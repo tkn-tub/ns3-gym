@@ -21,10 +21,8 @@
 #include "ie-dot11s-id.h"
 #include "ns3/assert.h"
 
-namespace ns3
-{
-namespace dot11s
-{
+namespace ns3 {
+namespace dot11s {
 IeMeshId::IeMeshId ()
 {
   for (uint8_t i = 0; i < 32; i++)

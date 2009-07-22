@@ -25,10 +25,8 @@
 #include "ns3/nstime.h"
 #include "ns3/wifi-information-element.h"
 
-namespace ns3
-{
-namespace dot11s
-{
+namespace ns3 {
+namespace dot11s {
 /**
  * \ingroup dot11s
  * \brief Describes one unit of beacon timing element

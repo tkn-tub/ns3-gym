@@ -31,10 +31,8 @@
 #include "ie-dot11s-prep.h"
 #include "ie-dot11s-rann.h"
 
-namespace ns3
-{
-namespace dot11s
-{
+namespace ns3 {
+namespace dot11s {
 
 NS_LOG_COMPONENT_DEFINE ("HwmpProtocolMac");
 HwmpProtocolMac::HwmpProtocolMac (uint32_t ifIndex, Ptr<HwmpProtocol> protocol) :

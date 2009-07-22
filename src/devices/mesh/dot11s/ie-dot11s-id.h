@@ -25,10 +25,8 @@
 #include "ns3/buffer.h"
 #include "ns3/wifi-information-element.h"
 
-namespace ns3
-{
-namespace dot11s
-{
+namespace ns3 {
+namespace dot11s {
 /**
  * \brief a IEEE 802.11s Mesh ID 7.3.287 of 802.11s draft 3.0
  *

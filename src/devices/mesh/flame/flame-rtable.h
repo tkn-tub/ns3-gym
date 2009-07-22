@@ -26,10 +26,8 @@
 #include "ns3/object.h"
 #include "ns3/mac48-address.h"
 
-namespace ns3
-{
-namespace flame
-{
+namespace ns3 {
+namespace flame {
 /**
  * \ingroup flame
  *

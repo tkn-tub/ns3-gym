@@ -20,10 +20,8 @@
 
 #include "hwmp-tag.h"
 
-namespace ns3
-{
-namespace dot11s
-{
+namespace ns3 {
+namespace dot11s {
 
 NS_OBJECT_ENSURE_REGISTERED (HwmpTag);
 //Class HwmpTag:

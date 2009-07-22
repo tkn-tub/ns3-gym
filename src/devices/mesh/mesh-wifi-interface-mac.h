@@ -34,8 +34,7 @@
 #include "ns3/mesh-wifi-interface-mac-plugin.h"
 #include "ns3/event-id.h"
 #include "qos-utils.h"
-namespace ns3
-{
+namespace ns3 {
 
 class WifiMacHeader;
 class DcaTxop;

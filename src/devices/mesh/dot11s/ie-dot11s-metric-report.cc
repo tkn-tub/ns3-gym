@@ -21,10 +21,8 @@
 #include "ie-dot11s-metric-report.h"
 #include "ns3/assert.h"
 
-namespace ns3
-{
-namespace dot11s
-{
+namespace ns3 {
+namespace dot11s {
 IeLinkMetricReport::IeLinkMetricReport () :
   m_metric (0)
 {

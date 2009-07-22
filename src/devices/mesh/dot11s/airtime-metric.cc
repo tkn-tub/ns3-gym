@@ -21,10 +21,8 @@
 #include "airtime-metric.h"
 #include "ns3/wifi-remote-station-manager.h"
 #include "ns3/wifi-mode.h"
-namespace ns3
-{
-namespace dot11s
-{
+namespace ns3 {
+namespace dot11s {
 NS_OBJECT_ENSURE_REGISTERED (AirtimeLinkMetricCalculator);
 TypeId
 AirtimeLinkMetricCalculator::GetTypeId ()

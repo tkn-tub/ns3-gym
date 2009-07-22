@@ -24,10 +24,8 @@
 
 #include "flame-header.h"
 
-namespace ns3
-{
-namespace flame
-{
+namespace ns3 {
+namespace flame {
 FlameHeader::FlameHeader () :
   m_cost (0), m_seqno (0), m_origDst (Mac48Address ()), m_origSrc (Mac48Address ())
 {

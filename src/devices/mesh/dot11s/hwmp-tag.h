@@ -26,10 +26,8 @@
 #include "ns3/tag.h"
 #include "ns3/object.h"
 #include "ns3/mac48-address.h"
-namespace ns3
-{
-namespace dot11s
-{
+namespace ns3 {
+namespace dot11s {
 /**
  * \ingroup dot11s
  *

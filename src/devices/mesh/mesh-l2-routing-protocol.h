@@ -26,8 +26,7 @@
 #include "ns3/mac48-address.h"
 #include "ns3/packet.h"
 
-namespace ns3
-{
+namespace ns3 {
 
 class Packet;
 class MeshPointDevice;

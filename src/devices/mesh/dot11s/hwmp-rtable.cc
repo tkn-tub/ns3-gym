@@ -26,10 +26,8 @@
 
 #include "hwmp-rtable.h"
 
-namespace ns3
-{
-namespace dot11s
-{
+namespace ns3 {
+namespace dot11s {
 
 NS_LOG_COMPONENT_DEFINE ("HwmpRtable");
 

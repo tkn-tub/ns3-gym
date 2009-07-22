@@ -24,10 +24,8 @@
 #include "ns3/packet.h"
 #include "ns3/test.h"
 
-namespace ns3
-{
-namespace dot11s
-{
+namespace ns3 {
+namespace dot11s {
 /***********************************************************
  *  Here Mesh Mac Header functionality is defined.
  ***********************************************************/

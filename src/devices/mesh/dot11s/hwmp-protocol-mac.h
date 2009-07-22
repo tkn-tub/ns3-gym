@@ -25,13 +25,11 @@
 #include "ie-dot11s-preq.h"
 #include "ie-dot11s-perr.h"
 
-namespace ns3
-{
+namespace ns3 {
 
 class MeshWifiInterfaceMac;
 
-namespace dot11s
-{
+namespace dot11s {
 
 class HwmpProtocol;
 class WifiMeshActionHeader;

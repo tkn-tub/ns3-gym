@@ -21,8 +21,7 @@
 #ifndef FLAME_STACK_INSTALLER_H
 #define FLAME_STACK_INSTALLER_H
 #include "ns3/mesh-stack-installer.h"
-namespace ns3
-{
+namespace ns3 {
 /**
  * \ingroup flame
  *

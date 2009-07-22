@@ -27,10 +27,8 @@
 #include "ns3/mesh-wifi-interface-mac.h"
 #include "ns3/simulator.h"
 #include "ns3/wifi-mac-header.h"
-namespace ns3
-{
-namespace dot11s
-{
+namespace ns3 {
+namespace dot11s {
 PeerManagementProtocolMac::PeerManagementProtocolMac (uint32_t interface,
     Ptr<PeerManagementProtocol> protocol)
 {

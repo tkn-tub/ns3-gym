@@ -30,10 +30,8 @@
 #include "ie-dot11s-peer-management.h"
 #include "ie-dot11s-configuration.h"
 #include "peer-management-protocol-mac.h"
-namespace ns3
-{
-namespace dot11s
-{
+namespace ns3 {
+namespace dot11s {
 /**
  * \ingroup dot11s
  *

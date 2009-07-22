@@ -25,10 +25,8 @@
 #include "ns3/packet.h"
 #include "ns3/test.h"
 
-namespace ns3
-{
-namespace dot11s
-{
+namespace ns3 {
+namespace dot11s {
 
 IeRann::~IeRann ()
 {

@@ -23,10 +23,8 @@
 
 #include "ns3/mesh-wifi-interface-mac.h"
 
-namespace ns3
-{
-namespace flame
-{
+namespace ns3 {
+namespace flame {
 class FlameProtocol;
 /**
  * \ingroup flame

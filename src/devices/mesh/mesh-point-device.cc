@@ -29,8 +29,7 @@
 
 NS_LOG_COMPONENT_DEFINE ("MeshPointDevice");
 
-namespace ns3
-{
+namespace ns3 {
 
 NS_OBJECT_ENSURE_REGISTERED (MeshPointDevice);
 

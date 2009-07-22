@@ -21,8 +21,7 @@
 #include "ns3/mesh-wifi-beacon.h"
 #include <algorithm>
 
-namespace ns3
-{
+namespace ns3 {
 
 MeshWifiBeacon::MeshWifiBeacon (Ssid ssid, SupportedRates rates, uint64_t us)
 {
@@ -35,8 +34,7 @@ MeshWifiBeacon::AddInformationElement (Ptr<WifiInformationElement> ie)
 {
   m_elements.push_back (ie);
 }
-namespace
-{
+namespace {
 /// aux sorter for Ptr<WifiInformationElement>
 struct PIEComparator
 {

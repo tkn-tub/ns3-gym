@@ -25,8 +25,7 @@
 
 NS_LOG_COMPONENT_DEFINE ("MeshL2RoutingProtocol");
 
-namespace ns3
-{
+namespace ns3 {
 
 NS_OBJECT_ENSURE_REGISTERED (MeshL2RoutingProtocol);
 

@@ -32,11 +32,9 @@
 #include "peer-link.h"
 
 #include <map>
-namespace ns3
-{
+namespace ns3 {
 class MeshPointDevice;
-namespace dot11s
-{
+namespace dot11s {
 class PeerManagementProtocolMac;
 class PeerLink;
 class IePeerManagement;

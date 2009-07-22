@@ -35,10 +35,8 @@
 #include "peer-link.h"
 
 NS_LOG_COMPONENT_DEFINE ("PeerManagementProtocol");
-namespace ns3
-{
-namespace dot11s
-{
+namespace ns3 {
+namespace dot11s {
 /***************************************************
  * PeerManager
  ***************************************************/

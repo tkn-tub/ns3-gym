@@ -32,10 +32,8 @@
 
 NS_LOG_COMPONENT_DEFINE ("FlameProtocol");
 
-namespace ns3
-{
-namespace flame
-{
+namespace ns3 {
+namespace flame {
 //-----------------------------------------------------------------------------
 // FlameTag
 //-----------------------------------------------------------------------------

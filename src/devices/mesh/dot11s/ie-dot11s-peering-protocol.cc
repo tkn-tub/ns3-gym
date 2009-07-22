@@ -19,10 +19,8 @@
  */
 
 #include "ie-dot11s-peering-protocol.h"
-namespace ns3
-{
-namespace dot11s
-{
+namespace ns3 {
+namespace dot11s {
 uint8_t
 IePeeringProtocol::GetInformationSize () const
 {

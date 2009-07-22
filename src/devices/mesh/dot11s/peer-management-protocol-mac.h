@@ -23,11 +23,9 @@
 
 #include "ns3/mesh-wifi-interface-mac-plugin.h"
 
-namespace ns3
-{
+namespace ns3 {
 class MeshWifiInterfaceMac;
-namespace dot11s
-{
+namespace dot11s {
 class PeerManagementProtocol;
 class IeConfiguration;
 class IePeerManagement;

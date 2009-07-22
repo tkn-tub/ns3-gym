@@ -21,10 +21,8 @@
 #ifndef AIRTIME_METRIC_H
 #define AIRTIME_METRIC_H
 #include "ns3/mesh-wifi-interface-mac.h"
-namespace ns3
-{
-namespace dot11s
-{
+namespace ns3 {
+namespace dot11s {
 /**
  * \ingroup dot11s
  *

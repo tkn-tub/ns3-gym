@@ -44,10 +44,8 @@
  * see also Linux kernel mailing list discussion at
  * http://lkml.org/lkml/2006/5/23/82
  */
-namespace ns3
-{
-namespace flame
-{
+namespace ns3 {
+namespace flame {
 /**
  * \ingroup flame
  * \brief Transmitter and receiver addresses

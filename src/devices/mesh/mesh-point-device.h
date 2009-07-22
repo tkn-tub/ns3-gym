@@ -27,8 +27,7 @@
 #include "ns3/bridge-channel.h"
 #include "ns3/mesh-l2-routing-protocol.h"
 
-namespace ns3
-{
+namespace ns3 {
 
 class Node;
 /**

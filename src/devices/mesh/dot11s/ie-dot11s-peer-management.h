@@ -24,10 +24,8 @@
 
 #include "ns3/wifi-information-element.h"
 
-namespace ns3
-{
-namespace dot11s
-{
+namespace ns3 {
+namespace dot11s {
 
 /**
  * \ingroup dot11s

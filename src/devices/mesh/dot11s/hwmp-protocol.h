@@ -28,13 +28,11 @@
 #include <vector>
 #include <map>
 
-namespace ns3
-{
+namespace ns3 {
 class MeshPointDevice;
 class Packet;
 class Mac48Address;
-namespace dot11s
-{
+namespace dot11s {
 class HwmpProtocolMac;
 class HwmpRtable;
 class IePreq;

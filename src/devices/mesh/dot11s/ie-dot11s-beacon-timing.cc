@@ -25,10 +25,8 @@
 
 NS_LOG_COMPONENT_DEFINE ("IeBeaconTiming");
 
-namespace ns3
-{
-namespace dot11s
-{
+namespace ns3 {
+namespace dot11s {
 /*******************************************
  * IeBeaconTimingUnit
  *******************************************/
