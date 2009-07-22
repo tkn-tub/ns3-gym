@@ -205,13 +205,11 @@ def register_Ns3CsmaChannel_methods(root_module, cls):
     ## csma-channel.h: ns3::DataRate ns3::CsmaChannel::GetDataRate() [member function]
     cls.add_method('GetDataRate', 
                    'ns3::DataRate', 
-                   [], 
-                   is_virtual=True)
+                   [])
     ## csma-channel.h: ns3::Time ns3::CsmaChannel::GetDelay() [member function]
     cls.add_method('GetDelay', 
                    'ns3::Time', 
-                   [], 
-                   is_virtual=True)
+                   [])
     return
 
 def register_Ns3CsmaNetDevice_methods(root_module, cls):

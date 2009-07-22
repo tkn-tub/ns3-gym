@@ -112,14 +112,14 @@ YansWifiPhy::GetTypeId (void)
                    MakeEnumChecker (WIFI_PHY_STANDARD_80211a, "802.11a",
                                     WIFI_PHY_STANDARD_80211b, "802.11b",
                                     WIFI_PHY_STANDARD_80211_10Mhz,"802.11_10Mhz",
-                                    WIFI_PHY_STANDARD_80211_5Mhz,"802-11_5Mhz",
+                                    WIFI_PHY_STANDARD_80211_5Mhz,"802.11_5Mhz",
                                     WIFI_PHY_STANDARD_holland, "holland"))
     .AddAttribute ("State", "The state of the PHY layer",
                    PointerValue (),
                    MakePointerAccessor (&YansWifiPhy::m_state),
                    MakePointerChecker<WifiPhyStateHelper> ())
     .AddAttribute ("ChannelSwitchDelay",
-                   "Delay between two short frames transmitted on different frequencies",
+                   "Delay between two short frames transmitted on different frequencies. NOTE: Unused now.",
                    TimeValue (MicroSeconds (250)),
                    MakeTimeAccessor (&YansWifiPhy::m_channelSwitchDelay), 
                    MakeTimeChecker ())
@@ -167,7 +167,7 @@ YansWifiPhy::SetStandard (enum WifiPhyStandard standard)
     break;
   case WIFI_PHY_STANDARD_80211_5Mhz:
     Configure80211_5Mhz ();
-    break;
+    break; 
   case WIFI_PHY_STANDARD_holland:
     ConfigureHolland ();
     break;
@@ -318,7 +318,8 @@ YansWifiPhy::SetChannel (Ptr<YansWifiChannel> channel)
 void 
 YansWifiPhy::SetChannelNumber (uint16_t nch)
 {
-  Simulator::Schedule (m_channelSwitchDelay, &YansWifiPhy::DoSetChannelNumber, this, nch);
+  // TODO implement channel switching state machine here
+  DoSetChannelNumber (nch);
 }
 
 void
@@ -476,6 +477,7 @@ void
 YansWifiPhy::Configure80211a (void)
 {
   NS_LOG_FUNCTION (this);
+  m_channelStartingFrequency = 5e3; // 5.000 GHz 
   m_modes.push_back (WifiPhy::Get6mba ());
   m_modes.push_back (WifiPhy::Get9mba ());
   m_modes.push_back (WifiPhy::Get12mba ());
@@ -491,6 +493,7 @@ void
 YansWifiPhy::Configure80211b (void)
 {
   NS_LOG_FUNCTION (this);
+  m_channelStartingFrequency = 2412; // 2.412 GHz 
   m_modes.push_back (WifiPhy::Get1mbb ());
   m_modes.push_back (WifiPhy::Get2mbb ());
   m_modes.push_back (WifiPhy::Get5_5mbb ());
@@ -501,6 +504,7 @@ void
 YansWifiPhy::Configure80211_10Mhz (void)
 {
   NS_LOG_FUNCTION (this);
+  m_channelStartingFrequency = 5e3; // 5.000 GHz, suppose 802.11a 
   m_modes.push_back (WifiPhy::Get3mb10Mhz ());
   m_modes.push_back (WifiPhy::Get4_5mb10Mhz ());
   m_modes.push_back (WifiPhy::Get6mb10Mhz ());
@@ -515,6 +519,7 @@ void
 YansWifiPhy::Configure80211_5Mhz (void)
 {
   NS_LOG_FUNCTION (this); 
+  m_channelStartingFrequency = 5e3; // 5.000 GHz, suppose 802.11a
   m_modes.push_back (WifiPhy::Get1_5mb5Mhz ());
   m_modes.push_back (WifiPhy::Get2_25mb5Mhz ());
   m_modes.push_back (WifiPhy::Get3mb5Mhz ());
@@ -529,6 +534,7 @@ void
 YansWifiPhy::ConfigureHolland (void)
 {
   NS_LOG_FUNCTION (this);
+  m_channelStartingFrequency = 5e3; // 5.000 GHz 
   m_modes.push_back (WifiPhy::Get6mba ());
   m_modes.push_back (WifiPhy::Get12mba ());
   m_modes.push_back (WifiPhy::Get18mba ());

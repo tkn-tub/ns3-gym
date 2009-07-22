@@ -128,6 +128,7 @@ NqstaWifiMac::DoDispose (void)
   NS_LOG_FUNCTION (this);
   delete m_rxMiddle;
   delete m_dcfManager;
+  m_low->Dispose ();
   m_rxMiddle = 0;
   m_low = 0;
   m_dcfManager = 0;

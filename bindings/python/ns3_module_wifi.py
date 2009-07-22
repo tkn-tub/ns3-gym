@@ -8,7 +8,7 @@ def register_types(module):
     ## wifi-preamble.h: ns3::WifiPreamble [enumeration]
     module.add_enum('WifiPreamble', ['WIFI_PREAMBLE_LONG', 'WIFI_PREAMBLE_SHORT'])
     ## wifi-phy-standard.h: ns3::WifiPhyStandard [enumeration]
-    module.add_enum('WifiPhyStandard', ['WIFI_PHY_STANDARD_80211a', 'WIFI_PHY_STANDARD_80211b', 'WIFI_PHY_STANDARD_holland'])
+    module.add_enum('WifiPhyStandard', ['WIFI_PHY_STANDARD_80211a', 'WIFI_PHY_STANDARD_80211b', 'WIFI_PHY_STANDARD_80211_10Mhz', 'WIFI_PHY_STANDARD_80211_5Mhz', 'WIFI_PHY_STANDARD_holland'])
     ## qos-utils.h: ns3::AccessClass [enumeration]
     module.add_enum('AccessClass', ['AC_VO', 'AC_VI', 'AC_BE', 'AC_BK', 'AC_UNDEF'])
     ## edca-txop-n.h: ns3::TypeOfStation [enumeration]
@@ -264,19 +264,11 @@ def register_Ns3InterferenceHelper_methods(root_module, cls):
     cls.add_method('CalculateSnrPer', 
                    'ns3::InterferenceHelper::SnrPer', 
                    [param('ns3::Ptr< ns3::InterferenceHelper::Event >', 'event')])
-    ## interference-helper.h: ns3::Time ns3::InterferenceHelper::CalculateTxDuration(uint32_t size, ns3::WifiMode payloadMode, ns3::WifiPreamble preamble) const [member function]
+    ## interference-helper.h: static ns3::Time ns3::InterferenceHelper::CalculateTxDuration(uint32_t size, ns3::WifiMode payloadMode, ns3::WifiPreamble preamble) [member function]
     cls.add_method('CalculateTxDuration', 
                    'ns3::Time', 
                    [param('uint32_t', 'size'), param('ns3::WifiMode', 'payloadMode'), param('ns3::WifiPreamble', 'preamble')], 
-                   is_const=True)
-    ## interference-helper.h: void ns3::InterferenceHelper::Configure80211aParameters() [member function]
-    cls.add_method('Configure80211aParameters', 
-                   'void', 
-                   [])
-    ## interference-helper.h: void ns3::InterferenceHelper::Configure80211bParameters() [member function]
-    cls.add_method('Configure80211bParameters', 
-                   'void', 
-                   [])
+                   is_static=True)
     ## interference-helper.h: ns3::Time ns3::InterferenceHelper::GetEnergyDuration(double energyW) [member function]
     cls.add_method('GetEnergyDuration', 
                    'ns3::Time', 
@@ -291,6 +283,26 @@ def register_Ns3InterferenceHelper_methods(root_module, cls):
                    'double', 
                    [], 
                    is_const=True)
+    ## interference-helper.h: static uint32_t ns3::InterferenceHelper::GetPayloadDurationMicroSeconds(uint32_t size, ns3::WifiMode payloadMode) [member function]
+    cls.add_method('GetPayloadDurationMicroSeconds', 
+                   'uint32_t', 
+                   [param('uint32_t', 'size'), param('ns3::WifiMode', 'payloadMode')], 
+                   is_static=True)
+    ## interference-helper.h: static uint32_t ns3::InterferenceHelper::GetPlcpHeaderDurationMicroSeconds(ns3::WifiMode payloadMode, ns3::WifiPreamble preamble) [member function]
+    cls.add_method('GetPlcpHeaderDurationMicroSeconds', 
+                   'uint32_t', 
+                   [param('ns3::WifiMode', 'payloadMode'), param('ns3::WifiPreamble', 'preamble')], 
+                   is_static=True)
+    ## interference-helper.h: static ns3::WifiMode ns3::InterferenceHelper::GetPlcpHeaderMode(ns3::WifiMode payloadMode, ns3::WifiPreamble preamble) [member function]
+    cls.add_method('GetPlcpHeaderMode', 
+                   'ns3::WifiMode', 
+                   [param('ns3::WifiMode', 'payloadMode'), param('ns3::WifiPreamble', 'preamble')], 
+                   is_static=True)
+    ## interference-helper.h: static uint32_t ns3::InterferenceHelper::GetPlcpPreambleDurationMicroSeconds(ns3::WifiMode mode, ns3::WifiPreamble preamble) [member function]
+    cls.add_method('GetPlcpPreambleDurationMicroSeconds', 
+                   'uint32_t', 
+                   [param('ns3::WifiMode', 'mode'), param('ns3::WifiPreamble', 'preamble')], 
+                   is_static=True)
     ## interference-helper.h: void ns3::InterferenceHelper::SetErrorRateModel(ns3::Ptr<ns3::ErrorRateModel> rate) [member function]
     cls.add_method('SetErrorRateModel', 
                    'void', 
@@ -457,6 +469,11 @@ def register_Ns3WifiMode_methods(root_module, cls):
                    'uint32_t', 
                    [], 
                    is_const=True)
+    ## wifi-mode.h: ns3::WifiPhyStandard ns3::WifiMode::GetStandard() const [member function]
+    cls.add_method('GetStandard', 
+                   'ns3::WifiPhyStandard', 
+                   [], 
+                   is_const=True)
     ## wifi-mode.h: uint32_t ns3::WifiMode::GetUid() const [member function]
     cls.add_method('GetUid', 
                    'uint32_t', 
@@ -487,25 +504,25 @@ def register_Ns3WifiMode_methods(root_module, cls):
 def register_Ns3WifiModeFactory_methods(root_module, cls):
     ## wifi-mode.h: ns3::WifiModeFactory::WifiModeFactory(ns3::WifiModeFactory const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::WifiModeFactory const &', 'arg0')])
-    ## wifi-mode.h: static ns3::WifiMode ns3::WifiModeFactory::CreateBpsk(std::string uniqueName, bool isMandatory, uint32_t bandwidth, uint32_t dataRate, uint32_t phyRate) [member function]
+    ## wifi-mode.h: static ns3::WifiMode ns3::WifiModeFactory::CreateBpsk(std::string uniqueName, bool isMandatory, uint32_t bandwidth, uint32_t dataRate, uint32_t phyRate, ns3::WifiPhyStandard standard) [member function]
     cls.add_method('CreateBpsk', 
                    'ns3::WifiMode', 
-                   [param('std::string', 'uniqueName'), param('bool', 'isMandatory'), param('uint32_t', 'bandwidth'), param('uint32_t', 'dataRate'), param('uint32_t', 'phyRate')], 
+                   [param('std::string', 'uniqueName'), param('bool', 'isMandatory'), param('uint32_t', 'bandwidth'), param('uint32_t', 'dataRate'), param('uint32_t', 'phyRate'), param('ns3::WifiPhyStandard', 'standard')], 
                    is_static=True)
-    ## wifi-mode.h: static ns3::WifiMode ns3::WifiModeFactory::CreateQam(std::string uniqueName, bool isMandatory, uint32_t bandwidth, uint32_t dataRate, uint32_t phyRate, uint8_t constellationSize) [member function]
+    ## wifi-mode.h: static ns3::WifiMode ns3::WifiModeFactory::CreateQam(std::string uniqueName, bool isMandatory, uint32_t bandwidth, uint32_t dataRate, uint32_t phyRate, uint8_t constellationSize, ns3::WifiPhyStandard standard) [member function]
     cls.add_method('CreateQam', 
                    'ns3::WifiMode', 
-                   [param('std::string', 'uniqueName'), param('bool', 'isMandatory'), param('uint32_t', 'bandwidth'), param('uint32_t', 'dataRate'), param('uint32_t', 'phyRate'), param('uint8_t', 'constellationSize')], 
+                   [param('std::string', 'uniqueName'), param('bool', 'isMandatory'), param('uint32_t', 'bandwidth'), param('uint32_t', 'dataRate'), param('uint32_t', 'phyRate'), param('uint8_t', 'constellationSize'), param('ns3::WifiPhyStandard', 'standard')], 
                    is_static=True)
-    ## wifi-mode.h: static ns3::WifiMode ns3::WifiModeFactory::CreateDbpsk(std::string uniqueName, bool isMandatory, uint32_t bandwidth, uint32_t dataRate, uint32_t phyRate) [member function]
+    ## wifi-mode.h: static ns3::WifiMode ns3::WifiModeFactory::CreateDbpsk(std::string uniqueName, bool isMandatory, uint32_t bandwidth, uint32_t dataRate, uint32_t phyRate, ns3::WifiPhyStandard standard) [member function]
     cls.add_method('CreateDbpsk', 
                    'ns3::WifiMode', 
-                   [param('std::string', 'uniqueName'), param('bool', 'isMandatory'), param('uint32_t', 'bandwidth'), param('uint32_t', 'dataRate'), param('uint32_t', 'phyRate')], 
+                   [param('std::string', 'uniqueName'), param('bool', 'isMandatory'), param('uint32_t', 'bandwidth'), param('uint32_t', 'dataRate'), param('uint32_t', 'phyRate'), param('ns3::WifiPhyStandard', 'standard')], 
                    is_static=True)
-    ## wifi-mode.h: static ns3::WifiMode ns3::WifiModeFactory::CreateDqpsk(std::string uniqueName, bool isMandatory, uint32_t bandwidth, uint32_t dataRate, uint32_t phyRate) [member function]
+    ## wifi-mode.h: static ns3::WifiMode ns3::WifiModeFactory::CreateDqpsk(std::string uniqueName, bool isMandatory, uint32_t bandwidth, uint32_t dataRate, uint32_t phyRate, ns3::WifiPhyStandard standard) [member function]
     cls.add_method('CreateDqpsk', 
                    'ns3::WifiMode', 
-                   [param('std::string', 'uniqueName'), param('bool', 'isMandatory'), param('uint32_t', 'bandwidth'), param('uint32_t', 'dataRate'), param('uint32_t', 'phyRate')], 
+                   [param('std::string', 'uniqueName'), param('bool', 'isMandatory'), param('uint32_t', 'bandwidth'), param('uint32_t', 'dataRate'), param('uint32_t', 'phyRate'), param('ns3::WifiPhyStandard', 'standard')], 
                    is_static=True)
     return
 
@@ -1470,6 +1487,10 @@ def register_Ns3WifiMac_methods(root_module, cls):
     cls.add_method('NotifyRxDrop', 
                    'void', 
                    [param('ns3::Ptr< ns3::Packet const >', 'packet')])
+    ## wifi-mac.h: void ns3::WifiMac::SetStandard(ns3::WifiPhyStandard standard) [member function]
+    cls.add_method('SetStandard', 
+                   'void', 
+                   [param('ns3::WifiPhyStandard', 'standard')])
     return
 
 def register_Ns3WifiMacHeader_methods(root_module, cls):
@@ -2050,6 +2071,86 @@ def register_Ns3WifiPhy_methods(root_module, cls):
                    is_static=True)
     ## wifi-phy.h: static ns3::WifiMode ns3::WifiPhy::Get11mbb() [member function]
     cls.add_method('Get11mbb', 
+                   'ns3::WifiMode', 
+                   [], 
+                   is_static=True)
+    ## wifi-phy.h: static ns3::WifiMode ns3::WifiPhy::Get3mb10Mhz() [member function]
+    cls.add_method('Get3mb10Mhz', 
+                   'ns3::WifiMode', 
+                   [], 
+                   is_static=True)
+    ## wifi-phy.h: static ns3::WifiMode ns3::WifiPhy::Get4_5mb10Mhz() [member function]
+    cls.add_method('Get4_5mb10Mhz', 
+                   'ns3::WifiMode', 
+                   [], 
+                   is_static=True)
+    ## wifi-phy.h: static ns3::WifiMode ns3::WifiPhy::Get6mb10Mhz() [member function]
+    cls.add_method('Get6mb10Mhz', 
+                   'ns3::WifiMode', 
+                   [], 
+                   is_static=True)
+    ## wifi-phy.h: static ns3::WifiMode ns3::WifiPhy::Get9mb10Mhz() [member function]
+    cls.add_method('Get9mb10Mhz', 
+                   'ns3::WifiMode', 
+                   [], 
+                   is_static=True)
+    ## wifi-phy.h: static ns3::WifiMode ns3::WifiPhy::Get12mb10Mhz() [member function]
+    cls.add_method('Get12mb10Mhz', 
+                   'ns3::WifiMode', 
+                   [], 
+                   is_static=True)
+    ## wifi-phy.h: static ns3::WifiMode ns3::WifiPhy::Get18mb10Mhz() [member function]
+    cls.add_method('Get18mb10Mhz', 
+                   'ns3::WifiMode', 
+                   [], 
+                   is_static=True)
+    ## wifi-phy.h: static ns3::WifiMode ns3::WifiPhy::Get24mb10Mhz() [member function]
+    cls.add_method('Get24mb10Mhz', 
+                   'ns3::WifiMode', 
+                   [], 
+                   is_static=True)
+    ## wifi-phy.h: static ns3::WifiMode ns3::WifiPhy::Get27mb10Mhz() [member function]
+    cls.add_method('Get27mb10Mhz', 
+                   'ns3::WifiMode', 
+                   [], 
+                   is_static=True)
+    ## wifi-phy.h: static ns3::WifiMode ns3::WifiPhy::Get1_5mb5Mhz() [member function]
+    cls.add_method('Get1_5mb5Mhz', 
+                   'ns3::WifiMode', 
+                   [], 
+                   is_static=True)
+    ## wifi-phy.h: static ns3::WifiMode ns3::WifiPhy::Get2_25mb5Mhz() [member function]
+    cls.add_method('Get2_25mb5Mhz', 
+                   'ns3::WifiMode', 
+                   [], 
+                   is_static=True)
+    ## wifi-phy.h: static ns3::WifiMode ns3::WifiPhy::Get3mb5Mhz() [member function]
+    cls.add_method('Get3mb5Mhz', 
+                   'ns3::WifiMode', 
+                   [], 
+                   is_static=True)
+    ## wifi-phy.h: static ns3::WifiMode ns3::WifiPhy::Get4_5mb5Mhz() [member function]
+    cls.add_method('Get4_5mb5Mhz', 
+                   'ns3::WifiMode', 
+                   [], 
+                   is_static=True)
+    ## wifi-phy.h: static ns3::WifiMode ns3::WifiPhy::Get6mb5Mhz() [member function]
+    cls.add_method('Get6mb5Mhz', 
+                   'ns3::WifiMode', 
+                   [], 
+                   is_static=True)
+    ## wifi-phy.h: static ns3::WifiMode ns3::WifiPhy::Get9mb5Mhz() [member function]
+    cls.add_method('Get9mb5Mhz', 
+                   'ns3::WifiMode', 
+                   [], 
+                   is_static=True)
+    ## wifi-phy.h: static ns3::WifiMode ns3::WifiPhy::Get12mb5Mhz() [member function]
+    cls.add_method('Get12mb5Mhz', 
+                   'ns3::WifiMode', 
+                   [], 
+                   is_static=True)
+    ## wifi-phy.h: static ns3::WifiMode ns3::WifiPhy::Get13_5mb5Mhz() [member function]
+    cls.add_method('Get13_5mb5Mhz', 
                    'ns3::WifiMode', 
                    [], 
                    is_static=True)
@@ -3128,6 +3229,16 @@ def register_Ns3JakesPropagationLossModel_methods(root_module, cls):
     cls.add_method('SetNOscillators', 
                    'void', 
                    [param('uint8_t', 'nOscillators')])
+    ## jakes-propagation-loss-model.h: uint8_t ns3::JakesPropagationLossModel::GetNRays() const [member function]
+    cls.add_method('GetNRays', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True)
+    ## jakes-propagation-loss-model.h: uint8_t ns3::JakesPropagationLossModel::GetNOscillators() const [member function]
+    cls.add_method('GetNOscillators', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True)
     ## jakes-propagation-loss-model.h: double ns3::JakesPropagationLossModel::DoCalcRxPower(double txPowerDbm, ns3::Ptr<ns3::MobilityModel> a, ns3::Ptr<ns3::MobilityModel> b) const [member function]
     cls.add_method('DoCalcRxPower', 
                    'double', 

@@ -125,6 +125,7 @@ QstaWifiMac::DoDispose ()
   delete m_rxMiddle;
   delete m_txMiddle;
   delete m_dcfManager;
+  m_low->Dispose ();
   m_rxMiddle = 0;
   m_txMiddle = 0;
   m_low = 0;
