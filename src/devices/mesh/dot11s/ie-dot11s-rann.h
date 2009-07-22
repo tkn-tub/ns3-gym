@@ -18,15 +18,16 @@
  * Author: Kirill Andreev <andreev@iitp.ru>
  */
 
-
 #ifndef RANN_INFORMATION_ELEMENT_H
 #define RANN_INFORMATION_ELEMENT_H
 
 #include "ns3/mac48-address.h"
 #include "ns3/wifi-information-element.h"
 
-namespace ns3 {
-namespace dot11s {
+namespace ns3
+{
+namespace dot11s
+{
 /**
  * \ingroup dot11s
  * \brief See 7.3.2.95 of 802.11s draft 2.07
@@ -50,21 +51,21 @@ public:
   uint32_t GetMetric ();
   void DecrementTtl ();
   void IncrementMetric (uint32_t metric);
-    
+
 private:
   WifiElementId ElementId () const;
   void SerializeInformation (Buffer::Iterator i) const;
   uint8_t DeserializeInformation (Buffer::Iterator start, uint8_t length);
   uint8_t GetInformationSize () const;
   void PrintInformation (std::ostream &os) const;
-  
+
   uint8_t m_flags;
   uint8_t m_hopcount;
   uint8_t m_ttl;
   Mac48Address m_originatorAddress;
   uint32_t m_destSeqNumber;
   uint32_t m_metric;
-  
+
   friend bool operator== (const IeRann & a, const IeRann & b);
 };
 

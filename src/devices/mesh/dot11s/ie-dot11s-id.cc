@@ -21,11 +21,13 @@
 #include "ie-dot11s-id.h"
 #include "ns3/assert.h"
 
-namespace ns3 {
-namespace dot11s {
+namespace ns3
+{
+namespace dot11s
+{
 IeMeshId::IeMeshId ()
 {
-  for (uint8_t i = 0; i < 32; i++) 
+  for (uint8_t i = 0; i < 32; i++)
     {
       m_meshId[i] = 0;
     }
@@ -35,14 +37,14 @@ IeMeshId::IeMeshId (std::string s)
   NS_ASSERT (s.size () < 32);
   const char *meshid = s.c_str ();
   uint8_t len = 0;
-  while (*meshid != 0 && len < 32) 
+  while (*meshid != 0 && len < 32)
     {
       m_meshId[len] = *meshid;
       meshid++;
       len++;
     }
   NS_ASSERT (len <= 32);
-  while (len < 33) 
+  while (len < 33)
     {
       m_meshId[len] = 0;
       len++;
@@ -51,28 +53,26 @@ IeMeshId::IeMeshId (std::string s)
 WifiElementId
 IeMeshId::ElementId () const
 {
-  return IE11S_MESH_ID; 
+  return IE11S_MESH_ID;
 }
-bool 
+bool
 IeMeshId::IsEqual (IeMeshId const &o) const
 {
   uint8_t i = 0;
-  while (i < 32 && 
-         m_meshId[i] == o.m_meshId[i] &&
-         m_meshId[i] != 0) 
+  while (i < 32 && m_meshId[i] == o.m_meshId[i] && m_meshId[i] != 0)
     {
       i++;
     }
-  if (m_meshId[i] != o.m_meshId[i]) 
+  if (m_meshId[i] != o.m_meshId[i])
     {
       return false;
     }
   return true;
 }
-bool 
+bool
 IeMeshId::IsBroadcast (void) const
 {
-  if (m_meshId[0] == 0) 
+  if (m_meshId[0] == 0)
     {
       return true;
     }
@@ -81,9 +81,9 @@ IeMeshId::IsBroadcast (void) const
 char *
 IeMeshId::PeekString (void) const
 {
-  return (char *)m_meshId;
+  return (char *) m_meshId;
 }
-uint8_t 
+uint8_t
 IeMeshId::GetInformationSize (void) const
 {
   uint8_t size = 0;
@@ -100,8 +100,8 @@ IeMeshId::SerializeInformation (Buffer::Iterator i) const
   uint8_t size = 0;
   while (m_meshId[size] != 0 && size < 32)
     {
-      i.WriteU8 (m_meshId [size]);
-      size ++;
+      i.WriteU8 (m_meshId[size]);
+      size++;
     }
 }
 uint8_t
@@ -111,27 +111,31 @@ IeMeshId::DeserializeInformation (Buffer::Iterator start, uint8_t length)
   NS_ASSERT (length <= 32);
   i.Read (m_meshId, length);
   m_meshId[length] = 0;
-  return i.GetDistanceFrom(start);
+  return i.GetDistanceFrom (start);
 }
-void 
+void
 IeMeshId::PrintInformation (std::ostream& os) const
 {
-  os << "meshId =  " << PeekString (); 
+  os << "meshId =  " << PeekString ();
 }
-bool operator== (const IeMeshId & a, const IeMeshId & b)
+bool
+operator== (const IeMeshId & a, const IeMeshId & b)
 {
   bool result (true);
   uint8_t size = 0;
 
-  while(size < 32)
-  {
-    result = result && (a.m_meshId[size] == b.m_meshId[size]);
-    if(a.m_meshId[size] == 0)
-      return result;
-    size ++;
-  }
+  while (size < 32)
+    {
+      result = result && (a.m_meshId[size] == b.m_meshId[size]);
+      if (a.m_meshId[size] == 0)
+        {
+          return result;
+        }
+      size++;
+    }
   return result;
-};
+}
+;
 
 std::ostream &
 operator << (std::ostream &os, const IeMeshId &meshId)
@@ -142,21 +146,26 @@ operator << (std::ostream &os, const IeMeshId &meshId)
 #ifdef RUN_SELF_TESTS
 
 /// Built-in self test for IeMeshId
-struct IeMeshIdBist : public IeTest 
+struct IeMeshIdBist : public IeTest
 {
-  IeMeshIdBist () : IeTest ("Mesh/802.11s/IE/MESH_ID") {}
-  virtual bool RunTests(); 
+  IeMeshIdBist () :
+    IeTest ("Mesh/802.11s/IE/MESH_ID")
+  {
+  }
+  virtual bool
+  RunTests ();
 };
 
 /// Test instance
 static IeMeshIdBist g_IeMeshIdBist;
 
-bool IeMeshIdBist::RunTests ()
+bool
+IeMeshIdBist::RunTests ()
 {
-  bool result(true);
-  
+  bool result (true);
+
   // create test information element
-  IeMeshId a("qwerty");
+  IeMeshId a ("qwerty");
   result = result && TestRoundtripSerialization (a);
   return result;
 }

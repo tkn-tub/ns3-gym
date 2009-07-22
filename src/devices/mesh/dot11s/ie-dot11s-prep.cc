@@ -18,31 +18,26 @@
  * Author: Kirill Andreev <andreev@iitp.ru>
  */
 
-
 #include "ie-dot11s-prep.h"
 #include "ns3/address-utils.h"
 #include "ns3/node.h"
 #include "ns3/assert.h"
 #include "ns3/test.h"
 #include "ns3/packet.h"
-namespace ns3 {
-namespace dot11s {
+namespace ns3
+{
+namespace dot11s
+{
 /********************************
  * IePrep
  *******************************/
 IePrep::~IePrep ()
 {
 }
-IePrep::IePrep ():
-    m_flags (0),
-    m_hopcount (0),
-    m_ttl (0),
-    m_destinationAddress (Mac48Address::GetBroadcast()),
-    m_destSeqNumber (0),
-    m_lifetime (0),
-    m_metric (0),
-    m_originatorAddress (Mac48Address::GetBroadcast()),
-    m_originatorSeqNumber (0)
+IePrep::IePrep () :
+  m_flags (0), m_hopcount (0), m_ttl (0), m_destinationAddress (Mac48Address::GetBroadcast ()),
+      m_destSeqNumber (0), m_lifetime (0), m_metric (0), m_originatorAddress (Mac48Address::GetBroadcast ()),
+      m_originatorSeqNumber (0)
 {
 }
 WifiElementId
@@ -143,15 +138,14 @@ IePrep::GetLifetime () const
 void
 IePrep::DecrementTtl ()
 {
-  m_ttl --;
+  m_ttl--;
 }
 
 void
 IePrep::IncrementMetric (uint32_t metric)
 {
-  m_metric +=metric;
+  m_metric += metric;
 }
-
 
 void
 IePrep::SerializeInformation (Buffer::Iterator i) const
@@ -184,80 +178,74 @@ IePrep::DeserializeInformation (Buffer::Iterator start, uint8_t length)
 uint8_t
 IePrep::GetInformationSize () const
 {
-  uint32_t retval =
-     1 //Flags
-    +1 //Hopcount
-    +1 //Ttl
-    +6 //Dest address
-    +4 //Dest seqno
-    +4 //Lifetime
-    +4 //metric
-    +6 //Originator address
-    +4; //Originator seqno
+  uint32_t retval = 1 //Flags
+      + 1 //Hopcount
+      + 1 //Ttl
+      + 6 //Dest address
+      + 4 //Dest seqno
+      + 4 //Lifetime
+      + 4 //metric
+      + 6 //Originator address
+      + 4; //Originator seqno
   return retval;
-};
+}
+;
 void
 IePrep::PrintInformation (std::ostream& os) const
 {
-  os<<"Flags:        = " << m_flags <<
-    "\nHopcount:     = " << m_hopcount <<
-    "\nTTL:          = " << m_ttl <<
-    "\nDestination:  = " << m_destinationAddress <<
-    "\nDest. seqnum: = " << m_destSeqNumber <<
-    "\nLifetime:     = " << m_lifetime <<
-    "\nMetric:       = " << m_metric <<
-    "\nOriginator:   = " << m_originatorAddress <<
-    "\nOrig. seqnum: = " << m_originatorSeqNumber << "\n";
+  os << "Flags:        = " << m_flags << "\nHopcount:     = " << m_hopcount << "\nTTL:          = " << m_ttl
+      << "\nDestination:  = " << m_destinationAddress << "\nDest. seqnum: = " << m_destSeqNumber
+      << "\nLifetime:     = " << m_lifetime << "\nMetric:       = " << m_metric << "\nOriginator:   = "
+      << m_originatorAddress << "\nOrig. seqnum: = " << m_originatorSeqNumber << "\n";
 }
-bool operator== (const IePrep & a, const IePrep & b)
+bool
+operator== (const IePrep & a, const IePrep & b)
 {
-  return (
-      (a.m_flags == b.m_flags) &&
-      (a.m_hopcount == b.m_hopcount) &&
-      (a.m_ttl == b.m_ttl) &&
-      (a.m_destinationAddress == b.m_destinationAddress) &&
-      (a.m_destSeqNumber == b.m_destSeqNumber) && 
-      (a.m_lifetime == b.m_lifetime) &&
-      (a.m_metric == b.m_metric) &&
-      (a.m_originatorAddress == b.m_originatorAddress) &&
-      (a.m_originatorSeqNumber == b.m_originatorSeqNumber)
-      );
+  return ((a.m_flags == b.m_flags) && (a.m_hopcount == b.m_hopcount) && (a.m_ttl == b.m_ttl)
+      && (a.m_destinationAddress == b.m_destinationAddress) && (a.m_destSeqNumber == b.m_destSeqNumber)
+      && (a.m_lifetime == b.m_lifetime) && (a.m_metric == b.m_metric) && (a.m_originatorAddress
+      == b.m_originatorAddress) && (a.m_originatorSeqNumber == b.m_originatorSeqNumber));
 }
 
 #ifdef RUN_SELF_TESTS
 
 /// Built-in self test for IePrep
-struct IePrepBist : public IeTest 
+struct IePrepBist : public IeTest
 {
-  IePrepBist () : IeTest ("Mesh/802.11s/IE/PREP") {};
-  virtual bool RunTests(); 
+  IePrepBist () :
+    IeTest ("Mesh/802.11s/IE/PREP")
+  {
+  }
+  ;
+  virtual bool
+  RunTests ();
 };
 
 /// Test instance
 static IePrepBist g_IePrepBist;
 
-bool IePrepBist::RunTests ()
+bool
+IePrepBist::RunTests ()
 {
-  bool result(true);
-  
+  bool result (true);
+
   // create test information element
   IePrep a;
   a.SetFlags (12);
   a.SetHopcount (11);
   a.SetTtl (10);
-  a.SetDestinationAddress (Mac48Address("11:22:33:44:55:66"));
+  a.SetDestinationAddress (Mac48Address ("11:22:33:44:55:66"));
   a.SetDestinationSeqNumber (123);
   a.SetLifetime (5000);
   a.SetMetric (4321);
-  a.SetOriginatorAddress (Mac48Address("33:00:22:00:11:00"));
+  a.SetOriginatorAddress (Mac48Address ("33:00:22:00:11:00"));
   a.SetOriginatorSeqNumber (666);
-  
+
   result = result && TestRoundtripSerialization (a);
   return result;
 }
 
 #endif // RUN_SELF_TESTS
- 
 } // namespace dot11s
 } //namespace ns3
 

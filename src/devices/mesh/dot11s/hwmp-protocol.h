@@ -18,7 +18,6 @@
  * Authors: Kirill Andreev <andreev@iitp.ru>
  */
 
-
 #ifndef HWMP_PROTOCOL_H
 #define HWMP_PROTOCOL_H
 
@@ -29,19 +28,21 @@
 #include <vector>
 #include <map>
 
-namespace ns3 {
+namespace ns3
+{
 class MeshPointDevice;
 class Packet;
 class Mac48Address;
-namespace dot11s {
+namespace dot11s
+{
 class HwmpProtocolMac;
 class HwmpRtable;
 class IePreq;
 class IePrep;
 /**
  * \ingroup dot11s
- * 
- * \brief Hybrid wireless mesh protocol -- a routing protocol of IEEE 802.11s draft. 
+ *
+ * \brief Hybrid wireless mesh protocol -- a routing protocol of IEEE 802.11s draft.
  */
 class HwmpProtocol : public MeshL2RoutingProtocol
 {
@@ -50,19 +51,19 @@ public:
   HwmpProtocol ();
   ~HwmpProtocol ();
   void DoDispose ();
-  
+
   /// Route request, inherited from MeshL2RoutingProtocol
   bool RequestRoute (uint32_t  sourceIface, const Mac48Address source, const Mac48Address destination,
       Ptr<const Packet>  packet, uint16_t  protocolType, RouteReplyCallback  routeReply);
   /// Cleanup packet from all tags
   bool RemoveRoutingStuff (uint32_t fromIface, const Mac48Address source,
       const Mac48Address destination, Ptr<Packet>  packet, uint16_t&  protocolType);
-  /** 
-   * \brief Install HWMP on given mesh point. 
-   * 
+  /**
+   * \brief Install HWMP on given mesh point.
+   *
    * Installing protocol cause installing its interface MAC plugins.
-   *  
-   * Also MP aggregates all installed protocols, HWMP protocol can be accessed 
+   *
+   * Also MP aggregates all installed protocols, HWMP protocol can be accessed
    * via MeshPointDevice::GetObject<dot11s::HwmpProtocol>();
    */
   bool Install (Ptr<MeshPointDevice>);
@@ -81,11 +82,11 @@ public:
   void ResetStats ();
 private:
   friend class HwmpProtocolMac;
-  
+
   /// Like RequestRoute, but for unicast packets
   bool ForwardUnicast (uint32_t  sourceIface, const Mac48Address source, const Mac48Address destination,
       Ptr<Packet>  packet, uint16_t  protocolType, RouteReplyCallback  routeReply, uint32_t ttl);
-  
+
   ///\name Interaction with HWMP MAC plugin
   //\{
   void ReceivePreq(IePreq preq, Mac48Address from, uint32_t interface, Mac48Address fromMp, uint32_t metric);
@@ -121,15 +122,15 @@ private:
   void InitiatePathError (PathError perr);
   /// \return list of addresses where a PERR should be sent to
   std::vector<std::pair<uint32_t, Mac48Address> > GetPerrReceivers (std::vector<IePerr::FailedDestination> failedDest);
-  
+
   /// \return list of addresses where a PERR should be sent to
   std::vector<Mac48Address> GetPreqReceivers (uint32_t interface);
   /// \return list of addresses where a broadcast should be
   //retransmitted
-  std::vector<Mac48Address> GetBroadcastReceivers (uint32_t interface); 
+  std::vector<Mac48Address> GetBroadcastReceivers (uint32_t interface);
   /**
    * \brief MAC-plugin asks wether the frame can be dropeed. Protocol automatically updates seqno.
-   * 
+   *
    * \return true if frame can be dropped
    * \param uint32_t is the seqno
    * \param Mac48Address is the mesh source addrress of the frame
@@ -145,10 +146,10 @@ private:
     uint16_t protocol; ///< protocol number
     uint32_t inInterface; ///< incoming device interface ID. (if packet has come from upper layers, this is Mesh point ID)
     RouteReplyCallback reply; ///< how to reply
-    
+
     QueuedPacket () : pkt(0), protocol(0), inInterface(0) {}
   };
-  
+
   ///\name Methods related to Queue/Dequeue procedures
   //\{
   bool QueuePacket (QueuedPacket packet);
@@ -178,27 +179,27 @@ private:
   ///\}
   ///\name Methods responsible for path discovery retry procedure:
   //\{
-  /** 
-   * \brief checks when the last path discovery procedure was started for a given destination. 
-   * 
+  /**
+   * \brief checks when the last path discovery procedure was started for a given destination.
+   *
    * If the retry counter has not achieved the maximum level - preq should not be sent
    */
   bool  ShouldSendPreq (Mac48Address dst);
-  
-  /** 
-   * \brief Generates PREQ retry when retry timeout has expired and route is still unresolved. 
-   * 
+
+  /**
+   * \brief Generates PREQ retry when retry timeout has expired and route is still unresolved.
+   *
    * When PREQ retry has achieved the maximum level - retry mechanish should be cancelled
    */
   void  RetryPathDiscovery (Mac48Address dst, uint8_t numOfRetry);
   //\}
-  
+
   ///\name Proactive Preq routines:
   //\{
   void SendProactivePreq ();
   //\}
   ///\return address of MeshPointDevice
-  Mac48Address GetAddress (); 
+  Mac48Address GetAddress ();
 private:
   typedef std::map<uint32_t, Ptr<HwmpProtocolMac> > HwmpProtocolMacMap;
   HwmpProtocolMacMap m_interfaces;
@@ -215,10 +216,10 @@ private:
   /// Metric database
   std::map<Mac48Address, uint32_t> m_lastHwmpMetric;
   //\}
-  
+
   /// Routing table
   Ptr<HwmpRtable> m_rtable;
-  
+
   ///\name Timers:
   //\{
   std::map<Mac48Address, EventId> m_preqTimeouts;
@@ -226,9 +227,9 @@ private:
   //Random start in Proactive PREQ propagation
   Time m_randomStart;
   //\}
-  
+
   /// Packet Queue
-  std::vector<QueuedPacket> m_rqueue; 
+  std::vector<QueuedPacket> m_rqueue;
 private:
   ///\name HWMP-protocol parameters (attributes of GetTypeId)
   //\{
@@ -249,7 +250,7 @@ private:
   bool m_doFlag;
   bool m_rfFlag;
   //\}
-  
+
   ///\name Methods needed by HwmpMacLugin to access protocol parameters:
   //\{
   bool GetDoFlag ();

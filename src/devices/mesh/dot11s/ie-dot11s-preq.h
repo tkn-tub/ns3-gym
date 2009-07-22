@@ -18,7 +18,6 @@
  * Author: Kirill Andreev <andreev@iitp.ru>
  */
 
-
 #ifndef WIFI_PREQ_INFORMATION_ELEMENT_H
 #define WIFI_PREQ_INFORMATION_ELEMENT_H
 
@@ -27,8 +26,10 @@
 #include "ns3/mac48-address.h"
 #include "ns3/wifi-information-element.h"
 
-namespace ns3 {
-namespace dot11s {
+namespace ns3
+{
+namespace dot11s
+{
 /**
  * \ingroup dot11s
  * \brief Describes an address unit in PREQ information element
@@ -52,7 +53,7 @@ private:
   bool m_usn;
   Mac48Address m_destinationAddress;
   uint32_t m_destSeqNumber;
-  
+
   friend bool operator== (const DestinationAddressUnit & a, const DestinationAddressUnit & b);
 };
 /**
@@ -142,7 +143,7 @@ private:
   uint32_t m_metric;
   uint8_t  m_destCount;
   std::vector<Ptr<DestinationAddressUnit> >  m_destinations;
-  
+
   friend bool operator== (const IePreq & a, const IePreq & b);
 };
 

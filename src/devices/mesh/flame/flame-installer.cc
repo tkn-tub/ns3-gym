@@ -21,7 +21,8 @@
 #include "flame-installer.h"
 #include "flame-protocol.h"
 
-namespace ns3 {
+namespace ns3
+{
 using namespace flame;
 NS_OBJECT_ENSURE_REGISTERED (FlameStack);
 TypeId
@@ -29,14 +30,15 @@ FlameStack::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::FlameStack")
     .SetParent<Object> ()
-    .AddConstructor<FlameStack> ()
-    ;
+    .AddConstructor<FlameStack> ();
   return tid;
 }
 FlameStack::FlameStack ()
-{}
+{
+}
 FlameStack::~FlameStack ()
-{}
+{
+}
 void
 FlameStack::DoDispose ()
 {
@@ -52,8 +54,8 @@ FlameStack::Report (const Ptr<MeshPointDevice> mp, std::ostream& os)
 {
   mp->Report (os);
   // TODO report flame counters
-  Ptr <FlameProtocol> flame = mp->GetObject<FlameProtocol> ();
-  NS_ASSERT(flame != 0);
+  Ptr<FlameProtocol> flame = mp->GetObject<FlameProtocol> ();
+  NS_ASSERT (flame != 0);
   flame->Report (os);
 }
 void
@@ -61,8 +63,8 @@ FlameStack::ResetStats (const Ptr<MeshPointDevice> mp)
 {
   mp->ResetStats ();
   // TODO reset flame counters
-  Ptr <FlameProtocol> flame = mp->GetObject<FlameProtocol> ();
-  NS_ASSERT(flame != 0);
+  Ptr<FlameProtocol> flame = mp->GetObject<FlameProtocol> ();
+  NS_ASSERT (flame != 0);
 
   flame->ResetStats ();
 }

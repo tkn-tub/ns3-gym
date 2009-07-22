@@ -18,7 +18,6 @@
  * Author: Kirill Andreev <andreev@iitp.ru>
  */
 
-
 #ifndef HWMP_STATE_H
 #define HWMP_STATE_H
 
@@ -26,11 +25,13 @@
 #include "ie-dot11s-preq.h"
 #include "ie-dot11s-perr.h"
 
-namespace ns3 {
+namespace ns3
+{
 
 class MeshWifiInterfaceMac;
 
-namespace dot11s {
+namespace dot11s
+{
 
 class HwmpProtocol;
 class WifiMeshActionHeader;
@@ -40,7 +41,7 @@ class IePerr;
 
 /**
  * \ingroup dot11s
- * 
+ *
  * \brief Interface MAC plugin for HWMP -- 802.11s routing protocol
  */
 class HwmpProtocolMac : public MeshWifiInterfaceMacPlugin
@@ -56,7 +57,7 @@ public:
   /// Update beacon is empty, because HWMP does not know anything about beacons
   void UpdateBeacon (MeshWifiBeacon & beacon) const {};
   //\}
-  
+
 private:
   friend class HwmpProtocol;
   ///\returns a path selection action header
@@ -78,7 +79,7 @@ private:
    */
   void RequestDestination (Mac48Address dest, uint32_t originator_seqno, uint32_t dst_seqno);
   //\}
-  
+
   /// Sends one PREQ when PreqMinInterval after last PREQ expires (if any PREQ exists in rhe queue)
   void SendMyPreq ();
   void SendMyPerr ();
@@ -93,7 +94,7 @@ private:
   Ptr<MeshWifiInterfaceMac> m_parent;
   uint32_t m_ifIndex;
   Ptr<HwmpProtocol> m_protocol;
-  
+
   ///\name my PREQ and PREQ timer:
   //\{
   EventId m_preqTimer;

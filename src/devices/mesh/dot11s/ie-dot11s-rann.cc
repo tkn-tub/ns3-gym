@@ -18,7 +18,6 @@
  * Author: Kirill Andreev <andreev@iitp.ru>
  */
 
-
 #include "ie-dot11s-rann.h"
 #include "ns3/assert.h"
 #include "ns3/address-utils.h"
@@ -26,19 +25,17 @@
 #include "ns3/packet.h"
 #include "ns3/test.h"
 
-namespace ns3 {
-namespace dot11s {
+namespace ns3
+{
+namespace dot11s
+{
 
 IeRann::~IeRann ()
 {
 }
-IeRann::IeRann ():
-    m_flags (0),
-    m_hopcount (0),
-    m_ttl (0),
-    m_originatorAddress (Mac48Address::GetBroadcast()),
-    m_destSeqNumber (0),
-    m_metric (0)
+IeRann::IeRann () :
+  m_flags (0), m_hopcount (0), m_ttl (0), m_originatorAddress (Mac48Address::GetBroadcast ()),
+      m_destSeqNumber (0), m_metric (0)
 {
 }
 WifiElementId
@@ -106,11 +103,11 @@ IeRann::GetMetric ()
 void
 IeRann::DecrementTtl ()
 {
-  m_ttl --;
-  m_hopcount ++;
+  m_ttl--;
+  m_hopcount++;
 }
 
-void 
+void
 IeRann::IncrementMetric (uint32_t m)
 {
   m_metric += m;
@@ -146,74 +143,74 @@ IeRann::DeserializeInformation (Buffer::Iterator start, uint8_t length)
 uint8_t
 IeRann::GetInformationSize () const
 {
-  uint8_t retval =
-     1 //Flags
-    +1 //Hopcount
-    +1 //TTL
-    +6 //OriginatorAddress
-    +4 //DestSeqNumber
-    +4;//Metric
+  uint8_t retval = 1 //Flags
+      + 1 //Hopcount
+      + 1 //TTL
+      + 6 //OriginatorAddress
+      + 4 //DestSeqNumber
+      + 4;//Metric
   return retval;
 }
 
-void 
+void
 IeRann::PrintInformation (std::ostream &os) const
 {
-  os << "  flags              = " << (int)m_flags       << "\n";
-  os << "  hop count          = " << (int)m_hopcount    << "\n";
-  os << "  TTL                = " << (int)m_ttl         << "\n";
-  os << "  originator address = " << m_originatorAddress<< "\n";
-  os << "  dst seq. number    = " << m_destSeqNumber    << "\n";
-  os << "  metric             = " << m_metric           << "\n";
+  os << "  flags              = " << (int) m_flags << "\n";
+  os << "  hop count          = " << (int) m_hopcount << "\n";
+  os << "  TTL                = " << (int) m_ttl << "\n";
+  os << "  originator address = " << m_originatorAddress << "\n";
+  os << "  dst seq. number    = " << m_destSeqNumber << "\n";
+  os << "  metric             = " << m_metric << "\n";
 }
 
 bool
 operator== (const IeRann & a, const IeRann & b)
 {
-  return (a.m_flags == b.m_flags 
-      &&  a.m_hopcount == b.m_hopcount 
-      &&  a.m_ttl == b.m_ttl
-      &&  a.m_originatorAddress == b.m_originatorAddress
-      &&  a.m_destSeqNumber == b.m_destSeqNumber
-      &&  a.m_metric == b.m_metric 
-      );
+  return (a.m_flags == b.m_flags && a.m_hopcount == b.m_hopcount && a.m_ttl == b.m_ttl
+      && a.m_originatorAddress == b.m_originatorAddress && a.m_destSeqNumber == b.m_destSeqNumber
+      && a.m_metric == b.m_metric);
 }
-  
+
 #ifdef RUN_SELF_TESTS
 
 /// Built-in self test for IeRann
 struct IeRannBist : public IeTest
 {
-  IeRannBist () : IeTest ("Mesh/802.11s/IE/RANN") {}
-  virtual bool RunTests(); 
+  IeRannBist () :
+    IeTest ("Mesh/802.11s/IE/RANN")
+  {
+  }
+  virtual bool
+  RunTests ();
 };
 
 /// Test instance
 static IeRannBist g_IeRannBist;
 
-bool IeRannBist::RunTests ()
+bool
+IeRannBist::RunTests ()
 {
-  bool result(true);
-  
+  bool result (true);
+
   // create test information element
   IeRann a;
-  
+
   a.SetFlags (1);
   a.SetHopcount (2);
   a.SetTTL (4);
   a.DecrementTtl ();
-  NS_TEST_ASSERT_EQUAL (a.GetTtl(), 3);
+  NS_TEST_ASSERT_EQUAL (a.GetTtl (), 3);
   a.SetOriginatorAddress (Mac48Address ("11:22:33:44:55:66"));
   a.SetDestSeqNumber (5);
   a.SetMetric (6);
   a.IncrementMetric (2);
-  NS_TEST_ASSERT_EQUAL (a.GetMetric(), 8);
-  
+  NS_TEST_ASSERT_EQUAL (a.GetMetric (), 8);
+
   result = result && TestRoundtripSerialization (a);
   return result;
 }
 #endif // RUN_SELF_TESTS
-
-}} // namespace ns3::dot11s
+}
+} // namespace ns3::dot11s
 
 

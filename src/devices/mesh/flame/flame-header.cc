@@ -24,23 +24,23 @@
 
 #include "flame-header.h"
 
-namespace ns3 {
-namespace flame {
+namespace ns3
+{
+namespace flame
+{
 FlameHeader::FlameHeader () :
-  m_cost (0),
-  m_seqno (0),
-  m_origDst (Mac48Address ()),
-  m_origSrc (Mac48Address ())
-{}
+  m_cost (0), m_seqno (0), m_origDst (Mac48Address ()), m_origSrc (Mac48Address ())
+{
+}
 FlameHeader::~FlameHeader ()
-{}
+{
+}
 TypeId
 FlameHeader::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::FlameHeader")
     .SetParent<Header> ()
-    .AddConstructor<FlameHeader> ()
-    ;
+    .AddConstructor<FlameHeader> ();
   return tid;
 }
 TypeId
@@ -51,27 +51,25 @@ FlameHeader::GetInstanceTypeId (void) const
 void
 FlameHeader::Print (std::ostream &os) const
 {
-  os << "Cost             = " << (uint16_t)m_cost <<
-      "\nSequence number  = " << m_seqno <<
-      "\nOrig Destination = " << m_origDst <<
-      "\nOrig Source      = " << m_origSrc << "\n";
+  os << "Cost             = " << (uint16_t) m_cost << "\nSequence number  = " << m_seqno
+      << "\nOrig Destination = " << m_origDst << "\nOrig Source      = " << m_origSrc << "\n";
 }
 uint32_t
 FlameHeader::GetSerializedSize (void) const
 {
-  return 1  // Reserved
-    + 1     // Cost
-    + 2     // Seqno
-    + 6     // Orig Dst
-    + 6     // Orig Src
-    + 2     // Flame Port
-    ;
+  return 1 // Reserved
+      + 1 // Cost
+      + 2 // Seqno
+      + 6 // Orig Dst
+      + 6 // Orig Src
+      + 2 // Flame Port
+  ;
 }
 void
 FlameHeader::Serialize (Buffer::Iterator start) const
 {
   Buffer::Iterator i = start;
-  i.WriteU8 (0);  //Reserved
+  i.WriteU8 (0); //Reserved
   i.WriteU8 (m_cost); //Cost
   i.WriteHtonU16 (m_seqno); //Seqno
   WriteTo (i, m_origDst);
@@ -93,7 +91,7 @@ FlameHeader::Deserialize (Buffer::Iterator start)
 void
 FlameHeader::AddCost (uint8_t cost)
 {
-  m_cost = (((uint16_t)cost+ (uint16_t)m_cost ) > 255) ? 255 : cost + m_cost;
+  m_cost = (((uint16_t) cost + (uint16_t) m_cost) > 255) ? 255 : cost + m_cost;
 }
 uint8_t
 FlameHeader::GetCost () const
@@ -140,43 +138,44 @@ FlameHeader::GetProtocol () const
 {
   return m_protocol;
 }
-bool operator== (const FlameHeader & a, const FlameHeader & b)
+bool
+operator== (const FlameHeader & a, const FlameHeader & b)
 {
-  return (
-      (a.m_cost == b.m_cost) &&
-      (a.m_seqno == b.m_seqno) &&
-      (a.m_origDst == b.m_origDst) &&
-      (a.m_origSrc == b.m_origSrc) &&
-      (a.m_protocol == b.m_protocol)
-      );
+  return ((a.m_cost == b.m_cost) && (a.m_seqno == b.m_seqno) && (a.m_origDst == b.m_origDst) && (a.m_origSrc
+      == b.m_origSrc) && (a.m_protocol == b.m_protocol));
 }
 
 #ifdef RUN_SELF_TESTS
 
 /// Built-in self test for FlameHeader
-struct FlameHeaderBist : public Test 
+struct FlameHeaderBist : public Test
 {
-  FlameHeaderBist () : Test ("mesh/flame/FlameHeader") {}
-  virtual bool RunTests(); 
+  FlameHeaderBist () :
+    Test ("mesh/flame/FlameHeader")
+  {
+  }
+  virtual bool
+  RunTests ();
 };
 
 /// Test instance
 static FlameHeaderBist g_FlameHeaderBist;
 
-bool FlameHeaderBist::RunTests ()
+bool
+FlameHeaderBist::RunTests ()
 {
   bool result (true);
-    FlameHeader a;
-    a.AddCost (123);
-    a.SetSeqno (456);
-    a.SetOrigDst (Mac48Address ("11:22:33:44:55:66"));
-    a.SetOrigSrc (Mac48Address ("00:11:22:33:44:55"));
-    a.SetProtocol (0x806);
-    Ptr<Packet> packet = Create<Packet> ();
-    packet->AddHeader (a);
-    FlameHeader b;
-    packet->RemoveHeader (b);
-    NS_TEST_ASSERT_EQUAL (b, a);
+  FlameHeader a;
+  a.AddCost (123);
+  a.SetSeqno (456);
+  a.SetOrigDst (Mac48Address ("11:22:33:44:55:66"));
+  a.SetOrigSrc (Mac48Address ("00:11:22:33:44:55"));
+  a.SetProtocol (0x806);
+  Ptr<Packet> packet = Create<Packet> ();
+  packet->AddHeader (a);
+  FlameHeader b;
+  packet->RemoveHeader (b);
+  NS_TEST_ASSERT_EQUAL (b, a);
   return result;
 }
 #endif

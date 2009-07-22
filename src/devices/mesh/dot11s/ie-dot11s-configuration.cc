@@ -19,27 +19,26 @@
  *          Aleksey Kovalenko <kovalenko@iitp.ru>
  */
 
-
 #include "ie-dot11s-configuration.h"
 #include "ns3/test.h"
 #include "ns3/packet.h"
-namespace ns3 {
-namespace dot11s {
+namespace ns3
+{
+namespace dot11s
+{
 
-dot11sMeshCapability::dot11sMeshCapability ():
-    acceptPeerLinks (true),
-    MCCASupported (false),
-    MCCAEnabled (false),
-    forwarding (true),
-    beaconTimingReport (true),
-    TBTTAdjustment (true),
-    powerSaveLevel (false)
-{}
-uint8_t dot11sMeshCapability::GetSerializedSize () const
+dot11sMeshCapability::dot11sMeshCapability () :
+  acceptPeerLinks (true), MCCASupported (false), MCCAEnabled (false), forwarding (true), beaconTimingReport (
+      true), TBTTAdjustment (true), powerSaveLevel (false)
+{
+}
+uint8_t
+dot11sMeshCapability::GetSerializedSize () const
 {
   return 2;
 }
-uint16_t dot11sMeshCapability::GetUint16 () const
+uint16_t
+dot11sMeshCapability::GetUint16 () const
 {
   uint16_t result = 0;
   if (acceptPeerLinks)
@@ -72,53 +71,53 @@ uint16_t dot11sMeshCapability::GetUint16 () const
     }
   return result;
 }
-Buffer::Iterator dot11sMeshCapability::Serialize (Buffer::Iterator i) const
+Buffer::Iterator
+dot11sMeshCapability::Serialize (Buffer::Iterator i) const
 {
   i.WriteHtolsbU16 (GetUint16 ());
   return i;
 }
-Buffer::Iterator dot11sMeshCapability::Deserialize (Buffer::Iterator i)
+Buffer::Iterator
+dot11sMeshCapability::Deserialize (Buffer::Iterator i)
 {
-  uint16_t  cap = i.ReadLsbtohU16 ();
-  acceptPeerLinks    = Is (cap, 0);
-  MCCASupported      = Is (cap, 1);
-  MCCAEnabled        = Is (cap, 2);
-  forwarding         = Is (cap, 3);
+  uint16_t cap = i.ReadLsbtohU16 ();
+  acceptPeerLinks = Is (cap, 0);
+  MCCASupported = Is (cap, 1);
+  MCCAEnabled = Is (cap, 2);
+  forwarding = Is (cap, 3);
   beaconTimingReport = Is (cap, 4);
-  TBTTAdjustment     = Is (cap, 5);
-  powerSaveLevel     = Is (cap, 6);
+  TBTTAdjustment = Is (cap, 5);
+  powerSaveLevel = Is (cap, 6);
   return i;
 }
-bool dot11sMeshCapability::Is (uint16_t cap, uint8_t n) const
+bool
+dot11sMeshCapability::Is (uint16_t cap, uint8_t n) const
 {
   uint16_t mask = 1 << n;
   return (cap & mask);
 }
 WifiElementId
 IeConfiguration::ElementId () const
-{    
+{
   return IE11S_MESH_CONFIGURATION;
 }
 
-IeConfiguration::IeConfiguration ():
-    m_APSPId (PROTOCOL_HWMP),
-    m_APSMId (METRIC_AIRTIME),
-    m_CCMId (CONGESTION_NULL),
-    m_SPId (SYNC_NEIGHBOUR_OFFSET),
-    m_APId (AUTH_NULL),
-    m_neighbors (0)
-{}
+IeConfiguration::IeConfiguration () :
+  m_APSPId (PROTOCOL_HWMP), m_APSMId (METRIC_AIRTIME), m_CCMId (CONGESTION_NULL), m_SPId (
+      SYNC_NEIGHBOUR_OFFSET), m_APId (AUTH_NULL), m_neighbors (0)
+{
+}
 uint8_t
 IeConfiguration::GetInformationSize () const
 {
   return 1 // Version
-    + 4 // APSPId
-    + 4 // APSMId
-    + 4 // CCMId
-    + 4 // SPId
-    + 4 // APId
-    + 1 // Mesh formation info (see 7.3.2.86.6 of 802.11s draft 3.0)
-    + m_meshCap.GetSerializedSize ();
+      + 4 // APSPId
+      + 4 // APSMId
+      + 4 // CCMId
+      + 4 // SPId
+      + 4 // APId
+      + 1 // Mesh formation info (see 7.3.2.86.6 of 802.11s draft 3.0)
+      + m_meshCap.GetSerializedSize ();
 }
 void
 IeConfiguration::SerializeInformation (Buffer::Iterator i) const
@@ -142,15 +141,15 @@ IeConfiguration::DeserializeInformation (Buffer::Iterator i, uint8_t length)
 {
   Buffer::Iterator start = i;
   uint8_t version;
-  version  = i.ReadU8 ();
+  version = i.ReadU8 ();
   // Active Path Selection Protocol ID:
-  m_APSPId  = (dot11sPathSelectionProtocol)i.ReadLsbtohU32 ();
+  m_APSPId = (dot11sPathSelectionProtocol) i.ReadLsbtohU32 ();
   // Active Path Metric ID:
-  m_APSMId = (dot11sPathSelectionMetric)i.ReadLsbtohU32 ();
+  m_APSMId = (dot11sPathSelectionMetric) i.ReadLsbtohU32 ();
   // Congestion Control Mode ID:
-  m_CCMId  = (dot11sCongestionControlMode)i.ReadLsbtohU32 ();
-  m_SPId   = (dot11sSynchronizationProtocolIdentifier)i.ReadLsbtohU32 ();
-  m_APId   = (dot11sAuthenticationProtocol)i.ReadLsbtohU32 ();
+  m_CCMId = (dot11sCongestionControlMode) i.ReadLsbtohU32 ();
+  m_SPId = (dot11sSynchronizationProtocolIdentifier) i.ReadLsbtohU32 ();
+  m_APId = (dot11sAuthenticationProtocol) i.ReadLsbtohU32 ();
   m_neighbors = (i.ReadU8 () >> 1) & 0xF;
   i = m_meshCap.Deserialize (i);
   return i.GetDistanceFrom (start);
@@ -158,23 +157,23 @@ IeConfiguration::DeserializeInformation (Buffer::Iterator i, uint8_t length)
 void
 IeConfiguration::PrintInformation (std::ostream& os) const
 {
-  os<<"Number of neighbors:               = " << (uint16_t)m_neighbors <<
-    "\nActive Path Selection Protocol ID: = " << (uint32_t)m_APSPId <<
-    "\nActive Path Selection Metric ID:   = " << (uint32_t)m_APSMId <<
-    "\nCongestion Control Mode ID:        = " << (uint32_t)m_CCMId <<
-    "\nSynchronize protocol ID:           = " << (uint32_t)m_SPId <<
-    "\nAuthentication protocol ID:        = " << (uint32_t)m_APId <<
-    "\nCapabilities:                      = " << m_meshCap.GetUint16 () << "\n";
+  os << "Number of neighbors:               = " << (uint16_t) m_neighbors
+      << "\nActive Path Selection Protocol ID: = " << (uint32_t) m_APSPId
+      << "\nActive Path Selection Metric ID:   = " << (uint32_t) m_APSMId
+      << "\nCongestion Control Mode ID:        = " << (uint32_t) m_CCMId
+      << "\nSynchronize protocol ID:           = " << (uint32_t) m_SPId
+      << "\nAuthentication protocol ID:        = " << (uint32_t) m_APId
+      << "\nCapabilities:                      = " << m_meshCap.GetUint16 () << "\n";
 }
 void
 IeConfiguration::SetRouting (dot11sPathSelectionProtocol routingId)
 {
-  m_APSPId  =  routingId;
+  m_APSPId = routingId;
 }
 void
 IeConfiguration::SetMetric (dot11sPathSelectionMetric metricId)
 {
-  m_APSMId =  metricId;
+  m_APSMId = metricId;
 }
 bool
 IeConfiguration::IsHWMP ()
@@ -184,7 +183,7 @@ IeConfiguration::IsHWMP ()
 bool
 IeConfiguration::IsAirtime ()
 {
-  return (m_APSMId  == METRIC_AIRTIME);
+  return (m_APSMId == METRIC_AIRTIME);
 }
 void
 IeConfiguration::SetNeighborCount (uint8_t neighbors)
@@ -196,51 +195,47 @@ IeConfiguration::GetNeighborCount ()
 {
   return m_neighbors;
 }
-dot11sMeshCapability const& IeConfiguration::MeshCapability ()
+dot11sMeshCapability const&
+IeConfiguration::MeshCapability ()
 {
   return m_meshCap;
 }
-bool operator== (const dot11sMeshCapability & a, const dot11sMeshCapability & b)
+bool
+operator== (const dot11sMeshCapability & a, const dot11sMeshCapability & b)
 {
-  return (
-      (a.acceptPeerLinks == b.acceptPeerLinks) &&
-      (a.MCCASupported == b.MCCASupported) &&
-      (a.MCCAEnabled == b.MCCAEnabled) &&
-      (a.forwarding == b.forwarding) &&
-      (a.beaconTimingReport == b.beaconTimingReport) &&
-      (a.TBTTAdjustment == b.TBTTAdjustment) &&
-      (a.powerSaveLevel == b.powerSaveLevel)
-      );
+  return ((a.acceptPeerLinks == b.acceptPeerLinks) && (a.MCCASupported == b.MCCASupported) && (a.MCCAEnabled
+      == b.MCCAEnabled) && (a.forwarding == b.forwarding) && (a.beaconTimingReport == b.beaconTimingReport)
+      && (a.TBTTAdjustment == b.TBTTAdjustment) && (a.powerSaveLevel == b.powerSaveLevel));
 }
-bool operator== (const IeConfiguration & a, const IeConfiguration & b)
+bool
+operator== (const IeConfiguration & a, const IeConfiguration & b)
 {
-  return (
-      (a.m_APSPId == b.m_APSPId) &&
-      (a.m_APSMId == b.m_APSMId) &&
-      (a.m_CCMId == b.m_CCMId) &&
-      (a.m_SPId == b.m_SPId) &&
-      (a.m_APId == b.m_APId) &&
-      (a.m_neighbors == b.m_neighbors) &&
-      (a.m_meshCap == b.m_meshCap)
-      );
+  return ((a.m_APSPId == b.m_APSPId) && (a.m_APSMId == b.m_APSMId) && (a.m_CCMId == b.m_CCMId) && (a.m_SPId
+      == b.m_SPId) && (a.m_APId == b.m_APId) && (a.m_neighbors == b.m_neighbors) && (a.m_meshCap
+      == b.m_meshCap));
 }
 #ifdef RUN_SELF_TESTS
 
 /// Built-in self test for IePreq
-struct IeConfigurationBist : public IeTest 
+struct IeConfigurationBist : public IeTest
 {
-  IeConfigurationBist () : IeTest ("Mesh/802.11s/IE/Configuration") {}
-  virtual bool RunTests(); 
+  IeConfigurationBist () :
+    IeTest ("Mesh/802.11s/IE/Configuration")
+  {
+  }
+  virtual bool
+  RunTests ();
 };
 
 /// Test instance
 static IeConfigurationBist g_IeConfigurationBist;
 
-bool IeConfigurationBist::RunTests ()
+bool
+IeConfigurationBist::RunTests ()
 {
-  bool result(true);
+  bool result (true);
   IeConfiguration a;
-  
+
   result = TestRoundtripSerialization (a);
   return result;
 }

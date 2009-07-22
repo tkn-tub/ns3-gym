@@ -18,17 +18,18 @@
  * Authors: Kirill Andreev <andreev@iitp.ru>
  */
 
-
 #include "ie-dot11s-peering-protocol.h"
-namespace ns3 {
-namespace dot11s {
+namespace ns3
+{
+namespace dot11s
+{
 uint8_t
 IePeeringProtocol::GetInformationSize () const
 {
   return 1;
 }
-IePeeringProtocol::IePeeringProtocol ():
-  m_protocol(0)
+IePeeringProtocol::IePeeringProtocol () :
+  m_protocol (0)
 {
 }
 WifiElementId
@@ -41,12 +42,11 @@ IePeeringProtocol::SerializeInformation (Buffer::Iterator i) const
 {
   i.WriteU8 (m_protocol);
 }
-
 uint8_t
 IePeeringProtocol::DeserializeInformation (Buffer::Iterator i, uint8_t length)
 {
   Buffer::Iterator start = i;
-  m_protocol  = i.ReadU8 ();
+  m_protocol = i.ReadU8 ();
   return i.GetDistanceFrom (start);
 }
 void

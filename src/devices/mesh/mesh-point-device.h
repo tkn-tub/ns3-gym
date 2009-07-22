@@ -19,7 +19,6 @@
  *          Pavel Boyko <boyko@iitp.ru>
  */
 
-
 #ifndef L2ROUTING_NET_DEVICE_H
 #define L2ROUTING_NET_DEVICE_H
 
@@ -28,23 +27,24 @@
 #include "ns3/bridge-channel.h"
 #include "ns3/mesh-l2-routing-protocol.h"
 
-namespace ns3 {
-  
+namespace ns3
+{
+
 class Node;
 /**
  * \ingroup mesh
  *
- * \brief Virtual net device modeling mesh point. 
+ * \brief Virtual net device modeling mesh point.
  *
  * Mesh point is a virtual net device which is responsible for
- *   - Aggreagating and coordinating 1..* real devices -- mesh interfaces, see MeshInterfaceDevice class. 
- *   - Hosting all mesh-related level 2 protocols. 
- * 
+ *   - Aggreagating and coordinating 1..* real devices -- mesh interfaces, see MeshInterfaceDevice class.
+ *   - Hosting all mesh-related level 2 protocols.
+ *
  * One of hosted L2 protocols must inplement L2RoutingProtocol interface and is used for packets forwarding.
  *
- * From the level 3 point of view MeshPointDevice is similar to BridgeNetDevice, but the packets, 
+ * From the level 3 point of view MeshPointDevice is similar to BridgeNetDevice, but the packets,
  * which going through may be changed (because L2 protocols may require their own headers or tags).
- * 
+ *
  * Attributes: TODO
  */
 class MeshPointDevice : public NetDevice
@@ -56,13 +56,13 @@ public:
   MeshPointDevice ();
   /// D-tor
   virtual ~MeshPointDevice ();
-  
-  ///\name Interfaces 
+
+  ///\name Interfaces
   //\{
   /**
    * \brief Attach new interface to the station. Interface must support 48-bit MAC address and SendFrom method.
-   * 
-   * \attention Only MeshPointDevice can have IP address, but not individual interfaces. 
+   *
+   * \attention Only MeshPointDevice can have IP address, but not individual interfaces.
    */
   void AddInterface (Ptr<NetDevice> port);
   /**
@@ -79,7 +79,7 @@ public:
    */
   std::vector<Ptr<NetDevice> > GetInterfaces () const;
   //\}
-  
+
   ///\name Protocols
   //\{
   /// Register routing protocol to be used. Protocol must be alredy installed on this mesh point.
@@ -87,7 +87,7 @@ public:
   /// Access current routing protocol
   Ptr<MeshL2RoutingProtocol> GetRoutingProtocol() const;
   //\}
-  
+
   ///\name NetDevice interface for upper layers
   //\{
   virtual void SetName (const std::string name);
@@ -118,7 +118,7 @@ public:
   virtual Address GetMulticast (Ipv6Address addr) const;
   virtual void DoDispose ();
   //\}
-  
+
   ///\name Statistics
   //\{
   /// Print statistics counters
@@ -126,17 +126,18 @@ public:
   /// Reset statistics counters
   void ResetStats ();
   //\}
-  
+
 private:
   /// Receive packet from interface
   void ReceiveFromDevice (Ptr<NetDevice> device, Ptr<const Packet> packet, uint16_t protocol,
                           Address const &source, Address const &destination, PacketType packetType);
-  /// Forward packet down to interfaces 
+  /// Forward packet down to interfaces
   void Forward (Ptr<NetDevice> incomingPort, Ptr<const Packet> packet,
-                uint16_t protocol, const Mac48Address src, const Mac48Address dst);
+                uint16_t protocol, const Mac48Address src,
+      const Mac48Address dst);
   /**
    * Response callback for L2 routing protocol. This will be executed when routing information is ready.
-   * 
+   *
    * \param success     True is route found. TODO: diagnose routing errors
    * \param packet      Packet to send
    * \param src         Source MAC address
@@ -144,8 +145,10 @@ private:
    * \param protocol    Protocol ID
    * \param outIface    Interface to use (ID) for send (decided by routing protocol). All interfaces will be used if outIface = 0xffffffff
    */
-  void DoSend (bool success, Ptr<Packet> packet, Mac48Address src, Mac48Address dst, uint16_t protocol, uint32_t iface);
-  
+  void
+  DoSend (bool success, Ptr<Packet> packet, Mac48Address src, Mac48Address dst, uint16_t protocol,
+      uint32_t iface);
+
 private:
   /// Receive action
   NetDevice::ReceiveCallback   m_rxCallback;
@@ -159,13 +162,13 @@ private:
   std::string m_name;
   /// List of interfaces
   std::vector< Ptr<NetDevice> > m_ifaces;
-  /// If index 
+  /// If index
   uint32_t m_ifIndex;
   /// MTU in bytes
   uint16_t m_mtu;
   /// Virtual channel for upper layers
   Ptr<BridgeChannel> m_channel;
-  
+
   /// Routing request callback
   Callback<bool,
            uint32_t,
@@ -179,15 +182,15 @@ private:
   MeshL2RoutingProtocol::RouteReplyCallback  m_myResponse;
   /// Current routing protocol, used mainly by GetRoutingProtocol
   Ptr<MeshL2RoutingProtocol> m_routingProtocol;
-  
+
   /// Device statistics counters
-  struct Statistics 
+  struct Statistics
   {
     uint32_t unicastData;
     uint32_t unicastDataBytes;
     uint32_t broadcastData;
     uint32_t broadcastDataBytes;
-    
+
     Statistics ();
   };
   /// Counters

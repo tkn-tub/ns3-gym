@@ -31,21 +31,23 @@
 
 /**
  * \ingroup mesh
- * \defgroup flame FLAME 
- * 
+ * \defgroup flame FLAME
+ *
  * \brief Forwarding LAyer for MEshing protocol
- * 
- * Simple L2.5 mesh routing protocol developed by 
+ *
+ * Simple L2.5 mesh routing protocol developed by
  * Herman Elfrink <herman.elfrink@ti-wmc.nl> and presented in
  * "Easy Wireless: broadband ad-hoc networking for emergency services"
- * by Maurits de Graaf et. al. at The Sixth Annual Mediterranean Ad Hoc 
+ * by Maurits de Graaf et. al. at The Sixth Annual Mediterranean Ad Hoc
  * Networking WorkShop, Corfu, Greece, June 12-15, 2007
  *
- * see also Linux kernel mailing list discussion at 
+ * see also Linux kernel mailing list discussion at
  * http://lkml.org/lkml/2006/5/23/82
  */
-namespace ns3 {
-namespace flame {
+namespace ns3
+{
+namespace flame
+{
 /**
  * \ingroup flame
  * \brief Transmitter and receiver addresses
@@ -57,10 +59,10 @@ public:
   Mac48Address  transmitter;
   /// Receiver of the packet:
   Mac48Address  receiver;
-  
+
   FlameTag (Mac48Address a = Mac48Address ()) :
     receiver (a){}
-  
+
   ///\name Inherited from Tag
   //\{
   static  TypeId  GetTypeId ();
@@ -83,19 +85,19 @@ public:
   FlameProtocol ();
   ~FlameProtocol ();
   void DoDispose ();
-  
+
   /// Route request, inherited from MeshL2RoutingProtocol
   bool RequestRoute (uint32_t  sourceIface, const Mac48Address source, const Mac48Address destination,
       Ptr<const Packet>  packet, uint16_t  protocolType, RouteReplyCallback  routeReply);
   /// Cleanup flame headers!
   bool RemoveRoutingStuff (uint32_t fromIface, const Mac48Address source,
       const Mac48Address destination, Ptr<Packet>  packet, uint16_t&  protocolType);
-  /** 
-   * \brief Install FLAME on given mesh point. 
-   * 
+  /**
+   * \brief Install FLAME on given mesh point.
+   *
    * Installing protocol cause installing its interface MAC plugins.
-   *  
-   * Also MP aggregates all installed protocols, FLAME protocol can be accessed 
+   *
+   * Also MP aggregates all installed protocols, FLAME protocol can be accessed
    * via MeshPointDevice::GetObject<flame::FlameProtocol>();
    */
   bool Install (Ptr<MeshPointDevice>);
@@ -108,7 +110,7 @@ private:
   static const uint16_t FLAME_PROTOCOL = 0x4040;
   /**
    * \brief Handles a packet: adds a routing information and drops packets by TTL or Seqno
-   * 
+   *
    * \return true if packet shall be dropped
    */
   bool HandleDataFrame (uint16_t seqno, Mac48Address source, const FlameHeader flameHdr, Mac48Address receiver, uint32_t fromIface);

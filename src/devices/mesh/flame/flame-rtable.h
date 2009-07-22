@@ -26,11 +26,13 @@
 #include "ns3/object.h"
 #include "ns3/mac48-address.h"
 
-namespace ns3 {
-namespace flame {
+namespace ns3
+{
+namespace flame
+{
 /**
  * \ingroup flame
- * 
+ *
  * \brief Routing table for FLAME
  */
 class FlameRtable : public Object
@@ -40,7 +42,7 @@ public:
   const static uint32_t INTERFACE_ANY = 0xffffffff;
   /// Maximum (the best?) path cost
   const static uint32_t MAX_COST = 0xff;
-  
+
   /// Route lookup result, return type of LookupXXX methods
   struct LookupResult
   {
@@ -48,9 +50,9 @@ public:
     uint32_t ifIndex;
     uint8_t  cost;
     uint16_t seqnum;
-    LookupResult(Mac48Address r = Mac48Address::GetBroadcast (), 
-                 uint32_t i = INTERFACE_ANY, 
-                 uint8_t  c = MAX_COST, 
+    LookupResult(Mac48Address r = Mac48Address::GetBroadcast (),
+                 uint32_t i = INTERFACE_ANY,
+                 uint8_t  c = MAX_COST,
                  uint16_t s = 0)
       : retransmitter (r),
         ifIndex (i),
@@ -58,7 +60,7 @@ public:
         seqnum (s)
     {
     }
-    /// True for valid route 
+    /// True for valid route
     bool IsValid() const;
     /// Compare route lookup results, used by tests
     bool operator==(const LookupResult & o) const;
@@ -68,7 +70,7 @@ public:
   FlameRtable ();
   ~FlameRtable ();
   void DoDispose ();
-  
+
   /// Add path
   void AddPath (
     const Mac48Address destination,

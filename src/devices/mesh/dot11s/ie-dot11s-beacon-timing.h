@@ -18,7 +18,6 @@
  * Author: Kirill Andreev <andreev@iitp.ru>
  */
 
-
 #ifndef WIFI_TIMING_ELEMENT_H
 #define WIFI_TIMING_ELEMENT_H
 
@@ -26,8 +25,10 @@
 #include "ns3/nstime.h"
 #include "ns3/wifi-information-element.h"
 
-namespace ns3 {
-namespace dot11s {
+namespace ns3
+{
+namespace dot11s
+{
 /**
  * \ingroup dot11s
  * \brief Describes one unit of beacon timing element
@@ -43,7 +44,7 @@ public:
   uint8_t GetAid () const;
   uint16_t GetLastBeacon () const;
   uint16_t GetBeaconInterval () const;
-  
+
 private:
   /// Least significant octet of AID:
   uint8_t m_aid;
@@ -89,7 +90,7 @@ private:
   uint8_t  GetInformationSize () const;
   void SerializeInformation (Buffer::Iterator i) const;
   uint8_t DeserializeInformation (Buffer::Iterator i, uint8_t length);
-  void PrintInformation (std::ostream& os) const; 
+  void PrintInformation (std::ostream& os) const;
   /**
    * Converters:
    */

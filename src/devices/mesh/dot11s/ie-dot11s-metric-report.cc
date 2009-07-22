@@ -21,10 +21,12 @@
 #include "ie-dot11s-metric-report.h"
 #include "ns3/assert.h"
 
-namespace ns3 {
-namespace dot11s {
-IeLinkMetricReport::IeLinkMetricReport ()
-  : m_metric (0)
+namespace ns3
+{
+namespace dot11s
+{
+IeLinkMetricReport::IeLinkMetricReport () :
+  m_metric (0)
 {
 }
 IeLinkMetricReport::IeLinkMetricReport (uint32_t metric)
@@ -34,12 +36,12 @@ IeLinkMetricReport::IeLinkMetricReport (uint32_t metric)
 WifiElementId
 IeLinkMetricReport::ElementId () const
 {
-  return IE11S_LINK_METRIC_REPORT; 
+  return IE11S_LINK_METRIC_REPORT;
 }
-uint8_t 
+uint8_t
 IeLinkMetricReport::GetInformationSize (void) const
 {
-  return sizeof (uint32_t);
+  return sizeof(uint32_t);
 }
 uint32_t
 IeLinkMetricReport::GetMetric ()
@@ -60,37 +62,44 @@ uint8_t
 IeLinkMetricReport::DeserializeInformation (Buffer::Iterator start, uint8_t length)
 {
   Buffer::Iterator i = start;
-  m_metric = i.ReadLsbtohU32();
-  return i.GetDistanceFrom(start);
+  m_metric = i.ReadLsbtohU32 ();
+  return i.GetDistanceFrom (start);
 }
-void 
+void
 IeLinkMetricReport::PrintInformation (std::ostream& os) const
 {
   os << "Metric = " << m_metric;
 }
-bool operator== (const IeLinkMetricReport & a, const IeLinkMetricReport & b)
+bool
+operator== (const IeLinkMetricReport & a, const IeLinkMetricReport & b)
 {
   return (a.m_metric == b.m_metric);
-};
+}
+;
 
 #ifdef RUN_SELF_TESTS
 
 /// Built-in self test for IeLinkMetricReport
-struct IeLinkMetricReportBist : public IeTest 
+struct IeLinkMetricReportBist : public IeTest
 {
-  IeLinkMetricReportBist () : IeTest ("Mesh/802.11s/IE/LINK_METRIC_REPORT") {}
-  virtual bool RunTests(); 
+  IeLinkMetricReportBist () :
+    IeTest ("Mesh/802.11s/IE/LINK_METRIC_REPORT")
+  {
+  }
+  virtual bool
+  RunTests ();
 };
 
 /// Test instance
 static IeLinkMetricReportBist g_IeLinkMetricReportBist;
 
-bool IeLinkMetricReportBist::RunTests ()
+bool
+IeLinkMetricReportBist::RunTests ()
 {
-  bool result(true);
-  
+  bool result (true);
+
   // create test information element
-  IeLinkMetricReport a(123456);
+  IeLinkMetricReport a (123456);
   result = result && TestRoundtripSerialization (a);
   return result;
 }

@@ -1,7 +1,7 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
-/* 
+/*
  * Copyright (c) 2009 IITP RAS
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- * 
+ *
  * Authors: Kirill Andreev <andreev@iitp.ru>
  *          Pavel Boyko <boyko@iitp.ru>
  */
@@ -34,7 +34,8 @@
 #include "ns3/mesh-wifi-interface-mac-plugin.h"
 #include "ns3/event-id.h"
 #include "qos-utils.h"
-namespace ns3 {
+namespace ns3
+{
 
 class WifiMacHeader;
 class DcaTxop;
@@ -46,23 +47,23 @@ class MacLow;
  * \ingroup mesh
  *
  * \brief Basic MAC of mesh point Wi-Fi interface. Its function is extendable through plugins mechanism.
- * 
+ *
  * Now only three output queues are used:
  *  - beacons (PIFS and no backoff),
  *  - background traffic,
  *  - management and priority traffic.
- *  
+ *
  */
 class MeshWifiInterfaceMac : public WifiMac
 {
 public:
   /// Never forget to support typeid
-  static TypeId  GetTypeId ();
+  static TypeId GetTypeId ();
   /// C-tor
   MeshWifiInterfaceMac ();
   /// D-tor
   virtual ~MeshWifiInterfaceMac ();
-  
+
   ///\name Inherited from WifiMac
   //\{
   virtual void  SetSlot (Time slotTime);
@@ -91,7 +92,7 @@ public:
   virtual void  SetAddress (Mac48Address address);
   virtual void  SetSsid (Ssid ssid);
   //\}
-  
+
   ///\name Each mesh point interfaces must know the mesh point address
   //\{
   void SetMeshPointAddress (Mac48Address);
@@ -105,34 +106,34 @@ public:
   void SetBeaconInterval (Time interval);
   /// \return interval between two beacons
   Time GetBeaconInterval () const;
-  /** 
+  /**
    * \brief Next beacon frame time
-   * 
+   *
    * This is supposed to be used by any entity managing beacon collision avoidance (e.g. Peer management protocol in 802.11s)
-   */ 
+   */
   Time GetTbtt () const;
   /**
    * \brief Shift TBTT.
-   * 
+   *
    * This is supposed to be used by any entity managing beacon collision avoidance (e.g. Peer management protocol in 802.11s)
-   * 
-   * \attention User of ShiftTbtt () must take care to not shift it to the past. 
+   *
+   * \attention User of ShiftTbtt () must take care to not shift it to the past.
    */
   void ShiftTbtt (Time shift);
   //\}
-  
+
   ///\name Plugins
   //\{
   /// Install plugin. TODO return unique ID to allow unregister plugins
   void InstallPlugin (Ptr<MeshWifiInterfaceMacPlugin> plugin);
   //\}
-  
+
   /** \name Channel switching
-   * 
-   * Channel center frequency = Channel starting frequency + 5 * channel_id (MHz), 
+   *
+   * Channel center frequency = Channel starting frequency + 5 * channel_id (MHz),
    * where Starting channel frequency is standard-dependent as defined in IEEE 802.11-2007 17.3.8.3.2.
-   * 
-   * Number of channels to use must be limited elsewhere. 
+   *
+   * Number of channels to use must be limited elsewhere.
    */
   //\{
   /// Current channel Id
@@ -140,7 +141,7 @@ public:
   /// Switch channel
   void SwitchFrequencyChannel (uint16_t new_id);
   //\}
-  
+
   /// To be used by plugins sending management frames.
   void SendManagementFrame(Ptr<Packet> frame, const WifiMacHeader& hdr);
   /// \return true if rates are supported
@@ -165,7 +166,7 @@ private:
   void  Receive (Ptr<Packet> packet, WifiMacHeader const *hdr);
   /// Forward frame to mesh point
   virtual void ForwardUp (Ptr<Packet> packet, Mac48Address src, Mac48Address dst);
-  /// Send frame. Frame is supposed to be tagged by routing information. TODO: clarify this point 
+  /// Send frame. Frame is supposed to be tagged by routing information. TODO: clarify this point
   void  ForwardDown (Ptr<const Packet> packet, Mac48Address from, Mac48Address to);
   /// Send beacon
   void SendBeacon ();
@@ -175,18 +176,18 @@ private:
   bool GetBeaconGeneration () const;
   /// Real d-tor
   virtual void DoDispose ();
-  
+
 private:
   ///\name Wifi MAC internals
   //\{
   typedef std::map<AccessClass, Ptr<DcaTxop> > Queues;
   Queues m_queues;
-  Ptr<DcaTxop>   m_beaconDca;
+  Ptr<DcaTxop> m_beaconDca;
   Ptr<WifiRemoteStationManager> m_stationManager;
-  Ptr<WifiPhy>   m_phy;
-  Callback<void, Ptr<Packet>, Mac48Address, Mac48Address>  m_upCallback;
+  Ptr<WifiPhy> m_phy;
+  Callback<void, Ptr<Packet> , Mac48Address, Mac48Address> m_upCallback;
   //\}
-  
+
   ///\name Wifi timing intervals
   //\{
   Time m_slot;
@@ -196,8 +197,8 @@ private:
   Time m_ctsTimeout;
   Time m_eifsNoDifs;
   //\}
-  
-  ///\name Mesh timing intervals 
+
+  ///\name Mesh timing intervals
   //\{
   /// Beaconing interval.
   Time m_beaconInterval;
@@ -206,7 +207,7 @@ private:
   /// Time for the next frame
   Time m_tbtt;
   //\}
-  
+
   /// DCF implementation
   DcfManager* m_dcfManager;
   /// Middle MAC sublayer
@@ -219,11 +220,11 @@ private:
   Mac48Address m_mpAddress;
   /// SSID
   Ssid m_meshId;
-  
-  /// "Timer" for the next beacon 
+
+  /// "Timer" for the next beacon
   EventId m_beaconSendEvent;
-  
-  typedef std::vector< Ptr<MeshWifiInterfaceMacPlugin> > PluginList; 
+
+  typedef std::vector<Ptr<MeshWifiInterfaceMacPlugin> > PluginList;
   /// List of all installed plugins
   PluginList m_plugins;
   Callback<uint32_t, Mac48Address, Ptr<MeshWifiInterfaceMac> > m_linkMetricCallback;
@@ -236,7 +237,8 @@ private:
     uint32_t sentBytes;
     uint32_t recvFrames;
     uint32_t recvBytes;
-    void Print (std::ostream & os) const;
+    void
+    Print (std::ostream & os) const;
     Statistics ();
   };
   Statistics m_stats;

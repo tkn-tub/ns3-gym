@@ -18,7 +18,6 @@
  * Author: Kirill Andreev <andreev@iitp.ru>
  */
 
-
 #ifndef HWMP_RTABLE_H
 #define HWMP_RTABLE_H
 
@@ -26,11 +25,13 @@
 #include "ns3/nstime.h"
 #include "ns3/mac48-address.h"
 #include "ie-dot11s-perr.h"
-namespace ns3 {
-namespace dot11s {
+namespace ns3
+{
+namespace dot11s
+{
 /**
  * \ingroup dot11s
- * 
+ *
  * \brief Routing table for HWMP -- 802.11s routing protocol
  */
 class HwmpRtable : public Object
@@ -40,7 +41,7 @@ public:
   const static uint32_t INTERFACE_ANY = 0xffffffff;
   /// Maximum (the best?) path metric
   const static uint32_t MAX_METRIC = 0xffffffff;
-  
+
   /// Route lookup result, return type of LookupXXX methods
   struct LookupResult
   {
@@ -49,10 +50,10 @@ public:
     uint32_t metric;
     uint32_t seqnum;
     Time lifetime;
-    
-    LookupResult(Mac48Address r = Mac48Address::GetBroadcast (), 
-                 uint32_t i = INTERFACE_ANY, 
-                 uint32_t m = MAX_METRIC, 
+
+    LookupResult(Mac48Address r = Mac48Address::GetBroadcast (),
+                 uint32_t i = INTERFACE_ANY,
+                 uint32_t m = MAX_METRIC,
                  uint32_t s = 0,
                  Time l = Seconds(0.0))
       : retransmitter (r),
@@ -62,23 +63,23 @@ public:
         lifetime (l)
     {
     }
-    
-    /// True for valid route 
+
+    /// True for valid route
     bool IsValid() const;
     /// Compare route lookup results, used by tests
     bool operator==(const LookupResult & o) const;
   };
   /// Path precursor = {MAC, interface ID}
   typedef std::vector<std::pair<uint32_t, Mac48Address> > PrecursorList;
-    
+
 public:
   static TypeId GetTypeId ();
   HwmpRtable ();
   ~HwmpRtable ();
   void DoDispose ();
-  
+
   ///\name Add/delete paths
-  //\{ 
+  //\{
   void AddReactivePath (
     Mac48Address destination,
     Mac48Address retransmitter,
@@ -101,7 +102,7 @@ public:
   void DeleteProactivePath (Mac48Address root);
   void DeleteReactivePath (Mac48Address destination);
   //\}
-  
+
   ///\name Lookup
   //\{
   /// Lookup path to destination
@@ -113,10 +114,10 @@ public:
   /// Return all proactive paths, including expired
   LookupResult LookupProactiveExpired ();
   //\}
-  
+
   /// When peer link with a given MAC-address fails - it returns list of unreachable destination addresses
   std::vector<IePerr::FailedDestination> GetUnreachableDestinations (Mac48Address peerAddress);
-  
+
 private:
   /// Route found in reactive mode
   struct ReactiveRoute
@@ -139,7 +140,7 @@ private:
     uint32_t seqnum;
     std::vector<std::pair<uint32_t, Mac48Address> > precursors;
   };
-  
+
   /// List of routes
   std::map<Mac48Address, ReactiveRoute>  m_routes;
   /// Path to proactive tree root MP

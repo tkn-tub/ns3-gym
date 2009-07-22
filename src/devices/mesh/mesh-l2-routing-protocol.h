@@ -26,7 +26,8 @@
 #include "ns3/mac48-address.h"
 #include "ns3/packet.h"
 
-namespace ns3 {
+namespace ns3
+{
 
 class Packet;
 class MeshPointDevice;
@@ -34,11 +35,11 @@ class MeshPointDevice;
 /**
  * \ingroup mesh
  *
- * \brief Interface for L2 mesh routing protocol and mesh point communication. 
+ * \brief Interface for L2 mesh routing protocol and mesh point communication.
  *
  * Every mesh routing protocol must implement this interface. Each mesh point (MeshPointDevice) is supposed
- * to know single L2RoutingProtocol to work with, see MeshPointDevice::SetRoutingProtocol ().  
- * 
+ * to know single L2RoutingProtocol to work with, see MeshPointDevice::SetRoutingProtocol ().
+ *
  * This interface is similar to ipv4 routiong protocol base class.
  */
 class MeshL2RoutingProtocol : public Object
@@ -50,24 +51,24 @@ public:
   virtual ~MeshL2RoutingProtocol ();
   /**
    * Callback to be invoked when route discovery  procedure is completed.
-   * 
-   * \param flag        indicating whether a route was actually found and all needed information is 
+   *
+   * \param flag        indicating whether a route was actually found and all needed information is
    *                    added to the packet succesfully
-   *                    
+   *
    * \param packet      for which the route was resolved. All routing information for MAC layer
-   *                    must be stored in proper tags (like in case of HWMP, when WifiMacHeader 
+   *                    must be stored in proper tags (like in case of HWMP, when WifiMacHeader
    *                    needs address of next hop), or must be added as a packet header (if MAC
-   *                    does not need any additional information). So, the packet is returned back 
-   *                    to MeshPointDevice looks like a pure packet with ethernet header 
+   *                    does not need any additional information). So, the packet is returned back
+   *                    to MeshPointDevice looks like a pure packet with ethernet header
    *                    (i.e data + src +dst + protocol). The only special information addressed
    *                    to MeshPointDevice is an outcoming interface ID.
-   *                    
+   *
    * \param src         source address of the packet
-   * 
+   *
    * \param dst         destiation address of the packet
-   * 
+   *
    * \param protocol    ethernet 'Protocol' field, needed to form a proper MAC-layer header
-   * 
+   *
    * \param uint32_t    outcoming interface to use or 0xffffffff if packet should be sent by ALL interfaces
    */
   typedef Callback<void,/* return type */
@@ -76,11 +77,11 @@ public:
           Mac48Address,/* src */
           Mac48Address,/* dst */
           uint16_t,    /* protocol */
-          uint32_t     /* out interface ID */ 
+          uint32_t     /* out interface ID */
           > RouteReplyCallback;
   /**
    * Request routing information, all packets must go through this request.
-   * 
+   *
    * Note that route discovery works async. -- RequestRoute returns immediately, while
    * reply callback will be called when routing information will be available.
    * \return true if valid route is already known
@@ -89,13 +90,13 @@ public:
    * \param destination   destination address
    * \param packet        the packet to be resolved (needed the whole packet, because
    *                      routing information is added as tags or headers). The packet
-   *                      will be returned to reply callback. 
+   *                      will be returned to reply callback.
    * \param protocolType  protocol ID, needed to form a proper MAC-layer header
-   * \param routeReply    callback to be invoked after route discovery procedure, supposed 
+   * \param routeReply    callback to be invoked after route discovery procedure, supposed
    *                      to really send packet using routing information.
    */
-  virtual bool RequestRoute (uint32_t sourceIface, const Mac48Address source, const Mac48Address destination, 
-      Ptr<const Packet> packet, uint16_t  protocolType, RouteReplyCallback routeReply ) = 0;
+  virtual bool RequestRoute (uint32_t sourceIface, const Mac48Address source, const Mac48Address destination, Ptr<
+      const Packet> packet, uint16_t protocolType, RouteReplyCallback routeReply) = 0;
   /**
    * \brief When packet is ready to go to upper layer, protocol must
    * remove all its information: tags, header, etc. So,
@@ -110,12 +111,14 @@ public:
    * \attention protocol type is passed by reference, because may be
    * changed
    */
-  virtual bool RemoveRoutingStuff (uint32_t fromIface, const Mac48Address source,
-      const Mac48Address destination, Ptr<Packet>  packet, uint16_t &  protocolType) = 0;
+  virtual bool RemoveRoutingStuff (uint32_t fromIface, const Mac48Address source, const Mac48Address destination, Ptr<
+      Packet> packet, uint16_t & protocolType) = 0;
   /// Set host mesh point, analog of SetNode (...) methods for upper layer protocols.
-  void SetMeshPoint (Ptr<MeshPointDevice> mp);
+  void
+  SetMeshPoint (Ptr<MeshPointDevice> mp);
   /// Each mesh protocol must be installed on the mesh point to work.
-  Ptr<MeshPointDevice> GetMeshPoint () const; 
+  Ptr<MeshPointDevice>
+  GetMeshPoint () const;
 protected:
   /// Host mesh point
   Ptr<MeshPointDevice> m_mp;

@@ -1,7 +1,7 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
-/* 
+/*
  * Copyright (c) 2009 IITP RAS
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- * 
+ *
  * Authors: Kirill Andreev <andreev@iitp.ru>
  */
 
@@ -26,12 +26,14 @@
 #include "ie-dot11s-configuration.h"
 #include "ie-dot11s-peering-protocol.h"
 #include "ie-dot11s-id.h"
-namespace ns3 {
+namespace ns3
+{
 class MeshWifiInterfaceMac;
-namespace dot11s {
+namespace dot11s
+{
 /**
  * \ingroup dot11s
- * 
+ *
  * \brief 802.11s Peer link management frame:
  * \details included the following (see chapters 7.4.12.1-7.4.12.3 of
  * 802.11s):

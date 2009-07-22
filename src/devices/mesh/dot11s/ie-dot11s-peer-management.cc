@@ -19,26 +19,24 @@
  *          Aleksey Kovalenko <kovalenko@iitp.ru>
  */
 
-
 #include "ie-dot11s-peer-management.h"
 #include "ns3/assert.h"
 #include "ns3/test.h"
 #include "ns3/packet.h"
 
-namespace ns3 {
-namespace dot11s {
+namespace ns3
+{
+namespace dot11s
+{
 
-IePeerManagement::IePeerManagement ():
-    m_length (0),
-    m_subtype (PEER_OPEN),
-    m_localLinkId (0),
-    m_peerLinkId (0),
-    m_reasonCode (REASON11S_RESERVED)
-{}
+IePeerManagement::IePeerManagement () :
+  m_length (0), m_subtype (PEER_OPEN), m_localLinkId (0), m_peerLinkId (0), m_reasonCode (REASON11S_RESERVED)
+{
+}
 WifiElementId
 IePeerManagement::ElementId () const
 {
-  return IE11S_PEERING_MANAGEMENT;  
+  return IE11S_PEERING_MANAGEMENT;
 }
 void
 IePeerManagement::SetPeerOpen (uint16_t localLinkId)
@@ -124,7 +122,7 @@ uint8_t
 IePeerManagement::DeserializeInformation (Buffer::Iterator start, uint8_t length)
 {
   Buffer::Iterator i = start;
-  m_subtype  = i.ReadU8 ();
+  m_subtype = i.ReadU8 ();
   m_length = length;
   if (m_subtype == PEER_OPEN)
     {
@@ -138,14 +136,14 @@ IePeerManagement::DeserializeInformation (Buffer::Iterator start, uint8_t length
     {
       NS_ASSERT (length == 7);
     }
-  m_localLinkId  = i.ReadLsbtohU16 ();
+  m_localLinkId = i.ReadLsbtohU16 ();
   if (m_length > 3)
     {
       m_peerLinkId = i.ReadLsbtohU16 ();
     }
   if (m_length > 5)
     {
-      m_reasonCode = (PmpReasonCode)i.ReadLsbtohU16 ();
+      m_reasonCode = (PmpReasonCode) i.ReadLsbtohU16 ();
     }
   return i.GetDistanceFrom (start);
 }
@@ -153,50 +151,51 @@ void
 IePeerManagement::PrintInformation (std::ostream& os) const
 {
 
-  os << " Subtype:      = " << (uint16_t)m_subtype << "\n";
-  os << " Length:       = " << (uint16_t)m_length << "\n";
+  os << " Subtype:      = " << (uint16_t) m_subtype << "\n";
+  os << " Length:       = " << (uint16_t) m_length << "\n";
   os << " LocalLinkId:  = " << m_localLinkId << "\n";
   os << " PeerLinkId:   = " << m_peerLinkId << "\n";
   os << " ReasonCode:   = " << m_reasonCode << "\n";
 }
-bool operator== (const IePeerManagement & a, const IePeerManagement & b)
+bool
+operator== (const IePeerManagement & a, const IePeerManagement & b)
 {
-  return (
-      (a.m_length == b.m_length) &&
-      (a.m_subtype == b.m_subtype) &&
-      (a.m_localLinkId == b.m_localLinkId) &&
-      (a.m_peerLinkId == b.m_peerLinkId) &&
-      (a.m_reasonCode == b.m_reasonCode)
-      );
+  return ((a.m_length == b.m_length) && (a.m_subtype == b.m_subtype) && (a.m_localLinkId == b.m_localLinkId)
+      && (a.m_peerLinkId == b.m_peerLinkId) && (a.m_reasonCode == b.m_reasonCode));
 }
-#ifdef RUN_SELF_TESTS  
-struct IePeerManagementBist : public IeTest 
+#ifdef RUN_SELF_TESTS
+struct IePeerManagementBist : public IeTest
 {
-  IePeerManagementBist () : IeTest ("Mesh/802.11s/IE/PeerManagement") {}
-  virtual bool RunTests(); 
+  IePeerManagementBist () :
+    IeTest ("Mesh/802.11s/IE/PeerManagement")
+  {
+  }
+  virtual bool
+  RunTests ();
 };
 
 /// Test instance
 static IePeerManagementBist g_IePerrBist;
 
-bool IePeerManagementBist::RunTests ()
+bool
+IePeerManagementBist::RunTests ()
 {
-  bool result(true);
-  {
-    IePeerManagement a;
-    a.SetPeerOpen (1);
-    result = result && TestRoundtripSerialization (a);
-  }
-  {
-    IePeerManagement a;
-    a.SetPeerConfirm (1,2);
-    result = result && TestRoundtripSerialization (a);
-  }
-  {
-    IePeerManagement a;
-    a.SetPeerClose (1, 2, REASON11S_MESH_CAPABILITY_POLICY_VIOLATION);
-    result = result && TestRoundtripSerialization (a);
-  }
+  bool result (true);
+    {
+      IePeerManagement a;
+      a.SetPeerOpen (1);
+      result = result && TestRoundtripSerialization (a);
+    }
+    {
+      IePeerManagement a;
+      a.SetPeerConfirm (1, 2);
+      result = result && TestRoundtripSerialization (a);
+    }
+    {
+      IePeerManagement a;
+      a.SetPeerClose (1, 2, REASON11S_MESH_CAPABILITY_POLICY_VIOLATION);
+      result = result && TestRoundtripSerialization (a);
+    }
   return result;
 }
 #endif

@@ -18,16 +18,16 @@
  * Author: Kirill Andreev <andreev@iitp.ru>
  */
 
-
 #ifndef WIFI_PREP_INFORMATION_ELEMENT_H
 #define WIFI_PREP_INFORMATION_ELEMENT_H
-
 
 #include "ns3/mac48-address.h"
 #include "ns3/wifi-information-element.h"
 
-namespace ns3 {
-namespace dot11s {
+namespace ns3
+{
+namespace dot11s
+{
 /**
  * \ingroup dot11s
  * \brief See 7.3.2.97 of 802.11s draft 2.07
@@ -46,7 +46,7 @@ public:
   void SetMetric (uint32_t metric);
   void SetOriginatorAddress (Mac48Address originator_address);
   void SetOriginatorSeqNumber (uint32_t originator_seq_number);
- 
+
   uint8_t GetFlags () const;
   uint8_t GetHopcount () const;
   uint32_t GetTtl () const;
@@ -77,7 +77,7 @@ private:
   uint32_t m_originatorSeqNumber;
   friend bool operator== (const IePrep & a, const IePrep & b);
 };
-bool operator== (const IePrep & a, const IePrep & b); 
+bool operator== (const IePrep & a, const IePrep & b);
 } // namespace dot11s
 } //namespace ns3
 #endif

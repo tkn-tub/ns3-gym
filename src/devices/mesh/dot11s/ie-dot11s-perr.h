@@ -18,15 +18,16 @@
  * Author: Kirill Andreev <andreev@iitp.ru>
  */
 
-
 #ifndef PERR_INFORMATION_ELEMENT_H
 #define PERR_INFORMATION_ELEMENT_H
 
 #include "ns3/mac48-address.h"
 #include "ns3/wifi-information-element.h"
 
-namespace ns3 {
-namespace dot11s {
+namespace ns3
+{
+namespace dot11s
+{
 /**
  * \ingroup dot11s
  * \brief See 7.3.2.98 of 802.11s draft 2.07
@@ -50,10 +51,10 @@ public:
   void ResetPerr ();
 private:
   WifiElementId ElementId () const;
-  void  SerializeInformation (Buffer::Iterator i) const;
-  uint8_t  DeserializeInformation (Buffer::Iterator start, uint8_t length);
+  void SerializeInformation (Buffer::Iterator i) const;
+  uint8_t DeserializeInformation (Buffer::Iterator start, uint8_t length);
   void PrintInformation (std::ostream& os) const;
-  uint8_t  GetInformationSize () const;
+  uint8_t GetInformationSize () const;
 private:
   std::vector<FailedDestination> m_addressUnits;
   friend bool operator== (const IePerr & a, const IePerr & b);

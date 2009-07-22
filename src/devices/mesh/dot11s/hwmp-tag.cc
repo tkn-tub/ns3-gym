@@ -18,19 +18,17 @@
  * Authors: Kirill Andreev <andreev@iitp.ru>
  */
 
-
 #include "hwmp-tag.h"
 
-namespace ns3 {
-namespace dot11s{
+namespace ns3
+{
+namespace dot11s
+{
 
 NS_OBJECT_ENSURE_REGISTERED (HwmpTag);
 //Class HwmpTag:
-HwmpTag::HwmpTag ():
-  m_address (Mac48Address::GetBroadcast ()),
-  m_ttl (0),
-  m_metric (0),
-  m_seqno (0)
+HwmpTag::HwmpTag () :
+  m_address (Mac48Address::GetBroadcast ()), m_ttl (0), m_metric (0), m_seqno (0)
 {
 }
 
@@ -89,9 +87,7 @@ HwmpTag::GetSeqno ()
 TypeId
 HwmpTag::GetTypeId ()
 {
-  static TypeId tid = TypeId ("ns3::dot11s::HwmpTag")
-    .SetParent<Tag> ()
-    .AddConstructor<HwmpTag> ();
+  static TypeId tid = TypeId ("ns3::dot11s::HwmpTag") .SetParent<Tag> () .AddConstructor<HwmpTag> ();
   return tid;
 }
 
@@ -104,11 +100,10 @@ HwmpTag::GetInstanceTypeId () const
 uint32_t
 HwmpTag::GetSerializedSize () const
 {
-  return
-     6 //address
-    +1 //ttl
-    +4 //metric
-    +4; //seqno
+  return 6 //address
+      + 1 //ttl
+      + 4 //metric
+      + 4; //seqno
 }
 
 void
@@ -119,9 +114,11 @@ HwmpTag::Serialize (TagBuffer i) const
   m_address.CopyTo (address);
   i.WriteU8 (m_ttl);
   i.WriteU32 (m_metric);
-  i.WriteU32(m_seqno);
-  for (j = 0; j < 6; j ++)
-    i.WriteU8 (address[j]);
+  i.WriteU32 (m_seqno);
+  for (j = 0; j < 6; j++)
+    {
+      i.WriteU8 (address[j]);
+    }
 }
 
 void
@@ -132,8 +129,10 @@ HwmpTag::Deserialize (TagBuffer i)
   m_ttl = i.ReadU8 ();
   m_metric = i.ReadU32 ();
   m_seqno = i.ReadU32 ();
-  for (j = 0; j < 6; j ++)
-    address[j] = i.ReadU8 ();
+  for (j = 0; j < 6; j++)
+    {
+      address[j] = i.ReadU8 ();
+    }
   m_address.CopyFrom (address);
 }
 
@@ -141,14 +140,14 @@ void
 HwmpTag::Print (std::ostream &os) const
 {
   os << "address=" << m_address;
-  os << "ttl="  <<  m_ttl;
+  os << "ttl=" << m_ttl;
   os << "metrc=" << m_metric;
   os << "seqno=" << m_seqno;
 }
 void
 HwmpTag::DecrementTtl ()
 {
-  m_ttl --;
+  m_ttl--;
 }
 } //namespace dot11s
 } //namespace ns3

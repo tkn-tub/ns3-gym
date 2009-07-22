@@ -18,14 +18,15 @@
  * Authors: Kirill Andreev <andreev@iitp.ru>
  */
 
-
 #ifndef MESH_PERING_PROTOCOL_H
 #define MESH_PEERING_PROTOCOL_H
 
 #include "ns3/wifi-information-element.h"
 
-namespace ns3 {
-namespace dot11s {
+namespace ns3
+{
+namespace dot11s
+{
 class IePeeringProtocol : public WifiInformationElement
 {
 public:

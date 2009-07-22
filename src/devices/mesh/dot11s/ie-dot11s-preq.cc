@@ -18,7 +18,6 @@
  * Author: Kirill Andreev <andreev@iitp.ru>
  */
 
-
 #include "ie-dot11s-preq.h"
 #include "ns3/address-utils.h"
 #include "ns3/node.h"
@@ -26,17 +25,15 @@
 #include "ns3/test.h"
 #include "ns3/packet.h"
 
-namespace ns3 {
-namespace dot11s {
+namespace ns3
+{
+namespace dot11s
+{
 /*************************
  * DestinationAddressUnit
  ************************/
-DestinationAddressUnit::DestinationAddressUnit ():
-  m_do (false),
-  m_rf (false),
-  m_usn (false),
-  m_destinationAddress (Mac48Address ()),
-  m_destSeqNumber (0)
+DestinationAddressUnit::DestinationAddressUnit () :
+  m_do (false), m_rf (false), m_usn (false), m_destinationAddress (Mac48Address ()), m_destSeqNumber (0)
 {
 }
 void
@@ -51,7 +48,7 @@ void
 DestinationAddressUnit::SetDestSeqNumber (uint32_t dest_seq_number)
 {
   m_destSeqNumber = dest_seq_number;
-  if(m_destSeqNumber != 0)
+  if (m_destSeqNumber != 0)
     m_usn = true;
 }
 void
@@ -91,20 +88,13 @@ DestinationAddressUnit::GetDestinationAddress () const
 IePreq::~IePreq ()
 {
 }
-IePreq::IePreq ():
-    m_maxSize (32),
-    m_flags (0),
-    m_hopCount (0),
-    m_ttl (0),
-    m_preqId (0),
-    m_originatorAddress (Mac48Address::GetBroadcast()),
-    m_originatorSeqNumber (0),
-    m_lifetime (0),
-    m_metric (0),
-    m_destCount (0)
+IePreq::IePreq () :
+  m_maxSize (32), m_flags (0), m_hopCount (0), m_ttl (0), m_preqId (0), m_originatorAddress (
+      Mac48Address::GetBroadcast ()), m_originatorSeqNumber (0), m_lifetime (0), m_metric (0),
+      m_destCount (0)
 {
 }
-WifiElementId 
+WifiElementId
 IePreq::ElementId () const
 {
   return IE11S_PREQ;
@@ -112,13 +102,13 @@ IePreq::ElementId () const
 void
 IePreq::SetUnicastPreq ()
 {
-  m_flags |= 1<<1;
+  m_flags |= 1 << 1;
 }
 
 void
 IePreq::SetNeedNotPrep ()
 {
-  m_flags |= 1<<2;
+  m_flags |= 1 << 2;
 }
 //void
 //IePreq::SetFlags (uint8_t flags)
@@ -168,12 +158,12 @@ IePreq::SetDestCount (uint8_t dest_count)
 bool
 IePreq::IsUnicastPreq () const
 {
-  return (m_flags & (1<<1));
+  return (m_flags & (1 << 1));
 }
 bool
 IePreq::IsNeedNotPrep () const
 {
-  return (m_flags & (1<<2));
+  return (m_flags & (1 << 2));
 }
 uint8_t
 IePreq::GetHopCount () const
@@ -219,13 +209,13 @@ IePreq::GetDestCount () const
 void
 IePreq::DecrementTtl ()
 {
-  m_ttl --;
-  m_hopCount ++;
+  m_ttl--;
+  m_hopCount++;
 }
 void
 IePreq::IncrementMetric (uint32_t metric)
 {
-  m_metric +=metric;
+  m_metric += metric;
 }
 void
 IePreq::SerializeInformation (Buffer::Iterator i) const
@@ -240,7 +230,8 @@ IePreq::SerializeInformation (Buffer::Iterator i) const
   i.WriteHtolsbU32 (m_metric);
   i.WriteU8 (m_destCount);
   int written = 0;
-  for (std::vector<Ptr<DestinationAddressUnit> >::const_iterator j = m_destinations.begin (); j != m_destinations.end(); j++)
+  for (std::vector<Ptr<DestinationAddressUnit> >::const_iterator j = m_destinations.begin (); j
+      != m_destinations.end (); j++)
     {
       uint8_t flags = 0;
       if ((*j)->IsDo ())
@@ -251,12 +242,12 @@ IePreq::SerializeInformation (Buffer::Iterator i) const
         {
           flags |= 1 << 1;
         }
-      if((*j)->IsUsn ())
+      if ((*j)->IsUsn ())
         {
           flags |= 1 << 2;
         }
       i.WriteU8 (flags);
-      WriteTo (i, (*j)->GetDestinationAddress());
+      WriteTo (i, (*j)->GetDestinationAddress ());
       i.WriteHtolsbU32 ((*j)->GetDestSeqNumber ());
       written++;
       if (written > m_maxSize)
@@ -278,7 +269,7 @@ IePreq::DeserializeInformation (Buffer::Iterator start, uint8_t length)
   m_lifetime = i.ReadLsbtohU32 ();
   m_metric = i.ReadLsbtohU32 ();
   m_destCount = i.ReadU8 ();
-  for (int j = 0; j < m_destCount; j++ )
+  for (int j = 0; j < m_destCount; j++)
     {
       Ptr<DestinationAddressUnit> new_element = Create<DestinationAddressUnit> ();
       bool doFlag = false;
@@ -299,34 +290,33 @@ IePreq::DeserializeInformation (Buffer::Iterator start, uint8_t length)
         }
       new_element->SetFlags (doFlag, rfFlag, usnFlag);
       Mac48Address addr;
-      ReadFrom (i,addr);
+      ReadFrom (i, addr);
       new_element->SetDestinationAddress (addr);
-      new_element->SetDestSeqNumber (i.ReadLsbtohU32());
+      new_element->SetDestSeqNumber (i.ReadLsbtohU32 ());
       m_destinations.push_back (new_element);
-      NS_ASSERT (28+j*11 < length);
+      NS_ASSERT (28 + j * 11 < length);
     }
   return i.GetDistanceFrom (start);
 }
 uint8_t
 IePreq::GetInformationSize () const
 {
-  uint8_t retval =
-     1 //Flags
-    +1 //Hopcount
-    +1 //TTL
-    +4 //PREQ ID
-    +6 //Source address (originator)
-    +4 //Originator seqno
-    +4 //Lifetime
-    +4 //metric
-    +1; //destination count
+  uint8_t retval = 1 //Flags
+      + 1 //Hopcount
+      + 1 //TTL
+      + 4 //PREQ ID
+      + 6 //Source address (originator)
+      + 4 //Originator seqno
+      + 4 //Lifetime
+      + 4 //metric
+      + 1; //destination count
   if (m_destCount > m_maxSize)
     {
-      retval += (m_maxSize*11);
+      retval += (m_maxSize * 11);
     }
   else
     {
-      retval += (m_destCount*11);
+      retval += (m_destCount * 11);
     }
   return retval;
 }
@@ -334,14 +324,14 @@ void
 IePreq::PrintInformation (std::ostream &os) const
 {
   os << " originator address  = " << m_originatorAddress << "\n";
-  os << " TTL                 = "  <<  (uint16_t)m_ttl << "\n";
-  os << " hop count           = "  <<  (uint16_t)m_hopCount << "\n";
+  os << " TTL                 = " << (uint16_t) m_ttl << "\n";
+  os << " hop count           = " << (uint16_t) m_hopCount << "\n";
   os << " metric              = " << m_metric << "\n";
   os << " seqno               = " << m_originatorSeqNumber << "\n";
   os << " lifetime            = " << m_lifetime << "\n";
-  os << " preq ID             = " <<m_preqId << "\n";
+  os << " preq ID             = " << m_preqId << "\n";
   os << " Destinations are:\n";
-  for (int j = 0; j < m_destCount; j++ )
+  for (int j = 0; j < m_destCount; j++)
     os << "    " << m_destinations[j]->GetDestinationAddress () << "\n";
 }
 std::vector<Ptr<DestinationAddressUnit> >
@@ -350,13 +340,11 @@ IePreq::GetDestinationList ()
   return m_destinations;
 }
 void
-IePreq::AddDestinationAddressElement (
-  bool doFlag, bool rfFlag,
-  Mac48Address dest_address,
-  uint32_t dest_seq_number
-)
+IePreq::AddDestinationAddressElement (bool doFlag, bool rfFlag, Mac48Address dest_address,
+    uint32_t dest_seq_number)
 {
-  for (std::vector<Ptr<DestinationAddressUnit> >::const_iterator i = m_destinations.begin (); i != m_destinations.end(); i++ )
+  for (std::vector<Ptr<DestinationAddressUnit> >::const_iterator i = m_destinations.begin (); i
+      != m_destinations.end (); i++)
     {
       if ((*i)->GetDestinationAddress () == dest_address)
         {
@@ -364,7 +352,7 @@ IePreq::AddDestinationAddressElement (
         }
     }
   //TODO: check overflow
-  Ptr<DestinationAddressUnit>new_element = Create<DestinationAddressUnit> ();
+  Ptr<DestinationAddressUnit> new_element = Create<DestinationAddressUnit> ();
   new_element->SetFlags (doFlag, rfFlag, false);
   new_element->SetDestinationAddress (dest_address);
   new_element->SetDestSeqNumber (dest_seq_number);
@@ -374,7 +362,8 @@ IePreq::AddDestinationAddressElement (
 void
 IePreq::DelDestinationAddressElement (Mac48Address dest_address)
 {
-  for (std::vector<Ptr<DestinationAddressUnit> >::iterator i = m_destinations.begin (); i != m_destinations.end(); i++)
+  for (std::vector<Ptr<DestinationAddressUnit> >::iterator i = m_destinations.begin (); i
+      != m_destinations.end (); i++)
     {
       if ((*i)->GetDestinationAddress () == dest_address)
         {
@@ -388,53 +377,46 @@ void
 IePreq::ClearDestinationAddressElements ()
 {
   int i;
-  for (std::vector<Ptr<DestinationAddressUnit> >::iterator j = m_destinations.begin (); j != m_destinations.end(); j++)
+  for (std::vector<Ptr<DestinationAddressUnit> >::iterator j = m_destinations.begin (); j
+      != m_destinations.end (); j++)
     {
       (*j) = 0;
     }
-  for (i = 0; i < m_destCount; i ++)
+  for (i = 0; i < m_destCount; i++)
     {
       m_destinations.pop_back ();
     }
   m_destinations.clear ();
   m_destCount = 0;
 }
-bool operator== (const DestinationAddressUnit & a, const DestinationAddressUnit & b)
+bool
+operator== (const DestinationAddressUnit & a, const DestinationAddressUnit & b)
 {
-  return (a.m_do == b.m_do 
-      &&  a.m_rf == b.m_rf
-      &&  a.m_usn == b.m_usn
-      &&  a.m_destinationAddress == b.m_destinationAddress
-      &&  a.m_destSeqNumber == b.m_destSeqNumber
-    );
+  return (a.m_do == b.m_do && a.m_rf == b.m_rf && a.m_usn == b.m_usn && a.m_destinationAddress
+      == b.m_destinationAddress && a.m_destSeqNumber == b.m_destSeqNumber);
 }
-bool operator== (const IePreq & a, const IePreq & b)
+bool
+operator== (const IePreq & a, const IePreq & b)
 {
-  bool ok = ( a.m_flags == b.m_flags 
-    && a.m_hopCount == b.m_hopCount
-    && a.m_ttl == b.m_ttl
-    && a.m_preqId == b.m_preqId 
-    && a.m_originatorAddress == b.m_originatorAddress
-    && a.m_originatorSeqNumber == b.m_originatorSeqNumber
-    && a.m_lifetime == b.m_lifetime
-    && a.m_metric == b.m_metric
-    && a.m_destCount == b.m_destCount
-  );
-  
-  if (! ok)
+  bool ok = (a.m_flags == b.m_flags && a.m_hopCount == b.m_hopCount && a.m_ttl == b.m_ttl && a.m_preqId
+      == b.m_preqId && a.m_originatorAddress == b.m_originatorAddress && a.m_originatorSeqNumber
+      == b.m_originatorSeqNumber && a.m_lifetime == b.m_lifetime && a.m_metric == b.m_metric && a.m_destCount
+      == b.m_destCount);
+
+  if (!ok)
     {
       return false;
     }
-  if (a.m_destinations.size() != b.m_destinations.size())
+  if (a.m_destinations.size () != b.m_destinations.size ())
     {
       return false;
     }
-  for (size_t i = 0; i < a.m_destinations.size(); ++i)
+  for (size_t i = 0; i < a.m_destinations.size (); ++i)
     {
-      if (!( *(PeekPointer (a.m_destinations[i])) == *(PeekPointer (b.m_destinations[i]))))
-      {
-        return false;
-      }
+      if (!(*(PeekPointer (a.m_destinations[i])) == *(PeekPointer (b.m_destinations[i]))))
+        {
+          return false;
+        }
     }
   return true;
 }
@@ -445,11 +427,11 @@ IePreq::MayAddAddress (Mac48Address originator)
     {
       return false;
     }
-  if(m_destinations[0]->GetDestinationAddress () == Mac48Address::GetBroadcast ())
+  if (m_destinations[0]->GetDestinationAddress () == Mac48Address::GetBroadcast ())
     {
       return false;
     }
-  if((GetInformationSize () + 11) > 255)
+  if ((GetInformationSize () + 11) > 255)
     {
       return false;
     }
@@ -463,36 +445,40 @@ IePreq::IsFull () const
 #ifdef RUN_SELF_TESTS
 
 /// Built-in self test for IePreq
-struct IePreqBist : public IeTest 
+struct IePreqBist : public IeTest
 {
-  IePreqBist () : IeTest ("Mesh/802.11s/IE/PREQ") {}
-  virtual bool RunTests(); 
+  IePreqBist () :
+    IeTest ("Mesh/802.11s/IE/PREQ")
+  {
+  }
+  virtual bool
+  RunTests ();
 };
 
 /// Test instance
 static IePreqBist g_IePreqBist;
 
-bool IePreqBist::RunTests ()
+bool
+IePreqBist::RunTests ()
 {
-  bool result(true);
-  
+  bool result (true);
+
   // create test information element
   IePreq a;
   a.SetHopcount (0);
   a.SetTTL (1);
   a.SetPreqID (2);
-  a.SetOriginatorAddress ( Mac48Address("11:22:33:44:55:66") );
+  a.SetOriginatorAddress (Mac48Address ("11:22:33:44:55:66"));
   a.SetOriginatorSeqNumber (3);
   a.SetLifetime (4);
-  a.AddDestinationAddressElement (false, false, Mac48Address("11:11:11:11:11:11"), 5);
-  a.AddDestinationAddressElement (false, false, Mac48Address("22:22:22:22:22:22"), 6);
+  a.AddDestinationAddressElement (false, false, Mac48Address ("11:11:11:11:11:11"), 5);
+  a.AddDestinationAddressElement (false, false, Mac48Address ("22:22:22:22:22:22"), 6);
 
   result = result && TestRoundtripSerialization (a);
   return result;
 }
 
 #endif // RUN_SELF_TESTS
-  
 } // namespace dot11s
 } //namespace ns3
 

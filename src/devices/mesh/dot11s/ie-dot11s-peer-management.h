@@ -19,20 +19,22 @@
  *          Aleksey Kovalenko <kovalenko@iitp.ru>
  */
 
-
 #ifndef MESH_PEER_MAN_ELEMENT
 #define MESH_PEER_MAN_ELEMENT
 
 #include "ns3/wifi-information-element.h"
 
-namespace ns3 {
-namespace dot11s {
+namespace ns3
+{
+namespace dot11s
+{
 
 /**
  * \ingroup dot11s
- * \brief Codes used by 802.11s Peer Management Protocol 
+ * \brief Codes used by 802.11s Peer Management Protocol
  */
-enum PmpReasonCode {
+enum PmpReasonCode
+{
   REASON11S_PEERING_CANCELLED = 2, // according to open80211s
   REASON11S_MESH_MAX_PEERS,
   REASON11S_MESH_CAPABILITY_POLICY_VIOLATION,
@@ -44,7 +46,7 @@ enum PmpReasonCode {
   REASON11S_MESH_INVALID_SECURITY_CAPABILITY,
   REASON11S_RESERVED,
 };
-  
+
 /**
  * \ingroup dot11s
  * \brief See 7.3.2.85 of draft 2.07
@@ -52,12 +54,13 @@ enum PmpReasonCode {
 class IePeerManagement : public WifiInformationElement
 {
 public:
-    IePeerManagement ();
-    enum Subtype {
-      PEER_OPEN    = 0,
-      PEER_CONFIRM,
-      PEER_CLOSE,
-    };
+  IePeerManagement ();
+  enum Subtype
+  {
+    PEER_OPEN = 0,
+    PEER_CONFIRM,
+    PEER_CLOSE,
+  };
   void   SetPeerOpen (uint16_t localLinkId);
   void   SetPeerClose (uint16_t localLinkID, uint16_t peerLinkId, PmpReasonCode reasonCode);
   void   SetPeerConfirm (uint16_t localLinkID, uint16_t peerLinkId);
@@ -76,13 +79,13 @@ private:
   uint8_t DeserializeInformation (Buffer::Iterator i, uint8_t length);
   void PrintInformation (std::ostream& os) const;
 private:
-  uint8_t   m_length;
-  uint8_t   m_subtype;
-  uint16_t  m_localLinkId;
+  uint8_t m_length;
+  uint8_t m_subtype;
+  uint16_t m_localLinkId;
   /**
    * Present within confirm and may be present in close
    */
-  uint16_t  m_peerLinkId;
+  uint16_t m_peerLinkId;
   /**
    * Present only within close frame
    */

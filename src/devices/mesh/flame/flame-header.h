@@ -18,24 +18,25 @@
  * Author: Kirill Andreev <andreev@iitp.ru>
  */
 
-
 #ifndef FLAME_HEADER_H
 #define FLAME_HEADER_H
 
 #include "ns3/header.h"
 #include "ns3/mac48-address.h"
 
-namespace ns3 {
-namespace flame {
+namespace ns3
+{
+namespace flame
+{
 /**
  * \ingroup flame
- * 
+ *
  * \brief Flame header
- * 
+ *
  * Header format: | Reserved: 1 | cost: 1 | Sequence number: 2 | OrigDst: 6 | OrigSrc: 6 | Flame port : 2 |
  */
 
-class FlameHeader : public Header 
+class FlameHeader : public Header
 {
 public:
 

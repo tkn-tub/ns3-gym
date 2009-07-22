@@ -19,7 +19,6 @@
  *          Aleksey Kovalenko <kovalenko@iitp.ru>
  */
 
-
 #ifndef DOT11S_PEER_MAN_H
 #define DOT11S_PEER_MAN_H
 
@@ -33,17 +32,19 @@
 #include "peer-link.h"
 
 #include <map>
-namespace ns3 {
+namespace ns3
+{
 class MeshPointDevice;
-namespace dot11s {
+namespace dot11s
+{
 class PeerManagementProtocolMac;
 class PeerLink;
 class IePeerManagement;
 class IeConfiguration;
 /**
  * \ingroup dot11s
- * 
- * \brief 802.11s Peer Management Protocol model 
+ *
+ * \brief 802.11s Peer Management Protocol model
  */
 class PeerManagementProtocol : public Object
 {
@@ -52,18 +53,18 @@ public:
   ~PeerManagementProtocol ();
   static TypeId GetTypeId ();
   void DoDispose ();
-  /** 
-   * \brief Install PMP on given mesh point. 
-   * 
+  /**
+   * \brief Install PMP on given mesh point.
+   *
    * Installing protocol cause installing its interface MAC plugins.
-   *  
-   * Also MP aggregates all installed protocols, PMP protocol can be accessed 
+   *
+   * Also MP aggregates all installed protocols, PMP protocol can be accessed
    * via MeshPointDevice::GetObject<PeerManagementProtocol>();
    */
   bool Install(Ptr<MeshPointDevice>);
-  /** 
+  /**
    * \brief Methods that handle beacon sending/receiving procedure.
-   * 
+   *
    * This methods interact with MAC_layer plug-in
    * \{
    */
@@ -242,7 +243,7 @@ private:
   struct Statistics m_stats;
 
 };
-  
+
 } // namespace dot11s
 } //namespace ns3
 #endif

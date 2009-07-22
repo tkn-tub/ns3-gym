@@ -22,7 +22,8 @@
 #include "peer-management-protocol.h"
 #include "hwmp-protocol.h"
 
-namespace ns3 {
+namespace ns3
+{
 using namespace dot11s;
 NS_OBJECT_ENSURE_REGISTERED (Dot11sStack);
 TypeId
@@ -30,14 +31,15 @@ Dot11sStack::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::Dot11sStack")
     .SetParent<Object> ()
-    .AddConstructor<Dot11sStack> ()
-    ;
+    .AddConstructor<Dot11sStack> ();
   return tid;
 }
 Dot11sStack::Dot11sStack ()
-{}
+{
+}
 Dot11sStack::~Dot11sStack ()
-{}
+{
+}
 void
 Dot11sStack::DoDispose ()
 {
@@ -45,16 +47,16 @@ Dot11sStack::DoDispose ()
 void
 Dot11sStack::SetRoot (Ptr<MeshPointDevice> mp)
 {
-   Ptr <HwmpProtocol> hwmp = mp->GetObject<HwmpProtocol> ();
-   NS_ASSERT(hwmp != 0);
-   hwmp->SetRoot ();
+  Ptr<HwmpProtocol> hwmp = mp->GetObject<HwmpProtocol> ();
+  NS_ASSERT (hwmp != 0);
+  hwmp->SetRoot ();
 }
 bool
 Dot11sStack::InstallStack (Ptr<MeshPointDevice> mp)
 {
   //Install Peer management protocol:
   Ptr<PeerManagementProtocol> pmp = CreateObject<PeerManagementProtocol> ();
-  pmp->SetMeshId("mesh");
+  pmp->SetMeshId ("mesh");
   bool install_ok = pmp->Install (mp);
   if (!install_ok)
     {
@@ -68,27 +70,27 @@ Dot11sStack::InstallStack (Ptr<MeshPointDevice> mp)
       return false;
     }
   //Install interaction between HWMP and Peer management protocol:
-  pmp->SetPeerLinkStatusCallback (MakeCallback(&HwmpProtocol::PeerLinkStatus, hwmp));
-  hwmp->SetNeighboursCallback (MakeCallback(&PeerManagementProtocol::GetActiveLinks, pmp));
+  pmp->SetPeerLinkStatusCallback (MakeCallback (&HwmpProtocol::PeerLinkStatus, hwmp));
+  hwmp->SetNeighboursCallback (MakeCallback (&PeerManagementProtocol::GetActiveLinks, pmp));
   return true;
 }
 void
 Dot11sStack::Report (const Ptr<MeshPointDevice> mp, std::ostream& os)
 {
   mp->Report (os);
-  
+
   std::vector<Ptr<NetDevice> > ifaces = mp->GetInterfaces ();
   for (std::vector<Ptr<NetDevice> >::const_iterator i = ifaces.begin (); i != ifaces.end (); ++i)
-  {
-    Ptr<WifiNetDevice> device = (*i)->GetObject<WifiNetDevice> ();
-    NS_ASSERT (device != 0);
-    MeshInterfaceHelper::Report (device, os);
-  }
-  Ptr <HwmpProtocol> hwmp = mp->GetObject<HwmpProtocol> ();
+    {
+      Ptr<WifiNetDevice> device = (*i)->GetObject<WifiNetDevice> ();
+      NS_ASSERT (device != 0);
+      MeshInterfaceHelper::Report (device, os);
+    }
+  Ptr<HwmpProtocol> hwmp = mp->GetObject<HwmpProtocol> ();
   NS_ASSERT (hwmp != 0);
   hwmp->Report (os);
 
-  Ptr <PeerManagementProtocol> pmp = mp->GetObject<PeerManagementProtocol> ();
+  Ptr<PeerManagementProtocol> pmp = mp->GetObject<PeerManagementProtocol> ();
   NS_ASSERT (pmp != 0);
   pmp->Report (os);
 }
@@ -96,20 +98,20 @@ void
 Dot11sStack::ResetStats (const Ptr<MeshPointDevice> mp)
 {
   mp->ResetStats ();
-  
+
   std::vector<Ptr<NetDevice> > ifaces = mp->GetInterfaces ();
   for (std::vector<Ptr<NetDevice> >::const_iterator i = ifaces.begin (); i != ifaces.end (); ++i)
-  {
-    Ptr<WifiNetDevice> device = (*i)->GetObject<WifiNetDevice> ();
-    NS_ASSERT (device != 0);
-    MeshInterfaceHelper::ResetStats (device);
-  }
-  Ptr <HwmpProtocol> hwmp = mp->GetObject<HwmpProtocol> ();
-  NS_ASSERT(hwmp != 0);
+    {
+      Ptr<WifiNetDevice> device = (*i)->GetObject<WifiNetDevice> ();
+      NS_ASSERT (device != 0);
+      MeshInterfaceHelper::ResetStats (device);
+    }
+  Ptr<HwmpProtocol> hwmp = mp->GetObject<HwmpProtocol> ();
+  NS_ASSERT (hwmp != 0);
   hwmp->ResetStats ();
 
-  Ptr <PeerManagementProtocol> pmp = mp->GetObject<PeerManagementProtocol> ();
-  NS_ASSERT(pmp != 0);
+  Ptr<PeerManagementProtocol> pmp = mp->GetObject<PeerManagementProtocol> ();
+  NS_ASSERT (pmp != 0);
   pmp->ResetStats ();
 }
 } //namespace ns3
