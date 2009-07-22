@@ -188,8 +188,7 @@ IePrep::GetInformationSize () const
       + 6 //Originator address
       + 4; //Originator seqno
   return retval;
-}
-;
+};
 void
 IePrep::PrintInformation (std::ostream& os) const
 {
@@ -215,8 +214,7 @@ struct IePrepBist : public IeTest
   IePrepBist () :
     IeTest ("Mesh/802.11s/IE/PREP")
   {
-  }
-  ;
+  };
   virtual bool
   RunTests ();
 };

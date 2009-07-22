@@ -74,9 +74,7 @@ bool
 operator== (const IeLinkMetricReport & a, const IeLinkMetricReport & b)
 {
   return (a.m_metric == b.m_metric);
-}
-;
-
+};
 #ifdef RUN_SELF_TESTS
 
 /// Built-in self test for IeLinkMetricReport

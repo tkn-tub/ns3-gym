@@ -134,9 +134,7 @@ operator== (const IeMeshId & a, const IeMeshId & b)
       size++;
     }
   return result;
-}
-;
-
+};
 std::ostream &
 operator << (std::ostream &os, const IeMeshId &meshId)
 {
