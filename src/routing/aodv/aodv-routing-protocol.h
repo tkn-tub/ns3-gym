@@ -128,13 +128,37 @@ private:
      Time        m_expire;
    };
   struct IsExpiredForPacket
-   {
-     bool operator()(const struct PacketUid & p) const
+  {
+    bool operator()(const struct PacketUid & p) const
+    {
+      return (p.m_expire < Simulator::Now());
+    }
+  };
+  std::vector<PacketUid> m_packetUidCache;
+  //\}
+
+  /**\name Handle neighbors
+   *  - from which node has received a Hello message, or
+   *  - which are active next hops, or
+   *  - which are active precursors
+   */
+  //\{
+  struct Neighbor
+  {
+    Ipv4Address m_neighborAddress;
+    Time m_expireTime;
+  };
+  struct IsExpiredForNeighbor
+  {
+     bool operator()(const struct Neighbor & nb) const
      {
-       return (p.m_expire < Simulator::Now());
+       return (nb.m_expireTime < Simulator::Now());
      }
    };
-  std::vector<PacketUid> m_packetUidCache;
+  bool LookupNeighbor (Ipv4Address addr, Neighbor & n);
+  void UpdateNeighbor(Ipv4Address addr, Time expire);
+  void PurgeNeighbor ();
+  std::vector<Neighbor> m_nb;
   //\}
 
   /// IP protocol

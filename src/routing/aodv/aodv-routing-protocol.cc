@@ -102,13 +102,46 @@ RoutingProtocol::LookupPacketUid(Ipv4Address src, uint32_t uid)
     }
   return false;
 }
-
 void
 RoutingProtocol::PurgePacketUid ()
 {
   NS_LOG_FUNCTION(this);
   std::vector<PacketUid>::iterator i = remove_if (m_packetUidCache.begin (), m_packetUidCache.end (), IsExpiredForPacket ());
   m_packetUidCache.erase (i, m_packetUidCache.end ());
+}
+
+bool
+RoutingProtocol::LookupNeighbor (Ipv4Address addr, Neighbor & n)
+{
+  PurgeNeighbor ();
+   for (std::vector<Neighbor>::const_iterator i = m_nb.begin (); i != m_nb.end (); ++i)
+     if (i->m_neighborAddress == addr)
+       return true;
+   return false;
+}
+void
+RoutingProtocol::UpdateNeighbor(Ipv4Address addr, Time expire)
+{
+  NS_LOG_FUNCTION(this);
+  PurgeNeighbor ();
+  for (std::vector<Neighbor>::iterator i = m_nb.begin (); i != m_nb.end (); ++i)
+     if (i->m_neighborAddress == addr)
+     {
+       i->m_expireTime = expire;
+       return;
+     }
+  struct Neighbor neighbor = { addr, expire + Simulator::Now () };
+  m_nb.push_back (neighbor);
+}
+void
+RoutingProtocol::PurgeNeighbor ()
+{
+  NS_LOG_FUNCTION(this);
+  for(std::vector<Neighbor>::const_iterator i = m_nb.begin(); i != m_nb.end(); ++i)
+    if(i->m_expireTime < Simulator::Now()) HandleLinkFailure(i->m_neighborAddress);
+  std::vector<Neighbor>::iterator i = remove_if (m_nb.begin (), m_nb.end (), IsExpiredForNeighbor ());
+  m_nb.erase (i, m_nb.end ());
+
 }
 
 RoutingProtocol::RoutingProtocol () :
