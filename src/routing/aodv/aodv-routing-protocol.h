@@ -156,7 +156,8 @@ private:
      }
    };
   bool LookupNeighbor (Ipv4Address addr, Neighbor & n);
-  void UpdateNeighbor(Ipv4Address addr, Time expire);
+  bool IsNeighbor (Ipv4Address addr);
+  void UpdateNeighbor (Ipv4Address addr, Time expire);
   void PurgeNeighbor ();
   std::vector<Neighbor> m_nb;
   //\}
@@ -168,6 +169,8 @@ private:
 
   /// Routing table
   RoutingTable m_routingTable;
+  /// Routing entry for desired destination
+  std::vector<RoutingTableEntry>  m_desired;
   /// A "drop-front" queue used by the routing layer to buffer packets to which it does not have a route.
   AodvQueue m_queue;
   /// Broadcast ID
@@ -212,8 +215,8 @@ private:
   void RecvRequest (Ptr<Packet> p, Ipv4Address receiver, Ipv4Address src, Ptr<Socket> socket);
   /// Receive RREP
   void RecvReply (Ptr<Packet> p, Ipv4Address my ,Ipv4Address src);
-  /// Receive RERR
-  void RecvError (Ptr<Packet> p);
+  /// Receive RERR from node with address src
+  void RecvError (Ptr<Packet> p, Ipv4Address src);
   //\}
   
   ///\name Send
@@ -253,6 +256,8 @@ private:
   void RouteCacheTimerExpire ();
   Timer lrtimer;
   void LocalRepairTimerExpire ();
+  Timer m_routeRequestTimer;
+  void RouteRequestTimerExpire(Ipv4Address dst);
   //\}
 };
 

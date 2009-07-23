@@ -116,22 +116,33 @@ RoutingProtocol::LookupNeighbor (Ipv4Address addr, Neighbor & n)
   PurgeNeighbor ();
    for (std::vector<Neighbor>::const_iterator i = m_nb.begin (); i != m_nb.end (); ++i)
      if (i->m_neighborAddress == addr)
+     {
+       n = *i;
        return true;
+     }
    return false;
 }
+bool
+RoutingProtocol::IsNeighbor(Ipv4Address addr)
+{
+  for (std::vector<Neighbor>::const_iterator i = m_nb.begin (); i != m_nb.end (); ++i)
+    if (i->m_neighborAddress == addr) return true;
+  return false;
+}
+
 void
 RoutingProtocol::UpdateNeighbor(Ipv4Address addr, Time expire)
 {
   NS_LOG_FUNCTION(this);
-  PurgeNeighbor ();
   for (std::vector<Neighbor>::iterator i = m_nb.begin (); i != m_nb.end (); ++i)
      if (i->m_neighborAddress == addr)
      {
-       i->m_expireTime = expire;
+       i->m_expireTime = expire + Simulator::Now();
        return;
      }
   struct Neighbor neighbor = { addr, expire + Simulator::Now () };
   m_nb.push_back (neighbor);
+  PurgeNeighbor ();
 }
 void
 RoutingProtocol::PurgeNeighbor ()
@@ -154,7 +165,7 @@ RoutingProtocol::RoutingProtocol () :
   ALLOWED_HELLO_LOSS (2),
   FREQUENCY (Seconds (0.5)),
   m_broadcastID (0), m_seqNo (0), btimer (Timer::CANCEL_ON_DESTROY), htimer (Timer::CANCEL_ON_DESTROY), ntimer (Timer::CANCEL_ON_DESTROY),
-  rtimer (Timer::CANCEL_ON_DESTROY), lrtimer (Timer::CANCEL_ON_DESTROY)
+  rtimer (Timer::CANCEL_ON_DESTROY), lrtimer (Timer::CANCEL_ON_DESTROY), m_routeRequestTimer (Timer::CANCEL_ON_DESTROY)
 
 {
   NET_TRAVERSAL_TIME = Scalar (2 * NET_DIAMETER) * NODE_TRAVERSAL_TIME;
@@ -163,6 +174,7 @@ RoutingProtocol::RoutingProtocol () :
   MinHelloInterval = Scalar (0.75) * HELLO_INTERVAL;
   if(ACTIVE_ROUTE_TIMEOUT > HELLO_INTERVAL) DELETE_PERIOD = Scalar(5) * ACTIVE_ROUTE_TIMEOUT;
   else DELETE_PERIOD = Scalar(5) * HELLO_INTERVAL;
+  Ptr<NetDevice> dev;
 }
 
 TypeId
@@ -235,7 +247,10 @@ RoutingProtocol::Start ()
 
   m_scb = MakeCallback (&RoutingProtocol::Send, this);
   m_ecb = MakeCallback (&RoutingProtocol::Drop, this);
- // btimer.Schedule ();
+
+  btimer.Schedule();
+  ntimer.Schedule();
+  rtimer.Schedule();
 }
 
 Ptr<Ipv4Route>
@@ -244,8 +259,7 @@ RoutingProtocol::RouteOutput (Ptr<Packet> p, const Ipv4Header &header, uint32_t 
   NS_LOG_FUNCTION (this << p->GetUid() << header.GetDestination());
   Ptr<Ipv4Route> route;
   Ipv4Address dst = header.GetDestination ();
-  Ptr<NetDevice> dev;
-  RoutingTableEntry rt (dev);
+  RoutingTableEntry rt;
   bool result = m_routingTable.LookupRoute (dst, rt);
   if (result && (rt.GetFlag () == RTF_UP))
   {
@@ -254,6 +268,7 @@ RoutingProtocol::RouteOutput (Ptr<Packet> p, const Ipv4Header &header, uint32_t 
     NS_ASSERT (route != 0);
     sockerr = Socket::ERROR_NOTERROR;
     NS_LOG_LOGIC("exist route to " << route->GetDestination() << " from iface " << route->GetSource());
+    UpdateRouteLifeTime(dst, ACTIVE_ROUTE_TIMEOUT);
     return route;
   }
   else
@@ -261,7 +276,7 @@ RoutingProtocol::RouteOutput (Ptr<Packet> p, const Ipv4Header &header, uint32_t 
     QueueEntry newEntry (p, header, m_scb, m_ecb);
     m_queue.Enqueue (newEntry);
     sockerr = Socket::ERROR_NOROUTETOHOST;
-    SendRequest (dst, false, false);
+    if(rt.GetFlag() != RTF_IN_SEARCH) SendRequest (dst, false, false);
     return route;
   }
 
@@ -328,13 +343,17 @@ RoutingProtocol::RouteInput (Ptr<const Packet> p, const Ipv4Header &header, Ptr<
   {
     Ptr<Ipv4Route> route = rt.GetRoute ();
     NS_LOG_LOGIC(route->GetSource()<<" forwarding to " << dst);
+
     UpdateRouteLifeTime(src, ACTIVE_ROUTE_TIMEOUT);
     UpdateRouteLifeTime(route->GetGateway(), ACTIVE_ROUTE_TIMEOUT);
-    UpdateNeighbor(route->GetGateway(), ACTIVE_ROUTE_TIMEOUT);
+
+    UpdateNeighbor(route->GetGateway(), ACTIVE_ROUTE_TIMEOUT); //?
     UpdateNeighbor(src, ACTIVE_ROUTE_TIMEOUT);
     ucb (route, p, header);
     return true;
   }
+
+
   QueueEntry newEntry (p, header, ucb, ecb, RTQ_TIMEOUT);
   m_queue.Enqueue (newEntry);
   NS_LOG_LOGIC("route not found to "<< dst);
@@ -352,9 +371,11 @@ RoutingProtocol::SetIpv4 (Ptr<Ipv4> ipv4)
   rtimer.SetFunction (&RoutingProtocol::RouteCacheTimerExpire, this);
   lrtimer.SetFunction (&RoutingProtocol::LocalRepairTimerExpire, this);
   htimer.SetFunction (&RoutingProtocol::HelloTimerExpire, this);
+  m_routeRequestTimer.SetFunction(&RoutingProtocol::RouteRequestTimerExpire, this);
 
   htimer.SetDelay (HELLO_INTERVAL);
   btimer.SetDelay (BCAST_ID_SAVE);
+  rtimer.SetDelay (FREQUENCY);
 
   m_ipv4 = ipv4;
   Simulator::ScheduleNow (&RoutingProtocol::Start, this);
@@ -427,7 +448,10 @@ RoutingProtocol::SendRequest (Ipv4Address dst, bool G, bool D)
   {
     // if we already send maximum number of RREQ
     if (rt.GetRreqCnt () == RREQ_RETRIES)
+    {
+      NS_LOG_LOGIC ("Route does not found to " << dst);
       return;
+    }
 
     rreqHeader.SetHopCount (rt.GetLastValidHopCount ());
     rreqHeader.SetDstSeqno (rt.GetSeqNo ());
@@ -466,6 +490,9 @@ RoutingProtocol::SendRequest (Ipv4Address dst, bool G, bool D)
     packet->AddHeader (tHeader);
     socket->Send (packet);
   }
+  m_routeRequestTimer.SetArguments(dst);
+  m_routeRequestTimer.Cancel();
+  m_routeRequestTimer.Schedule(NET_TRAVERSAL_TIME);
   htimer.Cancel();
   htimer.Schedule (HELLO_INTERVAL);
 }
@@ -511,7 +538,7 @@ RoutingProtocol::RecvAodv (Ptr<Socket> socket)
       }
     case AODVTYPE_RERR:
       {
-        RecvError (packet);
+        RecvError (packet, senderIfaceAddr);
         break;
       }
     case AODVTYPE_RREP_ACK:
@@ -857,14 +884,70 @@ RoutingProtocol::ProcessHello (RrepHeader const & rrepHeader, Ipv4Address receiv
 
 // TODO process RERR with 'N' flag
 void
-RoutingProtocol::RecvError (Ptr<Packet> p)
+RoutingProtocol::RecvError (Ptr<Packet> p, Ipv4Address src)
 {
   RerrHeader rerrHeader;
   p->RemoveHeader(rerrHeader);
-  for(uint8_t i = 0; i < rerrHeader.GetDestCount(); ++i)
+  std::map<Ipv4Address, uint32_t> dstWithNextHopSrc;
+  std::map<Ipv4Address, uint32_t> unreachable;
+  m_routingTable.GetListOfDestinationWithNextHop(src, dstWithNextHopSrc);
+  std::pair<Ipv4Address, uint32_t>  un;
+  while (rerrHeader.RemoveUnDestination(un))
   {
-    // TODO
+    if (IsNeighbor (un.first)) SendRerrWhenBreaksLinkToNextHop (un.first);
+    else
+    {
+      for (std::map<Ipv4Address, uint32_t>::const_iterator i = dstWithNextHopSrc.begin(); i != dstWithNextHopSrc.end(); ++i)
+        if (i->first == un.first) unreachable.insert(un);
+    }
   }
+
+  std::vector<Ipv4Address> precursors;
+  for (std::map<Ipv4Address, uint32_t>::const_iterator i = unreachable.begin (); i != unreachable.end ();)
+  {
+    if (!rerrHeader.AddUnDestination (i->first, i->second))
+    {
+      TypeHeader typeHeader (AODVTYPE_RERR);
+      Ptr<Packet> packet = Create<Packet> ();
+      packet->AddHeader (rerrHeader);
+      packet->AddHeader (typeHeader);
+      SendRerrMessage (packet, precursors);
+      rerrHeader.Clear();
+    }
+    else
+    {
+      Ptr<NetDevice> dev;
+      RoutingTableEntry toDst (dev);
+      m_routingTable.LookupRoute (i->first, toDst);
+      toDst.GetPrecursors(precursors);
+      ++i;
+    }
+  }
+  m_routingTable.InvalidateRoutesWithDst(unreachable, DELETE_PERIOD);
+}
+
+void
+RoutingProtocol::RouteRequestTimerExpire(Ipv4Address dst)
+{
+  NS_LOG_LOGIC(this);
+  RoutingTableEntry toDst;
+  m_routingTable.LookupRoute(dst, toDst);
+  if(toDst.GetFlag() == RTF_UP)
+  {
+    NS_LOG_LOGIC("route to " << dst << " found");
+    return;
+  }
+  /**
+   *  If a route discovery has been attempted RREQ_RETRIES times at the maximum TTL without
+   *  receiving any RREP, all data packets destined for the corresponding destination SHOULD be
+   *  dropped from the buffer and a Destination Unreachable message SHOULD be delivered to the application.
+   */
+  if(toDst.GetRreqCnt() == RREQ_RETRIES)
+  {
+    NS_LOG_LOGIC("route discovery to " << dst << " has been attempted RREQ_RETRIES times");
+  }
+  NS_LOG_LOGIC("Send new RREQ to " << dst);
+  SendRequest (dst, false, false);
 }
 
 void
@@ -898,7 +981,7 @@ RoutingProtocol::NeighborTimerExpire ()
 void
 RoutingProtocol::RouteCacheTimerExpire ()
 {
-  // rt_purge();
+  RtPurge();
   rtimer.Schedule (FREQUENCY);
 }
 
@@ -997,31 +1080,36 @@ RoutingProtocol::SendRerrWhenBreaksLinkToNextHop (Ipv4Address nextHop)
 {
   RerrHeader rerrHeader;
   std::vector<Ipv4Address> precursors;
-  std::map<Ipv4Address, RoutingTableEntry> unreachable;
+  std::map<Ipv4Address, uint32_t> unreachable;
   Ptr<NetDevice> dev;
 
   RoutingTableEntry toNextHop (dev);
   if (!m_routingTable.LookupRoute (nextHop, toNextHop))
     return;
+  toNextHop.GetPrecursors(precursors);
   rerrHeader.AddUnDestination (nextHop, toNextHop.GetSeqNo ());
-  toNextHop.GetPrecursors (precursors);
-  toNextHop.SetFlag (RTF_DOWN);
-  toNextHop.SetLifeTime(DELETE_PERIOD);
-  m_routingTable.Update (nextHop, toNextHop);
-
-  m_routingTable.GetListOfDestinationWithNextHop (nextHop, unreachable, DELETE_PERIOD);
-  for (std::map<Ipv4Address, RoutingTableEntry>::const_iterator i = unreachable.begin (); i != unreachable.end (); ++i)
+  m_routingTable.GetListOfDestinationWithNextHop (nextHop, unreachable);
+  for (std::map<Ipv4Address, uint32_t>::const_iterator i = unreachable.begin (); i != unreachable.end ();)
   {
-    if (!rerrHeader.AddUnDestination (i->first, i->second.GetSeqNo ()))
+    if (!rerrHeader.AddUnDestination (i->first, i->second))
     {
       TypeHeader typeHeader (AODVTYPE_RERR);
       Ptr<Packet> packet = Create<Packet> ();
       packet->AddHeader (rerrHeader);
       packet->AddHeader (typeHeader);
       SendRerrMessage (packet, precursors);
+      rerrHeader.Clear();
     }
-
+    else
+    {
+      RoutingTableEntry toDst (dev);
+      m_routingTable.LookupRoute (i->first, toDst);
+      toDst.GetPrecursors(precursors);
+      ++i;
+    }
   }
+  unreachable.insert(std::make_pair(nextHop, toNextHop.GetSeqNo ()));
+  m_routingTable.InvalidateRoutesWithDst(unreachable, DELETE_PERIOD);
 }
 
 void
@@ -1037,33 +1125,33 @@ RoutingProtocol::SendRerrMessage (Ptr<Packet> packet, std::vector<Ipv4Address> p
     m_routingTable.LookupRoute (precursors.front (), toPrecursor);
     Ptr<Socket> socket = FindSocketWithInterfaceAddress (toPrecursor.GetInterface ());
     socket->SendTo (packet, 0, InetSocketAddress (toPrecursor.GetDestination (), AODV_PORT));
+    return;
   }
-  else
-  {
-    //  Should only transmit RERR on those interfaces which have precursor nodes for the broken route
-    std::vector<Ipv4Address> ifaces;
-    Ptr<NetDevice> dev;
-    RoutingTableEntry toPrecursor (dev);
-    for (std::vector<Ipv4Address>::const_iterator i = precursors.begin (); i != precursors.end (); ++i)
-    {
-      m_routingTable.LookupRoute (*i, toPrecursor);
-      bool result = true;
-      for (std::vector<Ipv4Address>::const_iterator i = ifaces.begin (); i != ifaces.end (); ++i)
-        if (*i == toPrecursor.GetInterface ())
-        {
-          result = false;
-          break;
-        }
-      if (result)
-        ifaces.push_back (toPrecursor.GetInterface ());
-    }
-    for (std::vector<Ipv4Address>::const_iterator i = ifaces.begin (); i != ifaces.end (); ++i)
-    {
-      Ptr<Socket> socket = FindSocketWithInterfaceAddress (*i);
-      socket->Send (packet);
-    }
 
+  //  Should only transmit RERR on those interfaces which have precursor nodes for the broken route
+  std::vector<Ipv4Address> ifaces;
+  Ptr<NetDevice> dev;
+  RoutingTableEntry toPrecursor (dev);
+  for (std::vector<Ipv4Address>::const_iterator i = precursors.begin (); i != precursors.end (); ++i)
+  {
+    if (!m_routingTable.LookupRoute (*i, toPrecursor)) break;
+    bool result = true;
+    for (std::vector<Ipv4Address>::const_iterator i = ifaces.begin (); i != ifaces.end (); ++i)
+      if (*i == toPrecursor.GetInterface ())
+      {
+        result = false;
+        break;
+      }
+    if (result)
+      ifaces.push_back (toPrecursor.GetInterface ());
   }
+
+  for (std::vector<Ipv4Address>::const_iterator i = ifaces.begin (); i != ifaces.end (); ++i)
+  {
+    Ptr<Socket> socket = FindSocketWithInterfaceAddress (*i);
+    socket->Send (packet);
+  }
+
 }
 
 Ptr<Socket>
@@ -1091,7 +1179,6 @@ void
 RoutingProtocol::HandleLinkFailure (Ipv4Address addr)
 {
   NS_LOG_FUNCTION(this << addr);
-  RtPurge();
   SendRerrWhenBreaksLinkToNextHop(addr);
   // TODO
 }
@@ -1100,7 +1187,8 @@ RoutingProtocol::HandleLinkFailure (Ipv4Address addr)
 void
 RoutingProtocol::RtPurge ()
 {
-  m_routingTable.Purge();
+  NS_LOG_FUNCTION(this);
+  m_routingTable.Purge(DELETE_PERIOD);
   // TODO AODV::rt_purge()
 }
 //-----------------------------------------------------------------------------

@@ -47,7 +47,6 @@ AodvQueue::GetSize ()
 void
 AodvQueue::Enqueue(QueueEntry & entry)
 {
-  // Purge any packets that have timed out.
   Purge();
   entry.m_expire = Simulator::Now() + m_timeout;
 

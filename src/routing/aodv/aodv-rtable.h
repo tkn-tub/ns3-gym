@@ -35,6 +35,7 @@
 #include "ns3/ipv4-route.h"
 #include "ns3/ipv4-address.h"
 #include "ns3/nstime.h"
+#include "ns3/timer.h"
 #include "ns3/net-device.h"
 
 
@@ -59,7 +60,7 @@ enum RouteFlags
 class RoutingTableEntry
 {
 public:
-  RoutingTableEntry(Ptr<NetDevice> dev,Ipv4Address dst = Ipv4Address(), bool vSeqNo = false, u_int32_t m_seqNo = 0, Ipv4Address iface = Ipv4Address(), u_int16_t  hops = 0,
+  RoutingTableEntry(Ptr<NetDevice> dev = 0,Ipv4Address dst = Ipv4Address(), bool vSeqNo = false, u_int32_t m_seqNo = 0, Ipv4Address iface = Ipv4Address(), u_int16_t  hops = 0,
       Ipv4Address nextHop = Ipv4Address(), Time lifetime = Seconds(0));
 
   ~RoutingTableEntry();
@@ -98,7 +99,7 @@ public:
 
 
   /// Mark entry as "down" (i.e. disable it)
-  void Down (Time badLinkLifetime);
+  void Invalidate (Time badLinkLifetime);
   ///\name Fields
   //\{
   Ipv4Address GetDestination() const { return m_ipv4Route->GetDestination(); }
@@ -122,8 +123,6 @@ public:
   void SetRreqCnt(uint8_t n) { m_reqCount = n; }
   uint8_t GetRreqCnt() const { return m_reqCount; }
   void IncrementRreqCnt() { m_reqCount++; }
-  void SetRreqTimeout(Time t) {m_reqTimeout = t; }
-  Time GetRreqTimeout() const { return m_reqTimeout; }
   /// Return last valid hop count
   uint16_t GetLastValidHopCount() { return m_lastHopCount; }
   //\}
@@ -137,6 +136,7 @@ public:
     return (m_ipv4Route->GetDestination() == dst);
   }
   void Print(std::ostream & os) const;
+
 private:
   /// Valid Destination Sequence Number flag
   bool m_validSeqNo;
@@ -166,14 +166,9 @@ private:
   /// List of precursors
   std::vector<Ipv4Address> m_precursorList;
   /// When I can send another request
-  Time m_reqTimeout;
+  Time m_routeRequestTimout;
   /// Number of route requests
   uint8_t m_reqCount;
-
-  // TODO review and delete
-#define MAX_HISTORY     3
-  double rt_disc_latency[MAX_HISTORY];
-  char hist_indx;
 };
 
 /**
@@ -203,22 +198,25 @@ public:
    * \param rt entry with destination address dst, if exists
    * \return true on success
    */
-  bool LookupRoute(Ipv4Address dst, RoutingTableEntry & rt) const;
+  bool LookupRoute(Ipv4Address dst, RoutingTableEntry & rt);
   /// Update routing table
   bool Update(Ipv4Address dst, RoutingTableEntry & rt);
   /// Set routing table entry flags
   void SetEntryState (Ipv4Address dst, uint8_t state /*TODO use enum*/);
   /**
    * Lookup valid routing entries with next hop Address dst and not empty list of precursors.
-   * Update found routing entries as follows:
+   */
+  void GetListOfDestinationWithNextHop(Ipv4Address nextHop, std::map<Ipv4Address, uint32_t> unreachable);
+  /**
+   *   Update routing entries with this destinations as follows:
    *  1. The destination sequence number of this routing entry, if it
    *     exists and is valid, is incremented.
    *  2. The entry is invalidated by marking the route entry as invalid
    *  3. The Lifetime field is updated to current time plus DELETE_PERIOD.
    */
-  void GetListOfDestinationWithNextHop(Ipv4Address nextHop, std::map<Ipv4Address, RoutingTableEntry> unreachable, Time badLinkLifetime);
-  /// Delete all outdated entries
-  void Purge();
+  void InvalidateRoutesWithDst(std::map<Ipv4Address, uint32_t> const & unreachable, Time badLinkLifetime);
+  /// Delete all outdated entries and invalidate valid entry if Lifetime is expired
+  void Purge(Time badLinkLifetime);
   /// Print routing table
   void Print(std::ostream &os) const;
 
