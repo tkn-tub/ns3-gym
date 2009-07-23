@@ -508,7 +508,7 @@ HwmpProtocol::ReceivePreq (IePreq preq, Mac48Address from, uint32_t interface, M
           //we have got from PREQ, and set the rest lifetime of the
           //route if the information is correct
           uint32_t lifetime = result.lifetime.GetMicroSeconds () / 1024;
-          if (lifetime > 0)
+          if ((lifetime > 0) && (result.seqnum >= (*i)->GetDestSeqNumber ()))
             {
               SendPrep (
                   (*i)->GetDestinationAddress (),
@@ -516,19 +516,19 @@ HwmpProtocol::ReceivePreq (IePreq preq, Mac48Address from, uint32_t interface, M
                   from,
                   result.metric,
                   preq.GetOriginatorSeqNumber (),
-                  result.seqnum +1,
+                  result.seqnum,
                   lifetime,
                   interface
                   );
-            }
-          if ((*i)->IsRf ())
-            {
-              (*i)->SetFlags (true, false, (*i)->IsUsn ()); //DO = 1, RF = 0
-            }
-          else
-            {
-              preq.DelDestinationAddressElement ((*i)->GetDestinationAddress ());
-              continue;
+              if ((*i)->IsRf ())
+                {
+                  (*i)->SetFlags (true, false, (*i)->IsUsn ()); //DO = 1, RF = 0
+                }
+              else
+                {
+                  preq.DelDestinationAddressElement ((*i)->GetDestinationAddress ());
+                  continue;
+                }
             }
         }
     }
@@ -982,11 +982,7 @@ HwmpProtocol::RetryPathDiscovery (Mac48Address dst, uint8_t numOfRetry)
       return;
     }
   uint32_t originator_seqno = GetNextHwmpSeqno ();
-  uint32_t dst_seqno = 0;
-  if (result.retransmitter != Mac48Address::GetBroadcast ())
-    {
-      dst_seqno = result.seqnum;
-    }
+  uint32_t dst_seqno = m_rtable->LookupReactiveExpired (dst).seqnum;
   for (HwmpProtocolMacMap::const_iterator i = m_interfaces.begin (); i != m_interfaces.end (); i ++)
     {
       i->second->RequestDestination (dst, originator_seqno, dst_seqno);

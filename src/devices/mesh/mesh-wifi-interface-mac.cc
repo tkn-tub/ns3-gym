@@ -399,8 +399,7 @@ MeshWifiInterfaceMac::SendManagementFrame (Ptr<Packet> packet, const WifiMacHead
     }
   m_stats.sentFrames++;
   m_stats.sentBytes += packet->GetSize ();
-  Queues::iterator i = m_queues.find (AC_VO);
-  if (i == m_queues.end ())
+  if (m_queues.find (AC_VO) == m_queues.end ())
     {
       NS_FATAL_ERROR ("Voice queue is not set up!");
     }
@@ -654,8 +653,7 @@ MeshWifiInterfaceMac::ResetStats ()
 void
 MeshWifiInterfaceMac::SetQueue (Ptr<DcaTxop> queue, AccessClass ac)
 {
-  Queues::iterator i = m_queues.find (ac);
-  if (i != m_queues.end ())
+  if (m_queues.find (ac) != m_queues.end ())
     {
       NS_LOG_WARN ("Queue is already set!");
       return;
@@ -667,7 +665,7 @@ MeshWifiInterfaceMac::SetQueue (Ptr<DcaTxop> queue, AccessClass ac)
 Ptr<DcaTxop>
 MeshWifiInterfaceMac::GetQueue (AccessClass ac)
 {
-  Queues::iterator i = m_queues.find (ac);
+  Queues::const_iterator i = m_queues.find (ac);
   if (i != m_queues.end ())
     {
       NS_LOG_WARN ("Queue is not found! Check access class!");
