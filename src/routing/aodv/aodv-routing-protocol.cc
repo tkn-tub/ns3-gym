@@ -26,7 +26,6 @@
  *          Pavel Boyko <boyko@iitp.ru>
  */
 #include "aodv-routing-protocol.h"
-#include "ns3/socket-factory.h"
 #include "ns3/socket.h"
 #include "ns3/udp-socket-factory.h"
 #include "ns3/simulator.h"
@@ -325,16 +324,6 @@ RoutingProtocol::RouteInput (Ptr<const Packet> p, const Ipv4Header &header, Ptr<
 
   // TODO: local delivery to non-AODV interfaces
 
-  // Locally deliver all AODV control traffic
-  if (LooksLikeAodvControl (p, header))
-  {
-    NS_LOG_LOGIC("Locally deliver AODV control traffic to " << m_ipv4->GetAddress(iif, 0).GetLocal() << " packet " << p->GetUid());
-    Ipv4Header h = header;
-    h.SetDestination (m_ipv4->GetAddress (iif, 0).GetLocal ()); // really want to receive it
-    lcb (p, h, iif);
-    return true;
-  }
-
   // Forwarding
   RoutingTableEntry toDst;
   if (m_routingTable.LookupRoute (dst, toDst))
@@ -417,17 +406,6 @@ RoutingProtocol::NotifyAddAddress (uint32_t interface, Ipv4InterfaceAddress addr
 void
 RoutingProtocol::NotifyRemoveAddress (uint32_t interface, Ipv4InterfaceAddress address)
 {
-}
-
-bool
-RoutingProtocol::LooksLikeAodvControl (Ptr<const Packet> p, Ipv4Header const & header) const
-{
-  if (header.GetProtocol () == 17 /*UDP*/)
-  {
-    UdpHeader uh;
-    return (p->PeekHeader (uh) && uh.GetDestinationPort () == AODV_PORT && uh.GetSourcePort () == AODV_PORT);
-  }
-  return false;
 }
 
 bool
@@ -684,7 +662,6 @@ RoutingProtocol::RecvRequest (Ptr<Packet> p, Ipv4Address receiver, Ipv4Address s
       return;
     }
   }
-
 /*
  * (ii) it has an active route to the destination, the destination sequence number in the node's existing route table entry for the destination
  *      is valid and greater than or equal to the Destination Sequence Number of the RREQ, and the "destination only" flag is NOT set.
@@ -706,7 +683,7 @@ RoutingProtocol::RecvRequest (Ptr<Packet> p, Ipv4Address receiver, Ipv4Address s
         SendReplyByIntermediateNode (toDst, toOrigin, rreqHeader.GetGratiousRrep (), socket);
         return;
       }
-      rreqHeader.SetOriginSeqno (toDst.GetSeqNo ());
+      rreqHeader.SetDstSeqno (toDst.GetSeqNo ());
       rreqHeader.SetUnknownSeqno (false);
     }
   }
@@ -734,26 +711,49 @@ void
 RoutingProtocol::SendReply (RreqHeader const & rreqHeader, RoutingTableEntry const & toOrigin, Ptr<Socket> socket)
 {
   NS_LOG_FUNCTION (this << toOrigin.GetDestination ());
-  // Create RREP
-  RrepHeader rrepHeader;
-  rrepHeader.SetHopCount (toOrigin.GetHop ());
-  rrepHeader.SetOrigin (toOrigin.GetDestination ());
-  //  Destination node MUST increment its own sequence number by one
-  //  if the sequence number in the RREQ packet is equal to that incremented value.
-  //  Otherwise, the destination does not change its sequence number before
-  //  generating the  RREP message.
-  if (!rreqHeader.GetUnknownSeqno () && (rreqHeader.GetDstSeqno () == m_seqNo + 1))
-    m_seqNo++;
-  rrepHeader.SetDstSeqno (m_seqNo);
-  rrepHeader.SetDst (rreqHeader.GetDst ());
-  rrepHeader.SetLifeTime (MY_ROUTE_TIMEOUT);
+  /*
+   * Destination node MUST increment its own sequence number by one if the sequence number in the RREQ packet is equal to that
+   * incremented value. Otherwise, the destination does not change its sequence number before generating the  RREP message.
+   */
+  if (!rreqHeader.GetUnknownSeqno () && (rreqHeader.GetDstSeqno () == m_seqNo + 1)) m_seqNo++;
+  RrepHeader rrepHeader ( /*prefixSize=*/0, /*hops=*/toOrigin.GetHop (), /*dst=*/rreqHeader.GetDst (),
+                        /*dstSeqNo=*/m_seqNo, /*origin=*/toOrigin.GetDestination (), /*lifeTime=*/MY_ROUTE_TIMEOUT);
+  Ptr<Packet> packet = Create<Packet> ();
+  packet->AddHeader (rrepHeader);
+  TypeHeader tHeader (AODVTYPE_RREP);
+  packet->AddHeader (tHeader);
+  socket->SendTo (packet, 0, InetSocketAddress (toOrigin.GetNextHop(), AODV_PORT));
+}
+
+void
+RoutingProtocol::SendReplyByIntermediateNode (RoutingTableEntry & toDst, RoutingTableEntry & toOrigin, bool gratRep, Ptr<Socket> socket)
+{
+
+  RrepHeader rrepHeader (/*prefix size=*/0, /*hops=*/toDst.GetHop (), /*dst=*/toDst.GetDestination (), /*dst seqno=*/toDst.GetSeqNo (),
+                         /*origin=*/toOrigin.GetDestination (), /*lifetime=*/toDst.GetLifeTime () - Simulator::Now ());
+
+  toDst.InsertPrecursor (toOrigin.GetNextHop ());
+  toOrigin.InsertPrecursor (toDst.GetNextHop ());
+  m_routingTable.Update (toDst.GetDestination (), toDst);
+  m_routingTable.Update (toOrigin.GetDestination (), toOrigin);
 
   Ptr<Packet> packet = Create<Packet> ();
   packet->AddHeader (rrepHeader);
   TypeHeader tHeader (AODVTYPE_RREP);
   packet->AddHeader (tHeader);
+  socket->SendTo (packet, 0, InetSocketAddress (toOrigin.GetNextHop (), AODV_PORT));
 
-  socket->SendTo (packet, 0, InetSocketAddress (toOrigin.GetDestination (), AODV_PORT));
+  // Generating gratuitous RREPs
+  if (gratRep)
+  {
+    RrepHeader gratRepHeader (/*prefix size=*/0, /*hops=*/toOrigin.GetHop (), /*dst=*/toOrigin.GetDestination (), /*dst seqno=*/toOrigin.GetSeqNo (),
+                              /*origin=*/toDst.GetDestination (), /*lifetime=*/toOrigin.GetLifeTime () - Simulator::Now ());
+    Ptr<Packet> packetToDst = Create<Packet> ();
+    packetToDst->AddHeader (rrepHeader);
+    packetToDst->AddHeader (tHeader);
+    socket->SendTo (packetToDst, 0, InetSocketAddress (toDst.GetNextHop(), AODV_PORT));
+
+  }
 }
 
 void
@@ -908,7 +908,6 @@ RoutingProtocol::ProcessHello (RrepHeader const & rrepHeader, Ipv4Address receiv
   UpdateNeighbor(rrepHeader.GetDst (), Scalar (ALLOWED_HELLO_LOSS) * HELLO_INTERVAL);
 }
 
-
 // TODO process RERR with 'N' flag
 void
 RoutingProtocol::RecvError (Ptr<Packet> p, Ipv4Address src)
@@ -1034,49 +1033,13 @@ RoutingProtocol::SendHello ()
   {
     Ptr<Socket> socket = j->first;
     Ipv4InterfaceAddress iface = j->second;
-    RrepHeader helloHeader (/*flags=*/0, /*prefix size=*/0, /*hops=*/0, /*dst=*/
-    iface.GetLocal (), /*dst seqno=*/m_seqNo,
-    /*origin=*/iface.GetLocal (), /*lifetime=*/Scalar (ALLOWED_HELLO_LOSS) * HELLO_INTERVAL);
+    RrepHeader helloHeader (/*prefix size=*/0, /*hops=*/0, /*dst=*/iface.GetLocal (), /*dst seqno=*/m_seqNo,
+                            /*origin=*/iface.GetLocal (),/*lifetime=*/Scalar (ALLOWED_HELLO_LOSS) * HELLO_INTERVAL);
     Ptr<Packet> packet = Create<Packet> ();
     packet->AddHeader (helloHeader);
     TypeHeader tHeader (AODVTYPE_RREP);
     packet->AddHeader (tHeader);
     socket->Send (packet);
-  }
-}
-
-void
-RoutingProtocol::SendReplyByIntermediateNode (RoutingTableEntry & toDst, RoutingTableEntry & toOrigin, bool gratRep, Ptr<Socket> socket)
-{
-
-  RrepHeader rrepHeader (/*flags=*/0, /*prefix size=*/0, /*hops=*/
-  toDst.GetHop (), /*dst=*/toDst.GetDestination (), /*dst seqno=*/
-  toDst.GetSeqNo (),
-  /*origin=*/toOrigin.GetDestination (), /*lifetime=*/toDst.GetLifeTime () - Simulator::Now ());
-
-  toDst.InsertPrecursor (toOrigin.GetNextHop ());
-  toOrigin.InsertPrecursor (toDst.GetNextHop ());
-  m_routingTable.Update (toDst.GetDestination (), toDst);
-  m_routingTable.Update (toOrigin.GetDestination (), toOrigin);
-
-  Ptr<Packet> packet = Create<Packet> ();
-  packet->AddHeader (rrepHeader);
-  TypeHeader tHeader (AODVTYPE_RREP);
-  packet->AddHeader (tHeader);
-
-  socket->SendTo (packet, 0, InetSocketAddress (toOrigin.GetDestination (), AODV_PORT));
-
-  if (gratRep)
-  {
-    RrepHeader gratRepHeader (/*flags=*/0, /*prefix size=*/0, /*hops=*/
-    toOrigin.GetHop (), /*dst=*/toOrigin.GetDestination (), /*dst seqno=*/
-    toOrigin.GetSeqNo (),
-    /*origin=*/toDst.GetDestination (), /*lifetime=*/
-    toOrigin.GetLifeTime () - Simulator::Now ());
-    Ptr<Packet> packetToDst = Create<Packet> ();
-    packetToDst->AddHeader (rrepHeader);
-    packetToDst->AddHeader (tHeader);
-    socket->SendTo (packetToDst, 0, InetSocketAddress (toDst.GetDestination (), AODV_PORT));
   }
 }
 

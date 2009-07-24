@@ -320,8 +320,8 @@ bool RreqHeaderTest::RunTests ()
 // RREP
 //-----------------------------------------------------------------------------
 
-RrepHeader::RrepHeader(uint8_t flags,uint8_t prefixSize, uint8_t hopCount, Ipv4Address dst,
-                       uint32_t dstSeqNo, Ipv4Address origin, Time lifeTime) : m_flags(flags), m_prefixSize(prefixSize), m_hopCount(hopCount),
+RrepHeader::RrepHeader(uint8_t prefixSize, uint8_t hopCount, Ipv4Address dst,
+                       uint32_t dstSeqNo, Ipv4Address origin, Time lifeTime) : m_flags(0), m_prefixSize(prefixSize), m_hopCount(hopCount),
                        m_dst(dst), m_dstSeqNo(dstSeqNo), m_origin(origin)
 {
   m_lifeTime = uint32_t(lifeTime.GetMilliSeconds());

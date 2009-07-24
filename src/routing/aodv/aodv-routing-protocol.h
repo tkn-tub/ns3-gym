@@ -198,8 +198,6 @@ private:
   bool UpdateRouteLifeTime(Ipv4Address addr, Time lifetime);
   /// Update neighbor record. \param receiver is supposed to be my interface
   void UpdateRouteToNeighbor (Ipv4Address sender, Ipv4Address receiver);
-  /// Check that packet is an AODV control message
-  bool LooksLikeAodvControl (Ptr<const Packet> p, Ipv4Header const & header) const;
   /// Check that packet is send from own interface
   bool IsMyOwnPacket(Ipv4Address src);
   /// Find socket with local interface address iface

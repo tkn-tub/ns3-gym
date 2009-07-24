@@ -171,7 +171,7 @@ std::ostream & operator<<(std::ostream & os, RreqHeader const &);
 class RrepHeader : public Header
 {
 public:
-  RrepHeader(uint8_t flags = 0, uint8_t prefixSize = 0, uint8_t hopCount = 0, Ipv4Address dst = Ipv4Address(),
+  RrepHeader(uint8_t prefixSize = 0, uint8_t hopCount = 0, Ipv4Address dst = Ipv4Address(),
             uint32_t dstSeqNo = 0, Ipv4Address origin = Ipv4Address(), Time lifetime = MilliSeconds(0));
   ///\name Header serialization/deserialization
   //\{
