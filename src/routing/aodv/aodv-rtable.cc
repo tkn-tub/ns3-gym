@@ -29,6 +29,8 @@
 #include <algorithm>
 #include "ns3/simulator.h"
 #include "ns3/test.h"
+#include "ns3/log.h"
+
 
 namespace ns3 {
 namespace aodv {
@@ -40,7 +42,7 @@ namespace aodv {
 
 RoutingTableEntry::RoutingTableEntry(Ptr<NetDevice> dev, Ipv4Address dst, bool vSeqNo, u_int32_t seqNo, Ipv4Address iface, u_int16_t  hops,
                               Ipv4Address nextHop, Time lifetime)
-                            : m_validSeqNo(vSeqNo), m_seqNo(seqNo), m_hops(hops), m_lastHopCount(hops), m_lifeTime(lifetime), m_reqCount(0)
+                            : m_validSeqNo(vSeqNo), m_seqNo(seqNo), m_hops(hops), m_lifeTime(lifetime + Simulator::Now()), m_reqCount(0)
 {
   m_ipv4Route = Create<Ipv4Route> ();
   m_ipv4Route->SetDestination(dst);
@@ -113,9 +115,6 @@ void
 RoutingTableEntry::Invalidate (Time badLinkLifetime)
 {
   if(m_flag == RTF_DOWN) return;
-
-  m_lastHopCount = m_hops;
-  m_hops = INFINITY2;
   m_flag = RTF_DOWN;
   m_lifeTime = badLinkLifetime + Simulator::Now();
 }
@@ -223,15 +222,22 @@ RoutingTable::InvalidateRoutesWithDst(const std::map<Ipv4Address, uint32_t> & un
 void
 RoutingTable::Purge(Time badLinkLifetime)
 {
-  for(std::map<Ipv4Address, RoutingTableEntry>::iterator i = m_ipv4AddressEntry.begin(); i != m_ipv4AddressEntry.end();)
+  if(m_ipv4AddressEntry.empty ()) return;
+  for(std::map<Ipv4Address, RoutingTableEntry>::iterator i = m_ipv4AddressEntry.begin(); i != m_ipv4AddressEntry.end(); ++i)
   {
     if(i->second.GetLifeTime() < Simulator::Now())
     {
       if(i->second.GetFlag() == RTF_DOWN)
-        m_ipv4AddressEntry.erase(i++);
-      else if (i->second.GetFlag() == RTF_UP) i->second.Invalidate(badLinkLifetime);
+      {
+        std::map<Ipv4Address, RoutingTableEntry>::iterator tmp = i;
+        m_ipv4AddressEntry.erase(tmp);
+      }
+      else if (i->second.GetFlag() == RTF_UP)
+      {
+        NS_LOG_UNCOND("invalidate routing entry to " << i->second.GetDestination());
+        i->second.Invalidate(badLinkLifetime);
+      }
     }
-    else ++i;
   }
 }
 

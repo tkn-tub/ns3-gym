@@ -29,6 +29,8 @@
 #include "ns3/simulator.h"
 #include "ns3/test.h"
 #include <algorithm>
+#include <functional>
+
 
 namespace ns3 {
 namespace aodv {
@@ -60,6 +62,16 @@ AodvQueue::Dequeue()
   Purge();
   return RemoveHead();
 }
+
+void
+AodvQueue::DropPacketWithDst (Ipv4Address dst)
+{
+  Purge();
+  const Ipv4Address addr = dst;
+  std::vector<QueueEntry>::iterator i = std::remove_if (m_queue.begin(), m_queue.end(), std::bind2nd(std::ptr_fun( AodvQueue::IsEqual), dst) );
+  m_queue.erase (i, m_queue.end());
+}
+
 
 bool
 AodvQueue::Dequeue(Ipv4Address dst, QueueEntry & entry)

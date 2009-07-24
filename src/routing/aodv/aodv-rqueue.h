@@ -38,6 +38,8 @@
 namespace ns3 {
 namespace aodv {
 
+
+
 /// The maximum number of packets that we allow a routing protocol to buffer.
 #define AODV_RTQ_MAX_LEN 64
 /// The maximum period of time that a routing protocol is allowed to buffer a packet for, seconds.
@@ -91,10 +93,13 @@ public:
   QueueEntry Dequeue ();
   /// Return first found (the earliest) entry for given destination
   bool Dequeue (Ipv4Address dst, QueueEntry & entry);
+  /// Remove all packets with destination IP address dst
+  void DropPacketWithDst (Ipv4Address dst);
   /// Finds whether a packet with destination dst exists in the queue
   bool Find (Ipv4Address dst);
   /// Number of entries
   uint32_t GetSize ();
+
 
 private:
   std::vector<QueueEntry> m_queue;
@@ -108,7 +113,10 @@ private:
   uint32_t m_maxSize;
   /// Life time of queue entry in queue
   Time m_timeout;
+  static bool IsEqual(QueueEntry  en, const Ipv4Address dst) { return (en.m_header.GetDestination() == dst);}
 };
+
+
 }}
 
 #endif /* __aodv_rqueue_h__ */

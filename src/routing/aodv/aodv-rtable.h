@@ -61,7 +61,7 @@ class RoutingTableEntry
 {
 public:
   RoutingTableEntry(Ptr<NetDevice> dev = 0,Ipv4Address dst = Ipv4Address(), bool vSeqNo = false, u_int32_t m_seqNo = 0, Ipv4Address iface = Ipv4Address(), u_int16_t  hops = 0,
-      Ipv4Address nextHop = Ipv4Address(), Time lifetime = Seconds(0));
+      Ipv4Address nextHop = Ipv4Address(), Time lifetime = Simulator::Now());
 
   ~RoutingTableEntry();
   
@@ -116,15 +116,13 @@ public:
   uint32_t GetSeqNo() const { return m_seqNo; }
   void SetHop(uint16_t hop) { m_hops = hop; }
   uint16_t GetHop() const {return m_hops; }
-  void SetLifeTime(Time lt) { m_lifeTime = lt; }
+  void SetLifeTime(Time lt) { m_lifeTime = lt + Simulator::Now(); }
   Time GetLifeTime() const { return m_lifeTime; }
   void SetFlag(uint8_t flag) { m_flag = flag; }
   uint8_t GetFlag() const { return m_flag; }
   void SetRreqCnt(uint8_t n) { m_reqCount = n; }
   uint8_t GetRreqCnt() const { return m_reqCount; }
   void IncrementRreqCnt() { m_reqCount++; }
-  /// Return last valid hop count
-  uint16_t GetLastValidHopCount() { return m_lastHopCount; }
   //\}
 
   /**
@@ -144,8 +142,6 @@ private:
   uint32_t m_seqNo;
   /// Hop Count (number of hops needed to reach destination)
   uint16_t m_hops;
-  /// Last valid hop count
-  uint16_t m_lastHopCount;
   /**
   * \brief Expiration or deletion time of the route
   *	Lifetime field in the routing table plays dual role --

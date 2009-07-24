@@ -226,7 +226,7 @@ private:
   /// Send hello. TODO send independent hello per interface
   void SendHello ();
   /// Send RREQ
-  void SendRequest (Ipv4Address dst, bool G, bool D);
+  void SendRequest (Ipv4Address dst,  bool D,bool G = true);
   /// Send RREP
   void SendReply (RreqHeader const & rreqHeader, RoutingTableEntry const & toOrigin, Ptr<Socket> socket);
   /** Send RREP by intermediate node
