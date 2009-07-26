@@ -18,8 +18,6 @@ import ns3
 ns3.LogComponentEnable("UdpEchoClientApplication", ns3.LOG_LEVEL_INFO)
 ns3.LogComponentEnable("UdpEchoServerApplication", ns3.LOG_LEVEL_INFO)
 
-ns3.RandomVariable.UseGlobalSeed(1, 1, 2, 3, 5, 8)
-
 nodes = ns3.NodeContainer()
 nodes.Create(2)
 
