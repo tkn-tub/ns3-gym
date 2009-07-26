@@ -233,6 +233,8 @@ private:
    * \param gratRep indicates whether a gratuitous RREP should be unicast to destination
    */
   void SendReplyByIntermediateNode (RoutingTableEntry & toDst, RoutingTableEntry & toOrigin, bool gratRep,  Ptr<Socket> socket);
+  /// Send RREP_ACK
+  void SendRouteReplyAck (Ipv4Address neighbor, Ptr<Socket> socket);
   ///\name Send RERR
   //\{
   void SendRerrWhenBreaksLinkToNextHop (Ipv4Address nextHop);

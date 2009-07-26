@@ -757,9 +757,21 @@ RoutingProtocol::SendReplyByIntermediateNode (RoutingTableEntry & toDst, Routing
 }
 
 void
-RoutingProtocol::RecvReply (Ptr<Packet> p, Ipv4Address receiverIfaceAddr, Ipv4Address senderIfaceAddr)
+RoutingProtocol::SendRouteReplyAck(Ipv4Address neighbor, Ptr<Socket> socket)
 {
-  NS_LOG_FUNCTION(this << " src " << senderIfaceAddr);
+  RrepAckHeader h;
+  TypeHeader typeHeader(AODVTYPE_RREP_ACK);
+  Ptr<Packet> packet = Create<Packet> ();
+  packet->AddHeader(h);
+  packet->AddHeader(typeHeader);
+  socket->SendTo (packet, 0, InetSocketAddress (neighbor, AODV_PORT));
+}
+
+
+void
+RoutingProtocol::RecvReply (Ptr<Packet> p, Ipv4Address receiver, Ipv4Address sender)
+{
+  NS_LOG_FUNCTION(this << " src " << sender);
   RrepHeader rrepHeader;
   p->RemoveHeader (rrepHeader);
   NS_LOG_LOGIC("RREP destination " << rrepHeader.GetDst() << " RREP origin " << rrepHeader.GetOrigin());
@@ -770,58 +782,48 @@ RoutingProtocol::RecvReply (Ptr<Packet> p, Ipv4Address receiverIfaceAddr, Ipv4Ad
   // If RREP is Hello message
   if (rrepHeader.GetDst () == rrepHeader.GetOrigin ())
   {
-    ProcessHello (rrepHeader, receiverIfaceAddr);
+    ProcessHello (rrepHeader, receiver);
     return;
   }
 
-  RoutingTableEntry toDst;
   /*
-   If the route table entry to the destination is created or updated,
-   then the following actions occur:
-   -  the route is marked as active,
-   -  the destination sequence number is marked as valid,
-   -  the next hop in the route entry is assigned to be the node from
-   which the RREP is received, which is indicated by the source IP
-   address field in the IP header,
-   -  the hop count is set to the value of the New Hop Count,
-   -  the expiry time is set to the current time plus the value of the
-   Lifetime in the RREP message,
-   -  and the destination sequence number is the Destination Sequence
-   Number in the RREP message.
+   * If the route table entry to the destination is created or updated, then the following actions occur:
+   * -  the route is marked as active,
+   * -  the destination sequence number is marked as valid,
+   * -  the next hop in the route entry is assigned to be the node from which the RREP is received,
+   *    which is indicated by the source IP address field in the IP header,
+   * -  the hop count is set to the value of the hop count from RREP message + 1
+   * -  the expiry time is set to the current time plus the value of the Lifetime in the RREP message,
+   * -  and the destination sequence number is the Destination Sequence Number in the RREP message.
    */
-  Ptr<NetDevice> dev = m_ipv4->GetNetDevice (m_ipv4->GetInterfaceForAddress (receiverIfaceAddr));
+  Ptr<NetDevice> dev = m_ipv4->GetNetDevice (m_ipv4->GetInterfaceForAddress (receiver));
   RoutingTableEntry newEntry (/*device=*/dev, /*dst=*/rrepHeader.GetDst (), /*validSeqNo=*/
-  true, /*seqno=*/rrepHeader.GetDstSeqno (), /*iface=*/receiverIfaceAddr,
-  /*hop=*/hop, /*nextHop=*/senderIfaceAddr, /*lifeTime=*/Simulator::Now () + rrepHeader.GetLifeTime ());
-
+  true, /*seqno=*/rrepHeader.GetDstSeqno (), /*iface=*/receiver,
+  /*hop=*/hop, /*nextHop=*/sender, /*lifeTime=*/Simulator::Now () + rrepHeader.GetLifeTime ());
+  RoutingTableEntry toDst;
   if (m_routingTable.LookupRoute (rrepHeader.GetDst (), toDst))
   {
-    /*     The existing entry is updated only in the following circumstances:
-     (i)   the sequence number in the routing table is marked as
-     invalid in route table entry.
+    /*
+     * The existing entry is updated only in the following circumstances:
+     * (i) the sequence number in the routing table is marked as invalid in route table entry.
      */
     if (!toDst.GetValidSeqNo ())
     {
       m_routingTable.Update (rrepHeader.GetDst (), newEntry);
     }
-    /*     (ii)  the Destination Sequence Number in the RREP is greater than
-     the node's copy of the destination sequence number and the
-     known value is valid,
-     */
+    // (ii)the Destination Sequence Number in the RREP is greater than the node's copy of the destination sequence number and the known value is valid,
     else if ((int32_t (rrepHeader.GetDstSeqno ()) - int32_t (toDst.GetSeqNo ())) > 0)
     {
-      toDst.SetSeqNo (rrepHeader.GetDstSeqno ());
       m_routingTable.Update (rrepHeader.GetDst (), newEntry);
     }
     else
     {
-      //  (iii) the sequence numbers are the same, but the route is marked as inactive.
+      // (iii) the sequence numbers are the same, but the route is marked as inactive.
       if ((rrepHeader.GetDstSeqno () == toDst.GetSeqNo ()) && (toDst.GetFlag () != RTF_UP))
       {
         m_routingTable.Update (rrepHeader.GetDst (), newEntry);
       }
-      //  (iv)   the sequence numbers are the same, and the New Hop Count is
-      //         smaller than the hop count in route table entry.
+      // (iv)  the sequence numbers are the same, and the New Hop Count is smaller than the hop count in route table entry.
       else if ((rrepHeader.GetDstSeqno () == toDst.GetSeqNo ()) && (hop < toDst.GetHop ()))
       {
         m_routingTable.Update (rrepHeader.GetDst (), newEntry);
@@ -835,7 +837,7 @@ RoutingProtocol::RecvReply (Ptr<Packet> p, Ipv4Address receiverIfaceAddr, Ipv4Ad
     m_routingTable.AddRoute (newEntry);
   }
 
-  if (receiverIfaceAddr == rrepHeader.GetOrigin ())
+  if (receiver == rrepHeader.GetOrigin ())
   {
     if (toDst.GetFlag () == RTF_IN_SEARCH)
       m_routingTable.Update (rrepHeader.GetDst (), newEntry);
