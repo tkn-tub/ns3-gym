@@ -123,6 +123,10 @@ public:
   void SetRreqCnt(uint8_t n) { m_reqCount = n; }
   uint8_t GetRreqCnt() const { return m_reqCount; }
   void IncrementRreqCnt() { m_reqCount++; }
+  bool IsInBlacklist() const { return m_blackListState; }
+  void SetUnidirectional(bool u) { m_blackListState = u; }
+  void SetBalcklistTimeout (Time t) { m_blackListTimeout = t; }
+  Time GetBlacklistTimeout () { return m_blackListTimeout; }
   //\}
 
   /**
@@ -165,6 +169,14 @@ private:
   Time m_routeRequestTimout;
   /// Number of route requests
   uint8_t m_reqCount;
+  /// Indicate if this entry is in "blacklist"
+  bool m_blackListState;
+  Time m_blackListTimeout;
+public:
+  /// RREP_ACK timer
+  Timer m_ackTimer;
+  /// LifeTime timer of this entry
+  Timer lifeTimeTimer;
 };
 
 /**
@@ -194,7 +206,7 @@ public:
    * \param rt entry with destination address dst, if exists
    * \return true on success
    */
-  bool LookupRoute(Ipv4Address dst, RoutingTableEntry & rt);
+  bool LookupRoute(Ipv4Address dst, RoutingTableEntry & rt) const;
   /// Update routing table
   bool Update(Ipv4Address dst, RoutingTableEntry & rt);
   /// Set routing table entry flags
@@ -213,6 +225,11 @@ public:
   void InvalidateRoutesWithDst(std::map<Ipv4Address, uint32_t> const & unreachable, Time badLinkLifetime);
   /// Delete all outdated entries and invalidate valid entry if Lifetime is expired
   void Purge(Time badLinkLifetime);
+  /** Mark entry as unidirectional (e.g. add this neighbor to "blacklist" for blacklistTimeout period)
+   * \param neighbor - neighbor address link to which assumed to be unidirectional
+   * \return true on success
+   */
+  bool MarkLinkAsUinidirectional(Ipv4Address neighbor, Time blacklistTimeout);
   /// Print routing table
   void Print(std::ostream &os) const;
 

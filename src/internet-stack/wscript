@@ -94,6 +94,7 @@ def build(bld):
         'pending-data.cc',
         'sequence-number.cc',
         'rtt-estimator.cc',
+        'raw-socket-impl.cc',
         'ipv4-raw-socket-factory-impl.cc',
         'ipv4-raw-socket-impl.cc',
         'icmpv4.cc',

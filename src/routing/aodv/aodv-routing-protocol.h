@@ -93,6 +93,8 @@ private:
   Time MinHelloInterval; //        (0.75 * HELLO_INTERVAL)
   Time FREQUENCY;
   Time NET_TRAVERSAL_TIME;          // 2 * NODE_TRAVERSAL_TIME * NET_DIAMETER
+  Time BLACKLIST_TIMEOUT;
+  Time NEXT_HOP_WAIT;
   //\}
 
   /// \name Handle Broadcast sequence number cache
@@ -213,6 +215,8 @@ private:
   void RecvRequest (Ptr<Packet> p, Ipv4Address receiver, Ipv4Address src, Ptr<Socket> socket);
   /// Receive RREP
   void RecvReply (Ptr<Packet> p, Ipv4Address my ,Ipv4Address src);
+  /// receive RREP_ACK
+  void RecvReplyAck(Ipv4Address neighbor);
   /// Receive RERR from node with address src
   void RecvError (Ptr<Packet> p, Ipv4Address src);
   //\}
@@ -234,7 +238,7 @@ private:
    */
   void SendReplyByIntermediateNode (RoutingTableEntry & toDst, RoutingTableEntry & toOrigin, bool gratRep,  Ptr<Socket> socket);
   /// Send RREP_ACK
-  void SendRouteReplyAck (Ipv4Address neighbor, Ptr<Socket> socket);
+  void SendReplyAck (Ipv4Address neighbor);
   ///\name Send RERR
   //\{
   void SendRerrWhenBreaksLinkToNextHop (Ipv4Address nextHop);
@@ -258,6 +262,8 @@ private:
   void LocalRepairTimerExpire ();
   Timer m_routeRequestTimer;
   void RouteRequestTimerExpire(Ipv4Address dst);
+  void AckTimerExpire (Ipv4Address neighbor,  Time blacklistTimeout);
+  void RoutingTableEntryTimerExpire(Ipv4Address dst);
   //\}
 };
 

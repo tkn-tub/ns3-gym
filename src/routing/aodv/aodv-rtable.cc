@@ -42,7 +42,9 @@ namespace aodv {
 
 RoutingTableEntry::RoutingTableEntry(Ptr<NetDevice> dev, Ipv4Address dst, bool vSeqNo, u_int32_t seqNo, Ipv4Address iface, u_int16_t  hops,
                               Ipv4Address nextHop, Time lifetime)
-                            : m_validSeqNo(vSeqNo), m_seqNo(seqNo), m_hops(hops), m_lifeTime(lifetime + Simulator::Now()), m_reqCount(0)
+                            : m_validSeqNo(vSeqNo), m_seqNo(seqNo), m_hops(hops), m_lifeTime(lifetime + Simulator::Now()),
+                              m_reqCount(0), m_blackListState(false), m_blackListTimeout(Simulator::Now()),
+                              m_ackTimer(Timer::CANCEL_ON_DESTROY), lifeTimeTimer(Timer::CANCEL_ON_DESTROY)
 {
   m_ipv4Route = Create<Ipv4Route> ();
   m_ipv4Route->SetDestination(dst);
@@ -155,7 +157,7 @@ RoutingTableEntry::Print(std::ostream & os) const
  */
 
 bool
-RoutingTable::LookupRoute(Ipv4Address id, RoutingTableEntry & rt)
+RoutingTable::LookupRoute(Ipv4Address id, RoutingTableEntry & rt) const
 {
   std::map<Ipv4Address, RoutingTableEntry>::const_iterator i = m_ipv4AddressEntry.find(id);
   if (i == m_ipv4AddressEntry.end()) return false;
@@ -240,6 +242,17 @@ RoutingTable::Purge(Time badLinkLifetime)
     }
   }
 }
+
+bool
+RoutingTable::MarkLinkAsUinidirectional (Ipv4Address neighbor, Time blacklistTimeout)
+{
+  std::map<Ipv4Address, RoutingTableEntry>::iterator i = m_ipv4AddressEntry.find(neighbor);
+  if (i == m_ipv4AddressEntry.end()) return false;
+  i->second.SetUnidirectional (true);
+  i->second.SetBalcklistTimeout(blacklistTimeout);
+  return true;
+}
+
 
 void
 RoutingTable::Print(std::ostream &os) const
