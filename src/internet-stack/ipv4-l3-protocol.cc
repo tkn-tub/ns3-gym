@@ -40,6 +40,9 @@
 #include "icmpv4-l4-protocol.h"
 #include "ipv4-interface.h"
 #include "ipv4-raw-socket-impl.h"
+#include "raw-socket-impl.h"
+
+
 
 NS_LOG_COMPONENT_DEFINE ("Ipv4L3Protocol");
 
@@ -125,6 +128,18 @@ Ipv4L3Protocol::CreateRawSocket (void)
   m_sockets.push_back (socket);
   return socket;
 }
+
+Ptr<Socket>
+Ipv4L3Protocol::CreateRawSocket2 (void)
+{
+  NS_LOG_FUNCTION (this);
+  Ptr<RawSocketImpl> socket = CreateObject<RawSocketImpl> ();
+  socket->SetNode (m_node);
+  m_rawSocket.push_back (socket);
+  return socket;
+}
+
+
 void 
 Ipv4L3Protocol::DeleteRawSocket (Ptr<Socket> socket)
 {

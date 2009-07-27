@@ -30,6 +30,8 @@
 #include "ns3/traced-callback.h"
 #include "ns3/ipv4-header.h"
 #include "ns3/ipv4-routing-protocol.h"
+#include "raw-socket-impl.h"
+
 
 namespace ns3 {
 
@@ -71,6 +73,7 @@ public:
   Ptr<Ipv4RoutingProtocol> GetRoutingProtocol (void) const;
 
   Ptr<Socket> CreateRawSocket (void);
+  Ptr<Socket> CreateRawSocket2 (void);
   void DeleteRawSocket (Ptr<Socket> socket);
 
   /**
@@ -206,6 +209,7 @@ private:
 
   typedef std::list<Ptr<Ipv4Interface> > Ipv4InterfaceList;
   typedef std::list<Ptr<Ipv4RawSocketImpl> > SocketList;
+  typedef std::list<Ptr<RawSocketImpl> > RawSocketList;
   typedef std::list<Ptr<Ipv4L4Protocol> > L4List_t;
 
   bool m_ipForward;
@@ -222,6 +226,7 @@ private:
   Ptr<Ipv4RoutingProtocol> m_routingProtocol;
 
   SocketList m_sockets;
+  RawSocketList m_rawSocket;
 };
 
 } // Namespace ns3

@@ -1,5 +1,5 @@
-#ifndef IPV4_RAW_SOCKET_IMPL_H
-#define IPV4_RAW_SOCKET_IMPL_H
+#ifndef RAW_SOCKET_IMPL_H
+#define RAW_SOCKET_IMPL_H
 
 #include "ns3/socket.h"
 #include "ns3/ipv4-header.h"

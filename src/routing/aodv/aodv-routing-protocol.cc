@@ -43,6 +43,11 @@
 #include "ns3/nstime.h"
 #include "ns3/net-device.h"
 
+#include "ns3/raw-socket-factory.h"
+#include "ns3/ipv4-raw-socket-factory.h"
+
+
+
 /// UDP Port for AODV control traffic
 #define AODV_PORT  654
 
@@ -66,6 +71,7 @@ RoutingProtocol::InsertBroadcastId (Ipv4Address id, uint32_t bid)
 bool
 RoutingProtocol::LookupBroadcastId (Ipv4Address id, uint32_t bid)
 {
+  NS_LOG_FUNCTION(this);
   PurgeBroadcastId ();
   for (std::vector<BroadcastId>::const_iterator i = m_broadcastIdCache.begin (); i != m_broadcastIdCache.end (); ++i)
     if (i->src == id && i->id == bid)
@@ -229,7 +235,9 @@ RoutingProtocol::Start ()
       continue;
 
     // Create a socket to listen only on this interface
-    Ptr<Socket> socket = Socket::CreateSocket (GetObject<Node> (), TypeId::LookupByName ("ns3::UdpSocketFactory"));
+    Ptr<RawSocketImpl> socket = CreateObject<RawSocketImpl> ();
+    socket->SetNode(GetObject<Node> ());
+    //Ptr<Socket> socket = Socket::CreateSocket (GetObject<Node> (), RawSocketFactory::GetTypeId());
     NS_ASSERT (socket != 0);
     int status = socket->Bind (InetSocketAddress (iface.GetLocal (), AODV_PORT));
     NS_ASSERT (status != -1);
@@ -436,6 +444,8 @@ RoutingProtocol::SendRequest (Ipv4Address dst, bool D, bool G)
   // Create RREQ header
   TypeHeader tHeader (AODVTYPE_RREQ);
   RreqHeader rreqHeader;
+  Ipv4Header ipv4Header;
+  ipv4Header.SetTtl (NET_DIAMETER);
   rreqHeader.SetDst (dst);
 
   RoutingTableEntry rt;
@@ -487,6 +497,9 @@ RoutingProtocol::SendRequest (Ipv4Address dst, bool D, bool G)
 
     rreqHeader.SetOrigin (iface.GetLocal ());
     InsertBroadcastId (iface.GetLocal (), m_broadcastID);
+
+    ipv4Header.SetSource (iface.GetLocal ());
+    ipv4Header.SetDestination (iface.GetBroadcast());
 
     packet->AddHeader (rreqHeader);
     packet->AddHeader (tHeader);
