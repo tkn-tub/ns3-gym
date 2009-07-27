@@ -48,20 +48,11 @@ public:
     uint32_t metric;
     uint32_t seqnum;
     Time lifetime;
-
     LookupResult (Mac48Address r = Mac48Address::GetBroadcast (),
                  uint32_t i = INTERFACE_ANY,
                  uint32_t m = MAX_METRIC,
                  uint32_t s = 0,
-                 Time l = Seconds (0.0))
-      : retransmitter (r),
-        ifIndex (i),
-        metric (m),
-        seqnum (s),
-        lifetime (l)
-    {
-    }
-
+                 Time l = Seconds (0.0));
     /// True for valid route
     bool IsValid () const;
     /// Compare route lookup results, used by tests

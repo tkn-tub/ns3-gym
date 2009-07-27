@@ -253,6 +253,10 @@ HwmpRtable::LookupResult::operator== (const HwmpRtable::LookupResult & o) const
   return (retransmitter == o.retransmitter && ifIndex == o.ifIndex && metric == o.metric && seqnum
       == o.seqnum);
 }
+HwmpRtable::LookupResult::LookupResult (Mac48Address r, uint32_t i, uint32_t m, uint32_t s, Time l) :
+  retransmitter (r), ifIndex (i), metric (m), seqnum (s), lifetime (l)
+{
+}
 bool
 HwmpRtable::LookupResult::IsValid () const
 {
