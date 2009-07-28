@@ -49,6 +49,15 @@ MeshInterfaceHelper::Default (void)
   MeshInterfaceHelper helper;
   helper.SetType ();
   helper.SetRemoteStationManager ("ns3::ArfWifiManager");
+    /* For more details about this default parameters see IEE802.11 section 7.3.2.29 */
+  helper.SetQueueParameters (AC_VO, "MinCw", UintegerValue (3), "MaxCw", UintegerValue (7), "Aifsn",
+      UintegerValue (2));
+  helper.SetQueueParameters (AC_VI, "MinCw", UintegerValue (7), "MaxCw", UintegerValue (15), "Aifsn",
+      UintegerValue (2));
+  helper.SetQueueParameters (AC_BE, "MinCw", UintegerValue (15), "MaxCw", UintegerValue (1023), "Aifsn",
+      UintegerValue (3));
+  helper.SetQueueParameters (AC_BK, "MinCw", UintegerValue (15), "MaxCw", UintegerValue (1023), "Aifsn",
+      UintegerValue (7));
   return helper;
 }
 

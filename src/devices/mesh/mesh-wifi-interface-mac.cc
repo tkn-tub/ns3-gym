@@ -399,11 +399,26 @@ MeshWifiInterfaceMac::SendManagementFrame (Ptr<Packet> packet, const WifiMacHead
     }
   m_stats.sentFrames++;
   m_stats.sentBytes += packet->GetSize ();
-  if (m_queues.find (AC_VO) == m_queues.end ())
+  if ((m_queues.find (AC_VO) == m_queues.end ()) || (m_queues.find (AC_VO) == m_queues.end ()))
     {
-      NS_FATAL_ERROR ("Voice queue is not set up!");
+      NS_FATAL_ERROR ("Voice or Background queue is not set up!");
     }
-  m_queues[AC_VO]->Queue (packet, header);
+  /*
+   * When we send a management frame - it is better to enqueue it to
+   * priority queue. But when we send a broadcast management frame,
+   * like PREQ, little MinCw value may cause collisions during
+   * retransmissions (two neighbor stations may choose the same window
+   * size, and two packets will be collided). So, broadcast management
+   * frames go to BK queue.
+   */
+  if (hdr.GetAddr1 () != Mac48Address::GetBroadcast ())
+    {
+      m_queues[AC_VO]->Queue (packet, header);
+    }
+  else
+    {
+      m_queues[AC_BK]->Queue (packet, header);
+    }
 }
 SupportedRates
 MeshWifiInterfaceMac::GetSupportedRates () const
