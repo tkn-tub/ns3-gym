@@ -399,7 +399,7 @@ MeshWifiInterfaceMac::SendManagementFrame (Ptr<Packet> packet, const WifiMacHead
     }
   m_stats.sentFrames++;
   m_stats.sentBytes += packet->GetSize ();
-  if ((m_queues.find (AC_VO) == m_queues.end ()) || (m_queues.find (AC_VO) == m_queues.end ()))
+  if ((m_queues.find (AC_VO) == m_queues.end ()) || (m_queues.find (AC_BK) == m_queues.end ()))
     {
       NS_FATAL_ERROR ("Voice or Background queue is not set up!");
     }
