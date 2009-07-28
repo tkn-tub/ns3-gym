@@ -141,6 +141,21 @@ Ipv4L3Protocol::CreateRawSocket2 (void)
 
 
 void 
+Ipv4L3Protocol::DeleteRawSocket2 (Ptr<Socket> socket)
+{
+  NS_LOG_FUNCTION (this << socket);
+  for (RawSocketList::iterator i = m_rawSocket.begin (); i != m_rawSocket.end (); ++i)
+  {
+    if ((*i) == socket)
+    {
+      m_rawSocket.erase (i);
+      return;
+    }
+  }
+  return;
+}
+
+void
 Ipv4L3Protocol::DeleteRawSocket (Ptr<Socket> socket)
 {
   NS_LOG_FUNCTION (this << socket);
@@ -154,6 +169,7 @@ Ipv4L3Protocol::DeleteRawSocket (Ptr<Socket> socket)
     }
   return;
 }
+
 /*
  * This method is called by AddAgregate and completes the aggregation
  * by setting the node in the ipv4 stack
@@ -424,6 +440,14 @@ Ipv4L3Protocol::Receive( Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t pr
       socket->ForwardUp (packet, ipHeader, device);
     }
 
+  NS_LOG_UNCOND(m_rawSocket.size());
+  for (RawSocketList::iterator i = m_rawSocket.begin (); i != m_rawSocket.end (); ++i)
+    {
+      NS_LOG_UNCOND ("Forwarding to raw socket");
+      Ptr<RawSocketImpl> socket = *i;
+      socket->ForwardUp (p, device);
+    }
+  NS_LOG_UNCOND("in route input");
   m_routingProtocol->RouteInput (packet, ipHeader, device, 
     MakeCallback (&Ipv4L3Protocol::IpForward, this),
     MakeCallback (&Ipv4L3Protocol::IpMulticastForward, this),

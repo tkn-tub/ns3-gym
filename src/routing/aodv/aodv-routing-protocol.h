@@ -204,6 +204,15 @@ private:
   bool IsMyOwnPacket(Ipv4Address src);
   /// Find socket with local interface address iface
   Ptr<Socket> FindSocketWithInterfaceAddress(Ipv4Address iface) const;
+  /**
+  * Add UDP and IP header to packet.
+  * \param sport - source port number
+  * \param dport - destination port number
+  * \param src - source IP address
+  * \param dst - destination IP address
+  * \param identification - used as sequence number for broadcast traffic
+  */
+  void BuildPacket(Ptr<Packet> packet, uint16_t sport, uint16_t dport, Ipv4Address src, Ipv4Address dst, uint32_t identification, uint16_t ttl);
   /// Process hello message
   void ProcessHello(RrepHeader const & rrepHeader, Ipv4Address receiverIfaceAddr);
   

@@ -40,7 +40,7 @@ public:
 				Address &fromAddress);
 
   void SetProtocol (uint16_t protocol);
-  bool ForwardUp (Ptr<const Packet> p, Ipv4Header ipHeader, Ptr<NetDevice> device);
+  bool ForwardUp (Ptr<const Packet> p, Ptr<NetDevice> device);
 private:
   virtual void DoDispose (void);
 
@@ -63,4 +63,4 @@ private:
 
 } // namespace ns3
 
-#endif /* IPV4_RAW_SOCKET_IMPL_H */
+#endif /* RAW_SOCKET_IMPL_H */

@@ -144,14 +144,14 @@ RawSocketImpl::GetTxAvailable (void) const
 int
 RawSocketImpl::Send (Ptr<Packet> p, uint32_t flags)
 {
-  NS_LOG_FUNCTION (this << p << flags);
+  NS_LOG_FUNCTION (this << " packet " << p << flags);
   InetSocketAddress to = InetSocketAddress (m_dst, m_protocol);
   return SendTo (p, flags, to);
 }
 int
 RawSocketImpl::SendTo (Ptr<Packet> packet, uint32_t flags, const Address &toAddress)
 {
-  NS_LOG_FUNCTION (this << packet << flags << toAddress);
+
   if (!InetSocketAddress::IsMatchingType (toAddress))
   {
     m_err = Socket::ERROR_INVAL;
@@ -163,7 +163,9 @@ RawSocketImpl::SendTo (Ptr<Packet> packet, uint32_t flags, const Address &toAddr
   }
   InetSocketAddress ad = InetSocketAddress::ConvertFrom (toAddress);
   Ptr<Ipv4L3Protocol> ipv4 = m_node->GetObject<Ipv4L3Protocol> ();
+  NS_ASSERT(ipv4 != 0);
   Ipv4Address dst = ad.GetIpv4 ();
+  NS_LOG_LOGIC ("RawSocketImpl::SendTo packet uid " << packet->GetUid() << " address "  << dst);
   if (ipv4->GetRoutingProtocol ())
   {
     Ipv4Header header;
@@ -262,13 +264,16 @@ RawSocketImpl::SetProtocol (uint16_t protocol)
 }
 
 bool
-RawSocketImpl::ForwardUp (Ptr<const Packet> p, Ipv4Header ipHeader, Ptr<NetDevice> device)
+RawSocketImpl::ForwardUp (Ptr<const Packet> p, Ptr<NetDevice> device)
 {
-  NS_LOG_FUNCTION (this << *p << ipHeader << device);
+  NS_LOG_FUNCTION (this << *p  << device);
   if (m_shutdownRecv)
   {
     return false;
   } NS_LOG_LOGIC ("src = " << m_src << " dst = " << m_dst);
+  Ptr<Packet> copy = p->Copy ();
+  Ipv4Header ipHeader;
+  copy->RemoveHeader (ipHeader);
   if ((m_src == Ipv4Address::GetAny () || ipHeader.GetDestination () == m_src) && (m_dst == Ipv4Address::GetAny () || ipHeader.GetSource () == m_dst)
       && ipHeader.GetProtocol () == m_protocol)
   {
@@ -284,7 +289,6 @@ RawSocketImpl::ForwardUp (Ptr<const Packet> p, Ipv4Header ipHeader, Ptr<NetDevic
         return false;
       }
     }
-    copy->AddHeader (ipHeader);
     struct Data data;
     data.packet = copy;
     data.fromIp = ipHeader.GetSource ();

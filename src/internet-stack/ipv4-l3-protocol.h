@@ -75,6 +75,8 @@ public:
   Ptr<Socket> CreateRawSocket (void);
   Ptr<Socket> CreateRawSocket2 (void);
   void DeleteRawSocket (Ptr<Socket> socket);
+  void DeleteRawSocket2 (Ptr<Socket> socket);
+
 
   /**
    * \param protocol a template for the protocol to add to this L4 Demux.
