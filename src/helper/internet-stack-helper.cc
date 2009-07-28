@@ -171,6 +171,7 @@ namespace ns3 {
 
 std::vector<InternetStackHelper::Trace> InternetStackHelper::m_traces;
 std::string InternetStackHelper::m_pcapBaseFilename;
+bool InternetStackHelper::m_isInitialized = false;
 
 InternetStackHelper::InternetStackHelper ()
 {
@@ -178,8 +179,13 @@ InternetStackHelper::InternetStackHelper ()
   static Ipv4StaticRoutingHelper staticRouting;
   static Ipv4GlobalRoutingHelper globalRouting;
   static Ipv4ListRoutingHelper listRouting;
-  listRouting.Add (staticRouting, 0);
-  listRouting.Add (globalRouting, -10);
+  if (m_isInitialized == false)
+    {
+      // Only add these once
+      listRouting.Add (staticRouting, 0);
+      listRouting.Add (globalRouting, -10);
+      m_isInitialized = true;
+    }
   SetRoutingHelper (listRouting);
 }
 
