@@ -96,9 +96,18 @@ private:
    * This method implements the pure virtual method defined in \ref ns3::WifiMacHelper.
    */
   Ptr<WifiMac> Create (void) const;
-
+  struct QUEUE
+    {
+      ObjectFactory dcaTxop;
+      AccessClass ac;
+    };
   ObjectFactory m_mac;
-  std::map<AccessClass, ObjectFactory> m_queues;
+  /**
+   * \brief array of object factories, which generate queues
+   * \attention Queues shall be sorte starting from the queue with
+   * higher priority
+   */
+  std::vector<QUEUE> m_queues;
   ObjectFactory m_stationManager;
 };
 

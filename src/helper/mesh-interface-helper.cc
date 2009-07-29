@@ -24,20 +24,23 @@
 #include "ns3/pointer.h"
 #include "ns3/dca-txop.h"
 #include "ns3/wifi-remote-station-manager.h"
+#include "ns3/log.h"
 namespace ns3
 {
 
 MeshInterfaceHelper::MeshInterfaceHelper ()
 {
-  m_queues.insert (std::make_pair (AC_VO, ObjectFactory ()));
-  m_queues.insert (std::make_pair (AC_VI, ObjectFactory ()));
-  m_queues.insert (std::make_pair (AC_BE, ObjectFactory ()));
-  m_queues.insert (std::make_pair (AC_BK, ObjectFactory ()));
-
-  m_queues[AC_VO].SetTypeId ("ns3::DcaTxop");
-  m_queues[AC_VI].SetTypeId ("ns3::DcaTxop");
-  m_queues[AC_BE].SetTypeId ("ns3::DcaTxop");
-  m_queues[AC_BK].SetTypeId ("ns3::DcaTxop");
+  struct QUEUE queue;
+  queue.dcaTxop = ObjectFactory (); 
+  queue.dcaTxop.SetTypeId ("ns3::DcaTxop");
+  queue.ac = AC_VO;
+  m_queues.push_back (queue);
+  queue.ac = AC_VI;
+  m_queues.push_back (queue);
+  queue.ac = AC_BK;
+  m_queues.push_back (queue);
+  queue.ac = AC_BE;
+  m_queues.push_back (queue);
 }
 
 MeshInterfaceHelper::~MeshInterfaceHelper ()
@@ -88,13 +91,21 @@ MeshInterfaceHelper::SetQueueParameters ( AccessClass ac,
     std::string n2, const AttributeValue &v2,
     std::string n3, const AttributeValue &v3)
 {
-  std::map<AccessClass, ObjectFactory>::iterator queue = m_queues.find (ac);
+  std::vector<QUEUE>::iterator queue = m_queues.end ();
+  for (std::vector<QUEUE>::iterator i = m_queues.begin (); i != m_queues.end (); i ++)
+    {
+      if (i->ac == ac)
+        {
+          queue = i;
+          break;
+        }
+    }
   if (queue != m_queues.end ())
     {
-      queue->second.Set (n0, v0);
-      queue->second.Set (n1, v1);
-      queue->second.Set (n2, v2);
-      queue->second.Set (n3, v3);
+      queue->dcaTxop.Set (n0, v0);
+      queue->dcaTxop.Set (n1, v1);
+      queue->dcaTxop.Set (n2, v2);
+      queue->dcaTxop.Set (n3, v3);
     }
   else
   {
@@ -145,9 +156,9 @@ Ptr<WifiMac>
 MeshInterfaceHelper::Create (void) const
 {
   Ptr<MeshWifiInterfaceMac> mac = m_mac.Create<MeshWifiInterfaceMac> ();
-  for (std::map<AccessClass, ObjectFactory>::const_iterator i = m_queues.begin (); i != m_queues.end (); i++)
+  for (std::vector<QUEUE>::const_iterator i = m_queues.begin (); i != m_queues.end (); i ++)
     {
-      mac->SetQueue (i->second.Create<DcaTxop> (), i->first);
+      mac->SetQueue (i->dcaTxop.Create<DcaTxop> (), i->ac);
     }
   return mac;
 }
