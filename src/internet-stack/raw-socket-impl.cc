@@ -42,6 +42,12 @@ void
 RawSocketImpl::SetNode (Ptr<Node> node)
 {
   m_node = node;
+  m_ipv4 = m_node->GetObject<Ipv4L3Protocol> ();
+  NS_ASSERT(m_ipv4 != 0);
+  for(uint32_t i = 0; i < m_ipv4->GetNInterfaces(); ++i)
+  {
+    m_interfaces.push_back (m_ipv4->GetInterface(i));
+  }
 }
 
 void
@@ -163,61 +169,127 @@ RawSocketImpl::SendTo (Ptr<Packet> packet, uint32_t flags, const Address &toAddr
   {
     return 0;
   }
-  InetSocketAddress ad = InetSocketAddress::ConvertFrom (toAddress);
-  Ptr<Ipv4L3Protocol> ipv4 = m_node->GetObject<Ipv4L3Protocol> ();
-  NS_ASSERT(ipv4 != 0);
-  Ipv4Address dst = ad.GetIpv4 ();
-  NS_LOG_LOGIC ("RawSocketImpl::SendTo packet uid " << packet->GetUid() << " address " << dst);
-  if (ipv4->GetRoutingProtocol ())
+
+
+  if (m_ipv4->GetRoutingProtocol ())
   {
     Ipv4Header header;
     packet->PeekHeader (header);
+    NS_LOG_LOGIC ("RawSocketImpl::SendTo packet uid " << packet->GetUid() << " address " << header.GetDestination());
     SocketErrno errno_ = ERROR_NOTERROR;//do not use errno as it is the standard C last error number
     Ptr<Ipv4Route> route;
     uint32_t oif = 0; //specify non-zero if bound to a source address
-    route = ipv4->GetRoutingProtocol ()->RouteOutput (packet, header, oif, errno_);
+    route = m_ipv4->GetRoutingProtocol ()->RouteOutput (packet, header, oif, errno_);
     if (route != 0)
     {
-      NS_LOG_LOGIC ("Route exists");
-      Ptr<NetDevice> outDev = route->GetOutputDevice ();
-      int32_t interface = ipv4->GetInterfaceForDevice (outDev);
-      NS_ASSERT (interface >= 0);
-      Ptr<Ipv4Interface> outInterface = ipv4->GetInterface (interface);
-      NS_LOG_LOGIC ("Send via NetDevice ifIndex " << outDev->GetIfIndex () << " ipv4InterfaceIndex " << interface);
-
-      NS_ASSERT (packet->GetSize () <= outInterface->GetDevice ()->GetMtu ());
-      if (!route->GetGateway ().IsEqual (Ipv4Address ("0.0.0.0")))
-      {
-        if (outInterface->IsUp ())
-        {
-          NS_LOG_UNCOND ("Send to gateway " << route->GetGateway ());
-          outInterface->Send (packet, route->GetGateway ());
-        }
-        else
-        {
-          NS_LOG_LOGIC ("Dropping-- outgoing interface is down: " << route->GetGateway ());
-        }
-      }
-      else
-      {
-        if (outInterface->IsUp ())
-        {
-          NS_LOG_LOGIC ("Send to destination " << header.GetDestination ());
-          outInterface->Send (packet, header.GetDestination ());
-        }
-        else
-        {
-          NS_LOG_LOGIC ("Dropping-- outgoing interface is down: " << header.GetDestination ());
-        }
-      }
+      NS_LOG_UNCOND ("Route exists");
+      SendByInterface(packet, route);
     }
     else
     {
-      NS_LOG_DEBUG ("dropped because no outgoing route.");
+      NS_LOG_UNCOND ("dropped because no outgoing route.");
     }
   }
   return 0;
 }
+
+void
+RawSocketImpl::SendByInterface (Ptr<Packet> packet, Ptr<const Ipv4Route> route)
+{
+  NS_ASSERT(m_node != 0);
+  Ipv4Header ipv4Header;
+  packet->PeekHeader(ipv4Header);
+  Ipv4Address source = ipv4Header.GetSource ();
+  Ipv4Address destination = ipv4Header.GetDestination ();
+  NS_LOG_UNCOND ("RawSocketImpl::SendByInterface to " << destination);
+
+  // Handle a few cases:
+  // 1) packet is destined to limited broadcast address
+  // 2) packet is destined to a subnet-directed broadcast address
+  // 3) packet is not broadcast, and is passed in with a route entry
+  const Ipv4Address loopback ("127.0.0.1");
+  // 1) packet is destined to limited broadcast address
+  if (destination.IsBroadcast ())
+    {
+      NS_LOG_UNCOND ("RawSocketImpl::Send case 1:  limited broadcast");
+      for (std::list< Ptr<Ipv4Interface> >::iterator ifaceIter = m_interfaces.begin (); ifaceIter != m_interfaces.end (); ifaceIter++)
+        {
+          Ptr<Ipv4Interface> outInterface = *ifaceIter;
+          Ptr<Packet> packetCopy = packet->Copy ();
+
+          NS_ASSERT (packet->GetSize () <= outInterface->GetDevice()->GetMtu ());
+          outInterface->Send (packet, destination);
+        }
+      return;
+    }
+
+  // 2) check: packet is destined to a subnet-directed broadcast address
+  uint32_t ifaceIndex = 0;
+  bool result = false;
+  for (std::list< Ptr<Ipv4Interface> >::iterator ifaceIter = m_interfaces.begin (); ifaceIter != m_interfaces.end (); ifaceIter++, ifaceIndex++)
+  {
+    Ptr<Ipv4Interface> outInterface = *ifaceIter;
+    for (uint32_t j = 0; j < m_ipv4->GetNAddresses (ifaceIndex); j++)
+    {
+      Ipv4InterfaceAddress ifAddr = m_ipv4->GetAddress (ifaceIndex, j);
+      NS_LOG_UNCOND ("Testing address " << ifAddr.GetLocal () << " with mask " << ifAddr.GetMask ());
+      if (destination.IsSubnetDirectedBroadcast (ifAddr.GetMask ()) &&
+          destination.CombineMask (ifAddr.GetMask ()) == ifAddr.GetLocal ().CombineMask (ifAddr.GetMask ())   )
+      {
+        NS_LOG_UNCOND ("RawSocketImpl::Send case 2:  subnet directed bcast to " << ifAddr.GetLocal ());
+        if (ifAddr.GetLocal() != loopback)
+        {
+          Ptr<Packet> copy = packet->Copy();
+          copy->RemoveHeader(ipv4Header);
+          ipv4Header.SetSource(ifAddr.GetLocal());
+          copy->AddHeader(ipv4Header);
+          outInterface->Send (copy, destination);
+          result = true;
+        }
+      }
+    }
+  }
+  if(result) return;
+
+  // 3) packet is not broadcast, and is passed in with a route entry
+  //    with a valid Ipv4Address as the gateway
+  if (route && route->GetGateway () != Ipv4Address ())
+  {
+    NS_LOG_UNCOND ("RawSocketImpl::Send case 3:  passed in with route");
+    Ptr<NetDevice> outDev = route->GetOutputDevice ();
+    int32_t interface = m_ipv4->GetInterfaceForDevice (outDev);
+    NS_ASSERT (interface >= 0);
+    Ptr<Ipv4Interface> outInterface = m_ipv4->GetInterface (interface);
+    NS_LOG_UNCOND ("Send via NetDevice ifIndex " << outDev->GetIfIndex () << " ipv4InterfaceIndex " << interface);
+
+    NS_ASSERT (packet->GetSize () <= outInterface->GetDevice ()->GetMtu ());
+    if (!route->GetGateway ().IsEqual (Ipv4Address ("0.0.0.0")))
+    {
+      if (outInterface->IsUp ())
+      {
+        NS_LOG_UNCOND ("Send to gateway " << route->GetGateway ());
+        outInterface->Send (packet, route->GetGateway ());
+      }
+      else
+      {
+        NS_LOG_UNCOND ("Dropping-- outgoing interface is down: " << route->GetGateway ());
+      }
+    }
+       else
+         {
+           if (outInterface->IsUp ())
+             {
+             NS_LOG_UNCOND ("Send to destination " << destination);
+               outInterface->Send (packet,destination);
+             }
+           else
+             {
+             NS_LOG_UNCOND ("Dropping-- outgoing interface is down: " << destination);
+             }
+         }      return;
+    }
+}
+
 uint32_t
 RawSocketImpl::GetRxAvailable (void) const
 {
@@ -276,6 +348,14 @@ RawSocketImpl::ForwardUp (Ptr<const Packet> p, Ptr<NetDevice> device)
   Ptr<Packet> copy = p->Copy ();
   Ipv4Header ipHeader;
   copy->RemoveHeader(ipHeader);
+  for (std::list< Ptr<Ipv4Interface> >::const_iterator ifaceIter = m_interfaces.begin (); ifaceIter != m_interfaces.end (); ifaceIter++)
+  {
+    for (uint32_t i = 0; i < (*ifaceIter)->GetNAddresses(); ++i)
+    {
+      if ((*ifaceIter)->GetAddress(i).GetLocal() == ipHeader.GetSource())
+      return true;
+    }
+  }
   UdpHeader udpHeader;
   copy->RemoveHeader(udpHeader);
   NS_LOG_LOGIC ("src = " << m_src << " dst = " << m_dst);

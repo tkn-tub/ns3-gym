@@ -250,8 +250,6 @@ RoutingProtocol::Start ()
     RoutingTableEntry rt (/*device=*/dev, /*dst=*/iface.GetBroadcast (), /*know seqno=*/true, /*seqno=*/0, /*iface=*/iface,
         /*hops=*/1, /*next hop=*/iface.GetBroadcast (), /*lifetime=*/Seconds (1e9)); // TODO use infty
     m_routingTable.AddRoute (rt);
-    m_routingTable.Print(std::cout);
-
   }
 
   m_scb = MakeCallback (&RoutingProtocol::Send, this);
@@ -382,7 +380,9 @@ RoutingProtocol::RouteInput (Ptr<const Packet> p, const Ipv4Header &header, Ptr<
 void
 RoutingProtocol::SetIpv4 (Ptr<Ipv4> ipv4)
 {
-  NS_LOG_FUNCTION (this);NS_ASSERT (ipv4 != 0);NS_ASSERT (m_ipv4 == 0);
+  NS_LOG_FUNCTION (this);
+  NS_ASSERT (ipv4 != 0);
+  NS_ASSERT (m_ipv4 == 0);
 
   btimer.SetFunction (&RoutingProtocol::BroadcastTimerExpire, this);
   ntimer.SetFunction (&RoutingProtocol::NeighborTimerExpire, this);

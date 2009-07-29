@@ -4,6 +4,7 @@
 #include "ns3/socket.h"
 #include "ns3/ipv4-header.h"
 #include "ns3/ipv4-route.h"
+#include "ipv4-l3-protocol.h"
 #include <list>
 
 namespace ns3 {
@@ -32,8 +33,8 @@ public:
   virtual int Listen (void);
   virtual uint32_t GetTxAvailable (void) const;
   virtual int Send (Ptr<Packet> p, uint32_t flags);
-  virtual int SendTo (Ptr<Packet> p, uint32_t flags, 
-		      const Address &toAddress);
+  virtual int SendTo (Ptr<Packet> p, uint32_t flags,const Address &toAddress);
+  void SendByInterface (Ptr<Packet> packet, Ptr<const Ipv4Route> route);
   virtual uint32_t GetRxAvailable (void) const;
   virtual Ptr<Packet> Recv (uint32_t maxSize, uint32_t flags);
   virtual Ptr<Packet> RecvFrom (uint32_t maxSize, uint32_t flags,  
@@ -43,6 +44,7 @@ public:
   bool ForwardUp (Ptr<const Packet> p, Ptr<NetDevice> device);
 private:
   virtual void DoDispose (void);
+
 
   struct Data {
     Ptr<Packet> packet;
@@ -60,6 +62,8 @@ private:
   bool m_shutdownSend;
   bool m_shutdownRecv;
   uint32_t m_icmpFilter;
+  std::list< Ptr<Ipv4Interface> > m_interfaces;
+  Ptr<Ipv4L3Protocol> m_ipv4;
 };
 
 } // namespace ns3

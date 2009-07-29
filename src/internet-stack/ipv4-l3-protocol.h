@@ -30,7 +30,6 @@
 #include "ns3/traced-callback.h"
 #include "ns3/ipv4-header.h"
 #include "ns3/ipv4-routing-protocol.h"
-#include "raw-socket-impl.h"
 
 
 namespace ns3 {
@@ -45,6 +44,7 @@ class Ipv4Route;
 class Node;
 class Socket;
 class Ipv4RawSocketImpl;
+class RawSocketImpl;
 class Ipv4L4Protocol;
 class Ipv4L4Protocol;
 class Icmpv4L4Protocol;
