@@ -53,6 +53,7 @@ private:
   enum Socket::SocketErrno m_err;
   Ptr<Node> m_node;
   Ipv4Address m_src;
+  uint16_t m_sport;
   Ipv4Address m_dst;
   uint16_t m_protocol;
   std::list<struct Data> m_recv;

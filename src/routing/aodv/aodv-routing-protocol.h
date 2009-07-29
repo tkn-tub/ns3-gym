@@ -99,44 +99,44 @@ private:
 
   /// \name Handle Broadcast sequence number cache
   //\{
-  void InsertBroadcastId (Ipv4Address id, uint32_t bid);
-  bool LookupBroadcastId (Ipv4Address id, uint32_t bid);
-  void PurgeBroadcastId ();
-  struct BroadcastId
+  void InsertRequestId (Ipv4Address origin, uint32_t rid);
+  bool LookupRequestId (Ipv4Address origin, uint32_t rid);
+  void PurgeRequestId ();
+  struct RequestId
   {
-    Ipv4Address src;
-    uint32_t    id;
-    Time        expire;
+    Ipv4Address m_origin;
+    uint32_t    m_id;
+    Time        m_expire;
   };
-  struct IsExpired
+  struct IsExpiredForRequest
   {
-    bool operator()(const struct BroadcastId & b) const
+    bool operator()(const struct RequestId & b) const
     {
-      return (b.expire < Simulator::Now());
+      return (b.m_expire < Simulator::Now());
     }
   };
-  std::vector<BroadcastId> m_broadcastIdCache;
+  std::vector<RequestId> m_requestIdCache;
   //\}
 
   ///\name Handle duplicated packets
   //\{
-  void InsertPacketUid (Ipv4Address src, uint32_t uid);
-  bool LookupPacketUid (Ipv4Address src, uint32_t uid);
-  void PurgePacketUid ();
-  struct PacketUid
+  void InsertBroadcastId (Ipv4Address src, uint32_t bid);
+  bool LookupBroadcastId (Ipv4Address src, uint32_t bid);
+  void PurgeBroadcastId ();
+  struct BroadcastId
    {
      Ipv4Address m_src;
-     uint32_t    m_uid;
+     uint32_t    m_broadcastId;
      Time        m_expire;
    };
-  struct IsExpiredForPacket
+  struct IsExpiredForBroadcast
   {
-    bool operator()(const struct PacketUid & p) const
+    bool operator()(const struct BroadcastId & p) const
     {
       return (p.m_expire < Simulator::Now());
     }
   };
-  std::vector<PacketUid> m_packetUidCache;
+  std::vector<BroadcastId> m_broadcastIdCache;
   //\}
 
   /**\name Handle neighbors
@@ -176,7 +176,8 @@ private:
   /// A "drop-front" queue used by the routing layer to buffer packets to which it does not have a route.
   AodvQueue m_queue;
   /// Broadcast ID
-  uint32_t m_broadcastID;
+  uint32_t m_requestId;
+  uint32_t m_broadcastId;
   /// Request sequence number
   uint32_t m_seqNo;
 
@@ -221,9 +222,9 @@ private:
   /// Receive and process control packet
   void RecvAodv (Ptr<Socket> socket);
   /// Receive RREQ
-  void RecvRequest (Ptr<Packet> p, Ipv4Address receiver, Ipv4Address src, Ptr<Socket> socket);
+  void RecvRequest (Ptr<Packet> p, Ipv4Address receiver, Ipv4Address src, Ipv4Header ipv4Header);
   /// Receive RREP
-  void RecvReply (Ptr<Packet> p, Ipv4Address my ,Ipv4Address src);
+  void RecvReply (Ptr<Packet> p, Ipv4Address my ,Ipv4Address src, Ipv4Header ipv4Header);
   /// receive RREP_ACK
   void RecvReplyAck(Ipv4Address neighbor);
   /// Receive RERR from node with address src
@@ -239,13 +240,13 @@ private:
   /// Send RREQ
   void SendRequest (Ipv4Address dst,  bool D,bool G = true);
   /// Send RREP
-  void SendReply (RreqHeader const & rreqHeader, RoutingTableEntry const & toOrigin, Ptr<Socket> socket);
+  void SendReply (RreqHeader const & rreqHeader, RoutingTableEntry const & toOrigin);
   /** Send RREP by intermediate node
    * \param toDst routing table entry to destination
    * \param toOrigin routing table entry to originator
    * \param gratRep indicates whether a gratuitous RREP should be unicast to destination
    */
-  void SendReplyByIntermediateNode (RoutingTableEntry & toDst, RoutingTableEntry & toOrigin, bool gratRep,  Ptr<Socket> socket);
+  void SendReplyByIntermediateNode (RoutingTableEntry & toDst, RoutingTableEntry & toOrigin, bool gratRep);
   /// Send RREP_ACK
   void SendReplyAck (Ipv4Address neighbor);
   ///\name Send RERR

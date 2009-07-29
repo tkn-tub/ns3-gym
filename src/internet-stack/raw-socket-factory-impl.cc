@@ -16,7 +16,6 @@ RawSocketFactoryImpl::DoDispose (void)
 Ptr<Socket> 
 RawSocketFactoryImpl::CreateSocket (void)
 {
-
   Ptr<Socket> socket = m_ipv4->CreateRawSocket2 ();
   return socket;
 }

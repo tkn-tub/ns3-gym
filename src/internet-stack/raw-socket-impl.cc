@@ -7,7 +7,7 @@
 #include "ns3/uinteger.h"
 #include "ns3/log.h"
 #include "ipv4-interface.h"
-
+#include "udp-header.h"
 
 NS_LOG_COMPONENT_DEFINE ("RawSocketImpl");
 
@@ -21,8 +21,8 @@ RawSocketImpl::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::RawSocketImpl") .SetParent<Socket> () .AddAttribute ("Protocol", "Protocol number to match.", UintegerValue (0),
       MakeUintegerAccessor (&RawSocketImpl::m_protocol), MakeUintegerChecker<uint16_t> ()) .AddAttribute ("IcmpFilter",
-          "Any icmp header whose type field matches a bit in this filter is dropped.", UintegerValue (0), MakeUintegerAccessor (
-              &RawSocketImpl::m_icmpFilter), MakeUintegerChecker<uint32_t> ());
+      "Any icmp header whose type field matches a bit in this filter is dropped.", UintegerValue (0), MakeUintegerAccessor (
+          &RawSocketImpl::m_icmpFilter), MakeUintegerChecker<uint32_t> ());
   return tid;
 }
 
@@ -75,6 +75,7 @@ RawSocketImpl::Bind (const Address &address)
   }
   InetSocketAddress ad = InetSocketAddress::ConvertFrom (address);
   m_src = ad.GetIpv4 ();
+  m_sport = ad.GetPort();
   return 0;
 }
 int
@@ -82,6 +83,7 @@ RawSocketImpl::Bind (void)
 {
   NS_LOG_FUNCTION (this);
   m_src = Ipv4Address::GetAny ();
+  m_sport = 0;
   return 0;
 }
 int
@@ -165,11 +167,11 @@ RawSocketImpl::SendTo (Ptr<Packet> packet, uint32_t flags, const Address &toAddr
   Ptr<Ipv4L3Protocol> ipv4 = m_node->GetObject<Ipv4L3Protocol> ();
   NS_ASSERT(ipv4 != 0);
   Ipv4Address dst = ad.GetIpv4 ();
-  NS_LOG_LOGIC ("RawSocketImpl::SendTo packet uid " << packet->GetUid() << " address "  << dst);
+  NS_LOG_LOGIC ("RawSocketImpl::SendTo packet uid " << packet->GetUid() << " address " << dst);
   if (ipv4->GetRoutingProtocol ())
   {
     Ipv4Header header;
-    packet->PeekHeader(header);
+    packet->PeekHeader (header);
     SocketErrno errno_ = ERROR_NOTERROR;//do not use errno as it is the standard C last error number
     Ptr<Ipv4Route> route;
     uint32_t oif = 0; //specify non-zero if bound to a source address
@@ -188,7 +190,7 @@ RawSocketImpl::SendTo (Ptr<Packet> packet, uint32_t flags, const Address &toAddr
       {
         if (outInterface->IsUp ())
         {
-          NS_LOG_LOGIC ("Send to gateway " << route->GetGateway ());
+          NS_LOG_UNCOND ("Send to gateway " << route->GetGateway ());
           outInterface->Send (packet, route->GetGateway ());
         }
         else
@@ -237,7 +239,7 @@ RawSocketImpl::Recv (uint32_t maxSize, uint32_t flags)
 Ptr<Packet>
 RawSocketImpl::RecvFrom (uint32_t maxSize, uint32_t flags, Address &fromAddress)
 {
-  NS_LOG_FUNCTION (this << maxSize << flags << fromAddress);
+  NS_LOG_FUNCTION (this << " maxSize " << maxSize << " flags " << flags << " address " <<fromAddress);
   if (m_recv.empty ())
   {
     return 0;
@@ -251,6 +253,7 @@ RawSocketImpl::RecvFrom (uint32_t maxSize, uint32_t flags, Address &fromAddress)
     m_recv.push_front (data);
     return first;
   }
+
   InetSocketAddress inet = InetSocketAddress (data.fromIp, data.fromProtocol);
   fromAddress = inet;
   return data.packet;
@@ -266,18 +269,19 @@ RawSocketImpl::SetProtocol (uint16_t protocol)
 bool
 RawSocketImpl::ForwardUp (Ptr<const Packet> p, Ptr<NetDevice> device)
 {
-  NS_LOG_FUNCTION (this << *p  << device);
   if (m_shutdownRecv)
   {
     return false;
-  } NS_LOG_LOGIC ("src = " << m_src << " dst = " << m_dst);
+  }
   Ptr<Packet> copy = p->Copy ();
   Ipv4Header ipHeader;
-  copy->RemoveHeader (ipHeader);
-  if ((m_src == Ipv4Address::GetAny () || ipHeader.GetDestination () == m_src) && (m_dst == Ipv4Address::GetAny () || ipHeader.GetSource () == m_dst)
-      && ipHeader.GetProtocol () == m_protocol)
+  copy->RemoveHeader(ipHeader);
+  UdpHeader udpHeader;
+  copy->RemoveHeader(udpHeader);
+  NS_LOG_LOGIC ("src = " << m_src << " dst = " << m_dst);
+  if ( m_sport == udpHeader.GetDestinationPort ()  && ipHeader.GetProtocol () == m_protocol)
   {
-    Ptr<Packet> copy = p->Copy ();
+
     if (m_protocol == 1)
     {
       Icmpv4Header icmpHeader;
@@ -289,6 +293,7 @@ RawSocketImpl::ForwardUp (Ptr<const Packet> p, Ptr<NetDevice> device)
         return false;
       }
     }
+    copy = p->Copy();
     struct Data data;
     data.packet = copy;
     data.fromIp = ipHeader.GetSource ();

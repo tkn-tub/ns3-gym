@@ -40,17 +40,17 @@ namespace aodv {
  */
 
 
-RoutingTableEntry::RoutingTableEntry(Ptr<NetDevice> dev, Ipv4Address dst, bool vSeqNo, u_int32_t seqNo, Ipv4Address iface, u_int16_t  hops,
+RoutingTableEntry::RoutingTableEntry(Ptr<NetDevice> dev, Ipv4Address dst, bool vSeqNo, u_int32_t seqNo, Ipv4InterfaceAddress iface, u_int16_t  hops,
                               Ipv4Address nextHop, Time lifetime)
-                            : m_validSeqNo(vSeqNo), m_seqNo(seqNo), m_hops(hops), m_lifeTime(lifetime + Simulator::Now()),
+                            : m_validSeqNo(vSeqNo), m_seqNo(seqNo), m_hops(hops), m_lifeTime(lifetime + Simulator::Now()), m_iface(iface),
                               m_reqCount(0), m_blackListState(false), m_blackListTimeout(Simulator::Now()),
                               m_ackTimer(Timer::CANCEL_ON_DESTROY), lifeTimeTimer(Timer::CANCEL_ON_DESTROY)
 {
   m_ipv4Route = Create<Ipv4Route> ();
-  m_ipv4Route->SetDestination(dst);
-  m_ipv4Route->SetGateway(nextHop);
-  m_ipv4Route->SetSource(iface);
-  m_ipv4Route->SetOutputDevice(dev);
+  m_ipv4Route->SetDestination (dst);
+  m_ipv4Route->SetGateway (nextHop);
+  m_ipv4Route->SetSource (m_iface.GetLocal ());
+  m_ipv4Route->SetOutputDevice (dev);
   m_flag = RTF_UP;
 }
 
@@ -175,10 +175,6 @@ RoutingTable::DeleteRoute(Ipv4Address dst)
 bool
 RoutingTable::AddRoute(RoutingTableEntry const & rt)
 {
-  Ptr<NetDevice> dev;
-  RoutingTableEntry dummy(dev);
-  if(LookupRoute(rt.GetDestination(), dummy))
-  	return false;
   m_ipv4AddressEntry.insert(std::make_pair(rt.GetDestination(), rt));
   return true;
 }

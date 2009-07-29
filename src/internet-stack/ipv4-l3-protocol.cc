@@ -134,6 +134,7 @@ Ipv4L3Protocol::CreateRawSocket2 (void)
 {
   NS_LOG_FUNCTION (this);
   Ptr<RawSocketImpl> socket = CreateObject<RawSocketImpl> ();
+  socket->SetProtocol(17);   // UdpL4Protocol::PROT_NUMBER
   socket->SetNode (m_node);
   m_rawSocket.push_back (socket);
   return socket;
@@ -433,21 +434,21 @@ Ipv4L3Protocol::Receive( Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t pr
       return;
     }
 
-  for (SocketList::iterator i = m_sockets.begin (); i != m_sockets.end (); ++i)
+  for (RawSocketList::iterator i = m_rawSocket.begin (); i != m_rawSocket.end (); ++i)
     {
       NS_LOG_LOGIC ("Forwarding to raw socket");
+      Ptr<RawSocketImpl> socket = *i;
+      if(socket->ForwardUp (p, device))
+        return;
+    }
+
+  for (SocketList::iterator i = m_sockets.begin (); i != m_sockets.end (); ++i)
+    {
+      NS_LOG_LOGIC ("Forwarding to ip_raw socket");
       Ptr<Ipv4RawSocketImpl> socket = *i;
       socket->ForwardUp (packet, ipHeader, device);
     }
 
-  NS_LOG_UNCOND(m_rawSocket.size());
-  for (RawSocketList::iterator i = m_rawSocket.begin (); i != m_rawSocket.end (); ++i)
-    {
-      NS_LOG_UNCOND ("Forwarding to raw socket");
-      Ptr<RawSocketImpl> socket = *i;
-      socket->ForwardUp (p, device);
-    }
-  NS_LOG_UNCOND("in route input");
   m_routingProtocol->RouteInput (packet, ipHeader, device, 
     MakeCallback (&Ipv4L3Protocol::IpForward, this),
     MakeCallback (&Ipv4L3Protocol::IpMulticastForward, this),

@@ -60,7 +60,8 @@ enum RouteFlags
 class RoutingTableEntry
 {
 public:
-  RoutingTableEntry(Ptr<NetDevice> dev = 0,Ipv4Address dst = Ipv4Address(), bool vSeqNo = false, u_int32_t m_seqNo = 0, Ipv4Address iface = Ipv4Address(), u_int16_t  hops = 0,
+  RoutingTableEntry(Ptr<NetDevice> dev = 0,Ipv4Address dst = Ipv4Address(), bool vSeqNo = false, u_int32_t m_seqNo = 0,
+      Ipv4InterfaceAddress iface = Ipv4InterfaceAddress(), u_int16_t  hops = 0,
       Ipv4Address nextHop = Ipv4Address(), Time lifetime = Simulator::Now());
 
   ~RoutingTableEntry();
@@ -109,7 +110,8 @@ public:
   Ipv4Address GetNextHop () const { return m_ipv4Route->GetGateway(); }
   void SetOutputDevice(Ptr<NetDevice> dev) { m_ipv4Route->SetOutputDevice(dev); }
   Ptr<NetDevice> GetOutputDevice() const { return m_ipv4Route->GetOutputDevice(); }
-  Ipv4Address GetInterface() const { return m_ipv4Route->GetSource ();}
+  Ipv4InterfaceAddress GetInterface() const { return m_iface;}
+  void SetInterface (Ipv4InterfaceAddress iface) { m_iface = iface; }
   void SetValidSeqNo(bool s) { m_validSeqNo = s; }
   bool GetValidSeqNo() const { return m_validSeqNo; }
   void SetSeqNo(uint32_t sn) { m_seqNo = sn; }
@@ -160,6 +162,8 @@ private:
   *   - output device
   */
   Ptr<Ipv4Route> m_ipv4Route;
+  /// Output interface address
+  Ipv4InterfaceAddress m_iface;
   /// Routing flags: down, up or in repair
   uint8_t m_flag;
 
