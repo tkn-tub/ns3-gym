@@ -764,7 +764,7 @@ RoutingProtocol::SendReply (RreqHeader const & rreqHeader, RoutingTableEntry con
   TypeHeader tHeader (AODVTYPE_RREP);
   packet->AddHeader (tHeader);
   BuildPacket (/*packet*/packet, /*source port*/AODV_PORT, /*destination port*/AODV_PORT, /*source address*/toOrigin.GetInterface ().GetLocal(),
-      /*destination address*/toOrigin.GetNextHop(), /*id*/0 , /*TTL*/ toOrigin.GetHop()); //TODO TTL
+      /*destination address*/toOrigin.GetNextHop(), /*id*/0 , /*TTL*/ /*toOrigin.GetHop()*/ 35); //TODO TTL
   Ptr<Socket> socket = FindSocketWithInterfaceAddress(toOrigin.GetInterface ().GetLocal ());
   socket->SendTo (packet, 0, InetSocketAddress (toOrigin.GetNextHop(), AODV_PORT));
 }
@@ -818,7 +818,7 @@ RoutingProtocol::SendReplyAck(Ipv4Address neighbor)
   RoutingTableEntry toNeighbor;
   m_routingTable.LookupRoute(neighbor, toNeighbor);
   BuildPacket (/*packet*/packet, /*source port*/AODV_PORT, /*destination port*/AODV_PORT, /*source address*/toNeighbor.GetInterface ().GetLocal (),
-       /*destination address*/neighbor, /*id*/0 , /*TTL*/ 1);
+       /*destination address*/neighbor, /*id*/0 , /*TTL*/ 35); // TODO TTL
   Ptr<Socket> socket = FindSocketWithInterfaceAddress(toNeighbor.GetInterface ().GetLocal ());
   socket->SendTo (packet, 0, InetSocketAddress (neighbor, AODV_PORT));
 }
@@ -893,7 +893,8 @@ RoutingProtocol::RecvReply (Ptr<Packet> p, Ipv4Address receiver, Ipv4Address sen
   }
   // Acknowledge receipt of the RREP by sending a RREP-ACK message back
   if(rrepHeader.GetAckRequired()) SendReplyAck(sender);
-  if (receiver == rrepHeader.GetOrigin ())
+  NS_LOG_LOGIC ("receiver " << receiver <<  " origin " << rrepHeader.GetOrigin ());
+  if ( FindSocketWithInterfaceAddress (rrepHeader.GetOrigin ()) != 0 )
   {
     if (toDst.GetFlag () == RTF_IN_SEARCH)
       m_routingTable.Update (rrepHeader.GetDst (), newEntry);
@@ -1132,6 +1133,7 @@ RoutingProtocol::SendHello ()
 void
 RoutingProtocol::SendPacketFromQueue (Ipv4Address dst, Ptr<Ipv4Route> route)
 {
+  NS_LOG_FUNCTION(this);
   QueueEntry queueEntry;
   while (m_queue.Dequeue (dst, queueEntry))
   {

@@ -249,7 +249,6 @@ RoutingTable::MarkLinkAsUinidirectional (Ipv4Address neighbor, Time blacklistTim
   return true;
 }
 
-
 void
 RoutingTable::Print(std::ostream &os) const
 {

@@ -45,7 +45,6 @@ Ptr<Socket>
 Socket::CreateSocket (Ptr<Node> node, TypeId tid)
 {
   Ptr<Socket> s;
-  NS_LOG_UNCOND(tid);
   NS_ASSERT(node != 0);
   Ptr<SocketFactory> socketFactory = node->GetObject<SocketFactory> (tid);
   NS_ASSERT(socketFactory != 0);
