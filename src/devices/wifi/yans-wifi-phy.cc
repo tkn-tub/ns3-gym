@@ -346,7 +346,6 @@ YansWifiPhy::SetReceiveOkCallback (SyncOkCallback callback)
 {
   m_state->SetReceiveOkCallback (callback);
 }
-
 void 
 YansWifiPhy::SetReceiveErrorCallback (SyncErrorCallback callback)
 {

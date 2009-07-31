@@ -271,7 +271,6 @@ void
 MacLow::DoDispose (void)
 {
   NS_LOG_FUNCTION (this);
-  m_listener = 0;
   CancelAllEvents ();
   m_phy = 0;
   m_stationManager = 0;
