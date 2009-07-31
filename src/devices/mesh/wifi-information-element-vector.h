@@ -44,7 +44,8 @@ public:
   bool AddInformationElement (Ptr<WifiInformationElement> element);
   Ptr<WifiInformationElement> FindFirst (enum WifiElementId id) const;
   static WifiInformationElementVector DeserializePacket (Ptr<Packet> packet);
-  Ptr<Packet> MakePacket (bool sortByElementId = true);
+  Ptr<Packet> CreatePacket (bool sortByElementId = true);
+  void Print (std::ostream & os);
 private:
   uint32_t GetSize () const;
   /**
@@ -72,6 +73,8 @@ private:
   IE_VECTOR m_elements;
   /// Size in bytes (actually, max packet length)
   uint16_t m_maxSize;
+  friend bool operator== (const WifiInformationElementVector & a, const WifiInformationElementVector & b);
 };
+bool operator== (const WifiInformationElementVector & a, const WifiInformationElementVector & b);
 }
 #endif

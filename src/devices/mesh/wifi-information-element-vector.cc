@@ -18,9 +18,10 @@
  * Author: Pavel Boyko <boyko@iitp.ru>
  */
 
-#include "ie-vector.h"
+#include "wifi-information-element-vector.h"
 #include "ns3/test.h"
 #include "ns3/packet.h"
+#include <algorithm>
 // All information elements:
 #include "dot11s/ie-dot11s-beacon-timing.h"
 #include "dot11s/ie-dot11s-configuration.h"
@@ -120,6 +121,7 @@ WifiInformationElementVector::DeserializePacket (Ptr<Packet> packet)
         break;
       default:
         NS_FATAL_ERROR ("Information element " << (uint16_t) ie.GetElementId () << " is not implemented");
+        return retval;
         }
       packet->RemoveHeader (*newElement);
       if (!retval.AddInformationElement (newElement))
@@ -133,15 +135,26 @@ WifiInformationElementVector::DeserializePacket (Ptr<Packet> packet)
     }
   return retval;
 }
+namespace {
+struct PIEComparator
+{
+  bool
+  operator () (Ptr<WifiInformationElement> a, Ptr<WifiInformationElement> b) const
+  {
+    return ((*PeekPointer (a)) < (*PeekPointer (b)));
+  }
+};
+}
 Ptr<Packet>
-WifiInformationElementVector::MakePacket (bool sortByElementId)
+WifiInformationElementVector::CreatePacket (bool sortByElementId)
 {
   if (sortByElementId)
     {
-      //TODO: sort
+      std::sort (m_elements.begin (), m_elements.end (), PIEComparator ());
     }
   Ptr<Packet> packet = Create<Packet> ();
-  for (IE_VECTOR::const_iterator i = m_elements.begin (); i != m_elements.end (); i++)
+  std::vector<Ptr<WifiInformationElement> >::const_reverse_iterator i;
+  for (i = m_elements.rbegin (); i != m_elements.rend (); ++i)
     {
       packet->AddHeader (**i);
     }
@@ -209,4 +222,65 @@ void
 WifiInformationElementVector::EmptyIe::Print (std::ostream &os) const
 {
 }
+bool
+operator== (const WifiInformationElementVector & a, const WifiInformationElementVector & b)
+{
+  if (a.m_elements.size () != b.m_elements.size ())
+    {
+      NS_ASSERT(false);
+      return false;
+    }
+  WifiInformationElementVector::IE_VECTOR::const_iterator j = b.m_elements.begin ();
+  for (WifiInformationElementVector::IE_VECTOR::const_iterator i = a.m_elements.begin (); i
+      != a.m_elements.end (); i++, j++)
+    {     
+      if ((*i)->ElementId () != (*j)->ElementId ())
+        {
+          return false;
+        }
+      if ((*i)->GetSerializedSize () != (*j)->GetSerializedSize ())
+        {
+          return false;
+        }
+    }
+  return true;
 }
+#ifdef RUN_SELF_TESTS
+
+/// Built-in self test for WifiInformationElementVector
+struct WifiInformationElementVectorBist : public IeTest
+{
+  WifiInformationElementVectorBist () :
+    IeTest ("Mesh/WifiInformationElementVector")
+  {
+  };
+  virtual bool
+  RunTests ();
+};
+
+/// Test instance
+static WifiInformationElementVectorBist g_IePrepBist;
+
+bool
+WifiInformationElementVectorBist::RunTests ()
+{
+  bool result = true;
+  WifiInformationElementVector vector;
+  vector.AddInformationElement (Create<dot11s::IeMeshId> ());
+  vector.AddInformationElement (Create<dot11s::IeConfiguration> ());
+  vector.AddInformationElement (Create<dot11s::IeLinkMetricReport> ());
+  vector.AddInformationElement (Create<dot11s::IePeerManagement> ());
+  vector.AddInformationElement (Create<dot11s::IeBeaconTiming> ());
+  vector.AddInformationElement (Create<dot11s::IeRann> ());
+  vector.AddInformationElement (Create<dot11s::IePreq> ());
+  vector.AddInformationElement (Create<dot11s::IePrep> ());
+  vector.AddInformationElement (Create<dot11s::IePerr> ());
+  Ptr<Packet> packet = vector.CreatePacket (false);
+  WifiInformationElementVector resultVector = WifiInformationElementVector::DeserializePacket (packet);
+  NS_TEST_ASSERT (vector == resultVector);
+  
+  return result;
+}
+
+#endif // RUN_SELF_TESTS
+} //namespace ns3

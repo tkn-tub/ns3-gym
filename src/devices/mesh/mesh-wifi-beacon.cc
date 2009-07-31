@@ -19,7 +19,7 @@
  */
 
 #include "ns3/mesh-wifi-beacon.h"
-#include <algorithm>
+
 
 namespace ns3 {
 
@@ -32,32 +32,14 @@ MeshWifiBeacon::MeshWifiBeacon (Ssid ssid, SupportedRates rates, uint64_t us)
 void
 MeshWifiBeacon::AddInformationElement (Ptr<WifiInformationElement> ie)
 {
-  m_elements.push_back (ie);
+  m_elements.AddInformationElement (ie);
 }
-namespace {
-/// aux sorter for Ptr<WifiInformationElement>
-struct PIEComparator
-{
-  bool
-  operator () (Ptr<WifiInformationElement> a, Ptr<WifiInformationElement> b) const
-  {
-    return ((*PeekPointer (a)) < (*PeekPointer (b)));
-  }
-};
-}
+
 
 Ptr<Packet>
 MeshWifiBeacon::CreatePacket ()
 {
-  Ptr<Packet> packet = Create<Packet> ();
-
-  std::sort (m_elements.begin (), m_elements.end (), PIEComparator ());
-
-  std::vector<Ptr<WifiInformationElement> >::const_reverse_iterator i;
-  for (i = m_elements.rbegin (); i != m_elements.rend (); ++i)
-    {
-      packet->AddHeader (**i);
-    }
+  Ptr<Packet> packet = m_elements.CreatePacket();
   packet->AddHeader (BeaconHeader ());
   return packet;
 }
