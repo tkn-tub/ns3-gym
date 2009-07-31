@@ -70,33 +70,6 @@ WifiInformationElement::Print (std::ostream &os) const
   PrintInformation (os);
   os << "</information_element>\n";
 }
-
-bool
-WifiInformationElement::FindFirst (Ptr<Packet> packet)
-{
-  const uint8_t * data = packet->PeekData ();
-  uint32_t position = 0;
-  while (position < packet->GetSize ())
-    {
-      if (data[position] == ElementId ())
-        {
-          Ptr<Packet> myIe = packet->CreateFragment (position, data[position + 1] + 2);
-          NS_ASSERT (myIe->GetSize () == (uint32_t) (data[position + 1] + 2));
-          myIe->RemoveHeader (*this);
-          return true;
-        }
-      else
-        {
-          if (data[position] > ElementId ())
-            {
-              return false;
-            }
-          position += data[position + 1] + 2;
-        }
-    }
-  return false;
-}
-
 bool
 operator< (WifiInformationElement const & a, WifiInformationElement const & b)
 {

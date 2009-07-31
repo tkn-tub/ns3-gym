@@ -27,6 +27,8 @@
 #include "ns3/mesh-wifi-interface-mac.h"
 #include "ns3/simulator.h"
 #include "ns3/wifi-mac-header.h"
+#include "ns3/ie-vector.h"
+#include "ns3/log.h"
 namespace ns3 {
 namespace dot11s {
 PeerManagementProtocolMac::PeerManagementProtocolMac (uint32_t interface,
@@ -54,18 +56,22 @@ PeerManagementProtocolMac::Receive (Ptr<Packet> const_packet, const WifiMacHeade
   Ptr<Packet> packet = const_packet->Copy ();
   if (header.IsBeacon ())
     {
-      IeBeaconTiming beaconTiming;
-      IeMeshId meshId;
-      Ptr<Packet> myBeacon = packet->Copy ();
       MgtBeaconHeader beacon_hdr;
-      myBeacon->RemoveHeader (beacon_hdr);
-      meshId.FindFirst (myBeacon);
+      packet->RemoveHeader (beacon_hdr);
+      //meshId.FindFirst (myBeacon);
       bool meshBeacon = false;
-      if ((beaconTiming.FindFirst (myBeacon)) && (m_protocol->GetMeshId ()->IsEqual (meshId)))
+      WifiInformationElementVector elements = WifiInformationElementVector::DeserializePacket (packet);
+      Ptr<IeBeaconTiming> beaconTiming = DynamicCast<IeBeaconTiming> (elements.FindFirst (IE11S_BEACON_TIMING));
+      Ptr<IeMeshId> meshId = DynamicCast<IeMeshId> (elements.FindFirst (IE11S_MESH_ID));
+
+      if ((beaconTiming != 0) && (meshId != 0))
         {
-          meshBeacon = true;
+          if (m_protocol->GetMeshId ()->IsEqual (*meshId))
+            {
+              meshBeacon = true;
+            }
         }
-      m_protocol->UpdatePeerBeaconTiming (m_ifIndex, meshBeacon, beaconTiming, header.GetAddr2 (),
+      m_protocol->UpdatePeerBeaconTiming (m_ifIndex, meshBeacon, *beaconTiming, header.GetAddr2 (),
           Simulator::Now (), MicroSeconds (beacon_hdr.GetBeaconIntervalUs ()));
       // Beacon shall not be dropeed. May be needed to another plugins
       return true;

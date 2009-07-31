@@ -1,7 +1,7 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
-/* 
+/*
  * Copyright (c) 2009 IITP RAS
- * 
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- * 
+ *
  * Author: Pavel Boyko <boyko@iitp.ru>
  */
 
@@ -30,14 +30,14 @@ namespace ns3 {
 class Packet;
 /**
  * \ingroup mesh
- * 
- * \brief Enum of all known information element id (aka tags). 
- * 
- * For now only 802.11s (mesh) related elements are supported here (so 11S prefix), 
+ *
+ * \brief Enum of all known information element id (aka tags).
+ *
+ * For now only 802.11s (mesh) related elements are supported here (so 11S prefix),
  * but this can change in future.
- * 
- * Note that 802.11s element ids are not yet officially assigned, we use ones 
- * compatible with open80211s (http://o11s.org/) implementation.   
+ *
+ * Note that 802.11s element ids are not yet officially assigned, we use ones
+ * compatible with open80211s (http://o11s.org/) implementation.
  */
 enum WifiElementId {
   /* begin of open80211s-compatible IDs */
@@ -63,35 +63,35 @@ enum WifiElementId {
   /* begin of open80211s-compatible IDs */
   IE11S_PREQ                            = 68,
   IE11S_PREP                            = 69,
-  IE11S_PERR                            = 70, 
+  IE11S_PERR                            = 70,
   /* end of open80211s-compatible IDs */
   IE11S_PROXY_UPDATE                    = 37,
   IE11S_PROXY_UPDATE_CONFIRMATION,
   IE11S_ABBREVIATED_HANDSHAKE,
   IE11S_MESH_PEERING_PROTOCOL_VERSION   = 74,
-};  
-  
+};
+
 /**
  * \ingroup mesh
- * 
+ *
  * \brief Information element, as defined in 802.11-2007 standard
- * 
+ *
  * Elements are defined to have a common general format consisting of a 1 octet Element ID field, a 1 octet
  * length field, and a variable-length element-specific information field. Each element is assigned a unique
  * Element ID as defined in this standard. The Length field specifies the number of octets in the Information
- * field. 
+ * field.
  */
-class WifiInformationElement : public Header, 
-                               public RefCountBase     // need this to use Ptr<WifiInformationElement> 
+class WifiInformationElement : public Header,
+                               public RefCountBase     // need this to use Ptr<WifiInformationElement>
 {
 public:
   /// Support object system
   static TypeId GetTypeId ();
   TypeId GetInstanceTypeId () const;
-  
+
   /// virtual d-tor for subclasses
   virtual ~WifiInformationElement () {}
-  
+
   ///\name Inherited from Header
   //\{
   /**
@@ -120,37 +120,31 @@ public:
    * \return the number of bytes read.
    *
    * This method is used by Packet::RemoveHeader to
-   * re-create a header from the byte buffer of a packet. 
+   * re-create a header from the byte buffer of a packet.
    * The data read is expected to
    * match bit-for-bit the representation of this header in real
    * networks.
    */
   virtual uint32_t Deserialize (Buffer::Iterator start);
   /**
-   * This method is used by Packet::Print to print the 
+   * This method is used by Packet::Print to print the
    * content of a trailer as ascii data to a c++ output stream.
    * Although the trailer is free to format its output as it
    * wishes, it is recommended to follow a few rules to integrate
-   * with the packet pretty printer: start with flags, small field 
-   * values located between a pair of parens. Values should be separated 
-   * by whitespace. Follow the parens with the important fields, 
+   * with the packet pretty printer: start with flags, small field
+   * values located between a pair of parens. Values should be separated
+   * by whitespace. Follow the parens with the important fields,
    * separated by whitespace.
    * i.e.: (field1 val1 field2 val2 field3 val3) field4 val4 field5 val5
    */
   virtual void Print (std::ostream &os) const;
-  /**
-   * This method takes a packet which must be a list of information
-   * elements and looks for an information element of MINE Element ID
-   */
-  bool FindFirst (Ptr<Packet> packet);
   //\}
-    
-protected:
-  ///\name Each subclass must implement 
+  ///\name Each subclass must implement
   //\{
   /// Own unique Element ID
   virtual WifiElementId ElementId () const = 0;
   /// Length of serialized information
+protected:
   virtual uint8_t GetInformationSize () const = 0;
   /// Serialize information
   virtual void SerializeInformation (Buffer::Iterator start) const = 0;
@@ -159,7 +153,7 @@ protected:
   /// Print information
   virtual void PrintInformation (std::ostream &os) const = 0;
   //\}
-  
+
   /// Compare information elements using Element ID
   friend bool operator< (WifiInformationElement const & a, WifiInformationElement const & b);
 };
@@ -173,7 +167,7 @@ class IeTest : public Test
 {
 public:
   IeTest (const char * name) : Test (name) {}
-  /// Test roundtrip serialization
+  /// Test round-trip serialization
   template <typename IE> bool TestRoundtripSerialization (IE a);
 };
 
@@ -181,7 +175,7 @@ template <typename IE> bool
 IeTest::TestRoundtripSerialization (IE a)
 {
   bool result (true);
-  
+
   Ptr<Packet> packet = Create<Packet> ();
   packet->AddHeader (a);
   IE b;
@@ -189,13 +183,13 @@ IeTest::TestRoundtripSerialization (IE a)
   NS_TEST_ASSERT_EQUAL (a, b);
   packet->AddHeader (a);
   IE c;
-  bool ok = c.FindFirst (packet);
+  bool ok = packet->RemoveHeader (c);
   NS_TEST_ASSERT (ok);
   NS_TEST_ASSERT_EQUAL (a, c);
-  
+
   return result;
 }
-#endif 
+#endif
 
 }  // namespace ns3
 #endif /* WIFIINFORMATIONELEMENT_H_ */
