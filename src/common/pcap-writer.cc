@@ -254,7 +254,7 @@ void PcapWriter::WriteWifiMonitorPacket(Ptr<const Packet> packet, uint16_t chann
       Write16(PRISM_ITEM_LENGTH); 
       // convert from frequency to channel number. This conversion is
       // correct only for IEEE 802.11b/g channels 1-13.
-      Write32((channelFreqMhz - 2407) / 5);
+      Write32((2437 - 2407) / 5);
 
       Write32(PRISM_DID_RSSI);
       Write16(PRISM_STATUS_PRESENT);
@@ -388,7 +388,7 @@ void PcapWriter::WriteWifiMonitorPacket(Ptr<const Packet> packet, uint16_t chann
 
       Write8(rate); 
 
-      Write16((uint16_t) channelFreqMhz); 
+      Write16((uint16_t) 2437); 
 
       // we might want to make this setting depend on the WifiMode and
       // on the ChannelFrequency at some time in the future. But for now
