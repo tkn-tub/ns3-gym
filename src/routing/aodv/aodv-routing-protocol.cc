@@ -494,7 +494,7 @@ RoutingProtocol::SendRequest (Ipv4Address dst, bool D, bool G)
 
 
   // Send RREQ as subnet directed broadcast from each (own) interface
-  Ptr<Packet> packet = Create<Packet> ();
+
   for (std::map<Ptr<Socket> , Ipv4InterfaceAddress>::const_iterator j = m_socketAddresses.begin (); j != m_socketAddresses.end (); ++j)
   {
     Ptr<Socket> socket = j->first;
@@ -503,6 +503,7 @@ RoutingProtocol::SendRequest (Ipv4Address dst, bool D, bool G)
     rreqHeader.SetOrigin (iface.GetLocal ());
     InsertRequestId (iface.GetLocal (), m_requestId);
 
+    Ptr<Packet> packet = Create<Packet> ();
     packet->AddHeader(rreqHeader);
     packet->AddHeader(tHeader);
     m_broadcastId++;
@@ -722,15 +723,16 @@ RoutingProtocol::RecvRequest (Ptr<Packet> p, Ipv4Address receiver, Ipv4Address s
    */
   if(ipv4Header.GetTtl() < 2)
     return;
-  Ptr<Packet> packet = Create<Packet> ();
-  packet->AddHeader (rreqHeader);
-  TypeHeader tHeader (AODVTYPE_RREQ);
-  packet->AddHeader (tHeader);
+
 
   for (std::map<Ptr<Socket> , Ipv4InterfaceAddress>::const_iterator j = m_socketAddresses.begin (); j != m_socketAddresses.end (); ++j)
   {
     Ptr<Socket> socket = j->first;
     Ipv4InterfaceAddress iface = j->second;
+    Ptr<Packet> packet = p->Copy();
+    packet->AddHeader (rreqHeader);
+    TypeHeader tHeader (AODVTYPE_RREQ);
+    packet->AddHeader (tHeader);
     BuildPacket(/*packet*/packet, /*source port*/AODV_PORT, /*destination port*/AODV_PORT, /*source address*/iface.GetLocal (),
                   /*destination address*/iface.GetBroadcast(), /*id*/ipv4Header.GetIdentification() , /*TTL*/ ipv4Header.GetTtl() - 1);
     socket->Send (packet);

@@ -174,20 +174,21 @@ RawSocketImpl::SendTo (Ptr<Packet> packet, uint32_t flags, const Address &toAddr
   if (m_ipv4->GetRoutingProtocol ())
   {
     Ipv4Header header;
-    packet->PeekHeader (header);
+    Ptr<Packet> copy = packet->Copy();
+    copy->RemoveHeader (header);
     NS_LOG_LOGIC ("RawSocketImpl::SendTo packet uid " << packet->GetUid() << " address " << header.GetDestination());
     SocketErrno errno_ = ERROR_NOTERROR;//do not use errno as it is the standard C last error number
     Ptr<Ipv4Route> route;
     uint32_t oif = 0; //specify non-zero if bound to a source address
-    route = m_ipv4->GetRoutingProtocol ()->RouteOutput (packet, header, oif, errno_);
+    route = m_ipv4->GetRoutingProtocol ()->RouteOutput (copy, header, oif, errno_);
     if (route != 0)
     {
-      NS_LOG_UNCOND ("Route exists");
+      NS_LOG_LOGIC ("Route exists");
       SendByInterface(packet, route);
     }
     else
     {
-      NS_LOG_UNCOND ("dropped because no outgoing route.");
+      NS_LOG_LOGIC ("dropped because no outgoing route.");
     }
   }
   return 0;
@@ -199,10 +200,10 @@ RawSocketImpl::SendByInterface (Ptr<Packet> p, Ptr<const Ipv4Route> route)
   NS_ASSERT(m_node != 0);
   Ipv4Header ipv4Header;
   Ptr<Packet> packet = p->Copy();
-  packet->PeekHeader(ipv4Header);
+  packet->RemoveHeader(ipv4Header);
   Ipv4Address source = ipv4Header.GetSource ();
   Ipv4Address destination = ipv4Header.GetDestination ();
-  NS_LOG_UNCOND ("RawSocketImpl::SendByInterface to " << destination << " from " << source);
+  NS_LOG_LOGIC ("RawSocketImpl::SendByInterface to " << destination << " from " << source);
 
   // Handle a few cases:
   // 1) packet is destined to limited broadcast address
@@ -212,14 +213,14 @@ RawSocketImpl::SendByInterface (Ptr<Packet> p, Ptr<const Ipv4Route> route)
   // 1) packet is destined to limited broadcast address
   if (destination.IsBroadcast ())
     {
-      NS_LOG_UNCOND ("RawSocketImpl::Send case 1:  limited broadcast");
+    NS_LOG_LOGIC ("RawSocketImpl::Send case 1:  limited broadcast");
       for (std::list< Ptr<Ipv4Interface> >::iterator ifaceIter = m_interfaces.begin (); ifaceIter != m_interfaces.end (); ifaceIter++)
         {
           Ptr<Ipv4Interface> outInterface = *ifaceIter;
-          Ptr<Packet> packetCopy = packet->Copy ();
+          Ptr<Packet> packetCopy = p->Copy ();
 
           NS_ASSERT (packet->GetSize () <= outInterface->GetDevice()->GetMtu ());
-          outInterface->Send (packet, destination);
+          outInterface->Send (packetCopy, destination);
         }
       return;
     }
@@ -227,20 +228,20 @@ RawSocketImpl::SendByInterface (Ptr<Packet> p, Ptr<const Ipv4Route> route)
   // 2) check: packet is destined to a subnet-directed broadcast address
   bool result = false;
   uint32_t ifaceIndex = 0;
-  NS_LOG_UNCOND("number of interfaces " << m_interfaces.size ());
+  NS_LOG_LOGIC("number of interfaces " << m_interfaces.size ());
   for (std::list< Ptr<Ipv4Interface> >::iterator ifaceIter = m_interfaces.begin (); ifaceIter != m_interfaces.end (); ifaceIter++, ifaceIndex++)
   {
     Ptr<Ipv4Interface> outInterface = *ifaceIter;
     for (uint32_t j = 0; j < m_ipv4->GetNAddresses (ifaceIndex); j++)
     {
       Ipv4InterfaceAddress ifAddr = m_ipv4->GetAddress (ifaceIndex, j);
-      NS_LOG_UNCOND ("Testing address " << ifAddr.GetLocal () << " with mask " << ifAddr.GetMask ());
+      NS_LOG_LOGIC ("Testing address " << ifAddr.GetLocal () << " with mask " << ifAddr.GetMask ());
       if (destination.IsSubnetDirectedBroadcast (ifAddr.GetMask ()) &&
           (destination.CombineMask (ifAddr.GetMask ()) == ifAddr.GetLocal ().CombineMask (ifAddr.GetMask ())) )
-        if ( (ifAddr.GetLocal() != loopback)/* && (ifAddr.GetLocal() != source)*/)
+        //if (ifAddr.GetLocal() == source)
         {
-          NS_LOG_UNCOND ("Send case 2:  subnet directed bcast to " << ifAddr.GetLocal ());
-          Ptr<Packet> packetCopy = packet->Copy ();
+          NS_LOG_LOGIC ("Send case 2:  subnet directed bcast to " << ifAddr.GetLocal ());
+          Ptr<Packet> packetCopy = p->Copy ();
           outInterface->Send (packetCopy, destination);
           result = true;
         }
@@ -259,13 +260,14 @@ RawSocketImpl::SendByInterface (Ptr<Packet> p, Ptr<const Ipv4Route> route)
     Ptr<Ipv4Interface> outInterface = m_ipv4->GetInterface (interface);
     NS_LOG_UNCOND ("Send via NetDevice ifIndex " << outDev->GetIfIndex () << " ipv4InterfaceIndex " << interface);
 
-    NS_ASSERT (packet->GetSize () <= outInterface->GetDevice ()->GetMtu ());
+    NS_ASSERT (p->GetSize () <= outInterface->GetDevice ()->GetMtu ());
     if (!route->GetGateway ().IsEqual (Ipv4Address ("0.0.0.0")))
     {
       if (outInterface->IsUp ())
       {
         NS_LOG_UNCOND ("Send to gateway " << route->GetGateway ());
-        outInterface->Send (p, route->GetGateway ());
+        Ptr<Packet> packetCopy = p->Copy ();
+        outInterface->Send (packetCopy, route->GetGateway ());
       }
       else
       {
@@ -276,8 +278,9 @@ RawSocketImpl::SendByInterface (Ptr<Packet> p, Ptr<const Ipv4Route> route)
          {
            if (outInterface->IsUp ())
              {
+             Ptr<Packet> packetCopy = p->Copy ();
              NS_LOG_UNCOND ("Send to destination " << destination);
-               outInterface->Send (packet,destination);
+               outInterface->Send (packetCopy, destination);
              }
            else
              {
@@ -370,9 +373,9 @@ RawSocketImpl::ForwardUp (Ptr<const Packet> p, Ptr<NetDevice> device)
         return false;
       }
     }
-    copy = p->Copy();
+    Ptr<Packet> packet = p->Copy();
     struct Data data;
-    data.packet = copy;
+    data.packet = packet;
     data.fromIp = ipHeader.GetSource ();
     data.fromProtocol = ipHeader.GetProtocol ();
     m_recv.push_back (data);
