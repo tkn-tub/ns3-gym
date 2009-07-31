@@ -390,9 +390,9 @@ void
 Ipv4L3Protocol::Receive( Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t protocol, const Address &from,
                          const Address &to, NetDevice::PacketType packetType)
 {
-  NS_LOG_UNCOND ("Ipv4L3Protocol::Receive" << &device << p << protocol <<  from);
+  NS_LOG_FUNCTION (this << &device << p << protocol <<  from);
 
-  NS_LOG_UNCOND ("Packet from " << from << " received on node " <<
+  NS_LOG_LOGIC ("Packet from " << from << " received on node " <<
     m_node->GetId ());
 
   uint32_t interface = 0;
@@ -430,7 +430,7 @@ Ipv4L3Protocol::Receive( Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t pr
 
   if (!ipHeader.IsChecksumOk ()) 
     {
-      NS_LOG_UNCOND("bad check sum");
+    NS_LOG_LOGIC("bad check sum");
       m_dropTrace (packet);
       return;
     }

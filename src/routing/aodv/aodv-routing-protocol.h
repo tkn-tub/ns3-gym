@@ -78,13 +78,13 @@ private:
 
   ///\name Protocol parameters. TODO document
   //\{
- // Time AODV_RTQ_TIMEOUT;
-  Time RTQ_TIMEOUT;
+  Time MAX_QUEUE_TIME;
   uint32_t RREQ_RETRIES;        // 2
   Time ACTIVE_ROUTE_TIMEOUT;    // 3 seconds
   Time MY_ROUTE_TIMEOUT;       // 2 * ACTIVE_ROUTE_TIMEOUT
   uint16_t NET_DIAMETER;
   Time NODE_TRAVERSAL_TIME;         //  40 milliseconds
+  Time NET_TRAVERSAL_TIME;          // 2 * NODE_TRAVERSAL_TIME * NET_DIAMETER
   Time BCAST_ID_SAVE;
   Time HELLO_INTERVAL;
   uint32_t ALLOWED_HELLO_LOSS;
@@ -92,9 +92,11 @@ private:
   Time MaxHelloInterval; //        (1.25 * HELLO_INTERVAL)
   Time MinHelloInterval; //        (0.75 * HELLO_INTERVAL)
   Time FREQUENCY;
-  Time NET_TRAVERSAL_TIME;          // 2 * NODE_TRAVERSAL_TIME * NET_DIAMETER
   Time BLACKLIST_TIMEOUT;
   Time NEXT_HOP_WAIT;
+  uint16_t TTL_START;
+  uint16_t TTL_INCREMENT;
+  uint16_t TTL_THRESHOLD;
   //\}
 
   /// \name Handle Broadcast sequence number cache

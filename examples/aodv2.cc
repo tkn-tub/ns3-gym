@@ -195,6 +195,7 @@ AodvExample::InstallInternetStack ()
   stack.Install (nodes);
   Ipv4AddressHelper address;
   address.SetBase ("10.0.0.0", "255.0.0.0");
+
   interfaces1 = address.Assign (devices1);
   interfaces2 = address.Assign (devices2);
 

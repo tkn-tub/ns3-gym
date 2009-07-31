@@ -160,12 +160,15 @@ RoutingProtocol::PurgeNeighbor ()
 }
 
 RoutingProtocol::RoutingProtocol () :
-  RTQ_TIMEOUT (Seconds (30)),
+  MAX_QUEUE_TIME (Seconds (30)),
   RREQ_RETRIES (2),
   ACTIVE_ROUTE_TIMEOUT (Seconds (3)),
   MY_ROUTE_TIMEOUT (Scalar (2) * ACTIVE_ROUTE_TIMEOUT),
   NET_DIAMETER (35),
   NODE_TRAVERSAL_TIME (MilliSeconds (40)),
+  NET_TRAVERSAL_TIME (Scalar (2 * NET_DIAMETER) * NODE_TRAVERSAL_TIME),
+  BCAST_ID_SAVE ( Scalar (2) * NET_TRAVERSAL_TIME),
+  HELLO_INTERVAL(Seconds (1)),
   ALLOWED_HELLO_LOSS (2),
   FREQUENCY (Seconds (0.5)),
   BLACKLIST_TIMEOUT(Scalar(RREQ_RETRIES) * NET_TRAVERSAL_TIME),
@@ -174,13 +177,12 @@ RoutingProtocol::RoutingProtocol () :
      * This is to account for possible additional route discovery attempts.
      */
   NEXT_HOP_WAIT(NODE_TRAVERSAL_TIME + MilliSeconds (10)),
+  TTL_START(1), TTL_INCREMENT(2), TTL_THRESHOLD(7),
   m_requestId (0), m_broadcastId(0), m_seqNo (0), btimer (Timer::CANCEL_ON_DESTROY), htimer (Timer::CANCEL_ON_DESTROY), ntimer (Timer::CANCEL_ON_DESTROY),
   rtimer (Timer::CANCEL_ON_DESTROY), lrtimer (Timer::CANCEL_ON_DESTROY), m_routeRequestTimer (Timer::CANCEL_ON_DESTROY)
 
 
 {
-  NET_TRAVERSAL_TIME = Scalar (2 * NET_DIAMETER) * NODE_TRAVERSAL_TIME;
-  BCAST_ID_SAVE = Scalar (2) * NET_TRAVERSAL_TIME;
   MaxHelloInterval = Scalar (1.25) * HELLO_INTERVAL;
   MinHelloInterval = Scalar (0.75) * HELLO_INTERVAL;
   if(ACTIVE_ROUTE_TIMEOUT > HELLO_INTERVAL) DELETE_PERIOD = Scalar(5) * ACTIVE_ROUTE_TIMEOUT;
@@ -190,17 +192,52 @@ RoutingProtocol::RoutingProtocol () :
 TypeId
 RoutingProtocol::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::aodv::RoutingProtocol") .SetParent<Ipv4RoutingProtocol> () .AddConstructor<RoutingProtocol> () .AddAttribute (
-      "HelloInterval", "HELLO messages emission interval.", TimeValue (Seconds (1)), MakeTimeAccessor (&RoutingProtocol::HELLO_INTERVAL),
-      MakeTimeChecker ()) .AddAttribute ("Broadcast id save", "Broadcast id save interval.", TimeValue (Seconds (6)), MakeTimeAccessor (
-      &RoutingProtocol::BCAST_ID_SAVE), MakeTimeChecker ()) .AddAttribute ("RreqRetries",
-      "Maximum number of retransmissions of RREQ to discover a route", UintegerValue (2), MakeUintegerAccessor (&RoutingProtocol::RREQ_RETRIES),
-      MakeUintegerChecker<uint32_t> ()) .AddAttribute ("NodeTraversalTime",
-      "Conservative estimate of the average one hop traversal time for packets and should include"
-        "queuing delays, interrupt processing times and transfer times.", TimeValue (MilliSeconds (40)), MakeTimeAccessor (
-          &RoutingProtocol::NODE_TRAVERSAL_TIME), MakeTimeChecker ()) .AddAttribute ("ActiveRouteTimeout",
-      "Period of time during which the route is considered to be valid", TimeValue (Seconds (3)), MakeTimeAccessor (
-          &RoutingProtocol::ACTIVE_ROUTE_TIMEOUT), MakeTimeChecker ())
+  static TypeId tid = TypeId ("ns3::aodv::RoutingProtocol")
+      .SetParent<Ipv4RoutingProtocol> ()
+      .AddConstructor<RoutingProtocol> ()
+      .AddAttribute ("HelloInterval", "HELLO messages emission interval.",
+                     TimeValue (Seconds (1)),
+                     MakeTimeAccessor (&RoutingProtocol::HELLO_INTERVAL),
+                     MakeTimeChecker ())
+//      .AddAttribute ("Broadcast id save", "Broadcast id save interval.",
+//                     TimeValue (Seconds (6)),
+//                     MakeTimeAccessor (&RoutingProtocol::BCAST_ID_SAVE),
+//                     MakeTimeChecker ())
+      .AddAttribute ("RreqRetries", "Maximum number of retransmissions of RREQ to discover a route",
+                     UintegerValue (2),
+                     MakeUintegerAccessor (&RoutingProtocol::RREQ_RETRIES),
+                     MakeUintegerChecker<uint32_t> ())
+      .AddAttribute ("NodeTraversalTime", "Conservative estimate of the average one hop traversal time for packets and should include"
+                     "queuing delays, interrupt processing times and transfer times.",
+                     TimeValue (MilliSeconds (40)),
+                     MakeTimeAccessor (&RoutingProtocol::NODE_TRAVERSAL_TIME),
+                     MakeTimeChecker ())
+      .AddAttribute ("ActiveRouteTimeout", "Period of time during which the route is considered to be valid",
+                     TimeValue (Seconds (3)),
+                     MakeTimeAccessor (&RoutingProtocol::ACTIVE_ROUTE_TIMEOUT),
+                     MakeTimeChecker ())
+      .AddAttribute ("MaxQueueTime", "Maximum time packets can be queued (in seconds)",
+                     TimeValue (Seconds (30)),
+                     MakeTimeAccessor (&RoutingProtocol::MAX_QUEUE_TIME),
+                     MakeTimeChecker ())
+      .AddAttribute ("NetDiameter", "Net diameter measures the maximum possible number of hops between two nodes in the network",
+                     UintegerValue (35),
+                     MakeUintegerAccessor (&RoutingProtocol::NET_DIAMETER),
+                     MakeUintegerChecker<uint16_t> ())
+      .AddAttribute ("TtlStart", "Initial value of TTL in RREQ  when use an expanding ring search "
+                     "(should be set to at least 2 if Hello messages are used for local connectivity information.)",
+                     UintegerValue (1),
+                     MakeUintegerAccessor (&RoutingProtocol::TTL_START),
+                     MakeUintegerChecker<uint16_t> ())
+      .AddAttribute ("TtlIncrement", "Increment value of RREQ TTL when use an expanding ring search",
+                     UintegerValue (2),
+                     MakeUintegerAccessor (&RoutingProtocol::TTL_INCREMENT),
+                     MakeUintegerChecker<uint16_t> ())
+      .AddAttribute ("TtlThreshold", "Threshold, beyond which TTL = NET_DIAMETER is used for each attempt in RREQ.",
+                     UintegerValue (7),
+                     MakeUintegerAccessor (&RoutingProtocol::TTL_THRESHOLD),
+                     MakeUintegerChecker<uint16_t> ())
+
 
   ;
   return tid;
@@ -270,7 +307,6 @@ RoutingProtocol::RouteOutput (Ptr<Packet> p, const Ipv4Header &header, uint32_t 
   bool result = m_routingTable.LookupRoute (dst, rt);
   if (result && (rt.GetFlag () == RTF_UP))
   {
-    m_routingTable.Print (std::cout);
     route = rt.GetRoute ();
     NS_ASSERT (route != 0);
     sockerr = Socket::ERROR_NOTERROR;
@@ -370,10 +406,10 @@ RoutingProtocol::RouteInput (Ptr<const Packet> p, const Ipv4Header &header, Ptr<
   }
 
 
-  QueueEntry newEntry (p, header, ucb, ecb, RTQ_TIMEOUT);
+  QueueEntry newEntry (p, header, ucb, ecb, MAX_QUEUE_TIME);
   m_queue.Enqueue (newEntry);
   NS_LOG_LOGIC("route not found to "<< dst);
-  m_routingTable.Print (std::cout);
+ // m_routingTable.Print (std::cout);
   return false;
 }
 
@@ -754,7 +790,7 @@ RoutingProtocol::SendReply (RreqHeader const & rreqHeader, RoutingTableEntry con
   RrepHeader rrepHeader ( /*prefixSize=*/0, /*hops=*/toOrigin.GetHop (), /*dst=*/rreqHeader.GetDst (),
                         /*dstSeqNo=*/m_seqNo, /*origin=*/toOrigin.GetDestination (), /*lifeTime=*/MY_ROUTE_TIMEOUT);
   // TODO when??
-  rrepHeader.SetAckRequired(true);
+//  rrepHeader.SetAckRequired(true);
   RoutingTableEntry toNextHop;
   m_routingTable.LookupRoute(toOrigin.GetNextHop (), toNextHop);
   toNextHop.m_ackTimer.SetFunction(&RoutingProtocol::AckTimerExpire, this);

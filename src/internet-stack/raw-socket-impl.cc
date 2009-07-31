@@ -253,25 +253,25 @@ RawSocketImpl::SendByInterface (Ptr<Packet> p, Ptr<const Ipv4Route> route)
   //    with a valid Ipv4Address as the gateway
   if (route && route->GetGateway () != Ipv4Address ())
   {
-    NS_LOG_UNCOND ("RawSocketImpl::Send case 3:  passed in with route");
+    NS_LOG_LOGIC ("RawSocketImpl::Send case 3:  passed in with route");
     Ptr<NetDevice> outDev = route->GetOutputDevice ();
     int32_t interface = m_ipv4->GetInterfaceForDevice (outDev);
     NS_ASSERT (interface >= 0);
     Ptr<Ipv4Interface> outInterface = m_ipv4->GetInterface (interface);
-    NS_LOG_UNCOND ("Send via NetDevice ifIndex " << outDev->GetIfIndex () << " ipv4InterfaceIndex " << interface);
+    NS_LOG_LOGIC ("Send via NetDevice ifIndex " << outDev->GetIfIndex () << " ipv4InterfaceIndex " << interface);
 
     NS_ASSERT (p->GetSize () <= outInterface->GetDevice ()->GetMtu ());
     if (!route->GetGateway ().IsEqual (Ipv4Address ("0.0.0.0")))
     {
       if (outInterface->IsUp ())
       {
-        NS_LOG_UNCOND ("Send to gateway " << route->GetGateway ());
+        NS_LOG_LOGIC ("Send to gateway " << route->GetGateway ());
         Ptr<Packet> packetCopy = p->Copy ();
         outInterface->Send (packetCopy, route->GetGateway ());
       }
       else
       {
-        NS_LOG_UNCOND ("Dropping-- outgoing interface is down: " << route->GetGateway ());
+        NS_LOG_LOGIC ("Dropping-- outgoing interface is down: " << route->GetGateway ());
       }
     }
        else
@@ -279,12 +279,12 @@ RawSocketImpl::SendByInterface (Ptr<Packet> p, Ptr<const Ipv4Route> route)
            if (outInterface->IsUp ())
              {
              Ptr<Packet> packetCopy = p->Copy ();
-             NS_LOG_UNCOND ("Send to destination " << destination);
+             NS_LOG_LOGIC ("Send to destination " << destination);
                outInterface->Send (packetCopy, destination);
              }
            else
              {
-             NS_LOG_UNCOND ("Dropping-- outgoing interface is down: " << destination);
+             NS_LOG_LOGIC ("Dropping-- outgoing interface is down: " << destination);
              }
          }      return;
     }
@@ -304,14 +304,14 @@ RawSocketImpl::GetRxAvailable (void) const
 Ptr<Packet>
 RawSocketImpl::Recv (uint32_t maxSize, uint32_t flags)
 {
-  NS_LOG_UNCOND ("RawSocketImpl::Recv" << maxSize << flags);
+  NS_LOG_LOGIC ("RawSocketImpl::Recv" << maxSize << flags);
   Address tmp;
   return RecvFrom (maxSize, flags, tmp);
 }
 Ptr<Packet>
 RawSocketImpl::RecvFrom (uint32_t maxSize, uint32_t flags, Address &fromAddress)
 {
-  NS_LOG_UNCOND ("RawSocketImpl::RecvFrom" << " maxSize " << maxSize << " flags " << flags << " address " <<fromAddress);
+  NS_LOG_LOGIC ("RawSocketImpl::RecvFrom" << " maxSize " << maxSize << " flags " << flags << " address " <<fromAddress);
   if (m_recv.empty ())
   {
     return 0;
