@@ -59,6 +59,7 @@ class MeshTest
     bool      pcap;
     uint64_t  seed;
     std::string stack;
+    std::string root;
     /// List of network nodes
     NodeContainer nodes;
     /// List of all mesh point devices
@@ -89,7 +90,8 @@ MeshTest::MeshTest () :
   chan (true),
   pcap (false),
   seed (1),
-  stack ("ns3::Dot11sStack")
+  stack ("ns3::Dot11sStack"),
+  root ("ff:ff:ff:ff:ff:ff")
 {
 }
 void
@@ -108,6 +110,7 @@ MeshTest::Configure (int argc, char *argv[])
   cmd.AddValue ("pcap",   "Enable PCAP traces on interfaces. [0]", pcap);
   cmd.AddValue ("seed",   "Seed value", seed);
   cmd.AddValue ("stack",  "Type of protocol stack. ns3::Dot11sStack by default", stack);
+  cmd.AddValue ("root", "Mac address of root mesh point", root);
   
   cmd.Parse (argc, argv);
   NS_LOG_DEBUG ("Grid:" << xSize << "*" << ySize);
@@ -123,7 +126,7 @@ MeshTest::CreateNodes ()
   YansWifiChannelHelper wifiChannel = YansWifiChannelHelper::Default ();
   wifiPhy.SetChannel (wifiChannel.Create ());
   // Install mesh point devices & protocols
-  mesh.SetStackInstaller (stack);
+  mesh.SetStackInstaller (stack, "Root", Mac48AddressValue (Mac48Address (root.c_str ())));
   mesh.SetSpreadInterfaceChannels (chan);
   MeshInterfaceHelper interface = MeshInterfaceHelper::Default ();
   interface.SetType ("RandomStart", TimeValue (Seconds(randomStart)));

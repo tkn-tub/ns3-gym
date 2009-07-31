@@ -36,10 +36,27 @@ MeshHelper::SetSpreadInterfaceChannels (bool s)
   m_spreadInterfaceChannels = s;
 }
 void
-MeshHelper::SetStackInstaller (std::string type)
+MeshHelper::SetStackInstaller (std::string type,
+                std::string n0, const AttributeValue &v0,
+                std::string n1, const AttributeValue &v1,
+                std::string n2, const AttributeValue &v2,
+                std::string n3, const AttributeValue &v3,
+                std::string n4, const AttributeValue &v4,
+                std::string n5, const AttributeValue &v5,
+                std::string n6, const AttributeValue &v6,
+                std::string n7, const AttributeValue &v7)
 {
   NS_LOG_FUNCTION (this << type);
   m_stackFactory.SetTypeId (type);
+  m_stackFactory.Set (n0, v0);
+  m_stackFactory.Set (n1, v1);
+  m_stackFactory.Set (n2, v2);
+  m_stackFactory.Set (n3, v3);
+  m_stackFactory.Set (n4, v4);
+  m_stackFactory.Set (n5, v5);
+  m_stackFactory.Set (n6, v6);
+  m_stackFactory.Set (n7, v7);
+
   m_stack = m_stackFactory.Create<MeshStack> ();
   if (m_stack == 0)
     {

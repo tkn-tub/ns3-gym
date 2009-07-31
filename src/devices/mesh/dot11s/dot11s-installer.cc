@@ -30,10 +30,16 @@ Dot11sStack::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::Dot11sStack")
     .SetParent<Object> ()
-    .AddConstructor<Dot11sStack> ();
+    .AddConstructor<Dot11sStack> ()
+    .AddAttribute ("Root", 
+                   "The MAC address of root mesh point.",
+                   Mac48AddressValue (Mac48Address ("ff:ff:ff:ff:ff:ff")),
+                   MakeMac48AddressAccessor (&Dot11sStack::m_root),
+                   MakeMac48AddressChecker ());
   return tid;
 }
-Dot11sStack::Dot11sStack ()
+Dot11sStack::Dot11sStack () :
+  m_root (Mac48Address ("ff:ff:ff:ff:ff:ff"))
 {
 }
 Dot11sStack::~Dot11sStack ()
@@ -42,13 +48,6 @@ Dot11sStack::~Dot11sStack ()
 void
 Dot11sStack::DoDispose ()
 {
-}
-void
-Dot11sStack::SetRoot (Ptr<MeshPointDevice> mp)
-{
-  Ptr<HwmpProtocol> hwmp = mp->GetObject<HwmpProtocol> ();
-  NS_ASSERT (hwmp != 0);
-  hwmp->SetRoot ();
 }
 bool
 Dot11sStack::InstallStack (Ptr<MeshPointDevice> mp)
@@ -67,6 +66,11 @@ Dot11sStack::InstallStack (Ptr<MeshPointDevice> mp)
   if (!install_ok)
     {
       return false;
+    }
+  NS_LOG_UNCOND(m_root);
+  if (mp->GetAddress() == m_root)
+    {
+      hwmp->SetRoot ();
     }
   //Install interaction between HWMP and Peer management protocol:
   pmp->SetPeerLinkStatusCallback (MakeCallback (&HwmpProtocol::PeerLinkStatus, hwmp));

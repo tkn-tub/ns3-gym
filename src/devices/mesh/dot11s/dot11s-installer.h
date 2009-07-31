@@ -33,9 +33,10 @@ class Dot11sStack : public MeshStack
 
     ///\brief Installs 802.11s stack. needed by helper only
     bool InstallStack (Ptr<MeshPointDevice> mp);
-    void SetRoot (Ptr<MeshPointDevice> mp);
     void Report (const Ptr<MeshPointDevice> mp, std::ostream&);
     void ResetStats (const Ptr<MeshPointDevice> mp);
+  private:
+    Mac48Address m_root;
 };
 } //namespace ns3
 #endif

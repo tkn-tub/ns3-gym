@@ -77,7 +77,15 @@ public:
    * All the attributes specified in this method should exist
    * in the requested station manager.
    */
-  void SetStackInstaller (std::string type);
+  void SetStackInstaller (std::string type,
+                std::string n0 = "", const AttributeValue &v0 = EmptyAttributeValue (),
+                std::string n1 = "", const AttributeValue &v1 = EmptyAttributeValue (),
+                std::string n2 = "", const AttributeValue &v2 = EmptyAttributeValue (),
+                std::string n3 = "", const AttributeValue &v3 = EmptyAttributeValue (),
+                std::string n4 = "", const AttributeValue &v4 = EmptyAttributeValue (),
+                std::string n5 = "", const AttributeValue &v5 = EmptyAttributeValue (),
+                std::string n6 = "", const AttributeValue &v6 = EmptyAttributeValue (),
+                std::string n7 = "", const AttributeValue &v7 = EmptyAttributeValue ());
   void Report (const ns3::Ptr<ns3::NetDevice>&, std::ostream&);
   void ResetStats (const ns3::Ptr<ns3::NetDevice>&);
 private:
