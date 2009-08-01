@@ -122,23 +122,23 @@ private:
 
   ///\name Handle duplicated packets
   //\{
-  void InsertBroadcastId (Ipv4Address src, uint32_t bid);
-  bool LookupBroadcastId (Ipv4Address src, uint32_t bid);
-  void PurgeBroadcastId ();
-  struct BroadcastId
+  void InsertPacketUid (Ipv4Address src, uint32_t bid);
+  bool LookupPacketUid (Ipv4Address src, uint32_t bid);
+  void PurgePacketUid ();
+  struct PacketUid
    {
      Ipv4Address m_src;
-     uint32_t    m_broadcastId;
+     uint32_t    m_packetUid;
      Time        m_expire;
    };
   struct IsExpiredForBroadcast
   {
-    bool operator()(const struct BroadcastId & p) const
+    bool operator()(const struct PacketUid & p) const
     {
       return (p.m_expire < Simulator::Now());
     }
   };
-  std::vector<BroadcastId> m_broadcastIdCache;
+  std::vector<PacketUid> m_packetUidCache;
   //\}
 
   /**\name Handle neighbors
@@ -179,7 +179,6 @@ private:
   AodvQueue m_queue;
   /// Broadcast ID
   uint32_t m_requestId;
-  uint32_t m_broadcastId;
   /// Request sequence number
   uint32_t m_seqNo;
 

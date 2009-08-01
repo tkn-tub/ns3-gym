@@ -86,20 +86,20 @@ RoutingProtocol::PurgeRequestId ()
 }
 
 void
-RoutingProtocol::InsertBroadcastId(Ipv4Address src, uint32_t bid)
+RoutingProtocol::InsertPacketUid(Ipv4Address src, uint32_t bid)
 {
   NS_LOG_FUNCTION(this);
-   if (LookupBroadcastId (src, bid))
+   if (LookupPacketUid (src, bid))
      return;
-   struct BroadcastId broadcastId = { src, bid, BCAST_ID_SAVE + Simulator::Now () };
-   m_broadcastIdCache.push_back (broadcastId);
+   struct PacketUid packetUid = { src, bid, BCAST_ID_SAVE + Simulator::Now () };
+   m_packetUidCache.push_back (packetUid);
 }
 bool
-RoutingProtocol::LookupBroadcastId(Ipv4Address src, uint32_t bid)
+RoutingProtocol::LookupPacketUid(Ipv4Address src, uint32_t bid)
 {
-  PurgeBroadcastId ();
-  for (std::vector<BroadcastId>::const_iterator i = m_broadcastIdCache.begin (); i != m_broadcastIdCache.end (); ++i)
-    if (i->m_src == src && i->m_broadcastId == bid)
+  PurgePacketUid ();
+  for (std::vector<PacketUid>::const_iterator i = m_packetUidCache.begin (); i != m_packetUidCache.end (); ++i)
+    if (i->m_src == src && i->m_packetUid == bid)
     {
       NS_LOG_LOGIC("duplicated packet from " << src << " uid " << bid);
       return true;
@@ -107,11 +107,11 @@ RoutingProtocol::LookupBroadcastId(Ipv4Address src, uint32_t bid)
   return false;
 }
 void
-RoutingProtocol::PurgeBroadcastId ()
+RoutingProtocol::PurgePacketUid ()
 {
   NS_LOG_FUNCTION(this);
-  std::vector<BroadcastId>::iterator i = remove_if (m_broadcastIdCache.begin (), m_broadcastIdCache.end (), IsExpiredForBroadcast ());
-  m_broadcastIdCache.erase (i, m_broadcastIdCache.end ());
+  std::vector<PacketUid>::iterator i = remove_if (m_packetUidCache.begin (), m_packetUidCache.end (), IsExpiredForBroadcast ());
+  m_packetUidCache.erase (i, m_packetUidCache.end ());
 }
 
 bool
@@ -178,7 +178,7 @@ RoutingProtocol::RoutingProtocol () :
      */
   NEXT_HOP_WAIT(NODE_TRAVERSAL_TIME + MilliSeconds (10)),
   TTL_START(1), TTL_INCREMENT(2), TTL_THRESHOLD(7),
-  m_requestId (0), m_broadcastId(0), m_seqNo (0), btimer (Timer::CANCEL_ON_DESTROY), htimer (Timer::CANCEL_ON_DESTROY), ntimer (Timer::CANCEL_ON_DESTROY),
+  m_requestId (0), m_seqNo (0), btimer (Timer::CANCEL_ON_DESTROY), htimer (Timer::CANCEL_ON_DESTROY), ntimer (Timer::CANCEL_ON_DESTROY),
   rtimer (Timer::CANCEL_ON_DESTROY), lrtimer (Timer::CANCEL_ON_DESTROY), m_routeRequestTimer (Timer::CANCEL_ON_DESTROY)
 
 
@@ -348,12 +348,12 @@ RoutingProtocol::RouteInput (Ptr<const Packet> p, const Ipv4Header &header, Ptr<
     if (m_ipv4->GetInterfaceForAddress (iface.GetLocal ()) == iif)
       if (dst == iface.GetBroadcast ())
       {
-        if(LookupBroadcastId(origin, header.GetIdentification()))
+        if(LookupPacketUid(origin, p->GetUid()))
         {
           NS_LOG_LOGIC("Duplicated packet from " << origin);
           return true;
         }
-        InsertBroadcastId(origin, header.GetIdentification());
+        InsertPacketUid(origin, p->GetUid());
         NS_LOG_LOGIC ("Broadcast local delivery to " << iface.GetLocal ());
         lcb (p, header, iif);
         // TODO has TTL, forward
@@ -542,9 +542,8 @@ RoutingProtocol::SendRequest (Ipv4Address dst, bool D, bool G)
     Ptr<Packet> packet = Create<Packet> ();
     packet->AddHeader(rreqHeader);
     packet->AddHeader(tHeader);
-    m_broadcastId++;
     BuildPacket(/*packet*/packet, /*source port*/AODV_PORT, /*destination port*/AODV_PORT, /*source address*/iface.GetLocal (),
-                /*destination address*/iface.GetBroadcast(), /*id*/ m_broadcastId, /*TTL*/ NET_DIAMETER); //TODO add seqno for broadcast
+                /*destination address*/iface.GetBroadcast(), /*id*/ 0, /*TTL*/ NET_DIAMETER); //TODO add seqno for broadcast
     socket->Send (packet);
   }
 
@@ -660,6 +659,15 @@ RoutingProtocol::RecvRequest (Ptr<Packet> p, Ipv4Address receiver, Ipv4Address s
   NS_LOG_FUNCTION (this << receiver << src);
   RreqHeader rreqHeader;
   p->RemoveHeader (rreqHeader); // TODO check that header correctly found
+
+  // A node ignores all RREQs received from any node in its blacklist
+  RoutingTableEntry toPrev;
+  if(m_routingTable.LookupRoute(src, toPrev))
+  {
+    if(toPrev.IsInBlacklist())
+      return;
+  }
+
   uint32_t id = rreqHeader.GetId ();
   Ipv4Address origin = rreqHeader.GetOrigin ();
 
@@ -789,14 +797,15 @@ RoutingProtocol::SendReply (RreqHeader const & rreqHeader, RoutingTableEntry con
   if (!rreqHeader.GetUnknownSeqno () && (rreqHeader.GetDstSeqno () == m_seqNo + 1)) m_seqNo++;
   RrepHeader rrepHeader ( /*prefixSize=*/0, /*hops=*/toOrigin.GetHop (), /*dst=*/rreqHeader.GetDst (),
                         /*dstSeqNo=*/m_seqNo, /*origin=*/toOrigin.GetDestination (), /*lifeTime=*/MY_ROUTE_TIMEOUT);
-  // TODO when??
-//  rrepHeader.SetAckRequired(true);
-  RoutingTableEntry toNextHop;
-  m_routingTable.LookupRoute(toOrigin.GetNextHop (), toNextHop);
-  toNextHop.m_ackTimer.SetFunction(&RoutingProtocol::AckTimerExpire, this);
-  toNextHop.m_ackTimer.SetArguments(toNextHop.GetDestination(), BLACKLIST_TIMEOUT);
-  toNextHop.m_ackTimer.SetDelay(NEXT_HOP_WAIT);
-
+  if(0) // TODO when
+  {
+    rrepHeader.SetAckRequired(true);
+    RoutingTableEntry toNextHop;
+    m_routingTable.LookupRoute(toOrigin.GetNextHop (), toNextHop);
+    toNextHop.m_ackTimer.SetFunction(&RoutingProtocol::AckTimerExpire, this);
+    toNextHop.m_ackTimer.SetArguments(toNextHop.GetDestination(), BLACKLIST_TIMEOUT);
+    toNextHop.m_ackTimer.SetDelay(NEXT_HOP_WAIT);
+  }
   Ptr<Packet> packet = Create<Packet> ();
   packet->AddHeader (rrepHeader);
   TypeHeader tHeader (AODVTYPE_RREP);
@@ -1265,9 +1274,8 @@ RoutingProtocol::SendRerrMessage (Ptr<Packet> packet, std::vector<Ipv4Address> p
   for (std::vector<Ipv4Address>::const_iterator i = ifaces.begin (); i != ifaces.end (); ++i)
   {
     Ptr<Socket> socket = FindSocketWithInterfaceAddress (*i);
-    m_broadcastId++;
     BuildPacket (/*packet*/packet, /*source port*/AODV_PORT, /*destination port*/AODV_PORT, /*source address*/*i,
-                /*destination address*/m_socketAddresses[socket].GetBroadcast(), /*id*/m_broadcastId , /*TTL*/ 1);
+                /*destination address*/m_socketAddresses[socket].GetBroadcast(), /*id*/0 , /*TTL*/ 1);
     socket->Send (packet,0);
   }
 
