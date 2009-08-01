@@ -45,6 +45,7 @@
 #include "ns3/raw-socket-factory.h"
 #include "ns3/ipv4-raw-socket-factory.h"
 #include "src/internet-stack/udp-l4-protocol.h"
+#include <algorithm>
 
 
 /// UDP Port for AODV control traffic
@@ -170,6 +171,8 @@ RoutingProtocol::RoutingProtocol () :
   BCAST_ID_SAVE ( Scalar (2) * NET_TRAVERSAL_TIME),
   HELLO_INTERVAL(Seconds (1)),
   ALLOWED_HELLO_LOSS (2),
+  DELETE_PERIOD (Scalar(5) * std::max(ACTIVE_ROUTE_TIMEOUT, HELLO_INTERVAL)),
+  MaxHelloInterval (Scalar (1.25) * HELLO_INTERVAL), MinHelloInterval (Scalar (0.75) * HELLO_INTERVAL),
   FREQUENCY (Seconds (0.5)),
   BLACKLIST_TIMEOUT(Scalar(RREQ_RETRIES) * NET_TRAVERSAL_TIME),
     /* BLACKLIST_TIMEOUT should be suitably increased if an expanding ring search is used.  In such cases, it should be
@@ -177,16 +180,13 @@ RoutingProtocol::RoutingProtocol () :
      * This is to account for possible additional route discovery attempts.
      */
   NEXT_HOP_WAIT(NODE_TRAVERSAL_TIME + MilliSeconds (10)),
-  TTL_START(1), TTL_INCREMENT(2), TTL_THRESHOLD(7),
+  TTL_START(1), TTL_INCREMENT(2), TTL_THRESHOLD(7), MAX_REPAIR_TTL(0.3* NET_DIAMETER), LOCAL_ADD_TTL(2),
   m_requestId (0), m_seqNo (0), btimer (Timer::CANCEL_ON_DESTROY), htimer (Timer::CANCEL_ON_DESTROY), ntimer (Timer::CANCEL_ON_DESTROY),
   rtimer (Timer::CANCEL_ON_DESTROY), lrtimer (Timer::CANCEL_ON_DESTROY), m_routeRequestTimer (Timer::CANCEL_ON_DESTROY)
 
 
 {
-  MaxHelloInterval = Scalar (1.25) * HELLO_INTERVAL;
-  MinHelloInterval = Scalar (0.75) * HELLO_INTERVAL;
-  if(ACTIVE_ROUTE_TIMEOUT > HELLO_INTERVAL) DELETE_PERIOD = Scalar(5) * ACTIVE_ROUTE_TIMEOUT;
-  else DELETE_PERIOD = Scalar(5) * HELLO_INTERVAL;
+
 }
 
 TypeId
@@ -285,7 +285,7 @@ RoutingProtocol::Start ()
     // Add local broadcast record to the routing table
     Ptr<NetDevice> dev = m_ipv4->GetNetDevice (m_ipv4->GetInterfaceForAddress (iface.GetLocal ()));
     RoutingTableEntry rt (/*device=*/dev, /*dst=*/iface.GetBroadcast (), /*know seqno=*/true, /*seqno=*/0, /*iface=*/iface,
-        /*hops=*/1, /*next hop=*/iface.GetBroadcast (), /*lifetime=*/Seconds (1e9)); // TODO use infty
+                          /*hops=*/1, /*next hop=*/iface.GetBroadcast (), /*lifetime=*/Seconds (1e9)); // TODO use infty
     m_routingTable.AddRoute (rt);
   }
 
@@ -374,9 +374,20 @@ RoutingProtocol::RouteInput (Ptr<const Packet> p, const Ipv4Header &header, Ptr<
   // TODO: local delivery to non-AODV interfaces
 
   // Forwarding
+  m_routingTable.Purge(DELETE_PERIOD);
   RoutingTableEntry toDst;
   if (m_routingTable.LookupRoute (dst, toDst))
   {
+    if(toDst.GetFlag() == RTF_DOWN)
+    {
+      if(toDst.GetHop() > MAX_REPAIR_TTL)
+        return false;
+      LocalRouteRepair(dst, origin);
+      QueueEntry newEntry (p, header, ucb, ecb, MAX_QUEUE_TIME);
+      m_queue.Enqueue (newEntry);
+      NS_LOG_LOGIC("Local repair "<< dst);
+      return false;
+    }
     Ptr<Ipv4Route> route = toDst.GetRoute ();
     NS_LOG_LOGIC(route->GetSource()<<" forwarding to " << dst << " from" << origin);
 
@@ -405,11 +416,7 @@ RoutingProtocol::RouteInput (Ptr<const Packet> p, const Ipv4Header &header, Ptr<
     return true;
   }
 
-
-  QueueEntry newEntry (p, header, ucb, ecb, MAX_QUEUE_TIME);
-  m_queue.Enqueue (newEntry);
   NS_LOG_LOGIC("route not found to "<< dst);
- // m_routingTable.Print (std::cout);
   return false;
 }
 
@@ -510,7 +517,7 @@ RoutingProtocol::SendRequest (Ipv4Address dst, bool D, bool G)
   {
     Ptr<NetDevice> dev;
     rreqHeader.SetUnknownSeqno (true);
-    RoutingTableEntry newEntry (dev, dst, false, 0, Ipv4InterfaceAddress (), 0, Ipv4Address (), Simulator::Now ());
+    RoutingTableEntry newEntry (dev, dst, false, 0, Ipv4InterfaceAddress (), 0, Ipv4Address (), Seconds(0));
     newEntry.IncrementRreqCnt ();
     newEntry.SetFlag (RTF_IN_SEARCH);
     m_routingTable.AddRoute (newEntry);
@@ -620,7 +627,7 @@ RoutingProtocol::UpdateRouteLifeTime(Ipv4Address addr, Time lifetime)
   {
     rt.SetFlag(RTF_UP);
     rt.SetRreqCnt(0);
-    if(rt.GetLifeTime() < lifetime + Simulator::Now()) rt.SetLifeTime(lifetime);
+    rt.SetLifeTime( std::max(lifetime, rt.GetLifeTime()) );
     m_routingTable.Update(addr, rt);
     return true;
   }
@@ -637,18 +644,14 @@ RoutingProtocol::UpdateRouteToNeighbor (Ipv4Address sender, Ipv4Address receiver
     Ptr<NetDevice> dev = m_ipv4->GetNetDevice (m_ipv4->GetInterfaceForAddress (receiver));
     RoutingTableEntry newEntry (/*device=*/dev, /*dst=*/sender, /*know seqno=*/false, /*seqno=*/0,
                                  /*iface=*/m_ipv4->GetAddress(m_ipv4->GetInterfaceForAddress (receiver),0),
-                                /*hops=*/1, /*next hop=*/sender,/*lifetime=*/Simulator::Now () + ACTIVE_ROUTE_TIMEOUT);
+                                /*hops=*/1, /*next hop=*/sender, /*lifetime=*/ACTIVE_ROUTE_TIMEOUT);
     m_routingTable.AddRoute (newEntry);
   }
   else
   {
     toNeighbor.SetFlag (RTF_UP);
     toNeighbor.SetValidSeqNo(false);
-    if (toNeighbor.GetLifeTime () < Simulator::Now () + ACTIVE_ROUTE_TIMEOUT)
-    {
-
-      toNeighbor.SetLifeTime (Simulator::Now () + ACTIVE_ROUTE_TIMEOUT);
-    }
+    toNeighbor.SetLifeTime ( std::max(ACTIVE_ROUTE_TIMEOUT, toNeighbor.GetLifeTime ()) );
     m_routingTable.Update (sender, toNeighbor);
   }
 }
@@ -702,7 +705,7 @@ RoutingProtocol::RecvRequest (Ptr<Packet> p, Ipv4Address receiver, Ipv4Address s
     Ptr<NetDevice> dev = m_ipv4->GetNetDevice (m_ipv4->GetInterfaceForAddress (receiver));
     RoutingTableEntry newEntry (/*device=*/dev, /*dst=*/origin, /*validSeno=*/true, /*seqNo=*/rreqHeader.GetOriginSeqno (),
                                 /*iface=*/m_ipv4->GetAddress(m_ipv4->GetInterfaceForAddress (receiver),0), /*hops=*/hop, /*nextHop*/src,
-                                /*timeLife=*/Simulator::Now () + Scalar (2) * NET_TRAVERSAL_TIME - Scalar (2 * hop) * NODE_TRAVERSAL_TIME);
+                                /*timeLife=*/ Scalar (2) * NET_TRAVERSAL_TIME - Scalar (2 * hop) * NODE_TRAVERSAL_TIME);
     m_routingTable.AddRoute (newEntry);
   }
   else
@@ -714,12 +717,7 @@ RoutingProtocol::RecvRequest (Ptr<Packet> p, Ipv4Address receiver, Ipv4Address s
     toOrigin.SetOutputDevice (m_ipv4->GetNetDevice (m_ipv4->GetInterfaceForAddress (receiver)));
     toOrigin.SetInterface(m_ipv4->GetAddress(m_ipv4->GetInterfaceForAddress (receiver),0));
     toOrigin.SetHop (hop);
-    Time minimalLifetime = Simulator::Now () + Scalar (2) * NET_TRAVERSAL_TIME - Scalar (2 * hop) * NODE_TRAVERSAL_TIME;
-
-    if (toOrigin.GetLifeTime () < minimalLifetime)
-    {
-      toOrigin.SetLifeTime (minimalLifetime);
-    }
+    toOrigin.SetLifeTime ( std::max(Scalar (2) * NET_TRAVERSAL_TIME - Scalar (2 * hop) * NODE_TRAVERSAL_TIME, toOrigin.GetLifeTime ()) );
     m_routingTable.Update (origin, toOrigin);
   }
 
@@ -821,7 +819,7 @@ RoutingProtocol::SendReplyByIntermediateNode (RoutingTableEntry & toDst, Routing
 {
 
   RrepHeader rrepHeader (/*prefix size=*/0, /*hops=*/toDst.GetHop (), /*dst=*/toDst.GetDestination (), /*dst seqno=*/toDst.GetSeqNo (),
-                         /*origin=*/toOrigin.GetDestination (), /*lifetime=*/toDst.GetLifeTime () - Simulator::Now ());
+                         /*origin=*/toOrigin.GetDestination (), /*lifetime=*/toDst.GetLifeTime ());
 
   toDst.InsertPrecursor (toOrigin.GetNextHop ());
   toOrigin.InsertPrecursor (toDst.GetNextHop ());
@@ -841,7 +839,7 @@ RoutingProtocol::SendReplyByIntermediateNode (RoutingTableEntry & toDst, Routing
   if (gratRep)
   {
     RrepHeader gratRepHeader (/*prefix size=*/0, /*hops=*/toOrigin.GetHop (), /*dst=*/toOrigin.GetDestination (), /*dst seqno=*/toOrigin.GetSeqNo (),
-                              /*origin=*/toDst.GetDestination (), /*lifetime=*/toOrigin.GetLifeTime () - Simulator::Now ());
+                              /*origin=*/toDst.GetDestination (), /*lifetime=*/toOrigin.GetLifeTime ());
     Ptr<Packet> packetToDst = Create<Packet> ();
     packetToDst->AddHeader (rrepHeader);
     packetToDst->AddHeader (tHeader);
@@ -901,7 +899,7 @@ RoutingProtocol::RecvReply (Ptr<Packet> p, Ipv4Address receiver, Ipv4Address sen
   Ptr<NetDevice> dev = m_ipv4->GetNetDevice (m_ipv4->GetInterfaceForAddress (receiver));
   RoutingTableEntry newEntry (/*device=*/dev, /*dst=*/rrepHeader.GetDst (), /*validSeqNo=*/true, /*seqno=*/rrepHeader.GetDstSeqno (),
                               /*iface=*/m_ipv4->GetAddress(m_ipv4->GetInterfaceForAddress (receiver),0),/*hop=*/hop, /*nextHop=*/sender,
-                              /*lifeTime=*/Simulator::Now () + rrepHeader.GetLifeTime ());
+                              /*lifeTime=*/rrepHeader.GetLifeTime ());
   RoutingTableEntry toDst;
   if (m_routingTable.LookupRoute (rrepHeader.GetDst (), toDst))
   {
@@ -951,12 +949,12 @@ RoutingProtocol::RecvReply (Ptr<Packet> p, Ipv4Address receiver, Ipv4Address sen
 
   RoutingTableEntry toOrigin;
   if (!m_routingTable.LookupRoute (rrepHeader.GetOrigin (), toOrigin))
-    return; // Impossible! drop.
-  if (toOrigin.GetLifeTime () < (Simulator::Now () + ACTIVE_ROUTE_TIMEOUT))
   {
-    toOrigin.SetLifeTime (Simulator::Now () + ACTIVE_ROUTE_TIMEOUT);
-    m_routingTable.Update (toOrigin.GetDestination (), toOrigin);
+    return; // Impossible! drop.
   }
+  toOrigin.SetLifeTime ( std::max(ACTIVE_ROUTE_TIMEOUT, toOrigin.GetLifeTime ()) );
+  m_routingTable.Update (toOrigin.GetDestination (), toOrigin);
+
 
   // Update information about precursors
   m_routingTable.LookupRoute (rrepHeader.GetDst (), toDst);
@@ -967,7 +965,7 @@ RoutingProtocol::RecvReply (Ptr<Packet> p, Ipv4Address receiver, Ipv4Address sen
   toNextHopToDst.InsertPrecursor (toOrigin.GetNextHop ());
   m_routingTable.Update (toDst.GetNextHop (), toNextHopToDst);
 
-  // TODO add operation over unidirctinal links
+  // TODO add operation over unidirectional links
   Ptr<Packet> packet = Create<Packet> ();
   packet->AddHeader (rrepHeader);
   TypeHeader tHeader (AODVTYPE_RREP);
@@ -1007,16 +1005,12 @@ RoutingProtocol::ProcessHello (RrepHeader const & rrepHeader, Ipv4Address receiv
     Ptr<NetDevice> dev = m_ipv4->GetNetDevice (m_ipv4->GetInterfaceForAddress (receiver));
     RoutingTableEntry newEntry (/*device=*/dev, /*dst=*/rrepHeader.GetDst (), /*validSeqNo=*/true, /*seqno=*/rrepHeader.GetDstSeqno (),
                                 /*iface=*/m_ipv4->GetAddress(m_ipv4->GetInterfaceForAddress (receiver),0),
-                                /*hop=*/rrepHeader.GetHopCount (), /*nextHop=*/rrepHeader.GetDst (), /*lifeTime=*/
-    Simulator::Now () + rrepHeader.GetLifeTime ());
+                                /*hop=*/rrepHeader.GetHopCount (), /*nextHop=*/rrepHeader.GetDst (), /*lifeTime=*/rrepHeader.GetLifeTime ());
     m_routingTable.AddRoute (newEntry);
   }
   else
   {
-    if (toNeighbor.GetLifeTime () < Simulator::Now () + Scalar (ALLOWED_HELLO_LOSS) * HELLO_INTERVAL)
-    {
-      toNeighbor.SetLifeTime (Simulator::Now () + Scalar (ALLOWED_HELLO_LOSS) * HELLO_INTERVAL);
-    }
+    toNeighbor.SetLifeTime ( std::max(Scalar (ALLOWED_HELLO_LOSS) * HELLO_INTERVAL, toNeighbor.GetLifeTime ()) );
     toNeighbor.SetSeqNo (rrepHeader.GetDstSeqno ());
     toNeighbor.SetValidSeqNo (true);
     toNeighbor.SetFlag (RTF_UP);
@@ -1315,9 +1309,15 @@ RoutingProtocol::BuildPacket(Ptr<Packet> packet, uint16_t sport, uint16_t dport,
 }
 
 void
-RoutingProtocol::LocalRouteRepair (Ipv4Address dst, Ptr<Packet> p)
+RoutingProtocol::LocalRouteRepair (Ipv4Address dst, Ipv4Address origin)
 {
-  // TODO local_rt_repair
+  RoutingTableEntry toDst;
+  RoutingTableEntry toOrigin;
+  if (!m_routingTable.LookupRoute(dst, toDst)) return;
+  if (!m_routingTable.LookupRoute(origin, toOrigin)) return;
+  uint16_t ttl = std::max(toOrigin.GetHop() * 0.5, (double)toDst.GetHop()) + LOCAL_ADD_TTL;
+  ttl++;
+
 }
 
 void

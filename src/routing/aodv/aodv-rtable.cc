@@ -39,7 +39,6 @@ namespace aodv {
   The Routing Table
  */
 
-
 RoutingTableEntry::RoutingTableEntry(Ptr<NetDevice> dev, Ipv4Address dst, bool vSeqNo, u_int32_t seqNo, Ipv4InterfaceAddress iface, u_int16_t  hops,
                               Ipv4Address nextHop, Time lifetime)
                             : m_validSeqNo(vSeqNo), m_seqNo(seqNo), m_hops(hops), m_lifeTime(lifetime + Simulator::Now()), m_iface(iface),
@@ -223,7 +222,7 @@ RoutingTable::Purge(Time badLinkLifetime)
   if(m_ipv4AddressEntry.empty ()) return;
   for(std::map<Ipv4Address, RoutingTableEntry>::iterator i = m_ipv4AddressEntry.begin(); i != m_ipv4AddressEntry.end(); ++i)
   {
-    if(i->second.GetLifeTime() < Simulator::Now())
+    if(i->second.GetLifeTime() < Seconds(0))
     {
       if(i->second.GetFlag() == RTF_DOWN)
       {

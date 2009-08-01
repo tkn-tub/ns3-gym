@@ -97,6 +97,8 @@ private:
   uint16_t TTL_START;
   uint16_t TTL_INCREMENT;
   uint16_t TTL_THRESHOLD;
+  uint16_t  MAX_REPAIR_TTL;           // 0.3 * NET_DIAMETER
+  uint16_t LOCAL_ADD_TTL;
   //\}
 
   /// \name Handle Broadcast sequence number cache
@@ -189,7 +191,7 @@ private:
   /// Start protocol operation
   void Start ();
   /// Start local route repair procedure
-  void LocalRouteRepair (Ipv4Address dst, Ptr<Packet> p);
+  void LocalRouteRepair (Ipv4Address dst, Ipv4Address origin);
   /// Process broken link
   void HandleLinkFailure (Ipv4Address id);
   /// Purge all expired records from m_routingTable

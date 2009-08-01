@@ -119,7 +119,7 @@ public:
   void SetHop(uint16_t hop) { m_hops = hop; }
   uint16_t GetHop() const {return m_hops; }
   void SetLifeTime(Time lt) { m_lifeTime = lt + Simulator::Now(); }
-  Time GetLifeTime() const { return m_lifeTime; }
+  Time GetLifeTime() const { return m_lifeTime - Simulator::Now(); }
   void SetFlag(uint8_t flag) { m_flag = flag; }
   uint8_t GetFlag() const { return m_flag; }
   void SetRreqCnt(uint8_t n) { m_reqCount = n; }
