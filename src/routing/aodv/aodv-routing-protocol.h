@@ -99,6 +99,7 @@ private:
   uint16_t TTL_THRESHOLD;
   uint16_t  MAX_REPAIR_TTL;           // 0.3 * NET_DIAMETER
   uint16_t LOCAL_ADD_TTL;
+  uint16_t TIMEOUT_BUFFER;
   //\}
 
   /// \name Handle Broadcast sequence number cache
@@ -241,7 +242,7 @@ private:
   /// Send hello. TODO send independent hello per interface
   void SendHello ();
   /// Send RREQ
-  void SendRequest (Ipv4Address dst,  bool D,bool G = true);
+  void SendRequest (Ipv4Address dst,  bool D,bool G, uint16_t ttl);
   /// Send RREP
   void SendReply (RreqHeader const & rreqHeader, RoutingTableEntry const & toOrigin);
   /** Send RREP by intermediate node
@@ -273,8 +274,8 @@ private:
   void RouteCacheTimerExpire ();
   Timer lrtimer;
   void LocalRepairTimerExpire ();
-  Timer m_routeRequestTimer;
-  void RouteRequestTimerExpire(Ipv4Address dst);
+  std::map<Ipv4Address, Timer> m_addressReqTimer;
+  void RouteRequestTimerExpire(Ipv4Address dst, uint16_t lastTtl);
   void AckTimerExpire (Ipv4Address neighbor,  Time blacklistTimeout);
   void RoutingTableEntryTimerExpire(Ipv4Address dst);
   //\}

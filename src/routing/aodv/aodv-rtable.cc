@@ -172,8 +172,9 @@ RoutingTable::DeleteRoute(Ipv4Address dst)
 }
 
 bool
-RoutingTable::AddRoute(RoutingTableEntry const & rt)
+RoutingTable::AddRoute(RoutingTableEntry & rt)
 {
+  if(rt.GetFlag() != RTF_IN_SEARCH) rt.SetRreqCnt (0);
   m_ipv4AddressEntry.insert(std::make_pair(rt.GetDestination(), rt));
   return true;
 }
@@ -184,6 +185,7 @@ RoutingTable::Update(Ipv4Address dst, RoutingTableEntry & rt)
   std::map<Ipv4Address, RoutingTableEntry>::iterator i = m_ipv4AddressEntry.find(dst);
   if (i == m_ipv4AddressEntry.end()) return false;
   i->second = rt;
+  if(i->second.GetFlag() != RTF_IN_SEARCH) i->second.SetRreqCnt (0);
   return true;
 }
 

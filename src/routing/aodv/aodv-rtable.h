@@ -197,7 +197,7 @@ public:
    * \param r routing table entry
    * \return true in success
    */
-  bool AddRoute(RoutingTableEntry const & r);
+  bool AddRoute(RoutingTableEntry & r);
   /**
    * Delete routing table entry
    * \param dst destination address
