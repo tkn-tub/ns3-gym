@@ -321,7 +321,7 @@ RoutingProtocol::RouteOutput (Ptr<Packet> p, const Ipv4Header &header, uint32_t 
     m_queue.Enqueue (newEntry);
     sockerr = Socket::ERROR_NOROUTETOHOST;
     if (rt.GetFlag() == RTF_DOWN) SendRequest (dst, false, true, rt.GetHop() + TTL_INCREMENT);
-    else if(rt.GetFlag() != RTF_IN_SEARCH) SendRequest (dst, false, true, NET_DIAMETER);
+    else if(rt.GetFlag() != RTF_IN_SEARCH) SendRequest (dst, false, true, TTL_START);
     return route;
   }
 

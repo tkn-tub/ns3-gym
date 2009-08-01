@@ -161,7 +161,7 @@ AodvExample::CreateNodes ()
   mobility.Install (nodes);
 
   Ptr<ListPositionAllocator> pos = CreateObject<ListPositionAllocator>();
-  pos->Add(Vector(150.0 + radius, 0.0, 0.0));
+  pos->Add(Vector(155.0 + radius, 0.0, 0.0));
   mobility.SetPositionAllocator(pos);
   mobility.Install (node1);
 }
