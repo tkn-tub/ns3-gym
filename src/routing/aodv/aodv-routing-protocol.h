@@ -47,7 +47,6 @@ namespace ns3
 {
 namespace aodv
 {
-
 /**
  * \ingroup aodv
  * \brief AODV routing protocol
@@ -75,7 +74,6 @@ public:
   //\}
   
 private:
-
   ///\name Protocol parameters. TODO document
   //\{
   Time MAX_QUEUE_TIME;
@@ -176,8 +174,6 @@ private:
 
   /// Routing table
   RoutingTable m_routingTable;
-  /// Routing entry for desired destination
-  std::vector<RoutingTableEntry>  m_desired;
   /// A "drop-front" queue used by the routing layer to buffer packets to which it does not have a route.
   AodvQueue m_queue;
   /// Broadcast ID
@@ -221,7 +217,7 @@ private:
   /// Process hello message
   void ProcessHello(RrepHeader const & rrepHeader, Ipv4Address receiverIfaceAddr);
   
-  ///\name Recv
+  ///\name Receive control packets
   //\{
   /// Receive and process control packet
   void RecvAodv (Ptr<Socket> socket);
@@ -229,7 +225,7 @@ private:
   void RecvRequest (Ptr<Packet> p, Ipv4Address receiver, Ipv4Address src, Ipv4Header ipv4Header);
   /// Receive RREP
   void RecvReply (Ptr<Packet> p, Ipv4Address my ,Ipv4Address src, Ipv4Header ipv4Header);
-  /// receive RREP_ACK
+  /// Receive RREP_ACK
   void RecvReplyAck(Ipv4Address neighbor);
   /// Receive RERR from node with address src
   void RecvError (Ptr<Packet> p, Ipv4Address src);
@@ -237,9 +233,11 @@ private:
   
   ///\name Send
   //\{
+  /// Forward packet from route request queue
   void SendPacketFromQueue(Ipv4Address dst, Ptr<Ipv4Route> route);
+  /// Aux. send helper
   void Send(Ptr<Ipv4Route>, Ptr<const Packet>, const Ipv4Header &);
-  /// Send hello. TODO send independent hello per interface
+  /// Send hello
   void SendHello ();
   /// Send RREQ
   void SendRequest (Ipv4Address dst,  bool D,bool G, uint16_t ttl);
@@ -253,13 +251,13 @@ private:
   void SendReplyByIntermediateNode (RoutingTableEntry & toDst, RoutingTableEntry & toOrigin, bool gratRep);
   /// Send RREP_ACK
   void SendReplyAck (Ipv4Address neighbor);
-  ///\name Send RERR
-  //\{
+  /// Initiate RERR
   void SendRerrWhenBreaksLinkToNextHop (Ipv4Address nextHop);
+  /// Forward RERR
   void SendRerrMessage(Ptr<Packet> packet,  std::vector<Ipv4Address> precursors);
   //\}
-  //\}
   
+  /// Notify that packet is dropped for some reason 
   void Drop(Ptr<const Packet>, const Ipv4Header &, Socket::SocketErrno) {}
 
   ///\name Timers. TODO comment each one

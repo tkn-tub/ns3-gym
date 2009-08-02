@@ -38,24 +38,26 @@
 #include "ns3/timer.h"
 #include "ns3/net-device.h"
 
-
 namespace ns3 {
 namespace aodv {
 
 #define INFINITY2       0xff
-// #define DELETE_PERIOD   10 // seconds. TODO: remove defines
 
+/**
+ * \ingroup aodv
+ * \brief Route record states
+ */
 enum RouteFlags
 {
-  RTF_DOWN = 0,
-  RTF_UP = 1,
-  RTF_IN_REPAIR = 2,
-  RTF_IN_SEARCH = 3
+  RTF_DOWN = 0,     //!< RTF_DOWN
+  RTF_UP = 1,       //!< RTF_UP
+  RTF_IN_REPAIR = 2,//!< RTF_IN_REPAIR
+  RTF_IN_SEARCH = 3 //!< RTF_IN_SEARCH
 };
 
 /**
  * \ingroup aodv
- * \brief Route Table Entry
+ * \brief Routing table entry
  */
 class RoutingTableEntry
 {
@@ -97,7 +99,6 @@ public:
    */
   void GetPrecursors(std::vector<Ipv4Address> & prec) const;
   //\}
-
 
   /// Mark entry as "down" (i.e. disable it)
   void Invalidate (Time badLinkLifetime);
@@ -185,7 +186,7 @@ public:
 
 /**
  * \ingroup aodv
- * The Routing Table
+ * The Routing table used by AODV protocol
  */
 class RoutingTable
 {

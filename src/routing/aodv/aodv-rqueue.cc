@@ -72,7 +72,6 @@ AodvQueue::DropPacketWithDst (Ipv4Address dst)
   m_queue.erase (i, m_queue.end());
 }
 
-
 bool
 AodvQueue::Dequeue(Ipv4Address dst, QueueEntry & entry)
 {

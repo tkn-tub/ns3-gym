@@ -34,11 +34,8 @@
 #include <vector>
 #include "ns3/ipv4-routing-protocol.h"
 
-
 namespace ns3 {
 namespace aodv {
-
-
 
 /// The maximum number of packets that we allow a routing protocol to buffer.
 #define AODV_RTQ_MAX_LEN 64
@@ -50,8 +47,8 @@ namespace aodv {
  */
 struct QueueEntry
 {
-  typedef Callback<void, Ptr<Ipv4Route>, Ptr<const Packet>, const Ipv4Header &> UnicastForwardCallback;
-  typedef Callback<void, Ptr<const Packet>, const Ipv4Header &, Socket::SocketErrno > ErrorCallback;
+  typedef Ipv4RoutingProtocol::UnicastForwardCallback UnicastForwardCallback;
+  typedef Ipv4RoutingProtocol::ErrorCallback ErrorCallback;
 
   Ptr<const Packet> m_packet;
   Ipv4Header m_header;
@@ -60,8 +57,11 @@ struct QueueEntry
   /// Expire time for queue entry
   Time m_expire;
   /// c-tor
-  QueueEntry(Ptr<const Packet> pa = 0, Ipv4Header const & h = Ipv4Header(), UnicastForwardCallback ucb = 0, ErrorCallback ecb = 0, Time exp = Seconds(0)) : m_packet(pa),
-                        m_header(h), m_ucb(ucb), m_ecb(ecb), m_expire(exp) {}
+  QueueEntry(Ptr<const Packet> pa = 0, Ipv4Header const & h = Ipv4Header(), 
+             UnicastForwardCallback ucb = UnicastForwardCallback(), 
+             ErrorCallback ecb = ErrorCallback(), 
+             Time exp = Seconds(0)) 
+    : m_packet(pa), m_header(h), m_ucb(ucb), m_ecb(ecb), m_expire(exp) {}
   /**
    * Compare queue entries
    * \return true if equal
@@ -80,7 +80,9 @@ struct QueueEntry
 };
 /**
  * \ingroup aodv
- * \brief AODV Queue
+ * \brief AODV route request queue
+ * 
+ * Since AODV is an on demand routing we queue requests while looking for route.
  */
 class AodvQueue
 {
@@ -99,7 +101,6 @@ public:
   bool Find (Ipv4Address dst);
   /// Number of entries
   uint32_t GetSize ();
-
 
 private:
   std::vector<QueueEntry> m_queue;
