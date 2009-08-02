@@ -112,7 +112,7 @@ TypeHeader::Print (std::ostream &os) const
     break;
   }
   default:
-    os << "";
+    os << "UNKNOWN_TYPE";
   }
 }
 
@@ -143,6 +143,9 @@ static TypeHeaderTest g_TypeHeaderTest;
 bool TypeHeaderTest::RunTests ()
 {
   bool result(true);
+
+  TypeHeader badType(12);
+  NS_TEST_ASSERT(!badType.IsValid ());
 
   TypeHeader h(AODVTYPE_RREQ);
   NS_TEST_ASSERT(h.IsValid());
@@ -300,12 +303,20 @@ bool RreqHeaderTest::RunTests ()
   h.SetOrigin (Ipv4Address("4.3.2.1"));
   h.SetOriginSeqno (321);
   h.SetId (1);
+
   h.SetGratiousRrep (true);
   NS_TEST_ASSERT(h.GetGratiousRrep ());
+  h.SetGratiousRrep (false);
+  NS_TEST_ASSERT_EQUAL(h.GetGratiousRrep (), 0);
   h.SetDestinationOnly (true);
   NS_TEST_ASSERT(h.GetDestinationOnly ());
+  h.SetDestinationOnly (false);
+  NS_TEST_ASSERT_EQUAL(h.GetDestinationOnly (), 0);
   h.SetUnknownSeqno (true);
   NS_TEST_ASSERT(h.GetUnknownSeqno ());
+  h.SetUnknownSeqno (false);
+  NS_TEST_ASSERT_EQUAL(h.GetUnknownSeqno (), 0);
+
   Ptr<Packet> p = Create<Packet> ();
   p->AddHeader (h);
   RreqHeader h2;
@@ -326,7 +337,6 @@ RrepHeader::RrepHeader(uint8_t prefixSize, uint8_t hopCount, Ipv4Address dst,
 {
   m_lifeTime = uint32_t(lifeTime.GetMilliSeconds());
 }
-
 
 TypeId
 RrepHeader::GetInstanceTypeId() const
@@ -429,7 +439,6 @@ RrepHeader::operator==(RrepHeader const & o) const
       m_lifeTime == o.m_lifeTime);
 }
 
-
 void
 RrepHeader::SetHello(Ipv4Address origin, uint32_t srcSeqNo, Time lifetime)
 {
@@ -463,18 +472,28 @@ bool RrepHeaderTest::RunTests ()
 {
   bool result(true);
 
-  RrepHeader h;
-  h.SetDst (Ipv4Address("1.2.3.4"));
+  RrepHeader h (/*prefixSize*/0, /*hopCount*/12, /*dst*/Ipv4Address("1.2.3.4"), /*dstSeqNo*/2,
+                /*origin*/Ipv4Address("4.3.2.1"), /*lifetime*/Seconds(3));
+  NS_TEST_ASSERT_EQUAL (h.GetPrefixSize (), 0);
+  NS_TEST_ASSERT_EQUAL (h.GetHopCount (), 12);
+  NS_TEST_ASSERT_EQUAL (h.GetDst (), Ipv4Address("1.2.3.4"));
+  NS_TEST_ASSERT_EQUAL (h.GetDstSeqno (), 2);
+  NS_TEST_ASSERT_EQUAL (h.GetOrigin (), Ipv4Address("4.3.2.1"));
+  NS_TEST_ASSERT_EQUAL (h.GetLifeTime(), Seconds(3));
+  h.SetDst (Ipv4Address("1.1.1.1"));
+  NS_TEST_ASSERT_EQUAL (h.GetDst (), Ipv4Address("1.1.1.1"));
   h.SetDstSeqno (123);
-  h.SetOrigin (Ipv4Address("4.3.2.1"));
+  NS_TEST_ASSERT_EQUAL (h.GetDstSeqno (), 123);
+  h.SetOrigin (Ipv4Address("4.4.4.4"));
+  NS_TEST_ASSERT_EQUAL (h.GetOrigin (), Ipv4Address("4.4.4.4"));
   h.SetLifeTime(MilliSeconds(1200));
+  NS_TEST_ASSERT_EQUAL (h.GetLifeTime(), MilliSeconds(1200));
   h.SetAckRequired(true);
   NS_TEST_ASSERT(h.GetAckRequired ());
   h.SetAckRequired(false);
   NS_TEST_ASSERT(!h.GetAckRequired ());
   h.SetPrefixSize(2);
-  uint8_t sz = h.GetPrefixSize();
-  NS_TEST_ASSERT_EQUAL(2, sz);
+  NS_TEST_ASSERT_EQUAL (h.GetPrefixSize (), 2);
 
   Ptr<Packet> p = Create<Packet> ();
   p->AddHeader (h);

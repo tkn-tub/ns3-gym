@@ -41,8 +41,6 @@
 namespace ns3 {
 namespace aodv {
 
-#define INFINITY2       0xff
-
 /**
  * \ingroup aodv
  * \brief Route record states
@@ -126,8 +124,9 @@ public:
   void SetRreqCnt(uint8_t n) { m_reqCount = n; }
   uint8_t GetRreqCnt() const { return m_reqCount; }
   void IncrementRreqCnt() { m_reqCount++; }
-  bool IsInBlacklist() const { return m_blackListState; }
+  bool IsInBlacklist () const { return m_blackListState; }
   void SetUnidirectional(bool u) { m_blackListState = u; }
+  bool IsUnidirectional () const { return m_blackListState; }
   void SetBalcklistTimeout (Time t) { m_blackListTimeout = t; }
   Time GetBlacklistTimeout () { return m_blackListTimeout; }
   //\}
@@ -191,8 +190,12 @@ public:
 class RoutingTable
 {
 public:
-  RoutingTable() {}
-
+  RoutingTable(Time t) : m_badLinkLifetime (t) {}
+  ///\name Handle life time of invalid route
+  //\{
+  Time GetBadLinkLifetime () const { return m_badLinkLifetime; }
+  void SetBadLinkLifetime (Time t) { m_badLinkLifetime = t; }
+  //\}
   /**
    * Add routing table entry if it doesn't yet exist in routing table
    * \param r routing table entry
@@ -211,7 +214,7 @@ public:
    * \param rt entry with destination address dst, if exists
    * \return true on success
    */
-  bool LookupRoute(Ipv4Address dst, RoutingTableEntry & rt) const;
+  bool LookupRoute(Ipv4Address dst, RoutingTableEntry & rt);
   /// Update routing table
   bool Update(Ipv4Address dst, RoutingTableEntry & rt);
   /// Set routing table entry flags
@@ -229,7 +232,7 @@ public:
    */
   void InvalidateRoutesWithDst(std::map<Ipv4Address, uint32_t> const & unreachable, Time badLinkLifetime);
   /// Delete all outdated entries and invalidate valid entry if Lifetime is expired
-  void Purge(Time badLinkLifetime);
+  void Purge();
   /** Mark entry as unidirectional (e.g. add this neighbor to "blacklist" for blacklistTimeout period)
    * \param neighbor - neighbor address link to which assumed to be unidirectional
    * \return true on success
@@ -240,6 +243,7 @@ public:
 
 private:
   std::map<Ipv4Address, RoutingTableEntry> m_ipv4AddressEntry;
+  Time m_badLinkLifetime;
 };
 
 }}
