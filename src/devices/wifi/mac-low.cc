@@ -331,7 +331,6 @@ MacLow::CancelAllEvents (void)
       m_listener->Cancel ();
       m_listener = 0;
     }
-  NS_LOG_UNCOND("DONE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 }
 
 void
