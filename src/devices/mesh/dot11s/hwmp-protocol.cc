@@ -201,13 +201,12 @@ HwmpProtocol::DoDispose ()
     {
       i->second.Cancel ();
     }
+  m_proactivePreqTimer.Cancel();
   m_preqTimeouts.clear ();
   m_lastDataSeqno.clear ();
   m_lastHwmpSeqno.clear ();
   m_rqueue.clear ();
   m_rtable = 0;
-
-  //TODO: clear plugins
 }
 
 bool

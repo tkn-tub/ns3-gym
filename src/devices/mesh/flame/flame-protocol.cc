@@ -186,9 +186,14 @@ FlameProtocol::RequestRoute (uint32_t sourceIface, const Mac48Address source, co
       FlameHeader flameHdr;
       packet->RemoveHeader (flameHdr);
       FlameTag tag;
+      
       if (!packet->RemovePacketTag (tag))
         {
-          NS_FATAL_ERROR ("FLAME tag must exust here");
+          NS_FATAL_ERROR ("FLAME tag must exist here");
+        }
+      if (HandleDataFrame (flameHdr.GetSeqno (), source, flameHdr, tag.transmitter, sourceIface))
+        {
+          return false;
         }
       if (source == GetAddress ())
         {
@@ -215,10 +220,7 @@ FlameProtocol::RequestRoute (uint32_t sourceIface, const Mac48Address source, co
         }
       else
         {
-          if (HandleDataFrame (flameHdr.GetSeqno (), source, flameHdr, tag.transmitter, sourceIface))
-            {
-              return false;
-            }
+          
           FlameRtable::LookupResult result = m_rtable->Lookup (destination);
           if (tag.receiver != Mac48Address::GetBroadcast ())
             {
@@ -265,12 +267,22 @@ FlameProtocol::RemoveRoutingStuff (uint32_t fromIface, const Mac48Address source
     {
       NS_FATAL_ERROR ("FLAME tag must exist when packet is coming to protocol");
     }
-  //TODO: send path update
   FlameHeader flameHdr;
   packet->RemoveHeader (flameHdr);
+  if ((destination == GetAddress ()) && (m_lastBroadcast + m_broadcastInterval < Simulator::Now ()))
+      {
+        Ptr<Packet> packet = Create<Packet> ();
+        m_mp->Send(packet, Mac48Address::GetBroadcast (), 0);
+        m_lastBroadcast = Simulator::Now ();
+      }
   NS_ASSERT (protocolType == FLAME_PROTOCOL);
   protocolType = flameHdr.GetProtocol ();
-  return (!HandleDataFrame (flameHdr.GetSeqno (), source, flameHdr, tag.transmitter, fromIface));
+  if ((HandleDataFrame (flameHdr.GetSeqno (), source, flameHdr, tag.transmitter, fromIface))
+      || packet->GetSize () == 0)
+    {
+      return false;
+    }
+  return true;
 }
 bool
 FlameProtocol::Install (Ptr<MeshPointDevice> mp)
@@ -316,12 +328,7 @@ FlameProtocol::HandleDataFrame (uint16_t seqno, Mac48Address source, const Flame
       return true;
     }
   FlameRtable::LookupResult result = m_rtable->Lookup (source);
-  if (result.retransmitter == Mac48Address::GetBroadcast ())
-    {
-      m_rtable->AddPath (source, receiver, fromInterface, flameHdr.GetCost (), flameHdr.GetSeqno ());
-      return false;
-    }
-  if (result.seqnum >= seqno)
+  if ((result.retransmitter != Mac48Address::GetBroadcast ()) && (result.seqnum >= seqno))
     {
       return true;
     }

@@ -179,6 +179,7 @@ MeshTest::Run ()
   Simulator::Schedule (Seconds(totalTime), & MeshTest::Report, this);
   Simulator::Stop (Seconds (totalTime));
   Simulator::Run ();
+  std::cerr << "finish success\n";
   Simulator::Destroy ();
   return 0;
 }
