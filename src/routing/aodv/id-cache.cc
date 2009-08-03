@@ -32,11 +32,12 @@ namespace ns3
 namespace aodv
 {
 void
-IdCache::InsertId (Ipv4Address addr, uint32_t id, Time saveTime)
+IdCache::InsertId (Ipv4Address addr, uint32_t id, Time saveTime )
 {
   if (LookupId (addr, id))
     return;
-  struct UniqueId uniqueId = { addr, id, saveTime + Simulator::Now () };
+  struct UniqueId uniqueId =
+  { addr, id, saveTime + Simulator::Now () };
   m_idCache.push_back (uniqueId);
 }
 bool
