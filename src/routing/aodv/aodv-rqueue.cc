@@ -30,11 +30,46 @@
 #include "ns3/test.h"
 #include <algorithm>
 #include <functional>
+#include "ns3/ipv4-route.h"
+#include "ns3/log.h"
 
+NS_LOG_COMPONENT_DEFINE ("AodvRequestQueue");
 
 namespace ns3 {
 namespace aodv {
 
+#if 0
+#ifdef RUN_SELF_TESTS
+/// Unit test for AODV routing table entry
+struct QueueEntryTest : public Test
+{
+  QueueEntryTest () : Test ("AODV/QueueEntry"), result(true) {}
+  virtual bool RunTests();
+  void Unicast (Ptr<Ipv4Route> route, Ptr<const Packet> packet, const Ipv4Header & header);
+  void Error (Ptr<const Packet>, const Ipv4Header &, Socket::SocketErrno);
+  bool result;
+};
+
+/// Test instance
+static QueueEntryTest g_QueueEntryTest;
+
+bool
+QueueEntryTest::RunTests ()
+{
+  Ptr<Packet> packet;
+  Ipv4Header h;
+  h.SetDestination (Ipv4Address("1.2.3.4"));
+  h.SetSource (Ipv4Address("4.3.2.1"));
+  Ipv4RoutingProtocol::UnicastForwardCallback ucb = MakeCallback (&QueueEntryTest::Unicast, this);
+  Ipv4RoutingProtocol::ErrorCallback ecb = MakeCallback (&QueueEntryTest::Error, this);
+  QueueEntry entry (packet, h, ucb, ecb, Seconds(5));
+//  NS_TEST_ASSERT_EQUAL (h.GetDestination (),  entry.GetIpv4Header ().GetDestination ());
+//  NS_TEST_ASSERT_EQUAL (h.GetSource (),  entry.GetIpv4Header ().GetSource ());
+
+  return result;
+}
+#endif
+#endif
 
 uint32_t
 RequestQueue::GetSize ()
@@ -49,24 +84,30 @@ RequestQueue::Enqueue(QueueEntry & entry)
   Purge();
   entry.SetExpireTime (m_queueTimeout);
 
-  if (m_queue.size() == m_maxLen) Drop(RemoveHead()); // Drop the most aged packet
+  if (m_queue.size() == m_maxLen) Drop(Pop(), "Drop the most aged packet"); // Drop the most aged packet
   m_queue.push_back(entry);
 }
 
 QueueEntry
 RequestQueue::Dequeue()
 {
+  NS_LOG_FUNCTION (this);
   Purge();
-  return RemoveHead();
+  return Pop();
 }
 
 void
 RequestQueue::DropPacketWithDst (Ipv4Address dst)
 {
+  NS_LOG_FUNCTION (this << dst);
   Purge();
   const Ipv4Address addr = dst;
   std::vector<QueueEntry>::iterator i = std::remove_if (m_queue.begin(), m_queue.end(), std::bind2nd(std::ptr_fun( RequestQueue::IsEqual), dst) );
-  m_queue.erase (i, m_queue.end());
+  for(std::vector<QueueEntry>::iterator j = i; i != m_queue.end(); ++j)
+  {
+    Drop(*j, "DropPacketWithDst ");
+  }
+  m_queue.erase(i, m_queue.end());
 }
 
 bool
@@ -93,8 +134,9 @@ RequestQueue::Find(Ipv4Address dst)
 }
 
 QueueEntry
-RequestQueue::RemoveHead()
+RequestQueue::Pop()
 {
+  NS_LOG_FUNCTION (this);
   QueueEntry entry = m_queue.front();
   m_queue.erase(m_queue.begin());
   return entry;
@@ -113,14 +155,16 @@ RequestQueue::Purge()
 {
   std::vector<QueueEntry>::iterator i = std::remove_if(m_queue.begin(), m_queue.end(), IsExpired());
   for (std::vector<QueueEntry>::iterator j = i ; j < m_queue.end(); ++j)
-    Drop (*j);
+  {
+    Drop (*j, "Drop outdated packet ");
+  }
   m_queue.erase(i, m_queue.end());
 }
 
 void
-RequestQueue::Drop(QueueEntry)
+RequestQueue::Drop(QueueEntry en, std::string reason)
 {
-  // TODO do nothing now.
+  NS_LOG_LOGIC (reason << en.GetPacket ()->GetUid ());
 }
 
 #if 0

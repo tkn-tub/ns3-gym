@@ -31,6 +31,7 @@
 #include "aodv-rtable.h"
 #include "aodv-rqueue.h"
 #include "aodv-packet.h"
+#include "id-cache.h"
 
 #include "src/internet-stack/ipv4-l3-protocol.h"
 
@@ -47,6 +48,8 @@ namespace ns3
 {
 namespace aodv
 {
+
+
 /**
  * \ingroup aodv
  * \brief AODV routing protocol
@@ -76,72 +79,33 @@ public:
 private:
   ///\name Protocol parameters. TODO document
   //\{
-  Time MAX_QUEUE_TIME;
-  uint32_t RREQ_RETRIES;        // 2
-  Time ACTIVE_ROUTE_TIMEOUT;    // 3 seconds
-  Time MY_ROUTE_TIMEOUT;       // 2 * ACTIVE_ROUTE_TIMEOUT
-  uint16_t NET_DIAMETER;
-  Time NODE_TRAVERSAL_TIME;         //  40 milliseconds
-  Time NET_TRAVERSAL_TIME;          // 2 * NODE_TRAVERSAL_TIME * NET_DIAMETER
-  Time BCAST_ID_SAVE;
-  Time HELLO_INTERVAL;
-  uint32_t ALLOWED_HELLO_LOSS;
-  Time DELETE_PERIOD;
-  Time MaxHelloInterval; //        (1.25 * HELLO_INTERVAL)
-  Time MinHelloInterval; //        (0.75 * HELLO_INTERVAL)
+  uint32_t RreqRetries;        // 2
+  Time ActiveRouteTimeout;    // 3 seconds
+  Time MyRouteTimeout;       // 2 * ActiveRouteTimeout
+  uint16_t NetDiameter;
+  Time NodeTraversalTime;         //  40 milliseconds
+  Time NetTraversalTime;          // 2 * NodeTraversalTime * NetDiameter
+  Time PathDiscoveryTime;
+  Time HelloInterval;
+  uint32_t AllowedHelloLoss;
+  /**
+   * DeletePeriod is intended to provide an upper bound on the time for which an upstream node A
+   * can have a neighbor B as an active next hop for destination D, while B has invalidated the route to D.
+   */
+  Time DeletePeriod;
+  Time MaxHelloInterval; //        (1.25 * HelloInterval)
+  Time MinHelloInterval; //        (0.75 * HelloInterval)
   Time FREQUENCY;
-  Time NEXT_HOP_WAIT;
-  uint16_t TTL_START;
-  uint16_t TTL_INCREMENT;
-  uint16_t TTL_THRESHOLD;
-  uint16_t  MAX_REPAIR_TTL;           // 0.3 * NET_DIAMETER
+  Time NextHopWait;
+  uint16_t TtlStart;
+  uint16_t TtlIncrement;
+  uint16_t TtlThreshold;
+  uint16_t  MaxRepairTtl;           // 0.3 * NetDiameter
   uint16_t LOCAL_ADD_TTL;
   uint16_t TIMEOUT_BUFFER;
   Time BLACKLIST_TIMEOUT;
   uint32_t MaxQueueLen;
-  Time QueueTimeout;
-  //\}
-
-  /// \name Handle Broadcast sequence number cache
-  //\{
-  void InsertRequestId (Ipv4Address origin, uint32_t rid);
-  bool LookupRequestId (Ipv4Address origin, uint32_t rid);
-  void PurgeRequestId ();
-  struct RequestId
-  {
-    Ipv4Address m_origin;
-    uint32_t    m_id;
-    Time        m_expire;
-  };
-  struct IsExpiredForRequest
-  {
-    bool operator()(const struct RequestId & b) const
-    {
-      return (b.m_expire < Simulator::Now());
-    }
-  };
-  std::vector<RequestId> m_requestIdCache;
-  //\}
-
-  ///\name Handle duplicated packets
-  //\{
-  void InsertPacketUid (Ipv4Address src, uint32_t bid);
-  bool LookupPacketUid (Ipv4Address src, uint32_t bid);
-  void PurgePacketUid ();
-  struct PacketUid
-   {
-     Ipv4Address m_src;
-     uint32_t    m_packetUid;
-     Time        m_expire;
-   };
-  struct IsExpiredForBroadcast
-  {
-    bool operator()(const struct PacketUid & p) const
-    {
-      return (p.m_expire < Simulator::Now());
-    }
-  };
-  std::vector<PacketUid> m_packetUidCache;
+  Time MaxQueueTime;
   //\}
 
   /**\name Handle neighbors
@@ -182,6 +146,8 @@ private:
   uint32_t m_requestId;
   /// Request sequence number
   uint32_t m_seqNo;
+  /// Handle duplicated packets
+  IdCache m_idCache;
 
   UnicastForwardCallback m_scb;
   ErrorCallback m_ecb;

@@ -7,6 +7,7 @@ def build(bld):
         'aodv-rtable.cc',
         'aodv-rqueue.cc',
         'aodv-packet.cc',
+        'id-cache.cc',
         'aodv-routing-protocol.cc',
         ]
 
@@ -16,6 +17,7 @@ def build(bld):
         'aodv-rtable.h',
         'aodv-rqueue.h',
         'aodv-packet.h',
+        'id-cache.h',
         'aodv-routing-protocol.h',
         ]
 

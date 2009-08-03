@@ -61,7 +61,8 @@ public:
   {
     return ((m_packet == o.m_packet)/*&& header == o.header*/ && (m_expire == o.m_expire));
   }
-
+  ///\name Fields
+  //\{
   UnicastForwardCallback GetUnicastForwardCallback () const { return m_ucb; }
   void SetUnicastForwardCallback (UnicastForwardCallback ucb) { m_ucb = ucb; }
   ErrorCallback GetErrorCallback () const { return m_ecb; }
@@ -72,6 +73,7 @@ public:
   void SetIpv4Header (Ipv4Header h) { m_header = h; }
   void SetExpireTime (Time exp) { m_expire = exp + Simulator::Now(); }
   Time GetExpireTime () const { return m_expire - Simulator::Now(); }
+  //\}
 private:
   Ptr<const Packet> m_packet;
   Ipv4Header m_header;
@@ -114,11 +116,11 @@ public:
 private:
   std::vector<QueueEntry> m_queue;
   /// Remove and return first entry from queue
-  QueueEntry RemoveHead();
+  QueueEntry Pop();
   /// Remove all expired entries
   void Purge();
   /// Notify that packet is dropped from queue by timeout
-  void Drop (QueueEntry e);
+  void Drop (QueueEntry en, std::string reason);
   /// The maximum number of packets that we allow a routing protocol to buffer.
   uint32_t m_maxLen;
   /// The maximum period of time that a routing protocol is allowed to buffer a packet for, seconds.
