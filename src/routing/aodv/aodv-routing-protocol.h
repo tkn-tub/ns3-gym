@@ -90,7 +90,6 @@ private:
   Time MaxHelloInterval; //        (1.25 * HELLO_INTERVAL)
   Time MinHelloInterval; //        (0.75 * HELLO_INTERVAL)
   Time FREQUENCY;
-  Time BLACKLIST_TIMEOUT;
   Time NEXT_HOP_WAIT;
   uint16_t TTL_START;
   uint16_t TTL_INCREMENT;
@@ -98,6 +97,8 @@ private:
   uint16_t  MAX_REPAIR_TTL;           // 0.3 * NET_DIAMETER
   uint16_t LOCAL_ADD_TTL;
   uint16_t TIMEOUT_BUFFER;
+  Time BLACKLIST_TIMEOUT;
+
   //\}
 
   /// \name Handle Broadcast sequence number cache

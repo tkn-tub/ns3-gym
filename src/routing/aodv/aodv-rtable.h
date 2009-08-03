@@ -119,8 +119,8 @@ public:
   uint16_t GetHop() const {return m_hops; }
   void SetLifeTime(Time lt) { m_lifeTime = lt + Simulator::Now(); }
   Time GetLifeTime() const { return m_lifeTime - Simulator::Now(); }
-  void SetFlag(uint8_t flag) { m_flag = flag; }
-  uint8_t GetFlag() const { return m_flag; }
+  void SetFlag(RouteFlags flag) { m_flag = flag; }
+  RouteFlags GetFlag() const { return m_flag; }
   void SetRreqCnt(uint8_t n) { m_reqCount = n; }
   uint8_t GetRreqCnt() const { return m_reqCount; }
   void IncrementRreqCnt() { m_reqCount++; }
@@ -165,7 +165,7 @@ private:
   /// Output interface address
   Ipv4InterfaceAddress m_iface;
   /// Routing flags: down, up or in repair
-  uint8_t m_flag;
+  RouteFlags m_flag;
 
   /// List of precursors
   std::vector<Ipv4Address> m_precursorList;
@@ -216,13 +216,13 @@ public:
    */
   bool LookupRoute(Ipv4Address dst, RoutingTableEntry & rt);
   /// Update routing table
-  bool Update(Ipv4Address dst, RoutingTableEntry & rt);
+  bool Update(RoutingTableEntry & rt);
   /// Set routing table entry flags
-  void SetEntryState (Ipv4Address dst, uint8_t state /*TODO use enum*/);
+  bool SetEntryState (Ipv4Address dst, RouteFlags state /*TODO use enum*/);
   /**
    * Lookup valid routing entries with next hop Address dst and not empty list of precursors.
    */
-  void GetListOfDestinationWithNextHop(Ipv4Address nextHop, std::map<Ipv4Address, uint32_t> unreachable);
+  void GetListOfDestinationWithNextHop (Ipv4Address nextHop, std::map<Ipv4Address, uint32_t> unreachable);
   /**
    *   Update routing entries with this destinations as follows:
    *  1. The destination sequence number of this routing entry, if it
@@ -230,9 +230,9 @@ public:
    *  2. The entry is invalidated by marking the route entry as invalid
    *  3. The Lifetime field is updated to current time plus DELETE_PERIOD.
    */
-  void InvalidateRoutesWithDst(std::map<Ipv4Address, uint32_t> const & unreachable, Time badLinkLifetime);
+  void InvalidateRoutesWithDst (std::map<Ipv4Address, uint32_t> const & unreachable);
   /// Delete all outdated entries and invalidate valid entry if Lifetime is expired
-  void Purge();
+  void Purge ();
   /** Mark entry as unidirectional (e.g. add this neighbor to "blacklist" for blacklistTimeout period)
    * \param neighbor - neighbor address link to which assumed to be unidirectional
    * \return true on success
