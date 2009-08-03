@@ -98,7 +98,8 @@ private:
   uint16_t LOCAL_ADD_TTL;
   uint16_t TIMEOUT_BUFFER;
   Time BLACKLIST_TIMEOUT;
-
+  uint32_t MaxQueueLen;
+  Time QueueTimeout;
   //\}
 
   /// \name Handle Broadcast sequence number cache
@@ -176,7 +177,7 @@ private:
   /// Routing table
   RoutingTable m_routingTable;
   /// A "drop-front" queue used by the routing layer to buffer packets to which it does not have a route.
-  AodvQueue m_queue;
+  RequestQueue m_queue;
   /// Broadcast ID
   uint32_t m_requestId;
   /// Request sequence number

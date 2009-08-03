@@ -33,35 +33,26 @@
 #include "ns3/packet.h"
 #include <vector>
 #include "ns3/ipv4-routing-protocol.h"
+#include "ns3/simulator.h"
+
 
 namespace ns3 {
 namespace aodv {
 
-/// The maximum number of packets that we allow a routing protocol to buffer.
-#define AODV_RTQ_MAX_LEN 64
-/// The maximum period of time that a routing protocol is allowed to buffer a packet for, seconds.
-#define AODV_RTQ_TIMEOUT 30
 /**
  * \ingroup aodv
  * \brief AODV Queue Entry
  */
-struct QueueEntry
+class QueueEntry
 {
+public:
   typedef Ipv4RoutingProtocol::UnicastForwardCallback UnicastForwardCallback;
   typedef Ipv4RoutingProtocol::ErrorCallback ErrorCallback;
-
-  Ptr<const Packet> m_packet;
-  Ipv4Header m_header;
-  UnicastForwardCallback m_ucb;
-  ErrorCallback m_ecb;
-  /// Expire time for queue entry
-  Time m_expire;
   /// c-tor
-  QueueEntry(Ptr<const Packet> pa = 0, Ipv4Header const & h = Ipv4Header(), 
-             UnicastForwardCallback ucb = UnicastForwardCallback(), 
-             ErrorCallback ecb = ErrorCallback(), 
-             Time exp = Seconds(0)) 
-    : m_packet(pa), m_header(h), m_ucb(ucb), m_ecb(ecb), m_expire(exp) {}
+  QueueEntry(Ptr<const Packet> pa = 0, Ipv4Header const & h = Ipv4Header(),
+             UnicastForwardCallback ucb = UnicastForwardCallback(),ErrorCallback ecb = ErrorCallback(),
+             Time exp = Simulator::Now()) : m_packet(pa), m_header(h), m_ucb(ucb), m_ecb(ecb), m_expire(exp + Simulator::Next()) {}
+
   /**
    * Compare queue entries
    * \return true if equal
@@ -71,12 +62,23 @@ struct QueueEntry
     return ((m_packet == o.m_packet)/*&& header == o.header*/ && (m_expire == o.m_expire));
   }
 
-  UnicastForwardCallback GetUnicastForwardCallback() const { return m_ucb; }
-  void SetUnicastForwardCallback(UnicastForwardCallback ucb) { m_ucb = ucb; }
-  Ptr<const Packet> GetPacket() const { return m_packet; }
-  void SetPacket(Ptr<const Packet> p) { m_packet = p; }
+  UnicastForwardCallback GetUnicastForwardCallback () const { return m_ucb; }
+  void SetUnicastForwardCallback (UnicastForwardCallback ucb) { m_ucb = ucb; }
+  ErrorCallback GetErrorCallback () const { return m_ecb; }
+  void SetErrorCallback (ErrorCallback ecb) { m_ecb = ecb; }
+  Ptr<const Packet> GetPacket () const { return m_packet; }
+  void SetPacket (Ptr<const Packet> p) { m_packet = p; }
   Ipv4Header GetIpv4Header() const { return m_header; }
-  void SetIpv4Header(Ipv4Header h) { m_header = h; }
+  void SetIpv4Header (Ipv4Header h) { m_header = h; }
+  void SetExpireTime (Time exp) { m_expire = exp + Simulator::Now(); }
+  Time GetExpireTime () const { return m_expire - Simulator::Now(); }
+private:
+  Ptr<const Packet> m_packet;
+  Ipv4Header m_header;
+  UnicastForwardCallback m_ucb;
+  ErrorCallback m_ecb;
+  /// Expire time for queue entry
+  Time m_expire;
 };
 /**
  * \ingroup aodv
@@ -84,11 +86,11 @@ struct QueueEntry
  * 
  * Since AODV is an on demand routing we queue requests while looking for route.
  */
-class AodvQueue
+class RequestQueue
 {
 public:
   /// Default c-tor
-  AodvQueue ();
+  RequestQueue (uint32_t maxLen, Time routeToQueueTimeout) : m_maxLen (maxLen), m_queueTimeout (routeToQueueTimeout) {}
   /// Push entry in queue.
   void Enqueue (QueueEntry & entry);
   /// Returns a entry from the head of the queue.
@@ -101,6 +103,13 @@ public:
   bool Find (Ipv4Address dst);
   /// Number of entries
   uint32_t GetSize ();
+  ///\name Fields
+  //\{
+  uint32_t GetMaxQueueLen () const { return m_maxLen; }
+  void SetMaxQueueLen (uint32_t len) { m_maxLen = len; }
+  void SetQueueTimeout (Time t) { m_queueTimeout = t; }
+  Time GetQueueTimeout () const { return m_queueTimeout; }
+  //\}
 
 private:
   std::vector<QueueEntry> m_queue;
@@ -110,11 +119,11 @@ private:
   void Purge();
   /// Notify that packet is dropped from queue by timeout
   void Drop (QueueEntry e);
-  /// Maximum number of entries in queue
-  uint32_t m_maxSize;
-  /// Life time of queue entry in queue
-  Time m_timeout;
-  static bool IsEqual(QueueEntry  en, const Ipv4Address dst) { return (en.m_header.GetDestination() == dst);}
+  /// The maximum number of packets that we allow a routing protocol to buffer.
+  uint32_t m_maxLen;
+  /// The maximum period of time that a routing protocol is allowed to buffer a packet for, seconds.
+  Time m_queueTimeout;
+  static bool IsEqual(QueueEntry  en, const Ipv4Address dst) { return (en.GetIpv4Header ().GetDestination () == dst);}
 };
 
 

@@ -35,49 +35,46 @@
 namespace ns3 {
 namespace aodv {
 
-AodvQueue::AodvQueue() : m_maxSize(AODV_RTQ_MAX_LEN), m_timeout(Seconds(AODV_RTQ_TIMEOUT))
-{
-}
 
 uint32_t
-AodvQueue::GetSize ()
+RequestQueue::GetSize ()
 {
   Purge();
   return m_queue.size();
 }
 
 void
-AodvQueue::Enqueue(QueueEntry & entry)
+RequestQueue::Enqueue(QueueEntry & entry)
 {
   Purge();
-  entry.m_expire = Simulator::Now() + m_timeout;
+  entry.SetExpireTime (m_queueTimeout);
 
-  if (m_queue.size() == m_maxSize) Drop(RemoveHead()); // Drop the most aged packet
+  if (m_queue.size() == m_maxLen) Drop(RemoveHead()); // Drop the most aged packet
   m_queue.push_back(entry);
 }
 
 QueueEntry
-AodvQueue::Dequeue()
+RequestQueue::Dequeue()
 {
   Purge();
   return RemoveHead();
 }
 
 void
-AodvQueue::DropPacketWithDst (Ipv4Address dst)
+RequestQueue::DropPacketWithDst (Ipv4Address dst)
 {
   Purge();
   const Ipv4Address addr = dst;
-  std::vector<QueueEntry>::iterator i = std::remove_if (m_queue.begin(), m_queue.end(), std::bind2nd(std::ptr_fun( AodvQueue::IsEqual), dst) );
+  std::vector<QueueEntry>::iterator i = std::remove_if (m_queue.begin(), m_queue.end(), std::bind2nd(std::ptr_fun( RequestQueue::IsEqual), dst) );
   m_queue.erase (i, m_queue.end());
 }
 
 bool
-AodvQueue::Dequeue(Ipv4Address dst, QueueEntry & entry)
+RequestQueue::Dequeue(Ipv4Address dst, QueueEntry & entry)
 {
   Purge();
   for(std::vector<QueueEntry>::iterator i = m_queue.begin(); i != m_queue.end(); ++i)
-    if(i->m_header.GetDestination() == dst)
+    if(i->GetIpv4Header ().GetDestination() == dst)
       {
         entry = *i;
         m_queue.erase(i);
@@ -87,16 +84,16 @@ AodvQueue::Dequeue(Ipv4Address dst, QueueEntry & entry)
 }
 
 bool
-AodvQueue::Find(Ipv4Address dst)
+RequestQueue::Find(Ipv4Address dst)
 {
   for( std::vector<QueueEntry>::const_iterator i = m_queue.begin(); i != m_queue.end(); ++i)
-    if(i->m_header.GetDestination() == dst)
+    if(i->GetIpv4Header ().GetDestination() == dst)
       return true;
   return false;
 }
 
 QueueEntry
-AodvQueue::RemoveHead()
+RequestQueue::RemoveHead()
 {
   QueueEntry entry = m_queue.front();
   m_queue.erase(m_queue.begin());
@@ -107,12 +104,12 @@ struct IsExpired
 {
   bool operator() (QueueEntry const & e) const
   {
-    return (e.m_expire < Simulator::Now());
+    return (e.GetExpireTime () < Seconds(0));
   }
 };
 
 void
-AodvQueue::Purge()
+RequestQueue::Purge()
 {
   std::vector<QueueEntry>::iterator i = std::remove_if(m_queue.begin(), m_queue.end(), IsExpired());
   for (std::vector<QueueEntry>::iterator j = i ; j < m_queue.end(); ++j)
@@ -121,14 +118,14 @@ AodvQueue::Purge()
 }
 
 void
-AodvQueue::Drop(QueueEntry)
+RequestQueue::Drop(QueueEntry)
 {
   // TODO do nothing now.
 }
 
 #if 0
 #ifdef RUN_SELF_TESTS
-/// Unit test for AodvQueue
+/// Unit test for RequestQueue
 struct AodvRqueueTest : public Test
 {
   AodvRqueueTest () : Test ("AODV/Rqueue"), result(true) {}
@@ -137,7 +134,7 @@ struct AodvRqueueTest : public Test
   void CheckSizeLimit ();
   void CheckTimeout ();
 
-  AodvQueue q;
+  RequestQueue q;
   bool result;
 };
 

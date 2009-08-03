@@ -182,7 +182,8 @@ RoutingProtocol::RoutingProtocol () :
   TTL_START(1), TTL_INCREMENT(2), TTL_THRESHOLD(7), MAX_REPAIR_TTL(0.3* NET_DIAMETER), LOCAL_ADD_TTL(2),
   TIMEOUT_BUFFER (2),
   BLACKLIST_TIMEOUT( Scalar ( (((TTL_THRESHOLD - TTL_START)/TTL_INCREMENT) + 1 + RREQ_RETRIES) )*NET_TRAVERSAL_TIME ),
-  m_routingTable (DELETE_PERIOD),
+  MaxQueueLen (64), QueueTimeout (Seconds(30)),
+  m_routingTable (DELETE_PERIOD), m_queue (MaxQueueLen, QueueTimeout),
   m_requestId (0), m_seqNo (0), btimer (Timer::CANCEL_ON_DESTROY), htimer (Timer::CANCEL_ON_DESTROY), ntimer (Timer::CANCEL_ON_DESTROY),
   rtimer (Timer::CANCEL_ON_DESTROY), lrtimer (Timer::CANCEL_ON_DESTROY)
 
