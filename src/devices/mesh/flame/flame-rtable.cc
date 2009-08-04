@@ -75,10 +75,6 @@ FlameRtable::AddPath (const Mac48Address destination, const Mac48Address retrans
     }
   i->second.seqnum = seqnum;
   NS_ASSERT (i != m_routes.end ());
-  if (i->second.cost < cost)
-    {
-      return;
-    }
   i->second.retransmitter = retransmitter;
   i->second.interface = interface;
   i->second.cost = cost;
