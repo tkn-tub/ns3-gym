@@ -328,7 +328,7 @@ FlameProtocol::HandleDataFrame (uint16_t seqno, Mac48Address source, const Flame
       return true;
     }
   FlameRtable::LookupResult result = m_rtable->Lookup (source);
-  if ((result.retransmitter != Mac48Address::GetBroadcast ()) && (result.seqnum >= seqno))
+  if ((result.retransmitter != Mac48Address::GetBroadcast ()) && ((int16_t)(result.seqnum - seqno) >= 0))
     {
       return true;
     }

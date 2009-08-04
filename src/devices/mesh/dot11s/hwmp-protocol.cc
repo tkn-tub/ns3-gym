@@ -389,7 +389,7 @@ HwmpProtocol::ReceivePreq (IePreq preq, Mac48Address from, uint32_t interface, M
     }
   else
     {
-      if (i->second > preq.GetOriginatorSeqNumber ())
+      if ((int32_t)(i->second - preq.GetOriginatorSeqNumber ())  > 0)
         {
           return;
         }
@@ -507,7 +507,7 @@ HwmpProtocol::ReceivePreq (IePreq preq, Mac48Address from, uint32_t interface, M
           //we have got from PREQ, and set the rest lifetime of the
           //route if the information is correct
           uint32_t lifetime = result.lifetime.GetMicroSeconds () / 1024;
-          if ((lifetime > 0) && (result.seqnum >= (*i)->GetDestSeqNumber ()))
+          if ((lifetime > 0) && ((int32_t)(result.seqnum - (*i)->GetDestSeqNumber ()) >= 0))
             {
               SendPrep (
                   (*i)->GetDestinationAddress (),
@@ -555,7 +555,7 @@ HwmpProtocol::ReceivePrep (IePrep prep, Mac48Address from, uint32_t interface, M
     }
   else
   {
-    if (i->second > prep.GetOriginatorSeqNumber ())
+    if ((int32_t)(i->second - prep.GetOriginatorSeqNumber ()) > 0)
       {
         return;
       }
@@ -634,7 +634,7 @@ HwmpProtocol::ReceivePerr (std::vector<IePerr::FailedDestination> destinations, 
     if (!(
         (result.retransmitter != from) ||
         (result.ifIndex != interface) ||
-        (result.seqnum > destinations[i].seqnum)
+        ((int32_t)(result.seqnum - destinations[i].seqnum) > 0)
         ))
       {
         retval.push_back (destinations[i]);
@@ -732,7 +732,7 @@ HwmpProtocol::DropDataFrame (uint32_t seqno, Mac48Address source)
     }
   else
   {
-    if (i->second >= seqno)
+    if ((int32_t)(i->second - seqno)  >= 0)
       {
         return true;
       }
