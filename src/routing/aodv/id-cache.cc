@@ -26,6 +26,8 @@
  *          Pavel Boyko <boyko@iitp.ru>
  */
 #include "id-cache.h"
+#include "ns3/test.h"
+
 
 namespace ns3
 {
@@ -55,6 +57,71 @@ IdCache::Purge ()
   std::vector<UniqueId>::iterator i = remove_if (m_idCache.begin (), m_idCache.end (), IsExpired ());
   m_idCache.erase (i, m_idCache.end ());
 }
+
+uint32_t
+IdCache::GetSize ()
+{
+  Purge ();
+  return m_idCache.size ();
+}
+
+
+#ifdef RUN_SELF_TESTS
+/// Unit test for id cache
+struct IdCacheTest : public Test
+{
+  IdCacheTest () : Test ("AODV/IdCache"), result(true) {}
+  virtual bool RunTests();
+  void CheckTimeout1 ();
+  void CheckTimeout2 ();
+  void CheckTimeout3 ();
+
+  IdCache cache;
+  bool result;
+};
+
+/// Test instance
+static IdCacheTest g_IdCacheTest;
+
+bool
+IdCacheTest::RunTests ()
+{
+  cache.InsertId(Ipv4Address ("1.2.3.4"), 3, Seconds(5));
+  NS_TEST_ASSERT_EQUAL (cache.LookupId (Ipv4Address ("1.2.3.4"), 4), false);
+  NS_TEST_ASSERT_EQUAL (cache.LookupId (Ipv4Address ("4.3.2.1"), 3), false);
+  NS_TEST_ASSERT_EQUAL (cache.LookupId (Ipv4Address ("1.2.3.4"), 3), true);
+  cache.InsertId(Ipv4Address ("1.1.1.1"), 4, Seconds(5));
+  cache.InsertId(Ipv4Address ("2.2.2.2"), 5, Seconds(16));
+  cache.InsertId(Ipv4Address ("3.3.3.3"), 6, Seconds(27));
+  NS_TEST_ASSERT_EQUAL (cache.GetSize (), 4);
+
+  Simulator::Schedule (Seconds(1), &IdCacheTest::CheckTimeout1, this);
+  Simulator::Schedule (Seconds(6), &IdCacheTest::CheckTimeout2, this);
+  Simulator::Schedule (Seconds(30), &IdCacheTest::CheckTimeout3, this);
+  Simulator::Run ();
+  Simulator::Destroy ();
+  return result;
+}
+
+void
+IdCacheTest::CheckTimeout1 ()
+{
+  NS_TEST_ASSERT_EQUAL (cache.GetSize (), 4);
+}
+
+void
+IdCacheTest::CheckTimeout2 ()
+{
+  NS_TEST_ASSERT_EQUAL (cache.GetSize (), 2);
+}
+
+void
+IdCacheTest::CheckTimeout3 ()
+{
+  NS_TEST_ASSERT_EQUAL (cache.GetSize (), 0);
+}
+
+#endif
 
 }
 }

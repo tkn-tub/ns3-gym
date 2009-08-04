@@ -50,6 +50,7 @@ public:
   void InsertId (Ipv4Address addr, uint32_t id, Time saveTime);
   bool LookupId (Ipv4Address addr, uint32_t id);
   void Purge ();
+  uint32_t GetSize ();
 private:
   struct UniqueId
   {
