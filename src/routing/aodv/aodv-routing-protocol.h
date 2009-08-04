@@ -49,7 +49,6 @@ namespace ns3
 namespace aodv
 {
 
-
 /**
  * \ingroup aodv
  * \brief AODV routing protocol

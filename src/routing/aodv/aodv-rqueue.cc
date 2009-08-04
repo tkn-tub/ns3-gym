@@ -31,6 +31,7 @@
 #include <algorithm>
 #include <functional>
 #include "ns3/ipv4-route.h"
+#include "ns3/socket.h"
 #include "ns3/log.h"
 
 NS_LOG_COMPONENT_DEFINE ("AodvRequestQueue");
@@ -39,6 +40,56 @@ namespace ns3
 {
 namespace aodv
 {
+
+#ifdef RUN_SELF_TESTS
+/// Unit test for AODV routing table entry
+struct QueueEntryTest : public Test
+{
+  QueueEntryTest () : Test ("AODV/QueueEntry"), result(true) {}
+  virtual bool RunTests();
+  void Unicast (Ptr<Ipv4Route> route, Ptr<const Packet> packet, const Ipv4Header & header) {}
+  void Error (Ptr<const Packet>, const Ipv4Header &, Socket::SocketErrno) {}
+  void Unicast2 (Ptr<Ipv4Route> route, Ptr<const Packet> packet, const Ipv4Header & header) {}
+  void Error2 (Ptr<const Packet>, const Ipv4Header &, Socket::SocketErrno) {}
+  bool result;
+};
+
+/// Test instance
+static QueueEntryTest g_QueueEntryTest;
+
+bool
+QueueEntryTest::RunTests ()
+{
+  Ptr<const Packet> packet = Create<Packet> ();
+  Ipv4Header h;
+  h.SetDestination (Ipv4Address("1.2.3.4"));
+  h.SetSource (Ipv4Address("4.3.2.1"));
+  Ipv4RoutingProtocol::UnicastForwardCallback ucb = MakeCallback (&QueueEntryTest::Unicast, this);
+  Ipv4RoutingProtocol::ErrorCallback ecb = MakeCallback (&QueueEntryTest::Error, this);
+  QueueEntry entry (packet, h, ucb, ecb, Seconds(1));
+  NS_TEST_ASSERT_EQUAL (h.GetDestination (),  entry.GetIpv4Header ().GetDestination ());
+  NS_TEST_ASSERT_EQUAL (h.GetSource (),  entry.GetIpv4Header ().GetSource ());
+  NS_TEST_ASSERT_EQUAL (ucb.IsEqual(entry.GetUnicastForwardCallback()), true);
+  NS_TEST_ASSERT_EQUAL (ecb.IsEqual(entry.GetErrorCallback()), true);
+  NS_TEST_ASSERT_EQUAL (entry.GetExpireTime(), Seconds(1));
+  NS_TEST_ASSERT_EQUAL (entry.GetPacket(), packet);
+  entry.SetExpireTime(Seconds(3));
+  NS_TEST_ASSERT_EQUAL (entry.GetExpireTime(), Seconds(3));
+  Ipv4Header h2;
+  h2.SetDestination(Ipv4Address("1.1.1.1"));
+  entry.SetIpv4Header(h2);
+  NS_TEST_ASSERT_EQUAL (entry.GetIpv4Header ().GetDestination (), Ipv4Address("1.1.1.1"));
+  Ipv4RoutingProtocol::UnicastForwardCallback ucb2 = MakeCallback (&QueueEntryTest::Unicast2, this);
+  Ipv4RoutingProtocol::ErrorCallback ecb2 = MakeCallback (&QueueEntryTest::Error2, this);
+  entry.SetErrorCallback(ecb2);
+  NS_TEST_ASSERT_EQUAL (ecb2.IsEqual(entry.GetErrorCallback()), true);
+  entry.SetUnicastForwardCallback(ucb2);
+  NS_TEST_ASSERT_EQUAL (ucb2.IsEqual(entry.GetUnicastForwardCallback()), true);
+
+  return result;
+}
+#endif
+
 
 uint32_t
 RequestQueue::GetSize ()
@@ -58,14 +109,6 @@ RequestQueue::Enqueue (QueueEntry & entry )
   m_queue.push_back (entry);
 }
 
-QueueEntry
-RequestQueue::Dequeue ()
-{
-  NS_LOG_FUNCTION (this);
-  Purge ();
-  return Pop ();
-}
-
 void
 RequestQueue::DropPacketWithDst (Ipv4Address dst )
 {
@@ -73,7 +116,7 @@ RequestQueue::DropPacketWithDst (Ipv4Address dst )
   Purge ();
   const Ipv4Address addr = dst;
   std::vector<QueueEntry>::iterator i = std::remove_if (m_queue.begin (), m_queue.end (), std::bind2nd (std::ptr_fun (RequestQueue::IsEqual), dst));
-  for (std::vector<QueueEntry>::iterator j = i; i != m_queue.end (); ++j)
+  for (std::vector<QueueEntry>::iterator j = i; j != m_queue.end (); ++j)
     {
       Drop (*j, "DropPacketWithDst ");
     }
@@ -135,17 +178,19 @@ RequestQueue::Purge ()
 void
 RequestQueue::Drop (QueueEntry en, std::string reason )
 {
-  NS_LOG_LOGIC (reason << en.GetPacket ()->GetUid ());
+  NS_LOG_LOGIC (reason << en.GetPacket ()->GetUid () << " " << en.GetIpv4Header ().GetDestination ());
+  return;
 }
 
-#if 0
+
 #ifdef RUN_SELF_TESTS
 /// Unit test for RequestQueue
 struct AodvRqueueTest : public Test
   {
-    AodvRqueueTest () : Test ("AODV/Rqueue"), result(true) {}
+    AodvRqueueTest () : Test ("AODV/Rqueue"), q(64, Seconds(30)), result(true) {}
     virtual bool RunTests();
-
+    void Unicast (Ptr<Ipv4Route> route, Ptr<const Packet> packet, const Ipv4Header & header) {}
+    void Error (Ptr<const Packet>, const Ipv4Header &, Socket::SocketErrno) {}
     void CheckSizeLimit ();
     void CheckTimeout ();
 
@@ -158,62 +203,84 @@ static AodvRqueueTest g_AodvRqueueTest;
 
 bool
 AodvRqueueTest::RunTests ()
-  {
-    Ptr<Packet> packet = Create<Packet>();
-    Ipv4Header header;
-    QueueEntry e1 (packet, header);
-    q.Enqueue (e1);
-    QueueEntry e2 = q.Dequeue ();
-    NS_TEST_ASSERT (e1 == e2);
+{
+  NS_TEST_ASSERT_EQUAL (q.GetMaxQueueLen(), 64);
+  q.SetMaxQueueLen(32);
+  NS_TEST_ASSERT_EQUAL (q.GetMaxQueueLen(), 32);
+  NS_TEST_ASSERT_EQUAL (q.GetQueueTimeout(), Seconds(30));
+  q.SetQueueTimeout(Seconds(10));
+  NS_TEST_ASSERT_EQUAL (q.GetQueueTimeout(), Seconds(10));
 
-    Ipv4Address dst("1.2.3.4");
-    header.SetDestination (dst);
-    e1 = QueueEntry (packet, header);
-    q.Enqueue (e1);
+  Ptr<const Packet> packet = Create<Packet> ();
+  Ipv4Header h;
+  h.SetDestination (Ipv4Address ("1.2.3.4"));
+  h.SetSource (Ipv4Address ("4.3.2.1"));
+  Ipv4RoutingProtocol::UnicastForwardCallback ucb = MakeCallback (&AodvRqueueTest::Unicast, this);
+  Ipv4RoutingProtocol::ErrorCallback ecb = MakeCallback (&AodvRqueueTest::Error, this);
+  QueueEntry e1 (packet, h, ucb, ecb, Seconds (1));
+  q.Enqueue (e1);
+  q.Enqueue (e1);
+  q.Enqueue (e1);
+  NS_TEST_ASSERT_EQUAL (q.Find(Ipv4Address ("1.2.3.4")), true);
+  NS_TEST_ASSERT_EQUAL (q.Find(Ipv4Address ("1.1.1.1")), false);
+  NS_TEST_ASSERT_EQUAL (q.GetSize(), 3);
+  q.DropPacketWithDst(Ipv4Address ("1.2.3.4"));
+  NS_TEST_ASSERT_EQUAL (q.Find(Ipv4Address ("1.2.3.4")), false);
+  NS_TEST_ASSERT_EQUAL (q.GetSize(), 0);
 
-    bool ok = q.Dequeue (dst, e2);
-    NS_TEST_ASSERT (ok);
-    NS_TEST_ASSERT (e1 == e2);
-    NS_TEST_ASSERT (! q.Find(dst));
-    q.Enqueue (e1);
-    NS_TEST_ASSERT (q.Find(dst));
+  h.SetDestination(Ipv4Address("2.2.2.2"));
+  QueueEntry e2 (packet, h, ucb, ecb, Seconds (1));
+  q.Enqueue (e1);
+  q.Enqueue (e2);
+  Ptr<Packet> packet2 = Create<Packet> ();
+  QueueEntry e3 (packet2, h, ucb, ecb, Seconds (1));
+  NS_TEST_ASSERT_EQUAL(q.Dequeue(Ipv4Address("2.2.2.2"), e3), true);
+  NS_TEST_ASSERT_EQUAL (q.Find(Ipv4Address("2.2.2.2")), false);
+  q.Enqueue(e2);
+  q.Enqueue(e3);
+  q.Enqueue(e1);
+  NS_TEST_ASSERT_EQUAL (q.GetSize(), 4);
+  q.DropPacketWithDst(Ipv4Address ("1.2.3.4"));
+  NS_TEST_ASSERT_EQUAL (q.GetSize(), 2);
 
-    CheckSizeLimit ();
+  CheckSizeLimit ();
 
-    Ipv4Header header2;
-    Ipv4Address dst2("1.2.3.4");
-    header2.SetDestination (dst2);
+  Ipv4Header header2;
+  Ipv4Address dst2 ("1.2.3.4");
+  header2.SetDestination (dst2);
 
-    Simulator::Schedule (Seconds(AODV_RTQ_TIMEOUT+1), & AodvRqueueTest::CheckTimeout, this);
+  Simulator::Schedule (q.GetQueueTimeout() + Seconds(1), &AodvRqueueTest::CheckTimeout, this);
 
-    Simulator::Run ();
-    Simulator::Destroy ();
+  Simulator::Run ();
+  Simulator::Destroy ();
 
-    return result;
-  }
+  return result;
+}
 
 void
 AodvRqueueTest::CheckSizeLimit ()
-  {
-    Ptr<Packet> packet = Create<Packet>();
-    Ipv4Header header;
-    QueueEntry e1 (packet, header);
+{
+  Ptr<Packet> packet = Create<Packet> ();
+  Ipv4Header header;
+  Ipv4RoutingProtocol::UnicastForwardCallback ucb = MakeCallback (&AodvRqueueTest::Unicast, this);
+  Ipv4RoutingProtocol::ErrorCallback ecb = MakeCallback (&AodvRqueueTest::Error, this);
+  QueueEntry e1 (packet, header, ucb, ecb, Seconds (1));
 
-    for (uint32_t i = 0; i < AODV_RTQ_MAX_LEN; ++i)
+  for (uint32_t i = 0; i < q.GetMaxQueueLen (); ++i)
     q.Enqueue (e1);
-    NS_TEST_ASSERT (q.GetSize() == AODV_RTQ_MAX_LEN);
+  NS_TEST_ASSERT_EQUAL (q.GetSize (), q.GetMaxQueueLen ());
 
-    for (uint32_t i = 0; i < AODV_RTQ_MAX_LEN; ++i)
+  for (uint32_t i = 0; i < q.GetMaxQueueLen (); ++i)
     q.Enqueue (e1);
-    NS_TEST_ASSERT (q.GetSize() == AODV_RTQ_MAX_LEN);
-  }
+  NS_TEST_ASSERT_EQUAL (q.GetSize (), q.GetMaxQueueLen ());
+}
 
 void
 AodvRqueueTest::CheckTimeout ()
-  {
-    NS_TEST_ASSERT (q.GetSize() == 0);
-  }
+{
+  NS_TEST_ASSERT_EQUAL (q.GetSize (), 0);
+}
 #endif
-#endif
+
 }
 }

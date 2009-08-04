@@ -51,7 +51,8 @@ public:
   /// c-tor
   QueueEntry(Ptr<const Packet> pa = 0, Ipv4Header const & h = Ipv4Header(),
              UnicastForwardCallback ucb = UnicastForwardCallback(),ErrorCallback ecb = ErrorCallback(),
-             Time exp = Simulator::Now()) : m_packet(pa), m_header(h), m_ucb(ucb), m_ecb(ecb), m_expire(exp + Simulator::Next()) {}
+             Time exp = Simulator::Now()) : m_packet(pa), m_header(h), m_ucb(ucb), m_ecb(ecb),
+                                             m_expire(exp + Simulator::Now()) {}
 
   /**
    * Compare queue entries
@@ -59,7 +60,7 @@ public:
    */
   bool operator==(QueueEntry const & o) const
   {
-    return ((m_packet == o.m_packet)/*&& header == o.header*/ && (m_expire == o.m_expire));
+    return ((m_packet == o.m_packet) && (m_header.GetDestination () == o.m_header.GetDestination ()) && (m_expire == o.m_expire));
   }
   ///\name Fields
   //\{
@@ -95,8 +96,6 @@ public:
   RequestQueue (uint32_t maxLen, Time routeToQueueTimeout) : m_maxLen (maxLen), m_queueTimeout (routeToQueueTimeout) {}
   /// Push entry in queue.
   void Enqueue (QueueEntry & entry);
-  /// Returns a entry from the head of the queue.
-  QueueEntry Dequeue ();
   /// Return first found (the earliest) entry for given destination
   bool Dequeue (Ipv4Address dst, QueueEntry & entry);
   /// Remove all packets with destination IP address dst
@@ -125,7 +124,7 @@ private:
   uint32_t m_maxLen;
   /// The maximum period of time that a routing protocol is allowed to buffer a packet for, seconds.
   Time m_queueTimeout;
-  static bool IsEqual(QueueEntry  en, const Ipv4Address dst) { return (en.GetIpv4Header ().GetDestination () == dst);}
+  static bool IsEqual(QueueEntry  en, const Ipv4Address dst) { return (en.GetIpv4Header ().GetDestination () == dst); }
 };
 
 
