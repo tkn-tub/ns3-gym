@@ -85,10 +85,10 @@ public:
 private:
   ///\name Protocol parameters. TODO document
   //\{
-  uint32_t RreqRetries;        // 2
+  uint32_t RreqRetries;        ///< Maximum number of retransmissions of RREQ with TTL = NetDiameter to discover a route
   Time ActiveRouteTimeout;    // 3 seconds
   Time MyRouteTimeout;       // 2 * ActiveRouteTimeout
-  uint16_t NetDiameter;
+  uint32_t NetDiameter;
   Time NodeTraversalTime;         //  40 milliseconds
   Time NetTraversalTime;          // 2 * NodeTraversalTime * NetDiameter
   Time PathDiscoveryTime;
@@ -235,11 +235,10 @@ private:
   
   /// Notify that packet is dropped for some reason 
   void Drop(Ptr<const Packet>, const Ipv4Header &, Socket::SocketErrno) {}
+  void DropFromQueue (Ipv4Address dst);
 
   ///\name Timers. TODO comment each one
   //\{
-  Timer  btimer;
-  void BroadcastTimerExpire ();
   Timer htimer; // TODO independent hello timers for all interfaces
   void HelloTimerExpire ();
   Timer ntimer;

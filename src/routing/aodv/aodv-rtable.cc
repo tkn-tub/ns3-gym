@@ -124,6 +124,7 @@ RoutingTableEntry::Invalidate (Time badLinkLifetime )
   if (m_flag == RTF_DOWN)
     return;
   m_flag = RTF_DOWN;
+  m_reqCount = 0;
   m_lifeTime = badLinkLifetime + Simulator::Now ();
 }
 
@@ -303,6 +304,7 @@ RoutingTable::SetEntryState (Ipv4Address id, RouteFlags state )
   if (i == m_ipv4AddressEntry.end ())
     return false;
   i->second.SetFlag (state);
+  i->second.SetRreqCnt(0);
   return true;
 }
 
@@ -324,7 +326,10 @@ RoutingTable::InvalidateRoutesWithDst (const std::map<Ipv4Address, uint32_t> & u
     {
       for (std::map<Ipv4Address, uint32_t>::const_iterator j = unreachable.begin (); j != unreachable.end (); ++j)
         if ((i->first == j->first) && (i->second.GetFlag () == RTF_UP))
-          i->second.Invalidate (m_badLinkLifetime);
+          {
+            NS_LOG_UNCOND ("ivalidate route with dst " << i->first);
+            i->second.Invalidate (m_badLinkLifetime);
+          }
     }
 
 }
@@ -348,6 +353,8 @@ RoutingTable::Purge ()
             {
               NS_LOG_UNCOND ("ivalidate route with dst " << i->first );
               i->second.Invalidate (m_badLinkLifetime);
+              NS_LOG_UNCOND (Simulator::Now().GetSeconds());
+              Print(std::cout);
               ++i;
             }
           else
@@ -365,6 +372,7 @@ RoutingTable::MarkLinkAsUinidirectional (Ipv4Address neighbor, Time blacklistTim
     return false;
   i->second.SetUnidirectional (true);
   i->second.SetBalcklistTimeout (blacklistTimeout);
+  i->second.SetRreqCnt(0);
   return true;
 }
 
