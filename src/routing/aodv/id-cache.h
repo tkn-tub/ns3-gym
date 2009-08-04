@@ -46,6 +46,7 @@ namespace aodv
 class IdCache
 {
 public:
+  IdCache () {}
   void InsertId (Ipv4Address addr, uint32_t id, Time saveTime);
   bool LookupId (Ipv4Address addr, uint32_t id);
   void Purge ();

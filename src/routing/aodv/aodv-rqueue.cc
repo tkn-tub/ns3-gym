@@ -234,6 +234,7 @@ AodvRqueueTest::RunTests ()
   q.Enqueue (e2);
   Ptr<Packet> packet2 = Create<Packet> ();
   QueueEntry e3 (packet2, h, ucb, ecb, Seconds (1));
+  NS_TEST_ASSERT_EQUAL(q.Dequeue(Ipv4Address("3.3.3.3"), e3), false);
   NS_TEST_ASSERT_EQUAL(q.Dequeue(Ipv4Address("2.2.2.2"), e3), true);
   NS_TEST_ASSERT_EQUAL (q.Find(Ipv4Address("2.2.2.2")), false);
   q.Enqueue(e2);

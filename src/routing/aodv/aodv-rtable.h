@@ -124,7 +124,6 @@ public:
   void SetRreqCnt(uint8_t n) { m_reqCount = n; }
   uint8_t GetRreqCnt() const { return m_reqCount; }
   void IncrementRreqCnt() { m_reqCount++; }
-  bool IsInBlacklist () const { return m_blackListState; }
   void SetUnidirectional(bool u) { m_blackListState = u; }
   bool IsUnidirectional () const { return m_blackListState; }
   void SetBalcklistTimeout (Time t) { m_blackListTimeout = t; }

@@ -189,6 +189,14 @@ AodvRtableEntryTest::RunTests ()
     NS_TEST_ASSERT_EQUAL (rt.GetRreqCnt(), 0);
     NS_TEST_ASSERT_EQUAL (rt.IsPrecursorListEmpty(), true);
 
+    Ptr<NetDevice> dev2;
+    Ipv4InterfaceAddress iface2;
+    rt.SetOutputDevice(dev2);
+    NS_TEST_ASSERT_EQUAL (rt.GetOutputDevice (), dev2);
+    rt.SetInterface(iface2);
+    NS_TEST_ASSERT_EQUAL (rt.GetInterface(), iface2);
+    rt.SetValidSeqNo(false);
+    NS_TEST_ASSERT_EQUAL (rt.GetValidSeqNo (), false);
     rt.SetFlag(RTF_DOWN);
     NS_TEST_ASSERT_EQUAL (rt.GetFlag (), RTF_DOWN);
     rt.SetFlag(RTF_IN_REPAIR);

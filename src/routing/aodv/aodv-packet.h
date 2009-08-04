@@ -98,7 +98,8 @@ std::ostream & operator<<(std::ostream & os, TypeHeader const & h);
 class RreqHeader : public Header 
 {
 public:
-  RreqHeader ();
+  RreqHeader (uint8_t flags = 0, uint8_t reserved = 0, uint8_t hopCount = 0, uint32_t requestID = 0, Ipv4Address dst = Ipv4Address(),
+             uint32_t dstSeqNo = 0, Ipv4Address origin = Ipv4Address(), uint32_t originSeqNo = 0);
 
   ///\name Header serialization/deserialization
   //\{
@@ -113,16 +114,16 @@ public:
   //\{
   void SetHopCount (uint8_t count) { m_hopCount = count; }
   uint8_t GetHopCount () const { return m_hopCount; }
-  void SetId (uint32_t id) { m_broadcastID = id; }
-  uint8_t GetId () const { return m_broadcastID; }
+  void SetId (uint32_t id) { m_requestID = id; }
+  uint8_t GetId () const { return m_requestID; }
   void SetDst (Ipv4Address a) { m_dst = a; }
   Ipv4Address GetDst () const { return m_dst; }
   void SetDstSeqno (uint32_t s) { m_dstSeqNo = s; }
   uint32_t GetDstSeqno () const { return m_dstSeqNo; }
   void SetOrigin (Ipv4Address a) { m_origin = a; }
   Ipv4Address GetOrigin () const { return m_origin; }
-  void SetOriginSeqno (uint32_t s) { m_srcSeqNo = s; }
-  uint32_t GetOriginSeqno () const { return m_srcSeqNo; }
+  void SetOriginSeqno (uint32_t s) { m_originSeqNo = s; }
+  uint32_t GetOriginSeqno () const { return m_originSeqNo; }
   //\}
 
   ///\name Flags
@@ -140,11 +141,11 @@ private:
   uint8_t        m_flags;          ///< |J|R|G|D|U| bit flags, see RFC
   uint8_t        m_reserved;       ///< Not used
   uint8_t        m_hopCount;       ///< Hop Count
-  uint32_t       m_broadcastID;    ///< RREQ ID
+  uint32_t       m_requestID;      ///< RREQ ID
   Ipv4Address    m_dst;            ///< Destination IP Address
   uint32_t       m_dstSeqNo;       ///< Destination Sequence Number
   Ipv4Address    m_origin;         ///< Originator IP Address
-  uint32_t       m_srcSeqNo;       ///< Source Sequence Number
+  uint32_t       m_originSeqNo;    ///< Source Sequence Number
 };
 
 std::ostream & operator<<(std::ostream & os, RreqHeader const &);
@@ -209,12 +210,12 @@ public:
 
   bool operator==(RrepHeader const & o) const;
 private:
-  uint8_t       m_flags;	        ///< A - acknowledgment required flag
-  uint8_t       m_prefixSize;	    ///< Prefix Size
-  uint8_t	    m_hopCount;         ///< Hop Count
+  uint8_t       m_flags;	          ///< A - acknowledgment required flag
+  uint8_t       m_prefixSize;	      ///< Prefix Size
+  uint8_t	      m_hopCount;         ///< Hop Count
   Ipv4Address   m_dst;              ///< Destination IP Address
   uint32_t      m_dstSeqNo;         ///< Destination Sequence Number
-  Ipv4Address	m_origin;              ///< Source IP Address
+  Ipv4Address	  m_origin;           ///< Source IP Address
   uint32_t      m_lifeTime;         ///< Lifetime (in milliseconds)
 };
 

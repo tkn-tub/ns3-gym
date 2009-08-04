@@ -153,6 +153,7 @@ bool TypeHeaderTest::RunTests ()
 
     TypeHeader h(AODVTYPE_RREQ);
     NS_TEST_ASSERT(h.IsValid());
+    NS_TEST_ASSERT_EQUAL (h.Get(), AODVTYPE_RREQ);
     TypeHeader h1(13);
     NS_TEST_ASSERT(!h1.IsValid());
 
@@ -169,8 +170,10 @@ bool TypeHeaderTest::RunTests ()
 //-----------------------------------------------------------------------------
 // RREQ
 //-----------------------------------------------------------------------------
-RreqHeader::RreqHeader () :
-  m_flags (0), m_reserved (0), m_hopCount (0), m_broadcastID (0), m_dstSeqNo (0), m_srcSeqNo (0)
+RreqHeader::RreqHeader (uint8_t flags, uint8_t reserved, uint8_t hopCount, uint32_t requestID, Ipv4Address dst,
+                        uint32_t dstSeqNo, Ipv4Address origin, uint32_t originSeqNo) :
+                       m_flags (flags), m_reserved (reserved), m_hopCount (hopCount), m_requestID (requestID), m_dst(dst),
+                       m_dstSeqNo (dstSeqNo), m_origin(origin),  m_originSeqNo (originSeqNo)
 {
 }
 
@@ -192,11 +195,11 @@ RreqHeader::Serialize (Buffer::Iterator i ) const
   i.WriteU8 (m_flags);
   i.WriteU8 (m_reserved);
   i.WriteU8 (m_hopCount);
-  i.WriteHtonU32 (m_broadcastID);
+  i.WriteHtonU32 (m_requestID);
   WriteTo (i, m_dst);
   i.WriteHtonU32 (m_dstSeqNo);
   WriteTo (i, m_origin);
-  i.WriteHtonU32 (m_srcSeqNo);
+  i.WriteHtonU32 (m_originSeqNo);
 }
 
 uint32_t
@@ -206,11 +209,11 @@ RreqHeader::Deserialize (Buffer::Iterator start )
   m_flags = i.ReadU8 ();
   m_reserved = i.ReadU8 ();
   m_hopCount = i.ReadU8 ();
-  m_broadcastID = i.ReadNtohU32 ();
+  m_requestID = i.ReadNtohU32 ();
   ReadFrom (i, m_dst);
   m_dstSeqNo = i.ReadNtohU32 ();
   ReadFrom (i, m_origin);
-  m_srcSeqNo = i.ReadNtohU32 ();
+  m_originSeqNo = i.ReadNtohU32 ();
 
   uint32_t dist = i.GetDistanceFrom (start);
   NS_ASSERT (dist == GetSerializedSize ());
@@ -220,8 +223,8 @@ RreqHeader::Deserialize (Buffer::Iterator start )
 void
 RreqHeader::Print (std::ostream &os ) const
 {
-  os << "RREQ ID " << m_broadcastID << "\n" << "destination: ipv4 " << m_dst << " " << "sequence number " << m_dstSeqNo << "\n" << "source: ipv4 "
-      << m_origin << " " << "sequence number " << m_srcSeqNo << "\n" << "flags:\n" << "Gratuitous RREP " << (*this).GetGratiousRrep () << "\n"
+  os << "RREQ ID " << m_requestID << "\n" << "destination: ipv4 " << m_dst << " " << "sequence number " << m_dstSeqNo << "\n" << "source: ipv4 "
+      << m_origin << " " << "sequence number " << m_originSeqNo << "\n" << "flags:\n" << "Gratuitous RREP " << (*this).GetGratiousRrep () << "\n"
       << "Destination only " << (*this).GetDestinationOnly () << "\n" << "Unknown sequence number " << (*this).GetUnknownSeqno () << "\n";
 }
 
@@ -280,54 +283,68 @@ RreqHeader::GetUnknownSeqno () const
 bool
 RreqHeader::operator== (RreqHeader const & o ) const
 {
-  return (m_flags == o.m_flags && m_reserved == o.m_reserved && m_hopCount == o.m_hopCount && m_broadcastID == o.m_broadcastID && m_dst == o.m_dst
-      && m_dstSeqNo == o.m_dstSeqNo && m_origin == o.m_origin && m_srcSeqNo == o.m_srcSeqNo);
+  return (m_flags == o.m_flags && m_reserved == o.m_reserved && m_hopCount == o.m_hopCount && m_requestID == o.m_requestID && m_dst == o.m_dst
+      && m_dstSeqNo == o.m_dstSeqNo && m_origin == o.m_origin && m_originSeqNo == o.m_originSeqNo);
 }
 
 #ifdef RUN_SELF_TESTS
 /// Unit test for RREQ
 struct RreqHeaderTest : public Test
+{
+  RreqHeaderTest () :
+    Test ("AODV/RREQ")
   {
-    RreqHeaderTest () : Test ("AODV/RREQ")
-      {}
-    virtual bool RunTests();
-  };
+  }
+  virtual bool
+  RunTests ();
+};
 
 /// Test instance
 static RreqHeaderTest g_RreqHeaderTest;
 
-bool RreqHeaderTest::RunTests ()
-  {
-    bool result(true);
+bool
+RreqHeaderTest::RunTests ()
+{
+  bool result (true);
 
-    RreqHeader h;
-    h.SetDst (Ipv4Address("1.2.3.4"));
-    h.SetDstSeqno (123);
-    h.SetOrigin (Ipv4Address("4.3.2.1"));
-    h.SetOriginSeqno (321);
-    h.SetId (1);
+  RreqHeader h (/*flags*/0, /*reserved*/0, /*hopCount*/6, /*requestID*/1, /*dst*/Ipv4Address ("1.2.3.4"),
+  /*dstSeqNo*/40, /*origin*/Ipv4Address ("4.3.2.1"), /*originSeqNo*/10);
+  NS_TEST_ASSERT_EQUAL (h.GetGratiousRrep (), false);
+  NS_TEST_ASSERT_EQUAL (h.GetDestinationOnly (), false);
+  NS_TEST_ASSERT_EQUAL (h.GetHopCount (), 6);
+  NS_TEST_ASSERT_EQUAL (h.GetId (), 1);
+  NS_TEST_ASSERT_EQUAL (h.GetDst (), Ipv4Address ("1.2.3.4"));
+  NS_TEST_ASSERT_EQUAL (h.GetDstSeqno (), 40);
+  NS_TEST_ASSERT_EQUAL (h.GetOrigin (), Ipv4Address ("4.3.2.1"));
+  NS_TEST_ASSERT_EQUAL (h.GetOriginSeqno (), 10);
 
-    h.SetGratiousRrep (true);
-    NS_TEST_ASSERT(h.GetGratiousRrep ());
-    h.SetGratiousRrep (false);
-    NS_TEST_ASSERT_EQUAL(h.GetGratiousRrep (), 0);
-    h.SetDestinationOnly (true);
-    NS_TEST_ASSERT(h.GetDestinationOnly ());
-    h.SetDestinationOnly (false);
-    NS_TEST_ASSERT_EQUAL(h.GetDestinationOnly (), 0);
-    h.SetUnknownSeqno (true);
-    NS_TEST_ASSERT(h.GetUnknownSeqno ());
-    h.SetUnknownSeqno (false);
-    NS_TEST_ASSERT_EQUAL(h.GetUnknownSeqno (), 0);
+  h.SetGratiousRrep (true);
+  NS_TEST_ASSERT_EQUAL (h.GetGratiousRrep (), true);
+  h.SetDestinationOnly (true);
+  NS_TEST_ASSERT_EQUAL (h.GetDestinationOnly (), true);
+  h.SetUnknownSeqno (true);
+  NS_TEST_ASSERT_EQUAL (h.GetUnknownSeqno (), true);
+  h.SetDst (Ipv4Address ("1.1.1.1"));
+  NS_TEST_ASSERT_EQUAL (h.GetDst (), Ipv4Address ("1.1.1.1"));
+  h.SetDstSeqno (5);
+  NS_TEST_ASSERT_EQUAL (h.GetDstSeqno (), 5);
+  h.SetHopCount (7);
+  NS_TEST_ASSERT_EQUAL (h.GetHopCount (), 7);
+  h.SetId (55);
+  NS_TEST_ASSERT_EQUAL (h.GetId (), 55);
+  h.SetOrigin (Ipv4Address ("4.4.4.4"));
+  NS_TEST_ASSERT_EQUAL (h.GetOrigin (), Ipv4Address ("4.4.4.4"));
+  h.SetOriginSeqno (23);
+  NS_TEST_ASSERT_EQUAL (h.GetOriginSeqno (), 23);
 
-    Ptr<Packet> p = Create<Packet> ();
-    p->AddHeader (h);
-    RreqHeader h2;
-    uint32_t bytes = p->RemoveHeader(h2);
-    NS_TEST_ASSERT_EQUAL (bytes, 23);
-    NS_TEST_ASSERT_EQUAL (h, h2);
-    return result;
-  }
+  Ptr<Packet> p = Create<Packet> ();
+  p->AddHeader (h);
+  RreqHeader h2;
+  uint32_t bytes = p->RemoveHeader (h2);
+  NS_TEST_ASSERT_EQUAL (bytes, 23);
+  NS_TEST_ASSERT_EQUAL (h, h2);
+  return result;
+}
 #endif
 
 //-----------------------------------------------------------------------------
@@ -462,50 +479,58 @@ operator<< (std::ostream & os, RrepHeader const & h )
 #ifdef RUN_SELF_TESTS
 /// Unit test for RREP
 struct RrepHeaderTest : public Test
-  {
-    RrepHeaderTest () : Test ("AODV/RREP")
-      {}
-    virtual bool RunTests();
-  };
+{
+  RrepHeaderTest () : Test ("AODV/RREP") {}
+  virtual bool
+  RunTests ();
+};
 
 /// Test instance
 static RrepHeaderTest g_RrepHeaderTest;
 
-bool RrepHeaderTest::RunTests ()
-  {
-    bool result(true);
+bool
+RrepHeaderTest::RunTests ()
+{
+  bool result (true);
 
-    RrepHeader h (/*prefixSize*/0, /*hopCount*/12, /*dst*/Ipv4Address("1.2.3.4"), /*dstSeqNo*/2,
-        /*origin*/Ipv4Address("4.3.2.1"), /*lifetime*/Seconds(3));
-    NS_TEST_ASSERT_EQUAL (h.GetPrefixSize (), 0);
-    NS_TEST_ASSERT_EQUAL (h.GetHopCount (), 12);
-    NS_TEST_ASSERT_EQUAL (h.GetDst (), Ipv4Address("1.2.3.4"));
-    NS_TEST_ASSERT_EQUAL (h.GetDstSeqno (), 2);
-    NS_TEST_ASSERT_EQUAL (h.GetOrigin (), Ipv4Address("4.3.2.1"));
-    NS_TEST_ASSERT_EQUAL (h.GetLifeTime(), Seconds(3));
-    h.SetDst (Ipv4Address("1.1.1.1"));
-    NS_TEST_ASSERT_EQUAL (h.GetDst (), Ipv4Address("1.1.1.1"));
-    h.SetDstSeqno (123);
-    NS_TEST_ASSERT_EQUAL (h.GetDstSeqno (), 123);
-    h.SetOrigin (Ipv4Address("4.4.4.4"));
-    NS_TEST_ASSERT_EQUAL (h.GetOrigin (), Ipv4Address("4.4.4.4"));
-    h.SetLifeTime(MilliSeconds(1200));
-    NS_TEST_ASSERT_EQUAL (h.GetLifeTime(), MilliSeconds(1200));
-    h.SetAckRequired(true);
-    NS_TEST_ASSERT(h.GetAckRequired ());
-    h.SetAckRequired(false);
-    NS_TEST_ASSERT(!h.GetAckRequired ());
-    h.SetPrefixSize(2);
-    NS_TEST_ASSERT_EQUAL (h.GetPrefixSize (), 2);
+  RrepHeader h (/*prefixSize*/0, /*hopCount*/12, /*dst*/Ipv4Address ("1.2.3.4"), /*dstSeqNo*/2,
+                /*origin*/Ipv4Address ("4.3.2.1"), /*lifetime*/Seconds (3));
+  NS_TEST_ASSERT_EQUAL (h.GetPrefixSize (), 0);
+  NS_TEST_ASSERT_EQUAL (h.GetHopCount (), 12);
+  NS_TEST_ASSERT_EQUAL (h.GetDst (), Ipv4Address ("1.2.3.4"));
+  NS_TEST_ASSERT_EQUAL (h.GetDstSeqno (), 2);
+  NS_TEST_ASSERT_EQUAL (h.GetOrigin (), Ipv4Address ("4.3.2.1"));
+  NS_TEST_ASSERT_EQUAL (h.GetLifeTime (), Seconds (3));
+  h.SetDst (Ipv4Address ("1.1.1.1"));
+  NS_TEST_ASSERT_EQUAL (h.GetDst (), Ipv4Address ("1.1.1.1"));
+  h.SetDstSeqno (123);
+  NS_TEST_ASSERT_EQUAL (h.GetDstSeqno (), 123);
+  h.SetOrigin (Ipv4Address ("4.4.4.4"));
+  NS_TEST_ASSERT_EQUAL (h.GetOrigin (), Ipv4Address ("4.4.4.4"));
+  h.SetLifeTime (MilliSeconds (1200));
+  NS_TEST_ASSERT_EQUAL (h.GetLifeTime (), MilliSeconds (1200));
+  h.SetAckRequired (true);
+  NS_TEST_ASSERT_EQUAL (h.GetAckRequired (), true);
+  h.SetAckRequired (false);
+  NS_TEST_ASSERT (!h.GetAckRequired ());
+  h.SetPrefixSize (2);
+  NS_TEST_ASSERT_EQUAL (h.GetPrefixSize (), 2);
+  h.SetHopCount (15);
+  NS_TEST_ASSERT_EQUAL (h.GetHopCount (), 15);
 
-    Ptr<Packet> p = Create<Packet> ();
-    p->AddHeader (h);
-    RrepHeader h2;
-    uint32_t bytes = p->RemoveHeader(h2);
-    NS_TEST_ASSERT_EQUAL (bytes, 19);
-    NS_TEST_ASSERT_EQUAL (h, h2);
-    return result;
-  }
+  h.SetHello (Ipv4Address ("10.0.0.2"), 9, Seconds (15));
+  NS_TEST_ASSERT_EQUAL (h.GetDst (), h.GetOrigin ());
+  NS_TEST_ASSERT_EQUAL (h.GetDstSeqno (), 9);
+  NS_TEST_ASSERT_EQUAL (h.GetLifeTime (), Seconds (15));
+
+  Ptr<Packet> p = Create<Packet> ();
+  p->AddHeader (h);
+  RrepHeader h2;
+  uint32_t bytes = p->RemoveHeader (h2);
+  NS_TEST_ASSERT_EQUAL (bytes, 19);
+  NS_TEST_ASSERT_EQUAL (h, h2);
+  return result;
+}
 #endif
 
 //-----------------------------------------------------------------------------

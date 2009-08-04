@@ -634,7 +634,7 @@ RoutingProtocol::RecvRequest (Ptr<Packet> p, Ipv4Address receiver, Ipv4Address s
   RoutingTableEntry toPrev;
   if (m_routingTable.LookupRoute (src, toPrev))
     {
-      if (toPrev.IsInBlacklist ())
+      if (toPrev.IsUnidirectional ())
         return;
     }
 
