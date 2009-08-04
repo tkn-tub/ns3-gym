@@ -59,8 +59,6 @@ namespace aodv
 {
 NS_OBJECT_ENSURE_REGISTERED (RoutingProtocol);
 
-
-
 bool
 RoutingProtocol::LookupNeighbor (Ipv4Address addr, Neighbor & n)
 {
@@ -127,7 +125,7 @@ RoutingProtocol::RoutingProtocol () :
   TtlStart(1), TtlIncrement(2), TtlThreshold(7), MaxRepairTtl(0.3* NetDiameter), LOCAL_ADD_TTL(2),
   TIMEOUT_BUFFER (2),
   BLACKLIST_TIMEOUT( Scalar ( (((TtlThreshold - TtlStart)/TtlIncrement) + 1 + RreqRetries) )*NetTraversalTime ),
-  MaxQueueLen (64), MaxQueueTime (Seconds(30)),
+  MaxQueueLen (64), MaxQueueTime (Seconds(30)), DestinationOnly (false), GratuitousReply (true),
   m_routingTable (DeletePeriod), m_queue (MaxQueueLen, MaxQueueTime),
   m_requestId (0), m_seqNo (0), btimer (Timer::CANCEL_ON_DESTROY), htimer (Timer::CANCEL_ON_DESTROY), ntimer (Timer::CANCEL_ON_DESTROY),
   rtimer (Timer::CANCEL_ON_DESTROY), lrtimer (Timer::CANCEL_ON_DESTROY)
@@ -193,6 +191,16 @@ RoutingProtocol::GetTypeId (void)
                      UintegerValue (2),
                      MakeUintegerAccessor (&RoutingProtocol::AllowedHelloLoss),
                      MakeUintegerChecker<uint16_t> ())
+      .AddAttribute ("GratuitousReply", "indicates whether a gratuitous RREP should be unicast to the node originated route discovery.",
+                     BooleanValue (true),
+                     MakeBooleanAccessor (&RoutingProtocol::SetGratuitousReplyFlag,
+                                          &RoutingProtocol::GetGratuitousReplyFlag),
+                     MakeBooleanChecker ())
+      .AddAttribute ("DestinationOnly", "Indicates only the destination may respond to this RREQ.",
+                     BooleanValue (false),
+                     MakeBooleanAccessor (&RoutingProtocol::SetDesinationOnlyFlag,
+                                          &RoutingProtocol::GetDesinationOnlyFlag),
+                     MakeBooleanChecker ())
   ;
   return tid;
 }
@@ -275,13 +283,13 @@ RoutingProtocol::RouteOutput (Ptr<Packet> p, const Ipv4Header &header, uint32_t 
           if (rt.GetFlag () == RTF_DOWN)
             {
               m_routingTable.SetEntryState (dst, RTF_IN_REPAIR);
-              SendRequest (dst, false, true, rt.GetHop () + TtlIncrement);
+              SendRequest (dst, rt.GetHop () + TtlIncrement);
             }
         }
     }
   else
     {
-      SendRequest (dst, false, true, TtlStart);
+      SendRequest (dst, TtlStart);
     }
   return route;
 }
@@ -443,7 +451,7 @@ RoutingProtocol::IsMyOwnPacket (Ipv4Address src )
 }
 
 void
-RoutingProtocol::SendRequest (Ipv4Address dst, bool D, bool G, uint16_t ttl )
+RoutingProtocol::SendRequest (Ipv4Address dst, uint16_t ttl )
 {
   NS_LOG_FUNCTION ( this << dst);
 
@@ -479,9 +487,9 @@ RoutingProtocol::SendRequest (Ipv4Address dst, bool D, bool G, uint16_t ttl )
       m_routingTable.AddRoute (newEntry);
     }
 
-  if (G)
+  if (GratuitousReply)
     rreqHeader.SetGratiousRrep (true);
-  if (D)
+  if (DestinationOnly)
     rreqHeader.SetDestinationOnly (true);
 
   m_seqNo++;
@@ -1063,9 +1071,9 @@ RoutingProtocol::RouteRequestTimerExpire (Ipv4Address dst, uint16_t lastTtl )
   if (toDst.GetFlag () == RTF_IN_SEARCH)
     {
       if (lastTtl > TtlThreshold)
-        SendRequest (dst, false, true, NetDiameter);
+        SendRequest (dst, NetDiameter);
       else
-        SendRequest (dst, false, true, lastTtl + TtlIncrement);
+        SendRequest (dst, lastTtl + TtlIncrement);
     }
 }
 

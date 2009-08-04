@@ -75,6 +75,13 @@ public:
   virtual void SetIpv4 (Ptr<Ipv4> ipv4);
   //\}
   
+  ///\name Handle protocol parameters
+  //\{
+  bool GetDesinationOnlyFlag () const { return DestinationOnly; }
+  void SetDesinationOnlyFlag (bool f) { DestinationOnly = f; }
+  bool GetGratuitousReplyFlag () const { return GratuitousReply; }
+  void SetGratuitousReplyFlag (bool f) { GratuitousReply = f; }
+  //\}
 private:
   ///\name Protocol parameters. TODO document
   //\{
@@ -105,6 +112,8 @@ private:
   Time BLACKLIST_TIMEOUT;
   uint32_t MaxQueueLen;
   Time MaxQueueTime;
+  bool DestinationOnly;
+  bool GratuitousReply;
   //\}
 
   /**\name Handle neighbors
@@ -207,7 +216,7 @@ private:
   /// Send hello
   void SendHello ();
   /// Send RREQ
-  void SendRequest (Ipv4Address dst,  bool D,bool G, uint16_t ttl);
+  void SendRequest (Ipv4Address dst, uint16_t ttl);
   /// Send RREP
   void SendReply (RreqHeader const & rreqHeader, RoutingTableEntry const & toOrigin);
   /** Send RREP by intermediate node
