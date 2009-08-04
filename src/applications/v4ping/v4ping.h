@@ -1,3 +1,18 @@
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
+/*
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation;
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
 #ifndef V4PING_H
 #define V4PING_H
 
@@ -6,11 +21,17 @@
 #include "ns3/nstime.h"
 #include "ns3/average.h"
 #include "ns3/simulator.h"
+#include <map>
 
 namespace ns3 {
 
 class Socket;
 
+/**
+ * \ingroup applications
+ * 
+ * \brief Good old ping
+ */
 class V4Ping : public Application
 {
 public:
@@ -52,6 +73,8 @@ private:
   Average<double> m_avgRtt;
   /// Next packet will be sent
   EventId m_next;
+  /// All sent but not answered packets. Map icmp seqno -> when sent
+  std::map<uint16_t, Time> m_sent;
 };
 
 } // namespace ns3

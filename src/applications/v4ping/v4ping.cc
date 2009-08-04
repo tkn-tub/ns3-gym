@@ -118,8 +118,9 @@ V4Ping::Receive (Ptr<Socket> socket)
 	{
 	  Icmpv4Echo echo;
 	  p->RemoveHeader (echo);
-	  if (echo.GetSequenceNumber () == (m_seq - 1) &&
-	      echo.GetIdentifier () == 0)
+	  std::map<uint16_t, Time>::iterator i = m_sent.find(echo.GetSequenceNumber());
+	  
+	  if (i != m_sent.end () && echo.GetIdentifier () == 0)
 	    {
               uint32_t buf[m_size / 4];
 	      uint32_t dataSize = echo.GetDataSize ();
@@ -130,13 +131,11 @@ V4Ping::Receive (Ptr<Socket> socket)
 		  if (buf[0] == GetNode ()->GetId () &&
 		      buf[1] == GetApplicationId ())
 		    {
-		      int64_t ts = buf[3];
-		      ts <<= 32;
-		      ts |= buf[2];
-		      Time sendTime = TimeStep (ts);
+		      Time sendTime = i->second;
 		      NS_ASSERT (Simulator::Now () > sendTime);
 		      Time delta = Simulator::Now () - sendTime;
-		     
+		      
+		      m_sent.erase (i);
 		      m_avgRtt.Update (delta.GetMilliSeconds());
 		      m_recv++;
 		      m_traceRtt (delta);
@@ -189,14 +188,6 @@ V4Ping::Send ()
   tmp = GetApplicationId ();
   Write32 (&data[1 * sizeof(uint32_t)], tmp);
 
-  int64_t now = Simulator::Now ().GetTimeStep ();
-  tmp = now & 0xffffffff;
-  Write32 (&data[2 * sizeof(uint32_t)], tmp);
-
-  now >>= 32;
-  tmp = now & 0xffffffff;
-  Write32 (&data[3 * sizeof(uint32_t)], tmp);
-
   Ptr<Packet> dataPacket = Create<Packet> ((uint8_t *) &data, m_size);
   echo.SetData (dataPacket);
   p->AddHeader (echo);
@@ -205,7 +196,7 @@ V4Ping::Send ()
   header.SetCode (0);
   p->AddHeader (header);
   m_socket->Send (p, 0);
-  
+  m_sent.insert (std::make_pair (m_seq - 1, Simulator::Now()));  
   m_next = Simulator::Schedule (m_interval, & V4Ping::Send, this);
 }
 
