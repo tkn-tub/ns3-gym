@@ -32,6 +32,7 @@
 #include "aodv-rqueue.h"
 #include "aodv-packet.h"
 #include "id-cache.h"
+#include "aodv-neighbor.h"
 
 #include "src/internet-stack/ipv4-l3-protocol.h"
 
@@ -116,31 +117,6 @@ private:
   bool GratuitousReply;
   //\}
 
-  /**\name Handle neighbors
-   *  - from which node has received a Hello message, or
-   *  - which are active next hops, or
-   *  - which are active precursors
-   */
-  //\{
-  struct Neighbor
-  {
-    Ipv4Address m_neighborAddress;
-    Time m_expireTime;
-  };
-  struct IsExpiredForNeighbor
-  {
-     bool operator()(const struct Neighbor & nb) const
-     {
-       return (nb.m_expireTime < Simulator::Now());
-     }
-   };
-  bool LookupNeighbor (Ipv4Address addr, Neighbor & n);
-  bool IsNeighbor (Ipv4Address addr);
-  void UpdateNeighbor (Ipv4Address addr, Time expire);
-  void PurgeNeighbor ();
-  std::vector<Neighbor> m_nb;
-  //\}
-
   /// IP protocol
   Ptr<Ipv4> m_ipv4;
   /// Raw socket per each IP interface, map socket -> iface address (IP + mask)
@@ -156,6 +132,8 @@ private:
   uint32_t m_seqNo;
   /// Handle duplicated packets
   IdCache m_idCache;
+  /// Handle neighbors
+  Neighbors m_nb;
 
   UnicastForwardCallback m_scb;
   ErrorCallback m_ecb;
