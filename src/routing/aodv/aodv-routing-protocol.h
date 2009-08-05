@@ -58,6 +58,7 @@ class RoutingProtocol : public Ipv4RoutingProtocol
 {
 public:
   static TypeId GetTypeId (void);
+  static const uint32_t AODV_PORT;
 
   RoutingProtocol();
   virtual ~RoutingProtocol();

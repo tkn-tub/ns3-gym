@@ -43,13 +43,8 @@
 #include "ns3/net-device.h"
 
 #include "ns3/raw-socket-factory.h"
-#include "ns3/ipv4-raw-socket-factory.h"
 #include "src/internet-stack/udp-l4-protocol.h"
 #include <algorithm>
-
-
-/// UDP Port for AODV control traffic
-#define AODV_PORT  654
 
 NS_LOG_COMPONENT_DEFINE ("AodvRoutingProtocol");
 
@@ -59,6 +54,8 @@ namespace aodv
 {
 NS_OBJECT_ENSURE_REGISTERED (RoutingProtocol);
 
+/// UDP Port for AODV control traffic
+const uint32_t RoutingProtocol::AODV_PORT = 654;
 
 RoutingProtocol::RoutingProtocol () :
   RreqRetries (2),
