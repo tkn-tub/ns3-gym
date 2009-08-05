@@ -82,7 +82,7 @@ RoutingProtocol::RoutingProtocol () :
   TIMEOUT_BUFFER (2),
   BLACKLIST_TIMEOUT( Scalar ( (((TtlThreshold - TtlStart)/TtlIncrement) + 1 + RreqRetries) )*NetTraversalTime ),
   MaxQueueLen (64), MaxQueueTime (Seconds(30)), DestinationOnly (false), GratuitousReply (true),
-  m_routingTable (DeletePeriod), m_queue (MaxQueueLen, MaxQueueTime),
+  m_routingTable (DeletePeriod, FREQUENCY), m_queue (MaxQueueLen, MaxQueueTime),
   m_requestId (0), m_seqNo (0), m_nb(MakeCallback(&RoutingProtocol::HandleLinkFailure, this), HelloInterval),
   htimer (Timer::CANCEL_ON_DESTROY),
   rtimer (Timer::CANCEL_ON_DESTROY), lrtimer (Timer::CANCEL_ON_DESTROY)
@@ -209,8 +209,8 @@ RoutingProtocol::Start ()
   m_scb = MakeCallback (&RoutingProtocol::Send, this);
   m_ecb = MakeCallback (&RoutingProtocol::Drop, this);
 
-  m_nb.Shedule();
-  rtimer.Schedule();
+  m_nb.ScheduleTimer ();
+  m_routingTable.ScheduleTimer ();
 }
 
 Ptr<Ipv4Route>
@@ -362,12 +362,10 @@ RoutingProtocol::SetIpv4 (Ptr<Ipv4> ipv4)
   NS_ASSERT (ipv4 != 0);
   NS_ASSERT (m_ipv4 == 0);
 
-  rtimer.SetFunction (&RoutingProtocol::RouteCacheTimerExpire, this);
   lrtimer.SetFunction (&RoutingProtocol::LocalRepairTimerExpire, this);
   htimer.SetFunction (&RoutingProtocol::HelloTimerExpire, this);
 
   htimer.SetDelay (HelloInterval);
-  rtimer.SetDelay (FREQUENCY);
 
   m_ipv4 = ipv4;
   Simulator::ScheduleNow (&RoutingProtocol::Start, this);
@@ -1066,14 +1064,6 @@ RoutingProtocol::HelloTimerExpire ()
 }
 
 void
-RoutingProtocol::RouteCacheTimerExpire ()
-{
-  NS_LOG_FUNCTION(this);
-  RtPurge ();
-  rtimer.Schedule (FREQUENCY);
-}
-
-void
 RoutingProtocol::LocalRepairTimerExpire ()
 {
   // TODO start local repair procedure
@@ -1286,12 +1276,5 @@ RoutingProtocol::HandleLinkFailure (Ipv4Address addr )
   // TODO
 }
 
-void
-RoutingProtocol::RtPurge ()
-{
-  NS_LOG_FUNCTION(this);
-  m_routingTable.Purge ();
-  // TODO AODV::rt_purge()
-}
 }
 }

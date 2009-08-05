@@ -64,7 +64,7 @@ public:
   bool IsNeighbor (Ipv4Address addr);
   void Update (Ipv4Address addr, Time expire);
   void Purge ();
-  void Shedule ();
+  void ScheduleTimer ();
 private:
   struct IsExpired
   {

@@ -189,7 +189,7 @@ public:
 class RoutingTable
 {
 public:
-  RoutingTable(Time t) : m_badLinkLifetime (t) {}
+  RoutingTable(Time t, Time delay);
   ///\name Handle life time of invalid route
   //\{
   Time GetBadLinkLifetime () const { return m_badLinkLifetime; }
@@ -239,10 +239,12 @@ public:
   bool MarkLinkAsUinidirectional(Ipv4Address neighbor, Time blacklistTimeout);
   /// Print routing table
   void Print(std::ostream &os) const;
+  void ScheduleTimer ();
 
 private:
   std::map<Ipv4Address, RoutingTableEntry> m_ipv4AddressEntry;
   Time m_badLinkLifetime;
+  Timer m_rtimer;
 };
 
 }}

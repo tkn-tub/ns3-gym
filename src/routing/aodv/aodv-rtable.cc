@@ -254,6 +254,13 @@ AodvRtableEntryTest::RunTests ()
  The Routing Table
  */
 
+RoutingTable::RoutingTable (Time t, Time delay) : m_badLinkLifetime (t), m_rtimer (Timer::CANCEL_ON_DESTROY)
+{
+  m_rtimer.SetDelay(delay);
+  m_rtimer.SetFunction(&RoutingTable::Purge, this);
+}
+
+
 bool
 RoutingTable::LookupRoute (Ipv4Address id, RoutingTableEntry & rt )
 {
@@ -364,6 +371,9 @@ RoutingTable::Purge ()
         }
       ++i;
     }
+  m_rtimer.Cancel();
+  m_rtimer.Schedule();
+
 }
 
 bool
@@ -390,6 +400,13 @@ RoutingTable::Print (std::ostream &os ) const
 
 }
 
+void
+RoutingTable::ScheduleTimer ()
+{
+  m_rtimer.Schedule();
+}
+
+
 #ifdef RUN_SELF_TESTS
 /// Unit test for AODV routing table
 struct AodvRtableTest : public Test
@@ -406,7 +423,7 @@ static AodvRtableTest g_AodvRtableTest;
 bool
 AodvRtableTest::RunTests ()
   {
-    RoutingTable rtable (Seconds(2));
+    RoutingTable rtable (Seconds(2), Seconds(0.5));
     NS_TEST_ASSERT_EQUAL (rtable.GetBadLinkLifetime(), Seconds(2));
     rtable.SetBadLinkLifetime(Seconds(1));
     NS_TEST_ASSERT_EQUAL (rtable.GetBadLinkLifetime(), Seconds(1));

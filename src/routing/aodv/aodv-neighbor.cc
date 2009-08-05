@@ -42,7 +42,6 @@ Neighbors::Neighbors (Callback<void, Ipv4Address> cb, Time delay) : m_handleLinl
   m_ntimer.SetFunction(&Neighbors::Purge, this);
 }
 
-
 bool
 Neighbors::Lookup (Ipv4Address addr)
 {
@@ -101,13 +100,13 @@ Neighbors::Purge ()
       m_handleLinleFailure (i->m_neighborAddress);
     }
   m_nb.erase (i, m_nb.end ());
-
+  m_ntimer.Cancel();
+  m_ntimer.Schedule();
 }
 
 void
-Neighbors::Shedule ()
+Neighbors::ScheduleTimer ()
 {
-  m_ntimer.Cancel();
   m_ntimer.Schedule();
 }
 
@@ -173,7 +172,7 @@ NeighborTest::RunTests ()
   neighbor.Update (Ipv4Address("2.2.2.2"), Seconds(10));
   neighbor.Update (Ipv4Address("3.3.3.3"), Seconds(20));
 
-  Simulator::Schedule (Seconds(1), &NeighborTest::CheckTimeout1, this);
+  Simulator::Schedule (Seconds(2), &NeighborTest::CheckTimeout1, this);
   Simulator::Schedule (Seconds(15), &NeighborTest::CheckTimeout2, this);
   Simulator::Schedule (Seconds(30), &NeighborTest::CheckTimeout3, this);
   Simulator::Run ();
