@@ -83,12 +83,12 @@ RoutingProtocol::RoutingProtocol () :
   BLACKLIST_TIMEOUT( Scalar ( (((TtlThreshold - TtlStart)/TtlIncrement) + 1 + RreqRetries) )*NetTraversalTime ),
   MaxQueueLen (64), MaxQueueTime (Seconds(30)), DestinationOnly (false), GratuitousReply (true),
   m_routingTable (DeletePeriod, FREQUENCY), m_queue (MaxQueueLen, MaxQueueTime),
-  m_requestId (0), m_seqNo (0), m_nb(MakeCallback(&RoutingProtocol::HandleLinkFailure, this), HelloInterval),
+  m_requestId (0), m_seqNo (0), m_nb(HelloInterval),
   htimer (Timer::CANCEL_ON_DESTROY),
   rtimer (Timer::CANCEL_ON_DESTROY), lrtimer (Timer::CANCEL_ON_DESTROY)
 
 {
-
+  m_nb.SetCallback(MakeCallback(&RoutingProtocol::HandleLinkFailure, this));
 }
 
 TypeId

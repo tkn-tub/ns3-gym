@@ -36,7 +36,7 @@ namespace ns3
 namespace aodv
 {
 
-Neighbors::Neighbors (Callback<void, Ipv4Address> cb, Time delay) : m_handleLinleFailure (cb), m_ntimer (Timer::CANCEL_ON_DESTROY)
+Neighbors::Neighbors (Time delay) : m_ntimer (Timer::CANCEL_ON_DESTROY)
 {
   m_ntimer.SetDelay(delay);
   m_ntimer.SetFunction(&Neighbors::Purge, this);
@@ -95,9 +95,12 @@ Neighbors::Purge ()
 {
   if (m_nb.empty ()) return;
   std::vector<Neighbor>::iterator i = remove_if (m_nb.begin (), m_nb.end (), IsExpired ());
-  for (std::vector<Neighbor>::const_iterator j = i; j != m_nb.end (); ++j)
+  if (!m_handleLinleFailure.IsNull ())
     {
-      m_handleLinleFailure (i->m_neighborAddress);
+      for (std::vector<Neighbor>::const_iterator j = i; j != m_nb.end (); ++j)
+        {
+          m_handleLinleFailure (i->m_neighborAddress);
+        }
     }
   m_nb.erase (i, m_nb.end ());
   m_ntimer.Cancel();
@@ -115,13 +118,14 @@ Neighbors::ScheduleTimer ()
 /// Unit test for neighbors
 struct NeighborTest : public Test
 {
-  NeighborTest () : Test ("AODV/Neighbor"), neighbor(MakeCallback(&NeighborTest::Handler, this), Seconds(1)), result(true) {}
+  NeighborTest () : Test ("AODV/Neighbor"),
+                    result(true) { }
   virtual bool RunTests();
   void Handler (Ipv4Address addr);
   void CheckTimeout1 ();
   void CheckTimeout2 ();
   void CheckTimeout3 ();
-  Neighbors neighbor;
+  Neighbors * neighbor;
   bool result;
 };
 
@@ -136,41 +140,44 @@ NeighborTest::Handler (Ipv4Address addr)
 void
 NeighborTest::CheckTimeout1 ()
 {
-  NS_TEST_ASSERT_EQUAL (neighbor.Lookup(Ipv4Address("1.2.3.4")), true);
-  NS_TEST_ASSERT_EQUAL (neighbor.Lookup(Ipv4Address("1.1.1.1")), true);
-  NS_TEST_ASSERT_EQUAL (neighbor.Lookup(Ipv4Address("2.2.2.2")), true);
-  NS_TEST_ASSERT_EQUAL (neighbor.Lookup(Ipv4Address("3.3.3.3")), true);
+  NS_TEST_ASSERT_EQUAL (neighbor->Lookup(Ipv4Address("1.2.3.4")), true);
+  NS_TEST_ASSERT_EQUAL (neighbor->Lookup(Ipv4Address("1.1.1.1")), true);
+  NS_TEST_ASSERT_EQUAL (neighbor->Lookup(Ipv4Address("2.2.2.2")), true);
+  NS_TEST_ASSERT_EQUAL (neighbor->Lookup(Ipv4Address("3.3.3.3")), true);
 }
 void
 NeighborTest::CheckTimeout2 ()
 {
-  NS_TEST_ASSERT_EQUAL (neighbor.Lookup(Ipv4Address("1.2.3.4")), false);
-  NS_TEST_ASSERT_EQUAL (neighbor.Lookup(Ipv4Address("1.1.1.1")), false);
-  NS_TEST_ASSERT_EQUAL (neighbor.Lookup(Ipv4Address("2.2.2.2")), false);
-  NS_TEST_ASSERT_EQUAL (neighbor.Lookup(Ipv4Address("3.3.3.3")), true);
+  NS_TEST_ASSERT_EQUAL (neighbor->Lookup(Ipv4Address("1.2.3.4")), false);
+  NS_TEST_ASSERT_EQUAL (neighbor->Lookup(Ipv4Address("1.1.1.1")), false);
+  NS_TEST_ASSERT_EQUAL (neighbor->Lookup(Ipv4Address("2.2.2.2")), false);
+  NS_TEST_ASSERT_EQUAL (neighbor->Lookup(Ipv4Address("3.3.3.3")), true);
 }
 void
 NeighborTest::CheckTimeout3 ()
 {
-  NS_TEST_ASSERT_EQUAL (neighbor.Lookup(Ipv4Address("1.2.3.4")), false);
-  NS_TEST_ASSERT_EQUAL (neighbor.Lookup(Ipv4Address("1.1.1.1")), false);
-  NS_TEST_ASSERT_EQUAL (neighbor.Lookup(Ipv4Address("2.2.2.2")), false);
-  NS_TEST_ASSERT_EQUAL (neighbor.Lookup(Ipv4Address("3.3.3.3")), false);
+  NS_TEST_ASSERT_EQUAL (neighbor->Lookup(Ipv4Address("1.2.3.4")), false);
+  NS_TEST_ASSERT_EQUAL (neighbor->Lookup(Ipv4Address("1.1.1.1")), false);
+  NS_TEST_ASSERT_EQUAL (neighbor->Lookup(Ipv4Address("2.2.2.2")), false);
+  NS_TEST_ASSERT_EQUAL (neighbor->Lookup(Ipv4Address("3.3.3.3")), false);
 }
 
 bool
 NeighborTest::RunTests ()
 {
-  neighbor.Update (Ipv4Address("1.2.3.4"), Seconds(1));
-  NS_TEST_ASSERT_EQUAL (neighbor.Lookup(Ipv4Address("1.2.3.4")), true);
-  NS_TEST_ASSERT_EQUAL (neighbor.Lookup(Ipv4Address("4.3.2.1")), false);
-  neighbor.Update (Ipv4Address("1.2.3.4"), Seconds(10));
-  NS_TEST_ASSERT_EQUAL (neighbor.Lookup(Ipv4Address("1.2.3.4")), true);
-  NS_TEST_ASSERT_EQUAL (neighbor.GetExpireTime (Ipv4Address("1.2.3.4")), Seconds(10));
-  NS_TEST_ASSERT_EQUAL (neighbor.GetExpireTime (Ipv4Address("4.3.2.1")), Seconds(0));
-  neighbor.Update (Ipv4Address("1.1.1.1"), Seconds(5));
-  neighbor.Update (Ipv4Address("2.2.2.2"), Seconds(10));
-  neighbor.Update (Ipv4Address("3.3.3.3"), Seconds(20));
+  Neighbors nb (Seconds (1));
+  neighbor = &nb;
+  neighbor->SetCallback(MakeCallback(&NeighborTest::Handler, this));
+  neighbor->Update (Ipv4Address("1.2.3.4"), Seconds(1));
+  NS_TEST_ASSERT_EQUAL (neighbor->Lookup(Ipv4Address("1.2.3.4")), true);
+  NS_TEST_ASSERT_EQUAL (neighbor->Lookup(Ipv4Address("4.3.2.1")), false);
+  neighbor->Update (Ipv4Address("1.2.3.4"), Seconds(10));
+  NS_TEST_ASSERT_EQUAL (neighbor->Lookup(Ipv4Address("1.2.3.4")), true);
+  NS_TEST_ASSERT_EQUAL (neighbor->GetExpireTime (Ipv4Address("1.2.3.4")), Seconds(10));
+  NS_TEST_ASSERT_EQUAL (neighbor->GetExpireTime (Ipv4Address("4.3.2.1")), Seconds(0));
+  neighbor->Update (Ipv4Address("1.1.1.1"), Seconds(5));
+  neighbor->Update (Ipv4Address("2.2.2.2"), Seconds(10));
+  neighbor->Update (Ipv4Address("3.3.3.3"), Seconds(20));
 
   Simulator::Schedule (Seconds(2), &NeighborTest::CheckTimeout1, this);
   Simulator::Schedule (Seconds(15), &NeighborTest::CheckTimeout2, this);

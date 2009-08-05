@@ -46,7 +46,7 @@ class RoutingProtocol;
 class Neighbors
 {
 public:
-  Neighbors (Callback<void, Ipv4Address> cb, Time delay);
+  Neighbors (Time delay);
   struct Neighbor
   {
     Ipv4Address m_neighborAddress;
@@ -65,6 +65,7 @@ public:
   void Update (Ipv4Address addr, Time expire);
   void Purge ();
   void ScheduleTimer ();
+  void SetCallback (Callback<void, Ipv4Address> cb) { m_handleLinleFailure = cb;}
 private:
   struct IsExpired
   {
