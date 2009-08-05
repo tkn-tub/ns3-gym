@@ -43,29 +43,35 @@ namespace ns3
 namespace aodv
 {
 class RoutingProtocol;
+/**
+ * \ingroup aodv
+ * \brief maintain list of active neighbors
+ */
 class Neighbors
 {
 public:
+  /// c-tor
   Neighbors (Time delay);
   struct Neighbor
   {
     Ipv4Address m_neighborAddress;
     Time m_expireTime;
   };
-  /**
-   * Lookup neighbor with address addr
-   * @param addr - neighbor's IP address
-   * @return true on success
-   */
-  bool Lookup (Ipv4Address addr);
   /// Return expire time for neighbor node with address addr, if exists, else return 0.
   Time GetExpireTime (Ipv4Address addr);
   /// Check that node with address addr  is neighbor
   bool IsNeighbor (Ipv4Address addr);
+  /// Update expire time for entry with address addr, if it exists, else add new entry
   void Update (Ipv4Address addr, Time expire);
+  /// Remove all expired entries
   void Purge ();
+  /// Schedule m_ntimer.
   void ScheduleTimer ();
+  ///\name Handle link failure callback
+  //\{
   void SetCallback (Callback<void, Ipv4Address> cb) { m_handleLinleFailure = cb;}
+  Callback<void, Ipv4Address> GetCallback () const { return m_handleLinleFailure; }
+  //\}
 private:
   struct IsExpired
   {
@@ -74,9 +80,11 @@ private:
        return (nb.m_expireTime < Simulator::Now());
      }
    };
-
+  /// link failure callback
   Callback<void, Ipv4Address> m_handleLinleFailure;
+  /// Timer for neighbor's list. Schedule Purge().
   Timer m_ntimer;
+  /// vector of entries
   std::vector<Neighbor> m_nb;
 };
 

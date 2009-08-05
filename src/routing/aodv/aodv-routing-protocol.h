@@ -150,8 +150,6 @@ private:
   * for a single destination MUST utilize a binary exponential backoff.
   */
   void ScheduleRreqRetry (Ipv4Address dst,  uint16_t ttl);
-  /// Purge all expired records from m_routingTable
-  void RtPurge ();
   /**
    * Update route lifetime.
    * \param addr - destination address

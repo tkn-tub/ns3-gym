@@ -46,10 +46,15 @@ namespace aodv
 class IdCache
 {
 public:
+  /// c-tor
   IdCache () {}
+  /// Insert entry (addr, id) in cache if it does not exist before
   void InsertId (Ipv4Address addr, uint32_t id, Time saveTime);
+  /// Check that entry (addr, id) exists in cache
   bool LookupId (Ipv4Address addr, uint32_t id);
+  /// Remove all expired entries
   void Purge ();
+  /// Return number of entries in cache
   uint32_t GetSize ();
 private:
   struct UniqueId
