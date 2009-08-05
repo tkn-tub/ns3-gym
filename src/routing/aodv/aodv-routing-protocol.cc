@@ -481,9 +481,7 @@ RoutingProtocol::SendRequest (Ipv4Address dst, uint16_t ttl )
       Ptr<Packet> packet = Create<Packet> ();
       packet->AddHeader (rreqHeader);
       packet->AddHeader (tHeader);
-      BuildPacket (/*packet*/packet, /*source port*/AODV_PORT, /*destination port*/AODV_PORT, /*source address*/iface.GetLocal (),
-      /*destination address*/iface.GetBroadcast (), /*id*/0, /*TTL*/ttl);
-      socket->Send (packet);
+      SendPacketFromRawSocket (/*packet*/packet, /*pair<Ptr<Socket> , Ipv4InterfaceAddress>*/ *j, /*dst*/iface.GetBroadcast (), /*TTL*/ ttl, /*id*/0);
     }
   ScheduleRreqRetry (dst, ttl);
   htimer.Cancel ();
@@ -719,9 +717,8 @@ RoutingProtocol::RecvRequest (Ptr<Packet> p, Ipv4Address receiver, Ipv4Address s
       packet->AddHeader (rreqHeader);
       TypeHeader tHeader (AODVTYPE_RREQ);
       packet->AddHeader (tHeader);
-      BuildPacket (/*packet*/packet, /*source port*/AODV_PORT, /*destination port*/AODV_PORT, /*source address*/iface.GetLocal (),
-      /*destination address*/iface.GetBroadcast (), /*id*/ipv4Header.GetIdentification (), /*TTL*/ipv4Header.GetTtl () - 1);
-      socket->Send (packet);
+      SendPacketFromRawSocket (/*packet*/packet, /*pair<Ptr<Socket> , Ipv4InterfaceAddress>*/ *j, /*dst*/iface.GetBroadcast (),
+                               /*TTL*/ ipv4Header.GetTtl () - 1, /*id*/ipv4Header.GetIdentification ());
     }
 
   htimer.Cancel ();
@@ -753,10 +750,10 @@ RoutingProtocol::SendReply (RreqHeader const & rreqHeader, RoutingTableEntry con
   packet->AddHeader (rrepHeader);
   TypeHeader tHeader (AODVTYPE_RREP);
   packet->AddHeader (tHeader);
-  BuildPacket (/*packet*/packet, /*source port*/AODV_PORT, /*destination port*/AODV_PORT, /*source address*/toOrigin.GetInterface ().GetLocal (),
-  /*destination address*/toOrigin.GetNextHop (), /*id*/0, /*TTL*/1); //TODO TTL
   Ptr<Socket> socket = FindSocketWithInterfaceAddress (toOrigin.GetInterface ().GetLocal ());
-  socket->SendTo (packet, 0, InetSocketAddress (toOrigin.GetNextHop (), AODV_PORT));
+  NS_ASSERT (socket);
+  SendPacketFromRawSocket (/*packet*/packet, /*pair<Ptr<Socket> , Ipv4InterfaceAddress>*/ std::make_pair(socket, toOrigin.GetInterface ()),
+                           /*dst*/toOrigin.GetNextHop (), /*TTL*/ toOrigin.GetHop (), /*id*/0);
 }
 
 void
@@ -775,10 +772,10 @@ RoutingProtocol::SendReplyByIntermediateNode (RoutingTableEntry & toDst, Routing
   packet->AddHeader (rrepHeader);
   TypeHeader tHeader (AODVTYPE_RREP);
   packet->AddHeader (tHeader);
-  BuildPacket (/*packet*/packet, /*source port*/AODV_PORT, /*destination port*/AODV_PORT, /*source address*/toOrigin.GetInterface ().GetLocal (),
-  /*destination address*/toOrigin.GetNextHop (), /*id*/0, /*TTL*/toOrigin.GetHop ());
   Ptr<Socket> socket = FindSocketWithInterfaceAddress (toOrigin.GetInterface ().GetLocal ());
-  socket->SendTo (packet, 0, InetSocketAddress (toOrigin.GetNextHop (), AODV_PORT));
+  NS_ASSERT (socket);
+  SendPacketFromRawSocket (/*packet*/packet, /*pair<Ptr<Socket> , Ipv4InterfaceAddress>*/ std::make_pair(socket, toOrigin.GetInterface ()),
+                           /*dst*/toOrigin.GetNextHop (), /*TTL*/ toOrigin.GetHop (), /*id*/0);
 
   // Generating gratuitous RREPs
   if (gratRep)
@@ -789,10 +786,10 @@ RoutingProtocol::SendReplyByIntermediateNode (RoutingTableEntry & toDst, Routing
       Ptr<Packet> packetToDst = Create<Packet> ();
       packetToDst->AddHeader (rrepHeader);
       packetToDst->AddHeader (tHeader);
-      BuildPacket (/*packet*/packet, /*source port*/AODV_PORT, /*destination port*/AODV_PORT, /*source address*/toDst.GetInterface ().GetLocal (),
-      /*destination address*/toDst.GetNextHop (), /*id*/0, /*TTL*/toDst.GetHop ());
-      socket = FindSocketWithInterfaceAddress (toDst.GetInterface ().GetLocal ());
-      socket->SendTo (packetToDst, 0, InetSocketAddress (toDst.GetNextHop (), AODV_PORT));
+      Ptr<Socket> socket = FindSocketWithInterfaceAddress (toDst.GetInterface ().GetLocal ());
+      NS_ASSERT (socket);
+      SendPacketFromRawSocket (/*packet*/packet, /*pair<Ptr<Socket> , Ipv4InterfaceAddress>*/ std::make_pair(socket, toDst.GetInterface ()),
+                               /*dst*/toDst.GetNextHop (), /*TTL*/ toDst.GetHop (), /*id*/0);
     }
 }
 
@@ -807,10 +804,10 @@ RoutingProtocol::SendReplyAck (Ipv4Address neighbor )
   packet->AddHeader (typeHeader);
   RoutingTableEntry toNeighbor;
   m_routingTable.LookupRoute (neighbor, toNeighbor);
-  BuildPacket (/*packet*/packet, /*source port*/AODV_PORT, /*destination port*/AODV_PORT, /*source address*/toNeighbor.GetInterface ().GetLocal (),
-  /*destination address*/neighbor, /*id*/0, /*TTL*/35); // TODO TTL
   Ptr<Socket> socket = FindSocketWithInterfaceAddress (toNeighbor.GetInterface ().GetLocal ());
-  socket->SendTo (packet, 0, InetSocketAddress (neighbor, AODV_PORT));
+  NS_ASSERT (socket);
+  SendPacketFromRawSocket (/*packet*/packet, /*pair<Ptr<Socket> , Ipv4InterfaceAddress>*/ std::make_pair(socket, toNeighbor.GetInterface ()),
+                           /*dst*/neighbor, /*TTL*/ 1, /*id*/0);
 }
 
 void
@@ -844,8 +841,8 @@ RoutingProtocol::RecvReply (Ptr<Packet> p, Ipv4Address receiver, Ipv4Address sen
    */
   Ptr<NetDevice> dev = m_ipv4->GetNetDevice (m_ipv4->GetInterfaceForAddress (receiver));
   RoutingTableEntry newEntry (/*device=*/dev, /*dst=*/dst, /*validSeqNo=*/true, /*seqno=*/rrepHeader.GetDstSeqno (),
-  /*iface=*/m_ipv4->GetAddress (m_ipv4->GetInterfaceForAddress (receiver), 0),/*hop=*/hop, /*nextHop=*/sender,
-  /*lifeTime=*/rrepHeader.GetLifeTime ());
+                              /*iface=*/m_ipv4->GetAddress (m_ipv4->GetInterfaceForAddress (receiver), 0),/*hop=*/hop,
+                              /*nextHop=*/sender, /*lifeTime=*/rrepHeader.GetLifeTime ());
   RoutingTableEntry toDst;
   if (m_routingTable.LookupRoute (dst, toDst))
     {
@@ -920,16 +917,10 @@ RoutingProtocol::RecvReply (Ptr<Packet> p, Ipv4Address receiver, Ipv4Address sen
   packet->AddHeader (rrepHeader);
   TypeHeader tHeader (AODVTYPE_RREP);
   packet->AddHeader (tHeader);
-  for (std::map<Ptr<Socket> , Ipv4InterfaceAddress>::const_iterator j = m_socketAddresses.begin (); j != m_socketAddresses.end (); ++j)
-    {
-      dev = m_ipv4->GetNetDevice (m_ipv4->GetInterfaceForAddress (j->second.GetLocal ()));
-      if (dev->GetAddress () == toOrigin.GetOutputDevice ()->GetAddress ())
-        {
-          BuildPacket (/*packet*/packet, /*source port*/AODV_PORT, /*destination port*/AODV_PORT, /*source address*/j->second.GetLocal (),
-          /*destination address*/toOrigin.GetNextHop (), /*id*/0, /*TTL*/ipv4Header.GetTtl () - 1);
-          j->first->SendTo (packet, 0, InetSocketAddress (toOrigin.GetNextHop (), AODV_PORT));
-        }
-    }
+  Ptr<Socket> socket = FindSocketWithInterfaceAddress (toOrigin.GetInterface ().GetLocal ());
+  NS_ASSERT (socket);
+  SendPacketFromRawSocket (/*packet*/packet, /*pair<Ptr<Socket> , Ipv4InterfaceAddress>*/ std::make_pair(socket, toOrigin.GetInterface ()),
+                           /*dst*/toOrigin.GetNextHop (), /*TTL*/ ipv4Header.GetTtl () - 1, /*id*/0);
 }
 
 void
@@ -1114,11 +1105,32 @@ RoutingProtocol::SendHello ()
       packet->AddHeader (helloHeader);
       TypeHeader tHeader (AODVTYPE_RREP);
       packet->AddHeader (tHeader);
-      BuildPacket (/*packet*/packet, /*source port*/AODV_PORT, /*destination port*/AODV_PORT, /*source address*/iface.GetLocal (),
-      /*destination address*/iface.GetBroadcast (), /*id*/0, /*TTL*/1);
-      socket->Send (packet);
+      SendPacketFromRawSocket (/*packet*/packet, /*pair<Ptr<Socket> , Ipv4InterfaceAddress>*/ *j,
+                               /*dst*/iface.GetBroadcast (), /*TTL*/ 1, /*id*/0);
     }
 }
+
+void
+RoutingProtocol::SendPacketFromRawSocket (Ptr<Packet> packet, std::pair<Ptr<Socket> , Ipv4InterfaceAddress> socketAddress, Ipv4Address dst,
+    uint16_t ttl, uint16_t id )
+{
+  UdpHeader udpHeader;
+  udpHeader.SetDestinationPort (AODV_PORT);
+  udpHeader.SetSourcePort (AODV_PORT);
+  packet->AddHeader (udpHeader);
+
+  Ipv4Header ipv4Header;
+  ipv4Header.SetSource (socketAddress.second.GetLocal ());
+  ipv4Header.SetDestination (dst);
+  ipv4Header.SetIdentification (id);
+  ipv4Header.EnableChecksum ();
+  ipv4Header.SetProtocol (UdpL4Protocol::PROT_NUMBER);
+  ipv4Header.SetTtl (ttl);
+  ipv4Header.SetPayloadSize (packet->GetSize ());
+  packet->AddHeader (ipv4Header);
+  socketAddress.first->SendTo (packet, 0, InetSocketAddress (dst, AODV_PORT));
+}
+
 
 void
 RoutingProtocol::SendPacketFromQueue (Ipv4Address dst, Ptr<Ipv4Route> route )
@@ -1196,11 +1208,10 @@ RoutingProtocol::SendRerrMessage (Ptr<Packet> packet, std::vector<Ipv4Address> p
     {
       RoutingTableEntry toPrecursor;
       m_routingTable.LookupRoute (precursors.front (), toPrecursor);
-      BuildPacket (/*packet*/packet, /*source port*/AODV_PORT, /*destination port*/AODV_PORT, /*source address*/
-          toPrecursor.GetInterface ().GetLocal (),
-          /*destination address*/precursors.front (), /*id*/0, /*TTL*/1);
       Ptr<Socket> socket = FindSocketWithInterfaceAddress (toPrecursor.GetInterface ().GetLocal ());
-      socket->SendTo (packet, 0, InetSocketAddress (toPrecursor.GetDestination (), AODV_PORT));
+      NS_ASSERT (socket);
+      SendPacketFromRawSocket (/*packet*/packet, /*pair<Ptr<Socket> , Ipv4InterfaceAddress>*/ std::make_pair(socket, toPrecursor.GetInterface ()),
+                               /*dst*/precursors.front (), /*TTL*/ 1, /*id*/0);
       return;
     }
 
@@ -1225,9 +1236,9 @@ RoutingProtocol::SendRerrMessage (Ptr<Packet> packet, std::vector<Ipv4Address> p
   for (std::vector<Ipv4Address>::const_iterator i = ifaces.begin (); i != ifaces.end (); ++i)
     {
       Ptr<Socket> socket = FindSocketWithInterfaceAddress (*i);
-      BuildPacket (/*packet*/packet, /*source port*/AODV_PORT, /*destination port*/AODV_PORT, /*source address*/*i,
-      /*destination address*/m_socketAddresses[socket].GetBroadcast (), /*id*/0, /*TTL*/1);
-      socket->Send (packet, 0);
+      NS_ASSERT (socket);
+      SendPacketFromRawSocket (/*packet*/packet, /*pair<Ptr<Socket> , Ipv4InterfaceAddress>*/ std::make_pair(socket, toPrecursor.GetInterface ()),
+                               /*dst*/m_socketAddresses[socket].GetBroadcast (), /*TTL*/ 1, /*id*/0);
     }
 
 }
@@ -1246,25 +1257,6 @@ RoutingProtocol::FindSocketWithInterfaceAddress (Ipv4Address addr ) const
   return socket;
 }
 
-void
-RoutingProtocol::BuildPacket (Ptr<Packet> packet, uint16_t sport, uint16_t dport, Ipv4Address src, Ipv4Address dst, uint32_t identification,
-    uint16_t ttl )
-{
-  UdpHeader udpHeader;
-  udpHeader.SetDestinationPort (sport);
-  udpHeader.SetSourcePort (dport);
-  packet->AddHeader (udpHeader);
-
-  Ipv4Header ipv4Header;
-  ipv4Header.SetSource (src);
-  ipv4Header.SetDestination (dst);
-  ipv4Header.SetIdentification (identification);
-  ipv4Header.EnableChecksum ();
-  ipv4Header.SetProtocol (UdpL4Protocol::PROT_NUMBER);
-  ipv4Header.SetTtl (ttl);
-  ipv4Header.SetPayloadSize (packet->GetSize ());
-  packet->AddHeader (ipv4Header);
-}
 
 void
 RoutingProtocol::LocalRouteRepair (Ipv4Address dst, Ipv4Address origin )
