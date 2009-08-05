@@ -54,7 +54,9 @@ public:
    * @param addr - neighbor's IP address
    * @return true on success
    */
-  bool Lookup (Ipv4Address addr, Neighbor & n);
+  bool Lookup (Ipv4Address addr);
+  /// Return expire time for neighbor node with address addr, if exists, else return 0.
+  Time GetExpireTime (Ipv4Address addr);
   /// Check that node with address addr  is neighbor
   bool IsNeighbor (Ipv4Address addr);
   void Update (Ipv4Address addr, Time expire);

@@ -1027,7 +1027,7 @@ RoutingProtocol::RouteRequestTimerExpire (Ipv4Address dst, uint16_t lastTtl )
     {
       NS_LOG_LOGIC("route discovery to " << dst << " has been attempted RreqRetries times");
       m_addressReqTimer.erase(dst);
-      NS_LOG_UNCOND ("Route not found. Drop packet with dst " << dst);
+      NS_LOG_LOGIC ("Route not found. Drop packet with dst " << dst);
       DropFromQueue (dst);
       // TODO drop packet from queue and deliver Destination Unreachable message to the application.
       return;
@@ -1049,7 +1049,7 @@ RoutingProtocol::RouteRequestTimerExpire (Ipv4Address dst, uint16_t lastTtl )
     }
   else
     {
-      NS_LOG_UNCOND ("Route down. Stop search. Drop packet with destination " << dst);
+      NS_LOG_LOGIC ("Route down. Stop search. Drop packet with destination " << dst);
       m_addressReqTimer.erase(dst);
       DropFromQueue (dst);
     }
@@ -1134,7 +1134,7 @@ RoutingProtocol::SendPacketFromQueue (Ipv4Address dst, Ptr<Ipv4Route> route )
   QueueEntry queueEntry;
   while (m_queue.Dequeue (dst, queueEntry))
     {
-      NS_LOG_UNCOND (Simulator::Now ().GetSeconds () << "  SendPacketFromQueue");
+      NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "  SendPacketFromQueue");
       UnicastForwardCallback ucb = queueEntry.GetUnicastForwardCallback ();
       ucb (route, queueEntry.GetPacket (), queueEntry.GetIpv4Header ());
     }

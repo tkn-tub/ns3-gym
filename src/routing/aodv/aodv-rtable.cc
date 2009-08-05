@@ -31,6 +31,8 @@
 #include "ns3/test.h"
 #include "ns3/log.h"
 
+NS_LOG_COMPONENT_DEFINE ("AodvRoutingTable");
+
 namespace ns3
 {
 namespace aodv
@@ -327,7 +329,7 @@ RoutingTable::InvalidateRoutesWithDst (const std::map<Ipv4Address, uint32_t> & u
       for (std::map<Ipv4Address, uint32_t>::const_iterator j = unreachable.begin (); j != unreachable.end (); ++j)
         if ((i->first == j->first) && (i->second.GetFlag () == RTF_UP))
           {
-            NS_LOG_UNCOND ("ivalidate route with dst " << i->first);
+            NS_LOG_LOGIC ("invalidate route with dst " << i->first);
             i->second.Invalidate (m_badLinkLifetime);
           }
     }
@@ -351,9 +353,9 @@ RoutingTable::Purge ()
             }
           else if (i->second.GetFlag () == RTF_UP)
             {
-              NS_LOG_UNCOND ("ivalidate route with dst " << i->first );
+              NS_LOG_LOGIC ("invalidate route with dst " << i->first );
               i->second.Invalidate (m_badLinkLifetime);
-              NS_LOG_UNCOND (Simulator::Now().GetSeconds());
+              NS_LOG_LOGIC (Simulator::Now().GetSeconds());
               Print(std::cout);
               ++i;
             }
