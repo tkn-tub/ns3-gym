@@ -28,6 +28,7 @@
 
 #include "aodv-neighbor.h"
 #include "ns3/test.h"
+#include <algorithm>
 
 namespace ns3
 {
