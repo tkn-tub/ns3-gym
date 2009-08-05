@@ -304,8 +304,15 @@ RoutingProtocol::RouteInput (Ptr<const Packet> p, const Ipv4Header &header, Ptr<
     }
 
   // TODO: local delivery to non-AODV interfaces
-
   // Forwarding
+  return Forwarding (p, header, ucb, ecb);
+}
+
+bool
+RoutingProtocol::Forwarding (Ptr<const Packet> p, const Ipv4Header & header, UnicastForwardCallback ucb, ErrorCallback ecb)
+{
+  Ipv4Address dst = header.GetDestination ();
+  Ipv4Address origin = header.GetSource ();
   m_routingTable.Purge ();
   RoutingTableEntry toDst;
   if (m_routingTable.LookupRoute (dst, toDst))
@@ -318,36 +325,44 @@ RoutingProtocol::RouteInput (Ptr<const Packet> p, const Ipv4Header &header, Ptr<
           QueueEntry newEntry (p, header, ucb, ecb, MaxQueueTime);
           m_queue.Enqueue (newEntry);
           NS_LOG_LOGIC("Local repair "<< dst);
-          return false;
+          return true;
         }
-      Ptr<Ipv4Route> route = toDst.GetRoute ();
-      NS_LOG_LOGIC(route->GetSource()<<" forwarding to " << dst << " from" << origin);
+      else if (toDst.GetFlag () == RTF_IN_REPAIR)
+        {
+          QueueEntry newEntry (p, header, ucb, ecb, MaxQueueTime);
+          m_queue.Enqueue (newEntry);
+          return true;
+        }
+      else if (toDst.GetFlag () == RTF_UP)
+        {
+          Ptr<Ipv4Route> route = toDst.GetRoute ();
+          NS_LOG_LOGIC(route->GetSource()<<" forwarding to " << dst << " from" << origin);
 
-      /**
-       *  Each time a route is used to forward a data packet, its Active Route
-       *  Lifetime field of the source, destination and the next hop on the
-       *  path to the destination is updated to be no less than the current
-       *  time plus ActiveRouteTimeout.
-       */
-      UpdateRouteLifeTime (origin, ActiveRouteTimeout);
-      UpdateRouteLifeTime (dst, ActiveRouteTimeout);
-      UpdateRouteLifeTime (route->GetGateway (), ActiveRouteTimeout);
-      /**
-       *  Since the route between each originator and destination pair is expected to be symmetric, the
-       *  Active Route Lifetime for the previous hop, along the reverse path back to the IP source, is also updated
-       *  to be no less than the current time plus ActiveRouteTimeout
-       */
-      RoutingTableEntry toOrigin;
-      m_routingTable.LookupRoute (origin, toOrigin);
-      UpdateRouteLifeTime (toOrigin.GetNextHop (), ActiveRouteTimeout);
+          /**
+           *  Each time a route is used to forward a data packet, its Active Route
+           *  Lifetime field of the source, destination and the next hop on the
+           *  path to the destination is updated to be no less than the current
+           *  time plus ActiveRouteTimeout.
+           */
+          UpdateRouteLifeTime (origin, ActiveRouteTimeout);
+          UpdateRouteLifeTime (dst, ActiveRouteTimeout);
+          UpdateRouteLifeTime (route->GetGateway (), ActiveRouteTimeout);
+          /**
+           *  Since the route between each originator and destination pair is expected to be symmetric, the
+           *  Active Route Lifetime for the previous hop, along the reverse path back to the IP source, is also updated
+           *  to be no less than the current time plus ActiveRouteTimeout
+           */
+          RoutingTableEntry toOrigin;
+          m_routingTable.LookupRoute (origin, toOrigin);
+          UpdateRouteLifeTime (toOrigin.GetNextHop (), ActiveRouteTimeout);
 
-      m_nb.Update (route->GetGateway (), ActiveRouteTimeout); //?
-      m_nb.Update (toOrigin.GetNextHop (), ActiveRouteTimeout);
+          m_nb.Update (route->GetGateway (), ActiveRouteTimeout); //?
+          m_nb.Update (toOrigin.GetNextHop (), ActiveRouteTimeout);
 
-      ucb (route, p, header);
-      return true;
+          ucb (route, p, header);
+          return true;
+        }
     }
-
   NS_LOG_LOGIC("route not found to "<< dst);
   return false;
 }

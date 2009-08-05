@@ -144,6 +144,15 @@ private:
   void Start ();
   /// Start local route repair procedure
   void LocalRouteRepair (Ipv4Address dst, Ipv4Address origin);
+  /**
+   * If route exists and valid, forward packet.
+   * If route exists and down try to repair route if following conditions is true
+   *    1. Using local route repair technique enable
+   *    2. The destination is no farther than MAX_REPAIR_TTL hops away.
+   * During local repair data packets SHOULD be buffered.
+   * \return true if node forward packet or try to repair route.
+   */
+  bool Forwarding (Ptr<const Packet> p, const Ipv4Header & header, UnicastForwardCallback ucb, ErrorCallback ecb);
   /// Process broken link
   void HandleLinkFailure (Ipv4Address id);
   /**
