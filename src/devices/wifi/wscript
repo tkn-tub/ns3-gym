@@ -106,6 +106,13 @@ def build(bld):
         'msdu-aggregator.h',
         'amsdu-subframe-header.h',
         'qos-tag.h',
+# Need this for module devices/mesh
+        'mgt-headers.h',
+        'status-code.h',
+        'capability-information.h',
+        'dcf-manager.h',
+        'mac-rx-middle.h', 
+        'mac-low.h',
         ]
 
     if bld.env['ENABLE_GSL']:

@@ -372,8 +372,11 @@ InterferenceHelper::GetPayloadDurationMicroSeconds (uint32_t size, WifiMode payl
           case WIFI_PHY_STANDARD_80211b:
             NS_FATAL_ERROR("can't happen here");
             symbolDurationUs = 0; // quiet compiler
+            break;
           default:
             NS_FATAL_ERROR("unknown standard");
+            symbolDurationUs = 0; // quiet compiler
+            break;
           }
       
         // IEEE Std 802.11-2007, section 17.3.2.2, table 17-3

@@ -433,7 +433,9 @@ WifiRemoteStation::GetTypeId (void)
 WifiRemoteStation::WifiRemoteStation ()
   : m_state (BRAND_NEW),
     m_ssrc (0),
-    m_slrc (0)
+    m_slrc (0),
+    m_avgSlrcCoefficient(0.9),
+    m_avgSlrc (0)
 {}
 WifiRemoteStation::~WifiRemoteStation ()
 {}
@@ -557,7 +559,11 @@ WifiRemoteStation::GetAckMode (WifiMode dataMode)
 {
   return GetControlAnswerMode (dataMode);
 }
-
+double
+WifiRemoteStation::GetAvgSlrc () const
+{
+  return m_avgSlrc;
+}
 uint32_t 
 WifiRemoteStation::GetNSupportedModes (void) const
 {
@@ -712,6 +718,7 @@ WifiRemoteStation::ReportRtsOk (double ctsSnr, WifiMode ctsMode, double rtsSnr)
 void 
 WifiRemoteStation::ReportDataOk (double ackSnr, WifiMode ackMode, double dataSnr)
 {
+  m_avgSlrc = m_avgSlrc * m_avgSlrcCoefficient + (double) m_slrc * (1 - m_avgSlrcCoefficient);
   m_slrc = 0;
   DoReportDataOk (ackSnr, ackMode, dataSnr);
 }

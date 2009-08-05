@@ -173,6 +173,7 @@ private:
   static std::string m_pcapBaseFilename;
   static uint32_t GetNodeIndex (std::string context);
   static std::vector<Trace> m_traces;
+  static bool m_isInitialized;
 };
 
 } // namespace ns3

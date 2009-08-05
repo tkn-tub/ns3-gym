@@ -442,6 +442,16 @@ def register_Ns3GlobalValue_methods(root_module, cls):
                    '__gnu_cxx::__normal_iterator< ns3::GlobalValue * const *, std::vector< ns3::GlobalValue * > >', 
                    [], 
                    is_static=True)
+    ## global-value.h: static bool ns3::GlobalValue::GetValueByNameFailSafe(std::string name, ns3::AttributeValue & value) [member function]
+    cls.add_method('GetValueByNameFailSafe', 
+                   'bool', 
+                   [param('std::string', 'name'), param('ns3::AttributeValue &', 'value')], 
+                   is_static=True)
+    ## global-value.h: static void ns3::GlobalValue::GetValueByName(std::string name, ns3::AttributeValue & value) [member function]
+    cls.add_method('GetValueByName', 
+                   'void', 
+                   [param('std::string', 'name'), param('ns3::AttributeValue &', 'value')], 
+                   is_static=True)
     return
 
 def register_Ns3IntToType__0_methods(root_module, cls):
