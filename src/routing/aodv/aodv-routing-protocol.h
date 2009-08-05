@@ -169,9 +169,9 @@ private:
   /// Update neighbor record. \param receiver is supposed to be my interface
   void UpdateRouteToNeighbor (Ipv4Address sender, Ipv4Address receiver);
   /// Check that packet is send from own interface
-  bool IsMyOwnPacket(Ipv4Address src);
+  bool IsMyOwnAddress(Ipv4Address src);
   /// Find socket with local interface address iface
-  Ptr<Socket> FindSocketWithInterfaceAddress(Ipv4Address iface) const;
+  Ptr<Socket> FindSocketWithInterfaceAddress (Ipv4InterfaceAddress iface) const;
   /// Process hello message
   void ProcessHello(RrepHeader const & rrepHeader, Ipv4Address receiverIfaceAddr);
   
@@ -214,14 +214,9 @@ private:
   /// Forward RERR
   void SendRerrMessage(Ptr<Packet> packet,  std::vector<Ipv4Address> precursors);
   /**
-  * Add UDP and IP header to packet.
-  * \param sport - source port number
-  * \param dport - destination port number
-  * \param src - source IP address
-  * \param dst - destination IP address
-  * \param identification - used as sequence number for broadcast traffic
+  * Add UDP, IP headers to packet and send it via raw socket
   */
-  void SendPacketFromRawSocket (Ptr<Packet> packet, std::pair<Ptr<Socket> , Ipv4InterfaceAddress> socketAddress, Ipv4Address dst, uint16_t ttl, uint16_t id);
+  void SendPacketViaRawSocket (Ptr<Packet> packet, std::pair<Ptr<Socket> , Ipv4InterfaceAddress> socketAddress, Ipv4Address dst, uint16_t ttl, uint16_t id);
   //\}
   
   /// Notify that packet is dropped for some reason 
