@@ -145,6 +145,11 @@ private:
   void LocalRouteRepair (Ipv4Address dst, Ipv4Address origin);
   /// Process broken link
   void HandleLinkFailure (Ipv4Address id);
+  /**
+  * To reduce congestion in a network, repeated attempts by a source node at route discovery
+  * for a single destination MUST utilize a binary exponential backoff.
+  */
+  void ScheduleRreqRetry (Ipv4Address dst,  uint16_t ttl);
   /// Purge all expired records from m_routingTable
   void RtPurge ();
   /**
@@ -219,8 +224,6 @@ private:
   //\{
   Timer htimer; // TODO independent hello timers for all interfaces
   void HelloTimerExpire ();
-  Timer ntimer;
-  void NeighborTimerExpire ();
   Timer rtimer;
   void RouteCacheTimerExpire ();
   Timer lrtimer;

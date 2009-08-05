@@ -83,11 +83,12 @@ RoutingProtocol::RoutingProtocol () :
   BLACKLIST_TIMEOUT( Scalar ( (((TtlThreshold - TtlStart)/TtlIncrement) + 1 + RreqRetries) )*NetTraversalTime ),
   MaxQueueLen (64), MaxQueueTime (Seconds(30)), DestinationOnly (false), GratuitousReply (true),
   m_routingTable (DeletePeriod), m_queue (MaxQueueLen, MaxQueueTime),
-  m_requestId (0), m_seqNo (0), m_nb(MakeCallback(&RoutingProtocol::HandleLinkFailure, this)),
-  htimer (Timer::CANCEL_ON_DESTROY), ntimer (Timer::CANCEL_ON_DESTROY),
+  m_requestId (0), m_seqNo (0), m_nb(MakeCallback(&RoutingProtocol::HandleLinkFailure, this), HelloInterval),
+  htimer (Timer::CANCEL_ON_DESTROY),
   rtimer (Timer::CANCEL_ON_DESTROY), lrtimer (Timer::CANCEL_ON_DESTROY)
 
 {
+
 }
 
 TypeId
@@ -208,7 +209,7 @@ RoutingProtocol::Start ()
   m_scb = MakeCallback (&RoutingProtocol::Send, this);
   m_ecb = MakeCallback (&RoutingProtocol::Drop, this);
 
-  ntimer.Schedule();
+  m_nb.Shedule();
   rtimer.Schedule();
 }
 
@@ -361,7 +362,6 @@ RoutingProtocol::SetIpv4 (Ptr<Ipv4> ipv4)
   NS_ASSERT (ipv4 != 0);
   NS_ASSERT (m_ipv4 == 0);
 
-  ntimer.SetFunction (&RoutingProtocol::NeighborTimerExpire, this);
   rtimer.SetFunction (&RoutingProtocol::RouteCacheTimerExpire, this);
   lrtimer.SetFunction (&RoutingProtocol::LocalRepairTimerExpire, this);
   htimer.SetFunction (&RoutingProtocol::HelloTimerExpire, this);
@@ -475,34 +475,34 @@ RoutingProtocol::SendRequest (Ipv4Address dst, uint16_t ttl )
       /*destination address*/iface.GetBroadcast (), /*id*/0, /*TTL*/ttl);
       socket->Send (packet);
     }
-
-  /*
-   * Schedule RREQ retry. 
-   * 
-   * To reduce congestion in a network, repeated attempts by a source node at route discovery
-   * for a single destination MUST utilize a binary exponential backoff.
-   */
-  if (m_addressReqTimer.find (dst) == m_addressReqTimer.end ())
-    {
-      Timer timer (Timer::CANCEL_ON_DESTROY);
-      m_addressReqTimer[dst] = timer;
-    }
-  m_addressReqTimer[dst].SetFunction (&RoutingProtocol::RouteRequestTimerExpire, this);
-  m_addressReqTimer[dst].Cancel ();
-  m_addressReqTimer[dst].SetArguments (dst, ttl);
-  m_routingTable.LookupRoute (dst, rt);
-  if (ttl == NetDiameter)
-    {
-      rt.IncrementRreqCnt ();
-      m_routingTable.Update (rt);
-      m_addressReqTimer[dst].Schedule (Scalar (rt.GetRreqCnt ()) * NetTraversalTime);
-    }
-  else
-    m_addressReqTimer[dst].Schedule (Scalar (2) * NodeTraversalTime * Scalar (ttl + TIMEOUT_BUFFER));
-
+  ScheduleRreqRetry (dst, ttl);
   htimer.Cancel ();
   htimer.Schedule (HelloInterval);
 }
+
+void
+RoutingProtocol::ScheduleRreqRetry (Ipv4Address dst,  uint16_t ttl)
+{
+  if (m_addressReqTimer.find (dst) == m_addressReqTimer.end ())
+     {
+       Timer timer (Timer::CANCEL_ON_DESTROY);
+       m_addressReqTimer[dst] = timer;
+     }
+   m_addressReqTimer[dst].SetFunction (&RoutingProtocol::RouteRequestTimerExpire, this);
+   m_addressReqTimer[dst].Cancel ();
+   m_addressReqTimer[dst].SetArguments (dst, ttl);
+   RoutingTableEntry rt;
+   m_routingTable.LookupRoute (dst, rt);
+   if (ttl == NetDiameter)
+     {
+       rt.IncrementRreqCnt ();
+       m_routingTable.Update (rt);
+       m_addressReqTimer[dst].Schedule (Scalar (rt.GetRreqCnt ()) * NetTraversalTime);
+     }
+   else
+     m_addressReqTimer[dst].Schedule (Scalar (2) * NodeTraversalTime * Scalar (ttl + TIMEOUT_BUFFER));
+}
+
 
 void
 RoutingProtocol::RecvAodv (Ptr<Socket> socket )
@@ -1063,15 +1063,6 @@ RoutingProtocol::HelloTimerExpire ()
   // TODO select random time for the next hello
   htimer.Cancel ();
   htimer.Schedule (HelloInterval + Seconds(UniformVariable().GetValue (0, 0.01)) );
-}
-
-void
-RoutingProtocol::NeighborTimerExpire ()
-{
-  NS_LOG_FUNCTION(this);
-  m_nb.Purge ();
-  ntimer.Cancel ();
-  ntimer.Schedule (HelloInterval);
 }
 
 void

@@ -28,11 +28,20 @@
 
 #include "aodv-neighbor.h"
 #include "ns3/test.h"
+#include "ns3/log.h"
+#include <algorithm>
 
 namespace ns3
 {
 namespace aodv
 {
+
+Neighbors::Neighbors (Callback<void, Ipv4Address> cb, Time delay) : m_handleLinleFailure (cb), m_ntimer (Timer::CANCEL_ON_DESTROY)
+{
+  m_ntimer.SetDelay(delay);
+  m_ntimer.SetFunction(&Neighbors::Purge, this);
+}
+
 
 bool
 Neighbors::Lookup (Ipv4Address addr)
@@ -86,21 +95,28 @@ void
 Neighbors::Purge ()
 {
   if (m_nb.empty ()) return;
-  for (std::vector<Neighbor>::const_iterator i = m_nb.begin (); i != m_nb.end (); ++i)
-    if (i->m_expireTime < Simulator::Now ())
-      {
-        m_handleLinleFailure (i->m_neighborAddress);
-      }
   std::vector<Neighbor>::iterator i = remove_if (m_nb.begin (), m_nb.end (), IsExpired ());
+  for (std::vector<Neighbor>::const_iterator j = i; j != m_nb.end (); ++j)
+    {
+      m_handleLinleFailure (i->m_neighborAddress);
+    }
   m_nb.erase (i, m_nb.end ());
 
 }
+
+void
+Neighbors::Shedule ()
+{
+  m_ntimer.Cancel();
+  m_ntimer.Schedule();
+}
+
 
 #ifdef RUN_SELF_TESTS
 /// Unit test for neighbors
 struct NeighborTest : public Test
 {
-  NeighborTest () : Test ("AODV/Neighbor"), neighbor(MakeCallback(&NeighborTest::Handler, this)), result(true) {}
+  NeighborTest () : Test ("AODV/Neighbor"), neighbor(MakeCallback(&NeighborTest::Handler, this), Seconds(1)), result(true) {}
   virtual bool RunTests();
   void Handler (Ipv4Address addr);
   void CheckTimeout1 ();

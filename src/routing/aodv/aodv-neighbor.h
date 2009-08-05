@@ -31,19 +31,22 @@
 
 #include "ns3/simulator.h"
 #include "ns3/nstime.h"
+#include "ns3/timer.h"
 #include "ns3/ipv4-address.h"
 #include "ns3/callback.h"
 #include <vector>
+#
 
 
 namespace ns3
 {
 namespace aodv
 {
+class RoutingProtocol;
 class Neighbors
 {
 public:
-  Neighbors (Callback<void, Ipv4Address> cb) : m_handleLinleFailure (cb) {}
+  Neighbors (Callback<void, Ipv4Address> cb, Time delay);
   struct Neighbor
   {
     Ipv4Address m_neighborAddress;
@@ -61,6 +64,7 @@ public:
   bool IsNeighbor (Ipv4Address addr);
   void Update (Ipv4Address addr, Time expire);
   void Purge ();
+  void Shedule ();
 private:
   struct IsExpired
   {
@@ -71,6 +75,7 @@ private:
    };
 
   Callback<void, Ipv4Address> m_handleLinleFailure;
+  Timer m_ntimer;
   std::vector<Neighbor> m_nb;
 };
 
