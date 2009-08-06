@@ -236,7 +236,7 @@ public:
    */
   bool MarkLinkAsUinidirectional(Ipv4Address neighbor, Time blacklistTimeout);
   /// Print routing table
-  void Print(std::ostream &os) const;
+  void Print(std::ostream &os);
 
 private:
   std::map<Ipv4Address, RoutingTableEntry> m_ipv4AddressEntry;

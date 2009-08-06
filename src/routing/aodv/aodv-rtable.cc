@@ -306,6 +306,7 @@ RoutingTable::Update (RoutingTableEntry & rt )
 bool
 RoutingTable::SetEntryState (Ipv4Address id, RouteFlags state )
 {
+  Purge ();
   std::map<Ipv4Address, RoutingTableEntry>::iterator i = m_ipv4AddressEntry.find (id);
   if (i == m_ipv4AddressEntry.end ())
     return false;
@@ -373,6 +374,7 @@ RoutingTable::Purge ()
 bool
 RoutingTable::MarkLinkAsUinidirectional (Ipv4Address neighbor, Time blacklistTimeout )
 {
+  Purge ();
   std::map<Ipv4Address, RoutingTableEntry>::iterator i = m_ipv4AddressEntry.find (neighbor);
   if (i == m_ipv4AddressEntry.end ())
     return false;
@@ -383,8 +385,9 @@ RoutingTable::MarkLinkAsUinidirectional (Ipv4Address neighbor, Time blacklistTim
 }
 
 void
-RoutingTable::Print (std::ostream &os ) const
+RoutingTable::Print (std::ostream &os )
 {
+  Purge ();
   os << "\nAODV Routing table\n" << "Destination\tGateway\t\tInterface\tFlag\tExpire\n";
   for (std::map<Ipv4Address, RoutingTableEntry>::const_iterator i = m_ipv4AddressEntry.begin (); i != m_ipv4AddressEntry.end (); ++i)
     {

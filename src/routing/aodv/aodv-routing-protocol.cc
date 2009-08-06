@@ -420,7 +420,7 @@ RoutingProtocol::SetIpv4 (Ptr<Ipv4> ipv4)
   if (EnableHello)
     {
       htimer.SetFunction (&RoutingProtocol::HelloTimerExpire, this);
-      htimer.SetDelay (HelloInterval);
+      htimer.SetDelay (HelloInterval - Scalar(0.1)*MilliSeconds(UniformVariable().GetValue (0, 1)));
     }
 
   m_ipv4 = ipv4;
@@ -526,7 +526,7 @@ RoutingProtocol::SendRequest (Ipv4Address dst, uint16_t ttl)
   if (EnableHello)
     {
       htimer.Cancel ();
-      htimer.Schedule (HelloInterval);
+      htimer.Schedule (HelloInterval - Scalar(0.1)*MilliSeconds(UniformVariable().GetValue (0, 1)));
     }
 }
 
@@ -767,7 +767,7 @@ RoutingProtocol::RecvRequest (Ptr<Packet> p, Ipv4Address receiver, Ipv4Address s
   if (EnableHello)
     {
       htimer.Cancel ();
-      htimer.Schedule (HelloInterval);
+      htimer.Schedule (HelloInterval - Scalar(0.1)*MilliSeconds(UniformVariable().GetValue (0, 1)));
     }
   NS_LOG_LOGIC ("After recieve request");
   m_routingTable.Print (std::cout);
@@ -1111,7 +1111,7 @@ RoutingProtocol::HelloTimerExpire ()
   SendHello ();
   // TODO select random time for the next hello
   htimer.Cancel ();
-  htimer.Schedule (HelloInterval + MilliSeconds(UniformVariable().GetValue (0, 1)) );
+  htimer.Schedule (HelloInterval - Scalar(0.1)*MilliSeconds(UniformVariable().GetValue (0, 1)) );
 }
 
 void
