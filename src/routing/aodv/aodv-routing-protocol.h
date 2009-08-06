@@ -248,7 +248,6 @@ private:
   std::map<Ipv4Address, Timer> m_addressReqTimer;
   void RouteRequestTimerExpire(Ipv4Address dst, uint16_t lastTtl);
   void AckTimerExpire (Ipv4Address neighbor,  Time blacklistTimeout);
-  void RoutingTableEntryTimerExpire(Ipv4Address dst);
   //\}
 };
 

@@ -132,7 +132,7 @@ RoutingTableEntry::Invalidate (Time badLinkLifetime )
 void
 RoutingTableEntry::Print (std::ostream & os ) const
 {
-  os << m_ipv4Route->GetDestination () << "\t" << m_ipv4Route->GetGateway () << "\t" << m_ipv4Route->GetSource () << "\t";
+  os << m_ipv4Route->GetDestination () << "\t" << m_ipv4Route->GetGateway () << "\t" << m_iface.GetLocal ()<< "\t";
   switch (m_flag)
     {
     case RTF_UP:
@@ -156,7 +156,7 @@ RoutingTableEntry::Print (std::ostream & os ) const
         break;
       }
     }
-  os << "\t" << (m_lifeTime - Simulator::Now ()).GetSeconds () << "\n";
+  os << "\t" << (m_lifeTime - Simulator::Now ()).GetSeconds () << "\t" << m_hops <<"\n";
 }
 
 #ifdef RUN_SELF_TESTS
@@ -388,7 +388,7 @@ void
 RoutingTable::Print (std::ostream &os )
 {
   Purge ();
-  os << "\nAODV Routing table\n" << "Destination\tGateway\t\tInterface\tFlag\tExpire\n";
+  os << "\nAODV Routing table\n" << "Destination\tGateway\t\tInterface\tFlag\tExpire\tHops\n";
   for (std::map<Ipv4Address, RoutingTableEntry>::const_iterator i = m_ipv4AddressEntry.begin (); i != m_ipv4AddressEntry.end (); ++i)
     {
       i->second.Print (os);
