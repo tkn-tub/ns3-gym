@@ -943,8 +943,8 @@ HwmpProtocol::ShouldSendPreq (Mac48Address dst)
   if (i == m_preqTimeouts.end ())
     {
       m_preqTimeouts[dst] = Simulator::Schedule (
-          MilliSeconds (2*(m_dot11MeshHWMPnetDiameterTraversalTime.GetMilliSeconds())),
-          &HwmpProtocol::RetryPathDiscovery, this, dst, 0);
+          m_dot11MeshHWMPnetDiameterTraversalTime * Scalar (2),
+          &HwmpProtocol::RetryPathDiscovery, this, dst, 1);
       return true;
     }
   return false;
@@ -965,7 +965,7 @@ HwmpProtocol::RetryPathDiscovery (Mac48Address dst, uint8_t numOfRetry)
       return;
     }
   numOfRetry++;
-  if (numOfRetry > m_dot11MeshHWMPmaxPREQretries)
+  if (numOfRetry >= m_dot11MeshHWMPmaxPREQretries)
     {
       QueuedPacket packet = DequeueFirstPacketByDst (dst);
       //purge queue and delete entry from retryDatabase
@@ -987,7 +987,7 @@ HwmpProtocol::RetryPathDiscovery (Mac48Address dst, uint8_t numOfRetry)
       i->second->RequestDestination (dst, originator_seqno, dst_seqno);
     }
   m_preqTimeouts[dst] = Simulator::Schedule (
-      MilliSeconds (2*(m_dot11MeshHWMPnetDiameterTraversalTime.GetMilliSeconds())),
+      Scalar (2 * (numOfRetry + 1)) *  m_dot11MeshHWMPnetDiameterTraversalTime,
       &HwmpProtocol::RetryPathDiscovery, this, dst, numOfRetry);
 }
 //Proactive PREQ routines:
