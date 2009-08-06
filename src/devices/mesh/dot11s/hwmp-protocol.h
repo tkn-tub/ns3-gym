@@ -145,7 +145,7 @@ private:
     uint32_t inInterface; ///< incoming device interface ID. (if packet has come from upper layers, this is Mesh point ID)
     RouteReplyCallback reply; ///< how to reply
 
-    QueuedPacket () : pkt (0), protocol (0), inInterface (0) {}
+    QueuedPacket ();
   };
 
   ///\name Methods related to Queue/Dequeue procedures

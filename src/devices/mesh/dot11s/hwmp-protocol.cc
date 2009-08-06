@@ -1140,6 +1140,10 @@ HwmpProtocol::ResetStats ()
     plugin->second->ResetStats ();
     }
 }
-
+HwmpProtocol::QueuedPacket::QueuedPacket () :
+  pkt (0),
+  protocol (0),
+  inInterface (0)
+{}
 } //namespace dot11s
 } //namespace ns3
