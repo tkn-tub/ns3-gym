@@ -43,10 +43,9 @@ namespace aodv
  */
 
 RoutingTableEntry::RoutingTableEntry (Ptr<NetDevice> dev, Ipv4Address dst, bool vSeqNo, u_int32_t seqNo, Ipv4InterfaceAddress iface, u_int16_t hops,
-    Ipv4Address nextHop, Time lifetime ) :
-  m_validSeqNo (vSeqNo), m_seqNo (seqNo), m_hops (hops), m_lifeTime (lifetime + Simulator::Now ()), m_iface (iface), m_flag (RTF_UP), m_reqCount (0),
-      m_blackListState (false), m_blackListTimeout (Simulator::Now ()), m_ackTimer (Timer::CANCEL_ON_DESTROY), lifeTimeTimer (
-          Timer::CANCEL_ON_DESTROY)
+    Ipv4Address nextHop, Time lifetime ) : m_validSeqNo (vSeqNo), m_seqNo (seqNo), m_hops (hops), m_lifeTime (lifetime + Simulator::Now ()),
+                                           m_iface (iface), m_flag (RTF_UP), m_reqCount (0), m_blackListState (false), m_blackListTimeout (Simulator::Now ()),
+                                           m_ackTimer (Timer::CANCEL_ON_DESTROY)
 {
   m_ipv4Route = Create<Ipv4Route> ();
   m_ipv4Route->SetDestination (dst);
@@ -254,10 +253,8 @@ AodvRtableEntryTest::RunTests ()
  The Routing Table
  */
 
-RoutingTable::RoutingTable (Time t, Time delay) : m_badLinkLifetime (t), m_rtimer (Timer::CANCEL_ON_DESTROY)
+RoutingTable::RoutingTable (Time t) : m_badLinkLifetime (t)
 {
-  m_rtimer.SetDelay(delay);
-  m_rtimer.SetFunction(&RoutingTable::Purge, this);
 }
 
 
@@ -371,9 +368,6 @@ RoutingTable::Purge ()
         }
       ++i;
     }
-  m_rtimer.Cancel();
-  m_rtimer.Schedule();
-
 }
 
 bool
@@ -400,13 +394,6 @@ RoutingTable::Print (std::ostream &os ) const
 
 }
 
-void
-RoutingTable::ScheduleTimer ()
-{
-  m_rtimer.Schedule();
-}
-
-
 #ifdef RUN_SELF_TESTS
 /// Unit test for AODV routing table
 struct AodvRtableTest : public Test
@@ -423,7 +410,7 @@ static AodvRtableTest g_AodvRtableTest;
 bool
 AodvRtableTest::RunTests ()
   {
-    RoutingTable rtable (Seconds(2), Seconds(0.5));
+    RoutingTable rtable (Seconds(2));
     NS_TEST_ASSERT_EQUAL (rtable.GetBadLinkLifetime(), Seconds(2));
     rtable.SetBadLinkLifetime(Seconds(1));
     NS_TEST_ASSERT_EQUAL (rtable.GetBadLinkLifetime(), Seconds(1));

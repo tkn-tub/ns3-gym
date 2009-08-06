@@ -178,8 +178,6 @@ private:
 public:
   /// RREP_ACK timer
   Timer m_ackTimer;
-  /// LifeTime timer of this entry
-  Timer lifeTimeTimer;
 };
 
 /**
@@ -189,7 +187,7 @@ public:
 class RoutingTable
 {
 public:
-  RoutingTable(Time t, Time delay);
+  RoutingTable(Time t);
   ///\name Handle life time of invalid route
   //\{
   Time GetBadLinkLifetime () const { return m_badLinkLifetime; }
@@ -239,12 +237,10 @@ public:
   bool MarkLinkAsUinidirectional(Ipv4Address neighbor, Time blacklistTimeout);
   /// Print routing table
   void Print(std::ostream &os) const;
-  void ScheduleTimer ();
 
 private:
   std::map<Ipv4Address, RoutingTableEntry> m_ipv4AddressEntry;
   Time m_badLinkLifetime;
-  Timer m_rtimer;
 };
 
 }}

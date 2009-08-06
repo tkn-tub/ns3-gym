@@ -83,39 +83,53 @@ public:
   void SetDesinationOnlyFlag (bool f) { DestinationOnly = f; }
   bool GetGratuitousReplyFlag () const { return GratuitousReply; }
   void SetGratuitousReplyFlag (bool f) { GratuitousReply = f; }
+  void SetExpandingRingSearchEnable (bool f) { EnableExpandingRingSearch = f; }
+  bool GetExpandingRingSearchEnable () const { return EnableExpandingRingSearch; }
+  void SetHelloEnable (bool f) { EnableHello = f; }
+  bool GetHelloEnable () const { return EnableHello; }
+  void SetLocalRepairEnable (bool f) { EnableLocalRepair = f; }
+  bool GetLocalRepairEnable () const { return EnableLocalRepair; }
   //\}
 private:
   ///\name Protocol parameters. TODO document
   //\{
-  uint32_t RreqRetries;        ///< Maximum number of retransmissions of RREQ with TTL = NetDiameter to discover a route
+  uint32_t RreqRetries;          ///< Maximum number of retransmissions of RREQ with TTL = NetDiameter to discover a route
   Time ActiveRouteTimeout;    // 3 seconds
-  Time MyRouteTimeout;       // 2 * ActiveRouteTimeout
-  uint32_t NetDiameter;
-  Time NodeTraversalTime;         //  40 milliseconds
+  uint32_t NetDiameter;         ///< Net diameter measures the maximum possible number of hops between two nodes in the network
+  /**
+   *  NodeTraversalTime is a conservative estimate of the average one hop traversal time for packets
+   *  and should include queuing delays, interrupt processing times and transfer times.
+   */
+  Time NodeTraversalTime;
   Time NetTraversalTime;          // 2 * NodeTraversalTime * NetDiameter
   Time PathDiscoveryTime;
+  Time MyRouteTimeout;          ///< Value of lifetime field in RREP generating by this node
   Time HelloInterval;
-  uint32_t AllowedHelloLoss;
+  uint32_t AllowedHelloLoss;     ///< Number of hello messages which may be loss for valid link
   /**
    * DeletePeriod is intended to provide an upper bound on the time for which an upstream node A
    * can have a neighbor B as an active next hop for destination D, while B has invalidated the route to D.
    */
   Time DeletePeriod;
-  Time MaxHelloInterval; //        (1.25 * HelloInterval)
-  Time MinHelloInterval; //        (0.75 * HelloInterval)
-  Time FREQUENCY;
   Time NextHopWait;
   uint16_t TtlStart;
   uint16_t TtlIncrement;
   uint16_t TtlThreshold;
   uint16_t  MaxRepairTtl;           // 0.3 * NetDiameter
-  uint16_t LOCAL_ADD_TTL;
-  uint16_t TIMEOUT_BUFFER;
-  Time BLACKLIST_TIMEOUT;
+  uint16_t LocalAddTtl;
+  /**
+   * The TimeoutBuffer is configurable.  Its purpose is to provide a buffer for the timeout so that if the RREP is delayed
+   * due to congestion, a timeout is less likely to occur while the RREP is still en route back to the source.
+   */
+  uint16_t TimeoutBuffer;
+  Time BlackListTimeout;
   uint32_t MaxQueueLen;
   Time MaxQueueTime;
   bool DestinationOnly;
   bool GratuitousReply;
+  bool EnableExpandingRingSearch;
+  bool EnableHello;
+  bool EnableLocalRepair;
   //\}
 
   /// IP protocol
