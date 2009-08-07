@@ -172,7 +172,7 @@ PacketSocket::ShutdownRecv (void)
       m_errno = ERROR_BADF;
       return -1;
     }
-  m_shutdownRecv = false;
+  m_shutdownRecv = true;
   return 0;
 }
 
@@ -186,6 +186,8 @@ PacketSocket::Close(void)
       return -1;
     }
   m_state = STATE_CLOSED;
+  m_shutdownSend = true;
+  m_shutdownRecv = true;
   return 0;
 }
 
