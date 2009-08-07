@@ -645,11 +645,11 @@ of an instance of the new class.
 found in @code{src/contrib} and not in the main tree.  If you like this feature
 and would like to provide feedback on it, please email us.
 
-Values for ns-3 attributes can be stored in an ascii text file and
+Values for ns-3 attributes can be stored in an ascii or XML text file and
 loaded into a future simulation.  This feature is known as the
 ns-3 ConfigStore.  
 The ConfigStore code is in @code{src/contrib/}.  It is not yet main-tree
-code, because we are seeking some user feedback. 
+code, because we are seeking some user feedback and experience with this. 
 
 We can explore this system by using an example.  Copy the @code{csma-bridge.cc}
 file to the scratch directory:
@@ -658,8 +658,8 @@ file to the scratch directory:
   ./waf
 @end verbatim
 
-Let's edit it to add the ConfigStore feature.  First, add an include statement,
-and then add these lines:
+Let's edit it to add the ConfigStore feature.  First, add an include statement 
+to include the contrib module, and then add these lines:
 
 @verbatim
 #include "contrib-module.h"
@@ -670,20 +670,43 @@ int main (...)
 
   // Invoke just before entering Simulator::Run ()
   ConfigStore config;
-  config.Configure ();
+  config.ConfigureDefaults ();
+  config.ConfigureAttributes ();
 
   Simulator::Run ();
 }
 @end verbatim
 
-There is an attribute that governs whether the Configure() call either
-stores a simulation configuration in a file and exits, or whether
-it loads a simulation configuration file annd proceeds.  First,
-the @code{LoadFilename} attribute is checked, and if non-empty,
-the program loads the configuration from the filename provided.
-If LoadFilename is empty, and if the @code{StoreFilename} attribute is 
-populated, the configuration will be written to the output filename
-specified.
+There are three attributes that govern the behavior of the ConfigStore:
+"Mode", "Filename", and "FileFormat".  The Mode (default "None") configures
+whether ns-3 should load configuration from a previously saved file
+(specify "Mode=Load") or save it to a file (specify "Mode=Save").
+The Filename (default "") is where the ConfigStore should store its
+output data.  The FileFormat (default "RawText") governs whether
+the ConfigStore format is Xml or RawText format.
+
+So, using the above modified program, try executing the following
+waf command and 
+@verbatim
+./waf --command-template="%s --ns3::ConfigStore::Filename=csma-bridge-config.xml --ns3::ConfigStore::Mode=Save --ns3::ConfigStore::FileFormat=Xml" --run scratch/csma-bridge
+@end verbatim
+After running, you can open the csma-bridge-config.xml file and it will
+display the configuration that was applied to your simulation; e.g.
+@verbatim
+<?xml version="1.0" encoding="UTF-8"?>
+<ns3>
+ <default name="ns3::V4Ping::Remote" value="102.102.102.102"/>
+ <default name="ns3::MsduStandardAggregator::MaxAmsduSize" value="7935"/>
+ <default name="ns3::EdcaTxopN::MinCw" value="31"/>
+ <default name="ns3::EdcaTxopN::MaxCw" value="1023"/>
+ <default name="ns3::EdcaTxopN::Aifsn" value="3"/>
+ <default name="ns3::QstaWifiMac::ProbeRequestTimeout" value="50000000ns"/>
+ <default name="ns3::QstaWifiMac::AssocRequestTimeout" value="500000000ns"/>
+ <default name="ns3::QstaWifiMac::MaxMissedBeacons" value="10"/>
+ <default name="ns3::QstaWifiMac::ActiveProbing" value="false"/>
+...
+@end verbatim
+This file can be archived with your simulation script and output data.
 
 While it is possible to generate a sample config file and lightly
 edit it to change a couple of values, there are cases where this
@@ -697,55 +720,46 @@ file only the strictly necessary elements, and move these minimal
 elements to a new configuration file which can then safely
 be edited and loaded in a subsequent simulation run. 
 
-So, let's do that as an example.  We'lll run the program once
-to create a configure file, and look at it. 
-If you are running bash shell, the below command should work (which illustrates
-how to set an attribute from the command line):
-@verbatim
-./build/debug/scratch/csma-bridge --ns3::ConfigStore::StoreFilename=test.config
-@end verbatim
-or, if the above does not work (the above requires rpath support), try this:
-@verbatim
-./waf --command-template="%s --ns3::ConfigStore::StoreFilename=test.config" --run scratch/csma-bridge
-@end verbatim
+When the ConfigStore object is instantiated, its attributes Filename,
+Mode, and FileFormat must be set, either via command-line or via
+program statements.  
 
-Running the program should yield a "test.config" output configuration file 
-that looks like this:
+As a more complicated example, let's assume that we want to 
+read in a configuration of defaults from an input file named
+"input-defaults.xml", and write out the resulting attributes to a
+separate file called "output-attributes.xml".  (Note-- to get this
+input xml file to begin with, it is sometimes helpful to run the
+program to generate an output xml file first, then hand-edit that
+file and re-input it for the next simulation run).
 @verbatim
-/$ns3::NodeListPriv/NodeList/0/$ns3::Node/DeviceList/0/$ns3::CsmaNetDevice/Addre
-ss 00:00:00:00:00:01
-/$ns3::NodeListPriv/NodeList/0/$ns3::Node/DeviceList/0/$ns3::CsmaNetDevice/Frame
-Size 1518
-/$ns3::NodeListPriv/NodeList/0/$ns3::Node/DeviceList/0/$ns3::CsmaNetDevice/SendE
-nable true
-/$ns3::NodeListPriv/NodeList/0/$ns3::Node/DeviceList/0/$ns3::CsmaNetDevice/Recei
-veEnable true
-/$ns3::NodeListPriv/NodeList/0/$ns3::Node/DeviceList/0/$ns3::CsmaNetDevice/TxQue
-ue/$ns3::DropTailQueue/MaxPackets 100
-/$ns3::NodeListPriv/NodeList/0/$ns3::Node/DeviceList/0/$ns3::CsmaNetDevice/Mtu 1
-500
+#include "contrib-module.h"
 ...
-@end verbatim
+int main (...)
+{
 
-The above lists, for each object in the script topology, the value of each 
-registered attribute.  The syntax of this file is that the unique name
-of the attribute (in the attribute namespace) is specified on each line,
-followed by a value.  
+  Config::SetDefault ("ns3::ConfigStore::Filename", StringValue ("input-defaults.xml"));
+  Config::SetDefault ("ns3::ConfigStore::Mode", StringValue ("Load"));
+  Config::SetDefault ("ns3::ConfigStore::FileFormat", StringValue ("Xml"));
+  ConfigStore inputConfig;
+  inputConfig.ConfigureDefaults ();
+  
+  //
+  // Allow the user to override any of the defaults and the above Bind() at
+  // run-time, via command-line arguments
+  //
+  CommandLine cmd;
+  cmd.Parse (argc, argv);
 
-This file is intended to be a convenient record of the parameters that were 
-used in a given simulation run, and can be stored with simulation
-output files.  Additionally, 
-this file can also be used to parameterize a simulation, instead of
-editing the script or passing in command line arguments.   For instance,
-a person wanting to run the simulation can examine and tweak the values
-in a pre-existing configuration file, and pass the file to the
-program.   In this case, the relevant commands are:
-@verbatim
-./build/debug/scratch/csma-bridge --ns3::ConfigStore::LoadFilename=test.config
-@end verbatim
-or, if the above does not work (the above requires rpath support), try this:
-@verbatim
-./waf --command-template="%s --ns3::ConfigStore::LoadFilename=test.config" --run scratch/csma-bridge
+  // setup topology
+  ...
+
+  // Invoke just before entering Simulator::Run ()
+  Config::SetDefault ("ns3::ConfigStore::Filename", StringValue ("output-attributes.xml"));
+  Config::SetDefault ("ns3::ConfigStore::Mode", StringValue ("Save"));
+  ConfigStore outputConfig;
+  outputConfig.ConfigureAttributes ();
+  Simulator::Run ();
+}
 @end verbatim
 
 @subsection GTK-based ConfigStore
@@ -772,11 +786,13 @@ GtkConfigStore                : not enabled (library 'gtk+-2.0 >= 2.12' not foun
 In the above example, it was not enabled, so it cannot be used until a
 suitable version is installed and ./waf configure; ./waf is rerun.
 
-Usage is almost the same as the non-GTK-based version:
+Usage is almost the same as the non-GTK-based version, but there
+are no ConfigStore attributes involved:
 @verbatim
   // Invoke just before entering Simulator::Run ()
   GtkConfigStore config;
-  config.Configure ();
+  config.ConfigureDefaults ();
+  config.ConfigureAttributes ();
 @end verbatim
 
 Now, when you run the script, a GUI should pop up, allowing you to open
