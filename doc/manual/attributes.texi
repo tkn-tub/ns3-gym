@@ -489,6 +489,24 @@ the attribute system:
 @item ATTRIBUTE_HELPER_CPP
 @end itemize
 
+@subsection Initialization order
+
+In general, the attribute code to assign values to the underlying
+class member variables is executed after an object is constructed.
+But what if you need the values assigned before the constructor
+body executes, because you need them in the logic of the constructor?
+There is a way to do this, used for example in the class 
+@code{ns3::ConfigStore}:  call @code{ObjectBase::ConstructSelf()}
+as follows:
+
+@verbatim
+ConfigStore::ConfigStore ()
+{
+  ObjectBase::ConstructSelf (AttributeList ());
+  // continue on with constructor.
+}
+@end verbatim
+
 @node Extending attributes
 @section Extending attributes
 
