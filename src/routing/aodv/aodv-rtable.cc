@@ -283,7 +283,6 @@ RoutingTable::DeleteRoute (Ipv4Address dst )
 bool
 RoutingTable::AddRoute (RoutingTableEntry & rt )
 {
-  Purge ();
   if (rt.GetFlag () != RTF_IN_SEARCH)
     rt.SetRreqCnt (0);
   std::pair<std::map<Ipv4Address, RoutingTableEntry>::iterator, bool> result = m_ipv4AddressEntry.insert (std::make_pair (rt.GetDestination (), rt));
@@ -293,7 +292,6 @@ RoutingTable::AddRoute (RoutingTableEntry & rt )
 bool
 RoutingTable::Update (RoutingTableEntry & rt )
 {
-  Purge ();
   std::map<Ipv4Address, RoutingTableEntry>::iterator i = m_ipv4AddressEntry.find (rt.GetDestination ());
   if (i == m_ipv4AddressEntry.end ())
     return false;
@@ -306,7 +304,6 @@ RoutingTable::Update (RoutingTableEntry & rt )
 bool
 RoutingTable::SetEntryState (Ipv4Address id, RouteFlags state )
 {
-  Purge ();
   std::map<Ipv4Address, RoutingTableEntry>::iterator i = m_ipv4AddressEntry.find (id);
   if (i == m_ipv4AddressEntry.end ())
     return false;
@@ -361,7 +358,6 @@ RoutingTable::Purge ()
               NS_LOG_LOGIC ("invalidate route with dst " << i->first );
               i->second.Invalidate (m_badLinkLifetime);
               NS_LOG_LOGIC (Simulator::Now().GetSeconds());
-              Print(std::cout);
               ++i;
             }
           else
@@ -374,7 +370,6 @@ RoutingTable::Purge ()
 bool
 RoutingTable::MarkLinkAsUinidirectional (Ipv4Address neighbor, Time blacklistTimeout )
 {
-  Purge ();
   std::map<Ipv4Address, RoutingTableEntry>::iterator i = m_ipv4AddressEntry.find (neighbor);
   if (i == m_ipv4AddressEntry.end ())
     return false;

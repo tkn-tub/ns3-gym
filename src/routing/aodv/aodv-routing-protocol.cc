@@ -81,7 +81,7 @@ RoutingProtocol::RoutingProtocol () :
   DestinationOnly (false),
   GratuitousReply (true),
   EnableExpandingRingSearch (false),
-  EnableHello (true),
+  EnableHello (false),
   EnableLocalRepair (true),
   m_routingTable (DeletePeriod),
   m_queue (MaxQueueLen, MaxQueueTime),
@@ -163,7 +163,7 @@ RoutingProtocol::GetTypeId (void)
                      UintegerValue (2),
                      MakeUintegerAccessor (&RoutingProtocol::AllowedHelloLoss),
                      MakeUintegerChecker<uint16_t> ())
-      .AddAttribute ("GratuitousReply", "indicates whether a gratuitous RREP should be unicast to the node originated route discovery.",
+      .AddAttribute ("GratuitousReply", "Indicates whether a gratuitous RREP should be unicast to the node originated route discovery.",
                      BooleanValue (true),
                      MakeBooleanAccessor (&RoutingProtocol::SetGratuitousReplyFlag,
                                           &RoutingProtocol::GetGratuitousReplyFlag),
@@ -178,8 +178,8 @@ RoutingProtocol::GetTypeId (void)
                      MakeBooleanAccessor (&RoutingProtocol::SetExpandingRingSearchEnable,
                                           &RoutingProtocol::GetExpandingRingSearchEnable),
                      MakeBooleanChecker ())
-      .AddAttribute ("EnableHello", "Enable hello message.",
-                     BooleanValue (true),
+      .AddAttribute ("EnableHello", "Indicates whether a hello messages enable.",
+                     BooleanValue (false),
                      MakeBooleanAccessor (&RoutingProtocol::SetHelloEnable,
                                           &RoutingProtocol::GetHelloEnable),
                      MakeBooleanChecker ())
@@ -422,7 +422,7 @@ RoutingProtocol::SetIpv4 (Ptr<Ipv4> ipv4)
   if (EnableHello)
     {
       htimer.SetFunction (&RoutingProtocol::HelloTimerExpire, this);
-      htimer.Schedule(MilliSeconds(UniformVariable().GetValue (0.0, 1000.0)));
+      htimer.Schedule(MilliSeconds(UniformVariable().GetValue (0.0, 10.0)));
     }
 
   m_ipv4 = ipv4;
@@ -477,12 +477,6 @@ RoutingProtocol::SendRequest (Ipv4Address dst, uint16_t ttl)
   RoutingTableEntry rt;
   if (m_routingTable.LookupRoute (dst, rt))
     {
-      // if we already send maximum number of RREQ
-      if (rt.GetRreqCnt () == RreqRetries)
-        {
-          NS_LOG_LOGIC ("Route does not found to " << dst);
-          return;
-        }
       rreqHeader.SetHopCount (rt.GetHop ());
       if (rt.GetValidSeqNo ())
         rreqHeader.SetDstSeqno (rt.GetSeqNo ());
@@ -528,7 +522,7 @@ RoutingProtocol::SendRequest (Ipv4Address dst, uint16_t ttl)
   if (EnableHello)
     {
       htimer.Cancel ();
-      htimer.Schedule (HelloInterval - Scalar(0.1)*MilliSeconds(UniformVariable().GetValue (0, 10)));
+      htimer.Schedule (HelloInterval - Scalar(0.01)*MilliSeconds(UniformVariable().GetValue (0, 10)));
     }
 }
 
@@ -1083,6 +1077,7 @@ RoutingProtocol::RouteRequestTimerExpire (Ipv4Address dst, uint16_t lastTtl )
     {
       NS_LOG_LOGIC("route discovery to " << dst << " has been attempted RreqRetries times");
       m_addressReqTimer.erase(dst);
+      m_routingTable.DeleteRoute(dst);
       NS_LOG_LOGIC ("Route not found. Drop packet with dst " << dst);
       DropFromQueue (dst);
       // TODO drop packet from queue and deliver Destination Unreachable message to the application.
@@ -1107,6 +1102,7 @@ RoutingProtocol::RouteRequestTimerExpire (Ipv4Address dst, uint16_t lastTtl )
     {
       NS_LOG_LOGIC ("Route down. Stop search. Drop packet with destination " << dst);
       m_addressReqTimer.erase(dst);
+      m_routingTable.DeleteRoute(dst);
       DropFromQueue (dst);
     }
 }
@@ -1118,7 +1114,7 @@ RoutingProtocol::HelloTimerExpire ()
   SendHello ();
   // TODO select random time for the next hello
   htimer.Cancel ();
-  htimer.Schedule (HelloInterval - Scalar(0.1)*MilliSeconds(UniformVariable().GetValue (0.0, 10.0)) );
+  htimer.Schedule (HelloInterval - Scalar(0.01)*MilliSeconds(UniformVariable().GetValue (0.0, 10.0)) );
 }
 
 void

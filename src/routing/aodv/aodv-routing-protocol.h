@@ -93,42 +93,46 @@ public:
 private:
   ///\name Protocol parameters. TODO document
   //\{
-  uint32_t RreqRetries;          ///< Maximum number of retransmissions of RREQ with TTL = NetDiameter to discover a route
-  Time ActiveRouteTimeout;    // 3 seconds
-  uint32_t NetDiameter;         ///< Net diameter measures the maximum possible number of hops between two nodes in the network
+  uint32_t RreqRetries;             ///< Maximum number of retransmissions of RREQ with TTL = NetDiameter to discover a route
+  Time ActiveRouteTimeout;
+  uint32_t NetDiameter;             ///< Net diameter measures the maximum possible number of hops between two nodes in the network
   /**
    *  NodeTraversalTime is a conservative estimate of the average one hop traversal time for packets
    *  and should include queuing delays, interrupt processing times and transfer times.
    */
   Time NodeTraversalTime;
-  Time NetTraversalTime;          // 2 * NodeTraversalTime * NetDiameter
+  Time NetTraversalTime;
   Time PathDiscoveryTime;
-  Time MyRouteTimeout;          ///< Value of lifetime field in RREP generating by this node
+  Time MyRouteTimeout;               ///< Value of lifetime field in RREP generating by this node
+  /**
+   * Every HelloInterval the node checks whether it has sent a broadcast  within the last HelloInterval.
+   * If it has not, it MAY broadcast a  Hello message
+   */
   Time HelloInterval;
-  uint32_t AllowedHelloLoss;     ///< Number of hello messages which may be loss for valid link
+  uint32_t AllowedHelloLoss;         ///< Number of hello messages which may be loss for valid link
   /**
    * DeletePeriod is intended to provide an upper bound on the time for which an upstream node A
    * can have a neighbor B as an active next hop for destination D, while B has invalidated the route to D.
    */
   Time DeletePeriod;
   Time NextHopWait;
-  uint16_t TtlStart;
-  uint16_t TtlIncrement;
-  uint16_t TtlThreshold;
-  uint16_t  MaxRepairTtl;           // 0.3 * NetDiameter
-  uint16_t LocalAddTtl;
+  uint16_t TtlStart;                 ///< Initial value of TTL in RREQ  when use an expanding ring search
+  uint16_t TtlIncrement;             ///< Increment value of RREQ TTL when use an expanding ring search
+  uint16_t TtlThreshold;             ///< Threshold, beyond which TTL = NetDiameter is used for each attempt in RREQ
+  uint16_t  MaxRepairTtl;            ///< Maximum distance in hops between intermediate node and destination node when local repair still may be applied.
+  uint16_t LocalAddTtl;              ///< Value used in calculation RREQ TTL when use local repair
   /**
    * The TimeoutBuffer is configurable.  Its purpose is to provide a buffer for the timeout so that if the RREP is delayed
    * due to congestion, a timeout is less likely to occur while the RREP is still en route back to the source.
    */
   uint16_t TimeoutBuffer;
   Time BlackListTimeout;
-  uint32_t MaxQueueLen;
-  Time MaxQueueTime;
-  bool DestinationOnly;
-  bool GratuitousReply;
+  uint32_t MaxQueueLen;              ///< The maximum number of packets that we allow a routing protocol to buffer.
+  Time MaxQueueTime;                 ///< The maximum period of time that a routing protocol is allowed to buffer a packet for.
+  bool DestinationOnly;              ///< Indicates only the destination may respond to this RREQ.
+  bool GratuitousReply;              ///< Indicates whether a gratuitous RREP should be unicast to the node originated route discovery.
   bool EnableExpandingRingSearch;
-  bool EnableHello;
+  bool EnableHello;                  ///< Indicates whether a hello messages enable
   bool EnableLocalRepair;
   //\}
 
