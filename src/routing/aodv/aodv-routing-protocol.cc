@@ -376,7 +376,7 @@ RoutingProtocol::Forwarding (Ptr<const Packet> p, const Ipv4Header & header, Uni
       else if (toDst.GetFlag () == RTF_UP)
         {
           Ptr<Ipv4Route> route = toDst.GetRoute ();
-          NS_LOG_LOGIC(route->GetSource()<<" forwarding to " << dst << " from" << origin);
+          NS_LOG_LOGIC(route->GetSource()<<" forwarding to " << dst << " from " << origin << " packet " << p->GetUid ());
 
           /**
            *  Each time a route is used to forward a data packet, its Active Route
@@ -707,6 +707,9 @@ RoutingProtocol::RecvRequest (Ptr<Packet> p, Ipv4Address receiver, Ipv4Address s
       m_routingTable.Update (toOrigin);
     }
 
+  NS_LOG_LOGIC ("After recieve request");
+  m_routingTable.Print (std::cout);
+
   //  A node generates a RREP if either:
   //  (i)  it is itself the destination,
   if (IsMyOwnAddress (rreqHeader.GetDst ()))
@@ -742,8 +745,7 @@ RoutingProtocol::RecvRequest (Ptr<Packet> p, Ipv4Address receiver, Ipv4Address s
           rreqHeader.SetUnknownSeqno (false);
         }
     }
-  NS_LOG_LOGIC ("After recieve request");
-  m_routingTable.Print (std::cout);
+
   /*
    * If a node does not generate a RREP the incoming IP header has TTL larger than 1, the node updates
    * and broadcasts the RREQ on each of its configured interfaces.
@@ -926,6 +928,8 @@ RoutingProtocol::RecvReply (Ptr<Packet> p, Ipv4Address receiver, Ipv4Address sen
       NS_LOG_LOGIC("add new route");
       m_routingTable.AddRoute (newEntry);
     }
+  NS_LOG_LOGIC ("After receive RREP");
+  m_routingTable.Print(std::cout);
   // Acknowledge receipt of the RREP by sending a RREP-ACK message back
   if (rrepHeader.GetAckRequired ())
     SendReplyAck (sender);
@@ -1185,7 +1189,6 @@ RoutingProtocol::SendPacketFromQueue (Ipv4Address dst, Ptr<Ipv4Route> route )
   QueueEntry queueEntry;
   while (m_queue.Dequeue (dst, queueEntry))
     {
-      NS_LOG_LOGIC (Simulator::Now ().GetSeconds () << "  SendPacketFromQueue");
       UnicastForwardCallback ucb = queueEntry.GetUnicastForwardCallback ();
       ucb (route, queueEntry.GetPacket (), queueEntry.GetIpv4Header ());
     }
