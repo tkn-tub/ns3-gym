@@ -126,7 +126,7 @@ FlameProtocol::GetTypeId ()
 }
 FlameProtocol::FlameProtocol () :
   m_address (Mac48Address ()), m_broadcastInterval (Seconds (5)), m_lastBroadcast (Simulator::Now ()),
-      m_maxCost (32), m_myLastSeqno (0), m_rtable (CreateObject<FlameRtable> ())
+      m_maxCost (32), m_myLastSeqno (1), m_rtable (CreateObject<FlameRtable> ())
 {
 }
 FlameProtocol::~FlameProtocol ()
@@ -186,24 +186,10 @@ FlameProtocol::RequestRoute (uint32_t sourceIface, const Mac48Address source, co
       FlameHeader flameHdr;
       packet->RemoveHeader (flameHdr);
       FlameTag tag;
-      
+
       if (!packet->RemovePacketTag (tag))
         {
           NS_FATAL_ERROR ("FLAME tag must exist here");
-        }
-      if (HandleDataFrame (flameHdr.GetSeqno (), source, flameHdr, tag.transmitter, sourceIface))
-        {
-          return false;
-        }
-      if (source == GetAddress ())
-        {
-          if (tag.receiver != Mac48Address::GetBroadcast ())
-            {
-              NS_LOG_DEBUG ("received packet with SA = GetAddress (), RA = " << tag.receiver << ", TA = "
-                  << tag.transmitter << ", I am " << GetAddress ());
-            }
-          m_stats.totalDropped++;
-          return false;
         }
       if (destination == Mac48Address::GetBroadcast ())
         {
@@ -220,7 +206,12 @@ FlameProtocol::RequestRoute (uint32_t sourceIface, const Mac48Address source, co
         }
       else
         {
-          
+          // We check sequence only when forward unicast, because broadcast-checks were done
+          // inside remove routing stuff.
+          if (HandleDataFrame (flameHdr.GetSeqno (), source, flameHdr, tag.transmitter, sourceIface))
+            {
+              return false;
+            }
           FlameRtable::LookupResult result = m_rtable->Lookup (destination);
           if (tag.receiver != Mac48Address::GetBroadcast ())
             {
@@ -325,6 +316,7 @@ FlameProtocol::HandleDataFrame (uint16_t seqno, Mac48Address source, const Flame
 {
   if (source == GetAddress ())
     {
+      m_stats.totalDropped++;
       return true;
     }
   FlameRtable::LookupResult result = m_rtable->Lookup (source);

@@ -136,7 +136,8 @@ PeerManagementProtocol::GetBeaconTimingElement (uint32_t interface)
   bool cleaned = false;
   while (!cleaned)
     {
-      for (BeaconsOnInterface::iterator j = i->second.begin (); j != i->second.end (); j++)
+      BeaconsOnInterface::iterator start = i->second.begin ();
+      for (BeaconsOnInterface::iterator j = start; j != i->second.end (); j++)
         {
           //check beacon loss and make a timing element
           //if last beacon was m_maxBeaconLostForBeaconTiming beacons ago - we do not put it to the
@@ -144,6 +145,7 @@ PeerManagementProtocol::GetBeaconTimingElement (uint32_t interface)
           if ((j->second.referenceTbtt + j->second.beaconInterval * Scalar (m_maxBeaconLostForBeaconTiming))
               < Simulator::Now ())
             {
+              start = j;
               i->second.erase (j);
               break;
             }
