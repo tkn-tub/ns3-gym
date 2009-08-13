@@ -22,7 +22,7 @@
 #define PCAP_WRITER_H
 
 #include <stdint.h>
-#include "ns3/ref-count-base.h"
+#include "ns3/object.h"
 
 namespace ns3 {
 
@@ -36,9 +36,10 @@ class Packet;
  * Log Packets to a file in pcap format which can be
  * read by pcap readers.
  */
-class PcapWriter : public RefCountBase
+class PcapWriter : public Object
 {
 public:
+  static TypeId GetTypeId (void);
   PcapWriter ();
   ~PcapWriter ();
 
@@ -128,7 +129,13 @@ public:
                               uint32_t rate, bool isShortPreamble, bool isTx, 
                               double signalDbm, double noiseDbm);
 
-
+  /** 
+   * Set the maximum number of bytes to be captured for each packet. 
+   * 
+   * @param size the maximum number of bytes to be captured. If zero
+   * (default), the whole packet will be captured. 
+   */
+  void SetCaptureSize (uint32_t size);
 
 
 private:
@@ -141,6 +148,8 @@ private:
   int8_t RoundToInt8 (double value);
   std::ofstream *m_writer;
   uint32_t m_pcapMode;
+  uint32_t m_captureSize;
+  
 };
 
 } // namespace ns3

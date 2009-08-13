@@ -70,7 +70,7 @@ EmuHelper::EnablePcap (std::string filename, uint32_t nodeid, uint32_t deviceid,
   NS_LOG_FUNCTION (filename << nodeid << deviceid << promiscuous);
   std::ostringstream oss;
   oss << filename << "-" << nodeid << "-" << deviceid << ".pcap";
-  Ptr<PcapWriter> pcap = Create<PcapWriter> ();
+  Ptr<PcapWriter> pcap = CreateObject<PcapWriter> ();
   pcap->Open (oss.str ());
   pcap->WriteEthernetHeader ();
 

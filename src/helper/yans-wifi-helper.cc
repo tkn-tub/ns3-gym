@@ -234,9 +234,7 @@ YansWifiPhyHelper::EnablePcap (std::string filename, uint32_t nodeid, uint32_t d
     }
   oss.str ("");
   oss << filename << "-" << nodeid << "-" << deviceid << ".pcap";
-  // we must fully-qualify the call to Create below because it conflicts
-  // with the locally-defined WifiPhyHelper::Create method.
-  Ptr<PcapWriter> pcap = ::ns3::Create<PcapWriter> ();
+  Ptr<PcapWriter> pcap = CreateObject<PcapWriter> ();
   pcap->Open (oss.str ());
 
   switch (m_pcapFormat) {

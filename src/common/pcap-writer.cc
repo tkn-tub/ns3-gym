@@ -29,12 +29,15 @@
 #include "ns3/assert.h"
 #include "ns3/abort.h"
 #include "ns3/simulator.h"
+#include "ns3/uinteger.h"
 #include "pcap-writer.h"
 #include "packet.h"
 
 NS_LOG_COMPONENT_DEFINE ("PcapWriter");
 
 namespace ns3 {
+
+NS_OBJECT_ENSURE_REGISTERED (PcapWriter);
 
 enum {
   PCAP_ETHERNET = 1,
@@ -44,6 +47,21 @@ enum {
   PCAP_80211_PRISM = 119,
   PCAP_80211_RADIOTAP  = 127,
 };
+
+TypeId 
+PcapWriter::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::PcapWriter")
+    .SetParent<Object> ()
+    .AddConstructor<PcapWriter> ()
+    .AddAttribute ("CaptureSize",
+                   "Number of bytes to capture at the start of each packet written in the pcap file. Zero means capture all bytes.",
+                   UintegerValue (0),
+                   MakeUintegerAccessor (&PcapWriter::m_captureSize),
+                   MakeUintegerChecker<uint32_t> ())
+    ;
+  return tid;
+}
 
 PcapWriter::PcapWriter ()
 {
@@ -162,9 +180,18 @@ PcapWriter::WritePacket (Ptr<const Packet> packet)
       uint64_t us = current % 1000000;
       Write32 (s & 0xffffffff);
       Write32 (us & 0xffffffff);
-      Write32 (packet->GetSize ());
-      Write32 (packet->GetSize ());
-      packet->CopyData (m_writer, packet->GetSize ());
+      uint32_t thisCaptureSize;
+      if (m_captureSize == 0)
+        {
+          thisCaptureSize = packet->GetSize ();
+        }
+      else
+        {
+          thisCaptureSize = std::min (m_captureSize, packet->GetSize ());         
+        }          
+      Write32 (thisCaptureSize); 
+      Write32 (packet->GetSize ()); // actual packet size
+      packet->CopyData (m_writer, thisCaptureSize);
     }
 }
 
@@ -203,7 +230,10 @@ void PcapWriter::WriteWifiMonitorPacket(Ptr<const Packet> packet, uint16_t chann
   // real devices (e.g. madwifi) handle this case, especially for TX
   // packets (radiotap specs says TSFT is not used for TX packets,
   // but madwifi actually uses it).
-  uint64_t tsft = current;      
+  uint64_t tsft = current;    
+
+  
+  uint32_t wifiMonitorHeaderSize;  
     
   if (m_pcapMode == PCAP_80211_PRISM)
     {
@@ -226,10 +256,17 @@ void PcapWriter::WriteWifiMonitorPacket(Ptr<const Packet> packet, uint16_t chann
 #define PRISM_ITEM_LENGTH       4
 
 
-
-      uint32_t size = packet->GetSize () + PRISM_MSG_LENGTH;
-      Write32 (size); // total packet size
-      Write32 (size); // captured size
+      wifiMonitorHeaderSize = PRISM_MSG_LENGTH;
+      if (m_captureSize == 0)
+        {
+          Write32 (packet->GetSize () + wifiMonitorHeaderSize); // captured size == actual packet size
+        }
+      else
+        {
+          uint32_t thisCaptureSize = std::min (m_captureSize, packet->GetSize () + wifiMonitorHeaderSize);         
+          Write32 (thisCaptureSize); 
+        }
+      Write32 (packet->GetSize () + wifiMonitorHeaderSize); // actual packet size
 
       Write32(PRISM_MSG_CODE);
       Write32(PRISM_MSG_LENGTH);
@@ -349,18 +386,26 @@ void PcapWriter::WriteWifiMonitorPacket(Ptr<const Packet> packet, uint16_t chann
 
 #define RADIOTAP_TX_PRESENT (RADIOTAP_TSFT | RADIOTAP_FLAGS  | RADIOTAP_RATE | RADIOTAP_CHANNEL)
 #define RADIOTAP_TX_LENGTH (8+8+1+1+2+2)
-
-      uint32_t size;
+      
       if (isTx)
         {
-          size = packet->GetSize () + RADIOTAP_TX_LENGTH;
+          wifiMonitorHeaderSize = RADIOTAP_TX_LENGTH;
         }
       else
         {
-          size = packet->GetSize () + RADIOTAP_RX_LENGTH;
+          wifiMonitorHeaderSize = RADIOTAP_RX_LENGTH;
+        }      
+
+      if (m_captureSize == 0)
+        {
+          Write32 (packet->GetSize () + wifiMonitorHeaderSize); // captured size == actual packet size
         }
-      Write32 (size); // total packet size
-      Write32 (size); // captured size
+      else
+        {
+          uint32_t thisCaptureSize = std::min (m_captureSize, packet->GetSize () + wifiMonitorHeaderSize);         
+          Write32 (thisCaptureSize); 
+        }
+      Write32 (packet->GetSize () + wifiMonitorHeaderSize); // actual packet size
 
       Write8(0); // radiotap version
       Write8(0); // padding
@@ -412,11 +457,23 @@ void PcapWriter::WriteWifiMonitorPacket(Ptr<const Packet> packet, uint16_t chann
     }    
 
   // finally, write rest of packet
-  packet->CopyData (m_writer, packet->GetSize ());
+  if (m_captureSize == 0)
+    {
+      packet->CopyData (m_writer, packet->GetSize ());
+    }
+  else
+    {
+      packet->CopyData (m_writer, m_captureSize - wifiMonitorHeaderSize);      
+    }
+
 }
     
   
-
+void 
+PcapWriter::SetCaptureSize (uint32_t size)
+{
+  m_captureSize = size;
+}
 
 int8_t 
 PcapWriter::RoundToInt8 (double value)

@@ -356,7 +356,7 @@ InternetStackHelper::GetStream (uint32_t nodeId, uint32_t interfaceId)
   InternetStackHelper::Trace trace;
   trace.nodeId = nodeId;
   trace.interfaceId = interfaceId;
-  trace.writer = Create<PcapWriter> ();
+  trace.writer = CreateObject<PcapWriter> ();
   std::ostringstream oss;
   oss << m_pcapBaseFilename << "-" << nodeId << "-" << interfaceId << ".pcap";
   trace.writer->Open (oss.str ());
