@@ -117,6 +117,8 @@ public:
    * transmitted. This is because it is possible to have the receiver
    * tuned on a given channel and still to be able to receive packets
    * on a nearby channel.
+   * @param channelNumber the channel number, as defined by the
+   * IEEE 802.11 standard. 
    * @param rate the PHY data rate in units of 500kbps (i.e., the same
    * units used both for the radiotap and for the prism header) 
    * @param isShortPreamble true if short preamble is used, false otherwise
@@ -125,7 +127,7 @@ public:
    * @param signalDbm signal power in dBm
    * @param noiseDbm  noise power in dBm
    */
-  void WriteWifiMonitorPacket(Ptr<const Packet> packet, uint16_t channelFreqMhz, 
+  void WriteWifiMonitorPacket(Ptr<const Packet> packet, uint16_t channelFreqMhz,  uint16_t channelNumber,
                               uint32_t rate, bool isShortPreamble, bool isTx, 
                               double signalDbm, double noiseDbm);
 

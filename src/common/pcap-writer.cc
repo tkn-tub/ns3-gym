@@ -196,7 +196,7 @@ PcapWriter::WritePacket (Ptr<const Packet> packet)
 }
 
 
-void PcapWriter::WriteWifiMonitorPacket(Ptr<const Packet> packet, uint16_t channelFreqMhz, 
+void PcapWriter::WriteWifiMonitorPacket(Ptr<const Packet> packet, uint16_t channelFreqMhz, uint16_t channelNumber,                                        
                                         uint32_t rate, bool isShortPreamble, bool isTx, 
                                         double signalDbm, double noiseDbm)
 {  
@@ -288,10 +288,8 @@ void PcapWriter::WriteWifiMonitorPacket(Ptr<const Packet> packet, uint16_t chann
 
       Write32(PRISM_DID_CHANNEL);
       Write16(PRISM_STATUS_PRESENT);
-      Write16(PRISM_ITEM_LENGTH); 
-      // convert from frequency to channel number. This conversion is
-      // correct only for IEEE 802.11b/g channels 1-13.
-      Write32((2437 - 2407) / 5);
+      Write16(PRISM_ITEM_LENGTH);             
+      Write32((uint32_t) channelNumber);
 
       Write32(PRISM_DID_RSSI);
       Write16(PRISM_STATUS_PRESENT);
@@ -372,14 +370,18 @@ void PcapWriter::WriteWifiMonitorPacket(Ptr<const Packet> packet, uint16_t chann
 #define	RADIOTAP_FLAG_DATAPAD	   0x20	
 #define	RADIOTAP_FLAG_BADFCS	   0x40	
 
-#define	RADIOTAP_CHANNEL_TURBO	  0x0010
-#define	RADIOTAP_CHANNEL_CCK	  0x0020
-#define	RADIOTAP_CHANNEL_OFDM	  0x0040
-#define	RADIOTAP_CHANNEL_2GHZ	  0x0080
-#define	RADIOTAP_CHANNEL_5GHZ	  0x0100
-#define	RADIOTAP_CHANNEL_PASSIVE  0x0200
-#define	RADIOTAP_CHANNEL_DYN	  0x0400
-#define	RADIOTAP_CHANNEL_GFSK	  0x0800
+#define	RADIOTAP_CHANNEL_TURBO	         0x0010
+#define	RADIOTAP_CHANNEL_CCK	         0x0020
+#define	RADIOTAP_CHANNEL_OFDM	         0x0040
+#define	RADIOTAP_CHANNEL_2GHZ	         0x0080
+#define	RADIOTAP_CHANNEL_5GHZ	         0x0100
+#define	RADIOTAP_CHANNEL_PASSIVE         0x0200
+#define	RADIOTAP_CHANNEL_DYN_CCK_OFDM    0x0400
+#define	RADIOTAP_CHANNEL_GFSK	         0x0800
+#define	RADIOTAP_CHANNEL_GSM             0x1000
+#define	RADIOTAP_CHANNEL_STATIC_TURBO    0x2000
+#define	RADIOTAP_CHANNEL_HALF_RATE       0x4000
+#define	RADIOTAP_CHANNEL_QUARTER_RATE    0x8000
 
 #define RADIOTAP_RX_PRESENT (RADIOTAP_TSFT | RADIOTAP_FLAGS | RADIOTAP_RATE | RADIOTAP_CHANNEL | RADIOTAP_DBM_ANTSIGNAL | RADIOTAP_DBM_ANTNOISE)
 #define RADIOTAP_RX_LENGTH (8+8+1+1+2+2+1+1)
@@ -433,12 +435,24 @@ void PcapWriter::WriteWifiMonitorPacket(Ptr<const Packet> packet, uint16_t chann
 
       Write8(rate); 
 
-      Write16((uint16_t) 2437); 
-
-      // we might want to make this setting depend on the WifiMode and
-      // on the ChannelFrequency at some time in the future. But for now
-      // I think a fixed setting is more than enough for most purposes.
-      Write16(RADIOTAP_CHANNEL_OFDM | RADIOTAP_CHANNEL_2GHZ); 
+      Write16(channelFreqMhz); 
+      
+      uint16_t channelFlags;
+      if (channelFreqMhz < 2500)
+        {
+          // TODO: when 802.11g WifiModes will be implemented
+          // we will need to check dinamically whether channelFlags
+          // needs to be set to RADIOTAP_CHANNEL_CCK,
+          // RADIOTAP_CHANNEL_DYN or RADIOTAP_CHANNEL_OFDM.          
+          channelFlags = RADIOTAP_CHANNEL_2GHZ | RADIOTAP_CHANNEL_CCK;
+        }
+      else
+        {
+          // TODO: we should handle correctly the case of half rate
+          // (10 MHz channel) and quarter rate (5 Mhz channel). 
+          channelFlags = RADIOTAP_CHANNEL_5GHZ | RADIOTAP_CHANNEL_OFDM;
+        }                
+      Write16(channelFlags); 
     
       if (!isTx)
         {

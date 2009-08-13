@@ -205,15 +205,15 @@ WifiPhy::NotifyRxDrop (Ptr<const Packet> packet)
 }
 
 void 
-WifiPhy::NotifyPromiscSniffRx (Ptr<const Packet> packet, uint16_t channelFreqMhz, uint32_t rate, bool isShortPreamble, double signalDbm, double noiseDbm)
+WifiPhy::NotifyPromiscSniffRx (Ptr<const Packet> packet, uint16_t channelFreqMhz, uint16_t channelNumber, uint32_t rate, bool isShortPreamble, double signalDbm, double noiseDbm)
 {
-  m_phyPromiscSniffRxTrace (packet, channelFreqMhz, rate, isShortPreamble, signalDbm, noiseDbm);
+  m_phyPromiscSniffRxTrace (packet, channelFreqMhz, channelNumber, rate, isShortPreamble, signalDbm, noiseDbm);
 }
 
 void 
-WifiPhy::NotifyPromiscSniffTx (Ptr<const Packet> packet, uint16_t channelFreqMhz, uint32_t rate, bool isShortPreamble)
+WifiPhy::NotifyPromiscSniffTx (Ptr<const Packet> packet, uint16_t channelFreqMhz, uint16_t channelNumber, uint32_t rate, bool isShortPreamble)
 {
-  m_phyPromiscSniffTxTrace (packet, channelFreqMhz, rate, isShortPreamble);
+  m_phyPromiscSniffTxTrace (packet, channelFreqMhz, channelNumber, rate, isShortPreamble);
 }
 
 WifiMode 
