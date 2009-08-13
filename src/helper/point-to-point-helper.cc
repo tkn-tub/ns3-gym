@@ -22,10 +22,11 @@
 #include "ns3/point-to-point-net-device.h"
 #include "ns3/point-to-point-channel.h"
 #include "ns3/queue.h"
-#include "ns3/pcap-writer.h"
 #include "ns3/config.h"
 #include "ns3/packet.h"
 #include "ns3/names.h"
+#include "ns3/pcap-writer.h"
+#include "ns3/ascii-writer.h"
 
 namespace ns3 {
 
@@ -131,19 +132,20 @@ PointToPointHelper::EnablePcapAll (std::string filename)
 void 
 PointToPointHelper::EnableAscii (std::ostream &os, uint32_t nodeid, uint32_t deviceid)
 {
+  Ptr<AsciiWriter> writer = AsciiWriter::Get (os);
   Packet::EnablePrinting ();
   std::ostringstream oss;
   oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::PointToPointNetDevice/MacRx";
-  Config::Connect (oss.str (), MakeBoundCallback (&PointToPointHelper::AsciiRxEvent, &os));
+  Config::Connect (oss.str (), MakeBoundCallback (&PointToPointHelper::AsciiRxEvent, writer));
   oss.str ("");
   oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::PointToPointNetDevice/TxQueue/Enqueue";
-  Config::Connect (oss.str (), MakeBoundCallback (&PointToPointHelper::AsciiEnqueueEvent, &os));
+  Config::Connect (oss.str (), MakeBoundCallback (&PointToPointHelper::AsciiEnqueueEvent, writer));
   oss.str ("");
   oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::PointToPointNetDevice/TxQueue/Dequeue";
-  Config::Connect (oss.str (), MakeBoundCallback (&PointToPointHelper::AsciiDequeueEvent, &os));
+  Config::Connect (oss.str (), MakeBoundCallback (&PointToPointHelper::AsciiDequeueEvent, writer));
   oss.str ("");
   oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::PointToPointNetDevice/TxQueue/Drop";
-  Config::Connect (oss.str (), MakeBoundCallback (&PointToPointHelper::AsciiDropEvent, &os));
+  Config::Connect (oss.str (), MakeBoundCallback (&PointToPointHelper::AsciiDropEvent, writer));
 }
 
 void 
@@ -256,32 +258,29 @@ PointToPointHelper::SniffEvent (Ptr<PcapWriter> writer, Ptr<const Packet> packet
   writer->WritePacket (packet);
 }
 
-void 
-PointToPointHelper::AsciiEnqueueEvent (std::ostream *os, std::string path, Ptr<const Packet> packet)
+void
+PointToPointHelper::AsciiEnqueueEvent (Ptr<AsciiWriter> writer, std::string path,
+                                       Ptr<const Packet> packet)
 {
-  *os << "+ " << Simulator::Now ().GetSeconds () << " ";
-  *os << path << " " << *packet << std::endl;
+  writer->WritePacket (AsciiWriter::ENQUEUE, path, packet);
 }
 
-void 
-PointToPointHelper::AsciiDequeueEvent (std::ostream *os, std::string path, Ptr<const Packet> packet)
+void
+PointToPointHelper::AsciiDequeueEvent (Ptr<AsciiWriter> writer, std::string path, Ptr<const Packet> packet)
 {
-  *os << "- " << Simulator::Now ().GetSeconds () << " ";
-  *os << path << " " << *packet << std::endl;
+  writer->WritePacket (AsciiWriter::DEQUEUE, path, packet);
 }
 
-void 
-PointToPointHelper::AsciiDropEvent (std::ostream *os, std::string path, Ptr<const Packet> packet)
+void
+PointToPointHelper::AsciiDropEvent (Ptr<AsciiWriter> writer, std::string path, Ptr<const Packet> packet)
 {
-  *os << "d " << Simulator::Now ().GetSeconds () << " ";
-  *os << path << " " << *packet << std::endl;
+  writer->WritePacket (AsciiWriter::DROP, path, packet);
 }
 
-void 
-PointToPointHelper::AsciiRxEvent (std::ostream *os, std::string path, Ptr<const Packet> packet)
+void
+PointToPointHelper::AsciiRxEvent (Ptr<AsciiWriter> writer, std::string path, Ptr<const Packet> packet)
 {
-  *os << "r " << Simulator::Now ().GetSeconds () << " ";
-  *os << path << " " << *packet << std::endl;
+  writer->WritePacket (AsciiWriter::RX, path, packet);
 }
 
 } // namespace ns3
