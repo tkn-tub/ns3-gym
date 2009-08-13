@@ -23,7 +23,6 @@
 
 #include "node-container.h"
 #include "net-device-container.h"
-#include "ns3/pcap-writer.h"
 #include "ns3/packet.h"
 #include "ns3/ptr.h"
 #include "ns3/object-factory.h"
@@ -169,7 +168,7 @@ private:
     uint32_t interfaceId;
     Ptr<PcapWriter> writer;
   };
-  static void AsciiDropEvent (std::ostream *os, std::string path, Ptr<const Packet> packet);
+  static void AsciiDropEvent (Ptr<AsciiWriter> writer, std::string path, Ptr<const Packet> packet);
   static std::string m_pcapBaseFilename;
   static uint32_t GetNodeIndex (std::string context);
   static std::vector<Trace> m_traces;

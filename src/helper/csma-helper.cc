@@ -23,10 +23,11 @@
 #include "ns3/queue.h"
 #include "ns3/csma-net-device.h"
 #include "ns3/csma-channel.h"
-#include "ns3/pcap-writer.h"
 #include "ns3/config.h"
 #include "ns3/packet.h"
 #include "ns3/names.h"
+#include "ns3/pcap-writer.h"
+#include "ns3/ascii-writer.h"
 #include <string>
 
 namespace ns3 {
@@ -139,19 +140,20 @@ CsmaHelper::EnablePcapAll (std::string filename, bool promiscuous)
 void 
 CsmaHelper::EnableAscii (std::ostream &os, uint32_t nodeid, uint32_t deviceid)
 {
+  Ptr<AsciiWriter> writer = AsciiWriter::Get (os);
   Packet::EnablePrinting ();
   std::ostringstream oss;
   oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::CsmaNetDevice/MacRx";
-  Config::Connect (oss.str (), MakeBoundCallback (&CsmaHelper::AsciiRxEvent, &os));
+  Config::Connect (oss.str (), MakeBoundCallback (&CsmaHelper::AsciiRxEvent, writer));
   oss.str ("");
   oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::CsmaNetDevice/TxQueue/Enqueue";
-  Config::Connect (oss.str (), MakeBoundCallback (&CsmaHelper::AsciiEnqueueEvent, &os));
+  Config::Connect (oss.str (), MakeBoundCallback (&CsmaHelper::AsciiEnqueueEvent, writer));
   oss.str ("");
   oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::CsmaNetDevice/TxQueue/Dequeue";
-  Config::Connect (oss.str (), MakeBoundCallback (&CsmaHelper::AsciiDequeueEvent, &os));
+  Config::Connect (oss.str (), MakeBoundCallback (&CsmaHelper::AsciiDequeueEvent, writer));
   oss.str ("");
   oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::CsmaNetDevice/TxQueue/Drop";
-  Config::Connect (oss.str (), MakeBoundCallback (&CsmaHelper::AsciiDropEvent, &os));
+  Config::Connect (oss.str (), MakeBoundCallback (&CsmaHelper::AsciiDropEvent, writer));
 }
 void 
 CsmaHelper::EnableAscii (std::ostream &os, NetDeviceContainer d)
@@ -294,31 +296,27 @@ CsmaHelper::SniffEvent (Ptr<PcapWriter> writer, Ptr<const Packet> packet)
 }
 
 void 
-CsmaHelper::AsciiEnqueueEvent (std::ostream *os, std::string path, Ptr<const Packet> packet)
+CsmaHelper::AsciiEnqueueEvent (Ptr<AsciiWriter> writer, std::string path, Ptr<const Packet> packet)
 {
-  *os << "+ " << Simulator::Now ().GetSeconds () << " ";
-  *os << path << " " << *packet << std::endl;
+  writer->WritePacket (AsciiWriter::ENQUEUE, path, packet);
 }
 
 void 
-CsmaHelper::AsciiDequeueEvent (std::ostream *os, std::string path, Ptr<const Packet> packet)
+CsmaHelper::AsciiDequeueEvent (Ptr<AsciiWriter> writer, std::string path, Ptr<const Packet> packet)
 {
-  *os << "- " << Simulator::Now ().GetSeconds () << " ";
-  *os << path << " " << *packet << std::endl;
+  writer->WritePacket (AsciiWriter::DEQUEUE, path, packet);
 }
 
 void 
-CsmaHelper::AsciiDropEvent (std::ostream *os, std::string path, Ptr<const Packet> packet)
+CsmaHelper::AsciiDropEvent (Ptr<AsciiWriter> writer, std::string path, Ptr<const Packet> packet)
 {
-  *os << "d " << Simulator::Now ().GetSeconds () << " ";
-  *os << path << " " << *packet << std::endl;
+  writer->WritePacket (AsciiWriter::DROP, path, packet);
 }
 
 void 
-CsmaHelper::AsciiRxEvent (std::ostream *os, std::string path, Ptr<const Packet> packet)
+CsmaHelper::AsciiRxEvent (Ptr<AsciiWriter> writer, std::string path, Ptr<const Packet> packet)
 {
-  *os << "r " << Simulator::Now ().GetSeconds () << " ";
-  *os << path << " " << *packet << std::endl;
+  writer->WritePacket (AsciiWriter::RX, path, packet);
 }
 
 } // namespace ns3
