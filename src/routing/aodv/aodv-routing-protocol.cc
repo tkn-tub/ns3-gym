@@ -626,15 +626,17 @@ RoutingProtocol::UpdateRouteToNeighbor (Ipv4Address sender, Ipv4Address receiver
     {
       Ptr<NetDevice> dev = m_ipv4->GetNetDevice (m_ipv4->GetInterfaceForAddress (receiver));
       RoutingTableEntry newEntry (/*device=*/dev, /*dst=*/sender, /*know seqno=*/false, /*seqno=*/0,
-                                  /*iface=*/m_ipv4->GetAddress (m_ipv4->GetInterfaceForAddress (receiver), 0),
-                                  /*hops=*/1, /*next hop=*/sender, /*lifetime=*/ActiveRouteTimeout);
+      /*iface=*/m_ipv4->GetAddress (m_ipv4->GetInterfaceForAddress (receiver), 0),
+      /*hops=*/1, /*next hop=*/sender, /*lifetime=*/ActiveRouteTimeout);
       m_routingTable.AddRoute (newEntry);
     }
   else
     {
-      toNeighbor.SetFlag (RTF_UP);
-      toNeighbor.SetLifeTime (std::max (ActiveRouteTimeout, toNeighbor.GetLifeTime ()));
-      m_routingTable.Update (toNeighbor);
+      Ptr<NetDevice> dev = m_ipv4->GetNetDevice (m_ipv4->GetInterfaceForAddress (receiver));
+      RoutingTableEntry newEntry (/*device=*/dev, /*dst=*/sender, /*know seqno=*/false, /*seqno=*/0,
+      /*iface=*/m_ipv4->GetAddress (m_ipv4->GetInterfaceForAddress (receiver), 0),
+      /*hops=*/1, /*next hop=*/sender, /*lifetime=*/std::max (ActiveRouteTimeout, toNeighbor.GetLifeTime ()));
+      m_routingTable.Update (newEntry);
     }
 }
 
