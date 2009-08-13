@@ -784,15 +784,6 @@ RoutingProtocol::SendReply (RreqHeader const & rreqHeader, RoutingTableEntry con
     m_seqNo++;
   RrepHeader rrepHeader ( /*prefixSize=*/0, /*hops=*/toOrigin.GetHop (), /*dst=*/rreqHeader.GetDst (),
   /*dstSeqNo=*/m_seqNo, /*origin=*/toOrigin.GetDestination (), /*lifeTime=*/MyRouteTimeout);
-  if (0) // TODO when
-    {
-      rrepHeader.SetAckRequired (true);
-      RoutingTableEntry toNextHop;
-      m_routingTable.LookupRoute (toOrigin.GetNextHop (), toNextHop);
-      toNextHop.m_ackTimer.SetFunction (&RoutingProtocol::AckTimerExpire, this);
-      toNextHop.m_ackTimer.SetArguments (toNextHop.GetDestination (), BlackListTimeout);
-      toNextHop.m_ackTimer.SetDelay (NextHopWait);
-    }
   Ptr<Packet> packet = Create<Packet> ();
   packet->AddHeader (rrepHeader);
   TypeHeader tHeader (AODVTYPE_RREP);
@@ -808,8 +799,19 @@ RoutingProtocol::SendReplyByIntermediateNode (RoutingTableEntry & toDst, Routing
 {
   NS_LOG_FUNCTION(this);
   RrepHeader rrepHeader (/*prefix size=*/0, /*hops=*/toDst.GetHop (), /*dst=*/toDst.GetDestination (), /*dst seqno=*/toDst.GetSeqNo (),
-  /*origin=*/toOrigin.GetDestination (), /*lifetime=*/toDst.GetLifeTime ());
-
+                         /*origin=*/toOrigin.GetDestination (), /*lifetime=*/toDst.GetLifeTime ());
+  /* If the node we received a RREQ for is a neighbor we are
+   * probably facing a unidirectional link... Better request a RREP-ack
+   */
+  if (toDst.GetHop () == 1)
+    {
+      rrepHeader.SetAckRequired (true);
+      RoutingTableEntry toNextHop;
+      m_routingTable.LookupRoute (toOrigin.GetNextHop (), toNextHop);
+      toNextHop.m_ackTimer.SetFunction (&RoutingProtocol::AckTimerExpire, this);
+      toNextHop.m_ackTimer.SetArguments (toNextHop.GetDestination (), BlackListTimeout);
+      toNextHop.m_ackTimer.SetDelay (NextHopWait);
+    }
   toDst.InsertPrecursor (toOrigin.GetNextHop ());
   toOrigin.InsertPrecursor (toDst.GetNextHop ());
   m_routingTable.Update (toDst);
