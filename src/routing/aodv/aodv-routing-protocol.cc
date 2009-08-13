@@ -81,7 +81,7 @@ RoutingProtocol::RoutingProtocol () :
   DestinationOnly (false),
   GratuitousReply (true),
   EnableExpandingRingSearch (false),
-  EnableHello (false),
+  EnableHello (true),
   EnableLocalRepair (true),
   m_routingTable (DeletePeriod),
   m_queue (MaxQueueLen, MaxQueueTime),
@@ -179,7 +179,7 @@ RoutingProtocol::GetTypeId (void)
                                           &RoutingProtocol::GetExpandingRingSearchEnable),
                      MakeBooleanChecker ())
       .AddAttribute ("EnableHello", "Indicates whether a hello messages enable.",
-                     BooleanValue (false),
+                     BooleanValue (true),
                      MakeBooleanAccessor (&RoutingProtocol::SetHelloEnable,
                                           &RoutingProtocol::GetHelloEnable),
                      MakeBooleanChecker ())
@@ -261,7 +261,7 @@ RoutingProtocol::RouteOutput (Ptr<Packet> p, const Ipv4Header &header, uint32_t 
           NS_LOG_LOGIC("exist route to " << route->GetDestination() << " from iface " << route->GetSource());
           UpdateRouteLifeTime (dst, ActiveRouteTimeout);
           UpdateRouteLifeTime (route->GetGateway(), ActiveRouteTimeout);
-          m_nb.Update (route->GetGateway(), ActiveRouteTimeout);  //?
+//          m_nb.Update (route->GetGateway(), ActiveRouteTimeout);  //?
         }
       else
         {
@@ -626,16 +626,16 @@ RoutingProtocol::UpdateRouteToNeighbor (Ipv4Address sender, Ipv4Address receiver
     {
       Ptr<NetDevice> dev = m_ipv4->GetNetDevice (m_ipv4->GetInterfaceForAddress (receiver));
       RoutingTableEntry newEntry (/*device=*/dev, /*dst=*/sender, /*know seqno=*/false, /*seqno=*/0,
-      /*iface=*/m_ipv4->GetAddress (m_ipv4->GetInterfaceForAddress (receiver), 0),
-      /*hops=*/1, /*next hop=*/sender, /*lifetime=*/ActiveRouteTimeout);
+                                  /*iface=*/m_ipv4->GetAddress (m_ipv4->GetInterfaceForAddress (receiver), 0),
+                                  /*hops=*/1, /*next hop=*/sender, /*lifetime=*/ActiveRouteTimeout);
       m_routingTable.AddRoute (newEntry);
     }
   else
     {
       Ptr<NetDevice> dev = m_ipv4->GetNetDevice (m_ipv4->GetInterfaceForAddress (receiver));
       RoutingTableEntry newEntry (/*device=*/dev, /*dst=*/sender, /*know seqno=*/false, /*seqno=*/0,
-      /*iface=*/m_ipv4->GetAddress (m_ipv4->GetInterfaceForAddress (receiver), 0),
-      /*hops=*/1, /*next hop=*/sender, /*lifetime=*/std::max (ActiveRouteTimeout, toNeighbor.GetLifeTime ()));
+                                  /*iface=*/m_ipv4->GetAddress (m_ipv4->GetInterfaceForAddress (receiver), 0),
+                                  /*hops=*/1, /*next hop=*/sender, /*lifetime=*/std::max (ActiveRouteTimeout, toNeighbor.GetLifeTime ()));
       m_routingTable.Update (newEntry);
     }
 }
@@ -1014,9 +1014,12 @@ RoutingProtocol::ProcessHello (RrepHeader const & rrepHeader, Ipv4Address receiv
       toNeighbor.SetInterface (m_ipv4->GetAddress (m_ipv4->GetInterfaceForAddress (receiver), 0));
       m_routingTable.Update (toNeighbor);
     }
-  m_nb.Update (rrepHeader.GetDst (), Scalar (AllowedHelloLoss) * HelloInterval);
-  NS_LOG_LOGIC ("After recieve Hello");
-  m_routingTable.Print(std::cout);
+  if (EnableHello)
+    {
+      m_nb.Update (rrepHeader.GetDst (), Scalar (AllowedHelloLoss) * HelloInterval);
+      NS_LOG_LOGIC ("After recieve Hello");
+      m_routingTable.Print (std::cout);
+    }
 }
 
 // TODO process RERR with 'N' flag
