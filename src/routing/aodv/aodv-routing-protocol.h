@@ -239,7 +239,6 @@ private:
   
   /// Notify that packet is dropped for some reason 
   void Drop(Ptr<const Packet>, const Ipv4Header &, Socket::SocketErrno) {}
-  void DropFromQueue (Ipv4Address dst);
 
   ///\name Timers. TODO comment each one
   //\{

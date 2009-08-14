@@ -970,7 +970,6 @@ RoutingProtocol::RecvReply (Ptr<Packet> p, Ipv4Address receiver, Ipv4Address sen
   toNextHopToDst.InsertPrecursor (toOrigin.GetNextHop ());
   m_routingTable.Update (toNextHopToDst);
 
-  // TODO add operation over unidirectional links
   Ptr<Packet> packet = Create<Packet> ();
   packet->AddHeader (rrepHeader);
   TypeHeader tHeader (AODVTYPE_RREP);
@@ -1091,8 +1090,7 @@ RoutingProtocol::RouteRequestTimerExpire (Ipv4Address dst, uint16_t lastTtl )
       m_addressReqTimer.erase(dst);
       m_routingTable.DeleteRoute(dst);
       NS_LOG_LOGIC ("Route not found. Drop packet with dst " << dst);
-      DropFromQueue (dst);
-      // TODO drop packet from queue and deliver Destination Unreachable message to the application.
+      m_queue.DropPacketWithDst(dst);
       return;
     }
 
@@ -1115,7 +1113,7 @@ RoutingProtocol::RouteRequestTimerExpire (Ipv4Address dst, uint16_t lastTtl )
       NS_LOG_LOGIC ("Route down. Stop search. Drop packet with destination " << dst);
       m_addressReqTimer.erase(dst);
       m_routingTable.DeleteRoute(dst);
-      DropFromQueue (dst);
+      m_queue.DropPacketWithDst(dst);
     }
 }
 
@@ -1202,12 +1200,6 @@ RoutingProtocol::SendPacketFromQueue (Ipv4Address dst, Ptr<Ipv4Route> route )
       UnicastForwardCallback ucb = queueEntry.GetUnicastForwardCallback ();
       ucb (route, queueEntry.GetPacket (), queueEntry.GetIpv4Header ());
     }
-}
-void
-RoutingProtocol::DropFromQueue (Ipv4Address dst)
-{
-  NS_LOG_FUNCTION(this);
-  m_queue.DropPacketWithDst(dst);
 }
 
 void
