@@ -323,7 +323,15 @@ RoutingProtocol::RouteInput (Ptr<const Packet> p, const Ipv4Header &header, Ptr<
             UpdateRouteLifeTime (origin, ActiveRouteTimeout);
             NS_LOG_LOGIC ("Broadcast local delivery to " << iface.GetLocal ());
             lcb (p, header, iif);
-            // TODO has TTL, forward
+            Ptr<Ipv4L3Protocol> l3 = m_ipv4->GetObject<Ipv4L3Protocol> ();
+            NS_ASSERT(l3 != 0);
+            // Broadcast packet from all interfaces.
+            for (std::map<Ptr<Socket> , Ipv4InterfaceAddress>::const_iterator i = m_socketAddresses.begin (); i != m_socketAddresses.end (); ++i)
+              {
+                Ptr<Packet> packet = p->Copy ();
+                Ptr<Ipv4Route> route;
+                l3->Send (packet, i->second.GetLocal (), i->second.GetBroadcast (), header.GetProtocol (), route);
+              }
             return true;
           }
     }
