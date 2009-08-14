@@ -30,6 +30,7 @@ def build(bld):
         'attribute-default-iterator.cc',
         'file-config.cc',
         'raw-text-config.cc',
+        'packetbb.cc',
         ]
 
     headers = bld.new_task_gen('ns3header')
@@ -41,6 +42,7 @@ def build(bld):
         'file-config.h',
         'config-store.h',
         'flow-id-tag.h',
+        'packetbb.h',
         ]
 
     if bld.env['ENABLE_GTK_CONFIG_STORE']:
