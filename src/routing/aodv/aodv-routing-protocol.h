@@ -94,15 +94,15 @@ private:
   ///\name Protocol parameters. TODO document
   //\{
   uint32_t RreqRetries;             ///< Maximum number of retransmissions of RREQ with TTL = NetDiameter to discover a route
-  Time ActiveRouteTimeout;
+  Time ActiveRouteTimeout;          ///< Minimal lifetime for active route.
   uint32_t NetDiameter;             ///< Net diameter measures the maximum possible number of hops between two nodes in the network
   /**
    *  NodeTraversalTime is a conservative estimate of the average one hop traversal time for packets
    *  and should include queuing delays, interrupt processing times and transfer times.
    */
   Time NodeTraversalTime;
-  Time NetTraversalTime;
-  Time PathDiscoveryTime;
+  Time NetTraversalTime;             ///< Estimate of the average net traversal time.
+  Time PathDiscoveryTime;            ///< Estimate of maximum time needed to find route in network
   Time MyRouteTimeout;               ///< Value of lifetime field in RREP generating by this node
   /**
    * Every HelloInterval the node checks whether it has sent a broadcast  within the last HelloInterval.
@@ -115,7 +115,7 @@ private:
    * can have a neighbor B as an active next hop for destination D, while B has invalidated the route to D.
    */
   Time DeletePeriod;
-  Time NextHopWait;
+  Time NextHopWait;                  ///< Period of our waiting for the neighbour's RREP_ACK
   uint16_t TtlStart;                 ///< Initial value of TTL in RREQ  when use an expanding ring search
   uint16_t TtlIncrement;             ///< Increment value of RREQ TTL when use an expanding ring search
   uint16_t TtlThreshold;             ///< Threshold, beyond which TTL = NetDiameter is used for each attempt in RREQ
@@ -126,14 +126,14 @@ private:
    * due to congestion, a timeout is less likely to occur while the RREP is still en route back to the source.
    */
   uint16_t TimeoutBuffer;
-  Time BlackListTimeout;
+  Time BlackListTimeout;             ///< Time for which the node is put into the blacklist
   uint32_t MaxQueueLen;              ///< The maximum number of packets that we allow a routing protocol to buffer.
   Time MaxQueueTime;                 ///< The maximum period of time that a routing protocol is allowed to buffer a packet for.
   bool DestinationOnly;              ///< Indicates only the destination may respond to this RREQ.
   bool GratuitousReply;              ///< Indicates whether a gratuitous RREP should be unicast to the node originated route discovery.
-  bool EnableExpandingRingSearch;
+  bool EnableExpandingRingSearch;    ///< Indicates whether a expanding ring search enable
   bool EnableHello;                  ///< Indicates whether a hello messages enable
-  bool EnableLocalRepair;
+  bool EnableLocalRepair;            ///< Indicates whether a local repair enable
   //\}
 
   /// IP protocol
@@ -154,7 +154,9 @@ private:
   /// Handle neighbors
   Neighbors m_nb;
 
+  /// Unicast callback for own packets
   UnicastForwardCallback m_scb;
+  /// Error callback for own packets
   ErrorCallback m_ecb;
 
 private:
