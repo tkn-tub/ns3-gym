@@ -197,7 +197,8 @@ int main (int argc, char *argv[])
      wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager",
                                    "DataMode",StringValue(modes[i]),
                                    "ControlMode",StringValue(modes[i]));
-     wifiMac.SetType ("ns3::AdhocWifiMac");
+     wifiMac.SetType ("ns3::AdhocWifiMac",
+                      "Standard",StringValue ("802.11b"));
  
      YansWifiPhyHelper wifiPhy = YansWifiPhyHelper::Default ();
      YansWifiChannelHelper wifiChannel ;
