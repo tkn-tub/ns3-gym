@@ -153,6 +153,8 @@ private:
   IdCache m_idCache;
   /// Handle neighbors
   Neighbors m_nb;
+  /// Address of the destination, which currently repaired.
+  Ipv4Address m_repairedDst;
 
   /// Unicast callback for own packets
   UnicastForwardCallback m_scb;
@@ -173,8 +175,6 @@ private:
    * \return true if node forward packet or try to repair route.
    */
   bool Forwarding (Ptr<const Packet> p, const Ipv4Header & header, UnicastForwardCallback ucb, ErrorCallback ecb);
-  /// Process broken link
-  void HandleLinkFailure (Ipv4Address id);
   /**
   * To reduce congestion in a network, repeated attempts by a source node at route discovery
   * for a single destination MUST utilize a binary exponential backoff.
@@ -231,6 +231,7 @@ private:
   void SendReplyAck (Ipv4Address neighbor);
   /// Initiate RERR
   void SendRerrWhenBreaksLinkToNextHop (Ipv4Address nextHop);
+  void SendRerr (Ipv4Address dst, bool noDelete);
   /// Forward RERR
   void SendRerrMessage(Ptr<Packet> packet,  std::vector<Ipv4Address> precursors);
   /**

@@ -47,10 +47,11 @@ namespace aodv {
  */
 enum RouteFlags
 {
-  RTF_DOWN = 0,     //!< RTF_DOWN
-  RTF_UP = 1,       //!< RTF_UP
-  RTF_IN_REPAIR = 2,//!< RTF_IN_REPAIR
-  RTF_IN_SEARCH = 3 //!< RTF_IN_SEARCH
+  VALID = 0,          //!< VALID
+  INVALID = 1,        //!< INVALID
+  IN_SEARCH = 2,      //!< IN_SEARCH
+  REPAIRABLE = 3,     //!< REPAIRABLE
+  BEING_REPAIRED = 4, //!BEING_REPAIRED
 };
 
 /**

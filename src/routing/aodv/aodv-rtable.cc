@@ -44,7 +44,7 @@ namespace aodv
 
 RoutingTableEntry::RoutingTableEntry (Ptr<NetDevice> dev, Ipv4Address dst, bool vSeqNo, u_int32_t seqNo, Ipv4InterfaceAddress iface, u_int16_t hops,
     Ipv4Address nextHop, Time lifetime ) : m_validSeqNo (vSeqNo), m_seqNo (seqNo), m_hops (hops), m_lifeTime (lifetime + Simulator::Now ()),
-                                           m_iface (iface), m_flag (RTF_UP), m_reqCount (0), m_blackListState (false), m_blackListTimeout (Simulator::Now ()),
+                                           m_iface (iface), m_flag (VALID), m_reqCount (0), m_blackListState (false), m_blackListTimeout (Simulator::Now ()),
                                            m_ackTimer (Timer::CANCEL_ON_DESTROY)
 {
   m_ipv4Route = Create<Ipv4Route> ();
@@ -122,9 +122,9 @@ RoutingTableEntry::GetPrecursors (std::vector<Ipv4Address> & prec ) const
 void
 RoutingTableEntry::Invalidate (Time badLinkLifetime )
 {
-  if (m_flag == RTF_DOWN)
+  if (m_flag == INVALID)
     return;
-  m_flag = RTF_DOWN;
+  m_flag = INVALID;
   m_reqCount = 0;
   m_lifeTime = badLinkLifetime + Simulator::Now ();
 }
@@ -135,22 +135,27 @@ RoutingTableEntry::Print (std::ostream & os ) const
   os << m_ipv4Route->GetDestination () << "\t" << m_ipv4Route->GetGateway () << "\t" << m_iface.GetLocal ()<< "\t";
   switch (m_flag)
     {
-    case RTF_UP:
+    case VALID:
       {
         os << "UP";
         break;
       }
-    case RTF_DOWN:
+    case INVALID:
       {
         os << "DOWN";
         break;
       }
-    case RTF_IN_REPAIR:
+    case BEING_REPAIRED:
       {
         os << "IN_REPAIR";
         break;
       }
-    case RTF_IN_SEARCH:
+    case REPAIRABLE:
+      {
+        os << "REPAIRABLE";
+        break;
+      }
+    case IN_SEARCH:
       {
         os << "IN_SEARCH";
         break;
@@ -187,7 +192,7 @@ AodvRtableEntryTest::RunTests ()
     NS_TEST_ASSERT_EQUAL (rt.GetHop(), 5);
     NS_TEST_ASSERT_EQUAL (rt.GetNextHop (), Ipv4Address ("3.3.3.3"));
     NS_TEST_ASSERT_EQUAL (rt.GetLifeTime (), Seconds (10));
-    NS_TEST_ASSERT_EQUAL (rt.GetFlag (), RTF_UP);
+    NS_TEST_ASSERT_EQUAL (rt.GetFlag (), VALID);
     NS_TEST_ASSERT_EQUAL (rt.GetRreqCnt(), 0);
     NS_TEST_ASSERT_EQUAL (rt.IsPrecursorListEmpty(), true);
 
@@ -199,10 +204,10 @@ AodvRtableEntryTest::RunTests ()
     NS_TEST_ASSERT_EQUAL (rt.GetInterface(), iface2);
     rt.SetValidSeqNo(false);
     NS_TEST_ASSERT_EQUAL (rt.GetValidSeqNo (), false);
-    rt.SetFlag(RTF_DOWN);
-    NS_TEST_ASSERT_EQUAL (rt.GetFlag (), RTF_DOWN);
-    rt.SetFlag(RTF_IN_REPAIR);
-    NS_TEST_ASSERT_EQUAL (rt.GetFlag (), RTF_IN_REPAIR);
+    rt.SetFlag(INVALID);
+    NS_TEST_ASSERT_EQUAL (rt.GetFlag (), INVALID);
+    rt.SetFlag(BEING_REPAIRED);
+    NS_TEST_ASSERT_EQUAL (rt.GetFlag (), BEING_REPAIRED);
     rt.SetHop(12);
     NS_TEST_ASSERT_EQUAL (rt.GetHop (), 12);
     rt.SetLifeTime(Seconds(1));
@@ -218,7 +223,7 @@ AodvRtableEntryTest::RunTests ()
     rt.IncrementRreqCnt();
     NS_TEST_ASSERT_EQUAL (rt.GetRreqCnt(), 3);
     rt.Invalidate(Seconds(13));
-    NS_TEST_ASSERT_EQUAL (rt.GetFlag (), RTF_DOWN);
+    NS_TEST_ASSERT_EQUAL (rt.GetFlag (), INVALID);
     NS_TEST_ASSERT_EQUAL (rt.GetLifeTime (), Seconds (13));
     rt.SetLifeTime(Seconds(0.1));
     NS_TEST_ASSERT_EQUAL (rt.GetLifeTime (), Seconds (0.1));
@@ -283,7 +288,7 @@ RoutingTable::DeleteRoute (Ipv4Address dst )
 bool
 RoutingTable::AddRoute (RoutingTableEntry & rt )
 {
-  if (rt.GetFlag () != RTF_IN_SEARCH)
+  if (rt.GetFlag () != IN_SEARCH)
     rt.SetRreqCnt (0);
   std::pair<std::map<Ipv4Address, RoutingTableEntry>::iterator, bool> result = m_ipv4AddressEntry.insert (std::make_pair (rt.GetDestination (), rt));
   return result.second;
@@ -296,7 +301,7 @@ RoutingTable::Update (RoutingTableEntry & rt )
   if (i == m_ipv4AddressEntry.end ())
     return false;
   i->second = rt;
-  if (i->second.GetFlag () != RTF_IN_SEARCH)
+  if (i->second.GetFlag () != IN_SEARCH)
     i->second.SetRreqCnt (0);
   return true;
 }
@@ -318,7 +323,7 @@ RoutingTable::GetListOfDestinationWithNextHop (Ipv4Address nextHop, std::map<Ipv
   Purge ();
   unreachable.clear ();
   for (std::map<Ipv4Address, RoutingTableEntry>::const_iterator i = m_ipv4AddressEntry.begin (); i != m_ipv4AddressEntry.end (); ++i)
-    if ((i->second.GetNextHop () == nextHop) && (i->second.GetFlag () == RTF_UP) && (!i->second.IsPrecursorListEmpty ()))
+    if ((i->second.GetNextHop () == nextHop) && (i->second.GetFlag () == VALID) && (!i->second.IsPrecursorListEmpty ()))
       unreachable.insert (std::make_pair (i->first, i->second.GetSeqNo ()));
 }
 
@@ -329,7 +334,7 @@ RoutingTable::InvalidateRoutesWithDst (const std::map<Ipv4Address, uint32_t> & u
   for (std::map<Ipv4Address, RoutingTableEntry>::iterator i = m_ipv4AddressEntry.begin (); i != m_ipv4AddressEntry.end (); ++i)
     {
       for (std::map<Ipv4Address, uint32_t>::const_iterator j = unreachable.begin (); j != unreachable.end (); ++j)
-        if ((i->first == j->first) && (i->second.GetFlag () == RTF_UP))
+        if ((i->first == j->first) && (i->second.GetFlag () == VALID))
           {
             NS_LOG_LOGIC ("invalidate route with dst " << i->first);
             i->second.Invalidate (m_badLinkLifetime);
@@ -347,13 +352,13 @@ RoutingTable::Purge ()
     {
       if (i->second.GetLifeTime () < Seconds (0))
         {
-          if (i->second.GetFlag () == RTF_DOWN)
+          if (i->second.GetFlag () == INVALID)
             {
               std::map<Ipv4Address, RoutingTableEntry>::iterator tmp = i;
               ++i;
               m_ipv4AddressEntry.erase (tmp);
             }
-          else if (i->second.GetFlag () == RTF_UP)
+          else if (i->second.GetFlag () == VALID)
             {
               NS_LOG_LOGIC ("invalidate route with dst " << i->first );
               i->second.Invalidate (m_badLinkLifetime);
@@ -429,13 +434,13 @@ AodvRtableTest::RunTests ()
     RoutingTableEntry rt3;
     NS_TEST_ASSERT_EQUAL (rtable.LookupRoute(Ipv4Address("10.0.0.1"), rt), false);
     NS_TEST_ASSERT_EQUAL (rtable.Update (rt3), false);
-    NS_TEST_ASSERT_EQUAL (rtable.SetEntryState(Ipv4Address("10.0.0.1"), RTF_DOWN), false);
-    NS_TEST_ASSERT_EQUAL (rtable.SetEntryState(Ipv4Address("1.2.3.4"), RTF_IN_SEARCH), true);
+    NS_TEST_ASSERT_EQUAL (rtable.SetEntryState(Ipv4Address("10.0.0.1"), INVALID), false);
+    NS_TEST_ASSERT_EQUAL (rtable.SetEntryState(Ipv4Address("1.2.3.4"), IN_SEARCH), true);
     NS_TEST_ASSERT_EQUAL (rtable.DeleteRoute(Ipv4Address("5.5.5.5")), false);
     RoutingTableEntry rt4 (/*output device*/dev, /*dst*/Ipv4Address("5.5.5.5"), /*validSeqNo*/false, /*seqNo*/0,
         /*interface*/iface, /*hop*/15, /*next hop*/Ipv4Address("1.1.1.1"), /*lifetime*/Seconds(-10));
     NS_TEST_ASSERT_EQUAL (rtable.AddRoute (rt4), true);
-    NS_TEST_ASSERT_EQUAL (rtable.SetEntryState(Ipv4Address("5.5.5.5"), RTF_DOWN), true);
+    NS_TEST_ASSERT_EQUAL (rtable.SetEntryState(Ipv4Address("5.5.5.5"), INVALID), true);
     NS_TEST_ASSERT_EQUAL (rtable.LookupRoute(Ipv4Address("5.5.5.5"), rt), false);
 
     NS_TEST_ASSERT_EQUAL (rtable.MarkLinkAsUinidirectional(Ipv4Address("1.2.3.4"), Seconds(2)), true);
@@ -447,7 +452,7 @@ AodvRtableTest::RunTests ()
     unreachable.insert (std::make_pair(Ipv4Address("4.3.2.1"), 3));
     rtable.InvalidateRoutesWithDst(unreachable);
     NS_TEST_ASSERT_EQUAL (rtable.LookupRoute(Ipv4Address("4.3.2.1"), rt), true);
-    NS_TEST_ASSERT_EQUAL (rt.GetFlag(), RTF_DOWN);
+    NS_TEST_ASSERT_EQUAL (rt.GetFlag(), INVALID);
     rtable.GetListOfDestinationWithNextHop(Ipv4Address("1.1.1.1"), unreachable);
     NS_TEST_ASSERT_EQUAL (unreachable.size (), 1);
     NS_TEST_ASSERT_EQUAL (rtable.DeleteRoute(Ipv4Address("1.2.3.4")), true);
