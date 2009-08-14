@@ -1311,6 +1311,12 @@ RoutingProtocol::FindSocketWithInterfaceAddress (Ipv4InterfaceAddress addr ) con
   return socket;
 }
 
+void
+RoutingProtocol::Drop(Ptr<const Packet> packet, const Ipv4Header & header, Socket::SocketErrno err)
+{
+  NS_LOG_LOGIC (this <<" drop own packet " << packet->GetUid() << " to " << header.GetDestination () << " from queue. Error " << err);
+}
+
 
 void
 RoutingProtocol::LocalRouteRepair (Ipv4Address dst, Ipv4Address origin )

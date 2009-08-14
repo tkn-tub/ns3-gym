@@ -114,8 +114,6 @@ public:
 
 private:
   std::vector<QueueEntry> m_queue;
-  /// Remove and return first entry from queue
-  QueueEntry Pop();
   /// Remove all expired entries
   void Purge();
   /// Notify that packet is dropped from queue by timeout

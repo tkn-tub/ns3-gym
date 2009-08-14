@@ -105,7 +105,10 @@ RequestQueue::Enqueue (QueueEntry & entry )
   entry.SetExpireTime (m_queueTimeout);
 
   if (m_queue.size () == m_maxLen)
-    Drop (Pop (), "Drop the most aged packet"); // Drop the most aged packet
+    {
+      Drop (m_queue.front (), "Drop the most aged packet"); // Drop the most aged packet
+      m_queue.erase (m_queue.begin ());
+    }
   m_queue.push_back (entry);
 }
 
@@ -144,15 +147,6 @@ RequestQueue::Find (Ipv4Address dst )
     if (i->GetIpv4Header ().GetDestination () == dst)
       return true;
   return false;
-}
-
-QueueEntry
-RequestQueue::Pop ()
-{
-  NS_LOG_FUNCTION (this);
-  QueueEntry entry = m_queue.front ();
-  m_queue.erase (m_queue.begin ());
-  return entry;
 }
 
 struct IsExpired
