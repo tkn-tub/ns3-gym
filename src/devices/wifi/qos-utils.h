@@ -31,6 +31,7 @@ enum AccessClass {
   AC_VI = 1,
   AC_BE = 2,
   AC_BK = 3,
+  AC_BE_NQOS = 4,
   AC_UNDEF
 };
 

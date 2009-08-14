@@ -46,6 +46,7 @@ WifiMacHelper::~WifiMacHelper ()
 {}
 
 WifiHelper::WifiHelper ()
+  : m_standard (WIFI_PHY_STANDARD_80211a)
 {}
 
 WifiHelper
@@ -79,6 +80,12 @@ WifiHelper::SetRemoteStationManager (std::string type,
   m_stationManager.Set (n7, v7);
 }
 
+void 
+WifiHelper::SetStandard (enum WifiPhyStandard standard)
+{
+  m_standard = standard;
+}
+
 NetDeviceContainer 
 WifiHelper::Install (const WifiPhyHelper &phyHelper,
                      const WifiMacHelper &macHelper, NodeContainer c) const
@@ -92,6 +99,8 @@ WifiHelper::Install (const WifiPhyHelper &phyHelper,
       Ptr<WifiMac> mac = macHelper.Create ();
       Ptr<WifiPhy> phy = phyHelper.Create (node, device);
       mac->SetAddress (Mac48Address::Allocate ());
+      mac->ConfigureStandard (m_standard);
+      phy->ConfigureStandard (m_standard);
       device->SetMac (mac);
       device->SetPhy (phy);
       device->SetRemoteStationManager (manager);

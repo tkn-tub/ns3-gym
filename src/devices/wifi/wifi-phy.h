@@ -253,6 +253,8 @@ public:
   virtual void SetChannelNumber (uint16_t id) = 0;
   /// Return current channel number, see SetChannelNumber()
   virtual uint16_t GetChannelNumber () const = 0;
+
+  virtual void ConfigureStandard (enum WifiPhyStandard standard) = 0;
   
   virtual Ptr<WifiChannel> GetChannel (void) const = 0;
 

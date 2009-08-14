@@ -87,7 +87,7 @@ private:
   AdhocWifiMac (const AdhocWifiMac & ctor_arg);
   AdhocWifiMac &operator = (const AdhocWifiMac &o);
   Ptr<DcaTxop> GetDcaTxop(void) const;
-  void SetDcaTxop (Ptr<DcaTxop> dcaTxop);
+  virtual void FinishConfigureStandard (enum WifiPhyStandard standard);
 
   Ptr<DcaTxop> m_dca;
   Callback<void,Ptr<Packet>, Mac48Address, Mac48Address> m_upCallback;

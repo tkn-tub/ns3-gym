@@ -2286,10 +2286,15 @@ def register_Ns3WifiMac_methods(root_module, cls):
     cls.add_method('NotifyRxDrop', 
                    'void', 
                    [param('ns3::Ptr< ns3::Packet const >', 'packet')])
-    ## wifi-mac.h: void ns3::WifiMac::SetStandard(ns3::WifiPhyStandard standard) [member function]
-    cls.add_method('SetStandard', 
+    ## wifi-mac.h: void ns3::WifiMac::ConfigureStandard(ns3::WifiPhyStandard standard) [member function]
+    cls.add_method('ConfigureStandard', 
                    'void', 
                    [param('ns3::WifiPhyStandard', 'standard')])
+    ## wifi-mac.h: void ns3::WifiMac::FinishConfigureStandard(ns3::WifiPhyStandard standard) [member function]
+    cls.add_method('FinishConfigureStandard', 
+                   'void', 
+                   [param('ns3::WifiPhyStandard', 'standard')], 
+                   is_pure_virtual=True, visibility='private', is_virtual=True)
     return
 
 def register_Ns3WifiMacHeader_methods(root_module, cls):
@@ -2836,6 +2841,11 @@ def register_Ns3WifiPhy_methods(root_module, cls):
                    'uint16_t', 
                    [], 
                    is_pure_virtual=True, is_const=True, is_virtual=True)
+    ## wifi-phy.h: void ns3::WifiPhy::ConfigureStandard(ns3::WifiPhyStandard standard) [member function]
+    cls.add_method('ConfigureStandard', 
+                   'void', 
+                   [param('ns3::WifiPhyStandard', 'standard')], 
+                   is_pure_virtual=True, is_virtual=True)
     ## wifi-phy.h: ns3::Ptr<ns3::WifiChannel> ns3::WifiPhy::GetChannel() const [member function]
     cls.add_method('GetChannel', 
                    'ns3::Ptr< ns3::WifiChannel >', 
@@ -3160,10 +3170,6 @@ def register_Ns3YansWifiPhy_methods(root_module, cls):
     cls.add_method('StartReceivePacket', 
                    'void', 
                    [param('ns3::Ptr< ns3::Packet >', 'packet'), param('double', 'rxPowerDbm'), param('ns3::WifiMode', 'mode'), param('ns3::WifiPreamble', 'preamble')])
-    ## yans-wifi-phy.h: void ns3::YansWifiPhy::SetStandard(ns3::WifiPhyStandard standard) [member function]
-    cls.add_method('SetStandard', 
-                   'void', 
-                   [param('ns3::WifiPhyStandard', 'standard')])
     ## yans-wifi-phy.h: void ns3::YansWifiPhy::SetRxNoiseFigure(double noiseFigureDb) [member function]
     cls.add_method('SetRxNoiseFigure', 
                    'void', 
@@ -3347,6 +3353,11 @@ def register_Ns3YansWifiPhy_methods(root_module, cls):
                    'ns3::Ptr< ns3::WifiChannel >', 
                    [], 
                    is_const=True, is_virtual=True)
+    ## yans-wifi-phy.h: void ns3::YansWifiPhy::ConfigureStandard(ns3::WifiPhyStandard standard) [member function]
+    cls.add_method('ConfigureStandard', 
+                   'void', 
+                   [param('ns3::WifiPhyStandard', 'standard')], 
+                   is_virtual=True)
     ## yans-wifi-phy.h: void ns3::YansWifiPhy::DoDispose() [member function]
     cls.add_method('DoDispose', 
                    'void', 
@@ -3513,6 +3524,11 @@ def register_Ns3AdhocWifiMac_methods(root_module, cls):
     cls.add_method('DoDispose', 
                    'void', 
                    [], 
+                   visibility='private', is_virtual=True)
+    ## adhoc-wifi-mac.h: void ns3::AdhocWifiMac::FinishConfigureStandard(ns3::WifiPhyStandard standard) [member function]
+    cls.add_method('FinishConfigureStandard', 
+                   'void', 
+                   [param('ns3::WifiPhyStandard', 'standard')], 
                    visibility='private', is_virtual=True)
     return
 
@@ -4450,6 +4466,11 @@ def register_Ns3NqapWifiMac_methods(root_module, cls):
                    'void', 
                    [], 
                    visibility='private', is_virtual=True)
+    ## nqap-wifi-mac.h: void ns3::NqapWifiMac::FinishConfigureStandard(ns3::WifiPhyStandard standard) [member function]
+    cls.add_method('FinishConfigureStandard', 
+                   'void', 
+                   [param('ns3::WifiPhyStandard', 'standard')], 
+                   visibility='private', is_virtual=True)
     return
 
 def register_Ns3NqstaWifiMac_methods(root_module, cls):
@@ -4605,6 +4626,11 @@ def register_Ns3NqstaWifiMac_methods(root_module, cls):
     cls.add_method('DoDispose', 
                    'void', 
                    [], 
+                   visibility='private', is_virtual=True)
+    ## nqsta-wifi-mac.h: void ns3::NqstaWifiMac::FinishConfigureStandard(ns3::WifiPhyStandard standard) [member function]
+    cls.add_method('FinishConfigureStandard', 
+                   'void', 
+                   [param('ns3::WifiPhyStandard', 'standard')], 
                    visibility='private', is_virtual=True)
     return
 
@@ -4763,6 +4789,11 @@ def register_Ns3QadhocWifiMac_methods(root_module, cls):
                    'void', 
                    [], 
                    visibility='private', is_virtual=True)
+    ## qadhoc-wifi-mac.h: void ns3::QadhocWifiMac::FinishConfigureStandard(ns3::WifiPhyStandard standard) [member function]
+    cls.add_method('FinishConfigureStandard', 
+                   'void', 
+                   [param('ns3::WifiPhyStandard', 'standard')], 
+                   visibility='private', is_virtual=True)
     return
 
 def register_Ns3QapWifiMac_methods(root_module, cls):
@@ -4915,6 +4946,11 @@ def register_Ns3QapWifiMac_methods(root_module, cls):
     cls.add_method('DoDispose', 
                    'void', 
                    [], 
+                   visibility='private', is_virtual=True)
+    ## qap-wifi-mac.h: void ns3::QapWifiMac::FinishConfigureStandard(ns3::WifiPhyStandard standard) [member function]
+    cls.add_method('FinishConfigureStandard', 
+                   'void', 
+                   [param('ns3::WifiPhyStandard', 'standard')], 
                    visibility='private', is_virtual=True)
     return
 
@@ -5071,6 +5107,11 @@ def register_Ns3QstaWifiMac_methods(root_module, cls):
     cls.add_method('DoDispose', 
                    'void', 
                    [], 
+                   visibility='private', is_virtual=True)
+    ## qsta-wifi-mac.h: void ns3::QstaWifiMac::FinishConfigureStandard(ns3::WifiPhyStandard standard) [member function]
+    cls.add_method('FinishConfigureStandard', 
+                   'void', 
+                   [param('ns3::WifiPhyStandard', 'standard')], 
                    visibility='private', is_virtual=True)
     return
 

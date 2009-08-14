@@ -105,15 +105,6 @@ YansWifiPhy::GetTypeId (void)
                    MakeDoubleAccessor (&YansWifiPhy::SetRxNoiseFigure,
                                        &YansWifiPhy::GetRxNoiseFigure),
                    MakeDoubleChecker<double> ())
-    .AddAttribute ("Standard", "The standard chosen configures a set of transmission modes"
-                   " and some PHY-specific constants.",
-                   EnumValue (WIFI_PHY_STANDARD_80211a),
-                   MakeEnumAccessor (&YansWifiPhy::SetStandard),
-                   MakeEnumChecker (WIFI_PHY_STANDARD_80211a, "802.11a",
-                                    WIFI_PHY_STANDARD_80211b, "802.11b",
-                                    WIFI_PHY_STANDARD_80211_10Mhz,"802.11_10Mhz",
-                                    WIFI_PHY_STANDARD_80211_5Mhz,"802.11_5Mhz",
-                                    WIFI_PHY_STANDARD_holland, "holland"))
     .AddAttribute ("State", "The state of the PHY layer",
                    PointerValue (),
                    MakePointerAccessor (&YansWifiPhy::m_state),
@@ -151,10 +142,9 @@ YansWifiPhy::DoDispose (void)
 }
 
 void
-YansWifiPhy::SetStandard (enum WifiPhyStandard standard)
+YansWifiPhy::ConfigureStandard (enum WifiPhyStandard standard)
 {
   NS_LOG_FUNCTION (this << standard);
-  m_standard = standard;
   switch (standard) {
   case WIFI_PHY_STANDARD_80211a:
     Configure80211a ();

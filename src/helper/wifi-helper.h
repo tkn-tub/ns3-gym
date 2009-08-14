@@ -27,6 +27,7 @@
 #include "ns3/object-factory.h"
 #include "ns3/node-container.h"
 #include "ns3/net-device-container.h"
+#include "ns3/wifi-phy-standard.h"
 
 namespace ns3 {
 
@@ -155,6 +156,8 @@ public:
   NetDeviceContainer Install (const WifiPhyHelper &phy,
                               const WifiMacHelper &mac, std::string nodeName) const;
 
+  void SetStandard (enum WifiPhyStandard standard);
+
   /**
    * Helper to enable all WifiNetDevice log components with one statement 
    */
@@ -162,6 +165,7 @@ public:
 
 private:
   ObjectFactory m_stationManager;
+  enum WifiPhyStandard m_standard;
 };
 
 } // namespace ns3
