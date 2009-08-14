@@ -22,10 +22,9 @@
 
 #include "ns3/attribute.h"
 #include "ns3/attribute-helper.h"
+#include "ns3/vector.h"
 
 namespace ns3 {
-
-class Vector;
 
 /**
  * \brief a 2d rectangle

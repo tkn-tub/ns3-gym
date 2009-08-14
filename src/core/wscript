@@ -78,6 +78,7 @@ def build(bld):
         'config.cc',
         'callback.cc',
         'names.cc',
+        'vector.cc',
         ]
 
     headers = bld.new_task_gen('ns3header')
@@ -123,6 +124,7 @@ def build(bld):
         'deprecated.h',
         'abort.h',
         'names.h',
+        'vector.h',
         ]
 
     if sys.platform == 'win32':
