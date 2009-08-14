@@ -9,8 +9,6 @@ def register_types(module):
     module.add_class('Rectangle')
     ## rectangle.h: ns3::Rectangle::Side [enumeration]
     module.add_enum('Side', ['RIGHT', 'LEFT', 'TOP', 'BOTTOM'], outer_class=root_module['ns3::Rectangle'])
-    ## vector.h: ns3::Vector [class]
-    module.add_class('Vector')
     ## position-allocator.h: ns3::PositionAllocator [class]
     module.add_class('PositionAllocator', parent=root_module['ns3::Object'])
     ## position-allocator.h: ns3::RandomDiscPositionAllocator [class]
@@ -21,10 +19,6 @@ def register_types(module):
     module.add_class('RectangleChecker', parent=root_module['ns3::AttributeChecker'])
     ## rectangle.h: ns3::RectangleValue [class]
     module.add_class('RectangleValue', parent=root_module['ns3::AttributeValue'])
-    ## vector.h: ns3::VectorChecker [class]
-    module.add_class('VectorChecker', parent=root_module['ns3::AttributeChecker'])
-    ## vector.h: ns3::VectorValue [class]
-    module.add_class('VectorValue', parent=root_module['ns3::AttributeValue'])
     ## position-allocator.h: ns3::GridPositionAllocator [class]
     module.add_class('GridPositionAllocator', parent=root_module['ns3::PositionAllocator'])
     ## position-allocator.h: ns3::GridPositionAllocator::LayoutType [enumeration]
@@ -103,14 +97,11 @@ def register_types_ns3_olsr(module):
 def register_methods(root_module):
     register_Ns3ConstantVelocityHelper_methods(root_module, root_module['ns3::ConstantVelocityHelper'])
     register_Ns3Rectangle_methods(root_module, root_module['ns3::Rectangle'])
-    register_Ns3Vector_methods(root_module, root_module['ns3::Vector'])
     register_Ns3PositionAllocator_methods(root_module, root_module['ns3::PositionAllocator'])
     register_Ns3RandomDiscPositionAllocator_methods(root_module, root_module['ns3::RandomDiscPositionAllocator'])
     register_Ns3RandomRectanglePositionAllocator_methods(root_module, root_module['ns3::RandomRectanglePositionAllocator'])
     register_Ns3RectangleChecker_methods(root_module, root_module['ns3::RectangleChecker'])
     register_Ns3RectangleValue_methods(root_module, root_module['ns3::RectangleValue'])
-    register_Ns3VectorChecker_methods(root_module, root_module['ns3::VectorChecker'])
-    register_Ns3VectorValue_methods(root_module, root_module['ns3::VectorValue'])
     register_Ns3GridPositionAllocator_methods(root_module, root_module['ns3::GridPositionAllocator'])
     register_Ns3ListPositionAllocator_methods(root_module, root_module['ns3::ListPositionAllocator'])
     register_Ns3MobilityModel_methods(root_module, root_module['ns3::MobilityModel'])
@@ -201,22 +192,6 @@ def register_Ns3Rectangle_methods(root_module, cls):
     cls.add_instance_attribute('yMax', 'double', is_const=False)
     ## rectangle.h: ns3::Rectangle::yMin [variable]
     cls.add_instance_attribute('yMin', 'double', is_const=False)
-    return
-
-def register_Ns3Vector_methods(root_module, cls):
-    cls.add_output_stream_operator()
-    ## vector.h: ns3::Vector::Vector(ns3::Vector const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::Vector const &', 'arg0')])
-    ## vector.h: ns3::Vector::Vector(double _x, double _y, double _z) [constructor]
-    cls.add_constructor([param('double', '_x'), param('double', '_y'), param('double', '_z')])
-    ## vector.h: ns3::Vector::Vector() [constructor]
-    cls.add_constructor([])
-    ## vector.h: ns3::Vector::x [variable]
-    cls.add_instance_attribute('x', 'double', is_const=False)
-    ## vector.h: ns3::Vector::y [variable]
-    cls.add_instance_attribute('y', 'double', is_const=False)
-    ## vector.h: ns3::Vector::z [variable]
-    cls.add_instance_attribute('z', 'double', is_const=False)
     return
 
 def register_Ns3PositionAllocator_methods(root_module, cls):
@@ -328,46 +303,6 @@ def register_Ns3RectangleValue_methods(root_module, cls):
                    [param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
                    is_const=True, is_virtual=True)
     ## rectangle.h: bool ns3::RectangleValue::DeserializeFromString(std::string value, ns3::Ptr<ns3::AttributeChecker const> checker) [member function]
-    cls.add_method('DeserializeFromString', 
-                   'bool', 
-                   [param('std::string', 'value'), param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
-                   is_virtual=True)
-    return
-
-def register_Ns3VectorChecker_methods(root_module, cls):
-    ## vector.h: ns3::VectorChecker::VectorChecker(ns3::VectorChecker const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::VectorChecker const &', 'arg0')])
-    ## vector.h: ns3::VectorChecker::VectorChecker() [constructor]
-    cls.add_constructor([])
-    return
-
-def register_Ns3VectorValue_methods(root_module, cls):
-    ## vector.h: ns3::VectorValue::VectorValue(ns3::VectorValue const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::VectorValue const &', 'arg0')])
-    ## vector.h: ns3::VectorValue::VectorValue() [constructor]
-    cls.add_constructor([])
-    ## vector.h: ns3::VectorValue::VectorValue(ns3::Vector const & value) [constructor]
-    cls.add_constructor([param('ns3::Vector const &', 'value')])
-    ## vector.h: void ns3::VectorValue::Set(ns3::Vector const & value) [member function]
-    cls.add_method('Set', 
-                   'void', 
-                   [param('ns3::Vector const &', 'value')])
-    ## vector.h: ns3::Vector ns3::VectorValue::Get() const [member function]
-    cls.add_method('Get', 
-                   'ns3::Vector', 
-                   [], 
-                   is_const=True)
-    ## vector.h: ns3::Ptr<ns3::AttributeValue> ns3::VectorValue::Copy() const [member function]
-    cls.add_method('Copy', 
-                   'ns3::Ptr< ns3::AttributeValue >', 
-                   [], 
-                   is_const=True, is_virtual=True)
-    ## vector.h: std::string ns3::VectorValue::SerializeToString(ns3::Ptr<ns3::AttributeChecker const> checker) const [member function]
-    cls.add_method('SerializeToString', 
-                   'std::string', 
-                   [param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
-                   is_const=True, is_virtual=True)
-    ## vector.h: bool ns3::VectorValue::DeserializeFromString(std::string value, ns3::Ptr<ns3::AttributeChecker const> checker) [member function]
     cls.add_method('DeserializeFromString', 
                    'bool', 
                    [param('std::string', 'value'), param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
@@ -744,16 +679,8 @@ def register_Ns3HierarchicalMobilityModel_methods(root_module, cls):
 
 def register_functions(root_module):
     module = root_module
-    ## vector.h: extern double ns3::CalculateDistance(ns3::Vector const & a, ns3::Vector const & b) [free function]
-    module.add_function('CalculateDistance', 
-                        'double', 
-                        [param('ns3::Vector const &', 'a'), param('ns3::Vector const &', 'b')])
     ## rectangle.h: extern ns3::Ptr<ns3::AttributeChecker const> ns3::MakeRectangleChecker() [free function]
     module.add_function('MakeRectangleChecker', 
-                        'ns3::Ptr< ns3::AttributeChecker const >', 
-                        [])
-    ## vector.h: extern ns3::Ptr<ns3::AttributeChecker const> ns3::MakeVectorChecker() [free function]
-    module.add_function('MakeVectorChecker', 
                         'ns3::Ptr< ns3::AttributeChecker const >', 
                         [])
     register_functions_ns3_Config(module.get_submodule('Config'), root_module)
