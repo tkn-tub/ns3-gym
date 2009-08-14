@@ -574,7 +574,7 @@ RoutingProtocol::RecvAodv (Ptr<Socket> socket )
   packet->RemoveHeader (tHeader);
   if (!tHeader.IsValid ())
     {
-      NS_LOG_WARN ("AODV message with unknown type received: " << tHeader.Get());
+      NS_LOG_WARN ("AODV message " << packet->GetUid() << " with unknown type received: " << tHeader.Get());
       return; // drop
     }
   switch (tHeader.Get ())
@@ -824,7 +824,6 @@ RoutingProtocol::SendReplyByIntermediateNode (RoutingTableEntry & toDst, Routing
   TypeHeader tHeader (AODVTYPE_RREP);
   packet->AddHeader (tHeader);
   Ptr<Socket> socket = FindSocketWithInterfaceAddress (toOrigin.GetInterface ());
-  NS_LOG_LOGIC ("interface" << toOrigin.GetInterface ().GetLocal ());
   m_routingTable.Print(std::cout);
   NS_ASSERT (socket);
   SendPacketViaRawSocket (/*packet*/packet, /*pair<Ptr<Socket> , Ipv4InterfaceAddress>*/ std::make_pair(socket, toOrigin.GetInterface ()),
@@ -833,15 +832,16 @@ RoutingProtocol::SendReplyByIntermediateNode (RoutingTableEntry & toDst, Routing
   // Generating gratuitous RREPs
   if (gratRep)
     {
-      RrepHeader gratRepHeader (/*prefix size=*/0, /*hops=*/toOrigin.GetHop (), /*dst=*/toOrigin.GetDestination (), /*dst seqno=*/
-          toOrigin.GetSeqNo (),
+      RrepHeader gratRepHeader (/*prefix size=*/0, /*hops=*/toOrigin.GetHop (), /*dst=*/toOrigin.GetDestination (), /*dst seqno=*/toOrigin.GetSeqNo (),
           /*origin=*/toDst.GetDestination (), /*lifetime=*/toOrigin.GetLifeTime ());
       Ptr<Packet> packetToDst = Create<Packet> ();
-      packetToDst->AddHeader (rrepHeader);
-      packetToDst->AddHeader (tHeader);
+      packetToDst->AddHeader (gratRepHeader);
+      TypeHeader type (AODVTYPE_RREP);
+      packetToDst->AddHeader (type);
       Ptr<Socket> socket = FindSocketWithInterfaceAddress (toDst.GetInterface ());
       NS_ASSERT (socket);
-      SendPacketViaRawSocket (/*packet*/packet, /*pair<Ptr<Socket> , Ipv4InterfaceAddress>*/ std::make_pair(socket, toDst.GetInterface ()),
+      NS_LOG_LOGIC ("Send gratuitous RREP " << packet->GetUid());
+      SendPacketViaRawSocket (/*packet*/packetToDst, /*pair<Ptr<Socket> , Ipv4InterfaceAddress>*/ std::make_pair(socket, toDst.GetInterface ()),
                                /*dst*/toDst.GetNextHop (), /*TTL*/ toDst.GetHop (), /*id*/0);
     }
 }
@@ -936,7 +936,10 @@ RoutingProtocol::RecvReply (Ptr<Packet> p, Ipv4Address receiver, Ipv4Address sen
   m_routingTable.Print(std::cout);
   // Acknowledge receipt of the RREP by sending a RREP-ACK message back
   if (rrepHeader.GetAckRequired ())
-    SendReplyAck (sender);
+    {
+      SendReplyAck (sender);
+      rrepHeader.SetAckRequired (false);
+    }
   NS_LOG_LOGIC ("receiver " << receiver << " origin " << rrepHeader.GetOrigin ());
   if (IsMyOwnAddress (rrepHeader.GetOrigin ()))
     {
@@ -1017,8 +1020,6 @@ RoutingProtocol::ProcessHello (RrepHeader const & rrepHeader, Ipv4Address receiv
   if (EnableHello)
     {
       m_nb.Update (rrepHeader.GetDst (), Scalar (AllowedHelloLoss) * HelloInterval);
-      NS_LOG_LOGIC ("After recieve Hello");
-      m_routingTable.Print (std::cout);
     }
 }
 
@@ -1125,7 +1126,9 @@ RoutingProtocol::HelloTimerExpire ()
   SendHello ();
   // TODO select random time for the next hello
   htimer.Cancel ();
-  htimer.Schedule (HelloInterval - Scalar(0.01)*MilliSeconds(UniformVariable().GetValue (0.0, 10.0)) );
+  Time t = Scalar(0.001)*MilliSeconds(UniformVariable().GetValue (0.0, 100.0));
+  NS_LOG_LOGIC ("delay = " << t.GetMicroSeconds ());
+  htimer.Schedule (HelloInterval - t);
 }
 
 void
