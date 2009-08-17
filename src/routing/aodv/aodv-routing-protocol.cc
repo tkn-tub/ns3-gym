@@ -1157,7 +1157,7 @@ RoutingProtocol::RecvError (Ptr<Packet> p, Ipv4Address src )
   bool noDelete = rerrHeader.GetNoDelete ();
   if (noDelete)
     {
-
+      NS_LOG_LOGIC ("Receive RERR with no delete flag.");
     }
   std::map<Ipv4Address, uint32_t> dstWithNextHopSrc;
   std::map<Ipv4Address, uint32_t> unreachable;
@@ -1194,6 +1194,16 @@ RoutingProtocol::RecvError (Ptr<Packet> p, Ipv4Address src )
           toDst.GetPrecursors (precursors);
           ++i;
         }
+    }
+  if (rerrHeader.GetDestCount () != 0)
+    {
+      TypeHeader typeHeader (AODVTYPE_RERR);
+      Ptr<Packet> packet = Create<Packet> ();
+      packet->AddHeader (rerrHeader);
+      packet->AddHeader (typeHeader);
+      NS_LOG_DEBUG ("RERR header");
+      rerrHeader.Print(std::cout);
+      SendRerrMessage (packet, precursors);
     }
   if (!noDelete)
     m_routingTable.InvalidateRoutesWithDst (unreachable);
