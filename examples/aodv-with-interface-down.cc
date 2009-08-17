@@ -94,7 +94,7 @@ int main (int argc, char **argv)
 
 //-----------------------------------------------------------------------------
 AodvExample::AodvExample () :
-  size (4),
+  size (8),
   step (120),
   totalTime (10),
   pcap (true)
@@ -206,8 +206,8 @@ AodvExample::InstallApplications ()
   p.Start (Seconds (0));
   p.Stop (Seconds (totalTime));
 
-  Ptr<Node> node = nodes.Get (size/2);
+  Ptr<Node> node = nodes.Get (2);
   Ptr<Ipv4> ipv4 = node->GetObject<Ipv4> ();
-  Simulator::Schedule (Seconds (1), &Ipv4::SetDown, ipv4, 1);
+  Simulator::Schedule (Seconds (3), &Ipv4::SetDown, ipv4, 1);
 }
 

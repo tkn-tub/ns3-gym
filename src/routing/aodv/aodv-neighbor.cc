@@ -66,16 +66,16 @@ Neighbors::GetExpireTime (Ipv4Address addr)
 void
 Neighbors::Update (Ipv4Address addr, Time expire )
 {
-  Purge ();
   for (std::vector<Neighbor>::iterator i = m_nb.begin (); i != m_nb.end (); ++i)
     if (i->m_neighborAddress == addr)
       {
-        i->m_expireTime = expire + Simulator::Now ();
+        i->m_expireTime =  std::max(expire + Simulator::Now (), i->m_expireTime);
         return;
       }
   struct Neighbor neighbor =
   { addr, expire + Simulator::Now () };
   m_nb.push_back (neighbor);
+  Purge ();
 }
 
 void

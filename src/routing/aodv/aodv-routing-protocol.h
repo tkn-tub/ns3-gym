@@ -235,6 +235,13 @@ private:
   /// Forward RERR
   void SendRerrMessage(Ptr<Packet> packet,  std::vector<Ipv4Address> precursors);
   /**
+   * Send RERR message when no route to forward input packet. Unicast if there is reverse route to originating node, broadcast otherwise.
+   * \param dst - destination node IP address
+   * \param dstSeqNo - destination node sequence number
+   * \param origin - originating node IP address
+   */
+  void SendRerrWhenNoRouteToForward (Ipv4Address dst, uint32_t dstSeqNo, Ipv4Address origin);
+  /**
   * Add UDP, IP headers to packet and send it via raw socket
   */
   void SendPacketViaRawSocket (Ptr<Packet> packet, std::pair<Ptr<Socket> , Ipv4InterfaceAddress> socketAddress, Ipv4Address dst, uint16_t ttl, uint16_t id);
