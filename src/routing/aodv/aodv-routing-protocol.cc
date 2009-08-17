@@ -420,7 +420,7 @@ RoutingProtocol::SetIpv4 (Ptr<Ipv4> ipv4)
 void
 RoutingProtocol::NotifyInterfaceUp (uint32_t i )
 {
-  NS_LOG_FUNCTION (this << i);
+  NS_LOG_FUNCTION (this << m_ipv4->GetAddress (i, 0).GetLocal ());
   Ptr<Ipv4L3Protocol> l3 = m_ipv4->GetObject<Ipv4L3Protocol> ();
   Ptr<Ipv4Interface> interface = l3->GetInterface (i);
   if (interface->GetNAddresses () > 1)
@@ -469,7 +469,7 @@ RoutingProtocol::NotifyInterfaceDown (uint32_t i )
 void
 RoutingProtocol::NotifyAddAddress (uint32_t i, Ipv4InterfaceAddress address )
 {
-  NS_LOG_FUNCTION (this);
+  NS_LOG_FUNCTION (this << " interface " << i << " address " << address);
   Ptr<Ipv4L3Protocol> l3 = m_ipv4->GetObject<Ipv4L3Protocol> ();
   Ptr<Ipv4Interface> interface = l3->GetInterface (i);
   if (interface->IsDown ()) return;
@@ -504,8 +504,48 @@ RoutingProtocol::NotifyAddAddress (uint32_t i, Ipv4InterfaceAddress address )
 }
 
 void
-RoutingProtocol::NotifyRemoveAddress (uint32_t interface, Ipv4InterfaceAddress address )
+RoutingProtocol::NotifyRemoveAddress (uint32_t i, Ipv4InterfaceAddress address )
 {
+  NS_LOG_FUNCTION (this);
+  Ptr<Socket> socket = FindSocketWithInterfaceAddress (address);
+  if (socket)
+    {
+      m_routingTable.DeleteAllRoutesFromInterface (address);
+      m_socketAddresses.erase (socket);
+      Ptr<Ipv4L3Protocol> l3 = m_ipv4->GetObject<Ipv4L3Protocol> ();
+      Ptr<Ipv4Interface> interface = l3->GetInterface (i);
+      if (interface->GetNAddresses ())
+        {
+          Ipv4InterfaceAddress iface = interface->GetAddress (0);
+          // Create a socket to listen only on this interface
+          Ptr<Ipv4L3Protocol> l3 = m_ipv4->GetObject<Ipv4L3Protocol> ();
+          Ptr<Socket> socket = l3->CreateRawSocket2 ();
+          NS_ASSERT (socket != 0);
+          socket->SetRecvCallback (MakeCallback (&RoutingProtocol::RecvAodv, this));
+          socket->Bind (InetSocketAddress (iface.GetLocal (), AODV_PORT));
+          socket->Connect (InetSocketAddress (iface.GetBroadcast (), AODV_PORT));
+          m_socketAddresses.insert (std::make_pair (socket, iface));
+
+          // Add local broadcast record to the routing table
+          Ptr<NetDevice> dev = m_ipv4->GetNetDevice (m_ipv4->GetInterfaceForAddress (iface.GetLocal ()));
+          RoutingTableEntry rt (/*device=*/dev, /*dst=*/iface.GetBroadcast (), /*know seqno=*/true, /*seqno=*/0, /*iface=*/iface,
+          /*hops=*/1, /*next hop=*/iface.GetBroadcast (), /*lifetime=*/Seconds (1e9)); // TODO use infty
+          m_routingTable.AddRoute (rt);
+        }
+      if (m_socketAddresses.empty ())
+        {
+          NS_LOG_LOGIC ("No aodv interfaces");
+          htimer.Cancel ();
+          lrtimer.Cancel ();
+          m_nb.Clear ();
+          m_routingTable.Clear ();
+          return;
+        }
+    }
+  else
+    {
+      NS_LOG_LOGIC ("Remove address not participating in AODV operation");
+    }
 }
 
 bool
