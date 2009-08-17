@@ -712,9 +712,9 @@ RerrHeader::AddUnDestination (Ipv4Address dst, uint32_t seqNo )
 bool
 RerrHeader::RemoveUnDestination (std::pair<Ipv4Address, uint32_t> & un )
 {
-  if (GetDestCount () == 0)
+  if (m_unreachableDstSeqNo.empty ())
     return false;
-  std::map<Ipv4Address, uint32_t>::iterator i = m_unreachableDstSeqNo.end ();
+  std::map<Ipv4Address, uint32_t>::iterator i = m_unreachableDstSeqNo.begin ();
   un = *i;
   m_unreachableDstSeqNo.erase (i);
   return true;

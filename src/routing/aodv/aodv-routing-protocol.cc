@@ -442,6 +442,9 @@ void
 RoutingProtocol::NotifyInterfaceDown (uint32_t i )
 {
   NS_LOG_FUNCTION (this << m_ipv4->GetAddress (i, 0).GetLocal ());
+//  Ptr<Socket> socket = FindSocketWithInterfaceAddress (m_ipv4->GetAddress (i, 0));
+//  m_socketAddresses.erase (socket);
+//  m_routingTable.DeleteAllRouteFromInterface (m_ipv4->GetAddress (i, 0));
   // TODO
 }
 
@@ -980,10 +983,19 @@ RoutingProtocol::RecvReply (Ptr<Packet> p, Ipv4Address receiver, Ipv4Address sen
   m_routingTable.LookupRoute (rrepHeader.GetDst (), toDst);
   toDst.InsertPrecursor (toOrigin.GetNextHop ());
   m_routingTable.Update (toDst);
+
   RoutingTableEntry toNextHopToDst;
   m_routingTable.LookupRoute (toDst.GetNextHop (), toNextHopToDst);
   toNextHopToDst.InsertPrecursor (toOrigin.GetNextHop ());
   m_routingTable.Update (toNextHopToDst);
+
+  toOrigin.InsertPrecursor (toDst.GetNextHop ());
+  m_routingTable.Update (toOrigin);
+
+  RoutingTableEntry toNextHopToOrigin;
+  m_routingTable.LookupRoute (toOrigin.GetNextHop (), toNextHopToOrigin);
+  toNextHopToOrigin.InsertPrecursor (toDst.GetNextHop ());
+  m_routingTable.Update (toNextHopToOrigin);
 
   Ptr<Packet> packet = Create<Packet> ();
   packet->AddHeader (rrepHeader);
@@ -1040,9 +1052,14 @@ RoutingProtocol::ProcessHello (RrepHeader const & rrepHeader, Ipv4Address receiv
 void
 RoutingProtocol::RecvError (Ptr<Packet> p, Ipv4Address src )
 {
+  NS_LOG_FUNCTION (this << " from " << src);
   RerrHeader rerrHeader;
   p->RemoveHeader (rerrHeader);
   bool noDelete = rerrHeader.GetNoDelete ();
+  if (noDelete)
+    {
+
+    }
   std::map<Ipv4Address, uint32_t> dstWithNextHopSrc;
   std::map<Ipv4Address, uint32_t> unreachable;
   m_routingTable.GetListOfDestinationWithNextHop (src, dstWithNextHopSrc);
@@ -1081,6 +1098,8 @@ RoutingProtocol::RecvError (Ptr<Packet> p, Ipv4Address src )
     }
   if (!noDelete)
     m_routingTable.InvalidateRoutesWithDst (unreachable);
+  NS_LOG_LOGIC ("After receive RERR");
+  m_routingTable.Print (std::cout);
 }
 
 void
@@ -1237,6 +1256,10 @@ RoutingProtocol::Send (Ptr<Ipv4Route> route, Ptr<const Packet> packet, const Ipv
 void
 RoutingProtocol::SendRerrWhenBreaksLinkToNextHop (Ipv4Address nextHop )
 {
+  NS_LOG_FUNCTION (this << nextHop);
+  NS_LOG_LOGIC ("Before send RERR");
+  m_routingTable.Print(std::cout);
+
   RerrHeader rerrHeader;
   std::vector<Ipv4Address> precursors;
   std::map<Ipv4Address, uint32_t> unreachable;
@@ -1247,6 +1270,7 @@ RoutingProtocol::SendRerrWhenBreaksLinkToNextHop (Ipv4Address nextHop )
   toNextHop.GetPrecursors (precursors);
   rerrHeader.AddUnDestination (nextHop, toNextHop.GetSeqNo ());
   m_routingTable.GetListOfDestinationWithNextHop (nextHop, unreachable);
+  NS_LOG_LOGIC ("number of unreachable destination " << unreachable.size ());
   for (std::map<Ipv4Address, uint32_t>::const_iterator i = unreachable.begin (); i != unreachable.end ();)
     {
       if (!rerrHeader.AddUnDestination (i->first, i->second))
@@ -1266,8 +1290,20 @@ RoutingProtocol::SendRerrWhenBreaksLinkToNextHop (Ipv4Address nextHop )
           ++i;
         }
     }
+  if (rerrHeader.GetDestCount () != 0)
+    {
+      TypeHeader typeHeader (AODVTYPE_RERR);
+      Ptr<Packet> packet = Create<Packet> ();
+      packet->AddHeader (rerrHeader);
+      packet->AddHeader (typeHeader);
+      NS_LOG_DEBUG ("RERR header");
+      rerrHeader.Print(std::cout);
+      SendRerrMessage (packet, precursors);
+    }
   unreachable.insert (std::make_pair (nextHop, toNextHop.GetSeqNo ()));
   m_routingTable.InvalidateRoutesWithDst (unreachable);
+  NS_LOG_LOGIC ("After send RERR");
+  m_routingTable.Print(std::cout);
 }
 
 void
@@ -1293,7 +1329,10 @@ RoutingProtocol::SendRerrMessage (Ptr<Packet> packet, std::vector<Ipv4Address> p
   NS_LOG_FUNCTION(this);
 
   if (precursors.empty ())
-    return; // TODO too many unreachable destinations, but no precursors
+    {
+      NS_LOG_LOGIC ("No precursors");
+      return; // TODO too many unreachable destinations, but no precursors
+    }
   // If there is only one precursor, RERR SHOULD be unicast toward that precursor
   if (precursors.size () == 1)
     {
@@ -1301,6 +1340,7 @@ RoutingProtocol::SendRerrMessage (Ptr<Packet> packet, std::vector<Ipv4Address> p
       m_routingTable.LookupRoute (precursors.front (), toPrecursor);
       Ptr<Socket> socket = FindSocketWithInterfaceAddress (toPrecursor.GetInterface ());
       NS_ASSERT (socket);
+      NS_LOG_LOGIC ("one precursor => unicast RERR to " << toPrecursor.GetDestination() << " from " << toPrecursor.GetInterface ().GetLocal ());
       SendPacketViaRawSocket (/*packet*/packet, /*pair<Ptr<Socket> , Ipv4InterfaceAddress>*/ std::make_pair(socket, toPrecursor.GetInterface ()),
                                /*dst*/precursors.front (), /*TTL*/ 1, /*id*/0);
       return;
@@ -1328,6 +1368,7 @@ RoutingProtocol::SendRerrMessage (Ptr<Packet> packet, std::vector<Ipv4Address> p
     {
       Ptr<Socket> socket = FindSocketWithInterfaceAddress (*i);
       NS_ASSERT (socket);
+      NS_LOG_LOGIC ("broadcast RERR meassage from interface " << i->GetLocal());
       SendPacketViaRawSocket (/*packet*/packet, /*pair<Ptr<Socket> , Ipv4InterfaceAddress>*/ std::make_pair(socket, toPrecursor.GetInterface ()),
                                /*dst*/m_socketAddresses[socket].GetBroadcast (), /*TTL*/ 1, /*id*/0);
     }

@@ -220,7 +220,7 @@ public:
   /**
    * Lookup valid routing entries with next hop Address dst and not empty list of precursors.
    */
-  void GetListOfDestinationWithNextHop (Ipv4Address nextHop, std::map<Ipv4Address, uint32_t> unreachable);
+  void GetListOfDestinationWithNextHop (Ipv4Address nextHop, std::map<Ipv4Address, uint32_t> & unreachable);
   /**
    *   Update routing entries with this destinations as follows:
    *  1. The destination sequence number of this routing entry, if it
