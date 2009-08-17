@@ -346,6 +346,22 @@ RoutingTable::InvalidateRoutesWithDst (const std::map<Ipv4Address, uint32_t> & u
 }
 
 void
+RoutingTable::DeleteAllRoutesFromInterface (Ipv4InterfaceAddress iface)
+{
+  if (m_ipv4AddressEntry.empty ()) return;
+  for (std::map<Ipv4Address, RoutingTableEntry>::iterator i = m_ipv4AddressEntry.begin (); i != m_ipv4AddressEntry.end ();)
+    {
+      if (i->second.GetInterface () == iface)
+        {
+          std::map<Ipv4Address, RoutingTableEntry>::iterator tmp = i;
+          ++i;
+          m_ipv4AddressEntry.erase (tmp);
+        }
+      else ++i;
+    }
+}
+
+void
 RoutingTable::Purge ()
 {
   if (m_ipv4AddressEntry.empty ())

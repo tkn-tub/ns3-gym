@@ -247,8 +247,6 @@ private:
   //\{
   Timer htimer; // TODO independent hello timers for all interfaces
   void HelloTimerExpire ();
-  Timer rtimer;
-  void RouteCacheTimerExpire ();
   Timer lrtimer;
   void LocalRepairTimerExpire ();
   std::map<Ipv4Address, Timer> m_addressReqTimer;

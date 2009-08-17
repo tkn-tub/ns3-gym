@@ -90,7 +90,6 @@ RoutingProtocol::RoutingProtocol () :
   m_nb(HelloInterval),
   m_repairedDst (Ipv4Address ()),
   htimer (Timer::CANCEL_ON_DESTROY),
-  rtimer (Timer::CANCEL_ON_DESTROY),
   lrtimer (Timer::CANCEL_ON_DESTROY)
 
 {
@@ -211,30 +210,6 @@ RoutingProtocol::DoDispose ()
 void
 RoutingProtocol::Start ()
 {
-  // Open sockets for control traffic on each IP interface
-  const Ipv4Address loopback ("127.0.0.1");
-  for (uint32_t i = 0; i < m_ipv4->GetNInterfaces (); i++)
-  {
-    Ipv4InterfaceAddress iface = m_ipv4->GetAddress (i, 0);
-    if (iface.GetLocal () == loopback)
-      continue;
-
-    // Create a socket to listen only on this interface
-    Ptr<Ipv4L3Protocol> l3 = m_ipv4->GetObject<Ipv4L3Protocol> ();
-    Ptr<Socket> socket = l3->CreateRawSocket2();
-    NS_ASSERT (socket != 0);
-    socket->SetRecvCallback (MakeCallback (&RoutingProtocol::RecvAodv, this));
-    socket->Bind(InetSocketAddress (iface.GetLocal(), AODV_PORT));
-    socket->Connect (InetSocketAddress (iface.GetBroadcast(), AODV_PORT));
-    m_socketAddresses.insert (std::make_pair (socket, iface));
-
-    // Add local broadcast record to the routing table
-    Ptr<NetDevice> dev = m_ipv4->GetNetDevice (m_ipv4->GetInterfaceForAddress (iface.GetLocal ()));
-    RoutingTableEntry rt (/*device=*/dev, /*dst=*/iface.GetBroadcast (), /*know seqno=*/true, /*seqno=*/0, /*iface=*/iface,
-                          /*hops=*/1, /*next hop=*/iface.GetBroadcast (), /*lifetime=*/Seconds (1e9)); // TODO use infty
-    m_routingTable.AddRoute (rt);
-  }
-
   m_scb = MakeCallback (&RoutingProtocol::Send, this);
   m_ecb = MakeCallback (&RoutingProtocol::Drop, this);
 
@@ -248,6 +223,13 @@ Ptr<Ipv4Route>
 RoutingProtocol::RouteOutput (Ptr<Packet> p, const Ipv4Header &header, uint32_t oif, Socket::SocketErrno &sockerr )
 {
   NS_LOG_FUNCTION (this << p->GetUid() << header.GetDestination());
+  if (m_socketAddresses.empty ())
+    {
+      sockerr = Socket::ERROR_NOROUTETOHOST;
+      NS_LOG_LOGIC ("No aodv interfaces");
+      Ptr<Ipv4Route> route;
+      return route;
+    }
   sockerr = Socket::ERROR_NOTERROR;
   Ptr<Ipv4Route> route;
   Ipv4Address dst = header.GetDestination ();
@@ -295,7 +277,11 @@ RoutingProtocol::RouteInput (Ptr<const Packet> p, const Ipv4Header &header, Ptr<
     MulticastForwardCallback mcb, LocalDeliverCallback lcb, ErrorCallback ecb )
 {
   NS_LOG_FUNCTION (this << p->GetUid() << header.GetDestination() << idev->GetAddress());
-
+  if (m_socketAddresses.empty ())
+    {
+      NS_LOG_LOGIC ("No aodv interfaces");
+      return false;
+    }
   NS_ASSERT (m_ipv4 != 0);
   // Check if input device supports IP
   NS_ASSERT (m_ipv4->GetInterfaceForDevice (idev) >= 0);
@@ -458,10 +444,20 @@ void
 RoutingProtocol::NotifyInterfaceDown (uint32_t i )
 {
   NS_LOG_FUNCTION (this << m_ipv4->GetAddress (i, 0).GetLocal ());
-//  Ptr<Socket> socket = FindSocketWithInterfaceAddress (m_ipv4->GetAddress (i, 0));
-//  m_socketAddresses.erase (socket);
-//  m_routingTable.DeleteAllRouteFromInterface (m_ipv4->GetAddress (i, 0));
-  // TODO
+  Ptr<Socket> socket = FindSocketWithInterfaceAddress (m_ipv4->GetAddress (i, 0));
+  NS_ASSERT (socket);
+  socket->Close ();
+  m_socketAddresses.erase (socket);
+  if (m_socketAddresses.empty ())
+    {
+      NS_LOG_LOGIC ("No aodv interfaces");
+      htimer.Cancel ();
+      lrtimer.Cancel ();
+      m_nb.Clear ();
+      m_routingTable.Clear ();
+      return;
+    }
+  m_routingTable.DeleteAllRoutesFromInterface (m_ipv4->GetAddress (i, 0));
 }
 
 void

@@ -229,6 +229,9 @@ public:
    *  3. The Lifetime field is updated to current time plus DELETE_PERIOD.
    */
   void InvalidateRoutesWithDst (std::map<Ipv4Address, uint32_t> const & unreachable);
+  /// Delete all route from interface with address iface
+  void DeleteAllRoutesFromInterface (Ipv4InterfaceAddress iface);
+  void Clear () { m_ipv4AddressEntry.clear (); }
   /// Delete all outdated entries and invalidate valid entry if Lifetime is expired
   void Purge ();
   /** Mark entry as unidirectional (e.g. add this neighbor to "blacklist" for blacklistTimeout period)

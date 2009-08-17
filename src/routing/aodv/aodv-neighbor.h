@@ -67,6 +67,8 @@ public:
   void Purge ();
   /// Schedule m_ntimer.
   void ScheduleTimer ();
+  /// Remove all entries
+  void Clear () { m_nb.clear (); }
   ///\name Handle link failure callback
   //\{
   void SetCallback (Callback<void, Ipv4Address> cb) { m_handleLinleFailure = cb;}
