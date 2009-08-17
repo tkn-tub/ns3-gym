@@ -421,11 +421,17 @@ void
 RoutingProtocol::NotifyInterfaceUp (uint32_t i )
 {
   NS_LOG_FUNCTION (this << i);
-  Ipv4InterfaceAddress iface = m_ipv4->GetAddress (i, 0);
+  Ptr<Ipv4L3Protocol> l3 = m_ipv4->GetObject<Ipv4L3Protocol> ();
+  Ptr<Ipv4Interface> interface = l3->GetInterface (i);
+  if (interface->GetNAddresses () > 1)
+    {
+      NS_LOG_LOGIC ("AODV does not work with more then one address per each interface.");
+    }
+  Ipv4InterfaceAddress iface = interface->GetAddress (0);
   if (iface.GetLocal () == Ipv4Address ("127.0.0.1"))
     return;
   // Create a socket to listen only on this interface
-  Ptr<Ipv4L3Protocol> l3 = m_ipv4->GetObject<Ipv4L3Protocol> ();
+  l3 = m_ipv4->GetObject<Ipv4L3Protocol> ();
   Ptr<Socket> socket = l3->CreateRawSocket2();
   NS_ASSERT (socket != 0);
   socket->SetRecvCallback (MakeCallback (&RoutingProtocol::RecvAodv, this));
@@ -461,8 +467,40 @@ RoutingProtocol::NotifyInterfaceDown (uint32_t i )
 }
 
 void
-RoutingProtocol::NotifyAddAddress (uint32_t interface, Ipv4InterfaceAddress address )
+RoutingProtocol::NotifyAddAddress (uint32_t i, Ipv4InterfaceAddress address )
 {
+  NS_LOG_FUNCTION (this);
+  Ptr<Ipv4L3Protocol> l3 = m_ipv4->GetObject<Ipv4L3Protocol> ();
+  Ptr<Ipv4Interface> interface = l3->GetInterface (i);
+  if (interface->IsDown ()) return;
+  if (interface->GetNAddresses() == 1)
+    {
+      Ipv4InterfaceAddress iface = interface->GetAddress (0);
+      Ptr<Socket> socket = FindSocketWithInterfaceAddress (iface);
+      if (!socket)
+        {
+          if (iface.GetLocal () == Ipv4Address ("127.0.0.1"))
+            return;
+          // Create a socket to listen only on this interface
+          Ptr<Ipv4L3Protocol> l3 = m_ipv4->GetObject<Ipv4L3Protocol> ();
+          Ptr<Socket> socket = l3->CreateRawSocket2 ();
+          NS_ASSERT (socket != 0);
+          socket->SetRecvCallback (MakeCallback (&RoutingProtocol::RecvAodv, this));
+          socket->Bind (InetSocketAddress (iface.GetLocal (), AODV_PORT));
+          socket->Connect (InetSocketAddress (iface.GetBroadcast (), AODV_PORT));
+          m_socketAddresses.insert (std::make_pair (socket, iface));
+
+          // Add local broadcast record to the routing table
+          Ptr<NetDevice> dev = m_ipv4->GetNetDevice (m_ipv4->GetInterfaceForAddress (iface.GetLocal ()));
+          RoutingTableEntry rt (/*device=*/dev, /*dst=*/iface.GetBroadcast (), /*know seqno=*/true, /*seqno=*/0, /*iface=*/iface,
+          /*hops=*/1, /*next hop=*/iface.GetBroadcast (), /*lifetime=*/Seconds (1e9)); // TODO use infty
+          m_routingTable.AddRoute (rt);
+        }
+    }
+  else
+    {
+      NS_LOG_LOGIC ("AODV does not work with more then one address per each interface. Ignore added address");
+    }
 }
 
 void
