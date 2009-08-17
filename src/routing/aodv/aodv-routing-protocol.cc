@@ -220,7 +220,6 @@ RoutingProtocol::Start ()
       continue;
 
     // Create a socket to listen only on this interface
-
     Ptr<Ipv4L3Protocol> l3 = m_ipv4->GetObject<Ipv4L3Protocol> ();
     Ptr<Socket> socket = l3->CreateRawSocket2();
     NS_ASSERT (socket != 0);
@@ -435,7 +434,24 @@ RoutingProtocol::SetIpv4 (Ptr<Ipv4> ipv4)
 void
 RoutingProtocol::NotifyInterfaceUp (uint32_t i )
 {
-  // TODO
+  NS_LOG_FUNCTION (this << i);
+  Ipv4InterfaceAddress iface = m_ipv4->GetAddress (i, 0);
+  if (iface.GetLocal () == Ipv4Address ("127.0.0.1"))
+    return;
+  // Create a socket to listen only on this interface
+  Ptr<Ipv4L3Protocol> l3 = m_ipv4->GetObject<Ipv4L3Protocol> ();
+  Ptr<Socket> socket = l3->CreateRawSocket2();
+  NS_ASSERT (socket != 0);
+  socket->SetRecvCallback (MakeCallback (&RoutingProtocol::RecvAodv, this));
+  socket->Bind(InetSocketAddress (iface.GetLocal(), AODV_PORT));
+  socket->Connect (InetSocketAddress (iface.GetBroadcast(), AODV_PORT));
+  m_socketAddresses.insert (std::make_pair (socket, iface));
+
+  // Add local broadcast record to the routing table
+  Ptr<NetDevice> dev = m_ipv4->GetNetDevice (m_ipv4->GetInterfaceForAddress (iface.GetLocal ()));
+  RoutingTableEntry rt (/*device=*/dev, /*dst=*/iface.GetBroadcast (), /*know seqno=*/true, /*seqno=*/0, /*iface=*/iface,
+                        /*hops=*/1, /*next hop=*/iface.GetBroadcast (), /*lifetime=*/Seconds (1e9)); // TODO use infty
+  m_routingTable.AddRoute (rt);
 }
 
 void
