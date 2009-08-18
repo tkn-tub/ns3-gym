@@ -65,7 +65,7 @@ RoutingProtocol::RoutingProtocol () :
   PathDiscoveryTime ( Scalar (2) * NetTraversalTime),
   MyRouteTimeout (Scalar (2) * std::max (PathDiscoveryTime, ActiveRouteTimeout)),
   HelloInterval(Seconds (1)),
-  AllowedHelloLoss (2),
+  AllowedHelloLoss (3),
   DeletePeriod (Scalar(5) * std::max(ActiveRouteTimeout, HelloInterval)),
   NextHopWait (NodeTraversalTime + MilliSeconds (10)),
   TimeoutBuffer (2),
@@ -124,7 +124,7 @@ RoutingProtocol::GetTypeId (void)
                      MakeTimeAccessor (&RoutingProtocol::MaxQueueTime),
                      MakeTimeChecker ())
       .AddAttribute ("AllowedHelloLoss", "Number of hello messages which may be loss for valid link.",
-                     UintegerValue (100000),
+                     UintegerValue (3),
                      MakeUintegerAccessor (&RoutingProtocol::AllowedHelloLoss),
                      MakeUintegerChecker<uint16_t> ())
       .AddAttribute ("GratuitousReply", "Indicates whether a gratuitous RREP should be unicast to the node originated route discovery.",
