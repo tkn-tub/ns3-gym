@@ -68,6 +68,10 @@ public:
                                 std::string n5 = "", const AttributeValue &v5 = EmptyAttributeValue (),
                                 std::string n6 = "", const AttributeValue &v6 = EmptyAttributeValue (),
                                 std::string n7 = "", const AttributeValue &v7 = EmptyAttributeValue ());
+  /**
+   * Set PHY standard
+   */
+  void SetStandard (enum WifiPhyStandard standard);
   void SetMeshId (std::string s);
   /**
    * \returns a WifiNetDevice with ready-to-use interface
@@ -88,6 +92,7 @@ private:
   Ptr<WifiMac> Create (void) const;
   ObjectFactory m_mac;
   ObjectFactory m_stationManager;
+  enum WifiPhyStandard m_standard;
 };
 
 } //namespace ns3

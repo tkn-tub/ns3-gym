@@ -28,7 +28,8 @@
 namespace ns3
 {
 
-MeshInterfaceHelper::MeshInterfaceHelper ()
+MeshInterfaceHelper::MeshInterfaceHelper () :
+  m_standard (WIFI_PHY_STANDARD_80211a)
 {
 }
 
@@ -86,6 +87,12 @@ MeshInterfaceHelper::SetRemoteStationManager (std::string type,
   m_stationManager.Set (n6, v6);
   m_stationManager.Set (n7, v7);
 }
+void 
+MeshInterfaceHelper::SetStandard (enum WifiPhyStandard standard)
+{
+  m_standard = standard;
+}
+
 Ptr<WifiNetDevice>
 MeshInterfaceHelper::CreateInterface (const WifiPhyHelper &phyHelper, Ptr<Node> node, uint16_t channelId) const
 {
@@ -98,8 +105,8 @@ MeshInterfaceHelper::CreateInterface (const WifiPhyHelper &phyHelper, Ptr<Node> 
   NS_ASSERT (manager != 0);
   Ptr<WifiPhy> phy = phyHelper.Create (node, device);
   mac->SetAddress (Mac48Address::Allocate ());
-  mac->ConfigureStandard (WIFI_PHY_STANDARD_80211a);
-  phy->ConfigureStandard (WIFI_PHY_STANDARD_80211a);
+  mac->ConfigureStandard (m_standard);
+  phy->ConfigureStandard (m_standard);
   device->SetMac (mac);
   device->SetPhy (phy);
   device->SetRemoteStationManager (manager);
