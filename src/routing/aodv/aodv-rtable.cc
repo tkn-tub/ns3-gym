@@ -313,7 +313,7 @@ RoutingTable::GetListOfDestinationWithNextHop (Ipv4Address nextHop, std::map<Ipv
   Purge ();
   unreachable.clear ();
   for (std::map<Ipv4Address, RoutingTableEntry>::const_iterator i = m_ipv4AddressEntry.begin (); i != m_ipv4AddressEntry.end (); ++i)
-      if ((i->second.GetNextHop () == nextHop) && (i->second.GetFlag () == VALID) && (!i->second.IsPrecursorListEmpty ()))
+      if ((i->second.GetNextHop () == nextHop) && (i->second.GetFlag () == VALID))
         {
           unreachable.insert (std::make_pair (i->first, i->second.GetSeqNo ()));
         }

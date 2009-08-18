@@ -292,7 +292,10 @@ public:
   bool GetNoDelete() const;
   //\}
 
-  /// Add unreachable node address and its sequence number in RERR header
+  /**
+   * Add unreachable node address and its sequence number in RERR header
+   *\return false if we already added maximum possible number of unreachable destinations
+   */
   bool AddUnDestination(Ipv4Address dst, uint32_t seqNo);
   /** Delete pair (address + sequence number) from REER header, if the number of unreachable destinations > 0
    * \return true on success

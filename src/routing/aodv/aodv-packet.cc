@@ -702,7 +702,7 @@ bool
 RerrHeader::AddUnDestination (Ipv4Address dst, uint32_t seqNo )
 {
   if (m_unreachableDstSeqNo.find (dst) != m_unreachableDstSeqNo.end ())
-    return false;
+    return true;
 
   NS_ASSERT (GetDestCount() < 255); // can't support more than 255 destinations in single RERR
   m_unreachableDstSeqNo.insert (std::make_pair (dst, seqNo));
@@ -776,7 +776,7 @@ bool RerrHeaderTest::RunTests ()
     Ipv4Address dst = Ipv4Address("1.2.3.4");
     NS_TEST_ASSERT(h.AddUnDestination(dst, 12));
     NS_TEST_ASSERT_EQUAL(h.GetDestCount(),1);
-    NS_TEST_ASSERT(!h.AddUnDestination(dst, 13));
+    NS_TEST_ASSERT(h.AddUnDestination(dst, 13));
     Ipv4Address dst2 = Ipv4Address("4.3.2.1");
     NS_TEST_ASSERT(h.AddUnDestination(dst2, 12));
     NS_TEST_ASSERT_EQUAL(h.GetDestCount(), 2);
