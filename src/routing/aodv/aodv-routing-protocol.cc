@@ -69,9 +69,6 @@ RoutingProtocol::RoutingProtocol () :
   AllowedHelloLoss (2),
   DeletePeriod (Scalar(5) * std::max(ActiveRouteTimeout, HelloInterval)),
   NextHopWait (NodeTraversalTime + MilliSeconds (10)),
-  TtlStart (2),
-  TtlIncrement (2),
-  TtlThreshold (7),
   MaxRepairTtl (0.3* NetDiameter),
   LocalAddTtl (2),
   TimeoutBuffer (2),
@@ -80,7 +77,6 @@ RoutingProtocol::RoutingProtocol () :
   MaxQueueTime (Seconds(30)),
   DestinationOnly (false),
   GratuitousReply (true),
-  EnableExpandingRingSearch (false),
   EnableHello (true),
   EnableLocalRepair (true),
   m_routingTable (DeletePeriod),
@@ -96,14 +92,6 @@ RoutingProtocol::RoutingProtocol () :
   if (EnableHello)
     {
       m_nb.SetCallback (MakeCallback (&RoutingProtocol::SendRerrWhenBreaksLinkToNextHop, this));
-    }
-  /* BlackListTimeout should be suitably increased if an expanding ring search is used.  In such cases, it should be
-   *    {[(TtlThreshold - TtlStart)/TtlIncrement] + 1 + RreqRetries} *NetTraversalTime.
-   * This is to account for possible additional route discovery attempts.
-   */
-  if (EnableExpandingRingSearch)
-    {
-      BlackListTimeout = Scalar ((((TtlThreshold - TtlStart) / TtlIncrement) + 1 + RreqRetries)) * NetTraversalTime;
     }
 }
 
@@ -134,19 +122,6 @@ RoutingProtocol::GetTypeId (void)
                      UintegerValue (35),
                      MakeUintegerAccessor (&RoutingProtocol::NetDiameter),
                      MakeUintegerChecker<uint32_t> ())
-      .AddAttribute ("TtlStart", "Initial value of TTL in RREQ  when use an expanding ring search "
-                     "(should be set to at least 2 if Hello messages are used for local connectivity information.)",
-                     UintegerValue (2),
-                     MakeUintegerAccessor (&RoutingProtocol::TtlStart),
-                     MakeUintegerChecker<uint16_t> ())
-      .AddAttribute ("TtlIncrement", "Increment value of RREQ TTL when use an expanding ring search",
-                     UintegerValue (2),
-                     MakeUintegerAccessor (&RoutingProtocol::TtlIncrement),
-                     MakeUintegerChecker<uint16_t> ())
-      .AddAttribute ("TtlThreshold", "Threshold, beyond which TTL = NetDiameter is used for each attempt in RREQ.",
-                     UintegerValue (7),
-                     MakeUintegerAccessor (&RoutingProtocol::TtlThreshold),
-                     MakeUintegerChecker<uint16_t> ())
       .AddAttribute ("LocalAddTtl", "Value used in calculation RREQ TTL when use local repair.",
                      UintegerValue (7),
                      MakeUintegerAccessor (&RoutingProtocol::LocalAddTtl),
@@ -172,11 +147,6 @@ RoutingProtocol::GetTypeId (void)
                      BooleanValue (false),
                      MakeBooleanAccessor (&RoutingProtocol::SetDesinationOnlyFlag,
                                           &RoutingProtocol::GetDesinationOnlyFlag),
-                     MakeBooleanChecker ())
-      .AddAttribute ("EnableExpandingRingSearch", "Enable expanding ring search technique.",
-                     BooleanValue (false),
-                     MakeBooleanAccessor (&RoutingProtocol::SetExpandingRingSearchEnable,
-                                          &RoutingProtocol::GetExpandingRingSearchEnable),
                      MakeBooleanChecker ())
       .AddAttribute ("EnableHello", "Indicates whether a hello messages enable.",
                      BooleanValue (true),
@@ -249,15 +219,11 @@ RoutingProtocol::RouteOutput (Ptr<Packet> p, const Ipv4Header &header, uint32_t 
       else
         {
           QueueEntry newEntry (p, header, m_scb, m_ecb);
-
           m_queue.Enqueue (newEntry);
           if (rt.GetFlag () == INVALID)
             {
               m_routingTable.SetEntryState (dst, IN_SEARCH);
-              if (EnableExpandingRingSearch)
-                SendRequest (dst, rt.GetHop () + TtlIncrement);
-              else
-                SendRequest (dst, NetDiameter);
+              SendRequest (dst);
             }
         }
     }
@@ -265,10 +231,7 @@ RoutingProtocol::RouteOutput (Ptr<Packet> p, const Ipv4Header &header, uint32_t 
     {
       QueueEntry newEntry (p, header, m_scb, m_ecb);
       m_queue.Enqueue (newEntry);
-      if (EnableExpandingRingSearch)
-        SendRequest (dst, TtlStart);
-      else
-        SendRequest (dst, NetDiameter);
+      SendRequest (dst);
     }
   return route;
 }
@@ -574,7 +537,7 @@ RoutingProtocol::IsMyOwnAddress (Ipv4Address src )
 }
 
 void
-RoutingProtocol::SendRequest (Ipv4Address dst, uint16_t ttl)
+RoutingProtocol::SendRequest (Ipv4Address dst)
 {
   NS_LOG_FUNCTION ( this << dst);
   // Create RREQ header
@@ -623,9 +586,9 @@ RoutingProtocol::SendRequest (Ipv4Address dst, uint16_t ttl)
       packet->AddHeader (rreqHeader);
       TypeHeader tHeader (AODVTYPE_RREQ);
       packet->AddHeader (tHeader);
-      SendPacketViaRawSocket (/*packet*/packet, /*pair<Ptr<Socket> , Ipv4InterfaceAddress>*/ *j, /*dst*/iface.GetBroadcast (), /*TTL*/ ttl, /*id*/0);
+      SendPacketViaRawSocket (/*packet*/packet, /*pair<Ptr<Socket> , Ipv4InterfaceAddress>*/ *j, /*dst*/iface.GetBroadcast (), /*TTL*/ NetDiameter, /*id*/0);
     }
-  ScheduleRreqRetry (dst, ttl);
+  ScheduleRreqRetry (dst);
   if (EnableHello)
     {
       htimer.Cancel ();
@@ -634,26 +597,21 @@ RoutingProtocol::SendRequest (Ipv4Address dst, uint16_t ttl)
 }
 
 void
-RoutingProtocol::ScheduleRreqRetry (Ipv4Address dst,  uint16_t ttl)
+RoutingProtocol::ScheduleRreqRetry (Ipv4Address dst)
 {
   if (m_addressReqTimer.find (dst) == m_addressReqTimer.end ())
-     {
-       Timer timer (Timer::CANCEL_ON_DESTROY);
-       m_addressReqTimer[dst] = timer;
-     }
-   m_addressReqTimer[dst].SetFunction (&RoutingProtocol::RouteRequestTimerExpire, this);
-   m_addressReqTimer[dst].Cancel ();
-   m_addressReqTimer[dst].SetArguments (dst, ttl);
-   RoutingTableEntry rt;
-   m_routingTable.LookupRoute (dst, rt);
-   if (ttl == NetDiameter)
-     {
-       rt.IncrementRreqCnt ();
-       m_routingTable.Update (rt);
-       m_addressReqTimer[dst].Schedule (Scalar (rt.GetRreqCnt ()) * NetTraversalTime);
-     }
-   else
-     m_addressReqTimer[dst].Schedule (Scalar (2) * NodeTraversalTime * Scalar (ttl + TimeoutBuffer));
+    {
+      Timer timer (Timer::CANCEL_ON_DESTROY);
+      m_addressReqTimer[dst] = timer;
+    }
+  m_addressReqTimer[dst].SetFunction (&RoutingProtocol::RouteRequestTimerExpire, this);
+  m_addressReqTimer[dst].Cancel ();
+  m_addressReqTimer[dst].SetArguments (dst);
+  RoutingTableEntry rt;
+  m_routingTable.LookupRoute (dst, rt);
+  rt.IncrementRreqCnt ();
+  m_routingTable.Update (rt);
+  m_addressReqTimer[dst].Schedule (Scalar (rt.GetRreqCnt ()) * NetTraversalTime);
 }
 
 void
@@ -1212,7 +1170,7 @@ RoutingProtocol::RecvError (Ptr<Packet> p, Ipv4Address src )
 }
 
 void
-RoutingProtocol::RouteRequestTimerExpire (Ipv4Address dst, uint16_t lastTtl )
+RoutingProtocol::RouteRequestTimerExpire (Ipv4Address dst)
 {
   NS_LOG_LOGIC(this);
   RoutingTableEntry toDst;
@@ -1240,17 +1198,8 @@ RoutingProtocol::RouteRequestTimerExpire (Ipv4Address dst, uint16_t lastTtl )
 
   if (toDst.GetFlag () == IN_SEARCH)
     {
-
-      if (lastTtl + TtlIncrement > TtlThreshold)
-        {
-          NS_LOG_LOGIC ("Send new RREQ to " << dst << " ttl " << NetDiameter);
-          SendRequest (dst, NetDiameter);
-        }
-      else
-        {
-          NS_LOG_LOGIC ("Send new RREQ to " << dst << " ttl " << lastTtl + TtlIncrement);
-          SendRequest (dst, lastTtl + TtlIncrement);
-        }
+      NS_LOG_LOGIC ("Send new RREQ to " << dst << " ttl " << NetDiameter);
+      SendRequest (dst);
     }
   else
     {
@@ -1552,7 +1501,7 @@ RoutingProtocol::LocalRouteRepair (Ipv4Address dst, Ipv4Address origin )
   if (!m_routingTable.LookupRoute (origin, toOrigin))
     return;
   uint16_t ttl = std::max (toOrigin.GetHop () * 0.5, (double) toDst.GetHop ()) + LocalAddTtl;
-  SendRequest (dst, ttl);
+  SendRequest (dst);
   toDst.SetFlag (BEING_REPAIRED);
   lrtimer.Schedule(Scalar(2*(ttl + TimeoutBuffer)) * NodeTraversalTime);
 

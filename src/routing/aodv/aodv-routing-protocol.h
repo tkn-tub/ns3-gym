@@ -83,8 +83,6 @@ public:
   void SetDesinationOnlyFlag (bool f) { DestinationOnly = f; }
   bool GetGratuitousReplyFlag () const { return GratuitousReply; }
   void SetGratuitousReplyFlag (bool f) { GratuitousReply = f; }
-  void SetExpandingRingSearchEnable (bool f) { EnableExpandingRingSearch = f; }
-  bool GetExpandingRingSearchEnable () const { return EnableExpandingRingSearch; }
   void SetHelloEnable (bool f) { EnableHello = f; }
   bool GetHelloEnable () const { return EnableHello; }
   void SetLocalRepairEnable (bool f) { EnableLocalRepair = f; }
@@ -116,9 +114,6 @@ private:
    */
   Time DeletePeriod;
   Time NextHopWait;                  ///< Period of our waiting for the neighbour's RREP_ACK
-  uint16_t TtlStart;                 ///< Initial value of TTL in RREQ  when use an expanding ring search
-  uint16_t TtlIncrement;             ///< Increment value of RREQ TTL when use an expanding ring search
-  uint16_t TtlThreshold;             ///< Threshold, beyond which TTL = NetDiameter is used for each attempt in RREQ
   uint16_t  MaxRepairTtl;            ///< Maximum distance in hops between intermediate node and destination node when local repair still may be applied.
   uint16_t LocalAddTtl;              ///< Value used in calculation RREQ TTL when use local repair
   /**
@@ -131,7 +126,6 @@ private:
   Time MaxQueueTime;                 ///< The maximum period of time that a routing protocol is allowed to buffer a packet for.
   bool DestinationOnly;              ///< Indicates only the destination may respond to this RREQ.
   bool GratuitousReply;              ///< Indicates whether a gratuitous RREP should be unicast to the node originated route discovery.
-  bool EnableExpandingRingSearch;    ///< Indicates whether a expanding ring search enable
   bool EnableHello;                  ///< Indicates whether a hello messages enable
   bool EnableLocalRepair;            ///< Indicates whether a local repair enable
   //\}
@@ -179,7 +173,7 @@ private:
   * To reduce congestion in a network, repeated attempts by a source node at route discovery
   * for a single destination MUST utilize a binary exponential backoff.
   */
-  void ScheduleRreqRetry (Ipv4Address dst,  uint16_t ttl);
+  void ScheduleRreqRetry (Ipv4Address dst);
   /**
    * Update route lifetime.
    * \param addr - destination address
@@ -218,7 +212,7 @@ private:
   /// Send hello
   void SendHello ();
   /// Send RREQ
-  void SendRequest (Ipv4Address dst, uint16_t ttl);
+  void SendRequest (Ipv4Address dst);
   /// Send RREP
   void SendReply (RreqHeader const & rreqHeader, RoutingTableEntry const & toOrigin);
   /** Send RREP by intermediate node
@@ -257,7 +251,7 @@ private:
   Timer lrtimer;
   void LocalRepairTimerExpire ();
   std::map<Ipv4Address, Timer> m_addressReqTimer;
-  void RouteRequestTimerExpire(Ipv4Address dst, uint16_t lastTtl);
+  void RouteRequestTimerExpire (Ipv4Address dst);
   void AckTimerExpire (Ipv4Address neighbor,  Time blacklistTimeout);
   //\}
 };
