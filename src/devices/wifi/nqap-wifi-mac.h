@@ -115,7 +115,7 @@ private:
   NqapWifiMac (const NqapWifiMac & ctor_arg);
   NqapWifiMac &operator = (const NqapWifiMac &o);
   Ptr<DcaTxop> GetDcaTxop (void) const;
-  void SetDcaTxop (Ptr<DcaTxop> dcaTxop);
+  virtual void FinishConfigureStandard (enum WifiPhyStandard standard);
 
   Ptr<DcaTxop> m_dca;
   Ptr<DcaTxop> m_beaconDca;

@@ -1,6 +1,6 @@
 /* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
 /*
- * Copyright (c) 2009 MIRKO BANCHI
+ * Copyright (c) 2005 INRIA
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as 
@@ -15,36 +15,29 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * Author: Mirko Banchi <mk.banchi@gmail.com>
+ * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#ifndef QOS_UTILS_H
-#define QOS_UTILS_H
 
-#include "ns3/uinteger.h"
-#include "ns3/ptr.h"
-#include "ns3/packet.h"
+#ifndef DCF_H
+#define DCF_H
+
+#include "ns3/object.h"
 
 namespace ns3 {
 
-enum AccessClass {
-  AC_VO = 0,
-  AC_VI = 1,
-  AC_BE = 2,
-  AC_BK = 3,
-  AC_BE_NQOS = 4,
-  AC_UNDEF
+class Dcf : public Object
+{
+ public:
+  static TypeId GetTypeId (void);
+
+  virtual void SetMinCw (uint32_t minCw) = 0;
+  virtual void SetMaxCw (uint32_t maxCw) = 0;
+  virtual void SetAifsn (uint32_t aifsn) = 0;
+  virtual uint32_t GetMinCw (void) const = 0;
+  virtual uint32_t GetMaxCw (void) const = 0;
+  virtual uint32_t GetAifsn (void) const = 0;
 };
 
-/* Maps TID (Traffic ID) to Access classes.
- * For more details see table 9-1 of IEEE802.11 standard.
- */
-AccessClass QosUtilsMapTidToAc (uint8_t tid);
+} // namespace ns3
 
-/* If a qos tag is attached to the packet, returns a value < 8.
-   A value >= 8 is returned otherwise.
- */
-uint8_t QosUtilsGetTidForPacket (Ptr<const Packet> packet);
-
-} //namespace ns3
-
-#endif /* QOS_UTILS_H */
+#endif /* DCF_H */

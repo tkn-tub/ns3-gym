@@ -253,6 +253,8 @@ public:
   virtual void SetChannelNumber (uint16_t id) = 0;
   /// Return current channel number, see SetChannelNumber()
   virtual uint16_t GetChannelNumber () const = 0;
+
+  virtual void ConfigureStandard (enum WifiPhyStandard standard) = 0;
   
   virtual Ptr<WifiChannel> GetChannel (void) const = 0;
 
@@ -341,7 +343,7 @@ public:
    * @param signalDbm signal power in dBm
    * @param noiseDbm  noise power in dBm
    */
-  void NotifyPromiscSniffRx (Ptr<const Packet> packet, uint16_t channelFreqMhz, uint32_t rate, bool isShortPreamble, 
+  void NotifyPromiscSniffRx (Ptr<const Packet> packet, uint16_t channelFreqMhz, uint16_t channelNumber, uint32_t rate, bool isShortPreamble, 
                              double signalDbm, double noiseDbm);
 
   /** 
@@ -361,7 +363,7 @@ public:
    * units used both for the radiotap and for the prism header) 
    * @param isShortPreamble true if short preamble is used, false otherwise
    */
-  void NotifyPromiscSniffTx (Ptr<const Packet> packet, uint16_t channelFreqMhz, uint32_t rate, bool isShortPreamble);
+  void NotifyPromiscSniffTx (Ptr<const Packet> packet, uint16_t channelFreqMhz, uint16_t channelNumber, uint32_t rate, bool isShortPreamble);
   
 
 private:
@@ -422,7 +424,7 @@ private:
    *
    * \see class CallBackTraceSource
    */
-  TracedCallback<Ptr<const Packet>, uint16_t, uint32_t, bool, double, double> m_phyPromiscSniffRxTrace;
+  TracedCallback<Ptr<const Packet>, uint16_t, uint16_t, uint32_t, bool, double, double> m_phyPromiscSniffRxTrace;
 
   /**
    * A trace source that emulates a wifi device in monitor mode
@@ -434,7 +436,7 @@ private:
    *
    * \see class CallBackTraceSource
    */
-  TracedCallback<Ptr<const Packet>, uint16_t, uint32_t, bool> m_phyPromiscSniffTxTrace;
+  TracedCallback<Ptr<const Packet>, uint16_t, uint16_t, uint32_t, bool> m_phyPromiscSniffTxTrace;
 
 };
 

@@ -185,7 +185,6 @@ MeshTest::Run ()
 void
 MeshTest::Report ()
 {
-  NS_LOG_UNCOND("Report is here:");
   unsigned n (0);
   for (NetDeviceContainer::Iterator i = meshDevices.Begin (); i != meshDevices.End (); ++i, ++n)
   {

@@ -30,6 +30,7 @@
 #include "wifi-mac.h"
 #include "wifi-mac-header.h"
 #include "qos-utils.h"
+#include "dcf.h"
 
 #include <map>
 #include <list>
@@ -62,7 +63,7 @@ enum TypeOfStation
   ADHOC_STA
 };
 
-class EdcaTxopN : public Object
+class EdcaTxopN : public Dcf
 {
 public:
 
@@ -85,12 +86,12 @@ public:
 
   void SetMaxQueueSize (uint32_t size);
   void SetMaxQueueDelay (Time delay);
-  void SetMinCw (uint32_t minCw);
-  void SetMaxCw (uint32_t maxCw);
-  void SetAifsn (uint32_t aifsn);
-  uint32_t GetMinCw (void) const;
-  uint32_t GetMaxCw (void) const;
-  uint32_t GetAifsn (void) const;
+  virtual void SetMinCw (uint32_t minCw);
+  virtual void SetMaxCw (uint32_t maxCw);
+  virtual void SetAifsn (uint32_t aifsn);
+  virtual uint32_t GetMinCw (void) const;
+  virtual uint32_t GetMaxCw (void) const;
+  virtual uint32_t GetAifsn (void) const;
 
   Ptr<MacLow> Low (void);
   Ptr<MsduAggregator> GetMsduAggregator (void) const;

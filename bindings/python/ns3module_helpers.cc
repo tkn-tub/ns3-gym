@@ -1,5 +1,5 @@
-#include "ns3/ref-count-base.h"
 #include "ns3module.h"
+#include "ns3/ref-count-base.h"
 
 
 namespace ns3{

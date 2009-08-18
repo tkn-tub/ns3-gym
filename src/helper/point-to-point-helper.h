@@ -32,6 +32,7 @@ class Queue;
 class NetDevice;
 class Node;
 class PcapWriter;
+class AsciiWriter;
 
 /**
  * \brief build a set of PointToPointNetDevice objects
@@ -286,10 +287,10 @@ private:
   static void SniffEvent (Ptr<PcapWriter> writer, Ptr<const Packet> packet);
 
   void EnableAscii (Ptr<Node> node, Ptr<NetDevice> device);
-  static void AsciiRxEvent (std::ostream *os, std::string path, Ptr<const Packet> packet);
-  static void AsciiEnqueueEvent (std::ostream *os, std::string path, Ptr<const Packet> packet);
-  static void AsciiDequeueEvent (std::ostream *os, std::string path, Ptr<const Packet> packet);
-  static void AsciiDropEvent (std::ostream *os, std::string path, Ptr<const Packet> packet);
+  static void AsciiRxEvent (Ptr<AsciiWriter> writer, std::string path, Ptr<const Packet> packet);
+  static void AsciiEnqueueEvent (Ptr<AsciiWriter> writer, std::string path, Ptr<const Packet> packet);
+  static void AsciiDequeueEvent (Ptr<AsciiWriter> writer, std::string path, Ptr<const Packet> packet);
+  static void AsciiDropEvent (Ptr<AsciiWriter> writer, std::string path, Ptr<const Packet> packet);
 
   ObjectFactory m_queueFactory;
   ObjectFactory m_channelFactory;

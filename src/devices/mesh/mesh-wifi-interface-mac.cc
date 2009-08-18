@@ -88,6 +88,11 @@ MeshWifiInterfaceMac::MeshWifiInterfaceMac ()
   m_beaconDca->SetMaxCw (0);
   m_beaconDca->SetAifsn (1);
   m_beaconDca->SetManager (m_dcfManager);
+  
+  SetQueue (AC_VO);
+  SetQueue (AC_VI);
+  SetQueue (AC_BE);
+  SetQueue (AC_BK);
 }
 MeshWifiInterfaceMac::~MeshWifiInterfaceMac ()
 {
@@ -666,27 +671,49 @@ MeshWifiInterfaceMac::ResetStats ()
   m_stats = Statistics::Statistics ();
 }
 void
-MeshWifiInterfaceMac::SetQueue (Ptr<DcaTxop> queue, AccessClass ac)
+MeshWifiInterfaceMac::SetQueue (AccessClass ac)
 {
   if (m_queues.find (ac) != m_queues.end ())
     {
       NS_LOG_WARN ("Queue is already set!");
       return;
     }
+  Ptr<DcaTxop> queue = Create<DcaTxop> ();
+  queue->SetLow (m_low);
+  queue->SetManager (m_dcfManager);
+  //queue->SetTxOkCallback (MakeCallback (&MeshWifiInterfaceMac::TxOk, this));
+  //queue->SetTxFailedCallback (MakeCallback (&MeshWifiInterfaceMac::TxFailed, this));
+
   m_queues.insert (std::make_pair (ac, queue));
-  m_queues[ac]->SetLow (m_low);
-  m_queues[ac]->SetManager (m_dcfManager);
 }
-Ptr<DcaTxop>
-MeshWifiInterfaceMac::GetQueue (AccessClass ac)
+void 
+MeshWifiInterfaceMac::FinishConfigureStandard (enum WifiPhyStandard standard)
 {
-  Queues::const_iterator i = m_queues.find (ac);
-  if (i != m_queues.end ())
+  switch (standard)
     {
-      NS_LOG_WARN ("Queue is not found! Check access class!");
-      return 0;
+    case WIFI_PHY_STANDARD_holland:
+      // fall through
+    case WIFI_PHY_STANDARD_80211a:
+      // fall through
+    case WIFI_PHY_STANDARD_80211_10Mhz:
+      // fall through
+    case WIFI_PHY_STANDARD_80211_5Mhz:
+      ConfigureDcf (m_queues[AC_BK], 15, 1023, AC_BK);
+      ConfigureDcf (m_queues[AC_BE], 15, 1023, AC_BE);
+      ConfigureDcf (m_queues[AC_VI], 15, 1023, AC_VI);
+      ConfigureDcf (m_queues[AC_VO], 15, 1023, AC_VO);
+      break;
+    case WIFI_PHY_STANDARD_80211b:
+      ConfigureDcf (m_queues[AC_BK], 31, 1023, AC_BK);
+      ConfigureDcf (m_queues[AC_BE], 31, 1023, AC_BE);
+      ConfigureDcf (m_queues[AC_VI], 31, 1023, AC_VI);
+      ConfigureDcf (m_queues[AC_VO], 31, 1023, AC_VO);
+      break;
+    default:
+      NS_ASSERT (false);
+      break;
     }
-  return i->second;
 }
+
 } // namespace ns3
 

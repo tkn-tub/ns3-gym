@@ -21,8 +21,8 @@
 #define CONSTANT_VELOCITY_MOBILITY_MODEL_H
 
 #include <stdint.h>
-#include "mobility-model.h"
 #include "ns3/nstime.h"
+#include "mobility-model.h"
 #include "constant-velocity-helper.h"
 
 namespace ns3 {

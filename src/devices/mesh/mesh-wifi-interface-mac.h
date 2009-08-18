@@ -158,9 +158,9 @@ public:
   void ResetStats ();
   /// Enable/disable beacons
   void SetBeaconGeneration (bool enable);
-  void SetQueue (Ptr<DcaTxop> queue, AccessClass ac);
+  void SetQueue (AccessClass ac);
+  virtual void FinishConfigureStandard (enum WifiPhyStandard standard);
 private:
-  Ptr<DcaTxop> GetQueue (AccessClass ac);
   /// Frame receive handler
   void  Receive (Ptr<Packet> packet, WifiMacHeader const *hdr);
   /// Forward frame to mesh point

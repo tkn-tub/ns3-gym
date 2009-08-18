@@ -25,40 +25,41 @@
 #include "ns3/yans-wifi-phy.h"
 #include "ns3/wifi-net-device.h"
 #include "ns3/pcap-writer.h"
+#include "ns3/ascii-writer.h"
 #include "ns3/simulator.h"
 #include "ns3/config.h"
 #include "ns3/names.h"
 
 namespace ns3 {
 
-static void PcapSniffTxEvent (Ptr<PcapWriter> writer, Ptr<const Packet> packet, uint16_t channelFreqMhz,  
+static void PcapSniffTxEvent (Ptr<PcapWriter> writer, Ptr<const Packet> packet, uint16_t channelFreqMhz,  uint16_t channelNumber, 
                               uint32_t rate, bool isShortPreamble)
 {
   const double unusedValue = 0;
-  writer->WriteWifiMonitorPacket(packet, channelFreqMhz, rate, isShortPreamble, true, unusedValue, unusedValue); 
+  writer->WriteWifiMonitorPacket(packet, channelFreqMhz, channelNumber, rate, isShortPreamble, true, unusedValue, unusedValue); 
 }
 
 
-static void PcapSniffRxEvent (Ptr<PcapWriter> writer, Ptr<const Packet> packet, uint16_t channelFreqMhz,  
+static void PcapSniffRxEvent (Ptr<PcapWriter> writer, Ptr<const Packet> packet, uint16_t channelFreqMhz,  uint16_t channelNumber,
                               uint32_t rate, bool isShortPreamble, double signalDbm, double noiseDbm)
 {
-  writer->WriteWifiMonitorPacket(packet, channelFreqMhz, rate, isShortPreamble, false, signalDbm, noiseDbm); 
+  writer->WriteWifiMonitorPacket(packet, channelFreqMhz, channelNumber, rate, isShortPreamble, false, signalDbm, noiseDbm); 
 }
 
 
-static void AsciiPhyTxEvent (std::ostream *os, std::string context, 
+static void AsciiPhyTxEvent (Ptr<AsciiWriter> writer, std::string path,
                              Ptr<const Packet> packet,
-                             WifiMode mode, WifiPreamble preamble, 
+                             WifiMode mode, WifiPreamble preamble,
                              uint8_t txLevel)
 {
-  *os << "+ " << Simulator::Now () << " " << context << " " << *packet << std::endl;
+  writer->WritePacket (AsciiWriter::TX, path, packet);
 }
 
-static void AsciiPhyRxOkEvent (std::ostream *os, std::string context, 
-                               Ptr<const Packet> packet, double snr, WifiMode mode, 
+static void AsciiPhyRxOkEvent (Ptr<AsciiWriter> writer, std::string path,
+                               Ptr<const Packet> packet, double snr, WifiMode mode,
                                enum WifiPreamble preamble)
 {
-  *os << "r " << Simulator::Now () << " " << context << " " << *packet << std::endl;
+  writer->WritePacket (AsciiWriter::RX, path, packet);
 }
 
 
@@ -234,9 +235,7 @@ YansWifiPhyHelper::EnablePcap (std::string filename, uint32_t nodeid, uint32_t d
     }
   oss.str ("");
   oss << filename << "-" << nodeid << "-" << deviceid << ".pcap";
-  // we must fully-qualify the call to Create below because it conflicts
-  // with the locally-defined WifiPhyHelper::Create method.
-  Ptr<PcapWriter> pcap = ::ns3::Create<PcapWriter> ();
+  Ptr<PcapWriter> pcap = CreateObject<PcapWriter> ();
   pcap->Open (oss.str ());
 
   switch (m_pcapFormat) {
@@ -309,13 +308,14 @@ YansWifiPhyHelper::EnablePcapAll (std::string filename)
 void 
 YansWifiPhyHelper::EnableAscii (std::ostream &os, uint32_t nodeid, uint32_t deviceid)
 {
+  Ptr<AsciiWriter> writer = AsciiWriter::Get (os);
   Packet::EnablePrinting ();
   std::ostringstream oss;
   oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::WifiNetDevice/Phy/State/RxOk";
-  Config::Connect (oss.str (), MakeBoundCallback (&AsciiPhyRxOkEvent, &os));
+  Config::Connect (oss.str (), MakeBoundCallback (&AsciiPhyRxOkEvent, writer));
   oss.str ("");
   oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::WifiNetDevice/Phy/State/Tx";
-  Config::Connect (oss.str (), MakeBoundCallback (&AsciiPhyTxEvent, &os));
+  Config::Connect (oss.str (), MakeBoundCallback (&AsciiPhyTxEvent, writer));
 }
 void 
 YansWifiPhyHelper::EnableAscii (std::ostream &os, NetDeviceContainer d)

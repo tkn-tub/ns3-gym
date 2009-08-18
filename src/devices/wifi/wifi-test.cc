@@ -71,9 +71,8 @@ WifiTest::CreateOne (Vector pos, Ptr<YansWifiChannel> channel)
   Ptr<Node> node = CreateObject<Node> ();
   Ptr<WifiNetDevice> dev = CreateObject<WifiNetDevice> ();
 
-  Ptr<DcaTxop> queue = CreateObject<DcaTxop> ();
   Ptr<WifiMac> mac = m_mac.Create<WifiMac> ();
-  mac->SetAttribute("DcaTxop", PointerValue (queue));
+  mac->ConfigureStandard (WIFI_PHY_STANDARD_80211a);
   Ptr<ConstantPositionMobilityModel> mobility = CreateObject<ConstantPositionMobilityModel> ();
   Ptr<YansWifiPhy> phy = CreateObject<YansWifiPhy> ();
   Ptr<ErrorRateModel> error = CreateObject<YansErrorRateModel> ();
@@ -81,6 +80,7 @@ WifiTest::CreateOne (Vector pos, Ptr<YansWifiChannel> channel)
   phy->SetChannel (channel);
   phy->SetDevice (dev);
   phy->SetMobility (node);
+  phy->ConfigureStandard (WIFI_PHY_STANDARD_80211a);
   Ptr<WifiRemoteStationManager> manager = m_manager.Create<WifiRemoteStationManager> ();
 
   mobility->SetPosition (pos);

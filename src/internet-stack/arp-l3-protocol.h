@@ -87,7 +87,7 @@ private:
   typedef std::list<Ptr<ArpCache> > CacheList;
   Ptr<ArpCache> FindCache (Ptr<NetDevice> device);
   void SendArpRequest (Ptr<const ArpCache>cache, Ipv4Address to);
-  void SendArpReply (Ptr<const ArpCache> cache, Ipv4Address toIp, Address toMac);
+  void SendArpReply (Ptr<const ArpCache> cache, Ipv4Address myIp, Ipv4Address toIp, Address toMac);
   CacheList m_cacheList;
   Ptr<Node> m_node;
   TracedCallback<Ptr<const Packet> > m_dropTrace;

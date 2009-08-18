@@ -63,26 +63,22 @@ QapWifiMac::GetTypeId (void)
     .AddAttribute ("VO_EdcaTxopN",
                    "Queue that manages packets belonging to AC_VO access class",
                    PointerValue (),
-                   MakePointerAccessor(&QapWifiMac::GetVOQueue,
-                                       &QapWifiMac::SetVOQueue),
+                   MakePointerAccessor(&QapWifiMac::GetVOQueue),
                    MakePointerChecker<EdcaTxopN> ())
     .AddAttribute ("VI_EdcaTxopN",
                    "Queue that manages packets belonging to AC_VI access class",
                    PointerValue (),
-                   MakePointerAccessor(&QapWifiMac::GetVIQueue,
-                                       &QapWifiMac::SetVIQueue),
+                   MakePointerAccessor(&QapWifiMac::GetVIQueue),
                    MakePointerChecker<EdcaTxopN> ())
     .AddAttribute ("BE_EdcaTxopN",
                    "Queue that manages packets belonging to AC_BE access class",
                    PointerValue (),
-                   MakePointerAccessor(&QapWifiMac::GetBEQueue,
-                                       &QapWifiMac::SetBEQueue),
+                   MakePointerAccessor(&QapWifiMac::GetBEQueue),
                    MakePointerChecker<EdcaTxopN> ())
     .AddAttribute ("BK_EdcaTxopN",
                    "Queue that manages packets belonging to AC_BK access class",
                    PointerValue (),
-                   MakePointerAccessor(&QapWifiMac::GetBKQueue,
-                                       &QapWifiMac::SetBKQueue),
+                   MakePointerAccessor(&QapWifiMac::GetBKQueue),
                    MakePointerChecker<EdcaTxopN> ())
     ;  
   return tid;
@@ -108,6 +104,11 @@ QapWifiMac::QapWifiMac ()
   m_beaconDca->SetMaxCw(0);
   m_beaconDca->SetLow (m_low);
   m_beaconDca->SetManager (m_dcfManager);
+
+  SetQueue (AC_VO);
+  SetQueue (AC_VI);
+  SetQueue (AC_BE);
+  SetQueue (AC_BK);
 }
 
 QapWifiMac::~QapWifiMac ()
@@ -129,15 +130,10 @@ QapWifiMac::DoDispose ()
   m_phy = 0;
   m_beaconDca = 0;
   m_beaconEvent.Cancel ();
-  m_voEdca = 0;
-  m_viEdca = 0;
-  m_beEdca = 0;
-  m_bkEdca = 0;
   m_stationManager = 0;
-  std::map<AccessClass, Ptr<EdcaTxopN> >::iterator it = m_queues.begin ();
-  for (;it != m_queues.end (); it++)
+  for (Queues::iterator i = m_queues.begin (); i != m_queues.end (); ++i)
     {
-      it->second = 0;
+      (*i).second = 0;
     }
   WifiMac::DoDispose ();
 }
@@ -259,10 +255,10 @@ QapWifiMac::SetWifiRemoteStationManager (Ptr<WifiRemoteStationManager> stationMa
 {
   NS_LOG_FUNCTION (this << stationManager);
   m_stationManager = stationManager;
-  m_voEdca->SetWifiRemoteStationManager (stationManager);
-  m_viEdca->SetWifiRemoteStationManager (stationManager);
-  m_beEdca->SetWifiRemoteStationManager (stationManager);
-  m_bkEdca->SetWifiRemoteStationManager (stationManager);
+  for (Queues::iterator i = m_queues.begin (); i != m_queues.end (); ++i)
+    {
+      (*i).second->SetWifiRemoteStationManager (stationManager);
+    }
   m_beaconDca->SetWifiRemoteStationManager (stationManager);
   m_low->SetWifiRemoteStationManager (stationManager);
 }
@@ -713,77 +709,67 @@ QapWifiMac::DeaggregateAmsduAndForward (Ptr<Packet> aggregatedPacket, WifiMacHea
 Ptr<EdcaTxopN>
 QapWifiMac::GetVOQueue (void) const
 {
-  return m_voEdca;
+  return m_queues.find (AC_VO)->second;
 }
 
 Ptr<EdcaTxopN>
 QapWifiMac::GetVIQueue (void) const
 {
-  return m_viEdca;
+  return m_queues.find (AC_VI)->second;
 }
 
 Ptr<EdcaTxopN>
 QapWifiMac::GetBEQueue (void) const
 {
-  return m_beEdca;
+  return m_queues.find (AC_BE)->second;
 }
 
 Ptr<EdcaTxopN>
 QapWifiMac::GetBKQueue (void) const
 {
-  return m_bkEdca;
+  return m_queues.find (AC_BK)->second;
 }
 
 void
-QapWifiMac::SetVOQueue (Ptr<EdcaTxopN> voQueue)
+QapWifiMac::SetQueue (enum AccessClass ac)
 {
-  m_voEdca = voQueue;
-  m_queues.insert (std::make_pair(AC_VO, m_voEdca));
-  m_queues[AC_VO]->SetLow (m_low);
-  m_queues[AC_VO]->SetManager (m_dcfManager);
-  m_queues[AC_VO]->SetTypeOfStation (AP);
-  m_queues[AC_VO]->SetTxMiddle (m_txMiddle);
-  m_queues[AC_VO]->SetTxOkCallback (MakeCallback (&QapWifiMac::TxOk, this));
-  m_queues[AC_VO]->SetTxFailedCallback (MakeCallback (&QapWifiMac::TxFailed, this));
+  Ptr<EdcaTxopN> edca = CreateObject<EdcaTxopN> ();
+  edca->SetLow (m_low);
+  edca->SetManager (m_dcfManager);
+  edca->SetTypeOfStation (AP);
+  edca->SetTxMiddle (m_txMiddle);
+  edca->SetTxOkCallback (MakeCallback (&QapWifiMac::TxOk, this));
+  edca->SetTxFailedCallback (MakeCallback (&QapWifiMac::TxFailed, this));
+  m_queues.insert (std::make_pair(ac, edca));
 }
 
-void
-QapWifiMac::SetVIQueue (Ptr<EdcaTxopN> viQueue)
+void 
+QapWifiMac::FinishConfigureStandard (enum WifiPhyStandard standard)
 {
-  m_viEdca = viQueue;
-  m_queues.insert (std::make_pair(AC_VI, m_viEdca));
-  m_queues[AC_VI]->SetLow (m_low);
-  m_queues[AC_VI]->SetManager (m_dcfManager);
-  m_queues[AC_VI]->SetTypeOfStation (AP);
-  m_queues[AC_VI]->SetTxMiddle (m_txMiddle);
-  m_queues[AC_VI]->SetTxOkCallback (MakeCallback (&QapWifiMac::TxOk, this));
-  m_queues[AC_VI]->SetTxFailedCallback (MakeCallback (&QapWifiMac::TxFailed, this));
-}
-
-void
-QapWifiMac::SetBEQueue (Ptr<EdcaTxopN> beQueue)
-{
-  m_beEdca = beQueue;
-  m_queues.insert (std::make_pair(AC_BE, m_beEdca));
-  m_queues[AC_BE]->SetLow (m_low);
-  m_queues[AC_BE]->SetManager (m_dcfManager);
-  m_queues[AC_BE]->SetTypeOfStation (AP);
-  m_queues[AC_BE]->SetTxMiddle (m_txMiddle);
-  m_queues[AC_BE]->SetTxOkCallback (MakeCallback (&QapWifiMac::TxOk, this));
-  m_queues[AC_BE]->SetTxFailedCallback (MakeCallback (&QapWifiMac::TxFailed, this));
-}
-
-void
-QapWifiMac::SetBKQueue (Ptr<EdcaTxopN> bkQueue)
-{
-  m_bkEdca = bkQueue;
-  m_queues.insert (std::make_pair(AC_BK, m_bkEdca));
-  m_queues[AC_BK]->SetLow (m_low);
-  m_queues[AC_BK]->SetManager (m_dcfManager);
-  m_queues[AC_BK]->SetTypeOfStation (AP);
-  m_queues[AC_BK]->SetTxMiddle (m_txMiddle);
-  m_queues[AC_BK]->SetTxOkCallback (MakeCallback (&QapWifiMac::TxOk, this));
-  m_queues[AC_BK]->SetTxFailedCallback (MakeCallback (&QapWifiMac::TxFailed, this));
+  switch (standard)
+    {
+    case WIFI_PHY_STANDARD_holland:
+      // fall through
+    case WIFI_PHY_STANDARD_80211a:
+      // fall through
+    case WIFI_PHY_STANDARD_80211_10Mhz:
+      // fall through
+    case WIFI_PHY_STANDARD_80211_5Mhz:
+      ConfigureDcf (m_queues[AC_BK], 15, 1023, AC_BK);
+      ConfigureDcf (m_queues[AC_BE], 15, 1023, AC_BE);
+      ConfigureDcf (m_queues[AC_VI], 15, 1023, AC_VI);
+      ConfigureDcf (m_queues[AC_VO], 15, 1023, AC_VO);
+      break;
+    case WIFI_PHY_STANDARD_80211b:
+      ConfigureDcf (m_queues[AC_BK], 31, 1023, AC_BK);
+      ConfigureDcf (m_queues[AC_BE], 31, 1023, AC_BE);
+      ConfigureDcf (m_queues[AC_VI], 31, 1023, AC_VI);
+      ConfigureDcf (m_queues[AC_VO], 31, 1023, AC_VO);
+      break;
+    default:
+      NS_ASSERT (false);
+      break;
+    }
 }
 
 }  //namespace ns3

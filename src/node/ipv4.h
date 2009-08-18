@@ -37,7 +37,9 @@ class Ipv4RoutingProtocol;
 /**
  * \ingroup node
  * \defgroup ipv4 Ipv4
- * 
+ */
+/**
+ * \ingroup ipv4
  * \brief Access to the Ipv4 forwarding table, interfaces, and configuration
  *
  * This class defines the API to manipulate the following aspects of

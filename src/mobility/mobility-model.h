@@ -20,8 +20,7 @@
 #ifndef MOBILITY_MODEL_H
 #define MOBILITY_MODEL_H
 
-#include "vector.h"
-
+#include "ns3/vector.h"
 #include "ns3/object.h"
 #include "ns3/traced-callback.h"
 

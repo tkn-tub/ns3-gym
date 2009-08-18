@@ -63,6 +63,8 @@ def build(bld):
         'msdu-aggregator.cc',
         'amsdu-subframe-header.cc',
         'msdu-standard-aggregator.cc',
+        'minstrel-wifi-manager.cc',
+        'dcf.cc',
         ]
     headers = bld.new_task_gen('ns3header')
     headers.module = 'wifi'
@@ -106,13 +108,14 @@ def build(bld):
         'msdu-aggregator.h',
         'amsdu-subframe-header.h',
         'qos-tag.h',
-# Need this for module devices/mesh
         'mgt-headers.h',
         'status-code.h',
         'capability-information.h',
         'dcf-manager.h',
         'mac-rx-middle.h', 
         'mac-low.h',
+        'minstrel-wifi-manager.h',
+        'dcf.h',
         ]
 
     if bld.env['ENABLE_GSL']:

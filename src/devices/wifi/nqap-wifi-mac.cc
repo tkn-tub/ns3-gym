@@ -60,8 +60,7 @@ NqapWifiMac::GetTypeId (void)
                    MakeBooleanChecker ())
     .AddAttribute ("DcaTxop", "The DcaTxop object",
                    PointerValue (),
-                   MakePointerAccessor (&NqapWifiMac::GetDcaTxop,
-                                        &NqapWifiMac::SetDcaTxop),
+                   MakePointerAccessor (&NqapWifiMac::GetDcaTxop),
                    MakePointerChecker<DcaTxop> ()) 
     ;
   return tid;
@@ -85,6 +84,12 @@ NqapWifiMac::NqapWifiMac ()
   m_beaconDca->SetMaxCw(0);
   m_beaconDca->SetLow (m_low);
   m_beaconDca->SetManager (m_dcfManager);
+
+  m_dca = CreateObject<DcaTxop> ();
+  m_dca->SetLow (m_low);
+  m_dca->SetManager (m_dcfManager);
+  m_dca->SetTxOkCallback (MakeCallback (&NqapWifiMac::TxOk, this));
+  m_dca->SetTxFailedCallback (MakeCallback (&NqapWifiMac::TxFailed, this));
 }
 NqapWifiMac::~NqapWifiMac ()
 {
@@ -565,14 +570,28 @@ NqapWifiMac::GetDcaTxop(void) const
   return m_dca;
 }
 
-void
-NqapWifiMac::SetDcaTxop (Ptr<DcaTxop> dcaTxop)
+void 
+NqapWifiMac::FinishConfigureStandard (enum WifiPhyStandard standard)
 {
-  m_dca = dcaTxop;
-  m_dca->SetLow (m_low);
-  m_dca->SetManager (m_dcfManager);
-  m_dca->SetTxOkCallback (MakeCallback (&NqapWifiMac::TxOk, this));
-  m_dca->SetTxFailedCallback (MakeCallback (&NqapWifiMac::TxFailed, this));
+  switch (standard)
+    {
+    case WIFI_PHY_STANDARD_holland:
+      // fall through
+    case WIFI_PHY_STANDARD_80211_10Mhz: 
+      // fall through
+    case WIFI_PHY_STANDARD_80211_5Mhz:
+      // fall through
+    case WIFI_PHY_STANDARD_80211a:
+      ConfigureDcf (m_dca, 15, 1023, AC_BE_NQOS);
+      break;
+    case WIFI_PHY_STANDARD_80211b:
+      ConfigureDcf (m_dca, 31, 1023, AC_BE_NQOS);
+      break;
+    default:
+      NS_ASSERT (false);
+      break;
+    }
 }
+
 
 } // namespace ns3
