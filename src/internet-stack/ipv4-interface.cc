@@ -178,7 +178,7 @@ Ipv4Interface::SetForwarding (bool val)
 void
 Ipv4Interface::Send (Ptr<Packet> p, Ipv4Address dest)
 {
-  NS_LOG_LOGIC (dest << *p);
+  NS_LOG_FUNCTION (dest << *p);
   if (!IsUp()) 
     {
       return;
@@ -188,7 +188,6 @@ Ipv4Interface::Send (Ptr<Packet> p, Ipv4Address dest)
     {
       // XXX additional checks needed here (such as whether multicast
       // goes to loopback)?
-    NS_LOG_LOGIC ("Ipv4Interface::Send loopback");
       m_device->Send (p, m_device->GetBroadcast (), 
                       Ipv4L3Protocol::PROT_NUMBER);
       return;
@@ -198,7 +197,6 @@ Ipv4Interface::Send (Ptr<Packet> p, Ipv4Address dest)
     {
       if (dest == (*i).GetLocal ())
         {
-        NS_LOG_LOGIC ("to local");
           Ptr<Ipv4L3Protocol> ipv4 = m_node->GetObject<Ipv4L3Protocol> ();
         
           ipv4->Receive (m_device, p, Ipv4L3Protocol::PROT_NUMBER, 
@@ -211,19 +209,19 @@ Ipv4Interface::Send (Ptr<Packet> p, Ipv4Address dest)
     }
   if (m_device->NeedsArp ())
     {
-    NS_LOG_LOGIC ("Needs ARP" << " " << dest);
+      NS_LOG_LOGIC ("Needs ARP" << " " << dest);
       Ptr<ArpL3Protocol> arp = m_node->GetObject<ArpL3Protocol> ();
       Address hardwareDestination;
       bool found = false;
       if (dest.IsBroadcast ())
         {
-        NS_LOG_LOGIC ("All-network Broadcast");
+          NS_LOG_LOGIC ("All-network Broadcast");
           hardwareDestination = m_device->GetBroadcast ();
           found = true;
         }
       else if (dest.IsMulticast ())
         {
-        NS_LOG_LOGIC ("IsMulticast");
+          NS_LOG_LOGIC ("IsMulticast");
           NS_ASSERT_MSG(m_device->IsMulticast (),
             "ArpIpv4Interface::SendTo (): Sending multicast packet over "
             "non-multicast device");
@@ -237,7 +235,7 @@ Ipv4Interface::Send (Ptr<Packet> p, Ipv4Address dest)
             {
               if (dest.IsSubnetDirectedBroadcast ((*i).GetMask ()))
                 {
-                NS_LOG_LOGIC ("Subnetwork Broadcast hardwareDestination " << hardwareDestination);
+                  NS_LOG_LOGIC ("Subnetwork Broadcast");
                   hardwareDestination = m_device->GetBroadcast ();
                   found = true;
                   break;
@@ -245,21 +243,21 @@ Ipv4Interface::Send (Ptr<Packet> p, Ipv4Address dest)
             }
           if (!found)
             {
-            NS_LOG_LOGIC ("ARP Lookup");
+              NS_LOG_LOGIC ("ARP Lookup");
               found = arp->Lookup (p, dest, m_device, m_cache, &hardwareDestination);
             }
         }
 
       if (found)
         {
-        NS_LOG_LOGIC ("Address Resolved.  Send.");
+          NS_LOG_LOGIC ("Address Resolved.  Send.");
           m_device ->Send (p, hardwareDestination, 
                               Ipv4L3Protocol::PROT_NUMBER);
         }
     }
   else
     {
-    NS_LOG_LOGIC ("Doesn't need ARP");
+      NS_LOG_LOGIC ("Doesn't need ARP");
       m_device->Send (p, m_device->GetBroadcast (), 
                       Ipv4L3Protocol::PROT_NUMBER);
     }

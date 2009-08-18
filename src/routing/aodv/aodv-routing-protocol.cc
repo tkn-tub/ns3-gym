@@ -42,7 +42,7 @@
 #include "ns3/nstime.h"
 #include "ns3/net-device.h"
 
-#include "ns3/raw-socket-factory.h"
+#include "ns3/udp-socket-factory.h"
 #include "src/internet-stack/udp-l4-protocol.h"
 #include <algorithm>
 
@@ -260,8 +260,8 @@ RoutingProtocol::RouteInput (Ptr<const Packet> p, const Ipv4Header &header, Ptr<
             Ptr<Packet> packet = p->Copy();
             lcb (p, header, iif);
             Ptr<Ipv4Route> route;
-            NS_LOG_LOGIC ("Forward broadcast");
-            ucb (route, packet, header);
+//            NS_LOG_LOGIC ("Forward broadcast");
+//            ucb (route, packet, header);
             return true;
           }
     }
@@ -370,8 +370,7 @@ RoutingProtocol::NotifyInterfaceUp (uint32_t i )
   if (iface.GetLocal () == Ipv4Address ("127.0.0.1"))
     return;
   // Create a socket to listen only on this interface
-  l3 = m_ipv4->GetObject<Ipv4L3Protocol> ();
-  Ptr<Socket> socket = l3->CreateRawSocket2();
+  Ptr<Socket> socket = Socket::CreateSocket (GetObject<Node> (), UdpSocketFactory::GetTypeId());
   NS_ASSERT (socket != 0);
   socket->SetRecvCallback (MakeCallback (&RoutingProtocol::RecvAodv, this));
   socket->Bind(InetSocketAddress (iface.GetLocal(), AODV_PORT));
@@ -420,8 +419,7 @@ RoutingProtocol::NotifyAddAddress (uint32_t i, Ipv4InterfaceAddress address )
           if (iface.GetLocal () == Ipv4Address ("127.0.0.1"))
             return;
           // Create a socket to listen only on this interface
-          Ptr<Ipv4L3Protocol> l3 = m_ipv4->GetObject<Ipv4L3Protocol> ();
-          Ptr<Socket> socket = l3->CreateRawSocket2 ();
+          Ptr<Socket> socket = Socket::CreateSocket (GetObject<Node> (), UdpSocketFactory::GetTypeId());
           NS_ASSERT (socket != 0);
           socket->SetRecvCallback (MakeCallback (&RoutingProtocol::RecvAodv, this));
           socket->Bind (InetSocketAddress (iface.GetLocal (), AODV_PORT));
@@ -456,8 +454,7 @@ RoutingProtocol::NotifyRemoveAddress (uint32_t i, Ipv4InterfaceAddress address )
         {
           Ipv4InterfaceAddress iface = interface->GetAddress (0);
           // Create a socket to listen only on this interface
-          Ptr<Ipv4L3Protocol> l3 = m_ipv4->GetObject<Ipv4L3Protocol> ();
-          Ptr<Socket> socket = l3->CreateRawSocket2 ();
+          Ptr<Socket> socket = Socket::CreateSocket (GetObject<Node> (), UdpSocketFactory::GetTypeId());
           NS_ASSERT (socket != 0);
           socket->SetRecvCallback (MakeCallback (&RoutingProtocol::RecvAodv, this));
           socket->Bind (InetSocketAddress (iface.GetLocal (), AODV_PORT));
@@ -549,7 +546,7 @@ RoutingProtocol::SendRequest (Ipv4Address dst)
       packet->AddHeader (rreqHeader);
       TypeHeader tHeader (AODVTYPE_RREQ);
       packet->AddHeader (tHeader);
-      SendPacketViaRawSocket (/*packet*/packet, /*pair<Ptr<Socket> , Ipv4InterfaceAddress>*/ *j, /*dst*/iface.GetBroadcast (), /*TTL*/ NetDiameter, /*id*/0);
+      socket->Send(packet);
     }
   ScheduleRreqRetry (dst);
   if (EnableHello)
@@ -583,17 +580,9 @@ RoutingProtocol::RecvAodv (Ptr<Socket> socket )
   NS_LOG_FUNCTION (this);
   Address sourceAddress;
   Ptr<Packet> packet = socket->RecvFrom (sourceAddress);
-
-  Ipv4Header ipv4Header;
-  packet->RemoveHeader (ipv4Header);
-
-  UdpHeader udpHeader;
-  packet->RemoveHeader (udpHeader);
-  NS_ASSERT (udpHeader.GetDestinationPort () == AODV_PORT);
-  NS_ASSERT (udpHeader.GetSourcePort () == AODV_PORT);
-
+  InetSocketAddress inetSourceAddr = InetSocketAddress::ConvertFrom (sourceAddress);
+  Ipv4Address sender = inetSourceAddr.GetIpv4 ();
   Ipv4Address receiver = m_socketAddresses[socket].GetLocal ();
-  Ipv4Address sender = ipv4Header.GetSource ();
   NS_LOG_DEBUG ("AODV node " << this << " received a AODV packet from " << sender << " to " << receiver);
 
   UpdateRouteToNeighbor (sender, receiver);
@@ -608,12 +597,12 @@ RoutingProtocol::RecvAodv (Ptr<Socket> socket )
     {
     case AODVTYPE_RREQ:
       {
-        RecvRequest (packet, receiver, sender, ipv4Header);
+        RecvRequest (packet, receiver, sender);
         break;
       }
     case AODVTYPE_RREP:
       {
-        RecvReply (packet, receiver, sender, ipv4Header);
+        RecvReply (packet, receiver, sender);
         break;
       }
     case AODVTYPE_RERR:
@@ -668,7 +657,7 @@ RoutingProtocol::UpdateRouteToNeighbor (Ipv4Address sender, Ipv4Address receiver
 }
 
 void
-RoutingProtocol::RecvRequest (Ptr<Packet> p, Ipv4Address receiver, Ipv4Address src, Ipv4Header ipv4Header )
+RoutingProtocol::RecvRequest (Ptr<Packet> p, Ipv4Address receiver, Ipv4Address src)
 {
   NS_LOG_FUNCTION (this);
   RreqHeader rreqHeader;
@@ -753,7 +742,7 @@ RoutingProtocol::RecvRequest (Ptr<Packet> p, Ipv4Address receiver, Ipv4Address s
    */
   RoutingTableEntry toDst;
   Ipv4Address dst = rreqHeader.GetDst ();
-  NS_LOG_LOGIC (receiver << " recieve RREQ to destination " << dst << " with ttl " << (uint16_t) ipv4Header.GetTtl ());
+  NS_LOG_LOGIC (receiver << " recieve RREQ to destination " << dst);
   if (m_routingTable.LookupRoute (dst, toDst))
     {
       /*
@@ -775,23 +764,15 @@ RoutingProtocol::RecvRequest (Ptr<Packet> p, Ipv4Address receiver, Ipv4Address s
         }
     }
 
-  /*
-   * If a node does not generate a RREP the incoming IP header has TTL larger than 1, the node updates
-   * and broadcasts the RREQ on each of its configured interfaces.
-   */
-  if (ipv4Header.GetTtl () < 2)
-    return;
-
   for (std::map<Ptr<Socket> , Ipv4InterfaceAddress>::const_iterator j = m_socketAddresses.begin (); j != m_socketAddresses.end (); ++j)
     {
       Ptr<Socket> socket = j->first;
       Ipv4InterfaceAddress iface = j->second;
-      Ptr<Packet> packet = p->Copy ();
+      Ptr<Packet> packet = Create<Packet> ();
       packet->AddHeader (rreqHeader);
       TypeHeader tHeader (AODVTYPE_RREQ);
       packet->AddHeader (tHeader);
-      SendPacketViaRawSocket (/*packet*/packet, /*pair<Ptr<Socket> , Ipv4InterfaceAddress>*/ *j, /*dst*/iface.GetBroadcast (),
-                               /*TTL*/ ipv4Header.GetTtl () - 1, /*id*/ipv4Header.GetIdentification ());
+      socket->Send (packet);
     }
 
   if (EnableHello)
@@ -819,8 +800,7 @@ RoutingProtocol::SendReply (RreqHeader const & rreqHeader, RoutingTableEntry con
   packet->AddHeader (tHeader);
   Ptr<Socket> socket = FindSocketWithInterfaceAddress (toOrigin.GetInterface ());
   NS_ASSERT (socket);
-  SendPacketViaRawSocket (/*packet*/packet, /*pair<Ptr<Socket> , Ipv4InterfaceAddress>*/ std::make_pair(socket, toOrigin.GetInterface ()),
-                           /*dst*/toOrigin.GetNextHop (), /*TTL*/ toOrigin.GetHop (), /*id*/0);
+  socket->SendTo (packet, 0, InetSocketAddress (toOrigin.GetNextHop (), AODV_PORT));
 }
 
 void
@@ -853,8 +833,7 @@ RoutingProtocol::SendReplyByIntermediateNode (RoutingTableEntry & toDst, Routing
   Ptr<Socket> socket = FindSocketWithInterfaceAddress (toOrigin.GetInterface ());
   m_routingTable.Print(std::cout);
   NS_ASSERT (socket);
-  SendPacketViaRawSocket (/*packet*/packet, /*pair<Ptr<Socket> , Ipv4InterfaceAddress>*/ std::make_pair(socket, toOrigin.GetInterface ()),
-                           /*dst*/toOrigin.GetNextHop (), /*TTL*/ toOrigin.GetHop (), /*id*/0);
+  socket->SendTo (packet, 0, InetSocketAddress (toOrigin.GetNextHop (), AODV_PORT));
 
   // Generating gratuitous RREPs
   if (gratRep)
@@ -868,8 +847,7 @@ RoutingProtocol::SendReplyByIntermediateNode (RoutingTableEntry & toDst, Routing
       Ptr<Socket> socket = FindSocketWithInterfaceAddress (toDst.GetInterface ());
       NS_ASSERT (socket);
       NS_LOG_LOGIC ("Send gratuitous RREP " << packet->GetUid());
-      SendPacketViaRawSocket (/*packet*/packetToDst, /*pair<Ptr<Socket> , Ipv4InterfaceAddress>*/ std::make_pair(socket, toDst.GetInterface ()),
-                               /*dst*/toDst.GetNextHop (), /*TTL*/ toDst.GetHop (), /*id*/0);
+      socket->SendTo (packetToDst, 0, InetSocketAddress (toDst.GetNextHop (), AODV_PORT));
     }
 }
 
@@ -886,12 +864,11 @@ RoutingProtocol::SendReplyAck (Ipv4Address neighbor )
   m_routingTable.LookupRoute (neighbor, toNeighbor);
   Ptr<Socket> socket = FindSocketWithInterfaceAddress (toNeighbor.GetInterface ());
   NS_ASSERT (socket);
-  SendPacketViaRawSocket (/*packet*/packet, /*pair<Ptr<Socket> , Ipv4InterfaceAddress>*/ std::make_pair(socket, toNeighbor.GetInterface ()),
-                           /*dst*/neighbor, /*TTL*/ 1, /*id*/0);
+  socket->SendTo (packet, 0, InetSocketAddress (neighbor, AODV_PORT));
 }
 
 void
-RoutingProtocol::RecvReply (Ptr<Packet> p, Ipv4Address receiver, Ipv4Address sender, Ipv4Header ipv4Header )
+RoutingProtocol::RecvReply (Ptr<Packet> p, Ipv4Address receiver, Ipv4Address sender)
 {
   NS_LOG_FUNCTION(this << " src " << sender);
   RrepHeader rrepHeader;
@@ -1012,12 +989,11 @@ RoutingProtocol::RecvReply (Ptr<Packet> p, Ipv4Address receiver, Ipv4Address sen
   packet->AddHeader (tHeader);
   Ptr<Socket> socket = FindSocketWithInterfaceAddress (toOrigin.GetInterface ());
   NS_ASSERT (socket);
-  SendPacketViaRawSocket (/*packet*/packet, /*pair<Ptr<Socket> , Ipv4InterfaceAddress>*/ std::make_pair(socket, toOrigin.GetInterface ()),
-                           /*dst*/toOrigin.GetNextHop (), /*TTL*/ ipv4Header.GetTtl () - 1, /*id*/0);
+  socket->SendTo (packet, 0, InetSocketAddress (toOrigin.GetNextHop (), AODV_PORT));
 }
 
 void
-RoutingProtocol::RecvReplyAck (Ipv4Address neighbor )
+RoutingProtocol::RecvReplyAck (Ipv4Address neighbor)
 {
   NS_LOG_LOGIC(this);
   // TODO
@@ -1063,11 +1039,6 @@ RoutingProtocol::RecvError (Ptr<Packet> p, Ipv4Address src )
   NS_LOG_FUNCTION (this << " from " << src);
   RerrHeader rerrHeader;
   p->RemoveHeader (rerrHeader);
-  bool noDelete = rerrHeader.GetNoDelete ();
-  if (noDelete)
-    {
-      NS_LOG_LOGIC ("Receive RERR with no delete flag.");
-    }
   std::map<Ipv4Address, uint32_t> dstWithNextHopSrc;
   std::map<Ipv4Address, uint32_t> unreachable;
   m_routingTable.GetListOfDestinationWithNextHop (src, dstWithNextHopSrc);
@@ -1114,8 +1085,7 @@ RoutingProtocol::RecvError (Ptr<Packet> p, Ipv4Address src )
       rerrHeader.Print(std::cout);
       SendRerrMessage (packet, precursors);
     }
-  if (!noDelete)
-    m_routingTable.InvalidateRoutesWithDst (unreachable);
+  m_routingTable.InvalidateRoutesWithDst (unreachable);
   NS_LOG_LOGIC ("After receive RERR");
   m_routingTable.Print (std::cout);
 }
@@ -1169,7 +1139,6 @@ RoutingProtocol::HelloTimerExpire ()
   // TODO select random time for the next hello
   htimer.Cancel ();
   Time t = Scalar(0.01)*MilliSeconds(UniformVariable().GetValue (0.0, 100.0));
-  NS_LOG_LOGIC ("delay = " << t.GetMicroSeconds ());
   htimer.Schedule (HelloInterval - t);
 }
 
@@ -1195,37 +1164,16 @@ RoutingProtocol::SendHello ()
       Ptr<Socket> socket = j->first;
       Ipv4InterfaceAddress iface = j->second;
       RrepHeader helloHeader (/*prefix size=*/0, /*hops=*/0, /*dst=*/iface.GetLocal (), /*dst seqno=*/m_seqNo,
-      /*origin=*/iface.GetLocal (),/*lifetime=*/Scalar (AllowedHelloLoss) * HelloInterval);
+                              /*origin=*/iface.GetLocal (),/*lifetime=*/Scalar (AllowedHelloLoss) * HelloInterval);
       Ptr<Packet> packet = Create<Packet> ();
       packet->AddHeader (helloHeader);
       TypeHeader tHeader (AODVTYPE_RREP);
       packet->AddHeader (tHeader);
-      SendPacketViaRawSocket (/*packet*/packet, /*pair<Ptr<Socket> , Ipv4InterfaceAddress>*/ *j,
-                               /*dst*/iface.GetBroadcast (), /*TTL*/ 1, /*id*/0);
+      socket->Send (packet);
     }
 }
 
-void
-RoutingProtocol::SendPacketViaRawSocket (Ptr<Packet> packet, std::pair<Ptr<Socket> , Ipv4InterfaceAddress> socketAddress, Ipv4Address dst,
-    uint16_t ttl, uint16_t id )
-{
-  UdpHeader udpHeader;
-  udpHeader.SetDestinationPort (AODV_PORT);
-  udpHeader.SetSourcePort (AODV_PORT);
-  packet->AddHeader (udpHeader);
 
-  Ipv4Header ipv4Header;
-  ipv4Header.SetSource (socketAddress.second.GetLocal ());
-  ipv4Header.SetDestination (dst);
-  ipv4Header.SetIdentification (id);
-  ipv4Header.EnableChecksum ();
-  ipv4Header.SetProtocol (UdpL4Protocol::PROT_NUMBER);
-  ipv4Header.SetTtl (ttl);
-  ipv4Header.SetPayloadSize (packet->GetSize ());
-  packet->AddHeader (ipv4Header);
-  NS_LOG_LOGIC ("Send packet " << packet->GetUid() << " from " << socketAddress.second.GetLocal () << " to " << dst);
-  socketAddress.first->SendTo (packet, 0, InetSocketAddress (dst, AODV_PORT));
-}
 
 void
 RoutingProtocol::SendPacketFromQueue (Ipv4Address dst, Ptr<Ipv4Route> route )
@@ -1321,8 +1269,7 @@ RoutingProtocol::SendRerrWhenNoRouteToForward (Ipv4Address dst, uint32_t dstSeqN
           Ptr<Socket> socket = FindSocketWithInterfaceAddress (toOrigin.GetInterface ());
           NS_ASSERT (socket);
           NS_LOG_LOGIC ("unicast RERR to the source of the data transmission");
-          SendPacketViaRawSocket (/*packet*/packet, /*pair<Ptr<Socket> , Ipv4InterfaceAddress>*/ std::make_pair(socket, toOrigin.GetInterface ()),
-                                    /*dst*/toOrigin.GetNextHop (), /*TTL*/ 1, /*id*/0);
+          socket->SendTo(packet, 0, InetSocketAddress (toOrigin.GetNextHop (), AODV_PORT));
         }
 
     }
@@ -1334,8 +1281,7 @@ RoutingProtocol::SendRerrWhenNoRouteToForward (Ipv4Address dst, uint32_t dstSeqN
           Ipv4InterfaceAddress iface = i->second;
           NS_ASSERT (socket);
           NS_LOG_LOGIC ("broadcast RERR meassage from interface " << iface.GetLocal());
-          SendPacketViaRawSocket (/*packet*/packet, /*pair<Ptr<Socket> , Ipv4InterfaceAddress>*/ std::make_pair(socket, iface),
-                                  /*dst*/iface.GetBroadcast (), /*TTL*/1, /*id*/0);
+          socket->Send (packet);
         }
     }
 }
@@ -1358,8 +1304,7 @@ RoutingProtocol::SendRerrMessage (Ptr<Packet> packet, std::vector<Ipv4Address> p
       Ptr<Socket> socket = FindSocketWithInterfaceAddress (toPrecursor.GetInterface ());
       NS_ASSERT (socket);
       NS_LOG_LOGIC ("one precursor => unicast RERR to " << toPrecursor.GetDestination() << " from " << toPrecursor.GetInterface ().GetLocal ());
-      SendPacketViaRawSocket (/*packet*/packet, /*pair<Ptr<Socket> , Ipv4InterfaceAddress>*/ std::make_pair(socket, toPrecursor.GetInterface ()),
-                               /*dst*/precursors.front (), /*TTL*/ 1, /*id*/0);
+      socket->SendTo(packet, 0, InetSocketAddress (precursors.front (), AODV_PORT));
       return;
     }
 
@@ -1386,8 +1331,7 @@ RoutingProtocol::SendRerrMessage (Ptr<Packet> packet, std::vector<Ipv4Address> p
       Ptr<Socket> socket = FindSocketWithInterfaceAddress (*i);
       NS_ASSERT (socket);
       NS_LOG_LOGIC ("broadcast RERR meassage from interface " << i->GetLocal());
-      SendPacketViaRawSocket (/*packet*/packet, /*pair<Ptr<Socket> , Ipv4InterfaceAddress>*/ std::make_pair(socket, *i),
-                               /*dst*/m_socketAddresses[socket].GetBroadcast (), /*TTL*/ 1, /*id*/0);
+      socket->Send (packet);
     }
 
 }

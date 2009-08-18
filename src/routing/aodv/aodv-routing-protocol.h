@@ -178,9 +178,9 @@ private:
   /// Receive and process control packet
   void RecvAodv (Ptr<Socket> socket);
   /// Receive RREQ
-  void RecvRequest (Ptr<Packet> p, Ipv4Address receiver, Ipv4Address src, Ipv4Header ipv4Header);
+  void RecvRequest (Ptr<Packet> p, Ipv4Address receiver, Ipv4Address src);
   /// Receive RREP
-  void RecvReply (Ptr<Packet> p, Ipv4Address my ,Ipv4Address src, Ipv4Header ipv4Header);
+  void RecvReply (Ptr<Packet> p, Ipv4Address my ,Ipv4Address src);
   /// Receive RREP_ACK
   void RecvReplyAck(Ipv4Address neighbor);
   /// Receive RERR from node with address src
@@ -218,10 +218,6 @@ private:
    * \param origin - originating node IP address
    */
   void SendRerrWhenNoRouteToForward (Ipv4Address dst, uint32_t dstSeqNo, Ipv4Address origin);
-  /**
-  * Add UDP, IP headers to packet and send it via raw socket
-  */
-  void SendPacketViaRawSocket (Ptr<Packet> packet, std::pair<Ptr<Socket> , Ipv4InterfaceAddress> socketAddress, Ipv4Address dst, uint16_t ttl, uint16_t id);
   //\}
   
   /// Notify that packet is dropped for some reason 

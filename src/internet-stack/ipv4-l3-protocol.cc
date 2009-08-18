@@ -40,9 +40,6 @@
 #include "icmpv4-l4-protocol.h"
 #include "ipv4-interface.h"
 #include "ipv4-raw-socket-impl.h"
-#include "raw-socket-impl.h"
-
-
 
 NS_LOG_COMPONENT_DEFINE ("Ipv4L3Protocol");
 
@@ -128,35 +125,7 @@ Ipv4L3Protocol::CreateRawSocket (void)
   m_sockets.push_back (socket);
   return socket;
 }
-
-Ptr<Socket>
-Ipv4L3Protocol::CreateRawSocket2 (void)
-{
-  NS_LOG_FUNCTION (this);
-  Ptr<RawSocketImpl> socket = CreateObject<RawSocketImpl> ();
-  socket->SetProtocol(17);   // UdpL4Protocol::PROT_NUMBER
-  socket->SetNode (m_node);
-  m_rawSocket.push_back (socket);
-  return socket;
-}
-
-
 void 
-Ipv4L3Protocol::DeleteRawSocket2 (Ptr<Socket> socket)
-{
-  NS_LOG_FUNCTION (this << socket);
-  for (RawSocketList::iterator i = m_rawSocket.begin (); i != m_rawSocket.end (); ++i)
-  {
-    if ((*i) == socket)
-    {
-      m_rawSocket.erase (i);
-      return;
-    }
-  }
-  return;
-}
-
-void
 Ipv4L3Protocol::DeleteRawSocket (Ptr<Socket> socket)
 {
   NS_LOG_FUNCTION (this << socket);
@@ -170,7 +139,6 @@ Ipv4L3Protocol::DeleteRawSocket (Ptr<Socket> socket)
     }
   return;
 }
-
 /*
  * This method is called by AddAgregate and completes the aggregation
  * by setting the node in the ipv4 stack
@@ -392,7 +360,7 @@ Ipv4L3Protocol::Receive( Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t pr
 {
   NS_LOG_FUNCTION (this << &device << p << protocol <<  from);
 
-  NS_LOG_LOGIC ("Packet from " << from << " received on node " <<
+  NS_LOG_LOGIC ("Packet from " << from << " received on node " << 
     m_node->GetId ());
 
   uint32_t interface = 0;
@@ -430,22 +398,13 @@ Ipv4L3Protocol::Receive( Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t pr
 
   if (!ipHeader.IsChecksumOk ()) 
     {
-    NS_LOG_LOGIC("bad check sum");
       m_dropTrace (packet);
       return;
     }
 
-  for (RawSocketList::iterator i = m_rawSocket.begin (); i != m_rawSocket.end (); ++i)
-    {
-      NS_LOG_LOGIC ("Forwarding to raw socket");
-      Ptr<RawSocketImpl> socket = *i;
-      if(socket->ForwardUp (p, device))
-        return;
-    }
-
   for (SocketList::iterator i = m_sockets.begin (); i != m_sockets.end (); ++i)
     {
-      NS_LOG_LOGIC ("Forwarding to ip_raw socket");
+      NS_LOG_LOGIC ("Forwarding to raw socket");
       Ptr<Ipv4RawSocketImpl> socket = *i;
       socket->ForwardUp (packet, ipHeader, device);
     }

@@ -244,35 +244,36 @@ Ipv4RawSocketImpl::ForwardUp (Ptr<const Packet> p, Ipv4Header ipHeader, Ptr<NetD
 {
   NS_LOG_FUNCTION (this << *p << ipHeader << device);
   if (m_shutdownRecv)
-  {
-    return false;
-  }
+    {
+      return false;
+    }
   NS_LOG_LOGIC ("src = " << m_src << " dst = " << m_dst);
   if ((m_src == Ipv4Address::GetAny () || ipHeader.GetDestination () == m_src) &&
       (m_dst == Ipv4Address::GetAny () || ipHeader.GetSource () == m_dst) &&
       ipHeader.GetProtocol () == m_protocol)
-  {
-    Ptr<Packet> copy = p->Copy ();
-    if (m_protocol == 1)
     {
-      Icmpv4Header icmpHeader;
-      copy->PeekHeader (icmpHeader);
-      uint8_t type = icmpHeader.GetType ();
-      if (type < 32 &&  ((1 << type) & m_icmpFilter))
-      {
-        // filter out icmp packet.
-        return false;
-      }
+      Ptr<Packet> copy = p->Copy ();
+      if (m_protocol == 1)
+	{
+	  Icmpv4Header icmpHeader;
+	  copy->PeekHeader (icmpHeader);
+	  uint8_t type = icmpHeader.GetType ();
+	  if (type < 32 && 
+	      ((1 << type) & m_icmpFilter))
+	    {
+	      // filter out icmp packet.
+	      return false;
+	    }
+	}
+      copy->AddHeader (ipHeader);
+      struct Data data;
+      data.packet = copy;
+      data.fromIp = ipHeader.GetSource ();
+      data.fromProtocol = ipHeader.GetProtocol ();
+      m_recv.push_back (data);
+      NotifyDataRecv ();
+      return true;
     }
-    copy->AddHeader (ipHeader);
-    struct Data data;
-    data.packet = copy;
-    data.fromIp = ipHeader.GetSource ();
-    data.fromProtocol = ipHeader.GetProtocol ();
-    m_recv.push_back (data);
-    NotifyDataRecv ();
-    return true;
-  }
   return false;
 }
 
