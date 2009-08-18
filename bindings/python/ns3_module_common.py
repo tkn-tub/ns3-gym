@@ -43,6 +43,10 @@ def register_types(module):
     module.add_class('Tag', parent=root_module['ns3::ObjectBase'])
     ## tag-buffer.h: ns3::TagBuffer [class]
     module.add_class('TagBuffer')
+    ## ascii-writer.h: ns3::AsciiWriter [class]
+    module.add_class('AsciiWriter', parent=root_module['ns3::RefCountBase'])
+    ## ascii-writer.h: ns3::AsciiWriter::Type [enumeration]
+    module.add_enum('Type', ['ENQUEUE', 'DEQUEUE', 'DROP', 'TX', 'RX'], outer_class=root_module['ns3::AsciiWriter'])
     ## chunk.h: ns3::Chunk [class]
     module.add_class('Chunk', parent=root_module['ns3::ObjectBase'])
     ## data-rate.h: ns3::DataRateChecker [class]
@@ -52,7 +56,7 @@ def register_types(module):
     ## header.h: ns3::Header [class]
     module.add_class('Header', parent=root_module['ns3::Chunk'])
     ## pcap-writer.h: ns3::PcapWriter [class]
-    module.add_class('PcapWriter', parent=root_module['ns3::RefCountBase'])
+    module.add_class('PcapWriter', parent=root_module['ns3::Object'])
     ## trailer.h: ns3::Trailer [class]
     module.add_class('Trailer', parent=root_module['ns3::Chunk'])
     ## error-model.h: ns3::ErrorModel [class]
@@ -131,6 +135,7 @@ def register_methods(root_module):
     register_Ns3PacketTagListTagData_methods(root_module, root_module['ns3::PacketTagList::TagData'])
     register_Ns3Tag_methods(root_module, root_module['ns3::Tag'])
     register_Ns3TagBuffer_methods(root_module, root_module['ns3::TagBuffer'])
+    register_Ns3AsciiWriter_methods(root_module, root_module['ns3::AsciiWriter'])
     register_Ns3Chunk_methods(root_module, root_module['ns3::Chunk'])
     register_Ns3DataRateChecker_methods(root_module, root_module['ns3::DataRateChecker'])
     register_Ns3DataRateValue_methods(root_module, root_module['ns3::DataRateValue'])
@@ -949,6 +954,20 @@ def register_Ns3TagBuffer_methods(root_module, cls):
                    [param('uint8_t *', 'buffer'), param('uint32_t', 'size')])
     return
 
+def register_Ns3AsciiWriter_methods(root_module, cls):
+    ## ascii-writer.h: ns3::AsciiWriter::AsciiWriter(ns3::AsciiWriter const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::AsciiWriter const &', 'arg0')])
+    ## ascii-writer.h: static ns3::Ptr<ns3::AsciiWriter> ns3::AsciiWriter::Get(std::ostream & os) [member function]
+    cls.add_method('Get', 
+                   'ns3::Ptr< ns3::AsciiWriter >', 
+                   [param('std::ostream &', 'os')], 
+                   is_static=True)
+    ## ascii-writer.h: void ns3::AsciiWriter::WritePacket(ns3::AsciiWriter::Type type, std::string message, ns3::Ptr<ns3::Packet const> p) [member function]
+    cls.add_method('WritePacket', 
+                   'void', 
+                   [param('ns3::AsciiWriter::Type', 'type'), param('std::string', 'message'), param('ns3::Ptr< ns3::Packet const >', 'p')])
+    return
+
 def register_Ns3Chunk_methods(root_module, cls):
     ## chunk.h: ns3::Chunk::Chunk(ns3::Chunk const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::Chunk const &', 'arg0')])
@@ -1047,6 +1066,11 @@ def register_Ns3Header_methods(root_module, cls):
 def register_Ns3PcapWriter_methods(root_module, cls):
     ## pcap-writer.h: ns3::PcapWriter::PcapWriter(ns3::PcapWriter const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::PcapWriter const &', 'arg0')])
+    ## pcap-writer.h: static ns3::TypeId ns3::PcapWriter::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
     ## pcap-writer.h: ns3::PcapWriter::PcapWriter() [constructor]
     cls.add_constructor([])
     ## pcap-writer.h: void ns3::PcapWriter::Open(std::string const & name) [member function]
@@ -1081,10 +1105,14 @@ def register_Ns3PcapWriter_methods(root_module, cls):
     cls.add_method('WritePacket', 
                    'void', 
                    [param('ns3::Ptr< ns3::Packet const >', 'packet')])
-    ## pcap-writer.h: void ns3::PcapWriter::WriteWifiMonitorPacket(ns3::Ptr<ns3::Packet const> packet, uint16_t channelFreqMhz, uint32_t rate, bool isShortPreamble, bool isTx, double signalDbm, double noiseDbm) [member function]
+    ## pcap-writer.h: void ns3::PcapWriter::WriteWifiMonitorPacket(ns3::Ptr<ns3::Packet const> packet, uint16_t channelFreqMhz, uint16_t channelNumber, uint32_t rate, bool isShortPreamble, bool isTx, double signalDbm, double noiseDbm) [member function]
     cls.add_method('WriteWifiMonitorPacket', 
                    'void', 
-                   [param('ns3::Ptr< ns3::Packet const >', 'packet'), param('uint16_t', 'channelFreqMhz'), param('uint32_t', 'rate'), param('bool', 'isShortPreamble'), param('bool', 'isTx'), param('double', 'signalDbm'), param('double', 'noiseDbm')])
+                   [param('ns3::Ptr< ns3::Packet const >', 'packet'), param('uint16_t', 'channelFreqMhz'), param('uint16_t', 'channelNumber'), param('uint32_t', 'rate'), param('bool', 'isShortPreamble'), param('bool', 'isTx'), param('double', 'signalDbm'), param('double', 'noiseDbm')])
+    ## pcap-writer.h: void ns3::PcapWriter::SetCaptureSize(uint32_t size) [member function]
+    cls.add_method('SetCaptureSize', 
+                   'void', 
+                   [param('uint32_t', 'size')])
     return
 
 def register_Ns3Trailer_methods(root_module, cls):

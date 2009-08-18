@@ -89,8 +89,7 @@ NqstaWifiMac::GetTypeId (void)
                    MakeBooleanChecker ())
     .AddAttribute ("DcaTxop", "The DcaTxop object",
                    PointerValue (),
-                   MakePointerAccessor (&NqstaWifiMac::GetDcaTxop,
-                                        &NqstaWifiMac::SetDcaTxop),
+                   MakePointerAccessor (&NqstaWifiMac::GetDcaTxop),
                    MakePointerChecker<DcaTxop> ()) 
     .AddTraceSource ("Assoc", "Associated with an access point.",
                      MakeTraceSourceAccessor (&NqstaWifiMac::m_assocLogger))
@@ -115,6 +114,10 @@ NqstaWifiMac::NqstaWifiMac ()
 
   m_dcfManager = new DcfManager ();
   m_dcfManager->SetupLowListener (m_low);
+
+  m_dca = CreateObject<DcaTxop> ();
+  m_dca->SetLow (m_low);
+  m_dca->SetManager (m_dcfManager);
 }
 
 NqstaWifiMac::~NqstaWifiMac ()
@@ -207,13 +210,6 @@ Ptr<DcaTxop>
 NqstaWifiMac::GetDcaTxop(void) const
 {
   return m_dca;
-}
-void
-NqstaWifiMac::SetDcaTxop (Ptr<DcaTxop> dcaTxop)
-{
-  m_dca = dcaTxop;
-  m_dca->SetLow (m_low);
-  m_dca->SetManager (m_dcfManager);
 }
 void 
 NqstaWifiMac::SetWifiPhy (Ptr<WifiPhy> phy)
@@ -666,6 +662,29 @@ NqstaWifiMac::SetState (MacState value)
       m_deAssocLogger (GetBssid ());
     }
   m_state = value;
+}
+
+void 
+NqstaWifiMac::FinishConfigureStandard (enum WifiPhyStandard standard)
+{
+  switch (standard)
+    {
+    case WIFI_PHY_STANDARD_holland:
+      // fall through
+    case WIFI_PHY_STANDARD_80211_10Mhz: 
+      // fall through
+    case WIFI_PHY_STANDARD_80211_5Mhz:
+      // fall through
+    case WIFI_PHY_STANDARD_80211a:
+      ConfigureDcf (m_dca, 15, 1023, AC_BE_NQOS);
+      break;
+    case WIFI_PHY_STANDARD_80211b:
+      ConfigureDcf (m_dca, 31, 1023, AC_BE_NQOS);
+      break;
+    default:
+      NS_ASSERT (false);
+      break;
+    }
 }
 
 } // namespace ns3

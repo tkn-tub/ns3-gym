@@ -25,9 +25,7 @@
 namespace ns3 {
 
 NqosWifiMacHelper::NqosWifiMacHelper ()
-{
-  m_queue.SetTypeId ("ns3::DcaTxop");
-}
+{}
 
 NqosWifiMacHelper::~NqosWifiMacHelper ()
 {}
@@ -62,24 +60,10 @@ NqosWifiMacHelper::SetType (std::string type,
   m_mac.Set (n7, v7);
 }
 
-void
-NqosWifiMacHelper::SetDcaParameters (std::string n0, const AttributeValue &v0,
-                                     std::string n1, const AttributeValue &v1,
-                                     std::string n2, const AttributeValue &v2,
-                                     std::string n3, const AttributeValue &v3)
-{
-  m_queue.Set (n0, v0);
-  m_queue.Set (n1, v1);
-  m_queue.Set (n2, v2);
-  m_queue.Set (n3, v3);
-}
-
 Ptr<WifiMac>
 NqosWifiMacHelper::Create (void) const
 {
   Ptr<WifiMac> mac = m_mac.Create<WifiMac> ();
-  Ptr<DcaTxop> queue = m_queue.Create<DcaTxop> ();
-  mac->SetAttribute ("DcaTxop", PointerValue (queue));
   return mac;
 }
 

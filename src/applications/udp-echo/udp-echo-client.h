@@ -23,6 +23,7 @@
 #include "ns3/event-id.h"
 #include "ns3/ptr.h"
 #include "ns3/ipv4-address.h"
+#include "ns3/traced-callback.h"
 
 namespace ns3 {
 
@@ -140,7 +141,8 @@ private:
   Ipv4Address m_peerAddress;
   uint16_t m_peerPort;
   EventId m_sendEvent;
-
+  /// Callbacks for tracing the packet Tx events
+  TracedCallback<Ptr<const Packet> > m_txTrace;
 };
 
 } // namespace ns3

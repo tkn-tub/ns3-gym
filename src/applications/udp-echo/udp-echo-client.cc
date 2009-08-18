@@ -24,6 +24,7 @@
 #include "ns3/socket-factory.h"
 #include "ns3/packet.h"
 #include "ns3/uinteger.h"
+#include "ns3/trace-source-accessor.h"
 #include "udp-echo-client.h"
 
 namespace ns3 {
@@ -62,6 +63,8 @@ UdpEchoClient::GetTypeId (void)
                    MakeUintegerAccessor (&UdpEchoClient::SetDataSize,
                                          &UdpEchoClient::GetDataSize),
                    MakeUintegerChecker<uint32_t> ())
+    .AddTraceSource ("Tx", "A new packet is created and is sent",
+                     MakeTraceSourceAccessor (&UdpEchoClient::m_txTrace))
     ;
   return tid;
 }
@@ -246,6 +249,7 @@ UdpEchoClient::Send (void)
 
   NS_ASSERT (m_sendEvent.IsExpired ());
 
+  Ptr<Packet> p;
   if (m_dataSize)
     {
       //
@@ -256,8 +260,7 @@ UdpEchoClient::Send (void)
       //
       NS_ASSERT_MSG (m_dataSize == m_size, "UdpEchoClient::Send(): m_size and m_dataSize inconsistent");
       NS_ASSERT_MSG (m_data, "UdpEchoClient::Send(): m_dataSize but no m_data");
-      Ptr<Packet> p = Create<Packet> (m_data, m_dataSize);
-      m_socket->Send (p);
+      p = Create<Packet> (m_data, m_dataSize);
     }
   else
     {
@@ -268,9 +271,12 @@ UdpEchoClient::Send (void)
       // this case, we don't worry about it either.  But we do allow m_size
       // to have a value different from the (zero) m_dataSize.
       //
-      Ptr<Packet> p = Create<Packet> (m_size);
-      m_socket->Send (p);
+      p = Create<Packet> (m_size);
     }
+  // call to the trace sinks before the packet is actually sent,
+  // so that tags added to the packet can be sent as well
+  m_txTrace (p);
+  m_socket->Send (p);
 
   ++m_sent;
 

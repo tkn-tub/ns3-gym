@@ -44,7 +44,8 @@ class WifiMode
     BPSK,
     DBPSK,
     DQPSK,
-    QAM
+    QAM,
+    UNKNOWN
   };
   
   /**

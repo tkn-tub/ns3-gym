@@ -31,6 +31,7 @@ namespace ns3 {
 
 class Packet;
 class PcapWriter;
+class AsciiWriter;
 
 /**
  * \brief build a set of EmuNetDevice objects
@@ -208,10 +209,10 @@ private:
   Ptr<NetDevice> InstallPriv (Ptr<Node> node) const;
   static void SniffEvent (Ptr<PcapWriter> writer, Ptr<const Packet> packet);
 
-  static void AsciiRxEvent (std::ostream *os, std::string path, Ptr<const Packet> packet);
-  static void AsciiEnqueueEvent (std::ostream *os, std::string path, Ptr<const Packet> packet);
-  static void AsciiDequeueEvent (std::ostream *os, std::string path, Ptr<const Packet> packet);
-  static void AsciiDropEvent (std::ostream *os, std::string path, Ptr<const Packet> packet);
+  static void AsciiRxEvent (Ptr<AsciiWriter> writer, std::string path, Ptr<const Packet> packet);
+  static void AsciiEnqueueEvent (Ptr<AsciiWriter> writer, std::string path, Ptr<const Packet> packet);
+  static void AsciiDequeueEvent (Ptr<AsciiWriter> writer, std::string path, Ptr<const Packet> packet);
+  static void AsciiDropEvent (Ptr<AsciiWriter> writer, std::string path, Ptr<const Packet> packet);
 
   ObjectFactory m_queueFactory;
   ObjectFactory m_deviceFactory;

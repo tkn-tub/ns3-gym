@@ -50,26 +50,22 @@ QadhocWifiMac::GetTypeId (void)
     .AddAttribute ("VO_EdcaTxopN",
                    "Queue that manages packets belonging to AC_VO access class",
                    PointerValue (),
-                   MakePointerAccessor(&QadhocWifiMac::GetVOQueue,
-                                       &QadhocWifiMac::SetVOQueue),
+                   MakePointerAccessor(&QadhocWifiMac::GetVOQueue),
                    MakePointerChecker<EdcaTxopN> ())
     .AddAttribute ("VI_EdcaTxopN",
                    "Queue that manages packets belonging to AC_VI access class",
                    PointerValue (),
-                   MakePointerAccessor(&QadhocWifiMac::GetVIQueue,
-                                       &QadhocWifiMac::SetVIQueue),
+                   MakePointerAccessor(&QadhocWifiMac::GetVIQueue),
                    MakePointerChecker<EdcaTxopN> ())
     .AddAttribute ("BE_EdcaTxopN",
                    "Queue that manages packets belonging to AC_BE access class",
                    PointerValue (),
-                   MakePointerAccessor(&QadhocWifiMac::GetBEQueue,
-                                       &QadhocWifiMac::SetBEQueue),
+                   MakePointerAccessor(&QadhocWifiMac::GetBEQueue),
                    MakePointerChecker<EdcaTxopN> ())
     .AddAttribute ("BK_EdcaTxopN",
                    "Queue that manages packets belonging to AC_BK access class",
                    PointerValue (),
-                   MakePointerAccessor(&QadhocWifiMac::GetBKQueue,
-                                       &QadhocWifiMac::SetBKQueue),
+                   MakePointerAccessor(&QadhocWifiMac::GetBKQueue),
                    MakePointerChecker<EdcaTxopN> ())
     ;
   return tid;
@@ -88,6 +84,11 @@ QadhocWifiMac::QadhocWifiMac ()
 
   m_dcfManager = new DcfManager ();
   m_dcfManager->SetupLowListener (m_low);
+
+  SetQueue (AC_VO);
+  SetQueue (AC_VI);
+  SetQueue (AC_BE);
+  SetQueue (AC_BK);
 }
 
 QadhocWifiMac::~QadhocWifiMac ()
@@ -112,10 +113,9 @@ QadhocWifiMac::DoDispose (void)
   m_beEdca = 0;
   m_bkEdca = 0;
   m_stationManager = 0;
-  std::map<AccessClass, Ptr<EdcaTxopN> >::iterator it = m_queues.begin ();
-  for (;it != m_queues.end (); it++)
+  for (Queues::iterator i = m_queues.begin (); i != m_queues.end (); ++i)
     {
-      it->second = 0;
+      (*i).second = 0;
     }
   WifiMac::DoDispose ();
 }
@@ -208,10 +208,10 @@ QadhocWifiMac::SetWifiRemoteStationManager (Ptr<WifiRemoteStationManager> statio
 {
   NS_LOG_FUNCTION (this << stationManager);
   m_stationManager = stationManager;
-  m_voEdca->SetWifiRemoteStationManager (stationManager);
-  m_viEdca->SetWifiRemoteStationManager (stationManager);
-  m_beEdca->SetWifiRemoteStationManager (stationManager);
-  m_bkEdca->SetWifiRemoteStationManager (stationManager);  
+  for (Queues::iterator i = m_queues.begin (); i != m_queues.end (); ++i)
+    {
+      (*i).second->SetWifiRemoteStationManager (stationManager);
+    }
   m_low->SetWifiRemoteStationManager (stationManager);
 }
 
@@ -373,69 +373,65 @@ QadhocWifiMac::DeaggregateAmsduAndForward (Ptr<Packet> aggregatedPacket,
 Ptr<EdcaTxopN>
 QadhocWifiMac::GetVOQueue (void) const
 {
-  return m_voEdca;
+  return m_queues.find (AC_VO)->second;
 }
 
 Ptr<EdcaTxopN>
 QadhocWifiMac::GetVIQueue (void) const
 {
-  return m_viEdca;
+  return m_queues.find (AC_VI)->second;
 }
 
 Ptr<EdcaTxopN>
 QadhocWifiMac::GetBEQueue (void) const
 {
-  return m_beEdca;
+  return m_queues.find (AC_BE)->second;
 }
 
 Ptr<EdcaTxopN>
 QadhocWifiMac::GetBKQueue (void) const
 {
-  return m_bkEdca;
+  return m_queues.find (AC_BK)->second;
 }
 
 void
-QadhocWifiMac::SetVOQueue (Ptr<EdcaTxopN> voQueue)
+QadhocWifiMac::SetQueue (enum AccessClass ac)
 {
-  m_voEdca = voQueue;
-  m_queues.insert (std::make_pair(AC_VO, m_voEdca));
-  m_queues[AC_VO]->SetLow (m_low);
-  m_queues[AC_VO]->SetManager (m_dcfManager);
-  m_queues[AC_VO]->SetTypeOfStation (ADHOC_STA);
-  m_queues[AC_VO]->SetTxMiddle (m_txMiddle);
+  Ptr<EdcaTxopN> edca = CreateObject<EdcaTxopN> ();
+  edca->SetLow (m_low);
+  edca->SetManager (m_dcfManager);
+  edca->SetTypeOfStation (ADHOC_STA);
+  edca->SetTxMiddle (m_txMiddle);
+  m_queues.insert (std::make_pair(ac, edca));
 }
 
-void
-QadhocWifiMac::SetVIQueue (Ptr<EdcaTxopN> viQueue)
+void 
+QadhocWifiMac::FinishConfigureStandard (enum WifiPhyStandard standard)
 {
-  m_viEdca = viQueue;
-  m_queues.insert (std::make_pair(AC_VI, m_viEdca));
-  m_queues[AC_VI]->SetLow (m_low);
-  m_queues[AC_VI]->SetManager (m_dcfManager);
-  m_queues[AC_VI]->SetTypeOfStation (ADHOC_STA);
-  m_queues[AC_VI]->SetTxMiddle (m_txMiddle);
-}
-
-void
-QadhocWifiMac::SetBEQueue (Ptr<EdcaTxopN> beQueue)
-{
-  m_beEdca = beQueue;
-  m_queues.insert (std::make_pair(AC_BE, m_beEdca));
-  m_queues[AC_BE]->SetLow (m_low);
-  m_queues[AC_BE]->SetManager (m_dcfManager);
-  m_queues[AC_BE]->SetTypeOfStation (ADHOC_STA);
-  m_queues[AC_BE]->SetTxMiddle (m_txMiddle);
-}
-
-void
-QadhocWifiMac::SetBKQueue (Ptr<EdcaTxopN> bkQueue)
-{
-  m_bkEdca = bkQueue;
-  m_queues.insert (std::make_pair(AC_BK, m_bkEdca));
-  m_queues[AC_BK]->SetLow (m_low);
-  m_queues[AC_BK]->SetManager (m_dcfManager);
-  m_queues[AC_BK]->SetTypeOfStation (ADHOC_STA);
-  m_queues[AC_BK]->SetTxMiddle (m_txMiddle);
+  switch (standard)
+    {
+    case WIFI_PHY_STANDARD_holland:
+      // fall through
+    case WIFI_PHY_STANDARD_80211a:
+      // fall through
+    case WIFI_PHY_STANDARD_80211_10Mhz:
+      // fall through
+    case WIFI_PHY_STANDARD_80211_5Mhz:
+      ConfigureDcf (m_queues[AC_BK], 15, 1023, AC_BK);
+      ConfigureDcf (m_queues[AC_BE], 15, 1023, AC_BE);
+      ConfigureDcf (m_queues[AC_VI], 15, 1023, AC_VI);
+      ConfigureDcf (m_queues[AC_VO], 15, 1023, AC_VO);
+      break;
+    case WIFI_PHY_STANDARD_80211b:
+      ConfigureDcf (m_queues[AC_BK], 31, 1023, AC_BK);
+      ConfigureDcf (m_queues[AC_BE], 31, 1023, AC_BE);
+      ConfigureDcf (m_queues[AC_VI], 31, 1023, AC_VI);
+      ConfigureDcf (m_queues[AC_VO], 31, 1023, AC_VO);
+      break;
+    default:
+      NS_ASSERT (false);
+      break;
+    }
 }
 
 } //namespace ns3

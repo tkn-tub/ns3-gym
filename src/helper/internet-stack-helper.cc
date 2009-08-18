@@ -161,6 +161,8 @@
 #include "ns3/callback.h"
 #include "ns3/node.h"
 #include "ns3/core-config.h"
+#include "ns3/pcap-writer.h"
+#include "ns3/ascii-writer.h"
 #include "internet-stack-helper.h"
 #include "ipv4-list-routing-helper.h"
 #include "ipv4-static-routing-helper.h"
@@ -279,16 +281,17 @@ InternetStackHelper::Install (std::string nodeName) const
 void
 InternetStackHelper::EnableAscii (std::ostream &os, NodeContainer n)
 {
+  Ptr<AsciiWriter> writer = AsciiWriter::Get (os);
   Packet::EnablePrinting ();
   std::ostringstream oss;
   for (NodeContainer::Iterator i = n.Begin (); i != n.End (); ++i)
     {
       Ptr<Node> node = *i;
       oss << "/NodeList/" << node->GetId () << "/$ns3::Ipv4L3Protocol/Drop";
-      Config::Connect (oss.str (), MakeBoundCallback (&InternetStackHelper::AsciiDropEvent, &os));
+      Config::Connect (oss.str (), MakeBoundCallback (&InternetStackHelper::AsciiDropEvent, writer));
       oss.str ("");
       oss << "/NodeList/" << node->GetId () << "/$ns3::ArpL3Protocol/Drop";
-      Config::Connect (oss.str (), MakeBoundCallback (&InternetStackHelper::AsciiDropEvent, &os));
+      Config::Connect (oss.str (), MakeBoundCallback (&InternetStackHelper::AsciiDropEvent, writer));
       oss.str ("");
     }
 }
@@ -356,7 +359,7 @@ InternetStackHelper::GetStream (uint32_t nodeId, uint32_t interfaceId)
   InternetStackHelper::Trace trace;
   trace.nodeId = nodeId;
   trace.interfaceId = interfaceId;
-  trace.writer = Create<PcapWriter> ();
+  trace.writer = CreateObject<PcapWriter> ();
   std::ostringstream oss;
   oss << m_pcapBaseFilename << "-" << nodeId << "-" << interfaceId << ".pcap";
   trace.writer->Open (oss.str ());
@@ -366,10 +369,9 @@ InternetStackHelper::GetStream (uint32_t nodeId, uint32_t interfaceId)
 }
 
 void
-InternetStackHelper::AsciiDropEvent (std::ostream *os, std::string path, Ptr<const Packet> packet)
+InternetStackHelper::AsciiDropEvent (Ptr<AsciiWriter> writer, std::string path, Ptr<const Packet> packet)
 {
-  *os << "d " << Simulator::Now ().GetSeconds () << " ";
-  *os << path << " " << *packet << std::endl;
+  writer->WritePacket (AsciiWriter::DROP, path, packet);
 }
 
 } // namespace ns3

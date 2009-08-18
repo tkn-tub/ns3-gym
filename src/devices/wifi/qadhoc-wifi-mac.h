@@ -74,6 +74,7 @@ public:
   virtual void SetSsid (Ssid ssid);
   virtual Mac48Address GetBssid (void) const;
 
+
 private:
   Callback<void, Ptr<Packet>, Mac48Address, Mac48Address> m_forwardUp;
   virtual void DoDispose (void);
@@ -92,15 +93,12 @@ private:
   typedef std::list<std::pair<Ptr<Packet>, AmsduSubframeHeader> > DeaggregatedMsdus;
   typedef std::list<std::pair<Ptr<Packet>, AmsduSubframeHeader> >::const_iterator DeaggregatedMsdusCI;
 
+  virtual void FinishConfigureStandard (enum WifiPhyStandard standard);
+  void SetQueue (enum AccessClass ac);
   Ptr<EdcaTxopN> GetVOQueue (void) const;
   Ptr<EdcaTxopN> GetVIQueue (void) const;
   Ptr<EdcaTxopN> GetBEQueue (void) const;
   Ptr<EdcaTxopN> GetBKQueue (void) const;
-
-  void SetVOQueue (Ptr<EdcaTxopN> voQueue);
-  void SetVIQueue (Ptr<EdcaTxopN> viQueue);
-  void SetBEQueue (Ptr<EdcaTxopN> beQueue);
-  void SetBKQueue (Ptr<EdcaTxopN> bkQueue);
 
   Queues m_queues;
   Ptr<EdcaTxopN> m_voEdca;
