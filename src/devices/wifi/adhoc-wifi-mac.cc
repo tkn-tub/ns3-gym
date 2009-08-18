@@ -28,6 +28,7 @@
 #include "ns3/pointer.h"
 #include "ns3/packet.h"
 #include "ns3/log.h"
+#include "ns3/trace-source-accessor.h"
 
 NS_LOG_COMPONENT_DEFINE ("AdhocWifiMac");
 
@@ -48,7 +49,17 @@ AdhocWifiMac::GetTypeId (void)
                    PointerValue (),
                    MakePointerAccessor (&AdhocWifiMac::GetDcaTxop,
                                         &AdhocWifiMac::SetDcaTxop),
-                   MakePointerChecker<DcaTxop> ()) 
+                   MakePointerChecker<DcaTxop> ())
+  .AddTraceSource ( "TxOkHeader",
+                    "The header of successfully transmitted packet",
+                    MakeTraceSourceAccessor (
+                      &AdhocWifiMac::m_txOkCallback)
+                  )
+  .AddTraceSource ( "TxErrHeader",
+                    "The header of unsuccessfully transmitted packet",
+                    MakeTraceSourceAccessor (
+                      &AdhocWifiMac::m_txErrCallback)
+                  )
     ;
   return tid;
 }
@@ -257,7 +268,16 @@ AdhocWifiMac::SetDcaTxop (Ptr<DcaTxop> dcaTxop)
   m_dca = dcaTxop;
   m_dca->SetLow (m_low);
   m_dca->SetManager (m_dcfManager);
+  m_dca->SetTxFailedCallback (MakeCallback (&AdhocWifiMac::TxFailed, this));
 }
-
-
+void
+AdhocWifiMac::TxOk (const WifiMacHeader &hdr)
+{
+  m_txOkCallback (hdr);
+}
+void
+AdhocWifiMac::TxFailed (const WifiMacHeader &hdr)
+{
+  m_txErrCallback (hdr);
+}
 } // namespace ns3
