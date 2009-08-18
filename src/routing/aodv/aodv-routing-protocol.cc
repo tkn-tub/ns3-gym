@@ -854,7 +854,7 @@ RoutingProtocol::SendReplyByIntermediateNode (RoutingTableEntry & toDst, Routing
 void
 RoutingProtocol::SendReplyAck (Ipv4Address neighbor )
 {
-  NS_LOG_FUNCTION(this);
+  NS_LOG_FUNCTION (this << " to " << neighbor);
   RrepAckHeader h;
   TypeHeader typeHeader (AODVTYPE_RREP_ACK);
   Ptr<Packet> packet = Create<Packet> ();
@@ -995,8 +995,14 @@ RoutingProtocol::RecvReply (Ptr<Packet> p, Ipv4Address receiver, Ipv4Address sen
 void
 RoutingProtocol::RecvReplyAck (Ipv4Address neighbor)
 {
-  NS_LOG_LOGIC(this);
-  // TODO
+  NS_LOG_FUNCTION (this);
+  RoutingTableEntry rt;
+  if(m_routingTable.LookupRoute(neighbor, rt))
+    {
+      rt.m_ackTimer.Cancel ();
+      rt.SetFlag (VALID);
+      m_routingTable.Update(rt);
+    }
 }
 
 void
