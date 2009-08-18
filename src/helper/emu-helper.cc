@@ -25,6 +25,7 @@
 #include "ns3/queue.h"
 #include "ns3/emu-net-device.h"
 #include "ns3/pcap-writer.h"
+#include "ns3/ascii-writer.h"
 #include "ns3/config.h"
 #include "ns3/packet.h"
 
@@ -70,7 +71,7 @@ EmuHelper::EnablePcap (std::string filename, uint32_t nodeid, uint32_t deviceid,
   NS_LOG_FUNCTION (filename << nodeid << deviceid << promiscuous);
   std::ostringstream oss;
   oss << filename << "-" << nodeid << "-" << deviceid << ".pcap";
-  Ptr<PcapWriter> pcap = Create<PcapWriter> ();
+  Ptr<PcapWriter> pcap = CreateObject<PcapWriter> ();
   pcap->Open (oss.str ());
   pcap->WriteEthernetHeader ();
 
@@ -140,23 +141,24 @@ void
 EmuHelper::EnableAscii (std::ostream &os, uint32_t nodeid, uint32_t deviceid)
 {
   NS_LOG_FUNCTION (&os << nodeid << deviceid);
+  Ptr<AsciiWriter> writer = AsciiWriter::Get (os);
   Packet::EnablePrinting ();
   std::ostringstream oss;
 
   oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::EmuNetDevice/MacRx";
-  Config::Connect (oss.str (), MakeBoundCallback (&EmuHelper::AsciiRxEvent, &os));
+  Config::Connect (oss.str (), MakeBoundCallback (&EmuHelper::AsciiRxEvent, writer));
 
   oss.str ("");
   oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::EmuNetDevice/TxQueue/Enqueue";
-  Config::Connect (oss.str (), MakeBoundCallback (&EmuHelper::AsciiEnqueueEvent, &os));
+  Config::Connect (oss.str (), MakeBoundCallback (&EmuHelper::AsciiEnqueueEvent, writer));
 
   oss.str ("");
   oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::EmuNetDevice/TxQueue/Dequeue";
-  Config::Connect (oss.str (), MakeBoundCallback (&EmuHelper::AsciiDequeueEvent, &os));
+  Config::Connect (oss.str (), MakeBoundCallback (&EmuHelper::AsciiDequeueEvent, writer));
 
   oss.str ("");
   oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::EmuNetDevice/TxQueue/Drop";
-  Config::Connect (oss.str (), MakeBoundCallback (&EmuHelper::AsciiDropEvent, &os));
+  Config::Connect (oss.str (), MakeBoundCallback (&EmuHelper::AsciiDropEvent, writer));
 }
 
 void 
@@ -238,48 +240,40 @@ EmuHelper::SniffEvent (Ptr<PcapWriter> writer, Ptr<const Packet> packet)
   writer->WritePacket (packet);
 }
 
-void 
-EmuHelper::AsciiEnqueueEvent (
-  std::ostream *os, 
-  std::string path, 
-  Ptr<const Packet> packet)
+void
+EmuHelper::AsciiEnqueueEvent (Ptr<AsciiWriter> writer,
+                              std::string path,
+                              Ptr<const Packet> packet)
 {
-  NS_LOG_FUNCTION (&os << path << packet);
-  *os << "+ " << Simulator::Now ().GetSeconds () << " ";
-  *os << path << " " << *packet << std::endl;
+  NS_LOG_FUNCTION (writer << path << packet);
+  writer->WritePacket (AsciiWriter::ENQUEUE, path, packet);
 }
 
-void 
-EmuHelper::AsciiDequeueEvent (
-  std::ostream *os, 
-  std::string path, 
-  Ptr<const Packet> packet)
+void
+EmuHelper::AsciiDequeueEvent (Ptr<AsciiWriter> writer,
+                              std::string path,
+                              Ptr<const Packet> packet)
 {
-  NS_LOG_FUNCTION (&os << path << packet);
-  *os << "- " << Simulator::Now ().GetSeconds () << " ";
-  *os << path << " " << *packet << std::endl;
+  NS_LOG_FUNCTION (writer << path << packet);
+  writer->WritePacket (AsciiWriter::DEQUEUE, path, packet);
 }
 
-void 
-EmuHelper::AsciiDropEvent (
-  std::ostream *os, 
-  std::string path, 
-  Ptr<const Packet> packet)
+void
+EmuHelper::AsciiDropEvent (Ptr<AsciiWriter> writer,
+                           std::string path,
+                           Ptr<const Packet> packet)
 {
-  NS_LOG_FUNCTION (&os << path << packet);
-  *os << "d " << Simulator::Now ().GetSeconds () << " ";
-  *os << path << " " << *packet << std::endl;
+  NS_LOG_FUNCTION (writer << path << packet);
+  writer->WritePacket (AsciiWriter::DROP, path, packet);
 }
 
-void 
-EmuHelper::AsciiRxEvent (
-  std::ostream *os, 
-  std::string path, 
-  Ptr<const Packet> packet)
+void
+EmuHelper::AsciiRxEvent (Ptr<AsciiWriter> writer,
+                         std::string path,
+                         Ptr<const Packet> packet)
 {
-  NS_LOG_FUNCTION (&os << path << packet);
-  *os << "r " << Simulator::Now ().GetSeconds () << " ";
-  *os << path << " " << *packet << std::endl;
+  NS_LOG_FUNCTION (writer << path << packet);
+  writer->WritePacket (AsciiWriter::RX, path, packet);
 }
 
 } // namespace ns3

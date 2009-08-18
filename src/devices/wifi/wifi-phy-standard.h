@@ -27,7 +27,8 @@ enum WifiPhyStandard {
   WIFI_PHY_STANDARD_80211b,
   WIFI_PHY_STANDARD_80211_10Mhz,
   WIFI_PHY_STANDARD_80211_5Mhz,
-  WIFI_PHY_STANDARD_holland
+  WIFI_PHY_STANDARD_holland,
+  WIFI_PHY_UNKNOWN
 };
 
 } // namespace ns3

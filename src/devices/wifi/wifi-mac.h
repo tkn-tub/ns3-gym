@@ -26,8 +26,11 @@
 #include "wifi-phy.h"
 #include "wifi-remote-station-manager.h"
 #include "ssid.h"
+#include "qos-utils.h"
 
 namespace ns3 {
+
+class Dcf;
 
 /**
  * \brief base class for all MAC-level wifi objects.
@@ -209,8 +212,10 @@ public:
   /**
    * \param standard the wifi standard to be configured
    */
-  void SetStandard (enum WifiPhyStandard standard);
+  void ConfigureStandard (enum WifiPhyStandard standard);
 
+protected:
+  void ConfigureDcf (Ptr<Dcf> dcf, uint32_t cwmin, uint32_t cwmax, enum AccessClass ac);
 private:
   static Time GetDefaultMaxPropagationDelay (void);
   static Time GetDefaultSlot (void);
@@ -218,10 +223,18 @@ private:
   static Time GetDefaultEifsNoDifs (void);
   static Time GetDefaultCtsAckDelay (void);
   static Time GetDefaultCtsAckTimeout (void);
+  /**
+   * \param standard the phy standard to be used
+   *
+   * This method is called by ns3::WifiMac::ConfigureStandard to complete
+   * the configuration process for a requested phy standard. Subclasses should
+   * implement this method to configure their dcf queues according to the
+   * requested standard.
+   */
+  virtual void FinishConfigureStandard (enum WifiPhyStandard standard) = 0;
 
   Time m_maxPropagationDelay;
   uint32_t m_maxMsduSize;
-  WifiPhyStandard m_standard;
 
   void Configure80211a (void);
   void Configure80211b (void);

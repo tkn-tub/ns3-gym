@@ -203,9 +203,16 @@ UdpSocketImpl::ShutdownRecv (void)
 }
 
 int
-UdpSocketImpl::Close(void)
+UdpSocketImpl::Close (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
+  if (m_shutdownRecv == true && m_shutdownSend == true)
+    {
+      m_errno = Socket::ERROR_BADF;
+      return -1;
+    }
+  m_shutdownRecv = true;
+  m_shutdownSend = true;
   return 0;
 }
 

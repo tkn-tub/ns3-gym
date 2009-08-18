@@ -29,6 +29,7 @@
 #include "wifi-mac-header.h"
 #include "wifi-mode.h"
 #include "wifi-remote-station-manager.h"
+#include "dcf.h"
 
 namespace ns3 {
 
@@ -62,7 +63,7 @@ class MacStations;
  * The rts/cts policy is similar to the fragmentation policy: when
  * a packet is bigger than a threshold, the rts/cts protocol is used.
  */
-class DcaTxop : public Object
+class DcaTxop : public Dcf
 {
 public:
   static TypeId GetTypeId (void);
@@ -90,12 +91,12 @@ public:
 
   void SetMaxQueueSize (uint32_t size);
   void SetMaxQueueDelay (Time delay);
-  void SetMinCw (uint32_t minCw);
-  void SetMaxCw (uint32_t maxCw);
-  void SetAifsn (uint32_t aifsn);
-  uint32_t GetMinCw (void) const;
-  uint32_t GetMaxCw (void) const;
-  uint32_t GetAifsn (void) const;
+  virtual void SetMinCw (uint32_t minCw);
+  virtual void SetMaxCw (uint32_t maxCw);
+  virtual void SetAifsn (uint32_t aifsn);
+  virtual uint32_t GetMinCw (void) const;
+  virtual uint32_t GetMaxCw (void) const;
+  virtual uint32_t GetAifsn (void) const;
 
   /**
    * \param packet packet to send

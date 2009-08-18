@@ -184,6 +184,7 @@ public:
 
   /** 
    * \brief Close a socket.
+   * \returns zero on success, -1 on failure.
    *
    * After the Close call, the socket is no longer valid, and cannot
    * safely be used for subsequent operations.

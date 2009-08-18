@@ -87,6 +87,10 @@ public:
   void StartBeaconing (void);
 
 private:
+  typedef std::map<AccessClass, Ptr<EdcaTxopN> > Queues;
+  typedef std::list<std::pair<Ptr<Packet>, AmsduSubframeHeader> > DeaggregatedMsdus;
+  typedef std::list<std::pair<Ptr<Packet>, AmsduSubframeHeader> >::const_iterator DeaggregatedMsdusCI;
+  
   virtual void DoDispose (void);
   void Receive (Ptr<Packet> packet, WifiMacHeader const*hdr);
   void ForwardUp (Ptr<Packet> packet, Mac48Address from, Mac48Address to);
@@ -107,28 +111,15 @@ private:
   QapWifiMac &operator = (const QapWifiMac &);
   QapWifiMac (const QapWifiMac &);
 
-  typedef std::map<AccessClass, Ptr<EdcaTxopN> > Queues;
-  typedef std::list<std::pair<Ptr<Packet>, AmsduSubframeHeader> > DeaggregatedMsdus;
-  typedef std::list<std::pair<Ptr<Packet>, AmsduSubframeHeader> >::const_iterator DeaggregatedMsdusCI;
-
-  Callback<void,Ptr<Packet>, Mac48Address, Mac48Address> m_forwardUp;
-  
   Ptr<EdcaTxopN> GetVOQueue (void) const;
   Ptr<EdcaTxopN> GetVIQueue (void) const;
   Ptr<EdcaTxopN> GetBEQueue (void) const;
   Ptr<EdcaTxopN> GetBKQueue (void) const;
+  void SetQueue (enum AccessClass ac);
 
-  void SetVOQueue (Ptr<EdcaTxopN> voQueue);
-  void SetVIQueue (Ptr<EdcaTxopN> viQueue);
-  void SetBEQueue (Ptr<EdcaTxopN> beQueue);
-  void SetBKQueue (Ptr<EdcaTxopN> bkQueue);
+  virtual void FinishConfigureStandard (enum WifiPhyStandard standard);
 
-  /*Next map is used only for an esay access to a specific queue*/
   Queues m_queues;
-  Ptr<EdcaTxopN> m_voEdca;
-  Ptr<EdcaTxopN> m_viEdca;
-  Ptr<EdcaTxopN> m_beEdca;
-  Ptr<EdcaTxopN> m_bkEdca;
   Ptr<DcaTxop> m_beaconDca;
   Ptr<MacLow> m_low;
   Ptr<WifiPhy> m_phy;
@@ -139,6 +130,7 @@ private:
   Ssid m_ssid;
   EventId m_beaconEvent;
   Time m_beaconInterval;
+  Callback<void,Ptr<Packet>, Mac48Address, Mac48Address> m_forwardUp;
 };
 
 }  //namespace ns3

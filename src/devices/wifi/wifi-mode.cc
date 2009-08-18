@@ -88,11 +88,6 @@ std::string
 WifiMode::GetUniqueName (void) const
 {
   // needed for ostream printing of the invalid mode
-  if (m_uid == 0)
-    {
-      return "Invalid-WifiMode";
-    }
-
   struct WifiModeFactory::WifiModeItem *item = WifiModeFactory::GetFactory ()->Get (m_uid);
   return item->uniqueUid;
 }
@@ -220,7 +215,7 @@ WifiModeFactory::CreateDqpsk (std::string uniqueName,
 bool 
 WifiModeFactory::Search (std::string name, WifiMode *mode)
 {
-  uint32_t j = 1;
+  uint32_t j = 0;
   for (WifiModeItemList::const_iterator i = m_itemList.begin ();
        i != m_itemList.end (); i++)
     {
@@ -238,7 +233,7 @@ WifiModeFactory::Search (std::string name, WifiMode *mode)
 uint32_t
 WifiModeFactory::AllocateUid (std::string uniqueUid)
 {
-  uint32_t j = 1;
+  uint32_t j = 0;
   for (WifiModeItemList::const_iterator i = m_itemList.begin ();
        i != m_itemList.end (); i++)
     {
@@ -248,16 +243,16 @@ WifiModeFactory::AllocateUid (std::string uniqueUid)
 	}
       j++;
     }
-  m_itemList.push_back (WifiModeItem ());
   uint32_t uid = m_itemList.size ();
+  m_itemList.push_back (WifiModeItem ());
   return uid;
 }
 
 struct WifiModeFactory::WifiModeItem *
 WifiModeFactory::Get (uint32_t uid)
 {
-  NS_ASSERT (uid > 0 && uid <= m_itemList.size ());
-  return &m_itemList[uid - 1];
+  NS_ASSERT (uid < m_itemList.size ());
+  return &m_itemList[uid];
 }
 
 WifiModeFactory *
@@ -267,7 +262,16 @@ WifiModeFactory::GetFactory (void)
   static WifiModeFactory factory;
   if (isFirstTime)
     {
-      factory.AllocateUid ("Invalid-WifiMode");
+      uint32_t uid = factory.AllocateUid ("Invalid-WifiMode");
+      WifiModeItem *item = factory.Get (uid);
+      item->uniqueUid = "Invalid-WifiMode";
+      item->bandwidth = 0;
+      item->dataRate = 0;
+      item->phyRate = 0;
+      item->modulation = WifiMode::UNKNOWN;
+      item->constellationSize = 0;
+      item->isMandatory = false;
+      item->standard = WIFI_PHY_UNKNOWN;
       isFirstTime = false;
     }
   return &factory;

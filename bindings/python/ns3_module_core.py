@@ -83,6 +83,10 @@ def register_types(module):
     module.add_class('UniformVariable', parent=root_module['ns3::RandomVariable'])
     ## attribute-list.h: ns3::UnsafeAttributeList [class]
     module.add_class('UnsafeAttributeList')
+    ## vector.h: ns3::Vector2D [class]
+    module.add_class('Vector2D')
+    ## vector.h: ns3::Vector3D [class]
+    module.add_class('Vector3D')
     ## random-variable.h: ns3::WeibullVariable [class]
     module.add_class('WeibullVariable', parent=root_module['ns3::RandomVariable'])
     ## random-variable.h: ns3::ZipfVariable [class]
@@ -165,6 +169,14 @@ def register_types(module):
     module.add_class('TypeIdValue', parent=root_module['ns3::AttributeValue'])
     ## uinteger.h: ns3::UintegerValue [class]
     module.add_class('UintegerValue', parent=root_module['ns3::AttributeValue'])
+    ## vector.h: ns3::Vector2DChecker [class]
+    module.add_class('Vector2DChecker', parent=root_module['ns3::AttributeChecker'])
+    ## vector.h: ns3::Vector2DValue [class]
+    module.add_class('Vector2DValue', parent=root_module['ns3::AttributeValue'])
+    ## vector.h: ns3::Vector3DChecker [class]
+    module.add_class('Vector3DChecker', parent=root_module['ns3::AttributeChecker'])
+    ## vector.h: ns3::Vector3DValue [class]
+    module.add_class('Vector3DValue', parent=root_module['ns3::AttributeValue'])
     ## traced-value.h: ns3::TracedValue<unsigned int> [class]
     module.add_class('TracedValue', template_parameters=['unsigned int'])
     ## traced-value.h: ns3::TracedValue<unsigned int> [class]
@@ -175,6 +187,12 @@ def register_types(module):
     root_module['ns3::TracedValue< unsigned int >'].implicitly_converts_to(root_module['ns3::BooleanValue'])
     ## traced-value.h: ns3::TracedValue<unsigned int> [class]
     root_module['ns3::TracedValue< unsigned int >'].implicitly_converts_to(root_module['ns3::EnumValue'])
+    typehandlers.add_type_alias('ns3::Vector3D', 'ns3::Vector')
+    module.add_typedef(root_module['ns3::Vector3D'], 'Vector')
+    typehandlers.add_type_alias('ns3::Vector3DValue', 'ns3::VectorValue')
+    module.add_typedef(root_module['ns3::Vector3DValue'], 'VectorValue')
+    typehandlers.add_type_alias('ns3::Vector3DChecker', 'ns3::VectorChecker')
+    module.add_typedef(root_module['ns3::Vector3DChecker'], 'VectorChecker')
     
     ## Register a nested module for the namespace Config
     
@@ -261,6 +279,8 @@ def register_methods(root_module):
     register_Ns3TypeIdAttributeInfo_methods(root_module, root_module['ns3::TypeId::AttributeInfo'])
     register_Ns3UniformVariable_methods(root_module, root_module['ns3::UniformVariable'])
     register_Ns3UnsafeAttributeList_methods(root_module, root_module['ns3::UnsafeAttributeList'])
+    register_Ns3Vector2D_methods(root_module, root_module['ns3::Vector2D'])
+    register_Ns3Vector3D_methods(root_module, root_module['ns3::Vector3D'])
     register_Ns3WeibullVariable_methods(root_module, root_module['ns3::WeibullVariable'])
     register_Ns3ZipfVariable_methods(root_module, root_module['ns3::ZipfVariable'])
     register_Ns3Empty_methods(root_module, root_module['ns3::empty'])
@@ -302,6 +322,10 @@ def register_methods(root_module):
     register_Ns3TypeIdChecker_methods(root_module, root_module['ns3::TypeIdChecker'])
     register_Ns3TypeIdValue_methods(root_module, root_module['ns3::TypeIdValue'])
     register_Ns3UintegerValue_methods(root_module, root_module['ns3::UintegerValue'])
+    register_Ns3Vector2DChecker_methods(root_module, root_module['ns3::Vector2DChecker'])
+    register_Ns3Vector2DValue_methods(root_module, root_module['ns3::Vector2DValue'])
+    register_Ns3Vector3DChecker_methods(root_module, root_module['ns3::Vector3DChecker'])
+    register_Ns3Vector3DValue_methods(root_module, root_module['ns3::Vector3DValue'])
     register_Ns3TracedValue__Unsigned_int_methods(root_module, root_module['ns3::TracedValue< unsigned int >'])
     register_Ns3ConfigMatchContainer_methods(root_module, root_module['ns3::Config::MatchContainer'])
     return
@@ -1180,6 +1204,36 @@ def register_Ns3UnsafeAttributeList_methods(root_module, cls):
                    is_const=True)
     return
 
+def register_Ns3Vector2D_methods(root_module, cls):
+    cls.add_output_stream_operator()
+    ## vector.h: ns3::Vector2D::Vector2D(ns3::Vector2D const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::Vector2D const &', 'arg0')])
+    ## vector.h: ns3::Vector2D::Vector2D(double _x, double _y) [constructor]
+    cls.add_constructor([param('double', '_x'), param('double', '_y')])
+    ## vector.h: ns3::Vector2D::Vector2D() [constructor]
+    cls.add_constructor([])
+    ## vector.h: ns3::Vector2D::x [variable]
+    cls.add_instance_attribute('x', 'double', is_const=False)
+    ## vector.h: ns3::Vector2D::y [variable]
+    cls.add_instance_attribute('y', 'double', is_const=False)
+    return
+
+def register_Ns3Vector3D_methods(root_module, cls):
+    cls.add_output_stream_operator()
+    ## vector.h: ns3::Vector3D::Vector3D(ns3::Vector3D const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::Vector3D const &', 'arg0')])
+    ## vector.h: ns3::Vector3D::Vector3D(double _x, double _y, double _z) [constructor]
+    cls.add_constructor([param('double', '_x'), param('double', '_y'), param('double', '_z')])
+    ## vector.h: ns3::Vector3D::Vector3D() [constructor]
+    cls.add_constructor([])
+    ## vector.h: ns3::Vector3D::x [variable]
+    cls.add_instance_attribute('x', 'double', is_const=False)
+    ## vector.h: ns3::Vector3D::y [variable]
+    cls.add_instance_attribute('y', 'double', is_const=False)
+    ## vector.h: ns3::Vector3D::z [variable]
+    cls.add_instance_attribute('z', 'double', is_const=False)
+    return
+
 def register_Ns3WeibullVariable_methods(root_module, cls):
     ## random-variable.h: ns3::WeibullVariable::WeibullVariable(ns3::WeibullVariable const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::WeibullVariable const &', 'arg0')])
@@ -2046,6 +2100,86 @@ def register_Ns3UintegerValue_methods(root_module, cls):
                    is_virtual=True)
     return
 
+def register_Ns3Vector2DChecker_methods(root_module, cls):
+    ## vector.h: ns3::Vector2DChecker::Vector2DChecker(ns3::Vector2DChecker const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::Vector2DChecker const &', 'arg0')])
+    ## vector.h: ns3::Vector2DChecker::Vector2DChecker() [constructor]
+    cls.add_constructor([])
+    return
+
+def register_Ns3Vector2DValue_methods(root_module, cls):
+    ## vector.h: ns3::Vector2DValue::Vector2DValue(ns3::Vector2DValue const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::Vector2DValue const &', 'arg0')])
+    ## vector.h: ns3::Vector2DValue::Vector2DValue() [constructor]
+    cls.add_constructor([])
+    ## vector.h: ns3::Vector2DValue::Vector2DValue(ns3::Vector2D const & value) [constructor]
+    cls.add_constructor([param('ns3::Vector2D const &', 'value')])
+    ## vector.h: void ns3::Vector2DValue::Set(ns3::Vector2D const & value) [member function]
+    cls.add_method('Set', 
+                   'void', 
+                   [param('ns3::Vector2D const &', 'value')])
+    ## vector.h: ns3::Vector2D ns3::Vector2DValue::Get() const [member function]
+    cls.add_method('Get', 
+                   'ns3::Vector2D', 
+                   [], 
+                   is_const=True)
+    ## vector.h: ns3::Ptr<ns3::AttributeValue> ns3::Vector2DValue::Copy() const [member function]
+    cls.add_method('Copy', 
+                   'ns3::Ptr< ns3::AttributeValue >', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## vector.h: std::string ns3::Vector2DValue::SerializeToString(ns3::Ptr<ns3::AttributeChecker const> checker) const [member function]
+    cls.add_method('SerializeToString', 
+                   'std::string', 
+                   [param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
+                   is_const=True, is_virtual=True)
+    ## vector.h: bool ns3::Vector2DValue::DeserializeFromString(std::string value, ns3::Ptr<ns3::AttributeChecker const> checker) [member function]
+    cls.add_method('DeserializeFromString', 
+                   'bool', 
+                   [param('std::string', 'value'), param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
+                   is_virtual=True)
+    return
+
+def register_Ns3Vector3DChecker_methods(root_module, cls):
+    ## vector.h: ns3::Vector3DChecker::Vector3DChecker(ns3::Vector3DChecker const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::Vector3DChecker const &', 'arg0')])
+    ## vector.h: ns3::Vector3DChecker::Vector3DChecker() [constructor]
+    cls.add_constructor([])
+    return
+
+def register_Ns3Vector3DValue_methods(root_module, cls):
+    ## vector.h: ns3::Vector3DValue::Vector3DValue(ns3::Vector3DValue const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::Vector3DValue const &', 'arg0')])
+    ## vector.h: ns3::Vector3DValue::Vector3DValue() [constructor]
+    cls.add_constructor([])
+    ## vector.h: ns3::Vector3DValue::Vector3DValue(ns3::Vector3D const & value) [constructor]
+    cls.add_constructor([param('ns3::Vector3D const &', 'value')])
+    ## vector.h: void ns3::Vector3DValue::Set(ns3::Vector3D const & value) [member function]
+    cls.add_method('Set', 
+                   'void', 
+                   [param('ns3::Vector3D const &', 'value')])
+    ## vector.h: ns3::Vector3D ns3::Vector3DValue::Get() const [member function]
+    cls.add_method('Get', 
+                   'ns3::Vector3D', 
+                   [], 
+                   is_const=True)
+    ## vector.h: ns3::Ptr<ns3::AttributeValue> ns3::Vector3DValue::Copy() const [member function]
+    cls.add_method('Copy', 
+                   'ns3::Ptr< ns3::AttributeValue >', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## vector.h: std::string ns3::Vector3DValue::SerializeToString(ns3::Ptr<ns3::AttributeChecker const> checker) const [member function]
+    cls.add_method('SerializeToString', 
+                   'std::string', 
+                   [param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
+                   is_const=True, is_virtual=True)
+    ## vector.h: bool ns3::Vector3DValue::DeserializeFromString(std::string value, ns3::Ptr<ns3::AttributeChecker const> checker) [member function]
+    cls.add_method('DeserializeFromString', 
+                   'bool', 
+                   [param('std::string', 'value'), param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
+                   is_virtual=True)
+    return
+
 def register_Ns3TracedValue__Unsigned_int_methods(root_module, cls):
     ## traced-value.h: ns3::TracedValue<unsigned int>::TracedValue() [constructor]
     cls.add_constructor([])
@@ -2153,6 +2287,14 @@ def register_functions(root_module):
     module.add_function('BreakpointFallback', 
                         'void', 
                         [])
+    ## vector.h: extern double ns3::CalculateDistance(ns3::Vector2D const & a, ns3::Vector2D const & b) [free function]
+    module.add_function('CalculateDistance', 
+                        'double', 
+                        [param('ns3::Vector2D const &', 'a'), param('ns3::Vector2D const &', 'b')])
+    ## vector.h: extern double ns3::CalculateDistance(ns3::Vector3D const & a, ns3::Vector3D const & b) [free function]
+    module.add_function('CalculateDistance', 
+                        'double', 
+                        [param('ns3::Vector3D const &', 'a'), param('ns3::Vector3D const &', 'b')])
     ## ptr.h: extern ns3::Ptr<ns3::ObjectVectorValue> ns3::Create() [free function]
     module.add_function('Create', 
                         'ns3::Ptr< ns3::ObjectVectorValue >', 
@@ -2205,6 +2347,18 @@ def register_functions(root_module):
                         [])
     ## type-id.h: extern ns3::Ptr<ns3::AttributeChecker const> ns3::MakeTypeIdChecker() [free function]
     module.add_function('MakeTypeIdChecker', 
+                        'ns3::Ptr< ns3::AttributeChecker const >', 
+                        [])
+    ## vector.h: extern ns3::Ptr<ns3::AttributeChecker const> ns3::MakeVector2DChecker() [free function]
+    module.add_function('MakeVector2DChecker', 
+                        'ns3::Ptr< ns3::AttributeChecker const >', 
+                        [])
+    ## vector.h: extern ns3::Ptr<ns3::AttributeChecker const> ns3::MakeVector3DChecker() [free function]
+    module.add_function('MakeVector3DChecker', 
+                        'ns3::Ptr< ns3::AttributeChecker const >', 
+                        [])
+    ## vector.h: extern ns3::Ptr<ns3::AttributeChecker const> ns3::MakeVectorChecker() [free function]
+    module.add_function('MakeVectorChecker', 
                         'ns3::Ptr< ns3::AttributeChecker const >', 
                         [])
     ## type-name.h: extern std::string ns3::TypeNameGet() [free function]

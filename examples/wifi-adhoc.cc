@@ -174,6 +174,7 @@ int main (int argc, char *argv[])
 
   Experiment experiment;
   WifiHelper wifi = WifiHelper::Default ();
+  wifi.SetStandard (WIFI_PHY_STANDARD_80211a);
   NqosWifiMacHelper wifiMac = NqosWifiMacHelper::Default ();
   YansWifiPhyHelper wifiPhy = YansWifiPhyHelper::Default ();
   YansWifiChannelHelper wifiChannel = YansWifiChannelHelper::Default ();
@@ -241,7 +242,7 @@ int main (int argc, char *argv[])
 
 
   gnuplot = Gnuplot ("rate-control.png");
-  Config::SetDefault ("ns3::YansWifiPhy::Standard", StringValue ("holland"));
+  wifi.SetStandard (WIFI_PHY_STANDARD_holland);
 
 
   NS_LOG_DEBUG ("arf");

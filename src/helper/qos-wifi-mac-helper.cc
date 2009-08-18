@@ -28,20 +28,12 @@ namespace ns3 {
 
 QosWifiMacHelper::QosWifiMacHelper ()
 {
-  m_aggregators.insert (std::make_pair (AC_VO, ObjectFactory ()));
-  m_aggregators.insert (std::make_pair (AC_VI, ObjectFactory ()));
-  m_aggregators.insert (std::make_pair (AC_BE, ObjectFactory ()));
-  m_aggregators.insert (std::make_pair (AC_BK, ObjectFactory ()));
-
-  m_queues.insert (std::make_pair (AC_VO, ObjectFactory ()));
-  m_queues.insert (std::make_pair (AC_VI, ObjectFactory ()));
-  m_queues.insert (std::make_pair (AC_BE, ObjectFactory ()));
-  m_queues.insert (std::make_pair (AC_BK, ObjectFactory ()));
-
-  m_queues[AC_VO].SetTypeId ("ns3::EdcaTxopN");
-  m_queues[AC_VI].SetTypeId ("ns3::EdcaTxopN");
-  m_queues[AC_BE].SetTypeId ("ns3::EdcaTxopN");
-  m_queues[AC_BK].SetTypeId ("ns3::EdcaTxopN");
+  ObjectFactory defaultAggregator;
+  defaultAggregator.SetTypeId ("ns3::MsduStandardAggregator");
+  m_aggregators.insert (std::make_pair (AC_VO, defaultAggregator));
+  m_aggregators.insert (std::make_pair (AC_VI, defaultAggregator));
+  m_aggregators.insert (std::make_pair (AC_BE, defaultAggregator));
+  m_aggregators.insert (std::make_pair (AC_BK, defaultAggregator));
 }
 
 QosWifiMacHelper::~QosWifiMacHelper ()
@@ -52,19 +44,7 @@ QosWifiMacHelper::Default (void)
 {
   QosWifiMacHelper helper;
   helper.SetType ("ns3::QstaWifiMac");
-  /* For more details about this default parameters see IEE802.11 section 7.3.2.29 */
-  helper.SetEdcaParametersForAc (AC_VO,"MinCw", UintegerValue (3),
-                                       "MaxCw", UintegerValue (7),
-                                       "Aifsn", UintegerValue (2));
-  helper.SetEdcaParametersForAc (AC_VI,"MinCw", UintegerValue (7),
-                                       "MaxCw", UintegerValue (15),
-                                       "Aifsn", UintegerValue (2));
-  helper.SetEdcaParametersForAc (AC_BE,"MinCw", UintegerValue (15),
-                                       "MaxCw", UintegerValue (1023),
-                                       "Aifsn", UintegerValue (3));
-  helper.SetEdcaParametersForAc (AC_BK,"MinCw", UintegerValue (15),
-                                       "MaxCw", UintegerValue (1023),
-                                       "Aifsn", UintegerValue (7));
+  
   return helper;
 }
 
@@ -110,80 +90,26 @@ QosWifiMacHelper::SetMsduAggregatorForAc (AccessClass accessClass, std::string t
 }
 
 void
-QosWifiMacHelper::SetEdcaParametersForAc (AccessClass accessClass,
-                                          std::string n0, const AttributeValue &v0,
-                                          std::string n1, const AttributeValue &v1,
-                                          std::string n2, const AttributeValue &v2,
-                                          std::string n3, const AttributeValue &v3)
+QosWifiMacHelper::Setup (Ptr<WifiMac> mac, enum AccessClass ac, std::string dcaAttrName) const
 {
-  std::map<AccessClass, ObjectFactory>::iterator it;
-  it = m_queues.find (accessClass);
-  if (it != m_queues.end ())
-    {
-      it->second.Set (n0, v0);
-      it->second.Set (n1, v1);
-      it->second.Set (n2, v2);
-      it->second.Set (n3, v3);
-    }
+  ObjectFactory factory  = m_aggregators.find (ac)->second;
+  PointerValue ptr;
+  mac->GetAttribute (dcaAttrName, ptr);
+  Ptr<EdcaTxopN> edca = ptr.Get<EdcaTxopN> ();
+  Ptr<MsduAggregator> aggregator = factory.Create<MsduAggregator> ();
+  edca->SetMsduAggregator (aggregator);
 }
+
 
 Ptr<WifiMac>
 QosWifiMacHelper::Create (void) const
 {
   Ptr<WifiMac> mac = m_mac.Create<WifiMac> ();
   
-  Ptr<EdcaTxopN> edcaQueue;
-  Ptr<MsduAggregator> aggregator;
-  std::map<AccessClass, ObjectFactory>::const_iterator itQueue;
-  std::map<AccessClass, ObjectFactory>::const_iterator itAggr;
-
-  /* Setting for VO queue */
-  itQueue = m_queues.find (AC_VO);
-  itAggr = m_aggregators.find (AC_VO);
-
-  edcaQueue = itQueue->second.Create<EdcaTxopN> ();
-  if (itAggr->second.GetTypeId ().GetUid () != 0)
-    {
-      aggregator = itAggr->second.Create<MsduAggregator> ();
-      edcaQueue->SetMsduAggregator (aggregator);
-    }
-  mac->SetAttribute ("VO_EdcaTxopN", PointerValue (edcaQueue));
-
-  /* Setting for VI queue */
-  itQueue = m_queues.find (AC_VI);
-  itAggr = m_aggregators.find (AC_VI);
-
-  edcaQueue = itQueue->second.Create<EdcaTxopN> ();
-  if (itAggr->second.GetTypeId ().GetUid () != 0)
-    {
-      aggregator = itAggr->second.Create<MsduAggregator> ();
-      edcaQueue->SetMsduAggregator (aggregator);
-    }
-  mac->SetAttribute ("VI_EdcaTxopN", PointerValue (edcaQueue));
-
-  /* Setting for BE queue */
-  itQueue = m_queues.find (AC_BE);
-  itAggr = m_aggregators.find (AC_BE);
-
-  edcaQueue = itQueue->second.Create<EdcaTxopN> ();
-  if (itAggr->second.GetTypeId ().GetUid () != 0)
-    {
-      aggregator = itAggr->second.Create<MsduAggregator> ();
-      edcaQueue->SetMsduAggregator (aggregator);
-    }
-  mac->SetAttribute ("BE_EdcaTxopN", PointerValue (edcaQueue));
-  
-  /* Setting for BK queue */
-  itQueue = m_queues.find (AC_BK);
-  itAggr = m_aggregators.find (AC_BK);
-
-  edcaQueue = itQueue->second.Create<EdcaTxopN> ();
-  if (itAggr->second.GetTypeId ().GetUid () != 0)
-    {
-      aggregator = itAggr->second.Create<MsduAggregator> ();
-      edcaQueue->SetMsduAggregator (aggregator);
-    }
-  mac->SetAttribute ("BK_EdcaTxopN", PointerValue (edcaQueue));
+  Setup (mac, AC_VO, "VO_EdcaTxopN");
+  Setup (mac, AC_VI, "VI_EdcaTxopN");
+  Setup (mac, AC_BE, "BE_EdcaTxopN");
+  Setup (mac, AC_BK, "BK_EdcaTxopN");
 
   return mac;
 }

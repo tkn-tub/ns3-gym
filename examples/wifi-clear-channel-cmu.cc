@@ -191,6 +191,7 @@ int main (int argc, char *argv[])
      dataset.SetStyle (Gnuplot2dDataset::LINES);
  
      WifiHelper wifi;
+     wifi.SetStandard (WIFI_PHY_STANDARD_80211b);
      NqosWifiMacHelper wifiMac = NqosWifiMacHelper::Default ();
      Config::SetDefault ("ns3::WifiRemoteStationManager::NonUnicastMode", 
                          StringValue (modes[i]));
@@ -207,7 +208,6 @@ int main (int argc, char *argv[])
  
      NS_LOG_DEBUG (modes[i]);
      experiment = Experiment (modes[i]);
-     wifiPhy.Set ("Standard", StringValue ("802.11b") );
      wifiPhy.Set ("EnergyDetectionThreshold", DoubleValue (-110.0) );
      wifiPhy.Set ("CcaMode1Threshold", DoubleValue (-110.0) );
      wifiPhy.Set ("TxPowerStart", DoubleValue (15.0) );

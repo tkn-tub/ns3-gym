@@ -18,6 +18,7 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 #include "wifi-mac.h"
+#include "dcf.h"
 #include "ns3/uinteger.h"
 #include "ns3/trace-source-accessor.h"
 
@@ -117,14 +118,6 @@ WifiMac::GetTypeId (void)
 		   MakeSsidAccessor (&WifiMac::GetSsid,
 				     &WifiMac::SetSsid),
 		   MakeSsidChecker ())
-    .AddAttribute ("Standard", "The standard chosen configures some MAC-specific constants",
-                   EnumValue (WIFI_PHY_STANDARD_80211a),
-                   MakeEnumAccessor (&WifiMac::SetStandard),
-                   MakeEnumChecker (WIFI_PHY_STANDARD_80211a, "802.11a",
-                                    WIFI_PHY_STANDARD_80211b, "802.11b",
-                                    WIFI_PHY_STANDARD_80211_10Mhz,"802.11_10Mhz",
-                                    WIFI_PHY_STANDARD_80211_5Mhz,"802-11_5Mhz",
-                                    WIFI_PHY_STANDARD_holland, "holland"))
     .AddTraceSource ("MacTx", 
                      "A packet has been received from higher layers and is being processed in preparation for "
                      "queueing for transmission.",
@@ -209,9 +202,8 @@ WifiMac::NotifyRxDrop (Ptr<const Packet> packet)
 }
 
 void
-WifiMac::SetStandard (enum WifiPhyStandard standard)
+WifiMac::ConfigureStandard (enum WifiPhyStandard standard)
 {
-  m_standard = standard;
   switch (standard) {
   case WIFI_PHY_STANDARD_80211a:
     Configure80211a ();
@@ -232,6 +224,7 @@ WifiMac::SetStandard (enum WifiPhyStandard standard)
     NS_ASSERT (false);
     break;
   }
+  FinishConfigureStandard (standard);
 }
 
 void
@@ -277,5 +270,42 @@ WifiMac::Configure80211_5Mhz (void)
   SetCtsTimeout(MicroSeconds(64+176+21+GetDefaultMaxPropagationDelay().GetMicroSeconds ()*2));
   SetAckTimeout(MicroSeconds(64+176+21+GetDefaultMaxPropagationDelay().GetMicroSeconds ()*2)); 
 }
+
+void
+WifiMac::ConfigureDcf (Ptr<Dcf> dcf, uint32_t cwmin, uint32_t cwmax, enum AccessClass ac)
+{
+  /* see IEE802.11 section 7.3.2.29 */
+  switch (ac) {
+  case AC_VO:
+    dcf->SetMinCw ((cwmin+1)/4-1);
+    dcf->SetMaxCw ((cwmin+1)/2-1);
+    dcf->SetAifsn (2);
+    break;
+  case AC_VI:
+    dcf->SetMinCw ((cwmin+1)/2-1);
+    dcf->SetMaxCw (cwmin);
+    dcf->SetAifsn (2);
+    break;
+  case AC_BE:
+    dcf->SetMinCw (cwmin);
+    dcf->SetMaxCw (cwmax);
+    dcf->SetAifsn (3);
+    break;
+  case AC_BK:
+    dcf->SetMinCw (cwmin);
+    dcf->SetMaxCw (cwmax);
+    dcf->SetAifsn (7);
+    break;
+  case AC_BE_NQOS:
+    dcf->SetMinCw (cwmin);
+    dcf->SetMaxCw (cwmax);
+    dcf->SetAifsn (2);    
+    break;
+  case AC_UNDEF:
+    NS_FATAL_ERROR ("I don't know what to do with this");
+    break;
+  }
+}
+
 
 } // namespace ns3

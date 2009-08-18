@@ -20,6 +20,7 @@
 #include "buffer.h"
 #include "ns3/assert.h"
 #include "ns3/log.h"
+#include "ns3/fatal-error.h"
 #include <iostream>
 
 NS_LOG_COMPONENT_DEFINE ("Buffer");
@@ -646,25 +647,25 @@ Buffer::PeekData (void) const
 void
 Buffer::CopyData(std::ostream *os, uint32_t size) const
 {
-  if (size == GetSize ())
+  if (size > 0)
     {
-      // fast path
-      os->write((const char*)(m_data->m_data + m_start), m_zeroAreaStart-m_start);
-      char zero = 0;
-      for (uint32_t i = 0; i < m_zeroAreaEnd - m_zeroAreaStart; ++i)
-        {
-          os->write (&zero, 1);
-        }
-      os->write ((const char*)(m_data->m_data + m_zeroAreaStart), m_end - m_zeroAreaEnd);
-    }
-  else
-    {
-      // slow path
-      Buffer::Iterator i = Begin ();
-      while (!i.IsEnd () && size > 0)
-        {
-          char byte = i.ReadU8 ();
-          os->write (&byte, 1);
+      uint32_t tmpsize = std::min (m_zeroAreaStart-m_start, size);
+      os->write((const char*)(m_data->m_data + m_start), tmpsize);
+      if (size > tmpsize) 
+        { 
+          size -= m_zeroAreaStart-m_start;
+          tmpsize = std::min (m_zeroAreaEnd - m_zeroAreaStart, size);
+          char zero = 0;
+          for (uint32_t i = 0; i < tmpsize; ++i)
+            {
+              os->write (&zero, 1);
+            }
+          if (size > tmpsize)
+            {
+              size -= tmpsize;
+              tmpsize = std::min (m_end - m_zeroAreaEnd, size);
+              os->write ((const char*)(m_data->m_data + m_zeroAreaStart), tmpsize); 
+            }
         }
     }
 }

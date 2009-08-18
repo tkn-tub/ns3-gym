@@ -27,6 +27,7 @@
 #include "ns3/object-factory.h"
 #include "ns3/node-container.h"
 #include "ns3/net-device-container.h"
+#include "ns3/wifi-phy-standard.h"
 
 namespace ns3 {
 
@@ -95,7 +96,8 @@ public:
    * \returns a new WifiHelper in a default state
    *
    * The default state is defined as being an Adhoc MAC layer with an ARF rate control algorithm
-   * and both objects using their default attribute values.
+   * and both objects using their default attribute values. By default, configure MAC and PHY 
+   * for 802.11a.
    */
   static WifiHelper Default (void);
 
@@ -156,12 +158,20 @@ public:
                               const WifiMacHelper &mac, std::string nodeName) const;
 
   /**
+   * \param standard the phy standard to configure during installation
+   *
+   * By default, all objects are configured for 802.11a
+   */
+  void SetStandard (enum WifiPhyStandard standard);
+
+  /**
    * Helper to enable all WifiNetDevice log components with one statement 
    */
   static void EnableLogComponents (void);
 
 private:
   ObjectFactory m_stationManager;
+  enum WifiPhyStandard m_standard;
 };
 
 } // namespace ns3

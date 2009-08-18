@@ -101,21 +101,6 @@ DcaTxop::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::DcaTxop")
     .SetParent<Object> ()
     .AddConstructor<DcaTxop> ()
-    .AddAttribute ("MinCw", "The minimum value of the contention window.",
-                   UintegerValue (15),
-                   MakeUintegerAccessor (&DcaTxop::SetMinCw,
-                                         &DcaTxop::GetMinCw),
-                   MakeUintegerChecker<uint32_t> ())
-    .AddAttribute ("MaxCw", "The maximum value of the contention window.",
-                   UintegerValue (1023),
-                   MakeUintegerAccessor (&DcaTxop::SetMaxCw,
-                                         &DcaTxop::GetMaxCw),
-                   MakeUintegerChecker<uint32_t> ())
-    .AddAttribute ("Aifsn", "The AIFSN: the default value conforms to simple DCA.",
-                   UintegerValue (2),
-                   MakeUintegerAccessor (&DcaTxop::SetAifsn,
-                                         &DcaTxop::GetAifsn),
-                   MakeUintegerChecker<uint32_t> ())
     ;
   return tid;
 }
