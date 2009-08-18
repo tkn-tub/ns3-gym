@@ -34,9 +34,9 @@
 #include "ns3/timer.h"
 #include "ns3/ipv4-address.h"
 #include "ns3/callback.h"
+#include "ns3/wifi-mac-header.h"
+#include "ns3/arp-cache.h"
 #include <vector>
-#
-
 
 namespace ns3
 {
@@ -52,10 +52,14 @@ class Neighbors
 public:
   /// c-tor
   Neighbors (Time delay);
+  /// Neighbor description
   struct Neighbor
   {
     Ipv4Address m_neighborAddress;
+    Mac48Address m_hardwareAddress;
     Time m_expireTime;
+    
+    Neighbor(Ipv4Address ip, Mac48Address mac, Time t) : m_neighborAddress(ip), m_hardwareAddress(mac), m_expireTime(t) {}
   };
   /// Return expire time for neighbor node with address addr, if exists, else return 0.
   Time GetExpireTime (Ipv4Address addr);
@@ -69,6 +73,14 @@ public:
   void ScheduleTimer ();
   /// Remove all entries
   void Clear () { m_nb.clear (); }
+  
+  /// Add ARP cache to be used to allow layer 2 notifications processing
+  void AddArpCache (Ptr<ArpCache>);
+  /// Don't use given ARP cache any more (interface is down)
+  void DelArpCache (Ptr<ArpCache>);
+  /// Get callback to ProcessTxError
+  Callback<void, WifiMacHeader const &> GetTxErrorCallback () const { return m_txErrorCallback; }
+ 
   ///\name Handle link failure callback
   //\{
   void SetCallback (Callback<void, Ipv4Address> cb) { m_handleLinleFailure = cb;}
@@ -79,15 +91,22 @@ private:
   {
      bool operator()(const struct Neighbor & nb) const
      {
-       return (nb.m_expireTime < Simulator::Now());
+       return (nb.m_expireTime <= Simulator::Now()); /*<= is important here*/ 
      }
    };
   /// link failure callback
   Callback<void, Ipv4Address> m_handleLinleFailure;
+  /// TX error callback
+  Callback<void, WifiMacHeader const &> m_txErrorCallback;
   /// Timer for neighbor's list. Schedule Purge().
   Timer m_ntimer;
   /// vector of entries
   std::vector<Neighbor> m_nb;
+  /// list of ARP cached to be used for layer 2 notifications processing
+  std::vector<Ptr<ArpCache> > m_arp;
+  
+  /// Process layer 2 TX error notification
+  void ProcessTxError (WifiMacHeader const &);
 };
 
 }

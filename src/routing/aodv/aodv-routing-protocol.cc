@@ -41,9 +41,9 @@
 #include "ns3/udp-header.h"
 #include "ns3/nstime.h"
 #include "ns3/net-device.h"
-
 #include "ns3/udp-socket-factory.h"
-#include "src/internet-stack/udp-l4-protocol.h"
+#include "ns3/wifi-net-device.h"
+#include "ns3/adhoc-wifi-mac.h"
 #include <algorithm>
 
 NS_LOG_COMPONENT_DEFINE ("AodvRoutingProtocol");
@@ -369,6 +369,7 @@ RoutingProtocol::NotifyInterfaceUp (uint32_t i )
   Ipv4InterfaceAddress iface = interface->GetAddress (0);
   if (iface.GetLocal () == Ipv4Address ("127.0.0.1"))
     return;
+  
   // Create a socket to listen only on this interface
   Ptr<Socket> socket = Socket::CreateSocket (GetObject<Node> (), UdpSocketFactory::GetTypeId());
   NS_ASSERT (socket != 0);
@@ -382,12 +383,38 @@ RoutingProtocol::NotifyInterfaceUp (uint32_t i )
   RoutingTableEntry rt (/*device=*/dev, /*dst=*/iface.GetBroadcast (), /*know seqno=*/true, /*seqno=*/0, /*iface=*/iface,
                         /*hops=*/1, /*next hop=*/iface.GetBroadcast (), /*lifetime=*/Seconds (1e9)); // TODO use infty
   m_routingTable.AddRoute (rt);
+  
+  // Allow neighbor manager use this interface for layer 2 feedback if possible
+  Ptr<WifiNetDevice> wifi = dev->GetObject<WifiNetDevice> ();
+  if (wifi == 0) return;
+  Ptr<WifiMac> mac = wifi->GetMac ()->GetObject<AdhocWifiMac> ();
+  if (mac == 0) return;
+  
+  mac->TraceConnectWithoutContext("TxErrHeader", m_nb.GetTxErrorCallback());
+  m_nb.AddArpCache (interface->GetArpCache());
 }
 
 void
 RoutingProtocol::NotifyInterfaceDown (uint32_t i )
 {
   NS_LOG_FUNCTION (this << m_ipv4->GetAddress (i, 0).GetLocal ());
+
+  // Discable layer 2 link state monitoring (if possible)
+  Ptr<Ipv4L3Protocol> l3 = m_ipv4->GetObject<Ipv4L3Protocol> ();
+  Ptr<Ipv4Interface> interface = l3->GetInterface (i);
+  Ptr<NetDevice> dev = interface->GetDevice();
+  Ptr<WifiNetDevice> wifi = dev->GetObject<WifiNetDevice> ();
+  if (wifi != 0) 
+    {
+      Ptr<WifiMac> mac = wifi->GetMac ()->GetObject<AdhocWifiMac> ();
+      if (mac != 0)
+        {
+          mac->TraceDisconnectWithoutContext ("TxErrHeader", m_nb.GetTxErrorCallback());
+          m_nb.DelArpCache (interface->GetArpCache());
+        }
+    }
+  
+  // Close socket 
   Ptr<Socket> socket = FindSocketWithInterfaceAddress (m_ipv4->GetAddress (i, 0));
   NS_ASSERT (socket);
   socket->Close ();
@@ -1173,8 +1200,6 @@ RoutingProtocol::SendHello ()
     }
 }
 
-
-
 void
 RoutingProtocol::SendPacketFromQueue (Ipv4Address dst, Ptr<Ipv4Route> route )
 {
@@ -1330,7 +1355,7 @@ RoutingProtocol::SendRerrMessage (Ptr<Packet> packet, std::vector<Ipv4Address> p
     {
       Ptr<Socket> socket = FindSocketWithInterfaceAddress (*i);
       NS_ASSERT (socket);
-      NS_LOG_LOGIC ("broadcast RERR meassage from interface " << i->GetLocal());
+      NS_LOG_LOGIC ("broadcast RERR message from interface " << i->GetLocal());
       socket->Send (packet);
     }
 

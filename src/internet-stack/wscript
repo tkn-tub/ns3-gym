@@ -108,6 +108,11 @@ def build(bld):
         'tcp-header.h',
         'sequence-number.h',
         'icmpv4.h',
+        # used by routing
+        'ipv4-interface.h', 
+        'ipv4-l3-protocol.h',
+        'arp-cache.h',
+        'sgi-hashmap.h',
         ]
 
     if bld.env['NSC_ENABLED']:

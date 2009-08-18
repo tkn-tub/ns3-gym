@@ -31,15 +31,17 @@
 #include "ns3/log.h"
 #include <algorithm>
 
+NS_LOG_COMPONENT_DEFINE ("AodvNeighbors");
+
 namespace ns3
 {
 namespace aodv
 {
-
 Neighbors::Neighbors (Time delay) : m_ntimer (Timer::CANCEL_ON_DESTROY)
 {
   m_ntimer.SetDelay(delay);
   m_ntimer.SetFunction(&Neighbors::Purge, this);
+  m_txErrorCallback = MakeCallback (& Neighbors::ProcessTxError, this);
 }
 
 bool
@@ -62,7 +64,6 @@ Neighbors::GetExpireTime (Ipv4Address addr)
   return Seconds(0);
 }
 
-
 void
 Neighbors::Update (Ipv4Address addr, Time expire )
 {
@@ -72,8 +73,20 @@ Neighbors::Update (Ipv4Address addr, Time expire )
         i->m_expireTime =  std::max(expire + Simulator::Now (), i->m_expireTime);
         return;
       }
-  struct Neighbor neighbor =
-  { addr, expire + Simulator::Now () };
+
+  // Lookup mac address
+  Mac48Address hwaddr;
+  for (std::vector<Ptr<ArpCache> >::const_iterator i = m_arp.begin(); i != m_arp.end(); ++i)
+    {
+      ArpCache::Entry * entry = (*i)->Lookup (addr);
+      if (entry != 0 && entry->IsAlive () && ! entry->IsExpired ())
+        {
+          hwaddr = Mac48Address::ConvertFrom(entry->GetMacAddress ());
+          break;
+        }
+    }
+  
+  Neighbor neighbor (addr, hwaddr, expire + Simulator::Now ());
   m_nb.push_back (neighbor);
   Purge ();
 }
@@ -102,6 +115,32 @@ Neighbors::ScheduleTimer ()
   m_ntimer.Schedule();
 }
 
+void
+Neighbors::AddArpCache (Ptr<ArpCache> a)
+{
+  m_arp.push_back(a);
+}
+
+void
+Neighbors::DelArpCache (Ptr<ArpCache> a)
+{
+  m_arp.erase(std::remove(m_arp.begin(), m_arp.end(), a), m_arp.end());
+}
+
+
+void
+Neighbors::ProcessTxError (WifiMacHeader const & hdr)
+{
+  Mac48Address addr = hdr.GetAddr1();
+  
+  for (std::vector<Neighbor>::iterator i = m_nb.begin (); i != m_nb.end (); ++i)
+    if (i->m_hardwareAddress == addr)
+      {
+        NS_LOG_LOGIC ("Close link to " << i->m_neighborAddress << " because of layer 2 TX error notification");
+        i->m_expireTime = Simulator::Now();
+      }  
+  Purge();
+}
 
 #ifdef RUN_SELF_TESTS
 /// Unit test for neighbors
