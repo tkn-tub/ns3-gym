@@ -58,8 +58,9 @@ public:
     Ipv4Address m_neighborAddress;
     Mac48Address m_hardwareAddress;
     Time m_expireTime;
+    bool close;
     
-    Neighbor(Ipv4Address ip, Mac48Address mac, Time t) : m_neighborAddress(ip), m_hardwareAddress(mac), m_expireTime(t) {}
+    Neighbor(Ipv4Address ip, Mac48Address mac, Time t) : m_neighborAddress(ip), m_hardwareAddress(mac), m_expireTime(t), close(false) {}
   };
   /// Return expire time for neighbor node with address addr, if exists, else return 0.
   Time GetExpireTime (Ipv4Address addr);
@@ -87,13 +88,6 @@ public:
   Callback<void, Ipv4Address> GetCallback () const { return m_handleLinleFailure; }
   //\}
 private:
-  struct IsExpired
-  {
-     bool operator()(const struct Neighbor & nb) const
-     {
-       return (nb.m_expireTime <= Simulator::Now()); /*<= is important here*/ 
-     }
-   };
   /// link failure callback
   Callback<void, Ipv4Address> m_handleLinleFailure;
   /// TX error callback
@@ -105,6 +99,8 @@ private:
   /// list of ARP cached to be used for layer 2 notifications processing
   std::vector<Ptr<ArpCache> > m_arp;
   
+  /// Find MAC address by IP using list of ARP caches
+  Mac48Address LookupMacAddress (Ipv4Address);
   /// Process layer 2 TX error notification
   void ProcessTxError (WifiMacHeader const &);
 };

@@ -33,7 +33,6 @@
 #include "ns3/inet-socket-address.h"
 #include "ns3/ipv4-routing-protocol.h"
 #include "ns3/ipv4-route.h"
-#include "ns3/boolean.h"
 #include "ns3/uinteger.h"
 #include "ns3/enum.h"
 #include "ns3/trace-source-accessor.h"
@@ -125,7 +124,7 @@ RoutingProtocol::GetTypeId (void)
                      MakeTimeAccessor (&RoutingProtocol::MaxQueueTime),
                      MakeTimeChecker ())
       .AddAttribute ("AllowedHelloLoss", "Number of hello messages which may be loss for valid link.",
-                     UintegerValue (2),
+                     UintegerValue (100000),
                      MakeUintegerAccessor (&RoutingProtocol::AllowedHelloLoss),
                      MakeUintegerChecker<uint16_t> ())
       .AddAttribute ("GratuitousReply", "Indicates whether a gratuitous RREP should be unicast to the node originated route discovery.",
@@ -288,9 +287,11 @@ RoutingProtocol::RouteInput (Ptr<const Packet> p, const Ipv4Header &header, Ptr<
         {
           UpdateRouteLifeTime (origin, ActiveRouteTimeout);
           RoutingTableEntry toOrigin;
-          m_routingTable.LookupRoute (origin, toOrigin);
-          UpdateRouteLifeTime (toOrigin.GetNextHop (), ActiveRouteTimeout);
-          m_nb.Update (toOrigin.GetNextHop (), ActiveRouteTimeout);
+          if (m_routingTable.LookupRoute (origin, toOrigin))
+            {
+              UpdateRouteLifeTime (toOrigin.GetNextHop (), ActiveRouteTimeout);
+              m_nb.Update (toOrigin.GetNextHop (), ActiveRouteTimeout);
+            }
           NS_LOG_LOGIC ("Unicast local delivery to " << iface.GetLocal ());
           lcb (p, header, iif);
           return true;
@@ -337,8 +338,6 @@ RoutingProtocol::Forwarding (Ptr<const Packet> p, const Ipv4Header & header, Uni
           m_nb.Update (route->GetGateway (), ActiveRouteTimeout); //?
           m_nb.Update (toOrigin.GetNextHop (), ActiveRouteTimeout);
 
-          NS_LOG_LOGIC ("Forwarding");
-          m_routingTable.Print (std::cout);
           ucb (route, p, header);
           return true;
         }
@@ -768,9 +767,6 @@ RoutingProtocol::RecvRequest (Ptr<Packet> p, Ipv4Address receiver, Ipv4Address s
       m_routingTable.Update (toOrigin);
     }
 
-  NS_LOG_LOGIC ("After recieve request");
-  m_routingTable.Print (std::cout);
-
   //  A node generates a RREP if either:
   //  (i)  it is itself the destination,
   if (IsMyOwnAddress (rreqHeader.GetDst ()))
@@ -874,7 +870,6 @@ RoutingProtocol::SendReplyByIntermediateNode (RoutingTableEntry & toDst, Routing
   TypeHeader tHeader (AODVTYPE_RREP);
   packet->AddHeader (tHeader);
   Ptr<Socket> socket = FindSocketWithInterfaceAddress (toOrigin.GetInterface ());
-  m_routingTable.Print(std::cout);
   NS_ASSERT (socket);
   socket->SendTo (packet, 0, InetSocketAddress (toOrigin.GetNextHop (), AODV_PORT));
 
@@ -979,8 +974,6 @@ RoutingProtocol::RecvReply (Ptr<Packet> p, Ipv4Address receiver, Ipv4Address sen
       NS_LOG_LOGIC("add new route");
       m_routingTable.AddRoute (newEntry);
     }
-  NS_LOG_LOGIC ("After receive RREP");
-  m_routingTable.Print(std::cout);
   // Acknowledge receipt of the RREP by sending a RREP-ACK message back
   if (rrepHeader.GetAckRequired ())
     {
@@ -1130,13 +1123,9 @@ RoutingProtocol::RecvError (Ptr<Packet> p, Ipv4Address src )
       Ptr<Packet> packet = Create<Packet> ();
       packet->AddHeader (rerrHeader);
       packet->AddHeader (typeHeader);
-      NS_LOG_DEBUG ("RERR header");
-      rerrHeader.Print(std::cout);
       SendRerrMessage (packet, precursors);
     }
   m_routingTable.InvalidateRoutesWithDst (unreachable);
-  NS_LOG_LOGIC ("After receive RERR");
-  m_routingTable.Print (std::cout);
 }
 
 void
@@ -1249,9 +1238,6 @@ void
 RoutingProtocol::SendRerrWhenBreaksLinkToNextHop (Ipv4Address nextHop )
 {
   NS_LOG_FUNCTION (this << nextHop);
-  NS_LOG_LOGIC ("Before send RERR");
-  m_routingTable.Print(std::cout);
-
   RerrHeader rerrHeader;
   std::vector<Ipv4Address> precursors;
   std::map<Ipv4Address, uint32_t> unreachable;
@@ -1289,14 +1275,10 @@ RoutingProtocol::SendRerrWhenBreaksLinkToNextHop (Ipv4Address nextHop )
       Ptr<Packet> packet = Create<Packet> ();
       packet->AddHeader (rerrHeader);
       packet->AddHeader (typeHeader);
-      NS_LOG_DEBUG ("RERR header");
-      rerrHeader.Print(std::cout);
       SendRerrMessage (packet, precursors);
     }
   unreachable.insert (std::make_pair (nextHop, toNextHop.GetSeqNo ()));
   m_routingTable.InvalidateRoutesWithDst (unreachable);
-  NS_LOG_LOGIC ("After send RERR");
-  m_routingTable.Print(std::cout);
 }
 
 void

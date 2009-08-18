@@ -206,8 +206,9 @@ AodvExample::InstallApplications ()
   p.Start (Seconds (0));
   p.Stop (Seconds (totalTime));
 
+  // move node away
   Ptr<Node> node = nodes.Get (2);
-  Ptr<Ipv4> ipv4 = node->GetObject<Ipv4> ();
-  Simulator::Schedule (Seconds (3), &Ipv4::SetDown, ipv4, 1);
+  Ptr<MobilityModel> mob = node->GetObject<MobilityModel>();
+  Simulator::Schedule (Seconds (3), &MobilityModel::SetPosition, mob, Vector(1e5, 1e5, 1e5));
 }
 

@@ -71,39 +71,43 @@ Neighbors::Update (Ipv4Address addr, Time expire )
     if (i->m_neighborAddress == addr)
       {
         i->m_expireTime =  std::max(expire + Simulator::Now (), i->m_expireTime);
+        if (i->m_hardwareAddress == Mac48Address())
+          i->m_hardwareAddress = LookupMacAddress(i->m_neighborAddress);
         return;
       }
 
-  // Lookup mac address
-  Mac48Address hwaddr;
-  for (std::vector<Ptr<ArpCache> >::const_iterator i = m_arp.begin(); i != m_arp.end(); ++i)
-    {
-      ArpCache::Entry * entry = (*i)->Lookup (addr);
-      if (entry != 0 && entry->IsAlive () && ! entry->IsExpired ())
-        {
-          hwaddr = Mac48Address::ConvertFrom(entry->GetMacAddress ());
-          break;
-        }
-    }
-  
-  Neighbor neighbor (addr, hwaddr, expire + Simulator::Now ());
+  NS_LOG_LOGIC ("Open link to " << addr);
+  Neighbor neighbor (addr, LookupMacAddress(addr), expire + Simulator::Now ());
   m_nb.push_back (neighbor);
   Purge ();
 }
+
+struct CloseNeighbor
+{
+  bool operator()(const Neighbors::Neighbor & nb) const
+  {
+    return ((nb.m_expireTime < Simulator::Now()) || nb.close); 
+  }
+};
 
 void
 Neighbors::Purge ()
 {
   if (m_nb.empty ()) return;
-  std::vector<Neighbor>::iterator i = remove_if (m_nb.begin (), m_nb.end (), IsExpired ());
+  
+  CloseNeighbor pred;
   if (!m_handleLinleFailure.IsNull ())
     {
-      for (std::vector<Neighbor>::const_iterator j = i; j != m_nb.end (); ++j)
+      for (std::vector<Neighbor>::iterator j = m_nb.begin (); j != m_nb.end (); ++j)
         {
-          m_handleLinleFailure (i->m_neighborAddress);
+          if (pred(*j)) 
+            {
+              NS_LOG_LOGIC ("Close link to " << j->m_neighborAddress);
+              m_handleLinleFailure (j->m_neighborAddress);
+            }
         }
     }
-  m_nb.erase (i, m_nb.end ());
+  m_nb.erase (std::remove_if (m_nb.begin(), m_nb.end(), pred), m_nb.end ());
   m_ntimer.Cancel();
   m_ntimer.Schedule();
 }
@@ -127,18 +131,30 @@ Neighbors::DelArpCache (Ptr<ArpCache> a)
   m_arp.erase(std::remove(m_arp.begin(), m_arp.end(), a), m_arp.end());
 }
 
+Mac48Address
+Neighbors::LookupMacAddress (Ipv4Address addr)
+{
+  Mac48Address hwaddr;
+  for (std::vector<Ptr<ArpCache> >::const_iterator i = m_arp.begin(); i != m_arp.end(); ++i)
+    {
+      ArpCache::Entry * entry = (*i)->Lookup (addr);
+      if (entry != 0 && entry->IsAlive () && ! entry->IsExpired ())
+        {
+          hwaddr = Mac48Address::ConvertFrom(entry->GetMacAddress ());
+          break;
+        }
+    } 
+  return hwaddr;
+}
 
 void
 Neighbors::ProcessTxError (WifiMacHeader const & hdr)
 {
   Mac48Address addr = hdr.GetAddr1();
-  
+
   for (std::vector<Neighbor>::iterator i = m_nb.begin (); i != m_nb.end (); ++i)
-    if (i->m_hardwareAddress == addr)
-      {
-        NS_LOG_LOGIC ("Close link to " << i->m_neighborAddress << " because of layer 2 TX error notification");
-        i->m_expireTime = Simulator::Now();
-      }  
+    if (i->m_hardwareAddress == addr) 
+      i->close = true;
   Purge();
 }
 

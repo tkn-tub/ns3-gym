@@ -252,7 +252,6 @@ RoutingTable::RoutingTable (Time t) : m_badLinkLifetime (t)
 {
 }
 
-
 bool
 RoutingTable::LookupRoute (Ipv4Address id, RoutingTableEntry & rt )
 {
@@ -402,7 +401,6 @@ RoutingTable::Print (std::ostream &os )
       i->second.Print (os);
     }
   os << "\n";
-
 }
 
 #ifdef RUN_SELF_TESTS
