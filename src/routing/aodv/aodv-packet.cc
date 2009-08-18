@@ -702,7 +702,7 @@ bool
 RerrHeader::AddUnDestination (Ipv4Address dst, uint32_t seqNo )
 {
   if (m_unreachableDstSeqNo.find (dst) != m_unreachableDstSeqNo.end ())
-    return true;
+    return false;
 
   NS_ASSERT (GetDestCount() < 255); // can't support more than 255 destinations in single RERR
   m_unreachableDstSeqNo.insert (std::make_pair (dst, seqNo));

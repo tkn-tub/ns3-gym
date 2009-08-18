@@ -222,7 +222,7 @@ AodvRqueueTest::RunTests ()
   q.Enqueue (e1);
   NS_TEST_ASSERT_EQUAL (q.Find(Ipv4Address ("1.2.3.4")), true);
   NS_TEST_ASSERT_EQUAL (q.Find(Ipv4Address ("1.1.1.1")), false);
-  NS_TEST_ASSERT_EQUAL (q.GetSize(), 3);
+  NS_TEST_ASSERT_EQUAL (q.GetSize(), 1);
   q.DropPacketWithDst(Ipv4Address ("1.2.3.4"));
   NS_TEST_ASSERT_EQUAL (q.Find(Ipv4Address ("1.2.3.4")), false);
   NS_TEST_ASSERT_EQUAL (q.GetSize(), 0);
@@ -238,10 +238,14 @@ AodvRqueueTest::RunTests ()
   NS_TEST_ASSERT_EQUAL (q.Find(Ipv4Address("2.2.2.2")), false);
   q.Enqueue(e2);
   q.Enqueue(e3);
-  q.Enqueue(e1);
-  NS_TEST_ASSERT_EQUAL (q.GetSize(), 4);
-  q.DropPacketWithDst(Ipv4Address ("1.2.3.4"));
   NS_TEST_ASSERT_EQUAL (q.GetSize(), 2);
+  Ptr<Packet> packet4 = Create<Packet> ();
+  h.SetDestination (Ipv4Address ("1.2.3.4"));
+  QueueEntry e4 (packet4, h, ucb, ecb, Seconds (20));
+  q.Enqueue (e4);
+  NS_TEST_ASSERT_EQUAL (q.GetSize(), 3);
+  q.DropPacketWithDst(Ipv4Address ("1.2.3.4"));
+  NS_TEST_ASSERT_EQUAL (q.GetSize(), 1);
 
   CheckSizeLimit ();
 
@@ -268,11 +272,11 @@ AodvRqueueTest::CheckSizeLimit ()
 
   for (uint32_t i = 0; i < q.GetMaxQueueLen (); ++i)
     q.Enqueue (e1);
-  NS_TEST_ASSERT_EQUAL (q.GetSize (), q.GetMaxQueueLen ());
+  NS_TEST_ASSERT_EQUAL (q.GetSize (), 2);
 
   for (uint32_t i = 0; i < q.GetMaxQueueLen (); ++i)
     q.Enqueue (e1);
-  NS_TEST_ASSERT_EQUAL (q.GetSize (), q.GetMaxQueueLen ());
+  NS_TEST_ASSERT_EQUAL (q.GetSize (), 2);
 }
 
 void

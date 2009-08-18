@@ -173,7 +173,7 @@ AodvRtableEntryTest::RunTests ()
     Ptr<NetDevice> dev;
     Ipv4InterfaceAddress iface;
     RoutingTableEntry rt (/*output device*/dev, /*dst*/Ipv4Address("1.2.3.4"), /*validSeqNo*/true, /*seqNo*/10,
-        /*interface*/iface, /*hop*/5, /*next hop*/Ipv4Address("3.3.3.3"), /*lifetime*/Seconds(10));
+                          /*interface*/iface, /*hop*/5, /*next hop*/Ipv4Address("3.3.3.3"), /*lifetime*/Seconds(10));
     NS_TEST_ASSERT_EQUAL (rt.GetOutputDevice (), dev);
     NS_TEST_ASSERT_EQUAL (rt.GetDestination (), Ipv4Address("1.2.3.4"));
     NS_TEST_ASSERT_EQUAL (rt.GetValidSeqNo (), true);
@@ -196,6 +196,8 @@ AodvRtableEntryTest::RunTests ()
     NS_TEST_ASSERT_EQUAL (rt.GetValidSeqNo (), false);
     rt.SetFlag(INVALID);
     NS_TEST_ASSERT_EQUAL (rt.GetFlag (), INVALID);
+    rt.SetFlag(IN_SEARCH);
+    NS_TEST_ASSERT_EQUAL (rt.GetFlag (), IN_SEARCH);
     rt.SetHop(12);
     NS_TEST_ASSERT_EQUAL (rt.GetHop (), 12);
     rt.SetLifeTime(Seconds(1));
@@ -311,7 +313,7 @@ RoutingTable::GetListOfDestinationWithNextHop (Ipv4Address nextHop, std::map<Ipv
   Purge ();
   unreachable.clear ();
   for (std::map<Ipv4Address, RoutingTableEntry>::const_iterator i = m_ipv4AddressEntry.begin (); i != m_ipv4AddressEntry.end (); ++i)
-      if ((i->second.GetNextHop () == nextHop) && (i->second.GetFlag () == VALID) /*&& (!i->second.IsPrecursorListEmpty ())*/)
+      if ((i->second.GetNextHop () == nextHop) && (i->second.GetFlag () == VALID) && (!i->second.IsPrecursorListEmpty ()))
         {
           unreachable.insert (std::make_pair (i->first, i->second.GetSeqNo ()));
         }
@@ -426,11 +428,11 @@ AodvRtableTest::RunTests ()
     Ptr<NetDevice> dev;
     Ipv4InterfaceAddress iface;
     RoutingTableEntry rt (/*output device*/dev, /*dst*/Ipv4Address("1.2.3.4"), /*validSeqNo*/true, /*seqNo*/10,
-        /*interface*/iface, /*hop*/5, /*next hop*/Ipv4Address("1.1.1.1"), /*lifetime*/Seconds(10));
+                          /*interface*/iface, /*hop*/5, /*next hop*/Ipv4Address("1.1.1.1"), /*lifetime*/Seconds(10));
     NS_TEST_ASSERT_EQUAL (rtable.AddRoute (rt), true);
     NS_TEST_ASSERT_EQUAL (rtable.AddRoute (rt), false);
     RoutingTableEntry rt2 (/*output device*/dev, /*dst*/Ipv4Address("4.3.2.1"), /*validSeqNo*/false, /*seqNo*/0,
-        /*interface*/iface, /*hop*/15, /*next hop*/Ipv4Address("1.1.1.1"), /*lifetime*/Seconds(1));
+                           /*interface*/iface, /*hop*/15, /*next hop*/Ipv4Address("1.1.1.1"), /*lifetime*/Seconds(1));
     NS_TEST_ASSERT_EQUAL (rtable.AddRoute (rt2), true);
     NS_TEST_ASSERT_EQUAL (rtable.LookupRoute(rt2.GetDestination(), rt), true);
     NS_TEST_ASSERT_EQUAL (rt2.GetDestination (), rt.GetDestination ());
@@ -444,7 +446,7 @@ AodvRtableTest::RunTests ()
     NS_TEST_ASSERT_EQUAL (rtable.SetEntryState(Ipv4Address("1.2.3.4"), IN_SEARCH), true);
     NS_TEST_ASSERT_EQUAL (rtable.DeleteRoute(Ipv4Address("5.5.5.5")), false);
     RoutingTableEntry rt4 (/*output device*/dev, /*dst*/Ipv4Address("5.5.5.5"), /*validSeqNo*/false, /*seqNo*/0,
-        /*interface*/iface, /*hop*/15, /*next hop*/Ipv4Address("1.1.1.1"), /*lifetime*/Seconds(-10));
+                          /*interface*/iface, /*hop*/15, /*next hop*/Ipv4Address("1.1.1.1"), /*lifetime*/Seconds(-10));
     NS_TEST_ASSERT_EQUAL (rtable.AddRoute (rt4), true);
     NS_TEST_ASSERT_EQUAL (rtable.SetEntryState(Ipv4Address("5.5.5.5"), INVALID), true);
     NS_TEST_ASSERT_EQUAL (rtable.LookupRoute(Ipv4Address("5.5.5.5"), rt), false);
@@ -455,12 +457,12 @@ AodvRtableTest::RunTests ()
     rt.SetLifeTime(Seconds(-5));
     NS_TEST_ASSERT_EQUAL (rtable.Update (rt), true);
     std::map<Ipv4Address, uint32_t> unreachable;
+    rtable.GetListOfDestinationWithNextHop (Ipv4Address("1.1.1.1"), unreachable);
+    NS_TEST_ASSERT_EQUAL (unreachable.size (), 1);
     unreachable.insert (std::make_pair(Ipv4Address("4.3.2.1"), 3));
     rtable.InvalidateRoutesWithDst(unreachable);
     NS_TEST_ASSERT_EQUAL (rtable.LookupRoute(Ipv4Address("4.3.2.1"), rt), true);
     NS_TEST_ASSERT_EQUAL (rt.GetFlag(), INVALID);
-    rtable.GetListOfDestinationWithNextHop(Ipv4Address("1.1.1.1"), unreachable);
-    NS_TEST_ASSERT_EQUAL (unreachable.size (), 1);
     NS_TEST_ASSERT_EQUAL (rtable.DeleteRoute(Ipv4Address("1.2.3.4")), true);
     NS_TEST_ASSERT_EQUAL (rtable.DeleteRoute(Ipv4Address("1.2.3.4")), false);
 
