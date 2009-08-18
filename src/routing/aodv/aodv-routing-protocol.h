@@ -90,6 +90,7 @@ private:
   ///\name Protocol parameters. TODO document
   //\{
   uint32_t RreqRetries;             ///< Maximum number of retransmissions of RREQ with TTL = NetDiameter to discover a route
+  uint16_t RreqRateLimit;           ///< Maximum number of RREQ per second.
   Time ActiveRouteTimeout;          ///< Minimal lifetime for active route.
   uint32_t NetDiameter;             ///< Net diameter measures the maximum possible number of hops between two nodes in the network
   /**
@@ -142,6 +143,7 @@ private:
   IdCache m_idCache;
   /// Handle neighbors
   Neighbors m_nb;
+  uint16_t m_rreqCount;
 
   /// Unicast callback for own packets
   UnicastForwardCallback m_scb;
@@ -227,6 +229,8 @@ private:
   //\{
   Timer htimer; // TODO independent hello timers for all interfaces
   void HelloTimerExpire ();
+  Timer m_rreqRateLimitTimer;
+  void RreqRateLimitTimerExpire ();
   std::map<Ipv4Address, Timer> m_addressReqTimer;
   void RouteRequestTimerExpire (Ipv4Address dst);
   void AckTimerExpire (Ipv4Address neighbor,  Time blacklistTimeout);

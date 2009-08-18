@@ -45,6 +45,8 @@
 #include "ns3/adhoc-wifi-mac.h"
 #include <algorithm>
 
+#include "ns3/icmpv4.h"
+
 NS_LOG_COMPONENT_DEFINE ("AodvRoutingProtocol");
 
 namespace ns3
@@ -58,6 +60,7 @@ const uint32_t RoutingProtocol::AODV_PORT = 654;
 
 RoutingProtocol::RoutingProtocol () :
   RreqRetries (2),
+  RreqRateLimit (10),
   ActiveRouteTimeout (Seconds (3)),
   NetDiameter (35),
   NodeTraversalTime (MilliSeconds (40)),
@@ -65,7 +68,7 @@ RoutingProtocol::RoutingProtocol () :
   PathDiscoveryTime ( Scalar (2) * NetTraversalTime),
   MyRouteTimeout (Scalar (2) * std::max (PathDiscoveryTime, ActiveRouteTimeout)),
   HelloInterval(Seconds (1)),
-  AllowedHelloLoss (3),
+  AllowedHelloLoss (2),
   DeletePeriod (Scalar(5) * std::max(ActiveRouteTimeout, HelloInterval)),
   NextHopWait (NodeTraversalTime + MilliSeconds (10)),
   TimeoutBuffer (2),
@@ -80,7 +83,9 @@ RoutingProtocol::RoutingProtocol () :
   m_requestId (0),
   m_seqNo (0),
   m_nb(HelloInterval),
-  htimer (Timer::CANCEL_ON_DESTROY)
+  m_rreqCount (0),
+  htimer (Timer::CANCEL_ON_DESTROY),
+  m_rreqRateLimitTimer (Timer::CANCEL_ON_DESTROY)
 {
   if (EnableHello)
     {
@@ -101,6 +106,10 @@ RoutingProtocol::GetTypeId (void)
       .AddAttribute ("RreqRetries", "Maximum number of retransmissions of RREQ to discover a route",
                      UintegerValue (2),
                      MakeUintegerAccessor (&RoutingProtocol::RreqRetries),
+                     MakeUintegerChecker<uint32_t> ())
+      .AddAttribute ("RreqRateLimit", "Maximum number of RREQ per second.",
+                     UintegerValue (10),
+                     MakeUintegerAccessor (&RoutingProtocol::RreqRateLimit),
                      MakeUintegerChecker<uint32_t> ())
       .AddAttribute ("NodeTraversalTime", "Conservative estimate of the average one hop traversal time for packets and should include "
                      "queuing delays, interrupt processing times and transfer times.",
@@ -124,7 +133,7 @@ RoutingProtocol::GetTypeId (void)
                      MakeTimeAccessor (&RoutingProtocol::MaxQueueTime),
                      MakeTimeChecker ())
       .AddAttribute ("AllowedHelloLoss", "Number of hello messages which may be loss for valid link.",
-                     UintegerValue (3),
+                     UintegerValue (2),
                      MakeUintegerAccessor (&RoutingProtocol::AllowedHelloLoss),
                      MakeUintegerChecker<uint16_t> ())
       .AddAttribute ("GratuitousReply", "Indicates whether a gratuitous RREP should be unicast to the node originated route discovery.",
@@ -172,6 +181,8 @@ RoutingProtocol::Start ()
     {
       m_nb.ScheduleTimer ();
     }
+  m_rreqRateLimitTimer.SetFunction (&RoutingProtocol::RreqRateLimitTimerExpire, this);
+  m_rreqRateLimitTimer.Schedule (Seconds (1));
 }
 
 Ptr<Ipv4Route>
@@ -212,9 +223,8 @@ RoutingProtocol::RouteOutput (Ptr<Packet> p, const Ipv4Header &header, uint32_t 
                 NS_LOG_LOGIC ("Add packet " << p->GetUid() << " to queue");
 
             }
-          if (rt.GetFlag () == INVALID && result)
+          if ((rt.GetFlag () == INVALID) && result)
             {
-              m_routingTable.SetEntryState (dst, IN_SEARCH);
               SendRequest (dst);
             }
         }
@@ -228,7 +238,7 @@ RoutingProtocol::RouteOutput (Ptr<Packet> p, const Ipv4Header &header, uint32_t 
           // Some protocols may ask route several times for a single packet.
           result = m_queue.Enqueue (newEntry);
           if (result)
-            NS_LOG_LOGIC ("Add packet " << p->GetUid() << " to queue");
+            NS_LOG_LOGIC ("Add packet " << p->GetUid() << " to queue. Protocol " << (uint16_t) header.GetProtocol ());
         }
       if (result)
         SendRequest (dst);
@@ -275,8 +285,8 @@ RoutingProtocol::RouteInput (Ptr<const Packet> p, const Ipv4Header &header, Ptr<
             Ptr<Packet> packet = p->Copy();
             lcb (p, header, iif);
             Ptr<Ipv4Route> route;
-//            NS_LOG_LOGIC ("Forward broadcast");
-//            ucb (route, packet, header);
+            NS_LOG_LOGIC ("Forward broadcast");
+            ucb (route, packet, header);
             return true;
           }
     }
@@ -542,6 +552,14 @@ void
 RoutingProtocol::SendRequest (Ipv4Address dst)
 {
   NS_LOG_FUNCTION ( this << dst);
+  // A node SHOULD NOT originate more than RREQ_RATELIMIT RREQ messages per second.
+  if (m_rreqCount == RreqRateLimit)
+    {
+      Simulator::Schedule(m_rreqRateLimitTimer.GetDelayLeft() + MilliSeconds(0.1), &RoutingProtocol::SendRequest, this, dst);
+      return;
+    }
+  else
+    m_rreqCount++;
   // Create RREQ header
   RreqHeader rreqHeader;
   rreqHeader.SetDst (dst);
@@ -554,6 +572,8 @@ RoutingProtocol::SendRequest (Ipv4Address dst)
         rreqHeader.SetDstSeqno (rt.GetSeqNo ());
       else
         rreqHeader.SetUnknownSeqno (true);
+      rt.SetFlag (IN_SEARCH);
+      m_routingTable.AddRoute (rt);
     }
   else
     {
@@ -766,6 +786,7 @@ RoutingProtocol::RecvRequest (Ptr<Packet> p, Ipv4Address receiver, Ipv4Address s
       toOrigin.SetLifeTime (std::max (Scalar (2) * NetTraversalTime - Scalar (2 * hop) * NodeTraversalTime, toOrigin.GetLifeTime ()));
       m_routingTable.Update (toOrigin);
     }
+  NS_LOG_LOGIC (receiver << " recieve RREQ to destination " << rreqHeader.GetDst ());
 
   //  A node generates a RREP if either:
   //  (i)  it is itself the destination,
@@ -781,7 +802,6 @@ RoutingProtocol::RecvRequest (Ptr<Packet> p, Ipv4Address receiver, Ipv4Address s
    */
   RoutingTableEntry toDst;
   Ipv4Address dst = rreqHeader.GetDst ();
-  NS_LOG_LOGIC (receiver << " recieve RREQ to destination " << dst);
   if (m_routingTable.LookupRoute (dst, toDst))
     {
       /*
@@ -1178,6 +1198,13 @@ RoutingProtocol::HelloTimerExpire ()
   htimer.Cancel ();
   Time t = Scalar(0.01)*MilliSeconds(UniformVariable().GetValue (0.0, 100.0));
   htimer.Schedule (HelloInterval - t);
+}
+
+void
+RoutingProtocol::RreqRateLimitTimerExpire ()
+{
+  m_rreqCount = 0;
+  m_rreqRateLimitTimer.Schedule(Seconds(1));
 }
 
 void
