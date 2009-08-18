@@ -174,6 +174,7 @@ Ipv4RawSocketImpl::SendTo (Ptr<Packet> p, uint32_t flags,
     {
       Ipv4Header header;
       header.SetDestination (dst);
+      header.SetProtocol (m_protocol);
       SocketErrno errno_ = ERROR_NOTERROR;//do not use errno as it is the standard C last error number 
       Ptr<Ipv4Route> route;
       uint32_t oif = 0; //specify non-zero if bound to a source address

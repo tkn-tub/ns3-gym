@@ -182,7 +182,7 @@ private:
   /// Receive RREP
   void RecvReply (Ptr<Packet> p, Ipv4Address my ,Ipv4Address src);
   /// Receive RREP_ACK
-  void RecvReplyAck(Ipv4Address neighbor);
+  void RecvReplyAck (Ipv4Address neighbor);
   /// Receive RERR from node with address src
   void RecvError (Ptr<Packet> p, Ipv4Address src);
   //\}

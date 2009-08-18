@@ -178,7 +178,7 @@ RoutingProtocol::Start ()
 Ptr<Ipv4Route>
 RoutingProtocol::RouteOutput (Ptr<Packet> p, const Ipv4Header &header, uint32_t oif, Socket::SocketErrno &sockerr )
 {
-  NS_LOG_FUNCTION (this << p->GetUid() << header.GetDestination());
+  NS_LOG_FUNCTION (this << header.GetDestination());
   if (m_socketAddresses.empty ())
     {
       sockerr = Socket::ERROR_NOROUTETOHOST;
@@ -203,9 +203,17 @@ RoutingProtocol::RouteOutput (Ptr<Packet> p, const Ipv4Header &header, uint32_t 
         }
       else
         {
-          QueueEntry newEntry (p, header, m_scb, m_ecb);
-          m_queue.Enqueue (newEntry);
-          if (rt.GetFlag () == INVALID)
+          bool result = true;
+          // May be null pointer (e.g. tcp-socket give null pointer)
+          if (p != Ptr<Packet> ())
+            {
+              QueueEntry newEntry (p, header, m_scb, m_ecb);
+              result = m_queue.Enqueue (newEntry);
+              if (result)
+                NS_LOG_LOGIC ("Add packet " << p->GetUid() << " to queue");
+
+            }
+          if (rt.GetFlag () == INVALID && result)
             {
               m_routingTable.SetEntryState (dst, IN_SEARCH);
               SendRequest (dst);
@@ -214,9 +222,17 @@ RoutingProtocol::RouteOutput (Ptr<Packet> p, const Ipv4Header &header, uint32_t 
     }
   else
     {
-      QueueEntry newEntry (p, header, m_scb, m_ecb);
-      m_queue.Enqueue (newEntry);
-      SendRequest (dst);
+      bool result = true;
+      if (p != Ptr<Packet> ())
+        {
+          QueueEntry newEntry (p, header, m_scb, m_ecb);
+          // Some protocols may ask route several times for a single packet.
+          result = m_queue.Enqueue (newEntry);
+          if (result)
+            NS_LOG_LOGIC ("Add packet " << p->GetUid() << " to queue");
+        }
+      if (result)
+        SendRequest (dst);
     }
   return route;
 }
@@ -881,7 +897,7 @@ RoutingProtocol::SendReplyByIntermediateNode (RoutingTableEntry & toDst, Routing
 void
 RoutingProtocol::SendReplyAck (Ipv4Address neighbor )
 {
-  NS_LOG_FUNCTION(this);
+  NS_LOG_FUNCTION (this << " to " << neighbor);
   RrepAckHeader h;
   TypeHeader typeHeader (AODVTYPE_RREP_ACK);
   Ptr<Packet> packet = Create<Packet> ();
@@ -1022,8 +1038,14 @@ RoutingProtocol::RecvReply (Ptr<Packet> p, Ipv4Address receiver, Ipv4Address sen
 void
 RoutingProtocol::RecvReplyAck (Ipv4Address neighbor)
 {
-  NS_LOG_LOGIC(this);
-  // TODO
+  NS_LOG_FUNCTION (this);
+  RoutingTableEntry rt;
+  if(m_routingTable.LookupRoute(neighbor, rt))
+    {
+      rt.m_ackTimer.Cancel ();
+      rt.SetFlag (VALID);
+      m_routingTable.Update(rt);
+    }
 }
 
 void
@@ -1215,12 +1237,12 @@ RoutingProtocol::SendPacketFromQueue (Ipv4Address dst, Ptr<Ipv4Route> route )
 void
 RoutingProtocol::Send (Ptr<Ipv4Route> route, Ptr<const Packet> packet, const Ipv4Header & header )
 {
-  NS_LOG_FUNCTION(this << packet->GetUid() << (uint16_t) header.GetProtocol());
+  NS_LOG_FUNCTION (this << packet->GetUid() << (uint16_t) header.GetProtocol());
   Ptr<Ipv4L3Protocol> l3 = m_ipv4->GetObject<Ipv4L3Protocol> ();
   NS_ASSERT(l3 != 0);
   Ptr<Packet> p = packet->Copy ();
   // TODO know protocol number
-  l3->Send (p, route->GetSource (), header.GetDestination (), 1, route);
+  l3->Send (p, route->GetSource (), header.GetDestination (), header.GetProtocol(), route);
 }
 
 void
