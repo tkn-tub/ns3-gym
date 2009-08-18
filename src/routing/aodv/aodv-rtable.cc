@@ -145,16 +145,6 @@ RoutingTableEntry::Print (std::ostream & os ) const
         os << "DOWN";
         break;
       }
-    case BEING_REPAIRED:
-      {
-        os << "IN_REPAIR";
-        break;
-      }
-    case REPAIRABLE:
-      {
-        os << "REPAIRABLE";
-        break;
-      }
     case IN_SEARCH:
       {
         os << "IN_SEARCH";
@@ -206,8 +196,6 @@ AodvRtableEntryTest::RunTests ()
     NS_TEST_ASSERT_EQUAL (rt.GetValidSeqNo (), false);
     rt.SetFlag(INVALID);
     NS_TEST_ASSERT_EQUAL (rt.GetFlag (), INVALID);
-    rt.SetFlag(BEING_REPAIRED);
-    NS_TEST_ASSERT_EQUAL (rt.GetFlag (), BEING_REPAIRED);
     rt.SetHop(12);
     NS_TEST_ASSERT_EQUAL (rt.GetHop (), 12);
     rt.SetLifeTime(Seconds(1));

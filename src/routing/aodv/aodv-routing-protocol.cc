@@ -69,8 +69,6 @@ RoutingProtocol::RoutingProtocol () :
   AllowedHelloLoss (2),
   DeletePeriod (Scalar(5) * std::max(ActiveRouteTimeout, HelloInterval)),
   NextHopWait (NodeTraversalTime + MilliSeconds (10)),
-  MaxRepairTtl (0.3* NetDiameter),
-  LocalAddTtl (2),
   TimeoutBuffer (2),
   BlackListTimeout(Scalar (RreqRetries) * NetTraversalTime),
   MaxQueueLen (64),
@@ -78,16 +76,12 @@ RoutingProtocol::RoutingProtocol () :
   DestinationOnly (false),
   GratuitousReply (true),
   EnableHello (true),
-  EnableLocalRepair (true),
   m_routingTable (DeletePeriod),
   m_queue (MaxQueueLen, MaxQueueTime),
   m_requestId (0),
   m_seqNo (0),
   m_nb(HelloInterval),
-  m_repairedDst (Ipv4Address ()),
-  htimer (Timer::CANCEL_ON_DESTROY),
-  lrtimer (Timer::CANCEL_ON_DESTROY)
-
+  htimer (Timer::CANCEL_ON_DESTROY)
 {
   if (EnableHello)
     {
@@ -122,10 +116,6 @@ RoutingProtocol::GetTypeId (void)
                      UintegerValue (35),
                      MakeUintegerAccessor (&RoutingProtocol::NetDiameter),
                      MakeUintegerChecker<uint32_t> ())
-      .AddAttribute ("LocalAddTtl", "Value used in calculation RREQ TTL when use local repair.",
-                     UintegerValue (7),
-                     MakeUintegerAccessor (&RoutingProtocol::LocalAddTtl),
-                     MakeUintegerChecker<uint16_t> ())
       .AddAttribute ("MaxQueueLen", "Maximum number of packets that we allow a routing protocol to buffer.",
                      UintegerValue (64),
                      MakeUintegerAccessor (&RoutingProtocol::MaxQueueLen),
@@ -152,11 +142,6 @@ RoutingProtocol::GetTypeId (void)
                      BooleanValue (true),
                      MakeBooleanAccessor (&RoutingProtocol::SetHelloEnable,
                                           &RoutingProtocol::GetHelloEnable),
-                     MakeBooleanChecker ())
-      .AddAttribute ("EnableLocalRepair", "Enable local repair.",
-                     BooleanValue (true),
-                     MakeBooleanAccessor (&RoutingProtocol::SetLocalRepairEnable,
-                                          &RoutingProtocol::GetLocalRepairEnable),
                      MakeBooleanChecker ())
   ;
   return tid;
@@ -310,23 +295,7 @@ RoutingProtocol::Forwarding (Ptr<const Packet> p, const Ipv4Header & header, Uni
   RoutingTableEntry toDst;
   if (m_routingTable.LookupRoute (dst, toDst))
     {
-      if (toDst.GetFlag () == REPAIRABLE && EnableLocalRepair && !lrtimer.IsRunning())
-        {
-          if (toDst.GetHop () > MaxRepairTtl)
-            return false;
-          LocalRouteRepair (dst, origin);
-          QueueEntry newEntry (p, header, ucb, ecb, MaxQueueTime);
-          m_queue.Enqueue (newEntry);
-          NS_LOG_LOGIC("Local repair "<< dst);
-          return true;
-        }
-      else if (toDst.GetFlag () == BEING_REPAIRED)
-        {
-          QueueEntry newEntry (p, header, ucb, ecb, MaxQueueTime);
-          m_queue.Enqueue (newEntry);
-          return true;
-        }
-      else if (toDst.GetFlag () == VALID)
+      if (toDst.GetFlag () == VALID)
         {
           Ptr<Ipv4Route> route = toDst.GetRoute ();
           NS_LOG_LOGIC(route->GetSource()<<" forwarding to " << dst << " from " << origin << " packet " << p->GetUid ());
@@ -353,7 +322,7 @@ RoutingProtocol::Forwarding (Ptr<const Packet> p, const Ipv4Header & header, Uni
           m_nb.Update (toOrigin.GetNextHop (), ActiveRouteTimeout);
 
           NS_LOG_LOGIC ("Forwarding");
-          m_routingTable.Print(std::cout);
+          m_routingTable.Print (std::cout);
           ucb (route, p, header);
           return true;
         }
@@ -377,10 +346,6 @@ RoutingProtocol::SetIpv4 (Ptr<Ipv4> ipv4)
   NS_ASSERT (ipv4 != 0);
   NS_ASSERT (m_ipv4 == 0);
 
-  if (EnableLocalRepair)
-    {
-      lrtimer.SetFunction (&RoutingProtocol::LocalRepairTimerExpire, this);
-    }
   if (EnableHello)
     {
       htimer.SetFunction (&RoutingProtocol::HelloTimerExpire, this);
@@ -432,7 +397,6 @@ RoutingProtocol::NotifyInterfaceDown (uint32_t i )
     {
       NS_LOG_LOGIC ("No aodv interfaces");
       htimer.Cancel ();
-      lrtimer.Cancel ();
       m_nb.Clear ();
       m_routingTable.Clear ();
       return;
@@ -510,7 +474,6 @@ RoutingProtocol::NotifyRemoveAddress (uint32_t i, Ipv4InterfaceAddress address )
         {
           NS_LOG_LOGIC ("No aodv interfaces");
           htimer.Cancel ();
-          lrtimer.Cancel ();
           m_nb.Clear ();
           m_routingTable.Clear ();
           return;
@@ -946,18 +909,6 @@ RoutingProtocol::RecvReply (Ptr<Packet> p, Ipv4Address receiver, Ipv4Address sen
       return;
     }
 
-  if (dst == m_repairedDst)
-    {
-    RoutingTableEntry toDst;
-    m_routingTable.LookupRoute (dst, toDst);
-    if (toDst.GetHop () < rrepHeader.GetHopCount ())
-        {
-          lrtimer.Cancel ();
-          m_repairedDst = Ipv4Address ();
-          SendRerr (dst, true);
-        }
-    }
-
   /*
    * If the route table entry to the destination is created or updated, then the following actions occur:
    * -  the route is marked as active,
@@ -1223,17 +1174,6 @@ RoutingProtocol::HelloTimerExpire ()
 }
 
 void
-RoutingProtocol::LocalRepairTimerExpire ()
-{
-  NS_LOG_LOGIC ("Local repair failed. Drop packet with destination IP address " << m_repairedDst << " and send RERR message");
-  m_queue.DropPacketWithDst (m_repairedDst);
-  SendRerr (m_repairedDst, false);
-  RoutingTableEntry toDst;
-  m_routingTable.SetEntryState (m_repairedDst, INVALID);
-  m_repairedDst = Ipv4Address ();
-}
-
-void
 RoutingProtocol::AckTimerExpire (Ipv4Address neighbor, Time blacklistTimeout )
 {
   NS_LOG_FUNCTION(this);
@@ -1401,23 +1341,6 @@ RoutingProtocol::SendRerrWhenNoRouteToForward (Ipv4Address dst, uint32_t dstSeqN
 }
 
 void
-RoutingProtocol::SendRerr (Ipv4Address dst, bool noDelete)
-{
-  RerrHeader rerrHeader;
-  std::vector<Ipv4Address> precursors;
-  RoutingTableEntry toDst;
-  if (!m_routingTable.LookupRoute (dst, toDst))
-    return;
-  toDst.GetPrecursors (precursors);
-  rerrHeader.AddUnDestination (dst, toDst.GetSeqNo ());
-  TypeHeader typeHeader (AODVTYPE_RERR);
-  Ptr<Packet> packet = Create<Packet> ();
-  packet->AddHeader (rerrHeader);
-  packet->AddHeader (typeHeader);
-  SendRerrMessage (packet, precursors);
-}
-
-void
 RoutingProtocol::SendRerrMessage (Ptr<Packet> packet, std::vector<Ipv4Address> precursors )
 {
   NS_LOG_FUNCTION(this);
@@ -1487,24 +1410,6 @@ void
 RoutingProtocol::Drop(Ptr<const Packet> packet, const Ipv4Header & header, Socket::SocketErrno err)
 {
   NS_LOG_LOGIC (this <<" drop own packet " << packet->GetUid() << " to " << header.GetDestination () << " from queue. Error " << err);
-}
-
-void
-RoutingProtocol::LocalRouteRepair (Ipv4Address dst, Ipv4Address origin )
-{
-  NS_LOG_FUNCTION(this << " from " << origin << " to " << dst);
-
-  RoutingTableEntry toDst;
-  RoutingTableEntry toOrigin;
-  if (!m_routingTable.LookupRoute (dst, toDst))
-    return;
-  if (!m_routingTable.LookupRoute (origin, toOrigin))
-    return;
-  uint16_t ttl = std::max (toOrigin.GetHop () * 0.5, (double) toDst.GetHop ()) + LocalAddTtl;
-  SendRequest (dst);
-  toDst.SetFlag (BEING_REPAIRED);
-  lrtimer.Schedule(Scalar(2*(ttl + TimeoutBuffer)) * NodeTraversalTime);
-
 }
 
 }

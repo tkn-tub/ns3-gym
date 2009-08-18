@@ -85,8 +85,6 @@ public:
   void SetGratuitousReplyFlag (bool f) { GratuitousReply = f; }
   void SetHelloEnable (bool f) { EnableHello = f; }
   bool GetHelloEnable () const { return EnableHello; }
-  void SetLocalRepairEnable (bool f) { EnableLocalRepair = f; }
-  bool GetLocalRepairEnable () const { return EnableLocalRepair; }
   //\}
 private:
   ///\name Protocol parameters. TODO document
@@ -114,8 +112,6 @@ private:
    */
   Time DeletePeriod;
   Time NextHopWait;                  ///< Period of our waiting for the neighbour's RREP_ACK
-  uint16_t  MaxRepairTtl;            ///< Maximum distance in hops between intermediate node and destination node when local repair still may be applied.
-  uint16_t LocalAddTtl;              ///< Value used in calculation RREQ TTL when use local repair
   /**
    * The TimeoutBuffer is configurable.  Its purpose is to provide a buffer for the timeout so that if the RREP is delayed
    * due to congestion, a timeout is less likely to occur while the RREP is still en route back to the source.
@@ -127,7 +123,6 @@ private:
   bool DestinationOnly;              ///< Indicates only the destination may respond to this RREQ.
   bool GratuitousReply;              ///< Indicates whether a gratuitous RREP should be unicast to the node originated route discovery.
   bool EnableHello;                  ///< Indicates whether a hello messages enable
-  bool EnableLocalRepair;            ///< Indicates whether a local repair enable
   //\}
 
   /// IP protocol
@@ -147,8 +142,6 @@ private:
   IdCache m_idCache;
   /// Handle neighbors
   Neighbors m_nb;
-  /// Address of the destination, which currently repaired.
-  Ipv4Address m_repairedDst;
 
   /// Unicast callback for own packets
   UnicastForwardCallback m_scb;
@@ -158,16 +151,7 @@ private:
 private:
   /// Start protocol operation
   void Start ();
-  /// Start local route repair procedure
-  void LocalRouteRepair (Ipv4Address dst, Ipv4Address origin);
-  /**
-   * If route exists and valid, forward packet.
-   * If route exists and down try to repair route if following conditions is true
-   *    1. Using local route repair technique enable
-   *    2. The destination is no farther than MAX_REPAIR_TTL hops away.
-   * During local repair data packets SHOULD be buffered.
-   * \return true if node forward packet or try to repair route.
-   */
+  /// If route exists and valid, forward packet.
   bool Forwarding (Ptr<const Packet> p, const Ipv4Header & header, UnicastForwardCallback ucb, ErrorCallback ecb);
   /**
   * To reduce congestion in a network, repeated attempts by a source node at route discovery
@@ -225,7 +209,6 @@ private:
   void SendReplyAck (Ipv4Address neighbor);
   /// Initiate RERR
   void SendRerrWhenBreaksLinkToNextHop (Ipv4Address nextHop);
-  void SendRerr (Ipv4Address dst, bool noDelete);
   /// Forward RERR
   void SendRerrMessage(Ptr<Packet> packet,  std::vector<Ipv4Address> precursors);
   /**
@@ -248,8 +231,6 @@ private:
   //\{
   Timer htimer; // TODO independent hello timers for all interfaces
   void HelloTimerExpire ();
-  Timer lrtimer;
-  void LocalRepairTimerExpire ();
   std::map<Ipv4Address, Timer> m_addressReqTimer;
   void RouteRequestTimerExpire (Ipv4Address dst);
   void AckTimerExpire (Ipv4Address neighbor,  Time blacklistTimeout);
