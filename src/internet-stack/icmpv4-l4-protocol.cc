@@ -86,6 +86,7 @@ Icmpv4L4Protocol::SendMessage (Ptr<Packet> packet, Ipv4Address dest, uint8_t typ
   NS_ASSERT (ipv4 != 0 && ipv4->GetRoutingProtocol () != 0);
   Ipv4Header header;
   header.SetDestination (dest);
+  header.SetProtocol (PROT_NUMBER);
   Socket::SocketErrno errno_;
   Ptr<Ipv4Route> route;
   uint32_t oif = 0; //specify non-zero if bound to a source address

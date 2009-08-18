@@ -403,6 +403,7 @@ UdpSocketImpl::DoSendTo (Ptr<Packet> p, Ipv4Address dest, uint16_t port)
     {
       Ipv4Header header;
       header.SetDestination (dest);
+      header.SetProtocol (UdpL4Protocol::PROT_NUMBER);
       Socket::SocketErrno errno_;
       Ptr<Ipv4Route> route;
       uint32_t oif = 0; //specify non-zero if bound to a source address

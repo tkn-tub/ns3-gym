@@ -549,6 +549,7 @@ TcpL4Protocol::Send (Ptr<Packet> packet,
       // should be cached.
       Ipv4Header header;
       header.SetDestination (daddr);
+      header.SetProtocol (PROT_NUMBER);
       Socket::SocketErrno errno_;
       Ptr<Ipv4Route> route;
       uint32_t oif = 0; //specify non-zero if bound to a source address
@@ -587,6 +588,7 @@ TcpL4Protocol::SendPacket (Ptr<Packet> packet, TcpHeader outgoingHeader,
       // should be cached.
       Ipv4Header header;
       header.SetDestination (daddr);
+      header.SetProtocol (PROT_NUMBER);
       Socket::SocketErrno errno_;
       Ptr<Ipv4Route> route;
       uint32_t oif = 0; //specify non-zero if bound to a source address

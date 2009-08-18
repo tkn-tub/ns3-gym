@@ -94,8 +94,8 @@ class RequestQueue
 public:
   /// Default c-tor
   RequestQueue (uint32_t maxLen, Time routeToQueueTimeout) : m_maxLen (maxLen), m_queueTimeout (routeToQueueTimeout) {}
-  /// Push entry in queue.
-  void Enqueue (QueueEntry & entry);
+  /// Push entry in queue, if there is no entry with the same packet and destination address in queue.
+  bool Enqueue (QueueEntry & entry);
   /// Return first found (the earliest) entry for given destination
   bool Dequeue (Ipv4Address dst, QueueEntry & entry);
   /// Remove all packets with destination IP address dst
