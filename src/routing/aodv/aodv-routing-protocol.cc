@@ -191,6 +191,7 @@ RoutingProtocol::GetTypeId (void)
   ;
   return tid;
 }
+
 RoutingProtocol::~RoutingProtocol ()
 {
 }
@@ -311,6 +312,7 @@ RoutingProtocol::RouteInput (Ptr<const Packet> p, const Ipv4Header &header, Ptr<
             Ptr<Packet> packet = p->Copy();
             lcb (p, header, iif);
             Ptr<Ipv4Route> route;
+            NS_LOG_LOGIC ("Forward broadcast");
             ucb (route, packet, header);
             return true;
           }
@@ -538,7 +540,7 @@ RoutingProtocol::NotifyRemoveAddress (uint32_t i, Ipv4InterfaceAddress address )
           // Add local broadcast record to the routing table
           Ptr<NetDevice> dev = m_ipv4->GetNetDevice (m_ipv4->GetInterfaceForAddress (iface.GetLocal ()));
           RoutingTableEntry rt (/*device=*/dev, /*dst=*/iface.GetBroadcast (), /*know seqno=*/true, /*seqno=*/0, /*iface=*/iface,
-          /*hops=*/1, /*next hop=*/iface.GetBroadcast (), /*lifetime=*/Seconds (1e9)); // TODO use infty
+                                /*hops=*/1, /*next hop=*/iface.GetBroadcast (), /*lifetime=*/Seconds (1e9)); // TODO use infty
           m_routingTable.AddRoute (rt);
         }
       if (m_socketAddresses.empty ())
@@ -653,7 +655,6 @@ RoutingProtocol::ScheduleRreqRetry (Ipv4Address dst,  uint16_t ttl)
    else
      m_addressReqTimer[dst].Schedule (Scalar (2) * NodeTraversalTime * Scalar (ttl + TimeoutBuffer));
 }
-
 
 void
 RoutingProtocol::RecvAodv (Ptr<Socket> socket )
@@ -1113,7 +1114,6 @@ RoutingProtocol::RecvReplyAck (Ipv4Address neighbor )
   // TODO
 }
 
-// TODO may be used for determining connectivity
 void
 RoutingProtocol::ProcessHello (RrepHeader const & rrepHeader, Ipv4Address receiver )
 {
@@ -1338,7 +1338,6 @@ RoutingProtocol::SendPacketViaRawSocket (Ptr<Packet> packet, std::pair<Ptr<Socke
   socketAddress.first->SendTo (packet, 0, InetSocketAddress (dst, AODV_PORT));
 }
 
-
 void
 RoutingProtocol::SendPacketFromQueue (Ipv4Address dst, Ptr<Ipv4Route> route )
 {
@@ -1452,7 +1451,6 @@ RoutingProtocol::SendRerrWhenNoRouteToForward (Ipv4Address dst, uint32_t dstSeqN
     }
 }
 
-
 void
 RoutingProtocol::SendRerr (Ipv4Address dst, bool noDelete)
 {
@@ -1542,7 +1540,6 @@ RoutingProtocol::Drop(Ptr<const Packet> packet, const Ipv4Header & header, Socke
   NS_LOG_LOGIC (this <<" drop own packet " << packet->GetUid() << " to " << header.GetDestination () << " from queue. Error " << err);
 }
 
-
 void
 RoutingProtocol::LocalRouteRepair (Ipv4Address dst, Ipv4Address origin )
 {
@@ -1560,7 +1557,6 @@ RoutingProtocol::LocalRouteRepair (Ipv4Address dst, Ipv4Address origin )
   lrtimer.Schedule(Scalar(2*(ttl + TimeoutBuffer)) * NodeTraversalTime);
 
 }
-
 
 }
 }
