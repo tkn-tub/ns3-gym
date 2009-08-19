@@ -231,8 +231,8 @@ AodvExample::InstallApplications ()
         uint16_t port = 9; // Discard port (RFC 863)
 
         OnOffHelper onoff ("ns3::UdpSocketFactory",
-            Address (InetSocketAddress (interfaces.GetAddress(size - 1), port)));
-        onoff.SetAttribute ("OnTime", RandomVariableValue (ConstantVariable(totalTime)));
+            Address (InetSocketAddress ("10.255.255.255", port)));
+        onoff.SetAttribute ("OnTime", RandomVariableValue (ConstantVariable(1)));
         onoff.SetAttribute ("OffTime", RandomVariableValue (ConstantVariable(0)));
 
         ApplicationContainer apps = onoff.Install (nodes.Get (0));
@@ -242,7 +242,10 @@ AodvExample::InstallApplications ()
         // Create an optional packet sink to receive these packets
         PacketSinkHelper sink ("ns3::UdpSocketFactory",
             Address (InetSocketAddress (Ipv4Address::GetAny (), port)));
-        apps = sink.Install (nodes.Get (size-1));
+        for (uint32_t i = 1; i < nodes.GetN (); ++i)
+          {
+            apps.Add(sink.Install (nodes.Get (i)) );
+          }
         apps.Start (Seconds (0));
         apps.Stop (Seconds (totalTime));
         break;
