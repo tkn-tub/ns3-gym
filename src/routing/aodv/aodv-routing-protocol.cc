@@ -45,7 +45,7 @@
 #include "ns3/adhoc-wifi-mac.h"
 #include <algorithm>
 
-#include "ns3/icmpv4.h"
+#include "ns3/udp-socket.h"
 
 NS_LOG_COMPONENT_DEFINE ("AodvRoutingProtocol");
 
@@ -426,6 +426,7 @@ RoutingProtocol::NotifyInterfaceUp (uint32_t i )
   socket->SetRecvCallback (MakeCallback (&RoutingProtocol::RecvAodv, this));
   socket->Bind(InetSocketAddress (iface.GetLocal(), AODV_PORT));
   socket->Connect (InetSocketAddress (iface.GetBroadcast(), AODV_PORT));
+  socket->SetAttribute("IpTtl", UintegerValue(1));
   m_socketAddresses.insert (std::make_pair (socket, iface));
 
   // Add local broadcast record to the routing table

@@ -250,6 +250,42 @@ AodvExample::InstallApplications ()
         apps.Stop (Seconds (totalTime));
         break;
       }
+    case TCP:
+         {
+//           V4PingHelper ping (interfaces.GetAddress(size - 1));
+//           ping.SetAttribute ("Verbose", BooleanValue (true));
+//
+//           ApplicationContainer p = ping.Install (nodes.Get (0));
+//           p.Start (Seconds (0));
+//           p.Stop (Seconds (totalTime/2));
+
+
+           Config::SetDefault ("ns3::OnOffApplication::PacketSize", UintegerValue (4096));
+           Config::SetDefault ("ns3::OnOffApplication::DataRate", StringValue ("6Mbps"));
+
+           uint16_t port = 8080;
+           PacketSinkHelper sinkHelper ("ns3::TcpSocketFactory", InetSocketAddress (Ipv4Address::GetAny (), port));
+           ApplicationContainer sinkApp = sinkHelper.Install (nodes.Get (size-1));
+           sinkApp.Start (Seconds (totalTime/2));
+           sinkApp.Stop (Seconds (totalTime));
+
+           // Create the OnOff applications to send TCP
+           OnOffHelper clientHelper ("ns3::TcpSocketFactory", Address ());
+           clientHelper.SetAttribute
+               ("OnTime", RandomVariableValue (ConstantVariable (1)));
+           clientHelper.SetAttribute
+               ("OffTime", RandomVariableValue (ConstantVariable (0)));
+
+           ApplicationContainer clientApp;
+           AddressValue remoteAddress
+               (InetSocketAddress (interfaces.GetAddress (size-1), port));
+           clientHelper.SetAttribute ("Remote", remoteAddress);
+           clientApp = clientHelper.Install (nodes.Get (0));
+           clientApp.Start (Seconds (totalTime/2));
+           clientApp.Stop (Seconds (totalTime));
+
+         }
+
   };
 
 }
