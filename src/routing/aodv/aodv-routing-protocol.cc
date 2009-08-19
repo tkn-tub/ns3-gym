@@ -271,12 +271,17 @@ RoutingProtocol::RouteInput (Ptr<const Packet> p, const Ipv4Header &header, Ptr<
               }
             m_idCache.InsertId (origin, p->GetUid (), PathDiscoveryTime);
             UpdateRouteLifeTime (origin, ActiveRouteTimeout);
+            
             NS_LOG_LOGIC ("Broadcast local delivery to " << iface.GetLocal ());
             Ptr<Packet> packet = p->Copy();
             lcb (p, header, iif);
             Ptr<Ipv4Route> route;
-//            NS_LOG_LOGIC ("Forward broadcast");
-//            ucb (route, packet, header);
+            
+            if (header.GetTtl() > 1)
+              {
+                NS_LOG_LOGIC ("Forward broadcast");
+                ucb (route, packet, header);
+              }
             return true;
           }
     }
