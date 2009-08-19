@@ -468,7 +468,6 @@ Ipv4L3Protocol::Send (Ptr<Packet> packet,
   if (destination.IsBroadcast ()) 
     {
       NS_LOG_LOGIC ("Ipv4L3Protocol::Send case 1:  limited broadcast");
-      ttl = 1;
       ipHeader = BuildHeader (source, destination, protocol, packet->GetSize (), ttl, mayFragment);
       uint32_t ifaceIndex = 0;
       for (Ipv4InterfaceList::iterator ifaceIter = m_interfaces.begin ();
@@ -499,7 +498,6 @@ Ipv4L3Protocol::Send (Ptr<Packet> packet,
               destination.CombineMask (ifAddr.GetMask ()) == ifAddr.GetLocal ().CombineMask (ifAddr.GetMask ())   )  
             {
               NS_LOG_LOGIC ("Ipv4L3Protocol::Send case 2:  subnet directed bcast to " << ifAddr.GetLocal ());
-              ttl = 1;
               ipHeader = BuildHeader (source, destination, protocol, packet->GetSize (), ttl, mayFragment);
               Ptr<Packet> packetCopy = packet->Copy ();
               packetCopy->AddHeader (ipHeader);
