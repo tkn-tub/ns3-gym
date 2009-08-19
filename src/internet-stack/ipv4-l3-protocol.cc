@@ -683,9 +683,9 @@ Ipv4L3Protocol::IpForward (Ptr<Ipv4Route> rtentry, Ptr<const Packet> p, const Ip
   ipHeader.SetTtl (ipHeader.GetTtl () - 1);
   if (ipHeader.GetTtl () == 0)
     {
-      // Do not reply to ICMP or to multicast/broadcast IP address 
-      if (ipHeader.GetProtocol () != Icmpv4L4Protocol::PROT_NUMBER && 
-        ipHeader.GetDestination ().IsBroadcast () == false && 
+      // Do not reply to ICMP or to multicast/broadcast IP address
+      if (ipHeader.GetProtocol () != Icmpv4L4Protocol::PROT_NUMBER &&
+        ipHeader.GetDestination ().IsBroadcast () == false &&
         ipHeader.GetDestination ().IsMulticast () == false)
         {
           Ptr<Icmpv4L4Protocol> icmp = GetIcmp ();
