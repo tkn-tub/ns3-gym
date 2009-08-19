@@ -54,8 +54,7 @@ IdCache::LookupId (Ipv4Address addr, uint32_t id )
 void
 IdCache::Purge ()
 {
-  std::vector<UniqueId>::iterator i = remove_if (m_idCache.begin (), m_idCache.end (), IsExpired ());
-  m_idCache.erase (i, m_idCache.end ());
+  m_idCache.erase (remove_if (m_idCache.begin (), m_idCache.end (), IsExpired ()), m_idCache.end ());
 }
 
 uint32_t

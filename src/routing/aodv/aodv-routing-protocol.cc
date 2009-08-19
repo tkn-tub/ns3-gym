@@ -188,7 +188,7 @@ RoutingProtocol::Start ()
 Ptr<Ipv4Route>
 RoutingProtocol::RouteOutput (Ptr<Packet> p, const Ipv4Header &header, uint32_t oif, Socket::SocketErrno &sockerr )
 {
-  NS_LOG_FUNCTION (this << header.GetDestination());
+  NS_LOG_FUNCTION (this << header.GetDestination ());
   if (m_socketAddresses.empty ())
     {
       sockerr = Socket::ERROR_NOROUTETOHOST;
@@ -290,6 +290,10 @@ RoutingProtocol::RouteInput (Ptr<const Packet> p, const Ipv4Header &header, Ptr<
               {
                 NS_LOG_LOGIC ("Forward broadcast");
                 ucb (route, packet, header);
+              }
+            else
+              {
+                NS_LOG_WARN ("TTL exceeded. Drop packet " << p->GetUid ());
               }
             return true;
           }
@@ -411,6 +415,9 @@ RoutingProtocol::NotifyInterfaceUp (uint32_t i )
   Ptr<NetDevice> dev = m_ipv4->GetNetDevice (m_ipv4->GetInterfaceForAddress (iface.GetLocal ()));
   RoutingTableEntry rt (/*device=*/dev, /*dst=*/iface.GetBroadcast (), /*know seqno=*/true, /*seqno=*/0, /*iface=*/iface,
                         /*hops=*/1, /*next hop=*/iface.GetBroadcast (), /*lifetime=*/Seconds (1e9)); // TODO use infty
+  m_routingTable.AddRoute (rt);
+  RoutingTableEntry rt2 (/*device=*/dev, /*dst=*/Ipv4Address::GetBroadcast(), /*know seqno=*/true, /*seqno=*/0, /*iface=*/iface,
+                        /*hops=*/1, /*next hop=*/Ipv4Address::GetBroadcast(), /*lifetime=*/Seconds (1e9)); // TODO use infty
   m_routingTable.AddRoute (rt);
   
   // Allow neighbor manager use this interface for layer 2 feedback if possible
@@ -1198,7 +1205,6 @@ RoutingProtocol::HelloTimerExpire ()
 {
   NS_LOG_FUNCTION(this);
   SendHello ();
-  // TODO select random time for the next hello
   htimer.Cancel ();
   Time t = Scalar(0.01)*MilliSeconds(UniformVariable().GetValue (0.0, 100.0));
   htimer.Schedule (HelloInterval - t);

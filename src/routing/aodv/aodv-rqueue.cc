@@ -122,12 +122,14 @@ RequestQueue::DropPacketWithDst (Ipv4Address dst )
   NS_LOG_FUNCTION (this << dst);
   Purge ();
   const Ipv4Address addr = dst;
-  std::vector<QueueEntry>::iterator i = std::remove_if (m_queue.begin (), m_queue.end (), std::bind2nd (std::ptr_fun (RequestQueue::IsEqual), dst));
-  for (std::vector<QueueEntry>::iterator j = i; j != m_queue.end (); ++j)
+  for (std::vector<QueueEntry>::iterator i = m_queue.begin (); i != m_queue.end (); ++i)
     {
-      Drop (*j, "DropPacketWithDst ");
+      if (IsEqual (*i, dst))
+        {
+          Drop (*i, "DropPacketWithDst ");
+        }
     }
-  m_queue.erase (i, m_queue.end ());
+  m_queue.erase (std::remove_if (m_queue.begin (), m_queue.end (), std::bind2nd (std::ptr_fun (RequestQueue::IsEqual), dst)), m_queue.end ());
 }
 
 bool
@@ -165,12 +167,15 @@ struct IsExpired
 void
 RequestQueue::Purge ()
 {
-  std::vector<QueueEntry>::iterator i = std::remove_if (m_queue.begin (), m_queue.end (), IsExpired ());
-  for (std::vector<QueueEntry>::iterator j = i; j < m_queue.end (); ++j)
+  IsExpired pred;
+  for (std::vector<QueueEntry>::iterator i = m_queue.begin (); i != m_queue.end (); ++i)
     {
-      Drop (*j, "Drop outdated packet ");
+      if (pred (*i))
+        {
+          Drop (*i, "Drop outdated packet ");
+        }
     }
-  m_queue.erase (i, m_queue.end ());
+  m_queue.erase (std::remove_if (m_queue.begin (), m_queue.end (), pred), m_queue.end ());
 }
 
 void

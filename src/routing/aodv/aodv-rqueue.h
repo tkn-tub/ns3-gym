@@ -122,7 +122,7 @@ private:
   uint32_t m_maxLen;
   /// The maximum period of time that a routing protocol is allowed to buffer a packet for, seconds.
   Time m_queueTimeout;
-  static bool IsEqual(QueueEntry  en, const Ipv4Address dst) { return (en.GetIpv4Header ().GetDestination () == dst); }
+  static bool IsEqual(QueueEntry en, const Ipv4Address dst) { return (en.GetIpv4Header ().GetDestination () == dst); }
 };
 
 
