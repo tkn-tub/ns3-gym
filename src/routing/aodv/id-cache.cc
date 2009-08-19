@@ -64,7 +64,6 @@ IdCache::GetSize ()
   return m_idCache.size ();
 }
 
-
 #ifdef RUN_SELF_TESTS
 /// Unit test for id cache
 struct IdCacheTest : public Test
@@ -89,6 +88,7 @@ IdCacheTest::RunTests ()
   NS_TEST_ASSERT_EQUAL (cache.LookupId (Ipv4Address ("1.2.3.4"), 4), false);
   NS_TEST_ASSERT_EQUAL (cache.LookupId (Ipv4Address ("4.3.2.1"), 3), false);
   NS_TEST_ASSERT_EQUAL (cache.LookupId (Ipv4Address ("1.2.3.4"), 3), true);
+  cache.InsertId(Ipv4Address ("1.1.1.1"), 4, Seconds(5));
   cache.InsertId(Ipv4Address ("1.1.1.1"), 4, Seconds(5));
   cache.InsertId(Ipv4Address ("2.2.2.2"), 5, Seconds(16));
   cache.InsertId(Ipv4Address ("3.3.3.3"), 6, Seconds(27));

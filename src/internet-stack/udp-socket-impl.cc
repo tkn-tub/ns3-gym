@@ -373,6 +373,8 @@ UdpSocketImpl::DoSendTo (Ptr<Packet> p, Ipv4Address dest, uint16_t port)
           // Get the primary address
           Ipv4InterfaceAddress iaddr = ipv4->GetAddress (i, 0);
           Ipv4Address addri = iaddr.GetLocal ();
+          if (addri == Ipv4Address ("127.0.0.1"))
+            continue;
           Ipv4Mask maski = iaddr.GetMask ();
           if (maski == Ipv4Mask::GetOnes ())
             {

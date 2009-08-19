@@ -310,7 +310,7 @@ RoutingProtocol::RouteInput (Ptr<const Packet> p, const Ipv4Header &header, Ptr<
               }
             else
               {
-                NS_LOG_WARN ("TTL exceeded. Drop packet " << p->GetUid ());
+                NS_LOG_DEBUG ("TTL exceeded. Drop packet " << p->GetUid ());
               }
             return true;
           }
@@ -381,6 +381,7 @@ RoutingProtocol::Forwarding (Ptr<const Packet> p, const Ipv4Header & header, Uni
           if (toDst.GetValidSeqNo ())
             {
               SendRerrWhenNoRouteToForward (dst, toDst.GetSeqNo (), origin);
+              NS_LOG_DEBUG ("Drop packet");
               return false;
             }
         }

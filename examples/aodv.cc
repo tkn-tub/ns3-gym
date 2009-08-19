@@ -227,11 +227,11 @@ AodvExample::InstallApplications ()
         // Create the OnOff application to send UDP datagrams of size
         // 210 bytes at a rate of 448 Kb/s
         Config::SetDefault ("ns3::OnOffApplication::PacketSize", UintegerValue (210));
-        Config::SetDefault ("ns3::OnOffApplication::DataRate", DataRateValue (DataRate ("448kb/s")));
+        Config::SetDefault ("ns3::OnOffApplication::DataRate", DataRateValue (DataRate ("6Mbps")));
         uint16_t port = 9; // Discard port (RFC 863)
 
         OnOffHelper onoff ("ns3::UdpSocketFactory",
-            Address (InetSocketAddress ("10.255.255.255", port)));
+            Address (InetSocketAddress (interfaces.GetAddress(size-1), port)));
         onoff.SetAttribute ("OnTime", RandomVariableValue (ConstantVariable(1)));
         onoff.SetAttribute ("OffTime", RandomVariableValue (ConstantVariable(0)));
 
@@ -252,12 +252,12 @@ AodvExample::InstallApplications ()
       }
     case TCP:
          {
-//           V4PingHelper ping (interfaces.GetAddress(size - 1));
-//           ping.SetAttribute ("Verbose", BooleanValue (true));
-//
-//           ApplicationContainer p = ping.Install (nodes.Get (0));
-//           p.Start (Seconds (0));
-//           p.Stop (Seconds (totalTime/2));
+           V4PingHelper ping (interfaces.GetAddress(size - 1));
+           ping.SetAttribute ("Verbose", BooleanValue (true));
+
+           ApplicationContainer p = ping.Install (nodes.Get (0));
+           p.Start (Seconds (0));
+           p.Stop (Seconds (totalTime/2));
 
 
            Config::SetDefault ("ns3::OnOffApplication::PacketSize", UintegerValue (4096));
