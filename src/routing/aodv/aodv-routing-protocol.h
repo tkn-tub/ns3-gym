@@ -35,10 +35,8 @@
 #include "aodv-neighbor.h"
 
 #include "ns3/object.h"
-#include "ns3/packet.h"
 #include "ns3/node.h"
 #include "ns3/socket.h"
-#include "ns3/timer.h"
 #include "ns3/ipv4.h"
 #include "ns3/ipv4-routing-protocol.h"
 #include "ns3/ipv4-interface.h"
@@ -60,7 +58,8 @@ public:
   static TypeId GetTypeId (void);
   static const uint32_t AODV_PORT;
 
-  RoutingProtocol();
+  /// c-tor
+  RoutingProtocol ();
   virtual ~RoutingProtocol();
   virtual void DoDispose ();
   
@@ -143,6 +142,7 @@ private:
   IdCache m_idCache;
   /// Handle neighbors
   Neighbors m_nb;
+  /// Number of RREQs used for RREQ rate control
   uint16_t m_rreqCount;
 
   /// Unicast callback for own packets
@@ -165,15 +165,15 @@ private:
    * \param addr - destination address
    * \return true if route to destination address addr exist
    */
-  bool UpdateRouteLifeTime(Ipv4Address addr, Time lifetime);
+  bool UpdateRouteLifeTime (Ipv4Address addr, Time lifetime);
   /// Update neighbor record. \param receiver is supposed to be my interface
   void UpdateRouteToNeighbor (Ipv4Address sender, Ipv4Address receiver);
   /// Check that packet is send from own interface
-  bool IsMyOwnAddress(Ipv4Address src);
+  bool IsMyOwnAddress (Ipv4Address src);
   /// Find socket with local interface address iface
   Ptr<Socket> FindSocketWithInterfaceAddress (Ipv4InterfaceAddress iface) const;
   /// Process hello message
-  void ProcessHello(RrepHeader const & rrepHeader, Ipv4Address receiverIfaceAddr);
+  void ProcessHello (RrepHeader const & rrepHeader, Ipv4Address receiverIfaceAddr);
   
   ///\name Receive control packets
   //\{
@@ -192,9 +192,9 @@ private:
   ///\name Send
   //\{
   /// Forward packet from route request queue
-  void SendPacketFromQueue(Ipv4Address dst, Ptr<Ipv4Route> route);
+  void SendPacketFromQueue (Ipv4Address dst, Ptr<Ipv4Route> route);
   /// Aux. send helper
-  void Send(Ptr<Ipv4Route>, Ptr<const Packet>, const Ipv4Header &);
+  void Send (Ptr<Ipv4Route>, Ptr<const Packet>, const Ipv4Header &);
   /// Send hello
   void SendHello ();
   /// Send RREQ
@@ -225,16 +225,21 @@ private:
   /// Notify that packet is dropped for some reason 
   void Drop(Ptr<const Packet>, const Ipv4Header &, Socket::SocketErrno);
 
-  ///\name Timers. TODO comment each one
-  //\{
+  /// Hello timer
   Timer htimer; // TODO independent hello timers for all interfaces
+  /// Schedule next send of hello message
   void HelloTimerExpire ();
+  /// RREQ rate limit timer
   Timer m_rreqRateLimitTimer;
+  /// Reset RREQ count and schedule RREQ rate limit timer with delay 1 sec.
   void RreqRateLimitTimerExpire ();
+  /// Map IP address + RREQ timer.
   std::map<Ipv4Address, Timer> m_addressReqTimer;
+  /// Handle route discovery process
   void RouteRequestTimerExpire (Ipv4Address dst);
+  /// Mark link to neighbor node as unidirectional for blacklistTimeout
   void AckTimerExpire (Ipv4Address neighbor,  Time blacklistTimeout);
-  //\}
+
 };
 
 }

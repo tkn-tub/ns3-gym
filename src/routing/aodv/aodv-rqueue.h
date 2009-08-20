@@ -28,9 +28,6 @@
 #ifndef __aodv_rqueue_h__
 #define __aodv_rqueue_h__
 
-#include "ns3/ipv4-header.h"
-#include "ns3/nstime.h"
-#include "ns3/packet.h"
 #include <vector>
 #include "ns3/ipv4-routing-protocol.h"
 #include "ns3/simulator.h"
@@ -49,16 +46,18 @@ public:
   typedef Ipv4RoutingProtocol::UnicastForwardCallback UnicastForwardCallback;
   typedef Ipv4RoutingProtocol::ErrorCallback ErrorCallback;
   /// c-tor
-  QueueEntry(Ptr<const Packet> pa = 0, Ipv4Header const & h = Ipv4Header(),
-             UnicastForwardCallback ucb = UnicastForwardCallback(),ErrorCallback ecb = ErrorCallback(),
-             Time exp = Simulator::Now()) : m_packet(pa), m_header(h), m_ucb(ucb), m_ecb(ecb),
-                                             m_expire(exp + Simulator::Now()) {}
+  QueueEntry (Ptr<const Packet> pa = 0, Ipv4Header const & h = Ipv4Header (),
+              UnicastForwardCallback ucb = UnicastForwardCallback (),
+              ErrorCallback ecb = ErrorCallback (), Time exp = Simulator::Now ()) :
+              m_packet (pa), m_header (h), m_ucb (ucb), m_ecb (ecb),
+              m_expire (exp + Simulator::Now ())
+  {}
 
   /**
    * Compare queue entries
    * \return true if equal
    */
-  bool operator==(QueueEntry const & o) const
+  bool operator== (QueueEntry const & o) const
   {
     return ((m_packet == o.m_packet) && (m_header.GetDestination () == o.m_header.GetDestination ()) && (m_expire == o.m_expire));
   }
@@ -76,9 +75,13 @@ public:
   Time GetExpireTime () const { return m_expire - Simulator::Now(); }
   //\}
 private:
+  /// Data packet
   Ptr<const Packet> m_packet;
+  /// IP header
   Ipv4Header m_header;
+  /// Unicast forward callback
   UnicastForwardCallback m_ucb;
+  /// Error callback
   ErrorCallback m_ecb;
   /// Expire time for queue entry
   Time m_expire;
@@ -93,7 +96,10 @@ class RequestQueue
 {
 public:
   /// Default c-tor
-  RequestQueue (uint32_t maxLen, Time routeToQueueTimeout) : m_maxLen (maxLen), m_queueTimeout (routeToQueueTimeout) {}
+  RequestQueue (uint32_t maxLen, Time routeToQueueTimeout) :
+    m_maxLen (maxLen), m_queueTimeout (routeToQueueTimeout)
+  {
+  }
   /// Push entry in queue, if there is no entry with the same packet and destination address in queue.
   bool Enqueue (QueueEntry & entry);
   /// Return first found (the earliest) entry for given destination
@@ -108,21 +114,21 @@ public:
   //\{
   uint32_t GetMaxQueueLen () const { return m_maxLen; }
   void SetMaxQueueLen (uint32_t len) { m_maxLen = len; }
-  void SetQueueTimeout (Time t) { m_queueTimeout = t; }
   Time GetQueueTimeout () const { return m_queueTimeout; }
+  void SetQueueTimeout (Time t) { m_queueTimeout = t; }
   //\}
 
 private:
   std::vector<QueueEntry> m_queue;
   /// Remove all expired entries
-  void Purge();
+  void Purge ();
   /// Notify that packet is dropped from queue by timeout
   void Drop (QueueEntry en, std::string reason);
   /// The maximum number of packets that we allow a routing protocol to buffer.
   uint32_t m_maxLen;
   /// The maximum period of time that a routing protocol is allowed to buffer a packet for, seconds.
   Time m_queueTimeout;
-  static bool IsEqual(QueueEntry en, const Ipv4Address dst) { return (en.GetIpv4Header ().GetDestination () == dst); }
+  static bool IsEqual (QueueEntry en, const Ipv4Address dst) { return (en.GetIpv4Header ().GetDestination () == dst); }
 };
 
 

@@ -45,10 +45,11 @@ Neighbors::Neighbors (Time delay) : m_ntimer (Timer::CANCEL_ON_DESTROY)
 }
 
 bool
-Neighbors::IsNeighbor (Ipv4Address addr )
+Neighbors::IsNeighbor (Ipv4Address addr)
 {
   Purge ();
-  for (std::vector<Neighbor>::const_iterator i = m_nb.begin (); i != m_nb.end (); ++i)
+  for (std::vector<Neighbor>::const_iterator i = m_nb.begin ();
+      i != m_nb.end (); ++i)
     if (i->m_neighborAddress == addr)
       return true;
   return false;
@@ -58,112 +59,116 @@ Time
 Neighbors::GetExpireTime (Ipv4Address addr)
 {
   Purge ();
-  for (std::vector<Neighbor>::const_iterator i = m_nb.begin (); i != m_nb.end (); ++i)
+  for (std::vector<Neighbor>::const_iterator i = m_nb.begin (); i
+      != m_nb.end (); ++i)
     if (i->m_neighborAddress == addr)
-      return (i->m_expireTime - Simulator::Now () );
-  return Seconds(0);
+      return (i->m_expireTime - Simulator::Now ());
+  return Seconds (0);
 }
 
 void
-Neighbors::Update (Ipv4Address addr, Time expire )
+Neighbors::Update (Ipv4Address addr, Time expire)
 {
   for (std::vector<Neighbor>::iterator i = m_nb.begin (); i != m_nb.end (); ++i)
     if (i->m_neighborAddress == addr)
       {
-        i->m_expireTime =  std::max(expire + Simulator::Now (), i->m_expireTime);
-        if (i->m_hardwareAddress == Mac48Address())
-          i->m_hardwareAddress = LookupMacAddress(i->m_neighborAddress);
+        i->m_expireTime
+            = std::max (expire + Simulator::Now (), i->m_expireTime);
+        if (i->m_hardwareAddress == Mac48Address ())
+          i->m_hardwareAddress = LookupMacAddress (i->m_neighborAddress);
         return;
       }
 
   NS_LOG_LOGIC ("Open link to " << addr);
-  Neighbor neighbor (addr, LookupMacAddress(addr), expire + Simulator::Now ());
+  Neighbor neighbor (addr, LookupMacAddress (addr), expire + Simulator::Now ());
   m_nb.push_back (neighbor);
   Purge ();
 }
 
 struct CloseNeighbor
 {
-  bool operator()(const Neighbors::Neighbor & nb) const
+  bool operator() (const Neighbors::Neighbor & nb) const
   {
-    return ((nb.m_expireTime < Simulator::Now()) || nb.close); 
+    return ((nb.m_expireTime < Simulator::Now ()) || nb.close);
   }
 };
 
 void
 Neighbors::Purge ()
 {
-  if (m_nb.empty ()) return;
-  
+  if (m_nb.empty ())
+    return;
+
   CloseNeighbor pred;
   if (!m_handleLinleFailure.IsNull ())
     {
       for (std::vector<Neighbor>::iterator j = m_nb.begin (); j != m_nb.end (); ++j)
         {
-          if (pred(*j)) 
+          if (pred (*j))
             {
               NS_LOG_LOGIC ("Close link to " << j->m_neighborAddress);
               m_handleLinleFailure (j->m_neighborAddress);
             }
         }
     }
-  m_nb.erase (std::remove_if (m_nb.begin(), m_nb.end(), pred), m_nb.end ());
-  m_ntimer.Cancel();
-  m_ntimer.Schedule();
+  m_nb.erase (std::remove_if (m_nb.begin (), m_nb.end (), pred), m_nb.end ());
+  m_ntimer.Cancel ();
+  m_ntimer.Schedule ();
 }
 
 void
 Neighbors::ScheduleTimer ()
 {
-  m_ntimer.Cancel();
-  m_ntimer.Schedule();
+  m_ntimer.Cancel ();
+  m_ntimer.Schedule ();
 }
 
 void
 Neighbors::AddArpCache (Ptr<ArpCache> a)
 {
-  m_arp.push_back(a);
+  m_arp.push_back (a);
 }
 
 void
 Neighbors::DelArpCache (Ptr<ArpCache> a)
 {
-  m_arp.erase(std::remove(m_arp.begin(), m_arp.end(), a), m_arp.end());
+  m_arp.erase (std::remove (m_arp.begin (), m_arp.end (), a), m_arp.end ());
 }
 
 Mac48Address
 Neighbors::LookupMacAddress (Ipv4Address addr)
 {
   Mac48Address hwaddr;
-  for (std::vector<Ptr<ArpCache> >::const_iterator i = m_arp.begin(); i != m_arp.end(); ++i)
+  for (std::vector<Ptr<ArpCache> >::const_iterator i = m_arp.begin ();
+      i != m_arp.end (); ++i)
     {
       ArpCache::Entry * entry = (*i)->Lookup (addr);
-      if (entry != 0 && entry->IsAlive () && ! entry->IsExpired ())
+      if (entry != 0 && entry->IsAlive () && !entry->IsExpired ())
         {
-          hwaddr = Mac48Address::ConvertFrom(entry->GetMacAddress ());
+          hwaddr = Mac48Address::ConvertFrom (entry->GetMacAddress ());
           break;
         }
-    } 
+    }
   return hwaddr;
 }
 
 void
 Neighbors::ProcessTxError (WifiMacHeader const & hdr)
 {
-  Mac48Address addr = hdr.GetAddr1();
+  Mac48Address addr = hdr.GetAddr1 ();
 
   for (std::vector<Neighbor>::iterator i = m_nb.begin (); i != m_nb.end (); ++i)
-    if (i->m_hardwareAddress == addr) 
+    if (i->m_hardwareAddress == addr)
       i->close = true;
-  Purge();
+  Purge ();
 }
 
 #ifdef RUN_SELF_TESTS
 /// Unit test for neighbors
 struct NeighborTest : public Test
 {
-  NeighborTest () : Test ("AODV/Neighbor"), neighbor(0),  result(true) { }
-  virtual bool RunTests();
+  NeighborTest () : Test ("AODV/Neighbor"), neighbor (0),  result (true) { }
+  virtual bool RunTests ();
   void Handler (Ipv4Address addr);
   void CheckTimeout1 ();
   void CheckTimeout2 ();
@@ -182,26 +187,26 @@ NeighborTest::Handler (Ipv4Address addr)
 void
 NeighborTest::CheckTimeout1 ()
 {
-  NS_TEST_ASSERT_EQUAL (neighbor->IsNeighbor(Ipv4Address("1.2.3.4")), true);
-  NS_TEST_ASSERT_EQUAL (neighbor->IsNeighbor(Ipv4Address("1.1.1.1")), true);
-  NS_TEST_ASSERT_EQUAL (neighbor->IsNeighbor(Ipv4Address("2.2.2.2")), true);
-  NS_TEST_ASSERT_EQUAL (neighbor->IsNeighbor(Ipv4Address("3.3.3.3")), true);
+  NS_TEST_ASSERT_EQUAL (neighbor->IsNeighbor (Ipv4Address ("1.2.3.4")), true);
+  NS_TEST_ASSERT_EQUAL (neighbor->IsNeighbor (Ipv4Address ("1.1.1.1")), true);
+  NS_TEST_ASSERT_EQUAL (neighbor->IsNeighbor (Ipv4Address ("2.2.2.2")), true);
+  NS_TEST_ASSERT_EQUAL (neighbor->IsNeighbor (Ipv4Address ("3.3.3.3")), true);
 }
 void
 NeighborTest::CheckTimeout2 ()
 {
-  NS_TEST_ASSERT_EQUAL (neighbor->IsNeighbor(Ipv4Address("1.2.3.4")), false);
-  NS_TEST_ASSERT_EQUAL (neighbor->IsNeighbor(Ipv4Address("1.1.1.1")), false);
-  NS_TEST_ASSERT_EQUAL (neighbor->IsNeighbor(Ipv4Address("2.2.2.2")), false);
-  NS_TEST_ASSERT_EQUAL (neighbor->IsNeighbor(Ipv4Address("3.3.3.3")), true);
+  NS_TEST_ASSERT_EQUAL (neighbor->IsNeighbor (Ipv4Address ("1.2.3.4")), false);
+  NS_TEST_ASSERT_EQUAL (neighbor->IsNeighbor (Ipv4Address ("1.1.1.1")), false);
+  NS_TEST_ASSERT_EQUAL (neighbor->IsNeighbor (Ipv4Address ("2.2.2.2")), false);
+  NS_TEST_ASSERT_EQUAL (neighbor->IsNeighbor (Ipv4Address ("3.3.3.3")), true);
 }
 void
 NeighborTest::CheckTimeout3 ()
 {
-  NS_TEST_ASSERT_EQUAL (neighbor->IsNeighbor(Ipv4Address("1.2.3.4")), false);
-  NS_TEST_ASSERT_EQUAL (neighbor->IsNeighbor(Ipv4Address("1.1.1.1")), false);
-  NS_TEST_ASSERT_EQUAL (neighbor->IsNeighbor(Ipv4Address("2.2.2.2")), false);
-  NS_TEST_ASSERT_EQUAL (neighbor->IsNeighbor(Ipv4Address("3.3.3.3")), false);
+  NS_TEST_ASSERT_EQUAL (neighbor->IsNeighbor (Ipv4Address ("1.2.3.4")), false);
+  NS_TEST_ASSERT_EQUAL (neighbor->IsNeighbor (Ipv4Address ("1.1.1.1")), false);
+  NS_TEST_ASSERT_EQUAL (neighbor->IsNeighbor (Ipv4Address ("2.2.2.2")), false);
+  NS_TEST_ASSERT_EQUAL (neighbor->IsNeighbor (Ipv4Address ("3.3.3.3")), false);
 }
 
 bool
@@ -209,21 +214,21 @@ NeighborTest::RunTests ()
 {
   Neighbors nb (Seconds (1));
   neighbor = &nb;
-  neighbor->SetCallback(MakeCallback(&NeighborTest::Handler, this));
-  neighbor->Update (Ipv4Address("1.2.3.4"), Seconds(1));
-  NS_TEST_ASSERT_EQUAL (neighbor->IsNeighbor(Ipv4Address("1.2.3.4")), true);
-  NS_TEST_ASSERT_EQUAL (neighbor->IsNeighbor(Ipv4Address("4.3.2.1")), false);
-  neighbor->Update (Ipv4Address("1.2.3.4"), Seconds(10));
-  NS_TEST_ASSERT_EQUAL (neighbor->IsNeighbor(Ipv4Address("1.2.3.4")), true);
-  NS_TEST_ASSERT_EQUAL (neighbor->GetExpireTime (Ipv4Address("1.2.3.4")), Seconds(10));
-  NS_TEST_ASSERT_EQUAL (neighbor->GetExpireTime (Ipv4Address("4.3.2.1")), Seconds(0));
-  neighbor->Update (Ipv4Address("1.1.1.1"), Seconds(5));
-  neighbor->Update (Ipv4Address("2.2.2.2"), Seconds(10));
-  neighbor->Update (Ipv4Address("3.3.3.3"), Seconds(20));
+  neighbor->SetCallback (MakeCallback (&NeighborTest::Handler, this));
+  neighbor->Update (Ipv4Address ("1.2.3.4"), Seconds (1));
+  NS_TEST_ASSERT_EQUAL (neighbor->IsNeighbor (Ipv4Address ("1.2.3.4")), true);
+  NS_TEST_ASSERT_EQUAL (neighbor->IsNeighbor (Ipv4Address ("4.3.2.1")), false);
+  neighbor->Update (Ipv4Address ("1.2.3.4"), Seconds (10));
+  NS_TEST_ASSERT_EQUAL (neighbor->IsNeighbor (Ipv4Address ("1.2.3.4")), true);
+  NS_TEST_ASSERT_EQUAL (neighbor->GetExpireTime (Ipv4Address ("1.2.3.4")), Seconds (10));
+  NS_TEST_ASSERT_EQUAL (neighbor->GetExpireTime (Ipv4Address ("4.3.2.1")), Seconds (0));
+  neighbor->Update (Ipv4Address ("1.1.1.1"), Seconds (5));
+  neighbor->Update (Ipv4Address ("2.2.2.2"), Seconds (10));
+  neighbor->Update (Ipv4Address ("3.3.3.3"), Seconds (20));
 
-  Simulator::Schedule (Seconds(2), &NeighborTest::CheckTimeout1, this);
-  Simulator::Schedule (Seconds(15), &NeighborTest::CheckTimeout2, this);
-  Simulator::Schedule (Seconds(30), &NeighborTest::CheckTimeout3, this);
+  Simulator::Schedule (Seconds (2), &NeighborTest::CheckTimeout1, this);
+  Simulator::Schedule (Seconds (15), &NeighborTest::CheckTimeout2, this);
+  Simulator::Schedule (Seconds (30), &NeighborTest::CheckTimeout3, this);
   Simulator::Run ();
   Simulator::Destroy ();
   return result;

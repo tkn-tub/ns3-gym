@@ -28,9 +28,9 @@
 #ifndef AODVPACKET_H_
 #define AODVPACKET_H_
 
-#include <stdint.h>
 #include <iostream>
 #include "ns3/header.h"
+#include "ns3/enum.h"
 #include "ns3/ipv4-address.h"
 #include <map>
 #include "ns3/nstime.h"
@@ -40,10 +40,10 @@ namespace aodv {
 
 enum MessageType
 {
-  AODVTYPE_RREQ  = 1,  //!< AODVTYPE_RREQ
-  AODVTYPE_RREP  = 2,  //!< AODVTYPE_RREP
-  AODVTYPE_RERR  = 3,  //!< AODVTYPE_RERR
-  AODVTYPE_RREP_ACK = 4//!< AODVTYPE_RREP_ACK
+  AODVTYPE_RREQ  = 1,   //!< AODVTYPE_RREQ
+  AODVTYPE_RREP  = 2,   //!< AODVTYPE_RREP
+  AODVTYPE_RERR  = 3,   //!< AODVTYPE_RERR
+  AODVTYPE_RREP_ACK = 4 //!< AODVTYPE_RREP_ACK
 };
 
 /**
@@ -53,26 +53,29 @@ enum MessageType
 class TypeHeader : public Header
 {
 public:
-  TypeHeader(uint8_t t);
+  /// c-tor
+  TypeHeader (MessageType t);
 
   ///\name Header serialization/deserialization
   //\{
-  TypeId GetInstanceTypeId() const;
+  TypeId GetInstanceTypeId () const;
   uint32_t GetSerializedSize () const;
   void Serialize (Buffer::Iterator start) const;
   uint32_t Deserialize (Buffer::Iterator start);
   void Print (std::ostream &os) const;
   //\}
 
-  uint8_t Get() const { return m_type; }
-  bool IsValid() const { return m_valid; }
-  bool operator==(TypeHeader const & o) const;
+  /// Return type
+  MessageType Get () const { return m_type; }
+  /// Check that type if valid
+  bool IsValid () const { return m_valid; }
+  bool operator== (TypeHeader const & o) const;
 private:
-  uint8_t m_type;
+  MessageType m_type;
   bool m_valid;
 };
 
-std::ostream & operator<<(std::ostream & os, TypeHeader const & h);
+std::ostream & operator<< (std::ostream & os, TypeHeader const & h);
 
 /**
 * \ingroup aodv
@@ -98,12 +101,15 @@ std::ostream & operator<<(std::ostream & os, TypeHeader const & h);
 class RreqHeader : public Header 
 {
 public:
-  RreqHeader (uint8_t flags = 0, uint8_t reserved = 0, uint8_t hopCount = 0, uint32_t requestID = 0, Ipv4Address dst = Ipv4Address(),
-             uint32_t dstSeqNo = 0, Ipv4Address origin = Ipv4Address(), uint32_t originSeqNo = 0);
+  /// c-tor
+  RreqHeader (uint8_t flags = 0, uint8_t reserved = 0, uint8_t hopCount = 0,
+      uint32_t requestID = 0, Ipv4Address dst = Ipv4Address (),
+      uint32_t dstSeqNo = 0, Ipv4Address origin = Ipv4Address (),
+      uint32_t originSeqNo = 0);
 
   ///\name Header serialization/deserialization
   //\{
-  TypeId GetInstanceTypeId() const;
+  TypeId GetInstanceTypeId () const;
   uint32_t GetSerializedSize () const;
   void Serialize (Buffer::Iterator start) const;
   uint32_t Deserialize (Buffer::Iterator start);
@@ -136,7 +142,7 @@ public:
   bool GetUnknownSeqno () const;
   //\}
 
-  bool operator==(RreqHeader const & o) const;
+  bool operator== (RreqHeader const & o) const;
 private:
   uint8_t        m_flags;          ///< |J|R|G|D|U| bit flags, see RFC
   uint8_t        m_reserved;       ///< Not used
@@ -148,7 +154,7 @@ private:
   uint32_t       m_originSeqNo;    ///< Source Sequence Number
 };
 
-std::ostream & operator<<(std::ostream & os, RreqHeader const &);
+std::ostream & operator<< (std::ostream & os, RreqHeader const &);
 
 /**
 * \ingroup aodv
@@ -172,11 +178,13 @@ std::ostream & operator<<(std::ostream & os, RreqHeader const &);
 class RrepHeader : public Header
 {
 public:
-  RrepHeader(uint8_t prefixSize = 0, uint8_t hopCount = 0, Ipv4Address dst = Ipv4Address(),
-            uint32_t dstSeqNo = 0, Ipv4Address origin = Ipv4Address(), Time lifetime = MilliSeconds(0));
+  /// c-tor
+  RrepHeader (uint8_t prefixSize = 0, uint8_t hopCount = 0, Ipv4Address dst =
+      Ipv4Address (), uint32_t dstSeqNo = 0, Ipv4Address origin =
+      Ipv4Address (), Time lifetime = MilliSeconds (0));
   ///\name Header serialization/deserialization
   //\{
-  TypeId GetInstanceTypeId() const;
+  TypeId GetInstanceTypeId () const;
   uint32_t GetSerializedSize () const;
   void Serialize (Buffer::Iterator start) const;
   uint32_t Deserialize (Buffer::Iterator start);
@@ -201,14 +209,14 @@ public:
   //\{
   void SetAckRequired (bool f);
   bool GetAckRequired () const;
-  void SetPrefixSize(uint8_t sz);
-  uint8_t GetPrefixSize() const;
+  void SetPrefixSize (uint8_t sz);
+  uint8_t GetPrefixSize () const;
   //\}
 
   /// Configure RREP to be a Hello message
-  void SetHello(Ipv4Address src, uint32_t srcSeqNo, Time lifetime);
+  void SetHello (Ipv4Address src, uint32_t srcSeqNo, Time lifetime);
 
-  bool operator==(RrepHeader const & o) const;
+  bool operator== (RrepHeader const & o) const;
 private:
   uint8_t       m_flags;	          ///< A - acknowledgment required flag
   uint8_t       m_prefixSize;	      ///< Prefix Size
@@ -219,7 +227,7 @@ private:
   uint32_t      m_lifeTime;         ///< Lifetime (in milliseconds)
 };
 
-std::ostream & operator<<(std::ostream & os, RrepHeader const &);
+std::ostream & operator<< (std::ostream & os, RrepHeader const &);
 
 /**
 * \ingroup aodv
@@ -235,22 +243,23 @@ std::ostream & operator<<(std::ostream & os, RrepHeader const &);
 class RrepAckHeader : public Header
 {
 public:
+  /// c-tor
   RrepAckHeader ();
 
   ///\name Header serialization/deserialization
   //\{
-  TypeId GetInstanceTypeId() const;
+  TypeId GetInstanceTypeId () const;
   uint32_t GetSerializedSize () const;
   void Serialize (Buffer::Iterator start) const;
   uint32_t Deserialize (Buffer::Iterator start);
   void Print (std::ostream &os) const;
   //\}
 
-  bool operator==(RrepAckHeader const & o) const;
+  bool operator== (RrepAckHeader const & o) const;
 private:
   uint8_t       m_reserved;
 };
-std::ostream & operator<<(std::ostream & os, RrepAckHeader const &);
+std::ostream & operator<< (std::ostream & os, RrepAckHeader const &);
 
 
 /**
@@ -275,11 +284,12 @@ std::ostream & operator<<(std::ostream & os, RrepAckHeader const &);
 class RerrHeader : public Header
 {
 public:
+  /// c-tor
   RerrHeader ();
 
   ///\name Header serialization/deserialization
   //\{
-  TypeId GetInstanceTypeId() const;
+  TypeId GetInstanceTypeId () const;
   uint32_t GetSerializedSize () const;
   void Serialize (Buffer::Iterator i) const;
   uint32_t Deserialize (Buffer::Iterator start);
@@ -288,32 +298,33 @@ public:
 
   ///\name No delete flag
   //\{
-  void SetNoDelete(bool f);
-  bool GetNoDelete() const;
+  void SetNoDelete (bool f);
+  bool GetNoDelete () const;
   //\}
 
   /**
    * Add unreachable node address and its sequence number in RERR header
    *\return false if we already added maximum possible number of unreachable destinations
    */
-  bool AddUnDestination(Ipv4Address dst, uint32_t seqNo);
+  bool AddUnDestination (Ipv4Address dst, uint32_t seqNo);
   /** Delete pair (address + sequence number) from REER header, if the number of unreachable destinations > 0
    * \return true on success
    */
-  bool RemoveUnDestination(std::pair<Ipv4Address, uint32_t> & un);
+  bool RemoveUnDestination (std::pair<Ipv4Address, uint32_t> & un);
   /// Clear header
   void Clear();
-  uint8_t GetDestCount() const { return (uint8_t)m_unreachableDstSeqNo.size(); }
-  bool operator==(RerrHeader const & o) const;
+  /// Return number of unreachable destinations in RERR message
+  uint8_t GetDestCount () const { return (uint8_t)m_unreachableDstSeqNo.size(); }
+  bool operator== (RerrHeader const & o) const;
 private:
   uint8_t m_flag;            ///< No delete flag
   uint8_t m_reserved;        ///< Not used
 
-  /// List of Unreachable destination IP addresses and sequence numbers
+  /// List of Unreachable destination: IP addresses and sequence numbers
   std::map<Ipv4Address, uint32_t> m_unreachableDstSeqNo;
 };
 
-std::ostream & operator<<(std::ostream & os, RerrHeader const &);
+std::ostream & operator<< (std::ostream & os, RerrHeader const &);
 }
 }
 #endif /* AODVPACKET_H_ */

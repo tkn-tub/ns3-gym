@@ -30,7 +30,6 @@
 #define AODVNEIGHBOR_H_
 
 #include "ns3/simulator.h"
-#include "ns3/nstime.h"
 #include "ns3/timer.h"
 #include "ns3/ipv4-address.h"
 #include "ns3/callback.h"
@@ -60,7 +59,11 @@ public:
     Time m_expireTime;
     bool close;
     
-    Neighbor(Ipv4Address ip, Mac48Address mac, Time t) : m_neighborAddress(ip), m_hardwareAddress(mac), m_expireTime(t), close(false) {}
+    Neighbor (Ipv4Address ip, Mac48Address mac, Time t) :
+      m_neighborAddress (ip), m_hardwareAddress (mac), m_expireTime (t),
+      close (false)
+    {
+    }
   };
   /// Return expire time for neighbor node with address addr, if exists, else return 0.
   Time GetExpireTime (Ipv4Address addr);
