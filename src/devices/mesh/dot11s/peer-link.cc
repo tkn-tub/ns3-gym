@@ -153,14 +153,12 @@ PeerLink::BeaconLoss ()
 void
 PeerLink::TransmissionSuccess ()
 {
-  std::cerr << "TX OK!\n";
   m_packetFail = 0;
 }
 void
 PeerLink::TransmissionFailure ()
 {
   m_packetFail ++;
-  std::cerr << "TX FAIL!\n";
   if (m_packetFail == m_maxPacketFail)
     {
       StateMachine (CNCL);
