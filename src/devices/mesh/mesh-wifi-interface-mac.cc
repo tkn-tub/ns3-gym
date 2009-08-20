@@ -31,6 +31,7 @@
 #include "ns3/simulator.h"
 #include "ns3/yans-wifi-phy.h"
 #include "ns3/pointer.h"
+#include "ns3/trace-source-accessor.h"
 #include "ns3/qos-tag.h"
 
 NS_LOG_COMPONENT_DEFINE ("MeshWifiInterfaceMac");
@@ -66,7 +67,18 @@ MeshWifiInterfaceMac::GetTypeId ()
                   MakeBooleanAccessor (
                       &MeshWifiInterfaceMac::SetBeaconGeneration, &MeshWifiInterfaceMac::GetBeaconGeneration),
                   MakeBooleanChecker ()
-                  );
+                  )
+  .AddTraceSource ( "TxOkHeader",
+                    "The header of successfully transmitted packet",
+                    MakeTraceSourceAccessor (
+                      &MeshWifiInterfaceMac::m_txOkCallback)
+                  )
+  .AddTraceSource ( "TxErrHeader",
+                    "The header of unsuccessfully transmitted packet",
+                    MakeTraceSourceAccessor (
+                      &MeshWifiInterfaceMac::m_txErrCallback)
+                  )
+                  ;
   return tid;
 }
 MeshWifiInterfaceMac::MeshWifiInterfaceMac ()
@@ -681,11 +693,22 @@ MeshWifiInterfaceMac::SetQueue (AccessClass ac)
   Ptr<DcaTxop> queue = Create<DcaTxop> ();
   queue->SetLow (m_low);
   queue->SetManager (m_dcfManager);
-  //queue->SetTxOkCallback (MakeCallback (&MeshWifiInterfaceMac::TxOk, this));
-  //queue->SetTxFailedCallback (MakeCallback (&MeshWifiInterfaceMac::TxFailed, this));
+  queue->SetTxOkCallback (MakeCallback (&MeshWifiInterfaceMac::TxOk, this));
+  queue->SetTxFailedCallback (MakeCallback (&MeshWifiInterfaceMac::TxFailed, this));
 
   m_queues.insert (std::make_pair (ac, queue));
 }
+void 
+MeshWifiInterfaceMac::TxOk (WifiMacHeader const &hdr)
+{
+  m_txOkCallback (hdr);
+}
+void 
+MeshWifiInterfaceMac::TxFailed (WifiMacHeader const &hdr)
+{
+  m_txErrCallback (hdr);
+}
+
 void 
 MeshWifiInterfaceMac::FinishConfigureStandard (enum WifiPhyStandard standard)
 {

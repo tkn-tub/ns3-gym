@@ -125,6 +125,11 @@ public:
    */
   void ConfigurationMismatch (uint32_t interface, Mac48Address peerAddress);
   /**
+   * Cancel peer link due to successive transmission failures
+   */
+  void TransmissionFailure (uint32_t interface, const Mac48Address peerAddress);
+  void TransmissionSuccess (uint32_t interface, const Mac48Address peerAddress);
+  /**
    * Checks if there is established link
    */
   bool IsActiveLink (uint32_t interface, Mac48Address peerAddress);

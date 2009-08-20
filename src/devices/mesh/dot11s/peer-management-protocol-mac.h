@@ -103,6 +103,9 @@ private:
   /// WifiInformationElements exist
   PlinkFrameStart ParsePlinkFrame (Ptr<const Packet> packet);
   ///\}
+  ///// Closes link when a proper number of successive transmissions have failed
+  void TxError (WifiMacHeader const &hdr);
+  void TxOk (WifiMacHeader const &hdr);
   //Keeps statistics
   struct Statistics {
     uint16_t txOpen;

@@ -99,6 +99,9 @@ public:
   typedef Callback<void, uint32_t, Mac48Address, Mac48Address, PeerLink::PeerState, PeerLink::PeerState> SignalStatusCallback;
   /// Set callback
   void MLMESetSignalStatusCallback (SignalStatusCallback);
+  /// Reports about transmission success/failure
+  void TransmissionSuccess ();
+  void TransmissionFailure ();
   //\}
   ///\brief Statistics
   void Report (std::ostream & os) const;
@@ -220,6 +223,8 @@ private:
   Time  m_lastBeacon;
   /// Current beacon interval on corresponding interface
   Time  m_beaconInterval;
+  /// How many successive packets were failed to transmit
+  uint16_t m_packetFail;
 
   /// Current state
   PeerState m_state;
@@ -244,7 +249,8 @@ private:
   EventId  m_confirmTimer;
   uint16_t m_retryCounter;
   EventId  m_beaconLossTimer;
-  uint16_t  m_maxBeaconLoss;
+  uint16_t m_maxBeaconLoss;
+  uint16_t m_maxPacketFail;
   //\}
 
   /// Several successive beacons were lost, close link

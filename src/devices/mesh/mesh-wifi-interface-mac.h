@@ -167,6 +167,9 @@ private:
   virtual void ForwardUp (Ptr<Packet> packet, Mac48Address src, Mac48Address dst);
   /// Send frame. Frame is supposed to be tagged by routing information. TODO: clarify this point
   void  ForwardDown (Ptr<const Packet> packet, Mac48Address from, Mac48Address to);
+  // Notify about tx OK/Error frames:
+  void TxOk (WifiMacHeader const &hdr);
+  void TxFailed (WifiMacHeader const &hdr);
   /// Send beacon
   void SendBeacon ();
   /// Schedule next beacon
@@ -242,6 +245,8 @@ private:
   };
   Statistics m_stats;
   ///\}
+  TracedCallback<WifiMacHeader const &> m_txOkCallback;
+  TracedCallback<WifiMacHeader const &> m_txErrCallback;
 
 };
 

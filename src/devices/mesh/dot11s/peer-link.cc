@@ -73,6 +73,13 @@ PeerLink::GetTypeId ()
                         &PeerLink::m_maxBeaconLoss),
                     MakeUintegerChecker<uint16_t> (1)
                   )
+    .AddAttribute ( "MaxPacketFailure",
+                    "Maximum number of failed packets before link will be closed",
+                    UintegerValue (2),
+                    MakeUintegerAccessor (
+                        &PeerLink::m_maxPacketFail),
+                    MakeUintegerChecker<uint16_t> (1)
+                  )
                   ;
   return tid;
 }
@@ -83,7 +90,7 @@ PeerLink::GetTypeId ()
 //-----------------------------------------------------------------------------
 PeerLink::PeerLink () :
   m_peerAddress (Mac48Address::GetBroadcast ()), m_peerMeshPointAddress (Mac48Address::GetBroadcast ()),
-      m_localLinkId (0), m_peerLinkId (0), m_state (IDLE), m_retryCounter (0)
+      m_localLinkId (0), m_peerLinkId (0), m_packetFail (0), m_state (IDLE), m_retryCounter (0), m_maxPacketFail (3)
 {
 }
 PeerLink::~PeerLink ()
@@ -143,6 +150,24 @@ PeerLink::BeaconLoss ()
 {
   StateMachine (CNCL);
 }
+void
+PeerLink::TransmissionSuccess ()
+{
+  std::cerr << "TX OK!\n";
+  m_packetFail = 0;
+}
+void
+PeerLink::TransmissionFailure ()
+{
+  m_packetFail ++;
+  std::cerr << "TX FAIL!\n";
+  if (m_packetFail == m_maxPacketFail)
+    {
+      StateMachine (CNCL);
+      m_packetFail = 0;
+    }
+}
+
 void
 PeerLink::SetBeaconTimingElement (IeBeaconTiming beaconTiming)
 {
