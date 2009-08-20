@@ -305,12 +305,20 @@ RoutingProtocol::RouteInput (Ptr<const Packet> p, const Ipv4Header &header, Ptr<
             if (header.GetTtl () > 1)
               {
                 NS_LOG_LOGIC ("Forward broadcast. TTL " << (uint16_t) header.GetTtl ());
-                Ptr<Ipv4Route> route;
-                ucb (route, packet, header);
+                RoutingTableEntry toBroadcast;
+                if (m_routingTable.LookupRoute (dst, toBroadcast))
+                  {
+                    Ptr<Ipv4Route> route = toBroadcast.GetRoute ();
+                    ucb (route, packet, header);
+                  }
+                else
+                  {
+                    NS_LOG_DEBUG ("No route to forward broadcast. Drop packet " << p->GetUid ());
+                  }
               }
             else
               {
-                NS_LOG_DEBUG ("TTL exceeded. Drop packet " << p->GetUid ());
+                NS_LOG_WARN ("TTL exceeded. Drop packet " << p->GetUid ());
               }
             return true;
           }
@@ -1033,7 +1041,7 @@ RoutingProtocol::RecvReply (Ptr<Packet> p, Ipv4Address receiver, Ipv4Address sen
       if (toDst.GetFlag () == IN_SEARCH)
         {
           m_routingTable.Update (newEntry);
-          m_addressReqTimer[dst].Cancel ();
+          m_addressReqTimer[dst].Remove ();
           m_addressReqTimer.erase (dst);
         }
       SendPacketFromQueue (rrepHeader.GetDst (), newEntry.GetRoute ());
@@ -1140,7 +1148,10 @@ RoutingProtocol::RecvError (Ptr<Packet> p, Ipv4Address src )
         {
           for (std::map<Ipv4Address, uint32_t>::const_iterator i = dstWithNextHopSrc.begin (); i != dstWithNextHopSrc.end (); ++i)
             if (i->first == un.first)
+              {
+              Ipv4Address dst = un.first;
               unreachable.insert (un);
+              }
         }
     }
 
@@ -1173,6 +1184,7 @@ RoutingProtocol::RecvError (Ptr<Packet> p, Ipv4Address src )
       SendRerrMessage (packet, precursors);
     }
   m_routingTable.InvalidateRoutesWithDst (unreachable);
+  m_routingTable.Print(std::cout);
 }
 
 void
@@ -1382,14 +1394,22 @@ RoutingProtocol::SendRerrMessage (Ptr<Packet> packet, std::vector<Ipv4Address> p
   if (precursors.size () == 1)
     {
       RoutingTableEntry toPrecursor;
-      m_routingTable.LookupRoute (precursors.front (), toPrecursor);
+      if (!m_routingTable.LookupRoute (precursors.front (), toPrecursor))
+        return;
       Ptr<Socket> socket = FindSocketWithInterfaceAddress (toPrecursor.GetInterface ());
       NS_ASSERT (socket);
-      NS_LOG_LOGIC ("one precursor => unicast RERR to " << toPrecursor.GetDestination() << " from " << toPrecursor.GetInterface ().GetLocal ());
-      socket->SendTo(packet, 0, InetSocketAddress (precursors.front (), AODV_PORT));
+      if (toPrecursor.GetFlag () == VALID)
+        {
+          NS_LOG_LOGIC ("one precursor => unicast RERR to " << toPrecursor.GetDestination() << " from " << toPrecursor.GetInterface ().GetLocal ());
+          socket->SendTo (packet, 0, InetSocketAddress (precursors.front (), AODV_PORT));
+        }
+      else
+        NS_LOG_LOGIC ("One precursor, but no valid route to this precursor");
       return;
     }
 
+  NS_LOG_DEBUG ("precursors " << precursors.size ());
+  m_routingTable.Print(std::cout);
   //  Should only transmit RERR on those interfaces which have precursor nodes for the broken route
   std::vector<Ipv4InterfaceAddress> ifaces;
   RoutingTableEntry toPrecursor;

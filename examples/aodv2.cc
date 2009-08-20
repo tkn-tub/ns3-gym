@@ -70,10 +70,8 @@ private:
   ///\name network
   //\{
   NodeContainer nodes;
-  NetDeviceContainer devices1;
-  NetDeviceContainer devices2;
-  Ipv4InterfaceContainer interfaces1;
-  Ipv4InterfaceContainer interfaces2;
+  NetDeviceContainer devices;
+  Ipv4InterfaceContainer interfaces;
   //\}
   
 private:
@@ -96,8 +94,8 @@ int main (int argc, char **argv)
 
 //-----------------------------------------------------------------------------
 AodvExample::AodvExample () :
-  size (4),
-  step (150),
+  size (10),
+  step (120),
   totalTime (10),
   pcap (true)
 {
@@ -124,6 +122,7 @@ AodvExample::Configure (int argc, char **argv)
 void
 AodvExample::Run ()
 {
+//  Config::SetDefault ("ns3::WifiRemoteStationManager::RtsCtsThreshold", UintegerValue (1)); // enable rts cts all the time.
   CreateNodes ();
   CreateDevices ();
   InstallInternetStack ();
@@ -175,9 +174,8 @@ AodvExample::CreateDevices ()
   YansWifiChannelHelper wifiChannel = YansWifiChannelHelper::Default ();
   wifiPhy.SetChannel (wifiChannel.Create ());
   WifiHelper wifi = WifiHelper::Default ();
-  wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager", "DataMode", StringValue ("wifia-6mbs"));
-  devices1 = wifi.Install (wifiPhy, wifiMac, nodes);
-  devices2 = wifi.Install (wifiPhy, wifiMac, nodes);
+  wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager", "DataMode", StringValue ("wifia-6mbs"), "RtsCtsThreshold", UintegerValue (0));
+  devices = wifi.Install (wifiPhy, wifiMac, nodes); 
   
   if (pcap)
     {
@@ -195,20 +193,22 @@ AodvExample::InstallInternetStack ()
   stack.Install (nodes);
   Ipv4AddressHelper address;
   address.SetBase ("10.0.0.0", "255.0.0.0");
-
-  interfaces1 = address.Assign (devices1);
-  interfaces2 = address.Assign (devices2);
-
+  interfaces = address.Assign (devices);
 }
 
 void
 AodvExample::InstallApplications ()
 {
-  V4PingHelper ping (interfaces2.GetAddress(size - 1));
+  V4PingHelper ping (interfaces.GetAddress(size - 1));
   ping.SetAttribute ("Verbose", BooleanValue (true));
   
   ApplicationContainer p = ping.Install (nodes.Get (0));
   p.Start (Seconds (0));
-  p.Stop (Seconds (totalTime));  
+  p.Stop (Seconds (totalTime));
+
+  // move node away
+  Ptr<Node> node = nodes.Get (2);
+  Ptr<MobilityModel> mob = node->GetObject<MobilityModel>();
+  Simulator::Schedule (Seconds (3), &MobilityModel::SetPosition, mob, Vector(1e5, 1e5, 1e5));
 }
 
