@@ -55,7 +55,8 @@ public:
   /// Remove all expired entries
   void Purge ();
   /// Return number of entries in cache
-  uint32_t GetSize ();
+  uint32_t
+  GetSize ();
 private:
   struct UniqueId
   {
@@ -65,8 +66,7 @@ private:
   };
   struct IsExpired
   {
-    bool
-    operator() (const struct UniqueId & u ) const
+    bool operator() (const struct UniqueId & u) const
     {
       return (u.m_expire < Simulator::Now ());
     }

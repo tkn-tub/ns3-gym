@@ -34,7 +34,7 @@ namespace ns3
 namespace aodv
 {
 void
-IdCache::InsertId (Ipv4Address addr, uint32_t id, Time saveTime )
+IdCache::InsertId (Ipv4Address addr, uint32_t id, Time saveTime)
 {
   if (LookupId (addr, id))
     return;
@@ -43,10 +43,11 @@ IdCache::InsertId (Ipv4Address addr, uint32_t id, Time saveTime )
   m_idCache.push_back (uniqueId);
 }
 bool
-IdCache::LookupId (Ipv4Address addr, uint32_t id )
+IdCache::LookupId (Ipv4Address addr, uint32_t id)
 {
   Purge ();
-  for (std::vector<UniqueId>::const_iterator i = m_idCache.begin (); i != m_idCache.end (); ++i)
+  for (std::vector<UniqueId>::const_iterator i = m_idCache.begin ();
+      i != m_idCache.end (); ++i)
     if (i->m_context == addr && i->m_id == id)
       return true;
   return false;
@@ -54,7 +55,8 @@ IdCache::LookupId (Ipv4Address addr, uint32_t id )
 void
 IdCache::Purge ()
 {
-  m_idCache.erase (remove_if (m_idCache.begin (), m_idCache.end (), IsExpired ()), m_idCache.end ());
+  m_idCache.erase (remove_if (m_idCache.begin (), m_idCache.end (),
+      IsExpired ()), m_idCache.end ());
 }
 
 uint32_t
@@ -68,7 +70,8 @@ IdCache::GetSize ()
 /// Unit test for id cache
 struct IdCacheTest : public Test
 {
-  IdCacheTest () : Test ("AODV/IdCache"), result(true) {}
+  IdCacheTest () : Test ("AODV/IdCache"), result(true)
+  {}
   virtual bool RunTests();
   void CheckTimeout1 ();
   void CheckTimeout2 ();
@@ -84,14 +87,14 @@ static IdCacheTest g_IdCacheTest;
 bool
 IdCacheTest::RunTests ()
 {
-  cache.InsertId(Ipv4Address ("1.2.3.4"), 3, Seconds(5));
+  cache.InsertId (Ipv4Address ("1.2.3.4"), 3, Seconds(5));
   NS_TEST_ASSERT_EQUAL (cache.LookupId (Ipv4Address ("1.2.3.4"), 4), false);
   NS_TEST_ASSERT_EQUAL (cache.LookupId (Ipv4Address ("4.3.2.1"), 3), false);
   NS_TEST_ASSERT_EQUAL (cache.LookupId (Ipv4Address ("1.2.3.4"), 3), true);
-  cache.InsertId(Ipv4Address ("1.1.1.1"), 4, Seconds(5));
-  cache.InsertId(Ipv4Address ("1.1.1.1"), 4, Seconds(5));
-  cache.InsertId(Ipv4Address ("2.2.2.2"), 5, Seconds(16));
-  cache.InsertId(Ipv4Address ("3.3.3.3"), 6, Seconds(27));
+  cache.InsertId (Ipv4Address ("1.1.1.1"), 4, Seconds(5));
+  cache.InsertId (Ipv4Address ("1.1.1.1"), 4, Seconds(5));
+  cache.InsertId (Ipv4Address ("2.2.2.2"), 5, Seconds(16));
+  cache.InsertId (Ipv4Address ("3.3.3.3"), 6, Seconds(27));
   NS_TEST_ASSERT_EQUAL (cache.GetSize (), 4);
 
   Simulator::Schedule (Seconds(1), &IdCacheTest::CheckTimeout1, this);
