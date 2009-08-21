@@ -57,12 +57,14 @@ public:
 
     if (TestDeserialize ())
       {
-        cout << "Deserialize Pass, ";
+        cout << "Deserialize Pass";
       }
     else
       {
-        cout << "Deserialize Fail, ";
+        cout << "Deserialize Fail";
       }
+
+    cout << endl;
   }
 
   bool TestSerialize (void)
