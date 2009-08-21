@@ -1,5 +1,5 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
-/* vim: set noai ts=2 sw=2 expandtab: */
+/* vim: set ts=2 sw=2 sta expandtab ai si cin: */
 /* 
  * Copyright (c) 2009 Drexel University
  * 
@@ -111,7 +111,6 @@ TlvBlock::Back (void) const
 void
 TlvBlock::PushFront (Ptr<Tlv> tlv)
 {
-  //Ptr<Tlv> * newptr = new Ptr<Tlv> (GetPointer<Tlv> (tlv));
   m_tlvList.push_front (tlv);
 }
 
@@ -124,7 +123,6 @@ TlvBlock::PopFront (void)
 void
 TlvBlock::PushBack (Ptr<Tlv> tlv)
 {
-  //Ptr<Tlv> * newptr = new Ptr<Tlv> (GetPointer<Tlv> (tlv));
   m_tlvList.push_back (tlv);
 }
 
@@ -164,9 +162,9 @@ TlvBlock::GetSerializedSize (void) const
   /* tlv size */
   uint32_t size = 2;
   for (ConstIterator iter = Begin (); iter != End (); iter++)
-  {
-    size += (*iter)->GetSerializedSize ();
-  }
+    {
+      size += (*iter)->GetSerializedSize ();
+    }
   return size;
 }
 
@@ -174,19 +172,19 @@ void
 TlvBlock::Serialize (Buffer::Iterator &start) const
 {
   if (Empty ())
-  {
-    start.WriteHtonU16 (0);
-    return;
-  }
+    {
+      start.WriteHtonU16 (0);
+      return;
+    }
 
   /* We need to write the size of the TLV block in front, so save its
    * position. */
   Buffer::Iterator tlvsize = start;
   start.Next (2);
   for (ConstIterator iter = Begin (); iter != End (); iter++)
-  {
-    (*iter)->Serialize (start);
-  }
+    {
+      (*iter)->Serialize (start);
+    }
   /* - 2 to not include the size field */
   uint16_t size = start.GetDistanceFrom (tlvsize) - 2;
   tlvsize.WriteHtonU16 (size);
@@ -199,17 +197,14 @@ TlvBlock::Deserialize (Buffer::Iterator &start)
 
   Buffer::Iterator tlvstart = start;
   if (size > 0)
-  {
-    while (start.GetDistanceFrom (tlvstart) < size)
     {
-      Ptr<Tlv> newtlv = Create<Tlv> ();
-      //Tlv * newtlv = new Tlv ();
-      newtlv->Deserialize (start);
-
-      //Ptr<Tlv> * newptr = new Ptr<Tlv> (newtlv);
-      PushBack (newtlv);
+      while (start.GetDistanceFrom (tlvstart) < size)
+        {
+          Ptr<Tlv> newtlv = Create<Tlv> ();
+          newtlv->Deserialize (start);
+          PushBack (newtlv);
+        }
     }
-  }
 }
 
 void
@@ -223,15 +218,19 @@ TlvBlock::Print (std::ostream &os, int level) const
 {
   std::string prefix = "";
   for (int i = 0; i < level; i++)
-    prefix.append("\t");
+    {
+      prefix.append("\t");
+    }
 
   os << prefix << "TLV Block {" << std::endl;
   os << prefix << "\tsize = " << Size () << std::endl;
   os << prefix << "\tmembers [" << std::endl;
+
   for (ConstIterator iter = Begin (); iter != End (); iter++)
-  {
-    (*iter)->Print (os, level+2);
-  }
+    {
+      (*iter)->Print (os, level+2);
+    }
+
   os << prefix << "\t]" << std::endl;
   os << prefix << "}" << std::endl;
 }
@@ -240,16 +239,20 @@ bool
 TlvBlock::operator== (const TlvBlock &other) const
 {
   if (Size () != other.Size ())
-    return false;
+    {
+      return false;
+    }
 
   ConstIterator ti, oi;
   for (ti = Begin (), oi = other.Begin ();
       ti != End () && oi != other.End ();
       ti++, oi++)
-  {
-    if (**ti != **oi)
-      return false;
-  }
+    {
+      if (**ti != **oi)
+        {
+          return false;
+        }
+    }
   return true;
 }
 
@@ -363,9 +366,9 @@ AddressTlvBlock::GetSerializedSize (void) const
   /* tlv size */
   uint32_t size = 2;
   for (ConstIterator iter = Begin (); iter != End (); iter++)
-  {
-    size += (*iter)->GetSerializedSize ();
-  }
+    {
+      size += (*iter)->GetSerializedSize ();
+    }
   return size;
 }
 
@@ -373,19 +376,19 @@ void
 AddressTlvBlock::Serialize (Buffer::Iterator &start) const
 {
   if (Empty ())
-  {
-    start.WriteHtonU16 (0);
-    return;
-  }
+    {
+      start.WriteHtonU16 (0);
+      return;
+    }
 
   /* We need to write the size of the TLV block in front, so save its
    * position. */
   Buffer::Iterator tlvsize = start;
   start.Next (2);
   for (ConstIterator iter = Begin (); iter != End (); iter++)
-  {
-    (*iter)->Serialize (start);
-  }
+    {
+      (*iter)->Serialize (start);
+    }
   /* - 2 to not include the size field */
   uint16_t size = start.GetDistanceFrom (tlvsize) - 2;
   tlvsize.WriteHtonU16 (size);
@@ -398,17 +401,14 @@ AddressTlvBlock::Deserialize (Buffer::Iterator &start)
 
   Buffer::Iterator tlvstart = start;
   if (size > 0)
-  {
-    while (start.GetDistanceFrom (tlvstart) < size)
     {
-      Ptr<AddressTlv> newtlv = Create<AddressTlv> ();
-      //AddressTlv * newtlv = new AddressTlv ();
-      newtlv->Deserialize (start);
-
-      //Ptr<AddressTlv> * newptr = new Ptr<AddressTlv> (newtlv);
-      PushBack (newtlv);
+      while (start.GetDistanceFrom (tlvstart) < size)
+      {
+        Ptr<AddressTlv> newtlv = Create<AddressTlv> ();
+        newtlv->Deserialize (start);
+        PushBack (newtlv);
+      }
     }
-  }
 }
 
 void
@@ -422,15 +422,19 @@ AddressTlvBlock::Print (std::ostream &os, int level) const
 {
   std::string prefix = "";
   for (int i = 0; i < level; i++)
-    prefix.append("\t");
+    {
+      prefix.append("\t");
+    }
 
   os << prefix << "TLV Block {" << std::endl;
   os << prefix << "\tsize = " << Size () << std::endl;
   os << prefix << "\tmembers [" << std::endl;
+
   for (ConstIterator iter = Begin (); iter != End (); iter++)
-  {
-    (*iter)->Print (os, level+2);
-  }
+    {
+      (*iter)->Print (os, level+2);
+    }
+
   os << prefix << "\t]" << std::endl;
   os << prefix << "}" << std::endl;
 }
@@ -439,16 +443,20 @@ bool
 AddressTlvBlock::operator== (const AddressTlvBlock &other) const
 {
   if (Size () != other.Size ())
-    return false;
+    {
+      return false;
+    }
 
   ConstIterator it, ot;
   for (it = Begin (), ot = other.Begin ();
       it != End () && ot != other.End ();
       it++, ot++)
-  {
-    if (**it != **ot)
-      return false;
-  }
+    {
+      if (**it != **ot)
+        {
+          return false;
+        }
+    }
   return true;
 }
 
@@ -482,12 +490,8 @@ PacketBB::SetSequenceNumber (uint16_t number)
 }
 
 uint16_t
-PacketBB::GetSequenceNumber (void) const throw (PacketBBError)
+PacketBB::GetSequenceNumber (void) const
 {
-  if (!HasSequenceNumber ())
-  {
-    throw PacketBBError ("Packet has no sequence number.");
-  }
   return m_seqnum;
 }
 
@@ -717,9 +721,9 @@ PacketBB::Unref (void) const
 {
   m_refCount--;
   if (m_refCount == 0)
-  {
-    delete this;
-  }
+    {
+      delete this;
+    }
 }
 
 TypeId
@@ -745,18 +749,21 @@ PacketBB::GetSerializedSize (void) const
   uint32_t size = 1;
 
   if (HasSequenceNumber())
-  {
-    size += 2;
-  }
+    {
+      size += 2;
+    }
 
   if (!TlvEmpty ())
-    size += m_tlvList.GetSerializedSize ();
+    {
+      size += m_tlvList.GetSerializedSize ();
+    }
 
-  for (ConstMessageIterator iter = MessageBegin (); iter != MessageEnd ();
+  for (ConstMessageIterator iter = MessageBegin ();
+      iter != MessageEnd ();
       iter++)
-  {
-    size += (*iter)->GetSerializedSize ();
-  }
+    {
+      size += (*iter)->GetSerializedSize ();
+    }
 
   return size;
 }
@@ -774,25 +781,25 @@ PacketBB::Serialize (Buffer::Iterator start) const
   flags <<= 4;
 
   if (HasSequenceNumber ())
-  {
-    flags |= PHAS_SEQ_NUM;
-    start.WriteHtonU16 (GetSequenceNumber ());
-  }
+    {
+      flags |= PHAS_SEQ_NUM;
+      start.WriteHtonU16 (GetSequenceNumber ());
+    }
 
   if (!TlvEmpty ())
-  {
-    flags |= PHAS_TLV;
-    m_tlvList.Serialize (start);
-  }
+    {
+      flags |= PHAS_TLV;
+      m_tlvList.Serialize (start);
+    }
 
   bufref.WriteU8(flags);
 
   for (ConstMessageIterator iter = MessageBegin ();
       iter != MessageEnd ();
       iter++)
-  {
-    (*iter)->Serialize (start);
-  }
+    {
+      (*iter)->Serialize (start);
+    }
 }
 
 uint32_t
@@ -803,18 +810,24 @@ PacketBB::Deserialize (Buffer::Iterator start)
   uint8_t flags = start.ReadU8 ();
 
   if (flags & PHAS_SEQ_NUM)
-    SetSequenceNumber (start.ReadNtohU16 ());
+    {
+      SetSequenceNumber (start.ReadNtohU16 ());
+    }
 
   if (flags & PHAS_TLV)
-    m_tlvList.Deserialize (start);
+    {
+      m_tlvList.Deserialize (start);
+    }
 
   while (!start.IsEnd())
-  {
-    Ptr<Message> newmsg = Message::DeserializeMessage (start);
-    //Message * newmsg = Message::DeserializeMessage (start);
-    //Ptr<Message> * newptr = new Ptr<Message> (newmsg);
-    MessagePushBack (newmsg);
-  }
+    {
+      Ptr<Message> newmsg = Message::DeserializeMessage (start);
+      if (newmsg == 0)
+        {
+          return start.GetDistanceFrom (begin);
+        }
+      MessagePushBack (newmsg);
+    }
 
   flags >>= 4;
   m_version = flags;
@@ -828,7 +841,9 @@ PacketBB::Print (std::ostream &os) const
   os << "PacketBB {" << std::endl;
 
   if (HasSequenceNumber ())
-    os << "\tsequence number = " << GetSequenceNumber ();
+    {
+      os << "\tsequence number = " << GetSequenceNumber ();
+    }
 
   os << std::endl;
 
@@ -837,9 +852,9 @@ PacketBB::Print (std::ostream &os) const
   for (ConstMessageIterator iter = MessageBegin ();
       iter != MessageEnd ();
       iter++)
-  {
-    (*iter)->Print (os, 1);
-  }
+    {
+      (*iter)->Print (os, 1);
+    }
 
   os << "}" << std::endl;
 }
@@ -848,31 +863,41 @@ bool
 PacketBB::operator== (const PacketBB &other) const
 {
   if (GetVersion () != other.GetVersion ())
-    return false;
+    {
+      return false;
+    }
 
   if (HasSequenceNumber () != other.HasSequenceNumber ())
-    return false;
+    {
+      return false;
+    }
 
   if (HasSequenceNumber ())
-  {
-    if (GetSequenceNumber () != other.GetSequenceNumber ())
-      return false;
-  }
+    {
+      if (GetSequenceNumber () != other.GetSequenceNumber ())
+        return false;
+    }
 
   if (m_tlvList != other.m_tlvList)
-    return false;
+    {
+      return false;
+    }
 
   if (MessageSize () != other.MessageSize ())
-      return false;
+    {
+        return false;
+    }
 
   ConstMessageIterator tmi, omi;
   for (tmi = MessageBegin (), omi = other.MessageBegin ();
     tmi != MessageEnd () && omi != other.MessageEnd ();
     tmi++, omi++)
-  {
-    if (**tmi != **omi)
-      return false;
-  }
+    {
+      if (**tmi != **omi)
+        {
+          return false;
+        }
+    }
   return true;
 }
 
@@ -921,12 +946,8 @@ Message::SetOriginatorAddress (Address address)
 }
 
 Address
-Message::GetOriginatorAddress (void) const throw (PacketBBError)
+Message::GetOriginatorAddress (void) const
 {
-  if (!HasOriginatorAddress()) 
-  {
-    throw PacketBBError ("Message has no originator address.");
-  }
   return m_originatorAddress;
 }
 
@@ -944,12 +965,8 @@ Message::SetHopLimit (uint8_t hopLimit)
 }
 
 uint8_t
-Message::GetHopLimit (void) const throw (PacketBBError)
+Message::GetHopLimit (void) const
 {
-  if (!HasHopLimit())
-  {
-    throw PacketBBError ("Message has no hop limit.");
-  }
   return m_hopLimit;
 }
 
@@ -967,12 +984,8 @@ Message::SetHopCount (uint8_t hopCount)
 }
 
 uint8_t
-Message::GetHopCount (void) const throw (PacketBBError)
+Message::GetHopCount (void) const
 {
-  if (!HasHopCount())
-  {
-    throw PacketBBError ("Message has no hop count.");
-  }
   return m_hopCount;
 }
 
@@ -990,12 +1003,8 @@ Message::SetSequenceNumber (uint16_t sequenceNumber)
 }
 
 uint16_t
-Message::GetSequenceNumber (void) const throw (PacketBBError)
+Message::GetSequenceNumber (void) const
 {
-  if (!HasSequenceNumber())
-  {
-    throw PacketBBError ("Message has no sequence number.");
-  }
   return m_sequenceNumber;
 }
 
@@ -1225,9 +1234,9 @@ Message::Unref (void) const
 {
   m_refCount--;
   if (m_refCount == 0)
-  {
-    delete this;
-  }
+    {
+      delete this;
+    }
 }
 
 uint32_t
@@ -1237,25 +1246,33 @@ Message::GetSerializedSize (void) const
   uint32_t size = 4;
 
   if (HasOriginatorAddress())
-    size += GetAddressLength() + 1;
+    {
+      size += GetAddressLength() + 1;
+    }
 
   if (HasHopLimit())
-    size++;
+    {
+      size++;
+    }
 
   if (HasHopCount())
-    size++;
+    {
+      size++;
+    }
 
   if (HasSequenceNumber())
-    size += 2;
+    {
+      size += 2;
+    }
 
   size += m_tlvList.GetSerializedSize ();
 
   for (ConstAddressBlockIterator iter = AddressBlockBegin ();
       iter != AddressBlockEnd ();
       iter++)
-  {
-    size += (*iter)->GetSerializedSize ();
-  }
+    {
+      size += (*iter)->GetSerializedSize ();
+    }
 
   return size;
 }
@@ -1279,28 +1296,28 @@ Message::Serialize (Buffer::Iterator &start) const
   start.Next (2);
 
   if (HasOriginatorAddress ())
-  {
-    flags |= MHAS_ORIG;
-    SerializeOriginatorAddress (start);
-  }
+    {
+      flags |= MHAS_ORIG;
+      SerializeOriginatorAddress (start);
+    }
 
   if (HasHopLimit ())
-  {
-    flags |= MHAS_HOP_LIMIT;
-    start.WriteU8 (GetHopLimit ());
-  }
+    {
+      flags |= MHAS_HOP_LIMIT;
+      start.WriteU8 (GetHopLimit ());
+    }
 
   if (HasHopCount ())
-  {
-    flags |= MHAS_HOP_COUNT;
-    start.WriteU8 (GetHopCount ());
-  }
+    {
+      flags |= MHAS_HOP_COUNT;
+      start.WriteU8 (GetHopCount ());
+    }
 
   if (HasSequenceNumber ())
-  {
-    flags |= MHAS_SEQ_NUM;
-    start.WriteHtonU16 (GetSequenceNumber ());
-  }
+    {
+      flags |= MHAS_SEQ_NUM;
+      start.WriteHtonU16 (GetSequenceNumber ());
+    }
 
   bufref.WriteU8(flags);
 
@@ -1309,15 +1326,15 @@ Message::Serialize (Buffer::Iterator &start) const
   for (ConstAddressBlockIterator iter = AddressBlockBegin ();
       iter != AddressBlockEnd ();
       iter++)
-  {
-    (*iter)->Serialize (start);
-  }
+    {
+      (*iter)->Serialize (start);
+    }
 
   sizeref.WriteHtonU16 (front.GetDistanceFrom (start));
 }
 
 Ptr<Message>
-Message::DeserializeMessage (Buffer::Iterator &start) throw (PacketBBError)
+Message::DeserializeMessage (Buffer::Iterator &start)
 {
   /* We need to read the msg-addr-len field to determine what kind of object to
    * construct. */
@@ -1332,18 +1349,18 @@ Message::DeserializeMessage (Buffer::Iterator &start) throw (PacketBBError)
   Ptr<Message> newmsg;
 
   switch (addrlen)
-  {
-    case 0:
-    case IPV4:
-      newmsg = Create<MessageIpv4> ();
-      break;
-    case IPV6:
-      newmsg = Create<MessageIpv6> ();
-      break;
-    default:
-      throw PacketBBError ("Message deserialization has invalid address size.");
-      break;
-  }
+    {
+      case 0:
+      case IPV4:
+        newmsg = Create<MessageIpv4> ();
+        break;
+      case IPV6:
+        newmsg = Create<MessageIpv6> ();
+        break;
+      default:
+        return 0;
+        break;
+    }
   newmsg->Deserialize (start);
   return newmsg;
 }
@@ -1358,29 +1375,35 @@ Message::Deserialize (Buffer::Iterator &start)
   uint16_t size = start.ReadNtohU16 ();
 
   if (flags & MHAS_ORIG)
-    SetOriginatorAddress (DeserializeOriginatorAddress (start));
+    {
+      SetOriginatorAddress (DeserializeOriginatorAddress (start));
+    }
 
   if (flags & MHAS_HOP_LIMIT)
-    SetHopLimit (start.ReadU8 ());
+    {
+      SetHopLimit (start.ReadU8 ());
+    }
 
   if (flags & MHAS_HOP_COUNT)
-    SetHopCount (start.ReadU8 ());
+    {
+      SetHopCount (start.ReadU8 ());
+    }
 
   if (flags & MHAS_SEQ_NUM)
-    SetSequenceNumber (start.ReadNtohU16 ());
+    {
+      SetSequenceNumber (start.ReadNtohU16 ());
+    }
 
   m_tlvList.Deserialize (start);
 
   if (size > 0)
-  {
-    while (start.GetDistanceFrom(front) < size)
     {
-      Ptr<AddressBlock> newab = AddressBlockDeserialize (start);
-      //AddressBlock * newab = AddressBlockDeserialize (start);
-      //Ptr<AddressBlock> * newptr = new Ptr<AddressBlock> (newab);
-      AddressBlockPushBack (newab);
+      while (start.GetDistanceFrom(front) < size)
+        {
+          Ptr<AddressBlock> newab = AddressBlockDeserialize (start);
+          AddressBlockPushBack (newab);
+        }
     }
-  }
 }
 
 void
@@ -1394,7 +1417,9 @@ Message::Print (std::ostream &os, int level) const
 {
   std::string prefix = "";
   for (int i = 0; i < level; i++)
-    prefix.append ("\t");
+    {
+      prefix.append ("\t");
+    }
 
   os << prefix << "Message {" << std::endl;
 
@@ -1402,29 +1427,35 @@ Message::Print (std::ostream &os, int level) const
   os << prefix << "\taddress size = " << GetAddressLength () << std::endl;
 
   if (HasOriginatorAddress ())
-  {
-    os << prefix << "\toriginator address = ";
-    PrintOriginatorAddress (os);
-    os << std::endl;
-  }
+    {
+      os << prefix << "\toriginator address = ";
+      PrintOriginatorAddress (os);
+      os << std::endl;
+    }
 
   if (HasHopLimit ())
-    os << prefix << "\thop limit = " << (int)GetHopLimit () << std::endl;
+    {
+      os << prefix << "\thop limit = " << (int)GetHopLimit () << std::endl;
+    }
 
   if (HasHopCount ())
-    os << prefix << "\thop count = " << (int)GetHopCount () << std::endl;
+    {
+      os << prefix << "\thop count = " << (int)GetHopCount () << std::endl;
+    }
 
   if (HasSequenceNumber ())
-    os << prefix << "\tseqnum = " << GetSequenceNumber () << std::endl;
+    {
+      os << prefix << "\tseqnum = " << GetSequenceNumber () << std::endl;
+    }
 
   m_tlvList.Print (os, level+1);
 
   for (ConstAddressBlockIterator iter = AddressBlockBegin ();
       iter != AddressBlockEnd ();
       iter++)
-  {
-    (*iter)->Print (os, level+1);
-  }
+    {
+      (*iter)->Print (os, level+1);
+    }
   os << prefix << "}" << std::endl;
 }
 
@@ -1432,61 +1463,87 @@ bool
 Message::operator== (const Message &other) const
 {
   if (GetAddressLength () != other.GetAddressLength ())
-    return false;
+    {
+      return false;
+    }
 
   if (GetType () != other.GetType ())
-    return false;
+    {
+      return false;
+    }
 
   if (HasOriginatorAddress () != other.HasOriginatorAddress ())
-    return false;
+    {
+      return false;
+    }
 
   if (HasOriginatorAddress ())
-  {
-    if (GetOriginatorAddress () != other.GetOriginatorAddress ())
-      return false;
-  }
+    {
+      if (GetOriginatorAddress () != other.GetOriginatorAddress ())
+        {
+          return false;
+        }
+    }
 
   if (HasHopLimit () != other.HasHopLimit ())
-    return false;
+    {
+      return false;
+    }
 
   if (HasHopLimit ())
-  {
-    if (GetHopLimit () != other.GetHopLimit ())
-      return false;
-  }
+    {
+      if (GetHopLimit () != other.GetHopLimit ())
+        {
+          return false;
+        }
+    }
 
   if (HasHopCount () != other.HasHopCount ())
-    return false;
+    {
+      return false;
+    }
 
   if (HasHopCount ())
-  {
-    if (GetHopCount () != other.GetHopCount ())
-      return false;
-  }
+    {
+      if (GetHopCount () != other.GetHopCount ())
+        {
+          return false;
+        }
+    }
 
   if (HasSequenceNumber () != other.HasSequenceNumber ())
-    return false;
+    {
+      return false;
+    }
 
   if (HasSequenceNumber ())
-  {
-    if (GetSequenceNumber () != other.GetSequenceNumber ())
-      return false;
-  }
+    {
+      if (GetSequenceNumber () != other.GetSequenceNumber ())
+        {
+          return false;
+        }
+    }
 
   if (m_tlvList != other.m_tlvList)
-    return false;
+    {
+      return false;
+    }
 
   if (AddressBlockSize () != other.AddressBlockSize ())
-    return false;
+    {
+      return false;
+    }
 
   ConstAddressBlockIterator tai, oai;
   for (tai = AddressBlockBegin (), oai = other.AddressBlockBegin ();
       tai != AddressBlockEnd () && oai != other.AddressBlockEnd ();
       tai++, oai++)
-  {
-    if (**tai != **oai)
-      return false;
-  }
+    {
+      if (**tai != **oai)
+        {
+          return false;
+        }
+    }
   return true;
 }
 
@@ -1886,9 +1943,9 @@ AddressBlock::Unref (void) const
 {
   m_refCount--;
   if (m_refCount == 0)
-  {
-    delete this;
-  }
+    {
+      delete this;
+    }
 }
 
 uint32_t
@@ -1898,33 +1955,37 @@ AddressBlock::GetSerializedSize (void) const
   uint32_t size = 2;
 
   if (AddressSize () == 1)
-  {
-    size += GetAddressLength () + PrefixSize();
-  }
-  else if (AddressSize () > 0)
-  {
-    uint8_t head[GetAddressLength ()];
-    uint8_t headlen = 0;
-    uint8_t tail[GetAddressLength ()];
-    uint8_t taillen = 0;
-
-    GetHeadTail (head, headlen, tail, taillen);
-
-    if (headlen > 0)
-      size += 1 + headlen;
-
-    if (taillen > 0)
     {
-      size++;
-      if (!HasZeroTail (tail, taillen))
-        size += taillen;
+      size += GetAddressLength () + PrefixSize();
     }
+  else if (AddressSize () > 0)
+    {
+      uint8_t head[GetAddressLength ()];
+      uint8_t headlen = 0;
+      uint8_t tail[GetAddressLength ()];
+      uint8_t taillen = 0;
 
-    /* mid size */
-    size += (GetAddressLength () - headlen - taillen) * AddressSize ();
+      GetHeadTail (head, headlen, tail, taillen);
 
-    size += PrefixSize ();
-  }
+      if (headlen > 0)
+        {
+          size += 1 + headlen;
+        }
+
+      if (taillen > 0)
+        {
+          size++;
+          if (!HasZeroTail (tail, taillen))
+            {
+              size += taillen;
+            }
+        }
+
+      /* mid size */
+      size += (GetAddressLength () - headlen - taillen) * AddressSize ();
+
+      size += PrefixSize ();
+    }
 
   size += m_addressTlvList.GetSerializedSize ();
 
@@ -1936,73 +1997,76 @@ AddressBlock::Serialize (Buffer::Iterator &start) const
 {
   start.WriteU8 (AddressSize ());
 
-  if (AddressSize () == 1) {
-    start.WriteU8 (0);
+  if (AddressSize () == 1)
+    {
+      start.WriteU8 (0);
 
-    uint8_t buf[GetAddressLength ()];
-    SerializeAddress (buf, AddressBegin ());
-    start.Write (buf, GetAddressLength ());
+      uint8_t buf[GetAddressLength ()];
+      SerializeAddress (buf, AddressBegin ());
+      start.Write (buf, GetAddressLength ());
 
-    if (PrefixSize () == 1)
-      start.WriteU8 (PrefixFront ());
-  }
+      if (PrefixSize () == 1)
+        {
+          start.WriteU8 (PrefixFront ());
+        }
+    }
   else if (AddressSize () > 0)
-  {
-    Buffer::Iterator bufref = start;
-    uint8_t flags = 0;
-    start.Next ();
-
-    uint8_t head[GetAddressLength ()];
-    uint8_t tail[GetAddressLength ()];
-    uint8_t headlen = 0;
-    uint8_t taillen = 0;
-
-    GetHeadTail (head, headlen, tail, taillen);
-
-    if (headlen > 0)
     {
-      flags |= AHAS_HEAD;
-      start.WriteU8 (headlen);
-      start.Write (head, headlen);
-    }
+      Buffer::Iterator bufref = start;
+      uint8_t flags = 0;
+      start.Next ();
 
-    if (taillen > 0)
-    {
-      start.WriteU8 (taillen);
+      uint8_t head[GetAddressLength ()];
+      uint8_t tail[GetAddressLength ()];
+      uint8_t headlen = 0;
+      uint8_t taillen = 0;
 
-      if (HasZeroTail (tail, taillen))
-      {
-        flags |= AHAS_ZERO_TAIL;
-      }
-      else
-      {
-        flags |= AHAS_FULL_TAIL;
-        start.Write (tail, taillen);
-      }
-    }
+      GetHeadTail (head, headlen, tail, taillen);
 
-    if (headlen + taillen < GetAddressLength ())
-    {
-      uint8_t mid[GetAddressLength ()];
-      for (AddressBlock::ConstAddressIterator iter = AddressBegin ();
-          iter != AddressEnd ();
+      if (headlen > 0)
+        {
+          flags |= AHAS_HEAD;
+          start.WriteU8 (headlen);
+          start.Write (head, headlen);
+        }
+
+      if (taillen > 0)
+        {
+          start.WriteU8 (taillen);
+
+          if (HasZeroTail (tail, taillen))
+            {
+              flags |= AHAS_ZERO_TAIL;
+            }
+          else
+            {
+              flags |= AHAS_FULL_TAIL;
+              start.Write (tail, taillen);
+            }
+        }
+
+      if (headlen + taillen < GetAddressLength ())
+        {
+          uint8_t mid[GetAddressLength ()];
+          for (AddressBlock::ConstAddressIterator iter = AddressBegin ();
+              iter != AddressEnd ();
+              iter++)
+            {
+              SerializeAddress (mid, iter);
+              start.Write (mid + headlen, GetAddressLength () - headlen - taillen);
+            }
+        }
+
+      flags |= GetPrefixFlags ();
+      bufref.WriteU8 (flags);
+
+      for (ConstPrefixIterator iter = PrefixBegin ();
+          iter != PrefixEnd ();
           iter++)
-      {
-        SerializeAddress (mid, iter);
-        start.Write (mid + headlen, GetAddressLength () - headlen - taillen);
-      }
+        {
+          start.WriteU8 (*iter);
+        }
     }
-
-    flags |= GetPrefixFlags ();
-    bufref.WriteU8 (flags);
-
-    for (ConstPrefixIterator iter = PrefixBegin ();
-        iter != PrefixEnd ();
-        iter++)
-    {
-      start.WriteU8 (*iter);
-    }
-  }
   
   m_addressTlvList.Serialize (start);
 }
@@ -2014,46 +2078,46 @@ AddressBlock::Deserialize (Buffer::Iterator &start)
   uint8_t flags = start.ReadU8 ();
 
   if (numaddr > 0)
-  {
-    uint8_t headlen = 0;
-    uint8_t taillen = 0;
-    uint8_t addrtmp[GetAddressLength ()];
-    memset(addrtmp, 0, GetAddressLength ());
+    {
+      uint8_t headlen = 0;
+      uint8_t taillen = 0;
+      uint8_t addrtmp[GetAddressLength ()];
+      memset(addrtmp, 0, GetAddressLength ());
 
-    if (flags & AHAS_HEAD)
-    {
-      headlen = start.ReadU8 ();
-      start.Read (addrtmp, headlen);
-    }
+      if (flags & AHAS_HEAD)
+        {
+          headlen = start.ReadU8 ();
+          start.Read (addrtmp, headlen);
+        }
 
-    if ((flags & AHAS_FULL_TAIL) ^ (flags & AHAS_ZERO_TAIL))
-    {
-      taillen = start.ReadU8 ();
-      
-      if (flags & AHAS_FULL_TAIL)
-      {
-        start.Read (addrtmp + GetAddressLength () - taillen, taillen);
-      }
-    }
+      if ((flags & AHAS_FULL_TAIL) ^ (flags & AHAS_ZERO_TAIL))
+        {
+          taillen = start.ReadU8 ();
+          
+          if (flags & AHAS_FULL_TAIL)
+            {
+              start.Read (addrtmp + GetAddressLength () - taillen, taillen);
+            }
+        }
 
-    for (int i = 0; i < numaddr; i++)
-    {
-      start.Read (addrtmp + headlen, GetAddressLength () - headlen - taillen);
-      AddressPushBack (DeserializeAddress (addrtmp));
-    }
-
-    if (flags & AHAS_SINGLE_PRE_LEN)
-    {
-      PrefixPushBack (start.ReadU8 ());
-    }
-    else if (flags & AHAS_MULTI_PRE_LEN)
-    {
       for (int i = 0; i < numaddr; i++)
-      {
-        PrefixPushBack (start.ReadU8 ());
-      }
+        {
+          start.Read (addrtmp + headlen, GetAddressLength () - headlen - taillen);
+          AddressPushBack (DeserializeAddress (addrtmp));
+        }
+
+      if (flags & AHAS_SINGLE_PRE_LEN)
+        {
+          PrefixPushBack (start.ReadU8 ());
+        }
+      else if (flags & AHAS_MULTI_PRE_LEN)
+        {
+          for (int i = 0; i < numaddr; i++)
+            {
+              PrefixPushBack (start.ReadU8 ());
+            }
+        }
     }
-  }
 
   m_addressTlvList.Deserialize (start);
 }
@@ -2069,26 +2133,28 @@ AddressBlock::Print (std::ostream &os, int level) const
 {
   std::string prefix = "";
   for (int i = 0; i < level; i++)
-    prefix.append ("\t");
+    {
+      prefix.append ("\t");
+    }
 
   os << prefix << "AddressBlock {" << std::endl;
   os << prefix << "\taddresses = " << std::endl;
   for (ConstAddressIterator iter = AddressBegin ();
       iter != AddressEnd ();
       iter++)
-  {
-    os << prefix << "\t\t";
-    PrintAddress(os, iter);
-    os << std::endl;
-  }
+    {
+      os << prefix << "\t\t";
+      PrintAddress(os, iter);
+      os << std::endl;
+    }
 
   os << prefix << "\tprefixes = " << std::endl;
   for (ConstPrefixIterator iter = PrefixBegin ();
       iter != PrefixEnd ();
       iter++)
-  {
-    os << prefix << "\t\t" << (int)(*iter) << std::endl;
-  }
+    {
+      os << prefix << "\t\t" << (int)(*iter) << std::endl;
+    }
 
   m_addressTlvList.Print (os, level+1);
 }
@@ -2097,31 +2163,41 @@ bool
 AddressBlock::operator== (const AddressBlock &other) const
 {
   if (AddressSize () != other.AddressSize ())
-    return false;
+    {
+      return false;
+    }
 
   ConstAddressIterator tai, oai;
   for (tai = AddressBegin (), oai = other.AddressBegin ();
       tai != AddressEnd () && oai != other.AddressEnd ();
       tai++, oai++)
-  {
-    if (*tai != *oai)
-      return false;
-  }
+    {
+      if (*tai != *oai)
+        {
+          return false;
+        }
+    }
 
   if (PrefixSize () != other.PrefixSize ())
-    return false;
+    {
+      return false;
+    }
 
   ConstPrefixIterator tpi, opi;
   for (tpi = PrefixBegin (), opi = other.PrefixBegin ();
       tpi != PrefixEnd () && opi != other.PrefixEnd ();
       tpi++, opi++)
-  {
-    if (*tpi != *opi)
-      return false;
-  }
+    {
+      if (*tpi != *opi)
+        {
+          return false;
+        }
+    }
 
   if (m_addressTlvList != other.m_addressTlvList)
-    return false;
+    {
+      return false;
+    }
 
   return true;
 }
@@ -2136,17 +2212,17 @@ uint8_t
 AddressBlock::GetPrefixFlags (void) const
 {
   switch (PrefixSize ())
-  {
-    case 0:
-      return 0;
-      break;
-    case 1:
-      return AHAS_SINGLE_PRE_LEN;
-      break;
-    default:
-      return AHAS_MULTI_PRE_LEN;
-      break;
-  }
+    {
+      case 0:
+        return 0;
+        break;
+      case 1:
+        return AHAS_SINGLE_PRE_LEN;
+        break;
+      default:
+        return AHAS_MULTI_PRE_LEN;
+        break;
+    }
 }
 
 void
@@ -2167,41 +2243,43 @@ AddressBlock::GetHeadTail (uint8_t *head, uint8_t &headlen,
   for (AddressBlock::ConstAddressIterator iter = AddressBegin ()++;
       iter != AddressEnd ();
       iter++)
-  {
-    SerializeAddress (bufcur, iter);
-
-    int i;
-    for (i = 0; i < headlen; i++)
     {
-      if (buflast[i] != bufcur[i])
-      {
-        headlen = i;
-        break;
-      }
-    }
+      SerializeAddress (bufcur, iter);
 
-    /* If headlen == fulllen - 1, then tail is 0 */
-    if (headlen <= GetAddressLength () - 1)
-    {
-      for (i = GetAddressLength () - 1;
-          GetAddressLength () - 1 - i <= taillen && i > headlen;
-          i--)
-      {
-        if (buflast[i] != bufcur[i])
+      int i;
+      for (i = 0; i < headlen; i++)
+        {
+          if (buflast[i] != bufcur[i])
+            {
+              headlen = i;
+              break;
+            }
+        }
+
+      /* If headlen == fulllen - 1, then tail is 0 */
+      if (headlen <= GetAddressLength () - 1)
+        {
+          for (i = GetAddressLength () - 1;
+              GetAddressLength () - 1 - i <= taillen && i > headlen;
+              i--)
+            {
+              if (buflast[i] != bufcur[i])
+                {
+                  break;
+                }
+            }
+          taillen = GetAddressLength () - 1 - i;
+        }
+      else if (headlen == 0)
+        {
+          taillen = 0;
           break;
-      }
-      taillen = GetAddressLength () - 1 - i;
-    }
-    else if (headlen == 0)
-    {
-      taillen = 0;
-      break;
-    }
+        }
 
-    tmp = buflast;
-    buflast = bufcur;
-    bufcur = tmp;
-  }
+      tmp = buflast;
+      buflast = bufcur;
+      bufcur = tmp;
+    }
 
   memcpy(head, bufcur, headlen);
   memcpy(tail, bufcur + (GetAddressLength () - taillen), taillen);
@@ -2215,10 +2293,12 @@ AddressBlock::HasZeroTail (const uint8_t *tail, uint8_t taillen) const
 {
   int i;
   for (i = 0; i < taillen; i++)
-  {
-    if (tail[i] != 0)
-      break;
-  }
+    {
+      if (tail[i] != 0)
+        {
+          break;
+        }
+    }
   return i == taillen;
 }
 
@@ -2306,12 +2386,8 @@ Tlv::SetTypeExt (uint8_t typeExt)
 }
 
 uint8_t
-Tlv::GetTypeExt (void) const throw (PacketBBError)
+Tlv::GetTypeExt (void) const
 {
-  if (!HasTypeExt())
-  {
-    throw PacketBBError ("TLV has no type extension.");
-  }
   return m_typeExt;
 }
 
@@ -2329,12 +2405,8 @@ Tlv::SetIndexStart (uint8_t index)
 }
 
 uint8_t
-Tlv::GetIndexStart (void) const throw (PacketBBError)
+Tlv::GetIndexStart (void) const
 {
-  if (!HasIndexStart())
-  {
-    throw PacketBBError ("TLV has no start index.");
-  }
   return m_indexStart;
 }
 
@@ -2352,12 +2424,8 @@ Tlv::SetIndexStop (uint8_t index)
 }
 
 uint8_t
-Tlv::GetIndexStop (void) const throw (PacketBBError)
+Tlv::GetIndexStop (void) const
 {
-  if (!HasIndexStop())
-  {
-    throw PacketBBError ("TLV has no stop index.");
-  }
   return m_indexStop;
 }
 
@@ -2396,12 +2464,8 @@ Tlv::SetValue (const uint8_t * buffer, uint32_t size)
 }
 
 Buffer
-Tlv::GetValue (void) const throw (PacketBBError)
+Tlv::GetValue (void) const
 {
-  if (!HasValue ())
-  {
-    throw PacketBBError ("TLV has no value.");
-  }
   return m_value;
 }
 
@@ -2422,9 +2486,9 @@ Tlv::Unref (void) const
 {
   m_refCount--;
   if (m_refCount == 0)
-  {
-    delete this;
-  }
+    {
+      delete this;
+    }
 }
 
 uint32_t
@@ -2433,27 +2497,33 @@ Tlv::GetSerializedSize (void) const
   /* type + flags */
   uint32_t size = 2;
 
-  if (HasTypeExt ()) {
-    size++;
-  }
-
-  if (HasIndexStart ()) {
-    size++;
-  }
-
-  if (HasIndexStop ()) {
-    size++;
-  }
-
-  if (HasValue ())
-  {
-    if (GetValue ().GetSize () > 255) {
-      size += 2;
-    } else {
+  if (HasTypeExt ())
+    {
       size++;
     }
-    size += GetValue ().GetSize ();
-  }
+
+  if (HasIndexStart ())
+    {
+      size++;
+    }
+
+  if (HasIndexStop ())
+    {
+      size++;
+    }
+
+  if (HasValue ())
+    {
+      if (GetValue ().GetSize () > 255)
+        {
+          size += 2;
+        } 
+      else 
+        {
+          size++;
+        }
+      size += GetValue ().GetSize ();
+    }
 
   return size;
 }
@@ -2468,45 +2538,48 @@ Tlv::Serialize (Buffer::Iterator &start) const
   start.Next();
 
   if (HasTypeExt())
-  {
-    flags |= THAS_TYPE_EXT;
-    start.WriteU8 (GetTypeExt ());
-  }
+    {
+      flags |= THAS_TYPE_EXT;
+      start.WriteU8 (GetTypeExt ());
+    }
 
   if (HasIndexStart ())
-  {
-    start.WriteU8 (GetIndexStart ());
+    {
+      start.WriteU8 (GetIndexStart ());
 
-    if (HasIndexStop ())
-    {
-      flags |= THAS_MULTI_INDEX;
-      start.WriteU8 (GetIndexStop ());
-    } 
-    else
-    {
-      flags |= THAS_SINGLE_INDEX;
-    }
-  }
-
-  if (HasValue ()) {
-    flags |= THAS_VALUE;
-
-    uint32_t size = GetValue ().GetSize ();
-    if (size > 255)
-    {
-      flags |= THAS_EXT_LEN;
-      start.WriteHtonU16 (size);
-    }
-    else
-    {
-      start.WriteU8 (size);
+      if (HasIndexStop ())
+        {
+          flags |= THAS_MULTI_INDEX;
+          start.WriteU8 (GetIndexStop ());
+        } 
+      else
+        {
+          flags |= THAS_SINGLE_INDEX;
+        }
     }
 
-    if (IsMultivalue ())
-      flags |= TIS_MULTIVALUE;
+  if (HasValue ()) 
+    {
+      flags |= THAS_VALUE;
 
-    start.Write(GetValue ().Begin (), GetValue ().End ());
-  }
+      uint32_t size = GetValue ().GetSize ();
+      if (size > 255)
+        {
+          flags |= THAS_EXT_LEN;
+          start.WriteHtonU16 (size);
+        }
+      else
+        {
+          start.WriteU8 (size);
+        }
+
+      if (IsMultivalue ())
+        {
+          flags |= TIS_MULTIVALUE;
+        }
+
+      start.Write(GetValue ().Begin (), GetValue ().End ());
+    }
 
   bufref.WriteU8 (flags);
 }
@@ -2519,34 +2592,40 @@ Tlv::Deserialize (Buffer::Iterator &start)
   uint8_t flags = start.ReadU8 ();
 
   if (flags & THAS_TYPE_EXT)
-    SetTypeExt (start.ReadU8 ());
+    {
+      SetTypeExt (start.ReadU8 ());
+    }
 
   if (flags & THAS_MULTI_INDEX)
-  {
-    SetIndexStart (start.ReadU8 ());
-    SetIndexStop (start.ReadU8 ());
-  }
+    {
+      SetIndexStart (start.ReadU8 ());
+      SetIndexStop (start.ReadU8 ());
+    }
   else if (flags & THAS_SINGLE_INDEX)
-  {
-    SetIndexStart (start.ReadU8 ());
-  }
+    {
+      SetIndexStart (start.ReadU8 ());
+    }
 
   if (flags & THAS_VALUE)
-  {
-    uint16_t len = 0;
+    {
+      uint16_t len = 0;
 
-    if (flags & THAS_EXT_LEN)
-      len = start.ReadNtohU16 ();
-    else
-      len = start.ReadU8 ();
+      if (flags & THAS_EXT_LEN)
+        {
+          len = start.ReadNtohU16 ();
+        }
+      else
+        {
+          len = start.ReadU8 ();
+        }
 
-    m_value.AddAtStart (len);
+      m_value.AddAtStart (len);
 
-    Buffer::Iterator valueStart = start;
-    start.Next (len);
-    m_value.Begin ().Write (valueStart, start);
-    m_hasValue = true;
-  }
+      Buffer::Iterator valueStart = start;
+      start.Next (len);
+      m_value.Begin ().Write (valueStart, start);
+      m_hasValue = true;
+    }
 }
 
 void
@@ -2560,24 +2639,34 @@ Tlv::Print (std::ostream &os, int level) const
 {
   std::string prefix = "";
   for (int i = 0; i < level; i++)
-    prefix.append ("\t");
+    {
+      prefix.append ("\t");
+    }
 
   os << prefix << "Tlv {" << std::endl;
   os << prefix << "\ttype = " << (int)GetType () << std::endl;
 
   if (HasTypeExt ())
-    os << prefix << "\ttypeext = " << (int)GetTypeExt () << std::endl;
+    {
+      os << prefix << "\ttypeext = " << (int)GetTypeExt () << std::endl;
+    }
 
   if (HasIndexStart ())
-    os << prefix << "\tindexStart = " << (int)GetIndexStart () << std::endl;
+    {
+      os << prefix << "\tindexStart = " << (int)GetIndexStart () << std::endl;
+    }
 
   if (HasIndexStop ())
-    os << prefix << "\tindexStop = " << (int)GetIndexStop () << std::endl;
+    {
+      os << prefix << "\tindexStop = " << (int)GetIndexStop () << std::endl;
+    }
 
   os << prefix << "\tisMultivalue = " << IsMultivalue () << std::endl;
 
   if (HasValue ())
-    os << prefix << "\thas value; size = " << GetValue (). GetSize () << std::endl;
+    {
+      os << prefix << "\thas value; size = " << GetValue (). GetSize () << std::endl;
+    }
 
   os << prefix << "}" << std::endl;
 }
@@ -2586,32 +2675,44 @@ bool
 Tlv::operator== (const Tlv &other) const
 {
   if (GetType () != other.GetType ())
-    return false;
+    {
+      return false;
+    }
 
   if (HasTypeExt () != other.HasTypeExt ())
-    return false;
+    {
+      return false;
+    }
 
   if (HasTypeExt ())
-  {
-    if (GetTypeExt () != other.GetTypeExt ())
-      return false;
-  }
+    {
+      if (GetTypeExt () != other.GetTypeExt ())
+        {
+          return false;
+        }
+    }
 
   if (HasValue () != other.HasValue ())
-    return false;
+    {
+      return false;
+    }
 
   if (HasValue ())
-  {
-    Buffer tv = GetValue ();
-    Buffer ov = other.GetValue ();
-    if (tv.GetSize () != ov.GetSize ())
-      return false;
+    {
+      Buffer tv = GetValue ();
+      Buffer ov = other.GetValue ();
+      if (tv.GetSize () != ov.GetSize ())
+        {
+          return false;
+        }
 
-    /* The docs say I probably shouldn't use Buffer::PeekData, but I think it
-     * is justified in this case. */
-    if (memcmp (tv.PeekData (), ov.PeekData (), tv.GetSize ()) != 0)
-      return false;
-  }
+      /* The docs say I probably shouldn't use Buffer::PeekData, but I think it
+       * is justified in this case. */
+      if (memcmp (tv.PeekData (), ov.PeekData (), tv.GetSize ()) != 0)
+        {
+          return false;
+        }
+    }
   return true;
 }
 
@@ -2630,7 +2731,7 @@ AddressTlv::SetIndexStart (uint8_t index)
 }
 
 uint8_t
-AddressTlv::GetIndexStart (void) const throw (PacketBBError)
+AddressTlv::GetIndexStart (void) const
 {
   return Tlv::GetIndexStart ();
 }
@@ -2648,7 +2749,7 @@ AddressTlv::SetIndexStop (uint8_t index)
 }
 
 uint8_t
-AddressTlv::GetIndexStop (void) const throw (PacketBBError)
+AddressTlv::GetIndexStop (void) const
 {
   return Tlv::GetIndexStop ();
 }

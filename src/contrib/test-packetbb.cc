@@ -1,5 +1,5 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
-/* vim: set ts=2 sw=2 expandtab: */
+/* vim: set ts=2 sw=2 sta expandtab ai si cin: */
 /* 
  * Copyright (c) 2009 Drexel University
  * 
@@ -47,70 +47,41 @@ public:
   void Test (void)
   {
     if (TestSerialize ())
-      cout << "Serialize Pass, ";
+      {
+        cout << "Serialize Pass, ";
+      }
     else
-      cout << "Serialize Fail, ";
+      {
+        cout << "Serialize Fail, ";
+      }
 
     if (TestDeserialize ())
-      cout << "Deserialize Pass, ";
+      {
+        cout << "Deserialize Pass, ";
+      }
     else
-      cout << "Deserialize Fail, ";
-
-    if (TestConsistency ())
-      cout << "Consistency Pass" << endl;
-    else
-      cout << "Consistency Fail" << endl;
+      {
+        cout << "Deserialize Fail, ";
+      }
   }
 
   bool TestSerialize (void)
   {
     Buffer newBuffer;
-    try
-    {
-      newBuffer.AddAtStart (m_refPacket.GetSerializedSize ());
-      m_refPacket.Serialize (newBuffer.Begin ());
-    } 
-    catch (PacketBBError &e)
-    {
-      cout << endl << "Exception: " << e.what () << endl;
-      return false;
-    }
+    newBuffer.AddAtStart (m_refPacket.GetSerializedSize ());
+    m_refPacket.Serialize (newBuffer.Begin ());
     return CompareBuffers (m_refBuffer, newBuffer);
   }
 
   bool TestDeserialize (void)
   {
     PacketBB newPacket;
-    try
-    {
-      newPacket.Deserialize (m_refBuffer.Begin ());
-    } 
-    catch (PacketBBError &e)
-    {
-      cout << endl << "Exception: " << e.what () << endl;
-      return false;
-    }
+    if (newPacket.Deserialize (m_refBuffer.Begin ()) != m_refBuffer.GetSize ())
+      {
+        return false;
+      }
     return m_refPacket == newPacket;
   }
-
-  bool TestConsistency (void)
-  {
-    Buffer newBuffer;
-    PacketBB newPacket;
-    try
-    {
-      newBuffer.AddAtStart (m_refPacket.GetSerializedSize ());
-      m_refPacket.Serialize (newBuffer.Begin ());
-      newPacket.Deserialize (newBuffer.Begin ());
-    } 
-    catch (PacketBBError &e)
-    {
-      cout << endl << "Exception: " << e.what () << endl;
-      return false;
-    }
-    return m_refPacket == newPacket;
-  }
-
 
 private:
   static bool CompareBuffers (Buffer a, Buffer b)
@@ -119,21 +90,23 @@ private:
     const uint8_t * bbuf = b.PeekData ();
 
     for (unsigned int i = 0; i < a.GetSize (); i++)
-    {
-      if (abuf[i] != bbuf[i])
-        cout << "Difference - [" << i << "] - " << (int)abuf[i] << " - " << (int)bbuf[i] << endl;
-    }
+      {
+        if (abuf[i] != bbuf[i])
+          {
+            cout << "Difference - [" << i << "] - " << (int)abuf[i] << " - " << (int)bbuf[i] << endl;
+          }
+      }
 
     if (a.GetSize () != b.GetSize ())
-    {
-      cout << "Buffers differ in size: " << a.GetSize () << ", " << b.GetSize() << endl;
-      return false;
-    }
+      {
+        cout << "Buffers differ in size: " << a.GetSize () << ", " << b.GetSize() << endl;
+        return false;
+      }
 
     if (memcmp (a.PeekData (), b.PeekData (), a.GetSize ()) != 0)
-    {
-      return false;
-    }
+      {
+        return false;
+      }
 
     return true;
   }

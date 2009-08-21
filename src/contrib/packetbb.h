@@ -1,5 +1,5 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
-/* vim: set ts=2 sw=2 expandtab: */
+/* vim: set ts=2 sw=2 sta expandtab ai si cin: */
 /* 
  * Copyright (c) 2009 Drexel University
  * 
@@ -156,7 +156,9 @@ public:
   uint8_t GetVersion (void) const;
 
   void SetSequenceNumber (uint16_t number);
-  uint16_t GetSequenceNumber (void) const throw (PacketBBError);
+  /* Calling this while HasSequenceNumber is False is undefined, make sure you
+   * check first! */
+  uint16_t GetSequenceNumber (void) const;
   bool HasSequenceNumber (void) const;
 
   /* Manipulating Packet TLVs */
@@ -216,6 +218,8 @@ public:
   virtual TypeId GetInstanceTypeId (void) const;
   virtual uint32_t GetSerializedSize (void) const;
   virtual void Serialize (Buffer::Iterator start) const;
+  /* If this returns a number smaller than the total number of bytes in the
+   * buffer, there was an error. */
   virtual uint32_t Deserialize (Buffer::Iterator start);
   virtual void Print (std::ostream &os) const;
 
@@ -251,19 +255,27 @@ public:
   uint8_t GetType (void) const;
 
   void SetOriginatorAddress (Address address);
-  Address GetOriginatorAddress (void) const throw (PacketBBError);
+  /* Calling this while HasOriginatorAddress is False is undefined, make sure
+   * you check first! */
+  Address GetOriginatorAddress (void) const;
   bool HasOriginatorAddress (void) const;
 
   void SetHopLimit (uint8_t hoplimit);
-  uint8_t GetHopLimit (void) const throw (PacketBBError);
+  /* Calling this while HasHopLimit is False is undefined, make sure
+   * you check first! */
+  uint8_t GetHopLimit (void) const;
   bool HasHopLimit (void) const;
 
   void SetHopCount (uint8_t hopcount);
-  uint8_t GetHopCount (void) const throw (PacketBBError);
+  /* Calling this while HasHopCount is False is undefined, make sure
+   * you check first! */
+  uint8_t GetHopCount (void) const;
   bool HasHopCount (void) const;
 
   void SetSequenceNumber (uint16_t seqnum);
-  uint16_t GetSequenceNumber (void) const throw (PacketBBError);
+  /* Calling this while HasSequenceNumber is False is undefined, make sure
+   * you check first! */
+  uint16_t GetSequenceNumber (void) const;
   bool HasSequenceNumber (void) const;
 
   /* Manipulating Message TLVs */
@@ -319,7 +331,8 @@ public:
   void Ref (void) const;
   void Unref (void) const;
 
-  static Ptr<Message> DeserializeMessage (Buffer::Iterator &start) throw (PacketBBError);
+  /* Returns 0 on error */
+  static Ptr<Message> DeserializeMessage (Buffer::Iterator &start);
   uint32_t GetSerializedSize (void) const;
   void Serialize (Buffer::Iterator &start) const;
   void Deserialize (Buffer::Iterator &start);
@@ -543,12 +556,16 @@ public:
   uint8_t GetType (void) const;
 
   void SetTypeExt (uint8_t type);
-  uint8_t GetTypeExt (void) const throw (PacketBBError);
+  /* Calling this while HasTypeExt is False is undefined, make sure
+   * you check first! */
+  uint8_t GetTypeExt (void) const;
   bool HasTypeExt (void) const;
 
   void SetValue (Buffer start);
   void SetValue (const uint8_t * buffer, uint32_t size);
-  Buffer GetValue (void) const throw (PacketBBError);
+  /* Calling this while HasValue is False is undefined, make sure
+   * you check first! */
+  Buffer GetValue (void) const;
   bool HasValue (void) const;
 
   /* Smart pointer methods */
@@ -566,11 +583,11 @@ public:
 
 protected:
   void SetIndexStart (uint8_t index);
-  uint8_t GetIndexStart (void) const throw (PacketBBError);
+  uint8_t GetIndexStart (void) const;
   bool HasIndexStart (void) const;
 
   void SetIndexStop (uint8_t index);
-  uint8_t GetIndexStop (void) const throw (PacketBBError);
+  uint8_t GetIndexStop (void) const;
   bool HasIndexStop (void) const;
 
   void SetMultivalue (bool isMultivalue);
@@ -599,11 +616,15 @@ class AddressTlv : public Tlv
 {
 public:
   void SetIndexStart (uint8_t index);
-  uint8_t GetIndexStart (void) const throw (PacketBBError);
+  /* Calling this while HasIndexStart is False is undefined, make sure
+   * you check first! */
+  uint8_t GetIndexStart (void) const;
   bool HasIndexStart (void) const;
 
   void SetIndexStop (uint8_t index);
-  uint8_t GetIndexStop (void) const throw (PacketBBError);
+  /* Calling this while HasIndexStop is False is undefined, make sure
+   * you check first! */
+  uint8_t GetIndexStop (void) const;
   bool HasIndexStop (void) const;
 
   void SetMultivalue (bool isMultivalue);
