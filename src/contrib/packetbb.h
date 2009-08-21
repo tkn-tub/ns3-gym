@@ -25,7 +25,6 @@
 #ifndef PACKETBB_H
 #define PACKETBB_H
 
-#include <stdexcept>
 #include <list>
 
 #include "ns3/ptr.h"
@@ -51,11 +50,11 @@ enum AddressLength {
   IPV6 = 15,
 };
 
-class PacketBBError : public std::runtime_error {
-public:
-  PacketBBError(const std::string &arg) : std::runtime_error(arg) {}
-};
-
+/**
+ * \brief A block of Packet or Message TLVs.
+ *
+ * Acts similar to a C++ STL container.  Should not be used for Address TLVs.
+ */
 class TlvBlock
 {
 public:
@@ -99,6 +98,11 @@ private:
   std::list< Ptr<Tlv> > m_tlvList;
 };
 
+/**
+ * \brief A block of Address TLVs.
+ *
+ * Acts similar to a C++ STL container.
+ */
 class AddressTlvBlock
 {
 public:
@@ -142,7 +146,9 @@ private:
   std::list< Ptr<AddressTlv> > m_tlvList;
 };
 
-/** Top level PacketBB packet object */
+/**
+ * \brief Main PacketBB Packet object.
+ */
 class PacketBB : public Header
 {
 public:
@@ -156,8 +162,12 @@ public:
   uint8_t GetVersion (void) const;
 
   void SetSequenceNumber (uint16_t number);
-  /* Calling this while HasSequenceNumber is False is undefined, make sure you
-   * check first! */
+  /**
+   * \returns the sequence number of this packet.
+   *
+   * Calling this while HasSequenceNumber is False is undefined.  Make sure you
+   * check it first.
+   */
   uint16_t GetSequenceNumber (void) const;
   bool HasSequenceNumber (void) const;
 
@@ -218,8 +228,12 @@ public:
   virtual TypeId GetInstanceTypeId (void) const;
   virtual uint32_t GetSerializedSize (void) const;
   virtual void Serialize (Buffer::Iterator start) const;
-  /* If this returns a number smaller than the total number of bytes in the
-   * buffer, there was an error. */
+  /**
+   * \returns the number of bytes deserialized
+   *
+   * If this returns a number smaller than the total number of bytes in the
+   * buffer, there was an error.
+   */
   virtual uint32_t Deserialize (Buffer::Iterator start);
   virtual void Print (std::ostream &os) const;
 
@@ -241,6 +255,13 @@ private:
   mutable uint32_t m_refCount;
 };
 
+/**
+ * \brief A message within a PacketBB packet.
+ *
+ * There may be any number of messages in one PacketBB packet.
+ * This is a pure virutal base class, you should instantiate either MessageIpv4
+ * or MessageIpv6.
+ */
 class Message
 {
 public:
@@ -255,26 +276,42 @@ public:
   uint8_t GetType (void) const;
 
   void SetOriginatorAddress (Address address);
-  /* Calling this while HasOriginatorAddress is False is undefined, make sure
-   * you check first! */
+  /**
+   * \returns the address of the node that created this packet.
+   *
+   * Calling this while HasOriginatorAddress is False is undefined.  Make sure
+   * you check it first.
+   */
   Address GetOriginatorAddress (void) const;
   bool HasOriginatorAddress (void) const;
 
   void SetHopLimit (uint8_t hoplimit);
-  /* Calling this while HasHopLimit is False is undefined, make sure
-   * you check first! */
+  /**
+   * \returns the maximum number of hops this message should travel.
+   *
+   * Calling this while HasHopLimit is False is undefined.  Make sure you check
+   * it first.
+   */
   uint8_t GetHopLimit (void) const;
   bool HasHopLimit (void) const;
 
   void SetHopCount (uint8_t hopcount);
-  /* Calling this while HasHopCount is False is undefined, make sure
-   * you check first! */
+  /**
+   * \returns the current number of hops this message has traveled.
+   *
+   * Calling this while HasHopCount is False is undefined.  Make sure you check
+   * it first.
+   */
   uint8_t GetHopCount (void) const;
   bool HasHopCount (void) const;
 
   void SetSequenceNumber (uint16_t seqnum);
-  /* Calling this while HasSequenceNumber is False is undefined, make sure
-   * you check first! */
+  /**
+   * \returns the sequence number of this message.
+   *
+   * Calling this while HasSequenceNumber is False is undefined.  Make sure you
+   * check it first.
+   */
   uint16_t GetSequenceNumber (void) const;
   bool HasSequenceNumber (void) const;
 
@@ -377,6 +414,11 @@ private:
   mutable uint32_t m_refCount;
 };
 
+/**
+ * \brief Concrete IPv4 specific Message.
+ *
+ * This message will only contain IPv4 addresses.
+ */
 class MessageIpv4 : public Message {
 protected:
   virtual AddressLength GetAddressLength (void) const;
@@ -388,6 +430,11 @@ protected:
   virtual Ptr<AddressBlock> AddressBlockDeserialize (Buffer::Iterator &start) const;
 };
 
+/**
+ * \brief Concrete IPv6 specific Message class.
+ *
+ * This message will only contain IPv6 addresses.
+ */
 class MessageIpv6 : public Message {
 protected:
   virtual AddressLength GetAddressLength (void) const;
@@ -399,7 +446,12 @@ protected:
   virtual Ptr<AddressBlock> AddressBlockDeserialize (Buffer::Iterator &start) const;
 };
 
-/** This combines address blocks with their associated TLVs */
+/**
+ * \brief An Address Block and its associated Address TLV Blocks.
+ *
+ * This is a pure virtual base class, you should instantiate either
+ * AddressBlockIpv4 or AddressBlockIpv6.
+ */
 class AddressBlock
 {
 public:
@@ -526,6 +578,11 @@ private:
   mutable uint32_t m_refCount;
 };
 
+/**
+ * \brief Concrete IPv4 specific AddressBlock.
+ *
+ * This address block will only contain IPv4 addresses.
+ */
 class AddressBlockIpv4 : public AddressBlock
 {
 protected:
@@ -536,6 +593,11 @@ protected:
   virtual void PrintAddress (std::ostream &os, ConstAddressIterator iter) const;
 };
 
+/**
+ * \brief Concrete IPv6 specific AddressBlock.
+ *
+ * This address block will only contain IPv6 addresses.
+ */
 class AddressBlockIpv6 : public AddressBlock
 {
 protected:
@@ -546,7 +608,9 @@ protected:
   virtual void PrintAddress (std::ostream &os, ConstAddressIterator iter) const;
 };
 
-/** A packet or message TLV */
+/**
+ * \brief A packet or message TLV
+ */
 class Tlv
 {
 public:
@@ -556,15 +620,23 @@ public:
   uint8_t GetType (void) const;
 
   void SetTypeExt (uint8_t type);
-  /* Calling this while HasTypeExt is False is undefined, make sure
-   * you check first! */
+  /**
+   * \returns the type extension for this TLV.
+   *
+   * Calling this while HasTypeExt is False is undefined.  Make sure you check
+   * it first.
+   */
   uint8_t GetTypeExt (void) const;
   bool HasTypeExt (void) const;
 
   void SetValue (Buffer start);
   void SetValue (const uint8_t * buffer, uint32_t size);
-  /* Calling this while HasValue is False is undefined, make sure
-   * you check first! */
+  /**
+   * \returns a Buffer pointing to the value of this TLV.
+   *
+   * Calling this while HasValue is False is undefined.  Make sure you check it
+   * first.
+   */
   Buffer GetValue (void) const;
   bool HasValue (void) const;
 
@@ -612,18 +684,31 @@ private:
   mutable uint32_t m_refCount;
 };
 
+/**
+ * \brief An Address TLV
+ */
 class AddressTlv : public Tlv
 {
 public:
   void SetIndexStart (uint8_t index);
-  /* Calling this while HasIndexStart is False is undefined, make sure
-   * you check first! */
+  /**
+   * \returns the first (inclusive) index of the address in the corresponding
+   * AddressBlock that this TLV applies to.
+   *
+   * Calling this while HasIndexStart is False is undefined.  Make sure you
+   * check it first.
+   */
   uint8_t GetIndexStart (void) const;
   bool HasIndexStart (void) const;
 
   void SetIndexStop (uint8_t index);
-  /* Calling this while HasIndexStop is False is undefined, make sure
-   * you check first! */
+  /**
+   * \returns the last (inclusive) index of the address in the corresponding
+   * AddressBlock that this TLV applies to.
+   *
+   * Calling this while HasIndexStop is False is undefined.  Make sure you
+   * check it first.
+   */
   uint8_t GetIndexStop (void) const;
   bool HasIndexStop (void) const;
 
