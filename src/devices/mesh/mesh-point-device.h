@@ -89,8 +89,6 @@ public:
 
   ///\name NetDevice interface for upper layers
   //\{
-  virtual void SetName (const std::string name);
-  virtual std::string GetName () const;
   virtual void SetIfIndex (const uint32_t index);
   virtual uint32_t GetIfIndex () const;
   virtual Ptr<Channel> GetChannel () const;
@@ -157,8 +155,6 @@ private:
   Mac48Address m_address;
   /// Parent node
   Ptr<Node> m_node;
-  /// Station name
-  std::string m_name;
   /// List of interfaces
   std::vector< Ptr<NetDevice> > m_ifaces;
   /// If index

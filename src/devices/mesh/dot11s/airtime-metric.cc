@@ -30,27 +30,27 @@ AirtimeLinkMetricCalculator::GetTypeId ()
   static TypeId tid = TypeId ("ns3::dot11s::AirtimeLinkMetricCalculator")
     .SetParent<Object> ()
     .AddConstructor<AirtimeLinkMetricCalculator> ()
-    .AddAttribute ( "overheadNanosec",
+    .AddAttribute ( "OverheadNanosec",
                     "Overhead expressed in nanoseconds:DIFS+ 2* SIFS + 2* PREAMBLE + 2* ACK",
                     UintegerValue (108000),
                     MakeUintegerAccessor (&AirtimeLinkMetricCalculator::m_overheadNanosec),
                     MakeUintegerChecker<uint32_t> (1)
                   )
-    .AddAttribute ( "testLengt",
+    .AddAttribute ( "TestLengt",
                     "Rate should be estimated using test length.",
                      UintegerValue (1024),
                      MakeUintegerAccessor (
                          &AirtimeLinkMetricCalculator::m_testLength),
                      MakeUintegerChecker<uint16_t> (1)
                   )
-    .AddAttribute ( "dot11HeaderLengt",
+    .AddAttribute ( "Dot11HeaderLengt",
                     "Length of the 802.11 header",
                     UintegerValue (36),
                     MakeUintegerAccessor (
                         &AirtimeLinkMetricCalculator::m_headerLength),
                     MakeUintegerChecker<uint16_t> (0)
                   )
-    .AddAttribute ( "dot11sHeaderLength",
+    .AddAttribute ( "Dot11sHeaderLength",
                     "Length of the mesh header",
                     UintegerValue (6),
                     MakeUintegerAccessor (

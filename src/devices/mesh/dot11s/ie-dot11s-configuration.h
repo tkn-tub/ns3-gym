@@ -74,10 +74,10 @@ enum dot11sAuthenticationProtocol
  * \ingroup dot11s
  * \brief See 7.3.2.86.7 in 802.11s draft 3.0
  */
-class dot11sMeshCapability
+class Dot11sMeshCapability
 {
 public:
-  dot11sMeshCapability ();
+  Dot11sMeshCapability ();
   uint8_t  GetSerializedSize () const;
   Buffer::Iterator Serialize (Buffer::Iterator i) const;
   Buffer::Iterator Deserialize (Buffer::Iterator i);
@@ -90,7 +90,7 @@ public:
   bool TBTTAdjustment;
   bool powerSaveLevel;
   bool Is (uint16_t cap,uint8_t n) const;
-  friend bool operator== (const dot11sMeshCapability & a, const dot11sMeshCapability & b);
+  friend bool operator== (const Dot11sMeshCapability & a, const Dot11sMeshCapability & b);
 };
 
 /**
@@ -109,13 +109,13 @@ public:
   void SetNeighborCount (uint8_t neighbors);
   uint8_t GetNeighborCount ();
 
-  dot11sMeshCapability const& MeshCapability ();
+  Dot11sMeshCapability const& MeshCapability ();
 private:
-  WifiElementId ElementId () const;
-  uint8_t  GetInformationSize () const;
-  void SerializeInformation (Buffer::Iterator i) const;
-  uint8_t DeserializeInformation (Buffer::Iterator i, uint8_t length);
-  void PrintInformation (std::ostream& os) const;
+  virtual WifiElementId ElementId () const;
+  virtual uint8_t  GetInformationSize () const;
+  virtual void SerializeInformation (Buffer::Iterator i) const;
+  virtual uint8_t DeserializeInformation (Buffer::Iterator i, uint8_t length);
+  virtual void PrintInformation (std::ostream& os) const;
 private:
   /** Active Path Selection Protocol ID */
   dot11sPathSelectionProtocol m_APSPId;
@@ -127,12 +127,12 @@ private:
   dot11sSynchronizationProtocolIdentifier m_SPId;
   /** Auth protocol ID */
   dot11sAuthenticationProtocol m_APId;
-  dot11sMeshCapability m_meshCap;
+  Dot11sMeshCapability m_meshCap;
   uint8_t m_neighbors;
   friend bool operator== (const IeConfiguration & a, const IeConfiguration & b);
 };
 bool operator== (const IeConfiguration & a, const IeConfiguration & b);
-bool operator== (const dot11sMeshCapability & a, const dot11sMeshCapability & b);
+bool operator== (const Dot11sMeshCapability & a, const Dot11sMeshCapability & b);
 } // namespace dot11s
 } //namespace ns3
 #endif

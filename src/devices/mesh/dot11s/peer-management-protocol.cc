@@ -542,7 +542,7 @@ PeerManagementProtocol::Statistics::Print (std::ostream & os) const
   os << "<Statistics "
     "linksTotal=\"" << linksTotal << "\" "
     "linksOpened=\"" << linksOpened << "\" "
-    "linksClosed=\"" << linksClosed << "\"/>\n";
+    "linksClosed=\"" << linksClosed << "\"/>" << std::endl;
 }
 void
 PeerManagementProtocol::Report (std::ostream & os) const

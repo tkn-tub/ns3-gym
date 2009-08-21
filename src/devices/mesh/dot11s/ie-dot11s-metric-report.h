@@ -39,11 +39,11 @@ public:
   void SetMetric (uint32_t metric);
   uint32_t GetMetric ();
 private:
-  WifiElementId ElementId () const;
-  void SerializeInformation (Buffer::Iterator i) const;
-  uint8_t DeserializeInformation (Buffer::Iterator start, uint8_t length);
-  void PrintInformation (std::ostream& os) const;
-  uint8_t GetInformationSize () const;
+  virtual WifiElementId ElementId () const;
+  virtual void SerializeInformation (Buffer::Iterator i) const;
+  virtual uint8_t DeserializeInformation (Buffer::Iterator start, uint8_t length);
+  virtual void PrintInformation (std::ostream& os) const;
+  virtual uint8_t GetInformationSize () const;
 private:
   uint32_t m_metric;
   friend bool operator== (const IeLinkMetricReport & a, const IeLinkMetricReport & b);

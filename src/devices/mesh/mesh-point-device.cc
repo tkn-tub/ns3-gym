@@ -131,20 +131,6 @@ MeshPointDevice::Forward (Ptr<NetDevice> inport, Ptr<const Packet> packet, uint1
 }
 
 void
-MeshPointDevice::SetName (const std::string name)
-{
-  NS_LOG_FUNCTION_NOARGS ();
-  m_name = name;
-}
-
-std::string
-MeshPointDevice::GetName () const
-{
-  NS_LOG_FUNCTION_NOARGS ();
-  return m_name;
-}
-
-void
 MeshPointDevice::SetIfIndex (const uint32_t index)
 {
   NS_LOG_FUNCTION_NOARGS ();
@@ -452,20 +438,20 @@ MeshPointDevice::Statistics::Statistics () :
 void
 MeshPointDevice::Report (std::ostream & os) const
 {
-  os << "<Statistics \n"
-    "txUnicastData=\"" << m_txStats.unicastData << "\"\n"
-    "txUnicastDataBytes=\"" << m_txStats.unicastDataBytes << "\"\n"
-    "txBroadcastData=\"" << m_txStats.broadcastData << "\"\n"
-    "txBroadcastDataBytes=\"" << m_txStats.broadcastDataBytes << "\"\n"
-    "rxUnicastData=\"" << m_rxStats.unicastData << "\"\n"
-    "rxUnicastDataBytes=\"" << m_rxStats.unicastDataBytes << "\"\n"
-    "rxBroadcastData=\"" << m_rxStats.broadcastData << "\"\n"
-    "rxBroadcastDataBytes=\"" << m_rxStats.broadcastDataBytes << "\"\n"
-    "fwdUnicastData=\"" << m_fwdStats.unicastData << "\"\n"
-    "fwdUnicastDataBytes=\"" << m_fwdStats.unicastDataBytes << "\"\n"
-    "fwdBroadcastData=\"" << m_fwdStats.broadcastData << "\"\n"
-    "fwdBroadcastDataBytes=\"" << m_fwdStats.broadcastDataBytes << "\"\n"
-    "/>\n";
+  os << "<Statistics" << std::endl <<
+    "txUnicastData=\"" << m_txStats.unicastData << "\"" << std::endl <<
+    "txUnicastDataBytes=\"" << m_txStats.unicastDataBytes << "\"" << std::endl <<
+    "txBroadcastData=\"" << m_txStats.broadcastData << "\"" << std::endl <<
+    "txBroadcastDataBytes=\"" << m_txStats.broadcastDataBytes << "\"" << std::endl <<
+    "rxUnicastData=\"" << m_rxStats.unicastData << "\"" << std::endl <<
+    "rxUnicastDataBytes=\"" << m_rxStats.unicastDataBytes << "\"" << std::endl <<
+    "rxBroadcastData=\"" << m_rxStats.broadcastData << "\"" << std::endl <<
+    "rxBroadcastDataBytes=\"" << m_rxStats.broadcastDataBytes << "\"" << std::endl <<
+    "fwdUnicastData=\"" << m_fwdStats.unicastData << "\"" << std::endl <<
+    "fwdUnicastDataBytes=\"" << m_fwdStats.unicastDataBytes << "\"" << std::endl <<
+    "fwdBroadcastData=\"" << m_fwdStats.broadcastData << "\"" << std::endl <<
+    "fwdBroadcastDataBytes=\"" << m_fwdStats.broadcastDataBytes << "\"" << std::endl <<
+    "/>" << std::endl;
 }
 
 void

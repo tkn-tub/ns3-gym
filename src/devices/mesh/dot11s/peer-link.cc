@@ -676,16 +676,16 @@ PeerLink::Report (std::ostream & os) const
     {
       return;
     }
-  os << "<PeerLink\n"
-    "localAddress=\"" << m_macPlugin->GetAddress () << "\"\n"
-    "peerInterfaceAddress=\"" << m_peerAddress << "\"\n"
-    "peerMeshPointAddress=\"" << m_peerMeshPointAddress << "\"\n"
-    "metric=\"" << m_macPlugin->GetLinkMetric (m_peerAddress) << "\"\n"
-    "lastBeacon=\"" << m_lastBeacon.GetSeconds () << "\"\n"
-    "localLinkId=\"" << m_localLinkId << "\"\n"
-    "peerLinkId=\"" << m_peerLinkId << "\"\n"
-    "assocId=\"" << m_assocId << "\"\n"
-    "/>\n";
+  os << "<PeerLink" << std::endl <<
+    "localAddress=\"" << m_macPlugin->GetAddress () << "\"" << std::endl <<
+    "peerInterfaceAddress=\"" << m_peerAddress << "\"" << std::endl <<
+    "peerMeshPointAddress=\"" << m_peerMeshPointAddress << "\"" << std::endl <<
+    "metric=\"" << m_macPlugin->GetLinkMetric (m_peerAddress) << "\"" << std::endl <<
+    "lastBeacon=\"" << m_lastBeacon.GetSeconds () << "\"" << std::endl <<
+    "localLinkId=\"" << m_localLinkId << "\"" << std::endl <<
+    "peerLinkId=\"" << m_peerLinkId << "\"" << std::endl <<
+    "assocId=\"" << m_assocId << "\"" << std::endl <<
+    "/>" << std::endl;
 }
 } // namespace dot11s
 } //namespace ns3

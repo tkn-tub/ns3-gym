@@ -110,9 +110,7 @@ IeBeaconTiming::AddNeighboursTimingElementUnit (uint16_t aid, Time last_beacon, 
   m_numOfUnits++;
 }
 void
-IeBeaconTiming::DelNeighboursTimingElementUnit (uint16_t aid, Time last_beacon, //MicroSeconds!
-    Time beacon_interval //MicroSeconds!
-)
+IeBeaconTiming::DelNeighboursTimingElementUnit (uint16_t aid, Time last_beacon, Time beacon_interval)
 {
   for (NeighboursTimingUnitsList::iterator i = m_neighbours.begin (); i != m_neighbours.end (); i++)
     {
@@ -200,8 +198,6 @@ IeBeaconTiming::AidToU8 (uint16_t x)
 {
   return (uint8_t) (x & 0xff);
 }
-;
-
 bool
 operator== (const IeBeaconTimingUnit & a, const IeBeaconTimingUnit & b)
 {

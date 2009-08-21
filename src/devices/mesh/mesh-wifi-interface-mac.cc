@@ -665,7 +665,7 @@ MeshWifiInterfaceMac::Statistics::Print (std::ostream & os) const
     "txFrames=\"" << sentFrames << "\" "
     "txBytes=\"" << sentBytes << "\" "
     "rxFrames=\"" << recvFrames << "\" "
-    "rxBytes=\"" << recvBytes << "\"/>\n";
+    "rxBytes=\"" << recvBytes << "\"/>" << std::endl;
 }
 void
 MeshWifiInterfaceMac::Report (std::ostream & os) const
@@ -673,9 +673,9 @@ MeshWifiInterfaceMac::Report (std::ostream & os) const
   os << "<Interface "
     "BeaconInterval=\"" << GetBeaconInterval ().GetSeconds () << "\" "
     "Channel=\"" << GetFrequencyChannel () << "\" "
-    "Address = \"" << GetAddress () << "\">\n";
+    "Address = \"" << GetAddress () << "\">" << std::endl;
   m_stats.Print (os);
-  os << "</Interface>\n";
+  os << "</Interface>" << std::endl;
 }
 void
 MeshWifiInterfaceMac::ResetStats ()

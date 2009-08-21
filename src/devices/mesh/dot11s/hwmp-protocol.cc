@@ -60,55 +60,55 @@ HwmpProtocol::GetTypeId ()
                         &HwmpProtocol::m_maxQueueSize),
                     MakeUintegerChecker<uint16_t> (1)
                   )
-    .AddAttribute ( "dot11MeshHWMPmaxPREQretries",
+    .AddAttribute ( "Dot11MeshHWMPmaxPREQretries",
                     "Maximum number of retries before we suppose the destination to be unreachable",
                     UintegerValue (3),
                     MakeUintegerAccessor (
                         &HwmpProtocol::m_dot11MeshHWMPmaxPREQretries),
                     MakeUintegerChecker<uint8_t> (1)
                    )
-    .AddAttribute ( "dot11MeshHWMPnetDiameterTraversalTime",
+    .AddAttribute ( "Dot11MeshHWMPnetDiameterTraversalTime",
                     "Time we suppose the packet to go from one edge of the network to another",
                     TimeValue (MicroSeconds (1024*100)),
                     MakeTimeAccessor (
                         &HwmpProtocol::m_dot11MeshHWMPnetDiameterTraversalTime),
                     MakeTimeChecker ()
                   )
-    .AddAttribute ( "dot11MeshHWMPpreqMinInterval",
+    .AddAttribute ( "Dot11MeshHWMPpreqMinInterval",
                     "Minimal interval between to successive PREQs",
                     TimeValue (MicroSeconds (1024*100)),
                     MakeTimeAccessor (
                         &HwmpProtocol::m_dot11MeshHWMPpreqMinInterval),
                     MakeTimeChecker ()
                   )
-    .AddAttribute ( "dot11MeshHWMPperrMinInterval",
+    .AddAttribute ( "Dot11MeshHWMPperrMinInterval",
                     "Minimal interval between to successive PREQs",
                     TimeValue (MicroSeconds (1024*100)),
                     MakeTimeAccessor (&HwmpProtocol::m_dot11MeshHWMPperrMinInterval),
                     MakeTimeChecker ()
                   )
-    .AddAttribute ( "dot11MeshHWMPactiveRootTimeout",
+    .AddAttribute ( "Dot11MeshHWMPactiveRootTimeout",
                     "Lifetime of poractive routing information",
                     TimeValue (MicroSeconds (1024*5000)),
                     MakeTimeAccessor (
                         &HwmpProtocol::m_dot11MeshHWMPactiveRootTimeout),
                     MakeTimeChecker ()
                   )
-    .AddAttribute ( "dot11MeshHWMPactivePathTimeout",
+    .AddAttribute ( "Dot11MeshHWMPactivePathTimeout",
                      "Lifetime of reactive routing information",
                       TimeValue (MicroSeconds (1024*5000)),
                       MakeTimeAccessor (
                           &HwmpProtocol::m_dot11MeshHWMPactivePathTimeout),
                       MakeTimeChecker ()
                   )
-    .AddAttribute ( "dot11MeshHWMPpathToRootInterval",
+    .AddAttribute ( "Dot11MeshHWMPpathToRootInterval",
                     "Interval between two successive proactive PREQs",
                     TimeValue (MicroSeconds (1024*2000)),
                     MakeTimeAccessor (
                         &HwmpProtocol::m_dot11MeshHWMPpathToRootInterval),
                     MakeTimeChecker ()
                   )
-    .AddAttribute ( "dot11MeshHWMPrannInterval",
+    .AddAttribute ( "Dot11MeshHWMPrannInterval",
                     "Lifetime of poractive routing information",
                     TimeValue (MicroSeconds (1024*5000)),
                     MakeTimeAccessor (
@@ -898,18 +898,18 @@ HwmpProtocol::ReactivePathResolved (Mac48Address dst)
   //Send all packets stored for this destination
   QueuedPacket packet = DequeueFirstPacketByDst (dst);
   while (packet.pkt != 0)
-  {
-    //set RA tag for retransmitter:
-    HwmpTag tag;
-    packet.pkt->RemovePacketTag (tag);
-    tag.SetAddress (result.retransmitter);
-    packet.pkt->AddPacketTag (tag);
-    m_stats.txUnicast ++;
-    m_stats.txBytes += packet.pkt->GetSize ();
-    packet.reply (true, packet.pkt, packet.src, packet.dst, packet.protocol, result.ifIndex);
+    {
+      //set RA tag for retransmitter:
+      HwmpTag tag;
+      packet.pkt->RemovePacketTag (tag);
+      tag.SetAddress (result.retransmitter);
+      packet.pkt->AddPacketTag (tag);
+      m_stats.txUnicast ++;
+      m_stats.txBytes += packet.pkt->GetSize ();
+      packet.reply (true, packet.pkt, packet.src, packet.dst, packet.protocol, result.ifIndex);
 
-    packet = DequeueFirstPacketByDst (dst);
-  }
+      packet = DequeueFirstPacketByDst (dst);
+    }
 }
 void
 HwmpProtocol::ProactivePathResolved ()
@@ -919,21 +919,21 @@ HwmpProtocol::ProactivePathResolved ()
   NS_ASSERT (result.retransmitter != Mac48Address::GetBroadcast ());
   QueuedPacket packet = DequeueFirstPacket ();
   while (packet.pkt != 0)
-  {
-    //set RA tag for retransmitter:
-    HwmpTag tag;
-    if (!packet.pkt->RemovePacketTag (tag))
-      {
-        NS_FATAL_ERROR ("HWMP tag must be present at this point");
-      }
-    tag.SetAddress (result.retransmitter);
-    packet.pkt->AddPacketTag (tag);
-    m_stats.txUnicast ++;
-    m_stats.txBytes += packet.pkt->GetSize ();
-    packet.reply (true, packet.pkt, packet.src, packet.dst, packet.protocol, result.ifIndex);
+    {
+      //set RA tag for retransmitter:
+      HwmpTag tag;
+      if (!packet.pkt->RemovePacketTag (tag))
+        {
+          NS_FATAL_ERROR ("HWMP tag must be present at this point");
+        }
+      tag.SetAddress (result.retransmitter);
+      packet.pkt->AddPacketTag (tag);
+      m_stats.txUnicast ++;
+      m_stats.txBytes += packet.pkt->GetSize ();
+      packet.reply (true, packet.pkt, packet.src, packet.dst, packet.protocol, result.ifIndex);
 
-    packet = DequeueFirstPacket ();
-  }
+      packet = DequeueFirstPacket ();
+    }
 }
 
 bool
@@ -1107,28 +1107,28 @@ void
 HwmpProtocol::Report (std::ostream & os) const
 {
   os << "<Hwmp "
-    "address=\"" << m_address << "\"\n"
-    "maxQueueSize=\"" << m_maxQueueSize << "\"\n"
-    "dot11MeshHWMPmaxPREQretries=\"" << (uint16_t)m_dot11MeshHWMPmaxPREQretries << "\"\n"
-    "dot11MeshHWMPnetDiameterTraversalTime=\"" << m_dot11MeshHWMPnetDiameterTraversalTime.GetSeconds () << "\"\n"
-    "dot11MeshHWMPpreqMinInterval=\"" << m_dot11MeshHWMPpreqMinInterval.GetSeconds () << "\"\n"
-    "dot11MeshHWMPperrMinInterval=\"" << m_dot11MeshHWMPperrMinInterval.GetSeconds () << "\"\n"
-    "dot11MeshHWMPactiveRootTimeout=\"" << m_dot11MeshHWMPactiveRootTimeout.GetSeconds () << "\"\n"
-    "dot11MeshHWMPactivePathTimeout=\"" << m_dot11MeshHWMPactivePathTimeout.GetSeconds () << "\"\n"
-    "dot11MeshHWMPpathToRootInterval=\"" << m_dot11MeshHWMPpathToRootInterval.GetSeconds () << "\"\n"
-    "dot11MeshHWMPrannInterval=\"" << m_dot11MeshHWMPrannInterval.GetSeconds () << "\"\n"
-    "isRoot=\"" << m_isRoot << "\"\n"
-    "maxTtl=\"" << (uint16_t)m_maxTtl << "\"\n"
-    "unicastPerrThreshold=\"" << (uint16_t)m_unicastPerrThreshold << "\"\n"
-    "unicastPreqThreshold=\"" << (uint16_t)m_unicastPreqThreshold << "\"\n"
-    "unicastDataThreshold=\"" << (uint16_t)m_unicastDataThreshold << "\"\n"
-    "doFlag=\"" << m_doFlag << "\"\n"
-    "rfFlag=\"" << m_rfFlag << "\">\n";
+    "address=\"" << m_address << "\"" << std::endl <<
+    "maxQueueSize=\"" << m_maxQueueSize << "\"" << std::endl <<
+    "Dot11MeshHWMPmaxPREQretries=\"" << (uint16_t)m_dot11MeshHWMPmaxPREQretries << "\"" << std::endl <<
+    "Dot11MeshHWMPnetDiameterTraversalTime=\"" << m_dot11MeshHWMPnetDiameterTraversalTime.GetSeconds () << "\"" << std::endl <<
+    "Dot11MeshHWMPpreqMinInterval=\"" << m_dot11MeshHWMPpreqMinInterval.GetSeconds () << "\"" << std::endl <<
+    "Dot11MeshHWMPperrMinInterval=\"" << m_dot11MeshHWMPperrMinInterval.GetSeconds () << "\"" << std::endl <<
+    "Dot11MeshHWMPactiveRootTimeout=\"" << m_dot11MeshHWMPactiveRootTimeout.GetSeconds () << "\"" << std::endl <<
+    "Dot11MeshHWMPactivePathTimeout=\"" << m_dot11MeshHWMPactivePathTimeout.GetSeconds () << "\"" << std::endl <<
+    "Dot11MeshHWMPpathToRootInterval=\"" << m_dot11MeshHWMPpathToRootInterval.GetSeconds () << "\"" << std::endl <<
+    "Dot11MeshHWMPrannInterval=\"" << m_dot11MeshHWMPrannInterval.GetSeconds () << "\"" << std::endl <<
+    "isRoot=\"" << m_isRoot << "\"" << std::endl <<
+    "maxTtl=\"" << (uint16_t)m_maxTtl << "\"" << std::endl <<
+    "unicastPerrThreshold=\"" << (uint16_t)m_unicastPerrThreshold << "\"" << std::endl <<
+    "unicastPreqThreshold=\"" << (uint16_t)m_unicastPreqThreshold << "\"" << std::endl <<
+    "unicastDataThreshold=\"" << (uint16_t)m_unicastDataThreshold << "\"" << std::endl <<
+    "doFlag=\"" << m_doFlag << "\"" << std::endl <<
+    "rfFlag=\"" << m_rfFlag << "\">" << std::endl;
   m_stats.Print (os);
   for (HwmpProtocolMacMap::const_iterator plugin = m_interfaces.begin (); plugin != m_interfaces.end (); plugin ++)
-  {
-    plugin->second->Report (os);
-  }
+    {
+      plugin->second->Report (os);
+    }
   os << "</Hwmp>\n";
 }
 void
@@ -1137,7 +1137,7 @@ HwmpProtocol::ResetStats ()
   m_stats = Statistics::Statistics ();
   for (HwmpProtocolMacMap::const_iterator plugin = m_interfaces.begin (); plugin != m_interfaces.end (); plugin ++)
     {
-    plugin->second->ResetStats ();
+      plugin->second->ResetStats ();
     }
 }
 HwmpProtocol::QueuedPacket::QueuedPacket () :

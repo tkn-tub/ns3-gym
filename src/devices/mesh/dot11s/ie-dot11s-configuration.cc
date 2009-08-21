@@ -25,18 +25,18 @@
 namespace ns3 {
 namespace dot11s {
 
-dot11sMeshCapability::dot11sMeshCapability () :
+Dot11sMeshCapability::Dot11sMeshCapability () :
   acceptPeerLinks (true), MCCASupported (false), MCCAEnabled (false), forwarding (true), beaconTimingReport (
       true), TBTTAdjustment (true), powerSaveLevel (false)
 {
 }
 uint8_t
-dot11sMeshCapability::GetSerializedSize () const
+Dot11sMeshCapability::GetSerializedSize () const
 {
   return 2;
 }
 uint16_t
-dot11sMeshCapability::GetUint16 () const
+Dot11sMeshCapability::GetUint16 () const
 {
   uint16_t result = 0;
   if (acceptPeerLinks)
@@ -70,13 +70,13 @@ dot11sMeshCapability::GetUint16 () const
   return result;
 }
 Buffer::Iterator
-dot11sMeshCapability::Serialize (Buffer::Iterator i) const
+Dot11sMeshCapability::Serialize (Buffer::Iterator i) const
 {
   i.WriteHtolsbU16 (GetUint16 ());
   return i;
 }
 Buffer::Iterator
-dot11sMeshCapability::Deserialize (Buffer::Iterator i)
+Dot11sMeshCapability::Deserialize (Buffer::Iterator i)
 {
   uint16_t cap = i.ReadLsbtohU16 ();
   acceptPeerLinks = Is (cap, 0);
@@ -89,7 +89,7 @@ dot11sMeshCapability::Deserialize (Buffer::Iterator i)
   return i;
 }
 bool
-dot11sMeshCapability::Is (uint16_t cap, uint8_t n) const
+Dot11sMeshCapability::Is (uint16_t cap, uint8_t n) const
 {
   uint16_t mask = 1 << n;
   return (cap & mask);
@@ -193,13 +193,13 @@ IeConfiguration::GetNeighborCount ()
 {
   return m_neighbors;
 }
-dot11sMeshCapability const&
+Dot11sMeshCapability const&
 IeConfiguration::MeshCapability ()
 {
   return m_meshCap;
 }
 bool
-operator== (const dot11sMeshCapability & a, const dot11sMeshCapability & b)
+operator== (const Dot11sMeshCapability & a, const Dot11sMeshCapability & b)
 {
   return ((a.acceptPeerLinks == b.acceptPeerLinks) && (a.MCCASupported == b.MCCASupported) && (a.MCCAEnabled
       == b.MCCAEnabled) && (a.forwarding == b.forwarding) && (a.beaconTimingReport == b.beaconTimingReport)

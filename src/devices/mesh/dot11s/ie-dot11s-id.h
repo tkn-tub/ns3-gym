@@ -44,11 +44,11 @@ public:
   uint32_t GetLength (void) const;
   char *PeekString (void) const;
 private:
-  WifiElementId ElementId () const;
-  void SerializeInformation (Buffer::Iterator i) const;
-  uint8_t DeserializeInformation (Buffer::Iterator start, uint8_t length);
-  void PrintInformation (std::ostream& os) const;
-  uint8_t GetInformationSize () const;
+  virtual WifiElementId ElementId () const;
+  virtual void SerializeInformation (Buffer::Iterator i) const;
+  virtual uint8_t DeserializeInformation (Buffer::Iterator start, uint8_t length);
+  virtual void PrintInformation (std::ostream& os) const;
+  virtual uint8_t GetInformationSize () const;
 private:
   uint8_t m_meshId[33];
   friend bool operator== (const IeMeshId & a, const IeMeshId & b);

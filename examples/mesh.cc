@@ -47,19 +47,18 @@ class MeshTest
     /// Run test
     int Run ();
   private:
-    int       xSize;
-    int       ySize;
-    double    step;
-    double    randomStart;
-    double    totalTime;
-    double    packetInterval;
-    uint16_t  packetSize;
-    uint32_t  nIfaces;
-    bool      chan;
-    bool      pcap;
-    uint64_t  seed;
-    std::string stack;
-    std::string root;
+    int       m_xSize;
+    int       m_ySize;
+    double    m_step;
+    double    m_randomStart;
+    double    m_totalTime;
+    double    m_packetInterval;
+    uint16_t  m_packetSize;
+    uint32_t  m_nIfaces;
+    bool      m_chan;
+    bool      m_pcap;
+    std::string m_stack;
+    std::string m_root;
     /// List of network nodes
     NodeContainer nodes;
     /// List of all mesh point devices
@@ -71,7 +70,7 @@ class MeshTest
   private:
     /// Create nodes and setup their mobility
     void CreateNodes ();
-    /// Install internet stack on nodes
+    /// Install internet m_stack on nodes
     void InstallInternetStack ();
     /// Install applications
     void InstallApplication ();
@@ -79,78 +78,75 @@ class MeshTest
     void Report ();  
 };
 MeshTest::MeshTest () :
-  xSize (3),
-  ySize (3),
-  step (100.0),
-  randomStart (0.1),
-  totalTime (100.0),
-  packetInterval (0.1),
-  packetSize (1024),
-  nIfaces (1),
-  chan (true),
-  pcap (false),
-  seed (1),
-  stack ("ns3::Dot11sStack"),
-  root ("ff:ff:ff:ff:ff:ff")
+  m_xSize (3),
+  m_ySize (3),
+  m_step (100.0),
+  m_randomStart (0.1),
+  m_totalTime (100.0),
+  m_packetInterval (0.1),
+  m_packetSize (1024),
+  m_nIfaces (1),
+  m_chan (true),
+  m_pcap (false),
+  m_stack ("ns3::Dot11sStack"),
+  m_root ("ff:ff:ff:ff:ff:ff")
 {
 }
 void
 MeshTest::Configure (int argc, char *argv[])
 {
   CommandLine cmd;
-  cmd.AddValue ("x-size", "Number of nodes in a row grid. [6]", xSize);
-  cmd.AddValue ("y-size", "Number of rows in a grid. [6]", ySize);
-  cmd.AddValue ("step",   "Size of edge in our grid, meters. [100 m]", step);
-  cmd.AddValue ("start",  "Maximum random start delay, seconds. [0.1 s]", randomStart);
-  cmd.AddValue ("time",  "Simulation time, seconds [100 s]", totalTime);
-  cmd.AddValue ("packet-interval",  "Interval between packets, seconds [0.001 s]", packetInterval);
-  cmd.AddValue ("packet-size",  "Size of packets", packetSize);
-  cmd.AddValue ("interfaces", "Number of radio interfaces used by each mesh point. [1]", nIfaces);
-  cmd.AddValue ("channels",   "Use different frequency channels for different interfaces. [0]", chan);
-  cmd.AddValue ("pcap",   "Enable PCAP traces on interfaces. [0]", pcap);
-  cmd.AddValue ("seed",   "Seed value", seed);
-  cmd.AddValue ("stack",  "Type of protocol stack. ns3::Dot11sStack by default", stack);
-  cmd.AddValue ("root", "Mac address of root mesh point", root);
+  cmd.AddValue ("x-size", "Number of nodes in a row grid. [6]", m_xSize);
+  cmd.AddValue ("y-size", "Number of rows in a grid. [6]", m_ySize);
+  cmd.AddValue ("m_step",   "Size of edge in our grid, meters. [100 m]", m_step);
+  cmd.AddValue ("start",  "Maximum random start delay, seconds. [0.1 s]", m_randomStart);
+  cmd.AddValue ("time",  "Simulation time, seconds [100 s]", m_totalTime);
+  cmd.AddValue ("packet-interval",  "Interval between packets, seconds [0.001 s]", m_packetInterval);
+  cmd.AddValue ("packet-size",  "Size of packets", m_packetSize);
+  cmd.AddValue ("interfaces", "Number of radio interfaces used by each mesh point. [1]", m_nIfaces);
+  cmd.AddValue ("m_channels",   "Use different frequency m_channels for different interfaces. [0]", m_chan);
+  cmd.AddValue ("m_pcap",   "Enable PCAP traces on interfaces. [0]", m_pcap);
+  cmd.AddValue ("m_stack",  "Type of protocol m_stack. ns3::Dot11sStack by default", m_stack);
+  cmd.AddValue ("m_root", "Mac address of m_root mesh point", m_root);
   
   cmd.Parse (argc, argv);
-  NS_LOG_DEBUG ("Grid:" << xSize << "*" << ySize);
-  NS_LOG_DEBUG ("Simulation time: " << totalTime << " s");
-  SeedManager::SetSeed(seed);
+  NS_LOG_DEBUG ("Grid:" << m_xSize << "*" << m_ySize);
+  NS_LOG_DEBUG ("Simulation time: " << m_totalTime << " s");
 }
 void
 MeshTest::CreateNodes ()
 { 
-  nodes.Create (ySize*xSize);
-  // Setting channel
+  nodes.Create (m_ySize*m_xSize);
+  // Setting m_channel
   YansWifiPhyHelper wifiPhy = YansWifiPhyHelper::Default ();
   YansWifiChannelHelper wifiChannel = YansWifiChannelHelper::Default ();
   wifiPhy.SetChannel (wifiChannel.Create ());
   // Install mesh point devices & protocols
-  mesh.SetStackInstaller (stack, "Root", Mac48AddressValue (Mac48Address (root.c_str ())));
-  mesh.SetSpreadInterfaceChannels (chan);
+  mesh.SetStackInstaller (m_stack, "Root", Mac48AddressValue (Mac48Address (m_root.c_str ())));
+  mesh.SetSpreadInterfaceChannels (m_chan);
   MeshInterfaceHelper interface = MeshInterfaceHelper::Default ();
-  interface.SetType ("RandomStart", TimeValue (Seconds(randomStart)));
+  interface.SetType ("RandomStart", TimeValue (Seconds(m_randomStart)));
 
-  meshDevices = mesh.Install (wifiPhy, interface, nodes, nIfaces);
+  meshDevices = mesh.Install (wifiPhy, interface, nodes, m_nIfaces);
   // Setup mobility
   MobilityHelper mobility;
   mobility.SetPositionAllocator ("ns3::GridPositionAllocator",
                                  "MinX", DoubleValue (0.0),
                                  "MinY", DoubleValue (0.0),
-                                 "DeltaX", DoubleValue (step),
-                                 "DeltaY", DoubleValue (step),
-                                 "GridWidth", UintegerValue (xSize),
+                                 "DeltaX", DoubleValue (m_step),
+                                 "DeltaY", DoubleValue (m_step),
+                                 "GridWidth", UintegerValue (m_xSize),
                                  "LayoutType", StringValue ("RowFirst"));
   mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
   mobility.Install (nodes);
-  if (pcap)
+  if (m_pcap)
     wifiPhy.EnablePcapAll (std::string ("mp-"));
 }
 void
 MeshTest::InstallInternetStack ()
 {
-  InternetStackHelper stack;
-  stack.Install (nodes);
+  InternetStackHelper m_stack;
+  m_stack.Install (nodes);
   Ipv4AddressHelper address;
   address.SetBase ("10.1.1.0", "255.255.255.0");
   interfaces = address.Assign (meshDevices);
@@ -161,14 +157,14 @@ MeshTest::InstallApplication ()
   UdpEchoServerHelper echoServer (9);
   ApplicationContainer serverApps = echoServer.Install (nodes.Get (0));
   serverApps.Start (Seconds (0.0));
-  serverApps.Stop (Seconds (totalTime));
+  serverApps.Stop (Seconds (m_totalTime));
   UdpEchoClientHelper echoClient (interfaces.GetAddress (0), 9);
-  echoClient.SetAttribute ("MaxPackets", UintegerValue ((uint32_t)(totalTime*(1/packetInterval))));
-  echoClient.SetAttribute ("Interval", TimeValue (Seconds (packetInterval)));
-  echoClient.SetAttribute ("PacketSize", UintegerValue (packetSize));
-  ApplicationContainer clientApps = echoClient.Install (nodes.Get (xSize*ySize-1));
+  echoClient.SetAttribute ("MaxPackets", UintegerValue ((uint32_t)(m_totalTime*(1/m_packetInterval))));
+  echoClient.SetAttribute ("Interval", TimeValue (Seconds (m_packetInterval)));
+  echoClient.SetAttribute ("PacketSize", UintegerValue (m_packetSize));
+  ApplicationContainer clientApps = echoClient.Install (nodes.Get (m_xSize*m_ySize-1));
   clientApps.Start (Seconds (0.0));
-  clientApps.Stop (Seconds (totalTime));
+  clientApps.Stop (Seconds (m_totalTime));
 }
 int
 MeshTest::Run ()
@@ -176,8 +172,8 @@ MeshTest::Run ()
   CreateNodes ();
   InstallInternetStack ();
   InstallApplication ();
-  Simulator::Schedule (Seconds(totalTime), & MeshTest::Report, this);
-  Simulator::Stop (Seconds (totalTime));
+  Simulator::Schedule (Seconds(m_totalTime), & MeshTest::Report, this);
+  Simulator::Stop (Seconds (m_totalTime));
   Simulator::Run ();
   Simulator::Destroy ();
   return 0;

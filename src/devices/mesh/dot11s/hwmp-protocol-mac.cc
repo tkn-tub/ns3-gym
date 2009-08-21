@@ -430,20 +430,20 @@ void
 HwmpProtocolMac::Statistics::Print (std::ostream & os) const
 {
   os << "<Statistics "
-    "txPreq= \"" << txPreq << "\"\n"
-    "txPrep=\"" << txPrep << "\"\n"
-    "txPerr=\"" << txPerr << "\"\n"
-    "rxPreq=\"" << rxPreq << "\"\n"
-    "rxPrep=\"" << rxPrep << "\"\n"
-    "rxPerr=\"" << rxPerr << "\"\n"
-    "txMgt=\"" << txMgt << "\"\n"
-    "txMgtBytes=\"" << txMgtBytes << "\"\n"
-    "rxMgt=\"" << rxMgt << "\"\n"
-    "rxMgtBytes=\"" << rxMgtBytes << "\"\n"
-    "txData=\"" << txData << "\"\n"
-    "txDataBytes=\"" << txDataBytes << "\"\n"
-    "rxData=\"" << rxData << "\"\n"
-    "rxDataBytes=\"" << rxDataBytes << "\"/>\n";
+    "txPreq= \"" << txPreq << "\"" << std::endl <<
+    "txPrep=\"" << txPrep << "\"" << std::endl <<
+    "txPerr=\"" << txPerr << "\"" << std::endl <<
+    "rxPreq=\"" << rxPreq << "\"" << std::endl <<
+    "rxPrep=\"" << rxPrep << "\"" << std::endl <<
+    "rxPerr=\"" << rxPerr << "\"" << std::endl <<
+    "txMgt=\"" << txMgt << "\"" << std::endl <<
+    "txMgtBytes=\"" << txMgtBytes << "\"" << std::endl <<
+    "rxMgt=\"" << rxMgt << "\"" << std::endl <<
+    "rxMgtBytes=\"" << rxMgtBytes << "\"" << std::endl <<
+    "txData=\"" << txData << "\"" << std::endl <<
+    "txDataBytes=\"" << txDataBytes << "\"" << std::endl <<
+    "rxData=\"" << rxData << "\"" << std::endl <<
+    "rxDataBytes=\"" << rxDataBytes << "\"/>" << std::endl;
 }
 void
 HwmpProtocolMac::Report (std::ostream & os) const

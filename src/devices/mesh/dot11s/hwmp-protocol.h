@@ -149,13 +149,39 @@ private:
   };
 
   ///\name Methods related to Queue/Dequeue procedures
-  //\{
+  ///\{
   bool QueuePacket (QueuedPacket packet);
   QueuedPacket  DequeueFirstPacketByDst (Mac48Address dst);
   QueuedPacket  DequeueFirstPacket ();
   void ReactivePathResolved (Mac48Address dst);
   void ProactivePathResolved ();
-  //\}
+  ///\}
+  ///\name Methods responsible for path discovery retry procedure:
+  ///\{
+  /**
+   * \brief checks when the last path discovery procedure was started for a given destination.
+   *
+   * If the retry counter has not achieved the maximum level - preq should not be sent
+   */
+  bool  ShouldSendPreq (Mac48Address dst);
+
+  /**
+   * \brief Generates PREQ retry when retry timeout has expired and route is still unresolved.
+   *
+   * When PREQ retry has achieved the maximum level - retry mechanish should be cancelled
+   */
+  void  RetryPathDiscovery (Mac48Address dst, uint8_t numOfRetry);
+  ///\}
+
+  ///\name Proactive Preq routines:
+  ///\{
+  void SendProactivePreq ();
+  ///\}
+  ///\return address of MeshPointDevice
+  Mac48Address GetAddress ();
+private:
+  typedef std::map<uint32_t, Ptr<HwmpProtocolMac> > HwmpProtocolMacMap;
+  HwmpProtocolMacMap m_interfaces;
   ///\name Statistics:
   ///\{
   struct Statistics
@@ -175,62 +201,36 @@ private:
   };
   Statistics m_stats;
   ///\}
-  ///\name Methods responsible for path discovery retry procedure:
-  //\{
-  /**
-   * \brief checks when the last path discovery procedure was started for a given destination.
-   *
-   * If the retry counter has not achieved the maximum level - preq should not be sent
-   */
-  bool  ShouldSendPreq (Mac48Address dst);
-
-  /**
-   * \brief Generates PREQ retry when retry timeout has expired and route is still unresolved.
-   *
-   * When PREQ retry has achieved the maximum level - retry mechanish should be cancelled
-   */
-  void  RetryPathDiscovery (Mac48Address dst, uint8_t numOfRetry);
-  //\}
-
-  ///\name Proactive Preq routines:
-  //\{
-  void SendProactivePreq ();
-  //\}
-  ///\return address of MeshPointDevice
-  Mac48Address GetAddress ();
-private:
-  typedef std::map<uint32_t, Ptr<HwmpProtocolMac> > HwmpProtocolMacMap;
-  HwmpProtocolMacMap m_interfaces;
   Mac48Address m_address;
   uint32_t m_dataSeqno;
   uint32_t m_hwmpSeqno;
   uint32_t m_preqId;
   ///\name Sequence number filters
-  //\{
+  ///\{
   /// Data sequence number database
   std::map<Mac48Address, uint32_t> m_lastDataSeqno;
   /// DSN databse
   std::map<Mac48Address, uint32_t> m_lastHwmpSeqno;
   /// Metric database
   std::map<Mac48Address, uint32_t> m_lastHwmpMetric;
-  //\}
+  ///\}
 
   /// Routing table
   Ptr<HwmpRtable> m_rtable;
 
   ///\name Timers:
-  //\{
+  ///\{
   std::map<Mac48Address, EventId> m_preqTimeouts;
   EventId m_proactivePreqTimer;
   //Random start in Proactive PREQ propagation
   Time m_randomStart;
-  //\}
+  ///\}
 
   /// Packet Queue
   std::vector<QueuedPacket> m_rqueue;
 private:
   ///\name HWMP-protocol parameters (attributes of GetTypeId)
-  //\{
+  ///\{
   uint16_t m_maxQueueSize;
   uint8_t m_dot11MeshHWMPmaxPREQretries;
   Time m_dot11MeshHWMPnetDiameterTraversalTime;
@@ -247,10 +247,10 @@ private:
   uint8_t m_unicastDataThreshold;
   bool m_doFlag;
   bool m_rfFlag;
-  //\}
+  ///\}
 
   ///\name Methods needed by HwmpMacLugin to access protocol parameters:
-  //\{
+  ///\{
   bool GetDoFlag ();
   bool GetRfFlag ();
   Time GetPreqMinInterval ();
@@ -260,7 +260,7 @@ private:
   uint32_t GetNextHwmpSeqno ();
   uint32_t GetActivePathLifetime ();
   uint8_t GetUnicastPerrThreshold ();
-  //\}
+  ///\}
   Callback <std::vector<Mac48Address>, uint32_t> m_neighboursCallback;
 };
 } //namespace dot11s
