@@ -98,21 +98,6 @@ EdcaTxopN::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::EdcaTxopN")
     .SetParent<Object> ()
     .AddConstructor<EdcaTxopN> ()
-    .AddAttribute ("MinCw", "The minimun value of the contention window.",
-                   UintegerValue (31),
-                   MakeUintegerAccessor (&EdcaTxopN::SetMinCw,
-                                         &EdcaTxopN::GetMinCw),
-                   MakeUintegerChecker<uint32_t> ())
-    .AddAttribute ("MaxCw", "The maximum value of the contention window.",
-                   UintegerValue (1023),
-                   MakeUintegerAccessor (&EdcaTxopN::SetMaxCw,
-                                         &EdcaTxopN::GetMaxCw),
-                   MakeUintegerChecker<uint32_t> ())
-    .AddAttribute ("Aifsn", "The AIFSN: the default value conforms to simple DCA.",
-                   UintegerValue (3),
-                   MakeUintegerAccessor (&EdcaTxopN::SetAifsn,
-                                         &EdcaTxopN::GetAifsn),
-                   MakeUintegerChecker<uint32_t> ())
     ;
   return tid;
 }

@@ -21,7 +21,6 @@
 #define CONSTANT_POSITION_MOBILITY_MODEL_H
 
 #include "mobility-model.h"
-#include "vector.h"
 
 namespace ns3 {
 

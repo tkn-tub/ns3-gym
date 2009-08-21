@@ -226,7 +226,7 @@ int main (int argc, char *argv[])
   wifiMac.SetType ("ns3::AdhocWifiMac");
 
   gnuplot = Gnuplot ("multi-rate-first.png");
-  Config::SetDefault ("ns3::YansWifiPhy::Standard", StringValue ("holland"));
+  wifi.SetStandard (WIFI_PHY_STANDARD_holland);
 
   NS_LOG_DEBUG ("minstrel");
   experiment = Experiment ("minstrel");
@@ -261,7 +261,7 @@ int main (int argc, char *argv[])
   wifiMac.SetType ("ns3::AdhocWifiMac");
 
   gnuplot = Gnuplot ("multi-rate-first.png");
-  Config::SetDefault ("ns3::YansWifiPhy::Standard", StringValue ("holland"));
+  wifi.SetStandard (WIFI_PHY_STANDARD_holland);
 
   NS_LOG_DEBUG ("minstrel");
   experiment = Experiment ("minstrel");
@@ -296,7 +296,7 @@ int main (int argc, char *argv[])
   wifiMac.SetType ("ns3::AdhocWifiMac");
 
   gnuplot = Gnuplot ("multi-rate-first.png");
-  Config::SetDefault ("ns3::YansWifiPhy::Standard", StringValue ("holland"));
+  wifi.SetStandard (WIFI_PHY_STANDARD_holland);
 
   NS_LOG_DEBUG ("minstrel");
   experiment = Experiment ("minstrel");

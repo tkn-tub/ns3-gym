@@ -539,8 +539,8 @@ MinstrelWifiRemoteStation::UpdateStats ()
           m_minstrelTable[i].attemptHist += m_minstrelTable[i].numRateAttempt;
           m_minstrelTable[i].prob = tempProb;
 
-          /// ewma probability
-          tempProb = ((tempProb * (100 - m_stations->m_ewmaLevel)) + (m_minstrelTable[i].ewmaProb * m_stations->m_ewmaLevel) )/100;
+          /// ewma probability (cast for gcc 3.4 compatibility)
+          tempProb = static_cast<uint32_t>(((tempProb * (100 - m_stations->m_ewmaLevel)) + (m_minstrelTable[i].ewmaProb * m_stations->m_ewmaLevel) )/100);
 
           m_minstrelTable[i].ewmaProb = tempProb;
 

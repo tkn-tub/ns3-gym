@@ -18,7 +18,7 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 #include "rectangle.h"
-#include "vector.h"
+#include "ns3/vector.h"
 #include "ns3/assert.h"
 #include "ns3/fatal-error.h"
 #include <cmath>

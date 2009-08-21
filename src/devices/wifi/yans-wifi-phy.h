@@ -89,7 +89,6 @@ public:
                            WifiMode mode,
                            WifiPreamble preamble);
 
-  void SetStandard (enum WifiPhyStandard standard);
   void SetRxNoiseFigure (double noiseFigureDb);
   void SetTxPowerStart (double start);
   void SetTxPowerEnd (double end);
@@ -133,6 +132,7 @@ public:
   virtual WifiMode GetMode (uint32_t mode) const;
   virtual double CalculateSnr (WifiMode txMode, double ber) const;
   virtual Ptr<WifiChannel> GetChannel (void) const;
+  virtual void ConfigureStandard (enum WifiPhyStandard standard);
 
 private:
   typedef std::vector<WifiMode> Modes;
@@ -170,7 +170,6 @@ private:
   Modes m_modes;
   EventId m_endSyncEvent;
   UniformVariable m_random;
-  WifiPhyStandard m_standard;
   /// Standard-dependent center frequency of 0-th channel, MHz 
   double m_channelStartingFrequency;
   Ptr<WifiPhyStateHelper> m_state;

@@ -22,7 +22,7 @@
 
 #include "ns3/object.h"
 #include "ns3/random-variable.h"
-#include "vector.h"
+#include "ns3/vector.h"
 
 namespace ns3 {
 

@@ -111,18 +111,14 @@ private:
   */
   void DeaggregateAmsduAndForward (Ptr<Packet> aggregatedPacket, WifiMacHeader const *hdr);
 
+  QstaWifiMac &operator = (const QstaWifiMac &);
+  QstaWifiMac (const QstaWifiMac &);
+  virtual void FinishConfigureStandard (enum WifiPhyStandard standard);
+  void SetQueue (enum AccessClass ac);
   Ptr<EdcaTxopN> GetVOQueue (void) const;
   Ptr<EdcaTxopN> GetVIQueue (void) const;
   Ptr<EdcaTxopN> GetBEQueue (void) const;
   Ptr<EdcaTxopN> GetBKQueue (void) const;
-
-  void SetVOQueue (Ptr<EdcaTxopN> voQueue);
-  void SetVIQueue (Ptr<EdcaTxopN> viQueue);
-  void SetBEQueue (Ptr<EdcaTxopN> beQueue);
-  void SetBKQueue (Ptr<EdcaTxopN> bkQueue);
-
-  QstaWifiMac &operator = (const QstaWifiMac &);
-  QstaWifiMac (const QstaWifiMac &);
 
   typedef std::map<AccessClass, Ptr<EdcaTxopN> > Queues;
   typedef std::list<std::pair<Ptr<Packet>, AmsduSubframeHeader> > DeaggregatedMsdus;
@@ -136,13 +132,7 @@ private:
     REFUSED
   } m_state;
 
-  /*Next map is used only for an esay access to a specific queue*/
   Queues m_queues;
-  Ptr<EdcaTxopN> m_voEdca;
-  Ptr<EdcaTxopN> m_viEdca;
-  Ptr<EdcaTxopN> m_beEdca;
-  Ptr<EdcaTxopN> m_bkEdca;
-
   Ptr<MacLow> m_low;
   Ptr<WifiPhy> m_phy;
   Ptr<WifiRemoteStationManager> m_stationManager;

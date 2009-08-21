@@ -92,23 +92,6 @@ public:
                                std::string n1 = "", const AttributeValue &v1 = EmptyAttributeValue (),
                                std::string n2 = "", const AttributeValue &v2 = EmptyAttributeValue (),
                                std::string n3 = "", const AttributeValue &v3 = EmptyAttributeValue ());
-  /**
-   * \param accessClass access class for which we are setting edca params. Possibilities
-   *  are: AC_BK, AC_BE, AC_VI, AC_VO.
-   * \param n0 the name of the attribute to set
-   * \param v0 the value of the attribute to set
-   * \param n1 the name of the attribute to set
-   * \param v1 the value of the attribute to set
-   * \param n2 the name of the attribute to set
-   * \param v2 the value of the attribute to set
-   * \param n3 the name of the attribute to set
-   * \param v3 the value of the attribute to set
-   */
-  void SetEdcaParametersForAc (AccessClass accessClass,
-                               std::string n0 = "", const AttributeValue &v0 = EmptyAttributeValue (),
-                               std::string n1 = "", const AttributeValue &v1 = EmptyAttributeValue (),
-                               std::string n2 = "", const AttributeValue &v2 = EmptyAttributeValue (),
-                               std::string n3 = "", const AttributeValue &v3 = EmptyAttributeValue ());
 private:
   /**
    * \returns a newly-created MAC object.
@@ -116,9 +99,10 @@ private:
    * This method implements the pure virtual method defined in \ref ns3::WifiMacHelper.
    */
   virtual Ptr<WifiMac> Create (void) const;
+  void Setup (Ptr<WifiMac> mac, enum AccessClass ac, std::string dcaAttrName) const;
+
 
   ObjectFactory m_mac;
-  std::map<AccessClass, ObjectFactory> m_queues;
   std::map<AccessClass, ObjectFactory> m_aggregators;
 };
 
