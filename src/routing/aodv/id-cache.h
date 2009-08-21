@@ -30,7 +30,6 @@
 #define IDCACHE_H_
 
 #include "ns3/ipv4-address.h"
-#include "ns3/nstime.h"
 #include "ns3/simulator.h"
 #include <vector>
 

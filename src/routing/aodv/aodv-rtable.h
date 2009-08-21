@@ -33,8 +33,6 @@
 #include <sys/types.h>
 #include "ns3/ipv4.h"
 #include "ns3/ipv4-route.h"
-#include "ns3/ipv4-address.h"
-#include "ns3/nstime.h"
 #include "ns3/timer.h"
 #include "ns3/net-device.h"
 

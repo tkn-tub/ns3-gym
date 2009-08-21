@@ -26,19 +26,14 @@
  *          Pavel Boyko <boyko@iitp.ru>
  */
 #include "aodv-routing-protocol.h"
-#include "ns3/socket.h"
 #include "ns3/log.h"
 #include "ns3/random-variable.h"
 #include "ns3/inet-socket-address.h"
-#include "ns3/uinteger.h"
 #include "ns3/trace-source-accessor.h"
-#include "ns3/udp-header.h"
 #include "ns3/udp-socket-factory.h"
 #include "ns3/wifi-net-device.h"
 #include "ns3/adhoc-wifi-mac.h"
 #include <algorithm>
-
-#include "ns3/udp-socket.h"
 
 NS_LOG_COMPONENT_DEFINE ("AodvRoutingProtocol");
 
@@ -402,12 +397,11 @@ RoutingProtocol::NotifyInterfaceUp (uint32_t i)
 {
   NS_LOG_FUNCTION (this << m_ipv4->GetAddress (i, 0).GetLocal ());
   Ptr<Ipv4L3Protocol> l3 = m_ipv4->GetObject<Ipv4L3Protocol> ();
-  Ptr<Ipv4Interface> interface = l3->GetInterface (i);
-  if (interface->GetNAddresses () > 1)
+  if (l3->GetNAddresses (i) > 1)
     {
       NS_LOG_LOGIC ("AODV does not work with more then one address per each interface.");
     }
-  Ipv4InterfaceAddress iface = interface->GetAddress (0);
+  Ipv4InterfaceAddress iface = l3->GetAddress (i, 0);
   if (iface.GetLocal () == Ipv4Address ("127.0.0.1"))
     return;
   
@@ -436,7 +430,7 @@ RoutingProtocol::NotifyInterfaceUp (uint32_t i)
     return;
   
   mac->TraceConnectWithoutContext ("TxErrHeader", m_nb.GetTxErrorCallback ());
-  m_nb.AddArpCache (interface->GetArpCache ());
+  m_nb.AddArpCache (l3->GetInterface (i)->GetArpCache ());
 }
 
 void
@@ -446,8 +440,7 @@ RoutingProtocol::NotifyInterfaceDown (uint32_t i)
 
   // Disable layer 2 link state monitoring (if possible)
   Ptr<Ipv4L3Protocol> l3 = m_ipv4->GetObject<Ipv4L3Protocol> ();
-  Ptr<Ipv4Interface> interface = l3->GetInterface (i);
-  Ptr<NetDevice> dev = interface->GetDevice ();
+  Ptr<NetDevice> dev = l3->GetNetDevice (i);
   Ptr<WifiNetDevice> wifi = dev->GetObject<WifiNetDevice> ();
   if (wifi != 0)
     {
@@ -456,7 +449,7 @@ RoutingProtocol::NotifyInterfaceDown (uint32_t i)
         {
           mac->TraceDisconnectWithoutContext ("TxErrHeader",
               m_nb.GetTxErrorCallback ());
-          m_nb.DelArpCache (interface->GetArpCache ());
+          m_nb.DelArpCache (l3->GetInterface (i)->GetArpCache ());
         }
     }
   
@@ -481,12 +474,11 @@ RoutingProtocol::NotifyAddAddress (uint32_t i, Ipv4InterfaceAddress address)
 {
   NS_LOG_FUNCTION (this << " interface " << i << " address " << address);
   Ptr<Ipv4L3Protocol> l3 = m_ipv4->GetObject<Ipv4L3Protocol> ();
-  Ptr<Ipv4Interface> interface = l3->GetInterface (i);
-  if (interface->IsDown ())
+  if (!l3->IsUp (i))
     return;
-  if (interface->GetNAddresses () == 1)
+  if (l3->GetNAddresses (i) == 1)
     {
-      Ipv4InterfaceAddress iface = interface->GetAddress (0);
+      Ipv4InterfaceAddress iface = l3->GetAddress (i, 0);
       Ptr<Socket> socket = FindSocketWithInterfaceAddress (iface);
       if (!socket)
         {
@@ -526,10 +518,9 @@ RoutingProtocol::NotifyRemoveAddress (uint32_t i, Ipv4InterfaceAddress address)
       m_routingTable.DeleteAllRoutesFromInterface (address);
       m_socketAddresses.erase (socket);
       Ptr<Ipv4L3Protocol> l3 = m_ipv4->GetObject<Ipv4L3Protocol> ();
-      Ptr<Ipv4Interface> interface = l3->GetInterface (i);
-      if (interface->GetNAddresses ())
+      if (l3->GetNAddresses (i))
         {
-          Ipv4InterfaceAddress iface = interface->GetAddress (0);
+          Ipv4InterfaceAddress iface = l3->GetAddress (i, 0);
           // Create a socket to listen only on this interface
           Ptr<Socket> socket = Socket::CreateSocket (GetObject<Node> (),
               UdpSocketFactory::GetTypeId ());
@@ -1182,7 +1173,6 @@ RoutingProtocol::RecvError (Ptr<Packet> p, Ipv4Address src )
       SendRerrMessage (packet, precursors);
     }
   m_routingTable.InvalidateRoutesWithDst (unreachable);
-  m_routingTable.Print(std::cout);
 }
 
 void

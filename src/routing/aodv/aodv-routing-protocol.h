@@ -34,10 +34,7 @@
 #include "id-cache.h"
 #include "aodv-neighbor.h"
 
-#include "ns3/object.h"
 #include "ns3/node.h"
-#include "ns3/socket.h"
-#include "ns3/ipv4.h"
 #include "ns3/ipv4-routing-protocol.h"
 #include "ns3/ipv4-interface.h"
 #include "ns3/ipv4-l3-protocol.h"
