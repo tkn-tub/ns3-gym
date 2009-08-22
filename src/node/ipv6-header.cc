@@ -31,16 +31,15 @@ namespace ns3 {
 NS_OBJECT_ENSURE_REGISTERED (Ipv6Header);
 
 Ipv6Header::Ipv6Header ()
-: m_version (6),
+  : m_version (6),
   m_trafficClass (0),
   m_flowLabel (1),
   m_payloadLength (0),
   m_nextHeader (0),
   m_hopLimit (0)
 {
-
-  SetSourceAddress (Ipv6Address("::"));
-  SetDestinationAddress(Ipv6Address ("::"));
+  SetSourceAddress (Ipv6Address ("::"));
+  SetDestinationAddress (Ipv6Address ("::"));
 }
 
 void Ipv6Header::SetTrafficClass (uint8_t traffic)
@@ -157,8 +156,8 @@ void Ipv6Header::Serialize (Buffer::Iterator start) const
   i.WriteU8(m_nextHeader);
   i.WriteU8(m_hopLimit);
 
-  WriteTo(i, m_sourceAddress);
-  WriteTo(i, m_destinationAddress);
+  WriteTo (i, m_sourceAddress);
+  WriteTo (i, m_destinationAddress);
 }
 
 uint32_t Ipv6Header::Deserialize (Buffer::Iterator start)
@@ -169,7 +168,7 @@ uint32_t Ipv6Header::Deserialize (Buffer::Iterator start)
   vTcFl = i.ReadNtohU32();
   m_version = vTcFl >> 28;
 
-  NS_ASSERT((m_version) == 6);
+  NS_ASSERT ((m_version) == 6);
 
   m_trafficClass = (uint8_t)((vTcFl >> 20) & 0x000000ff);
   m_flowLabel = vTcFl & 0xfff00000;
@@ -177,10 +176,10 @@ uint32_t Ipv6Header::Deserialize (Buffer::Iterator start)
   m_nextHeader = i.ReadU8();
   m_hopLimit = i.ReadU8();
 
-  ReadFrom(i, m_sourceAddress);
-  ReadFrom(i, m_destinationAddress);
+  ReadFrom (i, m_sourceAddress);
+  ReadFrom (i, m_destinationAddress);
 
-  return GetSerializedSize();
+  return GetSerializedSize ();
 }
 
 } /* namespace ns3 */

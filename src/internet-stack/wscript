@@ -99,6 +99,18 @@ def build(bld):
         'icmpv4.cc',
         'icmpv4-l4-protocol.cc',
         'loopback-net-device.cc',
+        'ipv6-interface.cc',
+        'ndisc-cache.cc',
+        'icmpv6-header.cc',
+        'ipv6-l3-protocol.cc',
+        'ipv6-end-point.cc',
+        'ipv6-end-point-demux.cc',
+        'ipv6-l4-protocol.cc',
+        'ipv6-raw-socket-factory-impl.cc',
+        'ipv6-raw-socket-impl.cc',
+        'ipv6-autoconfigured-prefix.cc',
+        'icmpv6-l4-protocol.cc',
+        'ipv6-test.cc'
         ]
 
     headers = bld.new_task_gen('ns3header')
@@ -108,6 +120,7 @@ def build(bld):
         'tcp-header.h',
         'sequence-number.h',
         'icmpv4.h',
+        'icmpv6-header.h',
         ]
 
     if bld.env['NSC_ENABLED']:

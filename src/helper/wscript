@@ -28,6 +28,12 @@ def build(bld):
         'ipv4-global-routing-helper.cc',
         'ipv4-list-routing-helper.cc',
         'ipv4-routing-helper.cc',
+        'ipv6-address-helper.cc',
+        'ipv6-interface-container.cc',
+        'ipv6-static-routing-helper.cc',
+        'ipv6-list-routing-helper.cc',
+        'ipv6-routing-helper.cc',
+        'ping6-helper.cc',
         ]
 
     headers = bld.new_task_gen('ns3header')
@@ -58,6 +64,12 @@ def build(bld):
         'ipv4-global-routing-helper.h',
         'ipv4-list-routing-helper.h',
         'ipv4-routing-helper.h',
+        'ipv6-address-helper.h',
+        'ipv6-interface-container.h',
+        'ipv6-static-routing-helper.h',
+        'ipv6-list-routing-helper.h',
+        'ipv6-routing-helper.h',
+        'ping6-helper.h',
         ]
 
     env = bld.env_of_name('default')

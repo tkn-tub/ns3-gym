@@ -31,6 +31,7 @@ namespace ns3 {
 
 class Node;
 class Ipv4RoutingHelper;
+class Ipv6RoutingHelper;
 
 /**
  * \brief aggregate IP/TCP/UDP functionality to existing Nodes.
@@ -59,9 +60,15 @@ public:
    * ns3::Ipv4::SetRoutingProtocol.
    */
   void SetRoutingHelper (const Ipv4RoutingHelper &routing);
+  
+  /**
+   * \brief Set IPv6 routing helper.
+   * \param routing IPv6 routing helper
+   */
+  void SetRoutingHelper (const Ipv6RoutingHelper &routing);
 
   /**
-   * Aggregate implementations of the ns3::Ipv4, ns3::Udp, and ns3::Tcp classes
+   * Aggregate implementations of the ns3::Ipv4, ns3::Ipv6, ns3::Udp, and ns3::Tcp classes
    * onto the provided node.  This method will assert if called on a node that 
    * already has an Ipv4 object aggregated to it.
    * 
@@ -70,7 +77,7 @@ public:
   void Install (std::string nodeName) const;
 
   /**
-   * Aggregate implementations of the ns3::Ipv4, ns3::Udp, and ns3::Tcp classes
+   * Aggregate implementations of the ns3::Ipv4, ns3::Ipv6, ns3::Udp, and ns3::Tcp classes
    * onto the provided node.  This method will assert if called on a node that 
    * already has an Ipv4 object aggregated to it.
    * 
@@ -80,7 +87,7 @@ public:
 
   /**
    * For each node in the input container, aggregate implementations of the 
-   * ns3::Ipv4, ns3::Udp, and, ns3::Tcp classes.  The program will assert 
+   * ns3::Ipv4, ns3::Ipv6, ns3::Udp, and, ns3::Tcp classes.  The program will assert 
    * if this method is called on a container with a node that already has
    * an Ipv4 object aggregated to it.
    * 
@@ -90,11 +97,11 @@ public:
   void Install (NodeContainer c) const;
 
   /**
-   * Aggregate ip, udp, and tcp stacks to all nodes in the simulation
+   * Aggregate IPv4, IPv6, UDP, and TCP stacks to all nodes in the simulation
    */
   void InstallAll (void) const;
 
- /**
+  /**
    * \brief set the Tcp stack which will not need any other parameter.  
    *
    * This function sets up the tcp stack to the given TypeId. It should not be 
@@ -128,6 +135,7 @@ public:
    * Enable ascii output on these drop traces, for each node in the NodeContainer..
    * /NodeList/[i]/$ns3ArpL3Protocol/Drop 
    * /NodeList/[i]/$ns3Ipv4L3Protocol/Drop 
+   * /NodeList/[i]/$ns3Ipv6L3Protocol/Drop 
    */
   static void EnableAscii (std::ostream &os, NodeContainer n);
 
@@ -137,12 +145,14 @@ public:
    * Enable ascii output on these drop traces, for all nodes.
    * /NodeList/[i]/$ns3ArpL3Protocol/Drop 
    * /NodeList/[i]/$ns3Ipv4L3Protocol/Drop 
+   * /NodeList/[i]/$ns3Ipv6L3Protocol/Drop 
    */
   static void EnableAsciiAll (std::ostream &os);
 
   /**
    * Enable pcap output on each protocol instance which is of the
-   * ns3::Ipv4L3Protocol type.  Both Tx and Rx events will be logged.
+   * ns3::Ipv4L3Protocol or ns3::Ipv6L3Protocol type.  Both Tx and 
+   * Rx events will be logged.
    *
    * \param filename filename prefix to use for pcap files.
    *
@@ -155,9 +165,27 @@ public:
    */
   static void EnablePcapAll (std::string filename);
 
+  /**
+   * \brief Enable/disable IPv4 stack install.
+   * \param enable enable state
+   */
+  void SetIpv4StackInstall (bool enable);
+
+  /**
+   * \brief Enable/disable IPv6 stack install.
+   * \param enable enable state
+   */
+  void SetIpv6StackInstall (bool enable);
+
 private:
   ObjectFactory m_tcpFactory;
   const Ipv4RoutingHelper *m_routing;
+  
+  /**
+   * \brief IPv6 routing helper.
+   */
+  const Ipv6RoutingHelper *m_routingv6;
+
   static void CreateAndAggregateObjectFromTypeId (Ptr<Node> node, const std::string typeId);
   static void Cleanup (void);
   static void LogRxIp (std::string context, Ptr<const Packet> packet, uint32_t deviceId);
@@ -173,6 +201,16 @@ private:
   static uint32_t GetNodeIndex (std::string context);
   static std::vector<Trace> m_traces;
   static bool m_isInitialized;
+
+  /**
+   * \brief IPv4 install state (enabled/disabled) ?
+   */
+  bool m_ipv4Enabled;
+
+  /**
+   * \brief IPv6 install state (enabled/disabled) ?
+   */
+  bool m_ipv6Enabled;
 };
 
 } // namespace ns3

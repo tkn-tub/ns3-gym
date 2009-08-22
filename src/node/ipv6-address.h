@@ -415,7 +415,7 @@ inline bool operator < (const Ipv6Address& a, const Ipv6Address& b)
 class Ipv6AddressHash : public std::unary_function<Ipv6Address, size_t>
 {
   public:
-    size_t operator() (Ipv6Address const &x) const;
+    size_t operator () (Ipv6Address const &x) const;
 };
 
 bool operator == (Ipv6Prefix const &a, Ipv6Prefix const &b);

@@ -36,6 +36,8 @@ all_modules = (
     'helper',
     'contrib/stats',
     'applications/v4ping',
+    'applications/ping6',
+    'applications/radvd',
     )
 
 def set_options(opt):
