@@ -198,11 +198,26 @@ private:
  * \ingroup address
  *
  * \brief a class to represent an Ipv4 address mask
+ * 
+ * The constructor takes arguments according to a few formats. 
+ * Ipv4Mask ("255.255.255.255"), Ipv4Mask ("/32"), and Ipv4Mask (0xffffffff)
+ * are all equivalent.
  */
 class Ipv4Mask {
 public:
+  /**
+   * Will initialize to a garbage value (0x66666666)
+   */
   Ipv4Mask ();
+  /**
+   * param mask bitwise integer representation of the mask
+   * 
+   * For example, the integer input 0xffffff00 yields a 24-bit mask
+   */
   Ipv4Mask (uint32_t mask);
+  /**
+   * \param mask String constant either in "255.255.255.0" or "/24" format
+   */
   Ipv4Mask (char const *mask);
   /**
    * \param a first address to compare

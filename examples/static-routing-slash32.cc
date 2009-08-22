@@ -87,12 +87,12 @@ main (int argc, char *argv[])
   int32_t ifIndexA = ipv4A->AddInterface (deviceA);
   int32_t ifIndexC = ipv4C->AddInterface (deviceC);
     
-  Ipv4InterfaceAddress ifInAddrA = Ipv4InterfaceAddress (Ipv4Address ("172.16.1.1"), Ipv4Mask ("255.255.255.255"));
+  Ipv4InterfaceAddress ifInAddrA = Ipv4InterfaceAddress (Ipv4Address ("172.16.1.1"), Ipv4Mask ("/32"));
   ipv4A->AddAddress (ifIndexA, ifInAddrA);
   ipv4A->SetMetric (ifIndexA, 1);
   ipv4A->SetUp (ifIndexA);
 
-  Ipv4InterfaceAddress ifInAddrC = Ipv4InterfaceAddress (Ipv4Address ("192.168.1.1"), Ipv4Mask ("255.255.255.255"));
+  Ipv4InterfaceAddress ifInAddrC = Ipv4InterfaceAddress (Ipv4Address ("192.168.1.1"), Ipv4Mask ("/32"));
   ipv4C->AddAddress (ifIndexC, ifInAddrC);
   ipv4C->SetMetric (ifIndexC, 1);
   ipv4C->SetUp (ifIndexC);

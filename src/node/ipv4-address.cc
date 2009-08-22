@@ -28,6 +28,7 @@ namespace ns3 {
 
 #define ASCII_DOT (0x2e)
 #define ASCII_ZERO (0x30)
+#define ASCII_SLASH (0x2f)
 
 static uint32_t 
 AsciiToIpv4Host (char const *address)
@@ -63,9 +64,18 @@ Ipv4Mask::Ipv4Mask ()
 Ipv4Mask::Ipv4Mask (uint32_t mask)
   : m_mask (mask)
 {}
+
 Ipv4Mask::Ipv4Mask (char const *mask)
 {
-  m_mask = AsciiToIpv4Host (mask);
+  if (*mask == ASCII_SLASH)
+    {
+      m_mask = static_cast<uint32_t> (atoi (++mask));
+      NS_ASSERT (m_mask <= 32);
+    }
+  else
+    {
+      m_mask = AsciiToIpv4Host (mask);
+    }
 }
 
 bool 
