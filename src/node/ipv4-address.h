@@ -238,6 +238,10 @@ public:
    */
   void Print (std::ostream &os) const;
   /**
+   * \return the prefix length of mask (the yy in x.x.x.x/yy notation)
+   */
+  uint16_t GetPrefixLength (void) const;
+  /**
    * \return the 255.0.0.0 mask corresponding to a typical loopback address
    */
   static Ipv4Mask GetLoopback (void);

@@ -133,6 +133,20 @@ Ipv4Mask::GetOnes (void)
   return ones;
 }
 
+uint16_t
+Ipv4Mask::GetPrefixLength (void) const
+{
+  uint16_t tmp = 0;
+  uint32_t mask = m_mask;
+  while (mask != 0 ) 
+  {
+    mask = mask << 1;
+    tmp++;
+  }
+  return tmp; 
+}
+
+
 Ipv4Address::Ipv4Address ()
   : m_address (0x66666666)
 {}
