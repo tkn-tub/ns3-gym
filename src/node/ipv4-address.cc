@@ -34,21 +34,23 @@ static uint32_t
 AsciiToIpv4Host (char const *address)
 {
   uint32_t host = 0;
-  while (true) {
-    uint8_t byte = 0;
-    while (*address != ASCII_DOT &&
-           *address != 0) {
-      byte *= 10;
-      byte += *address - ASCII_ZERO;
+  while (true) 
+    {
+      uint8_t byte = 0;
+      while (*address != ASCII_DOT && *address != 0) 
+        {
+          byte *= 10;
+          byte += *address - ASCII_ZERO;
+          address++;
+        }
+      host <<= 8;
+      host |= byte;
+      if (*address == 0) 
+        {
+          break;
+        }
       address++;
     }
-    host <<= 8;
-    host |= byte;
-    if (*address == 0) {
-      break;
-    }
-    address++;
-  }
   return host;
 }
 
