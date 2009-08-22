@@ -650,6 +650,11 @@ def register_Ns3Ipv4Mask_methods(root_module, cls):
                    'ns3::Ipv4Mask', 
                    [], 
                    is_static=True)
+    ## ipv4-address.h: uint16_t ns3::Ipv4Mask::GetPrefixLength() const [member function]
+    cls.add_method('GetPrefixLength', 
+                   'uint16_t', 
+                   [], 
+                   is_const=True)
     ## ipv4-address.h: static ns3::Ipv4Mask ns3::Ipv4Mask::GetZero() [member function]
     cls.add_method('GetZero', 
                    'ns3::Ipv4Mask', 
