@@ -18,6 +18,7 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 
+#include <stdlib.h>
 #include "ns3/log.h"
 #include "ipv4-address.h"
 #include "ns3/assert.h"
