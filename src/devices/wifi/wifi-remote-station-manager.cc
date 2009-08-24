@@ -159,6 +159,18 @@ WifiRemoteStationManager::GetTypeId (void)
                    WifiModeValue (),
                    MakeWifiModeAccessor (&WifiRemoteStationManager::m_nonUnicastMode),
                    MakeWifiModeChecker ())
+    .AddTraceSource ("MacTxRtsFailed", 
+                     "The transmission of a RTS by the MAC layer has failed",
+                     MakeTraceSourceAccessor (&WifiRemoteStationManager::m_macTxRtsFailed))
+    .AddTraceSource ("MacTxDataFailed", 
+                     "The transmission of a data packet by the MAC layer has failed",
+                     MakeTraceSourceAccessor (&WifiRemoteStationManager::m_macTxDataFailed))
+    .AddTraceSource ("MacTxFinalRtsFailed", 
+                     "The transmission of a RTS has exceeded the maximum number of attempts",
+                     MakeTraceSourceAccessor (&WifiRemoteStationManager::m_macTxFinalRtsFailed))
+    .AddTraceSource ("MacTxFinalDataFailed", 
+                     "The transmission of a data packet has exceeded the maximum number of attempts",
+                     MakeTraceSourceAccessor (&WifiRemoteStationManager::m_macTxFinalDataFailed))
     ;
   return tid;
 }
@@ -175,7 +187,7 @@ WifiRemoteStationManager::DoDispose (void)
 {
   for (Stations::const_iterator i = m_stations.begin (); i != m_stations.end (); i++) 
     {
-      delete (*i).second;
+      delete (*i);
     }
   m_stations.clear ();
   delete m_nonUnicast;
@@ -237,14 +249,15 @@ WifiRemoteStationManager::Lookup (Mac48Address address)
     }
   for (Stations::const_iterator i = m_stations.begin (); i != m_stations.end (); i++) 
     {
-      if ((*i).first == address)
+      if ((*i)->GetAddress () == address)
         {
-          return (*i).second;
+          return (*i);
         }
     }
   WifiRemoteStation *station = CreateStation ();
+  station->SetAddress(address);
   station->Reset ();
-  m_stations.push_back (std::make_pair (address, station));
+  m_stations.push_back (station);
   return station;
 }
 
@@ -264,7 +277,7 @@ WifiRemoteStationManager::Reset (void)
 {
   for (Stations::const_iterator i = m_stations.begin (); i != m_stations.end (); i++)
     {
-      delete i->second;
+      delete (*i);
     }
   m_stations.clear ();
   m_basicModes.clear ();
@@ -317,6 +330,33 @@ WifiRemoteStationManager::GetNonUnicastMode (void) const
   else
     return m_nonUnicastMode;
 }
+
+
+void 
+WifiRemoteStationManager::NotifyTxRtsFailed (Mac48Address address)
+{
+  m_macTxRtsFailed (address);
+}
+
+void 
+WifiRemoteStationManager::NotifyTxDataFailed (Mac48Address address)
+{
+  m_macTxDataFailed (address);
+}
+
+void 
+WifiRemoteStationManager::NotifyTxFinalRtsFailed (Mac48Address address)
+{
+  m_macTxFinalRtsFailed (address);
+}
+
+void 
+WifiRemoteStationManager::NotifyTxFinalDataFailed (Mac48Address address)
+{
+  m_macTxFinalDataFailed (address);
+}
+
+
 
 } // namespace ns3
 
@@ -564,6 +604,16 @@ WifiRemoteStation::GetAvgSlrc () const
 {
   return m_avgSlrc;
 }
+void 
+WifiRemoteStation::SetAddress(Mac48Address address)
+{
+  m_address = address;
+}  
+Mac48Address 
+WifiRemoteStation::GetAddress()
+{
+  return m_address;
+}
 uint32_t 
 WifiRemoteStation::GetNSupportedModes (void) const
 {
@@ -698,6 +748,7 @@ void
 WifiRemoteStation::ReportRtsFailed (void)
 {
   m_ssrc++;
+  GetManager ()->NotifyTxRtsFailed (m_address);
   DoReportRtsFailed ();
 }
 
@@ -705,6 +756,7 @@ void
 WifiRemoteStation::ReportDataFailed (void)
 {
   m_slrc++;
+  GetManager ()->NotifyTxDataFailed (m_address);
   DoReportDataFailed ();
 }
 
@@ -727,6 +779,7 @@ void
 WifiRemoteStation::ReportFinalRtsFailed (void)
 {
   m_ssrc = 0;
+  GetManager ()->NotifyTxFinalRtsFailed (m_address);
   DoReportFinalRtsFailed ();
 }
 
@@ -734,6 +787,7 @@ void
 WifiRemoteStation::ReportFinalDataFailed (void)
 {
   m_slrc = 0;
+  GetManager ()->NotifyTxFinalDataFailed (m_address);
   DoReportFinalDataFailed ();
 }
 

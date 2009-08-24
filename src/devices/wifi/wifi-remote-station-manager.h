@@ -88,7 +88,7 @@ protected:
   friend class WifiRemoteStation;
   virtual void DoDispose (void);
 private:
-  typedef std::vector <std::pair<Mac48Address, WifiRemoteStation *> > Stations;
+  typedef std::vector <WifiRemoteStation *> Stations;
   virtual class WifiRemoteStation *CreateStation (void) = 0;
   Stations m_stations;
   WifiMode m_defaultTxMode;
@@ -100,6 +100,63 @@ private:
   uint32_t m_rtsCtsThreshold;
   uint32_t m_fragmentationThreshold;
   WifiMode m_nonUnicastMode;
+
+
+  /**
+   * Public method used to fire a MacTxRtsFailed trace.
+   * Implemented for encapsulation purposes.
+   */
+  void NotifyTxRtsFailed (Mac48Address address);  
+
+  /**
+   * Public method used to fire a MacTxDataFailed trace.
+   * Implemented for encapsulation purposes. 
+   */
+  void NotifyTxDataFailed (Mac48Address address);  
+
+  /**
+   * Public method used to fire a MacTxFinalRtsFailed trace.
+   * Implemented for encapsulation purposes.
+   */
+  void NotifyTxFinalRtsFailed (Mac48Address address);  
+
+  /**
+   * Public method used to fire a MacTxFinalDataFailed trace.
+   * Implemented for encapsulation purposes. 
+   */
+  void NotifyTxFinalDataFailed (Mac48Address address);    
+
+
+  /**
+   * The trace source fired when the transmission of a RTS has failed
+   *
+   * \see class CallBackTraceSource
+   */
+  TracedCallback<Mac48Address> m_macTxRtsFailed;
+
+  /**
+   * The trace source fired when the transmission of a data packet has failed 
+   *
+   * \see class CallBackTraceSource
+   */
+  TracedCallback<Mac48Address> m_macTxDataFailed;
+
+  /**
+   * The trace source fired when the transmission of a RTS has
+   * exceeded the maximum number of attempts
+   *
+   * \see class CallBackTraceSource
+   */
+  TracedCallback<Mac48Address> m_macTxFinalRtsFailed;
+
+  /**
+   * The trace source fired when the transmission of a data packet has
+   * exceeded the maximum number of attempts
+   *
+   * \see class CallBackTraceSource
+   */
+  TracedCallback<Mac48Address> m_macTxFinalDataFailed;
+
 };
 
 } // namespace ns3
@@ -264,6 +321,18 @@ public:
    * \return exponentially weighted average SLRC, this is used by Airtime link metric of 802.11s
    */
   double GetAvgSlrc () const;
+  /** 
+   * set the address of the remote stationt represented by this instance of WifiRemoteStation
+   * 
+   * @param address the MAC address of the remote station
+   */
+  void SetAddress(Mac48Address address);
+  /** 
+   * get the address of the remote stationt represented by this instance of WifiRemoteStation
+   * 
+   * @return the MAC address of the remote station
+   */
+  Mac48Address GetAddress();
 private:
   virtual Ptr<WifiRemoteStationManager> GetManager (void) const = 0;
   virtual WifiMode DoGetDataMode (uint32_t size) = 0;
@@ -294,6 +363,7 @@ private:
   TracedValue<uint32_t> m_slrc;
   double m_avgSlrcCoefficient;
   double m_avgSlrc;
+  Mac48Address m_address;
 };
 
 } // namespace ns3 
