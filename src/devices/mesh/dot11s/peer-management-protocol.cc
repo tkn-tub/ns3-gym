@@ -547,7 +547,7 @@ PeerManagementProtocol::Statistics::Print (std::ostream & os) const
 void
 PeerManagementProtocol::Report (std::ostream & os) const
 {
-  os << "<PeerManagementProtocol>\n";
+  os << "<PeerManagementProtocol>" << std::endl;
   m_stats.Print (os);
   for (PeerManagementProtocolMacMap::const_iterator plugins = m_plugins.begin (); plugins != m_plugins.end (); plugins++)
     {
@@ -561,7 +561,7 @@ PeerManagementProtocol::Report (std::ostream & os) const
           (*i)->Report (os);
         }
     }
-  os << "</PeerManagementProtocol>\n";
+  os << "</PeerManagementProtocol>" << std::endl;
 }
 void
 PeerManagementProtocol::ResetStats ()

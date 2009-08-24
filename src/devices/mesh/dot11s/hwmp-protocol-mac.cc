@@ -448,10 +448,10 @@ HwmpProtocolMac::Statistics::Print (std::ostream & os) const
 void
 HwmpProtocolMac::Report (std::ostream & os) const
 {
-  os << "<HwmpProtocolMac\n"
-    "address =\"" << m_parent->GetAddress () << "\">\n";
+  os << "<HwmpProtocolMac" << std::endl <<
+    "address =\"" << m_parent->GetAddress () << "\">" << std::endl;
   m_stats.Print (os);
-  os << "</HwmpProtocolMac>\n";
+  os << "</HwmpProtocolMac>" << std::endl;
 }
 void
 HwmpProtocolMac::ResetStats ()

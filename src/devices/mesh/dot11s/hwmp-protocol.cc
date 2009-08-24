@@ -53,7 +53,7 @@ HwmpProtocol::GetTypeId ()
                         &HwmpProtocol::m_randomStart),
                     MakeTimeChecker ()
                    )
-    .AddAttribute ( "maxQueueSize",
+    .AddAttribute ( "MaxQueueSize",
                     "Maximum number of packets we can store when resolving route",
                     UintegerValue (255),
                     MakeUintegerAccessor (
@@ -115,42 +115,42 @@ HwmpProtocol::GetTypeId ()
                         &HwmpProtocol::m_dot11MeshHWMPrannInterval),
                     MakeTimeChecker ()
                   )
-    .AddAttribute ( "maxTtl",
+    .AddAttribute ( "MaxTtl",
                     "Initial value of Time To Live field",
                     UintegerValue (32),
                     MakeUintegerAccessor (
                         &HwmpProtocol::m_maxTtl),
                     MakeUintegerChecker<uint8_t> (2)
                   )
-    .AddAttribute ( "unicastPerrThreshold",
+    .AddAttribute ( "UnicastPerrThreshold",
                     "Maximum number of PERR receivers, when we send a PERR as a chain of unicasts",
                     UintegerValue (32),
                     MakeUintegerAccessor (
                         &HwmpProtocol::m_unicastPerrThreshold),
                     MakeUintegerChecker<uint8_t> (1)
                     )
-    .AddAttribute ( "unicastPreqThreshold",
+    .AddAttribute ( "UnicastPreqThreshold",
                     "Maximum number of PREQ receivers, when we send a PREQ as a chain of unicasts",
                     UintegerValue (1),
                     MakeUintegerAccessor (
                         &HwmpProtocol::m_unicastPreqThreshold),
                     MakeUintegerChecker<uint8_t> (1)
                     )
-    .AddAttribute ( "unicastDataThreshold",
+    .AddAttribute ( "UnicastDataThreshold",
                     "Maximum number ofbroadcast receivers, when we send a broadcast as a chain of unicasts",
                     UintegerValue (1),
                     MakeUintegerAccessor (
                         &HwmpProtocol::m_unicastDataThreshold),
                     MakeUintegerChecker<uint8_t> (1)
                   )
-    .AddAttribute ( "doFlag",
+    .AddAttribute ( "DoFlag",
                     "Destination only HWMP flag",
                     BooleanValue (false),
                     MakeBooleanAccessor (
                         &HwmpProtocol::m_doFlag),
                     MakeBooleanChecker ()
                   )
-    .AddAttribute ( "rfFlag",
+    .AddAttribute ( "RfFlag",
                     "Reply and forward flag",
                     BooleanValue (true),
                     MakeBooleanAccessor (
@@ -1101,7 +1101,7 @@ void HwmpProtocol::Statistics::Print (std::ostream & os) const
     "totalDropped=\"" << totalDropped << "\" "
     "initiatedPreq=\"" << initiatedPreq << "\" "
     "initiatedPrep=\"" << initiatedPrep << "\" "
-    "initiatedPerr=\"" << initiatedPerr << "\"\n";
+    "initiatedPerr=\"" << initiatedPerr << "\"" << std::endl;
 }
 void
 HwmpProtocol::Report (std::ostream & os) const
@@ -1129,7 +1129,7 @@ HwmpProtocol::Report (std::ostream & os) const
     {
       plugin->second->Report (os);
     }
-  os << "</Hwmp>\n";
+  os << "</Hwmp>" << std::endl;
 }
 void
 HwmpProtocol::ResetStats ()

@@ -153,12 +153,12 @@ IeRann::GetInformationSize () const
 void
 IeRann::PrintInformation (std::ostream &os) const
 {
-  os << "  flags              = " << (int) m_flags << "\n";
-  os << "  hop count          = " << (int) m_hopcount << "\n";
-  os << "  TTL                = " << (int) m_ttl << "\n";
-  os << "  originator address = " << m_originatorAddress << "\n";
-  os << "  dst seq. number    = " << m_destSeqNumber << "\n";
-  os << "  metric             = " << m_metric << "\n";
+  os << "  flags              = " << (int) m_flags << "std::endl";
+  os << "  hop count          = " << (int) m_hopcount << "std::endl";
+  os << "  TTL                = " << (int) m_ttl << "std::endl";
+  os << "  originator address = " << m_originatorAddress << "std::endl";
+  os << "  dst seq. number    = " << m_destSeqNumber << "std::endl";
+  os << "  metric             = " << m_metric << "std::endl";
 }
 
 bool

@@ -45,7 +45,7 @@ IePerr::PrintInformation (std::ostream &os) const
       os << "Failed destination address: = " << m_addressUnits[j].destination << ", sequence number = "
           << m_addressUnits[j].seqnum;
     }
-  os << "\n";
+  os << std::endl;
 }
 uint8_t
 IePerr::GetNumOfDest ()

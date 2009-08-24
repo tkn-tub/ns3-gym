@@ -149,11 +149,11 @@ void
 IePeerManagement::PrintInformation (std::ostream& os) const
 {
 
-  os << " Subtype:      = " << (uint16_t) m_subtype << "\n";
-  os << " Length:       = " << (uint16_t) m_length << "\n";
-  os << " LocalLinkId:  = " << m_localLinkId << "\n";
-  os << " PeerLinkId:   = " << m_peerLinkId << "\n";
-  os << " ReasonCode:   = " << m_reasonCode << "\n";
+  os << " Subtype:      = " << (uint16_t) m_subtype << std::endl;
+  os << " Length:       = " << (uint16_t) m_length << std::endl;
+  os << " LocalLinkId:  = " << m_localLinkId << std::endl;
+  os << " PeerLinkId:   = " << m_peerLinkId << std::endl;
+  os << " ReasonCode:   = " << m_reasonCode << std::endl;
 }
 bool
 operator== (const IePeerManagement & a, const IePeerManagement & b)

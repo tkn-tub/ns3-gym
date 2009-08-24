@@ -107,15 +107,15 @@ FlameProtocolMac::Statistics::Print (std::ostream &os) const
     "txBytes=\"" << txBytes << "\" "
     "rxUnicast=\"" << rxUnicast << "\" "
     "rxBroadcast=\"" << rxBroadcast << "\" "
-    "rxBytes=\"" << rxBytes << "\"/>\n";
+    "rxBytes=\"" << rxBytes << "\"/>" << std::endl;
 }
 void
 FlameProtocolMac::Report (std::ostream & os) const
 {
-  os << "<FlameProtocolMac\n"
-    "address =\"" << m_parent->GetAddress () << "\">\n";
+  os << "<FlameProtocolMac" << std::endl << 
+    "address =\"" << m_parent->GetAddress () << "\">" << std::endl;
   m_stats.Print (os);
-  os << "</FlameProtocolMac>\n";
+  os << "</FlameProtocolMac>" << std::endl;
 
 }
 void

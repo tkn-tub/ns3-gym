@@ -156,12 +156,12 @@ void
 IeConfiguration::PrintInformation (std::ostream& os) const
 {
   os << "Number of neighbors:               = " << (uint16_t) m_neighbors
-      << "\nActive Path Selection Protocol ID: = " << (uint32_t) m_APSPId
-      << "\nActive Path Selection Metric ID:   = " << (uint32_t) m_APSMId
-      << "\nCongestion Control Mode ID:        = " << (uint32_t) m_CCMId
-      << "\nSynchronize protocol ID:           = " << (uint32_t) m_SPId
-      << "\nAuthentication protocol ID:        = " << (uint32_t) m_APId
-      << "\nCapabilities:                      = " << m_meshCap.GetUint16 () << "\n";
+      << std::endl << "Active Path Selection Protocol ID: = " << (uint32_t) m_APSPId
+      << std::endl << "Active Path Selection Metric ID:   = " << (uint32_t) m_APSMId
+      << std::endl << "Congestion Control Mode ID:        = " << (uint32_t) m_CCMId
+      << std::endl << "Synchronize protocol ID:           = " << (uint32_t) m_SPId
+      << std::endl << "Authentication protocol ID:        = " << (uint32_t) m_APId
+      << std::endl << "Capabilities:                      = " << m_meshCap.GetUint16 () << std::endl;
 }
 void
 IeConfiguration::SetRouting (dot11sPathSelectionProtocol routingId)

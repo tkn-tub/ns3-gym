@@ -345,21 +345,21 @@ FlameProtocol::Statistics::Print (std::ostream & os) const
     "txBroadcast=\"" << txBroadcast << "\" "
     "txBytes=\"" << txBytes << "\" "
     "droppedTtl=\"" << droppedTtl << "\" "
-    "totalDropped=\"" << totalDropped << "\"/>\n";
+    "totalDropped=\"" << totalDropped << "\"/>" << std::endl;
 }
 void
 FlameProtocol::Report (std::ostream & os) const
 {
   os << "<Flame "
-    "address=\"" << m_address << "\"\n"
-    "broadcastInterval=\"" << m_broadcastInterval.GetSeconds () << "\"\n"
-    "maxCost=\"" << (uint16_t) m_maxCost << "\">\n";
+    "address=\"" << m_address << "\"" << std::endl << 
+    "broadcastInterval=\"" << m_broadcastInterval.GetSeconds () << "\"" << std::endl << 
+    "maxCost=\"" << (uint16_t) m_maxCost << "\">" << std::endl;
   m_stats.Print (os);
   for (FlamePluginMap::const_iterator plugin = m_interfaces.begin (); plugin != m_interfaces.end (); plugin++)
     {
       plugin->second->Report (os);
     }
-  os << "</Flame>\n";
+  os << "</Flame>" << std::endl;
 }
 void
 FlameProtocol::ResetStats ()

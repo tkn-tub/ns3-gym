@@ -323,17 +323,17 @@ IePreq::GetInformationSize () const
 void
 IePreq::PrintInformation (std::ostream &os) const
 {
-  os << " originator address  = " << m_originatorAddress << "\n";
-  os << " TTL                 = " << (uint16_t) m_ttl << "\n";
-  os << " hop count           = " << (uint16_t) m_hopCount << "\n";
-  os << " metric              = " << m_metric << "\n";
-  os << " seqno               = " << m_originatorSeqNumber << "\n";
-  os << " lifetime            = " << m_lifetime << "\n";
-  os << " preq ID             = " << m_preqId << "\n";
-  os << " Destinations are:\n";
+  os << " originator address  = " << m_originatorAddress << "std::endl";
+  os << " TTL                 = " << (uint16_t) m_ttl << "std::endl";
+  os << " hop count           = " << (uint16_t) m_hopCount << "std::endl";
+  os << " metric              = " << m_metric << "std::endl";
+  os << " seqno               = " << m_originatorSeqNumber << "std::endl";
+  os << " lifetime            = " << m_lifetime << "std::endl";
+  os << " preq ID             = " << m_preqId << "std::endl";
+  os << " Destinations are:std::endl";
   for (int j = 0; j < m_destCount; j++)
     {
-      os << "    " << m_destinations[j]->GetDestinationAddress () << "\n";
+      os << "    " << m_destinations[j]->GetDestinationAddress () << "std::endl";
     }
 }
 std::vector<Ptr<DestinationAddressUnit> >

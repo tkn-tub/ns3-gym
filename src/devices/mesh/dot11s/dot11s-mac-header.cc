@@ -164,8 +164,9 @@ MeshHeader::Deserialize (Buffer::Iterator start)
 void
 MeshHeader::Print (std::ostream &os) const
 {
-  os << "flags = " << (uint16_t) m_meshFlags << "\nttl = " << (uint16_t) m_meshTtl << "\nseqno = "
-      << m_meshSeqno << "\naddr4 = " << m_addr4 << "\naddr5 = " << m_addr5 << "\naddr6 = " << m_addr6;
+  os << "flags = " << (uint16_t) m_meshFlags << std::endl << "ttl = " << (uint16_t) m_meshTtl 
+    << std::endl << "seqno = " << m_meshSeqno << std::endl<< "addr4 = " << m_addr4 << std::endl
+    << "addr5 = " << m_addr5 << std::endl << "addr6 = " << m_addr6 << std::endl;
 }
 bool
 operator== (const MeshHeader & a, const MeshHeader & b)

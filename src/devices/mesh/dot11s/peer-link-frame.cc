@@ -97,9 +97,9 @@ PeerLinkFrameStart::GetInstanceTypeId () const
 void
 PeerLinkFrameStart::Print (std::ostream &os) const
 {
-  os << "subtype = " << (uint16_t) m_subtype << "\ncapability = " << m_capability << "\naid = "
-      << (uint16_t) m_aid << "\nrates = " << m_rates << "\nmeshId = " << m_meshId << "\nconfiguration = "
-      << m_config << "\nreason code = " << m_reasonCode;
+  os << "subtype = " << (uint16_t) m_subtype << "std::endlcapability = " << m_capability << "std::endlaid = "
+      << (uint16_t) m_aid << "std::endlrates = " << m_rates << "std::endlmeshId = " << m_meshId << "std::endlconfiguration = "
+      << m_config << "std::endlreason code = " << m_reasonCode;
 }
 uint32_t
 PeerLinkFrameStart::GetSerializedSize () const

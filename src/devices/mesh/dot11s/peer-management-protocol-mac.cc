@@ -288,27 +288,27 @@ void
 PeerManagementProtocolMac::Statistics::Print (std::ostream & os) const
 {
   os << "<Statistics "
-    "txOpen=\"" << txOpen << "\"\n"
-    "txConfirm=\"" << txConfirm << "\"\n"
-    "txClose=\"" << txClose << "\"\n"
-    "rxOpen=\"" << rxOpen << "\"\n"
-    "rxConfirm=\"" << rxConfirm << "\"\n"
-    "rxClose=\"" << rxClose << "\"\n"
-    "dropped=\"" << dropped << "\"\n"
-    "brokenMgt=\"" << brokenMgt << "\"\n"
-    "txMgt=\"" << txMgt << "\"\n"
-    "txMgtBytes=\"" << txMgtBytes << "\"\n"
-    "rxMgt=\"" << rxMgt << "\"\n"
-    "rxMgtBytes=\"" << rxMgtBytes << "\"\n"
-    "beaconShift=\"" << beaconShift << "\"/>\n";
+    "txOpen=\"" << txOpen << "\"" << std::endl <<
+    "txConfirm=\"" << txConfirm << "\"" << std::endl <<
+    "txClose=\"" << txClose << "\"" << std::endl <<
+    "rxOpen=\"" << rxOpen << "\"" << std::endl <<
+    "rxConfirm=\"" << rxConfirm << "\"" << std::endl <<
+    "rxClose=\"" << rxClose << "\"" << std::endl <<
+    "dropped=\"" << dropped << "\"" << std::endl <<
+    "brokenMgt=\"" << brokenMgt << "\"" << std::endl <<
+    "txMgt=\"" << txMgt << "\"" << std::endl <<
+    "txMgtBytes=\"" << txMgtBytes << "\"" << std::endl <<
+    "rxMgt=\"" << rxMgt << "\"" << std::endl <<
+    "rxMgtBytes=\"" << rxMgtBytes << "\"" << std::endl <<
+    "beaconShift=\"" << beaconShift << "\"/>" << std::endl;
 }
 void
 PeerManagementProtocolMac::Report (std::ostream & os) const
 {
   os << "<PeerManagementProtocolMac "
-    "address=\"" << m_parent->GetAddress () << "\">\n";
+    "address=\"" << m_parent->GetAddress () << "\">" << std::endl;
   m_stats.Print (os);
-  os << "</PeerManagementProtocolMac>\n";
+  os << "</PeerManagementProtocolMac>" << std::endl;
 }
 void
 PeerManagementProtocolMac::ResetStats ()

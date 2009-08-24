@@ -66,9 +66,9 @@ WifiInformationElement::Deserialize (Buffer::Iterator i)
 void
 WifiInformationElement::Print (std::ostream &os) const
 {
-  os << "\n<information_element id=" << ElementId () << ">\n";
+  os << std::endl << "<information_element id=" << ElementId () << ">" << std::endl;
   PrintInformation (os);
-  os << "</information_element>\n";
+  os << "</information_element>" << std::endl;
 }
 bool
 operator< (WifiInformationElement const & a, WifiInformationElement const & b)

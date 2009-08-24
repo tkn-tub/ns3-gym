@@ -190,10 +190,10 @@ IePrep::GetInformationSize () const
 void
 IePrep::PrintInformation (std::ostream& os) const
 {
-  os << "Flags:        = " << m_flags << "\nHopcount:     = " << m_hopcount << "\nTTL:          = " << m_ttl
-      << "\nDestination:  = " << m_destinationAddress << "\nDest. seqnum: = " << m_destSeqNumber
-      << "\nLifetime:     = " << m_lifetime << "\nMetric:       = " << m_metric << "\nOriginator:   = "
-      << m_originatorAddress << "\nOrig. seqnum: = " << m_originatorSeqNumber << "\n";
+  os << "Flags:        = " << m_flags << std::endl << "Hopcount:     = " << m_hopcount << std::endl << "TTL:          = " << m_ttl
+      << std::endl<< "Destination:  = " << m_destinationAddress << std::endl << "Dest. seqnum: = " << m_destSeqNumber
+      << std::endl << "Lifetime:     = " << m_lifetime << std::endl<< "Metric:       = " << m_metric << std::endl << "Originator:   = "
+      << m_originatorAddress << std::endl << "Orig. seqnum: = " << m_originatorSeqNumber << std::endl;
 }
 bool
 operator== (const IePrep & a, const IePrep & b)

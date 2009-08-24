@@ -148,11 +148,11 @@ IeBeaconTiming::GetInformationSize () const
 void
 IeBeaconTiming::PrintInformation (std::ostream& os) const
 {
-  os << "Number of units: " << (uint16_t) m_numOfUnits << "\n";
+  os << "Number of units: " << (uint16_t) m_numOfUnits << std::endl;
   for (NeighboursTimingUnitsList::const_iterator j = m_neighbours.begin (); j != m_neighbours.end (); j++)
     {
       os << "AID=" << (uint16_t) (*j)->GetAid () << ", Last beacon was at " << (*j)->GetLastBeacon ()
-          << ", with beacon interval " << (*j)->GetBeaconInterval () << "\n";
+          << ", with beacon interval " << (*j)->GetBeaconInterval () << std::endl;
     }
 }
 void
