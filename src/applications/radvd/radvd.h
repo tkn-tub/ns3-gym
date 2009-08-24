@@ -57,6 +57,11 @@ class Radvd : public Application
     virtual ~Radvd ();
 
     /**
+     * \brief Default value for maximum delay of RA (ms)
+     */
+    static const uint32_t MAX_RA_DELAY_TIME = 500;
+
+    /**
      * \brief Add configuration for an interface;
      * \param routerInterface configuration
      */

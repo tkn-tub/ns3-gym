@@ -213,7 +213,7 @@ void Radvd::Send (Ptr<RadvdInterface> config, Ipv6Address dst)
   m_socket->Send (p, 0);
 
   UniformVariable rnd;
-  uint32_t delay = rnd.GetValue (config->GetMinRtrAdvInterval (), config->GetMaxRtrAdvInterval ());
+  uint64_t delay = static_cast<uint64_t> (rnd.GetValue (config->GetMinRtrAdvInterval (), config->GetMaxRtrAdvInterval ()) + 0.5);
   Time t = MilliSeconds (delay);
   ScheduleTransmit (t, config, m_eventIds[config->GetInterface ()]);
 }
@@ -231,7 +231,7 @@ void Radvd::HandleRead (Ptr<Socket> socket)
       Ipv6Header hdr;
       Icmpv6RS rsHdr;
       Inet6SocketAddress address = Inet6SocketAddress::ConvertFrom (from);
-      uint32_t delay = 0;
+      uint64_t delay = 0;
       UniformVariable rnd;
       Time t;
 
@@ -244,13 +244,13 @@ void Radvd::HandleRead (Ptr<Socket> socket)
           packet->RemoveHeader (rsHdr);
           NS_LOG_INFO ("Received ICMPv6 Router Solicitation from " << hdr.GetSourceAddress () << " code = " << (uint32_t)rsHdr.GetCode ());
 
-          delay = rnd.GetValue (0, 500); /* default value for MAX_RA_DELAY_TIME */
+          delay = static_cast<uint64_t> (rnd.GetValue (0, MAX_RA_DELAY_TIME) + 0.5); 
           t = Simulator::Now () + MilliSeconds (delay);
 
 #if 0
           NS_LOG_INFO ("schedule new RA : " << t.GetTimeStep () << " next scheduled RA" << (int64_t)m_sendEvent.GetTs ());
 
-          if (t.GetTimeStep () < (int64_t)m_sendEvent.GetTs ())
+          if (t.GetTimeStep () < static_cast<int64_t> (m_sendEvent.GetTs ()))
           {
             /* send multicast RA */
             /* maybe replace this by a unicast RA (it is a SHOULD in the RFC) */

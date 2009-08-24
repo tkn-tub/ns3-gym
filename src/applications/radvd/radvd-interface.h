@@ -44,8 +44,8 @@ class RadvdInterface : public RefCountBase
     /**
      * \brief Constructor.
      * \param interface interface index
-     * \param maxRtrAdvInterval maximum RA interval
-     * \param minRtrAdvInterval minimum RA interval
+     * \param maxRtrAdvInterval maximum RA interval (ms)
+     * \param minRtrAdvInterval minimum RA interval (ms)
      */
     RadvdInterface (uint32_t interface, uint32_t maxRtrAdvInterval, uint32_t minRtrAdvInterval);
 
@@ -86,37 +86,37 @@ class RadvdInterface : public RefCountBase
 
     /**
      * \brief Get maximum RA interval.
-     * \return RA interval
+     * \return RA interval (ms)
      */
     uint32_t GetMaxRtrAdvInterval () const;
 
     /**
      * \brief Get maximum RA interval.
-     * \param maxRtrAdvInterval RA interval
+     * \param maxRtrAdvInterval RA interval (ms)
      */
     void SetMaxRtrAdvInterval (uint32_t maxRtrAdvInterval);
 
     /**
-     * \brief Get minimum RA interval.
-     * \return RA interval
+     * \brief Get minimum RA interval 
+     * \return RA interval (ms)
      */
     uint32_t GetMinRtrAdvInterval () const;
     
     /**
-     * \brief Get minimum RA interval.
-     * \param minRtrAdvInterval RA interval
+     * \brief Get minimum RA interval 
+     * \param minRtrAdvInterval RA interval (ms).
      */
     void SetMinRtrAdvInterval (uint32_t minRtrAdvInterval);
 
     /**
      * \brief Get minimum delay between RAs.
-     * \return minimum delay
+     * \return minimum delay (ms)
      */
     uint32_t GetMinDelayBetweenRAs () const;
     
     /**
      * \brief Set minimum delay between RAs.
-     * \param minDelayBetweenRAs minimum delay
+     * \param minDelayBetweenRAs minimum delay (ms)
      */
     void SetMinDelayBetweenRAs (uint32_t minDelayBetweenRAs);
 
