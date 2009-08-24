@@ -22,6 +22,7 @@
 #define IE_VECTOR_H
 
 #include "ns3/wifi-information-element.h"
+#include "ns3/header.h"
 
 namespace ns3 {
 class Packet;
@@ -32,11 +33,26 @@ class Packet;
  *
  * Implements a vector of WifiInformationElement's
  */
-class WifiInformationElementVector
+class WifiInformationElementVector : public Header
 {
 public:
   WifiInformationElementVector ();
   ~WifiInformationElementVector ();
+  ///\name Inherited from Header
+  //\{
+  static TypeId GetTypeId ();
+  TypeId GetInstanceTypeId () const;
+  virtual uint32_t GetSerializedSize () const;
+  virtual void Serialize (Buffer::Iterator start) const;
+  virtual uint32_t Deserialize (Buffer::Iterator start);
+  virtual void Print (std::ostream &os) const;
+  //\}
+  /**
+   * \brief Needed when you try to deserialize a lonely IE inside other header
+   * \param start is the start of the buffer
+   * \return deserialized bytes
+   */
+  virtual uint32_t DeserializeSingleIe (Buffer::Iterator start);
   void SetMaxSize (uint16_t size);
   typedef std::vector<Ptr<WifiInformationElement> >::iterator Iterator;
   Iterator Begin ();
@@ -45,7 +61,6 @@ public:
   Ptr<WifiInformationElement> FindFirst (enum WifiElementId id) const;
   static WifiInformationElementVector DeserializePacket (Ptr<Packet> packet);
   Ptr<Packet> CreatePacket (bool sortByElementId = true);
-  void Print (std::ostream & os);
 private:
   uint32_t GetSize () const;
   /**

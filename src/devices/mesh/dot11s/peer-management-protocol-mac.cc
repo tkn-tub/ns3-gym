@@ -71,7 +71,8 @@ PeerManagementProtocolMac::Receive (Ptr<Packet> const_packet, const WifiMacHeade
       packet->RemoveHeader (beacon_hdr);
       //meshId.FindFirst (myBeacon);
       bool meshBeacon = false;
-      WifiInformationElementVector elements = WifiInformationElementVector::DeserializePacket (packet);
+      WifiInformationElementVector elements;
+      packet->RemoveHeader(elements);
       Ptr<IeBeaconTiming> beaconTiming = DynamicCast<IeBeaconTiming> (elements.FindFirst (IE11S_BEACON_TIMING));
       Ptr<IeMeshId> meshId = DynamicCast<IeMeshId> (elements.FindFirst (IE11S_MESH_ID));
 

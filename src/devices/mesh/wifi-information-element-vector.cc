@@ -42,6 +42,105 @@ WifiInformationElementVector::WifiInformationElementVector () :
 WifiInformationElementVector::~WifiInformationElementVector ()
 {
 }
+TypeId
+WifiInformationElementVector::GetTypeId ()
+{
+  static TypeId tid = TypeId ("ns3::WifiInformationElementVector")
+                      .SetParent<Header> ();
+  return tid;
+}
+TypeId
+WifiInformationElementVector::GetInstanceTypeId () const
+{
+  return GetTypeId ();
+}
+uint32_t
+WifiInformationElementVector::GetSerializedSize () const
+{
+  return GetSize ();
+}
+void
+WifiInformationElementVector::Serialize (Buffer::Iterator start) const
+{
+  for(std::vector<Ptr<WifiInformationElement> >::const_iterator i = m_elements.begin (); i != m_elements.end (); i ++)
+    {
+      start.WriteU8((*i)->ElementId ());
+      start.WriteU8 ((*i)->GetInformationSize ());
+      (*i)->SerializeInformation (start);
+      start.Next ((*i)->GetInformationSize ());
+    }
+}
+uint32_t
+WifiInformationElementVector::Deserialize (Buffer::Iterator start)
+{
+  Buffer::Iterator i = start;
+  uint32_t size = start.GetSize();
+  std::cerr << "Size = " << size << "\n";
+  while (size > 0)
+    {
+      uint32_t deserialized = DeserializeSingleIe(i);
+      i.Next (deserialized);
+      size -= deserialized;
+    }
+  return i.GetDistanceFrom(start);
+}
+uint32_t
+WifiInformationElementVector::DeserializeSingleIe(Buffer::Iterator start)
+{
+  Buffer::Iterator i = start;
+  uint8_t id = i.ReadU8 ();
+  uint8_t length = i.ReadU8 ();
+  Ptr<WifiInformationElement> newElement;
+  switch (id)
+    {
+  case IE11S_MESH_CONFIGURATION:
+    newElement = Create<dot11s::IeConfiguration> ();
+    break;
+  case IE11S_MESH_ID:
+    newElement = Create<dot11s::IeMeshId> ();
+    break;
+  case IE11S_LINK_METRIC_REPORT:
+    newElement = Create<dot11s::IeLinkMetricReport> ();
+    break;
+  case IE11S_PEERING_MANAGEMENT:
+    newElement = Create<dot11s::IePeerManagement> ();
+    break;
+  case IE11S_BEACON_TIMING:
+    newElement = Create<dot11s::IeBeaconTiming> ();
+    break;
+  case IE11S_RANN:
+    newElement = Create<dot11s::IeRann> ();
+    break;
+  case IE11S_PREQ:
+    newElement = Create<dot11s::IePreq> ();
+    break;
+  case IE11S_PREP:
+    newElement = Create<dot11s::IePrep> ();
+    break;
+  case IE11S_PERR:
+    newElement = Create<dot11s::IePerr> ();
+    break;
+  case IE11S_MESH_PEERING_PROTOCOL_VERSION:
+    newElement = Create<dot11s::IePeeringProtocol> ();
+    break;
+  default:
+    NS_FATAL_ERROR ("Information element " << (uint16_t) id << " is not implemented");
+    return 0;
+    }
+  if (GetSize () + length > m_maxSize)
+    {
+      NS_FATAL_ERROR ("Check max size for information element!");
+    }
+  newElement->DeserializeInformation (i, length);
+  i.Next (length);
+  m_elements.push_back (newElement);
+  return i.GetDistanceFrom(start);
+}
+void
+WifiInformationElementVector::Print(std::ostream & os) const
+{
+  //TODO
+}
 void
 WifiInformationElementVector::SetMaxSize (uint16_t size)
 {

@@ -144,7 +144,7 @@ public:
   /// Own unique Element ID
   virtual WifiElementId ElementId () const = 0;
   /// Length of serialized information
-private:
+//private:
   virtual uint8_t GetInformationSize () const = 0;
   /// Serialize information
   virtual void SerializeInformation (Buffer::Iterator start) const = 0;

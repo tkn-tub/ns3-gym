@@ -39,7 +39,8 @@ MeshWifiBeacon::AddInformationElement (Ptr<WifiInformationElement> ie)
 Ptr<Packet>
 MeshWifiBeacon::CreatePacket ()
 {
-  Ptr<Packet> packet = m_elements.CreatePacket();
+  Ptr<Packet> packet = Create <Packet> ();
+  packet->AddHeader (m_elements);
   packet->AddHeader (BeaconHeader ());
   return packet;
 }
