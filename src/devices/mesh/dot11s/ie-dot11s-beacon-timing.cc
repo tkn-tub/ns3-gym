@@ -138,14 +138,16 @@ IeBeaconTiming::GetInformationSize () const
   return (5 * m_numOfUnits );
 }
 void
-IeBeaconTiming::PrintInformation (std::ostream& os) const
+IeBeaconTiming::Print (std::ostream& os) const
 {
+  os << std::endl << "<information_element id=" << ElementId () << ">" << std::endl;
   os << "Number of units: " << (uint16_t) m_numOfUnits << std::endl;
   for (NeighboursTimingUnitsList::const_iterator j = m_neighbours.begin (); j != m_neighbours.end (); j++)
     {
       os << "AID=" << (uint16_t) (*j)->GetAid () << ", Last beacon was at " << (*j)->GetLastBeacon ()
           << ", with beacon interval " << (*j)->GetBeaconInterval () << std::endl;
     }
+  os << "</information_element>" << std::endl;
 }
 void
 IeBeaconTiming::SerializeInformation (Buffer::Iterator i) const
@@ -211,6 +213,12 @@ operator== (const IeBeaconTiming & a, const IeBeaconTiming& b)
         }
     }
   return true;
+}
+std::ostream &
+operator << (std::ostream &os, const IeBeaconTiming &a)
+{
+  a.Print (os);
+  return os;
 }
 } // namespace dot11s
 } //namespace ns3

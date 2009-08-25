@@ -35,14 +35,6 @@
 #include "dot11s/ie-dot11s-rann.h"
 
 namespace ns3 {
-
-void
-WifiInformationElement::Print (std::ostream &os) const
-{
-  os << std::endl << "<information_element id=" << ElementId () << ">" << std::endl;
-  PrintInformation (os);
-  os << "</information_element>" << std::endl;
-}
 bool
 operator< (WifiInformationElement const & a, WifiInformationElement const & b)
 {

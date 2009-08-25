@@ -76,7 +76,7 @@ HwmpProtocolMac::ReceiveData (Ptr<Packet> packet, const WifiMacHeader & header)
   default:
     NS_FATAL_ERROR (
         "6-address scheme is not yet supported and 4-address extension is not supposed to be used for data frames.");
-    };
+    }
   tag.SetSeqno (meshHdr.GetMeshSeqno ());
   tag.SetTtl (meshHdr.GetMeshTtl ());
   packet->AddPacketTag (tag);

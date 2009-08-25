@@ -53,11 +53,11 @@ public:
    * \name Inherited from WifiInformationElement
    * \{
    */
-  WifiElementId ElementId () const;
-  void SerializeInformation (Buffer::Iterator i) const;
-  uint8_t DeserializeInformation (Buffer::Iterator start, uint8_t length);
-  uint8_t GetInformationSize () const;
-  void PrintInformation (std::ostream &os) const;
+  virtual WifiElementId ElementId () const;
+  virtual void SerializeInformation (Buffer::Iterator i) const;
+  virtual uint8_t DeserializeInformation (Buffer::Iterator start, uint8_t length);
+  virtual uint8_t GetInformationSize () const;
+  virtual void Print (std::ostream &os) const;
   ///\}
 private:
   uint8_t m_flags;
@@ -71,7 +71,7 @@ private:
 };
 
 bool operator== (const IeRann & a, const IeRann & b);
-
+std::ostream &operator << (std::ostream &os, const IeRann &rann);
 } // namespace dot11s
 } //namespace ns3
 

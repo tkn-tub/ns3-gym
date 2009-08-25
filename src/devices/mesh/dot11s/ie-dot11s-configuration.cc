@@ -152,8 +152,9 @@ IeConfiguration::DeserializeInformation (Buffer::Iterator i, uint8_t length)
   return i.GetDistanceFrom (start);
 }
 void
-IeConfiguration::PrintInformation (std::ostream& os) const
+IeConfiguration::Print (std::ostream& os) const
 {
+  os << std::endl << "<information_element id=" << ElementId () << ">" << std::endl;
   os << "Number of neighbors:               = " << (uint16_t) m_neighbors
       << std::endl << "Active Path Selection Protocol ID: = " << (uint32_t) m_APSPId
       << std::endl << "Active Path Selection Metric ID:   = " << (uint32_t) m_APSMId
@@ -161,6 +162,7 @@ IeConfiguration::PrintInformation (std::ostream& os) const
       << std::endl << "Synchronize protocol ID:           = " << (uint32_t) m_SPId
       << std::endl << "Authentication protocol ID:        = " << (uint32_t) m_APId
       << std::endl << "Capabilities:                      = " << m_meshCap.GetUint16 () << std::endl;
+  os << "</information_element>" << std::endl;
 }
 void
 IeConfiguration::SetRouting (dot11sPathSelectionProtocol routingId)
@@ -211,7 +213,12 @@ operator== (const IeConfiguration & a, const IeConfiguration & b)
       == b.m_SPId) && (a.m_APId == b.m_APId) && (a.m_neighbors == b.m_neighbors) && (a.m_meshCap
       == b.m_meshCap));
 }
-
+std::ostream &
+operator << (std::ostream &os, const IeConfiguration &a)
+{
+  a.Print (os);
+  return os;
+}
 } // namespace dot11s
 } //namespace ns3
 

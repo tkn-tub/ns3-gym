@@ -319,8 +319,9 @@ IePreq::GetInformationSize () const
   return retval;
 }
 void
-IePreq::PrintInformation (std::ostream &os) const
+IePreq::Print (std::ostream &os) const
 {
+  os << std::endl << "<information_element id=" << ElementId () << ">" << std::endl;
   os << " originator address  = " << m_originatorAddress << "std::endl";
   os << " TTL                 = " << (uint16_t) m_ttl << "std::endl";
   os << " hop count           = " << (uint16_t) m_hopCount << "std::endl";
@@ -333,6 +334,7 @@ IePreq::PrintInformation (std::ostream &os) const
     {
       os << "    " << m_destinations[j]->GetDestinationAddress () << "std::endl";
     }
+  os << "</information_element>" << std::endl;
 }
 std::vector<Ptr<DestinationAddressUnit> >
 IePreq::GetDestinationList ()
@@ -441,6 +443,12 @@ bool
 IePreq::IsFull () const
 {
   return ((GetInformationSize () + 11) > 255);
+}
+std::ostream &
+operator << (std::ostream &os, const IePreq &a)
+{
+  a.Print (os);
+  return os;
 }
 } // namespace dot11s
 } //namespace ns3

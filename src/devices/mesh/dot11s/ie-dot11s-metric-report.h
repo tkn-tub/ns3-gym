@@ -45,7 +45,7 @@ public:
   virtual WifiElementId ElementId () const;
   virtual void SerializeInformation (Buffer::Iterator i) const;
   virtual uint8_t DeserializeInformation (Buffer::Iterator start, uint8_t length);
-  virtual void PrintInformation (std::ostream& os) const;
+  virtual void Print (std::ostream& os) const;
   virtual uint8_t GetInformationSize () const;
   ///\}
 private:
@@ -54,7 +54,7 @@ private:
   friend bool operator>  (const IeLinkMetricReport & a, const IeLinkMetricReport & b);
   friend bool operator<  (const IeLinkMetricReport & a, const IeLinkMetricReport & b);
 };
-
+std::ostream &operator << (std::ostream &os, const IeLinkMetricReport &linkMetricReport);
 } //namespace dot11s
 } // namespace ns3
 #endif /* METRIC_REPORT_H */

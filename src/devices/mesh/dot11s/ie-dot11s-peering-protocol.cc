@@ -48,9 +48,17 @@ IePeeringProtocol::DeserializeInformation (Buffer::Iterator i, uint8_t length)
   return i.GetDistanceFrom (start);
 }
 void
-IePeeringProtocol::PrintInformation (std::ostream& os) const
+IePeeringProtocol::Print (std::ostream& os) const
 {
+  os << std::endl << "<information_element id=" << ElementId () << ">" << std::endl;
   os << "peering protocol = " << m_protocol;
+  os << "</information_element>" << std::endl;
+}
+std::ostream &
+operator << (std::ostream &os, const IePeeringProtocol &a)
+{
+  a.Print (os);
+  return os;
 }
 } // namespace dot11s
 } //namespace ns3

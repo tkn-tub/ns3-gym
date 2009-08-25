@@ -149,20 +149,27 @@ IePeerManagement::DeserializeInformation (Buffer::Iterator start, uint8_t length
   return i.GetDistanceFrom (start);
 }
 void
-IePeerManagement::PrintInformation (std::ostream& os) const
+IePeerManagement::Print (std::ostream& os) const
 {
-
+  os << std::endl << "<information_element id=" << ElementId () << ">" << std::endl;
   os << " Subtype:      = " << (uint16_t) m_subtype << std::endl;
   os << " Length:       = " << (uint16_t) m_length << std::endl;
   os << " LocalLinkId:  = " << m_localLinkId << std::endl;
   os << " PeerLinkId:   = " << m_peerLinkId << std::endl;
   os << " ReasonCode:   = " << m_reasonCode << std::endl;
+  os << "</information_element>" << std::endl;
 }
 bool
 operator== (const IePeerManagement & a, const IePeerManagement & b)
 {
   return ((a.m_length == b.m_length) && (a.m_subtype == b.m_subtype) && (a.m_localLinkId == b.m_localLinkId)
       && (a.m_peerLinkId == b.m_peerLinkId) && (a.m_reasonCode == b.m_reasonCode));
+}
+std::ostream &
+operator << (std::ostream &os, const IePeerManagement &a)
+{
+  a.Print (os);
+  return os;
 }
 } // namespace dot11s
 } //namespace ns3

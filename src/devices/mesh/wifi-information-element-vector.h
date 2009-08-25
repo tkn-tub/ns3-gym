@@ -82,9 +82,9 @@ enum WifiElementId {
 class WifiInformationElement : public RefCountBase
 {
 public:
-  virtual void Print (std::ostream &os) const;
   ///\name Each subclass must implement
   //\{
+  virtual void Print (std::ostream &os) const = 0;
   /// Own unique Element ID
   virtual WifiElementId ElementId () const = 0;
   /// Length of serialized information
@@ -93,8 +93,6 @@ public:
   virtual void SerializeInformation (Buffer::Iterator start) const = 0;
   /// Deserialize information
   virtual uint8_t DeserializeInformation (Buffer::Iterator start, uint8_t length) = 0;
-  /// Print information
-  virtual void PrintInformation (std::ostream &os) const = 0;
   //\}
 
   /// Compare information elements using Element ID

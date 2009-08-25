@@ -117,7 +117,7 @@ public:
   virtual uint8_t  GetInformationSize () const;
   virtual void SerializeInformation (Buffer::Iterator i) const;
   virtual uint8_t DeserializeInformation (Buffer::Iterator i, uint8_t length);
-  virtual void PrintInformation (std::ostream& os) const;
+  virtual void Print (std::ostream& os) const;
   ///\}
 private:
   /** Active Path Selection Protocol ID */
@@ -136,6 +136,7 @@ private:
 };
 bool operator== (const IeConfiguration & a, const IeConfiguration & b);
 bool operator== (const Dot11sMeshCapability & a, const Dot11sMeshCapability & b);
+std::ostream &operator << (std::ostream &os, const IeConfiguration &config);
 } // namespace dot11s
 } //namespace ns3
 #endif

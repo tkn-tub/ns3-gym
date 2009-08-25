@@ -35,15 +35,16 @@ IePerr::ElementId () const
   return IE11S_PERR;
 }
 void
-IePerr::PrintInformation (std::ostream &os) const
+IePerr::Print (std::ostream &os) const
 {
+  os << std::endl << "<information_element id=" << ElementId () << ">" << std::endl;
   os << "Number of failed destinations: = " << m_addressUnits.size ();
   for (unsigned int j = 0; j < m_addressUnits.size (); j++)
     {
       os << "Failed destination address: = " << m_addressUnits[j].destination << ", sequence number = "
           << m_addressUnits[j].seqnum;
     }
-  os << std::endl;
+  os << std::endl << "</information_element>" << std::endl;
 }
 uint8_t
 IePerr::GetNumOfDest ()
@@ -150,6 +151,12 @@ operator== (const IePerr & a, const IePerr & b)
         }
     }
   return true;
+}
+std::ostream &
+operator << (std::ostream &os, const IePerr &a)
+{
+  a.Print (os);
+  return os;
 }
 } // namespace dot11s
 } //namespace ns3

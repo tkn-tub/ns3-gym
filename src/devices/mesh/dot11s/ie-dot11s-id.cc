@@ -112,9 +112,11 @@ IeMeshId::DeserializeInformation (Buffer::Iterator start, uint8_t length)
   return i.GetDistanceFrom (start);
 }
 void
-IeMeshId::PrintInformation (std::ostream& os) const
+IeMeshId::Print (std::ostream& os) const
 {
+  os << std::endl << "<information_element id=" << ElementId () << ">" << std::endl;
   os << "meshId =  " << PeekString ();
+  os << "</information_element>" << std::endl;
 }
 bool
 operator== (const IeMeshId & a, const IeMeshId & b)
@@ -132,11 +134,11 @@ operator== (const IeMeshId & a, const IeMeshId & b)
       size++;
     }
   return result;
-};
+}
 std::ostream &
-operator << (std::ostream &os, const IeMeshId &meshId)
+operator << (std::ostream &os, const IeMeshId &a)
 {
-  os << meshId.PeekString ();
+  a.Print (os);
   return os;
 }
 } //namespace dot11s

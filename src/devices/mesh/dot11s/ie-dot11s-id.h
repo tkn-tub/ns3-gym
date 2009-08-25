@@ -49,7 +49,7 @@ public:
   virtual WifiElementId ElementId () const;
   virtual void SerializeInformation (Buffer::Iterator i) const;
   virtual uint8_t DeserializeInformation (Buffer::Iterator start, uint8_t length);
-  virtual void PrintInformation (std::ostream& os) const;
+  virtual void Print (std::ostream& os) const;
   virtual uint8_t GetInformationSize () const;
   ///\}
 private:

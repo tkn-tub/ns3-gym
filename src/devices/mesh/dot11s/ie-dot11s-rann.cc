@@ -149,14 +149,16 @@ IeRann::GetInformationSize () const
 }
 
 void
-IeRann::PrintInformation (std::ostream &os) const
+IeRann::Print (std::ostream &os) const
 {
+  os << std::endl << "<information_element id=" << ElementId () << ">" << std::endl;
   os << "  flags              = " << (int) m_flags << "std::endl";
   os << "  hop count          = " << (int) m_hopcount << "std::endl";
   os << "  TTL                = " << (int) m_ttl << "std::endl";
   os << "  originator address = " << m_originatorAddress << "std::endl";
   os << "  dst seq. number    = " << m_destSeqNumber << "std::endl";
   os << "  metric             = " << m_metric << "std::endl";
+  os << "</information_element>" << std::endl;
 }
 
 bool
@@ -165,6 +167,12 @@ operator== (const IeRann & a, const IeRann & b)
   return (a.m_flags == b.m_flags && a.m_hopcount == b.m_hopcount && a.m_ttl == b.m_ttl
       && a.m_originatorAddress == b.m_originatorAddress && a.m_destSeqNumber == b.m_destSeqNumber
       && a.m_metric == b.m_metric);
+}
+std::ostream &
+operator << (std::ostream &os, const IeRann &a)
+{
+  a.Print (os);
+  return os;
 }
 }
 } // namespace ns3::dot11s

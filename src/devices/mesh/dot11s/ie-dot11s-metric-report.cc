@@ -64,14 +64,22 @@ IeLinkMetricReport::DeserializeInformation (Buffer::Iterator start, uint8_t leng
   return i.GetDistanceFrom (start);
 }
 void
-IeLinkMetricReport::PrintInformation (std::ostream& os) const
+IeLinkMetricReport::Print (std::ostream& os) const
 {
+  os << std::endl << "<information_element id=" << ElementId () << ">" << std::endl;
   os << "Metric = " << m_metric;
+  os << "</information_element>" << std::endl;
 }
 bool
 operator== (const IeLinkMetricReport & a, const IeLinkMetricReport & b)
 {
   return (a.m_metric == b.m_metric);
-};
+}
+std::ostream &
+operator << (std::ostream &os, const IeLinkMetricReport &a)
+{
+  a.Print (os);
+  return os;
+}
 } //namespace dot11s
 } // namespace ns3

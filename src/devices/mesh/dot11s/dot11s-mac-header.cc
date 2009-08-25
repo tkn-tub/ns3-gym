@@ -207,7 +207,7 @@ WifiMeshActionHeader::SetAction (WifiMeshActionHeader::CategoryValue type,
   case MESH_RESOURCE_COORDINATION:
   case MESH_PROXY_FORWARDING:
     break;
-    };
+    }
 }
 WifiMeshActionHeader::CategoryValue
 WifiMeshActionHeader::GetCategory ()

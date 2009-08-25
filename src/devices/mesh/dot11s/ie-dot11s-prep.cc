@@ -184,14 +184,16 @@ IePrep::GetInformationSize () const
       + 6 //Originator address
       + 4; //Originator seqno
   return retval;
-};
+}
 void
-IePrep::PrintInformation (std::ostream& os) const
+IePrep::Print (std::ostream& os) const
 {
+  os << std::endl << "<information_element id=" << ElementId () << ">" << std::endl;
   os << "Flags:        = " << m_flags << std::endl << "Hopcount:     = " << m_hopcount << std::endl << "TTL:          = " << m_ttl
       << std::endl<< "Destination:  = " << m_destinationAddress << std::endl << "Dest. seqnum: = " << m_destSeqNumber
       << std::endl << "Lifetime:     = " << m_lifetime << std::endl<< "Metric:       = " << m_metric << std::endl << "Originator:   = "
       << m_originatorAddress << std::endl << "Orig. seqnum: = " << m_originatorSeqNumber << std::endl;
+  os << "</information_element>" << std::endl;
 }
 bool
 operator== (const IePrep & a, const IePrep & b)
@@ -200,6 +202,12 @@ operator== (const IePrep & a, const IePrep & b)
       && (a.m_destinationAddress == b.m_destinationAddress) && (a.m_destSeqNumber == b.m_destSeqNumber)
       && (a.m_lifetime == b.m_lifetime) && (a.m_metric == b.m_metric) && (a.m_originatorAddress
       == b.m_originatorAddress) && (a.m_originatorSeqNumber == b.m_originatorSeqNumber));
+}
+std::ostream &
+operator << (std::ostream &os, const IePrep &a)
+{
+  a.Print (os);
+  return os;
 }
 } // namespace dot11s
 } //namespace ns3

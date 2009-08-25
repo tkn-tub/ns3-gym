@@ -91,7 +91,7 @@ public:
   virtual uint8_t  GetInformationSize () const;
   virtual void SerializeInformation (Buffer::Iterator i) const;
   virtual uint8_t DeserializeInformation (Buffer::Iterator i, uint8_t length);
-  virtual void PrintInformation (std::ostream& os) const;
+  virtual void Print (std::ostream& os) const;
   ///\}
 private:
   /**
@@ -110,6 +110,7 @@ private:
 };
 bool operator== (const IeBeaconTiming & a, const IeBeaconTiming & b);
 bool operator== (const IeBeaconTimingUnit & a, const IeBeaconTimingUnit & b);
+std::ostream &operator << (std::ostream &os, const IeBeaconTiming &beaconTiming);
 } // namespace dot11s
 } //namespace ns3
 #endif
