@@ -35,6 +35,20 @@
 #include "dot11s/ie-dot11s-rann.h"
 
 namespace ns3 {
+
+void
+WifiInformationElement::Print (std::ostream &os) const
+{
+  os << std::endl << "<information_element id=" << ElementId () << ">" << std::endl;
+  PrintInformation (os);
+  os << "</information_element>" << std::endl;
+}
+bool
+operator< (WifiInformationElement const & a, WifiInformationElement const & b)
+{
+  return (a.ElementId () < b.ElementId ());
+}
+
 WifiInformationElementVector::WifiInformationElementVector () :
   m_maxSize (1500)
 {
@@ -360,10 +374,10 @@ operator== (const WifiInformationElementVector & a, const WifiInformationElement
 #ifdef RUN_SELF_TESTS
 
 /// Built-in self test for WifiInformationElementVector
-struct WifiInformationElementVectorBist : public IeTest
+struct WifiInformationElementVectorBist : public Test
 {
   WifiInformationElementVectorBist () :
-    IeTest ("Mesh/WifiInformationElementVector")
+    Test ("Mesh/WifiInformationElementVector")
   {
   };
   virtual bool

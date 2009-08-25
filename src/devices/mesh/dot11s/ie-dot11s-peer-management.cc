@@ -21,7 +21,6 @@
 
 #include "ie-dot11s-peer-management.h"
 #include "ns3/assert.h"
-#include "ns3/test.h"
 #include "ns3/packet.h"
 
 namespace ns3 {

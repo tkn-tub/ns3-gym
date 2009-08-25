@@ -23,7 +23,6 @@
 
 #include "ns3/object.h"
 #include "ns3/packet.h"
-#include "ns3/wifi-information-element.h"
 #include "ns3/mgt-headers.h"        // from wifi module
 #include "ns3/wifi-mac-header.h"
 #include "ns3/wifi-information-element-vector.h"

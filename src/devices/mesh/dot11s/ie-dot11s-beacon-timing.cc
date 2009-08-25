@@ -19,12 +19,7 @@
  */
 
 #include "ie-dot11s-beacon-timing.h"
-#include "ns3/log.h"
-#include "ns3/test.h"
 #include "ns3/packet.h"
-
-NS_LOG_COMPONENT_DEFINE ("IeBeaconTiming");
-
 namespace ns3 {
 namespace dot11s {
 /*******************************************
@@ -88,8 +83,6 @@ IeBeaconTiming::AddNeighboursTimingElementUnit (uint16_t aid, Time last_beacon, 
 {
   if (m_numOfUnits == 50)
     {
-      NS_LOG_WARN (
-          "Neighbor timing element is ignored, since more than 50 neighbors can not be supported in single information element.");
       return;
     }
   //First we lookup if this element already exists
@@ -98,7 +91,6 @@ IeBeaconTiming::AddNeighboursTimingElementUnit (uint16_t aid, Time last_beacon, 
       if (((*i)->GetAid () == AidToU8 (aid)) && ((*i)->GetLastBeacon () == TimestampToU16 (last_beacon))
           && ((*i)->GetBeaconInterval () == BeaconIntervalToU16 (beacon_interval)))
         {
-          NS_LOG_WARN ("Duplicated neighbor timing element is ignored.");
           return;
         }
     }

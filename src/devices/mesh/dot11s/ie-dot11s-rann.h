@@ -22,7 +22,7 @@
 #define RANN_INFORMATION_ELEMENT_H
 
 #include "ns3/mac48-address.h"
-#include "ns3/wifi-information-element.h"
+#include "ns3/wifi-information-element-vector.h"
 
 namespace ns3 {
 namespace dot11s {

@@ -22,7 +22,7 @@
 #ifndef MESH_PEER_MAN_ELEMENT
 #define MESH_PEER_MAN_ELEMENT
 
-#include "ns3/wifi-information-element.h"
+#include "ns3/wifi-information-element-vector.h"
 
 namespace ns3 {
 namespace dot11s {
