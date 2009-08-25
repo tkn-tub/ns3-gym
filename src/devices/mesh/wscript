@@ -4,7 +4,6 @@ def build(bld):
     obj = bld.create_ns3_module('mesh', ['wifi', 'dot11s'])
 
     obj.source = [
-        #'wifi-information-element.cc',
         'wifi-information-element-vector.cc',
         'mesh-point-device.cc',
         'mesh-l2-routing-protocol.cc',
@@ -14,7 +13,6 @@ def build(bld):
     headers = bld.new_task_gen('ns3header')
     headers.module = 'mesh'
     headers.source = [
-        #'wifi-information-element.h',
         'wifi-information-element-vector.h',
         'mesh-point-device.h',
         'mesh-l2-routing-protocol.h',

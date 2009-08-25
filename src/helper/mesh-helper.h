@@ -20,13 +20,11 @@
  */
 
 
-#ifndef _MESHWIFIHELPER_H
-#define _MESHWIFIHELPER_H
+#ifndef MESH_HELPER_H
+#define MESH_HELPER_H
 
 #include "ns3/wifi-helper.h"
 #include "ns3/mesh-stack-installer.h"
-#include "ns3/nstime.h"
-#include "ns3/mesh-interface-helper.h"
 
 namespace ns3 {
 
@@ -40,16 +38,58 @@ class WifiChannel;
 class MeshHelper
 {
 public:
-  MeshHelper (); 
+  MeshHelper ();
+  static MeshHelper
+  Default ();
+  /**
+   * \param type the type of ns3::WifiMac to create.
+   * \param n%d the name of the attribute to set
+   * \param v%d the value of the attribute to set
+   *
+   * All the attributes specified in this method should exist
+   * in the requested mac.
+   */
+  void SetMacType (std::string n0 = "", const AttributeValue &v0 = EmptyAttributeValue (),
+        std::string n1 = "", const AttributeValue &v1 = EmptyAttributeValue (),
+        std::string n2 = "", const AttributeValue &v2 = EmptyAttributeValue (),
+        std::string n3 = "", const AttributeValue &v3 = EmptyAttributeValue (),
+        std::string n4 = "", const AttributeValue &v4 = EmptyAttributeValue (),
+        std::string n5 = "", const AttributeValue &v5 = EmptyAttributeValue (),
+        std::string n6 = "", const AttributeValue &v6 = EmptyAttributeValue (),
+        std::string n7 = "", const AttributeValue &v7 = EmptyAttributeValue ());
+  /**
+   * \param type the type of ns3::WifiRemoteStationManager to create.
+   * \param n%d the name of the attribute to set
+   * \param v%d the value of the attribute to set
+   *
+   * All the attributes specified in this method should exist
+   * in the requested station manager.
+   */
+  void
+  SetRemoteStationManager (std::string type,
+      std::string n0 = "", const AttributeValue &v0 = EmptyAttributeValue (),    
+      std::string n1 = "", const AttributeValue &v1 = EmptyAttributeValue (),
+      std::string n2 = "", const AttributeValue &v2 = EmptyAttributeValue (),
+      std::string n3 = "", const AttributeValue &v3 = EmptyAttributeValue (),
+      std::string n4 = "", const AttributeValue &v4 = EmptyAttributeValue (),
+      std::string n5 = "", const AttributeValue &v5 = EmptyAttributeValue (),
+      std::string n6 = "", const AttributeValue &v6 = EmptyAttributeValue (),
+      std::string n7 = "", const AttributeValue &v7 = EmptyAttributeValue ());
+  /**
+   * Set PHY standard
+   */
+  void SetStandard (enum WifiPhyStandard standard);
+  void SetMeshId (std::string s);
   /** 
    *  \brief Spread/not spread frequency channels of MP interfaces. 
    * 
    *  If set to true different non-overlaping 20MHz frequency 
    *  channels will be assigned to different mesh point interfaces.
    */
-  enum ChannelPolicy {
-  SPREAD_CHANNELS,
-  ZERO_CHANNEL
+  enum ChannelPolicy
+  {
+    SPREAD_CHANNELS,
+    ZERO_CHANNEL
   };
   void SetSpreadInterfaceChannels (ChannelPolicy);
   /**
@@ -69,7 +109,7 @@ public:
    * \return list of created mesh point devices, see MeshPointDevice
    */
   NetDeviceContainer
-  Install (const WifiPhyHelper &phyHelper, const MeshInterfaceHelper &interfaceHelper, NodeContainer c) const;
+  Install (const WifiPhyHelper &phyHelper, NodeContainer c) const;
   /**
    * \param type the type of ns3::MeshStack.
    *
@@ -88,12 +128,22 @@ public:
   void Report (const ns3::Ptr<ns3::NetDevice>&, std::ostream&);
   void ResetStats (const ns3::Ptr<ns3::NetDevice>&);
 private:
+  /**
+   * \returns a WifiNetDevice with ready-to-use interface
+   */
+  Ptr<WifiNetDevice> CreateInterface (const WifiPhyHelper &phyHelper, Ptr<Node> node, uint16_t channelId) const;
   uint32_t m_nInterfaces;
   ChannelPolicy m_spreadChannelPolicy;
   Ptr<MeshStack> m_stack;
   ObjectFactory m_stackFactory;
+  ///\name Interface factory
+  ///\{
+  ObjectFactory m_mac;
+  ObjectFactory m_stationManager;
+  enum WifiPhyStandard m_standard;
+    ///\}
 };
 } //namespace ns3
 
-#endif /* _MESHWIFIHELPER_H */
+#endif /* MESH_HELPER_H */
 

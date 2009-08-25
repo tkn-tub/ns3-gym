@@ -22,13 +22,14 @@
 #include "ns3/simulator.h"
 #include "ns3/mesh-point-device.h"
 #include "ns3/wifi-net-device.h"
-#include "ns3/log.h"
-NS_LOG_COMPONENT_DEFINE ("MeshHelper");
+#include "ns3/mesh-wifi-interface-mac.h"
 namespace ns3
 {
 MeshHelper::MeshHelper () :
   m_nInterfaces (1),
-  m_spreadChannelPolicy (ZERO_CHANNEL), m_stack (0)
+  m_spreadChannelPolicy (ZERO_CHANNEL),
+  m_stack (0),
+  m_standard (WIFI_PHY_STANDARD_80211a)
 {
 }
 void
@@ -47,7 +48,6 @@ MeshHelper::SetStackInstaller (std::string type,
                 std::string n6, const AttributeValue &v6,
                 std::string n7, const AttributeValue &v7)
 {
-  NS_LOG_FUNCTION (this << type);
   m_stackFactory.SetTypeId (type);
   m_stackFactory.Set (n0, v0);
   m_stackFactory.Set (n1, v1);
@@ -71,25 +71,29 @@ MeshHelper::SetNumberOfInterfaces (uint32_t nInterfaces)
   m_nInterfaces = nInterfaces;
 }
 NetDeviceContainer
-MeshHelper::Install (const WifiPhyHelper &phyHelper, const MeshInterfaceHelper &interfaceHelper,
-    NodeContainer c) const
+MeshHelper::Install (const WifiPhyHelper &phyHelper, NodeContainer c) const
 {
   NetDeviceContainer devices;
   NS_ASSERT (m_stack != 0);
-  uint16_t node_counter = 0;
   for (NodeContainer::Iterator i = c.Begin (); i != c.End (); ++i)
     {
       Ptr<Node> node = *i;
-
       // Create a mesh point device
       Ptr<MeshPointDevice> mp = CreateObject<MeshPointDevice> ();
       node->AddDevice (mp);
-
       // Create wifi interfaces (single interface by default)
       for (uint32_t i = 0; i < m_nInterfaces; ++i)
         {
-          uint32_t channel = i * 5;
-          Ptr<WifiNetDevice> iface = interfaceHelper.CreateInterface (phyHelper, node, channel);
+          uint32_t channel = 0;
+          if (m_spreadChannelPolicy == ZERO_CHANNEL)
+            {
+              channel = 0;
+            }
+          if (m_spreadChannelPolicy == SPREAD_CHANNELS)
+            {
+              channel = i * 5;
+            }
+          Ptr<WifiNetDevice> iface = CreateInterface (phyHelper, node, channel);
           mp->AddInterface (iface);
         }
       if (!m_stack->InstallStack (mp))
@@ -97,9 +101,87 @@ MeshHelper::Install (const WifiPhyHelper &phyHelper, const MeshInterfaceHelper &
           NS_FATAL_ERROR ("Stack is not installed!");
         }
       devices.Add (mp);
-      node_counter++;
     }
   return devices;
+}
+MeshHelper
+MeshHelper::Default (void)
+{
+  MeshHelper helper;
+  helper.SetMacType ();
+  helper.SetRemoteStationManager ("ns3::ArfWifiManager");
+  helper.SetSpreadInterfaceChannels (SPREAD_CHANNELS);
+  return helper;
+}
+
+void
+MeshHelper::SetMacType (std::string n0, const AttributeValue &v0,
+                              std::string n1, const AttributeValue &v1,
+                              std::string n2, const AttributeValue &v2,
+                              std::string n3, const AttributeValue &v3,
+                              std::string n4, const AttributeValue &v4,
+                              std::string n5, const AttributeValue &v5,
+                              std::string n6, const AttributeValue &v6,
+                              std::string n7, const AttributeValue &v7)
+{
+  m_mac.SetTypeId ("ns3::MeshWifiInterfaceMac");
+  m_mac.Set (n0, v0);
+  m_mac.Set (n1, v1);
+  m_mac.Set (n2, v2);
+  m_mac.Set (n3, v3);
+  m_mac.Set (n4, v4);
+  m_mac.Set (n5, v5);
+  m_mac.Set (n6, v6);
+  m_mac.Set (n7, v7);
+}
+void
+MeshHelper::SetRemoteStationManager (std::string type,
+                                     std::string n0, const AttributeValue &v0,
+                                     std::string n1, const AttributeValue &v1,
+                                     std::string n2, const AttributeValue &v2,
+                                     std::string n3, const AttributeValue &v3,
+                                     std::string n4, const AttributeValue &v4,
+                                     std::string n5, const AttributeValue &v5,
+                                     std::string n6, const AttributeValue &v6,
+                                     std::string n7, const AttributeValue &v7)
+{
+  m_stationManager = ObjectFactory ();
+  m_stationManager.SetTypeId (type);
+  m_stationManager.Set (n0, v0);
+  m_stationManager.Set (n1, v1);
+  m_stationManager.Set (n2, v2);
+  m_stationManager.Set (n3, v3);
+  m_stationManager.Set (n4, v4);
+  m_stationManager.Set (n5, v5);
+  m_stationManager.Set (n6, v6);
+  m_stationManager.Set (n7, v7);
+}
+void 
+MeshHelper::SetStandard (enum WifiPhyStandard standard)
+{
+  m_standard = standard;
+}
+
+Ptr<WifiNetDevice>
+MeshHelper::CreateInterface (const WifiPhyHelper &phyHelper, Ptr<Node> node, uint16_t channelId) const
+{
+  Ptr<WifiNetDevice> device = CreateObject<WifiNetDevice> ();
+
+  Ptr<MeshWifiInterfaceMac> mac = m_mac.Create<MeshWifiInterfaceMac> ();
+  NS_ASSERT (mac != 0);
+  mac->SetSsid (Ssid ());
+  Ptr<WifiRemoteStationManager> manager = m_stationManager.Create<WifiRemoteStationManager> ();
+  NS_ASSERT (manager != 0);
+  Ptr<WifiPhy> phy = phyHelper.Create (node, device);
+  mac->SetAddress (Mac48Address::Allocate ());
+  mac->ConfigureStandard (m_standard);
+  phy->ConfigureStandard (m_standard);
+  device->SetMac (mac);
+  device->SetPhy (phy);
+  device->SetRemoteStationManager (manager);
+  node->AddDevice (device);
+  mac->SwitchFrequencyChannel (channelId);
+  return device;
 }
 void
 MeshHelper::Report (const ns3::Ptr<ns3::NetDevice>& device, std::ostream& os)

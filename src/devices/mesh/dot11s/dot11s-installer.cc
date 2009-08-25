@@ -17,10 +17,11 @@
  *
  * Authors: Kirill Andreev <andreev@iitp.ru>
  */
-#include "ns3/mesh-interface-helper.h"
 #include "dot11s-installer.h"
 #include "peer-management-protocol.h"
 #include "hwmp-protocol.h"
+#include "ns3/wifi-net-device.h"
+#include "ns3/mesh-wifi-interface-mac.h"
 
 namespace ns3 {
 using namespace dot11s;
@@ -86,7 +87,9 @@ Dot11sStack::Report (const Ptr<MeshPointDevice> mp, std::ostream& os)
     {
       Ptr<WifiNetDevice> device = (*i)->GetObject<WifiNetDevice> ();
       NS_ASSERT (device != 0);
-      MeshInterfaceHelper::Report (device, os);
+      Ptr<MeshWifiInterfaceMac> mac = device->GetMac ()->GetObject<MeshWifiInterfaceMac> ();
+      NS_ASSERT (mac != 0);
+      mac->Report (os);
     }
   Ptr<HwmpProtocol> hwmp = mp->GetObject<HwmpProtocol> ();
   NS_ASSERT (hwmp != 0);
@@ -106,7 +109,9 @@ Dot11sStack::ResetStats (const Ptr<MeshPointDevice> mp)
     {
       Ptr<WifiNetDevice> device = (*i)->GetObject<WifiNetDevice> ();
       NS_ASSERT (device != 0);
-      MeshInterfaceHelper::ResetStats (device);
+      Ptr<MeshWifiInterfaceMac> mac = device->GetMac ()->GetObject<MeshWifiInterfaceMac> ();
+      NS_ASSERT (mac != 0);
+      mac->ResetStats ();
     }
   Ptr<HwmpProtocol> hwmp = mp->GetObject<HwmpProtocol> ();
   NS_ASSERT (hwmp != 0);

@@ -28,7 +28,6 @@
 #include "ns3/mesh-module.h"
 #include "ns3/mobility-module.h"
 #include "ns3/mesh-helper.h"
-#include "ns3/mesh-interface-helper.h"
 
 #include <iostream>
 #include <sstream>
@@ -121,6 +120,7 @@ MeshTest::CreateNodes ()
   YansWifiPhyHelper wifiPhy = YansWifiPhyHelper::Default ();
   YansWifiChannelHelper wifiChannel = YansWifiChannelHelper::Default ();
   wifiPhy.SetChannel (wifiChannel.Create ());
+  mesh = MeshHelper::Default ();
   // Install mesh point devices & protocols
   mesh.SetStackInstaller (m_stack, "Root", Mac48AddressValue (Mac48Address (m_root.c_str ())));
   if (m_chan)
@@ -131,10 +131,10 @@ MeshTest::CreateNodes ()
     {
       mesh.SetSpreadInterfaceChannels (MeshHelper::ZERO_CHANNEL);
     }
-  MeshInterfaceHelper interface = MeshInterfaceHelper::Default ();
-  interface.SetType ("RandomStart", TimeValue (Seconds(m_randomStart)));
+  //MeshInterfaceHelper interface = MeshInterfaceHelper::Default ();
+  mesh.SetMacType ("RandomStart", TimeValue (Seconds(m_randomStart)));
   mesh.SetNumberOfInterfaces (m_nIfaces);
-  meshDevices = mesh.Install (wifiPhy, interface, nodes);
+  meshDevices = mesh.Install (wifiPhy, nodes);
   // Setup mobility
   MobilityHelper mobility;
   mobility.SetPositionAllocator ("ns3::GridPositionAllocator",

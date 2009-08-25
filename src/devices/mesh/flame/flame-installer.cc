@@ -17,9 +17,11 @@
  *
  * Authors: Kirill Andreev <andreev@iitp.ru>
  */
-#include "ns3/mesh-interface-helper.h"
+
 #include "flame-installer.h"
 #include "flame-protocol.h"
+#include "ns3/wifi-net-device.h"
+#include "ns3/mesh-wifi-interface-mac.h"
 
 namespace ns3
 {
