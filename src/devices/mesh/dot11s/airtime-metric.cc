@@ -36,21 +36,21 @@ AirtimeLinkMetricCalculator::GetTypeId ()
                     MakeUintegerAccessor (&AirtimeLinkMetricCalculator::m_overheadNanosec),
                     MakeUintegerChecker<uint32_t> (1)
                   )
-    .AddAttribute ( "TestLengt",
+    .AddAttribute ( "TestLength",
                     "Rate should be estimated using test length.",
                      UintegerValue (1024),
                      MakeUintegerAccessor (
                          &AirtimeLinkMetricCalculator::m_testLength),
                      MakeUintegerChecker<uint16_t> (1)
                   )
-    .AddAttribute ( "Dot11HeaderLengt",
+    .AddAttribute ( "Dot11MacHeaderLength",
                     "Length of the 802.11 header",
                     UintegerValue (36),
                     MakeUintegerAccessor (
                         &AirtimeLinkMetricCalculator::m_headerLength),
                     MakeUintegerChecker<uint16_t> (0)
                   )
-    .AddAttribute ( "Dot11sHeaderLength",
+    .AddAttribute ( "Dot11sMeshHeaderLength",
                     "Length of the mesh header",
                     UintegerValue (6),
                     MakeUintegerAccessor (
