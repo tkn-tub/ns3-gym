@@ -1,10 +1,16 @@
 /**
  *
  * Instructions:
- * ./waf --run multi-rate-first > m.data
- * gnuplot m.data
- * eog *.png
+ * ./waf --run multi-rate-first
+ * gnuplot multi-rate-first-scen*.plt
  *
+ * Output: 
+ * multi-rate-first-scen1.eps
+ * multi-rate-first-scen2.eps
+ * multi-rate-first-scen3.eps
+ * multi-rate-first-scen4.eps
+ *
+ * Side Note: It may take some time.
  */
 
 #include "ns3/core-module.h"
@@ -15,6 +21,7 @@
 #include "ns3/contrib-module.h"
 
 #include <iostream>
+#include <fstream>
 
 NS_LOG_COMPONENT_DEFINE ("Main");
 
@@ -34,6 +41,7 @@ private:
   void AdvancePosition (Ptr<Node> node);
   void BackTrackPosition (Ptr<Node> node);
   void StationaryPosition (Ptr<Node> node);
+  void MultiPosition (Ptr<Node> node1, Ptr<Node> node2);
   Ptr<Socket> SetupPacketReceive (Ptr<Node> node);
 
   uint32_t m_bytesTotal;
@@ -108,6 +116,26 @@ Experiment::StationaryPosition (Ptr<Node> node)
   m_output.Add ((Simulator::Now()).GetSeconds(), mbs);
 
 }
+void
+Experiment::MultiPosition (Ptr<Node> n1, Ptr<Node> n2)
+{
+  Vector pos1 = GetPosition(n1);
+  Vector pos2 = GetPosition(n2);
+  double mbs = ((m_bytesTotal * 8.0) / 1000000);
+  m_bytesTotal = 0;
+  m_output.Add ((Simulator::Now()).GetSeconds(), mbs);
+  
+  if( pos1.x < 230)
+    {
+      pos1.x += 1.0;
+      SetPosition (n1, pos1);
+    }
+  if( pos2.x > 0)
+    {
+      pos2.x -= 1.0;
+      SetPosition (n2, pos2);
+    }
+}
 
 void
 Experiment::ReceivePacket (Ptr<Socket> socket)
@@ -169,21 +197,30 @@ Experiment::Run (const WifiHelper &wifi, const YansWifiPhyHelper &wifiPhy,
 
   Ptr<Socket> recvSink = SetupPacketReceive (c.Get (1));
 
-  if(positionStep == 1)
+  if (positionStep == 1)
     {
       Simulator::Schedule (Seconds (1.5), &Experiment::AdvancePosition, this, c.Get (1));
     }
-  else if(positionStep == -1)
+  else if (positionStep == -1)
     {
       Simulator::Schedule (Seconds (1.5), &Experiment::BackTrackPosition, this, c.Get (1));
     }
-  else if(positionStep == 0)
+  else if (positionStep == 0)
     {
       for(int i = 1; i <= 210; i++) 
         {
           Simulator::Schedule (Seconds (i), &Experiment::StationaryPosition, this, c.Get (1));
         }
     }
+  else if (positionStep == 2)
+    {
+      for(int i = 1; i <= 210; i++) 
+        {
+          Simulator::Schedule (Seconds (i), &Experiment::MultiPosition, this, c.Get(0), c.Get (1));
+        }
+    }
+
+     
   Simulator::Run ();
   Simulator::Destroy ();
 
@@ -192,6 +229,11 @@ Experiment::Run (const WifiHelper &wifi, const YansWifiPhyHelper &wifiPhy,
 
 int main (int argc, char *argv[])
 {
+  std::ofstream outfile ("multi-rate-first-scen1.plt");
+  std::ofstream outfile2 ("multi-rate-first-scen2.plt");
+  std::ofstream outfile3 ("multi-rate-first-scen3.plt");
+  std::ofstream outfile4 ("multi-rate-first-scen4.plt");
+
   // disable fragmentation
   Config::SetDefault ("ns3::WifiRemoteStationManager::FragmentationThreshold", StringValue ("2200"));
   Config::SetDefault ("ns3::WifiRemoteStationManager::RtsCtsThreshold", StringValue ("2200"));
@@ -199,119 +241,158 @@ int main (int argc, char *argv[])
   CommandLine cmd;
   cmd.Parse (argc, argv);
 
-  Gnuplot gnuplot = Gnuplot ("multi-rate-first.png");
+
+  MobilityHelper mobility;
   Experiment experiment;
+  Gnuplot gnuplot;
+  int myPositionStep; 
+  Ptr<ListPositionAllocator> positionAlloc;
+  Gnuplot2dDataset dataset;
   WifiHelper wifi = WifiHelper::Default ();
   NqosWifiMacHelper wifiMac = NqosWifiMacHelper::Default ();
   YansWifiPhyHelper wifiPhy = YansWifiPhyHelper::Default ();
   YansWifiChannelHelper wifiChannel = YansWifiChannelHelper::Default ();
-  Gnuplot2dDataset dataset;
-  int myPositionStep = 0; 
 
-/*
+  // Scenario 1: two nodes within transmission range about 5 meters apart
+  // Fix a node stationary, move the second node away from it
 
-  // Scenario 1: moving away from one another
-  // Initially set them 5 meters apart 
-  // Set  positionStep parameter of Experiment::Run to 1  
-  // Set RateErrorModel of Experiment::Run to 0
+  // moving forward 
   myPositionStep = 1;
 
-  MobilityHelper mobility;
-  Ptr<ListPositionAllocator> positionAlloc = CreateObject<ListPositionAllocator> ();
+  gnuplot = Gnuplot ("multi-rate-first-scen1.eps");
+
+  positionAlloc = CreateObject<ListPositionAllocator> ();
   positionAlloc->Add (Vector (0.0, 0.0, 0.0));
   positionAlloc->Add (Vector (5.0, 0.0, 0.0));
   mobility.SetPositionAllocator (positionAlloc);
   mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
 
   wifiMac.SetType ("ns3::AdhocWifiMac");
-
-  gnuplot = Gnuplot ("multi-rate-first.png");
   wifi.SetStandard (WIFI_PHY_STANDARD_holland);
 
-  NS_LOG_DEBUG ("minstrel");
   experiment = Experiment ("minstrel");
   wifi.SetRemoteStationManager ("ns3::MinstrelWifiManager");
   dataset = experiment.Run (wifi, wifiPhy, wifiMac, wifiChannel, mobility, myPositionStep);
   gnuplot.AddDataset (dataset);
 
-  NS_LOG_DEBUG ("ideal");
   experiment = Experiment ("ideal");
   wifi.SetRemoteStationManager ("ns3::IdealWifiManager");
   dataset = experiment.Run (wifi, wifiPhy, wifiMac, wifiChannel, mobility, myPositionStep);
   gnuplot.AddDataset (dataset);
 
-  gnuplot.GenerateOutput (std::cout);
-  */
+  gnuplot.SetTerminal ("postscript eps color enh \"Times-BoldItalic\"");
+  gnuplot.SetLegend ("Time (Seconds)", "Throughput(Mbps)");
+  gnuplot.SetExtra  ("set xrange [0:250]");
+  gnuplot.SetTitle ("Throughput vs Time");
+  gnuplot.GenerateOutput (outfile);
+  outfile.close ();
 
 
-  // Scenario 2: two nodes out of range, moving into transmission range range
-  // Initially set them 230 meters apart 
-  // Set positionStep parameter of Experiment::Rung to -1
-  // set RateErrorModel of Experiment::Run to 0
+  // Scenario 2: two nodes out of transmission range about 230 meters apart
+  // Fix a node stationary, move the second node into transmission range
 
+  // moving backward
   myPositionStep = -1;
 
-  MobilityHelper mobility;
-  Ptr<ListPositionAllocator> positionAlloc = CreateObject<ListPositionAllocator> ();
+  gnuplot = Gnuplot ("multi-rate-first-scen2.eps");
+
+  positionAlloc = CreateObject<ListPositionAllocator> ();
   positionAlloc->Add (Vector (0.0, 0.0, 0.0));
   positionAlloc->Add (Vector (230.0, 0.0, 0.0));
   mobility.SetPositionAllocator (positionAlloc);
   mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
 
   wifiMac.SetType ("ns3::AdhocWifiMac");
-
-  gnuplot = Gnuplot ("multi-rate-first.png");
   wifi.SetStandard (WIFI_PHY_STANDARD_holland);
 
-  NS_LOG_DEBUG ("minstrel");
   experiment = Experiment ("minstrel");
   wifi.SetRemoteStationManager ("ns3::MinstrelWifiManager");
-  dataset = experiment.Run (wifi, wifiPhy, wifiMac, wifiChannel, mobility, myPositionStep);
+  dataset= experiment.Run (wifi, wifiPhy, wifiMac, wifiChannel, mobility, myPositionStep);
   gnuplot.AddDataset (dataset);
 
-  NS_LOG_DEBUG ("ideal");
   experiment = Experiment ("ideal");
   wifi.SetRemoteStationManager ("ns3::IdealWifiManager");
-  dataset = experiment.Run (wifi, wifiPhy, wifiMac, wifiChannel, mobility, myPositionStep);
+  dataset= experiment.Run (wifi, wifiPhy, wifiMac, wifiChannel, mobility, myPositionStep);
   gnuplot.AddDataset (dataset);
 
-  gnuplot.GenerateOutput (std::cout);
+
+  gnuplot.SetTerminal ("postscript eps color enh \"Times-BoldItalic\"");
+  gnuplot.SetLegend ("Time (Seconds)", "Throughput(Mbps)");
+  gnuplot.SetExtra  ("set xrange [0:250]");
+  gnuplot.SetTitle ("Throughput vs Time");
+  gnuplot.GenerateOutput (outfile2);
+  outfile2.close ();
 
 
+  // Scenario 3: two nodes within transmission range 25 meters part
+  // Set both nodes stationary
+  // this is more like a sanity check
 
-/*
-  // Scenario 3:
-  // Initially set them 25 meters apart, stationary
-  // Set positionStep parameter of Experiment::Rung to 0 
-  // This is a sanity check
-
+  // Set position stationary 
   myPositionStep = 0;
-  MobilityHelper mobility;
-  Ptr<ListPositionAllocator> positionAlloc = CreateObject<ListPositionAllocator> ();
+
+  gnuplot = Gnuplot ("multi-rate-first-scen3.eps");
+
+  positionAlloc = CreateObject<ListPositionAllocator> ();
   positionAlloc->Add (Vector (0.0, 0.0, 0.0));
   positionAlloc->Add (Vector (25.0, 0.0, 0.0));
   mobility.SetPositionAllocator (positionAlloc);
   mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
 
   wifiMac.SetType ("ns3::AdhocWifiMac");
-
-  gnuplot = Gnuplot ("multi-rate-first.png");
   wifi.SetStandard (WIFI_PHY_STANDARD_holland);
 
-  NS_LOG_DEBUG ("minstrel");
   experiment = Experiment ("minstrel");
   wifi.SetRemoteStationManager ("ns3::MinstrelWifiManager");
-  dataset = experiment.Run (wifi, wifiPhy, wifiMac, wifiChannel, mobility, myPositionStep);
+  dataset= experiment.Run (wifi, wifiPhy, wifiMac, wifiChannel, mobility, myPositionStep);
   gnuplot.AddDataset (dataset);
 
-  NS_LOG_DEBUG ("ideal");
   experiment = Experiment ("ideal");
   wifi.SetRemoteStationManager ("ns3::IdealWifiManager");
-  dataset = experiment.Run (wifi, wifiPhy, wifiMac, wifiChannel, mobility, myPositionStep);
+  dataset= experiment.Run (wifi, wifiPhy, wifiMac, wifiChannel, mobility, myPositionStep);
   gnuplot.AddDataset (dataset);
 
-  gnuplot.GenerateOutput (std::cout);
-  */
+  gnuplot.SetTerminal ("postscript eps color enh \"Times-BoldItalic\"");
+  gnuplot.SetLegend ("Time (Seconds)", "Throughput(Mbps)");
+  gnuplot.SetExtra  ("set xrange [0:250]");
+  gnuplot.SetTitle ("Throughput vs Time");
+  gnuplot.GenerateOutput (outfile3);
+  outfile3.close ();
+
+  // Scenario 4: Two nodes in opposite direction about 230 meters apart
+  // moving into transmission range and out of transmission range
+  myPositionStep = 2;
+
+  gnuplot = Gnuplot ("multi-rate-first-scen4.eps");
+
+  positionAlloc = CreateObject<ListPositionAllocator> ();
+  // initial position of node 1
+  positionAlloc->Add (Vector (0.0, 25.0, 0.0));
+  // initial position of node 2
+  positionAlloc->Add (Vector (230.0, 0.0, 0.0));
+  mobility.SetPositionAllocator (positionAlloc);
+  mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
+
+  wifiMac.SetType ("ns3::AdhocWifiMac");
+  wifi.SetStandard (WIFI_PHY_STANDARD_holland);
+
+  experiment = Experiment ("minstrel");
+  wifi.SetRemoteStationManager ("ns3::MinstrelWifiManager");
+  dataset= experiment.Run (wifi, wifiPhy, wifiMac, wifiChannel, mobility, myPositionStep);
+  gnuplot.AddDataset (dataset);
+
+  experiment = Experiment ("ideal");
+  wifi.SetRemoteStationManager ("ns3::IdealWifiManager");
+  dataset= experiment.Run (wifi, wifiPhy, wifiMac, wifiChannel, mobility, myPositionStep);
+  gnuplot.AddDataset (dataset);
+
+  gnuplot.SetTerminal ("postscript eps color enh \"Times-BoldItalic\"");
+  gnuplot.SetLegend ("Time (Seconds)", "Throughput(Mbps)");
+  gnuplot.SetExtra  ("set xrange [0:250]");
+  gnuplot.SetTitle ("Throughput vs Time");
+  gnuplot.GenerateOutput (outfile4);
+  outfile4.close ();
+  
 
   return 0;
 }
