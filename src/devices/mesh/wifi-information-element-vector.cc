@@ -75,7 +75,6 @@ WifiInformationElementVector::Deserialize (Buffer::Iterator start)
 {
   Buffer::Iterator i = start;
   uint32_t size = start.GetSize();
-  std::cerr << "Size = " << size << "\n";
   while (size > 0)
     {
       uint32_t deserialized = DeserializeSingleIe(i);
@@ -159,7 +158,7 @@ WifiInformationElementVector::End ()
 bool
 WifiInformationElementVector::AddInformationElement (Ptr<WifiInformationElement> element)
 {
-  if (element->GetSerializedSize () + GetSize () > m_maxSize)
+  if (element->GetInformationSize () + 2 + GetSize () > m_maxSize)
     {
       return false;
     }
@@ -178,62 +177,6 @@ WifiInformationElementVector::FindFirst (enum WifiElementId id) const
     }
   return 0;
 }
-WifiInformationElementVector
-WifiInformationElementVector::DeserializePacket (Ptr<Packet> packet)
-{
-  WifiInformationElementVector retval;
-  EmptyIe ie;
-  while (packet->PeekHeader (ie))
-    {
-      Ptr<WifiInformationElement> newElement;
-      switch (ie.GetElementId ())
-        {
-      case IE11S_MESH_CONFIGURATION:
-        newElement = Create<dot11s::IeConfiguration> ();
-        break;
-      case IE11S_MESH_ID:
-        newElement = Create<dot11s::IeMeshId> ();
-        break;
-      case IE11S_LINK_METRIC_REPORT:
-        newElement = Create<dot11s::IeLinkMetricReport> ();
-        break;
-      case IE11S_PEERING_MANAGEMENT:
-        newElement = Create<dot11s::IePeerManagement> ();
-        break;
-      case IE11S_BEACON_TIMING:
-        newElement = Create<dot11s::IeBeaconTiming> ();
-        break;
-      case IE11S_RANN:
-        newElement = Create<dot11s::IeRann> ();
-        break;
-      case IE11S_PREQ:
-        newElement = Create<dot11s::IePreq> ();
-        break;
-      case IE11S_PREP:
-        newElement = Create<dot11s::IePrep> ();
-        break;
-      case IE11S_PERR:
-        newElement = Create<dot11s::IePerr> ();
-        break;
-      case IE11S_MESH_PEERING_PROTOCOL_VERSION:
-        newElement = Create<dot11s::IePeeringProtocol> ();
-        break;
-      default:
-        NS_FATAL_ERROR ("Information element " << (uint16_t) ie.GetElementId () << " is not implemented");
-        return retval;
-        }
-      packet->RemoveHeader (*newElement);
-      if (!retval.AddInformationElement (newElement))
-        {
-          NS_FATAL_ERROR ("Check max size for information element!");
-        }
-      if (packet->GetSize () == 0)
-        {
-          return retval;
-        }
-    }
-  return retval;
-}
 namespace {
 struct PIEComparator
 {
@@ -244,82 +187,15 @@ struct PIEComparator
   }
 };
 }
-Ptr<Packet>
-WifiInformationElementVector::CreatePacket (bool sortByElementId)
-{
-  if (sortByElementId)
-    {
-      std::sort (m_elements.begin (), m_elements.end (), PIEComparator ());
-    }
-  Ptr<Packet> packet = Create<Packet> ();
-  std::vector<Ptr<WifiInformationElement> >::const_reverse_iterator i;
-  for (i = m_elements.rbegin (); i != m_elements.rend (); ++i)
-    {
-      packet->AddHeader (**i);
-    }
-  return packet;
-}
 uint32_t
 WifiInformationElementVector::GetSize () const
 {
   uint32_t size = 0;
   for (IE_VECTOR::const_iterator i = m_elements.begin (); i != m_elements.end (); i++)
     {
-      size += (*i)->GetSerializedSize ();
+      size += ((*i)->GetInformationSize () + 2);
     }
   return size;
-}
-WifiInformationElementVector::EmptyIe::~EmptyIe ()
-{
-}
-WifiInformationElementVector::EmptyIe::EmptyIe () :
-  m_elementId (0), m_length (0)
-{
-}
-TypeId
-WifiInformationElementVector::EmptyIe::GetTypeId ()
-{
-  static TypeId tid = TypeId ("ns3::WifiInformationElementVector::EmptyIe")
-    .SetParent<Header> ();
-  return tid;
-}
-TypeId
-WifiInformationElementVector::EmptyIe::GetInstanceTypeId () const
-{
-  return GetTypeId ();
-}
-uint8_t
-WifiInformationElementVector::EmptyIe::GetLength ()
-{
-  return m_length;
-}
-uint8_t
-WifiInformationElementVector::EmptyIe::GetElementId ()
-{
-  return m_elementId;
-}
-uint32_t
-WifiInformationElementVector::EmptyIe::GetSerializedSize () const
-{
-  return 2;
-}
-void
-WifiInformationElementVector::EmptyIe::Serialize (Buffer::Iterator start) const
-{
-  start.WriteU8 (m_elementId);
-  start.WriteU8 (m_length);
-}
-uint32_t
-WifiInformationElementVector::EmptyIe::Deserialize (Buffer::Iterator start)
-{
-  Buffer::Iterator i = start;
-  m_elementId = i.ReadU8 ();
-  m_length = i.ReadU8 ();
-  return i.GetDistanceFrom (start);
-}
-void
-WifiInformationElementVector::EmptyIe::Print (std::ostream &os) const
-{
 }
 bool
 operator== (const WifiInformationElementVector & a, const WifiInformationElementVector & b)
@@ -337,7 +213,7 @@ operator== (const WifiInformationElementVector & a, const WifiInformationElement
         {
           return false;
         }
-      if ((*i)->GetSerializedSize () != (*j)->GetSerializedSize ())
+      if ((*i)->GetInformationSize () != (*j)->GetInformationSize ())
         {
           return false;
         }
@@ -374,8 +250,10 @@ WifiInformationElementVectorBist::RunTests ()
   vector.AddInformationElement (Create<dot11s::IePreq> ());
   vector.AddInformationElement (Create<dot11s::IePrep> ());
   vector.AddInformationElement (Create<dot11s::IePerr> ());
-  Ptr<Packet> packet = vector.CreatePacket (false);
-  WifiInformationElementVector resultVector = WifiInformationElementVector::DeserializePacket (packet);
+  Ptr<Packet> packet = Create<Packet> ();
+  packet->AddHeader (vector);
+  WifiInformationElementVector resultVector;
+  packet->RemoveHeader (resultVector);
   NS_TEST_ASSERT (vector == resultVector);
   
   return result;

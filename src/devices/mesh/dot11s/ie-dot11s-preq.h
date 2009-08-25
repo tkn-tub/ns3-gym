@@ -118,12 +118,17 @@ public:
    */
   bool MayAddAddress (Mac48Address originator);
   bool IsFull () const;
-private:
+  /**
+   * \name Inherited from WifiInformationElement
+   * \{
+   */
   WifiElementId ElementId () const;
   void SerializeInformation (Buffer::Iterator i) const;
   uint8_t DeserializeInformation (Buffer::Iterator i, uint8_t length);
   uint8_t GetInformationSize () const;
   void PrintInformation (std::ostream& os) const;
+  ///\}
+private:
   /**
    * how many destinations we support
    */

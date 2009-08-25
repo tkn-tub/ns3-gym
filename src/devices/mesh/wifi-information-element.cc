@@ -24,45 +24,6 @@
 
 namespace ns3
 {
-
-TypeId
-WifiInformationElement::GetTypeId ()
-{
-  static TypeId tid = TypeId ("ns3::WifiInformationElement")
-    .SetParent<Header> ();
-  return tid;
-}
-
-TypeId
-WifiInformationElement::GetInstanceTypeId () const
-{
-  return GetTypeId ();
-}
-uint32_t
-WifiInformationElement::GetSerializedSize () const
-{
-  return (GetInformationSize () + 2);
-}
-
-void
-WifiInformationElement::Serialize (Buffer::Iterator i) const
-{
-  i.WriteU8 (ElementId ());
-  i.WriteU8 (GetInformationSize ());
-  SerializeInformation (i);
-}
-
-uint32_t
-WifiInformationElement::Deserialize (Buffer::Iterator i)
-{
-  if (i.ReadU8 () != ElementId ())
-    {
-      return 0;
-    }
-  uint8_t length = i.ReadU8 ();
-  return (DeserializeInformation (i, length) + 2);
-}
-
 void
 WifiInformationElement::Print (std::ostream &os) const
 {

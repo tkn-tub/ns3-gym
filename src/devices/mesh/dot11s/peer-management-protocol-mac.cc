@@ -126,26 +126,30 @@ PeerManagementProtocolMac::Receive (Ptr<Packet> const_packet, const WifiMacHeade
           m_stats.brokenMgt++;
           return false;
         }
-      IePeerManagement peerElement;
-      packet->RemoveHeader (peerElement);
+      Ptr<IePeerManagement> peerElement;
+      //Peer Management element is the last element in this frame - so, we can use WifiInformationElementVector
+      WifiInformationElementVector elements;
+      packet->RemoveHeader (elements);
+      peerElement = DynamicCast<IePeerManagement>(elements.FindFirst(IE11S_PEERING_MANAGEMENT));
+      NS_ASSERT (peerElement != 0);
       //Check taht frame subtype corresponds peer link subtype
-      if (peerElement.SubtypeIsOpen ())
+      if (peerElement->SubtypeIsOpen ())
         {
           m_stats.rxOpen++;
           NS_ASSERT (actionValue.peerLink == WifiMeshActionHeader::PEER_LINK_OPEN);
         }
-      if (peerElement.SubtypeIsConfirm ())
+      if (peerElement->SubtypeIsConfirm ())
         {
           m_stats.rxConfirm++;
           NS_ASSERT (actionValue.peerLink == WifiMeshActionHeader::PEER_LINK_CONFIRM);
         }
-      if (peerElement.SubtypeIsClose ())
+      if (peerElement->SubtypeIsClose ())
         {
           m_stats.rxClose++;
           NS_ASSERT (actionValue.peerLink == WifiMeshActionHeader::PEER_LINK_CLOSE);
         }
       //Deliver Peer link management frame to protocol:
-      m_protocol->ReceivePeerLinkFrame (m_ifIndex, peerAddress, peerMpAddress, fields.aid, peerElement,
+      m_protocol->ReceivePeerLinkFrame (m_ifIndex, peerAddress, peerMpAddress, fields.aid, *peerElement,
           fields.config);
       // if we can handle a frame - drop it
       return false;
@@ -198,7 +202,9 @@ PeerManagementProtocolMac::SendPeerLinkManagementFrame (Mac48Address peerAddress
   //Create a packet:
   meshConfig.SetNeighborCount (m_protocol->GetNumberOfLinks ());
   Ptr<Packet> packet = Create<Packet> ();
-  packet->AddHeader (peerElement);
+  WifiInformationElementVector elements;
+  elements.AddInformationElement(Ptr<IePeerManagement> (&peerElement));
+  packet->AddHeader (elements);
   PeerLinkFrameStart::PlinkFrameStartFields fields;
   fields.rates = m_parent->GetSupportedRates ();
   fields.capability = 0;

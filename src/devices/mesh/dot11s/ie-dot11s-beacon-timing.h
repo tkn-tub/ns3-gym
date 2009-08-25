@@ -83,12 +83,17 @@ public:
     Time  beacon_interval
   );
   void   ClearTimingElement ();
-private:
+  /**
+   * \name Inherited from WifiInformationElement
+   * \{
+   */
   virtual WifiElementId ElementId () const;
   virtual uint8_t  GetInformationSize () const;
   virtual void SerializeInformation (Buffer::Iterator i) const;
   virtual uint8_t DeserializeInformation (Buffer::Iterator i, uint8_t length);
   virtual void PrintInformation (std::ostream& os) const;
+  ///\}
+private:
   /**
    * Converters:
    */

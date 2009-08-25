@@ -97,9 +97,12 @@ PeerLinkFrameStart::GetInstanceTypeId () const
 void
 PeerLinkFrameStart::Print (std::ostream &os) const
 {
-  os << "subtype = " << (uint16_t) m_subtype << "std::endlcapability = " << m_capability << "std::endlaid = "
-      << (uint16_t) m_aid << "std::endlrates = " << m_rates << "std::endlmeshId = " << m_meshId << "std::endlconfiguration = "
-      << m_config << "std::endlreason code = " << m_reasonCode;
+  os << "subtype = " << (uint16_t) m_subtype << std::endl << "capability = " << m_capability << std::endl << "laid = "
+      << (uint16_t) m_aid << std::endl << "rates = " << m_rates << std::endl << "meshId = ";
+  m_meshId.Print (os);
+  os << std::endl << "configuration = ";
+  m_config.Print (os);
+  os << std::endl << "reason code = " << m_reasonCode;
 }
 uint32_t
 PeerLinkFrameStart::GetSerializedSize () const
@@ -120,11 +123,11 @@ PeerLinkFrameStart::GetSerializedSize () const
     }
   if ((uint8_t) (WifiMeshActionHeader::PEER_LINK_CONFIRM) != m_subtype)
     {
-      size += m_meshId.GetSerializedSize ();
+      size += m_meshId.GetInformationSize () + 2;
     }
   if ((uint8_t) (WifiMeshActionHeader::PEER_LINK_CLOSE) != m_subtype)
     {
-      size += m_config.GetSerializedSize ();
+      size += m_config.GetInformationSize () + 2;
     }
   else
     {
@@ -137,8 +140,10 @@ PeerLinkFrameStart::Serialize (Buffer::Iterator start) const
 {
   Buffer::Iterator i = start;
   NS_ASSERT (m_subtype < 3);
-  m_protocol.Serialize (i);
-  i.Next (m_protocol.GetSerializedSize ());
+  i.WriteU8 (IE11S_MESH_PEERING_PROTOCOL_VERSION);
+  i.WriteU8 (m_protocol.GetInformationSize ());
+  m_protocol.SerializeInformation (i);
+  i.Next (m_protocol.GetInformationSize ());
   if ((uint8_t) (WifiMeshActionHeader::PEER_LINK_CLOSE) != m_subtype)
     {
       i.WriteHtolsbU16 (m_capability);
@@ -153,13 +158,17 @@ PeerLinkFrameStart::Serialize (Buffer::Iterator start) const
     }
   if ((uint8_t) (WifiMeshActionHeader::PEER_LINK_CONFIRM) != m_subtype)
     {
-      m_meshId.Serialize (i);
-      i.Next (m_meshId.GetSerializedSize ());
+      i.WriteU8 (IE11S_MESH_ID);
+      i.WriteU8 (m_meshId.GetInformationSize ());
+      m_meshId.SerializeInformation (i);
+      i.Next (m_meshId.GetInformationSize ());
     }
   if ((uint8_t) (WifiMeshActionHeader::PEER_LINK_CLOSE) != m_subtype)
     {
-      m_config.Serialize (i);
-      i.Next (m_config.GetSerializedSize ());
+      i.WriteU8 (IE11S_MESH_CONFIGURATION);
+      i.WriteU8 (m_config.GetInformationSize ());
+      m_config.SerializeInformation (i);
+      i.Next (m_config.GetInformationSize ());
     }
   else
     {
@@ -171,8 +180,16 @@ PeerLinkFrameStart::Deserialize (Buffer::Iterator start)
 {
   Buffer::Iterator i = start;
   NS_ASSERT (m_subtype < 3);
-  m_protocol.Deserialize (i);
-  i.Next (m_protocol.GetSerializedSize ());
+  {
+      uint8_t id = i.ReadU8 ();
+      uint8_t length = i.ReadU8 ();
+      m_protocol.DeserializeInformation (i, length);
+      if ((m_protocol.ElementId () != (WifiElementId) id) || (m_protocol.GetInformationSize () != length))
+        {
+          NS_FATAL_ERROR ("Broken frame: Element ID does not match IE itself!");
+        }
+      i.Next (m_protocol.GetInformationSize ());
+    }
   if ((uint8_t) (WifiMeshActionHeader::PEER_LINK_CLOSE) != m_subtype)
     {
       m_capability = i.ReadLsbtohU16 ();
@@ -187,13 +204,25 @@ PeerLinkFrameStart::Deserialize (Buffer::Iterator start)
     }
   if ((uint8_t) (WifiMeshActionHeader::PEER_LINK_CONFIRM) != m_subtype)
     {
-      m_meshId.Deserialize (i);
-      i.Next (m_meshId.GetSerializedSize ());
+      uint8_t id = i.ReadU8 ();
+      uint8_t length = i.ReadU8 ();
+      m_meshId.DeserializeInformation (i, length);
+      if ((m_meshId.ElementId () != (WifiElementId) id) || (m_meshId.GetInformationSize () != length))
+        {
+          NS_FATAL_ERROR ("Broken frame: Element ID does not match IE itself!");
+        }
+      i.Next (m_meshId.GetInformationSize ());
     }
   if ((uint8_t) (WifiMeshActionHeader::PEER_LINK_CLOSE) != m_subtype)
     {
-      m_config.Deserialize (i);
-      i.Next (m_config.GetSerializedSize ());
+      uint8_t id = i.ReadU8 ();
+      uint8_t length = i.ReadU8 ();
+      m_config. DeserializeInformation (i, length);
+      if ((m_config.ElementId () != (WifiElementId) id) || (m_config.GetInformationSize () != length))
+        {
+          NS_FATAL_ERROR ("Broken frame: Element ID does not match IE itself!");
+        }
+      i.Next (m_config.GetInformationSize ());
     }
   else
     {

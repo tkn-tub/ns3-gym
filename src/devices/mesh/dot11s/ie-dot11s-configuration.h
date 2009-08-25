@@ -108,14 +108,17 @@ public:
   bool IsAirtime ();
   void SetNeighborCount (uint8_t neighbors);
   uint8_t GetNeighborCount ();
-
   Dot11sMeshCapability const& MeshCapability ();
-private:
+  /**
+   * \name Inherited from WifiInformationElement
+   * \{
+   */
   virtual WifiElementId ElementId () const;
   virtual uint8_t  GetInformationSize () const;
   virtual void SerializeInformation (Buffer::Iterator i) const;
   virtual uint8_t DeserializeInformation (Buffer::Iterator i, uint8_t length);
   virtual void PrintInformation (std::ostream& os) const;
+  ///\}
 private:
   /** Active Path Selection Protocol ID */
   dot11sPathSelectionProtocol m_APSPId;

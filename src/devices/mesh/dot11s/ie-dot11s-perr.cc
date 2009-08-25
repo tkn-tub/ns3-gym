@@ -109,7 +109,7 @@ IePerr::AddAddressUnit (FailedDestination unit)
 bool
 IePerr::IsFull () const
 {
-  return (GetSerializedSize () + 10 > 255);
+  return (GetInformationSize () + 2 /* ID + LENGTH*/+ 10 /* Sie of Mac48Address + uint32_t (one unit)*/> 255);
 }
 std::vector<IePerr::FailedDestination>
 IePerr::GetAddressUnitVector () const

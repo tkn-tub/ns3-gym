@@ -47,12 +47,16 @@ public:
   std::vector<FailedDestination> GetAddressUnitVector () const;
   void DeleteAddressUnit (Mac48Address address);
   void ResetPerr ();
-private:
+  /**
+   * \name Inherited from WifiInformationElement
+   * \{
+   */
   WifiElementId ElementId () const;
   void SerializeInformation (Buffer::Iterator i) const;
   uint8_t DeserializeInformation (Buffer::Iterator start, uint8_t length);
   void PrintInformation (std::ostream& os) const;
   uint8_t GetInformationSize () const;
+  ///\}
 private:
   std::vector<FailedDestination> m_addressUnits;
   friend bool operator== (const IePerr & a, const IePerr & b);

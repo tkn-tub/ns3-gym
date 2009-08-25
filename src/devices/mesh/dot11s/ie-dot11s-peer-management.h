@@ -69,13 +69,17 @@ public:
   bool   SubtypeIsOpen () const;
   bool   SubtypeIsClose () const;
   bool   SubtypeIsConfirm () const ;
-  uint8_t GetSubtype () const { return m_subtype;};
-private:
+  uint8_t GetSubtype () const;
+  /**
+   * \name Inherited from WifiInformationElement
+   * \{
+   */
   virtual WifiElementId ElementId () const;
   virtual uint8_t  GetInformationSize (void) const;
   virtual void SerializeInformation (Buffer::Iterator i) const;
   virtual uint8_t DeserializeInformation (Buffer::Iterator i, uint8_t length);
   virtual void PrintInformation (std::ostream& os) const;
+  ///\}
 private:
   uint8_t m_length;
   uint8_t m_subtype;

@@ -85,7 +85,11 @@ IePeerManagement::GetInformationSize (void) const
 {
   return m_length;
 }
-
+uint8_t
+IePeerManagement::GetSubtype () const
+{
+  return m_subtype;
+}
 bool
 IePeerManagement::SubtypeIsOpen () const
 {

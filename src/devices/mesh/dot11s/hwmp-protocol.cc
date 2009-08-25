@@ -406,7 +406,7 @@ HwmpProtocol::ReceivePreq (IePreq preq, Mac48Address from, uint32_t interface, M
       m_lastHwmpSeqno[preq.GetOriginatorAddress ()] = preq.GetOriginatorSeqNumber ();
       m_lastHwmpMetric[preq.GetOriginatorAddress ()] = preq.GetMetric ();
     }
-  NS_LOG_DEBUG("I am " << GetAddress () << "Accepted preq from address" << from << ", preq:" << preq);
+  //NS_LOG_DEBUG("I am " << GetAddress () << "Accepted preq from address" << from << ", preq:" << preq);
   std::vector<Ptr<DestinationAddressUnit> > destinations = preq.GetDestinationList ();
   //Add reactive path to originator:
   if (
@@ -537,7 +537,7 @@ HwmpProtocol::ReceivePreq (IePreq preq, Mac48Address from, uint32_t interface, M
       return;
     }
   //Forward PREQ to all interfaces:
-  NS_LOG_DEBUG("I am " << GetAddress () << "retransmitting PREQ:" << preq);
+  //NS_LOG_DEBUG("I am " << GetAddress () << "retransmitting PREQ:" << preq);
   for (HwmpProtocolMacMap::const_iterator i = m_interfaces.begin (); i != m_interfaces.end (); i ++)
     {
       i->second->SendPreq (preq);
@@ -566,7 +566,7 @@ HwmpProtocol::ReceivePrep (IePrep prep, Mac48Address from, uint32_t interface, M
   }
   //update routing info
   //Now add a path to destination and add precursor to source
-  NS_LOG_DEBUG("I am " << GetAddress () << ", received prep from " << prep.GetOriginatorAddress () << ", receiver was:" << from);
+  //NS_LOG_DEBUG("I am " << GetAddress () << ", received prep from " << prep.GetOriginatorAddress () << ", receiver was:" << from);
   HwmpRtable::LookupResult result = m_rtable->LookupReactive (prep.GetDestinationAddress ());
   //Add a reactive path only if it is better than existing:
   if (
@@ -604,7 +604,7 @@ HwmpProtocol::ReceivePrep (IePrep prep, Mac48Address from, uint32_t interface, M
     }
   if (prep.GetDestinationAddress () == GetAddress ())
     {
-      NS_LOG_DEBUG("I am "<<GetAddress ()<<", resolved "<<prep.GetOriginatorAddress ());
+      //NS_LOG_DEBUG("I am "<<GetAddress ()<<", resolved "<<prep.GetOriginatorAddress ());
       return;
     }
   if (result.retransmitter == Mac48Address::GetBroadcast ())
