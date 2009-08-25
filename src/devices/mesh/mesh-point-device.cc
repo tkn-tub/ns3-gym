@@ -96,7 +96,7 @@ MeshPointDevice::ReceiveFromDevice (Ptr<NetDevice> incomingPort, Ptr<const Packe
   if (dst48.IsGroup ())
     {
       Ptr<Packet> packet_copy = packet->Copy ();
-      if (m_removeRoutingStuff (incomingPort->GetIfIndex (), src48, dst48, packet_copy, realProtocol))
+      if (m_routingProtocol->RemoveRoutingStuff (incomingPort->GetIfIndex (), src48, dst48, packet_copy, realProtocol))
         {
           m_rxCallback (this, packet_copy, realProtocol, src);
           Forward (incomingPort, packet, protocol, src48, dst48);
@@ -109,10 +109,9 @@ MeshPointDevice::ReceiveFromDevice (Ptr<NetDevice> incomingPort, Ptr<const Packe
   if (dst48 == m_address)
     {
       Ptr<Packet> packet_copy = packet->Copy ();
-      if (m_removeRoutingStuff (incomingPort->GetIfIndex (), src48, dst48, packet_copy, realProtocol))
+      if (m_routingProtocol->RemoveRoutingStuff (incomingPort->GetIfIndex (), src48, dst48, packet_copy, realProtocol))
         {
           m_rxCallback (this, packet_copy, realProtocol, src);
-
           m_rxStats.unicastData++;
           m_rxStats.unicastDataBytes += packet->GetSize ();
         }
@@ -127,7 +126,8 @@ MeshPointDevice::Forward (Ptr<NetDevice> inport, Ptr<const Packet> packet, uint1
     const Mac48Address src, const Mac48Address dst)
 {
   // pass through routing protocol
-  m_requestRoute (inport->GetIfIndex (), src, dst, packet, protocol, m_myResponse);
+  m_routingProtocol->RequestRoute (inport->GetIfIndex (), src, dst, packet, protocol, MakeCallback (
+      &MeshPointDevice::DoSend, this));
 }
 
 void
@@ -240,7 +240,8 @@ bool
 MeshPointDevice::Send (Ptr<Packet> packet, const Address& dest, uint16_t protocolNumber)
 {
   const Mac48Address dst48 = Mac48Address::ConvertFrom (dest);
-  return m_requestRoute (m_ifIndex, m_address, dst48, packet, protocolNumber, m_myResponse);
+  return m_routingProtocol->RequestRoute (m_ifIndex, m_address, dst48, packet, protocolNumber, MakeCallback (
+      &MeshPointDevice::DoSend, this));
 }
 
 bool
@@ -249,7 +250,8 @@ MeshPointDevice::SendFrom (Ptr<Packet> packet, const Address& src, const Address
 {
   const Mac48Address src48 = Mac48Address::ConvertFrom (src);
   const Mac48Address dst48 = Mac48Address::ConvertFrom (dest);
-  return m_requestRoute (m_ifIndex, src48, dst48, packet, protocolNumber, m_myResponse);
+  return m_routingProtocol->RequestRoute (m_ifIndex, src48, dst48, packet, protocolNumber, MakeCallback (
+      &MeshPointDevice::DoSend, this));
 }
 
 Ptr<Node>
@@ -377,14 +379,9 @@ void
 MeshPointDevice::SetRoutingProtocol (Ptr<MeshL2RoutingProtocol> protocol)
 {
   NS_LOG_FUNCTION_NOARGS ();
-
   NS_ASSERT_MSG (PeekPointer (protocol->GetMeshPoint ()) == this,
       "Routing protocol must be installed on mesh point to be useful.");
-
   m_routingProtocol = protocol;
-  m_requestRoute = MakeCallback (&MeshL2RoutingProtocol::RequestRoute, protocol);
-  m_removeRoutingStuff = MakeCallback (&MeshL2RoutingProtocol::RemoveRoutingStuff, protocol);
-  m_myResponse = MakeCallback (&MeshPointDevice::DoSend, this);
 }
 
 Ptr<MeshL2RoutingProtocol>

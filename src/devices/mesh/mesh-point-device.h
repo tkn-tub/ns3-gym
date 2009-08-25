@@ -163,18 +163,6 @@ private:
   uint16_t m_mtu;
   /// Virtual channel for upper layers
   Ptr<BridgeChannel> m_channel;
-
-  /// Routing request callback
-  Callback<bool,
-           uint32_t,
-           Mac48Address,
-           Mac48Address,
-           Ptr<const Packet>,
-           uint16_t,
-           MeshL2RoutingProtocol::RouteReplyCallback>  m_requestRoute;
-  Callback<bool, uint32_t, Mac48Address, Mac48Address, Ptr<Packet>, uint16_t&> m_removeRoutingStuff;
-  /// Routing response callback, this is supplied to mesh routing protocol
-  MeshL2RoutingProtocol::RouteReplyCallback  m_myResponse;
   /// Current routing protocol, used mainly by GetRoutingProtocol
   Ptr<MeshL2RoutingProtocol> m_routingProtocol;
 

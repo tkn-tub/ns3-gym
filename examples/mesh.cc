@@ -123,11 +123,18 @@ MeshTest::CreateNodes ()
   wifiPhy.SetChannel (wifiChannel.Create ());
   // Install mesh point devices & protocols
   mesh.SetStackInstaller (m_stack, "Root", Mac48AddressValue (Mac48Address (m_root.c_str ())));
-  mesh.SetSpreadInterfaceChannels (m_chan);
+  if (m_chan)
+    {
+      mesh.SetSpreadInterfaceChannels (MeshHelper::SPREAD_CHANNELS);
+    }
+  else
+    {
+      mesh.SetSpreadInterfaceChannels (MeshHelper::ZERO_CHANNEL);
+    }
   MeshInterfaceHelper interface = MeshInterfaceHelper::Default ();
   interface.SetType ("RandomStart", TimeValue (Seconds(m_randomStart)));
-
-  meshDevices = mesh.Install (wifiPhy, interface, nodes, m_nIfaces);
+  mesh.SetNumberOfInterfaces (m_nIfaces);
+  meshDevices = mesh.Install (wifiPhy, interface, nodes);
   // Setup mobility
   MobilityHelper mobility;
   mobility.SetPositionAllocator ("ns3::GridPositionAllocator",

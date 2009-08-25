@@ -46,8 +46,17 @@ public:
    * 
    *  If set to true different non-overlaping 20MHz frequency 
    *  channels will be assigned to different mesh point interfaces.
-   */ 
-  void SetSpreadInterfaceChannels (bool); 
+   */
+  enum ChannelPolicy {
+  SPREAD_CHANNELS,
+  ZERO_CHANNEL
+  };
+  void SetSpreadInterfaceChannels (ChannelPolicy);
+  /**
+   * \brief Set a number of interfaces in a mesh network
+   * \param nInterfaces is the number of interfaces
+   */
+  void SetNumberOfInterfaces (uint32_t nInterfaces);
   
   /** 
    * \brief Install 802.11s mesh device & protocols on given node list
@@ -59,18 +68,8 @@ public:
    * 
    * \return list of created mesh point devices, see MeshPointDevice
    */
-  NetDeviceContainer Install (const WifiPhyHelper &phyHelper, const MeshInterfaceHelper &interfaceHelper, NodeContainer c, uint32_t nInterfaces = 1) const;
-  /** 
-   * \brief Install 802.11s mesh device & protocols on given node
-   * 
-   * \param phy                 Wifi PHY helper
-   * \param node                Node to install
-   * \param roots               List of root mesh points
-   * \param nInterfaces         Number of mesh point radio interfaces (= WiFi NICs)
-   * 
-   * \return list of created mesh point devices, see MeshPointDevice
-   */ 
-  NetDeviceContainer Install (const WifiPhyHelper &phy, const MeshInterfaceHelper &interfaceHelper, Ptr<Node> node, uint32_t nInterfaces = 1) const;
+  NetDeviceContainer
+  Install (const WifiPhyHelper &phyHelper, const MeshInterfaceHelper &interfaceHelper, NodeContainer c) const;
   /**
    * \param type the type of ns3::MeshStack.
    *
@@ -89,7 +88,8 @@ public:
   void Report (const ns3::Ptr<ns3::NetDevice>&, std::ostream&);
   void ResetStats (const ns3::Ptr<ns3::NetDevice>&);
 private:
-  bool m_spreadInterfaceChannels;
+  uint32_t m_nInterfaces;
+  ChannelPolicy m_spreadChannelPolicy;
   Ptr<MeshStack> m_stack;
   ObjectFactory m_stackFactory;
 };

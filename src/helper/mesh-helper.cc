@@ -27,13 +27,14 @@ NS_LOG_COMPONENT_DEFINE ("MeshHelper");
 namespace ns3
 {
 MeshHelper::MeshHelper () :
-  m_spreadInterfaceChannels (false), m_stack (0)
+  m_nInterfaces (1),
+  m_spreadChannelPolicy (ZERO_CHANNEL), m_stack (0)
 {
 }
 void
-MeshHelper::SetSpreadInterfaceChannels (bool s)
+MeshHelper::SetSpreadInterfaceChannels (enum ChannelPolicy policy)
 {
-  m_spreadInterfaceChannels = s;
+  m_spreadChannelPolicy = policy;
 }
 void
 MeshHelper::SetStackInstaller (std::string type,
@@ -64,9 +65,14 @@ MeshHelper::SetStackInstaller (std::string type,
     }
 }
 
+void
+MeshHelper::SetNumberOfInterfaces (uint32_t nInterfaces)
+{
+  m_nInterfaces = nInterfaces;
+}
 NetDeviceContainer
 MeshHelper::Install (const WifiPhyHelper &phyHelper, const MeshInterfaceHelper &interfaceHelper,
-    NodeContainer c, uint32_t nInterfaces) const
+    NodeContainer c) const
 {
   NetDeviceContainer devices;
   NS_ASSERT (m_stack != 0);
@@ -80,11 +86,10 @@ MeshHelper::Install (const WifiPhyHelper &phyHelper, const MeshInterfaceHelper &
       node->AddDevice (mp);
 
       // Create wifi interfaces (single interface by default)
-      for (uint32_t i = 0; i < nInterfaces; ++i)
+      for (uint32_t i = 0; i < m_nInterfaces; ++i)
         {
           uint32_t channel = i * 5;
-          Ptr<WifiNetDevice> iface = interfaceHelper.CreateInterface (phyHelper, node,
-              (m_spreadInterfaceChannels ? channel : 0));
+          Ptr<WifiNetDevice> iface = interfaceHelper.CreateInterface (phyHelper, node, channel);
           mp->AddInterface (iface);
         }
       if (!m_stack->InstallStack (mp))
@@ -95,13 +100,6 @@ MeshHelper::Install (const WifiPhyHelper &phyHelper, const MeshInterfaceHelper &
       node_counter++;
     }
   return devices;
-}
-
-NetDeviceContainer
-MeshHelper::Install (const WifiPhyHelper &phy, const MeshInterfaceHelper &interfaceHelper, Ptr<Node> node,
-    uint32_t nInterfaces) const
-{
-  return Install (phy, interfaceHelper, NodeContainer (node), nInterfaces);
 }
 void
 MeshHelper::Report (const ns3::Ptr<ns3::NetDevice>& device, std::ostream& os)
