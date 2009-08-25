@@ -242,7 +242,7 @@ operator== (const PeerLinkFrameStart & a, const PeerLinkFrameStart & b)
 struct PeerLinkFrameStartBist : public Test
 {
   PeerLinkFrameStartBist () :
-    Test ("Mesh/802.11s/IE/PeerLinkFrameStart")
+    Test ("Mesh/802.11s/PeerLinkFrameStart")
   {
   }
   virtual bool

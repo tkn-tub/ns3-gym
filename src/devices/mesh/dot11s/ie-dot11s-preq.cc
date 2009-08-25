@@ -444,43 +444,6 @@ IePreq::IsFull () const
 {
   return ((GetInformationSize () + 11) > 255);
 }
-#ifdef RUN_SELF_TESTS
-
-/// Built-in self test for IePreq
-struct IePreqBist : public IeTest
-{
-  IePreqBist () :
-    IeTest ("Mesh/802.11s/IE/PREQ")
-  {
-  }
-  virtual bool
-  RunTests ();
-};
-
-/// Test instance
-static IePreqBist g_IePreqBist;
-
-bool
-IePreqBist::RunTests ()
-{
-  bool result (true);
-
-  // create test information element
-  IePreq a;
-  a.SetHopcount (0);
-  a.SetTTL (1);
-  a.SetPreqID (2);
-  a.SetOriginatorAddress (Mac48Address ("11:22:33:44:55:66"));
-  a.SetOriginatorSeqNumber (3);
-  a.SetLifetime (4);
-  a.AddDestinationAddressElement (false, false, Mac48Address ("11:11:11:11:11:11"), 5);
-  a.AddDestinationAddressElement (false, false, Mac48Address ("22:22:22:22:22:22"), 6);
-
-  result = result && TestRoundtripSerialization (a);
-  return result;
-}
-
-#endif // RUN_SELF_TESTS
 } // namespace dot11s
 } //namespace ns3
 

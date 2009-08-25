@@ -139,32 +139,5 @@ operator << (std::ostream &os, const IeMeshId &meshId)
   os << meshId.PeekString ();
   return os;
 }
-#ifdef RUN_SELF_TESTS
-
-/// Built-in self test for IeMeshId
-struct IeMeshIdBist : public IeTest
-{
-  IeMeshIdBist () :
-    IeTest ("Mesh/802.11s/IE/MESH_ID")
-  {
-  }
-  virtual bool
-  RunTests ();
-};
-
-/// Test instance
-static IeMeshIdBist g_IeMeshIdBist;
-
-bool
-IeMeshIdBist::RunTests ()
-{
-  bool result (true);
-
-  // create test information element
-  IeMeshId a ("qwerty");
-  result = result && TestRoundtripSerialization (a);
-  return result;
-}
-#endif // RUN_SELF_TESTS
 } //namespace dot11s
 } // namespace ns3

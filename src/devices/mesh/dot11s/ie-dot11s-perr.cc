@@ -153,44 +153,6 @@ operator== (const IePerr & a, const IePerr & b)
     }
   return true;
 }
-#ifdef RUN_SELF_TESTS
-
-/// Built-in self test for IePreq
-struct IePerrBist : public IeTest
-{
-  IePerrBist () :
-    IeTest ("Mesh/802.11s/IE/PERR")
-  {
-  }
-  virtual bool
-  RunTests ();
-};
-
-/// Test instance
-static IePerrBist g_IePerrBist;
-
-bool
-IePerrBist::RunTests ()
-{
-  bool result (true);
-  // create test information element
-  IePerr a;
-  IePerr::FailedDestination dest;
-  dest.destination = Mac48Address ("11:22:33:44:55:66");
-  dest.seqnum = 1;
-  a.AddAddressUnit (dest);
-  dest.destination = Mac48Address ("10:20:30:40:50:60");
-  dest.seqnum = 2;
-  a.AddAddressUnit (dest);
-  dest.destination = Mac48Address ("01:02:03:04:05:06");
-  dest.seqnum = 3;
-  a.AddAddressUnit (dest);
-
-  result = result && TestRoundtripSerialization (a);
-  return result;
-}
-
-#endif // RUN_SELF_TESTS
 } // namespace dot11s
 } //namespace ns3
 

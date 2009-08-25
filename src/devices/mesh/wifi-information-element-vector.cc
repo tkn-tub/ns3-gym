@@ -208,7 +208,7 @@ operator== (const WifiInformationElementVector & a, const WifiInformationElement
   WifiInformationElementVector::IE_VECTOR::const_iterator j = b.m_elements.begin ();
   for (WifiInformationElementVector::IE_VECTOR::const_iterator i = a.m_elements.begin (); i
       != a.m_elements.end (); i++, j++)
-    {     
+    {
       if ((*i)->ElementId () != (*j)->ElementId ())
         {
           return false;
@@ -216,6 +216,143 @@ operator== (const WifiInformationElementVector & a, const WifiInformationElement
       if ((*i)->GetInformationSize () != (*j)->GetInformationSize ())
         {
           return false;
+        }
+      uint8_t id = (*i)->ElementId ();
+      switch (id)
+        {
+      case IE11S_MESH_CONFIGURATION:
+        if (DynamicCast<dot11s::IeConfiguration> ((*i)) == 0)
+          {
+            return false;
+          }
+        if (DynamicCast<dot11s::IeConfiguration> ((*j)) == 0)
+          {
+            return false;
+          }
+        if (!(*DynamicCast<dot11s::IeConfiguration> ((*i)) == *DynamicCast<dot11s::IeConfiguration> ((*j))))
+          {
+            return false;
+          }
+        break;
+      case IE11S_MESH_ID:
+        if (DynamicCast<dot11s::IeMeshId> ((*i)) == 0)
+          {
+            return false;
+          }
+        if (DynamicCast<dot11s::IeMeshId> ((*j)) == 0)
+          {
+            return false;
+          }
+        if (!(*DynamicCast<dot11s::IeMeshId> ((*i)) == *DynamicCast<dot11s::IeMeshId> ((*j))))
+          {
+            return false;
+          }
+        break;
+      case IE11S_LINK_METRIC_REPORT:
+        if (DynamicCast<dot11s::IeLinkMetricReport> ((*i)) == 0)
+          {
+            return false;
+          }
+        if (DynamicCast<dot11s::IeLinkMetricReport> ((*j)) == 0)
+          {
+            return false;
+          }
+        if (!(*DynamicCast<dot11s::IeLinkMetricReport> ((*i)) == *DynamicCast<dot11s::IeLinkMetricReport> (
+            (*j))))
+          {
+            return false;
+          }
+        break;
+      case IE11S_PEERING_MANAGEMENT:
+        if (DynamicCast<dot11s::IePeerManagement> ((*i)) == 0)
+          {
+            return false;
+          }
+        if (DynamicCast<dot11s::IePeerManagement> ((*j)) == 0)
+          {
+            return false;
+          }
+        if (!(*DynamicCast<dot11s::IePeerManagement> ((*i)) == *DynamicCast<dot11s::IePeerManagement> ((*j))))
+          {
+            return false;
+          }
+        break;
+      case IE11S_BEACON_TIMING:
+        if (DynamicCast<dot11s::IeBeaconTiming> ((*i)) == 0)
+          {
+            return false;
+          }
+        if (DynamicCast<dot11s::IeBeaconTiming> ((*j)) == 0)
+          {
+            return false;
+          }
+        if (!(*DynamicCast<dot11s::IeBeaconTiming> ((*i)) == *DynamicCast<dot11s::IeBeaconTiming> ((*j))))
+          {
+            return false;
+          }
+        break;
+      case IE11S_RANN:
+        if (DynamicCast<dot11s::IeRann> ((*i)) == 0)
+          {
+            return false;
+          }
+        if (DynamicCast<dot11s::IeRann> ((*j)) == 0)
+          {
+            return false;
+          }
+        if (!(*DynamicCast<dot11s::IeRann> ((*i)) == *DynamicCast<dot11s::IeRann> ((*j))))
+          {
+            return false;
+          }
+        break;
+      case IE11S_PREQ:
+        if (DynamicCast<dot11s::IePreq> ((*i)) == 0)
+          {
+            return false;
+          }
+        if (DynamicCast<dot11s::IePreq> ((*j)) == 0)
+          {
+            return false;
+          }
+        if (!(*DynamicCast<dot11s::IePreq> ((*i)) == *DynamicCast<dot11s::IePreq> ((*j))))
+          {
+            return false;
+          }
+        break;
+      case IE11S_PREP:
+        if (DynamicCast<dot11s::IePrep> ((*i)) == 0)
+          {
+            return false;
+          }
+        if (DynamicCast<dot11s::IePrep> ((*j)) == 0)
+          {
+            return false;
+          }
+        if (!(*DynamicCast<dot11s::IePrep> ((*i)) == *DynamicCast<dot11s::IePrep> ((*j))))
+          {
+            return false;
+          }
+
+        break;
+      case IE11S_PERR:
+        if (DynamicCast<dot11s::IePerr> ((*i)) == 0)
+          {
+            return false;
+          }
+        if (DynamicCast<dot11s::IePerr> ((*j)) == 0)
+          {
+            return false;
+          }
+        if (!(*DynamicCast<dot11s::IePerr> ((*i)) == *DynamicCast<dot11s::IePerr> ((*j))))
+          {
+            return false;
+          }
+        break;
+      case IE11S_MESH_PEERING_PROTOCOL_VERSION:
+        break;
+      default:
+        NS_FATAL_ERROR ("Information element " << (uint16_t) id << " is not implemented");
+        return false;
         }
     }
   return true;
@@ -241,15 +378,91 @@ WifiInformationElementVectorBist::RunTests ()
 {
   bool result = true;
   WifiInformationElementVector vector;
-  vector.AddInformationElement (Create<dot11s::IeMeshId> ());
-  vector.AddInformationElement (Create<dot11s::IeConfiguration> ());
-  vector.AddInformationElement (Create<dot11s::IeLinkMetricReport> ());
-  vector.AddInformationElement (Create<dot11s::IePeerManagement> ());
-  vector.AddInformationElement (Create<dot11s::IeBeaconTiming> ());
-  vector.AddInformationElement (Create<dot11s::IeRann> ());
-  vector.AddInformationElement (Create<dot11s::IePreq> ());
-  vector.AddInformationElement (Create<dot11s::IePrep> ());
-  vector.AddInformationElement (Create<dot11s::IePerr> ());
+  {
+    //Mesh ID test
+    Ptr<dot11s::IeMeshId> meshId = Create<dot11s::IeMeshId> ("qwerty");
+    vector.AddInformationElement (meshId);
+  }
+  {
+    Ptr<dot11s::IeConfiguration> config = Create<dot11s::IeConfiguration> ();
+    vector.AddInformationElement (config);
+  }
+  {
+    Ptr<dot11s::IeLinkMetricReport> report = Create<dot11s::IeLinkMetricReport> (123456);
+    vector.AddInformationElement (report);
+  }
+  {
+    Ptr<dot11s::IePeerManagement> peerMan1 = Create<dot11s::IePeerManagement> ();
+    peerMan1->SetPeerOpen (1);
+    Ptr<dot11s::IePeerManagement> peerMan2 = Create<dot11s::IePeerManagement> ();
+    peerMan2->SetPeerConfirm (1, 2);
+    Ptr<dot11s::IePeerManagement> peerMan3 = Create<dot11s::IePeerManagement> ();
+    peerMan3->SetPeerClose (1, 2, dot11s::REASON11S_MESH_CAPABILITY_POLICY_VIOLATION);
+    vector.AddInformationElement (peerMan1);
+    vector.AddInformationElement (peerMan2);
+    vector.AddInformationElement (peerMan3);
+  }
+  {
+    Ptr<dot11s::IeBeaconTiming>  beaconTiming = Create<dot11s::IeBeaconTiming> ();
+    beaconTiming->AddNeighboursTimingElementUnit (1, Seconds (1.0), Seconds (4.0));
+    beaconTiming->AddNeighboursTimingElementUnit (2, Seconds (2.0), Seconds (3.0));
+    beaconTiming->AddNeighboursTimingElementUnit (3, Seconds (3.0), Seconds (2.0));
+    beaconTiming->AddNeighboursTimingElementUnit (4, Seconds (4.0), Seconds (1.0));
+    vector.AddInformationElement (beaconTiming);
+  }
+  {
+    Ptr<dot11s::IeRann> rann = Create<dot11s::IeRann> ();
+    rann->SetFlags (1);
+    rann->SetHopcount (2);
+    rann->SetTTL (4);
+    rann->DecrementTtl ();
+    NS_TEST_ASSERT_EQUAL (rann->GetTtl (), 3);
+    rann->SetOriginatorAddress (Mac48Address ("11:22:33:44:55:66"));
+    rann->SetDestSeqNumber (5);
+    rann->SetMetric (6);
+    rann->IncrementMetric (2);
+    NS_TEST_ASSERT_EQUAL (rann->GetMetric (), 8);
+    vector.AddInformationElement (rann);
+  }
+  {
+    Ptr<dot11s::IePreq> preq = Create<dot11s::IePreq> ();
+    preq->SetHopcount (0);
+    preq->SetTTL (1);
+    preq->SetPreqID (2);
+    preq->SetOriginatorAddress (Mac48Address ("11:22:33:44:55:66"));
+    preq->SetOriginatorSeqNumber (3);
+    preq->SetLifetime (4);
+    preq->AddDestinationAddressElement (false, false, Mac48Address ("11:11:11:11:11:11"), 5);
+    preq->AddDestinationAddressElement (false, false, Mac48Address ("22:22:22:22:22:22"), 6);
+    vector.AddInformationElement (preq);
+  }
+  {
+    Ptr<dot11s::IePrep> prep = Create<dot11s::IePrep> ();
+    prep->SetFlags (12);
+    prep->SetHopcount (11);
+    prep->SetTtl (10);
+    prep->SetDestinationAddress (Mac48Address ("11:22:33:44:55:66"));
+    prep->SetDestinationSeqNumber (123);
+    prep->SetLifetime (5000);
+    prep->SetMetric (4321);
+    prep->SetOriginatorAddress (Mac48Address ("33:00:22:00:11:00"));
+    prep->SetOriginatorSeqNumber (666);
+    vector.AddInformationElement (prep);
+  }
+  {
+    Ptr<dot11s::IePerr> perr = Create<dot11s::IePerr> ();
+    dot11s::IePerr::FailedDestination dest;
+    dest.destination = Mac48Address ("11:22:33:44:55:66");
+    dest.seqnum = 1;
+    perr->AddAddressUnit (dest);
+    dest.destination = Mac48Address ("10:20:30:40:50:60");
+    dest.seqnum = 2;
+    perr->AddAddressUnit (dest);
+    dest.destination = Mac48Address ("01:02:03:04:05:06");
+    dest.seqnum = 3;
+    perr->AddAddressUnit (dest);
+    vector.AddInformationElement (perr);
+  }
   Ptr<Packet> packet = Create<Packet> ();
   packet->AddHeader (vector);
   WifiInformationElementVector resultVector;

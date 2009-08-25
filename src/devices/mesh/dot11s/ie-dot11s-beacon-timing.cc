@@ -220,36 +220,6 @@ operator== (const IeBeaconTiming & a, const IeBeaconTiming& b)
     }
   return true;
 }
-
-#ifdef RUN_SELF_TESTS
-struct IeBeaconTimingBist : public IeTest
-{
-  IeBeaconTimingBist () :
-    IeTest ("Mesh/802.11s/IE/BeaconTiming")
-  {
-  }
-  virtual bool
-  RunTests ();
-};
-
-/// Test instance
-static IeBeaconTimingBist g_IePerrBist;
-
-bool
-IeBeaconTimingBist::RunTests ()
-{
-  bool result (true);
-  // create test information element
-  IeBeaconTiming a;
-  a.IeBeaconTiming::AddNeighboursTimingElementUnit (1, Seconds (1.0), Seconds (4.0));
-  a.IeBeaconTiming::AddNeighboursTimingElementUnit (2, Seconds (2.0), Seconds (3.0));
-  a.IeBeaconTiming::AddNeighboursTimingElementUnit (3, Seconds (3.0), Seconds (2.0));
-  a.IeBeaconTiming::AddNeighboursTimingElementUnit (4, Seconds (4.0), Seconds (1.0));
-
-  result = TestRoundtripSerialization (a);
-  return result;
-}
-#endif
 } // namespace dot11s
 } //namespace ns3
 

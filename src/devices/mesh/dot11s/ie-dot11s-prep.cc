@@ -203,45 +203,6 @@ operator== (const IePrep & a, const IePrep & b)
       && (a.m_lifetime == b.m_lifetime) && (a.m_metric == b.m_metric) && (a.m_originatorAddress
       == b.m_originatorAddress) && (a.m_originatorSeqNumber == b.m_originatorSeqNumber));
 }
-
-#ifdef RUN_SELF_TESTS
-
-/// Built-in self test for IePrep
-struct IePrepBist : public IeTest
-{
-  IePrepBist () :
-    IeTest ("Mesh/802.11s/IE/PREP")
-  {
-  };
-  virtual bool
-  RunTests ();
-};
-
-/// Test instance
-static IePrepBist g_IePrepBist;
-
-bool
-IePrepBist::RunTests ()
-{
-  bool result (true);
-
-  // create test information element
-  IePrep a;
-  a.SetFlags (12);
-  a.SetHopcount (11);
-  a.SetTtl (10);
-  a.SetDestinationAddress (Mac48Address ("11:22:33:44:55:66"));
-  a.SetDestinationSeqNumber (123);
-  a.SetLifetime (5000);
-  a.SetMetric (4321);
-  a.SetOriginatorAddress (Mac48Address ("33:00:22:00:11:00"));
-  a.SetOriginatorSeqNumber (666);
-
-  result = result && TestRoundtripSerialization (a);
-  return result;
-}
-
-#endif // RUN_SELF_TESTS
 } // namespace dot11s
 } //namespace ns3
 

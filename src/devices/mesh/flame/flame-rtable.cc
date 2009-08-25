@@ -146,7 +146,7 @@ private:
 static FlameRtableTest g_FlameRtableTest;
 
 FlameRtableTest::FlameRtableTest () :
-  Test ("Mesh/flame/FlameRtable"), result (true), dst ("01:00:00:01:00:01"), hop ("01:00:00:01:00:03"),
+  Test ("Mesh/Flame/FlameRtable"), result (true), dst ("01:00:00:01:00:01"), hop ("01:00:00:01:00:03"),
       iface (8010), cost (10), seqnum (1)
 {
 }

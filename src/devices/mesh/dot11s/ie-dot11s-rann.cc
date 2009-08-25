@@ -168,46 +168,6 @@ operator== (const IeRann & a, const IeRann & b)
       && a.m_originatorAddress == b.m_originatorAddress && a.m_destSeqNumber == b.m_destSeqNumber
       && a.m_metric == b.m_metric);
 }
-
-#ifdef RUN_SELF_TESTS
-
-/// Built-in self test for IeRann
-struct IeRannBist : public IeTest
-{
-  IeRannBist () :
-    IeTest ("Mesh/802.11s/IE/RANN")
-  {
-  }
-  virtual bool
-  RunTests ();
-};
-
-/// Test instance
-static IeRannBist g_IeRannBist;
-
-bool
-IeRannBist::RunTests ()
-{
-  bool result (true);
-
-  // create test information element
-  IeRann a;
-
-  a.SetFlags (1);
-  a.SetHopcount (2);
-  a.SetTTL (4);
-  a.DecrementTtl ();
-  NS_TEST_ASSERT_EQUAL (a.GetTtl (), 3);
-  a.SetOriginatorAddress (Mac48Address ("11:22:33:44:55:66"));
-  a.SetDestSeqNumber (5);
-  a.SetMetric (6);
-  a.IncrementMetric (2);
-  NS_TEST_ASSERT_EQUAL (a.GetMetric (), 8);
-
-  result = result && TestRoundtripSerialization (a);
-  return result;
-}
-#endif // RUN_SELF_TESTS
 }
 } // namespace ns3::dot11s
 

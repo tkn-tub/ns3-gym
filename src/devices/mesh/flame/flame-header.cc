@@ -149,7 +149,7 @@ operator== (const FlameHeader & a, const FlameHeader & b)
 struct FlameHeaderBist : public Test
 {
   FlameHeaderBist () :
-    Test ("mesh/flame/FlameHeader")
+    Test ("mesh/Flame/FlameHeader")
   {
   }
   virtual bool

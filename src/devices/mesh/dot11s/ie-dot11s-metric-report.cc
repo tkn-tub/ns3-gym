@@ -73,32 +73,5 @@ operator== (const IeLinkMetricReport & a, const IeLinkMetricReport & b)
 {
   return (a.m_metric == b.m_metric);
 };
-#ifdef RUN_SELF_TESTS
-
-/// Built-in self test for IeLinkMetricReport
-struct IeLinkMetricReportBist : public IeTest
-{
-  IeLinkMetricReportBist () :
-    IeTest ("Mesh/802.11s/IE/LINK_METRIC_REPORT")
-  {
-  }
-  virtual bool
-  RunTests ();
-};
-
-/// Test instance
-static IeLinkMetricReportBist g_IeLinkMetricReportBist;
-
-bool
-IeLinkMetricReportBist::RunTests ()
-{
-  bool result (true);
-
-  // create test information element
-  IeLinkMetricReport a (123456);
-  result = result && TestRoundtripSerialization (a);
-  return result;
-}
-#endif // RUN_SELF_TESTS
 } //namespace dot11s
 } // namespace ns3

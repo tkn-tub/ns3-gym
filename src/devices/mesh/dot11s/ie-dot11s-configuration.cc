@@ -212,32 +212,7 @@ operator== (const IeConfiguration & a, const IeConfiguration & b)
       == b.m_SPId) && (a.m_APId == b.m_APId) && (a.m_neighbors == b.m_neighbors) && (a.m_meshCap
       == b.m_meshCap));
 }
-#ifdef RUN_SELF_TESTS
 
-/// Built-in self test for IePreq
-struct IeConfigurationBist : public IeTest
-{
-  IeConfigurationBist () :
-    IeTest ("Mesh/802.11s/IE/Configuration")
-  {
-  }
-  virtual bool
-  RunTests ();
-};
-
-/// Test instance
-static IeConfigurationBist g_IeConfigurationBist;
-
-bool
-IeConfigurationBist::RunTests ()
-{
-  bool result (true);
-  IeConfiguration a;
-
-  result = TestRoundtripSerialization (a);
-  return result;
-}
-#endif
 } // namespace dot11s
 } //namespace ns3
 

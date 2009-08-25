@@ -165,42 +165,6 @@ operator== (const IePeerManagement & a, const IePeerManagement & b)
   return ((a.m_length == b.m_length) && (a.m_subtype == b.m_subtype) && (a.m_localLinkId == b.m_localLinkId)
       && (a.m_peerLinkId == b.m_peerLinkId) && (a.m_reasonCode == b.m_reasonCode));
 }
-#ifdef RUN_SELF_TESTS
-struct IePeerManagementBist : public IeTest
-{
-  IePeerManagementBist () :
-    IeTest ("Mesh/802.11s/IE/PeerManagement")
-  {
-  }
-  virtual bool
-  RunTests ();
-};
-
-/// Test instance
-static IePeerManagementBist g_IePerrBist;
-
-bool
-IePeerManagementBist::RunTests ()
-{
-  bool result (true);
-    {
-      IePeerManagement a;
-      a.SetPeerOpen (1);
-      result = result && TestRoundtripSerialization (a);
-    }
-    {
-      IePeerManagement a;
-      a.SetPeerConfirm (1, 2);
-      result = result && TestRoundtripSerialization (a);
-    }
-    {
-      IePeerManagement a;
-      a.SetPeerClose (1, 2, REASON11S_MESH_CAPABILITY_POLICY_VIOLATION);
-      result = result && TestRoundtripSerialization (a);
-    }
-  return result;
-}
-#endif
 } // namespace dot11s
 } //namespace ns3
 
