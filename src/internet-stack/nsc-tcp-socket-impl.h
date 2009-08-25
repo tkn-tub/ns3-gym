@@ -30,7 +30,8 @@
 #include "tcp-typedefs.h"
 #include "pending-data.h"
 #include "sequence-number.h"
-#include "rtt-estimator.h"
+
+struct INetStreamSocket;
 
 namespace ns3 {
 
@@ -63,7 +64,6 @@ public:
 
   void SetNode (Ptr<Node> node);
   void SetTcp (Ptr<NscTcpL4Protocol> tcp);
-  void SetRtt (Ptr<RttEstimator> rtt);
 
   virtual enum SocketErrno GetErrno (void) const;
   virtual Ptr<Node> GetNode (void) const;
@@ -158,7 +158,6 @@ private:
   uint32_t                       m_initialCWnd;          //Initial cWnd value
 
   // Round trip time estimation
-  Ptr<RttEstimator> m_rtt;
   Time m_lastMeasuredRtt;
 
   // Timer-related members

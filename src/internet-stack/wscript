@@ -121,11 +121,19 @@ def build(bld):
         'sequence-number.h',
         'icmpv4.h',
         'icmpv6-header.h',
-        ]
+        'ipv4-l3-protocol.h',
+        'arp-l3-protocol.h',
+        'udp-l4-protocol.h',
+        'tcp-l4-protocol.h',
+        'icmpv4-l4-protocol.h',
+        'ipv4-l4-protocol.h',
+        'arp-cache.h',
+       ]
 
     if bld.env['NSC_ENABLED']:
         obj.source.append ('nsc-tcp-socket-impl.cc')
         obj.source.append ('nsc-tcp-l4-protocol.cc')
         obj.source.append ('nsc-tcp-socket-factory-impl.cc')
         obj.source.append ('nsc-sysctl.cc')
+        headers.source.append('nsc-tcp-l4-protocol.h')
         obj.uselib = 'DL'
