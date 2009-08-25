@@ -31,8 +31,8 @@
 #include "ns3/ipv6-address.h"
 #include "ns3/ptr.h"
 #include "ns3/timer.h"
+#include "ns3/sgi-hashmap.h"
 
-#include "sgi-hashmap.h"
 #include "ipv6-interface.h"
 
 namespace ns3
