@@ -1,0 +1,110 @@
+/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/*
+ * Copyright (c) 2008-2009 Strasbourg University
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation;
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * Author: David Gross <david.gross@eturs.u-strasbg.fr>
+ *         Sebastien Vincent <vincent@clarinet.u-strasbg.fr>
+ */
+
+// Network topology
+// //
+// //             n0   r    n1
+// //             |    _    |
+// //             ====|_|====
+// //                router
+// //
+// // - Tracing of queues and packet receptions to file "simple-routing-ping6.tr"
+
+#include <fstream>
+#include "ns3/core-module.h"
+#include "ns3/simulator-module.h"
+#include "ns3/helper-module.h"
+
+using namespace ns3;
+
+NS_LOG_COMPONENT_DEFINE ("SimpleRoutingUdp6Example");
+
+int 
+main (int argc, char** argv)
+{
+#if 0 
+  LogComponentEnable ("Ipv6L3Protocol", LOG_LEVEL_ALL);
+  LogComponentEnable ("Icmpv6L4Protocol", LOG_LEVEL_ALL);
+  LogComponentEnable ("Ipv6StaticRouting", LOG_LEVEL_ALL);
+  LogComponentEnable ("Ipv6Interface", LOG_LEVEL_ALL);
+  LogComponentEnable ("Ping6Application", LOG_LEVEL_ALL);
+#endif
+
+	CommandLine cmd;
+  cmd.Parse (argc, argv);
+  
+	NS_LOG_INFO ("Create nodes.");
+	Ptr<Node> n0 = CreateObject<Node> ();
+	Ptr<Node> r = CreateObject<Node> ();
+	Ptr<Node> n1 = CreateObject<Node> ();
+
+	NodeContainer net1 (n0, r);
+	NodeContainer net2 (r, n1);
+	NodeContainer all (n0, r, n1);
+
+	NS_LOG_INFO ("Create IPv6 Internet Stack");
+  InternetStackHelper internetv6;
+  internetv6.Install (all);
+
+  NS_LOG_INFO ("Create channels.");
+	CsmaHelper csma;
+  csma.SetChannelAttribute ("DataRate", DataRateValue (5000000));
+  csma.SetChannelAttribute ("Delay", TimeValue (MilliSeconds (2)));
+	NetDeviceContainer d1 = csma.Install (net1);
+	NetDeviceContainer d2 = csma.Install (net2);
+
+	NS_LOG_INFO ("Create networks and assign IPv6 Addresses.");
+	Ipv6AddressHelper ipv6;
+	ipv6.NewNetwork (Ipv6Address ("2001:1::"), 64);
+	Ipv6InterfaceContainer i1 = ipv6.Assign (d1);
+  i1.SetRouter (1, true);
+	ipv6.NewNetwork (Ipv6Address ("2001:2::"), 64);
+	Ipv6InterfaceContainer i2 = ipv6.Assign (d2);
+  i2.SetRouter (0, true);
+
+  /* Create a Ping6 application to send ICMPv6 echo request from n0 to n1 via r */
+  uint32_t packetSize = 1024;
+  uint32_t maxPacketCount = 5;
+  Time interPacketInterval = Seconds (1.);
+  Ping6Helper ping6;
+
+  ping6.SetLocal (i1.GetAddress (0, 1));
+  ping6.SetRemote (i2.GetAddress (1, 1)); 
+  /* ping6.SetRemote (Ipv6Address::GetAllNodesMulticast ()); */
+
+  ping6.SetAttribute ("MaxPackets", UintegerValue (maxPacketCount));
+  ping6.SetAttribute ("Interval", TimeValue (interPacketInterval));
+  ping6.SetAttribute ("PacketSize", UintegerValue (packetSize));
+  ApplicationContainer apps = ping6.Install (net1.Get (0));
+  apps.Start (Seconds (2.0));
+  apps.Stop (Seconds (20.0));
+
+	std::ofstream ascii;
+  ascii.open ("simple-routing-ping6.tr");
+  CsmaHelper::EnablePcapAll (std::string ("simple-routing-ping6"), true);
+  CsmaHelper::EnableAsciiAll (ascii);
+
+  NS_LOG_INFO ("Run Simulation.");
+  Simulator::Run ();
+  Simulator::Destroy ();
+  NS_LOG_INFO ("Done.");
+}
+

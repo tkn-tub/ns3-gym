@@ -39,6 +39,8 @@ all_modules = (
     'devices/mesh',
     'devices/mesh/dot11s',
     'devices/mesh/flame',
+    'applications/ping6',
+    'applications/radvd',
     )
 
 def set_options(opt):

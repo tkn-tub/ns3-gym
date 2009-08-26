@@ -27,19 +27,17 @@
 #include "ns3/ipv4-address.h"
 #include "ns3/ptr.h"
 #include "ns3/object-factory.h"
-#include "ipv4-end-point-demux.h"
 #include "ipv4-l4-protocol.h"
-#include "ipv4-interface.h"
-
-#include "tcp-socket-impl.h"
-#include "tcp-header.h"
-#include "tcp-typedefs.h"
 
 namespace ns3 {
 
 class Node;
 class Socket;
 class TcpHeader;
+class Ipv4EndPointDemux;
+class Ipv4Interface;
+class TcpSocketImpl;
+class Ipv4EndPoint;
 
 /**
  * \ingroup tcp
@@ -120,7 +118,7 @@ private:
   ObjectFactory m_rttFactory;
 private:
   friend class TcpSocketImpl;
-  void SendPacket (Ptr<Packet>, TcpHeader,
+  void SendPacket (Ptr<Packet>, const TcpHeader &,
                   Ipv4Address, Ipv4Address);
   static ObjectFactory GetDefaultRttEstimatorFactory (void);
 

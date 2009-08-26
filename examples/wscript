@@ -151,6 +151,26 @@ def build(bld):
       ['point-to-point', 'internet-stack'])
     obj.source = 'test-ipv6.cc'
 
+    obj = bld.create_ns3_program('ping6',
+      ['csma', 'internet-stack'])
+    obj.source = 'ping6.cc'
+
+    obj = bld.create_ns3_program('simple-routing-ping6',
+      ['csma', 'internet-stack'])
+    obj.source = 'simple-routing-ping6.cc'
+
+    obj = bld.create_ns3_program('icmpv6-redirect',
+      ['csma', 'internet-stack'])
+    obj.source = 'icmpv6-redirect.cc'
+
+    obj = bld.create_ns3_program('radvd',
+      ['csma', 'internet-stack'])
+    obj.source = 'radvd.cc'
+
+    obj = bld.create_ns3_program('radvd-two-prefix',
+      ['csma', 'internet-stack'])
+    obj.source = 'radvd-two-prefix.cc'
+
     env = bld.env_of_name('default')
     if env['ENABLE_EMU']:
         obj = bld.create_ns3_program('emu-udp-echo', ['emu', 'internet-stack'])

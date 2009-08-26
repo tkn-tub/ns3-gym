@@ -10,7 +10,7 @@ def register_types(module):
     ## wifi-phy-standard.h: ns3::WifiPhyStandard [enumeration]
     module.add_enum('WifiPhyStandard', ['WIFI_PHY_STANDARD_80211a', 'WIFI_PHY_STANDARD_80211b', 'WIFI_PHY_STANDARD_80211_10Mhz', 'WIFI_PHY_STANDARD_80211_5Mhz', 'WIFI_PHY_STANDARD_holland', 'WIFI_PHY_UNKNOWN'])
     ## qos-utils.h: ns3::AccessClass [enumeration]
-    module.add_enum('AccessClass', ['AC_VO', 'AC_VI', 'AC_BE', 'AC_BK', 'AC_UNDEF'])
+    module.add_enum('AccessClass', ['AC_VO', 'AC_VI', 'AC_BE', 'AC_BK', 'AC_BE_NQOS', 'AC_UNDEF'])
     ## edca-txop-n.h: ns3::TypeOfStation [enumeration]
     module.add_enum('TypeOfStation', ['STA', 'AP', 'ADHOC_STA'])
     ## capability-information.h: ns3::CapabilityInformation [class]
@@ -123,10 +123,10 @@ def register_types(module):
     module.add_class('ConstantRateWifiManager', parent=root_module['ns3::WifiRemoteStationManager'])
     ## propagation-delay-model.h: ns3::ConstantSpeedPropagationDelayModel [class]
     module.add_class('ConstantSpeedPropagationDelayModel', parent=root_module['ns3::PropagationDelayModel'])
-    ## dca-txop.h: ns3::DcaTxop [class]
-    module.add_class('DcaTxop', parent=root_module['ns3::Object'])
+    ## dcf.h: ns3::Dcf [class]
+    module.add_class('Dcf', parent=root_module['ns3::Object'])
     ## edca-txop-n.h: ns3::EdcaTxopN [class]
-    module.add_class('EdcaTxopN', parent=root_module['ns3::Object'])
+    module.add_class('EdcaTxopN', parent=root_module['ns3::Dcf'])
     ## error-rate-model.h: ns3::ErrorRateModel [class]
     module.add_class('ErrorRateModel', parent=root_module['ns3::Object'])
     ## propagation-loss-model.h: ns3::FixedRssLossModel [class]
@@ -173,6 +173,8 @@ def register_types(module):
     module.add_class('YansWifiChannel', parent=root_module['ns3::WifiChannel'])
     ## aarf-wifi-manager.h: ns3::AarfWifiManager [class]
     module.add_class('AarfWifiManager', parent=root_module['ns3::ArfWifiManager'])
+    ## dca-txop.h: ns3::DcaTxop [class]
+    module.add_class('DcaTxop', parent=root_module['ns3::Dcf'])
     typehandlers.add_type_alias('std::vector< ns3::RateInfo, std::allocator< ns3::RateInfo > >', 'ns3::MinstrelRate')
     typehandlers.add_type_alias('std::vector< std::vector< unsigned int, std::allocator< unsigned int > >, std::allocator< std::vector< unsigned int, std::allocator< unsigned int > > > >', 'ns3::SampleRate')
     typehandlers.add_type_alias('std::vector< ns3::ThresholdsItem, std::allocator< ns3::ThresholdsItem > >', 'ns3::Thresholds')
@@ -279,7 +281,7 @@ def register_methods(root_module):
     register_Ns3ArfWifiManager_methods(root_module, root_module['ns3::ArfWifiManager'])
     register_Ns3ConstantRateWifiManager_methods(root_module, root_module['ns3::ConstantRateWifiManager'])
     register_Ns3ConstantSpeedPropagationDelayModel_methods(root_module, root_module['ns3::ConstantSpeedPropagationDelayModel'])
-    register_Ns3DcaTxop_methods(root_module, root_module['ns3::DcaTxop'])
+    register_Ns3Dcf_methods(root_module, root_module['ns3::Dcf'])
     register_Ns3EdcaTxopN_methods(root_module, root_module['ns3::EdcaTxopN'])
     register_Ns3ErrorRateModel_methods(root_module, root_module['ns3::ErrorRateModel'])
     register_Ns3FixedRssLossModel_methods(root_module, root_module['ns3::FixedRssLossModel'])
@@ -304,6 +306,7 @@ def register_methods(root_module):
     register_Ns3YansErrorRateModel_methods(root_module, root_module['ns3::YansErrorRateModel'])
     register_Ns3YansWifiChannel_methods(root_module, root_module['ns3::YansWifiChannel'])
     register_Ns3AarfWifiManager_methods(root_module, root_module['ns3::AarfWifiManager'])
+    register_Ns3DcaTxop_methods(root_module, root_module['ns3::DcaTxop'])
     return
 
 def register_Ns3CapabilityInformation_methods(root_module, cls):
@@ -2290,6 +2293,11 @@ def register_Ns3WifiMac_methods(root_module, cls):
     cls.add_method('ConfigureStandard', 
                    'void', 
                    [param('ns3::WifiPhyStandard', 'standard')])
+    ## wifi-mac.h: void ns3::WifiMac::ConfigureDcf(ns3::Ptr<ns3::Dcf> dcf, uint32_t cwmin, uint32_t cwmax, ns3::AccessClass ac) [member function]
+    cls.add_method('ConfigureDcf', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Dcf >', 'dcf'), param('uint32_t', 'cwmin'), param('uint32_t', 'cwmax'), param('ns3::AccessClass', 'ac')], 
+                   visibility='protected')
     ## wifi-mac.h: void ns3::WifiMac::FinishConfigureStandard(ns3::WifiPhyStandard standard) [member function]
     cls.add_method('FinishConfigureStandard', 
                    'void', 
@@ -3683,78 +3691,46 @@ def register_Ns3ConstantSpeedPropagationDelayModel_methods(root_module, cls):
                    is_const=True)
     return
 
-def register_Ns3DcaTxop_methods(root_module, cls):
-    ## dca-txop.h: static ns3::TypeId ns3::DcaTxop::GetTypeId() [member function]
+def register_Ns3Dcf_methods(root_module, cls):
+    ## dcf.h: ns3::Dcf::Dcf(ns3::Dcf const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::Dcf const &', 'arg0')])
+    ## dcf.h: ns3::Dcf::Dcf() [constructor]
+    cls.add_constructor([])
+    ## dcf.h: static ns3::TypeId ns3::Dcf::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
-    ## dca-txop.h: ns3::DcaTxop::DcaTxop() [constructor]
-    cls.add_constructor([])
-    ## dca-txop.h: void ns3::DcaTxop::SetLow(ns3::Ptr<ns3::MacLow> low) [member function]
-    cls.add_method('SetLow', 
-                   'void', 
-                   [param('ns3::Ptr< ns3::MacLow >', 'low')])
-    ## dca-txop.h: void ns3::DcaTxop::SetManager(ns3::DcfManager * manager) [member function]
-    cls.add_method('SetManager', 
-                   'void', 
-                   [param('ns3::DcfManager *', 'manager')])
-    ## dca-txop.h: void ns3::DcaTxop::SetWifiRemoteStationManager(ns3::Ptr<ns3::WifiRemoteStationManager> remoteManager) [member function]
-    cls.add_method('SetWifiRemoteStationManager', 
-                   'void', 
-                   [param('ns3::Ptr< ns3::WifiRemoteStationManager >', 'remoteManager')])
-    ## dca-txop.h: void ns3::DcaTxop::SetTxOkCallback(ns3::Callback<void, ns3::WifiMacHeader const&, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> callback) [member function]
-    cls.add_method('SetTxOkCallback', 
-                   'void', 
-                   [param('ns3::Callback< void, ns3::WifiMacHeader const &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'callback')])
-    ## dca-txop.h: void ns3::DcaTxop::SetTxFailedCallback(ns3::Callback<void, ns3::WifiMacHeader const&, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> callback) [member function]
-    cls.add_method('SetTxFailedCallback', 
-                   'void', 
-                   [param('ns3::Callback< void, ns3::WifiMacHeader const &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'callback')])
-    ## dca-txop.h: void ns3::DcaTxop::SetMaxQueueSize(uint32_t size) [member function]
-    cls.add_method('SetMaxQueueSize', 
-                   'void', 
-                   [param('uint32_t', 'size')])
-    ## dca-txop.h: void ns3::DcaTxop::SetMaxQueueDelay(ns3::Time delay) [member function]
-    cls.add_method('SetMaxQueueDelay', 
-                   'void', 
-                   [param('ns3::Time', 'delay')])
-    ## dca-txop.h: void ns3::DcaTxop::SetMinCw(uint32_t minCw) [member function]
+    ## dcf.h: void ns3::Dcf::SetMinCw(uint32_t minCw) [member function]
     cls.add_method('SetMinCw', 
                    'void', 
-                   [param('uint32_t', 'minCw')])
-    ## dca-txop.h: void ns3::DcaTxop::SetMaxCw(uint32_t maxCw) [member function]
+                   [param('uint32_t', 'minCw')], 
+                   is_pure_virtual=True, is_virtual=True)
+    ## dcf.h: void ns3::Dcf::SetMaxCw(uint32_t maxCw) [member function]
     cls.add_method('SetMaxCw', 
                    'void', 
-                   [param('uint32_t', 'maxCw')])
-    ## dca-txop.h: void ns3::DcaTxop::SetAifsn(uint32_t aifsn) [member function]
+                   [param('uint32_t', 'maxCw')], 
+                   is_pure_virtual=True, is_virtual=True)
+    ## dcf.h: void ns3::Dcf::SetAifsn(uint32_t aifsn) [member function]
     cls.add_method('SetAifsn', 
                    'void', 
-                   [param('uint32_t', 'aifsn')])
-    ## dca-txop.h: uint32_t ns3::DcaTxop::GetMinCw() const [member function]
+                   [param('uint32_t', 'aifsn')], 
+                   is_pure_virtual=True, is_virtual=True)
+    ## dcf.h: uint32_t ns3::Dcf::GetMinCw() const [member function]
     cls.add_method('GetMinCw', 
                    'uint32_t', 
                    [], 
-                   is_const=True)
-    ## dca-txop.h: uint32_t ns3::DcaTxop::GetMaxCw() const [member function]
+                   is_pure_virtual=True, is_const=True, is_virtual=True)
+    ## dcf.h: uint32_t ns3::Dcf::GetMaxCw() const [member function]
     cls.add_method('GetMaxCw', 
                    'uint32_t', 
                    [], 
-                   is_const=True)
-    ## dca-txop.h: uint32_t ns3::DcaTxop::GetAifsn() const [member function]
+                   is_pure_virtual=True, is_const=True, is_virtual=True)
+    ## dcf.h: uint32_t ns3::Dcf::GetAifsn() const [member function]
     cls.add_method('GetAifsn', 
                    'uint32_t', 
                    [], 
-                   is_const=True)
-    ## dca-txop.h: void ns3::DcaTxop::Queue(ns3::Ptr<ns3::Packet const> packet, ns3::WifiMacHeader const & hdr) [member function]
-    cls.add_method('Queue', 
-                   'void', 
-                   [param('ns3::Ptr< ns3::Packet const >', 'packet'), param('ns3::WifiMacHeader const &', 'hdr')])
-    ## dca-txop.h: void ns3::DcaTxop::DoDispose() [member function]
-    cls.add_method('DoDispose', 
-                   'void', 
-                   [], 
-                   visibility='private', is_virtual=True)
+                   is_pure_virtual=True, is_const=True, is_virtual=True)
     return
 
 def register_Ns3EdcaTxopN_methods(root_module, cls):
@@ -3814,30 +3790,33 @@ def register_Ns3EdcaTxopN_methods(root_module, cls):
     ## edca-txop-n.h: void ns3::EdcaTxopN::SetMinCw(uint32_t minCw) [member function]
     cls.add_method('SetMinCw', 
                    'void', 
-                   [param('uint32_t', 'minCw')])
+                   [param('uint32_t', 'minCw')], 
+                   is_virtual=True)
     ## edca-txop-n.h: void ns3::EdcaTxopN::SetMaxCw(uint32_t maxCw) [member function]
     cls.add_method('SetMaxCw', 
                    'void', 
-                   [param('uint32_t', 'maxCw')])
+                   [param('uint32_t', 'maxCw')], 
+                   is_virtual=True)
     ## edca-txop-n.h: void ns3::EdcaTxopN::SetAifsn(uint32_t aifsn) [member function]
     cls.add_method('SetAifsn', 
                    'void', 
-                   [param('uint32_t', 'aifsn')])
+                   [param('uint32_t', 'aifsn')], 
+                   is_virtual=True)
     ## edca-txop-n.h: uint32_t ns3::EdcaTxopN::GetMinCw() const [member function]
     cls.add_method('GetMinCw', 
                    'uint32_t', 
                    [], 
-                   is_const=True)
+                   is_const=True, is_virtual=True)
     ## edca-txop-n.h: uint32_t ns3::EdcaTxopN::GetMaxCw() const [member function]
     cls.add_method('GetMaxCw', 
                    'uint32_t', 
                    [], 
-                   is_const=True)
+                   is_const=True, is_virtual=True)
     ## edca-txop-n.h: uint32_t ns3::EdcaTxopN::GetAifsn() const [member function]
     cls.add_method('GetAifsn', 
                    'uint32_t', 
                    [], 
-                   is_const=True)
+                   is_const=True, is_virtual=True)
     ## edca-txop-n.h: ns3::Ptr<ns3::MacLow> ns3::EdcaTxopN::Low() [member function]
     cls.add_method('Low', 
                    'ns3::Ptr< ns3::MacLow >', 
@@ -5391,6 +5370,83 @@ def register_Ns3AarfWifiManager_methods(root_module, cls):
     ## aarf-wifi-manager.h: ns3::WifiRemoteStation * ns3::AarfWifiManager::CreateStation() [member function]
     cls.add_method('CreateStation', 
                    'ns3::WifiRemoteStation *', 
+                   [], 
+                   visibility='private', is_virtual=True)
+    return
+
+def register_Ns3DcaTxop_methods(root_module, cls):
+    ## dca-txop.h: static ns3::TypeId ns3::DcaTxop::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## dca-txop.h: ns3::DcaTxop::DcaTxop() [constructor]
+    cls.add_constructor([])
+    ## dca-txop.h: void ns3::DcaTxop::SetLow(ns3::Ptr<ns3::MacLow> low) [member function]
+    cls.add_method('SetLow', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::MacLow >', 'low')])
+    ## dca-txop.h: void ns3::DcaTxop::SetManager(ns3::DcfManager * manager) [member function]
+    cls.add_method('SetManager', 
+                   'void', 
+                   [param('ns3::DcfManager *', 'manager')])
+    ## dca-txop.h: void ns3::DcaTxop::SetWifiRemoteStationManager(ns3::Ptr<ns3::WifiRemoteStationManager> remoteManager) [member function]
+    cls.add_method('SetWifiRemoteStationManager', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::WifiRemoteStationManager >', 'remoteManager')])
+    ## dca-txop.h: void ns3::DcaTxop::SetTxOkCallback(ns3::Callback<void, ns3::WifiMacHeader const&, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> callback) [member function]
+    cls.add_method('SetTxOkCallback', 
+                   'void', 
+                   [param('ns3::Callback< void, ns3::WifiMacHeader const &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'callback')])
+    ## dca-txop.h: void ns3::DcaTxop::SetTxFailedCallback(ns3::Callback<void, ns3::WifiMacHeader const&, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> callback) [member function]
+    cls.add_method('SetTxFailedCallback', 
+                   'void', 
+                   [param('ns3::Callback< void, ns3::WifiMacHeader const &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'callback')])
+    ## dca-txop.h: void ns3::DcaTxop::SetMaxQueueSize(uint32_t size) [member function]
+    cls.add_method('SetMaxQueueSize', 
+                   'void', 
+                   [param('uint32_t', 'size')])
+    ## dca-txop.h: void ns3::DcaTxop::SetMaxQueueDelay(ns3::Time delay) [member function]
+    cls.add_method('SetMaxQueueDelay', 
+                   'void', 
+                   [param('ns3::Time', 'delay')])
+    ## dca-txop.h: void ns3::DcaTxop::SetMinCw(uint32_t minCw) [member function]
+    cls.add_method('SetMinCw', 
+                   'void', 
+                   [param('uint32_t', 'minCw')], 
+                   is_virtual=True)
+    ## dca-txop.h: void ns3::DcaTxop::SetMaxCw(uint32_t maxCw) [member function]
+    cls.add_method('SetMaxCw', 
+                   'void', 
+                   [param('uint32_t', 'maxCw')], 
+                   is_virtual=True)
+    ## dca-txop.h: void ns3::DcaTxop::SetAifsn(uint32_t aifsn) [member function]
+    cls.add_method('SetAifsn', 
+                   'void', 
+                   [param('uint32_t', 'aifsn')], 
+                   is_virtual=True)
+    ## dca-txop.h: uint32_t ns3::DcaTxop::GetMinCw() const [member function]
+    cls.add_method('GetMinCw', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## dca-txop.h: uint32_t ns3::DcaTxop::GetMaxCw() const [member function]
+    cls.add_method('GetMaxCw', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## dca-txop.h: uint32_t ns3::DcaTxop::GetAifsn() const [member function]
+    cls.add_method('GetAifsn', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## dca-txop.h: void ns3::DcaTxop::Queue(ns3::Ptr<ns3::Packet const> packet, ns3::WifiMacHeader const & hdr) [member function]
+    cls.add_method('Queue', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Packet const >', 'packet'), param('ns3::WifiMacHeader const &', 'hdr')])
+    ## dca-txop.h: void ns3::DcaTxop::DoDispose() [member function]
+    cls.add_method('DoDispose', 
+                   'void', 
                    [], 
                    visibility='private', is_virtual=True)
     return

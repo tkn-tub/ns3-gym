@@ -26,6 +26,7 @@
 #include "ns3/mobility-module.h"
 #include "ns3/contrib-module.h"
 #include "ns3/wifi-module.h"
+#include "ns3/athstats-helper.h"
 
 #include <iostream>
 
@@ -110,6 +111,9 @@ AdvancePosition (Ptr<Node> node)
 
 int main (int argc, char *argv[])
 {
+  CommandLine cmd;
+   cmd.Parse (argc, argv);
+   
   Packet::EnablePrinting ();
 
   // enable rts cts all the time.
@@ -175,6 +179,10 @@ int main (int argc, char *argv[])
   Config::Connect ("/NodeList/*/DeviceList/*/Phy/State/RxError", MakeCallback (&PhyRxErrorTrace));
   Config::Connect ("/NodeList/*/DeviceList/*/Phy/State/Tx", MakeCallback (&PhyTxTrace));
   Config::Connect ("/NodeList/*/DeviceList/*/Phy/State/State", MakeCallback (&PhyStateTrace));
+  
+  AthstatsHelper athstats;
+  athstats.EnableAthstats("athstats-sta", stas);
+  athstats.EnableAthstats("athstats-ap", ap);
 
   Simulator::Run ();
 

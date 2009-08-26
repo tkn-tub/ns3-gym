@@ -5,11 +5,15 @@ def build(bld):
     module.source = [
         'ipv4-static-routing.cc',
         'ipv4-routing-table-entry.cc',
+        'ipv6-static-routing.cc',
+        'ipv6-routing-table-entry.cc',
         ]
     headers = bld.new_task_gen('ns3header')
     headers.module = 'static-routing'
     headers.source = [
         'ipv4-static-routing.h',
         'ipv4-routing-table-entry.h',
+        'ipv6-static-routing.h',
+        'ipv6-routing-table-entry.h',
         ]
 

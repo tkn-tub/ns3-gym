@@ -32,7 +32,7 @@
 #include "ns3/ptr.h"
 #include "ns3/object.h"
 #include "ns3/traced-callback.h"
-#include "sgi-hashmap.h"
+#include "ns3/sgi-hashmap.h"
 
 namespace ns3 {
 

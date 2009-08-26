@@ -52,6 +52,26 @@ us a note on ns-developers mailing list.  </p>
 
 <h2>New API:</h2>
 <ul>
+<li><b>Athstats</b>
+<p>New classes AthstatsWifiTraceSink and AthstatsHelper.
+</p>
+</li>
+<li><b>WifiRemoteStationManager </b>
+<p>New trace sources exported by WifiRemoteStationManager: MacTxRtsFailed, MacTxDataFailed, MacTxFinalRtsFailed and MacTxFinalDataFailed.
+</p>
+</li>
+<li><b> IPv6 additions</b>
+<p> Add an IPv6 protocol and ICMPv6 capability.
+<ul>
+<li> new classes Ipv6, Ipv6Interface, Ipv6L3Protocol, Ipv6L4Protocol
+<li> Ipv6RawSocket (no UDP or TCP capability yet)
+<li> a set of classes to implement Icmpv6, including neighbor discovery,
+router solicitation, DAD
+<li> new applications Ping6 and Radvd
+<li> routing objects Ipv6Route and Ipv6MulticastRoute
+<li> routing protocols Ipv6ListRouting and Ipv6StaticRouting
+<li> examples: icmpv6-redirect.cc, ping6.cc, radvd.cc, radvd-two-prefix.cc, simple-routing-ping6.cc
+</ul> 
 </ul>
 
 <h2>Changes to existing API:</h2>
