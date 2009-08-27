@@ -104,14 +104,45 @@ RoutingProtocol::GetTypeId (void)
                      TimeValue (MilliSeconds (40)),
                      MakeTimeAccessor (&RoutingProtocol::NodeTraversalTime),
                      MakeTimeChecker ())
+      .AddAttribute ("NextHopWait", "Period of our waiting for the neighbour's RREP_ACK = 10 ms + NodeTraversalTime",
+                     TimeValue (MilliSeconds (50)),
+                     MakeTimeAccessor (&RoutingProtocol::NextHopWait),
+                     MakeTimeChecker ())
       .AddAttribute ("ActiveRouteTimeout", "Period of time during which the route is considered to be valid",
                      TimeValue (Seconds (3)),
                      MakeTimeAccessor (&RoutingProtocol::ActiveRouteTimeout),
                      MakeTimeChecker ())
+      .AddAttribute ("MyRouteTimeout", "Value of lifetime field in RREP generating by this node = 2 * max(ActiveRouteTimeout, PathDiscoveryTime)",
+                     TimeValue (Seconds (11.2)),
+                     MakeTimeAccessor (&RoutingProtocol::MyRouteTimeout),
+                     MakeTimeChecker ())
+      .AddAttribute ("BlackListTimeout", "Time for which the node is put into the blacklist = RreqRetries * NetTraversalTime",
+                     TimeValue (Seconds (5.6)),
+                     MakeTimeAccessor (&RoutingProtocol::BlackListTimeout),
+                     MakeTimeChecker ())
+      .AddAttribute ("DeletePeriod", "DeletePeriod is intended to provide an upper bound on the time for which an upstream node A "
+                     "can have a neighbor B as an active next hop for destination D, while B has invalidated the route to D."
+                     " = 5 * max (HelloInterval, ActiveRouteTimeout)",
+                     TimeValue (Seconds (15)),
+                     MakeTimeAccessor (&RoutingProtocol::DeletePeriod),
+                     MakeTimeChecker ())
+      .AddAttribute ("TimeoutBuffer", "Its purpose is to provide a buffer for the timeout so that if the RREP is delayed"
+                     " due to congestion, a timeout is less likely to occur while the RREP is still en route back to the source.",
+                     UintegerValue (2),
+                     MakeUintegerAccessor (&RoutingProtocol::TimeoutBuffer),
+                     MakeUintegerChecker<uint16_t> ())
       .AddAttribute ("NetDiameter", "Net diameter measures the maximum possible number of hops between two nodes in the network",
                      UintegerValue (35),
                      MakeUintegerAccessor (&RoutingProtocol::NetDiameter),
                      MakeUintegerChecker<uint32_t> ())
+      .AddAttribute ("NetTraversalTime", "Estimate of the average net traversal time = 2 * NodeTraversalTime * NetDiameter",
+                     TimeValue (Seconds (2.8)),
+                     MakeTimeAccessor (&RoutingProtocol::NetTraversalTime),
+                     MakeTimeChecker ())
+      .AddAttribute ("PathDiscoveryTime", "Estimate of maximum time needed to find route in network = 2 * NetTraversalTime",
+                     TimeValue (Seconds (5.6)),
+                     MakeTimeAccessor (&RoutingProtocol::PathDiscoveryTime),
+                     MakeTimeChecker ())
       .AddAttribute ("MaxQueueLen", "Maximum number of packets that we allow a routing protocol to buffer.",
                      UintegerValue (64),
                      MakeUintegerAccessor (&RoutingProtocol::MaxQueueLen),

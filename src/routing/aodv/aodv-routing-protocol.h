@@ -87,7 +87,7 @@ private:
   //\{
   uint32_t RreqRetries;             ///< Maximum number of retransmissions of RREQ with TTL = NetDiameter to discover a route
   uint16_t RreqRateLimit;           ///< Maximum number of RREQ per second.
-  Time ActiveRouteTimeout;          ///< Minimal lifetime for active route.
+  Time ActiveRouteTimeout;          ///< Period of time during which the route is considered to be valid.
   uint32_t NetDiameter;             ///< Net diameter measures the maximum possible number of hops between two nodes in the network
   /**
    *  NodeTraversalTime is a conservative estimate of the average one hop traversal time for packets
@@ -95,8 +95,8 @@ private:
    */
   Time NodeTraversalTime;
   Time NetTraversalTime;             ///< Estimate of the average net traversal time.
-  Time PathDiscoveryTime;            ///< Estimate of maximum time needed to find route in network
-  Time MyRouteTimeout;               ///< Value of lifetime field in RREP generating by this node
+  Time PathDiscoveryTime;            ///< Estimate of maximum time needed to find route in network.
+  Time MyRouteTimeout;               ///< Value of lifetime field in RREP generating by this node.
   /**
    * Every HelloInterval the node checks whether it has sent a broadcast  within the last HelloInterval.
    * If it has not, it MAY broadcast a  Hello message
