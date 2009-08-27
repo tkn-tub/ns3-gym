@@ -189,11 +189,11 @@ HwmpRtable::LookupProactiveExpired ()
   return LookupResult (m_root.retransmitter, m_root.interface, m_root.metric, m_root.seqnum,
       m_root.whenExpire - Simulator::Now ());
 }
-std::vector<IePerr::FailedDestination>
+std::vector<HwmpProtocol::FailedDestination>
 HwmpRtable::GetUnreachableDestinations (Mac48Address peerAddress)
 {
-  IePerr::FailedDestination dst;
-  std::vector<IePerr::FailedDestination> retval;
+  HwmpProtocol::FailedDestination dst;
+  std::vector<HwmpProtocol::FailedDestination> retval;
   for (std::map<Mac48Address, ReactiveRoute>::iterator i = m_routes.begin (); i != m_routes.end (); i++)
   {
       if (i->second.retransmitter == peerAddress)

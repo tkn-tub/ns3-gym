@@ -47,7 +47,7 @@ IePerr::Print (std::ostream &os) const
   os << std::endl << "</information_element>" << std::endl;
 }
 uint8_t
-IePerr::GetNumOfDest ()
+IePerr::GetNumOfDest () const
 {
   return m_addressUnits.size ();
 }
@@ -72,7 +72,7 @@ IePerr::DeserializeInformation (Buffer::Iterator start, uint8_t length)
   length = 0; //to avoid compiler warning in optimized builds
   for (unsigned int j = 0; j < numOfDest; j++)
     {
-      FailedDestination unit;
+      HwmpProtocol::FailedDestination unit;
       ReadFrom (i, unit.destination);
       unit.seqnum = i.ReadLsbtohU32 ();
       m_addressUnits.push_back (unit);
@@ -90,7 +90,7 @@ IePerr::GetInformationSize () const
 }
 
 void
-IePerr::AddAddressUnit (FailedDestination unit)
+IePerr::AddAddressUnit (HwmpProtocol::FailedDestination unit)
 {
   for (unsigned int i = 0; i < m_addressUnits.size (); i++)
     {
@@ -110,7 +110,7 @@ IePerr::IsFull () const
 {
   return (GetInformationSize () + 2 /* ID + LENGTH*/+ 10 /* Sie of Mac48Address + uint32_t (one unit)*/> 255);
 }
-std::vector<IePerr::FailedDestination>
+std::vector<HwmpProtocol::FailedDestination>
 IePerr::GetAddressUnitVector () const
 {
   return m_addressUnits;
@@ -118,7 +118,8 @@ IePerr::GetAddressUnitVector () const
 void
 IePerr::DeleteAddressUnit (Mac48Address address)
 {
-  for (std::vector<FailedDestination>::iterator i = m_addressUnits.begin (); i != m_addressUnits.end (); i++)
+  for (std::vector<HwmpProtocol::FailedDestination>::iterator i = m_addressUnits.begin (); i
+      != m_addressUnits.end (); i++)
     {
       if (i->destination == address)
         {

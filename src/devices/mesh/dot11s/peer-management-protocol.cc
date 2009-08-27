@@ -20,10 +20,8 @@
  */
 
 #include "peer-management-protocol.h"
-
-#include "ie-dot11s-peer-management.h"
 #include "ie-dot11s-configuration.h"
-
+#include "ie-dot11s-id.h"
 #include "ns3/mesh-point-device.h"
 #include "ns3/simulator.h"
 #include "ns3/assert.h"
@@ -32,7 +30,6 @@
 #include "ns3/mesh-wifi-interface-mac.h"
 #include "ns3/mesh-wifi-interface-mac-plugin.h"
 #include "ns3/wifi-net-device.h"
-#include "peer-link.h"
 
 NS_LOG_COMPONENT_DEFINE ("PeerManagementProtocol");
 namespace ns3 {

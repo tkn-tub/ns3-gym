@@ -28,7 +28,6 @@
 #include "ns3/nstime.h"
 #include "ie-dot11s-beacon-timing.h"
 #include "ie-dot11s-peer-management.h"
-#include "ie-dot11s-id.h"
 #include "peer-link.h"
 
 #include <map>
@@ -37,6 +36,7 @@ class MeshPointDevice;
 namespace dot11s {
 class PeerManagementProtocolMac;
 class PeerLink;
+class IeMeshId;
 class IePeerManagement;
 class IeConfiguration;
 /**

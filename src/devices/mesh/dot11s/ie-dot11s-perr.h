@@ -23,6 +23,7 @@
 
 #include "ns3/mac48-address.h"
 #include "ns3/wifi-information-element-vector.h"
+#include "ns3/hwmp-protocol.h"
 
 namespace ns3 {
 namespace dot11s {
@@ -35,16 +36,10 @@ class IePerr : public WifiInformationElement
 public:
   IePerr ();
   ~IePerr ();
-  struct FailedDestination
-  {
-    Mac48Address destination;
-    uint32_t seqnum;
-  };
-  uint8_t   GetNumOfDest ();
-
-  void AddAddressUnit (struct FailedDestination unit);
+  uint8_t   GetNumOfDest () const;
+  void AddAddressUnit (HwmpProtocol::FailedDestination unit);
   bool IsFull () const;
-  std::vector<FailedDestination> GetAddressUnitVector () const;
+  std::vector<HwmpProtocol::FailedDestination> GetAddressUnitVector () const;
   void DeleteAddressUnit (Mac48Address address);
   void ResetPerr ();
   /**
@@ -58,7 +53,7 @@ public:
   virtual uint8_t GetInformationSize () const;
   ///\}
 private:
-  std::vector<FailedDestination> m_addressUnits;
+  std::vector<HwmpProtocol::FailedDestination> m_addressUnits;
   friend bool operator== (const IePerr & a, const IePerr & b);
 };
   bool operator== (const IePerr & a, const IePerr & b);

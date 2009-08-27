@@ -33,6 +33,7 @@
 #include "airtime-metric.h"
 #include "ie-dot11s-preq.h"
 #include "ie-dot11s-prep.h"
+#include "ie-dot11s-perr.h"
 
 NS_LOG_COMPONENT_DEFINE ("HwmpProtocol");
 
@@ -336,7 +337,7 @@ HwmpProtocol::ForwardUnicast (uint32_t  sourceIface, const Mac48Address source, 
         }
       if (result.retransmitter != Mac48Address::GetBroadcast ())
         {
-          std::vector<IePerr::FailedDestination> destinations = m_rtable->GetUnreachableDestinations (result.retransmitter);
+          std::vector<FailedDestination> destinations = m_rtable->GetUnreachableDestinations (result.retransmitter);
           InitiatePathError (MakePathError (destinations));
         }
       m_stats.totalDropped ++;
@@ -622,11 +623,11 @@ HwmpProtocol::ReceivePrep (IePrep prep, Mac48Address from, uint32_t interface, M
   prep_sender->second->SendPrep (prep, result.retransmitter);
 }
 void
-HwmpProtocol::ReceivePerr (std::vector<IePerr::FailedDestination> destinations, Mac48Address from, uint32_t interface, Mac48Address fromMp)
+HwmpProtocol::ReceivePerr (std::vector<FailedDestination> destinations, Mac48Address from, uint32_t interface, Mac48Address fromMp)
 {
   //Acceptance cretirea:
   NS_LOG_DEBUG("I am "<<GetAddress ()<<", received PERR from "<<from);
-  std::vector<IePerr::FailedDestination> retval;
+  std::vector<FailedDestination> retval;
   HwmpRtable::LookupResult result;
   for (unsigned int i = 0; i < destinations.size (); i ++)
   {
@@ -710,7 +711,7 @@ HwmpProtocol::PeerLinkStatus(Mac48Address meshPointAddress, Mac48Address peerAdd
     {
       return;
     }
-  std::vector<IePerr::FailedDestination> destinations = m_rtable->GetUnreachableDestinations (peerAddress);
+  std::vector<FailedDestination> destinations = m_rtable->GetUnreachableDestinations (peerAddress);
   InitiatePathError (MakePathError (destinations));
 }
 void
@@ -741,7 +742,7 @@ HwmpProtocol::DropDataFrame (uint32_t seqno, Mac48Address source)
   return false;
 }
 HwmpProtocol::PathError
-HwmpProtocol::MakePathError (std::vector<IePerr::FailedDestination> destinations)
+HwmpProtocol::MakePathError (std::vector<FailedDestination> destinations)
 {
   PathError retval;
   //HwmpRtable increments a sequence number as written in 11B.9.7.2
@@ -792,7 +793,7 @@ HwmpProtocol::ForwardPathError(PathError perr)
 }
 
 std::vector<std::pair<uint32_t, Mac48Address> >
-HwmpProtocol::GetPerrReceivers (std::vector<IePerr::FailedDestination> failedDest)
+HwmpProtocol::GetPerrReceivers (std::vector<FailedDestination> failedDest)
 {
   HwmpRtable::PrecursorList retval;
   for (unsigned int i = 0; i < failedDest.size (); i ++)

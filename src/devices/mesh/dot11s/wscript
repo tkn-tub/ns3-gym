@@ -28,5 +28,7 @@ def build(bld):
     headers = bld.new_task_gen('ns3header')
     headers.module = 'dot11s'
     headers.source = [
+        'hwmp-protocol.h',
+        'peer-management-protocol.h',
         'dot11s-installer.h',
         ]

@@ -24,7 +24,6 @@
 #include "ns3/mesh-l2-routing-protocol.h"
 #include "ns3/nstime.h"
 #include "ns3/event-id.h"
-#include "ie-dot11s-perr.h"
 #include <vector>
 #include <map>
 
@@ -35,6 +34,7 @@ class Mac48Address;
 namespace dot11s {
 class HwmpProtocolMac;
 class HwmpRtable;
+class IePerr;
 class IePreq;
 class IePrep;
 /**
@@ -49,7 +49,14 @@ public:
   HwmpProtocol ();
   ~HwmpProtocol ();
   void DoDispose ();
-
+  /**
+   * \brief structure of unreachable destination - address and sequence number
+   */
+  typedef struct
+  {
+    Mac48Address destination;
+    uint32_t seqnum;
+  } FailedDestination;
   /// Route request, inherited from MeshL2RoutingProtocol
   bool RequestRoute (uint32_t  sourceIface, const Mac48Address source, const Mac48Address destination,
       Ptr<const Packet>  packet, uint16_t  protocolType, RouteReplyCallback  routeReply);
@@ -88,7 +95,7 @@ private:
   //\{
   void ReceivePreq (IePreq preq, Mac48Address from, uint32_t interface, Mac48Address fromMp, uint32_t metric);
   void ReceivePrep (IePrep prep, Mac48Address from, uint32_t interface, Mac48Address fromMp, uint32_t metric);
-  void ReceivePerr (std::vector<IePerr::FailedDestination>, Mac48Address from, uint32_t interface, Mac48Address fromMp);
+  void ReceivePerr (std::vector<FailedDestination>, Mac48Address from, uint32_t interface, Mac48Address fromMp);
   void SendPrep (
       Mac48Address src,
       Mac48Address dst,
@@ -104,7 +111,7 @@ private:
    */
   struct PathError
   {
-    std::vector<IePerr::FailedDestination> destinations;
+    std::vector<FailedDestination> destinations;
     /// interface-address
     std::vector<std::pair<uint32_t, Mac48Address> > receivers;
   };
@@ -112,13 +119,13 @@ private:
    * \brief forms a path error information element when list of destination fails on a given interface
    * \attention removes all entries from routing table!
    */
-  PathError MakePathError (std::vector<IePerr::FailedDestination> destinations);
+  PathError MakePathError (std::vector<FailedDestination> destinations);
   ///\brief Forwards a received path error
   void ForwardPathError (PathError perr);
   ///\brief Pasess a selg-generated PERR to interface-plugin
   void InitiatePathError (PathError perr);
   /// \return list of addresses where a PERR should be sent to
-  std::vector<std::pair<uint32_t, Mac48Address> > GetPerrReceivers (std::vector<IePerr::FailedDestination> failedDest);
+  std::vector<std::pair<uint32_t, Mac48Address> > GetPerrReceivers (std::vector<FailedDestination> failedDest);
 
   /// \return list of addresses where a PERR should be sent to
   std::vector<Mac48Address> GetPreqReceivers (uint32_t interface);

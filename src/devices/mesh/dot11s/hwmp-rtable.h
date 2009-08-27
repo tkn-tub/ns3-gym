@@ -24,7 +24,7 @@
 #include <map>
 #include "ns3/nstime.h"
 #include "ns3/mac48-address.h"
-#include "ie-dot11s-perr.h"
+#include "ns3/hwmp-protocol.h"
 namespace ns3 {
 namespace dot11s {
 /**
@@ -105,7 +105,7 @@ public:
   //\}
 
   /// When peer link with a given MAC-address fails - it returns list of unreachable destination addresses
-  std::vector<IePerr::FailedDestination> GetUnreachableDestinations (Mac48Address peerAddress);
+  std::vector<HwmpProtocol::FailedDestination> GetUnreachableDestinations (Mac48Address peerAddress);
 
 private:
   /// Route found in reactive mode

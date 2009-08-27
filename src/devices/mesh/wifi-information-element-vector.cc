@@ -19,9 +19,10 @@
  */
 
 #include "wifi-information-element-vector.h"
-#include "ns3/test.h"
 #include "ns3/packet.h"
 #include <algorithm>
+#include "ns3/test.h"
+#include "ns3/hwmp-protocol.h"
 // All information elements:
 #include "dot11s/ie-dot11s-beacon-timing.h"
 #include "dot11s/ie-dot11s-configuration.h"
@@ -457,7 +458,7 @@ WifiInformationElementVectorBist::RunTests ()
   }
   {
     Ptr<dot11s::IePerr> perr = Create<dot11s::IePerr> ();
-    dot11s::IePerr::FailedDestination dest;
+    dot11s::HwmpProtocol::FailedDestination dest;
     dest.destination = Mac48Address ("11:22:33:44:55:66");
     dest.seqnum = 1;
     perr->AddAddressUnit (dest);

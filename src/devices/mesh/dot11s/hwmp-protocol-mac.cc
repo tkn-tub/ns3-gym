@@ -24,12 +24,12 @@
 #include "ns3/nstime.h"
 #include "ns3/log.h"
 #include "dot11s-mac-header.h"
-#include "hwmp-protocol.h"
 #include "hwmp-protocol-mac.h"
 #include "hwmp-tag.h"
 #include "ie-dot11s-preq.h"
 #include "ie-dot11s-prep.h"
 #include "ie-dot11s-rann.h"
+#include "ie-dot11s-perr.h"
 
 namespace ns3 {
 namespace dot11s {
@@ -103,7 +103,7 @@ HwmpProtocolMac::ReceiveAction (Ptr<Packet> packet, const WifiMacHeader & header
     }
   WifiInformationElementVector elements;
   packet->RemoveHeader (elements);
-  std::vector<IePerr::FailedDestination> failedDestinations;
+  std::vector<HwmpProtocol::FailedDestination> failedDestinations;
   for (WifiInformationElementVector::Iterator i = elements.Begin(); i != elements.End(); i ++)
     {
       if ((*i)->ElementId () == IE11S_RANN)
@@ -145,8 +145,8 @@ HwmpProtocolMac::ReceiveAction (Ptr<Packet> packet, const WifiMacHeader & header
           Ptr<IePerr> perr = DynamicCast<IePerr> (*i);
           NS_ASSERT (perr != 0);
           m_stats.rxPerr++;
-          std::vector<IePerr::FailedDestination> destinations = perr->GetAddressUnitVector ();
-          for (std::vector<IePerr::FailedDestination>::const_iterator i = destinations.begin (); i
+          std::vector<HwmpProtocol::FailedDestination> destinations = perr->GetAddressUnitVector ();
+          for (std::vector<HwmpProtocol::FailedDestination>::const_iterator i = destinations.begin (); i
               != destinations.end (); i++)
             {
               failedDestinations.push_back (*i);
@@ -316,14 +316,14 @@ HwmpProtocolMac::SendPrep (IePrep prep, Mac48Address receiver)
   m_parent->SendManagementFrame (packet, hdr);
 }
 void
-HwmpProtocolMac::ForwardPerr (std::vector<IePerr::FailedDestination> failedDestinations, std::vector<
+HwmpProtocolMac::ForwardPerr (std::vector<HwmpProtocol::FailedDestination> failedDestinations, std::vector<
     Mac48Address> receivers)
 {
   NS_LOG_FUNCTION_NOARGS ();
   Ptr<Packet> packet = Create<Packet> ();
   Ptr<IePerr> perr = Create <IePerr> ();
   WifiInformationElementVector elements;
-  for (std::vector<IePerr::FailedDestination>::const_iterator i = failedDestinations.begin (); i
+  for (std::vector<HwmpProtocol::FailedDestination>::const_iterator i = failedDestinations.begin (); i
       != failedDestinations.end (); i++)
     {
       if (!perr->IsFull ())
@@ -366,7 +366,7 @@ HwmpProtocolMac::ForwardPerr (std::vector<IePerr::FailedDestination> failedDesti
     }
 }
 void
-HwmpProtocolMac::InitiatePerr (std::vector<IePerr::FailedDestination> failedDestinations, std::vector<
+HwmpProtocolMac::InitiatePerr (std::vector<HwmpProtocol::FailedDestination> failedDestinations, std::vector<
     Mac48Address> receivers)
 {
   //All duplicates in PERR are checked here, and there is no reason to
@@ -391,11 +391,11 @@ HwmpProtocolMac::InitiatePerr (std::vector<IePerr::FailedDestination> failedDest
         }
     }
     {
-      std::vector<IePerr::FailedDestination>::const_iterator end = failedDestinations.end ();
-      for (std::vector<IePerr::FailedDestination>::const_iterator i = failedDestinations.begin (); i != end; i++)
+      std::vector<HwmpProtocol::FailedDestination>::const_iterator end = failedDestinations.end ();
+      for (std::vector<HwmpProtocol::FailedDestination>::const_iterator i = failedDestinations.begin (); i != end; i++)
         {
           bool should_add = true;
-          for (std::vector<IePerr::FailedDestination>::const_iterator j = m_myPerr.destinations.begin (); j
+          for (std::vector<HwmpProtocol::FailedDestination>::const_iterator j = m_myPerr.destinations.begin (); j
               != m_myPerr.destinations.end (); j++)
             {
               if (((*i).destination == (*j).destination) && ((*j).seqnum > (*i).seqnum))
