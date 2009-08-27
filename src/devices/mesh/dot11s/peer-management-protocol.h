@@ -63,14 +63,13 @@ public:
   /**
    * \brief Methods that handle beacon sending/receiving procedure.
    *
-   * This methods interact with MAC_layer plug-in
+   * \name This methods interact with MAC_layer plug-in
    * \{
    */
   /**
    * \brief When we are sending a beacon - we fill beacon timing
    * element
-   * \param IeBeaconTiming is a beacon timing element that
-   * should be present in beacon
+   * \return IeBeaconTiming is a beacon timing element that should be present in beacon
    * \param interface is a interface sending a beacon
    */
   Ptr<IeBeaconTiming> GetBeaconTimingElement (uint32_t interface);
@@ -80,7 +79,11 @@ public:
    * and remember beacon timers - last beacon and beacon interval to
    * detect beacon loss and cancel links
    * \param interface is a interface on which beacon was received
+   * \param meshBeacon indicates whether the beacon is mesh beacon or not.
    * \param timingElement is a timing element of remote beacon
+   * \param peerAddress is an address where a beacon was received from
+   * \param receivingTime is a time when beacon was received
+   * \param beaconInterval is a beacon interval of received beacon
    */
   void UpdatePeerBeaconTiming (
       uint32_t interface,
@@ -98,18 +101,15 @@ public:
    */
   /**
    * Deliver Peer link management information to the protocol-part
-   * \param void is returning value - we pass a frame and forget
-   * about it
-   * \param uint32_t - is a interface ID of a given MAC (interfaceID rather
-   * than MAC address, beacause many interfaces may have the same MAC)
-   * \param Mac48Address is address of peer
-   * \param Mac48Address is address of peer mesh point device (equal
+   * \param interface is a interface ID of a given MAC (interfaceID rather
+   * than MAC address, because many interfaces may have the same MAC)
+   * \param peerAddress is address of peer
+   * \param peerMeshPointAddress is address of peer mesh point device (equal
    * to peer address when only one interface)
-   * \param uint16_t is association ID, which peer has assigned to
-   * us
-   * \param IeConfiguration is mesh configuration element
-   * taken from the peer management frame
-   * \param IePeerManagement is peer link management element
+   * \param aid is association ID, which peer has assigned to us
+   * \param peerManagementElement is peer link management element
+   * \param meshConfig is mesh configuration element taken from the peer
+   * management frame
    */
   void ReceivePeerLinkFrame (
       uint32_t interface,
@@ -120,17 +120,20 @@ public:
       IeConfiguration meshConfig
       );
   /**
-   * Cancell peer link due to broken configuration (SSID or Supported
+   * \brief Cancels peer link due to broken configuration (Mesh ID or Supported
    * rates)
    */
   void ConfigurationMismatch (uint32_t interface, Mac48Address peerAddress);
   /**
-   * Cancel peer link due to successive transmission failures
+   * \brief Cancels peer link due to successive transmission failures
    */
   void TransmissionFailure (uint32_t interface, const Mac48Address peerAddress);
+  /**
+   * \brief resets transmission failure statistics
+   */
   void TransmissionSuccess (uint32_t interface, const Mac48Address peerAddress);
   /**
-   * Checks if there is established link
+   * \brief Checks if there is established link
    */
   bool IsActiveLink (uint32_t interface, Mac48Address peerAddress);
   //\}
@@ -140,7 +143,7 @@ public:
   std::vector<Mac48Address> GetActiveLinks (uint32_t interface);
   ///\brief needed by plugins to set global source address
   Mac48Address GetAddress ();
-  ///\Needed to fill mesh configuration
+  ///\brief Needed to fill mesh configuration
   uint8_t GetNumberOfLinks ();
   void SetMeshId (std::string s);
   Ptr<IeMeshId> GetMeshId () const;
@@ -162,10 +165,8 @@ private:
   /// keeps all peer links at a given interface.
   typedef std::vector<Ptr<PeerLink> > PeerLinksOnInterface;
   /// This map keeps all peer links.
-  ///\param uint32_t is interface ID
   typedef std::map<uint32_t, PeerLinksOnInterface>  PeerLinksMap;
-  ///\brief This map keeps relationship between peer address and its
-  /// beacon information
+  /// This map keeps relationship between peer address and its beacon information
   typedef std::map<Mac48Address, BeaconInfo>  BeaconsOnInterface;
   ///\brief This map keeps beacon information on all intefaces
   typedef std::map<uint32_t, BeaconsOnInterface> BeaconInfoMap;
@@ -174,7 +175,7 @@ private:
   ///\}
 private:
   /**
-   * Return a position in beacon-storage for a given remote station
+   * \brief Fills information of received beacon. Needed to form own beacon timing element
    */
   void FillBeaconInfo (uint32_t interface, Mac48Address peerAddress, Time receivingTime, Time beaconInterval);
   Ptr<PeerLink> InitiateLink (
@@ -219,19 +220,20 @@ private:
   uint8_t m_maxNumberOfPeerLinks;
   uint8_t m_maxBeaconLostForBeaconTiming;
   /**
-   * Peer Links
+   * \name Peer Links
    * \{
    */
   PeerLinksMap m_peerLinks;
   /**
    * \}
    */
-  ///\brief Callback to notify about peer link changes:
-  ///\param Mac48Address is peer address of mesh point
-  ///\param Mac48Address is peer address of interface
-  ///\param uint32_t - interface ID
-  ///\param bool is staus - true when new link has appeared, false -
-  //when link was closed
+  /**
+   * \brief Callback to notify about peer link changes:
+   * Mac48Address is peer address of mesh point,
+   * Mac48Address is peer address of interface,
+   * uint32_t - interface ID,
+   * bool is status - true when new link has appeared, false - when link was closed,
+   */
   Callback <void, Mac48Address, Mac48Address, uint32_t, bool> m_peerStatusCallback;
   ///\}
   //Keeps statistics

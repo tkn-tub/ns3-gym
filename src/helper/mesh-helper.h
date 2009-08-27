@@ -42,9 +42,22 @@ public:
   static MeshHelper
   Default ();
   /**
-   * \param type the type of ns3::WifiMac to create.
-   * \param n%d the name of the attribute to set
-   * \param v%d the value of the attribute to set
+   * \param n0 the name of the attribute to set
+   * \param v0 the value of the attribute to set
+   * \param n1 the name of the attribute to set
+   * \param v1 the value of the attribute to set
+   * \param n2 the name of the attribute to set
+   * \param v2 the value of the attribute to set
+   * \param n3 the name of the attribute to set
+   * \param v3 the value of the attribute to set
+   * \param n4 the name of the attribute to set
+   * \param v4 the value of the attribute to set
+   * \param n5 the name of the attribute to set
+   * \param v5 the value of the attribute to set
+   * \param n6 the name of the attribute to set
+   * \param v6 the value of the attribute to set
+   * \param n7 the name of the attribute to set
+   * \param v7 the value of the attribute to set
    *
    * All the attributes specified in this method should exist
    * in the requested mac.
@@ -59,8 +72,22 @@ public:
         std::string n7 = "", const AttributeValue &v7 = EmptyAttributeValue ());
   /**
    * \param type the type of ns3::WifiRemoteStationManager to create.
-   * \param n%d the name of the attribute to set
-   * \param v%d the value of the attribute to set
+   * \param n0 the name of the attribute to set
+   * \param v0 the value of the attribute to set
+   * \param n1 the name of the attribute to set
+   * \param v1 the value of the attribute to set
+   * \param n2 the name of the attribute to set
+   * \param v2 the value of the attribute to set
+   * \param n3 the name of the attribute to set
+   * \param v3 the value of the attribute to set
+   * \param n4 the name of the attribute to set
+   * \param v4 the value of the attribute to set
+   * \param n5 the name of the attribute to set
+   * \param v5 the value of the attribute to set
+   * \param n6 the name of the attribute to set
+   * \param v6 the value of the attribute to set
+   * \param n7 the name of the attribute to set
+   * \param v7 the value of the attribute to set
    *
    * All the attributes specified in this method should exist
    * in the requested station manager.
@@ -101,10 +128,8 @@ public:
   /** 
    * \brief Install 802.11s mesh device & protocols on given node list
    * 
-   * \param phy                 Wifi PHY helper
-   * \param nodes               List of nodes to install
-   * \param roots               List of root mesh points
-   * \param nInterfaces         Number of mesh point radio interfaces (= WiFi NICs)
+   * \param phyHelper           Wifi PHY helper
+   * \param c               List of nodes to install
    * 
    * \return list of created mesh point devices, see MeshPointDevice
    */
@@ -112,9 +137,22 @@ public:
   Install (const WifiPhyHelper &phyHelper, NodeContainer c) const;
   /**
    * \param type the type of ns3::MeshStack.
-   *
-   * All the attributes specified in this method should exist
-   * in the requested station manager.
+   * \param n0 the name of the attribute to set
+   * \param v0 the value of the attribute to set
+   * \param n1 the name of the attribute to set
+   * \param v1 the value of the attribute to set
+   * \param n2 the name of the attribute to set
+   * \param v2 the value of the attribute to set
+   * \param n3 the name of the attribute to set
+   * \param v3 the value of the attribute to set
+   * \param n4 the name of the attribute to set
+   * \param v4 the value of the attribute to set
+   * \param n5 the name of the attribute to set
+   * \param v5 the value of the attribute to set
+   * \param n6 the name of the attribute to set
+   * \param v6 the value of the attribute to set
+   * \param n7 the name of the attribute to set
+   * \param v7 the value of the attribute to set
    */
   void SetStackInstaller (std::string type,
                 std::string n0 = "", const AttributeValue &v0 = EmptyAttributeValue (),

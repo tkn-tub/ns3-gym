@@ -133,14 +133,14 @@ private:
                 uint16_t protocol, const Mac48Address src,
       const Mac48Address dst);
   /**
-   * Response callback for L2 routing protocol. This will be executed when routing information is ready.
+   * \brief Response callback for L2 routing protocol. This will be executed when routing information is ready.
    *
    * \param success     True is route found. TODO: diagnose routing errors
    * \param packet      Packet to send
    * \param src         Source MAC address
    * \param dst         Destination MAC address
    * \param protocol    Protocol ID
-   * \param outIface    Interface to use (ID) for send (decided by routing protocol). All interfaces will be used if outIface = 0xffffffff
+   * \param iface       Interface to use (ID) for send (decided by routing protocol). All interfaces will be used if outIface = 0xffffffff
    */
   void
   DoSend (bool success, Ptr<Packet> packet, Mac48Address src, Mac48Address dst, uint16_t protocol,

@@ -66,9 +66,8 @@ public:
    */
   bool Install (Ptr<MeshPointDevice>);
   void PeerLinkStatus (Mac48Address meshPontAddress, Mac48Address peerAddress, uint32_t interface,bool status);
-  ///\brief This callback is used to obtain active neighbours on a
-  //given interface
-  ///\param interface is the interface ID
+  ///\brief This callback is used to obtain active neighbours on a given interface
+  ///\param cb is a callback, which returns a list of addresses on given interface (uint32_t)  
   void SetNeighboursCallback (Callback<std::vector<Mac48Address>, uint32_t> cb);
   ///\name Proactive PREQ mechanism:
   ///\{
@@ -127,13 +126,13 @@ private:
   //retransmitted
   std::vector<Mac48Address> GetBroadcastReceivers (uint32_t interface);
   /**
-   * \brief MAC-plugin asks wether the frame can be dropeed. Protocol automatically updates seqno.
+   * \brief MAC-plugin asks whether the frame can be dropped. Protocol automatically updates seqno.
    *
    * \return true if frame can be dropped
-   * \param uint32_t is the seqno
-   * \param Mac48Address is the mesh source addrress of the frame
+   * \param seqno is the sequence number of source
+   * \param source is the source address
    */
-  bool DropDataFrame (uint32_t, Mac48Address);
+  bool DropDataFrame (uint32_t seqno, Mac48Address source);
   //\}
 private:
   /// Packet waiting its routing information
@@ -168,7 +167,7 @@ private:
   /**
    * \brief Generates PREQ retry when retry timeout has expired and route is still unresolved.
    *
-   * When PREQ retry has achieved the maximum level - retry mechanish should be cancelled
+   * When PREQ retry has achieved the maximum level - retry mechanism should be canceled
    */
   void  RetryPathDiscovery (Mac48Address dst, uint8_t numOfRetry);
   ///\}
@@ -222,7 +221,7 @@ private:
   ///\{
   std::map<Mac48Address, EventId> m_preqTimeouts;
   EventId m_proactivePreqTimer;
-  //Random start in Proactive PREQ propagation
+  /// Random start in Proactive PREQ propagation
   Time m_randomStart;
   ///\}
 

@@ -120,6 +120,12 @@ public:
   TypeId GetInstanceTypeId () const;
   virtual uint32_t GetSerializedSize () const;
   virtual void Serialize (Buffer::Iterator start) const;
+  /**
+   * \attention When you use RemoveHeader, WifiInformationElementVector supposes, that
+   * all buffer consists of information elements
+   * @param start
+   * @return
+   */
   virtual uint32_t Deserialize (Buffer::Iterator start);
   virtual void Print (std::ostream &os) const;
   //\}
@@ -129,6 +135,7 @@ public:
    * \return deserialized bytes
    */
   virtual uint32_t DeserializeSingleIe (Buffer::Iterator start);
+  ///Set maximum size to control overflow of the max packet length 
   void SetMaxSize (uint16_t size);
   typedef std::vector<Ptr<WifiInformationElement> >::iterator Iterator;
   Iterator Begin ();

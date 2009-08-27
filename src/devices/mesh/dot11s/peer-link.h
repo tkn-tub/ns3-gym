@@ -51,13 +51,14 @@ public:
   /// Process beacon received from peer
   void SetBeaconInformation (Time lastBeacon, Time BeaconInterval);
   /**
-   * \brief Method used to detecet peer link changes
+   * \brief Method used to detect peer link changes
    *
-   * \param bool if true - opened new link, if false - link closed
+   * \param cb is a callback, which notifyes, that on interface (uint32_t), peer link
+   * with address (Mac48Address) was opened (bool is true) or closed (bool is false) 
    */
   void  SetLinkStatusCallback (Callback<void, uint32_t, Mac48Address, bool> cb);
   /**
-   * \name Peer link geeters/setters
+   * \name Peer link getters/setters
    * \{
    */
   void SetPeerAddress (Mac48Address macaddr);
@@ -203,7 +204,7 @@ private:
 private:
   ///The number of interface I am associated with
   uint32_t m_interface;
-  /// pointer to mac plugin, which is responsible for peer management
+  /// pointer to MAC plugin, which is responsible for peer management
   Ptr<PeerManagementProtocolMac> m_macPlugin;
   /// Peer address
   Mac48Address m_peerAddress;
@@ -230,9 +231,7 @@ private:
   PeerState m_state;
   /// Mesh interface configuration
   IeConfiguration m_configuration;
-
-  // State is a bitfield as defined as follows:
-  // This are states for a given
+  /// Beacon timing element received from the peer. Needed by BCA
   IeBeaconTiming m_beaconTiming;
 
   /**

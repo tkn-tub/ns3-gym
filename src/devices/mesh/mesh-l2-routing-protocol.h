@@ -102,7 +102,7 @@ public:
    * MeshPointDevice must call this method when passing a packet to
    * upper layer.
    * \returns true if packet shall not be dropeed, false otherwise.
-   * \param sourceIface the incoming interface of the packet
+   * \param fromIface     the incoming interface of the packet
    * \param source        source address
    * \param destination   destination address
    * \param packet        the packet to be handled
