@@ -23,15 +23,16 @@
 #define PEERLLINK_H_
 
 #include "ns3/nstime.h"
+#include "ns3/object.h"
 #include "ns3/callback.h"
 #include "ns3/mac48-address.h"
 #include "ns3/event-id.h"
-#include "ie-dot11s-beacon-timing.h"
-#include "ie-dot11s-peer-management.h"
-#include "ie-dot11s-configuration.h"
-#include "peer-management-protocol-mac.h"
+#include "ns3/ie-dot11s-beacon-timing.h"
+#include "ns3/ie-dot11s-peer-management.h"
 namespace ns3 {
 namespace dot11s {
+class IeConfiguration;
+class PeerManagementProtocolMac;
 /**
  * \ingroup dot11s
  *
@@ -229,8 +230,11 @@ private:
 
   /// Current state
   PeerState m_state;
-  /// Mesh interface configuration
-  IeConfiguration m_configuration;
+  /**
+   * \brief Mesh interface configuration
+   * \attention Is not used now, nothing to configure :)
+   */
+  Ptr<IeConfiguration> m_configuration;
   /// Beacon timing element received from the peer. Needed by BCA
   IeBeaconTiming m_beaconTiming;
 

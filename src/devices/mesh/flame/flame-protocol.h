@@ -21,11 +21,9 @@
 #ifndef FLAME_PROTOCOL_H
 #define FLAME_PROTOCOL_H
 
-#include "flame-protocol-mac.h"
-#include "flame-header.h"
-#include "flame-rtable.h"
 
 #include "ns3/mesh-l2-routing-protocol.h"
+#include "ns3/nstime.h"
 #include "ns3/tag.h"
 #include <map>
 
@@ -46,6 +44,9 @@
  */
 namespace ns3 {
 namespace flame {
+class FlameProtocolMac;
+class FlameHeader;
+class FlameRtable;
 /**
  * \ingroup flame
  * \brief Transmitter and receiver addresses

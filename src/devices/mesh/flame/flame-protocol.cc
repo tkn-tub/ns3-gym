@@ -19,7 +19,9 @@
  */
 
 #include "flame-protocol.h"
+#include "flame-protocol-mac.h"
 #include "flame-header.h"
+#include "flame-rtable.h"
 #include "ns3/llc-snap-header.h"
 #include "ns3/log.h"
 #include "ns3/simulator.h"

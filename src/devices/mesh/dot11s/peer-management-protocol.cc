@@ -19,7 +19,8 @@
  *          Aleksey Kovalenko <kovalenko@iitp.ru>
  */
 
-#include "peer-management-protocol.h"
+#include "ns3/peer-management-protocol.h"
+#include "peer-management-protocol-mac.h"
 #include "ie-dot11s-configuration.h"
 #include "ie-dot11s-id.h"
 #include "ns3/mesh-point-device.h"

@@ -23,12 +23,13 @@ def build(bld):
         'hwmp-protocol-mac.cc',
         'hwmp-protocol.cc',
         'airtime-metric.cc',
-        'dot11s-installer.cc',
         ]
     headers = bld.new_task_gen('ns3header')
     headers.module = 'dot11s'
     headers.source = [
         'hwmp-protocol.h',
         'peer-management-protocol.h',
-        'dot11s-installer.h',
+        'ie-dot11s-beacon-timing.h',
+        'ie-dot11s-peer-management.h',
+        'peer-link.h',
         ]

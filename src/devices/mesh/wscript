@@ -19,5 +19,4 @@ def build(bld):
         'mesh-wifi-beacon.h',
         'mesh-wifi-interface-mac.h',
         'mesh-wifi-interface-mac-plugin.h',
-        'mesh-stack-installer.h',
         ]

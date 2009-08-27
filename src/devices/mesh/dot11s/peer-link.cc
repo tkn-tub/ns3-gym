@@ -20,7 +20,9 @@
  *          Pavel Boyko <boyko@iitp.ru>
  */
 
-#include "peer-link.h"
+#include "ns3/peer-link.h"
+#include "ie-dot11s-configuration.h"
+#include "peer-management-protocol-mac.h"
 #include "ns3/log.h"
 #include "ns3/simulator.h"
 #include "ns3/traced-value.h"
@@ -89,8 +91,15 @@ PeerLink::GetTypeId ()
 // PeerLink public interface
 //-----------------------------------------------------------------------------
 PeerLink::PeerLink () :
-  m_peerAddress (Mac48Address::GetBroadcast ()), m_peerMeshPointAddress (Mac48Address::GetBroadcast ()),
-      m_localLinkId (0), m_peerLinkId (0), m_packetFail (0), m_state (IDLE), m_retryCounter (0), m_maxPacketFail (3)
+  m_peerAddress (Mac48Address::GetBroadcast ()),
+  m_peerMeshPointAddress (Mac48Address::GetBroadcast ()),
+  m_localLinkId (0),
+  m_peerLinkId (0),
+  m_packetFail (0),
+  m_state (IDLE),
+  m_configuration (Create <IeConfiguration> ()),
+  m_retryCounter (0),
+  m_maxPacketFail (3)
 {
 }
 PeerLink::~PeerLink ()
@@ -238,7 +247,7 @@ PeerLink::OpenAccept (uint16_t localLinkId, IeConfiguration conf, Mac48Address p
     {
       m_peerLinkId = localLinkId;
     }
-  m_configuration = conf;
+  m_configuration = Ptr<IeConfiguration> (&conf);
   if (m_peerMeshPointAddress != Mac48Address::GetBroadcast ())
     {
       NS_ASSERT (m_peerMeshPointAddress == peerMp);
@@ -256,7 +265,7 @@ PeerLink::OpenReject (uint16_t localLinkId, IeConfiguration conf, Mac48Address p
     {
       m_peerLinkId = localLinkId;
     }
-  m_configuration = conf;
+  m_configuration = Ptr<IeConfiguration> (&conf);
   if (m_peerMeshPointAddress != Mac48Address::GetBroadcast ())
     {
       NS_ASSERT (m_peerMeshPointAddress == peerMp);
@@ -286,7 +295,7 @@ PeerLink::ConfirmAccept (uint16_t localLinkId, uint16_t peerLinkId, uint16_t pee
           return;
         }
     }
-  m_configuration = conf;
+  m_configuration = Ptr<IeConfiguration> (&conf);
   m_peerAssocId = peerAid;
   if (m_peerMeshPointAddress != Mac48Address::GetBroadcast ())
     {
@@ -317,7 +326,7 @@ PeerLink::ConfirmReject (uint16_t localLinkId, uint16_t peerLinkId, IeConfigurat
           return;
         }
     }
-  m_configuration = conf;
+  m_configuration = Ptr<IeConfiguration> (&conf);
   if (m_peerMeshPointAddress != Mac48Address::GetBroadcast ())
     {
       NS_ASSERT (m_peerMeshPointAddress == peerMp);
@@ -607,27 +616,30 @@ PeerLink::ClearHoldingTimer ()
 void
 PeerLink::SendPeerLinkClose (PmpReasonCode reasoncode)
 {
+  NS_ASSERT (m_configuration != 0);
   IePeerManagement peerElement;
   peerElement.SetPeerClose (m_localLinkId, m_peerLinkId, reasoncode);
   m_macPlugin->SendPeerLinkManagementFrame (m_peerAddress, m_peerMeshPointAddress, m_assocId, peerElement,
-      m_configuration);
+      *m_configuration);
 }
 void
 PeerLink::SendPeerLinkOpen ()
 {
+  NS_ASSERT (m_configuration != 0);
   IePeerManagement peerElement;
   peerElement.SetPeerOpen (m_localLinkId);
   NS_ASSERT (m_macPlugin != 0);
   m_macPlugin->SendPeerLinkManagementFrame (m_peerAddress, m_peerMeshPointAddress, m_assocId, peerElement,
-      m_configuration);
+      *m_configuration);
 }
 void
 PeerLink::SendPeerLinkConfirm ()
 {
+  NS_ASSERT (m_configuration != 0);
   IePeerManagement peerElement;
   peerElement.SetPeerConfirm (m_localLinkId, m_peerLinkId);
   m_macPlugin->SendPeerLinkManagementFrame (m_peerAddress, m_peerMeshPointAddress, m_assocId, peerElement,
-      m_configuration);
+      *m_configuration);
 }
 void
 PeerLink::SetHoldingTimer ()
