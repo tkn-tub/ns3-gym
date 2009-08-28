@@ -355,8 +355,7 @@ HwmpProtocolMac::ForwardPerr (std::vector<HwmpProtocol::FailedDestination> faile
       receivers.push_back (Mac48Address::GetBroadcast ());
     }
   //Send Management frame
-  for (std::vector<Mac48Address>::const_iterator i = m_myPerr.receivers.begin (); i
-      != m_myPerr.receivers.end (); i++)
+  for (std::vector<Mac48Address>::const_iterator i = receivers.begin (); i != receivers.end (); i++)
     {
       hdr.SetAddr1 (*i);
       m_stats.txPerr++;

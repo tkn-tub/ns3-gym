@@ -626,12 +626,12 @@ void
 HwmpProtocol::ReceivePerr (std::vector<FailedDestination> destinations, Mac48Address from, uint32_t interface, Mac48Address fromMp)
 {
   //Acceptance cretirea:
-  NS_LOG_DEBUG("I am "<<GetAddress ()<<", received PERR from "<<from);
+  NS_LOG_DEBUG ("I am "<<GetAddress ()<<", received PERR from "<<from);
   std::vector<FailedDestination> retval;
   HwmpRtable::LookupResult result;
   for (unsigned int i = 0; i < destinations.size (); i ++)
   {
-    result = m_rtable->LookupReactive (destinations[i].destination);
+    result = m_rtable->LookupReactiveExpired (destinations[i].destination);
     if (!(
         (result.retransmitter != from) ||
         (result.ifIndex != interface) ||
