@@ -29,10 +29,10 @@
  * \brief MAC-layer mobile mesh networking.
  * \section MeshOverview Overview of Layer-2 Mesh networking protocols
  * 
- * The main goal of this module is to provide a MAC-layer routing functionality.
+ * The main goal of this module is to provide MAC-layer routing functionality.
  
- * The main part of MAC-layer routing model is a special type of a network device -- 
- * ns3::MeshPointDevice. Being an interface to upper-layer protocols, it provides routing functionality, 
+ * The main part of MAC-layer routing model is specific type of a network device -- 
+ * ns3::MeshPointDevice. Being an interface to upper-layer protocols, it provides routing functionality
  * hidden from upper-layer protocols, by means of ns3::MeshL2RoutingProtocol. 
  * 
  * Our model supports stations with multiple network devices handled by a single
@@ -41,13 +41,13 @@
  * 
  * Network devices may be of different types, each with a specific medium access method.
  * So ns3::MeshL2RoutingProtocol consists of two parts: the one independent from the network device type, 
- * which we refer to as a routing protocol, and the other one depended on the network device type. which
+ * which we refer to as a routing protocol, and the other one depended on the network device type which
  * we refer to as a plug-in to the routing protocol.
  * 
- * One can imagine a MAC-layer routing as a two-tiers model. ns3::MeshL2RoutingProtocol and ns3::MeshPointDevice 
+ * One can imagine a MAC-layer routing as a two-tier model. ns3::MeshL2RoutingProtocol and ns3::MeshPointDevice 
  * belong to the upper tier. The task of ns3::MeshPointDevice is to send, receive, and forward frames, 
  * while the task of ns3::MeshL2RoutingProtocol is to resolve routes and keep frames waiting for route resolution. 
- * This functionality is independent from the type of underlying network devices ("interfaces").
+ * This functionality is independent from the types of underlying network devices ("interfaces").
  * 
  * The lower tier implements the part of MAC-layer routing, specific for underlying network devices
  * and their medium access control methods. For example, HWMP routing protocol in IEEE802.11s
@@ -56,7 +56,7 @@
  * At present, two routing protocols are implemented in this module:
  *      - HWMP (default routing protocol for IEEE802.11s standard) + Peer management protocol 
  *      (also described in 802.11s standard draft) which is required by HWMP to manage peer links 
- *      (works like association mechanism in IEEE802.11).
+ *      (it works like association mechanism in IEEE802.11).
  *      - FLAME (Forwarding LAyer for MEshing).
  
  * While HWMP only works with 802.11-MAC, FLAME works with all types of network devices, which support
@@ -80,11 +80,11 @@
  * generation is enabled or disabled, it implements IEEE802.11s mesh functionality or a simple ad hoc functionality 
  * of the MAC-high part of the WiFi model, respectively. The latter is a plug-in to L2Routing protocol. 
  * It handles all outgoing and incoming frames, fills headers and make decisions to drop a frame or not. Also, it 
- * adds information elements to a beacon specific to given L2Routing protocol, if needed.
+ * adds information elements to beacons specific to given L2Routing protocol, if needed.
  * \image html MeshArchitecture.png "Overview of the Mesh MAC-layer routing system"
  * 
  * \subsection NewProtocol Adding a new protocol
- * This module requires all the network devices operates with ns3::Mac48Address addressing scheme.
+ * This module requires all the network devices operate with ns3::Mac48Address addressing scheme.
  * 
  * To add a new L2Routing protocol, one needs to define the following:
  *      - Write an upper part of the protocol inherited from ns3::MeshL2Routing.
