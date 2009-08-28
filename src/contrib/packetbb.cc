@@ -25,6 +25,7 @@
 
 #include "ns3/ipv4-address.h"
 #include "ns3/ipv6-address.h"
+#include "ns3/assert.h"
 
 #include "packetbb.h"
 
@@ -492,6 +493,7 @@ PacketBB::SetSequenceNumber (uint16_t number)
 uint16_t
 PacketBB::GetSequenceNumber (void) const
 {
+  NS_ASSERT (HasSequenceNumber ());
   return m_seqnum;
 }
 
@@ -948,6 +950,7 @@ Message::SetOriginatorAddress (Address address)
 Address
 Message::GetOriginatorAddress (void) const
 {
+  NS_ASSERT (HasOriginatorAddress ());
   return m_originatorAddress;
 }
 
@@ -967,6 +970,7 @@ Message::SetHopLimit (uint8_t hopLimit)
 uint8_t
 Message::GetHopLimit (void) const
 {
+  NS_ASSERT (HasHopLimit ());
   return m_hopLimit;
 }
 
@@ -986,6 +990,7 @@ Message::SetHopCount (uint8_t hopCount)
 uint8_t
 Message::GetHopCount (void) const
 {
+  NS_ASSERT (HasHopCount ());
   return m_hopCount;
 }
 
@@ -1005,6 +1010,7 @@ Message::SetSequenceNumber (uint16_t sequenceNumber)
 uint16_t
 Message::GetSequenceNumber (void) const
 {
+  NS_ASSERT (HasSequenceNumber ());
   return m_sequenceNumber;
 }
 
@@ -2388,6 +2394,7 @@ Tlv::SetTypeExt (uint8_t typeExt)
 uint8_t
 Tlv::GetTypeExt (void) const
 {
+  NS_ASSERT (HasTypeExt ());
   return m_typeExt;
 }
 
@@ -2407,6 +2414,7 @@ Tlv::SetIndexStart (uint8_t index)
 uint8_t
 Tlv::GetIndexStart (void) const
 {
+  NS_ASSERT (HasIndexStart ());
   return m_indexStart;
 }
 
@@ -2426,6 +2434,7 @@ Tlv::SetIndexStop (uint8_t index)
 uint8_t
 Tlv::GetIndexStop (void) const
 {
+  NS_ASSERT (HasIndexStop ());
   return m_indexStop;
 }
 
@@ -2466,6 +2475,7 @@ Tlv::SetValue (const uint8_t * buffer, uint32_t size)
 Buffer
 Tlv::GetValue (void) const
 {
+  NS_ASSERT (HasValue ());
   return m_value;
 }
 

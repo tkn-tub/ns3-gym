@@ -166,7 +166,7 @@ public:
    * \returns the sequence number of this packet.
    *
    * Calling this while HasSequenceNumber is False is undefined.  Make sure you
-   * check it first.
+   * check it first.  This will be checked by an assert in debug builds.
    */
   uint16_t GetSequenceNumber (void) const;
   bool HasSequenceNumber (void) const;
@@ -280,7 +280,7 @@ public:
    * \returns the address of the node that created this packet.
    *
    * Calling this while HasOriginatorAddress is False is undefined.  Make sure
-   * you check it first.
+   * you check it first.  This will be checked by an assert in debug builds.
    */
   Address GetOriginatorAddress (void) const;
   bool HasOriginatorAddress (void) const;
@@ -290,7 +290,7 @@ public:
    * \returns the maximum number of hops this message should travel.
    *
    * Calling this while HasHopLimit is False is undefined.  Make sure you check
-   * it first.
+   * it first.  This will be checked by an assert in debug builds.
    */
   uint8_t GetHopLimit (void) const;
   bool HasHopLimit (void) const;
@@ -300,7 +300,7 @@ public:
    * \returns the current number of hops this message has traveled.
    *
    * Calling this while HasHopCount is False is undefined.  Make sure you check
-   * it first.
+   * it first.  This will be checked by an assert in debug builds.
    */
   uint8_t GetHopCount (void) const;
   bool HasHopCount (void) const;
@@ -310,7 +310,7 @@ public:
    * \returns the sequence number of this message.
    *
    * Calling this while HasSequenceNumber is False is undefined.  Make sure you
-   * check it first.
+   * check it first.  This will be checked by an assert in debug builds.
    */
   uint16_t GetSequenceNumber (void) const;
   bool HasSequenceNumber (void) const;
@@ -624,7 +624,7 @@ public:
    * \returns the type extension for this TLV.
    *
    * Calling this while HasTypeExt is False is undefined.  Make sure you check
-   * it first.
+   * it first.  This will be checked by an assert in debug builds.
    */
   uint8_t GetTypeExt (void) const;
   bool HasTypeExt (void) const;
@@ -635,7 +635,7 @@ public:
    * \returns a Buffer pointing to the value of this TLV.
    *
    * Calling this while HasValue is False is undefined.  Make sure you check it
-   * first.
+   * first.  This will be checked by an assert in debug builds.
    */
   Buffer GetValue (void) const;
   bool HasValue (void) const;
@@ -696,7 +696,7 @@ public:
    * AddressBlock that this TLV applies to.
    *
    * Calling this while HasIndexStart is False is undefined.  Make sure you
-   * check it first.
+   * check it first.  This will be checked by an assert in debug builds.
    */
   uint8_t GetIndexStart (void) const;
   bool HasIndexStart (void) const;
@@ -707,7 +707,7 @@ public:
    * AddressBlock that this TLV applies to.
    *
    * Calling this while HasIndexStop is False is undefined.  Make sure you
-   * check it first.
+   * check it first.  This will be checked by an assert in debug builds.
    */
   uint8_t GetIndexStop (void) const;
   bool HasIndexStop (void) const;
