@@ -26,7 +26,11 @@ def register_types(module):
     ## packet-data-calculators.h: ns3::PacketCounterCalculator [class]
     module.add_class('PacketCounterCalculator', parent=root_module['ns3::CounterCalculator< unsigned int >'])
     typehandlers.add_type_alias('std::list< ns3::Ptr< ns3::DataCalculator >, std::allocator< ns3::Ptr< ns3::DataCalculator > > >', 'ns3::DataCalculatorList')
+    typehandlers.add_type_alias('std::list< ns3::Ptr< ns3::DataCalculator >, std::allocator< ns3::Ptr< ns3::DataCalculator > > >*', 'ns3::DataCalculatorList*')
+    typehandlers.add_type_alias('std::list< ns3::Ptr< ns3::DataCalculator >, std::allocator< ns3::Ptr< ns3::DataCalculator > > >&', 'ns3::DataCalculatorList&')
     typehandlers.add_type_alias('std::list< std::pair< std::string, std::string >, std::allocator< std::pair< std::string, std::string > > >', 'ns3::MetadataList')
+    typehandlers.add_type_alias('std::list< std::pair< std::string, std::string >, std::allocator< std::pair< std::string, std::string > > >*', 'ns3::MetadataList*')
+    typehandlers.add_type_alias('std::list< std::pair< std::string, std::string >, std::allocator< std::pair< std::string, std::string > > >&', 'ns3::MetadataList&')
     
     ## Register a nested module for the namespace Config
     
@@ -93,10 +97,10 @@ def register_methods(root_module):
     return
 
 def register_Ns3DataOutputCallback_methods(root_module, cls):
-    ## data-output-interface.h: ns3::DataOutputCallback::DataOutputCallback(ns3::DataOutputCallback const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::DataOutputCallback const &', 'arg0')])
     ## data-output-interface.h: ns3::DataOutputCallback::DataOutputCallback() [constructor]
     cls.add_constructor([])
+    ## data-output-interface.h: ns3::DataOutputCallback::DataOutputCallback(ns3::DataOutputCallback const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::DataOutputCallback const &', 'arg0')])
     ## data-output-interface.h: void ns3::DataOutputCallback::OutputSingleton(std::string key, std::string variable, int val) [member function]
     cls.add_method('OutputSingleton', 
                    'void', 
@@ -129,28 +133,33 @@ def register_Ns3DataCalculator_methods(root_module, cls):
     cls.add_constructor([param('ns3::DataCalculator const &', 'arg0')])
     ## data-calculator.h: ns3::DataCalculator::DataCalculator() [constructor]
     cls.add_constructor([])
+    ## data-calculator.h: void ns3::DataCalculator::Disable() [member function]
+    cls.add_method('Disable', 
+                   'void', 
+                   [])
+    ## data-calculator.h: void ns3::DataCalculator::Enable() [member function]
+    cls.add_method('Enable', 
+                   'void', 
+                   [])
     ## data-calculator.h: bool ns3::DataCalculator::GetEnabled() const [member function]
     cls.add_method('GetEnabled', 
                    'bool', 
                    [], 
                    is_const=True)
-    ## data-calculator.h: void ns3::DataCalculator::Enable() [member function]
-    cls.add_method('Enable', 
-                   'void', 
-                   [])
-    ## data-calculator.h: void ns3::DataCalculator::Disable() [member function]
-    cls.add_method('Disable', 
-                   'void', 
-                   [])
-    ## data-calculator.h: void ns3::DataCalculator::SetKey(std::string const key) [member function]
-    cls.add_method('SetKey', 
-                   'void', 
-                   [param('std::string const', 'key')])
     ## data-calculator.h: std::string ns3::DataCalculator::GetKey() const [member function]
     cls.add_method('GetKey', 
                    'std::string', 
                    [], 
                    is_const=True)
+    ## data-calculator.h: void ns3::DataCalculator::Output(ns3::DataOutputCallback & callback) const [member function]
+    cls.add_method('Output', 
+                   'void', 
+                   [param('ns3::DataOutputCallback &', 'callback')], 
+                   is_pure_virtual=True, is_const=True, is_virtual=True)
+    ## data-calculator.h: void ns3::DataCalculator::SetKey(std::string const key) [member function]
+    cls.add_method('SetKey', 
+                   'void', 
+                   [param('std::string const', 'key')])
     ## data-calculator.h: void ns3::DataCalculator::Start(ns3::Time const & startTime) [member function]
     cls.add_method('Start', 
                    'void', 
@@ -161,11 +170,6 @@ def register_Ns3DataCalculator_methods(root_module, cls):
                    'void', 
                    [param('ns3::Time const &', 'stopTime')], 
                    is_virtual=True)
-    ## data-calculator.h: void ns3::DataCalculator::Output(ns3::DataOutputCallback & callback) const [member function]
-    cls.add_method('Output', 
-                   'void', 
-                   [param('ns3::DataOutputCallback &', 'callback')], 
-                   is_pure_virtual=True, is_const=True, is_virtual=True)
     ## data-calculator.h: void ns3::DataCalculator::DoDispose() [member function]
     cls.add_method('DoDispose', 
                    'void', 
@@ -178,17 +182,41 @@ def register_Ns3DataCollector_methods(root_module, cls):
     cls.add_constructor([param('ns3::DataCollector const &', 'arg0')])
     ## data-collector.h: ns3::DataCollector::DataCollector() [constructor]
     cls.add_constructor([])
+    ## data-collector.h: void ns3::DataCollector::AddDataCalculator(ns3::Ptr<ns3::DataCalculator> datac) [member function]
+    cls.add_method('AddDataCalculator', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::DataCalculator >', 'datac')])
+    ## data-collector.h: void ns3::DataCollector::AddMetadata(std::string key, std::string value) [member function]
+    cls.add_method('AddMetadata', 
+                   'void', 
+                   [param('std::string', 'key'), param('std::string', 'value')])
+    ## data-collector.h: void ns3::DataCollector::AddMetadata(std::string key, double value) [member function]
+    cls.add_method('AddMetadata', 
+                   'void', 
+                   [param('std::string', 'key'), param('double', 'value')])
+    ## data-collector.h: void ns3::DataCollector::AddMetadata(std::string key, uint32_t value) [member function]
+    cls.add_method('AddMetadata', 
+                   'void', 
+                   [param('std::string', 'key'), param('uint32_t', 'value')])
+    ## data-collector.h: std::_List_iterator<ns3::Ptr<ns3::DataCalculator> > ns3::DataCollector::DataCalculatorBegin() [member function]
+    cls.add_method('DataCalculatorBegin', 
+                   'std::_List_iterator< ns3::Ptr< ns3::DataCalculator > >', 
+                   [])
+    ## data-collector.h: std::_List_iterator<ns3::Ptr<ns3::DataCalculator> > ns3::DataCollector::DataCalculatorEnd() [member function]
+    cls.add_method('DataCalculatorEnd', 
+                   'std::_List_iterator< ns3::Ptr< ns3::DataCalculator > >', 
+                   [])
     ## data-collector.h: void ns3::DataCollector::DescribeRun(std::string experiment, std::string strategy, std::string input, std::string runID, std::string description="") [member function]
     cls.add_method('DescribeRun', 
                    'void', 
                    [param('std::string', 'experiment'), param('std::string', 'strategy'), param('std::string', 'input'), param('std::string', 'runID'), param('std::string', 'description', default_value='""')])
-    ## data-collector.h: std::string ns3::DataCollector::GetExperimentLabel() const [member function]
-    cls.add_method('GetExperimentLabel', 
+    ## data-collector.h: std::string ns3::DataCollector::GetDescription() const [member function]
+    cls.add_method('GetDescription', 
                    'std::string', 
                    [], 
                    is_const=True)
-    ## data-collector.h: std::string ns3::DataCollector::GetStrategyLabel() const [member function]
-    cls.add_method('GetStrategyLabel', 
+    ## data-collector.h: std::string ns3::DataCollector::GetExperimentLabel() const [member function]
+    cls.add_method('GetExperimentLabel', 
                    'std::string', 
                    [], 
                    is_const=True)
@@ -202,23 +230,11 @@ def register_Ns3DataCollector_methods(root_module, cls):
                    'std::string', 
                    [], 
                    is_const=True)
-    ## data-collector.h: std::string ns3::DataCollector::GetDescription() const [member function]
-    cls.add_method('GetDescription', 
+    ## data-collector.h: std::string ns3::DataCollector::GetStrategyLabel() const [member function]
+    cls.add_method('GetStrategyLabel', 
                    'std::string', 
                    [], 
                    is_const=True)
-    ## data-collector.h: void ns3::DataCollector::AddMetadata(std::string key, std::string value) [member function]
-    cls.add_method('AddMetadata', 
-                   'void', 
-                   [param('std::string', 'key'), param('std::string', 'value')])
-    ## data-collector.h: void ns3::DataCollector::AddMetadata(std::string key, double value) [member function]
-    cls.add_method('AddMetadata', 
-                   'void', 
-                   [param('std::string', 'key'), param('double', 'value')])
-    ## data-collector.h: void ns3::DataCollector::AddMetadata(std::string key, uint32_t value) [member function]
-    cls.add_method('AddMetadata', 
-                   'void', 
-                   [param('std::string', 'key'), param('uint32_t', 'value')])
     ## data-collector.h: std::_List_iterator<std::pair<std::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::basic_string<char, std::char_traits<char>, std::allocator<char> > > > ns3::DataCollector::MetadataBegin() [member function]
     cls.add_method('MetadataBegin', 
                    'std::_List_iterator< std::pair< std::basic_string< char, std::char_traits< char >, std::allocator< char > >, std::basic_string< char, std::char_traits< char >, std::allocator< char > > > >', 
@@ -226,18 +242,6 @@ def register_Ns3DataCollector_methods(root_module, cls):
     ## data-collector.h: std::_List_iterator<std::pair<std::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::basic_string<char, std::char_traits<char>, std::allocator<char> > > > ns3::DataCollector::MetadataEnd() [member function]
     cls.add_method('MetadataEnd', 
                    'std::_List_iterator< std::pair< std::basic_string< char, std::char_traits< char >, std::allocator< char > >, std::basic_string< char, std::char_traits< char >, std::allocator< char > > > >', 
-                   [])
-    ## data-collector.h: void ns3::DataCollector::AddDataCalculator(ns3::Ptr<ns3::DataCalculator> datac) [member function]
-    cls.add_method('AddDataCalculator', 
-                   'void', 
-                   [param('ns3::Ptr< ns3::DataCalculator >', 'datac')])
-    ## data-collector.h: std::_List_iterator<ns3::Ptr<ns3::DataCalculator> > ns3::DataCollector::DataCalculatorBegin() [member function]
-    cls.add_method('DataCalculatorBegin', 
-                   'std::_List_iterator< ns3::Ptr< ns3::DataCalculator > >', 
-                   [])
-    ## data-collector.h: std::_List_iterator<ns3::Ptr<ns3::DataCalculator> > ns3::DataCollector::DataCalculatorEnd() [member function]
-    cls.add_method('DataCalculatorEnd', 
-                   'std::_List_iterator< ns3::Ptr< ns3::DataCalculator > >', 
                    [])
     ## data-collector.h: void ns3::DataCollector::DoDispose() [member function]
     cls.add_method('DoDispose', 
@@ -251,6 +255,11 @@ def register_Ns3DataOutputInterface_methods(root_module, cls):
     cls.add_constructor([param('ns3::DataOutputInterface const &', 'arg0')])
     ## data-output-interface.h: ns3::DataOutputInterface::DataOutputInterface() [constructor]
     cls.add_constructor([])
+    ## data-output-interface.h: std::string ns3::DataOutputInterface::GetFilePrefix() const [member function]
+    cls.add_method('GetFilePrefix', 
+                   'std::string', 
+                   [], 
+                   is_const=True)
     ## data-output-interface.h: void ns3::DataOutputInterface::Output(ns3::DataCollector & dc) [member function]
     cls.add_method('Output', 
                    'void', 
@@ -260,11 +269,6 @@ def register_Ns3DataOutputInterface_methods(root_module, cls):
     cls.add_method('SetFilePrefix', 
                    'void', 
                    [param('std::string const', 'prefix')])
-    ## data-output-interface.h: std::string ns3::DataOutputInterface::GetFilePrefix() const [member function]
-    cls.add_method('GetFilePrefix', 
-                   'std::string', 
-                   [], 
-                   is_const=True)
     ## data-output-interface.h: void ns3::DataOutputInterface::DoDispose() [member function]
     cls.add_method('DoDispose', 
                    'void', 
@@ -277,15 +281,15 @@ def register_Ns3MinMaxAvgTotalCalculator__Unsigned_int_methods(root_module, cls)
     cls.add_constructor([param('ns3::MinMaxAvgTotalCalculator< unsigned int > const &', 'arg0')])
     ## basic-data-calculators.h: ns3::MinMaxAvgTotalCalculator<unsigned int>::MinMaxAvgTotalCalculator() [constructor]
     cls.add_constructor([])
-    ## basic-data-calculators.h: void ns3::MinMaxAvgTotalCalculator<unsigned int>::Update(unsigned int const i) [member function]
-    cls.add_method('Update', 
-                   'void', 
-                   [param('unsigned int const', 'i')])
     ## basic-data-calculators.h: void ns3::MinMaxAvgTotalCalculator<unsigned int>::Output(ns3::DataOutputCallback & callback) const [member function]
     cls.add_method('Output', 
                    'void', 
                    [param('ns3::DataOutputCallback &', 'callback')], 
                    is_const=True, is_virtual=True)
+    ## basic-data-calculators.h: void ns3::MinMaxAvgTotalCalculator<unsigned int>::Update(unsigned int const i) [member function]
+    cls.add_method('Update', 
+                   'void', 
+                   [param('unsigned int const', 'i')])
     ## basic-data-calculators.h: void ns3::MinMaxAvgTotalCalculator<unsigned int>::DoDispose() [member function]
     cls.add_method('DoDispose', 
                    'void', 
@@ -315,14 +319,14 @@ def register_Ns3PacketSizeMinMaxAvgTotalCalculator_methods(root_module, cls):
     cls.add_constructor([param('ns3::PacketSizeMinMaxAvgTotalCalculator const &', 'arg0')])
     ## packet-data-calculators.h: ns3::PacketSizeMinMaxAvgTotalCalculator::PacketSizeMinMaxAvgTotalCalculator() [constructor]
     cls.add_constructor([])
-    ## packet-data-calculators.h: void ns3::PacketSizeMinMaxAvgTotalCalculator::PacketUpdate(std::string path, ns3::Ptr<ns3::Packet const> packet) [member function]
-    cls.add_method('PacketUpdate', 
-                   'void', 
-                   [param('std::string', 'path'), param('ns3::Ptr< ns3::Packet const >', 'packet')])
     ## packet-data-calculators.h: void ns3::PacketSizeMinMaxAvgTotalCalculator::FrameUpdate(std::string path, ns3::Ptr<ns3::Packet const> packet, ns3::Mac48Address realto) [member function]
     cls.add_method('FrameUpdate', 
                    'void', 
                    [param('std::string', 'path'), param('ns3::Ptr< ns3::Packet const >', 'packet'), param('ns3::Mac48Address', 'realto')])
+    ## packet-data-calculators.h: void ns3::PacketSizeMinMaxAvgTotalCalculator::PacketUpdate(std::string path, ns3::Ptr<ns3::Packet const> packet) [member function]
+    cls.add_method('PacketUpdate', 
+                   'void', 
+                   [param('std::string', 'path'), param('ns3::Ptr< ns3::Packet const >', 'packet')])
     ## packet-data-calculators.h: void ns3::PacketSizeMinMaxAvgTotalCalculator::DoDispose() [member function]
     cls.add_method('DoDispose', 
                    'void', 
@@ -352,15 +356,15 @@ def register_Ns3TimeMinMaxAvgTotalCalculator_methods(root_module, cls):
     cls.add_constructor([param('ns3::TimeMinMaxAvgTotalCalculator const &', 'arg0')])
     ## time-data-calculators.h: ns3::TimeMinMaxAvgTotalCalculator::TimeMinMaxAvgTotalCalculator() [constructor]
     cls.add_constructor([])
-    ## time-data-calculators.h: void ns3::TimeMinMaxAvgTotalCalculator::Update(ns3::Time const i) [member function]
-    cls.add_method('Update', 
-                   'void', 
-                   [param('ns3::Time const', 'i')])
     ## time-data-calculators.h: void ns3::TimeMinMaxAvgTotalCalculator::Output(ns3::DataOutputCallback & callback) const [member function]
     cls.add_method('Output', 
                    'void', 
                    [param('ns3::DataOutputCallback &', 'callback')], 
                    is_const=True, is_virtual=True)
+    ## time-data-calculators.h: void ns3::TimeMinMaxAvgTotalCalculator::Update(ns3::Time const i) [member function]
+    cls.add_method('Update', 
+                   'void', 
+                   [param('ns3::Time const', 'i')])
     ## time-data-calculators.h: void ns3::TimeMinMaxAvgTotalCalculator::DoDispose() [member function]
     cls.add_method('DoDispose', 
                    'void', 
@@ -373,14 +377,6 @@ def register_Ns3CounterCalculator__Unsigned_int_methods(root_module, cls):
     cls.add_constructor([param('ns3::CounterCalculator< unsigned int > const &', 'arg0')])
     ## basic-data-calculators.h: ns3::CounterCalculator<unsigned int>::CounterCalculator() [constructor]
     cls.add_constructor([])
-    ## basic-data-calculators.h: void ns3::CounterCalculator<unsigned int>::Update() [member function]
-    cls.add_method('Update', 
-                   'void', 
-                   [])
-    ## basic-data-calculators.h: void ns3::CounterCalculator<unsigned int>::Update(unsigned int const i) [member function]
-    cls.add_method('Update', 
-                   'void', 
-                   [param('unsigned int const', 'i')])
     ## basic-data-calculators.h: unsigned int ns3::CounterCalculator<unsigned int>::GetCount() const [member function]
     cls.add_method('GetCount', 
                    'unsigned int', 
@@ -391,6 +387,14 @@ def register_Ns3CounterCalculator__Unsigned_int_methods(root_module, cls):
                    'void', 
                    [param('ns3::DataOutputCallback &', 'callback')], 
                    is_const=True, is_virtual=True)
+    ## basic-data-calculators.h: void ns3::CounterCalculator<unsigned int>::Update() [member function]
+    cls.add_method('Update', 
+                   'void', 
+                   [])
+    ## basic-data-calculators.h: void ns3::CounterCalculator<unsigned int>::Update(unsigned int const i) [member function]
+    cls.add_method('Update', 
+                   'void', 
+                   [param('unsigned int const', 'i')])
     ## basic-data-calculators.h: void ns3::CounterCalculator<unsigned int>::DoDispose() [member function]
     cls.add_method('DoDispose', 
                    'void', 
@@ -403,14 +407,14 @@ def register_Ns3PacketCounterCalculator_methods(root_module, cls):
     cls.add_constructor([param('ns3::PacketCounterCalculator const &', 'arg0')])
     ## packet-data-calculators.h: ns3::PacketCounterCalculator::PacketCounterCalculator() [constructor]
     cls.add_constructor([])
-    ## packet-data-calculators.h: void ns3::PacketCounterCalculator::PacketUpdate(std::string path, ns3::Ptr<ns3::Packet const> packet) [member function]
-    cls.add_method('PacketUpdate', 
-                   'void', 
-                   [param('std::string', 'path'), param('ns3::Ptr< ns3::Packet const >', 'packet')])
     ## packet-data-calculators.h: void ns3::PacketCounterCalculator::FrameUpdate(std::string path, ns3::Ptr<ns3::Packet const> packet, ns3::Mac48Address realto) [member function]
     cls.add_method('FrameUpdate', 
                    'void', 
                    [param('std::string', 'path'), param('ns3::Ptr< ns3::Packet const >', 'packet'), param('ns3::Mac48Address', 'realto')])
+    ## packet-data-calculators.h: void ns3::PacketCounterCalculator::PacketUpdate(std::string path, ns3::Ptr<ns3::Packet const> packet) [member function]
+    cls.add_method('PacketUpdate', 
+                   'void', 
+                   [param('std::string', 'path'), param('ns3::Ptr< ns3::Packet const >', 'packet')])
     ## packet-data-calculators.h: void ns3::PacketCounterCalculator::DoDispose() [member function]
     cls.add_method('DoDispose', 
                    'void', 

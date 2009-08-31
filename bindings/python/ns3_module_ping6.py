@@ -3,8 +3,8 @@ from pybindgen import Module, FileCodeSink, param, retval, cppclass, typehandler
 def register_types(module):
     root_module = module.get_root()
     
-    ## onoff-application.h: ns3::OnOffApplication [class]
-    module.add_class('OnOffApplication', parent=root_module['ns3::Application'])
+    ## ping6.h: ns3::Ping6 [class]
+    module.add_class('Ping6', parent=root_module['ns3::Application'])
     
     ## Register a nested module for the namespace Config
     
@@ -57,34 +57,42 @@ def register_types_ns3_olsr(module):
     
 
 def register_methods(root_module):
-    register_Ns3OnOffApplication_methods(root_module, root_module['ns3::OnOffApplication'])
+    register_Ns3Ping6_methods(root_module, root_module['ns3::Ping6'])
     return
 
-def register_Ns3OnOffApplication_methods(root_module, cls):
-    ## onoff-application.h: ns3::OnOffApplication::OnOffApplication(ns3::OnOffApplication const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::OnOffApplication const &', 'arg0')])
-    ## onoff-application.h: ns3::OnOffApplication::OnOffApplication() [constructor]
+def register_Ns3Ping6_methods(root_module, cls):
+    ## ping6.h: ns3::Ping6::Ping6(ns3::Ping6 const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::Ping6 const &', 'arg0')])
+    ## ping6.h: ns3::Ping6::Ping6() [constructor]
     cls.add_constructor([])
-    ## onoff-application.h: static ns3::TypeId ns3::OnOffApplication::GetTypeId() [member function]
+    ## ping6.h: static ns3::TypeId ns3::Ping6::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
-    ## onoff-application.h: void ns3::OnOffApplication::SetMaxBytes(uint32_t maxBytes) [member function]
-    cls.add_method('SetMaxBytes', 
+    ## ping6.h: void ns3::Ping6::SetIfIndex(uint32_t ifIndex) [member function]
+    cls.add_method('SetIfIndex', 
                    'void', 
-                   [param('uint32_t', 'maxBytes')])
-    ## onoff-application.h: void ns3::OnOffApplication::DoDispose() [member function]
+                   [param('uint32_t', 'ifIndex')])
+    ## ping6.h: void ns3::Ping6::SetLocal(ns3::Ipv6Address ipv6) [member function]
+    cls.add_method('SetLocal', 
+                   'void', 
+                   [param('ns3::Ipv6Address', 'ipv6')])
+    ## ping6.h: void ns3::Ping6::SetRemote(ns3::Ipv6Address ipv6) [member function]
+    cls.add_method('SetRemote', 
+                   'void', 
+                   [param('ns3::Ipv6Address', 'ipv6')])
+    ## ping6.h: void ns3::Ping6::DoDispose() [member function]
     cls.add_method('DoDispose', 
                    'void', 
                    [], 
                    visibility='protected', is_virtual=True)
-    ## onoff-application.h: void ns3::OnOffApplication::StartApplication() [member function]
+    ## ping6.h: void ns3::Ping6::StartApplication() [member function]
     cls.add_method('StartApplication', 
                    'void', 
                    [], 
                    visibility='private', is_virtual=True)
-    ## onoff-application.h: void ns3::OnOffApplication::StopApplication() [member function]
+    ## ping6.h: void ns3::Ping6::StopApplication() [member function]
     cls.add_method('StopApplication', 
                    'void', 
                    [], 

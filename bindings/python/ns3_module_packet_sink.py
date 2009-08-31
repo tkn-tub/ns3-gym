@@ -63,13 +63,13 @@ def register_methods(root_module):
 def register_Ns3PacketSink_methods(root_module, cls):
     ## packet-sink.h: ns3::PacketSink::PacketSink(ns3::PacketSink const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::PacketSink const &', 'arg0')])
+    ## packet-sink.h: ns3::PacketSink::PacketSink() [constructor]
+    cls.add_constructor([])
     ## packet-sink.h: static ns3::TypeId ns3::PacketSink::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
-    ## packet-sink.h: ns3::PacketSink::PacketSink() [constructor]
-    cls.add_constructor([])
     ## packet-sink.h: void ns3::PacketSink::DoDispose() [member function]
     cls.add_method('DoDispose', 
                    'void', 

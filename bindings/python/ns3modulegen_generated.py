@@ -35,6 +35,8 @@ import ns3_module_bridge
 import ns3_module_global_routing
 import ns3_module_udp_echo
 import ns3_module_olsr
+import ns3_module_radvd
+import ns3_module_ping6
 import ns3_module_helper
 
 def module_init():
@@ -297,6 +299,28 @@ def register_types(module):
         ns3_module_olsr__local.register_types(module)
     
     root_module.end_section('ns3_module_olsr')
+    root_module.begin_section('ns3_module_radvd')
+    ns3_module_radvd.register_types(module)
+    
+    try:
+        import ns3_module_radvd__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_radvd__local.register_types(module)
+    
+    root_module.end_section('ns3_module_radvd')
+    root_module.begin_section('ns3_module_ping6')
+    ns3_module_ping6.register_types(module)
+    
+    try:
+        import ns3_module_ping6__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_ping6__local.register_types(module)
+    
+    root_module.end_section('ns3_module_ping6')
     root_module.begin_section('ns3_module_helper')
     ns3_module_helper.register_types(module)
     
@@ -309,6 +333,7 @@ def register_types(module):
     
     root_module.end_section('ns3_module_helper')
     module.add_container('std::vector< unsigned int >', 'unsigned int', container_type='vector')
+    module.add_container('std::vector< bool >', 'bool', container_type='vector')
     module.add_container('std::list< unsigned int >', 'unsigned int', container_type='list')
     module.add_container('std::list< std::pair< ns3::Ptr< ns3::Packet >, ns3::AmsduSubframeHeader > >', 'std::pair< ns3::Ptr< ns3::Packet >, ns3::AmsduSubframeHeader >', container_type='list')
     
@@ -617,6 +642,28 @@ def register_methods(root_module):
         ns3_module_olsr__local.register_methods(root_module)
     
     root_module.end_section('ns3_module_olsr')
+    root_module.begin_section('ns3_module_radvd')
+    ns3_module_radvd.register_methods(root_module)
+    
+    try:
+        import ns3_module_radvd__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_radvd__local.register_methods(root_module)
+    
+    root_module.end_section('ns3_module_radvd')
+    root_module.begin_section('ns3_module_ping6')
+    ns3_module_ping6.register_methods(root_module)
+    
+    try:
+        import ns3_module_ping6__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_ping6__local.register_methods(root_module)
+    
+    root_module.end_section('ns3_module_ping6')
     root_module.begin_section('ns3_module_helper')
     ns3_module_helper.register_methods(root_module)
     
@@ -885,6 +932,28 @@ def register_functions(root_module):
         ns3_module_olsr__local.register_functions(root_module)
     
     root_module.end_section('ns3_module_olsr')
+    root_module.begin_section('ns3_module_radvd')
+    ns3_module_radvd.register_functions(root_module)
+    
+    try:
+        import ns3_module_radvd__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_radvd__local.register_functions(root_module)
+    
+    root_module.end_section('ns3_module_radvd')
+    root_module.begin_section('ns3_module_ping6')
+    ns3_module_ping6.register_functions(root_module)
+    
+    try:
+        import ns3_module_ping6__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_ping6__local.register_functions(root_module)
+    
+    root_module.end_section('ns3_module_ping6')
     root_module.begin_section('ns3_module_helper')
     ns3_module_helper.register_functions(root_module)
     

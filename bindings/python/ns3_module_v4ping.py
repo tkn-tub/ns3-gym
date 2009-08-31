@@ -63,13 +63,18 @@ def register_methods(root_module):
 def register_Ns3V4Ping_methods(root_module, cls):
     ## v4ping.h: ns3::V4Ping::V4Ping(ns3::V4Ping const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::V4Ping const &', 'arg0')])
+    ## v4ping.h: ns3::V4Ping::V4Ping() [constructor]
+    cls.add_constructor([])
     ## v4ping.h: static ns3::TypeId ns3::V4Ping::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
-    ## v4ping.h: ns3::V4Ping::V4Ping() [constructor]
-    cls.add_constructor([])
+    ## v4ping.h: void ns3::V4Ping::DoDispose() [member function]
+    cls.add_method('DoDispose', 
+                   'void', 
+                   [], 
+                   visibility='private', is_virtual=True)
     ## v4ping.h: void ns3::V4Ping::StartApplication() [member function]
     cls.add_method('StartApplication', 
                    'void', 
@@ -77,11 +82,6 @@ def register_Ns3V4Ping_methods(root_module, cls):
                    visibility='private', is_virtual=True)
     ## v4ping.h: void ns3::V4Ping::StopApplication() [member function]
     cls.add_method('StopApplication', 
-                   'void', 
-                   [], 
-                   visibility='private', is_virtual=True)
-    ## v4ping.h: void ns3::V4Ping::DoDispose() [member function]
-    cls.add_method('DoDispose', 
                    'void', 
                    [], 
                    visibility='private', is_virtual=True)

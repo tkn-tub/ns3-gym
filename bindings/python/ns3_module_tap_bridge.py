@@ -65,45 +65,20 @@ def register_methods(root_module):
 def register_Ns3TapBridge_methods(root_module, cls):
     ## tap-bridge.h: ns3::TapBridge::TapBridge(ns3::TapBridge const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::TapBridge const &', 'arg0')])
-    ## tap-bridge.h: static ns3::TypeId ns3::TapBridge::GetTypeId() [member function]
-    cls.add_method('GetTypeId', 
-                   'ns3::TypeId', 
-                   [], 
-                   is_static=True)
     ## tap-bridge.h: ns3::TapBridge::TapBridge() [constructor]
     cls.add_constructor([])
+    ## tap-bridge.h: ns3::Address ns3::TapBridge::GetAddress() const [member function]
+    cls.add_method('GetAddress', 
+                   'ns3::Address', 
+                   [], 
+                   is_const=True, is_virtual=True)
     ## tap-bridge.h: ns3::Ptr<ns3::NetDevice> ns3::TapBridge::GetBridgedNetDevice() [member function]
     cls.add_method('GetBridgedNetDevice', 
                    'ns3::Ptr< ns3::NetDevice >', 
                    [])
-    ## tap-bridge.h: void ns3::TapBridge::SetBridgedNetDevice(ns3::Ptr<ns3::NetDevice> bridgedDevice) [member function]
-    cls.add_method('SetBridgedNetDevice', 
-                   'void', 
-                   [param('ns3::Ptr< ns3::NetDevice >', 'bridgedDevice')])
-    ## tap-bridge.h: void ns3::TapBridge::Start(ns3::Time tStart) [member function]
-    cls.add_method('Start', 
-                   'void', 
-                   [param('ns3::Time', 'tStart')])
-    ## tap-bridge.h: void ns3::TapBridge::Stop(ns3::Time tStop) [member function]
-    cls.add_method('Stop', 
-                   'void', 
-                   [param('ns3::Time', 'tStop')])
-    ## tap-bridge.h: void ns3::TapBridge::SetMode(ns3::TapBridge::Mode mode) [member function]
-    cls.add_method('SetMode', 
-                   'void', 
-                   [param('ns3::TapBridge::Mode', 'mode')])
-    ## tap-bridge.h: ns3::TapBridge::Mode ns3::TapBridge::GetMode() [member function]
-    cls.add_method('GetMode', 
-                   'ns3::TapBridge::Mode', 
-                   [])
-    ## tap-bridge.h: void ns3::TapBridge::SetIfIndex(uint32_t const index) [member function]
-    cls.add_method('SetIfIndex', 
-                   'void', 
-                   [param('uint32_t const', 'index')], 
-                   is_virtual=True)
-    ## tap-bridge.h: uint32_t ns3::TapBridge::GetIfIndex() const [member function]
-    cls.add_method('GetIfIndex', 
-                   'uint32_t', 
+    ## tap-bridge.h: ns3::Address ns3::TapBridge::GetBroadcast() const [member function]
+    cls.add_method('GetBroadcast', 
+                   'ns3::Address', 
                    [], 
                    is_const=True, is_virtual=True)
     ## tap-bridge.h: ns3::Ptr<ns3::Channel> ns3::TapBridge::GetChannel() const [member function]
@@ -111,49 +86,18 @@ def register_Ns3TapBridge_methods(root_module, cls):
                    'ns3::Ptr< ns3::Channel >', 
                    [], 
                    is_const=True, is_virtual=True)
-    ## tap-bridge.h: void ns3::TapBridge::SetAddress(ns3::Address address) [member function]
-    cls.add_method('SetAddress', 
-                   'void', 
-                   [param('ns3::Address', 'address')], 
-                   is_virtual=True)
-    ## tap-bridge.h: ns3::Address ns3::TapBridge::GetAddress() const [member function]
-    cls.add_method('GetAddress', 
-                   'ns3::Address', 
+    ## tap-bridge.h: uint32_t ns3::TapBridge::GetIfIndex() const [member function]
+    cls.add_method('GetIfIndex', 
+                   'uint32_t', 
                    [], 
                    is_const=True, is_virtual=True)
-    ## tap-bridge.h: bool ns3::TapBridge::SetMtu(uint16_t const mtu) [member function]
-    cls.add_method('SetMtu', 
-                   'bool', 
-                   [param('uint16_t const', 'mtu')], 
-                   is_virtual=True)
+    ## tap-bridge.h: ns3::TapBridge::Mode ns3::TapBridge::GetMode() [member function]
+    cls.add_method('GetMode', 
+                   'ns3::TapBridge::Mode', 
+                   [])
     ## tap-bridge.h: uint16_t ns3::TapBridge::GetMtu() const [member function]
     cls.add_method('GetMtu', 
                    'uint16_t', 
-                   [], 
-                   is_const=True, is_virtual=True)
-    ## tap-bridge.h: bool ns3::TapBridge::IsLinkUp() const [member function]
-    cls.add_method('IsLinkUp', 
-                   'bool', 
-                   [], 
-                   is_const=True, is_virtual=True)
-    ## tap-bridge.h: void ns3::TapBridge::SetLinkChangeCallback(ns3::Callback<void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> callback) [member function]
-    cls.add_method('SetLinkChangeCallback', 
-                   'void', 
-                   [param('ns3::Callback< void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'callback')], 
-                   is_virtual=True)
-    ## tap-bridge.h: bool ns3::TapBridge::IsBroadcast() const [member function]
-    cls.add_method('IsBroadcast', 
-                   'bool', 
-                   [], 
-                   is_const=True, is_virtual=True)
-    ## tap-bridge.h: ns3::Address ns3::TapBridge::GetBroadcast() const [member function]
-    cls.add_method('GetBroadcast', 
-                   'ns3::Address', 
-                   [], 
-                   is_const=True, is_virtual=True)
-    ## tap-bridge.h: bool ns3::TapBridge::IsMulticast() const [member function]
-    cls.add_method('IsMulticast', 
-                   'bool', 
                    [], 
                    is_const=True, is_virtual=True)
     ## tap-bridge.h: ns3::Address ns3::TapBridge::GetMulticast(ns3::Ipv4Address multicastGroup) const [member function]
@@ -161,13 +105,48 @@ def register_Ns3TapBridge_methods(root_module, cls):
                    'ns3::Address', 
                    [param('ns3::Ipv4Address', 'multicastGroup')], 
                    is_const=True, is_virtual=True)
+    ## tap-bridge.h: ns3::Address ns3::TapBridge::GetMulticast(ns3::Ipv6Address addr) const [member function]
+    cls.add_method('GetMulticast', 
+                   'ns3::Address', 
+                   [param('ns3::Ipv6Address', 'addr')], 
+                   is_const=True, is_virtual=True)
+    ## tap-bridge.h: ns3::Ptr<ns3::Node> ns3::TapBridge::GetNode() const [member function]
+    cls.add_method('GetNode', 
+                   'ns3::Ptr< ns3::Node >', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## tap-bridge.h: static ns3::TypeId ns3::TapBridge::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## tap-bridge.h: bool ns3::TapBridge::IsBridge() const [member function]
+    cls.add_method('IsBridge', 
+                   'bool', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## tap-bridge.h: bool ns3::TapBridge::IsBroadcast() const [member function]
+    cls.add_method('IsBroadcast', 
+                   'bool', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## tap-bridge.h: bool ns3::TapBridge::IsLinkUp() const [member function]
+    cls.add_method('IsLinkUp', 
+                   'bool', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## tap-bridge.h: bool ns3::TapBridge::IsMulticast() const [member function]
+    cls.add_method('IsMulticast', 
+                   'bool', 
+                   [], 
+                   is_const=True, is_virtual=True)
     ## tap-bridge.h: bool ns3::TapBridge::IsPointToPoint() const [member function]
     cls.add_method('IsPointToPoint', 
                    'bool', 
                    [], 
                    is_const=True, is_virtual=True)
-    ## tap-bridge.h: bool ns3::TapBridge::IsBridge() const [member function]
-    cls.add_method('IsBridge', 
+    ## tap-bridge.h: bool ns3::TapBridge::NeedsArp() const [member function]
+    cls.add_method('NeedsArp', 
                    'bool', 
                    [], 
                    is_const=True, is_virtual=True)
@@ -181,41 +160,67 @@ def register_Ns3TapBridge_methods(root_module, cls):
                    'bool', 
                    [param('ns3::Ptr< ns3::Packet >', 'packet'), param('ns3::Address const &', 'source'), param('ns3::Address const &', 'dest'), param('uint16_t', 'protocolNumber')], 
                    is_virtual=True)
-    ## tap-bridge.h: ns3::Ptr<ns3::Node> ns3::TapBridge::GetNode() const [member function]
-    cls.add_method('GetNode', 
-                   'ns3::Ptr< ns3::Node >', 
-                   [], 
-                   is_const=True, is_virtual=True)
+    ## tap-bridge.h: void ns3::TapBridge::SetAddress(ns3::Address address) [member function]
+    cls.add_method('SetAddress', 
+                   'void', 
+                   [param('ns3::Address', 'address')], 
+                   is_virtual=True)
+    ## tap-bridge.h: void ns3::TapBridge::SetBridgedNetDevice(ns3::Ptr<ns3::NetDevice> bridgedDevice) [member function]
+    cls.add_method('SetBridgedNetDevice', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::NetDevice >', 'bridgedDevice')])
+    ## tap-bridge.h: void ns3::TapBridge::SetIfIndex(uint32_t const index) [member function]
+    cls.add_method('SetIfIndex', 
+                   'void', 
+                   [param('uint32_t const', 'index')], 
+                   is_virtual=True)
+    ## tap-bridge.h: void ns3::TapBridge::SetLinkChangeCallback(ns3::Callback<void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> callback) [member function]
+    cls.add_method('SetLinkChangeCallback', 
+                   'void', 
+                   [param('ns3::Callback< void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'callback')], 
+                   is_virtual=True)
+    ## tap-bridge.h: void ns3::TapBridge::SetMode(ns3::TapBridge::Mode mode) [member function]
+    cls.add_method('SetMode', 
+                   'void', 
+                   [param('ns3::TapBridge::Mode', 'mode')])
+    ## tap-bridge.h: bool ns3::TapBridge::SetMtu(uint16_t const mtu) [member function]
+    cls.add_method('SetMtu', 
+                   'bool', 
+                   [param('uint16_t const', 'mtu')], 
+                   is_virtual=True)
     ## tap-bridge.h: void ns3::TapBridge::SetNode(ns3::Ptr<ns3::Node> node) [member function]
     cls.add_method('SetNode', 
                    'void', 
                    [param('ns3::Ptr< ns3::Node >', 'node')], 
-                   is_virtual=True)
-    ## tap-bridge.h: bool ns3::TapBridge::NeedsArp() const [member function]
-    cls.add_method('NeedsArp', 
-                   'bool', 
-                   [], 
-                   is_const=True, is_virtual=True)
-    ## tap-bridge.h: void ns3::TapBridge::SetReceiveCallback(ns3::Callback<bool, ns3::Ptr<ns3::NetDevice>, ns3::Ptr<ns3::Packet const>, unsigned short, ns3::Address const&, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> cb) [member function]
-    cls.add_method('SetReceiveCallback', 
-                   'void', 
-                   [param('ns3::Callback< bool, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet const >, unsigned short, ns3::Address const &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'cb')], 
                    is_virtual=True)
     ## tap-bridge.h: void ns3::TapBridge::SetPromiscReceiveCallback(ns3::Callback<bool, ns3::Ptr<ns3::NetDevice>, ns3::Ptr<ns3::Packet const>, unsigned short, ns3::Address const&, ns3::Address const&, ns3::NetDevice::PacketType, ns3::empty, ns3::empty, ns3::empty> cb) [member function]
     cls.add_method('SetPromiscReceiveCallback', 
                    'void', 
                    [param('ns3::Callback< bool, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet const >, unsigned short, ns3::Address const &, ns3::Address const &, ns3::NetDevice::PacketType, ns3::empty, ns3::empty, ns3::empty >', 'cb')], 
                    is_virtual=True)
+    ## tap-bridge.h: void ns3::TapBridge::SetReceiveCallback(ns3::Callback<bool, ns3::Ptr<ns3::NetDevice>, ns3::Ptr<ns3::Packet const>, unsigned short, ns3::Address const&, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> cb) [member function]
+    cls.add_method('SetReceiveCallback', 
+                   'void', 
+                   [param('ns3::Callback< bool, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet const >, unsigned short, ns3::Address const &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'cb')], 
+                   is_virtual=True)
+    ## tap-bridge.h: void ns3::TapBridge::Start(ns3::Time tStart) [member function]
+    cls.add_method('Start', 
+                   'void', 
+                   [param('ns3::Time', 'tStart')])
+    ## tap-bridge.h: void ns3::TapBridge::Stop(ns3::Time tStop) [member function]
+    cls.add_method('Stop', 
+                   'void', 
+                   [param('ns3::Time', 'tStop')])
     ## tap-bridge.h: bool ns3::TapBridge::SupportsSendFrom() const [member function]
     cls.add_method('SupportsSendFrom', 
                    'bool', 
                    [], 
                    is_const=True, is_virtual=True)
-    ## tap-bridge.h: ns3::Address ns3::TapBridge::GetMulticast(ns3::Ipv6Address addr) const [member function]
-    cls.add_method('GetMulticast', 
-                   'ns3::Address', 
-                   [param('ns3::Ipv6Address', 'addr')], 
-                   is_const=True, is_virtual=True)
+    ## tap-bridge.h: bool ns3::TapBridge::DiscardFromBridgedDevice(ns3::Ptr<ns3::NetDevice> device, ns3::Ptr<ns3::Packet const> packet, uint16_t protocol, ns3::Address const & src) [member function]
+    cls.add_method('DiscardFromBridgedDevice', 
+                   'bool', 
+                   [param('ns3::Ptr< ns3::NetDevice >', 'device'), param('ns3::Ptr< ns3::Packet const >', 'packet'), param('uint16_t', 'protocol'), param('ns3::Address const &', 'src')], 
+                   visibility='protected')
     ## tap-bridge.h: void ns3::TapBridge::DoDispose() [member function]
     cls.add_method('DoDispose', 
                    'void', 
@@ -225,11 +230,6 @@ def register_Ns3TapBridge_methods(root_module, cls):
     cls.add_method('ReceiveFromBridgedDevice', 
                    'bool', 
                    [param('ns3::Ptr< ns3::NetDevice >', 'device'), param('ns3::Ptr< ns3::Packet const >', 'packet'), param('uint16_t', 'protocol'), param('ns3::Address const &', 'src'), param('ns3::Address const &', 'dst'), param('ns3::NetDevice::PacketType', 'packetType')], 
-                   visibility='protected')
-    ## tap-bridge.h: bool ns3::TapBridge::DiscardFromBridgedDevice(ns3::Ptr<ns3::NetDevice> device, ns3::Ptr<ns3::Packet const> packet, uint16_t protocol, ns3::Address const & src) [member function]
-    cls.add_method('DiscardFromBridgedDevice', 
-                   'bool', 
-                   [param('ns3::Ptr< ns3::NetDevice >', 'device'), param('ns3::Ptr< ns3::Packet const >', 'packet'), param('uint16_t', 'protocol'), param('ns3::Address const &', 'src')], 
                    visibility='protected')
     return
 
