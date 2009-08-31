@@ -13,6 +13,8 @@ def register_types(module):
     module.add_class('CsmaHelper', allow_subclassing=False)
     ## emu-helper.h: ns3::EmuHelper [class]
     module.add_class('EmuHelper', allow_subclassing=False)
+    ## flow-monitor-helper.h: ns3::FlowMonitorHelper [class]
+    module.add_class('FlowMonitorHelper', allow_subclassing=False)
     ## internet-stack-helper.h: ns3::InternetStackHelper [class]
     module.add_class('InternetStackHelper', allow_subclassing=False)
     ## ipv4-address-helper.h: ns3::Ipv4AddressHelper [class]
@@ -140,6 +142,7 @@ def register_methods(root_module):
     register_Ns3BridgeHelper_methods(root_module, root_module['ns3::BridgeHelper'])
     register_Ns3CsmaHelper_methods(root_module, root_module['ns3::CsmaHelper'])
     register_Ns3EmuHelper_methods(root_module, root_module['ns3::EmuHelper'])
+    register_Ns3FlowMonitorHelper_methods(root_module, root_module['ns3::FlowMonitorHelper'])
     register_Ns3InternetStackHelper_methods(root_module, root_module['ns3::InternetStackHelper'])
     register_Ns3Ipv4AddressHelper_methods(root_module, root_module['ns3::Ipv4AddressHelper'])
     register_Ns3Ipv4InterfaceContainer_methods(root_module, root_module['ns3::Ipv4InterfaceContainer'])
@@ -469,6 +472,37 @@ def register_Ns3EmuHelper_methods(root_module, cls):
     cls.add_method('SetQueue', 
                    'void', 
                    [param('std::string', 'type'), param('std::string', 'n1', default_value='""'), param('ns3::AttributeValue const &', 'v1', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n2', default_value='""'), param('ns3::AttributeValue const &', 'v2', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n3', default_value='""'), param('ns3::AttributeValue const &', 'v3', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n4', default_value='""'), param('ns3::AttributeValue const &', 'v4', default_value='ns3::EmptyAttributeValue()')])
+    return
+
+def register_Ns3FlowMonitorHelper_methods(root_module, cls):
+    ## flow-monitor-helper.h: ns3::FlowMonitorHelper::FlowMonitorHelper(ns3::FlowMonitorHelper const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::FlowMonitorHelper const &', 'arg0')])
+    ## flow-monitor-helper.h: ns3::FlowMonitorHelper::FlowMonitorHelper() [constructor]
+    cls.add_constructor([])
+    ## flow-monitor-helper.h: ns3::Ptr<ns3::FlowClassifier> ns3::FlowMonitorHelper::GetClassifier() [member function]
+    cls.add_method('GetClassifier', 
+                   'ns3::Ptr< ns3::FlowClassifier >', 
+                   [])
+    ## flow-monitor-helper.h: ns3::Ptr<ns3::FlowMonitor> ns3::FlowMonitorHelper::GetMonitor() [member function]
+    cls.add_method('GetMonitor', 
+                   'ns3::Ptr< ns3::FlowMonitor >', 
+                   [])
+    ## flow-monitor-helper.h: ns3::Ptr<ns3::FlowMonitor> ns3::FlowMonitorHelper::Install(ns3::NodeContainer nodes) [member function]
+    cls.add_method('Install', 
+                   'ns3::Ptr< ns3::FlowMonitor >', 
+                   [param('ns3::NodeContainer', 'nodes')])
+    ## flow-monitor-helper.h: ns3::Ptr<ns3::FlowMonitor> ns3::FlowMonitorHelper::Install(ns3::Ptr<ns3::Node> node) [member function]
+    cls.add_method('Install', 
+                   'ns3::Ptr< ns3::FlowMonitor >', 
+                   [param('ns3::Ptr< ns3::Node >', 'node')])
+    ## flow-monitor-helper.h: ns3::Ptr<ns3::FlowMonitor> ns3::FlowMonitorHelper::InstallAll() [member function]
+    cls.add_method('InstallAll', 
+                   'ns3::Ptr< ns3::FlowMonitor >', 
+                   [])
+    ## flow-monitor-helper.h: void ns3::FlowMonitorHelper::SetMonitorAttribute(std::string n1, ns3::AttributeValue const & v1) [member function]
+    cls.add_method('SetMonitorAttribute', 
+                   'void', 
+                   [param('std::string', 'n1'), param('ns3::AttributeValue const &', 'v1')])
     return
 
 def register_Ns3InternetStackHelper_methods(root_module, cls):
