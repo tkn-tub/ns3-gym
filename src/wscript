@@ -38,6 +38,7 @@ all_modules = (
     'applications/v4ping',
     'applications/ping6',
     'applications/radvd',
+    'contrib/flow-monitor',
     )
 
 def set_options(opt):

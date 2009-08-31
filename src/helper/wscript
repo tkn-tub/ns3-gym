@@ -35,6 +35,7 @@ def build(bld):
         'ipv6-list-routing-helper.cc',
         'ipv6-routing-helper.cc',
         'ping6-helper.cc',
+        'flow-monitor-helper.cc',
         ]
 
     headers = bld.new_task_gen('ns3header')
@@ -72,6 +73,7 @@ def build(bld):
         'ipv6-list-routing-helper.h',
         'ipv6-routing-helper.h',
         'ping6-helper.h',
+        'flow-monitor-helper.h',
         ]
 
     env = bld.env_of_name('default')
