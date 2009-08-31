@@ -69,6 +69,8 @@ main (int argc, char *argv[])
   // Allow the user to override any of the defaults and the above
   // DefaultValue::Bind ()s at run-time, via command-line arguments
   CommandLine cmd;
+  bool enableFlowMonitor = false;
+  cmd.AddValue("EnableMonitor", "Enable Flow Monitor", enableFlowMonitor);
   cmd.Parse (argc, argv);
 
   // Here, we will explicitly create four nodes.  In more sophisticated
@@ -148,10 +150,24 @@ main (int argc, char *argv[])
   PointToPointHelper::EnablePcapAll ("simple-global-routing");
   PointToPointHelper::EnableAsciiAll (ascii);
 
+  // Flow Monitor
+  Ptr<FlowMonitor> flowmon;
+  if (enableFlowMonitor)
+    {
+      FlowMonitorHelper flowmonHelper;
+      flowmon = flowmonHelper.InstallAll ();
+    }  
+
   NS_LOG_INFO ("Run Simulation.");
+  Simulator::Stop (Seconds (10));
   Simulator::Run ();
-  Simulator::Destroy ();
   NS_LOG_INFO ("Done.");
 
+  if (enableFlowMonitor)
+    {
+      flowmon->SerializeToXmlFile ("simple-global-routing.flowmon", false, false);
+    }
+
+  Simulator::Destroy ();
   return 0;
 }
