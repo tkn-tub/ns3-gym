@@ -187,12 +187,6 @@ class Ipv6StaticRouting : public Ipv6RoutingProtocol
     Ipv6MulticastRoutingTableEntry GetMulticastRoute (uint32_t i) const;
 
     /**
-     * \brief Get the default multicast IPv6 route.
-     * \return default Ipv6MulticastRoute
-     */
-    Ipv6MulticastRoutingTableEntry GetDefaultMulticastRoute () const;
-
-    /**
      * \brief Remove a static multicast route.
      * \param origin IPv6 address of the source
      * \param group the multicast group address.

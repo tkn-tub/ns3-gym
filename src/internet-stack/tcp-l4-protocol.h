@@ -121,6 +121,8 @@ private:
   void SendPacket (Ptr<Packet>, const TcpHeader &,
                   Ipv4Address, Ipv4Address);
   static ObjectFactory GetDefaultRttEstimatorFactory (void);
+  TcpL4Protocol (const TcpL4Protocol &o);
+  TcpL4Protocol &operator = (const TcpL4Protocol &o);
 
   std::vector<Ptr<TcpSocketImpl> > m_sockets;
 };
