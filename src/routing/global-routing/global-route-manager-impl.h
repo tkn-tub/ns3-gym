@@ -26,6 +26,7 @@
 #include <list>
 #include <queue>
 #include <map>
+#include <vector>
 #include "ns3/object.h"
 #include "ns3/ptr.h"
 #include "ns3/ipv4-address.h"
@@ -563,6 +564,9 @@ public:
    * @returns value of underlying flag
    */ 
   bool IsVertexProcessed (void) const;
+  
+  void ClearVertexProcessed (void);
+      
 private:
   VertexType m_vertexType;
   Ipv4Address m_vertexId;
@@ -683,12 +687,18 @@ public:
  * @see SPFVertex
  */
   void Initialize ();
+  
+  GlobalRoutingLSA* GetExtLSA (uint32_t index) const;
+  uint32_t GetNumExtLSAs () const;
+      
 
 private:
   typedef std::map<Ipv4Address, GlobalRoutingLSA*> LSDBMap_t;
   typedef std::pair<Ipv4Address, GlobalRoutingLSA*> LSDBPair_t;
 
   LSDBMap_t m_database;
+  std::vector<GlobalRoutingLSA*> m_extdatabase;
+  
 /**
  * @brief GlobalRouteManagerLSDB copy construction is disallowed.  There's no 
  * need for it and a compiler provided shallow copy would be wrong.
@@ -775,6 +785,7 @@ private:
   bool CheckForStubNode (Ipv4Address root);
   void SPFCalculate (Ipv4Address root);
   void SPFProcessStubs (SPFVertex* v);
+  void ProcessASExternals (SPFVertex* v, GlobalRoutingLSA* extlsa);
   void SPFNext (SPFVertex*, CandidateQueue&);
   int SPFNexthopCalculation (SPFVertex* v, SPFVertex* w, 
     GlobalRoutingLinkRecord* l, uint32_t distance);
@@ -784,6 +795,7 @@ private:
   void SPFIntraAddRouter (SPFVertex* v);
   void SPFIntraAddTransit (SPFVertex* v);
   void SPFIntraAddStub (GlobalRoutingLinkRecord *l, SPFVertex* v);
+  void SPFAddASExternal (GlobalRoutingLSA *extlsa, SPFVertex *v);
   int32_t FindOutgoingInterfaceId (Ipv4Address a, 
     Ipv4Mask amask = Ipv4Mask("255.255.255.255"));
 };
