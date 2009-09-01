@@ -30,6 +30,7 @@ def build(bld):
         'hwmp-protocol.h',
         'peer-management-protocol.h',
         'ie-dot11s-beacon-timing.h',
+        'ie-dot11s-configuration.h',
         'ie-dot11s-peer-management.h',
         'peer-link.h',
         ]

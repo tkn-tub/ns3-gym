@@ -29,9 +29,9 @@
 #include "ns3/event-id.h"
 #include "ns3/ie-dot11s-beacon-timing.h"
 #include "ns3/ie-dot11s-peer-management.h"
+#include "ns3/ie-dot11s-configuration.h"
 namespace ns3 {
 namespace dot11s {
-class IeConfiguration;
 class PeerManagementProtocolMac;
 /**
  * \ingroup dot11s
@@ -234,7 +234,7 @@ private:
    * \brief Mesh interface configuration
    * \attention Is not used now, nothing to configure :)
    */
-  Ptr<IeConfiguration> m_configuration;
+  IeConfiguration m_configuration;
   /// Beacon timing element received from the peer. Needed by BCA
   IeBeaconTiming m_beaconTiming;
 
