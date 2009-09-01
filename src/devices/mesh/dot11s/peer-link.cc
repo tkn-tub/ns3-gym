@@ -620,7 +620,7 @@ PeerLink::SendPeerLinkClose (PmpReasonCode reasoncode)
   IePeerManagement peerElement;
   peerElement.SetPeerClose (m_localLinkId, m_peerLinkId, reasoncode);
   m_macPlugin->SendPeerLinkManagementFrame (m_peerAddress, m_peerMeshPointAddress, m_assocId, peerElement,
-      *m_configuration);
+      *PeekPointer(m_configuration));
 }
 void
 PeerLink::SendPeerLinkOpen ()
@@ -630,7 +630,7 @@ PeerLink::SendPeerLinkOpen ()
   peerElement.SetPeerOpen (m_localLinkId);
   NS_ASSERT (m_macPlugin != 0);
   m_macPlugin->SendPeerLinkManagementFrame (m_peerAddress, m_peerMeshPointAddress, m_assocId, peerElement,
-      *m_configuration);
+      *PeekPointer(m_configuration));
 }
 void
 PeerLink::SendPeerLinkConfirm ()
@@ -639,7 +639,7 @@ PeerLink::SendPeerLinkConfirm ()
   IePeerManagement peerElement;
   peerElement.SetPeerConfirm (m_localLinkId, m_peerLinkId);
   m_macPlugin->SendPeerLinkManagementFrame (m_peerAddress, m_peerMeshPointAddress, m_assocId, peerElement,
-      *m_configuration);
+      *PeekPointer(m_configuration));
 }
 void
 PeerLink::SetHoldingTimer ()
