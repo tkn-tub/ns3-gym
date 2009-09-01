@@ -52,6 +52,15 @@ us a note on ns-developers mailing list.  </p>
 
 <h2>New API:</h2>
 <ul>
+<li><b>Longest prefix match, support for metrics, for Ipv4StaticRouting</b>
+<p>When performing route lookup, first match for longest prefix, and then
+based on metrics (default metric = 0).  If metrics are equal, most recent
+addition is picked.  Extends API for support of metrics but preserves
+backward compatibility.  One small change is that the default route
+is no longer stored as index 0 route in the host route table so 
+GetDefaultRoute () must be used.
+</p>
+</li>
 <li><b>Route injection for global routing</b>
 <p>Add ability to inject and withdraw routes to Ipv4GlobalRouting.  This
 allows a user to insert a route and have it redistributed like an OSPF
