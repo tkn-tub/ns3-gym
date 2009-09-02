@@ -143,8 +143,8 @@ public:
   bool AddInformationElement (Ptr<WifiInformationElement> element);
   Ptr<WifiInformationElement> FindFirst (enum WifiElementId id) const;
 private:
-  uint32_t GetSize () const;
   typedef std::vector<Ptr<WifiInformationElement> > IE_VECTOR;
+  uint32_t GetSize () const;
   IE_VECTOR m_elements;
   /// Size in bytes (actually, max packet length)
   uint16_t m_maxSize;

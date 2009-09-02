@@ -236,7 +236,8 @@ private:
    */
   Callback <void, Mac48Address, Mac48Address, uint32_t, bool> m_peerStatusCallback;
   ///\}
-  //Keeps statistics
+  ///\name Statistics:
+  ///\{
   struct Statistics {
     uint16_t linksTotal;
     uint16_t linksOpened;
@@ -246,7 +247,7 @@ private:
     void Print (std::ostream & os) const;
   };
   struct Statistics m_stats;
-
+  ///\}
 };
 
 } // namespace dot11s

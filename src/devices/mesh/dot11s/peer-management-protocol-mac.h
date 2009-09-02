@@ -60,6 +60,29 @@ public:
 private:
   friend class PeerManagementProtocol;
   friend class PeerLink;
+   ///\name Create peer link management frames:
+   ///\{
+  struct PlinkFrameStart
+  {
+    uint8_t subtype;
+    uint16_t aid;
+    SupportedRates rates;
+    uint16_t qos;
+  };
+  Ptr<Packet> CreatePeerLinkOpenFrame ();
+  Ptr<Packet> CreatePeerLinkConfirmFrame ();
+  Ptr<Packet> CreatePeerLinkCloseFrame ();
+  /**
+   * \brief This structure keeps all fields in peer link management frame,
+   * which are not subclasses of WifiInformationElement
+   */
+  /// \name Parses the start of the frame, where there are no
+  /// WifiInformationElements exist
+  PlinkFrameStart ParsePlinkFrame (Ptr<const Packet> packet);
+  ///\}
+  ///// Closes link when a proper number of successive transmissions have failed
+  void TxError (WifiMacHeader const &hdr);
+  void TxOk (WifiMacHeader const &hdr);
   ///\name BCA functionallity:
   ///\{
   ///\brief Fills TBTT and beacon interval. Needed by BCA
@@ -79,35 +102,9 @@ private:
       );
   ///\brief DUBUG only - to print established links
   Mac48Address GetAddress () const;
-private:
-  ///\name Information about MAC and protocol:
-  ///\{
-  Ptr<MeshWifiInterfaceMac> m_parent;
-  uint32_t m_ifIndex;
-  Ptr<PeerManagementProtocol> m_protocol;
-   ///\}
-   ///\name Create peer link management frames:
-   ///\{
-  Ptr<Packet> CreatePeerLinkOpenFrame ();
-  Ptr<Packet> CreatePeerLinkConfirmFrame ();
-  Ptr<Packet> CreatePeerLinkCloseFrame ();
-  ///This structure keeps all fields in peer link management frame,
-  ///which are not subclasses of WifiInformationElement
-  struct PlinkFrameStart {
-    uint8_t subtype;
-    uint16_t aid;
-    SupportedRates rates;
-    uint16_t qos;
-  };
-  /// \name Parses the start of the frame, where there are no
-  /// WifiInformationElements exist
-  PlinkFrameStart ParsePlinkFrame (Ptr<const Packet> packet);
-  ///\}
-  ///// Closes link when a proper number of successive transmissions have failed
-  void TxError (WifiMacHeader const &hdr);
-  void TxOk (WifiMacHeader const &hdr);
-  //Keeps statistics
-  struct Statistics {
+  ///\name Statistics
+  struct Statistics
+  {
     uint16_t txOpen;
     uint16_t txConfirm;
     uint16_t txClose;
@@ -125,7 +122,15 @@ private:
     Statistics ();
     void Print (std::ostream & os) const;
   };
+private:
   struct Statistics m_stats;
+  ///\}
+  ///\name Information about MAC and protocol:
+  ///\{
+  Ptr<MeshWifiInterfaceMac> m_parent;
+  uint32_t m_ifIndex;
+  Ptr<PeerManagementProtocol> m_protocol;
+   ///\}
 };
 
 } // namespace dot11s

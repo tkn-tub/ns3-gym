@@ -48,7 +48,15 @@ public:
   PeerLink ();
   ~PeerLink ();
   void DoDispose ();
-
+  /// Peer Link state:
+  enum  PeerState {
+    IDLE,
+    OPN_SNT,
+    CNF_RCVD,
+    OPN_RCVD,
+    ESTAB,
+    HOLDING,
+  };
   /// Process beacon received from peer
   void SetBeaconInformation (Time lastBeacon, Time BeaconInterval);
   /**
@@ -89,14 +97,6 @@ public:
   void MLMEActivePeerLinkOpen ();
   /// MLME-PeeringRequestReject
   void MLMEPeeringRequestReject ();
-  enum  PeerState {
-    IDLE,
-    OPN_SNT,
-    CNF_RCVD,
-    OPN_RCVD,
-    ESTAB,
-    HOLDING,
-  };
   /// Callback type for MLME-SignalPeerLinkStatus event
   typedef Callback<void, uint32_t, Mac48Address, Mac48Address, PeerLink::PeerState, PeerLink::PeerState> SignalStatusCallback;
   /// Set callback
@@ -108,6 +108,24 @@ public:
   ///\brief Statistics
   void Report (std::ostream & os) const;
 private:
+  /// Peer link events, see 802.11s draft 11B.3.3.2
+  enum  PeerEvent
+  {
+    CNCL,       ///< Cancel peer link
+    ACTOPN,     ///< Active peer link open
+    CLS_ACPT,   ///< PeerLinkClose_Accept
+    OPN_ACPT,   ///< PeerLinkOpen_Accept
+    OPN_RJCT,   ///< PeerLinkOpen_Reject
+    REQ_RJCT,   ///< PeerLinkOpenReject by internal reason
+    CNF_ACPT,   ///< PeerLinkConfirm_Accept
+    CNF_RJCT,   ///< PeerLinkConfirm_Reject
+    TOR1,       ///< Timeout of retry timer
+    TOR2,       ///< also timeout of retry timer
+    TOC,        ///< Timeout of confirm timer
+    TOH,        ///< Timeout of holding (gracefull closing) timer
+  };
+  /// State transition
+  void StateMachine (PeerEvent event, PmpReasonCode = REASON11S_RESERVED);
   /**
    * \name Link response to received management frames
    *
@@ -139,7 +157,6 @@ private:
     PmpReasonCode reason
   );
   //\}
-
   /// True if link is established
   bool  LinkIsEstab () const;
   /// True if link is idle. Link can be deleted in this state
@@ -149,29 +166,6 @@ private:
    * link management frames
    */
   void SetMacPlugin (Ptr<PeerManagementProtocolMac> plugin);
-  /// Peer link states, see 802.11s draft 11B.3.3.1
-private:
-  /// Peer link events, see 802.11s draft 11B.3.3.2
-  enum  PeerEvent
-  {
-    CNCL,       ///< Cancel peer link
-    ACTOPN,     ///< Active peer link open
-    CLS_ACPT,   ///< PeerLinkClose_Accept
-    OPN_ACPT,   ///< PeerLinkOpen_Accept
-    OPN_RJCT,   ///< PeerLinkOpen_Reject
-    REQ_RJCT,   ///< PeerLinkOpenReject by internal reason
-    CNF_ACPT,   ///< PeerLinkConfirm_Accept
-    CNF_RJCT,   ///< PeerLinkConfirm_Reject
-    TOR1,       ///< Timeout of retry timer
-    TOR2,       ///< also timeout of retry timer
-    TOC,        ///< Timeout of confirm timer
-    TOH,        ///< Timeout of holding (gracefull closing) timer
-  };
-
-private:
-  /// State transition
-  void StateMachine (PeerEvent event, PmpReasonCode = REASON11S_RESERVED);
-
   /**
    * \name Event handlers
    * \{
@@ -201,7 +195,8 @@ private:
   void RetryTimeout ();
   void ConfirmTimeout ();
   //\}
-
+  /// Several successive beacons were lost, close link
+  void BeaconLoss ();
 private:
   ///The number of interface I am associated with
   uint32_t m_interface;
@@ -255,10 +250,6 @@ private:
   uint16_t m_maxBeaconLoss;
   uint16_t m_maxPacketFail;
   //\}
-
-  /// Several successive beacons were lost, close link
-  void BeaconLoss ();
-
   /// How to report my status change
   SignalStatusCallback m_linkStatusCallback;
 };

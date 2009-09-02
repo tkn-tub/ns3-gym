@@ -180,9 +180,10 @@ private:
   virtual void DoDispose ();
 
 private:
+  typedef std::map<AccessClass, Ptr<DcaTxop> > Queues;
+  typedef std::vector<Ptr<MeshWifiInterfaceMacPlugin> > PluginList;
   ///\name Wifi MAC internals
   //\{
-  typedef std::map<AccessClass, Ptr<DcaTxop> > Queues;
   Queues m_queues;
   Ptr<DcaTxop> m_beaconDca;
   Ptr<WifiRemoteStationManager> m_stationManager;
@@ -225,8 +226,6 @@ private:
 
   /// "Timer" for the next beacon
   EventId m_beaconSendEvent;
-
-  typedef std::vector<Ptr<MeshWifiInterfaceMacPlugin> > PluginList;
   /// List of all installed plugins
   PluginList m_plugins;
   Callback<uint32_t, Mac48Address, Ptr<MeshWifiInterfaceMac> > m_linkMetricCallback;

@@ -86,7 +86,28 @@ public:
   void ResetStats ();
 private:
   friend class HwmpProtocolMac;
+  /**
+   * \brief Structure of path error: IePerr and list of receivers:
+   * interfaces and MAC address
+   */
+  struct PathError
+  {
+    std::vector<FailedDestination> destinations; ///< destination list: Mac48Address and sequence number
+    std::vector<std::pair<uint32_t, Mac48Address> > receivers; ///< list of PathError receivrs (in case of unicast PERR)
+  };
+  /// Packet waiting its routing information
+  struct QueuedPacket
+  {
+    Ptr<Packet> pkt; ///< the packet
+    Mac48Address src; ///< src address
+    Mac48Address dst; ///< dst address
+    uint16_t protocol; ///< protocol number
+    uint32_t inInterface; ///< incoming device interface ID. (if packet has come from upper layers, this is Mesh point ID)
+    RouteReplyCallback reply; ///< how to reply
 
+    QueuedPacket ();
+  };
+  typedef std::map<uint32_t, Ptr<HwmpProtocolMac> > HwmpProtocolMacMap;
   /// Like RequestRoute, but for unicast packets
   bool ForwardUnicast (uint32_t  sourceIface, const Mac48Address source, const Mac48Address destination,
       Ptr<Packet>  packet, uint16_t  protocolType, RouteReplyCallback  routeReply, uint32_t ttl);
@@ -105,16 +126,6 @@ private:
       uint32_t destinationSN,
       uint32_t lifetime,
       uint32_t interface);
-  /**
-   * \brief Structure of path error: IePerr and list of receivers:
-   * interfaces and MAC address
-   */
-  struct PathError
-  {
-    std::vector<FailedDestination> destinations;
-    /// interface-address
-    std::vector<std::pair<uint32_t, Mac48Address> > receivers;
-  };
   /**
    * \brief forms a path error information element when list of destination fails on a given interface
    * \attention removes all entries from routing table!
@@ -141,19 +152,6 @@ private:
    */
   bool DropDataFrame (uint32_t seqno, Mac48Address source);
   //\}
-private:
-  /// Packet waiting its routing information
-  struct QueuedPacket {
-    Ptr<Packet> pkt; ///< the packet
-    Mac48Address src; ///< src address
-    Mac48Address dst; ///< dst address
-    uint16_t protocol; ///< protocol number
-    uint32_t inInterface; ///< incoming device interface ID. (if packet has come from upper layers, this is Mesh point ID)
-    RouteReplyCallback reply; ///< how to reply
-
-    QueuedPacket ();
-  };
-
   ///\name Methods related to Queue/Dequeue procedures
   ///\{
   bool QueuePacket (QueuedPacket packet);
@@ -177,17 +175,24 @@ private:
    * When PREQ retry has achieved the maximum level - retry mechanism should be canceled
    */
   void  RetryPathDiscovery (Mac48Address dst, uint8_t numOfRetry);
-  ///\}
-
-  ///\name Proactive Preq routines:
-  ///\{
+  /// Proactive Preq routines:
   void SendProactivePreq ();
   ///\}
   ///\return address of MeshPointDevice
   Mac48Address GetAddress ();
+  ///\name Methods needed by HwmpMacLugin to access protocol parameters:
+  ///\{
+  bool GetDoFlag ();
+  bool GetRfFlag ();
+  Time GetPreqMinInterval ();
+  Time GetPerrMinInterval ();
+  uint8_t GetMaxTtl ();
+  uint32_t GetNextPreqId ();
+  uint32_t GetNextHwmpSeqno ();
+  uint32_t GetActivePathLifetime ();
+  uint8_t GetUnicastPerrThreshold ();
+  ///\}
 private:
-  typedef std::map<uint32_t, Ptr<HwmpProtocolMac> > HwmpProtocolMacMap;
-  HwmpProtocolMacMap m_interfaces;
   ///\name Statistics:
   ///\{
   struct Statistics
@@ -207,6 +212,7 @@ private:
   };
   Statistics m_stats;
   ///\}
+  HwmpProtocolMacMap m_interfaces;
   Mac48Address m_address;
   uint32_t m_dataSeqno;
   uint32_t m_hwmpSeqno;
@@ -231,10 +237,8 @@ private:
   /// Random start in Proactive PREQ propagation
   Time m_randomStart;
   ///\}
-
   /// Packet Queue
   std::vector<QueuedPacket> m_rqueue;
-private:
   ///\name HWMP-protocol parameters (attributes of GetTypeId)
   ///\{
   uint16_t m_maxQueueSize;
@@ -253,19 +257,6 @@ private:
   uint8_t m_unicastDataThreshold;
   bool m_doFlag;
   bool m_rfFlag;
-  ///\}
-
-  ///\name Methods needed by HwmpMacLugin to access protocol parameters:
-  ///\{
-  bool GetDoFlag ();
-  bool GetRfFlag ();
-  Time GetPreqMinInterval ();
-  Time GetPerrMinInterval ();
-  uint8_t GetMaxTtl ();
-  uint32_t GetNextPreqId ();
-  uint32_t GetNextHwmpSeqno ();
-  uint32_t GetActivePathLifetime ();
-  uint8_t GetUnicastPerrThreshold ();
   ///\}
   Callback <std::vector<Mac48Address>, uint32_t> m_neighboursCallback;
 };

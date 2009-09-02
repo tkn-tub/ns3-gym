@@ -166,7 +166,8 @@ private:
   /// Current routing protocol, used mainly by GetRoutingProtocol
   Ptr<MeshL2RoutingProtocol> m_routingProtocol;
 
-  /// Device statistics counters
+  ///\name Device statistics counters
+  ///\{
   struct Statistics
   {
     uint32_t unicastData;
@@ -178,6 +179,7 @@ private:
   };
   /// Counters
   Statistics m_rxStats, m_txStats, m_fwdStats;
+  ///\}
 };
 } //namespace ns3
 #endif
