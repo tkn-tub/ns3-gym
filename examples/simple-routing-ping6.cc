@@ -35,7 +35,7 @@
 
 using namespace ns3;
 
-NS_LOG_COMPONENT_DEFINE ("SimpleRoutingUdp6Example");
+NS_LOG_COMPONENT_DEFINE ("SimpleRoutingPing6Example");
 
 int 
 main (int argc, char** argv)
