@@ -114,13 +114,13 @@ def main(argv):
     #  our container
     # 
     wifi = ns3.WifiHelper()
-    mac = ns3.NqosWifiMacHelper.Default ()
-    mac.SetType ("ns3::AdhocWifiMac")
-    wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager",
-                                  "DataMode", ns3.StringValue ("wifia-54mbs"))
-    wifiPhy = ns3.YansWifiPhyHelper.Default ()
-    wifiChannel = ns3.YansWifiChannelHelper.Default ()
-    wifiPhy.SetChannel (wifiChannel.Create ())
+    mac = ns3.NqosWifiMacHelper.Default()
+    mac.SetType("ns3::AdhocWifiMac")
+    wifi.SetRemoteStationManager("ns3::ConstantRateWifiManager",
+                                  "DataMode", ns3.StringValue("wifia-54mbs"))
+    wifiPhy = ns3.YansWifiPhyHelper.Default()
+    wifiChannel = ns3.YansWifiChannelHelper.Default()
+    wifiPhy.SetChannel(wifiChannel.Create())
     backboneDevices = wifi.Install(wifiPhy, mac, backbone)
     # 
     #  Add the IPv4 protocol stack to the nodes in our container
@@ -128,8 +128,8 @@ def main(argv):
     print "Enabling OLSR routing on all backbone nodes"
     internet = ns3.InternetStackHelper()
     olsr = ns3.OlsrHelper()
-    internet.SetRoutingHelper (olsr);
-    internet.Install (backbone);
+    internet.SetRoutingHelper(olsr);
+    internet.Install(backbone);
     # 
     #  Assign IPv4 addresses to the device drivers(actually to the associated
     #  IPv4 interfaces) we just created.
@@ -223,24 +223,24 @@ def main(argv):
         # 
         #  Create another ad hoc network and devices
         # 
-        ssid = ns3.Ssid ('wifi-infra' + str(i))
-        wifiInfra = ns3.WifiHelper.Default ()
-        wifiPhy.SetChannel (wifiChannel.Create ())
-        wifiInfra.SetRemoteStationManager ('ns3::ArfWifiManager')
-        macInfra = ns3.NqosWifiMacHelper.Default ();
-        macInfra.SetType ("ns3::NqstaWifiMac",
-                          "Ssid", ns3.SsidValue (ssid),
-                          "ActiveProbing", ns3.BooleanValue (False))
+        ssid = ns3.Ssid('wifi-infra' + str(i))
+        wifiInfra = ns3.WifiHelper.Default()
+        wifiPhy.SetChannel(wifiChannel.Create())
+        wifiInfra.SetRemoteStationManager('ns3::ArfWifiManager')
+        macInfra = ns3.NqosWifiMacHelper.Default();
+        macInfra.SetType("ns3::NqstaWifiMac",
+                          "Ssid", ns3.SsidValue(ssid),
+                          "ActiveProbing", ns3.BooleanValue(False))
 
         # setup stas
-        staDevices = wifiInfra.Install (wifiPhy, macInfra, stas)
+        staDevices = wifiInfra.Install(wifiPhy, macInfra, stas)
         # setup ap.
-        macInfra.SetType ("ns3::NqapWifiMac", "Ssid", ns3.SsidValue (ssid),
-                          "BeaconGeneration", ns3.BooleanValue (True),
-                          "BeaconInterval", ns3.TimeValue (ns3.Seconds (2.5)))
-        apDevices = wifiInfra.Install (wifiPhy, macInfra, backbone.Get (i))
+        macInfra.SetType("ns3::NqapWifiMac", "Ssid", ns3.SsidValue(ssid),
+                          "BeaconGeneration", ns3.BooleanValue(True),
+                          "BeaconInterval", ns3.TimeValue(ns3.Seconds(2.5)))
+        apDevices = wifiInfra.Install(wifiPhy, macInfra, backbone.Get(i))
         # Collect all of these new devices
-        infraDevices = ns3.NetDeviceContainer (apDevices, staDevices)
+        infraDevices = ns3.NetDeviceContainer(apDevices, staDevices)
 
         #  Add the IPv4 protocol stack to the nodes in our container
         # 
@@ -284,7 +284,7 @@ def main(argv):
 
     #  Let's make sure that the user does not define too few LAN nodes
     #  to make this example work.  We need lanNodes >= 5
-    assert (lanNodes >= 5)
+    assert(lanNodes >= 5)
     appSource = ns3.NodeList.GetNode(11)
     appSink = ns3.NodeList.GetNode(13)
     remoteAddr = ns3.Ipv4Address("172.16.0.5")
