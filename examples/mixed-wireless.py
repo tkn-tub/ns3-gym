@@ -114,18 +114,22 @@ def main(argv):
     #  our container
     # 
     wifi = ns3.WifiHelper()
-    wifi.SetMac("ns3::AdhocWifiMac")
+    mac = ns3.NqosWifiMacHelper.Default ()
+    mac.SetType ("ns3::AdhocWifiMac")
     wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager",
                                   "DataMode", ns3.StringValue ("wifia-54mbs"))
     wifiPhy = ns3.YansWifiPhyHelper.Default ()
     wifiChannel = ns3.YansWifiChannelHelper.Default ()
     wifiPhy.SetChannel (wifiChannel.Create ())
-    backboneDevices = wifi.Install(wifiPhy, backbone)
+    backboneDevices = wifi.Install(wifiPhy, mac, backbone)
     # 
     #  Add the IPv4 protocol stack to the nodes in our container
     # 
+    print "Enabling OLSR routing on all backbone nodes"
     internet = ns3.InternetStackHelper()
-    internet.Install(backbone)
+    olsr = ns3.OlsrHelper()
+    internet.SetRoutingHelper (olsr);
+    internet.Install (backbone);
     # 
     #  Assign IPv4 addresses to the device drivers(actually to the associated
     #  IPv4 interfaces) we just created.
@@ -223,16 +227,18 @@ def main(argv):
         wifiInfra = ns3.WifiHelper.Default ()
         wifiPhy.SetChannel (wifiChannel.Create ())
         wifiInfra.SetRemoteStationManager ('ns3::ArfWifiManager')
-        # setup stas
-        wifiInfra.SetMac ("ns3::NqstaWifiMac",
+        macInfra = ns3.NqosWifiMacHelper.Default ();
+        macInfra.SetType ("ns3::NqstaWifiMac",
                           "Ssid", ns3.SsidValue (ssid),
                           "ActiveProbing", ns3.BooleanValue (False))
-        staDevices = wifiInfra.Install (wifiPhy, stas)
+
+        # setup stas
+        staDevices = wifiInfra.Install (wifiPhy, macInfra, stas)
         # setup ap.
-        wifiInfra.SetMac ("ns3::NqapWifiMac", "Ssid", ns3.SsidValue (ssid),
+        macInfra.SetType ("ns3::NqapWifiMac", "Ssid", ns3.SsidValue (ssid),
                           "BeaconGeneration", ns3.BooleanValue (True),
                           "BeaconInterval", ns3.TimeValue (ns3.Seconds (2.5)))
-        apDevices = wifiInfra.Install (wifiPhy, backbone.Get (i))
+        apDevices = wifiInfra.Install (wifiPhy, macInfra, backbone.Get (i))
         # Collect all of these new devices
         infraDevices = ns3.NetDeviceContainer (apDevices, staDevices)
 
@@ -264,16 +270,6 @@ def main(argv):
                                   "Speed", ns3.RandomVariableValue(ns3.ConstantVariable(30)),
                                   "Pause", ns3.RandomVariableValue(ns3.ConstantVariable(0.4)))
         mobility.Install(infra)
-
-    # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # / 
-    #                                                                        # 
-    #  Routing configuration                                                 # 
-    #                                                                        # 
-    # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # / 
-
-    print "Enabling OLSR routing on all backbone nodes"
-    olsr = ns3.OlsrHelper()
-    olsr.Install(backbone)
 
     # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # / 
     #                                                                        # 
@@ -327,9 +323,9 @@ def main(argv):
     # WifiHelper.EnableAscii(ascii, 13, 0); 
 
     #  Let's do a pcap trace on the backbone devices
-    ns3.YansWifiPhyHelper.EnablePcap("mixed-wireless", backboneDevices)
+    wifiPhy.EnablePcap("mixed-wireless", backboneDevices)
     #  Let's additionally trace the application Sink, ifIndex 0
-    ns3.CsmaHelper.EnablePcap("mixed-wireless", appSink.GetId(), 0)
+    ns3.CsmaHelper.EnablePcap("mixed-wireless", appSink.GetId(), 0, False)
 
 #   #ifdef ENABLE_FOR_TRACING_EXAMPLE
 #     Config.Connect("/NodeList/*/$MobilityModel/CourseChange",

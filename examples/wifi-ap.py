@@ -115,16 +115,18 @@ def main(argv):
 
     ssid = ns3.Ssid("wifi-default")
     wifi.SetRemoteStationManager("ns3::ArfWifiManager")
+    wifiMac = ns3.NqosWifiMacHelper.Default ()
+
     # setup stas.
-    wifi.SetMac("ns3::NqstaWifiMac", 
+    wifiMac.SetType("ns3::NqstaWifiMac", 
                "Ssid", ns3.SsidValue(ssid),
                "ActiveProbing", ns3.BooleanValue(False))
-    staDevs = wifi.Install(wifiPhy, stas)
+    staDevs = wifi.Install(wifiPhy, wifiMac, stas)
     # setup ap.
-    wifi.SetMac("ns3::NqapWifiMac", "Ssid", ns3.SsidValue(ssid),
+    wifiMac.SetType("ns3::NqapWifiMac", "Ssid", ns3.SsidValue(ssid),
                 "BeaconGeneration", ns3.BooleanValue(True),
                 "BeaconInterval", ns3.TimeValue(ns3.Seconds(2.5)))
-    wifi.Install(wifiPhy, ap)
+    wifi.Install(wifiPhy, wifiMac, ap)
 
     # mobility.
     mobility.Install(stas)
