@@ -406,7 +406,8 @@ GlobalRouteManagerImpl::DebugUseLsdb (GlobalRouteManagerLSDB* lsdb)
 GlobalRouteManagerImpl::DeleteGlobalRoutes ()
 {
   NS_LOG_FUNCTION_NOARGS ();
-  for (NodeList::Iterator i = NodeList::Begin (); i != NodeList::End (); i++)
+  NodeList::Iterator listEnd = NodeList::End ();
+  for (NodeList::Iterator i = NodeList::Begin (); i != listEnd; i++)
     {
       Ptr<Node> node = *i;
       Ptr<GlobalRouter> router = node->GetObject<GlobalRouter> ();
@@ -453,7 +454,8 @@ GlobalRouteManagerImpl::BuildGlobalRoutingDatabase ()
 // Walk the list of nodes looking for the GlobalRouter Interface.  Nodes with
 // global router interfaces are, not too surprisingly, our routers.
 //
-  for (NodeList::Iterator i = NodeList::Begin (); i != NodeList::End (); i++)
+  NodeList::Iterator listEnd = NodeList::End ();
+  for (NodeList::Iterator i = NodeList::Begin (); i != listEnd; i++)
     {
       Ptr<Node> node = *i;
 
@@ -534,7 +536,8 @@ GlobalRouteManagerImpl::InitializeRoutes ()
 //
 // Walk the list of nodes in the system.
 //
-  for (NodeList::Iterator i = NodeList::Begin (); i != NodeList::End (); i++)
+  NodeList::Iterator listEnd = NodeList::End ();
+  for (NodeList::Iterator i = NodeList::Begin (); i != listEnd; i++)
     {
       Ptr<Node> node = *i;
 //
@@ -1351,7 +1354,8 @@ GlobalRouteManagerImpl::SPFAddASExternal (GlobalRoutingLSA *extlsa, SPFVertex *v
 // the routing information to.
 //
   NodeList::Iterator i = NodeList::Begin (); 
-  for (; i != NodeList::End (); i++)
+  NodeList::Iterator listEnd = NodeList::End ();
+  for (; i != listEnd; i++)
     {
       Ptr<Node> node = *i;
 //
@@ -1516,7 +1520,8 @@ GlobalRouteManagerImpl::SPFIntraAddStub (GlobalRoutingLinkRecord *l, SPFVertex* 
 // the routing information to.
 //
   NodeList::Iterator i = NodeList::Begin (); 
-  for (; i != NodeList::End (); i++)
+  NodeList::Iterator listEnd = NodeList::End ();
+  for (; i != listEnd; i++)
     {
       Ptr<Node> node = *i;
 //
@@ -1637,7 +1642,8 @@ GlobalRouteManagerImpl::FindOutgoingInterfaceId (Ipv4Address a, Ipv4Mask amask)
 // building the routing table.
 //
   NodeList::Iterator i = NodeList::Begin (); 
-  for (; i != NodeList::End (); i++)
+  NodeList::Iterator listEnd = NodeList::End ();
+  for (; i != listEnd; i++)
     {
       Ptr<Node> node = *i;
 
@@ -1727,7 +1733,8 @@ GlobalRouteManagerImpl::SPFIntraAddRouter (SPFVertex* v)
 // the routing information to.
 //
   NodeList::Iterator i = NodeList::Begin (); 
-  for (; i != NodeList::End (); i++)
+  NodeList::Iterator listEnd = NodeList::End ();
+  for (; i != listEnd; i++)
     {
       Ptr<Node> node = *i;
 //
@@ -1867,7 +1874,8 @@ GlobalRouteManagerImpl::SPFIntraAddTransit (SPFVertex* v)
 // the routing information to.
 //
   NodeList::Iterator i = NodeList::Begin (); 
-  for (; i != NodeList::End (); i++)
+  NodeList::Iterator listEnd = NodeList::End ();
+  for (; i != listEnd; i++)
     {
       Ptr<Node> node = *i;
 //
