@@ -615,8 +615,6 @@ public:
  * advertisements after a network topology change by calling DiscoverLSAs 
  * and then by reading those advertisements.
  *
- * \param List of routing table entries of external routes to be injected.
- *
  * @see GlobalRoutingLSA
  * @see GlobalRouter::GetLSA ()
  * @returns The number of Global Routing Link State Advertisements.
@@ -700,13 +698,8 @@ public:
 /**
  * @brief Withdraw a route from the global unicast routing table.
  *
- * Calling this function will cause all indexed routes numbered above
- * index i to have their index decremented.  For instance, it is possible to
- * remove N injected routes by calling RemoveInjectedRoute (0) N times.
- *
- * @param i The index (into the injected routing list) of the route to remove.  
- * @param network The Network to inject
- * @param networkMask The Network Mask to inject
+ * @param network The Network to withdraw
+ * @param networkMask The Network Mask to withdraw
  * @return whether the operation succeeded (will return false if no such route)
  *
  * @see GlobalRouter::RemoveInjectedRoute ()
