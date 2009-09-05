@@ -225,7 +225,7 @@ will query each one of these routing protocols (in some order determined
 by the simulation author) until a route is found.  
 
 We chose this approach because it may better
-faciliate the integration of disparate routing approaches that may 
+facilitate the integration of disparate routing approaches that may 
 be difficult to coordinate the writing to a single table, approaches
 where more information than destination IP address (e.g., source
 routing) is used to determine the next hop, and on-demand
@@ -300,7 +300,7 @@ are sent.
 
 Typically there are two main types of multicast routes:  routes of the 
 first kind are used during forwarding.  All of the conditions must be
-exlicitly provided.  The second kind of routes are used to get packets off
+explicitly provided.  The second kind of routes are used to get packets off
 of a local node.  The difference is in the input interface.  Routes for
 forwarding will always have an explicit input interface specified.  Routes
 off of a node will always set the input interface to a wildcard specified

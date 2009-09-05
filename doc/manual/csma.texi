@@ -139,7 +139,7 @@ corresponding to a single speed-of-light delay.  This delay applies to all
 net devices on the channel identically.  You can think of a symmetrical hub
 in which the packet bits propagate to a central location and then back out
 equal length cables to the other devices on the channel.  The single ``speed
-of light'' delay then corresponds to the time it takes for: 1) a singal to 
+of light'' delay then corresponds to the time it takes for: 1) a signal to 
 propagate from one CsmaNetDevice through its cable to the hub; plus 2) the
 time it takes for the hub to forward the packet out a port; plus 3) the time
 it takes for the signal in question to propagate to the destination net 
@@ -168,7 +168,7 @@ The CsmaChannel provides following Attributes:
 @item ReceiveEnable:  Enable packet reception if true;
 @item EncapsulationMode:  Type of link layer encapsulation to use;
 @item RxErrorModel:  The receive error model;
-@item TxQueue:  The trasmit queue used by the device;
+@item TxQueue:  The transmit queue used by the device;
 @item InterframeGap:  The optional time to wait between "frames";
 @item Rx:  A trace source for received packets;
 @item Drop:  A trace source for dropped packets.
@@ -181,7 +181,7 @@ on the link.
 Packets sent over the CsmaNetDevice are always routed through the 
 transmit queue to provide a trace hook for packets sent out over the 
 network.  This transmit queue can be set (via attribute) to model different
-queueing strategies.
+queuing strategies.
 
 Also configurable by attribute is the encapsulation method used by the
 device.  Every packet gets an EthernetHeader that includes the 
@@ -219,7 +219,7 @@ attempted.  The default maximum number of retries is 1000.
 
 The CSMA net devices and channels are typically created and configured using
 the associated @code{CsmaHelper} object.  The various ns3 device dhelpers 
-generatlly work in a simlar way, and their use is seen in many of our example
+generally work in a similar way, and their use is seen in many of our example
 programs.
 
 The conceptual model of interest is that of a bare computer ``husk'' into which 
@@ -302,13 +302,13 @@ like a transmit complete interrupt service routine; or 3) from
 the random exponential backoff handler if a timeout is detected.
 
 Case (3) implies that a packet is dequeued from the transmit queue if it is 
-unable to be transmittted according to the backoff rules.  It is important 
+unable to be transmitted according to the backoff rules.  It is important 
 to understand that this will appear as a Dequeued packet and it is easy to 
 incorrectly assume that the packet was transmitted since it passed through
 the transmit queue.  In fact, a packet is actually dropped by the net device
 in this case.  The reason for this behavior is due to the definition of the 
-Queue Drop event.  The m_traceDrop event is, by defintion, fired when a 
-packet cannot be enqueued on the transmit queue becasue it is full.  This 
+Queue Drop event.  The m_traceDrop event is, by definition, fired when a 
+packet cannot be enqueued on the transmit queue because it is full.  This 
 event only fires if the queue is full and we do not overload this event
 to indicate that the CsmaChannel is "full."
 

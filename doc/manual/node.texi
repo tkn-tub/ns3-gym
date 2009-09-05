@@ -100,7 +100,7 @@ function can be registered with the protocol handler by calling:
     MakeCallback (&Ipv4L3Protocol::Receive, ipv4), 
     Ipv4L3Protocol::PROT_NUMBER, 0);
 @end verbatim
-and likewise for Ipv6, Arp, etc.
+and likewise for Ipv6, ARP, etc.
 
 @section NodeList
 
@@ -115,7 +115,7 @@ The above @code{class Node} is not very useful as-is; other objects
 must be aggregated to it to provide useful node functionality.
 
 The ns-3 source code directory @code{src/internet-stack} provides
-implmentation of TCP/IPv4-related components.  These include IPv4,
+implementation of TCP/IPv4-related components.  These include IPv4,
 ARP, UDP, TCP, and other related protocols.
 
 Internet Nodes are not subclasses of class Node; they are simply Nodes 
@@ -289,7 +289,7 @@ usage is in @code{class PacketSink}:
 
 To summarize, internally, the UDP implementation is organized as follows:
 @itemize @bullet
-@item a @code{UdpImpl} class that implements the Udp socket factory
+@item a @code{UdpImpl} class that implements the UDP socket factory
 functionality
 @item a @code{UdpL4Protocol} class that implements the protocol logic
 that is socket-independent 

@@ -128,11 +128,11 @@ The modularity provided by the implementation makes low-level
 configuration of the WifiNetDevice powerful but complex.  For this reason,
 we provide some helper classes to perform common operations in a simple
 matter, and leverage the ns-3 attribute system to allow users to control
-the parameterization of the underlying models.
+the parametrization of the underlying models.
 
 Users who use the low-level ns-3 API and who wish to add a WifiNetDevice
 to their node must create an instance of a WifiNetDevice, plus 
-a number of consitutent objects, and bind them together appropriately
+a number of constituent objects, and bind them together appropriately
 (the WifiNetDevice is very modular in this regard, for future
 extensibility).  At the low-level API, this can be done
 with about 20 lines of code (see @code{ns3::WifiHelper::Install}, and
