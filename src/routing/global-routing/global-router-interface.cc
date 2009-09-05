@@ -1564,7 +1564,7 @@ GlobalRouter::RemoveInjectedRoute (uint32_t index)
 bool
 GlobalRouter::WithdrawRoute (Ipv4Address network, Ipv4Mask networkMask)
 {
-  NS_LOG_FUNCTION (index);
+  NS_LOG_FUNCTION (network << networkMask);
   for (InjectedRoutesI i = m_injectedRoutes.begin (); i != m_injectedRoutes.end (); i++)
     {
       if ((*i)->GetDestNetwork () == network && (*i)->GetDestNetworkMask () == networkMask)
