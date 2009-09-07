@@ -33,6 +33,12 @@ class Packet;
 class Socket;
 
 /**
+ * \ingroup applications 
+ * \defgroup ping6 Ping6
+ */
+
+/**
+ * \ingroup ping6
  * \class Ping6
  * \brief A ping6 application.
  */
