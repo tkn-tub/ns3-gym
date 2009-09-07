@@ -493,12 +493,12 @@ void
 MeshWifiInterfaceMac::SetBeaconGeneration (bool enable)
 {
   NS_LOG_FUNCTION (this << enable);
+  UniformVariable coefficient (0.0, m_randomStart.GetSeconds ());
   if (enable)
     {
-      // Now start sending beacons after some random delay (to avoid collisions)
-      UniformVariable coefficient (0.0, m_randomStart.GetSeconds ());
       Time randomStart = Seconds (coefficient.GetValue ());
-
+      // Now start sending beacons after some random delay (to avoid collisions)
+      NS_ASSERT (!m_beaconSendEvent.IsRunning ());
       m_beaconSendEvent = Simulator::Schedule (randomStart, &MeshWifiInterfaceMac::SendBeacon, this);
       m_tbtt = Simulator::Now () + randomStart;
     }

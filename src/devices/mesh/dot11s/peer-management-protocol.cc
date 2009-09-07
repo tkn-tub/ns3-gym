@@ -424,6 +424,8 @@ PeerManagementProtocol::GetNextBeaconShift (uint32_t interface)
   //So, the shift is a random integer variable uniformly distributed in [-15;-1] U [1;15]
   static int maxShift = 15;
   static int minShift = 1;
+  UniformVariable randomSign (-1, 1);
+  UniformVariable randomShift (minShift, maxShift);
   PeerLinksMap::iterator iface = m_peerLinks.find (interface);
   NS_ASSERT (iface != m_peerLinks.end ());
   PeerManagementProtocolMacMap::iterator plugin = m_plugins.find (interface);
@@ -452,8 +454,6 @@ PeerManagementProtocol::GetNextBeaconShift (uint32_t interface)
               if ((TimeToTu (myBeacon.first) - ((*j)->GetLastBeacon () / 4)) % ((*j)->GetBeaconInterval ())
                   == 0)
                 {
-                  UniformVariable randomSign (-1, 1);
-                  UniformVariable randomShift (minShift, maxShift);
                   int beaconShift = randomShift.GetInteger (minShift, maxShift) * ((randomSign.GetValue ()
                       >= 0) ? 1 : -1);
                   NS_LOG_DEBUG ("Apply MBCA: Shift value = " << beaconShift << " beacon TUs");
