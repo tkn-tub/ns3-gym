@@ -28,6 +28,7 @@
 namespace ns3 {
 
 /**
+ * \ingroup address
  * \class Inet6SocketAddress
  * \brief An Inet6 address class.
  */

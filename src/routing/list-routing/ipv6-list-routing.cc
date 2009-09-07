@@ -257,7 +257,7 @@ void Ipv6ListRouting::NotifyAddRoute (Ipv6Address dst, Ipv6Prefix mask, Ipv6Addr
     }
 }
 
-void Ipv6ListRouting::NotifyRemoveRoute (Ipv6Address dst, Ipv6Prefix mask, Ipv6Address nextHop, uint32_t interface)
+void Ipv6ListRouting::NotifyRemoveRoute (Ipv6Address dst, Ipv6Prefix mask, Ipv6Address nextHop, uint32_t interface, Ipv6Address prefixToUse)
 {
   NS_LOG_FUNCTION (this << dst << mask << nextHop << interface);
   for (Ipv6RoutingProtocolList::const_iterator rprotoIter =
@@ -265,7 +265,7 @@ void Ipv6ListRouting::NotifyRemoveRoute (Ipv6Address dst, Ipv6Prefix mask, Ipv6A
        rprotoIter != m_routingProtocols.end ();
        rprotoIter++)
     {
-      (*rprotoIter).second->NotifyRemoveRoute (dst, mask, nextHop, interface);
+      (*rprotoIter).second->NotifyRemoveRoute (dst, mask, nextHop, interface, prefixToUse);
     }
 }
 
@@ -352,7 +352,7 @@ public:
   void NotifyAddAddress (uint32_t interface, Ipv6InterfaceAddress address) {}
   void NotifyRemoveAddress (uint32_t interface, Ipv6InterfaceAddress address) {}
   void NotifyAddRoute (Ipv6Address dst, Ipv6Prefix mask, Ipv6Address nextHop, uint32_t interface, Ipv6Address prefixToUse = Ipv6Address::GetZero ()) {}
-  void NotifyRemoveRoute (Ipv6Address dst, Ipv6Prefix mask, Ipv6Address nextHop, uint32_t interface) {}
+  void NotifyRemoveRoute (Ipv6Address dst, Ipv6Prefix mask, Ipv6Address nextHop, uint32_t interface, Ipv6Address prefixToUse) {}
   void SetIpv6 (Ptr<Ipv6> ipv6) {}
 };
 
@@ -367,7 +367,7 @@ public:
   void NotifyAddAddress (uint32_t interface, Ipv6InterfaceAddress address) {}
   void NotifyRemoveAddress (uint32_t interface, Ipv6InterfaceAddress address) {}
   void NotifyAddRoute (Ipv6Address dst, Ipv6Prefix mask, Ipv6Address nextHop, uint32_t interface, Ipv6Address prefixToUse = Ipv6Address::GetZero ()) {}
-  void NotifyRemoveRoute (Ipv6Address dst, Ipv6Prefix mask, Ipv6Address nextHop, uint32_t interface) {}
+  void NotifyRemoveRoute (Ipv6Address dst, Ipv6Prefix mask, Ipv6Address nextHop, uint32_t interface, Ipv6Address prefixToUse) {}
   void SetIpv6 (Ptr<Ipv6> ipv6) {}
 };
 

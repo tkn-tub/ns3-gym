@@ -1086,6 +1086,19 @@ Ptr<NdiscCache> Icmpv6L4Protocol::CreateCache (Ptr<NetDevice> device, Ptr<Ipv6In
   return cache;
 }
 
+bool Icmpv6L4Protocol::Lookup (Ipv6Address dst, Ptr<NetDevice> device, Ptr<NdiscCache> cache, Address* hardwareDestination)
+{
+  NS_LOG_FUNCTION (this << dst << device << hardwareDestination);
+
+  if (!cache)
+  {
+    /* try to find the cache */
+    cache = FindCache (device);
+  }
+
+  return cache->Lookup (dst);
+}
+
 bool Icmpv6L4Protocol::Lookup (Ptr<Packet> p, Ipv6Address dst, Ptr<NetDevice> device, Ptr<NdiscCache> cache, Address* hardwareDestination)
 {
   NS_LOG_FUNCTION (this << p << dst << device << hardwareDestination);

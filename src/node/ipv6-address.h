@@ -35,6 +35,7 @@ class Ipv6Prefix;
 class Mac48Address;
 
 /**
+ * \ingroup address
  * \class Ipv6Address
  * \brief Describes an IPv6 address.
  * \see Ipv6Prefix
@@ -254,6 +255,12 @@ class Ipv6Address
     static Ipv6Address GetLoopback ();
 
     /**
+     * \brief Get the "all-1" IPv6 address (ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff).
+     * \return all-1 Ipv6Address representation
+     */
+    static Ipv6Address GetOnes ();
+
+    /**
      * \brief Get the bytes corresponding to the address.
      * \param buf buffer to store the data
      * \return bytes of the address
@@ -284,6 +291,7 @@ class Ipv6Address
 };
 
 /**
+ * \ingroup address
  * \class Ipv6Prefix
  * \brief Describes an IPv6 prefix. It is just a bitmask like Ipv4Mask.
  * \see Ipv6Address
@@ -347,6 +355,12 @@ class Ipv6Prefix
     void GetBytes (uint8_t buf[16]) const;
 
     /**
+     * \brief Get prefix length.
+     * \return prefix length
+     */
+    uint8_t GetPrefixLength () const;
+
+    /**
      * \brief Comparison operation between two Ipv6Prefix.
      * \param other the IPv6 prefix to which to compare this prefix
      * \return true if the prefixes are equal, false otherwise
@@ -366,6 +380,12 @@ class Ipv6Prefix
      * \return a Ipv6Prefix corresponding to loopback prefix
      */
     static Ipv6Prefix GetLoopback ();
+
+    /**
+     * \brief Get the "all-1" IPv6 mask (ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff).
+     * \return /128 Ipv6Prefix representation
+     */
+    static Ipv6Prefix GetOnes ();
 
     /**
      * \brief Get the zero prefix ( /0).

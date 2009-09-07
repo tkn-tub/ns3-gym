@@ -33,12 +33,59 @@
 #include "ns3/simulator-module.h"
 #include "ns3/helper-module.h"
 
+#include "ns3/ipv6-routing-table-entry.h"
+
 using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("SimpleRoutingPing6Example");
 
-int 
-main (int argc, char** argv)
+class StackHelper
+{
+  public:
+
+    /**
+     * \brief Add an address to a IPv6 node.
+     * \param n node
+     * \param interface interface index
+     * \param address IPv6 address to add
+     */
+    inline void AddAddress (Ptr<Node>& n, uint32_t interface, Ipv6Address address)
+    {
+      Ptr<Ipv6> ipv6 = n->GetObject<Ipv6> ();
+      ipv6->AddAddress (interface, address);
+    }
+
+    /**
+     * \brief Print the routing table.
+     * \param n the node
+     */
+    inline void PrintRoutingTable (Ptr<Node>& n)
+    {
+      Ptr<Ipv6StaticRouting> routing = 0;
+      Ipv6StaticRoutingHelper routingHelper;
+      Ptr<Ipv6> ipv6 = n->GetObject<Ipv6> ();
+      uint32_t nbRoutes = 0;
+      Ipv6RoutingTableEntry route;
+
+      routing = routingHelper.GetStaticRouting (ipv6);
+
+      std::cout << "Routing table of " << n << " : " << std::endl;
+      std::cout << "Destination\t\t\t\t" << "Gateway\t\t\t\t\t" << "Interface\t" <<  "Prefix to use" << std::endl;
+
+      nbRoutes = routing->GetNRoutes ();
+      for (uint32_t i = 0 ; i < nbRoutes ; i++)
+      {
+        route = routing->GetRoute (i);
+        std::cout << route.GetDest () << "\t"
+          << route.GetGateway () << "\t"
+          << route.GetInterface () << "\t"
+          << route.GetPrefixToUse () << "\t"
+          << std::endl;
+      }
+    }
+};
+
+int main (int argc, char** argv)
 {
 #if 0 
   LogComponentEnable ("Ipv6L3Protocol", LOG_LEVEL_ALL);
@@ -50,6 +97,8 @@ main (int argc, char** argv)
 
 	CommandLine cmd;
   cmd.Parse (argc, argv);
+
+  StackHelper stackHelper;
   
 	NS_LOG_INFO ("Create nodes.");
 	Ptr<Node> n0 = CreateObject<Node> ();
@@ -80,6 +129,8 @@ main (int argc, char** argv)
 	Ipv6InterfaceContainer i2 = ipv6.Assign (d2);
   i2.SetRouter (0, true);
 
+  stackHelper.PrintRoutingTable(n0);
+
   /* Create a Ping6 application to send ICMPv6 echo request from n0 to n1 via r */
   uint32_t packetSize = 1024;
   uint32_t maxPacketCount = 5;
@@ -88,7 +139,6 @@ main (int argc, char** argv)
 
   ping6.SetLocal (i1.GetAddress (0, 1));
   ping6.SetRemote (i2.GetAddress (1, 1)); 
-  /* ping6.SetRemote (Ipv6Address::GetAllNodesMulticast ()); */
 
   ping6.SetAttribute ("MaxPackets", UintegerValue (maxPacketCount));
   ping6.SetAttribute ("Interval", TimeValue (interPacketInterval));

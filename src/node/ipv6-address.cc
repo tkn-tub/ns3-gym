@@ -483,6 +483,12 @@ Ipv6Address Ipv6Address::GetLoopback ()
   return loopback;
 }
 
+Ipv6Address Ipv6Address::GetOnes ()
+{
+  static Ipv6Address ones ("ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff");
+  return ones; 
+}
+
 void Ipv6Address::GetBytes (uint8_t buf[16]) const
 {
   memcpy (buf, m_address, 16);
@@ -491,7 +497,7 @@ void Ipv6Address::GetBytes (uint8_t buf[16]) const
 bool Ipv6Address::IsLinkLocal () const
 {
   Ipv6Address linkLocal ("fe80::0");
-  if (!IsMulticast () && ((Ipv6Address*)this)->CombinePrefix (Ipv6Prefix (64))==linkLocal)
+  if (!IsMulticast () && ((Ipv6Address*)this)->CombinePrefix (Ipv6Prefix (64)) == linkLocal)
   {
     return true;
   }
@@ -627,6 +633,12 @@ Ipv6Prefix Ipv6Prefix::GetLoopback ()
   return prefix;
 }
 
+Ipv6Prefix Ipv6Prefix::GetOnes ()
+{
+  static Ipv6Prefix ones ((uint8_t)128);
+  return ones; 
+}
+
 Ipv6Prefix Ipv6Prefix::GetZero ()
 {
   Ipv6Prefix prefix ((uint8_t)0);
@@ -636,6 +648,25 @@ Ipv6Prefix Ipv6Prefix::GetZero ()
 void Ipv6Prefix::GetBytes (uint8_t buf[16]) const
 {
   memcpy (buf, m_prefix, 16);
+}
+
+uint8_t Ipv6Prefix::GetPrefixLength () const
+{
+  uint8_t i = 0;
+  uint8_t prefixLength = 0;
+
+  for(i = 0 ; i < 16 ; i++)
+  {
+    uint8_t mask = m_prefix[i];
+
+    while(mask != 0)
+    {
+      mask = mask << 1;
+      prefixLength++;
+    }
+  }
+  
+  return prefixLength;
 }
 
 bool Ipv6Prefix::IsEqual (const Ipv6Prefix& other) const
