@@ -188,7 +188,7 @@ MeshPointDevice::IsLinkUp () const
 }
 
 void
-MeshPointDevice::SetLinkChangeCallback (Callback<void> callback)
+MeshPointDevice::AddLinkChangeCallback (Callback<void> callback)
 {
   // do nothing
 }
