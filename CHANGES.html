@@ -109,6 +109,13 @@ router solicitation, DAD
 <li><b>WifiMode</b>
 <p>WifiMode now has a WifiPhyStandard attribute which identifies the standard the WifiMode belongs to. To properly set this attribute when creating a new WifiMode, it is now required to explicitly pass a WifiPhyStandard parameter to all WifiModeFactory::CreateXXXX() methods. The WifiPhyStandard value of an existing WifiMode can be retrieved using the new method WifiMode::GetStandard().</p>
 </li>
+<li><b>NetDevice</b>
+<p>In order to have multiple link change callback in NetDevice (i.e. to flush ARP and IPv6 neighbor discovery caches), the following member method has been renamed:</p>
+<pre>
+- virtual void SetLinkChangeCallback (Callback&lt;void&gt; callback);
++ virtual void AddLinkChangeCallback (Callback&lt;void&gt; callback);</pre>
+Now each NetDevice subclasses have a TracedCallback&lt;&gt; object (list of callbacks) instead of Callback&lt;void&gt; ones.
+</li>
 </ul>
 
 <hr>
