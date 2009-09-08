@@ -1076,14 +1076,24 @@ Ptr<NdiscCache> Icmpv6L4Protocol::CreateCache (Ptr<NetDevice> device, Ptr<Ipv6In
 {
   Ptr<Ipv6L3Protocol> ipv6 = m_node->GetObject<Ipv6L3Protocol> ();
   Ptr<NdiscCache> cache = CreateObject<NdiscCache> ();
+  
   cache->SetDevice (device, interface);
-
-  /* XXX : make a list of callback in net-device.cc
-   * else we override IPv4 flushing ARP table...
-   */
-/* device->SetLinkChangeCallback (MakeCallback (&NdiscCache::Flush, cache)); */
+  device->AddLinkChangeCallback (MakeCallback (&NdiscCache::Flush, cache));
   m_cacheList.push_back (cache);
   return cache;
+}
+
+bool Icmpv6L4Protocol::Lookup (Ipv6Address dst, Ptr<NetDevice> device, Ptr<NdiscCache> cache, Address* hardwareDestination)
+{
+  NS_LOG_FUNCTION (this << dst << device << hardwareDestination);
+
+  if (!cache)
+  {
+    /* try to find the cache */
+    cache = FindCache (device);
+  }
+
+  return cache->Lookup (dst);
 }
 
 bool Icmpv6L4Protocol::Lookup (Ptr<Packet> p, Ipv6Address dst, Ptr<NetDevice> device, Ptr<NdiscCache> cache, Address* hardwareDestination)

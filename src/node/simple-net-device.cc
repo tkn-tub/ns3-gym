@@ -121,7 +121,7 @@ SimpleNetDevice::IsLinkUp (void) const
   return true;
 }
 void 
-SimpleNetDevice::SetLinkChangeCallback (Callback<void> callback)
+SimpleNetDevice::AddLinkChangeCallback (Callback<void> callback)
 {}
 bool 
 SimpleNetDevice::IsBroadcast (void) const

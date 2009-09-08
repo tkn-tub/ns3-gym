@@ -269,12 +269,6 @@ void Ipv6L3Protocol::AddAutoconfiguredAddress (uint32_t interface, Ipv6Address n
         (*it)->StopPreferredTimer ();
         (*it)->StopValidTimer ();
         (*it)->StartPreferredTimer ();
-
-        /* Suppose a link with two prefixes advertised, 
-         * when first prefix (which is the default route) expires,
-         * the second ones router has to be default router
-         */
-        GetRoutingProtocol ()->NotifyAddRoute (Ipv6Address::GetAny (), Ipv6Prefix ((uint8_t)0), defaultRouter, interface, network);
         return;
       }
     }
@@ -284,10 +278,7 @@ void Ipv6L3Protocol::AddAutoconfiguredAddress (uint32_t interface, Ipv6Address n
     AddAddress (interface, address);
 
     /* add default router
-     * check to know if default route already exists is done 
-     * in Ipv6StaticRouting class
-     *
-     * If default route is already set, this function does nothing.
+     * if a previous default route exists, the new ones is simply added 
      */
     GetRoutingProtocol ()->NotifyAddRoute (Ipv6Address::GetAny (), Ipv6Prefix ((uint8_t)0), defaultRouter, interface, network);
 
@@ -327,7 +318,7 @@ void Ipv6L3Protocol::RemoveAutoconfiguredAddress (uint32_t interface, Ipv6Addres
     }
   }
 
-  GetRoutingProtocol ()->NotifyRemoveRoute (Ipv6Address::GetAny (), Ipv6Prefix ((uint8_t)0), defaultRouter, interface);
+  GetRoutingProtocol ()->NotifyRemoveRoute (Ipv6Address::GetAny (), Ipv6Prefix ((uint8_t)0), defaultRouter, interface, network);
 }
 
 bool Ipv6L3Protocol::AddAddress (uint32_t i, Ipv6InterfaceAddress address)
@@ -811,7 +802,7 @@ void Ipv6L3Protocol::IpForward (Ptr<Ipv6Route> rtentry, Ptr<const Packet> p, con
 
     copy->AddHeader (header);
     
-    if (icmpv6->Lookup (copy, target, rtentry->GetOutputDevice (), 0, &hardwareTarget))
+    if (icmpv6->Lookup (target, rtentry->GetOutputDevice (), 0, &hardwareTarget))
     {
       icmpv6->SendRedirection (copy, src, target, dst, hardwareTarget);
     }
@@ -820,7 +811,7 @@ void Ipv6L3Protocol::IpForward (Ptr<Ipv6Route> rtentry, Ptr<const Packet> p, con
       icmpv6->SendRedirection (copy, src, target, dst, Address ());
     }
   }
-
+  
   SendRealOut (rtentry, packet, ipHeader);
 }
 

@@ -28,7 +28,7 @@ create TCP sockets.  A typical usage can be seen in this snippet:
       ...
     }
 @end verbatim
-The parameter @code{m_tid} controls the TypeId of the actual Tcp Socket
+The parameter @code{m_tid} controls the TypeId of the actual TCP Socket
 implementation that is instantiated.  This way, the application can be
 written generically and different socket implementations can be swapped out
 by specifying the TypeId.
@@ -138,7 +138,7 @@ NSC requires the packages mercurial, flex, and bison.
 
 @subsection Configuring and Downloading
 
-NSC is disbled by default and must be explicitly configured in.  To try
+NSC is disabled by default and must be explicitly configured in.  To try
 this, type
 @verbatim
 ./waf configure --enable-nsc
@@ -210,7 +210,7 @@ to be set:
 The key line is the @code{SetNscStack}.  This tells the InternetStack
 helper to aggregate instances of NSC TCP instead of native ns-3 TCP
 to the remaining nodes.  It is important that this function be called
-@strong{before} callling the @code{Install()} function, as shown above.
+@strong{before} calling the @code{Install()} function, as shown above.
 
 Which stacks are available to use?  Presently, the focus has been on
 Linux 2.6.18 and Linux 2.6.26 stacks for ns-3.  To see which stacks

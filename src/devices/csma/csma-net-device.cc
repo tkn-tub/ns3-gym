@@ -839,12 +839,8 @@ CsmaNetDevice::GetQueue (void) const
 CsmaNetDevice::NotifyLinkUp (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
-
   m_linkUp = true;
-  if (m_linkChangeCallback.IsNull () == false)
-    {
-      m_linkChangeCallback ();
-    }
+  m_linkChangeCallbacks ();
 }
 
   void 
@@ -890,10 +886,10 @@ CsmaNetDevice::IsLinkUp (void) const
 }
 
   void 
-CsmaNetDevice::SetLinkChangeCallback (Callback<void> callback)
+CsmaNetDevice::AddLinkChangeCallback (Callback<void> callback)
 {
   NS_LOG_FUNCTION (&callback);
-  m_linkChangeCallback = callback;
+  m_linkChangeCallbacks.ConnectWithoutContext (callback);
 }
 
   bool 

@@ -61,6 +61,11 @@ type_annotations = {
         'allow_subclassing': 'true', # needed so that AddValue is able to set attributes on the object
         },
 
+    '::ns3::NscTcpL4Protocol': {
+        'ignore': 'true', # this class is implementation detail
+        },
+
+
     'ns3::RandomVariable::RandomVariable(ns3::RandomVariableBase const & variable) [constructor]': {
         'ignore': None,
         },

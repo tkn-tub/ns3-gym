@@ -77,7 +77,7 @@ class StackHelper
       routing = routingHelper.GetStaticRouting (ipv6);
 
       std::cout << "Routing table of " << n << " : " << std::endl;
-      std::cout << "Destination\t\t\t\t" << "Gateway\t\t\t\t\t" << "Interface\t" << std::endl;
+      std::cout << "Destination\t\t\t\t" << "Gateway\t\t\t\t\t" << "Interface\t" << "Prefix to use" << std::endl;
 
       nbRoutes = routing->GetNRoutes ();
       for (uint32_t i = 0 ; i < nbRoutes ; i++)
@@ -85,7 +85,9 @@ class StackHelper
         route = routing->GetRoute (i);
         std::cout << route.GetDest () << "\t"
           << route.GetGateway () << "\t"
-          << route.GetInterface () << "\t" << std::endl;
+          << route.GetInterface () << "\t"
+          << route.GetPrefixToUse () << "\t"
+          << std::endl;
       }
     }
 };
@@ -157,8 +159,8 @@ int main (int argc, char** argv)
   iic2.Add (iicr2);
 
   /* radvd configuration */
-  Ipv6Address prefix ("2001:1::0"); /* create the prefix */
-  Ipv6Address prefixBis ("2001:ABCD::0"); /* create the prefix */
+  Ipv6Address prefix ("2001:ABCD::0"); /* create the prefix */
+  Ipv6Address prefixBis ("2001:1::0"); /* create the prefix */
   Ipv6Address prefix2 ("2001:2::0"); /* create the prefix */
   uint32_t indexRouter = iic1.GetInterfaceIndex (1); /* R interface (n0 - R) */
   uint32_t indexRouter2 = iic2.GetInterfaceIndex (1); /* R interface (R - n1) */

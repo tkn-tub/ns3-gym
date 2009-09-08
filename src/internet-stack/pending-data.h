@@ -48,7 +48,6 @@ public:
   virtual ~PendingData ();     // Destructor
   uint32_t Size () const { return size;}
   // Serialization
-  uint32_t SSize ();                   // Size needed for serialization
   uint8_t*  Serialize (uint8_t*, uint32_t&); // Serialize to a buffer
   uint8_t*  Construct (uint8_t*, uint32_t&); // Construct from buffer
   virtual void Clear ();// Remove all associated data

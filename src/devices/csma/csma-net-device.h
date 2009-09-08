@@ -306,7 +306,7 @@ public:
   virtual void SetAddress (Address address);
   virtual Address GetAddress (void) const;
   virtual bool IsLinkUp (void) const;
-  virtual void SetLinkChangeCallback (Callback<void> callback);
+  virtual void AddLinkChangeCallback (Callback<void> callback);
   virtual bool IsBroadcast (void) const;
   virtual Address GetBroadcast (void) const;
   virtual bool IsMulticast (void) const;
@@ -806,9 +806,9 @@ private:
   bool m_linkUp;
 
   /**
-   * Callback to fire if the link changes state (up or down).
+   * List of callbacks to fire if the link changes state (up or down).
    */
-  Callback<void> m_linkChangeCallback;
+  TracedCallback<> m_linkChangeCallbacks;
 
   static const uint16_t DEFAULT_FRAME_SIZE = 1518;
   static const uint16_t ETHERNET_OVERHEAD = 18;

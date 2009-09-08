@@ -48,6 +48,10 @@ class Ipv4Interface;
  */
 class ArpCache : public Object
 {
+private:
+  ArpCache (ArpCache const &);
+  ArpCache& operator= (ArpCache const &);
+  
 public:
   static TypeId GetTypeId (void);
   class Entry;

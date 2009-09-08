@@ -90,6 +90,9 @@ protected:
   virtual void DoDispose (void);
   virtual void NotifyNewAggregate ();
 private:
+  NscTcpL4Protocol (NscTcpL4Protocol const &);
+  NscTcpL4Protocol& operator= (NscTcpL4Protocol const &);
+
   // NSC callbacks.
   // NSC invokes these hooks to interact with the simulator.
   // In any case, these methods are only to be called by NSC.

@@ -28,7 +28,7 @@ ns-3 random numbers are provided via instances of @code{class RandomVariable}.
 @itemize @bullet
 @item @strong{by default, ns-3 simulations use a fixed seed}; if there is any 
 randomness in the simulation, each run of the program will yield identical
-results uniess the seed and/or run number is changed.  
+results unless the seed and/or run number is changed.  
 @itemize @bullet
 @item @strong{in ns-3.3 and earlier, ns-3 simulations used a random seed by 
 default; this marks a change in policy starting with ns-3.4}
@@ -81,7 +81,7 @@ RNG, then
 the first stream might use the first N/2 values and the second
 stream might produce the second N/2 values.  An important property
 here is that the two streams are uncorrelated.  Likewise, each
-stream can be partitioned disjointly to a number of 
+stream can be partitioned disjointedly to a number of 
 uncorrelated @emph{substreams}.  The underlying RNG hopefully
 produces a pseudo-random sequence of numbers with a very long
 cycle length, and partitions this into streams and substreams in an 

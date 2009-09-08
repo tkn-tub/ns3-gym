@@ -515,7 +515,7 @@ The file is called @code{tutorial-linear-dumbbell.cc} and is located in the
 create this network, so we will just quickly go over the main sections of the
 script.
 
-The first section creates a CSMA lan that will become the left side of the
+The first section creates a CSMA LAN that will become the left side of the
 dumbbell network.  This code should be very familiar since we used the same
 process to create our first example.
 
@@ -549,7 +549,7 @@ process to create our first example.
   CsmaIpv4Topology::AddIpv4Address (n3, nd3, "10.1.1.4", "255.255.255.0");
 @end verbatim
 
-The code to generate the CSMA lan on the right side is similar; only the names
+The code to generate the CSMA LAN on the right side is similar; only the names
 have been changed.
  
 @verbatim
@@ -582,9 +582,9 @@ have been changed.
   CsmaIpv4Topology::AddIpv4Address (n7, nd7, "10.1.2.4", "255.255.255.0");
 @end verbatim
 
-Next, we create a point to point link to connect the two lans.  We connect
-the point-to-point channel between nodes three (on the left lan) and four
-(on the right lan).  You should recoginze this as substantially similar to
+Next, we create a point to point link to connect the two LANs.  We connect
+the point-to-point channel between nodes three (on the left LAN) and four
+(on the right LAN).  You should recognize this as substantially similar to
 the link setup from the @code{point-to-point} example.
 
 @verbatim
@@ -599,7 +599,7 @@ the link setup from the @code{point-to-point} example.
 @end verbatim
 
 Then we configure data flows.  We create four echo clients that send UDP 
-packets from the left side lan to servers created on the right side lan.
+packets from the left side LAN to servers created on the right side LAN.
 Notice that we send 100 packets with an inter-packet gap of ten milliseconds
 instead of the single packet we have previously used.  This data rate is
 sufficient to saturate the point-to-point link and will cause packets to be
@@ -710,7 +710,7 @@ object-oriented way.  Since object-oriented design is somewhat of a black art
 to some people, we'll take some time here and outline a simple methodology 
 you can follow.
 
-@section Object Design 101 --- Class Ipv4BusNetwork
+@section Object Design 101 --- Class IPv4BusNetwork
 If you are a master of object oriented design, feel free to skip or skim this
 section, in which we derive a simplistic but fully operational bus network 
 class.
@@ -735,7 +735,7 @@ give you a starting point for required classes and member variables.
 Immediately we can notice that at the highest level we are talking about the
 noun @emph{network}.  This probably won't surprise you.  We also have an 
 adjective that modifies the noun --- @emph{bus}.  This should lead us to our 
-first class defintion.  Usually class names are constructed in the same way
+first class definition.  Usually class names are constructed in the same way
 as an English language sentence would be spoken.  For example, one would speak
 of a @emph{bus network} in conversation, so we would normally create a
 @code{class BusNetwork} to represent it.  
@@ -1005,7 +1005,7 @@ For your convenience, we reproduce the entire bus network implementation below:
 
 @section Using Ipv4BusNetwork
 If all you ever want to do with a bus network can be captured in a topology
-with four nodes on the bus, the preceeding section may seem like a colossal
+with four nodes on the bus, the preceding section may seem like a colossal
 waste of time.  This is probably not the case, though.  Now that we have a
 relatively abstract bus class, we can create bus networks with 4, 40 or 4000
 nodes with no additional effort.
@@ -1044,7 +1044,7 @@ by all of the nodes in the simulation, so this can add up quickly.
 
 This concludes the first part of the tutorial.  We have focused on
 using the @command{ns-3} system to construct various network topologies and to
-simulate sendng data across the networks; and we've shown you how to use the 
+simulate sending data across the networks; and we've shown you how to use the 
 trace facility to get access to simulation results.
 
 We now encourage you to play with the system a little.  Experiment with what
@@ -1058,7 +1058,7 @@ In the next part of the tutorial we are going to drop down a level and begin
 examining the lower levels of the system in more detail.  We are going to
 explain how to change the behavior of the system and eventually how to write
 new models and applications.  This is a good time to make sure that you
-thorougly understand what we've gone over so far.
+thoroughly understand what we've gone over so far.
 
 @c ========================================================================
 @c Object Model
@@ -1365,7 +1365,7 @@ its aggregation via the method @code{GetObject}.
 Technically, the class named @code{Object} is simply a base class that you
 will inherit from if you want your @code{Objects} to support aggregation and
 discovery.  Many systems have a base class that implements common 
-functionality and these base classes are typically called somthing like 
+functionality and these base classes are typically called something like 
 Object.  The @command{ns-3} version of this base class relates primarily to
 @code{Object} aggregation and discovery, although it does also provide methods
 to help with intrusive reference counting and tracing as well.
@@ -1383,7 +1383,7 @@ rather than with the form of the class declaration.
 For those of you unfamiliar with Microsoft COM, CORBA or ORBit, this might 
 sound obvious.  For those of with such a background, the point we are making 
 is that there is no such thing in @command{ns-3} as a separate Interface
-declaration, no such thing as an Interface Definiition Language, no such thing
+declaration, no such thing as an Interface Definition Language, no such thing
 as a UUID or GUID, etc.  In @command{ns-3} we just work with C++ objects that
 may be given some very useful abilities by inheriting from the @command{ns-3}
 base class @code{Object}.  @command{Ns-3} @code{Objects} are not required to
@@ -1422,7 +1422,7 @@ mentioned that the @code{Node} class acts as a container.  In fact, the
 @code{Object}.  So, when the @code{Node} object is created it is really an 
 aggregation of one @code{Object} and you can call @code{AggregateObject} or
 @code{GetObject} on the resulting @code{Node} object.  Along with being an
-aggregation, the @code{Node} class also describes a public interface.  THis
+aggregation, the @code{Node} class also describes a public interface.  This
 public interface (API) is declared just as any C++ object is declared, via its
 class methods as specified in the inheritance tree.  For those steeped in 
 COM or CORBA, this is where the concept of Interface works in @command{ns-3}.
@@ -1435,7 +1435,7 @@ The figure below shows how an @code{Object} could be illustrated in detail.
 The line with the circle at the top of the diagram represents the appearance 
 of the @code{Object} API to the external world.  This circle and line are 
 together called a lollipop because of its superficial similarity to a kind of
-childs candy.  
+child's candy.  
 
 @sp 1
 @center @image{oneobj,,,,png}
@@ -1514,7 +1514,7 @@ the @code{Object} (and container/aggregation) @code{A}.
   a->AggregateObject (c);
 @end verbatim
 
-Thats all there is to it.  Now that you have those connectors snapped
+That's all there is to it.  Now that you have those connectors snapped
 together, you can ask each of the @code{Objects} in the aggregation for any of
 the other @code{Objects} in the aggregation.  Lets look at a simple example:
 
@@ -1527,11 +1527,11 @@ The left hand side of this assignment declares a smart pointer to the class
 @code{B} to help with memory management of the returned @code{Object} pointer.
 You should be very familiar with smart pointers at this stage of the tutorial.
 
-The right hand side illustrates how @code{GetObject} is acutally used.  
-The method @code{GetObject} is templated.  The assocated template parameter 
+The right hand side illustrates how @code{GetObject} is actually used.  
+The method @code{GetObject} is templated.  The associated template parameter 
 (between the brackets) specifies the @emph{class} that is being requested.
 This is important.  Since it is the class type that specifies the search
-criteron, there can be only one instance of a particular class present in an
+criterion, there can be only one instance of a particular class present in an
 aggregation.  Looking back a little, although the parameter to
 @code{AggregateObject} appears to be a vanilla C++ object (@code{b} or @code{c}
 above), it actually represents (is an instance of) a class that has an
@@ -1648,7 +1648,7 @@ If you can get to @code{Object B} from @code{Object A}, and you can get to
 @cindex TypeId
 @cindex GetTypeId
 The final piece of this puzzle is the @code{TypeId}.  Recall that the
-declaration our eample object above included the following code
+declaration our example object above included the following code
 
 @verbatim
   static ns3::TypeId GetTypeId (void)
@@ -1724,7 +1724,7 @@ named @code{A::tid} since it is inside the class declaration for
 @code{class A}, and is initialized by a call to the constructor for the class
 @code{TypeId}.  The constructor for @code{TypeId} takes a @code{std::string}
 that can be used to locate the type information for your class.  We usually
-privide the class name as the string.
+provide the class name as the string.
 
 Hopefully, this much of the declaration is now clear:
 
@@ -1787,7 +1787,7 @@ constructor to be used when an instance of your class is created using
   AddConstructor<A> ();
 @end verbatim
 
-You can interpret this as explaining to the @command{ns-3} object ssytem that
+You can interpret this as explaining to the @command{ns-3} object system that
 you have a constructor named @code{A::A} which takes no parameters.  You are
 saying that this constructor should be used when @code{CreateObject} is called
 with no parameters.
@@ -2077,10 +2077,10 @@ associated with it.
 
 @emph{Remember:  Object types do not identify objects.}
 
-@subsection Dont use GetObject to Check Your Own Type.
+@subsection Don't use GetObject to Check Your Own Type.
 @cindex GetObject
 It is tempting to use @code{GetObject} as a form of runtime type
-information.  Dont do it.  You have no control over what @emph{other}
+information.  Don't do it.  You have no control over what @emph{other}
 object may be added to your aggregation.  Someone else may have
 appropriated (reimplemented) your type and aggregated themselves onto the
 aggregation.

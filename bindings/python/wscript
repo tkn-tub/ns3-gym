@@ -15,7 +15,7 @@ import Build
 import Utils
 
 ## https://launchpad.net/pybindgen/
-REQUIRED_PYBINDGEN_VERSION = (0, 10, 0, 640)
+REQUIRED_PYBINDGEN_VERSION = (0, 11, 0, 697)
 REQUIRED_PYGCCXML_VERSION = (0, 9, 5)
 
 
@@ -181,6 +181,7 @@ prio_headers = {
         "propagation-delay-model.h",
         "propagation-loss-model.h",
         "net-device.h",
+        "ipv4-interface.h",
         )
      }
 

@@ -44,6 +44,9 @@ class Ipv6MulticastRoutingTableEntry;
 /**
  * \ingroup routing
  * \defgroup ipv6StaticRouting Ipv6StaticRouting
+ */
+/**
+ * \ingroup ipv6StaticRouting
  * \class Ipv6StaticRouting
  * \brief Static routing protocol for IP version 6 stack.
  * \see Ipv6RoutingProtocol
@@ -74,15 +77,17 @@ class Ipv6StaticRouting : public Ipv6RoutingProtocol
      * \param nextHop next hop address to route the packet
      * \param interface interface index
      * \param prefixToUse prefix that should be used for source address for this destination
+     * \param metric metric of route in case of multiple routes to same destination
      */
-    void AddHostRouteTo (Ipv6Address dest, Ipv6Address nextHop, uint32_t interface, Ipv6Address prefixToUse = Ipv6Address ("::"));
+    void AddHostRouteTo (Ipv6Address dest, Ipv6Address nextHop, uint32_t interface, Ipv6Address prefixToUse = Ipv6Address ("::"), uint32_t metric = 0);
 
     /**
      * \brief Add route to host.
      * \param dest destination address.
      * \param interface interface index
+     * \param metric metric of route in case of multiple routes to same destination
      */
-    void AddHostRouteTo (Ipv6Address dest, uint32_t interface);
+    void AddHostRouteTo (Ipv6Address dest, uint32_t interface, uint32_t metric = 0);
 
     /**
      * \brief Add route to network.
@@ -90,8 +95,9 @@ class Ipv6StaticRouting : public Ipv6RoutingProtocol
      * \param networkPrefix network prefix*
      * \param nextHop next hop address to route the packet
      * \param interface interface index
+     * \param metric metric of route in case of multiple routes to same destination
      */
-    void AddNetworkRouteTo (Ipv6Address network, Ipv6Prefix networkPrefix, Ipv6Address nextHop, uint32_t interface);
+    void AddNetworkRouteTo (Ipv6Address network, Ipv6Prefix networkPrefix, Ipv6Address nextHop, uint32_t interface, uint32_t metric = 0);
 
     /**
      * \brief Add route to network.
@@ -100,29 +106,27 @@ class Ipv6StaticRouting : public Ipv6RoutingProtocol
      * \param nextHop next hop address to route the packet
      * \param interface interface index
      * \param prefixToUse prefix that should be used for source address for this destination
+     * \param metric metric of route in case of multiple routes to same destination
      */
-    void AddNetworkRouteTo (Ipv6Address network, Ipv6Prefix networkPrefix, Ipv6Address nextHop, uint32_t interface, Ipv6Address prefixToUse);
+    void AddNetworkRouteTo (Ipv6Address network, Ipv6Prefix networkPrefix, Ipv6Address nextHop, uint32_t interface, Ipv6Address prefixToUse, uint32_t metric = 0);
 
     /**
      * \brief Add route to network.
      * \param network network address
      * \param networkPrefix network prefix
      * \param interface interface index
+     * \param metric metric of route in case of multiple routes to same destination
      */
-    void AddNetworkRouteTo (Ipv6Address network, Ipv6Prefix networkPrefix, uint32_t interface);
+    void AddNetworkRouteTo (Ipv6Address network, Ipv6Prefix networkPrefix, uint32_t interface, uint32_t metric = 0);
 
     /**
      * \brief Set the default route.
      * \param nextHop next hop address to route the packet
      * \param interface interface index
      * \param prefixToUse prefix to use (i.e for multihoming)
+     * \param metric metric of route in case of multiple routes to same destination
      */
-    void SetDefaultRoute (Ipv6Address nextHop, uint32_t interface, Ipv6Address prefixToUse = Ipv6Address ("::"));
-
-    /**
-     * \brief Remove the default route.
-     */
-    void RemoveDefaultRoute ();
+    void SetDefaultRoute (Ipv6Address nextHop, uint32_t interface, Ipv6Address prefixToUse = Ipv6Address ("::"), uint32_t metric = 0);
 
     /**
      * \brief Get the number or entries in the routing table.
@@ -132,6 +136,8 @@ class Ipv6StaticRouting : public Ipv6RoutingProtocol
 
     /**
      * \brief Get the default route.
+     *
+     * If multiple default routes exist, the one with lowest metric is returned.
      * \return default Ipv6Route
      */
     Ipv6RoutingTableEntry GetDefaultRoute ();
@@ -142,6 +148,13 @@ class Ipv6StaticRouting : public Ipv6RoutingProtocol
      * \return the route whose index is i
      */
     Ipv6RoutingTableEntry GetRoute (uint32_t i);
+
+   /**
+    * \brief Get a metric for route from the static unicast routing table.
+    * \param index The index (into the routing table) of the route to retrieve.  
+    * \return If route is set, the metric is returned. If not, an infinity metric (0xffffffff) is returned
+    */
+    uint32_t GetMetric (uint32_t index);
 
     /**
      * \brief Remove a route from the routing table.
@@ -154,8 +167,9 @@ class Ipv6StaticRouting : public Ipv6RoutingProtocol
      * \param network IPv6 network
      * \param prefix IPv6 prefix
      * \param ifIndex interface index
+     * \param prefixToUse IPv6 prefix to use with this route (multihoming)
      */
-    void RemoveRoute (Ipv6Address network, Ipv6Prefix prefix, uint32_t ifIndex);
+    void RemoveRoute (Ipv6Address network, Ipv6Prefix prefix, uint32_t ifIndex, Ipv6Address prefixToUse);
 
     /**
      * \brief Add a multicast route for a given multicast source and group.
@@ -185,12 +199,6 @@ class Ipv6StaticRouting : public Ipv6RoutingProtocol
      * \return the route whose index is i
      */
     Ipv6MulticastRoutingTableEntry GetMulticastRoute (uint32_t i) const;
-
-    /**
-     * \brief Get the default multicast IPv6 route.
-     * \return default Ipv6MulticastRoute
-     */
-    Ipv6MulticastRoutingTableEntry GetDefaultMulticastRoute () const;
 
     /**
      * \brief Remove a static multicast route.
@@ -225,7 +233,7 @@ class Ipv6StaticRouting : public Ipv6RoutingProtocol
     virtual void NotifyAddAddress (uint32_t interface, Ipv6InterfaceAddress address);
     virtual void NotifyRemoveAddress (uint32_t interface, Ipv6InterfaceAddress address);
     virtual void NotifyAddRoute (Ipv6Address dst, Ipv6Prefix mask, Ipv6Address nextHop, uint32_t interface, Ipv6Address prefixToUse = Ipv6Address::GetZero ());
-    virtual void NotifyRemoveRoute (Ipv6Address dst, Ipv6Prefix mask, Ipv6Address nextHop, uint32_t interface);
+    virtual void NotifyRemoveRoute (Ipv6Address dst, Ipv6Prefix mask, Ipv6Address nextHop, uint32_t interface, Ipv6Address prefixToUse = Ipv6Address::GetZero ());
     virtual void SetIpv6 (Ptr<Ipv6> ipv6);
 
   protected:
@@ -235,12 +243,9 @@ class Ipv6StaticRouting : public Ipv6RoutingProtocol
     void DoDispose ();
 
   private:
-    typedef std::list<Ipv6RoutingTableEntry *> HostRoutes;
-    typedef std::list<Ipv6RoutingTableEntry *>::const_iterator HostRoutesCI;
-    typedef std::list<Ipv6RoutingTableEntry *>::iterator HostRoutesI;
-    typedef std::list<Ipv6RoutingTableEntry *> NetworkRoutes;
-    typedef std::list<Ipv6RoutingTableEntry *>::const_iterator NetworkRoutesCI;
-    typedef std::list<Ipv6RoutingTableEntry *>::iterator NetworkRoutesI;
+    typedef std::list<std::pair <Ipv6RoutingTableEntry *, uint32_t> > NetworkRoutes;
+    typedef std::list<std::pair <Ipv6RoutingTableEntry *, uint32_t> >::const_iterator NetworkRoutesCI;
+    typedef std::list<std::pair <Ipv6RoutingTableEntry *, uint32_t> >::iterator NetworkRoutesI;
 
     typedef std::list<Ipv6MulticastRoutingTableEntry *> MulticastRoutes;
     typedef std::list<Ipv6MulticastRoutingTableEntry *>::const_iterator MulticastRoutesCI;
@@ -272,19 +277,9 @@ class Ipv6StaticRouting : public Ipv6RoutingProtocol
     Ipv6Address SourceAddressSelection (uint32_t interface, Ipv6Address dest);
 
     /**
-     * \brief the forwarding table for hosts.
-     */
-    HostRoutes m_hostRoutes;
-
-    /**
      * \brief the forwarding table for network.
      */
     NetworkRoutes m_networkRoutes;
-
-    /**
-     * \brief the default route.
-     */
-    Ipv6RoutingTableEntry *m_defaultRoute;
 
     /**
      * \brief the forwarding table for multicast.

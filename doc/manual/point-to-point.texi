@@ -35,7 +35,7 @@ The PointToPointNetDevice provides following Attributes:
 @itemize @bullet
 @item Address:  The ns3::Mac48Address of the device (if desired);
 @item DataRate:  The data rate (ns3::DataRate) of the device;
-@item TxQueue:  The trasmit queue (ns3::Queue) used by the device;
+@item TxQueue:  The transmit queue (ns3::Queue) used by the device;
 @item InterframeGap:  The optional ns3::Time to wait between "frames";
 @item Rx:  A trace source for received packets;
 @item Drop:  A trace source for dropped packets.
@@ -78,7 +78,7 @@ the channel.
 
 The PointToPoint net devices and channels are typically created and configured using
 the associated @code{PointToPointHelper} object.  The various ns3 device helpers 
-generally work in a simlar way, and their use is seen in many of our example
+generally work in a similar way, and their use is seen in many of our example
 programs and is also covered in the ns-3 tutorial.
 
 The conceptual model of interest is that of a bare computer ``husk'' into which 
@@ -93,7 +93,7 @@ helper.  You just ask this helper to create as many computers (we call them
 
 Once you have your nodes, you need to instantiate a @code{PointToPointHelper} and set
 any attributes you may want to change.  Note that since this is a point-to-point 
-(as compared to a point-to-mulipoint) there may only be two nodes with associated 
+(as compared to a point-to-multipoint) there may only be two nodes with associated 
 net devices connected by a PointToPointChannel.
 
 @verbatim

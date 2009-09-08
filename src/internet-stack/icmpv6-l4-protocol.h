@@ -226,7 +226,6 @@ class Icmpv6L4Protocol : public Ipv6L4Protocol
      * \param id id of the packet
      * \param seq sequence number
      * \param data auxiliary data
-     * \todo Change data to be a char[], change it too in icmpv6-header.
      */
     void SendEchoReply (Ipv6Address src, Ipv6Address dst, uint16_t id, uint16_t seq, Ptr<Packet> data);
 
@@ -350,7 +349,19 @@ class Icmpv6L4Protocol : public Ipv6L4Protocol
     static void FunctionDadTimeout (Ptr<Icmpv6L4Protocol> icmpv6, Ipv6Interface* interface, Ipv6Address addr);
 
     /**
+     * \brief Lookup in the ND cache for the IPv6 address
+     * \param dst destination address
+     * \param device device
+     * \param cache the neighbor cache
+     * \param hardwareDestination hardware address
+     * \note Unlike other Lookup method, it does not send NS request!
+     */
+    bool Lookup (Ipv6Address dst, Ptr<NetDevice> device, Ptr<NdiscCache> cache, Address* hardwareDestination);
+
+    /**
      * \brief Lookup in the ND cache for the IPv6 address (similar as ARP protocol).
+     *
+     * It also send NS request to target and store the waiting packet.
      * \param p the packet
      * \param dst destination address
      * \param device device

@@ -35,7 +35,7 @@ stacks attached to a simulation node to communicate over real hardware.
 
 We expect the primary use for this configuration will be to generate repeatable
 experimental results in a real-world network environment that includes all of 
-the ns-3 tracing, loging, visualization and statistics gathering tools.
+the ns-3 tracing, logging, visualization and statistics gathering tools.
 
 In what can be viewed as essentially an inverse configuration, we allow ``real'' 
 machines running native applications and protocol stacks to integrate with
@@ -188,7 +188,7 @@ here for one side).
   ed->SetAddress ("00:00:00:00:00:02");
 @end verbatim
 
-And then the IP address of the client or serveris set in the usual way using
+And then the IP address of the client or server is set in the usual way using
 helpers.
 
 @verbatim

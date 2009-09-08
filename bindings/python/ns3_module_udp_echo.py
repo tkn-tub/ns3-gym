@@ -66,26 +66,22 @@ def register_methods(root_module):
 def register_Ns3UdpEchoClient_methods(root_module, cls):
     ## udp-echo-client.h: ns3::UdpEchoClient::UdpEchoClient(ns3::UdpEchoClient const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::UdpEchoClient const &', 'arg0')])
-    ## udp-echo-client.h: static ns3::TypeId ns3::UdpEchoClient::GetTypeId() [member function]
-    cls.add_method('GetTypeId', 
-                   'ns3::TypeId', 
-                   [], 
-                   is_static=True)
     ## udp-echo-client.h: ns3::UdpEchoClient::UdpEchoClient() [constructor]
     cls.add_constructor([])
-    ## udp-echo-client.h: void ns3::UdpEchoClient::SetRemote(ns3::Ipv4Address ip, uint16_t port) [member function]
-    cls.add_method('SetRemote', 
-                   'void', 
-                   [param('ns3::Ipv4Address', 'ip'), param('uint16_t', 'port')])
-    ## udp-echo-client.h: void ns3::UdpEchoClient::SetDataSize(uint32_t dataSize) [member function]
-    cls.add_method('SetDataSize', 
-                   'void', 
-                   [param('uint32_t', 'dataSize')])
     ## udp-echo-client.h: uint32_t ns3::UdpEchoClient::GetDataSize() const [member function]
     cls.add_method('GetDataSize', 
                    'uint32_t', 
                    [], 
                    is_const=True)
+    ## udp-echo-client.h: static ns3::TypeId ns3::UdpEchoClient::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## udp-echo-client.h: void ns3::UdpEchoClient::SetDataSize(uint32_t dataSize) [member function]
+    cls.add_method('SetDataSize', 
+                   'void', 
+                   [param('uint32_t', 'dataSize')])
     ## udp-echo-client.h: void ns3::UdpEchoClient::SetFill(std::string fill) [member function]
     cls.add_method('SetFill', 
                    'void', 
@@ -98,6 +94,10 @@ def register_Ns3UdpEchoClient_methods(root_module, cls):
     cls.add_method('SetFill', 
                    'void', 
                    [param('uint8_t *', 'fill'), param('uint32_t', 'fillSize'), param('uint32_t', 'dataSize')])
+    ## udp-echo-client.h: void ns3::UdpEchoClient::SetRemote(ns3::Ipv4Address ip, uint16_t port) [member function]
+    cls.add_method('SetRemote', 
+                   'void', 
+                   [param('ns3::Ipv4Address', 'ip'), param('uint16_t', 'port')])
     ## udp-echo-client.h: void ns3::UdpEchoClient::DoDispose() [member function]
     cls.add_method('DoDispose', 
                    'void', 
@@ -118,13 +118,13 @@ def register_Ns3UdpEchoClient_methods(root_module, cls):
 def register_Ns3UdpEchoServer_methods(root_module, cls):
     ## udp-echo-server.h: ns3::UdpEchoServer::UdpEchoServer(ns3::UdpEchoServer const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::UdpEchoServer const &', 'arg0')])
+    ## udp-echo-server.h: ns3::UdpEchoServer::UdpEchoServer() [constructor]
+    cls.add_constructor([])
     ## udp-echo-server.h: static ns3::TypeId ns3::UdpEchoServer::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
-    ## udp-echo-server.h: ns3::UdpEchoServer::UdpEchoServer() [constructor]
-    cls.add_constructor([])
     ## udp-echo-server.h: void ns3::UdpEchoServer::DoDispose() [member function]
     cls.add_method('DoDispose', 
                    'void', 

@@ -147,6 +147,20 @@ public:
                           uint32_t interface);
 
 /**
+ * \brief Add an external route to the global routing table.
+ *
+ * \param network The Ipv4Address network for this route.
+ * \param networkMask The Ipv4Mask to extract the network.
+ * \param nextHop The next hop Ipv4Address
+ * \param interface The network interface index used to send packets to the
+ * destination.
+ */
+  void AddASExternalRouteTo (Ipv4Address network,
+                             Ipv4Mask networkMask,
+                             Ipv4Address nextHop,
+                             uint32_t interface);
+
+/**
  * \brief Get the number of individual unicast routes that have been added
  * to the routing table.
  *
@@ -204,12 +218,16 @@ private:
   typedef std::list<Ipv4RoutingTableEntry *> NetworkRoutes;
   typedef std::list<Ipv4RoutingTableEntry *>::const_iterator NetworkRoutesCI;
   typedef std::list<Ipv4RoutingTableEntry *>::iterator NetworkRoutesI;
+  typedef std::list<Ipv4RoutingTableEntry *> ASExternalRoutes;
+  typedef std::list<Ipv4RoutingTableEntry *>::const_iterator ASExternalRoutesCI;
+  typedef std::list<Ipv4RoutingTableEntry *>::iterator ASExternalRoutesI;
 
   Ptr<Ipv4Route> LookupGlobal (Ipv4Address dest);
 
   HostRoutes m_hostRoutes;
   NetworkRoutes m_networkRoutes;
-
+  ASExternalRoutes m_ASexternalRoutes; // External routes imported
+  
   Ptr<Ipv4> m_ipv4;
 };
 

@@ -1026,7 +1026,7 @@ TapBridge::IsLinkUp (void) const
 }
 
 void 
-TapBridge::SetLinkChangeCallback (Callback<void> callback)
+TapBridge::AddLinkChangeCallback (Callback<void> callback)
 {
   NS_LOG_FUNCTION_NOARGS ();
 }
