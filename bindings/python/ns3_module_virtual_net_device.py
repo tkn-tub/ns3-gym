@@ -65,6 +65,11 @@ def register_Ns3VirtualNetDevice_methods(root_module, cls):
     cls.add_constructor([param('ns3::VirtualNetDevice const &', 'arg0')])
     ## virtual-net-device.h: ns3::VirtualNetDevice::VirtualNetDevice() [constructor]
     cls.add_constructor([])
+    ## virtual-net-device.h: void ns3::VirtualNetDevice::AddLinkChangeCallback(ns3::Callback<void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> callback) [member function]
+    cls.add_method('AddLinkChangeCallback', 
+                   'void', 
+                   [param('ns3::Callback< void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'callback')], 
+                   is_virtual=True)
     ## virtual-net-device.h: ns3::Address ns3::VirtualNetDevice::GetAddress() const [member function]
     cls.add_method('GetAddress', 
                    'ns3::Address', 
@@ -168,11 +173,6 @@ def register_Ns3VirtualNetDevice_methods(root_module, cls):
     cls.add_method('SetIsPointToPoint', 
                    'void', 
                    [param('bool', 'isPointToPoint')])
-    ## virtual-net-device.h: void ns3::VirtualNetDevice::SetLinkChangeCallback(ns3::Callback<void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> callback) [member function]
-    cls.add_method('SetLinkChangeCallback', 
-                   'void', 
-                   [param('ns3::Callback< void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'callback')], 
-                   is_virtual=True)
     ## virtual-net-device.h: bool ns3::VirtualNetDevice::SetMtu(uint16_t const mtu) [member function]
     cls.add_method('SetMtu', 
                    'bool', 

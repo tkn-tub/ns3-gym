@@ -65,6 +65,11 @@ def register_Ns3EmuNetDevice_methods(root_module, cls):
     cls.add_constructor([param('ns3::EmuNetDevice const &', 'arg0')])
     ## emu-net-device.h: ns3::EmuNetDevice::EmuNetDevice() [constructor]
     cls.add_constructor([])
+    ## emu-net-device.h: void ns3::EmuNetDevice::AddLinkChangeCallback(ns3::Callback<void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> callback) [member function]
+    cls.add_method('AddLinkChangeCallback', 
+                   'void', 
+                   [param('ns3::Callback< void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'callback')], 
+                   is_virtual=True)
     ## emu-net-device.h: ns3::Address ns3::EmuNetDevice::GetAddress() const [member function]
     cls.add_method('GetAddress', 
                    'ns3::Address', 
@@ -163,11 +168,6 @@ def register_Ns3EmuNetDevice_methods(root_module, cls):
     cls.add_method('SetIfIndex', 
                    'void', 
                    [param('uint32_t const', 'index')], 
-                   is_virtual=True)
-    ## emu-net-device.h: void ns3::EmuNetDevice::SetLinkChangeCallback(ns3::Callback<void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> callback) [member function]
-    cls.add_method('SetLinkChangeCallback', 
-                   'void', 
-                   [param('ns3::Callback< void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'callback')], 
                    is_virtual=True)
     ## emu-net-device.h: bool ns3::EmuNetDevice::SetMtu(uint16_t const mtu) [member function]
     cls.add_method('SetMtu', 

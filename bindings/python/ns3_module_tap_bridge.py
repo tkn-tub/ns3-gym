@@ -67,6 +67,11 @@ def register_Ns3TapBridge_methods(root_module, cls):
     cls.add_constructor([param('ns3::TapBridge const &', 'arg0')])
     ## tap-bridge.h: ns3::TapBridge::TapBridge() [constructor]
     cls.add_constructor([])
+    ## tap-bridge.h: void ns3::TapBridge::AddLinkChangeCallback(ns3::Callback<void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> callback) [member function]
+    cls.add_method('AddLinkChangeCallback', 
+                   'void', 
+                   [param('ns3::Callback< void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'callback')], 
+                   is_virtual=True)
     ## tap-bridge.h: ns3::Address ns3::TapBridge::GetAddress() const [member function]
     cls.add_method('GetAddress', 
                    'ns3::Address', 
@@ -173,11 +178,6 @@ def register_Ns3TapBridge_methods(root_module, cls):
     cls.add_method('SetIfIndex', 
                    'void', 
                    [param('uint32_t const', 'index')], 
-                   is_virtual=True)
-    ## tap-bridge.h: void ns3::TapBridge::SetLinkChangeCallback(ns3::Callback<void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> callback) [member function]
-    cls.add_method('SetLinkChangeCallback', 
-                   'void', 
-                   [param('ns3::Callback< void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'callback')], 
                    is_virtual=True)
     ## tap-bridge.h: void ns3::TapBridge::SetMode(ns3::TapBridge::Mode mode) [member function]
     cls.add_method('SetMode', 

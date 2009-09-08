@@ -143,6 +143,11 @@ def register_Ns3PointToPointNetDevice_methods(root_module, cls):
     cls.add_constructor([param('ns3::PointToPointNetDevice const &', 'arg0')])
     ## point-to-point-net-device.h: ns3::PointToPointNetDevice::PointToPointNetDevice() [constructor]
     cls.add_constructor([])
+    ## point-to-point-net-device.h: void ns3::PointToPointNetDevice::AddLinkChangeCallback(ns3::Callback<void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> callback) [member function]
+    cls.add_method('AddLinkChangeCallback', 
+                   'void', 
+                   [param('ns3::Callback< void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'callback')], 
+                   is_virtual=True)
     ## point-to-point-net-device.h: bool ns3::PointToPointNetDevice::Attach(ns3::Ptr<ns3::PointToPointChannel> ch) [member function]
     cls.add_method('Attach', 
                    'bool', 
@@ -263,11 +268,6 @@ def register_Ns3PointToPointNetDevice_methods(root_module, cls):
     cls.add_method('SetInterframeGap', 
                    'void', 
                    [param('ns3::Time', 't')])
-    ## point-to-point-net-device.h: void ns3::PointToPointNetDevice::SetLinkChangeCallback(ns3::Callback<void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> callback) [member function]
-    cls.add_method('SetLinkChangeCallback', 
-                   'void', 
-                   [param('ns3::Callback< void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'callback')], 
-                   is_virtual=True)
     ## point-to-point-net-device.h: bool ns3::PointToPointNetDevice::SetMtu(uint16_t const mtu) [member function]
     cls.add_method('SetMtu', 
                    'bool', 
