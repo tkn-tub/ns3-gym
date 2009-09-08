@@ -159,8 +159,8 @@ int main (int argc, char** argv)
   iic2.Add (iicr2);
 
   /* radvd configuration */
-  Ipv6Address prefix ("2001:1::0"); /* create the prefix */
-  Ipv6Address prefixBis ("2001:ABCD::0"); /* create the prefix */
+  Ipv6Address prefix ("2001:ABCD::0"); /* create the prefix */
+  Ipv6Address prefixBis ("2001:1::0"); /* create the prefix */
   Ipv6Address prefix2 ("2001:2::0"); /* create the prefix */
   uint32_t indexRouter = iic1.GetInterfaceIndex (1); /* R interface (n0 - R) */
   uint32_t indexRouter2 = iic2.GetInterfaceIndex (1); /* R interface (R - n1) */

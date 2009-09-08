@@ -274,7 +274,6 @@ Ptr<Ipv6Route> Ipv6StaticRouting::LookupStatic (Ipv6Address dst, uint32_t interf
         uint32_t interfaceIdx = route->GetInterface ();
         rtentry = Create<Ipv6Route> ();
 
-
         if (route->GetGateway ().IsAny ())
         {
           rtentry->SetSource (SourceAddressSelection (interfaceIdx, route->GetDest ()));
@@ -295,7 +294,10 @@ Ptr<Ipv6Route> Ipv6StaticRouting::LookupStatic (Ipv6Address dst, uint32_t interf
     }
   }
 
-  NS_LOG_LOGIC ("Matching route via " << rtentry->GetDestination () << " (throught " << rtentry->GetGateway () << ") at the end");
+  if(rtentry)
+  {
+    NS_LOG_LOGIC ("Matching route via " << rtentry->GetDestination () << " (throught " << rtentry->GetGateway () << ") at the end");
+  }
   return rtentry;
 }
 
@@ -652,6 +654,11 @@ void Ipv6StaticRouting::NotifyAddRoute (Ipv6Address dst, Ipv6Prefix mask, Ipv6Ad
   {
     /* this case is mainly used by configuring default route following RA processing,
      * in case of multipe prefix in RA, the first will configured default route
+     */
+
+    /* for the moment, all default route has the same metric
+     * so according to the longest prefix algorithm,
+     * the default route choosen will be the last added
      */
     SetDefaultRoute (nextHop, interface, prefixToUse);
   }
