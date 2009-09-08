@@ -301,6 +301,26 @@ def register_Ns3GlobalRouter_methods(root_module, cls):
                    'bool', 
                    [param('uint32_t', 'n'), param('ns3::GlobalRoutingLSA &', 'lsa')], 
                    is_const=True)
+    ## global-router-interface.h: void ns3::GlobalRouter::InjectRoute(ns3::Ipv4Address network, ns3::Ipv4Mask networkMask) [member function]
+    cls.add_method('InjectRoute', 
+                   'void', 
+                   [param('ns3::Ipv4Address', 'network'), param('ns3::Ipv4Mask', 'networkMask')])
+    ## global-router-interface.h: uint32_t ns3::GlobalRouter::GetNInjectedRoutes() [member function]
+    cls.add_method('GetNInjectedRoutes', 
+                   'uint32_t', 
+                   [])
+    ## global-router-interface.h: ns3::Ipv4RoutingTableEntry * ns3::GlobalRouter::GetInjectedRoute(uint32_t i) [member function]
+    cls.add_method('GetInjectedRoute', 
+                   'ns3::Ipv4RoutingTableEntry *', 
+                   [param('uint32_t', 'i')])
+    ## global-router-interface.h: void ns3::GlobalRouter::RemoveInjectedRoute(uint32_t i) [member function]
+    cls.add_method('RemoveInjectedRoute', 
+                   'void', 
+                   [param('uint32_t', 'i')])
+    ## global-router-interface.h: bool ns3::GlobalRouter::WithdrawRoute(ns3::Ipv4Address network, ns3::Ipv4Mask networkMask) [member function]
+    cls.add_method('WithdrawRoute', 
+                   'bool', 
+                   [param('ns3::Ipv4Address', 'network'), param('ns3::Ipv4Mask', 'networkMask')])
     ## global-router-interface.h: void ns3::GlobalRouter::DoDispose() [member function]
     cls.add_method('DoDispose', 
                    'void', 
@@ -313,6 +333,10 @@ def register_Ns3Ipv4GlobalRouting_methods(root_module, cls):
     cls.add_constructor([param('ns3::Ipv4GlobalRouting const &', 'arg0')])
     ## ipv4-global-routing.h: ns3::Ipv4GlobalRouting::Ipv4GlobalRouting() [constructor]
     cls.add_constructor([])
+    ## ipv4-global-routing.h: void ns3::Ipv4GlobalRouting::AddASExternalRouteTo(ns3::Ipv4Address network, ns3::Ipv4Mask networkMask, ns3::Ipv4Address nextHop, uint32_t interface) [member function]
+    cls.add_method('AddASExternalRouteTo', 
+                   'void', 
+                   [param('ns3::Ipv4Address', 'network'), param('ns3::Ipv4Mask', 'networkMask'), param('ns3::Ipv4Address', 'nextHop'), param('uint32_t', 'interface')])
     ## ipv4-global-routing.h: void ns3::Ipv4GlobalRouting::AddHostRouteTo(ns3::Ipv4Address dest, ns3::Ipv4Address nextHop, uint32_t interface) [member function]
     cls.add_method('AddHostRouteTo', 
                    'void', 

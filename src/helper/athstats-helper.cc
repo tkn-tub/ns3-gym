@@ -278,17 +278,17 @@ AthstatsWifiTraceSink::WriteStats ()
   // I know C strings are ugly but that's the quickest way to use exactly the same format as in madwifi
   char str[200];
   snprintf (str, 200, "%8u %8u %7u %7u %7u %6u %6u %6u %7u %4u %3uM\n",
-           m_txCount, // /proc/net/dev transmitted packets to which we should subract mgmt frames
-           m_rxCount, // /proc/net/dev received packets but subracts mgmt frames from it
-           0,         // ast_tx_altrate,
-           m_shortRetryCount,     // ast_tx_shortretry,
-           m_longRetryCount,      // ast_tx_longretry,
-           m_exceededRetryCount,  // ast_tx_xretries,
-           m_phyRxErrorCount,     // ast_rx_crcerr,
-           0,         // ast_rx_badcrypt,
-           0,         // ast_rx_phyerr,
-           0,         // ast_rx_rssi,
-           0          // rate
+           (unsigned int) m_txCount, // /proc/net/dev transmitted packets to which we should subract mgmt frames
+           (unsigned int) m_rxCount, // /proc/net/dev received packets but subracts mgmt frames from it
+           (unsigned int) 0,         // ast_tx_altrate,
+           (unsigned int) m_shortRetryCount,     // ast_tx_shortretry,
+           (unsigned int) m_longRetryCount,      // ast_tx_longretry,
+           (unsigned int) m_exceededRetryCount,  // ast_tx_xretries,
+           (unsigned int) m_phyRxErrorCount,     // ast_rx_crcerr,
+           (unsigned int) 0,         // ast_rx_badcrypt,
+           (unsigned int) 0,         // ast_rx_phyerr,
+           (unsigned int) 0,         // ast_rx_rssi,
+           (unsigned int) 0          // rate
            );
 
   if (m_writer)

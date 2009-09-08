@@ -85,7 +85,7 @@ public:
   virtual void NotifyAddAddress (uint32_t interface, Ipv6InterfaceAddress address);
   virtual void NotifyRemoveAddress (uint32_t interface, Ipv6InterfaceAddress address);
   virtual void NotifyAddRoute (Ipv6Address dst, Ipv6Prefix mask, Ipv6Address nextHop, uint32_t interface, Ipv6Address prefixToUse = Ipv6Address::GetZero ());
-  virtual void NotifyRemoveRoute (Ipv6Address dst, Ipv6Prefix mask, Ipv6Address nextHop, uint32_t interface);
+  virtual void NotifyRemoveRoute (Ipv6Address dst, Ipv6Prefix mask, Ipv6Address nextHop, uint32_t interface, Ipv6Address prefixToUse = Ipv6Address::GetZero ());
   virtual void SetIpv6 (Ptr<Ipv6> ipv6);
 
 protected:

@@ -32,6 +32,7 @@
 #include "ns3/net-device-container.h"
 #include "ns3/bridge-net-device.h"
 #include "ns3/global-route-manager.h"
+#include "ns3/ipv4-routing-table-entry.h"
 
 namespace ns3 {
 
@@ -657,6 +658,54 @@ public:
  */
   bool GetLSA (uint32_t n, GlobalRoutingLSA &lsa) const;
 
+/**
+ * @brief Inject a route to be circulated to other routers as an external
+ * route
+ *
+ * @param network The Network to inject
+ * @param networkMask The Network Mask to inject
+ */
+  void InjectRoute (Ipv4Address network, Ipv4Mask networkMask);
+
+/**
+ * @brief Get the number of injected routes that have been added
+ * to the routing table.
+ * @return number of injected routes
+ */
+  uint32_t GetNInjectedRoutes (void);
+
+/**
+ * @brief Return the injected route indexed by i
+ * @param i the index of the route
+ * @return a pointer to that Ipv4RoutingTableEntry is returned
+ *
+ */
+  Ipv4RoutingTableEntry *GetInjectedRoute (uint32_t i);
+
+/**
+ * @brief Withdraw a route from the global unicast routing table.
+ *
+ * Calling this function will cause all indexed routes numbered above
+ * index i to have their index decremented.  For instance, it is possible to
+ * remove N injected routes by calling RemoveInjectedRoute (0) N times.
+ *
+ * @param i The index (into the injected routing list) of the route to remove.  
+ *
+ * @see GlobalRouter::WithdrawRoute ()
+ */
+  void RemoveInjectedRoute (uint32_t i);
+
+/**
+ * @brief Withdraw a route from the global unicast routing table.
+ *
+ * @param network The Network to withdraw
+ * @param networkMask The Network Mask to withdraw
+ * @return whether the operation succeeded (will return false if no such route)
+ *
+ * @see GlobalRouter::RemoveInjectedRoute ()
+ */
+  bool WithdrawRoute (Ipv4Address network, Ipv4Mask networkMask);
+
 private:
   virtual ~GlobalRouter ();
   void ClearLSAs (void);
@@ -679,6 +728,11 @@ private:
 
   Ipv4Address m_routerId;
   Ptr<Ipv4GlobalRouting> m_routingProtocol;
+
+  typedef std::list<Ipv4RoutingTableEntry *> InjectedRoutes;
+  typedef std::list<Ipv4RoutingTableEntry *>::const_iterator InjectedRoutesCI;
+  typedef std::list<Ipv4RoutingTableEntry *>::iterator InjectedRoutesI;
+  InjectedRoutes m_injectedRoutes; // Routes we are exporting
 
   // inherited from Object
   virtual void DoDispose (void);

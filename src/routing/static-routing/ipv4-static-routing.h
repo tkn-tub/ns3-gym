@@ -23,6 +23,7 @@
 #define IPV4_STATIC_ROUTING_H
 
 #include <list>
+#include <utility>
 #include <stdint.h>
 #include "ns3/ipv4-address.h"
 #include "ns3/ipv4-header.h"
@@ -87,31 +88,6 @@ public:
   virtual void SetIpv4 (Ptr<Ipv4> ipv4);
 
 /**
- * \brief Add a host route to the static routing table.
- *
- * \param dest The Ipv4Address destination for this route.
- * \param nextHop The Ipv4Address of the next hop in the route.
- * \param interface The network interface index used to send packets to the
- * destination.
- *
- * \see Ipv4Address
- */
-  void AddHostRouteTo (Ipv4Address dest, 
-                       Ipv4Address nextHop, 
-                       uint32_t interface);
-/**
- * \brief Add a host route to the static routing table.
- *
- * \param dest The Ipv4Address destination for this route.
- * \param interface The network interface index used to send packets to the
- * destination.
- *
- * \see Ipv4Address
- */
-  void AddHostRouteTo (Ipv4Address dest, 
-                       uint32_t interface);
-
-/**
  * \brief Add a network route to the static routing table.
  *
  * \param network The Ipv4Address network for this route.
@@ -119,13 +95,15 @@ public:
  * \param nextHop The next hop in the route to the destination network.
  * \param interface The network interface index used to send packets to the
  * destination.
+ * \param metric Metric of route in case of multiple routes to same destination
  *
  * \see Ipv4Address
  */
   void AddNetworkRouteTo (Ipv4Address network, 
                           Ipv4Mask networkMask, 
                           Ipv4Address nextHop, 
-                          uint32_t interface);
+                          uint32_t interface,
+                          uint32_t metric = 0);
 
 /**
  * \brief Add a network route to the static routing table.
@@ -134,13 +112,43 @@ public:
  * \param networkMask The Ipv4Mask to extract the network.
  * \param interface The network interface index used to send packets to the
  * destination.
+ * \param metric Metric of route in case of multiple routes to same destination
  *
  * \see Ipv4Address
  */
   void AddNetworkRouteTo (Ipv4Address network, 
                           Ipv4Mask networkMask, 
-                          uint32_t interface);
+                          uint32_t interface,
+                          uint32_t metric = 0);
 
+/**
+ * \brief Add a host route to the static routing table.
+ *
+ * \param dest The Ipv4Address destination for this route.
+ * \param nextHop The Ipv4Address of the next hop in the route.
+ * \param interface The network interface index used to send packets to the
+ * destination.
+ * \param metric Metric of route in case of multiple routes to same destination
+ *
+ * \see Ipv4Address
+ */
+  void AddHostRouteTo (Ipv4Address dest, 
+                       Ipv4Address nextHop, 
+                       uint32_t interface,
+                       uint32_t metric = 0);
+/**
+ * \brief Add a host route to the static routing table.
+ *
+ * \param dest The Ipv4Address destination for this route.
+ * \param interface The network interface index used to send packets to the
+ * destination.
+ * \param metric Metric of route in case of multiple routes to same destination
+ *
+ * \see Ipv4Address
+ */
+  void AddHostRouteTo (Ipv4Address dest, 
+                       uint32_t interface,
+                       uint32_t metric = 0);
 /**
  * \brief Add a default route to the static routing table.
  *
@@ -155,12 +163,14 @@ public:
  * \param nextHop The Ipv4Address to send packets to in the hope that they
  * will be forwarded correctly.
  * \param interface The network interface index used to send packets.
+ * \param metric Metric of route in case of multiple routes to same destination
  *
  * \see Ipv4Address
  * \see Ipv4StaticRouting::Lookup
  */
   void SetDefaultRoute (Ipv4Address nextHop, 
-                        uint32_t interface);
+                        uint32_t interface,
+                        uint32_t metric = 0);
 
 /**
  * \brief Get the number of individual unicast routes that have been added
@@ -171,10 +181,11 @@ public:
   uint32_t GetNRoutes (void);
 
 /**
- * \brief Get the default route from the static routing table.
+ * \brief Get the default route with lowest metric from the static routing table.
  *
  * \return If the default route is set, a pointer to that Ipv4RoutingTableEntry is
- * returned, otherwise a zero pointer is returned.
+ * returned, otherwise an empty routing table entry is returned. 
+*  If multiple default routes exist, the one with lowest metric is returned.
  *
  * \see Ipv4RoutingTableEntry
  */
@@ -184,16 +195,9 @@ public:
  * \brief Get a route from the static unicast routing table.
  *
  * Externally, the unicast static routing table appears simply as a table with
- * n entries.  The one sublety of note is that if a default route has been set
- * it will appear as the zeroth entry in the table.  This means that if you
- * add only a default route, the table will have one entry that can be accessed
- * either by explicity calling GetDefaultRoute () or by calling GetRoute (0).
- * 
- * Similarly, if the default route has been set, calling RemoveRoute (0) will
- * remove the default route.
+ * n entries.  
  *
- * \param i The index (into the routing table) of the route to retrieve.  If
- * the default route has been set, it will occupy index zero.
+ * \param i The index (into the routing table) of the route to retrieve.  
  * \return If route is set, a pointer to that Ipv4RoutingTableEntry is returned, otherwise
  * a zero pointer is returned.
  *
@@ -203,16 +207,21 @@ public:
   Ipv4RoutingTableEntry GetRoute (uint32_t i);
 
 /**
+ * \brief Get a metric for route from the static unicast routing table.
+ *
+ * \param index The index (into the routing table) of the route to retrieve.  
+ * \return If route is set, the metric is returned. If not, an infinity metric (0xffffffff) is returned
+ *
+ */
+  uint32_t GetMetric (uint32_t index);
+  
+/**
  * \brief Remove a route from the static unicast routing table.
  *
  * Externally, the unicast static routing table appears simply as a table with
- * n entries.  The one sublety of note is that if a default route has been set
- * it will appear as the zeroth entry in the table.  This means that if the
- * default route has been set, calling RemoveRoute (0) will remove the
- * default route.
+ * n entries.  
  *
- * \param i The index (into the routing table) of the route to remove.  If
- * the default route has been set, it will occupy index zero.
+ * \param i The index (into the routing table) of the route to remove.  
  *
  * \see Ipv4RoutingTableEntry
  * \see Ipv4StaticRouting::GetRoute
@@ -366,12 +375,9 @@ protected:
   virtual void DoDispose (void);
 
 private:
-  typedef std::list<Ipv4RoutingTableEntry *> HostRoutes;
-  typedef std::list<Ipv4RoutingTableEntry *>::const_iterator HostRoutesCI;
-  typedef std::list<Ipv4RoutingTableEntry *>::iterator HostRoutesI;
-  typedef std::list<Ipv4RoutingTableEntry *> NetworkRoutes;
-  typedef std::list<Ipv4RoutingTableEntry *>::const_iterator NetworkRoutesCI;
-  typedef std::list<Ipv4RoutingTableEntry *>::iterator NetworkRoutesI;
+  typedef std::list<std::pair <Ipv4RoutingTableEntry *, uint32_t> > NetworkRoutes;
+  typedef std::list<std::pair <Ipv4RoutingTableEntry *, uint32_t> >::const_iterator NetworkRoutesCI;
+  typedef std::list<std::pair <Ipv4RoutingTableEntry *, uint32_t> >::iterator NetworkRoutesI;
 
   typedef std::list<Ipv4MulticastRoutingTableEntry *> MulticastRoutes;
   typedef std::list<Ipv4MulticastRoutingTableEntry *>::const_iterator MulticastRoutesCI;
@@ -383,9 +389,7 @@ private:
 
   Ipv4Address SourceAddressSelection (uint32_t interface, Ipv4Address dest);
 
-  HostRoutes m_hostRoutes;
   NetworkRoutes m_networkRoutes;
-  Ipv4RoutingTableEntry *m_defaultRoute;
   MulticastRoutes m_multicastRoutes;
 
   Ptr<Ipv4> m_ipv4;

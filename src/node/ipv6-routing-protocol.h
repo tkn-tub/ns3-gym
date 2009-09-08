@@ -37,14 +37,16 @@ class NetDevice;
 
 /**
  * \ingroup node 
- * \defgroup ipv6Routing Ipv6 Routing
- *
- * Abstract base class for Ipv6 routing protocols.  Defines two
- * virtual functions for packet routing and forwarding.  The first, 
+ * \defgroup ipv6Routing Ipv6RoutingProtocol
+ */
+/**
+ * \ingroup ipv6Routing
+ * \brief Abstract base class for Ipv6 routing protocols.
+ * 
+ * Defines two virtual functions for packet routing and forwarding.  The first, 
  * RouteOutput (), is used for locally originated packets, and the second,
  * RouteInput (), is used for forwarding and/or delivering received packets. 
  * Also defines the signatures of four callbacks used in RouteInput ().
- *
  */
 class Ipv6RoutingProtocol : public Object
 {
@@ -153,8 +155,9 @@ public:
    * \param mask destination mask
    * \param nextHop nextHop for this destination
    * \param interface output interface
+   * \param prefixToUse prefix to use as source with this route
    */
-  virtual void NotifyRemoveRoute (Ipv6Address dst, Ipv6Prefix mask, Ipv6Address nextHop, uint32_t interface) = 0;
+  virtual void NotifyRemoveRoute (Ipv6Address dst, Ipv6Prefix mask, Ipv6Address nextHop, uint32_t interface, Ipv6Address prefixToUse = Ipv6Address::GetZero ()) = 0;
 
   /**
    * \param ipv6 the ipv6 object this routing protocol is being associated with

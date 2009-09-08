@@ -48,14 +48,14 @@ Ipv4RoutingTableEntry::Ipv4RoutingTableEntry (Ipv4Address dest,
                       Ipv4Address gateway,
                       uint32_t interface)
   : m_dest (dest),
-    m_destNetworkMask (Ipv4Mask::GetZero ()),
+    m_destNetworkMask (Ipv4Mask::GetOnes ()),
     m_gateway (gateway),
     m_interface (interface)
 {}
 Ipv4RoutingTableEntry::Ipv4RoutingTableEntry (Ipv4Address dest,
                       uint32_t interface)
   : m_dest (dest),
-    m_destNetworkMask (Ipv4Mask::GetZero ()),
+    m_destNetworkMask (Ipv4Mask::GetOnes ()),
     m_gateway (Ipv4Address::GetZero ()),
     m_interface (interface)
 {}
@@ -80,7 +80,7 @@ Ipv4RoutingTableEntry::Ipv4RoutingTableEntry (Ipv4Address network,
 bool 
 Ipv4RoutingTableEntry::IsHost (void) const
 {
-  if (m_destNetworkMask.IsEqual (Ipv4Mask::GetZero ())) 
+  if (m_destNetworkMask.IsEqual (Ipv4Mask::GetOnes ())) 
     {
       return true;
     } 

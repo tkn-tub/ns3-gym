@@ -53,7 +53,7 @@ public:
   virtual bool SetMtu (const uint16_t mtu);
   virtual uint16_t GetMtu (void) const;
   virtual bool IsLinkUp (void) const;
-  virtual void SetLinkChangeCallback (Callback<void> callback);
+  virtual void AddLinkChangeCallback (Callback<void> callback);
   virtual bool IsBroadcast (void) const;
   virtual Address GetBroadcast (void) const;
   virtual bool IsMulticast (void) const;

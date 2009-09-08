@@ -215,19 +215,22 @@ class ns3moduleheader_taskgen(TaskGen.task_gen):
         ## get all of the ns3 headers
         ns3_dir_node = self.bld.path.find_dir("ns3")
         all_headers_inputs = []
+        found_the_module = False
         for ns3headers in self.bld.all_task_gen:
             if isinstance(ns3headers, ns3header_taskgen):
                 if ns3headers.module != self.module:
                     continue
+                found_the_module = True
                 for source in ns3headers.to_list(ns3headers.source):
                     source = os.path.basename(source)
                     node = ns3_dir_node.find_or_declare(os.path.basename(source))
                     if node is None:
                         fatal("missing header file %s" % (source,))
                     all_headers_inputs.append(node)
-        if not all_headers_inputs:
+        if not found_the_module:
             raise Utils.WscriptError("error finding headers for module %s" % self.module)
-        assert all_headers_inputs
+        if not all_headers_inputs:
+            return
         module_obj = self.bld.name_to_obj("ns3-" + self.module, self.env)
         assert module_obj is not None
         all_headers_outputs = [ns3_dir_node.find_or_declare("%s-module.h" % self.module)]

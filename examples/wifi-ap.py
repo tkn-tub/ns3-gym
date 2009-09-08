@@ -29,30 +29,30 @@ import ns3
 #   std::cout << " TX to=" << address << " p: " << *p << std::endl;
 # }
 # void
-# DevRxTrace (std::string context, Ptr<const Packet> p, Mac48Address address)
+# DevRxTrace(std::string context, Ptr<const Packet> p, Mac48Address address)
 # {
 #   std::cout << " RX from=" << address << " p: " << *p << std::endl;
 # }
 # void
-# PhyRxOkTrace (std::string context, Ptr<const Packet> packet, double snr, WifiMode mode, enum WifiPreamble preamble)
+# PhyRxOkTrace(std::string context, Ptr<const Packet> packet, double snr, WifiMode mode, enum WifiPreamble preamble)
 # {
 #   std::cout << "PHYRXOK mode=" << mode << " snr=" << snr << " " << *packet << std::endl;
 # }
 # void
-# PhyRxErrorTrace (std::string context, Ptr<const Packet> packet, double snr)
+# PhyRxErrorTrace(std::string context, Ptr<const Packet> packet, double snr)
 # {
 #   std::cout << "PHYRXERROR snr=" << snr << " " << *packet << std::endl;
 # }
 # void
-# PhyTxTrace (std::string context, Ptr<const Packet> packet, WifiMode mode, WifiPreamble preamble, uint8_t txPower)
+# PhyTxTrace(std::string context, Ptr<const Packet> packet, WifiMode mode, WifiPreamble preamble, uint8_t txPower)
 # {
 #   std::cout << "PHYTX mode=" << mode << " " << *packet << std::endl;
 # }
 # void
-# PhyStateTrace (std::string context, Time start, Time duration, enum WifiPhy::State state)
+# PhyStateTrace(std::string context, Time start, Time duration, enum WifiPhy::State state)
 # {
 #   std::cout << " state=";
-#   switch (state) {
+#   switch(state) {
 #   case WifiPhy::TX:
 #     std::cout << "tx      ";
 #     break;
@@ -79,7 +79,7 @@ def GetPosition(node):
     return mobility.GetPosition()
 
 def AdvancePosition(node):
-    pos = GetPosition (node);
+    pos = GetPosition(node);
     pos.x += 5.0
     if pos.x >= 210.0:
       return
@@ -88,12 +88,12 @@ def AdvancePosition(node):
 
 
 def main(argv):
-    ns3.Packet.EnablePrinting ();
+    ns3.Packet.EnablePrinting();
 
     # enable rts cts all the time.
     ns3.Config.SetDefault("ns3::WifiRemoteStationManager::RtsCtsThreshold", ns3.StringValue("0"))
     # disable fragmentation
-    ns3.Config.SetDefault("ns3::WifiRemoteStationManager::FragmentationThreshold", ns3.StringValue ("2200"))
+    ns3.Config.SetDefault("ns3::WifiRemoteStationManager::FragmentationThreshold", ns3.StringValue("2200"))
 
     wifi = ns3.WifiHelper.Default()
     mobility = ns3.MobilityHelper()
@@ -115,16 +115,18 @@ def main(argv):
 
     ssid = ns3.Ssid("wifi-default")
     wifi.SetRemoteStationManager("ns3::ArfWifiManager")
+    wifiMac = ns3.NqosWifiMacHelper.Default()
+
     # setup stas.
-    wifi.SetMac("ns3::NqstaWifiMac", 
+    wifiMac.SetType("ns3::NqstaWifiMac", 
                "Ssid", ns3.SsidValue(ssid),
                "ActiveProbing", ns3.BooleanValue(False))
-    staDevs = wifi.Install(wifiPhy, stas)
+    staDevs = wifi.Install(wifiPhy, wifiMac, stas)
     # setup ap.
-    wifi.SetMac("ns3::NqapWifiMac", "Ssid", ns3.SsidValue(ssid),
+    wifiMac.SetType("ns3::NqapWifiMac", "Ssid", ns3.SsidValue(ssid),
                 "BeaconGeneration", ns3.BooleanValue(True),
                 "BeaconInterval", ns3.TimeValue(ns3.Seconds(2.5)))
-    wifi.Install(wifiPhy, ap)
+    wifi.Install(wifiPhy, wifiMac, ap)
 
     # mobility.
     mobility.Install(stas)
@@ -147,12 +149,12 @@ def main(argv):
 
     ns3.Simulator.Stop(ns3.Seconds(44.0))
 
-  #   Config::Connect ("/NodeList/*/DeviceList/*/Tx", MakeCallback (&DevTxTrace));
-  #   Config::Connect ("/NodeList/*/DeviceList/*/Rx", MakeCallback (&DevRxTrace));
-  #   Config::Connect ("/NodeList/*/DeviceList/*/Phy/RxOk", MakeCallback (&PhyRxOkTrace));
-  #   Config::Connect ("/NodeList/*/DeviceList/*/Phy/RxError", MakeCallback (&PhyRxErrorTrace));
-  #   Config::Connect ("/NodeList/*/DeviceList/*/Phy/Tx", MakeCallback (&PhyTxTrace));
-  #   Config::Connect ("/NodeList/*/DeviceList/*/Phy/State", MakeCallback (&PhyStateTrace));
+  #   Config::Connect("/NodeList/*/DeviceList/*/Tx", MakeCallback(&DevTxTrace));
+  #   Config::Connect("/NodeList/*/DeviceList/*/Rx", MakeCallback(&DevRxTrace));
+  #   Config::Connect("/NodeList/*/DeviceList/*/Phy/RxOk", MakeCallback(&PhyRxOkTrace));
+  #   Config::Connect("/NodeList/*/DeviceList/*/Phy/RxError", MakeCallback(&PhyRxErrorTrace));
+  #   Config::Connect("/NodeList/*/DeviceList/*/Phy/Tx", MakeCallback(&PhyTxTrace));
+  #   Config::Connect("/NodeList/*/DeviceList/*/Phy/State", MakeCallback(&PhyStateTrace));
 
     ascii = ns3.ofstream("wifi-ap.tr")
     ns3.YansWifiPhyHelper.EnableAsciiAll(ascii)

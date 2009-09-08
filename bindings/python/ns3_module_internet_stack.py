@@ -79,8 +79,6 @@ def register_types(module):
     module.add_class('Ipv4L4Protocol', parent=root_module['ns3::Object'])
     ## ipv4-l4-protocol.h: ns3::Ipv4L4Protocol::RxStatus [enumeration]
     module.add_enum('RxStatus', ['RX_OK', 'RX_CSUM_FAILED', 'RX_ENDPOINT_UNREACH'], outer_class=root_module['ns3::Ipv4L4Protocol'])
-    ## nsc-tcp-l4-protocol.h: ns3::NscTcpL4Protocol [class]
-    module.add_class('NscTcpL4Protocol', parent=root_module['ns3::Ipv4L4Protocol'])
     ## tcp-l4-protocol.h: ns3::TcpL4Protocol [class]
     module.add_class('TcpL4Protocol', parent=root_module['ns3::Ipv4L4Protocol'])
     ## udp-l4-protocol.h: ns3::UdpL4Protocol [class]
@@ -166,7 +164,6 @@ def register_methods(root_module):
     register_Ns3Icmpv6Echo_methods(root_module, root_module['ns3::Icmpv6Echo'])
     register_Ns3Ipv4L3Protocol_methods(root_module, root_module['ns3::Ipv4L3Protocol'])
     register_Ns3Ipv4L4Protocol_methods(root_module, root_module['ns3::Ipv4L4Protocol'])
-    register_Ns3NscTcpL4Protocol_methods(root_module, root_module['ns3::NscTcpL4Protocol'])
     register_Ns3TcpL4Protocol_methods(root_module, root_module['ns3::TcpL4Protocol'])
     register_Ns3UdpL4Protocol_methods(root_module, root_module['ns3::UdpL4Protocol'])
     register_Ns3Icmpv4L4Protocol_methods(root_module, root_module['ns3::Icmpv4L4Protocol'])
@@ -1979,84 +1976,6 @@ def register_Ns3Ipv4L4Protocol_methods(root_module, cls):
                    'void', 
                    [param('ns3::Ipv4Address', 'icmpSource'), param('uint8_t', 'icmpTtl'), param('uint8_t', 'icmpType'), param('uint8_t', 'icmpCode'), param('uint32_t', 'icmpInfo'), param('ns3::Ipv4Address', 'payloadSource'), param('ns3::Ipv4Address', 'payloadDestination'), param('uint8_t const *', 'payload')], 
                    is_virtual=True)
-    return
-
-def register_Ns3NscTcpL4Protocol_methods(root_module, cls):
-    ## nsc-tcp-l4-protocol.h: ns3::NscTcpL4Protocol::PROT_NUMBER [variable]
-    cls.add_static_attribute('PROT_NUMBER', 'uint8_t const', is_const=True)
-    ## nsc-tcp-l4-protocol.h: static ns3::TypeId ns3::NscTcpL4Protocol::GetTypeId() [member function]
-    cls.add_method('GetTypeId', 
-                   'ns3::TypeId', 
-                   [], 
-                   is_static=True)
-    ## nsc-tcp-l4-protocol.h: ns3::NscTcpL4Protocol::NscTcpL4Protocol() [constructor]
-    cls.add_constructor([])
-    ## nsc-tcp-l4-protocol.h: void ns3::NscTcpL4Protocol::SetNode(ns3::Ptr<ns3::Node> node) [member function]
-    cls.add_method('SetNode', 
-                   'void', 
-                   [param('ns3::Ptr< ns3::Node >', 'node')])
-    ## nsc-tcp-l4-protocol.h: void ns3::NscTcpL4Protocol::SetNscLibrary(std::string const & lib) [member function]
-    cls.add_method('SetNscLibrary', 
-                   'void', 
-                   [param('std::string const &', 'lib')])
-    ## nsc-tcp-l4-protocol.h: std::string ns3::NscTcpL4Protocol::GetNscLibrary() const [member function]
-    cls.add_method('GetNscLibrary', 
-                   'std::string', 
-                   [], 
-                   is_const=True)
-    ## nsc-tcp-l4-protocol.h: int ns3::NscTcpL4Protocol::GetProtocolNumber() const [member function]
-    cls.add_method('GetProtocolNumber', 
-                   'int', 
-                   [], 
-                   is_const=True, is_virtual=True)
-    ## nsc-tcp-l4-protocol.h: int ns3::NscTcpL4Protocol::GetVersion() const [member function]
-    cls.add_method('GetVersion', 
-                   'int', 
-                   [], 
-                   is_const=True, is_virtual=True)
-    ## nsc-tcp-l4-protocol.h: ns3::Ptr<ns3::Socket> ns3::NscTcpL4Protocol::CreateSocket() [member function]
-    cls.add_method('CreateSocket', 
-                   'ns3::Ptr< ns3::Socket >', 
-                   [])
-    ## nsc-tcp-l4-protocol.h: ns3::Ipv4EndPoint * ns3::NscTcpL4Protocol::Allocate() [member function]
-    cls.add_method('Allocate', 
-                   'ns3::Ipv4EndPoint *', 
-                   [])
-    ## nsc-tcp-l4-protocol.h: ns3::Ipv4EndPoint * ns3::NscTcpL4Protocol::Allocate(ns3::Ipv4Address address) [member function]
-    cls.add_method('Allocate', 
-                   'ns3::Ipv4EndPoint *', 
-                   [param('ns3::Ipv4Address', 'address')])
-    ## nsc-tcp-l4-protocol.h: ns3::Ipv4EndPoint * ns3::NscTcpL4Protocol::Allocate(uint16_t port) [member function]
-    cls.add_method('Allocate', 
-                   'ns3::Ipv4EndPoint *', 
-                   [param('uint16_t', 'port')])
-    ## nsc-tcp-l4-protocol.h: ns3::Ipv4EndPoint * ns3::NscTcpL4Protocol::Allocate(ns3::Ipv4Address address, uint16_t port) [member function]
-    cls.add_method('Allocate', 
-                   'ns3::Ipv4EndPoint *', 
-                   [param('ns3::Ipv4Address', 'address'), param('uint16_t', 'port')])
-    ## nsc-tcp-l4-protocol.h: ns3::Ipv4EndPoint * ns3::NscTcpL4Protocol::Allocate(ns3::Ipv4Address localAddress, uint16_t localPort, ns3::Ipv4Address peerAddress, uint16_t peerPort) [member function]
-    cls.add_method('Allocate', 
-                   'ns3::Ipv4EndPoint *', 
-                   [param('ns3::Ipv4Address', 'localAddress'), param('uint16_t', 'localPort'), param('ns3::Ipv4Address', 'peerAddress'), param('uint16_t', 'peerPort')])
-    ## nsc-tcp-l4-protocol.h: void ns3::NscTcpL4Protocol::DeAllocate(ns3::Ipv4EndPoint * endPoint) [member function]
-    cls.add_method('DeAllocate', 
-                   'void', 
-                   [param('ns3::Ipv4EndPoint *', 'endPoint')])
-    ## nsc-tcp-l4-protocol.h: ns3::Ipv4L4Protocol::RxStatus ns3::NscTcpL4Protocol::Receive(ns3::Ptr<ns3::Packet> p, ns3::Ipv4Address const & source, ns3::Ipv4Address const & destination, ns3::Ptr<ns3::Ipv4Interface> incomingInterface) [member function]
-    cls.add_method('Receive', 
-                   'ns3::Ipv4L4Protocol::RxStatus', 
-                   [param('ns3::Ptr< ns3::Packet >', 'p'), param('ns3::Ipv4Address const &', 'source'), param('ns3::Ipv4Address const &', 'destination'), param('ns3::Ptr< ns3::Ipv4Interface >', 'incomingInterface')], 
-                   is_virtual=True)
-    ## nsc-tcp-l4-protocol.h: void ns3::NscTcpL4Protocol::DoDispose() [member function]
-    cls.add_method('DoDispose', 
-                   'void', 
-                   [], 
-                   visibility='protected', is_virtual=True)
-    ## nsc-tcp-l4-protocol.h: void ns3::NscTcpL4Protocol::NotifyNewAggregate() [member function]
-    cls.add_method('NotifyNewAggregate', 
-                   'void', 
-                   [], 
-                   visibility='protected', is_virtual=True)
     return
 
 def register_Ns3TcpL4Protocol_methods(root_module, cls):

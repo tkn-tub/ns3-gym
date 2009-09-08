@@ -29,6 +29,7 @@ namespace ns3
 {
 
 /**
+ * \ingroup radvd
  * \class RadvdPrefix
  * \brief Router prefix for radvd application.
  */

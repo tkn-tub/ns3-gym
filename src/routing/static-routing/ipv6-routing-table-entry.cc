@@ -57,7 +57,7 @@ Ipv6RoutingTableEntry::Ipv6RoutingTableEntry (Ipv6Address dest, Ipv6Address gate
 
 Ipv6RoutingTableEntry::Ipv6RoutingTableEntry (Ipv6Address dest, uint32_t interface)
   : m_dest (dest),
-  m_destNetworkPrefix (Ipv6Prefix (128)),
+  m_destNetworkPrefix (Ipv6Prefix::GetOnes ()),
   m_gateway (Ipv6Address::GetZero ()),
   m_interface (interface),
   m_prefixToUse (Ipv6Address ("::"))
@@ -107,8 +107,7 @@ Ipv6RoutingTableEntry::~Ipv6RoutingTableEntry ()
 
 bool Ipv6RoutingTableEntry::IsHost () const
 {
-  static Ipv6Prefix prefix (128);
-  if (m_destNetworkPrefix.IsEqual (prefix))
+  if (m_destNetworkPrefix.IsEqual (Ipv6Prefix::GetOnes ()))
   {
     return true;
   }
@@ -170,7 +169,7 @@ Ipv6Address Ipv6RoutingTableEntry::GetGateway () const
 
 Ipv6RoutingTableEntry Ipv6RoutingTableEntry::CreateHostRouteTo (Ipv6Address dest, Ipv6Address nextHop, uint32_t interface, Ipv6Address prefixToUse)
 {
-  return Ipv6RoutingTableEntry (dest, Ipv6Prefix (128), nextHop, interface, prefixToUse);
+  return Ipv6RoutingTableEntry (dest, Ipv6Prefix::GetOnes (), nextHop, interface, prefixToUse);
 }
 
 Ipv6RoutingTableEntry Ipv6RoutingTableEntry::CreateHostRouteTo (Ipv6Address dest, uint32_t interface)

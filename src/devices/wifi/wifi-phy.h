@@ -337,6 +337,7 @@ public:
    * transmitted. This is because it is possible to have the receiver
    * tuned on a given channel and still to be able to receive packets
    * on a nearby channel.
+   * @param channelNumber the channel on which the packet is received
    * @param rate the PHY data rate in units of 500kbps (i.e., the same
    * units used both for the radiotap and for the prism header) 
    * @param isShortPreamble true if short preamble is used, false otherwise
@@ -351,14 +352,10 @@ public:
    * Public method used to fire a PromiscSniffer trace for a wifi packet being transmitted.  Implemented for encapsulation 
    * purposes.
    * 
-   * @param packet the packet being received
+   * @param packet the packet being transmitted
    * @param channelFreqMhz the frequency in MHz at which the packet is
-   * received. Note that in real devices this is normally the
-   * frequency to which  the receiver is tuned, and this can be
-   * different than the frequency at which the packet was originally
-   * transmitted. This is because it is possible to have the receiver
-   * tuned on a given channel and still to be able to receive packets
-   * on a nearby channel.
+   * transmitted. 
+   * @param channelNumber the channel on which the packet is transmitted
    * @param rate the PHY data rate in units of 500kbps (i.e., the same
    * units used both for the radiotap and for the prism header) 
    * @param isShortPreamble true if short preamble is used, false otherwise
