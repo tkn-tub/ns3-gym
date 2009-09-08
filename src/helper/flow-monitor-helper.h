@@ -31,17 +31,27 @@ namespace ns3 {
 class AttributeValue;
 class Ipv4FlowClassifier;  
 
+/// \brief Helper to enable IPv4 flow monitoring on a set of Nodes
 class FlowMonitorHelper
 {
 public:
   FlowMonitorHelper ();
+
+  
+  /// \brief Set an attribute for the to-be-created FlowMonitor object
   void SetMonitorAttribute (std::string n1, const AttributeValue &v1);
 
+  /// \brief Enable flow monitoring on a set of nodes
   Ptr<FlowMonitor> Install (NodeContainer nodes);
+  /// \brief Enable flow monitoring on a single node
   Ptr<FlowMonitor> Install (Ptr<Node> node);
+  /// \brief Enable flow monitoring on all nodes
   Ptr<FlowMonitor> InstallAll ();
 
+  /// \brief Retrieve the FlowMonitor object created by the Install* methods
   Ptr<FlowMonitor> GetMonitor ();
+
+  /// \brief Retrieve the FlowClassifier object created by the Install* methods
   Ptr<FlowClassifier> GetClassifier ();
   
 private:

@@ -30,7 +30,11 @@
 namespace ns3 {
 
 class Packet;
-  
+
+/// Classifies packets by looking at their IP and TCP/UDP headers.
+/// From these packet headers, a tuple (source-ip, destination-ip,
+/// protocol, source-port, destination-port) is created, and a unique
+/// flow identifier is assigned for each different tuple combination
 class Ipv4FlowClassifier : public FlowClassifier
 {
 public:

@@ -30,6 +30,12 @@ namespace ns3 {
 class FlowMonitor;
 class Node;
 
+/// \brief Class that monitors flows at the IPv4 layer of a Node
+///
+/// For each node in the simulation, one instance of the class
+/// Ipv4FlowProbe is created to monitor that node.  Ipv4FlowProbe
+/// accomplishes this by connecting callbacks to trace sources in the
+/// Ipv4L3Protocol interface of the node.
 class Ipv4FlowProbe : public FlowProbe
 {
   
@@ -37,11 +43,16 @@ public:
   Ipv4FlowProbe (Ptr<FlowMonitor> monitor, Ptr<Ipv4FlowClassifier> classifier, Ptr<Node> node);
   ~Ipv4FlowProbe ();
 
+  /// \brief enumeration of possible reasons why a packet may be dropped
   enum DropReason 
     {
+      /// Packet dropped due to missing route to the destination
       DROP_NO_ROUTE = 0,
-      DROP_TTL_EXPIRE,
+      /// Packet dropped due to TTL decremented to zero during IPv4 forwarding
+      DROP_TTL_EXPIRE,      
+      /// Packet dropped due to invalid checksum in the IPv4 header
       DROP_BAD_CHECKSUM,
+
       // DROP_QUEUE, // TODO: this is not easy to do
       DROP_INVALID_REASON,
     };

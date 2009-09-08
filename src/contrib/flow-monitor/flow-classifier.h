@@ -29,7 +29,16 @@ namespace ns3 {
 typedef uint32_t FlowId;
 typedef uint32_t FlowPacketId;
 
-
+/// provides a method to translate raw packet data into abstract
+/// ``flow identifier'' and ``packet identifier'' parameters.  These
+/// identifiers are unsigned 32-bit integers that uniquely identify a
+/// flow and a packet within that flow, respectively, for the whole
+/// simulation, regardless of the point in which the packet was
+/// captured.  These abstract identifiers are used in the
+/// communication between FlowProbe and FlowMonitor, and all collected
+/// statistics reference only those abstract identifiers in order to
+/// keep the core architecture generic and not tied down to any
+/// particular flow capture method or classification system.
 class FlowClassifier : public RefCountBase
 {
   FlowId m_lastNewFlowId;
