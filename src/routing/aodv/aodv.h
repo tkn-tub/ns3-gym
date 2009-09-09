@@ -33,9 +33,7 @@
  * \ingroup routing
  * \defgroup aodv AODV
  * 
- * \brief RFC concerted AODV manet routing model
- * 
- * TODO more docs 
+ * \brief Ad hoc on demand distance vector (AODV) routing protocol manet, RFC3561
  */
 
 #endif /* AODV_H_ */

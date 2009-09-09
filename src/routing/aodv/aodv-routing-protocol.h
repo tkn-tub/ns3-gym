@@ -83,7 +83,7 @@ public:
   bool GetHelloEnable () const { return EnableHello; }
   //\}
 private:
-  ///\name Protocol parameters. TODO document
+  ///\name Protocol parameters.
   //\{
   uint32_t RreqRetries;             ///< Maximum number of retransmissions of RREQ with TTL = NetDiameter to discover a route
   uint16_t RreqRateLimit;           ///< Maximum number of RREQ per second.
@@ -223,7 +223,7 @@ private:
   void Drop(Ptr<const Packet>, const Ipv4Header &, Socket::SocketErrno);
 
   /// Hello timer
-  Timer htimer; // TODO independent hello timers for all interfaces
+  Timer htimer;
   /// Schedule next send of hello message
   void HelloTimerExpire ();
   /// RREQ rate limit timer
