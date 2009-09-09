@@ -182,7 +182,7 @@ public:
 
 /**
  * \ingroup aodv
- * The Routing table used by AODV protocol
+ * \brief The Routing table used by AODV protocol
  */
 class RoutingTable
 {
