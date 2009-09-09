@@ -34,13 +34,6 @@
 
 using namespace ns3;
 
-enum TrafficType
-{
-  PING = 1,
-  UDP = 2,
-  TCP = 3
-};
-
 /**
  * \brief Test script.
  * 
@@ -72,8 +65,6 @@ private:
   double totalTime;
   /// Write per-device PCAP traces if true
   bool pcap;
-  /// Traffic type
-  uint16_t type;
   //\}
   
   ///\name network
@@ -106,8 +97,7 @@ AodvExample::AodvExample () :
   size (10),
   step (120),
   totalTime (10),
-  pcap (true),
-  type (PING)
+  pcap (true)
 {
 }
 
@@ -121,7 +111,6 @@ AodvExample::Configure (int argc, char **argv)
   CommandLine cmd;
   
   cmd.AddValue ("pcap", "Write PCAP traces.", pcap);
-  cmd.AddValue ("type", "Traffic type.", type);
   cmd.AddValue ("size", "Number of nodes.", size);
   cmd.AddValue ("time", "Simulation time, s.", totalTime);
   cmd.AddValue ("step", "Grid step, m", step);
@@ -210,83 +199,16 @@ AodvExample::InstallInternetStack ()
 void
 AodvExample::InstallApplications ()
 {
-  switch (type)
-  {
-    case PING:
-      {
-        V4PingHelper ping (interfaces.GetAddress(size - 1));
-        ping.SetAttribute ("Verbose", BooleanValue (true));
+  V4PingHelper ping (interfaces.GetAddress(size - 1));
+  ping.SetAttribute ("Verbose", BooleanValue (true));
+  
+  ApplicationContainer p = ping.Install (nodes.Get (0));
+  p.Start (Seconds (0));
+  p.Stop (Seconds (totalTime));
 
-        ApplicationContainer p = ping.Install (nodes.Get (0));
-        p.Start (Seconds (0));
-        p.Stop (Seconds (totalTime));
-        break;
-      }
-    case UDP:
-      {
-        // Create the OnOff application to send UDP datagrams of size
-        // 210 bytes at a rate of 448 Kb/s
-        Config::SetDefault ("ns3::OnOffApplication::PacketSize", UintegerValue (210));
-        Config::SetDefault ("ns3::OnOffApplication::DataRate", DataRateValue (DataRate ("6Mbps")));
-        uint16_t port = 9; // Discard port (RFC 863)
-
-        OnOffHelper onoff ("ns3::UdpSocketFactory",
-            Address (InetSocketAddress (interfaces.GetAddress(size-1), port)));
-        onoff.SetAttribute ("OnTime", RandomVariableValue (ConstantVariable(1)));
-        onoff.SetAttribute ("OffTime", RandomVariableValue (ConstantVariable(0)));
-
-        ApplicationContainer apps = onoff.Install (nodes.Get (0));
-        apps.Start(Seconds(0));
-        apps.Stop (Seconds(totalTime));
-
-        // Create an optional packet sink to receive these packets
-        PacketSinkHelper sink ("ns3::UdpSocketFactory",
-            Address (InetSocketAddress (Ipv4Address::GetAny (), port)));
-        for (uint32_t i = 1; i < nodes.GetN (); ++i)
-          {
-            apps.Add(sink.Install (nodes.Get (i)) );
-          }
-        apps.Start (Seconds (0));
-        apps.Stop (Seconds (totalTime));
-        break;
-      }
-    case TCP:
-         {
-           V4PingHelper ping (interfaces.GetAddress(size - 1));
-           ping.SetAttribute ("Verbose", BooleanValue (true));
-
-           ApplicationContainer p = ping.Install (nodes.Get (0));
-           p.Start (Seconds (0));
-           p.Stop (Seconds (totalTime/2));
-
-
-           Config::SetDefault ("ns3::OnOffApplication::PacketSize", UintegerValue (4096));
-           Config::SetDefault ("ns3::OnOffApplication::DataRate", StringValue ("6Mbps"));
-
-           uint16_t port = 8080;
-           PacketSinkHelper sinkHelper ("ns3::TcpSocketFactory", InetSocketAddress (Ipv4Address::GetAny (), port));
-           ApplicationContainer sinkApp = sinkHelper.Install (nodes.Get (size-1));
-           sinkApp.Start (Seconds (totalTime/2));
-           sinkApp.Stop (Seconds (totalTime));
-
-           // Create the OnOff applications to send TCP
-           OnOffHelper clientHelper ("ns3::TcpSocketFactory", Address ());
-           clientHelper.SetAttribute
-               ("OnTime", RandomVariableValue (ConstantVariable (1)));
-           clientHelper.SetAttribute
-               ("OffTime", RandomVariableValue (ConstantVariable (0)));
-
-           ApplicationContainer clientApp;
-           AddressValue remoteAddress
-               (InetSocketAddress (interfaces.GetAddress (size-1), port));
-           clientHelper.SetAttribute ("Remote", remoteAddress);
-           clientApp = clientHelper.Install (nodes.Get (0));
-           clientApp.Start (Seconds (totalTime/2));
-           clientApp.Stop (Seconds (totalTime));
-
-         }
-
-  };
-
+  // move node away
+  Ptr<Node> node = nodes.Get (size/2);
+  Ptr<MobilityModel> mob = node->GetObject<MobilityModel>();
+  Simulator::Schedule (Seconds (totalTime/3), &MobilityModel::SetPosition, mob, Vector(1e5, 1e5, 1e5));
 }
 
