@@ -116,7 +116,7 @@ ArpL3Protocol::CreateCache (Ptr<NetDevice> device, Ptr<Ipv4Interface> interface)
   Ptr<ArpCache> cache = CreateObject<ArpCache> ();
   cache->SetDevice (device, interface);
   NS_ASSERT (device->IsBroadcast ());
-  device->SetLinkChangeCallback (MakeCallback (&ArpCache::Flush, cache));
+  device->AddLinkChangeCallback (MakeCallback (&ArpCache::Flush, cache));
   cache->SetArpRequestCallback (MakeCallback (&ArpL3Protocol::SendArpRequest, this));
   m_cacheList.push_back (cache);
   return cache;

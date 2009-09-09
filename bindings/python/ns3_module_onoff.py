@@ -63,13 +63,13 @@ def register_methods(root_module):
 def register_Ns3OnOffApplication_methods(root_module, cls):
     ## onoff-application.h: ns3::OnOffApplication::OnOffApplication(ns3::OnOffApplication const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::OnOffApplication const &', 'arg0')])
+    ## onoff-application.h: ns3::OnOffApplication::OnOffApplication() [constructor]
+    cls.add_constructor([])
     ## onoff-application.h: static ns3::TypeId ns3::OnOffApplication::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
-    ## onoff-application.h: ns3::OnOffApplication::OnOffApplication() [constructor]
-    cls.add_constructor([])
     ## onoff-application.h: void ns3::OnOffApplication::SetMaxBytes(uint32_t maxBytes) [member function]
     cls.add_method('SetMaxBytes', 
                    'void', 

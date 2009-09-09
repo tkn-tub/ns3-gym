@@ -122,7 +122,7 @@ def build(bld):
         'icmpv4.h',
         'icmpv6-header.h',
         # used by routing
-        'ipv4-interface.h', 
+        'ipv4-interface.h',
         'ipv4-l3-protocol.h',
         'arp-l3-protocol.h',
         'udp-l4-protocol.h',
@@ -131,11 +131,11 @@ def build(bld):
         'ipv4-l4-protocol.h',
         'arp-cache.h',
        ]
-        
 
     if bld.env['NSC_ENABLED']:
         obj.source.append ('nsc-tcp-socket-impl.cc')
         obj.source.append ('nsc-tcp-l4-protocol.cc')
         obj.source.append ('nsc-tcp-socket-factory-impl.cc')
         obj.source.append ('nsc-sysctl.cc')
+        headers.source.append('nsc-tcp-l4-protocol.h')
         obj.uselib = 'DL'

@@ -194,7 +194,7 @@ VirtualNetDevice::IsLinkUp (void) const
 }
 
 void
-VirtualNetDevice::SetLinkChangeCallback (Callback<void> callback)
+VirtualNetDevice::AddLinkChangeCallback (Callback<void> callback)
 {
 }
 

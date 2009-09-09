@@ -542,8 +542,10 @@ def build(bld):
         # When --run'ing a program, tell WAF to only build that program,
         # nothing more; this greatly speeds up compilation when all you
         # want to do is run a test program.
-        if not Options.options.compile_targets:
-            Options.options.compile_targets = os.path.basename(program_name)
+        Options.options.compile_targets += ',' + os.path.basename(program_name)
+        for gen in bld.all_task_gen:
+            if type(gen).__name__ in ['ns3header_taskgen', 'ns3moduleheader_taskgen']:
+                gen.post()
 
     if Options.options.regression or Options.options.regression_generate:
         regression_traces = env['REGRESSION_TRACES']
@@ -553,6 +555,7 @@ def build(bld):
         regression.run_regression(bld, regression_traces)
 
     if Options.options.check:
+        Options.options.compile_targets += ',run-tests,ns3module'
         _run_check(bld)
 
 

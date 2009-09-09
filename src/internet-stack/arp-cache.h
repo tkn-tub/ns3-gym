@@ -32,7 +32,7 @@
 #include "ns3/ptr.h"
 #include "ns3/object.h"
 #include "ns3/traced-callback.h"
-#include "sgi-hashmap.h"
+#include "ns3/sgi-hashmap.h"
 
 namespace ns3 {
 
@@ -48,6 +48,10 @@ class Ipv4Interface;
  */
 class ArpCache : public Object
 {
+private:
+  ArpCache (ArpCache const &);
+  ArpCache& operator= (ArpCache const &);
+  
 public:
   static TypeId GetTypeId (void);
   class Entry;

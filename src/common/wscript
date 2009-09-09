@@ -37,4 +37,5 @@ def build(bld):
         'tag-buffer.h',
         'packet-tag-list.h',
         'ascii-writer.h',
+        'sgi-hashmap.h',
         ]

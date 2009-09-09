@@ -19,7 +19,7 @@ it, and details on its implementation.
 Consider that you have two simulation models A and B, and you wish
 to have them pass information between them during the simulation.  One
 way that you can do that is that you can make A and B each explicitly
-knowledgable about the other, so that they can invoke methods on each
+knowledgeable about the other, so that they can invoke methods on each
 other. 
 
 @verbatim
@@ -141,7 +141,7 @@ CbOne (double a, double b)
 }
 @end verbatim
 
-Consider also the following main program snippett:
+Consider also the following main program snippet:
 @verbatim
 int main (int argc, char *argv[])
 {

@@ -366,10 +366,7 @@ PointToPointNetDevice::GetQueue(void) const
 PointToPointNetDevice::NotifyLinkUp (void)
 {
   m_linkUp = true;
-  if (!m_linkChangeCallback.IsNull ())
-    {
-      m_linkChangeCallback ();
-    }
+  m_linkChangeCallbacks ();
 }
 
   void 
@@ -415,9 +412,9 @@ PointToPointNetDevice::IsLinkUp (void) const
 }
 
   void 
-PointToPointNetDevice::SetLinkChangeCallback (Callback<void> callback)
+PointToPointNetDevice::AddLinkChangeCallback (Callback<void> callback)
 {
-  m_linkChangeCallback = callback;
+  m_linkChangeCallbacks.ConnectWithoutContext (callback);
 }
 
 //

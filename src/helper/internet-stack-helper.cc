@@ -153,6 +153,7 @@
 #include "ns3/object.h"
 #include "ns3/names.h"
 #include "ns3/ipv4.h"
+#include "ns3/ipv6.h"
 #include "ns3/packet-socket-factory.h"
 #include "ns3/config.h"
 #include "ns3/simulator.h"
@@ -167,6 +168,8 @@
 #include "ipv4-list-routing-helper.h"
 #include "ipv4-static-routing-helper.h"
 #include "ipv4-global-routing-helper.h"
+#include "ipv6-list-routing-helper.h"
+#include "ipv6-static-routing-helper.h"
 #include <limits>
 
 namespace ns3 {
@@ -176,19 +179,28 @@ std::string InternetStackHelper::m_pcapBaseFilename;
 bool InternetStackHelper::m_isInitialized = false;
 
 InternetStackHelper::InternetStackHelper ()
+  : m_ipv4Enabled (true),
+  m_ipv6Enabled (true)
 {
   SetTcp ("ns3::TcpL4Protocol");
   static Ipv4StaticRoutingHelper staticRouting;
   static Ipv4GlobalRoutingHelper globalRouting;
   static Ipv4ListRoutingHelper listRouting;
+  static Ipv6ListRoutingHelper listRoutingv6;
+  static Ipv6StaticRoutingHelper staticRoutingv6;
   if (m_isInitialized == false)
     {
       // Only add these once
       listRouting.Add (staticRouting, 0);
       listRouting.Add (globalRouting, -10);
+
+      /* IPv6 */
+      listRoutingv6.Add (staticRoutingv6, 0);
+      /* TODO add IPv6 global routing */
       m_isInitialized = true;
     }
   SetRoutingHelper (listRouting);
+  SetRoutingHelper (listRoutingv6);
 }
 
 void 
@@ -198,9 +210,26 @@ InternetStackHelper::SetRoutingHelper (const Ipv4RoutingHelper &routing)
 }
 
 void
+InternetStackHelper::SetRoutingHelper (const Ipv6RoutingHelper &routing)
+{
+  m_routingv6 = &routing;
+}
+
+void
+InternetStackHelper::SetIpv4StackInstall (bool enable)
+{
+  m_ipv4Enabled = enable;
+}
+
+void InternetStackHelper::SetIpv6StackInstall (bool enable)
+{
+  m_ipv6Enabled = enable;
+}
+
+void
 InternetStackHelper::Cleanup (void)
 {
-  uint32_t illegal = std::numeric_limits<uint32_t>::max();
+  uint32_t illegal = std::numeric_limits<uint32_t>::max ();
 
   for (std::vector<Trace>::iterator i = m_traces.begin ();
        i != m_traces.end (); i++)
@@ -244,7 +273,7 @@ void
 InternetStackHelper::CreateAndAggregateObjectFromTypeId (Ptr<Node> node, const std::string typeId)
 {
   ObjectFactory factory;
-  factory.SetTypeId(typeId);
+  factory.SetTypeId (typeId);
   Ptr<Object> protocol = factory.Create <Object> ();
   node->AggregateObject (protocol);
 }
@@ -252,24 +281,45 @@ InternetStackHelper::CreateAndAggregateObjectFromTypeId (Ptr<Node> node, const s
 void
 InternetStackHelper::Install (Ptr<Node> node) const
 {
-  if (node->GetObject<Ipv4> () != 0)
+  if (m_ipv4Enabled)
     {
-      NS_FATAL_ERROR ("InternetStackHelper::Install(): Aggregating " 
-                      "an InternetStack to a node with an existing Ipv4 object");
-      return;
+      if (node->GetObject<Ipv4> () != 0)
+        {
+          NS_FATAL_ERROR ("InternetStackHelper::Install (): Aggregating " 
+                          "an InternetStack to a node with an existing Ipv4 object");
+          return;
+        }
+
+      CreateAndAggregateObjectFromTypeId (node, "ns3::ArpL3Protocol");
+      CreateAndAggregateObjectFromTypeId (node, "ns3::Ipv4L3Protocol");
+      CreateAndAggregateObjectFromTypeId (node, "ns3::Icmpv4L4Protocol");
+      CreateAndAggregateObjectFromTypeId (node, "ns3::UdpL4Protocol");
+      node->AggregateObject (m_tcpFactory.Create<Object> ());
+      Ptr<PacketSocketFactory> factory = CreateObject<PacketSocketFactory> ();
+      node->AggregateObject (factory);
+      // Set routing
+      Ptr<Ipv4> ipv4 = node->GetObject<Ipv4> ();
+      Ptr<Ipv4RoutingProtocol> ipv4Routing = m_routing->Create (node);
+      ipv4->SetRoutingProtocol (ipv4Routing);
     }
 
-  CreateAndAggregateObjectFromTypeId (node, "ns3::ArpL3Protocol");
-  CreateAndAggregateObjectFromTypeId (node, "ns3::Ipv4L3Protocol");
-  CreateAndAggregateObjectFromTypeId (node, "ns3::Icmpv4L4Protocol");
-  CreateAndAggregateObjectFromTypeId (node, "ns3::UdpL4Protocol");
-  node->AggregateObject (m_tcpFactory.Create<Object> ());
-  Ptr<PacketSocketFactory> factory = CreateObject<PacketSocketFactory> ();
-  node->AggregateObject (factory);
-  // Set routing
-  Ptr<Ipv4> ipv4 = node->GetObject<Ipv4> ();
-  Ptr<Ipv4RoutingProtocol> ipv4Routing = m_routing->Create (node);
-  ipv4->SetRoutingProtocol (ipv4Routing);
+  if (m_ipv6Enabled)
+    {
+      /* IPv6 stack */
+      if (node->GetObject<Ipv6> () != 0)
+        {
+          NS_FATAL_ERROR ("InternetStackHelper::Install (): Aggregating " 
+                          "an InternetStack to a node with an existing Ipv6 object");
+          return;
+        }
+    
+      CreateAndAggregateObjectFromTypeId (node, "ns3::Ipv6L3Protocol");
+      CreateAndAggregateObjectFromTypeId (node, "ns3::Icmpv6L4Protocol");
+      /* TODO add UdpL4Protocol / TcpL4Protocol for IPv6 */
+      Ptr<Ipv6> ipv6 = node->GetObject<Ipv6> ();
+      Ptr<Ipv6RoutingProtocol> ipv6Routing = m_routingv6->Create (node);
+      ipv6->SetRoutingProtocol (ipv6Routing);
+    }
 }
 
 void
@@ -293,6 +343,9 @@ InternetStackHelper::EnableAscii (std::ostream &os, NodeContainer n)
       oss << "/NodeList/" << node->GetId () << "/$ns3::ArpL3Protocol/Drop";
       Config::Connect (oss.str (), MakeBoundCallback (&InternetStackHelper::AsciiDropEvent, writer));
       oss.str ("");
+      oss << "/NodeList/" << node->GetId () << "/$ns3::Ipv6L3Protocol/Drop";
+      Config::Connect (oss.str (), MakeBoundCallback (&InternetStackHelper::AsciiDropEvent, writer));
+      oss.str ("");
     }
 }
 
@@ -311,6 +364,12 @@ InternetStackHelper::EnablePcapAll (std::string filename)
   Config::Connect ("/NodeList/*/$ns3::Ipv4L3Protocol/Tx",
                    MakeCallback (&InternetStackHelper::LogTxIp));
   Config::Connect ("/NodeList/*/$ns3::Ipv4L3Protocol/Rx",
+                   MakeCallback (&InternetStackHelper::LogRxIp));
+
+  /* IPv6 */
+  Config::Connect ("/NodeList/*/$ns3::Ipv6L3Protocol/Tx",
+                   MakeCallback (&InternetStackHelper::LogTxIp));
+  Config::Connect ("/NodeList/*/$ns3::Ipv6L3Protocol/Rx",
                    MakeCallback (&InternetStackHelper::LogRxIp));
 }
 

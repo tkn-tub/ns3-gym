@@ -26,14 +26,13 @@
 #include "ns3/ptr.h"
 #include "ns3/traced-callback.h"
 
-#include "ipv4-interface.h"
-
 namespace ns3 {
 
 class ArpCache;
 class NetDevice;
 class Node;
 class Packet;
+class Ipv4Interface;
 
 /**
  * \ingroup internetStack
@@ -85,6 +84,8 @@ protected:
   virtual void NotifyNewAggregate ();
 private:
   typedef std::list<Ptr<ArpCache> > CacheList;
+  ArpL3Protocol (const ArpL3Protocol &o);
+  ArpL3Protocol &operator = (const ArpL3Protocol &o);
   Ptr<ArpCache> FindCache (Ptr<NetDevice> device);
   void SendArpRequest (Ptr<const ArpCache>cache, Ipv4Address to);
   void SendArpReply (Ptr<const ArpCache> cache, Ipv4Address myIp, Ipv4Address toIp, Address toMac);

@@ -26,7 +26,6 @@
 #include "ns3/packet.h"
 #include "ns3/ipv4-address.h"
 #include "ns3/ptr.h"
-#include "ipv4-end-point-demux.h"
 #include "ipv4-l4-protocol.h"
 
 namespace ns3 {
@@ -34,6 +33,8 @@ namespace ns3 {
 class Node;
 class Socket;
 class Ipv4Route;
+class Ipv4EndPointDemux;
+class Ipv4EndPoint;
 /**
  * \ingroup udp
  * \brief Implementation of the UDP protocol

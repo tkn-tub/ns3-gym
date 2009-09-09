@@ -196,9 +196,9 @@ WifiNetDevice::IsLinkUp (void) const
   return m_phy != 0 && m_linkUp;
 }
 void 
-WifiNetDevice::SetLinkChangeCallback (Callback<void> callback)
+WifiNetDevice::AddLinkChangeCallback (Callback<void> callback)
 {
-  m_linkChange = callback;
+  m_linkChanges.ConnectWithoutContext (callback);
 }
 bool 
 WifiNetDevice::IsBroadcast (void) const
@@ -312,19 +312,13 @@ void
 WifiNetDevice::LinkUp (void)
 {
   m_linkUp = true;
-  if (!m_linkChange.IsNull ())
-    {
-      m_linkChange ();
-    }
+  m_linkChanges ();
 }
 void
 WifiNetDevice::LinkDown (void)
 {
   m_linkUp = false;
-  if (!m_linkChange.IsNull ())
-    {
-      m_linkChange ();
-    }
+  m_linkChanges ();
 }
 
 bool

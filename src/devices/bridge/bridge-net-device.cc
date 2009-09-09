@@ -317,7 +317,7 @@ BridgeNetDevice::IsLinkUp (void) const
 
 
 void 
-BridgeNetDevice::SetLinkChangeCallback (Callback<void> callback)
+BridgeNetDevice::AddLinkChangeCallback (Callback<void> callback)
 {}
 
 

@@ -104,7 +104,7 @@ def main(argv):
     sink = ns3.PacketSinkHelper("ns3::UdpSocketFactory",
                                 ns3.Address(ns3.InetSocketAddress(ns3.Ipv4Address.GetAny(), port)))
     app = sink.Install(ns3.NodeContainer(terminals.Get(1)))
-    app.Start (ns3.Seconds (0.0))
+    app.Start(ns3.Seconds(0.0))
 
     # 
     # Create a similar flow from n3 to n0, starting at time 1.1 seconds
@@ -116,7 +116,7 @@ def main(argv):
     app.Stop(ns3.Seconds(10.0))
 
     app = sink.Install(ns3.NodeContainer(terminals.Get(0)))
-    app.Start (ns3.Seconds (0.0))
+    app.Start(ns3.Seconds(0.0))
 
     #
     # Configure tracing of all enqueue, dequeue, and NetDevice receive events.

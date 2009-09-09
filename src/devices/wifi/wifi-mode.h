@@ -151,6 +151,7 @@ public:
    *        associated WifiMode is used.
    * \param dataRate the rate (bits/second) at which the user data is transmitted
    * \param phyRate the rate (bits/second) at which the encoded user data is transmitted
+   * \param standard the Wifi Phy standard to apply
    *        The phyRate includes FEC so, is typically higher than the dataRate.
    *
    * Create a BPSK WifiMode.
@@ -171,6 +172,7 @@ public:
    * \param phyRate the rate (bits/second) at which the encoded user data is transmitted
    *        The phyRate includes FEC so, is typically higher than the dataRate.
    * \param constellationSize the number of elements included in the QAM constellation. 
+   * \param standard the Wifi Phy standard to apply
    *
    * Create a QAM WifiMode.
    */
@@ -190,6 +192,7 @@ public:
    *        associated WifiMode is used.
    * \param dataRate the rate (bits/second) at which the user data is transmitted
    * \param phyRate the rate (bits/second) at which the encoded user data is transmitted
+   * \param standard the Wifi Phy standard to apply
    *        The phyRate includes FEC so, is typically higher than the dataRate.
    *
    * Create a DBPSK WifiMode.
@@ -208,6 +211,7 @@ public:
    *        associated WifiMode is used.
    * \param dataRate the rate (bits/second) at which the user data is transmitted
    * \param phyRate the rate (bits/second) at which the encoded user data is transmitted
+   * \param standard the Wifi Phy standard to apply
    *        The phyRate includes FEC so, is typically higher than the dataRate.
    *
    * Create a DQPSK WifiMode.

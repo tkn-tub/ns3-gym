@@ -39,21 +39,21 @@ class Ipv6Header : public Header
      */
     enum NextHeader_e
     {
-      IPV6_EXT_HOP_BY_HOP=0,
-      IPV6_IPV4=4,
-      IPV6_TCP=6,
-      IPV6_UDP=17,
-      IPV6_IPV6=41,
-      IPV6_EXT_ROUTING=43,
-      IPV6_EXT_FRAGMENTATION=44,
-      IPV6_EXT_CONFIDENTIALITY=50,
-      IPV6_EXT_AUTHENTIFICATION,
-      IPV6_ICMPV6=58,
-      IPV6_EXT_END,
-      IPV6_EXT_DESTINATION,
-      IPV6_SCTP=135,
-      IPV6_EXT_MOBILITY=135,
-      IPV6_UDP_LITE,
+      IPV6_EXT_HOP_BY_HOP = 0,
+      IPV6_IPV4 = 4,
+      IPV6_TCP = 6,
+      IPV6_UDP = 17,
+      IPV6_IPV6 = 41,
+      IPV6_EXT_ROUTING = 43,
+      IPV6_EXT_FRAGMENTATION = 44,
+      IPV6_EXT_CONFIDENTIALITY = 50,
+      IPV6_EXT_AUTHENTIFICATION = 51,
+      IPV6_ICMPV6 = 58,
+      IPV6_EXT_END = 59,
+      IPV6_EXT_DESTINATION = 60,
+      IPV6_SCTP = 135,
+      IPV6_EXT_MOBILITY = 135,
+      IPV6_UDP_LITE = 136,
     };
 
     /**

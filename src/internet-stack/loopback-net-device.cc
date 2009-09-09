@@ -125,7 +125,7 @@ LoopbackNetDevice::IsLinkUp (void) const
 }
 
 void 
-LoopbackNetDevice::SetLinkChangeCallback (Callback<void> callback)
+LoopbackNetDevice::AddLinkChangeCallback (Callback<void> callback)
 {}
 
 bool 

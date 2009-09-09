@@ -78,9 +78,9 @@ trace hooks.  The EmuNetDevice provides following Attributes:
 @itemize @bullet
 @item Address:  The Mac48Address of the device;
 @item DeviceName: The name of the underlying real device (e.g., ``eth1'');
-@item Start:  The simualtion time at which to enable the underlying socket;
-@item Stop:  The simualtion time at which to stop receiving from the underlying socket;
-@item TxQueue:  The trasmit queue used by the device;
+@item Start:  The simulation time at which to enable the underlying socket;
+@item Stop:  The simulation time at which to stop receiving from the underlying socket;
+@item TxQueue:  The transmit queue used by the device;
 @item InterframeGap:  The optional time to wait between "frames";
 @item Rx:  A trace source for received packets;
 @end itemize
@@ -88,7 +88,7 @@ trace hooks.  The EmuNetDevice provides following Attributes:
 Packets sent over the EmuNetDevice are always routed through the 
 transmit queue to provide a trace hook for packets sent out over the 
 network.  This transmit queue can be set (via attribute) to model different
-queueing strategies.
+queuing strategies.
 
 @node Using the EmuNetDevice
 @section Using the EmuNetDevice
@@ -102,8 +102,8 @@ attempts to walk the channels looking for adjacent networks.  Since there
 is no channel, the global router will be unable to do this.
 
 The Emu net devices are typically created and configured using the associated 
-@code{EmuHelper} object.  The various ns3 device helpers generatlly work in a
-simlar way, and their use is seen in many of our example programs.
+@code{EmuHelper} object.  The various ns3 device helpers generally work in a
+similar way, and their use is seen in many of our example programs.
 
 The conceptual model of interest is that of a bare computer ``husk'' into which 
 you plug net devices.  The bare computers are created using a @code{NodeContainer}
@@ -173,8 +173,8 @@ The m_traceDequeue event is triggered when a packet is removed from the
 transmit queue.  Dequeues from the transmit queue happen immediately after
 the Enqueue event and just prior to the packet being sent to the underlying
 socket.  This means that the transmit queue really only exists to fire on
-enqueue and dequeue operations so the Emu device bhaves like other ns-3
-devices in this repect.
+enqueue and dequeue operations so the Emu device behaves like other ns-3
+devices in this respect.
 
 @subsection Lower-Level (PHY) Hooks
 
