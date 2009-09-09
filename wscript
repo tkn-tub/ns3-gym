@@ -555,7 +555,9 @@ def build(bld):
         regression.run_regression(bld, regression_traces)
 
     if Options.options.check:
-        Options.options.compile_targets += ',run-tests,ns3module'
+        Options.options.compile_targets += ',run-tests'
+        if env['ENABLE_PYTHON_BINDINGS']:
+            Options.options.compile_targets += ',ns3module'
         _run_check(bld)
 
 
