@@ -94,7 +94,7 @@ void Radvd::StartApplication ()
   for (RadvdInterfaceListCI it = m_configurations.begin () ; it != m_configurations.end () ; it++)
   {
     m_eventIds[(*it)->GetInterface ()] = EventId ();
-    ScheduleTransmit (Seconds (0.), (*it), m_eventIds[(*it)->GetInterface ()]);
+    ScheduleTransmit (Seconds (0.), (*it), m_eventIds[(*it)->GetInterface ()], Ipv6Address::GetAllNodesMulticast (), true); 
   }
 }
 
@@ -119,13 +119,13 @@ void Radvd::AddConfiguration (Ptr<RadvdInterface> routerInterface)
   m_configurations.push_back (routerInterface);
 }
 
-void Radvd::ScheduleTransmit (Time dt, Ptr<RadvdInterface> config, EventId& eventId)
+void Radvd::ScheduleTransmit (Time dt, Ptr<RadvdInterface> config, EventId& eventId, Ipv6Address dst, bool reschedule)
 {
   NS_LOG_FUNCTION (this << dt);
-  eventId = Simulator::Schedule (dt, &Radvd::Send, this, config, Ipv6Address::GetAllNodesMulticast ());
+  eventId = Simulator::Schedule (dt, &Radvd::Send, this, config, dst, reschedule);
 }
 
-void Radvd::Send (Ptr<RadvdInterface> config, Ipv6Address dst)
+void Radvd::Send (Ptr<RadvdInterface> config, Ipv6Address dst, bool reschedule)
 {
   NS_LOG_FUNCTION (this << dst);
   NS_ASSERT (m_eventIds[config->GetInterface ()].IsExpired ());
@@ -212,10 +212,14 @@ void Radvd::Send (Ptr<RadvdInterface> config, Ipv6Address dst)
   NS_LOG_LOGIC ("Send RA");
   m_socket->Send (p, 0);
 
-  UniformVariable rnd;
-  uint64_t delay = static_cast<uint64_t> (rnd.GetValue (config->GetMinRtrAdvInterval (), config->GetMaxRtrAdvInterval ()) + 0.5);
-  Time t = MilliSeconds (delay);
-  ScheduleTransmit (t, config, m_eventIds[config->GetInterface ()]);
+  if (reschedule)
+  {
+    UniformVariable rnd;
+    uint64_t delay = static_cast<uint64_t> (rnd.GetValue (config->GetMinRtrAdvInterval (), config->GetMaxRtrAdvInterval ()) + 0.5);
+    NS_LOG_INFO ("Reschedule in " << delay);
+    Time t = MilliSeconds (delay);
+    ScheduleTransmit (t, config, m_eventIds[config->GetInterface ()], Ipv6Address::GetAllNodesMulticast (), reschedule);
+  }
 }
 
 void Radvd::HandleRead (Ptr<Socket> socket)
@@ -236,31 +240,28 @@ void Radvd::HandleRead (Ptr<Socket> socket)
       Time t;
 
       packet->RemoveHeader (hdr);
-
       switch (*packet->PeekData ())
       {
         case Icmpv6Header::ICMPV6_ND_ROUTER_SOLICITATION:
-          /* send RA in response of a RS */
           packet->RemoveHeader (rsHdr);
           NS_LOG_INFO ("Received ICMPv6 Router Solicitation from " << hdr.GetSourceAddress () << " code = " << (uint32_t)rsHdr.GetCode ());
 
-          delay = static_cast<uint64_t> (rnd.GetValue (0, MAX_RA_DELAY_TIME) + 0.5); 
-          t = Simulator::Now () + MilliSeconds (delay);
-
-#if 0
-          NS_LOG_INFO ("schedule new RA : " << t.GetTimeStep () << " next scheduled RA" << (int64_t)m_sendEvent.GetTs ());
-
-          if (t.GetTimeStep () < static_cast<int64_t> (m_sendEvent.GetTs ()))
+          /* XXX advertise just prefix(es) for the interface not all */
+          for (RadvdInterfaceListCI it = m_configurations.begin () ; it != m_configurations.end () ; it++)
           {
-            /* send multicast RA */
-            /* maybe replace this by a unicast RA (it is a SHOULD in the RFC) */
-            NS_LOG_INFO ("Respond to RS");
-            /* XXX advertise just the prefix for the interface not all */
-            t = MilliSeconds (delay);
-            /* XXX schedule packet send */
-            /* ScheduleTransmit (t); */
+            /* calculate minimum delay between RA */
+            delay = static_cast<uint64_t> (rnd.GetValue (0, MAX_RA_DELAY_TIME) + 0.5); 
+            t = Simulator::Now () + MilliSeconds (delay); /* absolute time of solicited RA */
+        
+            /* if our solicited RA is before the next periodic RA, we schedule it */
+            if (t.GetTimeStep () < static_cast<int64_t> (m_eventIds[(*it)->GetInterface ()].GetTs ()))
+            {
+              NS_LOG_INFO ("schedule new RA");
+              EventId ei;
+              
+              ScheduleTransmit (MilliSeconds (delay), (*it), ei, address.GetIpv6 (), false);
+            }
           }
-#endif
           break;
         default:
           break;

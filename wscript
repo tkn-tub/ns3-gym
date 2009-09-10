@@ -141,6 +141,11 @@ def set_options(opt):
                    help=('Run doxygen to generate html documentation from source comments'),
                    action="store_true", default=False,
                    dest='doxygen')
+    opt.add_option('--doxygen-no-build',
+                   help=('Run doxygen to generate html documentation from source comments, '
+                         'but do not wait for ns-3 to finish the full build.'),
+                   action="store_true", default=False,
+                   dest='doxygen_no_build')
 
     opt.add_option('--run',
                    help=('Run a locally built program; argument can be a program name,'
@@ -555,9 +560,14 @@ def build(bld):
         regression.run_regression(bld, regression_traces)
 
     if Options.options.check:
-        Options.options.compile_targets += ',run-tests,ns3module'
+        Options.options.compile_targets += ',run-tests'
+        if env['ENABLE_PYTHON_BINDINGS']:
+            Options.options.compile_targets += ',ns3module'
         _run_check(bld)
 
+    if Options.options.doxygen_no_build:
+        doxygen()
+        raise SystemExit(0)
 
 def shutdown(ctx):
     bld = wutils.bld

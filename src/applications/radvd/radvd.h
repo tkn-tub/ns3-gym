@@ -103,15 +103,18 @@ class Radvd : public Application
      * \param dt interval between packet
      * \param config interface configuration
      * \param eventId event ID associated
+     * \param dst IPv6 destination address
+     * \param reschedule if true another send will be reschedule (periodic)
      */
-    void ScheduleTransmit (Time dt, Ptr<RadvdInterface> config, EventId& eventId);
+    void ScheduleTransmit (Time dt, Ptr<RadvdInterface> config, EventId& eventId, Ipv6Address dst = Ipv6Address::GetAllNodesMulticast (), bool reschedule = false);
 
     /**
      * \brief Send a packet.
      * \param config interface configuration
      * \param dst destination address (default ff02::1)
+     * \param reschedule if true another send will be reschedule (periodic)
      */
-    void Send (Ptr<RadvdInterface> config, Ipv6Address dst = Ipv6Address::GetAllNodesMulticast ());
+    void Send (Ptr<RadvdInterface> config, Ipv6Address dst = Ipv6Address::GetAllNodesMulticast (), bool reschedule = false);
 
     /**
      * \brief Handle received packet, especially router solicitation
