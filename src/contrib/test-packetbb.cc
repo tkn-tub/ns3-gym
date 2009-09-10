@@ -18,7 +18,6 @@
  * 
  * Author: Tom Wambold <tom5760@gmail.com>
  */
-/** TODO: Find out why msg-addr-length is set to 0 in tests */
 
 #include <iostream>
 
@@ -29,12 +28,12 @@
 
 using namespace std;
 using namespace ns3;
-using namespace ns3::pbb;
 
 class PacketBBTester
 {
 public:
-  PacketBBTester (int testnum, PacketBB &reference, const uint8_t * buffer, uint32_t size) :
+  PacketBBTester (int testnum, PbbPacket &reference, const uint8_t * buffer,
+      uint32_t size) :
     m_refPacket(reference)
   {
     m_refBuffer.AddAtStart (size);
@@ -77,7 +76,7 @@ public:
 
   bool TestDeserialize (void)
   {
-    PacketBB newPacket;
+    PbbPacket newPacket;
     if (newPacket.Deserialize (m_refBuffer.Begin ()) != m_refBuffer.GetSize ())
       {
         return false;
@@ -114,7 +113,7 @@ private:
   }
 
   Buffer m_refBuffer;
-  PacketBB &m_refPacket;
+  PbbPacket &m_refPacket;
 };
 
 int main (void)
@@ -133,7 +132,7 @@ int main (void)
    * 	`------------------
    */
   {
-    PacketBB packet;
+    PbbPacket packet;
     uint8_t buffer[] = {0x00};
     PacketBBTester test(testnum++, packet, buffer, sizeof(buffer));
   }
@@ -148,7 +147,7 @@ int main (void)
    * `------------------
    */
   {
-    PacketBB packet;
+    PbbPacket packet;
     packet.SetSequenceNumber (2);
     uint8_t buffer[] = {0x08, 0x00, 0x02};
     PacketBBTester test(testnum++, packet, buffer, sizeof(buffer));
@@ -165,7 +164,7 @@ int main (void)
    * This test has the phastlv flag set to 1 with no tlvs.
    * I'll come back to this one later.
   {
-    PacketBB packet;
+    PbbPacket packet;
     packet.SetSequenceNumber (3);
     uint8_t buffer[] = {0x0c, 0x00, 0x03, 0x00, 0x00};
     PacketBBTester test(testnum++, packet, buffer, sizeof(buffer));
@@ -187,10 +186,10 @@ int main (void)
 	 * `------------------
    */
   {
-    PacketBB packet;
+    PbbPacket packet;
     packet.SetSequenceNumber (4);
 
-    Ptr<Tlv> tlv = Create<Tlv>();
+    Ptr<PbbTlv> tlv = Create<PbbTlv>();
     tlv->SetType (1);
 
     packet.TlvPushBack (tlv);
@@ -218,14 +217,14 @@ int main (void)
 	 * `------------------
    */
   {
-    PacketBB packet;
+    PbbPacket packet;
     packet.SetSequenceNumber (5);
 
-    Ptr<Tlv> tlv1 = Create<Tlv>();
+    Ptr<PbbTlv> tlv1 = Create<PbbTlv>();
     tlv1->SetType (1);
     packet.TlvPushBack (tlv1);
 
-    Ptr<Tlv> tlv2 = Create<Tlv>();
+    Ptr<PbbTlv> tlv2 = Create<PbbTlv>();
     tlv2->SetType (2);
     tlv2->SetTypeExt (100);
     packet.TlvPushBack (tlv2);
@@ -256,14 +255,14 @@ int main (void)
 	 * `------------------
    */
   {
-    PacketBB packet;
+    PbbPacket packet;
     packet.SetSequenceNumber (6);
 
-    Ptr<Tlv> tlv1 = Create<Tlv>();
+    Ptr<PbbTlv> tlv1 = Create<PbbTlv>();
     tlv1->SetType (1);
     packet.TlvPushBack (tlv1);
 
-    Ptr<Tlv> tlv2 = Create<Tlv>();
+    Ptr<PbbTlv> tlv2 = Create<PbbTlv>();
     tlv2->SetType (2);
     tlv2->SetTypeExt (100);
 
@@ -295,92 +294,92 @@ int main (void)
 	 * |    |     - TLV
 	 * |    |         Flags = 152
 	 * |    |         Type = 2; Type ext. = 100; Value = 00  01  02  03
-	 * |    |                                          04  05  06  07
-	 * |    |                                          08  09  0a  0b
-	 * |    |                                          0c  0d  0e  0f
-	 * |    |                                          10  11  12  13
-	 * |    |                                          14  15  16  17
-	 * |    |                                          18  19  1a  1b
-	 * |    |                                          1c  1d  1e  1f
-	 * |    |                                          20  21  22  23
-	 * |    |                                          24  25  26  27
-	 * |    |                                          28  29  2a  2b
-	 * |    |                                          2c  2d  2e  2f
-	 * |    |                                          30  31  32  33
-	 * |    |                                          34  35  36  37
-	 * |    |                                          38  39  3a  3b
-	 * |    |                                          3c  3d  3e  3f
-	 * |    |                                          40  41  42  43
-	 * |    |                                          44  45  46  47
-	 * |    |                                          48  49  4a  4b
-	 * |    |                                          4c  4d  4e  4f
-	 * |    |                                          50  51  52  53
-	 * |    |                                          54  55  56  57
-	 * |    |                                          58  59  5a  5b
-	 * |    |                                          5c  5d  5e  5f
-	 * |    |                                          60  61  62  63
-	 * |    |                                          64  65  66  67
-	 * |    |                                          68  69  6a  6b
-	 * |    |                                          6c  6d  6e  6f
-	 * |    |                                          70  71  72  73
-	 * |    |                                          74  75  76  77
-	 * |    |                                          78  79  7a  7b
-	 * |    |                                          7c  7d  7e  7f
-	 * |    |                                          80  81  82  83
-	 * |    |                                          84  85  86  87
-	 * |    |                                          88  89  8a  8b
-	 * |    |                                          8c  8d  8e  8f
-	 * |    |                                          90  91  92  93
-	 * |    |                                          94  95  96  97
-	 * |    |                                          98  99  9a  9b
-	 * |    |                                          9c  9d  9e  9f
-	 * |    |                                          a0  a1  a2  a3
-	 * |    |                                          a4  a5  a6  a7
-	 * |    |                                          a8  a9  aa  ab
-	 * |    |                                          ac  ad  ae  af
-	 * |    |                                          b0  b1  b2  b3
-	 * |    |                                          b4  b5  b6  b7
-	 * |    |                                          b8  b9  ba  bb
-	 * |    |                                          bc  bd  be  bf
-	 * |    |                                          c0  c1  c2  c3
-	 * |    |                                          c4  c5  c6  c7
-	 * |    |                                          c8  c9  ca  cb
-	 * |    |                                          cc  cd  ce  cf
-	 * |    |                                          d0  d1  d2  d3
-	 * |    |                                          d4  d5  d6  d7
-	 * |    |                                          d8  d9  da  db
-	 * |    |                                          dc  dd  de  df
-	 * |    |                                          e0  e1  e2  e3
-	 * |    |                                          e4  e5  e6  e7
-	 * |    |                                          e8  e9  ea  eb
-	 * |    |                                          ec  ed  ee  ef
-	 * |    |                                          f0  f1  f2  f3
-	 * |    |                                          f4  f5  f6  f7
-	 * |    |                                          f8  f9  fa  fb
-	 * |    |                                          fc  fd  fe  00
-	 * |    |                                          01  02  03  04
-	 * |    |                                          05  06  07  08
-	 * |    |                                          09  0a  0b  0c
-	 * |    |                                          0d  0e  0f  10
-	 * |    |                                          11  12  13  14
-	 * |    |                                          15  16  17  18
-	 * |    |                                          19  1a  1b  1c
-	 * |    |                                          1d  1e  1f  20
-	 * |    |                                          21  22  23  24
-	 * |    |                                          25  26  27  28
-	 * |    |                                          29  2a  2b  2c
+	 * |    |                                            04  05  06  07
+	 * |    |                                            08  09  0a  0b
+	 * |    |                                            0c  0d  0e  0f
+	 * |    |                                            10  11  12  13
+	 * |    |                                            14  15  16  17
+	 * |    |                                            18  19  1a  1b
+	 * |    |                                            1c  1d  1e  1f
+	 * |    |                                            20  21  22  23
+	 * |    |                                            24  25  26  27
+	 * |    |                                            28  29  2a  2b
+	 * |    |                                            2c  2d  2e  2f
+	 * |    |                                            30  31  32  33
+	 * |    |                                            34  35  36  37
+	 * |    |                                            38  39  3a  3b
+	 * |    |                                            3c  3d  3e  3f
+	 * |    |                                            40  41  42  43
+	 * |    |                                            44  45  46  47
+	 * |    |                                            48  49  4a  4b
+	 * |    |                                            4c  4d  4e  4f
+	 * |    |                                            50  51  52  53
+	 * |    |                                            54  55  56  57
+	 * |    |                                            58  59  5a  5b
+	 * |    |                                            5c  5d  5e  5f
+	 * |    |                                            60  61  62  63
+	 * |    |                                            64  65  66  67
+	 * |    |                                            68  69  6a  6b
+	 * |    |                                            6c  6d  6e  6f
+	 * |    |                                            70  71  72  73
+	 * |    |                                            74  75  76  77
+	 * |    |                                            78  79  7a  7b
+	 * |    |                                            7c  7d  7e  7f
+	 * |    |                                            80  81  82  83
+	 * |    |                                            84  85  86  87
+	 * |    |                                            88  89  8a  8b
+	 * |    |                                            8c  8d  8e  8f
+	 * |    |                                            90  91  92  93
+	 * |    |                                            94  95  96  97
+	 * |    |                                            98  99  9a  9b
+	 * |    |                                            9c  9d  9e  9f
+	 * |    |                                            a0  a1  a2  a3
+	 * |    |                                            a4  a5  a6  a7
+	 * |    |                                            a8  a9  aa  ab
+	 * |    |                                            ac  ad  ae  af
+	 * |    |                                            b0  b1  b2  b3
+	 * |    |                                            b4  b5  b6  b7
+	 * |    |                                            b8  b9  ba  bb
+	 * |    |                                            bc  bd  be  bf
+	 * |    |                                            c0  c1  c2  c3
+	 * |    |                                            c4  c5  c6  c7
+	 * |    |                                            c8  c9  ca  cb
+	 * |    |                                            cc  cd  ce  cf
+	 * |    |                                            d0  d1  d2  d3
+	 * |    |                                            d4  d5  d6  d7
+	 * |    |                                            d8  d9  da  db
+	 * |    |                                            dc  dd  de  df
+	 * |    |                                            e0  e1  e2  e3
+	 * |    |                                            e4  e5  e6  e7
+	 * |    |                                            e8  e9  ea  eb
+	 * |    |                                            ec  ed  ee  ef
+	 * |    |                                            f0  f1  f2  f3
+	 * |    |                                            f4  f5  f6  f7
+	 * |    |                                            f8  f9  fa  fb
+	 * |    |                                            fc  fd  fe  00
+	 * |    |                                            01  02  03  04
+	 * |    |                                            05  06  07  08
+	 * |    |                                            09  0a  0b  0c
+	 * |    |                                            0d  0e  0f  10
+	 * |    |                                            11  12  13  14
+	 * |    |                                            15  16  17  18
+	 * |    |                                            19  1a  1b  1c
+	 * |    |                                            1d  1e  1f  20
+	 * |    |                                            21  22  23  24
+	 * |    |                                            25  26  27  28
+	 * |    |                                            29  2a  2b  2c
 	 * |    |                                          
 	 * `------------------
    */
   {
-    PacketBB packet;
+    PbbPacket packet;
     packet.SetSequenceNumber (7);
 
-    Ptr<Tlv> tlv1 = Create<Tlv>();
+    Ptr<PbbTlv> tlv1 = Create<PbbTlv>();
     tlv1->SetType (1);
     packet.TlvPushBack (tlv1);
 
-    Ptr<Tlv> tlv2 = Create<Tlv>();
+    Ptr<PbbTlv> tlv2 = Create<PbbTlv>();
     tlv2->SetType (2);
     tlv2->SetTypeExt (100);
 
@@ -569,14 +568,14 @@ int main (void)
 	 * `------------------
   */
   {
-    PacketBB packet;
+    PbbPacket packet;
     packet.SetSequenceNumber (8);
 
-    Ptr<Tlv> tlv1 = Create<Tlv> ();
+    Ptr<PbbTlv> tlv1 = Create<PbbTlv> ();
     tlv1->SetType (1);
     packet.TlvPushBack (tlv1);
 
-    Ptr<MessageIpv4> msg1 = Create<MessageIpv4> ();
+    Ptr<PbbMessageIpv4> msg1 = Create<PbbMessageIpv4> ();
     msg1->SetType (1);
     packet.MessagePushBack (msg1);
 
@@ -618,18 +617,18 @@ int main (void)
 	 * `------------------
   */
   {
-    PacketBB packet;
+    PbbPacket packet;
     packet.SetSequenceNumber (9);
 
-    Ptr<Tlv> tlv1 = Create<Tlv> ();
+    Ptr<PbbTlv> tlv1 = Create<PbbTlv> ();
     tlv1->SetType (1);
     packet.TlvPushBack (tlv1);
 
-    Ptr<MessageIpv4> msg1 = Create<MessageIpv4> ();
+    Ptr<PbbMessageIpv4> msg1 = Create<PbbMessageIpv4> ();
     msg1->SetType (1);
     packet.MessagePushBack (msg1);
 
-    Ptr<MessageIpv4> msg2 = Create<MessageIpv4> ();
+    Ptr<PbbMessageIpv4> msg2 = Create<PbbMessageIpv4> ();
     msg2->SetType (2);
     msg2->SetOriginatorAddress(Ipv4Address("10.0.0.1"));
     packet.MessagePushBack (msg2);
@@ -675,18 +674,18 @@ int main (void)
 	 * `------------------
    */
   {
-    PacketBB packet;
+    PbbPacket packet;
     packet.SetSequenceNumber (10);
 
-    Ptr<Tlv> tlv1 = Create<Tlv> ();
+    Ptr<PbbTlv> tlv1 = Create<PbbTlv> ();
     tlv1->SetType (1);
     packet.TlvPushBack (tlv1);
 
-    Ptr<MessageIpv4> msg1 = Create<MessageIpv4> ();
+    Ptr<PbbMessageIpv4> msg1 = Create<PbbMessageIpv4> ();
     msg1->SetType (1);
     packet.MessagePushBack (msg1);
 
-    Ptr<MessageIpv4> msg2 = Create<MessageIpv4> ();
+    Ptr<PbbMessageIpv4> msg2 = Create<PbbMessageIpv4> ();
     msg2->SetType (2);
     msg2->SetOriginatorAddress(Ipv4Address("10.0.0.1"));
     msg2->SetHopCount (1);
@@ -734,18 +733,18 @@ int main (void)
 	 * `------------------
    */
   {
-    PacketBB packet;
+    PbbPacket packet;
     packet.SetSequenceNumber (11);
 
-    Ptr<Tlv> tlv1 = Create<Tlv> ();
+    Ptr<PbbTlv> tlv1 = Create<PbbTlv> ();
     tlv1->SetType (1);
     packet.TlvPushBack (tlv1);
 
-    Ptr<MessageIpv4> msg1 = Create<MessageIpv4> ();
+    Ptr<PbbMessageIpv4> msg1 = Create<PbbMessageIpv4> ();
     msg1->SetType (1);
     packet.MessagePushBack (msg1);
 
-    Ptr<MessageIpv4> msg2 = Create<MessageIpv4> ();
+    Ptr<PbbMessageIpv4> msg2 = Create<PbbMessageIpv4> ();
     msg2->SetType (2);
     msg2->SetOriginatorAddress(Ipv4Address("10.0.0.1"));
     msg2->SetHopLimit (255);
@@ -796,18 +795,18 @@ int main (void)
 	 * `------------------
    */
   {
-    PacketBB packet;
+    PbbPacket packet;
     packet.SetSequenceNumber (12);
 
-    Ptr<Tlv> tlv1 = Create<Tlv> ();
+    Ptr<PbbTlv> tlv1 = Create<PbbTlv> ();
     tlv1->SetType (1);
     packet.TlvPushBack (tlv1);
 
-    Ptr<MessageIpv4> msg1 = Create<MessageIpv4> ();
+    Ptr<PbbMessageIpv4> msg1 = Create<PbbMessageIpv4> ();
     msg1->SetType (1);
     packet.MessagePushBack (msg1);
 
-    Ptr<MessageIpv4> msg2 = Create<MessageIpv4> ();
+    Ptr<PbbMessageIpv4> msg2 = Create<PbbMessageIpv4> ();
     msg2->SetType (2);
     msg2->SetOriginatorAddress(Ipv4Address("10.0.0.1"));
     msg2->SetHopLimit (255);
@@ -859,18 +858,18 @@ int main (void)
 	 * `------------------
    */
   {
-    PacketBB packet;
+    PbbPacket packet;
     packet.SetSequenceNumber (13);
 
-    Ptr<Tlv> tlv1 = Create<Tlv> ();
+    Ptr<PbbTlv> tlv1 = Create<PbbTlv> ();
     tlv1->SetType (1);
     packet.TlvPushBack (tlv1);
 
-    Ptr<MessageIpv4> msg1 = Create<MessageIpv4> ();
+    Ptr<PbbMessageIpv4> msg1 = Create<PbbMessageIpv4> ();
     msg1->SetType (1);
     packet.MessagePushBack (msg1);
 
-    Ptr<MessageIpv4> msg2 = Create<MessageIpv4> ();
+    Ptr<PbbMessageIpv4> msg2 = Create<PbbMessageIpv4> ();
     msg2->SetType (2);
     msg2->SetOriginatorAddress(Ipv4Address("10.0.0.1"));
     msg2->SetHopLimit (255);
@@ -926,23 +925,23 @@ int main (void)
 	 * `------------------
    */
   {
-    PacketBB packet;
+    PbbPacket packet;
     packet.SetSequenceNumber (14);
 
-    Ptr<Tlv> tlv1 = Create<Tlv> ();
+    Ptr<PbbTlv> tlv1 = Create<PbbTlv> ();
     tlv1->SetType (1);
     packet.TlvPushBack (tlv1);
 
-    Ptr<MessageIpv4> msg1 = Create<MessageIpv4> ();
+    Ptr<PbbMessageIpv4> msg1 = Create<PbbMessageIpv4> ();
     msg1->SetType (1);
 
-    Ptr<Tlv> msg1tlv1 = Create<Tlv> ();
+    Ptr<PbbTlv> msg1tlv1 = Create<PbbTlv> ();
     msg1tlv1->SetType (1);
     msg1->TlvPushBack (msg1tlv1);
 
     packet.MessagePushBack (msg1);
 
-    Ptr<MessageIpv4> msg2 = Create<MessageIpv4> ();
+    Ptr<PbbMessageIpv4> msg2 = Create<PbbMessageIpv4> ();
     msg2->SetType (2);
     msg2->SetOriginatorAddress(Ipv4Address("10.0.0.1"));
     msg2->SetHopLimit (255);
@@ -1003,30 +1002,30 @@ int main (void)
 	 * `------------------
    */
   {
-    PacketBB packet;
+    PbbPacket packet;
     packet.SetSequenceNumber (15);
 
-    Ptr<Tlv> tlv1 = Create<Tlv> ();
+    Ptr<PbbTlv> tlv1 = Create<PbbTlv> ();
     tlv1->SetType (1);
     packet.TlvPushBack (tlv1);
 
-    Ptr<MessageIpv4> msg1 = Create<MessageIpv4> ();
+    Ptr<PbbMessageIpv4> msg1 = Create<PbbMessageIpv4> ();
     msg1->SetType (1);
 
-    Ptr<Tlv> msg1tlv1 = Create<Tlv> ();
+    Ptr<PbbTlv> msg1tlv1 = Create<PbbTlv> ();
     msg1tlv1->SetType (1);
     msg1->TlvPushBack (msg1tlv1);
 
     packet.MessagePushBack (msg1);
 
-    Ptr<MessageIpv4> msg2 = Create<MessageIpv4> ();
+    Ptr<PbbMessageIpv4> msg2 = Create<PbbMessageIpv4> ();
     msg2->SetType (2);
     msg2->SetOriginatorAddress (Ipv4Address ("10.0.0.1"));
     msg2->SetHopLimit (255);
     msg2->SetHopCount (1);
     msg2->SetSequenceNumber (12345);
 
-    Ptr<AddressBlockIpv4> msg2a1 = Create<AddressBlockIpv4> ();
+    Ptr<PbbAddressBlockIpv4> msg2a1 = Create<PbbAddressBlockIpv4> ();
     msg2a1->AddressPushBack (Ipv4Address ("0.0.0.0"));
     msg2->AddressBlockPushBack (msg2a1);
 
@@ -1087,30 +1086,30 @@ int main (void)
 	 * `------------------
    */
   {
-    PacketBB packet;
+    PbbPacket packet;
     packet.SetSequenceNumber (16);
 
-    Ptr<Tlv> tlv1 = Create<Tlv> ();
+    Ptr<PbbTlv> tlv1 = Create<PbbTlv> ();
     tlv1->SetType (1);
     packet.TlvPushBack (tlv1);
 
-    Ptr<MessageIpv4> msg1 = Create<MessageIpv4> ();
+    Ptr<PbbMessageIpv4> msg1 = Create<PbbMessageIpv4> ();
     msg1->SetType (1);
 
-    Ptr<Tlv> msg1tlv1 = Create<Tlv> ();
+    Ptr<PbbTlv> msg1tlv1 = Create<PbbTlv> ();
     msg1tlv1->SetType (1);
     msg1->TlvPushBack (msg1tlv1);
 
     packet.MessagePushBack (msg1);
 
-    Ptr<MessageIpv4> msg2 = Create<MessageIpv4> ();
+    Ptr<PbbMessageIpv4> msg2 = Create<PbbMessageIpv4> ();
     msg2->SetType (2);
     msg2->SetOriginatorAddress (Ipv4Address ("10.0.0.1"));
     msg2->SetHopLimit (255);
     msg2->SetHopCount (1);
     msg2->SetSequenceNumber (12345);
 
-    Ptr<AddressBlockIpv4> msg2a1 = Create<AddressBlockIpv4> ();
+    Ptr<PbbAddressBlockIpv4> msg2a1 = Create<PbbAddressBlockIpv4> ();
     msg2a1->AddressPushBack (Ipv4Address ("255.255.255.255"));
     msg2->AddressBlockPushBack (msg2a1);
 
@@ -1171,30 +1170,30 @@ int main (void)
 	 * `------------------
    */
   {
-    PacketBB packet;
+    PbbPacket packet;
     packet.SetSequenceNumber (17);
 
-    Ptr<Tlv> tlv1 = Create<Tlv> ();
+    Ptr<PbbTlv> tlv1 = Create<PbbTlv> ();
     tlv1->SetType (1);
     packet.TlvPushBack (tlv1);
 
-    Ptr<MessageIpv4> msg1 = Create<MessageIpv4> ();
+    Ptr<PbbMessageIpv4> msg1 = Create<PbbMessageIpv4> ();
     msg1->SetType (1);
 
-    Ptr<Tlv> msg1tlv1 = Create<Tlv> ();
+    Ptr<PbbTlv> msg1tlv1 = Create<PbbTlv> ();
     msg1tlv1->SetType (1);
     msg1->TlvPushBack (msg1tlv1);
 
     packet.MessagePushBack (msg1);
 
-    Ptr<MessageIpv4> msg2 = Create<MessageIpv4> ();
+    Ptr<PbbMessageIpv4> msg2 = Create<PbbMessageIpv4> ();
     msg2->SetType (2);
     msg2->SetOriginatorAddress (Ipv4Address ("10.0.0.1"));
     msg2->SetHopLimit (255);
     msg2->SetHopCount (1);
     msg2->SetSequenceNumber (12345);
 
-    Ptr<AddressBlockIpv4> msg2a1 = Create<AddressBlockIpv4> ();
+    Ptr<PbbAddressBlockIpv4> msg2a1 = Create<PbbAddressBlockIpv4> ();
     msg2a1->AddressPushBack (Ipv4Address ("0.0.0.1"));
     msg2->AddressBlockPushBack (msg2a1);
 
@@ -1255,30 +1254,30 @@ int main (void)
 	 * `------------------
    */
   {
-    PacketBB packet;
+    PbbPacket packet;
     packet.SetSequenceNumber (18);
 
-    Ptr<Tlv> tlv1 = Create<Tlv> ();
+    Ptr<PbbTlv> tlv1 = Create<PbbTlv> ();
     tlv1->SetType (1);
     packet.TlvPushBack (tlv1);
 
-    Ptr<MessageIpv4> msg1 = Create<MessageIpv4> ();
+    Ptr<PbbMessageIpv4> msg1 = Create<PbbMessageIpv4> ();
     msg1->SetType (1);
 
-    Ptr<Tlv> msg1tlv1 = Create<Tlv> ();
+    Ptr<PbbTlv> msg1tlv1 = Create<PbbTlv> ();
     msg1tlv1->SetType (1);
     msg1->TlvPushBack (msg1tlv1);
 
     packet.MessagePushBack (msg1);
 
-    Ptr<MessageIpv4> msg2 = Create<MessageIpv4> ();
+    Ptr<PbbMessageIpv4> msg2 = Create<PbbMessageIpv4> ();
     msg2->SetType (2);
     msg2->SetOriginatorAddress (Ipv4Address ("10.0.0.1"));
     msg2->SetHopLimit (255);
     msg2->SetHopCount (1);
     msg2->SetSequenceNumber (12345);
 
-    Ptr<AddressBlockIpv4> msg2a1 = Create<AddressBlockIpv4> ();
+    Ptr<PbbAddressBlockIpv4> msg2a1 = Create<PbbAddressBlockIpv4> ();
     msg2a1->AddressPushBack (Ipv4Address ("10.0.0.0"));
     msg2->AddressBlockPushBack (msg2a1);
 
@@ -1339,30 +1338,30 @@ int main (void)
 	 * `------------------
    */
   {
-    PacketBB packet;
+    PbbPacket packet;
     packet.SetSequenceNumber (19);
 
-    Ptr<Tlv> tlv1 = Create<Tlv> ();
+    Ptr<PbbTlv> tlv1 = Create<PbbTlv> ();
     tlv1->SetType (1);
     packet.TlvPushBack (tlv1);
 
-    Ptr<MessageIpv4> msg1 = Create<MessageIpv4> ();
+    Ptr<PbbMessageIpv4> msg1 = Create<PbbMessageIpv4> ();
     msg1->SetType (1);
 
-    Ptr<Tlv> msg1tlv1 = Create<Tlv> ();
+    Ptr<PbbTlv> msg1tlv1 = Create<PbbTlv> ();
     msg1tlv1->SetType (1);
     msg1->TlvPushBack (msg1tlv1);
 
     packet.MessagePushBack (msg1);
 
-    Ptr<MessageIpv4> msg2 = Create<MessageIpv4> ();
+    Ptr<PbbMessageIpv4> msg2 = Create<PbbMessageIpv4> ();
     msg2->SetType (2);
     msg2->SetOriginatorAddress (Ipv4Address ("10.0.0.1"));
     msg2->SetHopLimit (255);
     msg2->SetHopCount (1);
     msg2->SetSequenceNumber (12345);
 
-    Ptr<AddressBlockIpv4> msg2a1 = Create<AddressBlockIpv4> ();
+    Ptr<PbbAddressBlockIpv4> msg2a1 = Create<PbbAddressBlockIpv4> ();
     msg2a1->AddressPushBack (Ipv4Address ("10.0.0.1"));
     msg2->AddressBlockPushBack (msg2a1);
 
@@ -1424,30 +1423,30 @@ int main (void)
 	 * `------------------
    */
   {
-    PacketBB packet;
+    PbbPacket packet;
     packet.SetSequenceNumber (20);
 
-    Ptr<Tlv> tlv1 = Create<Tlv> ();
+    Ptr<PbbTlv> tlv1 = Create<PbbTlv> ();
     tlv1->SetType (1);
     packet.TlvPushBack (tlv1);
 
-    Ptr<MessageIpv4> msg1 = Create<MessageIpv4> ();
+    Ptr<PbbMessageIpv4> msg1 = Create<PbbMessageIpv4> ();
     msg1->SetType (1);
 
-    Ptr<Tlv> msg1tlv1 = Create<Tlv> ();
+    Ptr<PbbTlv> msg1tlv1 = Create<PbbTlv> ();
     msg1tlv1->SetType (1);
     msg1->TlvPushBack (msg1tlv1);
 
     packet.MessagePushBack (msg1);
 
-    Ptr<MessageIpv4> msg2 = Create<MessageIpv4> ();
+    Ptr<PbbMessageIpv4> msg2 = Create<PbbMessageIpv4> ();
     msg2->SetType (2);
     msg2->SetOriginatorAddress (Ipv4Address ("10.0.0.1"));
     msg2->SetHopLimit (255);
     msg2->SetHopCount (1);
     msg2->SetSequenceNumber (12345);
 
-    Ptr<AddressBlockIpv4> msg2a1 = Create<AddressBlockIpv4> ();
+    Ptr<PbbAddressBlockIpv4> msg2a1 = Create<PbbAddressBlockIpv4> ();
     msg2a1->AddressPushBack (Ipv4Address ("10.0.0.1"));
     msg2a1->AddressPushBack (Ipv4Address ("10.0.0.2"));
     msg2->AddressBlockPushBack (msg2a1);
@@ -1510,30 +1509,30 @@ int main (void)
 	 * `------------------
    */
   {
-    PacketBB packet;
+    PbbPacket packet;
     packet.SetSequenceNumber (21);
 
-    Ptr<Tlv> tlv1 = Create<Tlv> ();
+    Ptr<PbbTlv> tlv1 = Create<PbbTlv> ();
     tlv1->SetType (1);
     packet.TlvPushBack (tlv1);
 
-    Ptr<MessageIpv4> msg1 = Create<MessageIpv4> ();
+    Ptr<PbbMessageIpv4> msg1 = Create<PbbMessageIpv4> ();
     msg1->SetType (1);
 
-    Ptr<Tlv> msg1tlv1 = Create<Tlv> ();
+    Ptr<PbbTlv> msg1tlv1 = Create<PbbTlv> ();
     msg1tlv1->SetType (1);
     msg1->TlvPushBack (msg1tlv1);
 
     packet.MessagePushBack (msg1);
 
-    Ptr<MessageIpv4> msg2 = Create<MessageIpv4> ();
+    Ptr<PbbMessageIpv4> msg2 = Create<PbbMessageIpv4> ();
     msg2->SetType (2);
     msg2->SetOriginatorAddress (Ipv4Address ("10.0.0.1"));
     msg2->SetHopLimit (255);
     msg2->SetHopCount (1);
     msg2->SetSequenceNumber (12345);
 
-    Ptr<AddressBlockIpv4> msg2a1 = Create<AddressBlockIpv4> ();
+    Ptr<PbbAddressBlockIpv4> msg2a1 = Create<PbbAddressBlockIpv4> ();
     msg2a1->AddressPushBack (Ipv4Address ("10.0.0.2"));
     msg2a1->AddressPushBack (Ipv4Address ("10.1.1.2"));
     msg2->AddressBlockPushBack (msg2a1);
@@ -1602,35 +1601,35 @@ int main (void)
 	 * `------------------
    */
   {
-    PacketBB packet;
+    PbbPacket packet;
     packet.SetSequenceNumber (22);
 
-    Ptr<Tlv> tlv1 = Create<Tlv> ();
+    Ptr<PbbTlv> tlv1 = Create<PbbTlv> ();
     tlv1->SetType (1);
     packet.TlvPushBack (tlv1);
 
-    Ptr<MessageIpv4> msg1 = Create<MessageIpv4> ();
+    Ptr<PbbMessageIpv4> msg1 = Create<PbbMessageIpv4> ();
     msg1->SetType (1);
 
-    Ptr<Tlv> msg1tlv1 = Create<Tlv> ();
+    Ptr<PbbTlv> msg1tlv1 = Create<PbbTlv> ();
     msg1tlv1->SetType (1);
     msg1->TlvPushBack (msg1tlv1);
 
     packet.MessagePushBack (msg1);
 
-    Ptr<MessageIpv4> msg2 = Create<MessageIpv4> ();
+    Ptr<PbbMessageIpv4> msg2 = Create<PbbMessageIpv4> ();
     msg2->SetType (2);
     msg2->SetOriginatorAddress (Ipv4Address ("10.0.0.1"));
     msg2->SetHopLimit (255);
     msg2->SetHopCount (1);
     msg2->SetSequenceNumber (12345);
 
-    Ptr<AddressBlockIpv4> msg2a1 = Create<AddressBlockIpv4> ();
+    Ptr<PbbAddressBlockIpv4> msg2a1 = Create<PbbAddressBlockIpv4> ();
     msg2a1->AddressPushBack (Ipv4Address ("10.0.0.2"));
     msg2a1->AddressPushBack (Ipv4Address ("10.1.1.2"));
     msg2->AddressBlockPushBack (msg2a1);
 
-    Ptr<AddressBlockIpv4> msg2a2 = Create<AddressBlockIpv4> ();
+    Ptr<PbbAddressBlockIpv4> msg2a2 = Create<PbbAddressBlockIpv4> ();
     msg2a2->AddressPushBack (Ipv4Address ("10.0.0.0"));
     msg2a2->AddressPushBack (Ipv4Address ("11.0.0.0"));
     msg2->AddressBlockPushBack (msg2a2);
@@ -1702,35 +1701,35 @@ int main (void)
 	 * `------------------
    */
   {
-    PacketBB packet;
+    PbbPacket packet;
     packet.SetSequenceNumber (23);
 
-    Ptr<Tlv> tlv1 = Create<Tlv> ();
+    Ptr<PbbTlv> tlv1 = Create<PbbTlv> ();
     tlv1->SetType (1);
     packet.TlvPushBack (tlv1);
 
-    Ptr<MessageIpv4> msg1 = Create<MessageIpv4> ();
+    Ptr<PbbMessageIpv4> msg1 = Create<PbbMessageIpv4> ();
     msg1->SetType (1);
 
-    Ptr<Tlv> msg1tlv1 = Create<Tlv> ();
+    Ptr<PbbTlv> msg1tlv1 = Create<PbbTlv> ();
     msg1tlv1->SetType (1);
     msg1->TlvPushBack (msg1tlv1);
 
     packet.MessagePushBack (msg1);
 
-    Ptr<MessageIpv4> msg2 = Create<MessageIpv4> ();
+    Ptr<PbbMessageIpv4> msg2 = Create<PbbMessageIpv4> ();
     msg2->SetType (2);
     msg2->SetOriginatorAddress (Ipv4Address ("10.0.0.1"));
     msg2->SetHopLimit (255);
     msg2->SetHopCount (1);
     msg2->SetSequenceNumber (12345);
 
-    Ptr<AddressBlockIpv4> msg2a1 = Create<AddressBlockIpv4> ();
+    Ptr<PbbAddressBlockIpv4> msg2a1 = Create<PbbAddressBlockIpv4> ();
     msg2a1->AddressPushBack (Ipv4Address ("10.0.0.2"));
     msg2a1->AddressPushBack (Ipv4Address ("10.1.1.2"));
     msg2->AddressBlockPushBack (msg2a1);
 
-    Ptr<AddressBlockIpv4> msg2a2 = Create<AddressBlockIpv4> ();
+    Ptr<PbbAddressBlockIpv4> msg2a2 = Create<PbbAddressBlockIpv4> ();
     msg2a2->AddressPushBack (Ipv4Address ("10.0.0.0"));
     msg2a2->AddressPushBack (Ipv4Address ("11.0.0.0"));
     msg2a2->AddressPushBack (Ipv4Address ("10.0.0.5"));
@@ -1818,35 +1817,35 @@ int main (void)
 	 * `------------------
    */
   {
-    PacketBB packet;
+    PbbPacket packet;
     packet.SetSequenceNumber (24);
 
-    Ptr<Tlv> tlv1 = Create<Tlv> ();
+    Ptr<PbbTlv> tlv1 = Create<PbbTlv> ();
     tlv1->SetType (1);
     packet.TlvPushBack (tlv1);
 
-    Ptr<MessageIpv4> msg1 = Create<MessageIpv4> ();
+    Ptr<PbbMessageIpv4> msg1 = Create<PbbMessageIpv4> ();
     msg1->SetType (1);
 
-    Ptr<Tlv> msg1tlv1 = Create<Tlv> ();
+    Ptr<PbbTlv> msg1tlv1 = Create<PbbTlv> ();
     msg1tlv1->SetType (1);
     msg1->TlvPushBack (msg1tlv1);
 
     packet.MessagePushBack (msg1);
 
-    Ptr<MessageIpv4> msg2 = Create<MessageIpv4> ();
+    Ptr<PbbMessageIpv4> msg2 = Create<PbbMessageIpv4> ();
     msg2->SetType (2);
     msg2->SetOriginatorAddress (Ipv4Address ("10.0.0.1"));
     msg2->SetHopLimit (255);
     msg2->SetHopCount (1);
     msg2->SetSequenceNumber (12345);
 
-    Ptr<AddressBlockIpv4> msg2a1 = Create<AddressBlockIpv4> ();
+    Ptr<PbbAddressBlockIpv4> msg2a1 = Create<PbbAddressBlockIpv4> ();
     msg2a1->AddressPushBack (Ipv4Address ("10.0.0.2"));
     msg2a1->AddressPushBack (Ipv4Address ("10.1.1.2"));
     msg2->AddressBlockPushBack (msg2a1);
 
-    Ptr<AddressBlockIpv4> msg2a2 = Create<AddressBlockIpv4> ();
+    Ptr<PbbAddressBlockIpv4> msg2a2 = Create<PbbAddressBlockIpv4> ();
     msg2a2->AddressPushBack (Ipv4Address ("10.0.0.0"));
     msg2a2->AddressPushBack (Ipv4Address ("11.0.0.0"));
     msg2a2->AddressPushBack (Ipv4Address ("10.0.0.5"));
@@ -1857,7 +1856,7 @@ int main (void)
     msg2a2->PrefixPushBack (16);
     msg2a2->PrefixPushBack (24);
 
-    Ptr<AddressTlv> msg2a2tlv1 = Create<AddressTlv> ();
+    Ptr<PbbAddressTlv> msg2a2tlv1 = Create<PbbAddressTlv> ();
     msg2a2tlv1->SetType (1);
     msg2a2->TlvPushBack (msg2a2tlv1);
 
@@ -1939,35 +1938,35 @@ int main (void)
 	 * `------------------
    */
   {
-    PacketBB packet;
+    PbbPacket packet;
     packet.SetSequenceNumber (25);
 
-    Ptr<Tlv> tlv1 = Create<Tlv> ();
+    Ptr<PbbTlv> tlv1 = Create<PbbTlv> ();
     tlv1->SetType (1);
     packet.TlvPushBack (tlv1);
 
-    Ptr<MessageIpv4> msg1 = Create<MessageIpv4> ();
+    Ptr<PbbMessageIpv4> msg1 = Create<PbbMessageIpv4> ();
     msg1->SetType (1);
 
-    Ptr<Tlv> msg1tlv1 = Create<Tlv> ();
+    Ptr<PbbTlv> msg1tlv1 = Create<PbbTlv> ();
     msg1tlv1->SetType (1);
     msg1->TlvPushBack (msg1tlv1);
 
     packet.MessagePushBack (msg1);
 
-    Ptr<MessageIpv4> msg2 = Create<MessageIpv4> ();
+    Ptr<PbbMessageIpv4> msg2 = Create<PbbMessageIpv4> ();
     msg2->SetType (2);
     msg2->SetOriginatorAddress (Ipv4Address ("10.0.0.1"));
     msg2->SetHopLimit (255);
     msg2->SetHopCount (1);
     msg2->SetSequenceNumber (12345);
 
-    Ptr<AddressBlockIpv4> msg2a1 = Create<AddressBlockIpv4> ();
+    Ptr<PbbAddressBlockIpv4> msg2a1 = Create<PbbAddressBlockIpv4> ();
     msg2a1->AddressPushBack (Ipv4Address ("10.0.0.2"));
     msg2a1->AddressPushBack (Ipv4Address ("10.1.1.2"));
     msg2->AddressBlockPushBack (msg2a1);
 
-    Ptr<AddressBlockIpv4> msg2a2 = Create<AddressBlockIpv4> ();
+    Ptr<PbbAddressBlockIpv4> msg2a2 = Create<PbbAddressBlockIpv4> ();
     msg2a2->AddressPushBack (Ipv4Address ("10.0.0.0"));
     msg2a2->AddressPushBack (Ipv4Address ("11.0.0.0"));
     msg2a2->AddressPushBack (Ipv4Address ("10.0.0.5"));
@@ -1978,7 +1977,7 @@ int main (void)
     msg2a2->PrefixPushBack (16);
     msg2a2->PrefixPushBack (24);
 
-    Ptr<AddressTlv> msg2a2tlv1 = Create<AddressTlv> ();
+    Ptr<PbbAddressTlv> msg2a2tlv1 = Create<PbbAddressTlv> ();
     msg2a2tlv1->SetType (1);
     msg2a2tlv1->SetIndexStart (1);
     msg2a2->TlvPushBack (msg2a2tlv1);
@@ -2062,35 +2061,35 @@ int main (void)
 	 * `------------------
    */
   {
-    PacketBB packet;
+    PbbPacket packet;
     packet.SetSequenceNumber (26);
 
-    Ptr<Tlv> tlv1 = Create<Tlv> ();
+    Ptr<PbbTlv> tlv1 = Create<PbbTlv> ();
     tlv1->SetType (1);
     packet.TlvPushBack (tlv1);
 
-    Ptr<MessageIpv4> msg1 = Create<MessageIpv4> ();
+    Ptr<PbbMessageIpv4> msg1 = Create<PbbMessageIpv4> ();
     msg1->SetType (1);
 
-    Ptr<Tlv> msg1tlv1 = Create<Tlv> ();
+    Ptr<PbbTlv> msg1tlv1 = Create<PbbTlv> ();
     msg1tlv1->SetType (1);
     msg1->TlvPushBack (msg1tlv1);
 
     packet.MessagePushBack (msg1);
 
-    Ptr<MessageIpv4> msg2 = Create<MessageIpv4> ();
+    Ptr<PbbMessageIpv4> msg2 = Create<PbbMessageIpv4> ();
     msg2->SetType (2);
     msg2->SetOriginatorAddress (Ipv4Address ("10.0.0.1"));
     msg2->SetHopLimit (255);
     msg2->SetHopCount (1);
     msg2->SetSequenceNumber (12345);
 
-    Ptr<AddressBlockIpv4> msg2a1 = Create<AddressBlockIpv4> ();
+    Ptr<PbbAddressBlockIpv4> msg2a1 = Create<PbbAddressBlockIpv4> ();
     msg2a1->AddressPushBack (Ipv4Address ("10.0.0.2"));
     msg2a1->AddressPushBack (Ipv4Address ("10.1.1.2"));
     msg2->AddressBlockPushBack (msg2a1);
 
-    Ptr<AddressBlockIpv4> msg2a2 = Create<AddressBlockIpv4> ();
+    Ptr<PbbAddressBlockIpv4> msg2a2 = Create<PbbAddressBlockIpv4> ();
     msg2a2->AddressPushBack (Ipv4Address ("10.0.0.0"));
     msg2a2->AddressPushBack (Ipv4Address ("11.0.0.0"));
     msg2a2->AddressPushBack (Ipv4Address ("10.0.0.5"));
@@ -2101,7 +2100,7 @@ int main (void)
     msg2a2->PrefixPushBack (16);
     msg2a2->PrefixPushBack (24);
 
-    Ptr<AddressTlv> msg2a2tlv1 = Create<AddressTlv> ();
+    Ptr<PbbAddressTlv> msg2a2tlv1 = Create<PbbAddressTlv> ();
     msg2a2tlv1->SetType (1);
     msg2a2tlv1->SetIndexStart (1);
     msg2a2tlv1->SetIndexStop (3);
@@ -2187,35 +2186,35 @@ int main (void)
 	 * `------------------
    */
   {
-    PacketBB packet;
+    PbbPacket packet;
     packet.SetSequenceNumber (27);
 
-    Ptr<Tlv> tlv1 = Create<Tlv> ();
+    Ptr<PbbTlv> tlv1 = Create<PbbTlv> ();
     tlv1->SetType (1);
     packet.TlvPushBack (tlv1);
 
-    Ptr<MessageIpv4> msg1 = Create<MessageIpv4> ();
+    Ptr<PbbMessageIpv4> msg1 = Create<PbbMessageIpv4> ();
     msg1->SetType (1);
 
-    Ptr<Tlv> msg1tlv1 = Create<Tlv> ();
+    Ptr<PbbTlv> msg1tlv1 = Create<PbbTlv> ();
     msg1tlv1->SetType (1);
     msg1->TlvPushBack (msg1tlv1);
 
     packet.MessagePushBack (msg1);
 
-    Ptr<MessageIpv4> msg2 = Create<MessageIpv4> ();
+    Ptr<PbbMessageIpv4> msg2 = Create<PbbMessageIpv4> ();
     msg2->SetType (2);
     msg2->SetOriginatorAddress (Ipv4Address ("10.0.0.1"));
     msg2->SetHopLimit (255);
     msg2->SetHopCount (1);
     msg2->SetSequenceNumber (12345);
 
-    Ptr<AddressBlockIpv4> msg2a1 = Create<AddressBlockIpv4> ();
+    Ptr<PbbAddressBlockIpv4> msg2a1 = Create<PbbAddressBlockIpv4> ();
     msg2a1->AddressPushBack (Ipv4Address ("10.0.0.2"));
     msg2a1->AddressPushBack (Ipv4Address ("10.1.1.2"));
     msg2->AddressBlockPushBack (msg2a1);
 
-    Ptr<AddressBlockIpv4> msg2a2 = Create<AddressBlockIpv4> ();
+    Ptr<PbbAddressBlockIpv4> msg2a2 = Create<PbbAddressBlockIpv4> ();
     msg2a2->AddressPushBack (Ipv4Address ("10.0.0.0"));
     msg2a2->AddressPushBack (Ipv4Address ("11.0.0.0"));
     msg2a2->AddressPushBack (Ipv4Address ("10.0.0.5"));
@@ -2226,7 +2225,7 @@ int main (void)
     msg2a2->PrefixPushBack (16);
     msg2a2->PrefixPushBack (24);
 
-    Ptr<AddressTlv> msg2a2tlv1 = Create<AddressTlv> ();
+    Ptr<PbbAddressTlv> msg2a2tlv1 = Create<PbbAddressTlv> ();
     msg2a2tlv1->SetType (1);
     msg2a2tlv1->SetIndexStart (1);
     msg2a2tlv1->SetIndexStop (3);
@@ -2313,115 +2312,115 @@ int main (void)
 	 * |    |         Index-start = 1
 	 * |    |         Index-stop = 3
 	 * |    |         Type = 1; Value = 00  01  02  03
-	 * |    |                                          04  05  06  07
-	 * |    |                                          08  09  0a  0b
-	 * |    |                                          0c  0d  0e  0f
-	 * |    |                                          10  11  12  13
-	 * |    |                                          14  15  16  17
-	 * |    |                                          18  19  1a  1b
-	 * |    |                                          1c  1d  1e  1f
-	 * |    |                                          20  21  22  23
-	 * |    |                                          24  25  26  27
-	 * |    |                                          28  29  2a  2b
-	 * |    |                                          2c  2d  2e  2f
-	 * |    |                                          30  31  32  33
-	 * |    |                                          34  35  36  37
-	 * |    |                                          38  39  3a  3b
-	 * |    |                                          3c  3d  3e  3f
-	 * |    |                                          40  41  42  43
-	 * |    |                                          44  45  46  47
-	 * |    |                                          48  49  4a  4b
-	 * |    |                                          4c  4d  4e  4f
-	 * |    |                                          50  51  52  53
-	 * |    |                                          54  55  56  57
-	 * |    |                                          58  59  5a  5b
-	 * |    |                                          5c  5d  5e  5f
-	 * |    |                                          60  61  62  63
-	 * |    |                                          64  65  66  67
-	 * |    |                                          68  69  6a  6b
-	 * |    |                                          6c  6d  6e  6f
-	 * |    |                                          70  71  72  73
-	 * |    |                                          74  75  76  77
-	 * |    |                                          78  79  7a  7b
-	 * |    |                                          7c  7d  7e  7f
-	 * |    |                                          80  81  82  83
-	 * |    |                                          84  85  86  87
-	 * |    |                                          88  89  8a  8b
-	 * |    |                                          8c  8d  8e  8f
-	 * |    |                                          90  91  92  93
-	 * |    |                                          94  95  96  97
-	 * |    |                                          98  99  9a  9b
-	 * |    |                                          9c  9d  9e  9f
-	 * |    |                                          a0  a1  a2  a3
-	 * |    |                                          a4  a5  a6  a7
-	 * |    |                                          a8  a9  aa  ab
-	 * |    |                                          ac  ad  ae  af
-	 * |    |                                          b0  b1  b2  b3
-	 * |    |                                          b4  b5  b6  b7
-	 * |    |                                          b8  b9  ba  bb
-	 * |    |                                          bc  bd  be  bf
-	 * |    |                                          c0  c1  c2  c3
-	 * |    |                                          c4  c5  c6  c7
-	 * |    |                                          c8  c9  ca  cb
-	 * |    |                                          cc  cd  ce  cf
-	 * |    |                                          d0  d1  d2  d3
-	 * |    |                                          d4  d5  d6  d7
-	 * |    |                                          d8  d9  da  db
-	 * |    |                                          dc  dd  de  df
-	 * |    |                                          e0  e1  e2  e3
-	 * |    |                                          e4  e5  e6  e7
-	 * |    |                                          e8  e9  ea  eb
-	 * |    |                                          ec  ed  ee  ef
-	 * |    |                                          f0  f1  f2  f3
-	 * |    |                                          f4  f5  f6  f7
-	 * |    |                                          f8  f9  fa  fb
-	 * |    |                                          fc  fd  fe  00
-	 * |    |                                          01  02  03  04
-	 * |    |                                          05  06  07  08
-	 * |    |                                          09  0a  0b  0c
-	 * |    |                                          0d  0e  0f  10
-	 * |    |                                          11  12  13  14
-	 * |    |                                          15  16  17  18
-	 * |    |                                          19  1a  1b  1c
-	 * |    |                                          1d  1e  1f  20
-	 * |    |                                          21  22  23  24
-	 * |    |                                          25  26  27  28
-	 * |    |                                          29  2a  2b  2c
+	 * |    |                           04  05  06  07
+	 * |    |                           08  09  0a  0b
+	 * |    |                           0c  0d  0e  0f
+	 * |    |                           10  11  12  13
+	 * |    |                           14  15  16  17
+	 * |    |                           18  19  1a  1b
+	 * |    |                           1c  1d  1e  1f
+	 * |    |                           20  21  22  23
+	 * |    |                           24  25  26  27
+	 * |    |                           28  29  2a  2b
+	 * |    |                           2c  2d  2e  2f
+	 * |    |                           30  31  32  33
+	 * |    |                           34  35  36  37
+	 * |    |                           38  39  3a  3b
+	 * |    |                           3c  3d  3e  3f
+	 * |    |                           40  41  42  43
+	 * |    |                           44  45  46  47
+	 * |    |                           48  49  4a  4b
+	 * |    |                           4c  4d  4e  4f
+	 * |    |                           50  51  52  53
+	 * |    |                           54  55  56  57
+	 * |    |                           58  59  5a  5b
+	 * |    |                           5c  5d  5e  5f
+	 * |    |                           60  61  62  63
+	 * |    |                           64  65  66  67
+	 * |    |                           68  69  6a  6b
+	 * |    |                           6c  6d  6e  6f
+	 * |    |                           70  71  72  73
+	 * |    |                           74  75  76  77
+	 * |    |                           78  79  7a  7b
+	 * |    |                           7c  7d  7e  7f
+	 * |    |                           80  81  82  83
+	 * |    |                           84  85  86  87
+	 * |    |                           88  89  8a  8b
+	 * |    |                           8c  8d  8e  8f
+	 * |    |                           90  91  92  93
+	 * |    |                           94  95  96  97
+	 * |    |                           98  99  9a  9b
+	 * |    |                           9c  9d  9e  9f
+	 * |    |                           a0  a1  a2  a3
+	 * |    |                           a4  a5  a6  a7
+	 * |    |                           a8  a9  aa  ab
+	 * |    |                           ac  ad  ae  af
+	 * |    |                           b0  b1  b2  b3
+	 * |    |                           b4  b5  b6  b7
+	 * |    |                           b8  b9  ba  bb
+	 * |    |                           bc  bd  be  bf
+	 * |    |                           c0  c1  c2  c3
+	 * |    |                           c4  c5  c6  c7
+	 * |    |                           c8  c9  ca  cb
+	 * |    |                           cc  cd  ce  cf
+	 * |    |                           d0  d1  d2  d3
+	 * |    |                           d4  d5  d6  d7
+	 * |    |                           d8  d9  da  db
+	 * |    |                           dc  dd  de  df
+	 * |    |                           e0  e1  e2  e3
+	 * |    |                           e4  e5  e6  e7
+	 * |    |                           e8  e9  ea  eb
+	 * |    |                           ec  ed  ee  ef
+	 * |    |                           f0  f1  f2  f3
+	 * |    |                           f4  f5  f6  f7
+	 * |    |                           f8  f9  fa  fb
+	 * |    |                           fc  fd  fe  00
+	 * |    |                           01  02  03  04
+	 * |    |                           05  06  07  08
+	 * |    |                           09  0a  0b  0c
+	 * |    |                           0d  0e  0f  10
+	 * |    |                           11  12  13  14
+	 * |    |                           15  16  17  18
+	 * |    |                           19  1a  1b  1c
+	 * |    |                           1d  1e  1f  20
+	 * |    |                           21  22  23  24
+	 * |    |                           25  26  27  28
+	 * |    |                           29  2a  2b  2c
 	 * |    |                                          
 	 * |    `-------------------
 	 * |
 	 * `------------------
    */
   {
-    PacketBB packet;
+    PbbPacket packet;
     packet.SetSequenceNumber (28);
 
-    Ptr<Tlv> tlv1 = Create<Tlv> ();
+    Ptr<PbbTlv> tlv1 = Create<PbbTlv> ();
     tlv1->SetType (1);
     packet.TlvPushBack (tlv1);
 
-    Ptr<MessageIpv4> msg1 = Create<MessageIpv4> ();
+    Ptr<PbbMessageIpv4> msg1 = Create<PbbMessageIpv4> ();
     msg1->SetType (1);
 
-    Ptr<Tlv> msg1tlv1 = Create<Tlv> ();
+    Ptr<PbbTlv> msg1tlv1 = Create<PbbTlv> ();
     msg1tlv1->SetType (1);
     msg1->TlvPushBack (msg1tlv1);
 
     packet.MessagePushBack (msg1);
 
-    Ptr<MessageIpv4> msg2 = Create<MessageIpv4> ();
+    Ptr<PbbMessageIpv4> msg2 = Create<PbbMessageIpv4> ();
     msg2->SetType (2);
     msg2->SetOriginatorAddress (Ipv4Address ("10.0.0.1"));
     msg2->SetHopLimit (255);
     msg2->SetHopCount (1);
     msg2->SetSequenceNumber (12345);
 
-    Ptr<AddressBlockIpv4> msg2a1 = Create<AddressBlockIpv4> ();
+    Ptr<PbbAddressBlockIpv4> msg2a1 = Create<PbbAddressBlockIpv4> ();
     msg2a1->AddressPushBack (Ipv4Address ("10.0.0.2"));
     msg2a1->AddressPushBack (Ipv4Address ("10.1.1.2"));
     msg2->AddressBlockPushBack (msg2a1);
 
-    Ptr<AddressBlockIpv4> msg2a2 = Create<AddressBlockIpv4> ();
+    Ptr<PbbAddressBlockIpv4> msg2a2 = Create<PbbAddressBlockIpv4> ();
     msg2a2->AddressPushBack (Ipv4Address ("10.0.0.0"));
     msg2a2->AddressPushBack (Ipv4Address ("11.0.0.0"));
     msg2a2->AddressPushBack (Ipv4Address ("10.0.0.5"));
@@ -2432,7 +2431,7 @@ int main (void)
     msg2a2->PrefixPushBack (16);
     msg2a2->PrefixPushBack (24);
 
-    Ptr<AddressTlv> msg2a2tlv1 = Create<AddressTlv> ();
+    Ptr<PbbAddressTlv> msg2a2tlv1 = Create<PbbAddressTlv> ();
     msg2a2tlv1->SetType (1);
     msg2a2tlv1->SetIndexStart (1);
     msg2a2tlv1->SetIndexStop (3);
@@ -2636,9 +2635,9 @@ int main (void)
 	 * `------------------
    */
   {
-    PacketBB packet;
+    PbbPacket packet;
 
-    Ptr<MessageIpv6> m1 = Create<MessageIpv6> ();
+    Ptr<PbbMessageIpv6> m1 = Create<PbbMessageIpv6> ();
     m1->SetType(1);
 
     packet.MessagePushBack (m1);
@@ -2667,9 +2666,9 @@ int main (void)
 	 * `------------------
    */
   {
-    PacketBB packet;
+    PbbPacket packet;
 
-    Ptr<MessageIpv6> m1 = Create<MessageIpv6> ();
+    Ptr<PbbMessageIpv6> m1 = Create<PbbMessageIpv6> ();
     m1->SetType(1);
     m1->SetOriginatorAddress (Ipv6Address("abcd::1"));
 
@@ -2707,13 +2706,13 @@ int main (void)
 	 * `------------------
    */
   {
-    PacketBB packet;
+    PbbPacket packet;
 
-    Ptr<MessageIpv6> m1 = Create<MessageIpv6> ();
+    Ptr<PbbMessageIpv6> m1 = Create<PbbMessageIpv6> ();
     m1->SetType(1);
     m1->SetOriginatorAddress (Ipv6Address("abcd::1"));
 
-    Ptr<AddressBlockIpv6> m1a1 = Create<AddressBlockIpv6> ();
+    Ptr<PbbAddressBlockIpv6> m1a1 = Create<PbbAddressBlockIpv6> ();
     m1a1->AddressPushBack (Ipv6Address ("10::1"));
     m1->AddressBlockPushBack (m1a1);
 
@@ -2757,13 +2756,13 @@ int main (void)
 	 * `------------------
    */
   {
-    PacketBB packet;
+    PbbPacket packet;
 
-    Ptr<MessageIpv6> m1 = Create<MessageIpv6> ();
+    Ptr<PbbMessageIpv6> m1 = Create<PbbMessageIpv6> ();
     m1->SetType(1);
     m1->SetOriginatorAddress (Ipv6Address("abcd::1"));
 
-    Ptr<AddressBlockIpv6> m1a1 = Create<AddressBlockIpv6> ();
+    Ptr<PbbAddressBlockIpv6> m1a1 = Create<PbbAddressBlockIpv6> ();
     m1a1->AddressPushBack (Ipv6Address ("10::1"));
     m1a1->AddressPushBack (Ipv6Address ("10::2"));
     m1->AddressBlockPushBack (m1a1);
@@ -2809,13 +2808,13 @@ int main (void)
 	 * `------------------
    */
   {
-    PacketBB packet;
+    PbbPacket packet;
 
-    Ptr<MessageIpv6> m1 = Create<MessageIpv6> ();
+    Ptr<PbbMessageIpv6> m1 = Create<PbbMessageIpv6> ();
     m1->SetType(1);
     m1->SetOriginatorAddress (Ipv6Address("abcd::1"));
 
-    Ptr<AddressBlockIpv6> m1a1 = Create<AddressBlockIpv6> ();
+    Ptr<PbbAddressBlockIpv6> m1a1 = Create<PbbAddressBlockIpv6> ();
     m1a1->AddressPushBack (Ipv6Address ("10::2"));
     m1a1->AddressPushBack (Ipv6Address ("10::11:2"));
     m1->AddressBlockPushBack (m1a1);
@@ -2866,18 +2865,18 @@ int main (void)
 	 * `------------------
    */
   {
-    PacketBB packet;
+    PbbPacket packet;
 
-    Ptr<MessageIpv6> m1 = Create<MessageIpv6> ();
+    Ptr<PbbMessageIpv6> m1 = Create<PbbMessageIpv6> ();
     m1->SetType(1);
     m1->SetOriginatorAddress (Ipv6Address("abcd::1"));
 
-    Ptr<AddressBlockIpv6> m1a1 = Create<AddressBlockIpv6> ();
+    Ptr<PbbAddressBlockIpv6> m1a1 = Create<PbbAddressBlockIpv6> ();
     m1a1->AddressPushBack (Ipv6Address ("10::2"));
     m1a1->AddressPushBack (Ipv6Address ("10::11:2"));
     m1->AddressBlockPushBack (m1a1);
 
-    Ptr<AddressBlockIpv6> m1a2 = Create<AddressBlockIpv6> ();
+    Ptr<PbbAddressBlockIpv6> m1a2 = Create<PbbAddressBlockIpv6> ();
     m1a2->AddressPushBack (Ipv6Address ("10::"));
     m1a2->AddressPushBack (Ipv6Address ("11::"));
     m1->AddressBlockPushBack (m1a2);
@@ -2932,18 +2931,18 @@ int main (void)
 	 * `------------------
    */
   {
-    PacketBB packet;
+    PbbPacket packet;
 
-    Ptr<MessageIpv6> m1 = Create<MessageIpv6> ();
+    Ptr<PbbMessageIpv6> m1 = Create<PbbMessageIpv6> ();
     m1->SetType(1);
     m1->SetOriginatorAddress (Ipv6Address("abcd::1"));
 
-    Ptr<AddressBlockIpv6> m1a1 = Create<AddressBlockIpv6> ();
+    Ptr<PbbAddressBlockIpv6> m1a1 = Create<PbbAddressBlockIpv6> ();
     m1a1->AddressPushBack (Ipv6Address ("10::2"));
     m1a1->AddressPushBack (Ipv6Address ("10::11:2"));
     m1->AddressBlockPushBack (m1a1);
 
-    Ptr<AddressBlockIpv6> m1a2 = Create<AddressBlockIpv6> ();
+    Ptr<PbbAddressBlockIpv6> m1a2 = Create<PbbAddressBlockIpv6> ();
     m1a2->AddressPushBack (Ipv6Address ("10::"));
     m1a2->AddressPushBack (Ipv6Address ("11::"));
     m1a2->AddressPushBack (Ipv6Address ("10::5"));
@@ -3038,80 +3037,80 @@ int main (void)
 	 * |    |         Index-start = 1
 	 * |    |         Index-stop = 3
 	 * |    |         Type = 1; Value = 00  01  02  03
-	 * |    |                                          04  05  06  07
-	 * |    |                                          08  09  0a  0b
-	 * |    |                                          0c  0d  0e  0f
-	 * |    |                                          10  11  12  13
-	 * |    |                                          14  15  16  17
-	 * |    |                                          18  19  1a  1b
-	 * |    |                                          1c  1d  1e  1f
-	 * |    |                                          20  21  22  23
-	 * |    |                                          24  25  26  27
-	 * |    |                                          28  29  2a  2b
-	 * |    |                                          2c  2d  2e  2f
-	 * |    |                                          30  31  32  33
-	 * |    |                                          34  35  36  37
-	 * |    |                                          38  39  3a  3b
-	 * |    |                                          3c  3d  3e  3f
-	 * |    |                                          40  41  42  43
-	 * |    |                                          44  45  46  47
-	 * |    |                                          48  49  4a  4b
-	 * |    |                                          4c  4d  4e  4f
-	 * |    |                                          50  51  52  53
-	 * |    |                                          54  55  56  57
-	 * |    |                                          58  59  5a  5b
-	 * |    |                                          5c  5d  5e  5f
-	 * |    |                                          60  61  62  63
-	 * |    |                                          64  65  66  67
-	 * |    |                                          68  69  6a  6b
-	 * |    |                                          6c  6d  6e  6f
-	 * |    |                                          70  71  72  73
-	 * |    |                                          74  75  76  77
-	 * |    |                                          78  79  7a  7b
-	 * |    |                                          7c  7d  7e  7f
-	 * |    |                                          80  81  82  83
-	 * |    |                                          84  85  86  87
-	 * |    |                                          88  89  8a  8b
-	 * |    |                                          8c  8d  8e  8f
-	 * |    |                                          90  91  92  93
-	 * |    |                                          94  95  96  97
-	 * |    |                                          98  99  9a  9b
-	 * |    |                                          9c  9d  9e  9f
-	 * |    |                                          a0  a1  a2  a3
-	 * |    |                                          a4  a5  a6  a7
-	 * |    |                                          a8  a9  aa  ab
-	 * |    |                                          ac  ad  ae  af
-	 * |    |                                          b0  b1  b2  b3
-	 * |    |                                          b4  b5  b6  b7
-	 * |    |                                          b8  b9  ba  bb
-	 * |    |                                          bc  bd  be  bf
-	 * |    |                                          c0  c1  c2  c3
-	 * |    |                                          c4  c5  c6  c7
-	 * |    |                                          c8  c9  ca  cb
-	 * |    |                                          cc  cd  ce  cf
-	 * |    |                                          d0  d1  d2  d3
-	 * |    |                                          d4  d5  d6  d7
-	 * |    |                                          d8  d9  da  db
-	 * |    |                                          dc  dd  de  df
-	 * |    |                                          e0  e1  e2  e3
-	 * |    |                                          e4  e5  e6  e7
-	 * |    |                                          e8  e9  ea  eb
-	 * |    |                                          ec  ed  ee  ef
-	 * |    |                                          f0  f1  f2  f3
-	 * |    |                                          f4  f5  f6  f7
-	 * |    |                                          f8  f9  fa  fb
-	 * |    |                                          fc  fd  fe  00
-	 * |    |                                          01  02  03  04
-	 * |    |                                          05  06  07  08
-	 * |    |                                          09  0a  0b  0c
-	 * |    |                                          0d  0e  0f  10
-	 * |    |                                          11  12  13  14
-	 * |    |                                          15  16  17  18
-	 * |    |                                          19  1a  1b  1c
-	 * |    |                                          1d  1e  1f  20
-	 * |    |                                          21  22  23  24
-	 * |    |                                          25  26  27  28
-	 * |    |                                          29  2a  2b  2c
+	 * |    |                           04  05  06  07
+	 * |    |                           08  09  0a  0b
+	 * |    |                           0c  0d  0e  0f
+	 * |    |                           10  11  12  13
+	 * |    |                           14  15  16  17
+	 * |    |                           18  19  1a  1b
+	 * |    |                           1c  1d  1e  1f
+	 * |    |                           20  21  22  23
+	 * |    |                           24  25  26  27
+	 * |    |                           28  29  2a  2b
+	 * |    |                           2c  2d  2e  2f
+	 * |    |                           30  31  32  33
+	 * |    |                           34  35  36  37
+	 * |    |                           38  39  3a  3b
+	 * |    |                           3c  3d  3e  3f
+	 * |    |                           40  41  42  43
+	 * |    |                           44  45  46  47
+	 * |    |                           48  49  4a  4b
+	 * |    |                           4c  4d  4e  4f
+	 * |    |                           50  51  52  53
+	 * |    |                           54  55  56  57
+	 * |    |                           58  59  5a  5b
+	 * |    |                           5c  5d  5e  5f
+	 * |    |                           60  61  62  63
+	 * |    |                           64  65  66  67
+	 * |    |                           68  69  6a  6b
+	 * |    |                           6c  6d  6e  6f
+	 * |    |                           70  71  72  73
+	 * |    |                           74  75  76  77
+	 * |    |                           78  79  7a  7b
+	 * |    |                           7c  7d  7e  7f
+	 * |    |                           80  81  82  83
+	 * |    |                           84  85  86  87
+	 * |    |                           88  89  8a  8b
+	 * |    |                           8c  8d  8e  8f
+	 * |    |                           90  91  92  93
+	 * |    |                           94  95  96  97
+	 * |    |                           98  99  9a  9b
+	 * |    |                           9c  9d  9e  9f
+	 * |    |                           a0  a1  a2  a3
+	 * |    |                           a4  a5  a6  a7
+	 * |    |                           a8  a9  aa  ab
+	 * |    |                           ac  ad  ae  af
+	 * |    |                           b0  b1  b2  b3
+	 * |    |                           b4  b5  b6  b7
+	 * |    |                           b8  b9  ba  bb
+	 * |    |                           bc  bd  be  bf
+	 * |    |                           c0  c1  c2  c3
+	 * |    |                           c4  c5  c6  c7
+	 * |    |                           c8  c9  ca  cb
+	 * |    |                           cc  cd  ce  cf
+	 * |    |                           d0  d1  d2  d3
+	 * |    |                           d4  d5  d6  d7
+	 * |    |                           d8  d9  da  db
+	 * |    |                           dc  dd  de  df
+	 * |    |                           e0  e1  e2  e3
+	 * |    |                           e4  e5  e6  e7
+	 * |    |                           e8  e9  ea  eb
+	 * |    |                           ec  ed  ee  ef
+	 * |    |                           f0  f1  f2  f3
+	 * |    |                           f4  f5  f6  f7
+	 * |    |                           f8  f9  fa  fb
+	 * |    |                           fc  fd  fe  00
+	 * |    |                           01  02  03  04
+	 * |    |                           05  06  07  08
+	 * |    |                           09  0a  0b  0c
+	 * |    |                           0d  0e  0f  10
+	 * |    |                           11  12  13  14
+	 * |    |                           15  16  17  18
+	 * |    |                           19  1a  1b  1c
+	 * |    |                           1d  1e  1f  20
+	 * |    |                           21  22  23  24
+	 * |    |                           25  26  27  28
+	 * |    |                           29  2a  2b  2c
 	 * |    |                                          
 	 * |    `-------------------
 	 * |
@@ -3138,34 +3137,34 @@ int main (void)
 	 * `------------------
    */
   {
-    PacketBB packet;
+    PbbPacket packet;
     packet.SetSequenceNumber (29);
 
-    Ptr<Tlv> ptlv1 = Create<Tlv> ();
+    Ptr<PbbTlv> ptlv1 = Create<PbbTlv> ();
     ptlv1->SetType (1);
     packet.TlvPushBack (ptlv1);
 
-    Ptr<MessageIpv6> m1 = Create<MessageIpv6> ();
+    Ptr<PbbMessageIpv6> m1 = Create<PbbMessageIpv6> ();
     m1->SetType (1);
 
-    Ptr<Tlv> m1tlv1 = Create<Tlv> ();
+    Ptr<PbbTlv> m1tlv1 = Create<PbbTlv> ();
     m1tlv1->SetType (1);
     m1->TlvPushBack (m1tlv1);
     packet.MessagePushBack (m1);
 
-    Ptr<MessageIpv4> m2 = Create<MessageIpv4> ();
+    Ptr<PbbMessageIpv4> m2 = Create<PbbMessageIpv4> ();
     m2->SetType (2);
     m2->SetOriginatorAddress (Ipv4Address ("10.0.0.1"));
     m2->SetHopLimit (255);
     m2->SetHopCount (1);
     m2->SetSequenceNumber (12345);
 
-    Ptr<AddressBlockIpv4> m2a1 = Create<AddressBlockIpv4> ();
+    Ptr<PbbAddressBlockIpv4> m2a1 = Create<PbbAddressBlockIpv4> ();
     m2a1->AddressPushBack (Ipv4Address ("10.0.0.2"));
     m2a1->AddressPushBack (Ipv4Address ("10.1.1.2"));
     m2->AddressBlockPushBack (m2a1);
 
-    Ptr<AddressBlockIpv4> m2a2 = Create<AddressBlockIpv4> ();
+    Ptr<PbbAddressBlockIpv4> m2a2 = Create<PbbAddressBlockIpv4> ();
     m2a2->AddressPushBack (Ipv4Address ("10.0.0.0"));
     m2a2->AddressPushBack (Ipv4Address ("11.0.0.0"));
     m2a2->AddressPushBack (Ipv4Address ("10.0.0.5"));
@@ -3175,7 +3174,7 @@ int main (void)
     m2a2->PrefixPushBack (16);
     m2a2->PrefixPushBack (24);
 
-    Ptr<AddressTlv> m2a2tlv1 = Create<AddressTlv> ();
+    Ptr<PbbAddressTlv> m2a2tlv1 = Create<PbbAddressTlv> ();
     m2a2tlv1->SetType (1);
     m2a2tlv1->SetIndexStart (1);
     m2a2tlv1->SetIndexStop (3);
@@ -3263,16 +3262,16 @@ int main (void)
     m2->AddressBlockPushBack (m2a2);
     packet.MessagePushBack (m2);
 
-    Ptr<MessageIpv6> m3 = Create<MessageIpv6> ();
+    Ptr<PbbMessageIpv6> m3 = Create<PbbMessageIpv6> ();
     m3->SetType (1);
     m3->SetOriginatorAddress (Ipv6Address ("abcd::1"));
 
-    Ptr<AddressBlockIpv6> m3a1 = Create<AddressBlockIpv6> ();
+    Ptr<PbbAddressBlockIpv6> m3a1 = Create<PbbAddressBlockIpv6> ();
     m3a1->AddressPushBack (Ipv6Address ("10::2"));
     m3a1->AddressPushBack (Ipv6Address ("10::11:2"));
     m3->AddressBlockPushBack (m3a1);
 
-    Ptr<AddressBlockIpv6> m3a2 = Create<AddressBlockIpv6> ();
+    Ptr<PbbAddressBlockIpv6> m3a2 = Create<PbbAddressBlockIpv6> ();
     m3a2->AddressPushBack (Ipv6Address ("10::"));
     m3a2->AddressPushBack (Ipv6Address ("11::"));
     m3a2->AddressPushBack (Ipv6Address ("10::5"));
@@ -3460,80 +3459,80 @@ int main (void)
 	 * |    |         Index-start = 1
 	 * |    |         Index-stop = 3
 	 * |    |         Type = 1; Value = 00  01  02  03
-	 * |    |                                          04  05  06  07
-	 * |    |                                          08  09  0a  0b
-	 * |    |                                          0c  0d  0e  0f
-	 * |    |                                          10  11  12  13
-	 * |    |                                          14  15  16  17
-	 * |    |                                          18  19  1a  1b
-	 * |    |                                          1c  1d  1e  1f
-	 * |    |                                          20  21  22  23
-	 * |    |                                          24  25  26  27
-	 * |    |                                          28  29  2a  2b
-	 * |    |                                          2c  2d  2e  2f
-	 * |    |                                          30  31  32  33
-	 * |    |                                          34  35  36  37
-	 * |    |                                          38  39  3a  3b
-	 * |    |                                          3c  3d  3e  3f
-	 * |    |                                          40  41  42  43
-	 * |    |                                          44  45  46  47
-	 * |    |                                          48  49  4a  4b
-	 * |    |                                          4c  4d  4e  4f
-	 * |    |                                          50  51  52  53
-	 * |    |                                          54  55  56  57
-	 * |    |                                          58  59  5a  5b
-	 * |    |                                          5c  5d  5e  5f
-	 * |    |                                          60  61  62  63
-	 * |    |                                          64  65  66  67
-	 * |    |                                          68  69  6a  6b
-	 * |    |                                          6c  6d  6e  6f
-	 * |    |                                          70  71  72  73
-	 * |    |                                          74  75  76  77
-	 * |    |                                          78  79  7a  7b
-	 * |    |                                          7c  7d  7e  7f
-	 * |    |                                          80  81  82  83
-	 * |    |                                          84  85  86  87
-	 * |    |                                          88  89  8a  8b
-	 * |    |                                          8c  8d  8e  8f
-	 * |    |                                          90  91  92  93
-	 * |    |                                          94  95  96  97
-	 * |    |                                          98  99  9a  9b
-	 * |    |                                          9c  9d  9e  9f
-	 * |    |                                          a0  a1  a2  a3
-	 * |    |                                          a4  a5  a6  a7
-	 * |    |                                          a8  a9  aa  ab
-	 * |    |                                          ac  ad  ae  af
-	 * |    |                                          b0  b1  b2  b3
-	 * |    |                                          b4  b5  b6  b7
-	 * |    |                                          b8  b9  ba  bb
-	 * |    |                                          bc  bd  be  bf
-	 * |    |                                          c0  c1  c2  c3
-	 * |    |                                          c4  c5  c6  c7
-	 * |    |                                          c8  c9  ca  cb
-	 * |    |                                          cc  cd  ce  cf
-	 * |    |                                          d0  d1  d2  d3
-	 * |    |                                          d4  d5  d6  d7
-	 * |    |                                          d8  d9  da  db
-	 * |    |                                          dc  dd  de  df
-	 * |    |                                          e0  e1  e2  e3
-	 * |    |                                          e4  e5  e6  e7
-	 * |    |                                          e8  e9  ea  eb
-	 * |    |                                          ec  ed  ee  ef
-	 * |    |                                          f0  f1  f2  f3
-	 * |    |                                          f4  f5  f6  f7
-	 * |    |                                          f8  f9  fa  fb
-	 * |    |                                          fc  fd  fe  00
-	 * |    |                                          01  02  03  04
-	 * |    |                                          05  06  07  08
-	 * |    |                                          09  0a  0b  0c
-	 * |    |                                          0d  0e  0f  10
-	 * |    |                                          11  12  13  14
-	 * |    |                                          15  16  17  18
-	 * |    |                                          19  1a  1b  1c
-	 * |    |                                          1d  1e  1f  20
-	 * |    |                                          21  22  23  24
-	 * |    |                                          25  26  27  28
-	 * |    |                                          29  2a  2b  2c
+	 * |    |                           04  05  06  07
+	 * |    |                           08  09  0a  0b
+	 * |    |                           0c  0d  0e  0f
+	 * |    |                           10  11  12  13
+	 * |    |                           14  15  16  17
+	 * |    |                           18  19  1a  1b
+	 * |    |                           1c  1d  1e  1f
+	 * |    |                           20  21  22  23
+	 * |    |                           24  25  26  27
+	 * |    |                           28  29  2a  2b
+	 * |    |                           2c  2d  2e  2f
+	 * |    |                           30  31  32  33
+	 * |    |                           34  35  36  37
+	 * |    |                           38  39  3a  3b
+	 * |    |                           3c  3d  3e  3f
+	 * |    |                           40  41  42  43
+	 * |    |                           44  45  46  47
+	 * |    |                           48  49  4a  4b
+	 * |    |                           4c  4d  4e  4f
+	 * |    |                           50  51  52  53
+	 * |    |                           54  55  56  57
+	 * |    |                           58  59  5a  5b
+	 * |    |                           5c  5d  5e  5f
+	 * |    |                           60  61  62  63
+	 * |    |                           64  65  66  67
+	 * |    |                           68  69  6a  6b
+	 * |    |                           6c  6d  6e  6f
+	 * |    |                           70  71  72  73
+	 * |    |                           74  75  76  77
+	 * |    |                           78  79  7a  7b
+	 * |    |                           7c  7d  7e  7f
+	 * |    |                           80  81  82  83
+	 * |    |                           84  85  86  87
+	 * |    |                           88  89  8a  8b
+	 * |    |                           8c  8d  8e  8f
+	 * |    |                           90  91  92  93
+	 * |    |                           94  95  96  97
+	 * |    |                           98  99  9a  9b
+	 * |    |                           9c  9d  9e  9f
+	 * |    |                           a0  a1  a2  a3
+	 * |    |                           a4  a5  a6  a7
+	 * |    |                           a8  a9  aa  ab
+	 * |    |                           ac  ad  ae  af
+	 * |    |                           b0  b1  b2  b3
+	 * |    |                           b4  b5  b6  b7
+	 * |    |                           b8  b9  ba  bb
+	 * |    |                           bc  bd  be  bf
+	 * |    |                           c0  c1  c2  c3
+	 * |    |                           c4  c5  c6  c7
+	 * |    |                           c8  c9  ca  cb
+	 * |    |                           cc  cd  ce  cf
+	 * |    |                           d0  d1  d2  d3
+	 * |    |                           d4  d5  d6  d7
+	 * |    |                           d8  d9  da  db
+	 * |    |                           dc  dd  de  df
+	 * |    |                           e0  e1  e2  e3
+	 * |    |                           e4  e5  e6  e7
+	 * |    |                           e8  e9  ea  eb
+	 * |    |                           ec  ed  ee  ef
+	 * |    |                           f0  f1  f2  f3
+	 * |    |                           f4  f5  f6  f7
+	 * |    |                           f8  f9  fa  fb
+	 * |    |                           fc  fd  fe  00
+	 * |    |                           01  02  03  04
+	 * |    |                           05  06  07  08
+	 * |    |                           09  0a  0b  0c
+	 * |    |                           0d  0e  0f  10
+	 * |    |                           11  12  13  14
+	 * |    |                           15  16  17  18
+	 * |    |                           19  1a  1b  1c
+	 * |    |                           1d  1e  1f  20
+	 * |    |                           21  22  23  24
+	 * |    |                           25  26  27  28
+	 * |    |                           29  2a  2b  2c
 	 * |    |                                          
 	 * |    `-------------------
 	 * |
@@ -3560,34 +3559,34 @@ int main (void)
 	 * `------------------
    */
   {
-    PacketBB packet;
+    PbbPacket packet;
     packet.SetSequenceNumber (30);
 
-    Ptr<Tlv> ptlv1 = Create<Tlv> ();
+    Ptr<PbbTlv> ptlv1 = Create<PbbTlv> ();
     ptlv1->SetType (1);
     packet.TlvPushBack (ptlv1);
 
-    Ptr<MessageIpv6> m1 = Create<MessageIpv6> ();
+    Ptr<PbbMessageIpv6> m1 = Create<PbbMessageIpv6> ();
     m1->SetType (1);
 
-    Ptr<Tlv> m1tlv1 = Create<Tlv> ();
+    Ptr<PbbTlv> m1tlv1 = Create<PbbTlv> ();
     m1tlv1->SetType (1);
     m1->TlvPushBack (m1tlv1);
     packet.MessagePushBack (m1);
 
-    Ptr<MessageIpv4> m2 = Create<MessageIpv4> ();
+    Ptr<PbbMessageIpv4> m2 = Create<PbbMessageIpv4> ();
     m2->SetType (2);
     m2->SetOriginatorAddress (Ipv4Address ("10.0.0.1"));
     m2->SetHopLimit (255);
     m2->SetHopCount (1);
     m2->SetSequenceNumber (12345);
 
-    Ptr<AddressBlockIpv4> m2a1 = Create<AddressBlockIpv4> ();
+    Ptr<PbbAddressBlockIpv4> m2a1 = Create<PbbAddressBlockIpv4> ();
     m2a1->AddressPushBack (Ipv4Address ("10.0.0.2"));
     m2a1->AddressPushBack (Ipv4Address ("10.1.1.2"));
     m2->AddressBlockPushBack (m2a1);
 
-    Ptr<AddressBlockIpv4> m2a2 = Create<AddressBlockIpv4> ();
+    Ptr<PbbAddressBlockIpv4> m2a2 = Create<PbbAddressBlockIpv4> ();
     m2a2->AddressPushBack (Ipv4Address ("10.0.0.0"));
     m2a2->AddressPushBack (Ipv4Address ("11.0.0.0"));
     m2a2->AddressPushBack (Ipv4Address ("10.0.0.5"));
@@ -3597,7 +3596,7 @@ int main (void)
     m2a2->PrefixPushBack (16);
     m2a2->PrefixPushBack (24);
 
-    Ptr<AddressTlv> m2a2tlv1 = Create<AddressTlv> ();
+    Ptr<PbbAddressTlv> m2a2tlv1 = Create<PbbAddressTlv> ();
     m2a2tlv1->SetType (1);
     m2a2tlv1->SetIndexStart (1);
     m2a2tlv1->SetIndexStop (3);
@@ -3685,16 +3684,16 @@ int main (void)
     m2->AddressBlockPushBack (m2a2);
     packet.MessagePushBack (m2);
 
-    Ptr<MessageIpv6> m3 = Create<MessageIpv6> ();
+    Ptr<PbbMessageIpv6> m3 = Create<PbbMessageIpv6> ();
     m3->SetType (1);
     m3->SetOriginatorAddress (Ipv6Address ("abcd::1"));
 
-    Ptr<AddressBlockIpv6> m3a1 = Create<AddressBlockIpv6> ();
+    Ptr<PbbAddressBlockIpv6> m3a1 = Create<PbbAddressBlockIpv6> ();
     m3a1->AddressPushBack (Ipv6Address ("10::2"));
     m3a1->AddressPushBack (Ipv6Address ("10::11:2"));
     m3->AddressBlockPushBack (m3a1);
 
-    Ptr<AddressBlockIpv6> m3a2 = Create<AddressBlockIpv6> ();
+    Ptr<PbbAddressBlockIpv6> m3a2 = Create<PbbAddressBlockIpv6> ();
     m3a2->AddressPushBack (Ipv6Address ("10::"));
     m3a2->AddressPushBack (Ipv6Address ("11::"));
     m3a2->AddressPushBack (Ipv6Address ("10::5"));

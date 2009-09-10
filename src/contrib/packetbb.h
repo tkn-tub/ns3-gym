@@ -19,7 +19,7 @@
  * Author: Tom Wambold <tom5760@gmail.com>
  */
 /* These classes implement RFC 5444 - The Generalized Mobile Ad Hoc Network
- * (MANET) Packet/Message Format
+ * (MANET) Packet/PbbMessage Format
  * See: http://tools.ietf.org/html/rfc5444 for details */
 
 #ifndef PACKETBB_H
@@ -34,16 +34,14 @@
 
 namespace ns3 {
 
-namespace pbb {
-
 /* Forward declare objects */
-class PacketBB;
-class Message;
-class AddressBlock;
-class TlvBlock;
-class AddressTlvBlock;
-class Tlv;
-class AddressTlv;
+class PbbPacket;
+class PbbMessage;
+class PbbAddressBlock;
+class PbbTlvBlock;
+class PbbAddressTlvBlock;
+class PbbTlv;
+class PbbAddressTlv;
 
 enum AddressLength {
   IPV4 = 3,
@@ -51,15 +49,15 @@ enum AddressLength {
 };
 
 /**
- * \brief A block of Packet or Message TLVs.
+ * \brief A block of Packet or PbbMessage TLVs.
  *
  * Acts similar to a C++ STL container.  Should not be used for Address TLVs.
  */
-class TlvBlock
+class PbbTlvBlock
 {
 public:
-  typedef std::list< Ptr<Tlv> >::iterator Iterator;
-  typedef std::list< Ptr<Tlv> >::const_iterator ConstIterator;
+  typedef std::list< Ptr<PbbTlv> >::iterator Iterator;
+  typedef std::list< Ptr<PbbTlv> >::const_iterator ConstIterator;
 
   Iterator Begin (void);
   ConstIterator Begin (void) const;
@@ -69,16 +67,16 @@ public:
   int Size (void) const;
   bool Empty (void) const;
 
-  Ptr<Tlv> Front (void) const;
-  Ptr<Tlv> Back (void) const;
+  Ptr<PbbTlv> Front (void) const;
+  Ptr<PbbTlv> Back (void) const;
 
-  void PushFront (Ptr<Tlv> tlv);
+  void PushFront (Ptr<PbbTlv> tlv);
   void PopFront (void);
 
-  void PushBack (Ptr<Tlv> tlv);
+  void PushBack (Ptr<PbbTlv> tlv);
   void PopBack (void);
 
-  Iterator Insert (Iterator position, const Ptr<Tlv> tlv);
+  Iterator Insert (Iterator position, const Ptr<PbbTlv> tlv);
 
   Iterator Erase (Iterator position);
   Iterator Erase (Iterator first, Iterator last);
@@ -91,11 +89,11 @@ public:
   void Print (std::ostream &os) const;
   void Print (std::ostream &os, int level) const;
 
-  bool operator== (const TlvBlock &other) const;
-  bool operator!= (const TlvBlock &other) const;
+  bool operator== (const PbbTlvBlock &other) const;
+  bool operator!= (const PbbTlvBlock &other) const;
 
 private:
-  std::list< Ptr<Tlv> > m_tlvList;
+  std::list< Ptr<PbbTlv> > m_tlvList;
 };
 
 /**
@@ -103,11 +101,11 @@ private:
  *
  * Acts similar to a C++ STL container.
  */
-class AddressTlvBlock
+class PbbAddressTlvBlock
 {
 public:
-  typedef std::list< Ptr<AddressTlv> >::iterator Iterator;
-  typedef std::list< Ptr<AddressTlv> >::const_iterator ConstIterator;
+  typedef std::list< Ptr<PbbAddressTlv> >::iterator Iterator;
+  typedef std::list< Ptr<PbbAddressTlv> >::const_iterator ConstIterator;
 
   Iterator Begin (void);
   ConstIterator Begin (void) const;
@@ -117,16 +115,16 @@ public:
   int Size (void) const;
   bool Empty (void) const;
 
-  Ptr<AddressTlv> Front (void) const;
-  Ptr<AddressTlv> Back (void) const;
+  Ptr<PbbAddressTlv> Front (void) const;
+  Ptr<PbbAddressTlv> Back (void) const;
 
-  void PushFront (Ptr<AddressTlv> tlv);
+  void PushFront (Ptr<PbbAddressTlv> tlv);
   void PopFront (void);
 
-  void PushBack (Ptr<AddressTlv> tlv);
+  void PushBack (Ptr<PbbAddressTlv> tlv);
   void PopBack (void);
 
-  Iterator Insert (Iterator position, const Ptr<AddressTlv> tlv);
+  Iterator Insert (Iterator position, const Ptr<PbbAddressTlv> tlv);
 
   Iterator Erase (Iterator position);
   Iterator Erase (Iterator first, Iterator last);
@@ -139,25 +137,25 @@ public:
   void Print (std::ostream &os) const;
   void Print (std::ostream &os, int level) const;
 
-  bool operator== (const AddressTlvBlock &other) const;
-  bool operator!= (const AddressTlvBlock &other) const;
+  bool operator== (const PbbAddressTlvBlock &other) const;
+  bool operator!= (const PbbAddressTlvBlock &other) const;
 
 private:
-  std::list< Ptr<AddressTlv> > m_tlvList;
+  std::list< Ptr<PbbAddressTlv> > m_tlvList;
 };
 
 /**
- * \brief Main PacketBB Packet object.
+ * \brief Main PbbPacket Packet object.
  */
-class PacketBB : public Header
+class PbbPacket : public Header
 {
 public:
-  typedef std::list< Ptr<Tlv> >::iterator TlvIterator;
-  typedef std::list< Ptr<Tlv> >::const_iterator ConstTlvIterator;
-  typedef std::list< Ptr<Message> >::iterator MessageIterator;
-  typedef std::list< Ptr<Message> >::const_iterator ConstMessageIterator;
+  typedef std::list< Ptr<PbbTlv> >::iterator TlvIterator;
+  typedef std::list< Ptr<PbbTlv> >::const_iterator ConstTlvIterator;
+  typedef std::list< Ptr<PbbMessage> >::iterator MessageIterator;
+  typedef std::list< Ptr<PbbMessage> >::const_iterator ConstMessageIterator;
 
-  PacketBB (void);
+  PbbPacket (void);
 
   uint8_t GetVersion (void) const;
 
@@ -181,14 +179,14 @@ public:
   int TlvSize (void) const;
   bool TlvEmpty (void) const;
 
-  Ptr<Tlv> TlvFront (void);
-  const Ptr<Tlv> TlvFront (void) const;
-  Ptr<Tlv> TlvBack (void);
-  const Ptr<Tlv> TlvBack (void) const;
+  Ptr<PbbTlv> TlvFront (void);
+  const Ptr<PbbTlv> TlvFront (void) const;
+  Ptr<PbbTlv> TlvBack (void);
+  const Ptr<PbbTlv> TlvBack (void) const;
 
-  void TlvPushFront (Ptr<Tlv>);
+  void TlvPushFront (Ptr<PbbTlv>);
   void TlvPopFront (void);
-  void TlvPushBack (Ptr<Tlv>);
+  void TlvPushBack (Ptr<PbbTlv>);
   void TlvPopBack (void);
 
   TlvIterator Erase (TlvIterator position);
@@ -205,14 +203,14 @@ public:
   int MessageSize (void) const;
   bool MessageEmpty (void) const;
 
-  Ptr<Message> MessageFront (void);
-  const Ptr<Message> MessageFront (void) const;
-  Ptr<Message> MessageBack (void);
-  const Ptr<Message> MessageBack (void) const;
+  Ptr<PbbMessage> MessageFront (void);
+  const Ptr<PbbMessage> MessageFront (void) const;
+  Ptr<PbbMessage> MessageBack (void);
+  const Ptr<PbbMessage> MessageBack (void) const;
 
-  void MessagePushFront (Ptr<Message> message);
+  void MessagePushFront (Ptr<PbbMessage> message);
   void MessagePopFront (void);
-  void MessagePushBack (Ptr<Message> message);
+  void MessagePushBack (Ptr<PbbMessage> message);
   void MessagePopBack (void);
 
   MessageIterator Erase (MessageIterator position);
@@ -237,15 +235,15 @@ public:
   virtual uint32_t Deserialize (Buffer::Iterator start);
   virtual void Print (std::ostream &os) const;
 
-  bool operator== (const PacketBB &other) const;
-  bool operator!= (const PacketBB &other) const;
+  bool operator== (const PbbPacket &other) const;
+  bool operator!= (const PbbPacket &other) const;
 
 protected:
   void SerializePacketTlv (Buffer::Iterator &start) const;
 
 private:
-  TlvBlock m_tlvList;
-  std::list< Ptr<Message> > m_messageList;
+  PbbTlvBlock m_tlvList;
+  std::list< Ptr<PbbMessage> > m_messageList;
 
   uint8_t m_version;
 
@@ -256,21 +254,21 @@ private:
 };
 
 /**
- * \brief A message within a PacketBB packet.
+ * \brief A message within a PbbPacket packet.
  *
- * There may be any number of messages in one PacketBB packet.
- * This is a pure virutal base class, you should instantiate either MessageIpv4
- * or MessageIpv6.
+ * There may be any number of messages in one PbbPacket packet.
+ * This is a pure virutal base class, you should instantiate either PbbMessageIpv4
+ * or PbbMessageIpv6.
  */
-class Message
+class PbbMessage
 {
 public:
-  typedef std::list< Ptr<Tlv> >::iterator TlvIterator;
-  typedef std::list< Ptr<Tlv> >::const_iterator ConstTlvIterator;
-  typedef std::list< Ptr<AddressBlock> >::iterator AddressBlockIterator;
-  typedef std::list< Ptr<AddressBlock> >::const_iterator ConstAddressBlockIterator;
+  typedef std::list< Ptr<PbbTlv> >::iterator TlvIterator;
+  typedef std::list< Ptr<PbbTlv> >::const_iterator ConstTlvIterator;
+  typedef std::list< Ptr<PbbAddressBlock> >::iterator AddressBlockIterator;
+  typedef std::list< Ptr<PbbAddressBlock> >::const_iterator ConstAddressBlockIterator;
 
-  Message (void);
+  PbbMessage (void);
 
   void SetType (uint8_t type);
   uint8_t GetType (void) const;
@@ -315,7 +313,7 @@ public:
   uint16_t GetSequenceNumber (void) const;
   bool HasSequenceNumber (void) const;
 
-  /* Manipulating Message TLVs */
+  /* Manipulating PbbMessage TLVs */
 
   TlvIterator TlvBegin ();
   ConstTlvIterator TlvBegin () const;
@@ -325,14 +323,14 @@ public:
   int TlvSize (void) const;
   bool TlvEmpty (void) const;
 
-  Ptr<Tlv> TlvFront (void);
-  const Ptr<Tlv> TlvFront (void) const;
-  Ptr<Tlv> TlvBack (void);
-  const Ptr<Tlv> TlvBack (void) const;
+  Ptr<PbbTlv> TlvFront (void);
+  const Ptr<PbbTlv> TlvFront (void) const;
+  Ptr<PbbTlv> TlvBack (void);
+  const Ptr<PbbTlv> TlvBack (void) const;
 
-  void TlvPushFront (Ptr<Tlv> tlv);
+  void TlvPushFront (Ptr<PbbTlv> tlv);
   void TlvPopFront (void);
-  void TlvPushBack (Ptr<Tlv> tlv);
+  void TlvPushBack (Ptr<PbbTlv> tlv);
   void TlvPopBack (void);
 
   TlvIterator TlvErase (TlvIterator position);
@@ -349,14 +347,14 @@ public:
   int AddressBlockSize (void) const;
   bool AddressBlockEmpty (void) const;
 
-  Ptr<AddressBlock> AddressBlockFront (void);
-  const Ptr<AddressBlock> AddressBlockFront (void) const;
-  Ptr<AddressBlock> AddressBlockBack (void);
-  const Ptr<AddressBlock> AddressBlockBack (void) const;
+  Ptr<PbbAddressBlock> AddressBlockFront (void);
+  const Ptr<PbbAddressBlock> AddressBlockFront (void) const;
+  Ptr<PbbAddressBlock> AddressBlockBack (void);
+  const Ptr<PbbAddressBlock> AddressBlockBack (void) const;
 
-  void AddressBlockPushFront (Ptr<AddressBlock> block);
+  void AddressBlockPushFront (Ptr<PbbAddressBlock> block);
   void AddressBlockPopFront (void);
-  void AddressBlockPushBack (Ptr<AddressBlock> block);
+  void AddressBlockPushBack (Ptr<PbbAddressBlock> block);
   void AddressBlockPopBack (void);
 
   AddressBlockIterator AddressBlockErase (AddressBlockIterator position);
@@ -369,18 +367,18 @@ public:
   void Unref (void) const;
 
   /* Returns 0 on error */
-  static Ptr<Message> DeserializeMessage (Buffer::Iterator &start);
+  static Ptr<PbbMessage> DeserializeMessage (Buffer::Iterator &start);
   uint32_t GetSerializedSize (void) const;
   void Serialize (Buffer::Iterator &start) const;
   void Deserialize (Buffer::Iterator &start);
   void Print (std::ostream &os) const;
   void Print (std::ostream &os, int level) const;
 
-  bool operator== (const Message &other) const;
-  bool operator!= (const Message &other) const;
+  bool operator== (const PbbMessage &other) const;
+  bool operator!= (const PbbMessage &other) const;
 
 protected:
-  /* Message size in bytes - 1.
+  /* PbbMessage size in bytes - 1.
    *
    * IPv4 = 4 - 1 = 3, IPv6 = 16 - 1 = 15
    */
@@ -390,11 +388,11 @@ protected:
   virtual Address DeserializeOriginatorAddress (Buffer::Iterator &start) const = 0;
   virtual void PrintOriginatorAddress (std::ostream &os) const = 0;
 
-  virtual Ptr<AddressBlock> AddressBlockDeserialize (Buffer::Iterator &start) const = 0;
+  virtual Ptr<PbbAddressBlock> AddressBlockDeserialize (Buffer::Iterator &start) const = 0;
 
 private:
-  TlvBlock m_tlvList;
-  std::list< Ptr<AddressBlock> > m_addressBlockList;
+  PbbTlvBlock m_tlvList;
+  std::list< Ptr<PbbAddressBlock> > m_addressBlockList;
 
   uint8_t m_type;
   AddressLength m_addrSize;
@@ -415,11 +413,11 @@ private:
 };
 
 /**
- * \brief Concrete IPv4 specific Message.
+ * \brief Concrete IPv4 specific PbbMessage.
  *
  * This message will only contain IPv4 addresses.
  */
-class MessageIpv4 : public Message {
+class PbbMessageIpv4 : public PbbMessage {
 protected:
   virtual AddressLength GetAddressLength (void) const;
 
@@ -427,15 +425,15 @@ protected:
   virtual Address DeserializeOriginatorAddress (Buffer::Iterator &start) const;
   virtual void PrintOriginatorAddress (std::ostream &os) const;
 
-  virtual Ptr<AddressBlock> AddressBlockDeserialize (Buffer::Iterator &start) const;
+  virtual Ptr<PbbAddressBlock> AddressBlockDeserialize (Buffer::Iterator &start) const;
 };
 
 /**
- * \brief Concrete IPv6 specific Message class.
+ * \brief Concrete IPv6 specific PbbMessage class.
  *
  * This message will only contain IPv6 addresses.
  */
-class MessageIpv6 : public Message {
+class PbbMessageIpv6 : public PbbMessage {
 protected:
   virtual AddressLength GetAddressLength (void) const;
 
@@ -443,16 +441,16 @@ protected:
   virtual Address DeserializeOriginatorAddress (Buffer::Iterator &start) const;
   virtual void PrintOriginatorAddress (std::ostream &os) const;
 
-  virtual Ptr<AddressBlock> AddressBlockDeserialize (Buffer::Iterator &start) const;
+  virtual Ptr<PbbAddressBlock> AddressBlockDeserialize (Buffer::Iterator &start) const;
 };
 
 /**
  * \brief An Address Block and its associated Address TLV Blocks.
  *
  * This is a pure virtual base class, you should instantiate either
- * AddressBlockIpv4 or AddressBlockIpv6.
+ * PbbAddressBlockIpv4 or PbbAddressBlockIpv6.
  */
-class AddressBlock
+class PbbAddressBlock
 {
 public:
   typedef std::list< Address >::iterator AddressIterator;
@@ -461,10 +459,10 @@ public:
   typedef std::list<uint8_t>::iterator PrefixIterator;
   typedef std::list<uint8_t>::const_iterator ConstPrefixIterator;
 
-  typedef AddressTlvBlock::Iterator TlvIterator;
-  typedef AddressTlvBlock::ConstIterator ConstTlvIterator;
+  typedef PbbAddressTlvBlock::Iterator TlvIterator;
+  typedef PbbAddressTlvBlock::ConstIterator ConstTlvIterator;
 
-  AddressBlock ();
+  PbbAddressBlock ();
 
   /* Manipulating the address block */
 
@@ -527,18 +525,18 @@ public:
   int TlvSize (void) const;
   bool TlvEmpty (void) const;
 
-  Ptr<AddressTlv> TlvFront (void);
-  const Ptr<AddressTlv> TlvFront (void) const;
-  Ptr<AddressTlv> TlvBack (void);
-  const Ptr<AddressTlv> TlvBack (void) const;
+  Ptr<PbbAddressTlv> TlvFront (void);
+  const Ptr<PbbAddressTlv> TlvFront (void) const;
+  Ptr<PbbAddressTlv> TlvBack (void);
+  const Ptr<PbbAddressTlv> TlvBack (void) const;
 
-  void TlvPushFront (Ptr<AddressTlv> address);
+  void TlvPushFront (Ptr<PbbAddressTlv> address);
   void TlvPopFront (void);
 
-  void TlvPushBack (Ptr<AddressTlv> address);
+  void TlvPushBack (Ptr<PbbAddressTlv> address);
   void TlvPopBack (void);
 
-  TlvIterator TlvInsert (TlvIterator position, const Ptr<Tlv> value);
+  TlvIterator TlvInsert (TlvIterator position, const Ptr<PbbTlv> value);
 
   TlvIterator TlvErase (TlvIterator position);
   TlvIterator TlvErase (TlvIterator first, TlvIterator last);
@@ -555,8 +553,8 @@ public:
   void Print (std::ostream &os) const;
   void Print (std::ostream &os, int level) const;
 
-  bool operator== (const AddressBlock &other) const;
-  bool operator!= (const AddressBlock &other) const;
+  bool operator== (const PbbAddressBlock &other) const;
+  bool operator!= (const PbbAddressBlock &other) const;
 
 protected:
   virtual uint8_t GetAddressLength (void) const = 0;
@@ -573,17 +571,17 @@ private:
 
   std::list<Address> m_addressList;
   std::list<uint8_t> m_prefixList;
-  AddressTlvBlock m_addressTlvList;
+  PbbAddressTlvBlock m_addressTlvList;
 
   mutable uint32_t m_refCount;
 };
 
 /**
- * \brief Concrete IPv4 specific AddressBlock.
+ * \brief Concrete IPv4 specific PbbAddressBlock.
  *
  * This address block will only contain IPv4 addresses.
  */
-class AddressBlockIpv4 : public AddressBlock
+class PbbAddressBlockIpv4 : public PbbAddressBlock
 {
 protected:
   virtual uint8_t GetAddressLength (void) const;
@@ -594,11 +592,11 @@ protected:
 };
 
 /**
- * \brief Concrete IPv6 specific AddressBlock.
+ * \brief Concrete IPv6 specific PbbAddressBlock.
  *
  * This address block will only contain IPv6 addresses.
  */
-class AddressBlockIpv6 : public AddressBlock
+class PbbAddressBlockIpv6 : public PbbAddressBlock
 {
 protected:
   virtual uint8_t GetAddressLength (void) const;
@@ -611,10 +609,10 @@ protected:
 /**
  * \brief A packet or message TLV
  */
-class Tlv
+class PbbTlv
 {
 public:
-  Tlv (void);
+  PbbTlv (void);
 
   void SetType (uint8_t type);
   uint8_t GetType (void) const;
@@ -650,8 +648,8 @@ public:
   void Print (std::ostream &os) const;
   void Print (std::ostream &os, int level) const;
 
-  bool operator== (const Tlv &other) const;
-  bool operator!= (const Tlv &other) const;
+  bool operator== (const PbbTlv &other) const;
+  bool operator!= (const PbbTlv &other) const;
 
 protected:
   void SetIndexStart (uint8_t index);
@@ -687,13 +685,13 @@ private:
 /**
  * \brief An Address TLV
  */
-class AddressTlv : public Tlv
+class PbbAddressTlv : public PbbTlv
 {
 public:
   void SetIndexStart (uint8_t index);
   /**
    * \returns the first (inclusive) index of the address in the corresponding
-   * AddressBlock that this TLV applies to.
+   * PbbAddressBlock that this TLV applies to.
    *
    * Calling this while HasIndexStart is False is undefined.  Make sure you
    * check it first.  This will be checked by an assert in debug builds.
@@ -704,7 +702,7 @@ public:
   void SetIndexStop (uint8_t index);
   /**
    * \returns the last (inclusive) index of the address in the corresponding
-   * AddressBlock that this TLV applies to.
+   * PbbAddressBlock that this TLV applies to.
    *
    * Calling this while HasIndexStop is False is undefined.  Make sure you
    * check it first.  This will be checked by an assert in debug builds.
@@ -715,8 +713,6 @@ public:
   void SetMultivalue (bool isMultivalue);
   bool IsMultivalue (void) const;
 };
-
-} /* namespace pbb */
 
 } /* namespace ns3 */
 
