@@ -16,6 +16,31 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Kirill Andreev <andreev@iitp.ru>
+ *
+ *
+ * By default this script creates m_xSize * m_ySize square grid topology with
+ * IEEE802.11s stack installed at each node with peering management
+ * and HWMP protocol.
+ * The side of the square cell is defined by m_step parameter.
+ * When topology is created, UDP ping is installed to opposite corners
+ * by diagonals. packet size of the UDP ping and interval between two
+ * successive packets is configurable.
+ * 
+ *  m_xSize * step
+ *  |<--------->|
+ *   step
+ *  |<--->|
+ *  * --- * --- * <---Ping sink  _
+ *  | \   |   / |                ^
+ *  |   \ | /   |                |
+ *  * --- * --- * m_ySize * step |
+ *  |   / | \   |                |
+ *  | /   |   \ |                |
+ *  * --- * --- *                _
+ *  ^ Ping source
+ *
+ *  See also MeshTest::Configure to read more about configurable
+ *  parameters.
  */
 
 
@@ -97,16 +122,20 @@ MeshTest::Configure (int argc, char *argv[])
   CommandLine cmd;
   cmd.AddValue ("x-size", "Number of nodes in a row grid. [6]", m_xSize);
   cmd.AddValue ("y-size", "Number of rows in a grid. [6]", m_ySize);
-  cmd.AddValue ("m_step",   "Size of edge in our grid, meters. [100 m]", m_step);
+  cmd.AddValue ("step",   "Size of edge in our grid, meters. [100 m]", m_step);
+  /*
+   * As soon as starting node means that it sends a beacon,
+   * simultaneous start is not good.
+   */
   cmd.AddValue ("start",  "Maximum random start delay, seconds. [0.1 s]", m_randomStart);
   cmd.AddValue ("time",  "Simulation time, seconds [100 s]", m_totalTime);
-  cmd.AddValue ("packet-interval",  "Interval between packets, seconds [0.001 s]", m_packetInterval);
-  cmd.AddValue ("packet-size",  "Size of packets", m_packetSize);
+  cmd.AddValue ("packet-interval",  "Interval between packets in UDP ping, seconds [0.001 s]", m_packetInterval);
+  cmd.AddValue ("packet-size",  "Size of packets in UDP ping", m_packetSize);
   cmd.AddValue ("interfaces", "Number of radio interfaces used by each mesh point. [1]", m_nIfaces);
-  cmd.AddValue ("m_channels",   "Use different frequency m_channels for different interfaces. [0]", m_chan);
-  cmd.AddValue ("m_pcap",   "Enable PCAP traces on interfaces. [0]", m_pcap);
-  cmd.AddValue ("m_stack",  "Type of protocol m_stack. ns3::Dot11sStack by default", m_stack);
-  cmd.AddValue ("m_root", "Mac address of m_root mesh point", m_root);
+  cmd.AddValue ("channels",   "Use different frequency channels for different interfaces. [0]", m_chan);
+  cmd.AddValue ("pcap",   "Enable PCAP traces on interfaces. [0]", m_pcap);
+  cmd.AddValue ("stack",  "Type of protocol stack. ns3::Dot11sStack by default", m_stack);
+  cmd.AddValue ("root", "Mac address of root mesh point in HWMP", m_root);
   
   cmd.Parse (argc, argv);
   NS_LOG_DEBUG ("Grid:" << m_xSize << "*" << m_ySize);
@@ -115,13 +144,20 @@ MeshTest::Configure (int argc, char *argv[])
 void
 MeshTest::CreateNodes ()
 { 
+  /*
+   * Create m_ySize*m_xSize stations to form a grid topology
+   */
   nodes.Create (m_ySize*m_xSize);
-  // Setting m_channel
+  // Configure YansWifiChannel
   YansWifiPhyHelper wifiPhy = YansWifiPhyHelper::Default ();
   YansWifiChannelHelper wifiChannel = YansWifiChannelHelper::Default ();
   wifiPhy.SetChannel (wifiChannel.Create ());
+  /*
+   * Create mesh helper and set stack installer to it
+   * Stack installer creates all needed protocols and install them to
+   * mesh point device
+   */
   mesh = MeshHelper::Default ();
-  // Install mesh point devices & protocols
   mesh.SetStackInstaller (m_stack, "Root", Mac48AddressValue (Mac48Address (m_root.c_str ())));
   if (m_chan)
     {
@@ -131,11 +167,12 @@ MeshTest::CreateNodes ()
     {
       mesh.SetSpreadInterfaceChannels (MeshHelper::ZERO_CHANNEL);
     }
-  //MeshInterfaceHelper interface = MeshInterfaceHelper::Default ();
   mesh.SetMacType ("RandomStart", TimeValue (Seconds(m_randomStart)));
+  // Set number of interfaces - default is single-interface mesh point
   mesh.SetNumberOfInterfaces (m_nIfaces);
+  // Install protocols and return container if MeshPointDevices
   meshDevices = mesh.Install (wifiPhy, nodes);
-  // Setup mobility
+  // Setup mobility - static grid topology
   MobilityHelper mobility;
   mobility.SetPositionAllocator ("ns3::GridPositionAllocator",
                                  "MinX", DoubleValue (0.0),
@@ -152,8 +189,8 @@ MeshTest::CreateNodes ()
 void
 MeshTest::InstallInternetStack ()
 {
-  InternetStackHelper m_stack;
-  m_stack.Install (nodes);
+  InternetStackHelper internetStack;
+  internetStack.Install (nodes);
   Ipv4AddressHelper address;
   address.SetBase ("10.1.1.0", "255.255.255.0");
   interfaces = address.Assign (meshDevices);
