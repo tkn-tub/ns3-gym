@@ -1,7 +1,7 @@
 ## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
 
 def build(bld):
-    obj = bld.create_ns3_module('dot11s', ['wifi'])
+    obj = bld.create_ns3_module('dot11s', ['wifi', 'mesh'])
     obj.source = [
         'ie-dot11s-beacon-timing.cc',
         'ie-dot11s-configuration.cc',
