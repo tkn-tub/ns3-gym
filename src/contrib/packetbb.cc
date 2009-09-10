@@ -932,7 +932,7 @@ PbbMessage::GetType (void) const
   return m_type;
 }
 
-AddressLength
+PbbAddressLength
 PbbMessage::GetAddressLength (void) const
 {
   return m_addrSize;
@@ -1559,7 +1559,7 @@ PbbMessage::operator!= (const PbbMessage &other) const
 
 /* End PbbMessage Class */
 
-AddressLength
+PbbAddressLength
 PbbMessageIpv4::GetAddressLength (void) const
 {
   return IPV4;
@@ -1597,7 +1597,7 @@ PbbMessageIpv4::AddressBlockDeserialize (Buffer::Iterator &start) const
 
 /* End PbbMessageIpv4 Class */
 
-AddressLength
+PbbAddressLength
 PbbMessageIpv6::GetAddressLength (void) const
 {
   return IPV6;

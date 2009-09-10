@@ -43,7 +43,7 @@ class PbbAddressTlvBlock;
 class PbbTlv;
 class PbbAddressTlv;
 
-enum AddressLength {
+enum PbbAddressLength {
   IPV4 = 3,
   IPV6 = 15,
 };
@@ -382,7 +382,7 @@ protected:
    *
    * IPv4 = 4 - 1 = 3, IPv6 = 16 - 1 = 15
    */
-  virtual AddressLength GetAddressLength (void) const = 0;
+  virtual PbbAddressLength GetAddressLength (void) const = 0;
 
   virtual void SerializeOriginatorAddress (Buffer::Iterator &start) const = 0;
   virtual Address DeserializeOriginatorAddress (Buffer::Iterator &start) const = 0;
@@ -395,7 +395,7 @@ private:
   std::list< Ptr<PbbAddressBlock> > m_addressBlockList;
 
   uint8_t m_type;
-  AddressLength m_addrSize;
+  PbbAddressLength m_addrSize;
 
   bool m_hasOriginatorAddress;
   Address m_originatorAddress;
@@ -419,7 +419,7 @@ private:
  */
 class PbbMessageIpv4 : public PbbMessage {
 protected:
-  virtual AddressLength GetAddressLength (void) const;
+  virtual PbbAddressLength GetAddressLength (void) const;
 
   virtual void SerializeOriginatorAddress (Buffer::Iterator &start) const;
   virtual Address DeserializeOriginatorAddress (Buffer::Iterator &start) const;
@@ -435,7 +435,7 @@ protected:
  */
 class PbbMessageIpv6 : public PbbMessage {
 protected:
-  virtual AddressLength GetAddressLength (void) const;
+  virtual PbbAddressLength GetAddressLength (void) const;
 
   virtual void SerializeOriginatorAddress (Buffer::Iterator &start) const;
   virtual Address DeserializeOriginatorAddress (Buffer::Iterator &start) const;
