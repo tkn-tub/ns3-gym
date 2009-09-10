@@ -74,7 +74,6 @@ NscTcpSocketImpl::GetTypeId ()
     m_state (CLOSED),
     m_closeOnEmpty (false),
     m_txBufferSize (0),
-    m_rtt (0),
     m_lastMeasuredRtt (Seconds(0.0))
 {
   NS_LOG_FUNCTION (this);
@@ -104,7 +103,6 @@ NscTcpSocketImpl::NscTcpSocketImpl(const NscTcpSocketImpl& sock)
     m_cWnd (sock.m_cWnd),
     m_ssThresh (sock.m_ssThresh),
     m_initialCWnd (sock.m_initialCWnd),
-    m_rtt (0),
     m_lastMeasuredRtt (Seconds(0.0)),
     m_cnTimeout (sock.m_cnTimeout),
     m_cnCount (sock.m_cnCount),
@@ -118,11 +116,6 @@ NscTcpSocketImpl::NscTcpSocketImpl(const NscTcpSocketImpl& sock)
   if(!sock.m_txBuffer.empty () )
     {
       m_txBuffer = sock.m_txBuffer;
-    }
-  //copy the rtt if necessary
-  if (sock.m_rtt)
-    {
-      m_rtt = sock.m_rtt->Copy();
     }
   //can't "copy" the endpoint just yes, must do this when we know the peer info
   //too; this is in SYN_ACK_TX
@@ -164,11 +157,6 @@ NscTcpSocketImpl::SetTcp (Ptr<NscTcpL4Protocol> tcp)
 {
   m_nscTcpSocket = tcp->m_nscStack->new_tcp_socket();
   m_tcp = tcp;
-}
-void 
-NscTcpSocketImpl::SetRtt (Ptr<RttEstimator> rtt)
-{
-  m_rtt = rtt;
 }
 
 

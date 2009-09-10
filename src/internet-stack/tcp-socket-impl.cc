@@ -36,6 +36,8 @@
 #include "tcp-socket-impl.h"
 #include "tcp-l4-protocol.h"
 #include "ipv4-end-point.h"
+#include "tcp-header.h"
+#include "rtt-estimator.h"
 
 #include <algorithm>
 

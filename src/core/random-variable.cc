@@ -778,23 +778,19 @@ private:
   double m_bound;     // Bound on value's difference from the mean (absolute value)
   bool   m_nextValid; // True if next valid
   double m_next;      // The algorithm produces two values at a time
-  static bool   m_static_nextValid;
-  static double m_static_next;
 };
 
-bool         NormalVariableImpl::m_static_nextValid = false;
-double       NormalVariableImpl::m_static_next;
 const double NormalVariableImpl::INFINITE_VALUE = 1e307;
 
 NormalVariableImpl::NormalVariableImpl() 
   : m_mean(0.0), m_variance(1.0), m_bound(INFINITE_VALUE), m_nextValid(false){}
 
-NormalVariableImpl::NormalVariableImpl(double m, double v, double b/*=INFINITE_VALUE*/)
+NormalVariableImpl::NormalVariableImpl(double m, double v, double b)
   : m_mean(m), m_variance(v), m_bound(b), m_nextValid(false) { }
 
 NormalVariableImpl::NormalVariableImpl(const NormalVariableImpl& c)
   : RandomVariableBase(c), m_mean(c.m_mean), m_variance(c.m_variance),
-    m_bound(c.m_bound) { }
+    m_bound(c.m_bound), m_nextValid(false) { }
 
 double NormalVariableImpl::GetValue()
 {

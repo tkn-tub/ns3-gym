@@ -141,6 +141,11 @@ def set_options(opt):
                    help=('Run doxygen to generate html documentation from source comments'),
                    action="store_true", default=False,
                    dest='doxygen')
+    opt.add_option('--doxygen-no-build',
+                   help=('Run doxygen to generate html documentation from source comments, '
+                         'but do not wait for ns-3 to finish the full build.'),
+                   action="store_true", default=False,
+                   dest='doxygen_no_build')
 
     opt.add_option('--run',
                    help=('Run a locally built program; argument can be a program name,'
@@ -542,8 +547,10 @@ def build(bld):
         # When --run'ing a program, tell WAF to only build that program,
         # nothing more; this greatly speeds up compilation when all you
         # want to do is run a test program.
-        if not Options.options.compile_targets:
-            Options.options.compile_targets = os.path.basename(program_name)
+        Options.options.compile_targets += ',' + os.path.basename(program_name)
+        for gen in bld.all_task_gen:
+            if type(gen).__name__ in ['ns3header_taskgen', 'ns3moduleheader_taskgen']:
+                gen.post()
 
     if Options.options.regression or Options.options.regression_generate:
         regression_traces = env['REGRESSION_TRACES']
@@ -553,8 +560,14 @@ def build(bld):
         regression.run_regression(bld, regression_traces)
 
     if Options.options.check:
+        Options.options.compile_targets += ',run-tests'
+        if env['ENABLE_PYTHON_BINDINGS']:
+            Options.options.compile_targets += ',ns3module'
         _run_check(bld)
 
+    if Options.options.doxygen_no_build:
+        doxygen()
+        raise SystemExit(0)
 
 def shutdown(ctx):
     bld = wutils.bld

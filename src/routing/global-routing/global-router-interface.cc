@@ -413,6 +413,10 @@ GlobalRoutingLSA::Print (std::ostream &os) const
     {
       os << " (GlobalRoutingLSA::NetworkLSA)";
     }
+  else if (m_lsType == GlobalRoutingLSA::ASExternalLSAs)
+    {
+      os << " (GlobalRoutingLSA::ASExternalLSA)";
+    }
   else
     {
       os << "(Unknown LSType)";
@@ -474,6 +478,12 @@ GlobalRoutingLSA::Print (std::ostream &os) const
         }
       os << "---------- End NetworkLSA Link Record ----------" << std::endl;
     }
+  else if (m_lsType == GlobalRoutingLSA::ASExternalLSAs)
+    {
+      os << "---------- ASExternalLSA Link Record --------" << std::endl;
+      os << "m_linkStateId = " << m_linkStateId << std::endl;
+      os << "m_networkLSANetworkMask = " << m_networkLSANetworkMask << std::endl;
+    }
   else 
     {
       NS_ASSERT_MSG(0, "Illegal LSA LSType: " << m_lsType);
@@ -532,6 +542,12 @@ GlobalRouter::DoDispose ()
 {
   NS_LOG_FUNCTION_NOARGS ();
   m_routingProtocol = 0;
+  for (InjectedRoutesI k = m_injectedRoutes.begin ();
+         k != m_injectedRoutes.end ();
+         k = m_injectedRoutes.erase (k))
+    {
+      delete (*k);
+    }
   Object::DoDispose ();
 }
 
@@ -568,8 +584,8 @@ GlobalRouter::GetRouterId (void) const
 // and build the Link State Advertisements that reflect them and their associated
 // networks.
 // 
-  uint32_t 
-GlobalRouter::DiscoverLSAs (void)
+uint32_t 
+GlobalRouter::DiscoverLSAs ()
 {
   NS_LOG_FUNCTION_NOARGS ();
   Ptr<Node> node = GetObject<Node> ();
@@ -696,6 +712,22 @@ GlobalRouter::DiscoverLSAs (void)
       BuildNetworkLSAs (c);
     }
 
+  //
+  // Build injected route LSAs as external routes
+  // RFC 2328, section 12.4.4
+  //
+  for (InjectedRoutesCI i = m_injectedRoutes.begin();
+       i != m_injectedRoutes.end();
+       i++)
+    {
+      GlobalRoutingLSA *pLSA = new GlobalRoutingLSA;
+      pLSA->SetLSType (GlobalRoutingLSA::ASExternalLSAs);
+      pLSA->SetLinkStateId ((*i)->GetDestNetwork ());
+      pLSA->SetAdvertisingRouter (m_routerId);
+      pLSA->SetNetworkLSANetworkMask ((*i)->GetDestNetworkMask ());
+      pLSA->SetStatus (GlobalRoutingLSA::LSA_SPF_NOT_EXPLORED);
+      m_LSAs.push_back (pLSA); 
+    }
   return m_LSAs.size ();
 }
 
@@ -1466,6 +1498,86 @@ GlobalRouter::GetLSA (uint32_t n, GlobalRoutingLSA &lsa) const
 
   return false;
 }
+
+void
+GlobalRouter::InjectRoute (Ipv4Address network, Ipv4Mask networkMask)
+{
+  NS_LOG_FUNCTION (network << networkMask);
+  Ipv4RoutingTableEntry *route = new Ipv4RoutingTableEntry ();
+//
+// Interface number does not matter here, using 1.
+//
+  *route = Ipv4RoutingTableEntry::CreateNetworkRouteTo (network,
+      networkMask,
+      1);
+  m_injectedRoutes.push_back (route);
+}
+
+Ipv4RoutingTableEntry *
+GlobalRouter::GetInjectedRoute (uint32_t index)
+{
+  NS_LOG_FUNCTION (index);
+  if (index < m_injectedRoutes.size ())
+    {
+      uint32_t tmp = 0;
+      for (InjectedRoutesCI i = m_injectedRoutes.begin ();
+           i != m_injectedRoutes.end ();
+           i++)
+        {
+          if (tmp  == index)
+            {
+              return *i;
+            }
+          tmp++;
+        }
+     }
+  NS_ASSERT (false);
+  // quiet compiler.
+  return 0;
+}
+
+uint32_t
+GlobalRouter::GetNInjectedRoutes ()
+{
+  return m_injectedRoutes.size ();
+}
+
+void
+GlobalRouter::RemoveInjectedRoute (uint32_t index)
+{
+  NS_LOG_FUNCTION (index);
+  NS_ASSERT (index < m_injectedRoutes.size ());
+  uint32_t tmp = 0;
+  for (InjectedRoutesI i = m_injectedRoutes.begin (); i != m_injectedRoutes.end (); i++)
+    {
+      if (tmp  == index)
+        {
+          NS_LOG_LOGIC ("Removing route " << index << "; size = " << m_injectedRoutes.size());
+          delete *i;
+          m_injectedRoutes.erase (i);
+          return;
+        }
+      tmp++;
+    }
+}
+
+bool
+GlobalRouter::WithdrawRoute (Ipv4Address network, Ipv4Mask networkMask)
+{
+  NS_LOG_FUNCTION (network << networkMask);
+  for (InjectedRoutesI i = m_injectedRoutes.begin (); i != m_injectedRoutes.end (); i++)
+    {
+      if ((*i)->GetDestNetwork () == network && (*i)->GetDestNetworkMask () == networkMask)
+        {
+          NS_LOG_LOGIC ("Withdrawing route to network/mask " << network << "/" << networkMask);
+          delete *i;
+          m_injectedRoutes.erase (i);
+          return true;
+        }
+    }
+  return false;
+}
+
 
 //
 // Link through the given channel and find the net device that's on the

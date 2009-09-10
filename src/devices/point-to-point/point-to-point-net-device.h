@@ -231,7 +231,7 @@ public:
 
   virtual bool IsLinkUp (void) const;
 
-  virtual void SetLinkChangeCallback (Callback<void> callback);
+  virtual void AddLinkChangeCallback (Callback<void> callback);
 
   virtual bool IsBroadcast (void) const;
   virtual Address GetBroadcast (void) const;
@@ -520,7 +520,7 @@ private:
   NetDevice::PromiscReceiveCallback m_promiscCallback;
   uint32_t m_ifIndex;
   bool m_linkUp;
-  Callback<void> m_linkChangeCallback;
+  TracedCallback<> m_linkChangeCallbacks;
 
   static const uint16_t DEFAULT_MTU = 1500;
   static const uint16_t PPP_OVERHEAD = 2;

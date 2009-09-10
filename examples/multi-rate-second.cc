@@ -95,13 +95,10 @@ Experiment::GenerateTraffic (Ptr<Socket> socket, uint32_t pktSize,
 {
   Vector pos = GetPosition(node);
 
-  ///to offset the start time
-  double offSetTime = 100;
-
   if (pktCount > 0)
     {
       ///To simulate nodes moving in and out of transmission constantly
-      if(pos.x <= 305 && advanceStep)
+      if(pos.x <= 230 && advanceStep)
         {
           ///keep moving away
           pos.x += .1;
@@ -110,7 +107,7 @@ Experiment::GenerateTraffic (Ptr<Socket> socket, uint32_t pktSize,
       else
         {
           if(pos.x < 150)
-	    {
+            {
               advanceStep=true;
             }
           else
@@ -128,7 +125,7 @@ Experiment::GenerateTraffic (Ptr<Socket> socket, uint32_t pktSize,
     }
   else
     {
-      m_output.Add((Simulator::Now()).GetSeconds() - offSetTime , m_pktsTotal); 
+      m_output.Add((Simulator::Now()).GetSeconds(), m_pktsTotal); 
     }
 }
 
@@ -172,32 +169,30 @@ Experiment::Run (const WifiHelper &wifi, const YansWifiPhyHelper &wifiPhy,
   source->Connect (remote);
   uint32_t packetSize = 1014;
   uint32_t maxPacketCount = 1000;
-  Time interPacketInterval = Seconds (.1);
+  Time interPacketInterval = Seconds (1.);
 
   Ptr<Node> n1 = c.Get(0);
   Ptr<Ipv4> ipv41 = n1->GetObject<Ipv4> ();
+  // parameters for Ipv4::SetDown and SetUp
+  // The first ifIndex is 0 for loopback, then the first p2p is numbered 1,
+  // then the next p2p is numbered 2
 
-
-
+  double downTime = 0.0;
   for (int i= 1; i <= 100; i++) 
     {
 
       Simulator::Schedule (Seconds (i), &Experiment::GenerateTraffic,
                            this, source, packetSize, maxPacketCount,interPacketInterval, c.Get(1));
-
-      if( i % 5 == 0 )
+      if ( i % 10 == 0 )
         {
           ///bring a network interface down 
-          Simulator::Schedule (Seconds (i+.5), &Ipv4::SetDown, ipv41, 1); 
-          i++;
-          Simulator::Schedule (Seconds (i), &Experiment::GenerateTraffic,
-                               this, source, packetSize, maxPacketCount,interPacketInterval, c.Get(1));
+          Simulator::Schedule (Seconds (i+.1), &Ipv4::SetDown, ipv41, 1); 
 	
+          //duration of the down time
+          downTime += .1;
+
           ///bring a network interface up
-          Simulator::Schedule (Seconds (i+.2), &Ipv4::SetUp, ipv41, 1); 
-          i++;
-          Simulator::Schedule (Seconds (i), &Experiment::GenerateTraffic,
-                               this, source, packetSize, maxPacketCount,interPacketInterval, c.Get(1));
+          Simulator::Schedule (Seconds (i + downTime), &Ipv4::SetUp, ipv41, 1); 
         }
     }
 
@@ -209,13 +204,15 @@ Experiment::Run (const WifiHelper &wifi, const YansWifiPhyHelper &wifiPhy,
 
 int main (int argc, char *argv[])
 {
+  std::ofstream outfile ("multi-rate-second.plt");
+
   std::vector <std::string> ratesControl;
-  ratesControl.push_back ("Ideal");
   ratesControl.push_back ("Minstrel");
+  ratesControl.push_back ("Ideal");
 
   std::vector <std::string> wifiManager;
-  wifiManager.push_back("ns3::IdealWifiManager");
   wifiManager.push_back("ns3::MinstrelWifiManager");
+  wifiManager.push_back("ns3::IdealWifiManager");
 
   // disable fragmentation
   Config::SetDefault ("ns3::WifiRemoteStationManager::FragmentationThreshold", StringValue ("2200"));
@@ -228,12 +225,13 @@ int main (int argc, char *argv[])
   
   for (uint32_t i = 0; i < ratesControl.size(); i++)
   {
+    std::cout << ratesControl[i] << std::endl;
+    std::cout << wifiManager[i] << std::endl;
     Gnuplot2dDataset dataset (ratesControl[i]);
     dataset.SetStyle (Gnuplot2dDataset::LINES);
     Experiment experiment;
 
-
-    WifiHelper wifi = WifiHelper::Default ();
+    WifiHelper wifi;
     NqosWifiMacHelper wifiMac = NqosWifiMacHelper::Default ();
     YansWifiPhyHelper wifiPhy = YansWifiPhyHelper::Default ();
     YansWifiChannelHelper wifiChannel  = YansWifiChannelHelper::Default ();
@@ -243,14 +241,18 @@ int main (int argc, char *argv[])
     NS_LOG_DEBUG (ratesControl[i]);
 
     experiment = Experiment (ratesControl[i]);
+    wifi.SetStandard (WIFI_PHY_STANDARD_80211b);
+    wifi.SetRemoteStationManager (wifiManager[i]);
     dataset = experiment.Run (wifi, wifiPhy, wifiMac, wifiChannel);
     gnuplot.AddDataset (dataset);
 
   }
   gnuplot.SetTerminal ("postscript eps color enh \"Times-BoldItalic\"");
-  gnuplot.SetLegend ("Time (Seconds)", "Number of packets received");
-  gnuplot.SetExtra  ("set xrange [0:100]");
-  gnuplot.GenerateOutput (std::cout);
+  gnuplot.SetLegend ("Time ", "Number of packets received");
+  gnuplot.SetExtra  ("set xrange [1000:1100]");
+  gnuplot.SetTitle ("Number of Packets Received vs Time");
+  gnuplot.GenerateOutput (outfile);
+  outfile.close ();
 
   return 0;
 }

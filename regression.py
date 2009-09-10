@@ -91,9 +91,31 @@ class regression_test_task(Task.TaskBase):
         self.env = env
         super(regression_test_task, self).__init__(generator=self, env=env)
         self.test_name = test_name
+
+        assert self.test_name.startswith('test-')
+        short_name = self.test_name[len('test-'):]
+
         self.test_scripts_dir = test_scripts_dir
         self.build_traces_dir = build_traces_dir
         self.reference_traces_dir = reference_traces
+
+        sys.path.insert(0, self.test_scripts_dir)
+        try:
+            mod = __import__(self.test_name, globals(), locals(), [])
+        finally:
+            sys.path.remove(self.test_scripts_dir)
+        self.mod = mod
+        if hasattr(mod, 'may_run'):
+            reason_cannot_run = mod.may_run(self.env, Options.options)
+        else:
+            reason_cannot_run = None
+        if not reason_cannot_run:
+            pyscript = getattr(mod, "pyscript", None)
+            if pyscript:
+                Options.options.compile_targets += ',ns3module'
+            else:
+                program = getattr(mod, "program", short_name)
+                Options.options.compile_targets += ',' + program
 
     def __str__(self):
         return 'regression-test (%s)\n' % self.test_name
@@ -103,15 +125,9 @@ class regression_test_task(Task.TaskBase):
 
     def run(self):
         """Run a single test"""
-        sys.path.insert(0, self.test_scripts_dir)
-        try:
-            mod = __import__(self.test_name, globals(), locals(), [])
-        finally:
-            sys.path.remove(self.test_scripts_dir)
-
         assert self.test_name.startswith('test-')
         short_name = self.test_name[len('test-'):]
-
+        mod = self.mod
         trace_dir_name = getattr(mod, "trace_dir_name", None)
         if trace_dir_name is None:
             trace_dir_name = "%s.ref" % short_name

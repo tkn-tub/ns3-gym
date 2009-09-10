@@ -869,10 +869,7 @@ void
 EmuNetDevice::NotifyLinkUp (void)
 {
   m_linkUp = true;
-  if (!m_linkChangeCallback.IsNull ())
-    {
-      m_linkChangeCallback ();
-    }
+  m_linkChangeCallbacks ();
 }
 
 void 
@@ -943,9 +940,9 @@ EmuNetDevice::IsLinkUp (void) const
 }
 
 void 
-EmuNetDevice::SetLinkChangeCallback (Callback<void> callback)
+EmuNetDevice::AddLinkChangeCallback (Callback<void> callback)
 {
-  m_linkChangeCallback = callback;
+  m_linkChangeCallbacks.ConnectWithoutContext (callback);
 }
 
 bool 

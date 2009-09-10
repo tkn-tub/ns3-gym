@@ -18,6 +18,7 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 
+#include <stdlib.h>
 #include "ns3/log.h"
 #include "ipv4-address.h"
 #include "ns3/assert.h"
@@ -28,26 +29,29 @@ namespace ns3 {
 
 #define ASCII_DOT (0x2e)
 #define ASCII_ZERO (0x30)
+#define ASCII_SLASH (0x2f)
 
 static uint32_t 
 AsciiToIpv4Host (char const *address)
 {
   uint32_t host = 0;
-  while (true) {
-    uint8_t byte = 0;
-    while (*address != ASCII_DOT &&
-           *address != 0) {
-      byte *= 10;
-      byte += *address - ASCII_ZERO;
+  while (true) 
+    {
+      uint8_t byte = 0;
+      while (*address != ASCII_DOT && *address != 0) 
+        {
+          byte *= 10;
+          byte += *address - ASCII_ZERO;
+          address++;
+        }
+      host <<= 8;
+      host |= byte;
+      if (*address == 0) 
+        {
+          break;
+        }
       address++;
     }
-    host <<= 8;
-    host |= byte;
-    if (*address == 0) {
-      break;
-    }
-    address++;
-  }
   return host;
 }
 
@@ -63,9 +67,18 @@ Ipv4Mask::Ipv4Mask ()
 Ipv4Mask::Ipv4Mask (uint32_t mask)
   : m_mask (mask)
 {}
+
 Ipv4Mask::Ipv4Mask (char const *mask)
 {
-  m_mask = AsciiToIpv4Host (mask);
+  if (*mask == ASCII_SLASH)
+    {
+      m_mask = static_cast<uint32_t> (atoi (++mask));
+      NS_ASSERT (m_mask <= 32);
+    }
+  else
+    {
+      m_mask = AsciiToIpv4Host (mask);
+    }
 }
 
 bool 
@@ -132,6 +145,20 @@ Ipv4Mask::GetOnes (void)
   static Ipv4Mask ones = Ipv4Mask ("255.255.255.255");
   return ones;
 }
+
+uint16_t
+Ipv4Mask::GetPrefixLength (void) const
+{
+  uint16_t tmp = 0;
+  uint32_t mask = m_mask;
+  while (mask != 0 ) 
+  {
+    mask = mask << 1;
+    tmp++;
+  }
+  return tmp; 
+}
+
 
 Ipv4Address::Ipv4Address ()
   : m_address (0x66666666)

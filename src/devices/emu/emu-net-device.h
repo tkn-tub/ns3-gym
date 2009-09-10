@@ -110,7 +110,7 @@ public:
 
   virtual bool IsLinkUp (void) const;
 
-  virtual void SetLinkChangeCallback (Callback<void> callback);
+  virtual void AddLinkChangeCallback (Callback<void> callback);
 
   virtual bool IsBroadcast (void) const;
   virtual Address GetBroadcast (void) const;
@@ -459,9 +459,9 @@ private:
   bool m_isMulticast;
 
   /**
-   * Callback to fire if the link changes state (up or down).
+   * Callbacks to fire if the link changes state (up or down).
    */
-  Callback<void> m_linkChangeCallback;
+  TracedCallback<> m_linkChangeCallbacks;
 
   /**
    * The unix/linux name of the underlying device (e.g., eth0)

@@ -128,12 +128,12 @@ public:
   /**
    * \param callback the callback to invoke
    *
-   * Register a callback invoked whenever the link 
+   * Add a callback invoked whenever the link 
    * status changes to UP. This callback is typically used
-   * by the IP/ARP layer to flush the ARP cache 
-   * whenever the link goes up.
+   * by the IP/ARP layer to flush the ARP cache and by IPv6 stack
+   * to flush NDISC cache whenever the link goes up.
    */
-  virtual void SetLinkChangeCallback (Callback<void> callback) = 0;
+  virtual void AddLinkChangeCallback (Callback<void> callback) = 0;
   /**
    * \return true if this interface supports a broadcast address,
    *         false otherwise.

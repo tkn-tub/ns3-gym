@@ -1,0 +1,17 @@
+## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
+
+def build(bld):
+    module = bld.create_ns3_module('radvd', ['internet-stack'])
+    module.source = [
+        'radvd.cc',
+        'radvd-interface.cc',
+        'radvd-prefix.cc',
+        ]
+    headers = bld.new_task_gen('ns3header')
+    headers.module = 'radvd'
+    headers.source = [
+        'radvd.h',
+        'radvd-interface.h',
+        'radvd-prefix.h',
+        ]
+

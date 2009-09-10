@@ -59,7 +59,7 @@ QoS class id set by an application and processed by a lower-level MAC
 layer.
  
 Memory management of Packet objects is entirely automatic and extremely
-efficient: memory for the application-level payload can be modelized by
+efficient: memory for the application-level payload can be modeled by
 a virtual buffer of zero-filled bytes for which memory is never allocated
 unless explicitly requested by the user or unless the packet is fragmented
 or serialized out to a real network device.
@@ -458,7 +458,7 @@ code in @code{src/internet-stack/udp-socket-impl.cc}:
 @verbatim
   Ptr<Packet> p;  // pointer to a pre-existing packet
   SocketIpTtlTag tag
-  tag.SetTtl (m_ipMulticastTtl); // Convey the TTL from Udp layer to IP layer
+  tag.SetTtl (m_ipMulticastTtl); // Convey the TTL from UDP layer to IP layer
   p->AddPacketTag (tag);
 @end verbatim
 
@@ -636,7 +636,7 @@ requires a deep copy of the linked list before performing this operation.
 On the other hand, copying a Packet and its tags is a matter of 
 copying the TagData head pointer and incrementing its reference count.
 
-Tags are found by the unique mapping betweent the Tag type and
+Tags are found by the unique mapping between the Tag type and
 its underlying id.  This is why at most one instance of any Tag
 can be stored in a packet.  The mapping between Tag type and 
 underlying id is performed by a registration as follows:

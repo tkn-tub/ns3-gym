@@ -34,7 +34,8 @@
 #include "ipv4-end-point.h"
 #include "ipv4-l3-protocol.h"
 #include "tcp-socket-factory-impl.h"
-
+#include "tcp-socket-impl.h"
+#include "rtt-estimator.h"
 #include "tcp-typedefs.h"
 
 #include <vector>
@@ -558,17 +559,18 @@ TcpL4Protocol::Send (Ptr<Packet> packet,
 }
 
 void
-TcpL4Protocol::SendPacket (Ptr<Packet> packet, TcpHeader outgoingHeader,
+TcpL4Protocol::SendPacket (Ptr<Packet> packet, const TcpHeader &outgoing,
                                Ipv4Address saddr, Ipv4Address daddr)
 {
   NS_LOG_LOGIC("TcpL4Protocol " << this
-              << " sending seq " << outgoingHeader.GetSequenceNumber()
-              << " ack " << outgoingHeader.GetAckNumber()
-              << " flags " << std::hex << (int)outgoingHeader.GetFlags() << std::dec
+              << " sending seq " << outgoing.GetSequenceNumber()
+              << " ack " << outgoing.GetAckNumber()
+              << " flags " << std::hex << (int)outgoing.GetFlags() << std::dec
               << " data size " << packet->GetSize());
   NS_LOG_FUNCTION (this << packet << saddr << daddr);
   // XXX outgoingHeader cannot be logged
 
+  TcpHeader outgoingHeader = outgoing;
   outgoingHeader.SetLength (5); //header length in units of 32bit words
   /* outgoingHeader.SetUrgentPointer (0); //XXX */
   if(Node::ChecksumEnabled ())

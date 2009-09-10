@@ -32,8 +32,10 @@
 #include "ipv4-end-point.h"
 #include "ipv4-l3-protocol.h"
 #include "nsc-tcp-l4-protocol.h"
+#include "nsc-tcp-socket-impl.h"
 #include "nsc-sysctl.h"
 #include "nsc-tcp-socket-factory-impl.h"
+#include "sim_interface.h"
 
 #include "tcp-typedefs.h"
 
@@ -54,13 +56,39 @@ NS_OBJECT_ENSURE_REGISTERED (NscTcpL4Protocol);
 /* see http://www.iana.org/assignments/protocol-numbers */
 const uint8_t NscTcpL4Protocol::PROT_NUMBER = 6;
 
-ObjectFactory
-NscTcpL4Protocol::GetDefaultRttEstimatorFactory (void)
+class NscInterfaceImpl : public ISendCallback, public IInterruptCallback 
 {
-  ObjectFactory factory;
-  factory.SetTypeId (RttMeanDeviation::GetTypeId ());
-  return factory;
+public:
+  NscInterfaceImpl (Ptr<NscTcpL4Protocol> prot);
+private:
+  virtual void send_callback(const void *data, int datalen);
+  virtual void wakeup();
+  virtual void gettime(unsigned int *, unsigned int *);
+private:
+  Ptr<NscTcpL4Protocol> m_prot;
+};
+
+NscInterfaceImpl::NscInterfaceImpl (Ptr<NscTcpL4Protocol> prot)
+  : m_prot (prot)
+{}
+
+void 
+NscInterfaceImpl::send_callback(const void *data, int datalen)
+{
+  m_prot->send_callback (data, datalen);
 }
+void 
+NscInterfaceImpl::wakeup()
+{
+  m_prot->wakeup ();
+}
+void 
+NscInterfaceImpl::gettime(unsigned int *sec, unsigned int *usec)
+{
+  m_prot->gettime (sec,usec);
+}
+
+
 
 TypeId 
 NscTcpL4Protocol::GetTypeId (void)
@@ -68,11 +96,6 @@ NscTcpL4Protocol::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::NscTcpL4Protocol")
     .SetParent<Ipv4L4Protocol> ()
     .AddConstructor<NscTcpL4Protocol>()
-    .AddAttribute ("RttEstimatorFactory",
-                   "How RttEstimator objects are created.",
-                   ObjectFactoryValue (GetDefaultRttEstimatorFactory ()),
-                   MakeObjectFactoryAccessor (&NscTcpL4Protocol::m_rttFactory),
-                   MakeObjectFactoryChecker ())
     .AddAttribute ("SocketList", "The list of sockets associated to this protocol.",
                    ObjectVectorValue (),
                    MakeObjectVectorAccessor (&NscTcpL4Protocol::m_sockets),
@@ -95,6 +118,7 @@ int external_rand()
 NscTcpL4Protocol::NscTcpL4Protocol ()
   : m_endPoints (new Ipv4EndPointDemux ()),
     m_nscStack (0),
+    m_nscInterface (new NscInterfaceImpl (this)),
     m_softTimer (Timer::CANCEL_ON_DESTROY)
 {
   m_dlopenHandle = NULL;
@@ -139,7 +163,7 @@ NscTcpL4Protocol::SetNode (Ptr<Node> node)
 
   FCreateStack create = (FCreateStack)dlsym(m_dlopenHandle, "nsc_create_stack");
   NS_ASSERT(create);
-  m_nscStack = create(this, this, external_rand);
+  m_nscStack = create(m_nscInterface, m_nscInterface, external_rand);
   int hzval = m_nscStack->get_hz();
 
   NS_ASSERT(hzval > 0);
@@ -212,6 +236,8 @@ NscTcpL4Protocol::DoDispose (void)
       m_endPoints = 0;
     }
   m_node = 0;
+  delete m_nscInterface;
+  m_nscInterface = 0;
   Ipv4L4Protocol::DoDispose ();
 }
 
@@ -220,11 +246,9 @@ NscTcpL4Protocol::CreateSocket (void)
 {
   NS_LOG_FUNCTION (this);
 
-  Ptr<RttEstimator> rtt = m_rttFactory.Create<RttEstimator> ();
   Ptr<NscTcpSocketImpl> socket = CreateObject<NscTcpSocketImpl> ();
   socket->SetNode (m_node);
   socket->SetTcp (this);
-  socket->SetRtt (rtt);
   m_sockets.push_back (socket);
   return socket;
 }

@@ -23,27 +23,27 @@
 #include "ns3/ipv4-address.h"
 #include "ns3/ptr.h"
 #include "ns3/object-factory.h"
-#include "ipv4-end-point-demux.h"
-#include "ipv4-l4-protocol.h"
-#include "ipv4-interface.h"
-
-#include "tcp-header.h"
-
 #include "ns3/timer.h"
-#include "sim_interface.h"
-#include "nsc-tcp-socket-impl.h"
+#include "ipv4-l4-protocol.h"
+
+struct INetStack;
 
 namespace ns3 {
 
 class Node;
 class Socket;
-class TcpHeader;
+class Ipv4EndPointDemux;
+class Ipv4Interface;
+class NscTcpSocketImpl;
+class Ipv4EndPoint;
+class NscInterfaceImpl;
+
 /**
  * \ingroup nsctcp
  * 
  * \brief Nsc wrapper glue, to interface with the Ipv4 protocol underneath.
  */
-class NscTcpL4Protocol : public Ipv4L4Protocol, ISendCallback, IInterruptCallback {
+class NscTcpL4Protocol : public Ipv4L4Protocol {
 public:
   static const uint8_t PROT_NUMBER;
   static TypeId GetTypeId (void);
@@ -86,6 +86,13 @@ public:
                                             Ipv4Address const &destination,
                                             Ptr<Ipv4Interface> incomingInterface);
 
+protected:
+  virtual void DoDispose (void);
+  virtual void NotifyNewAggregate ();
+private:
+  NscTcpL4Protocol (NscTcpL4Protocol const &);
+  NscTcpL4Protocol& operator= (NscTcpL4Protocol const &);
+
   // NSC callbacks.
   // NSC invokes these hooks to interact with the simulator.
   // In any case, these methods are only to be called by NSC.
@@ -93,29 +100,23 @@ public:
   // send_callback is invoked by NSCs 'ethernet driver' to re-inject
   // a packet (i.e. an octet soup consisting of an IP Header, TCP Header
   // and user payload, if any), into ns-3.
-  virtual void send_callback(const void *data, int datalen);
+  void send_callback(const void *data, int datalen);
   // This is called by the NSC stack whenever something of interest
   // has happened, e.g. when data arrives on a socket, a listen socket
   // has a new connection pending, etc.
-  virtual void wakeup();
+  void wakeup();
   // This is called by the Linux stack RNG initialization.
   // Its also used by the cradle code to add a timestamp to
   // printk/printf/debug output.
-  virtual void gettime(unsigned int *, unsigned int *);
-
-protected:
-  virtual void DoDispose (void);
-  virtual void NotifyNewAggregate ();
-private:
-  Ptr<Node> m_node;
-  Ipv4EndPointDemux *m_endPoints;
-  ObjectFactory m_rttFactory;
-private:
+  void gettime(unsigned int *sec, unsigned int *usec);
   void AddInterface (void);
   void SoftInterrupt (void);
-  static ObjectFactory GetDefaultRttEstimatorFactory (void);
+  friend class NscInterfaceImpl;
   friend class NscTcpSocketImpl;
+  Ptr<Node> m_node;
+  Ipv4EndPointDemux *m_endPoints;
   INetStack* m_nscStack;
+  NscInterfaceImpl *m_nscInterface;
   void *m_dlopenHandle;
   std::string m_nscLibrary;
   Timer m_softTimer;
