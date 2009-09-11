@@ -644,7 +644,7 @@ private:
  * \brief A message within a PbbPacket packet.
  *
  * There may be any number of messages in one packet packet.  This is a pure
- * virutal base class, when creating a message, you should instantiate either
+ * virtual base class, when creating a message, you should instantiate either
  * PbbMessageIpv4 or PbbMessageIpv6.
  */
 class PbbMessage
