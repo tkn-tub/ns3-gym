@@ -35,11 +35,8 @@
 namespace ns3 {
 
 /* Forward declare objects */
-class PbbPacket;
 class PbbMessage;
 class PbbAddressBlock;
-class PbbTlvBlock;
-class PbbAddressTlvBlock;
 class PbbTlv;
 class PbbAddressTlv;
 
