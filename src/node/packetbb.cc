@@ -18,10 +18,9 @@
  * 
  * Author: Tom Wambold <tom5760@gmail.com>
  */
-/* TODO:
- * - Check style
- * - Check copy constructors
- */
+/* These classes implement RFC 5444 - The Generalized Mobile Ad Hoc Network
+ * (MANET) Packet/PbbMessage Format
+ * See: http://tools.ietf.org/html/rfc5444 for details */
 
 #include "ns3/ipv4-address.h"
 #include "ns3/ipv6-address.h"

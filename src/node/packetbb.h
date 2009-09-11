@@ -47,7 +47,7 @@ enum PbbAddressLength {
 };
 
 /**
- * \brief A block of Packet or PbbMessage TLVs.
+ * \brief A block of packet or message TLVs (PbbTlv).
  *
  * Acts similar to a C++ STL container.  Should not be used for Address TLVs.
  */
@@ -196,7 +196,7 @@ private:
 };
 
 /**
- * \brief A block of Address TLVs.
+ * \brief A block of Address TLVs (PbbAddressTlv).
  *
  * Acts similar to a C++ STL container.
  */
@@ -348,6 +348,9 @@ private:
 
 /**
  * \brief Main PacketBB Packet object.
+ *
+ * A PacketBB packet is made up of zero or more packet TLVs (PbbTlv), and zero
+ * or more messages (PbbMessage).
  *
  * See: http://tools.ietf.org/html/rfc5444 for details.
  */
@@ -640,9 +643,9 @@ private:
 /**
  * \brief A message within a PbbPacket packet.
  *
- * There may be any number of messages in one PbbPacket packet.
- * This is a pure virutal base class, you should instantiate either PbbMessageIpv4
- * or PbbMessageIpv6.
+ * There may be any number of messages in one packet packet.  This is a pure
+ * virutal base class, when creating a message, you should instantiate either
+ * PbbMessageIpv4 or PbbMessageIpv6.
  */
 class PbbMessage
 {
@@ -1075,8 +1078,8 @@ protected:
 /**
  * \brief An Address Block and its associated Address TLV Blocks.
  *
- * This is a pure virtual base class, you should instantiate either
- * PbbAddressBlockIpv4 or PbbAddressBlockIpv6.
+ * This is a pure virtual base class, when creating address blocks, you should
+ * instantiate either PbbAddressBlockIpv4 or PbbAddressBlockIpv6.
  */
 class PbbAddressBlock
 {
