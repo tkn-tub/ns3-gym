@@ -655,7 +655,8 @@ public:
   typedef std::list< Ptr<PbbAddressBlock> >::iterator AddressBlockIterator;
   typedef std::list< Ptr<PbbAddressBlock> >::const_iterator ConstAddressBlockIterator;
 
-  PbbMessage (void);
+  PbbMessage ();
+  virtual ~PbbMessage ();
 
   /**
    * \brief Sets the type for this message.
@@ -1049,6 +1050,10 @@ private:
  * This message will only contain IPv4 addresses.
  */
 class PbbMessageIpv4 : public PbbMessage {
+public:
+  PbbMessageIpv4 ();
+  virtual ~PbbMessageIpv4 ();
+
 protected:
   virtual PbbAddressLength GetAddressLength (void) const;
 
@@ -1065,6 +1070,10 @@ protected:
  * This message will only contain IPv6 addresses.
  */
 class PbbMessageIpv6 : public PbbMessage {
+public:
+  PbbMessageIpv6 ();
+  virtual ~PbbMessageIpv6 ();
+
 protected:
   virtual PbbAddressLength GetAddressLength (void) const;
 
@@ -1093,7 +1102,8 @@ public:
   typedef PbbAddressTlvBlock::Iterator TlvIterator;
   typedef PbbAddressTlvBlock::ConstIterator ConstTlvIterator;
 
-  PbbAddressBlock (void);
+  PbbAddressBlock ();
+  virtual ~PbbAddressBlock ();
 
   /* Manipulating the address block */
 
@@ -1468,6 +1478,10 @@ private:
  */
 class PbbAddressBlockIpv4 : public PbbAddressBlock
 {
+public:
+  PbbAddressBlockIpv4 ();
+  virtual ~PbbAddressBlockIpv4 ();
+
 protected:
   virtual uint8_t GetAddressLength (void) const;
 
@@ -1483,6 +1497,10 @@ protected:
  */
 class PbbAddressBlockIpv6 : public PbbAddressBlock
 {
+public:
+  PbbAddressBlockIpv6 ();
+  virtual ~PbbAddressBlockIpv6 ();
+
 protected:
   virtual uint8_t GetAddressLength (void) const;
 

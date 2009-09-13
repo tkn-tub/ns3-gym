@@ -908,7 +908,7 @@ PbbPacket::operator!= (const PbbPacket &other) const
 
 /* End PbbPacket class */
 
-PbbMessage::PbbMessage (void)
+PbbMessage::PbbMessage ()
 {
   m_refCount = 1;
   /* Default to IPv4 */
@@ -917,6 +917,10 @@ PbbMessage::PbbMessage (void)
   m_hasHopLimit = false;
   m_hasHopCount = false;
   m_hasSequenceNumber = false;
+}
+
+PbbMessage::~PbbMessage ()
+{
 }
 
 void
@@ -1558,6 +1562,14 @@ PbbMessage::operator!= (const PbbMessage &other) const
 
 /* End PbbMessage Class */
 
+PbbMessageIpv4::PbbMessageIpv4 ()
+{
+}
+
+PbbMessageIpv4::~PbbMessageIpv4 ()
+{
+}
+
 PbbAddressLength
 PbbMessageIpv4::GetAddressLength (void) const
 {
@@ -1595,6 +1607,14 @@ PbbMessageIpv4::AddressBlockDeserialize (Buffer::Iterator &start) const
 }
 
 /* End PbbMessageIpv4 Class */
+
+PbbMessageIpv6::PbbMessageIpv6 ()
+{
+}
+
+PbbMessageIpv6::~PbbMessageIpv6 ()
+{
+}
 
 PbbAddressLength
 PbbMessageIpv6::GetAddressLength (void) const
@@ -1637,6 +1657,10 @@ PbbMessageIpv6::AddressBlockDeserialize (Buffer::Iterator &start) const
 PbbAddressBlock::PbbAddressBlock ()
 {
   m_refCount = 1;
+}
+
+PbbAddressBlock::~PbbAddressBlock ()
+{
 }
 
 /* Manipulating the address block */
@@ -2307,6 +2331,14 @@ PbbAddressBlock::HasZeroTail (const uint8_t *tail, uint8_t taillen) const
 
 /* End PbbAddressBlock Class */
 
+PbbAddressBlockIpv4::PbbAddressBlockIpv4 ()
+{
+}
+
+PbbAddressBlockIpv4::~PbbAddressBlockIpv4 ()
+{
+}
+
 uint8_t
 PbbAddressBlockIpv4::GetAddressLength (void) const
 {
@@ -2332,6 +2364,14 @@ PbbAddressBlockIpv4::PrintAddress (std::ostream &os, ConstAddressIterator iter) 
 }
 
 /* End PbbAddressBlockIpv4 Class */
+
+PbbAddressBlockIpv6::PbbAddressBlockIpv6 ()
+{
+}
+
+PbbAddressBlockIpv6::~PbbAddressBlockIpv6 ()
+{
+}
 
 uint8_t
 PbbAddressBlockIpv6::GetAddressLength (void) const
