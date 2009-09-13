@@ -58,7 +58,6 @@ def build(bld):
         'test.cc',
         'random-variable.cc',
         'rng-stream.cc',
-        'rng-test-suite.cc',
         'command-line.cc',
         'type-name.cc',
         'type-traits-test.cc',
@@ -151,3 +150,5 @@ def build(bld):
                 'system-condition.h',
                 ])
 
+    if bld.env['ENABLE_GSL']:
+        core.source.extend(['rng-test-suite.cc'])

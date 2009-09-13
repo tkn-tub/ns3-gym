@@ -358,8 +358,15 @@ def configure(conf):
     else:
         conf.report_optional_feature("static", "Static build", False,
                                      "option --enable-static not selected")
+    have_gsl = conf.pkg_check_modules('GSL', 'gsl', mandatory=False)
+    conf.env['ENABLE_GSL'] = have_gsl
 
-
+    conf.report_optional_feature("GSL", "GNU Scientific Library (GSL)",
+                                 conf.env['ENABLE_GSL'],
+                                 "GSL not found")
+    if have_gsl:
+        conf.env.append_value('CXXDEFINES', "ENABLE_GSL")
+        conf.env.append_value('CCDEFINES', "ENABLE_GSL")
 
     # Write a summary of optional features status
     print "---- Summary of optional NS-3 features:"

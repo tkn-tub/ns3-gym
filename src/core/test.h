@@ -25,6 +25,7 @@
 #include <string>
 #include <vector>
 #include <list>
+#include <limits>
 #include <sys/times.h>
 // 
 // Note on below macros:
@@ -746,7 +747,7 @@ private:
 class TestSuite
 {
 public:
-  typedef enum TestType {
+  enum TestType {
     BVT = 1,    /**< This test suite implements a Build Verification Test */
     UNIT,       /**< This test suite implements a Unit Test */
     SYSTEM,     /**< This test suite implements a System Test */
