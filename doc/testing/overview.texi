@@ -1,0 +1,16 @@
+@c ========================================================================
+@c Overview
+@c ========================================================================
+
+@node Overview
+@chapter Overview
+
+This document is concerned with the testing and validation of @command{ns-3}
+software.
+
+This document provides
+@itemize @bullet
+@item a description of the ns-3 testing framework;
+@item a guide to model developers or new model contributors for how to write tests;
+@item validation and verification results reported to date.
+@end itemize

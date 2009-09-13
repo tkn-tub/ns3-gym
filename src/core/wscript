@@ -58,6 +58,7 @@ def build(bld):
         'test.cc',
         'random-variable.cc',
         'rng-stream.cc',
+        'rng-test-suite.cc',
         'command-line.cc',
         'type-name.cc',
         'type-traits-test.cc',
@@ -79,6 +80,7 @@ def build(bld):
         'callback.cc',
         'names.cc',
         'vector.cc',
+        'names-test-suite.cc',
         ]
 
     headers = bld.new_task_gen('ns3header')

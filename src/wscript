@@ -38,6 +38,8 @@ all_modules = (
     'applications/v4ping',
     'applications/ping6',
     'applications/radvd',
+    'test/ns3tcp',
+    'test/ns3wifi',
     )
 
 def set_options(opt):

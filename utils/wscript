@@ -9,6 +9,11 @@ def build(bld):
     unit_tests.source = 'run-tests.cc'
     ## link unit test program with all ns3 modules
     unit_tests.uselib_local = 'ns3'
+
+    test_runner = bld.create_ns3_program('test-runner', ['core'])
+    test_runner.install_path = None # do not install
+    test_runner.source = 'test-runner.cc'
+    test_runner.uselib_local = 'ns3'
     
     obj = bld.create_ns3_program('bench-simulator', ['simulator'])
     obj.source = 'bench-simulator.cc'
