@@ -26,6 +26,7 @@
 #include <vector>
 #include <list>
 #include <limits>
+#include <stdint.h>
 #include <sys/times.h>
 // 
 // Note on below macros:

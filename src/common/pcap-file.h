@@ -20,6 +20,7 @@
 #define PCAP_FILE_H
 
 #include <string>
+#include <stdint.h>
 
 namespace ns3 {
 
