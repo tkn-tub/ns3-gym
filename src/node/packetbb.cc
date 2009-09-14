@@ -2250,6 +2250,9 @@ PbbAddressBlock::GetPrefixFlags (void) const
         return AHAS_MULTI_PRE_LEN;
         break;
     }
+
+  /* Quiet compiler */
+  return 0
 }
 
 void
