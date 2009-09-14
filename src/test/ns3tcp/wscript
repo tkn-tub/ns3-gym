@@ -1,0 +1,16 @@
+## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
+
+def configure(conf):
+    pass
+
+def build(bld):
+    ns3tcp = bld.create_ns3_module('ns3tcp')
+    ns3tcp.source = [
+        'ns3tcp-interop-test-suite.cc',
+        'ns3tcp-cwnd-test-suite.cc',
+        ]
+    headers = bld.new_task_gen('ns3header')
+    headers.module = 'ns3tcp'
+    headers.source = [
+        'ns3tcp.h',
+        ]

@@ -18,6 +18,8 @@ def build(bld):
         'tag-buffer.cc',
         'packet-tag-list.cc',
         'ascii-writer.cc',
+        'pcap-file.cc',
+        'pcap-file-test-suite.cc',
         ]
 
     headers = bld.new_task_gen('ns3header')
@@ -38,4 +40,5 @@ def build(bld):
         'packet-tag-list.h',
         'ascii-writer.h',
         'sgi-hashmap.h',
+        'pcap-file.h',
         ]

@@ -26,6 +26,8 @@
 #include "ns3/packet.h"
 #include "ns3/ptr.h"
 #include "ns3/object-factory.h"
+#include "ns3/pcap-writer.h"
+#include "ns3/ascii-writer.h"
 
 namespace ns3 {
 
