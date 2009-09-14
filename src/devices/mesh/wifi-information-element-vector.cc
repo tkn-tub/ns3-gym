@@ -204,6 +204,7 @@ WifiInformationElementVector::GetSize () const
     }
   return size;
 }
+
 bool
 operator== (const WifiInformationElementVector & a, const WifiInformationElementVector & b)
 {

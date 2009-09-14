@@ -257,15 +257,15 @@ HwmpProtocol::RequestRoute (
       std::vector<uint16_t> channels;
       for (HwmpProtocolMacMap::const_iterator plugin = m_interfaces.begin (); plugin != m_interfaces.end (); plugin ++)
         {
-          bool should_send = true;
+          bool shouldSend = true;
           for (std::vector<uint16_t>::const_iterator chan = channels.begin (); chan != channels.end (); chan ++)
             {
               if ((*chan) == plugin->second->GetChannelId ())
                 {
-                  should_send = false;
+                  shouldSend = false;
                 }
             }
-          if (!should_send)
+          if (!shouldSend)
             {
               continue;
             }
@@ -273,10 +273,10 @@ HwmpProtocol::RequestRoute (
           std::vector<Mac48Address> receivers = GetBroadcastReceivers (plugin->first);
           for (std::vector<Mac48Address>::const_iterator i = receivers.begin (); i != receivers.end (); i ++)
             {
-              Ptr<Packet> packet_copy = packet->Copy();
+              Ptr<Packet> packetCopy = packet->Copy();
               tag.SetAddress (*i);
-              packet_copy->AddPacketTag (tag);
-              routeReply (true, packet_copy, source, destination, protocolType, plugin->first);
+              packetCopy->AddPacketTag (tag);
+              routeReply (true, packetCopy, source, destination, protocolType, plugin->first);
             }
         }
     }

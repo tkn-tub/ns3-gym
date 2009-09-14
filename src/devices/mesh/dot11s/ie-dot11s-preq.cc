@@ -108,11 +108,6 @@ IePreq::SetNeedNotPrep ()
 {
   m_flags |= 1 << 2;
 }
-//void
-//IePreq::SetFlags (uint8_t flags)
-//{
-// m_flags = flags;
-//}
 void
 IePreq::SetHopcount (uint8_t hopcount)
 {

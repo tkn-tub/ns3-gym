@@ -199,20 +199,28 @@ operator== (const IeBeaconTimingUnit & a, const IeBeaconTimingUnit & b)
       && (a.GetBeaconInterval () == b.GetBeaconInterval ()));
 }
 bool
-operator== (const IeBeaconTiming & a, const IeBeaconTiming& b)
+IeBeaconTiming::operator== (WifiInformationElement const & a)
 {
-  if (a.m_numOfUnits != b.m_numOfUnits)
-    {
-      return false;
-    }
-  for (unsigned int i = 0; i < a.m_neighbours.size (); i++)
-    {
-      if (!(*PeekPointer (a.m_neighbours[i]) == *PeekPointer (b.m_neighbours[i])))
-        {
-          return false;
-        }
-    }
-  return true;
+  try {
+    IeBeaconTiming const & aa = dynamic_cast<IeBeaconTiming const &>(a);
+    
+    if (m_numOfUnits != aa.m_numOfUnits)
+      {
+        return false;
+      }
+      for (unsigned int i = 0; i < m_neighbours.size (); i++)
+      {
+        if (!(*PeekPointer (m_neighbours[i]) == *PeekPointer (aa.m_neighbours[i])))
+          {
+            return false;
+          }
+      }
+      return true;
+  } 
+  catch (std::bad_cast)
+  {
+    return false;
+  }
 }
 std::ostream &
 operator << (std::ostream &os, const IeBeaconTiming &a)

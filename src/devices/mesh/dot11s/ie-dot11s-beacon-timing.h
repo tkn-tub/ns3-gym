@@ -36,8 +36,8 @@ class IeBeaconTimingUnit : public RefCountBase
 public:
   IeBeaconTimingUnit ();
   void SetAid (uint8_t aid);
-  void SetLastBeacon (uint16_t last_beacon);
-  void SetBeaconInterval (uint16_t beacon_interval);
+  void SetLastBeacon (uint16_t lastBeacon);
+  void SetBeaconInterval (uint16_t beaconInterval);
 
   uint8_t GetAid () const;
   uint16_t GetLastBeacon () const;
@@ -93,6 +93,7 @@ public:
   virtual uint8_t DeserializeInformation (Buffer::Iterator i, uint8_t length);
   virtual void Print (std::ostream& os) const;
   ///\}
+  bool operator== (WifiInformationElement const & a);
 private:
   /**
    * Converters:
@@ -106,9 +107,7 @@ private:
    * Timing element parameters:
    */
   uint16_t  m_numOfUnits;
-  friend bool operator== (const IeBeaconTiming & a, const IeBeaconTiming & b);
 };
-bool operator== (const IeBeaconTiming & a, const IeBeaconTiming & b);
 bool operator== (const IeBeaconTimingUnit & a, const IeBeaconTimingUnit & b);
 std::ostream &operator << (std::ostream &os, const IeBeaconTiming &beaconTiming);
 } // namespace dot11s

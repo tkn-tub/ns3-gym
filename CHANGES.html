@@ -67,6 +67,7 @@ allows a user to insert a route and have it redistributed like an OSPF
 external LSA to the rest of the topology.
 </p>
 </li>
+
 <li><b>Athstats</b>
 <p>New classes AthstatsWifiTraceSink and AthstatsHelper.
 </p>
@@ -75,6 +76,7 @@ external LSA to the rest of the topology.
 <p>New trace sources exported by WifiRemoteStationManager: MacTxRtsFailed, MacTxDataFailed, MacTxFinalRtsFailed and MacTxFinalDataFailed.
 </p>
 </li>
+
 <li><b> IPv6 additions</b>
 <p> Add an IPv6 protocol and ICMPv6 capability.
 <ul>
@@ -86,7 +88,28 @@ router solicitation, DAD
 <li> routing objects Ipv6Route and Ipv6MulticastRoute
 <li> routing protocols Ipv6ListRouting and Ipv6StaticRouting
 <li> examples: icmpv6-redirect.cc, ping6.cc, radvd.cc, radvd-two-prefix.cc, simple-routing-ping6.cc
-</ul> 
+</ul>
+</p>
+</li> 
+
+<li><b>Wireless Mesh Networking models</b>
+<ul>
+<p>
+<li> General multi-interface mesh stack infrastructure (devices/mesh module).
+<li> IEEE 802.11s (Draft 3.0) model including Peering Management Protocol and HWMP.
+<li> Forwarding Layer for Meshing (FLAME) protocol.
+</ul>
+</p>
+</li>
+
+<li><b>802.11 enhancements</b>
+<p>
+<ul>
+<li> 10MHz and 5MHz channel width supported by 802.11a model (Ramon Bauza and Kirill Andreev).
+</ul>
+</p>
+</li>
+
 </ul>
 
 <h2>Changes to existing API:</h2>

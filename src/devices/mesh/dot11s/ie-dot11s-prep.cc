@@ -57,14 +57,14 @@ IePrep::SetTtl (uint8_t ttl)
   m_ttl = ttl;
 }
 void
-IePrep::SetDestinationSeqNumber (uint32_t dest_seq_number)
+IePrep::SetDestinationSeqNumber (uint32_t destSeqNumber)
 {
-  m_destSeqNumber = dest_seq_number;
+  m_destSeqNumber = destSeqNumber;
 }
 void
-IePrep::SetDestinationAddress (Mac48Address dest_address)
+IePrep::SetDestinationAddress (Mac48Address destAddress)
 {
-  m_destinationAddress = dest_address;
+  m_destinationAddress = destAddress;
 }
 void
 IePrep::SetMetric (uint32_t metric)
@@ -72,14 +72,14 @@ IePrep::SetMetric (uint32_t metric)
   m_metric = metric;
 }
 void
-IePrep::SetOriginatorAddress (Mac48Address originator_address)
+IePrep::SetOriginatorAddress (Mac48Address originatorAddress)
 {
-  m_originatorAddress = originator_address;
+  m_originatorAddress = originatorAddress;
 }
 void
-IePrep::SetOriginatorSeqNumber (uint32_t originator_seq_number)
+IePrep::SetOriginatorSeqNumber (uint32_t originatorSeqNumber)
 {
-  m_originatorSeqNumber = originator_seq_number;
+  m_originatorSeqNumber = originatorSeqNumber;
 }
 void
 IePrep::SetLifetime (uint32_t lifetime)

@@ -97,6 +97,8 @@ public:
 
   /// Compare information elements using Element ID
   friend bool operator< (WifiInformationElement const & a, WifiInformationElement const & b);
+  /// 
+  virtual bool operator== (WifiInformationElement const & a) { return false; }
 };
 
 /// Compare information elements using Element ID
