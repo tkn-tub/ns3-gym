@@ -159,7 +159,7 @@ main (int argc, char *argv[])
     }  
 
   NS_LOG_INFO ("Run Simulation.");
-  Simulator::Stop (Seconds (10));
+  Simulator::Stop (Seconds (11));
   Simulator::Run ();
   NS_LOG_INFO ("Done.");
 
