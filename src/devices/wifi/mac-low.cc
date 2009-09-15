@@ -244,6 +244,30 @@ std::ostream &operator << (std::ostream &os, const MacLowTransmissionParameters 
   return os;
 }
 
+
+/***************************************************************
+ *         Listener for PHY events. Forwards to MacLow
+ ***************************************************************/
+
+
+class PhyMacLowListener : public ns3::WifiPhyListener {
+public:
+  PhyMacLowListener (ns3::MacLow *macLow)
+    : m_macLow (macLow) {}
+  virtual ~PhyMacLowListener () {}
+  virtual void NotifyRxStart (Time duration) {}
+  virtual void NotifyRxEndOk (void) {}
+  virtual void NotifyRxEndError (void) {}
+  virtual void NotifyTxStart (Time duration) {}
+  virtual void NotifyMaybeCcaBusyStart (Time duration) {}
+  virtual void NotifySwitchingStart (Time duration) { 
+    m_macLow->NotifySwitchingStartNow (duration);
+  }
+private:
+  ns3::MacLow *m_macLow;
+};
+
+
 MacLow::MacLow ()
   : m_normalAckTimeoutEvent (),
     m_fastAckTimeoutEvent (),
@@ -268,12 +292,22 @@ MacLow::~MacLow ()
 }
 
 void 
+MacLow::SetupPhyMacLowListener (Ptr<WifiPhy> phy)
+{
+  m_phyMacLowListener = new PhyMacLowListener (this); 
+  phy->RegisterListener (m_phyMacLowListener);
+}
+
+
+void 
 MacLow::DoDispose (void)
 {
   NS_LOG_FUNCTION (this);
   CancelAllEvents ();
   m_phy = 0;
   m_stationManager = 0;
+  delete m_phyMacLowListener;
+  m_phyMacLowListener = 0;
 }
 
 void
@@ -339,6 +373,7 @@ MacLow::SetPhy (Ptr<WifiPhy> phy)
   m_phy = phy;
   m_phy->SetReceiveOkCallback (MakeCallback (&MacLow::ReceiveOk, this));
   m_phy->SetReceiveErrorCallback (MakeCallback (&MacLow::ReceiveError, this));
+  SetupPhyMacLowListener(phy); 
 }
 void 
 MacLow::SetWifiRemoteStationManager (Ptr<WifiRemoteStationManager> manager)
@@ -486,6 +521,22 @@ MacLow::ReceiveError (Ptr<const Packet> packet, double rxSnr)
                                                          &MacLow::FastAckFailedTimeout, this);
     }
   return;
+}
+
+void 
+MacLow::NotifySwitchingStartNow (Time duration)
+{
+  NS_LOG_DEBUG ("switching channel. Cancelling MAC pending events"); 
+  m_stationManager->Reset();
+  CancelAllEvents(); 
+  if (m_navCounterResetCtsMissed.IsRunning ())
+    {
+      m_navCounterResetCtsMissed.Cancel();
+    }
+  m_lastNavStart = Simulator::Now (); 
+  m_lastNavDuration = Seconds (0);
+  m_currentPacket = 0;
+  m_listener = 0;
 }
 
 void 

@@ -124,6 +124,7 @@ public:
   virtual bool IsStateBusy (void);
   virtual bool IsStateSync (void);
   virtual bool IsStateTx (void);
+  virtual bool IsStateSwitching (void); 
   virtual Time GetStateDuration (void);
   virtual Time GetDelayUntilIdle (void);
   virtual Time GetLastRxStartTime (void) const;
@@ -152,7 +153,6 @@ private:
   double RatioToDb (double ratio) const;
   double GetPowerDbm (uint8_t power) const;
   void EndSync (Ptr<Packet> packet, Ptr<InterferenceHelper::Event> event);
-  void DoSetChannelNumber(uint16_t id);
 
 private:
   double   m_edThresholdW;
@@ -164,7 +164,7 @@ private:
   uint32_t m_nTxPower;
 
   Ptr<YansWifiChannel> m_channel;
-  uint16_t m_channelId;
+  uint16_t m_channelNumber;
   Ptr<Object> m_device;
   Ptr<Object> m_mobility;
   Modes m_modes;

@@ -603,6 +603,10 @@ InterferenceHelper::CalculateSnrPer (Ptr<InterferenceHelper::Event> event)
   return snrPer;
 }
 
-
+void
+InterferenceHelper::EraseEvents (void) 
+{  
+  m_events.erase (m_events.begin (), m_events.end ());
+}
 
 } // namespace ns3

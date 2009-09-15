@@ -100,6 +100,7 @@ private:
   void NotifyAccessGranted (void);
   void NotifyCollision (void);
   void NotifyInternalCollision (void);
+  void NotifyChannelSwitching (void); 
 
 
   /**
@@ -130,6 +131,14 @@ private:
    * is access is still needed.
    */
   virtual void DoNotifyCollision (void) = 0;
+   /**
+   * Called by DcfManager to notify a DcfState subclass
+   * that a channel switching occured.
+   *
+   * The subclass is expected to flush the queue of 
+   * packets.
+   */
+  virtual void DoNotifyChannelSwitching () = 0; 
 
   uint32_t m_aifsn;
   uint32_t m_backoffSlots;
@@ -248,6 +257,12 @@ public:
    */
   void NotifyMaybeCcaBusyStartNow (Time duration);
   /**
+   * \param duration expected duration of channel switching period
+   *
+   * Notify the DCF that a channel switching period has just started.
+   */
+  void NotifySwitchingStartNow (Time duration); 
+  /**
    * \param duration the value of the received NAV.
    *
    * Called at end of rx
@@ -269,6 +284,7 @@ private:
   Time MostRecent (Time a, Time b, Time c) const;
   Time MostRecent (Time a, Time b, Time c, Time d) const;
   Time MostRecent (Time a, Time b, Time c, Time d, Time e, Time f) const;
+  Time MostRecent (Time a, Time b, Time c, Time d, Time e, Time f, Time g) const; 
   /**
    * Access will never be granted to the medium _before_
    * the time returned by this method.
@@ -299,6 +315,8 @@ private:
   Time m_lastTxDuration;
   Time m_lastBusyStart;
   Time m_lastBusyDuration;
+  Time m_lastSwitchingStart; 
+  Time m_lastSwitchingDuration; 
   bool m_rxing;
   bool m_sleeping;
   Time m_eifsNoDifs;
