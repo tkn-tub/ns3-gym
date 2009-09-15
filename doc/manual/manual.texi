@@ -82,8 +82,9 @@ see @uref{http://www.nsnam.org/docs/manual.pdf}.
 @menu
 * Random variables::
 * Callbacks::
-* Attributes::
 * Object model::
+* Attributes::
+* Tracing::
 * RealTime::
 * Emulation::
 * Packets::
@@ -100,8 +101,9 @@ see @uref{http://www.nsnam.org/docs/manual.pdf}.
 
 @include random.texi
 @include callbacks.texi
-@include attributes.texi
 @include objects.texi
+@include attributes.texi
+@include tracing.texi
 @include realtime.texi
 @include emulation.texi
 @include packets.texi
