@@ -77,6 +77,13 @@ public:
    *
    * where Starting channel frequency is standard-dependent, see SetStandard()
    * as defined in IEEE 802.11-2007 17.3.8.3.2.
+   *
+   * YansWifiPhy can switch among different channels. Basically, YansWifiPhy 
+   * has a private attribute m_channelNumber that identifies the channel the 
+   * PHY operates on. Channel switching cannot interrupt an ongoing transmission.
+   * When PHY is in TX state, the channel switching is postponed until the end
+   * of the current transmission. When the PHY is in SYNC state, the channel 
+   * switching causes the drop of the sync packet. 
    */ 
   void SetChannelNumber (uint16_t id);
   /// Return current channel number, see SetChannelNumber()

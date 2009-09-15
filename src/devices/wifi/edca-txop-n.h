@@ -101,6 +101,9 @@ public:
   void NotifyAccessGranted (void);
   void NotifyInternalCollision (void);
   void NotifyCollision (void);
+  /**
+  * When a channel switching occurs, enqueued packets are removed.
+  */
   void NotifyChannelSwitching (void);
 
   /*event handlers*/

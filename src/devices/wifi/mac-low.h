@@ -360,7 +360,8 @@ public:
    * \param duration switching delay duration.
    *
    * This method is typically invoked by the PhyMacLowListener to notify
-   * the MAC layer that a channel switching occured.
+   * the MAC layer that a channel switching occured. When a channel switching
+   * occurs, pending MAC transmissions (RTS, CTS, DATA and ACK) are cancelled.
    */
   void NotifySwitchingStartNow (Time duration); 
 private:
