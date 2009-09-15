@@ -235,6 +235,7 @@ WifiMeshActionHeader::ActionValue
 WifiMeshActionHeader::GetAction ()
 {
   ActionValue retval;
+  retval.peerLink = PEER_LINK_OPEN; // Needs to be initialized to something to quiet valgrind in default cases
   switch (m_category)
     {
   case MESH_PEERING_MGT:
