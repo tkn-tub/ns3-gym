@@ -51,6 +51,10 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("Icmpv6RedirectExample");
 
+/**
+ * \class StackHelper
+ * \brief Helper to set or get some IPv6 information about nodes.
+ */
 class StackHelper
 {
   public:
@@ -69,7 +73,7 @@ class StackHelper
       routing = routingHelper.GetStaticRouting (ipv6);
 
       std::cout << "Routing table of " << n << " : " << std::endl;
-      std::cout << "Destination\t\t\t\t" << "Gateway\t\t\t\t\t" << "Interface\t" << std::endl;
+      std::cout << "Destination\t\t\t\t" << "Gateway\t\t\t\t\t" << "Interface\t" << "Prefix to use" << std::endl;
 
       nbRoutes = routing->GetNRoutes ();
       for(uint32_t i = 0 ; i < nbRoutes ; i++)
@@ -77,10 +81,19 @@ class StackHelper
         route = routing->GetRoute (i);
         std::cout << route.GetDest () << "\t"
           << route.GetGateway () << "\t"
-          << route.GetInterface () << "\t" << std::endl;
+          << route.GetInterface () << "\t" 
+          << route.GetPrefixToUse () << "\t"
+          << std::endl;
       }
     }
 
+    /**
+     * \brief Add an host route.
+     * \param n node 
+     * \param dst destination address
+     * \param nextHop next hop for destination
+     * \param interface output interface
+     */
     inline void AddHostRouteTo (Ptr<Node>& n, Ipv6Address dst, Ipv6Address nextHop, uint32_t interface)
     {
       Ptr<Ipv6StaticRouting> routing = 0;
@@ -88,7 +101,6 @@ class StackHelper
       Ptr<Ipv6> ipv6 = n->GetObject<Ipv6> ();
 
       routing = routingHelper.GetStaticRouting (ipv6);
-
       routing->AddHostRouteTo (dst, nextHop, interface);
     }
 };

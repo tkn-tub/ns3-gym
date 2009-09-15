@@ -278,7 +278,7 @@ void Icmpv6L4Protocol::ReceiveLLA (Icmpv6OptionLinkLayerAddress lla, Ipv6Address
 {
   NS_LOG_FUNCTION (this << lla << src << dst << interface);
   Address hardwareAddress;
-  NdiscCache::Entry* entry = NULL;
+  NdiscCache::Entry* entry = 0;
   Ptr<NdiscCache> cache = FindCache (interface->GetDevice ());
   
   /* check if we have this address in our cache */ 
@@ -347,7 +347,7 @@ void Icmpv6L4Protocol::HandleRS (Ptr<Packet> packet, Ipv6Address const &src, Ipv
   packet->RemoveHeader (rsHeader);
   Address hardwareAddress;
   Icmpv6OptionLinkLayerAddress lla (1);
-  NdiscCache::Entry* entry = NULL;
+  NdiscCache::Entry* entry = 0;
   Ptr<NdiscCache> cache = FindCache (interface->GetDevice ());
 
   if (src != Ipv6Address::GetAny ())
@@ -664,7 +664,7 @@ void Icmpv6L4Protocol::HandleRedirection (Ptr<Packet> packet, Ipv6Address const 
   if (hasLla)
   {
     /* update the cache if needed */
-    NdiscCache::Entry* entry = NULL;
+    NdiscCache::Entry* entry = 0;
     Ptr<NdiscCache> cache = FindCache (interface->GetDevice ());
 
     entry = cache->Lookup (redirTarget);

@@ -39,6 +39,10 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("SimpleRoutingPing6Example");
 
+/**
+ * \class StackHelper
+ * \brief Helper to set or get some IPv6 information about nodes.
+ */
 class StackHelper
 {
   public:

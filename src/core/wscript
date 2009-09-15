@@ -79,6 +79,7 @@ def build(bld):
         'callback.cc',
         'names.cc',
         'vector.cc',
+        'names-test-suite.cc',
         ]
 
     headers = bld.new_task_gen('ns3header')
@@ -149,3 +150,5 @@ def build(bld):
                 'system-condition.h',
                 ])
 
+    if bld.env['ENABLE_GSL']:
+        core.source.extend(['rng-test-suite.cc'])

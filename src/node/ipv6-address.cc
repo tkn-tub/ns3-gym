@@ -33,119 +33,141 @@ namespace ns3 {
 
 #ifdef __cplusplus
 extern "C"
-{
+{ /* } */
 #endif
 
-  /**
-   * \brief Get a hash key.
-   * \param k the key
-   * \param length the length of the key
-   * \param level the previous hash, or an arbitrary value
-   * \return hash
-   * \note Adpated from Jens Jakobsen implementation (chillispot).
-   */
-  static uint32_t lookuphash (unsigned char* k, uint32_t length, uint32_t level)
+/**
+ * \brief Get a hash key.
+ * \param k the key
+ * \param length the length of the key
+ * \param level the previous hash, or an arbitrary value
+ * \return hash
+ * \note Adapted from Jens Jakobsen implementation (chillispot).
+ */
+static uint32_t lookuphash (unsigned char* k, uint32_t length, uint32_t level)
+{
+#define mix(a, b, c) \
+({ \
+    (a) -= (b); (a) -= (c); (a) ^= ((c) >> 13); \
+    (b) -= (c); (b) -= (a); (b) ^= ((a) << 8);  \
+    (c) -= (a); (c) -= (b); (c) ^= ((b) >> 13); \
+    (a) -= (b); (a) -= (c); (a) ^= ((c) >> 12); \
+    (b) -= (c); (b) -= (a); (b) ^= ((a) << 16); \
+    (c) -= (a); (c) -= (b); (c) ^= ((b) >> 5);  \
+    (a) -= (b); (a) -= (c); (a) ^= ((c) >> 3);  \
+    (b) -= (c); (b) -= (a); (b) ^= ((a) << 10); \
+    (c) -= (a); (c) -= (b); (c) ^= ((b) >> 15); \
+})
+
+  typedef uint32_t  ub4;   /* unsigned 4-byte quantities */
+  typedef unsigned  char ub1;   /* unsigned 1-byte quantities */
+  uint32_t a = 0;
+  uint32_t b = 0;
+  uint32_t c = 0;
+  uint32_t len = 0;
+
+  /* Set up the internal state */
+  len = length;
+  a = b = 0x9e3779b9;  /* the golden ratio; an arbitrary value */
+  c = level;           /* the previous hash value */
+
+  /* handle most of the key */
+  while (len >= 12)
   {
-#define mix(a,b,c) \
-    { \
-      a -= b; a -= c; a ^= (c>>13); \
-      b -= c; b -= a; b ^= (a<<8); \
-      c -= a; c -= b; c ^= (b>>13); \
-      a -= b; a -= c; a ^= (c>>12);  \
-      b -= c; b -= a; b ^= (a<<16); \
-      c -= a; c -= b; c ^= (b>>5); \
-      a -= b; a -= c; a ^= (c>>3);  \
-      b -= c; b -= a; b ^= (a<<10); \
-      c -= a; c -= b; c ^= (b>>15); \
-    }
-
-    typedef uint32_t  ub4;   /* unsigned 4-byte quantities */
-    typedef unsigned  char ub1;   /* unsigned 1-byte quantities */
-    uint32_t a,b,c,len;
-
-    /* Set up the internal state */
-    len = length;
-    a = b = 0x9e3779b9;  /* the golden ratio; an arbitrary value */
-    c = level;           /* the previous hash value */
-
-    /*---------------------------------------- handle most of the key */
-    while (len >= 12)
-    {
-      a += (k[0] +((ub4)k[1]<<8) +((ub4)k[2]<<16) +((ub4)k[3]<<24));
-      b += (k[4] +((ub4)k[5]<<8) +((ub4)k[6]<<16) +((ub4)k[7]<<24));
-      c += (k[8] +((ub4)k[9]<<8) +((ub4)k[10]<<16)+((ub4)k[11]<<24));
-      mix(a, b, c);
-      k += 12; len -= 12;
-    }
-
-    /*------------------------------------- handle the last 11 bytes */
-    c += length;
-    switch (len)              /* all the case statements fall through */
-    {
-      case 11: c+=((ub4)k[10]<<24);
-      case 10: c+=((ub4)k[9]<<16);
-      case 9 : c+=((ub4)k[8]<<8);
-               /* the first byte of c is reserved for the length */
-      case 8 : b+=((ub4)k[7]<<24);
-      case 7 : b+=((ub4)k[6]<<16);
-      case 6 : b+=((ub4)k[5]<<8);
-      case 5 : b+=k[4];
-      case 4 : a+=((ub4)k[3]<<24);
-      case 3 : a+=((ub4)k[2]<<16);
-      case 2 : a+=((ub4)k[1]<<8);
-      case 1 : a+=k[0];
-               /* case 0: nothing left to add */
-    }
-    mix(a, b, c);
-    /*-------------------------------------------- report the result */
-    return c;
+    a += (k[0] + ((ub4)k[1] << 8) + ((ub4)k[2] << 16) + ((ub4)k[3] << 24));
+    b += (k[4] + ((ub4)k[5] << 8) + ((ub4)k[6] << 16) + ((ub4)k[7] << 24));
+    c += (k[8] + ((ub4)k[9] << 8) + ((ub4)k[10] << 16) + ((ub4)k[11] << 24));
+    mix (a, b, c);
+    k += 12; 
+    len -= 12;
   }
+
+  /* handle the last 11 bytes */
+  c += length;
+  switch (len) /* all the case statements fall through */
+  {
+    case 11: c += ((ub4)k[10] << 24);
+    case 10: c += ((ub4)k[9] << 16);
+    case 9 : c += ((ub4)k[8] << 8); /* the first byte of c is reserved for the length */
+    case 8 : b += ((ub4)k[7] << 24);
+    case 7 : b += ((ub4)k[6] << 16);
+    case 6 : b += ((ub4)k[5] << 8);
+    case 5 : b += k[4];
+    case 4 : a += ((ub4)k[3] << 24);
+    case 3 : a += ((ub4)k[2] << 16);
+    case 2 : a += ((ub4)k[1] << 8);
+    case 1 : a += k[0];
+    /* case 0: nothing left to add */
+  }
+  mix (a, b, c);
+  
+#undef mix
+
+  /* report the result */
+  return c;
+}
+
 #ifdef __cplusplus
 }
 #endif
 
 /**
  * \brief Convert an IPv6 C-string into a 128-bit representation.
- * \return 1 if OK, 0 if failure (bad format, ...)
+ * \return true if success, false otherwise (bad format, ...)
  * \note This function is strongly inspired by inet_pton6() from Paul Vixie.
  * \todo Handle IPv6 address with decimal value for last four bytes.
  */
-static int AsciiToIpv6Host (char const *address, uint8_t addr[16])
+static bool AsciiToIpv6Host (const char *address, uint8_t addr[16])
 {
-  static const char xdigits_l[] = "0123456789abcdef",
-               xdigits_u[] = "0123456789ABCDEF";
-  unsigned char tmp[16 /*NS_IN6ADDRSZ*/], *tp, *endp, *colonp;
-  const char *xdigits, *curtok;
-  int ch, seen_xdigits;
-  unsigned int val;
+  static const char xdigits_l[] = "0123456789abcdef";
+  static const char xdigits_u[] = "0123456789ABCDEF";
+  unsigned char tmp[16];
+  unsigned char* tp = tmp;
+  unsigned char* endp = 0;
+  unsigned char* colonp = 0;
+  const char* xdigits = 0;
+  const char* curtok = 0;
+  int ch = 0;
+  int seen_xdigits = 0;
+  unsigned int val = 0;
 
-  memset ((tp = tmp), '\0', 16 /* NS_IN6ADDRSZ*/);
-  endp = tp + 16 /*NS_IN6ADDRSZ*/;
-  colonp = NULL;
+  memset (tp, 0x00, 16);
+  endp = tp + 16;
+
   /* Leading :: requires some special handling. */
   if (*address == ':')
+  {
     if (*++address != ':')
+    {
       return (0);
+    }
+  }
   curtok = address;
-  seen_xdigits = 0;
-  val = 0;
+
   while ((ch = *address++) != '\0')
   {
-    const char *pch;
+    const char *pch = 0;
 
-    if ((pch = strchr ((xdigits = xdigits_l), ch)) == NULL)
+    if ((pch = strchr ((xdigits = xdigits_l), ch)) == 0)
+    {
       pch = strchr ((xdigits = xdigits_u), ch);
-    if (pch != NULL)
+    }
+
+    if (pch != 0)
     {
       val <<= 4;
       val |= (pch - xdigits);
+
       if (++seen_xdigits > 4)
+      {
         return (0);
+      }
       continue;
     }
     if (ch == ':')
     {
       curtok = address;
+
       if (!seen_xdigits)
       {
         if (colonp)
@@ -153,8 +175,12 @@ static int AsciiToIpv6Host (char const *address, uint8_t addr[16])
         colonp = tp;
         continue;
       }
-      if (tp + 2 /*NS_INT16SZ*/ > endp)
+
+      if (tp + 2 > endp)
+      {
         return (0);
+      }
+
       *tp++ = (unsigned char) (val >> 8) & 0xff;
       *tp++ = (unsigned char) val & 0xff;
       seen_xdigits = 0;
@@ -174,35 +200,45 @@ static int AsciiToIpv6Host (char const *address, uint8_t addr[16])
 #endif
     return (0);
   }
+
   if (seen_xdigits)
   {
-    if (tp + 2/* NS_INT16SZ*/ > endp)
+    if (tp + 2 > endp)
+    {
       return (0);
+    }
     *tp++ = (unsigned char) (val >> 8) & 0xff;
     *tp++ = (unsigned char) val & 0xff;
   }
-  if (colonp != NULL)
+
+  if (colonp != 0)
   {
     /*
      * Since some memmove ()'s erroneously fail to handle
      * overlapping regions, we'll do the shift by hand.
      */
     const int n = tp - colonp;
-    int i;
+    int i = 0;
 
     if (tp == endp)
+    {
       return (0);
+    }
+
     for (i = 1; i <= n; i++)
     {
       endp[- i] = colonp[n - i];
       colonp[n - i] = 0;
     }
+
     tp = endp;
   }
-  if (tp != endp)
-    return (0);
 
-  /* memcpy (dst, tmp, NS_IN6ADDRSZ);  */
+  if (tp != endp)
+  {
+    return (0);
+  }
+
   memcpy (addr, tmp, 16);
   return (1);
 }
@@ -357,7 +393,7 @@ bool Ipv6Address::IsMulticast () const
   return false;
 }
 
-Ipv6Address Ipv6Address::CombinePrefix (Ipv6Prefix const & prefix)
+Ipv6Address Ipv6Address::CombinePrefix (Ipv6Prefix const& prefix)
 {
   Ipv6Address ipv6;
   uint8_t addr[16];
@@ -447,33 +483,21 @@ uint8_t Ipv6Address::GetType (void)
   return type;
 }
 
-Ipv6Address Ipv6Address::GetZero ()
-{
-  Ipv6Address zero ("::");
-  return zero;
-}
-
-Ipv6Address Ipv6Address::GetAny ()
-{
-  Ipv6Address any ("::");
-  return any;
-}
-
 Ipv6Address Ipv6Address::GetAllNodesMulticast ()
 {
-  Ipv6Address nmc ("ff02::1");
+  static Ipv6Address nmc ("ff02::1");
   return nmc;
 }
 
 Ipv6Address Ipv6Address::GetAllRoutersMulticast ()
 {
-  Ipv6Address rmc ("ff02::2");
+  static Ipv6Address rmc ("ff02::2");
   return rmc;
 }
 
 Ipv6Address Ipv6Address::GetAllHostsMulticast ()
 {
-  Ipv6Address hmc ("ff02::3");
+  static Ipv6Address hmc ("ff02::3");
   return hmc;
 }
 
@@ -481,6 +505,18 @@ Ipv6Address Ipv6Address::GetLoopback ()
 {
   static Ipv6Address loopback ("::1");
   return loopback;
+}
+
+Ipv6Address Ipv6Address::GetZero ()
+{
+  static Ipv6Address zero ("::");
+  return zero;
+}
+
+Ipv6Address Ipv6Address::GetAny ()
+{
+  static Ipv6Address any ("::");
+  return any;
 }
 
 Ipv6Address Ipv6Address::GetOnes ()
@@ -629,7 +665,7 @@ void Ipv6Prefix::Print (std::ostream &os) const
 
 Ipv6Prefix Ipv6Prefix::GetLoopback ()
 {
-  Ipv6Prefix prefix ((uint8_t)128);
+  static Ipv6Prefix prefix ((uint8_t)128);
   return prefix;
 }
 
@@ -641,7 +677,7 @@ Ipv6Prefix Ipv6Prefix::GetOnes ()
 
 Ipv6Prefix Ipv6Prefix::GetZero ()
 {
-  Ipv6Prefix prefix ((uint8_t)0);
+  static Ipv6Prefix prefix ((uint8_t)0);
   return prefix;
 }
 
@@ -665,7 +701,7 @@ uint8_t Ipv6Prefix::GetPrefixLength () const
       prefixLength++;
     }
   }
-  
+
   return prefixLength;
 }
 
@@ -678,7 +714,7 @@ bool Ipv6Prefix::IsEqual (const Ipv6Prefix& other) const
   return false;
 }
 
-std::ostream& operator<< (std::ostream& os, Ipv6Prefix const& prefix)
+std::ostream& operator << (std::ostream& os, Ipv6Prefix const& prefix)
 {
   prefix.Print (os);
   return os;
