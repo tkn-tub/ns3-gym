@@ -95,6 +95,7 @@ public:
 				      Time duration, double rxPower);
 
   struct InterferenceHelper::SnrPer CalculateSnrPer (Ptr<InterferenceHelper::Event> event);
+  void EraseEvents (void); 
 private:
   class NiChange {
   public:

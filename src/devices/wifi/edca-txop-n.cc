@@ -55,6 +55,9 @@ private:
   virtual void DoNotifyCollision (void) {
     m_txop->NotifyCollision ();
   }
+  virtual void DoNotifyChannelSwitching (void) { 
+    m_txop->NotifyChannelSwitching ();
+  }
   EdcaTxopN *m_txop;
 };
 
@@ -425,6 +428,13 @@ EdcaTxopN::MissedCts (void)
     }
   m_dcf->StartBackoffNow (m_rng->GetNext (0, m_dcf->GetCw ()));
   RestartAccessIfNeeded ();
+}
+
+void 
+EdcaTxopN::NotifyChannelSwitching (void)
+{
+  m_queue->Flush();
+  m_currentPacket = 0;
 }
 
 void

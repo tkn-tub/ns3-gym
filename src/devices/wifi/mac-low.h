@@ -356,6 +356,14 @@ public:
    * the MAC layer that a packet was unsuccessfully received.
    */
   void ReceiveError (Ptr<const Packet> packet, double rxSnr);
+  /**
+   * \param duration switching delay duration.
+   *
+   * This method is typically invoked by the PhyMacLowListener to notify
+   * the MAC layer that a channel switching occured. When a channel switching
+   * occurs, pending MAC transmissions (RTS, CTS, DATA and ACK) are cancelled.
+   */
+  void NotifySwitchingStartNow (Time duration); 
 private:
   void CancelAllEvents (void);
   uint32_t GetAckSize (void) const;
@@ -402,6 +410,8 @@ private:
   void StartDataTxTimers (void);
   virtual void DoDispose (void);
 
+  void SetupPhyMacLowListener (Ptr<WifiPhy> phy); 
+
   Ptr<WifiPhy> m_phy;
   Ptr<WifiRemoteStationManager> m_stationManager;
   MacLowRxCallback m_rxCallback;
@@ -434,6 +444,9 @@ private:
 
   Time m_lastNavStart;
   Time m_lastNavDuration;
+
+  // Listerner needed to monitor when a channel switching occurs. 
+  class PhyMacLowListener *m_phyMacLowListener; 
 };
 
 } // namespace ns3

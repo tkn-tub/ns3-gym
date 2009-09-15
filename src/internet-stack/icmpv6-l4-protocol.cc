@@ -69,6 +69,10 @@ TypeId Icmpv6L4Protocol::GetTypeId ()
   static TypeId tid = TypeId ("ns3::Icmpv6L4Protocol")
     .SetParent<Ipv6L4Protocol> ()
     .AddConstructor<Icmpv6L4Protocol> ()
+    .AddAttribute ("DAD", "Always do DAD check.",
+                   BooleanValue (true),
+                   MakeBooleanAccessor (&Icmpv6L4Protocol::m_alwaysDad),
+                   MakeBooleanChecker ())
     ;
   return tid;
 }
@@ -144,13 +148,23 @@ int Icmpv6L4Protocol::GetVersion () const
   return 1;
 }
 
+bool Icmpv6L4Protocol::IsAlwaysDad () const
+{
+  return m_alwaysDad;
+}
+
 void Icmpv6L4Protocol::DoDAD (Ipv6Address target, Ptr<Ipv6Interface> interface)
 {
   NS_LOG_FUNCTION (this << target << interface);
   Ipv6Address addr;
-
   Ptr<Ipv6L3Protocol> ipv6 = m_node->GetObject<Ipv6L3Protocol> ();
+
   NS_ASSERT (ipv6);
+
+  if(!m_alwaysDad)
+  {
+    return; 
+  }
 
   /* TODO : disable multicast loopback to prevent NS probing to be received by the sender */
 

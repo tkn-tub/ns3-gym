@@ -62,6 +62,9 @@ PhyStateTrace (std::string context, Time start, Time duration, enum WifiPhy::Sta
 {
   std::cout << " state=";
   switch (state) {
+  case WifiPhy::SWITCHING: 
+    std::cout << "switchng";
+    break; 
   case WifiPhy::TX:
     std::cout << "tx      ";
     break;

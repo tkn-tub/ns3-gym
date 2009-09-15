@@ -154,6 +154,11 @@ DcfState::NotifyInternalCollision (void)
 {
   DoNotifyInternalCollision ();
 }
+void 
+DcfState::NotifyChannelSwitching (void) 
+{
+  DoNotifyChannelSwitching ();
+}
 
 
 /***************************************************************
@@ -211,6 +216,9 @@ public:
   virtual void NotifyMaybeCcaBusyStart (Time duration) {
     m_dcf->NotifyMaybeCcaBusyStartNow (duration);
   }
+  virtual void NotifySwitchingStart (Time duration) { 
+    m_dcf->NotifySwitchingStartNow (duration);
+  }
 private:
   ns3::DcfManager *m_dcf;
 };
@@ -232,6 +240,8 @@ DcfManager::DcfManager ()
     m_lastTxDuration (MicroSeconds (0)),
     m_lastBusyStart (MicroSeconds (0)),
     m_lastBusyDuration (MicroSeconds (0)),
+    m_lastSwitchingStart (MicroSeconds (0)), 
+    m_lastSwitchingDuration (MicroSeconds (0)), 
     m_rxing (false),
     m_slotTime (Seconds (0.0)),
     m_sifs (Seconds (0.0)),
@@ -316,6 +326,18 @@ DcfManager::MostRecent (Time a, Time b, Time c, Time d, Time e, Time f) const
   Time i = Max (e, f);
   Time k = Max (g, h);
   Time retval = Max (k, i);
+  return retval;
+}
+
+Time
+DcfManager::MostRecent (Time a, Time b, Time c, Time d, Time e, Time f, Time g) const
+{
+  Time h = Max (a, b);
+  Time i = Max (c, d);
+  Time j = Max (e, f);
+  Time k = Max (h, i);
+  Time l = Max (j, g);
+  Time retval = Max (k, l);
   return retval;
 }
 
@@ -454,12 +476,14 @@ DcfManager::GetAccessGrantStart (void) const
   Time navAccessStart = m_lastNavStart + m_lastNavDuration + m_sifs;
   Time ackTimeoutAccessStart = m_lastAckTimeoutEnd + m_sifs;
   Time ctsTimeoutAccessStart = m_lastCtsTimeoutEnd + m_sifs;
+  Time switchingAccessStart = m_lastSwitchingStart + m_lastSwitchingDuration + m_sifs; 
   Time accessGrantedStart = MostRecent (rxAccessStart, 
                                         busyAccessStart,
                                         txAccessStart, 
                                         navAccessStart,
                                         ackTimeoutAccessStart,
-                                        ctsTimeoutAccessStart
+                                        ctsTimeoutAccessStart,
+                                        switchingAccessStart 
                                         );
   NS_LOG_INFO ("access grant start=" << accessGrantedStart <<
                ", rx access start=" << rxAccessStart <<
@@ -596,6 +620,67 @@ DcfManager::NotifyMaybeCcaBusyStartNow (Time duration)
   m_lastBusyStart = Simulator::Now ();
   m_lastBusyDuration = duration;
 }
+
+
+void 
+DcfManager::NotifySwitchingStartNow (Time duration)
+{
+  Time now = Simulator::Now ();
+  NS_ASSERT (m_lastTxStart + m_lastTxDuration <= now);
+  NS_ASSERT (m_lastSwitchingStart + m_lastSwitchingDuration <= now);
+
+  if (m_rxing)
+    {
+      // channel switching during packet reception
+      m_lastRxEnd = Simulator::Now ();
+      m_lastRxDuration = m_lastRxEnd - m_lastRxStart;
+      m_lastRxReceivedOk = true;
+      m_rxing = false;
+    }
+  if (m_lastNavStart + m_lastNavDuration > now)
+    {
+      m_lastNavDuration = now - m_lastNavStart;
+    }
+  if (m_lastBusyStart + m_lastBusyDuration > now)
+    {
+      m_lastBusyDuration = now - m_lastBusyStart;
+    }
+  if (m_lastAckTimeoutEnd > now)
+    {
+      m_lastAckTimeoutEnd = now;
+    }
+  if (m_lastCtsTimeoutEnd > now)
+    {
+      m_lastCtsTimeoutEnd = now;
+    }
+
+  // Cancel timeout
+  if (m_accessTimeout.IsRunning ())
+    {
+      m_accessTimeout.Cancel ();
+    }
+
+  // Reset backoffs
+  for (States::iterator i = m_states.begin (); i != m_states.end (); i++)
+    {
+      DcfState *state = *i;
+      uint32_t remainingSlots = state->GetBackoffSlots ();
+      if (remainingSlots > 0) 
+        {
+          state->UpdateBackoffSlotsNow (remainingSlots, now);
+          NS_ASSERT(state->GetBackoffSlots()==0);
+        }
+      state->ResetCw();
+      state->m_accessRequested = false;
+      state->NotifyChannelSwitching();
+    } 
+ 
+  MY_DEBUG ("switching start for "<<duration);
+  m_lastSwitchingStart = Simulator::Now ();
+  m_lastSwitchingDuration = duration;
+
+}
+
 void 
 DcfManager::NotifyNavResetNow (Time duration)
 {

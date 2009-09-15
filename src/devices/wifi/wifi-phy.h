@@ -97,6 +97,14 @@ public:
    * what duration it reported.
    */
   virtual void NotifyMaybeCcaBusyStart (Time duration) = 0;
+  /**
+   * \param duration the expected channel switching duration.
+   *
+   * We do not send any event to notify the end of 
+   * channel switching. Listeners should assume that the
+   * channel implicitely reverts to the idle or busy states.
+   */
+  virtual void NotifySwitchingStart (Time duration) = 0; 
 };
 
 
@@ -127,7 +135,11 @@ public:
     /**
      * The PHY layer is IDLE.
      */
-    IDLE
+    IDLE,
+    /**
+     * The PHY layer is switching to other channel.
+     */
+    SWITCHING
   };
   /**
    * arg1: packet received successfully
