@@ -101,6 +101,7 @@ public:
   void NotifyAccessGranted (void);
   void NotifyInternalCollision (void);
   void NotifyCollision (void);
+  void NotifyChannelSwitching (void);
 
   /*event handlers*/
   void GotCts (double snr, WifiMode txMode);

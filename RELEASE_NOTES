@@ -38,6 +38,8 @@ New user-visible features
        athstats tool (Nicola Baldo)
      - 10MHz and 5MHz channel width supported by 802.11a model 
        (Ramon Bauza and Kirill Andreev)
+     - Channel switching support. YansWifiPhy can now switch among 
+       different channels (Ramon Bauza and Pavel Boyko)
   
   b) IPv6 models:
     - IPv6 interface;
