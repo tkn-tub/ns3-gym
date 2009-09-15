@@ -76,7 +76,9 @@ public:
    * \param preamble the preamble associated to the packet
    *
    * This method should not be invoked by normal users. It is 
-   * currently invoked only from WifiPhy::Send.
+   * currently invoked only from WifiPhy::Send. YansWifiChannel 
+   * delivers packets only between PHYs with the same m_channelNumber,
+   * e.g. PHYs that are operating on the same channel.
    */
   void Send (Ptr<YansWifiPhy> sender, Ptr<const Packet> packet, double txPowerDbm,
              WifiMode wifiMode, WifiPreamble preamble) const;

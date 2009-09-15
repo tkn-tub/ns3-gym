@@ -43,12 +43,14 @@ public:
   bool IsStateBusy (void);
   bool IsStateSync (void);
   bool IsStateTx (void);
+  bool IsStateSwitching (void);
   Time GetStateDuration (void);
   Time GetDelayUntilIdle (void);
   Time GetLastRxStartTime (void) const;
 
   void SwitchToTx (Time txDuration, Ptr<const Packet> packet, WifiMode txMode, WifiPreamble preamble, uint8_t txPower);
   void SwitchToSync (Time syncDuration);
+  void SwitchToChannelSwitching (Time switchingDuration); 
   void SwitchFromSyncEndOk (Ptr<Packet> packet, double snr, WifiMode mode, enum WifiPreamble preamble);
   void SwitchFromSyncEndError (Ptr<const Packet> packet, double snr);
   void SwitchMaybeToCcaBusy (Time duration);
@@ -66,15 +68,18 @@ private:
   void NotifySyncEndOk (void);
   void NotifySyncEndError (void);
   void NotifyMaybeCcaBusyStart (Time duration);
+  void NotifySwitchingStart (Time duration); 
   void DoSwitchFromSync (void);
 
   bool m_syncing;
   Time m_endTx;
   Time m_endSync;
   Time m_endCcaBusy;
+  Time m_endSwitching; 
   Time m_startTx;
   Time m_startSync;
   Time m_startCcaBusy;
+  Time m_startSwitching; 
   Time m_previousStateChangeTime;
 
   Listeners m_listeners;
