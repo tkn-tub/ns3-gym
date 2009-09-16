@@ -241,7 +241,7 @@ PeerManagementProtocol::ReceivePeerLinkFrame (uint32_t interface, Mac48Address p
   Ptr<PeerLink> peerLink = FindPeerLink (interface, peerAddress);
   if (peerManagementElement.SubtypeIsOpen ())
     {
-      PmpReasonCode reasonCode;
+      PmpReasonCode reasonCode (REASON11S_RESERVED);
       bool reject = !(ShouldAcceptOpen (interface, peerAddress, reasonCode));
       if (peerLink == 0)
         {
