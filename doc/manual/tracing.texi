@@ -112,7 +112,7 @@ functions.
 
 It will be useful to go walk a quick example just to reinforce what we've said.
 
-@verbose
+@verbatim
   #include ``ns3/object.h''
   #include ``ns3/uinteger.h''
   #include ``ns3/traced-value.h''
@@ -121,7 +121,7 @@ It will be useful to go walk a quick example just to reinforce what we've said.
   #include <iostream>
   
   using namespace ns3;
-@end verbose
+@end verbatim
 
 The first thing to do is include the required files.  As mentioned above, the
 trace system makes heavy use of the Object and Attribute systems.  The first
@@ -167,7 +167,7 @@ the @code{TracedValue} declaration.
 
 The @code{.AddTraceSource} provides the ``hooks'' used for connecting the trace
 source to the outside world.  The @code{TracedValue} declaration provides the
-infrastructure that overloads the operators above and drives the callback 
+infrastructure that overloads the operators mentioned above and drives the callback 
 process.
 
 @verbatim
@@ -201,9 +201,11 @@ The next step, the @code{TraceConnectWithoutContext}, forms the connection
 between the trace source and the trace sink.  Notice the @code{MakeCallback}
 template function.  Recall from the Callback section that this creates the
 specialized functor responsible for providing the overloaded @code{operator()}
-used to ``fire'' the callback.  The @code{TraceConnectWithoutContext}, takes
-a string parameter that provides the name of the Attribute assigned to the
-trace source.  Let's ignore the bit about context for now.
+used to ``fire'' the callback.  The overloaded operators (++, --, etc.) will
+use this @code{operator()} to actually invoke the callback. The 
+@code{TraceConnectWithoutContext}, takes a string parameter that provides 
+the name of the Attribute assigned to the trace source.  Let's ignore the bit
+about context for now since it is not important yet.
 
 Finally, the line,
 
@@ -247,27 +249,27 @@ For example, one might find something that looks like the following in the syste
 @end verbatim
 
 This should look very familiar.  It is the same thing as the previous example,
-except that a static member function of @code{Config} is being called instead of
-a method on @code{Object}, and instead of an @code{Attribute} name, a path is
+except that a static member function of class @code{Config} is being called instead 
+of a method on @code{Object}; and instead of an @code{Attribute} name, a path is
 being provided.
 
 The first thing to do is to read the path backward.  The last segment of the path
 must be an @code{Attribute} of an @code{Object}.  In fact, if you had a pointer to
-the @code{Object} that has the @code{Attribute} handy, you could write this just like
-the previous example:
+the @code{Object} that has the ``CongestionWindow'' @code{Attribute} handy (call it
+@code{theObject}), you could write this just like the previous example:
 
 @verbatim
   void CwndTracer (uint32_t oldval, uint32_t newval) {}
 
   ...
 
-  object->TraceConnectWithoutContext ("CongestionWindow", MakeCallback (&CwndTracer));
+  theObject->TraceConnectWithoutContext ("CongestionWindow", MakeCallback (&CwndTracer));
 @end verbatim
 
-And it turns out that @code{Config::ConnectWithoutContext} does exactly that.  This
-function takes a path that represents a chain of @code{Object} pointers and follows 
+It turns out that the code for @code{Config::ConnectWithoutContext} does exactly that.
+This function takes a path that represents a chain of @code{Object} pointers and follows 
 them until it gets to the end of the path and interprets the last segment as an
-@code{Attribute} on the last object.
+@code{Attribute} on the last object.  Let's walk through what happens.
 
 The leading ``/'' character in the path refers to a so-called namespace.  One of the
 predefined namespaces in the config system is ``NodeList'' which is a list of all of

@@ -267,6 +267,10 @@ implement the specific operator() method,
    };
 @end verbatim
 
+@emph{N.B. The previous code is not real ns-3 code.  It is simplistic example
+code used only to illustrate the concepts involved and to help you understand 
+the system more.  Do not expect to find this code anywhere in the ns-3 tree}
+
 Notice that there are two variables defined in the class above.  The m_p 
 variable is the object pointer and m_pmi is the variable containing the 
 address of the function to execute.

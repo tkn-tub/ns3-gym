@@ -78,6 +78,7 @@ bool Ipv6L3ProtocolTest::RunTests ()
   uint32_t index = 0;
 
   /* init */
+  icmpv6->SetAttribute ("DAD", BooleanValue (false));
   node->AggregateObject (ipv6);
   node->AggregateObject (icmpv6);
   ipv6->Insert (icmpv6);
