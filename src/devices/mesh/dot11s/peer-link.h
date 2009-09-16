@@ -198,6 +198,10 @@ private:
   /// Several successive beacons were lost, close link
   void BeaconLoss ();
 private:
+
+  PeerLink& operator= (const PeerLink &);
+  PeerLink (const PeerLink &);
+
   ///The number of interface I am associated with
   uint32_t m_interface;
   /// pointer to MAC plugin, which is responsible for peer management

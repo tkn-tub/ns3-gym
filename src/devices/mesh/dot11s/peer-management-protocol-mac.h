@@ -58,6 +58,9 @@ public:
   uint32_t GetLinkMetric (Mac48Address peerAddress);
   ///\}
 private:
+  PeerManagementProtocolMac& operator= (const PeerManagementProtocolMac &);
+  PeerManagementProtocolMac (const PeerManagementProtocolMac &);
+  
   friend class PeerManagementProtocol;
   friend class PeerLink;
    ///\name Create peer link management frames:

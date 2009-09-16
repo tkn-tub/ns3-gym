@@ -105,6 +105,9 @@ public:
   void Report (std::ostream &) const;
   void ResetStats ();
 private:
+  FlameProtocol& operator= (const FlameProtocol &);
+  FlameProtocol (const FlameProtocol &);
+
   /// LLC protocol number reserved by flame
   static const uint16_t FLAME_PROTOCOL = 0x4040;
   /**

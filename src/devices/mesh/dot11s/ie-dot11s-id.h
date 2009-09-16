@@ -55,6 +55,7 @@ public:
 private:
   uint8_t m_meshId[33];
   friend bool operator== (const IeMeshId & a, const IeMeshId & b);
+
 };
 
 std::ostream &operator << (std::ostream &os, const IeMeshId &meshId);

@@ -32,5 +32,6 @@ def build(bld):
         'ie-dot11s-beacon-timing.h',
         'ie-dot11s-configuration.h',
         'ie-dot11s-peer-management.h',
+        'ie-dot11s-id.h',
         'peer-link.h',
         ]

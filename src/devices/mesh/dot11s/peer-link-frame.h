@@ -86,6 +86,10 @@ private:
   uint16_t m_reasonCode;
 
   friend bool operator== (const PeerLinkFrameStart & a, const PeerLinkFrameStart & b);
+
+  PeerLinkFrameStart& operator= (const PeerLinkFrameStart &);
+  PeerLinkFrameStart (const PeerLinkFrameStart &);
+
 };
 bool operator== (const PeerLinkFrameStart & a, const PeerLinkFrameStart & b);
 } //namespace dot11s
