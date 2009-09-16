@@ -40,7 +40,7 @@ public:
 
   bool IsEqual (IeMeshId const &o) const;
   bool IsBroadcast (void) const;
-  uint32_t GetLength (void) const;
+  //uint32_t GetLength (void) const;
   char *PeekString (void) const;
   /**
    * \name Inherited from WifiInformationElement
