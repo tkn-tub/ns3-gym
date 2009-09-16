@@ -112,7 +112,7 @@ class regression_test_task(Task.TaskBase):
         if not reason_cannot_run:
             pyscript = getattr(mod, "pyscript", None)
             if pyscript:
-                Options.options.compile_targets += ',ns3module'
+                Options.options.compile_targets += ',ns3module,pybindgen-command'
             else:
                 program = getattr(mod, "program", short_name)
                 Options.options.compile_targets += ',' + program
