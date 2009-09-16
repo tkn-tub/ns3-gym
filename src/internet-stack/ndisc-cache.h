@@ -416,6 +416,18 @@ class NdiscCache : public Object
     typedef sgi::hash_map<Ipv6Address, NdiscCache::Entry *, Ipv6AddressHash>::iterator CacheI;
 
     /**
+     * \brief Copy constructor.
+     * \param a cache to copy
+     */
+    NdiscCache (NdiscCache const &a);
+    
+    /**
+     * \brief Equal operator.
+     * \param a cache to copy
+     */
+    NdiscCache& operator= (NdiscCache const &a);
+
+    /**
      * \brief Dispose this object.
      */
     void DoDispose ();

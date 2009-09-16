@@ -23,8 +23,6 @@ def register_types(module):
     module.add_class('FlowMonitor', parent=root_module['ns3::Object'])
     ## flow-monitor.h: ns3::FlowMonitor::FlowStats [struct]
     module.add_class('FlowStats', outer_class=root_module['ns3::FlowMonitor'])
-    module.add_container('std::map< unsigned int, ns3::FlowProbe::FlowStats >', ('unsigned int', 'ns3::FlowProbe::FlowStats'), container_type='map')
-    module.add_container('std::map< unsigned int, ns3::FlowMonitor::FlowStats >', ('unsigned int', 'ns3::FlowMonitor::FlowStats'), container_type='map')
     typehandlers.add_type_alias('uint32_t', 'ns3::FlowPacketId')
     typehandlers.add_type_alias('uint32_t*', 'ns3::FlowPacketId*')
     typehandlers.add_type_alias('uint32_t&', 'ns3::FlowPacketId&')
@@ -209,7 +207,7 @@ def register_Ns3FlowProbeFlowStats_methods(root_module, cls):
     ## flow-probe.h: ns3::FlowProbe::FlowStats::bytes [variable]
     cls.add_instance_attribute('bytes', 'uint64_t', is_const=False)
     ## flow-probe.h: ns3::FlowProbe::FlowStats::bytesDropped [variable]
-    cls.add_instance_attribute('bytesDropped', 'std::vector< unsigned long >', is_const=False)
+    cls.add_instance_attribute('bytesDropped', 'std::vector< unsigned long long >', is_const=False)
     ## flow-probe.h: ns3::FlowProbe::FlowStats::delayFromFirstProbeSum [variable]
     cls.add_instance_attribute('delayFromFirstProbeSum', 'ns3::Time', is_const=False)
     ## flow-probe.h: ns3::FlowProbe::FlowStats::packets [variable]
@@ -363,7 +361,7 @@ def register_Ns3FlowMonitorFlowStats_methods(root_module, cls):
     ## flow-monitor.h: ns3::FlowMonitor::FlowStats::FlowStats(ns3::FlowMonitor::FlowStats const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::FlowMonitor::FlowStats const &', 'arg0')])
     ## flow-monitor.h: ns3::FlowMonitor::FlowStats::bytesDropped [variable]
-    cls.add_instance_attribute('bytesDropped', 'std::vector< unsigned long >', is_const=False)
+    cls.add_instance_attribute('bytesDropped', 'std::vector< unsigned long long >', is_const=False)
     ## flow-monitor.h: ns3::FlowMonitor::FlowStats::delayHistogram [variable]
     cls.add_instance_attribute('delayHistogram', 'ns3::Histogram', is_const=False)
     ## flow-monitor.h: ns3::FlowMonitor::FlowStats::delaySum [variable]
