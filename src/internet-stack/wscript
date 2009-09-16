@@ -122,6 +122,7 @@ def build(bld):
         'icmpv4.h',
         'icmpv6-header.h',
         'ipv4-l3-protocol.h',
+        'ipv6-l3-protocol.h',
         'arp-l3-protocol.h',
         'udp-l4-protocol.h',
         'tcp-l4-protocol.h',

@@ -59,6 +59,15 @@ class Ipv6L3Protocol : public Ipv6
      * \brief The protocol number for IPv6 (0x86DD).
      */
     static const uint16_t PROT_NUMBER;
+
+    enum DropReason 
+      {
+        DROP_TTL_EXPIRED = 1,
+        DROP_NO_ROUTE,
+        DROP_BAD_CHECKSUM,
+        DROP_INTERFACE_DOWN,
+        DROP_ROUTE_ERROR,
+      };
     
     /**
      * \brief Constructor.
@@ -344,7 +353,7 @@ class Ipv6L3Protocol : public Ipv6
     /**
      * \brief Callback to trace drop packets.
      */ 
-    TracedCallback<Ptr<const Packet> > m_dropTrace;
+    TracedCallback<const Ipv6Header &, Ptr<const Packet>, DropReason, uint32_t> m_dropTrace;
 
     /**
      * \brief Copy constructor.

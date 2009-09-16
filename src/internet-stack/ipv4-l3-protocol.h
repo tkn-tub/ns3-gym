@@ -63,6 +63,15 @@ public:
   Ipv4L3Protocol();
   virtual ~Ipv4L3Protocol ();
 
+  enum DropReason 
+    {
+      DROP_TTL_EXPIRED = 1,
+      DROP_NO_ROUTE,
+      DROP_BAD_CHECKSUM,
+      DROP_INTERFACE_DOWN,
+      DROP_ROUTE_ERROR,
+    };
+
   void SetNode (Ptr<Node> node);
 
   // functions defined in base class Ipv4
@@ -215,9 +224,15 @@ private:
   uint8_t m_defaultTtl;
   uint16_t m_identification;
   Ptr<Node> m_node;
+
+  TracedCallback<const Ipv4Header &, Ptr<const Packet>, uint32_t> m_sendOutgoingTrace;
+  TracedCallback<const Ipv4Header &, Ptr<const Packet>, uint32_t> m_unicastForwardTrace;
+  TracedCallback<const Ipv4Header &, Ptr<const Packet>, uint32_t> m_localDeliverTrace;
+
   TracedCallback<Ptr<const Packet>, uint32_t> m_txTrace;
   TracedCallback<Ptr<const Packet>, uint32_t> m_rxTrace;
-  TracedCallback<Ptr<const Packet> > m_dropTrace;
+  // <ip-header, payload, reason, ifindex> (ifindex not valid if reason is DROP_NO_ROUTE)
+  TracedCallback<const Ipv4Header &, Ptr<const Packet>, DropReason, uint32_t> m_dropTrace;
 
   Ptr<Ipv4RoutingProtocol> m_routingProtocol;
 

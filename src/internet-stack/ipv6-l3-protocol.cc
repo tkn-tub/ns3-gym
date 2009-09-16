@@ -646,7 +646,7 @@ void Ipv6L3Protocol::Send (Ptr<Packet> packet, Ipv6Address source, Ipv6Address d
   else
   {
     NS_LOG_WARN ("No route to host, drop!");
-    m_dropTrace (packet);
+    m_dropTrace (hdr, packet, DROP_NO_ROUTE, oif);
   }
 }
 
@@ -672,7 +672,9 @@ void Ipv6L3Protocol::Receive (Ptr<NetDevice> device, Ptr<const Packet> p, uint16
       else
       {
         NS_LOG_LOGIC ("Dropping received packet-- interface is down");
-        m_dropTrace (packet);
+        Ipv6Header hdr;
+        packet->RemoveHeader (hdr);
+        m_dropTrace (hdr, packet, DROP_INTERFACE_DOWN, interface);
         return;
       }
     }
@@ -701,8 +703,6 @@ void Ipv6L3Protocol::SendRealOut (Ptr<Ipv6Route> route, Ptr<Packet> packet, Ipv6
 {
   NS_LOG_FUNCTION (this << route << packet << ipHeader);
 
-  packet->AddHeader (ipHeader);
-
   if (!route)
   {
     NS_LOG_LOGIC ("No route to host, drop!.");
@@ -716,20 +716,20 @@ void Ipv6L3Protocol::SendRealOut (Ptr<Ipv6Route> route, Ptr<Packet> packet, Ipv6
   Ptr<Ipv6Interface> outInterface = GetInterface (interface);
   NS_LOG_LOGIC ("Send via NetDevice ifIndex " << dev->GetIfIndex () << " Ipv6InterfaceIndex " << interface);
 
-  NS_ASSERT (packet->GetSize () <= outInterface->GetDevice ()->GetMtu ());
-
   if (!route->GetGateway ().IsEqual (Ipv6Address::GetAny ()))
   {
     if (outInterface->IsUp ())
     {
       NS_LOG_LOGIC ("Send to gateway " << route->GetGateway ());
+      packet->AddHeader (ipHeader);
+      NS_ASSERT (packet->GetSize () <= outInterface->GetDevice ()->GetMtu ());
       m_txTrace (packet, interface);
       outInterface->Send (packet, route->GetGateway ());
     }
     else
     {
       NS_LOG_LOGIC ("Dropping-- outgoing interface is down: " << route->GetGateway ());
-      m_dropTrace (packet);
+      m_dropTrace (ipHeader, packet, DROP_INTERFACE_DOWN, interface);
     }
   }
   else
@@ -737,13 +737,15 @@ void Ipv6L3Protocol::SendRealOut (Ptr<Ipv6Route> route, Ptr<Packet> packet, Ipv6
     if (outInterface->IsUp ())
     {
        NS_LOG_LOGIC ("Send to destination " << ipHeader.GetDestinationAddress ());
+       packet->AddHeader (ipHeader);
+       NS_ASSERT (packet->GetSize () <= outInterface->GetDevice ()->GetMtu ());
        m_txTrace (packet, interface);
        outInterface->Send (packet, ipHeader.GetDestinationAddress ());
     }
     else
     {
       NS_LOG_LOGIC ("Dropping-- outgoing interface is down: " << ipHeader.GetDestinationAddress ());
-      m_dropTrace (packet);
+      m_dropTrace (ipHeader, packet, DROP_INTERFACE_DOWN, interface);
     }
   }
 }
@@ -766,6 +768,8 @@ void Ipv6L3Protocol::IpForward (Ptr<Ipv6Route> rtentry, Ptr<const Packet> p, con
   
   if (ipHeader.GetHopLimit () == 0)
   {
+    NS_LOG_WARN ("TTL exceeded.  Drop.");
+    m_dropTrace (ipHeader, packet, DROP_TTL_EXPIRED, 0);
     // Do not reply to ICMPv6 or to multicast IPv6 address
     if (ipHeader.GetNextHeader () != Icmpv6L4Protocol::PROT_NUMBER &&
         ipHeader.GetDestinationAddress ().IsMulticast () == false)
@@ -773,8 +777,6 @@ void Ipv6L3Protocol::IpForward (Ptr<Ipv6Route> rtentry, Ptr<const Packet> p, con
       packet->AddHeader (ipHeader);
       GetIcmpv6 ()->SendErrorTimeExceeded (packet, ipHeader.GetSourceAddress (), Icmpv6Header::ICMPV6_HOPLIMIT);
     }
-    NS_LOG_WARN ("TTL exceeded.  Drop.");
-    m_dropTrace (packet);
     return;
   }
 
@@ -832,7 +834,7 @@ void Ipv6L3Protocol::IpMulticastForward (Ptr<Ipv6MulticastRoute> mrtentry, Ptr<c
       if (h.GetHopLimit () == 0)
       {
         NS_LOG_WARN ("TTL exceeded.  Drop.");
-        m_dropTrace (packet);
+        m_dropTrace (header, packet, DROP_TTL_EXPIRED, i);
         return;
       }
 
@@ -882,7 +884,7 @@ void Ipv6L3Protocol::RouteInputError (Ptr<const Packet> p, const Ipv6Header& ipH
 {
   NS_LOG_FUNCTION (this << p << ipHeader << sockErrno);
   NS_LOG_LOGIC ("Route input failure-- dropping packet to " << ipHeader << " with errno " << sockErrno);
-  m_dropTrace (p);
+  m_dropTrace (ipHeader, p, DROP_ROUTE_ERROR, 0);
 }
 
 Ipv6Header Ipv6L3Protocol::BuildHeader (Ipv6Address src, Ipv6Address dst, uint8_t protocol, uint16_t payloadSize, uint8_t ttl)

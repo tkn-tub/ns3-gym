@@ -73,10 +73,16 @@ def register_types(module):
     module.add_class('Icmpv6Echo', parent=root_module['ns3::Icmpv6Header'])
     ## ipv4-l3-protocol.h: ns3::Ipv4L3Protocol [class]
     module.add_class('Ipv4L3Protocol', parent=root_module['ns3::Ipv4'])
+    ## ipv4-l3-protocol.h: ns3::Ipv4L3Protocol::DropReason [enumeration]
+    module.add_enum('DropReason', ['DROP_TTL_EXPIRED', 'DROP_NO_ROUTE', 'DROP_BAD_CHECKSUM', 'DROP_INTERFACE_DOWN', 'DROP_ROUTE_ERROR'], outer_class=root_module['ns3::Ipv4L3Protocol'])
     ## ipv4-l4-protocol.h: ns3::Ipv4L4Protocol [class]
     module.add_class('Ipv4L4Protocol', parent=root_module['ns3::Object'])
     ## ipv4-l4-protocol.h: ns3::Ipv4L4Protocol::RxStatus [enumeration]
     module.add_enum('RxStatus', ['RX_OK', 'RX_CSUM_FAILED', 'RX_ENDPOINT_UNREACH'], outer_class=root_module['ns3::Ipv4L4Protocol'])
+    ## ipv6-l3-protocol.h: ns3::Ipv6L3Protocol [class]
+    module.add_class('Ipv6L3Protocol', parent=root_module['ns3::Ipv6'])
+    ## ipv6-l3-protocol.h: ns3::Ipv6L3Protocol::DropReason [enumeration]
+    module.add_enum('DropReason', ['DROP_TTL_EXPIRED', 'DROP_NO_ROUTE', 'DROP_BAD_CHECKSUM', 'DROP_INTERFACE_DOWN', 'DROP_ROUTE_ERROR'], outer_class=root_module['ns3::Ipv6L3Protocol'])
     ## tcp-l4-protocol.h: ns3::TcpL4Protocol [class]
     module.add_class('TcpL4Protocol', parent=root_module['ns3::Ipv4L4Protocol'])
     ## udp-l4-protocol.h: ns3::UdpL4Protocol [class]
@@ -182,6 +188,7 @@ def register_methods(root_module):
     register_Ns3Icmpv6Echo_methods(root_module, root_module['ns3::Icmpv6Echo'])
     register_Ns3Ipv4L3Protocol_methods(root_module, root_module['ns3::Ipv4L3Protocol'])
     register_Ns3Ipv4L4Protocol_methods(root_module, root_module['ns3::Ipv4L4Protocol'])
+    register_Ns3Ipv6L3Protocol_methods(root_module, root_module['ns3::Ipv6L3Protocol'])
     register_Ns3TcpL4Protocol_methods(root_module, root_module['ns3::TcpL4Protocol'])
     register_Ns3UdpL4Protocol_methods(root_module, root_module['ns3::UdpL4Protocol'])
     register_Ns3Icmpv4L4Protocol_methods(root_module, root_module['ns3::Icmpv4L4Protocol'])
@@ -1994,6 +2001,193 @@ def register_Ns3Ipv4L4Protocol_methods(root_module, cls):
                    'void', 
                    [param('ns3::Ipv4Address', 'icmpSource'), param('uint8_t', 'icmpTtl'), param('uint8_t', 'icmpType'), param('uint8_t', 'icmpCode'), param('uint32_t', 'icmpInfo'), param('ns3::Ipv4Address', 'payloadSource'), param('ns3::Ipv4Address', 'payloadDestination'), param('uint8_t const *', 'payload')], 
                    is_virtual=True)
+    return
+
+def register_Ns3Ipv6L3Protocol_methods(root_module, cls):
+    ## ipv6-l3-protocol.h: ns3::Ipv6L3Protocol::PROT_NUMBER [variable]
+    cls.add_static_attribute('PROT_NUMBER', 'uint16_t const', is_const=True)
+    ## ipv6-l3-protocol.h: static ns3::TypeId ns3::Ipv6L3Protocol::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## ipv6-l3-protocol.h: ns3::Ipv6L3Protocol::Ipv6L3Protocol() [constructor]
+    cls.add_constructor([])
+    ## ipv6-l3-protocol.h: void ns3::Ipv6L3Protocol::SetNode(ns3::Ptr<ns3::Node> node) [member function]
+    cls.add_method('SetNode', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Node >', 'node')])
+    ## ipv6-l3-protocol.h: void ns3::Ipv6L3Protocol::Insert(ns3::Ptr<ns3::Ipv6L4Protocol> protocol) [member function]
+    cls.add_method('Insert', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Ipv6L4Protocol >', 'protocol')])
+    ## ipv6-l3-protocol.h: void ns3::Ipv6L3Protocol::Remove(ns3::Ptr<ns3::Ipv6L4Protocol> protocol) [member function]
+    cls.add_method('Remove', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Ipv6L4Protocol >', 'protocol')])
+    ## ipv6-l3-protocol.h: ns3::Ptr<ns3::Ipv6L4Protocol> ns3::Ipv6L3Protocol::GetProtocol(int protocolNumber) const [member function]
+    cls.add_method('GetProtocol', 
+                   'ns3::Ptr< ns3::Ipv6L4Protocol >', 
+                   [param('int', 'protocolNumber')], 
+                   is_const=True)
+    ## ipv6-l3-protocol.h: ns3::Ptr<ns3::Socket> ns3::Ipv6L3Protocol::CreateRawSocket() [member function]
+    cls.add_method('CreateRawSocket', 
+                   'ns3::Ptr< ns3::Socket >', 
+                   [])
+    ## ipv6-l3-protocol.h: void ns3::Ipv6L3Protocol::DeleteRawSocket(ns3::Ptr<ns3::Socket> socket) [member function]
+    cls.add_method('DeleteRawSocket', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Socket >', 'socket')])
+    ## ipv6-l3-protocol.h: void ns3::Ipv6L3Protocol::SetDefaultTtl(uint8_t ttl) [member function]
+    cls.add_method('SetDefaultTtl', 
+                   'void', 
+                   [param('uint8_t', 'ttl')])
+    ## ipv6-l3-protocol.h: void ns3::Ipv6L3Protocol::Receive(ns3::Ptr<ns3::NetDevice> device, ns3::Ptr<ns3::Packet const> p, uint16_t protocol, ns3::Address const & from, ns3::Address const & to, ns3::NetDevice::PacketType packetType) [member function]
+    cls.add_method('Receive', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::NetDevice >', 'device'), param('ns3::Ptr< ns3::Packet const >', 'p'), param('uint16_t', 'protocol'), param('ns3::Address const &', 'from'), param('ns3::Address const &', 'to'), param('ns3::NetDevice::PacketType', 'packetType')])
+    ## ipv6-l3-protocol.h: void ns3::Ipv6L3Protocol::Send(ns3::Ptr<ns3::Packet> packet, ns3::Ipv6Address source, ns3::Ipv6Address destination, uint8_t protocol, ns3::Ptr<ns3::Ipv6Route> route) [member function]
+    cls.add_method('Send', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Packet >', 'packet'), param('ns3::Ipv6Address', 'source'), param('ns3::Ipv6Address', 'destination'), param('uint8_t', 'protocol'), param('ns3::Ptr< ns3::Ipv6Route >', 'route')])
+    ## ipv6-l3-protocol.h: void ns3::Ipv6L3Protocol::SetRoutingProtocol(ns3::Ptr<ns3::Ipv6RoutingProtocol> routingProtocol) [member function]
+    cls.add_method('SetRoutingProtocol', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Ipv6RoutingProtocol >', 'routingProtocol')], 
+                   is_virtual=True)
+    ## ipv6-l3-protocol.h: ns3::Ptr<ns3::Ipv6RoutingProtocol> ns3::Ipv6L3Protocol::GetRoutingProtocol() const [member function]
+    cls.add_method('GetRoutingProtocol', 
+                   'ns3::Ptr< ns3::Ipv6RoutingProtocol >', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## ipv6-l3-protocol.h: uint32_t ns3::Ipv6L3Protocol::AddInterface(ns3::Ptr<ns3::NetDevice> device) [member function]
+    cls.add_method('AddInterface', 
+                   'uint32_t', 
+                   [param('ns3::Ptr< ns3::NetDevice >', 'device')], 
+                   is_virtual=True)
+    ## ipv6-l3-protocol.h: ns3::Ptr<ns3::Ipv6Interface> ns3::Ipv6L3Protocol::GetInterface(uint32_t i) const [member function]
+    cls.add_method('GetInterface', 
+                   'ns3::Ptr< ns3::Ipv6Interface >', 
+                   [param('uint32_t', 'i')], 
+                   is_const=True)
+    ## ipv6-l3-protocol.h: uint32_t ns3::Ipv6L3Protocol::GetNInterfaces() const [member function]
+    cls.add_method('GetNInterfaces', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## ipv6-l3-protocol.h: int32_t ns3::Ipv6L3Protocol::GetInterfaceForAddress(ns3::Ipv6Address addr) const [member function]
+    cls.add_method('GetInterfaceForAddress', 
+                   'int32_t', 
+                   [param('ns3::Ipv6Address', 'addr')], 
+                   is_const=True, is_virtual=True)
+    ## ipv6-l3-protocol.h: int32_t ns3::Ipv6L3Protocol::GetInterfaceForPrefix(ns3::Ipv6Address addr, ns3::Ipv6Prefix mask) const [member function]
+    cls.add_method('GetInterfaceForPrefix', 
+                   'int32_t', 
+                   [param('ns3::Ipv6Address', 'addr'), param('ns3::Ipv6Prefix', 'mask')], 
+                   is_const=True, is_virtual=True)
+    ## ipv6-l3-protocol.h: int32_t ns3::Ipv6L3Protocol::GetInterfaceForDevice(ns3::Ptr<const ns3::NetDevice> device) const [member function]
+    cls.add_method('GetInterfaceForDevice', 
+                   'int32_t', 
+                   [param('ns3::Ptr< ns3::NetDevice const >', 'device')], 
+                   is_const=True, is_virtual=True)
+    ## ipv6-l3-protocol.h: bool ns3::Ipv6L3Protocol::AddAddress(uint32_t i, ns3::Ipv6InterfaceAddress address) [member function]
+    cls.add_method('AddAddress', 
+                   'bool', 
+                   [param('uint32_t', 'i'), param('ns3::Ipv6InterfaceAddress', 'address')], 
+                   is_virtual=True)
+    ## ipv6-l3-protocol.h: ns3::Ipv6InterfaceAddress ns3::Ipv6L3Protocol::GetAddress(uint32_t interfaceIndex, uint32_t addressIndex) const [member function]
+    cls.add_method('GetAddress', 
+                   'ns3::Ipv6InterfaceAddress', 
+                   [param('uint32_t', 'interfaceIndex'), param('uint32_t', 'addressIndex')], 
+                   is_const=True, is_virtual=True)
+    ## ipv6-l3-protocol.h: uint32_t ns3::Ipv6L3Protocol::GetNAddresses(uint32_t interface) const [member function]
+    cls.add_method('GetNAddresses', 
+                   'uint32_t', 
+                   [param('uint32_t', 'interface')], 
+                   is_const=True, is_virtual=True)
+    ## ipv6-l3-protocol.h: bool ns3::Ipv6L3Protocol::RemoveAddress(uint32_t interfaceIndex, uint32_t addressIndex) [member function]
+    cls.add_method('RemoveAddress', 
+                   'bool', 
+                   [param('uint32_t', 'interfaceIndex'), param('uint32_t', 'addressIndex')], 
+                   is_virtual=True)
+    ## ipv6-l3-protocol.h: void ns3::Ipv6L3Protocol::SetMetric(uint32_t i, uint16_t metric) [member function]
+    cls.add_method('SetMetric', 
+                   'void', 
+                   [param('uint32_t', 'i'), param('uint16_t', 'metric')], 
+                   is_virtual=True)
+    ## ipv6-l3-protocol.h: uint16_t ns3::Ipv6L3Protocol::GetMetric(uint32_t i) const [member function]
+    cls.add_method('GetMetric', 
+                   'uint16_t', 
+                   [param('uint32_t', 'i')], 
+                   is_const=True, is_virtual=True)
+    ## ipv6-l3-protocol.h: uint16_t ns3::Ipv6L3Protocol::GetMtu(uint32_t i) const [member function]
+    cls.add_method('GetMtu', 
+                   'uint16_t', 
+                   [param('uint32_t', 'i')], 
+                   is_const=True, is_virtual=True)
+    ## ipv6-l3-protocol.h: bool ns3::Ipv6L3Protocol::IsUp(uint32_t i) const [member function]
+    cls.add_method('IsUp', 
+                   'bool', 
+                   [param('uint32_t', 'i')], 
+                   is_const=True, is_virtual=True)
+    ## ipv6-l3-protocol.h: void ns3::Ipv6L3Protocol::SetUp(uint32_t i) [member function]
+    cls.add_method('SetUp', 
+                   'void', 
+                   [param('uint32_t', 'i')], 
+                   is_virtual=True)
+    ## ipv6-l3-protocol.h: void ns3::Ipv6L3Protocol::SetDown(uint32_t i) [member function]
+    cls.add_method('SetDown', 
+                   'void', 
+                   [param('uint32_t', 'i')], 
+                   is_virtual=True)
+    ## ipv6-l3-protocol.h: bool ns3::Ipv6L3Protocol::IsForwarding(uint32_t i) const [member function]
+    cls.add_method('IsForwarding', 
+                   'bool', 
+                   [param('uint32_t', 'i')], 
+                   is_const=True, is_virtual=True)
+    ## ipv6-l3-protocol.h: void ns3::Ipv6L3Protocol::SetForwarding(uint32_t i, bool val) [member function]
+    cls.add_method('SetForwarding', 
+                   'void', 
+                   [param('uint32_t', 'i'), param('bool', 'val')], 
+                   is_virtual=True)
+    ## ipv6-l3-protocol.h: ns3::Ptr<ns3::NetDevice> ns3::Ipv6L3Protocol::GetNetDevice(uint32_t i) [member function]
+    cls.add_method('GetNetDevice', 
+                   'ns3::Ptr< ns3::NetDevice >', 
+                   [param('uint32_t', 'i')], 
+                   is_virtual=True)
+    ## ipv6-l3-protocol.h: ns3::Ptr<ns3::Icmpv6L4Protocol> ns3::Ipv6L3Protocol::GetIcmpv6() const [member function]
+    cls.add_method('GetIcmpv6', 
+                   'ns3::Ptr< ns3::Icmpv6L4Protocol >', 
+                   [], 
+                   is_const=True)
+    ## ipv6-l3-protocol.h: void ns3::Ipv6L3Protocol::AddAutoconfiguredAddress(uint32_t interface, ns3::Ipv6Address network, ns3::Ipv6Prefix mask, uint8_t flags, uint32_t validTime, uint32_t preferredTime, ns3::Ipv6Address defaultRouter=ns3::Ipv6Address::GetZero( )) [member function]
+    cls.add_method('AddAutoconfiguredAddress', 
+                   'void', 
+                   [param('uint32_t', 'interface'), param('ns3::Ipv6Address', 'network'), param('ns3::Ipv6Prefix', 'mask'), param('uint8_t', 'flags'), param('uint32_t', 'validTime'), param('uint32_t', 'preferredTime'), param('ns3::Ipv6Address', 'defaultRouter', default_value='ns3::Ipv6Address::GetZero( )')])
+    ## ipv6-l3-protocol.h: void ns3::Ipv6L3Protocol::RemoveAutoconfiguredAddress(uint32_t interface, ns3::Ipv6Address network, ns3::Ipv6Prefix mask, ns3::Ipv6Address defaultRouter) [member function]
+    cls.add_method('RemoveAutoconfiguredAddress', 
+                   'void', 
+                   [param('uint32_t', 'interface'), param('ns3::Ipv6Address', 'network'), param('ns3::Ipv6Prefix', 'mask'), param('ns3::Ipv6Address', 'defaultRouter')])
+    ## ipv6-l3-protocol.h: void ns3::Ipv6L3Protocol::DoDispose() [member function]
+    cls.add_method('DoDispose', 
+                   'void', 
+                   [], 
+                   visibility='protected', is_virtual=True)
+    ## ipv6-l3-protocol.h: void ns3::Ipv6L3Protocol::NotifyNewAggregate() [member function]
+    cls.add_method('NotifyNewAggregate', 
+                   'void', 
+                   [], 
+                   visibility='protected', is_virtual=True)
+    ## ipv6-l3-protocol.h: void ns3::Ipv6L3Protocol::SetIpForward(bool forward) [member function]
+    cls.add_method('SetIpForward', 
+                   'void', 
+                   [param('bool', 'forward')], 
+                   visibility='private', is_virtual=True)
+    ## ipv6-l3-protocol.h: bool ns3::Ipv6L3Protocol::GetIpForward() const [member function]
+    cls.add_method('GetIpForward', 
+                   'bool', 
+                   [], 
+                   is_const=True, visibility='private', is_virtual=True)
     return
 
 def register_Ns3TcpL4Protocol_methods(root_module, cls):

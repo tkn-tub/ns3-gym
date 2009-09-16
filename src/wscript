@@ -43,6 +43,7 @@ all_modules = (
     'applications/radvd',
     'test/ns3tcp',
     'test/ns3wifi',
+    'contrib/flow-monitor',
     )
 
 def set_options(opt):
