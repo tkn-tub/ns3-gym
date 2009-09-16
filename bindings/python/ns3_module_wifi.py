@@ -104,7 +104,7 @@ def register_types(module):
     ## wifi-phy.h: ns3::WifiPhy [class]
     module.add_class('WifiPhy', parent=root_module['ns3::Object'])
     ## wifi-phy.h: ns3::WifiPhy::State [enumeration]
-    module.add_enum('State', ['SYNC', 'TX', 'CCA_BUSY', 'IDLE'], outer_class=root_module['ns3::WifiPhy'])
+    module.add_enum('State', ['SYNC', 'TX', 'CCA_BUSY', 'IDLE', 'SWITCHING'], outer_class=root_module['ns3::WifiPhy'])
     ## wifi-remote-station-manager.h: ns3::WifiRemoteStationManager [class]
     module.add_class('WifiRemoteStationManager', parent=root_module['ns3::Object'])
     ## yans-wifi-phy.h: ns3::YansWifiPhy [class]
@@ -203,6 +203,18 @@ def register_types(module):
     register_types_ns3_addressUtils(nested_module)
     
     
+    ## Register a nested module for the namespace dot11s
+    
+    nested_module = module.add_cpp_namespace('dot11s')
+    register_types_ns3_dot11s(nested_module)
+    
+    
+    ## Register a nested module for the namespace flame
+    
+    nested_module = module.add_cpp_namespace('flame')
+    register_types_ns3_flame(nested_module)
+    
+    
     ## Register a nested module for the namespace internal
     
     nested_module = module.add_cpp_namespace('internal')
@@ -224,6 +236,14 @@ def register_types_ns3_TimeStepPrecision(module):
     
 
 def register_types_ns3_addressUtils(module):
+    root_module = module.get_root()
+    
+
+def register_types_ns3_dot11s(module):
+    root_module = module.get_root()
+    
+
+def register_types_ns3_flame(module):
     root_module = module.get_root()
     
 
@@ -408,6 +428,10 @@ def register_Ns3DcfManager_methods(root_module, cls):
     cls.add_method('NotifyRxStartNow', 
                    'void', 
                    [param('ns3::Time', 'duration')])
+    ## dcf-manager.h: void ns3::DcfManager::NotifySwitchingStartNow(ns3::Time duration) [member function]
+    cls.add_method('NotifySwitchingStartNow', 
+                   'void', 
+                   [param('ns3::Time', 'duration')])
     ## dcf-manager.h: void ns3::DcfManager::NotifyTxStartNow(ns3::Time duration) [member function]
     cls.add_method('NotifyTxStartNow', 
                    'void', 
@@ -497,6 +521,11 @@ def register_Ns3DcfState_methods(root_module, cls):
                    'void', 
                    [], 
                    is_pure_virtual=True, visibility='private', is_virtual=True)
+    ## dcf-manager.h: void ns3::DcfState::DoNotifyChannelSwitching() [member function]
+    cls.add_method('DoNotifyChannelSwitching', 
+                   'void', 
+                   [], 
+                   is_pure_virtual=True, visibility='private', is_virtual=True)
     ## dcf-manager.h: void ns3::DcfState::DoNotifyCollision() [member function]
     cls.add_method('DoNotifyCollision', 
                    'void', 
@@ -525,6 +554,10 @@ def register_Ns3InterferenceHelper_methods(root_module, cls):
                    'ns3::Time', 
                    [param('uint32_t', 'size'), param('ns3::WifiMode', 'payloadMode'), param('ns3::WifiPreamble', 'preamble')], 
                    is_static=True)
+    ## interference-helper.h: void ns3::InterferenceHelper::EraseEvents() [member function]
+    cls.add_method('EraseEvents', 
+                   'void', 
+                   [])
     ## interference-helper.h: ns3::Time ns3::InterferenceHelper::GetEnergyDuration(double energyW) [member function]
     cls.add_method('GetEnergyDuration', 
                    'ns3::Time', 
@@ -1052,6 +1085,11 @@ def register_Ns3WifiPhyListener_methods(root_module, cls):
                    is_pure_virtual=True, is_virtual=True)
     ## wifi-phy.h: void ns3::WifiPhyListener::NotifyRxStart(ns3::Time duration) [member function]
     cls.add_method('NotifyRxStart', 
+                   'void', 
+                   [param('ns3::Time', 'duration')], 
+                   is_pure_virtual=True, is_virtual=True)
+    ## wifi-phy.h: void ns3::WifiPhyListener::NotifySwitchingStart(ns3::Time duration) [member function]
+    cls.add_method('NotifySwitchingStart', 
                    'void', 
                    [param('ns3::Time', 'duration')], 
                    is_pure_virtual=True, is_virtual=True)
@@ -3335,6 +3373,11 @@ def register_Ns3YansWifiPhy_methods(root_module, cls):
                    'bool', 
                    [], 
                    is_virtual=True)
+    ## yans-wifi-phy.h: bool ns3::YansWifiPhy::IsStateSwitching() [member function]
+    cls.add_method('IsStateSwitching', 
+                   'bool', 
+                   [], 
+                   is_virtual=True)
     ## yans-wifi-phy.h: ns3::Time ns3::YansWifiPhy::GetStateDuration() [member function]
     cls.add_method('GetStateDuration', 
                    'ns3::Time', 
@@ -3857,6 +3900,10 @@ def register_Ns3EdcaTxopN_methods(root_module, cls):
     cls.add_method('NotifyCollision', 
                    'void', 
                    [])
+    ## edca-txop-n.h: void ns3::EdcaTxopN::NotifyChannelSwitching() [member function]
+    cls.add_method('NotifyChannelSwitching', 
+                   'void', 
+                   [])
     ## edca-txop-n.h: void ns3::EdcaTxopN::GotCts(double snr, ns3::WifiMode txMode) [member function]
     cls.add_method('GotCts', 
                    'void', 
@@ -4170,6 +4217,10 @@ def register_Ns3MacLow_methods(root_module, cls):
                    'ns3::Time', 
                    [], 
                    is_const=True)
+    ## mac-low.h: void ns3::MacLow::NotifySwitchingStartNow(ns3::Time duration) [member function]
+    cls.add_method('NotifySwitchingStartNow', 
+                   'void', 
+                   [param('ns3::Time', 'duration')])
     ## mac-low.h: void ns3::MacLow::ReceiveError(ns3::Ptr<ns3::Packet const> packet, double rxSnr) [member function]
     cls.add_method('ReceiveError', 
                    'void', 
@@ -5486,6 +5537,8 @@ def register_functions(root_module):
     register_functions_ns3_Config(module.get_submodule('Config'), root_module)
     register_functions_ns3_TimeStepPrecision(module.get_submodule('TimeStepPrecision'), root_module)
     register_functions_ns3_addressUtils(module.get_submodule('addressUtils'), root_module)
+    register_functions_ns3_dot11s(module.get_submodule('dot11s'), root_module)
+    register_functions_ns3_flame(module.get_submodule('flame'), root_module)
     register_functions_ns3_internal(module.get_submodule('internal'), root_module)
     register_functions_ns3_olsr(module.get_submodule('olsr'), root_module)
     return
@@ -5497,6 +5550,12 @@ def register_functions_ns3_TimeStepPrecision(module, root_module):
     return
 
 def register_functions_ns3_addressUtils(module, root_module):
+    return
+
+def register_functions_ns3_dot11s(module, root_module):
+    return
+
+def register_functions_ns3_flame(module, root_module):
     return
 
 def register_functions_ns3_internal(module, root_module):

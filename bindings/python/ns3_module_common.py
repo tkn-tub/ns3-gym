@@ -39,6 +39,8 @@ def register_types(module):
     module.add_class('PacketTagList')
     ## packet-tag-list.h: ns3::PacketTagList::TagData [struct]
     module.add_class('TagData', outer_class=root_module['ns3::PacketTagList'])
+    ## pcap-file.h: ns3::PcapFile [class]
+    module.add_class('PcapFile')
     ## tag.h: ns3::Tag [class]
     module.add_class('Tag', parent=root_module['ns3::ObjectBase'])
     ## tag-buffer.h: ns3::TagBuffer [class]
@@ -84,6 +86,18 @@ def register_types(module):
     register_types_ns3_addressUtils(nested_module)
     
     
+    ## Register a nested module for the namespace dot11s
+    
+    nested_module = module.add_cpp_namespace('dot11s')
+    register_types_ns3_dot11s(nested_module)
+    
+    
+    ## Register a nested module for the namespace flame
+    
+    nested_module = module.add_cpp_namespace('flame')
+    register_types_ns3_flame(nested_module)
+    
+    
     ## Register a nested module for the namespace internal
     
     nested_module = module.add_cpp_namespace('internal')
@@ -105,6 +119,14 @@ def register_types_ns3_TimeStepPrecision(module):
     
 
 def register_types_ns3_addressUtils(module):
+    root_module = module.get_root()
+    
+
+def register_types_ns3_dot11s(module):
+    root_module = module.get_root()
+    
+
+def register_types_ns3_flame(module):
     root_module = module.get_root()
     
 
@@ -133,6 +155,7 @@ def register_methods(root_module):
     register_Ns3PacketTagIteratorItem_methods(root_module, root_module['ns3::PacketTagIterator::Item'])
     register_Ns3PacketTagList_methods(root_module, root_module['ns3::PacketTagList'])
     register_Ns3PacketTagListTagData_methods(root_module, root_module['ns3::PacketTagList::TagData'])
+    register_Ns3PcapFile_methods(root_module, root_module['ns3::PcapFile'])
     register_Ns3Tag_methods(root_module, root_module['ns3::Tag'])
     register_Ns3TagBuffer_methods(root_module, root_module['ns3::TagBuffer'])
     register_Ns3AsciiWriter_methods(root_module, root_module['ns3::AsciiWriter'])
@@ -859,6 +882,69 @@ def register_Ns3PacketTagListTagData_methods(root_module, cls):
     cls.add_instance_attribute('tid', 'ns3::TypeId', is_const=False)
     return
 
+def register_Ns3PcapFile_methods(root_module, cls):
+    ## pcap-file.h: ns3::PcapFile::PcapFile(ns3::PcapFile const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::PcapFile const &', 'arg0')])
+    ## pcap-file.h: ns3::PcapFile::PcapFile() [constructor]
+    cls.add_constructor([])
+    ## pcap-file.h: void ns3::PcapFile::Close() [member function]
+    cls.add_method('Close', 
+                   'void', 
+                   [])
+    ## pcap-file.h: uint32_t ns3::PcapFile::GetDataLinkType() [member function]
+    cls.add_method('GetDataLinkType', 
+                   'uint32_t', 
+                   [])
+    ## pcap-file.h: uint32_t ns3::PcapFile::GetMagic() [member function]
+    cls.add_method('GetMagic', 
+                   'uint32_t', 
+                   [])
+    ## pcap-file.h: uint32_t ns3::PcapFile::GetSigFigs() [member function]
+    cls.add_method('GetSigFigs', 
+                   'uint32_t', 
+                   [])
+    ## pcap-file.h: uint32_t ns3::PcapFile::GetSnapLen() [member function]
+    cls.add_method('GetSnapLen', 
+                   'uint32_t', 
+                   [])
+    ## pcap-file.h: bool ns3::PcapFile::GetSwapMode() [member function]
+    cls.add_method('GetSwapMode', 
+                   'bool', 
+                   [])
+    ## pcap-file.h: int32_t ns3::PcapFile::GetTimeZoneOffset() [member function]
+    cls.add_method('GetTimeZoneOffset', 
+                   'int32_t', 
+                   [])
+    ## pcap-file.h: uint16_t ns3::PcapFile::GetVersionMajor() [member function]
+    cls.add_method('GetVersionMajor', 
+                   'uint16_t', 
+                   [])
+    ## pcap-file.h: uint16_t ns3::PcapFile::GetVersionMinor() [member function]
+    cls.add_method('GetVersionMinor', 
+                   'uint16_t', 
+                   [])
+    ## pcap-file.h: bool ns3::PcapFile::Init(uint32_t dataLinkType, uint32_t snapLen=ns3::PcapFile::SNAPLEN_DEFAULT, int32_t timeZoneCorrection=ns3::PcapFile::ZONE_DEFAULT, bool swapMode=false) [member function]
+    cls.add_method('Init', 
+                   'bool', 
+                   [param('uint32_t', 'dataLinkType'), param('uint32_t', 'snapLen', default_value='ns3::PcapFile::SNAPLEN_DEFAULT'), param('int32_t', 'timeZoneCorrection', default_value='ns3::PcapFile::ZONE_DEFAULT'), param('bool', 'swapMode', default_value='false')])
+    ## pcap-file.h: bool ns3::PcapFile::Open(std::string const & filename, std::string const & mode) [member function]
+    cls.add_method('Open', 
+                   'bool', 
+                   [param('std::string const &', 'filename'), param('std::string const &', 'mode')])
+    ## pcap-file.h: bool ns3::PcapFile::Read(uint8_t * const data, uint32_t maxBytes, uint32_t & tsSec, uint32_t & tsUsec, uint32_t & inclLen, uint32_t & origLen, uint32_t & readLen) [member function]
+    cls.add_method('Read', 
+                   'bool', 
+                   [param('uint8_t * const', 'data'), param('uint32_t', 'maxBytes'), param('uint32_t &', 'tsSec'), param('uint32_t &', 'tsUsec'), param('uint32_t &', 'inclLen'), param('uint32_t &', 'origLen'), param('uint32_t &', 'readLen')])
+    ## pcap-file.h: bool ns3::PcapFile::Write(uint32_t tsSec, uint32_t tsUsec, uint8_t const * const data, uint32_t totalLen) [member function]
+    cls.add_method('Write', 
+                   'bool', 
+                   [param('uint32_t', 'tsSec'), param('uint32_t', 'tsUsec'), param('uint8_t const * const', 'data'), param('uint32_t', 'totalLen')])
+    ## pcap-file.h: ns3::PcapFile::SNAPLEN_DEFAULT [variable]
+    cls.add_static_attribute('SNAPLEN_DEFAULT', 'uint32_t const', is_const=True)
+    ## pcap-file.h: ns3::PcapFile::ZONE_DEFAULT [variable]
+    cls.add_static_attribute('ZONE_DEFAULT', 'int32_t const', is_const=True)
+    return
+
 def register_Ns3Tag_methods(root_module, cls):
     ## tag.h: ns3::Tag::Tag() [constructor]
     cls.add_constructor([])
@@ -1290,6 +1376,8 @@ def register_functions(root_module):
     register_functions_ns3_Config(module.get_submodule('Config'), root_module)
     register_functions_ns3_TimeStepPrecision(module.get_submodule('TimeStepPrecision'), root_module)
     register_functions_ns3_addressUtils(module.get_submodule('addressUtils'), root_module)
+    register_functions_ns3_dot11s(module.get_submodule('dot11s'), root_module)
+    register_functions_ns3_flame(module.get_submodule('flame'), root_module)
     register_functions_ns3_internal(module.get_submodule('internal'), root_module)
     register_functions_ns3_olsr(module.get_submodule('olsr'), root_module)
     return
@@ -1301,6 +1389,12 @@ def register_functions_ns3_TimeStepPrecision(module, root_module):
     return
 
 def register_functions_ns3_addressUtils(module, root_module):
+    return
+
+def register_functions_ns3_dot11s(module, root_module):
+    return
+
+def register_functions_ns3_flame(module, root_module):
     return
 
 def register_functions_ns3_internal(module, root_module):

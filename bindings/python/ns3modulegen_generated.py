@@ -20,14 +20,14 @@ import ns3_module_contrib
 import ns3_module_node
 import ns3_module_tap_bridge
 import ns3_module_v4ping
+import ns3_module_static_routing
 import ns3_module_packet_sink
 import ns3_module_stats
 import ns3_module_onoff
-import ns3_module_internet_stack
 import ns3_module_point_to_point
+import ns3_module_internet_stack
 import ns3_module_csma
 import ns3_module_list_routing
-import ns3_module_static_routing
 import ns3_module_virtual_net_device
 import ns3_module_wifi
 import ns3_module_emu
@@ -37,7 +37,10 @@ import ns3_module_udp_echo
 import ns3_module_olsr
 import ns3_module_radvd
 import ns3_module_ping6
+import ns3_module_mesh
 import ns3_module_helper
+import ns3_module_dot11s
+import ns3_module_flame
 
 def module_init():
     root_module = Module('ns3', cpp_namespace='::ns3')
@@ -134,6 +137,17 @@ def register_types(module):
         ns3_module_v4ping__local.register_types(module)
     
     root_module.end_section('ns3_module_v4ping')
+    root_module.begin_section('ns3_module_static_routing')
+    ns3_module_static_routing.register_types(module)
+    
+    try:
+        import ns3_module_static_routing__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_static_routing__local.register_types(module)
+    
+    root_module.end_section('ns3_module_static_routing')
     root_module.begin_section('ns3_module_packet_sink')
     ns3_module_packet_sink.register_types(module)
     
@@ -167,17 +181,6 @@ def register_types(module):
         ns3_module_onoff__local.register_types(module)
     
     root_module.end_section('ns3_module_onoff')
-    root_module.begin_section('ns3_module_internet_stack')
-    ns3_module_internet_stack.register_types(module)
-    
-    try:
-        import ns3_module_internet_stack__local
-    except ImportError:
-        pass
-    else:
-        ns3_module_internet_stack__local.register_types(module)
-    
-    root_module.end_section('ns3_module_internet_stack')
     root_module.begin_section('ns3_module_point_to_point')
     ns3_module_point_to_point.register_types(module)
     
@@ -189,6 +192,17 @@ def register_types(module):
         ns3_module_point_to_point__local.register_types(module)
     
     root_module.end_section('ns3_module_point_to_point')
+    root_module.begin_section('ns3_module_internet_stack')
+    ns3_module_internet_stack.register_types(module)
+    
+    try:
+        import ns3_module_internet_stack__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_internet_stack__local.register_types(module)
+    
+    root_module.end_section('ns3_module_internet_stack')
     root_module.begin_section('ns3_module_csma')
     ns3_module_csma.register_types(module)
     
@@ -211,17 +225,6 @@ def register_types(module):
         ns3_module_list_routing__local.register_types(module)
     
     root_module.end_section('ns3_module_list_routing')
-    root_module.begin_section('ns3_module_static_routing')
-    ns3_module_static_routing.register_types(module)
-    
-    try:
-        import ns3_module_static_routing__local
-    except ImportError:
-        pass
-    else:
-        ns3_module_static_routing__local.register_types(module)
-    
-    root_module.end_section('ns3_module_static_routing')
     root_module.begin_section('ns3_module_virtual_net_device')
     ns3_module_virtual_net_device.register_types(module)
     
@@ -321,6 +324,17 @@ def register_types(module):
         ns3_module_ping6__local.register_types(module)
     
     root_module.end_section('ns3_module_ping6')
+    root_module.begin_section('ns3_module_mesh')
+    ns3_module_mesh.register_types(module)
+    
+    try:
+        import ns3_module_mesh__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_mesh__local.register_types(module)
+    
+    root_module.end_section('ns3_module_mesh')
     root_module.begin_section('ns3_module_helper')
     ns3_module_helper.register_types(module)
     
@@ -332,6 +346,28 @@ def register_types(module):
         ns3_module_helper__local.register_types(module)
     
     root_module.end_section('ns3_module_helper')
+    root_module.begin_section('ns3_module_dot11s')
+    ns3_module_dot11s.register_types(module)
+    
+    try:
+        import ns3_module_dot11s__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_dot11s__local.register_types(module)
+    
+    root_module.end_section('ns3_module_dot11s')
+    root_module.begin_section('ns3_module_flame')
+    ns3_module_flame.register_types(module)
+    
+    try:
+        import ns3_module_flame__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_flame__local.register_types(module)
+    
+    root_module.end_section('ns3_module_flame')
     module.add_container('std::vector< unsigned int >', 'unsigned int', container_type='vector')
     module.add_container('std::vector< bool >', 'bool', container_type='vector')
     module.add_container('std::list< unsigned int >', 'unsigned int', container_type='list')
@@ -353,6 +389,18 @@ def register_types(module):
     
     nested_module = module.add_cpp_namespace('addressUtils')
     register_types_ns3_addressUtils(nested_module)
+    
+    
+    ## Register a nested module for the namespace dot11s
+    
+    nested_module = module.add_cpp_namespace('dot11s')
+    register_types_ns3_dot11s(nested_module)
+    
+    
+    ## Register a nested module for the namespace flame
+    
+    nested_module = module.add_cpp_namespace('flame')
+    register_types_ns3_flame(nested_module)
     
     
     ## Register a nested module for the namespace internal
@@ -377,6 +425,14 @@ def register_types_ns3_TimeStepPrecision(module):
     
 
 def register_types_ns3_addressUtils(module):
+    root_module = module.get_root()
+    
+
+def register_types_ns3_dot11s(module):
+    root_module = module.get_root()
+    
+
+def register_types_ns3_flame(module):
     root_module = module.get_root()
     
 
@@ -477,6 +533,17 @@ def register_methods(root_module):
         ns3_module_v4ping__local.register_methods(root_module)
     
     root_module.end_section('ns3_module_v4ping')
+    root_module.begin_section('ns3_module_static_routing')
+    ns3_module_static_routing.register_methods(root_module)
+    
+    try:
+        import ns3_module_static_routing__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_static_routing__local.register_methods(root_module)
+    
+    root_module.end_section('ns3_module_static_routing')
     root_module.begin_section('ns3_module_packet_sink')
     ns3_module_packet_sink.register_methods(root_module)
     
@@ -510,17 +577,6 @@ def register_methods(root_module):
         ns3_module_onoff__local.register_methods(root_module)
     
     root_module.end_section('ns3_module_onoff')
-    root_module.begin_section('ns3_module_internet_stack')
-    ns3_module_internet_stack.register_methods(root_module)
-    
-    try:
-        import ns3_module_internet_stack__local
-    except ImportError:
-        pass
-    else:
-        ns3_module_internet_stack__local.register_methods(root_module)
-    
-    root_module.end_section('ns3_module_internet_stack')
     root_module.begin_section('ns3_module_point_to_point')
     ns3_module_point_to_point.register_methods(root_module)
     
@@ -532,6 +588,17 @@ def register_methods(root_module):
         ns3_module_point_to_point__local.register_methods(root_module)
     
     root_module.end_section('ns3_module_point_to_point')
+    root_module.begin_section('ns3_module_internet_stack')
+    ns3_module_internet_stack.register_methods(root_module)
+    
+    try:
+        import ns3_module_internet_stack__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_internet_stack__local.register_methods(root_module)
+    
+    root_module.end_section('ns3_module_internet_stack')
     root_module.begin_section('ns3_module_csma')
     ns3_module_csma.register_methods(root_module)
     
@@ -554,17 +621,6 @@ def register_methods(root_module):
         ns3_module_list_routing__local.register_methods(root_module)
     
     root_module.end_section('ns3_module_list_routing')
-    root_module.begin_section('ns3_module_static_routing')
-    ns3_module_static_routing.register_methods(root_module)
-    
-    try:
-        import ns3_module_static_routing__local
-    except ImportError:
-        pass
-    else:
-        ns3_module_static_routing__local.register_methods(root_module)
-    
-    root_module.end_section('ns3_module_static_routing')
     root_module.begin_section('ns3_module_virtual_net_device')
     ns3_module_virtual_net_device.register_methods(root_module)
     
@@ -664,6 +720,17 @@ def register_methods(root_module):
         ns3_module_ping6__local.register_methods(root_module)
     
     root_module.end_section('ns3_module_ping6')
+    root_module.begin_section('ns3_module_mesh')
+    ns3_module_mesh.register_methods(root_module)
+    
+    try:
+        import ns3_module_mesh__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_mesh__local.register_methods(root_module)
+    
+    root_module.end_section('ns3_module_mesh')
     root_module.begin_section('ns3_module_helper')
     ns3_module_helper.register_methods(root_module)
     
@@ -675,6 +742,28 @@ def register_methods(root_module):
         ns3_module_helper__local.register_methods(root_module)
     
     root_module.end_section('ns3_module_helper')
+    root_module.begin_section('ns3_module_dot11s')
+    ns3_module_dot11s.register_methods(root_module)
+    
+    try:
+        import ns3_module_dot11s__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_dot11s__local.register_methods(root_module)
+    
+    root_module.end_section('ns3_module_dot11s')
+    root_module.begin_section('ns3_module_flame')
+    ns3_module_flame.register_methods(root_module)
+    
+    try:
+        import ns3_module_flame__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_flame__local.register_methods(root_module)
+    
+    root_module.end_section('ns3_module_flame')
     return
 
 def register_functions(root_module):
@@ -767,6 +856,17 @@ def register_functions(root_module):
         ns3_module_v4ping__local.register_functions(root_module)
     
     root_module.end_section('ns3_module_v4ping')
+    root_module.begin_section('ns3_module_static_routing')
+    ns3_module_static_routing.register_functions(root_module)
+    
+    try:
+        import ns3_module_static_routing__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_static_routing__local.register_functions(root_module)
+    
+    root_module.end_section('ns3_module_static_routing')
     root_module.begin_section('ns3_module_packet_sink')
     ns3_module_packet_sink.register_functions(root_module)
     
@@ -800,17 +900,6 @@ def register_functions(root_module):
         ns3_module_onoff__local.register_functions(root_module)
     
     root_module.end_section('ns3_module_onoff')
-    root_module.begin_section('ns3_module_internet_stack')
-    ns3_module_internet_stack.register_functions(root_module)
-    
-    try:
-        import ns3_module_internet_stack__local
-    except ImportError:
-        pass
-    else:
-        ns3_module_internet_stack__local.register_functions(root_module)
-    
-    root_module.end_section('ns3_module_internet_stack')
     root_module.begin_section('ns3_module_point_to_point')
     ns3_module_point_to_point.register_functions(root_module)
     
@@ -822,6 +911,17 @@ def register_functions(root_module):
         ns3_module_point_to_point__local.register_functions(root_module)
     
     root_module.end_section('ns3_module_point_to_point')
+    root_module.begin_section('ns3_module_internet_stack')
+    ns3_module_internet_stack.register_functions(root_module)
+    
+    try:
+        import ns3_module_internet_stack__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_internet_stack__local.register_functions(root_module)
+    
+    root_module.end_section('ns3_module_internet_stack')
     root_module.begin_section('ns3_module_csma')
     ns3_module_csma.register_functions(root_module)
     
@@ -844,17 +944,6 @@ def register_functions(root_module):
         ns3_module_list_routing__local.register_functions(root_module)
     
     root_module.end_section('ns3_module_list_routing')
-    root_module.begin_section('ns3_module_static_routing')
-    ns3_module_static_routing.register_functions(root_module)
-    
-    try:
-        import ns3_module_static_routing__local
-    except ImportError:
-        pass
-    else:
-        ns3_module_static_routing__local.register_functions(root_module)
-    
-    root_module.end_section('ns3_module_static_routing')
     root_module.begin_section('ns3_module_virtual_net_device')
     ns3_module_virtual_net_device.register_functions(root_module)
     
@@ -954,6 +1043,17 @@ def register_functions(root_module):
         ns3_module_ping6__local.register_functions(root_module)
     
     root_module.end_section('ns3_module_ping6')
+    root_module.begin_section('ns3_module_mesh')
+    ns3_module_mesh.register_functions(root_module)
+    
+    try:
+        import ns3_module_mesh__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_mesh__local.register_functions(root_module)
+    
+    root_module.end_section('ns3_module_mesh')
     root_module.begin_section('ns3_module_helper')
     ns3_module_helper.register_functions(root_module)
     
@@ -965,9 +1065,33 @@ def register_functions(root_module):
         ns3_module_helper__local.register_functions(root_module)
     
     root_module.end_section('ns3_module_helper')
+    root_module.begin_section('ns3_module_dot11s')
+    ns3_module_dot11s.register_functions(root_module)
+    
+    try:
+        import ns3_module_dot11s__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_dot11s__local.register_functions(root_module)
+    
+    root_module.end_section('ns3_module_dot11s')
+    root_module.begin_section('ns3_module_flame')
+    ns3_module_flame.register_functions(root_module)
+    
+    try:
+        import ns3_module_flame__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_flame__local.register_functions(root_module)
+    
+    root_module.end_section('ns3_module_flame')
     register_functions_ns3_Config(module.get_submodule('Config'), root_module)
     register_functions_ns3_TimeStepPrecision(module.get_submodule('TimeStepPrecision'), root_module)
     register_functions_ns3_addressUtils(module.get_submodule('addressUtils'), root_module)
+    register_functions_ns3_dot11s(module.get_submodule('dot11s'), root_module)
+    register_functions_ns3_flame(module.get_submodule('flame'), root_module)
     register_functions_ns3_internal(module.get_submodule('internal'), root_module)
     register_functions_ns3_olsr(module.get_submodule('olsr'), root_module)
     return
@@ -979,6 +1103,12 @@ def register_functions_ns3_TimeStepPrecision(module, root_module):
     return
 
 def register_functions_ns3_addressUtils(module, root_module):
+    return
+
+def register_functions_ns3_dot11s(module, root_module):
+    return
+
+def register_functions_ns3_flame(module, root_module):
     return
 
 def register_functions_ns3_internal(module, root_module):
