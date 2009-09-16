@@ -33,8 +33,6 @@
 #include "ns3/timer.h"
 #include "ns3/sgi-hashmap.h"
 
-#include "ipv6-interface.h"
-
 namespace ns3
 {
 

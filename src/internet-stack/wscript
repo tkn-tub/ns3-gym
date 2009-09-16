@@ -129,6 +129,9 @@ def build(bld):
         'icmpv4-l4-protocol.h',
         'ipv4-l4-protocol.h',
         'arp-cache.h',
+        'icmpv6-l4-protocol.h',
+        'ipv6-l4-protocol.h',
+        'ndisc-cache.h',
        ]
 
     if bld.env['NSC_ENABLED']:

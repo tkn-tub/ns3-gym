@@ -21,8 +21,9 @@
 #ifndef IPV6_STATIC_ROUTING_H
 #define IPV6_STATIC_ROUTING_H
 
-#include <list>
 #include <stdint.h>
+
+#include <list>
 
 #include "ns3/ptr.h"
 #include "ns3/ipv6-address.h"

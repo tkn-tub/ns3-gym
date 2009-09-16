@@ -22,8 +22,9 @@
 
 #include "ns3/assert.h"
 #include "ns3/address-utils.h"
-#include "icmpv6-header.h"
 #include "ns3/log.h"
+
+#include "icmpv6-header.h"
 
 namespace ns3
 {

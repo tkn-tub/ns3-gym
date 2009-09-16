@@ -24,7 +24,6 @@
 #include <list>
 
 #include "ns3/traced-callback.h"
-
 #include "ns3/net-device.h"
 #include "ns3/ipv6.h"
 #include "ns3/ipv6-address.h"

@@ -35,6 +35,7 @@
 #include "ipv6-raw-socket-impl.h"
 #include "ipv6-autoconfigured-prefix.h"
 #include "icmpv6-l4-protocol.h"
+#include "ndisc-cache.h"
 
 namespace ns3
 {

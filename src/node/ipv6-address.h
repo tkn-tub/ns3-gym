@@ -26,8 +26,9 @@
 
 #include <ostream>
 
-#include "address.h"
 #include "ns3/attribute-helper.h"
+
+#include "address.h"
 
 namespace ns3 { 
 

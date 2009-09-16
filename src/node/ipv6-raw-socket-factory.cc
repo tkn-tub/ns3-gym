@@ -18,8 +18,9 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 
-#include "ipv6-raw-socket-factory.h"
 #include "ns3/uinteger.h"
+
+#include "ipv6-raw-socket-factory.h"
 
 namespace ns3 {
 

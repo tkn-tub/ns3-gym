@@ -22,7 +22,9 @@
 #define IPV6_INTERFACE_CONTAINER_H
 
 #include <stdint.h>
+
 #include <vector>
+
 #include "ns3/ipv6.h"
 #include "ns3/ipv6-address.h"
 

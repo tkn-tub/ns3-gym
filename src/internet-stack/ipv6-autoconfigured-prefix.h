@@ -21,14 +21,14 @@
 #ifndef IPV6_AUTOCONFIGURED_PREFIX_H
 #define IPV6_AUTOCONFIGURED_PREFIX_H
 
+#include <stdint.h>
+
 #include <list>
 #include <vector>
 #include <ostream>
 
 #include "ns3/timer.h"
 #include "ns3/ipv6-address.h"
-#include "ipv6-l3-protocol.h"
-#include "ipv6-interface.h"
 
 namespace ns3
 {

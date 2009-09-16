@@ -26,6 +26,7 @@
 #include <ostream>
 
 #include "ns3/ref-count-base.h"
+
 #include "ipv6-address.h"
 
 namespace ns3

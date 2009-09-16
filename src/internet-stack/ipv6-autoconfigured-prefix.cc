@@ -18,11 +18,10 @@
  * Author: Mehdi Benamor <benamor.mehdi@ensi.rnu.tn>
  */
 
-#include <stdlib.h>
 #include "ns3/log.h"
-#include "ns3/packet.h"
 #include "ns3/node.h"
 
+#include "ipv6-l3-protocol.h"
 #include "ipv6-autoconfigured-prefix.h"
 
 NS_LOG_COMPONENT_DEFINE ("Ipv6AutoconfiguredPrefix");

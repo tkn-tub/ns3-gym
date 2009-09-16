@@ -24,16 +24,15 @@
 #include "ns3/assert.h"
 #include "ns3/packet.h"
 #include "ns3/node.h"
+#include "ns3/boolean.h"
 #include "ns3/ipv6-routing-protocol.h"
 #include "ns3/ipv6-route.h"
 
 #include "ipv6-raw-socket-factory-impl.h"
-#include "icmpv6-l4-protocol.h"
-#include "icmpv6-header.h"
 #include "ipv6-l3-protocol.h"
-#include "ipv6-end-point.h"
-
-#include "ns3/ipv6-static-routing-helper.h"
+#include "ipv6-interface.h"
+#include "icmpv6-l4-protocol.h"
+#include "ndisc-cache.h"
 
 namespace ns3
 {

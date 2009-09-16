@@ -22,14 +22,14 @@
 #define IPV6_L4_PROTOCOL_H
 
 #include "ns3/object.h"
-#include "ipv6-interface.h"
+#include "ns3/ipv6-header.h"
 
 namespace ns3
 {
 
 class Packet;
 class Ipv6Address;
-class TraceContext;
+class Ipv6Interface;
 
 /**
  * \class Ipv6L4Protocol
