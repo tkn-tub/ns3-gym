@@ -241,10 +241,7 @@ PeerLink::Close (uint16_t localLinkId, uint16_t peerLinkId, PmpReasonCode reason
 void
 PeerLink::OpenAccept (uint16_t localLinkId, IeConfiguration conf, Mac48Address peerMp)
 {
-  if (m_peerLinkId == 0)
-    {
-      m_peerLinkId = localLinkId;
-    }
+  m_peerLinkId = localLinkId;
   m_configuration = conf;
   if (m_peerMeshPointAddress != Mac48Address::GetBroadcast ())
     {
