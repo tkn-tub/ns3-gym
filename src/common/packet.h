@@ -521,7 +521,7 @@ public:
    */
   PacketTagIterator GetPacketTagIterator (void) const;
 
-  /* Note: These function support a temporary solution 
+  /* Note: These functions support a temporary solution 
    * to a specific problem in this generic class, i.e. 
    * how to associate something specific like nix-vector 
    * with a packet.  This design methodology 
