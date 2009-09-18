@@ -183,14 +183,6 @@ def build(bld):
       ['csma', 'internet-stack'])
     obj.source = 'radvd-two-prefix.cc'
 
-    obj = bld.create_ns3_program('test-dumbbell',
-      ['point-to-point', 'internet-stack'])
-    obj.source = 'test-dumbbell.cc'
-
-    obj = bld.create_ns3_program('test-grid',
-      ['point-to-point', 'internet-stack'])
-    obj.source = 'test-grid.cc'
-
     env = bld.env_of_name('default')
     if env['ENABLE_EMU']:
         obj = bld.create_ns3_program('emu-udp-echo', ['emu', 'internet-stack'])

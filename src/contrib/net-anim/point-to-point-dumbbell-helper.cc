@@ -26,9 +26,9 @@
 #include <netinet/in.h>
 
 // ns3 includes
-#include "animation-interface.h"
-#include "point-to-point-dumbbell-helper.h"
-#include "node-location.h"
+#include "ns3/animation-interface.h"
+#include "ns3/point-to-point-dumbbell-helper.h"
+#include "ns3/node-location.h"
 
 #include "ns3/node-list.h"
 #include "ns3/point-to-point-net-device.h"

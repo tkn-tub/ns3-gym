@@ -16,11 +16,11 @@
  * Author: Josh Pelkey <jpelkey@gatech.edu>
  */
 
-#include "point-to-point-grid-helper.h"
-#include "animation-interface.h"
-#include "internet-stack-helper.h"
-#include "point-to-point-helper.h"
-#include "node-location.h"
+#include "ns3/point-to-point-grid-helper.h"
+#include "ns3/animation-interface.h"
+#include "ns3/internet-stack-helper.h"
+#include "ns3/point-to-point-helper.h"
+#include "ns3/node-location.h"
 #include "ns3/string.h"
 #include "ns3/vector.h"
 #include "ns3/log.h"
