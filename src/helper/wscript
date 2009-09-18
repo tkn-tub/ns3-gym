@@ -1,7 +1,7 @@
 ## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
 
 def build(bld):
-    helper = bld.create_ns3_module('helper', ['internet-stack', 'wifi', 'point-to-point', 'csma', 'olsr', 'global-routing', 'onoff', 'packet-sink', 'udp-echo'])
+    helper = bld.create_ns3_module('helper', ['internet-stack', 'wifi', 'point-to-point', 'csma', 'olsr', 'nix-vector-routing', 'global-routing', 'onoff', 'packet-sink', 'udp-echo'])
     helper.source = [
         'node-container.cc',
         'net-device-container.cc',
@@ -25,6 +25,7 @@ def build(bld):
         'v4ping-helper.cc',
         'nqos-wifi-mac-helper.cc',
         'qos-wifi-mac-helper.cc',
+        'ipv4-nix-vector-helper.cc',
         'ipv4-global-routing-helper.cc',
         'ipv4-list-routing-helper.cc',
         'ipv4-routing-helper.cc',
@@ -66,6 +67,7 @@ def build(bld):
         'v4ping-helper.h',
         'nqos-wifi-mac-helper.h',
         'qos-wifi-mac-helper.h',
+        'ipv4-nix-vector-helper.h',
         'ipv4-global-routing-helper.h',
         'ipv4-list-routing-helper.h',
         'ipv4-routing-helper.h',

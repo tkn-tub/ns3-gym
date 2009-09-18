@@ -28,6 +28,7 @@
 #include "tag.h"
 #include "byte-tag-list.h"
 #include "packet-tag-list.h"
+#include "nix-vector.h"
 #include "ns3/callback.h"
 #include "ns3/assert.h"
 #include "ns3/ptr.h"
@@ -520,6 +521,15 @@ public:
    */
   PacketTagIterator GetPacketTagIterator (void) const;
 
+  /* Note: These function support a temporary solution 
+   * to a specific problem in this generic class, i.e. 
+   * how to associate something specific like nix-vector 
+   * with a packet.  This design methodology 
+   * should _not_ be followed, and is only here as an 
+   * impetus to fix this general issue. */
+  void SetNixVector (Ptr<NixVector>);
+  Ptr<NixVector> GetNixVector (void) const; 
+
 private:
   Packet (const Buffer &buffer, const ByteTagList &byteTagList, 
           const PacketTagList &packetTagList, const PacketMetadata &metadata);
@@ -527,6 +537,10 @@ private:
   ByteTagList m_byteTagList;
   PacketTagList m_packetTagList;
   PacketMetadata m_metadata;
+
+  /* Please see comments above about nix-vector */
+  Ptr<NixVector> m_nixVector;
+
   mutable uint32_t m_refCount;
   static uint32_t m_globalUid;
 };

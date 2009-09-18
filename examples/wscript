@@ -96,6 +96,14 @@ def build(bld):
                                  ['point-to-point', 'internet-stack', 'olsr'])
     obj.source = 'simple-point-to-point-olsr.cc'
 
+    obj = bld.create_ns3_program('nix-simple',
+                                 ['point-to-point', 'internet-stack', 'nix-vector-routing'])
+    obj.source = 'nix-simple.cc'
+
+    obj = bld.create_ns3_program('nms-p2p-nix',
+                                 ['point-to-point', 'internet-stack', 'nix-vector-routing'])
+    obj.source = 'nms-p2p-nix.cc'
+
     obj = bld.create_ns3_program('tcp-large-transfer',
                                  ['point-to-point', 'internet-stack'])
     obj.source = 'tcp-large-transfer.cc'
