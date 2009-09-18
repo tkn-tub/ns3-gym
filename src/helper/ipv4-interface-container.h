@@ -49,7 +49,10 @@ public:
    * \param interface interface index of the Ipv4Interface to add to the container
    */
   void Add (Ptr<Ipv4> ipv4, uint32_t interface);
+  void Add (std::pair<Ptr<Ipv4>, uint32_t>);
   void Add (std::string ipv4Name, uint32_t interface);
+
+  std::pair<Ptr<Ipv4>, uint32_t> Get (uint32_t) const;
 
  private:
   

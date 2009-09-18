@@ -387,6 +387,24 @@ private:
   Ptr<ErrorModel> m_receiveErrorModel;
 
   /**
+   * The trace source for the packet transmission animation events that the 
+   * device can fire.
+   * Arguments to the callback are the packet, transmitting
+   * net device, receiving net device, transmittion time and 
+   * packet receipt time.
+   *
+   * @see class CallBackTraceSource
+   */
+  friend class PointToPointChannel; // Allow the channel to call the callback
+  TracedCallback<Ptr<const Packet>, // Packet being transmitted
+                 Ptr<NetDevice>,    // Transmitting NetDevice
+                 Ptr<NetDevice>,    // Receiving NetDevice
+                 Time,              // Amount of time to transmit the pkt
+                 Time               // Last bit receive time (relative to now)
+                 > m_txrxPointToPoint;
+
+
+  /**
    * The trace source fired when packets come into the "top" of the device
    * at the L3/L2 transition, before being queued for transmission.
    *

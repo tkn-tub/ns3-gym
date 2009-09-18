@@ -39,6 +39,10 @@ def build(bld):
         'ipv6-list-routing-helper.cc',
         'ipv6-routing-helper.cc',
         'ping6-helper.cc',
+        'animation-interface.cc',
+        'node-location.cc',
+        'point-to-point-dumbbell-helper.cc',
+        'point-to-point-grid-helper.cc',
         'flow-monitor-helper.cc',
         ]
 
@@ -83,6 +87,10 @@ def build(bld):
         'ipv6-routing-helper.h',
         'ping6-helper.h',
         'flow-monitor-helper.h',
+        'animation-interface.h',
+        'node-location.h',
+        'point-to-point-dumbbell-helper.h',
+        'point-to-point-grid-helper.h',
         ]
 
     env = bld.env_of_name('default')
