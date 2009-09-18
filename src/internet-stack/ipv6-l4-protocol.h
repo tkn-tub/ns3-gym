@@ -44,14 +44,14 @@ class Ipv6L4Protocol : public Object
      */
     enum RxStatus_e 
     {
-      RX_OK,
-      RX_CSUM_FAILED,
-      RX_ENDPOINT_UNREACH
+      RX_OK, /**< Receive OK */
+      RX_CSUM_FAILED, /**< Checksum of layer 4 protocol failed */
+      RX_ENDPOINT_UNREACH /**< Destination unreachable */
     };
 
     /**
-     * \brief Get the type identificator.
-     * \return type identificator
+     * \brief Get the type identifier.
+     * \return type identifier
      */
     static TypeId GetTypeId (void);
 
@@ -77,9 +77,12 @@ class Ipv6L4Protocol : public Object
      * \param incomingInterface the Ipv6Interface on which the packet arrived
      * \return status (OK, destination unreachable or checksum failed)
      */
-    virtual enum RxStatus_e Receive (Ptr<Packet> p, Ipv6Address const &src, Ipv6Address const &dst, Ptr<Ipv6Interface> incomingInterface) = 0;
+    virtual enum RxStatus_e Receive (Ptr<Packet> p, Ipv6Address const &src, 
+                                     Ipv6Address const &dst, 
+                                    Ptr<Ipv6Interface> incomingInterface) = 0;
 
     /**
+     * \brief ICMPv6 receive method.
      * \param icmpSource the source address of the ICMPv6 message
      * \param icmpTtl the ttl of the ICMPv6 message
      * \param icmpType the 'type' field of the ICMPv6 message
@@ -94,9 +97,9 @@ class Ipv6L4Protocol : public Object
      *        which triggered the ICMPv6 message.
      */
     virtual void ReceiveIcmp (Ipv6Address icmpSource, uint8_t icmpTtl,
-                            uint8_t icmpType, uint8_t icmpCode, uint32_t icmpInfo,
-                            Ipv6Address payloadSource, Ipv6Address payloadDestination,
-                            const uint8_t* payload);
+                              uint8_t icmpType, uint8_t icmpCode, uint32_t icmpInfo,
+                              Ipv6Address payloadSource, Ipv6Address payloadDestination,
+                              const uint8_t* payload);
 
 };
 

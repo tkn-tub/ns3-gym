@@ -29,7 +29,7 @@ class Ipv6RoutingProtocol;
 class Node;
 
 /**
- * \brief a factory to create ns3::Ipv6RoutingProtocol objects
+ * \brief A factory to create ns3::Ipv6RoutingProtocol objects
  *
  * For each new routing protocol created as a subclass of 
  * ns3::Ipv6RoutingProtocol, you need to create a subclass of 

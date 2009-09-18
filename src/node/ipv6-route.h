@@ -177,22 +177,26 @@ class Ipv6MulticastRoute : public RefCountBase
     Ipv6Address GetOrigin (void) const;
 
     /**
+     * \brief Set parent for this route.
      * \param iif Parent (input interface) for this route
      */
     void SetParent (uint32_t iif);
+
     /**
+     * \brief Get parent for this route.
      * \return Parent (input interface) for this route
      */
     uint32_t GetParent (void) const;
 
     /**
+     * \brief set output TTL for this route.
      * \param oif Outgoing interface index
      * \param ttl time-to-live for this route
      */
     void SetOutputTtl (uint32_t oif, uint32_t ttl);
 
     /**
-     * \brief Get output TTL.
+     * \brief Get output TTL for this route.
      * \param oif outgoing interface
      * \return TTL for this route
      */
@@ -215,7 +219,7 @@ class Ipv6MulticastRoute : public RefCountBase
     uint32_t m_parent;
 
     /**
-     * \brief TTLs;
+     * \brief TTLs.
      */
     std::vector<uint32_t> m_ttls;
 };

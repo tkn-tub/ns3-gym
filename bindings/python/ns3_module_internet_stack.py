@@ -82,7 +82,7 @@ def register_types(module):
     ## ipv6-l3-protocol.h: ns3::Ipv6L3Protocol [class]
     module.add_class('Ipv6L3Protocol', parent=root_module['ns3::Ipv6'])
     ## ipv6-l3-protocol.h: ns3::Ipv6L3Protocol::DropReason [enumeration]
-    module.add_enum('DropReason', ['DROP_TTL_EXPIRED', 'DROP_NO_ROUTE', 'DROP_BAD_CHECKSUM', 'DROP_INTERFACE_DOWN', 'DROP_ROUTE_ERROR'], outer_class=root_module['ns3::Ipv6L3Protocol'])
+    module.add_enum('DropReason', ['DROP_TTL_EXPIRED', 'DROP_NO_ROUTE', 'DROP_INTERFACE_DOWN', 'DROP_ROUTE_ERROR'], outer_class=root_module['ns3::Ipv6L3Protocol'])
     ## ipv6-l4-protocol.h: ns3::Ipv6L4Protocol [class]
     module.add_class('Ipv6L4Protocol', parent=root_module['ns3::Object'])
     ## ipv6-l4-protocol.h: ns3::Ipv6L4Protocol::RxStatus_e [enumeration]

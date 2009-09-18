@@ -58,7 +58,7 @@ class Ipv6StaticRouting : public Ipv6RoutingProtocol
   public:
     /**
      * \brief The interface Id associated with this class.
-     * \return type identificator
+     * \return type identifier
      */
     static TypeId GetTypeId ();
 

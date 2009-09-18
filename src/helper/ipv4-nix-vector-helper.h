@@ -45,7 +45,7 @@ public:
   *
   * This method will be called by ns3::InternetStackHelper::Install
   */
-  virtual Ptr<Ipv4RoutingProtocol> Create (Ptr<Node>) const;
+  virtual Ptr<Ipv4RoutingProtocol> Create (Ptr<Node> node) const;
 
 private:
   ObjectFactory m_agentFactory;

@@ -574,7 +574,7 @@ namespace ns3 {
  * This routine is based on the GNU Scientific Library function gsl_fcmp.
  * 
  * \param a The first of double precision floating point numbers to compare
- * \param a The second of double precision floating point numbers to compare
+ * \param b The second of double precision floating point numbers to compare
  * \param epsilon The second of double precision floating point numberss to compare
  * \returns Returns true if the doubles are equal to a precision defined by epsilon
  */
@@ -591,7 +591,6 @@ public:
 
   /**
    * \brief Run this test case.
-   * \param verbose Turn on any output the test case may provide
    * \returns Boolean sense of "an error has occurred."
    */
   bool Run (void);
@@ -748,6 +747,10 @@ private:
 class TestSuite
 {
 public:
+  /**
+   * \enum TestType
+   * \brief Type of test.
+   */
   enum TestType {
     BVT = 1,    /**< This test suite implements a Build Verification Test */
     UNIT,       /**< This test suite implements a Unit Test */
@@ -772,7 +775,6 @@ public:
   /**
    * \brief Run this test suite.
    *
-   * \param verbose Turn on any output the test case may provide
    * \returns Boolean sense of "an error has occurred."
    */
   bool Run (void);

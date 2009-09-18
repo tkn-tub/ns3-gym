@@ -443,7 +443,7 @@ class NdiscCache : public Object
     Ptr<Ipv6Interface> m_interface;
 
     /**
-     * A list of Entry.
+     * \brief A list of Entry.
      */
     Cache m_ndCache;
 

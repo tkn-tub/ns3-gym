@@ -41,6 +41,9 @@ namespace ns3 {
 class Ipv6StaticRoutingHelper : public Ipv6RoutingHelper
 {
 public:
+  /**
+   * \brief Constructor.
+   */
   Ipv6StaticRoutingHelper ();
 
   /**
@@ -51,6 +54,11 @@ public:
    */
   virtual Ptr<Ipv6RoutingProtocol> Create (Ptr<Node> node) const;
 
+  /**
+   * \brief Get Ipv6StaticRouting pointer from IPv6 stack.
+   * \param ipv6 Ipv6 pointer
+   * \return Ipv6StaticRouting pointer or 0 if not exist
+   */
   Ptr<Ipv6StaticRouting> GetStaticRouting (Ptr<Ipv6> ipv6) const;
 
   void AddMulticastRoute (Ptr<Node> n, Ipv6Address source, Ipv6Address group,  

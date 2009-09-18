@@ -81,7 +81,7 @@ class RadvdInterface : public RefCountBase
     
     /**
      * \brief Set send advert flag.
-     * \return sendAdvert value
+     * \param sendAdvert value
      */
     void SetSendAdvert (bool sendAdvert);
 

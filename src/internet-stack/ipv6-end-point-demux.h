@@ -95,7 +95,8 @@ class Ipv6EndPointDemux
 
     /**
      * \brief Allocate a Ipv6EndPoint.
-     * \return an empty Ipv6EndPoint instance
+     * \param address IPv6 address
+     * \return an Ipv6EndPoint instance
      */
     Ipv6EndPoint *Allocate (Ipv6Address address);
 

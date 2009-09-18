@@ -59,13 +59,16 @@ class Ipv6L3Protocol : public Ipv6
      */
     static const uint16_t PROT_NUMBER;
 
+    /**
+     * \enum DropReason
+     * \brief Reason why a packet has been dropped.
+     */
     enum DropReason 
       {
-        DROP_TTL_EXPIRED = 1,
-        DROP_NO_ROUTE,
-        DROP_BAD_CHECKSUM,
-        DROP_INTERFACE_DOWN,
-        DROP_ROUTE_ERROR,
+        DROP_TTL_EXPIRED = 1, /**< Packet TTL has expired */
+        DROP_NO_ROUTE, /**< No route to host */
+        DROP_INTERFACE_DOWN, /**< Interface is down so can not send packet */
+        DROP_ROUTE_ERROR, /**< Route error */
       };
     
     /**
@@ -216,6 +219,7 @@ class Ipv6L3Protocol : public Ipv6
 
     /**
      * \brief Get number of address for an interface.
+     * \param interface interface index
      * \return number of address
      */
     uint32_t GetNAddresses (uint32_t interface) const;

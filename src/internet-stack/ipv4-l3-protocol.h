@@ -63,13 +63,17 @@ public:
   Ipv4L3Protocol();
   virtual ~Ipv4L3Protocol ();
 
+  /**
+   * \enum DropReason
+   * \brief Reason why a packet has been dropped.
+   */
   enum DropReason 
     {
-      DROP_TTL_EXPIRED = 1,
-      DROP_NO_ROUTE,
-      DROP_BAD_CHECKSUM,
-      DROP_INTERFACE_DOWN,
-      DROP_ROUTE_ERROR,
+      DROP_TTL_EXPIRED = 1, /**< Packet TTL has expired */
+      DROP_NO_ROUTE, /**< No route to host */
+      DROP_BAD_CHECKSUM, /**< Bad checksum */
+      DROP_INTERFACE_DOWN, /**< Interface is down so can not send packet */
+      DROP_ROUTE_ERROR, /**< Route error */
     };
 
   void SetNode (Ptr<Node> node);

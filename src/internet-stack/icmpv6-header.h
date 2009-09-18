@@ -384,8 +384,8 @@ class Icmpv6NS : public Icmpv6Header
     void SetIpv6Target (Ipv6Address target);
 
     /**
-     * \brief Get the IPv6 target field.
-     * \return IPv6 address
+     * \brief Print informations.
+     * \param os output stream
      */
     virtual void Print (std::ostream& os) const;
 
@@ -799,7 +799,7 @@ class Icmpv6RS : public Icmpv6Header
      * \brief Print informations.
      * \param os output stream
      */
-    virtual void Print (std::ostream& os);
+    virtual void Print (std::ostream& os) const;
 
     /**
      * \brief Get the serialized size.
@@ -884,7 +884,7 @@ class Icmpv6Redirection : public Icmpv6Header
      * \brief Print informations.
      * \param os output stream
      */
-    virtual void Print (std::ostream& os);
+    virtual void Print (std::ostream& os) const;
 
     /**
      * \brief Get the serialized size.
@@ -1075,7 +1075,7 @@ class Icmpv6DestinationUnreachable : public Icmpv6Header
      * \brief Print informations.
      * \param os output stream
      */
-    virtual void Print (std::ostream& os);
+    virtual void Print (std::ostream& os) const;
 
     /**
      * \brief Get the serialized size.
@@ -1160,7 +1160,7 @@ class Icmpv6TooBig : public Icmpv6Header
      * \brief Print informations.
      * \param os output stream
      */
-    virtual void Print (std::ostream& os);
+    virtual void Print (std::ostream& os) const;
 
     /**
      * \brief Get the serialized size.
@@ -1239,7 +1239,7 @@ class Icmpv6TimeExceeded : public Icmpv6Header
      * \brief Print informations.
      * \param os output stream
      */
-    virtual void Print (std::ostream& os);
+    virtual void Print (std::ostream& os) const;
 
     /**
      * \brief Get the serialized size.
@@ -1325,7 +1325,7 @@ class Icmpv6ParameterError : public Icmpv6Header
      * \brief Print informations.
      * \param os output stream
      */
-    virtual void Print (std::ostream& os);
+    virtual void Print (std::ostream& os) const;
 
     /**
      * \brief Get the serialized size.
