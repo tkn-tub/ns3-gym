@@ -84,6 +84,8 @@ public:
    * method provided to do this is Join (). If you call Join() you will block
    * until the SystemThread run method returns.
    *
+   * @param callback entry point of the thread
+   * 
    * @warning The SystemThread uses SIGALRM to wake threads that are possibly
    * blocked on IO.
    * @see Shutdown

@@ -140,6 +140,7 @@ Ptr<T> Create (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6, T7 a7);
 
 /**
  * \relates Ptr
+ * \param p smart pointer
  * \return the pointer managed by this smart pointer.
  *
  * The underlying refcount is not incremented prior
@@ -151,6 +152,7 @@ T * PeekPointer (const Ptr<T> &p);
 
 /**
  * \relates Ptr
+ * \param p smart pointer
  * \return the pointer managed by this smart pointer.
  *
  * The underlying refcount is incremented prior

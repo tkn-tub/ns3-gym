@@ -99,6 +99,7 @@ public:
 
   /**
    * Set the address of this interface
+   * \param address address to set
    */
   virtual void SetAddress (Address address) = 0;
 

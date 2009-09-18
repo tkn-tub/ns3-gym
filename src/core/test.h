@@ -656,6 +656,7 @@ public:
    * around so we need to save it.  Since file streams are not designed to be
    * copied or assigned (what does it mean to have duplicate streams to a file) 
    * we have to stash a pointer to the stream.
+   * \param ofs output file stream
    */
   void SetStream (std::ofstream *ofs);
 
@@ -840,6 +841,7 @@ public:
    * around so we need to save it.  Since file streams are not designed to be
    * copied or assigned (what does it mean to have duplicate streams to a file) 
    * we have to stash a pointer to the stream.
+   * \param ofs output file stream
    */
   void SetStream (std::ofstream *ofs);
 

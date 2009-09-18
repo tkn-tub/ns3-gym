@@ -129,6 +129,12 @@ public:
    * packet is coming to:
    *    - implement a per-NetDevice ARP cache
    *    - send back arp replies on the right device
+   * \param device network device
+   * \param p the packet
+   * \param protocol protocol value
+   * \param from address of the correspondant
+   * \param to address of the destination
+   * \param packetType type of the packet
    */
   void Receive( Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t protocol, const Address &from,
                 const Address &to, NetDevice::PacketType packetType);

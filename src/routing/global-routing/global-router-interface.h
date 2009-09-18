@@ -401,7 +401,7 @@ public:
 /**
  * @brief Set the Link State ID is defined by the OSPF spec.  We always set it
  * to the router ID of the router making the advertisement.
- *
+ * @param addr IPv4 address which will act as ID
  * @see RoutingEnvironment::AllocateRouterId ()
  * @see GlobalRouting::GetRouterId ()
  */
@@ -421,6 +421,7 @@ public:
  * @brief Set the Advertising Router as defined by the OSPF spec.  We always
  * set it to the router ID of the router making the advertisement.
  *
+ * @param rtr ID of the router making advertisement
  * @see RoutingEnvironment::AllocateRouterId ()
  * @see GlobalRouting::GetRouterId ()
  */
@@ -473,7 +474,7 @@ public:
 
 /**
  * @brief Set the SPF status of the advertisement
- *
+ * @param status SPF status to set
  * @see SPFStatus
  */
   void SetStatus (SPFStatus status);

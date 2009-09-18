@@ -22,6 +22,7 @@ public:
 
   /**
    * Concatenate the entries in the other container with ours.
+   * \param other container
    */
   void Add (Ipv4InterfaceContainer other);
 
@@ -31,6 +32,8 @@ public:
   uint32_t GetN (void) const;
 
   /**
+   * \param i interface index
+   * \param j interface address index (if interface has multiple addresses)
    * \returns the IPv4 address of the j'th address of the interface
    *  corresponding to index i.
    * 

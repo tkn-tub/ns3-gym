@@ -193,6 +193,7 @@ public:
    */
   uint32_t GetNOutputInterfaces (void) const;
   /**
+   * \param n interface index
    * \return A specified output interface.
    */
   uint32_t GetOutputInterface (uint32_t n) const;

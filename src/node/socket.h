@@ -487,8 +487,9 @@ public:
    */
   int RecvFrom (uint8_t* buf, uint32_t size, uint32_t flags,
                 Address &fromAddress);
-    /**
-   * \returns the address name  this socket is associated with.
+  /**
+   * \param address the address name this socket is associated with.
+   * \returns 0 if success, -1 otherwise
    */
   virtual int GetSockName (Address &address) const = 0; 
  

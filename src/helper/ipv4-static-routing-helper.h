@@ -67,6 +67,8 @@ public:
    *
    * Functionally equivalent to:
    * route add 224.0.0.0 netmask 240.0.0.0 dev nd
+   * \param n node
+   * \param nd device of the node to add default route
    */
   void SetDefaultMulticastRoute (Ptr<Node> n, Ptr<NetDevice> nd);
   void SetDefaultMulticastRoute (Ptr<Node> n, std::string ndName);

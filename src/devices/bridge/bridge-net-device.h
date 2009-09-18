@@ -70,12 +70,14 @@ public:
   BridgeNetDevice ();
   virtual ~BridgeNetDevice ();
 
-  /** \brief Add a 'port' to a bridge device
+  /** 
+   * \brief Add a 'port' to a bridge device
    *
    * This method adds a new bridge port to a BridgeNetDevice, so that
    * the new bridge port NetDevice becomes part of the bridge and L2
    * frames start being forwarded to/from this NetDevice.
    *
+   * \param bridgePort NetDevice
    * \attention The netdevice that is being added as bridge port must
    * _not_ have an IP address.  In order to add IP connectivity to a
    * bridging node you must enable IP on the BridgeNetDevice itself,

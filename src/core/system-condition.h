@@ -61,6 +61,7 @@ public:
 
   /**
    * Set the value of the underlying condition.
+   * \param condition value
    */
   void SetCondition (bool condition);
 
@@ -91,6 +92,7 @@ public:
   /**
    * Wait a maximum of ns nanoseconds for the condition to be true.  If the
    * wait times out, return true else return false.
+   * \param ns maximum of nanoseconds to wait
    */
   bool TimedWait (uint64_t ns);
 	

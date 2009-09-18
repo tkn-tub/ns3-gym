@@ -609,6 +609,7 @@ public:
 
   /**
    * \brief Deserializes a packet from the specified buffer.
+   * \param start start offset
    * \return the number of bytes deserialized
    *
    * If this returns a number smaller than the total number of bytes in the

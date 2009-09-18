@@ -349,12 +349,21 @@ public:
 
   /**
    * Start sending a packet down the channel.
+   * \param packet packet to send
+   * \param dest layer 2 destination address
+   * \param protocolNumber protocol number
+   * \return true if successfull, false otherwise (drop, ...)
    */
   virtual bool Send (Ptr<Packet> packet, const Address& dest, 
     uint16_t protocolNumber);
 
   /**
    * Start sending a packet down the channel, with MAC spoofing
+   * \param packet packet to send
+   * \param source layer 2 source address
+   * \param dest layer 2 destination address
+   * \param protocolNumber protocol number
+   * \return true if successfull, false otherwise (drop, ...)
    */
   virtual bool SendFrom (Ptr<Packet> packet, const Address& source, const Address& dest, 
                          uint16_t protocolNumber);
@@ -448,30 +457,35 @@ private:
   /**
    * Operator = is declared but not implemented.  This disables the assigment
    * operator for CsmaNetDevice objects.
-
+   * \param o object to copy
    */
   CsmaNetDevice &operator = (const CsmaNetDevice &o);
 
   /**
    * Copy constructor is declared but not implemented.  This disables the
    * copy constructor for CsmaNetDevice objects.
+   * \param o object to copy
    */
   CsmaNetDevice (const CsmaNetDevice &o);
 
   /**
    * Initialization function used during object construction.
+   * \param sendEnable if device will be allowed to send
+   * \param receiveEnable if device will be allowed to receive
    */
   void Init (bool sendEnable, bool receiveEnable);
 
   /**
    * Calculate the value for the MTU that would result from 
    * setting the frame size to the given value.
+   * \param frameSize size of frame
    */
   uint32_t MtuFromFrameSize (uint32_t frameSize);
 
   /**
    * Calculate the value for the frame size that would be required
    * to be able to set the MTU to the given value.
+   * \param mtu MTU
    */
   uint32_t FrameSizeFromMtu (uint32_t mtu);
 
