@@ -64,8 +64,8 @@
  * The nix-vector stores an index for each hop along the path, which 
  * corresponds to the neighbor-index.  This index is used to determine 
  * which net-device and gateway should be used.  To route a packet, the 
- * nix-vector must be transmitted with the packet (in the metadata).  
- * At each hop, the current node extracts the appropriate neighbor-index 
- * from the nix-vector and transmits the packet through the corresponding 
+ * nix-vector must be transmitted with the packet. At each hop, the 
+ * current node extracts the appropriate neighbor-index from the 
+ * nix-vector and transmits the packet through the corresponding 
  * net-device.  This continues until the packet reaches the destination.
  * */
