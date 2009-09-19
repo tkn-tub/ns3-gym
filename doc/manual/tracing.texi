@@ -322,6 +322,7 @@ generated or use existing trace sources in different ways, without modifying the
 core of the simulator;
 @item Advanced users can modify the simulator core to add new tracing sources and 
 sinks. 
+@end itemize
 
 @node Implementation details
 @section Implementation details
