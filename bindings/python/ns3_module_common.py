@@ -65,6 +65,8 @@ def register_types(module):
     module.add_class('ErrorModel', parent=root_module['ns3::Object'])
     ## error-model.h: ns3::ListErrorModel [class]
     module.add_class('ListErrorModel', parent=root_module['ns3::ErrorModel'])
+    ## nix-vector.h: ns3::NixVector [class]
+    module.add_class('NixVector', parent=root_module['ns3::Object'])
     ## error-model.h: ns3::RateErrorModel [class]
     module.add_class('RateErrorModel', parent=root_module['ns3::ErrorModel'])
     
@@ -167,6 +169,7 @@ def register_methods(root_module):
     register_Ns3Trailer_methods(root_module, root_module['ns3::Trailer'])
     register_Ns3ErrorModel_methods(root_module, root_module['ns3::ErrorModel'])
     register_Ns3ListErrorModel_methods(root_module, root_module['ns3::ListErrorModel'])
+    register_Ns3NixVector_methods(root_module, root_module['ns3::NixVector'])
     register_Ns3RateErrorModel_methods(root_module, root_module['ns3::RateErrorModel'])
     return
 
@@ -611,6 +614,11 @@ def register_Ns3Packet_methods(root_module, cls):
                    'ns3::ByteTagIterator', 
                    [], 
                    is_const=True)
+    ## packet.h: ns3::Ptr<ns3::NixVector> ns3::Packet::GetNixVector() const [member function]
+    cls.add_method('GetNixVector', 
+                   'ns3::Ptr< ns3::NixVector >', 
+                   [], 
+                   is_const=True)
     ## packet.h: ns3::PacketTagIterator ns3::Packet::GetPacketTagIterator() const [member function]
     cls.add_method('GetPacketTagIterator', 
                    'ns3::PacketTagIterator', 
@@ -693,6 +701,10 @@ def register_Ns3Packet_methods(root_module, cls):
                    'ns3::Buffer', 
                    [], 
                    is_const=True)
+    ## packet.h: void ns3::Packet::SetNixVector(ns3::Ptr<ns3::NixVector> arg0) [member function]
+    cls.add_method('SetNixVector', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::NixVector >', 'arg0')])
     return
 
 def register_Ns3PacketMetadata_methods(root_module, cls):
@@ -1306,6 +1318,60 @@ def register_Ns3ListErrorModel_methods(root_module, cls):
                    'void', 
                    [], 
                    visibility='private', is_virtual=True)
+    return
+
+def register_Ns3NixVector_methods(root_module, cls):
+    cls.add_output_stream_operator()
+    ## nix-vector.h: ns3::NixVector::NixVector() [constructor]
+    cls.add_constructor([])
+    ## nix-vector.h: ns3::NixVector::NixVector(ns3::NixVector const & o) [copy constructor]
+    cls.add_constructor([param('ns3::NixVector const &', 'o')])
+    ## nix-vector.h: void ns3::NixVector::AddNeighborIndex(uint32_t newBits, uint32_t numberOfBits) [member function]
+    cls.add_method('AddNeighborIndex', 
+                   'void', 
+                   [param('uint32_t', 'newBits'), param('uint32_t', 'numberOfBits')])
+    ## nix-vector.h: uint32_t ns3::NixVector::BitCount(uint32_t numberOfNeighbors) const [member function]
+    cls.add_method('BitCount', 
+                   'uint32_t', 
+                   [param('uint32_t', 'numberOfNeighbors')], 
+                   is_const=True)
+    ## nix-vector.h: ns3::Ptr<ns3::NixVector> ns3::NixVector::Copy() const [member function]
+    cls.add_method('Copy', 
+                   'ns3::Ptr< ns3::NixVector >', 
+                   [], 
+                   is_const=True)
+    ## nix-vector.h: uint32_t ns3::NixVector::Deserialize(ns3::Buffer::Iterator i) [member function]
+    cls.add_method('Deserialize', 
+                   'uint32_t', 
+                   [param('ns3::Buffer::Iterator', 'i')])
+    ## nix-vector.h: void ns3::NixVector::DumpNixVector(std::ostream & os) const [member function]
+    cls.add_method('DumpNixVector', 
+                   'void', 
+                   [param('std::ostream &', 'os')], 
+                   is_const=True)
+    ## nix-vector.h: uint32_t ns3::NixVector::ExtractNeighborIndex(uint32_t numberOfBits) [member function]
+    cls.add_method('ExtractNeighborIndex', 
+                   'uint32_t', 
+                   [param('uint32_t', 'numberOfBits')])
+    ## nix-vector.h: uint32_t ns3::NixVector::GetRemainingBits() [member function]
+    cls.add_method('GetRemainingBits', 
+                   'uint32_t', 
+                   [])
+    ## nix-vector.h: uint32_t ns3::NixVector::GetSerializedSize() const [member function]
+    cls.add_method('GetSerializedSize', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## nix-vector.h: static ns3::TypeId ns3::NixVector::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## nix-vector.h: void ns3::NixVector::Serialize(ns3::Buffer::Iterator i, uint32_t size) const [member function]
+    cls.add_method('Serialize', 
+                   'void', 
+                   [param('ns3::Buffer::Iterator', 'i'), param('uint32_t', 'size')], 
+                   is_const=True)
     return
 
 def register_Ns3RateErrorModel_methods(root_module, cls):

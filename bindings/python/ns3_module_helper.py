@@ -81,6 +81,8 @@ def register_types(module):
     module.add_class('Ipv4GlobalRoutingHelper', allow_subclassing=False, parent=root_module['ns3::Ipv4RoutingHelper'])
     ## ipv4-list-routing-helper.h: ns3::Ipv4ListRoutingHelper [class]
     module.add_class('Ipv4ListRoutingHelper', allow_subclassing=False, parent=root_module['ns3::Ipv4RoutingHelper'])
+    ## ipv4-nix-vector-helper.h: ns3::Ipv4NixVectorHelper [class]
+    module.add_class('Ipv4NixVectorHelper', allow_subclassing=False, parent=root_module['ns3::Ipv4RoutingHelper'])
     ## ipv6-list-routing-helper.h: ns3::Ipv6ListRoutingHelper [class]
     module.add_class('Ipv6ListRoutingHelper', allow_subclassing=False, parent=root_module['ns3::Ipv6RoutingHelper'])
     ## nqos-wifi-mac-helper.h: ns3::NqosWifiMacHelper [class]
@@ -204,6 +206,7 @@ def register_methods(root_module):
     register_Ns3YansWifiPhyHelper_methods(root_module, root_module['ns3::YansWifiPhyHelper'])
     register_Ns3Ipv4GlobalRoutingHelper_methods(root_module, root_module['ns3::Ipv4GlobalRoutingHelper'])
     register_Ns3Ipv4ListRoutingHelper_methods(root_module, root_module['ns3::Ipv4ListRoutingHelper'])
+    register_Ns3Ipv4NixVectorHelper_methods(root_module, root_module['ns3::Ipv4NixVectorHelper'])
     register_Ns3Ipv6ListRoutingHelper_methods(root_module, root_module['ns3::Ipv6ListRoutingHelper'])
     register_Ns3NqosWifiMacHelper_methods(root_module, root_module['ns3::NqosWifiMacHelper'])
     register_Ns3QosWifiMacHelper_methods(root_module, root_module['ns3::QosWifiMacHelper'])
@@ -610,6 +613,8 @@ def register_Ns3Ipv4AddressHelper_methods(root_module, cls):
     cls.add_constructor([param('ns3::Ipv4AddressHelper const &', 'arg0')])
     ## ipv4-address-helper.h: ns3::Ipv4AddressHelper::Ipv4AddressHelper() [constructor]
     cls.add_constructor([])
+    ## ipv4-address-helper.h: ns3::Ipv4AddressHelper::Ipv4AddressHelper(ns3::Ipv4Address network, ns3::Ipv4Mask mask, ns3::Ipv4Address base="0.0.0.1") [constructor]
+    cls.add_constructor([param('ns3::Ipv4Address', 'network'), param('ns3::Ipv4Mask', 'mask'), param('ns3::Ipv4Address', 'base', default_value='"0.0.0.1"')])
     ## ipv4-address-helper.h: ns3::Ipv4InterfaceContainer ns3::Ipv4AddressHelper::Assign(ns3::NetDeviceContainer const & c) [member function]
     cls.add_method('Assign', 
                    'ns3::Ipv4InterfaceContainer', 
@@ -641,10 +646,19 @@ def register_Ns3Ipv4InterfaceContainer_methods(root_module, cls):
     cls.add_method('Add', 
                    'void', 
                    [param('ns3::Ptr< ns3::Ipv4 >', 'ipv4'), param('uint32_t', 'interface')])
+    ## ipv4-interface-container.h: void ns3::Ipv4InterfaceContainer::Add(std::pair<ns3::Ptr<ns3::Ipv4>,unsigned int> arg0) [member function]
+    cls.add_method('Add', 
+                   'void', 
+                   [param('std::pair< ns3::Ptr< ns3::Ipv4 >, unsigned int >', 'arg0')])
     ## ipv4-interface-container.h: void ns3::Ipv4InterfaceContainer::Add(std::string ipv4Name, uint32_t interface) [member function]
     cls.add_method('Add', 
                    'void', 
                    [param('std::string', 'ipv4Name'), param('uint32_t', 'interface')])
+    ## ipv4-interface-container.h: std::pair<ns3::Ptr<ns3::Ipv4>,unsigned int> ns3::Ipv4InterfaceContainer::Get(uint32_t arg0) const [member function]
+    cls.add_method('Get', 
+                   'std::pair< ns3::Ptr< ns3::Ipv4 >, unsigned int >', 
+                   [param('uint32_t', 'arg0')], 
+                   is_const=True)
     ## ipv4-interface-container.h: ns3::Ipv4Address ns3::Ipv4InterfaceContainer::GetAddress(uint32_t i, uint32_t j=0) const [member function]
     cls.add_method('GetAddress', 
                    'ns3::Ipv4Address', 
@@ -1611,6 +1625,18 @@ def register_Ns3Ipv4ListRoutingHelper_methods(root_module, cls):
                    'void', 
                    [param('ns3::Ipv4RoutingHelper const &', 'routing'), param('int16_t', 'priority')])
     ## ipv4-list-routing-helper.h: ns3::Ptr<ns3::Ipv4RoutingProtocol> ns3::Ipv4ListRoutingHelper::Create(ns3::Ptr<ns3::Node> node) const [member function]
+    cls.add_method('Create', 
+                   'ns3::Ptr< ns3::Ipv4RoutingProtocol >', 
+                   [param('ns3::Ptr< ns3::Node >', 'node')], 
+                   is_const=True, is_virtual=True)
+    return
+
+def register_Ns3Ipv4NixVectorHelper_methods(root_module, cls):
+    ## ipv4-nix-vector-helper.h: ns3::Ipv4NixVectorHelper::Ipv4NixVectorHelper(ns3::Ipv4NixVectorHelper const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::Ipv4NixVectorHelper const &', 'arg0')])
+    ## ipv4-nix-vector-helper.h: ns3::Ipv4NixVectorHelper::Ipv4NixVectorHelper() [constructor]
+    cls.add_constructor([])
+    ## ipv4-nix-vector-helper.h: ns3::Ptr<ns3::Ipv4RoutingProtocol> ns3::Ipv4NixVectorHelper::Create(ns3::Ptr<ns3::Node> node) const [member function]
     cls.add_method('Create', 
                    'ns3::Ptr< ns3::Ipv4RoutingProtocol >', 
                    [param('ns3::Ptr< ns3::Node >', 'node')], 

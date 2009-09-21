@@ -998,11 +998,11 @@ def register_Ns3Icmpv6ParameterError_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
-    ## icmpv6-header.h: void ns3::Icmpv6ParameterError::Print(std::ostream & os) [member function]
+    ## icmpv6-header.h: void ns3::Icmpv6ParameterError::Print(std::ostream & os) const [member function]
     cls.add_method('Print', 
                    'void', 
                    [param('std::ostream &', 'os')], 
-                   is_virtual=True)
+                   is_const=True, is_virtual=True)
     ## icmpv6-header.h: void ns3::Icmpv6ParameterError::Serialize(ns3::Buffer::Iterator start) const [member function]
     cls.add_method('Serialize', 
                    'void', 
@@ -1157,11 +1157,11 @@ def register_Ns3Icmpv6RS_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
-    ## icmpv6-header.h: void ns3::Icmpv6RS::Print(std::ostream & os) [member function]
+    ## icmpv6-header.h: void ns3::Icmpv6RS::Print(std::ostream & os) const [member function]
     cls.add_method('Print', 
                    'void', 
                    [param('std::ostream &', 'os')], 
-                   is_virtual=True)
+                   is_const=True, is_virtual=True)
     ## icmpv6-header.h: void ns3::Icmpv6RS::Serialize(ns3::Buffer::Iterator start) const [member function]
     cls.add_method('Serialize', 
                    'void', 
@@ -1213,11 +1213,11 @@ def register_Ns3Icmpv6Redirection_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
-    ## icmpv6-header.h: void ns3::Icmpv6Redirection::Print(std::ostream & os) [member function]
+    ## icmpv6-header.h: void ns3::Icmpv6Redirection::Print(std::ostream & os) const [member function]
     cls.add_method('Print', 
                    'void', 
                    [param('std::ostream &', 'os')], 
-                   is_virtual=True)
+                   is_const=True, is_virtual=True)
     ## icmpv6-header.h: void ns3::Icmpv6Redirection::Serialize(ns3::Buffer::Iterator start) const [member function]
     cls.add_method('Serialize', 
                    'void', 
@@ -1267,11 +1267,11 @@ def register_Ns3Icmpv6TimeExceeded_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
-    ## icmpv6-header.h: void ns3::Icmpv6TimeExceeded::Print(std::ostream & os) [member function]
+    ## icmpv6-header.h: void ns3::Icmpv6TimeExceeded::Print(std::ostream & os) const [member function]
     cls.add_method('Print', 
                    'void', 
                    [param('std::ostream &', 'os')], 
-                   is_virtual=True)
+                   is_const=True, is_virtual=True)
     ## icmpv6-header.h: void ns3::Icmpv6TimeExceeded::Serialize(ns3::Buffer::Iterator start) const [member function]
     cls.add_method('Serialize', 
                    'void', 
@@ -1318,11 +1318,11 @@ def register_Ns3Icmpv6TooBig_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
-    ## icmpv6-header.h: void ns3::Icmpv6TooBig::Print(std::ostream & os) [member function]
+    ## icmpv6-header.h: void ns3::Icmpv6TooBig::Print(std::ostream & os) const [member function]
     cls.add_method('Print', 
                    'void', 
                    [param('std::ostream &', 'os')], 
-                   is_virtual=True)
+                   is_const=True, is_virtual=True)
     ## icmpv6-header.h: void ns3::Icmpv6TooBig::Serialize(ns3::Buffer::Iterator start) const [member function]
     cls.add_method('Serialize', 
                    'void', 
@@ -1743,11 +1743,11 @@ def register_Ns3Icmpv6DestinationUnreachable_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
-    ## icmpv6-header.h: void ns3::Icmpv6DestinationUnreachable::Print(std::ostream & os) [member function]
+    ## icmpv6-header.h: void ns3::Icmpv6DestinationUnreachable::Print(std::ostream & os) const [member function]
     cls.add_method('Print', 
                    'void', 
                    [param('std::ostream &', 'os')], 
-                   is_virtual=True)
+                   is_const=True, is_virtual=True)
     ## icmpv6-header.h: void ns3::Icmpv6DestinationUnreachable::Serialize(ns3::Buffer::Iterator start) const [member function]
     cls.add_method('Serialize', 
                    'void', 
