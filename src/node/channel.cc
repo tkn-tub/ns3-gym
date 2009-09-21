@@ -16,9 +16,12 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "ns3/log.h"
 #include "channel.h"
+#include "channel-list.h"
 #include "net-device.h"
+
+#include "ns3/log.h"
+#include "ns3/uinteger.h"
 
 NS_LOG_COMPONENT_DEFINE ("Channel");
 
@@ -30,19 +33,31 @@ TypeId
 Channel::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::Channel")
-    .SetParent<Object> ();
+    .SetParent<Object> ()
+    .AddAttribute ("Id", "The id (unique integer) of this Channel.",
+                   TypeId::ATTR_GET,
+                   UintegerValue (0),
+                   MakeUintegerAccessor (&Channel::m_id),
+                   MakeUintegerChecker<uint32_t> ());
   return tid;
 }
 
 Channel::Channel ()
+  : m_id(0)
 {
   NS_LOG_FUNCTION_NOARGS ();
+  m_id = ChannelList::Add (this);
 }
-
 
 Channel::~Channel ()
 {
   NS_LOG_FUNCTION_NOARGS ();
+}
+
+uint32_t 
+Channel::GetId (void) const
+{
+  return m_id;
 }
 
 } // namespace ns3
