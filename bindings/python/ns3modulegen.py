@@ -8,6 +8,8 @@ LOCAL_MODULES = [
 import sys
 import os
 
+sys.path.insert(0, sys.argv[2])
+
 from pybindgen import FileCodeSink, write_preamble
 from pybindgen.module import MultiSectionFactory
 import pybindgen.settings
@@ -77,7 +79,7 @@ class MyMultiSectionFactory(MultiSectionFactory):
 
 
 def main():
-    out = MyMultiSectionFactory(sys.argv[1], sys.argv[2:])
+    out = MyMultiSectionFactory(sys.argv[1], sys.argv[3:])
     root_module = module_init()
     root_module.add_include('"everything.h"')
 
