@@ -11,6 +11,7 @@ This chapter describes validation of ns-3 propagation loss models.
 From source: @uref{http://www.scribd.com/doc/6650712/Wireless-CommunicationsPrinciples-and-Practice-Theodore-S,, Wireless Communications-Principles and Practice ,Theodore S Rappaport  pg. 71 }
 
 Given equation:
+@smallformat
 @verbatim
 Pr = Pt*Gt*Gr*lmb^2/((4*pi)^2*d^2*L)
 
@@ -33,12 +34,14 @@ Distance  ::  	Pr		::	SNR
 5000		1.99306e-13W		0.451571 
 6000		1.38407e-13W		0.313591 
 @end verbatim
+@end smallformat
 
 @subsection Validation test
 
 Test program available online at: @uref{http://xxx.xxx.com,,}
 
 Taken at default settings (packetSize = 1000, numPackets = 1, lambda = 0.125, 802.11b at 2.4GHz):
+@smallformat
 @verbatim
 Distance   ::   Pr		    ::	SNR 
 100		4.98265e-10W		1128.93 
@@ -52,6 +55,7 @@ Distance   ::   Pr		    ::	SNR
 7000		1.01687e-13W		0.230393 
 8000		7.78539e-14W		0.176395
 @end verbatim
+@end smallformat
 
 @subsection Discussion
 
@@ -64,6 +68,7 @@ As can be seen, the SNR outputted from the simulator, and the SNR computed from 
 From source: @uref{http://www.plextek.co.uk/papers/aps2005mcw.pdf,, Urban Propagation Measurements and Statistical Path Loss Model at 3.5 GHz, Marcus C. Walden, Frank J. Rowsell}
 
 Given equation:
+@smallformat
 @verbatim
 PL{dBm} = PL(d0) + 10*n*log(d/d0) + Xs
 
@@ -89,12 +94,14 @@ Distance   ::   Pr 		::	SNR
 500		3.98612e-14		.090314 
 1000		4.98265e-15		.011289
 @end verbatim
+@end smallformat
 
 @subsection Validation test
 
 Test program available online at: @uref{http://xxx.xxx.com,,}
 
 Taken at default settings (packetSize = 1000, numPackets = 1, exponent = 3, reference loss = 46.6777, 802.11b at 2.4GHz)
+@smallformat
 @verbatim
 Distance   ::   Pr		::	snr 
 10		4.98471e-9		11293.9 
@@ -107,7 +114,7 @@ Distance   ::   Pr		::	snr
 500		3.98777e-14		0.0903516 
 1000		4.98471e-15		0.0112939
 @end verbatim
-
+@end smallformat
 
 @subsection Discussion
 There is a ~.04% error between these results. I do not believe this is 

@@ -5,6 +5,11 @@
 @node Background
 @chapter Background
 
+@cartouche
+@emph{This chapter may be skipped by readers familiar with the basics of
+software testing.}
+@end cartouche
+
 Writing defect-free software is a difficult proposition.  There are many
 dimensions to the problem and there is much confusion regarding what is 
 meant by different terms in different contexts.  We have found it worthwhile
@@ -44,7 +49,7 @@ must be present for the product to succeed.  From a testing perspective, some
 of these qualities that must be addressed are that @command{ns-3} must be 
 ``correct,'' ``robust,''  ``performant'' and ``maintainable.''  Ideally there
 should be metrics for each of these dimensions that are checked by the tests
-to identify when the product fails to meed its expectations / requirements.
+to identify when the product fails to meet its expectations / requirements.
 
 @node Correctness
 @section Correctness
@@ -55,15 +60,18 @@ something, the simulation should faithfully represent some physical entity or
 process to a specified accuracy and precision.
 
 It turns out that there are two perspectives from which one can view 
-correctness.  Verifying that a particular process is implemented according 
-to its specification is generically called verification.  The process of 
-deciding that the specification is correct is generically called validation.
+correctness.  Verifying that a particular model is implemented according 
+to its specification is generically called @emph{verification}.  The process of 
+deciding that the model is correct for its intended use is generically called 
+@emph{validation}.
 
 @node ValidationAndVerification
 @section Validation and Verification
 
 A computer model is a mathematical or logical representation of something. It 
-can represent a vehicle, a frog or a networking card.  Models can also represent
+can represent a vehicle, an elephant (see 
+@uref{http://www.simutools.org,,David Harel's talk about modeling an 
+elephant at SIMUTools 2009}, or a networking card.  Models can also represent
 processes such as global warming, freeway traffic flow or a specification of a 
 networking protocol.  Models can be completely faithful representations of a 
 logical process specification, but they necessarily can never completely 
@@ -141,14 +149,14 @@ zero-terminated string representation of an integer, a dirty test might provide
 an unterminated string of random characters to verify that the system does not
 crash as a result of this unexpected input.  Unfortunately, detecting such 
 ``dirty'' input and taking preventive measures to ensure the system does not
-fail catasrophically can require a huge amount of development overhead.  In
+fail catastrophically can require a huge amount of development overhead.  In
 order to reduce development time, a decision was taken early on in the project
 to minimize the amount of parameter validation and error handling in the 
 @command{ns-3} codebase.  For this reason, we do not spend much time on dirty
 testing -- it would just uncover the results of the design decision we know
 we took.
 
-We do want to deonstrate that @command{ns-3} software does work across some set
+We do want to demonstrate that @command{ns-3} software does work across some set
 of conditions.  We borrow a couple of definitions to narrow this down a bit.  
 The @emph{domain of applicability} is a set of prescribed conditions for which
 the model has been tested, compared against reality to the extent possible, and 
@@ -158,7 +166,7 @@ the computerized model and reality within a domain of applicability.
 The @command{ns-3} testing environment provides tools to allow for setting up 
 and running test environments over multiple systems (buildbot) and provides 
 classes to encourage clean tests to verify the operation of the system over the
-expected ``domain of applicability'' and ``range of accuraccy.''
+expected ``domain of applicability'' and ``range of accuracy.''
 
 @node Performant
 @section Performant
@@ -171,7 +179,7 @@ This is really about the broad subject of software performance testing.  One of
 the key things that is done is to compare two systems to find which performs 
 better (cf benchmarks).  This is used to demonstrate that, for example, 
 @code{ns-3} can perform a basic kind of simulation at least as fast as a 
-competing product, or can be used to identify parts of the system that perform
+competing tool, or can be used to identify parts of the system that perform
 badly.
 
 In the @code{ns-3} test framework, we provide support for timing various kinds
@@ -187,7 +195,8 @@ of tests for the entire system to ensure that it remains valid and verified
 over its lifetime.
 
 When a feature stops functioning as intended after some kind of change to the
-system is integrated, it is called generically a regression.  Originally the 
+system is integrated, it is called generically a @emph{regression}.  
+Originally the 
 term regression referred to a change that caused a previously fixed bug to
 reappear, but the term has evolved to describe any kind of change that breaks
 existing functionality.  There are many kinds of regressions that may occur

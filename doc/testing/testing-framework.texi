@@ -2,14 +2,30 @@
 @c Testing framework
 @c ========================================================================
 
+@unnumbered Part I:  Testing
+
 @node TestingFramework
 @chapter Testing Framework
+
+ns-3 consists of a simulation core engine, a set of models, example programs, 
+and tests.  Over time, new contributors contribute models, tests, and 
+examples.  A Python test program @samp{test.py} serves as the test
+execution manager; @code{test.py} can run test code and examples to
+look for regressions, can output the results into a number of forms, and
+can manage code coverage analysis tools.  On top of this, we layer 
+@samp{Buildbots} that are automated build robots that perform
+robustness testing by running the test framework on different systems
+and with different configuration options.
+
+@cartouche
+Insert figure showing the components here
+@end cartouche
 
 @node BuildBots
 @section Buildbots
 
-The @command{ns-3} testing framework is composed of several major pieces.  At
-the highest level are the buildbots (build robots).  If you are unfamiliar with
+At the highest level of ns-3 testing are the buildbots (build robots).  
+If you are unfamiliar with
 this system look at @uref{http://djmitche.github.com/buildbot/docs/0.7.11/}.  
 This is an open-source automated system that allows @command{ns-3} to be rebuilt
 and tested each time something has changed.  By running the buildbots on a number
@@ -21,6 +37,7 @@ than to read its messages regarding test results.  If a failure is detected in
 one of the automated build and test jobs, the buildbot will send an email to the
 @emph{ns-developers} mailing list.  This email will look something like:
 
+@smallformat
 @verbatim
   The Buildbot has detected a new failure of osx-ppc-g++-4.2 on NsNam.
   Full details are available at:
@@ -35,11 +52,12 @@ one of the automated build and test jobs, the buildbot will send an email to the
   Build Source Stamp: HEAD
   Blamelist: 
   
-  BUILD FAILED: failed shell_5 shell_6 shell_7 shell_8 shell_9 shell_10 shell_11 shell_12 shell_13 shell_14 shell_15
+  BUILD FAILED: failed shell_5 shell_6 shell_7 shell_8 shell_9 shell_10 shell_11 shell_12 
   
   sincerely,
   -The Buildbot
 @end verbatim
+@end smallformat
 
 In the full details URL shown in the email, one can search for the keyword 
 @code{failed} and select the @code{stdio} link for the corresponding step to see
@@ -68,6 +86,7 @@ back in a very concise form.  Running the command,
 will result in a number of @code{PASS}, @code{FAIL}, @code{CRASH} or @code{SKIP}
 indications followed by the kind of test that was run and its display name.
  
+@smallformat
 @verbatim
   Waf: Entering directory `/home/craigdo/repos/ns-3-allinone-test/ns-3-dev/build'
   Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone-test/ns-3-dev/build'
@@ -82,6 +101,7 @@ indications followed by the kind of test that was run and its display name.
   PASS: Example csma-broadcast
   PASS: Example csma-multicast
 @end verbatim
+@end smallformat
 
 This mode is indented to be used by users who are interested in determining if
 their distribution is working correctly, and by developers who are interested
@@ -134,6 +154,7 @@ the file ``results.txt''.
 
 You should find something similar to the following in that file:
 
+@smallformat
 @verbatim
 FAIL: Test Suite ``ns3-wifi-propagation-loss-models'' (real 0.02 user 0.01 system 0.00)
   PASS: Test Case "Check ... Friis ... model ..." (real 0.01 user 0.00 system 0.00)
@@ -146,6 +167,7 @@ FAIL: Test Suite ``ns3-wifi-propagation-loss-models'' (real 0.02 user 0.01 syste
       File:      ../src/test/ns3wifi/propagation-loss-models-test-suite.cc
       Line:      360
 @end verbatim
+@end smallformat
 
 Notice that the Test Suite is composed of two Test Cases.  The first test case
 checked the Friis propagation loss model and passed.  The second test case 
@@ -158,14 +180,14 @@ If you desire, you could just as easily have written an HTML file using the
 @code{--html} option as described above.
 
 Typically a user will run all tests at least once after downloading 
-@command{ns-3} to ensure that his or her enviornment has been built correctly
+@command{ns-3} to ensure that his or her environment has been built correctly
 and is generating correct results according to the test suites.  Developers
 will typically run the test suites before and after making a change to ensure
 that they have not introduced a regression with their changes.  In this case,
 developers may not want to run all tests, but only a subset.  For example,
 the developer might only want to run the unit tests periodically while making
 changes to a repository.  In this case, @code{test.py} can be told to constrain
-the types of tests being run to a particular class of tests.  The follwoing
+the types of tests being run to a particular class of tests.  The following
 command will result in only the unit tests being run:
 
 @verbatim
@@ -188,6 +210,7 @@ to be listed.  The following command
 
 will result in the following list being displayed:
 
+@smallformat
 @verbatim
   Waf: Entering directory `/home/craigdo/repos/ns-3-allinone-test/ns-3-dev/build'
   Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone-test/ns-3-dev/build'
@@ -198,6 +221,7 @@ will result in the following list being displayed:
   example:     Examples (to see if example programs run successfully)
   performance: Performance Tests (check to see if the system is as fast as expected)
 @end verbatim
+@end smallformat
 
 This list is displayed in increasing order of complexity of the tests.  Any of these
 kinds of test can be provided as a constraint using the @code{--constraint} option.
@@ -211,6 +235,7 @@ to be listed.  The following command,
 
 will result in a list of the test suite being displayed, similar to :
 
+@smallformat
 @verbatim
   Waf: Entering directory `/home/craigdo/repos/ns-3-allinone-test/ns-3-dev/build'
   Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone-test/ns-3-dev/build'
@@ -222,6 +247,7 @@ will result in a list of the test suite being displayed, similar to :
   object-name-service
   random-number-generators
 @end verbatim
+@end smallformat
 
 Any of these listed suites can be selected to be run by itself using the 
 @code{--suite} option as shown above.
@@ -308,7 +334,7 @@ are examples of this kind of test.
 @subsection Unit Tests
 
 Unit tests are more involved tests that go into detail to make sure that a
-piece of code works as advertized in isolation.  There is really no reason
+piece of code works as advertised in isolation.  There is really no reason
 for this kind of test to be built into an ns-3 module.  It turns out, for
 example, that the unit tests for the object name service are about the same
 size as the object name service code itself.  Unit tests are tests that
@@ -325,8 +351,8 @@ locally in the src/common directory.
 
 System tests are those that involve more than one module in the system.  We
 have lots of this kind of test running in our current regression framework,
-but they are overloaded examples.  We provide a new place for this kind of
-test in the directory ``src/tests''.  The file
+but they are typically overloaded examples.  We provide a new place 
+for this kind of test in the directory ``src/test''.  The file
 src/test/ns3tcp/ns3-interop-test-suite.cc is an example of this kind of
 test.  It uses NSC TCP to test the ns-3 TCP implementation.  Often there
 will be test vectors required for this kind of test, and they are stored in
@@ -376,6 +402,7 @@ In order to execute the test-runner, you run it like any other ns-3 executable
 
 You should see something like the following:
 
+@smallformat
 @verbatim
   Waf: Entering directory `/home/craigdo/repos/ns-3-allinone-test/ns-3-dev/build'
   Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone-test/ns-3-dev/build'
@@ -389,6 +416,7 @@ You should see something like the following:
   --suite=suite-name:     Run the test suite named ``suite-name''
   --verbose:              Turn on messages in the run test suites
 @end verbatim
+@end smallformat
 
 There are a number of things available to you which will be familiar to you if
 you have looked at @command{test.py}.  This should be expected since the test-
@@ -417,12 +445,15 @@ file to which the tests will write their XML status using the @code{--out}
 option.  You need to be careful interpreting the results because the test 
 suites will @emph{append} results onto this file.  Try,
 
+@smallformat
 @verbatim
   ./waf --run "test-runner --basedir=`pwd` --suite=pcap-file-object --out=myfile.xml''
 @end verbatim
+@end smallformat
 
 If you look at the file @code{myfile.xml} you should see something like,
 
+@smallformat
 @verbatim
 <TestSuite>
   <SuiteName>pcap-file-object</SuiteName>
@@ -460,6 +491,7 @@ If you look at the file @code{myfile.xml} you should see something like,
   <SuiteTime>real 0.00 user 0.00 system 0.00</SuiteTime>
 </TestSuite>
 @end verbatim
+@end smallformat
 
 If you are familiar with XML this should be fairly self-explanatory.  It is 
 also not a complete XML file since test suites are designed to have their
@@ -471,12 +503,13 @@ section.
 
 The executables that run dedicated test programs use a TestRunner class.  This
 class provides for automatic test registration and listing, as well as a way to
-exeute the individual tests.  Individual test suites use C++ global constructors
+execute the individual tests.  Individual test suites use C++ global 
+constructors
 to add themselves to a collection of test suites managed by the test runner.
 The test runner is used to list all of the available tests and to select a test
 to be run.  This is a quite simple class that provides three static methods to
 provide or Adding and Getting test suites to a collection of tests.  See the 
-doxygen for class @code{ns3::TestRunner} for details
+doxygen for class @code{ns3::TestRunner} for details.
 
 @node TestSuite
 @section Test Suite
