@@ -56,6 +56,9 @@ along with this program.  If not, see @uref{http://www.gnu.org/licenses/}.
 @title ns-3 Reference Manual
 @author ns-3 project
 @author feedback:  ns-developers@@isi.edu
+
+@b{Simulator version:  }
+@include VERSION
 @today{}
 
 @c @page
@@ -75,6 +78,9 @@ along with this program.  If not, see @uref{http://www.gnu.org/licenses/}.
 
 For a pdf version of this manual, 
 see @uref{http://www.nsnam.org/docs/manual.pdf}.
+
+Simulator version:  
+@include VERSION
 
 @insertcopying
 @end ifnottex
