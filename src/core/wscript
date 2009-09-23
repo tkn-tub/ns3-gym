@@ -151,4 +151,5 @@ def build(bld):
                 ])
 
     if bld.env['ENABLE_GSL']:
+        core.uselib = 'GSL GSLCBLAS M'
         core.source.extend(['rng-test-suite.cc'])

@@ -369,7 +369,6 @@ MinstrelWifiRemoteStation::GetManager (void) const
 WifiMode
 MinstrelWifiRemoteStation::DoGetDataMode (uint32_t size)
 {
-  UpdateStats ();
   if (!m_initialized)
     {
       CheckInit ();
@@ -377,6 +376,7 @@ MinstrelWifiRemoteStation::DoGetDataMode (uint32_t size)
       /// start the rate at half way
       m_txrate = GetNSupportedModes () / 2;
     }
+  UpdateStats ();
   return GetSupportedMode (m_txrate);
 }
 
@@ -435,7 +435,7 @@ MinstrelWifiRemoteStation::FindRate ()
     {
 
       /// now go through the table and find an index rate
-      idx = GetNextSample	();
+      idx = GetNextSample();
 			
 			
       /**
