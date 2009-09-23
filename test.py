@@ -233,7 +233,7 @@ def translate_to_html(results_file, html_file):
     for example in dom.getElementsByTagName("Example"):
         f.write("<tr>\n")
         result = get_node_text(example.getElementsByTagName("Result")[0])
-        if result == "FAIL":
+        if result in ["FAIL", "CRASH"]:
             f.write("<td style=\"color:red\">%s</td>\n" % result)
         else:
             f.write("<td style=\"color:green\">%s</td>\n" % result)
