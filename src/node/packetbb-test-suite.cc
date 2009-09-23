@@ -19,110 +19,101 @@
  * Author: Tom Wambold <tom5760@gmail.com>
  */
 
+#include <cstring>
 #include <iostream>
-
+#include "ns3/test.h"
 #include "ns3/ptr.h"
 #include "ns3/ipv4-address.h"
 #include "ns3/ipv6-address.h"
-#include "ns3/packetbb.h"
+#include "packetbb.h"
 
-using namespace std;
 using namespace ns3;
 
-class PacketBBTester
+class PbbTestCase : public TestCase
 {
 public:
-  PacketBBTester (int testnum, PbbPacket &reference, const uint8_t * buffer,
-      uint32_t size) :
-    m_refPacket(reference)
-  {
-    m_refBuffer.AddAtStart (size);
-    m_refBuffer.Begin ().Write (buffer, size);
+  PbbTestCase (std::string name, Ptr<PbbPacket> packet,
+      uint8_t * buffer, uint32_t size);
+  virtual ~PbbTestCase ();
 
-    cout << "Test " << testnum << " - ";
-    Test ();
-  }
-
-  void Test (void)
-  {
-    if (TestSerialize ())
-      {
-        cout << "Serialize Pass, ";
-      }
-    else
-      {
-        cout << "Serialize Fail, ";
-      }
-
-    if (TestDeserialize ())
-      {
-        cout << "Deserialize Pass";
-      }
-    else
-      {
-        cout << "Deserialize Fail";
-      }
-
-    cout << endl;
-  }
-
-  bool TestSerialize (void)
-  {
-    Buffer newBuffer;
-    newBuffer.AddAtStart (m_refPacket.GetSerializedSize ());
-    m_refPacket.Serialize (newBuffer.Begin ());
-    return CompareBuffers (m_refBuffer, newBuffer);
-  }
-
-  bool TestDeserialize (void)
-  {
-    PbbPacket newPacket;
-    if (newPacket.Deserialize (m_refBuffer.Begin ()) != m_refBuffer.GetSize ())
-      {
-        return false;
-      }
-    return m_refPacket == newPacket;
-  }
+protected:
+  virtual bool DoRun (void);
 
 private:
-  static bool CompareBuffers (Buffer a, Buffer b)
-  {
-    const uint8_t * abuf = a.PeekData ();
-    const uint8_t * bbuf = b.PeekData ();
+  bool TestSerialize (void);
+  bool TestDeserialize (void);
 
-    for (unsigned int i = 0; i < a.GetSize (); i++)
-      {
-        if (abuf[i] != bbuf[i])
-          {
-            cout << "Difference - [" << i << "] - " << (int)abuf[i] << " - " << (int)bbuf[i] << endl;
-          }
-      }
-
-    if (a.GetSize () != b.GetSize ())
-      {
-        cout << "Buffers differ in size: " << a.GetSize () << ", " << b.GetSize() << endl;
-        return false;
-      }
-
-    if (memcmp (a.PeekData (), b.PeekData (), a.GetSize ()) != 0)
-      {
-        return false;
-      }
-
-    return true;
-  }
-
+  Ptr<PbbPacket> m_refPacket;
   Buffer m_refBuffer;
-  PbbPacket &m_refPacket;
 };
 
-int main (void)
+PbbTestCase::PbbTestCase (std::string name, Ptr<PbbPacket> packet,
+    uint8_t * buffer, uint32_t size)
+  : TestCase (name)
 {
-  /* These tests are from:
-   * http://interop08.thomasclausen.org/packets-and-dumps.txt
-   */
-  int testnum = 1;
+  m_refPacket = packet;
 
+  m_refBuffer.AddAtStart (size);
+  m_refBuffer.Begin ().Write (buffer, size);
+}
+
+PbbTestCase::~PbbTestCase (void)
+{
+}
+
+bool
+PbbTestCase::DoRun (void)
+{
+  NS_TEST_ASSERT_MSG_EQ (TestSerialize (), false,
+      "serialization failed");
+  NS_TEST_ASSERT_MSG_EQ (TestDeserialize (), false,
+      "deserialization failed");
+  return GetErrorStatus ();
+}
+
+bool
+PbbTestCase::TestSerialize (void)
+{
+  Buffer newBuffer;
+  newBuffer.AddAtStart (m_refPacket->GetSerializedSize ());
+  m_refPacket->Serialize (newBuffer.Begin ());
+
+  NS_TEST_ASSERT_MSG_EQ (newBuffer.GetSize (), m_refBuffer.GetSize (),
+      "serialization failed, buffers have different sizes");
+
+  int memrv = memcmp (newBuffer.PeekData (), m_refBuffer.PeekData (),
+      newBuffer.GetSize ());
+
+  NS_TEST_ASSERT_MSG_EQ (memrv, 0,
+      "serialization faled, buffers differ");
+
+  return GetErrorStatus ();
+}
+
+bool
+PbbTestCase::TestDeserialize (void)
+{
+  Ptr<PbbPacket> newPacket = Create<PbbPacket> ();
+  uint32_t numbytes = newPacket->Deserialize (m_refBuffer.Begin ());
+
+  NS_TEST_ASSERT_MSG_EQ (numbytes, m_refBuffer.GetSize (),
+      "deserialization failed, did not use all bytes");
+
+  NS_TEST_ASSERT_MSG_EQ (*newPacket, *m_refPacket,
+      "deserialization failed, objects do not match");
+
+  return GetErrorStatus ();
+}
+
+class PbbTestSuite : public TestSuite
+{
+public:
+  PbbTestSuite ();
+};
+
+PbbTestSuite::PbbTestSuite ()
+  : TestSuite ("packetbb-test-suite", UNIT)
+{
   /* Test 1
    * 	,------------------
    * 	|  PACKET
@@ -132,9 +123,9 @@ int main (void)
    * 	`------------------
    */
   {
-    PbbPacket packet;
+    Ptr<PbbPacket> packet = Create<PbbPacket> ();
     uint8_t buffer[] = {0x00};
-    PacketBBTester test(testnum++, packet, buffer, sizeof(buffer));
+    AddTestCase (new PbbTestCase ("1", packet, buffer, sizeof(buffer)));
   }
 
   /* Test 2
@@ -147,10 +138,10 @@ int main (void)
    * `------------------
    */
   {
-    PbbPacket packet;
-    packet.SetSequenceNumber (2);
+    Ptr<PbbPacket> packet = Create<PbbPacket> ();
+    packet->SetSequenceNumber (2);
     uint8_t buffer[] = {0x08, 0x00, 0x02};
-    PacketBBTester test(testnum++, packet, buffer, sizeof(buffer));
+    AddTestCase (new PbbTestCase ("2", packet, buffer, sizeof(buffer)));
   }
 
   /* Test 3
@@ -163,14 +154,15 @@ int main (void)
 	 * `------------------
    * This test has the phastlv flag set to 1 with no tlvs.
    * I'll come back to this one later.
-  {
-    PbbPacket packet;
-    packet.SetSequenceNumber (3);
-    uint8_t buffer[] = {0x0c, 0x00, 0x03, 0x00, 0x00};
-    PacketBBTester test(testnum++, packet, buffer, sizeof(buffer));
-  }
    */
-  std::cout << "Skipping test " << testnum++ << std::endl;
+#if 0
+  {
+    Ptr<PbbPacket> packet = Create<PbbPacket> ();
+    packet->SetSequenceNumber (3);
+    uint8_t buffer[] = {0x0c, 0x00, 0x03, 0x00, 0x00};
+    AddTestCase (new PbbTestCase ("3", packet, buffer, sizeof(buffer)));
+  }
+#endif
 
   /* Test 4
    * ,------------------
@@ -186,18 +178,18 @@ int main (void)
 	 * `------------------
    */
   {
-    PbbPacket packet;
-    packet.SetSequenceNumber (4);
+    Ptr<PbbPacket> packet = Create<PbbPacket> ();
+    packet->SetSequenceNumber (4);
 
     Ptr<PbbTlv> tlv = Create<PbbTlv>();
     tlv->SetType (1);
 
-    packet.TlvPushBack (tlv);
+    packet->TlvPushBack (tlv);
     uint8_t buffer[] = {
       0x0c, 0x00, 0x04, 0x00,
       0x02, 0x01, 0x00
     };
-    PacketBBTester test(testnum++, packet, buffer, sizeof(buffer));
+    AddTestCase (new PbbTestCase ("4", packet, buffer, sizeof(buffer)));
   }
 
   /* Test 5
@@ -217,24 +209,24 @@ int main (void)
 	 * `------------------
    */
   {
-    PbbPacket packet;
-    packet.SetSequenceNumber (5);
+    Ptr<PbbPacket> packet = Create<PbbPacket> ();
+    packet->SetSequenceNumber (5);
 
     Ptr<PbbTlv> tlv1 = Create<PbbTlv>();
     tlv1->SetType (1);
-    packet.TlvPushBack (tlv1);
+    packet->TlvPushBack (tlv1);
 
     Ptr<PbbTlv> tlv2 = Create<PbbTlv>();
     tlv2->SetType (2);
     tlv2->SetTypeExt (100);
-    packet.TlvPushBack (tlv2);
+    packet->TlvPushBack (tlv2);
 
     uint8_t buffer[] = {
       0x0c, 0x00, 0x05, 0x00,
       0x05, 0x01, 0x00, 0x02,
       0x80, 0x64
     };
-    PacketBBTester test(testnum++, packet, buffer, sizeof(buffer));
+    AddTestCase (new PbbTestCase ("5", packet, buffer, sizeof(buffer)));
   }
 
   /* Test 6
@@ -255,12 +247,12 @@ int main (void)
 	 * `------------------
    */
   {
-    PbbPacket packet;
-    packet.SetSequenceNumber (6);
+    Ptr<PbbPacket> packet = Create<PbbPacket> ();
+    packet->SetSequenceNumber (6);
 
     Ptr<PbbTlv> tlv1 = Create<PbbTlv>();
     tlv1->SetType (1);
-    packet.TlvPushBack (tlv1);
+    packet->TlvPushBack (tlv1);
 
     Ptr<PbbTlv> tlv2 = Create<PbbTlv>();
     tlv2->SetType (2);
@@ -269,7 +261,7 @@ int main (void)
     uint8_t tlv2val[] = {1, 2, 3, 4};
     tlv2->SetValue(tlv2val, sizeof(tlv2val));
 
-    packet.TlvPushBack (tlv2);
+    packet->TlvPushBack (tlv2);
 
     uint8_t buffer[] = {
       0x0c, 0x00, 0x06, 0x00,
@@ -277,7 +269,7 @@ int main (void)
       0x90, 0x64, 0x04, 0x01,
       0x02, 0x03, 0x04
     };
-    PacketBBTester test(testnum++, packet, buffer, sizeof(buffer));
+    AddTestCase (new PbbTestCase ("6", packet, buffer, sizeof(buffer)));
   }
 
   /* Test 7
@@ -372,12 +364,12 @@ int main (void)
 	 * `------------------
    */
   {
-    PbbPacket packet;
-    packet.SetSequenceNumber (7);
+    Ptr<PbbPacket> packet = Create<PbbPacket> ();
+    packet->SetSequenceNumber (7);
 
     Ptr<PbbTlv> tlv1 = Create<PbbTlv>();
     tlv1->SetType (1);
-    packet.TlvPushBack (tlv1);
+    packet->TlvPushBack (tlv1);
 
     Ptr<PbbTlv> tlv2 = Create<PbbTlv>();
     tlv2->SetType (2);
@@ -462,7 +454,7 @@ int main (void)
     };
     tlv2->SetValue(tlv2val, sizeof(tlv2val));
 
-    packet.TlvPushBack (tlv2);
+    packet->TlvPushBack (tlv2);
 
     uint8_t buffer[] = {
       0x0c, 0x00, 0x07, 0x01,
@@ -544,7 +536,7 @@ int main (void)
       0x25, 0x26, 0x27, 0x28,
       0x29, 0x2a, 0x2b, 0x2c
     };
-    PacketBBTester test(testnum++, packet, buffer, sizeof(buffer));
+    AddTestCase (new PbbTestCase ("7", packet, buffer, sizeof(buffer)));
   }
 
   /* Test 8
@@ -568,16 +560,16 @@ int main (void)
 	 * `------------------
   */
   {
-    PbbPacket packet;
-    packet.SetSequenceNumber (8);
+    Ptr<PbbPacket> packet = Create<PbbPacket> ();
+    packet->SetSequenceNumber (8);
 
     Ptr<PbbTlv> tlv1 = Create<PbbTlv> ();
     tlv1->SetType (1);
-    packet.TlvPushBack (tlv1);
+    packet->TlvPushBack (tlv1);
 
     Ptr<PbbMessageIpv4> msg1 = Create<PbbMessageIpv4> ();
     msg1->SetType (1);
-    packet.MessagePushBack (msg1);
+    packet->MessagePushBack (msg1);
 
     uint8_t buffer[] = {
       0x0c, 0x00, 0x08, 0x00,
@@ -585,7 +577,7 @@ int main (void)
       0x03, 0x00, 0x06, 0x00,
       0x00
     };
-    PacketBBTester test(testnum++, packet, buffer, sizeof(buffer));
+    AddTestCase (new PbbTestCase ("8", packet, buffer, sizeof(buffer)));
   }
 
   /* Test 9
@@ -617,21 +609,21 @@ int main (void)
 	 * `------------------
   */
   {
-    PbbPacket packet;
-    packet.SetSequenceNumber (9);
+    Ptr<PbbPacket> packet = Create<PbbPacket> ();
+    packet->SetSequenceNumber (9);
 
     Ptr<PbbTlv> tlv1 = Create<PbbTlv> ();
     tlv1->SetType (1);
-    packet.TlvPushBack (tlv1);
+    packet->TlvPushBack (tlv1);
 
     Ptr<PbbMessageIpv4> msg1 = Create<PbbMessageIpv4> ();
     msg1->SetType (1);
-    packet.MessagePushBack (msg1);
+    packet->MessagePushBack (msg1);
 
     Ptr<PbbMessageIpv4> msg2 = Create<PbbMessageIpv4> ();
     msg2->SetType (2);
     msg2->SetOriginatorAddress(Ipv4Address("10.0.0.1"));
-    packet.MessagePushBack (msg2);
+    packet->MessagePushBack (msg2);
 
     uint8_t buffer[] = {
       0x0c, 0x00, 0x09, 0x00,
@@ -641,7 +633,7 @@ int main (void)
       0x0a, 0x0a, 0x00, 0x00,
       0x01, 0x00, 0x00
     };
-    PacketBBTester test(testnum++, packet, buffer, sizeof(buffer));
+    AddTestCase (new PbbTestCase ("9", packet, buffer, sizeof(buffer)));
   }
 
   /* Test 10
@@ -674,22 +666,22 @@ int main (void)
 	 * `------------------
    */
   {
-    PbbPacket packet;
-    packet.SetSequenceNumber (10);
+    Ptr<PbbPacket> packet = Create<PbbPacket> ();
+    packet->SetSequenceNumber (10);
 
     Ptr<PbbTlv> tlv1 = Create<PbbTlv> ();
     tlv1->SetType (1);
-    packet.TlvPushBack (tlv1);
+    packet->TlvPushBack (tlv1);
 
     Ptr<PbbMessageIpv4> msg1 = Create<PbbMessageIpv4> ();
     msg1->SetType (1);
-    packet.MessagePushBack (msg1);
+    packet->MessagePushBack (msg1);
 
     Ptr<PbbMessageIpv4> msg2 = Create<PbbMessageIpv4> ();
     msg2->SetType (2);
     msg2->SetOriginatorAddress(Ipv4Address("10.0.0.1"));
     msg2->SetHopCount (1);
-    packet.MessagePushBack (msg2);
+    packet->MessagePushBack (msg2);
 
     uint8_t buffer[] = {
       0x0c, 0x00, 0x0a, 0x00,
@@ -699,7 +691,7 @@ int main (void)
       0x0b, 0x0a, 0x00, 0x00,
       0x01, 0x01, 0x00, 0x00,
     };
-    PacketBBTester test(testnum++, packet, buffer, sizeof(buffer));
+    AddTestCase (new PbbTestCase ("10", packet, buffer, sizeof(buffer)));
   }
 
   /* Test 11
@@ -733,23 +725,23 @@ int main (void)
 	 * `------------------
    */
   {
-    PbbPacket packet;
-    packet.SetSequenceNumber (11);
+    Ptr<PbbPacket> packet = Create<PbbPacket> ();
+    packet->SetSequenceNumber (11);
 
     Ptr<PbbTlv> tlv1 = Create<PbbTlv> ();
     tlv1->SetType (1);
-    packet.TlvPushBack (tlv1);
+    packet->TlvPushBack (tlv1);
 
     Ptr<PbbMessageIpv4> msg1 = Create<PbbMessageIpv4> ();
     msg1->SetType (1);
-    packet.MessagePushBack (msg1);
+    packet->MessagePushBack (msg1);
 
     Ptr<PbbMessageIpv4> msg2 = Create<PbbMessageIpv4> ();
     msg2->SetType (2);
     msg2->SetOriginatorAddress(Ipv4Address("10.0.0.1"));
     msg2->SetHopLimit (255);
     msg2->SetHopCount (1);
-    packet.MessagePushBack (msg2);
+    packet->MessagePushBack (msg2);
 
     uint8_t buffer[] = {
       0x0c, 0x00, 0x0b, 0x00,
@@ -760,7 +752,7 @@ int main (void)
       0x01, 0xff, 0x01, 0x00,
       0x00
     };
-    PacketBBTester test(testnum++, packet, buffer, sizeof(buffer));
+    AddTestCase (new PbbTestCase ("11", packet, buffer, sizeof(buffer)));
   }
 
   /* Test 12
@@ -795,16 +787,16 @@ int main (void)
 	 * `------------------
    */
   {
-    PbbPacket packet;
-    packet.SetSequenceNumber (12);
+    Ptr<PbbPacket> packet = Create<PbbPacket> ();
+    packet->SetSequenceNumber (12);
 
     Ptr<PbbTlv> tlv1 = Create<PbbTlv> ();
     tlv1->SetType (1);
-    packet.TlvPushBack (tlv1);
+    packet->TlvPushBack (tlv1);
 
     Ptr<PbbMessageIpv4> msg1 = Create<PbbMessageIpv4> ();
     msg1->SetType (1);
-    packet.MessagePushBack (msg1);
+    packet->MessagePushBack (msg1);
 
     Ptr<PbbMessageIpv4> msg2 = Create<PbbMessageIpv4> ();
     msg2->SetType (2);
@@ -812,7 +804,7 @@ int main (void)
     msg2->SetHopLimit (255);
     msg2->SetHopCount (1);
     msg2->SetSequenceNumber (12345);
-    packet.MessagePushBack (msg2);
+    packet->MessagePushBack (msg2);
 
     uint8_t buffer[] = {
       0x0c, 0x00, 0x0c, 0x00,
@@ -823,7 +815,7 @@ int main (void)
       0x01, 0xff, 0x01, 0x30,
       0x39, 0x00, 0x00
     };
-    PacketBBTester test(testnum++, packet, buffer, sizeof(buffer));
+    AddTestCase (new PbbTestCase ("12", packet, buffer, sizeof(buffer)));
   }
 
   /* Test 13
@@ -858,16 +850,16 @@ int main (void)
 	 * `------------------
    */
   {
-    PbbPacket packet;
-    packet.SetSequenceNumber (13);
+    Ptr<PbbPacket> packet = Create<PbbPacket> ();
+    packet->SetSequenceNumber (13);
 
     Ptr<PbbTlv> tlv1 = Create<PbbTlv> ();
     tlv1->SetType (1);
-    packet.TlvPushBack (tlv1);
+    packet->TlvPushBack (tlv1);
 
     Ptr<PbbMessageIpv4> msg1 = Create<PbbMessageIpv4> ();
     msg1->SetType (1);
-    packet.MessagePushBack (msg1);
+    packet->MessagePushBack (msg1);
 
     Ptr<PbbMessageIpv4> msg2 = Create<PbbMessageIpv4> ();
     msg2->SetType (2);
@@ -875,7 +867,7 @@ int main (void)
     msg2->SetHopLimit (255);
     msg2->SetHopCount (1);
     msg2->SetSequenceNumber (12345);
-    packet.MessagePushBack (msg2);
+    packet->MessagePushBack (msg2);
 
     uint8_t buffer[] = {
       0x0c, 0x00, 0x0d, 0x00,
@@ -886,7 +878,7 @@ int main (void)
       0x01, 0xff, 0x01, 0x30,
       0x39, 0x00, 0x00
     };
-    PacketBBTester test(testnum++, packet, buffer, sizeof(buffer));
+    AddTestCase (new PbbTestCase ("13", packet, buffer, sizeof(buffer)));
   }
 
   /* Test 14
@@ -925,12 +917,12 @@ int main (void)
 	 * `------------------
    */
   {
-    PbbPacket packet;
-    packet.SetSequenceNumber (14);
+    Ptr<PbbPacket> packet = Create<PbbPacket> ();
+    packet->SetSequenceNumber (14);
 
     Ptr<PbbTlv> tlv1 = Create<PbbTlv> ();
     tlv1->SetType (1);
-    packet.TlvPushBack (tlv1);
+    packet->TlvPushBack (tlv1);
 
     Ptr<PbbMessageIpv4> msg1 = Create<PbbMessageIpv4> ();
     msg1->SetType (1);
@@ -939,7 +931,7 @@ int main (void)
     msg1tlv1->SetType (1);
     msg1->TlvPushBack (msg1tlv1);
 
-    packet.MessagePushBack (msg1);
+    packet->MessagePushBack (msg1);
 
     Ptr<PbbMessageIpv4> msg2 = Create<PbbMessageIpv4> ();
     msg2->SetType (2);
@@ -947,7 +939,7 @@ int main (void)
     msg2->SetHopLimit (255);
     msg2->SetHopCount (1);
     msg2->SetSequenceNumber (12345);
-    packet.MessagePushBack (msg2);
+    packet->MessagePushBack (msg2);
 
     uint8_t buffer[] = {
       0x0c, 0x00, 0x0e, 0x00,
@@ -959,7 +951,7 @@ int main (void)
       0x01, 0x30, 0x39, 0x00,
       0x00
     };
-    PacketBBTester test(testnum++, packet, buffer, sizeof(buffer));
+    AddTestCase (new PbbTestCase ("14", packet, buffer, sizeof(buffer)));
   }
 
   /* Test 15
@@ -1002,12 +994,12 @@ int main (void)
 	 * `------------------
    */
   {
-    PbbPacket packet;
-    packet.SetSequenceNumber (15);
+    Ptr<PbbPacket> packet = Create<PbbPacket> ();
+    packet->SetSequenceNumber (15);
 
     Ptr<PbbTlv> tlv1 = Create<PbbTlv> ();
     tlv1->SetType (1);
-    packet.TlvPushBack (tlv1);
+    packet->TlvPushBack (tlv1);
 
     Ptr<PbbMessageIpv4> msg1 = Create<PbbMessageIpv4> ();
     msg1->SetType (1);
@@ -1016,7 +1008,7 @@ int main (void)
     msg1tlv1->SetType (1);
     msg1->TlvPushBack (msg1tlv1);
 
-    packet.MessagePushBack (msg1);
+    packet->MessagePushBack (msg1);
 
     Ptr<PbbMessageIpv4> msg2 = Create<PbbMessageIpv4> ();
     msg2->SetType (2);
@@ -1029,7 +1021,7 @@ int main (void)
     msg2a1->AddressPushBack (Ipv4Address ("0.0.0.0"));
     msg2->AddressBlockPushBack (msg2a1);
 
-    packet.MessagePushBack (msg2);
+    packet->MessagePushBack (msg2);
 
     uint8_t buffer[] = {
       0x0c, 0x00, 0x0f, 0x00,
@@ -1043,7 +1035,7 @@ int main (void)
       0x00, 0x00, 0x00, 0x00,
       0x00
     };
-    PacketBBTester test(testnum++, packet, buffer, sizeof(buffer));
+    AddTestCase (new PbbTestCase ("15", packet, buffer, sizeof(buffer)));
   }
 
   /* Test 16
@@ -1086,12 +1078,12 @@ int main (void)
 	 * `------------------
    */
   {
-    PbbPacket packet;
-    packet.SetSequenceNumber (16);
+    Ptr<PbbPacket> packet = Create<PbbPacket> ();
+    packet->SetSequenceNumber (16);
 
     Ptr<PbbTlv> tlv1 = Create<PbbTlv> ();
     tlv1->SetType (1);
-    packet.TlvPushBack (tlv1);
+    packet->TlvPushBack (tlv1);
 
     Ptr<PbbMessageIpv4> msg1 = Create<PbbMessageIpv4> ();
     msg1->SetType (1);
@@ -1100,7 +1092,7 @@ int main (void)
     msg1tlv1->SetType (1);
     msg1->TlvPushBack (msg1tlv1);
 
-    packet.MessagePushBack (msg1);
+    packet->MessagePushBack (msg1);
 
     Ptr<PbbMessageIpv4> msg2 = Create<PbbMessageIpv4> ();
     msg2->SetType (2);
@@ -1113,7 +1105,7 @@ int main (void)
     msg2a1->AddressPushBack (Ipv4Address ("255.255.255.255"));
     msg2->AddressBlockPushBack (msg2a1);
 
-    packet.MessagePushBack (msg2);
+    packet->MessagePushBack (msg2);
 
     uint8_t buffer[] = {
       0x0c, 0x00, 0x10, 0x00,
@@ -1127,7 +1119,7 @@ int main (void)
       0xff, 0xff, 0xff, 0x00,
       0x00,
     };
-    PacketBBTester test(testnum++, packet, buffer, sizeof(buffer));
+    AddTestCase (new PbbTestCase ("16", packet, buffer, sizeof(buffer)));
   }
 
   /* Test 17
@@ -1170,12 +1162,12 @@ int main (void)
 	 * `------------------
    */
   {
-    PbbPacket packet;
-    packet.SetSequenceNumber (17);
+    Ptr<PbbPacket> packet = Create<PbbPacket> ();
+    packet->SetSequenceNumber (17);
 
     Ptr<PbbTlv> tlv1 = Create<PbbTlv> ();
     tlv1->SetType (1);
-    packet.TlvPushBack (tlv1);
+    packet->TlvPushBack (tlv1);
 
     Ptr<PbbMessageIpv4> msg1 = Create<PbbMessageIpv4> ();
     msg1->SetType (1);
@@ -1184,7 +1176,7 @@ int main (void)
     msg1tlv1->SetType (1);
     msg1->TlvPushBack (msg1tlv1);
 
-    packet.MessagePushBack (msg1);
+    packet->MessagePushBack (msg1);
 
     Ptr<PbbMessageIpv4> msg2 = Create<PbbMessageIpv4> ();
     msg2->SetType (2);
@@ -1197,7 +1189,7 @@ int main (void)
     msg2a1->AddressPushBack (Ipv4Address ("0.0.0.1"));
     msg2->AddressBlockPushBack (msg2a1);
 
-    packet.MessagePushBack (msg2);
+    packet->MessagePushBack (msg2);
 
     uint8_t buffer[] = {
       0x0c, 0x00, 0x11, 0x00,
@@ -1211,7 +1203,7 @@ int main (void)
       0x00, 0x00, 0x01, 0x00,
       0x00,
     };
-    PacketBBTester test(testnum++, packet, buffer, sizeof(buffer));
+    AddTestCase (new PbbTestCase ("17", packet, buffer, sizeof(buffer)));
   }
 
   /* Test 18
@@ -1254,12 +1246,12 @@ int main (void)
 	 * `------------------
    */
   {
-    PbbPacket packet;
-    packet.SetSequenceNumber (18);
+    Ptr<PbbPacket> packet = Create<PbbPacket> ();
+    packet->SetSequenceNumber (18);
 
     Ptr<PbbTlv> tlv1 = Create<PbbTlv> ();
     tlv1->SetType (1);
-    packet.TlvPushBack (tlv1);
+    packet->TlvPushBack (tlv1);
 
     Ptr<PbbMessageIpv4> msg1 = Create<PbbMessageIpv4> ();
     msg1->SetType (1);
@@ -1268,7 +1260,7 @@ int main (void)
     msg1tlv1->SetType (1);
     msg1->TlvPushBack (msg1tlv1);
 
-    packet.MessagePushBack (msg1);
+    packet->MessagePushBack (msg1);
 
     Ptr<PbbMessageIpv4> msg2 = Create<PbbMessageIpv4> ();
     msg2->SetType (2);
@@ -1281,7 +1273,7 @@ int main (void)
     msg2a1->AddressPushBack (Ipv4Address ("10.0.0.0"));
     msg2->AddressBlockPushBack (msg2a1);
 
-    packet.MessagePushBack (msg2);
+    packet->MessagePushBack (msg2);
 
     uint8_t buffer[] = {
       0x0c, 0x00, 0x12, 0x00,
@@ -1295,7 +1287,7 @@ int main (void)
       0x00, 0x00, 0x00, 0x00,
       0x00,
     };
-    PacketBBTester test(testnum++, packet, buffer, sizeof(buffer));
+    AddTestCase (new PbbTestCase ("18", packet, buffer, sizeof(buffer)));
   }
 
   /* Test 19
@@ -1338,12 +1330,12 @@ int main (void)
 	 * `------------------
    */
   {
-    PbbPacket packet;
-    packet.SetSequenceNumber (19);
+    Ptr<PbbPacket> packet = Create<PbbPacket> ();
+    packet->SetSequenceNumber (19);
 
     Ptr<PbbTlv> tlv1 = Create<PbbTlv> ();
     tlv1->SetType (1);
-    packet.TlvPushBack (tlv1);
+    packet->TlvPushBack (tlv1);
 
     Ptr<PbbMessageIpv4> msg1 = Create<PbbMessageIpv4> ();
     msg1->SetType (1);
@@ -1352,7 +1344,7 @@ int main (void)
     msg1tlv1->SetType (1);
     msg1->TlvPushBack (msg1tlv1);
 
-    packet.MessagePushBack (msg1);
+    packet->MessagePushBack (msg1);
 
     Ptr<PbbMessageIpv4> msg2 = Create<PbbMessageIpv4> ();
     msg2->SetType (2);
@@ -1365,7 +1357,7 @@ int main (void)
     msg2a1->AddressPushBack (Ipv4Address ("10.0.0.1"));
     msg2->AddressBlockPushBack (msg2a1);
 
-    packet.MessagePushBack (msg2);
+    packet->MessagePushBack (msg2);
 
     uint8_t buffer[] = {
       0x0c, 0x00, 0x13, 0x00,
@@ -1379,7 +1371,7 @@ int main (void)
       0x00, 0x00, 0x01, 0x00,
       0x00,
     };
-    PacketBBTester test(testnum++, packet, buffer, sizeof(buffer));
+    AddTestCase (new PbbTestCase ("19", packet, buffer, sizeof(buffer)));
   }
 
   /* Test 20
@@ -1423,12 +1415,12 @@ int main (void)
 	 * `------------------
    */
   {
-    PbbPacket packet;
-    packet.SetSequenceNumber (20);
+    Ptr<PbbPacket> packet = Create<PbbPacket> ();
+    packet->SetSequenceNumber (20);
 
     Ptr<PbbTlv> tlv1 = Create<PbbTlv> ();
     tlv1->SetType (1);
-    packet.TlvPushBack (tlv1);
+    packet->TlvPushBack (tlv1);
 
     Ptr<PbbMessageIpv4> msg1 = Create<PbbMessageIpv4> ();
     msg1->SetType (1);
@@ -1437,7 +1429,7 @@ int main (void)
     msg1tlv1->SetType (1);
     msg1->TlvPushBack (msg1tlv1);
 
-    packet.MessagePushBack (msg1);
+    packet->MessagePushBack (msg1);
 
     Ptr<PbbMessageIpv4> msg2 = Create<PbbMessageIpv4> ();
     msg2->SetType (2);
@@ -1451,7 +1443,7 @@ int main (void)
     msg2a1->AddressPushBack (Ipv4Address ("10.0.0.2"));
     msg2->AddressBlockPushBack (msg2a1);
 
-    packet.MessagePushBack (msg2);
+    packet->MessagePushBack (msg2);
 
     uint8_t buffer[] = {
       0x0c, 0x00, 0x14, 0x00,
@@ -1465,7 +1457,7 @@ int main (void)
       0x0a, 0x00, 0x00, 0x01,
       0x02, 0x00, 0x00,
     };
-    PacketBBTester test(testnum++, packet, buffer, sizeof(buffer));
+    AddTestCase (new PbbTestCase ("20", packet, buffer, sizeof(buffer)));
   }
 
   /* Test 21
@@ -1509,12 +1501,12 @@ int main (void)
 	 * `------------------
    */
   {
-    PbbPacket packet;
-    packet.SetSequenceNumber (21);
+    Ptr<PbbPacket> packet = Create<PbbPacket> ();
+    packet->SetSequenceNumber (21);
 
     Ptr<PbbTlv> tlv1 = Create<PbbTlv> ();
     tlv1->SetType (1);
-    packet.TlvPushBack (tlv1);
+    packet->TlvPushBack (tlv1);
 
     Ptr<PbbMessageIpv4> msg1 = Create<PbbMessageIpv4> ();
     msg1->SetType (1);
@@ -1523,7 +1515,7 @@ int main (void)
     msg1tlv1->SetType (1);
     msg1->TlvPushBack (msg1tlv1);
 
-    packet.MessagePushBack (msg1);
+    packet->MessagePushBack (msg1);
 
     Ptr<PbbMessageIpv4> msg2 = Create<PbbMessageIpv4> ();
     msg2->SetType (2);
@@ -1537,7 +1529,7 @@ int main (void)
     msg2a1->AddressPushBack (Ipv4Address ("10.1.1.2"));
     msg2->AddressBlockPushBack (msg2a1);
 
-    packet.MessagePushBack (msg2);
+    packet->MessagePushBack (msg2);
 
     uint8_t buffer[] = {
       0x0c, 0x00, 0x15, 0x00,
@@ -1552,7 +1544,7 @@ int main (void)
       0x00, 0x01, 0x01, 0x00,
       0x00,
     };
-    PacketBBTester test(testnum++, packet, buffer, sizeof(buffer));
+    AddTestCase (new PbbTestCase ("21", packet, buffer, sizeof(buffer)));
   }
 
   /* Test 22
@@ -1601,12 +1593,12 @@ int main (void)
 	 * `------------------
    */
   {
-    PbbPacket packet;
-    packet.SetSequenceNumber (22);
+    Ptr<PbbPacket> packet = Create<PbbPacket> ();
+    packet->SetSequenceNumber (22);
 
     Ptr<PbbTlv> tlv1 = Create<PbbTlv> ();
     tlv1->SetType (1);
-    packet.TlvPushBack (tlv1);
+    packet->TlvPushBack (tlv1);
 
     Ptr<PbbMessageIpv4> msg1 = Create<PbbMessageIpv4> ();
     msg1->SetType (1);
@@ -1615,7 +1607,7 @@ int main (void)
     msg1tlv1->SetType (1);
     msg1->TlvPushBack (msg1tlv1);
 
-    packet.MessagePushBack (msg1);
+    packet->MessagePushBack (msg1);
 
     Ptr<PbbMessageIpv4> msg2 = Create<PbbMessageIpv4> ();
     msg2->SetType (2);
@@ -1634,7 +1626,7 @@ int main (void)
     msg2a2->AddressPushBack (Ipv4Address ("11.0.0.0"));
     msg2->AddressBlockPushBack (msg2a2);
 
-    packet.MessagePushBack (msg2);
+    packet->MessagePushBack (msg2);
 
     uint8_t buffer[] = {
       0x0c, 0x00, 0x16, 0x00,
@@ -1650,7 +1642,7 @@ int main (void)
       0x00, 0x02, 0x20, 0x03,
       0x0a, 0x0b, 0x00, 0x00,
     };
-    PacketBBTester test(testnum++, packet, buffer, sizeof(buffer));
+    AddTestCase (new PbbTestCase ("22", packet, buffer, sizeof(buffer)));
   }
 
   /* Test 23
@@ -1701,12 +1693,12 @@ int main (void)
 	 * `------------------
    */
   {
-    PbbPacket packet;
-    packet.SetSequenceNumber (23);
+    Ptr<PbbPacket> packet = Create<PbbPacket> ();
+    packet->SetSequenceNumber (23);
 
     Ptr<PbbTlv> tlv1 = Create<PbbTlv> ();
     tlv1->SetType (1);
-    packet.TlvPushBack (tlv1);
+    packet->TlvPushBack (tlv1);
 
     Ptr<PbbMessageIpv4> msg1 = Create<PbbMessageIpv4> ();
     msg1->SetType (1);
@@ -1715,7 +1707,7 @@ int main (void)
     msg1tlv1->SetType (1);
     msg1->TlvPushBack (msg1tlv1);
 
-    packet.MessagePushBack (msg1);
+    packet->MessagePushBack (msg1);
 
     Ptr<PbbMessageIpv4> msg2 = Create<PbbMessageIpv4> ();
     msg2->SetType (2);
@@ -1742,7 +1734,7 @@ int main (void)
 
     msg2->AddressBlockPushBack (msg2a2);
 
-    packet.MessagePushBack (msg2);
+    packet->MessagePushBack (msg2);
 
     uint8_t buffer[] = {
       0x0c, 0x00, 0x17, 0x00,
@@ -1763,7 +1755,7 @@ int main (void)
       0x20, 0x10, 0x18, 0x00,
       0x00,
     };
-    PacketBBTester test(testnum++, packet, buffer, sizeof(buffer));
+    AddTestCase (new PbbTestCase ("23", packet, buffer, sizeof(buffer)));
   }
 
   /* Test 24
@@ -1817,12 +1809,12 @@ int main (void)
 	 * `------------------
    */
   {
-    PbbPacket packet;
-    packet.SetSequenceNumber (24);
+    Ptr<PbbPacket> packet = Create<PbbPacket> ();
+    packet->SetSequenceNumber (24);
 
     Ptr<PbbTlv> tlv1 = Create<PbbTlv> ();
     tlv1->SetType (1);
-    packet.TlvPushBack (tlv1);
+    packet->TlvPushBack (tlv1);
 
     Ptr<PbbMessageIpv4> msg1 = Create<PbbMessageIpv4> ();
     msg1->SetType (1);
@@ -1831,7 +1823,7 @@ int main (void)
     msg1tlv1->SetType (1);
     msg1->TlvPushBack (msg1tlv1);
 
-    packet.MessagePushBack (msg1);
+    packet->MessagePushBack (msg1);
 
     Ptr<PbbMessageIpv4> msg2 = Create<PbbMessageIpv4> ();
     msg2->SetType (2);
@@ -1862,7 +1854,7 @@ int main (void)
 
     msg2->AddressBlockPushBack (msg2a2);
 
-    packet.MessagePushBack (msg2);
+    packet->MessagePushBack (msg2);
 
     uint8_t buffer[] = {
       0x0c, 0x00, 0x18, 0x00,
@@ -1883,7 +1875,7 @@ int main (void)
       0x20, 0x10, 0x18, 0x00,
       0x02, 0x01, 0x00,
     };
-    PacketBBTester test(testnum++, packet, buffer, sizeof(buffer));
+    AddTestCase (new PbbTestCase ("24", packet, buffer, sizeof(buffer)));
   }
 
   /* Test 25
@@ -1938,12 +1930,12 @@ int main (void)
 	 * `------------------
    */
   {
-    PbbPacket packet;
-    packet.SetSequenceNumber (25);
+    Ptr<PbbPacket> packet = Create<PbbPacket> ();
+    packet->SetSequenceNumber (25);
 
     Ptr<PbbTlv> tlv1 = Create<PbbTlv> ();
     tlv1->SetType (1);
-    packet.TlvPushBack (tlv1);
+    packet->TlvPushBack (tlv1);
 
     Ptr<PbbMessageIpv4> msg1 = Create<PbbMessageIpv4> ();
     msg1->SetType (1);
@@ -1952,7 +1944,7 @@ int main (void)
     msg1tlv1->SetType (1);
     msg1->TlvPushBack (msg1tlv1);
 
-    packet.MessagePushBack (msg1);
+    packet->MessagePushBack (msg1);
 
     Ptr<PbbMessageIpv4> msg2 = Create<PbbMessageIpv4> ();
     msg2->SetType (2);
@@ -1984,7 +1976,7 @@ int main (void)
 
     msg2->AddressBlockPushBack (msg2a2);
 
-    packet.MessagePushBack (msg2);
+    packet->MessagePushBack (msg2);
 
     uint8_t buffer[] = {
       0x0c, 0x00, 0x19, 0x00,
@@ -2005,7 +1997,7 @@ int main (void)
       0x20, 0x10, 0x18, 0x00,
       0x03, 0x01, 0x40, 0x01,
     };
-    PacketBBTester test(testnum++, packet, buffer, sizeof(buffer));
+    AddTestCase (new PbbTestCase ("25", packet, buffer, sizeof(buffer)));
   }
 
   /* Test 26
@@ -2061,12 +2053,12 @@ int main (void)
 	 * `------------------
    */
   {
-    PbbPacket packet;
-    packet.SetSequenceNumber (26);
+    Ptr<PbbPacket> packet = Create<PbbPacket> ();
+    packet->SetSequenceNumber (26);
 
     Ptr<PbbTlv> tlv1 = Create<PbbTlv> ();
     tlv1->SetType (1);
-    packet.TlvPushBack (tlv1);
+    packet->TlvPushBack (tlv1);
 
     Ptr<PbbMessageIpv4> msg1 = Create<PbbMessageIpv4> ();
     msg1->SetType (1);
@@ -2075,7 +2067,7 @@ int main (void)
     msg1tlv1->SetType (1);
     msg1->TlvPushBack (msg1tlv1);
 
-    packet.MessagePushBack (msg1);
+    packet->MessagePushBack (msg1);
 
     Ptr<PbbMessageIpv4> msg2 = Create<PbbMessageIpv4> ();
     msg2->SetType (2);
@@ -2108,7 +2100,7 @@ int main (void)
 
     msg2->AddressBlockPushBack (msg2a2);
 
-    packet.MessagePushBack (msg2);
+    packet->MessagePushBack (msg2);
 
     uint8_t buffer[] = {
       0x0c, 0x00, 0x1a, 0x00,
@@ -2130,7 +2122,7 @@ int main (void)
       0x04, 0x01, 0x20, 0x01,
       0x03,
     };
-    PacketBBTester test(testnum++, packet, buffer, sizeof(buffer));
+    AddTestCase (new PbbTestCase ("26", packet, buffer, sizeof(buffer)));
   }
 
   /* Test 27
@@ -2186,12 +2178,12 @@ int main (void)
 	 * `------------------
    */
   {
-    PbbPacket packet;
-    packet.SetSequenceNumber (27);
+    Ptr<PbbPacket> packet = Create<PbbPacket> ();
+    packet->SetSequenceNumber (27);
 
     Ptr<PbbTlv> tlv1 = Create<PbbTlv> ();
     tlv1->SetType (1);
-    packet.TlvPushBack (tlv1);
+    packet->TlvPushBack (tlv1);
 
     Ptr<PbbMessageIpv4> msg1 = Create<PbbMessageIpv4> ();
     msg1->SetType (1);
@@ -2200,7 +2192,7 @@ int main (void)
     msg1tlv1->SetType (1);
     msg1->TlvPushBack (msg1tlv1);
 
-    packet.MessagePushBack (msg1);
+    packet->MessagePushBack (msg1);
 
     Ptr<PbbMessageIpv4> msg2 = Create<PbbMessageIpv4> ();
     msg2->SetType (2);
@@ -2238,7 +2230,7 @@ int main (void)
 
     msg2->AddressBlockPushBack (msg2a2);
 
-    packet.MessagePushBack (msg2);
+    packet->MessagePushBack (msg2);
 
     uint8_t buffer[] = {
       0x0c, 0x00, 0x1b, 0x00,
@@ -2261,7 +2253,7 @@ int main (void)
       0x03, 0x03, 0x01, 0x02,
       0x03,
     };
-    PacketBBTester test(testnum++, packet, buffer, sizeof(buffer));
+    AddTestCase (new PbbTestCase ("27", packet, buffer, sizeof(buffer)));
   }
 
   /* Test 28
@@ -2392,12 +2384,12 @@ int main (void)
 	 * `------------------
    */
   {
-    PbbPacket packet;
-    packet.SetSequenceNumber (28);
+    Ptr<PbbPacket> packet = Create<PbbPacket> ();
+    packet->SetSequenceNumber (28);
 
     Ptr<PbbTlv> tlv1 = Create<PbbTlv> ();
     tlv1->SetType (1);
-    packet.TlvPushBack (tlv1);
+    packet->TlvPushBack (tlv1);
 
     Ptr<PbbMessageIpv4> msg1 = Create<PbbMessageIpv4> ();
     msg1->SetType (1);
@@ -2406,7 +2398,7 @@ int main (void)
     msg1tlv1->SetType (1);
     msg1->TlvPushBack (msg1tlv1);
 
-    packet.MessagePushBack (msg1);
+    packet->MessagePushBack (msg1);
 
     Ptr<PbbMessageIpv4> msg2 = Create<PbbMessageIpv4> ();
     msg2->SetType (2);
@@ -2519,7 +2511,7 @@ int main (void)
 
     msg2->AddressBlockPushBack (msg2a2);
 
-    packet.MessagePushBack (msg2);
+    packet->MessagePushBack (msg2);
 
     uint8_t buffer[] = {
       0x0c, 0x00, 0x1c, 0x00,
@@ -2616,7 +2608,7 @@ int main (void)
       0x26, 0x27, 0x28, 0x29,
       0x2a, 0x2b, 0x2c
     };
-    PacketBBTester test(testnum++, packet, buffer, sizeof(buffer));
+    AddTestCase (new PbbTestCase ("28", packet, buffer, sizeof(buffer)));
   }
 
   /* Test 29
@@ -2635,18 +2627,18 @@ int main (void)
 	 * `------------------
    */
   {
-    PbbPacket packet;
+    Ptr<PbbPacket> packet = Create<PbbPacket> ();
 
     Ptr<PbbMessageIpv6> m1 = Create<PbbMessageIpv6> ();
     m1->SetType(1);
 
-    packet.MessagePushBack (m1);
+    packet->MessagePushBack (m1);
 
     uint8_t buffer[] = {
       0x00, 0x01, 0x0f, 0x00,
       0x06, 0x00, 0x00,
     };
-    PacketBBTester test(testnum++, packet, buffer, sizeof(buffer));
+    AddTestCase (new PbbTestCase ("29", packet, buffer, sizeof(buffer)));
   }
 
   /* Test 30
@@ -2666,13 +2658,13 @@ int main (void)
 	 * `------------------
    */
   {
-    PbbPacket packet;
+    Ptr<PbbPacket> packet = Create<PbbPacket> ();
 
     Ptr<PbbMessageIpv6> m1 = Create<PbbMessageIpv6> ();
     m1->SetType(1);
     m1->SetOriginatorAddress (Ipv6Address("abcd::1"));
 
-    packet.MessagePushBack (m1);
+    packet->MessagePushBack (m1);
 
     uint8_t buffer[] = {
       0x00, 0x01, 0x8f, 0x00,
@@ -2682,7 +2674,7 @@ int main (void)
       0x00, 0x00, 0x00, 0x00,
       0x01, 0x00, 0x00
     };
-    PacketBBTester test(testnum++, packet, buffer, sizeof(buffer));
+    AddTestCase (new PbbTestCase ("30", packet, buffer, sizeof(buffer)));
   }
 
   /* Test 31
@@ -2706,7 +2698,7 @@ int main (void)
 	 * `------------------
    */
   {
-    PbbPacket packet;
+    Ptr<PbbPacket> packet = Create<PbbPacket> ();
 
     Ptr<PbbMessageIpv6> m1 = Create<PbbMessageIpv6> ();
     m1->SetType(1);
@@ -2716,7 +2708,7 @@ int main (void)
     m1a1->AddressPushBack (Ipv6Address ("10::1"));
     m1->AddressBlockPushBack (m1a1);
 
-    packet.MessagePushBack (m1);
+    packet->MessagePushBack (m1);
 
     uint8_t buffer[] = {
       0x00, 0x01, 0x8f, 0x00,
@@ -2731,7 +2723,7 @@ int main (void)
       0x00, 0x00, 0x00, 0x00,
       0x01, 0x00, 0x00,
     };
-    PacketBBTester test(testnum++, packet, buffer, sizeof(buffer));
+    AddTestCase (new PbbTestCase ("31", packet, buffer, sizeof(buffer)));
   }
 
   /* Test 32
@@ -2756,7 +2748,7 @@ int main (void)
 	 * `------------------
    */
   {
-    PbbPacket packet;
+    Ptr<PbbPacket> packet = Create<PbbPacket> ();
 
     Ptr<PbbMessageIpv6> m1 = Create<PbbMessageIpv6> ();
     m1->SetType(1);
@@ -2767,7 +2759,7 @@ int main (void)
     m1a1->AddressPushBack (Ipv6Address ("10::2"));
     m1->AddressBlockPushBack (m1a1);
 
-    packet.MessagePushBack (m1);
+    packet->MessagePushBack (m1);
 
     uint8_t buffer[] = {
       0x00, 0x01, 0x8f, 0x00,
@@ -2783,7 +2775,7 @@ int main (void)
       0x00, 0x01, 0x02, 0x00,
       0x00,
     };
-    PacketBBTester test(testnum++, packet, buffer, sizeof(buffer));
+    AddTestCase (new PbbTestCase ("32", packet, buffer, sizeof(buffer)));
   }
 
   /* Test 33
@@ -2808,7 +2800,7 @@ int main (void)
 	 * `------------------
    */
   {
-    PbbPacket packet;
+    Ptr<PbbPacket> packet = Create<PbbPacket> ();
 
     Ptr<PbbMessageIpv6> m1 = Create<PbbMessageIpv6> ();
     m1->SetType(1);
@@ -2819,7 +2811,7 @@ int main (void)
     m1a1->AddressPushBack (Ipv6Address ("10::11:2"));
     m1->AddressBlockPushBack (m1a1);
 
-    packet.MessagePushBack (m1);
+    packet->MessagePushBack (m1);
 
     uint8_t buffer[] = {
       0x00, 0x01, 0x8f, 0x00,
@@ -2835,7 +2827,7 @@ int main (void)
       0x00, 0x02, 0x00, 0x11,
       0x00, 0x00,
     };
-    PacketBBTester test(testnum++, packet, buffer, sizeof(buffer));
+    AddTestCase (new PbbTestCase ("33", packet, buffer, sizeof(buffer)));
   }
 
   /* Test 34
@@ -2865,7 +2857,7 @@ int main (void)
 	 * `------------------
    */
   {
-    PbbPacket packet;
+    Ptr<PbbPacket> packet = Create<PbbPacket> ();
 
     Ptr<PbbMessageIpv6> m1 = Create<PbbMessageIpv6> ();
     m1->SetType(1);
@@ -2881,7 +2873,7 @@ int main (void)
     m1a2->AddressPushBack (Ipv6Address ("11::"));
     m1->AddressBlockPushBack (m1a2);
 
-    packet.MessagePushBack (m1);
+    packet->MessagePushBack (m1);
 
     uint8_t buffer[] = {
       0x00, 0x01, 0x8f, 0x00,
@@ -2899,7 +2891,7 @@ int main (void)
       0x01, 0x00, 0x0e, 0x10,
       0x11, 0x00, 0x00,
     };
-    PacketBBTester test(testnum++, packet, buffer, sizeof(buffer));
+    AddTestCase (new PbbTestCase ("34", packet, buffer, sizeof(buffer)));
   }
 
   /* Test 35
@@ -2931,7 +2923,7 @@ int main (void)
 	 * `------------------
    */
   {
-    PbbPacket packet;
+    Ptr<PbbPacket> packet = Create<PbbPacket> ();
 
     Ptr<PbbMessageIpv6> m1 = Create<PbbMessageIpv6> ();
     m1->SetType(1);
@@ -2953,7 +2945,7 @@ int main (void)
     m1a2->PrefixPushBack (48);
     m1->AddressBlockPushBack (m1a2);
 
-    packet.MessagePushBack (m1);
+    packet->MessagePushBack (m1);
 
     uint8_t buffer[] = {
       0x00, 0x01, 0x8f, 0x00,
@@ -2986,7 +2978,7 @@ int main (void)
       0x00, 0x06, 0x80, 0x80,
       0x40, 0x30, 0x00, 0x00,
     };
-    PacketBBTester test(testnum++, packet, buffer, sizeof(buffer));
+    AddTestCase (new PbbTestCase ("35", packet, buffer, sizeof(buffer)));
   }
 
   /* Test 36
@@ -3137,12 +3129,12 @@ int main (void)
 	 * `------------------
    */
   {
-    PbbPacket packet;
-    packet.SetSequenceNumber (29);
+    Ptr<PbbPacket> packet = Create<PbbPacket> ();
+    packet->SetSequenceNumber (29);
 
     Ptr<PbbTlv> ptlv1 = Create<PbbTlv> ();
     ptlv1->SetType (1);
-    packet.TlvPushBack (ptlv1);
+    packet->TlvPushBack (ptlv1);
 
     Ptr<PbbMessageIpv6> m1 = Create<PbbMessageIpv6> ();
     m1->SetType (1);
@@ -3150,7 +3142,7 @@ int main (void)
     Ptr<PbbTlv> m1tlv1 = Create<PbbTlv> ();
     m1tlv1->SetType (1);
     m1->TlvPushBack (m1tlv1);
-    packet.MessagePushBack (m1);
+    packet->MessagePushBack (m1);
 
     Ptr<PbbMessageIpv4> m2 = Create<PbbMessageIpv4> ();
     m2->SetType (2);
@@ -3260,7 +3252,7 @@ int main (void)
     m2a2->TlvPushBack (m2a2tlv1);
 
     m2->AddressBlockPushBack (m2a2);
-    packet.MessagePushBack (m2);
+    packet->MessagePushBack (m2);
 
     Ptr<PbbMessageIpv6> m3 = Create<PbbMessageIpv6> ();
     m3->SetType (1);
@@ -3282,7 +3274,7 @@ int main (void)
     m3a2->PrefixPushBack (48);
 
     m3->AddressBlockPushBack (m3a2);
-    packet.MessagePushBack (m3);
+    packet->MessagePushBack (m3);
 
     uint8_t buffer[] = {
       0x0c, 0x00, 0x1d, 0x00,
@@ -3408,7 +3400,7 @@ int main (void)
       0x80, 0x80, 0x40, 0x30,
       0x00, 0x00,
     };
-    PacketBBTester test(testnum++, packet, buffer, sizeof(buffer));
+    AddTestCase (new PbbTestCase ("36", packet, buffer, sizeof(buffer)));
   }
 
   /* Test 37
@@ -3559,12 +3551,12 @@ int main (void)
 	 * `------------------
    */
   {
-    PbbPacket packet;
-    packet.SetSequenceNumber (30);
+    Ptr<PbbPacket> packet = Create<PbbPacket> ();
+    packet->SetSequenceNumber (30);
 
     Ptr<PbbTlv> ptlv1 = Create<PbbTlv> ();
     ptlv1->SetType (1);
-    packet.TlvPushBack (ptlv1);
+    packet->TlvPushBack (ptlv1);
 
     Ptr<PbbMessageIpv6> m1 = Create<PbbMessageIpv6> ();
     m1->SetType (1);
@@ -3572,7 +3564,7 @@ int main (void)
     Ptr<PbbTlv> m1tlv1 = Create<PbbTlv> ();
     m1tlv1->SetType (1);
     m1->TlvPushBack (m1tlv1);
-    packet.MessagePushBack (m1);
+    packet->MessagePushBack (m1);
 
     Ptr<PbbMessageIpv4> m2 = Create<PbbMessageIpv4> ();
     m2->SetType (2);
@@ -3682,7 +3674,7 @@ int main (void)
     m2a2->TlvPushBack (m2a2tlv1);
 
     m2->AddressBlockPushBack (m2a2);
-    packet.MessagePushBack (m2);
+    packet->MessagePushBack (m2);
 
     Ptr<PbbMessageIpv6> m3 = Create<PbbMessageIpv6> ();
     m3->SetType (1);
@@ -3704,7 +3696,7 @@ int main (void)
     m3a2->PrefixPushBack (48);
 
     m3->AddressBlockPushBack (m3a2);
-    packet.MessagePushBack (m3);
+    packet->MessagePushBack (m3);
 
     uint8_t buffer[] = {
       0x0c, 0x00, 0x1e, 0x00,
@@ -3830,6 +3822,8 @@ int main (void)
       0x80, 0x80, 0x40, 0x30,
       0x00, 0x00,
     };
-    PacketBBTester test(testnum++, packet, buffer, sizeof(buffer));
+    AddTestCase (new PbbTestCase ("37", packet, buffer, sizeof(buffer)));
   }
 }
+
+PbbTestSuite pbbTestSuite;

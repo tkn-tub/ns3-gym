@@ -47,6 +47,7 @@ def build(bld):
         'ipv6-raw-socket-factory.cc',
         'ipv6-routing-protocol.cc',
         'packetbb.cc',
+        'packetbb-test-suite.cc',
         ]
 
     headers = bld.new_task_gen('ns3header')
