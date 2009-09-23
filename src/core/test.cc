@@ -22,6 +22,36 @@
 
 namespace ns3 {
 
+
+//
+// XML files have restrictions on certain characters that may be present in
+// data.  We need to replace these characters with their alternate 
+// representation on the way into the XML file.
+//
+std::string
+ReplaceXmlSpecialCharacters (std::string xml)
+{
+  std::string specials = "<>&\"'";
+  std::string replacements[] = {"&lt;", "&gt;", "&amp;", "&#39;", "&quot;"};
+  std::string result;
+  std::size_t index, length = xml.length ();
+
+  for (size_t i = 0; i < length; ++i)
+    {
+      char character = xml[i];
+
+      if ((index = specials.find (character)) == std::string::npos)
+        {
+          result.push_back (character);
+        }
+      else
+        {
+          result += replacements[index];
+        }
+    }
+  return result;
+}
+
 bool
 TestDoubleIsEqual (const double x1, const double x2, const double epsilon)
 {
@@ -180,7 +210,7 @@ TestCase::DoReportStart  (void)
       return;
     }
   *m_ofs << "  <TestCase>" << std::endl;
-  *m_ofs << "    <CaseName>" << GetName () << "</CaseName>" << std::endl;
+  *m_ofs << "    <CaseName>" << ReplaceXmlSpecialCharacters (GetName ()) << "</CaseName>" << std::endl;
 }
 
 void
@@ -202,18 +232,20 @@ TestCase::DoReportFailure  (
   std::string file, 
   int32_t line)
 {
+  m_error |= true;
+
   if (m_ofs == 0)
     {
       return;
     }
+
   *m_ofs << "    <CaseResult>FAIL</CaseResult>" << std::endl;
-  *m_ofs << "    <CaseCondition>" << cond << "</CaseCondition>" << std::endl;
-  *m_ofs << "    <CaseActual>" << actual << "</CaseActual>" << std::endl;
-  *m_ofs << "    <CaseLimit>" << limit << "</CaseLimit>" << std::endl;
-  *m_ofs << "    <CaseMessage>" << message << "</CaseMessage>" << std::endl;
-  *m_ofs << "    <CaseFile>" << file << "</CaseFile>" << std::endl;
+  *m_ofs << "    <CaseCondition>" << ReplaceXmlSpecialCharacters (cond) << "</CaseCondition>" << std::endl;
+  *m_ofs << "    <CaseActual>" << ReplaceXmlSpecialCharacters (actual) << "</CaseActual>" << std::endl;
+  *m_ofs << "    <CaseLimit>" << ReplaceXmlSpecialCharacters (limit) << "</CaseLimit>" << std::endl;
+  *m_ofs << "    <CaseMessage>" << ReplaceXmlSpecialCharacters (message) << "</CaseMessage>" << std::endl;
+  *m_ofs << "    <CaseFile>" << ReplaceXmlSpecialCharacters (file) << "</CaseFile>" << std::endl;
   *m_ofs << "    <CaseLine>" << line << "</CaseLine>" << std::endl;
-  m_error |= true;
 }
 
 void
@@ -387,7 +419,7 @@ TestSuite::DoReportStart (void)
       return;
     }
   *m_ofs << "<TestSuite>" << std::endl;
-  *m_ofs << "  <SuiteName>" << GetName () << "</SuiteName>" << std::endl;
+  *m_ofs << "  <SuiteName>" << ReplaceXmlSpecialCharacters (GetName ()) << "</SuiteName>" << std::endl;
 }
 
 void

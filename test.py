@@ -27,6 +27,7 @@ import Queue
 import signal
 import random
 import xml.dom.minidom
+import shutil
 
 #
 # XXX This should really be part of a waf command to list the configuration
@@ -805,8 +806,9 @@ def run_tests():
             else:
                 f = open(xml_results_file, 'a')
                 f.write("<TestSuite>\n")
-                f.write("  <Name>%s</Name>\n" % job.display_name)
-                f.write('  <Result>CRASH</Result>\n')
+                f.write("  <SuiteName>%s</SuiteName>\n" % job.display_name)
+                f.write('  <SuiteResult>CRASH</SuiteResult>\n')
+                f.write('  <SuiteTime>Execution times not available</SuiteTime>\n')
                 f.write("</TestSuite>\n")
                 f.close()
 
@@ -832,13 +834,16 @@ def run_tests():
 
     #
     # The last things to do are to translate the XML results file to "human
-    # readable form" if the user asked for it
+    # readable form" if the user asked for it (or make an XML file somewhere)
     #
     if len(options.html):
         translate_to_html(xml_results_file, options.html)
 
     if len(options.text):
         translate_to_text(xml_results_file, options.text)
+
+    if len(options.xml):
+        shutil.copyfile(xml_results_file, options.xml)
 
 def main(argv):
     random.seed()
@@ -875,6 +880,10 @@ def main(argv):
     parser.add_option("-t", "--text", action="store", type="string", dest="text", default="",
                       metavar="TEXT-FILE",
                       help="write detailed test results into TEXT-FILE.txt")
+
+    parser.add_option("-x", "--xml", action="store", type="string", dest="xml", default="",
+                      metavar="XML-FILE",
+                      help="write detailed test results into XML-FILE.xml")
 
     global options
     options = parser.parse_args()[0]

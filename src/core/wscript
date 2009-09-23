@@ -70,7 +70,6 @@ def build(bld):
         'string.cc',
         'pointer.cc',
         'object-vector.cc',
-        'attribute-test.cc',
         'object-factory.cc',
         'global-value.cc',
         'traced-callback.cc',
@@ -80,6 +79,7 @@ def build(bld):
         'names.cc',
         'vector.cc',
         'names-test-suite.cc',
+        'attribute-test-suite.cc',
         ]
 
     headers = bld.new_task_gen('ns3header')
