@@ -1062,6 +1062,7 @@ PointerAttributeTestCase::DoRun (void)
 }
 
 // ===========================================================================
+// Test the Attributes of type CallbackVale.
 // ===========================================================================
 class CallbackValueTestCase : public TestCase
 {
@@ -1075,7 +1076,6 @@ public:
         m_cbValue (a);
       }
   }
-
 
 private:
   virtual bool DoRun (void);
