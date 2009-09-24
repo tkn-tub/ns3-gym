@@ -13,6 +13,8 @@ def register_types(module):
     module.add_class('CsmaHelper', allow_subclassing=False)
     ## emu-helper.h: ns3::EmuHelper [class]
     module.add_class('EmuHelper', allow_subclassing=False)
+    ## flow-monitor-helper.h: ns3::FlowMonitorHelper [class]
+    module.add_class('FlowMonitorHelper', allow_subclassing=False)
     ## internet-stack-helper.h: ns3::InternetStackHelper [class]
     module.add_class('InternetStackHelper', allow_subclassing=False)
     ## ipv4-address-helper.h: ns3::Ipv4AddressHelper [class]
@@ -31,6 +33,10 @@ def register_types(module):
     module.add_class('Ipv6RoutingHelper', allow_subclassing=False)
     ## ipv6-static-routing-helper.h: ns3::Ipv6StaticRoutingHelper [class]
     module.add_class('Ipv6StaticRoutingHelper', allow_subclassing=False, parent=root_module['ns3::Ipv6RoutingHelper'])
+    ## mesh-helper.h: ns3::MeshHelper [class]
+    module.add_class('MeshHelper', allow_subclassing=False)
+    ## mesh-helper.h: ns3::MeshHelper::ChannelPolicy [enumeration]
+    module.add_enum('ChannelPolicy', ['SPREAD_CHANNELS', 'ZERO_CHANNEL'], outer_class=root_module['ns3::MeshHelper'])
     ## mobility-helper.h: ns3::MobilityHelper [class]
     module.add_class('MobilityHelper', allow_subclassing=False)
     ## net-device-container.h: ns3::NetDeviceContainer [class]
@@ -75,6 +81,8 @@ def register_types(module):
     module.add_class('Ipv4GlobalRoutingHelper', allow_subclassing=False, parent=root_module['ns3::Ipv4RoutingHelper'])
     ## ipv4-list-routing-helper.h: ns3::Ipv4ListRoutingHelper [class]
     module.add_class('Ipv4ListRoutingHelper', allow_subclassing=False, parent=root_module['ns3::Ipv4RoutingHelper'])
+    ## ipv4-nix-vector-helper.h: ns3::Ipv4NixVectorHelper [class]
+    module.add_class('Ipv4NixVectorHelper', allow_subclassing=False, parent=root_module['ns3::Ipv4RoutingHelper'])
     ## ipv6-list-routing-helper.h: ns3::Ipv6ListRoutingHelper [class]
     module.add_class('Ipv6ListRoutingHelper', allow_subclassing=False, parent=root_module['ns3::Ipv6RoutingHelper'])
     ## nqos-wifi-mac-helper.h: ns3::NqosWifiMacHelper [class]
@@ -83,6 +91,12 @@ def register_types(module):
     module.add_class('QosWifiMacHelper', allow_subclassing=False, parent=root_module['ns3::WifiMacHelper'])
     ## athstats-helper.h: ns3::AthstatsWifiTraceSink [class]
     module.add_class('AthstatsWifiTraceSink', parent=root_module['ns3::Object'])
+    ## mesh-stack-installer.h: ns3::MeshStack [class]
+    module.add_class('MeshStack', parent=root_module['ns3::Object'])
+    ## dot11s-installer.h: ns3::Dot11sStack [class]
+    module.add_class('Dot11sStack', parent=root_module['ns3::MeshStack'])
+    ## flame-installer.h: ns3::FlameStack [class]
+    module.add_class('FlameStack', parent=root_module['ns3::MeshStack'])
     
     ## Register a nested module for the namespace Config
     
@@ -100,6 +114,18 @@ def register_types(module):
     
     nested_module = module.add_cpp_namespace('addressUtils')
     register_types_ns3_addressUtils(nested_module)
+    
+    
+    ## Register a nested module for the namespace dot11s
+    
+    nested_module = module.add_cpp_namespace('dot11s')
+    register_types_ns3_dot11s(nested_module)
+    
+    
+    ## Register a nested module for the namespace flame
+    
+    nested_module = module.add_cpp_namespace('flame')
+    register_types_ns3_flame(nested_module)
     
     
     ## Register a nested module for the namespace internal
@@ -126,6 +152,14 @@ def register_types_ns3_addressUtils(module):
     root_module = module.get_root()
     
 
+def register_types_ns3_dot11s(module):
+    root_module = module.get_root()
+    
+
+def register_types_ns3_flame(module):
+    root_module = module.get_root()
+    
+
 def register_types_ns3_internal(module):
     root_module = module.get_root()
     
@@ -140,6 +174,7 @@ def register_methods(root_module):
     register_Ns3BridgeHelper_methods(root_module, root_module['ns3::BridgeHelper'])
     register_Ns3CsmaHelper_methods(root_module, root_module['ns3::CsmaHelper'])
     register_Ns3EmuHelper_methods(root_module, root_module['ns3::EmuHelper'])
+    register_Ns3FlowMonitorHelper_methods(root_module, root_module['ns3::FlowMonitorHelper'])
     register_Ns3InternetStackHelper_methods(root_module, root_module['ns3::InternetStackHelper'])
     register_Ns3Ipv4AddressHelper_methods(root_module, root_module['ns3::Ipv4AddressHelper'])
     register_Ns3Ipv4InterfaceContainer_methods(root_module, root_module['ns3::Ipv4InterfaceContainer'])
@@ -149,6 +184,7 @@ def register_methods(root_module):
     register_Ns3Ipv6InterfaceContainer_methods(root_module, root_module['ns3::Ipv6InterfaceContainer'])
     register_Ns3Ipv6RoutingHelper_methods(root_module, root_module['ns3::Ipv6RoutingHelper'])
     register_Ns3Ipv6StaticRoutingHelper_methods(root_module, root_module['ns3::Ipv6StaticRoutingHelper'])
+    register_Ns3MeshHelper_methods(root_module, root_module['ns3::MeshHelper'])
     register_Ns3MobilityHelper_methods(root_module, root_module['ns3::MobilityHelper'])
     register_Ns3NetDeviceContainer_methods(root_module, root_module['ns3::NetDeviceContainer'])
     register_Ns3NodeContainer_methods(root_module, root_module['ns3::NodeContainer'])
@@ -170,10 +206,14 @@ def register_methods(root_module):
     register_Ns3YansWifiPhyHelper_methods(root_module, root_module['ns3::YansWifiPhyHelper'])
     register_Ns3Ipv4GlobalRoutingHelper_methods(root_module, root_module['ns3::Ipv4GlobalRoutingHelper'])
     register_Ns3Ipv4ListRoutingHelper_methods(root_module, root_module['ns3::Ipv4ListRoutingHelper'])
+    register_Ns3Ipv4NixVectorHelper_methods(root_module, root_module['ns3::Ipv4NixVectorHelper'])
     register_Ns3Ipv6ListRoutingHelper_methods(root_module, root_module['ns3::Ipv6ListRoutingHelper'])
     register_Ns3NqosWifiMacHelper_methods(root_module, root_module['ns3::NqosWifiMacHelper'])
     register_Ns3QosWifiMacHelper_methods(root_module, root_module['ns3::QosWifiMacHelper'])
     register_Ns3AthstatsWifiTraceSink_methods(root_module, root_module['ns3::AthstatsWifiTraceSink'])
+    register_Ns3MeshStack_methods(root_module, root_module['ns3::MeshStack'])
+    register_Ns3Dot11sStack_methods(root_module, root_module['ns3::Dot11sStack'])
+    register_Ns3FlameStack_methods(root_module, root_module['ns3::FlameStack'])
     return
 
 def register_Ns3ApplicationContainer_methods(root_module, cls):
@@ -471,6 +511,37 @@ def register_Ns3EmuHelper_methods(root_module, cls):
                    [param('std::string', 'type'), param('std::string', 'n1', default_value='""'), param('ns3::AttributeValue const &', 'v1', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n2', default_value='""'), param('ns3::AttributeValue const &', 'v2', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n3', default_value='""'), param('ns3::AttributeValue const &', 'v3', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n4', default_value='""'), param('ns3::AttributeValue const &', 'v4', default_value='ns3::EmptyAttributeValue()')])
     return
 
+def register_Ns3FlowMonitorHelper_methods(root_module, cls):
+    ## flow-monitor-helper.h: ns3::FlowMonitorHelper::FlowMonitorHelper(ns3::FlowMonitorHelper const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::FlowMonitorHelper const &', 'arg0')])
+    ## flow-monitor-helper.h: ns3::FlowMonitorHelper::FlowMonitorHelper() [constructor]
+    cls.add_constructor([])
+    ## flow-monitor-helper.h: ns3::Ptr<ns3::FlowClassifier> ns3::FlowMonitorHelper::GetClassifier() [member function]
+    cls.add_method('GetClassifier', 
+                   'ns3::Ptr< ns3::FlowClassifier >', 
+                   [])
+    ## flow-monitor-helper.h: ns3::Ptr<ns3::FlowMonitor> ns3::FlowMonitorHelper::GetMonitor() [member function]
+    cls.add_method('GetMonitor', 
+                   'ns3::Ptr< ns3::FlowMonitor >', 
+                   [])
+    ## flow-monitor-helper.h: ns3::Ptr<ns3::FlowMonitor> ns3::FlowMonitorHelper::Install(ns3::NodeContainer nodes) [member function]
+    cls.add_method('Install', 
+                   'ns3::Ptr< ns3::FlowMonitor >', 
+                   [param('ns3::NodeContainer', 'nodes')])
+    ## flow-monitor-helper.h: ns3::Ptr<ns3::FlowMonitor> ns3::FlowMonitorHelper::Install(ns3::Ptr<ns3::Node> node) [member function]
+    cls.add_method('Install', 
+                   'ns3::Ptr< ns3::FlowMonitor >', 
+                   [param('ns3::Ptr< ns3::Node >', 'node')])
+    ## flow-monitor-helper.h: ns3::Ptr<ns3::FlowMonitor> ns3::FlowMonitorHelper::InstallAll() [member function]
+    cls.add_method('InstallAll', 
+                   'ns3::Ptr< ns3::FlowMonitor >', 
+                   [])
+    ## flow-monitor-helper.h: void ns3::FlowMonitorHelper::SetMonitorAttribute(std::string n1, ns3::AttributeValue const & v1) [member function]
+    cls.add_method('SetMonitorAttribute', 
+                   'void', 
+                   [param('std::string', 'n1'), param('ns3::AttributeValue const &', 'v1')])
+    return
+
 def register_Ns3InternetStackHelper_methods(root_module, cls):
     ## internet-stack-helper.h: ns3::InternetStackHelper::InternetStackHelper(ns3::InternetStackHelper const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::InternetStackHelper const &', 'arg0')])
@@ -542,6 +613,8 @@ def register_Ns3Ipv4AddressHelper_methods(root_module, cls):
     cls.add_constructor([param('ns3::Ipv4AddressHelper const &', 'arg0')])
     ## ipv4-address-helper.h: ns3::Ipv4AddressHelper::Ipv4AddressHelper() [constructor]
     cls.add_constructor([])
+    ## ipv4-address-helper.h: ns3::Ipv4AddressHelper::Ipv4AddressHelper(ns3::Ipv4Address network, ns3::Ipv4Mask mask, ns3::Ipv4Address base="0.0.0.1") [constructor]
+    cls.add_constructor([param('ns3::Ipv4Address', 'network'), param('ns3::Ipv4Mask', 'mask'), param('ns3::Ipv4Address', 'base', default_value='"0.0.0.1"')])
     ## ipv4-address-helper.h: ns3::Ipv4InterfaceContainer ns3::Ipv4AddressHelper::Assign(ns3::NetDeviceContainer const & c) [member function]
     cls.add_method('Assign', 
                    'ns3::Ipv4InterfaceContainer', 
@@ -573,10 +646,19 @@ def register_Ns3Ipv4InterfaceContainer_methods(root_module, cls):
     cls.add_method('Add', 
                    'void', 
                    [param('ns3::Ptr< ns3::Ipv4 >', 'ipv4'), param('uint32_t', 'interface')])
+    ## ipv4-interface-container.h: void ns3::Ipv4InterfaceContainer::Add(std::pair<ns3::Ptr<ns3::Ipv4>,unsigned int> arg0) [member function]
+    cls.add_method('Add', 
+                   'void', 
+                   [param('std::pair< ns3::Ptr< ns3::Ipv4 >, unsigned int >', 'arg0')])
     ## ipv4-interface-container.h: void ns3::Ipv4InterfaceContainer::Add(std::string ipv4Name, uint32_t interface) [member function]
     cls.add_method('Add', 
                    'void', 
                    [param('std::string', 'ipv4Name'), param('uint32_t', 'interface')])
+    ## ipv4-interface-container.h: std::pair<ns3::Ptr<ns3::Ipv4>,unsigned int> ns3::Ipv4InterfaceContainer::Get(uint32_t arg0) const [member function]
+    cls.add_method('Get', 
+                   'std::pair< ns3::Ptr< ns3::Ipv4 >, unsigned int >', 
+                   [param('uint32_t', 'arg0')], 
+                   is_const=True)
     ## ipv4-interface-container.h: ns3::Ipv4Address ns3::Ipv4InterfaceContainer::GetAddress(uint32_t i, uint32_t j=0) const [member function]
     cls.add_method('GetAddress', 
                    'ns3::Ipv4Address', 
@@ -766,6 +848,55 @@ def register_Ns3Ipv6StaticRoutingHelper_methods(root_module, cls):
                    'ns3::Ptr< ns3::Ipv6StaticRouting >', 
                    [param('ns3::Ptr< ns3::Ipv6 >', 'ipv6')], 
                    is_const=True)
+    return
+
+def register_Ns3MeshHelper_methods(root_module, cls):
+    ## mesh-helper.h: ns3::MeshHelper::MeshHelper(ns3::MeshHelper const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::MeshHelper const &', 'arg0')])
+    ## mesh-helper.h: ns3::MeshHelper::MeshHelper() [constructor]
+    cls.add_constructor([])
+    ## mesh-helper.h: static ns3::MeshHelper ns3::MeshHelper::Default() [member function]
+    cls.add_method('Default', 
+                   'ns3::MeshHelper', 
+                   [], 
+                   is_static=True)
+    ## mesh-helper.h: ns3::NetDeviceContainer ns3::MeshHelper::Install(ns3::WifiPhyHelper const & phyHelper, ns3::NodeContainer c) const [member function]
+    cls.add_method('Install', 
+                   'ns3::NetDeviceContainer', 
+                   [param('ns3::WifiPhyHelper const &', 'phyHelper'), param('ns3::NodeContainer', 'c')], 
+                   is_const=True)
+    ## mesh-helper.h: void ns3::MeshHelper::Report(ns3::Ptr<ns3::NetDevice> const & arg0, std::ostream & arg1) [member function]
+    cls.add_method('Report', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::NetDevice > const &', 'arg0'), param('std::ostream &', 'arg1')])
+    ## mesh-helper.h: void ns3::MeshHelper::ResetStats(ns3::Ptr<ns3::NetDevice> const & arg0) [member function]
+    cls.add_method('ResetStats', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::NetDevice > const &', 'arg0')])
+    ## mesh-helper.h: void ns3::MeshHelper::SetMacType(std::string n0="", ns3::AttributeValue const & v0=ns3::EmptyAttributeValue(), std::string n1="", ns3::AttributeValue const & v1=ns3::EmptyAttributeValue(), std::string n2="", ns3::AttributeValue const & v2=ns3::EmptyAttributeValue(), std::string n3="", ns3::AttributeValue const & v3=ns3::EmptyAttributeValue(), std::string n4="", ns3::AttributeValue const & v4=ns3::EmptyAttributeValue(), std::string n5="", ns3::AttributeValue const & v5=ns3::EmptyAttributeValue(), std::string n6="", ns3::AttributeValue const & v6=ns3::EmptyAttributeValue(), std::string n7="", ns3::AttributeValue const & v7=ns3::EmptyAttributeValue()) [member function]
+    cls.add_method('SetMacType', 
+                   'void', 
+                   [param('std::string', 'n0', default_value='""'), param('ns3::AttributeValue const &', 'v0', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n1', default_value='""'), param('ns3::AttributeValue const &', 'v1', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n2', default_value='""'), param('ns3::AttributeValue const &', 'v2', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n3', default_value='""'), param('ns3::AttributeValue const &', 'v3', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n4', default_value='""'), param('ns3::AttributeValue const &', 'v4', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n5', default_value='""'), param('ns3::AttributeValue const &', 'v5', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n6', default_value='""'), param('ns3::AttributeValue const &', 'v6', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n7', default_value='""'), param('ns3::AttributeValue const &', 'v7', default_value='ns3::EmptyAttributeValue()')])
+    ## mesh-helper.h: void ns3::MeshHelper::SetNumberOfInterfaces(uint32_t nInterfaces) [member function]
+    cls.add_method('SetNumberOfInterfaces', 
+                   'void', 
+                   [param('uint32_t', 'nInterfaces')])
+    ## mesh-helper.h: void ns3::MeshHelper::SetRemoteStationManager(std::string type, std::string n0="", ns3::AttributeValue const & v0=ns3::EmptyAttributeValue(), std::string n1="", ns3::AttributeValue const & v1=ns3::EmptyAttributeValue(), std::string n2="", ns3::AttributeValue const & v2=ns3::EmptyAttributeValue(), std::string n3="", ns3::AttributeValue const & v3=ns3::EmptyAttributeValue(), std::string n4="", ns3::AttributeValue const & v4=ns3::EmptyAttributeValue(), std::string n5="", ns3::AttributeValue const & v5=ns3::EmptyAttributeValue(), std::string n6="", ns3::AttributeValue const & v6=ns3::EmptyAttributeValue(), std::string n7="", ns3::AttributeValue const & v7=ns3::EmptyAttributeValue()) [member function]
+    cls.add_method('SetRemoteStationManager', 
+                   'void', 
+                   [param('std::string', 'type'), param('std::string', 'n0', default_value='""'), param('ns3::AttributeValue const &', 'v0', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n1', default_value='""'), param('ns3::AttributeValue const &', 'v1', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n2', default_value='""'), param('ns3::AttributeValue const &', 'v2', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n3', default_value='""'), param('ns3::AttributeValue const &', 'v3', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n4', default_value='""'), param('ns3::AttributeValue const &', 'v4', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n5', default_value='""'), param('ns3::AttributeValue const &', 'v5', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n6', default_value='""'), param('ns3::AttributeValue const &', 'v6', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n7', default_value='""'), param('ns3::AttributeValue const &', 'v7', default_value='ns3::EmptyAttributeValue()')])
+    ## mesh-helper.h: void ns3::MeshHelper::SetSpreadInterfaceChannels(ns3::MeshHelper::ChannelPolicy arg0) [member function]
+    cls.add_method('SetSpreadInterfaceChannels', 
+                   'void', 
+                   [param('ns3::MeshHelper::ChannelPolicy', 'arg0')])
+    ## mesh-helper.h: void ns3::MeshHelper::SetStackInstaller(std::string type, std::string n0="", ns3::AttributeValue const & v0=ns3::EmptyAttributeValue(), std::string n1="", ns3::AttributeValue const & v1=ns3::EmptyAttributeValue(), std::string n2="", ns3::AttributeValue const & v2=ns3::EmptyAttributeValue(), std::string n3="", ns3::AttributeValue const & v3=ns3::EmptyAttributeValue(), std::string n4="", ns3::AttributeValue const & v4=ns3::EmptyAttributeValue(), std::string n5="", ns3::AttributeValue const & v5=ns3::EmptyAttributeValue(), std::string n6="", ns3::AttributeValue const & v6=ns3::EmptyAttributeValue(), std::string n7="", ns3::AttributeValue const & v7=ns3::EmptyAttributeValue()) [member function]
+    cls.add_method('SetStackInstaller', 
+                   'void', 
+                   [param('std::string', 'type'), param('std::string', 'n0', default_value='""'), param('ns3::AttributeValue const &', 'v0', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n1', default_value='""'), param('ns3::AttributeValue const &', 'v1', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n2', default_value='""'), param('ns3::AttributeValue const &', 'v2', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n3', default_value='""'), param('ns3::AttributeValue const &', 'v3', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n4', default_value='""'), param('ns3::AttributeValue const &', 'v4', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n5', default_value='""'), param('ns3::AttributeValue const &', 'v5', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n6', default_value='""'), param('ns3::AttributeValue const &', 'v6', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n7', default_value='""'), param('ns3::AttributeValue const &', 'v7', default_value='ns3::EmptyAttributeValue()')])
+    ## mesh-helper.h: void ns3::MeshHelper::SetStandard(ns3::WifiPhyStandard standard) [member function]
+    cls.add_method('SetStandard', 
+                   'void', 
+                   [param('ns3::WifiPhyStandard', 'standard')])
     return
 
 def register_Ns3MobilityHelper_methods(root_module, cls):
@@ -1500,6 +1631,18 @@ def register_Ns3Ipv4ListRoutingHelper_methods(root_module, cls):
                    is_const=True, is_virtual=True)
     return
 
+def register_Ns3Ipv4NixVectorHelper_methods(root_module, cls):
+    ## ipv4-nix-vector-helper.h: ns3::Ipv4NixVectorHelper::Ipv4NixVectorHelper(ns3::Ipv4NixVectorHelper const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::Ipv4NixVectorHelper const &', 'arg0')])
+    ## ipv4-nix-vector-helper.h: ns3::Ipv4NixVectorHelper::Ipv4NixVectorHelper() [constructor]
+    cls.add_constructor([])
+    ## ipv4-nix-vector-helper.h: ns3::Ptr<ns3::Ipv4RoutingProtocol> ns3::Ipv4NixVectorHelper::Create(ns3::Ptr<ns3::Node> node) const [member function]
+    cls.add_method('Create', 
+                   'ns3::Ptr< ns3::Ipv4RoutingProtocol >', 
+                   [param('ns3::Ptr< ns3::Node >', 'node')], 
+                   is_const=True, is_virtual=True)
+    return
+
 def register_Ns3Ipv6ListRoutingHelper_methods(root_module, cls):
     ## ipv6-list-routing-helper.h: ns3::Ipv6ListRoutingHelper::Ipv6ListRoutingHelper(ns3::Ipv6ListRoutingHelper const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::Ipv6ListRoutingHelper const &', 'arg0')])
@@ -1618,11 +1761,99 @@ def register_Ns3AthstatsWifiTraceSink_methods(root_module, cls):
                    [param('std::string', 'context'), param('ns3::Mac48Address', 'address')])
     return
 
+def register_Ns3MeshStack_methods(root_module, cls):
+    ## mesh-stack-installer.h: ns3::MeshStack::MeshStack() [constructor]
+    cls.add_constructor([])
+    ## mesh-stack-installer.h: ns3::MeshStack::MeshStack(ns3::MeshStack const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::MeshStack const &', 'arg0')])
+    ## mesh-stack-installer.h: bool ns3::MeshStack::InstallStack(ns3::Ptr<ns3::MeshPointDevice> mp) [member function]
+    cls.add_method('InstallStack', 
+                   'bool', 
+                   [param('ns3::Ptr< ns3::MeshPointDevice >', 'mp')], 
+                   is_pure_virtual=True, is_virtual=True)
+    ## mesh-stack-installer.h: void ns3::MeshStack::Report(ns3::Ptr<ns3::MeshPointDevice> const mp, std::ostream & arg1) [member function]
+    cls.add_method('Report', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::MeshPointDevice > const', 'mp'), param('std::ostream &', 'arg1')], 
+                   is_pure_virtual=True, is_virtual=True)
+    ## mesh-stack-installer.h: void ns3::MeshStack::ResetStats(ns3::Ptr<ns3::MeshPointDevice> const mp) [member function]
+    cls.add_method('ResetStats', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::MeshPointDevice > const', 'mp')], 
+                   is_pure_virtual=True, is_virtual=True)
+    return
+
+def register_Ns3Dot11sStack_methods(root_module, cls):
+    ## dot11s-installer.h: ns3::Dot11sStack::Dot11sStack(ns3::Dot11sStack const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::Dot11sStack const &', 'arg0')])
+    ## dot11s-installer.h: ns3::Dot11sStack::Dot11sStack() [constructor]
+    cls.add_constructor([])
+    ## dot11s-installer.h: void ns3::Dot11sStack::DoDispose() [member function]
+    cls.add_method('DoDispose', 
+                   'void', 
+                   [], 
+                   is_virtual=True)
+    ## dot11s-installer.h: static ns3::TypeId ns3::Dot11sStack::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## dot11s-installer.h: bool ns3::Dot11sStack::InstallStack(ns3::Ptr<ns3::MeshPointDevice> mp) [member function]
+    cls.add_method('InstallStack', 
+                   'bool', 
+                   [param('ns3::Ptr< ns3::MeshPointDevice >', 'mp')], 
+                   is_virtual=True)
+    ## dot11s-installer.h: void ns3::Dot11sStack::Report(ns3::Ptr<ns3::MeshPointDevice> const mp, std::ostream & arg1) [member function]
+    cls.add_method('Report', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::MeshPointDevice > const', 'mp'), param('std::ostream &', 'arg1')], 
+                   is_virtual=True)
+    ## dot11s-installer.h: void ns3::Dot11sStack::ResetStats(ns3::Ptr<ns3::MeshPointDevice> const mp) [member function]
+    cls.add_method('ResetStats', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::MeshPointDevice > const', 'mp')], 
+                   is_virtual=True)
+    return
+
+def register_Ns3FlameStack_methods(root_module, cls):
+    ## flame-installer.h: ns3::FlameStack::FlameStack(ns3::FlameStack const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::FlameStack const &', 'arg0')])
+    ## flame-installer.h: ns3::FlameStack::FlameStack() [constructor]
+    cls.add_constructor([])
+    ## flame-installer.h: void ns3::FlameStack::DoDispose() [member function]
+    cls.add_method('DoDispose', 
+                   'void', 
+                   [], 
+                   is_virtual=True)
+    ## flame-installer.h: static ns3::TypeId ns3::FlameStack::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## flame-installer.h: bool ns3::FlameStack::InstallStack(ns3::Ptr<ns3::MeshPointDevice> mp) [member function]
+    cls.add_method('InstallStack', 
+                   'bool', 
+                   [param('ns3::Ptr< ns3::MeshPointDevice >', 'mp')], 
+                   is_virtual=True)
+    ## flame-installer.h: void ns3::FlameStack::Report(ns3::Ptr<ns3::MeshPointDevice> const mp, std::ostream & arg1) [member function]
+    cls.add_method('Report', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::MeshPointDevice > const', 'mp'), param('std::ostream &', 'arg1')], 
+                   is_virtual=True)
+    ## flame-installer.h: void ns3::FlameStack::ResetStats(ns3::Ptr<ns3::MeshPointDevice> const mp) [member function]
+    cls.add_method('ResetStats', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::MeshPointDevice > const', 'mp')], 
+                   is_virtual=True)
+    return
+
 def register_functions(root_module):
     module = root_module
     register_functions_ns3_Config(module.get_submodule('Config'), root_module)
     register_functions_ns3_TimeStepPrecision(module.get_submodule('TimeStepPrecision'), root_module)
     register_functions_ns3_addressUtils(module.get_submodule('addressUtils'), root_module)
+    register_functions_ns3_dot11s(module.get_submodule('dot11s'), root_module)
+    register_functions_ns3_flame(module.get_submodule('flame'), root_module)
     register_functions_ns3_internal(module.get_submodule('internal'), root_module)
     register_functions_ns3_olsr(module.get_submodule('olsr'), root_module)
     return
@@ -1634,6 +1865,12 @@ def register_functions_ns3_TimeStepPrecision(module, root_module):
     return
 
 def register_functions_ns3_addressUtils(module, root_module):
+    return
+
+def register_functions_ns3_dot11s(module, root_module):
+    return
+
+def register_functions_ns3_flame(module, root_module):
     return
 
 def register_functions_ns3_internal(module, root_module):

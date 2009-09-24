@@ -138,6 +138,7 @@ Packet::Packet ()
     m_byteTagList (),
     m_packetTagList (),
     m_metadata (m_globalUid, 0),
+    m_nixVector (0),
     m_refCount (1)
 {
   m_globalUid++;
@@ -149,7 +150,10 @@ Packet::Packet (const Packet &o)
     m_packetTagList (o.m_packetTagList),
     m_metadata (o.m_metadata),
     m_refCount (1)
-{}
+{
+  o.m_nixVector ? m_nixVector = o.m_nixVector->Copy () 
+                : m_nixVector = 0;
+}
 
 Packet &
 Packet::operator = (const Packet &o)
@@ -162,6 +166,8 @@ Packet::operator = (const Packet &o)
   m_byteTagList = o.m_byteTagList;
   m_packetTagList = o.m_packetTagList;
   m_metadata = o.m_metadata;
+  o.m_nixVector ? m_nixVector = o.m_nixVector->Copy () 
+                : m_nixVector = 0;
   return *this;
 }
 
@@ -170,6 +176,7 @@ Packet::Packet (uint32_t size)
     m_byteTagList (),
     m_packetTagList (),
     m_metadata (m_globalUid, size),
+    m_nixVector (0),
     m_refCount (1)
 {
   m_globalUid++;
@@ -179,6 +186,7 @@ Packet::Packet (uint8_t const*buffer, uint32_t size)
     m_byteTagList (),
     m_packetTagList (),
     m_metadata (m_globalUid, size),
+    m_nixVector (0),
     m_refCount (1)
 {
   m_globalUid++;
@@ -193,6 +201,7 @@ Packet::Packet (const Buffer &buffer,  const ByteTagList &byteTagList,
     m_byteTagList (byteTagList),
     m_packetTagList (packetTagList),
     m_metadata (metadata),
+    m_nixVector (0),
     m_refCount (1)
 {}
 
@@ -208,6 +217,18 @@ Packet::CreateFragment (uint32_t start, uint32_t length) const
   // through Create because it is private.
   return Ptr<Packet> (new Packet (buffer, m_byteTagList, m_packetTagList, metadata), false);
 }
+
+void
+Packet::SetNixVector (Ptr<NixVector> nixVector)
+{
+  m_nixVector = nixVector;
+}
+
+Ptr<NixVector>
+Packet::GetNixVector (void) const
+{
+  return m_nixVector;
+} 
 
 uint32_t 
 Packet::GetSize (void) const
@@ -676,7 +697,6 @@ Packet::GetPacketTagIterator (void) const
 {
   return PacketTagIterator (m_packetTagList.Head ());
 }
-
 
 std::ostream& operator<< (std::ostream& os, const Packet &packet)
 {

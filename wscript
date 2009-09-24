@@ -569,7 +569,7 @@ def build(bld):
     if Options.options.check:
         Options.options.compile_targets += ',run-tests'
         if env['ENABLE_PYTHON_BINDINGS']:
-            Options.options.compile_targets += ',ns3module'
+            Options.options.compile_targets += ',ns3module,pybindgen-command'
         _run_check(bld)
 
     if Options.options.doxygen_no_build:

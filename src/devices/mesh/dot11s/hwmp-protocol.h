@@ -86,6 +86,10 @@ public:
   void ResetStats ();
 private:
   friend class HwmpProtocolMac;
+
+  HwmpProtocol& operator= (const HwmpProtocol &);
+  HwmpProtocol (const HwmpProtocol &);
+
   /**
    * \brief Structure of path error: IePerr and list of receivers:
    * interfaces and MAC address

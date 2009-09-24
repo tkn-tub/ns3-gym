@@ -338,13 +338,13 @@ InternetStackHelper::EnableAscii (std::ostream &os, NodeContainer n)
     {
       Ptr<Node> node = *i;
       oss << "/NodeList/" << node->GetId () << "/$ns3::Ipv4L3Protocol/Drop";
-      Config::Connect (oss.str (), MakeBoundCallback (&InternetStackHelper::AsciiDropEvent, writer));
+      Config::Connect (oss.str (), MakeBoundCallback (&InternetStackHelper::AsciiDropEventIpv4, writer));
       oss.str ("");
       oss << "/NodeList/" << node->GetId () << "/$ns3::ArpL3Protocol/Drop";
-      Config::Connect (oss.str (), MakeBoundCallback (&InternetStackHelper::AsciiDropEvent, writer));
+      Config::Connect (oss.str (), MakeBoundCallback (&InternetStackHelper::AsciiDropEventArp, writer));
       oss.str ("");
       oss << "/NodeList/" << node->GetId () << "/$ns3::Ipv6L3Protocol/Drop";
-      Config::Connect (oss.str (), MakeBoundCallback (&InternetStackHelper::AsciiDropEvent, writer));
+      Config::Connect (oss.str (), MakeBoundCallback (&InternetStackHelper::AsciiDropEventIpv6, writer));
       oss.str ("");
     }
 }
@@ -428,9 +428,29 @@ InternetStackHelper::GetStream (uint32_t nodeId, uint32_t interfaceId)
 }
 
 void
-InternetStackHelper::AsciiDropEvent (Ptr<AsciiWriter> writer, std::string path, Ptr<const Packet> packet)
+InternetStackHelper::AsciiDropEventArp (Ptr<AsciiWriter> writer, std::string path, Ptr<const Packet> packet)
 {
   writer->WritePacket (AsciiWriter::DROP, path, packet);
+}
+
+void
+InternetStackHelper::AsciiDropEventIpv4 (Ptr<AsciiWriter> writer, std::string path,
+                                         Ipv4Header const &header, Ptr<const Packet> packet,
+                                         Ipv4L3Protocol::DropReason reason, uint32_t interface)
+{
+  Ptr<Packet> p = packet->Copy ();
+  p->AddHeader (header);
+  writer->WritePacket (AsciiWriter::DROP, path, p);
+}
+
+void
+InternetStackHelper::AsciiDropEventIpv6 (Ptr<AsciiWriter> writer, std::string path,
+                                         Ipv6Header const &header, Ptr<const Packet> packet,
+                                         Ipv6L3Protocol::DropReason reason, uint32_t interface)
+{
+  Ptr<Packet> p = packet->Copy ();
+  p->AddHeader (header);
+  writer->WritePacket (AsciiWriter::DROP, path, p);
 }
 
 } // namespace ns3

@@ -21,9 +21,10 @@
 #ifndef INET6_SOCKET_ADDRESS_H 
 #define INET6_SOCKET_ADDRESS_H
 
+#include <stdint.h>
+
 #include "address.h"
 #include "ipv6-address.h"
-#include <stdint.h>
 
 namespace ns3 {
 

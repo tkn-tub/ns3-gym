@@ -40,7 +40,7 @@ public:
 
   bool IsEqual (IeMeshId const &o) const;
   bool IsBroadcast (void) const;
-  uint32_t GetLength (void) const;
+  //uint32_t GetLength (void) const;
   char *PeekString (void) const;
   /**
    * \name Inherited from WifiInformationElement
@@ -55,6 +55,7 @@ public:
 private:
   uint8_t m_meshId[33];
   friend bool operator== (const IeMeshId & a, const IeMeshId & b);
+
 };
 
 std::ostream &operator << (std::ostream &os, const IeMeshId &meshId);

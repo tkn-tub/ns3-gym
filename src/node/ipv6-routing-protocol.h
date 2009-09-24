@@ -25,6 +25,7 @@
 #include "ns3/callback.h"
 #include "ns3/object.h"
 #include "ns3/socket.h"
+
 #include "ipv6-header.h"
 #include "ipv6-interface-address.h"
 #include "ipv6.h"
@@ -39,6 +40,7 @@ class NetDevice;
  * \ingroup node 
  * \defgroup ipv6Routing Ipv6RoutingProtocol
  */
+
 /**
  * \ingroup ipv6Routing
  * \brief Abstract base class for Ipv6 routing protocols.
@@ -102,37 +104,42 @@ public:
                              LocalDeliverCallback lcb, ErrorCallback ecb) = 0;
 
   /**
-   * \param interface the index of the interface we are being notified about
+   * \brief Notify when specified interface goes UP.
    *
    * Protocols are expected to implement this method to be notified of the state change of
    * an interface in a node.
+   * \param interface the index of the interface we are being notified about
    */
   virtual void NotifyInterfaceUp (uint32_t interface) = 0;
+  
   /**
-   * \param interface the index of the interface we are being notified about
+   * \brief Notify when specified interface goes DOWN.
    *
    * Protocols are expected to implement this method to be notified of the state change of
    * an interface in a node.
+   * \param interface the index of the interface we are being notified about
    */
   virtual void NotifyInterfaceDown (uint32_t interface) = 0;
 
   /**
-   * \param interface the index of the interface we are being notified about
-   * \param address a new address being added to an interface
+   * \brief Notify when specified interface add an address.
    *
    * Protocols are expected to implement this method to be notified whenever
    * a new address is added to an interface. Typically used to add a 'network route' on an
    * interface. Can be invoked on an up or down interface.
+   * \param interface the index of the interface we are being notified about
+   * \param address a new address being added to an interface
    */
   virtual void NotifyAddAddress (uint32_t interface, Ipv6InterfaceAddress address) = 0;
 
   /**
-   * \param interface the index of the interface we are being notified about
-   * \param address a new address being added to an interface
+   * \brief Notify when specified interface add an address.
    *
    * Protocols are expected to implement this method to be notified whenever
    * a new address is removed from an interface. Typically used to remove the 'network route' of an
    * interface. Can be invoked on an up or down interface.
+   * \param interface the index of the interface we are being notified about
+   * \param address a new address being added to an interface
    */
   virtual void NotifyRemoveAddress (uint32_t interface, Ipv6InterfaceAddress address) = 0;
 
@@ -160,9 +167,8 @@ public:
   virtual void NotifyRemoveRoute (Ipv6Address dst, Ipv6Prefix mask, Ipv6Address nextHop, uint32_t interface, Ipv6Address prefixToUse = Ipv6Address::GetZero ()) = 0;
 
   /**
+   * \brief Typically, invoked directly or indirectly from ns3::Ipv6::SetRoutingProtocol
    * \param ipv6 the ipv6 object this routing protocol is being associated with
-   * 
-   * Typically, invoked directly or indirectly from ns3::Ipv6::SetRoutingProtocol
    */
   virtual void SetIpv6 (Ptr<Ipv6> ipv6) = 0;
 };

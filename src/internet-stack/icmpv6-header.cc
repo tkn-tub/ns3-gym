@@ -22,8 +22,9 @@
 
 #include "ns3/assert.h"
 #include "ns3/address-utils.h"
-#include "icmpv6-header.h"
 #include "ns3/log.h"
+
+#include "icmpv6-header.h"
 
 namespace ns3
 {
@@ -666,7 +667,7 @@ void Icmpv6RS::SetReserved (uint32_t reserved)
   m_reserved = reserved;
 }
 
-void Icmpv6RS::Print (std::ostream& os)
+void Icmpv6RS::Print (std::ostream& os) const
 {
   os << "( type = " << (uint32_t)GetType () << " (RS) code = " << (uint32_t)GetCode () << " checksum = " << (uint32_t)GetChecksum ()  << ")";
 }
@@ -771,7 +772,7 @@ void Icmpv6Redirection::SetDestination (Ipv6Address destination)
   m_destination = destination;
 }
 
-void Icmpv6Redirection::Print (std::ostream& os)
+void Icmpv6Redirection::Print (std::ostream& os) const
 {
   os << "( type = " << (uint32_t)GetType () << " (Redirection) code = " << (uint32_t)GetCode () << " checksum = " << (uint32_t)GetChecksum ()  << " target = " << m_target << " destination = " << m_destination << ")";
 }
@@ -970,7 +971,7 @@ void Icmpv6DestinationUnreachable::SetPacket (Ptr<Packet> p)
   m_packet = p;
 }
 
-void Icmpv6DestinationUnreachable::Print (std::ostream& os)
+void Icmpv6DestinationUnreachable::Print (std::ostream& os) const
 {
   os << "( type = " << (uint32_t)GetType () << " (Destination Unreachable) code = " << (uint32_t)GetCode () << " checksum = " << (uint32_t)GetChecksum ()  << ")";
 }
@@ -1065,7 +1066,7 @@ void Icmpv6TooBig::SetMtu (uint32_t mtu)
   m_mtu = mtu;
 }
 
-void Icmpv6TooBig::Print (std::ostream& os) 
+void Icmpv6TooBig::Print (std::ostream& os)  const
 {
   os << "( type = " << (uint32_t)GetType () << " (Too Big) code = " << (uint32_t)GetCode () << " checksum = " << (uint32_t)GetChecksum () << " mtu = " << (uint32_t)GetMtu () << ")";
 }
@@ -1149,7 +1150,7 @@ void Icmpv6TimeExceeded::SetPacket (Ptr<Packet> p)
   m_packet = p;
 }
 
-void Icmpv6TimeExceeded::Print (std::ostream& os) 
+void Icmpv6TimeExceeded::Print (std::ostream& os) const
 {
   os << "( type = " << (uint32_t)GetType () << " (Destination Unreachable) code = " << (uint32_t)GetCode () << " checksum = " << (uint32_t)GetChecksum ()  << ")";
 }
@@ -1244,7 +1245,7 @@ void Icmpv6ParameterError::SetPtr (uint32_t ptr)
   m_ptr = ptr;
 }
 
-void Icmpv6ParameterError::Print (std::ostream& os)
+void Icmpv6ParameterError::Print (std::ostream& os) const
 {
   os << "( type = " << (uint32_t)GetType () << " (Destination Unreachable) code = " << (uint32_t)GetCode () << " checksum = " << (uint32_t)GetChecksum ()  << " ptr = " << (uint32_t)GetPtr () << ")";
 }

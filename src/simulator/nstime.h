@@ -535,6 +535,7 @@ std::istream& operator>> (std::istream& is, Time & time);
  * Time t = Seconds (2.0);
  * Simulator::Schedule (NanoSeconds (5.0), ...);
  * \endcode
+ * \param seconds seconds value
  */
 Time Seconds (double seconds);
 
@@ -546,6 +547,7 @@ Time Seconds (double seconds);
  * Time t = MilliSeconds (2);
  * Simulator::Schedule (MilliSeconds (5), ...);
  * \endcode
+ * \param ms milliseconds value
  */
 Time MilliSeconds (uint64_t ms);
 /**
@@ -556,6 +558,7 @@ Time MilliSeconds (uint64_t ms);
  * Time t = MicroSeconds (2);
  * Simulator::Schedule (MicroSeconds (5), ...);
  * \endcode
+ * \param us microseconds value
  */
 Time MicroSeconds (uint64_t us);
 /**
@@ -566,6 +569,7 @@ Time MicroSeconds (uint64_t us);
  * Time t = NanoSeconds (2);
  * Simulator::Schedule (NanoSeconds (5), ...);
  * \endcode
+ * \param ns nanoseconds value
  */
 Time NanoSeconds (uint64_t ns);
 /**
@@ -576,6 +580,7 @@ Time NanoSeconds (uint64_t ns);
  * Time t = PicoSeconds (2);
  * Simulator::Schedule (PicoSeconds (5), ...);
  * \endcode
+ * \param ps picoseconds value
  */
 Time PicoSeconds (uint64_t ps);
 /**
@@ -586,6 +591,7 @@ Time PicoSeconds (uint64_t ps);
  * Time t = FemtoSeconds (2);
  * Simulator::Schedule (FemtoSeconds (5), ...);
  * \endcode
+ * \param fs femtoseconds value
  */
 Time FemtoSeconds (uint64_t fs);
 

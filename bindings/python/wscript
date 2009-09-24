@@ -15,7 +15,7 @@ import Build
 import Utils
 
 ## https://launchpad.net/pybindgen/
-REQUIRED_PYBINDGEN_VERSION = (0, 12, 0)
+REQUIRED_PYBINDGEN_VERSION = (0, 12, 0, 700)
 REQUIRED_PYGCCXML_VERSION = (0, 9, 5)
 
 
@@ -404,6 +404,7 @@ def build(bld):
         scanned_modules.append(name)
 
     if env['ENABLE_PYTHON_BINDINGS']:
+        debug = ('PYBINDGEN_DEBUG' in os.environ)
         source = [
             'ns3modulegen.py',
             'ns3modulegen_generated.py',
@@ -412,9 +413,14 @@ def build(bld):
         target = [
             'ns3module.cc',
             'ns3module.h',
-            'ns3modulegen.log',
             ]
-        argv = ['NS3_ENABLED_FEATURES=${FEATURES}', '${PYTHON}', '${SRC[0]}', '${TGT[0]}']
+        if not debug:
+            target.append('ns3modulegen.log')
+
+        argv = ['NS3_ENABLED_FEATURES=${FEATURES}', '${PYTHON}']
+        if debug:
+            argv.extend(["-m", "pdb"])
+        argv.extend(['${SRC[0]}', '${TGT[0]}'])
         argv.extend(get_modules_and_headers(bld).iterkeys())
         for module in scanned_modules:
             source.append("ns3_module_%s.py" % module)
@@ -422,7 +428,8 @@ def build(bld):
             if os.path.exists(os.path.join(curdir, local)):
                 source.append(local)
 
-        argv.extend(['2>', '${TGT[2]}']) # 2> ns3modulegen.log
+        if not debug:
+            argv.extend(['2>', '${TGT[2]}']) # 2> ns3modulegen.log
 
         for module in scanned_modules:
             target.append("ns3_module_%s.cc" % module)

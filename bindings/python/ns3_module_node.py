@@ -3,6 +3,8 @@ from pybindgen import Module, FileCodeSink, param, retval, cppclass, typehandler
 def register_types(module):
     root_module = module.get_root()
     
+    ## packetbb.h: ns3::PbbAddressLength [enumeration]
+    module.add_enum('PbbAddressLength', ['IPV4', 'IPV6'])
     ## ethernet-header.h: ns3::ethernet_header_t [enumeration]
     module.add_enum('ethernet_header_t', ['LENGTH', 'VLAN', 'QINQ'])
     ## address.h: ns3::Address [class]
@@ -55,6 +57,24 @@ def register_types(module):
     module.add_class('PacketSocketAddress')
     ## packet-socket-address.h: ns3::PacketSocketAddress [class]
     root_module['ns3::PacketSocketAddress'].implicitly_converts_to(root_module['ns3::Address'])
+    ## packetbb.h: ns3::PbbAddressBlock [class]
+    module.add_class('PbbAddressBlock', allow_subclassing=True)
+    ## packetbb.h: ns3::PbbAddressBlockIpv4 [class]
+    module.add_class('PbbAddressBlockIpv4', parent=root_module['ns3::PbbAddressBlock'])
+    ## packetbb.h: ns3::PbbAddressBlockIpv6 [class]
+    module.add_class('PbbAddressBlockIpv6', parent=root_module['ns3::PbbAddressBlock'])
+    ## packetbb.h: ns3::PbbAddressTlvBlock [class]
+    module.add_class('PbbAddressTlvBlock')
+    ## packetbb.h: ns3::PbbMessage [class]
+    module.add_class('PbbMessage', allow_subclassing=True)
+    ## packetbb.h: ns3::PbbMessageIpv4 [class]
+    module.add_class('PbbMessageIpv4', parent=root_module['ns3::PbbMessage'])
+    ## packetbb.h: ns3::PbbMessageIpv6 [class]
+    module.add_class('PbbMessageIpv6', parent=root_module['ns3::PbbMessage'])
+    ## packetbb.h: ns3::PbbTlv [class]
+    module.add_class('PbbTlv')
+    ## packetbb.h: ns3::PbbTlvBlock [class]
+    module.add_class('PbbTlvBlock')
     ## ipv4-address.h: ns3::Ipv4AddressChecker [class]
     module.add_class('Ipv4AddressChecker', parent=root_module['ns3::AttributeChecker'])
     ## ipv4-address.h: ns3::Ipv4AddressValue [class]
@@ -91,6 +111,10 @@ def register_types(module):
     module.add_class('Mac48AddressChecker', parent=root_module['ns3::AttributeChecker'])
     ## mac48-address.h: ns3::Mac48AddressValue [class]
     module.add_class('Mac48AddressValue', parent=root_module['ns3::AttributeValue'])
+    ## packetbb.h: ns3::PbbAddressTlv [class]
+    module.add_class('PbbAddressTlv', parent=root_module['ns3::PbbTlv'])
+    ## packetbb.h: ns3::PbbPacket [class]
+    module.add_class('PbbPacket', parent=root_module['ns3::Header'])
     ## queue.h: ns3::Queue [class]
     module.add_class('Queue', parent=root_module['ns3::Object'])
     ## socket.h: ns3::Socket [class]
@@ -174,6 +198,18 @@ def register_types(module):
     register_types_ns3_addressUtils(nested_module)
     
     
+    ## Register a nested module for the namespace dot11s
+    
+    nested_module = module.add_cpp_namespace('dot11s')
+    register_types_ns3_dot11s(nested_module)
+    
+    
+    ## Register a nested module for the namespace flame
+    
+    nested_module = module.add_cpp_namespace('flame')
+    register_types_ns3_flame(nested_module)
+    
+    
     ## Register a nested module for the namespace internal
     
     nested_module = module.add_cpp_namespace('internal')
@@ -195,6 +231,15 @@ def register_types_ns3_TimeStepPrecision(module):
     
 
 def register_types_ns3_addressUtils(module):
+    root_module = module.get_root()
+    
+
+def register_types_ns3_dot11s(module):
+    root_module = module.get_root()
+    
+    module.add_container('std::vector< ns3::Mac48Address >', 'ns3::Mac48Address', container_type='vector')
+
+def register_types_ns3_flame(module):
     root_module = module.get_root()
     
 
@@ -221,6 +266,15 @@ def register_methods(root_module):
     register_Ns3Mac64Address_methods(root_module, root_module['ns3::Mac64Address'])
     register_Ns3NodeList_methods(root_module, root_module['ns3::NodeList'])
     register_Ns3PacketSocketAddress_methods(root_module, root_module['ns3::PacketSocketAddress'])
+    register_Ns3PbbAddressBlock_methods(root_module, root_module['ns3::PbbAddressBlock'])
+    register_Ns3PbbAddressBlockIpv4_methods(root_module, root_module['ns3::PbbAddressBlockIpv4'])
+    register_Ns3PbbAddressBlockIpv6_methods(root_module, root_module['ns3::PbbAddressBlockIpv6'])
+    register_Ns3PbbAddressTlvBlock_methods(root_module, root_module['ns3::PbbAddressTlvBlock'])
+    register_Ns3PbbMessage_methods(root_module, root_module['ns3::PbbMessage'])
+    register_Ns3PbbMessageIpv4_methods(root_module, root_module['ns3::PbbMessageIpv4'])
+    register_Ns3PbbMessageIpv6_methods(root_module, root_module['ns3::PbbMessageIpv6'])
+    register_Ns3PbbTlv_methods(root_module, root_module['ns3::PbbTlv'])
+    register_Ns3PbbTlvBlock_methods(root_module, root_module['ns3::PbbTlvBlock'])
     register_Ns3Ipv4AddressChecker_methods(root_module, root_module['ns3::Ipv4AddressChecker'])
     register_Ns3Ipv4AddressValue_methods(root_module, root_module['ns3::Ipv4AddressValue'])
     register_Ns3Ipv4Header_methods(root_module, root_module['ns3::Ipv4Header'])
@@ -238,6 +292,8 @@ def register_methods(root_module):
     register_Ns3LlcSnapHeader_methods(root_module, root_module['ns3::LlcSnapHeader'])
     register_Ns3Mac48AddressChecker_methods(root_module, root_module['ns3::Mac48AddressChecker'])
     register_Ns3Mac48AddressValue_methods(root_module, root_module['ns3::Mac48AddressValue'])
+    register_Ns3PbbAddressTlv_methods(root_module, root_module['ns3::PbbAddressTlv'])
+    register_Ns3PbbPacket_methods(root_module, root_module['ns3::PbbPacket'])
     register_Ns3Queue_methods(root_module, root_module['ns3::Queue'])
     register_Ns3Socket_methods(root_module, root_module['ns3::Socket'])
     register_Ns3SocketAddressTag_methods(root_module, root_module['ns3::SocketAddressTag'])
@@ -1163,6 +1219,1021 @@ def register_Ns3PacketSocketAddress_methods(root_module, cls):
                    [param('uint32_t', 'device')])
     return
 
+def register_Ns3PbbAddressBlock_methods(root_module, cls):
+    cls.add_binary_comparison_operator('==')
+    cls.add_binary_comparison_operator('!=')
+    ## packetbb.h: ns3::PbbAddressBlock::PbbAddressBlock(ns3::PbbAddressBlock const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::PbbAddressBlock const &', 'arg0')])
+    ## packetbb.h: ns3::PbbAddressBlock::PbbAddressBlock() [constructor]
+    cls.add_constructor([])
+    ## packetbb.h: ns3::Address ns3::PbbAddressBlock::AddressBack() const [member function]
+    cls.add_method('AddressBack', 
+                   'ns3::Address', 
+                   [], 
+                   is_const=True)
+    ## packetbb.h: std::_List_iterator<ns3::Address> ns3::PbbAddressBlock::AddressBegin() [member function]
+    cls.add_method('AddressBegin', 
+                   'std::_List_iterator< ns3::Address >', 
+                   [])
+    ## packetbb.h: std::_List_const_iterator<ns3::Address> ns3::PbbAddressBlock::AddressBegin() const [member function]
+    cls.add_method('AddressBegin', 
+                   'std::_List_const_iterator< ns3::Address >', 
+                   [], 
+                   is_const=True)
+    ## packetbb.h: void ns3::PbbAddressBlock::AddressClear() [member function]
+    cls.add_method('AddressClear', 
+                   'void', 
+                   [])
+    ## packetbb.h: bool ns3::PbbAddressBlock::AddressEmpty() const [member function]
+    cls.add_method('AddressEmpty', 
+                   'bool', 
+                   [], 
+                   is_const=True)
+    ## packetbb.h: std::_List_iterator<ns3::Address> ns3::PbbAddressBlock::AddressEnd() [member function]
+    cls.add_method('AddressEnd', 
+                   'std::_List_iterator< ns3::Address >', 
+                   [])
+    ## packetbb.h: std::_List_const_iterator<ns3::Address> ns3::PbbAddressBlock::AddressEnd() const [member function]
+    cls.add_method('AddressEnd', 
+                   'std::_List_const_iterator< ns3::Address >', 
+                   [], 
+                   is_const=True)
+    ## packetbb.h: std::_List_iterator<ns3::Address> ns3::PbbAddressBlock::AddressErase(std::_List_iterator<ns3::Address> position) [member function]
+    cls.add_method('AddressErase', 
+                   'std::_List_iterator< ns3::Address >', 
+                   [param('std::_List_iterator< ns3::Address >', 'position')])
+    ## packetbb.h: std::_List_iterator<ns3::Address> ns3::PbbAddressBlock::AddressErase(std::_List_iterator<ns3::Address> first, std::_List_iterator<ns3::Address> last) [member function]
+    cls.add_method('AddressErase', 
+                   'std::_List_iterator< ns3::Address >', 
+                   [param('std::_List_iterator< ns3::Address >', 'first'), param('std::_List_iterator< ns3::Address >', 'last')])
+    ## packetbb.h: ns3::Address ns3::PbbAddressBlock::AddressFront() const [member function]
+    cls.add_method('AddressFront', 
+                   'ns3::Address', 
+                   [], 
+                   is_const=True)
+    ## packetbb.h: std::_List_iterator<ns3::Address> ns3::PbbAddressBlock::AddressInsert(std::_List_iterator<ns3::Address> position, ns3::Address const value) [member function]
+    cls.add_method('AddressInsert', 
+                   'std::_List_iterator< ns3::Address >', 
+                   [param('std::_List_iterator< ns3::Address >', 'position'), param('ns3::Address const', 'value')])
+    ## packetbb.h: void ns3::PbbAddressBlock::AddressPopBack() [member function]
+    cls.add_method('AddressPopBack', 
+                   'void', 
+                   [])
+    ## packetbb.h: void ns3::PbbAddressBlock::AddressPopFront() [member function]
+    cls.add_method('AddressPopFront', 
+                   'void', 
+                   [])
+    ## packetbb.h: void ns3::PbbAddressBlock::AddressPushBack(ns3::Address address) [member function]
+    cls.add_method('AddressPushBack', 
+                   'void', 
+                   [param('ns3::Address', 'address')])
+    ## packetbb.h: void ns3::PbbAddressBlock::AddressPushFront(ns3::Address address) [member function]
+    cls.add_method('AddressPushFront', 
+                   'void', 
+                   [param('ns3::Address', 'address')])
+    ## packetbb.h: int ns3::PbbAddressBlock::AddressSize() const [member function]
+    cls.add_method('AddressSize', 
+                   'int', 
+                   [], 
+                   is_const=True)
+    ## packetbb.h: void ns3::PbbAddressBlock::Deserialize(ns3::Buffer::Iterator & start) [member function]
+    cls.add_method('Deserialize', 
+                   'void', 
+                   [param('ns3::Buffer::Iterator &', 'start')])
+    ## packetbb.h: uint32_t ns3::PbbAddressBlock::GetSerializedSize() const [member function]
+    cls.add_method('GetSerializedSize', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## packetbb.h: uint8_t ns3::PbbAddressBlock::PrefixBack() const [member function]
+    cls.add_method('PrefixBack', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True)
+    ## packetbb.h: std::_List_iterator<unsigned char> ns3::PbbAddressBlock::PrefixBegin() [member function]
+    cls.add_method('PrefixBegin', 
+                   'std::_List_iterator< unsigned char >', 
+                   [])
+    ## packetbb.h: std::_List_const_iterator<unsigned char> ns3::PbbAddressBlock::PrefixBegin() const [member function]
+    cls.add_method('PrefixBegin', 
+                   'std::_List_const_iterator< unsigned char >', 
+                   [], 
+                   is_const=True)
+    ## packetbb.h: void ns3::PbbAddressBlock::PrefixClear() [member function]
+    cls.add_method('PrefixClear', 
+                   'void', 
+                   [])
+    ## packetbb.h: bool ns3::PbbAddressBlock::PrefixEmpty() const [member function]
+    cls.add_method('PrefixEmpty', 
+                   'bool', 
+                   [], 
+                   is_const=True)
+    ## packetbb.h: std::_List_iterator<unsigned char> ns3::PbbAddressBlock::PrefixEnd() [member function]
+    cls.add_method('PrefixEnd', 
+                   'std::_List_iterator< unsigned char >', 
+                   [])
+    ## packetbb.h: std::_List_const_iterator<unsigned char> ns3::PbbAddressBlock::PrefixEnd() const [member function]
+    cls.add_method('PrefixEnd', 
+                   'std::_List_const_iterator< unsigned char >', 
+                   [], 
+                   is_const=True)
+    ## packetbb.h: std::_List_iterator<unsigned char> ns3::PbbAddressBlock::PrefixErase(std::_List_iterator<unsigned char> position) [member function]
+    cls.add_method('PrefixErase', 
+                   'std::_List_iterator< unsigned char >', 
+                   [param('std::_List_iterator< unsigned char >', 'position')])
+    ## packetbb.h: std::_List_iterator<unsigned char> ns3::PbbAddressBlock::PrefixErase(std::_List_iterator<unsigned char> first, std::_List_iterator<unsigned char> last) [member function]
+    cls.add_method('PrefixErase', 
+                   'std::_List_iterator< unsigned char >', 
+                   [param('std::_List_iterator< unsigned char >', 'first'), param('std::_List_iterator< unsigned char >', 'last')])
+    ## packetbb.h: uint8_t ns3::PbbAddressBlock::PrefixFront() const [member function]
+    cls.add_method('PrefixFront', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True)
+    ## packetbb.h: std::_List_iterator<unsigned char> ns3::PbbAddressBlock::PrefixInsert(std::_List_iterator<unsigned char> position, uint8_t const value) [member function]
+    cls.add_method('PrefixInsert', 
+                   'std::_List_iterator< unsigned char >', 
+                   [param('std::_List_iterator< unsigned char >', 'position'), param('uint8_t const', 'value')])
+    ## packetbb.h: void ns3::PbbAddressBlock::PrefixPopBack() [member function]
+    cls.add_method('PrefixPopBack', 
+                   'void', 
+                   [])
+    ## packetbb.h: void ns3::PbbAddressBlock::PrefixPopFront() [member function]
+    cls.add_method('PrefixPopFront', 
+                   'void', 
+                   [])
+    ## packetbb.h: void ns3::PbbAddressBlock::PrefixPushBack(uint8_t prefix) [member function]
+    cls.add_method('PrefixPushBack', 
+                   'void', 
+                   [param('uint8_t', 'prefix')])
+    ## packetbb.h: void ns3::PbbAddressBlock::PrefixPushFront(uint8_t prefix) [member function]
+    cls.add_method('PrefixPushFront', 
+                   'void', 
+                   [param('uint8_t', 'prefix')])
+    ## packetbb.h: int ns3::PbbAddressBlock::PrefixSize() const [member function]
+    cls.add_method('PrefixSize', 
+                   'int', 
+                   [], 
+                   is_const=True)
+    ## packetbb.h: void ns3::PbbAddressBlock::Print(std::ostream & os) const [member function]
+    cls.add_method('Print', 
+                   'void', 
+                   [param('std::ostream &', 'os')], 
+                   is_const=True)
+    ## packetbb.h: void ns3::PbbAddressBlock::Print(std::ostream & os, int level) const [member function]
+    cls.add_method('Print', 
+                   'void', 
+                   [param('std::ostream &', 'os'), param('int', 'level')], 
+                   is_const=True)
+    ## packetbb.h: void ns3::PbbAddressBlock::Ref() const [member function]
+    cls.add_method('Ref', 
+                   'void', 
+                   [], 
+                   is_const=True)
+    ## packetbb.h: void ns3::PbbAddressBlock::Serialize(ns3::Buffer::Iterator & start) const [member function]
+    cls.add_method('Serialize', 
+                   'void', 
+                   [param('ns3::Buffer::Iterator &', 'start')], 
+                   is_const=True)
+    ## packetbb.h: ns3::Ptr<ns3::PbbAddressTlv> ns3::PbbAddressBlock::TlvBack() [member function]
+    cls.add_method('TlvBack', 
+                   'ns3::Ptr< ns3::PbbAddressTlv >', 
+                   [])
+    ## packetbb.h: ns3::Ptr<ns3::PbbAddressTlv> const ns3::PbbAddressBlock::TlvBack() const [member function]
+    cls.add_method('TlvBack', 
+                   'ns3::Ptr< ns3::PbbAddressTlv > const', 
+                   [], 
+                   is_const=True)
+    ## packetbb.h: std::_List_iterator<ns3::Ptr<ns3::PbbAddressTlv> > ns3::PbbAddressBlock::TlvBegin() [member function]
+    cls.add_method('TlvBegin', 
+                   'std::_List_iterator< ns3::Ptr< ns3::PbbAddressTlv > >', 
+                   [])
+    ## packetbb.h: std::_List_const_iterator<ns3::Ptr<ns3::PbbAddressTlv> > ns3::PbbAddressBlock::TlvBegin() const [member function]
+    cls.add_method('TlvBegin', 
+                   'std::_List_const_iterator< ns3::Ptr< ns3::PbbAddressTlv > >', 
+                   [], 
+                   is_const=True)
+    ## packetbb.h: void ns3::PbbAddressBlock::TlvClear() [member function]
+    cls.add_method('TlvClear', 
+                   'void', 
+                   [])
+    ## packetbb.h: bool ns3::PbbAddressBlock::TlvEmpty() const [member function]
+    cls.add_method('TlvEmpty', 
+                   'bool', 
+                   [], 
+                   is_const=True)
+    ## packetbb.h: std::_List_iterator<ns3::Ptr<ns3::PbbAddressTlv> > ns3::PbbAddressBlock::TlvEnd() [member function]
+    cls.add_method('TlvEnd', 
+                   'std::_List_iterator< ns3::Ptr< ns3::PbbAddressTlv > >', 
+                   [])
+    ## packetbb.h: std::_List_const_iterator<ns3::Ptr<ns3::PbbAddressTlv> > ns3::PbbAddressBlock::TlvEnd() const [member function]
+    cls.add_method('TlvEnd', 
+                   'std::_List_const_iterator< ns3::Ptr< ns3::PbbAddressTlv > >', 
+                   [], 
+                   is_const=True)
+    ## packetbb.h: std::_List_iterator<ns3::Ptr<ns3::PbbAddressTlv> > ns3::PbbAddressBlock::TlvErase(std::_List_iterator<ns3::Ptr<ns3::PbbAddressTlv> > position) [member function]
+    cls.add_method('TlvErase', 
+                   'std::_List_iterator< ns3::Ptr< ns3::PbbAddressTlv > >', 
+                   [param('std::_List_iterator< ns3::Ptr< ns3::PbbAddressTlv > >', 'position')])
+    ## packetbb.h: std::_List_iterator<ns3::Ptr<ns3::PbbAddressTlv> > ns3::PbbAddressBlock::TlvErase(std::_List_iterator<ns3::Ptr<ns3::PbbAddressTlv> > first, std::_List_iterator<ns3::Ptr<ns3::PbbAddressTlv> > last) [member function]
+    cls.add_method('TlvErase', 
+                   'std::_List_iterator< ns3::Ptr< ns3::PbbAddressTlv > >', 
+                   [param('std::_List_iterator< ns3::Ptr< ns3::PbbAddressTlv > >', 'first'), param('std::_List_iterator< ns3::Ptr< ns3::PbbAddressTlv > >', 'last')])
+    ## packetbb.h: ns3::Ptr<ns3::PbbAddressTlv> ns3::PbbAddressBlock::TlvFront() [member function]
+    cls.add_method('TlvFront', 
+                   'ns3::Ptr< ns3::PbbAddressTlv >', 
+                   [])
+    ## packetbb.h: ns3::Ptr<ns3::PbbAddressTlv> const ns3::PbbAddressBlock::TlvFront() const [member function]
+    cls.add_method('TlvFront', 
+                   'ns3::Ptr< ns3::PbbAddressTlv > const', 
+                   [], 
+                   is_const=True)
+    ## packetbb.h: std::_List_iterator<ns3::Ptr<ns3::PbbAddressTlv> > ns3::PbbAddressBlock::TlvInsert(std::_List_iterator<ns3::Ptr<ns3::PbbAddressTlv> > position, ns3::Ptr<ns3::PbbTlv> const value) [member function]
+    cls.add_method('TlvInsert', 
+                   'std::_List_iterator< ns3::Ptr< ns3::PbbAddressTlv > >', 
+                   [param('std::_List_iterator< ns3::Ptr< ns3::PbbAddressTlv > >', 'position'), param('ns3::Ptr< ns3::PbbTlv > const', 'value')])
+    ## packetbb.h: void ns3::PbbAddressBlock::TlvPopBack() [member function]
+    cls.add_method('TlvPopBack', 
+                   'void', 
+                   [])
+    ## packetbb.h: void ns3::PbbAddressBlock::TlvPopFront() [member function]
+    cls.add_method('TlvPopFront', 
+                   'void', 
+                   [])
+    ## packetbb.h: void ns3::PbbAddressBlock::TlvPushBack(ns3::Ptr<ns3::PbbAddressTlv> address) [member function]
+    cls.add_method('TlvPushBack', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::PbbAddressTlv >', 'address')])
+    ## packetbb.h: void ns3::PbbAddressBlock::TlvPushFront(ns3::Ptr<ns3::PbbAddressTlv> address) [member function]
+    cls.add_method('TlvPushFront', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::PbbAddressTlv >', 'address')])
+    ## packetbb.h: int ns3::PbbAddressBlock::TlvSize() const [member function]
+    cls.add_method('TlvSize', 
+                   'int', 
+                   [], 
+                   is_const=True)
+    ## packetbb.h: void ns3::PbbAddressBlock::Unref() const [member function]
+    cls.add_method('Unref', 
+                   'void', 
+                   [], 
+                   is_const=True)
+    ## packetbb.h: ns3::Address ns3::PbbAddressBlock::DeserializeAddress(uint8_t * buffer) const [member function]
+    cls.add_method('DeserializeAddress', 
+                   'ns3::Address', 
+                   [param('uint8_t *', 'buffer')], 
+                   is_pure_virtual=True, is_const=True, visibility='protected', is_virtual=True)
+    ## packetbb.h: uint8_t ns3::PbbAddressBlock::GetAddressLength() const [member function]
+    cls.add_method('GetAddressLength', 
+                   'uint8_t', 
+                   [], 
+                   is_pure_virtual=True, is_const=True, visibility='protected', is_virtual=True)
+    ## packetbb.h: void ns3::PbbAddressBlock::PrintAddress(std::ostream & os, std::_List_const_iterator<ns3::Address> iter) const [member function]
+    cls.add_method('PrintAddress', 
+                   'void', 
+                   [param('std::ostream &', 'os'), param('std::_List_const_iterator< ns3::Address >', 'iter')], 
+                   is_pure_virtual=True, is_const=True, visibility='protected', is_virtual=True)
+    ## packetbb.h: void ns3::PbbAddressBlock::SerializeAddress(uint8_t * buffer, std::_List_const_iterator<ns3::Address> iter) const [member function]
+    cls.add_method('SerializeAddress', 
+                   'void', 
+                   [param('uint8_t *', 'buffer'), param('std::_List_const_iterator< ns3::Address >', 'iter')], 
+                   is_pure_virtual=True, is_const=True, visibility='protected', is_virtual=True)
+    return
+
+def register_Ns3PbbAddressBlockIpv4_methods(root_module, cls):
+    ## packetbb.h: ns3::PbbAddressBlockIpv4::PbbAddressBlockIpv4(ns3::PbbAddressBlockIpv4 const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::PbbAddressBlockIpv4 const &', 'arg0')])
+    ## packetbb.h: ns3::PbbAddressBlockIpv4::PbbAddressBlockIpv4() [constructor]
+    cls.add_constructor([])
+    ## packetbb.h: ns3::Address ns3::PbbAddressBlockIpv4::DeserializeAddress(uint8_t * buffer) const [member function]
+    cls.add_method('DeserializeAddress', 
+                   'ns3::Address', 
+                   [param('uint8_t *', 'buffer')], 
+                   is_const=True, visibility='protected', is_virtual=True)
+    ## packetbb.h: uint8_t ns3::PbbAddressBlockIpv4::GetAddressLength() const [member function]
+    cls.add_method('GetAddressLength', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True, visibility='protected', is_virtual=True)
+    ## packetbb.h: void ns3::PbbAddressBlockIpv4::PrintAddress(std::ostream & os, std::_List_const_iterator<ns3::Address> iter) const [member function]
+    cls.add_method('PrintAddress', 
+                   'void', 
+                   [param('std::ostream &', 'os'), param('std::_List_const_iterator< ns3::Address >', 'iter')], 
+                   is_const=True, visibility='protected', is_virtual=True)
+    ## packetbb.h: void ns3::PbbAddressBlockIpv4::SerializeAddress(uint8_t * buffer, std::_List_const_iterator<ns3::Address> iter) const [member function]
+    cls.add_method('SerializeAddress', 
+                   'void', 
+                   [param('uint8_t *', 'buffer'), param('std::_List_const_iterator< ns3::Address >', 'iter')], 
+                   is_const=True, visibility='protected', is_virtual=True)
+    return
+
+def register_Ns3PbbAddressBlockIpv6_methods(root_module, cls):
+    ## packetbb.h: ns3::PbbAddressBlockIpv6::PbbAddressBlockIpv6(ns3::PbbAddressBlockIpv6 const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::PbbAddressBlockIpv6 const &', 'arg0')])
+    ## packetbb.h: ns3::PbbAddressBlockIpv6::PbbAddressBlockIpv6() [constructor]
+    cls.add_constructor([])
+    ## packetbb.h: ns3::Address ns3::PbbAddressBlockIpv6::DeserializeAddress(uint8_t * buffer) const [member function]
+    cls.add_method('DeserializeAddress', 
+                   'ns3::Address', 
+                   [param('uint8_t *', 'buffer')], 
+                   is_const=True, visibility='protected', is_virtual=True)
+    ## packetbb.h: uint8_t ns3::PbbAddressBlockIpv6::GetAddressLength() const [member function]
+    cls.add_method('GetAddressLength', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True, visibility='protected', is_virtual=True)
+    ## packetbb.h: void ns3::PbbAddressBlockIpv6::PrintAddress(std::ostream & os, std::_List_const_iterator<ns3::Address> iter) const [member function]
+    cls.add_method('PrintAddress', 
+                   'void', 
+                   [param('std::ostream &', 'os'), param('std::_List_const_iterator< ns3::Address >', 'iter')], 
+                   is_const=True, visibility='protected', is_virtual=True)
+    ## packetbb.h: void ns3::PbbAddressBlockIpv6::SerializeAddress(uint8_t * buffer, std::_List_const_iterator<ns3::Address> iter) const [member function]
+    cls.add_method('SerializeAddress', 
+                   'void', 
+                   [param('uint8_t *', 'buffer'), param('std::_List_const_iterator< ns3::Address >', 'iter')], 
+                   is_const=True, visibility='protected', is_virtual=True)
+    return
+
+def register_Ns3PbbAddressTlvBlock_methods(root_module, cls):
+    cls.add_binary_comparison_operator('==')
+    cls.add_binary_comparison_operator('!=')
+    ## packetbb.h: ns3::PbbAddressTlvBlock::PbbAddressTlvBlock() [constructor]
+    cls.add_constructor([])
+    ## packetbb.h: ns3::PbbAddressTlvBlock::PbbAddressTlvBlock(ns3::PbbAddressTlvBlock const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::PbbAddressTlvBlock const &', 'arg0')])
+    ## packetbb.h: ns3::Ptr<ns3::PbbAddressTlv> ns3::PbbAddressTlvBlock::Back() const [member function]
+    cls.add_method('Back', 
+                   'ns3::Ptr< ns3::PbbAddressTlv >', 
+                   [], 
+                   is_const=True)
+    ## packetbb.h: std::_List_iterator<ns3::Ptr<ns3::PbbAddressTlv> > ns3::PbbAddressTlvBlock::Begin() [member function]
+    cls.add_method('Begin', 
+                   'std::_List_iterator< ns3::Ptr< ns3::PbbAddressTlv > >', 
+                   [])
+    ## packetbb.h: std::_List_const_iterator<ns3::Ptr<ns3::PbbAddressTlv> > ns3::PbbAddressTlvBlock::Begin() const [member function]
+    cls.add_method('Begin', 
+                   'std::_List_const_iterator< ns3::Ptr< ns3::PbbAddressTlv > >', 
+                   [], 
+                   is_const=True)
+    ## packetbb.h: void ns3::PbbAddressTlvBlock::Clear() [member function]
+    cls.add_method('Clear', 
+                   'void', 
+                   [])
+    ## packetbb.h: void ns3::PbbAddressTlvBlock::Deserialize(ns3::Buffer::Iterator & start) [member function]
+    cls.add_method('Deserialize', 
+                   'void', 
+                   [param('ns3::Buffer::Iterator &', 'start')])
+    ## packetbb.h: bool ns3::PbbAddressTlvBlock::Empty() const [member function]
+    cls.add_method('Empty', 
+                   'bool', 
+                   [], 
+                   is_const=True)
+    ## packetbb.h: std::_List_iterator<ns3::Ptr<ns3::PbbAddressTlv> > ns3::PbbAddressTlvBlock::End() [member function]
+    cls.add_method('End', 
+                   'std::_List_iterator< ns3::Ptr< ns3::PbbAddressTlv > >', 
+                   [])
+    ## packetbb.h: std::_List_const_iterator<ns3::Ptr<ns3::PbbAddressTlv> > ns3::PbbAddressTlvBlock::End() const [member function]
+    cls.add_method('End', 
+                   'std::_List_const_iterator< ns3::Ptr< ns3::PbbAddressTlv > >', 
+                   [], 
+                   is_const=True)
+    ## packetbb.h: std::_List_iterator<ns3::Ptr<ns3::PbbAddressTlv> > ns3::PbbAddressTlvBlock::Erase(std::_List_iterator<ns3::Ptr<ns3::PbbAddressTlv> > position) [member function]
+    cls.add_method('Erase', 
+                   'std::_List_iterator< ns3::Ptr< ns3::PbbAddressTlv > >', 
+                   [param('std::_List_iterator< ns3::Ptr< ns3::PbbAddressTlv > >', 'position')])
+    ## packetbb.h: std::_List_iterator<ns3::Ptr<ns3::PbbAddressTlv> > ns3::PbbAddressTlvBlock::Erase(std::_List_iterator<ns3::Ptr<ns3::PbbAddressTlv> > first, std::_List_iterator<ns3::Ptr<ns3::PbbAddressTlv> > last) [member function]
+    cls.add_method('Erase', 
+                   'std::_List_iterator< ns3::Ptr< ns3::PbbAddressTlv > >', 
+                   [param('std::_List_iterator< ns3::Ptr< ns3::PbbAddressTlv > >', 'first'), param('std::_List_iterator< ns3::Ptr< ns3::PbbAddressTlv > >', 'last')])
+    ## packetbb.h: ns3::Ptr<ns3::PbbAddressTlv> ns3::PbbAddressTlvBlock::Front() const [member function]
+    cls.add_method('Front', 
+                   'ns3::Ptr< ns3::PbbAddressTlv >', 
+                   [], 
+                   is_const=True)
+    ## packetbb.h: uint32_t ns3::PbbAddressTlvBlock::GetSerializedSize() const [member function]
+    cls.add_method('GetSerializedSize', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## packetbb.h: std::_List_iterator<ns3::Ptr<ns3::PbbAddressTlv> > ns3::PbbAddressTlvBlock::Insert(std::_List_iterator<ns3::Ptr<ns3::PbbAddressTlv> > position, ns3::Ptr<ns3::PbbAddressTlv> const tlv) [member function]
+    cls.add_method('Insert', 
+                   'std::_List_iterator< ns3::Ptr< ns3::PbbAddressTlv > >', 
+                   [param('std::_List_iterator< ns3::Ptr< ns3::PbbAddressTlv > >', 'position'), param('ns3::Ptr< ns3::PbbAddressTlv > const', 'tlv')])
+    ## packetbb.h: void ns3::PbbAddressTlvBlock::PopBack() [member function]
+    cls.add_method('PopBack', 
+                   'void', 
+                   [])
+    ## packetbb.h: void ns3::PbbAddressTlvBlock::PopFront() [member function]
+    cls.add_method('PopFront', 
+                   'void', 
+                   [])
+    ## packetbb.h: void ns3::PbbAddressTlvBlock::Print(std::ostream & os) const [member function]
+    cls.add_method('Print', 
+                   'void', 
+                   [param('std::ostream &', 'os')], 
+                   is_const=True)
+    ## packetbb.h: void ns3::PbbAddressTlvBlock::Print(std::ostream & os, int level) const [member function]
+    cls.add_method('Print', 
+                   'void', 
+                   [param('std::ostream &', 'os'), param('int', 'level')], 
+                   is_const=True)
+    ## packetbb.h: void ns3::PbbAddressTlvBlock::PushBack(ns3::Ptr<ns3::PbbAddressTlv> tlv) [member function]
+    cls.add_method('PushBack', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::PbbAddressTlv >', 'tlv')])
+    ## packetbb.h: void ns3::PbbAddressTlvBlock::PushFront(ns3::Ptr<ns3::PbbAddressTlv> tlv) [member function]
+    cls.add_method('PushFront', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::PbbAddressTlv >', 'tlv')])
+    ## packetbb.h: void ns3::PbbAddressTlvBlock::Serialize(ns3::Buffer::Iterator & start) const [member function]
+    cls.add_method('Serialize', 
+                   'void', 
+                   [param('ns3::Buffer::Iterator &', 'start')], 
+                   is_const=True)
+    ## packetbb.h: int ns3::PbbAddressTlvBlock::Size() const [member function]
+    cls.add_method('Size', 
+                   'int', 
+                   [], 
+                   is_const=True)
+    return
+
+def register_Ns3PbbMessage_methods(root_module, cls):
+    cls.add_binary_comparison_operator('==')
+    cls.add_binary_comparison_operator('!=')
+    ## packetbb.h: ns3::PbbMessage::PbbMessage(ns3::PbbMessage const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::PbbMessage const &', 'arg0')])
+    ## packetbb.h: ns3::PbbMessage::PbbMessage() [constructor]
+    cls.add_constructor([])
+    ## packetbb.h: ns3::Ptr<ns3::PbbAddressBlock> ns3::PbbMessage::AddressBlockBack() [member function]
+    cls.add_method('AddressBlockBack', 
+                   'ns3::Ptr< ns3::PbbAddressBlock >', 
+                   [])
+    ## packetbb.h: ns3::Ptr<ns3::PbbAddressBlock> const ns3::PbbMessage::AddressBlockBack() const [member function]
+    cls.add_method('AddressBlockBack', 
+                   'ns3::Ptr< ns3::PbbAddressBlock > const', 
+                   [], 
+                   is_const=True)
+    ## packetbb.h: std::_List_iterator<ns3::Ptr<ns3::PbbAddressBlock> > ns3::PbbMessage::AddressBlockBegin() [member function]
+    cls.add_method('AddressBlockBegin', 
+                   'std::_List_iterator< ns3::Ptr< ns3::PbbAddressBlock > >', 
+                   [])
+    ## packetbb.h: std::_List_const_iterator<ns3::Ptr<ns3::PbbAddressBlock> > ns3::PbbMessage::AddressBlockBegin() const [member function]
+    cls.add_method('AddressBlockBegin', 
+                   'std::_List_const_iterator< ns3::Ptr< ns3::PbbAddressBlock > >', 
+                   [], 
+                   is_const=True)
+    ## packetbb.h: void ns3::PbbMessage::AddressBlockClear() [member function]
+    cls.add_method('AddressBlockClear', 
+                   'void', 
+                   [])
+    ## packetbb.h: bool ns3::PbbMessage::AddressBlockEmpty() const [member function]
+    cls.add_method('AddressBlockEmpty', 
+                   'bool', 
+                   [], 
+                   is_const=True)
+    ## packetbb.h: std::_List_iterator<ns3::Ptr<ns3::PbbAddressBlock> > ns3::PbbMessage::AddressBlockEnd() [member function]
+    cls.add_method('AddressBlockEnd', 
+                   'std::_List_iterator< ns3::Ptr< ns3::PbbAddressBlock > >', 
+                   [])
+    ## packetbb.h: std::_List_const_iterator<ns3::Ptr<ns3::PbbAddressBlock> > ns3::PbbMessage::AddressBlockEnd() const [member function]
+    cls.add_method('AddressBlockEnd', 
+                   'std::_List_const_iterator< ns3::Ptr< ns3::PbbAddressBlock > >', 
+                   [], 
+                   is_const=True)
+    ## packetbb.h: std::_List_iterator<ns3::Ptr<ns3::PbbAddressBlock> > ns3::PbbMessage::AddressBlockErase(std::_List_iterator<ns3::Ptr<ns3::PbbAddressBlock> > position) [member function]
+    cls.add_method('AddressBlockErase', 
+                   'std::_List_iterator< ns3::Ptr< ns3::PbbAddressBlock > >', 
+                   [param('std::_List_iterator< ns3::Ptr< ns3::PbbAddressBlock > >', 'position')])
+    ## packetbb.h: std::_List_iterator<ns3::Ptr<ns3::PbbAddressBlock> > ns3::PbbMessage::AddressBlockErase(std::_List_iterator<ns3::Ptr<ns3::PbbAddressBlock> > first, std::_List_iterator<ns3::Ptr<ns3::PbbAddressBlock> > last) [member function]
+    cls.add_method('AddressBlockErase', 
+                   'std::_List_iterator< ns3::Ptr< ns3::PbbAddressBlock > >', 
+                   [param('std::_List_iterator< ns3::Ptr< ns3::PbbAddressBlock > >', 'first'), param('std::_List_iterator< ns3::Ptr< ns3::PbbAddressBlock > >', 'last')])
+    ## packetbb.h: ns3::Ptr<ns3::PbbAddressBlock> ns3::PbbMessage::AddressBlockFront() [member function]
+    cls.add_method('AddressBlockFront', 
+                   'ns3::Ptr< ns3::PbbAddressBlock >', 
+                   [])
+    ## packetbb.h: ns3::Ptr<ns3::PbbAddressBlock> const ns3::PbbMessage::AddressBlockFront() const [member function]
+    cls.add_method('AddressBlockFront', 
+                   'ns3::Ptr< ns3::PbbAddressBlock > const', 
+                   [], 
+                   is_const=True)
+    ## packetbb.h: void ns3::PbbMessage::AddressBlockPopBack() [member function]
+    cls.add_method('AddressBlockPopBack', 
+                   'void', 
+                   [])
+    ## packetbb.h: void ns3::PbbMessage::AddressBlockPopFront() [member function]
+    cls.add_method('AddressBlockPopFront', 
+                   'void', 
+                   [])
+    ## packetbb.h: void ns3::PbbMessage::AddressBlockPushBack(ns3::Ptr<ns3::PbbAddressBlock> block) [member function]
+    cls.add_method('AddressBlockPushBack', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::PbbAddressBlock >', 'block')])
+    ## packetbb.h: void ns3::PbbMessage::AddressBlockPushFront(ns3::Ptr<ns3::PbbAddressBlock> block) [member function]
+    cls.add_method('AddressBlockPushFront', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::PbbAddressBlock >', 'block')])
+    ## packetbb.h: int ns3::PbbMessage::AddressBlockSize() const [member function]
+    cls.add_method('AddressBlockSize', 
+                   'int', 
+                   [], 
+                   is_const=True)
+    ## packetbb.h: void ns3::PbbMessage::Deserialize(ns3::Buffer::Iterator & start) [member function]
+    cls.add_method('Deserialize', 
+                   'void', 
+                   [param('ns3::Buffer::Iterator &', 'start')])
+    ## packetbb.h: static ns3::Ptr<ns3::PbbMessage> ns3::PbbMessage::DeserializeMessage(ns3::Buffer::Iterator & start) [member function]
+    cls.add_method('DeserializeMessage', 
+                   'ns3::Ptr< ns3::PbbMessage >', 
+                   [param('ns3::Buffer::Iterator &', 'start')], 
+                   is_static=True)
+    ## packetbb.h: uint8_t ns3::PbbMessage::GetHopCount() const [member function]
+    cls.add_method('GetHopCount', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True)
+    ## packetbb.h: uint8_t ns3::PbbMessage::GetHopLimit() const [member function]
+    cls.add_method('GetHopLimit', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True)
+    ## packetbb.h: ns3::Address ns3::PbbMessage::GetOriginatorAddress() const [member function]
+    cls.add_method('GetOriginatorAddress', 
+                   'ns3::Address', 
+                   [], 
+                   is_const=True)
+    ## packetbb.h: uint16_t ns3::PbbMessage::GetSequenceNumber() const [member function]
+    cls.add_method('GetSequenceNumber', 
+                   'uint16_t', 
+                   [], 
+                   is_const=True)
+    ## packetbb.h: uint32_t ns3::PbbMessage::GetSerializedSize() const [member function]
+    cls.add_method('GetSerializedSize', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## packetbb.h: uint8_t ns3::PbbMessage::GetType() const [member function]
+    cls.add_method('GetType', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True)
+    ## packetbb.h: bool ns3::PbbMessage::HasHopCount() const [member function]
+    cls.add_method('HasHopCount', 
+                   'bool', 
+                   [], 
+                   is_const=True)
+    ## packetbb.h: bool ns3::PbbMessage::HasHopLimit() const [member function]
+    cls.add_method('HasHopLimit', 
+                   'bool', 
+                   [], 
+                   is_const=True)
+    ## packetbb.h: bool ns3::PbbMessage::HasOriginatorAddress() const [member function]
+    cls.add_method('HasOriginatorAddress', 
+                   'bool', 
+                   [], 
+                   is_const=True)
+    ## packetbb.h: bool ns3::PbbMessage::HasSequenceNumber() const [member function]
+    cls.add_method('HasSequenceNumber', 
+                   'bool', 
+                   [], 
+                   is_const=True)
+    ## packetbb.h: void ns3::PbbMessage::Print(std::ostream & os) const [member function]
+    cls.add_method('Print', 
+                   'void', 
+                   [param('std::ostream &', 'os')], 
+                   is_const=True)
+    ## packetbb.h: void ns3::PbbMessage::Print(std::ostream & os, int level) const [member function]
+    cls.add_method('Print', 
+                   'void', 
+                   [param('std::ostream &', 'os'), param('int', 'level')], 
+                   is_const=True)
+    ## packetbb.h: void ns3::PbbMessage::Ref() const [member function]
+    cls.add_method('Ref', 
+                   'void', 
+                   [], 
+                   is_const=True)
+    ## packetbb.h: void ns3::PbbMessage::Serialize(ns3::Buffer::Iterator & start) const [member function]
+    cls.add_method('Serialize', 
+                   'void', 
+                   [param('ns3::Buffer::Iterator &', 'start')], 
+                   is_const=True)
+    ## packetbb.h: void ns3::PbbMessage::SetHopCount(uint8_t hopcount) [member function]
+    cls.add_method('SetHopCount', 
+                   'void', 
+                   [param('uint8_t', 'hopcount')])
+    ## packetbb.h: void ns3::PbbMessage::SetHopLimit(uint8_t hoplimit) [member function]
+    cls.add_method('SetHopLimit', 
+                   'void', 
+                   [param('uint8_t', 'hoplimit')])
+    ## packetbb.h: void ns3::PbbMessage::SetOriginatorAddress(ns3::Address address) [member function]
+    cls.add_method('SetOriginatorAddress', 
+                   'void', 
+                   [param('ns3::Address', 'address')])
+    ## packetbb.h: void ns3::PbbMessage::SetSequenceNumber(uint16_t seqnum) [member function]
+    cls.add_method('SetSequenceNumber', 
+                   'void', 
+                   [param('uint16_t', 'seqnum')])
+    ## packetbb.h: void ns3::PbbMessage::SetType(uint8_t type) [member function]
+    cls.add_method('SetType', 
+                   'void', 
+                   [param('uint8_t', 'type')])
+    ## packetbb.h: ns3::Ptr<ns3::PbbTlv> ns3::PbbMessage::TlvBack() [member function]
+    cls.add_method('TlvBack', 
+                   'ns3::Ptr< ns3::PbbTlv >', 
+                   [])
+    ## packetbb.h: ns3::Ptr<ns3::PbbTlv> const ns3::PbbMessage::TlvBack() const [member function]
+    cls.add_method('TlvBack', 
+                   'ns3::Ptr< ns3::PbbTlv > const', 
+                   [], 
+                   is_const=True)
+    ## packetbb.h: std::_List_iterator<ns3::Ptr<ns3::PbbTlv> > ns3::PbbMessage::TlvBegin() [member function]
+    cls.add_method('TlvBegin', 
+                   'std::_List_iterator< ns3::Ptr< ns3::PbbTlv > >', 
+                   [])
+    ## packetbb.h: std::_List_const_iterator<ns3::Ptr<ns3::PbbTlv> > ns3::PbbMessage::TlvBegin() const [member function]
+    cls.add_method('TlvBegin', 
+                   'std::_List_const_iterator< ns3::Ptr< ns3::PbbTlv > >', 
+                   [], 
+                   is_const=True)
+    ## packetbb.h: void ns3::PbbMessage::TlvClear() [member function]
+    cls.add_method('TlvClear', 
+                   'void', 
+                   [])
+    ## packetbb.h: bool ns3::PbbMessage::TlvEmpty() const [member function]
+    cls.add_method('TlvEmpty', 
+                   'bool', 
+                   [], 
+                   is_const=True)
+    ## packetbb.h: std::_List_iterator<ns3::Ptr<ns3::PbbTlv> > ns3::PbbMessage::TlvEnd() [member function]
+    cls.add_method('TlvEnd', 
+                   'std::_List_iterator< ns3::Ptr< ns3::PbbTlv > >', 
+                   [])
+    ## packetbb.h: std::_List_const_iterator<ns3::Ptr<ns3::PbbTlv> > ns3::PbbMessage::TlvEnd() const [member function]
+    cls.add_method('TlvEnd', 
+                   'std::_List_const_iterator< ns3::Ptr< ns3::PbbTlv > >', 
+                   [], 
+                   is_const=True)
+    ## packetbb.h: std::_List_iterator<ns3::Ptr<ns3::PbbTlv> > ns3::PbbMessage::TlvErase(std::_List_iterator<ns3::Ptr<ns3::PbbTlv> > position) [member function]
+    cls.add_method('TlvErase', 
+                   'std::_List_iterator< ns3::Ptr< ns3::PbbTlv > >', 
+                   [param('std::_List_iterator< ns3::Ptr< ns3::PbbTlv > >', 'position')])
+    ## packetbb.h: std::_List_iterator<ns3::Ptr<ns3::PbbTlv> > ns3::PbbMessage::TlvErase(std::_List_iterator<ns3::Ptr<ns3::PbbTlv> > first, std::_List_iterator<ns3::Ptr<ns3::PbbTlv> > last) [member function]
+    cls.add_method('TlvErase', 
+                   'std::_List_iterator< ns3::Ptr< ns3::PbbTlv > >', 
+                   [param('std::_List_iterator< ns3::Ptr< ns3::PbbTlv > >', 'first'), param('std::_List_iterator< ns3::Ptr< ns3::PbbTlv > >', 'last')])
+    ## packetbb.h: ns3::Ptr<ns3::PbbTlv> ns3::PbbMessage::TlvFront() [member function]
+    cls.add_method('TlvFront', 
+                   'ns3::Ptr< ns3::PbbTlv >', 
+                   [])
+    ## packetbb.h: ns3::Ptr<ns3::PbbTlv> const ns3::PbbMessage::TlvFront() const [member function]
+    cls.add_method('TlvFront', 
+                   'ns3::Ptr< ns3::PbbTlv > const', 
+                   [], 
+                   is_const=True)
+    ## packetbb.h: void ns3::PbbMessage::TlvPopBack() [member function]
+    cls.add_method('TlvPopBack', 
+                   'void', 
+                   [])
+    ## packetbb.h: void ns3::PbbMessage::TlvPopFront() [member function]
+    cls.add_method('TlvPopFront', 
+                   'void', 
+                   [])
+    ## packetbb.h: void ns3::PbbMessage::TlvPushBack(ns3::Ptr<ns3::PbbTlv> tlv) [member function]
+    cls.add_method('TlvPushBack', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::PbbTlv >', 'tlv')])
+    ## packetbb.h: void ns3::PbbMessage::TlvPushFront(ns3::Ptr<ns3::PbbTlv> tlv) [member function]
+    cls.add_method('TlvPushFront', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::PbbTlv >', 'tlv')])
+    ## packetbb.h: int ns3::PbbMessage::TlvSize() const [member function]
+    cls.add_method('TlvSize', 
+                   'int', 
+                   [], 
+                   is_const=True)
+    ## packetbb.h: void ns3::PbbMessage::Unref() const [member function]
+    cls.add_method('Unref', 
+                   'void', 
+                   [], 
+                   is_const=True)
+    ## packetbb.h: ns3::Ptr<ns3::PbbAddressBlock> ns3::PbbMessage::AddressBlockDeserialize(ns3::Buffer::Iterator & start) const [member function]
+    cls.add_method('AddressBlockDeserialize', 
+                   'ns3::Ptr< ns3::PbbAddressBlock >', 
+                   [param('ns3::Buffer::Iterator &', 'start')], 
+                   is_pure_virtual=True, is_const=True, visibility='protected', is_virtual=True)
+    ## packetbb.h: ns3::Address ns3::PbbMessage::DeserializeOriginatorAddress(ns3::Buffer::Iterator & start) const [member function]
+    cls.add_method('DeserializeOriginatorAddress', 
+                   'ns3::Address', 
+                   [param('ns3::Buffer::Iterator &', 'start')], 
+                   is_pure_virtual=True, is_const=True, visibility='protected', is_virtual=True)
+    ## packetbb.h: ns3::PbbAddressLength ns3::PbbMessage::GetAddressLength() const [member function]
+    cls.add_method('GetAddressLength', 
+                   'ns3::PbbAddressLength', 
+                   [], 
+                   is_pure_virtual=True, is_const=True, visibility='protected', is_virtual=True)
+    ## packetbb.h: void ns3::PbbMessage::PrintOriginatorAddress(std::ostream & os) const [member function]
+    cls.add_method('PrintOriginatorAddress', 
+                   'void', 
+                   [param('std::ostream &', 'os')], 
+                   is_pure_virtual=True, is_const=True, visibility='protected', is_virtual=True)
+    ## packetbb.h: void ns3::PbbMessage::SerializeOriginatorAddress(ns3::Buffer::Iterator & start) const [member function]
+    cls.add_method('SerializeOriginatorAddress', 
+                   'void', 
+                   [param('ns3::Buffer::Iterator &', 'start')], 
+                   is_pure_virtual=True, is_const=True, visibility='protected', is_virtual=True)
+    return
+
+def register_Ns3PbbMessageIpv4_methods(root_module, cls):
+    ## packetbb.h: ns3::PbbMessageIpv4::PbbMessageIpv4(ns3::PbbMessageIpv4 const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::PbbMessageIpv4 const &', 'arg0')])
+    ## packetbb.h: ns3::PbbMessageIpv4::PbbMessageIpv4() [constructor]
+    cls.add_constructor([])
+    ## packetbb.h: ns3::Ptr<ns3::PbbAddressBlock> ns3::PbbMessageIpv4::AddressBlockDeserialize(ns3::Buffer::Iterator & start) const [member function]
+    cls.add_method('AddressBlockDeserialize', 
+                   'ns3::Ptr< ns3::PbbAddressBlock >', 
+                   [param('ns3::Buffer::Iterator &', 'start')], 
+                   is_const=True, visibility='protected', is_virtual=True)
+    ## packetbb.h: ns3::Address ns3::PbbMessageIpv4::DeserializeOriginatorAddress(ns3::Buffer::Iterator & start) const [member function]
+    cls.add_method('DeserializeOriginatorAddress', 
+                   'ns3::Address', 
+                   [param('ns3::Buffer::Iterator &', 'start')], 
+                   is_const=True, visibility='protected', is_virtual=True)
+    ## packetbb.h: ns3::PbbAddressLength ns3::PbbMessageIpv4::GetAddressLength() const [member function]
+    cls.add_method('GetAddressLength', 
+                   'ns3::PbbAddressLength', 
+                   [], 
+                   is_const=True, visibility='protected', is_virtual=True)
+    ## packetbb.h: void ns3::PbbMessageIpv4::PrintOriginatorAddress(std::ostream & os) const [member function]
+    cls.add_method('PrintOriginatorAddress', 
+                   'void', 
+                   [param('std::ostream &', 'os')], 
+                   is_const=True, visibility='protected', is_virtual=True)
+    ## packetbb.h: void ns3::PbbMessageIpv4::SerializeOriginatorAddress(ns3::Buffer::Iterator & start) const [member function]
+    cls.add_method('SerializeOriginatorAddress', 
+                   'void', 
+                   [param('ns3::Buffer::Iterator &', 'start')], 
+                   is_const=True, visibility='protected', is_virtual=True)
+    return
+
+def register_Ns3PbbMessageIpv6_methods(root_module, cls):
+    ## packetbb.h: ns3::PbbMessageIpv6::PbbMessageIpv6(ns3::PbbMessageIpv6 const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::PbbMessageIpv6 const &', 'arg0')])
+    ## packetbb.h: ns3::PbbMessageIpv6::PbbMessageIpv6() [constructor]
+    cls.add_constructor([])
+    ## packetbb.h: ns3::Ptr<ns3::PbbAddressBlock> ns3::PbbMessageIpv6::AddressBlockDeserialize(ns3::Buffer::Iterator & start) const [member function]
+    cls.add_method('AddressBlockDeserialize', 
+                   'ns3::Ptr< ns3::PbbAddressBlock >', 
+                   [param('ns3::Buffer::Iterator &', 'start')], 
+                   is_const=True, visibility='protected', is_virtual=True)
+    ## packetbb.h: ns3::Address ns3::PbbMessageIpv6::DeserializeOriginatorAddress(ns3::Buffer::Iterator & start) const [member function]
+    cls.add_method('DeserializeOriginatorAddress', 
+                   'ns3::Address', 
+                   [param('ns3::Buffer::Iterator &', 'start')], 
+                   is_const=True, visibility='protected', is_virtual=True)
+    ## packetbb.h: ns3::PbbAddressLength ns3::PbbMessageIpv6::GetAddressLength() const [member function]
+    cls.add_method('GetAddressLength', 
+                   'ns3::PbbAddressLength', 
+                   [], 
+                   is_const=True, visibility='protected', is_virtual=True)
+    ## packetbb.h: void ns3::PbbMessageIpv6::PrintOriginatorAddress(std::ostream & os) const [member function]
+    cls.add_method('PrintOriginatorAddress', 
+                   'void', 
+                   [param('std::ostream &', 'os')], 
+                   is_const=True, visibility='protected', is_virtual=True)
+    ## packetbb.h: void ns3::PbbMessageIpv6::SerializeOriginatorAddress(ns3::Buffer::Iterator & start) const [member function]
+    cls.add_method('SerializeOriginatorAddress', 
+                   'void', 
+                   [param('ns3::Buffer::Iterator &', 'start')], 
+                   is_const=True, visibility='protected', is_virtual=True)
+    return
+
+def register_Ns3PbbTlv_methods(root_module, cls):
+    cls.add_binary_comparison_operator('==')
+    cls.add_binary_comparison_operator('!=')
+    ## packetbb.h: ns3::PbbTlv::PbbTlv(ns3::PbbTlv const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::PbbTlv const &', 'arg0')])
+    ## packetbb.h: ns3::PbbTlv::PbbTlv() [constructor]
+    cls.add_constructor([])
+    ## packetbb.h: void ns3::PbbTlv::Deserialize(ns3::Buffer::Iterator & start) [member function]
+    cls.add_method('Deserialize', 
+                   'void', 
+                   [param('ns3::Buffer::Iterator &', 'start')])
+    ## packetbb.h: uint32_t ns3::PbbTlv::GetSerializedSize() const [member function]
+    cls.add_method('GetSerializedSize', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## packetbb.h: uint8_t ns3::PbbTlv::GetType() const [member function]
+    cls.add_method('GetType', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True)
+    ## packetbb.h: uint8_t ns3::PbbTlv::GetTypeExt() const [member function]
+    cls.add_method('GetTypeExt', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True)
+    ## packetbb.h: ns3::Buffer ns3::PbbTlv::GetValue() const [member function]
+    cls.add_method('GetValue', 
+                   'ns3::Buffer', 
+                   [], 
+                   is_const=True)
+    ## packetbb.h: bool ns3::PbbTlv::HasTypeExt() const [member function]
+    cls.add_method('HasTypeExt', 
+                   'bool', 
+                   [], 
+                   is_const=True)
+    ## packetbb.h: bool ns3::PbbTlv::HasValue() const [member function]
+    cls.add_method('HasValue', 
+                   'bool', 
+                   [], 
+                   is_const=True)
+    ## packetbb.h: void ns3::PbbTlv::Print(std::ostream & os) const [member function]
+    cls.add_method('Print', 
+                   'void', 
+                   [param('std::ostream &', 'os')], 
+                   is_const=True)
+    ## packetbb.h: void ns3::PbbTlv::Print(std::ostream & os, int level) const [member function]
+    cls.add_method('Print', 
+                   'void', 
+                   [param('std::ostream &', 'os'), param('int', 'level')], 
+                   is_const=True)
+    ## packetbb.h: void ns3::PbbTlv::Ref() const [member function]
+    cls.add_method('Ref', 
+                   'void', 
+                   [], 
+                   is_const=True)
+    ## packetbb.h: void ns3::PbbTlv::Serialize(ns3::Buffer::Iterator & start) const [member function]
+    cls.add_method('Serialize', 
+                   'void', 
+                   [param('ns3::Buffer::Iterator &', 'start')], 
+                   is_const=True)
+    ## packetbb.h: void ns3::PbbTlv::SetType(uint8_t type) [member function]
+    cls.add_method('SetType', 
+                   'void', 
+                   [param('uint8_t', 'type')])
+    ## packetbb.h: void ns3::PbbTlv::SetTypeExt(uint8_t type) [member function]
+    cls.add_method('SetTypeExt', 
+                   'void', 
+                   [param('uint8_t', 'type')])
+    ## packetbb.h: void ns3::PbbTlv::SetValue(ns3::Buffer start) [member function]
+    cls.add_method('SetValue', 
+                   'void', 
+                   [param('ns3::Buffer', 'start')])
+    ## packetbb.h: void ns3::PbbTlv::SetValue(uint8_t const * buffer, uint32_t size) [member function]
+    cls.add_method('SetValue', 
+                   'void', 
+                   [param('uint8_t const *', 'buffer'), param('uint32_t', 'size')])
+    ## packetbb.h: void ns3::PbbTlv::Unref() const [member function]
+    cls.add_method('Unref', 
+                   'void', 
+                   [], 
+                   is_const=True)
+    ## packetbb.h: uint8_t ns3::PbbTlv::GetIndexStart() const [member function]
+    cls.add_method('GetIndexStart', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True, visibility='protected')
+    ## packetbb.h: uint8_t ns3::PbbTlv::GetIndexStop() const [member function]
+    cls.add_method('GetIndexStop', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True, visibility='protected')
+    ## packetbb.h: bool ns3::PbbTlv::HasIndexStart() const [member function]
+    cls.add_method('HasIndexStart', 
+                   'bool', 
+                   [], 
+                   is_const=True, visibility='protected')
+    ## packetbb.h: bool ns3::PbbTlv::HasIndexStop() const [member function]
+    cls.add_method('HasIndexStop', 
+                   'bool', 
+                   [], 
+                   is_const=True, visibility='protected')
+    ## packetbb.h: bool ns3::PbbTlv::IsMultivalue() const [member function]
+    cls.add_method('IsMultivalue', 
+                   'bool', 
+                   [], 
+                   is_const=True, visibility='protected')
+    ## packetbb.h: void ns3::PbbTlv::SetIndexStart(uint8_t index) [member function]
+    cls.add_method('SetIndexStart', 
+                   'void', 
+                   [param('uint8_t', 'index')], 
+                   visibility='protected')
+    ## packetbb.h: void ns3::PbbTlv::SetIndexStop(uint8_t index) [member function]
+    cls.add_method('SetIndexStop', 
+                   'void', 
+                   [param('uint8_t', 'index')], 
+                   visibility='protected')
+    ## packetbb.h: void ns3::PbbTlv::SetMultivalue(bool isMultivalue) [member function]
+    cls.add_method('SetMultivalue', 
+                   'void', 
+                   [param('bool', 'isMultivalue')], 
+                   visibility='protected')
+    return
+
+def register_Ns3PbbTlvBlock_methods(root_module, cls):
+    cls.add_binary_comparison_operator('==')
+    cls.add_binary_comparison_operator('!=')
+    ## packetbb.h: ns3::PbbTlvBlock::PbbTlvBlock() [constructor]
+    cls.add_constructor([])
+    ## packetbb.h: ns3::PbbTlvBlock::PbbTlvBlock(ns3::PbbTlvBlock const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::PbbTlvBlock const &', 'arg0')])
+    ## packetbb.h: ns3::Ptr<ns3::PbbTlv> ns3::PbbTlvBlock::Back() const [member function]
+    cls.add_method('Back', 
+                   'ns3::Ptr< ns3::PbbTlv >', 
+                   [], 
+                   is_const=True)
+    ## packetbb.h: std::_List_iterator<ns3::Ptr<ns3::PbbTlv> > ns3::PbbTlvBlock::Begin() [member function]
+    cls.add_method('Begin', 
+                   'std::_List_iterator< ns3::Ptr< ns3::PbbTlv > >', 
+                   [])
+    ## packetbb.h: std::_List_const_iterator<ns3::Ptr<ns3::PbbTlv> > ns3::PbbTlvBlock::Begin() const [member function]
+    cls.add_method('Begin', 
+                   'std::_List_const_iterator< ns3::Ptr< ns3::PbbTlv > >', 
+                   [], 
+                   is_const=True)
+    ## packetbb.h: void ns3::PbbTlvBlock::Clear() [member function]
+    cls.add_method('Clear', 
+                   'void', 
+                   [])
+    ## packetbb.h: void ns3::PbbTlvBlock::Deserialize(ns3::Buffer::Iterator & start) [member function]
+    cls.add_method('Deserialize', 
+                   'void', 
+                   [param('ns3::Buffer::Iterator &', 'start')])
+    ## packetbb.h: bool ns3::PbbTlvBlock::Empty() const [member function]
+    cls.add_method('Empty', 
+                   'bool', 
+                   [], 
+                   is_const=True)
+    ## packetbb.h: std::_List_iterator<ns3::Ptr<ns3::PbbTlv> > ns3::PbbTlvBlock::End() [member function]
+    cls.add_method('End', 
+                   'std::_List_iterator< ns3::Ptr< ns3::PbbTlv > >', 
+                   [])
+    ## packetbb.h: std::_List_const_iterator<ns3::Ptr<ns3::PbbTlv> > ns3::PbbTlvBlock::End() const [member function]
+    cls.add_method('End', 
+                   'std::_List_const_iterator< ns3::Ptr< ns3::PbbTlv > >', 
+                   [], 
+                   is_const=True)
+    ## packetbb.h: std::_List_iterator<ns3::Ptr<ns3::PbbTlv> > ns3::PbbTlvBlock::Erase(std::_List_iterator<ns3::Ptr<ns3::PbbTlv> > position) [member function]
+    cls.add_method('Erase', 
+                   'std::_List_iterator< ns3::Ptr< ns3::PbbTlv > >', 
+                   [param('std::_List_iterator< ns3::Ptr< ns3::PbbTlv > >', 'position')])
+    ## packetbb.h: std::_List_iterator<ns3::Ptr<ns3::PbbTlv> > ns3::PbbTlvBlock::Erase(std::_List_iterator<ns3::Ptr<ns3::PbbTlv> > first, std::_List_iterator<ns3::Ptr<ns3::PbbTlv> > last) [member function]
+    cls.add_method('Erase', 
+                   'std::_List_iterator< ns3::Ptr< ns3::PbbTlv > >', 
+                   [param('std::_List_iterator< ns3::Ptr< ns3::PbbTlv > >', 'first'), param('std::_List_iterator< ns3::Ptr< ns3::PbbTlv > >', 'last')])
+    ## packetbb.h: ns3::Ptr<ns3::PbbTlv> ns3::PbbTlvBlock::Front() const [member function]
+    cls.add_method('Front', 
+                   'ns3::Ptr< ns3::PbbTlv >', 
+                   [], 
+                   is_const=True)
+    ## packetbb.h: uint32_t ns3::PbbTlvBlock::GetSerializedSize() const [member function]
+    cls.add_method('GetSerializedSize', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## packetbb.h: std::_List_iterator<ns3::Ptr<ns3::PbbTlv> > ns3::PbbTlvBlock::Insert(std::_List_iterator<ns3::Ptr<ns3::PbbTlv> > position, ns3::Ptr<ns3::PbbTlv> const tlv) [member function]
+    cls.add_method('Insert', 
+                   'std::_List_iterator< ns3::Ptr< ns3::PbbTlv > >', 
+                   [param('std::_List_iterator< ns3::Ptr< ns3::PbbTlv > >', 'position'), param('ns3::Ptr< ns3::PbbTlv > const', 'tlv')])
+    ## packetbb.h: void ns3::PbbTlvBlock::PopBack() [member function]
+    cls.add_method('PopBack', 
+                   'void', 
+                   [])
+    ## packetbb.h: void ns3::PbbTlvBlock::PopFront() [member function]
+    cls.add_method('PopFront', 
+                   'void', 
+                   [])
+    ## packetbb.h: void ns3::PbbTlvBlock::Print(std::ostream & os) const [member function]
+    cls.add_method('Print', 
+                   'void', 
+                   [param('std::ostream &', 'os')], 
+                   is_const=True)
+    ## packetbb.h: void ns3::PbbTlvBlock::Print(std::ostream & os, int level) const [member function]
+    cls.add_method('Print', 
+                   'void', 
+                   [param('std::ostream &', 'os'), param('int', 'level')], 
+                   is_const=True)
+    ## packetbb.h: void ns3::PbbTlvBlock::PushBack(ns3::Ptr<ns3::PbbTlv> tlv) [member function]
+    cls.add_method('PushBack', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::PbbTlv >', 'tlv')])
+    ## packetbb.h: void ns3::PbbTlvBlock::PushFront(ns3::Ptr<ns3::PbbTlv> tlv) [member function]
+    cls.add_method('PushFront', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::PbbTlv >', 'tlv')])
+    ## packetbb.h: void ns3::PbbTlvBlock::Serialize(ns3::Buffer::Iterator & start) const [member function]
+    cls.add_method('Serialize', 
+                   'void', 
+                   [param('ns3::Buffer::Iterator &', 'start')], 
+                   is_const=True)
+    ## packetbb.h: int ns3::PbbTlvBlock::Size() const [member function]
+    cls.add_method('Size', 
+                   'int', 
+                   [], 
+                   is_const=True)
+    return
+
 def register_Ns3Ipv4AddressChecker_methods(root_module, cls):
     ## ipv4-address.h: ns3::Ipv4AddressChecker::Ipv4AddressChecker() [constructor]
     cls.add_constructor([])
@@ -1833,6 +2904,271 @@ def register_Ns3Mac48AddressValue_methods(root_module, cls):
     cls.add_method('Set', 
                    'void', 
                    [param('ns3::Mac48Address const &', 'value')])
+    return
+
+def register_Ns3PbbAddressTlv_methods(root_module, cls):
+    ## packetbb.h: ns3::PbbAddressTlv::PbbAddressTlv() [constructor]
+    cls.add_constructor([])
+    ## packetbb.h: ns3::PbbAddressTlv::PbbAddressTlv(ns3::PbbAddressTlv const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::PbbAddressTlv const &', 'arg0')])
+    ## packetbb.h: uint8_t ns3::PbbAddressTlv::GetIndexStart() const [member function]
+    cls.add_method('GetIndexStart', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True)
+    ## packetbb.h: uint8_t ns3::PbbAddressTlv::GetIndexStop() const [member function]
+    cls.add_method('GetIndexStop', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True)
+    ## packetbb.h: bool ns3::PbbAddressTlv::HasIndexStart() const [member function]
+    cls.add_method('HasIndexStart', 
+                   'bool', 
+                   [], 
+                   is_const=True)
+    ## packetbb.h: bool ns3::PbbAddressTlv::HasIndexStop() const [member function]
+    cls.add_method('HasIndexStop', 
+                   'bool', 
+                   [], 
+                   is_const=True)
+    ## packetbb.h: bool ns3::PbbAddressTlv::IsMultivalue() const [member function]
+    cls.add_method('IsMultivalue', 
+                   'bool', 
+                   [], 
+                   is_const=True)
+    ## packetbb.h: void ns3::PbbAddressTlv::SetIndexStart(uint8_t index) [member function]
+    cls.add_method('SetIndexStart', 
+                   'void', 
+                   [param('uint8_t', 'index')])
+    ## packetbb.h: void ns3::PbbAddressTlv::SetIndexStop(uint8_t index) [member function]
+    cls.add_method('SetIndexStop', 
+                   'void', 
+                   [param('uint8_t', 'index')])
+    ## packetbb.h: void ns3::PbbAddressTlv::SetMultivalue(bool isMultivalue) [member function]
+    cls.add_method('SetMultivalue', 
+                   'void', 
+                   [param('bool', 'isMultivalue')])
+    return
+
+def register_Ns3PbbPacket_methods(root_module, cls):
+    cls.add_binary_comparison_operator('==')
+    cls.add_binary_comparison_operator('!=')
+    ## packetbb.h: ns3::PbbPacket::PbbPacket(ns3::PbbPacket const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::PbbPacket const &', 'arg0')])
+    ## packetbb.h: ns3::PbbPacket::PbbPacket() [constructor]
+    cls.add_constructor([])
+    ## packetbb.h: uint32_t ns3::PbbPacket::Deserialize(ns3::Buffer::Iterator start) [member function]
+    cls.add_method('Deserialize', 
+                   'uint32_t', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_virtual=True)
+    ## packetbb.h: std::_List_iterator<ns3::Ptr<ns3::PbbTlv> > ns3::PbbPacket::Erase(std::_List_iterator<ns3::Ptr<ns3::PbbTlv> > position) [member function]
+    cls.add_method('Erase', 
+                   'std::_List_iterator< ns3::Ptr< ns3::PbbTlv > >', 
+                   [param('std::_List_iterator< ns3::Ptr< ns3::PbbTlv > >', 'position')])
+    ## packetbb.h: std::_List_iterator<ns3::Ptr<ns3::PbbTlv> > ns3::PbbPacket::Erase(std::_List_iterator<ns3::Ptr<ns3::PbbTlv> > first, std::_List_iterator<ns3::Ptr<ns3::PbbTlv> > last) [member function]
+    cls.add_method('Erase', 
+                   'std::_List_iterator< ns3::Ptr< ns3::PbbTlv > >', 
+                   [param('std::_List_iterator< ns3::Ptr< ns3::PbbTlv > >', 'first'), param('std::_List_iterator< ns3::Ptr< ns3::PbbTlv > >', 'last')])
+    ## packetbb.h: std::_List_iterator<ns3::Ptr<ns3::PbbMessage> > ns3::PbbPacket::Erase(std::_List_iterator<ns3::Ptr<ns3::PbbMessage> > position) [member function]
+    cls.add_method('Erase', 
+                   'std::_List_iterator< ns3::Ptr< ns3::PbbMessage > >', 
+                   [param('std::_List_iterator< ns3::Ptr< ns3::PbbMessage > >', 'position')])
+    ## packetbb.h: std::_List_iterator<ns3::Ptr<ns3::PbbMessage> > ns3::PbbPacket::Erase(std::_List_iterator<ns3::Ptr<ns3::PbbMessage> > first, std::_List_iterator<ns3::Ptr<ns3::PbbMessage> > last) [member function]
+    cls.add_method('Erase', 
+                   'std::_List_iterator< ns3::Ptr< ns3::PbbMessage > >', 
+                   [param('std::_List_iterator< ns3::Ptr< ns3::PbbMessage > >', 'first'), param('std::_List_iterator< ns3::Ptr< ns3::PbbMessage > >', 'last')])
+    ## packetbb.h: ns3::TypeId ns3::PbbPacket::GetInstanceTypeId() const [member function]
+    cls.add_method('GetInstanceTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## packetbb.h: uint16_t ns3::PbbPacket::GetSequenceNumber() const [member function]
+    cls.add_method('GetSequenceNumber', 
+                   'uint16_t', 
+                   [], 
+                   is_const=True)
+    ## packetbb.h: uint32_t ns3::PbbPacket::GetSerializedSize() const [member function]
+    cls.add_method('GetSerializedSize', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## packetbb.h: static ns3::TypeId ns3::PbbPacket::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## packetbb.h: uint8_t ns3::PbbPacket::GetVersion() const [member function]
+    cls.add_method('GetVersion', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True)
+    ## packetbb.h: bool ns3::PbbPacket::HasSequenceNumber() const [member function]
+    cls.add_method('HasSequenceNumber', 
+                   'bool', 
+                   [], 
+                   is_const=True)
+    ## packetbb.h: ns3::Ptr<ns3::PbbMessage> ns3::PbbPacket::MessageBack() [member function]
+    cls.add_method('MessageBack', 
+                   'ns3::Ptr< ns3::PbbMessage >', 
+                   [])
+    ## packetbb.h: ns3::Ptr<ns3::PbbMessage> const ns3::PbbPacket::MessageBack() const [member function]
+    cls.add_method('MessageBack', 
+                   'ns3::Ptr< ns3::PbbMessage > const', 
+                   [], 
+                   is_const=True)
+    ## packetbb.h: std::_List_iterator<ns3::Ptr<ns3::PbbMessage> > ns3::PbbPacket::MessageBegin() [member function]
+    cls.add_method('MessageBegin', 
+                   'std::_List_iterator< ns3::Ptr< ns3::PbbMessage > >', 
+                   [])
+    ## packetbb.h: std::_List_const_iterator<ns3::Ptr<ns3::PbbMessage> > ns3::PbbPacket::MessageBegin() const [member function]
+    cls.add_method('MessageBegin', 
+                   'std::_List_const_iterator< ns3::Ptr< ns3::PbbMessage > >', 
+                   [], 
+                   is_const=True)
+    ## packetbb.h: void ns3::PbbPacket::MessageClear() [member function]
+    cls.add_method('MessageClear', 
+                   'void', 
+                   [])
+    ## packetbb.h: bool ns3::PbbPacket::MessageEmpty() const [member function]
+    cls.add_method('MessageEmpty', 
+                   'bool', 
+                   [], 
+                   is_const=True)
+    ## packetbb.h: std::_List_iterator<ns3::Ptr<ns3::PbbMessage> > ns3::PbbPacket::MessageEnd() [member function]
+    cls.add_method('MessageEnd', 
+                   'std::_List_iterator< ns3::Ptr< ns3::PbbMessage > >', 
+                   [])
+    ## packetbb.h: std::_List_const_iterator<ns3::Ptr<ns3::PbbMessage> > ns3::PbbPacket::MessageEnd() const [member function]
+    cls.add_method('MessageEnd', 
+                   'std::_List_const_iterator< ns3::Ptr< ns3::PbbMessage > >', 
+                   [], 
+                   is_const=True)
+    ## packetbb.h: ns3::Ptr<ns3::PbbMessage> ns3::PbbPacket::MessageFront() [member function]
+    cls.add_method('MessageFront', 
+                   'ns3::Ptr< ns3::PbbMessage >', 
+                   [])
+    ## packetbb.h: ns3::Ptr<ns3::PbbMessage> const ns3::PbbPacket::MessageFront() const [member function]
+    cls.add_method('MessageFront', 
+                   'ns3::Ptr< ns3::PbbMessage > const', 
+                   [], 
+                   is_const=True)
+    ## packetbb.h: void ns3::PbbPacket::MessagePopBack() [member function]
+    cls.add_method('MessagePopBack', 
+                   'void', 
+                   [])
+    ## packetbb.h: void ns3::PbbPacket::MessagePopFront() [member function]
+    cls.add_method('MessagePopFront', 
+                   'void', 
+                   [])
+    ## packetbb.h: void ns3::PbbPacket::MessagePushBack(ns3::Ptr<ns3::PbbMessage> message) [member function]
+    cls.add_method('MessagePushBack', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::PbbMessage >', 'message')])
+    ## packetbb.h: void ns3::PbbPacket::MessagePushFront(ns3::Ptr<ns3::PbbMessage> message) [member function]
+    cls.add_method('MessagePushFront', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::PbbMessage >', 'message')])
+    ## packetbb.h: int ns3::PbbPacket::MessageSize() const [member function]
+    cls.add_method('MessageSize', 
+                   'int', 
+                   [], 
+                   is_const=True)
+    ## packetbb.h: void ns3::PbbPacket::Print(std::ostream & os) const [member function]
+    cls.add_method('Print', 
+                   'void', 
+                   [param('std::ostream &', 'os')], 
+                   is_const=True, is_virtual=True)
+    ## packetbb.h: void ns3::PbbPacket::Ref() const [member function]
+    cls.add_method('Ref', 
+                   'void', 
+                   [], 
+                   is_const=True)
+    ## packetbb.h: void ns3::PbbPacket::Serialize(ns3::Buffer::Iterator start) const [member function]
+    cls.add_method('Serialize', 
+                   'void', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_const=True, is_virtual=True)
+    ## packetbb.h: void ns3::PbbPacket::SetSequenceNumber(uint16_t number) [member function]
+    cls.add_method('SetSequenceNumber', 
+                   'void', 
+                   [param('uint16_t', 'number')])
+    ## packetbb.h: ns3::Ptr<ns3::PbbTlv> ns3::PbbPacket::TlvBack() [member function]
+    cls.add_method('TlvBack', 
+                   'ns3::Ptr< ns3::PbbTlv >', 
+                   [])
+    ## packetbb.h: ns3::Ptr<ns3::PbbTlv> const ns3::PbbPacket::TlvBack() const [member function]
+    cls.add_method('TlvBack', 
+                   'ns3::Ptr< ns3::PbbTlv > const', 
+                   [], 
+                   is_const=True)
+    ## packetbb.h: std::_List_iterator<ns3::Ptr<ns3::PbbTlv> > ns3::PbbPacket::TlvBegin() [member function]
+    cls.add_method('TlvBegin', 
+                   'std::_List_iterator< ns3::Ptr< ns3::PbbTlv > >', 
+                   [])
+    ## packetbb.h: std::_List_const_iterator<ns3::Ptr<ns3::PbbTlv> > ns3::PbbPacket::TlvBegin() const [member function]
+    cls.add_method('TlvBegin', 
+                   'std::_List_const_iterator< ns3::Ptr< ns3::PbbTlv > >', 
+                   [], 
+                   is_const=True)
+    ## packetbb.h: void ns3::PbbPacket::TlvClear() [member function]
+    cls.add_method('TlvClear', 
+                   'void', 
+                   [])
+    ## packetbb.h: bool ns3::PbbPacket::TlvEmpty() const [member function]
+    cls.add_method('TlvEmpty', 
+                   'bool', 
+                   [], 
+                   is_const=True)
+    ## packetbb.h: std::_List_iterator<ns3::Ptr<ns3::PbbTlv> > ns3::PbbPacket::TlvEnd() [member function]
+    cls.add_method('TlvEnd', 
+                   'std::_List_iterator< ns3::Ptr< ns3::PbbTlv > >', 
+                   [])
+    ## packetbb.h: std::_List_const_iterator<ns3::Ptr<ns3::PbbTlv> > ns3::PbbPacket::TlvEnd() const [member function]
+    cls.add_method('TlvEnd', 
+                   'std::_List_const_iterator< ns3::Ptr< ns3::PbbTlv > >', 
+                   [], 
+                   is_const=True)
+    ## packetbb.h: ns3::Ptr<ns3::PbbTlv> ns3::PbbPacket::TlvFront() [member function]
+    cls.add_method('TlvFront', 
+                   'ns3::Ptr< ns3::PbbTlv >', 
+                   [])
+    ## packetbb.h: ns3::Ptr<ns3::PbbTlv> const ns3::PbbPacket::TlvFront() const [member function]
+    cls.add_method('TlvFront', 
+                   'ns3::Ptr< ns3::PbbTlv > const', 
+                   [], 
+                   is_const=True)
+    ## packetbb.h: void ns3::PbbPacket::TlvPopBack() [member function]
+    cls.add_method('TlvPopBack', 
+                   'void', 
+                   [])
+    ## packetbb.h: void ns3::PbbPacket::TlvPopFront() [member function]
+    cls.add_method('TlvPopFront', 
+                   'void', 
+                   [])
+    ## packetbb.h: void ns3::PbbPacket::TlvPushBack(ns3::Ptr<ns3::PbbTlv> tlv) [member function]
+    cls.add_method('TlvPushBack', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::PbbTlv >', 'tlv')])
+    ## packetbb.h: void ns3::PbbPacket::TlvPushFront(ns3::Ptr<ns3::PbbTlv> tlv) [member function]
+    cls.add_method('TlvPushFront', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::PbbTlv >', 'tlv')])
+    ## packetbb.h: int ns3::PbbPacket::TlvSize() const [member function]
+    cls.add_method('TlvSize', 
+                   'int', 
+                   [], 
+                   is_const=True)
+    ## packetbb.h: void ns3::PbbPacket::Unref() const [member function]
+    cls.add_method('Unref', 
+                   'void', 
+                   [], 
+                   is_const=True)
+    ## packetbb.h: void ns3::PbbPacket::SerializePacketTlv(ns3::Buffer::Iterator & start) const [member function]
+    cls.add_method('SerializePacketTlv', 
+                   'void', 
+                   [param('ns3::Buffer::Iterator &', 'start')], 
+                   is_const=True, visibility='protected')
     return
 
 def register_Ns3Queue_methods(root_module, cls):
@@ -3604,6 +4940,8 @@ def register_functions(root_module):
     register_functions_ns3_Config(module.get_submodule('Config'), root_module)
     register_functions_ns3_TimeStepPrecision(module.get_submodule('TimeStepPrecision'), root_module)
     register_functions_ns3_addressUtils(module.get_submodule('addressUtils'), root_module)
+    register_functions_ns3_dot11s(module.get_submodule('dot11s'), root_module)
+    register_functions_ns3_flame(module.get_submodule('flame'), root_module)
     register_functions_ns3_internal(module.get_submodule('internal'), root_module)
     register_functions_ns3_olsr(module.get_submodule('olsr'), root_module)
     return
@@ -3619,6 +4957,12 @@ def register_functions_ns3_addressUtils(module, root_module):
     module.add_function('IsMulticast', 
                         'bool', 
                         [param('ns3::Address const &', 'ad')])
+    return
+
+def register_functions_ns3_dot11s(module, root_module):
+    return
+
+def register_functions_ns3_flame(module, root_module):
     return
 
 def register_functions_ns3_internal(module, root_module):

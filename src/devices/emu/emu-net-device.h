@@ -225,12 +225,16 @@ private:
   /**
    * Adds the necessary headers and trailers to a packet of data in order to
    * respect the protocol implemented by the agent.
+   * \param p packet
+   * \param protocolNumber protocol number
    */
-  void AddHeader(Ptr<Packet> p, uint16_t protocolNumber);
+  void AddHeader (Ptr<Packet> p, uint16_t protocolNumber);
 
   /**
    * Removes, from a packet of data, all headers and trailers that
    * relate to the protocol implemented by the agent
+   * \param p Packet whose headers need to be processed
+   * \param param An integer parameter that can be set by the function
    * \return Returns true if the packet should be forwarded up the
    * protocol stack.
    */
@@ -238,7 +242,7 @@ private:
 
   /**
    * Start Sending a Packet Down the Wire.
-   *
+   * @param p packet to send
    * @returns true if success, false on failure
    */
   bool TransmitStart (Ptr<Packet> p);

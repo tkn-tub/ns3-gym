@@ -46,6 +46,14 @@ public:
   virtual ~Channel ();
 
   /**
+   * \returns the unique id of this channel
+   * 
+   * This unique id happens to be also the index of the Channel into
+   * the ChannelList. 
+   */
+  uint32_t GetId (void) const;
+
+  /**
    * \returns the number of NetDevices connected to this Channel.
    *
    * This method must be implemented by subclasses.
@@ -59,6 +67,8 @@ public:
    */
   virtual Ptr<NetDevice> GetDevice (uint32_t i) const = 0;
 
+private:
+  uint32_t m_id; // Channel id for this channel
 };
 
 } // namespace ns3

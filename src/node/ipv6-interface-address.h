@@ -190,7 +190,7 @@ class Ipv6InterfaceAddress
 
 std::ostream& operator<< (std::ostream& os, const Ipv6InterfaceAddress &addr);
 
-/* follow Ipv6InterfaceAddress way, maybe not inline them */
+/* follow Ipv4InterfaceAddress way, maybe not inline them */
 inline bool operator == (const Ipv6InterfaceAddress& a, const Ipv6InterfaceAddress& b)
 {
   return (a.m_address == b.m_address && a.m_prefix == b.m_prefix &&

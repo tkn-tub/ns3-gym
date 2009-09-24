@@ -73,6 +73,7 @@ public:
    */
   static Mac64Address ConvertFrom (const Address &address);
   /**
+   * \param address address to test
    * \returns true if the address matches, false otherwise.
    */
   static bool IsMatchingType (const Address &address);

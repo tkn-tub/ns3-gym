@@ -167,6 +167,7 @@ private:
  * Candidate Queue copy construction is disallowed (not implemented) to 
  * prevent the compiler from slipping in incorrect versions that don't
  * properly deal with deep copies.
+ * \param sr object to copy
  */
   CandidateQueue (CandidateQueue& sr);
 
@@ -174,6 +175,7 @@ private:
  * Candidate Queue assignment operator is disallowed (not implemented) to
  * prevent the compiler from slipping in incorrect versions that don't
  * properly deal with deep copies.
+ * \param sr object to assign
  */
   CandidateQueue& operator= (CandidateQueue& sr);
 

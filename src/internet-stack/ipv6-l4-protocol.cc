@@ -18,8 +18,9 @@
  * Author: Sebastien Vincent <vincent@clarinet.u-strasbg.fr>
  */
 
-#include "ipv6-l4-protocol.h"
 #include "ns3/uinteger.h"
+
+#include "ipv6-l4-protocol.h"
 
 namespace ns3
 {

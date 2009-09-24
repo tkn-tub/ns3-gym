@@ -23,6 +23,7 @@
 
 namespace ns3 {
 namespace dot11s {
+
 IeMeshId::IeMeshId ()
 {
   for (uint8_t i = 0; i < 32; i++)
@@ -141,5 +142,17 @@ operator << (std::ostream &os, const IeMeshId &a)
   a.Print (os);
   return os;
 }
+
+std::istream &operator >> (std::istream &is, IeMeshId &a)
+{
+  std::string str;
+  is >> str;
+  a = IeMeshId (str.c_str ());
+  return is;
+}
+
+ATTRIBUTE_HELPER_CPP (IeMeshId);
+
+
 } //namespace dot11s
 } // namespace ns3

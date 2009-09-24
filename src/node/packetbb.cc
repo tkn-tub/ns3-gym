@@ -728,7 +728,7 @@ PbbPacket::Unref (void) const
 TypeId
 PbbPacket::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("PbbPacket")
+  static TypeId tid = TypeId ("ns3::PbbPacket")
     .SetParent<Header> ()
     .AddConstructor<PbbPacket> ()
   ;

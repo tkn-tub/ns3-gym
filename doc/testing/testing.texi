@@ -66,12 +66,14 @@ along with this program.  If not, see @uref{http://www.gnu.org/licenses/}.
 @end titlepage
 
 @c So the toc is printed at the start.
+@ifnottex
 @anchor{Full Table of Contents}
-@contents
+@end ifnottex
+@shortcontents
 
 @ifnottex
 @node Top, Overview, Full Table of Contents 
-@top ns-3 Manual (html version)
+@top ns-3 Testing and Validation (html version)
 
 For a pdf version of this document, 
 see @uref{http://www.nsnam.org/docs/testing.pdf}.

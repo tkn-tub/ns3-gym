@@ -83,6 +83,9 @@ public:
    */
   LookupResult Lookup (Mac48Address destination);
 private:
+  FlameRtable& operator= (const FlameRtable &);
+  FlameRtable (const FlameRtable &);
+
   /// Routing table entry
   struct Route
   {

@@ -26,8 +26,9 @@
 
 #include <ostream>
 
-#include "address.h"
 #include "ns3/attribute-helper.h"
+
+#include "address.h"
 
 namespace ns3 { 
 
@@ -213,7 +214,8 @@ class Ipv6Address
     operator Address () const;
 
     /**
-     * \brief Convert the Address object into an Ipv6Address one.
+     * \brief Convert the Address object into an Ipv6Address ones.
+     * \param address address to convert
      * \return an Ipv6Address
      */
     static Ipv6Address ConvertFrom (const Address& address);
@@ -402,13 +404,13 @@ class Ipv6Prefix
 
 /**
  * \class ns3::Ipv6AddressValue
- * \brief hold objects of type ns3::Ipv6Address
+ * \brief Hold objects of type ns3::Ipv6Address
  */
 ATTRIBUTE_HELPER_HEADER (Ipv6Address);
 
 /**
  * \class ns3::Ipv6PrefixValue
- * \brief hold objects of type ns3::Ipv6Prefix
+ * \brief Hold objects of type ns3::Ipv6Prefix
  */
 ATTRIBUTE_HELPER_HEADER (Ipv6Prefix);
 
@@ -432,9 +434,17 @@ inline bool operator < (const Ipv6Address& a, const Ipv6Address& b)
   return (memcmp (a.m_address, b.m_address, 16) < 0);
 }
 
+/**
+ * \class Ipv6AddressHash
+ * \brief Hash function class for IPv6 addresses.
+ */
 class Ipv6AddressHash : public std::unary_function<Ipv6Address, size_t>
 {
   public:
+    /**
+     * \brief Unary operator to hash IPv6 address.
+     * \param x IPv6 address to hash
+     */
     size_t operator () (Ipv6Address const &x) const;
 };
 

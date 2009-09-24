@@ -18,14 +18,13 @@
  * Author: Sebastien Vincent <vincent@clarinet.u-strasbg.fr>
  */
 
-#include <string.h>
+#include <iomanip>
 
 #include "ns3/log.h"
-#include "ipv6-address.h"
 #include "ns3/assert.h"
-#include "mac48-address.h"
 
-#include <iomanip>
+#include "mac48-address.h"
+#include "ipv6-address.h"
 
 NS_LOG_COMPONENT_DEFINE ("Ipv6Address");
 

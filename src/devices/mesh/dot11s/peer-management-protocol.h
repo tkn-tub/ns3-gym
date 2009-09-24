@@ -174,6 +174,9 @@ private:
   typedef std::map<uint32_t, Ptr<PeerManagementProtocolMac> > PeerManagementProtocolMacMap;
   ///\}
 private:
+  PeerManagementProtocol& operator= (const PeerManagementProtocol &);
+  PeerManagementProtocol (const PeerManagementProtocol &);
+
   /**
    * \brief Fills information of received beacon. Needed to form own beacon timing element
    */

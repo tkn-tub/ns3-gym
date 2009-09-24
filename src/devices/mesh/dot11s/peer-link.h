@@ -74,17 +74,17 @@ public:
   void SetPeerMeshPointAddress (Mac48Address macaddr);
   void SetInterface (uint32_t interface);
   void SetLocalLinkId (uint16_t id);
-  void SetPeerLinkId (uint16_t id);
+  //void SetPeerLinkId (uint16_t id);
   void SetLocalAid (uint16_t aid);
-  void SetPeerAid (uint16_t aid);
+  //void SetPeerAid (uint16_t aid);
   void SetBeaconTimingElement (IeBeaconTiming beaconTiming);
-  void SetPeerLinkDescriptorElement (IePeerManagement peerLinkElement);
+  //void SetPeerLinkDescriptorElement (IePeerManagement peerLinkElement);
   Mac48Address GetPeerAddress () const;
   uint16_t GetLocalAid () const;
   Time GetLastBeacon () const;
   Time GetBeaconInterval () const;
   IeBeaconTiming GetBeaconTimingElement ()const;
-  IePeerManagement GetPeerLinkDescriptorElement ()const;
+  //IePeerManagement GetPeerLinkDescriptorElement ()const;
   //\}
 
   /**
@@ -198,6 +198,10 @@ private:
   /// Several successive beacons were lost, close link
   void BeaconLoss ();
 private:
+
+  PeerLink& operator= (const PeerLink &);
+  PeerLink (const PeerLink &);
+
   ///The number of interface I am associated with
   uint32_t m_interface;
   /// pointer to MAC plugin, which is responsible for peer management

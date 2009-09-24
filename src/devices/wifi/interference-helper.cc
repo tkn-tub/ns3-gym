@@ -460,17 +460,17 @@ InterferenceHelper::CalculateNoiseInterferenceW (Ptr<InterferenceHelper::Event> 
           i++;
           continue;
         }
-      if (event->Overlaps ((*i)->GetStartTime ())) 
+      if ((*i)->Overlaps (event->GetStartTime ())) 
+        {
+          noiseInterference += (*i)->GetRxPowerW ();
+        }
+      else if (event->Overlaps ((*i)->GetStartTime ())) 
         {
           ni->push_back (NiChange ((*i)->GetStartTime (), (*i)->GetRxPowerW ()));
         }
       if (event->Overlaps ((*i)->GetEndTime ())) 
         {
           ni->push_back (NiChange ((*i)->GetEndTime (), -(*i)->GetRxPowerW ()));
-        }
-      if ((*i)->Overlaps (event->GetStartTime ())) 
-        {
-          noiseInterference += (*i)->GetRxPowerW ();
         }
       i++;
     }

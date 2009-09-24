@@ -22,7 +22,9 @@
 #define IPV6_INTERFACE_CONTAINER_H
 
 #include <stdint.h>
+
 #include <vector>
+
 #include "ns3/ipv6.h"
 #include "ns3/ipv6-address.h"
 
@@ -31,7 +33,7 @@ namespace ns3
 
 /**
  * \class Ipv6InterfaceContainer
- * \brief keep track of a set of IPv6 interfaces.
+ * \brief Keep track of a set of IPv6 interfaces.
  */
 class Ipv6InterfaceContainer
 {

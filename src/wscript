@@ -27,6 +27,7 @@ all_modules = (
     'applications/onoff',
     'applications/packet-sink',
     'applications/udp-echo',
+    'routing/nix-vector-routing',
     'routing/olsr',
     'routing/global-routing',
     'routing/static-routing',
@@ -43,6 +44,8 @@ all_modules = (
     'applications/radvd',
     'test/ns3tcp',
     'test/ns3wifi',
+    'contrib/flow-monitor',
+    'contrib/net-anim',
     )
 
 def set_options(opt):

@@ -29,7 +29,7 @@ namespace dot11s {
 NS_OBJECT_ENSURE_REGISTERED (PeerLinkFrameStart);
 
 PeerLinkFrameStart::PeerLinkFrameStart () :
-  m_subtype (255), m_capability (0), m_aid (0), m_rates (SupportedRates ()), m_meshId (IeMeshId ()),
+  m_subtype (255), m_capability (0), m_aid (0), m_rates (SupportedRates ()), m_meshId (),
       m_config (IeConfiguration ()), m_reasonCode ((uint16_t) REASON11S_RESERVED)
 {
 }

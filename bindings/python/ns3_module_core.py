@@ -69,6 +69,14 @@ def register_types(module):
     module.add_class('SystemThread')
     ## system-wall-clock-ms.h: ns3::SystemWallClockMs [class]
     module.add_class('SystemWallClockMs')
+    ## test.h: ns3::TestCase [class]
+    module.add_class('TestCase', allow_subclassing=True)
+    ## test.h: ns3::TestRunner [class]
+    module.add_class('TestRunner')
+    ## test.h: ns3::TestSuite [class]
+    module.add_class('TestSuite', allow_subclassing=True)
+    ## test.h: ns3::TestSuite::TestType [enumeration]
+    module.add_enum('TestType', ['BVT', 'UNIT', 'SYSTEM', 'EXAMPLE', 'PERFORMANCE'], outer_class=root_module['ns3::TestSuite'])
     ## trace-source-accessor.h: ns3::TraceSourceAccessor [class]
     module.add_class('TraceSourceAccessor', allow_subclassing=True)
     ## random-variable.h: ns3::TriangularVariable [class]
@@ -189,6 +197,8 @@ def register_types(module):
     root_module['ns3::TracedValue< unsigned int >'].implicitly_converts_to(root_module['ns3::EnumValue'])
     module.add_container('std::list< ns3::Ptr< ns3::RadvdPrefix > >', 'ns3::Ptr< ns3::RadvdPrefix >', container_type='list')
     module.add_container('std::list< ns3::Ptr< ns3::Packet > >', 'ns3::Ptr< ns3::Packet >', container_type='list')
+    module.add_container('std::vector< ns3::Ptr< ns3::FlowProbe > >', 'ns3::Ptr< ns3::FlowProbe >', container_type='vector')
+    module.add_container('std::vector< ns3::Ptr< ns3::NetDevice > >', 'ns3::Ptr< ns3::NetDevice >', container_type='vector')
     typehandlers.add_type_alias('ns3::Vector3D', 'ns3::Vector')
     typehandlers.add_type_alias('ns3::Vector3D*', 'ns3::Vector*')
     typehandlers.add_type_alias('ns3::Vector3D&', 'ns3::Vector&')
@@ -220,6 +230,18 @@ def register_types(module):
     register_types_ns3_addressUtils(nested_module)
     
     
+    ## Register a nested module for the namespace dot11s
+    
+    nested_module = module.add_cpp_namespace('dot11s')
+    register_types_ns3_dot11s(nested_module)
+    
+    
+    ## Register a nested module for the namespace flame
+    
+    nested_module = module.add_cpp_namespace('flame')
+    register_types_ns3_flame(nested_module)
+    
+    
     ## Register a nested module for the namespace internal
     
     nested_module = module.add_cpp_namespace('internal')
@@ -244,6 +266,15 @@ def register_types_ns3_TimeStepPrecision(module):
     
 
 def register_types_ns3_addressUtils(module):
+    root_module = module.get_root()
+    
+
+def register_types_ns3_dot11s(module):
+    root_module = module.get_root()
+    
+    module.add_container('std::vector< ns3::Ptr< ns3::dot11s::IeBeaconTimingUnit > >', 'ns3::Ptr< ns3::dot11s::IeBeaconTimingUnit >', container_type='vector')
+
+def register_types_ns3_flame(module):
     root_module = module.get_root()
     
 
@@ -281,6 +312,9 @@ def register_methods(root_module):
     register_Ns3SystemMutex_methods(root_module, root_module['ns3::SystemMutex'])
     register_Ns3SystemThread_methods(root_module, root_module['ns3::SystemThread'])
     register_Ns3SystemWallClockMs_methods(root_module, root_module['ns3::SystemWallClockMs'])
+    register_Ns3TestCase_methods(root_module, root_module['ns3::TestCase'])
+    register_Ns3TestRunner_methods(root_module, root_module['ns3::TestRunner'])
+    register_Ns3TestSuite_methods(root_module, root_module['ns3::TestSuite'])
     register_Ns3TraceSourceAccessor_methods(root_module, root_module['ns3::TraceSourceAccessor'])
     register_Ns3TriangularVariable_methods(root_module, root_module['ns3::TriangularVariable'])
     register_Ns3TypeId_methods(root_module, root_module['ns3::TypeId'])
@@ -935,6 +969,228 @@ def register_Ns3SystemWallClockMs_methods(root_module, cls):
     cls.add_method('Start', 
                    'void', 
                    [])
+    return
+
+def register_Ns3TestCase_methods(root_module, cls):
+    ## test.h: ns3::TestCase::TestCase(std::string name) [constructor]
+    cls.add_constructor([param('std::string', 'name')])
+    ## test.h: bool ns3::TestCase::Run() [member function]
+    cls.add_method('Run', 
+                   'bool', 
+                   [])
+    ## test.h: void ns3::TestCase::SetVerbose(bool verbose) [member function]
+    cls.add_method('SetVerbose', 
+                   'void', 
+                   [param('bool', 'verbose')])
+    ## test.h: void ns3::TestCase::SetName(std::string name) [member function]
+    cls.add_method('SetName', 
+                   'void', 
+                   [param('std::string', 'name')])
+    ## test.h: std::string ns3::TestCase::GetName() [member function]
+    cls.add_method('GetName', 
+                   'std::string', 
+                   [])
+    ## test.h: void ns3::TestCase::SetBaseDir(std::string dir) [member function]
+    cls.add_method('SetBaseDir', 
+                   'void', 
+                   [param('std::string', 'dir')])
+    ## test.h: std::string ns3::TestCase::GetBaseDir() [member function]
+    cls.add_method('GetBaseDir', 
+                   'std::string', 
+                   [])
+    ## test.h: std::string ns3::TestCase::GetSourceDir(std::string file) [member function]
+    cls.add_method('GetSourceDir', 
+                   'std::string', 
+                   [param('std::string', 'file')])
+    ## test.h: void ns3::TestCase::SetStream(std::ofstream * ofs) [member function]
+    cls.add_method('SetStream', 
+                   'void', 
+                   [param('std::ofstream *', 'ofs')])
+    ## test.h: std::ofstream * ns3::TestCase::GetStream() [member function]
+    cls.add_method('GetStream', 
+                   'std::ofstream *', 
+                   [])
+    ## test.h: void ns3::TestCase::SetErrorStatus(bool error) [member function]
+    cls.add_method('SetErrorStatus', 
+                   'void', 
+                   [param('bool', 'error')])
+    ## test.h: bool ns3::TestCase::GetErrorStatus() [member function]
+    cls.add_method('GetErrorStatus', 
+                   'bool', 
+                   [])
+    ## test.h: void ns3::TestCase::ReportStart() [member function]
+    cls.add_method('ReportStart', 
+                   'void', 
+                   [])
+    ## test.h: void ns3::TestCase::ReportSuccess() [member function]
+    cls.add_method('ReportSuccess', 
+                   'void', 
+                   [])
+    ## test.h: void ns3::TestCase::ReportFailure(std::string cond, std::string actual, std::string limit, std::string message, std::string file, int32_t line) [member function]
+    cls.add_method('ReportFailure', 
+                   'void', 
+                   [param('std::string', 'cond'), param('std::string', 'actual'), param('std::string', 'limit'), param('std::string', 'message'), param('std::string', 'file'), param('int32_t', 'line')])
+    ## test.h: void ns3::TestCase::ReportEnd() [member function]
+    cls.add_method('ReportEnd', 
+                   'void', 
+                   [])
+    ## test.h: void ns3::TestCase::DoReportStart() [member function]
+    cls.add_method('DoReportStart', 
+                   'void', 
+                   [], 
+                   visibility='protected', is_virtual=True)
+    ## test.h: void ns3::TestCase::DoReportSuccess() [member function]
+    cls.add_method('DoReportSuccess', 
+                   'void', 
+                   [], 
+                   visibility='protected', is_virtual=True)
+    ## test.h: void ns3::TestCase::DoReportFailure(std::string cond, std::string actual, std::string limit, std::string message, std::string file, int32_t line) [member function]
+    cls.add_method('DoReportFailure', 
+                   'void', 
+                   [param('std::string', 'cond'), param('std::string', 'actual'), param('std::string', 'limit'), param('std::string', 'message'), param('std::string', 'file'), param('int32_t', 'line')], 
+                   visibility='protected', is_virtual=True)
+    ## test.h: void ns3::TestCase::DoReportEnd() [member function]
+    cls.add_method('DoReportEnd', 
+                   'void', 
+                   [], 
+                   visibility='protected', is_virtual=True)
+    ## test.h: void ns3::TestCase::DoSetup() [member function]
+    cls.add_method('DoSetup', 
+                   'void', 
+                   [], 
+                   visibility='protected', is_virtual=True)
+    ## test.h: bool ns3::TestCase::DoRun() [member function]
+    cls.add_method('DoRun', 
+                   'bool', 
+                   [], 
+                   is_pure_virtual=True, visibility='protected', is_virtual=True)
+    ## test.h: void ns3::TestCase::DoTeardown() [member function]
+    cls.add_method('DoTeardown', 
+                   'void', 
+                   [], 
+                   visibility='protected', is_virtual=True)
+    return
+
+def register_Ns3TestRunner_methods(root_module, cls):
+    ## test.h: ns3::TestRunner::TestRunner() [constructor]
+    cls.add_constructor([])
+    ## test.h: ns3::TestRunner::TestRunner(ns3::TestRunner const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::TestRunner const &', 'arg0')])
+    ## test.h: static uint32_t ns3::TestRunner::AddTestSuite(ns3::TestSuite * testSuite) [member function]
+    cls.add_method('AddTestSuite', 
+                   'uint32_t', 
+                   [param('ns3::TestSuite *', 'testSuite')], 
+                   is_static=True)
+    ## test.h: static uint32_t ns3::TestRunner::GetNTestSuites() [member function]
+    cls.add_method('GetNTestSuites', 
+                   'uint32_t', 
+                   [], 
+                   is_static=True)
+    ## test.h: static ns3::TestSuite * ns3::TestRunner::GetTestSuite(uint32_t n) [member function]
+    cls.add_method('GetTestSuite', 
+                   'ns3::TestSuite *', 
+                   [param('uint32_t', 'n')], 
+                   is_static=True)
+    return
+
+def register_Ns3TestSuite_methods(root_module, cls):
+    ## test.h: ns3::TestSuite::TestSuite(std::string name, ns3::TestSuite::TestType type=::ns3::TestSuite::UNIT) [constructor]
+    cls.add_constructor([param('std::string', 'name'), param('ns3::TestSuite::TestType', 'type', default_value='::ns3::TestSuite::UNIT')])
+    ## test.h: bool ns3::TestSuite::Run() [member function]
+    cls.add_method('Run', 
+                   'bool', 
+                   [])
+    ## test.h: uint32_t ns3::TestSuite::AddTestCase(ns3::TestCase * testCase) [member function]
+    cls.add_method('AddTestCase', 
+                   'uint32_t', 
+                   [param('ns3::TestCase *', 'testCase')])
+    ## test.h: uint32_t ns3::TestSuite::GetNTestCases() [member function]
+    cls.add_method('GetNTestCases', 
+                   'uint32_t', 
+                   [])
+    ## test.h: ns3::TestCase * ns3::TestSuite::GetTestCase(uint32_t i) [member function]
+    cls.add_method('GetTestCase', 
+                   'ns3::TestCase *', 
+                   [param('uint32_t', 'i')])
+    ## test.h: ns3::TestSuite::TestType ns3::TestSuite::GetTestType() [member function]
+    cls.add_method('GetTestType', 
+                   'ns3::TestSuite::TestType', 
+                   [])
+    ## test.h: void ns3::TestSuite::SetVerbose(bool verbose) [member function]
+    cls.add_method('SetVerbose', 
+                   'void', 
+                   [param('bool', 'verbose')])
+    ## test.h: void ns3::TestSuite::SetName(std::string name) [member function]
+    cls.add_method('SetName', 
+                   'void', 
+                   [param('std::string', 'name')])
+    ## test.h: std::string ns3::TestSuite::GetName() [member function]
+    cls.add_method('GetName', 
+                   'std::string', 
+                   [])
+    ## test.h: void ns3::TestSuite::SetBaseDir(std::string basedir) [member function]
+    cls.add_method('SetBaseDir', 
+                   'void', 
+                   [param('std::string', 'basedir')])
+    ## test.h: std::string ns3::TestSuite::GetBaseDir() [member function]
+    cls.add_method('GetBaseDir', 
+                   'std::string', 
+                   [])
+    ## test.h: void ns3::TestSuite::SetStream(std::ofstream * ofs) [member function]
+    cls.add_method('SetStream', 
+                   'void', 
+                   [param('std::ofstream *', 'ofs')])
+    ## test.h: void ns3::TestSuite::ReportStart() [member function]
+    cls.add_method('ReportStart', 
+                   'void', 
+                   [])
+    ## test.h: void ns3::TestSuite::ReportSuccess() [member function]
+    cls.add_method('ReportSuccess', 
+                   'void', 
+                   [])
+    ## test.h: void ns3::TestSuite::ReportFailure() [member function]
+    cls.add_method('ReportFailure', 
+                   'void', 
+                   [])
+    ## test.h: void ns3::TestSuite::ReportEnd() [member function]
+    cls.add_method('ReportEnd', 
+                   'void', 
+                   [])
+    ## test.h: void ns3::TestSuite::DoReportStart() [member function]
+    cls.add_method('DoReportStart', 
+                   'void', 
+                   [], 
+                   visibility='protected', is_virtual=True)
+    ## test.h: void ns3::TestSuite::DoReportSuccess() [member function]
+    cls.add_method('DoReportSuccess', 
+                   'void', 
+                   [], 
+                   visibility='protected', is_virtual=True)
+    ## test.h: void ns3::TestSuite::DoReportFailure() [member function]
+    cls.add_method('DoReportFailure', 
+                   'void', 
+                   [], 
+                   visibility='protected', is_virtual=True)
+    ## test.h: void ns3::TestSuite::DoReportEnd() [member function]
+    cls.add_method('DoReportEnd', 
+                   'void', 
+                   [], 
+                   visibility='protected', is_virtual=True)
+    ## test.h: void ns3::TestSuite::DoSetup() [member function]
+    cls.add_method('DoSetup', 
+                   'void', 
+                   [], 
+                   visibility='protected', is_virtual=True)
+    ## test.h: bool ns3::TestSuite::DoRun() [member function]
+    cls.add_method('DoRun', 
+                   'bool', 
+                   [], 
+                   visibility='protected', is_virtual=True)
+    ## test.h: void ns3::TestSuite::DoTeardown() [member function]
+    cls.add_method('DoTeardown', 
+                   'void', 
+                   [], 
+                   visibility='protected', is_virtual=True)
     return
 
 def register_Ns3TraceSourceAccessor_methods(root_module, cls):
@@ -2203,7 +2459,7 @@ def register_Ns3TracedValue__Unsigned_int_methods(root_module, cls):
     cls.add_constructor([param('ns3::BooleanValue const &', 'value')])
     ## traced-value.h: ns3::TracedValue<unsigned int>::TracedValue(ns3::EnumValue const & value) [constructor]
     cls.add_constructor([param('ns3::EnumValue const &', 'value')])
-    ## traced-value.h: void ns3::TracedValue<unsigned int>::Connect(ns3::CallbackBase const & cb, std::string path) [member function]
+    ## traced-value.h: void ns3::TracedValue<unsigned int>::Connect(ns3::CallbackBase const & cb, std::basic_string<char,std::char_traits<char>,std::allocator<char> > path) [member function]
     cls.add_method('Connect', 
                    'void', 
                    [param('ns3::CallbackBase const &', 'cb'), param('std::string', 'path')])
@@ -2211,7 +2467,7 @@ def register_Ns3TracedValue__Unsigned_int_methods(root_module, cls):
     cls.add_method('ConnectWithoutContext', 
                    'void', 
                    [param('ns3::CallbackBase const &', 'cb')])
-    ## traced-value.h: void ns3::TracedValue<unsigned int>::Disconnect(ns3::CallbackBase const & cb, std::string path) [member function]
+    ## traced-value.h: void ns3::TracedValue<unsigned int>::Disconnect(ns3::CallbackBase const & cb, std::basic_string<char,std::char_traits<char>,std::allocator<char> > path) [member function]
     cls.add_method('Disconnect', 
                    'void', 
                    [param('ns3::CallbackBase const &', 'cb'), param('std::string', 'path')])
@@ -2369,6 +2625,10 @@ def register_functions(root_module):
     module.add_function('MakeVectorChecker', 
                         'ns3::Ptr< ns3::AttributeChecker const >', 
                         [])
+    ## test.h: extern bool ns3::TestDoubleIsEqual(double const a, double const b, double const epsilon=std::numeric_limits<double>::epsilon()) [free function]
+    module.add_function('TestDoubleIsEqual', 
+                        'bool', 
+                        [param('double const', 'a'), param('double const', 'b'), param('double const', 'epsilon', default_value='std::numeric_limits<double>::epsilon()')])
     ## type-name.h: extern std::string ns3::TypeNameGet() [free function]
     module.add_function('TypeNameGet', 
                         'std::string', 
@@ -2383,7 +2643,7 @@ def register_functions(root_module):
     module.add_function('TypeNameGet', 
                         'std::string', 
                         [], 
-                        template_parameters=['long long'])
+                        template_parameters=['long'])
     ## type-name.h: extern std::string ns3::TypeNameGet() [free function]
     module.add_function('TypeNameGet', 
                         'std::string', 
@@ -2403,7 +2663,7 @@ def register_functions(root_module):
     module.add_function('TypeNameGet', 
                         'std::string', 
                         [], 
-                        template_parameters=['unsigned long long'])
+                        template_parameters=['unsigned long'])
     ## type-name.h: extern std::string ns3::TypeNameGet() [free function]
     module.add_function('TypeNameGet', 
                         'std::string', 
@@ -2422,6 +2682,8 @@ def register_functions(root_module):
     register_functions_ns3_Config(module.get_submodule('Config'), root_module)
     register_functions_ns3_TimeStepPrecision(module.get_submodule('TimeStepPrecision'), root_module)
     register_functions_ns3_addressUtils(module.get_submodule('addressUtils'), root_module)
+    register_functions_ns3_dot11s(module.get_submodule('dot11s'), root_module)
+    register_functions_ns3_flame(module.get_submodule('flame'), root_module)
     register_functions_ns3_internal(module.get_submodule('internal'), root_module)
     register_functions_ns3_olsr(module.get_submodule('olsr'), root_module)
     return
@@ -2489,6 +2751,12 @@ def register_functions_ns3_TimeStepPrecision(module, root_module):
     return
 
 def register_functions_ns3_addressUtils(module, root_module):
+    return
+
+def register_functions_ns3_dot11s(module, root_module):
+    return
+
+def register_functions_ns3_flame(module, root_module):
     return
 
 def register_functions_ns3_internal(module, root_module):

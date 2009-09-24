@@ -29,14 +29,13 @@
 #include "ns3/object.h"
 #include "ns3/timer.h"
 
-#include "ndisc-cache.h"
-
 namespace ns3
 {
 
 class NetDevice;
 class Packet;
 class Node;
+class NdiscCache;
 
 /**
  * \class Ipv6Interface

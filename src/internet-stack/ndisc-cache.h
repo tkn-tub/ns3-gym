@@ -33,8 +33,6 @@
 #include "ns3/timer.h"
 #include "ns3/sgi-hashmap.h"
 
-#include "ipv6-interface.h"
-
 namespace ns3
 {
 
@@ -418,6 +416,18 @@ class NdiscCache : public Object
     typedef sgi::hash_map<Ipv6Address, NdiscCache::Entry *, Ipv6AddressHash>::iterator CacheI;
 
     /**
+     * \brief Copy constructor.
+     * \param a cache to copy
+     */
+    NdiscCache (NdiscCache const &a);
+    
+    /**
+     * \brief Equal operator.
+     * \param a cache to copy
+     */
+    NdiscCache& operator= (NdiscCache const &a);
+
+    /**
      * \brief Dispose this object.
      */
     void DoDispose ();
@@ -433,7 +443,7 @@ class NdiscCache : public Object
     Ptr<Ipv6Interface> m_interface;
 
     /**
-     * A list of Entry.
+     * \brief A list of Entry.
      */
     Cache m_ndCache;
 

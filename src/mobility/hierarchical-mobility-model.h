@@ -80,6 +80,7 @@ public:
    * already existed a child model, then the child mobility model
    * current position is also modified to ensure that the composite
    * position is preserved.
+   * \param model new mobility model child
    */
   void SetChild (Ptr<MobilityModel> model);
   /**
@@ -87,6 +88,7 @@ public:
    * already existed a child model, then the child mobility model
    * current position is also modified to ensure that the composite
    * position is preserved.
+   * \param model new mobility model parent
    */
   void SetParent (Ptr<MobilityModel> model);
   

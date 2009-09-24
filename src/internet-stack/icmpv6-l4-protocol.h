@@ -24,15 +24,10 @@
 #define ICMPV6_L4_PROTOCOL_H
 
 #include <list>
+
 #include "ns3/ipv6-address.h"
-#include "ns3/ptr.h"
-#include "ns3/socket.h"
-#include "ns3/buffer.h"
-#include "ns3/boolean.h"
 #include "icmpv6-header.h"
 #include "ipv6-l4-protocol.h"
-#include "ndisc-cache.h"
-#include "ipv6-l3-protocol.h"
 
 namespace ns3
 {
@@ -41,6 +36,7 @@ class NetDevice;
 class Node;
 class Packet;
 class TraceContext;
+class NdiscCache;
 
 /**
  * \class Icmpv6L4Protocol

@@ -18,10 +18,12 @@
  * Author: Sebastien Vincent <vincent@clarinet.u-strasbg.fr>
  */
 
-#include "inet6-socket-address.h"
 #include "ns3/assert.h"
 
-namespace ns3 {
+#include "inet6-socket-address.h"
+
+namespace ns3
+{
 
 Inet6SocketAddress::Inet6SocketAddress (Ipv6Address ipv6, uint16_t port)
   : m_ipv6(ipv6),
