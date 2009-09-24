@@ -25,7 +25,7 @@
 #include "ns3/ptr.h"
 #include "ns3/ipv4-address.h"
 #include "ns3/ipv6-address.h"
-#include "packetbb.h"
+#include "ns3/packetbb.h"
 
 using namespace ns3;
 
@@ -34,7 +34,7 @@ class PbbTestCase : public TestCase
 public:
   PbbTestCase (std::string name, Ptr<PbbPacket> packet,
       uint8_t * buffer, uint32_t size);
-  virtual ~PbbTestCase ();
+  virtual ~PbbTestCase (void);
 
 protected:
   virtual bool DoRun (void);
@@ -59,6 +59,7 @@ PbbTestCase::PbbTestCase (std::string name, Ptr<PbbPacket> packet,
 
 PbbTestCase::~PbbTestCase (void)
 {
+  return;
 }
 
 bool
