@@ -25,20 +25,23 @@ CHAPTERS = \
 %.png : %.dia; $(DIA) -t png $< -e $@
 %.pdf : %.eps; $(EPSTOPDF) $< -o=$@
 
-all:  $(IMAGES) testing.pdf testing.html testing/testing.html
+all:  $(IMAGES) version testing.pdf testing.html testing/testing.html
 
-testing.pdf: $(IMAGES) $(CHAPTERS)
+testing.pdf: version $(IMAGES) $(CHAPTERS)
 	$(TEXI2PDF) testing.texi
 
-testing.html: $(IMAGES) $(CHAPTERS)
+testing.html: version $(IMAGES) $(CHAPTERS)
 	$(TEXI2HTML) ${CSS} testing.texi
 
-testing/testing.html: $(IMAGES) $(CHAPTERS)
+testing/testing.html: version $(IMAGES) $(CHAPTERS)
 	$(TEXI2HTML) ${CSS} ${SPLIT} testing.texi
 
 figures-clean:
 	rm -rf $(IMAGES)
 
+version:
+	echo -n "ns-" > VERSION-PREFIX; cat VERSION-PREFIX ../../VERSION > VERSION; rm -rf VERSION-PREFIX
+
 clean: 	figures-clean
 	rm -rf testing.aux testing.cp testing.cps testing.fn testing.ky testing.pg 
-	rm -rf testing.tp testing.vr testing.toc testing.log testing.pdf testing.html testing/ 
+	rm -rf testing.tp testing.vr testing.toc testing.log testing.pdf testing.html testing/ VERSION missfont.log

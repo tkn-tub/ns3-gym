@@ -1,18 +1,18 @@
 \input texinfo  @c -*-texinfo-*-
 @c %**start of header
-@setfilename ns-3.info
-@settitle ns-3 manual
+@setfilename ns-3-testing.info
+@settitle ns-3 testing and validation
 @c @setchapternewpage odd
 @c %**end of header
 
 @ifinfo
 Documentation for the @command{ns-3} project is available in
-several documents and the wiki:
+Doxygen, several documents, and the wiki:
 @itemize @bullet
 @item @uref{http://www.nsnam.org/doxygen/index.html,,ns-3 Doxygen/Manual}:  Documentation of the public APIs of the simulator
 @item @uref{http://www.nsnam.org/tutorial/index.html,,ns-3 Tutorial}
 @item @uref{http://www.nsnam.org/doc//index.html,,ns-3 Tutorial}
-@item Reference Manual 
+@item ns-3 Testing and Validation (this document)
 @item @uref{http://www.nsnam.org/wiki/index.php,, ns-3 wiki}
 @end itemize
 
@@ -26,12 +26,12 @@ the document should be discussed on the ns-developers@@isi.edu mailing list.
 
 This is an @command{ns-3} reference manual.
 Primary documentation for the @command{ns-3} project is available in
-four forms:
+Doxygen, several documents, and the wiki:
 @itemize @bullet
 @item @uref{http://www.nsnam.org/doxygen/index.html,,ns-3 Doxygen}:  Documentation of the public APIs of the simulator
 @item @uref{http://www.nsnam.org/docs/tutorial/index.html,,ns-3 Tutorial}
 @item @uref{http://www.nsnam.org/docs/manual/index.html,,ns-3 Manual}
-@item Testing and Validation (this document)
+@item ns-3 Testing and Validation (this document)
 @item @uref{http://www.nsnam.org/wiki/index.php,, ns-3 wiki}
 @end itemize
  
@@ -58,6 +58,9 @@ along with this program.  If not, see @uref{http://www.gnu.org/licenses/}.
 @title ns-3 Testing and Validation
 @author ns-3 project
 @author feedback:  ns-developers@@isi.edu
+
+@b{Simulator version: }
+@include VERSION
 @today{}
 
 @c @page
@@ -78,22 +81,30 @@ along with this program.  If not, see @uref{http://www.gnu.org/licenses/}.
 For a pdf version of this document, 
 see @uref{http://www.nsnam.org/docs/testing.pdf}.
 
+Simulator version:
+@include VERSION
+
 @insertcopying
 @end ifnottex
 
 @menu
 * Overview::
 * Background::
-* Testing framework::
+* TestingFramework::
 * How to write tests::
+* Random Variables::
 * Propagation Loss Models::
+* References::
 @end menu
 
 @include overview.texi
 @include background.texi
 @include testing-framework.texi
 @include how-to-write-tests.texi
+@include validation.texi
+@include random-variables.texi
 @include propagation-loss.texi
+@include references.texi
 
 @printindex cp
 

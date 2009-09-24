@@ -1,0 +1,9 @@
+@node References
+@chapter References
+
+The following work about the validation of ns-3 models is published
+elsewhere.
+
+@cartouche
+@emph{Write me}
+@end cartouche

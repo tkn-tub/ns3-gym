@@ -1,0 +1,8 @@
+@unnumbered Part II:  Validation 
+
+The goal of the remainder of this document is to list some validation
+results for the models of ns-3.  This extends beyond test code; for instance,
+results that compare simulation results with actual field experiments or
+with textbook results, or even with the results of other simulators,
+are welcome here.   If your validation results exist in another published
+report or web location, please add a reference here. 
