@@ -60,7 +60,6 @@ def build(bld):
         'rng-stream.cc',
         'command-line.cc',
         'type-name.cc',
-        'type-traits-test.cc',
         'attribute.cc',
         'boolean.cc',
         'integer.cc',
@@ -80,6 +79,7 @@ def build(bld):
         'vector.cc',
         'names-test-suite.cc',
         'attribute-test-suite.cc',
+        'type-traits-test-suite.cc',
         ]
 
     headers = bld.new_task_gen('ns3header')
