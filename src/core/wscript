@@ -46,7 +46,6 @@ int main ()
 def build(bld):
     core = bld.create_ns3_module('core')
     core.source = [
-        'callback-test.cc',
         'log.cc',
         'breakpoint.cc',
         'type-id.cc',
@@ -77,8 +76,9 @@ def build(bld):
         'callback.cc',
         'names.cc',
         'vector.cc',
-        'names-test-suite.cc',
         'attribute-test-suite.cc',
+        'callback-test-suite.cc',
+        'names-test-suite.cc',
         'type-traits-test-suite.cc',
         ]
 
