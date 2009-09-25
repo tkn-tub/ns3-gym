@@ -55,11 +55,11 @@ def configure(conf):
 
     conf.check_tool('misc')
 
-    if sys.platform == 'cygwin':
-        conf.report_optional_feature("python", "Python Bindings", False,
-                                     "unsupported platform 'cygwin'")
-        Logs.warn("Python is not supported in CygWin environment.  Try MingW instead.")
-        return
+#     if sys.platform == 'cygwin':
+#         conf.report_optional_feature("python", "Python Bindings", False,
+#                                      "unsupported platform 'cygwin'")
+#         Logs.warn("Python is not supported in CygWin environment.  Try MingW instead.")
+#         return
 
     ## Check for Python
     try:
@@ -340,31 +340,54 @@ class python_scan_task(Task.TaskBase):
     """
     after = 'gen_everything_h_task'
     before = 'cc cxx'
-    def __init__(self, curdirnode, env, bld):
+    color = "BLUE"
+    def __init__(self, curdirnode, env, bld, target, cflags):
         self.bld = bld
         super(python_scan_task, self).__init__(generator=self)
         self.curdirnode = curdirnode
         self.env = env
+        self.target = target
+        self.cflags = cflags
 
     def display(self):
-        return 'python-scan\n'
+        return 'python-scan-%s\n' % (self.target,)
 
     def run(self):
-        #print "Rescanning the python bindings..."
+        defsdir = os.path.join(self.curdirnode.abspath(), 'apidefs', self.target)
+        try:
+            os.mkdir(defsdir)
+        except OSError:
+            pass
         argv = [
             self.env['PYTHON'],
             os.path.join(self.curdirnode.abspath(), 'ns3modulescan.py'), # scanning script
             self.curdirnode.find_dir('../..').abspath(self.env), # include path (where the ns3 include dir is)
             self.curdirnode.find_or_declare('everything.h').abspath(self.env),
-            os.path.join(self.curdirnode.abspath(), 'ns3modulegen_generated.py'), # output file
+            os.path.join(defsdir, 'ns3modulegen_generated.py'), # output file
+            self.cflags,
             ]
         scan = subprocess.Popen(argv, stdin=subprocess.PIPE)
         scan.stdin.write(repr(get_modules_and_headers(self.bld)))
         scan.stdin.close()
         retval = scan.wait()
-        print "Scan finished with exit code", retval
-        if retval:
-            return retval
+        return retval
+
+class python_scan_task_collector(Task.TaskBase):
+    """Tasks that waits for the python-scan-* tasks to complete and then signals WAF to exit
+    """
+    after = 'python_scan_task'
+    before = 'cc cxx'
+    color = "BLUE"
+    def __init__(self, curdirnode, env, bld):
+        self.bld = bld
+        super(python_scan_task_collector, self).__init__(generator=self)
+        self.curdirnode = curdirnode
+        self.env = env
+
+    def display(self):
+        return 'python-scan-collector\n'
+
+    def run(self):
         # signal stop (we generated files into the source dir and WAF
         # can't cope with it, so we have to force the user to restart
         # WAF)
@@ -387,27 +410,53 @@ def build(bld):
     if Options.options.python_scan:
         if not env['ENABLE_PYTHON_SCANNING']:
             raise Utils.WafError("Cannot re-scan python bindings: (py)gccxml not available")
-        python_scan_task(bld.path, env, bld)
+        scan_targets = []
+        if sys.platform == 'cygwin':
+            scan_targets.append(('gcc-cygwin', ''))
+        else:
+            import struct
+            if struct.calcsize('I') == 4 and struct.calcsize('L') == 8 and struct.calcsize('P') == 8:
+                scan_targets.extend([('gcc-ILP32', '-m32'), ('gcc-LP64', '-m64')])
+            elif struct.calcsize('I') == 4 and struct.calcsize('L') == 4 and struct.calcsize('P') == 4:
+                scan_targets.append(('gcc-ILP32', ''))
+            else:
+                raise Utils.WafError("Cannot scan python bindings for unsupported data model")
+        for target, cflags in scan_targets:
+            python_scan_task(bld.path, env, bld, target, cflags)
+        python_scan_task_collector(bld.path, env, bld)
         return
 
-    ## Get a list of scanned modules; the set of scanned modules
-    ## may be smaller than the set of all modules, in case a new
-    ## ns3 module is being developed which wasn't scanned yet.
-    scanned_modules = []
-    for filename in os.listdir(curdir):
-        m = re.match(r"^ns3_module_(.+)\.py$", filename)
-        if m is None:
-            continue
-        name = m.group(1)
-        if name.endswith("__local"):
-            continue
-        scanned_modules.append(name)
-
     if env['ENABLE_PYTHON_BINDINGS']:
+        if sys.platform == 'cygwin':
+            apidefs = 'gcc-cygwin'
+        else:
+            import struct
+            if struct.calcsize('I') == 4 and struct.calcsize('L') == 8 and struct.calcsize('P') == 8:
+                apidefs = 'gcc-LP64'
+            elif struct.calcsize('I') == 4 and struct.calcsize('L') == 4 and struct.calcsize('P') == 4:
+                apidefs = 'gcc-ILP32'
+            else:
+                print "Cannot build python bindings for unsupported data model"
+                return
+        #print "Will build python bindings for target:", apidefs
+
+        ## Get a list of scanned modules; the set of scanned modules
+        ## may be smaller than the set of all modules, in case a new
+        ## ns3 module is being developed which wasn't scanned yet.
+        scanned_modules = []
+        for filename in os.listdir(os.path.join(curdir, 'apidefs', apidefs)):
+            m = re.match(r"^ns3_module_(.+)\.py$", filename)
+            if m is None:
+                continue
+            name = m.group(1)
+            if name.endswith("__local"):
+                continue
+            scanned_modules.append(name)
+
         debug = ('PYBINDGEN_DEBUG' in os.environ)
         source = [
             'ns3modulegen.py',
-            'ns3modulegen_generated.py',
+            'apidefs/%s/ns3modulegen_generated.py' % (apidefs,),
             'ns3modulegen_core_customizations.py',
             ]
         target = [
@@ -420,10 +469,11 @@ def build(bld):
         argv = ['NS3_ENABLED_FEATURES=${FEATURES}', '${PYTHON}']
         if debug:
             argv.extend(["-m", "pdb"])
-        argv.extend(['${SRC[0]}', '${TGT[0]}'])
+        argv.extend(['${SRC[0]}', '${TGT[0]}', os.path.join(curdir, 'apidefs', apidefs)])
+        
         argv.extend(get_modules_and_headers(bld).iterkeys())
         for module in scanned_modules:
-            source.append("ns3_module_%s.py" % module)
+            source.append("apidefs/%s/ns3_module_%s.py" % (apidefs, module))
             local = "ns3_module_%s__local.py" % module
             if os.path.exists(os.path.join(curdir, local)):
                 source.append(local)
