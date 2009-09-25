@@ -200,10 +200,6 @@ def build(bld):
                                  ['core', 'simulator', 'mobility', 'wifi'])
     obj.source = 'simple-wifi-frame-aggregation.cc'
 
-    obj = bld.create_ns3_program('multi-rate-first',
+    obj = bld.create_ns3_program('multirate',
                                  ['core', 'simulator', 'mobility', 'wifi'])
-    obj.source = 'multi-rate-first.cc'
-
-    obj = bld.create_ns3_program('multi-rate-second',
-                                 ['core', 'simulator', 'mobility', 'wifi'])
-    obj.source = 'multi-rate-second.cc'
+    obj.source = 'multirate.cc'
