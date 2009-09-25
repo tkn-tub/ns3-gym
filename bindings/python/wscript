@@ -55,11 +55,11 @@ def configure(conf):
 
     conf.check_tool('misc')
 
-#     if sys.platform == 'cygwin':
-#         conf.report_optional_feature("python", "Python Bindings", False,
-#                                      "unsupported platform 'cygwin'")
-#         Logs.warn("Python is not supported in CygWin environment.  Try MingW instead.")
-#         return
+    if sys.platform == 'cygwin':
+        conf.report_optional_feature("python", "Python Bindings", False,
+                                     "unsupported platform 'cygwin'")
+        Logs.warn("Python is not supported in CygWin environment.  Try MingW instead.")
+        return
 
     ## Check for Python
     try:
