@@ -284,7 +284,7 @@ def configure(conf):
 
     env['PLATFORM'] = sys.platform
 
-    if conf.env['CXX_NAME'] == 'gcc':
+    if conf.env['CXX_NAME'] in ['gcc', 'icc']:
         if sys.platform == 'win32':
             env.append_value("LINKFLAGS", "-Wl,--enable-runtime-pseudo-reloc")
         elif sys.platform == 'cygwin':
@@ -332,7 +332,7 @@ def configure(conf):
     env['ENABLE_STATIC_NS3'] = False
     if Options.options.enable_static:
         if env['PLATFORM'].startswith('linux') and \
-                env['CXX_NAME'] == 'gcc':
+                env['CXX_NAME'] in ['gcc', 'icc']:
             if re.match('i[3-6]86', os.uname()[4]):
                 conf.report_optional_feature("static", "Static build", True, '')
                 env['ENABLE_STATIC_NS3'] = True
@@ -532,7 +532,7 @@ def build(bld):
         lib = bld.new_task_gen('cxx', 'shlib')
         lib.name = 'ns3'
         lib.target = 'ns3'
-        if lib.env['CXX_NAME'] == 'gcc' and env['WL_SONAME_SUPPORTED']:
+        if lib.env['CXX_NAME'] in ['gcc', 'icc'] and env['WL_SONAME_SUPPORTED']:
             lib.env.append_value('LINKFLAGS', '-Wl,--soname=%s' % ccroot.get_target_name(lib))
         if sys.platform == 'cygwin':
             lib.features.append('implib') # workaround for WAF bug #472
