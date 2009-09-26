@@ -83,10 +83,9 @@ example_tests = [
     ("mesh", "True"),
     ("mixed-global-routing", "True"),
     ("mixed-wireless", "True"),
-#    ("multi-rate-first", "True"),
-    ("multi-rate-second", "True"),
+    ("multirate", "False"), # takes forever to run
     ("nix-simple", "True"),
-#    ("nms-p2p-nix", "True"),
+    ("nms-p2p-nix", "False"), # takes forever to run
     ("object-names", "True"),
     ("ping6", "True"),
     ("radvd", "True"),
@@ -108,7 +107,7 @@ example_tests = [
     ("third", "True"),
     ("udp-echo", "True"),
     ("virtual-net-device", "True"),
-#    ("wifi-adhoc", "True"),
+    ("wifi-adhoc", "False"), # takes forever to run
     ("wifi-ap", "True"),
     ("wifi-wired-bridging", "True"),
 ]
