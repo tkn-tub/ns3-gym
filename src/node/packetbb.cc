@@ -58,6 +58,16 @@ namespace ns3 {
 
 NS_OBJECT_ENSURE_REGISTERED (PbbPacket);
 
+PbbTlvBlock::PbbTlvBlock (void)
+{
+  return;
+}
+
+PbbTlvBlock::~PbbTlvBlock (void)
+{
+  Clear ();
+}
+
 PbbTlvBlock::Iterator
 PbbTlvBlock::Begin (void)
 {
@@ -151,6 +161,10 @@ PbbTlvBlock::Erase (PbbTlvBlock::Iterator first, PbbTlvBlock::Iterator last)
 void
 PbbTlvBlock::Clear (void)
 {
+  for (Iterator iter = Begin (); iter != End (); iter++)
+    {
+      *iter = 0;
+    }
   m_tlvList.clear ();
 }
 
@@ -262,6 +276,16 @@ PbbTlvBlock::operator!= (const PbbTlvBlock &other) const
 
 /* End PbbTlvBlock class */
 
+PbbAddressTlvBlock::PbbAddressTlvBlock (void)
+{
+  return;
+}
+
+PbbAddressTlvBlock::~PbbAddressTlvBlock (void)
+{
+  Clear ();
+}
+
 PbbAddressTlvBlock::Iterator
 PbbAddressTlvBlock::Begin (void)
 {
@@ -355,6 +379,10 @@ PbbAddressTlvBlock::Erase (PbbAddressTlvBlock::Iterator first, PbbAddressTlvBloc
 void
 PbbAddressTlvBlock::Clear (void)
 {
+  for (Iterator iter = Begin (); iter != End (); iter++)
+    {
+      *iter = 0;
+    }
   m_tlvList.clear ();
 }
 
@@ -472,6 +500,11 @@ PbbPacket::PbbPacket (void)
   m_refCount = 1;
   m_version = VERSION;
   m_hasseqnum = false;
+}
+
+PbbPacket::~PbbPacket (void)
+{
+  MessageClear ();
 }
 
 uint8_t
@@ -706,6 +739,10 @@ PbbPacket::Erase (PbbPacket::MessageIterator first,
 void
 PbbPacket::MessageClear (void)
 {
+  for (MessageIterator iter = MessageBegin (); iter != MessageEnd (); iter++)
+    {
+      *iter = 0;
+    }
   m_messageList.clear ();
 }
 
@@ -921,6 +958,7 @@ PbbMessage::PbbMessage ()
 
 PbbMessage::~PbbMessage ()
 {
+  AddressBlockClear ();
 }
 
 void
@@ -1122,7 +1160,7 @@ PbbMessage::TlvErase (PbbMessage::TlvIterator first, PbbMessage::TlvIterator las
 void
 PbbMessage::TlvClear (void)
 {
-  return m_tlvList.Clear();
+  m_tlvList.Clear();
 }
 
 /* Manipulating Address Block and Address TLV pairs */
@@ -1227,6 +1265,12 @@ PbbMessage::AddressBlockErase (PbbMessage::AddressBlockIterator first,
 void
 PbbMessage::AddressBlockClear (void)
 {
+  for (AddressBlockIterator iter = AddressBlockBegin ();
+      iter != AddressBlockEnd ();
+      iter++)
+    {
+      *iter = 0;
+    }
   return m_addressBlockList.clear();
 }
 
@@ -1956,7 +2000,7 @@ PbbAddressBlock::TlvErase (PbbAddressBlock::TlvIterator first,
 void
 PbbAddressBlock::TlvClear (void)
 {
-  return m_addressTlvList.Clear();
+  m_addressTlvList.Clear();
 }
 
 void
@@ -2412,6 +2456,11 @@ PbbTlv::PbbTlv (void)
   m_hasValue = false;
 }
 
+PbbTlv::~PbbTlv (void)
+{
+  m_value.RemoveAtEnd (m_value.GetSize ());
+}
+
 void
 PbbTlv::SetType (uint8_t type)
 {
@@ -2506,10 +2555,9 @@ PbbTlv::SetValue (Buffer start)
 void
 PbbTlv::SetValue (const uint8_t * buffer, uint32_t size)
 {
-  Buffer value;
-  value.AddAtStart (size);
-  value.Begin ().Write (buffer, size);
-  SetValue (value);
+  m_hasValue = true;
+  m_value.AddAtStart (size);
+  m_value.Begin ().Write (buffer, size);
 }
 
 Buffer
