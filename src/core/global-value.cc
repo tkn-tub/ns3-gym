@@ -21,6 +21,9 @@
 #include "fatal-error.h"
 #include "attribute.h"
 #include "string.h"
+#include "uinteger.h"
+#include "test.h"
+
 #include "ns3/core-config.h"
 #ifdef HAVE_STDLIB_H
 #include <stdlib.h>
@@ -205,54 +208,74 @@ GlobalValue::GetVector (void)
   return &vector;
 }
 
-} // namespace ns3
-
-#ifdef RUN_SELF_TESTS
-
-#include "test.h"
-#include "uinteger.h"
-
-namespace ns3 {
-
-class GlobalValueTests : public Test
+// ===========================================================================
+// Test for the ability to get at a GlobalValue.
+// ===========================================================================
+class GlobalValueTestCase : public TestCase
 {
 public:
-  GlobalValueTests ();
-  virtual bool RunTests (void);
+  GlobalValueTestCase ();
+  virtual ~GlobalValueTestCase () {}
+
 private:
+  virtual bool DoRun (void);
 };
 
-GlobalValueTests::GlobalValueTests ()
-  : Test ("GlobalValue")
-{}
-bool 
-GlobalValueTests::RunTests (void)
+GlobalValueTestCase::GlobalValueTestCase ()
+  : TestCase ("Check GlobalValue mechanism")
 {
-  bool result = true;
+}
+
+bool
+GlobalValueTestCase::DoRun (void)
+{
+  //
+  // Typically these are static globals but we can make one on the stack to 
+  // keep it hidden from the documentation.
+  //
   GlobalValue uint = GlobalValue ("TestUint", "help text",
 				  UintegerValue (10),
 				  MakeUintegerChecker<uint32_t> ());
 
+  //
+  // Make sure we can get at the value and that it was initialized correctly.
+  //
+  UintegerValue uv;
+  uint.GetValue (uv);
+  NS_TEST_ASSERT_MSG_EQ (uv.Get (), 10, "GlobalValue \"TestUint\" not initialized as expected");
 
-  UintegerValue v;
-  uint.GetValue (v);
-  NS_TEST_ASSERT_EQUAL (10, v.Get ());
-
+  //
+  // Remove the global value for a valgrind clean run
+  //
   GlobalValue::Vector *vector = GlobalValue::GetVector ();
   for (GlobalValue::Vector::iterator i = vector->begin (); i != vector->end (); ++i)
     {
       if ((*i) == &uint)
 	{
 	  vector->erase (i);
-	  break;
-	}
+          break;
+        }
     }
 
-  return result;
+  return GetErrorStatus ();
 }
 
-static GlobalValueTests g_initialValueTests;
+// ===========================================================================
+// The Test Suite that glues all of the Test Cases together.
+// ===========================================================================
+class GlobalValueTestSuite : public TestSuite
+{
+public:
+  GlobalValueTestSuite ();
+};
+
+GlobalValueTestSuite::GlobalValueTestSuite ()
+  : TestSuite ("global-value", BVT)
+{
+  AddTestCase (new GlobalValueTestCase);
+}
+
+GlobalValueTestSuite globalValueTestSuite;
 
 } // namespace ns3
 
-#endif /* RUN_SELF_TESTS */

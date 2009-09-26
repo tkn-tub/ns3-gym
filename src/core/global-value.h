@@ -139,7 +139,8 @@ public:
   
 
 private:
-  friend class GlobalValueTests;
+  friend class GlobalValueTestCase;
+
   static Vector *GetVector (void);
   void InitializeFromEnv (void);
   std::string m_name;
