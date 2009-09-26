@@ -385,7 +385,6 @@ MinstrelWifiRemoteStation::DoGetRtsMode (void)
 {
   NS_LOG_DEBUG ("DoGetRtsMode m_txrate=" << m_txrate);
 
-  UpdateStats ();
   return GetSupportedMode (0);
 }
 
