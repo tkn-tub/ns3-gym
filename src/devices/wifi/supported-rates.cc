@@ -136,7 +136,7 @@ std::ostream &operator << (std::ostream &os, const SupportedRates &rates)
         {
           os << "*";
         }
-      os << rate << "mbs";
+      os << rate / 1000000 << "mbs";
       if (i < rates.GetNRates () - 1)
         {
           os << " ";
