@@ -17,27 +17,36 @@
  */
 
 /**
- * Objective: Test multi-rate algorithms in varios scenarios and settings
+ * Scenarios: 100 nodes, multiple simultaneous flows, multi-hop ad hoc, routing,
+ * and mobility
  *
  * INSTRUCTIONS:
+ *
+ * To optimize build: 
+ * ./waf -d optimized configure
+ * ./waf
  *
  * To compile:
  * ./waf --run multirate
  *
- * To compile with command input:
+ * To compile with commandline(useful for varying parameters or configurations):
  * ./waf --run "scratch/multirate.cc --packetSize=2000 --totalTime=50"
  *
  * To turn on NS_LOG:
  * export NS_LOG=multirate=level_all
+ * (can only view log if built with ./waf -d debug configure)
  *
  * To debug:
- * /waf --shell
+ * ./waf --shell
  * gdb ./build/debug/scratch/multirate
  *
  * To view pcap files:
  * tcpdump -nn -tt -r filename.pcap
  *
- * Sidenote: Simulation might take sometime
+ * To monitor the files
+ * tail -f filename.pcap
+ *
+ * Sidenote: Simulation might take sometime 
  */
 
 #include "ns3/core-module.h"
@@ -58,37 +67,47 @@ using namespace ns3;
 
 class Experiment
 {
-
 public:
 
   Experiment ();
   Experiment (std::string name);
   Gnuplot2dDataset Run (const WifiHelper &wifi, const YansWifiPhyHelper &wifiPhy,
                         const NqosWifiMacHelper &wifiMac, const YansWifiChannelHelper &wifiChannel, const MobilityHelper &mobility);
-  bool CommandSetup (int argc, char **argv);
 
+  bool CommandSetup (int argc, char **argv);
+  bool IsRouting () { return (enableRouting == 1) ? 1:0; }
+  bool IsMobility () { return (enableMobility == 1) ? 1:0; }
+
+  uint32_t GetScenario () {return scenario; }
+
+  std::string GetRtsThreshold () { return rtsThreshold; }
+  std::string GetOutputFileName () { return outputFileName; }
+  std::string GetRateManager () { return rateManager; }
+  
 private:
 
   Vector GetPosition (Ptr<Node> node);
   Ptr<Socket> SetupPacketReceive (Ptr<Node> node);
+  NodeContainer GenerateNeighbors(NodeContainer c, uint32_t senderId);
 
   void ApplicationSetup (Ptr<Node> client, Ptr<Node> server, double start, double stop);
   void AssignNeighbors (NodeContainer c);
   void SelectSrcDest (NodeContainer c);
   void ReceivePacket (Ptr<Socket> socket);
   void CheckThroughput ();
-  void SendMultiDestinations(Ptr<Node> sender, NodeContainer c);
+  void SendMultiDestinations (Ptr<Node> sender, NodeContainer c);
 
   Gnuplot2dDataset m_output;
 
-  uint32_t m_bytesTotal;
+  double totalTime; 
+
+  uint32_t bytesTotal;
   uint32_t packetSize;
   uint32_t gridSize; 
   uint32_t nodeDistance;
   uint32_t port;
   uint32_t expMean;
-
-  double totalTime; 
+  uint32_t scenario;
 
   bool enablePcap;
   bool enableTracing;
@@ -97,6 +116,7 @@ private:
   bool enableMobility;
 
   NodeContainer containerA, containerB, containerC, containerD; 
+  std::string rtsThreshold, rateManager, outputFileName;
 };
 
 Experiment::Experiment ()
@@ -104,18 +124,22 @@ Experiment::Experiment ()
 
 Experiment::Experiment (std::string name) : 
   m_output (name),
-  m_bytesTotal(0),
+  totalTime (50), //use shorter time for faster simulation 
+  bytesTotal(0),
   packetSize (2000),
   gridSize (10), //10x10 grid  for a total of 100 nodes
-  nodeDistance (40),
+  nodeDistance (30),
   port (5000),
   expMean (4), //flows being exponentially distributed
-  totalTime (50),
-  enablePcap(false), // will flood the directory with *.pcap files
-  enableTracing(false),
-  enableFlowMon(true),
-  enableRouting(false),
-  enableMobility(false)
+  scenario (4), 
+  enablePcap (false), // will flood the directory with *.pcap files
+  enableTracing (true),
+  enableFlowMon (true),
+  enableRouting (false),
+  enableMobility (false),
+  rtsThreshold ("2200"), //0 for enabling rts/cts
+  rateManager ("ns3::MinstrelWifiManager"),
+  outputFileName ("minstrel")
 {
   m_output.SetStyle (Gnuplot2dDataset::LINES);
 }
@@ -138,15 +162,15 @@ Experiment::ReceivePacket (Ptr<Socket> socket)
   Ptr<Packet> packet;
   while (packet = socket->Recv ())
   {
-    m_bytesTotal += packet->GetSize();
+    bytesTotal += packet->GetSize();
   }
 }
 
 void
 Experiment::CheckThroughput()
 {
-  double mbs = ((m_bytesTotal * 8.0) /1000000);
-  m_bytesTotal = 0;
+  double mbs = ((bytesTotal * 8.0) /1000000);
+  bytesTotal = 0;
   m_output.Add ((Simulator::Now ()).GetSeconds (), mbs);
 
   Simulator::Schedule (Seconds (1.0), &Experiment::CheckThroughput, this);
@@ -200,6 +224,27 @@ Experiment::AssignNeighbors (NodeContainer c)
             }
 	}
     }
+}
+
+/**
+ * Generate 1-hop and 2-hop neighbors of a node in grid topology
+ *
+ */
+NodeContainer
+Experiment::GenerateNeighbors (NodeContainer c, uint32_t senderId)
+{
+  NodeContainer nc;
+  uint32_t limit = senderId + 2;  
+  for (uint32_t i= senderId - 2; i <= limit; i++)
+    {
+      //must ensure the boundaries for other topologies
+      nc.Add(c.Get(i));
+      nc.Add(c.Get(i + 10));
+      nc.Add(c.Get(i + 20));
+      nc.Add(c.Get(i - 10));
+      nc.Add(c.Get(i - 20));
+    }
+  return nc;
 }
 
 /**
@@ -297,8 +342,6 @@ Experiment::ApplicationSetup (Ptr<Node> client, Ptr<Node> server, double start, 
   apps.Start (Seconds (start));
   apps.Stop (Seconds (stop));
 
-
-
 /*
   // Select either Sink Method 1 or 2 for setting up sink
   // one using a helper vs one without
@@ -380,29 +423,24 @@ Experiment::Run (const WifiHelper &wifi, const YansWifiPhyHelper &wifiPhy,
   mobil.Install (c);
 
 
-
-  if (enableRouting)
-    {
-      SelectSrcDest(c);
-
-/*
-      //another setup
-      //All flows begin at the same time
-      for (uint32_t i = 0,j = 0; i < nodeSize - 1; i = i+2)
-        {
-          NS_LOG_DEBUG("Flow " << ++j);
-          ApplicationSetup (c.Get (i), c.Get (i+1),  1, totalTime);
-        }
-*/
-
 //    NS_LOG_INFO ("Enabling global routing on all nodes");
 //    Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
 
+  if ( scenario == 1 && enableRouting)
+    {
+      SelectSrcDest(c);
     }
-  else
+  else if ( scenario == 2)
+    {
+      //All flows begin at the same time
+      for (uint32_t i = 0; i < nodeSize - 1; i = i+2)
+        {
+          ApplicationSetup (c.Get (i), c.Get (i+1),  1, totalTime);
+        }
+    }
+  else if ( scenario == 3)
     {
       AssignNeighbors(c);
-
       //Note: these senders are hand-picked in order to ensure good coverage
       //for 10x10 grid, basically one sender for each quadrant
       //you might have to change these values for other grids 
@@ -418,19 +456,45 @@ Experiment::Run (const WifiHelper &wifi, const YansWifiPhyHelper &wifiPhy,
       NS_LOG_DEBUG(">>>>>>>>>region D<<<<<<<<<");
       SendMultiDestinations(c.Get(76), containerD);
     }
+  else if ( scenario == 4)
+    {
+      //GenerateNeighbors(NodeContainer, uint32_t sender)
+      //Note: these senders are hand-picked in order to ensure good coverage
+      //you might have to change these values for other grids 
+      NodeContainer c1, c2, c3, c4, c5, c6, c7, c8, c9;
 
+      c1 = GenerateNeighbors(c, 22);
+      c2 = GenerateNeighbors(c, 24);;
+      c3 = GenerateNeighbors(c, 26);;
+      c4 = GenerateNeighbors(c, 42);;
+      c5 = GenerateNeighbors(c, 44);;
+      c6 = GenerateNeighbors(c, 46);;
+      c7 = GenerateNeighbors(c, 62);;
+      c8 = GenerateNeighbors(c, 64);;
+      c9 = GenerateNeighbors(c, 66);;
+
+      SendMultiDestinations(c.Get(22), c1);
+      SendMultiDestinations(c.Get(24), c2);
+      SendMultiDestinations(c.Get(26), c3);
+      SendMultiDestinations(c.Get(42), c4);
+      SendMultiDestinations(c.Get(44), c5);
+      SendMultiDestinations(c.Get(46), c6);
+      SendMultiDestinations(c.Get(62), c7);
+      SendMultiDestinations(c.Get(64), c8);
+      SendMultiDestinations(c.Get(66), c9);
+    }
 
   CheckThroughput ();
 
   if (enablePcap)
     {
-      phy.EnablePcapAll("multirate");
+      phy.EnablePcapAll(GetOutputFileName());
     }
 
   if (enableTracing)
     {
       std::ofstream ascii;
-      ascii.open ("multirate.tr");
+      ascii.open ((GetOutputFileName() + ".tr").c_str());
       phy.EnableAsciiAll (ascii);
     }
 
@@ -447,7 +511,7 @@ Experiment::Run (const WifiHelper &wifi, const YansWifiPhyHelper &wifiPhy,
 
   if (enableFlowMon)
     {
-      flowmon->SerializeToXmlFile ("multirate.flowmon", false, false);
+      flowmon->SerializeToXmlFile ((GetOutputFileName() + ".flomon"), false, false);
     }
 
   Simulator::Destroy ();
@@ -462,6 +526,12 @@ Experiment::CommandSetup (int argc, char **argv)
   CommandLine cmd;
   cmd.AddValue ("packetSize", "packet size", packetSize);
   cmd.AddValue ("totalTime", "simulation time", totalTime);
+  cmd.AddValue ("rtsThreshold", "rts threshold", rtsThreshold);
+  cmd.AddValue ("rateManager", "type of rate", rateManager);
+  cmd.AddValue ("outputFileName", "output filename", outputFileName);
+  cmd.AddValue ("enableRouting", "enable Routing", enableRouting);
+  cmd.AddValue ("enableMobility", "enable Mobility", enableMobility);
+  cmd.AddValue ("scenario", "scenario ", scenario);
 
   cmd.Parse (argc, argv);
   return true;
@@ -469,17 +539,25 @@ Experiment::CommandSetup (int argc, char **argv)
 
 int main (int argc, char *argv[])
 {
-  std::ofstream outfile ("multirate.plt");
+
+  Experiment experiment;
+  experiment = Experiment ("multirate");
+
+  //for commandline input
+  if (!experiment.CommandSetup(argc, argv))
+    {
+      std::cout << "Configuration failed..." << std::endl;
+      exit(1);
+    }
 
   // disable fragmentation
+  // set value to 0 for enabling fragmentation
   Config::SetDefault ("ns3::WifiRemoteStationManager::FragmentationThreshold", StringValue ("2200"));
- 
-  //set value to 0 for enabling RTS/CTS
-  Config::SetDefault ("ns3::WifiRemoteStationManager::RtsCtsThreshold", StringValue ("2200"));
+  Config::SetDefault ("ns3::WifiRemoteStationManager::RtsCtsThreshold", StringValue (experiment.GetRtsThreshold()));
+
+  std::ofstream outfile ((experiment.GetOutputFileName()+ ".plt").c_str());
 
   MobilityHelper mobility;
-  Experiment experiment;
-
   Gnuplot gnuplot;
   Gnuplot2dDataset dataset;
 
@@ -489,34 +567,21 @@ int main (int argc, char *argv[])
   YansWifiChannelHelper wifiChannel = YansWifiChannelHelper::Default ();
   Ssid ssid = Ssid ("Testbed");
   
-
   wifiMac.SetType ("ns3::AdhocWifiMac", "Ssid", SsidValue(ssid));
   wifi.SetStandard (WIFI_PHY_STANDARD_holland);
+  wifi.SetRemoteStationManager (experiment.GetRateManager());
 
+  //printing out selection confirmation
+  std::cout << "Scenario: " << experiment.GetScenario () << std::endl;
+  std::cout << "Rts Threshold: " << experiment.GetRtsThreshold() << std::endl;
+  std::cout << "Name:  " << experiment.GetOutputFileName() << std::endl;
+  std::cout << "Rate:  " << experiment.GetRateManager() << std::endl;
+  std::cout << "Routing: " << experiment.IsRouting() << std::endl;
+  std::cout << "Mobility: " << experiment.IsMobility() << std::endl;
 
-
-  //To ensure repeatable experiment scenario
-  //for each multirate, please uncomment one at a time and obtain results 
-  experiment = Experiment ("minstrel");
-  //experiment = Experiment ("ideal");
-
-  //for commandline input
-  if (!experiment.CommandSetup(argc, argv))
-    {
-      std::cout << "exiting ..." << std::endl;
-      exit(1);
-    }
-
-  wifi.SetRemoteStationManager ("ns3::MinstrelWifiManager");
   dataset = experiment.Run (wifi, wifiPhy, wifiMac, wifiChannel, mobility);
-  gnuplot.AddDataset (dataset);
 
-  /*
-  wifi.SetRemoteStationManager ("ns3::IdealWifiManager");
-  dataset = experiment.Run (wifi, wifiPhy, wifiMac, wifiChannel, mobility);
   gnuplot.AddDataset (dataset);
-  */
-
   gnuplot.GenerateOutput (outfile);
 
   return 0;
