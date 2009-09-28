@@ -21,7 +21,6 @@ import os
 import sys
 import optparse
 import subprocess
-import multiprocessing
 import threading
 import Queue
 import signal
@@ -625,7 +624,11 @@ def run_tests():
     jobs = 0
     threads=[]
 
-    processors = multiprocessing.cpu_count()
+    try:
+        import multiprocessing
+        processors = multiprocessing.cpu_count()
+    except ImportError:
+        processors = 1
     for i in range(processors):
         thread = worker_thread(input_queue, output_queue)
         threads.append(thread)
