@@ -261,7 +261,7 @@ Experiment::SelectSrcDest (NodeContainer c)
 
   for (uint32_t i=0; i < totalNodes/3; i++)
     {
-      ApplicationSetup (c.Get(uvSrc.GetValue()), c.Get(uvDest.GetValue()) ,  1, totalTime);
+      ApplicationSetup (c.Get(uvSrc.RandomVariable::GetInteger()), c.Get(uvDest.RandomVariable::GetInteger()) ,  1, totalTime);
     }
 }
 
