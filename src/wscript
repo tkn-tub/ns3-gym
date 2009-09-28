@@ -42,6 +42,7 @@ all_modules = (
     'devices/mesh/flame',
     'applications/ping6',
     'applications/radvd',
+    'test',
     'test/ns3tcp',
     'test/ns3wifi',
     'contrib/flow-monitor',
