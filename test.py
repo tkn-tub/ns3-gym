@@ -21,7 +21,6 @@ import os
 import sys
 import optparse
 import subprocess
-import multiprocessing
 import threading
 import Queue
 import signal
@@ -616,16 +615,30 @@ def run_tests():
     # run them in parallel.  We're going to spin up a number of worker threads
     # that will run our test jobs for us.
     #
-    # XXX Need to figure out number of CPUs without the multiprocessing 
-    # dependency since multiprocessing is not standard `till Python 2.6
-    #
     input_queue = Queue.Queue(0)
     output_queue = Queue.Queue(0)
 
     jobs = 0
     threads=[]
 
-    processors = multiprocessing.cpu_count()
+    #
+    # In Python 2.6 you can just use multiprocessing module, but we don't want
+    # to introduce that dependency yet; so we jump through a few hoops.
+    #
+    processors = 1
+
+    if 'SC_NPROCESSORS_ONLN'in os.sysconf_names:
+        processors = os.sysconf('SC_NPROCESSORS_ONLN')
+    else:
+        proc = subprocess.Popen("sysctl -n hw.ncpu", shell = True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        stdout_results, stderr_results = proc.communicate()
+        if len(stderr_results) == 0:
+            processors = int(stdout_results)
+
+    #
+    # Now, spin up one thread per processor which will eventually mean one test
+    # per processor running concurrently.
+    #
     for i in range(processors):
         thread = worker_thread(input_queue, output_queue)
         threads.append(thread)
