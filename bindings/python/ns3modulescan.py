@@ -242,7 +242,7 @@ class MyPygenClassifier(PygenClassifier):
             return '__main__'
 
 
-def ns3_module_scan(top_builddir, pygen_file_name, everything_h):
+def ns3_module_scan(top_builddir, pygen_file_name, everything_h, cflags):
 
     ns3_modules = eval(sys.stdin.read())
 
@@ -275,7 +275,8 @@ def ns3_module_scan(top_builddir, pygen_file_name, everything_h):
          define_symbols={
             #'NS3_ASSERT_ENABLE': None,
             #'NS3_LOG_ENABLE': None,
-            }
+            },
+        cflags=('--gccxml-cxxflags %r' % (cflags,))
         )
 
     module_parser.parse_init([everything_h],
@@ -301,5 +302,5 @@ def ns3_module_scan(top_builddir, pygen_file_name, everything_h):
 
 
 if __name__ == '__main__':
-    ns3_module_scan(sys.argv[1], sys.argv[3], sys.argv[2])
+    ns3_module_scan(sys.argv[1], sys.argv[3], sys.argv[2], sys.argv[4])
 

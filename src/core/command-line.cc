@@ -22,8 +22,10 @@
 #include "config.h"
 #include "global-value.h"
 #include "type-id.h"
+#include "test.h"
 #include "string.h"
 #include <stdlib.h>
+#include <stdarg.h>
 
 NS_LOG_COMPONENT_DEFINE ("CommandLine");
 
@@ -277,30 +279,25 @@ CommandLine::AddValue (const std::string &name,
   m_items.push_back (item);
 }
 
-
-} // namespace ns3
-
-#ifdef RUN_SELF_TESTS
-
-#include "test.h"
-#include <stdarg.h>
-
-using namespace ns3;
-
-class CommandLineTest : public Test
+// ===========================================================================
+// A test base class that drives Command Line parsing
+// ===========================================================================
+class CommandLineTestCaseBase : public TestCase
 {
 public:
-  CommandLineTest ();
-  virtual bool RunTests (void);
-private:
+  CommandLineTestCaseBase (std::string description);
+  virtual ~CommandLineTestCaseBase () {}
+
   void Parse (const CommandLine &cmd, int n, ...);
 };
 
-CommandLineTest::CommandLineTest ()
-  : Test ("CommandLine")
-{}
+CommandLineTestCaseBase::CommandLineTestCaseBase (std::string description)
+  : TestCase (description)
+{
+}
+
 void
-CommandLineTest::Parse (const CommandLine &cmd, int n, ...)
+CommandLineTestCaseBase::Parse (const CommandLine &cmd, int n, ...)
 {
   char **args = new char* [n+1];
   args[0] = (char *) "Test";
@@ -317,41 +314,175 @@ CommandLineTest::Parse (const CommandLine &cmd, int n, ...)
   cmd.Parse (argc, args);
   delete [] args;
 }
-bool 
-CommandLineTest::RunTests (void)
+
+// ===========================================================================
+// Test boolean Command Line processing
+// ===========================================================================
+class CommandLineBooleanTestCase : public CommandLineTestCaseBase
 {
-  bool result = true;
+public:
+  CommandLineBooleanTestCase ();
+  virtual ~CommandLineBooleanTestCase () {}
 
-  bool myBool = false;
-  uint32_t myUint32 = 10;
-  std::string myStr = "MyStr";
-  int32_t myInt32 = -1;
-  CommandLine cmd;
+private:
+  virtual bool DoRun (void);
 
-  cmd.AddValue ("my-bool", "help", myBool);
-  Parse (cmd, 1, "--my-bool=0");
-  NS_TEST_ASSERT_EQUAL (myBool, false);
-  Parse (cmd, 1, "--my-bool=1");
-  NS_TEST_ASSERT_EQUAL (myBool, true);
+};
 
-  cmd.AddValue ("my-uint32", "help", myUint32);
-  Parse (cmd, 2, "--my-bool=0", "--my-uint32=9");
-  NS_TEST_ASSERT_EQUAL (myUint32, 9);
-
-  cmd.AddValue ("my-str", "help", myStr);
-  Parse (cmd, 2, "--my-bool=0", "--my-str=XX");
-  NS_TEST_ASSERT_EQUAL (myStr, "XX");
-
-  cmd.AddValue ("my-int32", "help", myInt32);
-  Parse (cmd, 2, "--my-bool=0", "--my-int32=-3");
-  NS_TEST_ASSERT_EQUAL (myInt32, -3);
-  Parse (cmd, 2, "--my-bool=0", "--my-int32=+2");
-  NS_TEST_ASSERT_EQUAL (myInt32, +2);
-
-  return result;
+CommandLineBooleanTestCase::CommandLineBooleanTestCase ()
+  : CommandLineTestCaseBase ("Check boolean arguments")
+{
 }
 
+bool
+CommandLineBooleanTestCase::DoRun (void)
+{
+  CommandLine cmd;
+  bool myBool = true;
 
-static CommandLineTest g_cmdLineTest;
+  cmd.AddValue ("my-bool", "help", myBool);
 
-#endif /* RUN_SELF_TESTS */
+  Parse (cmd, 1, "--my-bool=0");
+  NS_TEST_ASSERT_MSG_EQ (myBool, false, "Command parser did not correctly set a boolean value to false");
+
+  Parse (cmd, 1, "--my-bool=1");
+  NS_TEST_ASSERT_MSG_EQ (myBool, true, "Command parser did not correctly set a boolean value to true");
+
+  return GetErrorStatus ();
+}
+
+// ===========================================================================
+// Test int Command Line processing
+// ===========================================================================
+class CommandLineIntTestCase : public CommandLineTestCaseBase
+{
+public:
+  CommandLineIntTestCase ();
+  virtual ~CommandLineIntTestCase () {}
+
+private:
+  virtual bool DoRun (void);
+
+};
+
+CommandLineIntTestCase::CommandLineIntTestCase ()
+  : CommandLineTestCaseBase ("Check int arguments")
+{
+}
+
+bool
+CommandLineIntTestCase::DoRun (void)
+{
+  CommandLine cmd;
+  bool myBool = true;
+  int32_t myInt32 = 10;
+
+  cmd.AddValue ("my-bool", "help", myBool);
+  cmd.AddValue ("my-int32", "help", myInt32);
+
+  Parse (cmd, 2, "--my-bool=0", "--my-int32=-3");
+  NS_TEST_ASSERT_MSG_EQ (myBool, false, "Command parser did not correctly set a boolean value to false");
+  NS_TEST_ASSERT_MSG_EQ (myInt32, -3, "Command parser did not correctly set an integer value to -3");
+
+  Parse (cmd, 2, "--my-bool=1", "--my-int32=+2");
+  NS_TEST_ASSERT_MSG_EQ (myBool, true, "Command parser did not correctly set a boolean value to true");
+  NS_TEST_ASSERT_MSG_EQ (myInt32, +2, "Command parser did not correctly set an integer value to +2");
+
+  return GetErrorStatus ();
+}
+
+// ===========================================================================
+// Test unsigned int Command Line processing
+// ===========================================================================
+class CommandLineUnsignedIntTestCase : public CommandLineTestCaseBase
+{
+public:
+  CommandLineUnsignedIntTestCase ();
+  virtual ~CommandLineUnsignedIntTestCase () {}
+
+private:
+  virtual bool DoRun (void);
+
+};
+
+CommandLineUnsignedIntTestCase::CommandLineUnsignedIntTestCase ()
+  : CommandLineTestCaseBase ("Check unsigned int arguments")
+{
+}
+
+bool
+CommandLineUnsignedIntTestCase::DoRun (void)
+{
+  CommandLine cmd;
+  bool myBool = true;
+  uint32_t myUint32 = 10;
+
+  cmd.AddValue ("my-bool", "help", myBool);
+  cmd.AddValue ("my-uint32", "help", myUint32);
+
+  Parse (cmd, 2, "--my-bool=0", "--my-uint32=9");
+
+  NS_TEST_ASSERT_MSG_EQ (myBool, false, "Command parser did not correctly set a boolean value to true");
+  NS_TEST_ASSERT_MSG_EQ (myUint32, 9, "Command parser did not correctly set an unsigned integer value to 9");
+
+  return GetErrorStatus ();
+}
+
+// ===========================================================================
+// Test string Command Line processing
+// ===========================================================================
+class CommandLineStringTestCase : public CommandLineTestCaseBase
+{
+public:
+  CommandLineStringTestCase ();
+  virtual ~CommandLineStringTestCase () {}
+
+private:
+  virtual bool DoRun (void);
+
+};
+
+CommandLineStringTestCase::CommandLineStringTestCase ()
+  : CommandLineTestCaseBase ("Check unsigned int arguments")
+{
+}
+
+bool
+CommandLineStringTestCase::DoRun (void)
+{
+  CommandLine cmd;
+  uint32_t myUint32 = 10;
+  std::string myStr = "MyStr";
+
+  cmd.AddValue ("my-uint32", "help", myUint32);
+  cmd.AddValue ("my-str", "help", myStr);
+
+  Parse (cmd, 2, "--my-uint32=9", "--my-str=XX");
+
+  NS_TEST_ASSERT_MSG_EQ (myUint32, 9, "Command parser did not correctly set an unsigned integer value to 9");
+  NS_TEST_ASSERT_MSG_EQ (myStr, "XX", "Command parser did not correctly set an string value to \"XX\"");
+
+  return GetErrorStatus ();
+}
+
+// ===========================================================================
+// The Test Suite that glues all of the Test Cases together.
+// ===========================================================================
+class CommandLineTestSuite : public TestSuite
+{
+public:
+  CommandLineTestSuite ();
+};
+
+CommandLineTestSuite::CommandLineTestSuite ()
+  : TestSuite ("command-line", BVT)
+{
+  AddTestCase (new CommandLineBooleanTestCase);
+  AddTestCase (new CommandLineIntTestCase);
+  AddTestCase (new CommandLineUnsignedIntTestCase);
+  AddTestCase (new CommandLineStringTestCase);
+}
+
+CommandLineTestSuite CommandLineTestSuite;
+
+} // namespace ns3

@@ -18,10 +18,11 @@
  * Author: Sebastien Vincent <vincent@clarinet.u-strasbg.fr>
  */
 
-#include "ipv6-end-point.h"
 #include "ns3/packet.h"
 #include "ns3/log.h"
 #include "ns3/simulator.h"
+
+#include "ipv6-end-point.h"
 
 namespace ns3
 {

@@ -54,20 +54,23 @@ CHAPTERS = \
 %.png : %.dia; $(DIA) -t png $< -e $@
 %.pdf : %.eps; $(EPSTOPDF) $< -o=$@
 
-all:  $(IMAGES) manual.pdf manual.html manual/manual.html
+all:  $(IMAGES) version manual.pdf manual.html manual/manual.html
 
-manual.pdf: $(IMAGES) $(CHAPTERS)
+manual.pdf: version $(IMAGES) $(CHAPTERS)
 	$(TEXI2PDF) manual.texi
 
-manual.html: $(IMAGES) $(CHAPTERS)
+manual.html: version $(IMAGES) $(CHAPTERS)
 	$(TEXI2HTML) ${CSS} manual.texi
 
-manual/manual.html: $(IMAGES) $(CHAPTERS)
+manual/manual.html: version $(IMAGES) $(CHAPTERS)
 	$(TEXI2HTML) ${CSS} ${SPLIT} manual.texi
 
 figures-clean:
 	rm -rf $(IMAGES)
 
+version:
+	echo -n "ns-" > VERSION-PREFIX; cat VERSION-PREFIX ../../VERSION > VERSION; rm -rf VERSION-PREFIX
+
 clean: 	figures-clean
-	rm -rf manual.aux manual.cp manual.cps manual.fn manual.ky manual.pg 
-	rm -rf manual.tp manual.vr manual.toc manual.log manual.pdf manual.html manual/ 
+	rm -rf manual.aux manual.cp manual.cps manual.fn manual.ky manual.pg manual.tp
+	rm -rf manual.vr manual.toc manual.log manual.pdf manual.html manual/ VERSION 

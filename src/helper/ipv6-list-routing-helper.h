@@ -20,9 +20,11 @@
 #ifndef IPV6_LIST_ROUTING_HELPER_H
 #define IPV6_LIST_ROUTING_HELPER_H
 
-#include "ipv6-routing-helper.h"
 #include <stdint.h>
+
 #include <list>
+
+#include "ipv6-routing-helper.h"
 
 namespace ns3 {
 

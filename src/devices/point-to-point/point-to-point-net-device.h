@@ -275,12 +275,14 @@ private:
   /**
    * Calculate the value for the MTU that would result from 
    * setting the frame size to the given value.
+   * \param frameSize size of frame
    */
   uint32_t MtuFromFrameSize (uint32_t frameSize);
 
   /**
    * Calculate the value for the frame size that would be required
    * to be able to set the MTU to the given value.
+   * \param mtu MTU
    */
   uint32_t FrameSizeFromMtu (uint32_t mtu);
 
@@ -293,12 +295,16 @@ private:
   /**
    * Adds the necessary headers and trailers to a packet of data in order to
    * respect the protocol implemented by the agent.
+   * \param p packet
+   * \param protocolNumber protocol number
    */
   void AddHeader(Ptr<Packet> p, uint16_t protocolNumber);
 
   /**
    * Removes, from a packet of data, all headers and trailers that
    * relate to the protocol implemented by the agent
+   * \param p Packet whose headers need to be processed
+   * \param param An integer parameter that can be set by the function
    * \return Returns true if the packet should be forwarded up the
    * protocol stack.
    */
@@ -379,6 +385,24 @@ private:
    * Error model for receive packet events
    */
   Ptr<ErrorModel> m_receiveErrorModel;
+
+  /**
+   * The trace source for the packet transmission animation events that the 
+   * device can fire.
+   * Arguments to the callback are the packet, transmitting
+   * net device, receiving net device, transmittion time and 
+   * packet receipt time.
+   *
+   * @see class CallBackTraceSource
+   */
+  friend class PointToPointChannel; // Allow the channel to call the callback
+  TracedCallback<Ptr<const Packet>, // Packet being transmitted
+                 Ptr<NetDevice>,    // Transmitting NetDevice
+                 Ptr<NetDevice>,    // Receiving NetDevice
+                 Time,              // Amount of time to transmit the pkt
+                 Time               // Last bit receive time (relative to now)
+                 > m_txrxPointToPoint;
+
 
   /**
    * The trace source fired when packets come into the "top" of the device

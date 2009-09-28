@@ -26,6 +26,10 @@
 #include "ns3/packet.h"
 #include "ns3/ptr.h"
 #include "ns3/object-factory.h"
+#include "ns3/pcap-writer.h"
+#include "ns3/ascii-writer.h"
+#include "ns3/ipv4-l3-protocol.h"
+#include "ns3/ipv6-l3-protocol.h"
 
 namespace ns3 {
 
@@ -196,7 +200,14 @@ private:
     uint32_t interfaceId;
     Ptr<PcapWriter> writer;
   };
-  static void AsciiDropEvent (Ptr<AsciiWriter> writer, std::string path, Ptr<const Packet> packet);
+
+  static void AsciiDropEventIpv4 (Ptr<AsciiWriter> writer, std::string path,
+                                  Ipv4Header const &header, Ptr<const Packet> packet,
+                                  Ipv4L3Protocol::DropReason reason, uint32_t interface);
+  static void AsciiDropEventArp (Ptr<AsciiWriter> writer, std::string path, Ptr<const Packet> packet);
+  static void AsciiDropEventIpv6 (Ptr<AsciiWriter> writer, std::string path,
+                                  Ipv6Header const &header, Ptr<const Packet> packet,
+                                  Ipv6L3Protocol::DropReason reason, uint32_t interface);
   static std::string m_pcapBaseFilename;
   static uint32_t GetNodeIndex (std::string context);
   static std::vector<Trace> m_traces;

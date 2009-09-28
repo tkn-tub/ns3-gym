@@ -78,6 +78,7 @@ public:
    * Construct a data rate from an integer.  This class only supports positive
    * integer data rates in units of bits/s, meaning 1bit/s is the smallest 
    * non-trivial bitrate availiable.
+   * \param bps bit/s value
    */
   DataRate (uint64_t bps);
   DataRate (std::string rate);

@@ -77,6 +77,7 @@ public:
    */
   virtual uint32_t Deserialize (Buffer::Iterator start) = 0;
   /**
+   * \param os output stream
    * This method is used by Packet::Print to print the 
    * content of a trailer as ascii data to a c++ output stream.
    * Although the trailer is free to format its output as it

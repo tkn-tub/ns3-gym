@@ -22,6 +22,7 @@ public:
 
   /**
    * Concatenate the entries in the other container with ours.
+   * \param other container
    */
   void Add (Ipv4InterfaceContainer other);
 
@@ -31,6 +32,8 @@ public:
   uint32_t GetN (void) const;
 
   /**
+   * \param i interface index
+   * \param j interface address index (if interface has multiple addresses)
    * \returns the IPv4 address of the j'th address of the interface
    *  corresponding to index i.
    * 
@@ -46,7 +49,10 @@ public:
    * \param interface interface index of the Ipv4Interface to add to the container
    */
   void Add (Ptr<Ipv4> ipv4, uint32_t interface);
+  void Add (std::pair<Ptr<Ipv4>, uint32_t>);
   void Add (std::string ipv4Name, uint32_t interface);
+
+  std::pair<Ptr<Ipv4>, uint32_t> Get (uint32_t) const;
 
  private:
   

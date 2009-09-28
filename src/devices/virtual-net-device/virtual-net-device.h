@@ -93,6 +93,7 @@ public:
   /**
    * \brief Configure the reported MTU for the virtual device. The
    * default value is 65535.
+   * \param mtu MTU value to set
    * \return whether the MTU value was within legal bounds
    */
   bool SetMtu (const uint16_t mtu);

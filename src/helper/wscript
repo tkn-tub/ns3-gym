@@ -29,6 +29,9 @@ def build(bld):
         'ipv4-list-routing-helper.cc',
         'ipv4-routing-helper.cc',
         'aodv-helper.cc',
+        'mesh-helper.cc',
+        'dot11s-installer.cc',
+        'flame-installer.cc',
         'athstats-helper.cc',
         'ipv6-address-helper.cc',
         'ipv6-interface-container.cc',
@@ -36,6 +39,7 @@ def build(bld):
         'ipv6-list-routing-helper.cc',
         'ipv6-routing-helper.cc',
         'ping6-helper.cc',
+        'flow-monitor-helper.cc',
         ]
 
     headers = bld.new_task_gen('ns3header')
@@ -67,6 +71,10 @@ def build(bld):
         'ipv4-list-routing-helper.h',
         'ipv4-routing-helper.h',
         'aodv-helper.h',
+        'mesh-helper.h',
+        'mesh-stack-installer.h',
+        'dot11s-intaller.h',
+        'flame-installer.h',
         'athstats-helper.h',
         'ipv6-address-helper.h',
         'ipv6-interface-container.h',
@@ -74,6 +82,7 @@ def build(bld):
         'ipv6-list-routing-helper.h',
         'ipv6-routing-helper.h',
         'ping6-helper.h',
+        'flow-monitor-helper.h',
         ]
 
     env = bld.env_of_name('default')

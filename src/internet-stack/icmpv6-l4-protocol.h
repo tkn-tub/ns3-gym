@@ -24,14 +24,10 @@
 #define ICMPV6_L4_PROTOCOL_H
 
 #include <list>
+
 #include "ns3/ipv6-address.h"
-#include "ns3/ptr.h"
-#include "ns3/socket.h"
-#include "ns3/buffer.h"
 #include "icmpv6-header.h"
 #include "ipv6-l4-protocol.h"
-#include "ndisc-cache.h"
-#include "ipv6-l3-protocol.h"
 
 namespace ns3
 {
@@ -40,6 +36,7 @@ class NetDevice;
 class Node;
 class Packet;
 class TraceContext;
+class NdiscCache;
 
 /**
  * \class Icmpv6L4Protocol
@@ -387,6 +384,12 @@ class Icmpv6L4Protocol : public Ipv6L4Protocol
      */
     Ptr<NdiscCache> CreateCache (Ptr<NetDevice> device, Ptr<Ipv6Interface> interface);
 
+    /**
+     * \brief Is the node must do DAD.
+     * \return true if node has to do DAD.
+     */
+    bool IsAlwaysDad () const;
+
   protected:
     /**
      * \brief Dispose this object.
@@ -406,6 +409,11 @@ class Icmpv6L4Protocol : public Ipv6L4Protocol
      * \brief A list of cache by device.
      */
     CacheList m_cacheList;
+
+    /**
+     * \brief Always do DAD ?
+     */
+    bool m_alwaysDad;
 
     /**
      * \brief Receive Neighbor Solicitation method.

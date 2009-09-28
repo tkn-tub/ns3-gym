@@ -18,8 +18,9 @@
  * Author: Sebastien Vincent <vincent@clarinet.u-strasbg.fr>
  */
 
-#include "ipv6-routing-table-entry.h"
 #include "ns3/assert.h"
+
+#include "ipv6-routing-table-entry.h"
 
 namespace ns3
 {

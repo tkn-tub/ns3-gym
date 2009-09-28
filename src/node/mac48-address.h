@@ -78,6 +78,7 @@ public:
    */
   static Mac48Address ConvertFrom (const Address &address);
   /**
+   * \param address address to test
    * \returns true if the address matches, false otherwise.
    */
   static bool IsMatchingType (const Address &address);
@@ -102,12 +103,14 @@ public:
   static Mac48Address GetBroadcast (void);
 
   /**
+   * \param address base IPv4 address
    * \returns a multicast address
    */
   static Mac48Address GetMulticast (Ipv4Address address);
 
   /**
    * \brief Get multicast address from IPv6 address.
+   * \param address base IPv6 address
    * \returns a multicast address
    */
   static Mac48Address GetMulticast (Ipv6Address address);

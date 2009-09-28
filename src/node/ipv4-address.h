@@ -210,7 +210,7 @@ public:
    */
   Ipv4Mask ();
   /**
-   * param mask bitwise integer representation of the mask
+   * \param mask bitwise integer representation of the mask
    * 
    * For example, the integer input 0xffffff00 yields a 24-bit mask
    */

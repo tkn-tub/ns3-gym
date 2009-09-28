@@ -8,7 +8,7 @@ import Utils
 import Task
 
 # Required NSC version
-NSC_RELEASE_NAME = "nsc-0.5.0"
+NSC_RELEASE_NAME = "nsc-0.5.1"
 
 
 def set_options(opt):
@@ -124,12 +124,16 @@ def build(bld):
         # used by routing
         'ipv4-interface.h',
         'ipv4-l3-protocol.h',
+        'ipv6-l3-protocol.h',
         'arp-l3-protocol.h',
         'udp-l4-protocol.h',
         'tcp-l4-protocol.h',
         'icmpv4-l4-protocol.h',
         'ipv4-l4-protocol.h',
         'arp-cache.h',
+        'icmpv6-l4-protocol.h',
+        'ipv6-l4-protocol.h',
+        'ndisc-cache.h',
        ]
 
     if bld.env['NSC_ENABLED']:

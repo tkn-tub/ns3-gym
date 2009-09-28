@@ -58,6 +58,9 @@ private:
   virtual void DoNotifyCollision (void) {
     m_txop->NotifyCollision ();
   }
+  virtual void DoNotifyChannelSwitching (void) { 
+    m_txop->NotifyChannelSwitching ();
+  }
 
   DcaTxop *m_txop;
 };
@@ -444,6 +447,13 @@ DcaTxop::NotifyCollision (void)
   MY_DEBUG ("collision");
   m_dcf->StartBackoffNow (m_rng->GetNext (0, m_dcf->GetCw ()));
   RestartAccessIfNeeded ();
+}
+
+void 
+DcaTxop::NotifyChannelSwitching (void)
+{
+  m_queue->Flush();
+  m_currentPacket = 0;
 }
 
 void 

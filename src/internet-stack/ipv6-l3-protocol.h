@@ -24,7 +24,6 @@
 #include <list>
 
 #include "ns3/traced-callback.h"
-
 #include "ns3/net-device.h"
 #include "ns3/ipv6.h"
 #include "ns3/ipv6-address.h"
@@ -59,6 +58,18 @@ class Ipv6L3Protocol : public Ipv6
      * \brief The protocol number for IPv6 (0x86DD).
      */
     static const uint16_t PROT_NUMBER;
+
+    /**
+     * \enum DropReason
+     * \brief Reason why a packet has been dropped.
+     */
+    enum DropReason 
+      {
+        DROP_TTL_EXPIRED = 1, /**< Packet TTL has expired */
+        DROP_NO_ROUTE, /**< No route to host */
+        DROP_INTERFACE_DOWN, /**< Interface is down so can not send packet */
+        DROP_ROUTE_ERROR, /**< Route error */
+      };
     
     /**
      * \brief Constructor.
@@ -208,6 +219,7 @@ class Ipv6L3Protocol : public Ipv6
 
     /**
      * \brief Get number of address for an interface.
+     * \param interface interface index
      * \return number of address
      */
     uint32_t GetNAddresses (uint32_t interface) const;
@@ -344,7 +356,7 @@ class Ipv6L3Protocol : public Ipv6
     /**
      * \brief Callback to trace drop packets.
      */ 
-    TracedCallback<Ptr<const Packet> > m_dropTrace;
+    TracedCallback<const Ipv6Header &, Ptr<const Packet>, DropReason, uint32_t> m_dropTrace;
 
     /**
      * \brief Copy constructor.

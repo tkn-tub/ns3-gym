@@ -24,6 +24,7 @@ def build(bld):
         'drop-tail-queue.cc',
         'channel.cc',
         'node-list.cc',
+        'channel-list.cc',
         'socket.cc',
         'socket-factory.cc',
         'packet-socket-factory.cc',
@@ -45,6 +46,8 @@ def build(bld):
         'ipv6.cc',
         'ipv6-raw-socket-factory.cc',
         'ipv6-routing-protocol.cc',
+        'packetbb.cc',
+        'packetbb-test-suite.cc',
         ]
 
     headers = bld.new_task_gen('ns3header')
@@ -71,6 +74,7 @@ def build(bld):
         'ethernet-trailer.h',
         'channel.h',
         'node-list.h',
+        'channel-list.h',
         'socket.h',
         'socket-factory.h',
         'packet-socket-factory.h',
@@ -91,4 +95,5 @@ def build(bld):
         'ipv6.h',
         'ipv6-raw-socket-factory.h',
         'ipv6-routing-protocol.h',
+        'packetbb.h',
         ]

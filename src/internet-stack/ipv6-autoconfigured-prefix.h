@@ -21,14 +21,14 @@
 #ifndef IPV6_AUTOCONFIGURED_PREFIX_H
 #define IPV6_AUTOCONFIGURED_PREFIX_H
 
+#include <stdint.h>
+
 #include <list>
 #include <vector>
 #include <ostream>
 
 #include "ns3/timer.h"
 #include "ns3/ipv6-address.h"
-#include "ipv6-l3-protocol.h"
-#include "ipv6-interface.h"
 
 namespace ns3
 {
@@ -100,13 +100,13 @@ class Ipv6AutoconfiguredPrefix : public Object
     uint32_t GetValidLifeTime (void) const;
 
     /**
-     * \brief Set the prefix valid life time
+     * \brief Set the prefix valid life time.
      * \param v the prefix valid life time
      */
     void SetValidLifeTime (uint32_t v);
 
     /**
-     * \brief Test if the prefix is preferred
+     * \brief Test if the prefix is preferred.
      * \return true if prefix is in preferred state, false otherwise
      */
     bool IsPreferred () const;
@@ -118,74 +118,74 @@ class Ipv6AutoconfiguredPrefix : public Object
     bool IsValid () const;
 
     /**
-     * \brief Set the prefix as preferred
+     * \brief Set the prefix as preferred.
      */
     void SetPreferred ();
 
     /**
-     * \brief Set the prefix as valid
+     * \brief Set the prefix as valid.
      */
     void SetValid ();
 
     /**
-     * \brief Start the preferred timer
+     * \brief Start the preferred timer.
      */
     void StartPreferredTimer ();
 
     /**
-     * \brief Start the valid timer
+     * \brief Start the valid timer.
      */
     void StartValidTimer ();
 
     /**
-     * \brief Stop the preferred timer
+     * \brief Stop the preferred timer.
      */
     void StopPreferredTimer ();
 
     /**
-     * \brief Stop the valid timer
+     * \brief Stop the valid timer.
      */
     void StopValidTimer ();
 
     /**
-     * \brief Set the prefix as preferred
+     * \brief Set the prefix as preferred.
      */
     void MarkPreferredTime ();
 
     /**
-     * \brief Set the prefix as valid
+     * \brief Set the prefix as valid.
      */
     void MarkValidTime ();
 
     /**
-     * \brief Signal that the preferred time expired and start the valid timer
+     * \brief Signal that the preferred time expired and start the valid timer.
      */
     void FunctionPreferredTimeout ();
 
     /**
-     * \brief Signal that the valid time expired
+     * \brief Signal that the valid time expired.
      */
     void FunctionValidTimeout ();
 
     /**
-     * \brief Remove this prefix from the prefix list
+     * \brief Remove this prefix from the prefix list.
      */
     void RemoveMe ();
 
     /**
-     * \brief Get the prefix identificator
+     * \brief Get the prefix identifier.
      * \return id of the prefix.
      */
     uint32_t GetId () const;
 
     /**
-     * \brief Get the prefix address
+     * \brief Get the prefix address.
      * \return prefix address
      */
     Ipv6Address GetPrefix () const;
 
     /**
-     * \brief Set the prefix address
+     * \brief Set the prefix address.
      * \param prefix prefix address to set
      */
     void SetPrefix (Ipv6Address prefix);
@@ -229,7 +229,8 @@ class Ipv6AutoconfiguredPrefix : public Object
     Ipv6Prefix m_mask;
 
     /**
-     * \brief Default gateway router
+     * \brief Default gateway router.
+     *
      * If the RA received also configured the default gateway, 
      * this variable has the link-local address. Otherwise this
      * is "::"

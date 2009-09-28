@@ -87,6 +87,7 @@ public:
   void SetIpv4 (Ipv4Address address);
 
   /**
+   * \param address address to test
    * \returns true if the address matches, false otherwise.
    */
   static bool IsMatchingType (const Address &address);

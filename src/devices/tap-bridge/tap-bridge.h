@@ -113,7 +113,8 @@ public:
   TapBridge ();
   virtual ~TapBridge ();
 
-  /** \brief Get the bridged net device.
+  /**
+   * \brief Get the bridged net device.
    *
    * The bridged net device is the ns-3 device to which this bridge is connected,
    *
@@ -121,10 +122,13 @@ public:
    */
   Ptr<NetDevice> GetBridgedNetDevice (void);
 
-  /** \brief Set the ns-3 net device to bridge.
+  /**
+   * \brief Set the ns-3 net device to bridge.
    *
    * This method tells the bridge which ns-3 net device it should use to connect
-   * the simulation side of the bridge.  
+   * the simulation side of the bridge.
+   *
+   * \param bridgedDevice device to set
    *
    * \attention The ns-3 net device that is being set as the device must have an
    * an IP address assigned to it before the simulation is run.  This address 

@@ -17,6 +17,7 @@
  */
 
 #include <vector>
+
 #include "ns3/log.h"
 #include "ns3/ptr.h"
 #include "ns3/names.h"
@@ -27,6 +28,7 @@
 #include "ns3/assert.h"
 #include "ns3/ipv6-address.h"
 #include "ns3/ipv6-routing-protocol.h"
+
 #include "ipv6-static-routing-helper.h"
 
 NS_LOG_COMPONENT_DEFINE ("Ipv6StaticRoutingHelper");

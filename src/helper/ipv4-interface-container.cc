@@ -42,11 +42,22 @@ Ipv4InterfaceContainer::Add (Ptr<Ipv4> ipv4, uint32_t interface)
 {
   m_interfaces.push_back (std::make_pair (ipv4, interface));
 }
+void Ipv4InterfaceContainer::Add (std::pair<Ptr<Ipv4>, uint32_t> a)
+  {
+    Add (a.first, a.second);
+  }
 void 
 Ipv4InterfaceContainer::Add (std::string ipv4Name, uint32_t interface)
 {
   Ptr<Ipv4> ipv4 = Names::Find<Ipv4> (ipv4Name);
   m_interfaces.push_back (std::make_pair (ipv4, interface));
 }
+
+ std::pair<Ptr<Ipv4>, uint32_t>
+Ipv4InterfaceContainer::Get(uint32_t i) const
+ {
+   return m_interfaces[i];
+ }
+  
 
 } // namespace ns3

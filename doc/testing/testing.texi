@@ -1,0 +1,111 @@
+\input texinfo  @c -*-texinfo-*-
+@c %**start of header
+@setfilename ns-3-testing.info
+@settitle ns-3 testing and validation
+@c @setchapternewpage odd
+@c %**end of header
+
+@ifinfo
+Documentation for the @command{ns-3} project is available in
+Doxygen, several documents, and the wiki:
+@itemize @bullet
+@item @uref{http://www.nsnam.org/doxygen/index.html,,ns-3 Doxygen/Manual}:  Documentation of the public APIs of the simulator
+@item @uref{http://www.nsnam.org/tutorial/index.html,,ns-3 Tutorial}
+@item @uref{http://www.nsnam.org/doc//index.html,,ns-3 Tutorial}
+@item ns-3 Testing and Validation (this document)
+@item @uref{http://www.nsnam.org/wiki/index.php,, ns-3 wiki}
+@end itemize
+
+This document is written in GNU Texinfo and is to be maintained in
+revision control on the @command{ns-3} code server.  Both PDF and HTML versions
+should be available on the server.  Changes to 
+the document should be discussed on the ns-developers@@isi.edu mailing list.
+@end ifinfo
+
+@copying
+
+This is an @command{ns-3} reference manual.
+Primary documentation for the @command{ns-3} project is available in
+Doxygen, several documents, and the wiki:
+@itemize @bullet
+@item @uref{http://www.nsnam.org/doxygen/index.html,,ns-3 Doxygen}:  Documentation of the public APIs of the simulator
+@item @uref{http://www.nsnam.org/docs/tutorial/index.html,,ns-3 Tutorial}
+@item @uref{http://www.nsnam.org/docs/manual/index.html,,ns-3 Manual}
+@item ns-3 Testing and Validation (this document)
+@item @uref{http://www.nsnam.org/wiki/index.php,, ns-3 wiki}
+@end itemize
+ 
+This document is written in GNU Texinfo and is to be maintained in
+revision control on the @command{ns-3} code server.  Both PDF and HTML 
+versions should be available on the server.  Changes to 
+the document should be discussed on the ns-developers@@isi.edu mailing list.
+
+This software is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+This software is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see @uref{http://www.gnu.org/licenses/}.
+@end copying
+
+@titlepage
+@title ns-3 Testing and Validation
+@author ns-3 project
+@author feedback:  ns-developers@@isi.edu
+
+@b{Simulator version: }
+@include VERSION
+@today{}
+
+@c @page
+@vskip 0pt plus 1filll
+@insertcopying
+@end titlepage
+
+@c So the toc is printed at the start.
+@ifnottex
+@anchor{Full Table of Contents}
+@end ifnottex
+@shortcontents
+
+@ifnottex
+@node Top, Overview, Full Table of Contents 
+@top ns-3 Testing and Validation (html version)
+
+For a pdf version of this document, 
+see @uref{http://www.nsnam.org/docs/testing.pdf}.
+
+Simulator version:
+@include VERSION
+
+@insertcopying
+@end ifnottex
+
+@menu
+* Overview::
+* Background::
+* TestingFramework::
+* How to write tests::
+* Random Variables::
+* Propagation Loss Models::
+* References::
+@end menu
+
+@include overview.texi
+@include background.texi
+@include testing-framework.texi
+@include how-to-write-tests.texi
+@include validation.texi
+@include random-variables.texi
+@include propagation-loss.texi
+@include references.texi
+
+@printindex cp
+
+@bye

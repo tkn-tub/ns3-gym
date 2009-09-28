@@ -32,7 +32,7 @@ int main (int argc, char *argv[])
   mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
   mobility.Install (c);
 
-  Config::Connect ("/NodeList/*/$ns3::MobilityModelNotifier/CourseChange",
+  Config::Connect ("/NodeList/*/$ns3::MobilityModel/CourseChange",
                               MakeCallback (&CourseChange));
   
   Simulator::Stop (Seconds (100.0));

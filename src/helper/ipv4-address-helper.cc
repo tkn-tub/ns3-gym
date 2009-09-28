@@ -46,6 +46,15 @@ Ipv4AddressHelper::Ipv4AddressHelper ()
   m_max = 0xffffffff;
 }
 
+Ipv4AddressHelper::Ipv4AddressHelper (
+  const Ipv4Address network, 
+  const Ipv4Mask    mask,
+  const Ipv4Address address)
+{
+  NS_LOG_FUNCTION_NOARGS ();
+  SetBase (network, mask, address);
+}
+  
   void
 Ipv4AddressHelper::SetBase (
   const Ipv4Address network, 

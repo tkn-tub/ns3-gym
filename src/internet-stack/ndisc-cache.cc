@@ -25,6 +25,7 @@
 #include "ipv6-l3-protocol.h" 
 #include "icmpv6-l4-protocol.h"
 #include "ndisc-cache.h"
+#include "ipv6-interface.h"
 
 namespace ns3
 {

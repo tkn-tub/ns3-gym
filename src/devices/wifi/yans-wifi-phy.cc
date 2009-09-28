@@ -302,27 +302,53 @@ YansWifiPhy::SetChannel (Ptr<YansWifiChannel> channel)
 {
   m_channel = channel;
   m_channel->Add (this);
-  m_channelId = 1;      // always start on channel starting frequency (channel 1)
+  m_channelNumber = 1;      // always start on channel starting frequency (channel 1)
 }
 
 void 
 YansWifiPhy::SetChannelNumber (uint16_t nch)
 {
-  // TODO implement channel switching state machine here
-  DoSetChannelNumber (nch);
-}
+  NS_ASSERT(!IsStateSwitching()); 
+  switch (m_state->GetState ()) {
+  case YansWifiPhy::SYNC:
+    NS_LOG_DEBUG ("drop packet because of channel switching while reception");
+    m_endSyncEvent.Cancel();
+    goto switchChannel;
+    break;
+  case YansWifiPhy::TX:
+      NS_LOG_DEBUG ("channel switching postponed until end of current transmission");
+      Simulator::Schedule (GetDelayUntilIdle(), &YansWifiPhy::SetChannelNumber, this, nch);
+    break;
+  case YansWifiPhy::CCA_BUSY:
+  case YansWifiPhy::IDLE:
+    goto switchChannel;
+    break;
+  default:
+    NS_ASSERT (false);
+    break;
+  }
 
-void
-YansWifiPhy::DoSetChannelNumber (uint16_t nch)
-{
-  NS_LOG_DEBUG("switching channel " << m_channelId << " -> " << nch);
-  m_channelId = nch;
+  return;
+
+  switchChannel: 
+
+  NS_LOG_DEBUG("switching channel " << m_channelNumber << " -> " << nch);
+  m_state->SwitchToChannelSwitching(m_channelSwitchDelay); 
+  m_interference.EraseEvents(); 
+  /*
+   * Needed here to be able to correctly sensed the medium for the first
+   * time after the switching. The actual switching is not performed until
+   * after m_channelSwitchDelay. Packets received during the switching
+   * state are added to the event list and are employed later to figure
+   * out the state of the medium after the switching.
+   */
+  m_channelNumber = nch;
 }
 
 uint16_t 
 YansWifiPhy::GetChannelNumber() const
 {
-  return m_channelId;
+  return m_channelNumber;
 }
 
 double
@@ -361,6 +387,24 @@ YansWifiPhy::StartReceivePacket (Ptr<Packet> packet,
                               rxPowerW);
 
   switch (m_state->GetState ()) {
+  case YansWifiPhy::SWITCHING: 
+    NS_LOG_DEBUG ("drop packet because of channel switching");
+    NotifyRxDrop (packet);
+    /*
+     * Packets received on the upcoming channel are added to the event list
+     * during the switching state. This way the medium can be correctly sensed
+     * when the device listens to the channel for the first time after the
+     * switching e.g. after channel switching, the channel may be sensed as
+     * busy due to other devices' tramissions started before the end of
+     * the switching.
+     */
+    if (endRx > Simulator::Now () + m_state->GetDelayUntilIdle ()) 
+      {
+        // that packet will be noise _after_ the completion of the
+        // channel switching.
+        goto maybeCcaBusy;
+      }
+    break;
   case YansWifiPhy::SYNC:
     NS_LOG_DEBUG ("drop packet because already in Sync (power="<<
                   rxPowerW<<"W)");
@@ -431,7 +475,7 @@ YansWifiPhy::SendPacket (Ptr<const Packet> packet, WifiMode txMode, WifiPreamble
    *    prevent it.
    *  - we are idle
    */
-  NS_ASSERT (!m_state->IsStateTx ());
+  NS_ASSERT (!m_state->IsStateTx () && !m_state->IsStateSwitching ());
 
   Time txDuration = CalculateTxDuration (packet->GetSize (), txMode, preamble);
   if (m_state->IsStateSync ())
@@ -562,6 +606,11 @@ bool
 YansWifiPhy::IsStateTx (void)
 {
   return m_state->IsStateTx ();
+}
+bool 
+YansWifiPhy::IsStateSwitching (void)
+{
+  return m_state->IsStateSwitching ();
 }
 
 Time

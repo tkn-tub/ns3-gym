@@ -56,6 +56,7 @@ public:
   bool IsEmpty (void) const;
   /**
    * Place a packet into the rear of the Queue
+   * \param p packet to enqueue
    * \return True if the operation was successful; false otherwise
    */
   bool Enqueue (Ptr<Packet> p);

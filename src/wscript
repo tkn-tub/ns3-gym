@@ -27,6 +27,7 @@ all_modules = (
     'applications/onoff',
     'applications/packet-sink',
     'applications/udp-echo',
+    'routing/nix-vector-routing',
     'routing/olsr',
     'routing/global-routing',
     'routing/static-routing',
@@ -37,8 +38,16 @@ all_modules = (
     'helper',
     'contrib/stats',
     'applications/v4ping',
+    'devices/mesh',
+    'devices/mesh/dot11s',
+    'devices/mesh/flame',
     'applications/ping6',
     'applications/radvd',
+    'test',
+    'test/ns3tcp',
+    'test/ns3wifi',
+    'contrib/flow-monitor',
+    'contrib/net-anim',
     )
 
 def set_options(opt):
@@ -59,7 +68,6 @@ def configure(conf):
     conf.sub_config('core')
     conf.sub_config('simulator')
     conf.sub_config('devices/emu')
-    conf.sub_config('devices/wifi')
     conf.sub_config('devices/tap-bridge')
     conf.sub_config('contrib')
     conf.sub_config('internet-stack')
@@ -81,7 +89,7 @@ def create_ns3_module(bld, name, dependencies=()):
     module.module_deps = list(dependencies)
     if not module.env['ENABLE_STATIC_NS3']:
         module.env.append_value('CXXFLAGS', module.env['shlib_CXXFLAGS'])
-    elif module.env['CXX_NAME'] == 'gcc' and \
+    elif module.env['CXX_NAME'] in ['gcc', 'icc'] and \
             os.uname()[4] == 'x86_64' and \
             module.env['ENABLE_PYTHON_BINDINGS']:
         # enable that flag for static builds only on x86-64 platforms

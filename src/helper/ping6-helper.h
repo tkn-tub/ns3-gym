@@ -22,10 +22,12 @@
 #define PING6_HELPER_H
 
 #include <stdint.h>
-#include "application-container.h"
-#include "node-container.h"
+
 #include "ns3/object-factory.h"
 #include "ns3/ipv6-address.h"
+
+#include "application-container.h"
+#include "node-container.h"
 
 namespace ns3 {
 

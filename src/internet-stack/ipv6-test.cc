@@ -23,12 +23,14 @@
 #include "ns3/simulator.h"
 #include "ns3/test.h"
 #include "ns3/log.h"
+#include "ns3/boolean.h"
 #include "ns3/inet6-socket-address.h"
 #include "ns3/node.h"
 #include "ns3/csma-net-device.h"
 
-#include "icmpv6-l4-protocol.h"
 #include "ipv6-interface.h"
+#include "ipv6-l3-protocol.h"
+#include "icmpv6-l4-protocol.h"
 
 namespace ns3
 {
@@ -78,6 +80,7 @@ bool Ipv6L3ProtocolTest::RunTests ()
   uint32_t index = 0;
 
   /* init */
+  icmpv6->SetAttribute ("DAD", BooleanValue (false));
   node->AggregateObject (ipv6);
   node->AggregateObject (icmpv6);
   ipv6->Insert (icmpv6);

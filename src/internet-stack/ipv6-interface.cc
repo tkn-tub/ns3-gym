@@ -18,14 +18,16 @@
  * Author: Sebastien Vincent <vincent@clarinet.u-strasbg.fr>
  */
 
+#include "ns3/log.h"
+#include "ns3/node.h"
+#include "ns3/packet.h"
+
 #include "ipv6-interface.h"
 #include "ns3/net-device.h"
 #include "loopback-net-device.h"
-#include "ns3/log.h"
-#include "ns3/node.h"
-#include <ns3/packet.h>
-
+#include "ipv6-l3-protocol.h"
 #include "icmpv6-l4-protocol.h"
+#include "ndisc-cache.h"
 
 namespace ns3
 {
@@ -196,7 +198,7 @@ bool Ipv6Interface::AddAddress (Ipv6InterfaceAddress iface)
       /* DAD handling */
       Ptr<Icmpv6L4Protocol> icmpv6 = m_node->GetObject<Ipv6L3Protocol> ()->GetIcmpv6 ();
 
-      if (icmpv6)
+      if (icmpv6 && icmpv6->IsAlwaysDad ())
       {
         Simulator::Schedule (Seconds (0.), &Icmpv6L4Protocol::DoDAD, icmpv6, addr, this);
         Simulator::Schedule (Seconds (1.), &Icmpv6L4Protocol::FunctionDadTimeout, icmpv6, this, addr);

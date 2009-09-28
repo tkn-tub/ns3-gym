@@ -141,6 +141,11 @@ def set_options(opt):
                    help=('Run doxygen to generate html documentation from source comments'),
                    action="store_true", default=False,
                    dest='doxygen')
+    opt.add_option('--doxygen-no-build',
+                   help=('Run doxygen to generate html documentation from source comments, '
+                         'but do not wait for ns-3 to finish the full build.'),
+                   action="store_true", default=False,
+                   dest='doxygen_no_build')
 
     opt.add_option('--run',
                    help=('Run a locally built program; argument can be a program name,'
@@ -279,7 +284,7 @@ def configure(conf):
 
     env['PLATFORM'] = sys.platform
 
-    if conf.env['CXX_NAME'] == 'gcc':
+    if conf.env['CXX_NAME'] in ['gcc', 'icc']:
         if sys.platform == 'win32':
             env.append_value("LINKFLAGS", "-Wl,--enable-runtime-pseudo-reloc")
         elif sys.platform == 'cygwin':
@@ -327,7 +332,7 @@ def configure(conf):
     env['ENABLE_STATIC_NS3'] = False
     if Options.options.enable_static:
         if env['PLATFORM'].startswith('linux') and \
-                env['CXX_NAME'] == 'gcc':
+                env['CXX_NAME'] in ['gcc', 'icc']:
             if re.match('i[3-6]86', os.uname()[4]):
                 conf.report_optional_feature("static", "Static build", True, '')
                 env['ENABLE_STATIC_NS3'] = True
@@ -353,8 +358,15 @@ def configure(conf):
     else:
         conf.report_optional_feature("static", "Static build", False,
                                      "option --enable-static not selected")
+    have_gsl = conf.pkg_check_modules('GSL', 'gsl', mandatory=False)
+    conf.env['ENABLE_GSL'] = have_gsl
 
-
+    conf.report_optional_feature("GSL", "GNU Scientific Library (GSL)",
+                                 conf.env['ENABLE_GSL'],
+                                 "GSL not found")
+    if have_gsl:
+        conf.env.append_value('CXXDEFINES', "ENABLE_GSL")
+        conf.env.append_value('CCDEFINES', "ENABLE_GSL")
 
     # Write a summary of optional features status
     print "---- Summary of optional NS-3 features:"
@@ -520,7 +532,7 @@ def build(bld):
         lib = bld.new_task_gen('cxx', 'shlib')
         lib.name = 'ns3'
         lib.target = 'ns3'
-        if lib.env['CXX_NAME'] == 'gcc' and env['WL_SONAME_SUPPORTED']:
+        if lib.env['CXX_NAME'] in ['gcc', 'icc'] and env['WL_SONAME_SUPPORTED']:
             lib.env.append_value('LINKFLAGS', '-Wl,--soname=%s' % ccroot.get_target_name(lib))
         if sys.platform == 'cygwin':
             lib.features.append('implib') # workaround for WAF bug #472
@@ -555,9 +567,14 @@ def build(bld):
         regression.run_regression(bld, regression_traces)
 
     if Options.options.check:
-        Options.options.compile_targets += ',run-tests,ns3module'
+        Options.options.compile_targets += ',run-tests'
+        if env['ENABLE_PYTHON_BINDINGS']:
+            Options.options.compile_targets += ',ns3module,pybindgen-command'
         _run_check(bld)
 
+    if Options.options.doxygen_no_build:
+        doxygen()
+        raise SystemExit(0)
 
 def shutdown(ctx):
     bld = wutils.bld

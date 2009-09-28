@@ -1,0 +1,6 @@
+@node Random Variables
+@chapter Random Variables
+
+@cartouche
+@emph{Write me}
+@end cartouche

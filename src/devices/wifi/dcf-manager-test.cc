@@ -38,6 +38,7 @@ private:
   virtual void DoNotifyAccessGranted (void);
   virtual void DoNotifyInternalCollision (void);
   virtual void DoNotifyCollision (void);
+  virtual void DoNotifyChannelSwitching (void); 
 
   typedef std::pair<uint64_t,uint64_t> ExpectedGrant;
   typedef std::list<ExpectedGrant> ExpectedGrants;
@@ -65,6 +66,7 @@ public:
   void NotifyAccessGranted (uint32_t i);
   void NotifyInternalCollision (uint32_t i);
   void NotifyCollision (uint32_t i);
+  void NotifyChannelSwitching (uint32_t i); 
 
 
 private:
@@ -88,6 +90,9 @@ private:
   void AddAccessRequestWithSuccessfullAck (uint64_t at, uint64_t txTime, 
                                   uint64_t expectedGrantTime, uint32_t ackDelay, uint32_t from);
   void DoAccessRequest (uint64_t txTime, uint64_t expectedGrantTime, DcfStateTest *state);
+  void AddCcaBusyEvt (uint64_t at, uint64_t duration); 
+  void AddSwitchingEvt (uint64_t at, uint64_t duration); 
+  void AddRxStartEvt (uint64_t at, uint64_t duration); 
   
   typedef std::vector<DcfStateTest *> DcfStates;
 
@@ -122,7 +127,11 @@ DcfStateTest::DoNotifyCollision (void)
 {
   m_test->NotifyCollision (m_i);
 }
-
+void 
+DcfStateTest::DoNotifyChannelSwitching (void)
+{
+  m_test->NotifyChannelSwitching (m_i);
+}
 
 
 DcfManagerTest::DcfManagerTest ()
@@ -182,7 +191,22 @@ DcfManagerTest::NotifyCollision (uint32_t i)
       m_result = result;
     }
 }
-
+void 
+DcfManagerTest::NotifyChannelSwitching (uint32_t i)
+{
+  DcfStateTest *state = m_dcfStates[i];
+  bool result = true;
+  if (!state->m_expectedGrants.empty ())
+    {
+      std::pair<uint64_t, uint64_t> expected = state->m_expectedGrants.front ();
+      state->m_expectedGrants.pop_front ();
+      NS_TEST_ASSERT_EQUAL (Simulator::Now (), MicroSeconds (expected.second));
+    }
+  if (!result)
+    {
+      m_result = result;
+    }
+}
 
 void 
 DcfManagerTest::ExpectInternalCollision (uint64_t time, uint32_t nSlots, uint32_t from)
@@ -320,7 +344,27 @@ DcfManagerTest::DoAccessRequest (uint64_t txTime, uint64_t expectedGrantTime, Dc
   state->QueueTx (txTime, expectedGrantTime);
   m_dcfManager->RequestAccess (state);
 }
-
+void 
+DcfManagerTest::AddCcaBusyEvt (uint64_t at, uint64_t duration)
+{
+  Simulator::Schedule (MicroSeconds (at) - Now (), 
+                       &DcfManager::NotifyMaybeCcaBusyStartNow, m_dcfManager, 
+                       MicroSeconds (duration));
+}
+void
+DcfManagerTest::AddSwitchingEvt (uint64_t at, uint64_t duration)
+{
+  Simulator::Schedule (MicroSeconds (at) - Now (), 
+                       &DcfManager::NotifySwitchingStartNow, m_dcfManager, 
+                       MicroSeconds (duration));
+}
+void
+DcfManagerTest::AddRxStartEvt (uint64_t at, uint64_t duration)
+{
+  Simulator::Schedule (MicroSeconds (at) - Now (), 
+                       &DcfManager::NotifyRxStartNow, m_dcfManager, 
+                       MicroSeconds (duration));
+}
 
 
 
@@ -559,7 +603,95 @@ DcfManagerTest::RunTests (void)
   AddAccessRequest (30, 50, 108, 0);
   ExpectCollision (30, 3, 0); // backoff: 3 slots
   EndTest ();
- 
+
+
+  // Channel switching tests
+
+  //  0          20     23      24   25  
+  //  | switching | sifs | aifsn | tx |   
+  //                | 
+  //               21 access request. 
+  StartTest (1, 3, 10);
+  AddDcfState (1);
+  AddSwitchingEvt(0,20);
+  AddAccessRequest (21, 1, 24, 0);
+  EndTest ();
+
+  //  20          40       50     53      54   55
+  //   | switching |  busy  | sifs | aifsn | tx |   
+  //         |          |
+  //        30 busy.   45 access request.   
+  //
+  StartTest (1, 3, 10);
+  AddDcfState (1);
+  AddSwitchingEvt(20,20);
+  AddCcaBusyEvt(30,20);
+  AddAccessRequest (45, 1, 54, 0);
+  EndTest ();
+
+  //  20     30          50     53      54   55
+  //   |  rx  | switching | sifs | aifsn | tx |   
+  //                        |
+  //                       51 access request.   
+  //
+  StartTest (1, 3, 10);
+  AddDcfState (1);
+  AddRxStartEvt (20,40);
+  AddSwitchingEvt(30,20);
+  AddAccessRequest (51, 1, 54, 0);
+  EndTest ();
+
+  //  20     30          50     53      54   55
+  //   | busy | switching | sifs | aifsn | tx |   
+  //                        |
+  //                       51 access request.   
+  //
+  StartTest (1, 3, 10);
+  AddDcfState (1);
+  AddCcaBusyEvt (20,40);
+  AddSwitchingEvt(30,20);
+  AddAccessRequest (51, 1, 54, 0);
+  EndTest ();
+
+  //  20      30          50     53      54   55
+  //   |  nav  | switching | sifs | aifsn | tx |   
+  //                        |
+  //                       51 access request.   
+  //
+  StartTest (1, 3, 10);
+  AddDcfState (1);
+  AddNavStart (20,40);
+  AddSwitchingEvt(30,20);
+  AddAccessRequest (51, 1, 54, 0);
+  EndTest ();
+
+  //  20      40             50          55     58      59   60
+  //   |  tx   | ack timeout  | switching | sifs | aifsn | tx |   
+  //                  |                     |
+  //                 45 access request.    56 access request.   
+  //
+  StartTest (1, 3, 10);
+  AddDcfState (1);
+  AddAccessRequestWithAckTimeout (20, 20, 20, 0);
+  AddAccessRequest (45, 1, 50, 0);
+  AddSwitchingEvt(50,5);
+  AddAccessRequest (56, 1, 59, 0);
+  EndTest ();
+
+  //  20         60     66      70       74       78  80         100    106     110  112
+  //   |    rx    | sifs | aifsn | bslot0 | bslot1 |   | switching | sifs | aifsn | tx |   
+  //        |                                                        |
+  //       30 access request.                                      101 access request.   
+  //
+  StartTest (4, 6, 10);
+  AddDcfState (1);
+  AddRxOkEvt(20,40);
+  AddAccessRequest (30, 2, 80, 0); 
+  ExpectCollision(30, 4, 0); // backoff: 4 slots
+  AddSwitchingEvt(80,20);
+  AddAccessRequest (101, 2, 110, 0);
+  EndTest ();
+
 
   return m_result;
 }
