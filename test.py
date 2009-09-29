@@ -329,19 +329,22 @@ def read_waf_config():
 def make_library_path():
     global LIBRARY_PATH
 
-    LIBRARY_PATH = "LD_LIBRARY_PATH='"        
+    LIBRARY_PATH = "LD_LIBRARY_PATH=$LD_LIBRARY_PATH:'"        
 
     if sys.platform == "darwin":
         LIBRARY_PATH = "DYLD_LIBRARY_PATH='"
     elif sys.platform == "win32":
-        LIBRARY_PATH = "PATH='"
+        LIBRARY_PATH = "PATH=$PATH:'"
     elif sys.platform == "cygwin":
-        LIBRARY_PATH = "PATH='"
+        LIBRARY_PATH = "PATH=$PATH:'"
 
     for path in NS3_MODULE_PATH:
         LIBRARY_PATH = LIBRARY_PATH + path + ":"
 
     LIBRARY_PATH = LIBRARY_PATH + "'"
+
+    if options.verbose:
+        print "LIBRARY_PATH == %s" % LIBRARY_PATH
 
 def run_job_synchronously(shell_command, directory):
     cmd = "%s %s/%s/%s" % (LIBRARY_PATH, NS3_BUILDDIR, NS3_ACTIVE_VARIANT, shell_command)
