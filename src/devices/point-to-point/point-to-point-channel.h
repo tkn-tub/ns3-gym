@@ -24,6 +24,7 @@
 #include "ns3/ptr.h"
 #include "ns3/nstime.h"
 #include "ns3/data-rate.h"
+#include "ns3/traced-callback.h"
 
 namespace ns3 {
 
@@ -96,6 +97,22 @@ private:
 
   Time          m_delay;
   int32_t       m_nDevices;
+
+  /**
+   * The trace source for the packet transmission animation events that the 
+   * device can fire.
+   * Arguments to the callback are the packet, transmitting
+   * net device, receiving net device, transmittion time and 
+   * packet receipt time.
+   *
+   * @see class CallBackTraceSource
+   */
+  TracedCallback<Ptr<const Packet>, // Packet being transmitted
+                 Ptr<NetDevice>,    // Transmitting NetDevice
+                 Ptr<NetDevice>,    // Receiving NetDevice
+                 Time,              // Amount of time to transmit the pkt
+                 Time               // Last bit receive time (relative to now)
+                 > m_txrxPointToPoint;
 
   enum WireState
     {
