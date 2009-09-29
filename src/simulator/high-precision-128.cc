@@ -260,46 +260,31 @@ HighPrecision::SlowCompare (HighPrecision const &o) const
     }
 }
 
-}; // namespace ns3
+} // namespace ns3
 
-
-#ifdef RUN_SELF_TESTS
 #include "ns3/test.h"
 
-namespace ns3 {
-
-class HighPrecision128Tests : public Test
-{
-public:
-  HighPrecision128Tests ();
-  virtual ~HighPrecision128Tests ();
-  virtual bool RunTests (void);
-};
-
-HighPrecision128Tests::HighPrecision128Tests ()
-  : Test ("Int128")
-{}
-HighPrecision128Tests::~HighPrecision128Tests ()
-{}
-
-#define CHECK_EXPECTED(v,expected)                                      \
-  {                                                                     \
-    if (v.GetInteger () != expected)                                    \
-      {                                                                 \
-        Failure () << "file="<<__FILE__<<", line="<<__LINE__<<          \
-          ", expected: "<<expected<<", got: "<< v.GetInteger ()<<std::endl; \
-        result = false;                                                 \
-      }                                                                 \
-  }
+#define CHECK_EXPECTED(a,b) \
+  NS_TEST_ASSERT_MSG_EQ(a.GetInteger(),b,"Arithmetic failure: " << (a.GetInteger()) << "!=" << (b))
 
 #define V(v) \
   HighPrecision (v, false)
 
-bool
-HighPrecision128Tests::RunTests (void)
-{
-  bool result = true;
+namespace ns3 {
 
+class Hp128ArithmeticTestCase : public TestCase
+{
+public:
+  Hp128ArithmeticTestCase ();
+  virtual bool DoRun (void);
+};
+
+Hp128ArithmeticTestCase::Hp128ArithmeticTestCase ()
+  : TestCase ("Check basic arithmetic operations")
+{}
+bool 
+Hp128ArithmeticTestCase::DoRun (void)
+{
   HighPrecision a, b;
   a = HighPrecision (1, false);
   b = HighPrecision (1, false);
@@ -406,34 +391,53 @@ HighPrecision128Tests::RunTests (void)
   a.Div (V(3));
   a.Mul (V(3));
   CHECK_EXPECTED (a, 1999999999);
-  
-  // Bug 455
-  a = HighPrecision (0.1);
-  a.Div (HighPrecision (1.25));
-  NS_TEST_ASSERT_EQUAL (a.GetDouble (), 0.08);
-  //test the multiplication
-  a = HighPrecision (0.5);
-  a.Mul(HighPrecision (5));
-  NS_TEST_ASSERT_EQUAL (a.GetDouble (), 2.5);
-  //test the sign of multiplication, first operand negative
-  a = HighPrecision (-0.5);
-  a.Mul(HighPrecision (5));
-  NS_TEST_ASSERT_EQUAL (a.GetDouble (), -2.5);
-  //two negative
-  a = HighPrecision (-0.5);
-  a.Mul(HighPrecision (-5));
-  NS_TEST_ASSERT_EQUAL (a.GetDouble (), 2.5);
-  //second operand negative
-  a = HighPrecision (0.5);
-  a.Mul(HighPrecision (-5));
-  NS_TEST_ASSERT_EQUAL (a.GetDouble (), -2.5);
 
-
-  return result;
+  return false;
 }
 
-static HighPrecision128Tests g_int128Tests;
+class Hp128Bug455TestCase : public TestCase
+{
+public:
+  Hp128Bug455TestCase();
+  virtual bool DoRun (void);
+};
+
+Hp128Bug455TestCase::Hp128Bug455TestCase()
+  : TestCase("Test case for bug 455")
+{}
+bool 
+Hp128Bug455TestCase::DoRun (void)
+{
+  HighPrecision a = HighPrecision (0.1);
+  a.Div (HighPrecision (1.25));
+  NS_TEST_ASSERT_MSG_EQ (a.GetDouble (), 0.08, "The original testcase");
+  a = HighPrecision (0.5);
+  a.Mul(HighPrecision (5));
+  NS_TEST_ASSERT_MSG_EQ (a.GetDouble (), 2.5, "Simple test for multiplication");
+  a = HighPrecision (-0.5);
+  a.Mul(HighPrecision (5));
+  NS_TEST_ASSERT_MSG_EQ (a.GetDouble (), -2.5, "Test sign, first operation negative");
+  a = HighPrecision (-0.5);
+  a.Mul(HighPrecision (-5));
+  NS_TEST_ASSERT_MSG_EQ (a.GetDouble (), 2.5, "both operands negative");
+  a = HighPrecision (0.5);
+  a.Mul(HighPrecision (-5));
+  NS_TEST_ASSERT_MSG_EQ (a.GetDouble (), -2.5, "only second operand negative");
+
+  return false;
+}
+
+
+
+static class HighPrecision128TestSuite : public TestSuite
+{
+public:
+  HighPrecision128TestSuite()
+    : TestSuite ("high-precision-128", UNIT)
+  {
+    AddTestCase (new Hp128ArithmeticTestCase());
+    AddTestCase (new Hp128Bug455TestCase());
+  }
+} g_highPrecision128TestSuite;
 
 } // namespace ns3
-
-#endif /* RUN_SELF_TESTS */
