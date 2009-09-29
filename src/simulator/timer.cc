@@ -344,6 +344,7 @@ public:
     : TestSuite ("timer", UNIT)
   {
     AddTestCase (new TimerStateTestCase ());
+    AddTestCase (new TimerTemplateTestCase ());
   }
 } g_timerTestSuite;
 
