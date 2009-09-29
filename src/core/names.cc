@@ -130,6 +130,7 @@ NamesPriv::~NamesPriv ()
 {
   NS_LOG_FUNCTION_NOARGS ();
   Clear ();
+  m_root.m_name = "";
 }
 
 void
@@ -148,7 +149,7 @@ NamesPriv::Clear (void)
   m_objectMap.clear ();
 
   m_root.m_parent = 0;
-  m_root.m_name = "";
+  m_root.m_name = "Names";
   m_root.m_object = 0;
   m_root.m_nameMap.clear ();
 }
