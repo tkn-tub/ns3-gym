@@ -654,6 +654,7 @@ def run_tests():
     # Dispatching will run with unlimited speed and the worker threads will 
     # execute as fast as possible from the queue.
     #
+    total_tests = 0
     for test in suite_list:
         if len(test):
             job = Job()
@@ -669,6 +670,7 @@ def run_tests():
 
             input_queue.put(job)
             jobs = jobs + 1
+            total_tests = total_tests + 1
     
     #
     # We've taken care of the discovered or specified test suites.  Now we
@@ -728,6 +730,8 @@ def run_tests():
 
                     input_queue.put(job)
                     jobs = jobs + 1
+                    total_tests = total_tests + 1
+
     elif len(options.example):
         #
         # If you tell me to run an example, I will try and run the example
@@ -746,6 +750,7 @@ def run_tests():
 
         input_queue.put(job)
         jobs = jobs + 1
+        total_tests = total_tests + 1
 
     #
     # Tell the worker threads to pack up and go home for the day.  Each one
@@ -766,6 +771,9 @@ def run_tests():
     # ignore them.  If there are real results, we always print PASS or FAIL to
     # standard out as a quick indication of what happened.
     #
+    passed_tests = 0
+    failed_tests = 0
+    crashed_tests = 0
     for i in range(jobs):
         job = output_queue.get()
         if job.is_break:
@@ -778,8 +786,13 @@ def run_tests():
 
         if job.returncode == 0:
             status = "PASS"
-        else:
+            passed_tests = passed_tests + 1
+        elif job.returncode == 1:
+            failed_tests = failed_tests + 1
             status = "FAIL"
+        else:
+            crashed_tests = crashed_tests + 1
+            status = "CRASH"
 
         print "%s: %s %s" % (status, kind, job.display_name)
 
@@ -860,6 +873,11 @@ def run_tests():
     f.write('</TestResults>\n')
     f.close()
 
+    #
+    # Print a quick summary of events
+    #
+    print "%d of %d tests passed (%d passed, %d failed, %d crashed)" % (passed_tests, total_tests, passed_tests, 
+                                                                        failed_tests, crashed_tests)
     #
     # The last things to do are to translate the XML results file to "human
     # readable form" if the user asked for it (or make an XML file somewhere)
