@@ -446,7 +446,6 @@ OldTimeTestCase::DoRun (void)
 
   ASSERT_EQ((t1 / t2).GetDouble (), t1.GetSeconds()/t2.GetSeconds());
 
-  // XXX
   return false;
 }
 
@@ -501,7 +500,6 @@ OperationsTimeTestCase::DoRun(void)
 
   ASSERT_EQ((t0 * t1 / ((t0-t1) * t0)).GetDouble (),
             (t0.GetSeconds () * t1.GetSeconds () / ((t0.GetSeconds () - t1.GetSeconds()) * t0.GetSeconds ())));
-  // XXX
   return false;
 }
 
@@ -526,7 +524,6 @@ TimeStepTestCase::DoRun (void)
   NS_TEST_ASSERT_MSG_EQ (tooBig.IsPositive (), true, "Is not negative ?");
   tooBig += TimeStep (1);
   NS_TEST_ASSERT_MSG_EQ (tooBig.IsNegative (), true, "Is not negative ?");
-  // XXX
   return false;
 }
 
@@ -553,7 +550,6 @@ GlobalPrecisionTestCase::DoRun (void)
   CHECK_PRECISION(NS);
   CHECK_PRECISION(PS);
   CHECK_PRECISION(FS);
-  // XXX
   return false;
 }
 
