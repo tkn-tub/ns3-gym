@@ -82,9 +82,6 @@ PointToPointNetDevice::GetTypeId (void)
     // Trace sources at the "top" of the net device, where packets transition
     // to/from higher layers.
     //
-    .AddTraceSource ("TxRxPointToPoint", 
-                     "Trace source indicating transmission of packet from the PointToPointChannel, used by the Animation interface.",
-                     MakeTraceSourceAccessor (&PointToPointNetDevice::m_txrxPointToPoint))
     .AddTraceSource ("MacTx", 
                      "Trace source indicating a packet has arrived for transmission by this device",
                      MakeTraceSourceAccessor (&PointToPointNetDevice::m_macTxTrace))

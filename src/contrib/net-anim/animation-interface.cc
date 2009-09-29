@@ -141,7 +141,7 @@ void AnimationInterface::StartAnimation ()
     }
   
   // Connect the callback for packet tx events
-  Config::Connect ("/NodeList/*/DeviceList/*/TxRxPointToPoint",
+  Config::Connect ("/ChannelList/*/TxRxPointToPoint",
                    MakeCallback (&AnimationInterface::DevTxTrace, this));
 }
 
