@@ -333,7 +333,6 @@ Ipv6ListRouting::Compare (const Ipv6RoutingProtocolEntry& a, const Ipv6RoutingPr
 
 } // namespace ns3
 
-#ifdef RUN_SELF_TESTS
 
 #include "ns3/test.h"
 #include "ipv6-list-routing.h"
@@ -351,7 +350,8 @@ public:
   void NotifyInterfaceDown (uint32_t interface) {}
   void NotifyAddAddress (uint32_t interface, Ipv6InterfaceAddress address) {}
   void NotifyRemoveAddress (uint32_t interface, Ipv6InterfaceAddress address) {}
-  void NotifyAddRoute (Ipv6Address dst, Ipv6Prefix mask, Ipv6Address nextHop, uint32_t interface, Ipv6Address prefixToUse = Ipv6Address::GetZero ()) {}
+  void NotifyAddRoute (Ipv6Address dst, Ipv6Prefix mask, Ipv6Address nextHop, uint32_t interface, Ipv6Address prefixToUse = Ipv6Address::
+                          GetZero ()) {}
   void NotifyRemoveRoute (Ipv6Address dst, Ipv6Prefix mask, Ipv6Address nextHop, uint32_t interface, Ipv6Address prefixToUse) {}
   void SetIpv6 (Ptr<Ipv6> ipv6) {}
 };
@@ -366,24 +366,55 @@ public:
   void NotifyInterfaceDown (uint32_t interface) {}
   void NotifyAddAddress (uint32_t interface, Ipv6InterfaceAddress address) {}
   void NotifyRemoveAddress (uint32_t interface, Ipv6InterfaceAddress address) {}
-  void NotifyAddRoute (Ipv6Address dst, Ipv6Prefix mask, Ipv6Address nextHop, uint32_t interface, Ipv6Address prefixToUse = Ipv6Address::GetZero ()) {}
+  void NotifyAddRoute (Ipv6Address dst, Ipv6Prefix mask, Ipv6Address nextHop, uint32_t interface, Ipv6Address prefixToUse = Ipv6Address::
+                          GetZero ()) {}
   void NotifyRemoveRoute (Ipv6Address dst, Ipv6Prefix mask, Ipv6Address nextHop, uint32_t interface, Ipv6Address prefixToUse) {}
   void SetIpv6 (Ptr<Ipv6> ipv6) {}
 };
 
-class Ipv6ListRoutingTest: public Test {
+class Ipv6ListRoutingNegativeTestCase : public TestCase
+{
 public:
-  virtual bool RunTests (void);
-  Ipv6ListRoutingTest ();
+  Ipv6ListRoutingNegativeTestCase();
+  virtual bool DoRun (void);
 };
 
-Ipv6ListRoutingTest::Ipv6ListRoutingTest ()
-  : Test ("Ipv6ListRouting") {}
-
-bool
-Ipv6ListRoutingTest::RunTests (void)
+Ipv6ListRoutingNegativeTestCase::Ipv6ListRoutingNegativeTestCase()
+  : TestCase("Check negative priorities")
+{}
+bool 
+Ipv6ListRoutingNegativeTestCase::DoRun (void)
 {
-  bool result = true;
+  Ptr<Ipv6ListRouting> lr = CreateObject<Ipv6ListRouting> ();
+  Ptr<Ipv6RoutingProtocol> aRouting = CreateObject<Ipv6ARouting> ();
+  Ptr<Ipv6RoutingProtocol> bRouting = CreateObject<Ipv6BRouting> ();
+  // The Ipv6BRouting should be added with higher priority (larger integer value)
+  lr->AddRoutingProtocol (aRouting, -10);
+  lr->AddRoutingProtocol (bRouting, -5);
+  int16_t first = 3;
+  uint32_t num = lr->GetNRoutingProtocols ();
+  NS_TEST_ASSERT_MSG_EQ (num, 2, "XXX");
+  Ptr<Ipv6RoutingProtocol> firstRp = lr->GetRoutingProtocol (0, first);
+  NS_TEST_ASSERT_MSG_EQ (-5, first, "XXX");
+  NS_TEST_ASSERT_MSG_EQ (firstRp, bRouting, "XXX");
+
+  // XXX
+  return false;
+}
+
+class Ipv6ListRoutingPositiveTestCase : public TestCase
+{
+public:
+  Ipv6ListRoutingPositiveTestCase();
+  virtual bool DoRun (void);
+};
+
+Ipv6ListRoutingPositiveTestCase::Ipv6ListRoutingPositiveTestCase()
+  : TestCase("Check positive priorities")
+{}
+bool 
+Ipv6ListRoutingPositiveTestCase::DoRun (void)
+{
   Ptr<Ipv6ListRouting> lr = CreateObject<Ipv6ListRouting> ();
   Ptr<Ipv6RoutingProtocol> aRouting = CreateObject<Ipv6ARouting> ();
   Ptr<Ipv6RoutingProtocol> bRouting = CreateObject<Ipv6BRouting> ();
@@ -394,30 +425,28 @@ Ipv6ListRoutingTest::RunTests (void)
   int16_t first = 3;
   int16_t second = 3;
   uint32_t num = lr->GetNRoutingProtocols ();
-  NS_TEST_ASSERT_EQUAL (num, 2);
+  NS_TEST_ASSERT_MSG_EQ (num, 2, "XXX");
   Ptr<Ipv6RoutingProtocol> firstRp = lr->GetRoutingProtocol (0, first);
-  NS_TEST_ASSERT_EQUAL (10, first);
-  NS_TEST_ASSERT_EQUAL (firstRp, aRouting);
+  NS_TEST_ASSERT_MSG_EQ (10, first, "XXX");
+  NS_TEST_ASSERT_MSG_EQ (firstRp, aRouting, "XXX");
   Ptr<Ipv6RoutingProtocol> secondRp = lr->GetRoutingProtocol (1, second);
-  NS_TEST_ASSERT_EQUAL (5, second);
-  NS_TEST_ASSERT_EQUAL (secondRp, bRouting);
-
-  // Test negative values
-  lr = CreateObject<Ipv6ListRouting> ();
-  // The Ipv6BRouting should be added with higher priority (larger integer value)
-  lr->AddRoutingProtocol (aRouting, -10);
-  lr->AddRoutingProtocol (bRouting, -5);
-  num = lr->GetNRoutingProtocols ();
-  NS_TEST_ASSERT_EQUAL (num, 2);
-  firstRp = lr->GetRoutingProtocol (0, first);
-  NS_TEST_ASSERT_EQUAL (-5, first);
-  NS_TEST_ASSERT_EQUAL (firstRp, bRouting);
+  NS_TEST_ASSERT_MSG_EQ (5, second, "XXX");
+  NS_TEST_ASSERT_MSG_EQ (secondRp, bRouting, "XXX");
   
-  return result;
+  // XXX
+  return false;
 }
 
-static Ipv6ListRoutingTest gIpv6ListRoutingTest;
+static class Ipv6ListRoutingTestSuite : public TestSuite
+{
+public:
+  Ipv6ListRoutingTestSuite()
+    : TestSuite("ipv6-list-routing", UNIT)
+  {
+    AddTestCase(new Ipv6ListRoutingPositiveTestCase());
+    AddTestCase(new Ipv6ListRoutingNegativeTestCase());
+  }
+
+} g_ipv6ListRoutingTestSuite;
 
 } // namespace ns3
-
-#endif /* RUN_SELF_TESTS */

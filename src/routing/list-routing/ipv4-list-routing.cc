@@ -313,8 +313,6 @@ Ipv4ListRouting::Compare (const Ipv4RoutingProtocolEntry& a, const Ipv4RoutingPr
 
 } // namespace ns3
 
-#ifdef RUN_SELF_TESTS
-
 #include "ns3/test.h"
 #include "ipv4-list-routing.h"
 #include "ns3/ipv4-routing-protocol.h"
@@ -347,19 +345,49 @@ public:
   void SetIpv4 (Ptr<Ipv4> ipv4) {}
 };
 
-class Ipv4ListRoutingTest: public Test {
+class Ipv4ListRoutingNegativeTestCase : public TestCase
+{
 public:
-  virtual bool RunTests (void);
-  Ipv4ListRoutingTest ();
+  Ipv4ListRoutingNegativeTestCase();
+  virtual bool DoRun (void);
 };
 
-Ipv4ListRoutingTest::Ipv4ListRoutingTest ()
-  : Test ("Ipv4ListRouting") {}
-
-bool
-Ipv4ListRoutingTest::RunTests (void)
+Ipv4ListRoutingNegativeTestCase::Ipv4ListRoutingNegativeTestCase()
+  : TestCase("Check negative priorities")
+{}
+bool 
+Ipv4ListRoutingNegativeTestCase::DoRun (void)
 {
-  bool result = true;
+  Ptr<Ipv4ListRouting> lr = CreateObject<Ipv4ListRouting> ();
+  Ptr<Ipv4RoutingProtocol> aRouting = CreateObject<Ipv4ARouting> ();
+  Ptr<Ipv4RoutingProtocol> bRouting = CreateObject<Ipv4BRouting> ();
+  // The Ipv4BRouting should be added with higher priority (larger integer value)
+  lr->AddRoutingProtocol (aRouting, -10);
+  lr->AddRoutingProtocol (bRouting, -5);
+  int16_t first = 3;
+  uint32_t num = lr->GetNRoutingProtocols ();
+  NS_TEST_ASSERT_MSG_EQ (num, 2, "XXX");
+  Ptr<Ipv4RoutingProtocol> firstRp = lr->GetRoutingProtocol (0, first);
+  NS_TEST_ASSERT_MSG_EQ (-5, first, "XXX");
+  NS_TEST_ASSERT_MSG_EQ (firstRp, bRouting, "XXX");
+
+  // XXX
+  return false;
+}
+
+class Ipv4ListRoutingPositiveTestCase : public TestCase
+{
+public:
+  Ipv4ListRoutingPositiveTestCase();
+  virtual bool DoRun (void);
+};
+
+Ipv4ListRoutingPositiveTestCase::Ipv4ListRoutingPositiveTestCase()
+  : TestCase("Check positive priorities")
+{}
+bool 
+Ipv4ListRoutingPositiveTestCase::DoRun (void)
+{
   Ptr<Ipv4ListRouting> lr = CreateObject<Ipv4ListRouting> ();
   Ptr<Ipv4RoutingProtocol> aRouting = CreateObject<Ipv4ARouting> ();
   Ptr<Ipv4RoutingProtocol> bRouting = CreateObject<Ipv4BRouting> ();
@@ -370,30 +398,30 @@ Ipv4ListRoutingTest::RunTests (void)
   int16_t first = 3;
   int16_t second = 3;
   uint32_t num = lr->GetNRoutingProtocols ();
-  NS_TEST_ASSERT_EQUAL (num, 2);
+  NS_TEST_ASSERT_MSG_EQ (num, 2, "XXX");
   Ptr<Ipv4RoutingProtocol> firstRp = lr->GetRoutingProtocol (0, first);
-  NS_TEST_ASSERT_EQUAL (10, first);
-  NS_TEST_ASSERT_EQUAL (firstRp, aRouting);
+  NS_TEST_ASSERT_MSG_EQ (10, first, "XXX");
+  NS_TEST_ASSERT_MSG_EQ (firstRp, aRouting, "XXX");
   Ptr<Ipv4RoutingProtocol> secondRp = lr->GetRoutingProtocol (1, second);
-  NS_TEST_ASSERT_EQUAL (5, second);
-  NS_TEST_ASSERT_EQUAL (secondRp, bRouting);
-
-  // Test negative values
-  lr = CreateObject<Ipv4ListRouting> ();
-  // The Ipv4BRouting should be added with higher priority (larger integer value)
-  lr->AddRoutingProtocol (aRouting, -10);
-  lr->AddRoutingProtocol (bRouting, -5);
-  num = lr->GetNRoutingProtocols ();
-  NS_TEST_ASSERT_EQUAL (num, 2);
-  firstRp = lr->GetRoutingProtocol (0, first);
-  NS_TEST_ASSERT_EQUAL (-5, first);
-  NS_TEST_ASSERT_EQUAL (firstRp, bRouting);
+  NS_TEST_ASSERT_MSG_EQ (5, second, "XXX");
+  NS_TEST_ASSERT_MSG_EQ (secondRp, bRouting, "XXX");
   
-  return result;
+  // XXX
+  return false;
 }
 
-static Ipv4ListRoutingTest gIpv4ListRoutingTest;
+static class Ipv4ListRoutingTestSuite : public TestSuite
+{
+public:
+  Ipv4ListRoutingTestSuite()
+    : TestSuite("ipv4-list-routing", UNIT)
+  {
+    AddTestCase(new Ipv4ListRoutingPositiveTestCase());
+    AddTestCase(new Ipv4ListRoutingNegativeTestCase());
+  }
+
+} g_ipv4ListRoutingTestSuite;
 
 } // namespace ns3
 
-#endif /* RUN_SELF_TESTS */
+
