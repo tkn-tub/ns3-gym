@@ -93,6 +93,8 @@ public:
   std::string FindName (Ptr<Object> object);
   std::string FindPath (Ptr<Object> object);
 
+  void Clear (void);
+
   Ptr<Object> Find (std::string name);
   Ptr<Object> Find (std::string path, std::string name);
   Ptr<Object> Find (Ptr<Object> context, std::string name);
@@ -127,7 +129,12 @@ NamesPriv::NamesPriv ()
 NamesPriv::~NamesPriv ()
 {
   NS_LOG_FUNCTION_NOARGS ();
+  Clear ();
+}
 
+void
+NamesPriv::Clear (void)
+{
   //
   // Every name is associated with an object in the object map, so freeing the
   // NameNodes in this map will free all of the memory allocated for the NameNodes
@@ -138,9 +145,12 @@ NamesPriv::~NamesPriv ()
       i->second = 0;
     }
 
+  m_objectMap.clear ();
+
   m_root.m_parent = 0;
   m_root.m_name = "";
   m_root.m_object = 0;
+  m_root.m_nameMap.clear ();
 }
 
 bool
@@ -645,6 +655,12 @@ std::string
 Names::FindPath (Ptr<Object> object)
 {
   return NamesPriv::Get ()->FindPath (object);
+}
+
+void
+Names::Clear (void)
+{
+  return NamesPriv::Get ()->Clear ();
 }
 
 Ptr<Object>

@@ -71,6 +71,7 @@ public:
 
 private:
   virtual bool DoRun (void);
+  virtual void DoTeardown (void);
 };
 
 BasicAddTestCase::BasicAddTestCase ()
@@ -80,6 +81,12 @@ BasicAddTestCase::BasicAddTestCase ()
 
 BasicAddTestCase::~BasicAddTestCase ()
 {
+}
+
+void
+BasicAddTestCase::DoTeardown (void)
+{
+  Names::Clear ();
 }
 
 bool
@@ -131,6 +138,7 @@ public:
 
 private:
   virtual bool DoRun (void);
+  virtual void DoTeardown (void);
 };
 
 StringContextAddTestCase::StringContextAddTestCase ()
@@ -141,6 +149,12 @@ StringContextAddTestCase::StringContextAddTestCase ()
 
 StringContextAddTestCase::~StringContextAddTestCase ()
 {
+}
+
+void
+StringContextAddTestCase::DoTeardown (void)
+{
+  Names::Clear ();
 }
 
 bool
@@ -189,6 +203,7 @@ public:
 
 private:
   virtual bool DoRun (void);
+  virtual void DoTeardown (void);
 };
 
 FullyQualifiedAddTestCase::FullyQualifiedAddTestCase ()
@@ -199,6 +214,12 @@ FullyQualifiedAddTestCase::FullyQualifiedAddTestCase ()
 
 FullyQualifiedAddTestCase::~FullyQualifiedAddTestCase ()
 {
+}
+
+void
+FullyQualifiedAddTestCase::DoTeardown (void)
+{
+  Names::Clear ();
 }
 
 bool
@@ -250,6 +271,7 @@ public:
 
 private:
   virtual bool DoRun (void);
+  virtual void DoTeardown (void);
 };
 
 RelativeAddTestCase::RelativeAddTestCase ()
@@ -260,6 +282,12 @@ RelativeAddTestCase::RelativeAddTestCase ()
 
 RelativeAddTestCase::~RelativeAddTestCase ()
 {
+}
+
+void
+RelativeAddTestCase::DoTeardown (void)
+{
+  Names::Clear ();
 }
 
 bool
@@ -311,6 +339,7 @@ public:
 
 private:
   virtual bool DoRun (void);
+  virtual void DoTeardown (void);
 };
 
 BasicRenameTestCase::BasicRenameTestCase ()
@@ -320,6 +349,12 @@ BasicRenameTestCase::BasicRenameTestCase ()
 
 BasicRenameTestCase::~BasicRenameTestCase ()
 {
+}
+
+void
+BasicRenameTestCase::DoTeardown (void)
+{
+  Names::Clear ();
 }
 
 bool
@@ -366,6 +401,7 @@ public:
 
 private:
   virtual bool DoRun (void);
+  virtual void DoTeardown (void);
 };
 
 StringContextRenameTestCase::StringContextRenameTestCase ()
@@ -375,6 +411,12 @@ StringContextRenameTestCase::StringContextRenameTestCase ()
 
 StringContextRenameTestCase::~StringContextRenameTestCase ()
 {
+}
+
+void
+StringContextRenameTestCase::DoTeardown (void)
+{
+  Names::Clear ();
 }
 
 bool
@@ -421,6 +463,7 @@ public:
 
 private:
   virtual bool DoRun (void);
+  virtual void DoTeardown (void);
 };
 
 FullyQualifiedRenameTestCase::FullyQualifiedRenameTestCase ()
@@ -430,6 +473,12 @@ FullyQualifiedRenameTestCase::FullyQualifiedRenameTestCase ()
 
 FullyQualifiedRenameTestCase::~FullyQualifiedRenameTestCase ()
 {
+}
+
+void
+FullyQualifiedRenameTestCase::DoTeardown (void)
+{
+  Names::Clear ();
 }
 
 bool
@@ -476,6 +525,7 @@ public:
 
 private:
   virtual bool DoRun (void);
+  virtual void DoTeardown (void);
 };
 
 RelativeRenameTestCase::RelativeRenameTestCase ()
@@ -485,6 +535,12 @@ RelativeRenameTestCase::RelativeRenameTestCase ()
 
 RelativeRenameTestCase::~RelativeRenameTestCase ()
 {
+}
+
+void
+RelativeRenameTestCase::DoTeardown (void)
+{
+  Names::Clear ();
 }
 
 bool
@@ -531,6 +587,7 @@ public:
 
 private:
   virtual bool DoRun (void);
+  virtual void DoTeardown (void);
 };
 
 FindPathTestCase::FindPathTestCase ()
@@ -540,6 +597,12 @@ FindPathTestCase::FindPathTestCase ()
 
 FindPathTestCase::~FindPathTestCase ()
 {
+}
+
+void
+FindPathTestCase::DoTeardown (void)
+{
+  Names::Clear ();
 }
 
 bool
@@ -580,6 +643,7 @@ public:
 
 private:
   virtual bool DoRun (void);
+  virtual void DoTeardown (void);
 };
 
 BasicFindTestCase::BasicFindTestCase ()
@@ -589,6 +653,12 @@ BasicFindTestCase::BasicFindTestCase ()
 
 BasicFindTestCase::~BasicFindTestCase ()
 {
+}
+
+void
+BasicFindTestCase::DoTeardown (void)
+{
+  Names::Clear ();
 }
 
 bool
@@ -637,6 +707,7 @@ public:
 
 private:
   virtual bool DoRun (void);
+  virtual void DoTeardown (void);
 };
 
 StringContextFindTestCase::StringContextFindTestCase ()
@@ -646,6 +717,12 @@ StringContextFindTestCase::StringContextFindTestCase ()
 
 StringContextFindTestCase::~StringContextFindTestCase ()
 {
+}
+
+void
+StringContextFindTestCase::DoTeardown (void)
+{
+  Names::Clear ();
 }
 
 bool
@@ -694,6 +771,7 @@ public:
 
 private:
   virtual bool DoRun (void);
+  virtual void DoTeardown (void);
 };
 
 FullyQualifiedFindTestCase::FullyQualifiedFindTestCase ()
@@ -703,6 +781,12 @@ FullyQualifiedFindTestCase::FullyQualifiedFindTestCase ()
 
 FullyQualifiedFindTestCase::~FullyQualifiedFindTestCase ()
 {
+}
+
+void
+FullyQualifiedFindTestCase::DoTeardown (void)
+{
+  Names::Clear ();
 }
 
 bool
@@ -751,6 +835,7 @@ public:
 
 private:
   virtual bool DoRun (void);
+  virtual void DoTeardown (void);
 };
 
 RelativeFindTestCase::RelativeFindTestCase ()
@@ -760,6 +845,12 @@ RelativeFindTestCase::RelativeFindTestCase ()
 
 RelativeFindTestCase::~RelativeFindTestCase ()
 {
+}
+
+void
+RelativeFindTestCase::DoTeardown (void)
+{
+  Names::Clear ();
 }
 
 bool
@@ -806,6 +897,7 @@ public:
 
 private:
   virtual bool DoRun (void);
+  virtual void DoTeardown (void);
 };
 
 AlternateFindTestCase::AlternateFindTestCase ()
@@ -815,6 +907,12 @@ AlternateFindTestCase::AlternateFindTestCase ()
 
 AlternateFindTestCase::~AlternateFindTestCase ()
 {
+}
+
+void
+AlternateFindTestCase::DoTeardown (void)
+{
+  Names::Clear ();
 }
 
 bool
