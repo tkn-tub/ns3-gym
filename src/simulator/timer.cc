@@ -167,9 +167,9 @@ Timer::Resume (void)
 
 } // namespace ns3
 
-
-#ifdef RUN_SELF_TESTS
 #include "ns3/test.h"
+#include "ns3/simulator.h"
+#include "ns3/nstime.h"
 
 namespace {
 void bari (int)
@@ -192,15 +192,61 @@ void barip (int *)
 {}
 void barcip (const int *)
 {}
-}
+} // anonymous namespace
 
 namespace ns3 {
 
-class TimerTests : public Test
+class TimerStateTestCase : public TestCase
 {
 public:
-  TimerTests ();
-  virtual bool RunTests (void);
+  TimerStateTestCase ();
+  virtual bool DoRun (void);
+};
+
+TimerStateTestCase::TimerStateTestCase ()
+  : TestCase ("Check correct state transitions")
+{}
+bool 
+TimerStateTestCase::DoRun (void)
+{
+  Timer timer = Timer (Timer::CANCEL_ON_DESTROY);
+
+  timer.SetFunction (&bari);
+  timer.SetArguments (1);
+  timer.SetDelay (Seconds (10.0));
+  NS_TEST_ASSERT_MSG_EQ (!timer.IsRunning (), true, "");
+  NS_TEST_ASSERT_MSG_EQ (timer.IsExpired (), true, "");
+  NS_TEST_ASSERT_MSG_EQ (!timer.IsSuspended (), true, "");
+  NS_TEST_ASSERT_MSG_EQ (timer.GetState (), Timer::EXPIRED, "");
+  timer.Schedule ();
+  NS_TEST_ASSERT_MSG_EQ (timer.IsRunning (), true, "");
+  NS_TEST_ASSERT_MSG_EQ (!timer.IsExpired (), true, "");
+  NS_TEST_ASSERT_MSG_EQ (!timer.IsSuspended (), true, "");
+  NS_TEST_ASSERT_MSG_EQ (timer.GetState (), Timer::RUNNING, "");
+  timer.Suspend ();
+  NS_TEST_ASSERT_MSG_EQ (!timer.IsRunning (), true, "");
+  NS_TEST_ASSERT_MSG_EQ (!timer.IsExpired (), true, "");
+  NS_TEST_ASSERT_MSG_EQ (timer.IsSuspended (), true, "");
+  NS_TEST_ASSERT_MSG_EQ (timer.GetState (), Timer::SUSPENDED, "");
+  timer.Resume ();
+  NS_TEST_ASSERT_MSG_EQ (timer.IsRunning (), true, "");
+  NS_TEST_ASSERT_MSG_EQ (!timer.IsExpired (), true, "");
+  NS_TEST_ASSERT_MSG_EQ (!timer.IsSuspended (), true, "");
+  NS_TEST_ASSERT_MSG_EQ (timer.GetState (), Timer::RUNNING, "");
+  timer.Cancel ();
+  NS_TEST_ASSERT_MSG_EQ (!timer.IsRunning (), true, "");
+  NS_TEST_ASSERT_MSG_EQ (timer.IsExpired (), true, "");
+  NS_TEST_ASSERT_MSG_EQ (!timer.IsSuspended (), true, "");
+  NS_TEST_ASSERT_MSG_EQ (timer.GetState (), Timer::EXPIRED, "");
+  return false;
+}
+
+class TimerTemplateTestCase : public TestCase
+{
+public:
+  TimerTemplateTestCase ();
+  virtual bool DoRun (void);
+  virtual void DoTeardown (void);
   void bazi (int) {}
   void baz2i (int, int) {}
   void baz3i (int, int, int) {}
@@ -213,44 +259,14 @@ public:
   void bazcip (const int *) {}
 };
 
-TimerTests::TimerTests ()
-  : Test ("Timer")
+TimerTemplateTestCase::TimerTemplateTestCase ()
+  : TestCase ("Check that template magic is working")
 {}
 
 bool
-TimerTests::RunTests (void)
+TimerTemplateTestCase::DoRun (void)
 {
-  bool result = true;
-
   Timer timer = Timer (Timer::CANCEL_ON_DESTROY);
-
-  timer.SetFunction (&bari);
-  timer.SetArguments (1);
-  timer.SetDelay (Seconds (10.0));
-  NS_TEST_ASSERT (!timer.IsRunning ());
-  NS_TEST_ASSERT (timer.IsExpired ());
-  NS_TEST_ASSERT (!timer.IsSuspended ());
-  NS_TEST_ASSERT_EQUAL (timer.GetState (), Timer::EXPIRED);
-  timer.Schedule ();
-  NS_TEST_ASSERT (timer.IsRunning ());
-  NS_TEST_ASSERT (!timer.IsExpired ());
-  NS_TEST_ASSERT (!timer.IsSuspended ());
-  NS_TEST_ASSERT_EQUAL (timer.GetState (), Timer::RUNNING);
-  timer.Suspend ();
-  NS_TEST_ASSERT (!timer.IsRunning ());
-  NS_TEST_ASSERT (!timer.IsExpired ());
-  NS_TEST_ASSERT (timer.IsSuspended ());
-  NS_TEST_ASSERT_EQUAL (timer.GetState (), Timer::SUSPENDED);
-  timer.Resume ();
-  NS_TEST_ASSERT (timer.IsRunning ());
-  NS_TEST_ASSERT (!timer.IsExpired ());
-  NS_TEST_ASSERT (!timer.IsSuspended ());
-  NS_TEST_ASSERT_EQUAL (timer.GetState (), Timer::RUNNING);
-  timer.Cancel ();
-  NS_TEST_ASSERT (!timer.IsRunning ());
-  NS_TEST_ASSERT (timer.IsExpired ());
-  NS_TEST_ASSERT (!timer.IsSuspended ());
-  NS_TEST_ASSERT_EQUAL (timer.GetState (), Timer::EXPIRED);
 
   int a = 0;
   int &b = a;
@@ -277,11 +293,11 @@ TimerTests::RunTests (void)
   timer.SetDelay (Seconds (1.0));
   timer.Schedule ();
 
-  timer.SetFunction (&TimerTests::bazi, this);
+  timer.SetFunction (&TimerTemplateTestCase::bazi, this);
   timer.SetArguments (3);
-  timer.SetFunction (&TimerTests::bazir, this);
+  timer.SetFunction (&TimerTemplateTestCase::bazir, this);
   timer.SetArguments (3);
-  timer.SetFunction (&TimerTests::bazcir, this);
+  timer.SetFunction (&TimerTemplateTestCase::bazcir, this);
   timer.SetArguments (3);
 
   timer.SetFunction (&bar2i);
@@ -292,29 +308,45 @@ TimerTests::RunTests (void)
   timer.SetArguments (1, 1, 1, 1);
   timer.SetFunction (&bar5i);
   timer.SetArguments (1, 1, 1, 1, 1);
+  // unsupported in simulator class
   //timer.SetFunction (&bar6i);
   //timer.SetArguments (1, 1, 1, 1, 1, 1);
 
-  timer.SetFunction (&TimerTests::baz2i, this);
+  timer.SetFunction (&TimerTemplateTestCase::baz2i, this);
   timer.SetArguments (1, 1);
-  timer.SetFunction (&TimerTests::baz3i, this);
+  timer.SetFunction (&TimerTemplateTestCase::baz3i, this);
   timer.SetArguments (1, 1, 1);
-  timer.SetFunction (&TimerTests::baz4i, this);
+  timer.SetFunction (&TimerTemplateTestCase::baz4i, this);
   timer.SetArguments (1, 1, 1, 1);
-  timer.SetFunction (&TimerTests::baz5i, this);
+  timer.SetFunction (&TimerTemplateTestCase::baz5i, this);
   timer.SetArguments (1, 1, 1, 1, 1);
-  //timer.SetFunction (&TimerTests::baz6i, this);
+  // unsupported in simulator class
+  //timer.SetFunction (&TimerTemplateTestCase::baz6i, this);
   //timer.SetArguments (1, 1, 1, 1, 1, 1);
-
 
   Simulator::Run ();
   Simulator::Destroy ();
-		  
-  return result;
+
+  return false;
 }
 
-TimerTests g_tests;
+void
+TimerTemplateTestCase::DoTeardown (void)
+{
+  Simulator::Run ();
+  Simulator::Destroy ();
+}
+
+static class TimerTestSuite : public TestSuite
+{
+public:
+  TimerTestSuite ()
+    : TestSuite ("timer", UNIT)
+  {
+    AddTestCase (new TimerStateTestCase ());
+  }
+} g_timerTestSuite;
 
 } // namespace ns3
 
-#endif /* RUN_SELF_TESTS */
+
