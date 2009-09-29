@@ -1971,40 +1971,26 @@ GlobalRouteManagerImpl::SPFVertexAddParent (SPFVertex* v)
 
 } // namespace ns3
 
-#ifdef RUN_SELF_TESTS
-
-// ---------------------------------------------------------------------------
-//
-// Unit Tests
-//
-// ---------------------------------------------------------------------------
 
 #include "ns3/test.h"
 #include "ns3/simulator.h"
-#include <stdlib.h> // for rand ()
+#include <stdlib.h> // for rand()
 
 namespace ns3 {
 
-class GlobalRouteManagerImplTest : public Test {
+class GlobalRouteManagerImplTestCase : public TestCase
+{
 public:
-  GlobalRouteManagerImplTest ();
-  virtual ~GlobalRouteManagerImplTest ();
-  virtual bool RunTests (void);
+  GlobalRouteManagerImplTestCase();
+  virtual bool DoRun(void);
 };
 
-GlobalRouteManagerImplTest::GlobalRouteManagerImplTest ()
-  : Test ("GlobalRouteManagerImpl")
-{
-}
-
-GlobalRouteManagerImplTest::~GlobalRouteManagerImplTest ()
+GlobalRouteManagerImplTestCase::GlobalRouteManagerImplTestCase()
+  : TestCase("GlobalRouteManagerImplTestCase")
 {}
-
-  bool
-GlobalRouteManagerImplTest::RunTests (void)
+bool 
+GlobalRouteManagerImplTestCase::DoRun(void)
 {
-  bool ok = true;
-
   CandidateQueue candidate;
 
   for (int i = 0; i < 100; ++i)
@@ -2021,7 +2007,8 @@ GlobalRouteManagerImplTest::RunTests (void)
       SPFVertex *v = candidate.Pop ();
       if (v->GetDistanceFromRoot () < lastDistance)
         {
-          ok = false;
+          // XXX
+          SetErrorStatus (false);
         }
       lastDistance = v->GetDistanceFromRoot ();
       delete v;
@@ -2176,12 +2163,19 @@ GlobalRouteManagerImplTest::RunTests (void)
   // all of the LSAs, which each destroys the attached LinkRecords.
   delete srm;
 
-  return ok;
+  // XXX
+  return false;
 }
 
-// Instantiate this class for the unit tests
-static GlobalRouteManagerImplTest g_globalRouteManagerTest;
+
+static class GlobalRouteManagerImplTestSuite : public TestSuite
+{
+public:
+  GlobalRouteManagerImplTestSuite()
+    : TestSuite("global-route-manager-impl", UNIT)
+  {
+    AddTestCase(new GlobalRouteManagerImplTestCase());
+  }
+} g_globalRoutingManagerImplTestSuite;
 
 } // namespace ns3
-
-#endif 
