@@ -22,7 +22,6 @@
 #include "assert.h"
 #include "abort.h"
 #include "names.h"
-#include "ns3/simulator.h"
 
 namespace ns3 {
 
@@ -98,10 +97,9 @@ public:
   Ptr<Object> Find (std::string path, std::string name);
   Ptr<Object> Find (Ptr<Object> context, std::string name);
 
-  static NamesPriv *Get (void);
-  static void Delete (void);
 private:
-  static NamesPriv **DoGet (bool doCreate);
+  friend class Names;
+  static NamesPriv *Get (void);
 
   NameNode *IsNamed (Ptr<Object>);
   bool IsDuplicateName (NameNode *node, std::string name);
@@ -113,31 +111,8 @@ private:
 NamesPriv *
 NamesPriv::Get (void)
 {
-  return *(DoGet (true));
-}
-
-NamesPriv **
-NamesPriv::DoGet (bool doCreate)
-{
-  static NamesPriv *ptr = 0;
-
-  if (ptr == 0 && doCreate)
-    {
-      ptr = new NamesPriv;
-      Simulator::ScheduleDestroy (&NamesPriv::Delete);
-    }
-
-  return &ptr;
-}
-
-void 
-NamesPriv::Delete (void)
-{
-  NS_LOG_FUNCTION_NOARGS ();
-
-  NamesPriv **ptr = DoGet (false);
-  delete *ptr;
-  *ptr = 0;
+  static NamesPriv namesPriv;
+  return &namesPriv;
 }
 
 NamesPriv::NamesPriv ()
@@ -615,12 +590,6 @@ NamesPriv::IsDuplicateName (NameNode *node, std::string name)
       NS_LOG_LOGIC ("Name exists in name map");
       return true;
     }
-}
-
-void
-Names::Delete (void)
-{
-  NamesPriv::Delete ();
 }
 
 void

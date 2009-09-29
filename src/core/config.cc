@@ -767,23 +767,11 @@ public:
 
 private:
   virtual bool DoRun (void);
-  virtual void DoTeardown (void);
 };
 
 RootNamespaceConfigTestCase::RootNamespaceConfigTestCase ()
   : TestCase ("Check ability to register a root namespace and use it")
 {
-}
-
-void
-RootNamespaceConfigTestCase::DoTeardown (void)
-{
-  //
-  // The Config system is intertwined with the Names system.  In the process
-  // of parsing the paths in the tests, we create a NamesPriv singleton.  In
-  // order to get a valgrind-clean run we need to clean up that singleton.
-  //
-  Names::Delete ();
 }
 
 bool
@@ -839,23 +827,11 @@ public:
 
 private:
   virtual bool DoRun (void);
-  virtual void DoTeardown (void);
 };
 
 UnderRootNamespaceConfigTestCase::UnderRootNamespaceConfigTestCase ()
   : TestCase ("Check ability to register an object under the root namespace and use it")
 {
-}
-
-void
-UnderRootNamespaceConfigTestCase::DoTeardown (void)
-{
-  //
-  // The Config system is intertwined with the Names system.  In the process
-  // of parsing the paths in the tests, we create a NamesPriv singleton.  In
-  // order to get a valgrind-clean run we need to clean up that singleton.
-  //
-  Names::Delete ();
 }
 
 bool
@@ -951,23 +927,11 @@ public:
 
 private:
   virtual bool DoRun (void);
-  virtual void DoTeardown (void);
 };
 
 ObjectVectorConfigTestCase::ObjectVectorConfigTestCase ()
   : TestCase ("Check ability to configure vectors of Object using regular expressions")
 {
-}
-
-void
-ObjectVectorConfigTestCase::DoTeardown (void)
-{
-  //
-  // The Config system is intertwined with the Names system.  In the process
-  // of parsing the paths in the tests, we create a NamesPriv singleton.  In
-  // order to get a valgrind-clean run we need to clean up that singleton.
-  //
-  Names::Delete ();
 }
 
 bool
@@ -1122,7 +1086,6 @@ public:
 
 private:
   virtual bool DoRun (void);
-  virtual void DoTeardown (void);
 
   int16_t m_newValue;
   std::string m_path;
@@ -1131,17 +1094,6 @@ private:
 ObjectVectorTraceConfigTestCase::ObjectVectorTraceConfigTestCase ()
   : TestCase ("Check ability to trace connect through vectors of Object using regular expressions")
 {
-}
-
-void
-ObjectVectorTraceConfigTestCase::DoTeardown (void)
-{
-  //
-  // The Config system is intertwined with the Names system.  In the process
-  // of parsing the paths in the tests, we create a NamesPriv singleton.  In
-  // order to get a valgrind-clean run we need to clean up that singleton.
-  //
-  Names::Delete ();
 }
 
 bool

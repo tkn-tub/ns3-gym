@@ -358,13 +358,6 @@ public:
   template <typename T>
   static Ptr<T> Find (Ptr<Object> context, std::string name);
 
-  /**
-   * Clean up all of the data structures of the implementation and delete the
-   * underlying singleton.  Used to get valgrind-clean runs if the simulator
-   * is not run.  Normally singleton cleanup is scheduled on Simulator::Destroy.
-   */
-  static void Delete (void);
-
 private:
   /**
    * \internal
