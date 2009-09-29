@@ -130,6 +130,7 @@ UdpEchoClient::StopApplication ()
     {
       m_socket->Close ();
       m_socket->SetRecvCallback(MakeNullCallback<void, Ptr<Socket> > ());
+      m_socket = 0;
     }
 
   Simulator::Cancel(m_sendEvent);
