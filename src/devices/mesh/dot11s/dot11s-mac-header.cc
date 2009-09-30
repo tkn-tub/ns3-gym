@@ -22,7 +22,6 @@
 #include "ns3/address-utils.h"
 #include "dot11s-mac-header.h"
 #include "ns3/packet.h"
-#include "ns3/test.h"
 
 namespace ns3 {
 namespace dot11s {
@@ -314,67 +313,6 @@ WifiMeshActionHeader::Deserialize (Buffer::Iterator start)
   m_actionValue = i.ReadU8 ();
   return i.GetDistanceFrom (start);
 }
-#ifdef RUN_SELF_TESTS
 
-/// Built-in self test for Dot11sMacHeader
-struct Dot11sMacHeaderBist : public Test
-{
-  Dot11sMacHeaderBist () :
-    Test ("Mesh/802.11s/MeshHeader")
-  {
-  }
-  virtual bool
-  RunTests ();
-};
-
-/// Test instance
-static Dot11sMacHeaderBist g_Dot11sMacHeaderBist;
-
-bool
-Dot11sMacHeaderBist::RunTests ()
-{
-  bool result (true);
-    {
-      MeshHeader a;
-      a.SetAddressExt (3);
-      a.SetAddr4 (Mac48Address ("11:22:33:44:55:66"));
-      a.SetAddr5 (Mac48Address ("11:00:33:00:55:00"));
-      a.SetAddr6 (Mac48Address ("00:22:00:44:00:66"));
-      a.SetMeshTtl (122);
-      a.SetMeshSeqno (321);
-      Ptr<Packet> packet = Create<Packet> ();
-      packet->AddHeader (a);
-      MeshHeader b;
-      packet->RemoveHeader (b);
-      NS_TEST_ASSERT_EQUAL (a, b);
-    }
-    {
-      MeshHeader a;
-      a.SetAddressExt (2);
-      a.SetAddr5 (Mac48Address ("11:00:33:00:55:00"));
-      a.SetAddr6 (Mac48Address ("00:22:00:44:00:66"));
-      a.SetMeshTtl (122);
-      a.SetMeshSeqno (321);
-      Ptr<Packet> packet = Create<Packet> ();
-      packet->AddHeader (a);
-      MeshHeader b;
-      packet->RemoveHeader (b);
-      NS_TEST_ASSERT_EQUAL (a, b);
-    }
-    {
-      MeshHeader a;
-      a.SetAddressExt (1);
-      a.SetAddr4 (Mac48Address ("11:22:33:44:55:66"));
-      a.SetMeshTtl (122);
-      a.SetMeshSeqno (321);
-      Ptr<Packet> packet = Create<Packet> ();
-      packet->AddHeader (a);
-      MeshHeader b;
-      packet->RemoveHeader (b);
-      NS_TEST_ASSERT_EQUAL (a, b);
-    }
-  return result;
-}
-#endif
 } //namespace dot11s
 } // namespace ns3
