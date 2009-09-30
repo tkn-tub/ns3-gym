@@ -17,12 +17,10 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#ifdef RUN_SELF_TESTS
 
 #include "ns3/test.h"
 #include "ns3/simulator.h"
 #include "dcf-manager.h"
-
 
 namespace ns3 {
 
@@ -56,11 +54,11 @@ private:
 };
 
 
-class DcfManagerTest : public Test
+class DcfManagerTest : public TestCase
 {
 public:
   DcfManagerTest ();
-  virtual bool RunTests (void);
+  virtual bool DoRun (void);
 
 
   void NotifyAccessGranted (uint32_t i);
@@ -99,7 +97,6 @@ private:
   DcfManager *m_dcfManager;
   DcfStates m_dcfStates;
   uint32_t m_ackTimeoutValue;
-  bool m_result;
 };
 
 
@@ -135,24 +132,19 @@ DcfStateTest::DoNotifyChannelSwitching (void)
 
 
 DcfManagerTest::DcfManagerTest ()
-  : Test ("DcfManager")
+  : TestCase ("DcfManager")
 {}
 
 void 
 DcfManagerTest::NotifyAccessGranted (uint32_t i)
 {
   DcfStateTest *state = m_dcfStates[i];
-  bool result = true;
-  NS_TEST_ASSERT (!state->m_expectedGrants.empty ());
+  NS_TEST_EXPECT_MSG_EQ (state->m_expectedGrants.empty (), false, "Have expected grants");
   std::pair<uint64_t, uint64_t> expected = state->m_expectedGrants.front ();
   state->m_expectedGrants.pop_front ();
-  NS_TEST_ASSERT_EQUAL (Simulator::Now (), MicroSeconds (expected.second));
+  NS_TEST_EXPECT_MSG_EQ (Simulator::Now (), MicroSeconds (expected.second), "Expected access grant is now");
   m_dcfManager->NotifyTxStartNow (MicroSeconds (expected.first));
   m_dcfManager->NotifyAckTimeoutStartNow (MicroSeconds (m_ackTimeoutValue + expected.first));
-  if (!result)
-    {
-      m_result = result;
-    }
 }
 void
 DcfManagerTest::AddTxEvt (uint64_t at, uint64_t duration)
@@ -165,46 +157,31 @@ void
 DcfManagerTest::NotifyInternalCollision (uint32_t i)
 {
   DcfStateTest *state = m_dcfStates[i];
-  bool result = true;
-  NS_TEST_ASSERT (!state->m_expectedInternalCollision.empty ());
+  NS_TEST_EXPECT_MSG_EQ (state->m_expectedInternalCollision.empty (), false, "Have expected internal collisions");
   struct DcfStateTest::ExpectedCollision expected = state->m_expectedInternalCollision.front ();
   state->m_expectedInternalCollision.pop_front ();
-  NS_TEST_ASSERT_EQUAL (Simulator::Now (), MicroSeconds (expected.at));
+  NS_TEST_EXPECT_MSG_EQ (Simulator::Now (), MicroSeconds (expected.at), "Expected internal collision time is now");
   state->StartBackoffNow (expected.nSlots);
-  if (!result)
-    {
-      m_result = result;
-    }
 }
 void 
 DcfManagerTest::NotifyCollision (uint32_t i)
 {
   DcfStateTest *state = m_dcfStates[i];
-  bool result = true;
-  NS_TEST_ASSERT (!state->m_expectedCollision.empty ());
+  NS_TEST_EXPECT_MSG_EQ (state->m_expectedCollision.empty (), false, "Have expected collisions");
   struct DcfStateTest::ExpectedCollision expected = state->m_expectedCollision.front ();
   state->m_expectedCollision.pop_front ();
-  NS_TEST_ASSERT_EQUAL (Simulator::Now (), MicroSeconds (expected.at));
+  NS_TEST_EXPECT_MSG_EQ (Simulator::Now (), MicroSeconds (expected.at), "Expected collision is now");
   state->StartBackoffNow (expected.nSlots);
-  if (!result)
-    {
-      m_result = result;
-    }
 }
 void 
 DcfManagerTest::NotifyChannelSwitching (uint32_t i)
 {
   DcfStateTest *state = m_dcfStates[i];
-  bool result = true;
   if (!state->m_expectedGrants.empty ())
     {
       std::pair<uint64_t, uint64_t> expected = state->m_expectedGrants.front ();
       state->m_expectedGrants.pop_front ();
-      NS_TEST_ASSERT_EQUAL (Simulator::Now (), MicroSeconds (expected.second));
-    }
-  if (!result)
-    {
-      m_result = result;
+      NS_TEST_EXPECT_MSG_EQ (Simulator::Now (), MicroSeconds (expected.second), "Expected grant is now");
     }
 }
 
@@ -249,23 +226,18 @@ DcfManagerTest::AddDcfState (uint32_t aifsn)
 void
 DcfManagerTest::EndTest (void)
 {
-  bool result = true;
   Simulator::Run ();
   Simulator::Destroy ();
   for (DcfStates::const_iterator i = m_dcfStates.begin (); i != m_dcfStates.end (); i++)
     {
       DcfStateTest *state = *i;
-      NS_TEST_ASSERT (state->m_expectedGrants.empty ());
-      NS_TEST_ASSERT (state->m_expectedInternalCollision.empty ());
-      NS_TEST_ASSERT (state->m_expectedCollision.empty ());
+      NS_TEST_EXPECT_MSG_EQ (state->m_expectedGrants.empty (), true, "Have no expected grants");
+      NS_TEST_EXPECT_MSG_EQ (state->m_expectedInternalCollision.empty (), true, "Have no internal collisions");
+      NS_TEST_EXPECT_MSG_EQ (state->m_expectedCollision.empty (), true, "Have no expected collisions");
       delete state;
     }
   m_dcfStates.clear ();
   delete m_dcfManager;
-  if (!result)
-    {
-      m_result = result;
-    }
 }
 
 void 
@@ -369,10 +341,8 @@ DcfManagerTest::AddRxStartEvt (uint64_t at, uint64_t duration)
 
 
 bool 
-DcfManagerTest::RunTests (void)
+DcfManagerTest::DoRun (void)
 {
-  m_result = true;
-
   //  0      3       4    5      8       9  10   12
   //  | sifs | aifsn | tx | sifs | aifsn |   | tx | 
   //
@@ -691,15 +661,24 @@ DcfManagerTest::RunTests (void)
   AddSwitchingEvt(80,20);
   AddAccessRequest (101, 2, 110, 0);
   EndTest ();
-
-
-  return m_result;
+  
+  return GetErrorStatus ();
 }
 
+//-----------------------------------------------------------------------------
 
+class DcfTestSuite : public TestSuite
+{
+public:
+  DcfTestSuite ();
+};
 
-static DcfManagerTest g_dcf_manager_test;
+DcfTestSuite::DcfTestSuite ()
+  : TestSuite ("devices-wifi-dcf", UNIT)
+{
+  AddTestCase (new DcfManagerTest);
+}
+
+DcfTestSuite g_dcfTestSuite;
 
 } // namespace ns3
-
-#endif /* RUN_SELF_TESTS */

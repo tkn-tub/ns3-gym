@@ -18,26 +18,23 @@
  * Author: Nicola Baldo <nbaldo@cttc.es>
  */
 
-#include<ns3/object.h>
-#include<ns3/log.h>
+#include <ns3/object.h>
+#include <ns3/log.h>
 #include <ns3/test.h>
-#include<iostream>
-#include"interference-helper.h"
-#include"wifi-phy.h"
+#include <iostream>
+#include "interference-helper.h"
+#include "wifi-phy.h"
 
 NS_LOG_COMPONENT_DEFINE ("InterferenceHelperTxDurationTest");
 
-
-#ifdef RUN_SELF_TESTS
-
-
 namespace ns3 {
 
-class InterferenceHelperTxDurationTest : public Test {
+class InterferenceHelperTxDurationTest : public TestCase 
+{
 public:
   InterferenceHelperTxDurationTest ();
   virtual ~InterferenceHelperTxDurationTest ();
-  virtual bool RunTests (void);
+  virtual bool DoRun (void);
 
 private:
 
@@ -69,12 +66,8 @@ private:
 };
 
 
-// we need to create one instance of InterferenceHelperTxDurationTest
-static InterferenceHelperTxDurationTest interferenceHelperTxDurationTestInstance;
-
-
 InterferenceHelperTxDurationTest::InterferenceHelperTxDurationTest ()
-  : Test ("InterferenceHelperTxDuration")
+  : TestCase ("InterferenceHelper TX Duration")
 {
 }
 
@@ -82,8 +75,6 @@ InterferenceHelperTxDurationTest::InterferenceHelperTxDurationTest ()
 InterferenceHelperTxDurationTest::~InterferenceHelperTxDurationTest ()
 {
 }
-
-
 
 bool
 InterferenceHelperTxDurationTest::CheckPayloadDuration(uint32_t size, WifiMode payloadMode, uint32_t knownDurationMicroSeconds)
@@ -119,7 +110,7 @@ InterferenceHelperTxDurationTest::CheckTxDuration(uint32_t size, WifiMode payloa
 }
 
 bool 
-InterferenceHelperTxDurationTest::RunTests (void)
+InterferenceHelperTxDurationTest::DoRun (void)
 {
   bool retval = true;
 
@@ -182,12 +173,21 @@ InterferenceHelperTxDurationTest::RunTests (void)
     && CheckTxDuration (76, WifiPhy::Get54mba (), WIFI_PREAMBLE_LONG, 32)
     && CheckTxDuration (14, WifiPhy::Get54mba (), WIFI_PREAMBLE_LONG, 24);
 
-
-  return retval;
+  return (!retval);
 }
 
+class TxDurationTestSuite : public TestSuite
+{
+public:
+  TxDurationTestSuite ();
+};
 
+TxDurationTestSuite::TxDurationTestSuite ()
+  : TestSuite ("devices-wifi-tx-duration", UNIT)
+{
+  AddTestCase (new InterferenceHelperTxDurationTest);
+}
+
+TxDurationTestSuite g_txDurationTestSuite;
 } //namespace ns3 
 
-
-#endif /* RUN_SELF_TESTS */
