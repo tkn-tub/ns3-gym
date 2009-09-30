@@ -30,8 +30,9 @@
 #include <sys/stat.h>
 #include <fcntl.h>       
 #include <sstream>
+#include <vector>
 
-
+#include "test.h"
 #include "assert.h"
 #include "config.h"
 #include "integer.h"
@@ -1710,96 +1711,118 @@ std::istream &operator >> (std::istream &is, RandomVariable &var)
   return is;
 }
 
-
-
-}//namespace ns3
-
- 
-
-#ifdef RUN_SELF_TESTS
-#include "test.h"
-#include <vector>
-
-namespace ns3 {
-
-
-class RandomVariableTest : public Test
+class BasicRandomNumberTestCase : public TestCase
 {
 public:
-  RandomVariableTest () : Test ("RandomVariable") {}
-  virtual bool RunTests (void)
-  {
-    bool result = true;
-    const double desired_mean = 1.0;
-    const double desired_stddev = 1.0;
-    double tmp = log (1 + (desired_stddev/desired_mean)*(desired_stddev/desired_mean));
-    double sigma = sqrt (tmp);
-    double mu = log (desired_mean) - 0.5*tmp;
+  BasicRandomNumberTestCase ();
+  virtual ~BasicRandomNumberTestCase () {}
 
-    // Test a custom lognormal instance
-    {
-      LogNormalVariable lognormal (mu, sigma);
-      vector<double> samples;
-      const int NSAMPLES = 10000;
-      double sum = 0;
-      for (int n = NSAMPLES; n; --n)
-        {
-          double value = lognormal.GetValue ();
-          sum += value;
-          samples.push_back (value);
-        }
-      double obtained_mean = sum / NSAMPLES;
-      sum = 0;
-      for (vector<double>::iterator iter = samples.begin (); iter != samples.end (); iter++)
-        {
-          double tmp = (*iter - obtained_mean);
-          sum += tmp*tmp;
-        }
-      double obtained_stddev = sqrt (sum / (NSAMPLES - 1));
-
-      if (not (obtained_mean/desired_mean > 0.90 and obtained_mean/desired_mean < 1.10))
-        {
-          result = false;
-          Failure () << "Obtained lognormal mean value " << obtained_mean << ", expected " << desired_mean << std::endl;
-        }
-
-      if (not (obtained_stddev/desired_stddev > 0.90 and obtained_stddev/desired_stddev < 1.10))
-        {
-          result = false;
-          Failure () << "Obtained lognormal stddev value " << obtained_stddev <<
-            ", expected " << desired_stddev << std::endl;
-        }
-    }
-
-    // Test attribute serialization
-    {
-      {
-        RandomVariableValue val;
-        val.DeserializeFromString ("Uniform:0.1:0.2", MakeRandomVariableChecker ());
-        RandomVariable rng = val.Get ();
-        NS_TEST_ASSERT_EQUAL (val.SerializeToString (MakeRandomVariableChecker ()), "Uniform:0.1:0.2");
-      }
-      {
-        RandomVariableValue val;
-        val.DeserializeFromString ("Normal:0.1:0.2", MakeRandomVariableChecker ());
-        RandomVariable rng = val.Get ();
-        NS_TEST_ASSERT_EQUAL (val.SerializeToString (MakeRandomVariableChecker ()), "Normal:0.1:0.2");
-      }
-      {
-        RandomVariableValue val;
-        val.DeserializeFromString ("Normal:0.1:0.2:0.15", MakeRandomVariableChecker ());
-        RandomVariable rng = val.Get ();
-        NS_TEST_ASSERT_EQUAL (val.SerializeToString (MakeRandomVariableChecker ()), "Normal:0.1:0.2:0.15");
-      }
-    }
-
-    return result;
-  }
+private:
+  virtual bool DoRun (void);
 };
 
+BasicRandomNumberTestCase::BasicRandomNumberTestCase ()
+  : TestCase ("Check basic random number operation")
+{
+}
 
-static RandomVariableTest g_random_variable_tests;
+bool
+BasicRandomNumberTestCase::DoRun (void)
+{
+  const double desiredMean = 1.0;
+  const double desiredStdDev = 1.0;
+
+  double tmp = log (1 + (desiredStdDev / desiredMean) * (desiredStdDev / desiredMean));
+  double sigma = sqrt (tmp);
+  double mu = log (desiredMean) - 0.5 * tmp;
+
+  //
+  // Test a custom lognormal instance to see if its moments have any relation
+  // expected reality.
+  //
+  LogNormalVariable lognormal (mu, sigma);
+  vector<double> samples;
+  const int NSAMPLES = 10000;
+  double sum = 0;
+  
+  //
+  // Get and store a bunch of samples.  As we go along sum them and then find
+  // the mean value of the samples.
+  //
+  for (int n = NSAMPLES; n; --n)
+    {
+      double value = lognormal.GetValue ();
+      sum += value;
+      samples.push_back (value);
+    }
+  double obtainedMean = sum / NSAMPLES;
+  NS_TEST_EXPECT_MSG_EQ_TOL (obtainedMean, desiredMean, 0.1, "Got unexpected mean value from LogNormalVariable");
+  
+  //
+  // Wander back through the saved stamples and find their standard deviation
+  //
+  sum = 0;
+  for (vector<double>::iterator iter = samples.begin (); iter != samples.end (); iter++)
+    {
+      double tmp = (*iter - obtainedMean);
+      sum += tmp * tmp;
+    }
+  double obtainedStdDev = sqrt (sum / (NSAMPLES - 1));
+  NS_TEST_EXPECT_MSG_EQ_TOL (obtainedStdDev, desiredStdDev, 0.1, "Got unexpected standard deviation from LogNormalVariable");
+
+  return GetErrorStatus ();
+}
+
+class RandomNumberSerializationTestCase : public TestCase
+{
+public:
+  RandomNumberSerializationTestCase ();
+  virtual ~RandomNumberSerializationTestCase () {}
+
+private:
+  virtual bool DoRun (void);
+};
+
+RandomNumberSerializationTestCase::RandomNumberSerializationTestCase ()
+  : TestCase ("Check basic random number operation")
+{
+}
+
+bool
+RandomNumberSerializationTestCase::DoRun (void)
+{
+  RandomVariableValue val;
+  val.DeserializeFromString ("Uniform:0.1:0.2", MakeRandomVariableChecker ());
+  RandomVariable rng = val.Get ();
+  NS_TEST_ASSERT_MSG_EQ (val.SerializeToString (MakeRandomVariableChecker ()), "Uniform:0.1:0.2", 
+                         "Deserialize and Serialize \"Uniform:0.1:0.2\" mismatch");
+
+  val.DeserializeFromString ("Normal:0.1:0.2", MakeRandomVariableChecker ());
+  rng = val.Get ();
+  NS_TEST_ASSERT_MSG_EQ (val.SerializeToString (MakeRandomVariableChecker ()), "Normal:0.1:0.2",
+                         "Deserialize and Serialize \"Normal:0.1:0.2\" mismatch");
+
+  val.DeserializeFromString ("Normal:0.1:0.2:0.15", MakeRandomVariableChecker ());
+  rng = val.Get ();
+  NS_TEST_ASSERT_MSG_EQ (val.SerializeToString (MakeRandomVariableChecker ()), "Normal:0.1:0.2:0.15",
+                         "Deserialize and Serialize \"Normal:0.1:0.2:0.15\" mismatch");
+
+  return GetErrorStatus ();
+}
+
+class BasicRandomNumberTestSuite : public TestSuite
+{
+public:
+  BasicRandomNumberTestSuite ();
+};
+
+BasicRandomNumberTestSuite::BasicRandomNumberTestSuite ()
+  : TestSuite ("basic-random-number", BVT)
+{
+  AddTestCase (new BasicRandomNumberTestCase);
+  AddTestCase (new RandomNumberSerializationTestCase);
+}
+
+BasicRandomNumberTestSuite BasicRandomNumberTestSuite;
 
 }//namespace ns3
-
-#endif /* RUN_SELF_TESTS */
