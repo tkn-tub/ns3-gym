@@ -124,7 +124,8 @@ TestCase::Run (void)
 {
   DoReportStart ();
   DoSetup ();
-  m_error |= DoRun ();
+  bool status = DoRun ();
+  m_error |= status;
   DoTeardown ();
   if (m_error == false)
     {

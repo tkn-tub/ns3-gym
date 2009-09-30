@@ -586,35 +586,36 @@ void ConversionTestCase::DoTeardown (void)
     ASSERT_MSG_EQ_INT(t_sec.GetNanoSeconds(), val*1e9, 1e9, "conv sec ns"); \
     ASSERT_MSG_EQ_INT(t_sec.GetPicoSeconds(), val*1e12, 1e12, "conv sec ps"); \
     ASSERT_MSG_EQ_INT(t_sec.GetFemtoSeconds(), val*1e15, 1e15, "conv sec fs"); \
-    Time t_ms = MilliSeconds(val);                                     \
+    uint64_t int_val = (uint64_t)val;                                  \
+    Time t_ms = MilliSeconds(int_val);                                 \
     ASSERT_MSG_EQ(t_ms.GetSeconds(), val*1e-3, 1e0, "conv ms s");       \
     ASSERT_MSG_EQ_INT(t_ms.GetMilliSeconds(), val*1e0, 1e3, "conv ms ms");     \
     ASSERT_MSG_EQ_INT(t_ms.GetMicroSeconds(), val*1e3, 1e6, "conv ms us"); \
     ASSERT_MSG_EQ_INT(t_ms.GetNanoSeconds(), val*1e6, 1e9, "conv ms ns");  \
     ASSERT_MSG_EQ_INT(t_ms.GetPicoSeconds(), val*1e9, 1e12, "conv ms fs"); \
     ASSERT_MSG_EQ_INT(t_ms.GetFemtoSeconds(), val*1e12, 1e15, "conv ms ps"); \
-    Time t_us = MicroSeconds(val);                                     \
+    Time t_us = MicroSeconds(int_val);                                     \
     ASSERT_MSG_EQ(t_us.GetSeconds(), val*1e-6, 1e0, "conv us s");       \
     ASSERT_MSG_EQ_INT(t_us.GetMilliSeconds(), val*1e-3, 1e3, "conv us ms"); \
     ASSERT_MSG_EQ_INT(t_us.GetMicroSeconds(), val*1e0, 1e6, "conv us us");     \
     ASSERT_MSG_EQ_INT(t_us.GetNanoSeconds(), val*1e3, 1e9, "conv us ns");  \
     ASSERT_MSG_EQ_INT(t_us.GetPicoSeconds(), val*1e6, 1e12, "conv us ps"); \
     ASSERT_MSG_EQ_INT(t_us.GetFemtoSeconds(), val*1e9, 1e15, "conv us fs"); \
-    Time t_ns = NanoSeconds(val);                                      \
+    Time t_ns = NanoSeconds(int_val);                                      \
     ASSERT_MSG_EQ(t_ns.GetSeconds(), val*1e-9, 1e0, "conv ns s");       \
     ASSERT_MSG_EQ_INT(t_ns.GetMilliSeconds(), val*1e-6, 1e3, "conv ns ms"); \
     ASSERT_MSG_EQ_INT(t_ns.GetMicroSeconds(), val*1e-3, 1e6, "conv ns us"); \
     ASSERT_MSG_EQ_INT(t_ns.GetNanoSeconds(), val*1e0, 1e9, "conv ns ns");      \
     ASSERT_MSG_EQ_INT(t_ns.GetPicoSeconds(), val*1e3, 1e12, "conv ns ps"); \
     ASSERT_MSG_EQ_INT(t_ns.GetFemtoSeconds(), val*1e6, 1e15, "conv ns fs"); \
-    Time t_ps = PicoSeconds(val);                                      \
+    Time t_ps = PicoSeconds(int_val);                                      \
     ASSERT_MSG_EQ(t_ps.GetSeconds(), val*1e-12, 1e0, "conv ps s");      \
     ASSERT_MSG_EQ_INT(t_ps.GetMilliSeconds(), val*1e-9, 1e3, "conv ps ms"); \
     ASSERT_MSG_EQ_INT(t_ps.GetMicroSeconds(), val*1e-6, 1e6, "conv ps us"); \
     ASSERT_MSG_EQ_INT(t_ps.GetNanoSeconds(), val*1e-3, 1e9, "conv ps ns");  \
     ASSERT_MSG_EQ_INT(t_ps.GetPicoSeconds(), val*1e0, 1e12, "conv ps ps");     \
     ASSERT_MSG_EQ_INT(t_ps.GetFemtoSeconds(), val*1e3, 1e15, "conv ps fs"); \
-    Time t_fs = FemtoSeconds(val);                                     \
+    Time t_fs = FemtoSeconds(int_val);                                     \
     ASSERT_MSG_EQ(t_fs.GetSeconds(), val*1e-15, 1e0, "conv fs sec");    \
     ASSERT_MSG_EQ_INT(t_fs.GetMilliSeconds(), val*1e-12, 1e3, "conv fs ms"); \
     ASSERT_MSG_EQ_INT(t_fs.GetMicroSeconds(), val*1e-9, 1e6, "conv fs us"); \
