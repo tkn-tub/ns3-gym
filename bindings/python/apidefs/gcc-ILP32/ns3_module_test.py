@@ -3,8 +3,6 @@ from pybindgen import Module, FileCodeSink, param, retval, cppclass, typehandler
 def register_types(module):
     root_module = module.get_root()
     
-    ## packet-sink.h: ns3::PacketSink [class]
-    module.add_class('PacketSink', parent=root_module['ns3::Application'])
     
     ## Register a nested module for the namespace Config
     
@@ -77,34 +75,6 @@ def register_types_ns3_olsr(module):
     
 
 def register_methods(root_module):
-    register_Ns3PacketSink_methods(root_module, root_module['ns3::PacketSink'])
-    return
-
-def register_Ns3PacketSink_methods(root_module, cls):
-    ## packet-sink.h: ns3::PacketSink::PacketSink(ns3::PacketSink const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::PacketSink const &', 'arg0')])
-    ## packet-sink.h: ns3::PacketSink::PacketSink() [constructor]
-    cls.add_constructor([])
-    ## packet-sink.h: static ns3::TypeId ns3::PacketSink::GetTypeId() [member function]
-    cls.add_method('GetTypeId', 
-                   'ns3::TypeId', 
-                   [], 
-                   is_static=True)
-    ## packet-sink.h: void ns3::PacketSink::DoDispose() [member function]
-    cls.add_method('DoDispose', 
-                   'void', 
-                   [], 
-                   visibility='protected', is_virtual=True)
-    ## packet-sink.h: void ns3::PacketSink::StartApplication() [member function]
-    cls.add_method('StartApplication', 
-                   'void', 
-                   [], 
-                   visibility='private', is_virtual=True)
-    ## packet-sink.h: void ns3::PacketSink::StopApplication() [member function]
-    cls.add_method('StopApplication', 
-                   'void', 
-                   [], 
-                   visibility='private', is_virtual=True)
     return
 
 def register_functions(root_module):
