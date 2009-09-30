@@ -1,6 +1,7 @@
 /* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2007 Georgia Tech Research Corporation
+ * Copyright (c) 2009 INRIA
  * 
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -15,13 +16,9 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * Author: Raj Bhattacharjea <raj.b@gatech.edu>
+ * Authors: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
+ *          Raj Bhattacharjea <raj.b@gatech.edu>
  */
-/**
- * This is the test code for tcp-socket-impl.cc, it was moved out of tcp-socket-impl.cc 
- * to be in an independent file for clarity purposes.
- */
-#ifdef RUN_SELF_TESTS
 
 #include "ns3/test.h"
 #include "ns3/socket-factory.h"
@@ -47,10 +44,200 @@
 #include <string>
 
 namespace ns3 {
-    
-static void
-AddInternetStack (Ptr<Node> node)
+
+class TcpTestCase : public TestCase
 {
+public:
+  TcpTestCase (uint32_t totalStreamSize,
+               uint32_t sourceWriteSize,
+               uint32_t sourceReadSize,
+               uint32_t serverWriteSize,
+               uint32_t serverReadSize);
+private:
+  virtual bool DoRun (void);
+  virtual void DoTeardown (void);
+  void SetupDefaultSim (void);
+
+  Ptr<Node> CreateInternetNode (void);
+  Ptr<SimpleNetDevice> AddSimpleNetDevice (Ptr<Node> node, const char* ipaddr, const char* netmask);
+  void ServerHandleConnectionCreated (Ptr<Socket> s, const Address & addr);
+  void ServerHandleRecv (Ptr<Socket> sock);
+  void ServerHandleSend (Ptr<Socket> sock, uint32_t available);
+  void SourceHandleSend (Ptr<Socket> sock, uint32_t available);
+  void SourceHandleRecv (Ptr<Socket> sock);
+
+  uint32_t m_totalBytes;
+  uint32_t m_sourceWriteSize;
+  uint32_t m_sourceReadSize;
+  uint32_t m_serverWriteSize;
+  uint32_t m_serverReadSize;
+  uint32_t m_currentSourceTxBytes;
+  uint32_t m_currentSourceRxBytes;
+  uint32_t m_currentServerRxBytes;
+  uint32_t m_currentServerTxBytes;
+  uint8_t *m_sourceTxPayload;
+  uint8_t *m_sourceRxPayload;
+  uint8_t* m_serverRxPayload;
+};
+
+static std::string Name (std::string str, uint32_t totalStreamSize,
+                         uint32_t sourceWriteSize,
+                         uint32_t serverReadSize,
+                         uint32_t serverWriteSize,
+                         uint32_t sourceReadSize)
+{
+  std::ostringstream oss;
+  oss << str << " total=" << totalStreamSize << " sourceWrite=" << sourceWriteSize 
+      << " sourceRead=" << sourceReadSize << " serverRead=" << serverReadSize
+      << " serverWrite=" << serverWriteSize;
+  return oss.str ();
+}
+
+TcpTestCase::TcpTestCase (uint32_t totalStreamSize,
+                          uint32_t sourceWriteSize,
+                          uint32_t sourceReadSize,
+                          uint32_t serverWriteSize,
+                          uint32_t serverReadSize)
+  : TestCase (Name ("Send string data from client to server and back", 
+                    totalStreamSize, 
+                    sourceWriteSize,
+                    serverReadSize,
+                    serverWriteSize,
+                    sourceReadSize)),
+    m_totalBytes (totalStreamSize),
+    m_sourceWriteSize (sourceWriteSize),
+    m_sourceReadSize (sourceReadSize),
+    m_serverWriteSize (serverWriteSize),
+    m_serverReadSize (serverReadSize)
+{}
+
+bool
+TcpTestCase::DoRun (void)
+{
+  m_currentSourceTxBytes = 0;
+  m_currentSourceRxBytes = 0;
+  m_currentServerRxBytes = 0;
+  m_currentServerTxBytes = 0;
+  m_sourceTxPayload = new uint8_t [m_totalBytes];
+  m_sourceRxPayload = new uint8_t [m_totalBytes];
+  m_serverRxPayload = new uint8_t [m_totalBytes];
+  for(uint32_t i = 0; i < m_totalBytes; ++i)
+    {
+      uint8_t m = (uint8_t)(97 + (i % 26));
+      m_sourceTxPayload[i] = m;
+    }
+  memset (m_sourceRxPayload, 0, m_totalBytes);
+  memset (m_serverRxPayload, 0, m_totalBytes);
+
+  SetupDefaultSim ();
+
+  Simulator::Run ();
+
+  NS_TEST_EXPECT_MSG_EQ (m_currentSourceTxBytes, m_totalBytes, "Source sent all bytes");
+  NS_TEST_EXPECT_MSG_EQ (m_currentServerRxBytes, m_totalBytes, "Server received all bytes");
+  NS_TEST_EXPECT_MSG_EQ (m_currentSourceRxBytes, m_totalBytes, "Source received all bytes");
+  NS_TEST_EXPECT_MSG_EQ (memcmp (m_sourceTxPayload, m_serverRxPayload, m_totalBytes), 0, 
+                         "Server received expected data buffers");
+  NS_TEST_EXPECT_MSG_EQ (memcmp (m_sourceTxPayload, m_sourceRxPayload, m_totalBytes), 0, 
+                         "Source received back expected data buffers");
+
+  return false;
+}
+void
+TcpTestCase::DoTeardown (void)
+{
+  delete [] m_sourceTxPayload;
+  delete [] m_sourceRxPayload;
+  delete [] m_serverRxPayload;
+  Simulator::Destroy ();
+}
+
+void
+TcpTestCase::ServerHandleConnectionCreated (Ptr<Socket> s, const Address & addr)
+{
+  s->SetRecvCallback (MakeCallback (&TcpTestCase::ServerHandleRecv, this));
+  s->SetSendCallback (MakeCallback (&TcpTestCase::ServerHandleSend, this));
+}
+
+void
+TcpTestCase::ServerHandleRecv (Ptr<Socket> sock)
+{
+  while (sock->GetRxAvailable () > 0)
+    {
+      uint32_t toRead = std::min (m_serverReadSize, sock->GetRxAvailable ());
+      Ptr<Packet> p = sock->Recv (toRead, 0);
+      if (p == 0 && sock->GetErrno () != Socket::ERROR_NOTERROR)
+        {
+          NS_FATAL_ERROR ("Server could not read stream at byte " << m_currentServerRxBytes);
+        }
+      NS_TEST_EXPECT_MSG_EQ ((m_currentServerRxBytes + p->GetSize () <= m_totalBytes), true, 
+                             "Server received too many bytes");
+      p->CopyData (&m_serverRxPayload[m_currentServerRxBytes], p->GetSize ());
+      m_currentServerRxBytes += p->GetSize ();
+      ServerHandleSend (sock, sock->GetTxAvailable ());
+    }
+}
+
+void
+TcpTestCase::ServerHandleSend (Ptr<Socket> sock, uint32_t available)
+{
+  while (sock->GetTxAvailable () > 0 && m_currentServerTxBytes < m_currentServerRxBytes)
+    {
+      uint32_t left = m_currentServerRxBytes - m_currentServerTxBytes;
+      uint32_t toSend = std::min (left, sock->GetTxAvailable ());
+      toSend = std::min (toSend, m_serverWriteSize);
+      Ptr<Packet> p = Create<Packet> (&m_serverRxPayload[m_currentServerTxBytes], toSend);
+      int sent = sock->Send (p);
+      NS_TEST_EXPECT_MSG_EQ ((sent != -1), true, "Server error during send ?");
+      m_currentServerTxBytes += sent;
+    }
+  if (m_currentServerTxBytes == m_totalBytes)
+    {
+      sock->Close ();
+    }
+}
+
+void
+TcpTestCase::SourceHandleSend (Ptr<Socket> sock, uint32_t available)
+{
+  while (sock->GetTxAvailable () > 0 && m_currentSourceTxBytes < m_totalBytes)
+    {
+      uint32_t left = m_totalBytes - m_currentSourceTxBytes;
+      uint32_t toSend = std::min (left, sock->GetTxAvailable ());
+      toSend = std::min (toSend, m_sourceWriteSize);
+      Ptr<Packet> p = Create<Packet> (&m_sourceTxPayload[m_currentSourceTxBytes], toSend);
+      int sent = sock->Send (p);
+      NS_TEST_EXPECT_MSG_EQ ((sent != -1), true, "Error during send ?");
+      m_currentSourceTxBytes += sent;
+    }
+}
+
+void
+TcpTestCase::SourceHandleRecv (Ptr<Socket> sock)
+{
+  while (sock->GetRxAvailable () > 0 && m_currentSourceRxBytes < m_totalBytes)
+    {
+      uint32_t toRead = std::min (m_sourceReadSize, sock->GetRxAvailable ());
+      Ptr<Packet> p = sock->Recv (toRead, 0);
+      if (p == 0 && sock->GetErrno () != Socket::ERROR_NOTERROR)
+        {
+          NS_FATAL_ERROR ("Source could not read stream at byte " << m_currentSourceRxBytes);
+        }
+      NS_TEST_EXPECT_MSG_EQ ((m_currentSourceRxBytes + p->GetSize () <= m_totalBytes), true, 
+                             "Source received too many bytes");
+      p->CopyData (&m_sourceRxPayload[m_currentSourceRxBytes], p->GetSize ());
+      m_currentSourceRxBytes += p->GetSize ();
+    }
+  if (m_currentSourceRxBytes == m_totalBytes)
+    {
+      sock->Close ();
+    }
+}
+
+Ptr<Node>
+TcpTestCase::CreateInternetNode ()
+{
+  Ptr<Node> node = CreateObject<Node> ();
   //ARP
   Ptr<ArpL3Protocol> arp = CreateObject<ArpL3Protocol> ();
   node->AggregateObject(arp);
@@ -71,234 +258,11 @@ AddInternetStack (Ptr<Node> node)
   //TCP
   Ptr<TcpL4Protocol> tcp = CreateObject<TcpL4Protocol> ();
   node->AggregateObject(tcp);
-}
-
-class TcpSocketImplTest: public Test
-{
-  public:
-  TcpSocketImplTest ();
-  virtual bool RunTests (void);
-  private:
-  //test 1, which sends string "Hello world" server->client
-  void Test1 (void);
-  void Test1_HandleConnectionCreated (Ptr<Socket>, const Address &);
-  void Test1_HandleRecv (Ptr<Socket> sock);
-
-  //test 2, which sends a number of bytes server->client
-  void Test2 (uint32_t payloadSize);
-  void Test2_HandleConnectionCreated (Ptr<Socket>, const Address &);
-  void Test2_HandleRecv (Ptr<Socket> sock);
-  uint32_t test2_payloadSize;
-
-  //test 3, which makes sure the rx buffer is finite
-  void Test3 (uint32_t payloadSize);
-  void Test3_HandleConnectionCreated (Ptr<Socket>, const Address &);
-  void Test3_HandleRecv (Ptr<Socket> sock);
-  uint32_t test3_payloadSize;
-
-  //helpers to make topology construction easier
-  Ptr<Node> CreateInternetNode ();
-  Ptr<SimpleNetDevice> AddSimpleNetDevice (Ptr<Node>,const char*,const char*);
-  void SetupDefaultSim ();
-
-  //reset all of the below state for another run
-  void Reset ();
-
-  //all of the state this class needs; basically both ends of the connection,
-  //and this test kind of acts as an single application running on both nodes
-  //simultaneously
-  Ptr<Node> node0;
-  Ptr<Node> node1;
-  Ptr<SimpleNetDevice> dev0;
-  Ptr<SimpleNetDevice> dev1;
-  Ptr<SimpleChannel> channel;
-  Ptr<Socket> listeningSock;
-  Ptr<Socket> sock0;
-  Ptr<Socket> sock1;
-  uint32_t rxBytes0;
-  uint32_t rxBytes1;
-
-  uint8_t* rxPayload;
-
-  bool result;
-};
-
-TcpSocketImplTest::TcpSocketImplTest ()
-  : Test ("TcpSocketImpl"), 
-    rxBytes0 (0),
-    rxBytes1 (0),
-    rxPayload (0),
-    result (true)
-{
-}
-
-bool
-TcpSocketImplTest::RunTests (void)
-{
-  Test1();
-  if (!result) return false;
-  Test2(600);
-  if (!result) return false;
-  Test3(20000);
-  return result;
-}
-
-//-----------------------------------------------------------------------------
-//test 1-----------------------------------------------------------------------
-//-----------------------------------------------------------------------------
-void
-TcpSocketImplTest::Test1 ()
-{
-  SetupDefaultSim ();
-  listeningSock->SetAcceptCallback 
-      (MakeNullCallback<bool, Ptr< Socket >, const Address &> (),
-       MakeCallback(&TcpSocketImplTest::Test1_HandleConnectionCreated,this));
-  sock1->SetRecvCallback (MakeCallback(&TcpSocketImplTest::Test1_HandleRecv, this));
-
-  Simulator::Run ();
-  Simulator::Destroy ();
-
-  result = result && (rxBytes1 == 13);
-  result = result && (strcmp((const char*) rxPayload,"Hello World!") == 0);
-
-  Reset ();
-}
-
-void
-TcpSocketImplTest::Test1_HandleConnectionCreated (Ptr<Socket> s, const Address & addr)
-{
-  NS_ASSERT(s != listeningSock);
-  NS_ASSERT(sock0 == 0);
-  sock0 = s;
-  const uint8_t* hello = (uint8_t*)"Hello World!";
-  Ptr<Packet> p = Create<Packet> (hello, 13);
-  sock0->Send(p);
-  
-  sock0->SetRecvCallback (MakeCallback(&TcpSocketImplTest::Test1_HandleRecv, this));
-}
-
-void
-TcpSocketImplTest::Test1_HandleRecv (Ptr<Socket> sock)
-{
-  NS_ASSERT (sock == sock0 || sock == sock1);
-  Ptr<Packet> p = sock->Recv();
-  uint32_t sz = p->GetSize();
-  if (sock == sock1)
-  {
-    rxBytes1 += sz;
-    rxPayload = new uint8_t[sz];
-    p->CopyData (rxPayload, sz);
-  }
-  else
-  {
-    NS_FATAL_ERROR ("Recv from unknown socket "<<sock);
-  }
-}
-
-//-----------------------------------------------------------------------------
-//test 2-----------------------------------------------------------------------
-//-----------------------------------------------------------------------------
-void
-TcpSocketImplTest::Test2 (uint32_t payloadSize)
-{
-  test2_payloadSize = payloadSize;
-  SetupDefaultSim ();
-  listeningSock->SetAcceptCallback 
-      (MakeNullCallback<bool, Ptr< Socket >, const Address &> (),
-       MakeCallback(&TcpSocketImplTest::Test2_HandleConnectionCreated,this));
-  sock1->SetRecvCallback (MakeCallback(&TcpSocketImplTest::Test2_HandleRecv, this));
-
-  Simulator::Run ();
-  Simulator::Destroy ();
-
-  result = result && (rxBytes1 == test2_payloadSize);
-
-  Reset ();
-}
-
-void
-TcpSocketImplTest::Test2_HandleConnectionCreated (Ptr<Socket> s, const Address & addr)
-{
-  NS_ASSERT(s != listeningSock);
-  NS_ASSERT(sock0 == 0);
-  sock0 = s;
-  Ptr<Packet> p = Create<Packet> (test2_payloadSize);
-  sock0->Send(p);
-  
-  sock0->SetRecvCallback (MakeCallback(&TcpSocketImplTest::Test2_HandleRecv, this));
-}
-
-void
-TcpSocketImplTest::Test2_HandleRecv (Ptr<Socket> sock)
-{
-  NS_ASSERT (sock == sock0 || sock == sock1);
-  Ptr<Packet> p = sock->Recv();
-  uint32_t sz = p->GetSize();
-  if (sock == sock1)
-  {
-    rxBytes1 += sz;
-  }
-  else
-  {
-    NS_FATAL_ERROR ("Not supposed to be back traffic in test 2..."<<sock);
-  }
-}
-
-//-----------------------------------------------------------------------------
-//test 3-----------------------------------------------------------------------
-//-----------------------------------------------------------------------------
-void
-TcpSocketImplTest::Test3 (uint32_t payloadSize)
-{
-  Config::SetDefault ("ns3::TcpSocket::RcvBufSize", UintegerValue (10000));
-  test3_payloadSize = payloadSize;
-  SetupDefaultSim ();
-  listeningSock->SetAcceptCallback 
-      (MakeNullCallback<bool, Ptr< Socket >, const Address &> (),
-       MakeCallback(&TcpSocketImplTest::Test3_HandleConnectionCreated,this));
-  sock1->SetRecvCallback (MakeCallback(&TcpSocketImplTest::Test3_HandleRecv, this));
-
-  Simulator::Run ();
-  Simulator::Destroy ();
-
-  result = result && (rxBytes1 == test3_payloadSize);
-
-  Reset();
-}
-void
-TcpSocketImplTest::Test3_HandleConnectionCreated (Ptr<Socket> s, const Address &)
-{
-  NS_ASSERT(s != listeningSock);
-  NS_ASSERT(sock0 == 0);
-  sock0 = s;
-  Ptr<Packet> p = Create<Packet> (test3_payloadSize);
-  sock0->Send(p);
-}
-void
-TcpSocketImplTest::Test3_HandleRecv (Ptr<Socket> sock)
-{
-  NS_ASSERT_MSG (sock == sock1, "Not supposed to be back traffic in test 3... ");
-  if(sock->GetRxAvailable() >= 10000 ) //perform batch reads every 10000 bytes
-  {
-    Ptr<Packet> p = sock->Recv();
-    uint32_t sz = p->GetSize();
-    rxBytes1 += sz;
-  }
-}
-
-//-----------------------------------------------------------------------------
-//helpers----------------------------------------------------------------------
-//-----------------------------------------------------------------------------
-Ptr<Node>
-TcpSocketImplTest::CreateInternetNode ()
-{
-  Ptr<Node> node = CreateObject<Node> ();
-  AddInternetStack (node);
   return node;
 }
 
 Ptr<SimpleNetDevice>
-TcpSocketImplTest::AddSimpleNetDevice (Ptr<Node> node, const char* ipaddr, const char* netmask)
+TcpTestCase::AddSimpleNetDevice (Ptr<Node> node, const char* ipaddr, const char* netmask)
 {
   Ptr<SimpleNetDevice> dev = CreateObject<SimpleNetDevice> ();
   dev->SetAddress (Mac48Address::ConvertFrom (Mac48Address::Allocate ()));
@@ -311,57 +275,53 @@ TcpSocketImplTest::AddSimpleNetDevice (Ptr<Node> node, const char* ipaddr, const
   return dev;
 }
 
-void 
-TcpSocketImplTest::SetupDefaultSim ()
+void
+TcpTestCase::SetupDefaultSim (void)
 {
   const char* netmask = "255.255.255.0";
   const char* ipaddr0 = "192.168.1.1";
   const char* ipaddr1 = "192.168.1.2";
-  node0 = CreateInternetNode ();
-  node1 = CreateInternetNode ();
-  dev0 = AddSimpleNetDevice (node0, ipaddr0, netmask);
-  dev1 = AddSimpleNetDevice (node1, ipaddr1, netmask);
+  Ptr<Node> node0 = CreateInternetNode ();
+  Ptr<Node> node1 = CreateInternetNode ();
+  Ptr<SimpleNetDevice> dev0 = AddSimpleNetDevice (node0, ipaddr0, netmask);
+  Ptr<SimpleNetDevice> dev1 = AddSimpleNetDevice (node1, ipaddr1, netmask);
 
-  channel = CreateObject<SimpleChannel> ();
+  Ptr<SimpleChannel> channel = CreateObject<SimpleChannel> ();
   dev0->SetChannel (channel);
   dev1->SetChannel (channel);
 
   Ptr<SocketFactory> sockFactory0 = node0->GetObject<TcpSocketFactory> ();
   Ptr<SocketFactory> sockFactory1 = node1->GetObject<TcpSocketFactory> ();
 
-  listeningSock = sockFactory0->CreateSocket();
-  sock1 = sockFactory1->CreateSocket();
+  Ptr<Socket> server = sockFactory0->CreateSocket();
+  Ptr<Socket> source = sockFactory1->CreateSocket();
 
   uint16_t port = 50000;
   InetSocketAddress serverlocaladdr (Ipv4Address::GetAny(), port);
   InetSocketAddress serverremoteaddr (Ipv4Address(ipaddr0), port);
 
-  listeningSock->Bind(serverlocaladdr);
-  listeningSock->Listen ();
+  server->Bind(serverlocaladdr);
+  server->Listen ();
+  server->SetAcceptCallback (MakeNullCallback<bool, Ptr< Socket >, const Address &> (),
+                             MakeCallback(&TcpTestCase::ServerHandleConnectionCreated,this));
 
-  sock1->Connect(serverremoteaddr);
+  source->SetRecvCallback (MakeCallback(&TcpTestCase::SourceHandleRecv, this));
+  source->SetSendCallback (MakeCallback (&TcpTestCase::SourceHandleSend, this));
+
+  source->Connect(serverremoteaddr);
 }
 
-void
-TcpSocketImplTest::Reset ()
+static class TcpTestSuite : public TestSuite
 {
-  node0 = 0;
-  node1 = 0;
-  dev0 = 0;
-  dev1 = 0;
-  channel = 0;
-  listeningSock = 0;
-  sock0 = 0;
-  sock1 = 0;
-  rxBytes0 = 0;
-  rxBytes1 = 0;
-  delete[] rxPayload;
-  rxPayload = 0;
-}
+public:
+  TcpTestSuite ()
+    : TestSuite ("tcp", UNIT)
+    {
+      AddTestCase (new TcpTestCase (13, 200, 200, 200, 200));
+      AddTestCase (new TcpTestCase (13, 1, 1, 1, 1));
+      //AddTestCase (new TcpTestCase (100000, 100, 50, 100, 20));
+    }
+  
+} g_tcpTestSuite;
 
-static TcpSocketImplTest gTcpSocketImplTest;
-
-}//namespace ns3
-
-#endif /* RUN_SELF_TESTS */
-
+} // namespace ns3
