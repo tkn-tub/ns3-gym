@@ -135,37 +135,6 @@ operator<< (std::ostream & os, TypeHeader const & h)
   return os;
 }
 
-#ifdef RUN_SELF_TESTS
-/// Unit test for TypeHeader
-struct TypeHeaderTest : public Test
-  {
-    TypeHeaderTest () : Test ("AODV/TypeHeader")
-      {}
-    virtual bool RunTests ();
-  };
-
-/// Test instance
-static TypeHeaderTest g_TypeHeaderTest;
-
-bool
-TypeHeaderTest::RunTests ()
-{
-  bool result (true);
-
-  TypeHeader h (AODVTYPE_RREQ);
-  NS_TEST_ASSERT (h.IsValid ());
-  NS_TEST_ASSERT_EQUAL (h.Get (), AODVTYPE_RREQ);
-
-  Ptr<Packet> p = Create<Packet> ();
-  p->AddHeader (h);
-  TypeHeader h2 (AODVTYPE_RREP);
-  uint32_t bytes = p->RemoveHeader (h2);
-  NS_TEST_ASSERT_EQUAL (bytes, 1);
-  NS_TEST_ASSERT_EQUAL (h, h2);
-  return result;
-}
-#endif
-
 //-----------------------------------------------------------------------------
 // RREQ
 //-----------------------------------------------------------------------------
@@ -290,63 +259,6 @@ RreqHeader::operator== (RreqHeader const & o) const
           m_dst == o.m_dst && m_dstSeqNo == o.m_dstSeqNo &&
           m_origin == o.m_origin && m_originSeqNo == o.m_originSeqNo);
 }
-
-#ifdef RUN_SELF_TESTS
-/// Unit test for RREQ
-struct RreqHeaderTest : public Test
-{
-  RreqHeaderTest () : Test ("AODV/RREQ") {}
-  virtual bool
-  RunTests ();
-};
-
-/// Test instance
-static RreqHeaderTest g_RreqHeaderTest;
-
-bool
-RreqHeaderTest::RunTests ()
-{
-  bool result (true);
-
-  RreqHeader h (/*flags*/0, /*reserved*/0, /*hopCount*/6, /*requestID*/1, /*dst*/Ipv4Address ("1.2.3.4"),
-                /*dstSeqNo*/40, /*origin*/Ipv4Address ("4.3.2.1"), /*originSeqNo*/10);
-  NS_TEST_ASSERT_EQUAL (h.GetGratiousRrep (), false);
-  NS_TEST_ASSERT_EQUAL (h.GetDestinationOnly (), false);
-  NS_TEST_ASSERT_EQUAL (h.GetHopCount (), 6);
-  NS_TEST_ASSERT_EQUAL (h.GetId (), 1);
-  NS_TEST_ASSERT_EQUAL (h.GetDst (), Ipv4Address ("1.2.3.4"));
-  NS_TEST_ASSERT_EQUAL (h.GetDstSeqno (), 40);
-  NS_TEST_ASSERT_EQUAL (h.GetOrigin (), Ipv4Address ("4.3.2.1"));
-  NS_TEST_ASSERT_EQUAL (h.GetOriginSeqno (), 10);
-
-  h.SetGratiousRrep (true);
-  NS_TEST_ASSERT_EQUAL (h.GetGratiousRrep (), true);
-  h.SetDestinationOnly (true);
-  NS_TEST_ASSERT_EQUAL (h.GetDestinationOnly (), true);
-  h.SetUnknownSeqno (true);
-  NS_TEST_ASSERT_EQUAL (h.GetUnknownSeqno (), true);
-  h.SetDst (Ipv4Address ("1.1.1.1"));
-  NS_TEST_ASSERT_EQUAL (h.GetDst (), Ipv4Address ("1.1.1.1"));
-  h.SetDstSeqno (5);
-  NS_TEST_ASSERT_EQUAL (h.GetDstSeqno (), 5);
-  h.SetHopCount (7);
-  NS_TEST_ASSERT_EQUAL (h.GetHopCount (), 7);
-  h.SetId (55);
-  NS_TEST_ASSERT_EQUAL (h.GetId (), 55);
-  h.SetOrigin (Ipv4Address ("4.4.4.4"));
-  NS_TEST_ASSERT_EQUAL (h.GetOrigin (), Ipv4Address ("4.4.4.4"));
-  h.SetOriginSeqno (23);
-  NS_TEST_ASSERT_EQUAL (h.GetOriginSeqno (), 23);
-
-  Ptr<Packet> p = Create<Packet> ();
-  p->AddHeader (h);
-  RreqHeader h2;
-  uint32_t bytes = p->RemoveHeader (h2);
-  NS_TEST_ASSERT_EQUAL (bytes, 23);
-  NS_TEST_ASSERT_EQUAL (h, h2);
-  return result;
-}
-#endif
 
 //-----------------------------------------------------------------------------
 // RREP
@@ -482,63 +394,6 @@ operator<< (std::ostream & os, RrepHeader const & h)
   return os;
 }
 
-#ifdef RUN_SELF_TESTS
-/// Unit test for RREP
-struct RrepHeaderTest : public Test
-{
-  RrepHeaderTest () : Test ("AODV/RREP") {}
-  virtual bool
-  RunTests ();
-};
-
-/// Test instance
-static RrepHeaderTest g_RrepHeaderTest;
-
-bool
-RrepHeaderTest::RunTests ()
-{
-  bool result (true);
-
-  RrepHeader h (/*prefixSize*/0, /*hopCount*/12, /*dst*/Ipv4Address ("1.2.3.4"), /*dstSeqNo*/2,
-                /*origin*/Ipv4Address ("4.3.2.1"), /*lifetime*/Seconds (3));
-  NS_TEST_ASSERT_EQUAL (h.GetPrefixSize (), 0);
-  NS_TEST_ASSERT_EQUAL (h.GetHopCount (), 12);
-  NS_TEST_ASSERT_EQUAL (h.GetDst (), Ipv4Address ("1.2.3.4"));
-  NS_TEST_ASSERT_EQUAL (h.GetDstSeqno (), 2);
-  NS_TEST_ASSERT_EQUAL (h.GetOrigin (), Ipv4Address ("4.3.2.1"));
-  NS_TEST_ASSERT_EQUAL (h.GetLifeTime (), Seconds (3));
-  h.SetDst (Ipv4Address ("1.1.1.1"));
-  NS_TEST_ASSERT_EQUAL (h.GetDst (), Ipv4Address ("1.1.1.1"));
-  h.SetDstSeqno (123);
-  NS_TEST_ASSERT_EQUAL (h.GetDstSeqno (), 123);
-  h.SetOrigin (Ipv4Address ("4.4.4.4"));
-  NS_TEST_ASSERT_EQUAL (h.GetOrigin (), Ipv4Address ("4.4.4.4"));
-  h.SetLifeTime (MilliSeconds (1200));
-  NS_TEST_ASSERT_EQUAL (h.GetLifeTime (), MilliSeconds (1200));
-  h.SetAckRequired (true);
-  NS_TEST_ASSERT_EQUAL (h.GetAckRequired (), true);
-  h.SetAckRequired (false);
-  NS_TEST_ASSERT (!h.GetAckRequired ());
-  h.SetPrefixSize (2);
-  NS_TEST_ASSERT_EQUAL (h.GetPrefixSize (), 2);
-  h.SetHopCount (15);
-  NS_TEST_ASSERT_EQUAL (h.GetHopCount (), 15);
-
-  h.SetHello (Ipv4Address ("10.0.0.2"), 9, Seconds (15));
-  NS_TEST_ASSERT_EQUAL (h.GetDst (), h.GetOrigin ());
-  NS_TEST_ASSERT_EQUAL (h.GetDstSeqno (), 9);
-  NS_TEST_ASSERT_EQUAL (h.GetLifeTime (), Seconds (15));
-
-  Ptr<Packet> p = Create<Packet> ();
-  p->AddHeader (h);
-  RrepHeader h2;
-  uint32_t bytes = p->RemoveHeader (h2);
-  NS_TEST_ASSERT_EQUAL (bytes, 19);
-  NS_TEST_ASSERT_EQUAL (h, h2);
-  return result;
-}
-#endif
-
 //-----------------------------------------------------------------------------
 // RREP-ACK
 //-----------------------------------------------------------------------------
@@ -593,33 +448,6 @@ operator<< (std::ostream & os, RrepAckHeader const & h )
   h.Print (os);
   return os;
 }
-
-#ifdef RUN_SELF_TESTS
-/// Unit test for RREP-ACK
-struct RrepAckHeaderTest : public Test
-  {
-    RrepAckHeaderTest () : Test ("AODV/RREP-ACK")
-      {}
-    virtual bool RunTests();
-  };
-
-/// Test instance
-static RrepAckHeaderTest g_RrepAckHeaderTest;
-
-bool RrepAckHeaderTest::RunTests ()
-  {
-    bool result(true);
-
-    RrepAckHeader h;
-    Ptr<Packet> p = Create<Packet> ();
-    p->AddHeader (h);
-    RrepAckHeader h2;
-    uint32_t bytes = p->RemoveHeader(h2);
-    NS_TEST_ASSERT_EQUAL (bytes, 1);
-    NS_TEST_ASSERT_EQUAL (h, h2);
-    return result;
-  }
-#endif
 
 //-----------------------------------------------------------------------------
 // RERR
@@ -759,42 +587,5 @@ operator<< (std::ostream & os, RerrHeader const & h )
   h.Print (os);
   return os;
 }
-
-#ifdef RUN_SELF_TESTS
-/// Unit test for RERR
-struct RerrHeaderTest : public Test
-  {
-    RerrHeaderTest () : Test ("AODV/RERR")
-      {}
-    virtual bool RunTests();
-  };
-
-/// Test instance
-static RerrHeaderTest g_RerrHeaderTest;
-
-bool RerrHeaderTest::RunTests ()
-  {
-    bool result(true);
-
-    RerrHeader h;
-    h.SetNoDelete(true);
-    NS_TEST_ASSERT(h.GetNoDelete());
-    Ipv4Address dst = Ipv4Address("1.2.3.4");
-    NS_TEST_ASSERT(h.AddUnDestination(dst, 12));
-    NS_TEST_ASSERT_EQUAL(h.GetDestCount(),1);
-    NS_TEST_ASSERT(h.AddUnDestination(dst, 13));
-    Ipv4Address dst2 = Ipv4Address("4.3.2.1");
-    NS_TEST_ASSERT(h.AddUnDestination(dst2, 12));
-    NS_TEST_ASSERT_EQUAL(h.GetDestCount(), 2);
-
-    Ptr<Packet> p = Create<Packet> ();
-    p->AddHeader (h);
-    RerrHeader h2;
-    uint32_t bytes = p->RemoveHeader(h2);
-    NS_TEST_ASSERT_EQUAL (bytes, h.GetSerializedSize());
-    NS_TEST_ASSERT_EQUAL (h, h2);
-    return result;
-  }
-#endif
 }
 }
