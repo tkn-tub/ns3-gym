@@ -230,6 +230,7 @@ main (int argc, char *argv[])
   // but we'll do it if asked.
   //
   bool result = false;
+  bool suiteRan = false;
 
   for (uint32_t i = 0; i < TestRunner::GetNTestSuites (); ++i)
     {
@@ -240,9 +241,19 @@ main (int argc, char *argv[])
           testSuite->SetStream (pofs);
           testSuite->SetVerbose (doVerbose);
           result |= testSuite->Run ();
+          suiteRan = true;
         }
     }
 
   ofs.close();
+
+  //
+  // If we couldn't figure out how to run at least one test, then return an error
+  //
+  if (suiteRan == false)
+    {
+      return true;
+    }
+
   return result;
 }
