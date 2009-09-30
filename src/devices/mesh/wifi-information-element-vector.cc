@@ -365,26 +365,23 @@ operator== (const WifiInformationElementVector & a, const WifiInformationElement
     }
   return true;
 }
-#ifdef RUN_SELF_TESTS
 
-/// Built-in self test for WifiInformationElementVector
-struct WifiInformationElementVectorBist : public Test
+//-----------------------------------------------------------------------------
+// Unit tests
+//-----------------------------------------------------------------------------
+/// Built-in self test for WifiInformationElementVector and all IE
+struct WifiInformationElementVectorBist : public TestCase
 {
   WifiInformationElementVectorBist () :
-    Test ("Mesh/WifiInformationElementVector")
+    TestCase ("Serializarion test for all mesh information elements")
   {
   };
-  virtual bool
-  RunTests ();
+  bool DoRun ();
 };
 
-/// Test instance
-static WifiInformationElementVectorBist g_IePrepBist;
-
 bool
-WifiInformationElementVectorBist::RunTests ()
+WifiInformationElementVectorBist::DoRun ()
 {
-  bool result = true;
   WifiInformationElementVector vector;
   {
     //Mesh ID test
@@ -424,12 +421,12 @@ WifiInformationElementVectorBist::RunTests ()
     rann->SetHopcount (2);
     rann->SetTTL (4);
     rann->DecrementTtl ();
-    NS_TEST_ASSERT_EQUAL (rann->GetTtl (), 3);
+    NS_TEST_ASSERT_MSG_EQ (rann->GetTtl (), 3, "SetTtl works");
     rann->SetOriginatorAddress (Mac48Address ("11:22:33:44:55:66"));
     rann->SetDestSeqNumber (5);
     rann->SetMetric (6);
     rann->IncrementMetric (2);
-    NS_TEST_ASSERT_EQUAL (rann->GetMetric (), 8);
+    NS_TEST_ASSERT_MSG_EQ (rann->GetMetric (), 8, "SetMetric works");
     vector.AddInformationElement (rann);
   }
   {
@@ -475,10 +472,23 @@ WifiInformationElementVectorBist::RunTests ()
   packet->AddHeader (vector);
   WifiInformationElementVector resultVector;
   packet->RemoveHeader (resultVector);
-  NS_TEST_ASSERT (vector == resultVector);
+  NS_TEST_ASSERT_MSG_EQ (vector, resultVector, "Roundtrip serialization of all known information elements works");
   
-  return result;
+  return false;
 }
 
-#endif // RUN_SELF_TESTS
+class MeshTestSuite : public TestSuite
+{
+public:
+  MeshTestSuite ();
+};
+
+MeshTestSuite::MeshTestSuite ()
+  : TestSuite ("devices-mesh", UNIT)
+{
+  AddTestCase (new WifiInformationElementVectorBist);
+}
+
+MeshTestSuite g_meshTestSuite;
+
 } //namespace ns3

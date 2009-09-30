@@ -84,17 +84,14 @@ EventGarbageCollector::~EventGarbageCollector ()
     }
 }
 
-}; // namespace ns3
+} // namespace ns3
 
-
-
-#ifdef RUN_SELF_TESTS
 
 #include "ns3/test.h"
 
 namespace ns3 {
 
-class EventGarbageCollectorTests : public Test
+class EventGarbageCollectorTestCase : public TestCase
 {
   int m_counter;
   EventGarbageCollector *m_events;
@@ -103,20 +100,20 @@ class EventGarbageCollectorTests : public Test
 
 public:
 
-  EventGarbageCollectorTests ();
-  virtual ~EventGarbageCollectorTests ();
-  virtual bool RunTests (void);
+  EventGarbageCollectorTestCase ();
+  virtual ~EventGarbageCollectorTestCase ();
+  virtual bool DoRun (void);
 };
 
-EventGarbageCollectorTests::EventGarbageCollectorTests ()
-  : Test ("EventGarbageCollector"), m_counter (0), m_events (0)
+EventGarbageCollectorTestCase::EventGarbageCollectorTestCase ()
+  : TestCase ("EventGarbageCollector"), m_counter (0), m_events (0)
 {}
 
-EventGarbageCollectorTests::~EventGarbageCollectorTests ()
+EventGarbageCollectorTestCase::~EventGarbageCollectorTestCase ()
 {}
 
 void
-EventGarbageCollectorTests::EventGarbageCollectorCallback ()
+EventGarbageCollectorTestCase::EventGarbageCollectorCallback ()
 {
   m_counter++;
   if (m_counter == 50)
@@ -127,27 +124,33 @@ EventGarbageCollectorTests::EventGarbageCollectorCallback ()
     }
 }
 
-bool EventGarbageCollectorTests::RunTests (void)
+bool EventGarbageCollectorTestCase::DoRun (void)
 {
-  bool result = true;
-
   m_events = new EventGarbageCollector ();
 
   for (int n = 0; n < 100; n++)
     {
       m_events->Track (Simulator::Schedule
                        (Simulator::Now (),
-                        &EventGarbageCollectorTests::EventGarbageCollectorCallback,
+                        &EventGarbageCollectorTestCase::EventGarbageCollectorCallback,
                         this));
     }
   Simulator::Run ();
-  NS_TEST_ASSERT_EQUAL (m_events, 0);
-  NS_TEST_ASSERT_EQUAL (m_counter, 50);
-  return result;
+  NS_TEST_EXPECT_MSG_EQ (m_events, 0, "");
+  NS_TEST_EXPECT_MSG_EQ (m_counter, 50, "");
+
+  return false;
 }
 
-static EventGarbageCollectorTests g_eventCollectorTests;
+static class EventGarbageCollectorTestSuite : public TestSuite
+{
+public:
+  EventGarbageCollectorTestSuite ()
+    : TestSuite ("event-garbage-collector", UNIT) 
+  {
+    AddTestCase (new EventGarbageCollectorTestCase ());
+  }
+} g_eventGarbageCollectorTests;
     
-};
+}
 
-#endif /* RUN_SELF_TESTS */

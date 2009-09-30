@@ -148,65 +148,67 @@ Histogram::SerializeToXmlStream (std::ostream &os, int indent, std::string eleme
 } // namespace ns3
 
 
-#ifdef RUN_SELF_TESTS
-
 #include "ns3/test.h"
 
 namespace ns3 {
 
-class HistogramTest : public ns3::Test {
+class HistogramTestCase : public ns3::TestCase {
 private:
 public:
-  HistogramTest ();
-  virtual bool RunTests (void);
+  HistogramTestCase ();
+  virtual bool DoRun (void);
 
 
 };
 
-HistogramTest::HistogramTest ()
-  : ns3::Test ("Histogram")
+HistogramTestCase::HistogramTestCase ()
+  : ns3::TestCase ("Histogram")
 {}
 
 
 bool 
-HistogramTest::RunTests (void)
+HistogramTestCase::DoRun (void)
 {
-  bool result = true;
-
   Histogram h0(3.5);
   // Testing floating-point bin widths
   {
-    for (int i=1; i<= 10; i++) h0.AddValue(3.4);
-    for (int i=1; i<= 5; i++) h0.AddValue(3.6);
-
-    NS_TEST_ASSERT_EQUAL (h0.GetBinWidth (0),  3.5);
-    NS_TEST_ASSERT_EQUAL (h0.GetNBins (),  2);
-    NS_TEST_ASSERT_EQUAL (h0.GetBinStart(1),  3.5);
-    NS_TEST_ASSERT_EQUAL (h0.GetBinCount(0),  10);
-    NS_TEST_ASSERT_EQUAL (h0.GetBinCount(1),  5);
+    for (int i=1; i <= 10; i++)
+      { 
+        h0.AddValue (3.4);
+      }
+    
+    for (int i=1; i <= 5; i++)
+      {    
+        h0.AddValue (3.6);
+      }
+    
+    NS_TEST_EXPECT_MSG_EQ_TOL (h0.GetBinWidth (0),  3.5, 1e-6, "");
+    NS_TEST_EXPECT_MSG_EQ (h0.GetNBins (),  2, "");
+    NS_TEST_EXPECT_MSG_EQ_TOL (h0.GetBinStart (1),  3.5, 1e-6, "");
+    NS_TEST_EXPECT_MSG_EQ (h0.GetBinCount (0),  10, "");
+    NS_TEST_EXPECT_MSG_EQ (h0.GetBinCount (1),  5, "");
   }
   
   {
-  // Testing bin expansion
-    h0.AddValue(74.3);
-
-    NS_TEST_ASSERT_EQUAL (h0.GetNBins (),  22);
-
-    /*for (uint32_t i=0; i < h0.GetSize () ; i++)
-    {
-      std::cout << i << ") BinStart:" << h0.GetBinStart (i) << " BinEnd:" << ((double) h0.GetBinStart (i) + h0.GetBinWidth (i)) << " BinCount: " << h0.GetBinCount (i) << std::endl;
-    }*/
-    
-    NS_TEST_ASSERT_EQUAL (h0.GetBinCount (21),  1);
+    // Testing bin expansion
+    h0.AddValue (74.3);
+    NS_TEST_EXPECT_MSG_EQ (h0.GetNBins (), 22, "");
+    NS_TEST_EXPECT_MSG_EQ (h0.GetBinCount (21), 1, "");
   }
  
-  return result;
+  return false;
 }
 
-static HistogramTest gHistogramTest;
+static class HistogramTestSuite : public TestSuite
+{
+public:
+  HistogramTestSuite ()
+    : TestSuite ("histogram", UNIT) 
+  {
+    AddTestCase (new HistogramTestCase ());
+  }
+} g_HistogramTestSuite;
 
-}; // namespace
+} // namespace
 
-
-#endif /* RUN_SELF_TESTS */
 

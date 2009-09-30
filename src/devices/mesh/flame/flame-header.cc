@@ -20,7 +20,6 @@
 #include "ns3/assert.h"
 #include "ns3/address-utils.h"
 #include "ns3/packet.h"
-#include "ns3/test.h"
 
 #include "flame-header.h"
 
@@ -142,41 +141,6 @@ operator== (const FlameHeader & a, const FlameHeader & b)
   return ((a.m_cost == b.m_cost) && (a.m_seqno == b.m_seqno) && (a.m_origDst == b.m_origDst) && (a.m_origSrc
       == b.m_origSrc) && (a.m_protocol == b.m_protocol));
 }
-
-#ifdef RUN_SELF_TESTS
-
-/// Built-in self test for FlameHeader
-struct FlameHeaderBist : public Test
-{
-  FlameHeaderBist () :
-    Test ("Mesh/Flame/FlameHeader")
-  {
-  }
-  virtual bool
-  RunTests ();
-};
-
-/// Test instance
-static FlameHeaderBist g_FlameHeaderBist;
-
-bool
-FlameHeaderBist::RunTests ()
-{
-  bool result (true);
-  FlameHeader a;
-  a.AddCost (123);
-  a.SetSeqno (456);
-  a.SetOrigDst (Mac48Address ("11:22:33:44:55:66"));
-  a.SetOrigSrc (Mac48Address ("00:11:22:33:44:55"));
-  a.SetProtocol (0x806);
-  Ptr<Packet> packet = Create<Packet> ();
-  packet->AddHeader (a);
-  FlameHeader b;
-  packet->RemoveHeader (b);
-  NS_TEST_ASSERT_EQUAL (b, a);
-  return result;
-}
-#endif
 
 } //namespace flame
 } // namespace ns3
