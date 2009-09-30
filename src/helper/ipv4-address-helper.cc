@@ -177,120 +177,179 @@ Ipv4AddressHelper::NumAddressBits (uint32_t maskbits) const
   return 0;
 }
 
-}; // namespace ns3
-
-#ifdef RUN_SELF_TESTS
+} // namespace ns3
 
 #include "ns3/test.h"
 
 namespace ns3 {
 
-class AddressHelperTest : public Test
+class NetworkAllocatorHelperTestCase : public TestCase
 {
 public:
-  AddressHelperTest ();
-  virtual bool RunTests (void);
+  NetworkAllocatorHelperTestCase ();
+private:
+  virtual bool DoRun (void);
+  virtual void DoTeardown (void);
 };
 
-static AddressHelperTest g_addressHelperTest;
+NetworkAllocatorHelperTestCase::NetworkAllocatorHelperTestCase ()
+  : TestCase ("Make sure the network allocator part is working on some common network prefixes.")
+{}
 
-AddressHelperTest::AddressHelperTest ()
-  : Test ("AddressHelper")
+void
+NetworkAllocatorHelperTestCase::DoTeardown (void)
 {
+  Ipv4AddressGenerator::Reset ();
 }
-
-  bool
-AddressHelperTest::RunTests (void)
+bool
+NetworkAllocatorHelperTestCase::DoRun (void)
 {
-  bool result = true;
-  Ipv4Address network;
   Ipv4Address address;
-
-//
-// Make sure the network allocator part is working on some common network
-// prefixes.
-//
+  Ipv4Address network;
   Ipv4AddressHelper h;
 
   h.SetBase ("1.0.0.0", "255.0.0.0");
   network = h.NewNetwork();
-  NS_TEST_ASSERT_EQUAL (network, Ipv4Address ("2.0.0.0"));
+  NS_TEST_EXPECT_MSG_EQ (network, Ipv4Address ("2.0.0.0"), "XXX");
   address = h.NewAddress();
-  NS_TEST_ASSERT_EQUAL (address, Ipv4Address ("2.0.0.1"));
+  NS_TEST_EXPECT_MSG_EQ (address, Ipv4Address ("2.0.0.1"), "XXX");
 
   h.SetBase ("0.1.0.0", "255.255.0.0");
   network = h.NewNetwork();
-  NS_TEST_ASSERT_EQUAL (network, Ipv4Address ("0.2.0.0"));
+  NS_TEST_EXPECT_MSG_EQ (network, Ipv4Address ("0.2.0.0"), "XXX");
   address = h.NewAddress();
-  NS_TEST_ASSERT_EQUAL (address, Ipv4Address ("0.2.0.1"));
+  NS_TEST_EXPECT_MSG_EQ (address, Ipv4Address ("0.2.0.1"), "XXX");
 
   h.SetBase ("0.0.1.0", "255.255.255.0");
   network = h.NewNetwork();
-  NS_TEST_ASSERT_EQUAL (network, Ipv4Address ("0.0.2.0"));
+  NS_TEST_EXPECT_MSG_EQ (network, Ipv4Address ("0.0.2.0"), "XXX");
   address = h.NewAddress();
-  NS_TEST_ASSERT_EQUAL (address, Ipv4Address ("0.0.2.1"));
+  NS_TEST_EXPECT_MSG_EQ (address, Ipv4Address ("0.0.2.1"), "XXX");
 
-//
-// Make sure the address allocator part is working.
-//
-  h.SetBase ("1.0.0.0", "255.0.0.0", "0.0.0.3");
-  address = h.NewAddress();
-  NS_TEST_ASSERT_EQUAL (address, Ipv4Address ("1.0.0.3"));
-  address = h.NewAddress();
-  NS_TEST_ASSERT_EQUAL (address, Ipv4Address ("1.0.0.4"));
-
-  h.SetBase ("0.1.0.0", "255.255.0.0", "0.0.0.3");
-  address = h.NewAddress();
-  NS_TEST_ASSERT_EQUAL (address, Ipv4Address ("0.1.0.3"));
-  address = h.NewAddress();
-  NS_TEST_ASSERT_EQUAL (address, Ipv4Address ("0.1.0.4"));
-
-  h.SetBase ("0.0.1.0", "255.255.255.0", "0.0.0.3");
-  address = h.NewAddress();
-  NS_TEST_ASSERT_EQUAL (address, Ipv4Address ("0.0.1.3"));
-  address = h.NewAddress();
-  NS_TEST_ASSERT_EQUAL (address, Ipv4Address ("0.0.1.4"));
-
-//
-// Make sure the reset to base behavior is working.  We're going to use some
-// of the same addresses allocated above, so reset the Ipv4AddressGenerator
-// to make it forget we did.
-//
-  Ipv4AddressGenerator::Reset ();
-
-  h.SetBase ("1.0.0.0", "255.0.0.0", "0.0.0.3");
-  address = h.NewAddress();
-  NS_TEST_ASSERT_EQUAL (address, Ipv4Address ("1.0.0.3"));
-  address = h.NewAddress();
-  NS_TEST_ASSERT_EQUAL (address, Ipv4Address ("1.0.0.4"));
-  network = h.NewNetwork();
-  NS_TEST_ASSERT_EQUAL (network, Ipv4Address ("2.0.0.0"));
-  address = h.NewAddress();
-  NS_TEST_ASSERT_EQUAL (address, Ipv4Address ("2.0.0.3"));
-
-  h.SetBase ("0.1.0.0", "255.255.0.0", "0.0.0.3");
-  address = h.NewAddress();
-  NS_TEST_ASSERT_EQUAL (address, Ipv4Address ("0.1.0.3"));
-  address = h.NewAddress();
-  NS_TEST_ASSERT_EQUAL (address, Ipv4Address ("0.1.0.4"));
-  network = h.NewNetwork();
-  NS_TEST_ASSERT_EQUAL (network, Ipv4Address ("0.2.0.0"));
-  address = h.NewAddress();
-  NS_TEST_ASSERT_EQUAL (address, Ipv4Address ("0.2.0.3"));
-
-  h.SetBase ("0.0.1.0", "255.255.255.0", "0.0.0.3");
-  address = h.NewAddress();
-  NS_TEST_ASSERT_EQUAL (address, Ipv4Address ("0.0.1.3"));
-  address = h.NewAddress();
-  NS_TEST_ASSERT_EQUAL (address, Ipv4Address ("0.0.1.4"));
-  network = h.NewNetwork();
-  NS_TEST_ASSERT_EQUAL (network, Ipv4Address ("0.0.2.0"));
-  address = h.NewAddress();
-  NS_TEST_ASSERT_EQUAL (address, Ipv4Address ("0.0.2.3"));
-
-  return true;
+  return false;
 }
+
+class AddressAllocatorHelperTestCase : public TestCase
+{
+public:
+  AddressAllocatorHelperTestCase ();
+private:
+  virtual bool DoRun (void);
+  virtual void DoTeardown (void);
+};
+
+AddressAllocatorHelperTestCase::AddressAllocatorHelperTestCase ()
+  : TestCase ("Make sure the address allocator part is working")
+{}
+
+void
+AddressAllocatorHelperTestCase::DoTeardown (void)
+{
+  Ipv4AddressGenerator::Reset ();
+}
+
+bool
+AddressAllocatorHelperTestCase::DoRun (void)
+{
+  Ipv4Address network;
+  Ipv4Address address;
+  Ipv4AddressHelper h;
+
+  h.SetBase ("1.0.0.0", "255.0.0.0", "0.0.0.3");
+  address = h.NewAddress();
+  NS_TEST_EXPECT_MSG_EQ (address, Ipv4Address ("1.0.0.3"), "XXX");
+  address = h.NewAddress();
+  NS_TEST_EXPECT_MSG_EQ (address, Ipv4Address ("1.0.0.4"), "XXX");
+
+  h.SetBase ("0.1.0.0", "255.255.0.0", "0.0.0.3");
+  address = h.NewAddress();
+  NS_TEST_EXPECT_MSG_EQ (address, Ipv4Address ("0.1.0.3"), "XXX");
+  address = h.NewAddress();
+  NS_TEST_EXPECT_MSG_EQ (address, Ipv4Address ("0.1.0.4"), "XXX");
+
+  h.SetBase ("0.0.1.0", "255.255.255.0", "0.0.0.3");
+  address = h.NewAddress();
+  NS_TEST_EXPECT_MSG_EQ (address, Ipv4Address ("0.0.1.3"), "XXX");
+  address = h.NewAddress();
+  NS_TEST_EXPECT_MSG_EQ (address, Ipv4Address ("0.0.1.4"), "XXX");
+
+  return false;
+}
+
+class ResetAllocatorHelperTestCase : public TestCase
+{
+public:
+  ResetAllocatorHelperTestCase ();
+  virtual bool DoRun (void);
+  virtual void DoTeardown (void);
+};
+
+ResetAllocatorHelperTestCase::ResetAllocatorHelperTestCase ()
+  : TestCase ("Make sure the reset to base behavior is working")
+{}
+
+bool
+ResetAllocatorHelperTestCase::DoRun (void)
+{
+  Ipv4Address network;
+  Ipv4Address address;
+  Ipv4AddressHelper h;
+
+  //
+  // We're going to use some of the same addresses allocated above, 
+  // so reset the Ipv4AddressGenerator to make it forget we did.
+  //
+
+  h.SetBase ("1.0.0.0", "255.0.0.0", "0.0.0.3");
+  address = h.NewAddress();
+  NS_TEST_EXPECT_MSG_EQ (address, Ipv4Address ("1.0.0.3"), "XXX");
+  address = h.NewAddress();
+  NS_TEST_EXPECT_MSG_EQ (address, Ipv4Address ("1.0.0.4"), "XXX");
+  network = h.NewNetwork();
+  NS_TEST_EXPECT_MSG_EQ (network, Ipv4Address ("2.0.0.0"), "XXX");
+  address = h.NewAddress();
+  NS_TEST_EXPECT_MSG_EQ (address, Ipv4Address ("2.0.0.3"), "XXX");
+
+  h.SetBase ("0.1.0.0", "255.255.0.0", "0.0.0.3");
+  address = h.NewAddress();
+  NS_TEST_EXPECT_MSG_EQ (address, Ipv4Address ("0.1.0.3"), "XXX");
+  address = h.NewAddress();
+  NS_TEST_EXPECT_MSG_EQ (address, Ipv4Address ("0.1.0.4"), "XXX");
+  network = h.NewNetwork();
+  NS_TEST_EXPECT_MSG_EQ (network, Ipv4Address ("0.2.0.0"), "XXX");
+  address = h.NewAddress();
+  NS_TEST_EXPECT_MSG_EQ (address, Ipv4Address ("0.2.0.3"), "XXX");
+
+  h.SetBase ("0.0.1.0", "255.255.255.0", "0.0.0.3");
+  address = h.NewAddress();
+  NS_TEST_EXPECT_MSG_EQ (address, Ipv4Address ("0.0.1.3"), "XXX");
+  address = h.NewAddress();
+  NS_TEST_EXPECT_MSG_EQ (address, Ipv4Address ("0.0.1.4"), "XXX");
+  network = h.NewNetwork();
+  NS_TEST_EXPECT_MSG_EQ (network, Ipv4Address ("0.0.2.0"), "XXX");
+  address = h.NewAddress();
+  NS_TEST_EXPECT_MSG_EQ (address, Ipv4Address ("0.0.2.3"), "XXX");
+
+  return false;
+}
+
+void
+ResetAllocatorHelperTestCase::DoTeardown (void)
+{
+  Ipv4AddressGenerator::Reset ();
+}
+
+static class Ipv4AddressHelperTestSuite : public TestSuite
+{
+public:
+  Ipv4AddressHelperTestSuite ()
+    : TestSuite ("ipv4-address-helper", UNIT) 
+  {
+    AddTestCase (new NetworkAllocatorHelperTestCase ());
+    AddTestCase (new AddressAllocatorHelperTestCase ());
+    AddTestCase (new ResetAllocatorHelperTestCase ());
+  }
+} g_ipv4AddressHelperTestSuite;
 
 } // namespace ns3
 
-#endif /* RUN_SELF_TEST */
