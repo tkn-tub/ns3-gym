@@ -41,19 +41,12 @@ import shutil
 interesting_config_items = [
     "NS3_BUILDDIR",
     "NS3_MODULE_PATH",
-    "ENABLE_EMU",
-    "ENABLE_GSL",
-    "ENABLE_GTK_CONFIG_STORE",
-    "ENABLE_LIBXML2",
     "ENABLE_NSC",
-    "ENABLE_PYTHON_BINDINGS",
-    "ENABLE_PYTHON_SCANNING",
     "ENABLE_REAL_TIME",
-    "ENABLE_STATIC_NS3",
-    "ENABLE_SUDO",
-    "ENABLE_TAP",
-    "ENABLE_THREADING",
 ]
+
+ENABLE_NSC = False
+ENABLE_REAL_TIME = False
 
 #
 # A list of examples to run as smoke tests just to ensure that they remain 

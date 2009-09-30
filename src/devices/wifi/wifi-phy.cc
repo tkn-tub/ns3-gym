@@ -391,7 +391,7 @@ WifiPhy::Get9mb5Mhz (void)
 {
   static WifiMode mode = WifiModeFactory::CreateBpsk ("wifi-9mbs-5Mhz",
                                                       false,
-                                                      10000000, 9000000, 12000000,
+                                                      5000000, 9000000, 12000000,
                                                       WIFI_PHY_STANDARD_80211_5Mhz);
   return mode;
 }
@@ -401,7 +401,7 @@ WifiPhy::Get12mb5Mhz (void)
 {
   static WifiMode mode = WifiModeFactory::CreateBpsk ("wifi-12mbs-5Mhz",
                                                       false,
-                                                      10000000, 12000000, 18000000,
+                                                      5000000, 12000000, 18000000,
                                                       WIFI_PHY_STANDARD_80211_5Mhz);
   return mode;
 }
@@ -411,7 +411,7 @@ WifiPhy::Get13_5mb5Mhz (void)
 {
   static WifiMode mode = WifiModeFactory::CreateBpsk ("wifi-13.5mbs-5Mhz",
                                                       false,
-                                                      10000000, 13500000, 18000000,
+                                                      5000000, 13500000, 18000000,
                                                       WIFI_PHY_STANDARD_80211_5Mhz);
   return mode;
 }
