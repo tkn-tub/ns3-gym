@@ -525,7 +525,6 @@ OlsrEmfTestCase::DoRun (void)
       NS_TEST_ASSERT_MSG_EQ((seconds < 0 || fabs (seconds - time) > 0.1), true,
                             "XXX");
     }
-  // XXX
   return false;
 }
 
@@ -632,7 +631,6 @@ OlsrMidTestCase::DoRun (void)
       NS_TEST_ASSERT_MSG_EQ (sizeLeft, 0, "XXX");
     }
   }
-  // XXX
   return false;
 }
 
@@ -694,7 +692,6 @@ OlsrHelloTestCase::DoRun (void)
 
   NS_TEST_ASSERT_MSG_EQ (packet.GetSize (), 0, "All bytes in packet were not read");
 
-  // XXX
   return false;
 }
 
@@ -732,7 +729,7 @@ OlsrTcTestCase::DoRun (void)
                          Ipv4Address ("1.2.3.5"), "XXX");
 
   NS_TEST_ASSERT_MSG_EQ (packet.GetSize (), 0, "XXX");
-  // XXX
+
   return false;
 }
 
@@ -777,7 +774,6 @@ OlsrHnaTestCase::DoRun (void)
   
   NS_TEST_ASSERT_MSG_EQ (packet.GetSize (), 0, "All bytes in packet were not read");
 
-  // XXX: why are we returning a constant here ?
   return false;
 }
 
