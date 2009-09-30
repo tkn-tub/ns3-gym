@@ -415,7 +415,7 @@ RoutingProtocol::SetIpv4 (Ptr<Ipv4> ipv4)
   if (EnableHello)
     {
       htimer.SetFunction (&RoutingProtocol::HelloTimerExpire, this);
-      htimer.Schedule (MilliSeconds (UniformVariable ().GetValue (0.0, 100.0)));
+      htimer.Schedule (MilliSeconds (UniformVariable ().GetInteger (0, 100)));
     }
 
   m_ipv4 = ipv4;
@@ -603,7 +603,7 @@ RoutingProtocol::SendRequest (Ipv4Address dst)
   // A node SHOULD NOT originate more than RREQ_RATELIMIT RREQ messages per second.
   if (m_rreqCount == RreqRateLimit)
     {
-      Simulator::Schedule (m_rreqRateLimitTimer.GetDelayLeft () + MilliSeconds (0.1),
+      Simulator::Schedule (m_rreqRateLimitTimer.GetDelayLeft () + MicroSeconds (100),
           &RoutingProtocol::SendRequest, this, dst);
       return;
     }
@@ -663,7 +663,7 @@ RoutingProtocol::SendRequest (Ipv4Address dst)
   if (EnableHello)
     {
       htimer.Cancel ();
-      htimer.Schedule (HelloInterval - Scalar (0.01) * MilliSeconds (UniformVariable ().GetValue (0, 10)));
+      htimer.Schedule (HelloInterval - Scalar (0.01) * MilliSeconds (UniformVariable ().GetInteger (0, 10)));
     }
 }
 
@@ -888,7 +888,7 @@ RoutingProtocol::RecvRequest (Ptr<Packet> p, Ipv4Address receiver, Ipv4Address s
   if (EnableHello)
     {
       htimer.Cancel ();
-      htimer.Schedule (HelloInterval - Scalar(0.1)*MilliSeconds(UniformVariable().GetValue (0.0, 10.0)));
+      htimer.Schedule (HelloInterval - Scalar(0.1)*MilliSeconds(UniformVariable().GetInteger (0, 10)));
     }
 }
 
@@ -1252,7 +1252,7 @@ RoutingProtocol::HelloTimerExpire ()
   NS_LOG_FUNCTION(this);
   SendHello ();
   htimer.Cancel ();
-  Time t = Scalar(0.01)*MilliSeconds(UniformVariable().GetValue (0.0, 100.0));
+  Time t = Scalar(0.01)*MilliSeconds(UniformVariable().GetInteger (0, 100));
   htimer.Schedule (HelloInterval - t);
 }
 
