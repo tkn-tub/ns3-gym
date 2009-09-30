@@ -278,6 +278,12 @@ public:
   static std::string FindPath (Ptr<Object> object);
 
   /**
+   * Clear the list of objects associated with names.
+   */
+
+  static void Clear (void);
+
+  /**
    * Given a name path string, look to see if there's an object in the system
    * with that associated to it.  If there is, do a GetObject on the resulting
    * object to convert it to the requested typename and return it.
@@ -357,13 +363,6 @@ public:
    */
   template <typename T>
   static Ptr<T> Find (Ptr<Object> context, std::string name);
-
-  /**
-   * Clean up all of the data structures of the implementation and delete the
-   * underlying singleton.  Used to get valgrind-clean runs if the simulator
-   * is not run.  Normally singleton cleanup is scheduled on Simulator::Destroy.
-   */
-  static void Delete (void);
 
 private:
   /**

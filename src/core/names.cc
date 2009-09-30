@@ -22,7 +22,6 @@
 #include "assert.h"
 #include "abort.h"
 #include "names.h"
-#include "ns3/simulator.h"
 
 namespace ns3 {
 
@@ -94,14 +93,15 @@ public:
   std::string FindName (Ptr<Object> object);
   std::string FindPath (Ptr<Object> object);
 
+  void Clear (void);
+
   Ptr<Object> Find (std::string name);
   Ptr<Object> Find (std::string path, std::string name);
   Ptr<Object> Find (Ptr<Object> context, std::string name);
 
-  static NamesPriv *Get (void);
-  static void Delete (void);
 private:
-  static NamesPriv **DoGet (bool doCreate);
+  friend class Names;
+  static NamesPriv *Get (void);
 
   NameNode *IsNamed (Ptr<Object>);
   bool IsDuplicateName (NameNode *node, std::string name);
@@ -113,31 +113,8 @@ private:
 NamesPriv *
 NamesPriv::Get (void)
 {
-  return *(DoGet (true));
-}
-
-NamesPriv **
-NamesPriv::DoGet (bool doCreate)
-{
-  static NamesPriv *ptr = 0;
-
-  if (ptr == 0 && doCreate)
-    {
-      ptr = new NamesPriv;
-      Simulator::ScheduleDestroy (&NamesPriv::Delete);
-    }
-
-  return &ptr;
-}
-
-void 
-NamesPriv::Delete (void)
-{
-  NS_LOG_FUNCTION_NOARGS ();
-
-  NamesPriv **ptr = DoGet (false);
-  delete *ptr;
-  *ptr = 0;
+  static NamesPriv namesPriv;
+  return &namesPriv;
 }
 
 NamesPriv::NamesPriv ()
@@ -152,7 +129,13 @@ NamesPriv::NamesPriv ()
 NamesPriv::~NamesPriv ()
 {
   NS_LOG_FUNCTION_NOARGS ();
+  Clear ();
+  m_root.m_name = "";
+}
 
+void
+NamesPriv::Clear (void)
+{
   //
   // Every name is associated with an object in the object map, so freeing the
   // NameNodes in this map will free all of the memory allocated for the NameNodes
@@ -163,9 +146,12 @@ NamesPriv::~NamesPriv ()
       i->second = 0;
     }
 
+  m_objectMap.clear ();
+
   m_root.m_parent = 0;
-  m_root.m_name = "";
+  m_root.m_name = "Names";
   m_root.m_object = 0;
+  m_root.m_nameMap.clear ();
 }
 
 bool
@@ -618,12 +604,6 @@ NamesPriv::IsDuplicateName (NameNode *node, std::string name)
 }
 
 void
-Names::Delete (void)
-{
-  NamesPriv::Delete ();
-}
-
-void
 Names::Add (std::string name, Ptr<Object> object)
 {
   bool result = NamesPriv::Get ()->Add (name, object);
@@ -676,6 +656,12 @@ std::string
 Names::FindPath (Ptr<Object> object)
 {
   return NamesPriv::Get ()->FindPath (object);
+}
+
+void
+Names::Clear (void)
+{
+  return NamesPriv::Get ()->Clear ();
 }
 
 Ptr<Object>

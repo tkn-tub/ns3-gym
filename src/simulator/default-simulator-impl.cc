@@ -268,6 +268,11 @@ DefaultSimulatorImpl::IsExpired (const EventId &ev) const
 {
   if (ev.GetUid () == 2)
     {
+      if (ev.PeekEventImpl () == 0 ||
+          ev.PeekEventImpl ()->IsCancelled ())
+        {
+          return true;
+        }
       // destroy events.
       for (DestroyEvents::const_iterator i = m_destroyEvents.begin (); i != m_destroyEvents.end (); i++)
         {

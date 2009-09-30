@@ -11,6 +11,8 @@ def register_types(module):
     module.add_class('Address')
     ## address.h: ns3::Address::MaxSize_e [enumeration]
     module.add_enum('MaxSize_e', ['MAX_SIZE'], outer_class=root_module['ns3::Address'])
+    ## channel-list.h: ns3::ChannelList [class]
+    module.add_class('ChannelList')
     ## inet6-socket-address.h: ns3::Inet6SocketAddress [class]
     module.add_class('Inet6SocketAddress')
     ## inet6-socket-address.h: ns3::Inet6SocketAddress [class]
@@ -253,6 +255,7 @@ def register_types_ns3_olsr(module):
 
 def register_methods(root_module):
     register_Ns3Address_methods(root_module, root_module['ns3::Address'])
+    register_Ns3ChannelList_methods(root_module, root_module['ns3::ChannelList'])
     register_Ns3Inet6SocketAddress_methods(root_module, root_module['ns3::Inet6SocketAddress'])
     register_Ns3InetSocketAddress_methods(root_module, root_module['ns3::InetSocketAddress'])
     register_Ns3Ipv4Address_methods(root_module, root_module['ns3::Ipv4Address'])
@@ -392,6 +395,38 @@ def register_Ns3Address_methods(root_module, cls):
                    'void', 
                    [param('ns3::TagBuffer', 'buffer')], 
                    is_const=True)
+    return
+
+def register_Ns3ChannelList_methods(root_module, cls):
+    ## channel-list.h: ns3::ChannelList::ChannelList() [constructor]
+    cls.add_constructor([])
+    ## channel-list.h: ns3::ChannelList::ChannelList(ns3::ChannelList const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::ChannelList const &', 'arg0')])
+    ## channel-list.h: static uint32_t ns3::ChannelList::Add(ns3::Ptr<ns3::Channel> channel) [member function]
+    cls.add_method('Add', 
+                   'uint32_t', 
+                   [param('ns3::Ptr< ns3::Channel >', 'channel')], 
+                   is_static=True)
+    ## channel-list.h: static __gnu_cxx::__normal_iterator<const ns3::Ptr<ns3::Channel>*,std::vector<ns3::Ptr<ns3::Channel>, std::allocator<ns3::Ptr<ns3::Channel> > > > ns3::ChannelList::Begin() [member function]
+    cls.add_method('Begin', 
+                   '__gnu_cxx::__normal_iterator< ns3::Ptr< ns3::Channel > const, std::vector< ns3::Ptr< ns3::Channel > > >', 
+                   [], 
+                   is_static=True)
+    ## channel-list.h: static __gnu_cxx::__normal_iterator<const ns3::Ptr<ns3::Channel>*,std::vector<ns3::Ptr<ns3::Channel>, std::allocator<ns3::Ptr<ns3::Channel> > > > ns3::ChannelList::End() [member function]
+    cls.add_method('End', 
+                   '__gnu_cxx::__normal_iterator< ns3::Ptr< ns3::Channel > const, std::vector< ns3::Ptr< ns3::Channel > > >', 
+                   [], 
+                   is_static=True)
+    ## channel-list.h: static ns3::Ptr<ns3::Channel> ns3::ChannelList::GetChannel(uint32_t n) [member function]
+    cls.add_method('GetChannel', 
+                   'ns3::Ptr< ns3::Channel >', 
+                   [param('uint32_t', 'n')], 
+                   is_static=True)
+    ## channel-list.h: static uint32_t ns3::ChannelList::GetNChannels() [member function]
+    cls.add_method('GetNChannels', 
+                   'uint32_t', 
+                   [], 
+                   is_static=True)
     return
 
 def register_Ns3Inet6SocketAddress_methods(root_module, cls):
@@ -1557,10 +1592,10 @@ def register_Ns3PbbAddressBlockIpv6_methods(root_module, cls):
 def register_Ns3PbbAddressTlvBlock_methods(root_module, cls):
     cls.add_binary_comparison_operator('==')
     cls.add_binary_comparison_operator('!=')
-    ## packetbb.h: ns3::PbbAddressTlvBlock::PbbAddressTlvBlock() [constructor]
-    cls.add_constructor([])
     ## packetbb.h: ns3::PbbAddressTlvBlock::PbbAddressTlvBlock(ns3::PbbAddressTlvBlock const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::PbbAddressTlvBlock const &', 'arg0')])
+    ## packetbb.h: ns3::PbbAddressTlvBlock::PbbAddressTlvBlock() [constructor]
+    cls.add_constructor([])
     ## packetbb.h: ns3::Ptr<ns3::PbbAddressTlv> ns3::PbbAddressTlvBlock::Back() const [member function]
     cls.add_method('Back', 
                    'ns3::Ptr< ns3::PbbAddressTlv >', 
@@ -2134,10 +2169,10 @@ def register_Ns3PbbTlv_methods(root_module, cls):
 def register_Ns3PbbTlvBlock_methods(root_module, cls):
     cls.add_binary_comparison_operator('==')
     cls.add_binary_comparison_operator('!=')
-    ## packetbb.h: ns3::PbbTlvBlock::PbbTlvBlock() [constructor]
-    cls.add_constructor([])
     ## packetbb.h: ns3::PbbTlvBlock::PbbTlvBlock(ns3::PbbTlvBlock const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::PbbTlvBlock const &', 'arg0')])
+    ## packetbb.h: ns3::PbbTlvBlock::PbbTlvBlock() [constructor]
+    cls.add_constructor([])
     ## packetbb.h: ns3::Ptr<ns3::PbbTlv> ns3::PbbTlvBlock::Back() const [member function]
     cls.add_method('Back', 
                    'ns3::Ptr< ns3::PbbTlv >', 
@@ -3908,6 +3943,11 @@ def register_Ns3Channel_methods(root_module, cls):
                    'ns3::Ptr< ns3::NetDevice >', 
                    [param('uint32_t', 'i')], 
                    is_pure_virtual=True, is_const=True, is_virtual=True)
+    ## channel.h: uint32_t ns3::Channel::GetId() const [member function]
+    cls.add_method('GetId', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
     ## channel.h: uint32_t ns3::Channel::GetNDevices() const [member function]
     cls.add_method('GetNDevices', 
                    'uint32_t', 

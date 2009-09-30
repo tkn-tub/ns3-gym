@@ -14,6 +14,7 @@ pybindgen.settings.error_handler = ErrorHandler()
 import sys
 import ns3_module_core
 import ns3_module_simulator
+import ns3_module_test
 import ns3_module_mobility
 import ns3_module_common
 import ns3_module_node
@@ -73,6 +74,17 @@ def register_types(module):
         ns3_module_simulator__local.register_types(module)
     
     root_module.end_section('ns3_module_simulator')
+    root_module.begin_section('ns3_module_test')
+    ns3_module_test.register_types(module)
+    
+    try:
+        import ns3_module_test__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_test__local.register_types(module)
+    
+    root_module.end_section('ns3_module_test')
     root_module.begin_section('ns3_module_mobility')
     ns3_module_mobility.register_types(module)
     
@@ -504,6 +516,17 @@ def register_methods(root_module):
         ns3_module_simulator__local.register_methods(root_module)
     
     root_module.end_section('ns3_module_simulator')
+    root_module.begin_section('ns3_module_test')
+    ns3_module_test.register_methods(root_module)
+    
+    try:
+        import ns3_module_test__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_test__local.register_methods(root_module)
+    
+    root_module.end_section('ns3_module_test')
     root_module.begin_section('ns3_module_mobility')
     ns3_module_mobility.register_methods(root_module)
     
@@ -985,6 +1008,17 @@ def register_functions(root_module):
         ns3_module_simulator__local.register_functions(root_module)
     
     root_module.end_section('ns3_module_simulator')
+    root_module.begin_section('ns3_module_test')
+    ns3_module_test.register_functions(root_module)
+    
+    try:
+        import ns3_module_test__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_test__local.register_functions(root_module)
+    
+    root_module.end_section('ns3_module_test')
     root_module.begin_section('ns3_module_mobility')
     ns3_module_mobility.register_functions(root_module)
     

@@ -17,7 +17,6 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#ifdef RUN_SELF_TESTS
 
 #include "wifi-net-device.h"
 #include "yans-wifi-channel.h"
@@ -34,16 +33,17 @@
 #include "ns3/test.h"
 #include "ns3/object-factory.h"
 #include "dca-txop.h"
+#include "mac-rx-middle.h"
 #include "ns3/pointer.h"
 
 namespace ns3 {
 
-class WifiTest : public Test
+class WifiTest : public TestCase
 {
 public:
   WifiTest ();
 
-  virtual bool RunTests (void);
+  virtual bool DoRun (void);
 private:
   void RunOne (void);
   void CreateOne (Vector pos, Ptr<YansWifiChannel> channel);
@@ -55,7 +55,7 @@ private:
 };
 
 WifiTest::WifiTest ()
-  : Test ("Wifi")
+  : TestCase ("Wifi")
 {}
 
 void 
@@ -114,14 +114,11 @@ WifiTest::RunOne (void)
 }
 
 bool
-WifiTest::RunTests (void)
+WifiTest::DoRun (void)
 {
-  bool result = true;
-
   m_mac.SetTypeId ("ns3::AdhocWifiMac");
   m_propDelay.SetTypeId ("ns3::ConstantSpeedPropagationDelayModel");
   
-
   m_manager.SetTypeId ("ns3::ArfWifiManager");
   RunOne ();
   m_manager.SetTypeId ("ns3::AarfWifiManager");
@@ -147,12 +144,65 @@ WifiTest::RunTests (void)
   m_mac.SetTypeId ("ns3::AdhocWifiMac");
   RunOne ();
 
-  return result;
+  return false;
 }
 
-static WifiTest g_wifiTest;
+//-----------------------------------------------------------------------------
+class MacRxMiddleTest : public TestCase
+{
+public:
+  MacRxMiddleTest () : TestCase ("MacRxMiddle") {}
+  virtual bool DoRun (void) 
+  {
+    MacRxMiddle middle;
+    // 0 < 1
+    NS_TEST_EXPECT_MSG_EQ (middle.SequenceControlSmaller (0 << 4, 1 << 4), true, "0 < 1");
+    // 0 < 2047
+    NS_TEST_EXPECT_MSG_EQ (middle.SequenceControlSmaller (0 << 4, 2047 << 4), true, "0 < 2047");
+    // 0 > 2048
+    NS_TEST_EXPECT_MSG_EQ (!middle.SequenceControlSmaller (0 << 4, 2048 << 4), true, "0 > 2048");
+    // 0 > 2049
+    NS_TEST_EXPECT_MSG_EQ (!middle.SequenceControlSmaller (0 << 4, 2049 << 4), true, "0 > 2049");
+    // 0 > 4095
+    NS_TEST_EXPECT_MSG_EQ (!middle.SequenceControlSmaller (0 << 4, 4095 << 4), true, "0 > 4095");
 
+    // 1 > 0
+    NS_TEST_EXPECT_MSG_EQ (!middle.SequenceControlSmaller (1 << 4, 0 << 4), true, "1 > 0");
+    // 2047 > 0
+    NS_TEST_EXPECT_MSG_EQ (!middle.SequenceControlSmaller (2047 << 4, 0 << 4), true, "2047 > 0");
+    // 2048 < 0
+    NS_TEST_EXPECT_MSG_EQ (middle.SequenceControlSmaller (2048 << 4, 0 << 4), true, "2048 < 0");
+    // 2049 < 0
+    NS_TEST_EXPECT_MSG_EQ (middle.SequenceControlSmaller (2049 << 4, 0 << 4), true, "2049 < 0");
+    // 4095 < 0 
+    NS_TEST_EXPECT_MSG_EQ (middle.SequenceControlSmaller (4095 << 4, 0 << 4), true, "4095 < 0");
+
+    // 2048 < 2049
+    NS_TEST_EXPECT_MSG_EQ (middle.SequenceControlSmaller (2048 << 4, 2049 << 4), true, "2048 < 2049");
+    // 2048 < 4095
+    NS_TEST_EXPECT_MSG_EQ (middle.SequenceControlSmaller (2048 << 4, 4095 << 4), true, "2048 < 4095");
+    // 2047 > 4095
+    NS_TEST_EXPECT_MSG_EQ (!middle.SequenceControlSmaller (2047 << 4, 4095 << 4), true, "2047 > 4095");
+
+    return GetErrorStatus ();
+  }
+};
+
+//-----------------------------------------------------------------------------
+
+class WifiTestSuite : public TestSuite
+{
+public:
+  WifiTestSuite ();
+};
+
+WifiTestSuite::WifiTestSuite ()
+  : TestSuite ("devices-wifi", UNIT)
+{
+  AddTestCase (new WifiTest);
+  AddTestCase (new MacRxMiddleTest);
+}
+
+WifiTestSuite g_wifiTestSuite;
 
 } // namespace ns3
-
-#endif /* RUN_SELF_TESTS */

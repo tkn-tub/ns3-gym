@@ -86,7 +86,7 @@ BasicAddTestCase::~BasicAddTestCase ()
 void
 BasicAddTestCase::DoTeardown (void)
 {
-  Names::Delete ();
+  Names::Clear ();
 }
 
 bool
@@ -154,7 +154,7 @@ StringContextAddTestCase::~StringContextAddTestCase ()
 void
 StringContextAddTestCase::DoTeardown (void)
 {
-  Names::Delete ();
+  Names::Clear ();
 }
 
 bool
@@ -219,7 +219,7 @@ FullyQualifiedAddTestCase::~FullyQualifiedAddTestCase ()
 void
 FullyQualifiedAddTestCase::DoTeardown (void)
 {
-  Names::Delete ();
+  Names::Clear ();
 }
 
 bool
@@ -287,7 +287,7 @@ RelativeAddTestCase::~RelativeAddTestCase ()
 void
 RelativeAddTestCase::DoTeardown (void)
 {
-  Names::Delete ();
+  Names::Clear ();
 }
 
 bool
@@ -354,7 +354,7 @@ BasicRenameTestCase::~BasicRenameTestCase ()
 void
 BasicRenameTestCase::DoTeardown (void)
 {
-  Names::Delete ();
+  Names::Clear ();
 }
 
 bool
@@ -416,7 +416,7 @@ StringContextRenameTestCase::~StringContextRenameTestCase ()
 void
 StringContextRenameTestCase::DoTeardown (void)
 {
-  Names::Delete ();
+  Names::Clear ();
 }
 
 bool
@@ -478,7 +478,7 @@ FullyQualifiedRenameTestCase::~FullyQualifiedRenameTestCase ()
 void
 FullyQualifiedRenameTestCase::DoTeardown (void)
 {
-  Names::Delete ();
+  Names::Clear ();
 }
 
 bool
@@ -540,7 +540,7 @@ RelativeRenameTestCase::~RelativeRenameTestCase ()
 void
 RelativeRenameTestCase::DoTeardown (void)
 {
-  Names::Delete ();
+  Names::Clear ();
 }
 
 bool
@@ -602,7 +602,7 @@ FindPathTestCase::~FindPathTestCase ()
 void
 FindPathTestCase::DoTeardown (void)
 {
-  Names::Delete ();
+  Names::Clear ();
 }
 
 bool
@@ -658,7 +658,7 @@ BasicFindTestCase::~BasicFindTestCase ()
 void
 BasicFindTestCase::DoTeardown (void)
 {
-  Names::Delete ();
+  Names::Clear ();
 }
 
 bool
@@ -722,7 +722,7 @@ StringContextFindTestCase::~StringContextFindTestCase ()
 void
 StringContextFindTestCase::DoTeardown (void)
 {
-  Names::Delete ();
+  Names::Clear ();
 }
 
 bool
@@ -786,7 +786,7 @@ FullyQualifiedFindTestCase::~FullyQualifiedFindTestCase ()
 void
 FullyQualifiedFindTestCase::DoTeardown (void)
 {
-  Names::Delete ();
+  Names::Clear ();
 }
 
 bool
@@ -850,7 +850,7 @@ RelativeFindTestCase::~RelativeFindTestCase ()
 void
 RelativeFindTestCase::DoTeardown (void)
 {
-  Names::Delete ();
+  Names::Clear ();
 }
 
 bool
@@ -912,7 +912,7 @@ AlternateFindTestCase::~AlternateFindTestCase ()
 void
 AlternateFindTestCase::DoTeardown (void)
 {
-  Names::Delete ();
+  Names::Clear ();
 }
 
 bool

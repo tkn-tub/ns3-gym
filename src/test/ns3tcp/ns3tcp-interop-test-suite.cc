@@ -36,7 +36,7 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("Ns3TcpInteropTest");
 
-const bool WRITE_VECTORS = false;           // hack hack hack
+const bool WRITE_VECTORS = false;           // set to true to write response vectors
 const uint32_t PCAP_LINK_TYPE = 1187373553; // Some large random number -- we use to verify data was written by this program
 const uint32_t PCAP_SNAPLEN   = 64;         // Don't bother to save much data
 

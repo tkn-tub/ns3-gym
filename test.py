@@ -41,19 +41,12 @@ import shutil
 interesting_config_items = [
     "NS3_BUILDDIR",
     "NS3_MODULE_PATH",
-    "ENABLE_EMU",
-    "ENABLE_GSL",
-    "ENABLE_GTK_CONFIG_STORE",
-    "ENABLE_LIBXML2",
     "ENABLE_NSC",
-    "ENABLE_PYTHON_BINDINGS",
-    "ENABLE_PYTHON_SCANNING",
     "ENABLE_REAL_TIME",
-    "ENABLE_STATIC_NS3",
-    "ENABLE_SUDO",
-    "ENABLE_TAP",
-    "ENABLE_THREADING",
 ]
+
+ENABLE_NSC = False
+ENABLE_REAL_TIME = False
 
 #
 # A list of examples to run as smoke tests just to ensure that they remain 
@@ -329,19 +322,22 @@ def read_waf_config():
 def make_library_path():
     global LIBRARY_PATH
 
-    LIBRARY_PATH = "LD_LIBRARY_PATH='"        
+    LIBRARY_PATH = "LD_LIBRARY_PATH=$LD_LIBRARY_PATH:'"        
 
     if sys.platform == "darwin":
         LIBRARY_PATH = "DYLD_LIBRARY_PATH='"
     elif sys.platform == "win32":
-        LIBRARY_PATH = "PATH='"
+        LIBRARY_PATH = "PATH=$PATH:'"
     elif sys.platform == "cygwin":
-        LIBRARY_PATH = "PATH='"
+        LIBRARY_PATH = "PATH=$PATH:'"
 
     for path in NS3_MODULE_PATH:
         LIBRARY_PATH = LIBRARY_PATH + path + ":"
 
     LIBRARY_PATH = LIBRARY_PATH + "'"
+
+    if options.verbose:
+        print "LIBRARY_PATH == %s" % LIBRARY_PATH
 
 def run_job_synchronously(shell_command, directory):
     cmd = "%s %s/%s/%s" % (LIBRARY_PATH, NS3_BUILDDIR, NS3_ACTIVE_VARIANT, shell_command)
@@ -615,20 +611,30 @@ def run_tests():
     # run them in parallel.  We're going to spin up a number of worker threads
     # that will run our test jobs for us.
     #
-    # XXX Need to figure out number of CPUs without the multiprocessing 
-    # dependency since multiprocessing is not standard `till Python 2.6
-    #
     input_queue = Queue.Queue(0)
     output_queue = Queue.Queue(0)
 
     jobs = 0
     threads=[]
 
-    try:
-        import multiprocessing
-        processors = multiprocessing.cpu_count()
-    except ImportError:
-        processors = 1
+    #
+    # In Python 2.6 you can just use multiprocessing module, but we don't want
+    # to introduce that dependency yet; so we jump through a few hoops.
+    #
+    processors = 1
+
+    if 'SC_NPROCESSORS_ONLN'in os.sysconf_names:
+        processors = os.sysconf('SC_NPROCESSORS_ONLN')
+    else:
+        proc = subprocess.Popen("sysctl -n hw.ncpu", shell = True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        stdout_results, stderr_results = proc.communicate()
+        if len(stderr_results) == 0:
+            processors = int(stdout_results)
+
+    #
+    # Now, spin up one thread per processor which will eventually mean one test
+    # per processor running concurrently.
+    #
     for i in range(processors):
         thread = worker_thread(input_queue, output_queue)
         threads.append(thread)
@@ -641,6 +647,7 @@ def run_tests():
     # Dispatching will run with unlimited speed and the worker threads will 
     # execute as fast as possible from the queue.
     #
+    total_tests = 0
     for test in suite_list:
         if len(test):
             job = Job()
@@ -656,6 +663,7 @@ def run_tests():
 
             input_queue.put(job)
             jobs = jobs + 1
+            total_tests = total_tests + 1
     
     #
     # We've taken care of the discovered or specified test suites.  Now we
@@ -715,6 +723,8 @@ def run_tests():
 
                     input_queue.put(job)
                     jobs = jobs + 1
+                    total_tests = total_tests + 1
+
     elif len(options.example):
         #
         # If you tell me to run an example, I will try and run the example
@@ -733,6 +743,7 @@ def run_tests():
 
         input_queue.put(job)
         jobs = jobs + 1
+        total_tests = total_tests + 1
 
     #
     # Tell the worker threads to pack up and go home for the day.  Each one
@@ -753,6 +764,9 @@ def run_tests():
     # ignore them.  If there are real results, we always print PASS or FAIL to
     # standard out as a quick indication of what happened.
     #
+    passed_tests = 0
+    failed_tests = 0
+    crashed_tests = 0
     for i in range(jobs):
         job = output_queue.get()
         if job.is_break:
@@ -765,8 +779,13 @@ def run_tests():
 
         if job.returncode == 0:
             status = "PASS"
-        else:
+            passed_tests = passed_tests + 1
+        elif job.returncode == 1:
+            failed_tests = failed_tests + 1
             status = "FAIL"
+        else:
+            crashed_tests = crashed_tests + 1
+            status = "CRASH"
 
         print "%s: %s %s" % (status, kind, job.display_name)
 
@@ -847,6 +866,11 @@ def run_tests():
     f.write('</TestResults>\n')
     f.close()
 
+    #
+    # Print a quick summary of events
+    #
+    print "%d of %d tests passed (%d passed, %d failed, %d crashed)" % (passed_tests, total_tests, passed_tests, 
+                                                                        failed_tests, crashed_tests)
     #
     # The last things to do are to translate the XML results file to "human
     # readable form" if the user asked for it (or make an XML file somewhere)

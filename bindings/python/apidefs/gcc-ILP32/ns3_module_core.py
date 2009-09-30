@@ -589,8 +589,8 @@ def register_Ns3Names_methods(root_module, cls):
                    'void', 
                    [param('ns3::Ptr< ns3::Object >', 'context'), param('std::string', 'name'), param('ns3::Ptr< ns3::Object >', 'object')], 
                    is_static=True)
-    ## names.h: static void ns3::Names::Delete() [member function]
-    cls.add_method('Delete', 
+    ## names.h: static void ns3::Names::Clear() [member function]
+    cls.add_method('Clear', 
                    'void', 
                    [], 
                    is_static=True)
