@@ -146,5 +146,5 @@ public:
   {
     AddTestCase (new Ipv6L3ProtocolTestCase ());
   }
-} g_IPv6L3ProtocolTestSuite;
+} g_ipv6protocolTestSuite;
 } // namespace ns3
