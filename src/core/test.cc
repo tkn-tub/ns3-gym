@@ -17,6 +17,7 @@
  */
 
 #include "test.h"
+#include "assert.h"
 #include "abort.h"
 #include <math.h>
 
@@ -81,7 +82,13 @@ TestDoubleIsEqual (const double x1, const double x2, const double epsilon)
 
 
 TestCase::TestCase (std::string name)
-  : m_name (name), m_verbose (false), m_basedir ("invalid"), m_ofs (0), m_error (false)
+  : m_name (name), 
+    m_verbose (false), 
+    m_continueOnFailure (false), 
+    m_detailsReported (false), 
+    m_basedir ("invalid"), 
+    m_ofs (0), 
+    m_error (false)
 {
 }
 
@@ -96,13 +103,21 @@ TestCase::ReportStart  (void)
 }
 
 void
-TestCase::ReportSuccess  (void)
+TestCase::ReportCaseSuccess  (void)
 {
-  DoReportSuccess ();
+  UpdateErrorStatus (false);
+  DoReportCaseSuccess ();
 }
 
 void
-TestCase::ReportFailure  (
+TestCase::ReportCaseFailure  (void)
+{
+  UpdateErrorStatus (true);
+  DoReportCaseFailure ();
+}
+
+void
+TestCase::ReportTestFailure  (
   std::string cond, 
   std::string actual, 
   std::string limit, 
@@ -110,7 +125,9 @@ TestCase::ReportFailure  (
   std::string file, 
   int32_t line)
 {
-  DoReportFailure (cond, actual, limit, message, file, line);
+  UpdateErrorStatus (true);
+  DoReportTestFailure (cond, actual, limit, message, file, line);
+  m_detailsReported = true; 
 }
 
 void
@@ -122,23 +139,53 @@ TestCase::ReportEnd  (void)
 bool
 TestCase::Run (void)
 {
+  //
+  // We set up a flag to make sure the user plays by the rules and actually
+  // does something to report the details of an error.
+  //
+  m_detailsReported = false; 
+
   DoReportStart ();
   DoSetup ();
-  bool status = DoRun ();
-  m_error |= status;
+
+  bool result = DoRun ();
+  UpdateErrorStatus (result);
+
   DoTeardown ();
-  if (m_error == false)
+
+  if (GetErrorStatus () == false)
     {
-      DoReportSuccess ();
+      DoReportCaseSuccess ();
     }
+  else
+    {
+      //
+      // It is a programming error to return an error from a test case without 
+      // calling ReportTestFailure.  Typically this is done automagically when
+      // using the ASSERT or EXPECT macros.  If you don't use these, you must
+      // ReportTestFailure on any errors yourself, which will set 
+      // m_detailsReported and make us happy.
+      //
+      NS_ASSERT_MSG (m_detailsReported, "The details of a failing test was not reported");
+
+      DoReportCaseFailure ();
+    }
+
   DoReportEnd ();
-  return m_error;
+
+  return GetErrorStatus ();
 }
 
 void 
 TestCase::SetVerbose (bool verbose)
 {
   m_verbose = verbose;
+}
+
+void 
+TestCase::SetContinueOnFailure (bool continueOnFailure)
+{
+  m_continueOnFailure = continueOnFailure;
 }
 
 void 
@@ -189,6 +236,12 @@ TestCase::GetStream (void)
 }
 
 void 
+TestCase::UpdateErrorStatus (bool error)
+{
+  m_error |= error;
+}
+
+void 
 TestCase::SetErrorStatus (bool error)
 {
   m_error = error;
@@ -200,6 +253,11 @@ TestCase::GetErrorStatus (void)
   return m_error;
 }
 
+bool
+TestCase::ContinueOnFailure (void)
+{
+  return m_continueOnFailure;
+}
 
 void
 TestCase::DoReportStart  (void)
@@ -215,7 +273,7 @@ TestCase::DoReportStart  (void)
 }
 
 void
-TestCase::DoReportSuccess  (void)
+TestCase::DoReportCaseSuccess  (void)
 {
   if (m_ofs == 0)
     {
@@ -225,7 +283,17 @@ TestCase::DoReportSuccess  (void)
 }
 
 void
-TestCase::DoReportFailure  (
+TestCase::DoReportCaseFailure  (void)
+{
+  if (m_ofs == 0)
+    {
+      return;
+    }
+  *m_ofs << "    <CaseResult>FAIL</CaseResult>" << std::endl;
+}
+
+void
+TestCase::DoReportTestFailure  (
   std::string cond, 
   std::string actual, 
   std::string limit, 
@@ -233,20 +301,19 @@ TestCase::DoReportFailure  (
   std::string file, 
   int32_t line)
 {
-  m_error |= true;
-
   if (m_ofs == 0)
     {
       return;
     }
 
-  *m_ofs << "    <CaseResult>FAIL</CaseResult>" << std::endl;
-  *m_ofs << "    <CaseCondition>" << ReplaceXmlSpecialCharacters (cond) << "</CaseCondition>" << std::endl;
-  *m_ofs << "    <CaseActual>" << ReplaceXmlSpecialCharacters (actual) << "</CaseActual>" << std::endl;
-  *m_ofs << "    <CaseLimit>" << ReplaceXmlSpecialCharacters (limit) << "</CaseLimit>" << std::endl;
-  *m_ofs << "    <CaseMessage>" << ReplaceXmlSpecialCharacters (message) << "</CaseMessage>" << std::endl;
-  *m_ofs << "    <CaseFile>" << ReplaceXmlSpecialCharacters (file) << "</CaseFile>" << std::endl;
-  *m_ofs << "    <CaseLine>" << line << "</CaseLine>" << std::endl;
+  *m_ofs << "    <FailureDetails>" << std::endl;
+  *m_ofs << "      <Condition>" << ReplaceXmlSpecialCharacters (cond) << "</Condition>" << std::endl;
+  *m_ofs << "      <Actual>" << ReplaceXmlSpecialCharacters (actual) << "</Actual>" << std::endl;
+  *m_ofs << "      <Limit>" << ReplaceXmlSpecialCharacters (limit) << "</Limit>" << std::endl;
+  *m_ofs << "      <Message>" << ReplaceXmlSpecialCharacters (message) << "</Message>" << std::endl;
+  *m_ofs << "      <File>" << ReplaceXmlSpecialCharacters (file) << "</File>" << std::endl;
+  *m_ofs << "      <Line>" << line << "</Line>" << std::endl;
+  *m_ofs << "    </FailureDetails>" << std::endl;
 }
 
 void
@@ -288,7 +355,12 @@ TestCase::DoTeardown (void)
 }
 
 TestSuite::TestSuite (std::string name, TestType type)
-  : m_name (name), m_verbose (false), m_basedir ("invalid"), m_ofs (0), m_type (type)
+  : m_name (name), 
+    m_verbose (false), 
+    m_basedir ("invalid"), 
+    m_ofs (0), 
+    m_error (false), 
+    m_type (type)
 {
   TestRunner::AddTestSuite (this);
 }
@@ -313,12 +385,14 @@ TestSuite::ReportStart (void)
 void
 TestSuite::ReportSuccess (void)
 {
+  UpdateErrorStatus (false);
   DoReportSuccess ();
 }
 
 void
 TestSuite::ReportFailure (void)
 {
+  UpdateErrorStatus (true);
   DoReportFailure ();
 }
 
@@ -332,10 +406,15 @@ bool
 TestSuite::Run (void)
 {
   DoReportStart ();
+
   DoSetup (); 
-  bool error = DoRun ();
+
+  bool result = DoRun ();
+  UpdateErrorStatus (result);
+
   DoTeardown ();
-  if (error == false)
+
+  if (GetErrorStatus () == false)
     {
       DoReportSuccess ();
     }
@@ -345,7 +424,8 @@ TestSuite::Run (void)
     }
 
   DoReportEnd ();
-  return error;
+
+  return GetErrorStatus ();
 }
 
 uint32_t
@@ -381,6 +461,12 @@ TestSuite::SetVerbose (bool verbose)
 }
 
 void 
+TestSuite::SetContinueOnFailure (bool continueOnFailure)
+{
+  m_continueOnFailure = continueOnFailure;
+}
+
+void 
 TestSuite::SetName (std::string name)
 {
   m_name = name;
@@ -408,6 +494,30 @@ void
 TestSuite::SetStream (std::ofstream *ofs)
 {
   m_ofs = ofs;
+}
+
+void 
+TestSuite::UpdateErrorStatus (bool error)
+{
+  m_error |= error;
+}
+
+void 
+TestSuite::SetErrorStatus (bool error)
+{
+  m_error = error;
+}
+
+bool
+TestSuite::GetErrorStatus (void)
+{
+  return m_error;
+}
+
+bool
+TestSuite::ContinueOnFailure (void)
+{
+  return m_continueOnFailure;
 }
 
 void
@@ -478,19 +588,34 @@ TestSuite::DoSetup (void)
 bool
 TestSuite::DoRun (void)
 {
+  SetErrorStatus (false);
+
   for (TestCaseVector_t::iterator i = m_tests.begin (); i != m_tests.end (); ++i)
     {
+      //
+      // Set the current options for the test case
+      //
       (*i)->SetVerbose (m_verbose);
+      (*i)->SetContinueOnFailure (m_continueOnFailure);
       (*i)->SetBaseDir (m_basedir);
       (*i)->SetStream (m_ofs);
-      bool err = (*i)->Run ();
-      if (err)
+
+      //
+      // Run the test case
+      //
+      bool result = (*i)->Run ();
+      UpdateErrorStatus (result);
+
+      //
+      // Exit if we have detected an error and we are not allowing multiple filures
+      //
+      if (GetErrorStatus () && m_continueOnFailure == false)
         {
-          return err;
+          return GetErrorStatus ();
         }
     }
 
-  return false;
+  return GetErrorStatus ();
 }
 
 void 

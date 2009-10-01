@@ -129,7 +129,8 @@ def get_node_text(node):
     return "None"
 
 #
-# A simple example of writing a text file with a test result summary.
+# A simple example of writing a text file with a test result summary.  It is 
+# expected that this output will be fine for developers looking for problems.
 #
 def translate_to_text(results_file, text_file):
     f = open(text_file, 'w')
@@ -149,13 +150,14 @@ def translate_to_text(results_file, text_file):
                 f.write(output)
 
                 if result == "FAIL":
-                    f.write("    Details:\n")
-                    f.write("      Message:   %s\n" % get_node_text(case.getElementsByTagName("CaseMessage")[0]))
-                    f.write("      Condition: %s\n" % get_node_text(case.getElementsByTagName("CaseCondition")[0]))
-                    f.write("      Actual:    %s\n" % get_node_text(case.getElementsByTagName("CaseActual")[0]))
-                    f.write("      Limit:     %s\n" % get_node_text(case.getElementsByTagName("CaseLimit")[0]))
-                    f.write("      File:      %s\n" % get_node_text(case.getElementsByTagName("CaseFile")[0]))
-                    f.write("      Line:      %s\n" % get_node_text(case.getElementsByTagName("CaseLine")[0]))
+                    for details in case.getElementsByTagName("FailureDetails"):
+                        f.write("    Details:\n")
+                        f.write("      Message:   %s\n" % get_node_text(details.getElementsByTagName("Message")[0]))
+                        f.write("      Condition: %s\n" % get_node_text(details.getElementsByTagName("Condition")[0]))
+                        f.write("      Actual:    %s\n" % get_node_text(details.getElementsByTagName("Actual")[0]))
+                        f.write("      Limit:     %s\n" % get_node_text(details.getElementsByTagName("Limit")[0]))
+                        f.write("      File:      %s\n" % get_node_text(details.getElementsByTagName("File")[0]))
+                        f.write("      Line:      %s\n" % get_node_text(details.getElementsByTagName("Line")[0]))
 
     for example in dom.getElementsByTagName("Example"):
         result = get_node_text(example.getElementsByTagName("Result")[0])
@@ -166,7 +168,10 @@ def translate_to_text(results_file, text_file):
     f.close()
     
 #
-# A simple example of writing an HTML file with a test result summary.
+# A simple example of writing an HTML file with a test result summary.  It is 
+# expected that this will eventually be made prettier as time progresses and
+# we have time to tweak it.  This may end up being moved to a separate module
+# since it will probably grow over time.
 #
 def translate_to_html(results_file, html_file):
     f = open(html_file, 'w')
@@ -174,23 +179,56 @@ def translate_to_html(results_file, html_file):
     f.write("<body>\n")
     f.write("<center><h1>ns-3 Test Results</h1></center>\n")
 
+    #
+    # Read and parse the whole results file.
+    #
     dom = xml.dom.minidom.parse(results_file)
 
+    #
+    # Iterate through the test suites
+    #
     f.write("<h2>Test Suites</h2>\n")
     for suite in dom.getElementsByTagName("TestSuite"):
+     
+        #
+        # For each test suite, get its name, result and execution time info
+        #
         name = get_node_text(suite.getElementsByTagName("SuiteName")[0])
         result = get_node_text(suite.getElementsByTagName("SuiteResult")[0])
         time = get_node_text(suite.getElementsByTagName("SuiteTime")[0])
 
+        # 
+        # Print a level three header in green with the result, name and time.
+        # If the test suite passed, the header is printed in green, otherwise
+        # it is printed in red.
+        #
         if result == "PASS":
             f.write("<h3 style=\"color:green\">%s: %s (%s)</h3>\n" % (result, name, time))
         else:
             f.write("<h3 style=\"color:red\">%s: %s (%s)</h3>\n" % (result, name, time))
 
-
+        #
+        # The test case information goes in a table.
+        #
         f.write("<table border=\"1\">\n")
+
+        #
+        # The first column of the table has the heading Result
+        #
         f.write("<th> Result </th>\n")
 
+        #
+        # If the suite crashed, there is no further information, so just
+        # delare a new table row with the result (CRASH) in it.  Looks like:
+        #
+        #   +--------+
+        #   | Result |
+        #   +--------+
+        #   | CRASH  |
+        #   +--------+
+        #
+        # Then go on to the next test suite
+        #
         if result == "CRASH":
             f.write("<tr>\n")
             f.write("<td style=\"color:red\">%s</td>\n" % result)
@@ -198,55 +236,182 @@ def translate_to_html(results_file, html_file):
             f.write("</table>\n")
             continue
 
+        #
+        # If the suite didn't crash, we expect more information, so fill out
+        # the table heading row.  Like,
+        #
+        #   +--------+----------------+------+
+        #   | Result | Test Case Name | Time |
+        #   +--------+----------------+------+
+        #
         f.write("<th>Test Case Name</th>\n")
         f.write("<th> Time </th>\n")
 
+        #
+        # If the test case failed, we need to print out some failure details
+        # so extend the heading row again.  Like,
+        #
+        #   +--------+----------------+------+-----------------+
+        #   | Result | Test Case Name | Time | Failure Details |
+        #   +--------+----------------+------+-----------------+
+        #
         if result == "FAIL":
-            f.write("<th>Details</th>\n")
+            f.write("<th>Failure Details</th>\n")
 
+        #
+        # Now iterate through all of the test cases.
+        #
         for case in suite.getElementsByTagName("TestCase"):
-            f.write("<tr>\n")
+
+            #
+            # Get the name, result and timing information from xml to use in
+            # printing table below.
+            #
             name = get_node_text(case.getElementsByTagName("CaseName")[0])
             result = get_node_text(case.getElementsByTagName("CaseResult")[0])
             time = get_node_text(case.getElementsByTagName("CaseTime")[0])
+
+            #
+            # If the test case failed, we iterate through possibly multiple
+            # failure details
+            #
             if result == "FAIL":
-                f.write("<td style=\"color:red\">%s</td>\n" % result)
-                f.write("<td>%s</td>\n" % name)
-                f.write("<td>%s</td>\n" % time)
-                f.write("<td>")
-                f.write("<b>Message: </b>%s, " % get_node_text(case.getElementsByTagName("CaseMessage")[0]))
-                f.write("<b>Condition: </b>%s, " % get_node_text(case.getElementsByTagName("CaseCondition")[0]))
-                f.write("<b>Actual: </b>%s, " % get_node_text(case.getElementsByTagName("CaseActual")[0]))
-                f.write("<b>Limit: </b>%s, " % get_node_text(case.getElementsByTagName("CaseLimit")[0]))
-                f.write("<b>File: </b>%s, " % get_node_text(case.getElementsByTagName("CaseFile")[0]))
-                f.write("<b>Line: </b>%s" % get_node_text(case.getElementsByTagName("CaseLine")[0]))
-                f.write("</td>\n")
+                #
+                # There can be multiple failures for each test case.  The first
+                # row always gets the result, name and timing information along
+                # with the failure details.  Remaining failures don't duplicate
+                # this information but just get blanks for readability.  Like,
+                #
+                #   +--------+----------------+------+-----------------+
+                #   | Result | Test Case Name | Time | Failure Details |
+                #   +--------+----------------+------+-----------------+
+                #   |  FAIL  | The name       | time | It's busted     |   
+                #   +--------+----------------+------+-----------------+
+                #   |        |                |      | Really broken   |   
+                #   +--------+----------------+------+-----------------+
+                #   |        |                |      | Busted bad      |   
+                #   +--------+----------------+------+-----------------+
+                #
+
+                first_row = True
+                for details in case.getElementsByTagName("FailureDetails"):
+
+                    #
+                    # Start a new row in the table for each possible Failure Detail
+                    #
+                    f.write("<tr>\n")
+
+                    if first_row:
+                        first_row = False
+                        f.write("<td style=\"color:red\">%s</td>\n" % result)
+                        f.write("<td>%s</td>\n" % name)
+                        f.write("<td>%s</td>\n" % time)
+                    else:
+                        f.write("<td></td>\n")
+                        f.write("<td></td>\n")
+                        f.write("<td></td>\n")
+
+                    f.write("<td>")
+                    f.write("<b>Message: </b>%s, " % get_node_text(details.getElementsByTagName("Message")[0]))
+                    f.write("<b>Condition: </b>%s, " % get_node_text(details.getElementsByTagName("Condition")[0]))
+                    f.write("<b>Actual: </b>%s, " % get_node_text(details.getElementsByTagName("Actual")[0]))
+                    f.write("<b>Limit: </b>%s, " % get_node_text(details.getElementsByTagName("Limit")[0]))
+                    f.write("<b>File: </b>%s, " % get_node_text(details.getElementsByTagName("File")[0]))
+                    f.write("<b>Line: </b>%s" % get_node_text(details.getElementsByTagName("Line")[0]))
+                    f.write("</td>\n")
+                    
+                    #
+                    # End the table row
+                    #
+                    f.write("</td>\n")
             else:
+                #
+                # If this particular test case passed, then we just print the PASS
+                # result in green, followed by the test case name and its execution
+                # time information.  These go off in <td> ... </td> table data.
+                # The details table entry is left blank.
+                #
+                #   +--------+----------------+------+---------+
+                #   | Result | Test Case Name | Time | Details |
+                #   +--------+----------------+------+---------+
+                #   |  PASS  | The name       | time |         |   
+                #   +--------+----------------+------+---------+
+                #
+                f.write("<tr>\n")
                 f.write("<td style=\"color:green\">%s</td>\n" % result)
                 f.write("<td>%s</td>\n" % name)
                 f.write("<td>%s</td>\n" % time)
                 f.write("<td></td>\n")
-            
-            f.write("</tr>\n")
+                f.write("</tr>\n")
+        #
+        # All of the rows are written, so we need to end the table.
+        #
         f.write("</table>\n")
 
+    #
+    # That's it for all of the test suites.  Now we have to do something about 
+    # our examples.
+    #
     f.write("<h2>Examples</h2>\n")
+
+    #
+    # Example status is rendered in a table just like the suites.
+    #
     f.write("<table border=\"1\">\n")
+
+    #
+    # The table headings look like,
+    #
+    #   +--------+--------------+
+    #   | Result | Example Name |
+    #   +--------+--------------+
+    #
     f.write("<th> Result </th>\n")
     f.write("<th>Example Name</th>\n")
+
+    #
+    # Now iterate through all of the examples
+    #
     for example in dom.getElementsByTagName("Example"):
+        
+        #
+        # Start a new row for each example
+        #
         f.write("<tr>\n")
+        
+        #
+        # Get the result and name of the example in question
+        #
         result = get_node_text(example.getElementsByTagName("Result")[0])
+        name =   get_node_text(example.getElementsByTagName("Name")[0])
+
+        #
+        # If the example eitehr failed or crashed, print its result status
+        # in red; otherwise green.  This goes in a <td> ... </td> table data
+        #
         if result in ["FAIL", "CRASH"]:
             f.write("<td style=\"color:red\">%s</td>\n" % result)
         else:
             f.write("<td style=\"color:green\">%s</td>\n" % result)
-        name =   get_node_text(example.getElementsByTagName("Name")[0])
+
+        #
+        # Write the example name as a new tagle data.
+        #
         f.write("<td>%s</td>\n" % name)
+
+        #
+        # That's it for the current example, so terminate the row.
+        #
         f.write("</tr>\n")
 
+    #
+    # That's it for the table of examples, so terminate the table.
+    #
     f.write("</table>\n")
 
+    #
+    # And that's it for the report, so finish up.
+    #
     f.write("</body>\n")
     f.write("</html>\n")
     f.close()
@@ -656,7 +821,12 @@ def run_tests():
             job.set_tmp_file_name(TMP_OUTPUT_DIR + "%d" % random.randint(0, sys.maxint))
             job.set_cwd(os.getcwd())
             job.set_basedir(os.getcwd())
-            job.set_shell_command("utils/test-runner --suite='%s'" % test)
+            if (options.multiple):
+                multiple = " --multiple"
+            else:
+                multiple = ""
+
+            job.set_shell_command("utils/test-runner --suite='%s'%s" % (test, multiple))
 
             if options.verbose:
                 print "Queue %s" % test
@@ -901,6 +1071,9 @@ def main(argv):
 
     parser.add_option("-l", "--list", action="store_true", dest="list", default=False,
                       help="print the list of known tests")
+
+    parser.add_option("-m", "--multiple", action="store_true", dest="multiple", default=False,
+                      help="report multiple failures from test suites and test cases")
 
     parser.add_option("-n", "--nowaf", action="store_true", dest="nowaf", default=False,
                       help="do not run waf before starting testing")
