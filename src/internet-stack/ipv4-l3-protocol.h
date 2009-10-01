@@ -185,7 +185,7 @@ protected:
    */
   virtual void NotifyNewAggregate ();
 private:
-  friend class Ipv4L3ProtocolTest;
+  friend class Ipv4L3ProtocolTestCase;
   Ipv4L3Protocol(const Ipv4L3Protocol &);
   Ipv4L3Protocol &operator = (const Ipv4L3Protocol &);
 
