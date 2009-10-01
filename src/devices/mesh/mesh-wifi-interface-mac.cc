@@ -394,6 +394,8 @@ MeshWifiInterfaceMac::ForwardDown (Ptr<const Packet> const_packet, Mac48Address 
   QosTag tag;
   if (packet->RemovePacketTag (tag))
     {
+      hdr.SetType (WIFI_MAC_QOSDATA);
+      hdr.SetQosTid (tag.Get ());
       ac = QosUtilsMapTidToAc (tag.Get ());
     }
   m_stats.sentFrames++;
