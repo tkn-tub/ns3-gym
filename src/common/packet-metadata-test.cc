@@ -17,8 +17,6 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#ifdef RUN_SELF_TESTS
-
 #include <stdarg.h>
 #include <iostream>
 #include <sstream>
@@ -250,20 +248,18 @@ HistoryTrailer<N>::Deserialize (Buffer::Iterator start)
 
 namespace ns3 {
 
-
-
-class PacketMetadataTest : public Test {
+class PacketMetadataTest : public TestCase {
 public:
   PacketMetadataTest ();
   virtual ~PacketMetadataTest ();
   bool CheckHistory (Ptr<Packet> p, const char *file, int line, uint32_t n, ...);
-  virtual bool RunTests (void);
+  virtual bool DoRun (void);
 private:
   Ptr<Packet> DoAddHeader (Ptr<Packet> p);
 };
 
 PacketMetadataTest::PacketMetadataTest ()
-  : Test ("PacketMetadata")
+  : TestCase ("Packet metadata")
 {}
 
 PacketMetadataTest::~PacketMetadataTest ()
@@ -339,20 +335,21 @@ PacketMetadataTest::CheckHistory (Ptr<Packet> p, const char *file, int line, uin
     }
   return true;
  error:
-  Failure () << "PacketMetadata error. file="<< file 
-            << ", line=" << line << ", got:\"";
+  std::ostringstream failure;
+  failure << "PacketMetadata error. Got:\"";
   for (std::list<int>::iterator i = got.begin (); 
        i != got.end (); i++)
     {
-      Failure () << *i << ", ";
+      failure << *i << ", ";
     }
-  Failure () << "\", expected: \"";
+  failure << "\", expected: \"";
   for (std::list<int>::iterator j = expected.begin ();
        j != expected.end (); j++)
     {
-      Failure () << *j << ", ";
+      failure << *j << ", ";
     }
-  Failure () << "\"" << std::endl;
+  failure << "\"" << std::endl;
+  ReportTestFailure ("", "", "", failure.str(), file, line);
   return false;
 }
 
@@ -403,7 +400,7 @@ PacketMetadataTest::DoAddHeader (Ptr<Packet> p)
 }
 
 bool
-PacketMetadataTest::RunTests (void)
+PacketMetadataTest::DoRun (void)
 {
   bool result = true;
 
@@ -722,7 +719,7 @@ PacketMetadataTest::RunTests (void)
   ADD_HEADER (p1, 20);
   REM_HEADER (p1, 20);
   REM_TRAILER (p1, 5);
-  NS_TEST_ASSERT_EQUAL (p->GetSize (), 1015);
+  NS_TEST_EXPECT_MSG_EQ (p->GetSize (), 1015, "Correct size");
 
   
   p = Create<Packet> (1510);
@@ -733,7 +730,7 @@ PacketMetadataTest::RunTests (void)
   p1 = p->CreateFragment (0, 1500);
   p2 = p1->Copy ();
   ADD_HEADER (p2, 24);
-  NS_TEST_ASSERT_EQUAL (p->GetSize (), 1519);
+  NS_TEST_EXPECT_MSG_EQ (p->GetSize (), 1519, "Correct size");
 
   p = Create<Packet> (1000);
   ADD_HEADER (p, 2);
@@ -776,12 +773,20 @@ PacketMetadataTest::RunTests (void)
   p->RemoveAtStart (10);
   CHECK_HISTORY (p, 1, 490);
   
+  return !result;
+}
+//-----------------------------------------------------------------------------
+class PacketMetadataTestSuite : public TestSuite
+{
+public:
+  PacketMetadataTestSuite ();
+};
 
-  return result;
+PacketMetadataTestSuite::PacketMetadataTestSuite ()
+  : TestSuite ("packet-metadata", UNIT)
+{
+  AddTestCase (new PacketMetadataTest);
 }
 
-static PacketMetadataTest g_packetHistoryTest;
-
+PacketMetadataTestSuite g_packetMetadataTest;
 }//namespace ns3
-
-#endif /* RUN_SELF_TESTS */
