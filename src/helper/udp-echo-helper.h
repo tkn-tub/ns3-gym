@@ -28,15 +28,49 @@
 
 namespace ns3 {
 
+/**
+ * \brief create a server application which waits for input udp packets
+ *        and sends them back to the original sender.
+ */
 class UdpEchoServerHelper
 {
 public:
+  /**
+   * \param port the port the server will wait on for incoming packets
+   */
   UdpEchoServerHelper (uint16_t port);
 
+  /**
+   * \param name the name of the attribute to set
+   * \param value the value of the attribute to set
+   *
+   * Record an attribute to be set after the server application is created.
+   */
   void SetAttribute (std::string name, const AttributeValue &value);
 
+  /**
+   * \param node the node
+   *
+   * Create a udp echo server application on the input node
+   *
+   * \returns the application created
+   */
   ApplicationContainer Install (Ptr<Node> node) const;
+  /**
+   * \param nodeName the node
+   *
+   * Create a udp echo server application on the input node
+   *
+   * \returns the application created
+   */
   ApplicationContainer Install (std::string nodeName) const;
+  /**
+   * \param c the nodes
+   *
+   * Create one udp echo server application on each of the input nodes
+   *
+   * \returns the applications created, one application per input node.
+   */
   ApplicationContainer Install (NodeContainer c) const;
 
 private:
@@ -45,11 +79,24 @@ private:
   ObjectFactory m_factory;
 };
 
+/**
+ * \brief create an application which sends a udp packet and waits for an echo of this packet
+ */
 class UdpEchoClientHelper
 {
 public:
+  /**
+   * \param ip ip address of the remote udp echo server
+   * \param port port number of the remote udp echo server
+   */
   UdpEchoClientHelper (Ipv4Address ip, uint16_t port);
 
+  /**
+   * \param name the name of the attribute to set
+   * \param value the value of the attribute to set
+   *
+   * Record an attribute to be set after the client application is created.
+   */
   void SetAttribute (std::string name, const AttributeValue &value);
 
   /**
@@ -103,8 +150,29 @@ public:
    */
   void SetFill (Ptr<Application> app, uint8_t *fill, uint32_t fillLength, uint32_t dataLength);
 
+  /**
+   * \param node the node
+   *
+   * Create a udp echo client application on the input node
+   *
+   * \returns the application created
+   */
   ApplicationContainer Install (Ptr<Node> node) const;
+  /**
+   * \param nodeName the node
+   *
+   * Create a udp echo client application on the input node
+   *
+   * \returns the application created
+   */
   ApplicationContainer Install (std::string nodeName) const;
+  /**
+   * \param c the nodes
+   *
+   * Create one udp echo client application on each of the input nodes
+   *
+   * \returns the applications created, one application per input node.
+   */
   ApplicationContainer Install (NodeContainer c) const;
 
 private:
