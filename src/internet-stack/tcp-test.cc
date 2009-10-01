@@ -33,6 +33,7 @@
 #include "ns3/node.h"
 #include "ns3/inet-socket-address.h"
 #include "ns3/uinteger.h"
+#include "ns3/log.h"
 
 #include "ipv4-end-point.h"
 #include "arp-l3-protocol.h"
@@ -42,6 +43,8 @@
 #include "tcp-l4-protocol.h"
 
 #include <string>
+
+NS_LOG_COMPONENT_DEFINE("TcpTestSuite");
 
 namespace ns3 {
 
@@ -90,6 +93,13 @@ static std::string Name (std::string str, uint32_t totalStreamSize,
   oss << str << " total=" << totalStreamSize << " sourceWrite=" << sourceWriteSize 
       << " sourceRead=" << sourceReadSize << " serverRead=" << serverReadSize
       << " serverWrite=" << serverWriteSize;
+  return oss.str ();
+}
+
+static std::string GetString (Ptr<Packet> p)
+{
+  std::ostringstream oss;
+  p->CopyData (&oss, p->GetSize ());
   return oss.str ();
 }
 
@@ -172,6 +182,7 @@ TcpTestCase::ServerHandleRecv (Ptr<Socket> sock)
         }
       NS_TEST_EXPECT_MSG_EQ ((m_currentServerRxBytes + p->GetSize () <= m_totalBytes), true, 
                              "Server received too many bytes");
+      NS_LOG_DEBUG ("Server recv data=\"" << GetString (p) << "\"");
       p->CopyData (&m_serverRxPayload[m_currentServerRxBytes], p->GetSize ());
       m_currentServerRxBytes += p->GetSize ();
       ServerHandleSend (sock, sock->GetTxAvailable ());
@@ -187,6 +198,7 @@ TcpTestCase::ServerHandleSend (Ptr<Socket> sock, uint32_t available)
       uint32_t toSend = std::min (left, sock->GetTxAvailable ());
       toSend = std::min (toSend, m_serverWriteSize);
       Ptr<Packet> p = Create<Packet> (&m_serverRxPayload[m_currentServerTxBytes], toSend);
+      NS_LOG_DEBUG ("Server send data=\"" << GetString (p) << "\"");
       int sent = sock->Send (p);
       NS_TEST_EXPECT_MSG_EQ ((sent != -1), true, "Server error during send ?");
       m_currentServerTxBytes += sent;
@@ -206,6 +218,7 @@ TcpTestCase::SourceHandleSend (Ptr<Socket> sock, uint32_t available)
       uint32_t toSend = std::min (left, sock->GetTxAvailable ());
       toSend = std::min (toSend, m_sourceWriteSize);
       Ptr<Packet> p = Create<Packet> (&m_sourceTxPayload[m_currentSourceTxBytes], toSend);
+      NS_LOG_DEBUG ("Source send data=\"" << GetString (p) << "\"");
       int sent = sock->Send (p);
       NS_TEST_EXPECT_MSG_EQ ((sent != -1), true, "Error during send ?");
       m_currentSourceTxBytes += sent;
@@ -225,6 +238,7 @@ TcpTestCase::SourceHandleRecv (Ptr<Socket> sock)
         }
       NS_TEST_EXPECT_MSG_EQ ((m_currentSourceRxBytes + p->GetSize () <= m_totalBytes), true, 
                              "Source received too many bytes");
+      NS_LOG_DEBUG ("Source recv data=\"" << GetString (p) << "\"");
       p->CopyData (&m_sourceRxPayload[m_currentSourceRxBytes], p->GetSize ());
       m_currentSourceRxBytes += p->GetSize ();
     }
@@ -319,7 +333,7 @@ public:
     {
       AddTestCase (new TcpTestCase (13, 200, 200, 200, 200));
       AddTestCase (new TcpTestCase (13, 1, 1, 1, 1));
-      //AddTestCase (new TcpTestCase (100000, 100, 50, 100, 20));
+      AddTestCase (new TcpTestCase (100000, 100, 50, 100, 20));
     }
   
 } g_tcpTestSuite;
