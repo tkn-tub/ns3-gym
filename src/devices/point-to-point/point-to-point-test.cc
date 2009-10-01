@@ -1,5 +1,3 @@
-#ifdef RUN_SELF_TESTS
-
 #include "ns3/test.h"
 #include "ns3/drop-tail-queue.h"
 #include "ns3/simulator.h"
@@ -8,19 +6,19 @@
 
 namespace ns3 {
 
-class PointToPointTest : public Test
+class PointToPointTest : public TestCase
 {
 public:
   PointToPointTest ();
 
-  virtual bool RunTests (void);
+  virtual bool DoRun (void);
 
 private:
   void SendOnePacket (Ptr<PointToPointNetDevice> device);
 };
 
 PointToPointTest::PointToPointTest ()
-  : Test ("PointToPoint")
+  : TestCase ("PointToPoint")
 {}
 
 void
@@ -32,10 +30,8 @@ PointToPointTest::SendOnePacket (Ptr<PointToPointNetDevice> device)
 
 
 bool
-PointToPointTest::RunTests (void)
+PointToPointTest::DoRun (void)
 {
-  bool result = true;
-
   Ptr<Node> a = CreateObject<Node> ();
   Ptr<Node> b = CreateObject<Node> ();
   Ptr<PointToPointNetDevice> devA = CreateObject<PointToPointNetDevice> ();
@@ -58,11 +54,21 @@ PointToPointTest::RunTests (void)
 
   Simulator::Destroy ();
 
-  return result;
+  return GetErrorStatus ();
+}
+//-----------------------------------------------------------------------------
+class PointToPointTestSuite : public TestSuite
+{
+public:
+  PointToPointTestSuite ();
+};
+
+PointToPointTestSuite::PointToPointTestSuite ()
+  : TestSuite ("devices-point-to-point", UNIT)
+{
+  AddTestCase (new PointToPointTest);
 }
 
-static PointToPointTest g_pointToPointTest;
+PointToPointTestSuite g_pointToPointTestSuite;
 
 } // namespace ns3
-
-#endif /* RUN_SELF_TESTS */
