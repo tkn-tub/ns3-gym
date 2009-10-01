@@ -1054,6 +1054,11 @@ def run_tests():
     if len(options.xml):
         shutil.copyfile(xml_results_file, options.xml)
 
+    if passed_tests == total_tests:
+        return 0
+    else:
+        return -1
+
 def main(argv):
     random.seed()
 
@@ -1100,8 +1105,8 @@ def main(argv):
     global options
     options = parser.parse_args()[0]
     signal.signal(signal.SIGINT, sigint_hook)
-    run_tests()
-    return 0
+    
+    return run_tests()
 
 if __name__ == '__main__':
     sys.exit(main(sys.argv))
