@@ -15,11 +15,9 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * Author: Sebastien Vincent <vincent@clarinet.u-strasbg.fr>
+ * Authors: Sebastien Vincent <vincent@clarinet.u-strasbg.fr>
+ *         Faker Moatamri <faker.moatamri@sophia.inria.fr>
  */
-
-#ifdef RUN_SELF_TESTS
-
 #include "ns3/simulator.h"
 #include "ns3/test.h"
 #include "ns3/log.h"
@@ -32,44 +30,38 @@
 #include "ipv6-l3-protocol.h"
 #include "icmpv6-l4-protocol.h"
 
-namespace ns3
+namespace ns3 {
+class Ipv6L3ProtocolTestCase : public TestCase
 {
+public:
+  /**
+   * \brief Constructor.
+   */
+  Ipv6L3ProtocolTestCase ();
 
-/**
- * \class Ipv6L3ProtocolTest
- * \brief Ipv6L3Protocol unit tests.
- */
-class Ipv6L3ProtocolTest : public Test
-{
-  public:
-    /**
-     * \brief Constructor.
-     */
-    Ipv6L3ProtocolTest ();
+  /**
+   * \brief Destructor.
+   */
+  virtual
+  ~Ipv6L3ProtocolTestCase ();
 
-    /**
-     * \brief Destructor.
-     */
-    virtual ~Ipv6L3ProtocolTest ();
-
-    /**
-     * \brief Run unit tests for this class.
-     * \return true if all tests have passed, false otherwise
-     */
-    virtual bool RunTests ();
+  /**
+   * \brief Run unit tests for this class.
+   * \return false if all tests have passed, false otherwise
+   */
+  virtual bool
+  DoRun ();
 };
-
-Ipv6L3ProtocolTest::Ipv6L3ProtocolTest () : Test ("Ipv6L3Protocol")
+Ipv6L3ProtocolTestCase::Ipv6L3ProtocolTestCase () :
+  TestCase ("Verify the IPv6 layer 3 protocol")
 {
 }
-
-Ipv6L3ProtocolTest::~Ipv6L3ProtocolTest ()
+Ipv6L3ProtocolTestCase::~Ipv6L3ProtocolTestCase ()
 {
 }
-
-bool Ipv6L3ProtocolTest::RunTests ()
+bool
+Ipv6L3ProtocolTestCase::DoRun ()
 {
-  bool result = true;
   Ptr<Node> node = CreateObject<Node> ();
   Ptr<Ipv6L3Protocol> ipv6 = CreateObject<Ipv6L3Protocol> ();
   Ptr<Icmpv6L4Protocol> icmpv6 = CreateObject<Icmpv6L4Protocol> ();
@@ -90,59 +82,69 @@ bool Ipv6L3ProtocolTest::RunTests ()
   interface->SetDevice (device);
   interface->SetNode (node);
   index = ipv6->AddIpv6Interface (interface);
-  NS_TEST_ASSERT_EQUAL (index, 1);
+  NS_TEST_ASSERT_MSG_EQ (index, 1,"The index is not 1??");
 
   /* second interface */
   node->AddDevice (device2);
   interface2->SetDevice (device2);
   interface2->SetNode (node);
   index = ipv6->AddIpv6Interface (interface2);
-  NS_TEST_ASSERT_EQUAL (index, 2);
+  NS_TEST_ASSERT_MSG_EQ (index, 2, "The index is not 2??");
 
   Ipv6InterfaceAddress ifaceAddr = interface->GetLinkLocalAddress ();
-  NS_TEST_ASSERT_EQUAL (ifaceAddr.GetAddress ().IsLinkLocal (), true);
+  NS_TEST_ASSERT_MSG_EQ (ifaceAddr.GetAddress ().IsLinkLocal (), true,
+      "Should be link local??");
 
   interface->SetUp ();
-  NS_TEST_ASSERT_EQUAL (interface->GetNAddresses (), 1); /* interface has always a link-local address */
+  NS_TEST_ASSERT_MSG_EQ (interface->GetNAddresses (), 1,
+      "interface has always a link-local address"); /* interface has always a link-local address */
 
   interface2->SetUp ();
 
-  Ipv6InterfaceAddress ifaceAddr1 = Ipv6InterfaceAddress ("2001:1234:5678:9000::1", Ipv6Prefix (64));
+  Ipv6InterfaceAddress ifaceAddr1 = Ipv6InterfaceAddress (
+      "2001:1234:5678:9000::1", Ipv6Prefix (64));
   interface->AddAddress (ifaceAddr1);
-  Ipv6InterfaceAddress ifaceAddr2 = Ipv6InterfaceAddress ("2001:ffff:5678:9000::1", Ipv6Prefix (64));
+  Ipv6InterfaceAddress ifaceAddr2 = Ipv6InterfaceAddress (
+      "2001:ffff:5678:9000::1", Ipv6Prefix (64));
   interface->AddAddress (ifaceAddr2);
 
-  Ipv6InterfaceAddress ifaceAddr3 = Ipv6InterfaceAddress ("2001:ffff:5678:9001::2", Ipv6Prefix (64));
+  Ipv6InterfaceAddress ifaceAddr3 = Ipv6InterfaceAddress (
+      "2001:ffff:5678:9001::2", Ipv6Prefix (64));
   interface2->AddAddress (ifaceAddr3);
 
   uint32_t num = interface->GetNAddresses ();
-  NS_TEST_ASSERT_EQUAL (num, 3); /* 2 global addresses + link-local ones */
+  NS_TEST_ASSERT_MSG_EQ (num, 3, "Number of adresses should be 3??"); /* 2 global addresses + link-local ones */
 
   num = interface2->GetNAddresses ();
-  NS_TEST_ASSERT_EQUAL (num, 2); /* 1 global addresses + link-local ones */
+  NS_TEST_ASSERT_MSG_EQ (num, 2, "1 global addresses + link-local ones"); /* 1 global addresses + link-local ones */
 
   interface->RemoveAddress (2);
   num = interface->GetNAddresses ();
-  NS_TEST_ASSERT_EQUAL (num, 2);
+  NS_TEST_ASSERT_MSG_EQ (num, 2, "Number of adresses should be 2??");
 
   Ipv6InterfaceAddress output = interface->GetAddress (1);
-  NS_TEST_ASSERT_EQUAL (ifaceAddr1, output);
+  NS_TEST_ASSERT_MSG_EQ (ifaceAddr1, output,
+      "Should be the interface address 1?");
 
-  index = ipv6->GetInterfaceForPrefix ("2001:1234:5678:9000::0", Ipv6Prefix (64));
-  NS_TEST_ASSERT_EQUAL (index, 1); /* link-local address is always index 0 */
+  index = ipv6->GetInterfaceForPrefix ("2001:1234:5678:9000::0",
+      Ipv6Prefix (64));
+  NS_TEST_ASSERT_MSG_EQ (index, 1, "We should get one address??"); /* link-local address is always index 0 */
 
   index = ipv6->GetInterfaceForAddress ("2001:ffff:5678:9001::2");
-  NS_TEST_ASSERT_EQUAL (index, 2);
+  NS_TEST_ASSERT_MSG_EQ (index, 2, "Number of adresses should be 2??");
 
   index = ipv6->GetInterfaceForAddress ("2001:ffff:5678:9000::1"); /* address we just remove */
-  NS_TEST_ASSERT_EQUAL (index, (uint32_t)-1);
+  NS_TEST_ASSERT_MSG_EQ (index, (uint32_t) -1, "Address should not be found??");
 
-  return result;
-}
-
-static Ipv6L3ProtocolTest gIpv6L3ProtocolTest;
-
-} /* namespace ns3 */
-
-#endif /* RUN_SELF_TESTS */
-
+  return false;
+}//end DoRun
+static class IPv6L3ProtocolTestSuite : public TestSuite
+{
+public:
+  IPv6L3ProtocolTestSuite () :
+    TestSuite ("ipv6-protocol", UNIT)
+  {
+    AddTestCase (new Ipv6L3ProtocolTestCase ());
+  }
+} g_IPv6L3ProtocolTestSuite;
+} // namespace ns3
