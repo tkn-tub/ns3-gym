@@ -2007,8 +2007,8 @@ GlobalRouteManagerImplTestCase::DoRun(void)
       SPFVertex *v = candidate.Pop ();
       if (v->GetDistanceFromRoot () < lastDistance)
         {
-          // XXX
-          SetErrorStatus (false);
+          // XXX does nothing.
+          UpdateErrorStatus (false);
         }
       lastDistance = v->GetDistanceFromRoot ();
       delete v;
@@ -2164,7 +2164,9 @@ GlobalRouteManagerImplTestCase::DoRun(void)
   delete srm;
 
   // XXX
-  return false;
+  // No testing has actually been done other than making sure that this code
+  // does not crash
+  return GetErrorStatus ();
 }
 
 

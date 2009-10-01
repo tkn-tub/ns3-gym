@@ -34,6 +34,7 @@ main (int argc, char *argv[])
 {
   bool doVerbose = false;
   bool doList = false;
+  bool doMultiple = false;
   bool doHelp = false;
   bool doSuite = false;
   bool doKinds = false;
@@ -78,6 +79,11 @@ main (int argc, char *argv[])
           doList = true;
         }
 
+      if (arg.compare ("--multiple") == 0)
+        {
+          doMultiple = true;
+        }
+
       if (arg.find ("--out=") != std::string::npos)
         {
           outfileName = arg.substr (arg.find_first_of ("=") + 1, 9999);
@@ -107,6 +113,7 @@ main (int argc, char *argv[])
       std::cout << "  --help:                 Print this message" << std::endl;
       std::cout << "  --kinds:                List all of the available kinds of tests" << std::endl;
       std::cout << "  --list:                 List all of the test suites (optionally constrained by test-type)" << std::endl;
+      std::cout << "  --multiple:             Allow test suites and cases to produce multiple failures" << std::endl;
       std::cout << "  --out=file-name:        Set the test status output file to \"file-name\"" << std::endl;
       std::cout << "  --suite=suite-name:     Run the test suite named \"suite-name\"" << std::endl;
       std::cout << "  --verbose:              Turn on messages in the run test suites" << std::endl;
@@ -240,6 +247,7 @@ main (int argc, char *argv[])
           testSuite->SetBaseDir (basedir);
           testSuite->SetStream (pofs);
           testSuite->SetVerbose (doVerbose);
+          testSuite->SetContinueOnFailure (doMultiple);
           result |= testSuite->Run ();
           suiteRan = true;
         }
