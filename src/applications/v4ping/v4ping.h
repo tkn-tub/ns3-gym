@@ -9,11 +9,20 @@ namespace ns3 {
 
 class Socket;
 
+/**
+ * \brief an application which sends one ICMP ECHO request, waits for a REPLYs
+ *        and reports the calculated RTT.
+ *
+ * Note: The RTT calculated is reported through a trace source.
+ */
 class V4Ping : public Application
 {
 public:
   static TypeId GetTypeId (void);
 
+  /**
+   * create a pinger applications
+   */
   V4Ping ();
   virtual ~V4Ping ();
 
