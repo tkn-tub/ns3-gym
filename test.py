@@ -100,7 +100,7 @@ example_tests = [
     ("udp-echo", "True"),
     ("virtual-net-device", "True"),
     ("wifi-adhoc", "False"), # takes forever to run
-    ("wifi-ap", "True"),
+    ("wifi-ap --verbose=0", "True"), # don't let it spew 
     ("wifi-wired-bridging", "True"),
 ]
 
@@ -509,8 +509,8 @@ def run_job_synchronously(shell_command, directory):
     if options.verbose:
         print "Synchronously execute %s" % cmd
     proc = subprocess.Popen(cmd, shell=True, cwd=directory, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    stdout_results = proc.communicate()[0]
-    return (proc.returncode, stdout_results)
+    stdout_results, stderr_results = proc.communicate()
+    return (proc.returncode, stdout_results, stderr_results)
 
 #
 # This class defines a unit of testing work.  It will typically refer to
@@ -641,18 +641,22 @@ class worker_thread(threading.Thread):
                     # If we have an example, the shell command is all we need to
                     # know.  It will be something like "examples/udp-echo"
                     #
-                    (job.returncode, standard_out) = run_job_synchronously(job.shell_command, job.cwd)
+                    (job.returncode, standard_out, standard_err) = run_job_synchronously(job.shell_command, job.cwd)
                 else:
                     #
                     # If we're a test suite, we need to provide a little more info
                     # to the test runner, specifically the base directory and temp
                     # file name
                     #
-                    (job.returncode, standard_out) = run_job_synchronously(job.shell_command + " --basedir=%s --out=%s" %
-                        (job.basedir, job.tmp_file_name), job.cwd)
+                    (job.returncode, standard_out, standard_err) = run_job_synchronously(job.shell_command + 
+                        " --basedir=%s --out=%s" % (job.basedir, job.tmp_file_name), job.cwd)
 
                 if options.verbose:
+                    print "---------- beign standard out ----------"
                     print standard_out
+                    print "---------- begin standard err ----------"
+                    print standard_err
+                    print "---------- end standard err ----------"
 
                 self.output_queue.put(job)
 
@@ -685,11 +689,11 @@ def run_tests():
     # handle them without doing all of the hard work.
     #
     if options.kinds:
-        (rc, standard_out) = run_job_synchronously("utils/test-runner --kinds", os.getcwd())
+        (rc, standard_out, standard_err) = run_job_synchronously("utils/test-runner --kinds", os.getcwd())
         print standard_out
 
     if options.list:
-        (rc, standard_out) = run_job_synchronously("utils/test-runner --list", os.getcwd())
+        (rc, standard_out, standard_err) = run_job_synchronously("utils/test-runner --list", os.getcwd())
         print standard_out
 
     if options.kinds or options.list:
@@ -755,9 +759,10 @@ def run_tests():
         suites = options.suite + "\n"
     elif len(options.example) == 0:
         if len(options.constrain):
-            (rc, suites) = run_job_synchronously("utils/test-runner --list --constrain=%s" % options.constrain, os.getcwd())
+            (rc, suites, standard_err) = run_job_synchronously("utils/test-runner --list --constrain=%s" % 
+                options.constrain, os.getcwd())
         else:
-            (rc, suites) = run_job_synchronously("utils/test-runner --list", os.getcwd())
+            (rc, suites, standard_err) = run_job_synchronously("utils/test-runner --list", os.getcwd())
     else:
         suites = ""
 
@@ -1055,9 +1060,9 @@ def run_tests():
         shutil.copyfile(xml_results_file, options.xml)
 
     if passed_tests == total_tests:
-        return 0
+        return 0 # success
     else:
-        return -1
+        return 1 # catchall for general errors
 
 def main(argv):
     random.seed()

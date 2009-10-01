@@ -32,53 +32,73 @@
 
 using namespace ns3;
 
+static bool g_verbose = true;
+
 void
 DevTxTrace (std::string context, Ptr<const Packet> p)
 {
-  std::cout << " TX p: " << *p << std::endl;
+  if (g_verbose)
+    {
+      std::cout << " TX p: " << *p << std::endl;
+    }
 }
 void
 DevRxTrace (std::string context, Ptr<const Packet> p)
 {
-  std::cout << " RX p: " << *p << std::endl;
+  if (g_verbose)
+    {
+      std::cout << " RX p: " << *p << std::endl;
+    }
 }
 void
 PhyRxOkTrace (std::string context, Ptr<const Packet> packet, double snr, WifiMode mode, enum WifiPreamble preamble)
 {
-  std::cout << "PHYRXOK mode=" << mode << " snr=" << snr << " " << *packet << std::endl;
+  if (g_verbose)
+    {
+      std::cout << "PHYRXOK mode=" << mode << " snr=" << snr << " " << *packet << std::endl;
+    }
 }
 void
 PhyRxErrorTrace (std::string context, Ptr<const Packet> packet, double snr)
 {
-  std::cout << "PHYRXERROR snr=" << snr << " " << *packet << std::endl;
+  if (g_verbose)
+    {
+      std::cout << "PHYRXERROR snr=" << snr << " " << *packet << std::endl;
+    }
 }
 void
 PhyTxTrace (std::string context, Ptr<const Packet> packet, WifiMode mode, WifiPreamble preamble, uint8_t txPower)
 {
-  std::cout << "PHYTX mode=" << mode << " " << *packet << std::endl;
+  if (g_verbose)
+    {
+      std::cout << "PHYTX mode=" << mode << " " << *packet << std::endl;
+    }
 }
 void
 PhyStateTrace (std::string context, Time start, Time duration, enum WifiPhy::State state)
 {
-  std::cout << " state=";
-  switch (state) {
-  case WifiPhy::SWITCHING: 
-    std::cout << "switchng";
-    break; 
-  case WifiPhy::TX:
-    std::cout << "tx      ";
-    break;
-  case WifiPhy::SYNC:
-    std::cout << "sync    ";
-    break;
-  case WifiPhy::CCA_BUSY:
-    std::cout << "cca-busy";
-    break;
-  case WifiPhy::IDLE:
-    std::cout << "idle    ";
-    break;
-  }
-  std::cout << " start="<<start<<" duration="<<duration<<std::endl;
+  if (g_verbose)
+    {
+      std::cout << " state=";
+      switch (state) {
+      case WifiPhy::SWITCHING: 
+        std::cout << "switchng";
+        break; 
+      case WifiPhy::TX:
+        std::cout << "tx      ";
+        break;
+      case WifiPhy::SYNC:
+        std::cout << "sync    ";
+        break;
+      case WifiPhy::CCA_BUSY:
+        std::cout << "cca-busy";
+        break;
+      case WifiPhy::IDLE:
+        std::cout << "idle    ";
+        break;
+      }
+      std::cout << " start="<<start<<" duration="<<duration<<std::endl;
+    }
 }
 
 static void
@@ -105,17 +125,20 @@ AdvancePosition (Ptr<Node> node)
       return;
     }
   SetPosition (node, pos);
-  //std::cout << "x="<<pos.x << std::endl;
+
+  if (g_verbose)
+    {
+      //std::cout << "x="<<pos.x << std::endl;
+    }
   Simulator::Schedule (Seconds (1.0), &AdvancePosition, node);
 }
-
-
-
 
 int main (int argc, char *argv[])
 {
   CommandLine cmd;
-   cmd.Parse (argc, argv);
+  cmd.AddValue ("verbose", "Print trace information if true", g_verbose);
+
+  cmd.Parse (argc, argv);
    
   Packet::EnablePrinting ();
 
