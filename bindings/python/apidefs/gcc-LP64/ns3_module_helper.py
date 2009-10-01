@@ -1417,10 +1417,6 @@ def register_Ns3V4PingHelper_methods(root_module, cls):
                    'ns3::ApplicationContainer', 
                    [param('std::string', 'nodeName')], 
                    is_const=True)
-    ## v4ping-helper.h: void ns3::V4PingHelper::SetAttribute(std::string name, ns3::AttributeValue const & value) [member function]
-    cls.add_method('SetAttribute', 
-                   'void', 
-                   [param('std::string', 'name'), param('ns3::AttributeValue const &', 'value')])
     return
 
 def register_Ns3WifiHelper_methods(root_module, cls):
