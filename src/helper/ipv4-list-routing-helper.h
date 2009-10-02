@@ -35,7 +35,17 @@ namespace ns3 {
 class Ipv4ListRoutingHelper : public Ipv4RoutingHelper
 {
 public:
-  Ipv4ListRoutingHelper();
+  Ipv4ListRoutingHelper ();
+  virtual ~Ipv4ListRoutingHelper ();
+  Ipv4ListRoutingHelper (const Ipv4ListRoutingHelper &);
+  /**
+   * \returns pointer to clone of this Ipv4ListRoutingHelper 
+   * 
+   * This method is mainly for internal use by the other helpers;
+   * clients are expected to free the dynamic memory allocated by this method
+   */
+  Ipv4ListRoutingHelper* Copy (void) const;
+
   /**
    * \param routing a routing helper
    * \param priority the priority of the associated helper
@@ -55,6 +65,8 @@ public:
    */
   virtual Ptr<Ipv4RoutingProtocol> Create (Ptr<Node> node) const;
 private:
+  Ipv4ListRoutingHelper &operator = (const Ipv4ListRoutingHelper &o);
+
   std::list<std::pair<const Ipv4RoutingHelper *,int16_t> > m_list;
 };
 

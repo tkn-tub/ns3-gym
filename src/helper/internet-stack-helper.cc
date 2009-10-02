@@ -179,15 +179,17 @@ std::string InternetStackHelper::m_pcapBaseFilename;
 bool InternetStackHelper::m_isInitialized = false;
 
 InternetStackHelper::InternetStackHelper ()
-  : m_ipv4Enabled (true),
+  : m_routing (0),
+  m_routingv6 (0),
+  m_ipv4Enabled (true),
   m_ipv6Enabled (true)
 {
   SetTcp ("ns3::TcpL4Protocol");
-  static Ipv4StaticRoutingHelper staticRouting;
-  static Ipv4GlobalRoutingHelper globalRouting;
-  static Ipv4ListRoutingHelper listRouting;
-  static Ipv6ListRoutingHelper listRoutingv6;
-  static Ipv6StaticRoutingHelper staticRoutingv6;
+  Ipv4StaticRoutingHelper staticRouting;
+  Ipv4GlobalRoutingHelper globalRouting;
+  Ipv4ListRoutingHelper listRouting;
+  Ipv6ListRoutingHelper listRoutingv6;
+  Ipv6StaticRoutingHelper staticRoutingv6;
   if (m_isInitialized == false)
     {
       // Only add these once
@@ -203,16 +205,24 @@ InternetStackHelper::InternetStackHelper ()
   SetRoutingHelper (listRoutingv6);
 }
 
+InternetStackHelper::~InternetStackHelper ()
+{
+  delete m_routing;
+  delete m_routingv6;
+}
+
 void 
 InternetStackHelper::SetRoutingHelper (const Ipv4RoutingHelper &routing)
 {
-  m_routing = &routing;
+  delete m_routing;
+  m_routing = routing.Copy ();
 }
 
 void
 InternetStackHelper::SetRoutingHelper (const Ipv6RoutingHelper &routing)
 {
-  m_routingv6 = &routing;
+  delete m_routingv6;
+  m_routingv6 = routing.Copy ();
 }
 
 void

@@ -38,6 +38,14 @@ class Ipv4NixVectorHelper : public Ipv4RoutingHelper
 {
 public:
   Ipv4NixVectorHelper ();
+  Ipv4NixVectorHelper (const Ipv4NixVectorHelper &);
+  /**
+   * \returns pointer to clone of this Ipv4NixVectorHelper 
+   * 
+   * This method is mainly for internal use by the other helpers;
+   * clients are expected to free the dynamic memory allocated by this method
+   */
+  Ipv4NixVectorHelper* Copy (void) const;
 
   /**
   * \param node the node on which the routing protocol will run
@@ -48,6 +56,8 @@ public:
   virtual Ptr<Ipv4RoutingProtocol> Create (Ptr<Node> node) const;
 
 private:
+  Ipv4NixVectorHelper &operator = (const Ipv4NixVectorHelper &o);
+
   ObjectFactory m_agentFactory;
 };
 } // namespace ns3

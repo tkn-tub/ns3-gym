@@ -38,6 +38,16 @@ class Ipv6ListRoutingHelper : public Ipv6RoutingHelper
 {
 public:
   Ipv6ListRoutingHelper ();
+  virtual ~Ipv6ListRoutingHelper ();
+  Ipv6ListRoutingHelper (const Ipv6ListRoutingHelper &);
+  /**
+   * \returns pointer to clone of this Ipv6ListRoutingHelper 
+   * 
+   * This method is mainly for internal use by the other helpers;
+   * clients are expected to free the dynamic memory allocated by this method
+   */
+  Ipv6ListRoutingHelper* Copy (void) const;
+
   /**
    * \param routing a routing helper
    * \param priority the priority of the associated helper
@@ -57,6 +67,8 @@ public:
    */
   virtual Ptr<Ipv6RoutingProtocol> Create (Ptr<Node> node) const;
 private:
+  Ipv6ListRoutingHelper &operator = (const Ipv6ListRoutingHelper &o);
+
   std::list<std::pair<const Ipv6RoutingHelper *,int16_t> > m_list;
 };
 

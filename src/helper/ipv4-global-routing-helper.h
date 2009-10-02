@@ -32,6 +32,15 @@ class Ipv4GlobalRoutingHelper  : public Ipv4RoutingHelper
 {
 public:
   Ipv4GlobalRoutingHelper ();
+  Ipv4GlobalRoutingHelper (const Ipv4GlobalRoutingHelper &);
+  /**
+   * \returns pointer to clone of this Ipv4GlobalRoutingHelper
+   *
+   * This method is mainly for internal use by the other helpers;
+   * clients are expected to free the dynamic memory allocated by this method
+   */
+  Ipv4GlobalRoutingHelper* Copy (void) const;
+
   /**
    * \param node the node on which the routing protocol will run
    * \returns a newly-created routing protocol
@@ -63,6 +72,8 @@ public:
    *
    */
   static void RecomputeRoutingTables (void);
+private:
+  Ipv4GlobalRoutingHelper &operator = (const Ipv4GlobalRoutingHelper &o);
 };
 
 } // namespace ns3

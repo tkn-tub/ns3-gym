@@ -45,6 +45,14 @@ public:
    * \brief Constructor.
    */
   Ipv6StaticRoutingHelper ();
+  Ipv6StaticRoutingHelper (const Ipv6StaticRoutingHelper &);
+  /**
+   * \returns pointer to clone of this Ipv6StaticRoutingHelper
+   *
+   * This method is mainly for internal use by the other helpers;
+   * clients are expected to free the dynamic memory allocated by this method
+   */
+  Ipv6StaticRoutingHelper* Copy (void) const;
 
   /**
    * \param node the node on which the routing protocol will run
@@ -80,6 +88,8 @@ public:
   void SetDefaultMulticastRoute (std::string nName, Ptr<NetDevice> nd);
   void SetDefaultMulticastRoute (std::string nName, std::string ndName);
 #endif
+private:
+  Ipv6StaticRoutingHelper &operator = (const Ipv6StaticRoutingHelper &o);
 };
 
 } // namespace ns3

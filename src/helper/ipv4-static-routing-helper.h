@@ -40,7 +40,15 @@ namespace ns3 {
 class Ipv4StaticRoutingHelper : public Ipv4RoutingHelper
 {
 public:
-  Ipv4StaticRoutingHelper();
+  Ipv4StaticRoutingHelper ();
+  Ipv4StaticRoutingHelper (const Ipv4StaticRoutingHelper &);
+  /**
+   * \returns pointer to clone of this Ipv4StaticRoutingHelper
+   *
+   * This method is mainly for internal use by the other helpers;
+   * clients are expected to free the dynamic memory allocated by this method
+   */
+  Ipv4StaticRoutingHelper* Copy (void) const;
 
   /**
    * \param node the node on which the routing protocol will run
@@ -74,6 +82,8 @@ public:
   void SetDefaultMulticastRoute (Ptr<Node> n, std::string ndName);
   void SetDefaultMulticastRoute (std::string nName, Ptr<NetDevice> nd);
   void SetDefaultMulticastRoute (std::string nName, std::string ndName);
+private:
+  Ipv4StaticRoutingHelper &operator = (const Ipv4StaticRoutingHelper &o);
 
 };
 

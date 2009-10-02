@@ -53,6 +53,7 @@ public:
    * such as ns3::OlsrHelper
    */
   InternetStackHelper(void);
+  virtual ~InternetStackHelper(void);
 
   /**
    * \param routing a new routing helper
