@@ -514,23 +514,28 @@ Ptr<Ipv6Route> Ipv6StaticRouting::RouteOutput (Ptr<Packet> p, const Ipv6Header &
   return rtentry;
 }
 
-bool Ipv6StaticRouting::RouteInput (Ptr<const Packet> p, const Ipv6Header &ipHeader, Ptr<const NetDevice> idev,
+bool Ipv6StaticRouting::RouteInput (Ptr<const Packet> p, const Ipv6Header &header, Ptr<const NetDevice> idev,
                                     UnicastForwardCallback ucb, MulticastForwardCallback mcb,
                                     LocalDeliverCallback lcb, ErrorCallback ecb)
 {
-  NS_LOG_FUNCTION (this << p << ipHeader << ipHeader.GetSourceAddress () << ipHeader.GetDestinationAddress () << idev);
+  NS_LOG_FUNCTION (this << p << header << header.GetSourceAddress () << header.GetDestinationAddress () << idev);
+  NS_ASSERT (m_ipv6 != 0);
+  // Check if input device supports IP
+  NS_ASSERT (m_ipv6->GetInterfaceForDevice (idev) >= 0);
+  uint32_t iif = m_ipv6->GetInterfaceForDevice (idev);
+  Ipv6Address dst = header.GetDestinationAddress ();
 
-  if (ipHeader.GetDestinationAddress ().IsMulticast ())
+  if (dst.IsMulticast ())
   {
     NS_LOG_LOGIC ("Multicast destination");
-    Ptr<Ipv6MulticastRoute> mrtentry = LookupStatic (ipHeader.GetSourceAddress (),
-                                                    ipHeader.GetDestinationAddress ()
+    Ptr<Ipv6MulticastRoute> mrtentry = LookupStatic (header.GetSourceAddress (),
+                                                    header.GetDestinationAddress ()
                                                     , m_ipv6->GetInterfaceForDevice (idev));
 
     if (mrtentry)
     {
       NS_LOG_LOGIC ("Multicast route found");
-      mcb (mrtentry, p, ipHeader); // multicast forwarding callback
+      mcb (mrtentry, p, header); // multicast forwarding callback
       return true;
     }
     else
@@ -539,16 +544,50 @@ bool Ipv6StaticRouting::RouteInput (Ptr<const Packet> p, const Ipv6Header &ipHea
       return false; // Let other routing protocols try to handle this
     }
   }
-  //
-  // This is a unicast packet.  Check to see if we have a route for it.
-  //
+
+ // TODO:  Configurable option to enable RFC 1222 Strong End System Model
+ // Right now, we will be permissive and allow a source to send us
+ // a packet to one of our other interface addresses; that is, the
+ // destination unicast address does not match one of the iif addresses,
+ // but we check our other interfaces.  This could be an option
+ // (to remove the outer loop immediately below and just check iif).
+  for (uint32_t j = 0; j < m_ipv6->GetNInterfaces (); j++)
+    {
+      for (uint32_t i = 0; i < m_ipv6->GetNAddresses (j); i++)
+        {
+          Ipv6InterfaceAddress iaddr = m_ipv6->GetAddress (j, i);
+          Ipv6Address addr = iaddr.GetAddress ();
+          if (addr.IsEqual (header.GetDestinationAddress ()))
+            {
+              if (j == iif)
+                {
+                  NS_LOG_LOGIC ("For me (destination " << addr << " match)");
+                }
+              else
+                {
+                  NS_LOG_LOGIC ("For me (destination " << addr << " match) on another interface " << header.GetDestinationAddress ());
+                }
+              lcb (p, header, iif);
+              return true;
+            }
+          NS_LOG_LOGIC ("Address "<< addr << " not a match");
+        }
+    }
+  // Check if input device supports IP forwarding
+  if (m_ipv6->IsForwarding (iif) == false)
+    {
+      NS_LOG_LOGIC ("Forwarding disabled for this interface");
+      ecb (p, header, Socket::ERROR_NOROUTETOHOST);
+      return false;
+    }
+  // Next, try to find a route
   NS_LOG_LOGIC ("Unicast destination");
-  Ptr<Ipv6Route> rtentry = LookupStatic (ipHeader.GetDestinationAddress ());
+  Ptr<Ipv6Route> rtentry = LookupStatic (header.GetDestinationAddress ());
 
   if (rtentry != 0)
   {
     NS_LOG_LOGIC ("Found unicast destination- calling unicast callback");
-    ucb (rtentry, p, ipHeader);  // unicast forwarding callback
+    ucb (rtentry, p, header);  // unicast forwarding callback
     return true;
   }
   else

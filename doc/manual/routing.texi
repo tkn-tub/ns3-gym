@@ -280,6 +280,11 @@ Once instantiated, the agent can be started with the Start() command,
 and the OLSR "main interface" can be set with the SetMainInterface()
 command.  A number of protocol constants are defined in olsr-agent-impl.cc.
 
+Presently, OLSR is limited to use with an Ipv4ListRouting object, and
+does not respond to dynamic changes to a device's IP address or link up/down
+notifications; i.e. the topology changes are due to loss/gain of connectivity
+over a wireless channel.
+
 @node Multicast routing
 @section Multicast routing
 

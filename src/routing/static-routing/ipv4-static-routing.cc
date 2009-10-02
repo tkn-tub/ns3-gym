@@ -444,8 +444,6 @@ Ipv4StaticRouting::RouteOutput (Ptr<Packet> p, const Ipv4Header &header, uint32_
   return rtentry;
 }
 
-// XXX this method not robust enough to work outside of ListRouting context
-// because it will not perform local delivery
 bool 
 Ipv4StaticRouting::RouteInput  (Ptr<const Packet> p, const Ipv4Header &ipHeader, Ptr<const NetDevice> idev,
                              UnicastForwardCallback ucb, MulticastForwardCallback mcb,
@@ -453,6 +451,13 @@ Ipv4StaticRouting::RouteInput  (Ptr<const Packet> p, const Ipv4Header &ipHeader,
 {
   NS_LOG_FUNCTION (this << p << ipHeader << ipHeader.GetSource () << ipHeader.GetDestination () << idev);
 
+  NS_ASSERT (m_ipv4 != 0);
+  // Check if input device supports IP 
+  NS_ASSERT (m_ipv4->GetInterfaceForDevice (idev) >= 0);
+  uint32_t iif = m_ipv4->GetInterfaceForDevice (idev); 
+
+  // Multicast recognition; handle local delivery here
+  //
   if (ipHeader.GetDestination ().IsMulticast ())
     {
       NS_LOG_LOGIC ("Multicast destination");
@@ -471,10 +476,56 @@ Ipv4StaticRouting::RouteInput  (Ptr<const Packet> p, const Ipv4Header &ipHeader,
           return false; // Let other routing protocols try to handle this
         }
     }
-//
-// This is a unicast packet.  Check to see if we have a route for it.
-//
+  if (ipHeader.GetDestination ().IsBroadcast ())
+    {
+      NS_LOG_LOGIC ("For me (Ipv4Addr broadcast address)");
+      // TODO:  Local Deliver for broadcast
+      // TODO:  Forward broadcast
+    }
+
   NS_LOG_LOGIC ("Unicast destination");
+ // TODO:  Configurable option to enable RFC 1222 Strong End System Model
+ // Right now, we will be permissive and allow a source to send us
+ // a packet to one of our other interface addresses; that is, the
+ // destination unicast address does not match one of the iif addresses,
+ // but we check our other interfaces.  This could be an option
+ // (to remove the outer loop immediately below and just check iif).
+  for (uint32_t j = 0; j < m_ipv4->GetNInterfaces (); j++)
+    {
+      for (uint32_t i = 0; i < m_ipv4->GetNAddresses (j); i++)
+        {
+          Ipv4InterfaceAddress iaddr = m_ipv4->GetAddress (j, i);
+          Ipv4Address addr = iaddr.GetLocal ();
+          if (addr.IsEqual (ipHeader.GetDestination ()))
+            {
+              if (j == iif)
+                {
+                  NS_LOG_LOGIC ("For me (destination " << addr << " match)");
+                }
+              else
+                {
+                  NS_LOG_LOGIC ("For me (destination " << addr << " match) on another interface " << ipHeader.GetDestination ());
+                }
+              lcb (p, ipHeader, iif);
+              return true;
+            }
+          if (ipHeader.GetDestination ().IsEqual (iaddr.GetBroadcast ()))
+            {
+              NS_LOG_LOGIC ("For me (interface broadcast address)");
+              lcb (p, ipHeader, iif);
+              return true;
+            }
+          NS_LOG_LOGIC ("Address "<< addr << " not a match");
+        }
+    }
+  // Check if input device supports IP forwarding
+  if (m_ipv4->IsForwarding (iif) == false)
+    {
+      NS_LOG_LOGIC ("Forwarding disabled for this interface");
+      ecb (p, ipHeader, Socket::ERROR_NOROUTETOHOST);
+      return false;
+    }
+  // Next, try to find a route
   Ptr<Ipv4Route> rtentry = LookupStatic (ipHeader.GetDestination ());
   if (rtentry != 0)
     {
