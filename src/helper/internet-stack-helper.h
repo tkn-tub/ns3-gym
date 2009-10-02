@@ -54,6 +54,7 @@ public:
    */
   InternetStackHelper(void);
   virtual ~InternetStackHelper(void);
+  InternetStackHelper &operator = (const InternetStackHelper &o);
 
   /**
    * \param routing a new routing helper

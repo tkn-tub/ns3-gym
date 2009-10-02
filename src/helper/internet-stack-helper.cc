@@ -211,6 +211,18 @@ InternetStackHelper::~InternetStackHelper ()
   delete m_routingv6;
 }
 
+InternetStackHelper &
+InternetStackHelper::operator = (const InternetStackHelper &o)
+{
+  if (this == &o)
+    {
+      return *this;
+    }
+  m_routing = o.m_routing->Copy ();
+  m_routingv6 = o.m_routingv6->Copy ();
+  return *this;
+}
+
 void 
 InternetStackHelper::SetRoutingHelper (const Ipv4RoutingHelper &routing)
 {
