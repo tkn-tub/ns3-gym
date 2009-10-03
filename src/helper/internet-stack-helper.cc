@@ -215,7 +215,7 @@ InternetStackHelper::InternetStackHelper (const InternetStackHelper &o)
   m_routingv6 = o.m_routingv6->Copy ();
   m_ipv4Enabled = o.m_ipv4Enabled;
   m_ipv6Enabled = o.m_ipv6Enabled;
-  Initialize ();
+  m_tcpFactory = o.m_tcpFactory;
 }
 
 InternetStackHelper &
