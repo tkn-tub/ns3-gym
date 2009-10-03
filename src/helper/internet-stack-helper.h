@@ -54,6 +54,7 @@ public:
    */
   InternetStackHelper(void);
   virtual ~InternetStackHelper(void);
+  InternetStackHelper (const InternetStackHelper &);
   InternetStackHelper &operator = (const InternetStackHelper &o);
 
   /**
