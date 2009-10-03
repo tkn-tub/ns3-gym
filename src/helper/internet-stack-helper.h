@@ -57,6 +57,11 @@ public:
   InternetStackHelper &operator = (const InternetStackHelper &o);
 
   /**
+   * Return helper internal state to that of a newly constructed one
+   */
+  void Reset (void);
+
+  /**
    * \param routing a new routing helper
    *
    * Set the routing helper to use during Install. The routing
@@ -184,6 +189,7 @@ public:
   void SetIpv6StackInstall (bool enable);
 
 private:
+  void Initialize (void);
   ObjectFactory m_tcpFactory;
   const Ipv4RoutingHelper *m_routing;
   
@@ -213,7 +219,6 @@ private:
   static std::string m_pcapBaseFilename;
   static uint32_t GetNodeIndex (std::string context);
   static std::vector<Trace> m_traces;
-  static bool m_isInitialized;
 
   /**
    * \brief IPv4 install state (enabled/disabled) ?
