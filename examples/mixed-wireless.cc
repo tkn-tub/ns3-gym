@@ -164,7 +164,7 @@ main (int argc, char *argv[])
   internet.Install (backbone);
 
   // re-initialize for non-olsr routing.
-  internet = InternetStackHelper ();
+  internet.Reset ();
 
   //
   // Assign IPv4 addresses to the device drivers (actually to the associated

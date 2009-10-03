@@ -130,6 +130,8 @@ def main(argv):
     olsr = ns3.OlsrHelper()
     internet.SetRoutingHelper(olsr);
     internet.Install(backbone);
+    # re-initialize for non-olsr routing.
+    internet.Reset()
     # 
     #  Assign IPv4 addresses to the device drivers(actually to the associated
     #  IPv4 interfaces) we just created.
