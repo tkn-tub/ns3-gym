@@ -594,7 +594,36 @@ storing test vectors; a generic container useful for transient storage of
 test vectors during test execution; and tools for generating presentations
 based on validation and verification testing results.
 
+@node Debugging test suite failures
+@section Debugging test suite failures
 
+To debug test crashes, such as:
+@verbatim 
+CRASH: TestSuite ns3-wifi-interference
+@end verbatim
 
+You can access the underlying test-runner program via gdb as follows, and
+then pass the "--basedir=`pwd`" argument to run (you can also pass other
+arguments as needed, but basedir is the minimum needed)::
+@smallformat
+@verbatim
+./waf --command-template="gdb %s" --run "test-runner"
 
+Waf: Entering directory `/home/tomh/hg/sep09/ns-3-allinone/ns-3-dev-678/build'
+Waf: Leaving directory `/home/tomh/hg/sep09/ns-3-allinone/ns-3-dev-678/build'
+'build' finished successfully (0.380s)
+GNU gdb 6.8-debian
+Copyright (C) 2008 Free Software Foundation, Inc.
+L cense GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.  Type "show copying"
+and "show warranty" for details.
+This GDB was configured as "x86_64-linux-gnu"...
+(gdb) r --basedir=`pwd`
+Starting program: <..>/build/debug/utils/test-runner --basedir=`pwd`
+[Thread debugging using libthread_db enabled]
+assert failed. file=../src/core/type-id.cc, line=138, cond="uid <= m_information.size () && uid != 0"
+...
+@end verbatim
+@end smallformat
 
