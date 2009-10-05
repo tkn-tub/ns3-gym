@@ -5,6 +5,7 @@ def build(bld):
     obj.source = [
         'propagation-delay-model.cc',
         'propagation-loss-model.cc',
+        'propagation-loss-model-test-suite.cc',
         'jakes-propagation-loss-model.cc',
         'wifi-channel.cc',
         'wifi-mode.cc',
