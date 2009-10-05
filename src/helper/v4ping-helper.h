@@ -17,33 +17,48 @@ class V4PingHelper
 {
 public:
   /**
-   * \param remote the address which should be pinged
+   * Create a V4PingHelper which is used to make life easier for people wanting
+   * to use ping Applications.
+   *
+   * \param remote The address which should be pinged
    */
   V4PingHelper (Ipv4Address remote);
 
   /**
-   * \param nodes the list of nodes.
+   * Install a pinger application on each Node in the provided NodeContainer.
    *
-   * Install a pinger application on each node in the input list of nodes.
-   * \returns a list of pinger applications, one for each input node
+   * \param nodes The NodeContainer containing all of the nodes to get a V4Ping
+   *              application.
+   *
+   * \returns A list of pinger applications, one for each input node
    */
   ApplicationContainer Install (NodeContainer nodes) const;
+
   /**
-   * \param node the node
+   * Install a pinger application on the provided Node.  The Node is specified
+   * directly by a Ptr<Node>
    *
-   * Install a pinger application on the input node
-   * \returns the pinger application created.
+   * \param node The node to install the V4PingApplication on.
+   *
+   * \returns An ApplicationContainer holding the pinger application created.
    */
   ApplicationContainer Install (Ptr<Node> node) const;
+
   /**
-   * \param nodeName the node
+   * Install a pinger application on the provided Node.  The Node is specified
+   * by a string that must have previosly been associated with a Node using the
+   * Object Name Service.
    *
-   * Install a pinger application on the input node
-   * \returns the pinger application created.
+   * \param nodeName The node to install the V4PingApplication on.
+   *
+   * \returns An ApplicationContainer holding the pinger application created.
    */
   ApplicationContainer Install (std::string nodeName) const;
 
 private:
+  /**
+   * \internal
+   */
   Ptr<Application> InstallPriv (Ptr<Node> node) const;
   ObjectFactory m_factory;
 };
