@@ -28,7 +28,15 @@
 namespace ns3 {
 
 /**
- * \brief holds a vector of ns3::Application pointers
+ * \brief holds a vector of ns3::Application pointers.
+ *
+ * Typically ns-3 Applications are installed on nodes using an Application
+ * helper.  The helper Install method takes a NodeContainer which holds 
+ * some number of Ptr<Node>.  For each of the Nodes in the NodeContainer
+ * the helper will instantiate an application, install it in a node and
+ * add a Ptr<Application> to that application into a Container for use
+ * by the caller.  This is that container used to hold the Ptr<Application>
+ * which are instantiated by the Application helper.
  *
  */
 class ApplicationContainer
@@ -40,60 +48,165 @@ public:
   ApplicationContainer ();
 
   /**
-   * Create an ApplicationContainer with exactly one application
+   * Create an ApplicationContainer with exactly one application which has
+   * been previously instantiated.  The single application is specified
+   * by a smart pointer.
    *
-   * \param application The application to add to the container
+   * \param application The application to add to the container.
    */
   ApplicationContainer (Ptr<Application> application);
 
   /**
-   * Create an ApplicationContainer with exactly one application
+   * Create an ApplicationContainer with exactly one application which has
+   * been previously instantiated and assigned a name using the Object name
+   * service.  This Application is specified by its assigned name. 
    *
-   * \param name The name of the application object to add to the container
+   * \param name The name of the application object to add to the container.
    */
   ApplicationContainer (std::string name);
 
   typedef std::vector<Ptr<Application> >::const_iterator Iterator;
 
   /**
-   * \returns an iterator which points to the start of the array of pointers.
+   * \brief Get an iterator which refers to the first Application in the 
+   * container.
+   *
+   * Applications can be retrieved from the container in two ways.  First,
+   * directly by an index into the container, and second, using an iterator.
+   * This method is used in the iterator method and is typically used in a 
+   * for-loop to run through the Applications
+   *
+   * \code
+   *   ApplicationContainer::Iterator i;
+   *   for (i = container.Begin (); i != container.End (); ++i)
+   *     {
+   *       (*i)->method ();  // some Application method
+   *     }
+   * \endcode
+   *
+   * \returns an iterator which refers to the first Application in the container.
    */
   Iterator Begin (void) const;
+
   /**
-   * \returns an iterator which points to the end of the array of pointers.
+   * \brief Get an iterator which indicates to the last Application in the 
+   * container.
+   *
+   * Applications can be retrieved from the container in two ways.  First,
+   * directly by an index into the container, and second, using an iterator.
+   * This method is used in the iterator method and is typically used in a 
+   * for-loop to run through the Applications
+   *
+   * \code
+   *   ApplicationContainer::Iterator i;
+   *   for (i = container.Begin (); i != container.End (); ++i)
+   *     {
+   *       (*i)->method ();  // some Application method
+   *     }
+   * \endcode
+   *
+   * \returns an iterator which indicates an ending condition for a loop.
    */
   Iterator End (void) const;
 
   /**
-   * \returns the number of application pointers stored in this container.
+   * \brief Get the number of Ptr<Application> stored in this container.
+   *
+   * Applications can be retrieved from the container in two ways.  First,
+   * directly by an index into the container, and second, using an iterator.
+   * This method is used in the direct method and is typically used to
+   * define an ending condition in a for-loop that runs through the stored
+   * Applications
+   *
+   * \code
+   *   uint32_t nApplications = continer.GetN ();
+   *   for (uint32_t i = 0 i < nApplications; ++i)
+   *     {
+   *       Ptr<Application> p = continer.Get (i)
+   *       i->method ();  // some Application method
+   *     }
+   * \endcode
+   *
+   * \returns the number of Ptr<Application> stored in this container.
    */
   uint32_t GetN (void) const;
+
   /**
+   * \brief Get the Ptr<Application> stored in this container at a given
+   * index.
+   *
+   * Applications can be retrieved from the container in two ways.  First,
+   * directly by an index into the container, and second, using an iterator.
+   * This method is used in the direct method and is used to retrieve the
+   * indexed Ptr<Appliation>.
+   *
+   * \code
+   *   uint32_t nApplications = continer.GetN ();
+   *   for (uint32_t i = 0 i < nApplications; ++i)
+   *     {
+   *       Ptr<Application> p = continer.Get (i)
+   *       i->method ();  // some Application method
+   *     }
+   * \endcode
+   *
    * \param i the index of the requested application pointer.
    * \returns the requested application pointer.
    */
   Ptr<Application> Get (uint32_t i) const;
 
   /**
-   * Append to the end of this container the other input container.
+   * \brief Append the contents of another ApplicationContainer to the end of
+   * this container.
    *
-   * \param other another application container
+   * \param The ApplicationContainer to append.
    */
   void Add (ApplicationContainer other);
+
   /**
-   * Append to the end of this container the input application pointer.
+   * \brief Append the single Ptr<Application> to this container.
    *
-   * \param application another netdevice pointer.
+   * \param application The Ptr<Application> to append.
    */
   void Add (Ptr<Application> application);
+
   /**
-   * Append to the end of this container the application specified by the name.
+   * \brief Append to this container the single Ptr<Application> referred to
+   * via its object name service registered name.
    *
    * \param name The name of the application object to add to the container.
    */
   void Add (std::string name);
 
+  /**
+   * \brief Arrange for all of the Applications in this containter to Start()
+   * at the Time given as a parameter.
+   *
+   * All Applications need to be provided with a starting simulation time and
+   * a stopping simulation time.  The ApplicationContainer is a convenient 
+   * place for allowing all of the contained Applications to be told to wake
+   * up and start doing their thing (Start) at a common time.
+   *
+   * This method simply iterates through the contained Applications and calls
+   * their Start() methods with the provided Time.
+   *
+   * \param start The Time at which each of the applications should start.
+   */
   void Start (Time start);
+
+  /**
+   * \brief Arrange for all of the Applications in this containter to Stop()
+   * at the Time given as a parameter.
+   *
+   * All Applications need to be provided with a starting simulation time and
+   * a stopping simulation time.  The ApplicationContainer is a convenient 
+   * place for allowing all of the contained Applications to be told to shut
+   * down and stop doing their thing (Stop) at a common time.
+   *
+   * This method simply iterates through the contained Applications and calls
+   * their Start() methods with the provided Time.
+   *
+   * \param start The Time at which each of the applications should start.
+   */
   void Stop (Time stop);
 
 private:

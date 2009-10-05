@@ -81,11 +81,13 @@ class Ipv6AddressHelper
 
   private:
     /**
+     * \internal
      * \brief The IPv6 network.
      */
     Ipv6Address m_network;
 
     /**
+     * \internal
      * \brief IPv6 The prefix (mask).
      */
     Ipv6Prefix m_prefix;

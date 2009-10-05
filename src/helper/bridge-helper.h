@@ -36,13 +36,16 @@ class AttributeValue;
 class BridgeHelper
 {
 public:
+  /*
+   * Construct a BridgeHelper
+   */
   BridgeHelper ();
   /**
-   * \param n1 the name of the attribute to set
-   * \param v1 the value of the attribute to set
-   *
    * Set an attribute on each ns3::BridgeNetDevice created by
    * BridgeHelper::Install
+   *
+   * \param n1 the name of the attribute to set
+   * \param v1 the value of the attribute to set
    */
   void SetDeviceAttribute (std::string n1, const AttributeValue &v1);
   /**

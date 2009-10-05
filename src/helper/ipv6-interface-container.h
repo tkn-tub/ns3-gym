@@ -102,6 +102,7 @@ class Ipv6InterfaceContainer
     typedef std::vector<std::pair<Ptr<Ipv6>, uint32_t> > InterfaceVector;
 
     /**
+     * \internal
      * \brief List of IPv6 stack and interfaces index.
      */
     InterfaceVector m_interfaces;

@@ -33,13 +33,23 @@ namespace ns3 {
  * ns3::InternetStackHelper::SetRoutingHelper
  *
  */
-
 class Ipv4NixVectorHelper : public Ipv4RoutingHelper
 {
 public:
+  /*
+   * Construct an Ipv4NixVectorHelper to make life easier while adding Nix-vector
+   * routing to nodes.
+   */
   Ipv4NixVectorHelper ();
-  Ipv4NixVectorHelper (const Ipv4NixVectorHelper &);
+
   /**
+   * \brief Construct an Ipv4NixVectorHelper from another previously 
+   * initialized instance (Copy Constructor).
+   */
+  Ipv4NixVectorHelper (const Ipv4NixVectorHelper &);
+
+  /**
+   * \internal
    * \returns pointer to clone of this Ipv4NixVectorHelper 
    * 
    * This method is mainly for internal use by the other helpers;
@@ -56,6 +66,11 @@ public:
   virtual Ptr<Ipv4RoutingProtocol> Create (Ptr<Node> node) const;
 
 private:
+  /**
+   * \internal
+   * \brief Assignment operator declared private and not implemented to disallow
+   * assignment and prevent the compiler from happily inserting its own.
+   */
   Ipv4NixVectorHelper &operator = (const Ipv4NixVectorHelper &o);
 
   ObjectFactory m_agentFactory;

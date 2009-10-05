@@ -31,9 +31,20 @@ namespace ns3 {
 class Ipv4GlobalRoutingHelper  : public Ipv4RoutingHelper
 {
 public:
-  Ipv4GlobalRoutingHelper ();
-  Ipv4GlobalRoutingHelper (const Ipv4GlobalRoutingHelper &);
   /**
+   * \brief Construct a GlobalRoutingHelper to make life easier for managing
+   * global routing tasks.
+   */
+  Ipv4GlobalRoutingHelper ();
+
+  /**
+   * \brief Construct a GlobalRoutingHelper from another previously initialized
+   * instance (Copy Constructor).
+   */
+  Ipv4GlobalRoutingHelper (const Ipv4GlobalRoutingHelper &);
+
+  /**
+   * \internal
    * \returns pointer to clone of this Ipv4GlobalRoutingHelper
    *
    * This method is mainly for internal use by the other helpers;
@@ -50,7 +61,7 @@ public:
   virtual Ptr<Ipv4RoutingProtocol> Create (Ptr<Node> node) const;
 
   /**
-   * @brief Build a routing database and initialize the routing tables of
+   * \brief Build a routing database and initialize the routing tables of
    * the nodes in the simulation.  Makes all nodes in the simulation into
    * routers.
    *
@@ -60,7 +71,7 @@ public:
    */
   static void PopulateRoutingTables (void);
   /**
-   *@brief Remove all routes that were previously installed in a prior call
+   * \brief Remove all routes that were previously installed in a prior call
    * to either PopulateRoutingTables() or RecomputeRoutingTables(), and 
    * add a new set of routes.  
    * 
@@ -73,6 +84,11 @@ public:
    */
   static void RecomputeRoutingTables (void);
 private:
+  /**
+   * \internal
+   * \brief Assignment operator declared private and not implemented to disallow
+   * assignment and prevent the compiler from happily inserting its own.
+   */
   Ipv4GlobalRoutingHelper &operator = (const Ipv4GlobalRoutingHelper &o);
 };
 

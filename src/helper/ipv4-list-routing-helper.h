@@ -35,10 +35,26 @@ namespace ns3 {
 class Ipv4ListRoutingHelper : public Ipv4RoutingHelper
 {
 public:
+  /*
+   * Construct an Ipv4ListRoutingHelper used to make installing routing
+   * protocols easier.
+   */
   Ipv4ListRoutingHelper ();
+
+  /*
+   * Construct an Ipv4ListRoutingHelper used to make installing routing
+   * protocols easier.
+   */
   virtual ~Ipv4ListRoutingHelper ();
-  Ipv4ListRoutingHelper (const Ipv4ListRoutingHelper &);
+
   /**
+   * \brief Construct an Ipv4ListRoutingHelper from another previously 
+   * initialized instance (Copy Constructor).
+   */
+  Ipv4ListRoutingHelper (const Ipv4ListRoutingHelper &);
+
+  /**
+   * \internal
    * \returns pointer to clone of this Ipv4ListRoutingHelper 
    * 
    * This method is mainly for internal use by the other helpers;
@@ -65,6 +81,11 @@ public:
    */
   virtual Ptr<Ipv4RoutingProtocol> Create (Ptr<Node> node) const;
 private:
+  /**
+   * \internal
+   * \brief Assignment operator declared private and not implemented to disallow
+   * assignment and prevent the compiler from happily inserting its own.
+   */
   Ipv4ListRoutingHelper &operator = (const Ipv4ListRoutingHelper &o);
 
   std::list<std::pair<const Ipv4RoutingHelper *,int16_t> > m_list;

@@ -53,6 +53,10 @@ public:
    * such as ns3::OlsrHelper
    */
   InternetStackHelper(void);
+
+  /**
+   * Destroy the InternetStackHelper
+   */
   virtual ~InternetStackHelper(void);
   InternetStackHelper (const InternetStackHelper &);
   InternetStackHelper &operator = (const InternetStackHelper &o);
@@ -195,30 +199,67 @@ private:
   const Ipv4RoutingHelper *m_routing;
   
   /**
+   * \internal
    * \brief IPv6 routing helper.
    */
   const Ipv6RoutingHelper *m_routingv6;
 
+  /**
+   * \internal
+   */
   static void CreateAndAggregateObjectFromTypeId (Ptr<Node> node, const std::string typeId);
+
+  /**
+   * \internal
+   */
   static void Cleanup (void);
+
+  /**
+   * \internal
+   */
   static void LogRxIp (std::string context, Ptr<const Packet> packet, uint32_t deviceId);
+
+  /**
+   * \internal
+   */
   static void LogTxIp (std::string context, Ptr<const Packet> packet, uint32_t deviceId);
+
+  /**
+   * \internal
+   */
   static Ptr<PcapWriter> GetStream (uint32_t nodeId, uint32_t interfaceId);
+
   struct Trace {
     uint32_t nodeId;
     uint32_t interfaceId;
     Ptr<PcapWriter> writer;
   };
 
+  /**
+   * \internal
+   */
   static void AsciiDropEventIpv4 (Ptr<AsciiWriter> writer, std::string path,
                                   Ipv4Header const &header, Ptr<const Packet> packet,
                                   Ipv4L3Protocol::DropReason reason, uint32_t interface);
+  /**
+   * \internal
+   */
   static void AsciiDropEventArp (Ptr<AsciiWriter> writer, std::string path, Ptr<const Packet> packet);
+
+  /**
+   * \internal
+   */
   static void AsciiDropEventIpv6 (Ptr<AsciiWriter> writer, std::string path,
                                   Ipv6Header const &header, Ptr<const Packet> packet,
                                   Ipv6L3Protocol::DropReason reason, uint32_t interface);
+
   static std::string m_pcapBaseFilename;
+
+  /**
+   * \internal
+   */
   static uint32_t GetNodeIndex (std::string context);
+
   static std::vector<Trace> m_traces;
 
   /**

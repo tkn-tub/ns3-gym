@@ -39,6 +39,9 @@ class Node;
 class Ipv4RoutingHelper
 {
 public:
+  /*
+   * Destroy an instance of an Ipv4RoutingHelper
+   */
   virtual ~Ipv4RoutingHelper ();
 
   /**
