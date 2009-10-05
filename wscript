@@ -178,7 +178,6 @@ def set_options(opt):
                    default=False, dest='regression', action="store_true")
     opt.add_option('--check',
                    help=('DEPRECATED (run ./test.py)'),
-                   help=("Enable unit testing"),
                    default=False, dest='check', action="store_true")
     opt.add_option('--regression-generate',
                    help=("Generate new regression test traces."),
