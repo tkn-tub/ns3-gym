@@ -37,9 +37,24 @@ namespace ns3 {
 class Ipv6ListRoutingHelper : public Ipv6RoutingHelper
 {
 public:
+  /**
+   * Construct an Ipv6 Ipv6ListRoutingHelper which is used to make life easier
+   * for people wanting to configure routing using Ipv6.
+   */
   Ipv6ListRoutingHelper ();
+
+  /**
+   * \internal
+   * Destroy an Ipv6 Ipv6ListRoutingHelper.
+   */
   virtual ~Ipv6ListRoutingHelper ();
+
+  /**
+   * \brief Construct an Ipv6ListRoutingHelper from another previously 
+   * initialized instance (Copy Constructor).
+   */
   Ipv6ListRoutingHelper (const Ipv6ListRoutingHelper &);
+
   /**
    * \returns pointer to clone of this Ipv6ListRoutingHelper 
    * 
@@ -67,6 +82,11 @@ public:
    */
   virtual Ptr<Ipv6RoutingProtocol> Create (Ptr<Node> node) const;
 private:
+  /**
+   * \internal
+   * \brief Assignment operator declared private and not implemented to disallow
+   * assignment and prevent the compiler from happily inserting its own.
+   */
   Ipv6ListRoutingHelper &operator = (const Ipv6ListRoutingHelper &o);
 
   std::list<std::pair<const Ipv6RoutingHelper *,int16_t> > m_list;

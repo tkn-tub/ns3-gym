@@ -42,8 +42,8 @@ public:
   Ipv4ListRoutingHelper ();
 
   /*
-   * Construct an Ipv4ListRoutingHelper used to make installing routing
-   * protocols easier.
+   * \internal
+   * Destroy an Ipv4ListRoutingHelper.
    */
   virtual ~Ipv4ListRoutingHelper ();
 

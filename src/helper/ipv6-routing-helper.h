@@ -40,6 +40,11 @@ class Node;
 class Ipv6RoutingHelper
 {
 public:
+
+  /**
+   * \internal
+   * Destroy an Ipv6 Ipv6RoutingHelper.
+   */
   virtual ~Ipv6RoutingHelper ();
 
   /**

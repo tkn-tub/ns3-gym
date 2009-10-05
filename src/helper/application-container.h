@@ -37,7 +37,6 @@ namespace ns3 {
  * add a Ptr<Application> to that application into a Container for use
  * by the caller.  This is that container used to hold the Ptr<Application>
  * which are instantiated by the Application helper.
- *
  */
 class ApplicationContainer
 {
@@ -52,16 +51,16 @@ public:
    * been previously instantiated.  The single application is specified
    * by a smart pointer.
    *
-   * \param application The application to add to the container.
+   * \param application The Ptr<Application> to add to the container.
    */
   ApplicationContainer (Ptr<Application> application);
 
   /**
    * Create an ApplicationContainer with exactly one application which has
-   * been previously instantiated and assigned a name using the Object name
-   * service.  This Application is specified by its assigned name. 
+   * been previously instantiated and assigned a name using the Object Name
+   * Service.  This Application is then specified by its assigned name. 
    *
-   * \param name The name of the application object to add to the container.
+   * \param name The name of the Application Object to add to the container.
    */
   ApplicationContainer (std::string name);
 
@@ -89,7 +88,7 @@ public:
   Iterator Begin (void) const;
 
   /**
-   * \brief Get an iterator which indicates to the last Application in the 
+   * \brief Get an iterator which indicates past-the-last Application in the 
    * container.
    *
    * Applications can be retrieved from the container in two ways.  First,
@@ -141,10 +140,10 @@ public:
    * indexed Ptr<Appliation>.
    *
    * \code
-   *   uint32_t nApplications = continer.GetN ();
+   *   uint32_t nApplications = container.GetN ();
    *   for (uint32_t i = 0 i < nApplications; ++i)
    *     {
-   *       Ptr<Application> p = continer.Get (i)
+   *       Ptr<Application> p = container.Get (i)
    *       i->method ();  // some Application method
    *     }
    * \endcode
@@ -163,7 +162,7 @@ public:
   void Add (ApplicationContainer other);
 
   /**
-   * \brief Append the single Ptr<Application> to this container.
+   * \brief Append a single Ptr<Application> to this container.
    *
    * \param application The Ptr<Application> to append.
    */
@@ -173,7 +172,7 @@ public:
    * \brief Append to this container the single Ptr<Application> referred to
    * via its object name service registered name.
    *
-   * \param name The name of the application object to add to the container.
+   * \param name The name of the Application Object to add to the container.
    */
   void Add (std::string name);
 

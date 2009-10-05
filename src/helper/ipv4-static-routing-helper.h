@@ -162,7 +162,6 @@ private:
    * assignment and prevent the compiler from happily inserting its own.
    */
   Ipv4StaticRoutingHelper &operator = (const Ipv4StaticRoutingHelper &o);
-
 };
 
 } // namespace ns3

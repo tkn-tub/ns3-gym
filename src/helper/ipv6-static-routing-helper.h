@@ -45,8 +45,15 @@ public:
    * \brief Constructor.
    */
   Ipv6StaticRoutingHelper ();
-  Ipv6StaticRoutingHelper (const Ipv6StaticRoutingHelper &);
+
   /**
+   * \brief Construct an Ipv6ListRoutingHelper from another previously 
+   * initialized instance (Copy Constructor).
+   */
+  Ipv6StaticRoutingHelper (const Ipv6StaticRoutingHelper &);
+
+  /**
+   * \internal
    * \returns pointer to clone of this Ipv6StaticRoutingHelper
    *
    * This method is mainly for internal use by the other helpers;
@@ -69,12 +76,33 @@ public:
    */
   Ptr<Ipv6StaticRouting> GetStaticRouting (Ptr<Ipv6> ipv6) const;
 
+  /**
+   * \brief Add a multicast route to a node and net device using explicit 
+   * Ptr<Node> and Ptr<NetDevice>
+   */
   void AddMulticastRoute (Ptr<Node> n, Ipv6Address source, Ipv6Address group,  
     Ptr<NetDevice> input, NetDeviceContainer output);
+
+  /**
+   * \brief Add a multicast route to a node and device using a name string 
+   * previously associated to the node using the Object Name Service and a
+   * Ptr<NetDevice>
+   */
   void AddMulticastRoute (std::string n, Ipv6Address source, Ipv6Address group,  
     Ptr<NetDevice> input, NetDeviceContainer output);
+
+  /**
+   * \brief Add a multicast route to a node and device using a Ptr<Node> and a 
+   * name string previously associated to the device using the Object Name Service.
+   */
   void AddMulticastRoute (Ptr<Node> n, Ipv6Address source, Ipv6Address group,  
     std::string inputName, NetDeviceContainer output);
+
+  /**
+   * \brief Add a multicast route to a node and device using name strings
+   * previously associated to both the node and device using the Object Name 
+   * Service.
+   */
   void AddMulticastRoute (std::string nName, Ipv6Address source, Ipv6Address group,  
     std::string inputName, NetDeviceContainer output);
 
@@ -89,6 +117,11 @@ public:
   void SetDefaultMulticastRoute (std::string nName, std::string ndName);
 #endif
 private:
+  /**
+   * \internal
+   * \brief Assignment operator declared private and not implemented to disallow
+   * assignment and prevent the compiler from happily inserting its own.
+   */
   Ipv6StaticRoutingHelper &operator = (const Ipv6StaticRoutingHelper &o);
 };
 

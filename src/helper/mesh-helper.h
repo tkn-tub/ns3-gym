@@ -38,9 +38,17 @@ class WifiChannel;
 class MeshHelper
 {
 public:
+  /**
+   * Construct a MeshHelper used to make life easier when creating 802.11s networks.
+   */
   MeshHelper ();
-  static MeshHelper
-  Default ();
+
+  /**
+   * \brief Set the helper to the default values for the MAC type,  remote
+   * station manager and channel policy.
+   */
+   static MeshHelper Default ();
+
   /**
    * \param n0 the name of the attribute to set
    * \param v0 the value of the attribute to set
@@ -118,6 +126,10 @@ public:
     SPREAD_CHANNELS,
     ZERO_CHANNEL
   };
+
+  /**
+   * \brief set the channel policy
+   */
   void SetSpreadInterfaceChannels (ChannelPolicy);
   /**
    * \brief Set a number of interfaces in a mesh network
@@ -163,10 +175,19 @@ public:
                 std::string n5 = "", const AttributeValue &v5 = EmptyAttributeValue (),
                 std::string n6 = "", const AttributeValue &v6 = EmptyAttributeValue (),
                 std::string n7 = "", const AttributeValue &v7 = EmptyAttributeValue ());
+
+  /**
+   * \brief Print statistics.
+   */
   void Report (const ns3::Ptr<ns3::NetDevice>&, std::ostream&);
+
+  /**
+   * \brief Reset statistics.
+   */
   void ResetStats (const ns3::Ptr<ns3::NetDevice>&);
 private:
   /**
+   * \internal
    * \returns a WifiNetDevice with ready-to-use interface
    */
   Ptr<WifiNetDevice> CreateInterface (const WifiPhyHelper &phyHelper, Ptr<Node> node, uint16_t channelId) const;
