@@ -34,13 +34,26 @@ namespace ns3 {
 class QosWifiMacHelper : public WifiMacHelper
 {
 public:
+  /**
+   * Create a QosWifiMacHelper that is used to make life easier when working
+   * with Wifi devices using a QOS MAC layer.
+   */
   QosWifiMacHelper ();
+
+  /**
+   * \internal
+   * Destroy a QosWifiMacHelper
+   */
   virtual ~QosWifiMacHelper ();
+
   /**
    * Create a mac helper in a default working state.
    */
   static QosWifiMacHelper Default (void);
+
   /**
+   * Set the underlying type of the MAC and its attributes.
+   *
    * \param type the type of ns3::WifiMac to create.
    * \param n0 the name of the attribute to set
    * \param v0 the value of the attribute to set
@@ -72,6 +85,8 @@ public:
                 std::string n6 = "", const AttributeValue &v6 = EmptyAttributeValue (),
                 std::string n7 = "", const AttributeValue &v7 = EmptyAttributeValue ());
   /**
+   * Set the class, type and attribuytes for the Msdu agregator
+   *
    * \param accessClass access class for which we are setting aggregator. Possibilities
    *  are: AC_BK, AC_BE, AC_VI, AC_VO.
    * \param type the type of ns3::WifiMac to create.
@@ -94,6 +109,7 @@ public:
                                std::string n3 = "", const AttributeValue &v3 = EmptyAttributeValue ());
 private:
   /**
+   * \internal
    * \returns a newly-created MAC object.
    *
    * This method implements the pure virtual method defined in \ref ns3::WifiMacHelper.

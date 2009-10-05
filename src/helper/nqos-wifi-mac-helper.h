@@ -31,7 +31,17 @@ namespace ns3 {
 class NqosWifiMacHelper : public WifiMacHelper
 {
 public:
+  /**
+   * Create a NqosWifiMacHelper to make life easier for people who want to 
+   * work with non-QOS Wifi MAC layers.
+   */
   NqosWifiMacHelper ();
+
+  /**
+   * \internal
+   * Destroy a NqosWifiMacHelper.
+   */
+
   virtual ~NqosWifiMacHelper ();
   /**
    * Create a mac helper in a default working state.
@@ -71,6 +81,7 @@ public:
                 std::string n7 = "", const AttributeValue &v7 = EmptyAttributeValue ());
 private:
   /**
+   * \internal
    * \returns a newly-created MAC object.
    *
    * This method implements the pure virtual method defined in \ref ns3::WifiMacHelper.

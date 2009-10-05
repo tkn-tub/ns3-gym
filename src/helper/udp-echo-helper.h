@@ -29,51 +29,65 @@
 namespace ns3 {
 
 /**
- * \brief create a server application which waits for input udp packets
+ * \brief Create a server application which waits for input udp packets
  *        and sends them back to the original sender.
  */
 class UdpEchoServerHelper
 {
 public:
   /**
-   * \param port the port the server will wait on for incoming packets
+   * Create UdpEchoServerHelper which will make life easier for people trying
+   * to set up simulations with echos.
+   *
+   * \param port The port the server will wait on for incoming packets
    */
   UdpEchoServerHelper (uint16_t port);
 
   /**
+   * Record an attribute to be set in each Application after it is is created.
+   *
    * \param name the name of the attribute to set
    * \param value the value of the attribute to set
-   *
-   * Record an attribute to be set after the server application is created.
    */
   void SetAttribute (std::string name, const AttributeValue &value);
 
   /**
-   * \param node the node
+   * Create a UdpEchoServerApplication on the specified Node.
    *
-   * Create a udp echo server application on the input node
+   * \param node The node on which to create the Application.  The node is
+   *             specified by a Ptr<Node>.
    *
-   * \returns the application created
+   * \returns An ApplicationContainer holding the Application created,
    */
   ApplicationContainer Install (Ptr<Node> node) const;
+
   /**
-   * \param nodeName the node
+   * Create a UdpEchoServerApplication on specified node
    *
-   * Create a udp echo server application on the input node
+   * \param nodeName The node on which to create the application.  The node
+   *                 is specified by a node name previously registered with
+   *                 the Object Name Service.
    *
-   * \returns the application created
+   * \returns An ApplicationContainer holding the Application created.
    */
   ApplicationContainer Install (std::string nodeName) const;
+
   /**
-   * \param c the nodes
+   * \param c The nodes on which to create the Applications.  The nodes
+   *          are specified by a NodeContainer.
    *
-   * Create one udp echo server application on each of the input nodes
+   * Create one udp echo server application on each of the Nodes in the
+   * NodeContainer.
    *
-   * \returns the applications created, one application per input node.
+   * \returns The applications created, one Application per Node in the 
+   *          NodeContainer.
    */
   ApplicationContainer Install (NodeContainer c) const;
 
 private:
+  /**
+   * \internal
+   */
   Ptr<Application> InstallPriv (Ptr<Node> node) const;
 
   ObjectFactory m_factory;
@@ -86,16 +100,19 @@ class UdpEchoClientHelper
 {
 public:
   /**
-   * \param ip ip address of the remote udp echo server
-   * \param port port number of the remote udp echo server
+   * Create UdpEchoClientHelper which will make life easier for people trying
+   * to set up simulations with echos.
+   *
+   * \param ip The IP address of the remote udp echo server
+   * \param port The port number of the remote udp echo server
    */
   UdpEchoClientHelper (Ipv4Address ip, uint16_t port);
 
   /**
+   * Record an attribute to be set in each Application after it is is created.
+   *
    * \param name the name of the attribute to set
    * \param value the value of the attribute to set
-   *
-   * Record an attribute to be set after the client application is created.
    */
   void SetAttribute (std::string name, const AttributeValue &value);
 
@@ -151,21 +168,28 @@ public:
   void SetFill (Ptr<Application> app, uint8_t *fill, uint32_t fillLength, uint32_t dataLength);
 
   /**
-   * \param node the node
+   * Create a udp echo client application on the specified node.  The Node
+   * is provided as a Ptr<Node>.
    *
-   * Create a udp echo client application on the input node
+   * \param node The Ptr<Node> on which to create the UdpEchoClientApplication.
    *
-   * \returns the application created
+   * \returns An ApplicationContainer that holds a Ptr<Application> to the 
+   *          application created
    */
   ApplicationContainer Install (Ptr<Node> node) const;
+
   /**
-   * \param nodeName the node
+   * Create a udp echo client application on the specified node.  The Node
+   * is provided as a string name of a Node that has been previously 
+   * associated using the Object Name Service.
    *
-   * Create a udp echo client application on the input node
+   * \param node The name of the node on which to create the UdpEchoClientApplication
    *
-   * \returns the application created
+   * \returns An ApplicationContainer that holds a Ptr<Application> to the 
+   *          application created
    */
   ApplicationContainer Install (std::string nodeName) const;
+
   /**
    * \param c the nodes
    *
