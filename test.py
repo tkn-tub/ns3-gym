@@ -108,7 +108,6 @@ example_tests = [
     ("tap/tap-wifi-dumbbell", "False"), # Requires manual configuration
 
     ("tcp/star", "True"),
-    ("tcp/tcp-star-server", "True"),
     ("tcp/tcp-large-transfer", "True"),
     ("tcp/tcp-nsc-lfn", "ENABLE_NSC == True"),
     ("tcp/tcp-nsc-zoo", "ENABLE_NSC == True"),
@@ -259,9 +258,9 @@ def translate_to_html(results_file, html_file):
         #   | CRASH  |
         #   +--------+
         #
-        # Then go on to the next test suite
+        # Then go on to the next test suite.  Valgrind errors look the same.
         #
-        if result == "CRASH":
+        if result in ["CRASH", "VALGR"]:
             f.write("<tr>\n")
             f.write("<td style=\"color:red\">%s</td>\n" % result)
             f.write("</tr>\n")
@@ -418,13 +417,13 @@ def translate_to_html(results_file, html_file):
         name =   get_node_text(example.getElementsByTagName("Name")[0])
 
         #
-        # If the example eitehr failed or crashed, print its result status
+        # If the example either failed or crashed, print its result status
         # in red; otherwise green.  This goes in a <td> ... </td> table data
         #
-        if result in ["FAIL", "CRASH"]:
-            f.write("<td style=\"color:red\">%s</td>\n" % result)
-        else:
+        if result == "PASS":
             f.write("<td style=\"color:green\">%s</td>\n" % result)
+        else:
+            f.write("<td style=\"color:red\">%s</td>\n" % result)
 
         #
         # Write the example name as a new tagle data.
@@ -536,10 +535,15 @@ def make_library_path():
     if options.verbose:
         print "LIBRARY_PATH == %s" % LIBRARY_PATH
 
-def run_job_synchronously(shell_command, directory):
-    cmd = "%s %s/%s/%s" % (LIBRARY_PATH, NS3_BUILDDIR, NS3_ACTIVE_VARIANT, shell_command)
+def run_job_synchronously(shell_command, directory, valgrind):
+    if valgrind:
+        cmd = "%s valgrind --error-exitcode=2 %s/%s/%s" % (LIBRARY_PATH, NS3_BUILDDIR, NS3_ACTIVE_VARIANT, shell_command)
+    else:
+        cmd = "%s %s/%s/%s" % (LIBRARY_PATH, NS3_BUILDDIR, NS3_ACTIVE_VARIANT, shell_command)
+
     if options.verbose:
         print "Synchronously execute %s" % cmd
+
     proc = subprocess.Popen(cmd, shell=True, cwd=directory, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     stdout_results, stderr_results = proc.communicate()
     return (proc.returncode, stdout_results, stderr_results)
@@ -673,7 +677,8 @@ class worker_thread(threading.Thread):
                     # If we have an example, the shell command is all we need to
                     # know.  It will be something like "examples/udp-echo"
                     #
-                    (job.returncode, standard_out, standard_err) = run_job_synchronously(job.shell_command, job.cwd)
+                    (job.returncode, standard_out, standard_err) = run_job_synchronously(job.shell_command, job.cwd,
+                                                                                         options.valgrind)
                 else:
                     #
                     # If we're a test suite, we need to provide a little more info
@@ -681,9 +686,10 @@ class worker_thread(threading.Thread):
                     # file name
                     #
                     (job.returncode, standard_out, standard_err) = run_job_synchronously(job.shell_command + 
-                        " --basedir=%s --out=%s" % (job.basedir, job.tmp_file_name), job.cwd)
+                        " --basedir=%s --out=%s" % (job.basedir, job.tmp_file_name), job.cwd, options.valgrind)
 
                 if options.verbose:
+                    print "returncode = %d" % job.returncode
                     print "---------- beign standard out ----------"
                     print standard_out
                     print "---------- begin standard err ----------"
@@ -739,11 +745,11 @@ def run_tests():
     # handle them without doing all of the hard work.
     #
     if options.kinds:
-        (rc, standard_out, standard_err) = run_job_synchronously("utils/test-runner --kinds", os.getcwd())
+        (rc, standard_out, standard_err) = run_job_synchronously("utils/test-runner --kinds", os.getcwd(). False)
         print standard_out
 
     if options.list:
-        (rc, standard_out, standard_err) = run_job_synchronously("utils/test-runner --list", os.getcwd())
+        (rc, standard_out, standard_err) = run_job_synchronously("utils/test-runner --list", os.getcwd(), False)
         print standard_out
 
     if options.kinds or options.list:
@@ -811,9 +817,9 @@ def run_tests():
     elif len(options.example) == 0:
         if len(options.constrain):
             (rc, suites, standard_err) = run_job_synchronously("utils/test-runner --list --constrain=%s" % 
-                options.constrain, os.getcwd())
+                options.constrain, os.getcwd(), False)
         else:
-            (rc, suites, standard_err) = run_job_synchronously("utils/test-runner --list", os.getcwd())
+            (rc, suites, standard_err) = run_job_synchronously("utils/test-runner --list", os.getcwd(), False)
     else:
         suites = ""
 
@@ -994,6 +1000,7 @@ def run_tests():
     passed_tests = 0
     failed_tests = 0
     crashed_tests = 0
+    valgrind_errors = 0
     for i in range(jobs):
         job = output_queue.get()
         if job.is_break:
@@ -1010,6 +1017,9 @@ def run_tests():
         elif job.returncode == 1:
             failed_tests = failed_tests + 1
             status = "FAIL"
+        elif job.returncode == 2:
+            valgrind_errors = valgrind_errors + 1
+            status = "VALGR"
         else:
             crashed_tests = crashed_tests + 1
             status = "CRASH"
@@ -1030,15 +1040,19 @@ def run_tests():
             f.write('<Example>\n')
             example_name = "  <Name>%s</Name>\n" % job.display_name
             f.write(example_name)
+
             if job.returncode == 0:
                 f.write('  <Result>PASS</Result>\n')
             elif job.returncode == 1:
                 f.write('  <Result>FAIL</Result>\n')
+            elif job.returncode == 2:
+                f.write('  <Result>VALGR</Result>\n')
             else:
                 f.write('  <Result>CRASH</Result>\n')
 
             f.write('</Example>\n')
             f.close()
+
         else:
             #
             # If we're not running an example, we're running a test suite.
@@ -1058,7 +1072,33 @@ def run_tests():
             # corrupt and useless.  If the suite didn't create any XML, then
             # we're going to have to do it ourselves.
             #
-            if job.returncode == 0 or job.returncode == 1:
+            # Another issue is how to deal with a valgrind error.  If we run
+            # a test suite under valgrind and it passes, we will get a return
+            # code of 0 and there will be a valid xml results file since the code
+            # ran to completion.  If we get a return code of 1 under valgrind,
+            # the test case failed, but valgrind did not find any problems so the
+            # test case return code was passed through.  We will have a valid xml
+            # results file here as well since the test suite ran.  If we see a 
+            # return code of 2, this means that valgrind found an error (we asked
+            # it to return 2 if it found a problem in run_job_synchronously) but
+            # the suite ran to completion so there is a valid xml results file.
+            # If the suite crashes under valgrind we will see some other error 
+            # return code (like 139).  If valgrind finds an illegal instruction or
+            # some other strange problem, it will die with its own strange return
+            # code (like 132).  However, if the test crashes by itself, not under
+            # valgrind we will also see some other return code.
+            #
+            # If the return code is 0, 1, or 2, we have a valid xml file.  If we 
+            # get another return code, we have no xml and we can't really say what
+            # happened -- maybe the TestSuite crashed, maybe valgrind crashed due
+            # to an illegal instruction.  If we get something beside 0-2, we assume
+            # a crash and fake up an xml entry.  After this is all done, we still
+            # need to indicate a valgrind error somehow, so we fake up an xml entry
+            # with a VALGR result.  Thus, in the case of a working TestSuite that
+            # fails valgrind, we'll see the PASS entry for the working TestSuite
+            # followed by a VALGR failing test suite of the same name.
+            #
+            if job.returncode == 0 or job.returncode == 1 or job.returncode == 2:
                 f_to = open(xml_results_file, 'a')
                 f_from = open(job.tmp_file_name, 'r')
                 f_to.write(f_from.read())
@@ -1069,6 +1109,15 @@ def run_tests():
                 f.write("<TestSuite>\n")
                 f.write("  <SuiteName>%s</SuiteName>\n" % job.display_name)
                 f.write('  <SuiteResult>CRASH</SuiteResult>\n')
+                f.write('  <SuiteTime>Execution times not available</SuiteTime>\n')
+                f.write("</TestSuite>\n")
+                f.close()
+
+            if job.returncode == 2:
+                f = open(xml_results_file, 'a')
+                f.write("<TestSuite>\n")
+                f.write("  <SuiteName>%s</SuiteName>\n" % job.display_name)
+                f.write('  <SuiteResult>VALGR</SuiteResult>\n')
                 f.write('  <SuiteTime>Execution times not available</SuiteTime>\n')
                 f.write("</TestSuite>\n")
                 f.close()
@@ -1096,8 +1145,8 @@ def run_tests():
     #
     # Print a quick summary of events
     #
-    print "%d of %d tests passed (%d passed, %d failed, %d crashed)" % (passed_tests, total_tests, passed_tests, 
-                                                                        failed_tests, crashed_tests)
+    print "%d of %d tests passed (%d passed, %d failed, %d crashed, %d valgrind errors)" % (passed_tests, total_tests, 
+        passed_tests, failed_tests, crashed_tests, valgrind_errors)
     #
     # The last things to do are to translate the XML results file to "human
     # readable form" if the user asked for it (or make an XML file somewhere)
@@ -1127,6 +1176,9 @@ def main(argv):
     parser.add_option("-e", "--example", action="store", type="string", dest="example", default="",
                       metavar="EXAMPLE",
                       help="specify a single example to run")
+
+    parser.add_option("-g", "--grind", action="store_true", dest="valgrind", default=False,
+                      help="run the test suites and examples using valgrind")
 
     parser.add_option("-k", "--kinds", action="store_true", dest="kinds", default=False,
                       help="print the kinds of tests available")
