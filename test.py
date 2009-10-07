@@ -745,7 +745,7 @@ def run_tests():
     # handle them without doing all of the hard work.
     #
     if options.kinds:
-        (rc, standard_out, standard_err) = run_job_synchronously("utils/test-runner --kinds", os.getcwd(). False)
+        (rc, standard_out, standard_err) = run_job_synchronously("utils/test-runner --kinds", os.getcwd(), False)
         print standard_out
 
     if options.list:
