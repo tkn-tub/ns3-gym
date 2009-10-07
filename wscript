@@ -640,8 +640,10 @@ def shutdown(ctx):
 check_context = Build.BuildContext
 
 def check(bld):
-    """run the NS-3 unit tests (deprecated in favour of test.py)"""
-    raise Utils.WafError("Please run `./test.py' now, instead of './waf check'")
+    """run the equivalent of the old ns-3 unit tests using test.py"""
+    bld = wutils.bld
+    env = bld.env
+    wutils.run_python_program("test.py -c core", env)
 
 
 class print_introspected_doxygen_task(Task.TaskBase):
