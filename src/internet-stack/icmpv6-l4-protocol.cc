@@ -1131,7 +1131,6 @@ bool Icmpv6L4Protocol::Lookup (Ptr<Packet> p, Ipv6Address dst, Ptr<NetDevice> de
     }
     else if (entry->IsStale ())
     {
-      /* *hardwareDestination = entry->GetMacAddress (); */
       /* start delay timer */
       entry->StartDelayTimer ();
       entry->MarkDelay ();

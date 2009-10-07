@@ -55,16 +55,16 @@ TypeId Ipv6L3Protocol::GetTypeId ()
                    UintegerValue (64),
                    MakeUintegerAccessor (&Ipv6L3Protocol::m_defaultTtl),
                    MakeUintegerChecker<uint8_t> ())
+    .AddAttribute ("InterfaceList", "The set of IPv6 interfaces associated to this IPv6 stack.",
+                   ObjectVectorValue (),
+                   MakeObjectVectorAccessor (&Ipv6L3Protocol::m_interfaces),
+                   MakeObjectVectorChecker<Ipv6Interface> ())
     .AddTraceSource ("Tx", "Send IPv6 packet to outgoing interface.",
                    MakeTraceSourceAccessor (&Ipv6L3Protocol::m_txTrace))
     .AddTraceSource ("Rx", "Receive IPv6 packet from incoming interface.",
                      MakeTraceSourceAccessor (&Ipv6L3Protocol::m_rxTrace))
     .AddTraceSource ("Drop", "Drop IPv6 packet",
                      MakeTraceSourceAccessor (&Ipv6L3Protocol::m_dropTrace))
-    .AddAttribute ("InterfaceList", "The set of IPv6 interfaces associated to this IPv6 stack.",
-                   ObjectVectorValue (),
-                   MakeObjectVectorAccessor (&Ipv6L3Protocol::m_interfaces),
-                   MakeObjectVectorChecker<Ipv6Interface> ())
     ;
   return tid;
 }
