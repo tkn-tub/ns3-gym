@@ -1,0 +1,8 @@
+## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
+
+def build(bld):
+    env = bld.env_of_name('default')
+    if env['ENABLE_TAP']:
+        obj = bld.create_ns3_program('tap-wifi-dumbbell',
+                                     ['wifi', 'csma', 'point-to-point', 'tap-bridge', 'internet-stack'])
+        obj.source = 'tap-wifi-dumbbell.cc'

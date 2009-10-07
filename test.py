@@ -43,10 +43,17 @@ interesting_config_items = [
     "NS3_MODULE_PATH",
     "ENABLE_NSC",
     "ENABLE_REAL_TIME",
+    "ENABLE_EXAMPLES",
 ]
 
 ENABLE_NSC = False
 ENABLE_REAL_TIME = False
+ENABLE_EXAMPLES = True
+
+#
+# If the user has constrained us to run certain kinds of tests, we can tell waf
+# to only build
+core_kinds = ["bvt", "core", "system", "unit"]
 
 #
 # A list of examples to run as smoke tests just to ensure that they remain 
@@ -57,51 +64,76 @@ ENABLE_REAL_TIME = False
 # hardcoded.
 #
 example_tests = [
-    ("csma-bridge", "True"),
-    ("csma-bridge-one-hop", "True"),
-    ("csma-broadcast", "True"),
-    ("csma-multicast", "True"),
-    ("csma-one-subnet", "True"),
-    ("csma-packet-socket", "True"),
-    ("csma-ping", "True"),
-    ("csma-raw-ip-socket", "True"),
-    ("csma-star", "True"),
-    ("dynamic-global-routing", "True"),
-    ("first", "True"),
-    ("global-injection-slash32", "True"),
-    ("global-routing-slash32", "True"),
-    ("hello-simulator", "True"),
-    ("icmpv6-redirect", "True"),
-    ("mesh", "True"),
-    ("mixed-global-routing", "True"),
-    ("mixed-wireless", "True"),
-    ("multirate", "False"), # takes forever to run
-    ("nix-simple", "True"),
-    ("nms-p2p-nix", "False"), # takes forever to run
-    ("object-names", "True"),
-    ("ping6", "True"),
-    ("radvd", "True"),
-    ("radvd-two-prefix", "True"),    
-    ("realtime-udp-echo", "ENABLE_REAL_TIME == True"),
-    ("second", "True"),
-    ("simple-alternate-routing", "True"),
-    ("simple-error-model", "True"),
-    ("simple-global-routing", "True"),
-    ("simple-point-to-point-olsr", "True"),
-    ("simple-routing-ping6", "True"),
-    ("simple-wifi-frame-aggregation", "True"),
-    ("star", "True"),
-    ("static-routing-slash32", "True"),
-    ("tcp-large-transfer", "True"),
-    ("tcp-nsc-zoo", "ENABLE_NSC == True"),
-    ("tcp-star-server", "True"),
-    ("test-ipv6", "True"),
-    ("third", "True"),
-    ("udp-echo", "True"),
-    ("virtual-net-device", "True"),
-    ("wifi-adhoc", "False"), # takes forever to run
-    ("wifi-ap --verbose=0", "True"), # don't let it spew 
-    ("wifi-wired-bridging", "True"),
+    ("csma/csma-bridge", "True"),
+    ("csma/csma-bridge-one-hop", "True"),
+    ("csma/csma-broadcast", "True"),
+    ("csma/csma-multicast", "True"),
+    ("csma/csma-one-subnet", "True"),
+    ("csma/csma-packet-socket", "True"),
+    ("csma/csma-ping", "True"),
+    ("csma/csma-raw-ip-socket", "True"),
+    ("csma/csma-star", "True"),
+
+    ("emulation/emu-ping", "False"),
+    ("emulation/emu-udp-echo", "False"),
+
+    ("error-model/simple-error-model", "True"),
+
+    ("ipv6/icmpv6-redirect", "True"),
+    ("ipv6/ping6", "True"),
+    ("ipv6/radvd", "True"),
+    ("ipv6/radvd-two-prefix", "True"),    
+    ("ipv6/test-ipv6", "True"),
+
+    ("mesh/mesh", "True"),
+
+    ("naming/object-names", "True"),
+
+    ("realtime/realtime-udp-echo", "ENABLE_REAL_TIME == True"),
+
+    ("routing/dynamic-global-routing", "True"),
+    ("routing/global-injection-slash32", "True"),
+    ("routing/global-routing-slash32", "True"),
+    ("routing/mixed-global-routing", "True"),
+    ("routing/nix-simple", "True"),
+    ("routing/nms-p2p-nix", "False"), # Takes too long to run
+    ("routing/simple-alternate-routing", "True"),
+    ("routing/simple-global-routing", "True"),
+    ("routing/simple-point-to-point-olsr", "True"),
+    ("routing/simple-routing-ping6", "True"),
+    ("routing/static-routing-slash32", "True"),
+
+    ("stats/wifi-example-sim", "True"),
+
+    ("tap/tap-wifi-dumbbell", "False"), # Requires manual configuration
+
+    ("tcp/star", "True"),
+    ("tcp/tcp-star-server", "True"),
+    ("tcp/tcp-large-transfer", "True"),
+    ("tcp/tcp-nsc-lfn", "ENABLE_NSC == True"),
+    ("tcp/tcp-nsc-zoo", "ENABLE_NSC == True"),
+    ("tcp/tcp-star-server", "True"),
+
+    ("tunneling/virtual-net-device", "True"),
+
+    ("tutorial/first", "True"),
+    ("tutorial/hello-simulator", "True"),
+    ("tutorial/second", "True"),
+    ("tutorial/third", "True"),
+
+    ("udp/udp-echo", "True"),
+
+    ("wireless/mixed-wireless", "True"),
+    ("wireless/multirate", "False"), # Takes too long to run
+    ("wireless/simple-wifi-frame-aggregation", "True"),
+    ("wireless/wifi-adhoc", "False"), # Takes too long to run
+    ("wireless/wifi-ap --verbose=0", "True"), # Don't let it spew to stdout
+    ("wireless/wifi-clear-channel-cmu", "False"), # Requires specific hardware
+    ("wireless/wifi-simple-adhoc", "True"),
+    ("wireless/wifi-simple-adhoc-grid", "True"),
+    ("wireless/wifi-simple-infra", "True"),
+    ("wireless/wifi-simple-interference", "True"),
+    ("wireless/wifi-wired-bridging", "True"),
 ]
 
 #
@@ -667,10 +699,28 @@ class worker_thread(threading.Thread):
 def run_tests():
     #
     # Run waf to make sure that everything is built, configured and ready to go
-    # unless we are explicitly told not to.
+    # unless we are explicitly told not to.  We want to be careful about causing
+    # our users pain while waiting for extraneous stuff to compile and link, so
+    # we allow users that know what they''re doing to not invoke waf at all.
     #
-    if options.nowaf == False:
-        proc = subprocess.Popen("./waf", shell=True)
+    if not options.nowaf:
+
+        #
+        # If the user is running the "kinds" or "list" options, there is an 
+        # implied dependency on the test-runner since we call that program
+        # if those options are selected.  We will exit after processing those
+        # options, so if we see them, we can safely only build the test-runner.
+        #
+        # If the user has constrained us to running only a particular type of
+        # file, we can only ask waf to build what we know will be necessary.
+        # For example, if the user only wants to run BVT tests, we only have
+        # to build the test-runner and can ignore all of the examples.
+        #
+        if options.kinds or options.list or (len(options.constrain) and options.constrain in core_kinds):
+            proc = subprocess.Popen("./waf --target=test-runner", shell=True)
+        else:
+            proc = subprocess.Popen("./waf", shell=True)
+
         proc.communicate()
 
     #
@@ -746,9 +796,10 @@ def run_tests():
     # This translates into allowing the following options with respect to the 
     # suites
     #
-    #  ./test,py:                                           run all of the suites
+    #  ./test,py:                                           run all of the suites and examples
+    #  ./test.py --constrain=core:                          run all of the suites of all kinds
     #  ./test.py --constrain=unit:                          run all unit suites
-    #  ./test,py --suite=some-test-suite:                   run the single suite
+    #  ./test,py --suite=some-test-suite:                   run a single suite
     #  ./test,py --example=udp-echo:                        run no test suites
     #  ./test,py --suite=some-suite --example=some-example: run the single suite
     #
@@ -873,7 +924,7 @@ def run_tests():
     #
     #  ./test,py:                                           run all of the examples
     #  ./test.py --constrain=unit                           run no examples
-    #  ./test.py --constrain=example                       run all of the examples
+    #  ./test.py --constrain=example                        run all of the examples
     #  ./test,py --suite=some-test-suite:                   run no examples
     #  ./test,py --example=some-example:                    run the single example
     #  ./test,py --suite=some-suite --example=some-example: run the single example
@@ -883,22 +934,23 @@ def run_tests():
     #
     if len(options.suite) == 0 and len(options.example) == 0:
         if len(options.constrain) == 0 or options.constrain == "example":
-            for test, condition in example_tests:
-                if eval(condition) == True:
-                    job = Job()
-                    job.set_is_example(True)
-                    job.set_display_name(test)
-                    job.set_tmp_file_name("")
-                    job.set_cwd(TMP_TRACES_DIR)
-                    job.set_basedir(os.getcwd())
-                    job.set_shell_command("examples/%s" % test)
+            if ENABLE_EXAMPLES:
+                for test, condition in example_tests:
+                    if eval(condition) == True:
+                        job = Job()
+                        job.set_is_example(True)
+                        job.set_display_name(test)
+                        job.set_tmp_file_name("")
+                        job.set_cwd(TMP_TRACES_DIR)
+                        job.set_basedir(os.getcwd())
+                        job.set_shell_command("examples/%s" % test)
 
-                    if options.verbose:
-                        print "Queue %s" % test
+                        if options.verbose:
+                            print "Queue %s" % test
 
-                    input_queue.put(job)
-                    jobs = jobs + 1
-                    total_tests = total_tests + 1
+                        input_queue.put(job)
+                        jobs = jobs + 1
+                        total_tests = total_tests + 1
 
     elif len(options.example):
         #

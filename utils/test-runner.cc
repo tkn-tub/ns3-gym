@@ -133,10 +133,11 @@ main (int argc, char *argv[])
       // enum defined in test.h converted to lower case.
       //
       std::cout << "  bvt:         Build Verification Tests (to see if build completed successfully)" << std::endl;
-      std::cout << "  unit:        Unit Tests (within modules to check basic functionality)" << std::endl;
-      std::cout << "  system:      System Tests (spans modules to check integration of modules)" << std::endl;
+      std::cout << "  core:        Run all TestSuite-based tests (exclude examples)" << std::endl;
       std::cout << "  example:     Examples (to see if example programs run successfully)" << std::endl;
       std::cout << "  performance: Performance Tests (check to see if the system is as fast as expected)" << std::endl;
+      std::cout << "  system:      System Tests (spans modules to check integration of modules)" << std::endl;
+      std::cout << "  unit:        Unit Tests (within modules to check basic functionality)" << std::endl;
 
       return false;
     }
@@ -153,9 +154,10 @@ main (int argc, char *argv[])
           TestSuite *suite = TestRunner::GetTestSuite (i);
 
           //
-          // Filter the tests listed by type if requested.
+          // Filter the tests listed by type if requested.  The special typeName 
+          // "core" means any TestSuite.
           //
-          if (haveType)
+          if (haveType && typeName != "core")
             {
               TestSuite::TestType type = suite->GetTestType ();
               if (typeName == "bvt" && type != TestSuite::BVT)

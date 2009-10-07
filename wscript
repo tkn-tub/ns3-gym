@@ -173,6 +173,13 @@ def set_options(opt):
                    help=('Use sudo to setup suid bits on ns3 executables.'),
                    dest='enable_sudo', action='store_true',
                    default=False)
+    opt.add_option('--enable-examples',
+                   help=('Build the ns-3 examples and samples.'),
+                   dest='enable_examples', action='store_true',
+                   default=True)
+    opt.add_option('--disable-examples',
+                   help=('Do not build the ns-3 examples and samples.'),
+                   dest='enable_examples', action='store_false')
     opt.add_option('--regression',
                    help=("Enable regression testing; only used for the 'check' target"),
                    default=False, dest='regression', action="store_true")
@@ -323,6 +330,16 @@ def configure(conf):
             why_not_sudo = "option --enable-sudo not selected"
 
     conf.report_optional_feature("ENABLE_SUDO", "Use sudo to set suid bit", env['ENABLE_SUDO'], why_not_sudo)
+
+    if Options.options.enable_examples:
+        env['ENABLE_EXAMPLES'] = True
+        why_not_examples = "defaults to enabled"
+    else:
+        env['ENABLE_EXAMPLES'] = False
+        why_not_examples = "option --disable-examples selected"
+
+    conf.report_optional_feature("ENABLE_EXAMPLES", "Build examples and samples", env['ENABLE_EXAMPLES'], 
+                                 why_not_examples)
 
     # we cannot pull regression traces without mercurial
     conf.find_program('hg', var='MERCURIAL')
@@ -482,7 +499,9 @@ def build(bld):
 
     # process subfolders from here
     bld.add_subdirs('src')
-    bld.add_subdirs('samples utils examples')
+    bld.add_subdirs('samples')
+    bld.add_subdirs('utils')
+    bld.add_subdirs('examples')
 
     add_scratch_programs(bld)
 
@@ -564,7 +583,12 @@ def build(bld):
         if not regression_traces:
             raise Utils.WafError("Cannot run regression tests: reference traces directory not given"
                                  " (--with-regression-traces configure option)")
-        regression.run_regression(bld, regression_traces)
+
+        if env['ENABLE_EXAMPLES'] == True:
+            regression.run_regression(bld, regression_traces)
+        else:
+            raise Utils.WafError("Cannot run regression tests: building the ns-3 examples is not enabled"
+                                 " (regression tests are based on examples)")
 
 #    if Options.options.check:
 #        Options.options.compile_targets += ',run-tests'

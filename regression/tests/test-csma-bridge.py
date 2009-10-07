@@ -11,4 +11,4 @@ def may_run(env, options):
     else:
         return "Python bindings not available."
 
-pyscript = os.path.join('examples', 'csma-bridge.py')
+pyscript = os.path.join('examples/csma', 'csma-bridge.py')
