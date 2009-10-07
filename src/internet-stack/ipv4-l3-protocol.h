@@ -53,6 +53,16 @@ class Icmpv4L4Protocol;
  * 
  * This is the actual implementation of IP.  It contains APIs to send and
  * receive packets at the IP layer, as well as APIs for IP routing.
+ *
+ * This class contains two distinct groups of trace sources.  The
+ * trace sources 'Rx' and 'Tx' are called, respectively, immediately
+ * after receiving from the NetDevice and immediately before sending
+ * to a NetDevice for transmitting a packet.  These are low level
+ * trace sources that include the Ipv4Header already serialized into
+ * the packet.  In contrast, the Drop, SendOutgoing, UnicastForward,
+ * and LocalDeliver trace sources are slightly higher-level and pass
+ * around the Ipv4Header as an explicit parameter and not as part of
+ * the packet.
  */
 class Ipv4L3Protocol : public Ipv4
 {
