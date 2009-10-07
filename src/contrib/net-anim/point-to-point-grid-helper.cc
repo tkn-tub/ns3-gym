@@ -25,10 +25,6 @@
 #include "ns3/vector.h"
 #include "ns3/log.h"
 
-#ifdef NS3_MPI
-#include <mpi.h>
-#endif
-
 NS_LOG_COMPONENT_DEFINE("PointToPointGridHelper");
 
 namespace ns3 {
@@ -71,62 +67,6 @@ PointToPointGridHelper::PointToPointGridHelper (uint32_t nRows,
     if (y > 0)
       m_colDevices.push_back (colDevices);
   }
-}
-
-PointToPointGridHelper::PointToPointGridHelper (uint32_t nRows, 
-                                                uint32_t nCols, PointToPointHelper pointToPoint, 
-                                                uint16_t mpiSize)
-  : m_xSize (nCols), m_ySize (nRows)
-{
-#ifdef NS3_MPI
-  for (uint32_t y = 0; y < nRows; ++y)
-  {
-    NodeContainer rowNodes;
-    NetDeviceContainer rowDevices;
-    NetDeviceContainer colDevices;
-
-    for (uint32_t x = 0; x < nCols; ++x)
-    {
-      Ptr<Node> node = CreateObject<Node> ();
-      // keep it simple for now, and 
-      // split this up on to two 
-      // processors
-      if (x > xSize/2)
-      {
-        node->SetSystemId(1);
-      }
-      else
-      {
-        node->SetSystemId(0);
-      }
-      rowNodes.Add (node);
-
-      // install p2p links across the row
-      if (x > 0)
-      {
-        rowDevices.Add (pointToPoint.
-            Install (rowNodes.Get (x-1), rowNodes.Get (x)));
-      }
-
-      // install vertical p2p links
-      if (y > 0)
-      {
-        colDevices.Add(pointToPoint.
-                      Install ((m_nodes.at (y-1)).Get (x), rowNodes.Get (x)));
-      }
-    }
-
-    m_nodes.push_back(rowNodes);
-    m_rowDevices.push_back (rowDevices);
-
-    if (y > 0)
-    {
-      m_colDevices.push_back (colDevices);
-    }
-  }
-#else
-   NS_FATAL_ERROR ("Can't use distributed simulator without MPI compiled in");
-#endif
 }
 
 void

@@ -33,7 +33,6 @@ class PointToPointGridHelper
 {
   public: 
     PointToPointGridHelper (uint32_t nRows, uint32_t nCols, PointToPointHelper pointToPoint);
-    PointToPointGridHelper (uint32_t nRows, uint32_t nCols, PointToPointHelper pointToPoint, uint16_t mpiSize);
 
     Ptr<Node> GetNode (uint32_t row, uint32_t col);
     Ipv4Address GetAddress (uint32_t row, uint32_t col);
