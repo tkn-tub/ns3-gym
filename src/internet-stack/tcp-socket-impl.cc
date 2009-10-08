@@ -1350,6 +1350,7 @@ void TcpSocketImpl::NewRx (Ptr<Packet> p,
         }
       // Save for later delivery
       m_bufferedData[startSeq] = p;  
+      m_rxBufSize += p->GetSize();
       i = m_bufferedData.find (startSeq);
       next = i;
       ++next;
