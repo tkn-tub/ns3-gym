@@ -36,6 +36,13 @@
 #define cairo_private 
 #define HAVE_UINT64_T 1
 
+/*for compatibility with MacOS*/
+#ifndef HAVE_STDINT_H
+#ifdef __APPLE__
+#define HAVE_STDINT_H 1
+#endif
+#endif
+
 #if   HAVE_STDINT_H
 # include <stdint.h>
 #elif HAVE_INTTYPES_H
