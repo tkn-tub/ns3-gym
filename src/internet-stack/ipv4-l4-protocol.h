@@ -45,6 +45,7 @@ public:
   enum RxStatus {
     RX_OK,
     RX_CSUM_FAILED,
+    RX_ENDPOINT_CLOSED,
     RX_ENDPOINT_UNREACH
   };
 
