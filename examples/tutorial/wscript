@@ -12,3 +12,6 @@ def build(bld):
         
     obj = bld.create_ns3_program('third', ['core', 'simulator', 'point-to-point', 'csma', 'wifi', 'internet-stack'])
     obj.source = 'third.cc'
+
+    obj = bld.create_ns3_program('fourth', ['core'])
+    obj.source = 'fourth.cc'

@@ -1254,8 +1254,9 @@ the discussion in @code{second.cc}.  This is the same sequence.
 Now, we spent a lot of time setting up mobility models for the wireless network
 and so it would be a shame to finish up without even showing that the STA
 nodes are actually moving around during the simulation.  Let's do this by hooking
-into the @code{MobilityModel} course change trace source.  This is usually considered
-a fairly advanced topic, but let's just go for it.
+into the @code{MobilityModel} course change trace source.  This is just a sneak
+peek into the detailed tracing section which is coming up, but this seems a very
+nice place to get an example in.
 
 As mentioned in the ``Tweaking ns-3'' section, the @command{ns-3} tracing system 
 is divided into trace sources and trace sinks, and we provide functions to 
@@ -1354,18 +1355,3 @@ they happen.
   /NodeList/7/$ns3::MobilityModel/CourseChange x = 7.18682, y = 3.29223
   /NodeList/7/$ns3::MobilityModel/CourseChange x = 7.96865, y = 2.66873
 @end verbatim
-
-If you are feeling brave, there is a list of all trace sources in the 
-@uref{http://www.nsnam.org/doxygen-release/index.html,,ns-3 Doxygen}
-which you can find in the ``Modules'' tab.
-Under the ``core'' section, you will find a link to ``The list of all trace 
-sources.''.  You may find it interesting to try and hook some of these 
-traces yourself.  Additionally in the ``Modules'' documentation, there is
-a link to ``The list of all attributes.''.  You can set the default value of 
-any of these @code{Attributes} via the command line as we have previously 
-discussed.
-
-We have just scratched the surface of @command{ns-3} in this tutorial, but we 
-hope we have hopefully covered enough to get you started doing useful work.
-
--- The @command{ns-3} development team.

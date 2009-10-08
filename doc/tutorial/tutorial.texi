@@ -91,6 +91,7 @@ see @uref{http://www.nsnam.org/docs/tutorial.pdf}.
 @include conceptual-overview.texi
 @include tweaking.texi
 @include building-topologies.texi
+@include tracing.texi
 
 @printindex cp
 
