@@ -551,8 +551,9 @@ Ns3TcpCwndTestCase2::DoRun (void)
       NS_TEST_ASSERT_MSG_EQ (event.m_oldCwnd, from, "Wrong old cwnd value in cwnd change event " << i);
       adder = ((double) MSS * MSS) / event.m_oldCwnd;
       adder += event.m_oldCwnd;
-      from = adder;
-      NS_TEST_ASSERT_MSG_EQ (event.m_newCwnd, (uint32_t)adder, "Wrong new cwnd value in cwnd change event " << i);
+      from = static_cast<uint32_t> (adder);
+      NS_TEST_ASSERT_MSG_EQ (event.m_newCwnd, static_cast<uint32_t> (adder), "Wrong new cwnd value in cwnd change event " 
+                             << i);
     }
 
   // Cwnd should be back to 536
