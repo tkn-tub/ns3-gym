@@ -21,8 +21,8 @@
 #include "aodv-neighbor.h"
 #include "aodv-packet.h"
 #include "aodv-rqueue.h"
+#include "aodv-rtable.h"
 #include "ns3/ipv4-route.h"
-
 
 namespace ns3
 {
@@ -301,6 +301,238 @@ struct QueueEntryTest : public TestCase
   }
 };
 //-----------------------------------------------------------------------------
+/// Unit test for RequestQueue
+struct AodvRqueueTest : public TestCase
+{
+  AodvRqueueTest () : TestCase ("Rqueue"), q (64, Seconds (30)) {}
+  virtual bool DoRun ();
+  void Unicast (Ptr<Ipv4Route> route, Ptr<const Packet> packet, const Ipv4Header & header) {}
+  void Error (Ptr<const Packet>, const Ipv4Header &, Socket::SocketErrno) {}
+  void CheckSizeLimit ();
+  void CheckTimeout ();
+
+  RequestQueue q;
+};
+
+bool
+AodvRqueueTest::DoRun ()
+{
+  NS_TEST_EXPECT_MSG_EQ (q.GetMaxQueueLen (), 64, "trivial");
+  q.SetMaxQueueLen (32);
+  NS_TEST_EXPECT_MSG_EQ (q.GetMaxQueueLen (), 32, "trivial");
+  NS_TEST_EXPECT_MSG_EQ (q.GetQueueTimeout (), Seconds (30), "trivial");
+  q.SetQueueTimeout (Seconds(10));
+  NS_TEST_EXPECT_MSG_EQ (q.GetQueueTimeout (), Seconds (10), "trivial");
+
+  Ptr<const Packet> packet = Create<Packet> ();
+  Ipv4Header h;
+  h.SetDestination (Ipv4Address ("1.2.3.4"));
+  h.SetSource (Ipv4Address ("4.3.2.1"));
+  Ipv4RoutingProtocol::UnicastForwardCallback ucb = MakeCallback (&AodvRqueueTest::Unicast, this);
+  Ipv4RoutingProtocol::ErrorCallback ecb = MakeCallback (&AodvRqueueTest::Error, this);
+  QueueEntry e1 (packet, h, ucb, ecb, Seconds (1));
+  q.Enqueue (e1);
+  q.Enqueue (e1);
+  q.Enqueue (e1);
+  NS_TEST_EXPECT_MSG_EQ (q.Find (Ipv4Address ("1.2.3.4")), true, "trivial");
+  NS_TEST_EXPECT_MSG_EQ (q.Find (Ipv4Address ("1.1.1.1")), false, "trivial");
+  NS_TEST_EXPECT_MSG_EQ (q.GetSize (), 1, "trivial");
+  q.DropPacketWithDst (Ipv4Address ("1.2.3.4"));
+  NS_TEST_EXPECT_MSG_EQ (q.Find (Ipv4Address ("1.2.3.4")), false, "trivial");
+  NS_TEST_EXPECT_MSG_EQ (q.GetSize (), 0, "trivial");
+
+  h.SetDestination (Ipv4Address ("2.2.2.2"));
+  QueueEntry e2 (packet, h, ucb, ecb, Seconds (1));
+  q.Enqueue (e1);
+  q.Enqueue (e2);
+  Ptr<Packet> packet2 = Create<Packet> ();
+  QueueEntry e3 (packet2, h, ucb, ecb, Seconds (1));
+  NS_TEST_EXPECT_MSG_EQ (q.Dequeue (Ipv4Address("3.3.3.3"), e3), false, "trivial");
+  NS_TEST_EXPECT_MSG_EQ (q.Dequeue (Ipv4Address ("2.2.2.2"), e3), true, "trivial");
+  NS_TEST_EXPECT_MSG_EQ (q.Find (Ipv4Address ("2.2.2.2")), false, "trivial");
+  q.Enqueue (e2);
+  q.Enqueue (e3);
+  NS_TEST_EXPECT_MSG_EQ (q.GetSize (), 2, "trivial");
+  Ptr<Packet> packet4 = Create<Packet> ();
+  h.SetDestination (Ipv4Address ("1.2.3.4"));
+  QueueEntry e4 (packet4, h, ucb, ecb, Seconds (20));
+  q.Enqueue (e4);
+  NS_TEST_EXPECT_MSG_EQ (q.GetSize (), 3, "trivial");
+  q.DropPacketWithDst (Ipv4Address ("1.2.3.4"));
+  NS_TEST_EXPECT_MSG_EQ (q.GetSize(), 1, "trivial");
+
+  CheckSizeLimit ();
+
+  Ipv4Header header2;
+  Ipv4Address dst2 ("1.2.3.4");
+  header2.SetDestination (dst2);
+
+  Simulator::Schedule (q.GetQueueTimeout () + Seconds (1), &AodvRqueueTest::CheckTimeout, this);
+
+  Simulator::Run ();
+  Simulator::Destroy ();
+
+  return GetErrorStatus ();
+}
+
+void
+AodvRqueueTest::CheckSizeLimit ()
+{
+  Ptr<Packet> packet = Create<Packet> ();
+  Ipv4Header header;
+  Ipv4RoutingProtocol::UnicastForwardCallback ucb = MakeCallback (&AodvRqueueTest::Unicast, this);
+  Ipv4RoutingProtocol::ErrorCallback ecb = MakeCallback (&AodvRqueueTest::Error, this);
+  QueueEntry e1 (packet, header, ucb, ecb, Seconds (1));
+
+  for (uint32_t i = 0; i < q.GetMaxQueueLen (); ++i)
+    q.Enqueue (e1);
+  NS_TEST_EXPECT_MSG_EQ (q.GetSize (), 2, "trivial");
+
+  for (uint32_t i = 0; i < q.GetMaxQueueLen (); ++i)
+    q.Enqueue (e1);
+  NS_TEST_EXPECT_MSG_EQ (q.GetSize (), 2, "trivial");
+}
+
+void
+AodvRqueueTest::CheckTimeout ()
+{
+  NS_TEST_EXPECT_MSG_EQ (q.GetSize (), 0, "Must be empty now");
+}
+//-----------------------------------------------------------------------------
+/// Unit test for AODV routing table entry
+struct AodvRtableEntryTest : public TestCase
+{
+  AodvRtableEntryTest () : TestCase ("RtableEntry") {}
+  virtual bool DoRun()
+  {
+    Ptr<NetDevice> dev;
+    Ipv4InterfaceAddress iface;
+    RoutingTableEntry rt (/*output device*/dev, /*dst*/Ipv4Address("1.2.3.4"), /*validSeqNo*/true, /*seqNo*/10,
+                          /*interface*/iface, /*hop*/5, /*next hop*/Ipv4Address("3.3.3.3"), /*lifetime*/Seconds(10));
+    NS_TEST_EXPECT_MSG_EQ (rt.GetOutputDevice (), dev, "trivial");
+    NS_TEST_EXPECT_MSG_EQ (rt.GetDestination (), Ipv4Address ("1.2.3.4"), "trivial");
+    NS_TEST_EXPECT_MSG_EQ (rt.GetValidSeqNo (), true, "trivial");
+    NS_TEST_EXPECT_MSG_EQ (rt.GetSeqNo (), 10, "trivial");
+    NS_TEST_EXPECT_MSG_EQ (rt.GetInterface (), iface, "trivial");
+    NS_TEST_EXPECT_MSG_EQ (rt.GetHop (), 5, "trivial");
+    NS_TEST_EXPECT_MSG_EQ (rt.GetNextHop (), Ipv4Address ("3.3.3.3"), "trivial");
+    NS_TEST_EXPECT_MSG_EQ (rt.GetLifeTime (), Seconds (10), "trivial");
+    NS_TEST_EXPECT_MSG_EQ (rt.GetFlag (), VALID, "trivial");
+    NS_TEST_EXPECT_MSG_EQ (rt.GetRreqCnt (), 0, "trivial");
+    NS_TEST_EXPECT_MSG_EQ (rt.IsPrecursorListEmpty (), true, "trivial");
+
+    Ptr<NetDevice> dev2;
+    Ipv4InterfaceAddress iface2;
+    rt.SetOutputDevice (dev2);
+    NS_TEST_EXPECT_MSG_EQ (rt.GetOutputDevice (), dev2, "trivial");
+    rt.SetInterface (iface2);
+    NS_TEST_EXPECT_MSG_EQ (rt.GetInterface (), iface2, "trivial");
+    rt.SetValidSeqNo (false);
+    NS_TEST_EXPECT_MSG_EQ (rt.GetValidSeqNo (), false, "trivial");
+    rt.SetFlag (INVALID);
+    NS_TEST_EXPECT_MSG_EQ (rt.GetFlag (), INVALID, "trivial");
+    rt.SetFlag (IN_SEARCH);
+    NS_TEST_EXPECT_MSG_EQ (rt.GetFlag (), IN_SEARCH, "trivial");
+    rt.SetHop (12);
+    NS_TEST_EXPECT_MSG_EQ (rt.GetHop (), 12, "trivial");
+    rt.SetLifeTime (Seconds (1));
+    NS_TEST_EXPECT_MSG_EQ (rt.GetLifeTime (), Seconds (1), "trivial");
+    rt.SetNextHop (Ipv4Address ("1.1.1.1"));
+    NS_TEST_EXPECT_MSG_EQ (rt.GetNextHop (), Ipv4Address ("1.1.1.1"), "trivial");
+    rt.SetUnidirectional (true);
+    NS_TEST_EXPECT_MSG_EQ (rt.IsUnidirectional (), true, "trivial");
+    rt.SetBalcklistTimeout (Seconds (7));
+    NS_TEST_EXPECT_MSG_EQ (rt.GetBlacklistTimeout (), Seconds (7), "trivial");
+    rt.SetRreqCnt (2);
+    NS_TEST_EXPECT_MSG_EQ (rt.GetRreqCnt (), 2, "trivial");
+    rt.IncrementRreqCnt ();
+    NS_TEST_EXPECT_MSG_EQ (rt.GetRreqCnt (), 3, "trivial");
+    rt.Invalidate (Seconds (13));
+    NS_TEST_EXPECT_MSG_EQ (rt.GetFlag (), INVALID, "trivial");
+    NS_TEST_EXPECT_MSG_EQ (rt.GetLifeTime (), Seconds (13), "trivial");
+    rt.SetLifeTime (Seconds (0.1));
+    NS_TEST_EXPECT_MSG_EQ (rt.GetLifeTime (), Seconds (0.1), "trivial");
+    Ptr<Ipv4Route> route = rt.GetRoute ();
+    NS_TEST_EXPECT_MSG_EQ (route->GetDestination (), Ipv4Address ("1.2.3.4"), "trivial");
+
+    NS_TEST_EXPECT_MSG_EQ (rt.InsertPrecursor (Ipv4Address ("10.0.0.1")), true, "trivial");
+    NS_TEST_EXPECT_MSG_EQ (rt.IsPrecursorListEmpty (), false, "trivial");
+    NS_TEST_EXPECT_MSG_EQ (rt.InsertPrecursor (Ipv4Address ("10.0.0.2")), true, "trivial");
+    NS_TEST_EXPECT_MSG_EQ (rt.InsertPrecursor (Ipv4Address ("10.0.0.2")), false, "trivial");
+    NS_TEST_EXPECT_MSG_EQ (rt.LookupPrecursor (Ipv4Address ("10.0.0.3")), false, "trivial");
+    NS_TEST_EXPECT_MSG_EQ (rt.LookupPrecursor (Ipv4Address ("10.0.0.1")), true, "trivial");
+    NS_TEST_EXPECT_MSG_EQ (rt.DeletePrecursor (Ipv4Address ("10.0.0.2")), true, "trivial");
+    NS_TEST_EXPECT_MSG_EQ (rt.LookupPrecursor (Ipv4Address ("10.0.0.2")), false, "trivial");
+    std::vector<Ipv4Address> prec;
+    rt.GetPrecursors (prec);
+    NS_TEST_EXPECT_MSG_EQ (prec.size (), 1, "trivial");
+    NS_TEST_EXPECT_MSG_EQ (rt.InsertPrecursor (Ipv4Address ("10.0.0.4")), true, "trivial");
+    NS_TEST_EXPECT_MSG_EQ (rt.DeletePrecursor (Ipv4Address ("10.0.0.5")), false, "trivial");
+    rt.GetPrecursors (prec);
+    NS_TEST_EXPECT_MSG_EQ (prec.size (), 2, "trivial");
+    rt.DeleteAllPrecursors ();
+    NS_TEST_EXPECT_MSG_EQ (rt.IsPrecursorListEmpty (), true, "trivial");
+    rt.GetPrecursors (prec);
+    NS_TEST_EXPECT_MSG_EQ (prec.size (), 2, "trivial");
+
+    return GetErrorStatus ();
+  }
+};
+//-----------------------------------------------------------------------------
+/// Unit test for AODV routing table
+struct AodvRtableTest : public TestCase
+{
+  AodvRtableTest () : TestCase ("Rtable") {}
+  virtual bool DoRun()
+  {
+    RoutingTable rtable (Seconds (2));
+    NS_TEST_EXPECT_MSG_EQ (rtable.GetBadLinkLifetime (), Seconds (2), "trivial");
+    rtable.SetBadLinkLifetime (Seconds (1));
+    NS_TEST_EXPECT_MSG_EQ (rtable.GetBadLinkLifetime (), Seconds (1), "trivial");
+    Ptr<NetDevice> dev;
+    Ipv4InterfaceAddress iface;
+    RoutingTableEntry rt (/*output device*/dev, /*dst*/Ipv4Address("1.2.3.4"), /*validSeqNo*/true, /*seqNo*/10,
+                          /*interface*/iface, /*hop*/5, /*next hop*/Ipv4Address("1.1.1.1"), /*lifetime*/Seconds(10));
+    NS_TEST_EXPECT_MSG_EQ (rtable.AddRoute (rt), true, "trivial");
+    NS_TEST_EXPECT_MSG_EQ (rtable.AddRoute (rt), false, "trivial");
+    RoutingTableEntry rt2 (/*output device*/dev, /*dst*/Ipv4Address("4.3.2.1"), /*validSeqNo*/false, /*seqNo*/0,
+                           /*interface*/iface, /*hop*/15, /*next hop*/Ipv4Address("1.1.1.1"), /*lifetime*/Seconds(1));
+    NS_TEST_EXPECT_MSG_EQ (rtable.AddRoute (rt2), true, "trivial");
+    NS_TEST_EXPECT_MSG_EQ (rtable.LookupRoute (rt2.GetDestination (), rt), true, "trivial");
+    NS_TEST_EXPECT_MSG_EQ (rt2.GetDestination (), rt.GetDestination (), "trivial");
+    rt.SetHop (20);
+    rt.InsertPrecursor (Ipv4Address ("10.0.0.3"));
+    NS_TEST_EXPECT_MSG_EQ (rtable.Update (rt), true, "trivial");
+    RoutingTableEntry rt3;
+    NS_TEST_EXPECT_MSG_EQ (rtable.LookupRoute (Ipv4Address ("10.0.0.1"), rt), false, "trivial");
+    NS_TEST_EXPECT_MSG_EQ (rtable.Update (rt3), false, "trivial");
+    NS_TEST_EXPECT_MSG_EQ (rtable.SetEntryState (Ipv4Address ("10.0.0.1"), INVALID), false, "trivial");
+    NS_TEST_EXPECT_MSG_EQ (rtable.SetEntryState (Ipv4Address ("1.2.3.4"), IN_SEARCH), true, "trivial");
+    NS_TEST_EXPECT_MSG_EQ (rtable.DeleteRoute (Ipv4Address ("5.5.5.5")), false, "trivial");
+    RoutingTableEntry rt4 (/*output device*/dev, /*dst*/Ipv4Address ("5.5.5.5"), /*validSeqNo*/false, /*seqNo*/0,
+                           /*interface*/iface, /*hop*/15, /*next hop*/Ipv4Address ("1.1.1.1"), /*lifetime*/Seconds (-10));
+    NS_TEST_EXPECT_MSG_EQ (rtable.AddRoute (rt4), true, "trivial");
+    NS_TEST_EXPECT_MSG_EQ (rtable.SetEntryState (Ipv4Address ("5.5.5.5"), INVALID), true, "trivial");
+    NS_TEST_EXPECT_MSG_EQ (rtable.LookupRoute (Ipv4Address ("5.5.5.5"), rt), false, "trivial");
+    NS_TEST_EXPECT_MSG_EQ (rtable.MarkLinkAsUinidirectional (Ipv4Address ("1.2.3.4"), Seconds (2)), true, "trivial");
+    NS_TEST_EXPECT_MSG_EQ (rtable.LookupRoute (Ipv4Address ("1.2.3.4"), rt), true, "trivial");
+    NS_TEST_EXPECT_MSG_EQ (rt.IsUnidirectional (), true, "trivial");
+    rt.SetLifeTime (Seconds (-5));
+    NS_TEST_EXPECT_MSG_EQ (rtable.Update (rt), true, "trivial");
+    std::map<Ipv4Address, uint32_t> unreachable;
+    rtable.GetListOfDestinationWithNextHop (Ipv4Address ("1.1.1.1"), unreachable);
+    NS_TEST_EXPECT_MSG_EQ (unreachable.size (), 2, "trivial");
+    unreachable.insert (std::make_pair (Ipv4Address ("4.3.2.1"), 3));
+    rtable.InvalidateRoutesWithDst (unreachable);
+    NS_TEST_EXPECT_MSG_EQ (rtable.LookupRoute (Ipv4Address ("4.3.2.1"), rt), true, "trivial");
+    NS_TEST_EXPECT_MSG_EQ (rt.GetFlag (), INVALID, "trivial");
+    NS_TEST_EXPECT_MSG_EQ (rtable.DeleteRoute (Ipv4Address ("1.2.3.4")), true, "trivial");
+    NS_TEST_EXPECT_MSG_EQ (rtable.DeleteRoute (Ipv4Address ("1.2.3.4")), false, "trivial");
+
+    return GetErrorStatus ();
+  }
+};
+//-----------------------------------------------------------------------------
 class AodvTestSuite : public TestSuite
 {
 public:
@@ -313,6 +545,9 @@ public:
     AddTestCase (new RrepAckHeaderTest);
     AddTestCase (new RerrHeaderTest);
     AddTestCase (new QueueEntryTest);
+    AddTestCase (new AodvRqueueTest);
+    AddTestCase (new AodvRtableEntryTest);
+    AddTestCase (new AodvRtableTest);
   }
 } g_aodvTestSuite;
 
