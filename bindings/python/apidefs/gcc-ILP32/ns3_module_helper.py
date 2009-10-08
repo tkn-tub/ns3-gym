@@ -543,10 +543,10 @@ def register_Ns3FlowMonitorHelper_methods(root_module, cls):
     return
 
 def register_Ns3InternetStackHelper_methods(root_module, cls):
-    ## internet-stack-helper.h: ns3::InternetStackHelper::InternetStackHelper(ns3::InternetStackHelper const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::InternetStackHelper const &', 'arg0')])
     ## internet-stack-helper.h: ns3::InternetStackHelper::InternetStackHelper() [constructor]
     cls.add_constructor([])
+    ## internet-stack-helper.h: ns3::InternetStackHelper::InternetStackHelper(ns3::InternetStackHelper const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::InternetStackHelper const &', 'arg0')])
     ## internet-stack-helper.h: static void ns3::InternetStackHelper::EnableAscii(std::ostream & os, ns3::NodeContainer n) [member function]
     cls.add_method('EnableAscii', 
                    'void', 
@@ -582,6 +582,10 @@ def register_Ns3InternetStackHelper_methods(root_module, cls):
                    'void', 
                    [], 
                    is_const=True)
+    ## internet-stack-helper.h: void ns3::InternetStackHelper::Reset() [member function]
+    cls.add_method('Reset', 
+                   'void', 
+                   [])
     ## internet-stack-helper.h: void ns3::InternetStackHelper::SetIpv4StackInstall(bool enable) [member function]
     cls.add_method('SetIpv4StackInstall', 
                    'void', 
@@ -654,10 +658,10 @@ def register_Ns3Ipv4InterfaceContainer_methods(root_module, cls):
     cls.add_method('Add', 
                    'void', 
                    [param('std::string', 'ipv4Name'), param('uint32_t', 'interface')])
-    ## ipv4-interface-container.h: std::pair<ns3::Ptr<ns3::Ipv4>,unsigned int> ns3::Ipv4InterfaceContainer::Get(uint32_t arg0) const [member function]
+    ## ipv4-interface-container.h: std::pair<ns3::Ptr<ns3::Ipv4>,unsigned int> ns3::Ipv4InterfaceContainer::Get(uint32_t i) const [member function]
     cls.add_method('Get', 
                    'std::pair< ns3::Ptr< ns3::Ipv4 >, unsigned int >', 
-                   [param('uint32_t', 'arg0')], 
+                   [param('uint32_t', 'i')], 
                    is_const=True)
     ## ipv4-interface-container.h: ns3::Ipv4Address ns3::Ipv4InterfaceContainer::GetAddress(uint32_t i, uint32_t j=0) const [member function]
     cls.add_method('GetAddress', 
@@ -680,6 +684,11 @@ def register_Ns3Ipv4RoutingHelper_methods(root_module, cls):
     cls.add_constructor([])
     ## ipv4-routing-helper.h: ns3::Ipv4RoutingHelper::Ipv4RoutingHelper(ns3::Ipv4RoutingHelper const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::Ipv4RoutingHelper const &', 'arg0')])
+    ## ipv4-routing-helper.h: ns3::Ipv4RoutingHelper * ns3::Ipv4RoutingHelper::Copy() const [member function]
+    cls.add_method('Copy', 
+                   'ns3::Ipv4RoutingHelper *', 
+                   [], 
+                   is_pure_virtual=True, is_const=True, is_virtual=True)
     ## ipv4-routing-helper.h: ns3::Ptr<ns3::Ipv4RoutingProtocol> ns3::Ipv4RoutingHelper::Create(ns3::Ptr<ns3::Node> node) const [member function]
     cls.add_method('Create', 
                    'ns3::Ptr< ns3::Ipv4RoutingProtocol >', 
@@ -688,10 +697,25 @@ def register_Ns3Ipv4RoutingHelper_methods(root_module, cls):
     return
 
 def register_Ns3Ipv4StaticRoutingHelper_methods(root_module, cls):
-    ## ipv4-static-routing-helper.h: ns3::Ipv4StaticRoutingHelper::Ipv4StaticRoutingHelper(ns3::Ipv4StaticRoutingHelper const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::Ipv4StaticRoutingHelper const &', 'arg0')])
     ## ipv4-static-routing-helper.h: ns3::Ipv4StaticRoutingHelper::Ipv4StaticRoutingHelper() [constructor]
     cls.add_constructor([])
+    ## ipv4-static-routing-helper.h: ns3::Ipv4StaticRoutingHelper::Ipv4StaticRoutingHelper(ns3::Ipv4StaticRoutingHelper const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::Ipv4StaticRoutingHelper const &', 'arg0')])
+    ## ipv4-static-routing-helper.h: ns3::Ipv4StaticRoutingHelper * ns3::Ipv4StaticRoutingHelper::Copy() const [member function]
+    cls.add_method('Copy', 
+                   'ns3::Ipv4StaticRoutingHelper *', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## ipv4-static-routing-helper.h: ns3::Ptr<ns3::Ipv4RoutingProtocol> ns3::Ipv4StaticRoutingHelper::Create(ns3::Ptr<ns3::Node> node) const [member function]
+    cls.add_method('Create', 
+                   'ns3::Ptr< ns3::Ipv4RoutingProtocol >', 
+                   [param('ns3::Ptr< ns3::Node >', 'node')], 
+                   is_const=True, is_virtual=True)
+    ## ipv4-static-routing-helper.h: ns3::Ptr<ns3::Ipv4StaticRouting> ns3::Ipv4StaticRoutingHelper::GetStaticRouting(ns3::Ptr<ns3::Ipv4> ipv4) const [member function]
+    cls.add_method('GetStaticRouting', 
+                   'ns3::Ptr< ns3::Ipv4StaticRouting >', 
+                   [param('ns3::Ptr< ns3::Ipv4 >', 'ipv4')], 
+                   is_const=True)
     ## ipv4-static-routing-helper.h: void ns3::Ipv4StaticRoutingHelper::AddMulticastRoute(ns3::Ptr<ns3::Node> n, ns3::Ipv4Address source, ns3::Ipv4Address group, ns3::Ptr<ns3::NetDevice> input, ns3::NetDeviceContainer output) [member function]
     cls.add_method('AddMulticastRoute', 
                    'void', 
@@ -708,16 +732,6 @@ def register_Ns3Ipv4StaticRoutingHelper_methods(root_module, cls):
     cls.add_method('AddMulticastRoute', 
                    'void', 
                    [param('std::string', 'nName'), param('ns3::Ipv4Address', 'source'), param('ns3::Ipv4Address', 'group'), param('std::string', 'inputName'), param('ns3::NetDeviceContainer', 'output')])
-    ## ipv4-static-routing-helper.h: ns3::Ptr<ns3::Ipv4RoutingProtocol> ns3::Ipv4StaticRoutingHelper::Create(ns3::Ptr<ns3::Node> node) const [member function]
-    cls.add_method('Create', 
-                   'ns3::Ptr< ns3::Ipv4RoutingProtocol >', 
-                   [param('ns3::Ptr< ns3::Node >', 'node')], 
-                   is_const=True, is_virtual=True)
-    ## ipv4-static-routing-helper.h: ns3::Ptr<ns3::Ipv4StaticRouting> ns3::Ipv4StaticRoutingHelper::GetStaticRouting(ns3::Ptr<ns3::Ipv4> ipv4) const [member function]
-    cls.add_method('GetStaticRouting', 
-                   'ns3::Ptr< ns3::Ipv4StaticRouting >', 
-                   [param('ns3::Ptr< ns3::Ipv4 >', 'ipv4')], 
-                   is_const=True)
     ## ipv4-static-routing-helper.h: void ns3::Ipv4StaticRoutingHelper::SetDefaultMulticastRoute(ns3::Ptr<ns3::Node> n, ns3::Ptr<ns3::NetDevice> nd) [member function]
     cls.add_method('SetDefaultMulticastRoute', 
                    'void', 
@@ -810,6 +824,11 @@ def register_Ns3Ipv6RoutingHelper_methods(root_module, cls):
     cls.add_constructor([])
     ## ipv6-routing-helper.h: ns3::Ipv6RoutingHelper::Ipv6RoutingHelper(ns3::Ipv6RoutingHelper const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::Ipv6RoutingHelper const &', 'arg0')])
+    ## ipv6-routing-helper.h: ns3::Ipv6RoutingHelper * ns3::Ipv6RoutingHelper::Copy() const [member function]
+    cls.add_method('Copy', 
+                   'ns3::Ipv6RoutingHelper *', 
+                   [], 
+                   is_pure_virtual=True, is_const=True, is_virtual=True)
     ## ipv6-routing-helper.h: ns3::Ptr<ns3::Ipv6RoutingProtocol> ns3::Ipv6RoutingHelper::Create(ns3::Ptr<ns3::Node> node) const [member function]
     cls.add_method('Create', 
                    'ns3::Ptr< ns3::Ipv6RoutingProtocol >', 
@@ -818,10 +837,25 @@ def register_Ns3Ipv6RoutingHelper_methods(root_module, cls):
     return
 
 def register_Ns3Ipv6StaticRoutingHelper_methods(root_module, cls):
-    ## ipv6-static-routing-helper.h: ns3::Ipv6StaticRoutingHelper::Ipv6StaticRoutingHelper(ns3::Ipv6StaticRoutingHelper const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::Ipv6StaticRoutingHelper const &', 'arg0')])
     ## ipv6-static-routing-helper.h: ns3::Ipv6StaticRoutingHelper::Ipv6StaticRoutingHelper() [constructor]
     cls.add_constructor([])
+    ## ipv6-static-routing-helper.h: ns3::Ipv6StaticRoutingHelper::Ipv6StaticRoutingHelper(ns3::Ipv6StaticRoutingHelper const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::Ipv6StaticRoutingHelper const &', 'arg0')])
+    ## ipv6-static-routing-helper.h: ns3::Ipv6StaticRoutingHelper * ns3::Ipv6StaticRoutingHelper::Copy() const [member function]
+    cls.add_method('Copy', 
+                   'ns3::Ipv6StaticRoutingHelper *', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## ipv6-static-routing-helper.h: ns3::Ptr<ns3::Ipv6RoutingProtocol> ns3::Ipv6StaticRoutingHelper::Create(ns3::Ptr<ns3::Node> node) const [member function]
+    cls.add_method('Create', 
+                   'ns3::Ptr< ns3::Ipv6RoutingProtocol >', 
+                   [param('ns3::Ptr< ns3::Node >', 'node')], 
+                   is_const=True, is_virtual=True)
+    ## ipv6-static-routing-helper.h: ns3::Ptr<ns3::Ipv6StaticRouting> ns3::Ipv6StaticRoutingHelper::GetStaticRouting(ns3::Ptr<ns3::Ipv6> ipv6) const [member function]
+    cls.add_method('GetStaticRouting', 
+                   'ns3::Ptr< ns3::Ipv6StaticRouting >', 
+                   [param('ns3::Ptr< ns3::Ipv6 >', 'ipv6')], 
+                   is_const=True)
     ## ipv6-static-routing-helper.h: void ns3::Ipv6StaticRoutingHelper::AddMulticastRoute(ns3::Ptr<ns3::Node> n, ns3::Ipv6Address source, ns3::Ipv6Address group, ns3::Ptr<ns3::NetDevice> input, ns3::NetDeviceContainer output) [member function]
     cls.add_method('AddMulticastRoute', 
                    'void', 
@@ -838,16 +872,6 @@ def register_Ns3Ipv6StaticRoutingHelper_methods(root_module, cls):
     cls.add_method('AddMulticastRoute', 
                    'void', 
                    [param('std::string', 'nName'), param('ns3::Ipv6Address', 'source'), param('ns3::Ipv6Address', 'group'), param('std::string', 'inputName'), param('ns3::NetDeviceContainer', 'output')])
-    ## ipv6-static-routing-helper.h: ns3::Ptr<ns3::Ipv6RoutingProtocol> ns3::Ipv6StaticRoutingHelper::Create(ns3::Ptr<ns3::Node> node) const [member function]
-    cls.add_method('Create', 
-                   'ns3::Ptr< ns3::Ipv6RoutingProtocol >', 
-                   [param('ns3::Ptr< ns3::Node >', 'node')], 
-                   is_const=True, is_virtual=True)
-    ## ipv6-static-routing-helper.h: ns3::Ptr<ns3::Ipv6StaticRouting> ns3::Ipv6StaticRoutingHelper::GetStaticRouting(ns3::Ptr<ns3::Ipv6> ipv6) const [member function]
-    cls.add_method('GetStaticRouting', 
-                   'ns3::Ptr< ns3::Ipv6StaticRouting >', 
-                   [param('ns3::Ptr< ns3::Ipv6 >', 'ipv6')], 
-                   is_const=True)
     return
 
 def register_Ns3MeshHelper_methods(root_module, cls):
@@ -1087,10 +1111,15 @@ def register_Ns3Ns2MobilityHelper_methods(root_module, cls):
     return
 
 def register_Ns3OlsrHelper_methods(root_module, cls):
-    ## olsr-helper.h: ns3::OlsrHelper::OlsrHelper(ns3::OlsrHelper const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::OlsrHelper const &', 'arg0')])
     ## olsr-helper.h: ns3::OlsrHelper::OlsrHelper() [constructor]
     cls.add_constructor([])
+    ## olsr-helper.h: ns3::OlsrHelper::OlsrHelper(ns3::OlsrHelper const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::OlsrHelper const &', 'arg0')])
+    ## olsr-helper.h: ns3::OlsrHelper * ns3::OlsrHelper::Copy() const [member function]
+    cls.add_method('Copy', 
+                   'ns3::OlsrHelper *', 
+                   [], 
+                   is_const=True, is_virtual=True)
     ## olsr-helper.h: ns3::Ptr<ns3::Ipv4RoutingProtocol> ns3::OlsrHelper::Create(ns3::Ptr<ns3::Node> node) const [member function]
     cls.add_method('Create', 
                    'ns3::Ptr< ns3::Ipv4RoutingProtocol >', 
@@ -1323,10 +1352,10 @@ def register_Ns3TapBridgeHelper_methods(root_module, cls):
     cls.add_method('Install', 
                    'ns3::Ptr< ns3::NetDevice >', 
                    [param('std::string', 'nodeName'), param('std::string', 'ndName')])
-    ## tap-bridge-helper.h: ns3::Ptr<ns3::NetDevice> ns3::TapBridgeHelper::Install(ns3::Ptr<ns3::Node> node, ns3::Ptr<ns3::NetDevice> nd, ns3::AttributeValue const & v1) [member function]
+    ## tap-bridge-helper.h: ns3::Ptr<ns3::NetDevice> ns3::TapBridgeHelper::Install(ns3::Ptr<ns3::Node> node, ns3::Ptr<ns3::NetDevice> nd, ns3::AttributeValue const & bridgeType) [member function]
     cls.add_method('Install', 
                    'ns3::Ptr< ns3::NetDevice >', 
-                   [param('ns3::Ptr< ns3::Node >', 'node'), param('ns3::Ptr< ns3::NetDevice >', 'nd'), param('ns3::AttributeValue const &', 'v1')])
+                   [param('ns3::Ptr< ns3::Node >', 'node'), param('ns3::Ptr< ns3::NetDevice >', 'nd'), param('ns3::AttributeValue const &', 'bridgeType')])
     ## tap-bridge-helper.h: void ns3::TapBridgeHelper::SetAttribute(std::string n1, ns3::AttributeValue const & v1) [member function]
     cls.add_method('SetAttribute', 
                    'void', 
@@ -1590,10 +1619,15 @@ def register_Ns3YansWifiPhyHelper_methods(root_module, cls):
     return
 
 def register_Ns3Ipv4GlobalRoutingHelper_methods(root_module, cls):
-    ## ipv4-global-routing-helper.h: ns3::Ipv4GlobalRoutingHelper::Ipv4GlobalRoutingHelper(ns3::Ipv4GlobalRoutingHelper const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::Ipv4GlobalRoutingHelper const &', 'arg0')])
     ## ipv4-global-routing-helper.h: ns3::Ipv4GlobalRoutingHelper::Ipv4GlobalRoutingHelper() [constructor]
     cls.add_constructor([])
+    ## ipv4-global-routing-helper.h: ns3::Ipv4GlobalRoutingHelper::Ipv4GlobalRoutingHelper(ns3::Ipv4GlobalRoutingHelper const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::Ipv4GlobalRoutingHelper const &', 'arg0')])
+    ## ipv4-global-routing-helper.h: ns3::Ipv4GlobalRoutingHelper * ns3::Ipv4GlobalRoutingHelper::Copy() const [member function]
+    cls.add_method('Copy', 
+                   'ns3::Ipv4GlobalRoutingHelper *', 
+                   [], 
+                   is_const=True, is_virtual=True)
     ## ipv4-global-routing-helper.h: ns3::Ptr<ns3::Ipv4RoutingProtocol> ns3::Ipv4GlobalRoutingHelper::Create(ns3::Ptr<ns3::Node> node) const [member function]
     cls.add_method('Create', 
                    'ns3::Ptr< ns3::Ipv4RoutingProtocol >', 
@@ -1612,10 +1646,15 @@ def register_Ns3Ipv4GlobalRoutingHelper_methods(root_module, cls):
     return
 
 def register_Ns3Ipv4ListRoutingHelper_methods(root_module, cls):
-    ## ipv4-list-routing-helper.h: ns3::Ipv4ListRoutingHelper::Ipv4ListRoutingHelper(ns3::Ipv4ListRoutingHelper const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::Ipv4ListRoutingHelper const &', 'arg0')])
     ## ipv4-list-routing-helper.h: ns3::Ipv4ListRoutingHelper::Ipv4ListRoutingHelper() [constructor]
     cls.add_constructor([])
+    ## ipv4-list-routing-helper.h: ns3::Ipv4ListRoutingHelper::Ipv4ListRoutingHelper(ns3::Ipv4ListRoutingHelper const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::Ipv4ListRoutingHelper const &', 'arg0')])
+    ## ipv4-list-routing-helper.h: ns3::Ipv4ListRoutingHelper * ns3::Ipv4ListRoutingHelper::Copy() const [member function]
+    cls.add_method('Copy', 
+                   'ns3::Ipv4ListRoutingHelper *', 
+                   [], 
+                   is_const=True, is_virtual=True)
     ## ipv4-list-routing-helper.h: void ns3::Ipv4ListRoutingHelper::Add(ns3::Ipv4RoutingHelper const & routing, int16_t priority) [member function]
     cls.add_method('Add', 
                    'void', 
@@ -1628,10 +1667,15 @@ def register_Ns3Ipv4ListRoutingHelper_methods(root_module, cls):
     return
 
 def register_Ns3Ipv4NixVectorHelper_methods(root_module, cls):
-    ## ipv4-nix-vector-helper.h: ns3::Ipv4NixVectorHelper::Ipv4NixVectorHelper(ns3::Ipv4NixVectorHelper const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::Ipv4NixVectorHelper const &', 'arg0')])
     ## ipv4-nix-vector-helper.h: ns3::Ipv4NixVectorHelper::Ipv4NixVectorHelper() [constructor]
     cls.add_constructor([])
+    ## ipv4-nix-vector-helper.h: ns3::Ipv4NixVectorHelper::Ipv4NixVectorHelper(ns3::Ipv4NixVectorHelper const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::Ipv4NixVectorHelper const &', 'arg0')])
+    ## ipv4-nix-vector-helper.h: ns3::Ipv4NixVectorHelper * ns3::Ipv4NixVectorHelper::Copy() const [member function]
+    cls.add_method('Copy', 
+                   'ns3::Ipv4NixVectorHelper *', 
+                   [], 
+                   is_const=True, is_virtual=True)
     ## ipv4-nix-vector-helper.h: ns3::Ptr<ns3::Ipv4RoutingProtocol> ns3::Ipv4NixVectorHelper::Create(ns3::Ptr<ns3::Node> node) const [member function]
     cls.add_method('Create', 
                    'ns3::Ptr< ns3::Ipv4RoutingProtocol >', 
@@ -1640,10 +1684,15 @@ def register_Ns3Ipv4NixVectorHelper_methods(root_module, cls):
     return
 
 def register_Ns3Ipv6ListRoutingHelper_methods(root_module, cls):
-    ## ipv6-list-routing-helper.h: ns3::Ipv6ListRoutingHelper::Ipv6ListRoutingHelper(ns3::Ipv6ListRoutingHelper const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::Ipv6ListRoutingHelper const &', 'arg0')])
     ## ipv6-list-routing-helper.h: ns3::Ipv6ListRoutingHelper::Ipv6ListRoutingHelper() [constructor]
     cls.add_constructor([])
+    ## ipv6-list-routing-helper.h: ns3::Ipv6ListRoutingHelper::Ipv6ListRoutingHelper(ns3::Ipv6ListRoutingHelper const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::Ipv6ListRoutingHelper const &', 'arg0')])
+    ## ipv6-list-routing-helper.h: ns3::Ipv6ListRoutingHelper * ns3::Ipv6ListRoutingHelper::Copy() const [member function]
+    cls.add_method('Copy', 
+                   'ns3::Ipv6ListRoutingHelper *', 
+                   [], 
+                   is_const=True, is_virtual=True)
     ## ipv6-list-routing-helper.h: void ns3::Ipv6ListRoutingHelper::Add(ns3::Ipv6RoutingHelper const & routing, int16_t priority) [member function]
     cls.add_method('Add', 
                    'void', 
