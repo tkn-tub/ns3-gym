@@ -103,6 +103,8 @@ public:
    */
   virtual Ptr<Node> GetNode (void) const = 0;
   /**
+   * \brief Specify callbacks to allow the caller to determine if
+   * the connection succeeds of fails.
    * \param connectionSucceeded this callback is invoked when the 
    *        connection request initiated by the user is successfully 
    *        completed. The callback is passed  back a pointer to 
@@ -114,6 +116,23 @@ public:
    */
   void SetConnectCallback (Callback<void, Ptr<Socket> > connectionSucceeded,
                            Callback<void,  Ptr<Socket> > connectionFailed);
+ /**
+  * \brief Detect socket recv() events such as graceful shutdown or error.
+  * 
+  * For connection-oriented sockets, the first callback is used to signal
+  * that the remote side has gracefully shut down the connection, and the
+  * second callback denotes an error corresponding to cases in which
+  * a traditional recv() socket call might return -1 (error), such 
+  * as a connection reset.  For datagram sockets, these callbacks may
+  * never be invoked.
+  * 
+  * \param normalClose this callback is invoked when the 
+  *        peer closes the connection gracefully
+  * \param errorClose this callback is invoked when the 
+  *        connection closes abnormally
+  */
+  void SetCloseCallbacks (Callback<void, Ptr<Socket> > normalClose,
+                          Callback<void, Ptr<Socket> > errorClose);
   /**
    * \brief Accept connection requests from remote hosts
    * \param connectionRequest Callback for connection request from peer. 
@@ -496,6 +515,8 @@ public:
 protected:
   void NotifyConnectionSucceeded (void);
   void NotifyConnectionFailed (void);
+  void NotifyNormalClose(void);
+  void NotifyErrorClose(void);
   bool NotifyConnectionRequest (const Address &from);
   void NotifyNewConnectionCreated (Ptr<Socket> socket, const Address &from);
   void NotifyDataSent (uint32_t size);
@@ -503,13 +524,15 @@ protected:
   void NotifyDataRecv (void);
   virtual void DoDispose (void);
 private:
-  Callback<void, Ptr<Socket> >   m_connectionSucceeded;
-  Callback<void, Ptr<Socket> >   m_connectionFailed;
+  Callback<void, Ptr<Socket> >                   m_connectionSucceeded;
+  Callback<void, Ptr<Socket> >                   m_connectionFailed;
+  Callback<void, Ptr<Socket> >                   m_normalClose;
+  Callback<void, Ptr<Socket> >                   m_errorClose;
   Callback<bool, Ptr<Socket>, const Address &>   m_connectionRequest;
   Callback<void, Ptr<Socket>, const Address&>    m_newConnectionCreated;
   Callback<void, Ptr<Socket>, uint32_t>          m_dataSent;
   Callback<void, Ptr<Socket>, uint32_t >         m_sendCb;
-  Callback<void, Ptr<Socket> > m_receivedData;
+  Callback<void, Ptr<Socket> >                   m_receivedData;
 
 };
 
