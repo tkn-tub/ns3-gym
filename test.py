@@ -119,6 +119,7 @@ example_tests = [
     ("tutorial/hello-simulator", "True"),
     ("tutorial/second", "True"),
     ("tutorial/third", "True"),
+    ("tutorial/fourth", "True"),
 
     ("udp/udp-echo", "True"),
 
