@@ -396,6 +396,9 @@ MeshWifiInterfaceMac::ForwardDown (Ptr<const Packet> const_packet, Mac48Address 
     {
       hdr.SetType (WIFI_MAC_QOSDATA);
       hdr.SetQosTid (tag.Get ());
+      //Aftre setting type DsFrom and DsTo fields are reset.
+      hdr.SetDsFrom ();
+      hdr.SetDsTo ();
       ac = QosUtilsMapTidToAc (tag.Get ());
     }
   m_stats.sentFrames++;
