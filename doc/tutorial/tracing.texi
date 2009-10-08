@@ -77,7 +77,7 @@ output, as in,
 
 Nobody is going to prevent you from going deep into the core of @code{ns-3} and
 adding print statements.  This is insanely easy to do and, after all, you have 
-complete control of your own @node{ns-3} branch.  This will probably not turn 
+complete control of your own @ncde{ns-3} branch.  This will probably not turn 
 out to be very satisfactory in the long term, though.
 
 As the number of print statements increases in your programs, the task of 
@@ -338,7 +338,7 @@ object made using those operators.
 
 Since the tracing system is integrated with Attributes, and Attributes work
 with Objects, there must be an @command{ns-3} @code{Object} for the trace source
-to live in.  The next code snipped declares and defines a simple Object we can
+to live in.  The next code snippet declares and defines a simple Object we can
 work with.
 
 @verbatim
@@ -379,8 +379,8 @@ above and drives the callback process.
 @end verbatim
 
 This is the definition of the trace sink.  It corresponds directly to a callback
-function.  This function will be called whenever one of the operators of the
-@code{TracedValue} is executed.
+function.  Once it is connected, this function will be called whenever one of the
+overloaded operators of the @code{TracedValue} is executed.
 
 We have now seen the trace source and the trace sink.  What remains is code to
 connect the source to the sink.
@@ -401,17 +401,24 @@ Here we first create the Object in which the trace source lives.
 The next step, the @code{TraceConnectWithoutContext}, forms the connection
 between the trace source and the trace sink.  Notice the @code{MakeCallback}
 template function.  This function does the magic required to create the
-underlying callback function.  It will make sure that an overloaded 
-@code{operator()} is there which can be used to ``fire'' the callback.  This
-is essentially arranging for something that looks just like the @code{pfi()}
-example above.  The declaration of the @code{TracedValue<int32_t> m_myInt;}
-in the Object itself performs the magic needed to provide the overloaded
-operators (++, --, etc.) will use this @code{operator()} to actually invoke
-the callback.
+underlying @code{ns-3} Callback object and associate it with the function
+@code{IntTrace}.  TraceConnect with make the association between your provided
+function and the overloaded @code{operator()} in the traced variable referred 
+to by the ``MyInteger'' Attribute.  After this association is made, the trace
+source will ``fire'' your provided callback function.
 
-The @code{TraceConnectWithoutContext}, takes a string parameter that provides 
-the name of the Attribute assigned to the trace source.  Let's ignore the bit
-about context for now since it is not important yet.
+The code to make all of this happen is, of course, non-trivial, but the essence
+is that you are arranging for something that looks just like the @code{pfi()}
+example above to be called by the trace source.  The declaration of the 
+@code{TracedValue<int32_t> m_myInt;} in the Object itself performs the magic 
+needed to provide the overloaded operators (++, --, etc.) that will use the
+@code{operator()} to actually invoke the Callback with the desired parameters.
+The @code{.AddTraceSource} performs the magic to connect the Callback to the 
+Config system, and @code{TraceConnectWithoutContext} performs the magic to
+connect your function to the trace source, which is specified by Attribute
+name.
+
+Let's ignore the bit about context for now.
 
 Finally, the line,
 
@@ -421,6 +428,7 @@ Finally, the line,
 
 should be interpreted as an invocation of @code{operator=} on the member 
 variable @code{m_myInt} with the integer @code{1234} passed as a parameter.
+
 It turns out that this operator is defined (by @code{TracedValue}) to execute
 a callback that returns void and takes two integer values as parameters -- 
 an old value and a new value for the integer in question.  That is exactly 
@@ -627,4 +635,148 @@ there can be any number of trace sources in the system corresponding to any numb
 of nodes with mobility models.  There needs to be some way to identify which trace
 source is actually the one that fired the Callback.  An easy way is to request a 
 trace context when you @code{Config::Connect}.
+
+@subsection How to Find and Connect Trace Sources, and Discover Callback Signatures
+
+The first question that inevitably comes up for new users of the Tracing system is,
+``okay, I know that there must be trace sources in the simulation core, but how do
+I find out what trace sources are available to me''?  
+
+The second question is, ``okay, I found a trace source, how do I figure out the
+config path to use when I connect to it''? 
+
+The third question is, ``okay, I found a trace source, how do I figure out what 
+the return type and formal arguments of my callback function need to be''?
+
+The fourth question is, ``okay, I typed that all in and got this incredibly bizarre
+error message, what in the world does it mean''?
+
+@subsection What Trace Sources are Available?
+
+The answer to this question is found in the @code{ns-3} Doxygen.  Go to the 
+@code{ns-3} web site @uref{http://www.nsnam.org/getting_started.html,,``here''}
+and select the ``Doxygen (stable)'' link ``Documentation'' on the navigation
+bar to the left side of the page.  Expand the ``Modules'' book in the NS-3 
+documentation tree a the upper left by clicking the ``+'' box.  Now, expand
+the ``Core'' book in the tree by clicking its ``+'' box.  You should now
+see three extremely useful links:
+
+@itemize @bullet
+@item The list of all trace sources
+@item The list of all attributes
+@item The list of all global values
+@end itemize
+
+The list of interest to us here is ``the list of all trace sources.''  Go 
+ahead and select that link.  You will see, perhaps not too surprisingly, a
+list of all of the trace sources available in the @code{ns-3} core.
+
+As an example, scroll down to @code{ns3::MobilityModel}.  You will find
+an entry for
+
+@verbatim
+  CourseChange: The value of the position and/or velocity vector changed 
+@end verbatim
+
+You should recognize this as the trace source we used in the @code{third.cc}
+example.  Perusing this list will be helpful.
+
+@subsection What String do I use to Connect?
+
+The key to this question is found in the @code{ns-3} Doxygen as well.  It will
+be simplest just to walk through the ``CourseChanged'' example.
+
+Let's assume that you have just found the ``CourseChanged'' trace source in 
+``The list of all trace sources'' and you want to figure out how to connect to
+it.  You know that you are using (again, from the @code{third.cc} example) an
+@code{ns3::RandomWalk2dMobilityModel}.  So open the ``Class List'' book in
+the NS-3 documentation tree by clicking its ``+'' box.  You will now see a
+list of all of the classes in @code{ns-3}.  Scroll down until you see the
+entry for @code{ns3::RandomWalk2dMobilityModel} and follow that link.
+You should now be looking at the ``ns3::RandomWalk2dMobilityModel Class 
+Reference.''
+
+If you now scroll down to the ``Member Function Documentation'' section, you
+will see documentation for the @code{GetTypeId} function.  You constructed one
+of these in the simple tracing example above:
+
+@verbatim
+    static TypeId GetTypeId (void)
+    {
+      static TypeId tid = TypeId ("MyObject")
+        .SetParent (Object::GetTypeId ())
+        .AddConstructor<MyObject> ()
+        .AddTraceSource ("MyInteger",
+                         "An integer value to trace.",
+                         MakeTraceSourceAccessor (&MyObject::m_myInt))
+        ;
+      return tid;
+    }
+@end verbatim
+
+As mentioned above, this is the bit of code that connected the Config 
+and Attribute systems to the underlying trace source.  This is also the
+place where you should start looking for information about the way to 
+connect. 
+
+You are looking at the same information for the RandomWalk2dMobilityModel; and
+the information you want is now right there in front of you in the Doxygen:
+
+@verbatim
+  This object is accessible through the following paths with Config::Set and Config::Connect: 
+
+  /NodeList/[i]/$ns3::MobilityModel/$ns3::RandomWalk2dMobilityModel 
+@end verbatim
+
+The documentation tells you how to get to the @code{RandomWalk2dMobilityModel} 
+Object.  Compare the string above with the string we actually used in the 
+example code:
+
+@verbatim
+  "/NodeList/7/$ns3::MobilityModel"
+@end verbatim
+
+The difference is due to the fact that two @code{GetObject} calls are implied 
+in the string found in the documentation.  The first, for @code{$ns3::MobilityModel}
+will query the aggregation for the base class.  The second implied 
+@code{GetObject} call, for @code{$ns3::RandomWalk2dMobilityModel}, is used to ``cast''
+the base class to the concrete imlementation class.  The documentation shows 
+both of these operations for you.  It turns out that the actual Attribute you are
+going to be looking for is found in the base class as we have seen.
+
+Look further down in the @code{GetTypeId} doxygen.  You will find,
+
+@verbatim
+  No TraceSources defined for this type.
+  TraceSources defined in parent class ns3::MobilityModel:
+
+  CourseChange: The value of the position and/or velocity vector changed 
+  Reimplemented from ns3::MobilityModel
+@end verbatim
+
+This is exactly what you need to know.  The trace source of interest is found in
+@code{ns3::MobilityModel} (which you knew anyway).  The interesting thing this
+bit of Doxygen teslls you is that you don't need that extra cast in the config
+path above to get to the concrete class, since the trace source is actually in
+the base class.  Therefore the additional @code{GetObject} is not required and
+you simply use the path:
+
+@verbatim
+  /NodeList/[i]/$ns3::MobilityModel
+@end verbatim
+
+which perfectly matches the example path:
+
+@verbatim
+  /NodeList/7/$ns3::MobilityModel
+@end verbatim
+
+@subsection What Return Value and Formal Arguments?
+
+This is a bit more involved.  There are two ways you can figure this out.
+
+
+
+
+
 
