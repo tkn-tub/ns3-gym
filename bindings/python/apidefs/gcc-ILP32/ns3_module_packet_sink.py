@@ -85,6 +85,11 @@ def register_Ns3PacketSink_methods(root_module, cls):
     cls.add_constructor([param('ns3::PacketSink const &', 'arg0')])
     ## packet-sink.h: ns3::PacketSink::PacketSink() [constructor]
     cls.add_constructor([])
+    ## packet-sink.h: uint32_t ns3::PacketSink::GetTotalRx() const [member function]
+    cls.add_method('GetTotalRx', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
     ## packet-sink.h: static ns3::TypeId ns3::PacketSink::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 

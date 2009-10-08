@@ -73,6 +73,9 @@ public:
 
   virtual ~PacketSink ();
 
+  // Return the total bytes received in this sink app
+  uint32_t GetTotalRx() const;
+  
 protected:
   virtual void DoDispose (void);
 private:
@@ -80,15 +83,18 @@ private:
   virtual void StartApplication (void);    // Called at time specified by Start
   virtual void StopApplication (void);     // Called at time specified by Stop
 
-  void HandleRead (Ptr<Socket> socket);
+  void HandleRead (Ptr<Socket>);
   void HandleAccept (Ptr<Socket>, const Address& from);
-
+  void HandlePeerClose(Ptr<Socket>);
+  void HandlePeerError(Ptr<Socket>);
+  
   // In the case of TCP, each socket accept returns a new socket, so the 
   // listening socket is stored seperately from the accepted sockets
   Ptr<Socket>     m_socket;       // Listening socket
   std::list<Ptr<Socket> > m_socketList; //the accepted sockets
 
   Address         m_local;        // Local address to bind to
+  uint32_t        m_totalRx;      // Total bytes received
   TypeId          m_tid;          // Protocol TypeId
   TracedCallback<Ptr<const Packet>, const Address &> m_rxTrace;
   

@@ -105,6 +105,8 @@ private:
   int DoSendTo (Ptr<Packet> p, const Address &daddr);
   int DoSendTo (Ptr<Packet> p, Ipv4Address daddr, uint16_t dport);
   void SendEmptyPacket(uint8_t flags);
+  void SendRST();
+  
   //methods for state
   bool ProcessAction (Actions_t a);
   bool ProcessAction (Actions_t a, const TcpHeader& tcpHeader,
@@ -130,18 +132,18 @@ private:
   // Manage data tx/rx
   void NewRx (Ptr<Packet>, const TcpHeader&, const Address&);
   void RxBufFinishInsert (SequenceNumber);
-  // XXX This should be virtual and overridden
   Ptr<TcpSocketImpl> Copy ();
-  void NewAck (SequenceNumber seq); 
-  // XXX This should be virtual and overridden
-  void DupAck (const TcpHeader& t, uint32_t count); 
-  void ReTxTimeout ();
+  virtual void NewAck (SequenceNumber seq); 
+  virtual void DupAck (const TcpHeader& t, uint32_t count); 
+  virtual void ReTxTimeout ();
   void DelAckTimeout ();
   void LastAckTimeout ();
   void PersistTimeout ();
   void Retransmit ();
   void CommonNewAck (SequenceNumber seq, bool skipTimer = false);
-
+  // All timers are cancelled when the endpoint is deleted, to insure
+  // we don't have additional activity
+  void CancelAllTimers();
   // attribute related
   virtual void SetSndBufSize (uint32_t size);
   virtual uint32_t GetSndBufSize (void) const;

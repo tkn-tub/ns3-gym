@@ -198,6 +198,7 @@ TcpSocketImpl::~TcpSocketImpl ()
   m_tcp = 0;
   delete m_pendingData; //prevents leak
   m_pendingData = 0;
+  CancelAllTimers();
 }
 
 void
@@ -250,8 +251,9 @@ TcpSocketImpl::Destroy (void)
   NS_LOG_LOGIC (this<<" Cancelled ReTxTimeout event which was set to expire at "
                 << (Simulator::Now () + 
                 Simulator::GetDelayLeft (m_retxEvent)).GetSeconds());
-  m_retxEvent.Cancel ();
+  CancelAllTimers();
 }
+
 int
 TcpSocketImpl::FinishBind (void)
 {
@@ -329,14 +331,28 @@ int
 TcpSocketImpl::Close (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
-  if (m_pendingData && m_pendingData->Size() != 0)
+  // First we check to see if there is any unread rx data
+  // Bug number 426 claims we should send reset in this case.
+  if (!m_bufferedData.empty())
+    {
+      SendRST();
+      return 0;
+    }
+
+  uint32_t remainingData = 0;
+  if (m_pendingData)
+    {
+      remainingData = m_pendingData->SizeFromSeq (m_firstPendingSequence,
+                                                  m_nextTxSequence);
+    }
+  
+  if (remainingData != 0)
     { // App close with pending data must wait until all data transmitted
       m_closeOnEmpty = true;
       NS_LOG_LOGIC("Socket " << this << 
                    " deferring close, state " << m_state);
       return 0;
     }
-
   Actions_t action  = ProcessEvent (APP_CLOSE);
   ProcessAction (action);
   return 0;
@@ -460,9 +476,12 @@ int TcpSocketImpl::DoSendTo (Ptr<Packet> p, Ipv4Address ipv4, uint16_t port)
       m_errno = ERROR_SHUTDOWN;
       return -1;
     }
+  // Get the size before sending to tcp, as the sent callback cares
+  // about payload sent, not with headers
+  uint32_t sentSize = p->GetSize();
   m_tcp->Send (p, m_endPoint->GetLocalAddress (), ipv4,
                   m_endPoint->GetLocalPort (), port);
-  NotifyDataSent (p->GetSize ());
+  NotifyDataSent (sentSize);
   return 0;
 }
 
@@ -638,6 +657,16 @@ TcpSocketImpl::ForwardUp (Ptr<Packet> packet, Ipv4Address ipv4, uint16_t port)
   TcpHeader tcpHeader;
   packet->RemoveHeader (tcpHeader);
 
+  if (tcpHeader.GetFlags () & TcpHeader::RST)
+    { // Got an RST, just shut everything down
+      NotifyErrorClose();
+      CancelAllTimers();
+      m_endPoint->SetDestroyCallback(MakeNullCallback<void>());
+      m_tcp->DeAllocate (m_endPoint);
+      m_endPoint = 0;
+      return;
+    }
+      
   if (tcpHeader.GetFlags () & TcpHeader::ACK)
     {
       Time m = m_rtt->AckSeq (tcpHeader.GetAckNumber () );
@@ -677,6 +706,8 @@ Actions_t TcpSocketImpl::ProcessEvent (Events_t e)
     {
       NS_LOG_LOGIC ("TcpSocketImpl " << this << " sending RST from state "
               << saveState << " event " << e);
+      SendRST();
+      return NO_ACT;
     }
   bool needCloseNotify = (stateAction.state == CLOSED && m_state != CLOSED 
     && e != TIMEOUT);
@@ -692,7 +723,6 @@ Actions_t TcpSocketImpl::ProcessEvent (Events_t e)
     // the handshaking
     {
       Simulator::ScheduleNow(&TcpSocketImpl::ConnectionSucceeded, this);
-      //NotifyConnectionSucceeded ();
       m_connected = true;
       m_endPoint->SetPeer (m_remoteAddress, m_remotePort);
       NS_LOG_LOGIC ("TcpSocketImpl " << this << " Connected!");
@@ -708,6 +738,7 @@ Actions_t TcpSocketImpl::ProcessEvent (Events_t e)
       NS_LOG_LOGIC ("TcpSocketImpl " << this << " transition to CLOSED from " 
                << m_state << " event " << e << " closeNot " << m_closeNotified
                << " action " << stateAction.action);
+      NotifyNormalClose();
       m_closeNotified = true;
       NS_LOG_LOGIC ("TcpSocketImpl " << this << " calling Closed from PE"
               << " origState " << saveState
@@ -732,6 +763,7 @@ Actions_t TcpSocketImpl::ProcessEvent (Events_t e)
       m_endPoint->SetDestroyCallback(MakeNullCallback<void>());
       m_tcp->DeAllocate (m_endPoint);
       m_endPoint = 0;
+      CancelAllTimers();
     }
     
   return stateAction.action;
@@ -776,6 +808,18 @@ void TcpSocketImpl::SendEmptyPacket (uint8_t flags)
   }
 }
 
+// This function closes the endpoint completely
+void TcpSocketImpl::SendRST()
+{
+  SendEmptyPacket(TcpHeader::RST);
+  NotifyErrorClose();
+  CancelAllTimers();
+  m_endPoint->SetDestroyCallback(MakeNullCallback<void>());
+  m_tcp->DeAllocate (m_endPoint);
+  m_endPoint = 0;
+}
+
+  
 bool TcpSocketImpl::ProcessAction (Actions_t a)
 { // These actions do not require a packet or any TCP Headers
   NS_LOG_FUNCTION (this << a);
@@ -976,6 +1020,7 @@ bool TcpSocketImpl::ProcessPacketAction (Actions_t a, Ptr<Packet> p,
       break;
     case PEER_CLOSE:
     {
+      NS_LOG_LOGIC("Got Peer Close");
       // First we have to be sure the FIN packet was not received
       // out of sequence.  If so, note pending close and process
       // new sequence rx
@@ -1002,6 +1047,7 @@ bool TcpSocketImpl::ProcessPacketAction (Actions_t a, Ptr<Packet> p,
         {
           NS_LOG_LOGIC ("TCP " << this 
               << " calling AppCloseRequest");
+          NotifyNormalClose();
           m_closeRequestNotified = true;
         }
       NS_LOG_LOGIC ("TcpSocketImpl " << this 
@@ -1132,8 +1178,8 @@ bool TcpSocketImpl::SendPendingData (bool withAck)
                          m_endPoint->GetLocalAddress (),
                          m_remoteAddress);
       m_rtt->SentSeq(m_nextTxSequence, sz);       // notify the RTT
-      // Notify the application
-      Simulator::ScheduleNow(&TcpSocketImpl::NotifyDataSent, this, p->GetSize ());
+      // Notify the application of the data being sent
+      Simulator::ScheduleNow(&TcpSocketImpl::NotifyDataSent, this, sz);
       nPacketsSent++;                             // Count sent this loop
       m_nextTxSequence += sz;                     // Advance next tx sequence
       // Note the high water mark
@@ -1304,6 +1350,7 @@ void TcpSocketImpl::NewRx (Ptr<Packet> p,
         }
       // Save for later delivery
       m_bufferedData[startSeq] = p;  
+      m_rxBufSize += p->GetSize();
       i = m_bufferedData.find (startSeq);
       next = i;
       ++next;
@@ -1406,7 +1453,6 @@ void TcpSocketImpl::CommonNewAck (SequenceNumber ack, bool skipTimer)
   // and MUST be called by any subclass, from the NewAck function
   // Always cancel any pending re-tx timer on new acknowledgement
   NS_LOG_FUNCTION (this << ack << skipTimer); 
-  //DEBUG(1,(cout << "TCP " << this << "Cancelling retx timer " << endl));
   if (!skipTimer)
     {
       NS_LOG_LOGIC (this<<" Cancelled ReTxTimeout event which was set to expire at "
@@ -1463,6 +1509,14 @@ void TcpSocketImpl::CommonNewAck (SequenceNumber ack, bool skipTimer)
     }
   // Try to send more data
   SendPendingData (m_connected);
+}
+
+void TcpSocketImpl::CancelAllTimers()
+{
+  m_retxEvent.Cancel ();
+  m_persistEvent.Cancel ();
+  m_delAckEvent.Cancel();
+  m_lastAckEvent.Cancel ();
 }
 
 Ptr<TcpSocketImpl> TcpSocketImpl::Copy ()
@@ -1524,6 +1578,9 @@ void TcpSocketImpl::ReTxTimeout ()
 { // Retransmit timeout
   NS_LOG_FUNCTION (this);
   NS_LOG_LOGIC (this<<" ReTxTimeout Expired at time "<<Simulator::Now ().GetSeconds());
+  // If erroneous timeout in closed/timed-wait state, just return
+  if (m_state == CLOSED || m_state == TIMED_WAIT) return;
+  
   m_ssThresh = Window () / 2; // Per RFC2581
   m_ssThresh = std::max (m_ssThresh, 2 * m_segmentSize);
   // Set cWnd to segSize on timeout,  per rfc2581

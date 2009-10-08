@@ -735,6 +735,8 @@ Ipv4L3Protocol::LocalDeliver (Ptr<const Packet> packet, Ipv4Header const&ip, uin
       switch (status) {
       case Ipv4L4Protocol::RX_OK:
         // fall through
+      case Ipv4L4Protocol::RX_ENDPOINT_CLOSED:
+        // fall through
       case Ipv4L4Protocol::RX_CSUM_FAILED:
         break;
       case Ipv4L4Protocol::RX_ENDPOINT_UNREACH:

@@ -62,6 +62,7 @@ PacketSink::PacketSink ()
 {
   NS_LOG_FUNCTION (this);
   m_socket = 0;
+  m_totalRx = 0;
 }
 
 PacketSink::~PacketSink()
@@ -69,8 +70,12 @@ PacketSink::~PacketSink()
   NS_LOG_FUNCTION (this);
 }
 
-void
-PacketSink::DoDispose (void)
+uint32_t PacketSink::GetTotalRx() const
+{
+  return m_totalRx;
+}
+  
+void PacketSink::DoDispose (void)
 {
   NS_LOG_FUNCTION (this);
   m_socket = 0;
@@ -109,6 +114,9 @@ void PacketSink::StartApplication()    // Called at time specified by Start
   m_socket->SetAcceptCallback (
             MakeNullCallback<bool, Ptr<Socket>, const Address &> (),
             MakeCallback(&PacketSink::HandleAccept, this));
+  m_socket->SetCloseCallbacks (
+            MakeCallback(&PacketSink::HandlePeerClose, this),
+            MakeCallback(&PacketSink::HandlePeerError, this));
 }
 
 void PacketSink::StopApplication()     // Called at time specified by Stop
@@ -141,12 +149,25 @@ void PacketSink::HandleRead (Ptr<Socket> socket)
       if (InetSocketAddress::IsMatchingType (from))
         {
           InetSocketAddress address = InetSocketAddress::ConvertFrom (from);
+          m_totalRx += packet->GetSize();
           NS_LOG_INFO ("Received " << packet->GetSize() << " bytes from " << 
-            address.GetIpv4() << " [" << address << "]");
+                       address.GetIpv4() << " [" << address << "]" 
+                       << " total Rx " << m_totalRx);
         }    
       m_rxTrace (packet, from);
     }
 }
+
+void PacketSink::HandlePeerClose (Ptr<Socket> socket)
+{
+  NS_LOG_INFO("PktSink, peerClose");
+}
+ 
+void PacketSink::HandlePeerError (Ptr<Socket> socket)
+{
+  NS_LOG_INFO("PktSink, peerError");
+}
+ 
 
 void PacketSink::HandleAccept (Ptr<Socket> s, const Address& from)
 {

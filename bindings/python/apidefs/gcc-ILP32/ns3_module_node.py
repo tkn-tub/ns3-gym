@@ -3406,6 +3406,10 @@ def register_Ns3Socket_methods(root_module, cls):
     cls.add_method('SetAcceptCallback', 
                    'void', 
                    [param('ns3::Callback< bool, ns3::Ptr< ns3::Socket >, ns3::Address const &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'connectionRequest'), param('ns3::Callback< void, ns3::Ptr< ns3::Socket >, ns3::Address const &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'newConnectionCreated')])
+    ## socket.h: void ns3::Socket::SetCloseCallbacks(ns3::Callback<void, ns3::Ptr<ns3::Socket>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> normalClose, ns3::Callback<void, ns3::Ptr<ns3::Socket>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> errorClose) [member function]
+    cls.add_method('SetCloseCallbacks', 
+                   'void', 
+                   [param('ns3::Callback< void, ns3::Ptr< ns3::Socket >, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'normalClose'), param('ns3::Callback< void, ns3::Ptr< ns3::Socket >, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'errorClose')])
     ## socket.h: void ns3::Socket::SetConnectCallback(ns3::Callback<void, ns3::Ptr<ns3::Socket>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> connectionSucceeded, ns3::Callback<void, ns3::Ptr<ns3::Socket>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> connectionFailed) [member function]
     cls.add_method('SetConnectCallback', 
                    'void', 
@@ -3462,10 +3466,20 @@ def register_Ns3Socket_methods(root_module, cls):
                    'void', 
                    [param('uint32_t', 'size')], 
                    visibility='protected')
+    ## socket.h: void ns3::Socket::NotifyErrorClose() [member function]
+    cls.add_method('NotifyErrorClose', 
+                   'void', 
+                   [], 
+                   visibility='protected')
     ## socket.h: void ns3::Socket::NotifyNewConnectionCreated(ns3::Ptr<ns3::Socket> socket, ns3::Address const & from) [member function]
     cls.add_method('NotifyNewConnectionCreated', 
                    'void', 
                    [param('ns3::Ptr< ns3::Socket >', 'socket'), param('ns3::Address const &', 'from')], 
+                   visibility='protected')
+    ## socket.h: void ns3::Socket::NotifyNormalClose() [member function]
+    cls.add_method('NotifyNormalClose', 
+                   'void', 
+                   [], 
                    visibility='protected')
     ## socket.h: void ns3::Socket::NotifySend(uint32_t spaceAvailable) [member function]
     cls.add_method('NotifySend', 
