@@ -78,7 +78,7 @@ def register_types(module):
     ## ipv4-l4-protocol.h: ns3::Ipv4L4Protocol [class]
     module.add_class('Ipv4L4Protocol', parent=root_module['ns3::Object'])
     ## ipv4-l4-protocol.h: ns3::Ipv4L4Protocol::RxStatus [enumeration]
-    module.add_enum('RxStatus', ['RX_OK', 'RX_CSUM_FAILED', 'RX_ENDPOINT_UNREACH'], outer_class=root_module['ns3::Ipv4L4Protocol'])
+    module.add_enum('RxStatus', ['RX_OK', 'RX_CSUM_FAILED', 'RX_ENDPOINT_CLOSED', 'RX_ENDPOINT_UNREACH'], outer_class=root_module['ns3::Ipv4L4Protocol'])
     ## ipv6-l3-protocol.h: ns3::Ipv6L3Protocol [class]
     module.add_class('Ipv6L3Protocol', parent=root_module['ns3::Ipv6'])
     ## ipv6-l3-protocol.h: ns3::Ipv6L3Protocol::DropReason [enumeration]

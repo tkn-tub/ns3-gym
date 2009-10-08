@@ -88,7 +88,7 @@ public:
     
 
   /** 
-   * function to be called when the net device transmittes a packet
+   * function to be called when the net device transmits a packet
    * 
    * @param context 
    * @param p the packet being transmitted
@@ -138,7 +138,6 @@ public:
    * @param address the MAC address of the remote station
    */  
   void TxFinalDataFailedTrace (std::string context, Mac48Address address);    
-
 
   /** 
    * Function to be called when the PHY layer  of the considered
@@ -195,9 +194,15 @@ public:
 
 private:
 
+  /** 
+   * @internal
+   */
   void WriteStats ();
-  void ResetCounters ();
 
+  /** 
+   * @internal
+   */
+  void ResetCounters ();
 
   uint32_t m_txCount;
   uint32_t m_rxCount;
@@ -211,7 +216,6 @@ private:
   std::ofstream *m_writer;
 
   Time m_interval;    
-
 
 }; // class AthstatsWifiTraceSink
 

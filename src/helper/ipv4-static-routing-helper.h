@@ -40,7 +40,26 @@ namespace ns3 {
 class Ipv4StaticRoutingHelper : public Ipv4RoutingHelper
 {
 public:
-  Ipv4StaticRoutingHelper();
+  /*
+   * Construct an Ipv4StaticRoutingHelper object, used to make configuration
+   * of static routing easier.
+   */
+  Ipv4StaticRoutingHelper ();
+
+  /**
+   * \brief Construct an Ipv4StaticRoutingHelper from another previously 
+   * initialized instance (Copy Constructor).
+   */
+  Ipv4StaticRoutingHelper (const Ipv4StaticRoutingHelper &);
+
+  /**
+   * \internal
+   * \returns pointer to clone of this Ipv4StaticRoutingHelper
+   *
+   * This method is mainly for internal use by the other helpers;
+   * clients are expected to free the dynamic memory allocated by this method
+   */
+  Ipv4StaticRoutingHelper* Copy (void) const;
 
   /**
    * \param node the node on which the routing protocol will run
@@ -50,14 +69,42 @@ public:
    */
   virtual Ptr<Ipv4RoutingProtocol> Create (Ptr<Node> node) const;
 
+  /**
+   * Try and find the static routing protocol as either the main routing
+   * protocol or in the list of routing protocols associated with the 
+   * Ipv4 provided.
+   *
+   * \param ipv4 the Ptr<Ipv4> to search for the static routing protocol
+   */
   Ptr<Ipv4StaticRouting> GetStaticRouting (Ptr<Ipv4> ipv4) const;
 
+  /**
+   * \brief Add a multicast route to a node and net device using explicit 
+   * Ptr<Node> and Ptr<NetDevice>
+   */
   void AddMulticastRoute (Ptr<Node> n, Ipv4Address source, Ipv4Address group,  
     Ptr<NetDevice> input, NetDeviceContainer output);
+
+  /**
+   * \brief Add a multicast route to a node and device using a name string 
+   * previously associated to the node using the Object Name Service and a
+   * Ptr<NetDevice>
+   */
   void AddMulticastRoute (std::string n, Ipv4Address source, Ipv4Address group,  
     Ptr<NetDevice> input, NetDeviceContainer output);
+
+  /**
+   * \brief Add a multicast route to a node and device using a Ptr<Node> and a 
+   * name string previously associated to the device using the Object Name Service.
+   */
   void AddMulticastRoute (Ptr<Node> n, Ipv4Address source, Ipv4Address group,  
     std::string inputName, NetDeviceContainer output);
+
+  /**
+   * \brief Add a multicast route to a node and device using name strings
+   * previously associated to both the node and device using the Object Name 
+   * Service.
+   */
   void AddMulticastRoute (std::string nName, Ipv4Address source, Ipv4Address group,  
     std::string inputName, NetDeviceContainer output);
 
@@ -71,10 +118,50 @@ public:
    * \param nd device of the node to add default route
    */
   void SetDefaultMulticastRoute (Ptr<Node> n, Ptr<NetDevice> nd);
-  void SetDefaultMulticastRoute (Ptr<Node> n, std::string ndName);
-  void SetDefaultMulticastRoute (std::string nName, Ptr<NetDevice> nd);
-  void SetDefaultMulticastRoute (std::string nName, std::string ndName);
 
+  /**
+   * \brief Add a default route to the static routing protocol to forward
+   *        packets out a particular interface
+   *
+   * Functionally equivalent to:
+   * route add 224.0.0.0 netmask 240.0.0.0 dev nd
+   * \param n node
+   * \param ndName string with name previously associated to device using the 
+   *        Object Name Service
+   */
+  void SetDefaultMulticastRoute (Ptr<Node> n, std::string ndName);
+
+  /**
+   * \brief Add a default route to the static routing protocol to forward
+   *        packets out a particular interface
+   *
+   * Functionally equivalent to:
+   * route add 224.0.0.0 netmask 240.0.0.0 dev nd
+   * \param nName string with name previously associated to node using the 
+   *        Object Name Service
+   * \param nd device of the node to add default route
+   */
+  void SetDefaultMulticastRoute (std::string nName, Ptr<NetDevice> nd);
+
+  /**
+   * \brief Add a default route to the static routing protocol to forward
+   *        packets out a particular interface
+   *
+   * Functionally equivalent to:
+   * route add 224.0.0.0 netmask 240.0.0.0 dev nd
+   * \param nName string with name previously associated to node using the 
+   *        Object Name Service
+   * \param ndName string with name previously associated to device using the 
+   *        Object Name Service
+   */
+  void SetDefaultMulticastRoute (std::string nName, std::string ndName);
+private:
+  /**
+   * \internal
+   * \brief Assignment operator declared private and not implemented to disallow
+   * assignment and prevent the compiler from happily inserting its own.
+   */
+  Ipv4StaticRoutingHelper &operator = (const Ipv4StaticRoutingHelper &o);
 };
 
 } // namespace ns3

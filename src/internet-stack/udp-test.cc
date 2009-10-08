@@ -21,7 +21,6 @@
  * This is the test code for udp-socket-impl.cc, it was moved out of udp-socket-impl.cc to 
  * be in an independent file for clarity purposes.
  */
-#ifdef RUN_SELF_TESTS
 
 #include "ns3/test.h"
 #include "ns3/socket-factory.h"
@@ -74,13 +73,13 @@ AddInternetStack (Ptr<Node> node)
 }
 
 
-class UdpSocketImplTest: public Test
+class UdpSocketImplTest: public TestCase
 {
   Ptr<Packet> m_receivedPacket;
   Ptr<Packet> m_receivedPacket2;
 
 public:
-  virtual bool RunTests (void);
+  virtual bool DoRun (void);
   UdpSocketImplTest ();
 
   void ReceivePacket (Ptr<Socket> socket, Ptr<Packet> packet, const Address &from);
@@ -91,7 +90,7 @@ public:
 
 
 UdpSocketImplTest::UdpSocketImplTest ()
-  : Test ("UdpSocketImpl") 
+  : TestCase ("UDP socket implementation") 
 {
 }
 
@@ -122,10 +121,8 @@ void UdpSocketImplTest::ReceivePkt2 (Ptr<Socket> socket)
 }
 
 bool
-UdpSocketImplTest::RunTests (void)
+UdpSocketImplTest::DoRun (void)
 {
-  bool result = true;
-
   // Create topology
   
   // Receiver Node
@@ -193,12 +190,12 @@ UdpSocketImplTest::RunTests (void)
   // Create the UDP sockets
   Ptr<SocketFactory> rxSocketFactory = rxNode->GetObject<UdpSocketFactory> ();
   Ptr<Socket> rxSocket = rxSocketFactory->CreateSocket ();
-  NS_TEST_ASSERT_EQUAL (rxSocket->Bind (InetSocketAddress (Ipv4Address ("10.0.0.1"), 1234)), 0);
+  NS_TEST_EXPECT_MSG_EQ (rxSocket->Bind (InetSocketAddress (Ipv4Address ("10.0.0.1"), 1234)), 0, "trivial");
   rxSocket->SetRecvCallback (MakeCallback (&UdpSocketImplTest::ReceivePkt, this));
 
   Ptr<Socket> rxSocket2 = rxSocketFactory->CreateSocket ();
   rxSocket2->SetRecvCallback (MakeCallback (&UdpSocketImplTest::ReceivePkt2, this));
-  NS_TEST_ASSERT_EQUAL (rxSocket2->Bind (InetSocketAddress (Ipv4Address ("10.0.1.1"), 1234)), 0);
+  NS_TEST_EXPECT_MSG_EQ (rxSocket2->Bind (InetSocketAddress (Ipv4Address ("10.0.1.1"), 1234)), 0, "trivial");
 
   Ptr<SocketFactory> txSocketFactory = txNode->GetObject<UdpSocketFactory> ();
   Ptr<Socket> txSocket = txSocketFactory->CreateSocket ();
@@ -208,11 +205,11 @@ UdpSocketImplTest::RunTests (void)
   // Unicast test
   m_receivedPacket = Create<Packet> ();
   m_receivedPacket2 = Create<Packet> ();
-  NS_TEST_ASSERT_EQUAL (txSocket->SendTo ( Create<Packet> (123), 0, 
-    InetSocketAddress (Ipv4Address("10.0.0.1"), 1234)), 123);
+  NS_TEST_EXPECT_MSG_EQ (txSocket->SendTo ( Create<Packet> (123), 0, 
+    InetSocketAddress (Ipv4Address("10.0.0.1"), 1234)), 123, "trivial");
   Simulator::Run ();
-  NS_TEST_ASSERT_EQUAL (m_receivedPacket->GetSize (), 123);
-  NS_TEST_ASSERT_EQUAL (m_receivedPacket2->GetSize (), 0); // second interface should receive it
+  NS_TEST_EXPECT_MSG_EQ (m_receivedPacket->GetSize (), 123, "trivial");
+  NS_TEST_EXPECT_MSG_EQ (m_receivedPacket2->GetSize (), 0, "second interface should receive it");
 
   m_receivedPacket->RemoveAllByteTags ();
   m_receivedPacket2->RemoveAllByteTags ();
@@ -221,12 +218,11 @@ UdpSocketImplTest::RunTests (void)
 
   m_receivedPacket = Create<Packet> ();
   m_receivedPacket2 = Create<Packet> ();
-  NS_TEST_ASSERT_EQUAL (txSocket->SendTo ( Create<Packet> (123), 0, 
-    InetSocketAddress (Ipv4Address("255.255.255.255"), 1234)), 123);
+  NS_TEST_EXPECT_MSG_EQ (txSocket->SendTo ( Create<Packet> (123), 0, 
+    InetSocketAddress (Ipv4Address("255.255.255.255"), 1234)), 123, "trivial");
   Simulator::Run ();
-  NS_TEST_ASSERT_EQUAL (m_receivedPacket->GetSize (), 123);
-  // second socket should not receive it (it is bound specifically to the second interface's address
-  NS_TEST_ASSERT_EQUAL (m_receivedPacket2->GetSize (), 0);
+  NS_TEST_EXPECT_MSG_EQ (m_receivedPacket->GetSize (), 123, "trivial");
+  NS_TEST_EXPECT_MSG_EQ (m_receivedPacket2->GetSize (), 0, "second socket should not receive it (it is bound specifically to the second interface's address");
 
   m_receivedPacket->RemoveAllByteTags ();
   m_receivedPacket2->RemoveAllByteTags ();
@@ -239,26 +235,31 @@ UdpSocketImplTest::RunTests (void)
   rxSocket2->Dispose ();
   rxSocket2 = rxSocketFactory->CreateSocket ();
   rxSocket2->SetRecvCallback (MakeCallback (&UdpSocketImplTest::ReceivePkt2, this));
-  NS_TEST_ASSERT_EQUAL (rxSocket2->Bind (InetSocketAddress (Ipv4Address ("0.0.0.0"), 1234)), 0);
+  NS_TEST_EXPECT_MSG_EQ (rxSocket2->Bind (InetSocketAddress (Ipv4Address ("0.0.0.0"), 1234)), 0, "trivial");
 
   m_receivedPacket = Create<Packet> ();
   m_receivedPacket2 = Create<Packet> ();
-  NS_TEST_ASSERT_EQUAL (txSocket->SendTo (Create<Packet> (123), 0,
-InetSocketAddress (Ipv4Address("255.255.255.255"), 1234)), 123);
+  NS_TEST_EXPECT_MSG_EQ (txSocket->SendTo (Create<Packet> (123), 0,
+        InetSocketAddress (Ipv4Address("255.255.255.255"), 1234)), 123, "trivial");
   Simulator::Run ();
-  NS_TEST_ASSERT_EQUAL (m_receivedPacket->GetSize (), 123);
-  NS_TEST_ASSERT_EQUAL (m_receivedPacket2->GetSize (), 123);
+  NS_TEST_EXPECT_MSG_EQ (m_receivedPacket->GetSize (), 123, "trivial");
+  NS_TEST_EXPECT_MSG_EQ (m_receivedPacket2->GetSize (), 123, "trivial");
 
   m_receivedPacket = 0;
   m_receivedPacket2 = 0;
 
   Simulator::Destroy ();
 
-  return result;
+  return GetErrorStatus ();
 }
-
-static UdpSocketImplTest gUdpSocketImplTest;
+//-----------------------------------------------------------------------------
+class UdpTestSuite : public TestSuite
+{
+public:
+  UdpTestSuite () : TestSuite ("udp", UNIT)
+  {
+    AddTestCase (new UdpSocketImplTest);
+  }
+} g_udpTestSuite;
 
 }; // namespace ns3
-
-#endif /* RUN_SELF_TESTS */

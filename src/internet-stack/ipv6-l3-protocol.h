@@ -44,6 +44,16 @@ class Ipv6AutoconfiguredPrefix;
 /**
  * \class Ipv6L3Protocol
  * \brief IPv6 layer implementation.
+ *
+ * This class contains two distinct groups of trace sources.  The
+ * trace sources 'Rx' and 'Tx' are called, respectively, immediately
+ * after receiving from the NetDevice and immediately before sending
+ * to a NetDevice for transmitting a packet.  These are low level
+ * trace sources that include the Ipv6Header already serialized into
+ * the packet.  In contrast, the Drop, SendOutgoing, UnicastForward,
+ * and LocalDeliver trace sources are slightly higher-level and pass
+ * around the Ipv6Header as an explicit parameter and not as part of
+ * the packet.
  */
 class Ipv6L3Protocol : public Ipv6
 {
@@ -334,7 +344,7 @@ class Ipv6L3Protocol : public Ipv6
 
   private:
     /* for unit-tests */
-    friend class Ipv6L3ProtocolTest;
+    friend class Ipv6L3ProtocolTestCase;
 
     typedef std::list<Ptr<Ipv6Interface> > Ipv6InterfaceList;
     typedef std::list<Ptr<Ipv6RawSocketImpl> > SocketList;

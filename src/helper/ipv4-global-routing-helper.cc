@@ -29,6 +29,17 @@ namespace ns3 {
 
 Ipv4GlobalRoutingHelper::Ipv4GlobalRoutingHelper ()
 {}
+
+Ipv4GlobalRoutingHelper::Ipv4GlobalRoutingHelper (const Ipv4GlobalRoutingHelper &o)
+{
+}
+
+Ipv4GlobalRoutingHelper* 
+Ipv4GlobalRoutingHelper::Copy (void) const 
+{
+  return new Ipv4GlobalRoutingHelper (*this); 
+}
+
 Ptr<Ipv4RoutingProtocol> 
 Ipv4GlobalRoutingHelper::Create (Ptr<Node> node) const
 {

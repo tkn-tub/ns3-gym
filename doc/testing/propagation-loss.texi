@@ -38,28 +38,24 @@ Distance  ::  	Pr		::	SNR
 
 @subsection Validation test
 
-Test program available online at: @uref{http://xxx.xxx.com,,}
+Test program available in ns-3 at @code{src/devices/wifi/propagation-loss-model-test-suite.cc}
 
-Taken at default settings (packetSize = 1000, numPackets = 1, lambda = 0.125, 802.11b at 2.4GHz):
+Taken with values (lambda = 0.125m for 802.11b at 2.4GHz, SystemLoss = 1):
 @smallformat
 @verbatim
-Distance   ::   Pr		    ::	SNR 
-100		4.98265e-10W		1128.93 
-500		1.99306e-11W		45.1571 
-1000		4.98265e-12W		11.2893 
-2000		1.24566e-12W		2.82232 
-3000		5.53628e-13W		1.25436 
-4000		3.11416e-13W		0.70558 
-5000		1.99306e-13W		0.451571 
-6000		1.38407e-13W		0.313591 
-7000		1.01687e-13W		0.230393 
-8000		7.78539e-14W		0.176395
+Distance   ::   Pr		    
+100		4.98265e-10W		
+500		1.99306e-11W		
+1000		4.98265e-12W		
+2000		1.24566e-12W		
 @end verbatim
 @end smallformat
 
 @subsection Discussion
 
-As can be seen, the SNR outputted from the simulator, and the SNR computed from the source's equation are identical.
+As can be seen, the received power outputted from the model, and the power 
+computed from the source's equation are identical.  The test suite tests 
+the expected value to the most significant digit of the input expected value.
 
 @section LogDistancePropagationLossModel
 
@@ -98,31 +94,20 @@ Distance   ::   Pr 		::	SNR
 
 @subsection Validation test
 
-Test program available online at: @uref{http://xxx.xxx.com,,}
+Test program available in ns-3 at @code{src/devices/wifi/propagation-loss-model-test-suite.cc}
 
-Taken at default settings (packetSize = 1000, numPackets = 1, exponent = 3, reference loss = 46.6777, 802.11b at 2.4GHz)
+Taken at default settings (exponent = 3, reference loss = 46.6777, 802.11b at 2.4GHz)
 @smallformat
 @verbatim
-Distance   ::   Pr		::	snr 
-10		4.98471e-9		11293.9 
-20		6.23089e-10		1411.74 
-40		7.78861e-11		176.468 
-60		2.30774e-11		52.2868 
-80		9.72576e-12		22.0585 
-100		4.98471e-12		11.2939 
-200		6.23089e-13		1.41174 
-500		3.98777e-14		0.0903516 
-1000		4.98471e-15		0.0112939
+Distance   ::   Pr		
+10		4.98265e-9		
+20		6.22831e-10		
+40		7.78539e-11		
+80		9.73173e-12		
 @end verbatim
 @end smallformat
 
 @subsection Discussion
-There is a ~.04% error between these results. I do not believe this is 
-due to rounding, as the results taken from the equation from the source 
-match exactly with the Friis results taken at one less power of ten. 
-(Friis and LogDistance can be modeled by Pt*Gt*Gr*lmb^2/((4*pi)^2*d^n*L), 
-where n is the exponent. n is 2 for Friis, and 3 for logDistance, which 
-accounts for the power of ten. ie: Friis at 100m is equivalent to LogDistance 
-at 10m.)  Perhaps the ns-3 takes the random number into account despite 
-not being listed in the source.
+As can be seen, the received power outputted from the model, and the power computed from the source's equation are identical.  The test suite tests 
+the expected value to the most significant digit of the input expected value.
 

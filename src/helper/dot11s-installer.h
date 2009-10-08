@@ -18,26 +18,61 @@
  * Authors: Kirill Andreev <andreev@iitp.ru>
  */
 
-
 #ifndef DOT11S_STACK_INSTALLER_H
 #define DOT11S_STACK_INSTALLER_H
+
 #include "ns3/mesh-stack-installer.h"
+
 namespace ns3 {
+
+/**
+ * \brief Helper class to allow easy installation of 802.11s stack.
+ */
 class Dot11sStack : public MeshStack
 {
-  public:
-    static TypeId GetTypeId ();
-    Dot11sStack ();
-    ~Dot11sStack ();
-    void DoDispose ();
+public:
+  /**
+   * \internal
+   */
+  static TypeId GetTypeId ();
+  
+  /**
+   * Create a Dot11sStack() installer helper.
+   */
+  Dot11sStack ();
 
-    ///\brief Installs 802.11s stack. needed by helper only
-    bool InstallStack (Ptr<MeshPointDevice> mp);
-    void Report (const Ptr<MeshPointDevice> mp, std::ostream&);
-    void ResetStats (const Ptr<MeshPointDevice> mp);
-  private:
-    Mac48Address m_root;
+  /**
+   * Destroy a Dot11sStack() installer helper.
+   */
+  ~Dot11sStack ();
+
+  /**
+   * Break any reference cycles in the installer helper.  Required for ns-3
+   * Object support.
+   */
+  void DoDispose ();
+
+  /**
+   * \brief Install an 802.11s stack.
+   * \param The Ptr<MeshPointDevice> to use when setting up the PMP.
+   */
+  bool InstallStack (Ptr<MeshPointDevice> mp);
+ 
+  /**
+   * \brief Iterate through the referenced devices and protocols and print
+   * their statistics
+   */
+  void Report (const Ptr<MeshPointDevice> mp, std::ostream&);
+
+  /**
+   * \brief Reset the statistics on the referenced devices and protocols.
+   */
+  void ResetStats (const Ptr<MeshPointDevice> mp);
+private:
+  Mac48Address m_root;
 };
+
 } //namespace ns3
+
 #endif
 

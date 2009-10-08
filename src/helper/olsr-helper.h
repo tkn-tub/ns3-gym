@@ -36,7 +36,26 @@ namespace ns3 {
 class OlsrHelper : public Ipv4RoutingHelper
 {
 public:
+  /**
+   * Create an OlsrHelper that makes life easier for people who want to install
+   * OLSR routing to nodes.
+   */
   OlsrHelper ();
+
+  /**
+   * \brief Construct an OlsrHelper from another previously initialized instance
+   * (Copy Constructor).
+   */
+  OlsrHelper (const OlsrHelper &);
+
+  /**
+   * \internal
+   * \returns pointer to clone of this OlsrHelper 
+   * 
+   * This method is mainly for internal use by the other helpers;
+   * clients are expected to free the dynamic memory allocated by this method
+   */
+  OlsrHelper* Copy (void) const;
 
   /**
    * \param node the node on which the routing protocol will run
@@ -54,6 +73,12 @@ public:
    */
   void Set (std::string name, const AttributeValue &value);
 private:
+  /**
+   * \internal
+   * \brief Assignment operator declared private and not implemented to disallow
+   * assignment and prevent the compiler from happily inserting its own.
+   */
+  OlsrHelper &operator = (const OlsrHelper &o);
   ObjectFactory m_agentFactory;
 };
 

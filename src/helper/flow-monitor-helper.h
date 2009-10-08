@@ -35,15 +35,18 @@ class Ipv4FlowClassifier;
 class FlowMonitorHelper
 {
 public:
+  /// \brief Construct a FlowMonitorHelper class which makes it easier to 
+  /// configure and use the FlowMonitor
   FlowMonitorHelper ();
-
   
   /// \brief Set an attribute for the to-be-created FlowMonitor object
   void SetMonitorAttribute (std::string n1, const AttributeValue &v1);
 
   /// \brief Enable flow monitoring on a set of nodes
+  /// \param nodes A NodeContainer holding the set of nodes to work with.
   Ptr<FlowMonitor> Install (NodeContainer nodes);
   /// \brief Enable flow monitoring on a single node
+  /// \param nodes A Ptr<Node> to the node on which to enable flow monitoring.
   Ptr<FlowMonitor> Install (Ptr<Node> node);
   /// \brief Enable flow monitoring on all nodes
   Ptr<FlowMonitor> InstallAll ();

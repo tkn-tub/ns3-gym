@@ -55,9 +55,8 @@ class Node;
  * This class provides a basic set of methods for inserting static
  * unicast and multicast routes into the Ipv4 routing system.  
  * This particular protocol is designed to be inserted into an 
- * Ipv4ListRouting protocol and at present cannot be inserted as the
- * only routing protocol into Ipv4 (i.e. it must be added to an 
- * Ipv4ListRouting).
+ * Ipv4ListRouting protocol but can be used also as a standalone
+ * protocol.
  * 
  * The Ipv4StaticRouting class inherits from the abstract base class 
  * Ipv4RoutingProtocol that defines the interface methods that a routing 

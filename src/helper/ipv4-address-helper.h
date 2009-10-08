@@ -176,6 +176,9 @@ public:
   Ipv4InterfaceContainer Assign (const NetDeviceContainer &c);
 
 private:
+  /**
+   * @internal
+   */
   uint32_t NumAddressBits (uint32_t maskbits) const;
 
   uint32_t m_network;

@@ -39,6 +39,10 @@ class AsciiWriter;
 class EmuHelper
 {
 public:
+  /*
+   * Construct an EmuHelper() which is used to make installing and configuring 
+   * Emulated Net Devices easier.
+   */
   EmuHelper ();
 
   /**
@@ -206,12 +210,34 @@ public:
   NetDeviceContainer Install (const NodeContainer &c) const;
 
 private:
+  /*
+   * \internal
+   */
   Ptr<NetDevice> InstallPriv (Ptr<Node> node) const;
+
+  /*
+   * \internal
+   */
   static void SniffEvent (Ptr<PcapWriter> writer, Ptr<const Packet> packet);
 
+  /*
+   * \internal
+   */
   static void AsciiRxEvent (Ptr<AsciiWriter> writer, std::string path, Ptr<const Packet> packet);
+
+  /*
+   * \internal
+   */
   static void AsciiEnqueueEvent (Ptr<AsciiWriter> writer, std::string path, Ptr<const Packet> packet);
+
+  /*
+   * \internal
+   */
   static void AsciiDequeueEvent (Ptr<AsciiWriter> writer, std::string path, Ptr<const Packet> packet);
+
+  /*
+   * \internal
+   */
   static void AsciiDropEvent (Ptr<AsciiWriter> writer, std::string path, Ptr<const Packet> packet);
 
   ObjectFactory m_queueFactory;

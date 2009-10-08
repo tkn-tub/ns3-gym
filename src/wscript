@@ -77,7 +77,7 @@ def configure(conf):
     if Options.options.enable_rpath:
         conf.env.append_value('RPATH', '-Wl,-rpath=%s' % (os.path.join(blddir),))
 
-    ## Used to link the 'run-tests' program with all of ns-3 code
+    ## Used to link the 'test-runner' program with all of ns-3 code
     conf.env['NS3_MODULES'] = ['ns3-' + module.split('/')[-1] for module in all_modules]
 
 

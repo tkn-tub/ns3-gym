@@ -43,10 +43,17 @@ interesting_config_items = [
     "NS3_MODULE_PATH",
     "ENABLE_NSC",
     "ENABLE_REAL_TIME",
+    "ENABLE_EXAMPLES",
 ]
 
 ENABLE_NSC = False
 ENABLE_REAL_TIME = False
+ENABLE_EXAMPLES = True
+
+#
+# If the user has constrained us to run certain kinds of tests, we can tell waf
+# to only build
+core_kinds = ["bvt", "core", "system", "unit"]
 
 #
 # A list of examples to run as smoke tests just to ensure that they remain 
@@ -57,51 +64,75 @@ ENABLE_REAL_TIME = False
 # hardcoded.
 #
 example_tests = [
-    ("csma-bridge", "True"),
-    ("csma-bridge-one-hop", "True"),
-    ("csma-broadcast", "True"),
-    ("csma-multicast", "True"),
-    ("csma-one-subnet", "True"),
-    ("csma-packet-socket", "True"),
-    ("csma-ping", "True"),
-    ("csma-raw-ip-socket", "True"),
-    ("csma-star", "True"),
-    ("dynamic-global-routing", "True"),
-    ("first", "True"),
-    ("global-injection-slash32", "True"),
-    ("global-routing-slash32", "True"),
-    ("hello-simulator", "True"),
-    ("icmpv6-redirect", "True"),
-    ("mesh", "True"),
-    ("mixed-global-routing", "True"),
-    ("mixed-wireless", "True"),
-    ("multirate", "False"), # takes forever to run
-    ("nix-simple", "True"),
-    ("nms-p2p-nix", "False"), # takes forever to run
-    ("object-names", "True"),
-    ("ping6", "True"),
-    ("radvd", "True"),
-    ("radvd-two-prefix", "True"),    
-    ("realtime-udp-echo", "ENABLE_REAL_TIME == True"),
-    ("second", "True"),
-    ("simple-alternate-routing", "True"),
-    ("simple-error-model", "True"),
-    ("simple-global-routing", "True"),
-    ("simple-point-to-point-olsr", "True"),
-    ("simple-routing-ping6", "True"),
-    ("simple-wifi-frame-aggregation", "True"),
-    ("star", "True"),
-    ("static-routing-slash32", "True"),
-    ("tcp-large-transfer", "True"),
-    ("tcp-nsc-zoo", "ENABLE_NSC == True"),
-    ("tcp-star-server", "True"),
-    ("test-ipv6", "True"),
-    ("third", "True"),
-    ("udp-echo", "True"),
-    ("virtual-net-device", "True"),
-    ("wifi-adhoc", "False"), # takes forever to run
-    ("wifi-ap", "True"),
-    ("wifi-wired-bridging", "True"),
+    ("csma/csma-bridge", "True"),
+    ("csma/csma-bridge-one-hop", "True"),
+    ("csma/csma-broadcast", "True"),
+    ("csma/csma-multicast", "True"),
+    ("csma/csma-one-subnet", "True"),
+    ("csma/csma-packet-socket", "True"),
+    ("csma/csma-ping", "True"),
+    ("csma/csma-raw-ip-socket", "True"),
+    ("csma/csma-star", "True"),
+
+    ("emulation/emu-ping", "False"),
+    ("emulation/emu-udp-echo", "False"),
+
+    ("error-model/simple-error-model", "True"),
+
+    ("ipv6/icmpv6-redirect", "True"),
+    ("ipv6/ping6", "True"),
+    ("ipv6/radvd", "True"),
+    ("ipv6/radvd-two-prefix", "True"),    
+    ("ipv6/test-ipv6", "True"),
+
+    ("mesh/mesh", "True"),
+
+    ("naming/object-names", "True"),
+
+    ("realtime/realtime-udp-echo", "ENABLE_REAL_TIME == True"),
+
+    ("routing/dynamic-global-routing", "True"),
+    ("routing/global-injection-slash32", "True"),
+    ("routing/global-routing-slash32", "True"),
+    ("routing/mixed-global-routing", "True"),
+    ("routing/nix-simple", "True"),
+    ("routing/nms-p2p-nix", "False"), # Takes too long to run
+    ("routing/simple-alternate-routing", "True"),
+    ("routing/simple-global-routing", "True"),
+    ("routing/simple-point-to-point-olsr", "True"),
+    ("routing/simple-routing-ping6", "True"),
+    ("routing/static-routing-slash32", "True"),
+
+    ("stats/wifi-example-sim", "True"),
+
+    ("tap/tap-wifi-dumbbell", "False"), # Requires manual configuration
+
+    ("tcp/star", "True"),
+    ("tcp/tcp-large-transfer", "True"),
+    ("tcp/tcp-nsc-lfn", "ENABLE_NSC == True"),
+    ("tcp/tcp-nsc-zoo", "ENABLE_NSC == True"),
+    ("tcp/tcp-star-server", "True"),
+
+    ("tunneling/virtual-net-device", "True"),
+
+    ("tutorial/first", "True"),
+    ("tutorial/hello-simulator", "True"),
+    ("tutorial/second", "True"),
+    ("tutorial/third", "True"),
+
+    ("udp/udp-echo", "True"),
+
+    ("wireless/mixed-wireless", "True"),
+    ("wireless/multirate", "False"), # Takes too long to run
+    ("wireless/simple-wifi-frame-aggregation", "True"),
+    ("wireless/wifi-adhoc", "False"), # Takes too long to run
+    ("wireless/wifi-ap --verbose=0", "True"), # Don't let it spew to stdout
+    ("wireless/wifi-clear-channel-cmu", "False"), # Requires specific hardware
+    ("wireless/wifi-simple-adhoc", "True"),
+    ("wireless/wifi-simple-adhoc-grid", "True"),
+    ("wireless/wifi-simple-infra", "True"),
+    ("wireless/wifi-simple-interference", "True"),
+    ("wireless/wifi-wired-bridging", "True"),
 ]
 
 #
@@ -129,7 +160,8 @@ def get_node_text(node):
     return "None"
 
 #
-# A simple example of writing a text file with a test result summary.
+# A simple example of writing a text file with a test result summary.  It is 
+# expected that this output will be fine for developers looking for problems.
 #
 def translate_to_text(results_file, text_file):
     f = open(text_file, 'w')
@@ -149,13 +181,14 @@ def translate_to_text(results_file, text_file):
                 f.write(output)
 
                 if result == "FAIL":
-                    f.write("    Details:\n")
-                    f.write("      Message:   %s\n" % get_node_text(case.getElementsByTagName("CaseMessage")[0]))
-                    f.write("      Condition: %s\n" % get_node_text(case.getElementsByTagName("CaseCondition")[0]))
-                    f.write("      Actual:    %s\n" % get_node_text(case.getElementsByTagName("CaseActual")[0]))
-                    f.write("      Limit:     %s\n" % get_node_text(case.getElementsByTagName("CaseLimit")[0]))
-                    f.write("      File:      %s\n" % get_node_text(case.getElementsByTagName("CaseFile")[0]))
-                    f.write("      Line:      %s\n" % get_node_text(case.getElementsByTagName("CaseLine")[0]))
+                    for details in case.getElementsByTagName("FailureDetails"):
+                        f.write("    Details:\n")
+                        f.write("      Message:   %s\n" % get_node_text(details.getElementsByTagName("Message")[0]))
+                        f.write("      Condition: %s\n" % get_node_text(details.getElementsByTagName("Condition")[0]))
+                        f.write("      Actual:    %s\n" % get_node_text(details.getElementsByTagName("Actual")[0]))
+                        f.write("      Limit:     %s\n" % get_node_text(details.getElementsByTagName("Limit")[0]))
+                        f.write("      File:      %s\n" % get_node_text(details.getElementsByTagName("File")[0]))
+                        f.write("      Line:      %s\n" % get_node_text(details.getElementsByTagName("Line")[0]))
 
     for example in dom.getElementsByTagName("Example"):
         result = get_node_text(example.getElementsByTagName("Result")[0])
@@ -166,7 +199,10 @@ def translate_to_text(results_file, text_file):
     f.close()
     
 #
-# A simple example of writing an HTML file with a test result summary.
+# A simple example of writing an HTML file with a test result summary.  It is 
+# expected that this will eventually be made prettier as time progresses and
+# we have time to tweak it.  This may end up being moved to a separate module
+# since it will probably grow over time.
 #
 def translate_to_html(results_file, html_file):
     f = open(html_file, 'w')
@@ -174,79 +210,239 @@ def translate_to_html(results_file, html_file):
     f.write("<body>\n")
     f.write("<center><h1>ns-3 Test Results</h1></center>\n")
 
+    #
+    # Read and parse the whole results file.
+    #
     dom = xml.dom.minidom.parse(results_file)
 
+    #
+    # Iterate through the test suites
+    #
     f.write("<h2>Test Suites</h2>\n")
     for suite in dom.getElementsByTagName("TestSuite"):
+     
+        #
+        # For each test suite, get its name, result and execution time info
+        #
         name = get_node_text(suite.getElementsByTagName("SuiteName")[0])
         result = get_node_text(suite.getElementsByTagName("SuiteResult")[0])
         time = get_node_text(suite.getElementsByTagName("SuiteTime")[0])
 
+        # 
+        # Print a level three header in green with the result, name and time.
+        # If the test suite passed, the header is printed in green, otherwise
+        # it is printed in red.
+        #
         if result == "PASS":
             f.write("<h3 style=\"color:green\">%s: %s (%s)</h3>\n" % (result, name, time))
         else:
             f.write("<h3 style=\"color:red\">%s: %s (%s)</h3>\n" % (result, name, time))
 
-
+        #
+        # The test case information goes in a table.
+        #
         f.write("<table border=\"1\">\n")
+
+        #
+        # The first column of the table has the heading Result
+        #
         f.write("<th> Result </th>\n")
 
-        if result == "CRASH":
+        #
+        # If the suite crashed, there is no further information, so just
+        # delare a new table row with the result (CRASH) in it.  Looks like:
+        #
+        #   +--------+
+        #   | Result |
+        #   +--------+
+        #   | CRASH  |
+        #   +--------+
+        #
+        # Then go on to the next test suite.  Valgrind errors look the same.
+        #
+        if result in ["CRASH", "VALGR"]:
             f.write("<tr>\n")
             f.write("<td style=\"color:red\">%s</td>\n" % result)
             f.write("</tr>\n")
             f.write("</table>\n")
             continue
 
+        #
+        # If the suite didn't crash, we expect more information, so fill out
+        # the table heading row.  Like,
+        #
+        #   +--------+----------------+------+
+        #   | Result | Test Case Name | Time |
+        #   +--------+----------------+------+
+        #
         f.write("<th>Test Case Name</th>\n")
         f.write("<th> Time </th>\n")
 
+        #
+        # If the test case failed, we need to print out some failure details
+        # so extend the heading row again.  Like,
+        #
+        #   +--------+----------------+------+-----------------+
+        #   | Result | Test Case Name | Time | Failure Details |
+        #   +--------+----------------+------+-----------------+
+        #
         if result == "FAIL":
-            f.write("<th>Details</th>\n")
+            f.write("<th>Failure Details</th>\n")
 
+        #
+        # Now iterate through all of the test cases.
+        #
         for case in suite.getElementsByTagName("TestCase"):
-            f.write("<tr>\n")
+
+            #
+            # Get the name, result and timing information from xml to use in
+            # printing table below.
+            #
             name = get_node_text(case.getElementsByTagName("CaseName")[0])
             result = get_node_text(case.getElementsByTagName("CaseResult")[0])
             time = get_node_text(case.getElementsByTagName("CaseTime")[0])
+
+            #
+            # If the test case failed, we iterate through possibly multiple
+            # failure details
+            #
             if result == "FAIL":
-                f.write("<td style=\"color:red\">%s</td>\n" % result)
-                f.write("<td>%s</td>\n" % name)
-                f.write("<td>%s</td>\n" % time)
-                f.write("<td>")
-                f.write("<b>Message: </b>%s, " % get_node_text(case.getElementsByTagName("CaseMessage")[0]))
-                f.write("<b>Condition: </b>%s, " % get_node_text(case.getElementsByTagName("CaseCondition")[0]))
-                f.write("<b>Actual: </b>%s, " % get_node_text(case.getElementsByTagName("CaseActual")[0]))
-                f.write("<b>Limit: </b>%s, " % get_node_text(case.getElementsByTagName("CaseLimit")[0]))
-                f.write("<b>File: </b>%s, " % get_node_text(case.getElementsByTagName("CaseFile")[0]))
-                f.write("<b>Line: </b>%s" % get_node_text(case.getElementsByTagName("CaseLine")[0]))
-                f.write("</td>\n")
+                #
+                # There can be multiple failures for each test case.  The first
+                # row always gets the result, name and timing information along
+                # with the failure details.  Remaining failures don't duplicate
+                # this information but just get blanks for readability.  Like,
+                #
+                #   +--------+----------------+------+-----------------+
+                #   | Result | Test Case Name | Time | Failure Details |
+                #   +--------+----------------+------+-----------------+
+                #   |  FAIL  | The name       | time | It's busted     |   
+                #   +--------+----------------+------+-----------------+
+                #   |        |                |      | Really broken   |   
+                #   +--------+----------------+------+-----------------+
+                #   |        |                |      | Busted bad      |   
+                #   +--------+----------------+------+-----------------+
+                #
+
+                first_row = True
+                for details in case.getElementsByTagName("FailureDetails"):
+
+                    #
+                    # Start a new row in the table for each possible Failure Detail
+                    #
+                    f.write("<tr>\n")
+
+                    if first_row:
+                        first_row = False
+                        f.write("<td style=\"color:red\">%s</td>\n" % result)
+                        f.write("<td>%s</td>\n" % name)
+                        f.write("<td>%s</td>\n" % time)
+                    else:
+                        f.write("<td></td>\n")
+                        f.write("<td></td>\n")
+                        f.write("<td></td>\n")
+
+                    f.write("<td>")
+                    f.write("<b>Message: </b>%s, " % get_node_text(details.getElementsByTagName("Message")[0]))
+                    f.write("<b>Condition: </b>%s, " % get_node_text(details.getElementsByTagName("Condition")[0]))
+                    f.write("<b>Actual: </b>%s, " % get_node_text(details.getElementsByTagName("Actual")[0]))
+                    f.write("<b>Limit: </b>%s, " % get_node_text(details.getElementsByTagName("Limit")[0]))
+                    f.write("<b>File: </b>%s, " % get_node_text(details.getElementsByTagName("File")[0]))
+                    f.write("<b>Line: </b>%s" % get_node_text(details.getElementsByTagName("Line")[0]))
+                    f.write("</td>\n")
+                    
+                    #
+                    # End the table row
+                    #
+                    f.write("</td>\n")
             else:
+                #
+                # If this particular test case passed, then we just print the PASS
+                # result in green, followed by the test case name and its execution
+                # time information.  These go off in <td> ... </td> table data.
+                # The details table entry is left blank.
+                #
+                #   +--------+----------------+------+---------+
+                #   | Result | Test Case Name | Time | Details |
+                #   +--------+----------------+------+---------+
+                #   |  PASS  | The name       | time |         |   
+                #   +--------+----------------+------+---------+
+                #
+                f.write("<tr>\n")
                 f.write("<td style=\"color:green\">%s</td>\n" % result)
                 f.write("<td>%s</td>\n" % name)
                 f.write("<td>%s</td>\n" % time)
                 f.write("<td></td>\n")
-            
-            f.write("</tr>\n")
+                f.write("</tr>\n")
+        #
+        # All of the rows are written, so we need to end the table.
+        #
         f.write("</table>\n")
 
+    #
+    # That's it for all of the test suites.  Now we have to do something about 
+    # our examples.
+    #
     f.write("<h2>Examples</h2>\n")
+
+    #
+    # Example status is rendered in a table just like the suites.
+    #
     f.write("<table border=\"1\">\n")
+
+    #
+    # The table headings look like,
+    #
+    #   +--------+--------------+
+    #   | Result | Example Name |
+    #   +--------+--------------+
+    #
     f.write("<th> Result </th>\n")
     f.write("<th>Example Name</th>\n")
+
+    #
+    # Now iterate through all of the examples
+    #
     for example in dom.getElementsByTagName("Example"):
+        
+        #
+        # Start a new row for each example
+        #
         f.write("<tr>\n")
+        
+        #
+        # Get the result and name of the example in question
+        #
         result = get_node_text(example.getElementsByTagName("Result")[0])
-        if result in ["FAIL", "CRASH"]:
-            f.write("<td style=\"color:red\">%s</td>\n" % result)
-        else:
-            f.write("<td style=\"color:green\">%s</td>\n" % result)
         name =   get_node_text(example.getElementsByTagName("Name")[0])
+
+        #
+        # If the example either failed or crashed, print its result status
+        # in red; otherwise green.  This goes in a <td> ... </td> table data
+        #
+        if result == "PASS":
+            f.write("<td style=\"color:green\">%s</td>\n" % result)
+        else:
+            f.write("<td style=\"color:red\">%s</td>\n" % result)
+
+        #
+        # Write the example name as a new tagle data.
+        #
         f.write("<td>%s</td>\n" % name)
+
+        #
+        # That's it for the current example, so terminate the row.
+        #
         f.write("</tr>\n")
 
+    #
+    # That's it for the table of examples, so terminate the table.
+    #
     f.write("</table>\n")
 
+    #
+    # And that's it for the report, so finish up.
+    #
     f.write("</body>\n")
     f.write("</html>\n")
     f.close()
@@ -339,13 +535,18 @@ def make_library_path():
     if options.verbose:
         print "LIBRARY_PATH == %s" % LIBRARY_PATH
 
-def run_job_synchronously(shell_command, directory):
-    cmd = "%s %s/%s/%s" % (LIBRARY_PATH, NS3_BUILDDIR, NS3_ACTIVE_VARIANT, shell_command)
+def run_job_synchronously(shell_command, directory, valgrind):
+    if valgrind:
+        cmd = "%s valgrind --error-exitcode=2 %s/%s/%s" % (LIBRARY_PATH, NS3_BUILDDIR, NS3_ACTIVE_VARIANT, shell_command)
+    else:
+        cmd = "%s %s/%s/%s" % (LIBRARY_PATH, NS3_BUILDDIR, NS3_ACTIVE_VARIANT, shell_command)
+
     if options.verbose:
         print "Synchronously execute %s" % cmd
+
     proc = subprocess.Popen(cmd, shell=True, cwd=directory, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    stdout_results = proc.communicate()[0]
-    return (proc.returncode, stdout_results)
+    stdout_results, stderr_results = proc.communicate()
+    return (proc.returncode, stdout_results, stderr_results)
 
 #
 # This class defines a unit of testing work.  It will typically refer to
@@ -476,18 +677,24 @@ class worker_thread(threading.Thread):
                     # If we have an example, the shell command is all we need to
                     # know.  It will be something like "examples/udp-echo"
                     #
-                    (job.returncode, standard_out) = run_job_synchronously(job.shell_command, job.cwd)
+                    (job.returncode, standard_out, standard_err) = run_job_synchronously(job.shell_command, job.cwd,
+                                                                                         options.valgrind)
                 else:
                     #
                     # If we're a test suite, we need to provide a little more info
                     # to the test runner, specifically the base directory and temp
                     # file name
                     #
-                    (job.returncode, standard_out) = run_job_synchronously(job.shell_command + " --basedir=%s --out=%s" %
-                        (job.basedir, job.tmp_file_name), job.cwd)
+                    (job.returncode, standard_out, standard_err) = run_job_synchronously(job.shell_command + 
+                        " --basedir=%s --out=%s" % (job.basedir, job.tmp_file_name), job.cwd, options.valgrind)
 
                 if options.verbose:
+                    print "returncode = %d" % job.returncode
+                    print "---------- beign standard out ----------"
                     print standard_out
+                    print "---------- begin standard err ----------"
+                    print standard_err
+                    print "---------- end standard err ----------"
 
                 self.output_queue.put(job)
 
@@ -498,10 +705,28 @@ class worker_thread(threading.Thread):
 def run_tests():
     #
     # Run waf to make sure that everything is built, configured and ready to go
-    # unless we are explicitly told not to.
+    # unless we are explicitly told not to.  We want to be careful about causing
+    # our users pain while waiting for extraneous stuff to compile and link, so
+    # we allow users that know what they''re doing to not invoke waf at all.
     #
-    if options.nowaf == False:
-        proc = subprocess.Popen("./waf", shell=True)
+    if not options.nowaf:
+
+        #
+        # If the user is running the "kinds" or "list" options, there is an 
+        # implied dependency on the test-runner since we call that program
+        # if those options are selected.  We will exit after processing those
+        # options, so if we see them, we can safely only build the test-runner.
+        #
+        # If the user has constrained us to running only a particular type of
+        # file, we can only ask waf to build what we know will be necessary.
+        # For example, if the user only wants to run BVT tests, we only have
+        # to build the test-runner and can ignore all of the examples.
+        #
+        if options.kinds or options.list or (len(options.constrain) and options.constrain in core_kinds):
+            proc = subprocess.Popen("./waf --target=test-runner", shell=True)
+        else:
+            proc = subprocess.Popen("./waf", shell=True)
+
         proc.communicate()
 
     #
@@ -520,11 +745,11 @@ def run_tests():
     # handle them without doing all of the hard work.
     #
     if options.kinds:
-        (rc, standard_out) = run_job_synchronously("utils/test-runner --kinds", os.getcwd())
+        (rc, standard_out, standard_err) = run_job_synchronously("utils/test-runner --kinds", os.getcwd(), False)
         print standard_out
 
     if options.list:
-        (rc, standard_out) = run_job_synchronously("utils/test-runner --list", os.getcwd())
+        (rc, standard_out, standard_err) = run_job_synchronously("utils/test-runner --list", os.getcwd(), False)
         print standard_out
 
     if options.kinds or options.list:
@@ -577,9 +802,10 @@ def run_tests():
     # This translates into allowing the following options with respect to the 
     # suites
     #
-    #  ./test,py:                                           run all of the suites
+    #  ./test,py:                                           run all of the suites and examples
+    #  ./test.py --constrain=core:                          run all of the suites of all kinds
     #  ./test.py --constrain=unit:                          run all unit suites
-    #  ./test,py --suite=some-test-suite:                   run the single suite
+    #  ./test,py --suite=some-test-suite:                   run a single suite
     #  ./test,py --example=udp-echo:                        run no test suites
     #  ./test,py --suite=some-suite --example=some-example: run the single suite
     #
@@ -590,9 +816,10 @@ def run_tests():
         suites = options.suite + "\n"
     elif len(options.example) == 0:
         if len(options.constrain):
-            (rc, suites) = run_job_synchronously("utils/test-runner --list --constrain=%s" % options.constrain, os.getcwd())
+            (rc, suites, standard_err) = run_job_synchronously("utils/test-runner --list --constrain=%s" % 
+                options.constrain, os.getcwd(), False)
         else:
-            (rc, suites) = run_job_synchronously("utils/test-runner --list", os.getcwd())
+            (rc, suites, standard_err) = run_job_synchronously("utils/test-runner --list", os.getcwd(), False)
     else:
         suites = ""
 
@@ -656,7 +883,12 @@ def run_tests():
             job.set_tmp_file_name(TMP_OUTPUT_DIR + "%d" % random.randint(0, sys.maxint))
             job.set_cwd(os.getcwd())
             job.set_basedir(os.getcwd())
-            job.set_shell_command("utils/test-runner --suite='%s'" % test)
+            if (options.multiple):
+                multiple = " --multiple"
+            else:
+                multiple = ""
+
+            job.set_shell_command("utils/test-runner --suite='%s'%s" % (test, multiple))
 
             if options.verbose:
                 print "Queue %s" % test
@@ -698,7 +930,7 @@ def run_tests():
     #
     #  ./test,py:                                           run all of the examples
     #  ./test.py --constrain=unit                           run no examples
-    #  ./test.py --constrain=example                       run all of the examples
+    #  ./test.py --constrain=example                        run all of the examples
     #  ./test,py --suite=some-test-suite:                   run no examples
     #  ./test,py --example=some-example:                    run the single example
     #  ./test,py --suite=some-suite --example=some-example: run the single example
@@ -708,22 +940,23 @@ def run_tests():
     #
     if len(options.suite) == 0 and len(options.example) == 0:
         if len(options.constrain) == 0 or options.constrain == "example":
-            for test, condition in example_tests:
-                if eval(condition) == True:
-                    job = Job()
-                    job.set_is_example(True)
-                    job.set_display_name(test)
-                    job.set_tmp_file_name("")
-                    job.set_cwd(TMP_TRACES_DIR)
-                    job.set_basedir(os.getcwd())
-                    job.set_shell_command("examples/%s" % test)
+            if ENABLE_EXAMPLES:
+                for test, condition in example_tests:
+                    if eval(condition) == True:
+                        job = Job()
+                        job.set_is_example(True)
+                        job.set_display_name(test)
+                        job.set_tmp_file_name("")
+                        job.set_cwd(TMP_TRACES_DIR)
+                        job.set_basedir(os.getcwd())
+                        job.set_shell_command("examples/%s" % test)
 
-                    if options.verbose:
-                        print "Queue %s" % test
+                        if options.verbose:
+                            print "Queue %s" % test
 
-                    input_queue.put(job)
-                    jobs = jobs + 1
-                    total_tests = total_tests + 1
+                        input_queue.put(job)
+                        jobs = jobs + 1
+                        total_tests = total_tests + 1
 
     elif len(options.example):
         #
@@ -767,6 +1000,7 @@ def run_tests():
     passed_tests = 0
     failed_tests = 0
     crashed_tests = 0
+    valgrind_errors = 0
     for i in range(jobs):
         job = output_queue.get()
         if job.is_break:
@@ -783,6 +1017,9 @@ def run_tests():
         elif job.returncode == 1:
             failed_tests = failed_tests + 1
             status = "FAIL"
+        elif job.returncode == 2:
+            valgrind_errors = valgrind_errors + 1
+            status = "VALGR"
         else:
             crashed_tests = crashed_tests + 1
             status = "CRASH"
@@ -803,15 +1040,19 @@ def run_tests():
             f.write('<Example>\n')
             example_name = "  <Name>%s</Name>\n" % job.display_name
             f.write(example_name)
+
             if job.returncode == 0:
                 f.write('  <Result>PASS</Result>\n')
             elif job.returncode == 1:
                 f.write('  <Result>FAIL</Result>\n')
+            elif job.returncode == 2:
+                f.write('  <Result>VALGR</Result>\n')
             else:
                 f.write('  <Result>CRASH</Result>\n')
 
             f.write('</Example>\n')
             f.close()
+
         else:
             #
             # If we're not running an example, we're running a test suite.
@@ -831,7 +1072,33 @@ def run_tests():
             # corrupt and useless.  If the suite didn't create any XML, then
             # we're going to have to do it ourselves.
             #
-            if job.returncode == 0 or job.returncode == 1:
+            # Another issue is how to deal with a valgrind error.  If we run
+            # a test suite under valgrind and it passes, we will get a return
+            # code of 0 and there will be a valid xml results file since the code
+            # ran to completion.  If we get a return code of 1 under valgrind,
+            # the test case failed, but valgrind did not find any problems so the
+            # test case return code was passed through.  We will have a valid xml
+            # results file here as well since the test suite ran.  If we see a 
+            # return code of 2, this means that valgrind found an error (we asked
+            # it to return 2 if it found a problem in run_job_synchronously) but
+            # the suite ran to completion so there is a valid xml results file.
+            # If the suite crashes under valgrind we will see some other error 
+            # return code (like 139).  If valgrind finds an illegal instruction or
+            # some other strange problem, it will die with its own strange return
+            # code (like 132).  However, if the test crashes by itself, not under
+            # valgrind we will also see some other return code.
+            #
+            # If the return code is 0, 1, or 2, we have a valid xml file.  If we 
+            # get another return code, we have no xml and we can't really say what
+            # happened -- maybe the TestSuite crashed, maybe valgrind crashed due
+            # to an illegal instruction.  If we get something beside 0-2, we assume
+            # a crash and fake up an xml entry.  After this is all done, we still
+            # need to indicate a valgrind error somehow, so we fake up an xml entry
+            # with a VALGR result.  Thus, in the case of a working TestSuite that
+            # fails valgrind, we'll see the PASS entry for the working TestSuite
+            # followed by a VALGR failing test suite of the same name.
+            #
+            if job.returncode == 0 or job.returncode == 1 or job.returncode == 2:
                 f_to = open(xml_results_file, 'a')
                 f_from = open(job.tmp_file_name, 'r')
                 f_to.write(f_from.read())
@@ -842,6 +1109,15 @@ def run_tests():
                 f.write("<TestSuite>\n")
                 f.write("  <SuiteName>%s</SuiteName>\n" % job.display_name)
                 f.write('  <SuiteResult>CRASH</SuiteResult>\n')
+                f.write('  <SuiteTime>Execution times not available</SuiteTime>\n')
+                f.write("</TestSuite>\n")
+                f.close()
+
+            if job.returncode == 2:
+                f = open(xml_results_file, 'a')
+                f.write("<TestSuite>\n")
+                f.write("  <SuiteName>%s</SuiteName>\n" % job.display_name)
+                f.write('  <SuiteResult>VALGR</SuiteResult>\n')
                 f.write('  <SuiteTime>Execution times not available</SuiteTime>\n')
                 f.write("</TestSuite>\n")
                 f.close()
@@ -869,8 +1145,8 @@ def run_tests():
     #
     # Print a quick summary of events
     #
-    print "%d of %d tests passed (%d passed, %d failed, %d crashed)" % (passed_tests, total_tests, passed_tests, 
-                                                                        failed_tests, crashed_tests)
+    print "%d of %d tests passed (%d passed, %d failed, %d crashed, %d valgrind errors)" % (passed_tests, total_tests, 
+        passed_tests, failed_tests, crashed_tests, valgrind_errors)
     #
     # The last things to do are to translate the XML results file to "human
     # readable form" if the user asked for it (or make an XML file somewhere)
@@ -884,6 +1160,11 @@ def run_tests():
     if len(options.xml):
         shutil.copyfile(xml_results_file, options.xml)
 
+    if passed_tests == total_tests:
+        return 0 # success
+    else:
+        return 1 # catchall for general errors
+
 def main(argv):
     random.seed()
 
@@ -896,11 +1177,17 @@ def main(argv):
                       metavar="EXAMPLE",
                       help="specify a single example to run")
 
+    parser.add_option("-g", "--grind", action="store_true", dest="valgrind", default=False,
+                      help="run the test suites and examples using valgrind")
+
     parser.add_option("-k", "--kinds", action="store_true", dest="kinds", default=False,
                       help="print the kinds of tests available")
 
     parser.add_option("-l", "--list", action="store_true", dest="list", default=False,
                       help="print the list of known tests")
+
+    parser.add_option("-m", "--multiple", action="store_true", dest="multiple", default=False,
+                      help="report multiple failures from test suites and test cases")
 
     parser.add_option("-n", "--nowaf", action="store_true", dest="nowaf", default=False,
                       help="do not run waf before starting testing")
@@ -927,8 +1214,8 @@ def main(argv):
     global options
     options = parser.parse_args()[0]
     signal.signal(signal.SIGINT, sigint_hook)
-    run_tests()
-    return 0
+    
+    return run_tests()
 
 if __name__ == '__main__':
     sys.exit(main(sys.argv))

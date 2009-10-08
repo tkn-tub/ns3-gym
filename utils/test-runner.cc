@@ -34,6 +34,7 @@ main (int argc, char *argv[])
 {
   bool doVerbose = false;
   bool doList = false;
+  bool doMultiple = false;
   bool doHelp = false;
   bool doSuite = false;
   bool doKinds = false;
@@ -78,6 +79,11 @@ main (int argc, char *argv[])
           doList = true;
         }
 
+      if (arg.compare ("--multiple") == 0)
+        {
+          doMultiple = true;
+        }
+
       if (arg.find ("--out=") != std::string::npos)
         {
           outfileName = arg.substr (arg.find_first_of ("=") + 1, 9999);
@@ -107,6 +113,7 @@ main (int argc, char *argv[])
       std::cout << "  --help:                 Print this message" << std::endl;
       std::cout << "  --kinds:                List all of the available kinds of tests" << std::endl;
       std::cout << "  --list:                 List all of the test suites (optionally constrained by test-type)" << std::endl;
+      std::cout << "  --multiple:             Allow test suites and cases to produce multiple failures" << std::endl;
       std::cout << "  --out=file-name:        Set the test status output file to \"file-name\"" << std::endl;
       std::cout << "  --suite=suite-name:     Run the test suite named \"suite-name\"" << std::endl;
       std::cout << "  --verbose:              Turn on messages in the run test suites" << std::endl;
@@ -126,10 +133,11 @@ main (int argc, char *argv[])
       // enum defined in test.h converted to lower case.
       //
       std::cout << "  bvt:         Build Verification Tests (to see if build completed successfully)" << std::endl;
-      std::cout << "  unit:        Unit Tests (within modules to check basic functionality)" << std::endl;
-      std::cout << "  system:      System Tests (spans modules to check integration of modules)" << std::endl;
+      std::cout << "  core:        Run all TestSuite-based tests (exclude examples)" << std::endl;
       std::cout << "  example:     Examples (to see if example programs run successfully)" << std::endl;
       std::cout << "  performance: Performance Tests (check to see if the system is as fast as expected)" << std::endl;
+      std::cout << "  system:      System Tests (spans modules to check integration of modules)" << std::endl;
+      std::cout << "  unit:        Unit Tests (within modules to check basic functionality)" << std::endl;
 
       return false;
     }
@@ -146,9 +154,10 @@ main (int argc, char *argv[])
           TestSuite *suite = TestRunner::GetTestSuite (i);
 
           //
-          // Filter the tests listed by type if requested.
+          // Filter the tests listed by type if requested.  The special typeName 
+          // "core" means any TestSuite.
           //
-          if (haveType)
+          if (haveType && typeName != "core")
             {
               TestSuite::TestType type = suite->GetTestType ();
               if (typeName == "bvt" && type != TestSuite::BVT)
@@ -240,6 +249,7 @@ main (int argc, char *argv[])
           testSuite->SetBaseDir (basedir);
           testSuite->SetStream (pofs);
           testSuite->SetVerbose (doVerbose);
+          testSuite->SetContinueOnFailure (doMultiple);
           result |= testSuite->Run ();
           suiteRan = true;
         }

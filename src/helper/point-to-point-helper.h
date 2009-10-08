@@ -35,15 +35,22 @@ class PcapWriter;
 class AsciiWriter;
 
 /**
- * \brief build a set of PointToPointNetDevice objects
+ * \brief Build a set of PointToPointNetDevice objects
  */
 class PointToPointHelper
 {
 public:
-  // by default, create queues of type DropTailQueue.
+  /**
+   * Create a PointToPointHelper to make life easier when creating point to
+   * point networks.
+   */
   PointToPointHelper ();
 
   /**
+   * Each point to point net device must have a queue to pass packets through.
+   * This method allows one to set the type of the queue that is automatically
+   * created when the device is created and attached to a node.
+   *
    * \param type the type of queue
    * \param n1 the name of the attribute to set on the queue
    * \param v1 the value of the attribute to set on the queue
@@ -64,6 +71,9 @@ public:
                  std::string n4 = "", const AttributeValue &v4 = EmptyAttributeValue ());
 
   /**
+   * Set an attribute value to be propagated to each NetDevice created by the
+   * helper.
+   *
    * \param name the name of the attribute to set
    * \param value the value of the attribute to set
    *
@@ -71,7 +81,11 @@ public:
    * by PointToPointHelper::Install
    */
   void SetDeviceAttribute (std::string name, const AttributeValue &value);
+
   /**
+   * Set an attribute value to be propagated to each Channel created by the
+   * helper.
+   *
    * \param name the name of the attribute to set
    * \param value the value of the attribute to set
    *
@@ -296,7 +310,6 @@ private:
   ObjectFactory m_channelFactory;
   ObjectFactory m_deviceFactory;
 };
-
 
 } // namespace ns3
 

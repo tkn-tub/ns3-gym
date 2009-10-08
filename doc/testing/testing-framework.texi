@@ -216,15 +216,16 @@ will result in the following list being displayed:
   Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone-test/ns-3-dev/build'
   'build' finished successfully (0.939s)Waf: Entering directory `/home/craigdo/repos/ns-3-allinone-test/ns-3-dev/build'
   bvt:         Build Verification Tests (to see if build completed successfully)
-  unit:        Unit Tests (within modules to check basic functionality)
-  system:      System Tests (spans modules to check integration of modules)
+  core:        Run all TestSuite-based tests (exclude examples)
   example:     Examples (to see if example programs run successfully)
   performance: Performance Tests (check to see if the system is as fast as expected)
+  system:      System Tests (spans modules to check integration of modules)
+  unit:        Unit Tests (within modules to check basic functionality)
 @end verbatim
 @end smallformat
 
-This list is displayed in increasing order of complexity of the tests.  Any of these
-kinds of test can be provided as a constraint using the @code{--constraint} option.
+Any of these kinds of test can be provided as a constraint using the @code{--constraint} 
+option.
 
 To see a quick list of all of the test suites available, you can ask for them
 to be listed.  The following command,
@@ -240,12 +241,23 @@ will result in a list of the test suite being displayed, similar to :
   Waf: Entering directory `/home/craigdo/repos/ns-3-allinone-test/ns-3-dev/build'
   Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone-test/ns-3-dev/build'
   'build' finished successfully (0.939s)
-  ns3-wifi-propagation-loss-models
+  histogram
+  ns3-wifi-interference
   ns3-tcp-cwnd
   ns3-tcp-interoperability
-  pcap-file-object
+  sample
+  devices-mesh-flame
+  devices-mesh-dot11s
+  devices-mesh
+  ...
   object-name-service
-  random-number-generators
+  callback
+  attributes
+  config
+  global-value
+  command-line
+  basic-random-number
+  object
 @end verbatim
 @end smallformat
 
@@ -301,9 +313,34 @@ will result in a list of the currently built test suites being displayed, simila
 
 Note the absence of the @command{Waf} build messages.
 
+@code{test.py} also supports running the test suites and examples under valgrind.
+Valgrind is a flexible program for debugging and profiling Linux executables.  By
+default, valgrind runs a tool called memcheck, which performs a range of memory-
+checking functions, including detecting accesses to uninitialised memory, misuse 
+of allocated memory (double frees, access after free, etc.) and detecting memory 
+leaks.  This can be selected by using the @code{--grind} option.
+
+@verbatim
+  ./test.py --grind
+@end verbatim
+
 Finally, @code{test.py} provides a @command{--verbose} option which will print
 large amounts of information about its progress.  It is not expected that this
-will be terribly useful for most users.
+will be terribly useful unless there is an error.  In this case, you can get
+access to the standard output and standard error reported by running test suites
+and examples.  Select verbose in the following way:
+
+@verbatim
+  ./test.py --verbose
+@end verbatim
+
+All of these options can be mixed and matched.  For example, to run all of the 
+ns-3 core test suites under valgrind, in verbose mode, while generating an HTML
+output file, one would do:
+
+@verbatim
+  ./test.py --verbose --grind --constrain=core --html=results.html 
+@end verbatim
 
 @node TestTaxonomy
 @section Test Taxonomy
@@ -594,7 +631,36 @@ storing test vectors; a generic container useful for transient storage of
 test vectors during test execution; and tools for generating presentations
 based on validation and verification testing results.
 
+@node Debugging test suite failures
+@section Debugging test suite failures
 
+To debug test crashes, such as:
+@verbatim 
+CRASH: TestSuite ns3-wifi-interference
+@end verbatim
 
+You can access the underlying test-runner program via gdb as follows, and
+then pass the "--basedir=`pwd`" argument to run (you can also pass other
+arguments as needed, but basedir is the minimum needed)::
+@smallformat
+@verbatim
+./waf --command-template="gdb %s" --run "test-runner"
 
+Waf: Entering directory `/home/tomh/hg/sep09/ns-3-allinone/ns-3-dev-678/build'
+Waf: Leaving directory `/home/tomh/hg/sep09/ns-3-allinone/ns-3-dev-678/build'
+'build' finished successfully (0.380s)
+GNU gdb 6.8-debian
+Copyright (C) 2008 Free Software Foundation, Inc.
+L cense GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.  Type "show copying"
+and "show warranty" for details.
+This GDB was configured as "x86_64-linux-gnu"...
+(gdb) r --basedir=`pwd`
+Starting program: <..>/build/debug/utils/test-runner --basedir=`pwd`
+[Thread debugging using libthread_db enabled]
+assert failed. file=../src/core/type-id.cc, line=138, cond="uid <= m_information.size () && uid != 0"
+...
+@end verbatim
+@end smallformat
 

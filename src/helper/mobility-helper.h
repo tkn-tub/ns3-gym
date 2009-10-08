@@ -40,7 +40,16 @@ class MobilityModel;
 class MobilityHelper
 {
 public:
+  /**
+   * Construct a Mobility Helper which is used to make life easier when working
+   * with mobility models.
+   */
   MobilityHelper ();
+
+  /**
+   * \internal
+   * Destroy a Mobility Helper
+   */
   ~MobilityHelper ();
 
   /**
@@ -241,6 +250,9 @@ public:
   static void EnableAsciiAll (std::ostream &os);
 
 private:
+  /**
+   * \internal
+   */
   static void CourseChanged (std::ostream *os, Ptr<const MobilityModel> mobility);
   std::vector<Ptr<MobilityModel> > m_mobilityStack;
   ObjectFactory m_mobility;

@@ -35,6 +35,17 @@ namespace ns3 {
 
 Ipv4StaticRoutingHelper::Ipv4StaticRoutingHelper()
 {}
+
+Ipv4StaticRoutingHelper::Ipv4StaticRoutingHelper (const Ipv4StaticRoutingHelper &o)
+{
+}
+
+Ipv4StaticRoutingHelper* 
+Ipv4StaticRoutingHelper::Copy (void) const 
+{
+  return new Ipv4StaticRoutingHelper (*this); 
+}
+
 Ptr<Ipv4RoutingProtocol> 
 Ipv4StaticRoutingHelper::Create (Ptr<Node> node) const
 {

@@ -21,6 +21,9 @@
 #include "ns3/assert.h"
 #include "ns3/log.h"
 #include "ns3/fatal-error.h"
+#include "ns3/test.h"
+#include "ns3/random-variable.h"
+#include <iomanip>
 #include <iostream>
 
 NS_LOG_COMPONENT_DEFINE ("Buffer");
@@ -1197,29 +1200,20 @@ Buffer::Iterator::GetSize (void) const
   return m_dataEnd - m_dataStart;
 }
 
-} // namespace ns3
-
-
-#ifdef RUN_SELF_TESTS
-
-#include "ns3/test.h"
-#include "ns3/random-variable.h"
-#include <iomanip>
-
-
-namespace ns3 {
-
-class BufferTest: public Test {
+//-----------------------------------------------------------------------------
+// Unit tests
+//-----------------------------------------------------------------------------
+class BufferTest: public TestCase {
 private:
   bool EnsureWrittenBytes (Buffer b, uint32_t n, uint8_t array[]);
 public:
-  virtual bool RunTests (void);
+  virtual bool DoRun (void);
   BufferTest ();
 };
 
 
 BufferTest::BufferTest ()
-  : Test ("Buffer") {}
+  : TestCase ("Buffer") {}
 
 bool
 BufferTest::EnsureWrittenBytes (Buffer b, uint32_t n, uint8_t array[])
@@ -1237,22 +1231,24 @@ BufferTest::EnsureWrittenBytes (Buffer b, uint32_t n, uint8_t array[])
     }
   if (!success) 
     {
-      Failure () << "Buffer -- ";
-      Failure () << "expected: n=";
-      Failure () << n << ", ";
-      Failure ().setf (std::ios::hex, std::ios::basefield);
+      std::ostringstream failure;
+      failure << "Buffer -- ";
+      failure << "expected: n=";
+      failure << n << ", ";
+      failure.setf (std::ios::hex, std::ios::basefield);
       for (uint32_t j = 0; j < n; j++) 
         {
-          Failure () << (uint16_t)expected[j] << " ";
+          failure << (uint16_t)expected[j] << " ";
         }
-      Failure ().setf (std::ios::dec, std::ios::basefield);
-      Failure () << "got: ";
-      Failure ().setf (std::ios::hex, std::ios::basefield);
+      failure.setf (std::ios::dec, std::ios::basefield);
+      failure << "got: ";
+      failure.setf (std::ios::hex, std::ios::basefield);
       for (uint32_t j = 0; j < n; j++) 
         {
-          Failure () << (uint16_t)got[j] << " ";
+          failure << (uint16_t)got[j] << " ";
         }
-      Failure () << std::endl;
+      failure << std::endl;
+      ReportTestFailure ("", "", "", failure.str(), __FILE__, __LINE__);
     }
   return success;
 }
@@ -1266,14 +1262,13 @@ BufferTest::EnsureWrittenBytes (Buffer b, uint32_t n, uint8_t array[])
   uint8_t bytes[] = {__VA_ARGS__};             \
   if (!EnsureWrittenBytes (buffer, n , bytes)) \
     {                                          \
-      result = false;                          \
+      SetErrorStatus (false);                  \
     }                                          \
   }
 
 bool
-BufferTest::RunTests (void)
+BufferTest::DoRun (void)
 {
-  bool result = true;
   Buffer buffer;
   Buffer::Iterator i;
   buffer.AddAtStart (6);
@@ -1320,7 +1315,7 @@ BufferTest::RunTests (void)
   i.Prev (2);
   if (i.ReadNtohU16 () != 0xff00) 
     {
-      result = false;
+      SetErrorStatus (false);
     }
   i.Prev (2);
   i.WriteU16 (saved);
@@ -1347,7 +1342,7 @@ BufferTest::RunTests (void)
   i = buff64.Begin();
   if (i.ReadLsbtohU64() != 0x0123456789abcdefllu)
     {
-       result = false;
+      SetErrorStatus (false);
     }
   i = buff64.Begin();
   i.WriteHtolsbU64 (0x0123456789ABCDEFllu);
@@ -1355,7 +1350,7 @@ BufferTest::RunTests (void)
   i = buff64.Begin();
   if (i.ReadLsbtohU64() != 0x0123456789abcdefllu)
     {
-       result = false;
+      SetErrorStatus (false);
     }
   i = buff64.Begin();
   i.WriteHtonU64 (0x0123456789ABCDEFllu);
@@ -1363,7 +1358,7 @@ BufferTest::RunTests (void)
   i = buff64.Begin();
   if (i.ReadNtohU64() != 0x0123456789abcdefllu)
     {
-       result = false;
+      SetErrorStatus (false);
     }
 
   // test self-assignment
@@ -1438,7 +1433,7 @@ BufferTest::RunTests (void)
   buffer.RemoveAtEnd (8);
   if (buffer.GetSize () != 0) 
     {
-      result = false;
+      SetErrorStatus (false);
     }
 
   buffer = Buffer (6);
@@ -1462,13 +1457,6 @@ BufferTest::RunTests (void)
   i.Prev (100);
   i.WriteU8 (1, 100);
 
-#if 0
-  buffer = Buffer (10);  
-  ENSURE_WRITTEN_BYTES (buffer, 10, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00);
-  buffer.Begin ().WriteU8 (1);
-  ENSURE_WRITTEN_BYTES (buffer, 10, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00);
-#endif
-
   // Bug #54
   {
     const uint32_t actualSize = 72602;
@@ -1490,7 +1478,7 @@ BufferTest::RunTests (void)
     iter.Prev (chunkSize);
     iter.Write (inputBuffer.PeekData (), chunkSize);
 
-    NS_TEST_ASSERT (memcmp (inputBuffer.PeekData (), outputBuffer.PeekData (), chunkSize) == 0);
+    NS_TEST_EXPECT_MSG_EQ (memcmp (inputBuffer.PeekData (), outputBuffer.PeekData (), chunkSize), 0, "memcp works");
   }
 
   buffer = Buffer (5);
@@ -1508,15 +1496,23 @@ BufferTest::RunTests (void)
   ENSURE_WRITTEN_BYTES (buffer, 7, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x66);
   ENSURE_WRITTEN_BYTES (frag0, 7, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x66);
 
-  return result;
+  return GetErrorStatus ();
+}
+//-----------------------------------------------------------------------------
+class BufferTestSuite : public TestSuite
+{
+public:
+  BufferTestSuite ();
+};
+
+BufferTestSuite::BufferTestSuite ()
+  : TestSuite ("buffer", UNIT)
+{
+  AddTestCase (new BufferTest);
 }
 
-
-
-static BufferTest gBufferTest;
+BufferTestSuite g_bufferTestSuite;
 
 } // namespace ns3
-
-#endif /* RUN_SELF_TESTS */
 
 

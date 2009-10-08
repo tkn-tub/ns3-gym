@@ -982,6 +982,10 @@ def register_Ns3TestCase_methods(root_module, cls):
     cls.add_method('SetVerbose', 
                    'void', 
                    [param('bool', 'verbose')])
+    ## test.h: void ns3::TestCase::SetContinueOnFailure(bool continueOnFailure) [member function]
+    cls.add_method('SetContinueOnFailure', 
+                   'void', 
+                   [param('bool', 'continueOnFailure')])
     ## test.h: void ns3::TestCase::SetName(std::string name) [member function]
     cls.add_method('SetName', 
                    'void', 
@@ -1010,6 +1014,10 @@ def register_Ns3TestCase_methods(root_module, cls):
     cls.add_method('GetStream', 
                    'std::ofstream *', 
                    [])
+    ## test.h: void ns3::TestCase::UpdateErrorStatus(bool error) [member function]
+    cls.add_method('UpdateErrorStatus', 
+                   'void', 
+                   [param('bool', 'error')])
     ## test.h: void ns3::TestCase::SetErrorStatus(bool error) [member function]
     cls.add_method('SetErrorStatus', 
                    'void', 
@@ -1018,16 +1026,24 @@ def register_Ns3TestCase_methods(root_module, cls):
     cls.add_method('GetErrorStatus', 
                    'bool', 
                    [])
+    ## test.h: bool ns3::TestCase::ContinueOnFailure() [member function]
+    cls.add_method('ContinueOnFailure', 
+                   'bool', 
+                   [])
     ## test.h: void ns3::TestCase::ReportStart() [member function]
     cls.add_method('ReportStart', 
                    'void', 
                    [])
-    ## test.h: void ns3::TestCase::ReportSuccess() [member function]
-    cls.add_method('ReportSuccess', 
+    ## test.h: void ns3::TestCase::ReportCaseSuccess() [member function]
+    cls.add_method('ReportCaseSuccess', 
                    'void', 
                    [])
-    ## test.h: void ns3::TestCase::ReportFailure(std::string cond, std::string actual, std::string limit, std::string message, std::string file, int32_t line) [member function]
-    cls.add_method('ReportFailure', 
+    ## test.h: void ns3::TestCase::ReportCaseFailure() [member function]
+    cls.add_method('ReportCaseFailure', 
+                   'void', 
+                   [])
+    ## test.h: void ns3::TestCase::ReportTestFailure(std::string cond, std::string actual, std::string limit, std::string message, std::string file, int32_t line) [member function]
+    cls.add_method('ReportTestFailure', 
                    'void', 
                    [param('std::string', 'cond'), param('std::string', 'actual'), param('std::string', 'limit'), param('std::string', 'message'), param('std::string', 'file'), param('int32_t', 'line')])
     ## test.h: void ns3::TestCase::ReportEnd() [member function]
@@ -1039,13 +1055,18 @@ def register_Ns3TestCase_methods(root_module, cls):
                    'void', 
                    [], 
                    visibility='protected', is_virtual=True)
-    ## test.h: void ns3::TestCase::DoReportSuccess() [member function]
-    cls.add_method('DoReportSuccess', 
+    ## test.h: void ns3::TestCase::DoReportCaseSuccess() [member function]
+    cls.add_method('DoReportCaseSuccess', 
                    'void', 
                    [], 
                    visibility='protected', is_virtual=True)
-    ## test.h: void ns3::TestCase::DoReportFailure(std::string cond, std::string actual, std::string limit, std::string message, std::string file, int32_t line) [member function]
-    cls.add_method('DoReportFailure', 
+    ## test.h: void ns3::TestCase::DoReportCaseFailure() [member function]
+    cls.add_method('DoReportCaseFailure', 
+                   'void', 
+                   [], 
+                   visibility='protected', is_virtual=True)
+    ## test.h: void ns3::TestCase::DoReportTestFailure(std::string cond, std::string actual, std::string limit, std::string message, std::string file, int32_t line) [member function]
+    cls.add_method('DoReportTestFailure', 
                    'void', 
                    [param('std::string', 'cond'), param('std::string', 'actual'), param('std::string', 'limit'), param('std::string', 'message'), param('std::string', 'file'), param('int32_t', 'line')], 
                    visibility='protected', is_virtual=True)
@@ -1120,6 +1141,10 @@ def register_Ns3TestSuite_methods(root_module, cls):
     cls.add_method('SetVerbose', 
                    'void', 
                    [param('bool', 'verbose')])
+    ## test.h: void ns3::TestSuite::SetContinueOnFailure(bool continueOnFailure) [member function]
+    cls.add_method('SetContinueOnFailure', 
+                   'void', 
+                   [param('bool', 'continueOnFailure')])
     ## test.h: void ns3::TestSuite::SetName(std::string name) [member function]
     cls.add_method('SetName', 
                    'void', 
@@ -1140,6 +1165,22 @@ def register_Ns3TestSuite_methods(root_module, cls):
     cls.add_method('SetStream', 
                    'void', 
                    [param('std::ofstream *', 'ofs')])
+    ## test.h: void ns3::TestSuite::UpdateErrorStatus(bool error) [member function]
+    cls.add_method('UpdateErrorStatus', 
+                   'void', 
+                   [param('bool', 'error')])
+    ## test.h: void ns3::TestSuite::SetErrorStatus(bool error) [member function]
+    cls.add_method('SetErrorStatus', 
+                   'void', 
+                   [param('bool', 'error')])
+    ## test.h: bool ns3::TestSuite::GetErrorStatus() [member function]
+    cls.add_method('GetErrorStatus', 
+                   'bool', 
+                   [])
+    ## test.h: bool ns3::TestSuite::ContinueOnFailure() [member function]
+    cls.add_method('ContinueOnFailure', 
+                   'bool', 
+                   [])
     ## test.h: void ns3::TestSuite::ReportStart() [member function]
     cls.add_method('ReportStart', 
                    'void', 

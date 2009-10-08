@@ -22,18 +22,6 @@
 
 namespace ns3 {
 
-class X : public ns3::Test 
-{
-public:
-  X () : Test ("Callback") {}
-  void PublicParent (void) {}
-protected:
-  static void StaticProtectedParent (void) {}
-  void ProtectedParent (void) {}
-private:
-  void PrivateParent (void) {}
-};
-
 // ===========================================================================
 // Test the basic Callback mechanism
 // ===========================================================================

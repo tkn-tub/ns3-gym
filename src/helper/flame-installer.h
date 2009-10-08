@@ -20,26 +20,60 @@
 
 #ifndef FLAME_STACK_INSTALLER_H
 #define FLAME_STACK_INSTALLER_H
+
 #include "ns3/mesh-stack-installer.h"
+
 namespace ns3 {
+
 /**
  * \ingroup flame
  *
- * \brief FLAME mesh stack (actually single protocol in this stack)
+ * \brief Helper class used to install FLAME mesh stack (actually single
+ * protocol in this stack)
  */
 class FlameStack : public MeshStack
 {
-  public:
-    static TypeId GetTypeId ();
-    FlameStack ();
-    ~FlameStack ();
-    void DoDispose ();
+public:
+  /*
+   * \internal
+   */
+  static TypeId GetTypeId ();
 
-    /// Installs flame stack on given mesh point device.
-    bool InstallStack (Ptr<MeshPointDevice> mp);
-    void Report (const Ptr<MeshPointDevice> mp, std::ostream&);
-    void ResetStats (const Ptr<MeshPointDevice> mp);
+  /**
+   * Construct a FlameStack helper class.
+   */
+  FlameStack ();
+
+  /**
+   * Destroy a FlameStack helper class.
+   */
+  ~FlameStack ();
+
+  /**
+   * \internal
+   * Break any reference cycles in the installer helper.  Required for ns-3
+   * Object support.
+   */
+  void DoDispose ();
+  
+  /**
+   * \brief Install a flame stack on the given MeshPointDevice
+   * \param The Ptr<MeshPointDevice> to use.
+   */
+  bool InstallStack (Ptr<MeshPointDevice> mp);
+
+  /**
+   * \brief Print flame protocol statistics.
+   */
+  void Report (const Ptr<MeshPointDevice> mp, std::ostream&);
+
+  /**
+   * \brief Reset the statistics.
+   */
+  void ResetStats (const Ptr<MeshPointDevice> mp);
 };
+
 } //namespace ns3
-#endif
+
+#endif // FLAME_STACK_INSTALLER_H
 

@@ -53,6 +53,16 @@ class Icmpv4L4Protocol;
  * 
  * This is the actual implementation of IP.  It contains APIs to send and
  * receive packets at the IP layer, as well as APIs for IP routing.
+ *
+ * This class contains two distinct groups of trace sources.  The
+ * trace sources 'Rx' and 'Tx' are called, respectively, immediately
+ * after receiving from the NetDevice and immediately before sending
+ * to a NetDevice for transmitting a packet.  These are low level
+ * trace sources that include the Ipv4Header already serialized into
+ * the packet.  In contrast, the Drop, SendOutgoing, UnicastForward,
+ * and LocalDeliver trace sources are slightly higher-level and pass
+ * around the Ipv4Header as an explicit parameter and not as part of
+ * the packet.
  */
 class Ipv4L3Protocol : public Ipv4
 {
@@ -185,7 +195,7 @@ protected:
    */
   virtual void NotifyNewAggregate ();
 private:
-  friend class Ipv4L3ProtocolTest;
+  friend class Ipv4L3ProtocolTestCase;
   Ipv4L3Protocol(const Ipv4L3Protocol &);
   Ipv4L3Protocol &operator = (const Ipv4L3Protocol &);
 
@@ -239,6 +249,7 @@ private:
   TracedCallback<const Ipv4Header &, Ptr<const Packet>, uint32_t> m_unicastForwardTrace;
   TracedCallback<const Ipv4Header &, Ptr<const Packet>, uint32_t> m_localDeliverTrace;
 
+  // The following two traces pass a packet with an IP header
   TracedCallback<Ptr<const Packet>, uint32_t> m_txTrace;
   TracedCallback<Ptr<const Packet>, uint32_t> m_rxTrace;
   // <ip-header, payload, reason, ifindex> (ifindex not valid if reason is DROP_NO_ROUTE)

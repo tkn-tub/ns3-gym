@@ -27,6 +27,7 @@
 #include "ns3/inet-socket-address.h"
 #include "ns3/point-to-point-helper.h"
 #include "ns3/internet-stack-helper.h"
+#include "ns3/ipv4-global-routing-helper.h"
 #include "ns3/ipv4-address-helper.h"
 #include "ns3/packet-sink-helper.h"
 #include "ns3/tcp-socket-factory.h"
@@ -172,11 +173,11 @@ SimpleSource::ScheduleTx (void)
     }
 }
 
-class Ns3TcpCwndTestCase : public TestCase
+class Ns3TcpCwndTestCase1 : public TestCase
 {
 public:
-  Ns3TcpCwndTestCase ();
-  virtual ~Ns3TcpCwndTestCase ();
+  Ns3TcpCwndTestCase1 ();
+  virtual ~Ns3TcpCwndTestCase1 ();
 
 private:
   virtual bool DoRun (void);
@@ -193,18 +194,18 @@ private:
   void CwndChange (uint32_t oldCwnd, uint32_t newCwnd);
 };
 
-Ns3TcpCwndTestCase::Ns3TcpCwndTestCase ()
+Ns3TcpCwndTestCase1::Ns3TcpCwndTestCase1 ()
   : TestCase ("Check to see that the ns-3 TCP congestion window works as expected against liblinux2.6.26.so"),
     m_writeResults (false)
 {
 }
 
-Ns3TcpCwndTestCase::~Ns3TcpCwndTestCase ()
+Ns3TcpCwndTestCase1::~Ns3TcpCwndTestCase1 ()
 {
 }
 
 void
-Ns3TcpCwndTestCase::CwndChange (uint32_t oldCwnd, uint32_t newCwnd)
+Ns3TcpCwndTestCase1::CwndChange (uint32_t oldCwnd, uint32_t newCwnd)
 {
   CwndEvent event;
 
@@ -215,7 +216,7 @@ Ns3TcpCwndTestCase::CwndChange (uint32_t oldCwnd, uint32_t newCwnd)
 }
 
 bool
-Ns3TcpCwndTestCase::DoRun (void)
+Ns3TcpCwndTestCase1::DoRun (void)
 {
   //
   // Just create two nodes.  One (node zero) will be the node with the TCP
@@ -297,7 +298,7 @@ Ns3TcpCwndTestCase::DoRun (void)
   // in the node with the ns-3 TCP.
   //
   Ptr<Socket> ns3TcpSocket = Socket::CreateSocket (nodes.Get (0), TcpSocketFactory::GetTypeId ());
-  ns3TcpSocket->TraceConnectWithoutContext ("CongestionWindow", MakeCallback (&Ns3TcpCwndTestCase::CwndChange, this));
+  ns3TcpSocket->TraceConnectWithoutContext ("CongestionWindow", MakeCallback (&Ns3TcpCwndTestCase1::CwndChange, this));
 
   Ptr<SimpleSource> app = CreateObject<SimpleSource> ();
   app->Setup (ns3TcpSocket, sinkAddress, 1040, 10, DataRate ("5Mbps"));
@@ -366,6 +367,202 @@ Ns3TcpCwndTestCase::DoRun (void)
   return GetErrorStatus ();
 }
 
+
+// ===========================================================================
+// Test case for cwnd changes due to out-of-order packets. A bottleneck 
+// link is created, and a limited droptail queue is used in order to 
+// force dropped packets, resulting in out-of-order packet delivery. 
+// This out-of-order delivery will result in a different congestion 
+// window behavior than testcase 1.  Specifically, duplicate ACKs
+// are encountered.
+//
+// Network topology
+//
+//        1Mb/s, 10ms      100kb/s, 10ms     1Mb/s, 10ms
+//    n0--------------n1-----------------n2---------------n3
+//
+// ===========================================================================
+class Ns3TcpCwndTestCase2 : public TestCase
+{
+public:
+  Ns3TcpCwndTestCase2 ();
+  virtual ~Ns3TcpCwndTestCase2 ();
+
+private:
+  virtual bool DoRun (void);
+  bool m_writeResults;
+
+  class  CwndEvent {
+  public:
+    uint32_t m_oldCwnd;
+    uint32_t m_newCwnd;
+  };
+
+  TestVectors<CwndEvent> m_responses;
+
+  void CwndChange (uint32_t oldCwnd, uint32_t newCwnd);
+};
+
+Ns3TcpCwndTestCase2::Ns3TcpCwndTestCase2 ()
+  : TestCase ("Check to see that the ns-3 TCP congestion window works as expected for out-of-order packet delivery"),
+    m_writeResults (false)
+{
+}
+
+Ns3TcpCwndTestCase2::~Ns3TcpCwndTestCase2 ()
+{
+}
+
+void
+Ns3TcpCwndTestCase2::CwndChange (uint32_t oldCwnd, uint32_t newCwnd)
+{
+  CwndEvent event;
+
+  event.m_oldCwnd = oldCwnd;
+  event.m_newCwnd = newCwnd;
+
+  m_responses.Add (event);
+}
+
+bool
+Ns3TcpCwndTestCase2::DoRun (void)
+{
+  // Set up some default values for the simulation.
+  Config::SetDefault ("ns3::DropTailQueue::MaxPackets", UintegerValue (4));
+
+  NodeContainer n0n1;
+  n0n1.Create (2);
+
+  NodeContainer n1n2;
+  n1n2.Add (n0n1.Get (1));
+  n1n2.Create (1);
+
+  NodeContainer n2n3;
+  n2n3.Add (n1n2.Get (1));
+  n2n3.Create (1);
+
+  PointToPointHelper p2p1;
+  p2p1.SetDeviceAttribute ("DataRate", DataRateValue (DataRate(1000000)));
+  p2p1.SetChannelAttribute ("Delay", TimeValue (MilliSeconds(10)));
+  PointToPointHelper p2p2;
+  p2p2.SetDeviceAttribute ("DataRate", DataRateValue (DataRate(100000)));
+  p2p2.SetChannelAttribute ("Delay", TimeValue (MilliSeconds(10)));
+
+  // And then install devices and channels connecting our topology.
+  NetDeviceContainer dev0 = p2p1.Install (n0n1);
+  NetDeviceContainer dev1 = p2p2.Install (n1n2);
+  NetDeviceContainer dev2 = p2p1.Install (n2n3);
+
+  // Now add ip/tcp stack to all nodes.
+  InternetStackHelper internet;
+  internet.InstallAll ();
+
+  // Later, we add IP addresses.
+  Ipv4AddressHelper ipv4;
+  ipv4.SetBase ("10.1.3.0", "255.255.255.0");
+  ipv4.Assign (dev0);
+  ipv4.SetBase ("10.1.2.0", "255.255.255.0");
+  ipv4.Assign (dev1);
+  ipv4.SetBase ("10.1.1.0", "255.255.255.0");
+  Ipv4InterfaceContainer ipInterfs = ipv4.Assign (dev2);
+
+  // and setup ip routing tables to get total ip-level connectivity.
+  Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
+
+  // Set up the apps
+  uint16_t servPort = 50000;
+
+  // Create a packet sink to receive these packets on n3
+  PacketSinkHelper sink ("ns3::TcpSocketFactory",
+                         InetSocketAddress (Ipv4Address::GetAny (), servPort));
+
+  ApplicationContainer apps = sink.Install (n2n3.Get (1));
+  apps.Start (Seconds (0.0));
+  apps.Stop (Seconds (5.4));
+
+  // Create the socket for n0
+  Address sinkAddress (InetSocketAddress(ipInterfs.GetAddress (1), servPort));
+  Ptr<Socket> ns3TcpSocket = Socket::CreateSocket (n0n1.Get (0), TcpSocketFactory::GetTypeId ());
+  ns3TcpSocket->TraceConnectWithoutContext ("CongestionWindow", MakeCallback (&Ns3TcpCwndTestCase2::CwndChange, this));
+
+  // Create and start the app for n0
+  Ptr<SimpleSource> app = CreateObject<SimpleSource> ();
+  app->Setup (ns3TcpSocket, sinkAddress, 1040, 1000, DataRate ("1Mbps"));
+  n0n1.Get (0)->AddApplication (app);
+  app->Start (Seconds (1.0));
+  app->Stop (Seconds (5.4));
+
+  if (m_writeResults)
+    {
+      // Write a pcap for tcp cwnd testcase with out-of-order delivery
+      PointToPointHelper::EnablePcapAll ("tcp-cwnd-ood");
+    }
+
+  // Finally, set up the simulator to run.
+  Simulator::Stop (Seconds(5.4));
+  Simulator::Run ();
+  Simulator::Destroy ();
+
+  //
+  // As new acks are received by the TCP under test, the congestion window 
+  // should be opened up by one segment (MSS bytes) each time.  This should
+  // trigger a congestion window change event which we hooked and saved above.
+  // We should now be able to look through the saved response vectors and follow
+  // the congestion window as it opens up when the ns-3 TCP under test 
+  // transmits its bits
+  //
+  // From inspecting the results, we know that we should see 31 congestion
+  // window change events. On the tenth change event, the window should go back 
+  // to one segment due to 3 dup acks.  It should then slow start again for 
+  // 4 events and then enter congestion avoidance.  On change event 30 
+  // (29 zero-based indexing), it should go back to one segment, because of triple dup ack.
+  //
+  const uint32_t MSS = 536;
+
+  CwndEvent event;
+
+  NS_TEST_ASSERT_MSG_EQ (m_responses.GetN (), 31, "Unexpected number of cwnd change events");
+
+  for (uint32_t i = 0, from = 536, to = 1072; i < 9; ++i, from += 536, to += 536)
+    {
+      event = m_responses.Get (i);
+      NS_TEST_ASSERT_MSG_EQ (event.m_oldCwnd, from, "Wrong old cwnd value in cwnd change event " << i);
+      NS_TEST_ASSERT_MSG_EQ (event.m_newCwnd, to, "Wrong new cwnd value in cwnd change event " << i);
+    }
+
+  // Cwnd should be back to 536
+  event = m_responses.Get (9);
+  NS_TEST_ASSERT_MSG_EQ (event.m_newCwnd, MSS, "Wrong new cwnd value in cwnd change event " << 9);
+
+  // Another round of slow start
+  for (uint32_t i = 10, from = 536, to = 1072; i < 14; ++i, from += 536, to += 536)
+    {
+      event = m_responses.Get (i);
+      NS_TEST_ASSERT_MSG_EQ (event.m_oldCwnd, from, "Wrong old cwnd value in cwnd change event " << i);
+      NS_TEST_ASSERT_MSG_EQ (event.m_newCwnd, to, "Wrong new cwnd value in cwnd change event " << i);
+    }
+
+  // Congestion Avoidance
+  double adder; 
+  uint32_t from = 2680;
+  for (uint32_t i = 14;  i < 29; ++i)
+    {
+      event = m_responses.Get (i);
+      NS_TEST_ASSERT_MSG_EQ (event.m_oldCwnd, from, "Wrong old cwnd value in cwnd change event " << i);
+      adder = ((double) MSS * MSS) / event.m_oldCwnd;
+      adder += event.m_oldCwnd;
+      from = static_cast<uint32_t> (adder);
+      NS_TEST_ASSERT_MSG_EQ (event.m_newCwnd, static_cast<uint32_t> (adder), "Wrong new cwnd value in cwnd change event " 
+                             << i);
+    }
+
+  // Cwnd should be back to 536
+  event = m_responses.Get (29);
+  NS_TEST_ASSERT_MSG_EQ (event.m_newCwnd, MSS, "Wrong new cwnd value in cwnd change event " << 29);
+
+  return GetErrorStatus ();
+}
+
 class Ns3TcpCwndTestSuite : public TestSuite
 {
 public:
@@ -375,7 +572,8 @@ public:
 Ns3TcpCwndTestSuite::Ns3TcpCwndTestSuite ()
   : TestSuite ("ns3-tcp-cwnd", SYSTEM)
 {
-  AddTestCase (new Ns3TcpCwndTestCase);
+  AddTestCase (new Ns3TcpCwndTestCase1);
+  AddTestCase (new Ns3TcpCwndTestCase2);
 }
 
 Ns3TcpCwndTestSuite ns3TcpCwndTestSuite;

@@ -512,7 +512,33 @@ TcpL4Protocol::Receive (Ptr<Packet> packet,
     source.Print (oss);
     oss<<" source port: "<<tcpHeader.GetSourcePort ();
     NS_LOG_LOGIC (oss.str ());
-    return Ipv4L4Protocol::RX_ENDPOINT_UNREACH;
+
+    if (!(tcpHeader.GetFlags () & TcpHeader::RST))
+      {
+        // build a RST packet and send
+        Ptr<Packet> rstPacket = Create<Packet> ();
+        TcpHeader header;
+        if (tcpHeader.GetFlags () & TcpHeader::ACK)
+          {
+            // ACK bit was set
+            header.SetFlags (TcpHeader::RST);
+            header.SetSequenceNumber (header.GetAckNumber ());
+          }
+        else
+          {
+            header.SetFlags (TcpHeader::RST | TcpHeader::ACK);
+            header.SetSequenceNumber (SequenceNumber (0));
+            header.SetAckNumber (header.GetSequenceNumber () + SequenceNumber (1));
+          }
+        header.SetSourcePort (tcpHeader.GetDestinationPort ());
+        header.SetDestinationPort (tcpHeader.GetSourcePort ());
+        SendPacket (rstPacket, header, destination, source);
+        return Ipv4L4Protocol::RX_ENDPOINT_CLOSED;
+      }
+    else
+      {
+        return Ipv4L4Protocol::RX_ENDPOINT_CLOSED;
+      }
   }
   NS_ASSERT_MSG (endPoints.size() == 1 , "Demux returned more than one endpoint");
   NS_LOG_LOGIC ("TcpL4Protocol "<<this<<" forwarding up to endpoint/socket");

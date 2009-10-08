@@ -17,32 +17,13 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#include "ptr.h"
-
-#ifdef RUN_SELF_TESTS
 
 #include "test.h"
+#include "ptr.h"
 
 namespace ns3 {
 
-class NoCount;
-
-template <typename T>
-void Foo (void) {}
-
-class PtrTest : Test
-{
-public:
-  PtrTest ();
-  virtual ~PtrTest ();
-  virtual bool RunTests (void);
-  void DestroyNotify (void);
-private:
-  Ptr<NoCount> CallTest (Ptr<NoCount> p);
-  Ptr<NoCount> const CallTestConst (Ptr<NoCount> const p);
-  uint32_t m_nDestroyed;
-};
-
+class PtrTestCase;
 
 class Base
 {
@@ -58,12 +39,26 @@ private:
 class NoCount : public Base
 {
 public:
-  NoCount (PtrTest *test);
+  NoCount (PtrTestCase *test);
   ~NoCount ();
   void Nothing (void) const;
 private:
-  PtrTest *m_test;
+  PtrTestCase *m_test;
 };
+
+
+class PtrTestCase : public TestCase
+{
+public:
+  PtrTestCase ();
+  void DestroyNotify (void);
+private:
+  virtual bool DoRun (void);
+  Ptr<NoCount> CallTest (Ptr<NoCount> p);
+  Ptr<NoCount> const CallTestConst (Ptr<NoCount> const p);
+  uint32_t m_nDestroyed;
+};
+
 
 Base::Base ()
   : m_count (1)
@@ -85,7 +80,7 @@ Base::Unref (void) const
     }
 }
 
-NoCount::NoCount (PtrTest *test)
+NoCount::NoCount (PtrTestCase *test)
   : m_test (test)
 {}
 NoCount::~NoCount ()
@@ -96,43 +91,37 @@ void
 NoCount::Nothing () const
 {}
 
-PtrTest::PtrTest ()
-  : Test ("Ptr")
-{}
 
-PtrTest::~PtrTest ()
-{}
 
+PtrTestCase::PtrTestCase (void)
+  : TestCase ("Sanity checking of Ptr<>")
+{}
 void 
-PtrTest::DestroyNotify (void)
+PtrTestCase::DestroyNotify (void)
 {
   m_nDestroyed++;
 }
 Ptr<NoCount> 
-PtrTest::CallTest (Ptr<NoCount> p)
+PtrTestCase::CallTest (Ptr<NoCount> p)
 {
   return p;
 }
 
 Ptr<NoCount> const 
-PtrTest::CallTestConst (Ptr<NoCount> const p)
+PtrTestCase::CallTestConst (Ptr<NoCount> const p)
 {
   return p;
 }
 
-bool
-PtrTest::RunTests (void)
-{
-  bool ok = true;
 
+bool
+PtrTestCase::DoRun (void)
+{
   m_nDestroyed = false;
   {
     Ptr<NoCount> p = Create<NoCount> (this);
   }
-  if (m_nDestroyed != 1)
-    {
-      ok = false;
-    }
+  NS_TEST_EXPECT_MSG_EQ (m_nDestroyed, 1, "XXX");
 
   m_nDestroyed = 0;
   {
@@ -140,10 +129,7 @@ PtrTest::RunTests (void)
     p = Create<NoCount> (this);
     p = p;
   }
-  if (m_nDestroyed != 1)
-    {
-      ok = false;
-    }
+  NS_TEST_EXPECT_MSG_EQ (m_nDestroyed, 1, "XXX");
 
   m_nDestroyed = 0;
   {
@@ -151,10 +137,7 @@ PtrTest::RunTests (void)
     p1 = Create<NoCount> (this);
     Ptr<NoCount> p2 = p1;
   }
-  if (m_nDestroyed != 1)
-    {
-      ok = false;
-    }
+  NS_TEST_EXPECT_MSG_EQ (m_nDestroyed, 1, "XXX");
 
   m_nDestroyed = 0;
   {
@@ -163,10 +146,7 @@ PtrTest::RunTests (void)
     Ptr<NoCount> p2;
     p2 = p1;
   }
-  if (m_nDestroyed != 1)
-    {
-      ok = false;
-    }
+  NS_TEST_EXPECT_MSG_EQ (m_nDestroyed, 1, "XXX");
 
   m_nDestroyed = 0;
   {
@@ -175,10 +155,7 @@ PtrTest::RunTests (void)
     Ptr<NoCount> p2 = Create<NoCount> (this);
     p2 = p1;
   }
-  if (m_nDestroyed != 2)
-    {
-      ok = false;
-    }
+  NS_TEST_EXPECT_MSG_EQ (m_nDestroyed, 2, "XXX");
 
   m_nDestroyed = 0;
   {
@@ -188,10 +165,7 @@ PtrTest::RunTests (void)
     p2 = Create<NoCount> (this);
     p2 = p1;
   }
-  if (m_nDestroyed != 2)
-    {
-      ok = false;
-    }
+  NS_TEST_EXPECT_MSG_EQ (m_nDestroyed, 2, "XXX");
 
   m_nDestroyed = 0;
   {
@@ -199,10 +173,7 @@ PtrTest::RunTests (void)
     p1 = Create<NoCount> (this);
     p1 = Create<NoCount> (this);
   }
-  if (m_nDestroyed != 2)
-    {
-      ok = false;
-    }
+  NS_TEST_EXPECT_MSG_EQ (m_nDestroyed, 2, "XXX");
 
   m_nDestroyed = 0;
   {
@@ -213,15 +184,9 @@ PtrTest::RunTests (void)
       p2 = Create<NoCount> (this);
       p2 = p1;
     }
-    if (m_nDestroyed != 1)
-      {
-        ok = false;
-      }
+    NS_TEST_EXPECT_MSG_EQ (m_nDestroyed, 1, "XXX");
   }
-  if (m_nDestroyed != 2)
-    {
-      ok = false;
-    }
+  NS_TEST_EXPECT_MSG_EQ (m_nDestroyed, 2, "XXX");
 
   m_nDestroyed = 0;
   {
@@ -232,15 +197,9 @@ PtrTest::RunTests (void)
       p2 = Create<NoCount> (this);
       p2 = CallTest (p1);
     }
-    if (m_nDestroyed != 1)
-      {
-        ok = false;
-      }
+    NS_TEST_EXPECT_MSG_EQ (m_nDestroyed, 1, "XXX");
   }
-  if (m_nDestroyed != 2)
-    {
-      ok = false;
-    }
+  NS_TEST_EXPECT_MSG_EQ (m_nDestroyed, 2, "XXX");
 
   {
     Ptr<NoCount> p1;
@@ -278,10 +237,7 @@ PtrTest::RunTests (void)
       raw = GetPointer (p);
       p = 0;
     }
-    if (m_nDestroyed != 0)
-      {
-        ok = false;
-      }
+    NS_TEST_EXPECT_MSG_EQ (m_nDestroyed, 0, "XXX");
     delete raw;
   }
 
@@ -293,62 +249,26 @@ PtrTest::RunTests (void)
     v1->Nothing ();
     v2->Nothing ();
   }
-  if (m_nDestroyed != 1)
-    {
-      ok = false;
-    }
+  NS_TEST_EXPECT_MSG_EQ (m_nDestroyed, 1, "XXX");
 
   {
     Ptr<Base> p0 = Create<NoCount> (this);
     Ptr<NoCount> p1 = Create<NoCount> (this);
-    if (p0 == p1)
-      {
-        ok = false;
-      }
-    if (p0 != p1)
-      {
-      }
-    else
-      {
-        ok = false;
-      }
+    NS_TEST_EXPECT_MSG_EQ ((p0 == p1), false, "operator == failed");
+    NS_TEST_EXPECT_MSG_EQ ((p0 != p1), true, "operator != failed");
   }
-#if 0
-  {
-    Ptr<NoCount> p = Create<NoCount> (cb);
-    Callback<void> callback = MakeCallback (&NoCount::Nothing, p);
-    callback ();
-  }
-  {
-    Ptr<const NoCount> p = Create<NoCount> (cb);
-    Callback<void> callback = MakeCallback (&NoCount::Nothing, p);
-    callback ();
-  }
-#endif
 
-#if 0
-  // as expected, fails compilation.
-  {
-    Ptr<const Base> p = Create<NoCount> (cb);
-    Callback<void> callback = MakeCallback (&NoCount::Nothing, p);
-  }
-  // local types are not allowed as arguments to a template.
-  {
-    class B
-    {
-    public:
-      B () {}
-    };
-    Foo<B> ();
-  }
-#endif
-  
-
-  return ok;
+  return false;
 }
 
-PtrTest g_ptr_test;
+static class PtrTestSuite : public TestSuite
+{
+public:
+  PtrTestSuite ()
+  : TestSuite ("ptr", UNIT)
+  {
+    AddTestCase (new PtrTestCase ());
+  }
+} g_ptrTestSuite;
 
-}; // namespace ns3
-
-#endif /* RUN_SELF_TESTS */
+} // namespace ns3

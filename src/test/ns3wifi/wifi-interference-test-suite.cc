@@ -209,7 +209,7 @@ WifiInterferenceTestCase::WifiSimpleInterference (std::string phyMode,double Prs
   
   Config::Connect ("/NodeList/0/DeviceList/0/$ns3::WifiNetDevice/Phy/$ns3::YansWifiPhy/EndSync", MakeCallback (&WifiInterferenceTestCase::PrintEndSync, this)); 
   // Tracing
-  wifiPhy.EnablePcap ("wifi-simple-interference", devices.Get (0));
+//  wifiPhy.EnablePcap ("wifi-simple-interference", devices.Get (0));
   
   Simulator::Schedule (Seconds (startTime), &GenerateTraffic, 
                        source, PpacketSize, numPackets, interPacketInterval);

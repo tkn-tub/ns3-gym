@@ -32,12 +32,15 @@
 namespace ns3 {
 
 /**
- * \brief instanciate an ns3::OnOffApplication on a set of nodes.
+ * \brief A helper to make it easier to instantiate an ns3::OnOffApplication 
+ * on a set of nodes.
  */
 class OnOffHelper
 {
 public:
   /**
+   * Create an OnOffHelper to make it easier to work with OnOffApplications
+   *
    * \param protocol the name of the protocol to use to send traffic
    *        by the applications. This string identifies the socket
    *        factory type used to create sockets for the applications.
@@ -48,6 +51,8 @@ public:
   OnOffHelper (std::string protocol, Address address);
 
   /**
+   * Helper function used to set the underlying application attributes.
+   *
    * \param name the name of the application attribute to set
    * \param value the value of the application attribute to set
    */
@@ -83,6 +88,7 @@ public:
 
 private:
   /**
+   * \internal
    * Install an ns3::OnOffApplication on the node configured with all the 
    * attributes set with SetAttribute.
    *

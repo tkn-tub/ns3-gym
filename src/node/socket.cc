@@ -64,6 +64,16 @@ Socket::SetConnectCallback (
 }
 
 void 
+Socket::SetCloseCallbacks (
+  Callback<void, Ptr<Socket> > normalClose,
+  Callback<void, Ptr<Socket> > errorClose)
+{
+  NS_LOG_FUNCTION_NOARGS ();
+  m_normalClose = normalClose;
+  m_errorClose = errorClose;
+}
+
+void 
 Socket::SetAcceptCallback (
   Callback<bool, Ptr<Socket>, const Address &> connectionRequest,
   Callback<void, Ptr<Socket>, const Address&> newConnectionCreated)
@@ -193,6 +203,26 @@ Socket::NotifyConnectionFailed (void)
   if (!m_connectionFailed.IsNull ())
     {
       m_connectionFailed (this);
+    }
+}
+
+void 
+Socket::NotifyNormalClose (void)
+{
+  NS_LOG_FUNCTION_NOARGS ();
+  if (!m_normalClose.IsNull ())
+    {
+      m_normalClose (this);
+    }
+}
+
+void 
+Socket::NotifyErrorClose (void)
+{
+  NS_LOG_FUNCTION_NOARGS ();
+  if (!m_errorClose.IsNull ())
+    {
+      m_errorClose (this);
     }
 }
 

@@ -39,7 +39,20 @@ class Node;
 class Ipv4RoutingHelper
 {
 public:
+  /*
+   * Destroy an instance of an Ipv4RoutingHelper
+   */
   virtual ~Ipv4RoutingHelper ();
+
+  /**
+   * \brief virtual constructor
+   * \returns pointer to clone of this Ipv4RoutingHelper 
+   * 
+   * This method is mainly for internal use by the other helpers;
+   * clients are expected to free the dynamic memory allocated by this method
+   */
+  virtual Ipv4RoutingHelper* Copy (void) const = 0;
+
   /**
    * \param node the node within which the new routing protocol will run
    * \returns a newly-created routing protocol

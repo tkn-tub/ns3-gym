@@ -30,6 +30,17 @@ OlsrHelper::OlsrHelper ()
   m_agentFactory.SetTypeId ("ns3::olsr::RoutingProtocol");
 }
 
+OlsrHelper::OlsrHelper (const OlsrHelper &o)
+  : m_agentFactory (o.m_agentFactory)
+{
+}
+
+OlsrHelper* 
+OlsrHelper::Copy (void) const 
+{
+  return new OlsrHelper (*this); 
+}
+
 Ptr<Ipv4RoutingProtocol> 
 OlsrHelper::Create (Ptr<Node> node) const
 {

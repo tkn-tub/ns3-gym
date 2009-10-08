@@ -40,6 +40,9 @@ class AsciiWriter;
 class CsmaHelper
 {
 public:
+  /**
+   * Construct a CsmaHelper.
+   */
   CsmaHelper ();
 
   /**
@@ -349,13 +352,30 @@ public:
                     NetDeviceContainer& hubDevices, NetDeviceContainer& spokeDevices);
 
 private:
+  /*
+   * \internal
+   */
   Ptr<NetDevice> InstallPriv (Ptr<Node> node, Ptr<CsmaChannel> channel) const;
 
+  /*
+   * \internal
+   */
   static void SniffEvent (Ptr<PcapWriter> writer, Ptr<const Packet> packet);
 
   static void AsciiRxEvent (Ptr<AsciiWriter> writer, std::string path, Ptr<const Packet> packet);
+  /*
+   * \internal
+   */
   static void AsciiEnqueueEvent (Ptr<AsciiWriter> writer, std::string path, Ptr<const Packet> packet);
+
+  /*
+   * \internal
+   */
   static void AsciiDequeueEvent (Ptr<AsciiWriter> writer, std::string path, Ptr<const Packet> packet);
+
+  /*
+   * \internal
+   */
   static void AsciiDropEvent (Ptr<AsciiWriter> writer, std::string path, Ptr<const Packet> packet);
 
   ObjectFactory m_queueFactory;

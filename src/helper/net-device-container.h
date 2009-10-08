@@ -29,6 +29,14 @@ namespace ns3 {
 /**
  * \brief holds a vector of ns3::NetDevice pointers
  *
+ * Typically ns-3 NetDevices are installed on nodes using a net device
+ * helper.  The helper Install method takes a NodeContainer which holds 
+ * some number of Ptr<Node>.  For each of the Nodes in the NodeContainer
+ * the helper will instantiate a net device, add a MAC address and a queue
+ * to the device and install it to the node.  For each of the devices, the
+ * helper also adds the device into a Container for later use by the caller.
+ * This is that container used to hold the Ptr<NetDevice> which are 
+ * instantiated by the device helper.
  */
 class NetDeviceContainer
 {
@@ -39,18 +47,26 @@ public:
    * Create an empty NetDeviceContainer.
    */
   NetDeviceContainer ();
+
   /**
    * \param dev a device to add to the container
    *
-   * Create a NetDeviceContainer with exactly one device
+   * Create a NetDeviceContainer with exactly one net device that has previously
+   * been instantiated
    */
   NetDeviceContainer (Ptr<NetDevice> dev);
+
   /**
-   * \param devName The name of a device to add to the container
+   * Create a NetDeviceContainer with exactly one device which has been 
+   * previously instantiated and assigned a name using the Object name
+   * service.  This NetDevice is specified by its assigned name. 
+   *
+   * \param devName The name of the device to add to the container
    *
    * Create a NetDeviceContainer with exactly one device
    */
   NetDeviceContainer (std::string devName);
+
   /**
    * \param a a device container
    * \param b another device container
@@ -69,40 +85,112 @@ public:
   NetDeviceContainer (const NetDeviceContainer &a, const NetDeviceContainer &b);
 
   /**
-   * \returns an iterator which points to the start of the array of pointers.
+   * \brief Get an iterator which refers to the first NetDevice in the 
+   * container.
+   *
+   * NetDevices can be retrieved from the container in two ways.  First,
+   * directly by an index into the container, and second, using an iterator.
+   * This method is used in the iterator method and is typically used in a 
+   * for-loop to run through the NetDevices
+   *
+   * \code
+   *   NetDeviceContainer::Iterator i;
+   *   for (i = container.Begin (); i != container.End (); ++i)
+   *     {
+   *       (*i)->method ();  // some NetDevice method
+   *     }
+   * \endcode
+   *
+   * \returns an iterator which refers to the first NetDevice in the container.
    */
   Iterator Begin (void) const;
+
   /**
-   * \returns an iterator which points to the end of the array of pointers.
+   * \brief Get an iterator which indicates past-the-last NetDevice in the 
+   * container.
+   *
+   * NetDevices can be retrieved from the container in two ways.  First,
+   * directly by an index into the container, and second, using an iterator.
+   * This method is used in the iterator method and is typically used in a 
+   * for-loop to run through the NetDevices
+   *
+   * \code
+   *   NetDeviceContainer::Iterator i;
+   *   for (i = container.Begin (); i != container.End (); ++i)
+   *     {
+   *       (*i)->method ();  // some NetDevice method
+   *     }
+   * \endcode
+   *
+   * \returns an iterator which indicates an ending condition for a loop.
    */
   Iterator End (void) const;
 
   /**
-   * \returns the number of netdevice pointers stored in this container.
+   * \brief Get the number of Ptr<NetDevice> stored in this container.
+   *
+   * NetDevices can be retrieved from the container in two ways.  First,
+   * directly by an index into the container, and second, using an iterator.
+   * This method is used in the direct method and is typically used to
+   * define an ending condition in a for-loop that runs through the stored
+   * NetDevices
+   *
+   * \code
+   *   uint32_t nDevices = container.GetN ();
+   *   for (uint32_t i = 0 i < nDevices; ++i)
+   *     {
+   *       Ptr<NetDevice> p = container.Get (i)
+   *       i->method ();  // some NetDevice method
+   *     }
+   * \endcode
+   *
+   * \returns the number of Ptr<NetDevice> stored in this container.
    */
   uint32_t GetN (void) const;
+
   /**
-   * \param i the index of the requested netdevice pointer.
-   * \returns the requested netdevice pointer.
+   * \brief Get the Ptr<NetDevice> stored in this container at a given
+   * index.
+   *
+   * NetDevices can be retrieved from the container in two ways.  First,
+   * directly by an index into the container, and second, using an iterator.
+   * This method is used in the direct method and is used to retrieve the
+   * indexed Ptr<NetDevice>.
+   *
+   * \code
+   *   uint32_t nDevices = container.GetN ();
+   *   for (uint32_t i = 0 i < nDevices; ++i)
+   *     {
+   *       Ptr<NetDevice> p = container.Get (i)
+   *       i->method ();  // some NetDevice method
+   *     }
+   * \endcode
+   *
+   * \param i the index of the requested device pointer.
+   * \returns the requested device pointer.
    */
   Ptr<NetDevice> Get (uint32_t i) const;
 
   /**
-   * \param other another netdevice container
+   * \brief Append the contents of another NetDeviceContainer to the end of
+   * this container.
    *
-   * Append to the end of this container the other input container.
+   * \param The NetDeviceContainer to append.
    */
   void Add (NetDeviceContainer other);
+
   /**
-   * \param device another netdevice pointer.
+   * \brief Append a single Ptr<NetDevice> to this container.
    *
-   * Append to the end of this container the input netdevice pointer.
+   * \param application The Ptr<NetDevice> to append.
    */
   void Add (Ptr<NetDevice> device);
+
   /**
-   * \param deviceName The name of another netdevice to add.
+   * \brief Append to this container the single Ptr<NetDevice> referred to
+   * via its object name service registered name.
    *
-   * Append to the end of this container the input netdevice pointer.
+   * \param name The name of the NetDevice Object to add to the container.
    */
   void Add (std::string deviceName);
 

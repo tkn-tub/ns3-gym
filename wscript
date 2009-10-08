@@ -173,11 +173,18 @@ def set_options(opt):
                    help=('Use sudo to setup suid bits on ns3 executables.'),
                    dest='enable_sudo', action='store_true',
                    default=False)
+    opt.add_option('--enable-examples',
+                   help=('Build the ns-3 examples and samples.'),
+                   dest='enable_examples', action='store_true',
+                   default=True)
+    opt.add_option('--disable-examples',
+                   help=('Do not build the ns-3 examples and samples.'),
+                   dest='enable_examples', action='store_false')
     opt.add_option('--regression',
                    help=("Enable regression testing; only used for the 'check' target"),
                    default=False, dest='regression', action="store_true")
     opt.add_option('--check',
-                   help=("Enable unit testing"),
+                   help=('DEPRECATED (run ./test.py)'),
                    default=False, dest='check', action="store_true")
     opt.add_option('--regression-generate',
                    help=("Generate new regression test traces."),
@@ -323,6 +330,16 @@ def configure(conf):
             why_not_sudo = "option --enable-sudo not selected"
 
     conf.report_optional_feature("ENABLE_SUDO", "Use sudo to set suid bit", env['ENABLE_SUDO'], why_not_sudo)
+
+    if Options.options.enable_examples:
+        env['ENABLE_EXAMPLES'] = True
+        why_not_examples = "defaults to enabled"
+    else:
+        env['ENABLE_EXAMPLES'] = False
+        why_not_examples = "option --disable-examples selected"
+
+    conf.report_optional_feature("ENABLE_EXAMPLES", "Build examples and samples", env['ENABLE_EXAMPLES'], 
+                                 why_not_examples)
 
     # we cannot pull regression traces without mercurial
     conf.find_program('hg', var='MERCURIAL')
@@ -482,7 +499,9 @@ def build(bld):
 
     # process subfolders from here
     bld.add_subdirs('src')
-    bld.add_subdirs('samples utils examples')
+    bld.add_subdirs('samples')
+    bld.add_subdirs('utils')
+    bld.add_subdirs('examples')
 
     add_scratch_programs(bld)
 
@@ -564,13 +583,18 @@ def build(bld):
         if not regression_traces:
             raise Utils.WafError("Cannot run regression tests: reference traces directory not given"
                                  " (--with-regression-traces configure option)")
-        regression.run_regression(bld, regression_traces)
 
-    if Options.options.check:
-        Options.options.compile_targets += ',run-tests'
-        if env['ENABLE_PYTHON_BINDINGS']:
-            Options.options.compile_targets += ',ns3module,pybindgen-command'
-        _run_check(bld)
+        if env['ENABLE_EXAMPLES'] == True:
+            regression.run_regression(bld, regression_traces)
+        else:
+            raise Utils.WafError("Cannot run regression tests: building the ns-3 examples is not enabled"
+                                 " (regression tests are based on examples)")
+
+#    if Options.options.check:
+#        Options.options.compile_targets += ',run-tests'
+#        if env['ENABLE_PYTHON_BINDINGS']:
+#            Options.options.compile_targets += ',ns3module,pybindgen-command'
+#        _run_check(bld)
 
     if Options.options.doxygen_no_build:
         doxygen()
@@ -597,7 +621,10 @@ def shutdown(ctx):
         raise SystemExit(0)
 
     if Options.options.shell:
-        raise Utils.WafError("Run `./waf shell' now, instead of `./waf shell'")
+        raise Utils.WafError("Please run `./waf shell' now, instead of `./waf --shell'")
+
+    if Options.options.check:
+        raise Utils.WafError("Please run `./test.py' now, instead of `./waf --check'")
 
     if Options.options.doxygen:
         doxygen()
@@ -611,9 +638,12 @@ def shutdown(ctx):
 
 
 check_context = Build.BuildContext
+
 def check(bld):
-    """run the NS-3 unit tests (deprecated in favour of --check option)"""
-    raise Utils.WafError("Please run `./waf --check' instead.")
+    """run the equivalent of the old ns-3 unit tests using test.py"""
+    bld = wutils.bld
+    env = bld.env
+    wutils.run_python_program("test.py -c core", env)
 
 
 class print_introspected_doxygen_task(Task.TaskBase):
@@ -666,112 +696,110 @@ class run_python_unit_tests_task(Task.TaskBase):
         wutils.run_argv([self.bld.env['PYTHON'], os.path.join("..", "utils", "python-unit-tests.py")],
                         self.bld.env, proc_env, force_no_valgrind=True)
 
-
-class run_a_unit_test_task(Task.TaskBase):
-    after = 'cc cxx cc_link cxx_link'
-    color = 'BLUE'
-
-    def __init__(self, bld, name_of_test):
-        self.bld = bld
-        super(run_a_unit_test_task, self).__init__(generator=self)
-        self.name_of_test = name_of_test
-        try:
-            program_obj = wutils.find_program("run-tests", self.bld.env)
-        except ValueError, ex:
-            raise Utils.WafError(str(ex))
-        program_node = program_obj.path.find_or_declare(ccroot.get_target_name(program_obj))
-        self.program_path = program_node.abspath(self.bld.env)
-
-    def __str__(self):
-        return 'run-unit-test(%s)\n' % self.name_of_test
-
-    def runnable_status(self):
-        return Task.RUN_ME
-
-    def run(self):
-        #print repr([self.program_path, self.name_of_test])
-        try:
-            self.retval = wutils.run_argv([self.program_path, self.name_of_test], self.bld.env)
-        except Utils.WafError:
-            self.retval = 1
-        #print "running test %s: exit with %i" % (self.name_of_test, retval)
-        return 0
-
-class get_list_of_unit_tests_task(Task.TaskBase):
-    after = 'cc cxx cc_link cxx_link'
-    color = 'BLUE'
-
-    def __init__(self, bld):
-        self.bld = bld
-        super(get_list_of_unit_tests_task, self).__init__(generator=self)
-        self.tests = []
-
-    def __str__(self):
-        return 'get-unit-tests-list\n'
-
-    def runnable_status(self):
-        return Task.RUN_ME
-
-    def run(self):
-        try:
-            program_obj = wutils.find_program("run-tests", self.bld.env)
-        except ValueError, ex:
-            raise Utils.WafError(str(ex))
-        program_node = program_obj.path.find_or_declare(ccroot.get_target_name(program_obj))
-        program_path = program_node.abspath(self.bld.env)
-        proc = subprocess.Popen([program_path, "--ListTests"], stdout=subprocess.PIPE,
-                                env=wutils.get_proc_env())
-        self.tests = [l.rstrip() for l in proc.stdout.readlines()]
-        retval = proc.wait()
-        if retval:
-            return retval
-        test_tasks = []
-        for name_of_test in self.tests:
-            test_tasks.append(run_a_unit_test_task(self.bld, name_of_test))
-        collector = collect_unit_test_results_task(self.bld, list(test_tasks))
-        collector.run_after = list(test_tasks)
-        self.more_tasks = [collector] + test_tasks
-        
-
-class collect_unit_test_results_task(Task.TaskBase):
-    after = 'run_a_unit_test_task'
-    color = 'BLUE'
-
-    def __init__(self, bld, test_tasks):
-        self.bld = bld
-        super(collect_unit_test_results_task, self).__init__(generator=self)
-        self.test_tasks = test_tasks
-
-    def __str__(self):
-        return 'collect-unit-tests-results\n'
-
-    def runnable_status(self):
-        for t in self.run_after:
-            if not t.hasrun:
-                return Task.ASK_LATER
-        return Task.RUN_ME
-
-    def run(self):
-        failed_tasks = []
-        for task in self.test_tasks:
-            if task.retval:
-                failed_tasks.append(task)
-        if failed_tasks:
-            print "C++ UNIT TESTS: %i tests passed, %i failed (%s)." % \
-                (len(self.test_tasks) - len(failed_tasks), len(failed_tasks),
-                 ', '.join(t.name_of_test for t in failed_tasks))
-            return 1
-        else:
-            print "C++ UNIT TESTS: all %i tests passed." % (len(self.test_tasks),)
-            return 0
-
-
-def _run_check(bld):
-    task = get_list_of_unit_tests_task(bld)
-    print_introspected_doxygen_task(bld)
-    if bld.env['ENABLE_PYTHON_BINDINGS']:
-        run_python_unit_tests_task(bld)
-
+#class run_a_unit_test_task(Task.TaskBase):
+#    after = 'cc cxx cc_link cxx_link'
+#    color = 'BLUE'
+#
+#    def __init__(self, bld, name_of_test):
+#        self.bld = bld
+#        super(run_a_unit_test_task, self).__init__(generator=self)
+#        self.name_of_test = name_of_test
+#        try:
+#            program_obj = wutils.find_program("run-tests", self.bld.env)
+#        except ValueError, ex:
+#            raise Utils.WafError(str(ex))
+#        program_node = program_obj.path.find_or_declare(ccroot.get_target_name(program_obj))
+#        self.program_path = program_node.abspath(self.bld.env)
+#
+#    def __str__(self):
+#        return 'run-unit-test(%s)\n' % self.name_of_test
+#
+#    def runnable_status(self):
+#        return Task.RUN_ME
+#
+#    def run(self):
+#        #print repr([self.program_path, self.name_of_test])
+#        try:
+#            self.retval = wutils.run_argv([self.program_path, self.name_of_test], self.bld.env)
+#        except Utils.WafError:
+#            self.retval = 1
+#        #print "running test %s: exit with %i" % (self.name_of_test, retval)
+#        return 0
+#
+#class get_list_of_unit_tests_task(Task.TaskBase):
+#    after = 'cc cxx cc_link cxx_link'
+#    color = 'BLUE'
+#
+#    def __init__(self, bld):
+#        self.bld = bld
+#        super(get_list_of_unit_tests_task, self).__init__(generator=self)
+#        self.tests = []
+#
+#    def __str__(self):
+#        return 'get-unit-tests-list\n'
+#
+#    def runnable_status(self):
+#        return Task.RUN_ME
+#
+#    def run(self):
+#        try:
+#            program_obj = wutils.find_program("run-tests", self.bld.env)
+#        except ValueError, ex:
+#            raise Utils.WafError(str(ex))
+#        program_node = program_obj.path.find_or_declare(ccroot.get_target_name(program_obj))
+#        program_path = program_node.abspath(self.bld.env)
+#        proc = subprocess.Popen([program_path, "--ListTests"], stdout=subprocess.PIPE,
+#                                env=wutils.get_proc_env())
+#        self.tests = [l.rstrip() for l in proc.stdout.readlines()]
+#        retval = proc.wait()
+#        if retval:
+#            return retval
+#        test_tasks = []
+#        for name_of_test in self.tests:
+#            test_tasks.append(run_a_unit_test_task(self.bld, name_of_test))
+#        collector = collect_unit_test_results_task(self.bld, list(test_tasks))
+#        collector.run_after = list(test_tasks)
+#        self.more_tasks = [collector] + test_tasks
+#        
+#
+#class collect_unit_test_results_task(Task.TaskBase):
+#    after = 'run_a_unit_test_task'
+#    color = 'BLUE'
+#
+#    def __init__(self, bld, test_tasks):
+#        self.bld = bld
+#        super(collect_unit_test_results_task, self).__init__(generator=self)
+#        self.test_tasks = test_tasks
+#
+#    def __str__(self):
+#        return 'collect-unit-tests-results\n'
+#
+#    def runnable_status(self):
+#        for t in self.run_after:
+#            if not t.hasrun:
+#                return Task.ASK_LATER
+#        return Task.RUN_ME
+#
+#    def run(self):
+#        failed_tasks = []
+#        for task in self.test_tasks:
+#            if task.retval:
+#                failed_tasks.append(task)
+#        if failed_tasks:
+#            print "C++ UNIT TESTS: %i tests passed, %i failed (%s)." % \
+#                (len(self.test_tasks) - len(failed_tasks), len(failed_tasks),
+#                 ', '.join(t.name_of_test for t in failed_tasks))
+#            return 1
+#        else:
+#            print "C++ UNIT TESTS: all %i tests passed." % (len(self.test_tasks),)
+#            return 0
+#
+#
+#def _run_check(bld):
+#    task = get_list_of_unit_tests_task(bld)
+#    print_introspected_doxygen_task(bld)
+#    if bld.env['ENABLE_PYTHON_BINDINGS']:
+#        run_python_unit_tests_task(bld)
 
 def check_shell(bld):
     if 'NS3_MODULE_PATH' not in os.environ:
