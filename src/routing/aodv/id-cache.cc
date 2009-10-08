@@ -66,64 +66,69 @@ IdCache::GetSize ()
   return m_idCache.size ();
 }
 
-#ifdef RUN_SELF_TESTS
+//-----------------------------------------------------------------------------
+// Tests
+//-----------------------------------------------------------------------------
 /// Unit test for id cache
-struct IdCacheTest : public Test
+struct IdCacheTest : public TestCase
 {
-  IdCacheTest () : Test ("AODV/IdCache"), result(true)
+  IdCacheTest () : TestCase ("Id Cache")
   {}
-  virtual bool RunTests();
+  virtual bool DoRun();
   void CheckTimeout1 ();
   void CheckTimeout2 ();
   void CheckTimeout3 ();
 
   IdCache cache;
-  bool result;
 };
 
-/// Test instance
-static IdCacheTest g_IdCacheTest;
-
 bool
-IdCacheTest::RunTests ()
+IdCacheTest::DoRun ()
 {
   cache.InsertId (Ipv4Address ("1.2.3.4"), 3, Seconds(5));
-  NS_TEST_ASSERT_EQUAL (cache.LookupId (Ipv4Address ("1.2.3.4"), 4), false);
-  NS_TEST_ASSERT_EQUAL (cache.LookupId (Ipv4Address ("4.3.2.1"), 3), false);
-  NS_TEST_ASSERT_EQUAL (cache.LookupId (Ipv4Address ("1.2.3.4"), 3), true);
+  NS_TEST_EXPECT_MSG_EQ (cache.LookupId (Ipv4Address ("1.2.3.4"), 4), false, "Unknown ID");
+  NS_TEST_EXPECT_MSG_EQ (cache.LookupId (Ipv4Address ("4.3.2.1"), 3), false, "Unknown address");
+  NS_TEST_EXPECT_MSG_EQ (cache.LookupId (Ipv4Address ("1.2.3.4"), 3), true, "Known address & ID");
   cache.InsertId (Ipv4Address ("1.1.1.1"), 4, Seconds(5));
   cache.InsertId (Ipv4Address ("1.1.1.1"), 4, Seconds(5));
   cache.InsertId (Ipv4Address ("2.2.2.2"), 5, Seconds(16));
   cache.InsertId (Ipv4Address ("3.3.3.3"), 6, Seconds(27));
-  NS_TEST_ASSERT_EQUAL (cache.GetSize (), 4);
+  NS_TEST_EXPECT_MSG_EQ (cache.GetSize (), 4, "trivial");
 
   Simulator::Schedule (Seconds(1), &IdCacheTest::CheckTimeout1, this);
   Simulator::Schedule (Seconds(6), &IdCacheTest::CheckTimeout2, this);
   Simulator::Schedule (Seconds(30), &IdCacheTest::CheckTimeout3, this);
   Simulator::Run ();
   Simulator::Destroy ();
-  return result;
+  
+  return GetErrorStatus ();
 }
 
 void
 IdCacheTest::CheckTimeout1 ()
 {
-  NS_TEST_ASSERT_EQUAL (cache.GetSize (), 4);
+  NS_TEST_EXPECT_MSG_EQ (cache.GetSize (), 4, "Nothing expire");
 }
 
 void
 IdCacheTest::CheckTimeout2 ()
 {
-  NS_TEST_ASSERT_EQUAL (cache.GetSize (), 2);
+  NS_TEST_EXPECT_MSG_EQ (cache.GetSize (), 2, "2 records left");
 }
 
 void
 IdCacheTest::CheckTimeout3 ()
 {
-  NS_TEST_ASSERT_EQUAL (cache.GetSize (), 0);
+  NS_TEST_EXPECT_MSG_EQ (cache.GetSize (), 0, "All records expire");
 }
+//-----------------------------------------------------------------------------
+class IdCacheTestSuite : public TestSuite
+{
+public:
+  IdCacheTestSuite () : TestSuite ("routing-id-cache", UNIT)
+  {
+    AddTestCase (new IdCacheTest);
+  }
+} g_idCacheTestSuite;
 
-#endif
-
-}
-}
+}}

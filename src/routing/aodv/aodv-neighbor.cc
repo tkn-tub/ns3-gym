@@ -27,7 +27,6 @@
  */
 
 #include "aodv-neighbor.h"
-#include "ns3/test.h"
 #include "ns3/log.h"
 #include <algorithm>
 
