@@ -31,6 +31,12 @@ AodvHelper::AodvHelper() : Ipv4RoutingHelper ()
   m_agentFactory.SetTypeId ("ns3::aodv::RoutingProtocol");
 }
 
+AodvHelper* 
+AodvHelper::Copy (void) const 
+{
+  return new AodvHelper (*this); 
+}
+
 Ptr<Ipv4RoutingProtocol> 
 AodvHelper::Create (Ptr<Node> node) const
 {
