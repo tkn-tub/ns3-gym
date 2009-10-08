@@ -26,12 +26,12 @@
  *          Pavel Boyko <boyko@iitp.ru>
  */
 #include "aodv-rqueue.h"
-#include "ns3/test.h"
 #include <algorithm>
 #include <functional>
 #include "ns3/ipv4-route.h"
 #include "ns3/socket.h"
 #include "ns3/log.h"
+#include "ns3/test.h"
 
 NS_LOG_COMPONENT_DEFINE ("AodvRequestQueue");
 
@@ -39,57 +39,6 @@ namespace ns3
 {
 namespace aodv
 {
-
-#ifdef RUN_SELF_TESTS
-/// Unit test for AODV routing table entry
-struct QueueEntryTest : public Test
-{
-  QueueEntryTest () : Test ("AODV/QueueEntry"), result(true) {}
-  virtual bool RunTests();
-  void Unicast (Ptr<Ipv4Route> route, Ptr<const Packet> packet, const Ipv4Header & header) {}
-  void Error (Ptr<const Packet>, const Ipv4Header &, Socket::SocketErrno) {}
-  void Unicast2 (Ptr<Ipv4Route> route, Ptr<const Packet> packet, const Ipv4Header & header) {}
-  void Error2 (Ptr<const Packet>, const Ipv4Header &, Socket::SocketErrno) {}
-  bool result;
-};
-
-/// Test instance
-static QueueEntryTest g_QueueEntryTest;
-
-bool
-QueueEntryTest::RunTests ()
-{
-  Ptr<const Packet> packet = Create<Packet> ();
-  Ipv4Header h;
-  h.SetDestination (Ipv4Address ("1.2.3.4"));
-  h.SetSource (Ipv4Address ("4.3.2.1"));
-  Ipv4RoutingProtocol::UnicastForwardCallback ucb = MakeCallback (&QueueEntryTest::Unicast, this);
-  Ipv4RoutingProtocol::ErrorCallback ecb = MakeCallback (&QueueEntryTest::Error, this);
-  QueueEntry entry (packet, h, ucb, ecb, Seconds (1));
-  NS_TEST_ASSERT_EQUAL (h.GetDestination (),  entry.GetIpv4Header ().GetDestination ());
-  NS_TEST_ASSERT_EQUAL (h.GetSource (),  entry.GetIpv4Header ().GetSource ());
-  NS_TEST_ASSERT_EQUAL (ucb.IsEqual(entry.GetUnicastForwardCallback ()), true);
-  NS_TEST_ASSERT_EQUAL (ecb.IsEqual(entry.GetErrorCallback ()), true);
-  NS_TEST_ASSERT_EQUAL (entry.GetExpireTime (), Seconds (1));
-  NS_TEST_ASSERT_EQUAL (entry.GetPacket (), packet);
-  entry.SetExpireTime (Seconds (3));
-  NS_TEST_ASSERT_EQUAL (entry.GetExpireTime (), Seconds (3));
-  Ipv4Header h2;
-  h2.SetDestination(Ipv4Address ("1.1.1.1"));
-  entry.SetIpv4Header (h2);
-  NS_TEST_ASSERT_EQUAL (entry.GetIpv4Header ().GetDestination (), Ipv4Address ("1.1.1.1"));
-  Ipv4RoutingProtocol::UnicastForwardCallback ucb2 = MakeCallback (&QueueEntryTest::Unicast2, this);
-  Ipv4RoutingProtocol::ErrorCallback ecb2 = MakeCallback (&QueueEntryTest::Error2, this);
-  entry.SetErrorCallback (ecb2);
-  NS_TEST_ASSERT_EQUAL (ecb2.IsEqual (entry.GetErrorCallback ()), true);
-  entry.SetUnicastForwardCallback (ucb2);
-  NS_TEST_ASSERT_EQUAL (ucb2.IsEqual (entry.GetUnicastForwardCallback ()), true);
-
-  return result;
-}
-#endif
-
-
 uint32_t
 RequestQueue::GetSize ()
 {
