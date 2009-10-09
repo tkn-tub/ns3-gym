@@ -53,87 +53,99 @@ ENABLE_EXAMPLES = True
 #
 # If the user has constrained us to run certain kinds of tests, we can tell waf
 # to only build
+#
 core_kinds = ["bvt", "core", "system", "unit"]
+
+#
+# There are some special cases for test suites that kill valgrind.  This is
+# because NSC causes illegal instruction crashes when run under valgrind.
+#
+core_valgrind_skip_tests = [
+    "ns3-tcp-cwnd",
+    "ns3-tcp-interoperability",
+]
 
 #
 # A list of examples to run as smoke tests just to ensure that they remain 
 # buildable and runnable over time.  Also a condition under which to run
-# the example (from the waf configuration).
+# the example (from the waf configuration), and a condition under which to
+# run the example under valgrind.  This is because NSC causes illegal 
+# instruction crashes when run under valgrind.
 #
 # XXX Should this not be read from a configuration file somewhere and not
 # hardcoded.
 #
 example_tests = [
-    ("csma/csma-bridge", "True"),
-    ("csma/csma-bridge-one-hop", "True"),
-    ("csma/csma-broadcast", "True"),
-    ("csma/csma-multicast", "True"),
-    ("csma/csma-one-subnet", "True"),
-    ("csma/csma-packet-socket", "True"),
-    ("csma/csma-ping", "True"),
-    ("csma/csma-raw-ip-socket", "True"),
-    ("csma/csma-star", "True"),
+    ("csma/csma-bridge", "True", "True"),
+    ("csma/csma-bridge-one-hop", "True", "True"),
+    ("csma/csma-broadcast", "True", "True"),
+    ("csma/csma-multicast", "True", "True"),
+    ("csma/csma-one-subnet", "True", "True"),
+    ("csma/csma-packet-socket", "True", "True"),
+    ("csma/csma-ping", "True", "True"),
+    ("csma/csma-raw-ip-socket", "True", "True"),
+    ("csma/csma-star", "True", "True"),
 
-    ("emulation/emu-ping", "False"),
-    ("emulation/emu-udp-echo", "False"),
+    ("emulation/emu-ping", "False", "True"),
+    ("emulation/emu-udp-echo", "False", "True"),
 
-    ("error-model/simple-error-model", "True"),
+    ("error-model/simple-error-model", "True", "True"),
 
-    ("ipv6/icmpv6-redirect", "True"),
-    ("ipv6/ping6", "True"),
-    ("ipv6/radvd", "True"),
-    ("ipv6/radvd-two-prefix", "True"),    
-    ("ipv6/test-ipv6", "True"),
+    ("ipv6/icmpv6-redirect", "True", "True"),
+    ("ipv6/ping6", "True", "True"),
+    ("ipv6/radvd", "True", "True"),
+    ("ipv6/radvd-two-prefix", "True", "True"),    
+    ("ipv6/test-ipv6", "True", "True"),
 
-    ("mesh/mesh", "True"),
+    ("mesh/mesh", "True", "True"),
 
-    ("naming/object-names", "True"),
+    ("naming/object-names", "True", "True"),
 
-    ("realtime/realtime-udp-echo", "ENABLE_REAL_TIME == True"),
+    ("realtime/realtime-udp-echo", "ENABLE_REAL_TIME == True", "True"),
 
-    ("routing/dynamic-global-routing", "True"),
-    ("routing/global-injection-slash32", "True"),
-    ("routing/global-routing-slash32", "True"),
-    ("routing/mixed-global-routing", "True"),
-    ("routing/nix-simple", "True"),
-    ("routing/nms-p2p-nix", "False"), # Takes too long to run
-    ("routing/simple-alternate-routing", "True"),
-    ("routing/simple-global-routing", "True"),
-    ("routing/simple-point-to-point-olsr", "True"),
-    ("routing/simple-routing-ping6", "True"),
-    ("routing/static-routing-slash32", "True"),
+    ("routing/dynamic-global-routing", "True", "True"),
+    ("routing/global-injection-slash32", "True", "True"),
+    ("routing/global-routing-slash32", "True", "True"),
+    ("routing/mixed-global-routing", "True", "True"),
+    ("routing/nix-simple", "True", "True"),
+    ("routing/nms-p2p-nix", "False", "True"), # Takes too long to run
+    ("routing/simple-alternate-routing", "True", "True"),
+    ("routing/simple-global-routing", "True", "True"),
+    ("routing/simple-point-to-point-olsr", "True", "True"),
+    ("routing/simple-routing-ping6", "True", "True"),
+    ("routing/static-routing-slash32", "True", "True"),
 
-    ("stats/wifi-example-sim", "True"),
+    ("stats/wifi-example-sim", "True", "True"),
 
-    ("tap/tap-wifi-dumbbell", "False"), # Requires manual configuration
+    ("tap/tap-wifi-dumbbell", "False", "True"), # Requires manual configuration
 
-    ("tcp/star", "True"),
-    ("tcp/tcp-large-transfer", "True"),
-    ("tcp/tcp-nsc-lfn", "ENABLE_NSC == True"),
-    ("tcp/tcp-nsc-zoo", "ENABLE_NSC == True"),
-    ("tcp/tcp-star-server", "True"),
+    ("tcp/star", "True", "True"),
+    ("tcp/tcp-large-transfer", "True", "True"),
+    ("tcp/tcp-nsc-lfn", "ENABLE_NSC == True", "True"),
+    ("tcp/tcp-nsc-zoo", "ENABLE_NSC == True", "True"),
+    ("tcp/tcp-star-server", "True", "True"),
 
-    ("tunneling/virtual-net-device", "True"),
+    ("tunneling/virtual-net-device", "True", "True"),
 
-    ("tutorial/first", "True"),
-    ("tutorial/hello-simulator", "True"),
-    ("tutorial/second", "True"),
-    ("tutorial/third", "True"),
-    ("tutorial/fourth", "True"),
+    ("tutorial/first", "True", "True"),
+    ("tutorial/hello-simulator", "True", "True"),
+    ("tutorial/second", "True", "True"),
+    ("tutorial/third", "True", "True"),
+    ("tutorial/fourth", "True", "True"),
 
-    ("udp/udp-echo", "True"),
+    ("udp/udp-echo", "True", "True"),
 
-    ("wireless/mixed-wireless", "True"),
-    ("wireless/multirate", "False"), # Takes too long to run
-    ("wireless/simple-wifi-frame-aggregation", "True"),
-    ("wireless/wifi-adhoc", "False"), # Takes too long to run
-    ("wireless/wifi-ap --verbose=0", "True"), # Don't let it spew to stdout
-    ("wireless/wifi-clear-channel-cmu", "False"), # Requires specific hardware
-    ("wireless/wifi-simple-adhoc", "True"),
-    ("wireless/wifi-simple-adhoc-grid", "True"),
-    ("wireless/wifi-simple-infra", "True"),
-    ("wireless/wifi-simple-interference", "True"),
-    ("wireless/wifi-wired-bridging", "True"),
+    ("wireless/mixed-wireless", "True", "True"),
+    ("wireless/multirate", "False", "True"), # Takes too long to run
+    ("wireless/simple-wifi-frame-aggregation", "True", "True"),
+    ("wireless/wifi-adhoc", "False", "True"), # Takes too long to run
+    ("wireless/wifi-ap --verbose=0", "True", "True"), # Don't let it spew to stdout
+    ("wireless/wifi-clear-channel-cmu", "False", "True"), # Requires specific hardware
+    ("wireless/wifi-simple-adhoc", "True", "True"),
+    ("wireless/wifi-simple-adhoc-grid", "True", "True"),
+    ("wireless/wifi-simple-infra", "True", "True"),
+    ("wireless/wifi-simple-interference", "True", "True"),
+    ("wireless/wifi-wired-bridging", "True", "True"),
 ]
 
 #
@@ -230,12 +242,15 @@ def translate_to_html(results_file, html_file):
         time = get_node_text(suite.getElementsByTagName("SuiteTime")[0])
 
         # 
-        # Print a level three header in green with the result, name and time.
-        # If the test suite passed, the header is printed in green, otherwise
-        # it is printed in red.
+        # Print a level three header with the result, name and time.  If the 
+        # test suite passed, the header is printed in green. If the suite was
+        # skipped, print it in orange, otherwise assume something bad happened
+        # and print in red.
         #
         if result == "PASS":
             f.write("<h3 style=\"color:green\">%s: %s (%s)</h3>\n" % (result, name, time))
+        elif result == "SKIP":
+            f.write("<h3 style=\"color:#ff6600\">%s: %s (%s)</h3>\n" % (result, name, time))
         else:
             f.write("<h3 style=\"color:red\">%s: %s (%s)</h3>\n" % (result, name, time))
 
@@ -250,8 +265,8 @@ def translate_to_html(results_file, html_file):
         f.write("<th> Result </th>\n")
 
         #
-        # If the suite crashed, there is no further information, so just
-        # delare a new table row with the result (CRASH) in it.  Looks like:
+        # If the suite crashed or is skipped, there is no further information, so just
+        # delare a new table row with the result (CRASH or SKIP) in it.  Looks like:
         #
         #   +--------+
         #   | Result |
@@ -259,11 +274,14 @@ def translate_to_html(results_file, html_file):
         #   | CRASH  |
         #   +--------+
         #
-        # Then go on to the next test suite.  Valgrind errors look the same.
+        # Then go on to the next test suite.  Valgrind and skipped errors look the same.
         #
-        if result in ["CRASH", "VALGR"]:
+        if result in ["CRASH", "SKIP", "VALGR"]:
             f.write("<tr>\n")
-            f.write("<td style=\"color:red\">%s</td>\n" % result)
+            if result == "SKIP":
+                f.write("<td style=\"color:#ff6600\">%s</td>\n" % result)
+            else:
+                f.write("<td style=\"color:red\">%s</td>\n" % result)
             f.write("</tr>\n")
             f.write("</table>\n")
             continue
@@ -423,11 +441,13 @@ def translate_to_html(results_file, html_file):
         #
         if result == "PASS":
             f.write("<td style=\"color:green\">%s</td>\n" % result)
+        elif result == "SKIP":
+            f.write("<td style=\"color:#ff6600\">%s</fd>\n" % result)
         else:
             f.write("<td style=\"color:red\">%s</td>\n" % result)
 
         #
-        # Write the example name as a new tagle data.
+        # Write the example name as a new tag data.
         #
         f.write("<td>%s</td>\n" % name)
 
@@ -556,9 +576,11 @@ def run_job_synchronously(shell_command, directory, valgrind):
 class Job():
     def __init__(self):
         self.is_break = False
+        self.is_skip = False
         self.is_example = False
         self.shell_command = ""
         self.display_name = ""
+        self.basedir = ""
         self.cwd = ""
         self.tmp_file_name = ""
         self.returncode = False
@@ -570,6 +592,13 @@ class Job():
     #
     def set_is_break(self, is_break):
         self.is_break = is_break
+
+    #
+    # If a job is to be skipped, we actually run it through the worker threads
+    # to keep the PASS, FAIL, CRASH and SKIP processing all in one place.
+    #
+    def set_is_skip(self, is_skip):
+        self.is_skip = is_skip
 
     #
     # Examples are treated differently than standard test suites.  This is
@@ -666,6 +695,17 @@ class worker_thread(threading.Thread):
                 job.set_is_break(True)
                 self.output_queue.put(job)
                 continue
+
+            #
+            # If we are actually supposed to skip this job, do so.  Note that
+            # if is_skip is true, returncode is undefined.
+            #
+            if job.is_skip:
+                if options.verbose:
+                    print "Skip %s" % job.shell_command
+                self.output_queue.put(job)
+                return
+
             #
             # Otherwise go about the business of running tests as normal.
             #
@@ -758,8 +798,8 @@ def run_tests():
 
     #
     # We communicate results in two ways.  First, a simple message relating 
-    # PASS, FAIL, or SKIP is always written to the standard output.  It is 
-    # expected that this will be one of the main use cases.  A developer can
+    # PASS, FAIL, CRASH or SKIP is always written to the standard output.  It 
+    # is expected that this will be one of the main use cases.  A developer can
     # just run test.py with no options and see that all of the tests still 
     # pass.
     #
@@ -869,13 +909,21 @@ def run_tests():
         thread.start()
 
     #
+    # Keep track of some summary statistics
+    #
+    total_tests = 0
+    skipped_tests = 0
+
+    #
     # We now have worker threads spun up, and a list of work to do.  So, run 
     # through the list of test suites and dispatch a job to run each one.
     # 
     # Dispatching will run with unlimited speed and the worker threads will 
     # execute as fast as possible from the queue.
     #
-    total_tests = 0
+    # Note that we actually dispatch tests to be skipped, so all of the 
+    # PASS, FAIL, CRASH and SKIP processing is done in the same place.
+    #
     for test in suite_list:
         if len(test):
             job = Job()
@@ -890,6 +938,9 @@ def run_tests():
                 multiple = ""
 
             job.set_shell_command("utils/test-runner --suite='%s'%s" % (test, multiple))
+
+            if options.valgrind and test in core_valgrind_skip_tests:
+                job.set_is_skip(True)
 
             if options.verbose:
                 print "Queue %s" % test
@@ -942,8 +993,8 @@ def run_tests():
     if len(options.suite) == 0 and len(options.example) == 0:
         if len(options.constrain) == 0 or options.constrain == "example":
             if ENABLE_EXAMPLES:
-                for test, condition in example_tests:
-                    if eval(condition) == True:
+                for test, do_run, do_valgrind_run in example_tests:
+                    if eval(do_run):
                         job = Job()
                         job.set_is_example(True)
                         job.set_display_name(test)
@@ -951,6 +1002,9 @@ def run_tests():
                         job.set_cwd(TMP_TRACES_DIR)
                         job.set_basedir(os.getcwd())
                         job.set_shell_command("examples/%s" % test)
+
+                        if options.valgrind and not eval(do_valgrind_run):
+                            job.set_is_skip (True)
 
                         if options.verbose:
                             print "Queue %s" % test
@@ -1012,18 +1066,22 @@ def run_tests():
         else:
             kind = "TestSuite"
 
-        if job.returncode == 0:
-            status = "PASS"
-            passed_tests = passed_tests + 1
-        elif job.returncode == 1:
-            failed_tests = failed_tests + 1
-            status = "FAIL"
-        elif job.returncode == 2:
-            valgrind_errors = valgrind_errors + 1
-            status = "VALGR"
+        if job.is_skip:
+            status = "SKIP"
+            skipped_tests = skipped_tests + 1
         else:
-            crashed_tests = crashed_tests + 1
-            status = "CRASH"
+            if job.returncode == 0:
+                status = "PASS"
+                passed_tests = passed_tests + 1
+            elif job.returncode == 1:
+                failed_tests = failed_tests + 1
+                status = "FAIL"
+            elif job.returncode == 2:
+                valgrind_errors = valgrind_errors + 1
+                status = "VALGR"
+            else:
+                crashed_tests = crashed_tests + 1
+                status = "CRASH"
 
         print "%s: %s %s" % (status, kind, job.display_name)
 
@@ -1042,12 +1100,14 @@ def run_tests():
             example_name = "  <Name>%s</Name>\n" % job.display_name
             f.write(example_name)
 
-            if job.returncode == 0:
+            if status == "PASS":
                 f.write('  <Result>PASS</Result>\n')
-            elif job.returncode == 1:
+            elif status == "FAIL":
                 f.write('  <Result>FAIL</Result>\n')
-            elif job.returncode == 2:
+            elif status == "VALGR":
                 f.write('  <Result>VALGR</Result>\n')
+            elif status == "SKIP":
+                f.write('  <Result>SKIP</Result>\n')
             else:
                 f.write('  <Result>CRASH</Result>\n')
 
@@ -1099,31 +1159,43 @@ def run_tests():
             # fails valgrind, we'll see the PASS entry for the working TestSuite
             # followed by a VALGR failing test suite of the same name.
             #
-            if job.returncode == 0 or job.returncode == 1 or job.returncode == 2:
-                f_to = open(xml_results_file, 'a')
-                f_from = open(job.tmp_file_name, 'r')
-                f_to.write(f_from.read())
-                f_to.close()
-                f_from.close()
+            if job.is_skip:
+                f = open(xml_results_file, 'a')
+                f.write("<TestSuite>\n")
+                f.write("  <SuiteName>%s</SuiteName>\n" % job.display_name)
+                f.write('  <SuiteResult>SKIP</SuiteResult>\n')
+                f.write('  <SuiteTime>Execution times not available</SuiteTime>\n')
+                f.write("</TestSuite>\n")
+                f.close()
             else:
-                f = open(xml_results_file, 'a')
-                f.write("<TestSuite>\n")
-                f.write("  <SuiteName>%s</SuiteName>\n" % job.display_name)
-                f.write('  <SuiteResult>CRASH</SuiteResult>\n')
-                f.write('  <SuiteTime>Execution times not available</SuiteTime>\n')
-                f.write("</TestSuite>\n")
-                f.close()
+                if job.returncode == 0 or job.returncode == 1 or job.returncode == 2:
+                    f_to = open(xml_results_file, 'a')
+                    f_from = open(job.tmp_file_name, 'r')
+                    f_to.write(f_from.read())
+                    f_to.close()
+                    f_from.close()
+                else:
+                    f = open(xml_results_file, 'a')
+                    f.write("<TestSuite>\n")
+                    f.write("  <SuiteName>%s</SuiteName>\n" % job.display_name)
+                    f.write('  <SuiteResult>CRASH</SuiteResult>\n')
+                    f.write('  <SuiteTime>Execution times not available</SuiteTime>\n')
+                    f.write("</TestSuite>\n")
+                    f.close()
 
-            if job.returncode == 2:
-                f = open(xml_results_file, 'a')
-                f.write("<TestSuite>\n")
-                f.write("  <SuiteName>%s</SuiteName>\n" % job.display_name)
-                f.write('  <SuiteResult>VALGR</SuiteResult>\n')
-                f.write('  <SuiteTime>Execution times not available</SuiteTime>\n')
-                f.write("</TestSuite>\n")
-                f.close()
+                    if job.returncode == 2:
+                        f = open(xml_results_file, 'a')
+                        f.write("<TestSuite>\n")
+                        f.write("  <SuiteName>%s</SuiteName>\n" % job.display_name)
+                        f.write('  <SuiteResult>VALGR</SuiteResult>\n')
+                        f.write('  <SuiteTime>Execution times not available</SuiteTime>\n')
+                        f.write("</TestSuite>\n")
+                        f.close()
 
-            os.remove(job.tmp_file_name)
+                try:
+                    os.remove(job.tmp_file_name)
+                except:
+                    pass
 
     #
     # We have all of the tests run and the results written out.  One final 
@@ -1146,8 +1218,8 @@ def run_tests():
     #
     # Print a quick summary of events
     #
-    print "%d of %d tests passed (%d passed, %d failed, %d crashed, %d valgrind errors)" % (passed_tests, total_tests, 
-        passed_tests, failed_tests, crashed_tests, valgrind_errors)
+    print "%d of %d tests passed (%d passed, %d skipped, %d failed, %d crashed, %d valgrind errors)" % (passed_tests, 
+        total_tests, passed_tests, skipped_tests, failed_tests, crashed_tests, valgrind_errors)
     #
     # The last things to do are to translate the XML results file to "human
     # readable form" if the user asked for it (or make an XML file somewhere)
