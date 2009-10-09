@@ -27,9 +27,7 @@
  * ns-3 requires Doxygen version 1.5.4 or greater to fully build all items,
  * although earlier versions of Doxygen will mostly work.
  * 
- * Type "./waf --check" followed by "./waf --doxygen" to build the documentation.
- * There is a program that runs during "./waf --check" that builds pieces of
- * the documentation through introspection.  The doc/ directory contains
+ * Type "./waf doxygen" to build the documentation.  The doc/ directory contains
  * configuration for Doxygen (doxygen.conf and main.txt).  The Doxygen 
  * build process puts html files into the doc/html/ directory, and latex 
  * filex into the doc/latex/ directory.
