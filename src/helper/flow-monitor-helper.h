@@ -46,7 +46,7 @@ public:
   /// \param nodes A NodeContainer holding the set of nodes to work with.
   Ptr<FlowMonitor> Install (NodeContainer nodes);
   /// \brief Enable flow monitoring on a single node
-  /// \param nodes A Ptr<Node> to the node on which to enable flow monitoring.
+  /// \param node A Ptr<Node> to the node on which to enable flow monitoring.
   Ptr<FlowMonitor> Install (Ptr<Node> node);
   /// \brief Enable flow monitoring on all nodes
   Ptr<FlowMonitor> InstallAll ();

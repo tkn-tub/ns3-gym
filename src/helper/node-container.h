@@ -58,7 +58,7 @@ public:
    * instantiated and assigned a name using the Object Name Service.  This 
    * Node is then specified by its assigned name. 
    *
-   * \param name The name of the Node Object to add to the container.
+   * \param nodeName The name of the Node Object to add to the container.
    */
   NodeContainer (std::string nodeName);
 
@@ -240,7 +240,7 @@ public:
    * \brief Append the contents of another NodeContainer to the end of
    * this container.
    *
-   * \param The NodeContainer to append.
+   * \param other The NodeContainer to append.
    */
   void Add (NodeContainer other);
 

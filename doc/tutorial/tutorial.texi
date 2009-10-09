@@ -84,6 +84,7 @@ see @uref{http://www.nsnam.org/docs/tutorial.pdf}.
 * Conceptual Overview::
 * Tweaking ns-3::
 * Building Topologies::
+* The Tracing System::
 @end menu
 
 @include introduction.texi
