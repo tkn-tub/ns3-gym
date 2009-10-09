@@ -819,7 +819,283 @@ there is a callback function there which you can use.  Sure enough, there is:
   }
 @end verbatim
 
-If there are no examples to work from, this can be a bit more challenging.
+@subsubsection Take my Word for It
+
+If there are no examples to work from, this can be, well, challenging to 
+actually figure out from the source code.
+
+Before embarking on a walkthrough of the code, I'll be kind and just tell you
+a simple way to figure this out:  The return value of your callback will always 
+be void.  The formal parameter list for a @code{TracedCallback} can be found 
+from the template parameter list in the declaration.  Recall that for our
+current example, this is in @code{mobility-model.h}, where we have previously
+found:
+
+@verbatim
+  TracedCallback<Ptr<const MobilityModel> > m_courseChangeTrace;
+@end verbatim
+
+There is a one-to-one correspondence between the template parameter list in 
+the declaration and the formal arguments of the callback function.  Here,
+there is one template parameter, which is a @code{Ptr<const MobilityModel>}.
+This tells you that you need a function that returns void and takes a
+a @code{Ptr<const MobilityModel>}.  For example,
+
+@verbatim
+  void
+  CourseChangeCallback (Ptr<const MobilityModel> model)
+  {
+    ...
+  }
+@end verbatim
+
+That's all you need if you want to @code{Config::ConnectWithoutContext}.  If
+you want a context, you need to @code{Config::Connect} and use a Callback 
+function that takes a string context, then the required argument.
+
+@verbatim
+  void
+  CourseChangeCallback (std::string path, Ptr<const MobilityModel> model)
+  {
+    ...
+  }
+@end verbatim
+
+If you want to ensure that your @code{CourseChangeCallback} is only visible
+in your local file, you can add the keyword @code{static} and come up with:
+
+@verbatim
+  static void
+  CourseChangeCallback (std::string path, Ptr<const MobilityModel> model)
+  {
+    ...
+  }
+@end verbatim
+
+which is exactly what we used in the @code{third.c} example.
+
+@subsubsection The Hard Way
+
+This section is entirely optional.  It is going to be a bumpy ride, especially
+for those unfamiliar with the details of templates.  However, if you get through
+this, you will have a very good handle on a lot of the @code{ns-3} low level
+idioms.
+
+So, again, let's figure out what signature of callback function is required for
+the ``CourseChange'' Attribute.  This is going to be painful, but you only need
+to do this once.  After you get through this, you will be able to just look at
+a @code{TracedCallback} and understand it.
+
+The first thing we need to look at is the declaration of the trace source.
+Recall that this is in @code{mobility-model.h}, where we have previously
+found:
+
+@verbatim
+  TracedCallback<Ptr<const MobilityModel> > m_courseChangeTrace;
+@end verbatim
+
+This declaration is for a template.  The template parameter is inside the
+angle-brackets, so we are really interested in finding out what that
+@code{TracedCallback<>} is.  If you have absolutely no idea where this might
+be found, grep is your friend.
+
+We are probably going to be interested in some kind of declaration in the 
+@code{ns-3} source, so first change into the @code{src} directory.  Then, 
+we know this declaration is going to have to be in some kind of header file,
+so just grep for it using:
+
+@verbatim
+  find . -name '*.h' | xargs grep TracedCallback
+@end verbatim
+
+You'll see 124 lines fly by (I piped this through wc to see how bad it was).
+Although thatmay seem like it, that's not really a lot.  Just pipe the output
+through more and start scanning through it.  On the first page, you will see
+some very suspiciously template-looking stuff.
+
+@verbatim
+  TracedCallback<T1,T2,T3,T4,T5,T6,T7,T8>::TracedCallback ()
+  TracedCallback<T1,T2,T3,T4,T5,T6,T7,T8>::ConnectWithoutContext (c ...
+  TracedCallback<T1,T2,T3,T4,T5,T6,T7,T8>::Connect (const CallbackB ...
+  TracedCallback<T1,T2,T3,T4,T5,T6,T7,T8>::DisconnectWithoutContext ...
+  TracedCallback<T1,T2,T3,T4,T5,T6,T7,T8>::Disconnect (const Callba ...
+  TracedCallback<T1,T2,T3,T4,T5,T6,T7,T8>::operator() (void) const ...
+  TracedCallback<T1,T2,T3,T4,T5,T6,T7,T8>::operator() (T1 a1) const ...
+  TracedCallback<T1,T2,T3,T4,T5,T6,T7,T8>::operator() (T1 a1, T2 a2 ...
+  TracedCallback<T1,T2,T3,T4,T5,T6,T7,T8>::operator() (T1 a1, T2 a2 ...
+  TracedCallback<T1,T2,T3,T4,T5,T6,T7,T8>::operator() (T1 a1, T2 a2 ...
+  TracedCallback<T1,T2,T3,T4,T5,T6,T7,T8>::operator() (T1 a1, T2 a2 ...
+  TracedCallback<T1,T2,T3,T4,T5,T6,T7,T8>::operator() (T1 a1, T2 a2 ...
+  TracedCallback<T1,T2,T3,T4,T5,T6,T7,T8>::operator() (T1 a1, T2 a2 ...
+@end verbatim
+
+It turns out that all of this comes from the header file 
+@code{traced-callback.h} which sounds very promising.  You can then take a
+look at @code{mobility-model.h} and see that there is a line which confirms
+this hunch:
+
+@verbatim
+  #include "ns3/traced-callback.h"
+@endi verbatim
+
+Of course, you could have gone at this from the other direction and started
+by looking at the includes in @code{mobility-model.h} and noticing the 
+include of @code{traced-callback} and inferring that this must be the file
+you want.
+
+In either case, the next step is to take a look at @code{src/core/traced-callback.h}
+in your favorite editor to see what is happening.
+
+You will see a comment at the top of the file that should be comforting:
+
+@verbatim
+  An ns3::TracedCallback has almost exactly the same API as a normal ns3::Callback but
+  instead of forwarding calls to a single function (as an ns3::Callback normally does),
+  it forwards calls to a chain of ns3::Callback.
+@end verbatim
+
+This should sound very familiar and let you know you are on the right track.
+
+Just after this comment, you will find,
+
+@verbatim
+  template<typename T1 = empty, typename T2 = empty, 
+           typename T3 = empty, typename T4 = empty,
+           typename T5 = empty, typename T6 = empty,
+           typename T7 = empty, typename T8 = empty>
+  class TracedCallback 
+  {
+    ...
+@end verbatim
+
+This tells you that TracedCallback is a templated class.  It has eight possible
+type parameters with default values.  Go back and compare this with the 
+declaration you are trying to understand:
+
+@verbatim
+  TracedCallback<Ptr<const MobilityModel> > m_courseChangeTrace;
+@end verbatim
+
+The @code{typename T1} in the templated class declaration corresponds to the 
+@code{Ptr<const MobilityModel>} in the declaration above.  All of the other
+type parameters are left as defaults.  Looking at the constructor really
+doesn't tell you much.  The one place where you have seen a connection made
+between your Callback function and the tracing system is in the @code{Connect}
+and @code{ConnectWithoutContext} functions.  If you scroll down, you will see
+a @code{ConnectWithoutContext} method here:
+
+@verbatim
+  template<typename T1, typename T2, 
+           typename T3, typename T4,
+           typename T5, typename T6,
+           typename T7, typename T8>
+  void 
+  TracedCallback<T1,T2,T3,T4,T5,T6,T7,T8>::ConnectWithoutContext ...
+  {
+    Callback<void,T1,T2,T3,T4,T5,T6,T7,T8> cb;
+    cb.Assign (callback);
+    m_callbackList.push_back (cb);
+  }
+@end verbatim
+
+You are now in the belly of the beast.  When the template is instantiated for
+the declaration above, the compiler will replace @code{T1} with 
+@code{Ptr<const MobilityModel>}.  
+
+@verbatim
+  void 
+  TracedCallback<Ptr<const MobilityModel>::ConnectWithoutContext ... cb
+  {
+    Callback<void, Ptr<const MobilityModel> > cb;
+    cb.Assign (callback);
+    m_callbackList.push_back (cb);
+  }
+@end verbatim
+
+You can now see the implementation of everything we've been talking about.  The
+code creates a Callback of the right type and assigns your function to it.  This
+is the equivalent of the @code{pfi = MyFunction} we discussed at the start of
+this section.  The code then adds the Callback to the list of Callbacks for 
+this source.  The only thing left is to look at the definition of Callback.
+Using the same grep trick as we used to find @code{TracedCallback}, you will be
+able to find that the file ./core/callback.h is the one we need to look at.
+
+If you look down through the file, you will see a lot of probably almost
+incomprehensible template code.  You will eventually come to some Doxygen for
+the Callback template class, though.  Fortunately, there is some English:
+
+@verbatim
+  This class template implements the Functor Design Pattern.
+  It is used to declare the type of a Callback:
+   - the first non-optional template argument represents
+     the return type of the callback.
+   - the second optional template argument represents
+     the type of the first argument to the callback.
+   - the third optional template argument represents
+     the type of the second argument to the callback.
+   - the fourth optional template argument represents
+     the type of the third argument to the callback.
+   - the fifth optional template argument represents
+     the type of the fourth argument to the callback.
+   - the sixth optional template argument represents
+     the type of the fifth argument to the callback.
+@end verbatim
+
+We are trying to figure out what the
+
+@verbatim
+    Callback<void, Ptr<const MobilityModel> > cb;
+@end verbatim
+
+declaration means.  Now we are in a position to understand that the first
+(non-optional) parameter, @code{void}, represents the return type of the 
+Callback.  The second (non-optional) parameter, @code{Ptr<const MobilityModel>} 
+represents the first argument to the callback.
+
+The Callback in question is your function to receive the trace events.  From
+this you can infer that you need a function that returns void and takes a
+a @code{Ptr<const MobilityModel>}.  For example,
+
+@verbatim
+  void
+  CourseChangeCallback (Ptr<const MobilityModel> model)
+  {
+    ...
+  }
+@end verbatim
+
+That's all you need if you want to @code{Config::ConnectWithoutContext}.  If
+you want a context, you need to @code{Config::Connect} and use a Callback 
+function that takes a string context.  This is because the @code{Connect}
+function will provide the context for you.  You'll need:
+
+@verbatim
+  void
+  CourseChangeCallback (std::string path, Ptr<const MobilityModel> model)
+  {
+    ...
+  }
+@end verbatim
+
+If you want to ensure that your @code{CourseChangeCallback} is only visible
+in your local file, you can add the keyword @code{static} and come up with:
+
+@verbatim
+  static void
+  CourseChangeCallback (std::string path, Ptr<const MobilityModel> model)
+  {
+    ...
+  }
+@end verbatim
+
+which is exactly what we used in the @code{third.c} example.  Perhaps you
+should now go back and reread the previous section (Take My Word for It).
+
+If you are interested in more details regarding the implementation of 
+Callbacks, feel free to take a look at the @code{ns-3} manual.  They are one
+of the most frequently used constructs in the low-level parts of @code{ns-3}.
+It is, in my opinion, a quite elegant thing.
+
 
 
 
