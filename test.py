@@ -1233,7 +1233,7 @@ def run_tests():
     if len(options.xml):
         shutil.copyfile(xml_results_file, options.xml)
 
-    if passed_tests == total_tests:
+    if passed_tests + skipped_tests == total_tests:
         return 0 # success
     else:
         return 1 # catchall for general errors
