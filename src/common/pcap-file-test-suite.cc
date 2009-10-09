@@ -175,6 +175,7 @@ WriteModeCreateTestCase::DoRun (void)
   // data.
   //
   uint8_t buffer[128];
+  memset(buffer, 0, sizeof(buffer));
   err = f.Write (0, 0, buffer, 128);
   NS_TEST_ASSERT_MSG_EQ (err, false, "Write (write-only-file " << m_testFilename << ") returns error");
 
@@ -370,6 +371,7 @@ AppendModeCreateTestCase::DoRun (void)
   // We should be able to write to it since it was opened in "a" mode.
   //
   uint8_t buffer[128];
+  memset(buffer, 0, sizeof(buffer));
   err = f.Write (0, 0, buffer, 128);
   NS_TEST_ASSERT_MSG_EQ (err, false, "Write (append-mode-file " << m_testFilename << ") returns error");
 
