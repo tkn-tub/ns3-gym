@@ -18,6 +18,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <sstream>
+#include <cstring>
 
 #include "ns3/test.h"
 #include "ns3/pcap-file.h"
