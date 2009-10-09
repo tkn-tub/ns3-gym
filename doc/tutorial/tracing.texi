@@ -683,8 +683,26 @@ example.  Perusing this list will be helpful.
 
 @subsection What String do I use to Connect?
 
-The key to this question is found in the @code{ns-3} Doxygen as well.  It will
-be simplest just to walk through the ``CourseChanged'' example.
+The easiest way to do this is to grep around in the @ns-3 codebase for someone
+who has already figured it out,  You should always try to copy someone else's
+working code before you start to write your own.  Try something like:
+
+@verbatim
+  find . -name '*.cc' | xargs grep CourseChange | grep Connect
+@end verbatim
+
+and you may find your answer along with working code.  For example, in this
+case, @code{./ns-3-dev/examples/wireless/mixed-wireless.cc} has something
+just waiting for you to use:
+
+@verbatim
+  Config::Connect (``/NodeList/*/$ns3::MobilityModel/CourseChange'', 
+    MakeCallback (&CourseChangeCallback));
+@end verbatim
+
+If you cannot find any examples in the distribution, you can find this out
+from the @code{ns-3} Doxygen.  It will probably be simplest just to walk 
+through the ``CourseChanged'' example.
 
 Let's assume that you have just found the ``CourseChanged'' trace source in 
 ``The list of all trace sources'' and you want to figure out how to connect to
@@ -773,7 +791,36 @@ which perfectly matches the example path:
 
 @subsection What Return Value and Formal Arguments?
 
-This is a bit more involved.  There are two ways you can figure this out.
+The easiest way to do this is to grep around in the @ns-3 codebase for someone
+who has already figured it out,  You should always try to copy someone else's
+working code.  Try something like:
+
+@verbatim
+  find . -name '*.cc' | xargs grep CourseChange | grep Connect
+@end verbatim
+
+and you may find your answer along with working code.  For example, in this
+case, @code{./ns-3-dev/examples/wireless/mixed-wireless.cc} has something
+just waiting for you to use.  You will find
+
+@verbatim
+  Config::Connect (``/NodeList/*/$ns3::MobilityModel/CourseChange'', 
+    MakeCallback (&CourseChangeCallback));
+@end verbatim
+
+as a result of your grep.  The @code{MakeCallback} should indicate to you that
+there is a callback function there which you can use.  Sure enough, there is:
+
+@verbatim
+  static void
+  CourseChangeCallback (std::string path, Ptr<const MobilityModel> model)
+  {
+    ...
+  }
+@end verbatim
+
+If there are no examples to work from, this can be a bit more challenging.
+
 
 
 
