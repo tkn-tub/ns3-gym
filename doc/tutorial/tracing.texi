@@ -41,7 +41,7 @@ transformation, so this does not come for free.  Of course, if the information
 of interest in does not exist in any of the pre-defined output mechanisms,
 this approach fails.
 
-If you need to add some tidbit of inforamtion to the pre-defined bulk mechanisms,
+If you need to add some tidbit of information to the pre-defined bulk mechanisms,
 this can certainly be done; and if you use one of the @code{ns-3} mechanisms, 
 you may get your code added as a contribution.
 
@@ -53,9 +53,9 @@ control the format of the output directly so you avoid the postprocessing step
 with sed or awk script.  If you desire, your output can be formatted directly into
 a form acceptable by gnuplot, for example.  You can add hooks in the core which 
 can then be accessed by other users, but which will produce no information unless
-explicitly asked to do so.  For these reasons, we believe that the @code{ns-3>
+explicitly asked to do so.  For these reasons, we believe that the @code{ns-3}
 Tracing system is the best way to get information out of a simulation and is also
-therefore one of the most important mechansisms to understand in @command{ns-3}.
+therefore one of the most important mechanisms to understand in @command{ns-3}.
 
 @subsection Blunt Instruments
 There are many ways to get information out of a program.  The most 
@@ -68,7 +68,7 @@ output, as in,
   void
   SomeFunction (void)
   {
-   uint32_t x = SOME_INTERESTING_VALUE;
+    uint32_t x = SOME_INTERESTING_VALUE;
     ...
     std::cout << "The value of x is " << x << std::endl;
     ...
@@ -77,7 +77,7 @@ output, as in,
 
 Nobody is going to prevent you from going deep into the core of @code{ns-3} and
 adding print statements.  This is insanely easy to do and, after all, you have 
-complete control of your own @ncde{ns-3} branch.  This will probably not turn 
+complete control of your own @code{ns-3} branch.  This will probably not turn 
 out to be very satisfactory in the long term, though.
 
 As the number of print statements increases in your programs, the task of 
@@ -136,7 +136,7 @@ to add a new @code{NS_LOG_LOGIC} in the appropriate @code{case} statement:
       ...
 @end verbatim
 
-This may seem fairly simple and satisfying at first glance, but somthing to
+This may seem fairly simple and satisfying at first glance, but something to
 consider is that you will be writing code to add the @code{NS_LOG} statement 
 and you will also have to write code (as in grep, sed or awk scripts) to parse
 the log output in order to isolate your information.  This is because even 
@@ -168,7 +168,7 @@ of interest changed or an interesting event happened so the user doesn't have
 to actively go poke around in the system looking for things.
 
 The @command{ns-3} tracing system is designed to work along those lines and is 
-well-integrated with the Attribute and Config substems allowing for relatively
+well-integrated with the Attribute and Config subsystems allowing for relatively
 simple use scenarios.
 
 @node Overview
@@ -278,9 +278,9 @@ parameters (the call to ``pfi'' above passed one parameter to the target functio
 
 The important difference that the tracing system adds is that for each trace
 source there is an internal list of Callbacks.  Instead of just making one 
-indirect call, a trace source may invoke any numbr of Callbacks.  When a trace
+indirect call, a trace source may invoke any number of Callbacks.  When a trace
 sink expresses interest in notifications from a trace source, it basically just
-arranges to add its own fuction to the callback list.
+arranges to add its own function to the callback list.
 
 If you are interested in more details about how this is actually arranged in 
 @code{ns-3}, feel free to peruse the Callback section of the manual.
@@ -331,7 +331,7 @@ you can pass the object around, not an address.  In order to use value semantics
 at all you have to have an object with an associated copy constructor and 
 assignment operator available.  We extend the requirements to talk about the set
 of operators that are pre-defined for plain-old-data (POD) types.  Operator=, 
-operator++, operator--, operator+, operator==, etc.
+operator++, operator---, operator+, operator==, etc.
 
 What this all really means is that you will be able to trace changes to a C++
 object made using those operators.
@@ -402,7 +402,7 @@ The next step, the @code{TraceConnectWithoutContext}, forms the connection
 between the trace source and the trace sink.  Notice the @code{MakeCallback}
 template function.  This function does the magic required to create the
 underlying @code{ns-3} Callback object and associate it with the function
-@code{IntTrace}.  TraceConnect with make the association between your provided
+@code{IntTrace}.  TraceConnect makes the association between your provided
 function and the overloaded @code{operator()} in the traced variable referred 
 to by the ``MyInteger'' Attribute.  After this association is made, the trace
 source will ``fire'' your provided callback function.
@@ -411,7 +411,7 @@ The code to make all of this happen is, of course, non-trivial, but the essence
 is that you are arranging for something that looks just like the @code{pfi()}
 example above to be called by the trace source.  The declaration of the 
 @code{TracedValue<int32_t> m_myInt;} in the Object itself performs the magic 
-needed to provide the overloaded operators (++, --, etc.) that will use the
+needed to provide the overloaded operators (++, ---, etc.) that will use the
 @code{operator()} to actually invoke the Callback with the desired parameters.
 The @code{.AddTraceSource} performs the magic to connect the Callback to the 
 Config system, and @code{TraceConnectWithoutContext} performs the magic to
@@ -430,9 +430,9 @@ should be interpreted as an invocation of @code{operator=} on the member
 variable @code{m_myInt} with the integer @code{1234} passed as a parameter.
 
 It turns out that this operator is defined (by @code{TracedValue}) to execute
-a callback that returns void and takes two integer values as parameters -- 
+a callback that returns void and takes two integer values as parameters --- 
 an old value and a new value for the integer in question.  That is exactly 
-the function signature for the callback function we provided -- @code{IntTrace}.
+the function signature for the callback function we provided --- @code{IntTrace}.
 
 To summarize, a trace source is, in essence, a variable that holds a list of
 callbacks.  A trace sink is a function used as the target of a callback.  The
@@ -484,8 +484,8 @@ what this function is doing.
 @end verbatim
 
 When we connected the ``CourseChange'' trace source to the above trace sink,
-we used what is clled a ``Config Path'' to specify the source when we
-aranged a connection between the pre-defined trace source and the new trace 
+we used what is called a ``Config Path'' to specify the source when we
+arranged a connection between the pre-defined trace source and the new trace 
 sink:
 
 @verbatim
@@ -522,7 +522,7 @@ a connect method directly:
 @end verbatim
 
 In the @code{third.cc} example, we actually want an additional ``context'' to 
-be delivered along with the Callback paramters (which will be explained below) so we 
+be delivered along with the Callback parameters (which will be explained below) so we 
 could actually use the following equivalent code,
 
 @verbatim
@@ -683,7 +683,7 @@ example.  Perusing this list will be helpful.
 
 @subsection What String do I use to Connect?
 
-The easiest way to do this is to grep around in the @ns-3 codebase for someone
+The easiest way to do this is to grep around in the @code{ns-3} codebase for someone
 who has already figured it out,  You should always try to copy someone else's
 working code before you start to write your own.  Try something like:
 
@@ -774,7 +774,7 @@ Look further down in the @code{GetTypeId} doxygen.  You will find,
 
 This is exactly what you need to know.  The trace source of interest is found in
 @code{ns3::MobilityModel} (which you knew anyway).  The interesting thing this
-bit of Doxygen teslls you is that you don't need that extra cast in the config
+bit of Doxygen tells you is that you don't need that extra cast in the config
 path above to get to the concrete class, since the trace source is actually in
 the base class.  Therefore the additional @code{GetObject} is not required and
 you simply use the path:
@@ -791,7 +791,7 @@ which perfectly matches the example path:
 
 @subsection What Return Value and Formal Arguments?
 
-The easiest way to do this is to grep around in the @ns-3 codebase for someone
+The easiest way to do this is to grep around in the @code{ns-3} codebase for someone
 who has already figured it out,  You should always try to copy someone else's
 working code.  Try something like:
 
@@ -872,7 +872,7 @@ in your local file, you can add the keyword @code{static} and come up with:
   }
 @end verbatim
 
-which is exactly what we used in the @code{third.c} example.
+which is exactly what we used in the @code{third.cc} example.
 
 @subsubsection The Hard Way
 
@@ -909,7 +909,7 @@ so just grep for it using:
 @end verbatim
 
 You'll see 124 lines fly by (I piped this through wc to see how bad it was).
-Although thatmay seem like it, that's not really a lot.  Just pipe the output
+Although that may seem like it, that's not really a lot.  Just pipe the output
 through more and start scanning through it.  On the first page, you will see
 some very suspiciously template-looking stuff.
 
@@ -936,11 +936,11 @@ this hunch:
 
 @verbatim
   #include "ns3/traced-callback.h"
-@endi verbatim
+@end verbatim
 
 Of course, you could have gone at this from the other direction and started
 by looking at the includes in @code{mobility-model.h} and noticing the 
-include of @code{traced-callback} and inferring that this must be the file
+include of @code{traced-callback.h} and inferring that this must be the file
 you want.
 
 In either case, the next step is to take a look at @code{src/core/traced-callback.h}
@@ -1018,7 +1018,7 @@ is the equivalent of the @code{pfi = MyFunction} we discussed at the start of
 this section.  The code then adds the Callback to the list of Callbacks for 
 this source.  The only thing left is to look at the definition of Callback.
 Using the same grep trick as we used to find @code{TracedCallback}, you will be
-able to find that the file ./core/callback.h is the one we need to look at.
+able to find that the file @code{./core/callback.h} is the one we need to look at.
 
 If you look down through the file, you will see a lot of probably almost
 incomprehensible template code.  You will eventually come to some Doxygen for
@@ -1053,7 +1053,7 @@ Callback.  The second (non-optional) parameter, @code{Ptr<const MobilityModel>}
 represents the first argument to the callback.
 
 The Callback in question is your function to receive the trace events.  From
-this you can infer that you need a function that returns void and takes a
+this you can infer that you need a function that returns @code{void} and takes
 a @code{Ptr<const MobilityModel>}.  For example,
 
 @verbatim
@@ -1088,7 +1088,7 @@ in your local file, you can add the keyword @code{static} and come up with:
   }
 @end verbatim
 
-which is exactly what we used in the @code{third.c} example.  Perhaps you
+which is exactly what we used in the @code{third.cc} example.  Perhaps you
 should now go back and reread the previous section (Take My Word for It).
 
 If you are interested in more details regarding the implementation of 
