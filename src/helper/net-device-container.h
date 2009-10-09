@@ -175,14 +175,14 @@ public:
    * \brief Append the contents of another NetDeviceContainer to the end of
    * this container.
    *
-   * \param The NetDeviceContainer to append.
+   * \param other The NetDeviceContainer to append.
    */
   void Add (NetDeviceContainer other);
 
   /**
    * \brief Append a single Ptr<NetDevice> to this container.
    *
-   * \param application The Ptr<NetDevice> to append.
+   * \param device The Ptr<NetDevice> to append.
    */
   void Add (Ptr<NetDevice> device);
 
@@ -190,7 +190,7 @@ public:
    * \brief Append to this container the single Ptr<NetDevice> referred to
    * via its object name service registered name.
    *
-   * \param name The name of the NetDevice Object to add to the container.
+   * \param deviceName The name of the NetDevice Object to add to the container.
    */
   void Add (std::string deviceName);
 

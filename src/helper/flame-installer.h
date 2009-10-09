@@ -58,7 +58,7 @@ public:
   
   /**
    * \brief Install a flame stack on the given MeshPointDevice
-   * \param The Ptr<MeshPointDevice> to use.
+   * \param mp The Ptr<MeshPointDevice> to use.
    */
   bool InstallStack (Ptr<MeshPointDevice> mp);
 

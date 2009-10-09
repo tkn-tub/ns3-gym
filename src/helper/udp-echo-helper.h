@@ -121,7 +121,7 @@ public:
    * packet (what is sent as data to the server) to the contents of the fill
    * string (including the trailing zero terminator).
    *
-   * \warn The size of resulting echo packets will be automatically adjusted
+   * \warning The size of resulting echo packets will be automatically adjusted
    * to reflect the size of the fill string -- this means that the PacketSize
    * attribute may be changed as a result of this call.
    *
@@ -137,7 +137,7 @@ public:
    *
    * The fill byte will be used to initialize the contents of the data packet.
    * 
-   * \warn The size of resulting echo packets will be automatically adjusted
+   * \warning The size of resulting echo packets will be automatically adjusted
    * to reflect the dataLength parameter -- this means that the PacketSize
    * attribute may be changed as a result of this call.
    *
@@ -156,7 +156,7 @@ public:
    * by providing a complete buffer with fillLength set to your desired 
    * dataLength
    *
-   * \warn The size of resulting echo packets will be automatically adjusted
+   * \warning The size of resulting echo packets will be automatically adjusted
    * to reflect the dataLength parameter -- this means that the PacketSize
    * attribute of the Application may be changed as a result of this call.
    *
@@ -183,7 +183,7 @@ public:
    * is provided as a string name of a Node that has been previously 
    * associated using the Object Name Service.
    *
-   * \param node The name of the node on which to create the UdpEchoClientApplication
+   * \param nodeName The name of the node on which to create the UdpEchoClientApplication
    *
    * \returns An ApplicationContainer that holds a Ptr<Application> to the 
    *          application created

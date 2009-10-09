@@ -79,12 +79,11 @@ public:
    * Manually add an entry to the container consisting of a previously composed 
    * entry std::pair.
    *
-   * \param ipv4 pointer to Ipv4 object
-   * \param interface interface index of the Ipv4Interface to add to the container
+   * \param ipInterfacePair the pair of a pointer to Ipv4 object and interface index of the Ipv4Interface to add to the container
    *
    * @see Ipv4InterfaceContainer
    */
-  void Add (std::pair<Ptr<Ipv4>, uint32_t>);
+  void Add (std::pair<Ptr<Ipv4>, uint32_t> ipInterfacePair);
 
   /**
    * Manually add an entry to the container consisting of the individual parts

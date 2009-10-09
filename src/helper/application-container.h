@@ -157,7 +157,7 @@ public:
    * \brief Append the contents of another ApplicationContainer to the end of
    * this container.
    *
-   * \param The ApplicationContainer to append.
+   * \param other The ApplicationContainer to append.
    */
   void Add (ApplicationContainer other);
 
@@ -202,9 +202,9 @@ public:
    * down and stop doing their thing (Stop) at a common time.
    *
    * This method simply iterates through the contained Applications and calls
-   * their Start() methods with the provided Time.
+   * their Stop() methods with the provided Time.
    *
-   * \param start The Time at which each of the applications should start.
+   * \param stop The Time at which each of the applications should stop.
    */
   void Stop (Time stop);
 
