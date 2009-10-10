@@ -35,14 +35,16 @@ Steps in doing an ns-3 release
 7. check out a clean version of the new release (ns-3.x) somewhere
 8. Update the VERSION for this new release
    - change the string 3-dev in the VERSION file to the real version 
-     (e.g. 3.2)  This must agree with the version name you chose in the clone
+     (e.g. 3.7 or 3.7-RC1)  This must agree with the version name you chose in the clone
      for the regression tests to work.
    - hg commit
    - hg push
 9. Run the tests on the new release (debug and optimized) like a user would
+   You need to use ns-3-allinone since you will use that to make the distro
    - hg clone http://code.nsnam.org/ns-3-allinone-ns-3.x
    - ./download.py -n ns-3.x -r ns-3.x-ref-traces
    - ./build.py
+   - cd ns-3.x
    - ./waf -d debug configure
    - ./waf
    - ./test.py
@@ -57,15 +59,19 @@ Steps in doing an ns-3 release
    - ./waf --valgrind --regression (for valgrind version)
    - There should be no regression errors at this time
 10. Create final tarballs
+   - cd ..
+   - ./dist.py
    - ./waf configure; ./waf dist
-   - this will create an ns-3.x.tar.bz2 tarball
-   - this will also create a ns-3.x-ref-traces.tar.bz2 tarball
-11. upload "ns-3.x.tar.bz2" to the /var/www/html/releases/ directory on 
+   - this will create an ns-allinone-3.x.tar.bz2 tarball
+11. upload "ns-allinone-3.x.tar.bz2" to the /var/www/html/releases/ directory on 
    the www.nsnam.org server
-   - give it 644 file permissions, and user/group = apache
-12. upload "ns-3.x-ref-traces.tar.bz2" to the /var/www/html/releases/ 
-   directory on the www.nsnam.org server
-   - give it 644 file permissions, and user/group = apache
+   - scp ns-allinone-3.x.tar.bz2 www.nsnam.org:~
+   - ssh www.nsnam.org
+   - sudo cp ns-allinone-3.x.tar.bz2 /var/www/html/releases
+   - cd !$
+12. give it 644 file permissions, and user/group = apache if it is not already
+   - sudo chown apache:apache ns-allinone-3.x.tar.bz2
+   - sudo chmod 644 ns-allinone-3.x.tar.bz2
 13. update web pages on www.nsnam.org (source is in the www/ module)
    - clone the source repo (hg clone http://code.nsnam.org/www)
    - update index.html
