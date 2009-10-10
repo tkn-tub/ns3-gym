@@ -1,13 +1,18 @@
 Steps in doing an ns-3 release
 
 1. check out a clean ns-3-dev somewhere
+   - hg clone http://code.nsnam.org/ns-3-allinone
+   - ./download.py
+   - ./build.py
+   - confirm that the release builds cleanly.
+   - ensure that tests pass (./test.py)
+   - ensure no regressions (./waf --regression)
 2. prepare the source files
    - revise and check in AUTHORS, if needed
    - revise and check in RELEASE_NOTES
    - DO NOT change VERSION at this time
    - confirm that Doxygen builds cleanly and without warnings
-     (./waf --check; ./waf --doxygen), and check in any necessary changes 
-   - ensure no regressions (./waf --regression)
+     (./waf doxygen), and check in any necessary changes 
 3. ./waf configure; ./waf dist
    - this will create an ns-3-dev.tar.bz2 tarball
    - this will also create a ns-3-dev-ref-traces.tar.bz2 tarball
@@ -34,13 +39,17 @@ Steps in doing an ns-3 release
      for the regression tests to work.
    - hg commit
    - hg push
-9. Run the regression tests on the new release (debug and optimized)
+9. Run the tests on the new release (debug and optimized)
    - ./waf -d debug configure
    - ./waf
+   - ./test.py
+   - ./test.py -g
    - ./waf --regression
    - ./waf --valgrind --regression (for valgrind version)
    - ./waf -d optimized configure
    - ./waf
+   - ./test.py
+   - ./test.py -g
    - ./waf --regression
    - ./waf --valgrind --regression (for valgrind version)
    - There should be no regression errors at this time
