@@ -48,6 +48,13 @@ us a note on ns-developers mailing list.  </p>
 
 <h2>Changes to build system:</h2>
 <ul>
+<li><b>A new test framework is provided with ns-3.6 that primarilay runs outside waf</b>
+<p>"./waf check" now runs the new unit tests of the core part of ns-3.6.  
+In order to run the complete test package, use "./test.py" which is 
+documented in a new manual -- find it in ./doc/testing.  "./waf check"
+no longer generates the introspected Doxygen.  Now use "./waf doxygen"
+to do this and generate the Doxygen documentation in one step.
+</p>
 </ul>
 
 <h2>New API:</h2>
@@ -120,6 +127,14 @@ router solicitation, DAD
 </ul>
 <ul>
 <li> examples: nix-simple.cc, nms-p2p-nix.cc
+</ul> 
+</p>
+</li>
+
+<li><b>New Test Framework</b>
+<p> Add TestCase, TestSuite classes
+<ul>
+<li> examples: src/core/names-test-suite.cc, src/core/random-number-test-suite.cc, src/test/ns3tcp/ns3tcp-cwnd-test-suite.cc
 </ul> 
 </p>
 </li>

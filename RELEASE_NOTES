@@ -63,6 +63,11 @@ New user-visible features
     - Ipv4NixVectorHelper
     - Examples (nix-simple, nms-p2p-nix)
 
+  e) New Test Framework
+    - Use test.py instead of ./waf check or ./waf --regression
+    - Previous unit tests have been ported to new framework.
+    - Examples are tested for run-ability.
+
 API changes from ns-3.5
 -----------------------
 API changes for this release are documented in the file CHANGES.html. 
