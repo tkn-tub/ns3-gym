@@ -126,8 +126,8 @@ introduced features.
 
 Since the release numbers are going to be changing, I will stick with 
 the more constant ns-3-dev here in the tutorial, but you can replace the 
-string ``ns-3-dev'' with your choice of release (e.g., ns-3.5 and 
-ns-3.5-ref-traces) in the text below.  You can find the latest version  of the
+string ``ns-3-dev'' with your choice of release (e.g., ns-3.6 and 
+ns-3.6-ref-traces) in the text below.  You can find the latest version  of the
 code either by inspection of the repository list or by going to the 
 @uref{http://www.nsnam.org/getting_started.html,,``Getting Started''} 
 web page and looking for the latest release identifier.
@@ -138,7 +138,7 @@ script to pull down the various pieces of @command{ns-3} you will be using.
 
 Go ahead and type the following into your shell (remember you can substitute
 the name of your chosen release number instead of @code{ns-3-dev} -- like
-@code{"ns-3.5"} and @code{"ns-3.5-ref-traces"} if you want to work with a 
+@code{"ns-3.6"} and @code{"ns-3.6-ref-traces"} if you want to work with a 
 stable release).
 
 @verbatim
@@ -267,16 +267,16 @@ get a copy of a release by typing the following into your Linux shell
   cd
   mkdir tarballs
   cd tarballs
-  wget http://www.nsnam.org/releases/ns-allinone-3.5.tar.bz2
-  tar xjf ns-allinone-3.5.tar.bz2
+  wget http://www.nsnam.org/releases/ns-allinone-3.6.tar.bz2
+  tar xjf ns-allinone-3.6.tar.bz2
 @end verbatim 
 
-If you change into the directory @code{ns-allinone-3.5} you should see a
+If you change into the directory @code{ns-allinone-3.6} you should see a
 number of files:
 
 @verbatim
-build.py*     ns-3.5/             nsc-0.5.0/             README
-constants.py  ns-3.5-ref-traces/  pybindgen-0.10.0.640/  util.py
+build.py*     ns-3.6/             nsc-0.5.1/             README
+constants.py  ns-3.6-ref-traces/  pybindgen-0.12.0.700/  util.py
 @end verbatim 
 
 You are now ready to build the @command{ns-3} distribution.
@@ -298,7 +298,7 @@ Change into the directory you created in the download section above.  If you
 downloaded using Mercurial you should have a directory called 
 @code{ns-3-allinone} under your @code{~/repos} directory.  If you downloaded
 using a tarball you should have a directory called something like 
-@code{ns-allinone-3.5} under your @code{~/tarballs} directory.  Take a deep
+@code{ns-allinone-3.6} under your @code{~/tarballs} directory.  Take a deep
 breath and type the following:
 
 @verbatim
@@ -310,7 +310,7 @@ script builds the various pieces you downloaded.  Eventually you should see the
 following magic words:
 
 @verbatim
-  Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone-3.5-tutorial/ns-3-dev/build'
+  Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone/ns-3-dev/build'
   'build' finished successfully (2m30.586s)
 @end verbatim
 

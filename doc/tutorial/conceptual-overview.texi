@@ -750,10 +750,10 @@ You should see messages reporting that your @code{myfirst} example was built
 successfully.
 
 @verbatim
-  Waf: Entering directory `/home/craigdo/repos/ns-3-allinone-3.5-tutorial/ns-3-dev/build'
+  Waf: Entering directory `/home/craigdo/repos/ns-3-allinone/ns-3-dev/build'
   [614/708] cxx: scratch/myfirst.cc -> build/debug/scratch/myfirst_3.o
   [706/708] cxx_link: build/debug/scratch/myfirst_3.o -> build/debug/scratch/myfirst
-  Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone-3.5-tutorial/ns-3-dev/build'
+  Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone/ns-3-dev/build'
   'build' finished successfully (2.357s)
 @end verbatim
 
@@ -767,8 +767,8 @@ directory you must run it out of the scratch directory):
 You should see some output:
 
 @verbatim
-  Waf: Entering directory `/home/craigdo/repos/ns-3-allinone-3.5-tutorial/ns-3-dev/build'
-  Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone-3.5-tutorial/ns-3-dev/build'
+  Waf: Entering directory `/home/craigdo/repos/ns-3-allinone/ns-3-dev/build'
+  Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone/ns-3-dev/build'
   'build' finished successfully (0.418s)
   Sent 1024 bytes to 10.1.1.2
   Received 1024 bytes from 10.1.1.1
