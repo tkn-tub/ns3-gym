@@ -39,7 +39,10 @@ Steps in doing an ns-3 release
      for the regression tests to work.
    - hg commit
    - hg push
-9. Run the tests on the new release (debug and optimized)
+9. Run the tests on the new release (debug and optimized) like a user would
+   - hg clone http://code.nsnam.org/ns-3-allinone-ns-3.x
+   - ./download.py -n ns-3.x -r ns-3.x-ref-traces
+   - ./build.py
    - ./waf -d debug configure
    - ./waf
    - ./test.py
