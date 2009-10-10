@@ -405,6 +405,7 @@ output that looks similar to the following,
   Python Bindings               : enabled
   Python API Scanning Support   : enabled
   Use sudo to set suid bit      : not enabled (option --enable-sudo not selected)
+  Build examples and samples    : enabled
   Static build                  : not enabled (option --enable-static not selected)
   'configure' finished successfully (2.870s)
 @end verbatim
@@ -462,51 +463,44 @@ but now you know how to change the configuration and build optimized code.
 
 @cindex unit tests
 You can run the unit tests of the @command{ns-3} distribution by running the 
-``--check'' option,
+``./test.py -c core'' script,
 
 @verbatim
-  ./waf --check
+  ./test.py -c core
 @end verbatim
 
-These tests are run in parallel by waf, so the summary, ``Ran n tests'' will 
-appear as soon as all of the tasks are launched, but you should eventually
+These tests are run in parallel by waf. You should eventually
 see a report saying that,
 
 @verbatim
-  C++ UNIT TESTS: all 33 tests passed.
+  47 of 47 tests passed (47 passed, 0 failed, 0 crashed, 0 valgrind errors)
 @end verbatim
 
 This is the important message.
 
-You will also see output from the test runner and waf task sequence numbers
-the output will actually look something like,
+You will also see output from the test runner and the output will actually look something like,
 
 @verbatim
-  Waf: Entering directory `/home/craigdo/repos/ns-3-allinone-3.5-tutorial/ns-3-dev/build'
-  [707/709] get-unit-tests-list
-  [708/709] run-python-unit-tests
-  [709/709] print-introspected-doxygen
-  [710/743] run-unit-test(AddressHelper)
-  [711/743] run-unit-test(Wifi)
-  ...........
-  ----------------------------------------------------------------------
-  Ran 11 tests in 0.003s
-  
-  OK
-  [712/743] run-unit-test(DcfManager)
-  [713/743] run-unit-test(MacRxMiddle)
-  [714/743] run-unit-test(Ipv4ListRouting)
+  Waf: Entering directory `/home/craigdo/repos/ns-3-allinone/ns-3-dev/build'
+  Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone/ns-3-dev/build'
+  'build' finished successfully (1.799s)
+  PASS: TestSuite ns3-wifi-interference
+  PASS: TestSuite histogram
+  PASS: TestSuite sample
+  PASS: TestSuite ipv4-address-helper
+  PASS: TestSuite devices-wifi
+  PASS: TestSuite propagation-loss-model
 
   ...
 
-  [739/743] run-unit-test(RandomVariable)
-  [740/743] run-unit-test(Object)
-  [741/743] run-unit-test(Ptr)
-  [742/743] run-unit-test(Callback)
-  [743/743] collect-unit-tests-results
-  C++ UNIT TESTS: all 33 tests passed.
-  Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone-3.5-tutorial/ns-3-dev/build'
-  'build' finished successfully (1.799s)
+  PASS: TestSuite attributes
+  PASS: TestSuite config
+  PASS: TestSuite global-value
+  PASS: TestSuite command-line
+  PASS: TestSuite basic-random-number
+  PASS: TestSuite object
+  PASS: TestSuite random-number-generators
+  47 of 47 tests passed (47 passed, 0 failed, 0 crashed, 0 valgrind errors)
 @end verbatim
 
 This command is typically run by @code{users} to quickly verify that an 
@@ -519,7 +513,7 @@ known-good reference output files.  You downloaded these reference traces to
 your machine during the @code{./download.py} process above.  (Warning:  The 
 @code{ns-3.2} and @code{ns-3.3} releases do not use the @code{ns-3-allinone} 
 environment and require you to be online when you run regression tests because 
-hey dynamically synchronize the reference traces directory with an online
+they dynamically synchronize the reference traces directory with an online
 repository immediately prior to the run).
 
 During regression testing Waf will run a number of tests that generate what we
@@ -547,7 +541,7 @@ You should see messages indicating that many tests are being run and are
 passing.
 
 @verbatim
-  Entering directory `repos/ns-3-allinone/ns-3-dev/build'
+  Entering directory `/home/craigdo/repos/ns-3-allinone/ns-3-dev/build'
   [647/669] regression-test (test-csma-bridge)
   [648/669] regression-test (test-csma-broadcast)
   [649/669] regression-test (test-csma-multicast)
@@ -558,7 +552,7 @@ passing.
   ...
   Regression testing summary:
   PASS: 22 of 22 tests passed
-  Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone-3.5-tutorial/ns-3-dev/build'
+  Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone/ns-3-dev/build'
   'build' finished successfully (25.826s)
 @end verbatim
 
