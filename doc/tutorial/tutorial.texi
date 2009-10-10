@@ -85,6 +85,7 @@ see @uref{http://www.nsnam.org/docs/tutorial.pdf}.
 * Tweaking ns-3::
 * Building Topologies::
 * The Tracing System::
+* Index::
 @end menu
 
 @include introduction.texi
@@ -94,6 +95,8 @@ see @uref{http://www.nsnam.org/docs/tutorial.pdf}.
 @include building-topologies.texi
 @include tracing.texi
 
+@node Index
+@unnumbered Index
 @printindex cp
 
 @bye
