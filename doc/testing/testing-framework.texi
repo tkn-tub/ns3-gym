@@ -107,6 +107,37 @@ This mode is indented to be used by users who are interested in determining if
 their distribution is working correctly, and by developers who are interested
 in determining if changes they have made have caused any regressions.
 
+There are a number of options available to control the behavir of @code{test.py}.
+if you run @code{test.py --help} you should see a command summary like:
+
+@verbatim
+  Usage: test.py [options]
+  
+  Options:
+    -h, --help            show this help message and exit
+    -c KIND, --constrain=KIND
+                          constrain the test-runner by kind of test
+    -e EXAMPLE, --example=EXAMPLE
+                          specify a single example to run
+    -g, --grind           run the test suites and examples using valgrind
+    -k, --kinds           print the kinds of tests available
+    -l, --list            print the list of known tests
+    -m, --multiple        report multiple failures from test suites and test
+                          cases
+    -n, --nowaf           do not run waf before starting testing
+    -s TEST-SUITE, --suite=TEST-SUITE
+                          specify a single test suite to run
+    -v, --verbose         print progress and informational messages
+    -w HTML-FILE, --web=HTML-FILE, --html=HTML-FILE
+                          write detailed test results into HTML-FILE.html
+    -r, --retain          retain all temporary files (which are normally
+                          deleted)
+    -t TEXT-FILE, --text=TEXT-FILE
+                          write detailed test results into TEXT-FILE.txt
+    -x XML-FILE, --xml=XML-FILE
+                          write detailed test results into XML-FILE.xml
+@end verbatim
+
 If one specifies an optional output style, one can generate detailed descriptions
 of the tests and status.  Available styles are @command{text} and @command{HTML}.
 The buildbots will select the HTML option to generate HTML test reports for the
@@ -322,6 +353,18 @@ leaks.  This can be selected by using the @code{--grind} option.
 
 @verbatim
   ./test.py --grind
+@end verbatim
+
+As it runs, @code{test.py} and the programs that it runs indirectly, generate large
+numbers of temporary files.  Usually, the content of these files is not interesting,
+however in some cases it can be useful (for debugging purposes) to view these files.
+@code{test.py} provides a @command{--retain} option which will cause these temporary
+files to be kept after the run is completed.  The files are saved in a directory 
+named @code{testpy} under a subdirectory named according to the current Coordinated
+Universal Time (also known as Greenwich Mean Time).
+
+@verbatim
+  ./test.py --retain
 @end verbatim
 
 Finally, @code{test.py} provides a @command{--verbose} option which will print

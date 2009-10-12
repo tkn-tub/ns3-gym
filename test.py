@@ -19,12 +19,12 @@
 
 import os
 import sys
+import time
 import optparse
 import subprocess
 import threading
 import Queue
 import signal
-import random
 import xml.dom.minidom
 import shutil
 
@@ -149,22 +149,18 @@ example_tests = [
 ]
 
 #
-# Most of the examples produce gangs of trace files, so we want to find
-# somewhere to put them that won't pollute the current directory.  One
-# obvious place is somewhere in /tmp.
-#
-TMP_TRACES_DIR = "/tmp/unchecked-traces"
-
-#
 # The test suites are going to want to output status.  They are running
 # concurrently.  This means that unless we are careful, the output of
 # the test suites will be interleaved.  Rather than introducing a lock
 # file that could unintentionally start serializing execution, we ask
 # the tests to write their output to a temporary directory and then 
 # put together the final output file when we "join" the test tasks back
-# to the main thread.
+# to the main thread.  In addition to this issue, the example programs
+# often write lots and lots of trace files which we will just ignore.
+# We put all of them into the temp directory as well, so they can be
+# easily deleted.
 #
-TMP_OUTPUT_DIR = "/tmp/testpy"
+TMP_OUTPUT_DIR = "testpy-output"
 
 def get_node_text(node):
     for child in node.childNodes:
@@ -652,10 +648,7 @@ class Job():
     # This is the temporary results file name that will be given to an executing 
     # test as it is being run.  We will be running all of our tests in parallel
     # so there must be multiple temporary output files.  These will be collected
-    # into a single XML file at the end and then be deleted.  The file names are
-    # just giant random numbers, for example
-    #
-    #  "/tmp/testpy/5437925246732857"
+    # into a single XML file at the end and then be deleted.  
     #
     def set_tmp_file_name(self, tmp_file_name):
         self.tmp_file_name = tmp_file_name
@@ -808,26 +801,30 @@ def run_tests():
     # finds a problem, or HTML for nightly builds.  In these cases, an
     # XML file is written containing the status messages from the test suites.
     # This file is then read and translated into text or HTML.  It is expected
-    # that nobody will really be interested in the XML, so we write it to 
-    # somewhere in /tmp with a random name to avoid collisions.  Just in case 
-    # some strange once-in-a-lifetime error occurs, we always write the info
-    # so it can be found, we just may not use it.
+    # that nobody will really be interested in the XML, so we write it somewhere
+    # with a unique name (time) to avoid collisions.  In case an error happens, we
+    # provide a runtime option to retain the temporary files.
     #
     # When we run examples as smoke tests, they are going to want to create
     # lots and lots of trace files.  We aren't really interested in the contents
-    # of the trace files, so we also just stash them off in /tmp somewhere.
+    # of the trace files, so we also just stash them off in the temporary dir.
+    # The retain option also causes these unchecked trace files to be kept.
     #
+    date_and_time = time.strftime("%Y-%m-%d-%H-%M-%S-CUT", time.gmtime())
+
     if not os.path.exists(TMP_OUTPUT_DIR):
         os.makedirs(TMP_OUTPUT_DIR)
 
-    if not os.path.exists(TMP_TRACES_DIR):
-        os.makedirs(TMP_TRACES_DIR)
+    testpy_output_dir = os.path.join(TMP_OUTPUT_DIR, date_and_time);
+
+    if not os.path.exists(testpy_output_dir):
+        os.makedirs(testpy_output_dir)
 
     #
     # Create the main output file and start filling it with XML.  We need to 
     # do this since the tests will just append individual results to this file.
     #
-    xml_results_file = TMP_OUTPUT_DIR + "%d.xml" % random.randint(0, sys.maxint)
+    xml_results_file = os.path.join(testpy_output_dir, "results.xml")
     f = open(xml_results_file, 'w')
     f.write('<?xml version="1.0"?>\n')
     f.write('<TestResults>\n')
@@ -929,7 +926,7 @@ def run_tests():
             job = Job()
             job.set_is_example(False)
             job.set_display_name(test)
-            job.set_tmp_file_name(TMP_OUTPUT_DIR + "%d" % random.randint(0, sys.maxint))
+            job.set_tmp_file_name(os.path.join(testpy_output_dir, "%s.xml" % test))
             job.set_cwd(os.getcwd())
             job.set_basedir(os.getcwd())
             if (options.multiple):
@@ -999,7 +996,7 @@ def run_tests():
                         job.set_is_example(True)
                         job.set_display_name(test)
                         job.set_tmp_file_name("")
-                        job.set_cwd(TMP_TRACES_DIR)
+                        job.set_cwd(testpy_output_dir)
                         job.set_basedir(os.getcwd())
                         job.set_shell_command("examples/%s" % test)
 
@@ -1022,7 +1019,7 @@ def run_tests():
         job.set_is_example(True)
         job.set_display_name(options.example)
         job.set_tmp_file_name("")
-        job.set_cwd(TMP_TRACES_DIR)
+        job.set_cwd(testpy_output_dir)
         job.set_basedir(os.getcwd())
         job.set_shell_command("examples/%s" % options.example)
         
@@ -1192,11 +1189,6 @@ def run_tests():
                         f.write("</TestSuite>\n")
                         f.close()
 
-                try:
-                    os.remove(job.tmp_file_name)
-                except:
-                    pass
-
     #
     # We have all of the tests run and the results written out.  One final 
     # bit of housekeeping is to wait for all of the threads to close down
@@ -1233,14 +1225,21 @@ def run_tests():
     if len(options.xml):
         shutil.copyfile(xml_results_file, options.xml)
 
+    #
+    # If we have been asked to retain all of the little temporary files, we
+    # don't delete tm.  If we do delete the temporary files, delete only the
+    # directory we just created.  We don't want to happily delete any retained
+    # directories, which will probably surprise the user.
+    #
+    if not options.retain:
+        shutil.rmtree(testpy_output_dir)
+
     if passed_tests + skipped_tests == total_tests:
         return 0 # success
     else:
         return 1 # catchall for general errors
 
 def main(argv):
-    random.seed()
-
     parser = optparse.OptionParser()
     parser.add_option("-c", "--constrain", action="store", type="string", dest="constrain", default="",
                       metavar="KIND",
@@ -1275,6 +1274,9 @@ def main(argv):
     parser.add_option("-w", "--web", "--html", action="store", type="string", dest="html", default="",
                       metavar="HTML-FILE",
                       help="write detailed test results into HTML-FILE.html")
+
+    parser.add_option("-r", "--retain", action="store_true", dest="retain", default=False,
+                      help="retain all temporary files (which are normally deleted)")
 
     parser.add_option("-t", "--text", action="store", type="string", dest="text", default="",
                       metavar="TEXT-FILE",
