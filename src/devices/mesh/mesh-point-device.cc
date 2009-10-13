@@ -59,6 +59,9 @@ MeshPointDevice::MeshPointDevice () :
 MeshPointDevice::~MeshPointDevice ()
 {
   NS_LOG_FUNCTION_NOARGS ();
+  m_node = 0;
+  m_channel = 0;
+  m_routingProtocol = 0;
 }
 
 void
@@ -70,7 +73,6 @@ MeshPointDevice::DoDispose ()
       *iter = 0;
     }
   m_ifaces.clear ();
-  m_node = 0;
   NetDevice::DoDispose ();
 
 }
