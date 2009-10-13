@@ -110,6 +110,8 @@ private:
   typedef std::vector <NiChange> NiChanges;
   typedef std::list<Ptr<Event> > Events;
 
+  void EraseEvents (Events::iterator start, Events::iterator end); 
+
   InterferenceHelper (const InterferenceHelper &o);
   InterferenceHelper &operator = (const InterferenceHelper &o);
   void AppendEvent (Ptr<Event> event);

@@ -428,7 +428,7 @@ InterferenceHelper::AppendEvent (Ptr<InterferenceHelper::Event> event)
         {
           i++;
         }
-      m_events.erase (m_events.begin (), i);
+      EraseEvents (m_events.begin (), i);
     } 
   m_events.push_back (event);
 }
@@ -606,7 +606,21 @@ InterferenceHelper::CalculateSnrPer (Ptr<InterferenceHelper::Event> event)
 void
 InterferenceHelper::EraseEvents (void) 
 {  
+  for (Events::iterator i = m_events.begin (); i != m_events.end (); ++i)
+    {
+      *i = 0;
+    }
   m_events.erase (m_events.begin (), m_events.end ());
+}
+
+void
+InterferenceHelper::EraseEvents (Events::iterator start, Events::iterator end) 
+{  
+  for (Events::iterator i = start; i != end; ++i)
+    {
+      *i = 0;
+    }
+  m_events.erase (start, end);
 }
 
 } // namespace ns3

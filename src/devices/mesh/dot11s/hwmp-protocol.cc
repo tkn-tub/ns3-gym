@@ -274,7 +274,12 @@ HwmpProtocol::RequestRoute (
           for (std::vector<Mac48Address>::const_iterator i = receivers.begin (); i != receivers.end (); i ++)
             {
               Ptr<Packet> packetCopy = packet->Copy();
-              tag.SetAddress (*i);
+              //
+              // 64-bit Intel valgrind complains about tag.SetAddress (*i).  It
+              // likes this just fine.
+              //
+              Mac48Address address = *i;
+              tag.SetAddress (address);
               packetCopy->AddPacketTag (tag);
               routeReply (true, packetCopy, source, destination, protocolType, plugin->first);
             }

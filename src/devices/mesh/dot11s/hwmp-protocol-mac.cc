@@ -357,7 +357,12 @@ HwmpProtocolMac::ForwardPerr (std::vector<HwmpProtocol::FailedDestination> faile
   //Send Management frame
   for (std::vector<Mac48Address>::const_iterator i = receivers.begin (); i != receivers.end (); i++)
     {
-      hdr.SetAddr1 (*i);
+      //
+      // 64-bit Intel valgrind complains about hdr.SetAddr1 (*i).  It likes this
+      // just fine.
+      //
+      Mac48Address address = *i;
+      hdr.SetAddr1 (address);
       m_stats.txPerr++;
       m_stats.txMgt++;
       m_stats.txMgtBytes += packet->GetSize ();
