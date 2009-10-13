@@ -569,7 +569,7 @@ def run_job_synchronously(shell_command, directory, valgrind):
 # This class defines a unit of testing work.  It will typically refer to
 # a test suite to run using the test-runner, or an example to run directly.
 #
-class Job():
+class Job:
     def __init__(self):
         self.is_break = False
         self.is_skip = False
