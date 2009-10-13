@@ -554,7 +554,7 @@ def make_library_path():
 
 def run_job_synchronously(shell_command, directory, valgrind):
     if valgrind:
-        cmd = "%s valgrind --error-exitcode=2 %s/%s/%s" % (LIBRARY_PATH, NS3_BUILDDIR, NS3_ACTIVE_VARIANT, shell_command)
+        cmd = "%s valgrind --leak-check=full --error-exitcode=2 %s/%s/%s" % (LIBRARY_PATH, NS3_BUILDDIR, NS3_ACTIVE_VARIANT, shell_command)
     else:
         cmd = "%s %s/%s/%s" % (LIBRARY_PATH, NS3_BUILDDIR, NS3_ACTIVE_VARIANT, shell_command)
 
