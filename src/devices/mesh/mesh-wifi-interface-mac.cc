@@ -109,6 +109,10 @@ MeshWifiInterfaceMac::MeshWifiInterfaceMac ()
 MeshWifiInterfaceMac::~MeshWifiInterfaceMac ()
 {
   NS_LOG_FUNCTION (this);
+  m_beaconDca = 0;
+  m_stationManager = 0;
+  m_phy = 0;
+  m_low = 0;
 }
 //-----------------------------------------------------------------------------
 // WifiMac inherited

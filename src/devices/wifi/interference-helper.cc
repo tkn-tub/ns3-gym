@@ -128,6 +128,7 @@ InterferenceHelper::InterferenceHelper ()
 {}
 InterferenceHelper::~InterferenceHelper ()
 {
+  EraseEvents ();
   m_errorRateModel = 0;
 }
 

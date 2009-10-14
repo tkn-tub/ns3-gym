@@ -71,6 +71,7 @@ PeerManagementProtocol::PeerManagementProtocol () :
 }
 PeerManagementProtocol::~PeerManagementProtocol ()
 {
+  m_meshId = 0;
 }
 void
 PeerManagementProtocol::DoDispose ()

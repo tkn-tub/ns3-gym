@@ -48,6 +48,11 @@ WifiInformationElementVector::WifiInformationElementVector () :
 }
 WifiInformationElementVector::~WifiInformationElementVector ()
 {
+  for (IE_VECTOR::iterator i = m_elements.begin (); i != m_elements.end (); i++)
+    {
+      *i = 0;
+    }
+  m_elements.clear ();
 }
 TypeId
 WifiInformationElementVector::GetTypeId ()

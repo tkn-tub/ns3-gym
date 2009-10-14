@@ -32,6 +32,10 @@ MeshHelper::MeshHelper () :
   m_standard (WIFI_PHY_STANDARD_80211a)
 {
 }
+MeshHelper::~MeshHelper ()
+{
+  m_stack = 0;
+}
 void
 MeshHelper::SetSpreadInterfaceChannels (enum ChannelPolicy policy)
 {

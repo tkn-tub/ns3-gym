@@ -44,6 +44,11 @@ public:
   MeshHelper ();
 
   /**
+   * Destroy a MeshHelper.
+   */
+  ~MeshHelper ();
+
+  /**
    * \brief Set the helper to the default values for the MAC type,  remote
    * station manager and channel policy.
    */
