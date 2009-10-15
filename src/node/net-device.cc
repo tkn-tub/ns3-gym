@@ -45,6 +45,8 @@ TypeId NetDevice::GetTypeId (void)
 }
 
 NetDevice::~NetDevice ()
-{}
+{
+  NS_LOG_FUNCTION_NOARGS ();
+}
 
 } // namespace ns3

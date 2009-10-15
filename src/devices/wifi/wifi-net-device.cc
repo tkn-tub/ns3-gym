@@ -28,6 +28,9 @@
 #include "ns3/pointer.h"
 #include "ns3/node.h"
 #include "ns3/trace-source-accessor.h"
+#include "ns3/log.h"
+
+NS_LOG_COMPONENT_DEFINE ("WifiNetDevice");
 
 namespace ns3 {
 
@@ -65,13 +68,18 @@ WifiNetDevice::GetTypeId (void)
 WifiNetDevice::WifiNetDevice ()
   : m_mtu (0),
     m_configComplete (false)
-{}
+{
+  NS_LOG_FUNCTION_NOARGS ();
+}
 WifiNetDevice::~WifiNetDevice ()
-{}
+{
+  NS_LOG_FUNCTION_NOARGS ();
+}
 
 void
 WifiNetDevice::DoDispose (void)
 {
+  NS_LOG_FUNCTION_NOARGS ();
   m_node = 0;
   m_mac->Dispose ();
   m_phy->Dispose ();
