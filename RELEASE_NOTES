@@ -68,6 +68,10 @@ New user-visible features
     - Previous unit tests have been ported to new framework.
     - Examples are tested for run-ability.
 
+  f) A new Flow Monitor module
+   - To very easily measure flow metrics in a simulation
+   - No need to use trace callbacks or parsing trace files
+
 API changes from ns-3.5
 -----------------------
 API changes for this release are documented in the file CHANGES.html. 
