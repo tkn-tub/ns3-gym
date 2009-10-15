@@ -99,8 +99,8 @@ def build(bld):
         'icmpv4.cc',
         'icmpv4-l4-protocol.cc',
         'loopback-net-device.cc',
-        'ipv6-interface.cc',
         'ndisc-cache.cc',
+        'ipv6-interface.cc',
         'icmpv6-header.cc',
         'ipv6-l3-protocol.cc',
         'ipv6-end-point.cc',
@@ -109,6 +109,12 @@ def build(bld):
         'ipv6-raw-socket-factory-impl.cc',
         'ipv6-raw-socket-impl.cc',
         'ipv6-autoconfigured-prefix.cc',
+        'ipv6-extension.cc',
+        'ipv6-extension-header.cc',
+        'ipv6-extension-demux.cc',
+        'ipv6-option.cc',
+        'ipv6-option-header.cc',
+        'ipv6-option-demux.cc',
         'icmpv6-l4-protocol.cc',
         'ipv6-test.cc'
         ]
