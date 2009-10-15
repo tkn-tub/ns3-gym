@@ -12,8 +12,13 @@ defines the simulation topology and starts the simulator.  ns-3 also
 exports nearly all of its API to Python, allowing Python programs to
 import an "ns3" module in much the same way as in C++.  
 
+@float Figure,fig:organization
+@caption{Software organization of ns-3}
+@center @image{figures/software-organization, 5in}
+@end float
+
 The source code for ns-3 is mostly organized in the @code{src/}
-directory and can be described by the following block diagram.
+directory and can be described by the diagram in @ref{fig:organization}.
 We will work our way from the bottom up; in general, modules
 only have dependencies on modules beneath them in the figure.
 
@@ -47,4 +52,4 @@ Part 6 describes additional support for simulation, such as animators.
 
 The project maintains a separate manual devoted to testing and
 validation of ns-3 code (see the 
-@uref{http://www.nsnam.org/docs,, ns-3 Testing and Validation manual})j
+@uref{http://www.nsnam.org/tutorials.html,, ns-3 Testing and Validation manual})j
