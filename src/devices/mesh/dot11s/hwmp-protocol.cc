@@ -209,8 +209,10 @@ HwmpProtocol::DoDispose ()
   m_preqTimeouts.clear ();
   m_lastDataSeqno.clear ();
   m_lastHwmpSeqno.clear ();
+  m_interfaces.clear ();
   m_rqueue.clear ();
   m_rtable = 0;
+  m_mp = 0;
 }
 
 bool

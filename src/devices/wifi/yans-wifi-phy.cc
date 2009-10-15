@@ -139,6 +139,8 @@ YansWifiPhy::DoDispose (void)
   m_channel = 0;
   m_modes.clear ();
   m_device = 0;
+  m_mobility = 0;
+  m_state = 0;
 }
 
 void
