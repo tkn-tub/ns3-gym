@@ -73,6 +73,9 @@ MeshPointDevice::DoDispose ()
       *iter = 0;
     }
   m_ifaces.clear ();
+  m_node = 0;
+  m_channel = 0;
+  m_routingProtocol = 0;
   NetDevice::DoDispose ();
 
 }

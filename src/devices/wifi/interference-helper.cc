@@ -611,7 +611,7 @@ InterferenceHelper::EraseEvents (void)
     {
       *i = 0;
     }
-  m_events.erase (m_events.begin (), m_events.end ());
+  m_events.clear ();
 }
 
 void

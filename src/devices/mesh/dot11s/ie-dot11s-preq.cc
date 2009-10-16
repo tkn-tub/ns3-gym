@@ -373,15 +373,10 @@ IePreq::DelDestinationAddressElement (Mac48Address dest_address)
 void
 IePreq::ClearDestinationAddressElements ()
 {
-  int i;
   for (std::vector<Ptr<DestinationAddressUnit> >::iterator j = m_destinations.begin (); j
       != m_destinations.end (); j++)
     {
       (*j) = 0;
-    }
-  for (i = 0; i < m_destCount; i++)
-    {
-      m_destinations.pop_back ();
     }
   m_destinations.clear ();
   m_destCount = 0;

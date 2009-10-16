@@ -93,6 +93,8 @@ PeerManagementProtocol::DoDispose ()
       i->second.clear ();
     }
   m_neighbourBeacons.clear ();
+
+  m_plugins.clear ();
 }
 
 bool

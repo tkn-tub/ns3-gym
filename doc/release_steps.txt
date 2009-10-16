@@ -38,20 +38,21 @@ Steps in doing an ns-3 release
    - clone the ns-3-dev-ref-traces and place it on the repository as above
      but use the name ns-3.x-ref-traces and edit the hgrc appropriately
 7. check out a clean version of the new release (ns-3.x) somewhere
+   - hg clone http://code.nsnam.org/ns-3.x
 8. Update the VERSION for this new release
    - change the string 3-dev in the VERSION file to the real version 
      (e.g. 3.7 or 3.7-RC1)  This must agree with the version name you chose in the clone
      for the regression tests to work.
-   - hg commit
-   - hg push
+   - hg commit -m "update VERSION to ns-3.x"
+   - hg push ssh://code@code.nsnam.org//home/code/repos/ns-3.x
+
 9. Run the tests on the new release (debug and optimized) like a user would
    You need to use ns-3-allinone since you will use that to make the distro
-   - hg clone http://code.nsnam.org/ns-3-allinone-ns-3.x
+   - hg clone http://code.nsnam.org/ns-3-allinone ns-3-allinone-3.x
+   - cd !$
    - ./download.py -n ns-3.x -r ns-3.x-ref-traces
    - ./build.py
    - cd ns-3.x
-   - ./waf -d debug configure
-   - ./waf
    - ./test.py
    - ./test.py -g
    - ./waf --regression

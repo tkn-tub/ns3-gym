@@ -148,6 +148,7 @@ Node::GetNApplications (void) const
 void 
 Node::DoDispose()
 {
+  m_handlers.clear ();
   for (std::vector<Ptr<NetDevice> >::iterator i = m_devices.begin ();
        i != m_devices.end (); i++)
     {

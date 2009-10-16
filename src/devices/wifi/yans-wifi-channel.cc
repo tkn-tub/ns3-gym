@@ -56,6 +56,7 @@ YansWifiChannel::YansWifiChannel ()
 {}
 YansWifiChannel::~YansWifiChannel ()
 {
+  NS_LOG_FUNCTION_NOARGS ();
   m_phyList.clear ();
 }
 

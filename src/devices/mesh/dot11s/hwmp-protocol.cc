@@ -184,6 +184,7 @@ HwmpProtocol::HwmpProtocol ():
   m_doFlag (false),
   m_rfFlag (false)
 {
+  NS_LOG_FUNCTION_NOARGS ();
 
   if (m_isRoot)
     {
@@ -193,11 +194,13 @@ HwmpProtocol::HwmpProtocol ():
 
 HwmpProtocol::~HwmpProtocol ()
 {
+  NS_LOG_FUNCTION_NOARGS ();
 }
 
 void
 HwmpProtocol::DoDispose ()
 {
+  NS_LOG_FUNCTION_NOARGS ();
   for (std::map<Mac48Address, EventId>::iterator i = m_preqTimeouts.begin (); i != m_preqTimeouts.end (); i ++)
     {
       i->second.Cancel ();
@@ -206,8 +209,10 @@ HwmpProtocol::DoDispose ()
   m_preqTimeouts.clear ();
   m_lastDataSeqno.clear ();
   m_lastHwmpSeqno.clear ();
+  m_interfaces.clear ();
   m_rqueue.clear ();
   m_rtable = 0;
+  m_mp = 0;
 }
 
 bool
