@@ -284,6 +284,16 @@ public:
   virtual void SetForwarding (uint32_t interface, bool val) = 0;
 
   /**
+   * \brief Register the IPv6 Extensions.
+   */
+  virtual void RegisterExtensions () = 0;
+
+  /**
+   * \brief Register the IPv6 Options.
+   */
+  virtual void RegisterOptions () = 0;
+
+  /**
    * \brief Any interface magic number.
    */
   static const uint32_t IF_ANY = 0xffffffff;

@@ -85,9 +85,9 @@ uint8_t Ipv6OptionPad1::GetOptionNumber () const
   return OPT_NUMBER;
 }
 
-uint8_t Ipv6OptionPad1::Process (Ptr<Packet> packet, uint8_t offset, Ipv6Header const& ipv6Header, Ptr<Ipv6Interface> ipv6Interface, bool& isDropped)
+uint8_t Ipv6OptionPad1::Process (Ptr<Packet> packet, uint8_t offset, Ipv6Header const& ipv6Header, bool& isDropped)
 {
-  NS_LOG_FUNCTION (this << packet << offset << ipv6Header << ipv6Interface << isDropped);
+  NS_LOG_FUNCTION (this << packet << offset << ipv6Header << isDropped);
 
   Ptr<Packet> p = packet->Copy ();
   p->RemoveAtStart (offset);
@@ -131,9 +131,9 @@ uint8_t Ipv6OptionPadn::GetOptionNumber () const
   return OPT_NUMBER;
 }
 
-uint8_t Ipv6OptionPadn::Process (Ptr<Packet> packet, uint8_t offset, Ipv6Header const& ipv6Header, Ptr<Ipv6Interface> ipv6Interface, bool& isDropped)
+uint8_t Ipv6OptionPadn::Process (Ptr<Packet> packet, uint8_t offset, Ipv6Header const& ipv6Header, bool& isDropped)
 {
-  NS_LOG_FUNCTION (this << packet << offset << ipv6Header << ipv6Interface << isDropped);
+  NS_LOG_FUNCTION (this << packet << offset << ipv6Header << isDropped);
 
   Ptr<Packet> p = packet->Copy ();
   p->RemoveAtStart (offset);
@@ -177,9 +177,9 @@ uint8_t Ipv6OptionJumbogram::GetOptionNumber () const
   return OPT_NUMBER;
 }
 
-uint8_t Ipv6OptionJumbogram::Process (Ptr<Packet> packet, uint8_t offset, Ipv6Header const& ipv6Header, Ptr<Ipv6Interface> ipv6Interface, bool& isDropped)
+uint8_t Ipv6OptionJumbogram::Process (Ptr<Packet> packet, uint8_t offset, Ipv6Header const& ipv6Header, bool& isDropped)
 {
-  NS_LOG_FUNCTION (this << packet << offset << ipv6Header << ipv6Interface << isDropped);
+  NS_LOG_FUNCTION (this << packet << offset << ipv6Header << isDropped);
 
   Ptr<Packet> p = packet->Copy ();
   p->RemoveAtStart (offset);
@@ -223,9 +223,9 @@ uint8_t Ipv6OptionRouterAlert::GetOptionNumber () const
   return OPT_NUMBER;
 }
 
-uint8_t Ipv6OptionRouterAlert::Process (Ptr<Packet> packet, uint8_t offset, Ipv6Header const& ipv6Header, Ptr<Ipv6Interface> ipv6Interface, bool& isDropped)
+uint8_t Ipv6OptionRouterAlert::Process (Ptr<Packet> packet, uint8_t offset, Ipv6Header const& ipv6Header, bool& isDropped)
 {
-  NS_LOG_FUNCTION (this << packet << offset << ipv6Header << ipv6Interface << isDropped);
+  NS_LOG_FUNCTION (this << packet << offset << ipv6Header << isDropped);
 
   Ptr<Packet> p = packet->Copy ();
   p->RemoveAtStart (offset);
