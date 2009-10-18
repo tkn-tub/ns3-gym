@@ -7,15 +7,15 @@ chapter provides some motivation on the callback, guidance on how to use
 it, and details on its implementation.
 
 @menu
-* Motivation::
-* Background::
+* Callbacks Motivation::
+* Callbacks Background::
 * Using the Callback API::
 * Bound Callbacks::
 * Callback locations in ns-3::
 * Implementation details::
 @end menu
 
-@node Motivation
+@node Callbacks Motivation
 @section Motivation
 
 Consider that you have two simulation models A and B, and you wish
@@ -91,7 +91,7 @@ to a transport protocol above, the user may be forced to hack the
 system to get the desired interconnections,  This is clearly not an
 optimal way to design a generic simulator.
 
-@node Background
+@node Callbacks Background
 @section Background
 
 The basic mechanism that allows one to address the problem above is known as

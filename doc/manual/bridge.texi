@@ -1,0 +1,6 @@
+@node Bridge NetDevice
+@chapter Bridge NetDevice
+
+@cartouche
+Placeholder chapter
+@end cartouche

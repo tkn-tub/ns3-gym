@@ -13,13 +13,13 @@ further study.  In @command{ns-3}, the subsystem that enables a researcher to do
 this is the tracing subsystem.
 
 @menu
-* Motivation::
+* Tracing Motivation::
 * Overview::
 * Using the Tracing API::
-* Implementation details::
+* Tracing implementation details::
 @end menu
 
-@node Motivation
+@node Tracing Motivation
 @section Motivation
 
 There are many ways to get information out of a program.  The most straightforward
@@ -324,5 +324,5 @@ core of the simulator;
 sinks. 
 @end itemize
 
-@node Implementation details
+@node Tracing implementation details
 @section Implementation details

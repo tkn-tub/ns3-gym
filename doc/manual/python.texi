@@ -1,5 +1,5 @@
-@node Statistics
-@chapter Statistics
+@node Python
+@chapter Python
 
 @cartouche
 Placeholder chapter

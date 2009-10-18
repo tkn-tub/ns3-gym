@@ -1,5 +1,5 @@
-@node Statistics
-@chapter Statistics
+@node Mesh NetDevice
+@chapter Mesh NetDevice
 
 @cartouche
 Placeholder chapter

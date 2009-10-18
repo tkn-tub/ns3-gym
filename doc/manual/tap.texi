@@ -1,6 +1,7 @@
-@node Statistics
-@chapter Statistics
+@node Tap NetDevice
+@chapter Tap NetDevice
 
 @cartouche
 Placeholder chapter
 @end cartouche
+

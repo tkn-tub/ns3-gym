@@ -1,5 +1,5 @@
-@node Statistics
-@chapter Statistics
+@node Applications
+@chapter Applications
 
 @cartouche
 Placeholder chapter
