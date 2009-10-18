@@ -529,8 +529,8 @@ bool Ipv6StaticRouting::RouteInput (Ptr<const Packet> p, const Ipv6Header &heade
   {
     NS_LOG_LOGIC ("Multicast destination");
     Ptr<Ipv6MulticastRoute> mrtentry = LookupStatic (header.GetSourceAddress (),
-                                                    header.GetDestinationAddress ()
-                                                    , m_ipv6->GetInterfaceForDevice (idev));
+                                                    header.GetDestinationAddress (),
+                                                    m_ipv6->GetInterfaceForDevice (idev));
 
     if (mrtentry)
     {

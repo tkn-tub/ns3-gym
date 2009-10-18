@@ -77,6 +77,13 @@ class Ping6Helper
      */
     void SetIfIndex (uint32_t ifIndex);
 
+
+    /**
+     * \brief Set routers addresses for routing type 0.
+     * \param routers routers addresses
+     */
+    void SetRoutersAddress(std::vector<Ipv6Address> routers);
+    
   private:
     /**
      * \brief An object factory.
@@ -97,6 +104,11 @@ class Ping6Helper
      * \brief Out interface index.                       
      */
     uint32_t m_ifIndex;
+
+    /**
+     * \brief Routers addresses.
+     */
+    std::vector<Ipv6Address> m_routers;
 };
 
 } /* namespace ns3 */

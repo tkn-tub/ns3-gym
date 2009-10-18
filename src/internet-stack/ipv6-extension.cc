@@ -952,8 +952,9 @@ uint8_t Ipv6ExtensionLooseRouting::Process (Ptr<Packet>& packet, uint8_t offset,
   {
     ipv6->Lookup (ipv6header, p, MakeCallback (&Ipv6L3Protocol::SendRealOut, PeekPointer (ipv6)));
   }
-*/
+
   isDropped = true;
+*/
   return routingHeader.GetSerializedSize ();
 }
 

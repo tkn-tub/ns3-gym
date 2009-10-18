@@ -49,6 +49,8 @@ NS_LOG_COMPONENT_DEFINE ("LooseRoutingIpv6Example");
 
 int main (int argc, char **argv)
 {
+  LogComponentEnable("Ipv6ExtensionLooseRouting", LOG_LEVEL_ALL);
+  LogComponentEnable("Ipv6Extension", LOG_LEVEL_ALL);
 #if 0 
 	LogComponentEnable("Ipv6EndPointDemux", LOG_LEVEL_ALL);
   LogComponentEnable("Udp6Socket", LOG_LEVEL_ALL);
@@ -137,58 +139,33 @@ int main (int argc, char **argv)
 	Ipv6InterfaceContainer i6 = ipv6.Assign (d6);
 	i6.SetRouter (0, true);
 	i6.SetRouter (1, true);
-#if 0
-	/**
-	 * Network Configuration :
-	 * - h0 : client
-	 * - rX : router
-	 * - h1 : UDP server (port 7)
-	 */
+  
   NS_LOG_INFO ("Create Applications.");
-	UdpEcho6ServerHelper server (7);
-
-  ApplicationContainer apps = server.Install (h1);
-  apps.Start (Seconds (1.0));
-  apps.Stop (Seconds (15.0));
 
 	/**
-	 * UDP Echo from h0 to h1 port 7
+	 * ICMPv6 Echo from h0 to h1 port 7
 	 */
   uint32_t packetSize = 1024;
   uint32_t maxPacketCount = 1;
   Time interPacketInterval = Seconds (1.);
   
-	UdpEcho6ClientHelper client (i2.GetAddress (0), 7);
+	std::vector<Ipv6Address> routersAddress;
+	routersAddress.push_back (i3.GetAddress (1, 1));
+	routersAddress.push_back (i4.GetAddress (1, 1));
+	routersAddress.push_back (i5.GetAddress (1, 1));
+	routersAddress.push_back (i6.GetAddress (1, 1));
+	routersAddress.push_back (i2.GetAddress (0, 1));
+
+	Ping6Helper client;
+  client.SetRemote (i2.GetAddress (0, 1));
   client.SetAttribute ("MaxPackets", UintegerValue (maxPacketCount));
   client.SetAttribute ("Interval", TimeValue(interPacketInterval));
   client.SetAttribute ("PacketSize", UintegerValue (packetSize));
-  apps = client.Install (h0);
+	client.SetRoutersAddress (routersAddress);
+  ApplicationContainer apps = client.Install (h0);
   apps.Start (Seconds (1.0));
   apps.Stop (Seconds (10.0));
 	
-	/**
-	 * UDP Echo from h0 to h1 port 7 with loose routing
-	 */
-	std::vector<Ipv6Address> routersAddress;
-	routersAddress.push_back (i3.GetAddress (1));
-	routersAddress.push_back (i4.GetAddress (1));
-	routersAddress.push_back (i5.GetAddress (1));
-	routersAddress.push_back (i6.GetAddress (1));
-	routersAddress.push_back (i2.GetAddress (0));
-
-	UdpEcho6ClientHelper client2 (i1.GetAddress (1), 7);
-	packetSize = 10000;
-  client2.SetLocal (i1.GetAddress (0));
-	client2.SetLooseRouting (true);
-	client2.SetRoutersAddress (routersAddress);
-  client2.SetAttribute ("MaxPackets", UintegerValue (maxPacketCount));
-  client2.SetAttribute ("Interval", TimeValue(interPacketInterval));
-  client2.SetAttribute ("PacketSize", UintegerValue (packetSize));
-  apps = client2.Install (h0);
-  apps.Start (Seconds (2.0));
-  apps.Stop (Seconds (10.0));
-#endif
-
   std::ofstream ascii;
   ascii.open ("loose-routing-ipv6.tr");
   CsmaHelper::EnablePcapAll ("loose-routing-ipv6", true);

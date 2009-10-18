@@ -57,6 +57,7 @@ ApplicationContainer Ping6Helper::Install (NodeContainer c)
     client->SetLocal (m_localIp);
     client->SetRemote (m_remoteIp);
     client->SetIfIndex (m_ifIndex);
+    client->SetRouters (m_routers);
     node->AddApplication (client);
     apps.Add (client);
   }
@@ -66,6 +67,11 @@ ApplicationContainer Ping6Helper::Install (NodeContainer c)
 void Ping6Helper::SetIfIndex (uint32_t ifIndex)
 {
   m_ifIndex = ifIndex;
+}
+
+void Ping6Helper::SetRoutersAddress (std::vector<Ipv6Address> routers)
+{
+  m_routers = routers;
 }
 
 } /* namespace ns3 */
