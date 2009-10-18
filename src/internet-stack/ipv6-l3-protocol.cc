@@ -755,6 +755,8 @@ void Ipv6L3Protocol::SendRealOut (Ptr<Ipv6Route> route, Ptr<Packet> packet, Ipv6
 
     Ptr<Ipv6ExtensionDemux> ipv6ExtensionDemux = m_node->GetObject<Ipv6ExtensionDemux> ();
 
+    packet->AddHeader (ipHeader);
+
     // To get specific method GetFragments from Ipv6ExtensionFragmentation
     Ipv6ExtensionFragment *ipv6Fragment = dynamic_cast<Ipv6ExtensionFragment *>(PeekPointer (ipv6ExtensionDemux->GetExtension (Ipv6Header::IPV6_EXT_FRAGMENTATION)));
     ipv6Fragment->GetFragments (packet, outInterface->GetDevice ()->GetMtu (), fragments);
@@ -765,12 +767,12 @@ void Ipv6L3Protocol::SendRealOut (Ptr<Ipv6Route> route, Ptr<Packet> packet, Ipv6
     if (outInterface->IsUp ())
     {
       NS_LOG_LOGIC ("Send to gateway " << route->GetGateway ());
-      packet->AddHeader (ipHeader);
 
       if (fragments.size () != 0)
       {
         std::ostringstream oss;
 
+        /* IPv6 header is already added in fragments */
         for (std::list<Ptr<Packet> >::const_iterator it = fragments.begin (); it != fragments.end (); it++)
         {
           m_txTrace (*it, interface);
@@ -780,6 +782,7 @@ void Ipv6L3Protocol::SendRealOut (Ptr<Ipv6Route> route, Ptr<Packet> packet, Ipv6
       else
       {
         /* NS_ASSERT (packet->GetSize () <= outInterface->GetDevice ()->GetMtu ()); */
+        packet->AddHeader (ipHeader);
         m_txTrace (packet, interface);
         outInterface->Send (packet, route->GetGateway ());
       }
@@ -794,13 +797,13 @@ void Ipv6L3Protocol::SendRealOut (Ptr<Ipv6Route> route, Ptr<Packet> packet, Ipv6
   {
     if (outInterface->IsUp ())
     {
-       NS_LOG_LOGIC ("Send to destination " << ipHeader.GetDestinationAddress ());
-       packet->AddHeader (ipHeader);
+      NS_LOG_LOGIC ("Send to destination " << ipHeader.GetDestinationAddress ());
 
       if (fragments.size () != 0)
       {
         std::ostringstream oss;
-
+        
+        /* IPv6 header is already added in fragments */
         for (std::list<Ptr<Packet> >::const_iterator it = fragments.begin (); it != fragments.end (); it++)
         {
           m_txTrace (*it, interface);
@@ -810,6 +813,7 @@ void Ipv6L3Protocol::SendRealOut (Ptr<Ipv6Route> route, Ptr<Packet> packet, Ipv6
       else
       {
         /* NS_ASSERT (packet->GetSize () <= outInterface->GetDevice ()->GetMtu ()); */
+        packet->AddHeader (ipHeader);
         m_txTrace (packet, interface);
         outInterface->Send (packet, ipHeader.GetDestinationAddress ());
       }

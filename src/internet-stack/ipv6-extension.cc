@@ -187,7 +187,6 @@ uint8_t Ipv6ExtensionHopByHop::Process (Ptr<Packet>& packet, uint8_t offset, Ipv
           break;
       }
     }
-
     else 
     {
       optionLength = ipv6Option->Process (packet, offset + processedSize, ipv6Header, isDropped);
@@ -309,7 +308,6 @@ uint8_t Ipv6ExtensionDestination::Process (Ptr<Packet>& packet, uint8_t offset, 
           break;
       }
     }
-
     else 
     {
       optionLength = ipv6Option->Process (packet, offset + processedSize, ipv6Header, isDropped);
@@ -395,7 +393,6 @@ uint8_t Ipv6ExtensionFragment::Process (Ptr<Packet>& packet, uint8_t offset, Ipv
     fragments = Create<Fragments> ();
     m_fragments.insert (std::make_pair (fragmentsId, fragments));
   }
-
   else
   {
     fragments = it->second;
@@ -415,7 +412,6 @@ uint8_t Ipv6ExtensionFragment::Process (Ptr<Packet>& packet, uint8_t offset, Ipv
     packet = fragments->GetPacket ();
     isDropped = false;
   }
-
   else 
   {
     NS_LOG_LOGIC("Fragment. Drop!");
@@ -743,7 +739,6 @@ uint8_t Ipv6ExtensionRouting::Process (Ptr<Packet>& packet, uint8_t offset, Ipv6
     {
       isDropped = false;
     }
-
     else
     {
       NS_LOG_LOGIC("Malformed header. Drop!");
@@ -894,7 +889,6 @@ uint8_t Ipv6ExtensionLooseRouting::Process (Ptr<Packet>& packet, uint8_t offset,
   uint8_t nextAddressIndex;
   Ipv6Address nextAddress;
 
-
   if (segmentsLeft == 0)
   {
     isDropped = false;
@@ -1042,6 +1036,6 @@ uint8_t Ipv6ExtensionAH::Process (Ptr<Packet>& packet, uint8_t offset, Ipv6Heade
 
   return true;
 }
-} /* namespace ns3 */
 
+} /* namespace ns3 */
 
