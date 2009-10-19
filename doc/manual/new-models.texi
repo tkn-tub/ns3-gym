@@ -395,8 +395,10 @@ The @ref{Object model} chapter discusses this in more detail.
 @subsection how to include files from elsewhere
 @subsection log component 
 
-Here, write a bit about adding ns-3 logging macros.  Note that
+@cartouche
+Here, write a bit about adding ns-3 logging macros.  Note that @* 
 LOG_COMPONENT_DEFINE is done outside the namespace ns3
+@end cartouche
 
 @subsection constructor, empty function prototypes
 
@@ -407,7 +409,8 @@ LOG_COMPONENT_DEFINE is done outside the namespace ns3
 
 
 @subsection Object Framework
-@verbatim
+@smallformat
+@example
   static const ClassId cid;
 
 
@@ -416,8 +419,8 @@ const InterfaceId ErrorModel::iid =
 
 const ClassId ErrorModel::cid =
   MakeClassId<ErrorModel> ("ErrorModel", ErrorModel::iid);
-@end verbatim
-
+@end example
+@end smallformat
 
 @node Adding-a-sample-script
 @section Adding a sample script
@@ -431,7 +434,8 @@ of the ErrorModels themselves.
 
 @subsection Add basic support in the class
 
-@verbatim
+@smallformat
+@example
 point-to-point-net-device.h
   class ErrorModel;
   
@@ -440,12 +444,13 @@ point-to-point-net-device.h
    */
   Ptr<ErrorModel> m_receiveErrorModel;
   
-@end verbatim
+@end example
+@end smallformat
 
 @subsection Add Accessor
 
-@verbatim
-
+@smallformat
+@example
   void
 PointToPointNetDevice::SetReceiveErrorModel (Ptr<ErrorModel> em)
 {
@@ -458,11 +463,13 @@ PointToPointNetDevice::SetReceiveErrorModel (Ptr<ErrorModel> em)
                    PointerValue (),
                    MakePointerAccessor (&PointToPointNetDevice::m_receiveErrorModel),
                    MakePointerChecker<ErrorModel> ())
-@end verbatim
+@end example
+@end smallformat
 
 @subsection Plumb into the system
 
-@verbatim
+@smallformat
+@example
 void PointToPointNetDevice::Receive (Ptr<Packet> packet)
 {
   NS_LOG_FUNCTION (this << packet);
@@ -486,15 +493,18 @@ void PointToPointNetDevice::Receive (Ptr<Packet> packet)
       ProcessHeader(packet, protocol);
       m_rxCallback (this, packet, protocol, GetRemote ());
       if (!m_promiscCallback.IsNull ())
-        {           m_promiscCallback (this, packet, protocol, GetRemote (), GetAddress (), NetDevice::PACKET_HOST);
+        {           m_promiscCallback (this, packet, protocol, GetRemote (), 
+                      GetAddress (), NetDevice::PACKET_HOST);
         }
     }
 }
-@end verbatim
+@end example
+@end smallformat
 
 @subsection Create null functional script
 
-@verbatim
+@smallformat
+@example
 simple-error-model.cc
 
   // Error model
@@ -514,7 +524,8 @@ ErrorModel::DoCorrupt (Packet& p)
   NS_LOG_UNCOND("Corrupt!");
   return false;
 }
-@end verbatim
+@end example
+@end smallformat
 
 At this point, we can run the program with our trivial ErrorModel
 plumbed into the receive path of the PointToPointNetDevice.  It
@@ -550,7 +561,8 @@ the above unit of granularity.
 
 We declare BasicErrorModel to be a subclass of ErrorModel as follows,
 
-@verbatim
+@smallformat
+@example
 class BasicErrorModel : public ErrorModel
 {
 public:
@@ -562,7 +574,8 @@ private:
   virtual bool DoReset (void);
   ...
 }
-@end verbatim
+@end example
+@end smallformat
 
 and configure the subclass GetTypeId function by setting a unique
 TypeId string and setting the Parent to ErrorModel:

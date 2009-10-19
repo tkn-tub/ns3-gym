@@ -42,8 +42,8 @@ one of asynchronous I/O, which is not typically found in real systems
 @item the API is not a complete sockets API, such as supporting
 all socket options or all function variants; 
 @item many calls use @code{ns3::Packet} class to transfer data
-between application and socket.  This may seem a little funny to
-people to pass ``Packets'' across a stream socket API, but think
+between application and socket.  This may seem peculiar to
+pass ``Packets'' across a stream socket API, but think
 of these packets as just fancy byte buffers at this level (more
 on this also below).
 @end itemize
@@ -58,7 +58,7 @@ on this also below).
 @subsubsection Creating sockets
 
 An application that wants to use sockets must first create one.
-On real systems, this is accomplished by calling socket():
+On real systems using a C-based API, this is accomplished by calling socket():
 @verbatim
      int
      socket(int domain, int type, int protocol);
@@ -79,11 +79,13 @@ Examples of TypeIds to pass to this method are @code{TcpSocketFactory},
 
 This method returns a smart pointer to a Socket object.  Here is an
 example:  
-@verbatim
+@smallformat
+@example
   Ptr<Node> n0;
   // Do some stuff to build up the Node's internet stack
   Ptr<Socket> localSocket = Socket::CreateSocket (n0, TcpSocketFactory::GetTypeId ());
-@end verbatim
+@end example
+@end smallformat
 
 In some ns-3 code, sockets will not be explicitly created by user's
 main programs, if an ns-3 application does it.  For instance, for
@@ -149,7 +151,7 @@ There are two basic variants of @code{Send()} and @code{Recv()} supported:
   int Recv (uint8_t* buf, uint32_t size);
 @end verbatim
 
-The non-Packet variants are left for legacy API reasons.  When calling
+The non-Packet variants are provided for legacy API reasons.  When calling
 the raw buffer variant of @code{Send()}, the buffer is immediately
 written into a Packet and the @code{Send (Ptr<Packet> p)} is invoked.
 
@@ -160,7 +162,7 @@ the Packet variants are more likely to be preferred in ns-3:
 
 @itemize @bullet
 @item Users can use the Tags facility of packets to, for example, encode
-a flow ID or other helper data.
+a flow ID or other helper data at the application layer.
 @item Users can exploit the copy-on-write implementation to avoid
 memory copies (on the receive side, the conversion back to a 
 @code{uint8_t* buf} may sometimes incur an additional copy).
@@ -193,51 +195,6 @@ a real (zeroed) buffer on the spot, and the efficiency will be lost there.
 
 @section POSIX-like sockets API 
 
-@emph{this capability is under development and is scheduled for
-inclusion in the ns-3.5 releasetimeframe; see the repository
-http://code.nsnam.org/mathieu/ns-3-simu for details}
-
-The below is excerpted from Mathieu's post to ns-developers list
-on April 4, 2008.
-
-"To summarize, the goal is that the full posix/socket API is defined in
-src/process/simu.h: each posix type and function is re-defined there
-with a simu_ or SIMU_ prefix to avoid ugly name clashes and collisions
-(feel free to come up with a better prefix).
-
-Each process is created with a call to ProcessManager::Create and is
-attached to that ProcessManager instance. So, if the ProcessManager
-(which is aggregated to a Node in src/helper/process-helper.cc) is
-killed when the simulation ends, the system will automatically reclaim
-all the resources of each process associated to each manager. The same
-happens when an application "exits" from its main function.
-
-The example application defines two posix "processes": the function
-ClientProgram creates a udp socket on the localhost port 2000 and the
-function ServerProgram creates a udp socket on the localhost port 2000.
-The code does not work right now because I did not get the details of
-simu_read right yet but, I do plan to make this work at some point.
-
-I really think that this approach is worthwhile for many reasons, a few
-of which are outlined below:
-@itemize @bullet
-@item makes porting real world application code _much_ easier
-
-@item makes write applications for new users much easier because they can
-read the bsd socket api reference and documentation and write code
-directly.
-
-@item can be used to write applications which work in both simulation and
-in the real world at the same time. To do this, all you have to do is
-write your application to use the simu_ API, and, then, you can chose at
-compile-time which implementation of that API you want to use: you can
-pick one implementation which forwards all calls to the system BSD
-socket API or another one which forwards all calls to the attached
-ProcessManager. Arguably, I did not implement the version which forwards
-to system BSD sockets but, that should be pretty trivial.
-@end itemize
-
-So, anyway, comments about the overall API would be welcome. Students
-interested in the gsoc project for real-world code integration should
-consider looking at this also."
-
+@cartouche
+Under development in the http://code.nsnam.org/mathieu/ns-3-simu repository.
+@end cartouche
