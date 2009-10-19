@@ -24,11 +24,12 @@ the document should be discussed on the ns-developers@@isi.edu mailing list.
 
 This is an @command{ns-3} reference manual.
 Primary documentation for the @command{ns-3} project is available in
-four forms:
+five forms:
 @itemize @bullet
 @item @uref{http://www.nsnam.org/docs/tutorial/tutorial.html,,ns-3 Tutorial}
 @item @uref{http://www.nsnam.org/doxygen/index.html,,ns-3 Doxygen}:  Documentation of the public APIs of the simulator
 @item Reference Manual (this document)
+@item @uref{http://www.nsnam.org/tutorials.html,, ns-3 Testing and Validation manual}
 @item @uref{http://www.nsnam.org/wiki/index.php,, ns-3 wiki}
 @end itemize
  
@@ -62,6 +63,8 @@ along with this program.  If not, see @uref{http://www.gnu.org/licenses/}.
 
 @vskip 0pt plus 1filll
 @insertcopying
+@page
+@center This page is intentionally blank.
 @end titlepage
 
 @c So the toc is printed at the start.

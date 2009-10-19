@@ -12,6 +12,7 @@ it, and details on its implementation.
 * Using the Callback API::
 * Bound Callbacks::
 * Callback locations in ns-3::
+* Traced Callbacks::
 * Implementation details::
 @end menu
 
@@ -35,7 +36,6 @@ public:
 
 class B {
 public:
-  void ReceiveInput ( // parameters);
   void DoSomething (void);
   ...
 
@@ -93,6 +93,10 @@ optimal way to design a generic simulator.
 
 @node Callbacks Background
 @section Background
+
+@cartouche
+Readers familiar with programming callbacks may skip this tutorial section.
+@end cartouche
 
 The basic mechanism that allows one to address the problem above is known as
 a @emph{callback}.  The ultimate goal is to allow one piece of code to call 
@@ -358,16 +362,19 @@ Consider also the following main program snippet:
 @end verbatim
 
 This is an example of a C-style callback -- one which does not include or need
-a @code{this} pointer.  The funtion template @code{Callback} is esentially the
+a @code{this} pointer.  The function template @code{Callback} is esentially the
 declaration of the variable containing the pointer-to-function.  In the example
 above, we explicitly showed a pointer to a function that returned an integer and
 took a single integer as a parameter,  The @code{Callback} template function is
 a generic version of that -- it is used to declare the type of a callback.  
 
+@strong{Note1:} Readers unfamiliar with C++ templates may consult
+@uref{http://www.cplusplus.com/doc/tutorial/templates/,,this reference}.
+
 The @code{Callback} template requires one mandatory argument (the return type 
 of the function to be assigned to this callback) and up to five optional 
 arguments, which each specify the type of the arguments (if your particular
-callback function has more than five arguments, then this can be easily handled
+callback function has more than five arguments, then this can be handled
 by extending the callback implementation).
 
 So in the above example, we have a declared a callback named "one" that will
@@ -451,7 +458,7 @@ invoked.  Consider this example, also from main-callback.cc:
 @end verbatim
 
 Here, we pass an additional object pointer to the @code{MakeCallback<>} function.
-Recall from the example above that @code{Operator()} will use the pointer to 
+Recall from the background section above that @code{Operator()} will use the pointer to 
 member syntax when it executes on an object:
 
 @verbatim
@@ -505,7 +512,7 @@ later -- when the @code{Callback} is called via @code{operator()}.  All of
 the parameters are provided by the calling function.  
 
 What if it is desired to allow the client function (the one that provides the
-callback) to provide some of the parameters?  Alexandrescu calls the process of
+callback) to provide some of the parameters?  @uref{http://erdani.com/book/main.html,,Alexandrescu} calls the process of
 allowing a client to specify one of the parameters @emph{binding}.  One of the 
 parameters of @code{operator()} has been bound (fixed) by the client.
 
@@ -539,7 +546,7 @@ takes the parameters to be bound.  In the case of the example above,
     MakeBoundCallback (&CsmaHelper::SniffEvent, pcap));
 @end verbatim
 
-Will create a specific callback implementation that knows to add in the extra
+will create a specific callback implementation that knows to add in the extra
 bound arguments.  Conceptually, it extends the specific functor described above
 with one or more bound arguments
 
@@ -581,16 +588,24 @@ function call:
   (*m_p.*m_pmi)(m_boundArg, arg);
 @end verbatim
 
+@node Traced Callbacks
+@section Traced Callbacks
+@cartouche
+Placeholder subsection
+@end cartouche
+@section Callback locations in @command{ns-3}
 @node Callback locations in ns-3
 @section Callback locations in @command{ns-3}
 
 Where are callbacks frequently used in @command{ns-3}?  Here are some of the
 more visible ones to typical users:
 
-@subsection Socket API
-@subsection Layer-2/Layer-3 API
-@subsection Tracing subsystem
-@subsection Routing
+@itemize @bullet
+@item Socket API
+@item Layer-2/Layer-3 API
+@item Tracing subsystem
+@item API between IP and routing subsystems
+@end itemize
 
 @node Implementation details
 @section Implementation details
@@ -600,8 +615,9 @@ itself.  The actual Callback code is quite complicated and very template-intense
 a deep understanding of the code is not required.  If interested, expert users may
 find the following useful:
 
-The code was originally written based on the techniques described 
-@uref{http://www.codeproject.com/cpp/TTLFunction.asp,,here}.
+The code was originally written based on the techniques described in 
+@uref{http://www.codeproject.com/cpp/TTLFunction.asp,,
+http://www.codeproject.com/cpp/TTLFunction.asp}.
 It was subsequently rewritten to follow the architecture outlined in 
 @uref{http://www.amazon.com/Modern-C\%2B\%2B-Design-Programming-Patterns/dp/0201704315/ref=pd_bbs_sr_1/102-0157303-1900156?ie=UTF8\&s=books\&qid=1187982662\&sr=1-1,,Modern C++ Design: Generic Programming and Design Patterns Applied-- Alexandrescu}, chapter 5, "Generalized Functors".
 

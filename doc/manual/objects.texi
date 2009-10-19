@@ -98,7 +98,7 @@ When the reference count falls to zero, the object is deleted.
 
 @itemize @bullet
 @item When the client code obtains a pointer from the object itself
-through object creation, or via QueryInterface, it does not have
+through object creation, or via GetObject, it does not have
 to increment the reference count.   
 @item When client code obtains a pointer from another source (e.g.,
 copying a pointer) it must call @code{Ref()} to increment the
@@ -154,7 +154,9 @@ using @code{CreateObject()} instead.
 
 For objects deriving from @code{class RefCountBase}, or other
 objects that support usage of the smart pointer class
-(in particular, the ns-3 Packet class),
+(in particular, the ns-3 Packet class does not derive from RefCountBase
+in order to avoid a vtable, but separately implements @code{Ref ()} and 
+@code{Unref ()}),
 a templated helper function is available and recommended to be used:
 @verbatim
   Ptr<B> b = Create<B> ();
@@ -241,7 +243,7 @@ now use the Ptr to the Ipv4 object that was previously aggregated to
 the node.
 
 Another example of how one might use aggregation is to add optional
-models to objects.  For in
+models to objects.  
 For instance, an existing Node object may have an ``Energy Model''
 object aggregated to it at run time (without modifying
 and recompiling the node class).  An existing model (such as a wireless

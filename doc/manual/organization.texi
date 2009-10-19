@@ -52,4 +52,4 @@ Part 6 describes additional support for simulation, such as animators.
 
 The project maintains a separate manual devoted to testing and
 validation of ns-3 code (see the 
-@uref{http://www.nsnam.org/tutorials.html,, ns-3 Testing and Validation manual})j
+@uref{http://www.nsnam.org/tutorials.html,, ns-3 Testing and Validation manual}).

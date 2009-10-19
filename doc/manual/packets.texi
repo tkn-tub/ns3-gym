@@ -99,7 +99,7 @@ things that you wouldn't find in the bits on the wire).
 
 @float Figure,fig:packets
 @caption{Implementation overview of Packet class.}
-@image{figures/packet}
+@image{figures/packet, 4in}
 @end float
 
 Figure @ref{fig:packets} is a high-level overview of the Packet
@@ -222,9 +222,11 @@ applied is:
   Packet (uint8_t const *buffer, uint32_t size);
 @end verbatim
 Here is an example:
-@verbatim
+@smallformat
+@example
   Ptr<Packet> pkt1 = Create<Packet> (reinterpret_cast<const uint8_t*> ("hello"), 5);
-@end verbatim
+@end example
+@end smallformat
 
 Packets are freed when there are no more references to them, as with
 all ns-3 objects referenced by the Ptr class.
@@ -258,7 +260,8 @@ examples within the source code.
 Once you have a header (or you have a preexisting header), the following
 Packet API can be used to add or remove such headers.
 
-@verbatim
+@smallformat
+@example
   /**
    * Add header to this packet. This method invokes the
    * Header::GetSerializedSize and Header::Serialize
@@ -284,11 +287,13 @@ Packet API can be used to add or remove such headers.
    * \returns the number of bytes read from the packet.
    */
   uint32_t PeekHeader (Header &header) const;
-@end verbatim
+@end example
+@end smallformat
 
 For instance, here are the typical operations to add and remove a UDP header.
 
-@verbatim
+@smallformat
+@example
  // add header
  Ptr<Packet> packet = Create<Packet> ();
  UdpHeader udpHeader;
@@ -299,7 +304,8 @@ For instance, here are the typical operations to add and remove a UDP header.
  UdpHeader udpHeader;
  packet->RemoveHeader (udpHeader); 
  // Read udpHeader fields as needed
-@end verbatim
+@end example
+@end smallformat
 
 @subsection Adding and removing Tags
 
@@ -355,7 +361,8 @@ An example is the UdpEchoServer class, which takes the received packet
 and "turns it around" to send back to the echo client. 
 
 The Packet API for byte tags is given below.
-@verbatim
+@smallformat
+@example
   /**
    * \param tag the new tag to add to this packet
    *
@@ -399,10 +406,12 @@ The Packet API for byte tags is given below.
    * invoke the Print method of each tag stored in the packet.
    */
   void PrintByteTags (std::ostream &os) const;
-@end verbatim
+@end example
+@end smallformat
 
 The Packet API for packet tags is given below.
-@verbatim
+@smallformat
+@example
   /**
    * \param tag the tag to store in this packet
    *
@@ -451,7 +460,8 @@ The Packet API for packet tags is given below.
    *  packet tags.
    */
   PacketTagIterator GetPacketTagIterator (void) const;
-@end verbatim
+@end example
+@end smallformat
 
 Here is a simple example illustrating the use of tags from the
 code in @code{src/internet-stack/udp-socket-impl.cc}:
