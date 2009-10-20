@@ -25,9 +25,6 @@ namespace ns3 {
 
 /**
  * \brief measure wall-clock time in milliseconds
-
- * \todo This class exists also in non-unix systems but is not
- * implemented and always return zero as measurd time.
  */
 class SystemWallClockMs {
 public:
@@ -39,31 +36,13 @@ public:
    */
   void Start (void);
   /**
-   * \brief Stop measuring the time since Start() was called.
-   * \returns the measured elapsed wall clock time (in milliseconds) since 
-   *          ns3::SystemWallClockMs::Start was invoked.
+   * \returns the measured elapsed wall clock time since 
+   *          ns3::SystemWallClockMs::start was invoked.
    *
-   * It is possible to start a new measurement with ns3::SystemWallClockMs::Start
+   * It is possible to start a new measurement with ns3::SystemWallClockMs::start
    * after this method returns.
    */
   unsigned long long End (void);
-
-  /**
-   * \returns the measured elapsed wall clock time (in milliseconds) since 
-   *          ns3::SystemWallClockMs::Start was invoked.
-   */
-  double GetElapsedReal (void) const;
-  /**
-   * \returns the measured elapsed 'user' wall clock time (in milliseconds) since 
-   *          ns3::SystemWallClockMs::Start was invoked.
-   */
-  double GetElapsedUser (void) const;
-  /**
-   * \returns the measured elapsed 'system' wall clock time (in milliseconds) since 
-   *          ns3::SystemWallClockMs::Start was invoked.
-   */
-  double GetElapsedSystem (void) const;
-
 private:
   class SystemWallClockMsPrivate *m_priv;
 };

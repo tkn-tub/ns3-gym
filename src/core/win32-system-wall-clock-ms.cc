@@ -61,22 +61,4 @@ SystemWallClockMs::End (void)
   return m_priv->End ();
 }
 
-double
-SystemWallClockMs::GetElapsedReal (void) const
-{
-  return 0;
-}
-
-double
-SystemWallClockMs::GetElapsedUser (void) const
-{
-  return 0;
-}
-
-double
-SystemWallClockMs::GetElapsedSystem (void) const
-{
-  return 0;
-}
-
 }; // namespace ns3
