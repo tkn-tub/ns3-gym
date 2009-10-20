@@ -1320,7 +1320,7 @@ is created and hook the trace when that event is executedl or 2) create the
 dynamic object at configuration time, hook it then, and give the object to
 the system to use during simulation time.  We took the second approach in
 the @code{fifth.cc} example.  This decision required us to create the 
-@code{SimpleSource} @code{Application}, the entire purpose of which is to 
+@code{MyApp} @code{Application}, the entire purpose of which is to 
 take a @code{Socket} as a parameter.  
 
 @subsection A fifth.cc Walkthrough
@@ -1400,16 +1400,16 @@ with @code{Socket}.
 
 This should also be self-explanatory.  
 
-The next part is the declaration of the @code{SimpleSource} @code{Application} that
+The next part is the declaration of the @code{MyApp} @code{Application} that
 we put together to allow the @code{Socket} to be created at configuration time.
 
 @verbatim
-  class SimpleSource : public Application
+  class MyApp : public Application
   {
   public:
   
-    SimpleSource ();
-    virtual ~SimpleSource();
+    MyApp ();
+    virtual ~MyApp();
   
     void Setup (Ptr<Socket> socket, Address address, uint32_t packetSize, 
       uint32_t nPackets, DataRate dataRate);
@@ -1468,7 +1468,7 @@ which, in turn, schedules an event to start the @code{Application}:
   Simulator::Schedule (startTime, &Application::StartApplication, this);
 @end verbatim
 
-Since @code{SimpleSource} inherits from @code{Application} and overrides 
+Since @code{MyApp} inherits from @code{Application} and overrides 
 @code{StartApplication}, this bit of code causes the simulator to execute
 something that is effectively like,
 
@@ -1484,13 +1484,13 @@ begin doing some application-specific function, like sending packets.
 @code{StopApplication} operates in a similar manner and tells the @code{Application}
 to stop generating events.
 
-@subsubsection The SimpleSource Application
+@subsubsection The MyApp Application
 
-The @code{SimpleSource} @code{Application} needs a constructor and a destructor,
+The @code{MyApp} @code{Application} needs a constructor and a destructor,
 of course:
 
 @verbatim
-  SimpleSource::SimpleSource ()
+  MyApp::MyApp ()
     : m_socket (0),
       m_peer (),
       m_packetSize (0),
@@ -1502,7 +1502,7 @@ of course:
   {
   }
   
-  SimpleSource::~SimpleSource()
+  MyApp::~MyApp()
   {
     m_socket = 0;
   }
@@ -1513,7 +1513,7 @@ The existence of the next bit of code is the whole reason why we wrote this
 
 @verbatim
 void
-SimpleSource::Setup (Ptr<Socket> socket, Address address, uint32_t packetSize, 
+MyApp::Setup (Ptr<Socket> socket, Address address, uint32_t packetSize, 
                      uint32_t nPackets, DataRate dataRate)
 {
   m_socket = socket;
@@ -1534,7 +1534,7 @@ method.
 
 @verbatim
   void
-  SimpleSource::StartApplication (void)
+  MyApp::StartApplication (void)
   {
     m_running = true;
     m_packetsSent = 0;
@@ -1558,7 +1558,7 @@ simulation events.
 
 @verbatim
   void
-  SimpleSource::StopApplication (void)
+  MyApp::StopApplication (void)
   {
     m_running = false;
   
@@ -1591,7 +1591,7 @@ chain of events that describes the @code{Application} behavior.
 
 @verbatim
   void
-  SimpleSource::SendPacket (void)
+  MyApp::SendPacket (void)
   {
     Ptr<Packet> packet = Create<Packet> (m_packetSize);
     m_socket->Send (packet);
@@ -1614,12 +1614,12 @@ has sent enough.
 
 @verbatim
   void
-  SimpleSource::ScheduleTx (void)
+  MyApp::ScheduleTx (void)
   {
     if (m_running)
       {
         Time tNext (Seconds (m_packetSize * 8 / static_cast<double> (m_dataRate.GetBitRate ())));
-        m_sendEvent = Simulator::Schedule (tNext, &SimpleSource::SendPacket, this);
+        m_sendEvent = Simulator::Schedule (tNext, &MyApp::SendPacket, this);
       }
   }
 @end verbatim
@@ -1797,20 +1797,20 @@ create a helper to manage the @code{Application} so we are going to have to
 create and install it ``manually.''  This is actually quite easy:
 
 @verbatim
-  Ptr<SimpleSource> app = CreateObject<SimpleSource> ();
+  Ptr<MyApp> app = CreateObject<MyApp> ();
   app->Setup (ns3TcpSocket, sinkAddress, 1040, 1000, DataRate ("1Mbps"));
   nodes.Get (0)->AddApplication (app);
   app->Start (Seconds (1.));
   app->Stop (Seconds (20.));
 @end verbatim
 
-The first line creates an @code{Object} of type @code{SimpleSource} -- our
+The first line creates an @code{Object} of type @code{MyApp} -- our
 @code{Application}.  The second line tells the @code{Application} what
 @code{Socket} to use, what address to connect to, how much data to send 
 at each send event, how many send events to generate and the rate at which
 to produce data from those events.
 
-Next, we manually add the @code{SimpleSource Application} to the source node
+Next, we manually add the @code{MyApp Application} to the source node
 and explicitly call the @code{Start} and @code{Stop} methods on the 
 @code{Application} to tell it when to start and stop doing its thing.
 

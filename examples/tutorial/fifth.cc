@@ -59,12 +59,12 @@ NS_LOG_COMPONENT_DEFINE ("FifthScriptExample");
 // install in the source node.
 // ===========================================================================
 //
-class SimpleSource : public Application 
+class MyApp : public Application 
 {
 public:
 
-  SimpleSource ();
-  virtual ~SimpleSource();
+  MyApp ();
+  virtual ~MyApp();
 
   void Setup (Ptr<Socket> socket, Address address, uint32_t packetSize, uint32_t nPackets, DataRate dataRate);
 
@@ -85,7 +85,7 @@ private:
   uint32_t        m_packetsSent;
 };
 
-SimpleSource::SimpleSource ()
+MyApp::MyApp ()
   : m_socket (0), 
     m_peer (), 
     m_packetSize (0), 
@@ -97,13 +97,13 @@ SimpleSource::SimpleSource ()
 {
 }
 
-SimpleSource::~SimpleSource()
+MyApp::~MyApp()
 {
   m_socket = 0;
 }
 
 void
-SimpleSource::Setup (Ptr<Socket> socket, Address address, uint32_t packetSize, uint32_t nPackets, DataRate dataRate)
+MyApp::Setup (Ptr<Socket> socket, Address address, uint32_t packetSize, uint32_t nPackets, DataRate dataRate)
 {
   m_socket = socket;
   m_peer = address;
@@ -113,7 +113,7 @@ SimpleSource::Setup (Ptr<Socket> socket, Address address, uint32_t packetSize, u
 }
 
 void
-SimpleSource::StartApplication (void)
+MyApp::StartApplication (void)
 {
   m_running = true;
   m_packetsSent = 0;
@@ -123,7 +123,7 @@ SimpleSource::StartApplication (void)
 }
 
 void 
-SimpleSource::StopApplication (void)
+MyApp::StopApplication (void)
 {
   m_running = false;
 
@@ -139,7 +139,7 @@ SimpleSource::StopApplication (void)
 }
 
 void 
-SimpleSource::SendPacket (void)
+MyApp::SendPacket (void)
 {
   Ptr<Packet> packet = Create<Packet> (m_packetSize);
   m_socket->Send (packet);
@@ -151,12 +151,12 @@ SimpleSource::SendPacket (void)
 }
 
 void 
-SimpleSource::ScheduleTx (void)
+MyApp::ScheduleTx (void)
 {
   if (m_running)
     {
       Time tNext (Seconds (m_packetSize * 8 / static_cast<double> (m_dataRate.GetBitRate ())));
-      m_sendEvent = Simulator::Schedule (tNext, &SimpleSource::SendPacket, this);
+      m_sendEvent = Simulator::Schedule (tNext, &MyApp::SendPacket, this);
     }
 }
 
@@ -207,7 +207,7 @@ main (int argc, char *argv[])
   Ptr<Socket> ns3TcpSocket = Socket::CreateSocket (nodes.Get (0), TcpSocketFactory::GetTypeId ());
   ns3TcpSocket->TraceConnectWithoutContext ("CongestionWindow", MakeCallback (&CwndChange));
 
-  Ptr<SimpleSource> app = CreateObject<SimpleSource> ();
+  Ptr<MyApp> app = CreateObject<MyApp> ();
   app->Setup (ns3TcpSocket, sinkAddress, 1040, 1000, DataRate ("5Mbps"));
   nodes.Get (0)->AddApplication (app);
   app->Start (Seconds (1.));
