@@ -1127,9 +1127,9 @@ to the important piece of code:
 
 Here you see that the @code{TracedValue} is templated, of course.  In the simple
 example case at the start of the section, the typename is int32_t.  This means 
-that the member variable being traced (@code>m_v} in the private section of the 
+that the member variable being traced (@code{m_v} in the private section of the 
 class) will be an @code{int32_t m_v}.  The @code{Set} method will take a 
-@code{const uint32_t &v} as a parameter.  You should now be able to understand 
+@code{const int32_t &v} as a parameter.  You should now be able to understand 
 that the @code{Set} code will fire the @code{m_cb} callback with two parameters:
 the first being the current value of the @code{TracedValue}; and the second 
 being the new value being set.
@@ -1146,7 +1146,7 @@ looks like:
 
 @verbatim
   void
-  MyCallback (uint32_t oldValue, uint32_t newValue)
+  MyCallback (int32_t oldValue, int32_t newValue)
   {
     ...
   }
@@ -1246,7 +1246,7 @@ being the new value:
 @subsection What Script to Use?
 
 It's always best to try and find working code laying around that you can 
-modify, rather than starting from scratch.  So the fist order of business now
+modify, rather than starting from scratch.  So the first order of business now
 is to find some code that already hooks the ``CongestionWindow'' trace source
 and see if we can modify it.  As usual, grep is your friend:
 
@@ -1277,7 +1277,7 @@ and extract the code we need from this function
 you will find that it looks just like an @code{ns-3} script.  It turns out that
 is exactly what it is.  It is a script run by the test framework, so we can just
 pull it out and wrap it in @code{main} instead of in @code{DoRun}.  Rather than
-walk through this step, by step, we have provided the file that results from
+walk through this, step, by step, we have provided the file that results from
 porting this test back to a native @code{ns-3} script --
 @code{examples/tutorial/fifth.cc}.  
 
@@ -1287,7 +1287,7 @@ The @code{fifth.cc} example demonstrates an extremely important rule that you
 must understand before using any kind of @code{Attribute}:  you must ensure 
 that the target of a @code{Config} command exists before trying to use it.
 This is no different than saying an object must be instantiated before trying
-to call it,  Although this may seem obvious when stated this way, it does
+to call it.  Although this may seem obvious when stated this way, it does
 trip up many people trying to use the system for the first time.
 
 Let's return to basics for a moment.  There are three basic time periods that
@@ -1300,7 +1300,7 @@ when the @code{main} function of your script is running, but before
 executing the simulation,  @code{Simulator::Run} will return control back to 
 the @code{main} function.  When this happens, the script enters what can be 
 called ``Teardown Time,'' which is when the structures and objects created 
-during setup and taken apart and released,
+during setup and taken apart and released.
 
 Perhaps the most common mistake made in trying to use the tracing system is 
 assuming that entities constructed dynamically during simulation time are
@@ -1314,7 +1314,7 @@ is to ensure that the simulation is completely configured before the app
 tries to do anything (what would happen if it tried to connect to a node
 that didn't exist yet during configuration time).  The answer to this 
 issue is to 1) create a simulator event that is run after the dynamic object
-is created and hook the trace when that event is executedl or 2) create the
+is created and hook the trace when that event is executed; or 2) create the
 dynamic object at configuration time, hook it then, and give the object to
 the system to use during simulation time.  We took the second approach in
 the @code{fifth.cc} example.  This decision required us to create the 
@@ -1323,7 +1323,7 @@ take a @code{Socket} as a parameter.
 
 @subsection A fifth.cc Walkthrough
 
-Now, let's take a look at the example program we constructed by disecting
+Now, let's take a look at the example program we constructed by dissecting
 the congestion window test.  Open @code{examples/tutorial/fifth.cc} in your
 favorite editor.  You should see some familiar looking code:
 
@@ -1551,7 +1551,7 @@ the required work on the local side of the connection just as you might expect.
 The following @code{Connect} will do what is required to establish a connection 
 with the TCP at @code{Address} m_peer.  It should now be clear why we need to defer
 a lot of this to simulation time, since the @code{Connect} is going to need a fully
-functioning network to comlete.  After the @code{Connect}, the @code{Application} 
+functioning network to complete.  After the @code{Connect}, the @code{Application} 
 then starts creating simulation events by calling @code{SendPacket}.
 
 The next bit of code explains to the @code{Application} how to stop creating 
@@ -1627,7 +1627,7 @@ has sent enough.
 @end verbatim
 
 Here, you see that @code{ScheduleTx} does exactly that.  If the @code{Applciation}
-is running (if @code{StopApplication}) has not been called) it will schedule a 
+is running (if @code{StopApplication} has not been called) it will schedule a 
 new event, which calls @code{SendPacket} again.  The alert reader will spot
 something that also trips up new users.  The data rate of an @code{Application} is
 just that.  It has nothing to do with the data rate of an underlying @code{Channel}.
@@ -1656,8 +1656,8 @@ congestion window every time it is changed.  You can probably imagine that you
 could load the resulting output into a graphics program (gnuplot or Excel) and
 immediately see a nice graph of the congestion window behavior over time.
 
-We added a new trace sink to show where are dropped.  We are going to add an
-error model to this code also, so we wanted to demonstrate this working.
+We added a new trace sink to show where packets are dropped.  We are going to 
+add an error model to this code also, so we wanted to demonstrate this working.
 
 @verbatim
   static void
@@ -1700,7 +1700,7 @@ The following code should be very familiar to you by now:
 This creates two nodes with a point-to-point channel between them, just as
 shown in the illustration at the start of the file.
 
-The next few lines of code show somthing new.  If we trace a connection that
+The next few lines of code show something new.  If we trace a connection that
 behaves perfectly, we will end up with a monotonically increasing congestion
 window.  To see any interesting behavior, we really want to introduce link 
 errors which will drop packets, cause duplicate ACKs and trigger the more
@@ -1714,7 +1714,7 @@ to introduce errors into a @code{Channel} at a given @emph{rate}.
   Ptr<RateErrorModel> em = CreateObjectWithAttributes<RateErrorModel> (
     "RanVar", RandomVariableValue (UniformVariable (0., 1.)),
     "ErrorRate", DoubleValue (0.00001));
-  devices.Get (0)->SetAttribute ("ReceiveErrorModel", PointerValue (em));
+  devices.Get (1)->SetAttribute ("ReceiveErrorModel", PointerValue (em));
 @end verbatim
 
 The above code instantiates a @code{RateErrorModel} Object.  Rather than 
@@ -1856,17 +1856,17 @@ builds optimize out NS_LOGs) it will be waiting for you to run.
 
 @verbatim
   ./waf --run fifth
-  Waf: Entering directory `/home/craigdo/repos/ns-3-allinone-dev/ns-3-dev/build'
+  Waf: Entering directory `/home/craigdo/repos/ns-3-allinone-dev/ns-3-dev/build
   Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone-dev/ns-3-dev/build'
-  'build' finished successfully (0.525s)
-  1.21397 1072
-  1.22755 1608
-  1.24114 2144
+  'build' finished successfully (0.684s)
+  1.20919 1072
+  1.21511 1608
+  1.22103 2144
   ...
-  1.35211 8576
-  1.36136 9112
-  1.37061 9648
-  RxDrop at 1.3729
+  1.2471  8040
+  1.24895 8576
+  1.2508  9112
+  RxDrop at 1.25151
   ...
 @end verbatim
 
@@ -1889,7 +1889,7 @@ You can now run gnuplot (if you have it installed) and tell it to generate some
 pretty pictures:
 
 @verbatim
-  gnuplot> set terminal png size 1024,768
+  gnuplot> set terminal png size 640,480
   gnuplot> set output "cwnd.png"
   gnuplot> plot "cwnd.dat" using 1:2 title 'Congestion Window' with linespoints
   gnuplot> exit
