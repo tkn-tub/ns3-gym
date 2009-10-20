@@ -158,9 +158,9 @@ Simulator version:
 @unnumbered Part 3:  Emulation
 @setchapternewpage off
 @include emulation.texi
+@setchapternewpage odd
 @include emu.texi
 @include tap.texi
-@setchapternewpage odd
 
 @unnumbered Part 4:  Internet Models
 @setchapternewpage off

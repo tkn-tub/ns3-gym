@@ -105,10 +105,7 @@ for @code{class TcpSocket}.
 @subsection Current limitations
 @itemize @bullet
 @item Only Tahoe congestion control is presently supported.
-@item Only IPv4 is supported (IPv6 support will start to be added in ns-3.3).
-@item @uref{http://www.nsnam.org/bugzilla/show_bug.cgi?id=198,,Bug 198}:  TcpSocketImpl doesn't send acks with data packets in two-way transfers
-@item @uref{http://www.nsnam.org/bugzilla/show_bug.cgi?id=250,,Bug 250}:  Tcp breaks if you set the DelAckCount parameter to be greater than 2
-@item @uref{http://www.nsnam.org/bugzilla/show_bug.cgi?id=311,,Bug 311}:  Tcp socket close returns -1 but does not set errno.
+@item Only IPv4 is supported (IPv6 support will start to be added after ns-3.6).
 @end itemize
 
 @section Network Simulation Cradle
@@ -132,43 +129,17 @@ how to use it.
 @subsection Prerequisites
 
 Presently, NSC has been tested and shown to work on these platforms:
-Linux i386 and Linux x86-64.  NSC does not support powerpc at the moment.
+Linux i386 and Linux x86-64.  NSC does not support powerpc.
 
-NSC requires the packages mercurial, flex, and bison.  
+Building NSC requires the packages flex and bison.  
 
 @subsection Configuring and Downloading
 
-NSC is disabled by default and must be explicitly configured in.  To try
-this, type
+Using the @code{build.py} script in ns-3-allinone directory, NSC will be
+enabled by default unless the platform does not support it.  To disable
+it when building ns-3, type:
 @verbatim
-./waf configure --enable-nsc
-@end verbatim
-the output of the configuration will show something like:
-@verbatim
-Checking for NSC supported architecture x86_64                           : ok  
-Pulling nsc updates from https://secure.wand.net.nz/mercurial/nsc
-pulling from https://secure.wand.net.nz/mercurial/nsc
-searching for changes
-no changes found
----- Summary of optional NS-3 features:
-...
-Network Simulation Cradle     : enabled
-...
-@end verbatim 
-if successful.  Note that the configure script pulls a recent copy of
-NSC from a mercurial repository.  This download will not work if you are not
-online.
-
-If everything went OK, you will see a directory called "nsc" in the top-level
-directory, with contents like this:
-@verbatim
-audit.sh            linux-2.6/          openbsd3/           scons-time.py*
-ChangeLog           linux-2.6.18/       README              SConstruct 
-config.log          linux-2.6.26/       sconsign.py*        sim/
-freebsd5/           lwip-1.3.0/         scons-LICENSE       test/
-globaliser/         lwip-HEAD/          scons-local-1.0.1/  
-INSTALL             ns/                 scons.py*           
-LICENSE             omnetpp/            scons-README        
+./waf configure --disable-nsc
 @end verbatim
 
 @subsection Building and validating
@@ -233,12 +204,18 @@ Additionally, NSC TCP exports a lot of configuration variables into the
 ns-3 @ref{Attributes} system, via a @uref{http://en.wikipedia.org/wiki/Sysctl,,
 sysctl}-like interface.  In the @code{examples/tcp-nsc-zoo} example, you
 can see the following configuration:
-@verbatim
-  // this disables TCP SACK, wscale and timestamps on node 1 (the attributes represent sysctl-values).
-  Config::Set ("/NodeList/1/$ns3::Ns3NscStack<linux2.6.26>/net.ipv4.tcp_sack", StringValue ("0"));
-  Config::Set ("/NodeList/1/$ns3::Ns3NscStack<linux2.6.26>/net.ipv4.tcp_timestamps", StringValue ("0"));
-  Config::Set ("/NodeList/1/$ns3::Ns3NscStack<linux2.6.26>/net.ipv4.tcp_window_scaling", StringValue ("0"));
-@end verbatim
+@smallformat
+@example
+  // this disables TCP SACK, wscale and timestamps on node 1 (the attributes 
+represent sysctl-values).
+  Config::Set ("/NodeList/1/$ns3::Ns3NscStack<linux2.6.26>/net.ipv4.tcp_sack", 
+StringValue ("0"));
+  Config::Set ("/NodeList/1/$ns3::Ns3NscStack<linux2.6.26>/net.ipv4.tcp_timestamps", 
+StringValue ("0"));
+  Config::Set ("/NodeList/1/$ns3::Ns3NscStack<linux2.6.26>/net.ipv4.tcp_window_scaling", 
+StringValue ("0"));
+@end example
+@end smallformat
 These additional configuration variables are not available to native ns-3
 TCP.
 
@@ -331,11 +308,10 @@ nsc-tcp-sockets of a node when its wakeup callback is invoked by nsc.
 @itemize @bullet
 @item NSC only works on single-interface nodes; attempting to run it on
 a multi-interface node will cause a program error.  This limitation should
-be fixed by ns-3.3.
-@item Cygwin and OS X PPC are not presently supported
-@item The non-Linux stacks of NSC are not supported
-@item NSC's integration into the build system presently requires on-line
-access and mercurial, and is a slow download.
+be fixed by ns-3.7.
+@item Cygwin and OS X PPC are not supported
+@item The non-Linux stacks of NSC are not supported in ns-3
+@item Not all socket API callbacks are supported
 @end itemize
 
 For more information, see

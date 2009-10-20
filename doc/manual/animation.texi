@@ -4,3 +4,10 @@
 @cartouche
 Placeholder chapter
 @end cartouche
+
+This wiki page: @*
+@uref{http://www.nsnam.org/wiki/index.php/NetAnim,,http://www.nsnam.org/wiki/index.php/NetAnim}
+contains information about the animator support that has been added to ns-3.6.
+
+Another Python-based animator is available (ns-3-pyviz) but is not
+documented.

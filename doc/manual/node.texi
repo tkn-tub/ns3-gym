@@ -20,8 +20,8 @@ to which one may add NetDevices (cards) and other innards including
 the protocols and applications.  @ref{fig:node} illustrates
 that Node objects contain a list of Applications (initially,
 the list is empty), a list of NetDevices (initially, the list
-is empty), a unique integer ID, and a system ID (for
-distributed simulation).
+is empty), a list of ProtocolHandlers, a unique integer ID, and 
+a system ID (for distributed simulation).
 
 The design tries to avoid putting too many dependencies on the
 base class Node, Application, or NetDevice for the following:

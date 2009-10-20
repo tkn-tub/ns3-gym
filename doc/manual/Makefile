@@ -72,6 +72,8 @@ figures-clean:
 version:
 	echo -n "ns-" > VERSION-PREFIX; cat VERSION-PREFIX ../../VERSION > VERSION; rm -rf VERSION-PREFIX
 
-clean: 	figures-clean
+texi-clean: 	
 	rm -rf manual.aux manual.cp manual.cps manual.fn manual.ky manual.pg manual.tp
 	rm -rf manual.vr manual.toc manual.log manual.pdf manual.html manual/ VERSION 
+
+clean:	figures-clean texi-clean
