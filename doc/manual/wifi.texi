@@ -222,27 +222,17 @@ A possible user code:
 @smallformat
 @example
   QosWifiMacHelper wifiMacHelper = QosWifiMacHelper::Default ();
-  wifiMacHelper.SetType ("ns3::QapWifiMac", "Ssid", SsidValue (ssid), 
-"BeaconGeneration", BooleanValue (true),
-                         "BeaconInterval", TimeValue (Seconds (2.5)));
-  wifiMacHelper.SetEdcaParametersForAc (AC_VO, "MinCw", UintegerValue (2));
+  wifiMacHelper.SetType ("ns3::QapWifiMac", 
+    "Ssid", SsidValue (ssid), 
+    "BeaconGeneration", BooleanValue (true), 
+    "BeaconInterval", TimeValue (Seconds (2.5)));
   wifiMacHelper.SetMsduAggregatorForAc (AC_VO, "ns3::MsduStandardAggregator", 
-"MaxAmsduSize", UintegerValue (3839));
+    "MaxAmsduSize", UintegerValue (3839));
 @end example
 @end smallformat
 
 Call to QosWifiMacHelper::Default () is needed in order to set default EDCA parameters properly for all
-access classes. Otherwise we should set them one by one:
-@smallformat
-@example
-  QosWifiMacHelper wifiMacHelper;
-  wifiMacHelper.SetEdcaParametersForAc (AC_VO, "MinCw", UintegerValue (2), 
-"MaxCw", UintegerValue (7), "Aifsn", UintegerValue (2));
-  wifiMacHelper.SetEdcaParametersForAc (AC_VI, "MinCw", UintegerValue (7), 
-"MaxCw", UintegerValue (15), "Aifsn", UintegerValue (2));
-  ...
-@end example
-@end smallformat
+access classes; otherwise we should set them one by one.
 
 @subsection WifiHelper
 
