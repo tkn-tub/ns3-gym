@@ -27,10 +27,7 @@
 #include <list>
 #include <limits>
 #include <stdint.h>
-
-#include "ns3/system-wall-clock-ms.h"
-
-
+#include <sys/times.h>
 // 
 // Note on below macros:
 //
@@ -824,7 +821,6 @@ private:
   TestCase (TestCase& tc);
   TestCase& operator= (TestCase& tc);
 
-  SystemWallClockMs m_clock;
   std::string m_name;
   bool m_verbose;
   bool m_continueOnFailure;
@@ -832,6 +828,8 @@ private:
   std::string m_basedir;
   std::ofstream *m_ofs;
   bool m_error;
+  clock_t m_startTime;
+  struct tms m_startTimes;
 };
 
 /**
@@ -1059,7 +1057,6 @@ private:
   TestSuite (TestSuite& ts);
   TestSuite& operator= (TestSuite& ts);
 
-  SystemWallClockMs m_clock;
   std::string m_name;
   bool m_verbose;
   bool m_continueOnFailure;
@@ -1067,7 +1064,10 @@ private:
   std::ofstream *m_ofs;
   bool m_error;
   TestType m_type;
-  
+
+  clock_t m_startTime;
+  struct tms m_startTimes;
+
   typedef std::vector<TestCase *> TestCaseVector_t;
   TestCaseVector_t m_tests;
 };
