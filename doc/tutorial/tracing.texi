@@ -1194,7 +1194,7 @@ It turns out that the @command{ns-3} TCP implementation lives (mostly) in the
 file @code{src/internet-stack/tcp-socket-impl.cc}.  If you don't know this a 
 priori, you can use the recursive grep trick:
 
-@vervatim
+@verbatim
   find . -name '*.cc' | xargs grep -i tcp
 @end verbatim
 
@@ -1278,10 +1278,8 @@ you will find that it looks just like an @code{ns-3} script.  It turns out that
 is exactly what it is.  It is a script run by the test framework, so we can just
 pull it out and wrap it in @code{main} instead of in @code{DoRun}.  Rather than
 walk through this step, by step, we have provided the file that results from
-porting this test back to a native @code{ns-3} script.
-
-Rather than go through this extraction process, we'll just provide the results 
-in a file named @code{examples/tutorial/fifth.cc}.  
+porting this test back to a native @code{ns-3} script --
+@code{examples/tutorial/fifth.cc}.  
 
 @subsection A Common Problem and Solution
 
@@ -1346,18 +1344,19 @@ favorite editor.  You should see some familiar looking code:
    * Foundation, Include., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
    */
   
-  #include ``ns3/core-module.h''
-  #include ``ns3/common-module.h''
-  #include ``ns3/simulator-module.h''
-  #include ``ns3/node-module.h''
-  #include ``ns3/helper-module.h''
+  #include <fstream>
+  #include "ns3/core-module.h"
+  #include "ns3/common-module.h"
+  #include "ns3/simulator-module.h"
+  #include "ns3/node-module.h"
+  #include "ns3/helper-module.h"
   
   using namespace ns3;
   
-  NS_LOG_COMPONENT_DEFINE (``FifthScriptExample'');
+  NS_LOG_COMPONENT_DEFINE ("FifthScriptExample");
 @end verbatim
 
-This has all been covered, so we won't discuss it.  The next lines of source are
+This has all been covered, so we won't rehash it.  The next lines of source are
 the network illustration and a comment addressing the problem described above
 with @code{Socket}.
 
@@ -1434,17 +1433,17 @@ we put together to allow the @code{Socket} to be created at configuration time.
 
 You can see that this class inherits from the @command{ns-3} @code{Application}
 class.  Take a look at @code{src/node/application.h} if you are interested in 
-what is inherited.  This class is obligated to override the 
+what is inherited.  The @code{MyApp} class is obligated to override the 
 @code{StartApplication} and @code{StopApplication} methods.  These methods are
-called when the corresponding @code{Start} and @code{Stop} methods are called
-during simulation time.  
+called when the corresponding base class @code{Start} and @code{Stop} methods are
+called during simulation time.  
 
 @subsubsection How Applications are Started and Stopped
 
 It is worthwhile to spend a bit of time explaining how events actually get 
 started in the system.  The most common way to start pumping events is to start
 an @code{Application}.  This is done as the result of the following (hopefully)
-familar lines of an @sommand{ns-3} script:
+familar lines of an @command{ns-3} script:
 
 @verbatim
   ApplicationContainer apps = ...
@@ -1550,8 +1549,10 @@ running.  You can see that it does a @code{Socket} @code{Bind} operation.  If
 you are familiar with Berkeley Sockets this shouldn't be a surprise.  It performs
 the required work on the local side of the connection just as you might expect.
 The following @code{Connect} will do what is required to establish a connection 
-with the TCP at @code{Address} m_peer.  The @code{Application} then starts creating
-simulation events by calling @code{SendPacket}.
+with the TCP at @code{Address} m_peer.  It should now be clear why we need to defer
+a lot of this to simulation time, since the @code{Connect} is going to need a fully
+functioning network to comlete.  After the @code{Connect}, the @code{Application} 
+then starts creating simulation events by calling @code{SendPacket}.
 
 The next bit of code explains to the @code{Application} how to stop creating 
 simulation events.
@@ -1579,8 +1580,9 @@ Every time a simulation event is scheduled, an @code{Event} is created.  If the
 return @code{true}.  In this code, if @code{IsRunning()} returns true, we 
 @code{Cancel} the event which removes it from the simulator event queue.  By 
 doing this, we break the chain of events that the @code{Application} is using to
-keep sending its @code{Packets} and the event goes quiet.  After we quiet the
-@code{Application} we @code{Close} the socket which tears down the TCP connection.
+keep sending its @code{Packets} and the @code{Application} goes quiet.  After we 
+quiet the @code{Application} we @code{Close} the socket which tears down the TCP 
+connection.
 
 The socket is actually deleted in the destructor when the @code{m_socket = 0} is
 executed.  This removes the last reference to the underlying Ptr<Socket> which 
@@ -1636,8 +1638,9 @@ data rate as your underlying @code{Channel} you will eventually get a buffer ove
 
 @subsubsection The Trace Sinks
 
-The whole point of this exercise is to get trace callbacks.  The next piece of
-code implements that callback:
+The whole point of this exercise is to get trace callbacks from TCP indicating the
+congestion window has been updated.  The next piece of code implements the 
+corresponding trace sink:
 
 @verbatim
   static void
@@ -1665,9 +1668,10 @@ error model to this code also, so we wanted to demonstrate this working.
 @end verbatim
 
 This trace sink will be connected to the ``PhyRxDrop'' trace source of the 
-point-to-point NetDevice.  If you take a small detour there you will see
-(in @code{src/devices/point-to-point/point-to-point-net-device.cc}) that
-this trace source refers to @code{PointToPointNetDevice::m_phyRxDropTrace}.
+point-to-point NetDevice.  This trace source fires when a packet is dropped
+by the physical layer of a @code{NetDevice}.  If you take a small detour to the
+source (@code{src/devices/point-to-point/point-to-point-net-device.cc}) you will
+see that this trace source refers to @code{PointToPointNetDevice::m_phyRxDropTrace}.
 If you then look in @code{src/devices/point-to-point/point-to-point-net-device.h}
 for this member variable, you will find that it is declared as a
 @code{TracedCallback<Ptr<const Packet> >}.  This should tell you that the
@@ -1678,7 +1682,7 @@ parameter which is a @code{Ptr<const Packet>} -- just what we have above.
 
 The following code should be very familiar to you by now:
 
-@end verbatim
+@verbatim
   int
   main (int argc, char *argv[])
   {
@@ -1709,7 +1713,7 @@ to introduce errors into a @code{Channel} at a given @emph{rate}.
 @verbatim
   Ptr<RateErrorModel> em = CreateObjectWithAttributes<RateErrorModel> (
     "RanVar", RandomVariableValue (UniformVariable (0., 1.)),
-    "ErrorRate", DoubleValue (0.01));
+    "ErrorRate", DoubleValue (0.00001));
   devices.Get (0)->SetAttribute ("ReceiveErrorModel", PointerValue (em));
 @end verbatim
 
@@ -1718,12 +1722,10 @@ using the two-step process of instantiating it and then setting Attributes,
 we use the convenience function @code{CreateObjectWithAttributes} which
 allows us to do both at the same time.  We set the ``RanVar'' 
 @code{Attribute} to a random variable that generates a uniform distribution
-from 0 to 1.  We also set the ``ErrorRate'' @code{Attribute} to the rate 0.01.
+from 0 to 1.  We also set the ``ErrorRate'' @code{Attribute}.
 We then set the resulting instantiated @code{RateErrorModel} as the error
-model used by the point-to-point @code{NetDevice}.  This will result in
-about one of every one hundred packets being dropped by the net device
-and give us those retransmissions we want to make our plot a little more
-interesting.
+model used by the point-to-point @code{NetDevice}.  This will give us some
+retransmissions and make our plot a little more interesting.
 
 @verbatim
   InternetStackHelper stack;
@@ -1769,7 +1771,7 @@ can then be used, in turn, to create instances of the Objects created by the
 factory.
 
 The remaining parameter tells the @code{Application} which address and port it
-should @cod{Bind} to.
+should @code{Bind} to.
 
 The next two lines of code will create the socket and connect the trace source.
 
@@ -1780,7 +1782,7 @@ The next two lines of code will create the socket and connect the trace source.
     MakeCallback (&CwndChange));
 @end verbatim
 
-The first statement calls the static member function @code{Socket::CreateSocket)
+The first statement calls the static member function @code{Socket::CreateSocket}
 and provides a @code{Node} and an explicit @code{TypeId} for the object factory
 used to create the socket.  This is a slightly lower level call than the 
 @code{PacketSinkHelper} call above, and uses an explicit C++ type instead of 
