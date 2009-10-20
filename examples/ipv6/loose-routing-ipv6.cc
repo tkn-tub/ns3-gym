@@ -49,23 +49,14 @@ NS_LOG_COMPONENT_DEFINE ("LooseRoutingIpv6Example");
 
 int main (int argc, char **argv)
 {
+#if 0 
   LogComponentEnable("Ipv6ExtensionLooseRouting", LOG_LEVEL_ALL);
   LogComponentEnable("Ipv6Extension", LOG_LEVEL_ALL);
-#if 0 
-	LogComponentEnable("Ipv6EndPointDemux", LOG_LEVEL_ALL);
-  LogComponentEnable("Udp6Socket", LOG_LEVEL_ALL);
-  LogComponentEnable("Udp6L4Protocol", LOG_LEVEL_ALL);
   LogComponentEnable("Ipv6L3Protocol", LOG_LEVEL_ALL);
   LogComponentEnable("Ipv6StaticRouting", LOG_LEVEL_ALL);
   LogComponentEnable("Ipv6Interface", LOG_LEVEL_ALL);
-  LogComponentEnable("NdiscIpv6Interface", LOG_LEVEL_ALL);
-  LogComponentEnable("Ipv6LoopbackInterface", LOG_LEVEL_ALL);
-  LogComponentEnable("OnOffApplication", LOG_LEVEL_ALL);
-  LogComponentEnable("PacketSinkApplication", LOG_LEVEL_ALL);
-  LogComponentEnable("UdpEcho6ClientApplication", LOG_LEVEL_ALL);
-  LogComponentEnable("UdpEcho6ServerApplication", LOG_LEVEL_ALL);
+  LogComponentEnable("Ipv6Interface", LOG_LEVEL_ALL);
 	LogComponentEnable("NdiscCache", LOG_LEVEL_ALL);
-	LogComponentEnable("Ipv6Socket", LOG_LEVEL_ALL);
 #endif
 
 	CommandLine cmd;

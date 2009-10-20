@@ -99,7 +99,6 @@ void Ipv6StaticRouting::AddNetworkRouteTo (Ipv6Address network, Ipv6Prefix netwo
   m_networkRoutes.push_back (std::make_pair (route, metric));
 }
 
-
 void Ipv6StaticRouting::AddNetworkRouteTo (Ipv6Address network, Ipv6Prefix networkPrefix, uint32_t interface, uint32_t metric)
 {
   NS_LOG_FUNCTION (this << network << networkPrefix << interface);
@@ -448,7 +447,6 @@ uint32_t Ipv6StaticRouting::GetMetric (uint32_t index)
   // quiet compiler.
   return 0;
 }
-
 
 void Ipv6StaticRouting::RemoveRoute (uint32_t index)
 {

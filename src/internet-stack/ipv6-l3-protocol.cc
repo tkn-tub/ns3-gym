@@ -119,7 +119,6 @@ void Ipv6L3Protocol::DoDispose ()
   }
   m_prefixes.clear ();
 
-
   m_node = 0;
   m_routingProtocol = 0;
   Object::DoDispose ();
