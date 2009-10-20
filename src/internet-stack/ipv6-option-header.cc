@@ -191,7 +191,7 @@ void Ipv6OptionPadnHeader::Serialize (Buffer::Iterator start) const
   i.WriteU8 (GetType ());
   i.WriteU8 (GetLength ());
 
-  for(int padding = 0; padding < GetLength (); padding++)
+  for (int padding = 0; padding < GetLength (); padding++)
   {
     i.WriteU8 (0);
   }

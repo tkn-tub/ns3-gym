@@ -437,7 +437,7 @@ std::vector<Ipv6Address> Ipv6ExtensionLooseRoutingHeader::GetRoutersAddress () c
 
 void Ipv6ExtensionLooseRoutingHeader::SetRouterAddress (uint8_t index, Ipv6Address addr)
 {
-  m_routersAddress.at(index) = addr;
+  m_routersAddress.at (index) = addr;
 }
 
 Ipv6Address Ipv6ExtensionLooseRoutingHeader::GetRouterAddress (uint8_t index) const
@@ -450,7 +450,7 @@ void Ipv6ExtensionLooseRoutingHeader::Print (std::ostream &os) const
   os << "( nextHeader = " << (uint32_t)GetNextHeader () << " length = " <<  (uint32_t)GetLength () 
     << " typeRouting = " << (uint32_t)GetTypeRouting () << " segmentsLeft = " << (uint32_t)GetSegmentsLeft () << " ";
 
-  for(std::vector<Ipv6Address>::const_iterator it = m_routersAddress.begin(); it != m_routersAddress.end(); it++)
+  for (std::vector<Ipv6Address>::const_iterator it = m_routersAddress.begin (); it != m_routersAddress.end (); it++)
   {
     os << *it << " ";
   }
@@ -474,7 +474,7 @@ void Ipv6ExtensionLooseRoutingHeader::Serialize (Buffer::Iterator start) const
   i.WriteU8 (GetSegmentsLeft ());
   i.WriteU32 (0);
 
-  for(VectorIpv6Address_t::const_iterator it = m_routersAddress.begin (); it != m_routersAddress.end () ; it++)
+  for (VectorIpv6Address_t::const_iterator it = m_routersAddress.begin (); it != m_routersAddress.end () ; it++)
   {
     it->Serialize (buff);
     i.Write (buff, 16);
@@ -492,7 +492,7 @@ uint32_t Ipv6ExtensionLooseRoutingHeader::Deserialize (Buffer::Iterator start)
   SetSegmentsLeft (i.ReadU8 ());
   i.ReadU32 ();
 
-  for(std::vector<Ipv6Address>::iterator it = m_routersAddress.begin(); it != m_routersAddress.end(); it++)
+  for (std::vector<Ipv6Address>::iterator it = m_routersAddress.begin (); it != m_routersAddress.end (); it++)
   {
     i.Read (buff, 16);
     it->Set (buff);
