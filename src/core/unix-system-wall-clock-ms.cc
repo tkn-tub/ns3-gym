@@ -19,7 +19,9 @@
  */
 
 #include "system-wall-clock-ms.h"
-#include <sys/time.h>
+#include <sys/times.h>
+#include <unistd.h>
+#include <limits.h>
 
 namespace ns3 {
 
@@ -27,28 +29,57 @@ class SystemWallClockMsPrivate {
 public:
   void Start (void);
   unsigned long long End (void);
+  double GetElapsedReal (void) const;
+  double GetElapsedUser (void) const;
+  double GetElapsedSystem (void) const;
+
 private:
-  struct timeval m_startTv;
-  struct timeval m_endTv;
+  struct tms m_startTimes;
+  clock_t m_startTime;
+  double m_elapsedReal;
+  double m_elapsedUser;
+  double m_elapsedSystem;
 };
 
 void 
 SystemWallClockMsPrivate::Start (void)
 {
-  struct timezone tz;
-  gettimeofday (&m_startTv, &tz);
+  m_startTime = times (&m_startTimes);
 }
 
 unsigned long long 
 SystemWallClockMsPrivate::End (void)
 {
-  struct timezone tz;
-  gettimeofday (&m_endTv, &tz);
-  unsigned long long end = m_endTv.tv_sec *1000 + m_endTv.tv_usec / 1000;
-  unsigned long long start = m_startTv.tv_sec *1000 + m_startTv.tv_usec / 1000;
-  return end - start;
+  static long ticksPerSecond = sysconf (_SC_CLK_TCK);
+
+  struct tms endTimes;
+  clock_t endTime = times (&endTimes);
+
+  m_elapsedReal = 1e3 * static_cast<double> (endTime - m_startTime) / ticksPerSecond;
+  m_elapsedUser = 1e3 * static_cast<double> (endTimes.tms_utime - m_startTimes.tms_utime) / ticksPerSecond;
+  m_elapsedSystem = 1e3 * static_cast<double> (endTimes.tms_stime - m_startTimes.tms_stime) / ticksPerSecond;
+
+  return m_elapsedReal;
 }
 
+double
+SystemWallClockMsPrivate::GetElapsedReal (void) const
+{
+  return m_elapsedReal;
+}
+
+double
+SystemWallClockMsPrivate::GetElapsedUser (void) const
+{
+  return m_elapsedUser;
+}
+
+double
+SystemWallClockMsPrivate::GetElapsedSystem (void) const
+{
+  return m_elapsedSystem;
+}
+  
 SystemWallClockMs::SystemWallClockMs ()
   : m_priv (new SystemWallClockMsPrivate ())
 {}
@@ -68,6 +99,24 @@ unsigned long long
 SystemWallClockMs::End (void)
 {
   return m_priv->End ();
+}
+
+double
+SystemWallClockMs::GetElapsedReal (void) const
+{
+  return m_priv->GetElapsedReal ();
+}
+
+double
+SystemWallClockMs::GetElapsedUser (void) const
+{
+  return m_priv->GetElapsedUser ();
+}
+
+double
+SystemWallClockMs::GetElapsedSystem (void) const
+{
+  return m_priv->GetElapsedSystem ();
 }
 
 }; // namespace ns3
