@@ -81,17 +81,7 @@
 //    sudo route add -net 10.1.3.0 netmask 255.255.255.0 dev thetap gw 10.1.1.2
 //    ping 10.1.3.4
 //
-// 4) Try to run this in UseLocal mode.  This allows you to provide an existing
-//    pre-configured tap device to the simulation.  The IP address and MAC 
-//    address in this mode do not have to match those of the ns-3 device.
-//
-//    sudo tunctl -t mytap
-//    sudo ifconfig mytap hw ether 08:00:2e:00:00:01
-//    sudo ifconfig mytap 10.1.1.1 netmask 255.255.255.0 up
-//    ./waf --run "tap-wifi-dumbbell --mode=UseLocal --tapName=mytap"&
-//    ping 10.1.1.3
-//
-// 5) Try to run this in UseBridge mode.  This allows you to bridge an ns-3
+// 4) Try to run this in UseBridge mode.  This allows you to bridge an ns-3
 //    simulation to an existing pre-configured bridge.  This uses tap devices
 //    just for illustration, you can create your own bridge if you want.
 //
