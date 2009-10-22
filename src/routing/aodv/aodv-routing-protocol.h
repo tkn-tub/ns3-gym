@@ -31,9 +31,9 @@
 #include "aodv-rtable.h"
 #include "aodv-rqueue.h"
 #include "aodv-packet.h"
-#include "id-cache.h"
 #include "aodv-neighbor.h"
 
+#include "ns3/dpd.h"
 #include "ns3/node.h"
 #include "ns3/ipv4-routing-protocol.h"
 #include "ns3/ipv4-interface.h"
@@ -45,6 +45,7 @@ namespace ns3
 namespace aodv
 {
 
+using namespace dpd;
 /**
  * \ingroup aodv
  * \brief AODV routing protocol
@@ -81,6 +82,8 @@ public:
   void SetGratuitousReplyFlag (bool f) { GratuitousReply = f; }
   void SetHelloEnable (bool f) { EnableHello = f; }
   bool GetHelloEnable () const { return EnableHello; }
+  void SetBroadcastEnable (bool f) { EnableBroadcast = f; }
+  bool GetBroadcastEnable () const { return EnableBroadcast; }
   //\}
 private:
   ///\name Protocol parameters.
@@ -120,6 +123,7 @@ private:
   bool DestinationOnly;              ///< Indicates only the destination may respond to this RREQ.
   bool GratuitousReply;              ///< Indicates whether a gratuitous RREP should be unicast to the node originated route discovery.
   bool EnableHello;                  ///< Indicates whether a hello messages enable
+  bool EnableBroadcast;              ///< Indicates whether a a broadcast data packets forwarding enable
   //\}
 
   /// IP protocol
@@ -135,8 +139,10 @@ private:
   uint32_t m_requestId;
   /// Request sequence number
   uint32_t m_seqNo;
-  /// Handle duplicated packets
-  IdCache m_idCache;
+  /// Handle duplicated RREQ
+  IdCache m_rreqIdCache;
+  /// Handle duplicated broadcast/multicast packets
+  DuplicatePacketDetection m_dpd;
   /// Handle neighbors
   Neighbors m_nb;
   /// Number of RREQs used for RREQ rate control

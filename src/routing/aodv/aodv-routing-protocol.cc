@@ -70,6 +70,8 @@ RoutingProtocol::RoutingProtocol () :
   m_queue (MaxQueueLen, MaxQueueTime),
   m_requestId (0),
   m_seqNo (0),
+  m_rreqIdCache (PathDiscoveryTime),
+  m_dpd (PathDiscoveryTime),
   m_nb(HelloInterval),
   m_rreqCount (0),
   htimer (Timer::CANCEL_ON_DESTROY),
@@ -169,6 +171,11 @@ RoutingProtocol::GetTypeId (void)
                      BooleanValue (true),
                      MakeBooleanAccessor (&RoutingProtocol::SetHelloEnable,
                                           &RoutingProtocol::GetHelloEnable),
+                     MakeBooleanChecker ())
+      .AddAttribute ("EnableBroadcast", "Indicates whether a broadcast data packets forwarding enable.",
+                     BooleanValue (true),
+                     MakeBooleanAccessor (&RoutingProtocol::SetBroadcastEnable,
+                                          &RoutingProtocol::GetBroadcastEnable),
                      MakeBooleanChecker ())
   ;
   return tid;
@@ -297,12 +304,15 @@ RoutingProtocol::RouteInput (Ptr<const Packet> p, const Ipv4Header &header,
       if (m_ipv4->GetInterfaceForAddress (iface.GetLocal ()) == iif)
         if (dst == iface.GetBroadcast ())
           {
-            if (m_idCache.LookupId (origin, p->GetUid ()))
+            if (!EnableBroadcast)
+              {
+                return true;
+              }
+            if (m_dpd.IsDuplicated (p, header))
               {
                 NS_LOG_DEBUG ("Duplicated packet " << p->GetUid () << " from " << origin << ". Drop.");
                 return true;
               }
-            m_idCache.InsertId (origin, p->GetUid (), PathDiscoveryTime);
             UpdateRouteLifeTime (origin, ActiveRouteTimeout);
             NS_LOG_LOGIC ("Broadcast local delivery to " << iface.GetLocal ());
             Ptr<Packet> packet = p->Copy ();
@@ -651,7 +661,7 @@ RoutingProtocol::SendRequest (Ipv4Address dst)
       Ipv4InterfaceAddress iface = j->second;
 
       rreqHeader.SetOrigin (iface.GetLocal ());
-      m_idCache.InsertId (iface.GetLocal (), m_requestId, PathDiscoveryTime);
+      m_rreqIdCache.IsDuplicated (iface.GetLocal (), m_requestId);
 
       Ptr<Packet> packet = Create<Packet> ();
       packet->AddHeader (rreqHeader);
@@ -789,11 +799,10 @@ RoutingProtocol::RecvRequest (Ptr<Packet> p, Ipv4Address receiver, Ipv4Address s
    *  Node checks to determine whether it has received a RREQ with the same Originator IP Address and RREQ ID.
    *  If such a RREQ has been received, the node silently discards the newly received RREQ.
    */
-  if (m_idCache.LookupId (origin, id))
+  if (m_rreqIdCache.IsDuplicated (origin, id))
     {
       return;
     }
-  m_idCache.InsertId (origin, id, PathDiscoveryTime);
 
   // Increment RREQ hop count
   uint8_t hop = rreqHeader.GetHopCount () + 1;
