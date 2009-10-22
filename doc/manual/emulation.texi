@@ -23,7 +23,7 @@ for details on the ORBIT testbed.
 A simulation of this kind is shown in the following figure:
 
 @float Figure,fig:testbed
-@center @caption{Example Implementation of Testbed Emulation.}
+@caption{Example Implementation of Testbed Emulation.}
 @center @image{figures/testbed, 5in}
 @end float
 
@@ -44,7 +44,7 @@ is shown in the following figure:
 
 @float Figure,fig:emulated-channel
 @caption{Implementation overview of emulated channel.}
-@image{figures/emulated-channel, 5in}
+@image{figures/emulated-channel, 6in}
 @end float
 
 Here, you will see that there is a single host with a number of virtual machines 

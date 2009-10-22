@@ -9,14 +9,7 @@ being in promiscuous mode.  It opens a raw socket and binds to that interface.
 We perform MAC spoofing to separate simulation network traffic from other 
 network traffic that may be flowing to and from the host.
 
-Normally, the use case for emulated net devices is in collections of small 
-simulations that connect to the outside world through specific interfaces.
-For example, one could construct a number of virtual machines and connect them
-via a host-only network.  To use the emulated net device, you would need to 
-set all of the host-only interfaces in promiscuous mode and provide an 
-appropriate device name, "eth1" for example.
-
-One could also use the @code{Emu} net device in a testbed situation where the 
+One can use the @code{Emu} net device in a testbed situation where the 
 host on which the simulation is running has a specific interface of interest 
 which  drives the testbed hardware.  You would also need to set this specific 
 interface into promiscuous mode and provide an appropriate device name to the 
@@ -48,7 +41,7 @@ The emulated net device comes with a helper function as all ns-3 devices do.
 One unique aspect is that there is no channel associated with the underlying
 medium.  We really have no idea what this external medium is, and so have not
 made an effort to model it abstractly.  The primary thing to be aware of is the 
-implication this has for static global routing.  The global router module
+implication this has for IPv4 global routing.  The global router module
 attempts to walk the channels looking for adjacent networks.  Since there 
 is no channel, the global router will be unable to do this and you must then 
 use a dynamic routing protocol such as OLSR to include routing in 
@@ -71,8 +64,10 @@ you may want to take a moment to review a couple of HOWTO pages on the ns-3 wiki
 that describe how to set up a virtual test network using VMware and how to run
 a set of example (client server) simulations that use @code{Emu} net devices.
 
-@uref{http://www.nsnam.org/wiki/index.php/HOWTO_use_VMware_to_set_up_virtual_networks_(Windows)}
-@uref{http://www.nsnam.org/wiki/index.php/HOWTO_use_ns-3_scripts_to_drive_real_hardware_(experimental)} 
+@itemize @bullet
+@item @uref{http://www.nsnam.org/wiki/index.php/HOWTO_use_VMware_to_set_up_virtual_networks_(Windows)}
+@item @uref{http://www.nsnam.org/wiki/index.php/HOWTO_use_ns-3_scripts_to_drive_real_hardware_(experimental)} 
+@end itemize
 
 Once you are over the configuration hurdle, the script changes required to use 
 an @code{Emu} device are trivial.  The main structural difference is that you
@@ -102,7 +97,7 @@ here for one side).
   // We've got the devices in place.  Since we're using MAC address 
   // spoofing under the sheets, we need to make sure that the MAC addresses
   // we have assigned to our devices are unique.  Ns-3 will happily
-  // automatically assign the same MAC addresses to the devices in both halves
+  // automatically assign the same MAC address to the devices in both halves
   // of our two-script pair, so let's go ahead and just manually change them
   // to something we ensure is unique.
   //

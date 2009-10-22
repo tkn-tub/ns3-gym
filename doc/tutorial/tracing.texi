@@ -1,4 +1,3 @@
-
 @c ============================================================================
 @c Begin document body here
 @c ============================================================================
@@ -17,6 +16,7 @@
 
 @menu
 * Background::
+* Overview::
 @end menu
 
 @c ============================================================================
@@ -1096,10 +1096,809 @@ Callbacks, feel free to take a look at the @code{ns-3} manual.  They are one
 of the most frequently used constructs in the low-level parts of @code{ns-3}.
 It is, in my opinion, a quite elegant thing.
 
+@subsection What About TracedValue?
 
+Earlier in this section, we presented a simple piece of code that used a
+@code{TracedValue<int32_t>} to demonstrate the basics of the tracing code.
+We just glossed over the way to find the return type and formal arguments
+for the @code{TracedValue}.  Rather than go through the whole exercise, we
+will just point you at the correct file, @code{src/core/traced-value.h} and
+to the important piece of code:
 
+@verbatim
+  template <typename T>
+  class TracedValue
+  {
+  public:
+    ...
+    void Set (const T &v) {
+      if (m_v != v)
+        {
+  	m_cb (m_v, v);
+  	m_v = v;
+        }
+    }
+    ...
+  private:
+    T m_v;
+    TracedCallback<T,T> m_cb;
+  };
+@end verbatim
 
+Here you see that the @code{TracedValue} is templated, of course.  In the simple
+example case at the start of the section, the typename is int32_t.  This means 
+that the member variable being traced (@code{m_v} in the private section of the 
+class) will be an @code{int32_t m_v}.  The @code{Set} method will take a 
+@code{const int32_t &v} as a parameter.  You should now be able to understand 
+that the @code{Set} code will fire the @code{m_cb} callback with two parameters:
+the first being the current value of the @code{TracedValue}; and the second 
+being the new value being set.
 
+The callback, @code{m_cb} is declared as a @code{TracedCallback<T, T>} which
+will correspond to a @code{TracedCallback<int32_t, int32_t>} when the class is 
+instantiated.
 
+Recall that the callback target of a TracedCallback always returns @code{void}.  
+Further recall that there is a one-to-one correspondence between the template 
+parameter list in the declaration and the formal arguments of the callback 
+function.  Therefore the callback will need to have a function signature that 
+looks like:
+
+@verbatim
+  void
+  MyCallback (int32_t oldValue, int32_t newValue)
+  {
+    ...
+  }
+@end verbatim
+
+It probably won't surprise you that this is exactly what we provided in that 
+simple example we covered so long ago:
+
+@verbatim
+  void
+  IntTrace (int32_t oldValue, int32_t newValue)
+  {
+    std::cout << "Traced " << oldValue << " to " << newValue << std::endl;
+  }
+@end verbatim
+
+@c ============================================================================
+@c A Real Example
+@c ============================================================================
+@node A Real Example
+@section A Real Example
+
+Let's do an example taken from one of the best-known books on TCP around.  
+``TCP/IP Illustrated, Volume 1: The Protocols,'' by W. Richard Stevens is a 
+classic.  I just flipped the book open and ran across a nice plot of both the 
+congestion window and sequence numbers versus time on page 366.  Stevens calls 
+this, ``Figure 21.10. Value of cwnd and send sequence number while data is being 
+transmitted.''  Let's just recreate the cwnd part of that plot in @command{ns-3}
+using the tracing system and @code{gnuplot}.
+
+@subsection Are There Trace Sources Available?
+
+The first thing to think about is how we want to get the data out.  What is it
+that we need to trace?  The first thing to do is to consult ``The list of all
+trace sources'' to see what we have to work with.  Recall that this is found
+in the @command{ns-3} Doxygen in the ``Core'' Module section.  If you scroll
+through the list, you will eventually find:
+
+@verbatim
+  ns3::TcpSocketImpl
+  CongestionWindow: The TCP connection's congestion window
+@end verbatim
+
+It turns out that the @command{ns-3} TCP implementation lives (mostly) in the 
+file @code{src/internet-stack/tcp-socket-impl.cc}.  If you don't know this a 
+priori, you can use the recursive grep trick:
+
+@verbatim
+  find . -name '*.cc' | xargs grep -i tcp
+@end verbatim
+
+You will find page after page of instances of tcp pointing you to that file. 
+
+If you open @code{src/internet-stack/tcp-socket-impl.cc} in your favorite 
+editor, you will see right up at the top of the file, the following declarations:
+
+@verbatim
+  TypeId
+  TcpSocketImpl::GetTypeId ()
+  {
+    static TypeId tid = TypeId(``ns3::TcpSocketImpl'')
+      .SetParent<TcpSocket> ()
+      .AddTraceSource (``CongestionWindow'',
+                       ``The TCP connection's congestion window'',
+                       MakeTraceSourceAccessor (&TcpSocketImpl::m_cWnd))
+      ;
+    return tid;
+  }
+@end verbatim
+
+This should tell you to look for the declaration of @code{m_cWnd} in the header
+file @code{src/internet-stack/tcp-socket-impl.h}.  If you open this file in your
+favorite editor, you will find:
+
+@verbatim
+  TracedValue<uint32_t> m_cWnd; //Congestion window
+@end verbatim
+
+You should now understand this code completely.  If we have a pointer to the 
+@code{TcpSocketImpl}, we can @code{TraceConnect} to the ``CongestionWindow'' trace 
+source if we provide an appropriate callback target.  This is the same kind of
+trace source that we saw in the simple example at the start of this section,
+except that we are talking about @code{uint32_t} instead of @code{int32_t}.
+
+We now know that we need to provide a callback that returns void and takes 
+two @code{uint32_t} parameters, the first being the old value and the second 
+being the new value:
+
+@verbatim
+  void
+  CwndTrace (uint32_t oldValue, uint32_t newValue)
+  {
+    ...
+  }
+@end verbatim
+
+@subsection What Script to Use?
+
+It's always best to try and find working code laying around that you can 
+modify, rather than starting from scratch.  So the first order of business now
+is to find some code that already hooks the ``CongestionWindow'' trace source
+and see if we can modify it.  As usual, grep is your friend:
+
+@verbatim
+  find . -name '*.cc' | xargs grep CongestionWindow
+@end verbatim
+
+This will point out a couple of promising candidates: 
+@code{examples/tcp/tcp-large-transfer.cc} and 
+@code{src/test/ns3tcp/ns3tcp-cwnd-test-suite.cc}.
+
+We haven't visited any of the test code yet, so let's take a look there.  You
+will typically find that test code is fairly minimal, so this is probably a
+very good bet.  Open @code{src/test/ns3tcp/ns3tcp-cwnd-test-suite.cc} in your
+favorite editor and search for ``CongestionWindow.''  You will find,
+
+@verbatim
+  ns3TcpSocket->TraceConnectWithoutContext (``CongestionWindow'', 
+    MakeCallback (&Ns3TcpCwndTestCase1::CwndChange, this));
+@end verbatim
+
+This should look very familiar to you.  We mentioned above that if we had a
+pointer to the @code{TcpSocketImpl}, we could @code{TraceConnect} to the 
+``CongestionWindow'' trace source.  That's exactly what we have here; so it
+turns out that this line of code does exactly what we want.  Let's go ahead
+and extract the code we need from this function 
+(@code{Ns3TcpCwndTestCase1::DoRun (void)}).  If you look at this function,
+you will find that it looks just like an @code{ns-3} script.  It turns out that
+is exactly what it is.  It is a script run by the test framework, so we can just
+pull it out and wrap it in @code{main} instead of in @code{DoRun}.  Rather than
+walk through this, step, by step, we have provided the file that results from
+porting this test back to a native @code{ns-3} script --
+@code{examples/tutorial/fifth.cc}.  
+
+@subsection A Common Problem and Solution
+
+The @code{fifth.cc} example demonstrates an extremely important rule that you 
+must understand before using any kind of @code{Attribute}:  you must ensure 
+that the target of a @code{Config} command exists before trying to use it.
+This is no different than saying an object must be instantiated before trying
+to call it.  Although this may seem obvious when stated this way, it does
+trip up many people trying to use the system for the first time.
+
+Let's return to basics for a moment.  There are three basic time periods that
+exist in any @command{ns-3} script.  The first time period is sometimes called 
+``Configuration Time'' or ``Setup Time,'' and is in force during the period 
+when the @code{main} function of your script is running, but before 
+@code{Simulator::Run} is called.  The second time period  is sometimes called
+``Simulation Time'' and is in force during the time period when 
+@code{Simulator::Run} is actively executing its events.  After it completes
+executing the simulation,  @code{Simulator::Run} will return control back to 
+the @code{main} function.  When this happens, the script enters what can be 
+called ``Teardown Time,'' which is when the structures and objects created 
+during setup and taken apart and released.
+
+Perhaps the most common mistake made in trying to use the tracing system is 
+assuming that entities constructed dynamically during simulation time are
+available during configuration time.  In particular, an @command{ns-3}
+@code{Socket} is a dynamic object often created by @code{Applications} to
+communicate between @code{Nodes}.  An @command{ns-3} @code{Application} 
+always has a ``Start Time'' and a ``Stop Time'' associated with it.  In the
+vast majority of cases, an @code{Application} will not attempt to create 
+a dynamic object until its @code{StartApplication} method is called.  This
+is to ensure that the simulation is completely configured before the app
+tries to do anything (what would happen if it tried to connect to a node
+that didn't exist yet during configuration time).  The answer to this 
+issue is to 1) create a simulator event that is run after the dynamic object
+is created and hook the trace when that event is executed; or 2) create the
+dynamic object at configuration time, hook it then, and give the object to
+the system to use during simulation time.  We took the second approach in
+the @code{fifth.cc} example.  This decision required us to create the 
+@code{MyApp} @code{Application}, the entire purpose of which is to 
+take a @code{Socket} as a parameter.  
+
+@subsection A fifth.cc Walkthrough
+
+Now, let's take a look at the example program we constructed by dissecting
+the congestion window test.  Open @code{examples/tutorial/fifth.cc} in your
+favorite editor.  You should see some familiar looking code:
+
+@verbatim
+  /* -*- Mode:C++; c-file-style:''gnu''; indent-tabs-mode:nil; -*- */
+  /*
+   * This program is free software; you can redistribute it and/or modify
+   * it under the terms of the GNU General Public License version 2 as
+   * published by the Free Software Foundation;
+   *
+   * This program is distributed in the hope that it will be useful,
+   * but WITHOUT ANY WARRANTY; without even the implied warranty of
+   * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   * GNU General Public License for more details.
+   *
+   * You should have received a copy of the GNU General Public License
+   * along with this program; if not, write to the Free Software
+   * Foundation, Include., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+   */
+  
+  #include <fstream>
+  #include "ns3/core-module.h"
+  #include "ns3/common-module.h"
+  #include "ns3/simulator-module.h"
+  #include "ns3/node-module.h"
+  #include "ns3/helper-module.h"
+  
+  using namespace ns3;
+  
+  NS_LOG_COMPONENT_DEFINE ("FifthScriptExample");
+@end verbatim
+
+This has all been covered, so we won't rehash it.  The next lines of source are
+the network illustration and a comment addressing the problem described above
+with @code{Socket}.
+
+@verbatim
+  // ===========================================================================
+  //
+  //         node 0                 node 1
+  //   +----------------+    +----------------+
+  //   |    ns-3 TCP    |    |    ns-3 TCP    |
+  //   +----------------+    +----------------+
+  //   |    10.1.1.1    |    |    10.1.1.2    |
+  //   +----------------+    +----------------+
+  //   | point-to-point |    | point-to-point |
+  //   +----------------+    +----------------+
+  //           |                     |
+  //           +---------------------+
+  //                5 Mbps, 2 ms
+  //
+  //
+  // We want to look at changes in the ns-3 TCP congestion window.  We need
+  // to crank up a flow and hook the CongestionWindow attribute on the socket
+  // of the sender.  Normally one would use an on-off application to generate a
+  // flow, but this has a couple of problems.  First, the socket of the on-off
+  // application is not created until Application Start time, so we wouldn't be
+  // able to hook the socket (now) at configuration time.  Second, even if we
+  // could arrange a call after start time, the socket is not public so we
+  // couldn't get at it.
+  //
+  // So, we can cook up a simple version of the on-off application that does what
+  // we want.  On the plus side we don't need all of the complexity of the on-off
+  // application.  On the minus side, we don't have a helper, so we have to get
+  // a little more involved in the details, but this is trivial.
+  //
+  // So first, we create a socket and do the trace connect on it; then we pass
+  // this socket into the constructor of our simple application which we then
+  // install in the source node.
+  // ===========================================================================
+  //
+@end verbatim
+
+This should also be self-explanatory.  
+
+The next part is the declaration of the @code{MyApp} @code{Application} that
+we put together to allow the @code{Socket} to be created at configuration time.
+
+@verbatim
+  class MyApp : public Application
+  {
+  public:
+  
+    MyApp ();
+    virtual ~MyApp();
+  
+    void Setup (Ptr<Socket> socket, Address address, uint32_t packetSize, 
+      uint32_t nPackets, DataRate dataRate);
+  
+  private:
+    virtual void StartApplication (void);
+    virtual void StopApplication (void);
+  
+    void ScheduleTx (void);
+    void SendPacket (void);
+  
+    Ptr<Socket>     m_socket;
+    Address         m_peer;
+    uint32_t        m_packetSize;
+    uint32_t        m_nPackets;
+    DataRate        m_dataRate;
+    EventId         m_sendEvent;
+    bool            m_running;
+    uint32_t        m_packetsSent;
+  };
+@end verbatim
+
+You can see that this class inherits from the @command{ns-3} @code{Application}
+class.  Take a look at @code{src/node/application.h} if you are interested in 
+what is inherited.  The @code{MyApp} class is obligated to override the 
+@code{StartApplication} and @code{StopApplication} methods.  These methods are
+called when the corresponding base class @code{Start} and @code{Stop} methods are
+called during simulation time.  
+
+@subsubsection How Applications are Started and Stopped
+
+It is worthwhile to spend a bit of time explaining how events actually get 
+started in the system.  The most common way to start pumping events is to start
+an @code{Application}.  This is done as the result of the following (hopefully)
+familar lines of an @command{ns-3} script:
+
+@verbatim
+  ApplicationContainer apps = ...
+  apps.Start (Seconds (1.0));
+  apps.Stop (Seconds (10.0));
+@end verbatim
+
+The application container code (see @code{src/helper/application-container.h} if
+you are interested) loops through its contained applications and calls,
+
+@verbatim
+  app->Start (startTime);
+  app->Stop (stopTime);
+@end verbatim
+
+on each of them.  The @code{Start} method of an @code{Application} calls 
+@code{Application::ScheduleStart} (see @code{src/helper/application-container.cc})
+which, in turn, schedules an event to start the @code{Application}:
+
+@verbatim
+  Simulator::Schedule (startTime, &Application::StartApplication, this);
+@end verbatim
+
+Since @code{MyApp} inherits from @code{Application} and overrides 
+@code{StartApplication}, this bit of code causes the simulator to execute
+something that is effectively like,
+
+@verbatim
+  this->StartApplication (startTime);
+@end verbatim
+
+where the @code{this} pointer, if you have kept it all straight, is the pointer
+to the @code{Application} in the container.  It is then expected that another 
+event will be scheduled in the overridden @code{StartApplication} that will 
+begin doing some application-specific function, like sending packets.  
+
+@code{StopApplication} operates in a similar manner and tells the @code{Application}
+to stop generating events.
+
+@subsubsection The MyApp Application
+
+The @code{MyApp} @code{Application} needs a constructor and a destructor,
+of course:
+
+@verbatim
+  MyApp::MyApp ()
+    : m_socket (0),
+      m_peer (),
+      m_packetSize (0),
+      m_nPackets (0),
+      m_dataRate (0),
+      m_sendEvent (),
+      m_running (false),
+      m_packetsSent (0)
+  {
+  }
+  
+  MyApp::~MyApp()
+  {
+    m_socket = 0;
+  }
+@end verbatim
+
+The existence of the next bit of code is the whole reason why we wrote this
+@code{Application} in the first place.
+
+@verbatim
+void
+MyApp::Setup (Ptr<Socket> socket, Address address, uint32_t packetSize, 
+                     uint32_t nPackets, DataRate dataRate)
+{
+  m_socket = socket;
+  m_peer = address;
+  m_packetSize = packetSize;
+  m_nPackets = nPackets;
+  m_dataRate = dataRate;
+}
+@end verbatim
+
+This code should be pretty self-explanatory.  We are just initializing member
+variables.  The important one from the perspective of tracing is the 
+@code{Ptr<Socket> socket} which we needed to provide to the application 
+during configuration time.  Recall that we are going to create the @code{Socket}
+as a @code{TcpSocket} (which is implemented by @code{TcpSocketImpl}) and hook 
+its ``CongestionWindow'' trace source before passing it to the @code{Setup}
+method.
+
+@verbatim
+  void
+  MyApp::StartApplication (void)
+  {
+    m_running = true;
+    m_packetsSent = 0;
+    m_socket->Bind ();
+    m_socket->Connect (m_peer);
+    SendPacket ();
+  }
+@end verbatim
+
+The above code is the overridden implementation @code{Application::StartApplication}
+that will be automatically called by the simulator to start our @code{Application}
+running.  You can see that it does a @code{Socket} @code{Bind} operation.  If
+you are familiar with Berkeley Sockets this shouldn't be a surprise.  It performs
+the required work on the local side of the connection just as you might expect.
+The following @code{Connect} will do what is required to establish a connection 
+with the TCP at @code{Address} m_peer.  It should now be clear why we need to defer
+a lot of this to simulation time, since the @code{Connect} is going to need a fully
+functioning network to complete.  After the @code{Connect}, the @code{Application} 
+then starts creating simulation events by calling @code{SendPacket}.
+
+The next bit of code explains to the @code{Application} how to stop creating 
+simulation events.
+
+@verbatim
+  void
+  MyApp::StopApplication (void)
+  {
+    m_running = false;
+  
+    if (m_sendEvent.IsRunning ())
+      {
+        Simulator::Cancel (m_sendEvent);
+      }
+  
+    if (m_socket)
+      {
+        m_socket->Close ();
+      }
+  }
+@end verbatim
+
+Every time a simulation event is scheduled, an @code{Event} is created.  If the 
+@code{Event} is pending execution or executing, its method @code{IsRunning} will
+return @code{true}.  In this code, if @code{IsRunning()} returns true, we 
+@code{Cancel} the event which removes it from the simulator event queue.  By 
+doing this, we break the chain of events that the @code{Application} is using to
+keep sending its @code{Packets} and the @code{Application} goes quiet.  After we 
+quiet the @code{Application} we @code{Close} the socket which tears down the TCP 
+connection.
+
+The socket is actually deleted in the destructor when the @code{m_socket = 0} is
+executed.  This removes the last reference to the underlying Ptr<Socket> which 
+causes the destructor of that Object to be called.
+
+Recall that @code{StartApplication} called @code{SendPacket} to start the 
+chain of events that describes the @code{Application} behavior.
+
+@verbatim
+  void
+  MyApp::SendPacket (void)
+  {
+    Ptr<Packet> packet = Create<Packet> (m_packetSize);
+    m_socket->Send (packet);
+  
+    if (++m_packetsSent < m_nPackets)
+      {
+        ScheduleTx ();
+      }
+  }
+@end verbatim
+
+Here, you see that @code{SendPacket} does just that.  It creates a @code{Packet}
+and then does a @code{Send} which, if you know Berkeley Sockets, is probably 
+just what you expected to see.
+
+It is the responsibility of the @code{Application} to keep scheduling the 
+chain of events, so the next lines call @code{ScheduleTx} to schedule another
+transmit event (a @code{SendPacket}) until the @code{Application} decides it
+has sent enough.
+
+@verbatim
+  void
+  MyApp::ScheduleTx (void)
+  {
+    if (m_running)
+      {
+        Time tNext (Seconds (m_packetSize * 8 / static_cast<double> (m_dataRate.GetBitRate ())));
+        m_sendEvent = Simulator::Schedule (tNext, &MyApp::SendPacket, this);
+      }
+  }
+@end verbatim
+
+Here, you see that @code{ScheduleTx} does exactly that.  If the @code{Applciation}
+is running (if @code{StopApplication} has not been called) it will schedule a 
+new event, which calls @code{SendPacket} again.  The alert reader will spot
+something that also trips up new users.  The data rate of an @code{Application} is
+just that.  It has nothing to do with the data rate of an underlying @code{Channel}.
+This is the rate at which the @code{Application} produces bits.  It does not take
+into account any overhead for the various protocols or channels that it uses to 
+transport the data.  If you set the data rate of an @code{Application} to the same
+data rate as your underlying @code{Channel} you will eventually get a buffer overflow.
+
+@subsubsection The Trace Sinks
+
+The whole point of this exercise is to get trace callbacks from TCP indicating the
+congestion window has been updated.  The next piece of code implements the 
+corresponding trace sink:
+
+@verbatim
+  static void
+  CwndChange (uint32_t oldCwnd, uint32_t newCwnd)
+  {
+    NS_LOG_UNCOND (Simulator::Now ().GetSeconds () << ``\t'' << newCwnd);
+  }
+@end verbatim
+
+This should be very familiar to you now, so we won't dwell on the details.  This
+function just logs the current simulation time and the new value of the 
+congestion window every time it is changed.  You can probably imagine that you
+could load the resulting output into a graphics program (gnuplot or Excel) and
+immediately see a nice graph of the congestion window behavior over time.
+
+We added a new trace sink to show where packets are dropped.  We are going to 
+add an error model to this code also, so we wanted to demonstrate this working.
+
+@verbatim
+  static void
+  RxDrop (Ptr<const Packet> p)
+  {
+    NS_LOG_UNCOND ("RxDrop at " << Simulator::Now ().GetSeconds ());
+  }
+@end verbatim
+
+This trace sink will be connected to the ``PhyRxDrop'' trace source of the 
+point-to-point NetDevice.  This trace source fires when a packet is dropped
+by the physical layer of a @code{NetDevice}.  If you take a small detour to the
+source (@code{src/devices/point-to-point/point-to-point-net-device.cc}) you will
+see that this trace source refers to @code{PointToPointNetDevice::m_phyRxDropTrace}.
+If you then look in @code{src/devices/point-to-point/point-to-point-net-device.h}
+for this member variable, you will find that it is declared as a
+@code{TracedCallback<Ptr<const Packet> >}.  This should tell you that the
+callback target should be a function that returns void and takes a single
+parameter which is a @code{Ptr<const Packet>} -- just what we have above.
+
+@subsubsection The Main Program
+
+The following code should be very familiar to you by now:
+
+@verbatim
+  int
+  main (int argc, char *argv[])
+  {
+    NodeContainer nodes;
+    nodes.Create (2);
+  
+    PointToPointHelper pointToPoint;
+    pointToPoint.SetDeviceAttribute ("DataRate", StringValue ("5Mbps"));
+    pointToPoint.SetChannelAttribute ("Delay", StringValue ("2ms"));
+  
+    NetDeviceContainer devices;
+    devices = pointToPoint.Install (nodes);
+@end verbatim
+
+This creates two nodes with a point-to-point channel between them, just as
+shown in the illustration at the start of the file.
+
+The next few lines of code show something new.  If we trace a connection that
+behaves perfectly, we will end up with a monotonically increasing congestion
+window.  To see any interesting behavior, we really want to introduce link 
+errors which will drop packets, cause duplicate ACKs and trigger the more
+interesting behaviors of the congestion window.
+
+@command{ns-3} provides @code{ErrorModel} objects which can be attached to
+@code{Channels}.  We are using the @code{RateErrorModel} which allows us
+to introduce errors into a @code{Channel} at a given @emph{rate}. 
+
+@verbatim
+  Ptr<RateErrorModel> em = CreateObjectWithAttributes<RateErrorModel> (
+    "RanVar", RandomVariableValue (UniformVariable (0., 1.)),
+    "ErrorRate", DoubleValue (0.00001));
+  devices.Get (1)->SetAttribute ("ReceiveErrorModel", PointerValue (em));
+@end verbatim
+
+The above code instantiates a @code{RateErrorModel} Object.  Rather than 
+using the two-step process of instantiating it and then setting Attributes,
+we use the convenience function @code{CreateObjectWithAttributes} which
+allows us to do both at the same time.  We set the ``RanVar'' 
+@code{Attribute} to a random variable that generates a uniform distribution
+from 0 to 1.  We also set the ``ErrorRate'' @code{Attribute}.
+We then set the resulting instantiated @code{RateErrorModel} as the error
+model used by the point-to-point @code{NetDevice}.  This will give us some
+retransmissions and make our plot a little more interesting.
+
+@verbatim
+  InternetStackHelper stack;
+  stack.Install (nodes);
+
+  Ipv4AddressHelper address;
+  address.SetBase (``10.1.1.0'', ``255.255.255.252'');
+  Ipv4InterfaceContainer interfaces = address.Assign (devices);
+@end verbatim
+
+The above code should be familiar.  It installs internet stacks on our two
+nodes and creates interfaces and assigns IP addresses for the point-to-point
+devices.
+
+Since we are using TCP, we need something on the destination node to receive
+TCP connections and data.  The @code{PacketSink} @code{Application} is commonly
+used in @command{ns-3} for that purpose.
+
+@verbatim
+  uint16_t sinkPort = 8080;
+  Address sinkAddress (InetSocketAddress(interfaces.GetAddress (1), sinkPort));
+  PacketSinkHelper packetSinkHelper ("ns3::TcpSocketFactory", 
+    InetSocketAddress (Ipv4Address::GetAny (), sinkPort));
+  ApplicationContainer sinkApps = packetSinkHelper.Install (nodes.Get (1));
+  sinkApps.Start (Seconds (0.));
+  sinkApps.Stop (Seconds (20.));
+@end verbatim
+
+This should all be familiar, with the exception of,
+
+@verbatim
+  PacketSinkHelper packetSinkHelper ("ns3::TcpSocketFactory", 
+    InetSocketAddress (Ipv4Address::GetAny (), sinkPort));
+@end verbatim
+
+This code instantiates a @code{PacketSinkHelper} and tells it to create sockets
+using the class @code{ns3::TcpSocketFactory}.  This class implements a design 
+pattern called ``object factory'' which is a commonly used mechanism for 
+specifying a class used to create objects in an abstract way.  Here, instead of 
+having to create the objects themselves, you provide the @code{ PacketSinkHelper}
+a string that specifies a @code{TypeId} string used to create an object which 
+can then be used, in turn, to create instances of the Objects created by the 
+factory.
+
+The remaining parameter tells the @code{Application} which address and port it
+should @code{Bind} to.
+
+The next two lines of code will create the socket and connect the trace source.
+
+@verbatim
+  Ptr<Socket> ns3TcpSocket = Socket::CreateSocket (nodes.Get (0), 
+    TcpSocketFactory::GetTypeId ());
+  ns3TcpSocket->TraceConnectWithoutContext (``CongestionWindow'', 
+    MakeCallback (&CwndChange));
+@end verbatim
+
+The first statement calls the static member function @code{Socket::CreateSocket}
+and provides a @code{Node} and an explicit @code{TypeId} for the object factory
+used to create the socket.  This is a slightly lower level call than the 
+@code{PacketSinkHelper} call above, and uses an explicit C++ type instead of 
+one referred to by a string.  Otherwise, it is conceptually the same thing.
+
+Once the @code{TcpSocket} is created and attached to the @code{Node}, we can
+use @code{TraceConnectWithoutContext} to connect the CongestionWindow trace 
+source to our trace sink.
+
+Recall that we coded an @code{Application} so we could take that @code{Socket}
+we just made (during configuration time) and use it in simulation time.  We now 
+have to instantiate that @code{Application}.  We didn't go to any trouble to
+create a helper to manage the @code{Application} so we are going to have to 
+create and install it ``manually.''  This is actually quite easy:
+
+@verbatim
+  Ptr<MyApp> app = CreateObject<MyApp> ();
+  app->Setup (ns3TcpSocket, sinkAddress, 1040, 1000, DataRate ("1Mbps"));
+  nodes.Get (0)->AddApplication (app);
+  app->Start (Seconds (1.));
+  app->Stop (Seconds (20.));
+@end verbatim
+
+The first line creates an @code{Object} of type @code{MyApp} -- our
+@code{Application}.  The second line tells the @code{Application} what
+@code{Socket} to use, what address to connect to, how much data to send 
+at each send event, how many send events to generate and the rate at which
+to produce data from those events.
+
+Next, we manually add the @code{MyApp Application} to the source node
+and explicitly call the @code{Start} and @code{Stop} methods on the 
+@code{Application} to tell it when to start and stop doing its thing.
+
+We need to actually do the connect from the receiver point-to-point @code{NetDevice}
+to our callback now.
+
+@verbatim
+  devices.Get (1)->TraceConnectWithoutContext("PhyRxDrop", MakeCallback (&RxDrop));
+@end verbatim
+
+It should now be obvious that we are getting a reference to the receiving 
+@code{Node NetDevice} from its container and connecting the trace source defined
+by the attribute ``PhyRxDrop'' on that device to the trace sink @code{RxDrop}.
+
+Finally, we tell the simulator to override any @code{Applications} and just
+stop processing events at 20 seconds into the simulation.
+
+@verbatim
+    Simulator::Stop (Seconds(20));
+    Simulator::Run ();
+    Simulator::Destroy ();
+
+    return 0;
+  }
+@end verbatim
+
+Recall that as soon as @code{Simulator::Run} is called, configuration time
+ends, and simulation time begins.  All of the work we orchestrated by 
+creating the @code{Application} and teaching it how to connect and send
+data actually happens during this function call.
+
+As soon as @code{Simulator::Run} returns, the simulation is complete and
+we enter the teardown phase.  In this case, @code{Simulator::Destroy} takes
+care of the gory details and we just return a success code after it completes.
+
+@subsection Running fifth.cc
+
+Since we have provided the file @code{fifth.cc} for you, if you have built
+your distribution (in debug mode since it uses NS_LOG -- recall that optimized
+builds optimize out NS_LOGs) it will be waiting for you to run.
+
+@verbatim
+  ./waf --run fifth
+  Waf: Entering directory `/home/craigdo/repos/ns-3-allinone-dev/ns-3-dev/build
+  Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone-dev/ns-3-dev/build'
+  'build' finished successfully (0.684s)
+  1.20919 1072
+  1.21511 1608
+  1.22103 2144
+  ...
+  1.2471  8040
+  1.24895 8576
+  1.2508  9112
+  RxDrop at 1.25151
+  ...
+@end verbatim
+
+You can probably see immediately a downside of using prints of any kind in your
+traces.  We get those extraneous waf messages printed all over our interesting
+information along with those RxDrop messages.  We will remedy that soon, but I'm
+sure you can't wait to see the results of all of this work.  Let's redirect that
+output to a file called @code{cwnd.dat}:
+
+@verbatim
+  ./waf --run fifth > cwnd.dat 2>&1
+@end verbatim
+
+Now edit up ``cwnd.dat'' in your favorite editor and remove the waf build status
+and drop lines, leaving only the traced data (you could also comment out the
+@code{TraceConnectWithoutContext("PhyRxDrop", MakeCallback (&RxDrop));} in the
+script to get rid of the drop prints just as easily. 
+
+You can now run gnuplot (if you have it installed) and tell it to generate some 
+pretty pictures:
+
+@verbatim
+  gnuplot> set terminal png size 640,480
+  gnuplot> set output "cwnd.png"
+  gnuplot> plot "cwnd.dat" using 1:2 title 'Congestion Window' with linespoints
+  gnuplot> exit
+@end verbatim
+
+You should now have a graph of the congestion window versus time sitting in the 
+file ``cwnd.png'' in all of its glory, that looks like:
+
+@sp 1
+@center @image{figures/cwnd,,,,png}
 
 

@@ -4,3 +4,6 @@
 @cartouche
 Placeholder chapter
 @end cartouche
+
+Some examples of the use of Bridge NetDevice can be found in
+@code{examples/csma/} directory. 

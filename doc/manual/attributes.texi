@@ -125,7 +125,8 @@ public:
 
 This is defined in the node.cc file as follows:
 
-@verbatim
+@smallformat
+@example
 TypeId 
 Node::GetTypeId (void)
 {
@@ -148,15 +149,16 @@ Node::GetTypeId (void)
     ;
   return tid;
 }
-@end verbatim
+@end example
+@end smallformat
 
-Look at the TypeId of an ns-3 @code{Object} class as an extended form of run 
-time type information (RTTI).  The C++ language includes simple kind of RTTI
+Consider the TypeId of an ns-3 @code{Object} class as an extended form of run 
+time type information (RTTI).  The C++ language includes a simple kind of RTTI
 in order to support @code{dynamic_cast} and @code{typeid} operators.
 
 The ``@code{.SetParent<Object> ()}'' call in the declaration above is used in 
 conjunction with our object aggregation mechanisms to allow safe up- and
-down-casing in inheritance trees during @code{GetObject}.
+down-casting in inheritance trees during @code{GetObject}.
 
 The ``@code{.AddConstructor<Node> ()}'' call is used in conjunction with our
 abstract object factory mechanisms to allow us to construct C++ objects without
@@ -183,7 +185,7 @@ without even knowing the concrete C++ type
 @verbatim
   ObjectFactory factory;
   const std::string typeId = "ns3::Node'';
-  factory.SetTypeId(typeId);
+  factory.SetTypeId (typeId);
   Ptr<Object> node = factory.Create <Object> ();
 @end verbatim
 
@@ -259,7 +261,8 @@ and some type of global default value.
 In the ns-3 attribute system, these value definitions and accessor
 functions are moved into the TypeId class; e.g.:  
 
-@verbatim
+@smallformat
+@example
 NS_OBJECT_ENSURE_REGISTERED (DropTailQueue);
 
 TypeId DropTailQueue::GetTypeId (void) 
@@ -276,7 +279,8 @@ TypeId DropTailQueue::GetTypeId (void)
   
   return tid;
 }
-@end verbatim
+@end example
+@end smallformat
 
 The AddAttribute() method is performing a number of things with this
 value:
@@ -295,11 +299,19 @@ section, we will provide an example script that shows how users
 may manipulate these values.
 
 Note that initialization of the attribute relies on the macro
-NS_OBJECT_ENSURE_REGISTERED (DropTailQueue) being called; if you leave
+@code{NS_OBJECT_ENSURE_REGISTERED} (DropTailQueue) being called; if you leave
 this out of your new class implementation, your attributes will not be 
 initialized correctly.
 
-@subsection Basic usage
+While we have described how to create attributes, we still haven't
+described how to access and manage these values.  For instance, there is no 
+@code{globals.h} header file where these are stored; attributes are
+stored with their classes.  Questions that naturally arise are how
+do users easily learn about all of the attributes of their models, and
+how does a user access these attributes, or document their values 
+as part of the record of their simulation?
+
+@subsection Default values and command-line arguments
 
 Let's look at how a user script might access these values.  
 This is based on the script found at @code{samples/main-attribute-value.cc},
@@ -341,7 +353,8 @@ Now, we will create a few objects using the low-level API; here,
 our newly created queues will not have a m_maxPackets initialized to
 100 packets but to 80 packets, because of what we did above with
 default values.
-@verbatim
+@smallformat
+@example
   Ptr<Node> n0 = CreateObject<Node> ();
 
   Ptr<PointToPointNetDevice> net0 = CreateObject<PointToPointNetDevice> ();
@@ -349,7 +362,8 @@ default values.
 
   Ptr<Queue> q = CreateObject<DropTailQueue> ();
   net0->AddQueue(q);
-@end verbatim
+@end example
+@end smallformat
 
 At this point, we have created a single node (Node 0) and a 
 single PointToPointNetDevice (NetDevice 0) and added a 
@@ -358,10 +372,10 @@ DropTailQueue to it.
 Now, we can manipulate the MaxPackets value of the already 
 instantiated DropTailQueue.  Here are various ways to do that.
 
-@subsubsection Pointer-based access
+@subsection Pointer-based access
 
 We assume that a smart pointer (Ptr) to a relevant network device is 
-in hand; here, it is the net0 pointer. 
+in hand; in the current example, it is the @code{net0} pointer. 
 
 One way to change the value is to access a pointer to the
 underlying queue and modify its attribute.
@@ -369,11 +383,11 @@ underlying queue and modify its attribute.
 First, we observe that we can get a pointer to the (base class)
 queue via the PointToPointNetDevice attributes, where it is called
 TxQueue 
-@verbatim
+@example
   PointerValue tmp;
   net0->GetAttribute ("TxQueue", tmp);
   Ptr<Object> txQueue = tmp.GetObject ();
-@end verbatim
+@end example
 
 Using the GetObject function, we can perform a safe downcast
 to a DropTailQueue, where MaxPackets is a member
@@ -409,44 +423,52 @@ Now, let's set it to another value (60 packets)
   NS_LOG_INFO ("3.  txQueue limit changed: " << limit.Get () << " packets");
 @end verbatim
 
-@subsubsection Namespace-based access
+@subsection Namespace-based access
 
 An alternative way to get at the attribute is to use the configuration namespace.
 Here, this attribute resides on a known path in this namespace; this approach
 is useful if one doesn't have access to the underlying pointers and would like
 to configure a specific attribute with a single statement.  
 
-@verbatim
+@smallformat
+@example
   Config::Set ("/NodeList/0/DeviceList/0/TxQueue/MaxPackets", UintegerValue (25));
   txQueue->GetAttribute ("MaxPackets", limit); 
   NS_LOG_INFO ("4.  txQueue limit changed through namespace: " << 
     limit.Get () << " packets");
-@end verbatim
+@end example
+@end smallformat
 
 We could have also used wildcards to set this value for all nodes and all net 
 devices (which in this simple example has the same effect as the previous Set())
-@verbatim
+@smallformat
+@example
   Config::Set ("/NodeList/*/DeviceList/*/TxQueue/MaxPackets", UintegerValue (15));
   txQueue->GetAttribute ("MaxPackets", limit); 
   NS_LOG_INFO ("5.  txQueue limit changed through wildcarded namespace: " << 
     limit.Get () << " packets");
-@end verbatim
+@end example
+@end smallformat
 
-@subsubsection Object Name Service-based access
+@subsection Object Name Service-based access
 
 Another way to get at the attribute is to use the object name service facility.
 Here, this attribute is found using a name string.  This approach is useful if 
 one doesn't have access to the underlying pointers and it is difficult to 
 determine the required concrete configuration namespaced path.
 
-@verbatim
+@smallformat
+@example
   Names::Add ("server", serverNode);
   Names::Add ("server/eth0", serverDevice);
 
   ...
 
   Config::Set ("/Names/server/eth0/TxQueue/MaxPackets", UintegerValue (25));
-@end verbatim
+@end example
+@end smallformat
+
+@xref{Object names} for a fuller treatment of the ns-3 configuration namespace.
 
 @subsection Setting through constructors helper classes
 
@@ -466,7 +488,8 @@ or from the higher-level helper APIs, such as:
                                  "LayoutType", StringValue ("RowFirst"));
 @end verbatim
 
-@subsection Value classes
+@subsection Implementation details
+@subsubsection Value classes
 Readers will note the new FooValue classes which are subclasses of the
 AttributeValue base class.  These can be thought of as
 an intermediate class that can be used to convert from raw types to the
@@ -489,14 +512,14 @@ the attribute system:
 @item ATTRIBUTE_HELPER_CPP
 @end itemize
 
-@subsection Initialization order
+@subsubsection Initialization order
 
 In general, the attribute code to assign values to the underlying
 class member variables is executed after an object is constructed.
 But what if you need the values assigned before the constructor
 body executes, because you need them in the logic of the constructor?
 There is a way to do this, used for example in the class 
-@code{ns3::ConfigStore}:  call @code{ObjectBase::ConstructSelf()}
+@code{ns3::ConfigStore}:  call @code{ObjectBase::ConstructSelf ()}
 as follows:
 
 @verbatim
@@ -546,7 +569,8 @@ Here, we discuss the impact on a user who wants to add a new class to
 ns-3; what additional things must be done to hook it into this system.
 
 We've already introduced what a TypeId definition looks like:
-@verbatim
+@smallformat
+@example
 TypeId
 RandomWalk2dMobilityModel::GetTypeId (void)
 {
@@ -568,7 +592,8 @@ RandomWalk2dMobilityModel::GetTypeId (void)
     ;
   return tid;
 }
-@end verbatim
+@end example
+@end smallformat
 
 The declaration for this in the class declaration is one-line public
 member method:
@@ -599,7 +624,9 @@ the conversions to/from strings and attribute values.  Most of this can be
 copy/pasted with macro-ized code.  For instance, consider class
 declaration for Rectangle in the @code{src/mobility/} directory:
 
-@verbatim
+@subsection Header file
+@smallformat
+@example
 /**
  * \brief a 2d rectangle
  */
@@ -612,35 +639,42 @@ class Rectangle
   double yMin;
   double yMax;
 };
-@end verbatim
+@end example
+@end smallformat
  
 One macro call and two operators, must be added below the class declaration
 in order to turn a Rectangle into a value usable by the @code{Attribute}
 system:
 
-@verbatim
+@smallformat
+@example
 std::ostream &operator << (std::ostream &os, const Rectangle &rectangle);
 std::istream &operator >> (std::istream &is, Rectangle &rectangle);
 
 ATTRIBUTE_HELPER_HEADER (Rectangle);
-@end verbatim
+@end example
+@end smallformat
 
+@subsection Implementation file
 In the class definition (@code{.cc} file), the code looks like this:
 
-@verbatim
+@smallformat
+@example
 ATTRIBUTE_HELPER_CPP (Rectangle);
 
 std::ostream &
 operator << (std::ostream &os, const Rectangle &rectangle)
 {
-  os << rectangle.xMin << "|" << rectangle.xMax << "|" << rectangle.yMin << "|" << rectangle.yMax;
+  os << rectangle.xMin << "|" << rectangle.xMax << "|" << rectangle.yMin << "|"
+     << rectangle.yMax;
   return os;
 }
 std::istream &
 operator >> (std::istream &is, Rectangle &rectangle)
  {
   char c1, c2, c3;
-  is >> rectangle.xMin >> c1 >> rectangle.xMax >> c2 >> rectangle.yMin >> c3 >> rectangle.yMax;
+  is >> rectangle.xMin >> c1 >> rectangle.xMax >> c2 >> rectangle.yMin >> c3 
+     >> rectangle.yMax;
   if (c1 != '|' ||
       c2 != '|' ||
       c3 != '|')
@@ -649,7 +683,8 @@ operator >> (std::istream &is, Rectangle &rectangle)
     }
   return is;
 }
-@end verbatim
+@end example
+@end smallformat
 
 These stream operators simply convert from a string representation of the
 Rectangle ("xMin|xMax|yMin|yMax") to the underlying Rectangle, and the
@@ -679,7 +714,8 @@ file to the scratch directory:
 Let's edit it to add the ConfigStore feature.  First, add an include statement 
 to include the contrib module, and then add these lines:
 
-@verbatim
+@smallformat
+@example
 #include "contrib-module.h"
 ...
 int main (...)
@@ -693,7 +729,8 @@ int main (...)
 
   Simulator::Run ();
 }
-@end verbatim
+@end example
+@end smallformat
 
 There are three attributes that govern the behavior of the ConfigStore:
 "Mode", "Filename", and "FileFormat".  The Mode (default "None") configures
@@ -705,12 +742,16 @@ the ConfigStore format is Xml or RawText format.
 
 So, using the above modified program, try executing the following
 waf command and 
-@verbatim
-./waf --command-template="%s --ns3::ConfigStore::Filename=csma-bridge-config.xml --ns3::ConfigStore::Mode=Save --ns3::ConfigStore::FileFormat=Xml" --run scratch/csma-bridge
-@end verbatim
+@smallformat
+@example
+./waf --command-template="%s --ns3::ConfigStore::Filename=csma-bridge-config.xml
+--ns3::ConfigStore::Mode=Save --ns3::ConfigStore::FileFormat=Xml" --run scratch/csma-bridge
+@end example
+@end smallformat
 After running, you can open the csma-bridge-config.xml file and it will
 display the configuration that was applied to your simulation; e.g.
-@verbatim
+@smallformat
+@example
 <?xml version="1.0" encoding="UTF-8"?>
 <ns3>
  <default name="ns3::V4Ping::Remote" value="102.102.102.102"/>
@@ -723,7 +764,9 @@ display the configuration that was applied to your simulation; e.g.
  <default name="ns3::QstaWifiMac::MaxMissedBeacons" value="10"/>
  <default name="ns3::QstaWifiMac::ActiveProbing" value="false"/>
 ...
-@end verbatim
+@end example
+@end smallformat
+
 This file can be archived with your simulation script and output data.
 
 While it is possible to generate a sample config file and lightly
@@ -749,7 +792,8 @@ separate file called "output-attributes.xml".  (Note-- to get this
 input xml file to begin with, it is sometimes helpful to run the
 program to generate an output xml file first, then hand-edit that
 file and re-input it for the next simulation run).
-@verbatim
+@smallformat
+@example
 #include "contrib-module.h"
 ...
 int main (...)
@@ -778,7 +822,8 @@ int main (...)
   outputConfig.ConfigureAttributes ();
   Simulator::Run ();
 }
-@end verbatim
+@end example
+@end smallformat
 
 @subsection GTK-based ConfigStore
 
@@ -794,24 +839,28 @@ sudo apt-get install libgtk2.0-0 libgtk2.0-dev
 @end verbatim
 To check whether it is configured or not, check the output of the
 ./waf configure step:
-@verbatim
+@smallformat
+@example
 ---- Summary of optional NS-3 features:
 Threading Primitives          : enabled
 Real Time Simulator           : enabled
 GtkConfigStore                : not enabled (library 'gtk+-2.0 >= 2.12' not found)
-@end verbatim
+@end example
+@end smallformat
 
 In the above example, it was not enabled, so it cannot be used until a
 suitable version is installed and ./waf configure; ./waf is rerun.
 
 Usage is almost the same as the non-GTK-based version, but there
 are no ConfigStore attributes involved:
-@verbatim
+@smallformat
+@example
   // Invoke just before entering Simulator::Run ()
   GtkConfigStore config;
   config.ConfigureDefaults ();
   config.ConfigureAttributes ();
-@end verbatim
+@end example
+@end smallformat
 
 Now, when you run the script, a GUI should pop up, allowing you to open
 menus of attributes on different nodes/objects, and then launch the
