@@ -356,6 +356,7 @@ class Ipv6L3Protocol : public Ipv6
   private:
     /* for unit-tests */
     friend class Ipv6L3ProtocolTestCase;
+    friend class Ipv6ExtensionLooseRouting;
 
     typedef std::list<Ptr<Ipv6Interface> > Ipv6InterfaceList;
     typedef std::list<Ptr<Ipv6RawSocketImpl> > SocketList;

@@ -28,6 +28,9 @@
 #include "ns3/ipv6-address.h"
 #include "ns3/ipv6-header.h"
 #include "ns3/ipv6-l3-protocol.h"
+#include "ns3/ipv6-static-routing.h"
+#include "ns3/ipv6-list-routing.h"
+#include "ns3/ipv6-route.h"
 #include "ns3/trace-source-accessor.h"
 #include "ns3/random-variable.h"
 #include "icmpv6-l4-protocol.h"
@@ -943,18 +946,57 @@ uint8_t Ipv6ExtensionLooseRouting::Process (Ptr<Packet>& packet, uint8_t offset,
   ipv6header.SetHopLimit (hopLimit - 1);
   p->AddHeader (routingHeader);
 
-  /* TODO */
-/*
-  uint32_t ifIndex;
+  /* short-circuiting routing stuff */
+  
+  /* XXX taken from src/helper/ipv6-static-rouging.cc
+   *
+   * either include (and use) helper (Ipv6StaticRoutingHelper) or
+   * add a method in Ipv6RoutingProtocol to lookup in routing table 
+   * without callback to Ipv6L3Protocol::LocalDeliver/IpForward/IpMulticastForward
+   */
   Ptr<Ipv6L3Protocol> ipv6 = GetNode ()->GetObject<Ipv6L3Protocol> ();
+  Ptr<Ipv6RoutingProtocol> ipv6rp = ipv6->GetRoutingProtocol ();
+  Ptr<Ipv6StaticRouting> staticRouting = 0;
 
-  if (ipv6->GetIfIndexForDestination (nextAddress, ifIndex))
+  NS_ASSERT_MSG (ipv6rp, "No routing protocol associated with Ipv6");
+  if (DynamicCast<Ipv6StaticRouting> (ipv6rp))
   {
-    ipv6->Lookup (ipv6header, p, MakeCallback (&Ipv6L3Protocol::SendRealOut, PeekPointer (ipv6)));
+    staticRouting = DynamicCast<Ipv6StaticRouting> (ipv6rp);
+  }
+  else if (DynamicCast<Ipv6ListRouting> (ipv6rp))
+  {
+    Ptr<Ipv6ListRouting> lrp = DynamicCast<Ipv6ListRouting> (ipv6rp);
+    int16_t priority;
+    for (uint32_t i = 0; i < lrp->GetNRoutingProtocols ();  i++)
+    {
+      NS_LOG_LOGIC ("Searching for static routing in list");
+      Ptr<Ipv6RoutingProtocol> temp = lrp->GetRoutingProtocol (i, priority);
+      if (DynamicCast<Ipv6StaticRouting> (temp))
+      {
+        NS_LOG_LOGIC ("Found static routing in list");
+        staticRouting = DynamicCast<Ipv6StaticRouting> (temp);
+        break;
+      }
+    }
   }
 
-  isDropped = true;
-*/
+  NS_ASSERT (staticRouting);
+
+  Ptr<Ipv6Route> rtentry = staticRouting->LookupStatic (nextAddress, 0);
+
+  if (rtentry)
+  {
+    /* we know a route exists so send packet now */
+    ipv6->SendRealOut (rtentry, p, ipv6header);
+  }
+  else
+  {
+    NS_LOG_INFO("No route for next router");
+  }
+
+  /* as we directly send packet, mark it as dropped */
+  isDropped = true; 
+
   return routingHeader.GetSerializedSize ();
 }
 

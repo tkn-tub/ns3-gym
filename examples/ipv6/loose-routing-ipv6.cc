@@ -148,7 +148,8 @@ int main (int argc, char **argv)
 	routersAddress.push_back (i2.GetAddress (0, 1));
 
 	Ping6Helper client;
-  client.SetRemote (i2.GetAddress (0, 1));
+  /* remote address is first routers in RH0 => source routing */
+  client.SetRemote (i1.GetAddress (1, 1));
   client.SetAttribute ("MaxPackets", UintegerValue (maxPacketCount));
   client.SetAttribute ("Interval", TimeValue(interPacketInterval));
   client.SetAttribute ("PacketSize", UintegerValue (packetSize));
