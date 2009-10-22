@@ -87,7 +87,7 @@ void Radvd::StartApplication ()
 
 /*    m_socket->Bind (Inet6SocketAddress (m_localAddress, 0)); */
 /*    m_socket->Connect (Inet6SocketAddress (Ipv6Address::GetAllNodesMulticast (), 0)); */
-    m_socket->SetAttribute ("Protocol", UintegerValue (58)); /* ICMPv6 */
+    m_socket->SetAttribute ("Protocol", UintegerValue (Ipv6Header::IPV6_ICMPV6));
     m_socket->SetRecvCallback (MakeCallback (&Radvd::HandleRead, this));
   }
 
