@@ -7,10 +7,10 @@ http://www.nsnam.org/wiki/index.php/Installation
 
 === Installing Waf ===
 
-The top-level ns-3 directory should contain a current waf script.
-
-Note: we're using a WAF version based on WAF 1.5.x.  The source code
-can be retrieved from the followin URL:
+The top-level ns-3 directory should contain a current waf script, so
+there is no need to have WAF installed in the system.  We are using
+some extensions to WAF, which can be found in the 'waf-tools'
+directory. The upstream location for these WAF extensions is:
 
     https://code.launchpad.net/~gjc/waf/cmd
 

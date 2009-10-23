@@ -27,6 +27,8 @@ import Build
 import Configure
 import Scripting
 
+sys.path.insert(0, os.path.abspath('waf-tools'))
+
 import cflags # override the build profiles from waf
 cflags.profiles = {
 	# profile name: [optimization_level, warnings_level, debug_level]
