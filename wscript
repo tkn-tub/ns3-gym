@@ -382,6 +382,14 @@ def configure(conf):
         conf.env.append_value('CXXDEFINES', "ENABLE_GSL")
         conf.env.append_value('CCDEFINES', "ENABLE_GSL")
 
+    # append user defined flags after all our ones
+    for (confvar, envvar) in [['CCFLAGS', 'CCFLAGS_EXTRA'],
+                              ['CXXFLAGS', 'CXXFLAGS_EXTRA'],
+                              ['LINKFLAGS', 'LINKFLAGS_EXTRA'],
+                              ['LINKFLAGS', 'LDFLAGS_EXTRA']]:
+        if envvar in os.environ:
+            conf.env.append_value(confvar, os.environ[envvar])
+
     # Write a summary of optional features status
     print "---- Summary of optional NS-3 features:"
     for (name, caption, was_enabled, reason_not_enabled) in conf.env['NS3_OPTIONAL_FEATURES']:
