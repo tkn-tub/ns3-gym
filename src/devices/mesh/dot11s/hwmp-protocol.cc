@@ -33,6 +33,7 @@
 #include "airtime-metric.h"
 #include "ie-dot11s-preq.h"
 #include "ie-dot11s-prep.h"
+#include "ns3/trace-source-accessor.h"
 #include "ie-dot11s-perr.h"
 
 NS_LOG_COMPONENT_DEFINE ("HwmpProtocol");
@@ -157,7 +158,13 @@ HwmpProtocol::GetTypeId ()
                     MakeBooleanAccessor (
                         &HwmpProtocol::m_rfFlag),
                     MakeBooleanChecker ()
-        );
+                    )
+    .AddTraceSource ( "RouteDiscoveryTime",
+                      "The time of route discovery procedure",
+                      MakeTraceSourceAccessor (
+                        &HwmpProtocol::m_routeDiscoveryTimeCallback)
+                      )
+        ;
   return tid;
 }
 
@@ -201,14 +208,14 @@ void
 HwmpProtocol::DoDispose ()
 {
   NS_LOG_FUNCTION_NOARGS ();
-  for (std::map<Mac48Address, EventId>::iterator i = m_preqTimeouts.begin (); i != m_preqTimeouts.end (); i ++)
+  for (std::map<Mac48Address, PreqEvent>::iterator i = m_preqTimeouts.begin (); i != m_preqTimeouts.end (); i ++)
     {
-      i->second.Cancel ();
+      i->second.preqTimeout.Cancel ();
     }
   m_proactivePreqTimer.Cancel();
   m_preqTimeouts.clear ();
   m_lastDataSeqno.clear ();
-  m_lastHwmpSeqno.clear ();
+  m_hwmpSeqnoMetricDatabase.clear ();
   m_interfaces.clear ();
   m_rqueue.clear ();
   m_rtable = 0;
@@ -392,31 +399,24 @@ HwmpProtocol::ReceivePreq (IePreq preq, Mac48Address from, uint32_t interface, M
 {
   preq.IncrementMetric (metric);
   //acceptance cretirea:
-  std::map<Mac48Address, uint32_t>::const_iterator i = m_lastHwmpSeqno.find (preq.GetOriginatorAddress());
-  if (i == m_lastHwmpSeqno.end ())
+  std::map<Mac48Address, std::pair<uint32_t, uint32_t> >::const_iterator i = m_hwmpSeqnoMetricDatabase.find (
+      preq.GetOriginatorAddress ());
+  if (i != m_hwmpSeqnoMetricDatabase.end ())
     {
-      m_lastHwmpSeqno[preq.GetOriginatorAddress ()] = preq.GetOriginatorSeqNumber ();
-      m_lastHwmpMetric[preq.GetOriginatorAddress ()] = preq.GetMetric ();
-    }
-  else
-    {
-      if ((int32_t)(i->second - preq.GetOriginatorSeqNumber ())  > 0)
+      if ((int32_t)(i->second.first - preq.GetOriginatorSeqNumber ())  > 0)
         {
           return;
         }
-      if (i->second == preq.GetOriginatorSeqNumber ())
+      if (i->second.first == preq.GetOriginatorSeqNumber ())
         {
-          //find metric
-          std::map<Mac48Address, uint32_t>::const_iterator j = m_lastHwmpMetric.find (preq.GetOriginatorAddress());
-          NS_ASSERT (j != m_lastHwmpSeqno.end ());
-          if (j->second <= preq.GetMetric ())
+          if (i->second.second <= preq.GetMetric ())
             {
               return;
             }
         }
-      m_lastHwmpSeqno[preq.GetOriginatorAddress ()] = preq.GetOriginatorSeqNumber ();
-      m_lastHwmpMetric[preq.GetOriginatorAddress ()] = preq.GetMetric ();
     }
+  m_hwmpSeqnoMetricDatabase[preq.GetOriginatorAddress ()] = std::make_pair (preq.GetOriginatorSeqNumber (), preq.GetMetric ());
+
   NS_LOG_DEBUG("I am " << GetAddress () << "Accepted preq from address" << from << ", preq:" << preq);
   std::vector<Ptr<DestinationAddressUnit> > destinations = preq.GetDestinationList ();
   //Add reactive path to originator:
@@ -559,25 +559,16 @@ HwmpProtocol::ReceivePrep (IePrep prep, Mac48Address from, uint32_t interface, M
 {
   prep.IncrementMetric (metric);
   //acceptance cretirea:
-  std::map<Mac48Address, uint32_t>::const_iterator i = m_lastHwmpSeqno.find (prep.GetOriginatorAddress ());
-  if (i == m_lastHwmpSeqno.end ())
+  std::map<Mac48Address, std::pair<uint32_t, uint32_t> >::const_iterator i = m_hwmpSeqnoMetricDatabase.find (
+      prep.GetOriginatorAddress ());
+  if ((i != m_hwmpSeqnoMetricDatabase.end ()) && ((int32_t)(i->second.first - prep.GetOriginatorSeqNumber ()) > 0))
     {
-      m_lastHwmpSeqno[prep.GetOriginatorAddress ()] = prep.GetOriginatorSeqNumber ();
+      return;
     }
-  else
-  {
-    if ((int32_t)(i->second - prep.GetOriginatorSeqNumber ()) > 0)
-      {
-        return;
-      }
-    else
-      {
-        m_lastHwmpSeqno[prep.GetOriginatorAddress ()] = prep.GetOriginatorSeqNumber ();
-      }
-  }
+  m_hwmpSeqnoMetricDatabase[prep.GetOriginatorAddress ()] = std::make_pair (prep.GetOriginatorSeqNumber (), prep.GetMetric ());
   //update routing info
   //Now add a path to destination and add precursor to source
-  NS_LOG_DEBUG("I am " << GetAddress () << ", received prep from " << prep.GetOriginatorAddress () << ", receiver was:" << from);
+  NS_LOG_DEBUG ("I am " << GetAddress () << ", received prep from " << prep.GetOriginatorAddress () << ", receiver was:" << from);
   HwmpRtable::LookupResult result = m_rtable->LookupReactive (prep.GetDestinationAddress ());
   //Add a reactive path only if it is better than existing:
   if (
@@ -904,6 +895,12 @@ HwmpProtocol::DequeueFirstPacket ()
 void
 HwmpProtocol::ReactivePathResolved (Mac48Address dst)
 {
+  std::map<Mac48Address, PreqEvent>::iterator i = m_preqTimeouts.find (dst);
+  if (i !=  m_preqTimeouts.end ())
+    {
+      m_routeDiscoveryTimeCallback (Simulator::Now () - i->second.whenScheduled);
+    }
+
   HwmpRtable::LookupResult result = m_rtable->LookupReactive (dst);
   NS_ASSERT(result.retransmitter != Mac48Address::GetBroadcast ());
   //Send all packets stored for this destination
@@ -950,12 +947,13 @@ HwmpProtocol::ProactivePathResolved ()
 bool
 HwmpProtocol::ShouldSendPreq (Mac48Address dst)
 {
-  std::map<Mac48Address, EventId>::const_iterator i = m_preqTimeouts.find (dst);
+  std::map<Mac48Address, PreqEvent>::const_iterator i = m_preqTimeouts.find (dst);
   if (i == m_preqTimeouts.end ())
     {
-      m_preqTimeouts[dst] = Simulator::Schedule (
+      m_preqTimeouts[dst].preqTimeout = Simulator::Schedule (
           m_dot11MeshHWMPnetDiameterTraversalTime * Scalar (2),
           &HwmpProtocol::RetryPathDiscovery, this, dst, 1);
+      m_preqTimeouts[dst].whenScheduled = Simulator::Now ();
       return true;
     }
   return false;
@@ -970,8 +968,8 @@ HwmpProtocol::RetryPathDiscovery (Mac48Address dst, uint8_t numOfRetry)
     }
   if (result.retransmitter != Mac48Address::GetBroadcast ())
     {
-      std::map<Mac48Address, EventId>::iterator i = m_preqTimeouts.find (dst);
-      NS_ASSERT (i !=  m_preqTimeouts.end ());
+      std::map<Mac48Address, PreqEvent>::iterator i = m_preqTimeouts.find (dst);
+      NS_ASSERT (i != m_preqTimeouts.end ());
       m_preqTimeouts.erase (i);
       return;
     }
@@ -986,8 +984,9 @@ HwmpProtocol::RetryPathDiscovery (Mac48Address dst, uint8_t numOfRetry)
           packet.reply (false, packet.pkt, packet.src, packet.dst, packet.protocol, HwmpRtable::MAX_METRIC);
           packet = DequeueFirstPacketByDst (dst);
         }
-      std::map<Mac48Address, EventId>::iterator i = m_preqTimeouts.find (dst);
+      std::map<Mac48Address, PreqEvent>::iterator i = m_preqTimeouts.find (dst);
       NS_ASSERT (i !=  m_preqTimeouts.end ());
+      m_routeDiscoveryTimeCallback (Simulator::Now () - i->second.whenScheduled);
       m_preqTimeouts.erase (i);
       return;
     }
@@ -997,7 +996,7 @@ HwmpProtocol::RetryPathDiscovery (Mac48Address dst, uint8_t numOfRetry)
     {
       i->second->RequestDestination (dst, originator_seqno, dst_seqno);
     }
-  m_preqTimeouts[dst] = Simulator::Schedule (
+  m_preqTimeouts[dst].preqTimeout = Simulator::Schedule (
       Scalar (2 * (numOfRetry + 1)) *  m_dot11MeshHWMPnetDiameterTraversalTime,
       &HwmpProtocol::RetryPathDiscovery, this, dst, numOfRetry);
 }
@@ -1112,7 +1111,7 @@ void HwmpProtocol::Statistics::Print (std::ostream & os) const
     "totalDropped=\"" << totalDropped << "\" "
     "initiatedPreq=\"" << initiatedPreq << "\" "
     "initiatedPrep=\"" << initiatedPrep << "\" "
-    "initiatedPerr=\"" << initiatedPerr << "\"" << std::endl;
+    "initiatedPerr=\"" << initiatedPerr << "\"/>" << std::endl;
 }
 void
 HwmpProtocol::Report (std::ostream & os) const

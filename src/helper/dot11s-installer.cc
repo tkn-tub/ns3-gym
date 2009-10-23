@@ -75,7 +75,7 @@ Dot11sStack::InstallStack (Ptr<MeshPointDevice> mp)
   //Install interaction between HWMP and Peer management protocol:
   //PeekPointer()'s to avoid circular Ptr references
   pmp->SetPeerLinkStatusCallback (MakeCallback (&HwmpProtocol::PeerLinkStatus, PeekPointer (hwmp)));
-  hwmp->SetNeighboursCallback (MakeCallback (&PeerManagementProtocol::GetActiveLinks, PeekPointer (pmp)));
+  hwmp->SetNeighboursCallback (MakeCallback (&PeerManagementProtocol::GetPeers, PeekPointer (pmp)));
   return true;
 }
 void

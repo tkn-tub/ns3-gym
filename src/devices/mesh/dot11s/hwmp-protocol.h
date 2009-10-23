@@ -24,6 +24,7 @@
 #include "ns3/mesh-l2-routing-protocol.h"
 #include "ns3/nstime.h"
 #include "ns3/event-id.h"
+#include "ns3/traced-value.h"
 #include <vector>
 #include <map>
 
@@ -156,6 +157,8 @@ private:
    */
   bool DropDataFrame (uint32_t seqno, Mac48Address source);
   //\}
+  /// Route discovery time:
+  TracedCallback<Time> m_routeDiscoveryTimeCallback;
   ///\name Methods related to Queue/Dequeue procedures
   ///\{
   bool QueuePacket (QueuedPacket packet);
@@ -225,18 +228,20 @@ private:
   ///\{
   /// Data sequence number database
   std::map<Mac48Address, uint32_t> m_lastDataSeqno;
-  /// DSN databse
-  std::map<Mac48Address, uint32_t> m_lastHwmpSeqno;
-  /// Metric database
-  std::map<Mac48Address, uint32_t> m_lastHwmpMetric;
+  /// keeps HWMP seqno (first in pair) and HWMP metric (second in pair) for each address
+  std::map<Mac48Address, std::pair<uint32_t, uint32_t> > m_hwmpSeqnoMetricDatabase;
   ///\}
 
   /// Routing table
   Ptr<HwmpRtable> m_rtable;
 
   ///\name Timers:
-  ///\{
-  std::map<Mac48Address, EventId> m_preqTimeouts;
+  //\{
+  struct PreqEvent {
+    EventId preqTimeout;
+    Time whenScheduled;
+  };
+  std::map<Mac48Address, PreqEvent> m_preqTimeouts;
   EventId m_proactivePreqTimer;
   /// Random start in Proactive PREQ propagation
   Time m_randomStart;

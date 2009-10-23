@@ -45,13 +45,13 @@ public:
   static TypeId GetTypeId ();
   uint32_t CalculateMetric (Mac48Address peerAddress, Ptr<MeshWifiInterfaceMac> mac);
 private:
-  //\brief Overhead expressed in nanoseconds:DIFS+ 2* SIFS + 2*PREAMBLE + 2* ACK
+  /// Overhead expressed in nanoseconds:DIFS + SIFS + 2 * PREAMBLE + ACK
   uint32_t m_overheadNanosec;
-  ///\brief Bt value
+  /// Bt value
   uint32_t m_testLength;
-  ///\brief header length (used in overhead)
+  /// header length (used in overhead)
   uint16_t m_headerLength;
-  ///\brief meshHeader length (6 octets usually)
+  /// meshHeader length (minimum 6 octets)
   uint16_t m_meshHeaderLength;
 };
 } //namespace dot11s
