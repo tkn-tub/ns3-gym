@@ -763,7 +763,7 @@ HwmpProtocol::MakePathError (std::vector<FailedDestination> destinations)
 void
 HwmpProtocol::InitiatePathError(PathError perr)
 {
-  for (HwmpProtocolMacMap::const_iterator i =  m_interfaces.begin (); i != m_interfaces.end (); i ++)
+  for (HwmpProtocolMacMap::const_iterator i = m_interfaces.begin (); i != m_interfaces.end (); i ++)
   {
     std::vector<Mac48Address> receivers_for_interface;
     for (unsigned int j = 0; j < perr.receivers.size (); j ++)
@@ -779,7 +779,7 @@ HwmpProtocol::InitiatePathError(PathError perr)
 void
 HwmpProtocol::ForwardPathError(PathError perr)
 {
-  for (HwmpProtocolMacMap::const_iterator i =  m_interfaces.begin (); i != m_interfaces.end (); i ++)
+  for (HwmpProtocolMacMap::const_iterator i = m_interfaces.begin (); i != m_interfaces.end (); i ++)
   {
     std::vector<Mac48Address> receivers_for_interface;
     for (unsigned int j = 0; j < perr.receivers.size (); j ++)
@@ -896,7 +896,7 @@ void
 HwmpProtocol::ReactivePathResolved (Mac48Address dst)
 {
   std::map<Mac48Address, PreqEvent>::iterator i = m_preqTimeouts.find (dst);
-  if (i !=  m_preqTimeouts.end ())
+  if (i != m_preqTimeouts.end ())
     {
       m_routeDiscoveryTimeCallback (Simulator::Now () - i->second.whenScheduled);
     }
@@ -985,7 +985,7 @@ HwmpProtocol::RetryPathDiscovery (Mac48Address dst, uint8_t numOfRetry)
           packet = DequeueFirstPacketByDst (dst);
         }
       std::map<Mac48Address, PreqEvent>::iterator i = m_preqTimeouts.find (dst);
-      NS_ASSERT (i !=  m_preqTimeouts.end ());
+      NS_ASSERT (i != m_preqTimeouts.end ());
       m_routeDiscoveryTimeCallback (Simulator::Now () - i->second.whenScheduled);
       m_preqTimeouts.erase (i);
       return;

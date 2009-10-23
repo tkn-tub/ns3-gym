@@ -400,7 +400,7 @@ PeerManagementProtocol::DoShiftBeacon (uint32_t interface)
               continue;
             }
           //Beacon interval is stored in TU's
-          if (((*j)->GetBeaconInterval ()) != TimeToTu(beaconInterval->second))
+          if (((*j)->GetBeaconInterval ()) != TimeToTu (beaconInterval->second))
             {
               continue;
             }

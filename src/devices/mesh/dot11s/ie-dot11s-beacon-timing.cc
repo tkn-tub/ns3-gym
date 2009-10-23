@@ -77,9 +77,7 @@ IeBeaconTiming::GetNeighboursTimingElementsList ()
   return m_neighbours;
 }
 void
-IeBeaconTiming::AddNeighboursTimingElementUnit (uint16_t aid, Time last_beacon, //MicroSeconds!
-    Time beacon_interval //MicroSeconds!
-)
+IeBeaconTiming::AddNeighboursTimingElementUnit (uint16_t aid, Time last_beacon, Time beacon_interval)
 {
   if (m_numOfUnits == 50)
     {
