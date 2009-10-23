@@ -282,6 +282,10 @@ def configure(conf):
         env.append_value('CXXDEFINES', 'NS3_ASSERT_ENABLE')
         env.append_value('CXXDEFINES', 'NS3_LOG_ENABLE')
 
+    if Options.options.build_profile == 'release': 
+        env.append_value('CXXFLAGS', '-fomit-frame-pointer') 
+        env.append_value('CXXFLAGS', '-march=native') 
+
     env['PLATFORM'] = sys.platform
 
     if conf.env['CXX_NAME'] in ['gcc', 'icc']:
