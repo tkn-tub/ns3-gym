@@ -15,3 +15,6 @@ def build(bld):
 
     obj = bld.create_ns3_program('fourth', ['core'])
     obj.source = 'fourth.cc'
+
+    obj = bld.create_ns3_program('fifth', ['core', 'simulator', 'point-to-point', 'internet-stack'])
+    obj.source = 'fifth.cc'

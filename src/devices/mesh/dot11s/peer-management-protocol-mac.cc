@@ -69,22 +69,16 @@ PeerManagementProtocolMac::Receive (Ptr<Packet> const_packet, const WifiMacHeade
     {
       MgtBeaconHeader beacon_hdr;
       packet->RemoveHeader (beacon_hdr);
-      //meshId.FindFirst (myBeacon);
-      bool meshBeacon = false;
       WifiInformationElementVector elements;
       packet->RemoveHeader(elements);
       Ptr<IeBeaconTiming> beaconTiming = DynamicCast<IeBeaconTiming> (elements.FindFirst (IE11S_BEACON_TIMING));
       Ptr<IeMeshId> meshId = DynamicCast<IeMeshId> (elements.FindFirst (IE11S_MESH_ID));
 
-      if ((beaconTiming != 0) && (meshId != 0))
+      if ((meshId != 0) && (m_protocol->GetMeshId ()->IsEqual (*meshId)))
         {
-          if (m_protocol->GetMeshId ()->IsEqual (*meshId))
-            {
-              meshBeacon = true;
-            }
+          m_protocol->ReceiveBeacon (m_ifIndex, header.GetAddr2 (), MicroSeconds (
+              beacon_hdr.GetBeaconIntervalUs ()), beaconTiming);
         }
-      m_protocol->UpdatePeerBeaconTiming (m_ifIndex, meshBeacon, *beaconTiming, header.GetAddr2 (),
-          Simulator::Now (), MicroSeconds (beacon_hdr.GetBeaconIntervalUs ()));
       // Beacon shall not be dropeed. May be needed to another plugins
       return true;
     }
@@ -190,9 +184,13 @@ PeerManagementProtocolMac::UpdateOutcomingFrame (Ptr<Packet> packet, WifiMacHead
 void
 PeerManagementProtocolMac::UpdateBeacon (MeshWifiBeacon & beacon) const
 {
-  Ptr<IeBeaconTiming> beaconTiming = m_protocol->GetBeaconTimingElement (m_ifIndex);
-  beacon.AddInformationElement (beaconTiming);
+  if (m_protocol->GetBeaconCollisionAvoidance ())
+    {
+      Ptr<IeBeaconTiming> beaconTiming = m_protocol->GetBeaconTimingElement (m_ifIndex);
+      beacon.AddInformationElement (beaconTiming);
+    }
   beacon.AddInformationElement (m_protocol->GetMeshId ());
+  m_protocol->NotifyBeaconSent (m_ifIndex, beacon.GetBeaconInterval ());
 }
 
 void
@@ -268,14 +266,6 @@ PeerManagementProtocolMac::GetAddress () const
     {
       return Mac48Address::Mac48Address ();
     }
-}
-std::pair<Time, Time>
-PeerManagementProtocolMac::GetBeaconInfo () const
-{
-  std::pair<Time, Time> retval;
-  retval.first = m_parent->GetTbtt ();
-  retval.second = m_parent->GetBeaconInterval ();
-  return retval;
 }
 void
 PeerManagementProtocolMac::SetBeaconShift (Time shift)

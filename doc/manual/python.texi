@@ -1,0 +1,9 @@
+@node Python
+@chapter Python
+
+@cartouche
+Placeholder chapter
+@end cartouche
+
+For now, please see the Python wiki page at @*
+@uref{http://www.nsnam.org/wiki/index.php/NS-3_Python_Bindings,,http://www.nsnam.org/wiki/index.php/NS-3_Python_Bindings}.

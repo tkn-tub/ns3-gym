@@ -54,7 +54,7 @@ public:
 
   /**
    * \brief Install an 802.11s stack.
-   * \param The Ptr<MeshPointDevice> to use when setting up the PMP.
+   * \param mp The Ptr<MeshPointDevice> to use when setting up the PMP.
    */
   bool InstallStack (Ptr<MeshPointDevice> mp);
  

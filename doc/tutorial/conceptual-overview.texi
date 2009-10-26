@@ -181,7 +181,7 @@ directory structure something like the following:
 @end verbatim
 
 @cindex first.cc
-Change into the examples directory.  You should see a file named 
+Change into the @code{examples/tutorial} directory.  You should see a file named 
 @code{first.cc} located there.  This is a script that will create a simple
 point-to-point link between two nodes and echo a single packet between the
 nodes.  Let's take a look at that script line by line, so go ahead and open
@@ -277,7 +277,7 @@ done a
 @end verbatim
 
 to build the project.  So now if you look in the directory 
-@code{../build/debug/ns3} you will find the four module include files shown 
+@code{../../build/debug/ns3} you will find the four module include files shown 
 above.  You can take a look at the contents of these files and find that they
 do include all of the public include files in their respective modules.
 
@@ -732,12 +732,12 @@ took care of the hard part for you.  The remaining lines of our first
 @subsection Building Your Script
 We have made it trivial to build your simple scripts.  All you have to do is 
 to drop your script into the scratch directory and it will automatically be 
-built if you run Waf.  Let's try it.  Copy @code{examples/first.cc} into 
+built if you run Waf.  Let's try it.  Copy @code{examples/tutorial/first.cc} into 
 the @code{scratch} directory after changing back into the top level directory.
 
 @verbatim
   cd ..
-  cp examples/first.cc scratch/myfirst.cc
+  cp examples/tutorial/first.cc scratch/myfirst.cc
 @end verbatim
 
 Now build your first example script using waf:
@@ -750,10 +750,10 @@ You should see messages reporting that your @code{myfirst} example was built
 successfully.
 
 @verbatim
-  Waf: Entering directory `/home/craigdo/repos/ns-3-allinone-3.5-tutorial/ns-3-dev/build'
+  Waf: Entering directory `/home/craigdo/repos/ns-3-allinone/ns-3-dev/build'
   [614/708] cxx: scratch/myfirst.cc -> build/debug/scratch/myfirst_3.o
   [706/708] cxx_link: build/debug/scratch/myfirst_3.o -> build/debug/scratch/myfirst
-  Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone-3.5-tutorial/ns-3-dev/build'
+  Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone/ns-3-dev/build'
   'build' finished successfully (2.357s)
 @end verbatim
 
@@ -767,8 +767,8 @@ directory you must run it out of the scratch directory):
 You should see some output:
 
 @verbatim
-  Waf: Entering directory `/home/craigdo/repos/ns-3-allinone-3.5-tutorial/ns-3-dev/build'
-  Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone-3.5-tutorial/ns-3-dev/build'
+  Waf: Entering directory `/home/craigdo/repos/ns-3-allinone/ns-3-dev/build'
+  Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone/ns-3-dev/build'
   'build' finished successfully (0.418s)
   Sent 1024 bytes to 10.1.1.2
   Received 1024 bytes from 10.1.1.1

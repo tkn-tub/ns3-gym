@@ -86,15 +86,8 @@ private:
   ///// Closes link when a proper number of successive transmissions have failed
   void TxError (WifiMacHeader const &hdr);
   void TxOk (WifiMacHeader const &hdr);
-  ///\name BCA functionallity:
-  ///\{
-  ///\brief Fills TBTT and beacon interval. Needed by BCA
-  ///functionallity
-  ///\param first in retval is TBTT
-  ///\param second in retval is beacon interval
-  std::pair<Time, Time> GetBeaconInfo () const;
+  ///BCA functionallity:
   void SetBeaconShift (Time shift);
-  ///\}
   void SetPeerManagerProtcol (Ptr<PeerManagementProtocol> protocol);
   void SendPeerLinkManagementFrame (
       Mac48Address peerAddress,

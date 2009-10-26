@@ -25,7 +25,7 @@ are described in @ref{Unicast routing}.  Multicast routing is documented in
 @image{figures/routing, 6in}
 @end float
 
-Figure 11-1 shows the overall routing architecture for Ipv4.  The key objects
+@ref{fig:routing} shows the overall routing architecture for Ipv4.  The key objects
 are Ipv4L3Protocol, Ipv4RoutingProtocol(s) (a class to which all 
 routing/forwarding has been delegated from Ipv4L3Protocol), and Ipv4Route(s).
 
@@ -143,7 +143,8 @@ and rebuilds the routes.
 For instance, this scheduling call will cause the tables to be rebuilt
 at time 5 seconds:
 @verbatim
-  Simulator::Schedule (Seconds (5),&Ipv4GlobalRoutingHelper::RecomputeRoutingTables);
+  Simulator::Schedule (Seconds (5),
+    &Ipv4GlobalRoutingHelper::RecomputeRoutingTables);
 @end verbatim
 
 @subsection Global Routing Implementation
@@ -199,15 +200,21 @@ is finally used to populate the routes themselves.
 @node Unicast routing
 @section Unicast routing
 
-There are presently four routing protocols defined:
+There are presently five unicast routing protocols defined for IPv4 and
+two for IPv6:
 @itemize @bullet
 @item class Ipv4StaticRouting (covering both unicast and multicast)
-@item  Optimized Link State Routing (a MANET protocol defined in
+@item  IPv4 Optimized Link State Routing (a MANET protocol defined in
 @uref{http://www.ietf.org/rfc/rfc3626.txt,,RFC 3626})
 @item class Ipv4ListRouting (used to store a prioritized list of routing
 protocols)
 @item class Ipv4GlobalRouting (used to store routes computed by the global
 route manager, if that is used)
+@item class Ipv4NixVectorRouting (a more efficient version of global routing
+that stores source routes in a packet header field)
+@item class Ipv6ListRouting (used to store a prioritized list of routing
+protocols)
+@item class Ipv6StaticRouting 
 @end itemize
 
 In the future, this architecture should also allow someone to implement

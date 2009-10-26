@@ -35,6 +35,11 @@ MeshWifiBeacon::AddInformationElement (Ptr<WifiInformationElement> ie)
   m_elements.AddInformationElement (ie);
 }
 
+Time
+MeshWifiBeacon::GetBeaconInterval () const
+{
+  return MicroSeconds (m_header.GetBeaconIntervalUs ());
+}
 
 Ptr<Packet>
 MeshWifiBeacon::CreatePacket ()

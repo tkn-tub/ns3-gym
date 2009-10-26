@@ -28,9 +28,8 @@ ns-3 provides models for these aspects of 802.11:
 @item QoS-based EDCA and queueing extensions of @strong{802.11e}
 @item various propagation loss models including @strong{Nakagami, Rayleigh, Friis, LogDistance, FixedRss, Random} 
 @item two propagation delay models, a distance-based and random model
-@item various rate control algorithms including @strong{Aarf, Arf, Cara, Onoe, Rraa, and ConstantRate} 
-@item @emph{(under development)} 802.11s (mesh)
-@item @emph{(under development)} Minstrel rate control
+@item various rate control algorithms including @strong{Aarf, Arf, Cara, Onoe, Rraa, ConstantRate, and Minstrel} 
+@item 802.11s (mesh), described in another chapter
 @end itemize
 
 The set of 802.11 models provided in ns-3 attempts to provide
@@ -159,10 +158,12 @@ and a propagation loss based on a log distance model with a reference
 loss of 46.6777 dB at reference distance of 1m.
 
 Users will typically type code such as:
-@verbatim
+@smallformat
+@example
   YansWifiChannelHelper wifiChannelHelper = YansWifiChannelHelper::Default ();
   Ptr<WifiChannel> wifiChannel = wifiChannelHelper.Create ();
-@end verbatim
+@end example
+@end smallformat
 to get the defaults.  Note the distinction above in creating a helper
 object vs. an actual simulation object.
 In ns-3, helper objects (used at the helper API only) are created on the
@@ -203,35 +204,35 @@ configure MAC parameters like type of MAC, values of contention windows and so o
 Setting up a non-QoS MAC layers the object we use is @code{ns3::NqosWifiMacHelper}.
 For example the following user code configures a non-QoS MAC sta and changes its default
 values for contention window and Aifsn:
-@verbatim
+@smallformat
+@example
   NqosWifiMacHelper wifiMacHelper = NqosWifiMacHelper::Default ();
   Ssid ssid = Ssid ("ns-3-ssid");
-  wifiMacHelper.SetType ("ns3::NqstaWifiMac", "Ssid", SsidValue (ssid), "ActiveProbing", BooleanValue (false));
-  wifiMacHelper.SetDcaParameters ("MinCw", UintegerValue (20), "Aifsn", UintegerValue (3));
-@end verbatim
+  wifiMacHelper.SetType ("ns3::NqstaWifiMac", "Ssid", SsidValue (ssid), 
+"ActiveProbing", BooleanValue (false));
+  wifiMacHelper.SetDcaParameters ("MinCw", UintegerValue (20), "Aifsn", 
+UintegerValue (3));
+@end example
+@end smallformat
 
 Setting up a QoS MACs we use a @code{ns3::QosWifiMacHelper} instead.
 This object could be also used to change default EDCA parameters, and to set a possible MSDU aggregator
 for a particular access class in order to use 802.11n MSDU aggregation feature.
 A possible user code:
-@verbatim
+@smallformat
+@example
   QosWifiMacHelper wifiMacHelper = QosWifiMacHelper::Default ();
-  wifiMacHelper.SetType ("ns3::QapWifiMac", "Ssid", SsidValue (ssid), "BeaconGeneration", BooleanValue (true),
-                         "BeaconInterval", TimeValue (Seconds (2.5)));
-  wifiMacHelper.SetEdcaParametersForAc (AC_VO, "MinCw", UintegerValue (2));
-  wifiMacHelper.SetMsduAggregatorForAc (AC_VO, "ns3::MsduStandardAggregator", "MaxAmsduSize", UintegerValue (3839));
-@end verbatim
+  wifiMacHelper.SetType ("ns3::QapWifiMac", 
+    "Ssid", SsidValue (ssid), 
+    "BeaconGeneration", BooleanValue (true), 
+    "BeaconInterval", TimeValue (Seconds (2.5)));
+  wifiMacHelper.SetMsduAggregatorForAc (AC_VO, "ns3::MsduStandardAggregator", 
+    "MaxAmsduSize", UintegerValue (3839));
+@end example
+@end smallformat
 
 Call to QosWifiMacHelper::Default () is needed in order to set default EDCA parameters properly for all
-access classes. Otherwise we should set them one by one:
-@verbatim
-  QosWifiMacHelper wifiMacHelper;
-  wifiMacHelper.SetEdcaParametersForAc (AC_VO, "MinCw", UintegerValue (2), "MaxCw", UintegerValue (7),
-                                               "Aifsn", UintegerValue (2));
-  wifiMacHelper.SetEdcaParametersForAc (AC_VI, "MinCw", UintegerValue (7), "MaxCw", UintegerValue (15),
-                                               "Aifsn", UintegerValue (2));
-  ...
-@end verbatim
+access classes; otherwise we should set them one by one.
 
 @subsection WifiHelper
 
@@ -244,9 +245,11 @@ What does this do?  It sets the RemoteStationManager to
 @code{ns3::ArfWifiManager}.
 Now, let's use the wifiPhyHelper and wifiMacHelper created above to install WifiNetDevices
 on a set of nodes in a NodeContainer "c":
-@verbatim
+@smallformat
+@example
   NetDeviceContainer wifiContainer = WifiHelper::Install (wifiPhyHelper, wifiMacHelper, c);
-@end verbatim
+@end example
+@end smallformat
 This creates the WifiNetDevice which includes also a WifiRemoteStationManager,
 a WifiMac, and a WifiPhy (connected to the matching WifiChannel).
 
@@ -257,12 +260,16 @@ show how to do some of this reconfiguration.
 @subsection AdHoc WifiNetDevice configuration 
 This is a typical example of how a user might configure an adhoc network.
 
-@emph{Write me}
+@cartouche
+To be completed
+@end cartouche
 
 @subsection Infrastructure (Access Point and clients) WifiNetDevice configuration 
 This is a typical example of how a user might configure an access point and a set of clients. 
 
-@emph{Write me}
+@cartouche
+To be completed
+@end cartouche
 
 @node The WifiChannel and WifiPhy models
 @section The WifiChannel and WifiPhy models

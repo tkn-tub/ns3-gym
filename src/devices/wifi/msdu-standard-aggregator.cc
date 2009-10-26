@@ -64,7 +64,8 @@ MsduStandardAggregator::Aggregate (Ptr<const Packet> packet, Ptr<Packet> aggrega
     {
       if (padding)
         {
-          aggregatedPacket->AddPaddingAtEnd (padding);
+          Ptr<Packet> pad = Create<Packet> (padding);
+          aggregatedPacket->AddAtEnd (pad);
         }
       currentHdr.SetDestinationAddr (dest);
       currentHdr.SetSourceAddr (src);

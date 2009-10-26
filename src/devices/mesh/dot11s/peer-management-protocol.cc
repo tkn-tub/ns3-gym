@@ -55,22 +55,30 @@ PeerManagementProtocol::GetTypeId (void)
                       &PeerManagementProtocol::m_maxNumberOfPeerLinks),
                   MakeUintegerChecker<uint8_t> ()
                 )
-  .AddAttribute ( "MaxBeaconLossForBeaconTiming",
-                  "If maximum number of beacons were lost, station will not included in beacon timing element",
-                  UintegerValue (3),
+  .AddAttribute ( "MaxBeaconShiftValue",
+                  "Maximum number of TUs for beacon shifting",
+                  UintegerValue (15),
                   MakeUintegerAccessor (
-                      &PeerManagementProtocol::m_maxBeaconLostForBeaconTiming),
-                  MakeUintegerChecker<uint8_t> ()
+                      &PeerManagementProtocol::m_maxBeaconShift),
+                  MakeUintegerChecker<uint16_t> ()
                 )
+  .AddAttribute ( "EnableBeaconCollisionAvoidance",
+                  "Enable/Disable Beacon collision avoidance.",
+                  BooleanValue (true),
+                  MakeBooleanAccessor (
+                    &PeerManagementProtocol::SetBeaconCollisionAvoidance, &PeerManagementProtocol::GetBeaconCollisionAvoidance),
+                    MakeBooleanChecker ()
+                  )
                 ;
   return tid;
 }
 PeerManagementProtocol::PeerManagementProtocol () :
-  m_lastAssocId (0), m_lastLocalLinkId (1), m_maxBeaconLostForBeaconTiming (3)
+  m_lastAssocId (0), m_lastLocalLinkId (1), m_enableBca (true), m_maxBeaconShift (15)
 {
 }
 PeerManagementProtocol::~PeerManagementProtocol ()
 {
+  m_meshId = 0;
 }
 void
 PeerManagementProtocol::DoDispose ()
@@ -86,12 +94,7 @@ PeerManagementProtocol::DoDispose ()
       j->second.clear ();
     }
   m_peerLinks.clear ();
-  //cleaning beacon structures:
-  for (BeaconInfoMap::iterator i = m_neighbourBeacons.begin (); i != m_neighbourBeacons.end (); i++)
-    {
-      i->second.clear ();
-    }
-  m_neighbourBeacons.clear ();
+  m_plugins.clear ();
 }
 
 bool
@@ -125,89 +128,33 @@ PeerManagementProtocol::Install (Ptr<MeshPointDevice> mp)
 Ptr<IeBeaconTiming>
 PeerManagementProtocol::GetBeaconTimingElement (uint32_t interface)
 {
+  if (!GetBeaconCollisionAvoidance ())
+    {
+      return 0;
+    }
   Ptr<IeBeaconTiming> retval = Create<IeBeaconTiming> ();
-  BeaconInfoMap::iterator i = m_neighbourBeacons.find (interface);
-  if (i == m_neighbourBeacons.end ())
+  PeerLinksMap::iterator iface = m_peerLinks.find (interface);
+  NS_ASSERT (iface != m_peerLinks.end ());
+  for (PeerLinksOnInterface::iterator i = iface->second.begin (); i != iface->second.end (); i++)
     {
-      return retval;
-    }
-  bool cleaned = false;
-  while (!cleaned)
-    {
-      BeaconsOnInterface::iterator start = i->second.begin ();
-      for (BeaconsOnInterface::iterator j = start; j != i->second.end (); j++)
+      //If we do not know peer Assoc Id, we shall not add any info
+      //to a beacon timing element
+      if ((*i)->GetBeaconInterval () == Seconds (0))
         {
-          //check beacon loss and make a timing element
-          //if last beacon was m_maxBeaconLostForBeaconTiming beacons ago - we do not put it to the
-          //timing element
-          if ((j->second.referenceTbtt + j->second.beaconInterval * Scalar (m_maxBeaconLostForBeaconTiming))
-              < Simulator::Now ())
-            {
-              start = j;
-              i->second.erase (j);
-              break;
-            }
+          //No beacon was received, do not include to the beacon timing element
+          continue;
         }
-      cleaned = true;
-    }
-  for (BeaconsOnInterface::const_iterator j = i->second.begin (); j != i->second.end (); j++)
-    {
-      retval->AddNeighboursTimingElementUnit (j->second.aid, j->second.referenceTbtt,
-          j->second.beaconInterval);
+      retval->AddNeighboursTimingElementUnit ((*i)->GetLocalAid (), (*i)->GetLastBeacon (),
+          (*i)->GetBeaconInterval ());
     }
   return retval;
 }
-
 void
-PeerManagementProtocol::FillBeaconInfo (uint32_t interface, Mac48Address peerAddress, Time receivingTime,
-    Time beaconInterval)
+PeerManagementProtocol::ReceiveBeacon (uint32_t interface, Mac48Address peerAddress, Time beaconInterval, Ptr<IeBeaconTiming> timingElement)
 {
-  BeaconInfoMap::iterator i = m_neighbourBeacons.find (interface);
-  if (i == m_neighbourBeacons.end ())
-    {
-      BeaconsOnInterface newMap;
-      m_neighbourBeacons[interface] = newMap;
-    }
-  i = m_neighbourBeacons.find (interface);
-  BeaconsOnInterface::iterator j = i->second.find (peerAddress);
-  if (j == i->second.end ())
-    {
-      BeaconInfo newInfo;
-      newInfo.referenceTbtt = receivingTime;
-      newInfo.beaconInterval = beaconInterval;
-      newInfo.aid = m_lastAssocId++;
-      if (m_lastAssocId == 0xff)
-        {
-          m_lastAssocId = 0;
-        }
-      i->second[peerAddress] = newInfo;
-    }
-  else
-    {
-      j->second.referenceTbtt = receivingTime;
-      j->second.beaconInterval = beaconInterval;
-    }
-}
-
-void
-PeerManagementProtocol::UpdatePeerBeaconTiming (uint32_t interface, bool meshBeacon,
-    IeBeaconTiming timingElement, Mac48Address peerAddress, Time receivingTime, Time beaconInterval)
-{
-  FillBeaconInfo (interface, peerAddress, receivingTime, beaconInterval);
-  if (!meshBeacon)
-    {
-      return;
-    }
-  //BCA:
-  PeerManagementProtocolMacMap::iterator plugin = m_plugins.find (interface);
-  NS_ASSERT (plugin != m_plugins.end ());
-  Time shift = GetNextBeaconShift (interface);
-  if (TimeToTu (shift) != 0)
-    {
-      plugin->second->SetBeaconShift (shift);
-    }
   //PM STATE Machine
   //Check that a given beacon is not from our interface
+  Simulator::Schedule (beaconInterval - TuToTime (m_maxBeaconShift + 1), &PeerManagementProtocol::DoShiftBeacon, this, interface);
   for (PeerManagementProtocolMacMap::const_iterator i = m_plugins.begin (); i != m_plugins.end (); i++)
     {
       if (i->second->GetAddress () == peerAddress)
@@ -216,20 +163,18 @@ PeerManagementProtocol::UpdatePeerBeaconTiming (uint32_t interface, bool meshBea
         }
     }
   Ptr<PeerLink> peerLink = FindPeerLink (interface, peerAddress);
-  if (peerLink != 0)
-    {
-      peerLink->SetBeaconTimingElement (timingElement);
-      peerLink->SetBeaconInformation (receivingTime, beaconInterval);
-    }
-  else
+  if (peerLink == 0)
     {
       if (ShouldSendOpen (interface, peerAddress))
         {
-          peerLink = InitiateLink (interface, peerAddress, Mac48Address::GetBroadcast (), receivingTime,
-              beaconInterval);
-          peerLink->SetBeaconTimingElement (timingElement);
+          peerLink = InitiateLink (interface, peerAddress, Mac48Address::GetBroadcast ());
           peerLink->MLMEActivePeerLinkOpen ();
         }
+    }
+  peerLink->SetBeaconInformation (Simulator::Now (), beaconInterval);
+  if (GetBeaconCollisionAvoidance ())
+    {
+      peerLink->SetBeaconTimingElement (*PeekPointer (timingElement));
     }
 }
 
@@ -245,8 +190,7 @@ PeerManagementProtocol::ReceivePeerLinkFrame (uint32_t interface, Mac48Address p
       bool reject = !(ShouldAcceptOpen (interface, peerAddress, reasonCode));
       if (peerLink == 0)
         {
-          peerLink = InitiateLink (interface, peerAddress, peerMeshPointAddress, Simulator::Now (), Seconds (
-              1.0));
+          peerLink = InitiateLink (interface, peerAddress, peerMeshPointAddress);
         }
       if (!reject)
         {
@@ -304,26 +248,9 @@ PeerManagementProtocol::TransmissionSuccess (uint32_t interface, Mac48Address pe
 }
 Ptr<PeerLink>
 PeerManagementProtocol::InitiateLink (uint32_t interface, Mac48Address peerAddress,
-    Mac48Address peerMeshPointAddress, Time lastBeacon, Time beaconInterval)
+    Mac48Address peerMeshPointAddress)
 {
   Ptr<PeerLink> new_link = CreateObject<PeerLink> ();
-  if (m_lastLocalLinkId == 0xff)
-    {
-      m_lastLocalLinkId = 0;
-    }
-  //find a beacon entry
-  BeaconInfoMap::iterator beaconsOnInterface = m_neighbourBeacons.find (interface);
-  if (beaconsOnInterface == m_neighbourBeacons.end ())
-    {
-      FillBeaconInfo (interface, peerAddress, lastBeacon, beaconInterval);
-    }
-  beaconsOnInterface = m_neighbourBeacons.find (interface);
-  BeaconsOnInterface::iterator beacon = beaconsOnInterface->second.find (peerAddress);
-  if (beacon == beaconsOnInterface->second.end ())
-    {
-      FillBeaconInfo (interface, peerAddress, lastBeacon, beaconInterval);
-    }
-  beacon = beaconsOnInterface->second.find (peerAddress);
   //find a peer link  - it must not exist
   if (FindPeerLink (interface, peerAddress) != 0)
     {
@@ -334,17 +261,17 @@ PeerManagementProtocol::InitiateLink (uint32_t interface, Mac48Address peerAddre
   NS_ASSERT (plugin != m_plugins.end ());
   PeerLinksMap::iterator iface = m_peerLinks.find (interface);
   NS_ASSERT (iface != m_peerLinks.end ());
-  new_link->SetLocalAid (beacon->second.aid);
+  new_link->SetLocalAid (m_lastAssocId++);
   new_link->SetInterface (interface);
   new_link->SetLocalLinkId (m_lastLocalLinkId++);
   new_link->SetPeerAddress (peerAddress);
   new_link->SetPeerMeshPointAddress (peerMeshPointAddress);
-  new_link->SetBeaconInformation (lastBeacon, beaconInterval);
   new_link->SetMacPlugin (plugin->second);
   new_link->MLMESetSignalStatusCallback (MakeCallback (&PeerManagementProtocol::PeerLinkStatus, this));
   iface->second.push_back (new_link);
   return new_link;
 }
+
 Ptr<PeerLink>
 PeerManagementProtocol::FindPeerLink (uint32_t interface, Mac48Address peerAddress)
 {
@@ -374,13 +301,14 @@ PeerManagementProtocol::SetPeerLinkStatusCallback (
 {
   m_peerStatusCallback = cb;
 }
+
 std::vector<Mac48Address>
-PeerManagementProtocol::GetActiveLinks (uint32_t interface)
+PeerManagementProtocol::GetPeers (uint32_t interface) const
 {
   std::vector<Mac48Address> retval;
-  PeerLinksMap::iterator iface = m_peerLinks.find (interface);
+  PeerLinksMap::const_iterator iface = m_peerLinks.find (interface);
   NS_ASSERT (iface != m_peerLinks.end ());
-  for (PeerLinksOnInterface::iterator i = iface->second.begin (); i != iface->second.end (); i++)
+  for (PeerLinksOnInterface::const_iterator i = iface->second.begin (); i != iface->second.end (); i++)
     {
       if ((*i)->LinkIsEstab ())
         {
@@ -388,6 +316,21 @@ PeerManagementProtocol::GetActiveLinks (uint32_t interface)
         }
     }
   return retval;
+}
+
+std::vector< Ptr<PeerLink> >
+PeerManagementProtocol::GetPeerLinks () const
+{
+  std::vector< Ptr<PeerLink> > links;
+
+  for (PeerLinksMap::const_iterator iface = m_peerLinks.begin (); iface != m_peerLinks.end (); ++iface)
+    {
+      for (PeerLinksOnInterface::const_iterator i = iface->second.begin ();
+      i != iface->second.end (); i++)
+        if ((*i)->LinkIsEstab ())
+          links.push_back (*i);
+    }
+  return links;
 }
 bool
 PeerManagementProtocol::IsActiveLink (uint32_t interface, Mac48Address peerAddress)
@@ -404,6 +347,7 @@ PeerManagementProtocol::ShouldSendOpen (uint32_t interface, Mac48Address peerAdd
 {
   return (m_stats.linksTotal <= m_maxNumberOfPeerLinks);
 }
+
 bool
 PeerManagementProtocol::ShouldAcceptOpen (uint32_t interface, Mac48Address peerAddress,
     PmpReasonCode & reasonCode)
@@ -415,56 +359,70 @@ PeerManagementProtocol::ShouldAcceptOpen (uint32_t interface, Mac48Address peerA
     }
   return true;
 }
-Time
-PeerManagementProtocol::GetNextBeaconShift (uint32_t interface)
+
+void
+PeerManagementProtocol::DoShiftBeacon (uint32_t interface)
 {
-  //REMINDER:: in timing element  1) last beacon reception time is measured in units of 256 microseconds
-  //                              2) beacon interval is mesured in units of 1024 microseconds
-  //                              3) hereafter TU = 1024 microseconds
-  //So, the shift is a random integer variable uniformly distributed in [-15;-1] U [1;15]
-  static int maxShift = 15;
-  static int minShift = 1;
-  UniformVariable randomSign (-1, 1);
-  UniformVariable randomShift (minShift, maxShift);
+  if (!GetBeaconCollisionAvoidance ())
+    {
+      return;
+    }
+  // If beacon interval is equal to the neighbor's one and one o more beacons received
+  // by my neighbor coincide with my beacon - apply random uniformly distributed shift from
+  // [-m_maxBeaconShift, m_maxBeaconShift] except 0.
+  UniformVariable beaconShift (-m_maxBeaconShift, m_maxBeaconShift);
   PeerLinksMap::iterator iface = m_peerLinks.find (interface);
   NS_ASSERT (iface != m_peerLinks.end ());
-  PeerManagementProtocolMacMap::iterator plugin = m_plugins.find (interface);
+  PeerManagementProtocolMacMap::const_iterator plugin = m_plugins.find (interface);
   NS_ASSERT (plugin != m_plugins.end ());
-  std::pair<Time, Time> myBeacon = plugin->second->GetBeaconInfo ();
-  if (Simulator::Now () + TuToTime (maxShift) > myBeacon.first + myBeacon.second)
+  std::map<uint32_t, Time>::const_iterator lastBeacon = m_lastBeacon.find (interface);
+  std::map<uint32_t, Time>::const_iterator beaconInterval = m_beaconInterval.find (interface);
+  if ((lastBeacon == m_lastBeacon.end ()) || (beaconInterval == m_beaconInterval.end ()))
     {
-      return MicroSeconds (0);
+      return;
+    }
+  if (TuToTime (m_maxBeaconShift) > m_beaconInterval[interface])
+    {
+      NS_FATAL_ERROR ("Wrong beacon shift parameters");
+      return;
     }
   for (PeerLinksOnInterface::iterator i = iface->second.begin (); i != iface->second.end (); i++)
     {
       IeBeaconTiming::NeighboursTimingUnitsList neighbours;
-      if ((*i)->LinkIsIdle ())
-        {
-          continue;
-        }
       neighbours = (*i)->GetBeaconTimingElement ().GetNeighboursTimingElementsList ();
       //Going through all my timing elements and detecting future beacon collisions
       for (IeBeaconTiming::NeighboursTimingUnitsList::const_iterator j = neighbours.begin (); j
           != neighbours.end (); j++)
         {
-          //We apply MBAC only if beacon Intervals are equal
-          if ((*j)->GetBeaconInterval () == TimeToTu (myBeacon.second))
+          if ((*i)->GetPeerAid () == (*j)->GetAid ())
             {
-              //Apply MBCA if future beacons may coinside
-              if ((TimeToTu (myBeacon.first) - ((*j)->GetLastBeacon () / 4)) % ((*j)->GetBeaconInterval ())
-                  == 0)
-                {
-                  int beaconShift = randomShift.GetInteger (minShift, maxShift) * ((randomSign.GetValue ()
-                      >= 0) ? 1 : -1);
-                  NS_LOG_DEBUG ("Apply MBCA: Shift value = " << beaconShift << " beacon TUs");
-                  //Do not shift to the past!
-                  return (TuToTime (beaconShift) + Simulator::Now () < myBeacon.first) ? TuToTime (
-                      beaconShift) : TuToTime (0);
-                }
+              // I am present at neighbour's list of neighbors
+              continue;
             }
+          //Beacon interval is stored in TU's
+          if (((*j)->GetBeaconInterval ()) != TimeToTu (beaconInterval->second))
+            {
+              continue;
+            }
+          //Timing element keeps beacon receiving times in 256us units, TU=1024us
+          if ((int) ((int)(*j)->GetLastBeacon () / 4 - (int)TimeToTu (lastBeacon->second)) % TimeToTu (
+              beaconInterval->second)
+              != 0)
+            {
+              continue;
+            }
+              int shift = 0;
+              do
+                {
+                  shift = (int) beaconShift.GetValue ();
+                }
+              while (shift == 0);
+              PeerManagementProtocolMacMap::iterator plugin = m_plugins.find (interface);
+              NS_ASSERT (plugin != m_plugins.end ());
+              plugin->second->SetBeaconShift (TuToTime (shift));
+              return;
         }
     }
-  return MicroSeconds (0);
 }
 Time
 PeerManagementProtocol::TuToTime (uint32_t x)
@@ -530,6 +488,12 @@ PeerManagementProtocol::GetAddress ()
 {
   return m_address;
 }
+void
+PeerManagementProtocol::NotifyBeaconSent (uint32_t interface, Time beaconInterval)
+{
+  m_lastBeacon[interface] = Simulator::Now ();
+  m_beaconInterval[interface] = beaconInterval;
+}
 PeerManagementProtocol::Statistics::Statistics (uint16_t t) :
   linksTotal (t), linksOpened (0), linksClosed (0)
 {
@@ -571,6 +535,16 @@ PeerManagementProtocol::ResetStats ()
     }
 }
 
+void
+PeerManagementProtocol::SetBeaconCollisionAvoidance (bool enable)
+{
+  m_enableBca = enable;
+}
+bool
+PeerManagementProtocol::GetBeaconCollisionAvoidance () const
+{
+  return m_enableBca;
+}
 } // namespace dot11s
 } //namespace ns3
 

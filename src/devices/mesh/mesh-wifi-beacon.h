@@ -27,8 +27,6 @@
 #include "ns3/wifi-mac-header.h"
 #include "ns3/wifi-information-element-vector.h"
 
-#include <vector>
-
 namespace ns3 {
 
 /**
@@ -60,6 +58,8 @@ public:
    * \param mpAddress is mesh point address
    */
   WifiMacHeader CreateHeader (Mac48Address address, Mac48Address mpAddress);
+  ///Returns a beacon interval of wifi beacon
+  Time GetBeaconInterval () const;
   /// Create frame = { beacon header + all information elements sorted by ElementId () }
   Ptr<Packet> CreatePacket ();
 

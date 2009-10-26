@@ -2,7 +2,6 @@
 @c %**start of header
 @setfilename ns-3.info
 @settitle ns-3 manual
-@c @setchapternewpage odd
 @c %**end of header
 
 @ifinfo
@@ -25,11 +24,12 @@ the document should be discussed on the ns-developers@@isi.edu mailing list.
 
 This is an @command{ns-3} reference manual.
 Primary documentation for the @command{ns-3} project is available in
-four forms:
+five forms:
 @itemize @bullet
 @item @uref{http://www.nsnam.org/docs/tutorial/tutorial.html,,ns-3 Tutorial}
 @item @uref{http://www.nsnam.org/doxygen/index.html,,ns-3 Doxygen}:  Documentation of the public APIs of the simulator
 @item Reference Manual (this document)
+@item @uref{http://www.nsnam.org/tutorials.html,, ns-3 Testing and Validation manual}
 @item @uref{http://www.nsnam.org/wiki/index.php,, ns-3 wiki}
 @end itemize
  
@@ -61,9 +61,10 @@ along with this program.  If not, see @uref{http://www.gnu.org/licenses/}.
 @include VERSION
 @today{}
 
-@c @page
 @vskip 0pt plus 1filll
 @insertcopying
+@page
+@center This page is intentionally blank.
 @end titlepage
 
 @c So the toc is printed at the start.
@@ -86,42 +87,102 @@ Simulator version:
 @end ifnottex
 
 @menu
+* Organization::
 * Random variables::
 * Callbacks::
 * Object model::
 * Attributes::
+* Object names::
+* Logging::
 * Tracing::
 * RealTime::
-* Emulation::
 * Packets::
-* Sockets APIs::
-* Node and Internet Stack::
-* TCP::
-* Routing overview::
-* Wifi NetDevice::
-* CSMA NetDevice::
+* Helpers::
+* Python::
+* Node and NetDevices::
+* Simple NetDevice::
 * PointToPoint NetDevice::
+* CSMA NetDevice::
+* Wifi NetDevice::
+* Mesh NetDevice::
+* Bridge NetDevice::
+* Emulation::
+* Emu NetDevice::
+* Tap NetDevice::
+* Sockets APIs::
+* Internet Stack::
+* IPv4::
+* IPv6::
+* Routing overview::
+* TCP::
+* Applications::
+* Flow Monitor::
+* Animation::
+* Statistics::
 * Creating a new ns-3 model::
 * Troubleshooting::
 @end menu
 
+@setchapternewpage odd
+@headings off
+@everyheading @thischapter @| @| ns-3 manual
+@everyfooting  ns-3.6 @| @thispage @| @today
+@include organization.texi
+
+@unnumbered Part 1:  ns-3 core 
+@setchapternewpage off
 @include random.texi
+@setchapternewpage odd
 @include callbacks.texi
 @include objects.texi
 @include attributes.texi
+@include names.texi
+@include log.texi
 @include tracing.texi
 @include realtime.texi
-@include emulation.texi
 @include packets.texi
-@include sockets.texi
+@include helpers.texi
+@include python.texi
+
+@unnumbered Part 2:  Nodes and NetDevices
+@setchapternewpage off
 @include node.texi
-@c @include output.texi
-@include tcp.texi
-@include routing.texi
-@include wifi.texi
-@include csma.texi
+@setchapternewpage odd
+@include simple.texi
 @include point-to-point.texi
-@c @include other.texi
+@include csma.texi
+@include wifi.texi
+@include mesh.texi
+@include bridge.texi
+
+@unnumbered Part 3:  Emulation
+@setchapternewpage off
+@include emulation.texi
+@setchapternewpage odd
+@include emu.texi
+@include tap.texi
+
+@unnumbered Part 4:  Internet Models
+@setchapternewpage off
+@include sockets.texi
+@setchapternewpage odd
+@include internet.texi
+@include ipv4.texi
+@include ipv6.texi
+@include routing.texi
+@include tcp.texi
+
+@unnumbered Part 5:  Applications
+@setchapternewpage off
+@include applications.texi
+@setchapternewpage odd
+
+@unnumbered Part 6:  Support
+@setchapternewpage off
+@include flow-monitor.texi
+@setchapternewpage odd
+@include animation.texi
+@include statistics.texi
 @include new-models.texi
 @include troubleshoot.texi
 

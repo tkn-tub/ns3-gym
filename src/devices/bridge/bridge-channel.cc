@@ -44,7 +44,15 @@ BridgeChannel::BridgeChannel ()
 BridgeChannel::~BridgeChannel ()
 {
   NS_LOG_FUNCTION_NOARGS ();
+
+  for (std::vector< Ptr<Channel> >::iterator iter = m_bridgedChannels.begin ();
+       iter != m_bridgedChannels.end (); iter++)
+    {
+      *iter = 0;
+    }
+  m_bridgedChannels.clear ();
 }
+
 
 void
 BridgeChannel::AddChannel (Ptr<Channel> bridgedChannel)

@@ -4,6 +4,7 @@
 ~$
 ^build-dir
 ^build
+^testpy-output
 ^doc/html
 ^doc/latex
 ^\.lock-wscript

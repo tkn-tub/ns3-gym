@@ -74,11 +74,9 @@ public:
   void SetPeerMeshPointAddress (Mac48Address macaddr);
   void SetInterface (uint32_t interface);
   void SetLocalLinkId (uint16_t id);
-  //void SetPeerLinkId (uint16_t id);
   void SetLocalAid (uint16_t aid);
-  //void SetPeerAid (uint16_t aid);
+  uint16_t GetPeerAid () const;
   void SetBeaconTimingElement (IeBeaconTiming beaconTiming);
-  //void SetPeerLinkDescriptorElement (IePeerManagement peerLinkElement);
   Mac48Address GetPeerAddress () const;
   uint16_t GetLocalAid () const;
   Time GetLastBeacon () const;

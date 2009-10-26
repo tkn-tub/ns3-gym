@@ -100,8 +100,8 @@ You should see the now familiar output of the first @command{ns-3} example
 program
 
 @verbatim
-  Waf: Entering directory `/home/craigdo/repos/ns-3-allinone-3.5-tutorial/ns-3-dev/build'
-  Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone-3.5-tutorial/ns-3-dev/build'
+  Waf: Entering directory `/home/craigdo/repos/ns-3-allinone/ns-3-dev/build'
+  Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone/ns-3-dev/build'
   'build' finished successfully (0.413s)
   Sent 1024 bytes to 10.1.1.2
   Received 1024 bytes from 10.1.1.1
@@ -150,8 +150,8 @@ you run the script with NS_LOG set this way, the @command{ns-3} logging
 system will pick up the change and you should see the following output:
 
 @verbatim
-  Waf: Entering directory `/home/craigdo/repos/ns-3-allinone-3.5-tutorial/ns-3-dev/build
-  Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone-3.5-tutorial/ns-3-dev/build'
+  Waf: Entering directory `/home/craigdo/repos/ns-3-allinone/ns-3-dev/build
+  Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone/ns-3-dev/build'
   'build' finished successfully (0.404s)
   UdpEchoClientApplication:UdpEchoClient()
   UdpEchoClientApplication:SetDataSize(1024)
@@ -205,8 +205,8 @@ that every message from the given log component is prefixed with the component
 name.
 
 @verbatim
-  Waf: Entering directory `/home/craigdo/repos/ns-3-allinone-3.5-tutorial/ns-3-dev/build'
-  Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone-3.5-tutorial/ns-3-dev/build'
+  Waf: Entering directory `/home/craigdo/repos/ns-3-allinone/ns-3-dev/build'
+  Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone/ns-3-dev/build'
   'build' finished successfully (0.417s)
   UdpEchoClientApplication:UdpEchoClient()
   UdpEchoClientApplication:SetDataSize(1024)
@@ -242,8 +242,8 @@ echo client and server applications.  You may see that this can be very useful
 in debugging problems.
 
 @verbatim
-  Waf: Entering directory `/home/craigdo/repos/ns-3-allinone-3.5-tutorial/ns-3-dev/build'
-  Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone-3.5-tutorial/ns-3-dev/build'
+  Waf: Entering directory `/home/craigdo/repos/ns-3-allinone/ns-3-dev/build'
+  Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone/ns-3-dev/build'
   'build' finished successfully (0.406s)
   UdpEchoServerApplication:UdpEchoServer()
   UdpEchoClientApplication:UdpEchoClient()
@@ -277,8 +277,8 @@ Again, you will have to remove the newline above.  If you run the script now,
 you should see the following output:
 
 @verbatim
-  Waf: Entering directory `/home/craigdo/repos/ns-3-allinone-3.5-tutorial/ns-3-dev/build'
-  Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone-3.5-tutorial/ns-3-dev/build'
+  Waf: Entering directory `/home/craigdo/repos/ns-3-allinone/ns-3-dev/build'
+  Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone/ns-3-dev/build'
   'build' finished successfully (0.418s)
   0s UdpEchoServerApplication:UdpEchoServer()
   0s UdpEchoClientApplication:UdpEchoClient()
@@ -410,8 +410,8 @@ If you now run the script you will see your new ``Creating Topology'' log
 message,
 
 @verbatim
-  Waf: Entering directory `/home/craigdo/repos/ns-3-allinone-3.5-tutorial/ns-3-dev/build'
-  Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone-3.5-tutorial/ns-3-dev/build'
+  Waf: Entering directory `/home/craigdo/repos/ns-3-allinone/ns-3-dev/build'
+  Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone/ns-3-dev/build'
   'build' finished successfully (0.404s)
   Creating Topology
   Sent 1024 bytes to 10.1.1.2
@@ -465,8 +465,8 @@ sort out which program gets which argument.  The command line parser will
 now see the @code{--PrintHelp} argument and respond with,
 
 @verbatim
-  Waf: Entering directory `/home/craigdo/repos/ns-3-allinone-3.5-tutorial/ns-3-dev/build'
-  Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone-3.5-tutorial/ns-3-dev/build'
+  Waf: Entering directory `/home/craigdo/repos/ns-3-allinone/ns-3-dev/build'
+  Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone/ns-3-dev/build'
   'build' finished successfully (0.413s)
   TcpL4Protocol:TcpStateMachine()
   CommandLine:HandleArgument(): Handle arg name=PrintHelp value=
@@ -542,8 +542,8 @@ time prefix.
 If you run the script, you should now see the following output,
 
 @verbatim
-  Waf: Entering directory `/home/craigdo/repos/ns-3-allinone-3.5-tutorial/ns-3-dev/build'
-  Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone-3.5-tutorial/ns-3-dev/build'
+  Waf: Entering directory `/home/craigdo/repos/ns-3-allinone/ns-3-dev/build'
+  Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone/ns-3-dev/build'
   'build' finished successfully (0.405s)
   0s UdpEchoServerApplication:UdpEchoServer()
   1s UdpEchoServerApplication:StartApplication()
@@ -606,8 +606,8 @@ in which case we recover the timing we had when we explicitly set the
 @code{DataRate} and @code{Delay} in the script:
 
 @verbatim
-  Waf: Entering directory `/home/craigdo/repos/ns-3-allinone-3.5-tutorial/ns-3-dev/bu
-  Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone-3.5-tutorial/ns-3-dev/bui
+  Waf: Entering directory `/home/craigdo/repos/ns-3-allinone/ns-3-dev/build'
+  Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone/ns-3-dev/build'
   'build' finished successfully (0.417s)
   0s UdpEchoServerApplication:UdpEchoServer()
   1s UdpEchoServerApplication:StartApplication()
@@ -684,8 +684,8 @@ Try,
 @end verbatim
 
 @verbatim
-  Waf: Entering directory `/home/craigdo/repos/ns-3-allinone-3.5-tutorial/ns-3-dev/build'
-  Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone-3.5-tutorial/ns-3-dev/build'
+  Waf: Entering directory `/home/craigdo/repos/ns-3-allinone/ns-3-dev/build'
+  Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone/ns-3-dev/build'
   'build' finished successfully (0.403s)
   --PrintHelp: Print this help message.
   --PrintGroups: Print the list of groups.
@@ -707,8 +707,8 @@ setting the @code{--nPackets} argument in the command line,
 You should now see
 
 @verbatim
-  Waf: Entering directory `/home/craigdo/repos/ns-3-allinone-3.5-tutorial/ns-3-dev/build'
-  Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone-3.5-tutorial/ns-3-dev/build'
+  Waf: Entering directory `/home/craigdo/repos/ns-3-allinone/ns-3-dev/build'
+  Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone/ns-3-dev/build'
   'build' finished successfully (0.404s)
   0s UdpEchoServerApplication:UdpEchoServer()
   1s UdpEchoServerApplication:StartApplication()

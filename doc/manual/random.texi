@@ -35,7 +35,7 @@ default; this marks a change in policy starting with ns-3.4}
 @end itemize
 @item to obtain randomness across multiple simulation runs, you must either
 set the seed differently or set the run number differently.  To set a seed, call
-@code{SeedManager::SetSeed(uint32_t)} at the beginning of the program;
+@code{SeedManager::SetSeed (uint32_t)} at the beginning of the program;
 to set a run number with the same seed, call
 @code{SeedManager::SetRun (uint32_t)} at the beginning of the program;
 @xref{Seeding and independent replications}
@@ -53,7 +53,7 @@ ns-3.
 @node Background
 @section Background
 
-Simulations use a lot of random numbers; the study in [cite]
+Simulations use a lot of random numbers; one study 
 found that most network simulations spend as much as 50% 
 of the CPU generating random numbers.  Simulation users need
 to be concerned with the quality of the (pseudo) random numbers and
@@ -62,7 +62,7 @@ the independence between different streams of random numbers.
 Users need to be concerned with a few issues, such as:
 @itemize @bullet
 @item the seeding of the random number generator and whether a 
-simulation run is deterministic or not,
+simulation outcome is deterministic or not,
 @item how to acquire different streams of random numbers that are 
 independent from one another, and 
 @item how long it takes for streams to cycle
@@ -96,8 +96,7 @@ streams of random numbers, each of which consists of
 2.3x10^15 substreams. Each substream has a period
 (@emph{i.e.}, the number of random numbers before overlap) of
 7.6x10^22. The period of the entire generator is
-3.1x10^57. Figure ref-streams provides a graphical idea of
-how the streams and substreams fit together.
+3.1x10^57. 
 
 Class @code{ns3::RandomVariable} is the public interface to this 
 underlying random number generator.  When users create new
@@ -167,7 +166,7 @@ from within the program; the user can set the
 @end verbatim
 
 Another way to control this is by passing a command-line argument; since
-this is an ns3 GlobalValue instance, it is equivalently done such as follows:
+this is an ns-3 GlobalValue instance, it is equivalently done such as follows:
 @verbatim
   ./waf --command-template="%s --RngRun=3" --run program-name
 @end verbatim
@@ -198,42 +197,25 @@ numbers before overlapping.
 @section Base class public API
 
 Below are excerpted a few public methods of @code{class RandomVariable}
-that deal with the global configuration and state of the RNG. 
-@verbatim
+that access the next value in the substream.
+@smallformat
+@example
   /**
-   * \brief Set seeding behavior
-   * 
-   * Specify whether the POSIX device /dev/random is to
-   * be used for seeding.  When this is used, the underlying
-   * generator is seeded with data from /dev/random instead of
-   * being seeded based upon the time of day.   Defaults to true.
+   * \brief Returns a random double from the underlying distribution
+   * \return A floating point random value
    */
-  static  void UseDevRandom(bool udr = true);
-
-   /**
-   * \brief Use the global seed to force precisely reproducible results.
-   */ 
-  static void UseGlobalSeed(uint32_t s0, uint32_t s1, uint32_t s2, 
-                            uint32_t s3, uint32_t s4, uint32_t s5);
-
+  double GetValue (void) const;
+  
   /**
-   * \brief Set the run number of this simulation
+   * \brief Returns a random integer integer from the underlying distribution
+   * \return  Integer cast of ::GetValue()
    */
-  static void SetRunNumber(uint32_t n);
+  uint32_t GetInteger (void) const;
+@end example
+@end smallformat
 
-  /**
-   * \brief Get the internal state of the RNG
-   *
-   * This function is for power users who understand the inner workings
-   * of the underlying RngStream method used.  It returns the internal
-   * state of the RNG via the input parameter.
-   * \param seed Output parameter; gets overwritten with the internal state
-   * of the RNG.
-   */
-  void GetSeed(uint32_t seed[6]) const;
-@end verbatim
-
-We have already described the seeding configuration above.
+We have already described the seeding configuration above.  Different
+RandomVariable subclasses may have additional API.
 
 @node Types of RandomVariables
 @section Types of RandomVariables
@@ -255,6 +237,9 @@ class RandomVariable.
 @item @code{class DeterministicVariable }
 @item @code{class LogNormalVariable }
 @item @code{class TriangularVariable }
+@item @code{class GammaVariable }
+@item @code{class ErlangVariable }
+@item @code{class ZipfVariable }
 @end itemize
 
 @node Semantics of RandomVariable objects
@@ -270,7 +255,8 @@ any heap-allocated RandomVariables.
 RandomVariable objects can also be used in ns-3 attributes, which means
 that values can be set for them through the ns-3 attribute system.
 An example is in the propagation models for WifiNetDevice:
-@verbatim
+@smallformat
+@example
 TypeId
 RandomPropagationDelayModel::GetTypeId (void)
 { 
@@ -285,7 +271,8 @@ RandomPropagationDelayModel::GetTypeId (void)
     ;
   return tid;
 }
-@end verbatim
+@end example
+@end smallformat
 Here, the ns-3 user can change the default random variable for this
 delay model (which is a UniformVariable ranging from 0 to 1) through
 the attribute system.
@@ -328,14 +315,12 @@ Let's review what things you should do when creating a simulation.
 
 @itemize @bullet
 @item Decide whether you are running with a fixed seed or random seed;
-a random seed is the default, 
+a fixed seed is the default, 
 @item Decide how you are going to manage independent replications, if
 applicable, 
 @item Convince yourself that you are not drawing more random values
-than the cycle length, if you are running a long simulation, and
+than the cycle length, if you are running a very long simulation, and
 @item When you publish, follow the guidelines above about documenting your
 use of the random number generator.
 @end itemize
-
-The program @emph{samples/main-random.cc} has some examples of usage.
 

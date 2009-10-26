@@ -48,6 +48,11 @@ WifiInformationElementVector::WifiInformationElementVector () :
 }
 WifiInformationElementVector::~WifiInformationElementVector ()
 {
+  for (IE_VECTOR::iterator i = m_elements.begin (); i != m_elements.end (); i++)
+    {
+      *i = 0;
+    }
+  m_elements.clear ();
 }
 TypeId
 WifiInformationElementVector::GetTypeId ()
@@ -69,7 +74,7 @@ WifiInformationElementVector::GetSerializedSize () const
 void
 WifiInformationElementVector::Serialize (Buffer::Iterator start) const
 {
-  for(std::vector<Ptr<WifiInformationElement> >::const_iterator i = m_elements.begin (); i != m_elements.end (); i ++)
+  for(IE_VECTOR::const_iterator i = m_elements.begin (); i != m_elements.end (); i ++)
     {
       start.WriteU8((*i)->ElementId ());
       start.WriteU8 ((*i)->GetInformationSize ());

@@ -77,9 +77,7 @@ IeBeaconTiming::GetNeighboursTimingElementsList ()
   return m_neighbours;
 }
 void
-IeBeaconTiming::AddNeighboursTimingElementUnit (uint16_t aid, Time last_beacon, //MicroSeconds!
-    Time beacon_interval //MicroSeconds!
-)
+IeBeaconTiming::AddNeighboursTimingElementUnit (uint16_t aid, Time last_beacon, Time beacon_interval)
 {
   if (m_numOfUnits == 50)
     {
@@ -118,19 +116,11 @@ IeBeaconTiming::DelNeighboursTimingElementUnit (uint16_t aid, Time last_beacon, 
 void
 IeBeaconTiming::ClearTimingElement ()
 {
-  uint16_t to_delete = 0;
-  uint16_t i;
   for (NeighboursTimingUnitsList::iterator j = m_neighbours.begin (); j != m_neighbours.end (); j++)
     {
-      to_delete++;
       (*j) = 0;
     }
-  for (i = 0; i < to_delete; i++)
-    {
-      m_neighbours.pop_back ();
-    }
   m_neighbours.clear ();
-
 }
 uint8_t
 IeBeaconTiming::GetInformationSize () const

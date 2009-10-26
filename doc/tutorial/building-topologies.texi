@@ -43,10 +43,10 @@ point-to-point topologies, we will see equivalent CSMA topology helpers in
 this section.  The appearance and operation of these helpers should look 
 quite familiar to you.
 
-We provide an example script in our @code{examples} directory.  This script
+We provide an example script in our @code{examples/tutorial} directory.  This script
 builds on the @code{first.cc} script and adds a CSMA network to the 
 point-to-point simulation we've already considered.  Go ahead and open 
-@code{examples/second.cc} in your favorite editor.  You will have already seen
+@code{examples/tutorial/second.cc} in your favorite editor.  You will have already seen
 enough @command{ns-3} code to understand most of what is going on in this 
 example, but we will go over the entire script and examine some of the output.
 
@@ -356,7 +356,7 @@ the @code{first.cc} example.  If you are in the top-level directory of the
 repository you just type,
 
 @verbatim
-  cp examples/second.cc scratch/mysecond.cc
+  cp examples/tutorial/second.cc scratch/mysecond.cc
   ./waf
 @end verbatim
 
@@ -380,8 +380,8 @@ Since we have set up the UDP echo applications to log just as we did in
 @code{first.cc}, you will see similar output when you run the script.
 
 @verbatim
-  Waf: Entering directory `/home/craigdo/repos/ns-3-allinone-3.5-tutorial/ns-3-dev/build'
-  Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone-3.5-tutorial/ns-3-dev/build'
+  Waf: Entering directory `/home/craigdo/repos/ns-3-allinone/ns-3-dev/build'
+  Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone/ns-3-dev/build'
   'build' finished successfully (0.415s)
   Sent 1024 bytes to 10.1.2.4
   Received 1024 bytes from 10.1.1.1
@@ -560,8 +560,8 @@ devices set to four:
 You should now see,
 
 @verbatim
-  Waf: Entering directory `/home/craigdo/repos/ns-3-allinone-3.5-tutorial/ns-3-dev/build'
-  Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone-3.5-tutorial/ns-3-dev/build'
+  Waf: Entering directory `/home/craigdo/repos/ns-3-allinone/ns-3-dev/build'
+  Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone/ns-3-dev/build'
   'build' finished successfully (0.405s)
   Sent 1024 bytes to 10.1.2.5
   Received 1024 bytes from 10.1.1.1
@@ -634,8 +634,8 @@ If you build the new script and run the simulation setting @code{nCsma} to 100,
 you will see the following output:
 
 @verbatim
-  Waf: Entering directory `/home/craigdo/repos/ns-3-allinone-3.5-tutorial/ns-3-dev/build'
-  Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone-3.5-tutorial/ns-3-dev/build'
+  Waf: Entering directory `/home/craigdo/repos/ns-3-allinone/ns-3-dev/build'
+  Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone/ns-3-dev/build'
   'build' finished successfully (0.407s)
   Sent 1024 bytes to 10.1.2.101
   Received 1024 bytes from 10.1.1.1
@@ -712,9 +712,9 @@ constructing point-to-point topologies, we will see equivalent @code{Wifi}
 topology helpers in this section.  The appearance and operation of these 
 helpers should look quite familiar to you.
 
-We provide an example script in our @code{examples} directory.  This script
+We provide an example script in our @code{examples/tutorial} directory.  This script
 builds on the @code{second.cc} script and adds a Wifi network.  Go ahead and
-open @code{examples/third.cc} in your favorite editor.  You will have already
+open @code{examples/tutorial/third.cc} in your favorite editor.  You will have already
 seen enough @command{ns-3} code to understand most of what is going on in 
 this example, but there are a few new things, so we will go over the entire 
 script and examine some of the output.
@@ -1117,8 +1117,8 @@ Again, since we have set up the UDP echo applications just as we did in the
 @code{second.cc} script, you will see similar output.
 
 @verbatim
-  Waf: Entering directory `/home/craigdo/repos/ns-3-allinone-3.5-tutorial/ns-3-dev/build'
-  Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone-3.5-tutorial/ns-3-dev/build'
+  Waf: Entering directory `/home/craigdo/repos/ns-3-allinone/ns-3-dev/build'
+  Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone/ns-3-dev/build'
   'build' finished successfully (0.407s)
   Sent 1024 bytes to 10.1.2.4
   Received 1024 bytes from 10.1.3.3
