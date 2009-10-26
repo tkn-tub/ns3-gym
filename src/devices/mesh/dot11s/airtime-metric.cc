@@ -31,7 +31,7 @@ AirtimeLinkMetricCalculator::GetTypeId ()
     .SetParent<Object> ()
     .AddConstructor<AirtimeLinkMetricCalculator> ()
     .AddAttribute ( "OverheadNanosec",
-                    "Overhead expressed in nanoseconds:DIFS+ 2* SIFS + 2* PREAMBLE + 2* ACK",
+                    "Overhead expressed in nanoseconds:DIFS+ SIFS + 2 * PREAMBLE + ACK",
                     UintegerValue (108000),
                     MakeUintegerAccessor (&AirtimeLinkMetricCalculator::m_overheadNanosec),
                     MakeUintegerChecker<uint32_t> (1)
@@ -80,9 +80,9 @@ AirtimeLinkMetricCalculator::CalculateMetric (Mac48Address peerAddress, Ptr<Mesh
 
   WifiRemoteStation * station = mac->GetStationManager ()->Lookup (peerAddress);
   NS_ASSERT (station != 0);
-  Ptr<Packet> test_frame = Create<Packet> (m_testLength + m_headerLength + m_meshHeaderLength);
+  Ptr<Packet> test_frame = Create<Packet> (m_testLength + m_meshHeaderLength);
   uint32_t rate =
-      station->GetDataMode (test_frame, m_testLength + m_headerLength + m_meshHeaderLength).GetDataRate ();
+      station->GetDataMode (test_frame, m_testLength + m_meshHeaderLength).GetDataRate ();
   uint32_t payload_nanosec = (uint32_t) (
       (double) ((m_testLength + m_meshHeaderLength) * 8 /*octets -> bits*/) * sec2ns / ((double) rate));
   uint32_t header_nanosec = (uint32_t) ((double) (m_headerLength * 8 /*octets -> bits*/* sec2ns)

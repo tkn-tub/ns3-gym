@@ -74,25 +74,12 @@ public:
    */
   Ptr<IeBeaconTiming> GetBeaconTimingElement (uint32_t interface);
   /**
-   * \brief When we receive a beacon from peer-station, we remember
-   * its beacon timing element (needed for peer choosing mechanism),
-   * and remember beacon timers - last beacon and beacon interval to
-   * detect beacon loss and cancel links
-   * \param interface is a interface on which beacon was received
-   * \param meshBeacon indicates whether the beacon is mesh beacon or not.
-   * \param timingElement is a timing element of remote beacon
-   * \param peerAddress is an address where a beacon was received from
-   * \param receivingTime is a time when beacon was received
-   * \param beaconInterval is a beacon interval of received beacon
+   * \brief To initiate peer link we must notify about received beacon
+   * \param interface the interface where a beacon was received from
+   * \param peerAddress address of station, which sent a beacon
+   * \param beaconInterval beacon interval (needed by beacon loss counter)
    */
-  void UpdatePeerBeaconTiming (
-      uint32_t interface,
-      bool meshBeacon,
-      IeBeaconTiming timingElement,
-      Mac48Address peerAddress,
-      Time receivingTime,
-      Time beaconInterval
-      );
+  void ReceiveBeacon (uint32_t interface, Mac48Address peerAddress, Time beaconInterval, Ptr<IeBeaconTiming> beaconTiming);
   //\}
   /**
    * \brief Methods that handle Peer link management frames
@@ -137,16 +124,26 @@ public:
    */
   bool IsActiveLink (uint32_t interface, Mac48Address peerAddress);
   //\}
-  ///\brief Needed by external module to do MLME
-  Ptr<PeerLink> FindPeerLink (uint32_t interface, Mac48Address peerAddress);
+  ///\name Interface to other protocols (MLME)
+  //\{
+  /// Set peer link status change callback
   void SetPeerLinkStatusCallback (Callback<void, Mac48Address, Mac48Address, uint32_t, bool> cb);
-  std::vector<Mac48Address> GetActiveLinks (uint32_t interface);
-  ///\brief needed by plugins to set global source address
+  /// Find active peer link by my interface and peer interface MAC
+  Ptr<PeerLink> FindPeerLink (uint32_t interface, Mac48Address peerAddress);
+  /// Get list of all active peer links
+  std::vector < Ptr<PeerLink> > GetPeerLinks () const;
+  /// Get list of active peers of my given interface
+  std::vector<Mac48Address> GetPeers (uint32_t interface) const;
+  /// Get mesh point address. TODO this used by plugins only. Now MAC plugins can ask MP addrress directly from main MAC
   Mac48Address GetAddress ();
-  ///\brief Needed to fill mesh configuration
   uint8_t GetNumberOfLinks ();
   void SetMeshId (std::string s);
   Ptr<IeMeshId> GetMeshId () const;
+  /// Enable or disable beacon collision avoidance
+  void SetBeaconCollisionAvoidance (bool enable);
+  bool GetBeaconCollisionAvoidance () const;
+  /// Notify about beacon send event, needed to schedule BCA
+  void NotifyBeaconSent (uint32_t interface, Time beaconInterval);
   ///\brief: Report statistics
   void Report (std::ostream &) const;
   void ResetStats ();
@@ -177,16 +174,10 @@ private:
   PeerManagementProtocol& operator= (const PeerManagementProtocol &);
   PeerManagementProtocol (const PeerManagementProtocol &);
 
-  /**
-   * \brief Fills information of received beacon. Needed to form own beacon timing element
-   */
-  void FillBeaconInfo (uint32_t interface, Mac48Address peerAddress, Time receivingTime, Time beaconInterval);
   Ptr<PeerLink> InitiateLink (
       uint32_t interface,
       Mac48Address peerAddress,
-      Mac48Address peerMeshPointAddress,
-      Time lastBeacon,
-      Time beaconInterval
+      Mac48Address peerMeshPointAddress
       );
   /**
    * \name External peer-chooser
@@ -200,7 +191,7 @@ private:
    */
   void PeerLinkStatus (uint32_t interface, Mac48Address peerAddress, Mac48Address peerMeshPointAddres, PeerLink::PeerState ostate, PeerLink::PeerState nstate);
   ///\brief BCA
-  Time GetNextBeaconShift (uint32_t interface);
+  void DoShiftBeacon (uint32_t interface);
   /**
    * \name Time<-->TU converters:
    * \{
@@ -212,16 +203,19 @@ private:
   PeerManagementProtocolMacMap m_plugins;
   Mac48Address m_address;
   Ptr<IeMeshId> m_meshId;
-  /**
-   * \name Information related to beacons:
-   * \{
-   */
-  BeaconInfoMap m_neighbourBeacons;
-  ///\}
+  
   uint16_t m_lastAssocId;
   uint16_t m_lastLocalLinkId;
   uint8_t m_maxNumberOfPeerLinks;
-  uint8_t m_maxBeaconLostForBeaconTiming;
+  /// Flag which enables BCA
+  bool m_enableBca;
+  /// Beacon can be shifted at [-m_maxBeaconShift; +m_maxBeaconShift] TUs
+  uint16_t m_maxBeaconShift;
+  ///Last beacon at each interface
+  std::map<uint32_t, Time> m_lastBeacon;
+  ///Beacon interval at each interface
+  std::map<uint32_t, Time> m_beaconInterval;
+
   /**
    * \name Peer Links
    * \{

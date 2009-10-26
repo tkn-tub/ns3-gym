@@ -94,6 +94,10 @@ PeerLink::PeerLink () :
   m_peerMeshPointAddress (Mac48Address::GetBroadcast ()),
   m_localLinkId (0),
   m_peerLinkId (0),
+  m_assocId (0),
+  m_peerAssocId (0),
+  m_lastBeacon (Seconds (0)),
+  m_beaconInterval (Seconds (0)),
   m_packetFail (0),
   m_state (IDLE),
   m_retryCounter (0),
@@ -188,6 +192,12 @@ PeerLink::GetLocalAid () const
 {
   return m_assocId;
 }
+uint16_t
+PeerLink::GetPeerAid () const
+{
+  return m_peerAssocId;
+}
+
 Time
 PeerLink::GetLastBeacon () const
 {

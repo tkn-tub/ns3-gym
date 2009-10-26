@@ -27,11 +27,14 @@ import Build
 import Configure
 import Scripting
 
+sys.path.insert(0, os.path.abspath('waf-tools'))
+
 import cflags # override the build profiles from waf
 cflags.profiles = {
 	# profile name: [optimization_level, warnings_level, debug_level]
 	'debug':     [0, 2, 3],
 	'optimized': [3, 2, 1],
+	'release':   [3, 2, 0],
 	}
 cflags.default_profile = 'debug'
 
@@ -279,6 +282,10 @@ def configure(conf):
         env.append_value('CXXDEFINES', 'NS3_ASSERT_ENABLE')
         env.append_value('CXXDEFINES', 'NS3_LOG_ENABLE')
 
+    if Options.options.build_profile == 'release': 
+        env.append_value('CXXFLAGS', '-fomit-frame-pointer') 
+        env.append_value('CXXFLAGS', '-march=native') 
+
     env['PLATFORM'] = sys.platform
 
     if conf.env['CXX_NAME'] in ['gcc', 'icc']:
@@ -374,6 +381,14 @@ def configure(conf):
     if have_gsl:
         conf.env.append_value('CXXDEFINES', "ENABLE_GSL")
         conf.env.append_value('CCDEFINES', "ENABLE_GSL")
+
+    # append user defined flags after all our ones
+    for (confvar, envvar) in [['CCFLAGS', 'CCFLAGS_EXTRA'],
+                              ['CXXFLAGS', 'CXXFLAGS_EXTRA'],
+                              ['LINKFLAGS', 'LINKFLAGS_EXTRA'],
+                              ['LINKFLAGS', 'LDFLAGS_EXTRA']]:
+        if envvar in os.environ:
+            conf.env.append_value(confvar, os.environ[envvar])
 
     # Write a summary of optional features status
     print "---- Summary of optional NS-3 features:"

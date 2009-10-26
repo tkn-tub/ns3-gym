@@ -599,6 +599,11 @@ def register_Ns3Dot11sPeerLink_methods(root_module, cls):
     cls.add_method('SetLocalAid', 
                    'void', 
                    [param('uint16_t', 'aid')])
+    ## peer-link.h: uint16_t ns3::dot11s::PeerLink::GetPeerAid() const [member function]
+    cls.add_method('GetPeerAid', 
+                   'uint16_t', 
+                   [], 
+                   is_const=True)
     ## peer-link.h: void ns3::dot11s::PeerLink::SetBeaconTimingElement(ns3::dot11s::IeBeaconTiming beaconTiming) [member function]
     cls.add_method('SetBeaconTimingElement', 
                    'void', 
@@ -675,14 +680,15 @@ def register_Ns3Dot11sPeerManagementProtocol_methods(root_module, cls):
     cls.add_method('FindPeerLink', 
                    'ns3::Ptr< ns3::dot11s::PeerLink >', 
                    [param('uint32_t', 'interface'), param('ns3::Mac48Address', 'peerAddress')])
-    ## peer-management-protocol.h: std::vector<ns3::Mac48Address,std::allocator<ns3::Mac48Address> > ns3::dot11s::PeerManagementProtocol::GetActiveLinks(uint32_t interface) [member function]
-    cls.add_method('GetActiveLinks', 
-                   'std::vector< ns3::Mac48Address >', 
-                   [param('uint32_t', 'interface')])
     ## peer-management-protocol.h: ns3::Mac48Address ns3::dot11s::PeerManagementProtocol::GetAddress() [member function]
     cls.add_method('GetAddress', 
                    'ns3::Mac48Address', 
                    [])
+    ## peer-management-protocol.h: bool ns3::dot11s::PeerManagementProtocol::GetBeaconCollisionAvoidance() const [member function]
+    cls.add_method('GetBeaconCollisionAvoidance', 
+                   'bool', 
+                   [], 
+                   is_const=True)
     ## peer-management-protocol.h: ns3::Ptr<ns3::dot11s::IeBeaconTiming> ns3::dot11s::PeerManagementProtocol::GetBeaconTimingElement(uint32_t interface) [member function]
     cls.add_method('GetBeaconTimingElement', 
                    'ns3::Ptr< ns3::dot11s::IeBeaconTiming >', 
@@ -696,6 +702,16 @@ def register_Ns3Dot11sPeerManagementProtocol_methods(root_module, cls):
     cls.add_method('GetNumberOfLinks', 
                    'uint8_t', 
                    [])
+    ## peer-management-protocol.h: std::vector<ns3::Ptr<ns3::dot11s::PeerLink>,std::allocator<ns3::Ptr<ns3::dot11s::PeerLink> > > ns3::dot11s::PeerManagementProtocol::GetPeerLinks() const [member function]
+    cls.add_method('GetPeerLinks', 
+                   'std::vector< ns3::Ptr< ns3::dot11s::PeerLink > >', 
+                   [], 
+                   is_const=True)
+    ## peer-management-protocol.h: std::vector<ns3::Mac48Address,std::allocator<ns3::Mac48Address> > ns3::dot11s::PeerManagementProtocol::GetPeers(uint32_t interface) const [member function]
+    cls.add_method('GetPeers', 
+                   'std::vector< ns3::Mac48Address >', 
+                   [param('uint32_t', 'interface')], 
+                   is_const=True)
     ## peer-management-protocol.h: static ns3::TypeId ns3::dot11s::PeerManagementProtocol::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
@@ -709,6 +725,14 @@ def register_Ns3Dot11sPeerManagementProtocol_methods(root_module, cls):
     cls.add_method('IsActiveLink', 
                    'bool', 
                    [param('uint32_t', 'interface'), param('ns3::Mac48Address', 'peerAddress')])
+    ## peer-management-protocol.h: void ns3::dot11s::PeerManagementProtocol::NotifyBeaconSent(uint32_t interface, ns3::Time beaconInterval) [member function]
+    cls.add_method('NotifyBeaconSent', 
+                   'void', 
+                   [param('uint32_t', 'interface'), param('ns3::Time', 'beaconInterval')])
+    ## peer-management-protocol.h: void ns3::dot11s::PeerManagementProtocol::ReceiveBeacon(uint32_t interface, ns3::Mac48Address peerAddress, ns3::Time beaconInterval, ns3::Ptr<ns3::dot11s::IeBeaconTiming> beaconTiming) [member function]
+    cls.add_method('ReceiveBeacon', 
+                   'void', 
+                   [param('uint32_t', 'interface'), param('ns3::Mac48Address', 'peerAddress'), param('ns3::Time', 'beaconInterval'), param('ns3::Ptr< ns3::dot11s::IeBeaconTiming >', 'beaconTiming')])
     ## peer-management-protocol.h: void ns3::dot11s::PeerManagementProtocol::ReceivePeerLinkFrame(uint32_t interface, ns3::Mac48Address peerAddress, ns3::Mac48Address peerMeshPointAddress, uint16_t aid, ns3::dot11s::IePeerManagement peerManagementElement, ns3::dot11s::IeConfiguration meshConfig) [member function]
     cls.add_method('ReceivePeerLinkFrame', 
                    'void', 
@@ -722,6 +746,10 @@ def register_Ns3Dot11sPeerManagementProtocol_methods(root_module, cls):
     cls.add_method('ResetStats', 
                    'void', 
                    [])
+    ## peer-management-protocol.h: void ns3::dot11s::PeerManagementProtocol::SetBeaconCollisionAvoidance(bool enable) [member function]
+    cls.add_method('SetBeaconCollisionAvoidance', 
+                   'void', 
+                   [param('bool', 'enable')])
     ## peer-management-protocol.h: void ns3::dot11s::PeerManagementProtocol::SetMeshId(std::string s) [member function]
     cls.add_method('SetMeshId', 
                    'void', 
@@ -738,10 +766,6 @@ def register_Ns3Dot11sPeerManagementProtocol_methods(root_module, cls):
     cls.add_method('TransmissionSuccess', 
                    'void', 
                    [param('uint32_t', 'interface'), param('ns3::Mac48Address const', 'peerAddress')])
-    ## peer-management-protocol.h: void ns3::dot11s::PeerManagementProtocol::UpdatePeerBeaconTiming(uint32_t interface, bool meshBeacon, ns3::dot11s::IeBeaconTiming timingElement, ns3::Mac48Address peerAddress, ns3::Time receivingTime, ns3::Time beaconInterval) [member function]
-    cls.add_method('UpdatePeerBeaconTiming', 
-                   'void', 
-                   [param('uint32_t', 'interface'), param('bool', 'meshBeacon'), param('ns3::dot11s::IeBeaconTiming', 'timingElement'), param('ns3::Mac48Address', 'peerAddress'), param('ns3::Time', 'receivingTime'), param('ns3::Time', 'beaconInterval')])
     return
 
 def register_functions(root_module):
