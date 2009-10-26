@@ -824,7 +824,7 @@ private:
   TestCase (TestCase& tc);
   TestCase& operator= (TestCase& tc);
 
-  SystemWallClockMs m_clock;
+  SystemWallClockMs m_msClock;
   std::string m_name;
   bool m_verbose;
   bool m_continueOnFailure;
@@ -1059,7 +1059,7 @@ private:
   TestSuite (TestSuite& ts);
   TestSuite& operator= (TestSuite& ts);
 
-  SystemWallClockMs m_clock;
+  SystemWallClockMs m_msClock;
   std::string m_name;
   bool m_verbose;
   bool m_continueOnFailure;

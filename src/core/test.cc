@@ -262,7 +262,7 @@ TestCase::ContinueOnFailure (void)
 void
 TestCase::DoReportStart  (void)
 {
-  m_clock.Start ();
+  m_msClock.Start ();
 
   if (m_ofs == 0)
     {
@@ -319,18 +319,21 @@ TestCase::DoReportTestFailure  (
 void
 TestCase::DoReportEnd  (void)
 {
-  m_clock.End ();
+  m_msClock.End ();
+
   if (m_ofs == 0)
     {
       return;
     }
 
-  (*m_ofs).precision (2);
+  (*m_ofs).precision (3);
   *m_ofs << std::fixed;
 
-  *m_ofs << "    <CaseTime>" << "real " << m_clock.GetElapsedReal () * 1e-3
-                             << " user " << m_clock.GetElapsedUser () * 1e-3
-                             << " system " << m_clock.GetElapsedSystem () * 1e-3
+  const double MS_PER_SEC = 1000.;
+
+  *m_ofs << "    <CaseTime>" << "real " << m_msClock.GetElapsedReal () / MS_PER_SEC
+                             << " user " << m_msClock.GetElapsedUser () / MS_PER_SEC
+                             << " system " << m_msClock.GetElapsedSystem () / MS_PER_SEC
          << "</CaseTime>" << std::endl;
 
   *m_ofs << "  </TestCase>" << std::endl;
@@ -515,7 +518,7 @@ TestSuite::ContinueOnFailure (void)
 void
 TestSuite::DoReportStart (void)
 {
-  m_clock.Start ();
+  m_msClock.Start ();
   
   if (m_ofs == 0)
     {
@@ -548,19 +551,21 @@ TestSuite::DoReportSuccess (void)
 void
 TestSuite::DoReportEnd (void)
 {
-  m_clock.End ();
+  m_msClock.End ();
   
   if (m_ofs == 0)
     {
       return;
     }
 
-  (*m_ofs).precision (2);
+  (*m_ofs).precision (3);
   *m_ofs << std::fixed;
 
-  *m_ofs << "  <SuiteTime>" << "real " << m_clock.GetElapsedReal () * 1e-3
-                            << " user " << m_clock.GetElapsedUser () * 1e-3
-                            << " system " << m_clock.GetElapsedSystem () * 1e-3
+  const double MS_PER_SEC = 1000.;
+
+  *m_ofs << "  <SuiteTime>" << "real " << m_msClock.GetElapsedReal () / MS_PER_SEC
+                            << " user " << m_msClock.GetElapsedUser () / MS_PER_SEC
+                            << " system " << m_msClock.GetElapsedSystem () / MS_PER_SEC
          << "</SuiteTime>" << std::endl;
 
   *m_ofs << "</TestSuite>" << std::endl;

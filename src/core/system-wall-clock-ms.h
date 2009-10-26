@@ -21,13 +21,13 @@
 #ifndef SYSTEM_WALL_CLOCK_MS_H
 #define SYSTEM_WALL_CLOCK_MS_H
 
+#include <stdint.h>
+
 namespace ns3 {
 
 /**
- * \brief measure wall-clock time in milliseconds
-
- * \todo This class exists also in non-unix systems but is not
- * implemented and always return zero as measurd time.
+ * \brief measure elapsed time in milliseconds
+ *
  */
 class SystemWallClockMs {
 public:
@@ -45,24 +45,32 @@ public:
    *
    * It is possible to start a new measurement with ns3::SystemWallClockMs::Start
    * after this method returns.
+   *
+   * Returns int64_t to avoid dependency on clock_t in ns-3 code.
    */
-  unsigned long long End (void);
+  int64_t End (void);
 
   /**
    * \returns the measured elapsed wall clock time (in milliseconds) since 
    *          ns3::SystemWallClockMs::Start was invoked.
+   *
+   * Returns int64_t to avoid dependency on clock_t in ns-3 code.
    */
-  double GetElapsedReal (void) const;
+  int64_t GetElapsedReal (void) const;
   /**
    * \returns the measured elapsed 'user' wall clock time (in milliseconds) since 
    *          ns3::SystemWallClockMs::Start was invoked.
+   *
+   * Returns int64_t to avoid dependency on clock_t in ns-3 code.
    */
-  double GetElapsedUser (void) const;
+  int64_t GetElapsedUser (void) const;
   /**
    * \returns the measured elapsed 'system' wall clock time (in milliseconds) since 
    *          ns3::SystemWallClockMs::Start was invoked.
+   *
+   * Returns int64_t to avoid dependency on clock_t in ns-3 code.
    */
-  double GetElapsedSystem (void) const;
+  int64_t GetElapsedSystem (void) const;
 
 private:
   class SystemWallClockMsPrivate *m_priv;
