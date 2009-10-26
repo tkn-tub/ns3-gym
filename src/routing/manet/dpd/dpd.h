@@ -34,22 +34,22 @@ namespace dpd
 {
 /**
  * \ingroup dpd
- * \brief Detect duplicated packets
+ * 
+ * \brief Helper class used to remember already seen packets and detect duplicates.
  */
-
 class DuplicatePacketDetection
 {
 public:
-  /// c-tor
+  /// C-tor
   DuplicatePacketDetection (Time lifetime) : m_idCache(lifetime) {}
   /// Check that the packet is duplicated. If not, save information about this packet.
-  bool IsDuplicated (Ptr<const Packet> p, const Ipv4Header & header);
-  ///\name Handle lifetime
-  //\{
+  bool IsDuplicate (Ptr<const Packet> p, const Ipv4Header & header);
+  /// Set duplicate records lifetimes
   void SetLifetime (Time lifetime);
+  /// Get duplicate records lifetimes
   Time GetLifetime () const;
-  //\}
 private:
+  /// Impl
   IdCache m_idCache;
 };
 

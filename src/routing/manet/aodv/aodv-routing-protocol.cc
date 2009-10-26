@@ -308,7 +308,7 @@ RoutingProtocol::RouteInput (Ptr<const Packet> p, const Ipv4Header &header,
               {
                 return true;
               }
-            if (m_dpd.IsDuplicated (p, header))
+            if (m_dpd.IsDuplicate (p, header))
               {
                 NS_LOG_DEBUG ("Duplicated packet " << p->GetUid () << " from " << origin << ". Drop.");
                 return true;
@@ -661,7 +661,7 @@ RoutingProtocol::SendRequest (Ipv4Address dst)
       Ipv4InterfaceAddress iface = j->second;
 
       rreqHeader.SetOrigin (iface.GetLocal ());
-      m_rreqIdCache.IsDuplicated (iface.GetLocal (), m_requestId);
+      m_rreqIdCache.IsDuplicate (iface.GetLocal (), m_requestId);
 
       Ptr<Packet> packet = Create<Packet> ();
       packet->AddHeader (rreqHeader);
@@ -799,7 +799,7 @@ RoutingProtocol::RecvRequest (Ptr<Packet> p, Ipv4Address receiver, Ipv4Address s
    *  Node checks to determine whether it has received a RREQ with the same Originator IP Address and RREQ ID.
    *  If such a RREQ has been received, the node silently discards the newly received RREQ.
    */
-  if (m_rreqIdCache.IsDuplicated (origin, id))
+  if (m_rreqIdCache.IsDuplicate (origin, id))
     {
       return;
     }

@@ -34,7 +34,7 @@ namespace ns3
 namespace dpd
 {
 bool
-IdCache::IsDuplicated (Ipv4Address addr, uint32_t id)
+IdCache::IsDuplicate (Ipv4Address addr, uint32_t id)
 {
   Purge ();
   for (std::vector<UniqueId>::const_iterator i = m_idCache.begin ();
@@ -80,16 +80,16 @@ bool
 IdCacheTest::DoRun ()
 {
   NS_TEST_EXPECT_MSG_EQ (cache.GetLifeTime(), Seconds(10), "Lifetime");
-  NS_TEST_EXPECT_MSG_EQ (cache.IsDuplicated (Ipv4Address ("1.2.3.4"), 3), false, "Unknown ID & address");
-  NS_TEST_EXPECT_MSG_EQ (cache.IsDuplicated (Ipv4Address ("1.2.3.4"), 4), false, "Unknown ID");
-  NS_TEST_EXPECT_MSG_EQ (cache.IsDuplicated (Ipv4Address ("4.3.2.1"), 3), false, "Unknown address");
-  NS_TEST_EXPECT_MSG_EQ (cache.IsDuplicated (Ipv4Address ("1.2.3.4"), 3), true, "Known address & ID");
+  NS_TEST_EXPECT_MSG_EQ (cache.IsDuplicate (Ipv4Address ("1.2.3.4"), 3), false, "Unknown ID & address");
+  NS_TEST_EXPECT_MSG_EQ (cache.IsDuplicate (Ipv4Address ("1.2.3.4"), 4), false, "Unknown ID");
+  NS_TEST_EXPECT_MSG_EQ (cache.IsDuplicate (Ipv4Address ("4.3.2.1"), 3), false, "Unknown address");
+  NS_TEST_EXPECT_MSG_EQ (cache.IsDuplicate (Ipv4Address ("1.2.3.4"), 3), true, "Known address & ID");
   cache.SetLifetime(Seconds(15));
   NS_TEST_EXPECT_MSG_EQ (cache.GetLifeTime(), Seconds(15), "New lifetime");
-  cache.IsDuplicated (Ipv4Address ("1.1.1.1"), 4);
-  cache.IsDuplicated (Ipv4Address ("1.1.1.1"), 4);
-  cache.IsDuplicated (Ipv4Address ("2.2.2.2"), 5);
-  cache.IsDuplicated (Ipv4Address ("3.3.3.3"), 6);
+  cache.IsDuplicate (Ipv4Address ("1.1.1.1"), 4);
+  cache.IsDuplicate (Ipv4Address ("1.1.1.1"), 4);
+  cache.IsDuplicate (Ipv4Address ("2.2.2.2"), 5);
+  cache.IsDuplicate (Ipv4Address ("3.3.3.3"), 6);
   NS_TEST_EXPECT_MSG_EQ (cache.GetSize (), 6, "trivial");
 
   Simulator::Schedule (Seconds(5), &IdCacheTest::CheckTimeout1, this);

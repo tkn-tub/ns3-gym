@@ -44,10 +44,9 @@ namespace ns3
 {
 namespace aodv
 {
-
-using namespace dpd;
 /**
  * \ingroup aodv
+ * 
  * \brief AODV routing protocol
  */
 class RoutingProtocol : public Ipv4RoutingProtocol
@@ -140,9 +139,9 @@ private:
   /// Request sequence number
   uint32_t m_seqNo;
   /// Handle duplicated RREQ
-  IdCache m_rreqIdCache;
+  dpd::IdCache m_rreqIdCache;
   /// Handle duplicated broadcast/multicast packets
-  DuplicatePacketDetection m_dpd;
+  dpd::DuplicatePacketDetection m_dpd;
   /// Handle neighbors
   Neighbors m_nb;
   /// Number of RREQs used for RREQ rate control

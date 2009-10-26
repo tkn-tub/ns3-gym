@@ -37,10 +37,10 @@ namespace ns3
 {
 namespace dpd
 {
-
 /**
  * \ingroup dpd
- * \brief packets identification cache
+ * 
+ * \brief Unique packets identification cache used for simple duplicate detection.
  */
 class IdCache
 {
@@ -48,7 +48,7 @@ public:
   /// c-tor
   IdCache (Time lifetime): m_lifetime (lifetime) {}
   /// Check that entry (addr, id) exists in cache. Add entry, if it doesn't exist.
-  bool IsDuplicated (Ipv4Address addr, uint32_t id);
+  bool IsDuplicate (Ipv4Address addr, uint32_t id);
   /// Remove all expired entries
   void Purge ();
   /// Return number of entries in cache
@@ -58,10 +58,14 @@ public:
   /// Return lifetime for existing entries in cache
   Time GetLifeTime () const { return m_lifetime; }
 private:
+  /// Unique packet ID
   struct UniqueId
   {
+    /// ID is supposed to be unique in single address context (e.g. sender address)
     Ipv4Address m_context;
+    /// The id
     uint32_t m_id;
+    /// When record will expire
     Time m_expire;
   };
   struct IsExpired
@@ -71,7 +75,9 @@ private:
       return (u.m_expire < Simulator::Now ());
     }
   };
+  /// Already seen IDs
   std::vector<UniqueId> m_idCache;
+  /// Default lifetime for ID records
   Time m_lifetime;
 };
 
