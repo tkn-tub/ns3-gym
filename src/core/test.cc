@@ -262,7 +262,7 @@ TestCase::ContinueOnFailure (void)
 void
 TestCase::DoReportStart  (void)
 {
-  m_startTime = times (&m_startTimes);
+  m_clock.Start ();
 
   if (m_ofs == 0)
     {
@@ -319,26 +319,18 @@ TestCase::DoReportTestFailure  (
 void
 TestCase::DoReportEnd  (void)
 {
-  static long ticksPerSecond = sysconf (_SC_CLK_TCK);
-
+  m_clock.End ();
   if (m_ofs == 0)
     {
       return;
     }
 
-  struct tms endTimes;
-  clock_t endTime = times (&endTimes);
-
-  clock_t elapsed = endTime - m_startTime;
-  clock_t elapsedUsr = endTimes.tms_utime - m_startTimes.tms_utime;
-  clock_t elapsedSys = endTimes.tms_stime - m_startTimes.tms_stime;
-
   (*m_ofs).precision (2);
   *m_ofs << std::fixed;
 
-  *m_ofs << "    <CaseTime>" << "real " << static_cast<double> (elapsed) / ticksPerSecond
-                             << " user " << static_cast<double> (elapsedUsr) / ticksPerSecond
-                             << " system " << static_cast<double> (elapsedSys) / ticksPerSecond
+  *m_ofs << "    <CaseTime>" << "real " << m_clock.GetElapsedReal () * 1e-3
+                             << " user " << m_clock.GetElapsedUser () * 1e-3
+                             << " system " << m_clock.GetElapsedSystem () * 1e-3
          << "</CaseTime>" << std::endl;
 
   *m_ofs << "  </TestCase>" << std::endl;
@@ -523,8 +515,8 @@ TestSuite::ContinueOnFailure (void)
 void
 TestSuite::DoReportStart (void)
 {
-  m_startTime = times (&m_startTimes);
-
+  m_clock.Start ();
+  
   if (m_ofs == 0)
     {
       return;
@@ -556,25 +548,19 @@ TestSuite::DoReportSuccess (void)
 void
 TestSuite::DoReportEnd (void)
 {
-  static long ticksPerSecond = sysconf (_SC_CLK_TCK);
-
+  m_clock.End ();
+  
   if (m_ofs == 0)
     {
       return;
     }
-  struct tms endTimes;
-  clock_t endTime = times (&endTimes);
-
-  clock_t elapsed = endTime - m_startTime;
-  clock_t elapsedUsr = endTimes.tms_utime - m_startTimes.tms_utime;
-  clock_t elapsedSys = endTimes.tms_stime - m_startTimes.tms_stime;
 
   (*m_ofs).precision (2);
   *m_ofs << std::fixed;
 
-  *m_ofs << "  <SuiteTime>" << "real " << static_cast<double> (elapsed) / ticksPerSecond
-                            << " user " << static_cast<double> (elapsedUsr) / ticksPerSecond
-                            << " system " << static_cast<double> (elapsedSys) / ticksPerSecond
+  *m_ofs << "  <SuiteTime>" << "real " << m_clock.GetElapsedReal () * 1e-3
+                            << " user " << m_clock.GetElapsedUser () * 1e-3
+                            << " system " << m_clock.GetElapsedSystem () * 1e-3
          << "</SuiteTime>" << std::endl;
 
   *m_ofs << "</TestSuite>" << std::endl;
