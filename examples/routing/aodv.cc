@@ -199,7 +199,7 @@ AodvExample::InstallInternetStack ()
 void
 AodvExample::InstallApplications ()
 {
-  V4PingHelper ping (interfaces.GetAddress(size - 1));
+  V4PingHelper ping (interfaces.GetAddress (size - 1));
   ping.SetAttribute ("Verbose", BooleanValue (true));
   
   ApplicationContainer p = ping.Install (nodes.Get (0));
@@ -208,7 +208,7 @@ AodvExample::InstallApplications ()
 
   // move node away
   Ptr<Node> node = nodes.Get (size/2);
-  Ptr<MobilityModel> mob = node->GetObject<MobilityModel>();
-  Simulator::Schedule (Seconds (totalTime/3), &MobilityModel::SetPosition, mob, Vector(1e5, 1e5, 1e5));
+  Ptr<MobilityModel> mob = node->GetObject<MobilityModel> ();
+  Simulator::Schedule (Seconds (totalTime/3), &MobilityModel::SetPosition, mob, Vector (1e5, 1e5, 1e5));
 }
 

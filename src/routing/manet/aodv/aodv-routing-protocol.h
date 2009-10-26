@@ -229,7 +229,7 @@ private:
   void Drop(Ptr<const Packet>, const Ipv4Header &, Socket::SocketErrno);
 
   /// Hello timer
-  Timer htimer;
+  Timer m_htimer;
   /// Schedule next send of hello message
   void HelloTimerExpire ();
   /// RREQ rate limit timer

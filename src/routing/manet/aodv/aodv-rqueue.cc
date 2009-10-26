@@ -87,14 +87,15 @@ bool
 RequestQueue::Dequeue (Ipv4Address dst, QueueEntry & entry)
 {
   Purge ();
-  for (std::vector<QueueEntry>::iterator i = m_queue.begin (); i
-      != m_queue.end (); ++i)
-    if (i->GetIpv4Header ().GetDestination () == dst)
-      {
-        entry = *i;
-        m_queue.erase (i);
-        return true;
-      }
+  for (std::vector<QueueEntry>::iterator i = m_queue.begin (); i != m_queue.end (); ++i)
+    {
+      if (i->GetIpv4Header ().GetDestination () == dst)
+        {
+          entry = *i;
+          m_queue.erase (i);
+          return true;
+        }
+    }
   return false;
 }
 

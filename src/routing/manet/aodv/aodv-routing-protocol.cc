@@ -74,7 +74,7 @@ RoutingProtocol::RoutingProtocol () :
   m_dpd (PathDiscoveryTime),
   m_nb(HelloInterval),
   m_rreqCount (0),
-  htimer (Timer::CANCEL_ON_DESTROY),
+  m_htimer (Timer::CANCEL_ON_DESTROY),
   m_rreqRateLimitTimer (Timer::CANCEL_ON_DESTROY)
 {
   if (EnableHello)
@@ -424,8 +424,8 @@ RoutingProtocol::SetIpv4 (Ptr<Ipv4> ipv4)
 
   if (EnableHello)
     {
-      htimer.SetFunction (&RoutingProtocol::HelloTimerExpire, this);
-      htimer.Schedule (MilliSeconds (UniformVariable ().GetInteger (0, 100)));
+      m_htimer.SetFunction (&RoutingProtocol::HelloTimerExpire, this);
+      m_htimer.Schedule (MilliSeconds (UniformVariable ().GetInteger (0, 100)));
     }
 
   m_ipv4 = ipv4;
@@ -501,7 +501,7 @@ RoutingProtocol::NotifyInterfaceDown (uint32_t i)
   if (m_socketAddresses.empty ())
     {
       NS_LOG_LOGIC ("No aodv interfaces");
-      htimer.Cancel ();
+      m_htimer.Cancel ();
       m_nb.Clear ();
       m_routingTable.Clear ();
       return;
@@ -579,7 +579,7 @@ RoutingProtocol::NotifyRemoveAddress (uint32_t i, Ipv4InterfaceAddress address)
       if (m_socketAddresses.empty ())
         {
           NS_LOG_LOGIC ("No aodv interfaces");
-          htimer.Cancel ();
+          m_htimer.Cancel ();
           m_nb.Clear ();
           m_routingTable.Clear ();
           return;
@@ -672,8 +672,8 @@ RoutingProtocol::SendRequest (Ipv4Address dst)
   ScheduleRreqRetry (dst);
   if (EnableHello)
     {
-      htimer.Cancel ();
-      htimer.Schedule (HelloInterval - Scalar (0.01) * MilliSeconds (UniformVariable ().GetInteger (0, 10)));
+      m_htimer.Cancel ();
+      m_htimer.Schedule (HelloInterval - Scalar (0.01) * MilliSeconds (UniformVariable ().GetInteger (0, 10)));
     }
 }
 
@@ -896,8 +896,8 @@ RoutingProtocol::RecvRequest (Ptr<Packet> p, Ipv4Address receiver, Ipv4Address s
 
   if (EnableHello)
     {
-      htimer.Cancel ();
-      htimer.Schedule (HelloInterval - Scalar(0.1)*MilliSeconds(UniformVariable().GetInteger (0, 10)));
+      m_htimer.Cancel ();
+      m_htimer.Schedule (HelloInterval - Scalar(0.1)*MilliSeconds(UniformVariable().GetInteger (0, 10)));
     }
 }
 
@@ -1260,9 +1260,9 @@ RoutingProtocol::HelloTimerExpire ()
 {
   NS_LOG_FUNCTION(this);
   SendHello ();
-  htimer.Cancel ();
+  m_htimer.Cancel ();
   Time t = Scalar(0.01)*MilliSeconds(UniformVariable().GetInteger (0, 100));
-  htimer.Schedule (HelloInterval - t);
+  m_htimer.Schedule (HelloInterval - t);
 }
 
 void

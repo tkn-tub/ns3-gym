@@ -37,16 +37,6 @@ namespace aodv
 TypeHeader::TypeHeader (MessageType t) :
   m_type (t), m_valid (true)
 {
-  switch (m_type)
-    {
-    case AODVTYPE_RREQ:
-    case AODVTYPE_RREP:
-    case AODVTYPE_RERR:
-    case AODVTYPE_RREP_ACK:
-      break;
-    default:
-      m_valid = false;
-    }
 }
 
 TypeId

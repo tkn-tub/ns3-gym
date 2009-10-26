@@ -43,10 +43,10 @@ namespace aodv
 
 RoutingTableEntry::RoutingTableEntry (Ptr<NetDevice> dev, Ipv4Address dst, bool vSeqNo, u_int32_t seqNo,
                                       Ipv4InterfaceAddress iface, u_int16_t hops, Ipv4Address nextHop, Time lifetime) :
+                                      m_ackTimer (Timer::CANCEL_ON_DESTROY),
                                       m_validSeqNo (vSeqNo), m_seqNo (seqNo), m_hops (hops),
                                       m_lifeTime (lifetime + Simulator::Now ()), m_iface (iface), m_flag (VALID),
-                                      m_reqCount (0), m_blackListState (false), m_blackListTimeout (Simulator::Now ()),
-                                      m_ackTimer (Timer::CANCEL_ON_DESTROY)
+                                      m_reqCount (0), m_blackListState (false), m_blackListTimeout (Simulator::Now ())
 {
   m_ipv4Route = Create<Ipv4Route> ();
   m_ipv4Route->SetDestination (dst);
@@ -164,7 +164,8 @@ RoutingTableEntry::Print (std::ostream & os) const
  The Routing Table
  */
 
-RoutingTable::RoutingTable (Time t) : m_badLinkLifetime (t)
+RoutingTable::RoutingTable (Time t) : 
+  m_badLinkLifetime (t)
 {
 }
 
@@ -233,10 +234,12 @@ RoutingTable::GetListOfDestinationWithNextHop (Ipv4Address nextHop, std::map<Ipv
   unreachable.clear ();
   for (std::map<Ipv4Address, RoutingTableEntry>::const_iterator i =
       m_ipv4AddressEntry.begin (); i != m_ipv4AddressEntry.end (); ++i)
-    if (i->second.GetNextHop () == nextHop)
-      {
-        unreachable.insert (std::make_pair (i->first, i->second.GetSeqNo ()));
-      }
+    {
+      if (i->second.GetNextHop () == nextHop)
+        {
+          unreachable.insert (std::make_pair (i->first, i->second.GetSeqNo ()));
+        }
+    }
 }
 
 void

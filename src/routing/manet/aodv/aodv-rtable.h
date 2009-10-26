@@ -127,6 +127,8 @@ public:
   bool IsUnidirectional () const { return m_blackListState; }
   void SetBalcklistTimeout (Time t) { m_blackListTimeout = t; }
   Time GetBlacklistTimeout () const { return m_blackListTimeout; }
+  /// RREP_ACK timer
+  Timer m_ackTimer;
   //\}
 
   /**
@@ -175,9 +177,6 @@ private:
   bool m_blackListState;
   /// Time for which the node is put into the blacklist
   Time m_blackListTimeout;
-public:
-  /// RREP_ACK timer
-  Timer m_ackTimer;
 };
 
 /**

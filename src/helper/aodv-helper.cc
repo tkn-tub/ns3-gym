@@ -26,7 +26,8 @@
 namespace ns3
 {
 
-AodvHelper::AodvHelper() : Ipv4RoutingHelper ()
+AodvHelper::AodvHelper() : 
+  Ipv4RoutingHelper ()
 {
   m_agentFactory.SetTypeId ("ns3::aodv::RoutingProtocol");
 }

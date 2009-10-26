@@ -29,7 +29,10 @@ template <typename T = double>
 class Average
 {
 public:
-  Average () : size(0), min (std::numeric_limits<T>::max ()), max (0), avg (0), avg2 (0) {}
+  Average () : 
+    size (0), min (std::numeric_limits<T>::max ()), max (0), avg (0), avg2 (0) 
+  {
+  }
 
   /// Add new value
   void Update (T const & x)
