@@ -273,6 +273,7 @@ def register_types_ns3_dot11s(module):
     root_module = module.get_root()
     
     module.add_container('std::vector< ns3::Ptr< ns3::dot11s::IeBeaconTimingUnit > >', 'ns3::Ptr< ns3::dot11s::IeBeaconTimingUnit >', container_type='vector')
+    module.add_container('std::vector< ns3::Ptr< ns3::dot11s::PeerLink > >', 'ns3::Ptr< ns3::dot11s::PeerLink >', container_type='vector')
 
 def register_types_ns3_flame(module):
     root_module = module.get_root()
