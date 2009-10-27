@@ -974,6 +974,7 @@ def run_tests():
     # PASS, FAIL, CRASH and SKIP processing is done in the same place.
     #
     for test in suite_list:
+        test = test.strip()
         if len(test):
             job = Job()
             job.set_is_example(False)
@@ -986,7 +987,7 @@ def run_tests():
             else:
                 multiple = ""
 
-            path_cmd = os.path.join("utils", "test-runner --suite='%s'%s" % (test, multiple))
+            path_cmd = os.path.join("utils", "test-runner --suite=%s%s" % (test, multiple))
             job.set_shell_command(path_cmd)
 
             if options.valgrind and test in core_valgrind_skip_tests:
