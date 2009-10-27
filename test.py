@@ -202,7 +202,8 @@ def translate_to_text(results_file, text_file):
     for example in dom.getElementsByTagName("Example"):
         result = get_node_text(example.getElementsByTagName("Result")[0])
         name = get_node_text(example.getElementsByTagName("Name")[0])
-        output = "%s: Example \"%s\"\n" % (result, name)
+        time = get_node_text(example.getElementsByTagName("ElapsedTime")[0])
+        output = "%s: Example \"%s\" (%s)\n" % (result, name, time)
         f.write(output)
 
     f.close()
@@ -408,12 +409,13 @@ def translate_to_html(results_file, html_file):
     #
     # The table headings look like,
     #
-    #   +--------+--------------+
-    #   | Result | Example Name |
-    #   +--------+--------------+
+    #   +--------+--------------+--------------+
+    #   | Result | Example Name | Elapsed Time |
+    #   +--------+--------------+--------------+
     #
     f.write("<th> Result </th>\n")
     f.write("<th>Example Name</th>\n")
+    f.write("<th>Elapsed Time</th>\n")
 
     #
     # Now iterate through all of the examples
@@ -430,6 +432,7 @@ def translate_to_html(results_file, html_file):
         #
         result = get_node_text(example.getElementsByTagName("Result")[0])
         name =   get_node_text(example.getElementsByTagName("Name")[0])
+        time =   get_node_text(example.getElementsByTagName("ElapsedTime")[0])
 
         #
         # If the example either failed or crashed, print its result status
@@ -446,6 +449,11 @@ def translate_to_html(results_file, html_file):
         # Write the example name as a new tag data.
         #
         f.write("<td>%s</td>\n" % name)
+
+        #
+        # Write the elapsed time as a new tag data.
+        #
+        f.write("<td>%s</td>\n" % time)
 
         #
         # That's it for the current example, so terminate the row.
@@ -585,10 +593,10 @@ def run_job_synchronously(shell_command, directory, valgrind):
     if options.verbose:
         print "Synchronously execute %s" % cmd
 
-    start_time = time.clock()
+    start_time = time.time()
     proc = subprocess.Popen(cmd, shell = True, cwd = directory, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     stdout_results, stderr_results = proc.communicate()
-    elapsed_time = time.clock() - start_time
+    elapsed_time = time.time() - start_time
 
     if options.verbose:
         print "Return code = ", proc.returncode
@@ -1153,7 +1161,7 @@ def run_tests():
             else:
                 f.write('  <Result>CRASH</Result>\n')
 
-            f.write('  <ElapsedTime>%s</ElapsedTime>\n' % job.elapsed_time)
+            f.write('  <ElapsedTime>%.3f</ElapsedTime>\n' % job.elapsed_time)
             f.write('</Example>\n')
             f.close()
 
