@@ -78,6 +78,7 @@ public:
    * \param interface the interface where a beacon was received from
    * \param peerAddress address of station, which sent a beacon
    * \param beaconInterval beacon interval (needed by beacon loss counter)
+   * \param beaconTiming beacon timing element (needed by BCA)
    */
   void ReceiveBeacon (uint32_t interface, Mac48Address peerAddress, Time beaconInterval, Ptr<IeBeaconTiming> beaconTiming);
   //\}
