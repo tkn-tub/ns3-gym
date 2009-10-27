@@ -533,37 +533,68 @@ def read_waf_config():
 # path -- it is cooked up dynamically, so we do that too.
 #
 def make_library_path():
-    global LIBRARY_PATH
+    have_DYLD_LIBRARY_PATH = False
+    have_LD_LIBRARY_PATH = False
+    have_PATH = False
 
-    LIBRARY_PATH = "LD_LIBRARY_PATH=$LD_LIBRARY_PATH:'"        
+    keys = os.environ.keys()
+    for key in keys:
+        if key == "DYLD_LIBRARY_PATH":
+            have_DYLD_LIBRARY_PATH = True
+        if key == "LD_LIBRARY_PATH":
+            have_LD_LIBRARY_PATH = True
+        if key == "PATH":
+            have_PATH = True
 
     if sys.platform == "darwin":
-        LIBRARY_PATH = "DYLD_LIBRARY_PATH='"
+        if not have_DYLD_LIBRARY_PATH:
+            os.environ["DYLD_LIBRARY_PATH"] = ""
+        for path in NS3_MODULE_PATH:
+            os.environ["DYLD_LIBRARY_PATH"] += ":" + path
+        if options.verbose:
+            print "os.environ[\"DYLD_LIBRARY_PATH\"] == %s" % os.environ["DY_LIBRARY_PATH"]
     elif sys.platform == "win32":
-        LIBRARY_PATH = "PATH=$PATH:'"
+        if not have_PATH:
+            os.environ["PATH"] = ""
+        for path in NS3_MODULE_PATH:
+            os.environ["PATH"] += ';' + path
+        if options.verbose:
+            print "os.environ[\"PATH\"] == %s" % os.environ["PATH"]
     elif sys.platform == "cygwin":
-        LIBRARY_PATH = "PATH=$PATH:'"
-
-    for path in NS3_MODULE_PATH:
-        LIBRARY_PATH = LIBRARY_PATH + path + ":"
-
-    LIBRARY_PATH = LIBRARY_PATH + "'"
-
-    if options.verbose:
-        print "LIBRARY_PATH == %s" % LIBRARY_PATH
+        if not have_PATH:
+            os.environ["PATH"] = ""
+        for path in NS3_MODULE_PATH:
+            os.environ["PATH"] += ":" + path
+        if options.verbose:
+            print "os.environ[\"PATH\"] == %s" % os.environ["PATH"]
+    else:
+        if not have_LD_LIBRARY_PATH:
+            os.environ["LD_LIBRARY_PATH"] = ""
+        for path in NS3_MODULE_PATH:
+            os.environ["LD_LIBRARY_PATH"] += ":" + path
+        if options.verbose:
+            print "os.environ[\"LD_LIBRARY_PATH\"] == %s" % os.environ["LD_LIBRARY_PATH"]
 
 def run_job_synchronously(shell_command, directory, valgrind):
+    path_cmd = os.path.join (NS3_BUILDDIR, NS3_ACTIVE_VARIANT, shell_command)
     if valgrind:
-        cmd = "%s valgrind --leak-check=full --error-exitcode=2 %s/%s/%s" % (LIBRARY_PATH, NS3_BUILDDIR, NS3_ACTIVE_VARIANT, shell_command)
+        cmd = "valgrind --leak-check=full --error-exitcode=2 %s" % path_cmd
     else:
-        cmd = "%s %s/%s/%s" % (LIBRARY_PATH, NS3_BUILDDIR, NS3_ACTIVE_VARIANT, shell_command)
+        cmd = path_cmd
 
     if options.verbose:
         print "Synchronously execute %s" % cmd
 
-    proc = subprocess.Popen(cmd, shell=True, cwd=directory, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    start_time = time.clock()
+    proc = subprocess.Popen(cmd, shell = True, cwd = directory, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     stdout_results, stderr_results = proc.communicate()
-    return (proc.returncode, stdout_results, stderr_results)
+    elapsed_time = time.clock() - start_time
+
+    if options.verbose:
+        print "Return code = ", proc.returncode
+        print "stderr = ", stderr_results
+
+    return (proc.returncode, stdout_results, stderr_results, elapsed_time)
 
 #
 # This class defines a unit of testing work.  It will typically refer to
@@ -580,6 +611,7 @@ class Job:
         self.cwd = ""
         self.tmp_file_name = ""
         self.returncode = False
+        self.elapsed_time = 0
 
     #
     # A job is either a standard job or a special job indicating that a worker
@@ -659,6 +691,12 @@ class Job:
     def set_returncode(self, returncode):
         self.returncode = returncode
 
+    #
+    # The elapsed real time for the job execution.
+    #
+    def set_elapsed_time(self, elapsed_time):
+        self.elapsed_time = elapsed_time
+
 #
 # The worker thread class that handles the actual running of a given test.
 # Once spawned, it receives requests for work through its input_queue and
@@ -711,16 +749,18 @@ class worker_thread(threading.Thread):
                     # If we have an example, the shell command is all we need to
                     # know.  It will be something like "examples/udp-echo"
                     #
-                    (job.returncode, standard_out, standard_err) = run_job_synchronously(job.shell_command, job.cwd,
-                                                                                         options.valgrind)
+                    (job.returncode, standard_out, standard_err, et) = run_job_synchronously(job.shell_command, 
+                        job.cwd, options.valgrind)
                 else:
                     #
                     # If we're a test suite, we need to provide a little more info
                     # to the test runner, specifically the base directory and temp
                     # file name
                     #
-                    (job.returncode, standard_out, standard_err) = run_job_synchronously(job.shell_command + 
+                    (job.returncode, standard_out, standard_err, et) = run_job_synchronously(job.shell_command + 
                         " --basedir=%s --out=%s" % (job.basedir, job.tmp_file_name), job.cwd, options.valgrind)
+
+                job.set_elapsed_time(et)
 
                 if options.verbose:
                     print "returncode = %d" % job.returncode
@@ -757,9 +797,9 @@ def run_tests():
         # to build the test-runner and can ignore all of the examples.
         #
         if options.kinds or options.list or (len(options.constrain) and options.constrain in core_kinds):
-            proc = subprocess.Popen("./waf --target=test-runner", shell=True)
+            proc = subprocess.Popen("waf --target=test-runner", shell = True)
         else:
-            proc = subprocess.Popen("./waf", shell=True)
+            proc = subprocess.Popen("waf", shell = True)
 
         proc.communicate()
 
@@ -779,11 +819,13 @@ def run_tests():
     # handle them without doing all of the hard work.
     #
     if options.kinds:
-        (rc, standard_out, standard_err) = run_job_synchronously("utils/test-runner --kinds", os.getcwd(), False)
+        path_cmd = os.path.join("utils", "test-runner --kinds")
+        (rc, standard_out, standard_err, et) = run_job_synchronously(path_cmd, os.getcwd(), False)
         print standard_out
 
     if options.list:
-        (rc, standard_out, standard_err) = run_job_synchronously("utils/test-runner --list", os.getcwd(), False)
+        path_cmd = os.path.join("utils", "test-runner --list")
+        (rc, standard_out, standard_err, et) = run_job_synchronously(path_cmd, os.getcwd(), False)
         print standard_out
 
     if options.kinds or options.list:
@@ -854,10 +896,11 @@ def run_tests():
         suites = options.suite + "\n"
     elif len(options.example) == 0:
         if len(options.constrain):
-            (rc, suites, standard_err) = run_job_synchronously("utils/test-runner --list --constrain=%s" % 
-                options.constrain, os.getcwd(), False)
+            path_cmd = os.path.join("utils", "test-runner --list --constrain=%s" % options.constrain)
+            (rc, suites, standard_err, et) = run_job_synchronously(path_cmd, os.getcwd(), False)
         else:
-            (rc, suites, standard_err) = run_job_synchronously("utils/test-runner --list", os.getcwd(), False)
+            path_cmd = os.path.join("utils", "test-runner --list")
+            (rc, suites, standard_err, et) = run_job_synchronously(path_cmd, os.getcwd(), False)
     else:
         suites = ""
 
@@ -888,13 +931,14 @@ def run_tests():
     #
     processors = 1
 
-    if 'SC_NPROCESSORS_ONLN'in os.sysconf_names:
-        processors = os.sysconf('SC_NPROCESSORS_ONLN')
-    else:
-        proc = subprocess.Popen("sysctl -n hw.ncpu", shell = True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        stdout_results, stderr_results = proc.communicate()
-        if len(stderr_results) == 0:
-            processors = int(stdout_results)
+    if sys.platform != "win32":
+        if 'SC_NPROCESSORS_ONLN'in os.sysconf_names:
+            processors = os.sysconf('SC_NPROCESSORS_ONLN')
+        else:
+            proc = subprocess.Popen("sysctl -n hw.ncpu", shell = True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            stdout_results, stderr_results = proc.communicate()
+            if len(stderr_results) == 0:
+                processors = int(stdout_results)
 
     #
     # Now, spin up one thread per processor which will eventually mean one test
@@ -934,7 +978,8 @@ def run_tests():
             else:
                 multiple = ""
 
-            job.set_shell_command("utils/test-runner --suite='%s'%s" % (test, multiple))
+            path_cmd = os.path.join("utils", "test-runner --suite='%s'%s" % (test, multiple))
+            job.set_shell_command(path_cmd)
 
             if options.valgrind and test in core_valgrind_skip_tests:
                 job.set_is_skip(True)
@@ -1108,6 +1153,7 @@ def run_tests():
             else:
                 f.write('  <Result>CRASH</Result>\n')
 
+            f.write('  <ElapsedTime>%s</ElapsedTime>\n' % job.elapsed_time)
             f.write('</Example>\n')
             f.close()
 
@@ -1167,7 +1213,7 @@ def run_tests():
             else:
                 if job.returncode == 0 or job.returncode == 1 or job.returncode == 2:
                     f_to = open(xml_results_file, 'a')
-                    f_from = open(job.tmp_file_name, 'r')
+                    f_from = open(job.tmp_file_name)
                     f_to.write(f_from.read())
                     f_to.close()
                     f_from.close()
