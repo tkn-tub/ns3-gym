@@ -158,7 +158,16 @@ MeshTest::CreateNodes ()
    * mesh point device
    */
   mesh = MeshHelper::Default ();
-  mesh.SetStackInstaller (m_stack, "Root", Mac48AddressValue (Mac48Address (m_root.c_str ())));
+  if (!Mac48Address (m_root.c_str ()).IsBroadcast ())
+    {
+      mesh.SetStackInstaller (m_stack, "Root", Mac48AddressValue (Mac48Address (m_root.c_str ())));
+    }
+  else
+    {
+      //If root is not set, we do not use "Root" attribute, because it
+      //is specified only for 11s
+      mesh.SetStackInstaller (m_stack);
+    }
   if (m_chan)
     {
       mesh.SetSpreadInterfaceChannels (MeshHelper::SPREAD_CHANNELS);
