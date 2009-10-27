@@ -122,6 +122,11 @@ def register_Ns3MeshWifiBeacon_methods(root_module, cls):
     cls.add_method('CreatePacket', 
                    'ns3::Ptr< ns3::Packet >', 
                    [])
+    ## mesh-wifi-beacon.h: ns3::Time ns3::MeshWifiBeacon::GetBeaconInterval() const [member function]
+    cls.add_method('GetBeaconInterval', 
+                   'ns3::Time', 
+                   [], 
+                   is_const=True)
     return
 
 def register_Ns3WifiInformationElement_methods(root_module, cls):

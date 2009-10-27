@@ -282,13 +282,14 @@ def configure(conf):
         env.append_value('CXXDEFINES', 'NS3_ASSERT_ENABLE')
         env.append_value('CXXDEFINES', 'NS3_LOG_ENABLE')
 
-    if Options.options.build_profile == 'release': 
-        env.append_value('CXXFLAGS', '-fomit-frame-pointer') 
-        env.append_value('CXXFLAGS', '-march=native') 
-
     env['PLATFORM'] = sys.platform
 
     if conf.env['CXX_NAME'] in ['gcc', 'icc']:
+        if Options.options.build_profile == 'release': 
+            env.append_value('CXXFLAGS', '-fomit-frame-pointer') 
+            if conf.check_compilation_flag('-march=native'):
+                env.append_value('CXXFLAGS', '-march=native') 
+
         if sys.platform == 'win32':
             env.append_value("LINKFLAGS", "-Wl,--enable-runtime-pseudo-reloc")
         elif sys.platform == 'cygwin':

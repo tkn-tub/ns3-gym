@@ -248,7 +248,7 @@ runBench (void (*bench) (uint32_t), uint32_t n, char const *name)
   SystemWallClockMs time;
   time.Start ();
   (*bench) (n);
-  unsigned long long deltaMs = time.End ();
+  uint64_t deltaMs = time.End ();
   double ps = n;
   ps *= 1000;
   ps /= deltaMs;
