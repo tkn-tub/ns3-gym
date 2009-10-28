@@ -560,7 +560,7 @@ def make_library_path():
         for path in NS3_MODULE_PATH:
             os.environ["DYLD_LIBRARY_PATH"] += ":" + path
         if options.verbose:
-            print "os.environ[\"DYLD_LIBRARY_PATH\"] == %s" % os.environ["DY_LIBRARY_PATH"]
+            print "os.environ[\"DYLD_LIBRARY_PATH\"] == %s" % os.environ["DYLD_LIBRARY_PATH"]
     elif sys.platform == "win32":
         if not have_PATH:
             os.environ["PATH"] = ""
