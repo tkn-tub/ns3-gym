@@ -27,14 +27,7 @@
 namespace ns3 {
 
 QosWifiMacHelper::QosWifiMacHelper ()
-{
-  ObjectFactory defaultAggregator;
-  defaultAggregator.SetTypeId ("ns3::MsduStandardAggregator");
-  m_aggregators.insert (std::make_pair (AC_VO, defaultAggregator));
-  m_aggregators.insert (std::make_pair (AC_VI, defaultAggregator));
-  m_aggregators.insert (std::make_pair (AC_BE, defaultAggregator));
-  m_aggregators.insert (std::make_pair (AC_BK, defaultAggregator));
-}
+{}
 
 QosWifiMacHelper::~QosWifiMacHelper ()
 {}
@@ -77,8 +70,7 @@ QosWifiMacHelper::SetMsduAggregatorForAc (AccessClass accessClass, std::string t
                                           std::string n2, const AttributeValue &v2,
                                           std::string n3, const AttributeValue &v3)
 {
-  std::map<AccessClass, ObjectFactory>::iterator it;
-  it = m_aggregators.find (accessClass);
+  std::map<AccessClass, ObjectFactory>::iterator it = m_aggregators.find (accessClass);
   if (it != m_aggregators.end ())
     {
       it->second.SetTypeId (type);
@@ -87,17 +79,32 @@ QosWifiMacHelper::SetMsduAggregatorForAc (AccessClass accessClass, std::string t
       it->second.Set (n2, v2);
       it->second.Set (n3, v3);
     }
+  else
+    {
+      ObjectFactory factory;
+      factory.SetTypeId (type);
+      factory.Set (n0, v0);
+      factory.Set (n1, v1);
+      factory.Set (n2, v2);
+      factory.Set (n3, v3);
+      m_aggregators.insert (std::make_pair (accessClass, factory));
+    }
 }
 
 void
 QosWifiMacHelper::Setup (Ptr<WifiMac> mac, enum AccessClass ac, std::string dcaAttrName) const
 {
-  ObjectFactory factory  = m_aggregators.find (ac)->second;
-  PointerValue ptr;
-  mac->GetAttribute (dcaAttrName, ptr);
-  Ptr<EdcaTxopN> edca = ptr.Get<EdcaTxopN> ();
-  Ptr<MsduAggregator> aggregator = factory.Create<MsduAggregator> ();
-  edca->SetMsduAggregator (aggregator);
+  std::map<AccessClass, ObjectFactory>::const_iterator it = m_aggregators.find (ac);
+  if (it != m_aggregators.end ())
+    {
+      ObjectFactory factory = it->second;
+
+      PointerValue ptr;
+      mac->GetAttribute (dcaAttrName, ptr);
+      Ptr<EdcaTxopN> edca = ptr.Get<EdcaTxopN> ();
+      Ptr<MsduAggregator> aggregator = factory.Create<MsduAggregator> ();
+      edca->SetMsduAggregator (aggregator);
+    }
 }
 
 
