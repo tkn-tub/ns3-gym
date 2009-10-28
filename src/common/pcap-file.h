@@ -14,6 +14,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * 
+ * Author:  Craig Dowell (craigdo@ee.washington.edu)
  */
 
 #ifndef PCAP_FILE_H
@@ -125,7 +127,7 @@ public:
    * time zone from UTC/GMT.  For example, Pacific Standard Time in the US is
    * GMT-8, so one would enter -8 for that correction.  Defaults to 0 (UTC).
    *
-   * \returns false if the open succeeds, true otherwise.
+   * \return false if the open succeeds, true otherwise.
    *
    * \warning Calling this method on an existing file will result in the loss
    * any existing data.
@@ -135,8 +137,31 @@ public:
              int32_t timeZoneCorrection = ZONE_DEFAULT,
              bool swapMode = false);
 
+  /**
+   * \brief Write next packet to file
+   * 
+   * \param tsSec       Packet timestamp, seconds 
+   * \param tsUsec      Packet timestamp, microseconds
+   * \param data        Data buffer
+   * \param totalLen    Total packet length
+   * 
+   * \return true on error, false otherwise
+   */
   bool Write (uint32_t tsSec, uint32_t tsUsec, uint8_t const * const data, uint32_t totalLen);
 
+  /**
+   * \brief Read next packet from file
+   * 
+   * \param data        [out] Data buffer
+   * \param maxBytes    Allocated data buffer size
+   * \param tsSec       [out] Packet timestamp, seconds
+   * \param tsUsec      [out] Packet timestamp, microseconds
+   * \param inclLen     [out] Included length
+   * \param origLen     [out] Original length
+   * \param readLen     [out] Number of bytes read
+   * 
+   * \return true if read failed, false otherwise
+   */
   bool Read (uint8_t * const data, 
              uint32_t maxBytes,
              uint32_t &tsSec, 
@@ -154,6 +179,21 @@ public:
   uint32_t GetSigFigs (void);
   uint32_t GetSnapLen (void);
   uint32_t GetDataLinkType (void);
+  
+  /**
+   * \brief Compare two PCAP files packet-by-packet
+   * 
+   * \return true if files are different, false otherwise
+   * 
+   * \param  f1         First PCAP file name
+   * \param  f2         Second PCAP file name
+   * \param  sec        [out] Time stamp of first different packet, seconds. Undefined if files doesn't differ.
+   * \param  uses       [out] Time stamp of first different packet, microseconds. Undefined if files doesn't differ.
+   * \param  snapLen    Snap length (if used)
+   */
+  static bool Diff (std::string const & f1, std::string const & f2, 
+                    uint32_t & sec, uint32_t & usec, 
+                    uint32_t snapLen = SNAPLEN_DEFAULT);
 
 private:
   typedef struct {
