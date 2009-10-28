@@ -12,6 +12,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * 
+ * Author:  Craig Dowell (craigdo@ee.washington.edu)
  */
 
 #include <iostream>
@@ -948,6 +950,62 @@ ReadFileTestCase::DoRun (void)
   return false;
 }
 
+// ===========================================================================
+// Test case to make sure that the Pcap::Diff method works as expected
+// ===========================================================================
+class DiffTestCase : public TestCase
+{
+public:
+  DiffTestCase ();
+
+private:
+  virtual bool DoRun (void);
+};
+
+DiffTestCase::DiffTestCase ()
+  : TestCase ("Check that PcapFile::Diff works as expected")
+{
+}
+
+bool
+DiffTestCase::DoRun (void)
+{
+  //
+  // Check that PcapDiff(file, file) is false
+  //
+  std::string filename = NS_TEST_SOURCEDIR + "known.pcap";
+  uint32_t sec(0), usec(0);
+  bool diff = PcapFile::Diff (filename, filename, sec, usec);
+  NS_TEST_EXPECT_MSG_EQ (diff, false, "PcapDiff(file, file) must always be false");
+
+  //
+  // Create different PCAP file (with the same timestamps, but different packets) and check that it is indeed different 
+  //
+  std::string filename2 = "different.pcap";
+  PcapFile f;
+  
+  bool err = f.Open (filename2, "w");
+  NS_TEST_ASSERT_MSG_EQ (err, false, "Open (" << filename2 << ", \"w\") returns error");
+  err = f.Init (1, N_PACKET_BYTES);
+  NS_TEST_ASSERT_MSG_EQ (err, false, "Init (1, " << N_PACKET_BYTES << ") returns error");
+  
+  for (uint32_t i = 0; i < N_KNOWN_PACKETS; ++i)
+    {
+      PacketEntry const & p = knownPackets[i];
+      
+      err = f.Write (p.tsSec, p.tsUsec, (uint8_t const *)p.data, p.origLen);
+      NS_TEST_EXPECT_MSG_EQ (err, false, "Write must not fail");
+    }
+  f.Close ();
+
+  diff = PcapFile::Diff (filename, filename2, sec, usec);
+  NS_TEST_EXPECT_MSG_EQ (diff, true, "PcapDiff(file, file2) must be true");
+  NS_TEST_EXPECT_MSG_EQ (sec,  2, "Files are different from 2.3696 seconds");
+  NS_TEST_EXPECT_MSG_EQ (usec, 3696, "Files are different from 2.3696 seconds");
+  
+  return GetErrorStatus();
+}
+
 class PcapFileTestSuite : public TestSuite
 {
 public:
@@ -963,6 +1021,7 @@ PcapFileTestSuite::PcapFileTestSuite ()
   AddTestCase (new FileHeaderTestCase);
   AddTestCase (new RecordHeaderTestCase);
   AddTestCase (new ReadFileTestCase);
+  AddTestCase (new DiffTestCase);
 }
 
 PcapFileTestSuite pcapFileTestSuite;
