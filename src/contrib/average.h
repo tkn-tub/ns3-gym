@@ -18,8 +18,8 @@
  * Authors: Pavel Boyko <boyko@iitp.ru>
  */
 
-#ifndef STATS_H_
-#define STATS_H_
+#ifndef AVERAGE_H
+#define AVERAGE_H
 #include <cmath>
 #include <iostream>
 #include <limits>
@@ -79,4 +79,4 @@ std::ostream & operator<< (std::ostream & os, Average<T> const & x)
   return os;
 }
 
-#endif /* STATS_H_ */
+#endif /* AVERAGE_H */

@@ -87,12 +87,12 @@ public:
  
   ///\name Handle link failure callback
   //\{
-  void SetCallback (Callback<void, Ipv4Address> cb) { m_handleLinleFailure = cb;}
-  Callback<void, Ipv4Address> GetCallback () const { return m_handleLinleFailure; }
+  void SetCallback (Callback<void, Ipv4Address> cb) { m_handleLinkFailure = cb;}
+  Callback<void, Ipv4Address> GetCallback () const { return m_handleLinkFailure; }
   //\}
 private:
   /// link failure callback
-  Callback<void, Ipv4Address> m_handleLinleFailure;
+  Callback<void, Ipv4Address> m_handleLinkFailure;
   /// TX error callback
   Callback<void, WifiMacHeader const &> m_txErrorCallback;
   /// Timer for neighbor's list. Schedule Purge().

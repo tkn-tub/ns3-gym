@@ -50,8 +50,10 @@ Neighbors::IsNeighbor (Ipv4Address addr)
   Purge ();
   for (std::vector<Neighbor>::const_iterator i = m_nb.begin ();
       i != m_nb.end (); ++i)
-    if (i->m_neighborAddress == addr)
-      return true;
+    {
+      if (i->m_neighborAddress == addr)
+        return true;
+    }
   return false;
 }
 
@@ -61,8 +63,10 @@ Neighbors::GetExpireTime (Ipv4Address addr)
   Purge ();
   for (std::vector<Neighbor>::const_iterator i = m_nb.begin (); i
       != m_nb.end (); ++i)
-    if (i->m_neighborAddress == addr)
-      return (i->m_expireTime - Simulator::Now ());
+    {
+      if (i->m_neighborAddress == addr)
+        return (i->m_expireTime - Simulator::Now ());
+    }
   return Seconds (0);
 }
 
@@ -100,14 +104,14 @@ Neighbors::Purge ()
     return;
 
   CloseNeighbor pred;
-  if (!m_handleLinleFailure.IsNull ())
+  if (!m_handleLinkFailure.IsNull ())
     {
       for (std::vector<Neighbor>::iterator j = m_nb.begin (); j != m_nb.end (); ++j)
         {
           if (pred (*j))
             {
               NS_LOG_LOGIC ("Close link to " << j->m_neighborAddress);
-              m_handleLinleFailure (j->m_neighborAddress);
+              m_handleLinkFailure (j->m_neighborAddress);
             }
         }
     }
@@ -158,8 +162,10 @@ Neighbors::ProcessTxError (WifiMacHeader const & hdr)
   Mac48Address addr = hdr.GetAddr1 ();
 
   for (std::vector<Neighbor>::iterator i = m_nb.begin (); i != m_nb.end (); ++i)
-    if (i->m_hardwareAddress == addr)
-      i->close = true;
+    {
+      if (i->m_hardwareAddress == addr)
+        i->close = true;
+    }
   Purge ();
 }
 }
