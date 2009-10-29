@@ -25,8 +25,8 @@
  * Authors: Elena Buchatskaia <borovkovaes@iitp.ru>
  *          Pavel Boyko <boyko@iitp.ru>
  */
-#ifndef __aodv_rtable_h__
-#define __aodv_rtable_h__
+#ifndef AODV_RTABLE_H
+#define AODV_RTABLE_H
 
 #include <cassert>
 #include <map>
@@ -236,7 +236,7 @@ public:
    * \param neighbor - neighbor address link to which assumed to be unidirectional
    * \return true on success
    */
-  bool MarkLinkAsUinidirectional(Ipv4Address neighbor, Time blacklistTimeout);
+  bool MarkLinkAsUnidirectional(Ipv4Address neighbor, Time blacklistTimeout);
   /// Print routing table
   void Print(std::ostream &os);
 
@@ -248,4 +248,4 @@ private:
 
 }}
 
-#endif /* _aodv__rtable_h__ */
+#endif /* AODV_RTABLE_H */

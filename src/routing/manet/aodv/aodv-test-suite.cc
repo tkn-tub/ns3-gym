@@ -514,7 +514,7 @@ struct AodvRtableTest : public TestCase
     NS_TEST_EXPECT_MSG_EQ (rtable.AddRoute (rt4), true, "trivial");
     NS_TEST_EXPECT_MSG_EQ (rtable.SetEntryState (Ipv4Address ("5.5.5.5"), INVALID), true, "trivial");
     NS_TEST_EXPECT_MSG_EQ (rtable.LookupRoute (Ipv4Address ("5.5.5.5"), rt), false, "trivial");
-    NS_TEST_EXPECT_MSG_EQ (rtable.MarkLinkAsUinidirectional (Ipv4Address ("1.2.3.4"), Seconds (2)), true, "trivial");
+    NS_TEST_EXPECT_MSG_EQ (rtable.MarkLinkAsUnidirectional (Ipv4Address ("1.2.3.4"), Seconds (2)), true, "trivial");
     NS_TEST_EXPECT_MSG_EQ (rtable.LookupRoute (Ipv4Address ("1.2.3.4"), rt), true, "trivial");
     NS_TEST_EXPECT_MSG_EQ (rt.IsUnidirectional (), true, "trivial");
     rt.SetLifeTime (Seconds (-5));

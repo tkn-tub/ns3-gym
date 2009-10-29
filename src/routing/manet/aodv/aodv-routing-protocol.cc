@@ -439,7 +439,7 @@ RoutingProtocol::NotifyInterfaceUp (uint32_t i)
   Ptr<Ipv4L3Protocol> l3 = m_ipv4->GetObject<Ipv4L3Protocol> ();
   if (l3->GetNAddresses (i) > 1)
     {
-      NS_LOG_LOGIC ("AODV does not work with more then one address per each interface.");
+      NS_LOG_WARN ("AODV does not work with more then one address per each interface.");
     }
   Ipv4InterfaceAddress iface = l3->GetAddress (i, 0);
   if (iface.GetLocal () == Ipv4Address ("127.0.0.1"))
@@ -1052,7 +1052,7 @@ RoutingProtocol::RecvReply (Ptr<Packet> p, Ipv4Address receiver, Ipv4Address sen
   else
     {
       // The forward route for this destination is created if it does not already exist.
-      NS_LOG_LOGIC("add new route");
+      NS_LOG_LOGIC ("add new route");
       m_routingTable.AddRoute (newEntry);
     }
   // Acknowledge receipt of the RREP by sending a RREP-ACK message back
@@ -1174,11 +1174,13 @@ RoutingProtocol::RecvError (Ptr<Packet> p, Ipv4Address src )
         {
           for (std::map<Ipv4Address, uint32_t>::const_iterator i =
               dstWithNextHopSrc.begin (); i != dstWithNextHopSrc.end (); ++i)
-            if (i->first == un.first)
-              {
-                Ipv4Address dst = un.first;
-                unreachable.insert (un);
-              }
+            {
+              if (i->first == un.first)
+                {
+                  Ipv4Address dst = un.first;
+                  unreachable.insert (un);
+                }
+            }
         }
     }
 
@@ -1276,7 +1278,7 @@ void
 RoutingProtocol::AckTimerExpire (Ipv4Address neighbor, Time blacklistTimeout)
 {
   NS_LOG_FUNCTION(this);
-  m_routingTable.MarkLinkAsUinidirectional (neighbor, blacklistTimeout);
+  m_routingTable.MarkLinkAsUnidirectional (neighbor, blacklistTimeout);
 }
 
 void
@@ -1450,11 +1452,13 @@ RoutingProtocol::SendRerrMessage (Ptr<Packet> packet, std::vector<Ipv4Address> p
       bool result = true;
       for (std::vector<Ipv4InterfaceAddress>::const_iterator i =
           ifaces.begin (); i != ifaces.end (); ++i)
-        if (*i == toPrecursor.GetInterface ())
-          {
-            result = false;
-            break;
-          }
+        {
+          if (*i == toPrecursor.GetInterface ())
+            {
+              result = false;
+              break;
+            }
+        }
       if (result)
         ifaces.push_back (toPrecursor.GetInterface ());
     }

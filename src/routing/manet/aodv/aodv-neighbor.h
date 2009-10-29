@@ -26,8 +26,8 @@
  *          Pavel Boyko <boyko@iitp.ru>
  */
 
-#ifndef AODVNEIGHBOR_H_
-#define AODVNEIGHBOR_H_
+#ifndef AODVNEIGHBOR_H
+#define AODVNEIGHBOR_H
 
 #include "ns3/simulator.h"
 #include "ns3/timer.h"
@@ -111,4 +111,4 @@ private:
 }
 }
 
-#endif /* AODVNEIGHBOR_H_ */
+#endif /* AODVNEIGHBOR_H */

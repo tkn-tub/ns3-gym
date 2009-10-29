@@ -76,8 +76,10 @@ RoutingTableEntry::LookupPrecursor (Ipv4Address id)
 {
   for (std::vector<Ipv4Address>::const_iterator i = m_precursorList.begin (); i
       != m_precursorList.end (); ++i)
-    if (*i == id)
-      return true;
+    {
+      if (*i == id)
+        return true;
+    }
   return false;
 }
 
@@ -116,8 +118,10 @@ RoutingTableEntry::GetPrecursors (std::vector<Ipv4Address> & prec) const
       bool result = true;
       for (std::vector<Ipv4Address>::const_iterator j = prec.begin (); j
           != prec.end (); ++j)
-        if (*j == *i)
-          result = false;
+        {
+          if (*j == *i)
+            result = false;
+        }
       if (result)
         prec.push_back (*i);
     }
@@ -251,11 +255,13 @@ RoutingTable::InvalidateRoutesWithDst (const std::map<Ipv4Address, uint32_t> & u
     {
       for (std::map<Ipv4Address, uint32_t>::const_iterator j =
           unreachable.begin (); j != unreachable.end (); ++j)
-        if ((i->first == j->first) && (i->second.GetFlag () == VALID))
-          {
-            NS_LOG_LOGIC ("Invalidate route with destination address " << i->first);
-            i->second.Invalidate (m_badLinkLifetime);
-          }
+        {
+          if ((i->first == j->first) && (i->second.GetFlag () == VALID))
+            {
+              NS_LOG_LOGIC ("Invalidate route with destination address " << i->first);
+              i->second.Invalidate (m_badLinkLifetime);
+            }
+        }
     }
 }
 
@@ -308,7 +314,7 @@ RoutingTable::Purge ()
 }
 
 bool
-RoutingTable::MarkLinkAsUinidirectional (Ipv4Address neighbor, Time blacklistTimeout)
+RoutingTable::MarkLinkAsUnidirectional (Ipv4Address neighbor, Time blacklistTimeout)
 {
   std::map<Ipv4Address, RoutingTableEntry>::iterator i =
       m_ipv4AddressEntry.find (neighbor);

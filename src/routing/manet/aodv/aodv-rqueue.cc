@@ -51,10 +51,12 @@ RequestQueue::Enqueue (QueueEntry & entry)
   Purge ();
   for (std::vector<QueueEntry>::const_iterator i = m_queue.begin (); i
       != m_queue.end (); ++i)
-    if ((i->GetPacket ()->GetUid () == entry.GetPacket ()->GetUid ())
-        && (i->GetIpv4Header ().GetDestination ()
-            == entry.GetIpv4Header ().GetDestination ()))
-      return false;
+    {
+      if ((i->GetPacket ()->GetUid () == entry.GetPacket ()->GetUid ())
+          && (i->GetIpv4Header ().GetDestination ()
+              == entry.GetIpv4Header ().GetDestination ()))
+        return false;
+    }
   entry.SetExpireTime (m_queueTimeout);
   if (m_queue.size () == m_maxLen)
     {
@@ -104,8 +106,10 @@ RequestQueue::Find (Ipv4Address dst)
 {
   for (std::vector<QueueEntry>::const_iterator i = m_queue.begin (); i
       != m_queue.end (); ++i)
-    if (i->GetIpv4Header ().GetDestination () == dst)
-      return true;
+    {
+      if (i->GetIpv4Header ().GetDestination () == dst)
+        return true;
+    }
   return false;
 }
 

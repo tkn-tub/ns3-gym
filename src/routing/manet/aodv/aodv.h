@@ -26,8 +26,8 @@
  *          Pavel Boyko <boyko@iitp.ru>
  */
 
-#ifndef AODV_H_
-#define AODV_H_
+#ifndef AODV_H
+#define AODV_H
 
 /**
  * \ingroup routing
@@ -80,4 +80,4 @@
    */
  */
 
-#endif /* AODV_H_ */
+#endif /* AODV_H */
