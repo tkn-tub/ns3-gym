@@ -320,7 +320,7 @@ HwmpProtocol::ForwardUnicast (uint32_t  sourceIface, const Mac48Address source, 
 {
   NS_ASSERT(destination != Mac48Address::GetBroadcast ());
   HwmpRtable::LookupResult result = m_rtable->LookupReactive (destination);
-  NS_LOG_DEBUG("Requested src = "<<source<<", dst = "<<destination<<", I am "<<GetAddress ()<<", RA = "<<result.retransmitter);
+  NS_LOG_DEBUG ("Requested src = "<<source<<", dst = "<<destination<<", I am "<<GetAddress ()<<", RA = "<<result.retransmitter);
   if (result.retransmitter == Mac48Address::GetBroadcast ())
     {
       result = m_rtable->LookupProactive ();
@@ -477,6 +477,15 @@ HwmpProtocol::ReceivePreq (IePreq preq, Mac48Address from, uint32_t interface, M
                   preq.GetOriginatorSeqNumber ()
                   );
               ProactivePathResolved ();
+              m_rtable->AddReactivePath (
+                  preq.GetOriginatorAddress (),
+                  from,
+                  interface,
+                  preq.GetMetric (),
+                  MicroSeconds (preq.GetLifetime () * 1024),
+                  preq.GetOriginatorSeqNumber ()
+                  );
+              ReactivePathResolved (preq.GetOriginatorAddress ());
             }
           if (!preq.IsNeedNotPrep ())
             {
@@ -608,11 +617,6 @@ HwmpProtocol::ReceivePrep (IePrep prep, Mac48Address from, uint32_t interface, M
     {
       NS_LOG_DEBUG("I am "<<GetAddress ()<<", resolved "<<prep.GetOriginatorAddress ());
       return;
-    }
-  if (result.retransmitter == Mac48Address::GetBroadcast ())
-    {
-      //try to look for default route
-      result = m_rtable->LookupProactive ();
     }
   if (result.retransmitter == Mac48Address::GetBroadcast ())
     {
