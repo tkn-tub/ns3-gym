@@ -911,7 +911,7 @@ RoutingProtocol::SendReply (RreqHeader const & rreqHeader, RoutingTableEntry con
    */
   if (!rreqHeader.GetUnknownSeqno () && (rreqHeader.GetDstSeqno () == m_seqNo + 1))
     m_seqNo++;
-  RrepHeader rrepHeader ( /*prefixSize=*/0, /*hops=*/toOrigin.GetHop (), /*dst=*/rreqHeader.GetDst (),
+  RrepHeader rrepHeader ( /*prefixSize=*/0, /*hops=*/0, /*dst=*/rreqHeader.GetDst (),
                           /*dstSeqNo=*/m_seqNo, /*origin=*/toOrigin.GetDestination (), /*lifeTime=*/MyRouteTimeout);
   Ptr<Packet> packet = Create<Packet> ();
   packet->AddHeader (rrepHeader);

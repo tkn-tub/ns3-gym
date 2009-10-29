@@ -85,7 +85,7 @@ ChainRegressionTest::DoRun ()
   CreateDevices ();
   
   // At m_time / 3 move central node away and see what will happen
-  Ptr<Node> node = m_nodes->Get (m_size / 2 + 1);
+  Ptr<Node> node = m_nodes->Get (m_size / 2);
   Ptr<MobilityModel> mob = node->GetObject<MobilityModel> ();
   Simulator::Schedule (m_time / Scalar(3.0), &MobilityModel::SetPosition, mob, Vector (1e5, 1e5, 1e5));
 
@@ -126,7 +126,7 @@ ChainRegressionTest::CreateDevices ()
   YansWifiChannelHelper wifiChannel = YansWifiChannelHelper::Default ();
   wifiPhy.SetChannel (wifiChannel.Create ());
   WifiHelper wifi = WifiHelper::Default ();
-  wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager", "DataMode", StringValue ("wifia-6mbs"), "RtsCtsThreshold", UintegerValue (0));
+  wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager", "DataMode", StringValue ("wifia-6mbs"), "RtsCtsThreshold", StringValue ("2200"));
   NetDeviceContainer devices = wifi.Install (wifiPhy, wifiMac, *m_nodes); 
   
   // 2. Setup TCP/IP & AODV
