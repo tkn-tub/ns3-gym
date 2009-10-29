@@ -163,12 +163,17 @@ private:
   */
   void ScheduleRreqRetry (Ipv4Address dst);
   /**
-   * Update route lifetime.
+   * Set lifetime field in routing table entry to the maximum of existing lifetime and lt, if the entry exists
    * \param addr - destination address
+   * \param lt - proposed time for lifetime field in routing table entry for destination with address addr.
    * \return true if route to destination address addr exist
    */
-  bool UpdateRouteLifeTime (Ipv4Address addr, Time lifetime);
-  /// Update neighbor record. \param receiver is supposed to be my interface
+  bool UpdateRouteLifeTime (Ipv4Address addr, Time lt);
+  /**
+   * Update neighbor record.
+   * \param receiver is supposed to be my interface
+   * \param sender is supposed to be IP address of my neighbor.
+   */
   void UpdateRouteToNeighbor (Ipv4Address sender, Ipv4Address receiver);
   /// Check that packet is send from own interface
   bool IsMyOwnAddress (Ipv4Address src);
