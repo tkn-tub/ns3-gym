@@ -33,7 +33,15 @@ namespace aodv {
  * 
  * \brief AODV chain regression test
  *
- * TODO: describe test topology and traffic 
+ * This script creates 1-dimensional grid topology and then ping last node from the first one:
+ *
+ * [10.1.1.1] <-- step --> [10.1.1.2] <-- step --> [10.1.1.3] <-- step --> [10.1.1.4] <-- step --> [10.1.1.5]
+ *
+ * Each node can hear only his right and his left neighbor, if they exist. When one third of total time expired,
+ * central node moves away. After this, node 3 doesn't hear any packets from other nodes and nobody hears his packets.
+ * We want to demonstrate in this script
+ * 1) route establishing
+ * 2) broken link detection both from layer 2 information and hello messages.
  * 
  * \verbatim
  Expected packets time diagram.
