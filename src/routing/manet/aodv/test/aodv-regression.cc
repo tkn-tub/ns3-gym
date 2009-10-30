@@ -41,7 +41,7 @@
 #include <sstream>
 
 /// Set to true to rewrite reference traces, leave false to run regression tests
-const bool WRITE_VECTORS = true;
+const bool WRITE_VECTORS = false;
 
 namespace ns3 {
 namespace aodv {
