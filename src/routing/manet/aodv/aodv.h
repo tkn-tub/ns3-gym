@@ -76,8 +76,6 @@
  * This technique require direct access to IP header, which contradict assertion from AODV RFC that AODV works over UDP. Our model use UDP
  * for simplicity, but this disable us to implement protocol optimizations. We don't use low layer raw socket, because they are not portable.
  *
-
-   */
  */
 
 #endif /* AODV_H */
