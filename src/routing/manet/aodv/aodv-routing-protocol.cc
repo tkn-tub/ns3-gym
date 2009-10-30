@@ -465,7 +465,7 @@ RoutingProtocol::NotifyInterfaceUp (uint32_t i)
   Ptr<WifiNetDevice> wifi = dev->GetObject<WifiNetDevice> ();
   if (wifi == 0)
     return;
-  Ptr<WifiMac> mac = wifi->GetMac ()->GetObject<AdhocWifiMac> ();
+  Ptr<WifiMac> mac = wifi->GetMac ();
   if (mac == 0)
     return;
   
