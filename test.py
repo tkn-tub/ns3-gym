@@ -804,11 +804,33 @@ def run_tests():
         # For example, if the user only wants to run BVT tests, we only have
         # to build the test-runner and can ignore all of the examples.
         #
+        # If the user only wants to run a single example, then we can just build
+        # that example.
+        #
+        # If there is no constraint, then we have to build everything since the
+        # user wants to run everything.
+        #
         if options.kinds or options.list or (len(options.constrain) and options.constrain in core_kinds):
-            proc = subprocess.Popen("waf --target=test-runner", shell = True)
-        else:
-            proc = subprocess.Popen("waf", shell = True)
+            if sys.platform == "win32":
+                waf_cmd = "waf --target=test-runner"
+            else:
+                waf_cmd = "./waf --target=test-runner"
+        elif len(options.example):
+            if sys.platform == "win32":
+                waf_cmd = "waf --target=%s" % os.path.basename(options.example)
+            else:
+                waf_cmd = "./waf --target=%s" % os.path.basename(options.example)
 
+        else:
+            if sys.platform == "win32":
+                waf_cmd = "waf"
+            else:
+                waf_cmd = "./waf"
+
+        if options.verbose:
+            print "Building: %s" % waf_cmd
+
+        proc = subprocess.Popen(waf_cmd, shell = True)
         proc.communicate()
 
     #
