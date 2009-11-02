@@ -46,58 +46,58 @@ namespace ns3
  */
 class Ipv6Extension : public Object
 {
-  public:
-    /**
-     * \brief Get the type identificator.
-     * \return type identificator
-     */
-    static TypeId GetTypeId ();
+public:
+  /**
+   * \brief Get the type identificator.
+   * \return type identificator
+   */
+  static TypeId GetTypeId ();
 
-    /**
-     * \brief Destructor.
-     */
-    virtual ~Ipv6Extension ();
+  /**
+   * \brief Destructor.
+   */
+  virtual ~Ipv6Extension ();
 
-    /**
-     * \brief Set the node.
-     * \param node the node to set
-     */
-    void SetNode (Ptr<Node> node);
+  /**
+   * \brief Set the node.
+   * \param node the node to set
+   */
+  void SetNode (Ptr<Node> node);
 
-    /**
-     * \brief Get the node.
-     * \return the node
-     */
-    Ptr<Node> GetNode () const;
+  /**
+   * \brief Get the node.
+   * \return the node
+   */
+  Ptr<Node> GetNode () const;
 
-    /**
-     * \brief Get the extension number.
-     * \return extension number
-     */
-    virtual uint8_t GetExtensionNumber () const = 0;
+  /**
+   * \brief Get the extension number.
+   * \return extension number
+   */
+  virtual uint8_t GetExtensionNumber () const = 0;
 
-    /**
-     * \brief Process method
-     * Called from Ipv6L3Protocol::Receive.
-     *
-     * \param packet the packet
-     * \param offset the offset of the extension to process
-     * \param ipv6Header the IPv6 header of packet received
-     * \param dst destination address of the packet received (i.e. us)
-     * \param nextHeader the next header
-     * \param isDropped if the packet must be dropped
-     * \return the size processed
-     */
-    virtual uint8_t Process (Ptr<Packet>& packet, uint8_t offset, Ipv6Header const& ipv6Header, Ipv6Address dst, uint8_t *nextHeader, bool& isDropped) = 0;
+  /**
+   * \brief Process method
+   * Called from Ipv6L3Protocol::Receive.
+   *
+   * \param packet the packet
+   * \param offset the offset of the extension to process
+   * \param ipv6Header the IPv6 header of packet received
+   * \param dst destination address of the packet received (i.e. us)
+   * \param nextHeader the next header
+   * \param isDropped if the packet must be dropped
+   * \return the size processed
+   */
+  virtual uint8_t Process (Ptr<Packet>& packet, uint8_t offset, Ipv6Header const& ipv6Header, Ipv6Address dst, uint8_t *nextHeader, bool& isDropped) = 0;
 
-  protected:
-    TracedCallback<Ptr<const Packet> > m_dropTrace;
+protected:
+  TracedCallback<Ptr<const Packet> > m_dropTrace;
 
-  private:
-    /**
-     * \brief The node.
-     */
-    Ptr<Node> m_node;
+private:
+  /**
+   * \brief The node.
+   */
+  Ptr<Node> m_node;
 };
 
 /**
@@ -106,43 +106,43 @@ class Ipv6Extension : public Object
  */
 class Ipv6ExtensionHopByHop : public Ipv6Extension
 {
-  public:
-    static const uint8_t EXT_NUMBER = 0;
+public:
+  static const uint8_t EXT_NUMBER = 0;
 
-    /**
-     * \brief Get the type identificator.
-     * \return type identificator
-     */
-    static TypeId GetTypeId ();
+  /**
+   * \brief Get the type identificator.
+   * \return type identificator
+   */
+  static TypeId GetTypeId ();
 
-    /**
-     * \brief Constructor.
-     */
-    Ipv6ExtensionHopByHop ();
+  /**
+   * \brief Constructor.
+   */
+  Ipv6ExtensionHopByHop ();
 
-    /**
-     * \brief Destructor.
-     */
-    ~Ipv6ExtensionHopByHop ();
+  /**
+   * \brief Destructor.
+   */
+  ~Ipv6ExtensionHopByHop ();
 
-    /**
-     * \brief Get the extension number.
-     * \return extension number
-     */
-    virtual uint8_t GetExtensionNumber () const;
+  /**
+   * \brief Get the extension number.
+   * \return extension number
+   */
+  virtual uint8_t GetExtensionNumber () const;
 
-    /**
-     * \brief Process method
-     * Called from Ipv6L3Protocol::Receive.
-     * \param packet the packet
-     * \param offset the offset of the extension to process
-     * \param ipv6Header the IPv6 header of packet received
-     * \param dst destination address of the packet received (i.e. us)
-     * \param nextHeader the next header
-     * \param isDropped if the packet must be dropped
-     * \return the size processed
-     */
-    virtual uint8_t Process (Ptr<Packet>& packet, uint8_t offset, Ipv6Header const& ipv6Header, Ipv6Address dst, uint8_t *nextHeader, bool& isDropped);
+  /**
+   * \brief Process method
+   * Called from Ipv6L3Protocol::Receive.
+   * \param packet the packet
+   * \param offset the offset of the extension to process
+   * \param ipv6Header the IPv6 header of packet received
+   * \param dst destination address of the packet received (i.e. us)
+   * \param nextHeader the next header
+   * \param isDropped if the packet must be dropped
+   * \return the size processed
+   */
+  virtual uint8_t Process (Ptr<Packet>& packet, uint8_t offset, Ipv6Header const& ipv6Header, Ipv6Address dst, uint8_t *nextHeader, bool& isDropped);
 };
 
 /**
@@ -151,43 +151,43 @@ class Ipv6ExtensionHopByHop : public Ipv6Extension
  */
 class Ipv6ExtensionDestination : public Ipv6Extension
 {
-  public:
-    static const uint8_t EXT_NUMBER = 60;
+public:
+  static const uint8_t EXT_NUMBER = 60;
 
-    /**
-     * \brief Get the type identificator.
-     * \return type identificator
-     */
-    static TypeId GetTypeId ();
+  /**
+   * \brief Get the type identificator.
+   * \return type identificator
+   */
+  static TypeId GetTypeId ();
 
-    /**
-     * \brief Constructor.
-     */
-    Ipv6ExtensionDestination ();
+  /**
+   * \brief Constructor.
+   */
+  Ipv6ExtensionDestination ();
 
-    /**
-     * \brief Destructor.
-     */
-    ~Ipv6ExtensionDestination ();
+  /**
+   * \brief Destructor.
+   */
+  ~Ipv6ExtensionDestination ();
 
-    /**
-     * \brief Get the extension number.
-     * \return extension number
-     */
-    virtual uint8_t GetExtensionNumber () const;
+  /**
+   * \brief Get the extension number.
+   * \return extension number
+   */
+  virtual uint8_t GetExtensionNumber () const;
 
-    /**
-     * \brief Process method
-     * Called from Ipv6L3Protocol::Receive.
-     * \param packet the packet
-     * \param offset the offset of the extension to process
-     * \param ipv6Header the IPv6 header of packet received
-     * \param dst destination address of the packet received (i.e. us)
-     * \param nextHeader the next header
-     * \param isDropped if the packet must be dropped
-     * \return the size processed
-     */
-    virtual uint8_t Process (Ptr<Packet>& packet, uint8_t offset, Ipv6Header const& ipv6Header, Ipv6Address dst, uint8_t *nextHeader, bool& isDropped);
+  /**
+   * \brief Process method
+   * Called from Ipv6L3Protocol::Receive.
+   * \param packet the packet
+   * \param offset the offset of the extension to process
+   * \param ipv6Header the IPv6 header of packet received
+   * \param dst destination address of the packet received (i.e. us)
+   * \param nextHeader the next header
+   * \param isDropped if the packet must be dropped
+   * \return the size processed
+   */
+  virtual uint8_t Process (Ptr<Packet>& packet, uint8_t offset, Ipv6Header const& ipv6Header, Ipv6Address dst, uint8_t *nextHeader, bool& isDropped);
 };
 
 /**
@@ -196,133 +196,133 @@ class Ipv6ExtensionDestination : public Ipv6Extension
  */
 class Ipv6ExtensionFragment : public Ipv6Extension
 {
+public:
+  static const uint8_t EXT_NUMBER = 44;
+
+ /**
+   * \brief Get the type identificator.
+   * \return type identificator
+   */
+  static TypeId GetTypeId ();
+
+  /**
+   * \brief Constructor.
+   */
+  Ipv6ExtensionFragment ();
+
+  /**
+   * \brief Destructor.
+   */
+  ~Ipv6ExtensionFragment ();
+
+  /**
+   * \brief Get the extension number.
+   * \return extension number
+   */
+  virtual uint8_t GetExtensionNumber () const;
+
+  /**
+   * \brief Process method
+   * Called from Ipv6L3Protocol::Receive.
+   * \param packet the packet
+   * \param offset the offset of the extension to process
+   * \param ipv6Header the IPv6 header of packet received
+   * \param dst destination address of the packet received (i.e. us)
+   * \param nextHeader the next header
+   * \param isDropped if the packet must be dropped
+   * \return the size processed
+   */
+  virtual uint8_t Process (Ptr<Packet>& packet, uint8_t offset, Ipv6Header const& ipv6Header, Ipv6Address dst, uint8_t *nextHeader, bool& isDropped);
+
+  /**
+   * \brief Fragment a packet
+   * \param packet the packet
+   * \param fragmentSize the maximal size of the fragment (unfragmentable part + fragmentation header + fragmentable part)
+   * \param listFragments the list of fragments
+   */
+  void GetFragments (Ptr<Packet> packet, uint32_t fragmentSize, std::list<Ptr<Packet> >& listFragments);
+
+protected:
+  /**
+   * \brief Dispose this object.
+   */
+  virtual void DoDispose ();
+
+private:
+  /**
+   * \class Fragments
+   * \brief A Set of Fragment
+   */
+  class Fragments
+  {
   public:
-    static const uint8_t EXT_NUMBER = 44;
-
-    /**
-     * \brief Get the type identificator.
-     * \return type identificator
-     */
-    static TypeId GetTypeId ();
-
     /**
      * \brief Constructor.
      */
-    Ipv6ExtensionFragment ();
+    Fragments ();
 
     /**
      * \brief Destructor.
      */
-    ~Ipv6ExtensionFragment ();
+    ~Fragments ();
+
+    void Ref () const;
+    void Unref () const;
 
     /**
-     * \brief Get the extension number.
-     * \return extension number
+     * \brief Add a fragment.
+     * \param fragment the fragment
+     * \param fragmentOffset the offset of the fragment
+     * \param moreFragment the bit "More Fragment"
      */
-    virtual uint8_t GetExtensionNumber () const;
+    void AddFragment (Ptr<Packet> fragment, uint16_t fragmentOffset, bool moreFragment);
 
     /**
-     * \brief Process method
-     * Called from Ipv6L3Protocol::Receive.
-     * \param packet the packet
-     * \param offset the offset of the extension to process
-     * \param ipv6Header the IPv6 header of packet received
-     * \param dst destination address of the packet received (i.e. us)
-     * \param nextHeader the next header
-     * \param isDropped if the packet must be dropped
-     * \return the size processed
+     * \brief Set the unfragmentable part of the packet.
+     * \param unfragmentablePart the unfragmentable part
      */
-    virtual uint8_t Process (Ptr<Packet>& packet, uint8_t offset, Ipv6Header const& ipv6Header, Ipv6Address dst, uint8_t *nextHeader, bool& isDropped);
+    void SetUnfragmentablePart (Ptr<Packet> unfragmentablePart);
 
     /**
-     * \brief Fragment a packet
-     * \param packet the packet
-     * \param fragmentSize the maximal size of the fragment (unfragmentable part + fragmentation header + fragmentable part)
-     * \param listFragments the list of fragments
+     * \brief If all fragments have been added.
+     * \returns true if the packet is entire 
      */
-    void GetFragments (Ptr<Packet> packet, uint32_t fragmentSize, std::list<Ptr<Packet> >& listFragments);
+    bool IsEntire () const;
 
-  protected:
     /**
-     * \brief Dispose this object.
+     * \brief Get the entire packet.
+     * \return the entire packet
      */
-    virtual void DoDispose ();
+    Ptr<Packet> GetPacket () const;
 
   private:
     /**
-     * \class Fragments
-     * \brief A Set of Fragment
+     * \brief If other fragments will be sent.
      */
-    class Fragments
-    {
-      public:
-        /**
-         * \brief Constructor.
-         */
-        Fragments ();
-
-        /**
-         * \brief Destructor.
-         */
-        ~Fragments ();
-
-        void Ref () const;
-        void Unref () const;
-
-        /**
-         * \brief Add a fragment.
-         * \param fragment the fragment
-         * \param fragmentOffset the offset of the fragment
-         * \param moreFragment the bit "More Fragment"
-         */
-        void AddFragment (Ptr<Packet> fragment, uint16_t fragmentOffset, bool moreFragment);
-
-        /**
-         * \brief Set the unfragmentable part of the packet.
-         * \param unfragmentablePart the unfragmentable part
-         */
-        void SetUnfragmentablePart (Ptr<Packet> unfragmentablePart);
-
-        /**
-         * \brief If all fragments have been added.
-         * \returns true if the packet is entire 
-         */
-        bool IsEntire () const;
-
-        /**
-         * \brief Get the entire packet.
-         * \return the entire packet
-         */
-        Ptr<Packet> GetPacket () const;
-
-      private:
-        /**
-         * \brief If other fragments will be sent.
-         */
-        bool m_moreFragment;
-
-        /**
-         * \brief The current fragments.
-         */
-        std::list<std::pair<Ptr<Packet>, uint16_t> > m_fragments;
-
-        /**
-         * \brief The unfragmentable part.
-         */
-        Ptr<Packet> m_unfragmentable;
-
-        /**
-         * \brief Number of references.
-         */
-        mutable uint32_t m_refCount;
-    };
-
-    typedef std::map<std::pair<Ipv6Address, uint32_t>, Ptr<Fragments> > MapFragments_t;
+    bool m_moreFragment;
 
     /**
-     * \brief The hash of fragmented packets.
+     * \brief The current fragments.
      */
-    MapFragments_t m_fragments;
+    std::list<std::pair<Ptr<Packet>, uint16_t> > m_fragments;
+
+    /**
+     * \brief The unfragmentable part.
+     */
+    Ptr<Packet> m_unfragmentable;
+
+    /**
+     * \brief Number of references.
+     */
+    mutable uint32_t m_refCount;
+  };
+
+  typedef std::map<std::pair<Ipv6Address, uint32_t>, Ptr<Fragments> > MapFragments_t;
+
+  /**
+   * \brief The hash of fragmented packets.
+   */
+  MapFragments_t m_fragments;
 };
 
 /**
@@ -333,50 +333,50 @@ class Ipv6ExtensionFragment : public Ipv6Extension
  */
 class Ipv6ExtensionRouting : public Ipv6Extension
 {
-  public:
-    static const uint8_t EXT_NUMBER = 43;
+public:
+  static const uint8_t EXT_NUMBER = 43;
 
-    /**
-     * \brief Get the type identificator.
-     * \return type identificator
-     */
-    static TypeId GetTypeId ();
+  /**
+   * \brief Get the type identificator.
+   * \return type identificator
+   */
+  static TypeId GetTypeId ();
 
-    /**
-     * \brief Constructor.
-     */
-    Ipv6ExtensionRouting ();
+  /**
+   * \brief Constructor.
+   */
+  Ipv6ExtensionRouting ();
 
-    /**
-     * \brief Destructor.
-     */
-    ~Ipv6ExtensionRouting ();
+  /**
+   * \brief Destructor.
+   */
+ ~Ipv6ExtensionRouting ();
 
-    /**
-     * \brief Get the extension number.
-     * \return extension number
-     */
-    virtual uint8_t GetExtensionNumber () const;
+  /**
+   * \brief Get the extension number.
+   * \return extension number
+   */
+  virtual uint8_t GetExtensionNumber () const;
 
-    /**
-     * \brief Get the type of routing.
-     * \return type of routing
-     */
-    virtual uint8_t GetTypeRouting () const;
+  /**
+   * \brief Get the type of routing.
+   * \return type of routing
+   */
+  virtual uint8_t GetTypeRouting () const;
 
-    /**
-     * \brief Process method
-     * Called from Ipv6L3Protocol::Receive.
-     *
-     * \param packet the packet
-     * \param offset the offset of the extension to process
-     * \param ipv6Header the IPv6 header of packet received
-     * \param dst destination address of the packet received (i.e. us)
-     * \param nextHeader the next header
-     * \param isDropped if the packet must be dropped
-     * \return the size processed
-     */
-    virtual uint8_t Process (Ptr<Packet>& packet, uint8_t offset, Ipv6Header const& ipv6Header, Ipv6Address dst, uint8_t *nextHeader, bool& isDropped);
+  /**
+   * \brief Process method
+   *
+   * Called from Ipv6L3Protocol::Receive.
+   * \param packet the packet
+   * \param offset the offset of the extension to process
+   * \param ipv6Header the IPv6 header of packet received
+   * \param dst destination address of the packet received (i.e. us)
+   * \param nextHeader the next header
+   * \param isDropped if the packet must be dropped
+   * \return the size processed
+   */
+  virtual uint8_t Process (Ptr<Packet>& packet, uint8_t offset, Ipv6Header const& ipv6Header, Ipv6Address dst, uint8_t *nextHeader, bool& isDropped);
 };
 
 /**
@@ -385,66 +385,66 @@ class Ipv6ExtensionRouting : public Ipv6Extension
  */
 class Ipv6ExtensionRoutingDemux : public Object
 {
-  public:
-    /**
-     * \brief The interface ID.
-     * \return type ID
-     */
-    static TypeId GetTypeId ();
+public:
+  /**
+   * \brief The interface ID.
+   * \return type ID
+   */
+  static TypeId GetTypeId ();
 
-    /**
-     * \brief Constructor.
-     */
-    Ipv6ExtensionRoutingDemux ();
+  /**
+   * \brief Constructor.
+   */
+  Ipv6ExtensionRoutingDemux ();
 
-    /**
-     * \brief Destructor.
-     */
-    virtual ~Ipv6ExtensionRoutingDemux ();
+  /**
+   * \brief Destructor.
+   */
+  virtual ~Ipv6ExtensionRoutingDemux ();
 
-    /**
-     * \brief Set the node.
-     * \param node the node to set
-     */
-    void SetNode (Ptr<Node> node);
+  /**
+   * \brief Set the node.
+   * \param node the node to set
+   */
+  void SetNode (Ptr<Node> node);
 
-    /**
-     * \brief Insert a new IPv6 Routing Extension.
-     * \param extensionRouting the routing extension to insert
-     */
-    void Insert (Ptr<Ipv6ExtensionRouting> extensionRouting);
+  /**
+   * \brief Insert a new IPv6 Routing Extension.
+   * \param extensionRouting the routing extension to insert
+   */
+  void Insert (Ptr<Ipv6ExtensionRouting> extensionRouting);
 
-    /**
-     * \brief Get the routing extension corresponding to typeRouting.
-     * \param typeRouting the number of the routing extension to retrieve
-     * \return a matching IPv6 routing extension
-     */
-    Ptr<Ipv6ExtensionRouting> GetExtensionRouting (uint8_t typeRouting);
+  /**
+   * \brief Get the routing extension corresponding to typeRouting.
+   * \param typeRouting the number of the routing extension to retrieve
+   * \return a matching IPv6 routing extension
+   */
+  Ptr<Ipv6ExtensionRouting> GetExtensionRouting (uint8_t typeRouting);
 
-    /**
-     * \brief Remove a routing extension from this demux.
-     * \param extensionRouting pointer on the extension to remove
-     */
-    void Remove (Ptr<Ipv6ExtensionRouting> extensionRouting);
+  /**
+   * \brief Remove a routing extension from this demux.
+   * \param extensionRouting pointer on the extension to remove
+   */
+  void Remove (Ptr<Ipv6ExtensionRouting> extensionRouting);
 
-  protected:   
-    /**
-     * \brief Dispose this object.
-     */
-    virtual void DoDispose();
+protected:   
+  /**
+   * \brief Dispose this object.
+   */
+  virtual void DoDispose();
 
-  private:
-    typedef std::list<Ptr<Ipv6ExtensionRouting> > Ipv6ExtensionRoutingList_t;
+private:
+  typedef std::list<Ptr<Ipv6ExtensionRouting> > Ipv6ExtensionRoutingList_t;
 
-    /**
-     * \brief List of IPv6 Routing Extensions supported.
-     */
-    Ipv6ExtensionRoutingList_t m_extensionsRouting;
+  /**
+   * \brief List of IPv6 Routing Extensions supported.
+   */
+  Ipv6ExtensionRoutingList_t m_extensionsRouting;
 
-    /**
-     * \brief The node.
-     */
-    Ptr<Node> m_node;
+  /**
+   * \brief The node.
+   */
+  Ptr<Node> m_node;
 };
 
 /**
@@ -453,44 +453,45 @@ class Ipv6ExtensionRoutingDemux : public Object
  */
 class Ipv6ExtensionLooseRouting : public Ipv6ExtensionRouting
 {
-  public:
-    static const uint8_t TYPE_ROUTING;
+public:
+  static const uint8_t TYPE_ROUTING;
 
-    /**
-     * \brief Get the type identificator.
-     * \return type identificator
-     */
-    static TypeId GetTypeId ();
+  /**
+   * \brief Get the type identificator.
+   * \return type identificator
+   */
+  static TypeId GetTypeId ();
 
-    /**
-     * \brief Constructor.
-     */
-    Ipv6ExtensionLooseRouting ();
+  /**
+   * \brief Constructor.
+   */
+  Ipv6ExtensionLooseRouting ();
 
-    /**
-     * \brief Destructor.
-     */
-    ~Ipv6ExtensionLooseRouting ();
+  /**
+   * \brief Destructor.
+   */
+  ~Ipv6ExtensionLooseRouting ();
 
-    /**
-     * \brief Get the type of routing.
-     * \return type of routing
-     */
-    virtual uint8_t GetTypeRouting () const;
+  /**
+   * \brief Get the type of routing.
+   * \return type of routing
+   */
+  virtual uint8_t GetTypeRouting () const;
 
-    /**
-     * \brief Process method
-     * Called from Ipv6L3Protocol::Receive.
-     *
-     * \param packet the packet
-     * \param offset the offset of the extension to process
-     * \param ipv6Header the IPv6 header of packet received
-     * \param dst destination address of the packet received (i.e. us)
-     * \param nextHeader the next header
-     * \param isDropped if the packet must be dropped
-     * \return the size processed
-     */
-    virtual uint8_t Process (Ptr<Packet>& packet, uint8_t offset, Ipv6Header const& ipv6Header, Ipv6Address dst, uint8_t *nextHeader, bool& isDropped);
+  /**
+   * \brief Process method
+   *
+   * Called from Ipv6L3Protocol::Receive.
+   *
+   * \param packet the packet
+   * \param offset the offset of the extension to process
+   * \param ipv6Header the IPv6 header of packet received
+   * \param dst destination address of the packet received (i.e. us)
+   * \param nextHeader the next header
+   * \param isDropped if the packet must be dropped
+   * \return the size processed
+   */
+  virtual uint8_t Process (Ptr<Packet>& packet, uint8_t offset, Ipv6Header const& ipv6Header, Ipv6Address dst, uint8_t *nextHeader, bool& isDropped);
 };
 
 /**
@@ -499,44 +500,44 @@ class Ipv6ExtensionLooseRouting : public Ipv6ExtensionRouting
  */
 class Ipv6ExtensionESP : public Ipv6Extension
 {
-  public:
-    static const uint8_t EXT_NUMBER = 50;
+public:
+  static const uint8_t EXT_NUMBER = 50;
 
-    /**
-     * \brief Get the type identificator.
-     * \return type identificator
-     */
-    static TypeId GetTypeId ();
+  /**
+   * \brief Get the type identificator.
+   * \return type identificator
+   */
+  static TypeId GetTypeId ();
 
-    /**
-     * \brief Constructor.
-     */
-    Ipv6ExtensionESP ();
+  /**
+   * \brief Constructor.
+   */
+  Ipv6ExtensionESP ();
 
-    /**
-     * \brief Destructor.
-     */
-    ~Ipv6ExtensionESP ();
+  /**
+   * \brief Destructor.
+   */
+  ~Ipv6ExtensionESP ();
 
-    /**
-     * \brief Get the extension number.
-     * \return extension number
-     */
-    virtual uint8_t GetExtensionNumber () const;
+  /**
+   * \brief Get the extension number.
+   * \return extension number
+   */
+  virtual uint8_t GetExtensionNumber () const;
 
-    /**
-     * \brief Process method
-     * Called from Ipv6L3Protocol::Receive.
-     *
-     * \param packet the packet
-     * \param offset the offset of the extension to process
-     * \param ipv6Header the IPv6 header of packet received
-     * \param dst destination address of the packet received (i.e. us)
-     * \param nextHeader the next header
-     * \param isDropped if the packet must be dropped
-     * \return the size processed
-     */
-    virtual uint8_t Process (Ptr<Packet>& packet, uint8_t offset, Ipv6Header const& ipv6Header, Ipv6Address dst, uint8_t *nextHeader, bool& isDropped);
+  /**
+   * \brief Process method
+   * Called from Ipv6L3Protocol::Receive.
+   *
+   * \param packet the packet
+   * \param offset the offset of the extension to process
+   * \param ipv6Header the IPv6 header of packet received
+   * \param dst destination address of the packet received (i.e. us)
+   * \param nextHeader the next header
+   * \param isDropped if the packet must be dropped
+   * \return the size processed
+   */
+  virtual uint8_t Process (Ptr<Packet>& packet, uint8_t offset, Ipv6Header const& ipv6Header, Ipv6Address dst, uint8_t *nextHeader, bool& isDropped);
 };
 
 /**
@@ -545,44 +546,44 @@ class Ipv6ExtensionESP : public Ipv6Extension
  */
 class Ipv6ExtensionAH : public Ipv6Extension
 {
-  public:
-    static const uint8_t EXT_NUMBER = 51;
+public:
+  static const uint8_t EXT_NUMBER = 51;
 
-    /**
-     * \brief Get the type identificator.
-     * \return type identificator
-     */
-    static TypeId GetTypeId ();
+  /**
+   * \brief Get the type identificator.
+   * \return type identificator
+   */
+  static TypeId GetTypeId ();
 
-    /**
-     * \brief Constructor.
-     */
-    Ipv6ExtensionAH ();
+  /**
+   * \brief Constructor.
+   */
+  Ipv6ExtensionAH ();
 
-    /**
-     * \brief Destructor.
-     */
-    ~Ipv6ExtensionAH ();
+  /**
+   * \brief Destructor.
+   */
+  ~Ipv6ExtensionAH ();
 
-    /**
-     * \brief Get the extension number.
-     * \return extension number
-     */
-    virtual uint8_t GetExtensionNumber () const;
+  /**
+   * \brief Get the extension number.
+   * \return extension number
+   */
+  virtual uint8_t GetExtensionNumber () const;
 
-    /**
-     * \brief Process method
-     * Called from Ipv6L3Protocol::Receive.
-     *
-     * \param packet the packet
-     * \param offset the offset of the extension to process
-     * \param ipv6Header the IPv6 header of packet received
-     * \param dst destination address of the packet received (i.e. us)
-     * \param nextHeader the next header
-     * \param isDropped if the packet must be dropped
-     * \return the size processed
-     */
-    virtual uint8_t Process (Ptr<Packet>& packet, uint8_t offset, Ipv6Header const& ipv6Header, Ipv6Address dst, uint8_t *nextHeader, bool& isDropped);
+  /**
+   * \brief Process method
+   * Called from Ipv6L3Protocol::Receive.
+   *
+   * \param packet the packet
+   * \param offset the offset of the extension to process
+   * \param ipv6Header the IPv6 header of packet received
+   * \param dst destination address of the packet received (i.e. us)
+   * \param nextHeader the next header
+   * \param isDropped if the packet must be dropped
+   * \return the size processed
+   */
+  virtual uint8_t Process (Ptr<Packet>& packet, uint8_t offset, Ipv6Header const& ipv6Header, Ipv6Address dst, uint8_t *nextHeader, bool& isDropped);
 };
 
 } /* namespace ns3 */

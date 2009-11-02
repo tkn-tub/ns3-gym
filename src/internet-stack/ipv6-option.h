@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*-Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2007-2009 Strasbourg University
  *
@@ -8,12 +8,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA02111-1307USA
  *
  * Author: David Gross <gdavid.devel@gmail.com>
  */
@@ -38,51 +38,53 @@ namespace ns3
 /**
  * \class Ipv6Option
  * \brief IPv6 Option base
+ * 
  * If you want to implement a new IPv6 option, all you have to do is
  * implement a subclass of this class and add it to an Ipv6OptionDemux.
  */
 class Ipv6Option : public Object
 {
-  public:
-    /**
-     * \brief Get the type identificator.
-     * \return type identificator
-     */
-    static TypeId GetTypeId ();
+public:
+  /**
+   * \brief Get the type identificator.
+   * \return type identificator
+   */
+  static TypeId GetTypeId ();
 
-    /**
-     * \brief Destructor.
-     */
-    virtual ~Ipv6Option ();
+  /**
+   * \brief Destructor.
+   */
+  virtual ~Ipv6Option ();
 
-    /**
-     * \brief Set the node.
-     * \param node the node to set
-     */
-    void SetNode (Ptr<Node> node);
+  /**
+   * \brief Set the node.
+   * \param node the node to set
+   */
+  void SetNode (Ptr<Node> node);
 
-    /**
-     * \brief Get the option number.
-     * \return option number
-     */
-    virtual uint8_t GetOptionNumber () const = 0;
+  /**
+   * \brief Get the option number.
+   * \return option number
+   */
+  virtual uint8_t GetOptionNumber () const = 0;
 
-    /**
-     * \brief Process method
-     * Called from Ipv6L3Protocol::Receive.
-     * \param packet the packet
-     * \param offset the offset of the extension to process
-     * \param ipv6Header the IPv6 header of packet received
-     * \param isDropped if the packet must be dropped
-     * \return the processed size
-     */
-    virtual uint8_t Process (Ptr<Packet> packet, uint8_t offset, Ipv6Header const& ipv6Header, bool& isDropped) = 0;
+  /**
+   * \brief Process method
+   *
+   * Called from Ipv6L3Protocol::Receive.
+   * \param packet the packet
+   * \param offset the offset of the extension to process
+   * \param ipv6Header the IPv6 header of packet received
+   * \param isDropped if the packet must be dropped
+   * \return the processed size
+   */
+  virtual uint8_t Process (Ptr<Packet> packet, uint8_t offset, Ipv6Header const& ipv6Header, bool& isDropped) = 0;
 
-  private:
-    /**
-     * \brief The node.
-     */
-    Ptr<Node> m_node;
+private:
+  /**
+   * \brief The node.
+   */
+  Ptr<Node> m_node;
 };
 
 /**
@@ -91,41 +93,42 @@ class Ipv6Option : public Object
  */
 class Ipv6OptionPad1 : public Ipv6Option
 {
-  public:
-    static const uint8_t OPT_NUMBER = 0;
+public:
+  static const uint8_t OPT_NUMBER = 0;
 
-    /**
-     * \brief Get the type identificator.
-     * \return type identificator
-     */
-    static TypeId GetTypeId ();
+  /**
+   * \brief Get the type identificator.
+   * \return type identificator
+   */
+  static TypeId GetTypeId ();
 
-    /**
-     * \brief Constructor.
-     */
-    Ipv6OptionPad1 ();
+  /**
+   * \brief Constructor.
+   */
+  Ipv6OptionPad1 ();
 
-    /**
-     * \brief Destructor.
-     */
-    ~Ipv6OptionPad1 ();
+  /**
+   * \brief Destructor.
+   */
+  ~Ipv6OptionPad1 ();
 
-    /**
-     * \brief Get the option number.
-     * \return option number
-     */
-    virtual uint8_t GetOptionNumber () const;
+  /**
+   * \brief Get the option number.
+   * \return option number
+   */
+  virtual uint8_t GetOptionNumber () const;
 
-    /**
-     * \brief Process method
-     * Called from Ipv6L3Protocol::Receive.
-     * \param packet the packet
-     * \param offset the offset of the extension to process
-     * \param ipv6Header the IPv6 header of packet received
-     * \param isDropped if the packet must be dropped
-     * \return the processed size
-     */
-    virtual uint8_t Process (Ptr<Packet> packet, uint8_t offset, Ipv6Header const& ipv6Header, bool& isDropped);
+  /**
+   * \brief Process method
+   *
+   * Called from Ipv6L3Protocol::Receive.
+   * \param packet the packet
+   * \param offset the offset of the extension to process
+   * \param ipv6Header the IPv6 header of packet received
+   * \param isDropped if the packet must be dropped
+   * \return the processed size
+   */
+  virtual uint8_t Process (Ptr<Packet> packet, uint8_t offset, Ipv6Header const& ipv6Header, bool& isDropped);
 };
 
 /**
@@ -134,41 +137,42 @@ class Ipv6OptionPad1 : public Ipv6Option
  */
 class Ipv6OptionPadn : public Ipv6Option
 {
-  public:
-    static const uint8_t OPT_NUMBER = 60;
+public:
+  static const uint8_t OPT_NUMBER = 60;
 
-    /**
-     * \brief Get the type identificator.
-     * \return type identificator
-     */
-    static TypeId GetTypeId ();
+  /**
+   * \brief Get the type identificator.
+   * \return type identificator
+   */
+  static TypeId GetTypeId ();
 
-    /**
-     * \brief Constructor.
-     */
-    Ipv6OptionPadn ();
+  /**
+   * \brief Constructor.
+   */
+  Ipv6OptionPadn ();
 
-    /**
-     * \brief Destructor.
-     */
-    ~Ipv6OptionPadn ();
+  /**
+   * \brief Destructor.
+   */
+  ~Ipv6OptionPadn ();
 
-    /**
-     * \brief Get the option number.
-     * \return option number
-     */
-    virtual uint8_t GetOptionNumber () const;
+  /**
+   * \brief Get the option number.
+   * \return option number
+   */
+  virtual uint8_t GetOptionNumber () const;
 
-    /**
-     * \brief Process method
-     * Called from Ipv6L3Protocol::Receive.
-     * \param packet the packet
-     * \param offset the offset of the extension to process
-     * \param ipv6Header the IPv6 header of packet received
-     * \param isDropped if the packet must be dropped
-     * \return the processed size
-     */
-    virtual uint8_t Process (Ptr<Packet> packet, uint8_t offset, Ipv6Header const& ipv6Header, bool& isDropped);
+  /**
+   * \brief Process method
+   *
+   * Called from Ipv6L3Protocol::Receive.
+   * \param packet the packet
+   * \param offset the offset of the extension to process
+   * \param ipv6Header the IPv6 header of packet received
+   * \param isDropped if the packet must be dropped
+   * \return the processed size
+   */
+  virtual uint8_t Process (Ptr<Packet> packet, uint8_t offset, Ipv6Header const& ipv6Header, bool& isDropped);
 };
 
 /**
@@ -177,47 +181,47 @@ class Ipv6OptionPadn : public Ipv6Option
  */
 class Ipv6OptionJumbogram : public Ipv6Option
 {
-  public:
-    static const uint8_t OPT_NUMBER = 44;
+public:
+  static const uint8_t OPT_NUMBER = 44;
 
-    /**
-     * \brief Get the type identificator.
-     * \return type identificator
-     */
-    static TypeId GetTypeId ();
+  /**
+   * \brief Get the type identificator.
+   * \return type identificator
+   */
+  static TypeId GetTypeId ();
 
-    /**
-     * \brief Constructor.
-     */
-    Ipv6OptionJumbogram ();
+  /**
+   * \brief Constructor.
+   */
+  Ipv6OptionJumbogram ();
 
-    /**
-     * \brief Destructor.
-     */
-    ~Ipv6OptionJumbogram ();
+  /**
+   * \brief Destructor.
+   */
+  ~Ipv6OptionJumbogram ();
 
-    /**
-     * \brief Get the option number.
-     * \return option number
-     */
-    virtual uint8_t GetOptionNumber () const;
+  /**
+   * \brief Get the option number.
+   * \return option number
+   */
+  virtual uint8_t GetOptionNumber () const;
 
-    /**
-     * \brief Process method
-     * Called from Ipv6L3Protocol::Receive.
-     * \param packet the packet
-     * \param offset the offset of the extension to process
-     * \param ipv6Header the IPv6 header of packet received
-     * \param isDropped if the packet must be dropped
-     * \return the processed size
-     */
-    virtual uint8_t Process (Ptr<Packet> packet, uint8_t offset, Ipv6Header const& ipv6Header, bool& isDropped);
+  /**
+   * \brief Process method
+   * Called from Ipv6L3Protocol::Receive.
+   * \param packet the packet
+   * \param offset the offset of the extension to process
+   * \param ipv6Header the IPv6 header of packet received
+   * \param isDropped if the packet must be dropped
+   * \return the processed size
+   */
+  virtual uint8_t Process (Ptr<Packet> packet, uint8_t offset, Ipv6Header const& ipv6Header, bool& isDropped);
 
-  private:
-    /**
-     * \brief The length of the packet.
-     */
-    uint32_t m_length;
+private:
+  /**
+   * \brief The length of the packet.
+   */
+  uint32_t m_length;
 };
 
 /**
@@ -226,41 +230,42 @@ class Ipv6OptionJumbogram : public Ipv6Option
  */
 class Ipv6OptionRouterAlert : public Ipv6Option
 {
-  public:
-    static const uint8_t OPT_NUMBER = 43;
+public:
+  static const uint8_t OPT_NUMBER = 43;
 
-    /**
-     * \brief Get the type identificator.
-     * \return type identificator
-     */
-    static TypeId GetTypeId ();
+  /**
+   * \brief Get the type identificator.
+   * \return type identificator
+   */
+  static TypeId GetTypeId ();
 
-    /**
-     * \brief Constructor.
-     */
-    Ipv6OptionRouterAlert ();
+  /**
+   * \brief Constructor.
+   */
+  Ipv6OptionRouterAlert ();
 
-    /**
-     * \brief Destructor.
-     */
-    ~Ipv6OptionRouterAlert ();
+  /**
+   * \brief Destructor.
+   */
+  ~Ipv6OptionRouterAlert ();
 
-    /**
-     * \brief Get the option number.
-     * \return option number
-     */
-    virtual uint8_t GetOptionNumber () const;
+  /**
+   * \brief Get the option number.
+   * \return option number
+   */
+  virtual uint8_t GetOptionNumber () const;
 
-    /**
-     * \brief Process method
-     * Called from Ipv6L3Protocol::Receive.
-     * \param packet the packet
-     * \param offset the offset of the extension to process
-     * \param ipv6Header the IPv6 header of packet received
-     * \param isDropped if the packet must be dropped
-     * \return the processed size
-     */
-    virtual uint8_t Process (Ptr<Packet> packet, uint8_t offset, Ipv6Header const& ipv6Header, bool& isDropped);
+  /**
+   * \brief Process method
+   *
+   * Called from Ipv6L3Protocol::Receive.
+   * \param packet the packet
+   * \param offset the offset of the extension to process
+   * \param ipv6Header the IPv6 header of packet received
+   * \param isDropped if the packet must be dropped
+   * \return the processed size
+   */
+  virtual uint8_t Process (Ptr<Packet> packet, uint8_t offset, Ipv6Header const& ipv6Header, bool& isDropped);
 };
 
 } /* namespace ns3 */
