@@ -33,7 +33,7 @@ class Node;
 
 /**
  * \class Ipv6ExtensionDemux
- * \brief IPv6 Extension Demux.
+ * \brief Demultiplexes IPv6 extensions.
  */
 class Ipv6ExtensionDemux : public Object
 {
@@ -80,7 +80,7 @@ class Ipv6ExtensionDemux : public Object
     void Remove (Ptr<Ipv6Extension> extension);
 
   protected:   
-    virtual void DoDispose();
+    virtual void DoDispose ();
 
   private:
     typedef std::list<Ptr<Ipv6Extension> > Ipv6ExtensionList_t;
