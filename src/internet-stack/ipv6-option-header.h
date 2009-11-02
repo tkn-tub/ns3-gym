@@ -35,6 +35,20 @@ namespace ns3
 class Ipv6OptionHeader : public Header 
 {
   public:
+
+    /**
+     * \brief represents the alignment requirements of an option header
+     *
+     * Represented as factor*n+offset (eg. 8n+2) See RFC 2460.
+     * No alignemt is represented as 1n+0.
+     *
+     */
+    struct Alignment
+    {
+      uint8_t factor;
+      uint8_t offset;
+    };
+
     /**
      * \brief Get the type identificator.
      * \return type identificator
@@ -107,6 +121,15 @@ class Ipv6OptionHeader : public Header
      */
     virtual uint32_t Deserialize (Buffer::Iterator start);
 
+    /**
+     * \brief Get the Alignment requirement of this option header
+     * \return The required alignment
+     *
+     * Subclasses should only implement this method, if special alignemt is
+     * required. Default is no alignment (1n+0).
+     */
+    virtual Alignment GetAlignment() const;
+
   private:
     /**
      * \brief The type of the option.
@@ -117,6 +140,12 @@ class Ipv6OptionHeader : public Header
      * \brief The option length.
      */
     uint8_t m_length;
+
+    /**
+     * \brief The anonymous data of this option
+     */
+
+    Buffer m_data;
 
 };
 
@@ -197,8 +226,9 @@ class Ipv6OptionPadnHeader : public Ipv6OptionHeader
 
     /**
      * \brief Constructor.
+     * \param pad Number of bytes to pad (>=2)
      */
-    Ipv6OptionPadnHeader ();
+    Ipv6OptionPadnHeader (uint32_t pad = 2);
 
     /**
      * \brief Destructor.
@@ -299,6 +329,12 @@ class Ipv6OptionJumbogramHeader : public Ipv6OptionHeader
      */
     virtual uint32_t Deserialize (Buffer::Iterator start);
 
+    /**
+     * \brief Get the Alignment requirement of this option header
+     * \return The required alignment
+     */
+    virtual Alignment GetAlignment() const;
+
   private:
     /**
      * \brief The data length.
@@ -371,6 +407,12 @@ class Ipv6OptionRouterAlertHeader : public Ipv6OptionHeader
      * \return size of the packet
      */
     virtual uint32_t Deserialize (Buffer::Iterator start);
+
+    /**
+     * \brief Get the Alignment requirement of this option header
+     * \return The required alignment
+     */
+    virtual Alignment GetAlignment() const;
 
   private:
     /**

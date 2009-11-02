@@ -130,6 +130,7 @@ def build(bld):
         'ipv4-l3-protocol.h',
         'ipv6-l3-protocol.h',
         'ipv6-extension-header.h',
+        'ipv6-option-header.h',
         'arp-l3-protocol.h',
         'udp-l4-protocol.h',
         'tcp-l4-protocol.h',

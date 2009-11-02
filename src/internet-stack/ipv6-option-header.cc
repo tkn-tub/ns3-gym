@@ -81,7 +81,7 @@ void Ipv6OptionHeader::Print (std::ostream &os) const
 
 uint32_t Ipv6OptionHeader::GetSerializedSize () const
 {
-  return 1;
+  return m_length + 2;
 }
 
 void Ipv6OptionHeader::Serialize (Buffer::Iterator start) const
@@ -89,6 +89,9 @@ void Ipv6OptionHeader::Serialize (Buffer::Iterator start) const
   Buffer::Iterator i = start;
 
   i.WriteU8 (m_type);
+  i.WriteU8 (m_length);
+
+  i.Write(m_data.Begin(), m_data.End());
 }
 
 uint32_t Ipv6OptionHeader::Deserialize (Buffer::Iterator start) 
@@ -96,8 +99,21 @@ uint32_t Ipv6OptionHeader::Deserialize (Buffer::Iterator start)
   Buffer::Iterator i = start;
 
   m_type = i.ReadU8 ();
+  m_length = i.ReadU8();
+
+  m_data = Buffer();
+  m_data.AddAtEnd(m_length);
+  Buffer::Iterator dataStart = i;
+  i.Next(m_length);
+  Buffer::Iterator dataEnd = i;
+  m_data.Begin().Write(dataStart, dataEnd);
 
   return GetSerializedSize ();
+}
+
+Ipv6OptionHeader::Alignment Ipv6OptionHeader::GetAlignment() const
+{
+  return (Alignment){1,0};
 }
 
 NS_OBJECT_ENSURE_REGISTERED (Ipv6OptionPad1Header);
@@ -118,6 +134,7 @@ TypeId Ipv6OptionPad1Header::GetInstanceTypeId () const
 
 Ipv6OptionPad1Header::Ipv6OptionPad1Header ()
 {
+  SetType(0);
 }
 
 Ipv6OptionPad1Header::~Ipv6OptionPad1Header ()
@@ -166,8 +183,11 @@ TypeId Ipv6OptionPadnHeader::GetInstanceTypeId () const
   return GetTypeId ();
 }
 
-Ipv6OptionPadnHeader::Ipv6OptionPadnHeader ()
+Ipv6OptionPadnHeader::Ipv6OptionPadnHeader (uint32_t pad)
 {
+  SetType(1);
+  NS_ASSERT_MSG (pad >= 2, "PadN must be at least 2 bytes long");
+  SetLength (pad - 2);
 }
 
 Ipv6OptionPadnHeader::~Ipv6OptionPadnHeader ()
@@ -225,6 +245,7 @@ TypeId Ipv6OptionJumbogramHeader::GetInstanceTypeId () const
 
 Ipv6OptionJumbogramHeader::Ipv6OptionJumbogramHeader ()
 {
+  SetType (0xC2);
   SetLength (4);
 }
 
@@ -258,7 +279,7 @@ void Ipv6OptionJumbogramHeader::Serialize (Buffer::Iterator start) const
 
   i.WriteU8 (GetType ());
   i.WriteU8 (GetLength ());
-  i.WriteHtonU16 (m_dataLength);
+  i.WriteHtonU32 (m_dataLength);
 }
 
 uint32_t Ipv6OptionJumbogramHeader::Deserialize (Buffer::Iterator start) 
@@ -270,6 +291,11 @@ uint32_t Ipv6OptionJumbogramHeader::Deserialize (Buffer::Iterator start)
   m_dataLength = i.ReadNtohU16 ();
 
   return GetSerializedSize ();
+}
+
+Ipv6OptionHeader::Alignment Ipv6OptionJumbogramHeader::GetAlignment() const
+{
+  return (Alignment){4,2}; //4n+2
 }
 
 NS_OBJECT_ENSURE_REGISTERED (Ipv6OptionRouterAlertHeader);
@@ -336,6 +362,11 @@ uint32_t Ipv6OptionRouterAlertHeader::Deserialize (Buffer::Iterator start)
   m_value = i.ReadNtohU16 ();
 
   return GetSerializedSize ();
+}
+
+Ipv6OptionHeader::Alignment Ipv6OptionRouterAlertHeader::GetAlignment() const
+{
+  return (Alignment){2,0}; //2n+0
 }
 
 } /* namespace ns3 */

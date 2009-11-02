@@ -90,6 +90,21 @@ class Ipv6Extension : public Object
      */
     virtual uint8_t Process (Ptr<Packet>& packet, uint8_t offset, Ipv6Header const& ipv6Header, Ipv6Address dst, uint8_t *nextHeader, bool& isDropped) = 0;
 
+    /**
+     * \brief Process options
+     * Called by implementing classes to process the options
+     *
+     * \param packet the packet
+     * \param offset the offset of the first option to process
+     * \param length the total length of all options (as specified in the extension header)
+     * \param ipv6Header the IPv6 header of packet received
+     * \param dst destination address of the packet received (i.e. us)
+     * \param nextHeader the next header
+     * \param isDropped if the packet must be dropped
+     * \return the size processed
+     */
+    virtual uint8_t ProcessOptions (Ptr<Packet>& packet, uint8_t offset, uint8_t length, Ipv6Header const& ipv6Header, Ipv6Address dst, uint8_t *nextHeader, bool& isDropped);
+
   protected:
     TracedCallback<Ptr<const Packet> > m_dropTrace;
 
