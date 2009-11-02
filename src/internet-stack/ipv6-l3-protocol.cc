@@ -780,7 +780,6 @@ void Ipv6L3Protocol::SendRealOut (Ptr<Ipv6Route> route, Ptr<Packet> packet, Ipv6
       }
       else
       {
-        /* NS_ASSERT (packet->GetSize () <= outInterface->GetDevice ()->GetMtu ()); */
         packet->AddHeader (ipHeader);
         m_txTrace (packet, interface);
         outInterface->Send (packet, route->GetGateway ());
@@ -811,7 +810,6 @@ void Ipv6L3Protocol::SendRealOut (Ptr<Ipv6Route> route, Ptr<Packet> packet, Ipv6
       }
       else
       {
-        /* NS_ASSERT (packet->GetSize () <= outInterface->GetDevice ()->GetMtu ()); */
         packet->AddHeader (ipHeader);
         m_txTrace (packet, interface);
         outInterface->Send (packet, ipHeader.GetDestinationAddress ());
@@ -930,17 +928,15 @@ void Ipv6L3Protocol::LocalDeliver (Ptr<const Packet> packet, Ipv6Header const& i
   NS_LOG_FUNCTION (this << packet << ip << iif);
   Ptr<Packet> p = packet->Copy ();
   Ptr<Ipv6L4Protocol> protocol = 0; 
-/*GetProtocol (ip.GetNextHeader ());*/
-
   Ptr<Ipv6ExtensionDemux> ipv6ExtensionDemux = m_node->GetObject<Ipv6ExtensionDemux>();
   Ptr<Ipv6Extension> ipv6Extension = 0;
-
   Ipv6Address src = ip.GetSourceAddress ();
   Ipv6Address dst = ip.GetDestinationAddress ();
   uint8_t nextHeader = ip.GetNextHeader ();
   uint8_t nextHeaderPosition = 0;
   bool isDropped = false;
 
+  /* process hop-by-hop extension first if exists */
   if (nextHeader == Ipv6Header::IPV6_EXT_HOP_BY_HOP)
   {
     const uint8_t *buff = p->PeekData ();
@@ -949,7 +945,9 @@ void Ipv6L3Protocol::LocalDeliver (Ptr<const Packet> packet, Ipv6Header const& i
     nextHeaderPosition = *(buff + 1);
   }
 
+  /* process all the extensions found and the layer 4 protocol */
   do {
+    /* it return 0 for non-extension (i.e. layer 4 protocol) */
     ipv6Extension = ipv6ExtensionDemux->GetExtension (nextHeader);
 
     if (ipv6Extension)
@@ -964,6 +962,9 @@ void Ipv6L3Protocol::LocalDeliver (Ptr<const Packet> packet, Ipv6Header const& i
     else
     {
       protocol = GetProtocol (nextHeader);
+      // For ICMPv6 Error packets
+      Ptr<Packet> malformedPacket  = packet->Copy ();
+      malformedPacket->AddHeader (ip);
 
       if (!protocol)
       {
@@ -971,13 +972,11 @@ void Ipv6L3Protocol::LocalDeliver (Ptr<const Packet> packet, Ipv6Header const& i
 
         if (nextHeaderPosition == 0)
         {
-          /* TODO */
-          /* GetIcmpv6 ()->SendErrorParameterError (malformedPacket, dst, src, Icmpv6Header::ICMPV6_UNKNOWN_NEXT_HEADER, 40); */
+          GetIcmpv6 ()->SendErrorParameterError (malformedPacket, dst, Icmpv6Header::ICMPV6_UNKNOWN_NEXT_HEADER, 40);
         }
         else
         {
-          /* TODO */
-          /* GetIcmpv6 ()->SendErrorParameterError (malformedPacket, dst, src, Icmpv6Header::ICMPV6_UNKNOWN_NEXT_HEADER, ip.GetSerializedSize () + nextHeaderPosition); */
+          GetIcmpv6 ()->SendErrorParameterError (malformedPacket, dst, Icmpv6Header::ICMPV6_UNKNOWN_NEXT_HEADER, ip.GetSerializedSize () + nextHeaderPosition);
         }
         m_dropTrace (ip, p, DROP_UNKNOWN_PROTOCOL, iif);
         break;
@@ -1010,31 +1009,6 @@ void Ipv6L3Protocol::LocalDeliver (Ptr<const Packet> packet, Ipv6Header const& i
       }
     }
   } while (ipv6Extension);
-
-#if 0
-  if (protocol)
-  {
-    Ptr<Packet> copy = p->Copy ();
-    enum Ipv6L4Protocol::RxStatus_e status = protocol->Receive (p, ip.GetSourceAddress (), ip.GetDestinationAddress (), GetInterface (iif));
-
-    switch (status)
-    {
-    case Ipv6L4Protocol::RX_OK:
-      break;
-    case Ipv6L4Protocol::RX_CSUM_FAILED:
-      break;
-    case Ipv6L4Protocol::RX_ENDPOINT_UNREACH:
-      if (ip.GetDestinationAddress ().IsMulticast ())
-      {
-        /* do not rely on multicast address */
-        break;
-      }
-
-      copy->AddHeader (ip);
-      GetIcmpv6 ()->SendErrorDestinationUnreachable (copy, ip.GetSourceAddress (), Icmpv6Header::ICMPV6_PORT_UNREACHABLE);
-    }
-  }
-#endif
 }
 
 void Ipv6L3Protocol::RouteInputError (Ptr<const Packet> p, const Ipv6Header& ipHeader, Socket::SocketErrno sockErrno)

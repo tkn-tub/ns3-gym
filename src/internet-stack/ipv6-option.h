@@ -92,7 +92,7 @@ class Ipv6Option : public Object
 class Ipv6OptionPad1 : public Ipv6Option
 {
   public:
-    static const uint8_t OPT_NUMBER;
+    static const uint8_t OPT_NUMBER = 0;
 
     /**
      * \brief Get the type identificator.
@@ -135,7 +135,7 @@ class Ipv6OptionPad1 : public Ipv6Option
 class Ipv6OptionPadn : public Ipv6Option
 {
   public:
-    static const uint8_t OPT_NUMBER;
+    static const uint8_t OPT_NUMBER = 60;
 
     /**
      * \brief Get the type identificator.
@@ -178,7 +178,7 @@ class Ipv6OptionPadn : public Ipv6Option
 class Ipv6OptionJumbogram : public Ipv6Option
 {
   public:
-    static const uint8_t OPT_NUMBER;
+    static const uint8_t OPT_NUMBER = 44;
 
     /**
      * \brief Get the type identificator.
@@ -227,7 +227,7 @@ class Ipv6OptionJumbogram : public Ipv6Option
 class Ipv6OptionRouterAlert : public Ipv6Option
 {
   public:
-    static const uint8_t OPT_NUMBER;
+    static const uint8_t OPT_NUMBER = 43;
 
     /**
      * \brief Get the type identificator.

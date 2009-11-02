@@ -57,8 +57,6 @@ void Ipv6Option::SetNode (Ptr<Node> node)
 
 NS_OBJECT_ENSURE_REGISTERED (Ipv6OptionPad1);
 
-const uint8_t Ipv6OptionPad1::OPT_NUMBER = 0;
-
 TypeId Ipv6OptionPad1::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::Ipv6OptionPad1")
@@ -102,8 +100,6 @@ uint8_t Ipv6OptionPad1::Process (Ptr<Packet> packet, uint8_t offset, Ipv6Header 
 
 
 NS_OBJECT_ENSURE_REGISTERED (Ipv6OptionPadn);
-
-const uint8_t Ipv6OptionPadn::OPT_NUMBER = 60;
 
 TypeId Ipv6OptionPadn::GetTypeId ()
 {
@@ -149,8 +145,6 @@ uint8_t Ipv6OptionPadn::Process (Ptr<Packet> packet, uint8_t offset, Ipv6Header 
 
 NS_OBJECT_ENSURE_REGISTERED (Ipv6OptionJumbogram);
 
-const uint8_t Ipv6OptionJumbogram::OPT_NUMBER = 44;
-
 TypeId Ipv6OptionJumbogram::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::Ipv6OptionJumbogram")
@@ -194,8 +188,6 @@ uint8_t Ipv6OptionJumbogram::Process (Ptr<Packet> packet, uint8_t offset, Ipv6He
 
 
 NS_OBJECT_ENSURE_REGISTERED (Ipv6OptionRouterAlert);
-
-const uint8_t Ipv6OptionRouterAlert::OPT_NUMBER = 43;
 
 TypeId Ipv6OptionRouterAlert::GetTypeId ()
 {

@@ -107,7 +107,7 @@ class Ipv6Extension : public Object
 class Ipv6ExtensionHopByHop : public Ipv6Extension
 {
   public:
-    static const uint8_t EXT_NUMBER;
+    static const uint8_t EXT_NUMBER = 0;
 
     /**
      * \brief Get the type identificator.
@@ -152,7 +152,7 @@ class Ipv6ExtensionHopByHop : public Ipv6Extension
 class Ipv6ExtensionDestination : public Ipv6Extension
 {
   public:
-    static const uint8_t EXT_NUMBER;
+    static const uint8_t EXT_NUMBER = 60;
 
     /**
      * \brief Get the type identificator.
@@ -197,7 +197,7 @@ class Ipv6ExtensionDestination : public Ipv6Extension
 class Ipv6ExtensionFragment : public Ipv6Extension
 {
   public:
-    static const uint8_t EXT_NUMBER;
+    static const uint8_t EXT_NUMBER = 44;
 
     /**
      * \brief Get the type identificator.
@@ -334,7 +334,7 @@ class Ipv6ExtensionFragment : public Ipv6Extension
 class Ipv6ExtensionRouting : public Ipv6Extension
 {
   public:
-    static const uint8_t EXT_NUMBER;
+    static const uint8_t EXT_NUMBER = 43;
 
     /**
      * \brief Get the type identificator.
@@ -500,7 +500,7 @@ class Ipv6ExtensionLooseRouting : public Ipv6ExtensionRouting
 class Ipv6ExtensionESP : public Ipv6Extension
 {
   public:
-    static const uint8_t EXT_NUMBER;
+    static const uint8_t EXT_NUMBER = 50;
 
     /**
      * \brief Get the type identificator.
@@ -546,7 +546,7 @@ class Ipv6ExtensionESP : public Ipv6Extension
 class Ipv6ExtensionAH : public Ipv6Extension
 {
   public:
-    static const uint8_t EXT_NUMBER;
+    static const uint8_t EXT_NUMBER = 51;
 
     /**
      * \brief Get the type identificator.

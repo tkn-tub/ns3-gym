@@ -199,7 +199,7 @@ void Ping6::Send ()
   p->AddHeader (req);
   m_socket->Bind (Inet6SocketAddress (src, 0));
 
-  /* use routing type 0 */
+  /* use Loose Routing (routing type 0) */
   if (m_routersAddress.size ())
   {
     Ipv6ExtensionLooseRoutingHeader routingHeader;

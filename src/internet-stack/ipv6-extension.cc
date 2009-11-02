@@ -84,8 +84,6 @@ Ptr<Node> Ipv6Extension::GetNode () const
 
 NS_OBJECT_ENSURE_REGISTERED (Ipv6ExtensionHopByHop);
 
-const uint8_t Ipv6ExtensionHopByHop::EXT_NUMBER = 0;
-
 TypeId Ipv6ExtensionHopByHop::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::Ipv6ExtensionHopByHop")
@@ -147,6 +145,7 @@ uint8_t Ipv6ExtensionHopByHop::Process (Ptr<Packet>& packet, uint8_t offset, Ipv
     optionType = *(data + processedSize);
     ipv6Option = ipv6OptionDemux->GetOption (optionType);
 
+    /* unknow option */
     if (ipv6Option == 0)
     {
       optionType >>= 6;
@@ -165,8 +164,7 @@ uint8_t Ipv6ExtensionHopByHop::Process (Ptr<Packet>& packet, uint8_t offset, Ipv
 
         case 2:
           NS_LOG_LOGIC ("Unknown Option. Drop!");
-          /* TODO */
-          /* icmpv6->SendErrorParameterError (malformedPacket, dst, ipv6Header.GetSourceAddress (), Icmpv6Header::ICMPV6_UNKNOWN_OPTION, offset + processedSize); */
+          icmpv6->SendErrorParameterError (malformedPacket, ipv6Header.GetSourceAddress (), Icmpv6Header::ICMPV6_UNKNOWN_OPTION, offset + processedSize); 
           m_dropTrace (packet);
           optionLength = 0;
           isDropped = true;
@@ -177,8 +175,7 @@ uint8_t Ipv6ExtensionHopByHop::Process (Ptr<Packet>& packet, uint8_t offset, Ipv
 
           if (!ipv6Header.GetDestinationAddress ().IsMulticast ())
           {
-            /* TODO */
-            /* icmpv6->SendErrorParameterError (malformedPacket, dst, ipv6Header.GetSourceAddress (), Icmpv6Header::ICMPV6_UNKNOWN_OPTION, offset + processedSize); */
+            icmpv6->SendErrorParameterError (malformedPacket, ipv6Header.GetSourceAddress (), Icmpv6Header::ICMPV6_UNKNOWN_OPTION, offset + processedSize);
           }
 
           m_dropTrace (packet);
@@ -187,6 +184,7 @@ uint8_t Ipv6ExtensionHopByHop::Process (Ptr<Packet>& packet, uint8_t offset, Ipv
           break;
 
         default:
+          isDropped = true;
           break;
       }
     }
@@ -204,8 +202,6 @@ uint8_t Ipv6ExtensionHopByHop::Process (Ptr<Packet>& packet, uint8_t offset, Ipv
 
 
 NS_OBJECT_ENSURE_REGISTERED (Ipv6ExtensionDestination);
-
-const uint8_t Ipv6ExtensionDestination::EXT_NUMBER = 60;
 
 TypeId Ipv6ExtensionDestination::GetTypeId ()
 {
@@ -286,8 +282,7 @@ uint8_t Ipv6ExtensionDestination::Process (Ptr<Packet>& packet, uint8_t offset, 
 
         case 2:
           NS_LOG_LOGIC ("Unknown Option. Drop!");
-          /* TODO */
-          /* icmpv6->SendErrorParameterError (malformedPacket, dst, ipv6Header.GetSourceAddress (), Icmpv6Header::ICMPV6_UNKNOWN_OPTION, offset + processedSize); */
+          icmpv6->SendErrorParameterError (malformedPacket, ipv6Header.GetSourceAddress (), Icmpv6Header::ICMPV6_UNKNOWN_OPTION, offset + processedSize);
           m_dropTrace (packet);
           optionLength = 0;
           isDropped = true;
@@ -298,8 +293,7 @@ uint8_t Ipv6ExtensionDestination::Process (Ptr<Packet>& packet, uint8_t offset, 
 
           if (!ipv6Header.GetDestinationAddress ().IsMulticast ())
           {
-            /* TODO */
-            /* icmpv6->SendErrorParameterError (malformedPacket, dst, ipv6Header.GetSourceAddress (), Icmpv6Header::ICMPV6_UNKNOWN_OPTION, offset + processedSize); */
+            icmpv6->SendErrorParameterError (malformedPacket, ipv6Header.GetSourceAddress (), Icmpv6Header::ICMPV6_UNKNOWN_OPTION, offset + processedSize);
           }
 
           m_dropTrace (packet);
@@ -325,8 +319,6 @@ uint8_t Ipv6ExtensionDestination::Process (Ptr<Packet>& packet, uint8_t offset, 
 
 
 NS_OBJECT_ENSURE_REGISTERED (Ipv6ExtensionFragment);
-
-const uint8_t Ipv6ExtensionFragment::EXT_NUMBER = 44;
 
 TypeId Ipv6ExtensionFragment::GetTypeId ()
 {
@@ -661,20 +653,11 @@ Ptr<Packet> Ipv6ExtensionFragment::Fragments::GetPacket () const
     p->AddAtEnd (it->first);
   }
 
-  /* XXX : FIX THIS BUG (NS_ASSERT WHEN PRINT PACKET INFORMATION */
-  /*
-     std::ostringstream oss;
-     p->Print (oss);
-     std::cout << oss.str () << std::endl;
-   */
-
   return p;
 }
 
 
 NS_OBJECT_ENSURE_REGISTERED (Ipv6ExtensionRouting);
-
-const uint8_t Ipv6ExtensionRouting::EXT_NUMBER = 43;
 
 TypeId Ipv6ExtensionRouting::GetTypeId ()
 {
@@ -746,8 +729,7 @@ uint8_t Ipv6ExtensionRouting::Process (Ptr<Packet>& packet, uint8_t offset, Ipv6
     {
       NS_LOG_LOGIC ("Malformed header. Drop!");
 
-      /* TODO */
-      /* icmpv6->SendErrorParameterError (malformedPacket, dst, ipv6Header.GetSourceAddress (), Icmpv6Header::ICMPV6_MALFORMED_HEADER, offset + 1); */
+      icmpv6->SendErrorParameterError (malformedPacket, ipv6Header.GetSourceAddress (), Icmpv6Header::ICMPV6_MALFORMED_HEADER, offset + 1);
       m_dropTrace (packet);
       isDropped = true;
     }
@@ -901,8 +883,7 @@ uint8_t Ipv6ExtensionLooseRouting::Process (Ptr<Packet>& packet, uint8_t offset,
   if (length % 2 != 0)
   {
     NS_LOG_LOGIC ("Malformed header. Drop!");
-    /* TODO */
-    /* icmpv6->SendErrorParameterError (malformedPacket, dst, srcAddress, Icmpv6Header::ICMPV6_MALFORMED_HEADER, offset + 1); */
+    icmpv6->SendErrorParameterError (malformedPacket, srcAddress, Icmpv6Header::ICMPV6_MALFORMED_HEADER, offset + 1);
     m_dropTrace (packet);
     isDropped = true;
     return routingHeader.GetSerializedSize ();
@@ -911,8 +892,7 @@ uint8_t Ipv6ExtensionLooseRouting::Process (Ptr<Packet>& packet, uint8_t offset,
   if (segmentsLeft > nbAddress)
   {
     NS_LOG_LOGIC ("Malformed header. Drop!");
-    /* TODO */
-    /* icmpv6->SendErrorParameterError (malformedPacket, dst, srcAddress, Icmpv6Header::ICMPV6_MALFORMED_HEADER, offset + 3); */
+    icmpv6->SendErrorParameterError (malformedPacket, srcAddress, Icmpv6Header::ICMPV6_MALFORMED_HEADER, offset + 3);
     m_dropTrace (packet);
     isDropped = true;
     return routingHeader.GetSerializedSize ();
@@ -935,8 +915,7 @@ uint8_t Ipv6ExtensionLooseRouting::Process (Ptr<Packet>& packet, uint8_t offset,
   if (hopLimit <= 1)
   {
     NS_LOG_LOGIC ("Time Exceeded : Hop Limit <= 1. Drop!");
-    /* TODO */
-    /* icmpv6->SendErrorTimeExceeded (malformedPacket, dst, srcAddress, Icmpv6Header::ICMPV6_HOPLIMIT); */
+    icmpv6->SendErrorTimeExceeded (malformedPacket, srcAddress, Icmpv6Header::ICMPV6_HOPLIMIT);
     m_dropTrace (packet);
     isDropped = true;
     return routingHeader.GetSerializedSize ();
@@ -946,9 +925,14 @@ uint8_t Ipv6ExtensionLooseRouting::Process (Ptr<Packet>& packet, uint8_t offset,
   ipv6header.SetHopLimit (hopLimit - 1);
   p->AddHeader (routingHeader);
 
-  /* short-circuiting routing stuff */
+  /* short-circuiting routing stuff 
+   * 
+   * If we process this option,
+   * the packet was for us so we resend it to 
+   * the new destination (modified in the header above).
+   */
   
-  /* XXX taken from src/helper/ipv6-static-rouging.cc
+  /* XXX taken from src/helper/ipv6-static-routing.cc
    *
    * either include (and use) helper (Ipv6StaticRoutingHelper) or
    * add a method in Ipv6RoutingProtocol to lookup in routing table 
@@ -1003,8 +987,6 @@ uint8_t Ipv6ExtensionLooseRouting::Process (Ptr<Packet>& packet, uint8_t offset,
 
 NS_OBJECT_ENSURE_REGISTERED (Ipv6ExtensionESP);
 
-const uint8_t Ipv6ExtensionESP::EXT_NUMBER = 50;
-
 TypeId Ipv6ExtensionESP::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::Ipv6ExtensionESP")
@@ -1042,8 +1024,6 @@ uint8_t Ipv6ExtensionESP::Process (Ptr<Packet>& packet, uint8_t offset, Ipv6Head
 
 
 NS_OBJECT_ENSURE_REGISTERED (Ipv6ExtensionAH);
-
-const uint8_t Ipv6ExtensionAH::EXT_NUMBER = 51;
 
 TypeId Ipv6ExtensionAH::GetTypeId ()
 {
