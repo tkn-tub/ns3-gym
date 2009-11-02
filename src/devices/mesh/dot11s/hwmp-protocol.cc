@@ -1012,7 +1012,6 @@ HwmpProtocol::SetRoot ()
   Time randomStart = Seconds (coefficient.GetValue ());
   m_proactivePreqTimer = Simulator::Schedule (randomStart, &HwmpProtocol::SendProactivePreq, this);
   NS_LOG_DEBUG ("ROOT IS: " << m_address);
-  SendProactivePreq ();
   m_isRoot = true;
 }
 void
