@@ -31,6 +31,8 @@ FlameProtocolMac::FlameProtocolMac (uint32_t ifIndex, Ptr<FlameProtocol> protoco
 }
 FlameProtocolMac::~FlameProtocolMac ()
 {
+  m_protocol = 0;
+  m_parent = 0;
 }
 void
 FlameProtocolMac::SetParent (Ptr<MeshWifiInterfaceMac> parent)

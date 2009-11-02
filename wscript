@@ -194,8 +194,13 @@ def set_options(opt):
                    help=('Compile NS-3 statically: works only on linux, without python'),
                    dest='enable_static', action='store_true',
                    default=False)
+    opt.add_option('--doxygen-no-build',
+                   help=('Run doxygen to generate html documentation from source comments, '
+                         'but do not wait for ns-3 to finish the full build.'),
+                   action="store_true", default=False,
+                   dest='doxygen_no_build')
 
-    # options provided in a script in a subdirectory named "src"
+    # options provided in subdirectories
     opt.sub_options('src')
     opt.sub_options('bindings/python')
     opt.sub_options('src/internet-stack')
@@ -282,13 +287,14 @@ def configure(conf):
         env.append_value('CXXDEFINES', 'NS3_ASSERT_ENABLE')
         env.append_value('CXXDEFINES', 'NS3_LOG_ENABLE')
 
-    if Options.options.build_profile == 'release': 
-        env.append_value('CXXFLAGS', '-fomit-frame-pointer') 
-        env.append_value('CXXFLAGS', '-march=native') 
-
     env['PLATFORM'] = sys.platform
 
     if conf.env['CXX_NAME'] in ['gcc', 'icc']:
+        if Options.options.build_profile == 'release': 
+            env.append_value('CXXFLAGS', '-fomit-frame-pointer') 
+            if conf.check_compilation_flag('-march=native'):
+                env.append_value('CXXFLAGS', '-march=native') 
+
         if sys.platform == 'win32':
             env.append_value("LINKFLAGS", "-Wl,--enable-runtime-pseudo-reloc")
         elif sys.platform == 'cygwin':
@@ -595,6 +601,11 @@ def build(bld):
             raise Utils.WafError("Cannot run regression tests: building the ns-3 examples is not enabled"
                                  " (regression tests are based on examples)")
 
+
+    if Options.options.doxygen_no_build:
+        _doxygen(bld)
+        raise SystemExit(0)
+
 def shutdown(ctx):
     bld = wutils.bld
     if wutils.bld is None:
@@ -711,9 +722,7 @@ def shell(ctx):
     env = wutils.bld.env
     wutils.run_argv([shell], env, {'NS3_MODULE_PATH': os.pathsep.join(env['NS3_MODULE_PATH'])})
 
-def doxygen(bld):
-    """do a full build, generate the introspected doxygen and then the doxygen"""
-    Scripting.build(bld)
+def _doxygen(bld):
     env = wutils.bld.env
     proc_env = wutils.get_proc_env()
 
@@ -734,6 +743,11 @@ def doxygen(bld):
     doxygen_config = os.path.join('doc', 'doxygen.conf')
     if subprocess.Popen(['doxygen', doxygen_config]).wait():
         raise SystemExit(1)
+
+def doxygen(bld):
+    """do a full build, generate the introspected doxygen and then the doxygen"""
+    Scripting.build(bld)
+    _doxygen(bld)
 
 def lcov_report():
     env = Build.bld.env

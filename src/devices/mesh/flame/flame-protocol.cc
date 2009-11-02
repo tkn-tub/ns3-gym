@@ -127,7 +127,7 @@ FlameProtocol::GetTypeId ()
   return tid;
 }
 FlameProtocol::FlameProtocol () :
-  m_address (Mac48Address ()), m_broadcastInterval (Seconds (5)), m_lastBroadcast (Simulator::Now ()),
+  m_address (Mac48Address ()), m_broadcastInterval (Seconds (5)), m_lastBroadcast (Seconds (0)),
       m_maxCost (32), m_myLastSeqno (1), m_rtable (CreateObject<FlameRtable> ())
 {
 }
@@ -137,6 +137,9 @@ FlameProtocol::~FlameProtocol ()
 void
 FlameProtocol::DoDispose ()
 {
+  m_interfaces.clear ();
+  m_rtable = 0;
+  m_mp = 0;
 }
 bool
 FlameProtocol::RequestRoute (uint32_t sourceIface, const Mac48Address source, const Mac48Address destination,
@@ -224,8 +227,12 @@ FlameProtocol::RequestRoute (uint32_t sourceIface, const Mac48Address source, co
                   m_stats.totalDropped++;
                   return false;
                 }
+              tag.receiver = result.retransmitter;
             }
-          tag.receiver = result.retransmitter;
+          else
+            {
+              tag.receiver = Mac48Address::GetBroadcast ();
+            }
           if (result.retransmitter == Mac48Address::GetBroadcast ())
             {
               m_stats.txBroadcast++;
@@ -262,19 +269,21 @@ FlameProtocol::RemoveRoutingStuff (uint32_t fromIface, const Mac48Address source
     }
   FlameHeader flameHdr;
   packet->RemoveHeader (flameHdr);
-  if ((destination == GetAddress ()) && (m_lastBroadcast + m_broadcastInterval < Simulator::Now ()))
-      {
-        Ptr<Packet> packet = Create<Packet> ();
-        m_mp->Send(packet, Mac48Address::GetBroadcast (), 0);
-        m_lastBroadcast = Simulator::Now ();
-      }
-  NS_ASSERT (protocolType == FLAME_PROTOCOL);
-  protocolType = flameHdr.GetProtocol ();
-  if ((HandleDataFrame (flameHdr.GetSeqno (), source, flameHdr, tag.transmitter, fromIface))
-      || packet->GetSize () == 0)
+  if (HandleDataFrame (flameHdr.GetSeqno (), source, flameHdr, tag.transmitter, fromIface))
     {
       return false;
     }
+  // Start PATH_UPDATE procedure if destination is our own address and last broadcast was sent more
+  // than broadcast interval ago or was not sent at all
+  if ((destination == GetAddress ()) && ((m_lastBroadcast + m_broadcastInterval < Simulator::Now ())
+      || (m_lastBroadcast == Seconds (0))))
+    {
+      Ptr<Packet> packet = Create<Packet> ();
+      m_mp->Send (packet, Mac48Address::GetBroadcast (), 0);
+      m_lastBroadcast = Simulator::Now ();
+    }
+  NS_ASSERT (protocolType == FLAME_PROTOCOL);
+  protocolType = flameHdr.GetProtocol ();
   return true;
 }
 bool

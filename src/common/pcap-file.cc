@@ -14,14 +14,16 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * 
+ * Author:  Craig Dowell (craigdo@ee.washington.edu)
  */
 
 #include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
+#include <cstring>
 
 #include "pcap-file.h"
-
 //
 // This file is used as part of the ns-3 test framework, so please refrain from 
 // adding any ns-3 specific constructs such as Packet to this file.
@@ -514,6 +516,67 @@ PcapFile::Read (
     }
 
   return false;
+}
+
+bool
+PcapFile::Diff (std::string const & f1, std::string const & f2, 
+                uint32_t & sec, uint32_t & usec, 
+                uint32_t snapLen)
+{
+  PcapFile pcap[2];
+  for (int i = 0; i < 2; ++i)
+    {
+      std::string const & file = (i == 0) ? f1 : f2;
+      bool err = pcap[i].Open (file, "r");
+      if (err)
+        {
+          // Can't open file
+          return true;
+        }
+    }
+  
+  uint8_t data[2][snapLen];
+  uint32_t tsSec[2], tsUsec[2], inclLen[2], origLen[2], readLen[2];
+  bool err[2];
+  bool diff(false);
+  
+  while (1)
+    {
+      for (int i = 0; i < 2; ++i)
+        err[i] = pcap[i].Read (data[i], snapLen, tsSec[i], tsUsec[i], inclLen[i], origLen[i], readLen[i]);
+    
+      sec = tsSec[0];
+      usec = tsUsec[0];
+      
+      if (err[0] != err[1])
+        {
+          diff = true; // Read status doesn't match
+          break;
+        }
+      
+      if (err[0]) break; // nothing left
+      
+      if (tsSec[0] != tsSec[1] || tsUsec[0] != tsUsec[1])
+        {
+          diff = true; // Next packet timestamps do not match
+          break;
+        }
+      
+      if (readLen[0] != readLen[1])
+        {
+          diff = true; // Packet lengths do not match
+          break;
+        }
+      
+      if (std::memcmp(data[0], data[1], readLen[0]) != 0)
+        {
+          diff = true; // Packet data do not match
+          break;
+        }
+    }  
+  pcap[0].Close ();
+  pcap[1].Close ();
+  return diff;
 }
 
 } //namespace ns3
