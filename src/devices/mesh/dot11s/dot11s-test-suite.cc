@@ -174,9 +174,9 @@ HwmpRtableTest::TestPrecursorAdd ()
 {
   for (std::vector<Mac48Address>::const_iterator i = precursors.begin (); i != precursors.end (); i++)
     {
-      table->AddPrecursor (dst, iface, *i);
+      table->AddPrecursor (dst, iface, *i, Seconds (100));
       // Check that duplicates are filtered
-      table->AddPrecursor (dst, iface, *i);
+      table->AddPrecursor (dst, iface, *i, Seconds (100));
     }
 }
 

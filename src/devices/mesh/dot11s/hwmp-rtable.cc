@@ -84,11 +84,12 @@ HwmpRtable::AddProactivePath (uint32_t metric, Mac48Address root, Mac48Address r
 }
 void
 HwmpRtable::AddPrecursor (Mac48Address destination, uint32_t precursorInterface,
-    Mac48Address precursorAddress)
+    Mac48Address precursorAddress, Time lifetime)
 {
-  std::pair<uint32_t, Mac48Address> precursor;
-  precursor.first = precursorInterface;
-  precursor.second = precursorAddress;
+  Precursor precursor;
+  precursor.interface = precursorInterface;
+  precursor.address = precursorAddress;
+  precursor.whenExpire = Simulator::Now () + lifetime;
   std::map<Mac48Address, ReactiveRoute>::iterator i = m_routes.find (destination);
   if (i != m_routes.end ())
     {
@@ -97,9 +98,10 @@ HwmpRtable::AddPrecursor (Mac48Address destination, uint32_t precursorInterface,
         {
           //NB: Only one active route may exist, so do not check
           //interface ID, just address
-          if (i->second.precursors[j].second == precursorAddress)
+          if (i->second.precursors[j].address == precursorAddress)
             {
               should_add = false;
+              i->second.precursors[j].whenExpire = precursor.whenExpire;
               break;
             }
         }
@@ -108,17 +110,6 @@ HwmpRtable::AddPrecursor (Mac48Address destination, uint32_t precursorInterface,
           i->second.precursors.push_back (precursor);
         }
     }
-  if (m_root.root == destination)
-    {
-      for (unsigned int j = 0; j < m_root.precursors.size (); j++)
-        {
-          if (m_root.precursors[j].second == precursorAddress)
-            {
-              return;
-            }
-        }
-    }
-  m_root.precursors.push_back (precursor);
 }
 void
 HwmpRtable::DeleteProactivePath ()
@@ -221,27 +212,12 @@ HwmpRtable::GetPrecursors (Mac48Address destination)
   std::map<Mac48Address, ReactiveRoute>::iterator route = m_routes.find (destination);
   if (route != m_routes.end ())
     {
-      for (unsigned int i = 0; i < route->second.precursors.size (); i++)
+      for (std::vector<Precursor>::const_iterator i = route->second.precursors.begin ();
+          i != route->second.precursors.end (); i++)
         {
-          retval.push_back (route->second.precursors[i]);
-        }
-    }
-  if (m_root.root == destination)
-    {
-      for (unsigned int i = 0; i < m_root.precursors.size (); i++)
-        {
-          bool should_add = true;
-          for (unsigned int j = 0; j < retval.size (); j++)
+          if (i->whenExpire > Simulator::Now ())
             {
-              if (retval[j].second == m_root.precursors[i].second)
-                {
-                  should_add = false;
-                  break;
-                }
-            }
-          if (should_add)
-            {
-              retval.push_back (m_root.precursors[i]);
+              retval.push_back (std::make_pair(i->interface, i->address));
             }
         }
     }
