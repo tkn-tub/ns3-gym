@@ -237,14 +237,6 @@ class Ipv6StaticRouting : public Ipv6RoutingProtocol
     virtual void NotifyRemoveRoute (Ipv6Address dst, Ipv6Prefix mask, Ipv6Address nextHop, uint32_t interface, Ipv6Address prefixToUse = Ipv6Address::GetZero ());
     virtual void SetIpv6 (Ptr<Ipv6> ipv6);
 
-    /**
-     * \brief Lookup in the forwarding table for destination.
-     * \param dest destination address
-     * \param interface output interface if any (put 0 otherwise)
-     * \return Ipv6Route to route the packet to reach dest address
-     */
-    Ptr<Ipv6Route> LookupStatic (Ipv6Address dest, uint32_t interface = 0);
-
   protected:
     /**
      * \brief Dispose this object.
@@ -259,6 +251,14 @@ class Ipv6StaticRouting : public Ipv6RoutingProtocol
     typedef std::list<Ipv6MulticastRoutingTableEntry *> MulticastRoutes;
     typedef std::list<Ipv6MulticastRoutingTableEntry *>::const_iterator MulticastRoutesCI;
     typedef std::list<Ipv6MulticastRoutingTableEntry *>::iterator MulticastRoutesI;
+
+    /**
+     * \brief Lookup in the forwarding table for destination.
+     * \param dest destination address
+     * \param interface output interface if any (put 0 otherwise)
+     * \return Ipv6Route to route the packet to reach dest address
+     */
+    Ptr<Ipv6Route> LookupStatic (Ipv6Address dest, uint32_t interface = 0);
 
     /**
      * \brief Lookup in the multicast forwarding table for destination.

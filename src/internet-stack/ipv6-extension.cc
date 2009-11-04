@@ -932,41 +932,12 @@ uint8_t Ipv6ExtensionLooseRouting::Process (Ptr<Packet>& packet, uint8_t offset,
    * the new destination (modified in the header above).
    */
   
-  /* XXX taken from src/helper/ipv6-static-routing.cc
-   *
-   * either include (and use) helper (Ipv6StaticRoutingHelper) or
-   * add a method in Ipv6RoutingProtocol to lookup in routing table 
-   * without callback to Ipv6L3Protocol::LocalDeliver/IpForward/IpMulticastForward
-   */
   Ptr<Ipv6L3Protocol> ipv6 = GetNode ()->GetObject<Ipv6L3Protocol> ();
   Ptr<Ipv6RoutingProtocol> ipv6rp = ipv6->GetRoutingProtocol ();
-  Ptr<Ipv6StaticRouting> staticRouting = 0;
+  Socket::SocketErrno err;
+  NS_ASSERT (ipv6rp);
 
-  NS_ASSERT_MSG (ipv6rp, "No routing protocol associated with Ipv6");
-  if (DynamicCast<Ipv6StaticRouting> (ipv6rp))
-  {
-    staticRouting = DynamicCast<Ipv6StaticRouting> (ipv6rp);
-  }
-  else if (DynamicCast<Ipv6ListRouting> (ipv6rp))
-  {
-    Ptr<Ipv6ListRouting> lrp = DynamicCast<Ipv6ListRouting> (ipv6rp);
-    int16_t priority;
-    for (uint32_t i = 0; i < lrp->GetNRoutingProtocols ();  i++)
-    {
-      NS_LOG_LOGIC ("Searching for static routing in list");
-      Ptr<Ipv6RoutingProtocol> temp = lrp->GetRoutingProtocol (i, priority);
-      if (DynamicCast<Ipv6StaticRouting> (temp))
-      {
-        NS_LOG_LOGIC ("Found static routing in list");
-        staticRouting = DynamicCast<Ipv6StaticRouting> (temp);
-        break;
-      }
-    }
-  }
-
-  NS_ASSERT (staticRouting);
-
-  Ptr<Ipv6Route> rtentry = staticRouting->LookupStatic (nextAddress, 0);
+  Ptr<Ipv6Route> rtentry = ipv6rp->RouteOutput (p, ipv6header, 0, err);
 
   if (rtentry)
   {
