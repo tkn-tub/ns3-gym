@@ -113,6 +113,7 @@ Object::DoGetObject (TypeId tid) const
 {
   NS_ASSERT (CheckLoose ());
   const Object *currentObject = this;
+  const Object *prevObject = 0;
   TypeId objectTid = Object::GetTypeId ();
   do {
     NS_ASSERT (currentObject != 0);
@@ -123,8 +124,21 @@ Object::DoGetObject (TypeId tid) const
       }
     if (cur == tid)
       {
+        if (prevObject != 0)
+          {
+            // This is an attempt to 'cache' the result of this lookup.
+            // the idea is that if we perform a lookup for a TypdId on this object,
+            // we are likely to perform the same lookup later so, we re-order
+            // the circular linked-list of objects here by putting the object we 
+            // just found at the head of the list. This optimization is
+            // _extremely_ effective in general.
+            const_cast<Object*>(prevObject)->m_next = currentObject->m_next;
+            const_cast<Object*>(currentObject)->m_next = m_next;
+            const_cast<Object*>(this)->m_next = (Object*)currentObject;
+          }
         return const_cast<Object *> (currentObject);
       }
+    prevObject = currentObject;
     currentObject = currentObject->m_next;
   } while (currentObject != this);
   return 0;
