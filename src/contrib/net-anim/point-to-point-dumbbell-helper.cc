@@ -21,10 +21,6 @@
 #include <iostream>
 #include <sstream>
 
-// Socket related includes
-#include <sys/socket.h>
-#include <netinet/in.h>
-
 // ns3 includes
 #include "ns3/animation-interface.h"
 #include "ns3/point-to-point-dumbbell-helper.h"
