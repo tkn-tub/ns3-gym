@@ -21,9 +21,15 @@
 #include <stdio.h>
 #include <sstream>
 
+#include "ns3/net-anim-config.h"
+
 // Socket related includes
-#include <sys/socket.h>
-#include <netinet/in.h>
+#if defined(HAVE_SYS_SOCKET_H) && defined(HAVE_NETINET_IN_H)
+# include <sys/socket.h>
+# include <netinet/in.h>
+#else
+#include <fcntl.h>
+#endif
 
 // ns3 includes
 #include "ns3/animation-interface.h"
@@ -58,6 +64,7 @@ bool AnimationInterface::SetOutputFile (const std::string& fn)
 
 bool AnimationInterface::SetServerPort (uint16_t port)
 {
+#if defined(HAVE_SYS_SOCKET_H) && defined(HAVE_NETINET_IN_H)
   int s = socket (AF_INET, SOCK_STREAM, 0);
   struct sockaddr_in addr;
   addr.sin_family = AF_INET;
@@ -77,6 +84,8 @@ bool AnimationInterface::SetServerPort (uint16_t port)
   int t = 1;
   setsockopt (s, SOL_SOCKET, SO_LINGER, &t, sizeof(t));
   return true;
+#endif
+  return false;//never reached unless the above is disabled
 }
 
 bool AnimationInterface::SetInternalAnimation ()

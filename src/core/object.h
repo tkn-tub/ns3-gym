@@ -85,9 +85,9 @@ public:
     Ptr<const Object> Next (void);
   private:
     friend class Object;
-    AggregateIterator (Ptr<const Object> first);
-    Ptr<const Object> m_first;
-    Ptr<const Object> m_current;
+    AggregateIterator (Ptr<const Object> object);
+    Ptr<const Object> m_object;
+    uint32_t m_current;
   };
 
   Object ();
@@ -215,6 +215,21 @@ private:
   friend class ObjectFactory;
   friend class AggregateIterator;
 
+  /**
+   * This data structure uses a classic C-style trick to 
+   * hold an array of variable size without performing
+   * two memory allocations: the declaration of the structure
+   * declares a one-element array but when we allocate
+   * memory for this struct, we effectively allocate a larger
+   * chunk of memory than the struct to allow space for a larger
+   * variable sized buffer whose size is indicated by the element
+   * 'n'
+   */
+  struct Aggregates {
+    uint32_t n;
+    Object *buffer[1];
+  };
+
   Ptr<Object> DoGetObject (TypeId tid) const;
   bool Check (void) const;
   bool CheckLoose (void) const;
@@ -243,6 +258,8 @@ private:
    */
   void Construct (const AttributeList &attributes);
 
+  void UpdateSortedArray (struct Aggregates *aggregates, uint32_t i) const;
+
   /**
    * The reference count for this object. Each aggregate
    * has an individual reference count. When the global
@@ -261,13 +278,19 @@ private:
    */
   bool m_disposed;
   /**
-   * A pointer to the next aggregate object. This is a circular
-   * linked list of aggregated objects: the last one points
-   * back to the first one. If an object is not aggregated to
-   * any other object, the value of this field is equal to the
-   * value of the 'this' pointer.
+   * a pointer to an array of 'aggregates'. i.e., a pointer to
+   * each object aggregated to this object is stored in this 
+   * array. The array is shared by all aggregated objects
+   * so the size of the array is indirectly a reference count.
    */
-  Object *m_next;
+  struct Aggregates * m_aggregates;
+  /**
+   * Indicates the number of times the object was accessed with a
+   * call to GetObject. This integer is used to implement a
+   * heuristic to sort the array of aggregates to put at the start
+   * of the array the most-frequently accessed elements.
+   */
+  uint32_t m_getObjectCount;
 };
 
 /**

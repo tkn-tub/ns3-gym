@@ -401,6 +401,7 @@ HwmpProtocol::ReceivePreq (IePreq preq, Mac48Address from, uint32_t interface, M
   //acceptance cretirea:
   std::map<Mac48Address, std::pair<uint32_t, uint32_t> >::const_iterator i = m_hwmpSeqnoMetricDatabase.find (
       preq.GetOriginatorAddress ());
+  bool freshInfo (true);
   if (i != m_hwmpSeqnoMetricDatabase.end ())
     {
       if ((int32_t)(i->second.first - preq.GetOriginatorSeqNumber ())  > 0)
@@ -409,6 +410,7 @@ HwmpProtocol::ReceivePreq (IePreq preq, Mac48Address from, uint32_t interface, M
         }
       if (i->second.first == preq.GetOriginatorSeqNumber ())
         {
+          freshInfo = false;
           if (i->second.second <= preq.GetMetric ())
             {
               return;
@@ -421,7 +423,7 @@ HwmpProtocol::ReceivePreq (IePreq preq, Mac48Address from, uint32_t interface, M
   std::vector<Ptr<DestinationAddressUnit> > destinations = preq.GetDestinationList ();
   //Add reactive path to originator:
   if (
-      ((int32_t)(i->second.first - preq.GetOriginatorSeqNumber ())  < 0) ||
+      (freshInfo) ||
       (
         (m_rtable->LookupReactive (preq.GetOriginatorAddress ()).retransmitter == Mac48Address::GetBroadcast ()) ||
         (m_rtable->LookupReactive (preq.GetOriginatorAddress ()).metric > preq.GetMetric ())
@@ -562,9 +564,17 @@ HwmpProtocol::ReceivePrep (IePrep prep, Mac48Address from, uint32_t interface, M
   //acceptance cretirea:
   std::map<Mac48Address, std::pair<uint32_t, uint32_t> >::const_iterator i = m_hwmpSeqnoMetricDatabase.find (
       prep.GetOriginatorAddress ());
-  if ((i != m_hwmpSeqnoMetricDatabase.end ()) && ((int32_t)(i->second.first - prep.GetOriginatorSeqNumber ()) > 0))
+  bool freshInfo (true);
+  if (i != m_hwmpSeqnoMetricDatabase.end ())
     {
-      return;
+      if ((int32_t)(i->second.first - prep.GetOriginatorSeqNumber ()) > 0)
+        {
+          return;
+        }
+      if (i->second.first == prep.GetOriginatorSeqNumber ())
+        {
+          freshInfo = false;
+        }
     }
   m_hwmpSeqnoMetricDatabase[prep.GetOriginatorAddress ()] = std::make_pair (prep.GetOriginatorSeqNumber (), prep.GetMetric ());
   //update routing info
@@ -574,7 +584,7 @@ HwmpProtocol::ReceivePrep (IePrep prep, Mac48Address from, uint32_t interface, M
   //Add a reactive path only if seqno is fresher or it improves the
   //metric
   if (
-      (((int32_t)(i->second.first - prep.GetOriginatorSeqNumber ()) < 0)) ||
+      (freshInfo) ||
       (
        ((m_rtable->LookupReactive (prep.GetOriginatorAddress ())).retransmitter == Mac48Address::GetBroadcast ()) ||
        ((m_rtable->LookupReactive (prep.GetOriginatorAddress ())).metric > prep.GetMetric ())
