@@ -204,6 +204,10 @@ TestCase::GetName (void)
 void 
 TestCase::SetBaseDir (std::string basedir)
 {
+  //
+  // C and C++ allow one to use forward slashes even on systems where the 
+  // separator is actually a backslash.
+  //
   if (basedir[basedir.length () - 1] != '/')
     {
       m_basedir = basedir + "/";
@@ -223,6 +227,10 @@ TestCase::GetBaseDir (void)
 void 
 TestCase::SetTempDir (std::string tempdir)
 {
+  //
+  // C and C++ allow one to use forward slashes even on systems where the 
+  // separator is actually a backslash.
+  //
   if (tempdir[tempdir.length () - 1] != '/')
     {
       m_tempdir = tempdir + "/";
@@ -242,9 +250,25 @@ TestCase::GetTempDir (void)
 std::string 
 TestCase::GetSourceDir (std::string file)
 {
+  //
+  // The <file> parameter is actually going to be __FILE__ which may have 
+  // backslashes in it on win32 systems.  For example,
+  //
+  //   ..\src\common\pcap-file-test-suite.cc  (win32)
+  //
+  // or
+  //
+  //   ../src/common/pcap-file-test-suite.cc  (grown-up systems)
+  //
+#ifdef WIN32
+  std::string::size_type relPathBegin = file.find_first_of ("\\");
+  std::string::size_type relPathEnd = file.find_last_of ("\\");
+#else
   std::string::size_type relPathBegin = file.find_first_of ("/");
-  NS_ABORT_MSG_IF (relPathBegin == std::string::npos, "TestCase::GetSourceDir(): Internal Error");
   std::string::size_type relPathEnd = file.find_last_of ("/");
+#endif
+
+  NS_ABORT_MSG_IF (relPathBegin == std::string::npos, "TestCase::GetSourceDir(): Internal Error");
   NS_ABORT_MSG_IF (relPathEnd == std::string::npos, "TestCase::GetSourceDir(): Internal Error");
 
   return GetBaseDir () + file.substr (relPathBegin, relPathEnd + 1 - relPathBegin);
@@ -504,6 +528,10 @@ TestSuite::GetName (void)
 void 
 TestSuite::SetBaseDir (std::string basedir)
 {
+  //
+  // C and C++ allow one to use forward slashes even on systems where the 
+  // separator is actually a backslash.
+  //
   if (basedir[basedir.length () - 1] != '/')
     {
       m_basedir = basedir + "/";
@@ -523,6 +551,10 @@ TestSuite::GetBaseDir (void)
 void 
 TestSuite::SetTempDir (std::string tempdir)
 {
+  //
+  // C and C++ allow one to use forward slashes even on systems where the 
+  // separator is actually a backslash.
+  //
   if (tempdir[tempdir.length () - 1] != '/')
     {
       m_tempdir = tempdir + "/";
