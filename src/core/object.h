@@ -122,7 +122,7 @@ public:
    * \returns a pointer to the requested interface or zero if it could not be found.
    */
   template <typename T>
-  Ptr<T> GetObject (void) const;
+  inline Ptr<T> GetObject (void) const;
   /**
    * \param tid the interface id of the requested interface
    * \returns a pointer to the requested interface or zero if it could not be found.
@@ -383,6 +383,11 @@ template <typename T>
 Ptr<T> 
 Object::GetObject () const
 {
+  T *result = dynamic_cast<T *> (m_aggregates->buffer[0]);
+  if (result != 0)
+    {
+      return Ptr<T> (result);
+    }
   Ptr<Object> found = DoGetObject (T::GetTypeId ());
   if (found != 0)
     {
