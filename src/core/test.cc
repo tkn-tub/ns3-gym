@@ -87,6 +87,7 @@ TestCase::TestCase (std::string name)
     m_continueOnFailure (false), 
     m_detailsReported (false), 
     m_basedir ("invalid"), 
+    m_tempdir ("invalid"), 
     m_ofs (0), 
     m_error (false)
 {
@@ -203,7 +204,14 @@ TestCase::GetName (void)
 void 
 TestCase::SetBaseDir (std::string basedir)
 {
-  m_basedir = basedir;
+  if (basedir[basedir.length () - 1] != '/')
+    {
+      m_basedir = basedir + "/";
+    }
+  else
+    {
+      m_basedir = basedir;
+    }
 }
 
 std::string 
@@ -212,13 +220,32 @@ TestCase::GetBaseDir (void)
   return m_basedir;
 }
 
+void 
+TestCase::SetTempDir (std::string tempdir)
+{
+  if (tempdir[tempdir.length () - 1] != '/')
+    {
+      m_tempdir = tempdir + "/";
+    }
+  else
+    {
+      m_tempdir = tempdir;
+    }
+}
+
+std::string 
+TestCase::GetTempDir (void)
+{
+  return m_tempdir;
+}
+
 std::string 
 TestCase::GetSourceDir (std::string file)
 {
   std::string::size_type relPathBegin = file.find_first_of ("/");
-  NS_ABORT_MSG_IF (relPathBegin == std::string::npos, "TestCase::GetSrouceDir(): Internal Error");
+  NS_ABORT_MSG_IF (relPathBegin == std::string::npos, "TestCase::GetSourceDir(): Internal Error");
   std::string::size_type relPathEnd = file.find_last_of ("/");
-  NS_ABORT_MSG_IF (relPathEnd == std::string::npos, "TestCase::GetSrouceDir(): Internal Error");
+  NS_ABORT_MSG_IF (relPathEnd == std::string::npos, "TestCase::GetSourceDir(): Internal Error");
 
   return GetBaseDir () + file.substr (relPathBegin, relPathEnd + 1 - relPathBegin);
 }
@@ -353,6 +380,7 @@ TestSuite::TestSuite (std::string name, TestType type)
   : m_name (name), 
     m_verbose (false), 
     m_basedir ("invalid"), 
+    m_tempdir ("invalid"), 
     m_ofs (0), 
     m_error (false), 
     m_type (type)
@@ -476,13 +504,39 @@ TestSuite::GetName (void)
 void 
 TestSuite::SetBaseDir (std::string basedir)
 {
-  m_basedir = basedir;
+  if (basedir[basedir.length () - 1] != '/')
+    {
+      m_basedir = basedir + "/";
+    }
+  else
+    {
+      m_basedir = basedir;
+    }
 }
 
 std::string 
 TestSuite::GetBaseDir (void)
 {
   return m_basedir;
+}
+
+void 
+TestSuite::SetTempDir (std::string tempdir)
+{
+  if (tempdir[tempdir.length () - 1] != '/')
+    {
+      m_tempdir = tempdir + "/";
+    }
+  else
+    {
+      m_tempdir = tempdir;
+    }
+}
+
+std::string 
+TestSuite::GetTempDir (void)
+{
+  return m_tempdir;
 }
 
 void 
@@ -589,6 +643,7 @@ TestSuite::DoRun (void)
       (*i)->SetVerbose (m_verbose);
       (*i)->SetContinueOnFailure (m_continueOnFailure);
       (*i)->SetBaseDir (m_basedir);
+      (*i)->SetTempDir (m_tempdir);
       (*i)->SetStream (m_ofs);
 
       //
