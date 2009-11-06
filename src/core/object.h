@@ -28,6 +28,7 @@
 #include "attribute.h"
 #include "object-base.h"
 #include "attribute-list.h"
+#include "object-ref-count.h"
 
 
 namespace ns3 {
@@ -55,7 +56,7 @@ class TraceSourceAccessor;
  * invoked from the Object::Unref method before destroying the object, even if the user 
  * did not call Object::Dispose directly.
  */
-class Object : public ObjectBase
+class Object : public ObjectRefCount<Object,ObjectBase>
 {
 public:
   static TypeId GetTypeId (void);
@@ -97,26 +98,6 @@ public:
    * Implement the GetInstanceTypeId method defined in ObjectBase.
    */
   virtual TypeId GetInstanceTypeId (void) const;
-
-  /**
-   * Increment the reference count. This method should not be called
-   * by user code. Object instances are expected to be used in conjunction
-   * of the Ptr template which would make calling Ref unecessary and 
-   * dangerous.
-   */
-  inline void Ref (void) const;
-  /**
-   * Decrement the reference count. This method should not be called
-   * by user code. Object instances are expected to be used in conjunction
-   * of the Ptr template which would make calling Ref unecessary and 
-   * dangerous.
-   */
-  inline void Unref (void) const;
-
-  /**
-   * Get the reference count of the object.  Normally not needed; for language bindings.
-   */
-  uint32_t GetReferenceCount (void) const;
 
   /**
    * \returns a pointer to the requested interface or zero if it could not be found.
@@ -234,13 +215,6 @@ private:
   bool Check (void) const;
   bool CheckLoose (void) const;
   /**
-   * Attempt to delete this object. This method iterates
-   * over all aggregated objects to check if they all 
-   * have a zero refcount. If yes, the object and all
-   * its aggregates are deleted. If not, nothing is done.
-   */
-  void MaybeDelete (void) const;
-  /**
    * \param tid an TypeId
    *
    * Invoked from ns3::CreateObject only.
@@ -259,15 +233,14 @@ private:
   void Construct (const AttributeList &attributes);
 
   void UpdateSortedArray (struct Aggregates *aggregates, uint32_t i) const;
-
   /**
-   * The reference count for this object. Each aggregate
-   * has an individual reference count. When the global
-   * reference count (the sum of all reference counts) 
-   * reaches zero, the object and all its aggregates is 
-   * deleted.
+   * Attempt to delete this object. This method iterates
+   * over all aggregated objects to check if they all 
+   * have a zero refcount. If yes, the object and all
+   * its aggregates are deleted. If not, nothing is done.
    */
-  mutable uint32_t m_count;
+  virtual void DoDelete (void);
+
   /**
    * Identifies the type of this object instance.
    */
@@ -362,22 +335,6 @@ namespace ns3 {
 /*************************************************************************
  *   The Object implementation which depends on templates
  *************************************************************************/
-
-void
-Object::Ref (void) const
-{
-  m_count++;
-}
-void
-Object::Unref (void) const
-{
-  NS_ASSERT (Check ());
-  m_count--;
-  if (m_count == 0)
-    {
-      MaybeDelete ();
-    }
-}
 
 template <typename T>
 Ptr<T> 

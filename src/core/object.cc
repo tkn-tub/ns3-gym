@@ -79,8 +79,7 @@ Object::GetTypeId (void)
 
 
 Object::Object ()
-  : m_count (1),
-    m_tid (Object::GetTypeId ()),
+  : m_tid (Object::GetTypeId ()),
     m_disposed (false),
     m_aggregates ((struct Aggregates *)malloc (sizeof (struct Aggregates))),
     m_getObjectCount (0)
@@ -112,19 +111,13 @@ Object::~Object ()
   m_aggregates = 0;
 }
 Object::Object (const Object &o)
-  : m_count (1),
-    m_tid (o.m_tid),
+  : m_tid (o.m_tid),
     m_disposed (false),
     m_aggregates ((struct Aggregates *)malloc (sizeof (struct Aggregates))),
     m_getObjectCount (0)
 {
   m_aggregates->n = 1;
   m_aggregates->buffer[0] = this;
-}
-uint32_t
-Object::GetReferenceCount (void) const
-{
-  return m_count;
 }
 void
 Object::Construct (const AttributeList &attributes)
@@ -231,6 +224,10 @@ Object::AggregateObject (Ptr<Object> o)
       Object *current = aggregates->buffer[i];
       current->m_aggregates = aggregates;
     }
+
+  // share the counts
+  ShareCount (other);
+
   // Finally, call NotifyNewAggregate in the listed chain
   for (uint32_t i = 0; i < n; i++)
     {
@@ -271,7 +268,7 @@ Object::DoDispose (void)
 bool 
 Object::Check (void) const
 {
-  return (m_count > 0);
+  return (GetReferenceCount () > 0);
 }
 
 /* In some cases, when an event is scheduled against a subclass of
@@ -289,13 +286,12 @@ Object::CheckLoose (void) const
   for (uint32_t i = 0; i < n; i++)
     {
       Object *current = m_aggregates->buffer[i];
-      refcount += current->m_count;
+      refcount += current->GetReferenceCount ();
     }
   return (refcount > 0);
 }
-
 void
-Object::MaybeDelete (void) const
+Object::DoDelete (void)
 {
   // First, check if any of the attached
   // Object has a non-zero count.
@@ -303,7 +299,7 @@ Object::MaybeDelete (void) const
   for (uint32_t i = 0; i < n; i++)
     {
       Object *current = m_aggregates->buffer[i];
-      if (current->m_count != 0)
+      if (current->GetReferenceCount () != 0)
         {
           return;
         }
@@ -319,6 +315,8 @@ Object::MaybeDelete (void) const
         }
     }
 
+  int *count = PeekCountPtr ();
+
   // all attached objects have a zero count so, 
   // we can delete them all.
   struct Aggregates *aggregates = m_aggregates;
@@ -331,6 +329,8 @@ Object::MaybeDelete (void) const
       Object *current = aggregates->buffer[0];
       delete current;
     }
+
+  delete count;
 }
 } // namespace ns3
 

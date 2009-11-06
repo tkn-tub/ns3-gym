@@ -126,6 +126,7 @@ def build(bld):
         'abort.h',
         'names.h',
         'vector.h',
+        'object-ref-count.h',
         ]
 
     if sys.platform == 'win32':
