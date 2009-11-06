@@ -107,7 +107,7 @@ WriteModeCreateTestCase::DoSetup (void)
   std::stringstream filename;
   uint32_t n = rand ();
   filename << n;
-  m_testFilename = "/tmp/" + filename.str () + ".pcap";
+  m_testFilename = GetTempDir () + filename.str () + ".pcap";
 }
 
 void
@@ -218,7 +218,7 @@ ReadModeCreateTestCase::DoSetup (void)
   std::stringstream filename;
   uint32_t n = rand ();
   filename << n;
-  m_testFilename = "/tmp/" + filename.str () + ".pcap";
+  m_testFilename = GetTempDir () + filename.str () + ".pcap";
 }
 
 void
@@ -317,7 +317,7 @@ AppendModeCreateTestCase::DoSetup (void)
   std::stringstream filename;
   uint32_t n = rand ();
   filename << n;
-  m_testFilename = "/tmp/" + filename.str () + ".pcap";
+  m_testFilename = GetTempDir () + filename.str () + ".pcap";
 }
 
 void
@@ -416,7 +416,7 @@ FileHeaderTestCase::DoSetup (void)
   std::stringstream filename;
   uint32_t n = rand ();
   filename << n;
-  m_testFilename = "/tmp/" + filename.str () + ".pcap";
+  m_testFilename = GetTempDir () + filename.str () + ".pcap";
 }
 
 void
@@ -607,7 +607,7 @@ RecordHeaderTestCase::DoSetup (void)
   std::stringstream filename;
   uint32_t n = rand ();
   filename << n;
-  m_testFilename = "/tmp/" + filename.str () + ".pcap";
+  m_testFilename = GetTempDir () + filename.str () + ".pcap";
 }
 
 void
