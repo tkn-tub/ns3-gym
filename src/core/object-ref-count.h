@@ -46,7 +46,6 @@ public:
   {}
   ObjectRefCount & operator = (const ObjectRefCount &o)
   {
-    *m_count = *o.m_count;
     return *this;
   }
   ~ObjectRefCount () 
