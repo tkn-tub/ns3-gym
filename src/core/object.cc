@@ -293,18 +293,7 @@ Object::CheckLoose (void) const
 void
 Object::DoDelete (void)
 {
-  // First, check if any of the attached
-  // Object has a non-zero count.
   uint32_t n = m_aggregates->n;
-  for (uint32_t i = 0; i < n; i++)
-    {
-      Object *current = m_aggregates->buffer[i];
-      if (current->GetReferenceCount () != 0)
-        {
-          return;
-        }
-    }
-
   // Ensure we are disposed.
   for (uint32_t i = 0; i < n; i++)
     {
@@ -317,8 +306,7 @@ Object::DoDelete (void)
 
   int *count = PeekCountPtr ();
 
-  // all attached objects have a zero count so, 
-  // we can delete them all.
+  // Now, actually delete all objects
   struct Aggregates *aggregates = m_aggregates;
   for (uint32_t i = 0; i < n; i++)
     {
