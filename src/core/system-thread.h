@@ -72,12 +72,20 @@ public:
    * is asking the SystemThread to call object->MyMethod () in a new thread
    * of execution.
    *
-   * Remember that if you are invoking a callback on an object that is
-   * managed by a smart pointer, you need to call PeekPointer.
+   * If starting a thread in your currently executing object, you can use the
+   * "this" pointer:
+   *
+   *   Ptr<SystemThread> st = Create<SystemThread> (
+   *     MakeCallback (&MyClass::MyMethod, this));
+   *   st->Start ();
+   *
+   * Object lifetime is always an issue with threads, so it is common to use
+   * smart pointers.  If you are spinning up a thread in an object that is 
+   * managed by a smart pointer, you can use that pointer directly:
    *
    *   Ptr<MyClass> myPtr = Create<MyClass> ();
    *   Ptr<SystemThread> st = Create<SystemThread> (
-   *     MakeCallback (&MyClass::MyMethod, PeekPointer (myPtr)));
+   *     MakeCallback (&MyClass::MyMethod, myPtr));
    *   st->Start ();
    *
    * Just like any thread, you can synchronize with its termination.  The 
