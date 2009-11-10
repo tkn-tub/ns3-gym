@@ -1,10 +1,13 @@
 
 		ns-3 RELEASE NOTES
 
-This file contains ns-3 release notes (most recent releases first).
+This file contains ns-3 release notes (most recent releases first).  
 
 All of the ns-3 documentation is accessible from the ns-3 website: 
 http://www.nsnam.org including tutorials: http://www.nsnam.org/tutorials.html
+
+Consult the file CHANGES.html for more detailed information about changed
+API and behavior across ns-3 releases.
 
 Release 3.6
 ===========
