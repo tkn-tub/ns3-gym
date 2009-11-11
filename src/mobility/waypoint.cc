@@ -24,45 +24,23 @@ namespace ns3 {
 ATTRIBUTE_HELPER_CPP (Waypoint);
 
 Waypoint::Waypoint (const Time &waypointTime, const Vector &waypointPosition)
-  : m_time (waypointTime),
-  m_position (waypointPosition)
+  : time (waypointTime),
+  position (waypointPosition)
 {}
 Waypoint::Waypoint ()
-  : m_time (0.0),
-  m_position (0,0,0)
+  : time (0.0),
+  position (0,0,0)
 {}
-
-Time Waypoint::GetTime () const
-{
-  return m_time;
-}
-
-void Waypoint::SetTime (Time time)
-{
-  m_time = time;
-}
-
-Vector Waypoint::GetPosition () const
-{
-  return m_position;
-}
-
-void Waypoint::SetPosition (Vector pos)
-{
-  m_position = pos;
-}
 
 std::ostream &operator << (std::ostream &os, const Waypoint &waypoint)
 {
-  os << waypoint.GetTime ().GetSeconds () << "$" << waypoint.GetPosition ();
+  os << waypoint.time.GetSeconds () << "$" << waypoint.position;
   return os;
 }
 std::istream &operator >> (std::istream &is, Waypoint &waypoint)
 {
   char separator;
-  Time time = waypoint.GetTime ();
-  Vector pos = waypoint.GetPosition ();
-  is >> time >> separator >> pos;
+  is >> waypoint.time >> separator >> waypoint.position;
   if (separator != '$')
     {
       is.setstate (std::ios_base::failbit);

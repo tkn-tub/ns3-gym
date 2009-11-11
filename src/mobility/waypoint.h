@@ -46,15 +46,10 @@ public:
    * Create a waypoint at time 0 and position (0,0,0).
    */
   Waypoint ();
-  Time GetTime () const;
-  void SetTime (Time time);
-  Vector GetPosition () const;
-  void SetPosition (Vector vec);
-private:
   /* The waypoint time */
-  Time m_time;
+  Time time;
   /* The position of the waypoint */
-  Vector m_position;
+  Vector position;
 };
 
 /**

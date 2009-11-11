@@ -75,7 +75,7 @@ WaypointMobilityModel::AddWaypoint (const Waypoint &waypoint)
     }
   else
     {
-      NS_ABORT_MSG_IF ( !m_waypoints.empty () && (m_waypoints.back ().GetTime () >= waypoint.GetTime ()),
+      NS_ABORT_MSG_IF ( !m_waypoints.empty () && (m_waypoints.back ().time >= waypoint.time),
                         "Waypoints must be added in ascending time order");
       m_waypoints.push_back (waypoint);
     }
@@ -98,25 +98,25 @@ WaypointMobilityModel::Update (void) const
   const Time now = Simulator::Now ();
   bool newWaypoint = false;
 
-  if ( now <= m_current.GetTime () )
+  if ( now <= m_current.time )
     {
       return;
     }
 
-  while ( now >= m_next.GetTime ()  )
+  while ( now >= m_next.time  )
     {
       if ( m_waypoints.empty () )
         {
-          if ( m_current.GetTime () <= m_next.GetTime () )
+          if ( m_current.time <= m_next.time )
             {
-              m_current.SetPosition(m_next.GetPosition ());
-              m_current.SetTime (now);
+              m_current.position = m_next.position;
+              m_current.time = now;
               m_velocity = Vector (0,0,0);
               NotifyCourseChange ();
             }
           else
             {
-              m_current.SetTime (now);
+              m_current.time = now;
             }
 
           return;
@@ -127,21 +127,19 @@ WaypointMobilityModel::Update (void) const
       m_waypoints.pop_front ();
       newWaypoint = true;
 
-      const double t_span = (m_next.GetTime () - m_current.GetTime ()).GetSeconds ();
+      const double t_span = (m_next.time - m_current.time).GetSeconds ();
       NS_ASSERT (t_span > 0);
-      m_velocity.x = (m_next.GetPosition ().x - m_current.GetPosition ().x) / t_span;
-      m_velocity.y = (m_next.GetPosition ().y - m_current.GetPosition ().y) / t_span;
-      m_velocity.z = (m_next.GetPosition ().z - m_current.GetPosition ().z) / t_span;
+      m_velocity.x = (m_next.position.x - m_current.position.x) / t_span;
+      m_velocity.y = (m_next.position.y - m_current.position.y) / t_span;
+      m_velocity.z = (m_next.position.z - m_current.position.z) / t_span;
     }
 
 
-  const double t_diff = (now - m_current.GetTime ()).GetSeconds();
-  Vector pos;
-  pos.x = m_current.GetPosition ().x + m_velocity.x * t_diff;
-  pos.y = m_current.GetPosition ().y + m_velocity.y * t_diff;
-  pos.z = m_current.GetPosition ().z + m_velocity.z * t_diff;
-  m_current.SetPosition (pos);
-  m_current.SetTime (now);
+  const double t_diff = (now - m_current.time).GetSeconds();
+  m_current.position.x += m_velocity.x * t_diff;
+  m_current.position.y += m_velocity.y * t_diff;
+  m_current.position.z += m_velocity.z * t_diff;
+  m_current.time = now;
 
   if ( newWaypoint )
     {
@@ -152,15 +150,15 @@ Vector
 WaypointMobilityModel::DoGetPosition (void) const
 {
   Update ();
-  return m_current.GetPosition ();
+  return m_current.position;
 }
 void
 WaypointMobilityModel::DoSetPosition (const Vector &position)
 {
   const Time now = Simulator::Now ();
   Update ();
-  m_current.SetTime (std::max (now, m_next.GetTime ()));
-  m_current.SetPosition (position);
+  m_current.time = std::max (now, m_next.time);
+  m_current.position = position;
   m_velocity = Vector (0,0,0);
   NotifyCourseChange ();
 }
@@ -168,8 +166,8 @@ void
 WaypointMobilityModel::EndMobility (void)
 {
   m_waypoints.clear ();
-  m_current.SetTime (Seconds (std::numeric_limits<double>::infinity ()));
-  m_next.SetTime (m_current.GetTime ());
+  m_current.time = Seconds (std::numeric_limits<double>::infinity ());
+  m_next.time = m_current.time;
   m_first = true;
 }
 Vector
