@@ -22,10 +22,12 @@
 #define IPV6_EXTENSION_HEADER_H
 
 #include <vector>
+#include <list>
 #include <ostream>
 
 #include "ns3/header.h"
 #include "ns3/ipv6-address.h"
+#include "ipv6-option-header.h"
 
 namespace ns3
 {
@@ -127,10 +129,68 @@ class Ipv6ExtensionHeader : public Header
 };
 
 /**
+ * \brief Option field for an IPv6ExtensionHeader
+ * Enables adding options to an IPv6ExtensionHeader
+ *
+ * Implementor's note: Make sure to add the result of
+ * OptionField::GetSerializedSize () to your IPv6ExtensionHeader::GetSerializedSize ()
+ * return value. Call OptionField::Serialize and OptionField::Deserialize at the
+ * end of your corresponding IPv6ExtensionHeader methods.
+ */
+
+class OptionField
+{
+  public:
+    OptionField (uint32_t opitonsOffset);
+    ~OptionField ();
+
+    /**
+     * \brief Get the serialized size of the packet.
+     * \return size
+     */
+    uint32_t GetSerializedSize () const;
+
+    /**
+     * \brief Serialize all added options.
+     * \param start Buffer iterator
+     */
+    void Serialize (Buffer::Iterator start) const;
+
+    /**
+     * \brief Deserialize the packet.
+     * \param start Buffer iterator
+     * \return size of the packet
+     */
+    uint32_t Deserialize (Buffer::Iterator start, uint32_t length);
+
+    /**
+     * \brief Serialize the option, prepending pad1 or padn option as necessary
+     * \param option the option header to serialize
+     */
+    void AddOption (Ipv6OptionHeader const& option);
+
+    /**
+     * \brief Get the offset where the options begin, measured from the start of
+     * the extension header.
+     * \return the offset from the start of the extension header
+     */
+    uint32_t GetOptionsOffset ();
+
+    Buffer GetOptionBuffer ();
+
+  private:
+
+    uint32_t CalculatePad (Ipv6OptionHeader::Alignment alignment) const;
+
+    Buffer m_optionData;
+    uint32_t m_optionsOffset;
+};
+
+/**
  * \class Ipv6ExtensionHopByHopHeader
  * \brief Header of IPv6 Extension "Hop by Hop"
  */
-class Ipv6ExtensionHopByHopHeader : public Ipv6ExtensionHeader
+class Ipv6ExtensionHopByHopHeader : public Ipv6ExtensionHeader, public OptionField
 {
   public:
     /**
@@ -186,7 +246,7 @@ class Ipv6ExtensionHopByHopHeader : public Ipv6ExtensionHeader
  * \class Ipv6ExtensionDestinationHeader
  * \brief Header of IPv6 Extension Destination
  */
-class Ipv6ExtensionDestinationHeader : public Ipv6ExtensionHeader
+class Ipv6ExtensionDestinationHeader : public Ipv6ExtensionHeader, public OptionField
 {
   public:
     /**
