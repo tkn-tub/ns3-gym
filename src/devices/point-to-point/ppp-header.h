@@ -28,9 +28,9 @@ namespace ns3 {
  *
  * This class can be used to add a header to PPP packet.  Currently we do not
  * implement any of the state machine in RFC 1661, we just encapsulate the
- * inbound packet as an IP version 4 type and send it on.  The goal here is
- * not really to implement the point-to-point protocol, but to encapsulate our
- * packets in a known protocol so packet sniffers can parse them.
+ * inbound packet send it on.  The goal here is not really to implement the
+ * point-to-point protocol, but to encapsulate our packets in a known protocol
+ * so packet sniffers can parse them.
  *
  * if PPP is transmitted over a serial link, it will typically be framed in
  * some way derivative of IBM SDLC (HDLC) with all that that entails.
@@ -41,20 +41,20 @@ namespace ns3 {
  * teach the PcapWriter about the appropriate data link type (DLT_PPP = 9),
  * and we need to add a PPP header to each packet.  Since we are not using
  * framed PPP, this just means prepending the sixteen bit PPP protocol number
- * (0x0021) to the packet.  The ns-3 way to do this is via a class that 
- * inherits from class Header.
+ * to the packet.  The ns-3 way to do this is via a class that inherits from
+ * class Header.
  */
 class PppHeader : public Header 
 {
 public:
 
   /**
-   * \brief Construct an IP version 4 PPP header.
+   * \brief Construct a PPP header.
    */
   PppHeader ();
 
   /**
-   * \brief Destroy an IP version 4 PPP header.
+   * \brief Destroy a PPP header.
    */
   virtual ~PppHeader ();
 
@@ -64,6 +64,31 @@ public:
   virtual void Serialize (Buffer::Iterator start) const;
   virtual uint32_t Deserialize (Buffer::Iterator start);
   virtual uint32_t GetSerializedSize (void) const;
+
+  /**
+   * \brief Set the protocol type carried by this PPP packet
+   *
+   * The type numbers to be used are defined in RFC3818
+   *
+   * \param protocol the protocol type being carried
+   */
+  void SetProtocol(uint16_t protocol);
+
+  /**
+   * \brief Get the protocol type carried by this PPP packet
+   *
+   * The type numbers to be used are defined in RFC3818
+   *
+   * \return the protocol type being carried
+   */
+  uint16_t GetProtocol(void);
+
+private:
+
+  /**
+   * \brief The PPP protocol type of the payload packet
+   */
+  uint16_t m_protocol;
 };
 
 }; // namespace ns3
