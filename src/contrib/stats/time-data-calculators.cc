@@ -70,12 +70,12 @@ TimeMinMaxAvgTotalCalculator::Update(const Time i)
 void
 TimeMinMaxAvgTotalCalculator::Output(DataOutputCallback &callback) const
 {
-  callback.OutputSingleton(m_key, "count", m_count);
+  callback.OutputSingleton(m_context, m_key + "-count", m_count);
   if (m_count > 0) {
-    callback.OutputSingleton(m_key, "total", m_total);
-    callback.OutputSingleton(m_key, "average", m_total/Scalar(m_count));
-    callback.OutputSingleton(m_key, "max", m_max);
-    callback.OutputSingleton(m_key, "min", m_min);
+    callback.OutputSingleton(m_context, m_key + "-total", m_total);
+    callback.OutputSingleton(m_context, m_key + "-average", m_total/Scalar(m_count));
+    callback.OutputSingleton(m_context, m_key + "-max", m_max);
+    callback.OutputSingleton(m_context, m_key + "-min", m_min);
   }
   // end TimeMinMaxAvgTotalCalculator::Output
 }

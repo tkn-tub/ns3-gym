@@ -23,6 +23,7 @@
 
 #include "ns3/object.h"
 #include "ns3/nstime.h"
+#include "ns3/data-calculator.h"
 
 namespace ns3 {
 
@@ -51,6 +52,10 @@ namespace ns3 {
   class DataOutputCallback {
   public:
     virtual ~DataOutputCallback() {}
+
+    virtual void OutputStatistic(std::string key,
+                                 std::string variable,
+                                 const StatisticalSummary *statSum) = 0;
 
     virtual void OutputSingleton(std::string key,
                                  std::string variable,

@@ -45,24 +45,28 @@ namespace ns3 {
     public:
       OmnetOutputCallback(std::ostream *scalar);
 
-      void OutputSingleton(std::string key,
-                           std::string variable,
+      void OutputStatistic(std::string context,
+                           std::string name,
+                           const StatisticalSummary *statSum);
+
+      void OutputSingleton(std::string context,
+                           std::string name,
                            int val);
 
-      void OutputSingleton(std::string key,
-                           std::string variable,
+      void OutputSingleton(std::string context,
+                           std::string name,
                            uint32_t val);
 
-      void OutputSingleton(std::string key,
-                           std::string variable,
+      void OutputSingleton(std::string context,
+                           std::string name,
                            double val);
 
-      void OutputSingleton(std::string key,
-                           std::string variable,
+      void OutputSingleton(std::string context,
+                           std::string name,
                            std::string val);
 
-      void OutputSingleton(std::string key,
-                           std::string variable,
+      void OutputSingleton(std::string context,
+                           std::string name,
                            Time val);
 
     private:

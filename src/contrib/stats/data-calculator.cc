@@ -27,6 +27,8 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE("DataCalculator");
 
+static double zero = 0;
+const double ns3::NaN = zero / zero;
 
 //--------------------------------------------------------------
 //----------------------------------------------
@@ -68,6 +70,20 @@ DataCalculator::GetKey() const
   // end DataCalculator::GetKey
 }
 
+//----------------------------------------------
+void
+DataCalculator::SetContext(const std::string context)
+{
+  m_context = context;
+  // end DataCalculator::SetContext
+}
+
+std::string
+DataCalculator::GetContext() const
+{
+  return m_context;
+  // end DataCalculator::GetContext
+}
 //----------------------------------------------
 void
 DataCalculator::Enable()

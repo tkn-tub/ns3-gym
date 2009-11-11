@@ -29,7 +29,8 @@ namespace ns3 {
   //------------------------------------------------------------
   //--------------------------------------------
   template <typename T  = uint32_t>
-  class MinMaxAvgTotalCalculator : public DataCalculator {
+  class MinMaxAvgTotalCalculator : public DataCalculator,
+                                   public StatisticalSummary {
   public:
     MinMaxAvgTotalCalculator();
     virtual ~MinMaxAvgTotalCalculator();
@@ -37,6 +38,15 @@ namespace ns3 {
     void Update(const T i);
 
     virtual void Output(DataOutputCallback &callback) const;
+
+    long getCount() const { return m_count; }
+    double getSum() const { return m_total; }
+    double getMin() const { return m_min; }
+    double getMax() const { return m_max; }
+    double getMean() const { return m_total / (double)m_count; }
+    double getStddev() const { return NaN; } // unsupported
+    double getVariance() const { return NaN; } // unsupported
+    double getSqrSum() const { return NaN; } // unsupported
 
   protected:
     virtual void DoDispose(void);
@@ -86,21 +96,13 @@ namespace ns3 {
     }
     // end MinMaxAvgTotalCalculator::Update
   }
+
   template <typename T>
   void
   MinMaxAvgTotalCalculator<T>::Output(DataOutputCallback &callback) const
   {
-    callback.OutputSingleton(m_key, "count", m_count);
-    if (m_count > 0) {
-      callback.OutputSingleton(m_key, "total", m_total);
-      callback.OutputSingleton(m_key, "average", m_total/m_count);
-      callback.OutputSingleton(m_key, "max", m_max);
-      callback.OutputSingleton(m_key, "min", m_min);
-    }
-    // end MinMaxAvgTotalCalculator::Output
+      callback.OutputStatistic(m_context, m_key, this);
   }
-
-
 
 
   //------------------------------------------------------------
@@ -178,7 +180,7 @@ namespace ns3 {
   void
   CounterCalculator<T>::Output(DataOutputCallback &callback) const
   {
-    callback.OutputSingleton(m_key, "count", m_count);
+    callback.OutputSingleton(m_context, m_key, m_count);
     // end CounterCalculator::Output
   }
 
