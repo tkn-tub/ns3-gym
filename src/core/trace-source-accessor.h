@@ -23,6 +23,7 @@
 #include <stdint.h>
 #include "callback.h"
 #include "ptr.h"
+#include "simple-ref-count.h"
 
 namespace ns3 {
 
@@ -36,13 +37,11 @@ class ObjectBase;
  * This class abstracts the kind of trace source to which we want to connect
  * and provides services to Connect and Disconnect a sink to a trace source.
  */
-class TraceSourceAccessor
+class TraceSourceAccessor : public SimpleRefCount<TraceSourceAccessor>
 {
 public:
   TraceSourceAccessor ();
   virtual ~TraceSourceAccessor ();
-  void Ref (void) const;
-  void Unref (void) const;
 
   /**
    * \param obj the object instance which contains the target trace source.
@@ -66,8 +65,6 @@ public:
    * \param cb the callback to disconnect from the target trace source.
    */
   virtual bool Disconnect (ObjectBase *obj, std::string context, const CallbackBase &cb) const = 0;
-private:
-  mutable uint32_t m_count;
 };
 
 /**

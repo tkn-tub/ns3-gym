@@ -42,7 +42,7 @@ class SystemThreadImpl;
  *
  * Synchronization between threads is provided via the SystemMutex class.
  */
-class SystemThread 
+class SystemThread : public SimpleRefCount<SystemThread>
 {
 public:
   /**
@@ -116,22 +116,6 @@ public:
   ~SystemThread();
 
   /**
-   * Increment the reference count. This method should not be called
-   * by user code. Object instances are expected to be used in conjunction
-   * of the Ptr template which would make calling Ref unecessary and 
-   * dangerous.
-   */
-  inline void Ref (void) const;
-
-  /**
-   * Decrement the reference count. This method should not be called
-   * by user code. Object instances are expected to be used in conjunction
-   * of the Ptr template which would make calling Ref unecessary and 
-   * dangerous.
-   */
-  inline void Unref (void) const;
-
-  /**
    * @brief Start a thread of execution, running the provided callback.
    */
   void Start (void);
@@ -181,25 +165,8 @@ public:
 
 private:
   SystemThreadImpl * m_impl;
-  mutable uint32_t m_count;
   bool m_break;
 };
-
- void
-SystemThread::Ref (void) const
-{
-  m_count++;
-}
-
- void
-SystemThread::Unref (void) const
-{
-  m_count--;
-  if (m_count == 0)
-    {
-      delete this;
-    }
-}
 
 } //namespace ns3
 

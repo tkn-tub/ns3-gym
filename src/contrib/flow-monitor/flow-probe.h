@@ -24,7 +24,7 @@
 #include <map>
 #include <vector>
 
-#include "ns3/ref-count-base.h"
+#include "ns3/simple-ref-count.h"
 #include "ns3/flow-classifier.h"
 #include "ns3/nstime.h"
 
@@ -36,14 +36,14 @@ class FlowMonitor;
 /// in a specific point of the simulated space, report those events to
 /// the global FlowMonitor, and collect its own flow statistics
 /// regarding only the packets that pass through that probe.
-class FlowProbe : public RefCountBase
+class FlowProbe : public SimpleRefCount<FlowProbe>
 {
 protected:
   
   FlowProbe (Ptr<FlowMonitor> flowMonitor);
   
 public:
-  ~FlowProbe ();
+  virtual ~FlowProbe ();
 
   struct FlowStats
   {

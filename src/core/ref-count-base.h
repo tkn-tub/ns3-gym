@@ -23,73 +23,25 @@
 #ifndef __REF_COUNT_BASE_H__
 #define __REF_COUNT_BASE_H__
 
-#include <stdint.h>
+#include "simple-ref-count.h"
 
 namespace ns3 {
 
 /**
- * \brief a base class that provides implementations of reference counting
- *    operations.
- *  
- * A base class that provides implementations of reference counting 
- * operations, for classes that wish to use the templatized smart 
- * pointer for memory management but that do not wish to derive from
- * class ns3::Object.
+ * \brief A deprecated way to get reference-counting powers
  *
+ * Users who wish to use reference counting for a class of their own should use
+ * instead the template \ref ns3::SimpleRefCount. This class is maintained
+ * purely for compatibility to avoid breaking the code of users.
  */
-class RefCountBase 
+class RefCountBase : public SimpleRefCount<RefCountBase>
 { 
 public:
-  RefCountBase();
-  RefCountBase (const RefCountBase &o);
-  RefCountBase &operator = (const RefCountBase &o);
-  virtual ~RefCountBase ();
   /**
-   * Increment the reference count. This method should not be called
-   * by user code. RefCountBase instances are expected to be used in
-   * conjunction with the Ptr template which would make calling Ref
-   * unecessary and dangerous.
+   * This only thing this class does it declare a virtual destructor
    */
-  inline void Ref (void) const;
-  /**
-   * Decrement the reference count. This method should not be called
-   * by user code. RefCountBase instances are expected to be used in 
-   * conjunction with the Ptr template which would make calling Ref
-   * unecessary and dangerous.
-   */
-  inline void Unref (void) const;
-
-  /**
-   * Get the reference count of the object.  Normally not needed; for language bindings.
-   */
-  uint32_t GetReferenceCount (void) const;
-
-private:
-  // Note we make this mutable so that the const methods can still
-  // change it.
-  mutable uint32_t m_count;  // Reference count
+  virtual ~RefCountBase () = 0;
 };
-
-} // namespace ns3
-
-namespace ns3 {
-
-// Implementation of the in-line methods
-void
-RefCountBase::Ref (void) const
-{
-  m_count++;
-}
-
-void
-RefCountBase::Unref (void) const
-{
-  m_count--;
-  if (m_count == 0)
-    { // All references removed, ok to delete
-      delete this;
-    }
-}
 
 } // namespace ns3
 

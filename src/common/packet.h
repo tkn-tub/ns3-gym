@@ -198,12 +198,9 @@ private:
  * The performance aspects of the Packet API are discussed in 
  * \ref packetperf
  */
-class Packet 
+class Packet : public SimpleRefCount<Packet>
 {
 public:
-  void Ref (void) const;
-  void Unref (void) const;
-
   Ptr<Packet> Copy (void) const;
 
   /**
@@ -540,7 +537,6 @@ private:
   /* Please see comments above about nix-vector */
   Ptr<NixVector> m_nixVector;
 
-  mutable uint32_t m_refCount;
   static uint32_t m_globalUid;
 };
 

@@ -36,6 +36,10 @@
 #include "dot11s/ie-dot11s-rann.h"
 
 namespace ns3 {
+
+WifiInformationElement::~WifiInformationElement ()
+{}
+
 bool
 operator< (WifiInformationElement const & a, WifiInformationElement const & b)
 {

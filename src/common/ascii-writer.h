@@ -23,7 +23,7 @@
 
 #include <stdint.h>
 #include <ostream>
-#include "ns3/ref-count-base.h"
+#include "ns3/simple-ref-count.h"
 #include "ns3/ptr.h"
 
 namespace ns3 {
@@ -35,7 +35,7 @@ class Packet;
  *
  * \brief Ascii output
  */
-class AsciiWriter : public RefCountBase
+class AsciiWriter : public SimpleRefCount<AsciiWriter>
 {
 public:
   static Ptr<AsciiWriter> Get (std::ostream &os);

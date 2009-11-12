@@ -23,7 +23,7 @@
 #include <vector>
 #include <ostream>
 
-#include "ns3/ref-count-base.h"
+#include "ns3/simple-ref-count.h"
 #include "ipv4-address.h"
 
 namespace ns3 {
@@ -38,7 +38,8 @@ class NetDevice;
  * This is a reference counted object.  In the future, we will add other 
  * entries from struct dst_entry, struct rtable, and struct dst_ops as needed.
  */
-class Ipv4Route : public RefCountBase {
+class Ipv4Route : public SimpleRefCount<Ipv4Route> 
+{
 public:
   Ipv4Route ();
 
@@ -103,7 +104,8 @@ std::ostream& operator<< (std::ostream& os, Ipv4Route const& route);
  * 
  * \brief Ipv4 multicast route cache entry (similar to Linux struct mfc_cache)
  */
-class Ipv4MulticastRoute : public RefCountBase {
+class Ipv4MulticastRoute : public SimpleRefCount<Ipv4MulticastRoute> 
+{
 public:
   Ipv4MulticastRoute ();
 

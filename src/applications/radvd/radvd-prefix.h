@@ -24,6 +24,7 @@
 #include <stdint.h>
 
 #include "ns3/ipv6-address.h"
+#include "ns3/simple-ref-count.h"
 
 namespace ns3
 {
@@ -33,7 +34,7 @@ namespace ns3
  * \class RadvdPrefix
  * \brief Router prefix for radvd application.
  */
-class RadvdPrefix : public RefCountBase
+class RadvdPrefix : public SimpleRefCount<RadvdPrefix>
 {
   public:
     /**

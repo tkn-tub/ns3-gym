@@ -90,6 +90,7 @@ def build(bld):
         'callback.h',
         'object-base.h',
         'ref-count-base.h',
+        'simple-ref-count.h',
         'type-id.h',
         'attribute-list.h',
         'ptr.h',

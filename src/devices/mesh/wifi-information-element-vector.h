@@ -23,6 +23,7 @@
 #define IE_VECTOR_H
 
 #include "ns3/header.h"
+#include "ns3/simple-ref-count.h"
 
 namespace ns3 {
 class Packet;
@@ -79,9 +80,10 @@ enum WifiElementId {
  * Element ID as defined in this standard. The Length field specifies the number of octets in the Information
  * field.
  */
-class WifiInformationElement : public RefCountBase
+class WifiInformationElement : public SimpleRefCount<WifiInformationElement>
 {
 public:
+  virtual ~WifiInformationElement ();
   ///\name Each subclass must implement
   //\{
   virtual void Print (std::ostream &os) const = 0;

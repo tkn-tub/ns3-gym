@@ -497,7 +497,6 @@ PbbAddressTlvBlock::operator!= (const PbbAddressTlvBlock &other) const
 
 PbbPacket::PbbPacket (void)
 {
-  m_refCount = 1;
   m_version = VERSION;
   m_hasseqnum = false;
 }
@@ -746,21 +745,6 @@ PbbPacket::MessageClear (void)
   m_messageList.clear ();
 }
 
-void
-PbbPacket::Ref (void) const
-{
-  m_refCount++;
-}
-
-void
-PbbPacket::Unref (void) const
-{
-  m_refCount--;
-  if (m_refCount == 0)
-    {
-      delete this;
-    }
-}
 
 TypeId
 PbbPacket::GetTypeId (void)
@@ -947,7 +931,6 @@ PbbPacket::operator!= (const PbbPacket &other) const
 
 PbbMessage::PbbMessage ()
 {
-  m_refCount = 1;
   /* Default to IPv4 */
   m_addrSize = IPV4;
   m_hasOriginatorAddress = false;
@@ -1272,22 +1255,6 @@ PbbMessage::AddressBlockClear (void)
       *iter = 0;
     }
   return m_addressBlockList.clear();
-}
-
-void
-PbbMessage::Ref (void) const
-{
-  m_refCount++;
-}
-
-void
-PbbMessage::Unref (void) const
-{
-  m_refCount--;
-  if (m_refCount == 0)
-    {
-      delete this;
-    }
 }
 
 uint32_t
@@ -1699,13 +1666,10 @@ PbbMessageIpv6::AddressBlockDeserialize (Buffer::Iterator &start) const
 /* End PbbMessageIpv6 Class */
 
 PbbAddressBlock::PbbAddressBlock ()
-{
-  m_refCount = 1;
-}
+{}
 
 PbbAddressBlock::~PbbAddressBlock ()
-{
-}
+{}
 
 /* Manipulating the address block */
 
@@ -2002,23 +1966,6 @@ PbbAddressBlock::TlvClear (void)
 {
   m_addressTlvList.Clear();
 }
-
-void
-PbbAddressBlock::Ref (void) const
-{
-  m_refCount++;
-}
-
-void
-PbbAddressBlock::Unref (void) const
-{
-  m_refCount--;
-  if (m_refCount == 0)
-    {
-      delete this;
-    }
-}
-
 uint32_t
 PbbAddressBlock::GetSerializedSize (void) const
 {
@@ -2448,7 +2395,6 @@ PbbAddressBlockIpv6::PrintAddress (std::ostream &os, ConstAddressIterator iter) 
 
 PbbTlv::PbbTlv (void)
 {
-  m_refCount = 1;
   m_hasTypeExt = false;
   m_hasIndexStart = false;
   m_hasIndexStop = false;
@@ -2571,22 +2517,6 @@ bool
 PbbTlv::HasValue (void) const
 {
   return m_hasValue;
-}
-
-void
-PbbTlv::Ref (void) const
-{
-  m_refCount++;
-}
-
-void
-PbbTlv::Unref (void) const
-{
-  m_refCount--;
-  if (m_refCount == 0)
-    {
-      delete this;
-    }
 }
 
 uint32_t
