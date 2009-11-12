@@ -66,7 +66,7 @@ public:
   virtual Time Now (void) const;
   virtual Time GetDelayLeft (const EventId &id) const;
   virtual Time GetMaximumSimulationTime (void) const;
-  virtual void SetScheduler (Ptr<Scheduler> scheduler);
+  virtual void SetScheduler (ObjectFactory schedulerFactory);
 
   void ScheduleRealtime (Time const &time, EventImpl *event);
   void ScheduleRealtimeNow (EventImpl *event);

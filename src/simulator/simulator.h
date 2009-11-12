@@ -27,6 +27,7 @@
 #include "nstime.h"
 
 #include "ns3/deprecated.h"
+#include "ns3/object-factory.h"
 
 #include <stdint.h>
 #include <string>
@@ -80,7 +81,7 @@ public:
    * in the previous scheduler will be transfered to the new scheduler
    * before we start to use it.
    */
-  static void SetScheduler (Ptr<Scheduler> scheduler);
+  static void SetScheduler (ObjectFactory schedulerFactory);
 
   /**
    * Every event scheduled by the Simulator::insertAtDestroy method is

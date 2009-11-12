@@ -122,9 +122,11 @@ RealtimeSimulatorImpl::Destroy ()
 }
 
 void
-RealtimeSimulatorImpl::SetScheduler (Ptr<Scheduler> scheduler)
+RealtimeSimulatorImpl::SetScheduler (ObjectFactory schedulerFactory)
 {
   NS_LOG_FUNCTION_NOARGS ();
+
+  Ptr<Scheduler> scheduler = schedulerFactory.Create<Scheduler> ();
 
   { 
     CriticalSection cs (m_mutex);

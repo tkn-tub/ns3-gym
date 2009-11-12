@@ -86,8 +86,10 @@ DefaultSimulatorImpl::Destroy ()
 }
 
 void
-DefaultSimulatorImpl::SetScheduler (Ptr<Scheduler> scheduler)
+DefaultSimulatorImpl::SetScheduler (ObjectFactory schedulerFactory)
 {
+  Ptr<Scheduler> scheduler = schedulerFactory.Create<Scheduler> ();
+
   if (m_events != 0)
     {
       while (!m_events->IsEmpty ())

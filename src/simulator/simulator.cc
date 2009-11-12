@@ -25,6 +25,7 @@
 # include "realtime-simulator-impl.h"
 #endif
 #include "scheduler.h"
+#include "map-scheduler.h"
 #include "event-impl.h"
 
 #include "ns3/ptr.h"
@@ -51,8 +52,8 @@ GlobalValue g_simTypeImpl = GlobalValue ("SimulatorImplementationType",
 
 GlobalValue g_schedTypeImpl = GlobalValue ("SchedulerType", 
   "The object class to use as the scheduler implementation",
-  StringValue ("ns3::MapScheduler"),
-  MakeStringChecker ());
+  TypeIdValue (MapScheduler::GetTypeId ()),
+  MakeTypeIdChecker ());
 
 
 #ifdef NS3_LOG_ENABLE
@@ -97,7 +98,7 @@ static SimulatorImpl * GetImpl (void)
         StringValue s;
         g_schedTypeImpl.GetValue (s);
         factory.SetTypeId (s.Get ());
-        impl->SetScheduler (factory.Create<Scheduler> ());
+        impl->SetScheduler (factory);
       }
 
 //
@@ -133,10 +134,10 @@ Simulator::Destroy (void)
 }
 
 void
-Simulator::SetScheduler (Ptr<Scheduler> scheduler)
+Simulator::SetScheduler (ObjectFactory schedulerFactory)
 {
-  NS_LOG_FUNCTION (scheduler);
-  GetImpl ()->SetScheduler (scheduler);
+  NS_LOG_FUNCTION (schedulerFactory);
+  GetImpl ()->SetScheduler (schedulerFactory);
 }
 
 bool 
@@ -302,7 +303,7 @@ Simulator::SetImplementation (Ptr<SimulatorImpl> impl)
   StringValue s;
   g_schedTypeImpl.GetValue (s);
   factory.SetTypeId (s.Get ());
-  impl->SetScheduler (factory.Create<Scheduler> ());
+  impl->SetScheduler (factory);
 //
 // Note: we call LogSetTimePrinter _after_ creating the implementation
 // object because the act of creation can trigger calls to the logging 
@@ -334,7 +335,7 @@ namespace ns3 {
 class SimulatorEventsTestCase : public TestCase
 {
 public:
-  SimulatorEventsTestCase (Ptr<Scheduler> scheduler);
+  SimulatorEventsTestCase (ObjectFactory schedulerFactory);
   virtual bool DoRun (void);
   void A (int a);
   void B (int b);
@@ -350,10 +351,13 @@ public:
   EventId m_idC;
   bool m_destroy;
   EventId m_destroyId;
+  ObjectFactory m_schedulerFactory;
 };
 
-SimulatorEventsTestCase::SimulatorEventsTestCase (Ptr<Scheduler> scheduler)
-  : TestCase ("Check that basic event handling is working with " + scheduler->GetInstanceTypeId ().GetName ())
+SimulatorEventsTestCase::SimulatorEventsTestCase (ObjectFactory schedulerFactory)
+  : TestCase ("Check that basic event handling is working with " + 
+              schedulerFactory.GetTypeId ().GetName ()),
+    m_schedulerFactory (schedulerFactory)
 {}
 uint64_t
 SimulatorEventsTestCase::NowUs (void)
@@ -421,6 +425,8 @@ SimulatorEventsTestCase::DoRun (void)
   m_b = false;
   m_c = true;
   m_d = false;
+
+  Simulator::SetScheduler (m_schedulerFactory);
 
   EventId a = Simulator::Schedule (MicroSeconds (10), &SimulatorEventsTestCase::A, this, 1);
   Simulator::Schedule (MicroSeconds (11), &SimulatorEventsTestCase::B, this, 2);
@@ -767,11 +773,18 @@ public:
   SimulatorTestSuite ()
     : TestSuite ("simulator")
   {
-    AddTestCase (new SimulatorEventsTestCase (CreateObject<ListScheduler> ()));
-    AddTestCase (new SimulatorEventsTestCase (CreateObject<MapScheduler> ()));
-    AddTestCase (new SimulatorEventsTestCase (CreateObject<HeapScheduler> ()));
-    AddTestCase (new SimulatorEventsTestCase (CreateObject<CalendarScheduler> ()));
-    AddTestCase (new SimulatorEventsTestCase (CreateObject<Ns2CalendarScheduler> ()));
+    ObjectFactory factory;
+    factory.SetTypeId (ListScheduler::GetTypeId ());
+
+    AddTestCase (new SimulatorEventsTestCase (factory));
+    factory.SetTypeId (MapScheduler::GetTypeId ());
+    AddTestCase (new SimulatorEventsTestCase (factory));
+    factory.SetTypeId (HeapScheduler::GetTypeId ());
+    AddTestCase (new SimulatorEventsTestCase (factory));
+    factory.SetTypeId (CalendarScheduler::GetTypeId ());
+    AddTestCase (new SimulatorEventsTestCase (factory));
+    factory.SetTypeId (Ns2CalendarScheduler::GetTypeId ());
+    AddTestCase (new SimulatorEventsTestCase (factory));
   }
 } g_simulatorTestSuite;
 
