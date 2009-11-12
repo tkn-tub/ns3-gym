@@ -21,7 +21,7 @@
 #ifndef __FLOW_CLASSIFIER_H__
 #define __FLOW_CLASSIFIER_H__
 
-#include "ns3/ref-count-base.h"
+#include "ns3/simple-ref-count.h"
 #include <ostream>
 
 namespace ns3 {
@@ -39,13 +39,14 @@ typedef uint32_t FlowPacketId;
 /// statistics reference only those abstract identifiers in order to
 /// keep the core architecture generic and not tied down to any
 /// particular flow capture method or classification system.
-class FlowClassifier : public RefCountBase
+class FlowClassifier : public SimpleRefCount<FlowClassifier>
 {
   FlowId m_lastNewFlowId;
 
 public:
 
   FlowClassifier ();
+  virtual ~FlowClassifier ();
 
   virtual void SerializeToXmlStream (std::ostream &os, int indent) const = 0;
 

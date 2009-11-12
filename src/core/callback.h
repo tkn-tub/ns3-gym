@@ -27,6 +27,7 @@
 #include "type-traits.h"
 #include "attribute.h"
 #include "attribute-helper.h"
+#include "simple-ref-count.h"
 #include <typeinfo>
 
 namespace ns3 {
@@ -72,25 +73,11 @@ struct CallbackTraits<T *>
   }
 };
 
-class CallbackImplBase
+class CallbackImplBase : public SimpleRefCount<CallbackImplBase>
 {
 public:
-  CallbackImplBase ()
-    : m_count (1) {}
   virtual ~CallbackImplBase () {}
-  void Ref (void) const {
-    m_count++;
-  }
-  void Unref (void) const {
-    m_count--;
-    if (m_count == 0) {
-      delete this;
-    }
-  }
-  uint32_t GetReferenceCount (void) const { return m_count; }
   virtual bool IsEqual (Ptr<const CallbackImplBase> other) const = 0;
-private:
-  mutable uint32_t m_count;
 };
 
 // declare the CallbackImpl class

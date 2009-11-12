@@ -27,7 +27,7 @@
 #include "wifi-preamble.h"
 #include "wifi-phy-standard.h"
 #include "ns3/nstime.h"
-#include "ns3/ref-count-base.h"
+#include "ns3/simple-ref-count.h"
 
 namespace ns3 {
 
@@ -36,13 +36,13 @@ class ErrorRateModel;
 class InterferenceHelper
 {
 public:
-  class Event : public RefCountBase
+  class Event : public SimpleRefCount<InterferenceHelper::Event>
   {
   public:
     Event (uint32_t size, WifiMode payloadMode, 
 	     enum WifiPreamble preamble,
 	     Time duration, double rxPower);
-    virtual ~Event ();
+    ~Event ();
   
     Time GetDuration (void) const;
     Time GetStartTime (void) const;

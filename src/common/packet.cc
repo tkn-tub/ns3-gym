@@ -112,21 +112,6 @@ PacketTagIterator::Item::GetTag (Tag &tag) const
 }
 
 
-void 
-Packet::Ref (void) const
-{
-  m_refCount++;
-}
-void 
-Packet::Unref (void) const
-{
-  m_refCount--;
-  if (m_refCount == 0)
-    {
-      delete this;
-    }
-}
-
 Ptr<Packet> 
 Packet::Copy (void) const
 {
@@ -141,8 +126,7 @@ Packet::Packet ()
     m_byteTagList (),
     m_packetTagList (),
     m_metadata (m_globalUid, 0),
-    m_nixVector (0),
-    m_refCount (1)
+    m_nixVector (0)
 {
   m_globalUid++;
 }
@@ -151,8 +135,7 @@ Packet::Packet (const Packet &o)
   : m_buffer (o.m_buffer),
     m_byteTagList (o.m_byteTagList),
     m_packetTagList (o.m_packetTagList),
-    m_metadata (o.m_metadata),
-    m_refCount (1)
+    m_metadata (o.m_metadata)
 {
   o.m_nixVector ? m_nixVector = o.m_nixVector->Copy () 
                 : m_nixVector = 0;
@@ -179,8 +162,7 @@ Packet::Packet (uint32_t size)
     m_byteTagList (),
     m_packetTagList (),
     m_metadata (m_globalUid, size),
-    m_nixVector (0),
-    m_refCount (1)
+    m_nixVector (0)
 {
   m_globalUid++;
 }
@@ -189,8 +171,7 @@ Packet::Packet (uint8_t const*buffer, uint32_t size)
     m_byteTagList (),
     m_packetTagList (),
     m_metadata (m_globalUid, size),
-    m_nixVector (0),
-    m_refCount (1)
+    m_nixVector (0)
 {
   m_globalUid++;
   m_buffer.AddAtStart (size);
@@ -204,8 +185,7 @@ Packet::Packet (const Buffer &buffer,  const ByteTagList &byteTagList,
     m_byteTagList (byteTagList),
     m_packetTagList (packetTagList),
     m_metadata (metadata),
-    m_nixVector (0),
-    m_refCount (1)
+    m_nixVector (0)
 {}
 
 Ptr<Packet>

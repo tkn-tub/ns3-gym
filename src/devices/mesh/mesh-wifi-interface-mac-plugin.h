@@ -25,7 +25,7 @@
 #include "ns3/packet.h"
 #include "ns3/mac48-address.h"
 #include "ns3/mesh-wifi-beacon.h"
-#include "ns3/ref-count-base.h"
+#include "ns3/simple-ref-count.h"
 
 namespace ns3 {
 
@@ -38,7 +38,7 @@ class MeshWifiInterfaceMac;
  * 
  * TODO: plugins description
  */
-class MeshWifiInterfaceMacPlugin : public RefCountBase
+class MeshWifiInterfaceMacPlugin : public SimpleRefCount<MeshWifiInterfaceMacPlugin>
 {
 public:
   /// This is for subclasses

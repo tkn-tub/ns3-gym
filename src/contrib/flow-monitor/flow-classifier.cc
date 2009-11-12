@@ -28,6 +28,8 @@ FlowClassifier::FlowClassifier ()
 {
 }
 
+FlowClassifier::~FlowClassifier ()
+{}
 
 FlowId
 FlowClassifier::GetNewFlowId ()

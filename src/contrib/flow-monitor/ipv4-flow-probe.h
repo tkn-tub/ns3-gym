@@ -41,7 +41,7 @@ class Ipv4FlowProbe : public FlowProbe
   
 public:
   Ipv4FlowProbe (Ptr<FlowMonitor> monitor, Ptr<Ipv4FlowClassifier> classifier, Ptr<Node> node);
-  ~Ipv4FlowProbe ();
+  virtual ~Ipv4FlowProbe ();
 
   /// \brief enumeration of possible reasons why a packet may be dropped
   enum DropReason 
