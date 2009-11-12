@@ -903,6 +903,11 @@ def register_Ns3PcapFile_methods(root_module, cls):
     cls.add_method('Close', 
                    'void', 
                    [])
+    ## pcap-file.h: static bool ns3::PcapFile::Diff(std::string const & f1, std::string const & f2, uint32_t & sec, uint32_t & usec, uint32_t snapLen=ns3::PcapFile::SNAPLEN_DEFAULT) [member function]
+    cls.add_method('Diff', 
+                   'bool', 
+                   [param('std::string const &', 'f1'), param('std::string const &', 'f2'), param('uint32_t &', 'sec'), param('uint32_t &', 'usec'), param('uint32_t', 'snapLen', default_value='ns3::PcapFile::SNAPLEN_DEFAULT')], 
+                   is_static=True)
     ## pcap-file.h: uint32_t ns3::PcapFile::GetDataLinkType() [member function]
     cls.add_method('GetDataLinkType', 
                    'uint32_t', 
