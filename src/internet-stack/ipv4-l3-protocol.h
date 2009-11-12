@@ -22,6 +22,7 @@
 #define IPV4_L3_PROTOCOL_H
 
 #include <list>
+#include <vector>
 #include <stdint.h>
 #include "ns3/ipv4-address.h"
 #include "ns3/ptr.h"
@@ -233,7 +234,7 @@ private:
   Ptr<Icmpv4L4Protocol> GetIcmp (void) const;
   bool IsUnicast (Ipv4Address ad, Ipv4Mask interfaceMask) const;
 
-  typedef std::list<Ptr<Ipv4Interface> > Ipv4InterfaceList;
+  typedef std::vector<Ptr<Ipv4Interface> > Ipv4InterfaceList;
   typedef std::list<Ptr<Ipv4RawSocketImpl> > SocketList;
   typedef std::list<Ptr<Ipv4L4Protocol> > L4List_t;
 

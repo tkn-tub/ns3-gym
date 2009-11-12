@@ -173,8 +173,8 @@ PointToPointNetDevice::~PointToPointNetDevice ()
 PointToPointNetDevice::AddHeader(Ptr<Packet> p, uint16_t protocolNumber)
 {
   NS_LOG_FUNCTION_NOARGS ();
-  NS_ASSERT_MSG (protocolNumber == 0x800, "PointToPointNetDevice::AddHeader(): protocolNumber must be 0x800");
   PppHeader ppp;
+  ppp.SetProtocol(EtherToPpp(protocolNumber));
   p->AddHeader (ppp);
 }
 
@@ -184,7 +184,7 @@ PointToPointNetDevice::ProcessHeader(Ptr<Packet> p, uint16_t& param)
   NS_LOG_FUNCTION_NOARGS ();
   PppHeader ppp;
   p->RemoveHeader (ppp);
-  param = 0x800;
+  param = PppToEther(ppp.GetProtocol());
   return true;
 }
 
@@ -653,6 +653,30 @@ PointToPointNetDevice::GetMtu (void) const
 {
   NS_LOG_FUNCTION_NOARGS ();
   return m_mtu;
+}
+
+  uint16_t
+PointToPointNetDevice::PppToEther(uint16_t proto)
+{
+  switch(proto)
+    {
+      case 0x0021: return 0x0800; //IPv4
+      case 0x0057: return 0x86DD; //IPv6
+      default: NS_ASSERT_MSG(false, "PPP Protocol number not defined!");
+    }
+  return 0;
+}
+
+  uint16_t
+PointToPointNetDevice::EtherToPpp(uint16_t proto)
+{
+  switch(proto)
+    {
+      case 0x0800: return 0x0021; //IPv4
+      case 0x86DD: return 0x0057; //IPv6
+      default: NS_ASSERT_MSG(false, "PPP Protocol number not defined!");
+    }
+  return 0;
 }
 
 

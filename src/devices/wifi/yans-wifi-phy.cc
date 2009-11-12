@@ -52,14 +52,14 @@ YansWifiPhy::GetTypeId (void)
     .AddAttribute ("EnergyDetectionThreshold",
                    "The energy of a received signal should be higher than "
                    "this threshold (dbm) to allow the PHY layer to detect the signal.",
-                   DoubleValue (-140.0),
+                   DoubleValue (-96.0),
                    MakeDoubleAccessor (&YansWifiPhy::SetEdThreshold,
                                        &YansWifiPhy::GetEdThreshold),
                    MakeDoubleChecker<double> ())
     .AddAttribute ("CcaMode1Threshold",
                    "The energy of a received signal should be higher than "
                    "this threshold (dbm) to allow the PHY layer to declare CCA BUSY state",
-                   DoubleValue (-140.0),
+                   DoubleValue (-99.0),
                    MakeDoubleAccessor (&YansWifiPhy::SetCcaMode1Threshold,
                                        &YansWifiPhy::GetCcaMode1Threshold),
                    MakeDoubleChecker<double> ())

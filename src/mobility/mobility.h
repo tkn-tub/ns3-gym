@@ -28,4 +28,9 @@
  *   - ns3::RandomDirection2dMobilityModel: a 2d random direction mobility
  *     model where the bounds of the mobility are are a rectangle.
  *
+ *   - ns3::WaypointMobilityModel: A model which determines paths from sets
+ *     of ns3::Waypoint objects, similar to using events to update velocity
+ *     and direction with a ns3::ConstantVelocityMobilityModel. This model
+ *     is slightly faster for this task and uses less memory.
+ *
  */

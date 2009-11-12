@@ -297,6 +297,12 @@ Simulator::SetImplementation (Ptr<SimulatorImpl> impl)
       NS_FATAL_ERROR ("It is not possible to set the implementation after calling any Simulator:: function. Call Simulator::SetImplementation earlier or after Simulator::Destroy.");
     }
   *PeekImpl () = impl;
+  // Set the default scheduler
+  ObjectFactory factory;
+  StringValue s;
+  g_schedTypeImpl.GetValue (s);
+  factory.SetTypeId (s.Get ());
+  impl->SetScheduler (factory.Create<Scheduler> ());
 //
 // Note: we call LogSetTimePrinter _after_ creating the implementation
 // object because the act of creation can trigger calls to the logging 

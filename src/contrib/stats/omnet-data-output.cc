@@ -19,6 +19,7 @@
  */
 
 #include <fstream>
+#include <cstdlib>
 
 #include "ns3/log.h"
 #include "ns3/nstime.h"
@@ -54,26 +55,31 @@ OmnetDataOutput::DoDispose()
 }
 
 //----------------------------------------------
+
+inline bool isNumeric(const std::string& s) {
+  char *endp;
+  strtod(s.c_str(), &endp);
+  return endp == s.c_str() + s.size();
+}
+
 void
 OmnetDataOutput::Output(DataCollector &dc)
 {
 
   std::ofstream scalarFile;
-  std::string fn = m_filePrefix + ".sca";
-  scalarFile.open(fn.c_str(), std::ios_base::app);
+  std::string fn = m_filePrefix +"-"+dc.GetRunLabel()+ ".sca";
+  scalarFile.open(fn.c_str(), std::ios_base::out);
 
-  scalarFile << std::endl;
+  // TODO add timestamp to the runlevel
   scalarFile << "run " << dc.GetRunLabel() << std::endl;
-  scalarFile << std::endl;
   scalarFile << "attr experiment \"" << dc.GetExperimentLabel()
             << "\"" << std::endl;
   scalarFile << "attr strategy \"" << dc.GetStrategyLabel()
             << "\"" << std::endl;
-  scalarFile << "attr input \"" << dc.GetInputLabel()
+  scalarFile << "attr measurement \"" << dc.GetInputLabel()
             << "\"" << std::endl;
   scalarFile << "attr description \"" << dc.GetDescription()
             << "\"" << std::endl;
-  scalarFile << std::endl;
 
   for (MetadataList::iterator i = dc.MetadataBegin();
        i != dc.MetadataEnd(); i++) {
@@ -83,7 +89,18 @@ OmnetDataOutput::Output(DataCollector &dc)
   }
 
   scalarFile << std::endl;
-
+  if (isNumeric(dc.GetInputLabel())) {
+     scalarFile << "scalar . measurement \"" << dc.GetInputLabel()
+            << "\"" << std::endl;
+  }
+  for (MetadataList::iterator i = dc.MetadataBegin();
+       i != dc.MetadataEnd(); i++) {
+    std::pair<std::string, std::string> blob = (*i);
+    if (isNumeric(blob.second)) {
+       scalarFile << "scalar . \"" << blob.first << "\" \"" << blob.second << "\""
+               << std::endl;
+    }
+  }
   OmnetOutputCallback callback(&scalarFile);
 
   for (DataCalculatorList::iterator i = dc.DataCalculatorBegin();
@@ -97,6 +114,7 @@ OmnetDataOutput::Output(DataCollector &dc)
   // end OmnetDataOutput::Output
 }
 
+
 OmnetDataOutput::OmnetOutputCallback::OmnetOutputCallback
   (std::ostream *scalar) :
   m_scalar(scalar)
@@ -104,42 +122,92 @@ OmnetDataOutput::OmnetOutputCallback::OmnetOutputCallback
 }
 
 void
-OmnetDataOutput::OmnetOutputCallback::OutputSingleton(std::string key,
-                                                      std::string variable,
+OmnetDataOutput::OmnetOutputCallback::OutputStatistic(std::string context,
+                                                      std::string name,
+                                                      const StatisticalSummary *statSum)
+{
+	if (context == "")
+		context = ".";
+	if (name == "")
+		name = "\"\"";
+	(*m_scalar) << "statistic " << context << " " << name << std::endl;
+	if (!isNaN(statSum->getCount()))
+		(*m_scalar) << "field count " << statSum->getCount() << std::endl;
+	if (!isNaN(statSum->getSum()))
+		(*m_scalar) << "field sum " << statSum->getSum() << std::endl;
+	if (!isNaN(statSum->getMean()))
+		(*m_scalar) << "field mean " << statSum->getMean() << std::endl;
+	if (!isNaN(statSum->getMin()))
+		(*m_scalar) << "field min " << statSum->getMin() << std::endl;
+	if (!isNaN(statSum->getMax()))
+		(*m_scalar) << "field max " << statSum->getMax() << std::endl;
+	if (!isNaN(statSum->getSqrSum()))
+		(*m_scalar) << "field sqrsum " << statSum->getSqrSum() << std::endl;
+	if (!isNaN(statSum->getStddev()))
+		(*m_scalar) << "field stddev " << statSum->getStddev() << std::endl;
+}
+
+void
+OmnetDataOutput::OmnetOutputCallback::OutputSingleton(std::string context,
+                                                      std::string name,
                                                       int val)
 {
-  (*m_scalar) << "scalar " << key << " " << variable << " " << val << std::endl;
+	if (context == "")
+		context = ".";
+	if (name == "")
+		name = "\"\"";
+  (*m_scalar) << "scalar " << context << " " << name << " " << val << std::endl;
   // end OmnetDataOutput::OmnetOutputCallback::OutputSingleton
 }
+
 void
-OmnetDataOutput::OmnetOutputCallback::OutputSingleton(std::string key,
-                                                      std::string variable,
+OmnetDataOutput::OmnetOutputCallback::OutputSingleton(std::string context,
+                                                      std::string name,
                                                       uint32_t val)
 {
-  (*m_scalar) << "scalar " << key << " " << variable << " " << val << std::endl;
+	if (context == "")
+		context = ".";
+	if (name == "")
+		name = "\"\"";
+  (*m_scalar) << "scalar " << context << " " << name << " " << val << std::endl;
   // end OmnetDataOutput::OmnetOutputCallback::OutputSingleton
 }
+
 void
-OmnetDataOutput::OmnetOutputCallback::OutputSingleton(std::string key,
-                                                      std::string variable,
+OmnetDataOutput::OmnetOutputCallback::OutputSingleton(std::string context,
+                                                      std::string name,
                                                       double val)
 {
-  (*m_scalar) << "scalar " << key << " " << variable << " " << val << std::endl;
+	if (context == "")
+		context = ".";
+	if (name == "")
+		name = "\"\"";
+    (*m_scalar) << "scalar " << context << " " << name << " " << val << std::endl;
   // end OmnetDataOutput::OmnetOutputCallback::OutputSingleton
 }
+
 void
-OmnetDataOutput::OmnetOutputCallback::OutputSingleton(std::string key,
-                                                      std::string variable,
+OmnetDataOutput::OmnetOutputCallback::OutputSingleton(std::string context,
+                                                      std::string name,
                                                       std::string val)
 {
-  (*m_scalar) << "scalar " << key << " " << variable << " " << val << std::endl;
+	if (context == "")
+		context = ".";
+	if (name == "")
+		name = "\"\"";
+    (*m_scalar) << "scalar " << context << " " << name << " " << val << std::endl;
   // end OmnetDataOutput::OmnetOutputCallback::OutputSingleton
 }
+
 void
-OmnetDataOutput::OmnetOutputCallback::OutputSingleton(std::string key,
-                                                      std::string variable,
+OmnetDataOutput::OmnetOutputCallback::OutputSingleton(std::string context,
+                                                      std::string name,
                                                       Time val)
 {
-  (*m_scalar) << "scalar " << key << " " << variable << " " << val << std::endl;
+	if (context == "")
+		context = ".";
+	if (name == "")
+		name = "\"\"";
+    (*m_scalar) << "scalar " << context << " " << name << " " << val.GetTimeStep() << std::endl;
   // end OmnetDataOutput::OmnetOutputCallback::OutputSingleton
 }

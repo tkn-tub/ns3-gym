@@ -152,12 +152,12 @@ void
 IeRann::Print (std::ostream &os) const
 {
   os << std::endl << "<information_element id=" << ElementId () << ">" << std::endl;
-  os << "  flags              = " << (int) m_flags << "std::endl";
-  os << "  hop count          = " << (int) m_hopcount << "std::endl";
-  os << "  TTL                = " << (int) m_ttl << "std::endl";
-  os << "  originator address = " << m_originatorAddress << "std::endl";
-  os << "  dst seq. number    = " << m_destSeqNumber << "std::endl";
-  os << "  metric             = " << m_metric << "std::endl";
+  os << "  flags              = " << (int) m_flags << std::endl;
+  os << "  hop count          = " << (int) m_hopcount << std::endl;
+  os << "  TTL                = " << (int) m_ttl << std::endl;
+  os << "  originator address = " << m_originatorAddress << std::endl;
+  os << "  dst seq. number    = " << m_destSeqNumber << std::endl;
+  os << "  metric             = " << m_metric << std::endl;
   os << "</information_element>" << std::endl;
 }
 

@@ -58,7 +58,8 @@ TypeId
 WifiInformationElementVector::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::WifiInformationElementVector")
-                      .SetParent<Header> ();
+                      .SetParent<Header> ()
+                      .AddConstructor<WifiInformationElementVector> ();
   return tid;
 }
 TypeId
