@@ -114,12 +114,20 @@ YansWifiPhy::GetTypeId (void)
                    TimeValue (MicroSeconds (250)),
                    MakeTimeAccessor (&YansWifiPhy::m_channelSwitchDelay), 
                    MakeTimeChecker ())
+    .AddAttribute ("ChannelNumber",
+                   "Channel center frequency = Channel starting frequency + 5 MHz * (nch - 1)",
+                   UintegerValue (1),
+                   MakeUintegerAccessor (&YansWifiPhy::SetChannelNumber, 
+                                         &YansWifiPhy::GetChannelNumber),
+                   MakeUintegerChecker<uint16_t> ())
+
     ;
   return tid;
 }
 
 YansWifiPhy::YansWifiPhy ()
-  :  m_endSyncEvent (),
+  :  m_channelNumber (1),
+     m_endSyncEvent (),
      m_random (0.0, 1.0),
      m_channelStartingFrequency (0)
 {
@@ -304,7 +312,6 @@ YansWifiPhy::SetChannel (Ptr<YansWifiChannel> channel)
 {
   m_channel = channel;
   m_channel->Add (this);
-  m_channelNumber = 1;      // always start on channel starting frequency (channel 1)
 }
 
 void 
