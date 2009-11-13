@@ -182,7 +182,8 @@ private:
 
 /**
  * \brief allocate random positions within a disc
- * according to a pair of random variables.
+ * according to a given distribution for the polar coordinates of each
+ * node with respect to the provided center of the disc 
  */
 class RandomDiscPositionAllocator : public PositionAllocator
 {
@@ -200,6 +201,54 @@ public:
 private:
   RandomVariable m_theta;
   RandomVariable m_rho;
+  double m_x;
+  double m_y;
+};
+
+
+/**
+ * UniformDiscPositionAllocator allocates the positions randomly within a disc \f$ D \f$ lying on the
+ * plane \f$ z=0 \f$ and having center at coordinates \f$ (x,y,0) \f$
+ * and radius \f$ \rho \f$. The random positions are chosen such that,
+ * for any subset \f$ S \subset D \f$, the expected value of the
+ * fraction of points which fall into \f$ S \subset D \f$ corresponds
+ * to \f$ \frac{|S|}{|D|} \f$, i.e., to the ratio of the area of the
+ * subset to the area of the whole disc. 
+ *
+ * \note using UniformDiscPositionAllocator is not equivalent to using
+ * a RandomDiscPositionAllocator with a uniformly-distributed radius,
+ * since doing that would results in a point distribution which is
+ * more dense towards the center of the disc.
+ */
+class UniformDiscPositionAllocator : public PositionAllocator
+{
+public:
+  static TypeId GetTypeId (void);
+  UniformDiscPositionAllocator ();
+  virtual ~UniformDiscPositionAllocator ();
+
+  /** 
+   * 
+   * @param rho the value of the radius of the disc
+   */
+  void SetRho (double rho);
+
+  /** 
+   * 
+   * 
+   * @param x  the X coordinate of the center of the disc
+   */
+  void SetX (double x);
+
+  /** 
+   * 
+   * @param y   the Y coordinate of the center of the disc 
+   */
+  void SetY (double y);
+
+  virtual Vector GetNext (void) const;
+private:
+  double m_rho;
   double m_x;
   double m_y;
 };
