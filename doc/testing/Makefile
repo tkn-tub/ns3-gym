@@ -34,7 +34,7 @@ testing.html: version $(IMAGES) $(CHAPTERS)
 	$(TEXI2HTML) ${CSS} testing.texi
 
 testing/testing.html: version $(IMAGES) $(CHAPTERS)
-	$(TEXI2HTML) ${CSS} ${SPLIT} testing.texi
+	$(TEXI2HTML) ${CSS} ${SPLIT} --output testing testing.texi
 
 figures-clean:
 	rm -rf $(IMAGES)

@@ -64,7 +64,7 @@ manual.html: version $(IMAGES) $(CHAPTERS)
 	$(TEXI2HTML) ${CSS} manual.texi
 
 manual/manual.html: version $(IMAGES) $(CHAPTERS)
-	$(TEXI2HTML) ${CSS} ${SPLIT} manual.texi
+	$(TEXI2HTML) ${CSS} ${SPLIT} --output manual manual.texi
 
 figures-clean:
 	rm -rf $(IMAGES)
