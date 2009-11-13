@@ -32,10 +32,22 @@ IMAGES = $(IMAGES_EPS) $(IMAGES_PNG) $(IMAGES_PDF)
 
 CHAPTERS = \
 	manual.texi \
+	animation.texi \
 	attributes.texi \
+	bridge.texi \
 	callbacks.texi \
 	csma.texi \
 	emulation.texi \
+	emu.texi \
+	flow-monitor.texi \
+	helpers.texi \
+	internet.texi \
+	ipv4.texi \
+	ipv6.texi \
+	log.texi \
+	manual.texi \
+	mesh.texi \
+	names.texi \
 	new-models.texi \
 	node.texi \
 	objects.texi \
@@ -43,11 +55,16 @@ CHAPTERS = \
 	output.texi \
 	packets.texi \
 	point-to-point.texi \
+	python.texi \
 	random.texi \
 	realtime.texi \
 	routing.texi \
+	simple.texi \
 	sockets.texi \
 	statistics.texi \
+	tap.texi \
+	tcp.texi \
+	tracing.texi \
 	troubleshoot.texi \
 	wifi.texi
 
