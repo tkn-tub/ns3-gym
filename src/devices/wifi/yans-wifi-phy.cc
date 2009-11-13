@@ -317,7 +317,15 @@ YansWifiPhy::SetChannel (Ptr<YansWifiChannel> channel)
 void 
 YansWifiPhy::SetChannelNumber (uint16_t nch)
 {
-  NS_ASSERT(!IsStateSwitching()); 
+  if (Simulator::Now () == Seconds (0))
+    {
+      // this is not channel switch, this is initialization 
+      NS_LOG_DEBUG("start at channel " << nch);
+      m_channelNumber = nch;
+      return;
+    }
+
+  NS_ASSERT (!IsStateSwitching()); 
   switch (m_state->GetState ()) {
   case YansWifiPhy::SYNC:
     NS_LOG_DEBUG ("drop packet because of channel switching while reception");
