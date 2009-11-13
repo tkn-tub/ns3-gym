@@ -6,18 +6,17 @@
  * <a href="http://www.doxygen.org">Doxygen</a>.
  * Doxygen is typically used for 
  * API documentation, and organizes such documentation across different
- * modules.   This project uses Doxygen both for building the manual around 
- * the API documentation,  and a separate GNU texinfo document is used for 
- * the manual.
+ * modules.   This project uses Doxygen for building the definitive
+ * maintained API documentation,  Separate GNU texinfo documents are used for 
+ * a tutorial, reference manual, and testing and validation manual.
  *
  * The ns-3 project documentation is organized as follows:
  *     - <b><a href="modules.html">modules</a></b>:  The "Modules" tab (above) 
  *       organizes  all of the public API and supporting manual text 
- *       along the  source code directory structure.   This forms the 
- *       "ns-3 manual", and it is available in HTML and PDF forms.
- *     - <a href="http://www.nsnam.org/docs/tutorial/tutorial.html">tutorial</a>:  The ns-3 tutorial is a separate document maintained in <a href="http://www.gnu.org/software/texinfo/"> GNU Texinfo</a>. 
- *     - <a href="http://www.nsnam.org/docs/manual/manual.html">Reference manual</a>:  The ns-3 tutorial is a separate document maintained in <a href="http://www.gnu.org/software/texinfo/"> GNU Texinfo</a>. 
- *     - <a href="http://www.nsnam.org/docs/testing/testing.html">Testing and validation manual</a>:  The ns-3 tutorial is a separate document maintained in <a href="http://www.gnu.org/software/texinfo/"> GNU Texinfo</a>. 
+ *       along the  source code directory structure.   
+ *     - <a href="http://www.nsnam.org/tutorials.html">tutorial</a>:  The ns-3 tutorial is a separate document maintained in <a href="http://www.gnu.org/software/texinfo/"> GNU Texinfo</a>. 
+ *     - <a href="http://www.nsnam.org/tutorials.html">Reference manual</a>:  The ns-3 reference manual is a separate document maintained in <a href="http://www.gnu.org/software/texinfo/"> GNU Texinfo</a>. 
+ *     - <a href="http://www.nsnam.org/tutorials.html">Testing and validation manual</a>:  The ns-3 testing and validation manual is a separate document maintained in <a href="http://www.gnu.org/software/texinfo/"> GNU Texinfo</a>. 
  *     - The <b><a href="http://www.nsnam.org/wiki/index.php/Main_Page">ns-3 wiki</a></b> 
  *       contains additional user-contributed material.  Some wiki-contributed
  *       material may migrate to and overlap with the Doxygen and manual information.
