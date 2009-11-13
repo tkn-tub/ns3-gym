@@ -25,6 +25,7 @@
 #define __OLSR_AGENT_IMPL_H__
 
 #include "olsr-header.h"
+#include "ns3/test.h"
 #include "olsr-state.h"
 #include "olsr-repositories.h"
 
@@ -58,11 +59,21 @@ struct RoutingTableEntry
     destAddr (), nextAddr (),
     interface (0), distance (0) {};
 };
+class RoutingProtocol;
+/// Testcase for MPR computation mechanism
+class OlsrMprTestCase : public TestCase {
+public:
+  OlsrMprTestCase ();
+  ~OlsrMprTestCase ();
+  virtual bool DoRun (void);
+  ;
+};
 
 
 class RoutingProtocol : public Ipv4RoutingProtocol
 {
 public:
+  friend class OlsrMprTestCase;
   static TypeId GetTypeId (void);
 
   RoutingProtocol ();

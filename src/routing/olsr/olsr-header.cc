@@ -785,7 +785,7 @@ public:
 } g_olsrTestSuite;
 
 OlsrTestSuite::OlsrTestSuite()
-  : TestSuite("olsr-routing", UNIT)
+  : TestSuite("Routing-OLSR-header", UNIT)
 {
   AddTestCase(new OlsrHnaTestCase());
   AddTestCase(new OlsrTcTestCase());
