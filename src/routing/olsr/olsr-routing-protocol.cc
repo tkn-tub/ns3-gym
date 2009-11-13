@@ -2796,83 +2796,83 @@ bool
 OlsrMprTestCase::DoRun ()
 {
   /*
-      * Create a 3x3 grid like the following:
-      *      3---6---9
-      *      |\ /|\ /|
-      *      | X | X |
-      *      |/ \|/ \|
-      *      2---5---8
-      *      |\ /|\ /|
-      *      | X | X |
-      *      |/ \|/ \|
-      *      1---4---7
-      * PrepareTopology fills all 2-hop neighbors of station 1 and creates a routing protocol
-      * We are the station number 2. Obvious, that an only MPR in this case is 5 
-      */
-   Ptr<RoutingProtocol> m_protocol = CreateObject<RoutingProtocol> ();
-   m_protocol->m_mainAddress = Ipv4Address ("10.0.0.2");
-   // we fill all possible 2-hop neighborhood
-   TwoHopNeighborTuple tuple;
-   tuple.expirationTime = Seconds (3600);
-   // All neighbor stations which are seen from station 5
-   tuple.neighborMainAddr = Ipv4Address ("10.0.0.5");
-   tuple.twoHopNeighborAddr = Ipv4Address ("10.0.0.1");
-   m_protocol->m_state.InsertTwoHopNeighborTuple (tuple);
-   tuple.twoHopNeighborAddr = Ipv4Address ("10.0.0.2");
-   m_protocol->m_state.InsertTwoHopNeighborTuple (tuple);
-   tuple.twoHopNeighborAddr = Ipv4Address ("10.0.0.3");
-   m_protocol->m_state.InsertTwoHopNeighborTuple (tuple);
-   tuple.twoHopNeighborAddr = Ipv4Address ("10.0.0.4");
-   m_protocol->m_state.InsertTwoHopNeighborTuple (tuple);
-   tuple.twoHopNeighborAddr = Ipv4Address ("10.0.0.6");
-   m_protocol->m_state.InsertTwoHopNeighborTuple (tuple);
-   tuple.twoHopNeighborAddr = Ipv4Address ("10.0.0.7");
-   m_protocol->m_state.InsertTwoHopNeighborTuple (tuple);
-   tuple.twoHopNeighborAddr = Ipv4Address ("10.0.0.8");
-   m_protocol->m_state.InsertTwoHopNeighborTuple (tuple);
-   tuple.twoHopNeighborAddr = Ipv4Address ("10.0.0.9");
-   m_protocol->m_state.InsertTwoHopNeighborTuple (tuple);
-   // All neighbor stations which are seen from station 4
-   tuple.neighborMainAddr = Ipv4Address ("10.0.0.4");
-   tuple.twoHopNeighborAddr = Ipv4Address ("10.0.0.1");
-   m_protocol->m_state.InsertTwoHopNeighborTuple (tuple);
-   tuple.twoHopNeighborAddr = Ipv4Address ("10.0.0.2");
-   m_protocol->m_state.InsertTwoHopNeighborTuple (tuple);
-   tuple.twoHopNeighborAddr = Ipv4Address ("10.0.0.5");
-   m_protocol->m_state.InsertTwoHopNeighborTuple (tuple);
-   tuple.twoHopNeighborAddr = Ipv4Address ("10.0.0.8");
-   m_protocol->m_state.InsertTwoHopNeighborTuple (tuple);
-   tuple.twoHopNeighborAddr = Ipv4Address ("10.0.0.7");
-   m_protocol->m_state.InsertTwoHopNeighborTuple (tuple);
+   * Create a 3x3 grid like the following:
+   *      3---6---9
+   *      |\ /|\ /|
+   *      | X | X |
+   *      |/ \|/ \|
+   *      2---5---8
+   *      |\ /|\ /|
+   *      | X | X |
+   *      |/ \|/ \|
+   *      1---4---7
+   * PrepareTopology fills all 2-hop neighbors of station 1 and creates a routing protocol
+   * We are the station number 2. Obvious, that an only MPR in this case is 5 
+   */
+  Ptr<RoutingProtocol> m_protocol = CreateObject<RoutingProtocol> ();
+  m_protocol->m_mainAddress = Ipv4Address ("10.0.0.2");
+  // we fill all possible 2-hop neighborhood
+  TwoHopNeighborTuple tuple;
+  tuple.expirationTime = Seconds (3600);
+  // All neighbor stations which are seen from station 5
+  tuple.neighborMainAddr = Ipv4Address ("10.0.0.5");
+  tuple.twoHopNeighborAddr = Ipv4Address ("10.0.0.1");
+  m_protocol->m_state.InsertTwoHopNeighborTuple (tuple);
+  tuple.twoHopNeighborAddr = Ipv4Address ("10.0.0.2");
+  m_protocol->m_state.InsertTwoHopNeighborTuple (tuple);
+  tuple.twoHopNeighborAddr = Ipv4Address ("10.0.0.3");
+  m_protocol->m_state.InsertTwoHopNeighborTuple (tuple);
+  tuple.twoHopNeighborAddr = Ipv4Address ("10.0.0.4");
+  m_protocol->m_state.InsertTwoHopNeighborTuple (tuple);
+  tuple.twoHopNeighborAddr = Ipv4Address ("10.0.0.6");
+  m_protocol->m_state.InsertTwoHopNeighborTuple (tuple);
+  tuple.twoHopNeighborAddr = Ipv4Address ("10.0.0.7");
+  m_protocol->m_state.InsertTwoHopNeighborTuple (tuple);
+  tuple.twoHopNeighborAddr = Ipv4Address ("10.0.0.8");
+  m_protocol->m_state.InsertTwoHopNeighborTuple (tuple);
+  tuple.twoHopNeighborAddr = Ipv4Address ("10.0.0.9");
+  m_protocol->m_state.InsertTwoHopNeighborTuple (tuple);
+  // All neighbor stations which are seen from station 4
+  tuple.neighborMainAddr = Ipv4Address ("10.0.0.4");
+  tuple.twoHopNeighborAddr = Ipv4Address ("10.0.0.1");
+  m_protocol->m_state.InsertTwoHopNeighborTuple (tuple);
+  tuple.twoHopNeighborAddr = Ipv4Address ("10.0.0.2");
+  m_protocol->m_state.InsertTwoHopNeighborTuple (tuple);
+  tuple.twoHopNeighborAddr = Ipv4Address ("10.0.0.5");
+  m_protocol->m_state.InsertTwoHopNeighborTuple (tuple);
+  tuple.twoHopNeighborAddr = Ipv4Address ("10.0.0.8");
+  m_protocol->m_state.InsertTwoHopNeighborTuple (tuple);
+  tuple.twoHopNeighborAddr = Ipv4Address ("10.0.0.7");
+  m_protocol->m_state.InsertTwoHopNeighborTuple (tuple);
 
-   // All neighbor stations which are seen from station 6
-   tuple.neighborMainAddr = Ipv4Address ("10.0.0.6");
-   tuple.twoHopNeighborAddr = Ipv4Address ("10.0.0.3");
-   m_protocol->m_state.InsertTwoHopNeighborTuple (tuple);
-   tuple.twoHopNeighborAddr = Ipv4Address ("10.0.0.2");
-   m_protocol->m_state.InsertTwoHopNeighborTuple (tuple);
-   tuple.twoHopNeighborAddr = Ipv4Address ("10.0.0.5");
-   m_protocol->m_state.InsertTwoHopNeighborTuple (tuple);
-   tuple.twoHopNeighborAddr = Ipv4Address ("10.0.0.8");
-   m_protocol->m_state.InsertTwoHopNeighborTuple (tuple);
-   tuple.twoHopNeighborAddr = Ipv4Address ("10.0.0.9");
-   m_protocol->m_state.InsertTwoHopNeighborTuple (tuple);
+  // All neighbor stations which are seen from station 6
+  tuple.neighborMainAddr = Ipv4Address ("10.0.0.6");
+  tuple.twoHopNeighborAddr = Ipv4Address ("10.0.0.3");
+  m_protocol->m_state.InsertTwoHopNeighborTuple (tuple);
+  tuple.twoHopNeighborAddr = Ipv4Address ("10.0.0.2");
+  m_protocol->m_state.InsertTwoHopNeighborTuple (tuple);
+  tuple.twoHopNeighborAddr = Ipv4Address ("10.0.0.5");
+  m_protocol->m_state.InsertTwoHopNeighborTuple (tuple);
+  tuple.twoHopNeighborAddr = Ipv4Address ("10.0.0.8");
+  m_protocol->m_state.InsertTwoHopNeighborTuple (tuple);
+  tuple.twoHopNeighborAddr = Ipv4Address ("10.0.0.9");
+  m_protocol->m_state.InsertTwoHopNeighborTuple (tuple);
 
-   // All neighbor stations which are seen from station 1
-   tuple.neighborMainAddr = Ipv4Address ("10.0.0.1");
-   tuple.twoHopNeighborAddr = Ipv4Address ("10.0.0.2");
-   m_protocol->m_state.InsertTwoHopNeighborTuple (tuple);
-   tuple.twoHopNeighborAddr = Ipv4Address ("10.0.0.5");
-   m_protocol->m_state.InsertTwoHopNeighborTuple (tuple);
-   tuple.twoHopNeighborAddr = Ipv4Address ("10.0.0.4");
+  // All neighbor stations which are seen from station 1
+  tuple.neighborMainAddr = Ipv4Address ("10.0.0.1");
+  tuple.twoHopNeighborAddr = Ipv4Address ("10.0.0.2");
+  m_protocol->m_state.InsertTwoHopNeighborTuple (tuple);
+  tuple.twoHopNeighborAddr = Ipv4Address ("10.0.0.5");
+  m_protocol->m_state.InsertTwoHopNeighborTuple (tuple);
+  tuple.twoHopNeighborAddr = Ipv4Address ("10.0.0.4");
 
-   // All neighbor stations which are seen from station 3
-   tuple.neighborMainAddr = Ipv4Address ("10.0.0.3");
-   tuple.twoHopNeighborAddr = Ipv4Address ("10.0.0.2");
-   m_protocol->m_state.InsertTwoHopNeighborTuple (tuple);
-   tuple.twoHopNeighborAddr = Ipv4Address ("10.0.0.5");
-   m_protocol->m_state.InsertTwoHopNeighborTuple (tuple);
-   tuple.twoHopNeighborAddr = Ipv4Address ("10.0.0.6");
+  // All neighbor stations which are seen from station 3
+  tuple.neighborMainAddr = Ipv4Address ("10.0.0.3");
+  tuple.twoHopNeighborAddr = Ipv4Address ("10.0.0.2");
+  m_protocol->m_state.InsertTwoHopNeighborTuple (tuple);
+  tuple.twoHopNeighborAddr = Ipv4Address ("10.0.0.5");
+  m_protocol->m_state.InsertTwoHopNeighborTuple (tuple);
+  tuple.twoHopNeighborAddr = Ipv4Address ("10.0.0.6");
   // First, we fill all neighbors
   // If neighbors willingness = OLSR_WILL_DEFAULT, an only station number 5 will be an MPR
   NeighborTuple neigbor;
@@ -2903,7 +2903,7 @@ public:
 } g_olsrProtocolTestSuite;
 
 OlsrProtocolTestSuite::OlsrProtocolTestSuite()
-  : TestSuite("Routing-OLSR", UNIT)
+  : TestSuite("routing-olsr", UNIT)
 {
   AddTestCase (new OlsrMprTestCase ());
 }
