@@ -77,6 +77,8 @@ class UdpSocketImplTest: public TestCase
 {
   Ptr<Packet> m_receivedPacket;
   Ptr<Packet> m_receivedPacket2;
+  void DoSendData (Ptr<Socket> socket, std::string to);
+  void SendData (Ptr<Socket> socket, std::string to);
 
 public:
   virtual bool DoRun (void);
@@ -118,6 +120,24 @@ void UdpSocketImplTest::ReceivePkt2 (Ptr<Socket> socket)
   availableData = socket->GetRxAvailable ();
   m_receivedPacket2 = socket->Recv (std::numeric_limits<uint32_t>::max(), 0);
   NS_ASSERT (availableData == m_receivedPacket2->GetSize ());
+}
+
+void
+UdpSocketImplTest::DoSendData (Ptr<Socket> socket, std::string to)
+{
+  Address realTo = InetSocketAddress (Ipv4Address(to.c_str()), 1234);
+  NS_TEST_EXPECT_MSG_EQ (socket->SendTo (Create<Packet> (123), 0, realTo),
+                         123, "XXX");
+}
+
+void
+UdpSocketImplTest::SendData (Ptr<Socket> socket, std::string to)
+{
+  m_receivedPacket = Create<Packet> ();
+  m_receivedPacket2 = Create<Packet> ();
+  Simulator::ScheduleWithContext (socket->GetNode ()->GetId (), Seconds (0),
+                                  &UdpSocketImplTest::DoSendData, this, socket, to);
+  Simulator::Run ();
 }
 
 bool
@@ -203,11 +223,7 @@ UdpSocketImplTest::DoRun (void)
   // ------ Now the tests ------------
 
   // Unicast test
-  m_receivedPacket = Create<Packet> ();
-  m_receivedPacket2 = Create<Packet> ();
-  NS_TEST_EXPECT_MSG_EQ (txSocket->SendTo ( Create<Packet> (123), 0, 
-    InetSocketAddress (Ipv4Address("10.0.0.1"), 1234)), 123, "trivial");
-  Simulator::Run ();
+  SendData (txSocket, "10.0.0.1");
   NS_TEST_EXPECT_MSG_EQ (m_receivedPacket->GetSize (), 123, "trivial");
   NS_TEST_EXPECT_MSG_EQ (m_receivedPacket2->GetSize (), 0, "second interface should receive it");
 
@@ -216,11 +232,7 @@ UdpSocketImplTest::DoRun (void)
 
   // Simple broadcast test
 
-  m_receivedPacket = Create<Packet> ();
-  m_receivedPacket2 = Create<Packet> ();
-  NS_TEST_EXPECT_MSG_EQ (txSocket->SendTo ( Create<Packet> (123), 0, 
-    InetSocketAddress (Ipv4Address("255.255.255.255"), 1234)), 123, "trivial");
-  Simulator::Run ();
+  SendData (txSocket, "255.255.255.255");
   NS_TEST_EXPECT_MSG_EQ (m_receivedPacket->GetSize (), 123, "trivial");
   NS_TEST_EXPECT_MSG_EQ (m_receivedPacket2->GetSize (), 0, "second socket should not receive it (it is bound specifically to the second interface's address");
 
@@ -237,11 +249,7 @@ UdpSocketImplTest::DoRun (void)
   rxSocket2->SetRecvCallback (MakeCallback (&UdpSocketImplTest::ReceivePkt2, this));
   NS_TEST_EXPECT_MSG_EQ (rxSocket2->Bind (InetSocketAddress (Ipv4Address ("0.0.0.0"), 1234)), 0, "trivial");
 
-  m_receivedPacket = Create<Packet> ();
-  m_receivedPacket2 = Create<Packet> ();
-  NS_TEST_EXPECT_MSG_EQ (txSocket->SendTo (Create<Packet> (123), 0,
-        InetSocketAddress (Ipv4Address("255.255.255.255"), 1234)), 123, "trivial");
-  Simulator::Run ();
+  SendData (txSocket, "255.255.255.255");
   NS_TEST_EXPECT_MSG_EQ (m_receivedPacket->GetSize (), 123, "trivial");
   NS_TEST_EXPECT_MSG_EQ (m_receivedPacket2->GetSize (), 123, "trivial");
 
