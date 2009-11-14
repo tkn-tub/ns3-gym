@@ -167,12 +167,12 @@ int main(int argc, char *argv[]) {
   Ptr<Node> appSource = NodeList::GetNode(0);  
   Ptr<Sender> sender = CreateObject<Sender>();
   appSource->AddApplication(sender);
-  sender->Start(Seconds(1));
+  sender->SetStartTime(Seconds(1));
 
   Ptr<Node> appSink = NodeList::GetNode(1);  
   Ptr<Receiver> receiver = CreateObject<Receiver>();
   appSink->AddApplication(receiver);
-  receiver->Start(Seconds(0));
+  receiver->SetStartTime(Seconds(0));
 
   //  Config::Set("/NodeList/*/ApplicationList/*/$Sender/Destination",
   //              Ipv4AddressValue("192.168.0.2"));

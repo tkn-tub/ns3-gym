@@ -112,6 +112,7 @@ private:
   void SetBeaconGeneration (bool enable);
   bool GetBeaconGeneration (void) const;
   virtual void DoDispose (void);
+  virtual void DoStart (void);
   NqapWifiMac (const NqapWifiMac & ctor_arg);
   NqapWifiMac &operator = (const NqapWifiMac &o);
   Ptr<DcaTxop> GetDcaTxop (void) const;
@@ -123,6 +124,7 @@ private:
   Ptr<WifiPhy> m_phy;
   Callback<void, Ptr<Packet>,Mac48Address, Mac48Address> m_upCallback;
   Time m_beaconInterval;
+  bool m_enableBeaconGeneration;
 
   DcfManager *m_dcfManager;
   MacRxMiddle *m_rxMiddle;

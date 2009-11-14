@@ -213,8 +213,6 @@ RoutingProtocol::SetIpv4 (Ptr<Ipv4> ipv4)
   m_linkTupleTimerFirstTime = true;
 
   m_ipv4 = ipv4;
-
-  Simulator::ScheduleNow (&RoutingProtocol::Start, this);
 }
 
 void RoutingProtocol::DoDispose ()
@@ -231,7 +229,7 @@ void RoutingProtocol::DoDispose ()
   Ipv4RoutingProtocol::DoDispose ();
 }
 
-void RoutingProtocol::Start ()
+void RoutingProtocol::DoStart ()
 {
   if (m_mainAddress == Ipv4Address ())
     {

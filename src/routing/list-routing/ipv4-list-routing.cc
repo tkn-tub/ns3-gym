@@ -68,6 +68,19 @@ Ipv4ListRouting::DoDispose (void)
   m_ipv4 = 0;
 }
 
+void
+Ipv4ListRouting::DoStart (void)
+{
+  for (Ipv4RoutingProtocolList::iterator rprotoIter = m_routingProtocols.begin ();
+       rprotoIter != m_routingProtocols.end (); rprotoIter++)
+    {
+      Ptr<Ipv4RoutingProtocol> protocol = (*rprotoIter).second;
+      protocol->Start ();
+    }
+  Ipv4RoutingProtocol::DoStart ();
+}
+
+
 Ptr<Ipv4Route>
 Ipv4ListRouting::RouteOutput (Ptr<Packet> p, const Ipv4Header &header, uint32_t oif, enum Socket::SocketErrno &sockerr)
 {

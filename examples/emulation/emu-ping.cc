@@ -186,8 +186,8 @@ main (int argc, char *argv[])
   Ptr<V4Ping> app = CreateObject<V4Ping> ();
   app->SetAttribute ("Remote", Ipv4AddressValue (remoteIp));
   node->AddApplication (app);
-  app->Start (Seconds (1.0));
-  app->Stop (Seconds (5.0));
+  app->SetStartTime (Seconds (1.0));
+  app->SetStopTime (Seconds (5.0));
 
   //
   // Give the application a name.  This makes life much easier when constructing

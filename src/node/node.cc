@@ -167,6 +167,24 @@ Node::DoDispose()
   m_applications.clear ();
   Object::DoDispose ();
 }
+void 
+Node::DoStart (void)
+{
+  for (std::vector<Ptr<NetDevice> >::iterator i = m_devices.begin ();
+       i != m_devices.end (); i++)
+    {
+      Ptr<NetDevice> device = *i;
+      device->Start ();
+    }
+  for (std::vector<Ptr<Application> >::iterator i = m_applications.begin ();
+       i != m_applications.end (); i++)
+    {
+      Ptr<Application> application = *i;
+      application->Start ();
+    }
+  
+  Object::DoStart ();
+}
 
 void 
 Node::NotifyDeviceAdded (Ptr<NetDevice> device)

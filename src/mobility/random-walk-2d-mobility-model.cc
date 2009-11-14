@@ -72,13 +72,15 @@ RandomWalk2dMobilityModel::GetTypeId (void)
   return tid;
 }
 
-RandomWalk2dMobilityModel::RandomWalk2dMobilityModel ()
+void
+RandomWalk2dMobilityModel::DoStart (void)
 {
-  m_event = Simulator::ScheduleNow (&RandomWalk2dMobilityModel::Start, this);
+  DoStartPrivate ();
+  MobilityModel::DoStart ();
 }
 
 void
-RandomWalk2dMobilityModel::Start (void)
+RandomWalk2dMobilityModel::DoStartPrivate (void)
 {
   m_helper.Update ();
   double speed = m_speed.GetValue ();
@@ -109,9 +111,10 @@ RandomWalk2dMobilityModel::DoWalk (Time delayLeft)
   Vector nextPosition = position;
   nextPosition.x += speed.x * delayLeft.GetSeconds ();
   nextPosition.y += speed.y * delayLeft.GetSeconds ();
+  m_event.Cancel ();
   if (m_bounds.IsInside (nextPosition))
     {
-      m_event = Simulator::Schedule (delayLeft, &RandomWalk2dMobilityModel::Start, this);
+      m_event = Simulator::Schedule (delayLeft, &RandomWalk2dMobilityModel::DoStartPrivate, this);
     }
   else
     {
@@ -163,7 +166,7 @@ RandomWalk2dMobilityModel::DoSetPosition (const Vector &position)
   NS_ASSERT (m_bounds.IsInside (position));
   m_helper.SetPosition (position);
   Simulator::Remove (m_event);
-  m_event = Simulator::ScheduleNow (&RandomWalk2dMobilityModel::Start, this);
+  m_event = Simulator::ScheduleNow (&RandomWalk2dMobilityModel::DoStartPrivate, this);
 }
 Vector
 RandomWalk2dMobilityModel::DoGetVelocity (void) const

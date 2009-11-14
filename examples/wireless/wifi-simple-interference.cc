@@ -245,11 +245,13 @@ int main (int argc, char *argv[])
   // Output what we are doing
   NS_LOG_UNCOND ("Primary packet RSS=" << Prss << " dBm and interferer RSS=" << Irss << " dBm at time offset=" << delta << " ms");
 
-  Simulator::Schedule (Seconds (startTime), &GenerateTraffic, 
-                       source, PpacketSize, numPackets, interPacketInterval);
+  Simulator::ScheduleWithContext (source->GetNode ()->GetId (),
+                                  Seconds (startTime), &GenerateTraffic, 
+                                  source, PpacketSize, numPackets, interPacketInterval);
 
-  Simulator::Schedule (Seconds (startTime + delta/1000000.0), &GenerateTraffic, 
-                       interferer, IpacketSize, numPackets, interPacketInterval);
+  Simulator::ScheduleWithContext (interferer->GetNode ()->GetId (),
+                                  Seconds (startTime + delta/1000000.0), &GenerateTraffic, 
+                                  interferer, IpacketSize, numPackets, interPacketInterval);
 
   Simulator::Run ();
   Simulator::Destroy ();

@@ -45,14 +45,14 @@ class RandomDirection2dMobilityModel : public MobilityModel
  public:
   static TypeId GetTypeId (void);
 
-  RandomDirection2dMobilityModel ();
  private:
-  void Start (void);
   void ResetDirectionAndSpeed (void);
   void BeginPause (void);
   void SetDirectionAndSpeed (double direction);
   void InitializeDirectionAndSpeed (void);
+  void DoStartPrivate (void);
   virtual void DoDispose (void);
+  virtual void DoStart (void);
   virtual Vector DoGetPosition (void) const;
   virtual void DoSetPosition (const Vector &position);
   virtual Vector DoGetVelocity (void) const;

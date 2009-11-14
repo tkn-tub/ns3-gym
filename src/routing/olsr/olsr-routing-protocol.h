@@ -81,6 +81,8 @@ public:
 
   void SetMainInterface (uint32_t interface);
 
+protected:
+  virtual void DoStart (void);
 private:
   std::map<Ipv4Address, RoutingTableEntry> m_table; ///< Data structure for the routing table.
 
@@ -111,7 +113,7 @@ private:
   Ptr<Ipv4> m_ipv4;
 	
 private:
-  void Start ();
+
   void Clear ();
   uint32_t GetSize () const { return m_table.size (); }
   std::vector<RoutingTableEntry> GetEntries () const;

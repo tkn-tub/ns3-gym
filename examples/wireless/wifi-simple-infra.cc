@@ -200,8 +200,9 @@ int main (int argc, char *argv[])
   // Output what we are doing
   NS_LOG_UNCOND ("Testing " << numPackets  << " packets sent with receiver rss " << rss );
 
-  Simulator::Schedule (Seconds (1.0), &GenerateTraffic, 
-                       source, packetSize, numPackets, interPacketInterval);
+  Simulator::ScheduleWithContext (source->GetNode ()->GetId (),
+                                  Seconds (1.0), &GenerateTraffic, 
+                                  source, packetSize, numPackets, interPacketInterval);
 
   Simulator::Stop (Seconds (30.0));
   Simulator::Run ();

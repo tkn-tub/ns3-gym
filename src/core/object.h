@@ -140,6 +140,12 @@ public:
    */
   AggregateIterator GetAggregateIterator (void) const;
 
+  /**
+   * Execute starting code of an object. What this method does is really up
+   * to the user.
+   */
+  void Start (void);
+
 protected:
  /**
   * This function is called by the AggregateObject on all the objects connected in the listed chain.
@@ -148,6 +154,15 @@ protected:
   * additional/special behavior when aggregated to another object.
   */
   virtual void NotifyNewAggregate ();
+  /**
+   * This method is called only once by Object::Start. If the user
+   * calls Object::Start multiple times, DoStart is called only the
+   * first time.
+   *
+   * Subclasses are expected to override this method and _chain up_
+   * to their parent's implementation once they are done.
+   */
+  virtual void DoStart (void);
   /**
    * This method is called by Object::Dispose or by the object's 
    * destructor, whichever comes first.
@@ -250,6 +265,11 @@ private:
    * has run, false otherwise.
    */
   bool m_disposed;
+  /**
+   * Set to true once the DoStart method has run,
+   * false otherwise
+   */
+  bool m_started;
   /**
    * a pointer to an array of 'aggregates'. i.e., a pointer to
    * each object aggregated to this object is stored in this 

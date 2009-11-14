@@ -186,6 +186,7 @@ protected:
    * end of their own DoDispose method.
    */
   virtual void DoDispose (void);
+  virtual void DoStart (void);
 private:
 
   /**
