@@ -26,14 +26,12 @@
 #include "event-impl.h"
 
 #include "ns3/ptr.h"
-#include "ns3/assert.h"
-#include "ns3/log.h"
 
 #include <list>
 
 namespace ns3 {
 
-  class DefaultSimulatorImpl : public SimulatorImpl
+class DefaultSimulatorImpl : public SimulatorImpl
 {
 public:
   static TypeId GetTypeId (void);
@@ -45,7 +43,9 @@ public:
   virtual bool IsFinished (void) const;
   virtual Time Next (void) const;
   virtual void Stop (void);
+  virtual void Stop (Time const &time);
   virtual EventId Schedule (Time const &time, EventImpl *event);
+  virtual void ScheduleWithContext (uint32_t context, Time const &time, EventImpl *event);
   virtual EventId ScheduleNow (EventImpl *event);
   virtual EventId ScheduleDestroy (EventImpl *event);
   virtual void Remove (const EventId &ev);
@@ -57,18 +57,20 @@ public:
   virtual Time GetDelayLeft (const EventId &id) const;
   virtual Time GetMaximumSimulationTime (void) const;
   virtual void SetScheduler (ObjectFactory schedulerFactory);
+  virtual uint32_t GetContext (void) const;
 
 private:
   void ProcessOneEvent (void);
   uint64_t NextTs (void) const;
-
   typedef std::list<EventId> DestroyEvents;
+
   DestroyEvents m_destroyEvents;
   bool m_stop;
   Ptr<Scheduler> m_events;
   uint32_t m_uid;
   uint32_t m_currentUid;
   uint64_t m_currentTs;
+  uint32_t m_currentContext;
   // number of events that have been inserted but not yet scheduled,
   // not counting the "destroy" events; this is used for validation
   int m_unscheduledEvents;

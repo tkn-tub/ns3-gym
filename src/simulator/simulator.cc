@@ -20,10 +20,6 @@
 #include "ns3/core-config.h"
 #include "simulator.h"
 #include "simulator-impl.h"
-#include "default-simulator-impl.h"
-#ifdef HAVE_PTHREAD_H
-# include "realtime-simulator-impl.h"
-#endif
 #include "scheduler.h"
 #include "map-scheduler.h"
 #include "event-impl.h"
@@ -71,19 +67,19 @@ TimePrinter (std::ostream &os)
 
 #endif /* NS3_LOG_ENABLE */
 
-static Ptr<SimulatorImpl> *PeekImpl (void)
+static SimulatorImpl **PeekImpl (void)
 {
-  static Ptr<SimulatorImpl> impl = 0;
+  static SimulatorImpl *impl = 0;
   return &impl;
 }
 
 static SimulatorImpl * GetImpl (void)
 {
-  Ptr<SimulatorImpl> &impl = *PeekImpl ();
+  SimulatorImpl **pimpl = PeekImpl ();
   /* Please, don't include any calls to logging macros in this function
    * or pay the price, that is, stack explosions.
    */
-  if (impl == 0) 
+  if (*pimpl == 0)
     {
       {
         ObjectFactory factory;
@@ -91,14 +87,14 @@ static SimulatorImpl * GetImpl (void)
         
         g_simTypeImpl.GetValue (s);
         factory.SetTypeId (s.Get ());
-        impl = factory.Create<SimulatorImpl> ();
+        *pimpl = GetPointer (factory.Create<SimulatorImpl> ());
       }
       {
         ObjectFactory factory;
         StringValue s;
         g_schedTypeImpl.GetValue (s);
         factory.SetTypeId (s.Get ());
-        impl->SetScheduler (factory);
+        (*pimpl)->SetScheduler (factory);
       }
 
 //
@@ -110,7 +106,7 @@ static SimulatorImpl * GetImpl (void)
 //
       LogSetTimePrinter (&TimePrinter);
     }
-  return PeekPointer (impl);
+  return *pimpl;
 }
 
 void
@@ -118,8 +114,8 @@ Simulator::Destroy (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
 
-  Ptr<SimulatorImpl> &impl = *PeekImpl (); 
-  if (impl == 0)
+  SimulatorImpl **pimpl = PeekImpl (); 
+  if (*pimpl == 0)
     {
       return;
     }
@@ -129,8 +125,9 @@ Simulator::Destroy (void)
    * the stack explodes.
    */
   LogSetTimePrinter (0);
-  impl->Destroy ();
-  impl = 0;
+  (*pimpl)->Destroy ();
+  (*pimpl)->Unref ();
+  *pimpl = 0;
 }
 
 void
@@ -179,7 +176,7 @@ void
 Simulator::Stop (Time const &time)
 {
   NS_LOG_FUNCTION (time);
-  Simulator::Schedule (time, &Simulator::Stop);
+  GetImpl ()->Stop (time);
 }
 
 Time
@@ -205,6 +202,13 @@ Simulator::Schedule (Time const &time, const Ptr<EventImpl> &ev)
   return DoSchedule (time, GetPointer (ev));
 }
 
+void
+Simulator::ScheduleWithContext (uint32_t context, Time const &time, const Ptr<EventImpl> &ev)
+{
+  NS_LOG_FUNCTION (time << context << ev);
+  return DoScheduleWithContext (context, time, GetPointer (ev));
+}
+
 EventId
 Simulator::ScheduleNow (const Ptr<EventImpl> &ev)
 {
@@ -223,6 +227,11 @@ Simulator::DoSchedule (Time const &time, EventImpl *impl)
 {
   return GetImpl ()->Schedule (time, impl);
 }
+void
+Simulator::DoScheduleWithContext (uint32_t context, Time const &time, EventImpl *impl)
+{
+  return GetImpl ()->ScheduleWithContext (context, time, impl);
+}
 EventId 
 Simulator::DoScheduleNow (EventImpl *impl)
 {
@@ -240,6 +249,13 @@ Simulator::Schedule (Time const &time, void (*f) (void))
 {
   NS_LOG_FUNCTION (time << f);
   return DoSchedule (time, MakeEvent (f));
+}
+
+void
+Simulator::ScheduleWithContext (uint32_t context, Time const &time, void (*f) (void))
+{
+  NS_LOG_FUNCTION (time << context << f);
+  return DoScheduleWithContext (context, time, MakeEvent (f));
 }
 
 EventId
@@ -290,6 +306,13 @@ Simulator::GetMaximumSimulationTime (void)
   return GetImpl ()->GetMaximumSimulationTime ();
 }
 
+uint32_t
+Simulator::GetContext (void)
+{
+  NS_LOG_FUNCTION_NOARGS ();
+  return GetImpl ()->GetContext ();
+}
+
 void
 Simulator::SetImplementation (Ptr<SimulatorImpl> impl)
 {
@@ -297,7 +320,7 @@ Simulator::SetImplementation (Ptr<SimulatorImpl> impl)
     {
       NS_FATAL_ERROR ("It is not possible to set the implementation after calling any Simulator:: function. Call Simulator::SetImplementation earlier or after Simulator::Destroy.");
     }
-  *PeekImpl () = impl;
+  *PeekImpl () = GetPointer (impl);
   // Set the default scheduler
   ObjectFactory factory;
   StringValue s;

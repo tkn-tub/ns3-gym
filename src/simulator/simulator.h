@@ -284,6 +284,145 @@ public:
   static EventId Schedule (Time const &time, void (*f) (U1,U2,U3,U4,U5), T1 a1, T2 a2, T3 a3, T4 a4, T5 a5);
 
   /**
+   * Schedule an event with the given context.
+   * A context of 0xffffffff means no context is specified.
+   *
+   * @param time the relative expiration time of the event.
+   * @param context user-specified context parameter
+   * @param mem_ptr member method pointer to invoke
+   * @param obj the object on which to invoke the member method
+   */
+  template <typename MEM, typename OBJ>
+  static void ScheduleWithContext (uint32_t context, Time const &time, MEM mem_ptr, OBJ obj);
+
+  /**
+   * @param time the relative expiration time of the event.
+   * @param context user-specified context parameter
+   * @param mem_ptr member method pointer to invoke
+   * @param obj the object on which to invoke the member method
+   * @param a1 the first argument to pass to the invoked method
+   */
+  template <typename MEM, typename OBJ, typename T1>
+  static void ScheduleWithContext (uint32_t context, Time const &time, MEM mem_ptr, OBJ obj, T1 a1);
+
+  /**
+   * @param time the relative expiration time of the event.
+   * @param context user-specified context parameter
+   * @param mem_ptr member method pointer to invoke
+   * @param obj the object on which to invoke the member method
+   * @param a1 the first argument to pass to the invoked method
+   * @param a2 the second argument to pass to the invoked method
+   */
+  template <typename MEM, typename OBJ, typename T1, typename T2>
+  static void ScheduleWithContext (uint32_t context, Time const &time, MEM mem_ptr, OBJ obj, T1 a1, T2 a2);
+
+  /**
+   * @param time the relative expiration time of the event.
+   * @param context user-specified context parameter
+   * @param mem_ptr member method pointer to invoke
+   * @param obj the object on which to invoke the member method
+   * @param a1 the first argument to pass to the invoked method
+   * @param a2 the second argument to pass to the invoked method
+   * @param a3 the third argument to pass to the invoked method
+   */
+  template <typename MEM, typename OBJ, 
+            typename T1, typename T2, typename T3>
+  static void ScheduleWithContext (uint32_t context, Time const &time, MEM mem_ptr, OBJ obj, T1 a1, T2 a2, T3 a3);
+
+  /**
+   * @param time the relative expiration time of the event.
+   * @param context user-specified context parameter
+   * @param mem_ptr member method pointer to invoke
+   * @param obj the object on which to invoke the member method
+   * @param a1 the first argument to pass to the invoked method
+   * @param a2 the second argument to pass to the invoked method
+   * @param a3 the third argument to pass to the invoked method
+   * @param a4 the fourth argument to pass to the invoked method
+   */
+  template <typename MEM, typename OBJ, 
+            typename T1, typename T2, typename T3, typename T4>
+  static void ScheduleWithContext (uint32_t context, Time const &time, MEM mem_ptr, OBJ obj, T1 a1, T2 a2, T3 a3, T4 a4);
+
+  /**
+   * @param time the relative expiration time of the event.
+   * @param context user-specified context parameter
+   * @param mem_ptr member method pointer to invoke
+   * @param obj the object on which to invoke the member method
+   * @param a1 the first argument to pass to the invoked method
+   * @param a2 the second argument to pass to the invoked method
+   * @param a3 the third argument to pass to the invoked method
+   * @param a4 the fourth argument to pass to the invoked method
+   * @param a5 the fifth argument to pass to the invoked method
+   */
+  template <typename MEM, typename OBJ, 
+            typename T1, typename T2, typename T3, typename T4, typename T5>
+  static void ScheduleWithContext (uint32_t context, Time const &time, MEM mem_ptr, OBJ obj, 
+                           T1 a1, T2 a2, T3 a3, T4 a4, T5 a5);
+  /**
+   * @param time the relative expiration time of the event.
+   * @param context user-specified context parameter
+   * @param f the function to invoke
+   */
+  static void ScheduleWithContext (uint32_t context, Time const &time, void (*f) (void));
+
+  /**
+   * @param time the relative expiration time of the event.
+   * @param context user-specified context parameter
+   * @param f the function to invoke
+   * @param a1 the first argument to pass to the function to invoke
+   */
+  template <typename U1, typename T1>
+  static void ScheduleWithContext (uint32_t context, Time const &time, void (*f) (U1), T1 a1);
+
+  /**
+   * @param time the relative expiration time of the event.
+   * @param context user-specified context parameter
+   * @param f the function to invoke
+   * @param a1 the first argument to pass to the function to invoke
+   * @param a2 the second argument to pass to the function to invoke
+   */
+  template <typename U1, typename U2, typename T1, typename T2>
+  static void ScheduleWithContext (uint32_t context, Time const &time, void (*f) (U1,U2), T1 a1, T2 a2);
+
+  /**
+   * @param time the relative expiration time of the event.
+   * @param context user-specified context parameter
+   * @param f the function to invoke
+   * @param a1 the first argument to pass to the function to invoke
+   * @param a2 the second argument to pass to the function to invoke
+   * @param a3 the third argument to pass to the function to invoke
+   */
+  template <typename U1, typename U2, typename U3, typename T1, typename T2, typename T3>
+  static void ScheduleWithContext (uint32_t context, Time const &time, void (*f) (U1,U2,U3), T1 a1, T2 a2, T3 a3);
+
+  /**
+   * @param time the relative expiration time of the event.
+   * @param context user-specified context parameter
+   * @param f the function to invoke
+   * @param a1 the first argument to pass to the function to invoke
+   * @param a2 the second argument to pass to the function to invoke
+   * @param a3 the third argument to pass to the function to invoke
+   * @param a4 the fourth argument to pass to the function to invoke
+   */
+  template <typename U1, typename U2, typename U3, typename U4, 
+            typename T1, typename T2, typename T3, typename T4>
+  static void ScheduleWithContext (uint32_t context, Time const &time, void (*f) (U1,U2,U3,U4), T1 a1, T2 a2, T3 a3, T4 a4);
+
+  /**
+   * @param time the relative expiration time of the event.
+   * @param context user-specified context parameter
+   * @param f the function to invoke
+   * @param a1 the first argument to pass to the function to invoke
+   * @param a2 the second argument to pass to the function to invoke
+   * @param a3 the third argument to pass to the function to invoke
+   * @param a4 the fourth argument to pass to the function to invoke
+   * @param a5 the fifth argument to pass to the function to invoke
+   */
+  template <typename U1, typename U2, typename U3, typename U4, typename U5,
+            typename T1, typename T2, typename T3, typename T4, typename T5>
+  static void ScheduleWithContext (uint32_t context, Time const &time, void (*f) (U1,U2,U3,U4,U5), T1 a1, T2 a2, T3 a3, T4 a4, T5 a5);
+
+  /**
    * Schedule an event to expire Now. All events scheduled to
    * to expire "Now" are scheduled FIFO, after all normal events
    * have expired. 
@@ -589,6 +728,11 @@ public:
   static Time GetMaximumSimulationTime (void);
 
   /**
+   * \returns the current simulation context
+   */
+  static uint32_t GetContext (void);
+
+  /**
    * \param time delay until the event expires
    * \param event the event to schedule
    * \returns a unique identifier for the newly-scheduled event.
@@ -597,6 +741,17 @@ public:
    * to delegate events to their own subclass of the EventImpl base class.
    */
   static EventId Schedule (Time const &time, const Ptr<EventImpl> &event);  
+
+  /**
+   * \param time delay until the event expires
+   * \param context event context
+   * \param event the event to schedule
+   * \returns a unique identifier for the newly-scheduled event.
+   *
+   * This method will be typically used by language bindings
+   * to delegate events to their own subclass of the EventImpl base class.
+   */
+  static void ScheduleWithContext (uint32_t context, Time const &time, const Ptr<EventImpl> &event);
 
   /**
    * \param event the event to schedule
@@ -620,6 +775,7 @@ private:
   ~Simulator ();
 
   static EventId DoSchedule (Time const &time, EventImpl *event);  
+  static void DoScheduleWithContext (uint32_t context, Time const &time, EventImpl *event);
   static EventId DoScheduleNow (EventImpl *event);
   static EventId DoScheduleDestroy (EventImpl *event);
 };
@@ -716,6 +872,86 @@ template <typename U1, typename U2, typename U3, typename U4, typename U5,
 EventId Simulator::Schedule (Time const &time, void (*f) (U1,U2,U3,U4,U5), T1 a1, T2 a2, T3 a3, T4 a4, T5 a5) 
 {
   return DoSchedule (time, MakeEvent (f, a1, a2, a3, a4, a5));
+}
+
+
+
+
+template <typename MEM, typename OBJ>
+void Simulator::ScheduleWithContext (uint32_t context, Time const &time, MEM mem_ptr, OBJ obj)
+{
+  DoScheduleWithContext (context, time, MakeEvent (mem_ptr, obj));
+}
+
+
+template <typename MEM, typename OBJ,
+          typename T1>
+void Simulator::ScheduleWithContext (uint32_t context, Time const &time, MEM mem_ptr, OBJ obj, T1 a1)
+{
+  return DoScheduleWithContext (context, time, MakeEvent (mem_ptr, obj, a1));
+}
+
+template <typename MEM, typename OBJ,
+          typename T1, typename T2>
+void Simulator::ScheduleWithContext (uint32_t context, Time const &time, MEM mem_ptr, OBJ obj, T1 a1, T2 a2)
+{
+  return DoScheduleWithContext (context, time, MakeEvent (mem_ptr, obj, a1, a2));
+}
+
+template <typename MEM, typename OBJ,
+          typename T1, typename T2, typename T3>
+void Simulator::ScheduleWithContext (uint32_t context, Time const &time, MEM mem_ptr, OBJ obj, T1 a1, T2 a2, T3 a3)
+{
+  return DoScheduleWithContext (context, time, MakeEvent (mem_ptr, obj, a1, a2, a3));
+}
+
+template <typename MEM, typename OBJ,
+          typename T1, typename T2, typename T3, typename T4>
+void Simulator::ScheduleWithContext (uint32_t context, Time const &time, MEM mem_ptr, OBJ obj, T1 a1, T2 a2, T3 a3, T4 a4)
+{
+  return DoScheduleWithContext (context, time, MakeEvent (mem_ptr, obj, a1, a2, a3, a4));
+}
+
+template <typename MEM, typename OBJ,
+          typename T1, typename T2, typename T3, typename T4, typename T5>
+void Simulator::ScheduleWithContext (uint32_t context, Time const &time, MEM mem_ptr, OBJ obj,
+                             T1 a1, T2 a2, T3 a3, T4 a4, T5 a5)
+{
+  return DoScheduleWithContext (context, time, MakeEvent (mem_ptr, obj, a1, a2, a3, a4, a5));
+}
+
+template <typename U1, typename T1>
+void Simulator::ScheduleWithContext (uint32_t context, Time const &time, void (*f) (U1), T1 a1)
+{
+  return DoScheduleWithContext (context, time, MakeEvent (f, a1));
+}
+
+template <typename U1, typename U2,
+          typename T1, typename T2>
+void Simulator::ScheduleWithContext (uint32_t context, Time const &time, void (*f) (U1,U2), T1 a1, T2 a2)
+{
+  return DoScheduleWithContext (context, time, MakeEvent (f, a1, a2));
+}
+
+template <typename U1, typename U2, typename U3,
+          typename T1, typename T2, typename T3>
+void Simulator::ScheduleWithContext (uint32_t context, Time const &time, void (*f) (U1,U2,U3), T1 a1, T2 a2, T3 a3)
+{
+  return DoScheduleWithContext (context, time, MakeEvent (f, a1, a2, a3));
+}
+
+template <typename U1, typename U2, typename U3, typename U4,
+          typename T1, typename T2, typename T3, typename T4>
+void Simulator::ScheduleWithContext (uint32_t context, Time const &time, void (*f) (U1,U2,U3,U4), T1 a1, T2 a2, T3 a3, T4 a4)
+{
+  return DoScheduleWithContext (context, time, MakeEvent (f, a1, a2, a3, a4));
+}
+
+template <typename U1, typename U2, typename U3, typename U4, typename U5,
+          typename T1, typename T2, typename T3, typename T4, typename T5>
+void Simulator::ScheduleWithContext (uint32_t context, Time const &time, void (*f) (U1,U2,U3,U4,U5), T1 a1, T2 a2, T3 a3, T4 a4, T5 a5)
+{
+  return DoScheduleWithContext (context, time, MakeEvent (f, a1, a2, a3, a4, a5));
 }
 
 

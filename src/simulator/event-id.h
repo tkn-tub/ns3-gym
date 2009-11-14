@@ -47,7 +47,7 @@ class EventId {
 public:
   EventId ();
   // internal.
-  EventId (const Ptr<EventImpl> &impl, uint64_t ts, uint32_t uid);
+  EventId (const Ptr<EventImpl> &impl, uint64_t ts, uint32_t context, uint32_t uid);
   /**
    * This method is syntactic sugar for the ns3::Simulator::cancel
    * method.
@@ -72,11 +72,13 @@ public:
    */
   EventImpl *PeekEventImpl (void) const;
   uint64_t GetTs (void) const;
+  uint32_t GetContext (void) const;
   uint32_t GetUid (void) const;
 private:
   friend bool operator == (const EventId &a, const EventId &b);
   Ptr<EventImpl> m_eventImpl;
   uint64_t m_ts;
+  uint32_t m_context;
   uint32_t m_uid;
 };
 

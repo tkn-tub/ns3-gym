@@ -77,6 +77,7 @@ RealtimeSimulatorImpl::RealtimeSimulatorImpl ()
   // before ::Run is entered, the m_currentUid will be zero
   m_currentUid = 0;
   m_currentTs = 0;
+  m_currentContext = 0xffffffff;
   m_unscheduledEvents = 0;
 
   // Be very careful not to do anything that would cause a change or assignment
@@ -309,7 +310,7 @@ RealtimeSimulatorImpl::ProcessOneEvent (void)
     NS_ASSERT_MSG (m_events->IsEmpty () == false, 
       "RealtimeSimulatorImpl::ProcessOneEvent(): event queue is empty");
     next = m_events->RemoveNext ();
-    --m_unscheduledEvents;
+    m_unscheduledEvents--;
 
     //
     // We cannot make any assumption that "next" is the same event we originally waited 
@@ -327,6 +328,7 @@ RealtimeSimulatorImpl::ProcessOneEvent (void)
     // is frozen until the next event is executed.
     //
     m_currentTs = next.key.m_ts;
+    m_currentContext = next.key.m_context;
     m_currentUid = next.key.m_uid;
 
     // 
@@ -506,10 +508,11 @@ RealtimeSimulatorImpl::RunOneEvent (void)
     Scheduler::Event next = m_events->RemoveNext ();
 
     NS_ASSERT (next.key.m_ts >= m_currentTs);
-    --m_unscheduledEvents;
+    m_unscheduledEvents--;
 
     NS_LOG_LOGIC ("handle " << next.key.m_ts);
     m_currentTs = next.key.m_ts;
+    m_currentContext = next.key.m_context;
     m_currentUid = next.key.m_ts;
     event = next.impl;
   }
@@ -522,6 +525,12 @@ RealtimeSimulatorImpl::Stop (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
   m_stop = true;
+}
+
+void 
+RealtimeSimulatorImpl::Stop (Time const &time)
+{
+  Simulator::Schedule (time, &Simulator::Stop);
 }
 
 //
@@ -546,14 +555,38 @@ RealtimeSimulatorImpl::Schedule (Time const &time, EventImpl *impl)
     NS_ASSERT_MSG (tAbsolute >= TimeStep (m_currentTs), "RealtimeSimulatorImpl::Schedule(): time < m_currentTs");
     ev.impl = impl;
     ev.key.m_ts = (uint64_t) tAbsolute.GetTimeStep ();
+    ev.key.m_context = GetContext ();
     ev.key.m_uid = m_uid;
     m_uid++;
-    ++m_unscheduledEvents;
+    m_unscheduledEvents++;
     m_events->Insert (ev);
     m_synchronizer->Signal ();
   }
 
-  return EventId (impl, ev.key.m_ts, ev.key.m_uid);
+  return EventId (impl, ev.key.m_ts, ev.key.m_context, ev.key.m_uid);
+}
+
+void
+RealtimeSimulatorImpl::ScheduleWithContext (uint32_t context, Time const &time, EventImpl *impl)
+{
+  NS_LOG_FUNCTION (time << impl);
+
+  {
+    CriticalSection cs (m_mutex);
+    uint64_t ts;
+
+    ts = m_currentTs + time.GetTimeStep ();
+    NS_ASSERT_MSG (ts >= m_currentTs, "RealtimeSimulatorImpl::ScheduleRealtime(): schedule for time < m_currentTs");
+    Scheduler::Event ev;
+    ev.impl = impl;
+    ev.key.m_ts = ts;
+    ev.key.m_context = context;
+    ev.key.m_uid = m_uid;
+    m_uid++;
+    m_unscheduledEvents++;
+    m_events->Insert (ev);
+    m_synchronizer->Signal ();
+  }
 }
 
 EventId
@@ -566,14 +599,15 @@ RealtimeSimulatorImpl::ScheduleNow (EventImpl *impl)
 
     ev.impl = impl;
     ev.key.m_ts = m_currentTs;
+    ev.key.m_context = GetContext ();
     ev.key.m_uid = m_uid;
     m_uid++;
-    ++m_unscheduledEvents;
+    m_unscheduledEvents++;
     m_events->Insert (ev);
     m_synchronizer->Signal ();
   }
 
-  return EventId (impl, ev.key.m_ts, ev.key.m_uid);
+  return EventId (impl, ev.key.m_ts, ev.key.m_context, ev.key.m_uid);
 }
 
 Time
@@ -601,7 +635,7 @@ RealtimeSimulatorImpl::ScheduleRealtime (Time const &time, EventImpl *impl)
     ev.key.m_ts = ts;
     ev.key.m_uid = m_uid;
     m_uid++;
-    ++m_unscheduledEvents;
+    m_unscheduledEvents++;
     m_events->Insert (ev);
     m_synchronizer->Signal ();
   }
@@ -626,7 +660,7 @@ RealtimeSimulatorImpl::ScheduleRealtimeNow (EventImpl *impl)
     ev.key.m_ts = ts;
     ev.key.m_uid = m_uid;
     m_uid++;
-    ++m_unscheduledEvents;
+    m_unscheduledEvents++;
     m_events->Insert (ev);
     m_synchronizer->Signal ();
   }
@@ -652,7 +686,7 @@ RealtimeSimulatorImpl::ScheduleDestroy (EventImpl *impl)
     // overridden by the uid of 2 which identifies this as an event to be 
     // executed at Simulator::Destroy time.
     //
-    id = EventId (Ptr<EventImpl> (impl, false), m_currentTs, 2);
+    id = EventId (Ptr<EventImpl> (impl, false), m_currentTs, 0xffffffff, 2);
     m_destroyEvents.push_back (id);
     m_uid++;
   }
@@ -704,10 +738,11 @@ RealtimeSimulatorImpl::Remove (const EventId &id)
     Scheduler::Event event;
     event.impl = id.PeekEventImpl ();
     event.key.m_ts = id.GetTs ();
+    event.key.m_context = id.GetContext ();
     event.key.m_uid = id.GetUid ();
     
     m_events->Remove (event);
-    --m_unscheduledEvents;
+    m_unscheduledEvents--;
     event.impl->Cancel ();
     event.impl->Unref ();
   }
@@ -771,6 +806,12 @@ RealtimeSimulatorImpl::GetMaximumSimulationTime (void) const
   // XXX: I am fairly certain other compilers use other non-standard
   // post-fixes to indicate 64 bit constants.
   return TimeStep (0x7fffffffffffffffLL);
+}
+
+uint32_t
+RealtimeSimulatorImpl::GetContext (void) const
+{
+  return m_currentContext;
 }
 
 void 

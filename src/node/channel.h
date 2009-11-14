@@ -36,6 +36,9 @@ class NetDevice;
  *
  * A channel is a logical path over which information flows.  The path can
  * be as simple as a short piece of wire, or as complicated as space-time.
+ *
+ * Subclasses must use Simulator::ScheduleWithContext to correctly update
+ * event contexts when scheduling an event from one node to another one.
  */
 class Channel : public Object
 {
