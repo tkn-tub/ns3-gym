@@ -48,11 +48,12 @@ enum LogLevel {
   LOG_LOGIC          = 0x00000020, // control flow tracing within functions
   LOG_LEVEL_LOGIC    = 0x0000003f,
 
-  LOG_ALL            = 0x3fffffff, // print everything
+  LOG_ALL            = 0x1fffffff, // print everything
   LOG_LEVEL_ALL      = LOG_ALL,
 
   LOG_PREFIX_FUNC    = 0x80000000, // prefix all trace prints with function
-  LOG_PREFIX_TIME    = 0x40000000  // prefix all trace prints with simulation time
+  LOG_PREFIX_TIME    = 0x40000000, // prefix all trace prints with simulation time
+  LOG_PREFIX_NODE    = 0x20000000  // prefix all trace prints with simulation node
 };
 
 /**
@@ -160,6 +161,17 @@ void LogComponentDisableAll (enum LogLevel level);
         }                                                       \
     }
 
+#define NS_LOG_APPEND_NODE_PREFIX                               \
+  if (g_log.IsEnabled (ns3::LOG_PREFIX_NODE))                   \
+    {                                                           \
+      ns3::LogNodePrinter printer = ns3::LogGetNodePrinter ();  \
+      if (printer != 0)                                         \
+        {                                                       \
+          (*printer) (std::clog);                               \
+          std::clog << " ";                                     \
+        }                                                       \
+    }
+
 #define NS_LOG_APPEND_FUNC_PREFIX                               \
   if (g_log.IsEnabled (ns3::LOG_PREFIX_FUNC))                   \
     {                                                           \
@@ -192,6 +204,7 @@ void LogComponentDisableAll (enum LogLevel level);
       if (g_log.IsEnabled (level))                              \
         {                                                       \
           NS_LOG_APPEND_TIME_PREFIX;                            \
+          NS_LOG_APPEND_NODE_PREFIX;                            \
           NS_LOG_APPEND_CONTEXT;                                \
           NS_LOG_APPEND_FUNC_PREFIX;                            \
           std::clog << msg << std::endl;                        \
@@ -246,6 +259,7 @@ void LogComponentDisableAll (enum LogLevel level);
       if (g_log.IsEnabled (ns3::LOG_FUNCTION))                  \
         {                                                       \
           NS_LOG_APPEND_TIME_PREFIX;                            \
+          NS_LOG_APPEND_NODE_PREFIX;                            \
           NS_LOG_APPEND_CONTEXT;                                \
           std::clog << g_log.Name () << ":"                     \
                     << __FUNCTION__ << "()" << std::endl;       \
@@ -276,6 +290,7 @@ void LogComponentDisableAll (enum LogLevel level);
       if (g_log.IsEnabled (ns3::LOG_FUNCTION))                  \
         {                                                       \
           NS_LOG_APPEND_TIME_PREFIX;                            \
+          NS_LOG_APPEND_NODE_PREFIX;                            \
           NS_LOG_APPEND_CONTEXT;                                \
           std::clog << g_log.Name () << ":"                     \
                     << __FUNCTION__ << "(";                     \
@@ -321,9 +336,13 @@ namespace ns3 {
 void LogComponentPrintList (void);
 
 typedef void (*LogTimePrinter) (std::ostream &os);
+typedef void (*LogNodePrinter) (std::ostream &os);
 
 void LogSetTimePrinter (LogTimePrinter);
 LogTimePrinter LogGetTimePrinter(void);
+
+void LogSetNodePrinter (LogNodePrinter);
+LogNodePrinter LogGetNodePrinter(void);
 
 
 class LogComponent {
@@ -384,6 +403,8 @@ public:
 
 #define LogSetTimePrinter(printer)
 #define LogGetTimePrinter
+#define LogSetNodePrinter(printer)
+#define LogGetNodePrinter
 
 #endif /* LOG_ENABLE */
 

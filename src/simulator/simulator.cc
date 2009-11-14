@@ -65,6 +65,19 @@ TimePrinter (std::ostream &os)
   os << Simulator::Now ().GetSeconds () << "s";
 }
 
+static void
+NodePrinter (std::ostream &os)
+{
+  if (Simulator::GetContext () == 0xffffffff)
+    {
+      os << "-1";
+    }
+  else
+    {
+      os << Simulator::GetContext ();
+    }
+}
+
 #endif /* NS3_LOG_ENABLE */
 
 static SimulatorImpl **PeekImpl (void)
@@ -105,6 +118,7 @@ static SimulatorImpl * GetImpl (void)
 // in an infinite recursion until the stack explodes.
 //
       LogSetTimePrinter (&TimePrinter);
+      LogSetNodePrinter (&NodePrinter);
     }
   return *pimpl;
 }
@@ -125,6 +139,7 @@ Simulator::Destroy (void)
    * the stack explodes.
    */
   LogSetTimePrinter (0);
+  LogSetNodePrinter (0);
   (*pimpl)->Destroy ();
   (*pimpl)->Unref ();
   *pimpl = 0;
@@ -335,6 +350,7 @@ Simulator::SetImplementation (Ptr<SimulatorImpl> impl)
 // in an infinite recursion until the stack explodes.
 //
   LogSetTimePrinter (&TimePrinter);
+  LogSetNodePrinter (&NodePrinter);
 }
 Ptr<SimulatorImpl>
 Simulator::GetImplementation (void)
