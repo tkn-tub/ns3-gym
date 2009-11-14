@@ -211,11 +211,13 @@ WifiInterferenceTestCase::WifiSimpleInterference (std::string phyMode,double Prs
   // Tracing
 //  wifiPhy.EnablePcap ("wifi-simple-interference", devices.Get (0));
   
-  Simulator::Schedule (Seconds (startTime), &GenerateTraffic, 
-                       source, PpacketSize, numPackets, interPacketInterval);
+  Simulator::ScheduleWithContext (source->GetNode ()->GetId (),
+				  Seconds (startTime), &GenerateTraffic, 
+				  source, PpacketSize, numPackets, interPacketInterval);
   
-  Simulator::Schedule (Seconds (startTime + delta/1000000.0), &GenerateTraffic, 
-                       interferer, IpacketSize, numPackets, interPacketInterval);
+  Simulator::ScheduleWithContext (interferer->GetNode ()->GetId (),
+				  Seconds (startTime + delta/1000000.0), &GenerateTraffic, 
+				  interferer, IpacketSize, numPackets, interPacketInterval);
   
   Simulator::Run ();
   Simulator::Destroy ();
