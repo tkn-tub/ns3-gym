@@ -40,7 +40,7 @@ public:
   /**
    * This only thing this class does it declare a virtual destructor
    */
-  virtual ~RefCountBase () = 0;
+  virtual ~RefCountBase ();
 };
 
 } // namespace ns3
