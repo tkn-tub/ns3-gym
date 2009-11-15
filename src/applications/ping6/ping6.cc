@@ -152,9 +152,9 @@ void Ping6::ScheduleTransmit (Time dt)
   m_sendEvent = Simulator::Schedule (dt, &Ping6::Send, this);
 }
 
-void Ping6::SetRouters (std::vector<Ipv6Address> routersAddress)
+void Ping6::SetRouters (std::vector<Ipv6Address> routers)
 {
-  m_routersAddress = routersAddress;
+  m_routers = routers;
 }
 
 void Ping6::Send ()
@@ -200,14 +200,14 @@ void Ping6::Send ()
   m_socket->Bind (Inet6SocketAddress (src, 0));
 
   /* use Loose Routing (routing type 0) */
-  if (m_routersAddress.size ())
+  if (m_routers.size ())
   {
     Ipv6ExtensionLooseRoutingHeader routingHeader;
     routingHeader.SetNextHeader (Ipv6Header::IPV6_ICMPV6);
-    routingHeader.SetLength (m_routersAddress.size () * 16 + 8);
+    routingHeader.SetLength (m_routers.size () * 16 + 8);
     routingHeader.SetTypeRouting (0);
-    routingHeader.SetSegmentsLeft (m_routersAddress.size ());
-    routingHeader.SetRoutersAddress (m_routersAddress);
+    routingHeader.SetSegmentsLeft (m_routers.size ());
+    routingHeader.SetRoutersAddress (m_routers);
     p->AddHeader (routingHeader);
     m_socket->SetAttribute ("Protocol", UintegerValue (Ipv6Header::IPV6_EXT_ROUTING));
   }

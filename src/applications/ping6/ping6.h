@@ -83,9 +83,9 @@ class Ping6 : public Application
 
     /**
      * \brief Set routers for routing type 0 (loose routing).
-     * \param routers routers
+     * \param routers routers addresses
      */
-    void SetRouters(std::vector<Ipv6Address> routersAddress);
+    void SetRouters(std::vector<Ipv6Address> routers);
 
   protected:
     /**
@@ -179,7 +179,7 @@ class Ping6 : public Application
     /**
      * \brief Routers addresses for routing type 0.
      */
-    std::vector<Ipv6Address> m_routersAddress;
+    std::vector<Ipv6Address> m_routers;
 };
 
 } /* namespace ns3 */
