@@ -60,9 +60,6 @@ by the ns-3 logging system to report the execution context of each log line.
 <li><b>Object::DoStart</b>: Users who need to complete their object setup at the start of a simulation
 can override this virtual method, perform their adhoc setup, and then, must chain up to their parent.
 </ul>
-<ul>
-<li> Default TTL of IPv4 broadcast datagrams changed from 1 to 64.
-</ul> 
 
 <h2>Changes to existing API:</h2>
 <ul>
@@ -135,6 +132,9 @@ YansWifiPhy::CcaModelThreshold from -140.0 dBm to -99.0 dBm.  Rationale
 can be found <a href="http://www.nsnam.org/bugzilla/show_bug.cgi?id=689"> 
 here</a>.
 </ul>
+<ul>
+<li> Default TTL of IPv4 broadcast datagrams changed from 1 to 64.
+</ul> 
 
 
 <hr>
