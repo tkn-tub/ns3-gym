@@ -303,8 +303,8 @@ Ns3TcpCwndTestCase1::DoRun (void)
   Ptr<SimpleSource> app = CreateObject<SimpleSource> ();
   app->Setup (ns3TcpSocket, sinkAddress, 1040, 10, DataRate ("5Mbps"));
   nodes.Get (0)->AddApplication (app);
-  app->Start (Seconds (1.));
-  app->Stop (Seconds (1.1));
+  app->SetStartTime (Seconds (1.));
+  app->SetStopTime (Seconds (1.1));
 
   //
   // The idea here is that someone will look very closely at the all of the
@@ -484,8 +484,8 @@ Ns3TcpCwndTestCase2::DoRun (void)
   Ptr<SimpleSource> app = CreateObject<SimpleSource> ();
   app->Setup (ns3TcpSocket, sinkAddress, 1040, 1000, DataRate ("1Mbps"));
   n0n1.Get (0)->AddApplication (app);
-  app->Start (Seconds (1.0));
-  app->Stop (Seconds (5.4));
+  app->SetStartTime (Seconds (1.0));
+  app->SetStopTime (Seconds (5.4));
 
   if (m_writeResults)
     {
