@@ -80,6 +80,9 @@ class Ipv6ExtensionDemux : public Object
     void Remove (Ptr<Ipv6Extension> extension);
 
   protected:   
+    /**
+     * \brief Dispose object.
+     */
     virtual void DoDispose ();
 
   private:

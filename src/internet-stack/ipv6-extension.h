@@ -125,6 +125,9 @@ private:
 class Ipv6ExtensionHopByHop : public Ipv6Extension
 {
 public:
+  /**
+   * \brief Hop-by-hop extension number.
+   */
   static const uint8_t EXT_NUMBER = 0;
 
   /**
@@ -170,6 +173,9 @@ public:
 class Ipv6ExtensionDestination : public Ipv6Extension
 {
 public:
+  /**
+   * \brief Destination extension number.
+   */
   static const uint8_t EXT_NUMBER = 60;
 
   /**
@@ -215,6 +221,9 @@ public:
 class Ipv6ExtensionFragment : public Ipv6Extension
 {
 public:
+  /**
+   * \brief Fragmentation extension number.
+   */
   static const uint8_t EXT_NUMBER = 44;
 
  /**
@@ -271,7 +280,7 @@ private:
    * \class Fragments
    * \brief A Set of Fragment
    */
-  class Fragments
+  class Fragments : public SimpleRefCount<Fragments>
   {
   public:
     /**
@@ -283,9 +292,6 @@ private:
      * \brief Destructor.
      */
     ~Fragments ();
-
-    void Ref () const;
-    void Unref () const;
 
     /**
      * \brief Add a fragment.
@@ -352,6 +358,9 @@ private:
 class Ipv6ExtensionRouting : public Ipv6Extension
 {
 public:
+  /**
+   * \brief Routing extension number.
+   */
   static const uint8_t EXT_NUMBER = 43;
 
   /**
@@ -472,7 +481,10 @@ private:
 class Ipv6ExtensionLooseRouting : public Ipv6ExtensionRouting
 {
 public:
-  static const uint8_t TYPE_ROUTING;
+  /**
+   * \brief Routing type.
+   */
+  static const uint8_t TYPE_ROUTING = 0;
 
   /**
    * \brief Get the type identificator.
@@ -519,6 +531,9 @@ public:
 class Ipv6ExtensionESP : public Ipv6Extension
 {
 public:
+  /**
+   * \brief ESP extension number.
+   */
   static const uint8_t EXT_NUMBER = 50;
 
   /**
@@ -565,6 +580,9 @@ public:
 class Ipv6ExtensionAH : public Ipv6Extension
 {
 public:
+  /**
+   * \brief AH extension number.
+   */
   static const uint8_t EXT_NUMBER = 51;
 
   /**

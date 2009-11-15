@@ -119,6 +119,7 @@ NodeListPriv::Add (Ptr<Node> node)
 {
   uint32_t index = m_nodes.size ();
   m_nodes.push_back (node);
+  Simulator::ScheduleWithContext (index, TimeStep (0), &Node::Start, node);
   return index;
   
 }

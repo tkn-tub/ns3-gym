@@ -45,10 +45,11 @@ class RandomWaypointMobilityModel : public MobilityModel
 {
 public:
   static TypeId GetTypeId (void);
-  RandomWaypointMobilityModel ();
+protected:
+  virtual void DoStart (void);
 private:
-  void Start (void);
   void BeginWalk (void);
+  void DoStartPrivate (void);
   virtual Vector DoGetPosition (void) const;
   virtual void DoSetPosition (const Vector &position);
   virtual Vector DoGetVelocity (void) const;

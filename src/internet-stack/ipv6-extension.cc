@@ -522,29 +522,13 @@ void Ipv6ExtensionFragment::GetFragments (Ptr<Packet> packet, uint32_t maxFragme
   unfragmentablePart.clear ();
 }
 
-  Ipv6ExtensionFragment::Fragments::Fragments ()
-: m_moreFragment (0),
-  m_refCount (1)
+Ipv6ExtensionFragment::Fragments::Fragments ()
+  : m_moreFragment (0)
 {
 }
 
 Ipv6ExtensionFragment::Fragments::~Fragments ()
 {
-}
-
-void 	Ipv6ExtensionFragment::Fragments::Ref () const
-{
-  m_refCount++;
-}
-
-void Ipv6ExtensionFragment::Fragments::Unref () const
-{
-  m_refCount--;
-
-  if (m_refCount == 0)
-  {
-    delete this;
-  }
 }
 
 void Ipv6ExtensionFragment::Fragments::AddFragment (Ptr<Packet> fragment, uint16_t fragmentOffset, bool moreFragment)
@@ -755,8 +739,6 @@ void Ipv6ExtensionRoutingDemux::Remove (Ptr<Ipv6ExtensionRouting> extensionRouti
 
 
 NS_OBJECT_ENSURE_REGISTERED (Ipv6ExtensionLooseRouting);
-
-const uint8_t Ipv6ExtensionLooseRouting::TYPE_ROUTING = 0;
 
 TypeId Ipv6ExtensionLooseRouting::GetTypeId ()
 {

@@ -26,12 +26,14 @@ namespace ns3 {
 EventId::EventId ()
   : m_eventImpl (0),
     m_ts (0),
+    m_context (0),
     m_uid (0)
 {}
   
-EventId::EventId (const Ptr<EventImpl> &impl, uint64_t ts, uint32_t uid)
+EventId::EventId (const Ptr<EventImpl> &impl, uint64_t ts, uint32_t context, uint32_t uid)
   : m_eventImpl (impl),
     m_ts (ts),
+    m_context (context),
     m_uid (uid)
 {}
 void 
@@ -60,6 +62,11 @@ EventId::GetTs (void) const
   return m_ts;
 }
 uint32_t 
+EventId::GetContext (void) const
+{
+  return m_context;
+}
+uint32_t 
 EventId::GetUid (void) const
 {
   return m_uid;
@@ -69,6 +76,7 @@ bool operator == (const EventId &a, const EventId &b)
 {
   return 
     a.m_uid == b.m_uid && 
+    a.m_context == b.m_context && 
     a.m_ts == b.m_ts && 
     a.m_eventImpl == b.m_eventImpl;
 }

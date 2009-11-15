@@ -37,16 +37,16 @@ class Ipv6OptionHeader : public Header
   public:
 
     /**
+     * \struct Alignment
      * \brief represents the alignment requirements of an option header
      *
      * Represented as factor*n+offset (eg. 8n+2) See RFC 2460.
      * No alignemt is represented as 1n+0.
-     *
      */
     struct Alignment
     {
-      uint8_t factor;
-      uint8_t offset;
+      uint8_t factor; /**< Factor */
+      uint8_t offset; /**< Offset */
     };
 
     /**

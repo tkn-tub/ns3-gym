@@ -90,6 +90,8 @@ NqapWifiMac::NqapWifiMac ()
   m_dca->SetManager (m_dcfManager);
   m_dca->SetTxOkCallback (MakeCallback (&NqapWifiMac::TxOk, this));
   m_dca->SetTxFailedCallback (MakeCallback (&NqapWifiMac::TxFailed, this));
+
+  m_enableBeaconGeneration = false;
 }
 NqapWifiMac::~NqapWifiMac ()
 {
@@ -110,6 +112,7 @@ NqapWifiMac::DoDispose (void)
   m_dca = 0;
   m_beaconDca = 0;
   m_stationManager = 0;
+  m_enableBeaconGeneration = false;
   m_beaconEvent.Cancel ();
   WifiMac::DoDispose ();
 }
@@ -118,20 +121,21 @@ void
 NqapWifiMac::SetBeaconGeneration (bool enable)
 {
   NS_LOG_FUNCTION (this << enable);
-  if (enable)
+  if (!enable)
+    {
+      m_beaconEvent.Cancel ();
+    } 
+  else if (enable && !m_enableBeaconGeneration)
     {
       m_beaconEvent = Simulator::ScheduleNow (&NqapWifiMac::SendOneBeacon, this);
     }
-  else
-    {
-      m_beaconEvent.Cancel ();
-    }
+  m_enableBeaconGeneration = enable;
 }
 
 bool
 NqapWifiMac::GetBeaconGeneration (void) const
 {
-  return m_beaconEvent.IsRunning ();
+  return m_enableBeaconGeneration;
 }
 Time 
 NqapWifiMac::GetBeaconInterval (void) const
@@ -593,5 +597,16 @@ NqapWifiMac::FinishConfigureStandard (enum WifiPhyStandard standard)
     }
 }
 
+
+void
+NqapWifiMac::DoStart (void)
+{
+  m_beaconEvent.Cancel ();
+  if (m_enableBeaconGeneration)
+    {
+      m_beaconEvent = Simulator::ScheduleNow (&NqapWifiMac::SendOneBeacon, this);
+    }
+  WifiMac::DoStart ();
+}
 
 } // namespace ns3

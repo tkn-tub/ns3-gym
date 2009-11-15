@@ -315,4 +315,72 @@ RandomDiscPositionAllocator::GetNext (void) const
 }
 
 
+
+NS_OBJECT_ENSURE_REGISTERED (UniformDiscPositionAllocator);
+
+TypeId
+UniformDiscPositionAllocator::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::UniformDiscPositionAllocator")
+    .SetParent<PositionAllocator> ()
+    .SetGroupName ("Mobility")
+    .AddConstructor<UniformDiscPositionAllocator> ()
+    .AddAttribute ("rho",
+                   "The radius of the disc",
+                   DoubleValue (0.0),
+                   MakeDoubleAccessor (&UniformDiscPositionAllocator::m_rho),
+                   MakeDoubleChecker<double> ())
+    .AddAttribute ("X",
+                   "The x coordinate of the center of the  disc.",
+                   DoubleValue (0.0),
+                   MakeDoubleAccessor (&UniformDiscPositionAllocator::m_x),
+                   MakeDoubleChecker<double> ())
+    .AddAttribute ("Y",
+                   "The y coordinate of the center of the  disc.",
+                   DoubleValue (0.0),
+                   MakeDoubleAccessor (&UniformDiscPositionAllocator::m_y),
+                   MakeDoubleChecker<double> ())
+    ;
+  return tid;
+}   
+
+UniformDiscPositionAllocator::UniformDiscPositionAllocator ()
+{}
+UniformDiscPositionAllocator::~UniformDiscPositionAllocator ()
+{}
+
+void 
+UniformDiscPositionAllocator::SetRho (double rho)
+{
+  m_rho = rho;
+}
+void 
+UniformDiscPositionAllocator::SetX (double x)
+{
+  m_x = x;
+}
+void 
+UniformDiscPositionAllocator::SetY (double y)
+{
+  m_y = y;
+}
+Vector
+UniformDiscPositionAllocator::GetNext (void) const
+{
+  UniformVariable r (-m_rho, m_rho);
+  double x,y;
+  do
+    {
+      x = r.GetValue ();
+      y = r.GetValue ();
+    }
+  while (sqrt(x*x + y*y) > m_rho);
+  
+  x += m_x;
+  y += m_y;
+  NS_LOG_DEBUG ("Disc position x=" << x << ", y=" << y);
+  return Vector (x, y, 0.0);
+}
+
+
 } // namespace ns3 

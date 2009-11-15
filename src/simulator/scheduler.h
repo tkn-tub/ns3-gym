@@ -56,8 +56,9 @@ class Scheduler : public Object
   static TypeId GetTypeId (void);
 
   struct EventKey {
-      uint64_t m_ts;
-      uint32_t m_uid;
+    uint64_t m_ts;
+    uint32_t m_uid;
+    uint32_t m_context;
   };
   struct Event {
     EventImpl *impl;

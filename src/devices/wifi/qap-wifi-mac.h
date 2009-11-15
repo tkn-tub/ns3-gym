@@ -92,6 +92,7 @@ private:
   typedef std::list<std::pair<Ptr<Packet>, AmsduSubframeHeader> >::const_iterator DeaggregatedMsdusCI;
   
   virtual void DoDispose (void);
+  virtual void DoStart (void);
   void Receive (Ptr<Packet> packet, WifiMacHeader const*hdr);
   void ForwardUp (Ptr<Packet> packet, Mac48Address from, Mac48Address to);
   void ForwardDown (Ptr<const Packet> packet, Mac48Address from, Mac48Address to);
@@ -130,6 +131,7 @@ private:
   Ssid m_ssid;
   EventId m_beaconEvent;
   Time m_beaconInterval;
+  bool m_enableBeaconGeneration;
   Callback<void,Ptr<Packet>, Mac48Address, Mac48Address> m_forwardUp;
 };
 

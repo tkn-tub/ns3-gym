@@ -20,11 +20,8 @@
 #include "ns3/core-config.h"
 #include "simulator.h"
 #include "simulator-impl.h"
-#include "default-simulator-impl.h"
-#ifdef HAVE_PTHREAD_H
-# include "realtime-simulator-impl.h"
-#endif
 #include "scheduler.h"
+#include "map-scheduler.h"
 #include "event-impl.h"
 
 #include "ns3/ptr.h"
@@ -51,8 +48,8 @@ GlobalValue g_simTypeImpl = GlobalValue ("SimulatorImplementationType",
 
 GlobalValue g_schedTypeImpl = GlobalValue ("SchedulerType", 
   "The object class to use as the scheduler implementation",
-  StringValue ("ns3::MapScheduler"),
-  MakeStringChecker ());
+  TypeIdValue (MapScheduler::GetTypeId ()),
+  MakeTypeIdChecker ());
 
 
 #ifdef NS3_LOG_ENABLE
@@ -68,21 +65,34 @@ TimePrinter (std::ostream &os)
   os << Simulator::Now ().GetSeconds () << "s";
 }
 
+static void
+NodePrinter (std::ostream &os)
+{
+  if (Simulator::GetContext () == 0xffffffff)
+    {
+      os << "-1";
+    }
+  else
+    {
+      os << Simulator::GetContext ();
+    }
+}
+
 #endif /* NS3_LOG_ENABLE */
 
-static Ptr<SimulatorImpl> *PeekImpl (void)
+static SimulatorImpl **PeekImpl (void)
 {
-  static Ptr<SimulatorImpl> impl = 0;
+  static SimulatorImpl *impl = 0;
   return &impl;
 }
 
 static SimulatorImpl * GetImpl (void)
 {
-  Ptr<SimulatorImpl> &impl = *PeekImpl ();
+  SimulatorImpl **pimpl = PeekImpl ();
   /* Please, don't include any calls to logging macros in this function
    * or pay the price, that is, stack explosions.
    */
-  if (impl == 0) 
+  if (*pimpl == 0)
     {
       {
         ObjectFactory factory;
@@ -90,14 +100,14 @@ static SimulatorImpl * GetImpl (void)
         
         g_simTypeImpl.GetValue (s);
         factory.SetTypeId (s.Get ());
-        impl = factory.Create<SimulatorImpl> ();
+        *pimpl = GetPointer (factory.Create<SimulatorImpl> ());
       }
       {
         ObjectFactory factory;
         StringValue s;
         g_schedTypeImpl.GetValue (s);
         factory.SetTypeId (s.Get ());
-        impl->SetScheduler (factory.Create<Scheduler> ());
+        (*pimpl)->SetScheduler (factory);
       }
 
 //
@@ -108,8 +118,9 @@ static SimulatorImpl * GetImpl (void)
 // in an infinite recursion until the stack explodes.
 //
       LogSetTimePrinter (&TimePrinter);
+      LogSetNodePrinter (&NodePrinter);
     }
-  return PeekPointer (impl);
+  return *pimpl;
 }
 
 void
@@ -117,8 +128,8 @@ Simulator::Destroy (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
 
-  Ptr<SimulatorImpl> &impl = *PeekImpl (); 
-  if (impl == 0)
+  SimulatorImpl **pimpl = PeekImpl (); 
+  if (*pimpl == 0)
     {
       return;
     }
@@ -128,15 +139,17 @@ Simulator::Destroy (void)
    * the stack explodes.
    */
   LogSetTimePrinter (0);
-  impl->Destroy ();
-  impl = 0;
+  LogSetNodePrinter (0);
+  (*pimpl)->Destroy ();
+  (*pimpl)->Unref ();
+  *pimpl = 0;
 }
 
 void
-Simulator::SetScheduler (Ptr<Scheduler> scheduler)
+Simulator::SetScheduler (ObjectFactory schedulerFactory)
 {
-  NS_LOG_FUNCTION (scheduler);
-  GetImpl ()->SetScheduler (scheduler);
+  NS_LOG_FUNCTION (schedulerFactory);
+  GetImpl ()->SetScheduler (schedulerFactory);
 }
 
 bool 
@@ -178,7 +191,7 @@ void
 Simulator::Stop (Time const &time)
 {
   NS_LOG_FUNCTION (time);
-  Simulator::Schedule (time, &Simulator::Stop);
+  GetImpl ()->Stop (time);
 }
 
 Time
@@ -204,6 +217,13 @@ Simulator::Schedule (Time const &time, const Ptr<EventImpl> &ev)
   return DoSchedule (time, GetPointer (ev));
 }
 
+void
+Simulator::ScheduleWithContext (uint32_t context, Time const &time, const Ptr<EventImpl> &ev)
+{
+  NS_LOG_FUNCTION (time << context << ev);
+  return DoScheduleWithContext (context, time, GetPointer (ev));
+}
+
 EventId
 Simulator::ScheduleNow (const Ptr<EventImpl> &ev)
 {
@@ -222,6 +242,11 @@ Simulator::DoSchedule (Time const &time, EventImpl *impl)
 {
   return GetImpl ()->Schedule (time, impl);
 }
+void
+Simulator::DoScheduleWithContext (uint32_t context, Time const &time, EventImpl *impl)
+{
+  return GetImpl ()->ScheduleWithContext (context, time, impl);
+}
 EventId 
 Simulator::DoScheduleNow (EventImpl *impl)
 {
@@ -239,6 +264,13 @@ Simulator::Schedule (Time const &time, void (*f) (void))
 {
   NS_LOG_FUNCTION (time << f);
   return DoSchedule (time, MakeEvent (f));
+}
+
+void
+Simulator::ScheduleWithContext (uint32_t context, Time const &time, void (*f) (void))
+{
+  NS_LOG_FUNCTION (time << context << f);
+  return DoScheduleWithContext (context, time, MakeEvent (f));
 }
 
 EventId
@@ -289,6 +321,13 @@ Simulator::GetMaximumSimulationTime (void)
   return GetImpl ()->GetMaximumSimulationTime ();
 }
 
+uint32_t
+Simulator::GetContext (void)
+{
+  NS_LOG_FUNCTION_NOARGS ();
+  return GetImpl ()->GetContext ();
+}
+
 void
 Simulator::SetImplementation (Ptr<SimulatorImpl> impl)
 {
@@ -296,13 +335,13 @@ Simulator::SetImplementation (Ptr<SimulatorImpl> impl)
     {
       NS_FATAL_ERROR ("It is not possible to set the implementation after calling any Simulator:: function. Call Simulator::SetImplementation earlier or after Simulator::Destroy.");
     }
-  *PeekImpl () = impl;
+  *PeekImpl () = GetPointer (impl);
   // Set the default scheduler
   ObjectFactory factory;
   StringValue s;
   g_schedTypeImpl.GetValue (s);
   factory.SetTypeId (s.Get ());
-  impl->SetScheduler (factory.Create<Scheduler> ());
+  impl->SetScheduler (factory);
 //
 // Note: we call LogSetTimePrinter _after_ creating the implementation
 // object because the act of creation can trigger calls to the logging 
@@ -311,6 +350,7 @@ Simulator::SetImplementation (Ptr<SimulatorImpl> impl)
 // in an infinite recursion until the stack explodes.
 //
   LogSetTimePrinter (&TimePrinter);
+  LogSetNodePrinter (&NodePrinter);
 }
 Ptr<SimulatorImpl>
 Simulator::GetImplementation (void)
@@ -334,7 +374,7 @@ namespace ns3 {
 class SimulatorEventsTestCase : public TestCase
 {
 public:
-  SimulatorEventsTestCase (Ptr<Scheduler> scheduler);
+  SimulatorEventsTestCase (ObjectFactory schedulerFactory);
   virtual bool DoRun (void);
   void A (int a);
   void B (int b);
@@ -350,10 +390,13 @@ public:
   EventId m_idC;
   bool m_destroy;
   EventId m_destroyId;
+  ObjectFactory m_schedulerFactory;
 };
 
-SimulatorEventsTestCase::SimulatorEventsTestCase (Ptr<Scheduler> scheduler)
-  : TestCase ("Check that basic event handling is working with " + scheduler->GetInstanceTypeId ().GetName ())
+SimulatorEventsTestCase::SimulatorEventsTestCase (ObjectFactory schedulerFactory)
+  : TestCase ("Check that basic event handling is working with " + 
+              schedulerFactory.GetTypeId ().GetName ()),
+    m_schedulerFactory (schedulerFactory)
 {}
 uint64_t
 SimulatorEventsTestCase::NowUs (void)
@@ -421,6 +464,8 @@ SimulatorEventsTestCase::DoRun (void)
   m_b = false;
   m_c = true;
   m_d = false;
+
+  Simulator::SetScheduler (m_schedulerFactory);
 
   EventId a = Simulator::Schedule (MicroSeconds (10), &SimulatorEventsTestCase::A, this, 1);
   Simulator::Schedule (MicroSeconds (11), &SimulatorEventsTestCase::B, this, 2);
@@ -767,11 +812,18 @@ public:
   SimulatorTestSuite ()
     : TestSuite ("simulator")
   {
-    AddTestCase (new SimulatorEventsTestCase (CreateObject<ListScheduler> ()));
-    AddTestCase (new SimulatorEventsTestCase (CreateObject<MapScheduler> ()));
-    AddTestCase (new SimulatorEventsTestCase (CreateObject<HeapScheduler> ()));
-    AddTestCase (new SimulatorEventsTestCase (CreateObject<CalendarScheduler> ()));
-    AddTestCase (new SimulatorEventsTestCase (CreateObject<Ns2CalendarScheduler> ()));
+    ObjectFactory factory;
+    factory.SetTypeId (ListScheduler::GetTypeId ());
+
+    AddTestCase (new SimulatorEventsTestCase (factory));
+    factory.SetTypeId (MapScheduler::GetTypeId ());
+    AddTestCase (new SimulatorEventsTestCase (factory));
+    factory.SetTypeId (HeapScheduler::GetTypeId ());
+    AddTestCase (new SimulatorEventsTestCase (factory));
+    factory.SetTypeId (CalendarScheduler::GetTypeId ());
+    AddTestCase (new SimulatorEventsTestCase (factory));
+    factory.SetTypeId (Ns2CalendarScheduler::GetTypeId ());
+    AddTestCase (new SimulatorEventsTestCase (factory));
   }
 } g_simulatorTestSuite;
 

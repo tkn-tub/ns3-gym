@@ -51,6 +51,8 @@ def register_types(module):
     module.add_class('ObjectBase', allow_subclassing=True)
     ## object-factory.h: ns3::ObjectFactory [class]
     module.add_class('ObjectFactory')
+    ## object-ref-count.h: ns3::ObjectRefCount<ns3::Object, ns3::ObjectBase> [class]
+    module.add_class('ObjectRefCount', template_parameters=['ns3::Object', 'ns3::ObjectBase'], parent=root_module['ns3::ObjectBase'])
     ## random-variable.h: ns3::RandomVariable [class]
     module.add_class('RandomVariable')
     ## ref-count-base.h: ns3::RefCountBase [class]
@@ -144,7 +146,7 @@ def register_types(module):
     ## random-variable.h: ns3::NormalVariable [class]
     module.add_class('NormalVariable', parent=root_module['ns3::RandomVariable'])
     ## object.h: ns3::Object [class]
-    module.add_class('Object', automatic_type_narrowing=True, parent=root_module['ns3::ObjectBase'], memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'))
+    module.add_class('Object', automatic_type_narrowing=True, parent=root_module['ns3::ObjectRefCount< ns3::Object, ns3::ObjectBase >'], memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'))
     ## object.h: ns3::Object::AggregateIterator [class]
     module.add_class('AggregateIterator', outer_class=root_module['ns3::Object'])
     ## object-factory.h: ns3::ObjectFactoryChecker [class]
@@ -304,6 +306,7 @@ def register_methods(root_module):
     register_Ns3Names_methods(root_module, root_module['ns3::Names'])
     register_Ns3ObjectBase_methods(root_module, root_module['ns3::ObjectBase'])
     register_Ns3ObjectFactory_methods(root_module, root_module['ns3::ObjectFactory'])
+    register_Ns3ObjectRefCount__Ns3Object_Ns3ObjectBase_methods(root_module, root_module['ns3::ObjectRefCount< ns3::Object, ns3::ObjectBase >'])
     register_Ns3RandomVariable_methods(root_module, root_module['ns3::RandomVariable'])
     register_Ns3RefCountBase_methods(root_module, root_module['ns3::RefCountBase'])
     register_Ns3RngStream_methods(root_module, root_module['ns3::RngStream'])
@@ -721,6 +724,43 @@ def register_Ns3ObjectFactory_methods(root_module, cls):
                    [param('std::string', 'tid')])
     return
 
+def register_Ns3ObjectRefCount__Ns3Object_Ns3ObjectBase_methods(root_module, cls):
+    ## object-ref-count.h: ns3::ObjectRefCount<ns3::Object, ns3::ObjectBase>::ObjectRefCount() [constructor]
+    cls.add_constructor([])
+    ## object-ref-count.h: ns3::ObjectRefCount<ns3::Object, ns3::ObjectBase>::ObjectRefCount(ns3::ObjectRefCount<ns3::Object, ns3::ObjectBase> const & o) [copy constructor]
+    cls.add_constructor([param('ns3::ObjectRefCount< ns3::Object, ns3::ObjectBase > const &', 'o')])
+    ## object-ref-count.h: int ns3::ObjectRefCount<ns3::Object, ns3::ObjectBase>::GetReferenceCount() const [member function]
+    cls.add_method('GetReferenceCount', 
+                   'int', 
+                   [], 
+                   is_const=True)
+    ## object-ref-count.h: void ns3::ObjectRefCount<ns3::Object, ns3::ObjectBase>::Ref() const [member function]
+    cls.add_method('Ref', 
+                   'void', 
+                   [], 
+                   is_const=True)
+    ## object-ref-count.h: void ns3::ObjectRefCount<ns3::Object, ns3::ObjectBase>::Unref() const [member function]
+    cls.add_method('Unref', 
+                   'void', 
+                   [], 
+                   is_const=True)
+    ## object-ref-count.h: int * ns3::ObjectRefCount<ns3::Object, ns3::ObjectBase>::PeekCountPtr() const [member function]
+    cls.add_method('PeekCountPtr', 
+                   'int *', 
+                   [], 
+                   is_const=True, visibility='protected')
+    ## object-ref-count.h: void ns3::ObjectRefCount<ns3::Object, ns3::ObjectBase>::ShareCount(ns3::ObjectRefCount<ns3::Object, ns3::ObjectBase> * other) [member function]
+    cls.add_method('ShareCount', 
+                   'void', 
+                   [param('ns3::ObjectRefCount< ns3::Object, ns3::ObjectBase > *', 'other')], 
+                   visibility='protected')
+    ## object-ref-count.h: void ns3::ObjectRefCount<ns3::Object, ns3::ObjectBase>::DoDelete() [member function]
+    cls.add_method('DoDelete', 
+                   'void', 
+                   [], 
+                   is_pure_virtual=True, visibility='private', is_virtual=True)
+    return
+
 def register_Ns3RandomVariable_methods(root_module, cls):
     cls.add_output_stream_operator()
     ## random-variable.h: ns3::RandomVariable::RandomVariable() [constructor]
@@ -962,10 +1002,25 @@ def register_Ns3SystemWallClockMs_methods(root_module, cls):
     cls.add_constructor([param('ns3::SystemWallClockMs const &', 'arg0')])
     ## system-wall-clock-ms.h: ns3::SystemWallClockMs::SystemWallClockMs() [constructor]
     cls.add_constructor([])
-    ## system-wall-clock-ms.h: long long unsigned int ns3::SystemWallClockMs::End() [member function]
+    ## system-wall-clock-ms.h: int64_t ns3::SystemWallClockMs::End() [member function]
     cls.add_method('End', 
-                   'long long unsigned int', 
+                   'int64_t', 
                    [])
+    ## system-wall-clock-ms.h: int64_t ns3::SystemWallClockMs::GetElapsedReal() const [member function]
+    cls.add_method('GetElapsedReal', 
+                   'int64_t', 
+                   [], 
+                   is_const=True)
+    ## system-wall-clock-ms.h: int64_t ns3::SystemWallClockMs::GetElapsedSystem() const [member function]
+    cls.add_method('GetElapsedSystem', 
+                   'int64_t', 
+                   [], 
+                   is_const=True)
+    ## system-wall-clock-ms.h: int64_t ns3::SystemWallClockMs::GetElapsedUser() const [member function]
+    cls.add_method('GetElapsedUser', 
+                   'int64_t', 
+                   [], 
+                   is_const=True)
     ## system-wall-clock-ms.h: void ns3::SystemWallClockMs::Start() [member function]
     cls.add_method('Start', 
                    'void', 
@@ -1001,6 +1056,14 @@ def register_Ns3TestCase_methods(root_module, cls):
                    [param('std::string', 'dir')])
     ## test.h: std::string ns3::TestCase::GetBaseDir() [member function]
     cls.add_method('GetBaseDir', 
+                   'std::string', 
+                   [])
+    ## test.h: void ns3::TestCase::SetTempDir(std::string dir) [member function]
+    cls.add_method('SetTempDir', 
+                   'void', 
+                   [param('std::string', 'dir')])
+    ## test.h: std::string ns3::TestCase::GetTempDir() [member function]
+    cls.add_method('GetTempDir', 
                    'std::string', 
                    [])
     ## test.h: std::string ns3::TestCase::GetSourceDir(std::string file) [member function]
@@ -1160,6 +1223,14 @@ def register_Ns3TestSuite_methods(root_module, cls):
                    [param('std::string', 'basedir')])
     ## test.h: std::string ns3::TestSuite::GetBaseDir() [member function]
     cls.add_method('GetBaseDir', 
+                   'std::string', 
+                   [])
+    ## test.h: void ns3::TestSuite::SetTempDir(std::string dir) [member function]
+    cls.add_method('SetTempDir', 
+                   'void', 
+                   [param('std::string', 'dir')])
+    ## test.h: std::string ns3::TestSuite::GetTempDir() [member function]
+    cls.add_method('GetTempDir', 
                    'std::string', 
                    [])
     ## test.h: void ns3::TestSuite::SetStream(std::ofstream * ofs) [member function]
@@ -2046,6 +2117,11 @@ def register_Ns3Object_methods(root_module, cls):
                    'void', 
                    [], 
                    visibility='protected', is_virtual=True)
+    ## object.h: void ns3::Object::DoDelete() [member function]
+    cls.add_method('DoDelete', 
+                   'void', 
+                   [], 
+                   visibility='private', is_virtual=True)
     return
 
 def register_Ns3ObjectAggregateIterator_methods(root_module, cls):

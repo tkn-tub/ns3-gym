@@ -129,6 +129,7 @@ class Ipv6ExtensionHeader : public Header
 };
 
 /**
+ * \class OptionField
  * \brief Option field for an IPv6ExtensionHeader
  * Enables adding options to an IPv6ExtensionHeader
  *
@@ -137,11 +138,18 @@ class Ipv6ExtensionHeader : public Header
  * return value. Call OptionField::Serialize and OptionField::Deserialize at the
  * end of your corresponding IPv6ExtensionHeader methods.
  */
-
 class OptionField
 {
   public:
-    OptionField (uint32_t opitonsOffset);
+    /**
+     * \brief Constructor.
+     * \param optionsOffset option offset
+     */
+    OptionField (uint32_t optionsOffset);
+    
+    /**
+     * \brief Destructor.
+     */
     ~OptionField ();
 
     /**
@@ -159,6 +167,7 @@ class OptionField
     /**
      * \brief Deserialize the packet.
      * \param start Buffer iterator
+     * \param length length
      * \return size of the packet
      */
     uint32_t Deserialize (Buffer::Iterator start, uint32_t length);
@@ -176,13 +185,28 @@ class OptionField
      */
     uint32_t GetOptionsOffset ();
 
+    /**
+     * \brief Get the buffer.
+     * \return buffer
+     */
     Buffer GetOptionBuffer ();
 
   private:
 
+    /**
+     * \brief Calculate padding.
+     * \param alignment alignment
+     */
     uint32_t CalculatePad (Ipv6OptionHeader::Alignment alignment) const;
 
+    /**
+     * \brief Data payload.
+     */
     Buffer m_optionData;
+
+    /**
+     * \brief Offset.
+     */
     uint32_t m_optionsOffset;
 };
 

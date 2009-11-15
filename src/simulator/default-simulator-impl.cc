@@ -53,10 +53,11 @@ DefaultSimulatorImpl::DefaultSimulatorImpl ()
   // uid 0 is "invalid" events
   // uid 1 is "now" events
   // uid 2 is "destroy" events
-  m_uid = 4; 
+  m_uid = 4;
   // before ::Run is entered, the m_currentUid will be zero
   m_currentUid = 0;
   m_currentTs = 0;
+  m_currentContext = 0xffffffff;
   m_unscheduledEvents = 0;
 }
 
@@ -86,8 +87,10 @@ DefaultSimulatorImpl::Destroy ()
 }
 
 void
-DefaultSimulatorImpl::SetScheduler (Ptr<Scheduler> scheduler)
+DefaultSimulatorImpl::SetScheduler (ObjectFactory schedulerFactory)
 {
+  Ptr<Scheduler> scheduler = schedulerFactory.Create<Scheduler> ();
+
   if (m_events != 0)
     {
       while (!m_events->IsEmpty ())
@@ -105,10 +108,11 @@ DefaultSimulatorImpl::ProcessOneEvent (void)
   Scheduler::Event next = m_events->RemoveNext ();
 
   NS_ASSERT (next.key.m_ts >= m_currentTs);
-  --m_unscheduledEvents;
+  m_unscheduledEvents--;
 
   NS_LOG_LOGIC ("handle " << next.key.m_ts);
   m_currentTs = next.key.m_ts;
+  m_currentContext = next.key.m_context;
   m_currentUid = next.key.m_uid;
   next.impl->Invoke ();
   next.impl->Unref ();
@@ -160,6 +164,11 @@ DefaultSimulatorImpl::Stop (void)
   m_stop = true;
 }
 
+void 
+DefaultSimulatorImpl::Stop (Time const &time)
+{
+  Simulator::Schedule (time, &Simulator::Stop);
+}
 
 //
 // Schedule an event for a _relative_ time in the future.
@@ -167,18 +176,34 @@ DefaultSimulatorImpl::Stop (void)
 EventId
 DefaultSimulatorImpl::Schedule (Time const &time, EventImpl *event)
 {
-  Time tAbsolute = time + Now();
+  Time tAbsolute = time + TimeStep (m_currentTs);
 
   NS_ASSERT (tAbsolute.IsPositive ());
   NS_ASSERT (tAbsolute >= TimeStep (m_currentTs));
   Scheduler::Event ev;
   ev.impl = event;
   ev.key.m_ts = (uint64_t) tAbsolute.GetTimeStep ();
+  ev.key.m_context = GetContext ();
   ev.key.m_uid = m_uid;
   m_uid++;
-  ++m_unscheduledEvents;
+  m_unscheduledEvents++;
   m_events->Insert (ev);
-  return EventId (event, ev.key.m_ts, ev.key.m_uid);
+  return EventId (event, ev.key.m_ts, ev.key.m_context, ev.key.m_uid);
+}
+
+void
+DefaultSimulatorImpl::ScheduleWithContext (uint32_t context, Time const &time, EventImpl *event)
+{
+  NS_LOG_FUNCTION (this << context << time.GetTimeStep () << m_currentTs << event);
+
+  Scheduler::Event ev;
+  ev.impl = event;
+  ev.key.m_ts = m_currentTs + time.GetTimeStep ();
+  ev.key.m_context = context;
+  ev.key.m_uid = m_uid;
+  m_uid++;
+  m_unscheduledEvents++;
+  m_events->Insert (ev);
 }
 
 EventId
@@ -187,17 +212,18 @@ DefaultSimulatorImpl::ScheduleNow (EventImpl *event)
   Scheduler::Event ev;
   ev.impl = event;
   ev.key.m_ts = m_currentTs;
+  ev.key.m_context = GetContext ();
   ev.key.m_uid = m_uid;
   m_uid++;
-  ++m_unscheduledEvents;
+  m_unscheduledEvents++;
   m_events->Insert (ev);
-  return EventId (event, ev.key.m_ts, ev.key.m_uid);
+  return EventId (event, ev.key.m_ts, ev.key.m_context, ev.key.m_uid);
 }
 
 EventId
 DefaultSimulatorImpl::ScheduleDestroy (EventImpl *event)
 {
-  EventId id (Ptr<EventImpl> (event, false), m_currentTs, 2);
+  EventId id (Ptr<EventImpl> (event, false), m_currentTs, 0xffffffff, 2);
   m_destroyEvents.push_back (id);
   m_uid++;
   return id;
@@ -245,13 +271,14 @@ DefaultSimulatorImpl::Remove (const EventId &id)
   Scheduler::Event event;
   event.impl = id.PeekEventImpl ();
   event.key.m_ts = id.GetTs ();
+  event.key.m_context = id.GetContext ();
   event.key.m_uid = id.GetUid ();
   m_events->Remove (event);
   event.impl->Cancel ();
   // whenever we remove an event from the event list, we have to unref it.
   event.impl->Unref ();
 
-  --m_unscheduledEvents;
+  m_unscheduledEvents--;
 }
 
 void
@@ -303,6 +330,12 @@ DefaultSimulatorImpl::GetMaximumSimulationTime (void) const
   // XXX: I am fairly certain other compilers use other non-standard
   // post-fixes to indicate 64 bit constants.
   return TimeStep (0x7fffffffffffffffLL);
+}
+
+uint32_t
+DefaultSimulatorImpl::GetContext (void) const
+{
+  return m_currentContext;
 }
 
 } // namespace ns3

@@ -20,15 +20,13 @@
 
 #include "event-impl.h"
 
-
 namespace ns3 {
 
 EventImpl::~EventImpl ()
 {}
 
 EventImpl::EventImpl ()
-  : m_cancel (false),
-    m_count (1)
+  : m_cancel (false)
 {}
 
 void 

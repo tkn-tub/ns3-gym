@@ -23,7 +23,7 @@
 #include <string>
 #include <stdint.h>
 #include "ptr.h"
-#include "ref-count-base.h"
+#include "simple-ref-count.h"
 
 namespace ns3 {
 
@@ -48,7 +48,7 @@ class ObjectBase;
  * Most subclasses of this base class are implemented by the 
  * ATTRIBUTE_HELPER_* macros.
  */
-class AttributeValue : public RefCountBase
+class AttributeValue : public SimpleRefCount<AttributeValue>
 {
 public:
   AttributeValue ();
@@ -94,7 +94,7 @@ public:
  * of this base class are usually provided through the MakeAccessorHelper
  * template functions, hidden behind an ATTRIBUTE_HELPER_* macro.
  */
-class AttributeAccessor : public RefCountBase
+class AttributeAccessor : public SimpleRefCount<AttributeAccessor>
 {
 public:
   AttributeAccessor ();
@@ -146,7 +146,7 @@ public:
  * Most subclasses of this base class are implemented by the 
  * ATTRIBUTE_HELPER_HEADER and ATTRIBUTE_HELPER_CPP macros.
  */
-class AttributeChecker : public RefCountBase
+class AttributeChecker : public SimpleRefCount<AttributeChecker>
 {
 public:
   AttributeChecker ();

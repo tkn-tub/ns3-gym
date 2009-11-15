@@ -167,6 +167,24 @@ Node::DoDispose()
   m_applications.clear ();
   Object::DoDispose ();
 }
+void 
+Node::DoStart (void)
+{
+  for (std::vector<Ptr<NetDevice> >::iterator i = m_devices.begin ();
+       i != m_devices.end (); i++)
+    {
+      Ptr<NetDevice> device = *i;
+      device->Start ();
+    }
+  for (std::vector<Ptr<Application> >::iterator i = m_applications.begin ();
+       i != m_applications.end (); i++)
+    {
+      Ptr<Application> application = *i;
+      application->Start ();
+    }
+  
+  Object::DoStart ();
+}
 
 void 
 Node::NotifyDeviceAdded (Ptr<NetDevice> device)
@@ -247,6 +265,9 @@ bool
 Node::ReceiveFromDevice (Ptr<NetDevice> device, Ptr<const Packet> packet, uint16_t protocol,
                          const Address &from, const Address &to, NetDevice::PacketType packetType, bool promiscuous)
 {
+  NS_ASSERT_MSG (Simulator::GetContext () == GetId (), "Received packet with erroneous context ; " <<
+                 "make sure the channels in use are correctly updating events context " <<
+                 "when transfering events from one node to another.");
   NS_LOG_DEBUG("Node " << GetId () << " ReceiveFromDevice:  dev "
                << device->GetIfIndex () << " (type=" << device->GetInstanceTypeId ().GetName ()
                << ") Packet UID " << packet->GetUid ());

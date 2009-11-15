@@ -153,10 +153,10 @@ void OptionField::Serialize (Buffer::Iterator start) const
 uint32_t OptionField::Deserialize (Buffer::Iterator start, uint32_t length)
 {
   uint8_t buf[length];
-  start.Read (buf,length);
+  start.Read (buf, length);
   m_optionData = Buffer ();
   m_optionData.AddAtEnd (length);
-  m_optionData.Begin ().Write (buf,length);
+  m_optionData.Begin ().Write (buf, length);
   return length;
 }
 

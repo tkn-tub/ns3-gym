@@ -109,6 +109,8 @@ QapWifiMac::QapWifiMac ()
   SetQueue (AC_VI);
   SetQueue (AC_BE);
   SetQueue (AC_BK);
+
+  m_enableBeaconGeneration = false;
 }
 
 QapWifiMac::~QapWifiMac ()
@@ -129,6 +131,7 @@ QapWifiMac::DoDispose ()
   m_low = 0;
   m_phy = 0;
   m_beaconDca = 0;
+  m_enableBeaconGeneration = false;
   m_beaconEvent.Cancel ();
   m_stationManager = 0;
   for (Queues::iterator i = m_queues.begin (); i != m_queues.end (); ++i)
@@ -142,20 +145,21 @@ void
 QapWifiMac::SetBeaconGeneration (bool enable)
 {
   NS_LOG_FUNCTION (this << enable);
-  if (enable)
-    {
-      m_beaconEvent = Simulator::ScheduleNow (&QapWifiMac::SendOneBeacon, this);
-    }
-  else
+  if (!enable)
     {
       m_beaconEvent.Cancel ();
     }
+  else if (enable && !m_enableBeaconGeneration)
+    {
+      m_beaconEvent = Simulator::ScheduleNow (&QapWifiMac::SendOneBeacon, this);
+    }
+  m_enableBeaconGeneration = enable;
 }
 
 bool
 QapWifiMac::GetBeaconGeneration (void) const
 {
-  return m_beaconEvent.IsRunning ();
+  return m_enableBeaconGeneration;
 }
 
 Time
@@ -770,6 +774,17 @@ QapWifiMac::FinishConfigureStandard (enum WifiPhyStandard standard)
       NS_ASSERT (false);
       break;
     }
+}
+
+void
+QapWifiMac::DoStart (void)
+{
+  m_beaconEvent.Cancel ();
+  if (m_enableBeaconGeneration)
+    {
+      m_beaconEvent = Simulator::ScheduleNow (&QapWifiMac::SendOneBeacon, this);
+    }
+  WifiMac::DoStart ();
 }
 
 }  //namespace ns3

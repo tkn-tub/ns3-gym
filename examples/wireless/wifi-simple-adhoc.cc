@@ -80,7 +80,7 @@ static void GenerateTraffic (Ptr<Socket> socket, uint32_t pktSize,
     {
       socket->Send (Create<Packet> (pktSize));
       Simulator::Schedule (pktInterval, &GenerateTraffic, 
-                           socket, pktSize,pktCount-1, pktInterval);
+                                      socket, pktSize,pktCount-1, pktInterval);
     }
   else
     {
@@ -187,8 +187,9 @@ int main (int argc, char *argv[])
   // Output what we are doing
   NS_LOG_UNCOND ("Testing " << numPackets  << " packets sent with receiver rss " << rss );
 
-  Simulator::Schedule (Seconds (1.0), &GenerateTraffic, 
-                       source, packetSize, numPackets, interPacketInterval);
+  Simulator::ScheduleWithContext (source->GetNode ()->GetId (),
+                                  Seconds (1.0), &GenerateTraffic, 
+                                  source, packetSize, numPackets, interPacketInterval);
 
   Simulator::Run ();
   Simulator::Destroy ();

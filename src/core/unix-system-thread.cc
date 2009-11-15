@@ -141,8 +141,7 @@ SystemThreadImpl::DoRun (void *arg)
 // class above.
 //
 SystemThread::SystemThread (Callback<void> callback) 
-  : m_impl (new SystemThreadImpl (callback)),
-    m_count (1)
+  : m_impl (new SystemThreadImpl (callback))
 {
   NS_LOG_FUNCTION_NOARGS ();
 }

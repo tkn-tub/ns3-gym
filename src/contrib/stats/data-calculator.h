@@ -34,6 +34,12 @@ namespace ns3 {
   class StatisticalSummary {
 	  public:
 	    /**
+	     * Destructor
+	     */
+	    virtual ~StatisticalSummary () 
+	    {
+	    }
+	    /**
 	     * Returns the number of the observations.
 	     */
 	    virtual long getCount() const = 0;

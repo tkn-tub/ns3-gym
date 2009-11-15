@@ -94,6 +94,9 @@ private:
 class Ipv6OptionPad1 : public Ipv6Option
 {
 public:
+  /**
+   * \brief Pad1 option number.
+   */
   static const uint8_t OPT_NUMBER = 0;
 
   /**
@@ -138,6 +141,9 @@ public:
 class Ipv6OptionPadn : public Ipv6Option
 {
 public:
+  /**
+   * \brief PadN option number.
+   */
   static const uint8_t OPT_NUMBER = 60;
 
   /**
@@ -182,6 +188,9 @@ public:
 class Ipv6OptionJumbogram : public Ipv6Option
 {
 public:
+  /**
+   * \brief Jumbogram option number.
+   */
   static const uint8_t OPT_NUMBER = 44;
 
   /**
@@ -231,6 +240,9 @@ private:
 class Ipv6OptionRouterAlert : public Ipv6Option
 {
 public:
+  /**
+   * \brief Router alert option number.
+   */
   static const uint8_t OPT_NUMBER = 43;
 
   /**

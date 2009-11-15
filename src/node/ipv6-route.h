@@ -25,7 +25,7 @@
 #include <vector>
 #include <ostream>
 
-#include "ns3/ref-count-base.h"
+#include "ns3/simple-ref-count.h"
 
 #include "ipv6-address.h"
 
@@ -39,7 +39,7 @@ class NetDevice;
  * \class Ipv6Route
  * \brief IPv6 route cache entry.
  */
-class Ipv6Route : public RefCountBase
+class Ipv6Route : public SimpleRefCount<Ipv6Route>
 {
   public:
     /**
@@ -129,7 +129,7 @@ std::ostream& operator<< (std::ostream& os, Ipv6Route const& route);
  * \class Ipv6MulticastRoute
  * \brief IPv6 multicast route entry.
  */
-class Ipv6MulticastRoute : public RefCountBase
+class Ipv6MulticastRoute : public SimpleRefCount<Ipv6MulticastRoute>
 {
   public:
     /**

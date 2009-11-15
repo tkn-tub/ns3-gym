@@ -85,7 +85,7 @@ ApplicationContainer::Start (Time start)
   for (Iterator i = Begin (); i != End (); ++i)
     {
       Ptr<Application> app = *i;
-      app->Start (start);
+      app->SetStartTime (start);
     }
 }
 void 
@@ -94,7 +94,7 @@ ApplicationContainer::Stop (Time stop)
   for (Iterator i = Begin (); i != End (); ++i)
     {
       Ptr<Application> app = *i;
-      app->Stop (stop);
+      app->SetStopTime (stop);
     }
 }
 

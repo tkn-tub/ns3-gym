@@ -81,6 +81,7 @@ Object::GetTypeId (void)
 Object::Object ()
   : m_tid (Object::GetTypeId ()),
     m_disposed (false),
+    m_started (false),
     m_aggregates ((struct Aggregates *)malloc (sizeof (struct Aggregates))),
     m_getObjectCount (0)
 {
@@ -113,6 +114,7 @@ Object::~Object ()
 Object::Object (const Object &o)
   : m_tid (o.m_tid),
     m_disposed (false),
+    m_started (false),
     m_aggregates ((struct Aggregates *)malloc (sizeof (struct Aggregates))),
     m_getObjectCount (0)
 {
@@ -157,6 +159,17 @@ Object::DoGetObject (TypeId tid) const
         }
     }
   return 0;
+}
+void
+Object::Start (void)
+{
+  uint32_t n = m_aggregates->n;
+  for (uint32_t i = 0; i < n; i++)
+    {
+      Object *current = m_aggregates->buffer[i];
+      current->DoStart ();
+      current->m_started = true;
+    }
 }
 void 
 Object::Dispose (void)
@@ -264,6 +277,11 @@ Object::DoDispose (void)
   NS_ASSERT (!m_disposed);
 }
 
+void
+Object::DoStart (void)
+{
+  NS_ASSERT (!m_started);
+}
 
 bool 
 Object::Check (void) const
