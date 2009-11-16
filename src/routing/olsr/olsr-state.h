@@ -98,7 +98,10 @@ public:
 
   // MPR
   bool FindMprAddress (const Ipv4Address &address);
+  /// MprSet is set by routing protocol after MprCompute
   void SetMprSet (MprSet mprSet);
+  /// Gets an MPR Set needed by tests
+  MprSet GetMprSet () const;
 
   // Duplicate
   DuplicateTuple* FindDuplicateTuple (const Ipv4Address &address,

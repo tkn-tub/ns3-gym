@@ -90,6 +90,7 @@ def build(bld):
         'callback.h',
         'object-base.h',
         'ref-count-base.h',
+        'simple-ref-count.h',
         'type-id.h',
         'attribute-list.h',
         'ptr.h',
@@ -126,6 +127,7 @@ def build(bld):
         'abort.h',
         'names.h',
         'vector.h',
+        'object-ref-count.h',
         ]
 
     if sys.platform == 'win32':

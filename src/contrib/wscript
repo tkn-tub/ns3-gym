@@ -14,9 +14,11 @@ def configure(conf):
     conf.report_optional_feature("XmlIo", "XmlIo",
                                  conf.env['ENABLE_LIBXML2'],
                                  "library 'libxml-2.0 >= 2.7' not found")
-    conf.sub_config('stats')
-
     conf.write_config_header('ns3/contrib-config.h', top=True)
+
+    conf.sub_config('stats')
+    conf.sub_config('net-anim')
+
 
 def build(bld):
     module = bld.create_ns3_module('contrib', ['simulator', 'common'])

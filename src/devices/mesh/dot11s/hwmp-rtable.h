@@ -85,7 +85,7 @@ public:
     Time  lifetime,
     uint32_t seqnum
   );
-  void AddPrecursor (Mac48Address destination, uint32_t precursorInterface, Mac48Address precursorAddress);
+  void AddPrecursor (Mac48Address destination, uint32_t precursorInterface, Mac48Address precursorAddress, Time lifetime);
   PrecursorList GetPrecursors (Mac48Address destination);
   void DeleteProactivePath ();
   void DeleteProactivePath (Mac48Address root);
@@ -109,6 +109,12 @@ public:
 
 private:
   /// Route found in reactive mode
+  struct Precursor
+  {
+    Mac48Address address;
+    uint32_t interface;
+    Time whenExpire;
+  };
   struct ReactiveRoute
   {
     Mac48Address retransmitter;
@@ -116,7 +122,7 @@ private:
     uint32_t metric;
     Time whenExpire;
     uint32_t seqnum;
-    std::vector<std::pair<uint32_t, Mac48Address> > precursors;
+    std::vector<Precursor> precursors;
   };
   /// Route fond in proactive mode
   struct ProactiveRoute
@@ -127,7 +133,7 @@ private:
     uint32_t metric;
     Time whenExpire;
     uint32_t seqnum;
-    std::vector<std::pair<uint32_t, Mac48Address> > precursors;
+    std::vector<Precursor> precursors;
   };
 
   /// List of routes

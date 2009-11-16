@@ -212,8 +212,27 @@ CsmaChannel::TransmitEnd()
 
   NS_LOG_LOGIC ("Schedule event in " << m_delay.GetSeconds () << " sec");
 
+
+  NS_LOG_LOGIC ("Receive");
+  
+  std::vector<CsmaDeviceRec>::iterator it;
+  uint32_t devId = 0;
+  for (it = m_deviceList.begin (); it < m_deviceList.end(); it++) 
+    {
+      if (it->IsActive ())
+        {
+          // schedule reception events
+          Simulator::ScheduleWithContext (it->devicePtr->GetNode ()->GetId (),
+                                          m_delay,
+                                          &CsmaNetDevice::Receive, it->devicePtr,
+                                          m_currentPkt->Copy (), m_deviceList[m_currentSrc].devicePtr);
+        }
+      devId++;
+    }
+
+  // also schedule for the tx side to go back to IDLE
   Simulator::Schedule (m_delay, &CsmaChannel::PropagationCompleteEvent,
-    this);
+                       this);
   return retVal;
 }
 
@@ -224,19 +243,6 @@ CsmaChannel::PropagationCompleteEvent()
   NS_LOG_INFO ("UID is " << m_currentPkt->GetUid () << ")");
 
   NS_ASSERT (m_state == PROPAGATING);
-
-  NS_LOG_LOGIC ("Receive");
-  
-  std::vector<CsmaDeviceRec>::iterator it;
-  uint32_t devId = 0;
-  for (it = m_deviceList.begin (); it < m_deviceList.end(); it++) 
-    {
-      if (it->IsActive ())
-      {
-        it->devicePtr->Receive (m_currentPkt->Copy (), m_deviceList[m_currentSrc].devicePtr);
-      }
-      devId++;
-    }
   m_state = IDLE;
 }
 

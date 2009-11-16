@@ -22,7 +22,7 @@
 #define RADVD_INTERFACE_H
 
 #include <list>
-
+#include "ns3/simple-ref-count.h"
 #include "radvd-prefix.h"
 
 namespace ns3
@@ -33,7 +33,7 @@ namespace ns3
  * \class RadvdInterface
  * \brief Radvd interface configuration.
  */
-class RadvdInterface : public RefCountBase
+class RadvdInterface : public SimpleRefCount<RadvdInterface>
 {
   public:
     /**

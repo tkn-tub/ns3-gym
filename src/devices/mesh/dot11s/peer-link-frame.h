@@ -62,7 +62,7 @@ public:
   //action header knows about subtype
   void SetPlinkFrameSubtype (uint8_t subtype);
   void SetPlinkFrameStart (PlinkFrameStartFields);
-  PlinkFrameStartFields GetFields ();
+  PlinkFrameStartFields GetFields () const;
   /** \name Inherited from header:
    * \{
    */

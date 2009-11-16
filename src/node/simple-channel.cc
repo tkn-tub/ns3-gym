@@ -21,6 +21,7 @@
 #include "simple-net-device.h"
 #include "ns3/simulator.h"
 #include "ns3/packet.h"
+#include "ns3/node.h"
 
 namespace ns3 {
 
@@ -49,7 +50,8 @@ SimpleChannel::Send (Ptr<Packet> p, uint16_t protocol,
 	{
 	  continue;
 	}
-      Simulator::ScheduleNow (&SimpleNetDevice::Receive, tmp, p->Copy (), protocol, to, from);
+      Simulator::ScheduleWithContext (tmp->GetNode ()->GetId (), Seconds (0),
+                                      &SimpleNetDevice::Receive, tmp, p->Copy (), protocol, to, from);
     }
 }
 

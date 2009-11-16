@@ -42,7 +42,7 @@ class SystemThreadImpl;
  *
  * Synchronization between threads is provided via the SystemMutex class.
  */
-class SystemThread 
+class SystemThread : public SimpleRefCount<SystemThread>
 {
 public:
   /**
@@ -72,12 +72,20 @@ public:
    * is asking the SystemThread to call object->MyMethod () in a new thread
    * of execution.
    *
-   * Remember that if you are invoking a callback on an object that is
-   * managed by a smart pointer, you need to call PeekPointer.
+   * If starting a thread in your currently executing object, you can use the
+   * "this" pointer:
+   *
+   *   Ptr<SystemThread> st = Create<SystemThread> (
+   *     MakeCallback (&MyClass::MyMethod, this));
+   *   st->Start ();
+   *
+   * Object lifetime is always an issue with threads, so it is common to use
+   * smart pointers.  If you are spinning up a thread in an object that is 
+   * managed by a smart pointer, you can use that pointer directly:
    *
    *   Ptr<MyClass> myPtr = Create<MyClass> ();
    *   Ptr<SystemThread> st = Create<SystemThread> (
-   *     MakeCallback (&MyClass::MyMethod, PeekPointer (myPtr)));
+   *     MakeCallback (&MyClass::MyMethod, myPtr));
    *   st->Start ();
    *
    * Just like any thread, you can synchronize with its termination.  The 
@@ -106,22 +114,6 @@ public:
    *
    */
   ~SystemThread();
-
-  /**
-   * Increment the reference count. This method should not be called
-   * by user code. Object instances are expected to be used in conjunction
-   * of the Ptr template which would make calling Ref unecessary and 
-   * dangerous.
-   */
-  inline void Ref (void) const;
-
-  /**
-   * Decrement the reference count. This method should not be called
-   * by user code. Object instances are expected to be used in conjunction
-   * of the Ptr template which would make calling Ref unecessary and 
-   * dangerous.
-   */
-  inline void Unref (void) const;
 
   /**
    * @brief Start a thread of execution, running the provided callback.
@@ -173,25 +165,8 @@ public:
 
 private:
   SystemThreadImpl * m_impl;
-  mutable uint32_t m_count;
   bool m_break;
 };
-
- void
-SystemThread::Ref (void) const
-{
-  m_count++;
-}
-
- void
-SystemThread::Unref (void) const
-{
-  m_count--;
-  if (m_count == 0)
-    {
-      delete this;
-    }
-}
 
 } //namespace ns3
 

@@ -154,6 +154,25 @@ SqliteDataOutput::SqliteOutputCallback::SqliteOutputCallback
 }
 
 void
+SqliteDataOutput::SqliteOutputCallback::OutputStatistic(std::string key,
+                       std::string variable,
+                       const StatisticalSummary *statSum)
+{
+	OutputSingleton(key,variable+"-count", (double)statSum->getCount());
+	if (!isNaN(statSum->getSum()))
+		OutputSingleton(key,variable+"-total", statSum->getSum());
+	if (!isNaN(statSum->getMax()))
+		OutputSingleton(key,variable+"-max", statSum->getMax());
+	if (!isNaN(statSum->getMin()))
+		OutputSingleton(key,variable+"-min", statSum->getMin());
+	if (!isNaN(statSum->getSqrSum()))
+		OutputSingleton(key,variable+"-sqrsum", statSum->getSqrSum());
+	if (!isNaN(statSum->getStddev()))
+		OutputSingleton(key,variable+"-stddev", statSum->getStddev());
+}
+
+
+void
 SqliteDataOutput::SqliteOutputCallback::OutputSingleton(std::string key,
                                                         std::string variable,
                                                         int val)

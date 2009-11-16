@@ -317,17 +317,17 @@ void
 IePreq::Print (std::ostream &os) const
 {
   os << std::endl << "<information_element id=" << ElementId () << ">" << std::endl;
-  os << " originator address  = " << m_originatorAddress << "std::endl";
-  os << " TTL                 = " << (uint16_t) m_ttl << "std::endl";
-  os << " hop count           = " << (uint16_t) m_hopCount << "std::endl";
-  os << " metric              = " << m_metric << "std::endl";
-  os << " seqno               = " << m_originatorSeqNumber << "std::endl";
-  os << " lifetime            = " << m_lifetime << "std::endl";
-  os << " preq ID             = " << m_preqId << "std::endl";
-  os << " Destinations are:std::endl";
+  os << " originator address  = " << m_originatorAddress << std::endl;
+  os << " TTL                 = " << (uint16_t) m_ttl << std::endl;
+  os << " hop count           = " << (uint16_t) m_hopCount << std::endl;
+  os << " metric              = " << m_metric << std::endl;
+  os << " seqno               = " << m_originatorSeqNumber << std::endl;
+  os << " lifetime            = " << m_lifetime << std::endl;
+  os << " preq ID             = " << m_preqId << std::endl;
+  os << " Destinations are:" << std::endl;
   for (int j = 0; j < m_destCount; j++)
     {
-      os << "    " << m_destinations[j]->GetDestinationAddress () << "std::endl";
+      os << "    " << m_destinations[j]->GetDestinationAddress () << std::endl;
     }
   os << "</information_element>" << std::endl;
 }

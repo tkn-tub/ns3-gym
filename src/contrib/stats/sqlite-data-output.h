@@ -48,6 +48,10 @@ namespace ns3 {
     public:
       SqliteOutputCallback(Ptr<SqliteDataOutput> owner, std::string run);
 
+      void OutputStatistic(std::string key,
+                           std::string variable,
+                           const StatisticalSummary *statSum);
+
       void OutputSingleton(std::string key,
                            std::string variable,
                            int val);

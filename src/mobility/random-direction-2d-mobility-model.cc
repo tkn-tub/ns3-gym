@@ -55,11 +55,6 @@ RandomDirection2dMobilityModel::GetTypeId (void)
   return tid;
 }
 
-
-RandomDirection2dMobilityModel::RandomDirection2dMobilityModel ()
-{
-  m_event = Simulator::ScheduleNow (&RandomDirection2dMobilityModel::Start, this);
-}
 void 
 RandomDirection2dMobilityModel::DoDispose (void)
 {
@@ -67,7 +62,14 @@ RandomDirection2dMobilityModel::DoDispose (void)
   MobilityModel::DoDispose ();
 }
 void
-RandomDirection2dMobilityModel::Start (void)
+RandomDirection2dMobilityModel::DoStart (void)
+{
+  DoStartPrivate ();
+  MobilityModel::DoStart ();
+}
+
+void
+RandomDirection2dMobilityModel::DoStartPrivate (void)
 {
   double direction = m_direction.GetValue (0, 2 * PI);
   SetDirectionAndSpeed (direction);
@@ -79,6 +81,7 @@ RandomDirection2dMobilityModel::BeginPause (void)
   m_helper.Update ();
   m_helper.Pause ();
   Time pause = Seconds (m_pause.GetValue ());
+  m_event.Cancel ();
   m_event = Simulator::Schedule (pause, &RandomDirection2dMobilityModel::ResetDirectionAndSpeed, this);
   NotifyCourseChange ();
 }
@@ -97,6 +100,7 @@ RandomDirection2dMobilityModel::SetDirectionAndSpeed (double direction)
   m_helper.Unpause ();
   Vector next = m_bounds.CalculateIntersection (position, vector);
   Time delay = Seconds (CalculateDistance (position, next) / speed);
+  m_event.Cancel ();
   m_event = Simulator::Schedule (delay,
 				 &RandomDirection2dMobilityModel::BeginPause, this);
   NotifyCourseChange ();
@@ -136,7 +140,8 @@ RandomDirection2dMobilityModel::DoSetPosition (const Vector &position)
 {
   m_helper.SetPosition (position);
   Simulator::Remove (m_event);
-  m_event = Simulator::ScheduleNow (&RandomDirection2dMobilityModel::Start, this);
+  m_event.Cancel ();
+  m_event = Simulator::ScheduleNow (&RandomDirection2dMobilityModel::DoStartPrivate, this);
 }
 Vector
 RandomDirection2dMobilityModel::DoGetVelocity (void) const

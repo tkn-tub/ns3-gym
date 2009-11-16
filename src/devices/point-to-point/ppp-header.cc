@@ -56,7 +56,7 @@ PppHeader::GetInstanceTypeId (void) const
 void 
 PppHeader::Print (std::ostream &os) const
 {
-  os << "Point-to-Point Protocol: IP (0x0021)";
+  os << "Point-to-Point Protocol: " << m_protocol;
 }
 
   uint32_t
@@ -68,15 +68,27 @@ PppHeader::GetSerializedSize (void) const
   void
 PppHeader::Serialize (Buffer::Iterator start) const
 {
-  start.WriteHtonU16 (0x0021);
+  start.WriteHtonU16 (m_protocol);
 }
 
   uint32_t
 PppHeader::Deserialize (Buffer::Iterator start)
 {
-  uint16_t data = start.ReadNtohU16 ();
-  NS_ABORT_MSG_UNLESS (data == 0x0021, "MyHeader::Deserialize(): expected protocol 0x0021");
-  return 2;
+  m_protocol = start.ReadNtohU16 ();
+  return GetSerializedSize();
 }
+
+  void
+PppHeader::SetProtocol (uint16_t protocol)
+{
+  m_protocol=protocol;
+}
+
+  uint16_t
+PppHeader::GetProtocol (void)
+{
+  return m_protocol;
+}
+
 
 } // namespace ns3

@@ -123,8 +123,8 @@ int main (int argc, char** argv)
   radvd->AddConfiguration (routerInterface2);
 
   r->AddApplication (radvd);
-  radvd->Start (Seconds (1.0));
-  radvd->Stop (Seconds (10.0));
+  radvd->SetStartTime (Seconds (1.0));
+  radvd->SetStopTime (Seconds (10.0));
 
   /* Create a Ping6 application to send ICMPv6 echo request from n0 to n1 via R */
   uint32_t packetSize = 1024;

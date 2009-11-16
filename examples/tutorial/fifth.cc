@@ -210,8 +210,8 @@ main (int argc, char *argv[])
   Ptr<MyApp> app = CreateObject<MyApp> ();
   app->Setup (ns3TcpSocket, sinkAddress, 1040, 1000, DataRate ("1Mbps"));
   nodes.Get (0)->AddApplication (app);
-  app->Start (Seconds (1.));
-  app->Stop (Seconds (20.));
+  app->SetStartTime (Seconds (1.));
+  app->SetStopTime (Seconds (20.));
 
   devices.Get (1)->TraceConnectWithoutContext("PhyRxDrop", MakeCallback (&RxDrop));
 

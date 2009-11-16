@@ -135,6 +135,7 @@ void
 IePrep::DecrementTtl ()
 {
   m_ttl--;
+  m_hopcount ++;
 }
 
 void

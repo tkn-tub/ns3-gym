@@ -44,6 +44,100 @@ to this file based on your experience, please contribute a patch or drop
 us a note on ns-developers mailing list.  </p>
 
 <hr>
+<h1>Changes from ns-3.6 to ns-3.7</h1>
+
+
+<h2>Changes to build system:</h2>
+
+<h2>New API:</h2>
+
+<ul>
+<li><b>Simulator event contexts</b>: The Simulator API now keeps track of a per-event
+'context' (a 32bit integer which, by convention identifies a node by its id). Simulator::GetContext
+returns the context of the currently-executing event while Simulator::ScheduleWithContext creates an
+event with a context different from the execution context of the caller. This API is used
+by the ns-3 logging system to report the execution context of each log line.
+<li><b>Object::DoStart</b>: Users who need to complete their object setup at the start of a simulation
+can override this virtual method, perform their adhoc setup, and then, must chain up to their parent.
+</ul>
+
+<h2>Changes to existing API:</h2>
+<ul>
+<li><b>Application::Start</b> and <b>Application::Stop</b> have been renamed to
+<b>Application::SetStartTime</b> and <b>Application::SetStopTime</b>.
+<li><b>Channel::Send</b>: this method does not really exist but each subclass of the Channel
+base class must implement a similar method which sends a packet from a node to another node.
+Users must now use Simulator::ScheduleWithContext instead of Simulator::Schedule to schedule
+the reception event on a remote node.<br>
+For example, before:
+<pre>
+void
+SimpleChannel::Send (Ptr&lt;Packet&gt; p, uint16_t protocol, 
+		     Mac48Address to, Mac48Address from,
+		     Ptr&lt;SimpleNetDevice&gt; sender)
+{
+  for (std::vector&lt;Ptr&lt;SimpleNetDevice&gt; &gt;::const_iterator i = m_devices.begin (); i != m_devices.end (); ++i)
+    {
+      Ptr&lt;SimpleNetDevice&gt; tmp = *i;
+      if (tmp == sender)
+	{
+	  continue;
+	}
+      Simulator::ScheduleNow (&SimpleNetDevice::Receive, tmp, p->Copy (), protocol, to, from);
+    }
+}
+</pre>
+After:
+<pre>
+void
+SimpleChannel::Send (Ptr&lt;Packet&gt; p, uint16_t protocol, 
+		     Mac48Address to, Mac48Address from,
+		     Ptr&lt;SimpleNetDevice&gt; sender)
+{
+  for (std::vector&lt;Ptr&lt;SimpleNetDevice&gt; &gt;::const_iterator i = m_devices.begin (); i != m_devices.end (); ++i)
+    {
+      Ptr&lt;SimpleNetDevice&gt; tmp = *i;
+      if (tmp == sender)
+	{
+	  continue;
+	}
+      Simulator::ScheduleWithContext (tmp->GetNode ()->GetId (), Seconds (0),
+                                      &SimpleNetDevice::Receive, tmp, p->Copy (), protocol, to, from);
+    }
+}
+</pre>
+
+<li><b>Simulator::SetScheduler</b>: this method now takes an ObjectFactory
+instead of an object pointer directly. Existing callers can trivially be
+updated to use this new method.<br>
+Before:
+<pre>
+Ptr&lt;Scheduler&gt; sched = CreateObject&lt;ListScheduler&gt; ();
+Simulator::SetScheduler (sched);
+</pre>
+After:
+<pre>
+ObjectFactory sched;
+sched.SetTypeId ("ns3::ListScheduler");
+Simulator::SetScheduler (sched);
+</pre>
+
+</ul>
+
+<h2>Changed behavior:</h2>
+<ul>
+<li> Changed default value of YansWifiPhy::EnergyDetectionThreshold from
+-140.0 dBm to -96.0 dBm.  Changed default value of 
+YansWifiPhy::CcaModelThreshold from -140.0 dBm to -99.0 dBm.  Rationale
+can be found <a href="http://www.nsnam.org/bugzilla/show_bug.cgi?id=689"> 
+here</a>.
+</ul>
+<ul>
+<li> Default TTL of IPv4 broadcast datagrams changed from 1 to 64.
+</ul> 
+
+
+<hr>
 <h1>Changes from ns-3.5 to ns-3.6</h1>
 
 <h2>Changes to build system:</h2>

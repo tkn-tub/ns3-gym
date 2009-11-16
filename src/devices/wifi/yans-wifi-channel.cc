@@ -92,8 +92,19 @@ YansWifiChannel::Send (Ptr<YansWifiPhy> sender, Ptr<const Packet> packet, double
           NS_LOG_DEBUG ("propagation: txPower="<<txPowerDbm<<"dbm, rxPower="<<rxPowerDbm<<"dbm, "<<
                         "distance="<<senderMobility->GetDistanceFrom (receiverMobility)<<"m, delay="<<delay);
           Ptr<Packet> copy = packet->Copy ();
-          Simulator::Schedule (delay, &YansWifiChannel::Receive, this, 
-                               j, copy, rxPowerDbm, wifiMode, preamble);
+          Ptr<Object> dstNetDevice = m_phyList[j]->GetDevice ();
+          uint32_t dstNode;
+          if (dstNetDevice == 0)
+            {
+              dstNode = 0xffffffff;
+            }
+          else
+            {
+              dstNode = dstNetDevice->GetObject<NetDevice> ()->GetNode ()->GetId ();
+            }
+          Simulator::ScheduleWithContext (dstNode,
+                                          delay, &YansWifiChannel::Receive, this, 
+                                          j, copy, rxPowerDbm, wifiMode, preamble);
         }
     }
 }

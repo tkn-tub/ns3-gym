@@ -31,7 +31,7 @@ namespace dot11s {
  * \ingroup dot11s
  * \brief Describes one unit of beacon timing element
  */
-class IeBeaconTimingUnit : public RefCountBase
+class IeBeaconTimingUnit : public SimpleRefCount<IeBeaconTimingUnit>
 {
 public:
   IeBeaconTimingUnit ();

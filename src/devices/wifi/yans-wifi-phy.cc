@@ -52,14 +52,14 @@ YansWifiPhy::GetTypeId (void)
     .AddAttribute ("EnergyDetectionThreshold",
                    "The energy of a received signal should be higher than "
                    "this threshold (dbm) to allow the PHY layer to detect the signal.",
-                   DoubleValue (-140.0),
+                   DoubleValue (-96.0),
                    MakeDoubleAccessor (&YansWifiPhy::SetEdThreshold,
                                        &YansWifiPhy::GetEdThreshold),
                    MakeDoubleChecker<double> ())
     .AddAttribute ("CcaMode1Threshold",
                    "The energy of a received signal should be higher than "
                    "this threshold (dbm) to allow the PHY layer to declare CCA BUSY state",
-                   DoubleValue (-140.0),
+                   DoubleValue (-99.0),
                    MakeDoubleAccessor (&YansWifiPhy::SetCcaMode1Threshold,
                                        &YansWifiPhy::GetCcaMode1Threshold),
                    MakeDoubleChecker<double> ())
@@ -114,12 +114,20 @@ YansWifiPhy::GetTypeId (void)
                    TimeValue (MicroSeconds (250)),
                    MakeTimeAccessor (&YansWifiPhy::m_channelSwitchDelay), 
                    MakeTimeChecker ())
+    .AddAttribute ("ChannelNumber",
+                   "Channel center frequency = Channel starting frequency + 5 MHz * (nch - 1)",
+                   UintegerValue (1),
+                   MakeUintegerAccessor (&YansWifiPhy::SetChannelNumber, 
+                                         &YansWifiPhy::GetChannelNumber),
+                   MakeUintegerChecker<uint16_t> ())
+
     ;
   return tid;
 }
 
 YansWifiPhy::YansWifiPhy ()
-  :  m_endSyncEvent (),
+  :  m_channelNumber (1),
+     m_endSyncEvent (),
      m_random (0.0, 1.0),
      m_channelStartingFrequency (0)
 {
@@ -304,13 +312,20 @@ YansWifiPhy::SetChannel (Ptr<YansWifiChannel> channel)
 {
   m_channel = channel;
   m_channel->Add (this);
-  m_channelNumber = 1;      // always start on channel starting frequency (channel 1)
 }
 
 void 
 YansWifiPhy::SetChannelNumber (uint16_t nch)
 {
-  NS_ASSERT(!IsStateSwitching()); 
+  if (Simulator::Now () == Seconds (0))
+    {
+      // this is not channel switch, this is initialization 
+      NS_LOG_DEBUG("start at channel " << nch);
+      m_channelNumber = nch;
+      return;
+    }
+
+  NS_ASSERT (!IsStateSwitching()); 
   switch (m_state->GetState ()) {
   case YansWifiPhy::SYNC:
     NS_LOG_DEBUG ("drop packet because of channel switching while reception");

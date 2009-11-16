@@ -35,6 +35,7 @@
 namespace ns3 {
 
 LogTimePrinter g_logTimePrinter = 0;
+LogNodePrinter g_logNodePrinter = 0;
 
 typedef std::list<std::pair <std::string, LogComponent *> > ComponentList;
 typedef std::list<std::pair <std::string, LogComponent *> >::iterator ComponentListI;
@@ -124,7 +125,7 @@ LogComponent::EnvVarCheck (char const * name)
           component = tmp;
           if (component == myName || component == "*")
             {
-              int level = LOG_ALL | LOG_PREFIX_TIME | LOG_PREFIX_FUNC;
+              int level = LOG_ALL | LOG_PREFIX_TIME | LOG_PREFIX_FUNC | LOG_PREFIX_NODE;
               Enable ((enum LogLevel)level);
               return;
             }
@@ -177,6 +178,10 @@ LogComponent::EnvVarCheck (char const * name)
                   else if (lev == "prefix_time")
                     {
                       level |= LOG_PREFIX_TIME;
+                    }
+                  else if (lev == "prefix_node")
+                    {
+                      level |= LOG_PREFIX_NODE;
                     }
                   else if (lev == "level_error")
                     {
@@ -358,6 +363,15 @@ void LogSetTimePrinter (LogTimePrinter printer)
 LogTimePrinter LogGetTimePrinter(void)
 {
   return g_logTimePrinter;
+}
+
+void LogSetNodePrinter (LogNodePrinter printer)
+{
+  g_logNodePrinter = printer;
+}
+LogNodePrinter LogGetNodePrinter(void)
+{
+  return g_logNodePrinter;
 }
 
 

@@ -33,7 +33,7 @@ namespace dot11s {
  * \brief Describes an address unit in PREQ information element
  * See 7.3.2.96 for more details
  */
-class DestinationAddressUnit : public RefCountBase
+class DestinationAddressUnit : public SimpleRefCount<DestinationAddressUnit>
 {
 public:
   DestinationAddressUnit ();

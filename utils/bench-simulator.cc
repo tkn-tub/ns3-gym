@@ -162,21 +162,26 @@ int main (int argc, char *argv[])
     }
   while (argc > 0) 
     {
+      ObjectFactory factory;
       if (strcmp ("--list", argv[0]) == 0) 
         {
-          Simulator::SetScheduler (CreateObject<ListScheduler> ());
+          factory.SetTypeId ("ns3::ListScheduler");
+          Simulator::SetScheduler (factory);
         } 
       else if (strcmp ("--heap", argv[0]) == 0) 
         {
-          Simulator::SetScheduler (CreateObject<HeapScheduler> ());
+          factory.SetTypeId ("ns3::HeapScheduler");
+          Simulator::SetScheduler (factory);
         } 
       else if (strcmp ("--map", argv[0]) == 0) 
         {
-          Simulator::SetScheduler (CreateObject<MapScheduler> ());
+          factory.SetTypeId ("ns3::HeapScheduler");
+          Simulator::SetScheduler (factory);
         } 
       else if (strcmp ("--calendar", argv[0]) == 0)
         {
-          Simulator::SetScheduler (CreateObject<CalendarScheduler> ());
+          factory.SetTypeId ("ns3::CalendarScheduler");
+          Simulator::SetScheduler (factory);
         }
       else if (strcmp ("--debug", argv[0]) == 0) 
         {

@@ -662,6 +662,16 @@ public:
    */
   std::string GetBaseDir (void);
 
+  /**
+   * \brief Set the temporary file directory (where to write temporary files).
+   */
+  void SetTempDir (std::string dir);
+
+  /**
+   * \brief Get the temporary file directory .
+   */
+  std::string GetTempDir (void);
+
 /**
  * \brief Get the source directory of the current source file.
  *
@@ -830,6 +840,7 @@ private:
   bool m_continueOnFailure;
   bool m_detailsReported;
   std::string m_basedir;
+  std::string m_tempdir;
   std::ofstream *m_ofs;
   bool m_error;
 };
@@ -943,6 +954,16 @@ public:
    * \brief Get the base directory of the ns-3 distribution.
    */
   std::string GetBaseDir (void);
+
+  /**
+   * \brief Set the temporary file directory (where to write temporary files).
+   */
+  void SetTempDir (std::string dir);
+
+  /**
+   * \brief Get the temporary file directory.
+   */
+  std::string GetTempDir (void);
 
   /**
    * \brief Set the stream to which status and result messages will be written.
@@ -1064,6 +1085,7 @@ private:
   bool m_verbose;
   bool m_continueOnFailure;
   std::string m_basedir;
+  std::string m_tempdir;
   std::ofstream *m_ofs;
   bool m_error;
   TestType m_type;

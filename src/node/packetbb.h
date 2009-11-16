@@ -31,6 +31,7 @@
 #include "ns3/address.h"
 #include "ns3/header.h"
 #include "ns3/buffer.h"
+#include "ns3/simple-ref-count.h"
 
 namespace ns3 {
 
@@ -360,7 +361,7 @@ private:
  *
  * See: http://tools.ietf.org/html/rfc5444 for details.
  */
-class PbbPacket : public Header
+class PbbPacket : public SimpleRefCount<PbbPacket,Header>
 {
 public:
   typedef std::list< Ptr<PbbTlv> >::iterator TlvIterator;
@@ -595,10 +596,6 @@ public:
    */
   void MessageClear (void);
 
-  /* Smart pointer methods */
-  void Ref (void) const;
-  void Unref (void) const;
-
   /* Methods implemented by all headers */
   static TypeId GetTypeId (void);
   virtual TypeId GetInstanceTypeId (void) const;
@@ -644,8 +641,6 @@ private:
 
   bool m_hasseqnum;
   uint16_t m_seqnum;
-
-  mutable uint32_t m_refCount;
 };
 
 /**
@@ -655,7 +650,7 @@ private:
  * virtual base class, when creating a message, you should instantiate either
  * PbbMessageIpv4 or PbbMessageIpv6.
  */
-class PbbMessage
+class PbbMessage : public SimpleRefCount<PbbMessage>
 {
 public:
   typedef std::list< Ptr<PbbTlv> >::iterator TlvIterator;
@@ -959,10 +954,6 @@ public:
    */
   void AddressBlockClear (void);
 
-  /* Smart pointer methods */
-  void Ref (void) const;
-  void Unref (void) const;
-
   /**
    * \brief Deserializes a message, returning the correct object depending on
    *        whether it is an IPv4 message or an IPv6 message.
@@ -1048,8 +1039,6 @@ private:
 
   bool m_hasSequenceNumber;
   uint16_t m_sequenceNumber;
-
-  mutable uint32_t m_refCount;
 };
 
 /**
@@ -1098,7 +1087,7 @@ protected:
  * This is a pure virtual base class, when creating address blocks, you should
  * instantiate either PbbAddressBlockIpv4 or PbbAddressBlockIpv6.
  */
-class PbbAddressBlock
+class PbbAddressBlock : public SimpleRefCount<PbbAddressBlock>
 {
 public:
   typedef std::list< Address >::iterator AddressIterator;
@@ -1412,10 +1401,6 @@ public:
    */
   void TlvClear (void);
 
-  /* Smart pointer methods */
-  void Ref (void) const;
-  void Unref (void) const;
-
   /**
    * \return The size (in bytes) needed to serialize this address block.
    */
@@ -1475,8 +1460,6 @@ private:
   std::list<Address> m_addressList;
   std::list<uint8_t> m_prefixList;
   PbbAddressTlvBlock m_addressTlvList;
-
-  mutable uint32_t m_refCount;
 };
 
 /**
@@ -1520,11 +1503,11 @@ protected:
 /**
  * \brief A packet or message TLV
  */
-class PbbTlv
+class PbbTlv : public SimpleRefCount<PbbTlv>
 {
 public:
   PbbTlv (void);
-  ~PbbTlv (void);
+  virtual ~PbbTlv (void);
 
   /**
    * \brief Sets the type of this TLV.
@@ -1599,10 +1582,6 @@ public:
    */
   bool HasValue (void) const;
 
-  /* Smart pointer methods */
-  void Ref (void) const;
-  void Unref (void) const;
-
   /**
    * \return The size (in bytes) needed to serialize this TLV.
    */
@@ -1672,8 +1651,6 @@ private:
   bool m_isMultivalue;
   bool m_hasValue;
   Buffer m_value;
-
-  mutable uint32_t m_refCount;
 };
 
 /**

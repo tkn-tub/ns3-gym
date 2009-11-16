@@ -55,7 +55,9 @@ public:
   virtual bool IsFinished (void) const;
   virtual Time Next (void) const;
   virtual void Stop (void);
+  virtual void Stop (Time const &time);
   virtual EventId Schedule (Time const &time, EventImpl *event);
+  virtual void ScheduleWithContext (uint32_t context, Time const &time, EventImpl *event);
   virtual EventId ScheduleNow (EventImpl *event);
   virtual EventId ScheduleDestroy (EventImpl *event);
   virtual void Remove (const EventId &ev);
@@ -66,7 +68,8 @@ public:
   virtual Time Now (void) const;
   virtual Time GetDelayLeft (const EventId &id) const;
   virtual Time GetMaximumSimulationTime (void) const;
-  virtual void SetScheduler (Ptr<Scheduler> scheduler);
+  virtual void SetScheduler (ObjectFactory schedulerFactory);
+  virtual uint32_t GetContext (void) const;
 
   void ScheduleRealtime (Time const &time, EventImpl *event);
   void ScheduleRealtimeNow (EventImpl *event);
@@ -96,6 +99,7 @@ private:
   uint32_t m_uid;
   uint32_t m_currentUid;
   uint64_t m_currentTs;
+  uint32_t m_currentContext;
 
   mutable SystemMutex m_mutex;
 

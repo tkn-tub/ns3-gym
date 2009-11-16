@@ -213,8 +213,6 @@ RoutingProtocol::SetIpv4 (Ptr<Ipv4> ipv4)
   m_linkTupleTimerFirstTime = true;
 
   m_ipv4 = ipv4;
-
-  Simulator::ScheduleNow (&RoutingProtocol::Start, this);
 }
 
 void RoutingProtocol::DoDispose ()
@@ -231,7 +229,7 @@ void RoutingProtocol::DoDispose ()
   Ipv4RoutingProtocol::DoDispose ();
 }
 
-void RoutingProtocol::Start ()
+void RoutingProtocol::DoStart ()
 {
   if (m_mainAddress == Ipv4Address ())
     {
@@ -552,7 +550,23 @@ RoutingProtocol::MprComputation()
         }
     }
 
-  NS_LOG_DEBUG ("Size of N2: " << N2.size ());  
+#ifdef NS3_LOG_ENABLE
+  {
+    std::ostringstream os;
+    os << "[";
+    for (TwoHopNeighborSet::const_iterator iter = N2.begin ();
+         iter != N2.end (); iter++)
+      {
+        TwoHopNeighborSet::const_iterator next = iter;
+        next++;
+        os << iter->neighborMainAddr << "->" << iter->twoHopNeighborAddr;
+        if (next != N2.end ())
+          os << ", ";
+      }
+    os << "]";
+    NS_LOG_DEBUG ("N2: " << os.str ());
+  }
+#endif  //NS3_LOG_ENABLE
 
   // 1. Start with an MPR set made of all members of N with
   // N_willingness equal to WILL_ALWAYS
@@ -584,30 +598,37 @@ RoutingProtocol::MprComputation()
   // 3. Add to the MPR set those nodes in N, which are the *only*
   // nodes to provide reachability to a node in N2.
   std::set<Ipv4Address> coveredTwoHopNeighbors;
-  for (TwoHopNeighborSet::iterator twoHopNeigh = N2.begin (); twoHopNeigh != N2.end (); twoHopNeigh++)
+  for (TwoHopNeighborSet::const_iterator twoHopNeigh = N2.begin (); twoHopNeigh != N2.end (); twoHopNeigh++)
     {
-      NeighborSet::const_iterator onlyNeighbor = N.end ();
-      
-      for (NeighborSet::const_iterator neighbor = N.begin ();
-           neighbor != N.end (); neighbor++)
+      bool onlyOne = true;
+      // try to find another neighbor that can reach twoHopNeigh->twoHopNeighborAddr
+      for (TwoHopNeighborSet::const_iterator otherTwoHopNeigh = N2.begin (); otherTwoHopNeigh != N2.end (); otherTwoHopNeigh++)
         {
-          if (neighbor->neighborMainAddr == twoHopNeigh->neighborMainAddr)
+          if (otherTwoHopNeigh->twoHopNeighborAddr == twoHopNeigh->twoHopNeighborAddr
+              && otherTwoHopNeigh->neighborMainAddr != twoHopNeigh->neighborMainAddr)
             {
-              if (onlyNeighbor == N.end ())
-                {
-                  onlyNeighbor = neighbor;
-                }
-              else
-                {
-                  onlyNeighbor = N.end ();
-                  break;
-                }
+              onlyOne = false;
+              break;
             }
         }
-      if (onlyNeighbor != N.end ())
+      if (onlyOne)
         {
-          mprSet.insert (onlyNeighbor->neighborMainAddr);
-          coveredTwoHopNeighbors.insert (twoHopNeigh->twoHopNeighborAddr);
+          NS_LOG_LOGIC ("Neighbor " << twoHopNeigh->neighborMainAddr
+                        << " is the only that can reach 2-hop neigh. "
+                        << twoHopNeigh->twoHopNeighborAddr
+                        << " => select as MPR.");
+
+          mprSet.insert (twoHopNeigh->neighborMainAddr);
+
+          // take note of all the 2-hop neighbors reachable by the newly elected MPR
+          for (TwoHopNeighborSet::const_iterator otherTwoHopNeigh = N2.begin ();
+               otherTwoHopNeigh != N2.end (); otherTwoHopNeigh++)
+            {
+              if (otherTwoHopNeigh->neighborMainAddr == twoHopNeigh->neighborMainAddr)
+                {
+                  coveredTwoHopNeighbors.insert (otherTwoHopNeigh->twoHopNeighborAddr);
+                }
+            }
         }
     }
   // Remove the nodes from N2 which are now covered by a node in the MPR set.
@@ -616,6 +637,7 @@ RoutingProtocol::MprComputation()
     {
       if (coveredTwoHopNeighbors.find (twoHopNeigh->twoHopNeighborAddr) != coveredTwoHopNeighbors.end ())
         {
+          NS_LOG_LOGIC ("2-hop neigh. " << twoHopNeigh->twoHopNeighborAddr << " is already covered by an MPR.");
           twoHopNeigh = N2.erase (twoHopNeigh);
         }
       else
@@ -628,6 +650,26 @@ RoutingProtocol::MprComputation()
   // least one node in the MPR set:
   while (N2.begin () != N2.end ())
     {
+
+#ifdef NS3_LOG_ENABLE
+      {
+        std::ostringstream os;
+        os << "[";
+        for (TwoHopNeighborSet::const_iterator iter = N2.begin ();
+             iter != N2.end (); iter++)
+          {
+            TwoHopNeighborSet::const_iterator next = iter;
+            next++;
+            os << iter->neighborMainAddr << "->" << iter->twoHopNeighborAddr;
+            if (next != N2.end ())
+              os << ", ";
+          }
+        os << "]";
+        NS_LOG_DEBUG ("Step 4 iteration: N2=" << os.str ());
+      }
+#endif  //NS3_LOG_ENABLE
+
+
       // 4.1. For each node in N, calculate the reachability, i.e., the
       // number of nodes in N2 which are not yet covered by at
       // least one node in the MPR set, and which are reachable
@@ -672,6 +714,10 @@ RoutingProtocol::MprComputation()
               if (max == NULL || nb_tuple->willingness > max->willingness)
                 {
                   max = nb_tuple;
+                  for (TwoHopNeighborSet::iterator newCovered = N2.begin (); newCovered != N2.end (); newCovered++)
+                    {
+                      coveredTwoHopNeighbors.insert (newCovered->twoHopNeighborAddr);
+                    }
                   max_r = r;
                 }
               else if (nb_tuple->willingness == max->willingness)
@@ -696,11 +742,12 @@ RoutingProtocol::MprComputation()
       if (max != NULL)
         {
           mprSet.insert (max->neighborMainAddr);
-          for (TwoHopNeighborSet::iterator twoHopNeigh = N2.begin ();
-               twoHopNeigh != N2.end (); )
+          // Remove the nodes from N2 which are now covered by a node in the MPR set.
+          for (TwoHopNeighborSet::iterator twoHopNeigh = N2.begin (); twoHopNeigh != N2.end (); )
             {
-              if (twoHopNeigh->neighborMainAddr == max->neighborMainAddr)
+              if (coveredTwoHopNeighbors.find (twoHopNeigh->twoHopNeighborAddr) != coveredTwoHopNeighbors.end ())
                 {
+                  NS_LOG_LOGIC ("2-hop neigh. " << twoHopNeigh->twoHopNeighborAddr << " is already covered by an MPR.");
                   twoHopNeigh = N2.erase (twoHopNeigh);
                 }
               else
@@ -2735,6 +2782,128 @@ RoutingProtocol::GetEntries () const
       retval.push_back (iter->second);
     }
   return retval;
+}
+OlsrMprTestCase::OlsrMprTestCase ()
+  : TestCase ("Check OLSR MPR computing mechanism")
+{
+}
+OlsrMprTestCase::~OlsrMprTestCase ()
+{
+}
+bool
+OlsrMprTestCase::DoRun ()
+{
+  /*
+   * Create a 3x3 grid like the following:
+   *      3---6---9
+   *      |\ /|\ /|
+   *      | X | X |
+   *      |/ \|/ \|
+   *      2---5---8
+   *      |\ /|\ /|
+   *      | X | X |
+   *      |/ \|/ \|
+   *      1---4---7
+   * PrepareTopology fills all 2-hop neighbors of station 1 and creates a routing protocol
+   * We are the station number 2. Obvious, that an only MPR in this case is 5 
+   */
+  Ptr<RoutingProtocol> m_protocol = CreateObject<RoutingProtocol> ();
+  m_protocol->m_mainAddress = Ipv4Address ("10.0.0.2");
+  // we fill all possible 2-hop neighborhood
+  TwoHopNeighborTuple tuple;
+  tuple.expirationTime = Seconds (3600);
+  // All neighbor stations which are seen from station 5
+  tuple.neighborMainAddr = Ipv4Address ("10.0.0.5");
+  tuple.twoHopNeighborAddr = Ipv4Address ("10.0.0.1");
+  m_protocol->m_state.InsertTwoHopNeighborTuple (tuple);
+  tuple.twoHopNeighborAddr = Ipv4Address ("10.0.0.2");
+  m_protocol->m_state.InsertTwoHopNeighborTuple (tuple);
+  tuple.twoHopNeighborAddr = Ipv4Address ("10.0.0.3");
+  m_protocol->m_state.InsertTwoHopNeighborTuple (tuple);
+  tuple.twoHopNeighborAddr = Ipv4Address ("10.0.0.4");
+  m_protocol->m_state.InsertTwoHopNeighborTuple (tuple);
+  tuple.twoHopNeighborAddr = Ipv4Address ("10.0.0.6");
+  m_protocol->m_state.InsertTwoHopNeighborTuple (tuple);
+  tuple.twoHopNeighborAddr = Ipv4Address ("10.0.0.7");
+  m_protocol->m_state.InsertTwoHopNeighborTuple (tuple);
+  tuple.twoHopNeighborAddr = Ipv4Address ("10.0.0.8");
+  m_protocol->m_state.InsertTwoHopNeighborTuple (tuple);
+  tuple.twoHopNeighborAddr = Ipv4Address ("10.0.0.9");
+  m_protocol->m_state.InsertTwoHopNeighborTuple (tuple);
+  // All neighbor stations which are seen from station 4
+  tuple.neighborMainAddr = Ipv4Address ("10.0.0.4");
+  tuple.twoHopNeighborAddr = Ipv4Address ("10.0.0.1");
+  m_protocol->m_state.InsertTwoHopNeighborTuple (tuple);
+  tuple.twoHopNeighborAddr = Ipv4Address ("10.0.0.2");
+  m_protocol->m_state.InsertTwoHopNeighborTuple (tuple);
+  tuple.twoHopNeighborAddr = Ipv4Address ("10.0.0.5");
+  m_protocol->m_state.InsertTwoHopNeighborTuple (tuple);
+  tuple.twoHopNeighborAddr = Ipv4Address ("10.0.0.8");
+  m_protocol->m_state.InsertTwoHopNeighborTuple (tuple);
+  tuple.twoHopNeighborAddr = Ipv4Address ("10.0.0.7");
+  m_protocol->m_state.InsertTwoHopNeighborTuple (tuple);
+
+  // All neighbor stations which are seen from station 6
+  tuple.neighborMainAddr = Ipv4Address ("10.0.0.6");
+  tuple.twoHopNeighborAddr = Ipv4Address ("10.0.0.3");
+  m_protocol->m_state.InsertTwoHopNeighborTuple (tuple);
+  tuple.twoHopNeighborAddr = Ipv4Address ("10.0.0.2");
+  m_protocol->m_state.InsertTwoHopNeighborTuple (tuple);
+  tuple.twoHopNeighborAddr = Ipv4Address ("10.0.0.5");
+  m_protocol->m_state.InsertTwoHopNeighborTuple (tuple);
+  tuple.twoHopNeighborAddr = Ipv4Address ("10.0.0.8");
+  m_protocol->m_state.InsertTwoHopNeighborTuple (tuple);
+  tuple.twoHopNeighborAddr = Ipv4Address ("10.0.0.9");
+  m_protocol->m_state.InsertTwoHopNeighborTuple (tuple);
+
+  // All neighbor stations which are seen from station 1
+  tuple.neighborMainAddr = Ipv4Address ("10.0.0.1");
+  tuple.twoHopNeighborAddr = Ipv4Address ("10.0.0.2");
+  m_protocol->m_state.InsertTwoHopNeighborTuple (tuple);
+  tuple.twoHopNeighborAddr = Ipv4Address ("10.0.0.5");
+  m_protocol->m_state.InsertTwoHopNeighborTuple (tuple);
+  tuple.twoHopNeighborAddr = Ipv4Address ("10.0.0.4");
+
+  // All neighbor stations which are seen from station 3
+  tuple.neighborMainAddr = Ipv4Address ("10.0.0.3");
+  tuple.twoHopNeighborAddr = Ipv4Address ("10.0.0.2");
+  m_protocol->m_state.InsertTwoHopNeighborTuple (tuple);
+  tuple.twoHopNeighborAddr = Ipv4Address ("10.0.0.5");
+  m_protocol->m_state.InsertTwoHopNeighborTuple (tuple);
+  tuple.twoHopNeighborAddr = Ipv4Address ("10.0.0.6");
+  // First, we fill all neighbors
+  // If neighbors willingness = OLSR_WILL_DEFAULT, an only station number 5 will be an MPR
+  NeighborTuple neigbor;
+  neigbor.status = NeighborTuple::STATUS_SYM;
+  neigbor.willingness = OLSR_WILL_DEFAULT;
+  neigbor.neighborMainAddr = Ipv4Address ("10.0.0.3");
+  m_protocol->m_state.InsertNeighborTuple (neigbor);
+  neigbor.neighborMainAddr = Ipv4Address ("10.0.0.6");
+  m_protocol->m_state.InsertNeighborTuple (neigbor);
+  neigbor.neighborMainAddr = Ipv4Address ("10.0.0.5");
+  m_protocol->m_state.InsertNeighborTuple (neigbor);
+  neigbor.neighborMainAddr = Ipv4Address ("10.0.0.4");
+  m_protocol->m_state.InsertNeighborTuple (neigbor);
+  neigbor.neighborMainAddr = Ipv4Address ("10.0.0.1");
+  m_protocol->m_state.InsertNeighborTuple (neigbor);
+  //Now, calculateMPR
+  m_protocol->MprComputation ();
+  //Check results
+  NS_TEST_ASSERT_MSG_EQ (m_protocol->m_state.FindMprAddress (Ipv4Address ("10.0.0.5")), true, "MPR is incorrect!");
+  NS_TEST_ASSERT_MSG_EQ (m_protocol->m_state.GetMprSet ().size (), 1 , "An only address must be chosen!\n");
+  return false;
+}
+
+static class OlsrProtocolTestSuite : public TestSuite
+{
+public:
+  OlsrProtocolTestSuite ();
+} g_olsrProtocolTestSuite;
+
+OlsrProtocolTestSuite::OlsrProtocolTestSuite()
+  : TestSuite("routing-olsr", UNIT)
+{
+  AddTestCase (new OlsrMprTestCase ());
 }
 
 

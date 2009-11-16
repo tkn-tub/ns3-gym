@@ -64,7 +64,7 @@ public:
   static TypeId GetTypeId (void);
   Application ();
   virtual ~Application ();
-  
+
   /**
    * \brief Specify application start time
    * \param startTime Start time for this application,
@@ -76,15 +76,7 @@ public:
    * private "StartApplication" method defined below, which is called at the
    * time specified, to cause the application to begin.
    */
-  void Start (const Time& startTime);
-
-  /** 
-   * \brief Specify application start time.
-   * \param startVariable the random variable to use to pick
-   *        the real start time as a relative time, in units of
-   *        seconds, relative to the current simulation time.
-   */
-  void Start (const RandomVariable& startVariable);
+  void SetStartTime (Time start);
   
   /**
    * \brief Specify application stop time
@@ -97,16 +89,8 @@ public:
    * the private StopApplication method, to be notified when that
    * time has come.
    */
-  void Stop (const Time& stopTime);
-
-  /**
-   * \brief Specify application stop time
-   * \param stopVariable the random variable to use to pick
-   *        the real stop time, in units of seconds, 
-   *        relative to the current simulation time.
-   */
-  void Stop (const RandomVariable& stopVariable);
-
+  void SetStopTime (Time stop);
+  
   /**
    * \returns the Node to which this Application object is attached.
    */
@@ -137,13 +121,13 @@ private:
   virtual void StopApplication (void);
 protected:
   virtual void DoDispose (void);
-private:
-  void ScheduleStart (const Time &time);
-  void ScheduleStop (const Time &time);
+  virtual void DoStart (void);
 
-  EventId         m_startEvent;
-  EventId         m_stopEvent;
   Ptr<Node>       m_node;
+  Time m_startTime;
+  Time m_stopTime;
+  EventId m_startEvent;
+  EventId m_stopEvent;
 };
 
 } //namespace ns3

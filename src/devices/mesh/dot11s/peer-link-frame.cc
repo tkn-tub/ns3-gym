@@ -69,7 +69,7 @@ PeerLinkFrameStart::SetPlinkFrameStart (PeerLinkFrameStart::PlinkFrameStartField
     }
 }
 PeerLinkFrameStart::PlinkFrameStartFields
-PeerLinkFrameStart::GetFields ()
+PeerLinkFrameStart::GetFields () const
 {
   PlinkFrameStartFields retval;
   //TODO: protocol version:

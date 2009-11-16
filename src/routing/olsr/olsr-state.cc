@@ -272,6 +272,11 @@ OlsrState::SetMprSet (MprSet mprSet)
 {
   m_mprSet = mprSet;
 }
+MprSet
+OlsrState::GetMprSet () const
+{
+  return m_mprSet;
+}
 
 /********** Duplicate Set Manipulation **********/
 

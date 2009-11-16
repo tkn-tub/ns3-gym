@@ -132,6 +132,7 @@ example_tests = [
     ("tutorial/second", "True", "True"),
     ("tutorial/third", "True", "True"),
     ("tutorial/fourth", "True", "True"),
+    ("tutorial/fifth", "True", "True"),
 
     ("udp/udp-echo", "True", "True"),
 
@@ -560,7 +561,7 @@ def make_library_path():
         for path in NS3_MODULE_PATH:
             os.environ["DYLD_LIBRARY_PATH"] += ":" + path
         if options.verbose:
-            print "os.environ[\"DYLD_LIBRARY_PATH\"] == %s" % os.environ["DY_LIBRARY_PATH"]
+            print "os.environ[\"DYLD_LIBRARY_PATH\"] == %s" % os.environ["DYLD_LIBRARY_PATH"]
     elif sys.platform == "win32":
         if not have_PATH:
             os.environ["PATH"] = ""
@@ -616,6 +617,7 @@ class Job:
         self.shell_command = ""
         self.display_name = ""
         self.basedir = ""
+        self.tempdir = ""
         self.cwd = ""
         self.tmp_file_name = ""
         self.returncode = False
@@ -672,6 +674,13 @@ class Job:
     #
     def set_basedir(self, basedir):
         self.basedir = basedir
+
+    #
+    # This is the directory to which a running test suite should write any 
+    # temporary files.
+    #
+    def set_tempdir(self, tempdir):
+        self.tempdir = tempdir
 
     #
     # This is the current working directory that will be given to an executing
@@ -766,7 +775,8 @@ class worker_thread(threading.Thread):
                     # file name
                     #
                     (job.returncode, standard_out, standard_err, et) = run_job_synchronously(job.shell_command + 
-                        " --basedir=%s --out=%s" % (job.basedir, job.tmp_file_name), job.cwd, options.valgrind)
+                        " --basedir=%s --tempdir=%s --out=%s" % (job.basedir, job.tempdir, job.tmp_file_name), 
+                        job.cwd, options.valgrind)
 
                 job.set_elapsed_time(et)
 
@@ -804,11 +814,33 @@ def run_tests():
         # For example, if the user only wants to run BVT tests, we only have
         # to build the test-runner and can ignore all of the examples.
         #
+        # If the user only wants to run a single example, then we can just build
+        # that example.
+        #
+        # If there is no constraint, then we have to build everything since the
+        # user wants to run everything.
+        #
         if options.kinds or options.list or (len(options.constrain) and options.constrain in core_kinds):
-            proc = subprocess.Popen("waf --target=test-runner", shell = True)
-        else:
-            proc = subprocess.Popen("waf", shell = True)
+            if sys.platform == "win32":
+                waf_cmd = "waf --target=test-runner"
+            else:
+                waf_cmd = "./waf --target=test-runner"
+        elif len(options.example):
+            if sys.platform == "win32":
+                waf_cmd = "waf --target=%s" % os.path.basename(options.example)
+            else:
+                waf_cmd = "./waf --target=%s" % os.path.basename(options.example)
 
+        else:
+            if sys.platform == "win32":
+                waf_cmd = "waf"
+            else:
+                waf_cmd = "./waf"
+
+        if options.verbose:
+            print "Building: %s" % waf_cmd
+
+        proc = subprocess.Popen(waf_cmd, shell = True)
         proc.communicate()
 
     #
@@ -982,6 +1014,7 @@ def run_tests():
             job.set_tmp_file_name(os.path.join(testpy_output_dir, "%s.xml" % test))
             job.set_cwd(os.getcwd())
             job.set_basedir(os.getcwd())
+            job.set_tempdir(testpy_output_dir)
             if (options.multiple):
                 multiple = " --multiple"
             else:
@@ -1052,6 +1085,7 @@ def run_tests():
                         job.set_tmp_file_name("")
                         job.set_cwd(testpy_output_dir)
                         job.set_basedir(os.getcwd())
+                        job.set_tempdir(testpy_output_dir)
                         job.set_shell_command("examples/%s" % test)
 
                         if options.valgrind and not eval(do_valgrind_run):
@@ -1075,6 +1109,7 @@ def run_tests():
         job.set_tmp_file_name("")
         job.set_cwd(testpy_output_dir)
         job.set_basedir(os.getcwd())
+        job.set_tempdir(testpy_output_dir)
         job.set_shell_command("examples/%s" % options.example)
         
         if options.verbose:

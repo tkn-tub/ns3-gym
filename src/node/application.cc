@@ -40,6 +40,14 @@ Application::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::Application")
     .SetParent<Object> ()
+    .AddAttribute ("StartTime", "Time at which the application will start",
+                   TimeValue (Seconds (0.0)),
+                   MakeTimeAccessor (&Application::m_startTime),
+                   MakeTimeChecker ())
+    .AddAttribute ("StopTime", "Time at which the application will stop",
+                   TimeValue (TimeStep (0)),
+                   MakeTimeAccessor (&Application::m_stopTime),
+                   MakeTimeChecker ())
     ;
   return tid;
 }
@@ -52,38 +60,38 @@ Application::Application()
 Application::~Application()
 {}
 
+void 
+Application::SetStartTime (Time start)
+{
+  m_startTime = start;
+}
+void 
+Application::SetStopTime (Time stop)
+{
+  m_stopTime = stop;
+}
+
+
 void
 Application::DoDispose (void)
 {
   m_node = 0;
-  Simulator::Cancel(m_startEvent);
-  Simulator::Cancel(m_stopEvent);
+  m_startEvent.Cancel ();
+  m_stopEvent.Cancel ();
   Object::DoDispose ();
 }  
-   
-void Application::Start(const Time& startTime)
-{
-  ScheduleStart (startTime);
-}
 
-void Application::Start(const RandomVariable& startVar)
+void
+Application::DoStart (void)
 {
-  RandomVariable v = startVar;
-  ScheduleStart (Seconds (v.GetValue ()));
+  m_startEvent = Simulator::Schedule (m_startTime, &Application::StartApplication, this);
+  if (m_stopTime != TimeStep (0))
+    {
+      m_stopEvent = Simulator::Schedule (m_stopTime, &Application::StopApplication, this);
+    }
+  Object::DoStart ();
 }
-
-   
-void Application::Stop(const Time& stopTime)
-{
-  ScheduleStop (stopTime);
-}
-
-void Application::Stop(const RandomVariable& stopVar)
-{
-  RandomVariable v = stopVar;
-  ScheduleStop (Seconds (v.GetValue ()));
-}
-  
+     
 Ptr<Node> Application::GetNode() const
 {
   return m_node;
@@ -103,20 +111,6 @@ void Application::StartApplication()
 
 void Application::StopApplication()
 { // Provide null functionality in case subclass is not interested
-}
-
-
-// Private helpers
-void Application::ScheduleStart (const Time &startTime)
-{
-  m_startEvent = Simulator::Schedule (startTime,
-                                      &Application::StartApplication, this);
-}
-
-void Application::ScheduleStop (const Time &stopTime)
-{
-  m_stopEvent = Simulator::Schedule (stopTime,
-                                    &Application::StopApplication, this);
 }
 
 } //namespace ns3

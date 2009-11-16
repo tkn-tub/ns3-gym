@@ -6,29 +6,29 @@
  * <a href="http://www.doxygen.org">Doxygen</a>.
  * Doxygen is typically used for 
  * API documentation, and organizes such documentation across different
- * modules.   This project uses Doxygen both for building the manual around 
- * the API documentation,  and a separate GNU texinfo document is used for 
- * the manual.
+ * modules.   This project uses Doxygen for building the definitive
+ * maintained API documentation,  Separate GNU texinfo documents are used for 
+ * a tutorial, reference manual, and testing and validation manual.
  *
  * The ns-3 project documentation is organized as follows:
  *     - <b><a href="modules.html">modules</a></b>:  The "Modules" tab (above) 
  *       organizes  all of the public API and supporting manual text 
- *       along the  source code directory structure.   This forms the 
- *       "ns-3 manual", and it is available in HTML and PDF forms.
- *     - \ref howtos-anchor "HOWTOs": A set of HOWTOs and FAQs is
- *       maintained on another Doxygen "Related Page" 
- *     - <a href="http://www.nsnam.org/docs/tutorial/tutorial.html">tutorial</a>:  The ns-3 tutorial is a separate document maintained in <a href="http://www.gnu.org/software/texinfo/"> GNU Texinfo</a>. 
+ *       along the  source code directory structure.   
+ *     - <a href="http://www.nsnam.org/tutorials.html">tutorial</a>:  The ns-3 tutorial is a separate document maintained in <a href="http://www.gnu.org/software/texinfo/"> GNU Texinfo</a>. 
+ *     - <a href="http://www.nsnam.org/tutorials.html">Reference manual</a>:  The ns-3 reference manual is a separate document maintained in <a href="http://www.gnu.org/software/texinfo/"> GNU Texinfo</a>. 
+ *     - <a href="http://www.nsnam.org/tutorials.html">Testing and validation manual</a>:  The ns-3 testing and validation manual is a separate document maintained in <a href="http://www.gnu.org/software/texinfo/"> GNU Texinfo</a>. 
  *     - The <b><a href="http://www.nsnam.org/wiki/index.php/Main_Page">ns-3 wiki</a></b> 
  *       contains additional user-contributed material.  Some wiki-contributed
- *       material may migrate to and overlap with the Doxygen information.
+ *       material may migrate to and overlap with the Doxygen and manual information.
  *
  * \section install-sec Building the Documentation
  * 
  * ns-3 requires Doxygen version 1.5.4 or greater to fully build all items,
  * although earlier versions of Doxygen will mostly work.
  * 
- * Type "./waf doxygen" to build the documentation.  The doc/ directory contains
- * configuration for Doxygen (doxygen.conf and main.txt).  The Doxygen 
+ * Type "./waf --doxygen" or "./waf --doxygen-no-build" to build the 
+ *  documentation.  The doc/ directory contains
+ * configuration for Doxygen (doxygen.conf) and main.h.  The Doxygen 
  * build process puts html files into the doc/html/ directory, and latex 
  * filex into the doc/latex/ directory.
  * 
@@ -44,8 +44,14 @@
  *       to network simulations but shared by pretty much every model
  *       of a network component.
  *     - node: located in src/node. Defines the abstract interfaces which 
- *       must be implemented by every node and more specifically, by ipv4 nodes.       
+ *       must be implemented by every node and more specifically, by 
+ *       IPv4 and IPv6 nodes.       
  *     - devices: located in src/devices. Contains a set of MAC-level models
+ *     - InternetStack: located in src/internet-stack. Contains TCP/IP models.
+ *     - Applications: located in src/applications
+ *     - Routing:  located in src/routing; routing protocols.
+ *     - Mobility:  located in src/mobility; Mobility models for nodes
+ *     - Helper:  located in src/helper; Helper API for the simulator
  *
  * More detail can be found in the <b><a href="modules.html">Modules</a></b>
  * tab.

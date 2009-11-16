@@ -82,8 +82,7 @@ Ipv4L3Protocol::GetTypeId (void)
 }
 
 Ipv4L3Protocol::Ipv4L3Protocol()
-  : m_nInterfaces (0),
-    m_identification (0)
+  : m_identification (0)
 {
   NS_LOG_FUNCTION_NOARGS ();
 }
@@ -266,9 +265,8 @@ uint32_t
 Ipv4L3Protocol::AddIpv4Interface (Ptr<Ipv4Interface>interface)
 {
   NS_LOG_FUNCTION (this << interface);
-  uint32_t index = m_nInterfaces;
+  uint32_t index = m_interfaces.size ();
   m_interfaces.push_back (interface);
-  m_nInterfaces++;
   return index;
 }
 
@@ -276,14 +274,9 @@ Ptr<Ipv4Interface>
 Ipv4L3Protocol::GetInterface (uint32_t index) const
 {
   NS_LOG_FUNCTION (this << index);
-  uint32_t tmp = 0;
-  for (Ipv4InterfaceList::const_iterator i = m_interfaces.begin (); i != m_interfaces.end (); i++)
+  if (index < m_interfaces.size ())
     {
-      if (index == tmp) 
-	{
-	  return *i;
-	}
-      tmp++;
+      return m_interfaces[index];
     }
   return 0;
 }
@@ -292,7 +285,7 @@ uint32_t
 Ipv4L3Protocol::GetNInterfaces (void) const
 {
   NS_LOG_FUNCTION_NOARGS ();
-  return m_nInterfaces;
+  return m_interfaces.size ();
 }
 
 int32_t 
@@ -413,7 +406,7 @@ Ipv4L3Protocol::Receive( Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t pr
 
   for (SocketList::iterator i = m_sockets.begin (); i != m_sockets.end (); ++i)
     {
-      NS_LOG_LOGIC ("Forwarding to raw socket");
+      NS_LOG_LOGIC ("Forwarding to raw socket"); 
       Ptr<Ipv4RawSocketImpl> socket = *i;
       socket->ForwardUp (packet, ipHeader, device);
     }

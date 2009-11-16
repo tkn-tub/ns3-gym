@@ -52,13 +52,12 @@ class RandomWalk2dMobilityModel : public MobilityModel
     MODE_TIME
   };
 
-  RandomWalk2dMobilityModel ();
-
  private:
-  void Start (void);
   void Rebound (Time timeLeft);
   void DoWalk (Time timeLeft);
+  void DoStartPrivate (void);
   virtual void DoDispose (void);
+  virtual void DoStart (void);
   virtual Vector DoGetPosition (void) const;
   virtual void DoSetPosition (const Vector &position);
   virtual Vector DoGetVelocity (void) const;

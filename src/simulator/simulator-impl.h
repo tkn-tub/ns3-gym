@@ -25,6 +25,7 @@
 #include "event-id.h"
 #include "nstime.h"
 #include "ns3/object.h"
+#include "ns3/object-factory.h"
 #include "ns3/ptr.h"
 
 namespace ns3 {
@@ -38,7 +39,9 @@ public:
   virtual bool IsFinished (void) const = 0;
   virtual Time Next (void) const = 0;
   virtual void Stop (void) = 0;
+  virtual void Stop (Time const &time) = 0;
   virtual EventId Schedule (Time const &time, EventImpl *event) = 0;
+  virtual void ScheduleWithContext (uint32_t context, Time const &time, EventImpl *event) = 0;
   virtual EventId ScheduleNow (EventImpl *event) = 0;
   virtual EventId ScheduleDestroy (EventImpl *event) = 0;
   virtual void Remove (const EventId &ev) = 0;
@@ -49,7 +52,8 @@ public:
   virtual Time Now (void) const = 0;
   virtual Time GetDelayLeft (const EventId &id) const = 0;
   virtual Time GetMaximumSimulationTime (void) const = 0;
-  virtual void SetScheduler (Ptr<Scheduler> scheduler) = 0;
+  virtual void SetScheduler (ObjectFactory schedulerFactory) = 0;
+  virtual uint32_t GetContext (void) const = 0;
 };
 
 } // namespace ns3

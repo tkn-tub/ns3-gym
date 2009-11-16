@@ -36,6 +36,10 @@
 #include "dot11s/ie-dot11s-rann.h"
 
 namespace ns3 {
+
+WifiInformationElement::~WifiInformationElement ()
+{}
+
 bool
 operator< (WifiInformationElement const & a, WifiInformationElement const & b)
 {
@@ -58,7 +62,8 @@ TypeId
 WifiInformationElementVector::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::WifiInformationElementVector")
-                      .SetParent<Header> ();
+                      .SetParent<Header> ()
+                      .AddConstructor<WifiInformationElementVector> ();
   return tid;
 }
 TypeId

@@ -28,6 +28,7 @@
 #include "attribute.h"
 #include "object-base.h"
 #include "attribute-list.h"
+#include "object-ref-count.h"
 
 
 namespace ns3 {
@@ -55,7 +56,7 @@ class TraceSourceAccessor;
  * invoked from the Object::Unref method before destroying the object, even if the user 
  * did not call Object::Dispose directly.
  */
-class Object : public ObjectBase
+class Object : public ObjectRefCount<Object,ObjectBase>
 {
 public:
   static TypeId GetTypeId (void);
@@ -85,9 +86,9 @@ public:
     Ptr<const Object> Next (void);
   private:
     friend class Object;
-    AggregateIterator (Ptr<const Object> first);
-    Ptr<const Object> m_first;
-    Ptr<const Object> m_current;
+    AggregateIterator (Ptr<const Object> object);
+    Ptr<const Object> m_object;
+    uint32_t m_current;
   };
 
   Object ();
@@ -99,30 +100,10 @@ public:
   virtual TypeId GetInstanceTypeId (void) const;
 
   /**
-   * Increment the reference count. This method should not be called
-   * by user code. Object instances are expected to be used in conjunction
-   * of the Ptr template which would make calling Ref unecessary and 
-   * dangerous.
-   */
-  inline void Ref (void) const;
-  /**
-   * Decrement the reference count. This method should not be called
-   * by user code. Object instances are expected to be used in conjunction
-   * of the Ptr template which would make calling Ref unecessary and 
-   * dangerous.
-   */
-  inline void Unref (void) const;
-
-  /**
-   * Get the reference count of the object.  Normally not needed; for language bindings.
-   */
-  uint32_t GetReferenceCount (void) const;
-
-  /**
    * \returns a pointer to the requested interface or zero if it could not be found.
    */
   template <typename T>
-  Ptr<T> GetObject (void) const;
+  inline Ptr<T> GetObject (void) const;
   /**
    * \param tid the interface id of the requested interface
    * \returns a pointer to the requested interface or zero if it could not be found.
@@ -159,6 +140,12 @@ public:
    */
   AggregateIterator GetAggregateIterator (void) const;
 
+  /**
+   * Execute starting code of an object. What this method does is really up
+   * to the user.
+   */
+  void Start (void);
+
 protected:
  /**
   * This function is called by the AggregateObject on all the objects connected in the listed chain.
@@ -167,6 +154,15 @@ protected:
   * additional/special behavior when aggregated to another object.
   */
   virtual void NotifyNewAggregate ();
+  /**
+   * This method is called only once by Object::Start. If the user
+   * calls Object::Start multiple times, DoStart is called only the
+   * first time.
+   *
+   * Subclasses are expected to override this method and _chain up_
+   * to their parent's implementation once they are done.
+   */
+  virtual void DoStart (void);
   /**
    * This method is called by Object::Dispose or by the object's 
    * destructor, whichever comes first.
@@ -215,16 +211,24 @@ private:
   friend class ObjectFactory;
   friend class AggregateIterator;
 
+  /**
+   * This data structure uses a classic C-style trick to 
+   * hold an array of variable size without performing
+   * two memory allocations: the declaration of the structure
+   * declares a one-element array but when we allocate
+   * memory for this struct, we effectively allocate a larger
+   * chunk of memory than the struct to allow space for a larger
+   * variable sized buffer whose size is indicated by the element
+   * 'n'
+   */
+  struct Aggregates {
+    uint32_t n;
+    Object *buffer[1];
+  };
+
   Ptr<Object> DoGetObject (TypeId tid) const;
   bool Check (void) const;
   bool CheckLoose (void) const;
-  /**
-   * Attempt to delete this object. This method iterates
-   * over all aggregated objects to check if they all 
-   * have a zero refcount. If yes, the object and all
-   * its aggregates are deleted. If not, nothing is done.
-   */
-  void MaybeDelete (void) const;
   /**
    * \param tid an TypeId
    *
@@ -243,14 +247,15 @@ private:
    */
   void Construct (const AttributeList &attributes);
 
+  void UpdateSortedArray (struct Aggregates *aggregates, uint32_t i) const;
   /**
-   * The reference count for this object. Each aggregate
-   * has an individual reference count. When the global
-   * reference count (the sum of all reference counts) 
-   * reaches zero, the object and all its aggregates is 
-   * deleted.
+   * Attempt to delete this object. This method iterates
+   * over all aggregated objects to check if they all 
+   * have a zero refcount. If yes, the object and all
+   * its aggregates are deleted. If not, nothing is done.
    */
-  mutable uint32_t m_count;
+  virtual void DoDelete (void);
+
   /**
    * Identifies the type of this object instance.
    */
@@ -261,13 +266,24 @@ private:
    */
   bool m_disposed;
   /**
-   * A pointer to the next aggregate object. This is a circular
-   * linked list of aggregated objects: the last one points
-   * back to the first one. If an object is not aggregated to
-   * any other object, the value of this field is equal to the
-   * value of the 'this' pointer.
+   * Set to true once the DoStart method has run,
+   * false otherwise
    */
-  Object *m_next;
+  bool m_started;
+  /**
+   * a pointer to an array of 'aggregates'. i.e., a pointer to
+   * each object aggregated to this object is stored in this 
+   * array. The array is shared by all aggregated objects
+   * so the size of the array is indirectly a reference count.
+   */
+  struct Aggregates * m_aggregates;
+  /**
+   * Indicates the number of times the object was accessed with a
+   * call to GetObject. This integer is used to implement a
+   * heuristic to sort the array of aggregates to put at the start
+   * of the array the most-frequently accessed elements.
+   */
+  uint32_t m_getObjectCount;
 };
 
 /**
@@ -340,26 +356,15 @@ namespace ns3 {
  *   The Object implementation which depends on templates
  *************************************************************************/
 
-void
-Object::Ref (void) const
-{
-  m_count++;
-}
-void
-Object::Unref (void) const
-{
-  NS_ASSERT (Check ());
-  m_count--;
-  if (m_count == 0)
-    {
-      MaybeDelete ();
-    }
-}
-
 template <typename T>
 Ptr<T> 
 Object::GetObject () const
 {
+  T *result = dynamic_cast<T *> (m_aggregates->buffer[0]);
+  if (result != 0)
+    {
+      return Ptr<T> (result);
+    }
   Ptr<Object> found = DoGetObject (T::GetTypeId ());
   if (found != 0)
     {

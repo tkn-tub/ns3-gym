@@ -40,11 +40,13 @@ main (int argc, char *argv[])
   bool doKinds = false;
 
   bool haveBasedir = false;
+  bool haveTempdir = false;
   bool haveOutfile = false;
   bool haveType = false;
 
   std::string suiteName;
   std::string basedir;
+  std::string tempdir;
   std::string outfileName;
   std::string typeName;
 
@@ -94,6 +96,12 @@ main (int argc, char *argv[])
         {
           suiteName = arg.substr (arg.find_first_of ("=") + 1, 9999);
           doSuite = true;
+        }
+
+      if (arg.find ("--tempdir=") != std::string::npos)
+        {
+          tempdir = arg.substr (arg.find_first_of ("=") + 1, 9999);
+          haveTempdir = true;
         }
 
       if (arg.compare ("--verbose") == 0)
@@ -247,6 +255,7 @@ main (int argc, char *argv[])
       if (doSuite == false || (doSuite == true && suiteName == testSuite->GetName ()))
         {
           testSuite->SetBaseDir (basedir);
+          testSuite->SetTempDir (tempdir);
           testSuite->SetStream (pofs);
           testSuite->SetVerbose (doVerbose);
           testSuite->SetContinueOnFailure (doMultiple);

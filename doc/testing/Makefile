@@ -19,7 +19,13 @@ IMAGES = $(IMAGES_EPS) $(IMAGES_PNG) $(IMAGES_PDF)
 CHAPTERS = \
 	testing.texi \
 	overview.texi \
+	background.texi \
+	testing-framework.texi \
+	how-to-write-tests.texi \
+	validation.texi \
+	random-variables.texi \
 	propagation-loss.texi \
+	references.texi \
 
 %.eps : %.dia; $(DIA) -t eps $< -e $@
 %.png : %.dia; $(DIA) -t png $< -e $@
@@ -34,7 +40,7 @@ testing.html: version $(IMAGES) $(CHAPTERS)
 	$(TEXI2HTML) ${CSS} testing.texi
 
 testing/testing.html: version $(IMAGES) $(CHAPTERS)
-	$(TEXI2HTML) ${CSS} ${SPLIT} testing.texi
+	$(TEXI2HTML) ${CSS} ${SPLIT} --output testing testing.texi
 
 figures-clean:
 	rm -rf $(IMAGES)

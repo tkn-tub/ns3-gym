@@ -21,6 +21,7 @@
 #define EVENT_IMPL_H
 
 #include <stdint.h>
+#include "ns3/simple-ref-count.h"
 
 namespace ns3 {
 
@@ -35,12 +36,10 @@ namespace ns3 {
  * most subclasses are usually created by one of the many Simulator::Schedule
  * methods.
  */
-class EventImpl
+class EventImpl : public SimpleRefCount<EventImpl>
 {
 public:
   EventImpl ();
-  inline void Ref (void) const;
-  inline void Unref (void) const;
   virtual ~EventImpl () = 0;
   /**
    * Called by the simulation engine to notify the event that it has expired.
@@ -64,29 +63,7 @@ protected:
 
 private:
   bool m_cancel;
-  mutable uint32_t m_count;
 };
-
-}; // namespace ns3
-
-namespace ns3 {
-
-void
-EventImpl::Ref (void) const
-{
-  m_count++;
-}
-
-void
-EventImpl::Unref (void) const
-{
-  uint32_t c;
-  c = --m_count;
-  if (c == 0)
-    {
-      delete this;
-    }
-}
 
 } // namespace ns3
 

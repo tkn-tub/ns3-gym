@@ -32,6 +32,8 @@
 
 // #define NS3_LOG_ENABLE // Now defined by Makefile
 
+#include <ctime>
+
 #include <sstream>
 
 #include "ns3/core-module.h"
@@ -165,12 +167,12 @@ int main(int argc, char *argv[]) {
   Ptr<Node> appSource = NodeList::GetNode(0);  
   Ptr<Sender> sender = CreateObject<Sender>();
   appSource->AddApplication(sender);
-  sender->Start(Seconds(1));
+  sender->SetStartTime(Seconds(1));
 
   Ptr<Node> appSink = NodeList::GetNode(1);  
   Ptr<Receiver> receiver = CreateObject<Receiver>();
   appSink->AddApplication(receiver);
-  receiver->Start(Seconds(0));
+  receiver->SetStartTime(Seconds(0));
 
   //  Config::Set("/NodeList/*/ApplicationList/*/$Sender/Destination",
   //              Ipv4AddressValue("192.168.0.2"));
@@ -200,6 +202,7 @@ int main(int argc, char *argv[]) {
   Ptr<CounterCalculator<uint32_t> > totalTx =
     CreateObject<CounterCalculator<uint32_t> >();
   totalTx->SetKey("wifi-tx-frames");
+  totalTx->SetContext("node[0]");
   Config::Connect("/NodeList/0/DeviceList/*/$ns3::WifiNetDevice/Mac/MacTx",
                   MakeBoundCallback(&TxCallback, totalTx));
   data.AddDataCalculator(totalTx);
@@ -211,6 +214,7 @@ int main(int argc, char *argv[]) {
   Ptr<PacketCounterCalculator> totalRx =
     CreateObject<PacketCounterCalculator>();
   totalRx->SetKey("wifi-rx-frames");
+  totalRx->SetContext("node[1]");
   Config::Connect("/NodeList/1/DeviceList/*/$ns3::WifiNetDevice/Mac/MacRx",
                   MakeCallback(&PacketCounterCalculator::PacketUpdate,
                                totalRx));
@@ -225,6 +229,7 @@ int main(int argc, char *argv[]) {
   Ptr<PacketCounterCalculator> appTx =
     CreateObject<PacketCounterCalculator>();
   appTx->SetKey("sender-tx-packets");
+  appTx->SetContext("node[0]");
   Config::Connect("/NodeList/0/ApplicationList/*/$Sender/Tx",
                   MakeCallback(&PacketCounterCalculator::PacketUpdate,
                                     appTx));
@@ -237,6 +242,7 @@ int main(int argc, char *argv[]) {
   Ptr<CounterCalculator<> > appRx =
     CreateObject<CounterCalculator<> >();
   appRx->SetKey("receiver-rx-packets");
+  appRx->SetContext("node[1]");
   receiver->SetCounter(appRx);
   data.AddDataCalculator(appRx);
 
@@ -263,6 +269,7 @@ int main(int argc, char *argv[]) {
   Ptr<PacketSizeMinMaxAvgTotalCalculator> appTxPkts =
     CreateObject<PacketSizeMinMaxAvgTotalCalculator>();
   appTxPkts->SetKey("tx-pkt-size");
+  appTxPkts->SetContext("node[0]");
   Config::Connect("/NodeList/0/ApplicationList/*/$Sender/Tx",
                   MakeCallback
                     (&PacketSizeMinMaxAvgTotalCalculator::PacketUpdate,
@@ -277,6 +284,7 @@ int main(int argc, char *argv[]) {
   Ptr<TimeMinMaxAvgTotalCalculator> delayStat =
     CreateObject<TimeMinMaxAvgTotalCalculator>();
   delayStat->SetKey("delay");
+  delayStat->SetContext(".");
   receiver->SetDelayTracker(delayStat);
   data.AddDataCalculator(delayStat);
 

@@ -27,7 +27,7 @@ html:
 	$(TEXI2HTML) ${CSS} tutorial.texi
 
 split-html: 
-	$(TEXI2HTML) ${CSS} ${SPLIT} tutorial.texi
+	$(TEXI2HTML) ${CSS} ${SPLIT} --output tutorial tutorial.texi
 
 pdf:
 	$(TEXI2PDF) tutorial.texi

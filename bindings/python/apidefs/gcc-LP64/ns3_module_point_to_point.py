@@ -101,6 +101,10 @@ def register_Ns3PppHeader_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_const=True, is_virtual=True)
+    ## ppp-header.h: uint16_t ns3::PppHeader::GetProtocol() [member function]
+    cls.add_method('GetProtocol', 
+                   'uint16_t', 
+                   [])
     ## ppp-header.h: uint32_t ns3::PppHeader::GetSerializedSize() const [member function]
     cls.add_method('GetSerializedSize', 
                    'uint32_t', 
@@ -121,6 +125,10 @@ def register_Ns3PppHeader_methods(root_module, cls):
                    'void', 
                    [param('ns3::Buffer::Iterator', 'start')], 
                    is_const=True, is_virtual=True)
+    ## ppp-header.h: void ns3::PppHeader::SetProtocol(uint16_t protocol) [member function]
+    cls.add_method('SetProtocol', 
+                   'void', 
+                   [param('uint16_t', 'protocol')])
     return
 
 def register_Ns3PointToPointChannel_methods(root_module, cls):
