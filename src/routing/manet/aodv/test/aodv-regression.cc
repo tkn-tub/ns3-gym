@@ -146,7 +146,7 @@ ChainRegressionTest::CreateDevices ()
   p.Stop (m_time);
   
   // 4. write PCAP
-  std::string prefix = (WRITE_VECTORS ? NS_TEST_SOURCEDIR : std::string("./")) + PREFIX;
+  std::string prefix = (WRITE_VECTORS ? NS_TEST_SOURCEDIR : GetTempDir ()) + PREFIX;
   wifiPhy.EnablePcapAll (prefix);
 }
 
@@ -158,7 +158,7 @@ ChainRegressionTest::CheckResults ()
       std::ostringstream os1, os2;
       // File naming conventions are hard-coded here.
       os1 << NS_TEST_SOURCEDIR << PREFIX << "-" << i << "-0.pcap";
-      os2 << "./" << PREFIX << "-" << i << "-0.pcap";
+      os2 << GetTempDir () << PREFIX << "-" << i << "-0.pcap";
       
       uint32_t sec(0), usec(0);
       bool diff = PcapFile::Diff (os1.str(), os2.str(), sec, usec);
