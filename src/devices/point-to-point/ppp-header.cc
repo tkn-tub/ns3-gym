@@ -56,7 +56,20 @@ PppHeader::GetInstanceTypeId (void) const
 void 
 PppHeader::Print (std::ostream &os) const
 {
-  os << "Point-to-Point Protocol: " << m_protocol;
+  std::string proto;
+  
+  switch(m_protocol)
+  {
+    case 0x0021: /* IPv4 */
+      proto = "IP (0x0021)";
+      break;
+    case 0x0057: /* IPv6 */
+      proto = "IPv6 (0x0057)";
+      break;
+    default:
+      NS_ASSERT_MSG(false, "PPP Protocol number not defined!");
+  }
+  os << "Point-to-Point Protocol: " << proto; 
 }
 
   uint32_t
