@@ -92,6 +92,15 @@ WifiNetDevice::DoDispose (void)
 }
 
 void
+WifiNetDevice::DoStart (void)
+{
+  m_phy->Start ();
+  m_mac->Start ();
+  m_stationManager->Start ();
+  NetDevice::DoStart ();
+}
+
+void
 WifiNetDevice::CompleteConfig (void)
 {
   if (m_mac == 0 || 

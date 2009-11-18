@@ -20,10 +20,10 @@
 #include "ns3/ipv4-address.h"
 #include "ns3/socket.h"
 #include "ns3/uinteger.h"
+#include "ns3/boolean.h"
 #include "ns3/inet-socket-address.h"
 #include "ns3/packet.h"
 #include "ns3/trace-source-accessor.h"
-#include "ns3/simulator.h"
 
 namespace ns3 {
 
@@ -41,6 +41,19 @@ V4Ping::GetTypeId (void)
 		   Ipv4AddressValue (),
 		   MakeIpv4AddressAccessor (&V4Ping::m_remote),
 		   MakeIpv4AddressChecker ())
+    .AddAttribute ("Verbose",
+                   "Produce usual output.",
+                   BooleanValue (false),
+                   MakeBooleanAccessor (&V4Ping::m_verbose),
+                   MakeBooleanChecker ())
+    .AddAttribute ("Interval", "Wait  interval  seconds between sending each packet.",
+                   TimeValue (Seconds (1)),
+                   MakeTimeAccessor (&V4Ping::m_interval),
+                   MakeTimeChecker ())
+    .AddAttribute ("Size", "The number of data bytes to be sent, real packet will be 8 (ICMP) + 20 (IP) bytes longer.",
+                   UintegerValue (56),
+                   MakeUintegerAccessor (&V4Ping::m_size),
+                   MakeUintegerChecker<uint32_t> (16))
     .AddTraceSource ("Rtt",
 		     "The rtt calculated by the ping.",
 		     MakeTraceSourceAccessor (&V4Ping::m_traceRtt));
@@ -49,9 +62,14 @@ V4Ping::GetTypeId (void)
 }
 
 V4Ping::V4Ping ()
-  : m_socket (0),
-    m_seq (0)
-{}
+  : m_interval (Seconds (1)),
+    m_size (56),
+    m_socket (0),
+    m_seq (0),
+    m_verbose (false),
+    m_recv (0)
+{
+}
 V4Ping::~V4Ping ()
 {}
 
@@ -92,6 +110,7 @@ V4Ping::Receive (Ptr<Socket> socket)
       NS_ASSERT (realFrom.GetPort () == 1); // protocol should be icmp.
       Ipv4Header ipv4;
       p->RemoveHeader (ipv4);
+      uint32_t recvSize = p->GetSize ();
       NS_ASSERT (ipv4.GetProtocol () == 1); // protocol should be icmp.
       Icmpv4Header icmp;
       p->RemoveHeader (icmp);
@@ -99,10 +118,11 @@ V4Ping::Receive (Ptr<Socket> socket)
 	{
 	  Icmpv4Echo echo;
 	  p->RemoveHeader (echo);
-	  if (echo.GetSequenceNumber () == (m_seq - 1) &&
-	      echo.GetIdentifier () == 0)
+	  std::map<uint16_t, Time>::iterator i = m_sent.find(echo.GetSequenceNumber());
+	  
+	  if (i != m_sent.end () && echo.GetIdentifier () == 0)
 	    {
-              uint32_t buf[4];
+              uint32_t buf[m_size / 4];
 	      uint32_t dataSize = echo.GetDataSize ();
 	      if (dataSize == sizeof(buf))
 		{
@@ -111,13 +131,22 @@ V4Ping::Receive (Ptr<Socket> socket)
 		  if (buf[0] == GetNode ()->GetId () &&
 		      buf[1] == GetApplicationId ())
 		    {
-		      int64_t ts = buf[3];
-		      ts <<= 32;
-		      ts |= buf[2];
-		      Time sendTime = TimeStep (ts);
+		      Time sendTime = i->second;
 		      NS_ASSERT (Simulator::Now () > sendTime);
 		      Time delta = Simulator::Now () - sendTime;
+		      
+		      m_sent.erase (i);
+		      m_avgRtt.Update (delta.GetMilliSeconds());
+		      m_recv++;
 		      m_traceRtt (delta);
+		      
+		      if (m_verbose)
+		        {
+		          std::cout << recvSize << " bytes from " << realFrom.GetIpv4() << ":"
+                                    << " icmp_seq=" << echo.GetSequenceNumber ()
+                                    << " ttl=" << (unsigned)ipv4.GetTtl ()
+                                    << " time=" << delta.GetMilliSeconds() << " ms\n";
+		        }
 		    }
 		}
 	    }
@@ -135,20 +164,8 @@ V4Ping::Write32 (uint8_t *buffer, uint32_t data)
 }
 
 void 
-V4Ping::StartApplication (void)
+V4Ping::Send ()
 {
-  NS_LOG_FUNCTION (this);
-  m_socket = Socket::CreateSocket (GetNode (), TypeId::LookupByName ("ns3::Ipv4RawSocketFactory"));
-  NS_ASSERT (m_socket != 0);
-  m_socket->SetAttribute ("Protocol", UintegerValue (1)); // icmp
-  m_socket->SetRecvCallback (MakeCallback (&V4Ping::Receive, this));
-  InetSocketAddress src = InetSocketAddress (Ipv4Address::GetAny (), 0);
-  int status;
-  status = m_socket->Bind (src);
-  NS_ASSERT (status != -1);
-  InetSocketAddress dst = InetSocketAddress (m_remote, 0);
-  status = m_socket->Connect (dst);
-  NS_ASSERT (status != -1);
   Ptr<Packet> p = Create<Packet> ();
   Icmpv4Echo echo;
   echo.SetSequenceNumber (m_seq);
@@ -161,22 +178,17 @@ V4Ping::StartApplication (void)
   // (where any difference would show up anyway) and borrow that code.  Don't
   // be too surprised when you see that this is a little endian convention.
   //
-  uint8_t data[4 * sizeof(uint32_t)];
+  uint8_t data[m_size];
+  for (uint32_t i = 0; i < m_size; ++i) data[i] = 0;
+  NS_ASSERT (m_size >= 16);
+  
   uint32_t tmp = GetNode ()->GetId ();
   Write32 (&data[0 * sizeof(uint32_t)], tmp);
 
   tmp = GetApplicationId ();
   Write32 (&data[1 * sizeof(uint32_t)], tmp);
 
-  int64_t now = Simulator::Now ().GetTimeStep ();
-  tmp = now & 0xffffffff;
-  Write32 (&data[2 * sizeof(uint32_t)], tmp);
-
-  now >>= 32;
-  tmp = now & 0xffffffff;
-  Write32 (&data[3 * sizeof(uint32_t)], tmp);
-
-  Ptr<Packet> dataPacket = Create<Packet> ((uint8_t *) &data, 16);
+  Ptr<Packet> dataPacket = Create<Packet> ((uint8_t *) &data, m_size);
   echo.SetData (dataPacket);
   p->AddHeader (echo);
   Icmpv4Header header;
@@ -184,13 +196,57 @@ V4Ping::StartApplication (void)
   header.SetCode (0);
   p->AddHeader (header);
   m_socket->Send (p, 0);
+  m_sent.insert (std::make_pair (m_seq - 1, Simulator::Now()));  
+  m_next = Simulator::Schedule (m_interval, & V4Ping::Send, this);
+}
+
+void 
+V4Ping::StartApplication (void)
+{
+  NS_LOG_FUNCTION (this);
   
+  m_started = Simulator::Now ();
+  if (m_verbose)
+    {
+      std::cout << "PING  " << m_remote << " 56(84) bytes of data.\n";
+    }
+  
+  m_socket = Socket::CreateSocket (GetNode (), TypeId::LookupByName ("ns3::Ipv4RawSocketFactory"));
+  NS_ASSERT (m_socket != 0);
+  m_socket->SetAttribute ("Protocol", UintegerValue (1)); // icmp
+  m_socket->SetRecvCallback (MakeCallback (&V4Ping::Receive, this));
+  InetSocketAddress src = InetSocketAddress (Ipv4Address::GetAny (), 0);
+  int status;
+  status = m_socket->Bind (src);
+  NS_ASSERT (status != -1);
+  InetSocketAddress dst = InetSocketAddress (m_remote, 0);
+  status = m_socket->Connect (dst);
+  NS_ASSERT (status != -1);
+  
+  Send ();
 }
 void 
 V4Ping::StopApplication (void)
 {
   NS_LOG_FUNCTION (this);
+  m_next.Cancel();
   m_socket->Close ();
+  
+  if (m_verbose)
+    {
+      std::ostringstream os;
+      os.precision (4);
+      os << "--- " << m_remote << " ping statistics ---\n" 
+                << m_seq << " packets transmitted, " << m_recv << " received, " 
+                << ((m_seq - m_recv) * 100 / m_seq) << "% packet loss, "
+                << "time " << (Simulator::Now () - m_started).GetMilliSeconds () << "ms\n";
+      
+      if (m_avgRtt.Count () > 0)
+        os << "rtt min/avg/max/mdev = " << m_avgRtt.Min() << "/" << m_avgRtt.Avg() << "/"
+                                               << m_avgRtt.Max() << "/" << m_avgRtt.Err()
+                                               << " ms\n";
+      std::cout << os.str();
+    }
 }
 
 

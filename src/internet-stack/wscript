@@ -127,6 +127,8 @@ def build(bld):
         'sequence-number.h',
         'icmpv4.h',
         'icmpv6-header.h',
+        # used by routing
+        'ipv4-interface.h',
         'ipv4-l3-protocol.h',
         'ipv6-l3-protocol.h',
         'ipv6-extension-header.h',

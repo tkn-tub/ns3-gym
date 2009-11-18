@@ -1,7 +1,7 @@
 ## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
 
 def build(bld):
-    helper = bld.create_ns3_module('helper', ['internet-stack', 'wifi', 'point-to-point', 'csma', 'olsr', 'nix-vector-routing', 'global-routing', 'onoff', 'packet-sink', 'udp-echo'])
+    helper = bld.create_ns3_module('helper', ['internet-stack', 'wifi', 'point-to-point', 'csma', 'olsr', 'global-routing', 'onoff', 'packet-sink', 'udp-echo'])
     helper.source = [
         'node-container.cc',
         'net-device-container.cc',
@@ -29,6 +29,7 @@ def build(bld):
         'ipv4-global-routing-helper.cc',
         'ipv4-list-routing-helper.cc',
         'ipv4-routing-helper.cc',
+        'aodv-helper.cc',
         'mesh-helper.cc',
         'dot11s-installer.cc',
         'flame-installer.cc',
@@ -68,9 +69,10 @@ def build(bld):
         'nqos-wifi-mac-helper.h',
         'qos-wifi-mac-helper.h',
         'ipv4-nix-vector-helper.h',
-        'ipv4-global-routing-helper.h',
+	'ipv4-global-routing-helper.h',
         'ipv4-list-routing-helper.h',
         'ipv4-routing-helper.h',
+        'aodv-helper.h',
         'mesh-helper.h',
         'mesh-stack-installer.h',
         'dot11s-installer.h',

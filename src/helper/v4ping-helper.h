@@ -55,6 +55,12 @@ public:
    */
   ApplicationContainer Install (std::string nodeName) const;
 
+  /**
+   * \brief Configure ping applications attribute 
+   * \param name   attribute's name
+   * \param value  attribute's value
+   */
+  void SetAttribute (std::string name, const AttributeValue &value);
 private:
   /**
    * \internal
