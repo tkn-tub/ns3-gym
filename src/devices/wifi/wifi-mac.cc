@@ -220,6 +220,12 @@ WifiMac::ConfigureStandard (enum WifiPhyStandard standard)
   case WIFI_PHY_STANDARD_holland:
     Configure80211a ();
     break;
+  case WIFI_PHY_STANDARD_80211p_CCH:
+    Configure80211p_CCH ();
+    break;
+  case WIFI_PHY_STANDARD_80211p_SCH:
+    Configure80211p_SCH ();
+    break;
   default:
     NS_ASSERT (false);
     break;
@@ -272,6 +278,28 @@ WifiMac::Configure80211_5Mhz (void)
 }
 
 void
+WifiMac::Configure80211p_CCH (void)
+{
+  SetSifs(MicroSeconds(32));
+  SetSlot(MicroSeconds(16)); 
+  SetEifsNoDifs(MicroSeconds(32+88));
+  SetPifs(MicroSeconds(32+16));
+  SetCtsTimeout(MicroSeconds(32+88+16+GetDefaultMaxPropagationDelay().GetMicroSeconds ()*2));
+  SetAckTimeout(MicroSeconds(32+88+16+GetDefaultMaxPropagationDelay().GetMicroSeconds ()*2)); 
+}
+
+void
+WifiMac::Configure80211p_SCH (void)
+{
+  SetSifs(MicroSeconds(32));
+  SetSlot(MicroSeconds(16)); 
+  SetEifsNoDifs(MicroSeconds(32+88));
+  SetPifs(MicroSeconds(32+16));
+  SetCtsTimeout(MicroSeconds(32+88+16+GetDefaultMaxPropagationDelay().GetMicroSeconds ()*2));
+  SetAckTimeout(MicroSeconds(32+88+16+GetDefaultMaxPropagationDelay().GetMicroSeconds ()*2)); 
+}
+
+void
 WifiMac::ConfigureDcf (Ptr<Dcf> dcf, uint32_t cwmin, uint32_t cwmax, enum AccessClass ac)
 {
   /* see IEE802.11 section 7.3.2.29 */
@@ -307,5 +335,39 @@ WifiMac::ConfigureDcf (Ptr<Dcf> dcf, uint32_t cwmin, uint32_t cwmax, enum Access
   }
 }
 
-
+void
+WifiMac::ConfigureCCHDcf (Ptr<Dcf> dcf, uint32_t cwmin, uint32_t cwmax, enum AccessClass ac)
+{
+  /* see IEEE 1609.4-2006 section 6.3.1, Table 1 */
+  switch (ac) {
+  case AC_VO:
+    dcf->SetMinCw ((cwmin+1)/4-1);
+    dcf->SetMaxCw ((cwmin+1)/2-1);
+    dcf->SetAifsn (2);
+    break;
+  case AC_VI:
+    dcf->SetMinCw ((cwmin+1)/4-1);
+    dcf->SetMaxCw ((cwmin+1)/2-1);
+    dcf->SetAifsn (3);
+    break;
+  case AC_BE:
+    dcf->SetMinCw ((cwmin+1)/2-1);
+    dcf->SetMaxCw (cwmin);
+    dcf->SetAifsn (6);
+    break;
+  case AC_BK:
+    dcf->SetMinCw (cwmin);
+    dcf->SetMaxCw (cwmax);
+    dcf->SetAifsn (9);
+    break;
+  case AC_BE_NQOS:
+    dcf->SetMinCw (cwmin);
+    dcf->SetMaxCw (cwmax);
+    dcf->SetAifsn (2);    
+    break;
+  case AC_UNDEF:
+    NS_FATAL_ERROR ("I don't know what to do with this");
+    break;
+  }
+}
 } // namespace ns3
