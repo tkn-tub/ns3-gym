@@ -32,7 +32,7 @@ all_modules = (
     'routing/global-routing',
     'routing/static-routing',
     'routing/list-routing',
-    'routing/manet/aodv',
+    'routing/aodv',
     'mobility',
     'devices/wifi',
     'helper',
