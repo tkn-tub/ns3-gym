@@ -32,8 +32,7 @@
 #include "aodv-rqueue.h"
 #include "aodv-packet.h"
 #include "aodv-neighbor.h"
-
-#include "ns3/dpd.h"
+#include "aodv-dpd.h"
 #include "ns3/node.h"
 #include "ns3/ipv4-routing-protocol.h"
 #include "ns3/ipv4-interface.h"
@@ -139,9 +138,9 @@ private:
   /// Request sequence number
   uint32_t m_seqNo;
   /// Handle duplicated RREQ
-  dpd::IdCache m_rreqIdCache;
+  IdCache m_rreqIdCache;
   /// Handle duplicated broadcast/multicast packets
-  dpd::DuplicatePacketDetection m_dpd;
+  DuplicatePacketDetection m_dpd;
   /// Handle neighbors
   Neighbors m_nb;
   /// Number of RREQs used for RREQ rate control

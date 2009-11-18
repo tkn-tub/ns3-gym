@@ -35,10 +35,10 @@
 
 namespace ns3
 {
-namespace dpd
+namespace aodv
 {
 /**
- * \ingroup dpd
+ * \ingroup aodv
  * 
  * \brief Unique packets identification cache used for simple duplicate detection.
  */

@@ -72,7 +72,7 @@
  *    failure for all retries. This mechanism meant for active links and work much more faster, than first method.
  *    Layer 2 feedback implementation relies on TxErrHeader trace source, currently it is supported in AdhocWifiMac only.
  *    
- * 3) Duplicate packet detection. We use special class dpd::DuplicatePacketDetection for this purpose.
+ * 3) Duplicate packet detection. We use special class DuplicatePacketDetection for this purpose.
  *
  * Following optional protocol optimizations aren't implemented:
  *  - Expanding ring search.

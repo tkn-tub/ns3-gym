@@ -20,40 +20,31 @@
  *          Pavel Boyko <boyko@iitp.ru>
  */
 
-#ifndef DUPLICATEPACKETDETECTION_H_
-#define DUPLICATEPACKETDETECTION_H_
-
-#include "id-cache.h"
-#include "ns3/nstime.h"
-#include "ns3/packet.h"
-#include "ns3/ipv4-header.h"
+#include "aodv-dpd.h"
 
 namespace ns3
 {
-namespace dpd
+namespace aodv
 {
-/**
- * \ingroup dpd
- * 
- * \brief Helper class used to remember already seen packets and detect duplicates.
- */
-class DuplicatePacketDetection
+
+bool
+DuplicatePacketDetection::IsDuplicate  (Ptr<const Packet> p, const Ipv4Header & header)
 {
-public:
-  /// C-tor
-  DuplicatePacketDetection (Time lifetime) : m_idCache(lifetime) {}
-  /// Check that the packet is duplicated. If not, save information about this packet.
-  bool IsDuplicate (Ptr<const Packet> p, const Ipv4Header & header);
-  /// Set duplicate records lifetimes
-  void SetLifetime (Time lifetime);
-  /// Get duplicate records lifetimes
-  Time GetLifetime () const;
-private:
-  /// Impl
-  IdCache m_idCache;
-};
+  return m_idCache.IsDuplicate (header.GetSource (), p->GetUid() );
+}
+void
+DuplicatePacketDetection::SetLifetime (Time lifetime)
+{
+  m_idCache.SetLifetime(lifetime);
+}
+
+Time
+DuplicatePacketDetection::GetLifetime () const
+{
+  return m_idCache.GetLifeTime();
+}
+
 
 }
 }
 
-#endif
