@@ -739,6 +739,18 @@ QstaWifiMac::FinishConfigureStandard (enum WifiPhyStandard standard)
 {
   switch (standard)
     {
+    case WIFI_PHY_STANDARD_80211p_CCH:
+      ConfigureCCHDcf (m_queues[AC_BK], 15, 511, AC_BK);
+      ConfigureCCHDcf (m_queues[AC_BE], 15, 511, AC_BE);
+      ConfigureCCHDcf (m_queues[AC_VI], 15, 511, AC_VI);
+      ConfigureCCHDcf (m_queues[AC_VO], 15, 511, AC_VO);
+      break;
+    case WIFI_PHY_STANDARD_80211p_SCH:
+      ConfigureDcf (m_queues[AC_BK], 15, 511, AC_BK);
+      ConfigureDcf (m_queues[AC_BE], 15, 511, AC_BE);
+      ConfigureDcf (m_queues[AC_VI], 15, 511, AC_VI);
+      ConfigureDcf (m_queues[AC_VO], 15, 511, AC_VO);
+      break;
     case WIFI_PHY_STANDARD_holland:
       // fall through
     case WIFI_PHY_STANDARD_80211a:

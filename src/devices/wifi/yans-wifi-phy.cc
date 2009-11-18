@@ -171,6 +171,12 @@ YansWifiPhy::ConfigureStandard (enum WifiPhyStandard standard)
   case WIFI_PHY_STANDARD_holland:
     ConfigureHolland ();
     break;
+  case WIFI_PHY_STANDARD_80211p_CCH:
+    Configure80211p_CCH ();
+    break;
+  case WIFI_PHY_STANDARD_80211p_SCH:
+    Configure80211p_SCH ();
+    break;
   default:
     NS_ASSERT (false);
     break;
@@ -590,6 +596,36 @@ YansWifiPhy::ConfigureHolland (void)
   m_modes.push_back (WifiPhy::Get18mba ());
   m_modes.push_back (WifiPhy::Get36mba ());
   m_modes.push_back (WifiPhy::Get54mba ());
+}
+
+void
+YansWifiPhy::Configure80211p_CCH (void)
+{
+  NS_LOG_FUNCTION (this);
+  m_channelStartingFrequency = 5e3; // 802.11p works over the 5Ghz freq range
+  m_modes.push_back (WifiPhy::Get3mb10Mhz ());
+  m_modes.push_back (WifiPhy::Get4_5mb10Mhz ());
+  m_modes.push_back (WifiPhy::Get6mb10Mhz ());
+  m_modes.push_back (WifiPhy::Get9mb10Mhz ());
+  m_modes.push_back (WifiPhy::Get12mb10Mhz ());
+  m_modes.push_back (WifiPhy::Get18mb10Mhz ());
+  m_modes.push_back (WifiPhy::Get24mb10Mhz ());
+  m_modes.push_back (WifiPhy::Get27mb10Mhz  ());
+}
+
+void
+YansWifiPhy::Configure80211p_SCH (void)
+{
+  NS_LOG_FUNCTION (this);
+  m_channelStartingFrequency = 5e3; // 802.11p works over the 5Ghz freq range
+  m_modes.push_back (WifiPhy::Get3mb10Mhz ());
+  m_modes.push_back (WifiPhy::Get4_5mb10Mhz ());
+  m_modes.push_back (WifiPhy::Get6mb10Mhz ());
+  m_modes.push_back (WifiPhy::Get9mb10Mhz ());
+  m_modes.push_back (WifiPhy::Get12mb10Mhz ());
+  m_modes.push_back (WifiPhy::Get18mb10Mhz ());
+  m_modes.push_back (WifiPhy::Get24mb10Mhz ());
+  m_modes.push_back (WifiPhy::Get27mb10Mhz  ());
 }
 
 void 
