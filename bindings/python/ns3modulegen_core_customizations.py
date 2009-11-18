@@ -246,18 +246,43 @@ public:
                 "parses python args to get C++ value"
                 assert isinstance(wrapper, typehandlers.ForwardWrapperBase)
 
-                py_callback = wrapper.declarations.declare_variable('PyObject*', self.name)
-                wrapper.parse_params.add_parameter('O', ['&'+py_callback], self.name)
-                wrapper.before_call.write_error_check(
-                    '!PyCallable_Check(%s)' % py_callback,
-                    'PyErr_SetString(PyExc_TypeError, "parameter \'%s\' must be callbale");' % self.name)
-                callback_impl = wrapper.declarations.declare_variable(
-                    'ns3::Ptr<%s>' % self.PYTHON_CALLBACK_IMPL_NAME,
-                    '%s_cb_impl' % self.name)
-                wrapper.before_call.write_code("%s = ns3::Create<%s> (%s);"
-                                               % (callback_impl, self.PYTHON_CALLBACK_IMPL_NAME, py_callback))
-                wrapper.call_params.append(
-                    'ns3::Callback<%s> (%s)' % (', '.join(self.TEMPLATE_ARGS), callback_impl))
+                if self.default_value is None:
+                    py_callback = wrapper.declarations.declare_variable('PyObject*', self.name)
+                    wrapper.parse_params.add_parameter('O', ['&'+py_callback], self.name)
+                    wrapper.before_call.write_error_check(
+                        '!PyCallable_Check(%s)' % py_callback,
+                        'PyErr_SetString(PyExc_TypeError, "parameter \'%s\' must be callbale");' % self.name)
+                    callback_impl = wrapper.declarations.declare_variable(
+                        'ns3::Ptr<%s>' % self.PYTHON_CALLBACK_IMPL_NAME,
+                        '%s_cb_impl' % self.name)
+                    wrapper.before_call.write_code("%s = ns3::Create<%s> (%s);"
+                                                   % (callback_impl, self.PYTHON_CALLBACK_IMPL_NAME, py_callback))
+                    wrapper.call_params.append(
+                        'ns3::Callback<%s> (%s)' % (', '.join(self.TEMPLATE_ARGS), callback_impl))
+                else:
+                    py_callback = wrapper.declarations.declare_variable('PyObject*', self.name, 'NULL')
+                    wrapper.parse_params.add_parameter('O', ['&'+py_callback], self.name, optional=True)
+                    value = wrapper.declarations.declare_variable(
+                        'ns3::Callback<%s>' % ', '.join(self.TEMPLATE_ARGS),
+                        self.name+'_value',
+                        self.default_value)
+
+                    wrapper.before_call.write_code("if (%s) {" % (py_callback,))
+                    wrapper.before_call.indent()
+
+                    wrapper.before_call.write_error_check(
+                        '!PyCallable_Check(%s)' % py_callback,
+                        'PyErr_SetString(PyExc_TypeError, "parameter \'%s\' must be callbale");' % self.name)
+
+                    wrapper.before_call.write_code("%s = ns3::Callback<%s> (ns3::Create<%s> (%s));"
+                                                   % (value, ', '.join(self.TEMPLATE_ARGS),
+                                                      self.PYTHON_CALLBACK_IMPL_NAME, py_callback))
+
+                    wrapper.before_call.unindent()
+                    wrapper.before_call.write_code("}") # closes: if (py_callback) {
+                                        
+                    wrapper.call_params.append(value)
+                    
 
             def convert_c_to_python(self, wrapper):
                 raise typehandlers.NotSupportedError("Reverse wrappers for ns3::Callback<...> types "
