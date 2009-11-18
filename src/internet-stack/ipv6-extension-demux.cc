@@ -35,9 +35,9 @@ TypeId Ipv6ExtensionDemux::GetTypeId ()
   static TypeId tid = TypeId ("ns3::Ipv6ExtensionDemux")
     .SetParent<Object> ()
     .AddAttribute ("Extensions", "The set of IPv6 extensions registered with this demux.",
-        ObjectVectorValue (),
-        MakeObjectVectorAccessor (&Ipv6ExtensionDemux::m_extensions),
-        MakeObjectVectorChecker<Ipv6Extension> ())
+                   ObjectVectorValue (),
+                   MakeObjectVectorAccessor (&Ipv6ExtensionDemux::m_extensions),
+                   MakeObjectVectorChecker<Ipv6Extension> ())
     ;
   return tid;
 }
@@ -53,10 +53,10 @@ Ipv6ExtensionDemux::~Ipv6ExtensionDemux ()
 void Ipv6ExtensionDemux::DoDispose ()
 {
   for (Ipv6ExtensionList_t::iterator it = m_extensions.begin (); it != m_extensions.end (); it++)
-  {
-    (*it)->Dispose ();
-    *it = 0;
-  }
+    {
+      (*it)->Dispose ();
+      *it = 0;
+    }
   m_extensions.clear ();
   m_node = 0;
   Object::DoDispose ();
@@ -75,12 +75,12 @@ void Ipv6ExtensionDemux::Insert (Ptr<Ipv6Extension> extension)
 Ptr<Ipv6Extension> Ipv6ExtensionDemux::GetExtension (uint8_t extensionNumber)
 {
   for (Ipv6ExtensionList_t::iterator i = m_extensions.begin (); i != m_extensions.end (); ++i)
-  {
-    if ((*i)->GetExtensionNumber () == extensionNumber)
     {
-      return *i;
+      if ((*i)->GetExtensionNumber () == extensionNumber)
+        {
+          return *i;
+        }
     }
-  }
   return 0;
 }
 

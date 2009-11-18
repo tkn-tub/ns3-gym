@@ -45,26 +45,25 @@ NS_LOG_COMPONENT_DEFINE ("FragmentationIpv6Example");
  */
 class StackHelper
 {
-  public:
-
-    /**
-     * \brief Add an address to a IPv6 node.
-     * \param n node
-     * \param interface interface index
-     * \param address IPv6 address to add
-     */
-    inline void AddAddress (Ptr<Node>& n, uint32_t interface, Ipv6Address address)
-    {
+public:
+  /**
+   * \brief Add an address to a IPv6 node.
+   * \param n node
+   * \param interface interface index
+   * \param address IPv6 address to add
+   */
+  inline void AddAddress (Ptr<Node>& n, uint32_t interface, Ipv6Address address)
+  {
       Ptr<Ipv6> ipv6 = n->GetObject<Ipv6> ();
       ipv6->AddAddress (interface, address);
     }
 
-    /**
-     * \brief Print the routing table.
-     * \param n the node
-     */
-    inline void PrintRoutingTable (Ptr<Node>& n)
-    {
+  /**
+   * \brief Print the routing table.
+   * \param n the node
+   */
+  inline void PrintRoutingTable (Ptr<Node>& n)
+  {
       Ptr<Ipv6StaticRouting> routing = 0;
       Ipv6StaticRoutingHelper routingHelper;
       Ptr<Ipv6> ipv6 = n->GetObject<Ipv6> ();
@@ -78,15 +77,15 @@ class StackHelper
 
       nbRoutes = routing->GetNRoutes ();
       for (uint32_t i = 0 ; i < nbRoutes ; i++)
-      {
-        route = routing->GetRoute (i);
-        std::cout << route.GetDest () << "\t"
-          << route.GetGateway () << "\t"
-          << route.GetInterface () << "\t"
-          << route.GetPrefixToUse () << "\t"
-          << std::endl;
-      }
-    }
+        {
+          route = routing->GetRoute (i);
+          std::cout << route.GetDest () << "\t"
+            << route.GetGateway () << "\t"
+            << route.GetInterface () << "\t"
+            << route.GetPrefixToUse () << "\t"
+            << std::endl;
+        }
+  } 
 };
 
 int main (int argc, char** argv)

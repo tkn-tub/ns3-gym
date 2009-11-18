@@ -36,9 +36,9 @@ TypeId Ipv6Option::GetTypeId ()
   static TypeId tid = TypeId ("ns3::Ipv6Option")
     .SetParent<Object> ()
     .AddAttribute ("OptionNumber", "The IPv6 option number.",
-        UintegerValue (0),
-        MakeUintegerAccessor (&Ipv6Option::GetOptionNumber),
-        MakeUintegerChecker<uint8_t> ())
+                   UintegerValue (0),
+                   MakeUintegerAccessor (&Ipv6Option::GetOptionNumber),
+                   MakeUintegerChecker<uint8_t> ())
     ;
   return tid;
 }

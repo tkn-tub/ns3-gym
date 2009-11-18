@@ -45,7 +45,7 @@ TypeId Ipv6ExtensionHeader::GetInstanceTypeId () const
 }
 
 Ipv6ExtensionHeader::Ipv6ExtensionHeader ()
-  : m_nextHeader (0),
+: m_nextHeader (0),
   m_length (0),
   m_data (0)
 {
@@ -106,13 +106,13 @@ uint32_t Ipv6ExtensionHeader::Deserialize (Buffer::Iterator start)
   i.Read (data, dataLength);
 
   if (dataLength > m_data.GetSize ())
-  {
-    m_data.AddAtEnd (dataLength - m_data.GetSize ());
-  }
+    {
+      m_data.AddAtEnd (dataLength - m_data.GetSize ());
+    }
   else 
-  {
-    m_data.RemoveAtEnd (m_data.GetSize () - dataLength);
-  }
+    {
+      m_data.RemoveAtEnd (m_data.GetSize () - dataLength);
+    }
 
   i = m_data.Begin ();
   i.Write (data, dataLength);
@@ -121,7 +121,7 @@ uint32_t Ipv6ExtensionHeader::Deserialize (Buffer::Iterator start)
 }
 
 OptionField::OptionField (uint32_t optionsOffset)
-  : m_optionData (0),
+: m_optionData (0),
   m_optionsOffset (optionsOffset)
 {
 }
@@ -141,13 +141,13 @@ void OptionField::Serialize (Buffer::Iterator start) const
   uint32_t fill = CalculatePad ((Ipv6OptionHeader::Alignment) {8,0});
   NS_LOG_LOGIC ("fill with " << fill << " bytes padding");
   switch (fill)
-  {
+    {
     case 0: return;
     case 1: Ipv6OptionPad1Header ().Serialize (start);
             return;
     default: Ipv6OptionPadnHeader (fill).Serialize (start);
              return;
-  }
+    }
 }
 
 uint32_t OptionField::Deserialize (Buffer::Iterator start, uint32_t length)
@@ -167,13 +167,13 @@ void OptionField::AddOption (Ipv6OptionHeader const& option)
   uint32_t pad = CalculatePad (option.GetAlignment ());
   NS_LOG_LOGIC ("need " << pad << " bytes padding");
   switch (pad)
-  {
+    {
     case 0: break; //no padding needed
     case 1: AddOption (Ipv6OptionPad1Header ());
-      break;
+            break;
     default: AddOption (Ipv6OptionPadnHeader (pad));
-      break;
-  }
+             break;
+    }
 
   m_optionData.AddAtEnd (option.GetSerializedSize ());
   Buffer::Iterator it = m_optionData.End ();
@@ -214,7 +214,7 @@ TypeId Ipv6ExtensionHopByHopHeader::GetInstanceTypeId () const
 }
 
 Ipv6ExtensionHopByHopHeader::Ipv6ExtensionHopByHopHeader ()
-  : OptionField (2)
+: OptionField (2)
 {
 }
 
@@ -269,7 +269,7 @@ TypeId Ipv6ExtensionDestinationHeader::GetInstanceTypeId () const
 }
 
 Ipv6ExtensionDestinationHeader::Ipv6ExtensionDestinationHeader ()
-  : OptionField (2)
+: OptionField (2)
 {
 }
 
@@ -325,7 +325,7 @@ TypeId Ipv6ExtensionFragmentHeader::GetInstanceTypeId () const
 }
 
 Ipv6ExtensionFragmentHeader::Ipv6ExtensionFragmentHeader ()
-  : m_offset (0),
+: m_offset (0),
   m_identification (0)
 {
 }
@@ -416,7 +416,7 @@ TypeId Ipv6ExtensionRoutingHeader::GetInstanceTypeId () const
 }
 
 Ipv6ExtensionRoutingHeader::Ipv6ExtensionRoutingHeader ()
-  : m_typeRouting (0),
+: m_typeRouting (0),
   m_segmentsLeft (0)
 {
 }
@@ -495,7 +495,7 @@ TypeId Ipv6ExtensionLooseRoutingHeader::GetInstanceTypeId () const
 }
 
 Ipv6ExtensionLooseRoutingHeader::Ipv6ExtensionLooseRoutingHeader ()
-  : m_routersAddress (0)
+: m_routersAddress (0)
 {
 }
 
@@ -535,9 +535,9 @@ void Ipv6ExtensionLooseRoutingHeader::Print (std::ostream &os) const
     << " typeRouting = " << (uint32_t)GetTypeRouting () << " segmentsLeft = " << (uint32_t)GetSegmentsLeft () << " ";
 
   for (std::vector<Ipv6Address>::const_iterator it = m_routersAddress.begin (); it != m_routersAddress.end (); it++)
-  {
-    os << *it << " ";
-  }
+    {
+      os << *it << " ";
+    }
 
   os << " )";
 }
@@ -559,10 +559,10 @@ void Ipv6ExtensionLooseRoutingHeader::Serialize (Buffer::Iterator start) const
   i.WriteU32 (0);
 
   for (VectorIpv6Address_t::const_iterator it = m_routersAddress.begin (); it != m_routersAddress.end () ; it++)
-  {
-    it->Serialize (buff);
-    i.Write (buff, 16);
-  }
+    {
+      it->Serialize (buff);
+      i.Write (buff, 16);
+    }
 }
 
 uint32_t Ipv6ExtensionLooseRoutingHeader::Deserialize (Buffer::Iterator start) 
@@ -577,10 +577,10 @@ uint32_t Ipv6ExtensionLooseRoutingHeader::Deserialize (Buffer::Iterator start)
   i.ReadU32 ();
 
   for (std::vector<Ipv6Address>::iterator it = m_routersAddress.begin (); it != m_routersAddress.end (); it++)
-  {
-    i.Read (buff, 16);
-    it->Set (buff);
-  }
+    {
+      i.Read (buff, 16);
+      it->Set (buff);
+    }
 
   return GetSerializedSize ();
 }
