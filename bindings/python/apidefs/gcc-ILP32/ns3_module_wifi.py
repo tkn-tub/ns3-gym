@@ -8,7 +8,7 @@ def register_types(module):
     ## wifi-preamble.h: ns3::WifiPreamble [enumeration]
     module.add_enum('WifiPreamble', ['WIFI_PREAMBLE_LONG', 'WIFI_PREAMBLE_SHORT'])
     ## wifi-phy-standard.h: ns3::WifiPhyStandard [enumeration]
-    module.add_enum('WifiPhyStandard', ['WIFI_PHY_STANDARD_80211a', 'WIFI_PHY_STANDARD_80211b', 'WIFI_PHY_STANDARD_80211_10Mhz', 'WIFI_PHY_STANDARD_80211_5Mhz', 'WIFI_PHY_STANDARD_holland', 'WIFI_PHY_UNKNOWN'])
+    module.add_enum('WifiPhyStandard', ['WIFI_PHY_STANDARD_80211a', 'WIFI_PHY_STANDARD_80211b', 'WIFI_PHY_STANDARD_80211_10Mhz', 'WIFI_PHY_STANDARD_80211_5Mhz', 'WIFI_PHY_STANDARD_holland', 'WIFI_PHY_STANDARD_80211p_CCH', 'WIFI_PHY_STANDARD_80211p_SCH', 'WIFI_PHY_UNKNOWN'])
     ## qos-utils.h: ns3::AccessClass [enumeration]
     module.add_enum('AccessClass', ['AC_VO', 'AC_VI', 'AC_BE', 'AC_BK', 'AC_BE_NQOS', 'AC_UNDEF'])
     ## edca-txop-n.h: ns3::TypeOfStation [enumeration]
@@ -217,12 +217,6 @@ def register_types(module):
     register_types_ns3_dot11s(nested_module)
     
     
-    ## Register a nested module for the namespace dpd
-    
-    nested_module = module.add_cpp_namespace('dpd')
-    register_types_ns3_dpd(nested_module)
-    
-    
     ## Register a nested module for the namespace flame
     
     nested_module = module.add_cpp_namespace('flame')
@@ -258,10 +252,6 @@ def register_types_ns3_aodv(module):
     
 
 def register_types_ns3_dot11s(module):
-    root_module = module.get_root()
-    
-
-def register_types_ns3_dpd(module):
     root_module = module.get_root()
     
 
@@ -2327,6 +2317,11 @@ def register_Ns3WifiMac_methods(root_module, cls):
                    'bool', 
                    [], 
                    is_pure_virtual=True, is_const=True, is_virtual=True)
+    ## wifi-mac.h: void ns3::WifiMac::ConfigureCCHDcf(ns3::Ptr<ns3::Dcf> dcf, uint32_t cwmin, uint32_t cwmax, ns3::AccessClass ac) [member function]
+    cls.add_method('ConfigureCCHDcf', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Dcf >', 'dcf'), param('uint32_t', 'cwmin'), param('uint32_t', 'cwmax'), param('ns3::AccessClass', 'ac')], 
+                   visibility='protected')
     ## wifi-mac.h: void ns3::WifiMac::ConfigureDcf(ns3::Ptr<ns3::Dcf> dcf, uint32_t cwmin, uint32_t cwmax, ns3::AccessClass ac) [member function]
     cls.add_method('ConfigureDcf', 
                    'void', 
@@ -5576,7 +5571,6 @@ def register_functions(root_module):
     register_functions_ns3_addressUtils(module.get_submodule('addressUtils'), root_module)
     register_functions_ns3_aodv(module.get_submodule('aodv'), root_module)
     register_functions_ns3_dot11s(module.get_submodule('dot11s'), root_module)
-    register_functions_ns3_dpd(module.get_submodule('dpd'), root_module)
     register_functions_ns3_flame(module.get_submodule('flame'), root_module)
     register_functions_ns3_internal(module.get_submodule('internal'), root_module)
     register_functions_ns3_olsr(module.get_submodule('olsr'), root_module)
@@ -5595,9 +5589,6 @@ def register_functions_ns3_aodv(module, root_module):
     return
 
 def register_functions_ns3_dot11s(module, root_module):
-    return
-
-def register_functions_ns3_dpd(module, root_module):
     return
 
 def register_functions_ns3_flame(module, root_module):

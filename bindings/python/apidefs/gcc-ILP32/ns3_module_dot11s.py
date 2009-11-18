@@ -36,12 +36,6 @@ def register_types(module):
     register_types_ns3_dot11s(nested_module)
     
     
-    ## Register a nested module for the namespace dpd
-    
-    nested_module = module.add_cpp_namespace('dpd')
-    register_types_ns3_dpd(nested_module)
-    
-    
     ## Register a nested module for the namespace flame
     
     nested_module = module.add_cpp_namespace('flame')
@@ -119,10 +113,6 @@ def register_types_ns3_dot11s(module):
     module.add_enum('PeerState', ['IDLE', 'OPN_SNT', 'CNF_RCVD', 'OPN_RCVD', 'ESTAB', 'HOLDING'], outer_class=root_module['ns3::dot11s::PeerLink'])
     ## peer-management-protocol.h: ns3::dot11s::PeerManagementProtocol [class]
     module.add_class('PeerManagementProtocol', parent=root_module['ns3::Object'])
-
-def register_types_ns3_dpd(module):
-    root_module = module.get_root()
-    
 
 def register_types_ns3_flame(module):
     root_module = module.get_root()
@@ -797,7 +787,6 @@ def register_functions(root_module):
     register_functions_ns3_addressUtils(module.get_submodule('addressUtils'), root_module)
     register_functions_ns3_aodv(module.get_submodule('aodv'), root_module)
     register_functions_ns3_dot11s(module.get_submodule('dot11s'), root_module)
-    register_functions_ns3_dpd(module.get_submodule('dpd'), root_module)
     register_functions_ns3_flame(module.get_submodule('flame'), root_module)
     register_functions_ns3_internal(module.get_submodule('internal'), root_module)
     register_functions_ns3_olsr(module.get_submodule('olsr'), root_module)
@@ -820,9 +809,6 @@ def register_functions_ns3_dot11s(module, root_module):
     module.add_function('MakeIeMeshIdChecker', 
                         'ns3::Ptr< ns3::AttributeChecker const >', 
                         [])
-    return
-
-def register_functions_ns3_dpd(module, root_module):
     return
 
 def register_functions_ns3_flame(module, root_module):

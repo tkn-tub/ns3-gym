@@ -34,7 +34,6 @@ import ns3_module_list_routing
 import ns3_module_emu
 import ns3_module_bridge
 import ns3_module_onoff
-import ns3_module_dpd
 import ns3_module_udp_echo
 import ns3_module_ping6
 import ns3_module_nix_vector_routing
@@ -296,17 +295,6 @@ def register_types(module):
         ns3_module_onoff__local.register_types(module)
     
     root_module.end_section('ns3_module_onoff')
-    root_module.begin_section('ns3_module_dpd')
-    ns3_module_dpd.register_types(module)
-    
-    try:
-        import ns3_module_dpd__local
-    except ImportError:
-        pass
-    else:
-        ns3_module_dpd__local.register_types(module)
-    
-    root_module.end_section('ns3_module_dpd')
     root_module.begin_section('ns3_module_udp_echo')
     ns3_module_udp_echo.register_types(module)
     
@@ -472,12 +460,6 @@ def register_types(module):
     register_types_ns3_dot11s(nested_module)
     
     
-    ## Register a nested module for the namespace dpd
-    
-    nested_module = module.add_cpp_namespace('dpd')
-    register_types_ns3_dpd(nested_module)
-    
-    
     ## Register a nested module for the namespace flame
     
     nested_module = module.add_cpp_namespace('flame')
@@ -515,10 +497,6 @@ def register_types_ns3_aodv(module):
     module.add_container('std::map< ns3::Ipv4Address, unsigned int >', ('ns3::Ipv4Address', 'unsigned int'), container_type='map')
 
 def register_types_ns3_dot11s(module):
-    root_module = module.get_root()
-    
-
-def register_types_ns3_dpd(module):
     root_module = module.get_root()
     
 
@@ -781,17 +759,6 @@ def register_methods(root_module):
         ns3_module_onoff__local.register_methods(root_module)
     
     root_module.end_section('ns3_module_onoff')
-    root_module.begin_section('ns3_module_dpd')
-    ns3_module_dpd.register_methods(root_module)
-    
-    try:
-        import ns3_module_dpd__local
-    except ImportError:
-        pass
-    else:
-        ns3_module_dpd__local.register_methods(root_module)
-    
-    root_module.end_section('ns3_module_dpd')
     root_module.begin_section('ns3_module_udp_echo')
     ns3_module_udp_echo.register_methods(root_module)
     
@@ -1293,17 +1260,6 @@ def register_functions(root_module):
         ns3_module_onoff__local.register_functions(root_module)
     
     root_module.end_section('ns3_module_onoff')
-    root_module.begin_section('ns3_module_dpd')
-    ns3_module_dpd.register_functions(root_module)
-    
-    try:
-        import ns3_module_dpd__local
-    except ImportError:
-        pass
-    else:
-        ns3_module_dpd__local.register_functions(root_module)
-    
-    root_module.end_section('ns3_module_dpd')
     root_module.begin_section('ns3_module_udp_echo')
     ns3_module_udp_echo.register_functions(root_module)
     
@@ -1430,7 +1386,6 @@ def register_functions(root_module):
     register_functions_ns3_addressUtils(module.get_submodule('addressUtils'), root_module)
     register_functions_ns3_aodv(module.get_submodule('aodv'), root_module)
     register_functions_ns3_dot11s(module.get_submodule('dot11s'), root_module)
-    register_functions_ns3_dpd(module.get_submodule('dpd'), root_module)
     register_functions_ns3_flame(module.get_submodule('flame'), root_module)
     register_functions_ns3_internal(module.get_submodule('internal'), root_module)
     register_functions_ns3_olsr(module.get_submodule('olsr'), root_module)
@@ -1449,9 +1404,6 @@ def register_functions_ns3_aodv(module, root_module):
     return
 
 def register_functions_ns3_dot11s(module, root_module):
-    return
-
-def register_functions_ns3_dpd(module, root_module):
     return
 
 def register_functions_ns3_flame(module, root_module):

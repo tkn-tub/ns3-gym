@@ -34,12 +34,6 @@ def register_types(module):
     register_types_ns3_dot11s(nested_module)
     
     
-    ## Register a nested module for the namespace dpd
-    
-    nested_module = module.add_cpp_namespace('dpd')
-    register_types_ns3_dpd(nested_module)
-    
-    
     ## Register a nested module for the namespace flame
     
     nested_module = module.add_cpp_namespace('flame')
@@ -77,6 +71,10 @@ def register_types_ns3_aodv(module):
     module.add_enum('MessageType', ['AODVTYPE_RREQ', 'AODVTYPE_RREP', 'AODVTYPE_RERR', 'AODVTYPE_RREP_ACK'])
     ## aodv-rtable.h: ns3::aodv::RouteFlags [enumeration]
     module.add_enum('RouteFlags', ['VALID', 'INVALID', 'IN_SEARCH'])
+    ## aodv-dpd.h: ns3::aodv::DuplicatePacketDetection [class]
+    module.add_class('DuplicatePacketDetection')
+    ## aodv-id-cache.h: ns3::aodv::IdCache [class]
+    module.add_class('IdCache')
     ## aodv-neighbor.h: ns3::aodv::Neighbors [class]
     module.add_class('Neighbors')
     ## aodv-neighbor.h: ns3::aodv::Neighbors::Neighbor [struct]
@@ -106,10 +104,6 @@ def register_types_ns3_dot11s(module):
     root_module = module.get_root()
     
 
-def register_types_ns3_dpd(module):
-    root_module = module.get_root()
-    
-
 def register_types_ns3_flame(module):
     root_module = module.get_root()
     
@@ -123,6 +117,8 @@ def register_types_ns3_olsr(module):
     
 
 def register_methods(root_module):
+    register_Ns3AodvDuplicatePacketDetection_methods(root_module, root_module['ns3::aodv::DuplicatePacketDetection'])
+    register_Ns3AodvIdCache_methods(root_module, root_module['ns3::aodv::IdCache'])
     register_Ns3AodvNeighbors_methods(root_module, root_module['ns3::aodv::Neighbors'])
     register_Ns3AodvNeighborsNeighbor_methods(root_module, root_module['ns3::aodv::Neighbors::Neighbor'])
     register_Ns3AodvQueueEntry_methods(root_module, root_module['ns3::aodv::QueueEntry'])
@@ -135,6 +131,54 @@ def register_methods(root_module):
     register_Ns3AodvRrepHeader_methods(root_module, root_module['ns3::aodv::RrepHeader'])
     register_Ns3AodvRreqHeader_methods(root_module, root_module['ns3::aodv::RreqHeader'])
     register_Ns3AodvTypeHeader_methods(root_module, root_module['ns3::aodv::TypeHeader'])
+    return
+
+def register_Ns3AodvDuplicatePacketDetection_methods(root_module, cls):
+    ## aodv-dpd.h: ns3::aodv::DuplicatePacketDetection::DuplicatePacketDetection(ns3::aodv::DuplicatePacketDetection const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::aodv::DuplicatePacketDetection const &', 'arg0')])
+    ## aodv-dpd.h: ns3::aodv::DuplicatePacketDetection::DuplicatePacketDetection(ns3::Time lifetime) [constructor]
+    cls.add_constructor([param('ns3::Time', 'lifetime')])
+    ## aodv-dpd.h: ns3::Time ns3::aodv::DuplicatePacketDetection::GetLifetime() const [member function]
+    cls.add_method('GetLifetime', 
+                   'ns3::Time', 
+                   [], 
+                   is_const=True)
+    ## aodv-dpd.h: bool ns3::aodv::DuplicatePacketDetection::IsDuplicate(ns3::Ptr<ns3::Packet const> p, ns3::Ipv4Header const & header) [member function]
+    cls.add_method('IsDuplicate', 
+                   'bool', 
+                   [param('ns3::Ptr< ns3::Packet const >', 'p'), param('ns3::Ipv4Header const &', 'header')])
+    ## aodv-dpd.h: void ns3::aodv::DuplicatePacketDetection::SetLifetime(ns3::Time lifetime) [member function]
+    cls.add_method('SetLifetime', 
+                   'void', 
+                   [param('ns3::Time', 'lifetime')])
+    return
+
+def register_Ns3AodvIdCache_methods(root_module, cls):
+    ## aodv-id-cache.h: ns3::aodv::IdCache::IdCache(ns3::aodv::IdCache const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::aodv::IdCache const &', 'arg0')])
+    ## aodv-id-cache.h: ns3::aodv::IdCache::IdCache(ns3::Time lifetime) [constructor]
+    cls.add_constructor([param('ns3::Time', 'lifetime')])
+    ## aodv-id-cache.h: ns3::Time ns3::aodv::IdCache::GetLifeTime() const [member function]
+    cls.add_method('GetLifeTime', 
+                   'ns3::Time', 
+                   [], 
+                   is_const=True)
+    ## aodv-id-cache.h: uint32_t ns3::aodv::IdCache::GetSize() [member function]
+    cls.add_method('GetSize', 
+                   'uint32_t', 
+                   [])
+    ## aodv-id-cache.h: bool ns3::aodv::IdCache::IsDuplicate(ns3::Ipv4Address addr, uint32_t id) [member function]
+    cls.add_method('IsDuplicate', 
+                   'bool', 
+                   [param('ns3::Ipv4Address', 'addr'), param('uint32_t', 'id')])
+    ## aodv-id-cache.h: void ns3::aodv::IdCache::Purge() [member function]
+    cls.add_method('Purge', 
+                   'void', 
+                   [])
+    ## aodv-id-cache.h: void ns3::aodv::IdCache::SetLifetime(ns3::Time lifetime) [member function]
+    cls.add_method('SetLifetime', 
+                   'void', 
+                   [param('ns3::Time', 'lifetime')])
     return
 
 def register_Ns3AodvNeighbors_methods(root_module, cls):
@@ -979,7 +1023,6 @@ def register_functions(root_module):
     register_functions_ns3_addressUtils(module.get_submodule('addressUtils'), root_module)
     register_functions_ns3_aodv(module.get_submodule('aodv'), root_module)
     register_functions_ns3_dot11s(module.get_submodule('dot11s'), root_module)
-    register_functions_ns3_dpd(module.get_submodule('dpd'), root_module)
     register_functions_ns3_flame(module.get_submodule('flame'), root_module)
     register_functions_ns3_internal(module.get_submodule('internal'), root_module)
     register_functions_ns3_olsr(module.get_submodule('olsr'), root_module)
@@ -998,9 +1041,6 @@ def register_functions_ns3_aodv(module, root_module):
     return
 
 def register_functions_ns3_dot11s(module, root_module):
-    return
-
-def register_functions_ns3_dpd(module, root_module):
     return
 
 def register_functions_ns3_flame(module, root_module):
