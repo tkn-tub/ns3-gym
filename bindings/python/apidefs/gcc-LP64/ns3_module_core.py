@@ -4,13 +4,11 @@ def register_types(module):
     root_module = module.get_root()
     
     ## log.h: ns3::LogLevel [enumeration]
-    module.add_enum('LogLevel', ['LOG_NONE', 'LOG_ERROR', 'LOG_LEVEL_ERROR', 'LOG_WARN', 'LOG_LEVEL_WARN', 'LOG_DEBUG', 'LOG_LEVEL_DEBUG', 'LOG_INFO', 'LOG_LEVEL_INFO', 'LOG_FUNCTION', 'LOG_LEVEL_FUNCTION', 'LOG_LOGIC', 'LOG_LEVEL_LOGIC', 'LOG_ALL', 'LOG_LEVEL_ALL', 'LOG_PREFIX_FUNC', 'LOG_PREFIX_TIME'])
+    module.add_enum('LogLevel', ['LOG_NONE', 'LOG_ERROR', 'LOG_LEVEL_ERROR', 'LOG_WARN', 'LOG_LEVEL_WARN', 'LOG_DEBUG', 'LOG_LEVEL_DEBUG', 'LOG_INFO', 'LOG_LEVEL_INFO', 'LOG_FUNCTION', 'LOG_LEVEL_FUNCTION', 'LOG_LOGIC', 'LOG_LEVEL_LOGIC', 'LOG_ALL', 'LOG_LEVEL_ALL', 'LOG_PREFIX_FUNC', 'LOG_PREFIX_TIME', 'LOG_PREFIX_NODE'])
     ## attribute-list.h: ns3::AttributeList [class]
     module.add_class('AttributeList')
     ## callback.h: ns3::CallbackBase [class]
     module.add_class('CallbackBase')
-    ## callback.h: ns3::CallbackImplBase [class]
-    module.add_class('CallbackImplBase', allow_subclassing=True, memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'))
     ## command-line.h: ns3::CommandLine [class]
     module.add_class('CommandLine', allow_subclassing=True)
     ## system-mutex.h: ns3::CriticalSection [class]
@@ -55,8 +53,6 @@ def register_types(module):
     module.add_class('ObjectRefCount', template_parameters=['ns3::Object', 'ns3::ObjectBase'], parent=root_module['ns3::ObjectBase'])
     ## random-variable.h: ns3::RandomVariable [class]
     module.add_class('RandomVariable')
-    ## ref-count-base.h: ns3::RefCountBase [class]
-    module.add_class('RefCountBase', automatic_type_narrowing=True, memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'))
     ## rng-stream.h: ns3::RngStream [class]
     module.add_class('RngStream')
     ## random-variable.h: ns3::SeedManager [class]
@@ -67,8 +63,6 @@ def register_types(module):
     module.add_class('SystemCondition')
     ## system-mutex.h: ns3::SystemMutex [class]
     module.add_class('SystemMutex')
-    ## system-thread.h: ns3::SystemThread [class]
-    module.add_class('SystemThread')
     ## system-wall-clock-ms.h: ns3::SystemWallClockMs [class]
     module.add_class('SystemWallClockMs')
     ## test.h: ns3::TestCase [class]
@@ -79,8 +73,6 @@ def register_types(module):
     module.add_class('TestSuite', allow_subclassing=True)
     ## test.h: ns3::TestSuite::TestType [enumeration]
     module.add_enum('TestType', ['BVT', 'UNIT', 'SYSTEM', 'EXAMPLE', 'PERFORMANCE'], outer_class=root_module['ns3::TestSuite'])
-    ## trace-source-accessor.h: ns3::TraceSourceAccessor [class]
-    module.add_class('TraceSourceAccessor', allow_subclassing=True)
     ## random-variable.h: ns3::TriangularVariable [class]
     module.add_class('TriangularVariable', parent=root_module['ns3::RandomVariable'])
     ## type-id.h: ns3::TypeId [class]
@@ -103,34 +95,12 @@ def register_types(module):
     module.add_class('ZipfVariable', parent=root_module['ns3::RandomVariable'])
     ## empty.h: ns3::empty [class]
     module.add_class('empty')
-    ## attribute.h: ns3::AttributeAccessor [class]
-    module.add_class('AttributeAccessor', parent=root_module['ns3::RefCountBase'])
-    ## attribute.h: ns3::AttributeChecker [class]
-    module.add_class('AttributeChecker', allow_subclassing=False, automatic_type_narrowing=True, parent=root_module['ns3::RefCountBase'])
-    ## attribute.h: ns3::AttributeValue [class]
-    module.add_class('AttributeValue', allow_subclassing=False, automatic_type_narrowing=True, parent=root_module['ns3::RefCountBase'])
-    ## boolean.h: ns3::BooleanChecker [class]
-    module.add_class('BooleanChecker', parent=root_module['ns3::AttributeChecker'])
-    ## boolean.h: ns3::BooleanValue [class]
-    module.add_class('BooleanValue', parent=root_module['ns3::AttributeValue'])
-    ## callback.h: ns3::CallbackChecker [class]
-    module.add_class('CallbackChecker', parent=root_module['ns3::AttributeChecker'])
-    ## callback.h: ns3::CallbackValue [class]
-    module.add_class('CallbackValue', parent=root_module['ns3::AttributeValue'])
     ## random-variable.h: ns3::ConstantVariable [class]
     module.add_class('ConstantVariable', parent=root_module['ns3::RandomVariable'])
     ## random-variable.h: ns3::DeterministicVariable [class]
     module.add_class('DeterministicVariable', parent=root_module['ns3::RandomVariable'])
-    ## double.h: ns3::DoubleValue [class]
-    module.add_class('DoubleValue', parent=root_module['ns3::AttributeValue'])
     ## random-variable.h: ns3::EmpiricalVariable [class]
     module.add_class('EmpiricalVariable', parent=root_module['ns3::RandomVariable'])
-    ## attribute.h: ns3::EmptyAttributeValue [class]
-    module.add_class('EmptyAttributeValue', parent=root_module['ns3::AttributeValue'])
-    ## enum.h: ns3::EnumChecker [class]
-    module.add_class('EnumChecker', parent=root_module['ns3::AttributeChecker'])
-    ## enum.h: ns3::EnumValue [class]
-    module.add_class('EnumValue', parent=root_module['ns3::AttributeValue'])
     ## random-variable.h: ns3::ErlangVariable [class]
     module.add_class('ErlangVariable', parent=root_module['ns3::RandomVariable'])
     ## random-variable.h: ns3::ExponentialVariable [class]
@@ -139,8 +109,6 @@ def register_types(module):
     module.add_class('GammaVariable', parent=root_module['ns3::RandomVariable'])
     ## random-variable.h: ns3::IntEmpiricalVariable [class]
     module.add_class('IntEmpiricalVariable', parent=root_module['ns3::EmpiricalVariable'])
-    ## integer.h: ns3::IntegerValue [class]
-    module.add_class('IntegerValue', parent=root_module['ns3::AttributeValue'])
     ## random-variable.h: ns3::LogNormalVariable [class]
     module.add_class('LogNormalVariable', parent=root_module['ns3::RandomVariable'])
     ## random-variable.h: ns3::NormalVariable [class]
@@ -149,6 +117,52 @@ def register_types(module):
     module.add_class('Object', automatic_type_narrowing=True, parent=root_module['ns3::ObjectRefCount< ns3::Object, ns3::ObjectBase >'], memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'))
     ## object.h: ns3::Object::AggregateIterator [class]
     module.add_class('AggregateIterator', outer_class=root_module['ns3::Object'])
+    ## random-variable.h: ns3::ParetoVariable [class]
+    module.add_class('ParetoVariable', parent=root_module['ns3::RandomVariable'])
+    ## simple-ref-count.h: ns3::SimpleRefCount<ns3::AttributeAccessor, ns3::empty> [class]
+    module.add_class('SimpleRefCount', template_parameters=['ns3::AttributeAccessor', 'ns3::empty'], parent=root_module['ns3::empty'])
+    ## simple-ref-count.h: ns3::SimpleRefCount<ns3::AttributeChecker, ns3::empty> [class]
+    module.add_class('SimpleRefCount', template_parameters=['ns3::AttributeChecker', 'ns3::empty'], parent=root_module['ns3::empty'])
+    ## simple-ref-count.h: ns3::SimpleRefCount<ns3::AttributeValue, ns3::empty> [class]
+    module.add_class('SimpleRefCount', template_parameters=['ns3::AttributeValue', 'ns3::empty'], parent=root_module['ns3::empty'])
+    ## simple-ref-count.h: ns3::SimpleRefCount<ns3::CallbackImplBase, ns3::empty> [class]
+    module.add_class('SimpleRefCount', template_parameters=['ns3::CallbackImplBase', 'ns3::empty'], parent=root_module['ns3::empty'])
+    ## simple-ref-count.h: ns3::SimpleRefCount<ns3::RefCountBase, ns3::empty> [class]
+    module.add_class('SimpleRefCount', template_parameters=['ns3::RefCountBase', 'ns3::empty'], parent=root_module['ns3::empty'])
+    ## simple-ref-count.h: ns3::SimpleRefCount<ns3::SystemThread, ns3::empty> [class]
+    module.add_class('SimpleRefCount', template_parameters=['ns3::SystemThread', 'ns3::empty'], parent=root_module['ns3::empty'])
+    ## simple-ref-count.h: ns3::SimpleRefCount<ns3::TraceSourceAccessor, ns3::empty> [class]
+    module.add_class('SimpleRefCount', template_parameters=['ns3::TraceSourceAccessor', 'ns3::empty'], parent=root_module['ns3::empty'])
+    ## system-thread.h: ns3::SystemThread [class]
+    module.add_class('SystemThread', parent=root_module['ns3::SimpleRefCount< ns3::SystemThread, ns3::empty >'])
+    ## trace-source-accessor.h: ns3::TraceSourceAccessor [class]
+    module.add_class('TraceSourceAccessor', parent=root_module['ns3::SimpleRefCount< ns3::TraceSourceAccessor, ns3::empty >'])
+    ## attribute.h: ns3::AttributeAccessor [class]
+    module.add_class('AttributeAccessor', parent=root_module['ns3::SimpleRefCount< ns3::AttributeAccessor, ns3::empty >'])
+    ## attribute.h: ns3::AttributeChecker [class]
+    module.add_class('AttributeChecker', allow_subclassing=False, automatic_type_narrowing=True, parent=root_module['ns3::SimpleRefCount< ns3::AttributeChecker, ns3::empty >'])
+    ## attribute.h: ns3::AttributeValue [class]
+    module.add_class('AttributeValue', allow_subclassing=False, automatic_type_narrowing=True, parent=root_module['ns3::SimpleRefCount< ns3::AttributeValue, ns3::empty >'])
+    ## boolean.h: ns3::BooleanChecker [class]
+    module.add_class('BooleanChecker', parent=root_module['ns3::AttributeChecker'])
+    ## boolean.h: ns3::BooleanValue [class]
+    module.add_class('BooleanValue', parent=root_module['ns3::AttributeValue'])
+    ## callback.h: ns3::CallbackChecker [class]
+    module.add_class('CallbackChecker', parent=root_module['ns3::AttributeChecker'])
+    ## callback.h: ns3::CallbackImplBase [class]
+    module.add_class('CallbackImplBase', parent=root_module['ns3::SimpleRefCount< ns3::CallbackImplBase, ns3::empty >'], memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'))
+    ## callback.h: ns3::CallbackValue [class]
+    module.add_class('CallbackValue', parent=root_module['ns3::AttributeValue'])
+    ## double.h: ns3::DoubleValue [class]
+    module.add_class('DoubleValue', parent=root_module['ns3::AttributeValue'])
+    ## attribute.h: ns3::EmptyAttributeValue [class]
+    module.add_class('EmptyAttributeValue', parent=root_module['ns3::AttributeValue'])
+    ## enum.h: ns3::EnumChecker [class]
+    module.add_class('EnumChecker', parent=root_module['ns3::AttributeChecker'])
+    ## enum.h: ns3::EnumValue [class]
+    module.add_class('EnumValue', parent=root_module['ns3::AttributeValue'])
+    ## integer.h: ns3::IntegerValue [class]
+    module.add_class('IntegerValue', parent=root_module['ns3::AttributeValue'])
     ## object-factory.h: ns3::ObjectFactoryChecker [class]
     module.add_class('ObjectFactoryChecker', parent=root_module['ns3::AttributeChecker'])
     ## object-factory.h: ns3::ObjectFactoryValue [class]
@@ -159,8 +173,6 @@ def register_types(module):
     module.add_class('ObjectVectorChecker', parent=root_module['ns3::AttributeChecker'])
     ## object-vector.h: ns3::ObjectVectorValue [class]
     module.add_class('ObjectVectorValue', parent=root_module['ns3::AttributeValue'])
-    ## random-variable.h: ns3::ParetoVariable [class]
-    module.add_class('ParetoVariable', parent=root_module['ns3::RandomVariable'])
     ## pointer.h: ns3::PointerChecker [class]
     module.add_class('PointerChecker', parent=root_module['ns3::AttributeChecker'])
     ## pointer.h: ns3::PointerValue [class]
@@ -169,6 +181,8 @@ def register_types(module):
     module.add_class('RandomVariableChecker', parent=root_module['ns3::AttributeChecker'])
     ## random-variable.h: ns3::RandomVariableValue [class]
     module.add_class('RandomVariableValue', parent=root_module['ns3::AttributeValue'])
+    ## ref-count-base.h: ns3::RefCountBase [class]
+    module.add_class('RefCountBase', automatic_type_narrowing=True, parent=root_module['ns3::SimpleRefCount< ns3::RefCountBase, ns3::empty >'], memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'))
     ## string.h: ns3::StringChecker [class]
     module.add_class('StringChecker', parent=root_module['ns3::AttributeChecker'])
     ## string.h: ns3::StringValue [class]
@@ -197,9 +211,9 @@ def register_types(module):
     root_module['ns3::TracedValue< unsigned int >'].implicitly_converts_to(root_module['ns3::BooleanValue'])
     ## traced-value.h: ns3::TracedValue<unsigned int> [class]
     root_module['ns3::TracedValue< unsigned int >'].implicitly_converts_to(root_module['ns3::EnumValue'])
-    module.add_container('std::list< ns3::Ptr< ns3::RadvdPrefix > >', 'ns3::Ptr< ns3::RadvdPrefix >', container_type='list')
     module.add_container('std::list< ns3::Ptr< ns3::Packet > >', 'ns3::Ptr< ns3::Packet >', container_type='list')
     module.add_container('std::vector< ns3::Ptr< ns3::FlowProbe > >', 'ns3::Ptr< ns3::FlowProbe >', container_type='vector')
+    module.add_container('std::list< ns3::Ptr< ns3::RadvdPrefix > >', 'ns3::Ptr< ns3::RadvdPrefix >', container_type='list')
     module.add_container('std::vector< ns3::Ptr< ns3::NetDevice > >', 'ns3::Ptr< ns3::NetDevice >', container_type='vector')
     typehandlers.add_type_alias('ns3::Vector3D', 'ns3::Vector')
     typehandlers.add_type_alias('ns3::Vector3D*', 'ns3::Vector*')
@@ -232,10 +246,22 @@ def register_types(module):
     register_types_ns3_addressUtils(nested_module)
     
     
+    ## Register a nested module for the namespace aodv
+    
+    nested_module = module.add_cpp_namespace('aodv')
+    register_types_ns3_aodv(nested_module)
+    
+    
     ## Register a nested module for the namespace dot11s
     
     nested_module = module.add_cpp_namespace('dot11s')
     register_types_ns3_dot11s(nested_module)
+    
+    
+    ## Register a nested module for the namespace dpd
+    
+    nested_module = module.add_cpp_namespace('dpd')
+    register_types_ns3_dpd(nested_module)
     
     
     ## Register a nested module for the namespace flame
@@ -271,11 +297,19 @@ def register_types_ns3_addressUtils(module):
     root_module = module.get_root()
     
 
+def register_types_ns3_aodv(module):
+    root_module = module.get_root()
+    
+
 def register_types_ns3_dot11s(module):
     root_module = module.get_root()
     
     module.add_container('std::vector< ns3::Ptr< ns3::dot11s::IeBeaconTimingUnit > >', 'ns3::Ptr< ns3::dot11s::IeBeaconTimingUnit >', container_type='vector')
     module.add_container('std::vector< ns3::Ptr< ns3::dot11s::PeerLink > >', 'ns3::Ptr< ns3::dot11s::PeerLink >', container_type='vector')
+
+def register_types_ns3_dpd(module):
+    root_module = module.get_root()
+    
 
 def register_types_ns3_flame(module):
     root_module = module.get_root()
@@ -292,7 +326,6 @@ def register_types_ns3_olsr(module):
 def register_methods(root_module):
     register_Ns3AttributeList_methods(root_module, root_module['ns3::AttributeList'])
     register_Ns3CallbackBase_methods(root_module, root_module['ns3::CallbackBase'])
-    register_Ns3CallbackImplBase_methods(root_module, root_module['ns3::CallbackImplBase'])
     register_Ns3CommandLine_methods(root_module, root_module['ns3::CommandLine'])
     register_Ns3CriticalSection_methods(root_module, root_module['ns3::CriticalSection'])
     register_Ns3GlobalValue_methods(root_module, root_module['ns3::GlobalValue'])
@@ -308,18 +341,15 @@ def register_methods(root_module):
     register_Ns3ObjectFactory_methods(root_module, root_module['ns3::ObjectFactory'])
     register_Ns3ObjectRefCount__Ns3Object_Ns3ObjectBase_methods(root_module, root_module['ns3::ObjectRefCount< ns3::Object, ns3::ObjectBase >'])
     register_Ns3RandomVariable_methods(root_module, root_module['ns3::RandomVariable'])
-    register_Ns3RefCountBase_methods(root_module, root_module['ns3::RefCountBase'])
     register_Ns3RngStream_methods(root_module, root_module['ns3::RngStream'])
     register_Ns3SeedManager_methods(root_module, root_module['ns3::SeedManager'])
     register_Ns3SequentialVariable_methods(root_module, root_module['ns3::SequentialVariable'])
     register_Ns3SystemCondition_methods(root_module, root_module['ns3::SystemCondition'])
     register_Ns3SystemMutex_methods(root_module, root_module['ns3::SystemMutex'])
-    register_Ns3SystemThread_methods(root_module, root_module['ns3::SystemThread'])
     register_Ns3SystemWallClockMs_methods(root_module, root_module['ns3::SystemWallClockMs'])
     register_Ns3TestCase_methods(root_module, root_module['ns3::TestCase'])
     register_Ns3TestRunner_methods(root_module, root_module['ns3::TestRunner'])
     register_Ns3TestSuite_methods(root_module, root_module['ns3::TestSuite'])
-    register_Ns3TraceSourceAccessor_methods(root_module, root_module['ns3::TraceSourceAccessor'])
     register_Ns3TriangularVariable_methods(root_module, root_module['ns3::TriangularVariable'])
     register_Ns3TypeId_methods(root_module, root_module['ns3::TypeId'])
     register_Ns3TypeIdAttributeInfo_methods(root_module, root_module['ns3::TypeId::AttributeInfo'])
@@ -330,39 +360,69 @@ def register_methods(root_module):
     register_Ns3WeibullVariable_methods(root_module, root_module['ns3::WeibullVariable'])
     register_Ns3ZipfVariable_methods(root_module, root_module['ns3::ZipfVariable'])
     register_Ns3Empty_methods(root_module, root_module['ns3::empty'])
+    register_Ns3ConstantVariable_methods(root_module, root_module['ns3::ConstantVariable'])
+    register_Ns3DeterministicVariable_methods(root_module, root_module['ns3::DeterministicVariable'])
+    register_Ns3EmpiricalVariable_methods(root_module, root_module['ns3::EmpiricalVariable'])
+    register_Ns3ErlangVariable_methods(root_module, root_module['ns3::ErlangVariable'])
+    register_Ns3ExponentialVariable_methods(root_module, root_module['ns3::ExponentialVariable'])
+    register_Ns3GammaVariable_methods(root_module, root_module['ns3::GammaVariable'])
+    register_Ns3IntEmpiricalVariable_methods(root_module, root_module['ns3::IntEmpiricalVariable'])
+    register_Ns3LogNormalVariable_methods(root_module, root_module['ns3::LogNormalVariable'])
+    register_Ns3NormalVariable_methods(root_module, root_module['ns3::NormalVariable'])
+    register_Ns3Object_methods(root_module, root_module['ns3::Object'])
+    register_Ns3ObjectAggregateIterator_methods(root_module, root_module['ns3::Object::AggregateIterator'])
+    register_Ns3ParetoVariable_methods(root_module, root_module['ns3::ParetoVariable'])
+    register_Ns3SimpleRefCount__Ns3AsciiWriter_Ns3Empty_methods(root_module, root_module['ns3::SimpleRefCount< ns3::AsciiWriter, ns3::empty >'])
+    register_Ns3SimpleRefCount__Ns3AttributeAccessor_Ns3Empty_methods(root_module, root_module['ns3::SimpleRefCount< ns3::AttributeAccessor, ns3::empty >'])
+    register_Ns3SimpleRefCount__Ns3AttributeChecker_Ns3Empty_methods(root_module, root_module['ns3::SimpleRefCount< ns3::AttributeChecker, ns3::empty >'])
+    register_Ns3SimpleRefCount__Ns3AttributeValue_Ns3Empty_methods(root_module, root_module['ns3::SimpleRefCount< ns3::AttributeValue, ns3::empty >'])
+    register_Ns3SimpleRefCount__Ns3CallbackImplBase_Ns3Empty_methods(root_module, root_module['ns3::SimpleRefCount< ns3::CallbackImplBase, ns3::empty >'])
+    register_Ns3SimpleRefCount__Ns3EventImpl_Ns3Empty_methods(root_module, root_module['ns3::SimpleRefCount< ns3::EventImpl, ns3::empty >'])
+    register_Ns3SimpleRefCount__Ns3FlowClassifier_Ns3Empty_methods(root_module, root_module['ns3::SimpleRefCount< ns3::FlowClassifier, ns3::empty >'])
+    register_Ns3SimpleRefCount__Ns3FlowProbe_Ns3Empty_methods(root_module, root_module['ns3::SimpleRefCount< ns3::FlowProbe, ns3::empty >'])
+    register_Ns3SimpleRefCount__Ns3InterferenceHelperEvent_Ns3Empty_methods(root_module, root_module['ns3::SimpleRefCount< ns3::InterferenceHelper::Event, ns3::empty >'])
+    register_Ns3SimpleRefCount__Ns3Ipv4MulticastRoute_Ns3Empty_methods(root_module, root_module['ns3::SimpleRefCount< ns3::Ipv4MulticastRoute, ns3::empty >'])
+    register_Ns3SimpleRefCount__Ns3Ipv4Route_Ns3Empty_methods(root_module, root_module['ns3::SimpleRefCount< ns3::Ipv4Route, ns3::empty >'])
+    register_Ns3SimpleRefCount__Ns3Ipv6MulticastRoute_Ns3Empty_methods(root_module, root_module['ns3::SimpleRefCount< ns3::Ipv6MulticastRoute, ns3::empty >'])
+    register_Ns3SimpleRefCount__Ns3Ipv6Route_Ns3Empty_methods(root_module, root_module['ns3::SimpleRefCount< ns3::Ipv6Route, ns3::empty >'])
+    register_Ns3SimpleRefCount__Ns3MeshWifiInterfaceMacPlugin_Ns3Empty_methods(root_module, root_module['ns3::SimpleRefCount< ns3::MeshWifiInterfaceMacPlugin, ns3::empty >'])
+    register_Ns3SimpleRefCount__Ns3Packet_Ns3Empty_methods(root_module, root_module['ns3::SimpleRefCount< ns3::Packet, ns3::empty >'])
+    register_Ns3SimpleRefCount__Ns3PbbAddressBlock_Ns3Empty_methods(root_module, root_module['ns3::SimpleRefCount< ns3::PbbAddressBlock, ns3::empty >'])
+    register_Ns3SimpleRefCount__Ns3PbbMessage_Ns3Empty_methods(root_module, root_module['ns3::SimpleRefCount< ns3::PbbMessage, ns3::empty >'])
+    register_Ns3SimpleRefCount__Ns3PbbPacket_Ns3Header_methods(root_module, root_module['ns3::SimpleRefCount< ns3::PbbPacket, ns3::Header >'])
+    register_Ns3SimpleRefCount__Ns3PbbTlv_Ns3Empty_methods(root_module, root_module['ns3::SimpleRefCount< ns3::PbbTlv, ns3::empty >'])
+    register_Ns3SimpleRefCount__Ns3RadvdInterface_Ns3Empty_methods(root_module, root_module['ns3::SimpleRefCount< ns3::RadvdInterface, ns3::empty >'])
+    register_Ns3SimpleRefCount__Ns3RadvdPrefix_Ns3Empty_methods(root_module, root_module['ns3::SimpleRefCount< ns3::RadvdPrefix, ns3::empty >'])
+    register_Ns3SimpleRefCount__Ns3RefCountBase_Ns3Empty_methods(root_module, root_module['ns3::SimpleRefCount< ns3::RefCountBase, ns3::empty >'])
+    register_Ns3SimpleRefCount__Ns3SystemThread_Ns3Empty_methods(root_module, root_module['ns3::SimpleRefCount< ns3::SystemThread, ns3::empty >'])
+    register_Ns3SimpleRefCount__Ns3TraceSourceAccessor_Ns3Empty_methods(root_module, root_module['ns3::SimpleRefCount< ns3::TraceSourceAccessor, ns3::empty >'])
+    register_Ns3SimpleRefCount__Ns3WifiInformationElement_Ns3Empty_methods(root_module, root_module['ns3::SimpleRefCount< ns3::WifiInformationElement, ns3::empty >'])
+    register_Ns3SimpleRefCount__Ns3Dot11sIeBeaconTimingUnit_Ns3Empty_methods(root_module, root_module['ns3::SimpleRefCount< ns3::dot11s::IeBeaconTimingUnit, ns3::empty >'])
+    register_Ns3SystemThread_methods(root_module, root_module['ns3::SystemThread'])
+    register_Ns3TraceSourceAccessor_methods(root_module, root_module['ns3::TraceSourceAccessor'])
     register_Ns3AttributeAccessor_methods(root_module, root_module['ns3::AttributeAccessor'])
     register_Ns3AttributeChecker_methods(root_module, root_module['ns3::AttributeChecker'])
     register_Ns3AttributeValue_methods(root_module, root_module['ns3::AttributeValue'])
     register_Ns3BooleanChecker_methods(root_module, root_module['ns3::BooleanChecker'])
     register_Ns3BooleanValue_methods(root_module, root_module['ns3::BooleanValue'])
     register_Ns3CallbackChecker_methods(root_module, root_module['ns3::CallbackChecker'])
+    register_Ns3CallbackImplBase_methods(root_module, root_module['ns3::CallbackImplBase'])
     register_Ns3CallbackValue_methods(root_module, root_module['ns3::CallbackValue'])
-    register_Ns3ConstantVariable_methods(root_module, root_module['ns3::ConstantVariable'])
-    register_Ns3DeterministicVariable_methods(root_module, root_module['ns3::DeterministicVariable'])
     register_Ns3DoubleValue_methods(root_module, root_module['ns3::DoubleValue'])
-    register_Ns3EmpiricalVariable_methods(root_module, root_module['ns3::EmpiricalVariable'])
     register_Ns3EmptyAttributeValue_methods(root_module, root_module['ns3::EmptyAttributeValue'])
     register_Ns3EnumChecker_methods(root_module, root_module['ns3::EnumChecker'])
     register_Ns3EnumValue_methods(root_module, root_module['ns3::EnumValue'])
-    register_Ns3ErlangVariable_methods(root_module, root_module['ns3::ErlangVariable'])
-    register_Ns3ExponentialVariable_methods(root_module, root_module['ns3::ExponentialVariable'])
-    register_Ns3GammaVariable_methods(root_module, root_module['ns3::GammaVariable'])
-    register_Ns3IntEmpiricalVariable_methods(root_module, root_module['ns3::IntEmpiricalVariable'])
     register_Ns3IntegerValue_methods(root_module, root_module['ns3::IntegerValue'])
-    register_Ns3LogNormalVariable_methods(root_module, root_module['ns3::LogNormalVariable'])
-    register_Ns3NormalVariable_methods(root_module, root_module['ns3::NormalVariable'])
-    register_Ns3Object_methods(root_module, root_module['ns3::Object'])
-    register_Ns3ObjectAggregateIterator_methods(root_module, root_module['ns3::Object::AggregateIterator'])
     register_Ns3ObjectFactoryChecker_methods(root_module, root_module['ns3::ObjectFactoryChecker'])
     register_Ns3ObjectFactoryValue_methods(root_module, root_module['ns3::ObjectFactoryValue'])
     register_Ns3ObjectVectorAccessor_methods(root_module, root_module['ns3::ObjectVectorAccessor'])
     register_Ns3ObjectVectorChecker_methods(root_module, root_module['ns3::ObjectVectorChecker'])
     register_Ns3ObjectVectorValue_methods(root_module, root_module['ns3::ObjectVectorValue'])
-    register_Ns3ParetoVariable_methods(root_module, root_module['ns3::ParetoVariable'])
     register_Ns3PointerChecker_methods(root_module, root_module['ns3::PointerChecker'])
     register_Ns3PointerValue_methods(root_module, root_module['ns3::PointerValue'])
     register_Ns3RandomVariableChecker_methods(root_module, root_module['ns3::RandomVariableChecker'])
     register_Ns3RandomVariableValue_methods(root_module, root_module['ns3::RandomVariableValue'])
+    register_Ns3RefCountBase_methods(root_module, root_module['ns3::RefCountBase'])
     register_Ns3StringChecker_methods(root_module, root_module['ns3::StringChecker'])
     register_Ns3StringValue_methods(root_module, root_module['ns3::StringValue'])
     register_Ns3TypeIdChecker_methods(root_module, root_module['ns3::TypeIdChecker'])
@@ -431,18 +491,6 @@ def register_Ns3CallbackBase_methods(root_module, cls):
                    'std::string', 
                    [param('std::string const &', 'mangled')], 
                    is_static=True, visibility='protected')
-    return
-
-def register_Ns3CallbackImplBase_methods(root_module, cls):
-    ## callback.h: ns3::CallbackImplBase::CallbackImplBase(ns3::CallbackImplBase const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::CallbackImplBase const &', 'arg0')])
-    ## callback.h: ns3::CallbackImplBase::CallbackImplBase() [constructor]
-    cls.add_constructor([])
-    ## callback.h: bool ns3::CallbackImplBase::IsEqual(ns3::Ptr<ns3::CallbackImplBase const> other) const [member function]
-    cls.add_method('IsEqual', 
-                   'bool', 
-                   [param('ns3::Ptr< ns3::CallbackImplBase const >', 'other')], 
-                   is_pure_virtual=True, is_const=True, is_virtual=True)
     return
 
 def register_Ns3CommandLine_methods(root_module, cls):
@@ -779,13 +827,6 @@ def register_Ns3RandomVariable_methods(root_module, cls):
                    is_const=True)
     return
 
-def register_Ns3RefCountBase_methods(root_module, cls):
-    ## ref-count-base.h: ns3::RefCountBase::RefCountBase() [constructor]
-    cls.add_constructor([])
-    ## ref-count-base.h: ns3::RefCountBase::RefCountBase(ns3::RefCountBase const & o) [copy constructor]
-    cls.add_constructor([param('ns3::RefCountBase const &', 'o')])
-    return
-
 def register_Ns3RngStream_methods(root_module, cls):
     ## rng-stream.h: ns3::RngStream::RngStream() [constructor]
     cls.add_constructor([])
@@ -962,39 +1003,6 @@ def register_Ns3SystemMutex_methods(root_module, cls):
     cls.add_method('Unlock', 
                    'void', 
                    [])
-    return
-
-def register_Ns3SystemThread_methods(root_module, cls):
-    ## system-thread.h: ns3::SystemThread::SystemThread(ns3::SystemThread const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::SystemThread const &', 'arg0')])
-    ## system-thread.h: ns3::SystemThread::SystemThread(ns3::Callback<void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> callback) [constructor]
-    cls.add_constructor([param('ns3::Callback< void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'callback')])
-    ## system-thread.h: bool ns3::SystemThread::Break() [member function]
-    cls.add_method('Break', 
-                   'bool', 
-                   [])
-    ## system-thread.h: void ns3::SystemThread::Join() [member function]
-    cls.add_method('Join', 
-                   'void', 
-                   [])
-    ## system-thread.h: void ns3::SystemThread::Ref() const [member function]
-    cls.add_method('Ref', 
-                   'void', 
-                   [], 
-                   is_const=True)
-    ## system-thread.h: void ns3::SystemThread::Shutdown() [member function]
-    cls.add_method('Shutdown', 
-                   'void', 
-                   [])
-    ## system-thread.h: void ns3::SystemThread::Start() [member function]
-    cls.add_method('Start', 
-                   'void', 
-                   [])
-    ## system-thread.h: void ns3::SystemThread::Unref() const [member function]
-    cls.add_method('Unref', 
-                   'void', 
-                   [], 
-                   is_const=True)
     return
 
 def register_Ns3SystemWallClockMs_methods(root_module, cls):
@@ -1306,43 +1314,6 @@ def register_Ns3TestSuite_methods(root_module, cls):
                    visibility='protected', is_virtual=True)
     return
 
-def register_Ns3TraceSourceAccessor_methods(root_module, cls):
-    ## trace-source-accessor.h: ns3::TraceSourceAccessor::TraceSourceAccessor(ns3::TraceSourceAccessor const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::TraceSourceAccessor const &', 'arg0')])
-    ## trace-source-accessor.h: ns3::TraceSourceAccessor::TraceSourceAccessor() [constructor]
-    cls.add_constructor([])
-    ## trace-source-accessor.h: bool ns3::TraceSourceAccessor::Connect(ns3::ObjectBase * obj, std::string context, ns3::CallbackBase const & cb) const [member function]
-    cls.add_method('Connect', 
-                   'bool', 
-                   [param('ns3::ObjectBase *', 'obj', transfer_ownership=False), param('std::string', 'context'), param('ns3::CallbackBase const &', 'cb')], 
-                   is_pure_virtual=True, is_const=True, is_virtual=True)
-    ## trace-source-accessor.h: bool ns3::TraceSourceAccessor::ConnectWithoutContext(ns3::ObjectBase * obj, ns3::CallbackBase const & cb) const [member function]
-    cls.add_method('ConnectWithoutContext', 
-                   'bool', 
-                   [param('ns3::ObjectBase *', 'obj', transfer_ownership=False), param('ns3::CallbackBase const &', 'cb')], 
-                   is_pure_virtual=True, is_const=True, is_virtual=True)
-    ## trace-source-accessor.h: bool ns3::TraceSourceAccessor::Disconnect(ns3::ObjectBase * obj, std::string context, ns3::CallbackBase const & cb) const [member function]
-    cls.add_method('Disconnect', 
-                   'bool', 
-                   [param('ns3::ObjectBase *', 'obj', transfer_ownership=False), param('std::string', 'context'), param('ns3::CallbackBase const &', 'cb')], 
-                   is_pure_virtual=True, is_const=True, is_virtual=True)
-    ## trace-source-accessor.h: bool ns3::TraceSourceAccessor::DisconnectWithoutContext(ns3::ObjectBase * obj, ns3::CallbackBase const & cb) const [member function]
-    cls.add_method('DisconnectWithoutContext', 
-                   'bool', 
-                   [param('ns3::ObjectBase *', 'obj', transfer_ownership=False), param('ns3::CallbackBase const &', 'cb')], 
-                   is_pure_virtual=True, is_const=True, is_virtual=True)
-    ## trace-source-accessor.h: void ns3::TraceSourceAccessor::Ref() const [member function]
-    cls.add_method('Ref', 
-                   'void', 
-                   [], 
-                   is_const=True)
-    ## trace-source-accessor.h: void ns3::TraceSourceAccessor::Unref() const [member function]
-    cls.add_method('Unref', 
-                   'void', 
-                   [], 
-                   is_const=True)
-    return
-
 def register_Ns3TriangularVariable_methods(root_module, cls):
     ## random-variable.h: ns3::TriangularVariable::TriangularVariable(ns3::TriangularVariable const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::TriangularVariable const &', 'arg0')])
@@ -1640,6 +1611,822 @@ def register_Ns3Empty_methods(root_module, cls):
     cls.add_constructor([param('ns3::empty const &', 'arg0')])
     return
 
+def register_Ns3ConstantVariable_methods(root_module, cls):
+    ## random-variable.h: ns3::ConstantVariable::ConstantVariable(ns3::ConstantVariable const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::ConstantVariable const &', 'arg0')])
+    ## random-variable.h: ns3::ConstantVariable::ConstantVariable() [constructor]
+    cls.add_constructor([])
+    ## random-variable.h: ns3::ConstantVariable::ConstantVariable(double c) [constructor]
+    cls.add_constructor([param('double', 'c')])
+    ## random-variable.h: void ns3::ConstantVariable::SetConstant(double c) [member function]
+    cls.add_method('SetConstant', 
+                   'void', 
+                   [param('double', 'c')])
+    return
+
+def register_Ns3DeterministicVariable_methods(root_module, cls):
+    ## random-variable.h: ns3::DeterministicVariable::DeterministicVariable(ns3::DeterministicVariable const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::DeterministicVariable const &', 'arg0')])
+    ## random-variable.h: ns3::DeterministicVariable::DeterministicVariable(double * d, uint32_t c) [constructor]
+    cls.add_constructor([param('double *', 'd'), param('uint32_t', 'c')])
+    return
+
+def register_Ns3EmpiricalVariable_methods(root_module, cls):
+    ## random-variable.h: ns3::EmpiricalVariable::EmpiricalVariable(ns3::EmpiricalVariable const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::EmpiricalVariable const &', 'arg0')])
+    ## random-variable.h: ns3::EmpiricalVariable::EmpiricalVariable() [constructor]
+    cls.add_constructor([])
+    ## random-variable.h: void ns3::EmpiricalVariable::CDF(double v, double c) [member function]
+    cls.add_method('CDF', 
+                   'void', 
+                   [param('double', 'v'), param('double', 'c')])
+    return
+
+def register_Ns3ErlangVariable_methods(root_module, cls):
+    ## random-variable.h: ns3::ErlangVariable::ErlangVariable(ns3::ErlangVariable const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::ErlangVariable const &', 'arg0')])
+    ## random-variable.h: ns3::ErlangVariable::ErlangVariable() [constructor]
+    cls.add_constructor([])
+    ## random-variable.h: ns3::ErlangVariable::ErlangVariable(unsigned int k, double lambda) [constructor]
+    cls.add_constructor([param('unsigned int', 'k'), param('double', 'lambda')])
+    ## random-variable.h: double ns3::ErlangVariable::GetValue() const [member function]
+    cls.add_method('GetValue', 
+                   'double', 
+                   [], 
+                   is_const=True)
+    ## random-variable.h: double ns3::ErlangVariable::GetValue(unsigned int k, double lambda) const [member function]
+    cls.add_method('GetValue', 
+                   'double', 
+                   [param('unsigned int', 'k'), param('double', 'lambda')], 
+                   is_const=True)
+    return
+
+def register_Ns3ExponentialVariable_methods(root_module, cls):
+    ## random-variable.h: ns3::ExponentialVariable::ExponentialVariable(ns3::ExponentialVariable const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::ExponentialVariable const &', 'arg0')])
+    ## random-variable.h: ns3::ExponentialVariable::ExponentialVariable() [constructor]
+    cls.add_constructor([])
+    ## random-variable.h: ns3::ExponentialVariable::ExponentialVariable(double m) [constructor]
+    cls.add_constructor([param('double', 'm')])
+    ## random-variable.h: ns3::ExponentialVariable::ExponentialVariable(double m, double b) [constructor]
+    cls.add_constructor([param('double', 'm'), param('double', 'b')])
+    return
+
+def register_Ns3GammaVariable_methods(root_module, cls):
+    ## random-variable.h: ns3::GammaVariable::GammaVariable(ns3::GammaVariable const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::GammaVariable const &', 'arg0')])
+    ## random-variable.h: ns3::GammaVariable::GammaVariable() [constructor]
+    cls.add_constructor([])
+    ## random-variable.h: ns3::GammaVariable::GammaVariable(double alpha, double beta) [constructor]
+    cls.add_constructor([param('double', 'alpha'), param('double', 'beta')])
+    ## random-variable.h: double ns3::GammaVariable::GetValue() const [member function]
+    cls.add_method('GetValue', 
+                   'double', 
+                   [], 
+                   is_const=True)
+    ## random-variable.h: double ns3::GammaVariable::GetValue(double alpha, double beta) const [member function]
+    cls.add_method('GetValue', 
+                   'double', 
+                   [param('double', 'alpha'), param('double', 'beta')], 
+                   is_const=True)
+    return
+
+def register_Ns3IntEmpiricalVariable_methods(root_module, cls):
+    ## random-variable.h: ns3::IntEmpiricalVariable::IntEmpiricalVariable(ns3::IntEmpiricalVariable const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::IntEmpiricalVariable const &', 'arg0')])
+    ## random-variable.h: ns3::IntEmpiricalVariable::IntEmpiricalVariable() [constructor]
+    cls.add_constructor([])
+    return
+
+def register_Ns3LogNormalVariable_methods(root_module, cls):
+    ## random-variable.h: ns3::LogNormalVariable::LogNormalVariable(ns3::LogNormalVariable const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::LogNormalVariable const &', 'arg0')])
+    ## random-variable.h: ns3::LogNormalVariable::LogNormalVariable(double mu, double sigma) [constructor]
+    cls.add_constructor([param('double', 'mu'), param('double', 'sigma')])
+    return
+
+def register_Ns3NormalVariable_methods(root_module, cls):
+    ## random-variable.h: ns3::NormalVariable::NormalVariable(ns3::NormalVariable const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::NormalVariable const &', 'arg0')])
+    ## random-variable.h: ns3::NormalVariable::NormalVariable() [constructor]
+    cls.add_constructor([])
+    ## random-variable.h: ns3::NormalVariable::NormalVariable(double m, double v) [constructor]
+    cls.add_constructor([param('double', 'm'), param('double', 'v')])
+    ## random-variable.h: ns3::NormalVariable::NormalVariable(double m, double v, double b) [constructor]
+    cls.add_constructor([param('double', 'm'), param('double', 'v'), param('double', 'b')])
+    return
+
+def register_Ns3Object_methods(root_module, cls):
+    ## object.h: ns3::Object::Object() [constructor]
+    cls.add_constructor([])
+    ## object.h: void ns3::Object::AggregateObject(ns3::Ptr<ns3::Object> other) [member function]
+    cls.add_method('AggregateObject', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Object >', 'other')])
+    ## object.h: void ns3::Object::Dispose() [member function]
+    cls.add_method('Dispose', 
+                   'void', 
+                   [])
+    ## object.h: ns3::Object::AggregateIterator ns3::Object::GetAggregateIterator() const [member function]
+    cls.add_method('GetAggregateIterator', 
+                   'ns3::Object::AggregateIterator', 
+                   [], 
+                   is_const=True)
+    ## object.h: ns3::TypeId ns3::Object::GetInstanceTypeId() const [member function]
+    cls.add_method('GetInstanceTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## object.h: ns3::Ptr<ns3::Object> ns3::Object::GetObject(ns3::TypeId tid) const [member function]
+    cls.add_method('GetObject', 
+                   'ns3::Ptr< ns3::Object >', 
+                   [param('ns3::TypeId', 'tid')], 
+                   is_const=True, template_parameters=['ns3::Object'], custom_template_method_name='GetObject')
+    ## object.h: static ns3::TypeId ns3::Object::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## object.h: void ns3::Object::Start() [member function]
+    cls.add_method('Start', 
+                   'void', 
+                   [])
+    ## object.h: ns3::Object::Object(ns3::Object const & o) [copy constructor]
+    cls.add_constructor([param('ns3::Object const &', 'o')], 
+                        visibility='protected')
+    ## object.h: void ns3::Object::DoDispose() [member function]
+    cls.add_method('DoDispose', 
+                   'void', 
+                   [], 
+                   visibility='protected', is_virtual=True)
+    ## object.h: void ns3::Object::DoStart() [member function]
+    cls.add_method('DoStart', 
+                   'void', 
+                   [], 
+                   visibility='protected', is_virtual=True)
+    ## object.h: void ns3::Object::NotifyNewAggregate() [member function]
+    cls.add_method('NotifyNewAggregate', 
+                   'void', 
+                   [], 
+                   visibility='protected', is_virtual=True)
+    ## object.h: void ns3::Object::DoDelete() [member function]
+    cls.add_method('DoDelete', 
+                   'void', 
+                   [], 
+                   visibility='private', is_virtual=True)
+    return
+
+def register_Ns3ObjectAggregateIterator_methods(root_module, cls):
+    ## object.h: ns3::Object::AggregateIterator::AggregateIterator(ns3::Object::AggregateIterator const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::Object::AggregateIterator const &', 'arg0')])
+    ## object.h: ns3::Object::AggregateIterator::AggregateIterator() [constructor]
+    cls.add_constructor([])
+    ## object.h: bool ns3::Object::AggregateIterator::HasNext() const [member function]
+    cls.add_method('HasNext', 
+                   'bool', 
+                   [], 
+                   is_const=True)
+    ## object.h: ns3::Ptr<ns3::Object const> ns3::Object::AggregateIterator::Next() [member function]
+    cls.add_method('Next', 
+                   'ns3::Ptr< ns3::Object const >', 
+                   [])
+    return
+
+def register_Ns3ParetoVariable_methods(root_module, cls):
+    ## random-variable.h: ns3::ParetoVariable::ParetoVariable(ns3::ParetoVariable const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::ParetoVariable const &', 'arg0')])
+    ## random-variable.h: ns3::ParetoVariable::ParetoVariable() [constructor]
+    cls.add_constructor([])
+    ## random-variable.h: ns3::ParetoVariable::ParetoVariable(double m) [constructor]
+    cls.add_constructor([param('double', 'm')])
+    ## random-variable.h: ns3::ParetoVariable::ParetoVariable(double m, double s) [constructor]
+    cls.add_constructor([param('double', 'm'), param('double', 's')])
+    ## random-variable.h: ns3::ParetoVariable::ParetoVariable(double m, double s, double b) [constructor]
+    cls.add_constructor([param('double', 'm'), param('double', 's'), param('double', 'b')])
+    return
+
+def register_Ns3SimpleRefCount__Ns3AsciiWriter_Ns3Empty_methods(root_module, cls):
+    ## simple-ref-count.h: ns3::SimpleRefCount<ns3::AsciiWriter, ns3::empty>::SimpleRefCount() [constructor]
+    cls.add_constructor([])
+    ## simple-ref-count.h: ns3::SimpleRefCount<ns3::AsciiWriter, ns3::empty>::SimpleRefCount(ns3::SimpleRefCount<ns3::AsciiWriter, ns3::empty> const & o) [copy constructor]
+    cls.add_constructor([param('ns3::SimpleRefCount< ns3::AsciiWriter, ns3::empty > const &', 'o')])
+    ## simple-ref-count.h: uint32_t ns3::SimpleRefCount<ns3::AsciiWriter, ns3::empty>::GetReferenceCount() const [member function]
+    cls.add_method('GetReferenceCount', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## simple-ref-count.h: void ns3::SimpleRefCount<ns3::AsciiWriter, ns3::empty>::Ref() const [member function]
+    cls.add_method('Ref', 
+                   'void', 
+                   [], 
+                   is_const=True)
+    ## simple-ref-count.h: void ns3::SimpleRefCount<ns3::AsciiWriter, ns3::empty>::Unref() const [member function]
+    cls.add_method('Unref', 
+                   'void', 
+                   [], 
+                   is_const=True)
+    return
+
+def register_Ns3SimpleRefCount__Ns3AttributeAccessor_Ns3Empty_methods(root_module, cls):
+    ## simple-ref-count.h: ns3::SimpleRefCount<ns3::AttributeAccessor, ns3::empty>::SimpleRefCount() [constructor]
+    cls.add_constructor([])
+    ## simple-ref-count.h: ns3::SimpleRefCount<ns3::AttributeAccessor, ns3::empty>::SimpleRefCount(ns3::SimpleRefCount<ns3::AttributeAccessor, ns3::empty> const & o) [copy constructor]
+    cls.add_constructor([param('ns3::SimpleRefCount< ns3::AttributeAccessor, ns3::empty > const &', 'o')])
+    ## simple-ref-count.h: uint32_t ns3::SimpleRefCount<ns3::AttributeAccessor, ns3::empty>::GetReferenceCount() const [member function]
+    cls.add_method('GetReferenceCount', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## simple-ref-count.h: void ns3::SimpleRefCount<ns3::AttributeAccessor, ns3::empty>::Ref() const [member function]
+    cls.add_method('Ref', 
+                   'void', 
+                   [], 
+                   is_const=True)
+    ## simple-ref-count.h: void ns3::SimpleRefCount<ns3::AttributeAccessor, ns3::empty>::Unref() const [member function]
+    cls.add_method('Unref', 
+                   'void', 
+                   [], 
+                   is_const=True)
+    return
+
+def register_Ns3SimpleRefCount__Ns3AttributeChecker_Ns3Empty_methods(root_module, cls):
+    ## simple-ref-count.h: ns3::SimpleRefCount<ns3::AttributeChecker, ns3::empty>::SimpleRefCount() [constructor]
+    cls.add_constructor([])
+    ## simple-ref-count.h: ns3::SimpleRefCount<ns3::AttributeChecker, ns3::empty>::SimpleRefCount(ns3::SimpleRefCount<ns3::AttributeChecker, ns3::empty> const & o) [copy constructor]
+    cls.add_constructor([param('ns3::SimpleRefCount< ns3::AttributeChecker, ns3::empty > const &', 'o')])
+    ## simple-ref-count.h: uint32_t ns3::SimpleRefCount<ns3::AttributeChecker, ns3::empty>::GetReferenceCount() const [member function]
+    cls.add_method('GetReferenceCount', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## simple-ref-count.h: void ns3::SimpleRefCount<ns3::AttributeChecker, ns3::empty>::Ref() const [member function]
+    cls.add_method('Ref', 
+                   'void', 
+                   [], 
+                   is_const=True)
+    ## simple-ref-count.h: void ns3::SimpleRefCount<ns3::AttributeChecker, ns3::empty>::Unref() const [member function]
+    cls.add_method('Unref', 
+                   'void', 
+                   [], 
+                   is_const=True)
+    return
+
+def register_Ns3SimpleRefCount__Ns3AttributeValue_Ns3Empty_methods(root_module, cls):
+    ## simple-ref-count.h: ns3::SimpleRefCount<ns3::AttributeValue, ns3::empty>::SimpleRefCount() [constructor]
+    cls.add_constructor([])
+    ## simple-ref-count.h: ns3::SimpleRefCount<ns3::AttributeValue, ns3::empty>::SimpleRefCount(ns3::SimpleRefCount<ns3::AttributeValue, ns3::empty> const & o) [copy constructor]
+    cls.add_constructor([param('ns3::SimpleRefCount< ns3::AttributeValue, ns3::empty > const &', 'o')])
+    ## simple-ref-count.h: uint32_t ns3::SimpleRefCount<ns3::AttributeValue, ns3::empty>::GetReferenceCount() const [member function]
+    cls.add_method('GetReferenceCount', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## simple-ref-count.h: void ns3::SimpleRefCount<ns3::AttributeValue, ns3::empty>::Ref() const [member function]
+    cls.add_method('Ref', 
+                   'void', 
+                   [], 
+                   is_const=True)
+    ## simple-ref-count.h: void ns3::SimpleRefCount<ns3::AttributeValue, ns3::empty>::Unref() const [member function]
+    cls.add_method('Unref', 
+                   'void', 
+                   [], 
+                   is_const=True)
+    return
+
+def register_Ns3SimpleRefCount__Ns3CallbackImplBase_Ns3Empty_methods(root_module, cls):
+    ## simple-ref-count.h: ns3::SimpleRefCount<ns3::CallbackImplBase, ns3::empty>::SimpleRefCount() [constructor]
+    cls.add_constructor([])
+    ## simple-ref-count.h: ns3::SimpleRefCount<ns3::CallbackImplBase, ns3::empty>::SimpleRefCount(ns3::SimpleRefCount<ns3::CallbackImplBase, ns3::empty> const & o) [copy constructor]
+    cls.add_constructor([param('ns3::SimpleRefCount< ns3::CallbackImplBase, ns3::empty > const &', 'o')])
+    ## simple-ref-count.h: uint32_t ns3::SimpleRefCount<ns3::CallbackImplBase, ns3::empty>::GetReferenceCount() const [member function]
+    cls.add_method('GetReferenceCount', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## simple-ref-count.h: void ns3::SimpleRefCount<ns3::CallbackImplBase, ns3::empty>::Ref() const [member function]
+    cls.add_method('Ref', 
+                   'void', 
+                   [], 
+                   is_const=True)
+    ## simple-ref-count.h: void ns3::SimpleRefCount<ns3::CallbackImplBase, ns3::empty>::Unref() const [member function]
+    cls.add_method('Unref', 
+                   'void', 
+                   [], 
+                   is_const=True)
+    return
+
+def register_Ns3SimpleRefCount__Ns3EventImpl_Ns3Empty_methods(root_module, cls):
+    ## simple-ref-count.h: ns3::SimpleRefCount<ns3::EventImpl, ns3::empty>::SimpleRefCount() [constructor]
+    cls.add_constructor([])
+    ## simple-ref-count.h: ns3::SimpleRefCount<ns3::EventImpl, ns3::empty>::SimpleRefCount(ns3::SimpleRefCount<ns3::EventImpl, ns3::empty> const & o) [copy constructor]
+    cls.add_constructor([param('ns3::SimpleRefCount< ns3::EventImpl, ns3::empty > const &', 'o')])
+    ## simple-ref-count.h: uint32_t ns3::SimpleRefCount<ns3::EventImpl, ns3::empty>::GetReferenceCount() const [member function]
+    cls.add_method('GetReferenceCount', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## simple-ref-count.h: void ns3::SimpleRefCount<ns3::EventImpl, ns3::empty>::Ref() const [member function]
+    cls.add_method('Ref', 
+                   'void', 
+                   [], 
+                   is_const=True)
+    ## simple-ref-count.h: void ns3::SimpleRefCount<ns3::EventImpl, ns3::empty>::Unref() const [member function]
+    cls.add_method('Unref', 
+                   'void', 
+                   [], 
+                   is_const=True)
+    return
+
+def register_Ns3SimpleRefCount__Ns3FlowClassifier_Ns3Empty_methods(root_module, cls):
+    ## simple-ref-count.h: ns3::SimpleRefCount<ns3::FlowClassifier, ns3::empty>::SimpleRefCount() [constructor]
+    cls.add_constructor([])
+    ## simple-ref-count.h: ns3::SimpleRefCount<ns3::FlowClassifier, ns3::empty>::SimpleRefCount(ns3::SimpleRefCount<ns3::FlowClassifier, ns3::empty> const & o) [copy constructor]
+    cls.add_constructor([param('ns3::SimpleRefCount< ns3::FlowClassifier, ns3::empty > const &', 'o')])
+    ## simple-ref-count.h: uint32_t ns3::SimpleRefCount<ns3::FlowClassifier, ns3::empty>::GetReferenceCount() const [member function]
+    cls.add_method('GetReferenceCount', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## simple-ref-count.h: void ns3::SimpleRefCount<ns3::FlowClassifier, ns3::empty>::Ref() const [member function]
+    cls.add_method('Ref', 
+                   'void', 
+                   [], 
+                   is_const=True)
+    ## simple-ref-count.h: void ns3::SimpleRefCount<ns3::FlowClassifier, ns3::empty>::Unref() const [member function]
+    cls.add_method('Unref', 
+                   'void', 
+                   [], 
+                   is_const=True)
+    return
+
+def register_Ns3SimpleRefCount__Ns3FlowProbe_Ns3Empty_methods(root_module, cls):
+    ## simple-ref-count.h: ns3::SimpleRefCount<ns3::FlowProbe, ns3::empty>::SimpleRefCount() [constructor]
+    cls.add_constructor([])
+    ## simple-ref-count.h: ns3::SimpleRefCount<ns3::FlowProbe, ns3::empty>::SimpleRefCount(ns3::SimpleRefCount<ns3::FlowProbe, ns3::empty> const & o) [copy constructor]
+    cls.add_constructor([param('ns3::SimpleRefCount< ns3::FlowProbe, ns3::empty > const &', 'o')])
+    ## simple-ref-count.h: uint32_t ns3::SimpleRefCount<ns3::FlowProbe, ns3::empty>::GetReferenceCount() const [member function]
+    cls.add_method('GetReferenceCount', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## simple-ref-count.h: void ns3::SimpleRefCount<ns3::FlowProbe, ns3::empty>::Ref() const [member function]
+    cls.add_method('Ref', 
+                   'void', 
+                   [], 
+                   is_const=True)
+    ## simple-ref-count.h: void ns3::SimpleRefCount<ns3::FlowProbe, ns3::empty>::Unref() const [member function]
+    cls.add_method('Unref', 
+                   'void', 
+                   [], 
+                   is_const=True)
+    return
+
+def register_Ns3SimpleRefCount__Ns3InterferenceHelperEvent_Ns3Empty_methods(root_module, cls):
+    ## simple-ref-count.h: ns3::SimpleRefCount<ns3::InterferenceHelper::Event, ns3::empty>::SimpleRefCount() [constructor]
+    cls.add_constructor([])
+    ## simple-ref-count.h: ns3::SimpleRefCount<ns3::InterferenceHelper::Event, ns3::empty>::SimpleRefCount(ns3::SimpleRefCount<ns3::InterferenceHelper::Event, ns3::empty> const & o) [copy constructor]
+    cls.add_constructor([param('ns3::SimpleRefCount< ns3::InterferenceHelper::Event, ns3::empty > const &', 'o')])
+    ## simple-ref-count.h: uint32_t ns3::SimpleRefCount<ns3::InterferenceHelper::Event, ns3::empty>::GetReferenceCount() const [member function]
+    cls.add_method('GetReferenceCount', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## simple-ref-count.h: void ns3::SimpleRefCount<ns3::InterferenceHelper::Event, ns3::empty>::Ref() const [member function]
+    cls.add_method('Ref', 
+                   'void', 
+                   [], 
+                   is_const=True)
+    ## simple-ref-count.h: void ns3::SimpleRefCount<ns3::InterferenceHelper::Event, ns3::empty>::Unref() const [member function]
+    cls.add_method('Unref', 
+                   'void', 
+                   [], 
+                   is_const=True)
+    return
+
+def register_Ns3SimpleRefCount__Ns3Ipv4MulticastRoute_Ns3Empty_methods(root_module, cls):
+    ## simple-ref-count.h: ns3::SimpleRefCount<ns3::Ipv4MulticastRoute, ns3::empty>::SimpleRefCount() [constructor]
+    cls.add_constructor([])
+    ## simple-ref-count.h: ns3::SimpleRefCount<ns3::Ipv4MulticastRoute, ns3::empty>::SimpleRefCount(ns3::SimpleRefCount<ns3::Ipv4MulticastRoute, ns3::empty> const & o) [copy constructor]
+    cls.add_constructor([param('ns3::SimpleRefCount< ns3::Ipv4MulticastRoute, ns3::empty > const &', 'o')])
+    ## simple-ref-count.h: uint32_t ns3::SimpleRefCount<ns3::Ipv4MulticastRoute, ns3::empty>::GetReferenceCount() const [member function]
+    cls.add_method('GetReferenceCount', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## simple-ref-count.h: void ns3::SimpleRefCount<ns3::Ipv4MulticastRoute, ns3::empty>::Ref() const [member function]
+    cls.add_method('Ref', 
+                   'void', 
+                   [], 
+                   is_const=True)
+    ## simple-ref-count.h: void ns3::SimpleRefCount<ns3::Ipv4MulticastRoute, ns3::empty>::Unref() const [member function]
+    cls.add_method('Unref', 
+                   'void', 
+                   [], 
+                   is_const=True)
+    return
+
+def register_Ns3SimpleRefCount__Ns3Ipv4Route_Ns3Empty_methods(root_module, cls):
+    ## simple-ref-count.h: ns3::SimpleRefCount<ns3::Ipv4Route, ns3::empty>::SimpleRefCount() [constructor]
+    cls.add_constructor([])
+    ## simple-ref-count.h: ns3::SimpleRefCount<ns3::Ipv4Route, ns3::empty>::SimpleRefCount(ns3::SimpleRefCount<ns3::Ipv4Route, ns3::empty> const & o) [copy constructor]
+    cls.add_constructor([param('ns3::SimpleRefCount< ns3::Ipv4Route, ns3::empty > const &', 'o')])
+    ## simple-ref-count.h: uint32_t ns3::SimpleRefCount<ns3::Ipv4Route, ns3::empty>::GetReferenceCount() const [member function]
+    cls.add_method('GetReferenceCount', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## simple-ref-count.h: void ns3::SimpleRefCount<ns3::Ipv4Route, ns3::empty>::Ref() const [member function]
+    cls.add_method('Ref', 
+                   'void', 
+                   [], 
+                   is_const=True)
+    ## simple-ref-count.h: void ns3::SimpleRefCount<ns3::Ipv4Route, ns3::empty>::Unref() const [member function]
+    cls.add_method('Unref', 
+                   'void', 
+                   [], 
+                   is_const=True)
+    return
+
+def register_Ns3SimpleRefCount__Ns3Ipv6MulticastRoute_Ns3Empty_methods(root_module, cls):
+    ## simple-ref-count.h: ns3::SimpleRefCount<ns3::Ipv6MulticastRoute, ns3::empty>::SimpleRefCount() [constructor]
+    cls.add_constructor([])
+    ## simple-ref-count.h: ns3::SimpleRefCount<ns3::Ipv6MulticastRoute, ns3::empty>::SimpleRefCount(ns3::SimpleRefCount<ns3::Ipv6MulticastRoute, ns3::empty> const & o) [copy constructor]
+    cls.add_constructor([param('ns3::SimpleRefCount< ns3::Ipv6MulticastRoute, ns3::empty > const &', 'o')])
+    ## simple-ref-count.h: uint32_t ns3::SimpleRefCount<ns3::Ipv6MulticastRoute, ns3::empty>::GetReferenceCount() const [member function]
+    cls.add_method('GetReferenceCount', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## simple-ref-count.h: void ns3::SimpleRefCount<ns3::Ipv6MulticastRoute, ns3::empty>::Ref() const [member function]
+    cls.add_method('Ref', 
+                   'void', 
+                   [], 
+                   is_const=True)
+    ## simple-ref-count.h: void ns3::SimpleRefCount<ns3::Ipv6MulticastRoute, ns3::empty>::Unref() const [member function]
+    cls.add_method('Unref', 
+                   'void', 
+                   [], 
+                   is_const=True)
+    return
+
+def register_Ns3SimpleRefCount__Ns3Ipv6Route_Ns3Empty_methods(root_module, cls):
+    ## simple-ref-count.h: ns3::SimpleRefCount<ns3::Ipv6Route, ns3::empty>::SimpleRefCount() [constructor]
+    cls.add_constructor([])
+    ## simple-ref-count.h: ns3::SimpleRefCount<ns3::Ipv6Route, ns3::empty>::SimpleRefCount(ns3::SimpleRefCount<ns3::Ipv6Route, ns3::empty> const & o) [copy constructor]
+    cls.add_constructor([param('ns3::SimpleRefCount< ns3::Ipv6Route, ns3::empty > const &', 'o')])
+    ## simple-ref-count.h: uint32_t ns3::SimpleRefCount<ns3::Ipv6Route, ns3::empty>::GetReferenceCount() const [member function]
+    cls.add_method('GetReferenceCount', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## simple-ref-count.h: void ns3::SimpleRefCount<ns3::Ipv6Route, ns3::empty>::Ref() const [member function]
+    cls.add_method('Ref', 
+                   'void', 
+                   [], 
+                   is_const=True)
+    ## simple-ref-count.h: void ns3::SimpleRefCount<ns3::Ipv6Route, ns3::empty>::Unref() const [member function]
+    cls.add_method('Unref', 
+                   'void', 
+                   [], 
+                   is_const=True)
+    return
+
+def register_Ns3SimpleRefCount__Ns3MeshWifiInterfaceMacPlugin_Ns3Empty_methods(root_module, cls):
+    ## simple-ref-count.h: ns3::SimpleRefCount<ns3::MeshWifiInterfaceMacPlugin, ns3::empty>::SimpleRefCount() [constructor]
+    cls.add_constructor([])
+    ## simple-ref-count.h: ns3::SimpleRefCount<ns3::MeshWifiInterfaceMacPlugin, ns3::empty>::SimpleRefCount(ns3::SimpleRefCount<ns3::MeshWifiInterfaceMacPlugin, ns3::empty> const & o) [copy constructor]
+    cls.add_constructor([param('ns3::SimpleRefCount< ns3::MeshWifiInterfaceMacPlugin, ns3::empty > const &', 'o')])
+    ## simple-ref-count.h: uint32_t ns3::SimpleRefCount<ns3::MeshWifiInterfaceMacPlugin, ns3::empty>::GetReferenceCount() const [member function]
+    cls.add_method('GetReferenceCount', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## simple-ref-count.h: void ns3::SimpleRefCount<ns3::MeshWifiInterfaceMacPlugin, ns3::empty>::Ref() const [member function]
+    cls.add_method('Ref', 
+                   'void', 
+                   [], 
+                   is_const=True)
+    ## simple-ref-count.h: void ns3::SimpleRefCount<ns3::MeshWifiInterfaceMacPlugin, ns3::empty>::Unref() const [member function]
+    cls.add_method('Unref', 
+                   'void', 
+                   [], 
+                   is_const=True)
+    return
+
+def register_Ns3SimpleRefCount__Ns3Packet_Ns3Empty_methods(root_module, cls):
+    ## simple-ref-count.h: ns3::SimpleRefCount<ns3::Packet, ns3::empty>::SimpleRefCount() [constructor]
+    cls.add_constructor([])
+    ## simple-ref-count.h: ns3::SimpleRefCount<ns3::Packet, ns3::empty>::SimpleRefCount(ns3::SimpleRefCount<ns3::Packet, ns3::empty> const & o) [copy constructor]
+    cls.add_constructor([param('ns3::SimpleRefCount< ns3::Packet, ns3::empty > const &', 'o')])
+    ## simple-ref-count.h: uint32_t ns3::SimpleRefCount<ns3::Packet, ns3::empty>::GetReferenceCount() const [member function]
+    cls.add_method('GetReferenceCount', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## simple-ref-count.h: void ns3::SimpleRefCount<ns3::Packet, ns3::empty>::Ref() const [member function]
+    cls.add_method('Ref', 
+                   'void', 
+                   [], 
+                   is_const=True)
+    ## simple-ref-count.h: void ns3::SimpleRefCount<ns3::Packet, ns3::empty>::Unref() const [member function]
+    cls.add_method('Unref', 
+                   'void', 
+                   [], 
+                   is_const=True)
+    return
+
+def register_Ns3SimpleRefCount__Ns3PbbAddressBlock_Ns3Empty_methods(root_module, cls):
+    ## simple-ref-count.h: ns3::SimpleRefCount<ns3::PbbAddressBlock, ns3::empty>::SimpleRefCount() [constructor]
+    cls.add_constructor([])
+    ## simple-ref-count.h: ns3::SimpleRefCount<ns3::PbbAddressBlock, ns3::empty>::SimpleRefCount(ns3::SimpleRefCount<ns3::PbbAddressBlock, ns3::empty> const & o) [copy constructor]
+    cls.add_constructor([param('ns3::SimpleRefCount< ns3::PbbAddressBlock, ns3::empty > const &', 'o')])
+    ## simple-ref-count.h: uint32_t ns3::SimpleRefCount<ns3::PbbAddressBlock, ns3::empty>::GetReferenceCount() const [member function]
+    cls.add_method('GetReferenceCount', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## simple-ref-count.h: void ns3::SimpleRefCount<ns3::PbbAddressBlock, ns3::empty>::Ref() const [member function]
+    cls.add_method('Ref', 
+                   'void', 
+                   [], 
+                   is_const=True)
+    ## simple-ref-count.h: void ns3::SimpleRefCount<ns3::PbbAddressBlock, ns3::empty>::Unref() const [member function]
+    cls.add_method('Unref', 
+                   'void', 
+                   [], 
+                   is_const=True)
+    return
+
+def register_Ns3SimpleRefCount__Ns3PbbMessage_Ns3Empty_methods(root_module, cls):
+    ## simple-ref-count.h: ns3::SimpleRefCount<ns3::PbbMessage, ns3::empty>::SimpleRefCount() [constructor]
+    cls.add_constructor([])
+    ## simple-ref-count.h: ns3::SimpleRefCount<ns3::PbbMessage, ns3::empty>::SimpleRefCount(ns3::SimpleRefCount<ns3::PbbMessage, ns3::empty> const & o) [copy constructor]
+    cls.add_constructor([param('ns3::SimpleRefCount< ns3::PbbMessage, ns3::empty > const &', 'o')])
+    ## simple-ref-count.h: uint32_t ns3::SimpleRefCount<ns3::PbbMessage, ns3::empty>::GetReferenceCount() const [member function]
+    cls.add_method('GetReferenceCount', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## simple-ref-count.h: void ns3::SimpleRefCount<ns3::PbbMessage, ns3::empty>::Ref() const [member function]
+    cls.add_method('Ref', 
+                   'void', 
+                   [], 
+                   is_const=True)
+    ## simple-ref-count.h: void ns3::SimpleRefCount<ns3::PbbMessage, ns3::empty>::Unref() const [member function]
+    cls.add_method('Unref', 
+                   'void', 
+                   [], 
+                   is_const=True)
+    return
+
+def register_Ns3SimpleRefCount__Ns3PbbPacket_Ns3Header_methods(root_module, cls):
+    ## simple-ref-count.h: ns3::SimpleRefCount<ns3::PbbPacket, ns3::Header>::SimpleRefCount() [constructor]
+    cls.add_constructor([])
+    ## simple-ref-count.h: ns3::SimpleRefCount<ns3::PbbPacket, ns3::Header>::SimpleRefCount(ns3::SimpleRefCount<ns3::PbbPacket, ns3::Header> const & o) [copy constructor]
+    cls.add_constructor([param('ns3::SimpleRefCount< ns3::PbbPacket, ns3::Header > const &', 'o')])
+    ## simple-ref-count.h: uint32_t ns3::SimpleRefCount<ns3::PbbPacket, ns3::Header>::GetReferenceCount() const [member function]
+    cls.add_method('GetReferenceCount', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## simple-ref-count.h: void ns3::SimpleRefCount<ns3::PbbPacket, ns3::Header>::Ref() const [member function]
+    cls.add_method('Ref', 
+                   'void', 
+                   [], 
+                   is_const=True)
+    ## simple-ref-count.h: void ns3::SimpleRefCount<ns3::PbbPacket, ns3::Header>::Unref() const [member function]
+    cls.add_method('Unref', 
+                   'void', 
+                   [], 
+                   is_const=True)
+    return
+
+def register_Ns3SimpleRefCount__Ns3PbbTlv_Ns3Empty_methods(root_module, cls):
+    ## simple-ref-count.h: ns3::SimpleRefCount<ns3::PbbTlv, ns3::empty>::SimpleRefCount() [constructor]
+    cls.add_constructor([])
+    ## simple-ref-count.h: ns3::SimpleRefCount<ns3::PbbTlv, ns3::empty>::SimpleRefCount(ns3::SimpleRefCount<ns3::PbbTlv, ns3::empty> const & o) [copy constructor]
+    cls.add_constructor([param('ns3::SimpleRefCount< ns3::PbbTlv, ns3::empty > const &', 'o')])
+    ## simple-ref-count.h: uint32_t ns3::SimpleRefCount<ns3::PbbTlv, ns3::empty>::GetReferenceCount() const [member function]
+    cls.add_method('GetReferenceCount', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## simple-ref-count.h: void ns3::SimpleRefCount<ns3::PbbTlv, ns3::empty>::Ref() const [member function]
+    cls.add_method('Ref', 
+                   'void', 
+                   [], 
+                   is_const=True)
+    ## simple-ref-count.h: void ns3::SimpleRefCount<ns3::PbbTlv, ns3::empty>::Unref() const [member function]
+    cls.add_method('Unref', 
+                   'void', 
+                   [], 
+                   is_const=True)
+    return
+
+def register_Ns3SimpleRefCount__Ns3RadvdInterface_Ns3Empty_methods(root_module, cls):
+    ## simple-ref-count.h: ns3::SimpleRefCount<ns3::RadvdInterface, ns3::empty>::SimpleRefCount() [constructor]
+    cls.add_constructor([])
+    ## simple-ref-count.h: ns3::SimpleRefCount<ns3::RadvdInterface, ns3::empty>::SimpleRefCount(ns3::SimpleRefCount<ns3::RadvdInterface, ns3::empty> const & o) [copy constructor]
+    cls.add_constructor([param('ns3::SimpleRefCount< ns3::RadvdInterface, ns3::empty > const &', 'o')])
+    ## simple-ref-count.h: uint32_t ns3::SimpleRefCount<ns3::RadvdInterface, ns3::empty>::GetReferenceCount() const [member function]
+    cls.add_method('GetReferenceCount', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## simple-ref-count.h: void ns3::SimpleRefCount<ns3::RadvdInterface, ns3::empty>::Ref() const [member function]
+    cls.add_method('Ref', 
+                   'void', 
+                   [], 
+                   is_const=True)
+    ## simple-ref-count.h: void ns3::SimpleRefCount<ns3::RadvdInterface, ns3::empty>::Unref() const [member function]
+    cls.add_method('Unref', 
+                   'void', 
+                   [], 
+                   is_const=True)
+    return
+
+def register_Ns3SimpleRefCount__Ns3RadvdPrefix_Ns3Empty_methods(root_module, cls):
+    ## simple-ref-count.h: ns3::SimpleRefCount<ns3::RadvdPrefix, ns3::empty>::SimpleRefCount() [constructor]
+    cls.add_constructor([])
+    ## simple-ref-count.h: ns3::SimpleRefCount<ns3::RadvdPrefix, ns3::empty>::SimpleRefCount(ns3::SimpleRefCount<ns3::RadvdPrefix, ns3::empty> const & o) [copy constructor]
+    cls.add_constructor([param('ns3::SimpleRefCount< ns3::RadvdPrefix, ns3::empty > const &', 'o')])
+    ## simple-ref-count.h: uint32_t ns3::SimpleRefCount<ns3::RadvdPrefix, ns3::empty>::GetReferenceCount() const [member function]
+    cls.add_method('GetReferenceCount', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## simple-ref-count.h: void ns3::SimpleRefCount<ns3::RadvdPrefix, ns3::empty>::Ref() const [member function]
+    cls.add_method('Ref', 
+                   'void', 
+                   [], 
+                   is_const=True)
+    ## simple-ref-count.h: void ns3::SimpleRefCount<ns3::RadvdPrefix, ns3::empty>::Unref() const [member function]
+    cls.add_method('Unref', 
+                   'void', 
+                   [], 
+                   is_const=True)
+    return
+
+def register_Ns3SimpleRefCount__Ns3RefCountBase_Ns3Empty_methods(root_module, cls):
+    ## simple-ref-count.h: ns3::SimpleRefCount<ns3::RefCountBase, ns3::empty>::SimpleRefCount() [constructor]
+    cls.add_constructor([])
+    ## simple-ref-count.h: ns3::SimpleRefCount<ns3::RefCountBase, ns3::empty>::SimpleRefCount(ns3::SimpleRefCount<ns3::RefCountBase, ns3::empty> const & o) [copy constructor]
+    cls.add_constructor([param('ns3::SimpleRefCount< ns3::RefCountBase, ns3::empty > const &', 'o')])
+    ## simple-ref-count.h: uint32_t ns3::SimpleRefCount<ns3::RefCountBase, ns3::empty>::GetReferenceCount() const [member function]
+    cls.add_method('GetReferenceCount', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## simple-ref-count.h: void ns3::SimpleRefCount<ns3::RefCountBase, ns3::empty>::Ref() const [member function]
+    cls.add_method('Ref', 
+                   'void', 
+                   [], 
+                   is_const=True)
+    ## simple-ref-count.h: void ns3::SimpleRefCount<ns3::RefCountBase, ns3::empty>::Unref() const [member function]
+    cls.add_method('Unref', 
+                   'void', 
+                   [], 
+                   is_const=True)
+    return
+
+def register_Ns3SimpleRefCount__Ns3SystemThread_Ns3Empty_methods(root_module, cls):
+    ## simple-ref-count.h: ns3::SimpleRefCount<ns3::SystemThread, ns3::empty>::SimpleRefCount() [constructor]
+    cls.add_constructor([])
+    ## simple-ref-count.h: ns3::SimpleRefCount<ns3::SystemThread, ns3::empty>::SimpleRefCount(ns3::SimpleRefCount<ns3::SystemThread, ns3::empty> const & o) [copy constructor]
+    cls.add_constructor([param('ns3::SimpleRefCount< ns3::SystemThread, ns3::empty > const &', 'o')])
+    ## simple-ref-count.h: uint32_t ns3::SimpleRefCount<ns3::SystemThread, ns3::empty>::GetReferenceCount() const [member function]
+    cls.add_method('GetReferenceCount', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## simple-ref-count.h: void ns3::SimpleRefCount<ns3::SystemThread, ns3::empty>::Ref() const [member function]
+    cls.add_method('Ref', 
+                   'void', 
+                   [], 
+                   is_const=True)
+    ## simple-ref-count.h: void ns3::SimpleRefCount<ns3::SystemThread, ns3::empty>::Unref() const [member function]
+    cls.add_method('Unref', 
+                   'void', 
+                   [], 
+                   is_const=True)
+    return
+
+def register_Ns3SimpleRefCount__Ns3TraceSourceAccessor_Ns3Empty_methods(root_module, cls):
+    ## simple-ref-count.h: ns3::SimpleRefCount<ns3::TraceSourceAccessor, ns3::empty>::SimpleRefCount() [constructor]
+    cls.add_constructor([])
+    ## simple-ref-count.h: ns3::SimpleRefCount<ns3::TraceSourceAccessor, ns3::empty>::SimpleRefCount(ns3::SimpleRefCount<ns3::TraceSourceAccessor, ns3::empty> const & o) [copy constructor]
+    cls.add_constructor([param('ns3::SimpleRefCount< ns3::TraceSourceAccessor, ns3::empty > const &', 'o')])
+    ## simple-ref-count.h: uint32_t ns3::SimpleRefCount<ns3::TraceSourceAccessor, ns3::empty>::GetReferenceCount() const [member function]
+    cls.add_method('GetReferenceCount', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## simple-ref-count.h: void ns3::SimpleRefCount<ns3::TraceSourceAccessor, ns3::empty>::Ref() const [member function]
+    cls.add_method('Ref', 
+                   'void', 
+                   [], 
+                   is_const=True)
+    ## simple-ref-count.h: void ns3::SimpleRefCount<ns3::TraceSourceAccessor, ns3::empty>::Unref() const [member function]
+    cls.add_method('Unref', 
+                   'void', 
+                   [], 
+                   is_const=True)
+    return
+
+def register_Ns3SimpleRefCount__Ns3WifiInformationElement_Ns3Empty_methods(root_module, cls):
+    ## simple-ref-count.h: ns3::SimpleRefCount<ns3::WifiInformationElement, ns3::empty>::SimpleRefCount() [constructor]
+    cls.add_constructor([])
+    ## simple-ref-count.h: ns3::SimpleRefCount<ns3::WifiInformationElement, ns3::empty>::SimpleRefCount(ns3::SimpleRefCount<ns3::WifiInformationElement, ns3::empty> const & o) [copy constructor]
+    cls.add_constructor([param('ns3::SimpleRefCount< ns3::WifiInformationElement, ns3::empty > const &', 'o')])
+    ## simple-ref-count.h: uint32_t ns3::SimpleRefCount<ns3::WifiInformationElement, ns3::empty>::GetReferenceCount() const [member function]
+    cls.add_method('GetReferenceCount', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## simple-ref-count.h: void ns3::SimpleRefCount<ns3::WifiInformationElement, ns3::empty>::Ref() const [member function]
+    cls.add_method('Ref', 
+                   'void', 
+                   [], 
+                   is_const=True)
+    ## simple-ref-count.h: void ns3::SimpleRefCount<ns3::WifiInformationElement, ns3::empty>::Unref() const [member function]
+    cls.add_method('Unref', 
+                   'void', 
+                   [], 
+                   is_const=True)
+    return
+
+def register_Ns3SimpleRefCount__Ns3Dot11sIeBeaconTimingUnit_Ns3Empty_methods(root_module, cls):
+    ## simple-ref-count.h: ns3::SimpleRefCount<ns3::dot11s::IeBeaconTimingUnit, ns3::empty>::SimpleRefCount() [constructor]
+    cls.add_constructor([])
+    ## simple-ref-count.h: ns3::SimpleRefCount<ns3::dot11s::IeBeaconTimingUnit, ns3::empty>::SimpleRefCount(ns3::SimpleRefCount<ns3::dot11s::IeBeaconTimingUnit, ns3::empty> const & o) [copy constructor]
+    cls.add_constructor([param('ns3::SimpleRefCount< ns3::dot11s::IeBeaconTimingUnit, ns3::empty > const &', 'o')])
+    ## simple-ref-count.h: uint32_t ns3::SimpleRefCount<ns3::dot11s::IeBeaconTimingUnit, ns3::empty>::GetReferenceCount() const [member function]
+    cls.add_method('GetReferenceCount', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## simple-ref-count.h: void ns3::SimpleRefCount<ns3::dot11s::IeBeaconTimingUnit, ns3::empty>::Ref() const [member function]
+    cls.add_method('Ref', 
+                   'void', 
+                   [], 
+                   is_const=True)
+    ## simple-ref-count.h: void ns3::SimpleRefCount<ns3::dot11s::IeBeaconTimingUnit, ns3::empty>::Unref() const [member function]
+    cls.add_method('Unref', 
+                   'void', 
+                   [], 
+                   is_const=True)
+    return
+
+def register_Ns3SystemThread_methods(root_module, cls):
+    ## system-thread.h: ns3::SystemThread::SystemThread(ns3::SystemThread const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::SystemThread const &', 'arg0')])
+    ## system-thread.h: ns3::SystemThread::SystemThread(ns3::Callback<void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> callback) [constructor]
+    cls.add_constructor([param('ns3::Callback< void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'callback')])
+    ## system-thread.h: bool ns3::SystemThread::Break() [member function]
+    cls.add_method('Break', 
+                   'bool', 
+                   [])
+    ## system-thread.h: void ns3::SystemThread::Join() [member function]
+    cls.add_method('Join', 
+                   'void', 
+                   [])
+    ## system-thread.h: void ns3::SystemThread::Shutdown() [member function]
+    cls.add_method('Shutdown', 
+                   'void', 
+                   [])
+    ## system-thread.h: void ns3::SystemThread::Start() [member function]
+    cls.add_method('Start', 
+                   'void', 
+                   [])
+    return
+
+def register_Ns3TraceSourceAccessor_methods(root_module, cls):
+    ## trace-source-accessor.h: ns3::TraceSourceAccessor::TraceSourceAccessor(ns3::TraceSourceAccessor const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::TraceSourceAccessor const &', 'arg0')])
+    ## trace-source-accessor.h: ns3::TraceSourceAccessor::TraceSourceAccessor() [constructor]
+    cls.add_constructor([])
+    ## trace-source-accessor.h: bool ns3::TraceSourceAccessor::Connect(ns3::ObjectBase * obj, std::string context, ns3::CallbackBase const & cb) const [member function]
+    cls.add_method('Connect', 
+                   'bool', 
+                   [param('ns3::ObjectBase *', 'obj', transfer_ownership=False), param('std::string', 'context'), param('ns3::CallbackBase const &', 'cb')], 
+                   is_pure_virtual=True, is_const=True, is_virtual=True)
+    ## trace-source-accessor.h: bool ns3::TraceSourceAccessor::ConnectWithoutContext(ns3::ObjectBase * obj, ns3::CallbackBase const & cb) const [member function]
+    cls.add_method('ConnectWithoutContext', 
+                   'bool', 
+                   [param('ns3::ObjectBase *', 'obj', transfer_ownership=False), param('ns3::CallbackBase const &', 'cb')], 
+                   is_pure_virtual=True, is_const=True, is_virtual=True)
+    ## trace-source-accessor.h: bool ns3::TraceSourceAccessor::Disconnect(ns3::ObjectBase * obj, std::string context, ns3::CallbackBase const & cb) const [member function]
+    cls.add_method('Disconnect', 
+                   'bool', 
+                   [param('ns3::ObjectBase *', 'obj', transfer_ownership=False), param('std::string', 'context'), param('ns3::CallbackBase const &', 'cb')], 
+                   is_pure_virtual=True, is_const=True, is_virtual=True)
+    ## trace-source-accessor.h: bool ns3::TraceSourceAccessor::DisconnectWithoutContext(ns3::ObjectBase * obj, ns3::CallbackBase const & cb) const [member function]
+    cls.add_method('DisconnectWithoutContext', 
+                   'bool', 
+                   [param('ns3::ObjectBase *', 'obj', transfer_ownership=False), param('ns3::CallbackBase const &', 'cb')], 
+                   is_pure_virtual=True, is_const=True, is_virtual=True)
+    return
+
 def register_Ns3AttributeAccessor_methods(root_module, cls):
     ## attribute.h: ns3::AttributeAccessor::AttributeAccessor(ns3::AttributeAccessor const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::AttributeAccessor const &', 'arg0')])
@@ -1774,6 +2561,18 @@ def register_Ns3CallbackChecker_methods(root_module, cls):
     cls.add_constructor([param('ns3::CallbackChecker const &', 'arg0')])
     return
 
+def register_Ns3CallbackImplBase_methods(root_module, cls):
+    ## callback.h: ns3::CallbackImplBase::CallbackImplBase() [constructor]
+    cls.add_constructor([])
+    ## callback.h: ns3::CallbackImplBase::CallbackImplBase(ns3::CallbackImplBase const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::CallbackImplBase const &', 'arg0')])
+    ## callback.h: bool ns3::CallbackImplBase::IsEqual(ns3::Ptr<ns3::CallbackImplBase const> other) const [member function]
+    cls.add_method('IsEqual', 
+                   'bool', 
+                   [param('ns3::Ptr< ns3::CallbackImplBase const >', 'other')], 
+                   is_pure_virtual=True, is_const=True, is_virtual=True)
+    return
+
 def register_Ns3CallbackValue_methods(root_module, cls):
     ## callback.h: ns3::CallbackValue::CallbackValue(ns3::CallbackValue const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::CallbackValue const &', 'arg0')])
@@ -1800,26 +2599,6 @@ def register_Ns3CallbackValue_methods(root_module, cls):
     cls.add_method('Set', 
                    'void', 
                    [param('ns3::CallbackBase', 'base')])
-    return
-
-def register_Ns3ConstantVariable_methods(root_module, cls):
-    ## random-variable.h: ns3::ConstantVariable::ConstantVariable(ns3::ConstantVariable const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::ConstantVariable const &', 'arg0')])
-    ## random-variable.h: ns3::ConstantVariable::ConstantVariable() [constructor]
-    cls.add_constructor([])
-    ## random-variable.h: ns3::ConstantVariable::ConstantVariable(double c) [constructor]
-    cls.add_constructor([param('double', 'c')])
-    ## random-variable.h: void ns3::ConstantVariable::SetConstant(double c) [member function]
-    cls.add_method('SetConstant', 
-                   'void', 
-                   [param('double', 'c')])
-    return
-
-def register_Ns3DeterministicVariable_methods(root_module, cls):
-    ## random-variable.h: ns3::DeterministicVariable::DeterministicVariable(ns3::DeterministicVariable const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::DeterministicVariable const &', 'arg0')])
-    ## random-variable.h: ns3::DeterministicVariable::DeterministicVariable(double * d, uint32_t c) [constructor]
-    cls.add_constructor([param('double *', 'd'), param('uint32_t', 'c')])
     return
 
 def register_Ns3DoubleValue_methods(root_module, cls):
@@ -1853,17 +2632,6 @@ def register_Ns3DoubleValue_methods(root_module, cls):
     cls.add_method('Set', 
                    'void', 
                    [param('double const &', 'value')])
-    return
-
-def register_Ns3EmpiricalVariable_methods(root_module, cls):
-    ## random-variable.h: ns3::EmpiricalVariable::EmpiricalVariable(ns3::EmpiricalVariable const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::EmpiricalVariable const &', 'arg0')])
-    ## random-variable.h: ns3::EmpiricalVariable::EmpiricalVariable() [constructor]
-    cls.add_constructor([])
-    ## random-variable.h: void ns3::EmpiricalVariable::CDF(double v, double c) [member function]
-    cls.add_method('CDF', 
-                   'void', 
-                   [param('double', 'v'), param('double', 'c')])
     return
 
 def register_Ns3EmptyAttributeValue_methods(root_module, cls):
@@ -1966,62 +2734,6 @@ def register_Ns3EnumValue_methods(root_module, cls):
                    [param('int', 'v')])
     return
 
-def register_Ns3ErlangVariable_methods(root_module, cls):
-    ## random-variable.h: ns3::ErlangVariable::ErlangVariable(ns3::ErlangVariable const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::ErlangVariable const &', 'arg0')])
-    ## random-variable.h: ns3::ErlangVariable::ErlangVariable() [constructor]
-    cls.add_constructor([])
-    ## random-variable.h: ns3::ErlangVariable::ErlangVariable(unsigned int k, double lambda) [constructor]
-    cls.add_constructor([param('unsigned int', 'k'), param('double', 'lambda')])
-    ## random-variable.h: double ns3::ErlangVariable::GetValue() const [member function]
-    cls.add_method('GetValue', 
-                   'double', 
-                   [], 
-                   is_const=True)
-    ## random-variable.h: double ns3::ErlangVariable::GetValue(unsigned int k, double lambda) const [member function]
-    cls.add_method('GetValue', 
-                   'double', 
-                   [param('unsigned int', 'k'), param('double', 'lambda')], 
-                   is_const=True)
-    return
-
-def register_Ns3ExponentialVariable_methods(root_module, cls):
-    ## random-variable.h: ns3::ExponentialVariable::ExponentialVariable(ns3::ExponentialVariable const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::ExponentialVariable const &', 'arg0')])
-    ## random-variable.h: ns3::ExponentialVariable::ExponentialVariable() [constructor]
-    cls.add_constructor([])
-    ## random-variable.h: ns3::ExponentialVariable::ExponentialVariable(double m) [constructor]
-    cls.add_constructor([param('double', 'm')])
-    ## random-variable.h: ns3::ExponentialVariable::ExponentialVariable(double m, double b) [constructor]
-    cls.add_constructor([param('double', 'm'), param('double', 'b')])
-    return
-
-def register_Ns3GammaVariable_methods(root_module, cls):
-    ## random-variable.h: ns3::GammaVariable::GammaVariable(ns3::GammaVariable const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::GammaVariable const &', 'arg0')])
-    ## random-variable.h: ns3::GammaVariable::GammaVariable() [constructor]
-    cls.add_constructor([])
-    ## random-variable.h: ns3::GammaVariable::GammaVariable(double alpha, double beta) [constructor]
-    cls.add_constructor([param('double', 'alpha'), param('double', 'beta')])
-    ## random-variable.h: double ns3::GammaVariable::GetValue() const [member function]
-    cls.add_method('GetValue', 
-                   'double', 
-                   [], 
-                   is_const=True)
-    ## random-variable.h: double ns3::GammaVariable::GetValue(double alpha, double beta) const [member function]
-    cls.add_method('GetValue', 
-                   'double', 
-                   [param('double', 'alpha'), param('double', 'beta')], 
-                   is_const=True)
-    return
-
-def register_Ns3IntEmpiricalVariable_methods(root_module, cls):
-    ## random-variable.h: ns3::IntEmpiricalVariable::IntEmpiricalVariable(ns3::IntEmpiricalVariable const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::IntEmpiricalVariable const &', 'arg0')])
-    ## random-variable.h: ns3::IntEmpiricalVariable::IntEmpiricalVariable() [constructor]
-    cls.add_constructor([])
-    return
-
 def register_Ns3IntegerValue_methods(root_module, cls):
     ## integer.h: ns3::IntegerValue::IntegerValue() [constructor]
     cls.add_constructor([])
@@ -2053,91 +2765,6 @@ def register_Ns3IntegerValue_methods(root_module, cls):
     cls.add_method('Set', 
                    'void', 
                    [param('int64_t const &', 'value')])
-    return
-
-def register_Ns3LogNormalVariable_methods(root_module, cls):
-    ## random-variable.h: ns3::LogNormalVariable::LogNormalVariable(ns3::LogNormalVariable const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::LogNormalVariable const &', 'arg0')])
-    ## random-variable.h: ns3::LogNormalVariable::LogNormalVariable(double mu, double sigma) [constructor]
-    cls.add_constructor([param('double', 'mu'), param('double', 'sigma')])
-    return
-
-def register_Ns3NormalVariable_methods(root_module, cls):
-    ## random-variable.h: ns3::NormalVariable::NormalVariable(ns3::NormalVariable const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::NormalVariable const &', 'arg0')])
-    ## random-variable.h: ns3::NormalVariable::NormalVariable() [constructor]
-    cls.add_constructor([])
-    ## random-variable.h: ns3::NormalVariable::NormalVariable(double m, double v) [constructor]
-    cls.add_constructor([param('double', 'm'), param('double', 'v')])
-    ## random-variable.h: ns3::NormalVariable::NormalVariable(double m, double v, double b) [constructor]
-    cls.add_constructor([param('double', 'm'), param('double', 'v'), param('double', 'b')])
-    return
-
-def register_Ns3Object_methods(root_module, cls):
-    ## object.h: ns3::Object::Object() [constructor]
-    cls.add_constructor([])
-    ## object.h: void ns3::Object::AggregateObject(ns3::Ptr<ns3::Object> other) [member function]
-    cls.add_method('AggregateObject', 
-                   'void', 
-                   [param('ns3::Ptr< ns3::Object >', 'other')])
-    ## object.h: void ns3::Object::Dispose() [member function]
-    cls.add_method('Dispose', 
-                   'void', 
-                   [])
-    ## object.h: ns3::Object::AggregateIterator ns3::Object::GetAggregateIterator() const [member function]
-    cls.add_method('GetAggregateIterator', 
-                   'ns3::Object::AggregateIterator', 
-                   [], 
-                   is_const=True)
-    ## object.h: ns3::TypeId ns3::Object::GetInstanceTypeId() const [member function]
-    cls.add_method('GetInstanceTypeId', 
-                   'ns3::TypeId', 
-                   [], 
-                   is_const=True, is_virtual=True)
-    ## object.h: ns3::Ptr<ns3::Object> ns3::Object::GetObject(ns3::TypeId tid) const [member function]
-    cls.add_method('GetObject', 
-                   'ns3::Ptr< ns3::Object >', 
-                   [param('ns3::TypeId', 'tid')], 
-                   is_const=True, template_parameters=['ns3::Object'], custom_template_method_name='GetObject')
-    ## object.h: static ns3::TypeId ns3::Object::GetTypeId() [member function]
-    cls.add_method('GetTypeId', 
-                   'ns3::TypeId', 
-                   [], 
-                   is_static=True)
-    ## object.h: ns3::Object::Object(ns3::Object const & o) [copy constructor]
-    cls.add_constructor([param('ns3::Object const &', 'o')], 
-                        visibility='protected')
-    ## object.h: void ns3::Object::DoDispose() [member function]
-    cls.add_method('DoDispose', 
-                   'void', 
-                   [], 
-                   visibility='protected', is_virtual=True)
-    ## object.h: void ns3::Object::NotifyNewAggregate() [member function]
-    cls.add_method('NotifyNewAggregate', 
-                   'void', 
-                   [], 
-                   visibility='protected', is_virtual=True)
-    ## object.h: void ns3::Object::DoDelete() [member function]
-    cls.add_method('DoDelete', 
-                   'void', 
-                   [], 
-                   visibility='private', is_virtual=True)
-    return
-
-def register_Ns3ObjectAggregateIterator_methods(root_module, cls):
-    ## object.h: ns3::Object::AggregateIterator::AggregateIterator(ns3::Object::AggregateIterator const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::Object::AggregateIterator const &', 'arg0')])
-    ## object.h: ns3::Object::AggregateIterator::AggregateIterator() [constructor]
-    cls.add_constructor([])
-    ## object.h: bool ns3::Object::AggregateIterator::HasNext() const [member function]
-    cls.add_method('HasNext', 
-                   'bool', 
-                   [], 
-                   is_const=True)
-    ## object.h: ns3::Ptr<ns3::Object const> ns3::Object::AggregateIterator::Next() [member function]
-    cls.add_method('Next', 
-                   'ns3::Ptr< ns3::Object const >', 
-                   [])
     return
 
 def register_Ns3ObjectFactoryChecker_methods(root_module, cls):
@@ -2271,19 +2898,6 @@ def register_Ns3ObjectVectorValue_methods(root_module, cls):
                    is_const=True, is_virtual=True)
     return
 
-def register_Ns3ParetoVariable_methods(root_module, cls):
-    ## random-variable.h: ns3::ParetoVariable::ParetoVariable(ns3::ParetoVariable const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::ParetoVariable const &', 'arg0')])
-    ## random-variable.h: ns3::ParetoVariable::ParetoVariable() [constructor]
-    cls.add_constructor([])
-    ## random-variable.h: ns3::ParetoVariable::ParetoVariable(double m) [constructor]
-    cls.add_constructor([param('double', 'm')])
-    ## random-variable.h: ns3::ParetoVariable::ParetoVariable(double m, double s) [constructor]
-    cls.add_constructor([param('double', 'm'), param('double', 's')])
-    ## random-variable.h: ns3::ParetoVariable::ParetoVariable(double m, double s, double b) [constructor]
-    cls.add_constructor([param('double', 'm'), param('double', 's'), param('double', 'b')])
-    return
-
 def register_Ns3PointerChecker_methods(root_module, cls):
     ## pointer.h: ns3::PointerChecker::PointerChecker() [constructor]
     cls.add_constructor([])
@@ -2367,6 +2981,13 @@ def register_Ns3RandomVariableValue_methods(root_module, cls):
     cls.add_method('Set', 
                    'void', 
                    [param('ns3::RandomVariable const &', 'value')])
+    return
+
+def register_Ns3RefCountBase_methods(root_module, cls):
+    ## ref-count-base.h: ns3::RefCountBase::RefCountBase() [constructor]
+    cls.add_constructor([])
+    ## ref-count-base.h: ns3::RefCountBase::RefCountBase(ns3::RefCountBase const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::RefCountBase const &', 'arg0')])
     return
 
 def register_Ns3StringChecker_methods(root_module, cls):
@@ -2800,7 +3421,9 @@ def register_functions(root_module):
     register_functions_ns3_Config(module.get_submodule('Config'), root_module)
     register_functions_ns3_TimeStepPrecision(module.get_submodule('TimeStepPrecision'), root_module)
     register_functions_ns3_addressUtils(module.get_submodule('addressUtils'), root_module)
+    register_functions_ns3_aodv(module.get_submodule('aodv'), root_module)
     register_functions_ns3_dot11s(module.get_submodule('dot11s'), root_module)
+    register_functions_ns3_dpd(module.get_submodule('dpd'), root_module)
     register_functions_ns3_flame(module.get_submodule('flame'), root_module)
     register_functions_ns3_internal(module.get_submodule('internal'), root_module)
     register_functions_ns3_olsr(module.get_submodule('olsr'), root_module)
@@ -2871,7 +3494,13 @@ def register_functions_ns3_TimeStepPrecision(module, root_module):
 def register_functions_ns3_addressUtils(module, root_module):
     return
 
+def register_functions_ns3_aodv(module, root_module):
+    return
+
 def register_functions_ns3_dot11s(module, root_module):
+    return
+
+def register_functions_ns3_dpd(module, root_module):
     return
 
 def register_functions_ns3_flame(module, root_module):

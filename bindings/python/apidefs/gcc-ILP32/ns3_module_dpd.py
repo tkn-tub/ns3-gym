@@ -3,8 +3,6 @@ from pybindgen import Module, FileCodeSink, param, retval, cppclass, typehandler
 def register_types(module):
     root_module = module.get_root()
     
-    ## onoff-application.h: ns3::OnOffApplication [class]
-    module.add_class('OnOffApplication', parent=root_module['ns3::Application'])
     
     ## Register a nested module for the namespace Config
     
@@ -83,6 +81,10 @@ def register_types_ns3_dot11s(module):
 def register_types_ns3_dpd(module):
     root_module = module.get_root()
     
+    ## dpd.h: ns3::dpd::DuplicatePacketDetection [class]
+    module.add_class('DuplicatePacketDetection')
+    ## id-cache.h: ns3::dpd::IdCache [class]
+    module.add_class('IdCache')
 
 def register_types_ns3_flame(module):
     root_module = module.get_root()
@@ -97,38 +99,56 @@ def register_types_ns3_olsr(module):
     
 
 def register_methods(root_module):
-    register_Ns3OnOffApplication_methods(root_module, root_module['ns3::OnOffApplication'])
+    register_Ns3DpdDuplicatePacketDetection_methods(root_module, root_module['ns3::dpd::DuplicatePacketDetection'])
+    register_Ns3DpdIdCache_methods(root_module, root_module['ns3::dpd::IdCache'])
     return
 
-def register_Ns3OnOffApplication_methods(root_module, cls):
-    ## onoff-application.h: ns3::OnOffApplication::OnOffApplication(ns3::OnOffApplication const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::OnOffApplication const &', 'arg0')])
-    ## onoff-application.h: ns3::OnOffApplication::OnOffApplication() [constructor]
-    cls.add_constructor([])
-    ## onoff-application.h: static ns3::TypeId ns3::OnOffApplication::GetTypeId() [member function]
-    cls.add_method('GetTypeId', 
-                   'ns3::TypeId', 
+def register_Ns3DpdDuplicatePacketDetection_methods(root_module, cls):
+    ## dpd.h: ns3::dpd::DuplicatePacketDetection::DuplicatePacketDetection(ns3::dpd::DuplicatePacketDetection const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::dpd::DuplicatePacketDetection const &', 'arg0')])
+    ## dpd.h: ns3::dpd::DuplicatePacketDetection::DuplicatePacketDetection(ns3::Time lifetime) [constructor]
+    cls.add_constructor([param('ns3::Time', 'lifetime')])
+    ## dpd.h: ns3::Time ns3::dpd::DuplicatePacketDetection::GetLifetime() const [member function]
+    cls.add_method('GetLifetime', 
+                   'ns3::Time', 
                    [], 
-                   is_static=True)
-    ## onoff-application.h: void ns3::OnOffApplication::SetMaxBytes(uint32_t maxBytes) [member function]
-    cls.add_method('SetMaxBytes', 
+                   is_const=True)
+    ## dpd.h: bool ns3::dpd::DuplicatePacketDetection::IsDuplicate(ns3::Ptr<ns3::Packet const> p, ns3::Ipv4Header const & header) [member function]
+    cls.add_method('IsDuplicate', 
+                   'bool', 
+                   [param('ns3::Ptr< ns3::Packet const >', 'p'), param('ns3::Ipv4Header const &', 'header')])
+    ## dpd.h: void ns3::dpd::DuplicatePacketDetection::SetLifetime(ns3::Time lifetime) [member function]
+    cls.add_method('SetLifetime', 
                    'void', 
-                   [param('uint32_t', 'maxBytes')])
-    ## onoff-application.h: void ns3::OnOffApplication::DoDispose() [member function]
-    cls.add_method('DoDispose', 
-                   'void', 
+                   [param('ns3::Time', 'lifetime')])
+    return
+
+def register_Ns3DpdIdCache_methods(root_module, cls):
+    ## id-cache.h: ns3::dpd::IdCache::IdCache(ns3::dpd::IdCache const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::dpd::IdCache const &', 'arg0')])
+    ## id-cache.h: ns3::dpd::IdCache::IdCache(ns3::Time lifetime) [constructor]
+    cls.add_constructor([param('ns3::Time', 'lifetime')])
+    ## id-cache.h: ns3::Time ns3::dpd::IdCache::GetLifeTime() const [member function]
+    cls.add_method('GetLifeTime', 
+                   'ns3::Time', 
                    [], 
-                   visibility='protected', is_virtual=True)
-    ## onoff-application.h: void ns3::OnOffApplication::StartApplication() [member function]
-    cls.add_method('StartApplication', 
+                   is_const=True)
+    ## id-cache.h: uint32_t ns3::dpd::IdCache::GetSize() [member function]
+    cls.add_method('GetSize', 
+                   'uint32_t', 
+                   [])
+    ## id-cache.h: bool ns3::dpd::IdCache::IsDuplicate(ns3::Ipv4Address addr, uint32_t id) [member function]
+    cls.add_method('IsDuplicate', 
+                   'bool', 
+                   [param('ns3::Ipv4Address', 'addr'), param('uint32_t', 'id')])
+    ## id-cache.h: void ns3::dpd::IdCache::Purge() [member function]
+    cls.add_method('Purge', 
                    'void', 
-                   [], 
-                   visibility='private', is_virtual=True)
-    ## onoff-application.h: void ns3::OnOffApplication::StopApplication() [member function]
-    cls.add_method('StopApplication', 
+                   [])
+    ## id-cache.h: void ns3::dpd::IdCache::SetLifetime(ns3::Time lifetime) [member function]
+    cls.add_method('SetLifetime', 
                    'void', 
-                   [], 
-                   visibility='private', is_virtual=True)
+                   [param('ns3::Time', 'lifetime')])
     return
 
 def register_functions(root_module):

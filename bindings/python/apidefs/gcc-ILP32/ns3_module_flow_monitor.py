@@ -5,10 +5,18 @@ def register_types(module):
     
     ## histogram.h: ns3::Histogram [class]
     module.add_class('Histogram')
+    ## simple-ref-count.h: ns3::SimpleRefCount<ns3::FlowClassifier, ns3::empty> [class]
+    module.add_class('SimpleRefCount', template_parameters=['ns3::FlowClassifier', 'ns3::empty'], parent=root_module['ns3::empty'])
+    ## simple-ref-count.h: ns3::SimpleRefCount<ns3::FlowProbe, ns3::empty> [class]
+    module.add_class('SimpleRefCount', template_parameters=['ns3::FlowProbe', 'ns3::empty'], parent=root_module['ns3::empty'])
     ## flow-classifier.h: ns3::FlowClassifier [class]
-    module.add_class('FlowClassifier', parent=root_module['ns3::RefCountBase'])
+    module.add_class('FlowClassifier', parent=root_module['ns3::SimpleRefCount< ns3::FlowClassifier, ns3::empty >'])
+    ## flow-monitor.h: ns3::FlowMonitor [class]
+    module.add_class('FlowMonitor', parent=root_module['ns3::Object'])
+    ## flow-monitor.h: ns3::FlowMonitor::FlowStats [struct]
+    module.add_class('FlowStats', outer_class=root_module['ns3::FlowMonitor'])
     ## flow-probe.h: ns3::FlowProbe [class]
-    module.add_class('FlowProbe', parent=root_module['ns3::RefCountBase'])
+    module.add_class('FlowProbe', parent=root_module['ns3::SimpleRefCount< ns3::FlowProbe, ns3::empty >'])
     ## flow-probe.h: ns3::FlowProbe::FlowStats [struct]
     module.add_class('FlowStats', outer_class=root_module['ns3::FlowProbe'])
     ## ipv4-flow-classifier.h: ns3::Ipv4FlowClassifier [class]
@@ -19,12 +27,8 @@ def register_types(module):
     module.add_class('Ipv4FlowProbe', parent=root_module['ns3::FlowProbe'])
     ## ipv4-flow-probe.h: ns3::Ipv4FlowProbe::DropReason [enumeration]
     module.add_enum('DropReason', ['DROP_NO_ROUTE', 'DROP_TTL_EXPIRE', 'DROP_BAD_CHECKSUM', 'DROP_INVALID_REASON'], outer_class=root_module['ns3::Ipv4FlowProbe'])
-    ## flow-monitor.h: ns3::FlowMonitor [class]
-    module.add_class('FlowMonitor', parent=root_module['ns3::Object'])
-    ## flow-monitor.h: ns3::FlowMonitor::FlowStats [struct]
-    module.add_class('FlowStats', outer_class=root_module['ns3::FlowMonitor'])
-    module.add_container('std::map< unsigned int, ns3::FlowProbe::FlowStats >', ('unsigned int', 'ns3::FlowProbe::FlowStats'), container_type='map')
     module.add_container('std::map< unsigned int, ns3::FlowMonitor::FlowStats >', ('unsigned int', 'ns3::FlowMonitor::FlowStats'), container_type='map')
+    module.add_container('std::map< unsigned int, ns3::FlowProbe::FlowStats >', ('unsigned int', 'ns3::FlowProbe::FlowStats'), container_type='map')
     typehandlers.add_type_alias('uint32_t', 'ns3::FlowPacketId')
     typehandlers.add_type_alias('uint32_t*', 'ns3::FlowPacketId*')
     typehandlers.add_type_alias('uint32_t&', 'ns3::FlowPacketId&')
@@ -50,10 +54,22 @@ def register_types(module):
     register_types_ns3_addressUtils(nested_module)
     
     
+    ## Register a nested module for the namespace aodv
+    
+    nested_module = module.add_cpp_namespace('aodv')
+    register_types_ns3_aodv(nested_module)
+    
+    
     ## Register a nested module for the namespace dot11s
     
     nested_module = module.add_cpp_namespace('dot11s')
     register_types_ns3_dot11s(nested_module)
+    
+    
+    ## Register a nested module for the namespace dpd
+    
+    nested_module = module.add_cpp_namespace('dpd')
+    register_types_ns3_dpd(nested_module)
     
     
     ## Register a nested module for the namespace flame
@@ -86,7 +102,15 @@ def register_types_ns3_addressUtils(module):
     root_module = module.get_root()
     
 
+def register_types_ns3_aodv(module):
+    root_module = module.get_root()
+    
+
 def register_types_ns3_dot11s(module):
+    root_module = module.get_root()
+    
+
+def register_types_ns3_dpd(module):
     root_module = module.get_root()
     
 
@@ -105,13 +129,13 @@ def register_types_ns3_olsr(module):
 def register_methods(root_module):
     register_Ns3Histogram_methods(root_module, root_module['ns3::Histogram'])
     register_Ns3FlowClassifier_methods(root_module, root_module['ns3::FlowClassifier'])
+    register_Ns3FlowMonitor_methods(root_module, root_module['ns3::FlowMonitor'])
+    register_Ns3FlowMonitorFlowStats_methods(root_module, root_module['ns3::FlowMonitor::FlowStats'])
     register_Ns3FlowProbe_methods(root_module, root_module['ns3::FlowProbe'])
     register_Ns3FlowProbeFlowStats_methods(root_module, root_module['ns3::FlowProbe::FlowStats'])
     register_Ns3Ipv4FlowClassifier_methods(root_module, root_module['ns3::Ipv4FlowClassifier'])
     register_Ns3Ipv4FlowClassifierFiveTuple_methods(root_module, root_module['ns3::Ipv4FlowClassifier::FiveTuple'])
     register_Ns3Ipv4FlowProbe_methods(root_module, root_module['ns3::Ipv4FlowProbe'])
-    register_Ns3FlowMonitor_methods(root_module, root_module['ns3::FlowMonitor'])
-    register_Ns3FlowMonitorFlowStats_methods(root_module, root_module['ns3::FlowMonitor::FlowStats'])
     return
 
 def register_Ns3Histogram_methods(root_module, cls):
@@ -173,96 +197,6 @@ def register_Ns3FlowClassifier_methods(root_module, cls):
                    'ns3::FlowId', 
                    [], 
                    visibility='protected')
-    return
-
-def register_Ns3FlowProbe_methods(root_module, cls):
-    ## flow-probe.h: ns3::FlowProbe::FlowProbe(ns3::FlowProbe const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::FlowProbe const &', 'arg0')])
-    ## flow-probe.h: void ns3::FlowProbe::AddPacketDropStats(ns3::FlowId flowId, uint32_t packetSize, uint32_t reasonCode) [member function]
-    cls.add_method('AddPacketDropStats', 
-                   'void', 
-                   [param('ns3::FlowId', 'flowId'), param('uint32_t', 'packetSize'), param('uint32_t', 'reasonCode')])
-    ## flow-probe.h: void ns3::FlowProbe::AddPacketStats(ns3::FlowId flowId, uint32_t packetSize, ns3::Time delayFromFirstProbe) [member function]
-    cls.add_method('AddPacketStats', 
-                   'void', 
-                   [param('ns3::FlowId', 'flowId'), param('uint32_t', 'packetSize'), param('ns3::Time', 'delayFromFirstProbe')])
-    ## flow-probe.h: std::map<unsigned int, ns3::FlowProbe::FlowStats, std::less<unsigned int>, std::allocator<std::pair<unsigned int const, ns3::FlowProbe::FlowStats> > > ns3::FlowProbe::GetStats() const [member function]
-    cls.add_method('GetStats', 
-                   'std::map< unsigned int, ns3::FlowProbe::FlowStats >', 
-                   [], 
-                   is_const=True)
-    ## flow-probe.h: void ns3::FlowProbe::SerializeToXmlStream(std::ostream & os, int indent, uint32_t index) const [member function]
-    cls.add_method('SerializeToXmlStream', 
-                   'void', 
-                   [param('std::ostream &', 'os'), param('int', 'indent'), param('uint32_t', 'index')], 
-                   is_const=True)
-    ## flow-probe.h: ns3::FlowProbe::FlowProbe(ns3::Ptr<ns3::FlowMonitor> flowMonitor) [constructor]
-    cls.add_constructor([param('ns3::Ptr< ns3::FlowMonitor >', 'flowMonitor')], 
-                        visibility='protected')
-    return
-
-def register_Ns3FlowProbeFlowStats_methods(root_module, cls):
-    ## flow-probe.h: ns3::FlowProbe::FlowStats::FlowStats(ns3::FlowProbe::FlowStats const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::FlowProbe::FlowStats const &', 'arg0')])
-    ## flow-probe.h: ns3::FlowProbe::FlowStats::FlowStats() [constructor]
-    cls.add_constructor([])
-    ## flow-probe.h: ns3::FlowProbe::FlowStats::bytes [variable]
-    cls.add_instance_attribute('bytes', 'uint64_t', is_const=False)
-    ## flow-probe.h: ns3::FlowProbe::FlowStats::bytesDropped [variable]
-    cls.add_instance_attribute('bytesDropped', 'std::vector< unsigned long long >', is_const=False)
-    ## flow-probe.h: ns3::FlowProbe::FlowStats::delayFromFirstProbeSum [variable]
-    cls.add_instance_attribute('delayFromFirstProbeSum', 'ns3::Time', is_const=False)
-    ## flow-probe.h: ns3::FlowProbe::FlowStats::packets [variable]
-    cls.add_instance_attribute('packets', 'uint32_t', is_const=False)
-    ## flow-probe.h: ns3::FlowProbe::FlowStats::packetsDropped [variable]
-    cls.add_instance_attribute('packetsDropped', 'std::vector< unsigned int >', is_const=False)
-    return
-
-def register_Ns3Ipv4FlowClassifier_methods(root_module, cls):
-    ## ipv4-flow-classifier.h: ns3::Ipv4FlowClassifier::Ipv4FlowClassifier(ns3::Ipv4FlowClassifier const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::Ipv4FlowClassifier const &', 'arg0')])
-    ## ipv4-flow-classifier.h: ns3::Ipv4FlowClassifier::Ipv4FlowClassifier() [constructor]
-    cls.add_constructor([])
-    ## ipv4-flow-classifier.h: bool ns3::Ipv4FlowClassifier::Classify(ns3::Ipv4Header const & ipHeader, ns3::Ptr<ns3::Packet const> ipPayload, uint32_t * out_flowId, uint32_t * out_packetId) [member function]
-    cls.add_method('Classify', 
-                   'bool', 
-                   [param('ns3::Ipv4Header const &', 'ipHeader'), param('ns3::Ptr< ns3::Packet const >', 'ipPayload'), param('uint32_t *', 'out_flowId'), param('uint32_t *', 'out_packetId')])
-    ## ipv4-flow-classifier.h: ns3::Ipv4FlowClassifier::FiveTuple ns3::Ipv4FlowClassifier::FindFlow(ns3::FlowId flowId) const [member function]
-    cls.add_method('FindFlow', 
-                   'ns3::Ipv4FlowClassifier::FiveTuple', 
-                   [param('ns3::FlowId', 'flowId')], 
-                   is_const=True)
-    ## ipv4-flow-classifier.h: void ns3::Ipv4FlowClassifier::SerializeToXmlStream(std::ostream & os, int indent) const [member function]
-    cls.add_method('SerializeToXmlStream', 
-                   'void', 
-                   [param('std::ostream &', 'os'), param('int', 'indent')], 
-                   is_const=True, is_virtual=True)
-    return
-
-def register_Ns3Ipv4FlowClassifierFiveTuple_methods(root_module, cls):
-    cls.add_binary_comparison_operator('<')
-    cls.add_binary_comparison_operator('==')
-    ## ipv4-flow-classifier.h: ns3::Ipv4FlowClassifier::FiveTuple::FiveTuple() [constructor]
-    cls.add_constructor([])
-    ## ipv4-flow-classifier.h: ns3::Ipv4FlowClassifier::FiveTuple::FiveTuple(ns3::Ipv4FlowClassifier::FiveTuple const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::Ipv4FlowClassifier::FiveTuple const &', 'arg0')])
-    ## ipv4-flow-classifier.h: ns3::Ipv4FlowClassifier::FiveTuple::destinationAddress [variable]
-    cls.add_instance_attribute('destinationAddress', 'ns3::Ipv4Address', is_const=False)
-    ## ipv4-flow-classifier.h: ns3::Ipv4FlowClassifier::FiveTuple::destinationPort [variable]
-    cls.add_instance_attribute('destinationPort', 'uint16_t', is_const=False)
-    ## ipv4-flow-classifier.h: ns3::Ipv4FlowClassifier::FiveTuple::protocol [variable]
-    cls.add_instance_attribute('protocol', 'uint8_t', is_const=False)
-    ## ipv4-flow-classifier.h: ns3::Ipv4FlowClassifier::FiveTuple::sourceAddress [variable]
-    cls.add_instance_attribute('sourceAddress', 'ns3::Ipv4Address', is_const=False)
-    ## ipv4-flow-classifier.h: ns3::Ipv4FlowClassifier::FiveTuple::sourcePort [variable]
-    cls.add_instance_attribute('sourcePort', 'uint16_t', is_const=False)
-    return
-
-def register_Ns3Ipv4FlowProbe_methods(root_module, cls):
-    ## ipv4-flow-probe.h: ns3::Ipv4FlowProbe::Ipv4FlowProbe(ns3::Ipv4FlowProbe const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::Ipv4FlowProbe const &', 'arg0')])
-    ## ipv4-flow-probe.h: ns3::Ipv4FlowProbe::Ipv4FlowProbe(ns3::Ptr<ns3::FlowMonitor> monitor, ns3::Ptr<ns3::Ipv4FlowClassifier> classifier, ns3::Ptr<ns3::Node> node) [constructor]
-    cls.add_constructor([param('ns3::Ptr< ns3::FlowMonitor >', 'monitor'), param('ns3::Ptr< ns3::Ipv4FlowClassifier >', 'classifier'), param('ns3::Ptr< ns3::Node >', 'node')])
     return
 
 def register_Ns3FlowMonitor_methods(root_module, cls):
@@ -400,12 +334,104 @@ def register_Ns3FlowMonitorFlowStats_methods(root_module, cls):
     cls.add_instance_attribute('txPackets', 'uint32_t', is_const=False)
     return
 
+def register_Ns3FlowProbe_methods(root_module, cls):
+    ## flow-probe.h: ns3::FlowProbe::FlowProbe(ns3::FlowProbe const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::FlowProbe const &', 'arg0')])
+    ## flow-probe.h: void ns3::FlowProbe::AddPacketDropStats(ns3::FlowId flowId, uint32_t packetSize, uint32_t reasonCode) [member function]
+    cls.add_method('AddPacketDropStats', 
+                   'void', 
+                   [param('ns3::FlowId', 'flowId'), param('uint32_t', 'packetSize'), param('uint32_t', 'reasonCode')])
+    ## flow-probe.h: void ns3::FlowProbe::AddPacketStats(ns3::FlowId flowId, uint32_t packetSize, ns3::Time delayFromFirstProbe) [member function]
+    cls.add_method('AddPacketStats', 
+                   'void', 
+                   [param('ns3::FlowId', 'flowId'), param('uint32_t', 'packetSize'), param('ns3::Time', 'delayFromFirstProbe')])
+    ## flow-probe.h: std::map<unsigned int, ns3::FlowProbe::FlowStats, std::less<unsigned int>, std::allocator<std::pair<unsigned int const, ns3::FlowProbe::FlowStats> > > ns3::FlowProbe::GetStats() const [member function]
+    cls.add_method('GetStats', 
+                   'std::map< unsigned int, ns3::FlowProbe::FlowStats >', 
+                   [], 
+                   is_const=True)
+    ## flow-probe.h: void ns3::FlowProbe::SerializeToXmlStream(std::ostream & os, int indent, uint32_t index) const [member function]
+    cls.add_method('SerializeToXmlStream', 
+                   'void', 
+                   [param('std::ostream &', 'os'), param('int', 'indent'), param('uint32_t', 'index')], 
+                   is_const=True)
+    ## flow-probe.h: ns3::FlowProbe::FlowProbe(ns3::Ptr<ns3::FlowMonitor> flowMonitor) [constructor]
+    cls.add_constructor([param('ns3::Ptr< ns3::FlowMonitor >', 'flowMonitor')], 
+                        visibility='protected')
+    return
+
+def register_Ns3FlowProbeFlowStats_methods(root_module, cls):
+    ## flow-probe.h: ns3::FlowProbe::FlowStats::FlowStats(ns3::FlowProbe::FlowStats const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::FlowProbe::FlowStats const &', 'arg0')])
+    ## flow-probe.h: ns3::FlowProbe::FlowStats::FlowStats() [constructor]
+    cls.add_constructor([])
+    ## flow-probe.h: ns3::FlowProbe::FlowStats::bytes [variable]
+    cls.add_instance_attribute('bytes', 'uint64_t', is_const=False)
+    ## flow-probe.h: ns3::FlowProbe::FlowStats::bytesDropped [variable]
+    cls.add_instance_attribute('bytesDropped', 'std::vector< unsigned long long >', is_const=False)
+    ## flow-probe.h: ns3::FlowProbe::FlowStats::delayFromFirstProbeSum [variable]
+    cls.add_instance_attribute('delayFromFirstProbeSum', 'ns3::Time', is_const=False)
+    ## flow-probe.h: ns3::FlowProbe::FlowStats::packets [variable]
+    cls.add_instance_attribute('packets', 'uint32_t', is_const=False)
+    ## flow-probe.h: ns3::FlowProbe::FlowStats::packetsDropped [variable]
+    cls.add_instance_attribute('packetsDropped', 'std::vector< unsigned int >', is_const=False)
+    return
+
+def register_Ns3Ipv4FlowClassifier_methods(root_module, cls):
+    ## ipv4-flow-classifier.h: ns3::Ipv4FlowClassifier::Ipv4FlowClassifier(ns3::Ipv4FlowClassifier const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::Ipv4FlowClassifier const &', 'arg0')])
+    ## ipv4-flow-classifier.h: ns3::Ipv4FlowClassifier::Ipv4FlowClassifier() [constructor]
+    cls.add_constructor([])
+    ## ipv4-flow-classifier.h: bool ns3::Ipv4FlowClassifier::Classify(ns3::Ipv4Header const & ipHeader, ns3::Ptr<ns3::Packet const> ipPayload, uint32_t * out_flowId, uint32_t * out_packetId) [member function]
+    cls.add_method('Classify', 
+                   'bool', 
+                   [param('ns3::Ipv4Header const &', 'ipHeader'), param('ns3::Ptr< ns3::Packet const >', 'ipPayload'), param('uint32_t *', 'out_flowId'), param('uint32_t *', 'out_packetId')])
+    ## ipv4-flow-classifier.h: ns3::Ipv4FlowClassifier::FiveTuple ns3::Ipv4FlowClassifier::FindFlow(ns3::FlowId flowId) const [member function]
+    cls.add_method('FindFlow', 
+                   'ns3::Ipv4FlowClassifier::FiveTuple', 
+                   [param('ns3::FlowId', 'flowId')], 
+                   is_const=True)
+    ## ipv4-flow-classifier.h: void ns3::Ipv4FlowClassifier::SerializeToXmlStream(std::ostream & os, int indent) const [member function]
+    cls.add_method('SerializeToXmlStream', 
+                   'void', 
+                   [param('std::ostream &', 'os'), param('int', 'indent')], 
+                   is_const=True, is_virtual=True)
+    return
+
+def register_Ns3Ipv4FlowClassifierFiveTuple_methods(root_module, cls):
+    cls.add_binary_comparison_operator('<')
+    cls.add_binary_comparison_operator('==')
+    ## ipv4-flow-classifier.h: ns3::Ipv4FlowClassifier::FiveTuple::FiveTuple() [constructor]
+    cls.add_constructor([])
+    ## ipv4-flow-classifier.h: ns3::Ipv4FlowClassifier::FiveTuple::FiveTuple(ns3::Ipv4FlowClassifier::FiveTuple const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::Ipv4FlowClassifier::FiveTuple const &', 'arg0')])
+    ## ipv4-flow-classifier.h: ns3::Ipv4FlowClassifier::FiveTuple::destinationAddress [variable]
+    cls.add_instance_attribute('destinationAddress', 'ns3::Ipv4Address', is_const=False)
+    ## ipv4-flow-classifier.h: ns3::Ipv4FlowClassifier::FiveTuple::destinationPort [variable]
+    cls.add_instance_attribute('destinationPort', 'uint16_t', is_const=False)
+    ## ipv4-flow-classifier.h: ns3::Ipv4FlowClassifier::FiveTuple::protocol [variable]
+    cls.add_instance_attribute('protocol', 'uint8_t', is_const=False)
+    ## ipv4-flow-classifier.h: ns3::Ipv4FlowClassifier::FiveTuple::sourceAddress [variable]
+    cls.add_instance_attribute('sourceAddress', 'ns3::Ipv4Address', is_const=False)
+    ## ipv4-flow-classifier.h: ns3::Ipv4FlowClassifier::FiveTuple::sourcePort [variable]
+    cls.add_instance_attribute('sourcePort', 'uint16_t', is_const=False)
+    return
+
+def register_Ns3Ipv4FlowProbe_methods(root_module, cls):
+    ## ipv4-flow-probe.h: ns3::Ipv4FlowProbe::Ipv4FlowProbe(ns3::Ipv4FlowProbe const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::Ipv4FlowProbe const &', 'arg0')])
+    ## ipv4-flow-probe.h: ns3::Ipv4FlowProbe::Ipv4FlowProbe(ns3::Ptr<ns3::FlowMonitor> monitor, ns3::Ptr<ns3::Ipv4FlowClassifier> classifier, ns3::Ptr<ns3::Node> node) [constructor]
+    cls.add_constructor([param('ns3::Ptr< ns3::FlowMonitor >', 'monitor'), param('ns3::Ptr< ns3::Ipv4FlowClassifier >', 'classifier'), param('ns3::Ptr< ns3::Node >', 'node')])
+    return
+
 def register_functions(root_module):
     module = root_module
     register_functions_ns3_Config(module.get_submodule('Config'), root_module)
     register_functions_ns3_TimeStepPrecision(module.get_submodule('TimeStepPrecision'), root_module)
     register_functions_ns3_addressUtils(module.get_submodule('addressUtils'), root_module)
+    register_functions_ns3_aodv(module.get_submodule('aodv'), root_module)
     register_functions_ns3_dot11s(module.get_submodule('dot11s'), root_module)
+    register_functions_ns3_dpd(module.get_submodule('dpd'), root_module)
     register_functions_ns3_flame(module.get_submodule('flame'), root_module)
     register_functions_ns3_internal(module.get_submodule('internal'), root_module)
     register_functions_ns3_olsr(module.get_submodule('olsr'), root_module)
@@ -420,7 +446,13 @@ def register_functions_ns3_TimeStepPrecision(module, root_module):
 def register_functions_ns3_addressUtils(module, root_module):
     return
 
+def register_functions_ns3_aodv(module, root_module):
+    return
+
 def register_functions_ns3_dot11s(module, root_module):
+    return
+
+def register_functions_ns3_dpd(module, root_module):
     return
 
 def register_functions_ns3_flame(module, root_module):

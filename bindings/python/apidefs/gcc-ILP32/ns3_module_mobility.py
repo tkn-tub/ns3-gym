@@ -17,14 +17,8 @@ def register_types(module):
     module.add_class('RandomDiscPositionAllocator', parent=root_module['ns3::PositionAllocator'])
     ## position-allocator.h: ns3::RandomRectanglePositionAllocator [class]
     module.add_class('RandomRectanglePositionAllocator', parent=root_module['ns3::PositionAllocator'])
-    ## rectangle.h: ns3::RectangleChecker [class]
-    module.add_class('RectangleChecker', parent=root_module['ns3::AttributeChecker'])
-    ## rectangle.h: ns3::RectangleValue [class]
-    module.add_class('RectangleValue', parent=root_module['ns3::AttributeValue'])
-    ## waypoint.h: ns3::WaypointChecker [class]
-    module.add_class('WaypointChecker', parent=root_module['ns3::AttributeChecker'])
-    ## waypoint.h: ns3::WaypointValue [class]
-    module.add_class('WaypointValue', parent=root_module['ns3::AttributeValue'])
+    ## position-allocator.h: ns3::UniformDiscPositionAllocator [class]
+    module.add_class('UniformDiscPositionAllocator', parent=root_module['ns3::PositionAllocator'])
     ## position-allocator.h: ns3::GridPositionAllocator [class]
     module.add_class('GridPositionAllocator', parent=root_module['ns3::PositionAllocator'])
     ## position-allocator.h: ns3::GridPositionAllocator::LayoutType [enumeration]
@@ -41,8 +35,16 @@ def register_types(module):
     module.add_enum('Mode', ['MODE_DISTANCE', 'MODE_TIME'], outer_class=root_module['ns3::RandomWalk2dMobilityModel'])
     ## random-waypoint-mobility-model.h: ns3::RandomWaypointMobilityModel [class]
     module.add_class('RandomWaypointMobilityModel', parent=root_module['ns3::MobilityModel'])
+    ## rectangle.h: ns3::RectangleChecker [class]
+    module.add_class('RectangleChecker', parent=root_module['ns3::AttributeChecker'])
+    ## rectangle.h: ns3::RectangleValue [class]
+    module.add_class('RectangleValue', parent=root_module['ns3::AttributeValue'])
+    ## waypoint.h: ns3::WaypointChecker [class]
+    module.add_class('WaypointChecker', parent=root_module['ns3::AttributeChecker'])
     ## waypoint-mobility-model.h: ns3::WaypointMobilityModel [class]
     module.add_class('WaypointMobilityModel', parent=root_module['ns3::MobilityModel'])
+    ## waypoint.h: ns3::WaypointValue [class]
+    module.add_class('WaypointValue', parent=root_module['ns3::AttributeValue'])
     ## constant-acceleration-mobility-model.h: ns3::ConstantAccelerationMobilityModel [class]
     module.add_class('ConstantAccelerationMobilityModel', parent=root_module['ns3::MobilityModel'])
     ## constant-position-mobility-model.h: ns3::ConstantPositionMobilityModel [class]
@@ -70,10 +72,22 @@ def register_types(module):
     register_types_ns3_addressUtils(nested_module)
     
     
+    ## Register a nested module for the namespace aodv
+    
+    nested_module = module.add_cpp_namespace('aodv')
+    register_types_ns3_aodv(nested_module)
+    
+    
     ## Register a nested module for the namespace dot11s
     
     nested_module = module.add_cpp_namespace('dot11s')
     register_types_ns3_dot11s(nested_module)
+    
+    
+    ## Register a nested module for the namespace dpd
+    
+    nested_module = module.add_cpp_namespace('dpd')
+    register_types_ns3_dpd(nested_module)
     
     
     ## Register a nested module for the namespace flame
@@ -106,7 +120,15 @@ def register_types_ns3_addressUtils(module):
     root_module = module.get_root()
     
 
+def register_types_ns3_aodv(module):
+    root_module = module.get_root()
+    
+
 def register_types_ns3_dot11s(module):
+    root_module = module.get_root()
+    
+
+def register_types_ns3_dpd(module):
     root_module = module.get_root()
     
 
@@ -129,17 +151,18 @@ def register_methods(root_module):
     register_Ns3PositionAllocator_methods(root_module, root_module['ns3::PositionAllocator'])
     register_Ns3RandomDiscPositionAllocator_methods(root_module, root_module['ns3::RandomDiscPositionAllocator'])
     register_Ns3RandomRectanglePositionAllocator_methods(root_module, root_module['ns3::RandomRectanglePositionAllocator'])
-    register_Ns3RectangleChecker_methods(root_module, root_module['ns3::RectangleChecker'])
-    register_Ns3RectangleValue_methods(root_module, root_module['ns3::RectangleValue'])
-    register_Ns3WaypointChecker_methods(root_module, root_module['ns3::WaypointChecker'])
-    register_Ns3WaypointValue_methods(root_module, root_module['ns3::WaypointValue'])
+    register_Ns3UniformDiscPositionAllocator_methods(root_module, root_module['ns3::UniformDiscPositionAllocator'])
     register_Ns3GridPositionAllocator_methods(root_module, root_module['ns3::GridPositionAllocator'])
     register_Ns3ListPositionAllocator_methods(root_module, root_module['ns3::ListPositionAllocator'])
     register_Ns3MobilityModel_methods(root_module, root_module['ns3::MobilityModel'])
     register_Ns3RandomDirection2dMobilityModel_methods(root_module, root_module['ns3::RandomDirection2dMobilityModel'])
     register_Ns3RandomWalk2dMobilityModel_methods(root_module, root_module['ns3::RandomWalk2dMobilityModel'])
     register_Ns3RandomWaypointMobilityModel_methods(root_module, root_module['ns3::RandomWaypointMobilityModel'])
+    register_Ns3RectangleChecker_methods(root_module, root_module['ns3::RectangleChecker'])
+    register_Ns3RectangleValue_methods(root_module, root_module['ns3::RectangleValue'])
+    register_Ns3WaypointChecker_methods(root_module, root_module['ns3::WaypointChecker'])
     register_Ns3WaypointMobilityModel_methods(root_module, root_module['ns3::WaypointMobilityModel'])
+    register_Ns3WaypointValue_methods(root_module, root_module['ns3::WaypointValue'])
     register_Ns3ConstantAccelerationMobilityModel_methods(root_module, root_module['ns3::ConstantAccelerationMobilityModel'])
     register_Ns3ConstantPositionMobilityModel_methods(root_module, root_module['ns3::ConstantPositionMobilityModel'])
     register_Ns3ConstantVelocityMobilityModel_methods(root_module, root_module['ns3::ConstantVelocityMobilityModel'])
@@ -315,84 +338,33 @@ def register_Ns3RandomRectanglePositionAllocator_methods(root_module, cls):
                    [param('ns3::RandomVariable', 'y')])
     return
 
-def register_Ns3RectangleChecker_methods(root_module, cls):
-    ## rectangle.h: ns3::RectangleChecker::RectangleChecker() [constructor]
+def register_Ns3UniformDiscPositionAllocator_methods(root_module, cls):
+    ## position-allocator.h: ns3::UniformDiscPositionAllocator::UniformDiscPositionAllocator(ns3::UniformDiscPositionAllocator const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::UniformDiscPositionAllocator const &', 'arg0')])
+    ## position-allocator.h: ns3::UniformDiscPositionAllocator::UniformDiscPositionAllocator() [constructor]
     cls.add_constructor([])
-    ## rectangle.h: ns3::RectangleChecker::RectangleChecker(ns3::RectangleChecker const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::RectangleChecker const &', 'arg0')])
-    return
-
-def register_Ns3RectangleValue_methods(root_module, cls):
-    ## rectangle.h: ns3::RectangleValue::RectangleValue() [constructor]
-    cls.add_constructor([])
-    ## rectangle.h: ns3::RectangleValue::RectangleValue(ns3::RectangleValue const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::RectangleValue const &', 'arg0')])
-    ## rectangle.h: ns3::RectangleValue::RectangleValue(ns3::Rectangle const & value) [constructor]
-    cls.add_constructor([param('ns3::Rectangle const &', 'value')])
-    ## rectangle.h: ns3::Ptr<ns3::AttributeValue> ns3::RectangleValue::Copy() const [member function]
-    cls.add_method('Copy', 
-                   'ns3::Ptr< ns3::AttributeValue >', 
+    ## position-allocator.h: ns3::Vector ns3::UniformDiscPositionAllocator::GetNext() const [member function]
+    cls.add_method('GetNext', 
+                   'ns3::Vector', 
                    [], 
                    is_const=True, is_virtual=True)
-    ## rectangle.h: bool ns3::RectangleValue::DeserializeFromString(std::string value, ns3::Ptr<ns3::AttributeChecker const> checker) [member function]
-    cls.add_method('DeserializeFromString', 
-                   'bool', 
-                   [param('std::string', 'value'), param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
-                   is_virtual=True)
-    ## rectangle.h: ns3::Rectangle ns3::RectangleValue::Get() const [member function]
-    cls.add_method('Get', 
-                   'ns3::Rectangle', 
+    ## position-allocator.h: static ns3::TypeId ns3::UniformDiscPositionAllocator::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
                    [], 
-                   is_const=True)
-    ## rectangle.h: std::string ns3::RectangleValue::SerializeToString(ns3::Ptr<ns3::AttributeChecker const> checker) const [member function]
-    cls.add_method('SerializeToString', 
-                   'std::string', 
-                   [param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
-                   is_const=True, is_virtual=True)
-    ## rectangle.h: void ns3::RectangleValue::Set(ns3::Rectangle const & value) [member function]
-    cls.add_method('Set', 
+                   is_static=True)
+    ## position-allocator.h: void ns3::UniformDiscPositionAllocator::SetRho(double rho) [member function]
+    cls.add_method('SetRho', 
                    'void', 
-                   [param('ns3::Rectangle const &', 'value')])
-    return
-
-def register_Ns3WaypointChecker_methods(root_module, cls):
-    ## waypoint.h: ns3::WaypointChecker::WaypointChecker() [constructor]
-    cls.add_constructor([])
-    ## waypoint.h: ns3::WaypointChecker::WaypointChecker(ns3::WaypointChecker const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::WaypointChecker const &', 'arg0')])
-    return
-
-def register_Ns3WaypointValue_methods(root_module, cls):
-    ## waypoint.h: ns3::WaypointValue::WaypointValue() [constructor]
-    cls.add_constructor([])
-    ## waypoint.h: ns3::WaypointValue::WaypointValue(ns3::WaypointValue const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::WaypointValue const &', 'arg0')])
-    ## waypoint.h: ns3::WaypointValue::WaypointValue(ns3::Waypoint const & value) [constructor]
-    cls.add_constructor([param('ns3::Waypoint const &', 'value')])
-    ## waypoint.h: ns3::Ptr<ns3::AttributeValue> ns3::WaypointValue::Copy() const [member function]
-    cls.add_method('Copy', 
-                   'ns3::Ptr< ns3::AttributeValue >', 
-                   [], 
-                   is_const=True, is_virtual=True)
-    ## waypoint.h: bool ns3::WaypointValue::DeserializeFromString(std::string value, ns3::Ptr<ns3::AttributeChecker const> checker) [member function]
-    cls.add_method('DeserializeFromString', 
-                   'bool', 
-                   [param('std::string', 'value'), param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
-                   is_virtual=True)
-    ## waypoint.h: ns3::Waypoint ns3::WaypointValue::Get() const [member function]
-    cls.add_method('Get', 
-                   'ns3::Waypoint', 
-                   [], 
-                   is_const=True)
-    ## waypoint.h: std::string ns3::WaypointValue::SerializeToString(ns3::Ptr<ns3::AttributeChecker const> checker) const [member function]
-    cls.add_method('SerializeToString', 
-                   'std::string', 
-                   [param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
-                   is_const=True, is_virtual=True)
-    ## waypoint.h: void ns3::WaypointValue::Set(ns3::Waypoint const & value) [member function]
-    cls.add_method('Set', 
+                   [param('double', 'rho')])
+    ## position-allocator.h: void ns3::UniformDiscPositionAllocator::SetX(double x) [member function]
+    cls.add_method('SetX', 
                    'void', 
-                   [param('ns3::Waypoint const &', 'value')])
+                   [param('double', 'x')])
+    ## position-allocator.h: void ns3::UniformDiscPositionAllocator::SetY(double y) [member function]
+    cls.add_method('SetY', 
+                   'void', 
+                   [param('double', 'y')])
     return
 
 def register_Ns3GridPositionAllocator_methods(root_module, cls):
@@ -539,10 +511,10 @@ def register_Ns3MobilityModel_methods(root_module, cls):
     return
 
 def register_Ns3RandomDirection2dMobilityModel_methods(root_module, cls):
-    ## random-direction-2d-mobility-model.h: ns3::RandomDirection2dMobilityModel::RandomDirection2dMobilityModel(ns3::RandomDirection2dMobilityModel const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::RandomDirection2dMobilityModel const &', 'arg0')])
     ## random-direction-2d-mobility-model.h: ns3::RandomDirection2dMobilityModel::RandomDirection2dMobilityModel() [constructor]
     cls.add_constructor([])
+    ## random-direction-2d-mobility-model.h: ns3::RandomDirection2dMobilityModel::RandomDirection2dMobilityModel(ns3::RandomDirection2dMobilityModel const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::RandomDirection2dMobilityModel const &', 'arg0')])
     ## random-direction-2d-mobility-model.h: static ns3::TypeId ns3::RandomDirection2dMobilityModel::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
@@ -568,13 +540,18 @@ def register_Ns3RandomDirection2dMobilityModel_methods(root_module, cls):
                    'void', 
                    [param('ns3::Vector const &', 'position')], 
                    visibility='private', is_virtual=True)
+    ## random-direction-2d-mobility-model.h: void ns3::RandomDirection2dMobilityModel::DoStart() [member function]
+    cls.add_method('DoStart', 
+                   'void', 
+                   [], 
+                   visibility='private', is_virtual=True)
     return
 
 def register_Ns3RandomWalk2dMobilityModel_methods(root_module, cls):
-    ## random-walk-2d-mobility-model.h: ns3::RandomWalk2dMobilityModel::RandomWalk2dMobilityModel(ns3::RandomWalk2dMobilityModel const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::RandomWalk2dMobilityModel const &', 'arg0')])
     ## random-walk-2d-mobility-model.h: ns3::RandomWalk2dMobilityModel::RandomWalk2dMobilityModel() [constructor]
     cls.add_constructor([])
+    ## random-walk-2d-mobility-model.h: ns3::RandomWalk2dMobilityModel::RandomWalk2dMobilityModel(ns3::RandomWalk2dMobilityModel const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::RandomWalk2dMobilityModel const &', 'arg0')])
     ## random-walk-2d-mobility-model.h: static ns3::TypeId ns3::RandomWalk2dMobilityModel::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
@@ -600,18 +577,28 @@ def register_Ns3RandomWalk2dMobilityModel_methods(root_module, cls):
                    'void', 
                    [param('ns3::Vector const &', 'position')], 
                    visibility='private', is_virtual=True)
+    ## random-walk-2d-mobility-model.h: void ns3::RandomWalk2dMobilityModel::DoStart() [member function]
+    cls.add_method('DoStart', 
+                   'void', 
+                   [], 
+                   visibility='private', is_virtual=True)
     return
 
 def register_Ns3RandomWaypointMobilityModel_methods(root_module, cls):
-    ## random-waypoint-mobility-model.h: ns3::RandomWaypointMobilityModel::RandomWaypointMobilityModel(ns3::RandomWaypointMobilityModel const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::RandomWaypointMobilityModel const &', 'arg0')])
     ## random-waypoint-mobility-model.h: ns3::RandomWaypointMobilityModel::RandomWaypointMobilityModel() [constructor]
     cls.add_constructor([])
+    ## random-waypoint-mobility-model.h: ns3::RandomWaypointMobilityModel::RandomWaypointMobilityModel(ns3::RandomWaypointMobilityModel const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::RandomWaypointMobilityModel const &', 'arg0')])
     ## random-waypoint-mobility-model.h: static ns3::TypeId ns3::RandomWaypointMobilityModel::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
+    ## random-waypoint-mobility-model.h: void ns3::RandomWaypointMobilityModel::DoStart() [member function]
+    cls.add_method('DoStart', 
+                   'void', 
+                   [], 
+                   visibility='protected', is_virtual=True)
     ## random-waypoint-mobility-model.h: ns3::Vector ns3::RandomWaypointMobilityModel::DoGetPosition() const [member function]
     cls.add_method('DoGetPosition', 
                    'ns3::Vector', 
@@ -627,6 +614,53 @@ def register_Ns3RandomWaypointMobilityModel_methods(root_module, cls):
                    'void', 
                    [param('ns3::Vector const &', 'position')], 
                    visibility='private', is_virtual=True)
+    return
+
+def register_Ns3RectangleChecker_methods(root_module, cls):
+    ## rectangle.h: ns3::RectangleChecker::RectangleChecker() [constructor]
+    cls.add_constructor([])
+    ## rectangle.h: ns3::RectangleChecker::RectangleChecker(ns3::RectangleChecker const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::RectangleChecker const &', 'arg0')])
+    return
+
+def register_Ns3RectangleValue_methods(root_module, cls):
+    ## rectangle.h: ns3::RectangleValue::RectangleValue() [constructor]
+    cls.add_constructor([])
+    ## rectangle.h: ns3::RectangleValue::RectangleValue(ns3::RectangleValue const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::RectangleValue const &', 'arg0')])
+    ## rectangle.h: ns3::RectangleValue::RectangleValue(ns3::Rectangle const & value) [constructor]
+    cls.add_constructor([param('ns3::Rectangle const &', 'value')])
+    ## rectangle.h: ns3::Ptr<ns3::AttributeValue> ns3::RectangleValue::Copy() const [member function]
+    cls.add_method('Copy', 
+                   'ns3::Ptr< ns3::AttributeValue >', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## rectangle.h: bool ns3::RectangleValue::DeserializeFromString(std::string value, ns3::Ptr<ns3::AttributeChecker const> checker) [member function]
+    cls.add_method('DeserializeFromString', 
+                   'bool', 
+                   [param('std::string', 'value'), param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
+                   is_virtual=True)
+    ## rectangle.h: ns3::Rectangle ns3::RectangleValue::Get() const [member function]
+    cls.add_method('Get', 
+                   'ns3::Rectangle', 
+                   [], 
+                   is_const=True)
+    ## rectangle.h: std::string ns3::RectangleValue::SerializeToString(ns3::Ptr<ns3::AttributeChecker const> checker) const [member function]
+    cls.add_method('SerializeToString', 
+                   'std::string', 
+                   [param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
+                   is_const=True, is_virtual=True)
+    ## rectangle.h: void ns3::RectangleValue::Set(ns3::Rectangle const & value) [member function]
+    cls.add_method('Set', 
+                   'void', 
+                   [param('ns3::Rectangle const &', 'value')])
+    return
+
+def register_Ns3WaypointChecker_methods(root_module, cls):
+    ## waypoint.h: ns3::WaypointChecker::WaypointChecker() [constructor]
+    cls.add_constructor([])
+    ## waypoint.h: ns3::WaypointChecker::WaypointChecker(ns3::WaypointChecker const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::WaypointChecker const &', 'arg0')])
     return
 
 def register_Ns3WaypointMobilityModel_methods(root_module, cls):
@@ -677,6 +711,39 @@ def register_Ns3WaypointMobilityModel_methods(root_module, cls):
                    'void', 
                    [param('ns3::Vector const &', 'position')], 
                    visibility='private', is_virtual=True)
+    return
+
+def register_Ns3WaypointValue_methods(root_module, cls):
+    ## waypoint.h: ns3::WaypointValue::WaypointValue() [constructor]
+    cls.add_constructor([])
+    ## waypoint.h: ns3::WaypointValue::WaypointValue(ns3::WaypointValue const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::WaypointValue const &', 'arg0')])
+    ## waypoint.h: ns3::WaypointValue::WaypointValue(ns3::Waypoint const & value) [constructor]
+    cls.add_constructor([param('ns3::Waypoint const &', 'value')])
+    ## waypoint.h: ns3::Ptr<ns3::AttributeValue> ns3::WaypointValue::Copy() const [member function]
+    cls.add_method('Copy', 
+                   'ns3::Ptr< ns3::AttributeValue >', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## waypoint.h: bool ns3::WaypointValue::DeserializeFromString(std::string value, ns3::Ptr<ns3::AttributeChecker const> checker) [member function]
+    cls.add_method('DeserializeFromString', 
+                   'bool', 
+                   [param('std::string', 'value'), param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
+                   is_virtual=True)
+    ## waypoint.h: ns3::Waypoint ns3::WaypointValue::Get() const [member function]
+    cls.add_method('Get', 
+                   'ns3::Waypoint', 
+                   [], 
+                   is_const=True)
+    ## waypoint.h: std::string ns3::WaypointValue::SerializeToString(ns3::Ptr<ns3::AttributeChecker const> checker) const [member function]
+    cls.add_method('SerializeToString', 
+                   'std::string', 
+                   [param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
+                   is_const=True, is_virtual=True)
+    ## waypoint.h: void ns3::WaypointValue::Set(ns3::Waypoint const & value) [member function]
+    cls.add_method('Set', 
+                   'void', 
+                   [param('ns3::Waypoint const &', 'value')])
     return
 
 def register_Ns3ConstantAccelerationMobilityModel_methods(root_module, cls):
@@ -826,7 +893,9 @@ def register_functions(root_module):
     register_functions_ns3_Config(module.get_submodule('Config'), root_module)
     register_functions_ns3_TimeStepPrecision(module.get_submodule('TimeStepPrecision'), root_module)
     register_functions_ns3_addressUtils(module.get_submodule('addressUtils'), root_module)
+    register_functions_ns3_aodv(module.get_submodule('aodv'), root_module)
     register_functions_ns3_dot11s(module.get_submodule('dot11s'), root_module)
+    register_functions_ns3_dpd(module.get_submodule('dpd'), root_module)
     register_functions_ns3_flame(module.get_submodule('flame'), root_module)
     register_functions_ns3_internal(module.get_submodule('internal'), root_module)
     register_functions_ns3_olsr(module.get_submodule('olsr'), root_module)
@@ -841,7 +910,13 @@ def register_functions_ns3_TimeStepPrecision(module, root_module):
 def register_functions_ns3_addressUtils(module, root_module):
     return
 
+def register_functions_ns3_aodv(module, root_module):
+    return
+
 def register_functions_ns3_dot11s(module, root_module):
+    return
+
+def register_functions_ns3_dpd(module, root_module):
     return
 
 def register_functions_ns3_flame(module, root_module):

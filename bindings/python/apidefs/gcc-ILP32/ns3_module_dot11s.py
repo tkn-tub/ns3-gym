@@ -3,6 +3,8 @@ from pybindgen import Module, FileCodeSink, param, retval, cppclass, typehandler
 def register_types(module):
     root_module = module.get_root()
     
+    ## simple-ref-count.h: ns3::SimpleRefCount<ns3::dot11s::IeBeaconTimingUnit, ns3::empty> [class]
+    module.add_class('SimpleRefCount', template_parameters=['ns3::dot11s::IeBeaconTimingUnit', 'ns3::empty'], parent=root_module['ns3::empty'])
     
     ## Register a nested module for the namespace Config
     
@@ -22,10 +24,22 @@ def register_types(module):
     register_types_ns3_addressUtils(nested_module)
     
     
+    ## Register a nested module for the namespace aodv
+    
+    nested_module = module.add_cpp_namespace('aodv')
+    register_types_ns3_aodv(nested_module)
+    
+    
     ## Register a nested module for the namespace dot11s
     
     nested_module = module.add_cpp_namespace('dot11s')
     register_types_ns3_dot11s(nested_module)
+    
+    
+    ## Register a nested module for the namespace dpd
+    
+    nested_module = module.add_cpp_namespace('dpd')
+    register_types_ns3_dpd(nested_module)
     
     
     ## Register a nested module for the namespace flame
@@ -58,6 +72,10 @@ def register_types_ns3_addressUtils(module):
     root_module = module.get_root()
     
 
+def register_types_ns3_aodv(module):
+    root_module = module.get_root()
+    
+
 def register_types_ns3_dot11s(module):
     root_module = module.get_root()
     
@@ -82,7 +100,7 @@ def register_types_ns3_dot11s(module):
     ## ie-dot11s-beacon-timing.h: ns3::dot11s::IeBeaconTiming [class]
     module.add_class('IeBeaconTiming', parent=root_module['ns3::WifiInformationElement'])
     ## ie-dot11s-beacon-timing.h: ns3::dot11s::IeBeaconTimingUnit [class]
-    module.add_class('IeBeaconTimingUnit', parent=root_module['ns3::RefCountBase'])
+    module.add_class('IeBeaconTimingUnit', parent=root_module['ns3::SimpleRefCount< ns3::dot11s::IeBeaconTimingUnit, ns3::empty >'])
     ## ie-dot11s-configuration.h: ns3::dot11s::IeConfiguration [class]
     module.add_class('IeConfiguration', parent=root_module['ns3::WifiInformationElement'])
     ## ie-dot11s-id.h: ns3::dot11s::IeMeshId [class]
@@ -101,6 +119,10 @@ def register_types_ns3_dot11s(module):
     module.add_enum('PeerState', ['IDLE', 'OPN_SNT', 'CNF_RCVD', 'OPN_RCVD', 'ESTAB', 'HOLDING'], outer_class=root_module['ns3::dot11s::PeerLink'])
     ## peer-management-protocol.h: ns3::dot11s::PeerManagementProtocol [class]
     module.add_class('PeerManagementProtocol', parent=root_module['ns3::Object'])
+
+def register_types_ns3_dpd(module):
+    root_module = module.get_root()
+    
 
 def register_types_ns3_flame(module):
     root_module = module.get_root()
@@ -773,7 +795,9 @@ def register_functions(root_module):
     register_functions_ns3_Config(module.get_submodule('Config'), root_module)
     register_functions_ns3_TimeStepPrecision(module.get_submodule('TimeStepPrecision'), root_module)
     register_functions_ns3_addressUtils(module.get_submodule('addressUtils'), root_module)
+    register_functions_ns3_aodv(module.get_submodule('aodv'), root_module)
     register_functions_ns3_dot11s(module.get_submodule('dot11s'), root_module)
+    register_functions_ns3_dpd(module.get_submodule('dpd'), root_module)
     register_functions_ns3_flame(module.get_submodule('flame'), root_module)
     register_functions_ns3_internal(module.get_submodule('internal'), root_module)
     register_functions_ns3_olsr(module.get_submodule('olsr'), root_module)
@@ -788,11 +812,17 @@ def register_functions_ns3_TimeStepPrecision(module, root_module):
 def register_functions_ns3_addressUtils(module, root_module):
     return
 
+def register_functions_ns3_aodv(module, root_module):
+    return
+
 def register_functions_ns3_dot11s(module, root_module):
     ## ie-dot11s-id.h: extern ns3::Ptr<ns3::AttributeChecker const> ns3::dot11s::MakeIeMeshIdChecker() [free function]
     module.add_function('MakeIeMeshIdChecker', 
                         'ns3::Ptr< ns3::AttributeChecker const >', 
                         [])
+    return
+
+def register_functions_ns3_dpd(module, root_module):
     return
 
 def register_functions_ns3_flame(module, root_module):

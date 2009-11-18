@@ -7,16 +7,20 @@ def register_types(module):
     module.add_enum('WifiElementId', ['IE11S_MESH_CONFIGURATION', 'IE11S_MESH_ID', 'IE11S_LINK_METRIC_REPORT', 'IE11S_CONGESTION_NOTIFICATION', 'IE11S_PEERING_MANAGEMENT', 'IE11S_SUPP_MBSS_REG_CLASSES_CHANNELS', 'IE11S_MESH_CHANNEL_SWITCH_ANNOUNCEMENT', 'IE11S_MESH_TIM', 'IE11S_AWAKE_WINDOW', 'IE11S_BEACON_TIMING', 'IE11S_MCCAOP_SETUP_REQUEST', 'IE11S_MCCAOP_SETUP_REPLY', 'IE11S_MCCAOP_ADVERTISEMENT', 'IE11S_MCCAOP_RESERVATION_TEARDOWN', 'IE11S_PORTAL_ANNOUNCEMENT', 'IE11S_RANN', 'IE11S_PREQ', 'IE11S_PREP', 'IE11S_PERR', 'IE11S_PROXY_UPDATE', 'IE11S_PROXY_UPDATE_CONFIRMATION', 'IE11S_ABBREVIATED_HANDSHAKE', 'IE11S_MESH_PEERING_PROTOCOL_VERSION'])
     ## mesh-wifi-beacon.h: ns3::MeshWifiBeacon [class]
     module.add_class('MeshWifiBeacon')
+    ## simple-ref-count.h: ns3::SimpleRefCount<ns3::MeshWifiInterfaceMacPlugin, ns3::empty> [class]
+    module.add_class('SimpleRefCount', template_parameters=['ns3::MeshWifiInterfaceMacPlugin', 'ns3::empty'], parent=root_module['ns3::empty'])
+    ## simple-ref-count.h: ns3::SimpleRefCount<ns3::WifiInformationElement, ns3::empty> [class]
+    module.add_class('SimpleRefCount', template_parameters=['ns3::WifiInformationElement', 'ns3::empty'], parent=root_module['ns3::empty'])
     ## wifi-information-element-vector.h: ns3::WifiInformationElement [class]
-    module.add_class('WifiInformationElement', parent=root_module['ns3::RefCountBase'])
-    ## mesh-wifi-interface-mac-plugin.h: ns3::MeshWifiInterfaceMacPlugin [class]
-    module.add_class('MeshWifiInterfaceMacPlugin', parent=root_module['ns3::RefCountBase'])
+    module.add_class('WifiInformationElement', parent=root_module['ns3::SimpleRefCount< ns3::WifiInformationElement, ns3::empty >'])
     ## wifi-information-element-vector.h: ns3::WifiInformationElementVector [class]
     module.add_class('WifiInformationElementVector', parent=root_module['ns3::Header'])
     ## mesh-l2-routing-protocol.h: ns3::MeshL2RoutingProtocol [class]
     module.add_class('MeshL2RoutingProtocol', parent=root_module['ns3::Object'])
     ## mesh-wifi-interface-mac.h: ns3::MeshWifiInterfaceMac [class]
     module.add_class('MeshWifiInterfaceMac', parent=root_module['ns3::WifiMac'])
+    ## mesh-wifi-interface-mac-plugin.h: ns3::MeshWifiInterfaceMacPlugin [class]
+    module.add_class('MeshWifiInterfaceMacPlugin', parent=root_module['ns3::SimpleRefCount< ns3::MeshWifiInterfaceMacPlugin, ns3::empty >'])
     ## mesh-point-device.h: ns3::MeshPointDevice [class]
     module.add_class('MeshPointDevice', parent=root_module['ns3::NetDevice'])
     
@@ -38,10 +42,22 @@ def register_types(module):
     register_types_ns3_addressUtils(nested_module)
     
     
+    ## Register a nested module for the namespace aodv
+    
+    nested_module = module.add_cpp_namespace('aodv')
+    register_types_ns3_aodv(nested_module)
+    
+    
     ## Register a nested module for the namespace dot11s
     
     nested_module = module.add_cpp_namespace('dot11s')
     register_types_ns3_dot11s(nested_module)
+    
+    
+    ## Register a nested module for the namespace dpd
+    
+    nested_module = module.add_cpp_namespace('dpd')
+    register_types_ns3_dpd(nested_module)
     
     
     ## Register a nested module for the namespace flame
@@ -74,7 +90,15 @@ def register_types_ns3_addressUtils(module):
     root_module = module.get_root()
     
 
+def register_types_ns3_aodv(module):
+    root_module = module.get_root()
+    
+
 def register_types_ns3_dot11s(module):
+    root_module = module.get_root()
+    
+
+def register_types_ns3_dpd(module):
     root_module = module.get_root()
     
 
@@ -93,10 +117,10 @@ def register_types_ns3_olsr(module):
 def register_methods(root_module):
     register_Ns3MeshWifiBeacon_methods(root_module, root_module['ns3::MeshWifiBeacon'])
     register_Ns3WifiInformationElement_methods(root_module, root_module['ns3::WifiInformationElement'])
-    register_Ns3MeshWifiInterfaceMacPlugin_methods(root_module, root_module['ns3::MeshWifiInterfaceMacPlugin'])
     register_Ns3WifiInformationElementVector_methods(root_module, root_module['ns3::WifiInformationElementVector'])
     register_Ns3MeshL2RoutingProtocol_methods(root_module, root_module['ns3::MeshL2RoutingProtocol'])
     register_Ns3MeshWifiInterfaceMac_methods(root_module, root_module['ns3::MeshWifiInterfaceMac'])
+    register_Ns3MeshWifiInterfaceMacPlugin_methods(root_module, root_module['ns3::MeshWifiInterfaceMacPlugin'])
     register_Ns3MeshPointDevice_methods(root_module, root_module['ns3::MeshPointDevice'])
     return
 
@@ -161,33 +185,6 @@ def register_Ns3WifiInformationElement_methods(root_module, cls):
                    'void', 
                    [param('ns3::Buffer::Iterator', 'start')], 
                    is_pure_virtual=True, is_const=True, is_virtual=True)
-    return
-
-def register_Ns3MeshWifiInterfaceMacPlugin_methods(root_module, cls):
-    ## mesh-wifi-interface-mac-plugin.h: ns3::MeshWifiInterfaceMacPlugin::MeshWifiInterfaceMacPlugin() [constructor]
-    cls.add_constructor([])
-    ## mesh-wifi-interface-mac-plugin.h: ns3::MeshWifiInterfaceMacPlugin::MeshWifiInterfaceMacPlugin(ns3::MeshWifiInterfaceMacPlugin const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::MeshWifiInterfaceMacPlugin const &', 'arg0')])
-    ## mesh-wifi-interface-mac-plugin.h: bool ns3::MeshWifiInterfaceMacPlugin::Receive(ns3::Ptr<ns3::Packet> packet, ns3::WifiMacHeader const & header) [member function]
-    cls.add_method('Receive', 
-                   'bool', 
-                   [param('ns3::Ptr< ns3::Packet >', 'packet'), param('ns3::WifiMacHeader const &', 'header')], 
-                   is_pure_virtual=True, is_virtual=True)
-    ## mesh-wifi-interface-mac-plugin.h: void ns3::MeshWifiInterfaceMacPlugin::SetParent(ns3::Ptr<ns3::MeshWifiInterfaceMac> parent) [member function]
-    cls.add_method('SetParent', 
-                   'void', 
-                   [param('ns3::Ptr< ns3::MeshWifiInterfaceMac >', 'parent')], 
-                   is_pure_virtual=True, is_virtual=True)
-    ## mesh-wifi-interface-mac-plugin.h: void ns3::MeshWifiInterfaceMacPlugin::UpdateBeacon(ns3::MeshWifiBeacon & beacon) const [member function]
-    cls.add_method('UpdateBeacon', 
-                   'void', 
-                   [param('ns3::MeshWifiBeacon &', 'beacon')], 
-                   is_pure_virtual=True, is_const=True, is_virtual=True)
-    ## mesh-wifi-interface-mac-plugin.h: bool ns3::MeshWifiInterfaceMacPlugin::UpdateOutcomingFrame(ns3::Ptr<ns3::Packet> packet, ns3::WifiMacHeader & header, ns3::Mac48Address from, ns3::Mac48Address to) [member function]
-    cls.add_method('UpdateOutcomingFrame', 
-                   'bool', 
-                   [param('ns3::Ptr< ns3::Packet >', 'packet'), param('ns3::WifiMacHeader &', 'header'), param('ns3::Mac48Address', 'from'), param('ns3::Mac48Address', 'to')], 
-                   is_pure_virtual=True, is_virtual=True)
     return
 
 def register_Ns3WifiInformationElementVector_methods(root_module, cls):
@@ -524,6 +521,33 @@ def register_Ns3MeshWifiInterfaceMac_methods(root_module, cls):
                    visibility='private', is_virtual=True)
     return
 
+def register_Ns3MeshWifiInterfaceMacPlugin_methods(root_module, cls):
+    ## mesh-wifi-interface-mac-plugin.h: ns3::MeshWifiInterfaceMacPlugin::MeshWifiInterfaceMacPlugin() [constructor]
+    cls.add_constructor([])
+    ## mesh-wifi-interface-mac-plugin.h: ns3::MeshWifiInterfaceMacPlugin::MeshWifiInterfaceMacPlugin(ns3::MeshWifiInterfaceMacPlugin const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::MeshWifiInterfaceMacPlugin const &', 'arg0')])
+    ## mesh-wifi-interface-mac-plugin.h: bool ns3::MeshWifiInterfaceMacPlugin::Receive(ns3::Ptr<ns3::Packet> packet, ns3::WifiMacHeader const & header) [member function]
+    cls.add_method('Receive', 
+                   'bool', 
+                   [param('ns3::Ptr< ns3::Packet >', 'packet'), param('ns3::WifiMacHeader const &', 'header')], 
+                   is_pure_virtual=True, is_virtual=True)
+    ## mesh-wifi-interface-mac-plugin.h: void ns3::MeshWifiInterfaceMacPlugin::SetParent(ns3::Ptr<ns3::MeshWifiInterfaceMac> parent) [member function]
+    cls.add_method('SetParent', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::MeshWifiInterfaceMac >', 'parent')], 
+                   is_pure_virtual=True, is_virtual=True)
+    ## mesh-wifi-interface-mac-plugin.h: void ns3::MeshWifiInterfaceMacPlugin::UpdateBeacon(ns3::MeshWifiBeacon & beacon) const [member function]
+    cls.add_method('UpdateBeacon', 
+                   'void', 
+                   [param('ns3::MeshWifiBeacon &', 'beacon')], 
+                   is_pure_virtual=True, is_const=True, is_virtual=True)
+    ## mesh-wifi-interface-mac-plugin.h: bool ns3::MeshWifiInterfaceMacPlugin::UpdateOutcomingFrame(ns3::Ptr<ns3::Packet> packet, ns3::WifiMacHeader & header, ns3::Mac48Address from, ns3::Mac48Address to) [member function]
+    cls.add_method('UpdateOutcomingFrame', 
+                   'bool', 
+                   [param('ns3::Ptr< ns3::Packet >', 'packet'), param('ns3::WifiMacHeader &', 'header'), param('ns3::Mac48Address', 'from'), param('ns3::Mac48Address', 'to')], 
+                   is_pure_virtual=True, is_virtual=True)
+    return
+
 def register_Ns3MeshPointDevice_methods(root_module, cls):
     ## mesh-point-device.h: ns3::MeshPointDevice::MeshPointDevice(ns3::MeshPointDevice const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::MeshPointDevice const &', 'arg0')])
@@ -703,7 +727,9 @@ def register_functions(root_module):
     register_functions_ns3_Config(module.get_submodule('Config'), root_module)
     register_functions_ns3_TimeStepPrecision(module.get_submodule('TimeStepPrecision'), root_module)
     register_functions_ns3_addressUtils(module.get_submodule('addressUtils'), root_module)
+    register_functions_ns3_aodv(module.get_submodule('aodv'), root_module)
     register_functions_ns3_dot11s(module.get_submodule('dot11s'), root_module)
+    register_functions_ns3_dpd(module.get_submodule('dpd'), root_module)
     register_functions_ns3_flame(module.get_submodule('flame'), root_module)
     register_functions_ns3_internal(module.get_submodule('internal'), root_module)
     register_functions_ns3_olsr(module.get_submodule('olsr'), root_module)
@@ -718,7 +744,13 @@ def register_functions_ns3_TimeStepPrecision(module, root_module):
 def register_functions_ns3_addressUtils(module, root_module):
     return
 
+def register_functions_ns3_aodv(module, root_module):
+    return
+
 def register_functions_ns3_dot11s(module, root_module):
+    return
+
+def register_functions_ns3_dpd(module, root_module):
     return
 
 def register_functions_ns3_flame(module, root_module):

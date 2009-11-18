@@ -3,12 +3,16 @@ from pybindgen import Module, FileCodeSink, param, retval, cppclass, typehandler
 def register_types(module):
     root_module = module.get_root()
     
-    ## radvd-interface.h: ns3::RadvdInterface [class]
-    module.add_class('RadvdInterface', parent=root_module['ns3::RefCountBase'])
-    ## radvd-prefix.h: ns3::RadvdPrefix [class]
-    module.add_class('RadvdPrefix', parent=root_module['ns3::RefCountBase'])
+    ## simple-ref-count.h: ns3::SimpleRefCount<ns3::RadvdInterface, ns3::empty> [class]
+    module.add_class('SimpleRefCount', template_parameters=['ns3::RadvdInterface', 'ns3::empty'], parent=root_module['ns3::empty'])
+    ## simple-ref-count.h: ns3::SimpleRefCount<ns3::RadvdPrefix, ns3::empty> [class]
+    module.add_class('SimpleRefCount', template_parameters=['ns3::RadvdPrefix', 'ns3::empty'], parent=root_module['ns3::empty'])
     ## radvd.h: ns3::Radvd [class]
     module.add_class('Radvd', parent=root_module['ns3::Application'])
+    ## radvd-interface.h: ns3::RadvdInterface [class]
+    module.add_class('RadvdInterface', parent=root_module['ns3::SimpleRefCount< ns3::RadvdInterface, ns3::empty >'])
+    ## radvd-prefix.h: ns3::RadvdPrefix [class]
+    module.add_class('RadvdPrefix', parent=root_module['ns3::SimpleRefCount< ns3::RadvdPrefix, ns3::empty >'])
     
     ## Register a nested module for the namespace Config
     
@@ -28,10 +32,22 @@ def register_types(module):
     register_types_ns3_addressUtils(nested_module)
     
     
+    ## Register a nested module for the namespace aodv
+    
+    nested_module = module.add_cpp_namespace('aodv')
+    register_types_ns3_aodv(nested_module)
+    
+    
     ## Register a nested module for the namespace dot11s
     
     nested_module = module.add_cpp_namespace('dot11s')
     register_types_ns3_dot11s(nested_module)
+    
+    
+    ## Register a nested module for the namespace dpd
+    
+    nested_module = module.add_cpp_namespace('dpd')
+    register_types_ns3_dpd(nested_module)
     
     
     ## Register a nested module for the namespace flame
@@ -64,7 +80,15 @@ def register_types_ns3_addressUtils(module):
     root_module = module.get_root()
     
 
+def register_types_ns3_aodv(module):
+    root_module = module.get_root()
+    
+
 def register_types_ns3_dot11s(module):
+    root_module = module.get_root()
+    
+
+def register_types_ns3_dpd(module):
     root_module = module.get_root()
     
 
@@ -81,9 +105,42 @@ def register_types_ns3_olsr(module):
     
 
 def register_methods(root_module):
+    register_Ns3Radvd_methods(root_module, root_module['ns3::Radvd'])
     register_Ns3RadvdInterface_methods(root_module, root_module['ns3::RadvdInterface'])
     register_Ns3RadvdPrefix_methods(root_module, root_module['ns3::RadvdPrefix'])
-    register_Ns3Radvd_methods(root_module, root_module['ns3::Radvd'])
+    return
+
+def register_Ns3Radvd_methods(root_module, cls):
+    ## radvd.h: ns3::Radvd::Radvd(ns3::Radvd const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::Radvd const &', 'arg0')])
+    ## radvd.h: ns3::Radvd::Radvd() [constructor]
+    cls.add_constructor([])
+    ## radvd.h: void ns3::Radvd::AddConfiguration(ns3::Ptr<ns3::RadvdInterface> routerInterface) [member function]
+    cls.add_method('AddConfiguration', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::RadvdInterface >', 'routerInterface')])
+    ## radvd.h: static ns3::TypeId ns3::Radvd::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## radvd.h: ns3::Radvd::MAX_RA_DELAY_TIME [variable]
+    cls.add_static_attribute('MAX_RA_DELAY_TIME', 'uint32_t const', is_const=True)
+    ## radvd.h: void ns3::Radvd::DoDispose() [member function]
+    cls.add_method('DoDispose', 
+                   'void', 
+                   [], 
+                   visibility='protected', is_virtual=True)
+    ## radvd.h: void ns3::Radvd::StartApplication() [member function]
+    cls.add_method('StartApplication', 
+                   'void', 
+                   [], 
+                   visibility='private', is_virtual=True)
+    ## radvd.h: void ns3::Radvd::StopApplication() [member function]
+    cls.add_method('StopApplication', 
+                   'void', 
+                   [], 
+                   visibility='private', is_virtual=True)
     return
 
 def register_Ns3RadvdInterface_methods(root_module, cls):
@@ -350,45 +407,14 @@ def register_Ns3RadvdPrefix_methods(root_module, cls):
                    [param('uint32_t', 'validLifeTime')])
     return
 
-def register_Ns3Radvd_methods(root_module, cls):
-    ## radvd.h: ns3::Radvd::Radvd(ns3::Radvd const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::Radvd const &', 'arg0')])
-    ## radvd.h: ns3::Radvd::Radvd() [constructor]
-    cls.add_constructor([])
-    ## radvd.h: void ns3::Radvd::AddConfiguration(ns3::Ptr<ns3::RadvdInterface> routerInterface) [member function]
-    cls.add_method('AddConfiguration', 
-                   'void', 
-                   [param('ns3::Ptr< ns3::RadvdInterface >', 'routerInterface')])
-    ## radvd.h: static ns3::TypeId ns3::Radvd::GetTypeId() [member function]
-    cls.add_method('GetTypeId', 
-                   'ns3::TypeId', 
-                   [], 
-                   is_static=True)
-    ## radvd.h: ns3::Radvd::MAX_RA_DELAY_TIME [variable]
-    cls.add_static_attribute('MAX_RA_DELAY_TIME', 'uint32_t const', is_const=True)
-    ## radvd.h: void ns3::Radvd::DoDispose() [member function]
-    cls.add_method('DoDispose', 
-                   'void', 
-                   [], 
-                   visibility='protected', is_virtual=True)
-    ## radvd.h: void ns3::Radvd::StartApplication() [member function]
-    cls.add_method('StartApplication', 
-                   'void', 
-                   [], 
-                   visibility='private', is_virtual=True)
-    ## radvd.h: void ns3::Radvd::StopApplication() [member function]
-    cls.add_method('StopApplication', 
-                   'void', 
-                   [], 
-                   visibility='private', is_virtual=True)
-    return
-
 def register_functions(root_module):
     module = root_module
     register_functions_ns3_Config(module.get_submodule('Config'), root_module)
     register_functions_ns3_TimeStepPrecision(module.get_submodule('TimeStepPrecision'), root_module)
     register_functions_ns3_addressUtils(module.get_submodule('addressUtils'), root_module)
+    register_functions_ns3_aodv(module.get_submodule('aodv'), root_module)
     register_functions_ns3_dot11s(module.get_submodule('dot11s'), root_module)
+    register_functions_ns3_dpd(module.get_submodule('dpd'), root_module)
     register_functions_ns3_flame(module.get_submodule('flame'), root_module)
     register_functions_ns3_internal(module.get_submodule('internal'), root_module)
     register_functions_ns3_olsr(module.get_submodule('olsr'), root_module)
@@ -403,7 +429,13 @@ def register_functions_ns3_TimeStepPrecision(module, root_module):
 def register_functions_ns3_addressUtils(module, root_module):
     return
 
+def register_functions_ns3_aodv(module, root_module):
+    return
+
 def register_functions_ns3_dot11s(module, root_module):
+    return
+
+def register_functions_ns3_dpd(module, root_module):
     return
 
 def register_functions_ns3_flame(module, root_module):
