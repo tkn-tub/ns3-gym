@@ -32,6 +32,7 @@
 #include "ns3/callback.h"
 #include "ns3/assert.h"
 #include "ns3/ptr.h"
+#include "ns3/deprecated.h"
 
 namespace ns3 {
 
@@ -326,10 +327,14 @@ public:
   /**
    * If you try to change the content of the buffer
    * returned by this method, you will die.
+   * Note that this method is now deprecated and will be removed in
+   * the next version of ns-3. If you need to get access to the content
+   * of the byte buffer of a packet, you need to call
+   * ns3::Packet::CopyData to perform an explicit copy.
    *
    * \returns a pointer to the internal buffer of the packet.
    */
-  uint8_t const *PeekData (void) const;
+  uint8_t const *PeekData (void) const NS_DEPRECATED;
 
   /**
    * \param buffer a pointer to a byte buffer where the packet data 
