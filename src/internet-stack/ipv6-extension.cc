@@ -640,9 +640,9 @@ uint8_t Ipv6ExtensionRouting::Process (Ptr<Packet>& packet, uint8_t offset, Ipv6
   const uint8_t *buff = packet->PeekData ();
 
   uint8_t routingNextHeader = *buff;
-  uint8_t routingLength = *(buff+1);
-  uint8_t routingTypeRouting = *(buff+2);
-  uint8_t routingSegmentsLeft = *(buff+3);
+  uint8_t routingLength = *(buff + 1);
+  uint8_t routingTypeRouting = *(buff + 2);
+  uint8_t routingSegmentsLeft = *(buff + 3);
 
   if (nextHeader)
     {
