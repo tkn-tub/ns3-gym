@@ -2800,104 +2800,111 @@ OlsrMprTestCase::~OlsrMprTestCase ()
 bool
 OlsrMprTestCase::DoRun ()
 {
+  Ptr<RoutingProtocol> protocol = CreateObject<RoutingProtocol> ();
+  protocol->m_mainAddress = Ipv4Address ("10.0.0.1");
+  OlsrState & state = protocol->m_state; 
+ 
   /*
-   * Create a 3x3 grid like the following:
-   *      3---6---9
-   *      |\ /|\ /|
-   *      | X | X |
-   *      |/ \|/ \|
-   *      2---5---8
-   *      |\ /|\ /|
-   *      | X | X |
-   *      |/ \|/ \|
-   *      1---4---7
-   * PrepareTopology fills all 2-hop neighbors of station 1 and creates a routing protocol
-   * We are the station number 2. Obvious, that an only MPR in this case is 5 
+   *  1 -- 2 
+   *  |    |
+   *  3 -- 4
+   *
+   * Node 1 must select only one MPR (2 or 3, doesn't matter)
    */
-  Ptr<RoutingProtocol> m_protocol = CreateObject<RoutingProtocol> ();
-  m_protocol->m_mainAddress = Ipv4Address ("10.0.0.2");
-  // we fill all possible 2-hop neighborhood
-  TwoHopNeighborTuple tuple;
-  tuple.expirationTime = Seconds (3600);
-  // All neighbor stations which are seen from station 5
-  tuple.neighborMainAddr = Ipv4Address ("10.0.0.5");
-  tuple.twoHopNeighborAddr = Ipv4Address ("10.0.0.1");
-  m_protocol->m_state.InsertTwoHopNeighborTuple (tuple);
-  tuple.twoHopNeighborAddr = Ipv4Address ("10.0.0.2");
-  m_protocol->m_state.InsertTwoHopNeighborTuple (tuple);
-  tuple.twoHopNeighborAddr = Ipv4Address ("10.0.0.3");
-  m_protocol->m_state.InsertTwoHopNeighborTuple (tuple);
-  tuple.twoHopNeighborAddr = Ipv4Address ("10.0.0.4");
-  m_protocol->m_state.InsertTwoHopNeighborTuple (tuple);
-  tuple.twoHopNeighborAddr = Ipv4Address ("10.0.0.6");
-  m_protocol->m_state.InsertTwoHopNeighborTuple (tuple);
-  tuple.twoHopNeighborAddr = Ipv4Address ("10.0.0.7");
-  m_protocol->m_state.InsertTwoHopNeighborTuple (tuple);
-  tuple.twoHopNeighborAddr = Ipv4Address ("10.0.0.8");
-  m_protocol->m_state.InsertTwoHopNeighborTuple (tuple);
-  tuple.twoHopNeighborAddr = Ipv4Address ("10.0.0.9");
-  m_protocol->m_state.InsertTwoHopNeighborTuple (tuple);
-  // All neighbor stations which are seen from station 4
-  tuple.neighborMainAddr = Ipv4Address ("10.0.0.4");
-  tuple.twoHopNeighborAddr = Ipv4Address ("10.0.0.1");
-  m_protocol->m_state.InsertTwoHopNeighborTuple (tuple);
-  tuple.twoHopNeighborAddr = Ipv4Address ("10.0.0.2");
-  m_protocol->m_state.InsertTwoHopNeighborTuple (tuple);
-  tuple.twoHopNeighborAddr = Ipv4Address ("10.0.0.5");
-  m_protocol->m_state.InsertTwoHopNeighborTuple (tuple);
-  tuple.twoHopNeighborAddr = Ipv4Address ("10.0.0.8");
-  m_protocol->m_state.InsertTwoHopNeighborTuple (tuple);
-  tuple.twoHopNeighborAddr = Ipv4Address ("10.0.0.7");
-  m_protocol->m_state.InsertTwoHopNeighborTuple (tuple);
-
-  // All neighbor stations which are seen from station 6
-  tuple.neighborMainAddr = Ipv4Address ("10.0.0.6");
-  tuple.twoHopNeighborAddr = Ipv4Address ("10.0.0.3");
-  m_protocol->m_state.InsertTwoHopNeighborTuple (tuple);
-  tuple.twoHopNeighborAddr = Ipv4Address ("10.0.0.2");
-  m_protocol->m_state.InsertTwoHopNeighborTuple (tuple);
-  tuple.twoHopNeighborAddr = Ipv4Address ("10.0.0.5");
-  m_protocol->m_state.InsertTwoHopNeighborTuple (tuple);
-  tuple.twoHopNeighborAddr = Ipv4Address ("10.0.0.8");
-  m_protocol->m_state.InsertTwoHopNeighborTuple (tuple);
-  tuple.twoHopNeighborAddr = Ipv4Address ("10.0.0.9");
-  m_protocol->m_state.InsertTwoHopNeighborTuple (tuple);
-
-  // All neighbor stations which are seen from station 1
-  tuple.neighborMainAddr = Ipv4Address ("10.0.0.1");
-  tuple.twoHopNeighborAddr = Ipv4Address ("10.0.0.2");
-  m_protocol->m_state.InsertTwoHopNeighborTuple (tuple);
-  tuple.twoHopNeighborAddr = Ipv4Address ("10.0.0.5");
-  m_protocol->m_state.InsertTwoHopNeighborTuple (tuple);
-  tuple.twoHopNeighborAddr = Ipv4Address ("10.0.0.4");
-
-  // All neighbor stations which are seen from station 3
-  tuple.neighborMainAddr = Ipv4Address ("10.0.0.3");
-  tuple.twoHopNeighborAddr = Ipv4Address ("10.0.0.2");
-  m_protocol->m_state.InsertTwoHopNeighborTuple (tuple);
-  tuple.twoHopNeighborAddr = Ipv4Address ("10.0.0.5");
-  m_protocol->m_state.InsertTwoHopNeighborTuple (tuple);
-  tuple.twoHopNeighborAddr = Ipv4Address ("10.0.0.6");
-  // First, we fill all neighbors
-  // If neighbors willingness = OLSR_WILL_DEFAULT, an only station number 5 will be an MPR
   NeighborTuple neigbor;
   neigbor.status = NeighborTuple::STATUS_SYM;
   neigbor.willingness = OLSR_WILL_DEFAULT;
+  neigbor.neighborMainAddr = Ipv4Address ("10.0.0.2");
+  protocol->m_state.InsertNeighborTuple (neigbor);
   neigbor.neighborMainAddr = Ipv4Address ("10.0.0.3");
-  m_protocol->m_state.InsertNeighborTuple (neigbor);
-  neigbor.neighborMainAddr = Ipv4Address ("10.0.0.6");
-  m_protocol->m_state.InsertNeighborTuple (neigbor);
-  neigbor.neighborMainAddr = Ipv4Address ("10.0.0.5");
-  m_protocol->m_state.InsertNeighborTuple (neigbor);
-  neigbor.neighborMainAddr = Ipv4Address ("10.0.0.4");
-  m_protocol->m_state.InsertNeighborTuple (neigbor);
-  neigbor.neighborMainAddr = Ipv4Address ("10.0.0.1");
-  m_protocol->m_state.InsertNeighborTuple (neigbor);
-  //Now, calculateMPR
-  m_protocol->MprComputation ();
-  //Check results
-  NS_TEST_ASSERT_MSG_EQ (m_protocol->m_state.FindMprAddress (Ipv4Address ("10.0.0.5")), true, "MPR is incorrect!");
-  NS_TEST_ASSERT_MSG_EQ (m_protocol->m_state.GetMprSet ().size (), 1 , "An only address must be chosen!\n");
+  protocol->m_state.InsertNeighborTuple (neigbor); 
+  TwoHopNeighborTuple tuple;
+  tuple.expirationTime = Seconds (3600);
+  tuple.neighborMainAddr = Ipv4Address ("10.0.0.2");
+  tuple.twoHopNeighborAddr = Ipv4Address ("10.0.0.4");
+  protocol->m_state.InsertTwoHopNeighborTuple (tuple);
+  tuple.neighborMainAddr = Ipv4Address ("10.0.0.3");
+  tuple.twoHopNeighborAddr = Ipv4Address ("10.0.0.4");
+  protocol->m_state.InsertTwoHopNeighborTuple (tuple);
+  
+  protocol->MprComputation ();
+  NS_TEST_EXPECT_MSG_EQ (state.GetMprSet ().size (), 1 , "An only address must be chosen.");
+  /*
+   *  1 -- 2 -- 5 
+   *  |    |
+   *  3 -- 4
+   *
+   * Node 1 must select node 2 as MPR.
+   */
+  tuple.neighborMainAddr = Ipv4Address ("10.0.0.2");
+  tuple.twoHopNeighborAddr = Ipv4Address ("10.0.0.5");
+  protocol->m_state.InsertTwoHopNeighborTuple (tuple);
+
+  protocol->MprComputation ();
+  MprSet mpr = state.GetMprSet ();
+  NS_TEST_EXPECT_MSG_EQ (mpr.size (), 1 , "An only address must be chosen.");
+  NS_TEST_EXPECT_MSG_EQ ((mpr.find ("10.0.0.2") != mpr.end ()), true, "Node 1 must select node 2 as MPR");
+  /*
+   *  1 -- 2 -- 5 
+   *  |    |
+   *  3 -- 4
+   *  |
+   *  6
+   *
+   * Node 1 must select nodes 2 and 3 as MPRs.
+   */
+  tuple.neighborMainAddr = Ipv4Address ("10.0.0.3");
+  tuple.twoHopNeighborAddr = Ipv4Address ("10.0.0.6");
+  protocol->m_state.InsertTwoHopNeighborTuple (tuple);
+
+  protocol->MprComputation ();
+  mpr = state.GetMprSet ();
+  NS_TEST_EXPECT_MSG_EQ (mpr.size (), 2 , "An only address must be chosen.");
+  NS_TEST_EXPECT_MSG_EQ ((mpr.find ("10.0.0.2") != mpr.end ()), true, "Node 1 must select node 2 as MPR");
+  NS_TEST_EXPECT_MSG_EQ ((mpr.find ("10.0.0.3") != mpr.end ()), true, "Node 1 must select node 3 as MPR");
+  /*
+   *  7 (OLSR_WILL_ALWAYS)
+   *  |
+   *  1 -- 2 -- 5 
+   *  |    |
+   *  3 -- 4
+   *  |
+   *  6
+   *
+   * Node 1 must select nodes 2, 3 and 7 (since it is WILL_ALWAYS) as MPRs.
+   */
+  neigbor.willingness = OLSR_WILL_ALWAYS;
+  neigbor.neighborMainAddr = Ipv4Address ("10.0.0.7");
+  protocol->m_state.InsertNeighborTuple (neigbor);
+
+  protocol->MprComputation ();
+  mpr = state.GetMprSet ();
+  NS_TEST_EXPECT_MSG_EQ (mpr.size (), 3 , "An only address must be chosen.");
+  NS_TEST_EXPECT_MSG_EQ ((mpr.find ("10.0.0.7") != mpr.end ()), true, "Node 1 must select node 7 as MPR");
+  /*
+   *                7 <- WILL_ALWAYS
+   *                |
+   *      9 -- 8 -- 1 -- 2 -- 5 
+   *                |    |
+   *           ^    3 -- 4
+   *           |    |
+   *   WILL_NEVER   6
+   *
+   * Node 1 must select nodes 2, 3 and 7 (since it is WILL_ALWAYS) as MPRs.
+   * Node 1 must NOT select node 8 as MPR since it is WILL_NEVER
+   */
+  neigbor.willingness = OLSR_WILL_NEVER;
+  neigbor.neighborMainAddr = Ipv4Address ("10.0.0.8");
+  protocol->m_state.InsertNeighborTuple (neigbor);
+  tuple.neighborMainAddr = Ipv4Address ("10.0.0.8");
+  tuple.twoHopNeighborAddr = Ipv4Address ("10.0.0.9");
+  protocol->m_state.InsertTwoHopNeighborTuple (tuple);
+
+  protocol->MprComputation ();
+  mpr = state.GetMprSet ();
+  NS_TEST_EXPECT_MSG_EQ (mpr.size (), 3 , "An only address must be chosen.");
+  NS_TEST_EXPECT_MSG_EQ ((mpr.find ("10.0.0.9") == mpr.end ()), true, "Node 1 must NOT select node 8 as MPR");
+
   return false;
 }
 
