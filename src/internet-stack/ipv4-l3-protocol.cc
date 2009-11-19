@@ -355,6 +355,70 @@ Ipv4L3Protocol::GetInterfaceForDevice (
   return -1;
 }
 
+bool
+Ipv4L3Protocol::IsDestinationAddress (Ipv4Address address, uint32_t iif) const
+{
+  NS_LOG_FUNCTION (this << address << " " << iif);
+
+  // First check the incoming interface for a unicast address match
+  for (uint32_t i = 0; i < GetNAddresses (iif); i++)
+    {
+      Ipv4InterfaceAddress iaddr = GetAddress (iif, i);
+      if (address == iaddr.GetLocal ())
+        {
+          NS_LOG_LOGIC ("For me (destination " << address << " match)");
+          return true;
+        }
+      if (address == iaddr.GetBroadcast ())
+        {
+          NS_LOG_LOGIC ("For me (interface broadcast address)");
+          return true;
+        }
+    }
+
+  if (address.IsMulticast ())
+    {
+#ifdef NOTYET
+      if (MulticastCheckGroup (iif, address ))
+#endif
+      if (true)
+        {
+          NS_LOG_LOGIC ("For me (Ipv4Addr multicast address");
+          return true;
+        }
+    }
+
+  if (address.IsBroadcast ())
+    {
+      NS_LOG_LOGIC ("For me (Ipv4Addr broadcast address)");
+      return true;
+    }
+
+  if (GetWeakEsModel ())  // Check other interfaces
+    { 
+      for (uint32_t j = 0; j < GetNInterfaces (); j++)
+        {
+          if (j == uint32_t (iif)) continue;
+          for (uint32_t i = 0; i < GetNAddresses (j); i++)
+            {
+              Ipv4InterfaceAddress iaddr = GetAddress (j, i);
+              if (address == iaddr.GetLocal ())
+                {
+                  NS_LOG_LOGIC ("For me (destination " << address << " match) on another interface");
+                  return true;
+                }
+              //  This is a small corner case:  match another interface's broadcast address
+              if (address == iaddr.GetBroadcast ())
+                {
+                  NS_LOG_LOGIC ("For me (interface broadcast address on another interface)");
+                  return true;
+                }
+            }
+        }
+    }
+  return false;
+}
+
 void 
 Ipv4L3Protocol::Receive( Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t protocol, const Address &from,
                          const Address &to, NetDevice::PacketType packetType)
@@ -899,6 +963,18 @@ bool
 Ipv4L3Protocol::GetIpForward (void) const
 {
   return m_ipForward;
+}
+
+void 
+Ipv4L3Protocol::SetWeakEsModel (bool model)
+{
+  m_weakEsModel = model;
+}
+
+bool 
+Ipv4L3Protocol::GetWeakEsModel (void) const
+{
+  return m_weakEsModel;
 }
 
 void
