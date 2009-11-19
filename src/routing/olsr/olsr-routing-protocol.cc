@@ -464,6 +464,37 @@ RoutingProtocol::Degree (NeighborTuple const &tuple)
   return degree;
 }
 
+namespace {
+///
+/// \brief Remove all covered 2-hop neighbors from N2 set. This is a helper function used by MprComputation algorithm.
+///
+void 
+CoverTwoHopNeighbors (Ipv4Address neighborMainAddr, TwoHopNeighborSet & N2)
+{
+  // first gather all 2-hop neighbors to be removed
+  std::set<Ipv4Address> toRemove;
+  for (TwoHopNeighborSet::iterator twoHopNeigh = N2.begin (); twoHopNeigh != N2.end (); twoHopNeigh ++)
+    {
+      if (twoHopNeigh->neighborMainAddr == neighborMainAddr)
+        {
+          toRemove.insert (twoHopNeigh->twoHopNeighborAddr);
+        }
+    }
+  // Now remove all matching records from N2
+  for (TwoHopNeighborSet::iterator twoHopNeigh = N2.begin (); twoHopNeigh != N2.end (); )
+    {
+      if (toRemove.find (twoHopNeigh->twoHopNeighborAddr) != toRemove.end ())
+        {
+          twoHopNeigh = N2.erase (twoHopNeigh);
+        }
+      else
+        {
+          twoHopNeigh ++;
+        }
+    }
+}
+} // anonymous namespace
+
 ///
 /// \brief Computates MPR set of a node following RFC 3626 hints.
 ///
@@ -577,18 +608,7 @@ RoutingProtocol::MprComputation()
           mprSet.insert (neighbor->neighborMainAddr);
           // (not in RFC but I think is needed: remove the 2-hop
           // neighbors reachable by the MPR from N2)
-          for (TwoHopNeighborSet::iterator twoHopNeigh = N2.begin ();
-               twoHopNeigh != N2.end (); )
-            {
-              if (twoHopNeigh->neighborMainAddr == neighbor->neighborMainAddr)
-                {
-                  twoHopNeigh = N2.erase (twoHopNeigh);
-                }
-              else
-                {
-                  twoHopNeigh++;
-                }
-            }
+          CoverTwoHopNeighbors (neighbor->neighborMainAddr, N2);
         }
     }
   
@@ -637,6 +657,8 @@ RoutingProtocol::MprComputation()
     {
       if (coveredTwoHopNeighbors.find (twoHopNeigh->twoHopNeighborAddr) != coveredTwoHopNeighbors.end ())
         {
+          // This works correctly only because it is known that twoHopNeigh is reachable by exactly one neighbor, 
+          // so only one record in N2 exists for each of them. This record is erased here.
           NS_LOG_LOGIC ("2-hop neigh. " << twoHopNeigh->twoHopNeighborAddr << " is already covered by an MPR.");
           twoHopNeigh = N2.erase (twoHopNeigh);
         }
@@ -714,10 +736,6 @@ RoutingProtocol::MprComputation()
               if (max == NULL || nb_tuple->willingness > max->willingness)
                 {
                   max = nb_tuple;
-                  for (TwoHopNeighborSet::iterator newCovered = N2.begin (); newCovered != N2.end (); newCovered++)
-                    {
-                      coveredTwoHopNeighbors.insert (newCovered->twoHopNeighborAddr);
-                    }
                   max_r = r;
                 }
               else if (nb_tuple->willingness == max->willingness)
@@ -742,19 +760,8 @@ RoutingProtocol::MprComputation()
       if (max != NULL)
         {
           mprSet.insert (max->neighborMainAddr);
-          // Remove the nodes from N2 which are now covered by a node in the MPR set.
-          for (TwoHopNeighborSet::iterator twoHopNeigh = N2.begin (); twoHopNeigh != N2.end (); )
-            {
-              if (coveredTwoHopNeighbors.find (twoHopNeigh->twoHopNeighborAddr) != coveredTwoHopNeighbors.end ())
-                {
-                  NS_LOG_LOGIC ("2-hop neigh. " << twoHopNeigh->twoHopNeighborAddr << " is already covered by an MPR.");
-                  twoHopNeigh = N2.erase (twoHopNeigh);
-                }
-              else
-                {
-                  twoHopNeigh++;
-                }
-            }
+          CoverTwoHopNeighbors (max->neighborMainAddr, N2);
+          NS_LOG_LOGIC (N2.size () << " 2-hop neighbors left to cover!");           
         }
     }
 
