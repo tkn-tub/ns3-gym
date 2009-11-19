@@ -8,7 +8,7 @@ from pybindgen.gccxmlparser import ModuleParser, PygenClassifier, PygenSection, 
 from pybindgen.typehandlers.codesink import FileCodeSink
 from pygccxml.declarations import templates
 from pygccxml.declarations.class_declaration import class_t
-from pygccxml.declarations.calldef import free_function_t, member_function_t, constructor_t
+from pygccxml.declarations.calldef import free_function_t, member_function_t, constructor_t, calldef_t
 
 
 ## we need the smart pointer type transformation to be active even
@@ -161,6 +161,13 @@ def pre_scan_hook(dummy_module_parser,
             and pygccxml_definition.name == 'Run':
         global_annotations['ignore'] = True
 
+    ## http://www.gccxml.org/Bug/view.php?id=9915
+    if isinstance(pygccxml_definition, calldef_t):
+        for arg in pygccxml_definition.arguments:
+            if arg.default_value is None:
+                continue
+            if "ns3::MilliSeconds( )" == arg.default_value:
+                arg.default_value = "ns3::MilliSeconds(0)"
 
     ## classes
     if isinstance(pygccxml_definition, class_t):
