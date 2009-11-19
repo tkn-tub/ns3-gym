@@ -401,6 +401,11 @@ UdpSocketImpl::DoSendTo (Ptr<Packet> p, Ipv4Address dest, uint16_t port)
       NS_LOG_LOGIC ("Limited broadcast end.");
       return p->GetSize();
     }
+  else if (m_endPoint->GetLocalAddress() != Ipv4Address::GetAny())
+    {
+      m_udp->Send(p->Copy (), m_endPoint->GetLocalAddress(), dest,
+                  m_endPoint->GetLocalPort(), port, 0);
+    }
   else if (ipv4->GetRoutingProtocol () != 0)
     {
       Ipv4Header header;
