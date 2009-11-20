@@ -163,24 +163,49 @@ Object::DoGetObject (TypeId tid) const
 void
 Object::Start (void)
 {
+  /**
+   * Note: the code here is a bit tricky because we need to protect ourselves from
+   * modifications in the aggregate array while DoStart is called. The user's
+   * implementation of the DoStart method could call GetObject (which could
+   * reorder the array) and it could call AggregateObject which would add an 
+   * object at the end of the array. To be safe, we restart iteration over the 
+   * array whenever we call some user code, just in case.
+   */
+ restart:
   uint32_t n = m_aggregates->n;
   for (uint32_t i = 0; i < n; i++)
     {
       Object *current = m_aggregates->buffer[i];
-      current->DoStart ();
-      current->m_started = true;
+      if (!current->m_started)
+        {
+          current->DoStart ();
+          current->m_started = true;
+          goto restart;
+        }
     }
 }
 void 
 Object::Dispose (void)
 {
+  /**
+   * Note: the code here is a bit tricky because we need to protect ourselves from
+   * modifications in the aggregate array while DoDispose is called. The user's
+   * DoDispose implementation could call GetObject (which could reorder the array) 
+   * and it could call AggregateObject which would add an object at the end of the array.
+   * So, to be safe, we restart the iteration over the array whenever we call some
+   * user code.
+   */
+ restart:
   uint32_t n = m_aggregates->n;
   for (uint32_t i = 0; i < n; i++)
     {
       Object *current = m_aggregates->buffer[i];
-      NS_ASSERT (!current->m_disposed);
-      current->DoDispose ();
-      current->m_disposed = true;
+      if (!current->m_disposed)
+        {
+          current->DoDispose ();
+          current->m_disposed = true;
+          goto restart;
+        }
     }
 }
 void
@@ -216,21 +241,25 @@ Object::AggregateObject (Ptr<Object> o)
   struct Aggregates *aggregates = 
     (struct Aggregates *)malloc (sizeof(struct Aggregates)+(total-1)*sizeof(Object*));
   aggregates->n = total;
+
+  // copy our buffer to the new buffer
   memcpy (&aggregates->buffer[0], 
           &m_aggregates->buffer[0], 
           m_aggregates->n*sizeof(Object*));
-  // append the other aggregates in the new buffer
+
+  // append the other buffer into the new buffer too
   for (uint32_t i = 0; i < other->m_aggregates->n; i++)
     {
       aggregates->buffer[m_aggregates->n+i] = other->m_aggregates->buffer[i];
       UpdateSortedArray (aggregates, m_aggregates->n + i);
     }
 
-  // free both aggregate buffers
-  free (m_aggregates);
-  free (other->m_aggregates);
+  // keep track of the old aggregate buffers for the iteration
+  // of NotifyNewAggregates
+  struct Aggregates *a = m_aggregates;
+  struct Aggregates *b = other->m_aggregates;
 
-  // Then, assign that buffer to every object
+  // Then, assign the new aggregation buffer to every object
   uint32_t n = aggregates->n;
   for (uint32_t i = 0; i < n; i++)
     {
@@ -241,12 +270,25 @@ Object::AggregateObject (Ptr<Object> o)
   // share the counts
   ShareCount (other);
 
-  // Finally, call NotifyNewAggregate in the listed chain
-  for (uint32_t i = 0; i < n; i++)
+  // Finally, call NotifyNewAggregate on all the objects aggregates together.
+  // We purposedly use the old aggregate buffers to iterate over the objects
+  // because this allows us to assume that they will not change from under 
+  // our feet, even if our users call AggregateObject from within their
+  // NotifyNewAggregate method.
+  for (uint32_t i = 0; i < a->n; i++)
     {
-      Object *current = m_aggregates->buffer[i];
+      Object *current = a->buffer[i];
       current->NotifyNewAggregate ();
     }
+  for (uint32_t i = 0; i < b->n; i++)
+    {
+      Object *current = b->buffer[i];
+      current->NotifyNewAggregate ();
+    }
+
+  // Now that we are done with them, we can free our old aggregate buffers
+  free (a);
+  free (b);
 }
 /**
  * This function must be implemented in the stack that needs to notify

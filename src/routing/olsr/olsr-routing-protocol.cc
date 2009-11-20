@@ -219,7 +219,7 @@ void RoutingProtocol::DoDispose ()
 {
   m_ipv4 = 0;
 
-  for (std::map< Ptr<Socket>, Ipv4Address >::iterator iter = m_socketAddresses.begin ();
+  for (std::map< Ptr<Socket>, Ipv4InterfaceAddress >::iterator iter = m_socketAddresses.begin ();
        iter != m_socketAddresses.end (); iter++)
     {
       iter->first->Close ();
@@ -278,7 +278,7 @@ void RoutingProtocol::DoStart ()
           NS_FATAL_ERROR ("Failed to bind() OLSR receive socket");
         }
       socket->Connect (InetSocketAddress (Ipv4Address (0xffffffff), OLSR_PORT_NUMBER));
-      m_socketAddresses[socket] = addr;
+      m_socketAddresses[socket] = m_ipv4->GetAddress (i, 0);
     }
 
   HelloTimerExpire ();
@@ -305,7 +305,7 @@ RoutingProtocol::RecvOlsr (Ptr<Socket> socket)
 
   InetSocketAddress inetSourceAddr = InetSocketAddress::ConvertFrom (sourceAddress);
   Ipv4Address senderIfaceAddr = inetSourceAddr.GetIpv4 ();
-  Ipv4Address receiverIfaceAddr = m_socketAddresses[socket];
+  Ipv4Address receiverIfaceAddr = m_socketAddresses[socket].GetLocal ();
   NS_ASSERT (receiverIfaceAddr != Ipv4Address ());
   NS_LOG_DEBUG ("OLSR node " << m_mainAddress << " received a OLSR packet from "
                 << senderIfaceAddr << " to " << receiverIfaceAddr);
@@ -2653,11 +2653,32 @@ RoutingProtocol::RouteOutput (Ptr<Packet> p, const Ipv4Header &header, uint32_t 
 }
 
 bool RoutingProtocol::RouteInput  (Ptr<const Packet> p, 
-  const Ipv4Header &header, Ptr<const NetDevice> idev,                            UnicastForwardCallback ucb, MulticastForwardCallback mcb,             
+  const Ipv4Header &header, Ptr<const NetDevice> idev,                            
+  UnicastForwardCallback ucb, MulticastForwardCallback mcb,             
   LocalDeliverCallback lcb, ErrorCallback ecb)
 {   
   NS_LOG_FUNCTION (this << " " << m_ipv4->GetObject<Node> ()->GetId() << " " << header.GetDestination ());
   
+  Ipv4Address dst = header.GetDestination ();
+  Ipv4Address origin = header.GetSource ();
+
+  // Consume self-originated packets
+  if (IsMyOwnAddress (origin) == true)
+    {
+      return true; 
+    }
+  
+  // Local delivery
+  NS_ASSERT (m_ipv4->GetInterfaceForDevice (idev) >= 0);
+  uint32_t iif = m_ipv4->GetInterfaceForDevice (idev);
+  if (m_ipv4->IsDestinationAddress (dst, iif))
+    {
+        NS_LOG_LOGIC ("Local delivery to " << dst);
+        lcb (p, header, iif);
+        return true;
+    }
+  
+  // Forwarding
   Ptr<Ipv4Route> rtentry;
   RoutingTableEntry entry1, entry2; 
   if (Lookup (header.GetDestination (), entry1))
@@ -2918,6 +2939,21 @@ OlsrProtocolTestSuite::OlsrProtocolTestSuite()
   : TestSuite("routing-olsr", UNIT)
 {
   AddTestCase (new OlsrMprTestCase ());
+}
+
+bool
+RoutingProtocol::IsMyOwnAddress (const Ipv4Address & a) const
+{
+  for (std::map<Ptr<Socket> , Ipv4InterfaceAddress>::const_iterator j =
+      m_socketAddresses.begin (); j != m_socketAddresses.end (); ++j)
+    {
+      Ipv4InterfaceAddress iface = j->second;
+      if (a == iface.GetLocal ())
+        {
+          return true;
+        }
+    }
+  return false;
 }
 
 

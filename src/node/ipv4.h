@@ -123,9 +123,31 @@ public:
    * This method searches the list of interfaces for one that holds a
    * particular address.  This call takes an IP address as a parameter and
    * returns the interface number of the first interface that has been assigned
-   * that address, or -1 if not found.  There must be an exact match.
+   * that address, or -1 if not found.  There must be an exact match; this
+   * method will not match broadcast or multicast addresses.
    */
   virtual int32_t GetInterfaceForAddress (Ipv4Address address) const = 0;
+
+  /**
+   * \brief Determine whether address and interface corresponding to
+   *        received packet can be accepted for local delivery
+   *
+   * \param address The IP address being considered
+   * \param iif The incoming Ipv4 interface index
+   *
+   * This method can be used to determine whether a received packet has
+   * an acceptable address for local delivery on the host.  The address
+   * may be a unicast, multicast, or broadcast address.  This method will
+   * return true if address is an exact match of a unicast address on
+   * one of the host's interfaces (see below), if address corresponds to 
+   * a multicast group that the host has joined (and the incoming device
+   * is acceptable), or if address corresponds to a broadcast address.
+   *
+   * If the Ipv4 attribute WeakEsModel is true, the unicast address may
+   * match any of the Ipv4 addresses on any interface.  If the attribute is
+   * false, the address must match one assigned to the incoming device.
+   */
+  virtual bool IsDestinationAddress (Ipv4Address address, uint32_t iif) const = 0;
 
   /**
    * \brief Return the interface number of first interface found that 
@@ -257,6 +279,8 @@ private:
   // Indirect the Ipv4 attributes through private pure virtual methods
   virtual void SetIpForward (bool forward) = 0;
   virtual bool GetIpForward (void) const = 0;
+  virtual void SetWeakEsModel (bool model) = 0;
+  virtual bool GetWeakEsModel (void) const = 0;
 };
 
 } // namespace ns3 

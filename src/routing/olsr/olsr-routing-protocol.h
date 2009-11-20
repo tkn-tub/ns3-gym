@@ -229,13 +229,15 @@ private:
                                const olsr::MessageHeader::Hello &hello);
 
   int Degree (NeighborTuple const &tuple);
+  /// Check that address is one of my interfaces
+  bool IsMyOwnAddress (const Ipv4Address & a) const;
 
   Ipv4Address m_mainAddress;
 
   // One socket per interface, each bound to that interface's address
   // (reason: for OLSR Link Sensing we need to know on which interface
   // HELLO messages arrive)
-  std::map< Ptr<Socket>, Ipv4Address > m_socketAddresses;
+  std::map< Ptr<Socket>, Ipv4InterfaceAddress > m_socketAddresses;
 
   TracedCallback <const PacketHeader &,
                   const MessageList &> m_rxPacketTrace;
