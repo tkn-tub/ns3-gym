@@ -7,6 +7,9 @@ def build(bld):
         'olsr-header.cc',
         'olsr-state.cc',
         'olsr-routing-protocol.cc',
+        'test/regression-test-suite.cc',
+        'test/hello-regression-test.cc',
+        'test/tc-regression-test.cc',
         ]
 
     headers = bld.new_task_gen('ns3header')
