@@ -119,9 +119,54 @@ def configure(conf):
                                          "PyBindGen version not correct and newer version could not be retrieved")
             return
 
+
+    def test(t1, t2):
+        test_program = '''
+#include <stdint.h>
+#include <vector>
+
+int main ()
+{
+   std::vector< %(type1)s > t = std::vector< %(type2)s > ();
+   return 0;
+}
+''' % dict(type1=t1, type2=t2)
+
+        try:
+            ret = conf.run_c_code(code=test_program,
+                                  env=conf.env.copy(), compile_filename='test.cc',
+                                  compile_mode='cxx',type='cprogram', execute=False)
+        except Configure.ConfigurationError:
+            ret = 1
+        conf.check_message_custom('types %s and %s' % (t1, t2), 'equivalency', (ret and 'no' or 'yes'))
+        return not ret
+
+    uint64_is_long = test("uint64_t", "unsigned long")
+    uint64_is_long_long = test("uint64_t", "unsigned long long")
+
+    if uint64_is_long:
+        conf.env['PYTHON_BINDINGS_APIDEFS'] = 'gcc-LP64'
+    elif uint64_is_long_long:
+        conf.env['PYTHON_BINDINGS_APIDEFS'] = 'gcc-ILP32'
+    else:
+        conf.env['PYTHON_BINDINGS_APIDEFS'] = None
+    if conf.env['PYTHON_BINDINGS_APIDEFS'] is None:
+        msg = 'none available'
+    else:
+        msg = conf.env['PYTHON_BINDINGS_APIDEFS']
+
+    conf.check_message_custom('the apidefs that can be used for Python bindings', '', msg)
+
+    if conf.env['PYTHON_BINDINGS_APIDEFS'] is None:
+        conf.report_optional_feature("python", "Python Bindings", False,
+                                     "No apidefs are available that can be used in this system")
+        return
+
     ## If all has gone well, we finally enable the Python bindings
     conf.env['ENABLE_PYTHON_BINDINGS'] = True
     conf.report_optional_feature("python", "Python Bindings", True, None)
+
+    
 
     ## Check for pygccxml
     try:
@@ -427,18 +472,7 @@ def build(bld):
         return
 
     if env['ENABLE_PYTHON_BINDINGS']:
-        if sys.platform == 'cygwin':
-            apidefs = 'gcc-cygwin'
-        else:
-            import struct
-            if struct.calcsize('I') == 4 and struct.calcsize('L') == 8 and struct.calcsize('P') == 8:
-                apidefs = 'gcc-LP64'
-            elif struct.calcsize('I') == 4 and struct.calcsize('L') == 4 and struct.calcsize('P') == 4:
-                apidefs = 'gcc-ILP32'
-            else:
-                print "Cannot build python bindings for unsupported data model"
-                return
-        #print "Will build python bindings for target:", apidefs
+        apidefs = env['PYTHON_BINDINGS_APIDEFS']
 
         ## Get a list of scanned modules; the set of scanned modules
         ## may be smaller than the set of all modules, in case a new
