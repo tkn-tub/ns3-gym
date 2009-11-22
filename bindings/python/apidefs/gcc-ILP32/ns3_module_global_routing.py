@@ -109,16 +109,6 @@ def register_methods(root_module):
     return
 
 def register_Ns3GlobalRouteManager_methods(root_module, cls):
-    ## global-route-manager.h: static void ns3::GlobalRouteManager::PopulateRoutingTables() [member function]
-    cls.add_method('PopulateRoutingTables', 
-                   'void', 
-                   [], 
-                   is_static=True, deprecated=True)
-    ## global-route-manager.h: static void ns3::GlobalRouteManager::RecomputeRoutingTables() [member function]
-    cls.add_method('RecomputeRoutingTables', 
-                   'void', 
-                   [], 
-                   is_static=True, deprecated=True)
     ## global-route-manager.h: static uint32_t ns3::GlobalRouteManager::AllocateRouterId() [member function]
     cls.add_method('AllocateRouterId', 
                    'uint32_t', 
