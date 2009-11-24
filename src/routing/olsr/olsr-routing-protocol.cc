@@ -72,7 +72,7 @@
 /********** Holding times **********/
 
 /// Neighbor holding time.
-#define OLSR_NEIGHB_HOLD_TIME	(Scalar (3) * OLSR_REFRESH_INTERVAL)
+#define OLSR_NEIGHB_HOLD_TIME	(Scalar (3) * m_helloInterval)
 /// Top holding time.
 #define OLSR_TOP_HOLD_TIME	(Scalar (3) * m_tcInterval)
 /// Dup holding time.
@@ -1458,7 +1458,7 @@ RoutingProtocol::SendHello ()
   msg.SetMessageSequenceNumber (GetMessageSequenceNumber ());
   olsr::MessageHeader::Hello &hello = msg.GetHello ();
 
-  hello.SetHTime (Scalar (3) * m_helloInterval);
+  hello.SetHTime (m_helloInterval);
   hello.willingness = m_willingness;
 
   std::vector<olsr::MessageHeader::Hello::LinkMessage>
