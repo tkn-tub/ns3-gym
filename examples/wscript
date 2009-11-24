@@ -3,6 +3,7 @@
 def build(bld):
     env = bld.env_of_name('default')
     if env['ENABLE_EXAMPLES']:
+        bld.add_subdirs('animation')
         bld.add_subdirs('csma')
         bld.add_subdirs('emulation')
         bld.add_subdirs('error-model')

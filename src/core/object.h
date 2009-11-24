@@ -127,6 +127,12 @@ public:
    * This method aggregates the two objects together: after this
    * method returns, it becomes possible to call GetObject
    * on one to get the other, and vice-versa. 
+   *
+   * This method calls the virtual method NotifyNewAggregates to
+   * notify all aggregated objects that they have been aggregated
+   * together.
+   *
+   * \sa NotifyNewAggregate
    */
   void AggregateObject (Ptr<Object> other);
 
@@ -141,26 +147,32 @@ public:
   AggregateIterator GetAggregateIterator (void) const;
 
   /**
-   * Execute starting code of an object. What this method does is really up
-   * to the user.
+   * This method calls the virtual DoStart method on all the objects
+   * aggregated to this object. DoStart will be called only once over
+   * the lifetime of an object, just like DoDispose is called only
+   * once.
+   *
+   * \sa DoStart
    */
   void Start (void);
 
 protected:
  /**
-  * This function is called by the AggregateObject on all the objects connected in the listed chain.
-  * This way the new object aggregated will be used if needed by the NotifyNewAggregate corresponding
-  * to each object connected in the listed chain. It should be implemented by objects needing an
-  * additional/special behavior when aggregated to another object.
+  * This method is invoked whenever two sets of objects are aggregated together.
+  * It is invoked exactly once for each object in both sets.
+  * This method can be overriden by subclasses who wish to be notified of aggregation
+  * events. These subclasses must chain up to their base class NotifyNewAggregate method.
+  * It is safe to call GetObject and AggregateObject from within this method.
   */
-  virtual void NotifyNewAggregate ();
+  virtual void NotifyNewAggregate (void);
   /**
    * This method is called only once by Object::Start. If the user
    * calls Object::Start multiple times, DoStart is called only the
    * first time.
    *
    * Subclasses are expected to override this method and _chain up_
-   * to their parent's implementation once they are done.
+   * to their parent's implementation once they are done. It is
+   * safe to call GetObject and AggregateObject from within this method.
    */
   virtual void DoStart (void);
   /**
@@ -173,6 +185,8 @@ protected:
    * i.e., for simplicity, the destructor of every subclass should
    * be empty and its content should be moved to the associated
    * DoDispose method.
+   *
+   * It is safe to call GetObject from within this method.
    */
   virtual void DoDispose (void);
   /**

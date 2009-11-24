@@ -77,6 +77,8 @@ def register_types(module):
     module.add_class('YansWifiPhyHelper', allow_subclassing=False, parent=root_module['ns3::WifiPhyHelper'])
     ## yans-wifi-helper.h: ns3::YansWifiPhyHelper::PcapFormat [enumeration]
     module.add_enum('PcapFormat', ['PCAP_FORMAT_80211', 'PCAP_FORMAT_80211_PRISM', 'PCAP_FORMAT_80211_RADIOTAP'], outer_class=root_module['ns3::YansWifiPhyHelper'])
+    ## aodv-helper.h: ns3::AodvHelper [class]
+    module.add_class('AodvHelper', allow_subclassing=False, parent=root_module['ns3::Ipv4RoutingHelper'])
     ## ipv4-global-routing-helper.h: ns3::Ipv4GlobalRoutingHelper [class]
     module.add_class('Ipv4GlobalRoutingHelper', allow_subclassing=False, parent=root_module['ns3::Ipv4RoutingHelper'])
     ## ipv4-list-routing-helper.h: ns3::Ipv4ListRoutingHelper [class]
@@ -116,6 +118,12 @@ def register_types(module):
     register_types_ns3_addressUtils(nested_module)
     
     
+    ## Register a nested module for the namespace aodv
+    
+    nested_module = module.add_cpp_namespace('aodv')
+    register_types_ns3_aodv(nested_module)
+    
+    
     ## Register a nested module for the namespace dot11s
     
     nested_module = module.add_cpp_namespace('dot11s')
@@ -149,6 +157,10 @@ def register_types_ns3_TimeStepPrecision(module):
     
 
 def register_types_ns3_addressUtils(module):
+    root_module = module.get_root()
+    
+
+def register_types_ns3_aodv(module):
     root_module = module.get_root()
     
 
@@ -204,6 +216,7 @@ def register_methods(root_module):
     register_Ns3WifiPhyHelper_methods(root_module, root_module['ns3::WifiPhyHelper'])
     register_Ns3YansWifiChannelHelper_methods(root_module, root_module['ns3::YansWifiChannelHelper'])
     register_Ns3YansWifiPhyHelper_methods(root_module, root_module['ns3::YansWifiPhyHelper'])
+    register_Ns3AodvHelper_methods(root_module, root_module['ns3::AodvHelper'])
     register_Ns3Ipv4GlobalRoutingHelper_methods(root_module, root_module['ns3::Ipv4GlobalRoutingHelper'])
     register_Ns3Ipv4ListRoutingHelper_methods(root_module, root_module['ns3::Ipv4ListRoutingHelper'])
     register_Ns3Ipv4NixVectorHelper_methods(root_module, root_module['ns3::Ipv4NixVectorHelper'])
@@ -1446,6 +1459,10 @@ def register_Ns3V4PingHelper_methods(root_module, cls):
                    'ns3::ApplicationContainer', 
                    [param('std::string', 'nodeName')], 
                    is_const=True)
+    ## v4ping-helper.h: void ns3::V4PingHelper::SetAttribute(std::string name, ns3::AttributeValue const & value) [member function]
+    cls.add_method('SetAttribute', 
+                   'void', 
+                   [param('std::string', 'name'), param('ns3::AttributeValue const &', 'value')])
     return
 
 def register_Ns3WifiHelper_methods(root_module, cls):
@@ -1616,6 +1633,27 @@ def register_Ns3YansWifiPhyHelper_methods(root_module, cls):
                    'ns3::Ptr< ns3::WifiPhy >', 
                    [param('ns3::Ptr< ns3::Node >', 'node'), param('ns3::Ptr< ns3::WifiNetDevice >', 'device')], 
                    is_const=True, visibility='private', is_virtual=True)
+    return
+
+def register_Ns3AodvHelper_methods(root_module, cls):
+    ## aodv-helper.h: ns3::AodvHelper::AodvHelper(ns3::AodvHelper const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::AodvHelper const &', 'arg0')])
+    ## aodv-helper.h: ns3::AodvHelper::AodvHelper() [constructor]
+    cls.add_constructor([])
+    ## aodv-helper.h: ns3::AodvHelper * ns3::AodvHelper::Copy() const [member function]
+    cls.add_method('Copy', 
+                   'ns3::AodvHelper *', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## aodv-helper.h: ns3::Ptr<ns3::Ipv4RoutingProtocol> ns3::AodvHelper::Create(ns3::Ptr<ns3::Node> node) const [member function]
+    cls.add_method('Create', 
+                   'ns3::Ptr< ns3::Ipv4RoutingProtocol >', 
+                   [param('ns3::Ptr< ns3::Node >', 'node')], 
+                   is_const=True, is_virtual=True)
+    ## aodv-helper.h: void ns3::AodvHelper::Set(std::string name, ns3::AttributeValue const & value) [member function]
+    cls.add_method('Set', 
+                   'void', 
+                   [param('std::string', 'name'), param('ns3::AttributeValue const &', 'value')])
     return
 
 def register_Ns3Ipv4GlobalRoutingHelper_methods(root_module, cls):
@@ -1897,6 +1935,7 @@ def register_functions(root_module):
     register_functions_ns3_Config(module.get_submodule('Config'), root_module)
     register_functions_ns3_TimeStepPrecision(module.get_submodule('TimeStepPrecision'), root_module)
     register_functions_ns3_addressUtils(module.get_submodule('addressUtils'), root_module)
+    register_functions_ns3_aodv(module.get_submodule('aodv'), root_module)
     register_functions_ns3_dot11s(module.get_submodule('dot11s'), root_module)
     register_functions_ns3_flame(module.get_submodule('flame'), root_module)
     register_functions_ns3_internal(module.get_submodule('internal'), root_module)
@@ -1910,6 +1949,9 @@ def register_functions_ns3_TimeStepPrecision(module, root_module):
     return
 
 def register_functions_ns3_addressUtils(module, root_module):
+    return
+
+def register_functions_ns3_aodv(module, root_module):
     return
 
 def register_functions_ns3_dot11s(module, root_module):

@@ -37,6 +37,7 @@ import ns3_module_global_routing
 import ns3_module_udp_echo
 import ns3_module_nix_vector_routing
 import ns3_module_olsr
+import ns3_module_aodv
 import ns3_module_radvd
 import ns3_module_ping6
 import ns3_module_flow_monitor
@@ -327,6 +328,17 @@ def register_types(module):
         ns3_module_olsr__local.register_types(module)
     
     root_module.end_section('ns3_module_olsr')
+    root_module.begin_section('ns3_module_aodv')
+    ns3_module_aodv.register_types(module)
+    
+    try:
+        import ns3_module_aodv__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_aodv__local.register_types(module)
+    
+    root_module.end_section('ns3_module_aodv')
     root_module.begin_section('ns3_module_radvd')
     ns3_module_radvd.register_types(module)
     
@@ -436,6 +448,12 @@ def register_types(module):
     register_types_ns3_addressUtils(nested_module)
     
     
+    ## Register a nested module for the namespace aodv
+    
+    nested_module = module.add_cpp_namespace('aodv')
+    register_types_ns3_aodv(nested_module)
+    
+    
     ## Register a nested module for the namespace dot11s
     
     nested_module = module.add_cpp_namespace('dot11s')
@@ -472,6 +490,11 @@ def register_types_ns3_TimeStepPrecision(module):
 def register_types_ns3_addressUtils(module):
     root_module = module.get_root()
     
+
+def register_types_ns3_aodv(module):
+    root_module = module.get_root()
+    
+    module.add_container('std::map< ns3::Ipv4Address, unsigned int >', ('ns3::Ipv4Address', 'unsigned int'), container_type='map')
 
 def register_types_ns3_dot11s(module):
     root_module = module.get_root()
@@ -769,6 +792,17 @@ def register_methods(root_module):
         ns3_module_olsr__local.register_methods(root_module)
     
     root_module.end_section('ns3_module_olsr')
+    root_module.begin_section('ns3_module_aodv')
+    ns3_module_aodv.register_methods(root_module)
+    
+    try:
+        import ns3_module_aodv__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_aodv__local.register_methods(root_module)
+    
+    root_module.end_section('ns3_module_aodv')
     root_module.begin_section('ns3_module_radvd')
     ns3_module_radvd.register_methods(root_module)
     
@@ -1259,6 +1293,17 @@ def register_functions(root_module):
         ns3_module_olsr__local.register_functions(root_module)
     
     root_module.end_section('ns3_module_olsr')
+    root_module.begin_section('ns3_module_aodv')
+    ns3_module_aodv.register_functions(root_module)
+    
+    try:
+        import ns3_module_aodv__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_aodv__local.register_functions(root_module)
+    
+    root_module.end_section('ns3_module_aodv')
     root_module.begin_section('ns3_module_radvd')
     ns3_module_radvd.register_functions(root_module)
     
@@ -1339,6 +1384,7 @@ def register_functions(root_module):
     register_functions_ns3_Config(module.get_submodule('Config'), root_module)
     register_functions_ns3_TimeStepPrecision(module.get_submodule('TimeStepPrecision'), root_module)
     register_functions_ns3_addressUtils(module.get_submodule('addressUtils'), root_module)
+    register_functions_ns3_aodv(module.get_submodule('aodv'), root_module)
     register_functions_ns3_dot11s(module.get_submodule('dot11s'), root_module)
     register_functions_ns3_flame(module.get_submodule('flame'), root_module)
     register_functions_ns3_internal(module.get_submodule('internal'), root_module)
@@ -1352,6 +1398,9 @@ def register_functions_ns3_TimeStepPrecision(module, root_module):
     return
 
 def register_functions_ns3_addressUtils(module, root_module):
+    return
+
+def register_functions_ns3_aodv(module, root_module):
     return
 
 def register_functions_ns3_dot11s(module, root_module):

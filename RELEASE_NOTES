@@ -34,9 +34,19 @@ New user-visible features
   a) The ns-3 logging macros (NS_LOG_*) now report automatically the node id
      of the event which called the macro.
 
-  b) Ad hoc On-Demand Distance Vector (AODV) routing model according to RFC 3561.
+  b) Ad hoc On-Demand Distance Vector (AODV) routing model according to RFC 3561. 
 
-  c) IPv6 extensions support and two new examples for fragmentation and loose routing.
+  c) Net-anim:
+     - interface for animation of point-to-point links.
+     - dumbbell, grid, and star examples in examples/animation
+
+  d) Topology Helper classes:
+     - PointToPointDumbbellHelper
+     - PointToPointGridHelper
+     - PointToPointStarHelper
+     - CsmaStarHelper
+
+  e) IPv6 extensions support and two new examples for fragmentation and loose routing.
 
 API changes from ns-3.6
 -----------------------

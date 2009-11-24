@@ -25,8 +25,8 @@
 
 // Socket related includes
 #if defined(HAVE_SYS_SOCKET_H) && defined(HAVE_NETINET_IN_H)
-# include <sys/socket.h>
-# include <netinet/in.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
 #else
 #include <fcntl.h>
 #endif
@@ -36,7 +36,7 @@
 #include "ns3/channel.h"
 #include "ns3/config.h"
 #include "ns3/node.h"
-#include "ns3/node-location.h"
+#include "ns3/canvas-location.h"
 #include "ns3/packet.h"
 #include "ns3/simulator.h"
 
@@ -48,6 +48,10 @@ namespace ns3 {
 
 AnimationInterface::AnimationInterface ()
   : m_fHandle (STDOUT_FILENO), m_model (0)
+{
+}
+
+AnimationInterface::~AnimationInterface ()
 {
 }
 
@@ -85,12 +89,8 @@ bool AnimationInterface::SetServerPort (uint16_t port)
   setsockopt (s, SOL_SOCKET, SO_LINGER, &t, sizeof(t));
   return true;
 #endif
-  return false;//never reached unless the above is disabled
-}
-
-bool AnimationInterface::SetInternalAnimation ()
-{
-  return false; // Not implemented yet
+  return false; // never reached unless the above is disabled
+                // which is done to support a platform like MinGW
 }
 
 void AnimationInterface::StartAnimation ()
@@ -99,7 +99,7 @@ void AnimationInterface::StartAnimation ()
   for (NodeList::Iterator i = NodeList::Begin (); i != NodeList::End (); ++i)
     {
       Ptr<Node> n = *i;
-      Ptr<NodeLocation> loc = n->GetObject<NodeLocation> ();
+      Ptr<CanvasLocation> loc = n->GetObject<CanvasLocation> ();
       if (loc)
         {
           // Location exists, dump it
@@ -111,7 +111,7 @@ void AnimationInterface::StartAnimation ()
         }
     }
   // Now dump the p2p links
-  for (NodeList::Iterator i = NodeList::Begin (); i != NodeList::End(); ++i)
+  for (NodeList::Iterator i = NodeList::Begin (); i != NodeList::End (); ++i)
     {
       Ptr<Node> n = *i;
       uint32_t n1Id = n->GetId ();

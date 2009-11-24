@@ -121,75 +121,21 @@ Ipv4ListRouting::RouteInput (Ptr<const Packet> p, const Ipv4Header &header, Ptr<
   NS_ASSERT (m_ipv4->GetInterfaceForDevice (idev) >= 0);
   uint32_t iif = m_ipv4->GetInterfaceForDevice (idev); 
 
-  // Multicast recognition; handle local delivery here
-  //
-  if (header.GetDestination().IsMulticast ())
+  retVal = m_ipv4->IsDestinationAddress (header.GetDestination (), iif);
+  if (retVal == true)
     {
-#ifdef NOTYET
-      if (m_ipv4->MulticastCheckGroup (iif, header.GetDestination ()))
-#endif
-      if (true)
+      NS_LOG_LOGIC ("Address "<< header.GetDestination () << " is a match for local delivery");
+      if (header.GetDestination ().IsMulticast ())
         {
-          NS_LOG_LOGIC ("Multicast packet for me-- local deliver");
           Ptr<Packet> packetCopy = p->Copy();
-          // Here may want to disable lcb callback in recursive RouteInput
-          // call below
           lcb (packetCopy, header, iif);
-          // Fall through-- we may also need to forward this
           retVal = true;
+          // Fall through
         }
-      for (Ipv4RoutingProtocolList::const_iterator rprotoIter =
-         m_routingProtocols.begin (); rprotoIter != m_routingProtocols.end ();
-           rprotoIter++)
+      else
         {
-          NS_LOG_LOGIC ("Multicast packet for me-- trying to forward");
-          if ((*rprotoIter).second->RouteInput (p, header, idev, ucb, mcb, lcb, ecb))
-            {
-              retVal = true;
-            }
-        }
-      return retVal;
-    }
-
-  if (header.GetDestination ().IsBroadcast ())
-    {
-      NS_LOG_LOGIC ("For me (Ipv4Addr broadcast address)");
-      // TODO:  Local Deliver for broadcast
-      // TODO:  Forward broadcast
-    }
-
- // TODO:  Configurable option to enable RFC 1222 Strong End System Model
- // Right now, we will be permissive and allow a source to send us
- // a packet to one of our other interface addresses; that is, the
- // destination unicast address does not match one of the iif addresses,
- // but we check our other interfaces.  This could be an option
- // (to remove the outer loop immediately below and just check iif).
-  for (uint32_t j = 0; j < m_ipv4->GetNInterfaces (); j++)
-    {
-      for (uint32_t i = 0; i < m_ipv4->GetNAddresses (j); i++)
-        {
-          Ipv4InterfaceAddress iaddr = m_ipv4->GetAddress (j, i);
-          Ipv4Address addr = iaddr.GetLocal ();
-          if (addr.IsEqual (header.GetDestination ()))
-            {
-              if (j == iif)
-                {
-                  NS_LOG_LOGIC ("For me (destination " << addr << " match)");
-                }
-              else
-                {
-                  NS_LOG_LOGIC ("For me (destination " << addr << " match) on another interface " << header.GetDestination ());
-                }
-              lcb (p, header, iif);
-              return true;
-            }
-          if (header.GetDestination ().IsEqual (iaddr.GetBroadcast ()))
-            {
-              NS_LOG_LOGIC ("For me (interface broadcast address)");
-              lcb (p, header, iif);
-              return true;
-            }
-          NS_LOG_LOGIC ("Address "<< addr << " not a match");
+          lcb (p, header, iif);
+          return true;
         }
     }
   // Check if input device supports IP forwarding
@@ -200,13 +146,21 @@ Ipv4ListRouting::RouteInput (Ptr<const Packet> p, const Ipv4Header &header, Ptr<
       return false;
     }
   // Next, try to find a route
+  // If we have already delivered a packet locally (e.g. multicast)
+  // we suppress further downstream local delivery by nulling the callback
+  LocalDeliverCallback downstreamLcb = lcb;
+  if (retVal == true)
+    {
+      downstreamLcb = MakeNullCallback<void, Ptr<const Packet>, const Ipv4Header &, uint32_t > ();
+    }
   for (Ipv4RoutingProtocolList::const_iterator rprotoIter =
          m_routingProtocols.begin ();
        rprotoIter != m_routingProtocols.end ();
        rprotoIter++)
     {
-      if ((*rprotoIter).second->RouteInput (p, header, idev, ucb, mcb, lcb, ecb))
+      if ((*rprotoIter).second->RouteInput (p, header, idev, ucb, mcb, downstreamLcb, ecb))
         {
+          NS_LOG_LOGIC ("Route found to forward packet in protocol " << (*rprotoIter).second->GetInstanceTypeId ().GetName ()); 
           return true;
         }
     }

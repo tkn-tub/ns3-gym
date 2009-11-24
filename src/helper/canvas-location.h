@@ -17,8 +17,8 @@
  *
  * Author: George Riley<riley@ece.gatech.edu>
  */
-#ifndef __NODE_LOCATION_H__
-#define __NODE_LOCATION_H__
+#ifndef CANVAS_LOCATION_H
+#define CANVAS_LOCATION_H
 
 #include "ns3/object.h"
 #include "ns3/traced-callback.h"
@@ -37,12 +37,12 @@ namespace ns3 {
  * arbitrary and dimensionless.  In the case of use by the
  * animator they dimensions are in pixels.
  */
-class NodeLocation : public Object
+class CanvasLocation : public Object
 {
 public:
   static TypeId GetTypeId (void);
-  NodeLocation ();
-  virtual ~NodeLocation ();
+  CanvasLocation ();
+  virtual ~CanvasLocation ();
 
   /**
    * \returns the current location
@@ -58,4 +58,4 @@ private:
 
 }; // namespace ns3
 
-#endif /* __NODE_LOCATION_H__ */
+#endif /* CANVAS_LOCATION_H */

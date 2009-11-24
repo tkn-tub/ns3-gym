@@ -18,8 +18,8 @@
 
 // Define an object to create a dumbbell topology.
 
-#ifndef __POINT_TO_POINT_DUMBBELL_HELPER_H__
-#define __POINT_TO_POINT_DUMBBELL_HELPER_H__
+#ifndef POINT_TO_POINT_DUMBBELL_HELPER_H
+#define POINT_TO_POINT_DUMBBELL_HELPER_H
 
 #include <string>
 
@@ -34,21 +34,22 @@ class PointToPointDumbbellHelper
 {
 public:
   PointToPointDumbbellHelper (uint32_t nLeftLeaf,  // Number of left size leaf nodes
-           PointToPointHelper& leftHelper,
+           PointToPointHelper leftHelper,
            uint32_t nRightLeaf, // Number of right side leaf nodes
-           PointToPointHelper& rightHelper,
-           PointToPointHelper& bottleneckHelper);
+           PointToPointHelper rightHelper,
+           PointToPointHelper bottleneckHelper);
+  ~PointToPointDumbbellHelper ();
 public:
   Ptr<Node> GetLeft ()           const; // Get the left side bottleneck router
   Ptr<Node> GetLeft (uint32_t)   const; // Get the i'th left side leaf
   Ptr<Node> GetRight ()          const; // Get the right side bottleneck router
   Ptr<Node> GetRight (uint32_t)  const; // Get the i'th right side leaf
-  Ipv4Address GetLeftAddress (uint32_t)  const; // Get left leaf address
-  Ipv4Address GetRightAddress (uint32_t) const; // Get right leaf address
+  Ipv4Address GetLeftIpv4Address (uint32_t)  const; // Get left leaf address
+  Ipv4Address GetRightIpv4Address (uint32_t) const; // Get right leaf address
   uint32_t  LeftCount ()         const; // Number of left side nodes
   uint32_t  RightCount ()        const; // Number of right side nodes
   void      InstallStack (InternetStackHelper stack);
-  void      AssignAddresses (Ipv4AddressHelper leftIp,
+  void      AssignIpv4Addresses (Ipv4AddressHelper leftIp,
                             Ipv4AddressHelper rightIp,
                             Ipv4AddressHelper routerIp);
   // Add locations in the specified bounding box

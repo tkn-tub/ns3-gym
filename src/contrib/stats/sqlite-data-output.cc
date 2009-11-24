@@ -131,11 +131,13 @@ SqliteDataOutput::Output(DataCollector &dc)
          blob.second + "')");
   }
 
+  Exec("BEGIN");
   SqliteOutputCallback callback(this, run);
   for (DataCalculatorList::iterator i = dc.DataCalculatorBegin();
        i != dc.DataCalculatorEnd(); i++) {
     (*i)->Output(callback);
   }
+  Exec("COMMIT");
 
   sqlite3_close(m_db);
 

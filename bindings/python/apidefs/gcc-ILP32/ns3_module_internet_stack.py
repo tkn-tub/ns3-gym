@@ -71,6 +71,8 @@ def register_types(module):
     module.add_class('Icmpv6DestinationUnreachable', parent=root_module['ns3::Icmpv6Header'])
     ## icmpv6-header.h: ns3::Icmpv6Echo [class]
     module.add_class('Icmpv6Echo', parent=root_module['ns3::Icmpv6Header'])
+    ## ipv4-interface.h: ns3::Ipv4Interface [class]
+    module.add_class('Ipv4Interface', parent=root_module['ns3::Object'])
     ## ipv4-l3-protocol.h: ns3::Ipv4L3Protocol [class]
     module.add_class('Ipv4L3Protocol', parent=root_module['ns3::Ipv4'])
     ## ipv4-l3-protocol.h: ns3::Ipv4L3Protocol::DropReason [enumeration]
@@ -118,6 +120,12 @@ def register_types(module):
     register_types_ns3_addressUtils(nested_module)
     
     
+    ## Register a nested module for the namespace aodv
+    
+    nested_module = module.add_cpp_namespace('aodv')
+    register_types_ns3_aodv(nested_module)
+    
+    
     ## Register a nested module for the namespace dot11s
     
     nested_module = module.add_cpp_namespace('dot11s')
@@ -151,6 +159,10 @@ def register_types_ns3_TimeStepPrecision(module):
     
 
 def register_types_ns3_addressUtils(module):
+    root_module = module.get_root()
+    
+
+def register_types_ns3_aodv(module):
     root_module = module.get_root()
     
 
@@ -196,6 +208,7 @@ def register_methods(root_module):
     register_Ns3ArpL3Protocol_methods(root_module, root_module['ns3::ArpL3Protocol'])
     register_Ns3Icmpv6DestinationUnreachable_methods(root_module, root_module['ns3::Icmpv6DestinationUnreachable'])
     register_Ns3Icmpv6Echo_methods(root_module, root_module['ns3::Icmpv6Echo'])
+    register_Ns3Ipv4Interface_methods(root_module, root_module['ns3::Ipv4Interface'])
     register_Ns3Ipv4L3Protocol_methods(root_module, root_module['ns3::Ipv4L3Protocol'])
     register_Ns3Ipv4L4Protocol_methods(root_module, root_module['ns3::Ipv4L4Protocol'])
     register_Ns3Ipv6L3Protocol_methods(root_module, root_module['ns3::Ipv6L3Protocol'])
@@ -1816,6 +1829,103 @@ def register_Ns3Icmpv6Echo_methods(root_module, cls):
                    [param('uint16_t', 'seq')])
     return
 
+def register_Ns3Ipv4Interface_methods(root_module, cls):
+    ## ipv4-interface.h: ns3::Ipv4Interface::Ipv4Interface(ns3::Ipv4Interface const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::Ipv4Interface const &', 'arg0')])
+    ## ipv4-interface.h: ns3::Ipv4Interface::Ipv4Interface() [constructor]
+    cls.add_constructor([])
+    ## ipv4-interface.h: bool ns3::Ipv4Interface::AddAddress(ns3::Ipv4InterfaceAddress address) [member function]
+    cls.add_method('AddAddress', 
+                   'bool', 
+                   [param('ns3::Ipv4InterfaceAddress', 'address')])
+    ## ipv4-interface.h: ns3::Ipv4InterfaceAddress ns3::Ipv4Interface::GetAddress(uint32_t index) const [member function]
+    cls.add_method('GetAddress', 
+                   'ns3::Ipv4InterfaceAddress', 
+                   [param('uint32_t', 'index')], 
+                   is_const=True)
+    ## ipv4-interface.h: ns3::Ptr<ns3::ArpCache> ns3::Ipv4Interface::GetArpCache() const [member function]
+    cls.add_method('GetArpCache', 
+                   'ns3::Ptr< ns3::ArpCache >', 
+                   [], 
+                   is_const=True)
+    ## ipv4-interface.h: ns3::Ptr<ns3::NetDevice> ns3::Ipv4Interface::GetDevice() const [member function]
+    cls.add_method('GetDevice', 
+                   'ns3::Ptr< ns3::NetDevice >', 
+                   [], 
+                   is_const=True)
+    ## ipv4-interface.h: uint16_t ns3::Ipv4Interface::GetMetric() const [member function]
+    cls.add_method('GetMetric', 
+                   'uint16_t', 
+                   [], 
+                   is_const=True)
+    ## ipv4-interface.h: uint32_t ns3::Ipv4Interface::GetNAddresses() const [member function]
+    cls.add_method('GetNAddresses', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## ipv4-interface.h: static ns3::TypeId ns3::Ipv4Interface::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## ipv4-interface.h: bool ns3::Ipv4Interface::IsDown() const [member function]
+    cls.add_method('IsDown', 
+                   'bool', 
+                   [], 
+                   is_const=True)
+    ## ipv4-interface.h: bool ns3::Ipv4Interface::IsForwarding() const [member function]
+    cls.add_method('IsForwarding', 
+                   'bool', 
+                   [], 
+                   is_const=True)
+    ## ipv4-interface.h: bool ns3::Ipv4Interface::IsUp() const [member function]
+    cls.add_method('IsUp', 
+                   'bool', 
+                   [], 
+                   is_const=True)
+    ## ipv4-interface.h: ns3::Ipv4InterfaceAddress ns3::Ipv4Interface::RemoveAddress(uint32_t index) [member function]
+    cls.add_method('RemoveAddress', 
+                   'ns3::Ipv4InterfaceAddress', 
+                   [param('uint32_t', 'index')])
+    ## ipv4-interface.h: void ns3::Ipv4Interface::Send(ns3::Ptr<ns3::Packet> p, ns3::Ipv4Address dest) [member function]
+    cls.add_method('Send', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Packet >', 'p'), param('ns3::Ipv4Address', 'dest')])
+    ## ipv4-interface.h: void ns3::Ipv4Interface::SetArpCache(ns3::Ptr<ns3::ArpCache> arg0) [member function]
+    cls.add_method('SetArpCache', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::ArpCache >', 'arg0')])
+    ## ipv4-interface.h: void ns3::Ipv4Interface::SetDevice(ns3::Ptr<ns3::NetDevice> device) [member function]
+    cls.add_method('SetDevice', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::NetDevice >', 'device')])
+    ## ipv4-interface.h: void ns3::Ipv4Interface::SetDown() [member function]
+    cls.add_method('SetDown', 
+                   'void', 
+                   [])
+    ## ipv4-interface.h: void ns3::Ipv4Interface::SetForwarding(bool val) [member function]
+    cls.add_method('SetForwarding', 
+                   'void', 
+                   [param('bool', 'val')])
+    ## ipv4-interface.h: void ns3::Ipv4Interface::SetMetric(uint16_t metric) [member function]
+    cls.add_method('SetMetric', 
+                   'void', 
+                   [param('uint16_t', 'metric')])
+    ## ipv4-interface.h: void ns3::Ipv4Interface::SetNode(ns3::Ptr<ns3::Node> node) [member function]
+    cls.add_method('SetNode', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Node >', 'node')])
+    ## ipv4-interface.h: void ns3::Ipv4Interface::SetUp() [member function]
+    cls.add_method('SetUp', 
+                   'void', 
+                   [])
+    ## ipv4-interface.h: void ns3::Ipv4Interface::DoDispose() [member function]
+    cls.add_method('DoDispose', 
+                   'void', 
+                   [], 
+                   visibility='protected', is_virtual=True)
+    return
+
 def register_Ns3Ipv4L3Protocol_methods(root_module, cls):
     ## ipv4-l3-protocol.h: ns3::Ipv4L3Protocol::PROT_NUMBER [variable]
     cls.add_static_attribute('PROT_NUMBER', 'uint16_t const', is_const=True)
@@ -1903,6 +2013,11 @@ def register_Ns3Ipv4L3Protocol_methods(root_module, cls):
                    'int32_t', 
                    [param('ns3::Ptr< ns3::NetDevice const >', 'device')], 
                    is_const=True, is_virtual=True)
+    ## ipv4-l3-protocol.h: bool ns3::Ipv4L3Protocol::IsDestinationAddress(ns3::Ipv4Address address, uint32_t iif) const [member function]
+    cls.add_method('IsDestinationAddress', 
+                   'bool', 
+                   [param('ns3::Ipv4Address', 'address'), param('uint32_t', 'iif')], 
+                   is_const=True, is_virtual=True)
     ## ipv4-l3-protocol.h: bool ns3::Ipv4L3Protocol::AddAddress(uint32_t i, ns3::Ipv4InterfaceAddress address) [member function]
     cls.add_method('AddAddress', 
                    'bool', 
@@ -1985,6 +2100,16 @@ def register_Ns3Ipv4L3Protocol_methods(root_module, cls):
                    visibility='private', is_virtual=True)
     ## ipv4-l3-protocol.h: bool ns3::Ipv4L3Protocol::GetIpForward() const [member function]
     cls.add_method('GetIpForward', 
+                   'bool', 
+                   [], 
+                   is_const=True, visibility='private', is_virtual=True)
+    ## ipv4-l3-protocol.h: void ns3::Ipv4L3Protocol::SetWeakEsModel(bool model) [member function]
+    cls.add_method('SetWeakEsModel', 
+                   'void', 
+                   [param('bool', 'model')], 
+                   visibility='private', is_virtual=True)
+    ## ipv4-l3-protocol.h: bool ns3::Ipv4L3Protocol::GetWeakEsModel() const [member function]
+    cls.add_method('GetWeakEsModel', 
                    'bool', 
                    [], 
                    is_const=True, visibility='private', is_virtual=True)
@@ -2825,6 +2950,7 @@ def register_functions(root_module):
     register_functions_ns3_Config(module.get_submodule('Config'), root_module)
     register_functions_ns3_TimeStepPrecision(module.get_submodule('TimeStepPrecision'), root_module)
     register_functions_ns3_addressUtils(module.get_submodule('addressUtils'), root_module)
+    register_functions_ns3_aodv(module.get_submodule('aodv'), root_module)
     register_functions_ns3_dot11s(module.get_submodule('dot11s'), root_module)
     register_functions_ns3_flame(module.get_submodule('flame'), root_module)
     register_functions_ns3_internal(module.get_submodule('internal'), root_module)
@@ -2838,6 +2964,9 @@ def register_functions_ns3_TimeStepPrecision(module, root_module):
     return
 
 def register_functions_ns3_addressUtils(module, root_module):
+    return
+
+def register_functions_ns3_aodv(module, root_module):
     return
 
 def register_functions_ns3_dot11s(module, root_module):

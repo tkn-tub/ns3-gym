@@ -20,7 +20,7 @@
 #include "ns3/animation-interface.h"
 #include "ns3/internet-stack-helper.h"
 #include "ns3/point-to-point-helper.h"
-#include "ns3/node-location.h"
+#include "ns3/canvas-location.h"
 #include "ns3/string.h"
 #include "ns3/vector.h"
 #include "ns3/log.h"
@@ -34,6 +34,12 @@ PointToPointGridHelper::PointToPointGridHelper (uint32_t nRows,
                                                 PointToPointHelper pointToPoint)
   : m_xSize (nCols), m_ySize (nRows)
 {
+  // Bounds check
+  if (m_xSize < 1 || m_ySize < 1 || (m_xSize < 2 && m_ySize < 2))
+    {
+      NS_FATAL_ERROR ("Need more nodes for grid.");
+    }
+
   InternetStackHelper stack;
 
   for (uint32_t y = 0; y < nRows; ++y)
@@ -44,7 +50,7 @@ PointToPointGridHelper::PointToPointGridHelper (uint32_t nRows,
 
     for (uint32_t x = 0; x < nCols; ++x)
     {
-      rowNodes.Create(1);
+      rowNodes.Create (1);
 
       // install p2p links across the row
       if (x > 0)
@@ -61,13 +67,16 @@ PointToPointGridHelper::PointToPointGridHelper (uint32_t nRows,
       }
     }
 
-    m_nodes.push_back(rowNodes);
+    m_nodes.push_back (rowNodes);
     m_rowDevices.push_back (rowDevices);
 
     if (y > 0)
       m_colDevices.push_back (colDevices);
   }
 }
+
+PointToPointGridHelper::~PointToPointGridHelper ()
+{}
 
 void
 PointToPointGridHelper::InstallStack (InternetStackHelper stack)
@@ -83,7 +92,7 @@ PointToPointGridHelper::InstallStack (InternetStackHelper stack)
 }
 
 void
-PointToPointGridHelper::AssignAddresses (Ipv4AddressHelper rowIp, Ipv4AddressHelper colIp)
+PointToPointGridHelper::AssignIpv4Addresses (Ipv4AddressHelper rowIp, Ipv4AddressHelper colIp)
 {
   // Assign addresses to all row devices in the grid.
   // These devices are stored in a vector.  Each row 
@@ -124,9 +133,24 @@ void
 PointToPointGridHelper::BoundingBox (double ulx, double uly,
                          double lrx, double lry)
 {
-  double xDist = lrx - ulx;
-  double yDist = lry - uly;
-
+  double xDist; 
+  double yDist; 
+  if (lrx > ulx)
+    {
+      xDist = lrx - ulx;
+    }
+  else
+    {
+      xDist = ulx - lrx;
+    }
+  if (lry > uly)
+    {
+      yDist = lry - uly;
+    }
+  else
+    {
+      yDist = uly - lry;
+    }
   double xAdder = xDist / m_xSize;
   double yAdder = yDist / m_ySize;
   double yLoc = yDist / 2;
@@ -136,10 +160,10 @@ PointToPointGridHelper::BoundingBox (double ulx, double uly,
     for (uint32_t j = 0; j < m_xSize; ++j)
     {
       Ptr<Node> node = GetNode (i, j);
-      Ptr<NodeLocation> loc = node->GetObject<NodeLocation> ();
+      Ptr<CanvasLocation> loc = node->GetObject<CanvasLocation> ();
       if (loc ==0)
       {
-        loc = CreateObject<NodeLocation> ();
+        loc = CreateObject<CanvasLocation> ();
         node->AggregateObject (loc);
       }
       Vector locVec (xLoc, yLoc, 0);
@@ -154,12 +178,26 @@ PointToPointGridHelper::BoundingBox (double ulx, double uly,
 Ptr<Node> 
 PointToPointGridHelper::GetNode (uint32_t row, uint32_t col)
 {
-    return (m_nodes.at (row)).Get (col);
+  if (row < 0 || col < 0 || 
+      row > m_nodes.size () - 1 || 
+      col > m_nodes.at (row).GetN () - 1) 
+    {
+       NS_FATAL_ERROR ("Index out of bounds in PointToPointGridHelper::GetNode.");
+    }
+
+  return (m_nodes.at (row)).Get (col);
 }
 
 Ipv4Address
-PointToPointGridHelper::GetAddress (uint32_t row, uint32_t col)
+PointToPointGridHelper::GetIpv4Address (uint32_t row, uint32_t col)
 {
+  if (row < 0 || col < 0 || 
+      row > m_nodes.size () - 1 || 
+      col > m_nodes.at (row).GetN () - 1) 
+    {
+       NS_FATAL_ERROR ("Index out of bounds in PointToPointGridHelper::GetIpv4Address.");
+    }
+
   // Right now this just gets one of the addresses of the
   // specified node.  The exact device can't be specified.
   // If you picture the grid, the address returned is the 

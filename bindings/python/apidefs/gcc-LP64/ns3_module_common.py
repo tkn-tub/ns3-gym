@@ -21,8 +21,6 @@ def register_types(module):
     module.add_class('Item', outer_class=root_module['ns3::ByteTagList::Iterator'])
     ## data-rate.h: ns3::DataRate [class]
     module.add_class('DataRate')
-    ## packet.h: ns3::Packet [class]
-    module.add_class('Packet', memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'))
     ## packet-metadata.h: ns3::PacketMetadata [class]
     module.add_class('PacketMetadata')
     ## packet-metadata.h: ns3::PacketMetadata::Item [struct]
@@ -45,28 +43,34 @@ def register_types(module):
     module.add_class('Tag', parent=root_module['ns3::ObjectBase'])
     ## tag-buffer.h: ns3::TagBuffer [class]
     module.add_class('TagBuffer')
-    ## ascii-writer.h: ns3::AsciiWriter [class]
-    module.add_class('AsciiWriter', parent=root_module['ns3::RefCountBase'])
-    ## ascii-writer.h: ns3::AsciiWriter::Type [enumeration]
-    module.add_enum('Type', ['ENQUEUE', 'DEQUEUE', 'DROP', 'TX', 'RX'], outer_class=root_module['ns3::AsciiWriter'])
     ## chunk.h: ns3::Chunk [class]
     module.add_class('Chunk', parent=root_module['ns3::ObjectBase'])
-    ## data-rate.h: ns3::DataRateChecker [class]
-    module.add_class('DataRateChecker', parent=root_module['ns3::AttributeChecker'])
-    ## data-rate.h: ns3::DataRateValue [class]
-    module.add_class('DataRateValue', parent=root_module['ns3::AttributeValue'])
     ## header.h: ns3::Header [class]
     module.add_class('Header', parent=root_module['ns3::Chunk'])
     ## pcap-writer.h: ns3::PcapWriter [class]
     module.add_class('PcapWriter', parent=root_module['ns3::Object'])
+    ## simple-ref-count.h: ns3::SimpleRefCount<ns3::AsciiWriter, ns3::empty> [class]
+    module.add_class('SimpleRefCount', template_parameters=['ns3::AsciiWriter', 'ns3::empty'], parent=root_module['ns3::empty'])
+    ## simple-ref-count.h: ns3::SimpleRefCount<ns3::Packet, ns3::empty> [class]
+    module.add_class('SimpleRefCount', template_parameters=['ns3::Packet', 'ns3::empty'], parent=root_module['ns3::empty'])
     ## trailer.h: ns3::Trailer [class]
     module.add_class('Trailer', parent=root_module['ns3::Chunk'])
+    ## ascii-writer.h: ns3::AsciiWriter [class]
+    module.add_class('AsciiWriter', parent=root_module['ns3::SimpleRefCount< ns3::AsciiWriter, ns3::empty >'])
+    ## ascii-writer.h: ns3::AsciiWriter::Type [enumeration]
+    module.add_enum('Type', ['ENQUEUE', 'DEQUEUE', 'DROP', 'TX', 'RX'], outer_class=root_module['ns3::AsciiWriter'])
+    ## data-rate.h: ns3::DataRateChecker [class]
+    module.add_class('DataRateChecker', parent=root_module['ns3::AttributeChecker'])
+    ## data-rate.h: ns3::DataRateValue [class]
+    module.add_class('DataRateValue', parent=root_module['ns3::AttributeValue'])
     ## error-model.h: ns3::ErrorModel [class]
     module.add_class('ErrorModel', parent=root_module['ns3::Object'])
     ## error-model.h: ns3::ListErrorModel [class]
     module.add_class('ListErrorModel', parent=root_module['ns3::ErrorModel'])
     ## nix-vector.h: ns3::NixVector [class]
     module.add_class('NixVector', parent=root_module['ns3::Object'])
+    ## packet.h: ns3::Packet [class]
+    module.add_class('Packet', parent=root_module['ns3::SimpleRefCount< ns3::Packet, ns3::empty >'], memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'))
     ## error-model.h: ns3::RateErrorModel [class]
     module.add_class('RateErrorModel', parent=root_module['ns3::ErrorModel'])
     
@@ -86,6 +90,12 @@ def register_types(module):
     
     nested_module = module.add_cpp_namespace('addressUtils')
     register_types_ns3_addressUtils(nested_module)
+    
+    
+    ## Register a nested module for the namespace aodv
+    
+    nested_module = module.add_cpp_namespace('aodv')
+    register_types_ns3_aodv(nested_module)
     
     
     ## Register a nested module for the namespace dot11s
@@ -124,6 +134,10 @@ def register_types_ns3_addressUtils(module):
     root_module = module.get_root()
     
 
+def register_types_ns3_aodv(module):
+    root_module = module.get_root()
+    
+
 def register_types_ns3_dot11s(module):
     root_module = module.get_root()
     
@@ -149,7 +163,6 @@ def register_methods(root_module):
     register_Ns3ByteTagListIterator_methods(root_module, root_module['ns3::ByteTagList::Iterator'])
     register_Ns3ByteTagListIteratorItem_methods(root_module, root_module['ns3::ByteTagList::Iterator::Item'])
     register_Ns3DataRate_methods(root_module, root_module['ns3::DataRate'])
-    register_Ns3Packet_methods(root_module, root_module['ns3::Packet'])
     register_Ns3PacketMetadata_methods(root_module, root_module['ns3::PacketMetadata'])
     register_Ns3PacketMetadataItem_methods(root_module, root_module['ns3::PacketMetadata::Item'])
     register_Ns3PacketMetadataItemIterator_methods(root_module, root_module['ns3::PacketMetadata::ItemIterator'])
@@ -160,16 +173,17 @@ def register_methods(root_module):
     register_Ns3PcapFile_methods(root_module, root_module['ns3::PcapFile'])
     register_Ns3Tag_methods(root_module, root_module['ns3::Tag'])
     register_Ns3TagBuffer_methods(root_module, root_module['ns3::TagBuffer'])
-    register_Ns3AsciiWriter_methods(root_module, root_module['ns3::AsciiWriter'])
     register_Ns3Chunk_methods(root_module, root_module['ns3::Chunk'])
-    register_Ns3DataRateChecker_methods(root_module, root_module['ns3::DataRateChecker'])
-    register_Ns3DataRateValue_methods(root_module, root_module['ns3::DataRateValue'])
     register_Ns3Header_methods(root_module, root_module['ns3::Header'])
     register_Ns3PcapWriter_methods(root_module, root_module['ns3::PcapWriter'])
     register_Ns3Trailer_methods(root_module, root_module['ns3::Trailer'])
+    register_Ns3AsciiWriter_methods(root_module, root_module['ns3::AsciiWriter'])
+    register_Ns3DataRateChecker_methods(root_module, root_module['ns3::DataRateChecker'])
+    register_Ns3DataRateValue_methods(root_module, root_module['ns3::DataRateValue'])
     register_Ns3ErrorModel_methods(root_module, root_module['ns3::ErrorModel'])
     register_Ns3ListErrorModel_methods(root_module, root_module['ns3::ListErrorModel'])
     register_Ns3NixVector_methods(root_module, root_module['ns3::NixVector'])
+    register_Ns3Packet_methods(root_module, root_module['ns3::Packet'])
     register_Ns3RateErrorModel_methods(root_module, root_module['ns3::RateErrorModel'])
     return
 
@@ -529,184 +543,6 @@ def register_Ns3DataRate_methods(root_module, cls):
                    is_const=True)
     return
 
-def register_Ns3Packet_methods(root_module, cls):
-    cls.add_output_stream_operator()
-    ## packet.h: ns3::Packet::Packet() [constructor]
-    cls.add_constructor([])
-    ## packet.h: ns3::Packet::Packet(ns3::Packet const & o) [copy constructor]
-    cls.add_constructor([param('ns3::Packet const &', 'o')])
-    ## packet.h: ns3::Packet::Packet(uint32_t size) [constructor]
-    cls.add_constructor([param('uint32_t', 'size')])
-    ## packet.h: ns3::Packet::Packet(uint8_t const * buffer, uint32_t size) [constructor]
-    cls.add_constructor([param('uint8_t const *', 'buffer'), param('uint32_t', 'size')])
-    ## packet.h: void ns3::Packet::AddAtEnd(ns3::Ptr<ns3::Packet const> packet) [member function]
-    cls.add_method('AddAtEnd', 
-                   'void', 
-                   [param('ns3::Ptr< ns3::Packet const >', 'packet')])
-    ## packet.h: void ns3::Packet::AddByteTag(ns3::Tag const & tag) const [member function]
-    cls.add_method('AddByteTag', 
-                   'void', 
-                   [param('ns3::Tag const &', 'tag')], 
-                   is_const=True)
-    ## packet.h: void ns3::Packet::AddHeader(ns3::Header const & header) [member function]
-    cls.add_method('AddHeader', 
-                   'void', 
-                   [param('ns3::Header const &', 'header')])
-    ## packet.h: void ns3::Packet::AddPacketTag(ns3::Tag const & tag) const [member function]
-    cls.add_method('AddPacketTag', 
-                   'void', 
-                   [param('ns3::Tag const &', 'tag')], 
-                   is_const=True)
-    ## packet.h: void ns3::Packet::AddPaddingAtEnd(uint32_t size) [member function]
-    cls.add_method('AddPaddingAtEnd', 
-                   'void', 
-                   [param('uint32_t', 'size')])
-    ## packet.h: void ns3::Packet::AddTrailer(ns3::Trailer const & trailer) [member function]
-    cls.add_method('AddTrailer', 
-                   'void', 
-                   [param('ns3::Trailer const &', 'trailer')])
-    ## packet.h: ns3::PacketMetadata::ItemIterator ns3::Packet::BeginItem() const [member function]
-    cls.add_method('BeginItem', 
-                   'ns3::PacketMetadata::ItemIterator', 
-                   [], 
-                   is_const=True)
-    ## packet.h: ns3::Ptr<ns3::Packet> ns3::Packet::Copy() const [member function]
-    cls.add_method('Copy', 
-                   'ns3::Ptr< ns3::Packet >', 
-                   [], 
-                   is_const=True)
-    ## packet.h: uint32_t ns3::Packet::CopyData(uint8_t * buffer, uint32_t size) const [member function]
-    cls.add_method('CopyData', 
-                   'uint32_t', 
-                   [param('uint8_t *', 'buffer'), param('uint32_t', 'size')], 
-                   is_const=True)
-    ## packet.h: void ns3::Packet::CopyData(std::ostream * os, uint32_t size) const [member function]
-    cls.add_method('CopyData', 
-                   'void', 
-                   [param('std::ostream *', 'os'), param('uint32_t', 'size')], 
-                   is_const=True)
-    ## packet.h: ns3::Ptr<ns3::Packet> ns3::Packet::CreateFragment(uint32_t start, uint32_t length) const [member function]
-    cls.add_method('CreateFragment', 
-                   'ns3::Ptr< ns3::Packet >', 
-                   [param('uint32_t', 'start'), param('uint32_t', 'length')], 
-                   is_const=True)
-    ## packet.h: void ns3::Packet::Deserialize(ns3::Buffer buffer) [member function]
-    cls.add_method('Deserialize', 
-                   'void', 
-                   [param('ns3::Buffer', 'buffer')])
-    ## packet.h: static void ns3::Packet::EnableChecking() [member function]
-    cls.add_method('EnableChecking', 
-                   'void', 
-                   [], 
-                   is_static=True)
-    ## packet.h: static void ns3::Packet::EnablePrinting() [member function]
-    cls.add_method('EnablePrinting', 
-                   'void', 
-                   [], 
-                   is_static=True)
-    ## packet.h: bool ns3::Packet::FindFirstMatchingByteTag(ns3::Tag & tag) const [member function]
-    cls.add_method('FindFirstMatchingByteTag', 
-                   'bool', 
-                   [param('ns3::Tag &', 'tag')], 
-                   is_const=True)
-    ## packet.h: ns3::ByteTagIterator ns3::Packet::GetByteTagIterator() const [member function]
-    cls.add_method('GetByteTagIterator', 
-                   'ns3::ByteTagIterator', 
-                   [], 
-                   is_const=True)
-    ## packet.h: ns3::Ptr<ns3::NixVector> ns3::Packet::GetNixVector() const [member function]
-    cls.add_method('GetNixVector', 
-                   'ns3::Ptr< ns3::NixVector >', 
-                   [], 
-                   is_const=True)
-    ## packet.h: ns3::PacketTagIterator ns3::Packet::GetPacketTagIterator() const [member function]
-    cls.add_method('GetPacketTagIterator', 
-                   'ns3::PacketTagIterator', 
-                   [], 
-                   is_const=True)
-    ## packet.h: uint32_t ns3::Packet::GetSize() const [member function]
-    cls.add_method('GetSize', 
-                   'uint32_t', 
-                   [], 
-                   is_const=True)
-    ## packet.h: uint32_t ns3::Packet::GetUid() const [member function]
-    cls.add_method('GetUid', 
-                   'uint32_t', 
-                   [], 
-                   is_const=True)
-    ## packet.h: uint8_t const * ns3::Packet::PeekData() const [member function]
-    cls.add_method('PeekData', 
-                   'uint8_t const *', 
-                   [], 
-                   is_const=True)
-    ## packet.h: uint32_t ns3::Packet::PeekHeader(ns3::Header & header) const [member function]
-    cls.add_method('PeekHeader', 
-                   'uint32_t', 
-                   [param('ns3::Header &', 'header')], 
-                   is_const=True)
-    ## packet.h: bool ns3::Packet::PeekPacketTag(ns3::Tag & tag) const [member function]
-    cls.add_method('PeekPacketTag', 
-                   'bool', 
-                   [param('ns3::Tag &', 'tag')], 
-                   is_const=True)
-    ## packet.h: uint32_t ns3::Packet::PeekTrailer(ns3::Trailer & trailer) [member function]
-    cls.add_method('PeekTrailer', 
-                   'uint32_t', 
-                   [param('ns3::Trailer &', 'trailer')])
-    ## packet.h: void ns3::Packet::Print(std::ostream & os) const [member function]
-    cls.add_method('Print', 
-                   'void', 
-                   [param('std::ostream &', 'os')], 
-                   is_const=True)
-    ## packet.h: void ns3::Packet::PrintByteTags(std::ostream & os) const [member function]
-    cls.add_method('PrintByteTags', 
-                   'void', 
-                   [param('std::ostream &', 'os')], 
-                   is_const=True)
-    ## packet.h: void ns3::Packet::PrintPacketTags(std::ostream & os) const [member function]
-    cls.add_method('PrintPacketTags', 
-                   'void', 
-                   [param('std::ostream &', 'os')], 
-                   is_const=True)
-    ## packet.h: void ns3::Packet::RemoveAllByteTags() [member function]
-    cls.add_method('RemoveAllByteTags', 
-                   'void', 
-                   [])
-    ## packet.h: void ns3::Packet::RemoveAllPacketTags() [member function]
-    cls.add_method('RemoveAllPacketTags', 
-                   'void', 
-                   [])
-    ## packet.h: void ns3::Packet::RemoveAtEnd(uint32_t size) [member function]
-    cls.add_method('RemoveAtEnd', 
-                   'void', 
-                   [param('uint32_t', 'size')])
-    ## packet.h: void ns3::Packet::RemoveAtStart(uint32_t size) [member function]
-    cls.add_method('RemoveAtStart', 
-                   'void', 
-                   [param('uint32_t', 'size')])
-    ## packet.h: uint32_t ns3::Packet::RemoveHeader(ns3::Header & header) [member function]
-    cls.add_method('RemoveHeader', 
-                   'uint32_t', 
-                   [param('ns3::Header &', 'header')])
-    ## packet.h: bool ns3::Packet::RemovePacketTag(ns3::Tag & tag) [member function]
-    cls.add_method('RemovePacketTag', 
-                   'bool', 
-                   [param('ns3::Tag &', 'tag')])
-    ## packet.h: uint32_t ns3::Packet::RemoveTrailer(ns3::Trailer & trailer) [member function]
-    cls.add_method('RemoveTrailer', 
-                   'uint32_t', 
-                   [param('ns3::Trailer &', 'trailer')])
-    ## packet.h: ns3::Buffer ns3::Packet::Serialize() const [member function]
-    cls.add_method('Serialize', 
-                   'ns3::Buffer', 
-                   [], 
-                   is_const=True)
-    ## packet.h: void ns3::Packet::SetNixVector(ns3::Ptr<ns3::NixVector> arg0) [member function]
-    cls.add_method('SetNixVector', 
-                   'void', 
-                   [param('ns3::Ptr< ns3::NixVector >', 'arg0')])
-    return
-
 def register_Ns3PacketMetadata_methods(root_module, cls):
     ## packet-metadata.h: ns3::PacketMetadata::PacketMetadata(uint32_t uid, uint32_t size) [constructor]
     cls.add_constructor([param('uint32_t', 'uid'), param('uint32_t', 'size')])
@@ -1057,20 +893,6 @@ def register_Ns3TagBuffer_methods(root_module, cls):
                    [param('uint8_t', 'v')])
     return
 
-def register_Ns3AsciiWriter_methods(root_module, cls):
-    ## ascii-writer.h: ns3::AsciiWriter::AsciiWriter(ns3::AsciiWriter const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::AsciiWriter const &', 'arg0')])
-    ## ascii-writer.h: static ns3::Ptr<ns3::AsciiWriter> ns3::AsciiWriter::Get(std::ostream & os) [member function]
-    cls.add_method('Get', 
-                   'ns3::Ptr< ns3::AsciiWriter >', 
-                   [param('std::ostream &', 'os')], 
-                   is_static=True)
-    ## ascii-writer.h: void ns3::AsciiWriter::WritePacket(ns3::AsciiWriter::Type type, std::string message, ns3::Ptr<ns3::Packet const> p) [member function]
-    cls.add_method('WritePacket', 
-                   'void', 
-                   [param('ns3::AsciiWriter::Type', 'type'), param('std::string', 'message'), param('ns3::Ptr< ns3::Packet const >', 'p')])
-    return
-
 def register_Ns3Chunk_methods(root_module, cls):
     ## chunk.h: ns3::Chunk::Chunk() [constructor]
     cls.add_constructor([])
@@ -1091,46 +913,6 @@ def register_Ns3Chunk_methods(root_module, cls):
                    'void', 
                    [param('std::ostream &', 'os')], 
                    is_pure_virtual=True, is_const=True, is_virtual=True)
-    return
-
-def register_Ns3DataRateChecker_methods(root_module, cls):
-    ## data-rate.h: ns3::DataRateChecker::DataRateChecker() [constructor]
-    cls.add_constructor([])
-    ## data-rate.h: ns3::DataRateChecker::DataRateChecker(ns3::DataRateChecker const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::DataRateChecker const &', 'arg0')])
-    return
-
-def register_Ns3DataRateValue_methods(root_module, cls):
-    ## data-rate.h: ns3::DataRateValue::DataRateValue() [constructor]
-    cls.add_constructor([])
-    ## data-rate.h: ns3::DataRateValue::DataRateValue(ns3::DataRateValue const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::DataRateValue const &', 'arg0')])
-    ## data-rate.h: ns3::DataRateValue::DataRateValue(ns3::DataRate const & value) [constructor]
-    cls.add_constructor([param('ns3::DataRate const &', 'value')])
-    ## data-rate.h: ns3::Ptr<ns3::AttributeValue> ns3::DataRateValue::Copy() const [member function]
-    cls.add_method('Copy', 
-                   'ns3::Ptr< ns3::AttributeValue >', 
-                   [], 
-                   is_const=True, is_virtual=True)
-    ## data-rate.h: bool ns3::DataRateValue::DeserializeFromString(std::string value, ns3::Ptr<ns3::AttributeChecker const> checker) [member function]
-    cls.add_method('DeserializeFromString', 
-                   'bool', 
-                   [param('std::string', 'value'), param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
-                   is_virtual=True)
-    ## data-rate.h: ns3::DataRate ns3::DataRateValue::Get() const [member function]
-    cls.add_method('Get', 
-                   'ns3::DataRate', 
-                   [], 
-                   is_const=True)
-    ## data-rate.h: std::string ns3::DataRateValue::SerializeToString(ns3::Ptr<ns3::AttributeChecker const> checker) const [member function]
-    cls.add_method('SerializeToString', 
-                   'std::string', 
-                   [param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
-                   is_const=True, is_virtual=True)
-    ## data-rate.h: void ns3::DataRateValue::Set(ns3::DataRate const & value) [member function]
-    cls.add_method('Set', 
-                   'void', 
-                   [param('ns3::DataRate const &', 'value')])
     return
 
 def register_Ns3Header_methods(root_module, cls):
@@ -1249,6 +1031,60 @@ def register_Ns3Trailer_methods(root_module, cls):
                    'void', 
                    [param('ns3::Buffer::Iterator', 'start')], 
                    is_pure_virtual=True, is_const=True, is_virtual=True)
+    return
+
+def register_Ns3AsciiWriter_methods(root_module, cls):
+    ## ascii-writer.h: ns3::AsciiWriter::AsciiWriter(ns3::AsciiWriter const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::AsciiWriter const &', 'arg0')])
+    ## ascii-writer.h: static ns3::Ptr<ns3::AsciiWriter> ns3::AsciiWriter::Get(std::ostream & os) [member function]
+    cls.add_method('Get', 
+                   'ns3::Ptr< ns3::AsciiWriter >', 
+                   [param('std::ostream &', 'os')], 
+                   is_static=True)
+    ## ascii-writer.h: void ns3::AsciiWriter::WritePacket(ns3::AsciiWriter::Type type, std::string message, ns3::Ptr<ns3::Packet const> p) [member function]
+    cls.add_method('WritePacket', 
+                   'void', 
+                   [param('ns3::AsciiWriter::Type', 'type'), param('std::string', 'message'), param('ns3::Ptr< ns3::Packet const >', 'p')])
+    return
+
+def register_Ns3DataRateChecker_methods(root_module, cls):
+    ## data-rate.h: ns3::DataRateChecker::DataRateChecker() [constructor]
+    cls.add_constructor([])
+    ## data-rate.h: ns3::DataRateChecker::DataRateChecker(ns3::DataRateChecker const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::DataRateChecker const &', 'arg0')])
+    return
+
+def register_Ns3DataRateValue_methods(root_module, cls):
+    ## data-rate.h: ns3::DataRateValue::DataRateValue() [constructor]
+    cls.add_constructor([])
+    ## data-rate.h: ns3::DataRateValue::DataRateValue(ns3::DataRateValue const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::DataRateValue const &', 'arg0')])
+    ## data-rate.h: ns3::DataRateValue::DataRateValue(ns3::DataRate const & value) [constructor]
+    cls.add_constructor([param('ns3::DataRate const &', 'value')])
+    ## data-rate.h: ns3::Ptr<ns3::AttributeValue> ns3::DataRateValue::Copy() const [member function]
+    cls.add_method('Copy', 
+                   'ns3::Ptr< ns3::AttributeValue >', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## data-rate.h: bool ns3::DataRateValue::DeserializeFromString(std::string value, ns3::Ptr<ns3::AttributeChecker const> checker) [member function]
+    cls.add_method('DeserializeFromString', 
+                   'bool', 
+                   [param('std::string', 'value'), param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
+                   is_virtual=True)
+    ## data-rate.h: ns3::DataRate ns3::DataRateValue::Get() const [member function]
+    cls.add_method('Get', 
+                   'ns3::DataRate', 
+                   [], 
+                   is_const=True)
+    ## data-rate.h: std::string ns3::DataRateValue::SerializeToString(ns3::Ptr<ns3::AttributeChecker const> checker) const [member function]
+    cls.add_method('SerializeToString', 
+                   'std::string', 
+                   [param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
+                   is_const=True, is_virtual=True)
+    ## data-rate.h: void ns3::DataRateValue::Set(ns3::DataRate const & value) [member function]
+    cls.add_method('Set', 
+                   'void', 
+                   [param('ns3::DataRate const &', 'value')])
     return
 
 def register_Ns3ErrorModel_methods(root_module, cls):
@@ -1379,6 +1215,184 @@ def register_Ns3NixVector_methods(root_module, cls):
                    is_const=True)
     return
 
+def register_Ns3Packet_methods(root_module, cls):
+    cls.add_output_stream_operator()
+    ## packet.h: ns3::Packet::Packet() [constructor]
+    cls.add_constructor([])
+    ## packet.h: ns3::Packet::Packet(ns3::Packet const & o) [copy constructor]
+    cls.add_constructor([param('ns3::Packet const &', 'o')])
+    ## packet.h: ns3::Packet::Packet(uint32_t size) [constructor]
+    cls.add_constructor([param('uint32_t', 'size')])
+    ## packet.h: ns3::Packet::Packet(uint8_t const * buffer, uint32_t size) [constructor]
+    cls.add_constructor([param('uint8_t const *', 'buffer'), param('uint32_t', 'size')])
+    ## packet.h: void ns3::Packet::AddAtEnd(ns3::Ptr<ns3::Packet const> packet) [member function]
+    cls.add_method('AddAtEnd', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Packet const >', 'packet')])
+    ## packet.h: void ns3::Packet::AddByteTag(ns3::Tag const & tag) const [member function]
+    cls.add_method('AddByteTag', 
+                   'void', 
+                   [param('ns3::Tag const &', 'tag')], 
+                   is_const=True)
+    ## packet.h: void ns3::Packet::AddHeader(ns3::Header const & header) [member function]
+    cls.add_method('AddHeader', 
+                   'void', 
+                   [param('ns3::Header const &', 'header')])
+    ## packet.h: void ns3::Packet::AddPacketTag(ns3::Tag const & tag) const [member function]
+    cls.add_method('AddPacketTag', 
+                   'void', 
+                   [param('ns3::Tag const &', 'tag')], 
+                   is_const=True)
+    ## packet.h: void ns3::Packet::AddPaddingAtEnd(uint32_t size) [member function]
+    cls.add_method('AddPaddingAtEnd', 
+                   'void', 
+                   [param('uint32_t', 'size')])
+    ## packet.h: void ns3::Packet::AddTrailer(ns3::Trailer const & trailer) [member function]
+    cls.add_method('AddTrailer', 
+                   'void', 
+                   [param('ns3::Trailer const &', 'trailer')])
+    ## packet.h: ns3::PacketMetadata::ItemIterator ns3::Packet::BeginItem() const [member function]
+    cls.add_method('BeginItem', 
+                   'ns3::PacketMetadata::ItemIterator', 
+                   [], 
+                   is_const=True)
+    ## packet.h: ns3::Ptr<ns3::Packet> ns3::Packet::Copy() const [member function]
+    cls.add_method('Copy', 
+                   'ns3::Ptr< ns3::Packet >', 
+                   [], 
+                   is_const=True)
+    ## packet.h: uint32_t ns3::Packet::CopyData(uint8_t * buffer, uint32_t size) const [member function]
+    cls.add_method('CopyData', 
+                   'uint32_t', 
+                   [param('uint8_t *', 'buffer'), param('uint32_t', 'size')], 
+                   is_const=True)
+    ## packet.h: void ns3::Packet::CopyData(std::ostream * os, uint32_t size) const [member function]
+    cls.add_method('CopyData', 
+                   'void', 
+                   [param('std::ostream *', 'os'), param('uint32_t', 'size')], 
+                   is_const=True)
+    ## packet.h: ns3::Ptr<ns3::Packet> ns3::Packet::CreateFragment(uint32_t start, uint32_t length) const [member function]
+    cls.add_method('CreateFragment', 
+                   'ns3::Ptr< ns3::Packet >', 
+                   [param('uint32_t', 'start'), param('uint32_t', 'length')], 
+                   is_const=True)
+    ## packet.h: void ns3::Packet::Deserialize(ns3::Buffer buffer) [member function]
+    cls.add_method('Deserialize', 
+                   'void', 
+                   [param('ns3::Buffer', 'buffer')])
+    ## packet.h: static void ns3::Packet::EnableChecking() [member function]
+    cls.add_method('EnableChecking', 
+                   'void', 
+                   [], 
+                   is_static=True)
+    ## packet.h: static void ns3::Packet::EnablePrinting() [member function]
+    cls.add_method('EnablePrinting', 
+                   'void', 
+                   [], 
+                   is_static=True)
+    ## packet.h: bool ns3::Packet::FindFirstMatchingByteTag(ns3::Tag & tag) const [member function]
+    cls.add_method('FindFirstMatchingByteTag', 
+                   'bool', 
+                   [param('ns3::Tag &', 'tag')], 
+                   is_const=True)
+    ## packet.h: ns3::ByteTagIterator ns3::Packet::GetByteTagIterator() const [member function]
+    cls.add_method('GetByteTagIterator', 
+                   'ns3::ByteTagIterator', 
+                   [], 
+                   is_const=True)
+    ## packet.h: ns3::Ptr<ns3::NixVector> ns3::Packet::GetNixVector() const [member function]
+    cls.add_method('GetNixVector', 
+                   'ns3::Ptr< ns3::NixVector >', 
+                   [], 
+                   is_const=True)
+    ## packet.h: ns3::PacketTagIterator ns3::Packet::GetPacketTagIterator() const [member function]
+    cls.add_method('GetPacketTagIterator', 
+                   'ns3::PacketTagIterator', 
+                   [], 
+                   is_const=True)
+    ## packet.h: uint32_t ns3::Packet::GetSize() const [member function]
+    cls.add_method('GetSize', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## packet.h: uint32_t ns3::Packet::GetUid() const [member function]
+    cls.add_method('GetUid', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## packet.h: uint8_t const * ns3::Packet::PeekData() const [member function]
+    cls.add_method('PeekData', 
+                   'uint8_t const *', 
+                   [], 
+                   deprecated=True, is_const=True)
+    ## packet.h: uint32_t ns3::Packet::PeekHeader(ns3::Header & header) const [member function]
+    cls.add_method('PeekHeader', 
+                   'uint32_t', 
+                   [param('ns3::Header &', 'header')], 
+                   is_const=True)
+    ## packet.h: bool ns3::Packet::PeekPacketTag(ns3::Tag & tag) const [member function]
+    cls.add_method('PeekPacketTag', 
+                   'bool', 
+                   [param('ns3::Tag &', 'tag')], 
+                   is_const=True)
+    ## packet.h: uint32_t ns3::Packet::PeekTrailer(ns3::Trailer & trailer) [member function]
+    cls.add_method('PeekTrailer', 
+                   'uint32_t', 
+                   [param('ns3::Trailer &', 'trailer')])
+    ## packet.h: void ns3::Packet::Print(std::ostream & os) const [member function]
+    cls.add_method('Print', 
+                   'void', 
+                   [param('std::ostream &', 'os')], 
+                   is_const=True)
+    ## packet.h: void ns3::Packet::PrintByteTags(std::ostream & os) const [member function]
+    cls.add_method('PrintByteTags', 
+                   'void', 
+                   [param('std::ostream &', 'os')], 
+                   is_const=True)
+    ## packet.h: void ns3::Packet::PrintPacketTags(std::ostream & os) const [member function]
+    cls.add_method('PrintPacketTags', 
+                   'void', 
+                   [param('std::ostream &', 'os')], 
+                   is_const=True)
+    ## packet.h: void ns3::Packet::RemoveAllByteTags() [member function]
+    cls.add_method('RemoveAllByteTags', 
+                   'void', 
+                   [])
+    ## packet.h: void ns3::Packet::RemoveAllPacketTags() [member function]
+    cls.add_method('RemoveAllPacketTags', 
+                   'void', 
+                   [])
+    ## packet.h: void ns3::Packet::RemoveAtEnd(uint32_t size) [member function]
+    cls.add_method('RemoveAtEnd', 
+                   'void', 
+                   [param('uint32_t', 'size')])
+    ## packet.h: void ns3::Packet::RemoveAtStart(uint32_t size) [member function]
+    cls.add_method('RemoveAtStart', 
+                   'void', 
+                   [param('uint32_t', 'size')])
+    ## packet.h: uint32_t ns3::Packet::RemoveHeader(ns3::Header & header) [member function]
+    cls.add_method('RemoveHeader', 
+                   'uint32_t', 
+                   [param('ns3::Header &', 'header')])
+    ## packet.h: bool ns3::Packet::RemovePacketTag(ns3::Tag & tag) [member function]
+    cls.add_method('RemovePacketTag', 
+                   'bool', 
+                   [param('ns3::Tag &', 'tag')])
+    ## packet.h: uint32_t ns3::Packet::RemoveTrailer(ns3::Trailer & trailer) [member function]
+    cls.add_method('RemoveTrailer', 
+                   'uint32_t', 
+                   [param('ns3::Trailer &', 'trailer')])
+    ## packet.h: ns3::Buffer ns3::Packet::Serialize() const [member function]
+    cls.add_method('Serialize', 
+                   'ns3::Buffer', 
+                   [], 
+                   is_const=True)
+    ## packet.h: void ns3::Packet::SetNixVector(ns3::Ptr<ns3::NixVector> arg0) [member function]
+    cls.add_method('SetNixVector', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::NixVector >', 'arg0')])
+    return
+
 def register_Ns3RateErrorModel_methods(root_module, cls):
     ## error-model.h: ns3::RateErrorModel::RateErrorModel(ns3::RateErrorModel const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::RateErrorModel const &', 'arg0')])
@@ -1447,6 +1461,7 @@ def register_functions(root_module):
     register_functions_ns3_Config(module.get_submodule('Config'), root_module)
     register_functions_ns3_TimeStepPrecision(module.get_submodule('TimeStepPrecision'), root_module)
     register_functions_ns3_addressUtils(module.get_submodule('addressUtils'), root_module)
+    register_functions_ns3_aodv(module.get_submodule('aodv'), root_module)
     register_functions_ns3_dot11s(module.get_submodule('dot11s'), root_module)
     register_functions_ns3_flame(module.get_submodule('flame'), root_module)
     register_functions_ns3_internal(module.get_submodule('internal'), root_module)
@@ -1460,6 +1475,9 @@ def register_functions_ns3_TimeStepPrecision(module, root_module):
     return
 
 def register_functions_ns3_addressUtils(module, root_module):
+    return
+
+def register_functions_ns3_aodv(module, root_module):
     return
 
 def register_functions_ns3_dot11s(module, root_module):

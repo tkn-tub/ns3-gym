@@ -233,26 +233,6 @@ PointToPointHelper::Install (std::string aName, std::string bName)
 }
 
 void 
-PointToPointHelper::InstallStar (Ptr<Node> hub, NodeContainer spokes, 
-                                 NetDeviceContainer& hubDevices, NetDeviceContainer& spokeDevices)
-{
-  for (uint32_t i = 0; i < spokes.GetN (); ++i)
-    {
-      NetDeviceContainer nd = Install (hub, spokes.Get (i));
-      hubDevices.Add (nd.Get (0));
-      spokeDevices.Add (nd.Get (1));
-    }
-}
-
-void 
-PointToPointHelper::InstallStar (std::string hubName, NodeContainer spokes, 
-                                 NetDeviceContainer& hubDevices, NetDeviceContainer& spokeDevices)
-{
-  Ptr<Node> hub = Names::Find<Node> (hubName);
-  InstallStar (hub, spokes, hubDevices, spokeDevices);
-}
-
-void 
 PointToPointHelper::SniffEvent (Ptr<PcapWriter> writer, Ptr<const Packet> packet)
 {
   writer->WritePacket (packet);

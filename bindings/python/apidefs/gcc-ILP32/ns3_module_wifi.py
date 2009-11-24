@@ -8,7 +8,7 @@ def register_types(module):
     ## wifi-preamble.h: ns3::WifiPreamble [enumeration]
     module.add_enum('WifiPreamble', ['WIFI_PREAMBLE_LONG', 'WIFI_PREAMBLE_SHORT'])
     ## wifi-phy-standard.h: ns3::WifiPhyStandard [enumeration]
-    module.add_enum('WifiPhyStandard', ['WIFI_PHY_STANDARD_80211a', 'WIFI_PHY_STANDARD_80211b', 'WIFI_PHY_STANDARD_80211_10Mhz', 'WIFI_PHY_STANDARD_80211_5Mhz', 'WIFI_PHY_STANDARD_holland', 'WIFI_PHY_UNKNOWN'])
+    module.add_enum('WifiPhyStandard', ['WIFI_PHY_STANDARD_80211a', 'WIFI_PHY_STANDARD_80211b', 'WIFI_PHY_STANDARD_80211_10Mhz', 'WIFI_PHY_STANDARD_80211_5Mhz', 'WIFI_PHY_STANDARD_holland', 'WIFI_PHY_STANDARD_80211p_CCH', 'WIFI_PHY_STANDARD_80211p_SCH', 'WIFI_PHY_UNKNOWN'])
     ## qos-utils.h: ns3::AccessClass [enumeration]
     module.add_enum('AccessClass', ['AC_VO', 'AC_VI', 'AC_BE', 'AC_BK', 'AC_BE_NQOS', 'AC_UNDEF'])
     ## edca-txop-n.h: ns3::TypeOfStation [enumeration]
@@ -83,10 +83,8 @@ def register_types(module):
     module.add_class('RandomPropagationLossModel', parent=root_module['ns3::PropagationLossModel'])
     ## rraa-wifi-manager.h: ns3::RraaWifiRemoteStation [class]
     module.add_class('RraaWifiRemoteStation', parent=root_module['ns3::WifiRemoteStation'])
-    ## ssid.h: ns3::SsidChecker [class]
-    module.add_class('SsidChecker', parent=root_module['ns3::AttributeChecker'])
-    ## ssid.h: ns3::SsidValue [class]
-    module.add_class('SsidValue', parent=root_module['ns3::AttributeValue'])
+    ## simple-ref-count.h: ns3::SimpleRefCount<ns3::InterferenceHelper::Event, ns3::empty> [class]
+    module.add_class('SimpleRefCount', template_parameters=['ns3::InterferenceHelper::Event', 'ns3::empty'], parent=root_module['ns3::empty'])
     ## propagation-loss-model.h: ns3::ThreeLogDistancePropagationLossModel [class]
     module.add_class('ThreeLogDistancePropagationLossModel', parent=root_module['ns3::PropagationLossModel'])
     ## wifi-mac.h: ns3::WifiMac [class]
@@ -97,10 +95,6 @@ def register_types(module):
     module.add_enum('QosAckPolicy', ['NORMAL_ACK', 'NO_ACK', 'NO_EXPLICIT_ACK', 'BLOCK_ACK'], outer_class=root_module['ns3::WifiMacHeader'])
     ## wifi-mac-header.h: ns3::WifiMacHeader::AddressType [enumeration]
     module.add_enum('AddressType', ['ADDR1', 'ADDR2', 'ADDR3', 'ADDR4'], outer_class=root_module['ns3::WifiMacHeader'])
-    ## wifi-mode.h: ns3::WifiModeChecker [class]
-    module.add_class('WifiModeChecker', parent=root_module['ns3::AttributeChecker'])
-    ## wifi-mode.h: ns3::WifiModeValue [class]
-    module.add_class('WifiModeValue', parent=root_module['ns3::AttributeValue'])
     ## wifi-phy.h: ns3::WifiPhy [class]
     module.add_class('WifiPhy', parent=root_module['ns3::Object'])
     ## wifi-phy.h: ns3::WifiPhy::State [enumeration]
@@ -163,8 +157,16 @@ def register_types(module):
     module.add_class('QstaWifiMac', parent=root_module['ns3::WifiMac'])
     ## rraa-wifi-manager.h: ns3::RraaWifiManager [class]
     module.add_class('RraaWifiManager', parent=root_module['ns3::WifiRemoteStationManager'])
+    ## ssid.h: ns3::SsidChecker [class]
+    module.add_class('SsidChecker', parent=root_module['ns3::AttributeChecker'])
+    ## ssid.h: ns3::SsidValue [class]
+    module.add_class('SsidValue', parent=root_module['ns3::AttributeValue'])
     ## wifi-channel.h: ns3::WifiChannel [class]
     module.add_class('WifiChannel', parent=root_module['ns3::Channel'])
+    ## wifi-mode.h: ns3::WifiModeChecker [class]
+    module.add_class('WifiModeChecker', parent=root_module['ns3::AttributeChecker'])
+    ## wifi-mode.h: ns3::WifiModeValue [class]
+    module.add_class('WifiModeValue', parent=root_module['ns3::AttributeValue'])
     ## wifi-net-device.h: ns3::WifiNetDevice [class]
     module.add_class('WifiNetDevice', parent=root_module['ns3::NetDevice'])
     ## yans-error-rate-model.h: ns3::YansErrorRateModel [class]
@@ -203,6 +205,12 @@ def register_types(module):
     register_types_ns3_addressUtils(nested_module)
     
     
+    ## Register a nested module for the namespace aodv
+    
+    nested_module = module.add_cpp_namespace('aodv')
+    register_types_ns3_aodv(nested_module)
+    
+    
     ## Register a nested module for the namespace dot11s
     
     nested_module = module.add_cpp_namespace('dot11s')
@@ -236,6 +244,10 @@ def register_types_ns3_TimeStepPrecision(module):
     
 
 def register_types_ns3_addressUtils(module):
+    root_module = module.get_root()
+    
+
+def register_types_ns3_aodv(module):
     root_module = module.get_root()
     
 
@@ -290,13 +302,9 @@ def register_methods(root_module):
     register_Ns3RandomPropagationDelayModel_methods(root_module, root_module['ns3::RandomPropagationDelayModel'])
     register_Ns3RandomPropagationLossModel_methods(root_module, root_module['ns3::RandomPropagationLossModel'])
     register_Ns3RraaWifiRemoteStation_methods(root_module, root_module['ns3::RraaWifiRemoteStation'])
-    register_Ns3SsidChecker_methods(root_module, root_module['ns3::SsidChecker'])
-    register_Ns3SsidValue_methods(root_module, root_module['ns3::SsidValue'])
     register_Ns3ThreeLogDistancePropagationLossModel_methods(root_module, root_module['ns3::ThreeLogDistancePropagationLossModel'])
     register_Ns3WifiMac_methods(root_module, root_module['ns3::WifiMac'])
     register_Ns3WifiMacHeader_methods(root_module, root_module['ns3::WifiMacHeader'])
-    register_Ns3WifiModeChecker_methods(root_module, root_module['ns3::WifiModeChecker'])
-    register_Ns3WifiModeValue_methods(root_module, root_module['ns3::WifiModeValue'])
     register_Ns3WifiPhy_methods(root_module, root_module['ns3::WifiPhy'])
     register_Ns3WifiRemoteStationManager_methods(root_module, root_module['ns3::WifiRemoteStationManager'])
     register_Ns3YansWifiPhy_methods(root_module, root_module['ns3::YansWifiPhy'])
@@ -327,7 +335,11 @@ def register_methods(root_module):
     register_Ns3QapWifiMac_methods(root_module, root_module['ns3::QapWifiMac'])
     register_Ns3QstaWifiMac_methods(root_module, root_module['ns3::QstaWifiMac'])
     register_Ns3RraaWifiManager_methods(root_module, root_module['ns3::RraaWifiManager'])
+    register_Ns3SsidChecker_methods(root_module, root_module['ns3::SsidChecker'])
+    register_Ns3SsidValue_methods(root_module, root_module['ns3::SsidValue'])
     register_Ns3WifiChannel_methods(root_module, root_module['ns3::WifiChannel'])
+    register_Ns3WifiModeChecker_methods(root_module, root_module['ns3::WifiModeChecker'])
+    register_Ns3WifiModeValue_methods(root_module, root_module['ns3::WifiModeValue'])
     register_Ns3WifiNetDevice_methods(root_module, root_module['ns3::WifiNetDevice'])
     register_Ns3YansErrorRateModel_methods(root_module, root_module['ns3::YansErrorRateModel'])
     register_Ns3YansWifiChannel_methods(root_module, root_module['ns3::YansWifiChannel'])
@@ -2112,46 +2124,6 @@ def register_Ns3RraaWifiRemoteStation_methods(root_module, cls):
                    is_const=True, visibility='private', is_virtual=True)
     return
 
-def register_Ns3SsidChecker_methods(root_module, cls):
-    ## ssid.h: ns3::SsidChecker::SsidChecker() [constructor]
-    cls.add_constructor([])
-    ## ssid.h: ns3::SsidChecker::SsidChecker(ns3::SsidChecker const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::SsidChecker const &', 'arg0')])
-    return
-
-def register_Ns3SsidValue_methods(root_module, cls):
-    ## ssid.h: ns3::SsidValue::SsidValue() [constructor]
-    cls.add_constructor([])
-    ## ssid.h: ns3::SsidValue::SsidValue(ns3::SsidValue const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::SsidValue const &', 'arg0')])
-    ## ssid.h: ns3::SsidValue::SsidValue(ns3::Ssid const & value) [constructor]
-    cls.add_constructor([param('ns3::Ssid const &', 'value')])
-    ## ssid.h: ns3::Ptr<ns3::AttributeValue> ns3::SsidValue::Copy() const [member function]
-    cls.add_method('Copy', 
-                   'ns3::Ptr< ns3::AttributeValue >', 
-                   [], 
-                   is_const=True, is_virtual=True)
-    ## ssid.h: bool ns3::SsidValue::DeserializeFromString(std::string value, ns3::Ptr<ns3::AttributeChecker const> checker) [member function]
-    cls.add_method('DeserializeFromString', 
-                   'bool', 
-                   [param('std::string', 'value'), param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
-                   is_virtual=True)
-    ## ssid.h: ns3::Ssid ns3::SsidValue::Get() const [member function]
-    cls.add_method('Get', 
-                   'ns3::Ssid', 
-                   [], 
-                   is_const=True)
-    ## ssid.h: std::string ns3::SsidValue::SerializeToString(ns3::Ptr<ns3::AttributeChecker const> checker) const [member function]
-    cls.add_method('SerializeToString', 
-                   'std::string', 
-                   [param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
-                   is_const=True, is_virtual=True)
-    ## ssid.h: void ns3::SsidValue::Set(ns3::Ssid const & value) [member function]
-    cls.add_method('Set', 
-                   'void', 
-                   [param('ns3::Ssid const &', 'value')])
-    return
-
 def register_Ns3ThreeLogDistancePropagationLossModel_methods(root_module, cls):
     ## propagation-loss-model.h: static ns3::TypeId ns3::ThreeLogDistancePropagationLossModel::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
@@ -2345,6 +2317,11 @@ def register_Ns3WifiMac_methods(root_module, cls):
                    'bool', 
                    [], 
                    is_pure_virtual=True, is_const=True, is_virtual=True)
+    ## wifi-mac.h: void ns3::WifiMac::ConfigureCCHDcf(ns3::Ptr<ns3::Dcf> dcf, uint32_t cwmin, uint32_t cwmax, ns3::AccessClass ac) [member function]
+    cls.add_method('ConfigureCCHDcf', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Dcf >', 'dcf'), param('uint32_t', 'cwmin'), param('uint32_t', 'cwmax'), param('ns3::AccessClass', 'ac')], 
+                   visibility='protected')
     ## wifi-mac.h: void ns3::WifiMac::ConfigureDcf(ns3::Ptr<ns3::Dcf> dcf, uint32_t cwmin, uint32_t cwmax, ns3::AccessClass ac) [member function]
     cls.add_method('ConfigureDcf', 
                    'void', 
@@ -2744,46 +2721,6 @@ def register_Ns3WifiMacHeader_methods(root_module, cls):
     cls.add_method('SetTypeData', 
                    'void', 
                    [])
-    return
-
-def register_Ns3WifiModeChecker_methods(root_module, cls):
-    ## wifi-mode.h: ns3::WifiModeChecker::WifiModeChecker() [constructor]
-    cls.add_constructor([])
-    ## wifi-mode.h: ns3::WifiModeChecker::WifiModeChecker(ns3::WifiModeChecker const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::WifiModeChecker const &', 'arg0')])
-    return
-
-def register_Ns3WifiModeValue_methods(root_module, cls):
-    ## wifi-mode.h: ns3::WifiModeValue::WifiModeValue() [constructor]
-    cls.add_constructor([])
-    ## wifi-mode.h: ns3::WifiModeValue::WifiModeValue(ns3::WifiModeValue const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::WifiModeValue const &', 'arg0')])
-    ## wifi-mode.h: ns3::WifiModeValue::WifiModeValue(ns3::WifiMode const & value) [constructor]
-    cls.add_constructor([param('ns3::WifiMode const &', 'value')])
-    ## wifi-mode.h: ns3::Ptr<ns3::AttributeValue> ns3::WifiModeValue::Copy() const [member function]
-    cls.add_method('Copy', 
-                   'ns3::Ptr< ns3::AttributeValue >', 
-                   [], 
-                   is_const=True, is_virtual=True)
-    ## wifi-mode.h: bool ns3::WifiModeValue::DeserializeFromString(std::string value, ns3::Ptr<ns3::AttributeChecker const> checker) [member function]
-    cls.add_method('DeserializeFromString', 
-                   'bool', 
-                   [param('std::string', 'value'), param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
-                   is_virtual=True)
-    ## wifi-mode.h: ns3::WifiMode ns3::WifiModeValue::Get() const [member function]
-    cls.add_method('Get', 
-                   'ns3::WifiMode', 
-                   [], 
-                   is_const=True)
-    ## wifi-mode.h: std::string ns3::WifiModeValue::SerializeToString(ns3::Ptr<ns3::AttributeChecker const> checker) const [member function]
-    cls.add_method('SerializeToString', 
-                   'std::string', 
-                   [param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
-                   is_const=True, is_virtual=True)
-    ## wifi-mode.h: void ns3::WifiModeValue::Set(ns3::WifiMode const & value) [member function]
-    cls.add_method('Set', 
-                   'void', 
-                   [param('ns3::WifiMode const &', 'value')])
     return
 
 def register_Ns3WifiPhy_methods(root_module, cls):
@@ -4510,6 +4447,11 @@ def register_Ns3NqapWifiMac_methods(root_module, cls):
                    'void', 
                    [], 
                    visibility='private', is_virtual=True)
+    ## nqap-wifi-mac.h: void ns3::NqapWifiMac::DoStart() [member function]
+    cls.add_method('DoStart', 
+                   'void', 
+                   [], 
+                   visibility='private', is_virtual=True)
     ## nqap-wifi-mac.h: void ns3::NqapWifiMac::FinishConfigureStandard(ns3::WifiPhyStandard standard) [member function]
     cls.add_method('FinishConfigureStandard', 
                    'void', 
@@ -4991,6 +4933,11 @@ def register_Ns3QapWifiMac_methods(root_module, cls):
                    'void', 
                    [], 
                    visibility='private', is_virtual=True)
+    ## qap-wifi-mac.h: void ns3::QapWifiMac::DoStart() [member function]
+    cls.add_method('DoStart', 
+                   'void', 
+                   [], 
+                   visibility='private', is_virtual=True)
     ## qap-wifi-mac.h: void ns3::QapWifiMac::FinishConfigureStandard(ns3::WifiPhyStandard standard) [member function]
     cls.add_method('FinishConfigureStandard', 
                    'void', 
@@ -5190,6 +5137,46 @@ def register_Ns3RraaWifiManager_methods(root_module, cls):
                    visibility='private', is_virtual=True)
     return
 
+def register_Ns3SsidChecker_methods(root_module, cls):
+    ## ssid.h: ns3::SsidChecker::SsidChecker() [constructor]
+    cls.add_constructor([])
+    ## ssid.h: ns3::SsidChecker::SsidChecker(ns3::SsidChecker const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::SsidChecker const &', 'arg0')])
+    return
+
+def register_Ns3SsidValue_methods(root_module, cls):
+    ## ssid.h: ns3::SsidValue::SsidValue() [constructor]
+    cls.add_constructor([])
+    ## ssid.h: ns3::SsidValue::SsidValue(ns3::SsidValue const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::SsidValue const &', 'arg0')])
+    ## ssid.h: ns3::SsidValue::SsidValue(ns3::Ssid const & value) [constructor]
+    cls.add_constructor([param('ns3::Ssid const &', 'value')])
+    ## ssid.h: ns3::Ptr<ns3::AttributeValue> ns3::SsidValue::Copy() const [member function]
+    cls.add_method('Copy', 
+                   'ns3::Ptr< ns3::AttributeValue >', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## ssid.h: bool ns3::SsidValue::DeserializeFromString(std::string value, ns3::Ptr<ns3::AttributeChecker const> checker) [member function]
+    cls.add_method('DeserializeFromString', 
+                   'bool', 
+                   [param('std::string', 'value'), param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
+                   is_virtual=True)
+    ## ssid.h: ns3::Ssid ns3::SsidValue::Get() const [member function]
+    cls.add_method('Get', 
+                   'ns3::Ssid', 
+                   [], 
+                   is_const=True)
+    ## ssid.h: std::string ns3::SsidValue::SerializeToString(ns3::Ptr<ns3::AttributeChecker const> checker) const [member function]
+    cls.add_method('SerializeToString', 
+                   'std::string', 
+                   [param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
+                   is_const=True, is_virtual=True)
+    ## ssid.h: void ns3::SsidValue::Set(ns3::Ssid const & value) [member function]
+    cls.add_method('Set', 
+                   'void', 
+                   [param('ns3::Ssid const &', 'value')])
+    return
+
 def register_Ns3WifiChannel_methods(root_module, cls):
     ## wifi-channel.h: ns3::WifiChannel::WifiChannel() [constructor]
     cls.add_constructor([])
@@ -5200,6 +5187,46 @@ def register_Ns3WifiChannel_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
+    return
+
+def register_Ns3WifiModeChecker_methods(root_module, cls):
+    ## wifi-mode.h: ns3::WifiModeChecker::WifiModeChecker() [constructor]
+    cls.add_constructor([])
+    ## wifi-mode.h: ns3::WifiModeChecker::WifiModeChecker(ns3::WifiModeChecker const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::WifiModeChecker const &', 'arg0')])
+    return
+
+def register_Ns3WifiModeValue_methods(root_module, cls):
+    ## wifi-mode.h: ns3::WifiModeValue::WifiModeValue() [constructor]
+    cls.add_constructor([])
+    ## wifi-mode.h: ns3::WifiModeValue::WifiModeValue(ns3::WifiModeValue const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::WifiModeValue const &', 'arg0')])
+    ## wifi-mode.h: ns3::WifiModeValue::WifiModeValue(ns3::WifiMode const & value) [constructor]
+    cls.add_constructor([param('ns3::WifiMode const &', 'value')])
+    ## wifi-mode.h: ns3::Ptr<ns3::AttributeValue> ns3::WifiModeValue::Copy() const [member function]
+    cls.add_method('Copy', 
+                   'ns3::Ptr< ns3::AttributeValue >', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## wifi-mode.h: bool ns3::WifiModeValue::DeserializeFromString(std::string value, ns3::Ptr<ns3::AttributeChecker const> checker) [member function]
+    cls.add_method('DeserializeFromString', 
+                   'bool', 
+                   [param('std::string', 'value'), param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
+                   is_virtual=True)
+    ## wifi-mode.h: ns3::WifiMode ns3::WifiModeValue::Get() const [member function]
+    cls.add_method('Get', 
+                   'ns3::WifiMode', 
+                   [], 
+                   is_const=True)
+    ## wifi-mode.h: std::string ns3::WifiModeValue::SerializeToString(ns3::Ptr<ns3::AttributeChecker const> checker) const [member function]
+    cls.add_method('SerializeToString', 
+                   'std::string', 
+                   [param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
+                   is_const=True, is_virtual=True)
+    ## wifi-mode.h: void ns3::WifiModeValue::Set(ns3::WifiMode const & value) [member function]
+    cls.add_method('Set', 
+                   'void', 
+                   [param('ns3::WifiMode const &', 'value')])
     return
 
 def register_Ns3WifiNetDevice_methods(root_module, cls):
@@ -5361,6 +5388,11 @@ def register_Ns3WifiNetDevice_methods(root_module, cls):
                    is_const=True, is_virtual=True)
     ## wifi-net-device.h: void ns3::WifiNetDevice::DoDispose() [member function]
     cls.add_method('DoDispose', 
+                   'void', 
+                   [], 
+                   visibility='private', is_virtual=True)
+    ## wifi-net-device.h: void ns3::WifiNetDevice::DoStart() [member function]
+    cls.add_method('DoStart', 
                    'void', 
                    [], 
                    visibility='private', is_virtual=True)
@@ -5537,6 +5569,7 @@ def register_functions(root_module):
     register_functions_ns3_Config(module.get_submodule('Config'), root_module)
     register_functions_ns3_TimeStepPrecision(module.get_submodule('TimeStepPrecision'), root_module)
     register_functions_ns3_addressUtils(module.get_submodule('addressUtils'), root_module)
+    register_functions_ns3_aodv(module.get_submodule('aodv'), root_module)
     register_functions_ns3_dot11s(module.get_submodule('dot11s'), root_module)
     register_functions_ns3_flame(module.get_submodule('flame'), root_module)
     register_functions_ns3_internal(module.get_submodule('internal'), root_module)
@@ -5550,6 +5583,9 @@ def register_functions_ns3_TimeStepPrecision(module, root_module):
     return
 
 def register_functions_ns3_addressUtils(module, root_module):
+    return
+
+def register_functions_ns3_aodv(module, root_module):
     return
 
 def register_functions_ns3_dot11s(module, root_module):

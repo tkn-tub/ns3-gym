@@ -309,7 +309,10 @@ RoutingTable::Purge ()
           else
             ++i;
         }
-      ++i;
+      else 
+        {
+          ++i;
+        }
     }
 }
 

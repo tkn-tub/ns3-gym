@@ -24,6 +24,12 @@ def register_types(module):
     register_types_ns3_addressUtils(nested_module)
     
     
+    ## Register a nested module for the namespace aodv
+    
+    nested_module = module.add_cpp_namespace('aodv')
+    register_types_ns3_aodv(nested_module)
+    
+    
     ## Register a nested module for the namespace dot11s
     
     nested_module = module.add_cpp_namespace('dot11s')
@@ -57,6 +63,10 @@ def register_types_ns3_TimeStepPrecision(module):
     
 
 def register_types_ns3_addressUtils(module):
+    root_module = module.get_root()
+    
+
+def register_types_ns3_aodv(module):
     root_module = module.get_root()
     
 
@@ -116,6 +126,7 @@ def register_functions(root_module):
     register_functions_ns3_Config(module.get_submodule('Config'), root_module)
     register_functions_ns3_TimeStepPrecision(module.get_submodule('TimeStepPrecision'), root_module)
     register_functions_ns3_addressUtils(module.get_submodule('addressUtils'), root_module)
+    register_functions_ns3_aodv(module.get_submodule('aodv'), root_module)
     register_functions_ns3_dot11s(module.get_submodule('dot11s'), root_module)
     register_functions_ns3_flame(module.get_submodule('flame'), root_module)
     register_functions_ns3_internal(module.get_submodule('internal'), root_module)
@@ -129,6 +140,9 @@ def register_functions_ns3_TimeStepPrecision(module, root_module):
     return
 
 def register_functions_ns3_addressUtils(module, root_module):
+    return
+
+def register_functions_ns3_aodv(module, root_module):
     return
 
 def register_functions_ns3_dot11s(module, root_module):

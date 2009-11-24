@@ -32,8 +32,7 @@ all_modules = (
     'routing/global-routing',
     'routing/static-routing',
     'routing/list-routing',
-    'routing/manet/aodv',
-    'routing/manet/dpd',
+    'routing/aodv',
     'mobility',
     'devices/wifi',
     'helper',
@@ -48,7 +47,6 @@ all_modules = (
     'test/ns3tcp',
     'test/ns3wifi',
     'contrib/flow-monitor',
-    'contrib/net-anim',
     )
 
 def set_options(opt):
@@ -72,6 +70,7 @@ def configure(conf):
     conf.sub_config('devices/tap-bridge')
     conf.sub_config('contrib')
     conf.sub_config('internet-stack')
+    conf.sub_config('helper')
 
     blddir = os.path.abspath(os.path.join(conf.blddir, conf.env.variant()))
     conf.env.append_value('NS3_MODULE_PATH', blddir)

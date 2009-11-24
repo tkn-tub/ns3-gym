@@ -32,8 +32,32 @@
 namespace ns3 {
 
 HighPrecision Abs (HighPrecision const &value);
-HighPrecision Max (HighPrecision const &a, HighPrecision const &b);
-HighPrecision Min (HighPrecision const &a, HighPrecision const &b);
+inline HighPrecision Max (HighPrecision const &a, HighPrecision const &b);
+inline HighPrecision Min (HighPrecision const &a, HighPrecision const &b);
+
+
+inline HighPrecision Max (HighPrecision const &a, HighPrecision const &b)
+{
+  if (a.Compare (b) >= 0)
+    {
+      return a;
+    }
+  else
+    {
+      return b;
+    }
+}
+inline HighPrecision Min (HighPrecision const &a, HighPrecision const &b)
+{
+  if (a.Compare (b) <= 0)
+    {
+      return a;
+    }
+  else
+    {
+      return b;
+    }
+}
 
 }; /* namespace ns3 */
 

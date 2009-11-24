@@ -15,36 +15,24 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- *
- * Authors: Elena Buchatskaia <borovkovaes@iitp.ru>
- *          Pavel Boyko <boyko@iitp.ru>
+ * Authors: Pavel Boyko <boyko@iitp.ru>
  */
 
-#include "dpd.h"
+#include "hello-regression-test.h"
+#include "tc-regression-test.h"
 
-namespace ns3
-{
-namespace dpd
-{
+namespace ns3 {
+namespace olsr {
 
-bool
-DuplicatePacketDetection::IsDuplicate  (Ptr<const Packet> p, const Ipv4Header & header)
+class RegressionTestSuite : public TestSuite
 {
-  return m_idCache.IsDuplicate (header.GetSource (), p->GetUid() );
-}
-void
-DuplicatePacketDetection::SetLifetime (Time lifetime)
-{
-  m_idCache.SetLifetime(lifetime);
-}
-
-Time
-DuplicatePacketDetection::GetLifetime () const
-{
-  return m_idCache.GetLifeTime();
-}
-
+public:
+  RegressionTestSuite () : TestSuite ("routing-olsr-regression", SYSTEM) 
+  {
+    AddTestCase (new HelloRegressionTest);
+    AddTestCase (new TcRegressionTest);
+  }
+} g_olsrRegressionTestSuite;
 
 }
 }
-

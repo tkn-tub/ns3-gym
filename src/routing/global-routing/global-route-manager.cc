@@ -33,21 +33,6 @@ namespace ns3 {
 // ---------------------------------------------------------------------------
 
   void
-GlobalRouteManager::PopulateRoutingTables (void) 
-{
-  BuildGlobalRoutingDatabase ();
-  InitializeRoutes ();
-}
-
-  void
-GlobalRouteManager::RecomputeRoutingTables ()
-{
-  DeleteGlobalRoutes ();
-  BuildGlobalRoutingDatabase ();
-  InitializeRoutes ();
-}
-
-  void
 GlobalRouteManager::DeleteGlobalRoutes ()
 {
   SimulationSingleton<GlobalRouteManagerImpl>::Get ()->

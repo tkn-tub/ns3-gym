@@ -22,7 +22,6 @@
 #include "ns3/simulator-module.h"
 #include "ns3/node-module.h"
 #include "ns3/helper-module.h"
-#include "ns3/net-anim-module.h"
 
 using namespace ns3;
 
@@ -43,12 +42,10 @@ int main (int argc, char *argv[])
   cmd.AddValue ("animFile",  "File Name for Animation Output", animFile);
 
   cmd.Parse (argc,argv);
-  if (xSize < 1)
-    NS_FATAL_ERROR ("Need more nodes for grid.");
-  if (ySize < 1)
-    NS_FATAL_ERROR ("Need more nodes for grid.");
-  if (xSize < 2 && ySize < 2)
-    NS_FATAL_ERROR ("Need more nodes for grid.");
+  if (xSize < 1 || ySize < 1 || (xSize < 2 && ySize < 2))
+    {
+      NS_FATAL_ERROR ("Need more nodes for grid.");
+    }
   
   PointToPointHelper pointToPoint;
   pointToPoint.SetDeviceAttribute ("DataRate", StringValue ("5Mbps"));
@@ -62,8 +59,8 @@ int main (int argc, char *argv[])
   grid.InstallStack (stack);
 
   // Assign Addresses to Grid
-  grid.AssignAddresses (Ipv4AddressHelper("10.1.1.0", "255.255.255.0"),
-                        Ipv4AddressHelper("10.2.1.0", "255.255.255.0"));
+  grid.AssignIpv4Addresses (Ipv4AddressHelper ("10.1.1.0", "255.255.255.0"),
+                            Ipv4AddressHelper ("10.2.1.0", "255.255.255.0"));
 
 
   OnOffHelper clientHelper ("ns3::UdpSocketFactory", Address ());
@@ -74,27 +71,27 @@ int main (int argc, char *argv[])
   ApplicationContainer clientApps;
 
   // Create an on/off app sending packets
-  AddressValue remoteAddress(InetSocketAddress(grid.GetAddress (xSize-1,ySize-1), 1000));
-  clientHelper.SetAttribute("Remote", remoteAddress);
-  clientApps.Add(clientHelper.Install(grid.GetNode (0,0)));
+  AddressValue remoteAddress (InetSocketAddress (grid.GetIpv4Address (xSize-1,ySize-1), 1000));
+  clientHelper.SetAttribute ("Remote", remoteAddress);
+  clientApps.Add (clientHelper.Install (grid.GetNode (0,0)));
 
   clientApps.Start (Seconds (0.0));
   clientApps.Stop (Seconds (1.5));
 
   // Set the bounding box for animation
-  grid.BoundingBox(1, 1, 10, 10);
+  grid.BoundingBox (1, 1, 10, 10);
 
   // Create the animation object and configure for specified output
   AnimationInterface anim;
   if (port > 0)
     {
-      anim.SetServerPort(port);
+      anim.SetServerPort (port);
     }
-  else if (!animFile.empty())
+  else if (!animFile.empty ())
     {
-      anim.SetOutputFile(animFile);
+      anim.SetOutputFile (animFile);
     }
-  anim.StartAnimation();
+  anim.StartAnimation ();
   
   // Set up the actual simulation
   Ipv4GlobalRoutingHelper::PopulateRoutingTables ();

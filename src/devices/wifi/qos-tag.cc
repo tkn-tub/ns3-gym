@@ -31,7 +31,7 @@ QosTag::GetTypeId (void)
     .AddConstructor<QosTag> ()
     .AddAttribute ("tid", "The tid that indicates AC which packet belongs",
                    UintegerValue (0),
-                   MakeUintegerAccessor (&QosTag::Get),
+                   MakeUintegerAccessor (&QosTag::GetTid),
                    MakeUintegerChecker<uint8_t> ())
     ;
   return tid;
@@ -49,6 +49,18 @@ QosTag::QosTag ():
 QosTag::QosTag (uint8_t tid):
   m_tid (tid)
 {}
+  
+void
+QosTag::SetTid (uint8_t tid)
+{
+  m_tid = tid;
+}
+
+void
+QosTag::SetUserPriority (UserPriority up)
+{
+  m_tid = up;
+}
 
 uint32_t 
 QosTag::GetSerializedSize (void) const
@@ -65,17 +77,11 @@ QosTag::Serialize (TagBuffer i) const
 void
 QosTag::Deserialize (TagBuffer i)
 {
-  m_tid = i.ReadU8 ();
-}
-
-void
-QosTag::Set (uint8_t tid)
-{
-  m_tid = tid;
+  m_tid = (UserPriority) i.ReadU8 ();
 }
 
 uint8_t
-QosTag::Get () const
+QosTag::GetTid () const
 {
   return m_tid;
 }

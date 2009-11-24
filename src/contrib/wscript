@@ -17,7 +17,6 @@ def configure(conf):
     conf.write_config_header('ns3/contrib-config.h', top=True)
 
     conf.sub_config('stats')
-    conf.sub_config('net-anim')
 
 
 def build(bld):

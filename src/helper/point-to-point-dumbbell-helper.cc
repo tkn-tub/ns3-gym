@@ -24,23 +24,21 @@
 // ns3 includes
 #include "ns3/animation-interface.h"
 #include "ns3/point-to-point-dumbbell-helper.h"
-#include "ns3/node-location.h"
+#include "ns3/canvas-location.h"
 
 #include "ns3/node-list.h"
 #include "ns3/point-to-point-net-device.h"
 #include "ns3/vector.h"
-
-using namespace std;
 
 NS_LOG_COMPONENT_DEFINE("PointToPointDumbbellHelper");
 
 namespace ns3 {
   
 PointToPointDumbbellHelper::PointToPointDumbbellHelper (uint32_t nLeftLeaf,
-                   PointToPointHelper& leftHelper,
+                   PointToPointHelper leftHelper,
                    uint32_t nRightLeaf,
-                   PointToPointHelper& rightHelper,
-                   PointToPointHelper& bottleneckHelper)
+                   PointToPointHelper rightHelper,
+                   PointToPointHelper bottleneckHelper)
 {
   // Create the bottleneck routers
   m_routers.Create (2);
@@ -68,6 +66,9 @@ PointToPointDumbbellHelper::PointToPointDumbbellHelper (uint32_t nLeftLeaf,
     }
 }
 
+PointToPointDumbbellHelper::~PointToPointDumbbellHelper ()
+{}
+
 Ptr<Node> PointToPointDumbbellHelper::GetLeft () const
 { // Get the left side bottleneck router
   return m_routers.Get (0);
@@ -88,12 +89,12 @@ Ptr<Node> PointToPointDumbbellHelper::GetRight (uint32_t i) const
   return m_rightLeaf.Get (i);
 }
 
-Ipv4Address PointToPointDumbbellHelper::GetLeftAddress (uint32_t i) const
+Ipv4Address PointToPointDumbbellHelper::GetLeftIpv4Address (uint32_t i) const
 {
   return m_leftLeafInterfaces.GetAddress (i);
 }
 
-Ipv4Address PointToPointDumbbellHelper::GetRightAddress (uint32_t i) const
+Ipv4Address PointToPointDumbbellHelper::GetRightIpv4Address (uint32_t i) const
 {
   return m_rightLeafInterfaces.GetAddress (i);
 }
@@ -115,7 +116,7 @@ void PointToPointDumbbellHelper::InstallStack (InternetStackHelper stack)
   stack.Install (m_rightLeaf);
 }
 
-void PointToPointDumbbellHelper::AssignAddresses (Ipv4AddressHelper leftIp,
+void PointToPointDumbbellHelper::AssignIpv4Addresses (Ipv4AddressHelper leftIp,
                                Ipv4AddressHelper rightIp,
                                Ipv4AddressHelper routerIp)
 {
@@ -132,7 +133,7 @@ void PointToPointDumbbellHelper::AssignAddresses (Ipv4AddressHelper leftIp,
       m_leftRouterInterfaces.Add (ifc.Get (1));
       leftIp.NewNetwork ();
     }
-  // Assign to right size
+  // Assign to right side
   for (uint32_t i = 0; i < RightCount (); ++i)
     {
       NetDeviceContainer ndc;
@@ -149,18 +150,35 @@ void PointToPointDumbbellHelper::AssignAddresses (Ipv4AddressHelper leftIp,
 void PointToPointDumbbellHelper::BoundingBox (double ulx, double uly, // Upper left x/y
                            double lrx, double lry) // Lower right y
 {
-  double xDist = lrx - ulx;
-  double yDist = lry - uly;
+  double xDist;
+  double yDist;
+  if (lrx > ulx)
+    {
+      xDist = lrx - ulx;
+    }
+  else
+    {
+      xDist = ulx - lrx;
+    }
+  if (lry > uly)
+    {
+      yDist = lry - uly;
+    }
+  else
+    {
+      yDist = uly - lry;
+    }
+
   double xAdder = xDist / 3.0;
   double  thetaL = M_PI / (LeftCount () + 1.0);
   double  thetaR = M_PI / (RightCount () + 1.0);
 
   // Place the left router
   Ptr<Node> lr = GetLeft ();
-  Ptr<NodeLocation> loc = lr->GetObject<NodeLocation> ();
+  Ptr<CanvasLocation> loc = lr->GetObject<CanvasLocation> ();
   if (loc == 0)
     {
-      loc = CreateObject<NodeLocation> ();
+      loc = CreateObject<CanvasLocation> ();
       lr->AggregateObject (loc);
     }
   Vector lrl (ulx + xAdder, uly + yDist/2.0, 0);
@@ -168,10 +186,10 @@ void PointToPointDumbbellHelper::BoundingBox (double ulx, double uly, // Upper l
   
   // Place the right router
   Ptr<Node> rr = GetRight ();
-  loc = rr->GetObject<NodeLocation> ();
+  loc = rr->GetObject<CanvasLocation> ();
   if (loc == 0)
     {
-      loc = CreateObject<NodeLocation> ();
+      loc = CreateObject<CanvasLocation> ();
       rr->AggregateObject (loc);
     }
   Vector rrl (ulx + xAdder * 2, uly + yDist/2.0, 0); // Right router location
@@ -191,10 +209,10 @@ void PointToPointDumbbellHelper::BoundingBox (double ulx, double uly, // Upper l
             }
         }
       Ptr<Node> ln = GetLeft (l);
-      loc = ln->GetObject<NodeLocation> ();
+      loc = ln->GetObject<CanvasLocation> ();
       if (loc == 0)
         {
-          loc = CreateObject<NodeLocation> ();
+          loc = CreateObject<CanvasLocation> ();
           ln->AggregateObject (loc);
         }
       Vector lnl (lrl.x - cos (theta) * xAdder,
@@ -224,10 +242,10 @@ void PointToPointDumbbellHelper::BoundingBox (double ulx, double uly, // Upper l
             }
         }
       Ptr<Node> rn = GetRight (r);
-      loc = rn->GetObject<NodeLocation> ();
+      loc = rn->GetObject<CanvasLocation> ();
       if (loc == 0)
         {
-          loc = CreateObject<NodeLocation> ();
+          loc = CreateObject<CanvasLocation> ();
           rn->AggregateObject (loc);
         }
       Vector rnl (rrl.x + cos (theta) * xAdder, // Right node location

@@ -25,13 +25,13 @@
  * Authors: Elena Buchatskaia <borovkovaes@iitp.ru>
  *          Pavel Boyko <boyko@iitp.ru>
  */
-#include "id-cache.h"
+#include "aodv-id-cache.h"
 #include "ns3/test.h"
 #include <algorithm>
 
 namespace ns3
 {
-namespace dpd
+namespace aodv
 {
 bool
 IdCache::IsDuplicate (Ipv4Address addr, uint32_t id)

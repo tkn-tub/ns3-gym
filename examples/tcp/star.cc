@@ -51,52 +51,24 @@ main (int argc, char *argv[])
   //
   // Default number of nodes in the star.  Overridable by command line argument.
   //
-  uint32_t nNodes = 9;
+  uint32_t nSpokes = 8;
 
   CommandLine cmd;
-  cmd.AddValue("nNodes", "Number of nodes to place in the star", nNodes);
+  cmd.AddValue("nSpokes", "Number of nodes to place in the star", nSpokes);
   cmd.Parse (argc, argv);
 
-  NS_LOG_INFO ("Create nodes.");
-  NodeContainer hubNode;
-  NodeContainer spokeNodes;
-  hubNode.Create (1);
-  Ptr<Node> hub = hubNode.Get (0);
-  spokeNodes.Create (nNodes - 1);
-
-  NS_LOG_INFO ("Install internet stack on all nodes.");
-  InternetStackHelper internet;
-  internet.Install (NodeContainer (hubNode, spokeNodes));
-
+  NS_LOG_INFO ("Build star topology.");
   PointToPointHelper pointToPoint;
   pointToPoint.SetDeviceAttribute ("DataRate", StringValue ("5Mbps"));
   pointToPoint.SetChannelAttribute ("Delay", StringValue ("2ms"));
+  PointToPointStarHelper star (nSpokes, pointToPoint);
 
-  NS_LOG_INFO ("Build star topology.");
-  NetDeviceContainer hubDevices, spokeDevices;
-  pointToPoint.InstallStar (hubNode.Get (0), spokeNodes, hubDevices, spokeDevices);
+  NS_LOG_INFO ("Install internet stack on all nodes.");
+  InternetStackHelper internet;
+  star.InstallStack (internet);
 
   NS_LOG_INFO ("Assign IP Addresses.");
-  Ipv4AddressHelper address;
-
-  //
-  // Assign IPv4 interfaces and IP addresses to the devices we previously
-  // created.  Keep track of the resulting addresses, one for the addresses
-  // of the hub node, and one for addresses on the spoke nodes.  Despite the
-  // name of the class, what is visible to clients is really the address.
-  //
-  Ipv4InterfaceContainer hubAddresses;
-  Ipv4InterfaceContainer spokeAddresses;
-
-  for(uint32_t i = 0; i < spokeNodes.GetN (); ++i)
-  {
-    std::ostringstream subnet;
-    subnet << "10.1.1." << (i << 2);
-    NS_LOG_INFO ("Assign IP Addresses for point-to-point subnet " << subnet.str ());
-    address.SetBase (subnet.str ().c_str (), "255.255.255.252");
-    hubAddresses.Add (address.Assign (hubDevices.Get (i)));
-    spokeAddresses.Add (address.Assign (spokeDevices.Get (i)));
-  }
+  star.AssignIpv4Addresses (Ipv4AddressHelper ("10.1.1.0", "255.255.255.0"));
 
   NS_LOG_INFO ("Create applications.");
   //
@@ -105,7 +77,7 @@ main (int argc, char *argv[])
   uint16_t port = 50000;
   Address hubLocalAddress (InetSocketAddress (Ipv4Address::GetAny (), port));
   PacketSinkHelper packetSinkHelper ("ns3::TcpSocketFactory", hubLocalAddress);
-  ApplicationContainer hubApp = packetSinkHelper.Install (hubNode);
+  ApplicationContainer hubApp = packetSinkHelper.Install (star.GetHub ());
   hubApp.Start (Seconds (1.0));
   hubApp.Stop (Seconds (10.0));
 
@@ -118,11 +90,11 @@ main (int argc, char *argv[])
 
   ApplicationContainer spokeApps;
 
-  for (uint32_t i = 0; i < spokeNodes.GetN (); ++i)
+  for (uint32_t i = 0; i < star.SpokeCount (); ++i)
     {
-      AddressValue remoteAddress (InetSocketAddress (hubAddresses.GetAddress (i), port));
+      AddressValue remoteAddress (InetSocketAddress (star.GetHubIpv4Address (i), port));
       onOffHelper.SetAttribute ("Remote", remoteAddress);
-      spokeApps.Add (onOffHelper.Install (spokeNodes.Get (i)));
+      spokeApps.Add (onOffHelper.Install (star.GetSpoke (i)));
   }
   spokeApps.Start (Seconds (1.0));
   spokeApps.Stop (Seconds (10.0));

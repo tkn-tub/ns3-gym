@@ -8,7 +8,7 @@ from pybindgen.gccxmlparser import ModuleParser, PygenClassifier, PygenSection, 
 from pybindgen.typehandlers.codesink import FileCodeSink
 from pygccxml.declarations import templates
 from pygccxml.declarations.class_declaration import class_t
-from pygccxml.declarations.calldef import free_function_t, member_function_t, constructor_t
+from pygccxml.declarations.calldef import free_function_t, member_function_t, constructor_t, calldef_t
 
 
 ## we need the smart pointer type transformation to be active even
@@ -161,6 +161,13 @@ def pre_scan_hook(dummy_module_parser,
             and pygccxml_definition.name == 'Run':
         global_annotations['ignore'] = True
 
+    ## http://www.gccxml.org/Bug/view.php?id=9915
+    if isinstance(pygccxml_definition, calldef_t):
+        for arg in pygccxml_definition.arguments:
+            if arg.default_value is None:
+                continue
+            if "ns3::MilliSeconds( )" == arg.default_value:
+                arg.default_value = "ns3::MilliSeconds(0)"
 
     ## classes
     if isinstance(pygccxml_definition, class_t):
@@ -231,8 +238,9 @@ def scan_callback_classes(module_parser, callback_classes_file):
 
 
 class MyPygenClassifier(PygenClassifier):
-    def __init__(self, headers_map):
+    def __init__(self, headers_map, section_precendences):
         self.headers_map = headers_map
+        self.section_precendences = section_precendences
 
     def classify(self, pygccxml_definition):
         name = os.path.basename(pygccxml_definition.location.file_name)
@@ -240,6 +248,11 @@ class MyPygenClassifier(PygenClassifier):
             return self.headers_map[name]
         except KeyError:
             return '__main__'
+
+    def get_section_precedence(self, section_name):
+        if section_name == '__main__':
+            return -1
+        return self.section_precendences[section_name]
 
 
 def ns3_module_scan(top_builddir, pygen_file_name, everything_h, cflags):
@@ -257,13 +270,15 @@ def ns3_module_scan(top_builddir, pygen_file_name, everything_h, cflags):
 
     sections = [PygenSection('__main__', FileCodeSink(open(pygen_file_name, "wt")))]
     headers_map = {} # header_name -> section_name
-    for ns3_module in sorted_ns3_modules:
+    section_precendences = {} # section_name -> precedence
+    for prec, ns3_module in enumerate(sorted_ns3_modules):
         section_name = "ns3_module_%s" % ns3_module.replace('-', '_')
         file_name = os.path.join(os.path.dirname(pygen_file_name), "%s.py" % section_name)
         sections.append(PygenSection(section_name, FileCodeSink(open(file_name, "wt")),
                                      section_name + "__local"))
         for header in ns3_modules[ns3_module][1]:
             headers_map[header] = section_name
+        section_precendences[section_name] = prec
 
     module_parser = ModuleParser('ns3', 'ns3')
 
@@ -283,7 +298,7 @@ def ns3_module_scan(top_builddir, pygen_file_name, everything_h, cflags):
                              None, whitelist_paths=[top_builddir, os.path.dirname(everything_h)],
                              #includes=['"ns3/everything.h"'],
                              pygen_sink=sections,
-                             pygen_classifier=MyPygenClassifier(headers_map),
+                             pygen_classifier=MyPygenClassifier(headers_map, section_precendences),
                              gccxml_options=gccxml_options)
     module_parser.scan_types()
 

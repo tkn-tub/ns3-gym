@@ -18,37 +18,39 @@
  * Author: George Riley<riley@ece.gatech.edu>
  */
 
-#include "node-location.h"
+#include "canvas-location.h"
 
 namespace ns3 {
 
 TypeId 
-NodeLocation::GetTypeId (void)
+CanvasLocation::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::NodeLocation")
+  static TypeId tid = TypeId ("ns3::CanvasLocation")
     .SetParent<Object> ()
-    .AddAttribute ("Position", "The current position of the mobility model.",
+    .AddAttribute ("Location", "The current location on the canvas.",
                    TypeId::ATTR_SET | TypeId::ATTR_GET,
                    VectorValue (Vector (0.0, 0.0, 0.0)),
-                   MakeVectorAccessor (&NodeLocation::SetLocation,
-                                        &NodeLocation::GetLocation),
+                   MakeVectorAccessor (&CanvasLocation::SetLocation,
+                                        &CanvasLocation::GetLocation),
                    MakeVectorChecker ())
     ;
   return tid;
 }
 
-NodeLocation::NodeLocation ()
+CanvasLocation::CanvasLocation ()
 {}
 
-NodeLocation::~NodeLocation ()
+CanvasLocation::~CanvasLocation ()
 {}
 
-Vector NodeLocation::GetLocation (void) const
+Vector 
+CanvasLocation::GetLocation (void) const
 {
   return m_location;
 }
 
-void NodeLocation::SetLocation (const Vector &location)
+void 
+CanvasLocation::SetLocation (const Vector &location)
 {
   m_location = location;
 }

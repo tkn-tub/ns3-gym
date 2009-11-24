@@ -216,6 +216,7 @@ public:
 
 protected:
   void ConfigureDcf (Ptr<Dcf> dcf, uint32_t cwmin, uint32_t cwmax, enum AccessClass ac);
+  void ConfigureCCHDcf (Ptr<Dcf> dcf, uint32_t cwmin, uint32_t cwmax, enum AccessClass ac);
 private:
   static Time GetDefaultMaxPropagationDelay (void);
   static Time GetDefaultSlot (void);
@@ -240,6 +241,8 @@ private:
   void Configure80211b (void);
   void Configure80211_10Mhz (void);
   void Configure80211_5Mhz ();
+  void Configure80211p_CCH (void);
+  void Configure80211p_SCH (void);
 
   /**
    * The trace source fired when packets come into the "top" of the device

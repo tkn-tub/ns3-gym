@@ -41,37 +41,6 @@ class GlobalRouteManager
 {
 public:
 /**
- * @brief Build a routing database and initialize the routing tables of
- * the nodes in the simulation.  Makes all nodes in the simulation into
- * routers.
- *
- * All this function does is call the functions
- * BuildGlobalRoutingDatabase () and  InitializeRoutes ().
- *
- * @see BuildGlobalRoutingDatabase ();
- * @see InitializeRoutes ();
- */
-  static void PopulateRoutingTables () NS_DEPRECATED;
-
- /**
-  *@brief Remove all routes that were previously installed in a prior call
- * to either PopulateRoutingTables() or RecomputeRoutingTables(), and 
- * add a new set of routes.  
- * 
- * This method does not change the set of nodes
- * over which GlobalRouting is being used, but it will dynamically update
- * its representation of the global topology before recomputing routes.
- * Users must first call PopulateRoutingTables() and then may subsequently
- * call RecomputeRoutingTables() at any later time in the simulation.
- *
- * @see DeleteGlobalRoutes ();
- * @see BuildGlobalRoutingDatabase ();
- * @see InitializeRoutes ();
- */
- static void RecomputeRoutingTables () NS_DEPRECATED;
-
-public:
-/**
  * @brief Allocate a 32-bit router ID from monotonically increasing counter.
  */
   static uint32_t AllocateRouterId ();
