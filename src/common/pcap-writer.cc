@@ -333,7 +333,7 @@ void PcapWriter::WriteWifiMonitorPacket(Ptr<const Packet> packet, uint16_t chann
       Write32(isTx ? 1 : 0);
 
       Write32(PRISM_DID_FRMLEN);
-      Write16(PRISM_STATUS_ABSENT);
+      Write16(PRISM_STATUS_PRESENT);
       Write16(PRISM_ITEM_LENGTH); 
       Write32(packet->GetSize ());    
       
