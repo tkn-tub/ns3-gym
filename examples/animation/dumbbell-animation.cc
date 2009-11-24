@@ -22,7 +22,6 @@
 #include "ns3/simulator-module.h"
 #include "ns3/node-module.h"
 #include "ns3/helper-module.h"
-#include "ns3/net-anim-module.h"
 
 using namespace ns3;
 
@@ -68,9 +67,9 @@ int main (int argc, char *argv[])
   d.InstallStack (stack);
 
   // Assign IP Addresses
-  d.AssignAddresses(Ipv4AddressHelper("10.1.1.0", "255.255.255.0"),
-                    Ipv4AddressHelper("10.2.1.0", "255.255.255.0"),
-                    Ipv4AddressHelper("10.3.1.0", "255.255.255.0"));
+  d.AssignIpv4Addresses (Ipv4AddressHelper ("10.1.1.0", "255.255.255.0"),
+                    Ipv4AddressHelper ("10.2.1.0", "255.255.255.0"),
+                    Ipv4AddressHelper ("10.3.1.0", "255.255.255.0"));
   
   // Install on/off app on all right side nodes
   OnOffHelper clientHelper ("ns3::UdpSocketFactory", Address ());
@@ -80,31 +79,31 @@ int main (int argc, char *argv[])
     ("OffTime", RandomVariableValue (UniformVariable (0, 1)));
   ApplicationContainer clientApps;
 
-  for (uint32_t i = 0; i < d.RightCount(); ++i)
+  for (uint32_t i = 0; i < d.RightCount (); ++i)
     {
       // Create an on/off app sending packets to the same leaf right side
-      AddressValue remoteAddress(InetSocketAddress(d.GetLeftAddress(i), 1000));
-      clientHelper.SetAttribute("Remote", remoteAddress);
-      clientApps.Add(clientHelper.Install(d.GetRight(i)));
+      AddressValue remoteAddress (InetSocketAddress (d.GetLeftIpv4Address (i), 1000));
+      clientHelper.SetAttribute ("Remote", remoteAddress);
+      clientApps.Add(clientHelper.Install (d.GetRight (i)));
     }
 
   clientApps.Start (Seconds (0.0));
   clientApps.Stop (Seconds (10.0));
 
   // Set the bounding box for animation
-  d.BoundingBox(1, 1, 10, 10);
+  d.BoundingBox (1, 1, 10, 10);
 
   // Create the animation object and configure for specified output
   AnimationInterface anim;
   if (port > 0)
     {
-      anim.SetServerPort(port);
+      anim.SetServerPort (port);
     }
-  else if (!animFile.empty())
+  else if (!animFile.empty ())
     {
-      anim.SetOutputFile(animFile);
+      anim.SetOutputFile (animFile);
     }
-  anim.StartAnimation();
+  anim.StartAnimation ();
   
   // Set up the acutal simulation
   Ipv4GlobalRoutingHelper::PopulateRoutingTables ();

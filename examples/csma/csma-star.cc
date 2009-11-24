@@ -58,26 +58,17 @@ main (int argc, char *argv[])
   //
   // Default number of nodes in the star.  Overridable by command line argument.
   //
-  uint32_t nNodes = 7;
+  uint32_t nSpokes = 7;
 
   CommandLine cmd;
-  cmd.AddValue("nNodes", "Number of nodes to place in the star", nNodes);
+  cmd.AddValue("nSpokes", "Number of spoke nodes to place in the star", nSpokes);
   cmd.Parse (argc, argv);
 
-  NS_LOG_INFO ("Create nodes.");
-  NodeContainer hubNode;
-  NodeContainer spokeNodes;
-  hubNode.Create (1);
-  Ptr<Node> hub = hubNode.Get (0);
-  spokeNodes.Create (nNodes - 1);
-
+  NS_LOG_INFO ("Build star topology.");
   CsmaHelper csma;
   csma.SetChannelAttribute ("DataRate", StringValue ("100Mbps"));
   csma.SetChannelAttribute ("Delay", StringValue ("1ms"));
-
-  NS_LOG_INFO ("Build star topology.");
-  NetDeviceContainer hubDevices, spokeDevices;
-  csma.InstallStar (hubNode.Get (0), spokeNodes, hubDevices, spokeDevices);
+  CsmaStarHelper star (nSpokes, csma);
 
   NodeContainer fillNodes;
 
@@ -89,12 +80,11 @@ main (int argc, char *argv[])
   NetDeviceContainer fillDevices;
 
   uint32_t nFill = 14;
-  for (uint32_t i = 0; i < spokeDevices.GetN (); ++i)
+  for (uint32_t i = 0; i < star.GetSpokeDevices ().GetN (); ++i)
     {
-      Ptr<Channel> channel = spokeDevices.Get (i)->GetChannel ();
+      Ptr<Channel> channel = star.GetSpokeDevices ().Get (i)->GetChannel ();
       Ptr<CsmaChannel> csmaChannel = channel->GetObject<CsmaChannel> ();
       NodeContainer newNodes;
-      NetDeviceContainer newDevices;
       newNodes.Create (nFill);
       fillNodes.Add (newNodes);
       fillDevices.Add (csma.Install (newNodes, csmaChannel));
@@ -102,39 +92,30 @@ main (int argc, char *argv[])
 
   NS_LOG_INFO ("Install internet stack on all nodes.");
   InternetStackHelper internet;
-  internet.Install (NodeContainer (hubNode, spokeNodes, fillNodes));
+  star.InstallStack (internet);
+  internet.Install (fillNodes);
 
   NS_LOG_INFO ("Assign IP Addresses.");
+  star.AssignIpv4Addresses (Ipv4AddressHelper ("10.1.0.0", "255.255.255.0"));
+
+  //
+  // We assigned addresses to the logical hub and the first "drop" of the 
+  // CSMA network that acts as the spoke, but we also have a number of fill
+  // devices (nFill) also hanging off the CSMA network.  We have got to 
+  // assign addresses to them as well.  We put all of the fill devices into
+  // a single device container, so the first nFill devices are associated
+  // with the channel connected to spokeDevices.Get (0), the second nFill
+  // devices afe associated with the channel connected to spokeDevices.Get (1)
+  // etc.
+  //
   Ipv4AddressHelper address;
-
-  //
-  // Assign IPv4 interfaces and IP addresses to the devices we previously
-  // created.  Keep track of the resulting addresses, one for the addresses
-  // of the hub node, and one for addresses on the spoke nodes.  Despite the
-  // name of the class (Ipv4InterfaceContainer), what is visible to clients 
-  // is really the address not the interface.
-  //
-  Ipv4InterfaceContainer hubAddresses;
-  Ipv4InterfaceContainer spokeAddresses;
-
-  for(uint32_t i = 0; i < spokeNodes.GetN (); ++i)
+  for(uint32_t i = 0; i < star.SpokeCount (); ++i)
   {
     std::ostringstream subnet;
     subnet << "10.1." << i << ".0";
     NS_LOG_INFO ("Assign IP Addresses for CSMA subnet " << subnet.str ());
-    address.SetBase (subnet.str ().c_str (), "255.255.255.0");
-    hubAddresses.Add (address.Assign (hubDevices.Get (i)));
-    spokeAddresses.Add (address.Assign (spokeDevices.Get (i)));
-    //
-    // We assigned addresses to the logical hub and the first "drop" of the 
-    // CSMA network that acts as the spoke, but we also have a number of fill
-    // devices (nFill) also hanging off the CSMA network.  We have got to 
-    // assign addresses to them as well.  We put all of the fill devices into
-    // a single device container, so the first nFill devices are associated
-    // with the channel connected to spokeDevices.Get (0), the second nFill
-    // devices afe associated with the channel connected to spokeDevices.Get (1)
-    // etc.
-    //
+    address.SetBase (subnet.str ().c_str (), "255.255.255.0", "0.0.0.3");
+
     for (uint32_t j = 0; j < nFill; ++j)
       {
         address.Assign (fillDevices.Get (i * nFill + j));
@@ -148,7 +129,7 @@ main (int argc, char *argv[])
   uint16_t port = 50000;
   Address hubLocalAddress (InetSocketAddress (Ipv4Address::GetAny (), port));
   PacketSinkHelper packetSinkHelper ("ns3::TcpSocketFactory", hubLocalAddress);
-  ApplicationContainer hubApp = packetSinkHelper.Install (hubNode);
+  ApplicationContainer hubApp = packetSinkHelper.Install (star.GetHub ());
   hubApp.Start (Seconds (1.0));
   hubApp.Stop (Seconds (10.0));
 
@@ -161,11 +142,11 @@ main (int argc, char *argv[])
 
   ApplicationContainer spokeApps;
 
-  for (uint32_t i = 0; i < spokeNodes.GetN (); ++i)
+  for (uint32_t i = 0; i < star.SpokeCount (); ++i)
     {
-      AddressValue remoteAddress (InetSocketAddress (hubAddresses.GetAddress (i), port));
+      AddressValue remoteAddress (InetSocketAddress (star.GetHubIpv4Address (i), port));
       onOffHelper.SetAttribute ("Remote", remoteAddress);
-      spokeApps.Add (onOffHelper.Install (spokeNodes.Get (i)));
+      spokeApps.Add (onOffHelper.Install (star.GetSpoke (i)));
     }
 
   spokeApps.Start (Seconds (1.0));
@@ -183,7 +164,7 @@ main (int argc, char *argv[])
 
   for (uint32_t i = 0; i < fillNodes.GetN (); ++i)
     {
-      AddressValue remoteAddress (InetSocketAddress (hubAddresses.GetAddress (i / nFill), port));
+      AddressValue remoteAddress (InetSocketAddress (star.GetHubIpv4Address (i / nFill), port));
       onOffHelper.SetAttribute ("Remote", remoteAddress);
       fillApps.Add (onOffHelper.Install (fillNodes.Get (i)));
     }

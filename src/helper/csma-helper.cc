@@ -269,27 +269,6 @@ CsmaHelper::InstallPriv (Ptr<Node> node, Ptr<CsmaChannel> channel) const
 }
 
 void 
-CsmaHelper::InstallStar (Ptr<Node> hub, NodeContainer spokes, 
-                         NetDeviceContainer& hubDevices, NetDeviceContainer& spokeDevices)
-{
-  for (uint32_t i = 0; i < spokes.GetN (); ++i)
-    {
-      NodeContainer nodes (hub, spokes.Get (i));
-      NetDeviceContainer nd = Install (nodes);
-      hubDevices.Add (nd.Get (0));
-      spokeDevices.Add (nd.Get (1));
-    }
-}
-
-void 
-CsmaHelper::InstallStar (std::string hubName, NodeContainer spokes, 
-                         NetDeviceContainer& hubDevices, NetDeviceContainer& spokeDevices)
-{
-  Ptr<Node> hub = Names::Find<Node> (hubName);
-  InstallStar (hub, spokes, hubDevices, spokeDevices);
-}
-
-void 
 CsmaHelper::SniffEvent (Ptr<PcapWriter> writer, Ptr<const Packet> packet)
 {
   writer->WritePacket (packet);

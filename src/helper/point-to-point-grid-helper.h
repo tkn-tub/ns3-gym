@@ -16,8 +16,8 @@
  * Author: Josh Pelkey <jpelkey@gatech.edu>
  */
 
-#ifndef __POINT_TO_POINT_GRID_HELPER_H__
-#define __POINT_TO_POINT_GRID_HELPER_H__
+#ifndef POINT_TO_POINT_GRID_HELPER_H
+#define POINT_TO_POINT_GRID_HELPER_H
 
 #include <vector>
 
@@ -33,12 +33,13 @@ class PointToPointGridHelper
 {
   public: 
     PointToPointGridHelper (uint32_t nRows, uint32_t nCols, PointToPointHelper pointToPoint);
+    ~PointToPointGridHelper ();
 
     Ptr<Node> GetNode (uint32_t row, uint32_t col);
-    Ipv4Address GetAddress (uint32_t row, uint32_t col);
+    Ipv4Address GetIpv4Address (uint32_t row, uint32_t col);
 
     void InstallStack (InternetStackHelper stack);
-    void AssignAddresses (Ipv4AddressHelper rowIp, Ipv4AddressHelper colIp);
+    void AssignIpv4Addresses (Ipv4AddressHelper rowIp, Ipv4AddressHelper colIp);
     void BoundingBox (double ulx, double uly, double lrx, double lry);
 
   private:
@@ -54,4 +55,4 @@ class PointToPointGridHelper
 
 } // namespace ns3
       
-#endif /* GRID_HELPER_H */
+#endif /* POINT_TO_POINT_GRID_HELPER_H */

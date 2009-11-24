@@ -36,6 +36,16 @@ New user-visible features
 
   b) Ad hoc On-Demand Distance Vector (AODV) routing model according to RFC 3561. 
 
+  c) Net-anim:
+     - interface for animation of point-to-point links.
+     - dumbbell, grid, and star examples in examples/animation
+
+  d) Topology Helper classes:
+     - PointToPointDumbbellHelper
+     - PointToPointGridHelper
+     - PointToPointStarHelper
+     - CsmaStarHelper
+
 API changes from ns-3.6
 -----------------------
 API changes for this release are documented in the file CHANGES.html. 

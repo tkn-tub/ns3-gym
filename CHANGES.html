@@ -64,6 +64,12 @@ can override this virtual method, perform their adhoc setup, and then, must chai
 <li><b>Ipv4::IsDestinationAddress (Ipv4Address address, uint32_t iif)</b> Method added to support checks of whether a destination address should be accepted 
 as one of the host's own addresses.  RFC 1122 Strong/Weak end system behavior can be changed with a new attribute (WeakEsModel) in class Ipv4.  </li>
 
+<li><b>Net-anim interface</b>: Provides an inteface to net-anim, a network animator for point-to-point 
+links in ns-3.  The interface generates a custom trace file for use with the NetAnim program.
+
+<li><b>Topology Helpers</b>: New topology helpers have been introduced including PointToPointStarHelper, 
+PointToPointDumbbellHelper, PointToPointGridHelper, and CsmaStarHelper.
+
 </ul>
 
 <h2>Changes to existing API:</h2>
@@ -128,7 +134,37 @@ Simulator::SetScheduler (sched);
 </pre>
 
 <li> Extensions to IPv4 <b>Ping</b> application: verbose output and the ability to configure different ping 
-sizes and time intervals (via new attributes)</li>
+sizes and time intervals (via new attributes)
+
+<li><b>Topology Helpers</b>: Previously, topology helpers such as a point-to-point star existed in the 
+PointToPointHelper class in the form of a method (ex: PointToPointHelper::InstallStar).  These topology 
+helpers have been pulled out of the specific helper classes and created as separate classes.  Several 
+different topology helper classes now exist including PointToPointStarHelper, PointToPointGridHelper, 
+PointToPointDumbbellHelper, and CsmaStarHelper.  For example, a user wishes to create a 
+point-to-point star network:<br>
+Before:
+<pre>
+NodeContainer hubNode;
+NodeContainer spokeNodes;
+hubNode.Create (1);
+Ptr<Node> hub = hubNode.Get (0);
+spokeNodes.Create (nNodes - 1);
+
+PointToPointHelper pointToPoint;
+pointToPoint.SetDeviceAttribute ("DataRate", StringValue ("5Mbps"));
+pointToPoint.SetChannelAttribute ("Delay", StringValue ("2ms"));
+NetDeviceContainer hubDevices, spokeDevices;
+pointToPoint.InstallStar (hubNode.Get (0), spokeNodes, hubDevices, spokeDevices);
+</pre>
+After:
+<pre>
+PointToPointHelper pointToPoint;
+pointToPoint.SetDeviceAttribute ("DataRate", StringValue ("5Mbps"));
+pointToPoint.SetChannelAttribute ("Delay", StringValue ("2ms"));
+PointToPointStarHelper star (nSpokes, pointToPoint);
+</pre>
+
+</li>
 
 </ul>
 

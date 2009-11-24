@@ -34,7 +34,7 @@
 
 using namespace ns3;
 
-NS_LOG_COMPONENT_DEFINE ("Star");
+NS_LOG_COMPONENT_DEFINE ("StarAnimation");
 
 int 
 main (int argc, char *argv[])
@@ -52,9 +52,14 @@ main (int argc, char *argv[])
   // Default number of nodes in the star.  Overridable by command line argument.
   //
   uint32_t nSpokes = 8;
+  uint32_t animPort = 0;
+  std::string animFile;
 
   CommandLine cmd;
-  cmd.AddValue("nSpokes", "Number of nodes to place in the star", nSpokes);
+  cmd.AddValue("nSpokes", "Number of spoke nodes to place in the star", nSpokes);
+  cmd.AddValue ("animPort",      "Port Number for Remote Animation", animPort);
+  cmd.AddValue ("animFile",  "File Name for Animation Output", animFile);
+
   cmd.Parse (argc, argv);
 
   NS_LOG_INFO ("Build star topology.");
@@ -105,11 +110,20 @@ main (int argc, char *argv[])
   //
   Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
 
-  NS_LOG_INFO ("Enable pcap tracing.");
-  //
-  // Do pcap tracing on all point-to-point devices on all nodes.
-  //
-  PointToPointHelper::EnablePcapAll ("star");
+  // Set the bounding box for animation
+  star.BoundingBox (1, 1, 10, 10);
+  
+  // Create the animation object and configure for specified output
+  AnimationInterface anim;
+  if (animPort > 0)
+    {
+      anim.SetServerPort (animPort);
+    }
+  else if (!animFile.empty ())
+    {
+      anim.SetOutputFile (animFile);
+    }
+  anim.StartAnimation ();
 
   NS_LOG_INFO ("Run Simulation.");
   Simulator::Run ();

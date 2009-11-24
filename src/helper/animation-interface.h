@@ -18,8 +18,8 @@
 
 // Interface between ns3 and the network animator
 
-#ifndef __ANIMATION_INTERFACE__H__
-#define __ANIMATION_INTERFACE__H__
+#ifndef ANIMATION_INTERFACE__H
+#define ANIMATION_INTERFACE__H
 
 #include <string>
 
@@ -47,6 +47,10 @@ public:
  */
   AnimationInterface ();
 /**
+ * @brief Destructor for the animator interface.
+ */
+  ~AnimationInterface ();
+/**
  * @brief Specify that animation commands are to be written
  * to the specified output file.
  *
@@ -71,18 +75,6 @@ public:
  * @returns true if connection created, false if bind failed.
  */
   bool SetServerPort (uint16_t port);
-
-/**
- * @brief Specify that animation window is to be created as part
- * of the ns3 process.
- *
- * This call is used to set the ns3 animator internal to the
- * current process.  This will fail if the ns3 library was built
- * without the QT4 developer packages.
- *
- * @returns true if animation started, false if failed.
- */
-  bool SetInternalAnimation ();
 
 /**
  * @brief Writes the topology information and sets up the appropriate
