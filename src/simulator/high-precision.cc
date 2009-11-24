@@ -38,27 +38,5 @@ HighPrecision Abs (HighPrecision const &value)
       return value;
     }
 }
-HighPrecision Max (HighPrecision const &a, HighPrecision const &b)
-{
-  if (a.Compare (b) >= 0)
-    {
-      return a;
-    }
-  else
-    {
-      return b;
-    }
-}
-HighPrecision Min (HighPrecision const &a, HighPrecision const &b)
-{
-  if (a.Compare (b) <= 0)
-    {
-      return a;
-    }
-  else
-    {
-      return b;
-    }
-}
 
 }; /* namespace ns3 */
