@@ -114,6 +114,7 @@ example_tests = [
     ("routing/simple-point-to-point-olsr", "True", "True"),
     ("routing/simple-routing-ping6", "True", "True"),
     ("routing/static-routing-slash32", "True", "True"),
+    ("routing/aodv", "True", "True"),
 
     ("stats/wifi-example-sim", "True", "True"),
 

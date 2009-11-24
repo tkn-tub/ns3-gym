@@ -104,6 +104,7 @@ public:
 
 private:
   virtual void DoDispose (void);
+  virtual void DoStart (void);
   void ForwardUp (Ptr<Packet> packet, Mac48Address from, Mac48Address to);
   void LinkUp (void);
   void LinkDown (void);

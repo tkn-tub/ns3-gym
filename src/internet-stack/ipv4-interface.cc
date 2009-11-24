@@ -42,7 +42,8 @@ Ipv4Interface::GetTypeId (void)
     .AddAttribute ("ArpCache",
                    "The arp cache for this ipv4 interface",
                    PointerValue (0),
-                   MakePointerAccessor (&Ipv4Interface::m_cache),
+                   MakePointerAccessor (&Ipv4Interface::SetArpCache, 
+                                        &Ipv4Interface::GetArpCache),
                    MakePointerChecker<ArpCache> ())
     ;
     ;
@@ -126,6 +127,18 @@ Ipv4Interface::GetMetric (void) const
 {
   NS_LOG_FUNCTION_NOARGS ();
   return m_metric;
+}
+
+void
+Ipv4Interface::SetArpCache (Ptr<ArpCache> a)
+{
+  m_cache = a;
+}
+
+Ptr<ArpCache>
+Ipv4Interface::GetArpCache () const
+{
+  return m_cache;
 }
 
 /**

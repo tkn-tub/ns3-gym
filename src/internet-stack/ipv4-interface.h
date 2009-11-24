@@ -56,12 +56,17 @@ public:
 
   void SetNode (Ptr<Node> node); 
   void SetDevice (Ptr<NetDevice> device);
+  void SetArpCache (Ptr<ArpCache>);
 
   /**
    * \returns the underlying NetDevice. This method cannot return zero.
    */
   Ptr<NetDevice> GetDevice (void) const;
-
+  /**
+   * \return ARP cache used by this interface
+   */
+  Ptr<ArpCache> GetArpCache () const;
+  
   /**
    * \param metric configured routing metric (cost) of this interface
    *

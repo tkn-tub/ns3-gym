@@ -35,9 +35,9 @@ TypeId Ipv6OptionDemux::GetTypeId ()
   static TypeId tid = TypeId ("ns3::Ipv6OptionDemux")
     .SetParent<Object> ()
     .AddAttribute ("Options", "The set of IPv6 options registered with this demux.",
-        ObjectVectorValue (),
-        MakeObjectVectorAccessor (&Ipv6OptionDemux::m_options),
-        MakeObjectVectorChecker<Ipv6Option> ())
+                   ObjectVectorValue (),
+                   MakeObjectVectorAccessor (&Ipv6OptionDemux::m_options),
+                   MakeObjectVectorChecker<Ipv6Option> ())
     ;
   return tid;
 }
@@ -53,10 +53,10 @@ Ipv6OptionDemux::~Ipv6OptionDemux ()
 void Ipv6OptionDemux::DoDispose ()
 {
   for (Ipv6OptionList_t::iterator it = m_options.begin (); it != m_options.end (); it++)
-  {
-    (*it)->Dispose ();
-    *it = 0;
-  }
+    {
+      (*it)->Dispose ();
+      *it = 0;
+    }
   m_options.clear ();
   m_node = 0;
   Object::DoDispose ();
@@ -75,12 +75,12 @@ void Ipv6OptionDemux::Insert (Ptr<Ipv6Option> option)
 Ptr<Ipv6Option> Ipv6OptionDemux::GetOption (int optionNumber)
 {
   for (Ipv6OptionList_t::iterator i = m_options.begin (); i != m_options.end (); ++i)
-  {
-    if ((*i)->GetOptionNumber () == optionNumber)
     {
-      return *i;
+      if ((*i)->GetOptionNumber () == optionNumber)
+        {
+          return *i;
+        }
     }
-  }
   return 0;
 }
 
