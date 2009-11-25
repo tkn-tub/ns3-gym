@@ -262,7 +262,11 @@ def ns3_module_scan(top_builddir, pygen_file_name, everything_h, cflags):
     ## do a topological sort on the modules graph
     from topsort import topsort
     graph = []
-    for ns3_module_name, (ns3_module_deps, dummy) in ns3_modules.iteritems():
+    module_names = ns3_modules.keys()
+    module_names.sort()
+    for ns3_module_name in module_names:
+        ns3_module_deps = list(ns3_modules[ns3_module_name][0])
+        ns3_module_deps.sort()
         for dep in ns3_module_deps:
             graph.append((dep, ns3_module_name))
     sorted_ns3_modules = topsort(graph)
