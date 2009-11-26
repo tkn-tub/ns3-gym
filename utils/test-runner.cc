@@ -117,6 +117,7 @@ main (int argc, char *argv[])
   if (doHelp)
     {
       std::cout << "  --basedir=dir:          Set the base directory (where to find src) to \"dir\"" << std::endl;
+      std::cout << "  --tempdir=dir:          Set the temporary directory (where to find data files) to \"dir\"" << std::endl;
       std::cout << "  --constrain=test-type:  Constrain checks to test suites of type \"test-type\"" << std::endl;
       std::cout << "  --help:                 Print this message" << std::endl;
       std::cout << "  --kinds:                List all of the available kinds of tests" << std::endl;
