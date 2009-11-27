@@ -9,6 +9,8 @@ def register_types(module):
     module.add_enum('WifiPreamble', ['WIFI_PREAMBLE_LONG', 'WIFI_PREAMBLE_SHORT'])
     ## wifi-phy-standard.h: ns3::WifiPhyStandard [enumeration]
     module.add_enum('WifiPhyStandard', ['WIFI_PHY_STANDARD_80211a', 'WIFI_PHY_STANDARD_80211b', 'WIFI_PHY_STANDARD_80211_10Mhz', 'WIFI_PHY_STANDARD_80211_5Mhz', 'WIFI_PHY_STANDARD_holland', 'WIFI_PHY_STANDARD_80211p_CCH', 'WIFI_PHY_STANDARD_80211p_SCH', 'WIFI_PHY_UNKNOWN'])
+    ## qos-tag.h: ns3::UserPriority [enumeration]
+    module.add_enum('UserPriority', ['UP_BK', 'UP_BE', 'UP_EE', 'UP_CL', 'UP_VI', 'UP_VO', 'UP_NC'])
     ## qos-utils.h: ns3::AccessClass [enumeration]
     module.add_enum('AccessClass', ['AC_VO', 'AC_VI', 'AC_BE', 'AC_BK', 'AC_BE_NQOS', 'AC_UNDEF'])
     ## edca-txop-n.h: ns3::TypeOfStation [enumeration]
@@ -1994,11 +1996,6 @@ def register_Ns3QosTag_methods(root_module, cls):
                    'void', 
                    [param('ns3::TagBuffer', 'i')], 
                    is_virtual=True)
-    ## qos-tag.h: uint8_t ns3::QosTag::Get() const [member function]
-    cls.add_method('Get', 
-                   'uint8_t', 
-                   [], 
-                   is_const=True)
     ## qos-tag.h: ns3::TypeId ns3::QosTag::GetInstanceTypeId() const [member function]
     cls.add_method('GetInstanceTypeId', 
                    'ns3::TypeId', 
@@ -2009,6 +2006,11 @@ def register_Ns3QosTag_methods(root_module, cls):
                    'uint32_t', 
                    [], 
                    is_const=True, is_virtual=True)
+    ## qos-tag.h: uint8_t ns3::QosTag::GetTid() const [member function]
+    cls.add_method('GetTid', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True)
     ## qos-tag.h: static ns3::TypeId ns3::QosTag::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
@@ -2024,10 +2026,14 @@ def register_Ns3QosTag_methods(root_module, cls):
                    'void', 
                    [param('ns3::TagBuffer', 'i')], 
                    is_const=True, is_virtual=True)
-    ## qos-tag.h: void ns3::QosTag::Set(uint8_t tid) [member function]
-    cls.add_method('Set', 
+    ## qos-tag.h: void ns3::QosTag::SetTid(uint8_t tid) [member function]
+    cls.add_method('SetTid', 
                    'void', 
                    [param('uint8_t', 'tid')])
+    ## qos-tag.h: void ns3::QosTag::SetUserPriority(ns3::UserPriority up) [member function]
+    cls.add_method('SetUserPriority', 
+                   'void', 
+                   [param('ns3::UserPriority', 'up')])
     return
 
 def register_Ns3RandomPropagationDelayModel_methods(root_module, cls):

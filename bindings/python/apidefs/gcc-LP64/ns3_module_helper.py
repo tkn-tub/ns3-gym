@@ -3,6 +3,8 @@ from pybindgen import Module, FileCodeSink, param, retval, cppclass, typehandler
 def register_types(module):
     root_module = module.get_root()
     
+    ## animation-interface.h: ns3::AnimationInterface [class]
+    module.add_class('AnimationInterface')
     ## application-container.h: ns3::ApplicationContainer [class]
     module.add_class('ApplicationContainer')
     ## athstats-helper.h: ns3::AthstatsHelper [class]
@@ -11,6 +13,8 @@ def register_types(module):
     module.add_class('BridgeHelper', allow_subclassing=False)
     ## csma-helper.h: ns3::CsmaHelper [class]
     module.add_class('CsmaHelper', allow_subclassing=False)
+    ## csma-star-helper.h: ns3::CsmaStarHelper [class]
+    module.add_class('CsmaStarHelper', allow_subclassing=False)
     ## emu-helper.h: ns3::EmuHelper [class]
     module.add_class('EmuHelper', allow_subclassing=False)
     ## flow-monitor-helper.h: ns3::FlowMonitorHelper [class]
@@ -55,8 +59,14 @@ def register_types(module):
     module.add_class('PacketSocketHelper', allow_subclassing=False)
     ## ping6-helper.h: ns3::Ping6Helper [class]
     module.add_class('Ping6Helper', allow_subclassing=False)
+    ## point-to-point-dumbbell-helper.h: ns3::PointToPointDumbbellHelper [class]
+    module.add_class('PointToPointDumbbellHelper', allow_subclassing=False)
+    ## point-to-point-grid-helper.h: ns3::PointToPointGridHelper [class]
+    module.add_class('PointToPointGridHelper', allow_subclassing=False)
     ## point-to-point-helper.h: ns3::PointToPointHelper [class]
     module.add_class('PointToPointHelper', allow_subclassing=False)
+    ## point-to-point-star-helper.h: ns3::PointToPointStarHelper [class]
+    module.add_class('PointToPointStarHelper', allow_subclassing=False)
     ## tap-bridge-helper.h: ns3::TapBridgeHelper [class]
     module.add_class('TapBridgeHelper', allow_subclassing=False)
     ## udp-echo-helper.h: ns3::UdpEchoClientHelper [class]
@@ -93,6 +103,8 @@ def register_types(module):
     module.add_class('QosWifiMacHelper', allow_subclassing=False, parent=root_module['ns3::WifiMacHelper'])
     ## athstats-helper.h: ns3::AthstatsWifiTraceSink [class]
     module.add_class('AthstatsWifiTraceSink', parent=root_module['ns3::Object'])
+    ## canvas-location.h: ns3::CanvasLocation [class]
+    module.add_class('CanvasLocation', parent=root_module['ns3::Object'])
     ## mesh-stack-installer.h: ns3::MeshStack [class]
     module.add_class('MeshStack', parent=root_module['ns3::Object'])
     ## dot11s-installer.h: ns3::Dot11sStack [class]
@@ -181,10 +193,12 @@ def register_types_ns3_olsr(module):
     
 
 def register_methods(root_module):
+    register_Ns3AnimationInterface_methods(root_module, root_module['ns3::AnimationInterface'])
     register_Ns3ApplicationContainer_methods(root_module, root_module['ns3::ApplicationContainer'])
     register_Ns3AthstatsHelper_methods(root_module, root_module['ns3::AthstatsHelper'])
     register_Ns3BridgeHelper_methods(root_module, root_module['ns3::BridgeHelper'])
     register_Ns3CsmaHelper_methods(root_module, root_module['ns3::CsmaHelper'])
+    register_Ns3CsmaStarHelper_methods(root_module, root_module['ns3::CsmaStarHelper'])
     register_Ns3EmuHelper_methods(root_module, root_module['ns3::EmuHelper'])
     register_Ns3FlowMonitorHelper_methods(root_module, root_module['ns3::FlowMonitorHelper'])
     register_Ns3InternetStackHelper_methods(root_module, root_module['ns3::InternetStackHelper'])
@@ -206,7 +220,10 @@ def register_methods(root_module):
     register_Ns3PacketSinkHelper_methods(root_module, root_module['ns3::PacketSinkHelper'])
     register_Ns3PacketSocketHelper_methods(root_module, root_module['ns3::PacketSocketHelper'])
     register_Ns3Ping6Helper_methods(root_module, root_module['ns3::Ping6Helper'])
+    register_Ns3PointToPointDumbbellHelper_methods(root_module, root_module['ns3::PointToPointDumbbellHelper'])
+    register_Ns3PointToPointGridHelper_methods(root_module, root_module['ns3::PointToPointGridHelper'])
     register_Ns3PointToPointHelper_methods(root_module, root_module['ns3::PointToPointHelper'])
+    register_Ns3PointToPointStarHelper_methods(root_module, root_module['ns3::PointToPointStarHelper'])
     register_Ns3TapBridgeHelper_methods(root_module, root_module['ns3::TapBridgeHelper'])
     register_Ns3UdpEchoClientHelper_methods(root_module, root_module['ns3::UdpEchoClientHelper'])
     register_Ns3UdpEchoServerHelper_methods(root_module, root_module['ns3::UdpEchoServerHelper'])
@@ -224,9 +241,33 @@ def register_methods(root_module):
     register_Ns3NqosWifiMacHelper_methods(root_module, root_module['ns3::NqosWifiMacHelper'])
     register_Ns3QosWifiMacHelper_methods(root_module, root_module['ns3::QosWifiMacHelper'])
     register_Ns3AthstatsWifiTraceSink_methods(root_module, root_module['ns3::AthstatsWifiTraceSink'])
+    register_Ns3CanvasLocation_methods(root_module, root_module['ns3::CanvasLocation'])
     register_Ns3MeshStack_methods(root_module, root_module['ns3::MeshStack'])
     register_Ns3Dot11sStack_methods(root_module, root_module['ns3::Dot11sStack'])
     register_Ns3FlameStack_methods(root_module, root_module['ns3::FlameStack'])
+    return
+
+def register_Ns3AnimationInterface_methods(root_module, cls):
+    ## animation-interface.h: ns3::AnimationInterface::AnimationInterface(ns3::AnimationInterface const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::AnimationInterface const &', 'arg0')])
+    ## animation-interface.h: ns3::AnimationInterface::AnimationInterface() [constructor]
+    cls.add_constructor([])
+    ## animation-interface.h: bool ns3::AnimationInterface::SetOutputFile(std::string const & fn) [member function]
+    cls.add_method('SetOutputFile', 
+                   'bool', 
+                   [param('std::string const &', 'fn')])
+    ## animation-interface.h: bool ns3::AnimationInterface::SetServerPort(uint16_t port) [member function]
+    cls.add_method('SetServerPort', 
+                   'bool', 
+                   [param('uint16_t', 'port')])
+    ## animation-interface.h: void ns3::AnimationInterface::StartAnimation() [member function]
+    cls.add_method('StartAnimation', 
+                   'void', 
+                   [])
+    ## animation-interface.h: void ns3::AnimationInterface::StopAnimation() [member function]
+    cls.add_method('StopAnimation', 
+                   'void', 
+                   [])
     return
 
 def register_Ns3ApplicationContainer_methods(root_module, cls):
@@ -422,14 +463,6 @@ def register_Ns3CsmaHelper_methods(root_module, cls):
                    'ns3::NetDeviceContainer', 
                    [param('ns3::NodeContainer const &', 'c'), param('std::string', 'channelName')], 
                    is_const=True)
-    ## csma-helper.h: void ns3::CsmaHelper::InstallStar(ns3::Ptr<ns3::Node> hub, ns3::NodeContainer spokes, ns3::NetDeviceContainer & hubDevices, ns3::NetDeviceContainer & spokeDevices) [member function]
-    cls.add_method('InstallStar', 
-                   'void', 
-                   [param('ns3::Ptr< ns3::Node >', 'hub'), param('ns3::NodeContainer', 'spokes'), param('ns3::NetDeviceContainer &', 'hubDevices'), param('ns3::NetDeviceContainer &', 'spokeDevices')])
-    ## csma-helper.h: void ns3::CsmaHelper::InstallStar(std::string hubName, ns3::NodeContainer spokes, ns3::NetDeviceContainer & hubDevices, ns3::NetDeviceContainer & spokeDevices) [member function]
-    cls.add_method('InstallStar', 
-                   'void', 
-                   [param('std::string', 'hubName'), param('ns3::NodeContainer', 'spokes'), param('ns3::NetDeviceContainer &', 'hubDevices'), param('ns3::NetDeviceContainer &', 'spokeDevices')])
     ## csma-helper.h: void ns3::CsmaHelper::SetChannelAttribute(std::string n1, ns3::AttributeValue const & v1) [member function]
     cls.add_method('SetChannelAttribute', 
                    'void', 
@@ -442,6 +475,56 @@ def register_Ns3CsmaHelper_methods(root_module, cls):
     cls.add_method('SetQueue', 
                    'void', 
                    [param('std::string', 'type'), param('std::string', 'n1', default_value='""'), param('ns3::AttributeValue const &', 'v1', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n2', default_value='""'), param('ns3::AttributeValue const &', 'v2', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n3', default_value='""'), param('ns3::AttributeValue const &', 'v3', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n4', default_value='""'), param('ns3::AttributeValue const &', 'v4', default_value='ns3::EmptyAttributeValue()')])
+    return
+
+def register_Ns3CsmaStarHelper_methods(root_module, cls):
+    ## csma-star-helper.h: ns3::CsmaStarHelper::CsmaStarHelper(ns3::CsmaStarHelper const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::CsmaStarHelper const &', 'arg0')])
+    ## csma-star-helper.h: ns3::CsmaStarHelper::CsmaStarHelper(uint32_t numSpokes, ns3::CsmaHelper csmaHelper) [constructor]
+    cls.add_constructor([param('uint32_t', 'numSpokes'), param('ns3::CsmaHelper', 'csmaHelper')])
+    ## csma-star-helper.h: void ns3::CsmaStarHelper::AssignIpv4Addresses(ns3::Ipv4AddressHelper address) [member function]
+    cls.add_method('AssignIpv4Addresses', 
+                   'void', 
+                   [param('ns3::Ipv4AddressHelper', 'address')])
+    ## csma-star-helper.h: ns3::Ptr<ns3::Node> ns3::CsmaStarHelper::GetHub() const [member function]
+    cls.add_method('GetHub', 
+                   'ns3::Ptr< ns3::Node >', 
+                   [], 
+                   is_const=True)
+    ## csma-star-helper.h: ns3::NetDeviceContainer ns3::CsmaStarHelper::GetHubDevices() const [member function]
+    cls.add_method('GetHubDevices', 
+                   'ns3::NetDeviceContainer', 
+                   [], 
+                   is_const=True)
+    ## csma-star-helper.h: ns3::Ipv4Address ns3::CsmaStarHelper::GetHubIpv4Address(uint32_t arg0) const [member function]
+    cls.add_method('GetHubIpv4Address', 
+                   'ns3::Ipv4Address', 
+                   [param('uint32_t', 'arg0')], 
+                   is_const=True)
+    ## csma-star-helper.h: ns3::Ptr<ns3::Node> ns3::CsmaStarHelper::GetSpoke(uint32_t arg0) const [member function]
+    cls.add_method('GetSpoke', 
+                   'ns3::Ptr< ns3::Node >', 
+                   [param('uint32_t', 'arg0')], 
+                   is_const=True)
+    ## csma-star-helper.h: ns3::NetDeviceContainer ns3::CsmaStarHelper::GetSpokeDevices() const [member function]
+    cls.add_method('GetSpokeDevices', 
+                   'ns3::NetDeviceContainer', 
+                   [], 
+                   is_const=True)
+    ## csma-star-helper.h: ns3::Ipv4Address ns3::CsmaStarHelper::GetSpokeIpv4Address(uint32_t arg0) const [member function]
+    cls.add_method('GetSpokeIpv4Address', 
+                   'ns3::Ipv4Address', 
+                   [param('uint32_t', 'arg0')], 
+                   is_const=True)
+    ## csma-star-helper.h: void ns3::CsmaStarHelper::InstallStack(ns3::InternetStackHelper stack) [member function]
+    cls.add_method('InstallStack', 
+                   'void', 
+                   [param('ns3::InternetStackHelper', 'stack')])
+    ## csma-star-helper.h: uint32_t ns3::CsmaStarHelper::SpokeCount() const [member function]
+    cls.add_method('SpokeCount', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
     return
 
 def register_Ns3EmuHelper_methods(root_module, cls):
@@ -1245,6 +1328,92 @@ def register_Ns3Ping6Helper_methods(root_module, cls):
                    [param('ns3::Ipv6Address', 'ip')])
     return
 
+def register_Ns3PointToPointDumbbellHelper_methods(root_module, cls):
+    ## point-to-point-dumbbell-helper.h: ns3::PointToPointDumbbellHelper::PointToPointDumbbellHelper(ns3::PointToPointDumbbellHelper const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::PointToPointDumbbellHelper const &', 'arg0')])
+    ## point-to-point-dumbbell-helper.h: ns3::PointToPointDumbbellHelper::PointToPointDumbbellHelper(uint32_t nLeftLeaf, ns3::PointToPointHelper leftHelper, uint32_t nRightLeaf, ns3::PointToPointHelper rightHelper, ns3::PointToPointHelper bottleneckHelper) [constructor]
+    cls.add_constructor([param('uint32_t', 'nLeftLeaf'), param('ns3::PointToPointHelper', 'leftHelper'), param('uint32_t', 'nRightLeaf'), param('ns3::PointToPointHelper', 'rightHelper'), param('ns3::PointToPointHelper', 'bottleneckHelper')])
+    ## point-to-point-dumbbell-helper.h: void ns3::PointToPointDumbbellHelper::AssignIpv4Addresses(ns3::Ipv4AddressHelper leftIp, ns3::Ipv4AddressHelper rightIp, ns3::Ipv4AddressHelper routerIp) [member function]
+    cls.add_method('AssignIpv4Addresses', 
+                   'void', 
+                   [param('ns3::Ipv4AddressHelper', 'leftIp'), param('ns3::Ipv4AddressHelper', 'rightIp'), param('ns3::Ipv4AddressHelper', 'routerIp')])
+    ## point-to-point-dumbbell-helper.h: void ns3::PointToPointDumbbellHelper::BoundingBox(double arg0, double arg1, double arg2, double arg3) [member function]
+    cls.add_method('BoundingBox', 
+                   'void', 
+                   [param('double', 'arg0'), param('double', 'arg1'), param('double', 'arg2'), param('double', 'arg3')])
+    ## point-to-point-dumbbell-helper.h: ns3::Ptr<ns3::Node> ns3::PointToPointDumbbellHelper::GetLeft() const [member function]
+    cls.add_method('GetLeft', 
+                   'ns3::Ptr< ns3::Node >', 
+                   [], 
+                   is_const=True)
+    ## point-to-point-dumbbell-helper.h: ns3::Ptr<ns3::Node> ns3::PointToPointDumbbellHelper::GetLeft(uint32_t arg0) const [member function]
+    cls.add_method('GetLeft', 
+                   'ns3::Ptr< ns3::Node >', 
+                   [param('uint32_t', 'arg0')], 
+                   is_const=True)
+    ## point-to-point-dumbbell-helper.h: ns3::Ipv4Address ns3::PointToPointDumbbellHelper::GetLeftIpv4Address(uint32_t arg0) const [member function]
+    cls.add_method('GetLeftIpv4Address', 
+                   'ns3::Ipv4Address', 
+                   [param('uint32_t', 'arg0')], 
+                   is_const=True)
+    ## point-to-point-dumbbell-helper.h: ns3::Ptr<ns3::Node> ns3::PointToPointDumbbellHelper::GetRight() const [member function]
+    cls.add_method('GetRight', 
+                   'ns3::Ptr< ns3::Node >', 
+                   [], 
+                   is_const=True)
+    ## point-to-point-dumbbell-helper.h: ns3::Ptr<ns3::Node> ns3::PointToPointDumbbellHelper::GetRight(uint32_t arg0) const [member function]
+    cls.add_method('GetRight', 
+                   'ns3::Ptr< ns3::Node >', 
+                   [param('uint32_t', 'arg0')], 
+                   is_const=True)
+    ## point-to-point-dumbbell-helper.h: ns3::Ipv4Address ns3::PointToPointDumbbellHelper::GetRightIpv4Address(uint32_t arg0) const [member function]
+    cls.add_method('GetRightIpv4Address', 
+                   'ns3::Ipv4Address', 
+                   [param('uint32_t', 'arg0')], 
+                   is_const=True)
+    ## point-to-point-dumbbell-helper.h: void ns3::PointToPointDumbbellHelper::InstallStack(ns3::InternetStackHelper stack) [member function]
+    cls.add_method('InstallStack', 
+                   'void', 
+                   [param('ns3::InternetStackHelper', 'stack')])
+    ## point-to-point-dumbbell-helper.h: uint32_t ns3::PointToPointDumbbellHelper::LeftCount() const [member function]
+    cls.add_method('LeftCount', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## point-to-point-dumbbell-helper.h: uint32_t ns3::PointToPointDumbbellHelper::RightCount() const [member function]
+    cls.add_method('RightCount', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    return
+
+def register_Ns3PointToPointGridHelper_methods(root_module, cls):
+    ## point-to-point-grid-helper.h: ns3::PointToPointGridHelper::PointToPointGridHelper(ns3::PointToPointGridHelper const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::PointToPointGridHelper const &', 'arg0')])
+    ## point-to-point-grid-helper.h: ns3::PointToPointGridHelper::PointToPointGridHelper(uint32_t nRows, uint32_t nCols, ns3::PointToPointHelper pointToPoint) [constructor]
+    cls.add_constructor([param('uint32_t', 'nRows'), param('uint32_t', 'nCols'), param('ns3::PointToPointHelper', 'pointToPoint')])
+    ## point-to-point-grid-helper.h: void ns3::PointToPointGridHelper::AssignIpv4Addresses(ns3::Ipv4AddressHelper rowIp, ns3::Ipv4AddressHelper colIp) [member function]
+    cls.add_method('AssignIpv4Addresses', 
+                   'void', 
+                   [param('ns3::Ipv4AddressHelper', 'rowIp'), param('ns3::Ipv4AddressHelper', 'colIp')])
+    ## point-to-point-grid-helper.h: void ns3::PointToPointGridHelper::BoundingBox(double ulx, double uly, double lrx, double lry) [member function]
+    cls.add_method('BoundingBox', 
+                   'void', 
+                   [param('double', 'ulx'), param('double', 'uly'), param('double', 'lrx'), param('double', 'lry')])
+    ## point-to-point-grid-helper.h: ns3::Ipv4Address ns3::PointToPointGridHelper::GetIpv4Address(uint32_t row, uint32_t col) [member function]
+    cls.add_method('GetIpv4Address', 
+                   'ns3::Ipv4Address', 
+                   [param('uint32_t', 'row'), param('uint32_t', 'col')])
+    ## point-to-point-grid-helper.h: ns3::Ptr<ns3::Node> ns3::PointToPointGridHelper::GetNode(uint32_t row, uint32_t col) [member function]
+    cls.add_method('GetNode', 
+                   'ns3::Ptr< ns3::Node >', 
+                   [param('uint32_t', 'row'), param('uint32_t', 'col')])
+    ## point-to-point-grid-helper.h: void ns3::PointToPointGridHelper::InstallStack(ns3::InternetStackHelper stack) [member function]
+    cls.add_method('InstallStack', 
+                   'void', 
+                   [param('ns3::InternetStackHelper', 'stack')])
+    return
+
 def register_Ns3PointToPointHelper_methods(root_module, cls):
     ## point-to-point-helper.h: ns3::PointToPointHelper::PointToPointHelper(ns3::PointToPointHelper const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::PointToPointHelper const &', 'arg0')])
@@ -1320,14 +1489,6 @@ def register_Ns3PointToPointHelper_methods(root_module, cls):
     cls.add_method('Install', 
                    'ns3::NetDeviceContainer', 
                    [param('std::string', 'aNode'), param('std::string', 'bNode')])
-    ## point-to-point-helper.h: void ns3::PointToPointHelper::InstallStar(ns3::Ptr<ns3::Node> hub, ns3::NodeContainer spokes, ns3::NetDeviceContainer & hubDevices, ns3::NetDeviceContainer & spokeDevices) [member function]
-    cls.add_method('InstallStar', 
-                   'void', 
-                   [param('ns3::Ptr< ns3::Node >', 'hub'), param('ns3::NodeContainer', 'spokes'), param('ns3::NetDeviceContainer &', 'hubDevices'), param('ns3::NetDeviceContainer &', 'spokeDevices')])
-    ## point-to-point-helper.h: void ns3::PointToPointHelper::InstallStar(std::string hubName, ns3::NodeContainer spokes, ns3::NetDeviceContainer & hubDevices, ns3::NetDeviceContainer & spokeDevices) [member function]
-    cls.add_method('InstallStar', 
-                   'void', 
-                   [param('std::string', 'hubName'), param('ns3::NodeContainer', 'spokes'), param('ns3::NetDeviceContainer &', 'hubDevices'), param('ns3::NetDeviceContainer &', 'spokeDevices')])
     ## point-to-point-helper.h: void ns3::PointToPointHelper::SetChannelAttribute(std::string name, ns3::AttributeValue const & value) [member function]
     cls.add_method('SetChannelAttribute', 
                    'void', 
@@ -1340,6 +1501,50 @@ def register_Ns3PointToPointHelper_methods(root_module, cls):
     cls.add_method('SetQueue', 
                    'void', 
                    [param('std::string', 'type'), param('std::string', 'n1', default_value='""'), param('ns3::AttributeValue const &', 'v1', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n2', default_value='""'), param('ns3::AttributeValue const &', 'v2', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n3', default_value='""'), param('ns3::AttributeValue const &', 'v3', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n4', default_value='""'), param('ns3::AttributeValue const &', 'v4', default_value='ns3::EmptyAttributeValue()')])
+    return
+
+def register_Ns3PointToPointStarHelper_methods(root_module, cls):
+    ## point-to-point-star-helper.h: ns3::PointToPointStarHelper::PointToPointStarHelper(ns3::PointToPointStarHelper const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::PointToPointStarHelper const &', 'arg0')])
+    ## point-to-point-star-helper.h: ns3::PointToPointStarHelper::PointToPointStarHelper(uint32_t numSpokes, ns3::PointToPointHelper p2pHelper) [constructor]
+    cls.add_constructor([param('uint32_t', 'numSpokes'), param('ns3::PointToPointHelper', 'p2pHelper')])
+    ## point-to-point-star-helper.h: void ns3::PointToPointStarHelper::AssignIpv4Addresses(ns3::Ipv4AddressHelper address) [member function]
+    cls.add_method('AssignIpv4Addresses', 
+                   'void', 
+                   [param('ns3::Ipv4AddressHelper', 'address')])
+    ## point-to-point-star-helper.h: void ns3::PointToPointStarHelper::BoundingBox(double arg0, double arg1, double arg2, double arg3) [member function]
+    cls.add_method('BoundingBox', 
+                   'void', 
+                   [param('double', 'arg0'), param('double', 'arg1'), param('double', 'arg2'), param('double', 'arg3')])
+    ## point-to-point-star-helper.h: ns3::Ptr<ns3::Node> ns3::PointToPointStarHelper::GetHub() const [member function]
+    cls.add_method('GetHub', 
+                   'ns3::Ptr< ns3::Node >', 
+                   [], 
+                   is_const=True)
+    ## point-to-point-star-helper.h: ns3::Ipv4Address ns3::PointToPointStarHelper::GetHubIpv4Address(uint32_t arg0) const [member function]
+    cls.add_method('GetHubIpv4Address', 
+                   'ns3::Ipv4Address', 
+                   [param('uint32_t', 'arg0')], 
+                   is_const=True)
+    ## point-to-point-star-helper.h: ns3::Ptr<ns3::Node> ns3::PointToPointStarHelper::GetSpoke(uint32_t arg0) const [member function]
+    cls.add_method('GetSpoke', 
+                   'ns3::Ptr< ns3::Node >', 
+                   [param('uint32_t', 'arg0')], 
+                   is_const=True)
+    ## point-to-point-star-helper.h: ns3::Ipv4Address ns3::PointToPointStarHelper::GetSpokeIpv4Address(uint32_t arg0) const [member function]
+    cls.add_method('GetSpokeIpv4Address', 
+                   'ns3::Ipv4Address', 
+                   [param('uint32_t', 'arg0')], 
+                   is_const=True)
+    ## point-to-point-star-helper.h: void ns3::PointToPointStarHelper::InstallStack(ns3::InternetStackHelper stack) [member function]
+    cls.add_method('InstallStack', 
+                   'void', 
+                   [param('ns3::InternetStackHelper', 'stack')])
+    ## point-to-point-star-helper.h: uint32_t ns3::PointToPointStarHelper::SpokeCount() const [member function]
+    cls.add_method('SpokeCount', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
     return
 
 def register_Ns3TapBridgeHelper_methods(root_module, cls):
@@ -1842,6 +2047,27 @@ def register_Ns3AthstatsWifiTraceSink_methods(root_module, cls):
     cls.add_method('TxRtsFailedTrace', 
                    'void', 
                    [param('std::string', 'context'), param('ns3::Mac48Address', 'address')])
+    return
+
+def register_Ns3CanvasLocation_methods(root_module, cls):
+    ## canvas-location.h: ns3::CanvasLocation::CanvasLocation(ns3::CanvasLocation const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::CanvasLocation const &', 'arg0')])
+    ## canvas-location.h: ns3::CanvasLocation::CanvasLocation() [constructor]
+    cls.add_constructor([])
+    ## canvas-location.h: ns3::Vector ns3::CanvasLocation::GetLocation() const [member function]
+    cls.add_method('GetLocation', 
+                   'ns3::Vector', 
+                   [], 
+                   is_const=True)
+    ## canvas-location.h: static ns3::TypeId ns3::CanvasLocation::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## canvas-location.h: void ns3::CanvasLocation::SetLocation(ns3::Vector const & location) [member function]
+    cls.add_method('SetLocation', 
+                   'void', 
+                   [param('ns3::Vector const &', 'location')])
     return
 
 def register_Ns3MeshStack_methods(root_module, cls):

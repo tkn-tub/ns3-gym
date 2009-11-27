@@ -1574,7 +1574,7 @@ def register_functions(root_module):
     module.add_function('MakeTimeChecker', 
                         'ns3::Ptr< ns3::AttributeChecker const >', 
                         [])
-    ## high-precision.h: extern ns3::HighPrecision ns3::Max(ns3::HighPrecision const & a, ns3::HighPrecision const & b) [free function]
+    ## high-precision.h: ns3::HighPrecision ns3::Max(ns3::HighPrecision const & a, ns3::HighPrecision const & b) [free function]
     module.add_function('Max', 
                         'ns3::HighPrecision', 
                         [param('ns3::HighPrecision const &', 'a'), param('ns3::HighPrecision const &', 'b')])
@@ -1586,7 +1586,7 @@ def register_functions(root_module):
     module.add_function('MilliSeconds', 
                         'ns3::Time', 
                         [param('uint64_t', 'ms')])
-    ## high-precision.h: extern ns3::HighPrecision ns3::Min(ns3::HighPrecision const & a, ns3::HighPrecision const & b) [free function]
+    ## high-precision.h: ns3::HighPrecision ns3::Min(ns3::HighPrecision const & a, ns3::HighPrecision const & b) [free function]
     module.add_function('Min', 
                         'ns3::HighPrecision', 
                         [param('ns3::HighPrecision const &', 'a'), param('ns3::HighPrecision const &', 'b')])

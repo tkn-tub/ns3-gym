@@ -47,6 +47,7 @@ all_modules = (
     'test/ns3tcp',
     'test/ns3wifi',
     'contrib/flow-monitor',
+    'applications/udp-client-server',
     )
 
 def set_options(opt):
