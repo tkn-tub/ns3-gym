@@ -1,0 +1,21 @@
+## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
+
+def build(bld):
+    module = bld.create_ns3_module('udp-client-server', ['internet-stack'])
+    module.source = [
+        'udp-client.cc',
+        'udp-server.cc',
+        'seq-ts-header.cc',
+        'udp-trace-client.cc',
+        'udp-client-server-test.cc',
+        'packet-loss-counter.cc',
+        ]
+    headers = bld.new_task_gen('ns3header')
+    headers.module = 'udp-client-server'
+    headers.source = [
+        'udp-client.h',
+        'udp-server.h',
+        'udp-trace-client.h',
+        'packet-loss-counter.h',
+        ]
+
