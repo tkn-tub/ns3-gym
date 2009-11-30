@@ -100,7 +100,7 @@ def register_types(module):
     ## wifi-phy.h: ns3::WifiPhy [class]
     module.add_class('WifiPhy', parent=root_module['ns3::Object'])
     ## wifi-phy.h: ns3::WifiPhy::State [enumeration]
-    module.add_enum('State', ['SYNC', 'TX', 'CCA_BUSY', 'IDLE', 'SWITCHING'], outer_class=root_module['ns3::WifiPhy'])
+    module.add_enum('State', ['IDLE', 'CCA_BUSY', 'TX', 'RX', 'SWITCHING'], outer_class=root_module['ns3::WifiPhy'])
     ## wifi-remote-station-manager.h: ns3::WifiRemoteStationManager [class]
     module.add_class('WifiRemoteStationManager', parent=root_module['ns3::Object'])
     ## yans-wifi-phy.h: ns3::YansWifiPhy [class]
@@ -2959,8 +2959,13 @@ def register_Ns3WifiPhy_methods(root_module, cls):
                    'bool', 
                    [], 
                    is_pure_virtual=True, is_virtual=True)
-    ## wifi-phy.h: bool ns3::WifiPhy::IsStateSync() [member function]
-    cls.add_method('IsStateSync', 
+    ## wifi-phy.h: bool ns3::WifiPhy::IsStateRx() [member function]
+    cls.add_method('IsStateRx', 
+                   'bool', 
+                   [], 
+                   is_pure_virtual=True, is_virtual=True)
+    ## wifi-phy.h: bool ns3::WifiPhy::IsStateSwitching() [member function]
+    cls.add_method('IsStateSwitching', 
                    'bool', 
                    [], 
                    is_pure_virtual=True, is_virtual=True)
@@ -3306,8 +3311,8 @@ def register_Ns3YansWifiPhy_methods(root_module, cls):
                    'bool', 
                    [], 
                    is_virtual=True)
-    ## yans-wifi-phy.h: bool ns3::YansWifiPhy::IsStateSync() [member function]
-    cls.add_method('IsStateSync', 
+    ## yans-wifi-phy.h: bool ns3::YansWifiPhy::IsStateRx() [member function]
+    cls.add_method('IsStateRx', 
                    'bool', 
                    [], 
                    is_virtual=True)

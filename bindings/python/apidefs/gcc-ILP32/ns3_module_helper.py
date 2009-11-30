@@ -69,10 +69,16 @@ def register_types(module):
     module.add_class('PointToPointStarHelper', allow_subclassing=False)
     ## tap-bridge-helper.h: ns3::TapBridgeHelper [class]
     module.add_class('TapBridgeHelper', allow_subclassing=False)
+    ## udp-client-server-helper.h: ns3::UdpClientHelper [class]
+    module.add_class('UdpClientHelper', allow_subclassing=False)
     ## udp-echo-helper.h: ns3::UdpEchoClientHelper [class]
     module.add_class('UdpEchoClientHelper', allow_subclassing=False)
     ## udp-echo-helper.h: ns3::UdpEchoServerHelper [class]
     module.add_class('UdpEchoServerHelper', allow_subclassing=False)
+    ## udp-client-server-helper.h: ns3::UdpServerHelper [class]
+    module.add_class('UdpServerHelper', allow_subclassing=False)
+    ## udp-client-server-helper.h: ns3::UdpTraceClientHelper [class]
+    module.add_class('UdpTraceClientHelper', allow_subclassing=False)
     ## v4ping-helper.h: ns3::V4PingHelper [class]
     module.add_class('V4PingHelper', allow_subclassing=False)
     ## wifi-helper.h: ns3::WifiHelper [class]
@@ -225,8 +231,11 @@ def register_methods(root_module):
     register_Ns3PointToPointHelper_methods(root_module, root_module['ns3::PointToPointHelper'])
     register_Ns3PointToPointStarHelper_methods(root_module, root_module['ns3::PointToPointStarHelper'])
     register_Ns3TapBridgeHelper_methods(root_module, root_module['ns3::TapBridgeHelper'])
+    register_Ns3UdpClientHelper_methods(root_module, root_module['ns3::UdpClientHelper'])
     register_Ns3UdpEchoClientHelper_methods(root_module, root_module['ns3::UdpEchoClientHelper'])
     register_Ns3UdpEchoServerHelper_methods(root_module, root_module['ns3::UdpEchoServerHelper'])
+    register_Ns3UdpServerHelper_methods(root_module, root_module['ns3::UdpServerHelper'])
+    register_Ns3UdpTraceClientHelper_methods(root_module, root_module['ns3::UdpTraceClientHelper'])
     register_Ns3V4PingHelper_methods(root_module, root_module['ns3::V4PingHelper'])
     register_Ns3WifiHelper_methods(root_module, root_module['ns3::WifiHelper'])
     register_Ns3WifiMacHelper_methods(root_module, root_module['ns3::WifiMacHelper'])
@@ -1326,6 +1335,10 @@ def register_Ns3Ping6Helper_methods(root_module, cls):
     cls.add_method('SetRemote', 
                    'void', 
                    [param('ns3::Ipv6Address', 'ip')])
+    ## ping6-helper.h: void ns3::Ping6Helper::SetRoutersAddress(std::vector<ns3::Ipv6Address, std::allocator<ns3::Ipv6Address> > routers) [member function]
+    cls.add_method('SetRoutersAddress', 
+                   'void', 
+                   [param('std::vector< ns3::Ipv6Address >', 'routers')])
     return
 
 def register_Ns3PointToPointDumbbellHelper_methods(root_module, cls):
@@ -1580,6 +1593,23 @@ def register_Ns3TapBridgeHelper_methods(root_module, cls):
                    [param('std::string', 'n1'), param('ns3::AttributeValue const &', 'v1')])
     return
 
+def register_Ns3UdpClientHelper_methods(root_module, cls):
+    ## udp-client-server-helper.h: ns3::UdpClientHelper::UdpClientHelper(ns3::UdpClientHelper const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::UdpClientHelper const &', 'arg0')])
+    ## udp-client-server-helper.h: ns3::UdpClientHelper::UdpClientHelper() [constructor]
+    cls.add_constructor([])
+    ## udp-client-server-helper.h: ns3::UdpClientHelper::UdpClientHelper(ns3::Ipv4Address ip, uint16_t port) [constructor]
+    cls.add_constructor([param('ns3::Ipv4Address', 'ip'), param('uint16_t', 'port')])
+    ## udp-client-server-helper.h: ns3::ApplicationContainer ns3::UdpClientHelper::Install(ns3::NodeContainer c) [member function]
+    cls.add_method('Install', 
+                   'ns3::ApplicationContainer', 
+                   [param('ns3::NodeContainer', 'c')])
+    ## udp-client-server-helper.h: void ns3::UdpClientHelper::SetAttribute(std::string name, ns3::AttributeValue const & value) [member function]
+    cls.add_method('SetAttribute', 
+                   'void', 
+                   [param('std::string', 'name'), param('ns3::AttributeValue const &', 'value')])
+    return
+
 def register_Ns3UdpEchoClientHelper_methods(root_module, cls):
     ## udp-echo-helper.h: ns3::UdpEchoClientHelper::UdpEchoClientHelper(ns3::UdpEchoClientHelper const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::UdpEchoClientHelper const &', 'arg0')])
@@ -1639,6 +1669,44 @@ def register_Ns3UdpEchoServerHelper_methods(root_module, cls):
                    [param('ns3::NodeContainer', 'c')], 
                    is_const=True)
     ## udp-echo-helper.h: void ns3::UdpEchoServerHelper::SetAttribute(std::string name, ns3::AttributeValue const & value) [member function]
+    cls.add_method('SetAttribute', 
+                   'void', 
+                   [param('std::string', 'name'), param('ns3::AttributeValue const &', 'value')])
+    return
+
+def register_Ns3UdpServerHelper_methods(root_module, cls):
+    ## udp-client-server-helper.h: ns3::UdpServerHelper::UdpServerHelper(ns3::UdpServerHelper const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::UdpServerHelper const &', 'arg0')])
+    ## udp-client-server-helper.h: ns3::UdpServerHelper::UdpServerHelper() [constructor]
+    cls.add_constructor([])
+    ## udp-client-server-helper.h: ns3::UdpServerHelper::UdpServerHelper(uint16_t port) [constructor]
+    cls.add_constructor([param('uint16_t', 'port')])
+    ## udp-client-server-helper.h: ns3::Ptr<ns3::UdpServer> ns3::UdpServerHelper::GetServer() [member function]
+    cls.add_method('GetServer', 
+                   'ns3::Ptr< ns3::UdpServer >', 
+                   [])
+    ## udp-client-server-helper.h: ns3::ApplicationContainer ns3::UdpServerHelper::Install(ns3::NodeContainer c) [member function]
+    cls.add_method('Install', 
+                   'ns3::ApplicationContainer', 
+                   [param('ns3::NodeContainer', 'c')])
+    ## udp-client-server-helper.h: void ns3::UdpServerHelper::SetAttribute(std::string name, ns3::AttributeValue const & value) [member function]
+    cls.add_method('SetAttribute', 
+                   'void', 
+                   [param('std::string', 'name'), param('ns3::AttributeValue const &', 'value')])
+    return
+
+def register_Ns3UdpTraceClientHelper_methods(root_module, cls):
+    ## udp-client-server-helper.h: ns3::UdpTraceClientHelper::UdpTraceClientHelper(ns3::UdpTraceClientHelper const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::UdpTraceClientHelper const &', 'arg0')])
+    ## udp-client-server-helper.h: ns3::UdpTraceClientHelper::UdpTraceClientHelper() [constructor]
+    cls.add_constructor([])
+    ## udp-client-server-helper.h: ns3::UdpTraceClientHelper::UdpTraceClientHelper(ns3::Ipv4Address ip, uint16_t port, std::string filename) [constructor]
+    cls.add_constructor([param('ns3::Ipv4Address', 'ip'), param('uint16_t', 'port'), param('std::string', 'filename')])
+    ## udp-client-server-helper.h: ns3::ApplicationContainer ns3::UdpTraceClientHelper::Install(ns3::NodeContainer c) [member function]
+    cls.add_method('Install', 
+                   'ns3::ApplicationContainer', 
+                   [param('ns3::NodeContainer', 'c')])
+    ## udp-client-server-helper.h: void ns3::UdpTraceClientHelper::SetAttribute(std::string name, ns3::AttributeValue const & value) [member function]
     cls.add_method('SetAttribute', 
                    'void', 
                    [param('std::string', 'name'), param('ns3::AttributeValue const &', 'value')])

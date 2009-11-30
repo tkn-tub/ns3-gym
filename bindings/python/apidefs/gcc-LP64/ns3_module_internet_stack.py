@@ -3,6 +3,8 @@ from pybindgen import Module, FileCodeSink, param, retval, cppclass, typehandler
 def register_types(module):
     root_module = module.get_root()
     
+    ## ipv6-extension-header.h: ns3::OptionField [class]
+    module.add_class('OptionField')
     ## icmpv4.h: ns3::Icmpv4DestinationUnreachable [class]
     module.add_class('Icmpv4DestinationUnreachable', parent=root_module['ns3::Header'])
     ## icmpv4.h: ns3::Icmpv4DestinationUnreachable [enumeration]
@@ -55,6 +57,22 @@ def register_types(module):
     module.add_class('Icmpv6TimeExceeded', parent=root_module['ns3::Icmpv6Header'])
     ## icmpv6-header.h: ns3::Icmpv6TooBig [class]
     module.add_class('Icmpv6TooBig', parent=root_module['ns3::Icmpv6Header'])
+    ## ipv6-extension-header.h: ns3::Ipv6ExtensionHeader [class]
+    module.add_class('Ipv6ExtensionHeader', parent=root_module['ns3::Header'])
+    ## ipv6-extension-header.h: ns3::Ipv6ExtensionRoutingHeader [class]
+    module.add_class('Ipv6ExtensionRoutingHeader', parent=root_module['ns3::Ipv6ExtensionHeader'])
+    ## ipv6-option-header.h: ns3::Ipv6OptionHeader [class]
+    module.add_class('Ipv6OptionHeader', parent=root_module['ns3::Header'])
+    ## ipv6-option-header.h: ns3::Ipv6OptionHeader::Alignment [struct]
+    module.add_class('Alignment', outer_class=root_module['ns3::Ipv6OptionHeader'])
+    ## ipv6-option-header.h: ns3::Ipv6OptionJumbogramHeader [class]
+    module.add_class('Ipv6OptionJumbogramHeader', parent=root_module['ns3::Ipv6OptionHeader'])
+    ## ipv6-option-header.h: ns3::Ipv6OptionPad1Header [class]
+    module.add_class('Ipv6OptionPad1Header', parent=root_module['ns3::Ipv6OptionHeader'])
+    ## ipv6-option-header.h: ns3::Ipv6OptionPadnHeader [class]
+    module.add_class('Ipv6OptionPadnHeader', parent=root_module['ns3::Ipv6OptionHeader'])
+    ## ipv6-option-header.h: ns3::Ipv6OptionRouterAlertHeader [class]
+    module.add_class('Ipv6OptionRouterAlertHeader', parent=root_module['ns3::Ipv6OptionHeader'])
     ## tcp-header.h: ns3::TcpHeader [class]
     module.add_class('TcpHeader', parent=root_module['ns3::Header'])
     ## tcp-header.h: ns3::TcpHeader::Flags_t [enumeration]
@@ -81,10 +99,18 @@ def register_types(module):
     module.add_class('Ipv4L4Protocol', parent=root_module['ns3::Object'])
     ## ipv4-l4-protocol.h: ns3::Ipv4L4Protocol::RxStatus [enumeration]
     module.add_enum('RxStatus', ['RX_OK', 'RX_CSUM_FAILED', 'RX_ENDPOINT_CLOSED', 'RX_ENDPOINT_UNREACH'], outer_class=root_module['ns3::Ipv4L4Protocol'])
+    ## ipv6-extension-header.h: ns3::Ipv6ExtensionAHHeader [class]
+    module.add_class('Ipv6ExtensionAHHeader', parent=root_module['ns3::Ipv6ExtensionHeader'])
+    ## ipv6-extension-header.h: ns3::Ipv6ExtensionESPHeader [class]
+    module.add_class('Ipv6ExtensionESPHeader', parent=root_module['ns3::Ipv6ExtensionHeader'])
+    ## ipv6-extension-header.h: ns3::Ipv6ExtensionFragmentHeader [class]
+    module.add_class('Ipv6ExtensionFragmentHeader', parent=root_module['ns3::Ipv6ExtensionHeader'])
+    ## ipv6-extension-header.h: ns3::Ipv6ExtensionLooseRoutingHeader [class]
+    module.add_class('Ipv6ExtensionLooseRoutingHeader', parent=root_module['ns3::Ipv6ExtensionRoutingHeader'])
     ## ipv6-l3-protocol.h: ns3::Ipv6L3Protocol [class]
     module.add_class('Ipv6L3Protocol', parent=root_module['ns3::Ipv6'])
     ## ipv6-l3-protocol.h: ns3::Ipv6L3Protocol::DropReason [enumeration]
-    module.add_enum('DropReason', ['DROP_TTL_EXPIRED', 'DROP_NO_ROUTE', 'DROP_INTERFACE_DOWN', 'DROP_ROUTE_ERROR'], outer_class=root_module['ns3::Ipv6L3Protocol'])
+    module.add_enum('DropReason', ['DROP_TTL_EXPIRED', 'DROP_NO_ROUTE', 'DROP_INTERFACE_DOWN', 'DROP_ROUTE_ERROR', 'DROP_UNKNOWN_PROTOCOL'], outer_class=root_module['ns3::Ipv6L3Protocol'])
     ## ipv6-l4-protocol.h: ns3::Ipv6L4Protocol [class]
     module.add_class('Ipv6L4Protocol', parent=root_module['ns3::Object'])
     ## ipv6-l4-protocol.h: ns3::Ipv6L4Protocol::RxStatus_e [enumeration]
@@ -183,6 +209,7 @@ def register_types_ns3_olsr(module):
     
 
 def register_methods(root_module):
+    register_Ns3OptionField_methods(root_module, root_module['ns3::OptionField'])
     register_Ns3Icmpv4DestinationUnreachable_methods(root_module, root_module['ns3::Icmpv4DestinationUnreachable'])
     register_Ns3Icmpv4Echo_methods(root_module, root_module['ns3::Icmpv4Echo'])
     register_Ns3Icmpv4Header_methods(root_module, root_module['ns3::Icmpv4Header'])
@@ -201,6 +228,14 @@ def register_methods(root_module):
     register_Ns3Icmpv6Redirection_methods(root_module, root_module['ns3::Icmpv6Redirection'])
     register_Ns3Icmpv6TimeExceeded_methods(root_module, root_module['ns3::Icmpv6TimeExceeded'])
     register_Ns3Icmpv6TooBig_methods(root_module, root_module['ns3::Icmpv6TooBig'])
+    register_Ns3Ipv6ExtensionHeader_methods(root_module, root_module['ns3::Ipv6ExtensionHeader'])
+    register_Ns3Ipv6ExtensionRoutingHeader_methods(root_module, root_module['ns3::Ipv6ExtensionRoutingHeader'])
+    register_Ns3Ipv6OptionHeader_methods(root_module, root_module['ns3::Ipv6OptionHeader'])
+    register_Ns3Ipv6OptionHeaderAlignment_methods(root_module, root_module['ns3::Ipv6OptionHeader::Alignment'])
+    register_Ns3Ipv6OptionJumbogramHeader_methods(root_module, root_module['ns3::Ipv6OptionJumbogramHeader'])
+    register_Ns3Ipv6OptionPad1Header_methods(root_module, root_module['ns3::Ipv6OptionPad1Header'])
+    register_Ns3Ipv6OptionPadnHeader_methods(root_module, root_module['ns3::Ipv6OptionPadnHeader'])
+    register_Ns3Ipv6OptionRouterAlertHeader_methods(root_module, root_module['ns3::Ipv6OptionRouterAlertHeader'])
     register_Ns3TcpHeader_methods(root_module, root_module['ns3::TcpHeader'])
     register_Ns3UdpHeader_methods(root_module, root_module['ns3::UdpHeader'])
     register_Ns3ArpCache_methods(root_module, root_module['ns3::ArpCache'])
@@ -211,6 +246,10 @@ def register_methods(root_module):
     register_Ns3Ipv4Interface_methods(root_module, root_module['ns3::Ipv4Interface'])
     register_Ns3Ipv4L3Protocol_methods(root_module, root_module['ns3::Ipv4L3Protocol'])
     register_Ns3Ipv4L4Protocol_methods(root_module, root_module['ns3::Ipv4L4Protocol'])
+    register_Ns3Ipv6ExtensionAHHeader_methods(root_module, root_module['ns3::Ipv6ExtensionAHHeader'])
+    register_Ns3Ipv6ExtensionESPHeader_methods(root_module, root_module['ns3::Ipv6ExtensionESPHeader'])
+    register_Ns3Ipv6ExtensionFragmentHeader_methods(root_module, root_module['ns3::Ipv6ExtensionFragmentHeader'])
+    register_Ns3Ipv6ExtensionLooseRoutingHeader_methods(root_module, root_module['ns3::Ipv6ExtensionLooseRoutingHeader'])
     register_Ns3Ipv6L3Protocol_methods(root_module, root_module['ns3::Ipv6L3Protocol'])
     register_Ns3Ipv6L4Protocol_methods(root_module, root_module['ns3::Ipv6L4Protocol'])
     register_Ns3NdiscCache_methods(root_module, root_module['ns3::NdiscCache'])
@@ -219,6 +258,39 @@ def register_methods(root_module):
     register_Ns3UdpL4Protocol_methods(root_module, root_module['ns3::UdpL4Protocol'])
     register_Ns3Icmpv4L4Protocol_methods(root_module, root_module['ns3::Icmpv4L4Protocol'])
     register_Ns3Icmpv6L4Protocol_methods(root_module, root_module['ns3::Icmpv6L4Protocol'])
+    return
+
+def register_Ns3OptionField_methods(root_module, cls):
+    ## ipv6-extension-header.h: ns3::OptionField::OptionField(ns3::OptionField const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::OptionField const &', 'arg0')])
+    ## ipv6-extension-header.h: ns3::OptionField::OptionField(uint32_t optionsOffset) [constructor]
+    cls.add_constructor([param('uint32_t', 'optionsOffset')])
+    ## ipv6-extension-header.h: void ns3::OptionField::AddOption(ns3::Ipv6OptionHeader const & option) [member function]
+    cls.add_method('AddOption', 
+                   'void', 
+                   [param('ns3::Ipv6OptionHeader const &', 'option')])
+    ## ipv6-extension-header.h: uint32_t ns3::OptionField::Deserialize(ns3::Buffer::Iterator start, uint32_t length) [member function]
+    cls.add_method('Deserialize', 
+                   'uint32_t', 
+                   [param('ns3::Buffer::Iterator', 'start'), param('uint32_t', 'length')])
+    ## ipv6-extension-header.h: ns3::Buffer ns3::OptionField::GetOptionBuffer() [member function]
+    cls.add_method('GetOptionBuffer', 
+                   'ns3::Buffer', 
+                   [])
+    ## ipv6-extension-header.h: uint32_t ns3::OptionField::GetOptionsOffset() [member function]
+    cls.add_method('GetOptionsOffset', 
+                   'uint32_t', 
+                   [])
+    ## ipv6-extension-header.h: uint32_t ns3::OptionField::GetSerializedSize() const [member function]
+    cls.add_method('GetSerializedSize', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## ipv6-extension-header.h: void ns3::OptionField::Serialize(ns3::Buffer::Iterator start) const [member function]
+    cls.add_method('Serialize', 
+                   'void', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_const=True)
     return
 
 def register_Ns3Icmpv4DestinationUnreachable_methods(root_module, cls):
@@ -1351,6 +1423,363 @@ def register_Ns3Icmpv6TooBig_methods(root_module, cls):
                    [param('ns3::Ptr< ns3::Packet >', 'p')])
     return
 
+def register_Ns3Ipv6ExtensionHeader_methods(root_module, cls):
+    ## ipv6-extension-header.h: ns3::Ipv6ExtensionHeader::Ipv6ExtensionHeader(ns3::Ipv6ExtensionHeader const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::Ipv6ExtensionHeader const &', 'arg0')])
+    ## ipv6-extension-header.h: ns3::Ipv6ExtensionHeader::Ipv6ExtensionHeader() [constructor]
+    cls.add_constructor([])
+    ## ipv6-extension-header.h: uint32_t ns3::Ipv6ExtensionHeader::Deserialize(ns3::Buffer::Iterator start) [member function]
+    cls.add_method('Deserialize', 
+                   'uint32_t', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_virtual=True)
+    ## ipv6-extension-header.h: ns3::TypeId ns3::Ipv6ExtensionHeader::GetInstanceTypeId() const [member function]
+    cls.add_method('GetInstanceTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## ipv6-extension-header.h: uint16_t ns3::Ipv6ExtensionHeader::GetLength() const [member function]
+    cls.add_method('GetLength', 
+                   'uint16_t', 
+                   [], 
+                   is_const=True)
+    ## ipv6-extension-header.h: uint8_t ns3::Ipv6ExtensionHeader::GetNextHeader() const [member function]
+    cls.add_method('GetNextHeader', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True)
+    ## ipv6-extension-header.h: uint32_t ns3::Ipv6ExtensionHeader::GetSerializedSize() const [member function]
+    cls.add_method('GetSerializedSize', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## ipv6-extension-header.h: static ns3::TypeId ns3::Ipv6ExtensionHeader::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## ipv6-extension-header.h: void ns3::Ipv6ExtensionHeader::Print(std::ostream & os) const [member function]
+    cls.add_method('Print', 
+                   'void', 
+                   [param('std::ostream &', 'os')], 
+                   is_const=True, is_virtual=True)
+    ## ipv6-extension-header.h: void ns3::Ipv6ExtensionHeader::Serialize(ns3::Buffer::Iterator start) const [member function]
+    cls.add_method('Serialize', 
+                   'void', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_const=True, is_virtual=True)
+    ## ipv6-extension-header.h: void ns3::Ipv6ExtensionHeader::SetLength(uint16_t length) [member function]
+    cls.add_method('SetLength', 
+                   'void', 
+                   [param('uint16_t', 'length')])
+    ## ipv6-extension-header.h: void ns3::Ipv6ExtensionHeader::SetNextHeader(uint8_t nextHeader) [member function]
+    cls.add_method('SetNextHeader', 
+                   'void', 
+                   [param('uint8_t', 'nextHeader')])
+    return
+
+def register_Ns3Ipv6ExtensionRoutingHeader_methods(root_module, cls):
+    ## ipv6-extension-header.h: ns3::Ipv6ExtensionRoutingHeader::Ipv6ExtensionRoutingHeader(ns3::Ipv6ExtensionRoutingHeader const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::Ipv6ExtensionRoutingHeader const &', 'arg0')])
+    ## ipv6-extension-header.h: ns3::Ipv6ExtensionRoutingHeader::Ipv6ExtensionRoutingHeader() [constructor]
+    cls.add_constructor([])
+    ## ipv6-extension-header.h: uint32_t ns3::Ipv6ExtensionRoutingHeader::Deserialize(ns3::Buffer::Iterator start) [member function]
+    cls.add_method('Deserialize', 
+                   'uint32_t', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_virtual=True)
+    ## ipv6-extension-header.h: ns3::TypeId ns3::Ipv6ExtensionRoutingHeader::GetInstanceTypeId() const [member function]
+    cls.add_method('GetInstanceTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## ipv6-extension-header.h: uint8_t ns3::Ipv6ExtensionRoutingHeader::GetSegmentsLeft() const [member function]
+    cls.add_method('GetSegmentsLeft', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True)
+    ## ipv6-extension-header.h: uint32_t ns3::Ipv6ExtensionRoutingHeader::GetSerializedSize() const [member function]
+    cls.add_method('GetSerializedSize', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## ipv6-extension-header.h: static ns3::TypeId ns3::Ipv6ExtensionRoutingHeader::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## ipv6-extension-header.h: uint8_t ns3::Ipv6ExtensionRoutingHeader::GetTypeRouting() const [member function]
+    cls.add_method('GetTypeRouting', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True)
+    ## ipv6-extension-header.h: void ns3::Ipv6ExtensionRoutingHeader::Print(std::ostream & os) const [member function]
+    cls.add_method('Print', 
+                   'void', 
+                   [param('std::ostream &', 'os')], 
+                   is_const=True, is_virtual=True)
+    ## ipv6-extension-header.h: void ns3::Ipv6ExtensionRoutingHeader::Serialize(ns3::Buffer::Iterator start) const [member function]
+    cls.add_method('Serialize', 
+                   'void', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_const=True, is_virtual=True)
+    ## ipv6-extension-header.h: void ns3::Ipv6ExtensionRoutingHeader::SetSegmentsLeft(uint8_t segmentsLeft) [member function]
+    cls.add_method('SetSegmentsLeft', 
+                   'void', 
+                   [param('uint8_t', 'segmentsLeft')])
+    ## ipv6-extension-header.h: void ns3::Ipv6ExtensionRoutingHeader::SetTypeRouting(uint8_t typeRouting) [member function]
+    cls.add_method('SetTypeRouting', 
+                   'void', 
+                   [param('uint8_t', 'typeRouting')])
+    return
+
+def register_Ns3Ipv6OptionHeader_methods(root_module, cls):
+    ## ipv6-option-header.h: ns3::Ipv6OptionHeader::Ipv6OptionHeader(ns3::Ipv6OptionHeader const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::Ipv6OptionHeader const &', 'arg0')])
+    ## ipv6-option-header.h: ns3::Ipv6OptionHeader::Ipv6OptionHeader() [constructor]
+    cls.add_constructor([])
+    ## ipv6-option-header.h: uint32_t ns3::Ipv6OptionHeader::Deserialize(ns3::Buffer::Iterator start) [member function]
+    cls.add_method('Deserialize', 
+                   'uint32_t', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_virtual=True)
+    ## ipv6-option-header.h: ns3::Ipv6OptionHeader::Alignment ns3::Ipv6OptionHeader::GetAlignment() const [member function]
+    cls.add_method('GetAlignment', 
+                   'ns3::Ipv6OptionHeader::Alignment', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## ipv6-option-header.h: ns3::TypeId ns3::Ipv6OptionHeader::GetInstanceTypeId() const [member function]
+    cls.add_method('GetInstanceTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## ipv6-option-header.h: uint8_t ns3::Ipv6OptionHeader::GetLength() const [member function]
+    cls.add_method('GetLength', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True)
+    ## ipv6-option-header.h: uint32_t ns3::Ipv6OptionHeader::GetSerializedSize() const [member function]
+    cls.add_method('GetSerializedSize', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## ipv6-option-header.h: uint8_t ns3::Ipv6OptionHeader::GetType() const [member function]
+    cls.add_method('GetType', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True)
+    ## ipv6-option-header.h: static ns3::TypeId ns3::Ipv6OptionHeader::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## ipv6-option-header.h: void ns3::Ipv6OptionHeader::Print(std::ostream & os) const [member function]
+    cls.add_method('Print', 
+                   'void', 
+                   [param('std::ostream &', 'os')], 
+                   is_const=True, is_virtual=True)
+    ## ipv6-option-header.h: void ns3::Ipv6OptionHeader::Serialize(ns3::Buffer::Iterator start) const [member function]
+    cls.add_method('Serialize', 
+                   'void', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_const=True, is_virtual=True)
+    ## ipv6-option-header.h: void ns3::Ipv6OptionHeader::SetLength(uint8_t length) [member function]
+    cls.add_method('SetLength', 
+                   'void', 
+                   [param('uint8_t', 'length')])
+    ## ipv6-option-header.h: void ns3::Ipv6OptionHeader::SetType(uint8_t type) [member function]
+    cls.add_method('SetType', 
+                   'void', 
+                   [param('uint8_t', 'type')])
+    return
+
+def register_Ns3Ipv6OptionHeaderAlignment_methods(root_module, cls):
+    ## ipv6-option-header.h: ns3::Ipv6OptionHeader::Alignment::Alignment() [constructor]
+    cls.add_constructor([])
+    ## ipv6-option-header.h: ns3::Ipv6OptionHeader::Alignment::Alignment(ns3::Ipv6OptionHeader::Alignment const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::Ipv6OptionHeader::Alignment const &', 'arg0')])
+    ## ipv6-option-header.h: ns3::Ipv6OptionHeader::Alignment::factor [variable]
+    cls.add_instance_attribute('factor', 'uint8_t', is_const=False)
+    ## ipv6-option-header.h: ns3::Ipv6OptionHeader::Alignment::offset [variable]
+    cls.add_instance_attribute('offset', 'uint8_t', is_const=False)
+    return
+
+def register_Ns3Ipv6OptionJumbogramHeader_methods(root_module, cls):
+    ## ipv6-option-header.h: ns3::Ipv6OptionJumbogramHeader::Ipv6OptionJumbogramHeader(ns3::Ipv6OptionJumbogramHeader const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::Ipv6OptionJumbogramHeader const &', 'arg0')])
+    ## ipv6-option-header.h: ns3::Ipv6OptionJumbogramHeader::Ipv6OptionJumbogramHeader() [constructor]
+    cls.add_constructor([])
+    ## ipv6-option-header.h: uint32_t ns3::Ipv6OptionJumbogramHeader::Deserialize(ns3::Buffer::Iterator start) [member function]
+    cls.add_method('Deserialize', 
+                   'uint32_t', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_virtual=True)
+    ## ipv6-option-header.h: ns3::Ipv6OptionHeader::Alignment ns3::Ipv6OptionJumbogramHeader::GetAlignment() const [member function]
+    cls.add_method('GetAlignment', 
+                   'ns3::Ipv6OptionHeader::Alignment', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## ipv6-option-header.h: uint32_t ns3::Ipv6OptionJumbogramHeader::GetDataLength() const [member function]
+    cls.add_method('GetDataLength', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## ipv6-option-header.h: ns3::TypeId ns3::Ipv6OptionJumbogramHeader::GetInstanceTypeId() const [member function]
+    cls.add_method('GetInstanceTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## ipv6-option-header.h: uint32_t ns3::Ipv6OptionJumbogramHeader::GetSerializedSize() const [member function]
+    cls.add_method('GetSerializedSize', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## ipv6-option-header.h: static ns3::TypeId ns3::Ipv6OptionJumbogramHeader::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## ipv6-option-header.h: void ns3::Ipv6OptionJumbogramHeader::Print(std::ostream & os) const [member function]
+    cls.add_method('Print', 
+                   'void', 
+                   [param('std::ostream &', 'os')], 
+                   is_const=True, is_virtual=True)
+    ## ipv6-option-header.h: void ns3::Ipv6OptionJumbogramHeader::Serialize(ns3::Buffer::Iterator start) const [member function]
+    cls.add_method('Serialize', 
+                   'void', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_const=True, is_virtual=True)
+    ## ipv6-option-header.h: void ns3::Ipv6OptionJumbogramHeader::SetDataLength(uint32_t dataLength) [member function]
+    cls.add_method('SetDataLength', 
+                   'void', 
+                   [param('uint32_t', 'dataLength')])
+    return
+
+def register_Ns3Ipv6OptionPad1Header_methods(root_module, cls):
+    ## ipv6-option-header.h: ns3::Ipv6OptionPad1Header::Ipv6OptionPad1Header(ns3::Ipv6OptionPad1Header const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::Ipv6OptionPad1Header const &', 'arg0')])
+    ## ipv6-option-header.h: ns3::Ipv6OptionPad1Header::Ipv6OptionPad1Header() [constructor]
+    cls.add_constructor([])
+    ## ipv6-option-header.h: uint32_t ns3::Ipv6OptionPad1Header::Deserialize(ns3::Buffer::Iterator start) [member function]
+    cls.add_method('Deserialize', 
+                   'uint32_t', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_virtual=True)
+    ## ipv6-option-header.h: ns3::TypeId ns3::Ipv6OptionPad1Header::GetInstanceTypeId() const [member function]
+    cls.add_method('GetInstanceTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## ipv6-option-header.h: uint32_t ns3::Ipv6OptionPad1Header::GetSerializedSize() const [member function]
+    cls.add_method('GetSerializedSize', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## ipv6-option-header.h: static ns3::TypeId ns3::Ipv6OptionPad1Header::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## ipv6-option-header.h: void ns3::Ipv6OptionPad1Header::Print(std::ostream & os) const [member function]
+    cls.add_method('Print', 
+                   'void', 
+                   [param('std::ostream &', 'os')], 
+                   is_const=True, is_virtual=True)
+    ## ipv6-option-header.h: void ns3::Ipv6OptionPad1Header::Serialize(ns3::Buffer::Iterator start) const [member function]
+    cls.add_method('Serialize', 
+                   'void', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_const=True, is_virtual=True)
+    return
+
+def register_Ns3Ipv6OptionPadnHeader_methods(root_module, cls):
+    ## ipv6-option-header.h: ns3::Ipv6OptionPadnHeader::Ipv6OptionPadnHeader(ns3::Ipv6OptionPadnHeader const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::Ipv6OptionPadnHeader const &', 'arg0')])
+    ## ipv6-option-header.h: ns3::Ipv6OptionPadnHeader::Ipv6OptionPadnHeader(uint32_t pad=2) [constructor]
+    cls.add_constructor([param('uint32_t', 'pad', default_value='2')])
+    ## ipv6-option-header.h: uint32_t ns3::Ipv6OptionPadnHeader::Deserialize(ns3::Buffer::Iterator start) [member function]
+    cls.add_method('Deserialize', 
+                   'uint32_t', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_virtual=True)
+    ## ipv6-option-header.h: ns3::TypeId ns3::Ipv6OptionPadnHeader::GetInstanceTypeId() const [member function]
+    cls.add_method('GetInstanceTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## ipv6-option-header.h: uint32_t ns3::Ipv6OptionPadnHeader::GetSerializedSize() const [member function]
+    cls.add_method('GetSerializedSize', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## ipv6-option-header.h: static ns3::TypeId ns3::Ipv6OptionPadnHeader::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## ipv6-option-header.h: void ns3::Ipv6OptionPadnHeader::Print(std::ostream & os) const [member function]
+    cls.add_method('Print', 
+                   'void', 
+                   [param('std::ostream &', 'os')], 
+                   is_const=True, is_virtual=True)
+    ## ipv6-option-header.h: void ns3::Ipv6OptionPadnHeader::Serialize(ns3::Buffer::Iterator start) const [member function]
+    cls.add_method('Serialize', 
+                   'void', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_const=True, is_virtual=True)
+    return
+
+def register_Ns3Ipv6OptionRouterAlertHeader_methods(root_module, cls):
+    ## ipv6-option-header.h: ns3::Ipv6OptionRouterAlertHeader::Ipv6OptionRouterAlertHeader(ns3::Ipv6OptionRouterAlertHeader const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::Ipv6OptionRouterAlertHeader const &', 'arg0')])
+    ## ipv6-option-header.h: ns3::Ipv6OptionRouterAlertHeader::Ipv6OptionRouterAlertHeader() [constructor]
+    cls.add_constructor([])
+    ## ipv6-option-header.h: uint32_t ns3::Ipv6OptionRouterAlertHeader::Deserialize(ns3::Buffer::Iterator start) [member function]
+    cls.add_method('Deserialize', 
+                   'uint32_t', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_virtual=True)
+    ## ipv6-option-header.h: ns3::Ipv6OptionHeader::Alignment ns3::Ipv6OptionRouterAlertHeader::GetAlignment() const [member function]
+    cls.add_method('GetAlignment', 
+                   'ns3::Ipv6OptionHeader::Alignment', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## ipv6-option-header.h: ns3::TypeId ns3::Ipv6OptionRouterAlertHeader::GetInstanceTypeId() const [member function]
+    cls.add_method('GetInstanceTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## ipv6-option-header.h: uint32_t ns3::Ipv6OptionRouterAlertHeader::GetSerializedSize() const [member function]
+    cls.add_method('GetSerializedSize', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## ipv6-option-header.h: static ns3::TypeId ns3::Ipv6OptionRouterAlertHeader::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## ipv6-option-header.h: uint16_t ns3::Ipv6OptionRouterAlertHeader::GetValue() const [member function]
+    cls.add_method('GetValue', 
+                   'uint16_t', 
+                   [], 
+                   is_const=True)
+    ## ipv6-option-header.h: void ns3::Ipv6OptionRouterAlertHeader::Print(std::ostream & os) const [member function]
+    cls.add_method('Print', 
+                   'void', 
+                   [param('std::ostream &', 'os')], 
+                   is_const=True, is_virtual=True)
+    ## ipv6-option-header.h: void ns3::Ipv6OptionRouterAlertHeader::Serialize(ns3::Buffer::Iterator start) const [member function]
+    cls.add_method('Serialize', 
+                   'void', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_const=True, is_virtual=True)
+    ## ipv6-option-header.h: void ns3::Ipv6OptionRouterAlertHeader::SetValue(uint16_t value) [member function]
+    cls.add_method('SetValue', 
+                   'void', 
+                   [param('uint16_t', 'value')])
+    return
+
 def register_Ns3TcpHeader_methods(root_module, cls):
     ## tcp-header.h: ns3::TcpHeader::TcpHeader(ns3::TcpHeader const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::TcpHeader const &', 'arg0')])
@@ -2142,6 +2571,203 @@ def register_Ns3Ipv4L4Protocol_methods(root_module, cls):
                    is_virtual=True)
     return
 
+def register_Ns3Ipv6ExtensionAHHeader_methods(root_module, cls):
+    ## ipv6-extension-header.h: ns3::Ipv6ExtensionAHHeader::Ipv6ExtensionAHHeader(ns3::Ipv6ExtensionAHHeader const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::Ipv6ExtensionAHHeader const &', 'arg0')])
+    ## ipv6-extension-header.h: ns3::Ipv6ExtensionAHHeader::Ipv6ExtensionAHHeader() [constructor]
+    cls.add_constructor([])
+    ## ipv6-extension-header.h: uint32_t ns3::Ipv6ExtensionAHHeader::Deserialize(ns3::Buffer::Iterator start) [member function]
+    cls.add_method('Deserialize', 
+                   'uint32_t', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_virtual=True)
+    ## ipv6-extension-header.h: ns3::TypeId ns3::Ipv6ExtensionAHHeader::GetInstanceTypeId() const [member function]
+    cls.add_method('GetInstanceTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## ipv6-extension-header.h: uint32_t ns3::Ipv6ExtensionAHHeader::GetSerializedSize() const [member function]
+    cls.add_method('GetSerializedSize', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## ipv6-extension-header.h: static ns3::TypeId ns3::Ipv6ExtensionAHHeader::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## ipv6-extension-header.h: void ns3::Ipv6ExtensionAHHeader::Print(std::ostream & os) const [member function]
+    cls.add_method('Print', 
+                   'void', 
+                   [param('std::ostream &', 'os')], 
+                   is_const=True, is_virtual=True)
+    ## ipv6-extension-header.h: void ns3::Ipv6ExtensionAHHeader::Serialize(ns3::Buffer::Iterator start) const [member function]
+    cls.add_method('Serialize', 
+                   'void', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_const=True, is_virtual=True)
+    return
+
+def register_Ns3Ipv6ExtensionESPHeader_methods(root_module, cls):
+    ## ipv6-extension-header.h: ns3::Ipv6ExtensionESPHeader::Ipv6ExtensionESPHeader(ns3::Ipv6ExtensionESPHeader const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::Ipv6ExtensionESPHeader const &', 'arg0')])
+    ## ipv6-extension-header.h: ns3::Ipv6ExtensionESPHeader::Ipv6ExtensionESPHeader() [constructor]
+    cls.add_constructor([])
+    ## ipv6-extension-header.h: uint32_t ns3::Ipv6ExtensionESPHeader::Deserialize(ns3::Buffer::Iterator start) [member function]
+    cls.add_method('Deserialize', 
+                   'uint32_t', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_virtual=True)
+    ## ipv6-extension-header.h: ns3::TypeId ns3::Ipv6ExtensionESPHeader::GetInstanceTypeId() const [member function]
+    cls.add_method('GetInstanceTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## ipv6-extension-header.h: uint32_t ns3::Ipv6ExtensionESPHeader::GetSerializedSize() const [member function]
+    cls.add_method('GetSerializedSize', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## ipv6-extension-header.h: static ns3::TypeId ns3::Ipv6ExtensionESPHeader::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## ipv6-extension-header.h: void ns3::Ipv6ExtensionESPHeader::Print(std::ostream & os) const [member function]
+    cls.add_method('Print', 
+                   'void', 
+                   [param('std::ostream &', 'os')], 
+                   is_const=True, is_virtual=True)
+    ## ipv6-extension-header.h: void ns3::Ipv6ExtensionESPHeader::Serialize(ns3::Buffer::Iterator start) const [member function]
+    cls.add_method('Serialize', 
+                   'void', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_const=True, is_virtual=True)
+    return
+
+def register_Ns3Ipv6ExtensionFragmentHeader_methods(root_module, cls):
+    ## ipv6-extension-header.h: ns3::Ipv6ExtensionFragmentHeader::Ipv6ExtensionFragmentHeader(ns3::Ipv6ExtensionFragmentHeader const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::Ipv6ExtensionFragmentHeader const &', 'arg0')])
+    ## ipv6-extension-header.h: ns3::Ipv6ExtensionFragmentHeader::Ipv6ExtensionFragmentHeader() [constructor]
+    cls.add_constructor([])
+    ## ipv6-extension-header.h: uint32_t ns3::Ipv6ExtensionFragmentHeader::Deserialize(ns3::Buffer::Iterator start) [member function]
+    cls.add_method('Deserialize', 
+                   'uint32_t', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_virtual=True)
+    ## ipv6-extension-header.h: uint32_t ns3::Ipv6ExtensionFragmentHeader::GetIdentification() const [member function]
+    cls.add_method('GetIdentification', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## ipv6-extension-header.h: ns3::TypeId ns3::Ipv6ExtensionFragmentHeader::GetInstanceTypeId() const [member function]
+    cls.add_method('GetInstanceTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## ipv6-extension-header.h: bool ns3::Ipv6ExtensionFragmentHeader::GetMoreFragment() const [member function]
+    cls.add_method('GetMoreFragment', 
+                   'bool', 
+                   [], 
+                   is_const=True)
+    ## ipv6-extension-header.h: uint16_t ns3::Ipv6ExtensionFragmentHeader::GetOffset() const [member function]
+    cls.add_method('GetOffset', 
+                   'uint16_t', 
+                   [], 
+                   is_const=True)
+    ## ipv6-extension-header.h: uint32_t ns3::Ipv6ExtensionFragmentHeader::GetSerializedSize() const [member function]
+    cls.add_method('GetSerializedSize', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## ipv6-extension-header.h: static ns3::TypeId ns3::Ipv6ExtensionFragmentHeader::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## ipv6-extension-header.h: void ns3::Ipv6ExtensionFragmentHeader::Print(std::ostream & os) const [member function]
+    cls.add_method('Print', 
+                   'void', 
+                   [param('std::ostream &', 'os')], 
+                   is_const=True, is_virtual=True)
+    ## ipv6-extension-header.h: void ns3::Ipv6ExtensionFragmentHeader::Serialize(ns3::Buffer::Iterator start) const [member function]
+    cls.add_method('Serialize', 
+                   'void', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_const=True, is_virtual=True)
+    ## ipv6-extension-header.h: void ns3::Ipv6ExtensionFragmentHeader::SetIdentification(uint32_t identification) [member function]
+    cls.add_method('SetIdentification', 
+                   'void', 
+                   [param('uint32_t', 'identification')])
+    ## ipv6-extension-header.h: void ns3::Ipv6ExtensionFragmentHeader::SetMoreFragment(bool moreFragment) [member function]
+    cls.add_method('SetMoreFragment', 
+                   'void', 
+                   [param('bool', 'moreFragment')])
+    ## ipv6-extension-header.h: void ns3::Ipv6ExtensionFragmentHeader::SetOffset(uint16_t offset) [member function]
+    cls.add_method('SetOffset', 
+                   'void', 
+                   [param('uint16_t', 'offset')])
+    return
+
+def register_Ns3Ipv6ExtensionLooseRoutingHeader_methods(root_module, cls):
+    ## ipv6-extension-header.h: ns3::Ipv6ExtensionLooseRoutingHeader::Ipv6ExtensionLooseRoutingHeader(ns3::Ipv6ExtensionLooseRoutingHeader const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::Ipv6ExtensionLooseRoutingHeader const &', 'arg0')])
+    ## ipv6-extension-header.h: ns3::Ipv6ExtensionLooseRoutingHeader::Ipv6ExtensionLooseRoutingHeader() [constructor]
+    cls.add_constructor([])
+    ## ipv6-extension-header.h: uint32_t ns3::Ipv6ExtensionLooseRoutingHeader::Deserialize(ns3::Buffer::Iterator start) [member function]
+    cls.add_method('Deserialize', 
+                   'uint32_t', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_virtual=True)
+    ## ipv6-extension-header.h: ns3::TypeId ns3::Ipv6ExtensionLooseRoutingHeader::GetInstanceTypeId() const [member function]
+    cls.add_method('GetInstanceTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## ipv6-extension-header.h: ns3::Ipv6Address ns3::Ipv6ExtensionLooseRoutingHeader::GetRouterAddress(uint8_t index) const [member function]
+    cls.add_method('GetRouterAddress', 
+                   'ns3::Ipv6Address', 
+                   [param('uint8_t', 'index')], 
+                   is_const=True)
+    ## ipv6-extension-header.h: std::vector<ns3::Ipv6Address, std::allocator<ns3::Ipv6Address> > ns3::Ipv6ExtensionLooseRoutingHeader::GetRoutersAddress() const [member function]
+    cls.add_method('GetRoutersAddress', 
+                   'std::vector< ns3::Ipv6Address >', 
+                   [], 
+                   is_const=True)
+    ## ipv6-extension-header.h: uint32_t ns3::Ipv6ExtensionLooseRoutingHeader::GetSerializedSize() const [member function]
+    cls.add_method('GetSerializedSize', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## ipv6-extension-header.h: static ns3::TypeId ns3::Ipv6ExtensionLooseRoutingHeader::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## ipv6-extension-header.h: void ns3::Ipv6ExtensionLooseRoutingHeader::Print(std::ostream & os) const [member function]
+    cls.add_method('Print', 
+                   'void', 
+                   [param('std::ostream &', 'os')], 
+                   is_const=True, is_virtual=True)
+    ## ipv6-extension-header.h: void ns3::Ipv6ExtensionLooseRoutingHeader::Serialize(ns3::Buffer::Iterator start) const [member function]
+    cls.add_method('Serialize', 
+                   'void', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_const=True, is_virtual=True)
+    ## ipv6-extension-header.h: void ns3::Ipv6ExtensionLooseRoutingHeader::SetNumberAddress(uint8_t n) [member function]
+    cls.add_method('SetNumberAddress', 
+                   'void', 
+                   [param('uint8_t', 'n')])
+    ## ipv6-extension-header.h: void ns3::Ipv6ExtensionLooseRoutingHeader::SetRouterAddress(uint8_t index, ns3::Ipv6Address addr) [member function]
+    cls.add_method('SetRouterAddress', 
+                   'void', 
+                   [param('uint8_t', 'index'), param('ns3::Ipv6Address', 'addr')])
+    ## ipv6-extension-header.h: void ns3::Ipv6ExtensionLooseRoutingHeader::SetRoutersAddress(std::vector<ns3::Ipv6Address, std::allocator<ns3::Ipv6Address> > routersAddress) [member function]
+    cls.add_method('SetRoutersAddress', 
+                   'void', 
+                   [param('std::vector< ns3::Ipv6Address >', 'routersAddress')])
+    return
+
 def register_Ns3Ipv6L3Protocol_methods(root_module, cls):
     ## ipv6-l3-protocol.h: ns3::Ipv6L3Protocol::PROT_NUMBER [variable]
     cls.add_static_attribute('PROT_NUMBER', 'uint16_t const', is_const=True)
@@ -2307,6 +2933,16 @@ def register_Ns3Ipv6L3Protocol_methods(root_module, cls):
     cls.add_method('RemoveAutoconfiguredAddress', 
                    'void', 
                    [param('uint32_t', 'interface'), param('ns3::Ipv6Address', 'network'), param('ns3::Ipv6Prefix', 'mask'), param('ns3::Ipv6Address', 'defaultRouter')])
+    ## ipv6-l3-protocol.h: void ns3::Ipv6L3Protocol::RegisterExtensions() [member function]
+    cls.add_method('RegisterExtensions', 
+                   'void', 
+                   [], 
+                   is_virtual=True)
+    ## ipv6-l3-protocol.h: void ns3::Ipv6L3Protocol::RegisterOptions() [member function]
+    cls.add_method('RegisterOptions', 
+                   'void', 
+                   [], 
+                   is_virtual=True)
     ## ipv6-l3-protocol.h: void ns3::Ipv6L3Protocol::DoDispose() [member function]
     cls.add_method('DoDispose', 
                    'void', 
