@@ -67,8 +67,8 @@ class EdcaTxopN : public Dcf
 {
 public:
 
-  typedef Callback <void, WifiMacHeader const&> TxOk;
-  typedef Callback <void, WifiMacHeader const&> TxFailed;
+  typedef Callback <void, const WifiMacHeader&> TxOk;
+  typedef Callback <void, const WifiMacHeader&> TxFailed;
   
   static TypeId GetTypeId (void);
   EdcaTxopN ();
@@ -128,7 +128,7 @@ public:
   void NextFragment (void);
   Ptr<Packet> GetFragmentPacket (WifiMacHeader *hdr);
   
-  void Queue (Ptr<const Packet> packet, WifiMacHeader const &hdr);
+  void Queue (Ptr<const Packet> packet, const WifiMacHeader &hdr);
   void SetMsduAggregator (Ptr<MsduAggregator> aggr);
 
 private:
@@ -141,8 +141,8 @@ private:
    *   SA = Address3
    *   DA = Address1
    */
-  Mac48Address MapSrcAddressForAggregation (WifiMacHeader const &hdr);
-  Mac48Address MapDestAddressForAggregation (WifiMacHeader const &hdr);
+  Mac48Address MapSrcAddressForAggregation (const WifiMacHeader &hdr);
+  Mac48Address MapDestAddressForAggregation (const WifiMacHeader &hdr);
   EdcaTxopN &operator = (const EdcaTxopN &);
   EdcaTxopN (const EdcaTxopN &);
   

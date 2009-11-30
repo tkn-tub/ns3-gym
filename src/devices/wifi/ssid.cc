@@ -68,7 +68,7 @@ Ssid::Ssid (char const ssid[32], uint8_t length)
     }
 }
 bool 
-Ssid::IsEqual (Ssid const &o) const
+Ssid::IsEqual (const Ssid& o) const
 {
   uint8_t i = 0;
   while (i < 32 && 

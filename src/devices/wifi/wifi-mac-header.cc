@@ -518,23 +518,23 @@ WifiMacHeader::IsToDs (void) const
 bool 
 WifiMacHeader::IsData (void) const
 {
-  return (m_ctrlType == TYPE_DATA)?true:false;
+  return (m_ctrlType == TYPE_DATA);
     
 }
 bool 
 WifiMacHeader::IsQosData (void) const
 {
-  return (m_ctrlType == TYPE_DATA && (m_ctrlSubtype & 0x08))?true:false;
+  return (m_ctrlType == TYPE_DATA && (m_ctrlSubtype & 0x08));
 }
 bool 
 WifiMacHeader::IsCtl (void) const
 {
-  return (m_ctrlType == TYPE_CTL)?true:false;
+  return (m_ctrlType == TYPE_CTL);
 }
 bool 
 WifiMacHeader::IsMgt (void) const
 {
-  return (m_ctrlType == TYPE_MGT)?true:false;
+  return (m_ctrlType == TYPE_MGT);
 }
 bool 
 WifiMacHeader::IsCfpoll (void) const
@@ -558,77 +558,77 @@ WifiMacHeader::IsCfpoll (void) const
 bool 
 WifiMacHeader::IsRts (void) const
 {
-  return (GetType () == WIFI_MAC_CTL_RTS)?true:false;
+  return (GetType () == WIFI_MAC_CTL_RTS);
 }
 bool 
 WifiMacHeader::IsCts (void) const
 {
-  return (GetType () == WIFI_MAC_CTL_CTS)?true:false;
+  return (GetType () == WIFI_MAC_CTL_CTS);
 }
 bool 
 WifiMacHeader::IsAck (void) const
 {
-  return (GetType () == WIFI_MAC_CTL_ACK)?true:false;
+  return (GetType () == WIFI_MAC_CTL_ACK);
 }
 bool 
 WifiMacHeader::IsAssocReq (void) const
 {
-  return (GetType () == WIFI_MAC_MGT_ASSOCIATION_REQUEST)?true:false;
+  return (GetType () == WIFI_MAC_MGT_ASSOCIATION_REQUEST);
 }
 bool 
 WifiMacHeader::IsAssocResp (void) const
 {
-  return (GetType () == WIFI_MAC_MGT_ASSOCIATION_RESPONSE)?true:false;
+  return (GetType () == WIFI_MAC_MGT_ASSOCIATION_RESPONSE);
 }
 bool 
 WifiMacHeader::IsReassocReq (void) const
 {
-  return (GetType () == WIFI_MAC_MGT_REASSOCIATION_REQUEST)?true:false;
+  return (GetType () == WIFI_MAC_MGT_REASSOCIATION_REQUEST);
 }
 bool 
 WifiMacHeader::IsReassocResp (void) const
 {
-  return (GetType () == WIFI_MAC_MGT_REASSOCIATION_RESPONSE)?true:false;
+  return (GetType () == WIFI_MAC_MGT_REASSOCIATION_RESPONSE);
 }
 bool 
 WifiMacHeader::IsProbeReq (void) const
 {
-  return (GetType () == WIFI_MAC_MGT_PROBE_REQUEST)?true:false;
+  return (GetType () == WIFI_MAC_MGT_PROBE_REQUEST);
 }
 bool 
 WifiMacHeader::IsProbeResp (void) const
 {
-  return (GetType () == WIFI_MAC_MGT_PROBE_RESPONSE)?true:false;
+  return (GetType () == WIFI_MAC_MGT_PROBE_RESPONSE);
 }
 bool 
 WifiMacHeader::IsBeacon (void) const
 {
-  return (GetType () == WIFI_MAC_MGT_BEACON)?true:false;
+  return (GetType () == WIFI_MAC_MGT_BEACON);
 }
 bool 
 WifiMacHeader::IsDisassociation (void) const
 {
-  return (GetType () == WIFI_MAC_MGT_DISASSOCIATION)?true:false;
+  return (GetType () == WIFI_MAC_MGT_DISASSOCIATION);
 }
 bool 
 WifiMacHeader::IsAuthentication (void) const
 {
-  return (GetType () == WIFI_MAC_MGT_AUTHENTICATION)?true:false;
+  return (GetType () == WIFI_MAC_MGT_AUTHENTICATION);
 }
 bool 
 WifiMacHeader::IsDeauthentication (void) const
 {
-  return (GetType () == WIFI_MAC_MGT_DEAUTHENTICATION)?true:false;
+  return (GetType () == WIFI_MAC_MGT_DEAUTHENTICATION);
 }
 bool
 WifiMacHeader::IsAction (void) const
 {
-  return (GetType () == WIFI_MAC_MGT_ACTION)?true:false;
+  return (GetType () == WIFI_MAC_MGT_ACTION);
 }
 bool
 WifiMacHeader::IsMultihopAction (void) const
 {
-  return (GetType () == WIFI_MAC_MGT_MULTIHOP_ACTION)?true:false;
+  return (GetType () == WIFI_MAC_MGT_MULTIHOP_ACTION);
 }
 
 
@@ -660,42 +660,42 @@ WifiMacHeader::GetFragmentNumber (void) const
 bool 
 WifiMacHeader::IsRetry (void) const
 {
-  return (m_ctrlRetry == 1)?true:false;
+  return (m_ctrlRetry == 1);
 }
 bool 
 WifiMacHeader::IsMoreFragments (void) const
 {
-  return (m_ctrlMoreFrag == 1)?true:false;
+  return (m_ctrlMoreFrag == 1);
 }
 bool 
 WifiMacHeader::IsQosBlockAck (void) const
 {
   NS_ASSERT (IsQosData ());
-  return (m_qosAckPolicy == 3)?true:false;
+  return (m_qosAckPolicy == 3);
 }
 bool 
 WifiMacHeader::IsQosNoAck (void) const
 {
   NS_ASSERT (IsQosData ());
-  return (m_qosAckPolicy == 1)?true:false;
+  return (m_qosAckPolicy == 1);
 }
 bool 
 WifiMacHeader::IsQosAck (void) const
 {
   NS_ASSERT (IsQosData ());
-  return (m_qosAckPolicy == 0)?true:false;
+  return (m_qosAckPolicy == 0);
 }
 bool
 WifiMacHeader::IsQosEosp (void) const
 {
   NS_ASSERT (IsQosData ());
-  return (m_qosEosp == 1)?true:false;
+  return (m_qosEosp == 1);
 }
 bool
 WifiMacHeader::IsQosAmsdu (void) const
 {
   NS_ASSERT (IsQosData ());
-  return (m_amsduPresent == 1)?true:false;
+  return (m_amsduPresent == 1);
 }
 uint8_t
 WifiMacHeader::GetQosTid (void) const
@@ -825,7 +825,7 @@ WifiMacHeader::GetSize (void) const
   }
   return size;
 }
-char const *
+const char *
 WifiMacHeader::GetTypeString (void) const
 {
 #define FOO(x) \

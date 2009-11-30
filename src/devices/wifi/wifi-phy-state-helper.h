@@ -59,7 +59,7 @@ public:
 private:
   typedef std::vector<WifiPhyListener *> Listeners;
 
-  char const *StateToString (enum WifiPhy::State state);
+  const char *StateToString (enum WifiPhy::State state);
   void LogPreviousIdleAndCcaBusyStates (void);
 
   void NotifyTxStart (Time duration);

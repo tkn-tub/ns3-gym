@@ -40,7 +40,7 @@ StatusCode::SetFailure (void)
 bool 
 StatusCode::IsSuccess (void) const
 {
-  return (m_code == 0)?true:false;
+  return (m_code == 0);
 }
 uint32_t 
 StatusCode::GetSerializedSize (void) const

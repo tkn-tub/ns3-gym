@@ -149,7 +149,7 @@ MacRxMiddle::SequenceControlSmaller (uint16_t seqca, uint16_t seqcb)
 
 
 OriginatorRxStatus *
-MacRxMiddle::Lookup (WifiMacHeader const *hdr)
+MacRxMiddle::Lookup (const WifiMacHeader *hdr)
 {
   NS_LOG_FUNCTION (hdr);
   OriginatorRxStatus *originator;
@@ -183,7 +183,7 @@ MacRxMiddle::Lookup (WifiMacHeader const *hdr)
 }
 
 bool
-MacRxMiddle::IsDuplicate (WifiMacHeader const*hdr, 
+MacRxMiddle::IsDuplicate (const WifiMacHeader* hdr, 
                           OriginatorRxStatus *originator) const
 {
   NS_LOG_FUNCTION (hdr << originator);
@@ -196,7 +196,7 @@ MacRxMiddle::IsDuplicate (WifiMacHeader const*hdr,
 }
 
 Ptr<Packet>
-MacRxMiddle::HandleFragments (Ptr<Packet> packet, WifiMacHeader const*hdr,
+MacRxMiddle::HandleFragments (Ptr<Packet> packet, const WifiMacHeader *hdr,
                               OriginatorRxStatus *originator)
 {
   NS_LOG_FUNCTION (packet << hdr << originator);
@@ -255,7 +255,7 @@ MacRxMiddle::HandleFragments (Ptr<Packet> packet, WifiMacHeader const*hdr,
 }
 
 void
-MacRxMiddle::Receive (Ptr<Packet> packet, WifiMacHeader const *hdr)
+MacRxMiddle::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
 {
   NS_LOG_FUNCTION (packet << hdr);
   NS_ASSERT (hdr->IsData () || hdr->IsMgt ());

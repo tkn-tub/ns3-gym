@@ -109,7 +109,7 @@ private:
   * When an A-MSDU is received, is deaggregated by this method and all extracted packets are
   * forwarded up.
   */
-  void DeaggregateAmsduAndForward (Ptr<Packet> aggregatedPacket, WifiMacHeader const *hdr);
+  void DeaggregateAmsduAndForward (Ptr<Packet> aggregatedPacket, const WifiMacHeader *hdr);
 
   QstaWifiMac &operator = (const QstaWifiMac &);
   QstaWifiMac (const QstaWifiMac &);

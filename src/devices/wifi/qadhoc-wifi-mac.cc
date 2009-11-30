@@ -334,7 +334,7 @@ QadhocWifiMac::ForwardUp (Ptr<Packet> packet, Mac48Address from, Mac48Address to
 }
 
 void
-QadhocWifiMac::Receive (Ptr<Packet> packet, WifiMacHeader const *hdr)
+QadhocWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
 {
   NS_LOG_FUNCTION (this << packet << hdr);
   NS_ASSERT (!hdr->IsCtl ());
@@ -360,7 +360,7 @@ QadhocWifiMac::Receive (Ptr<Packet> packet, WifiMacHeader const *hdr)
 
 void
 QadhocWifiMac::DeaggregateAmsduAndForward (Ptr<Packet> aggregatedPacket,
-                                           WifiMacHeader const *hdr)
+                                           const WifiMacHeader *hdr)
 {
   DeaggregatedMsdus packets = MsduAggregator::Deaggregate (aggregatedPacket);
   for (DeaggregatedMsdusCI i = packets.begin (); i != packets.end (); ++i)

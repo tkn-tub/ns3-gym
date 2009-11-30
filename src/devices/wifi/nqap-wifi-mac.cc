@@ -413,7 +413,7 @@ NqapWifiMac::SendOneBeacon (void)
   m_beaconEvent = Simulator::Schedule (m_beaconInterval, &NqapWifiMac::SendOneBeacon, this);
 }
 void 
-NqapWifiMac::TxOk (WifiMacHeader const &hdr)
+NqapWifiMac::TxOk (const WifiMacHeader &hdr)
 {
   NS_LOG_FUNCTION (this);
   WifiRemoteStation *station = m_stationManager->Lookup (hdr.GetAddr1 ());
@@ -425,7 +425,7 @@ NqapWifiMac::TxOk (WifiMacHeader const &hdr)
     }
 }
 void 
-NqapWifiMac::TxFailed (WifiMacHeader const &hdr)
+NqapWifiMac::TxFailed (const WifiMacHeader &hdr)
 {
   NS_LOG_FUNCTION (this);
   WifiRemoteStation *station = m_stationManager->Lookup (hdr.GetAddr1 ());
@@ -437,7 +437,7 @@ NqapWifiMac::TxFailed (WifiMacHeader const &hdr)
     }
 }
 void 
-NqapWifiMac::Receive (Ptr<Packet> packet, WifiMacHeader const *hdr)
+NqapWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
 {
   NS_LOG_FUNCTION (this << packet << hdr);
 

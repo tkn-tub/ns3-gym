@@ -174,7 +174,7 @@ public:
   uint8_t GetQosTxopLimit (void) const;
 
   uint32_t GetSize (void) const;
-  char const *GetTypeString (void) const;
+  const char *GetTypeString (void) const;
 
 
 private:

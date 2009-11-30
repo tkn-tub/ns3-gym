@@ -89,27 +89,27 @@ WifiPhyStateHelper::IsStateCcaBusy (void)
 bool 
 WifiPhyStateHelper::IsStateIdle (void)
 {
-  return (GetState () == WifiPhy::IDLE)?true:false;
+  return (GetState () == WifiPhy::IDLE);
 }
 bool 
 WifiPhyStateHelper::IsStateBusy (void)
 {
-  return (GetState () != WifiPhy::IDLE)?true:false;
+  return (GetState () != WifiPhy::IDLE);
 }
 bool 
 WifiPhyStateHelper::IsStateSync (void)
 {
-  return (GetState () == WifiPhy::SYNC)?true:false;
+  return (GetState () == WifiPhy::SYNC);
 }
 bool 
 WifiPhyStateHelper::IsStateTx (void)
 {
-  return (GetState () == WifiPhy::TX)?true:false;
+  return (GetState () == WifiPhy::TX);
 }
 bool 
 WifiPhyStateHelper::IsStateSwitching (void)
 {
-  return (GetState () == WifiPhy::SWITCHING)?true:false;
+  return (GetState () == WifiPhy::SWITCHING);
 }
 
 
@@ -157,7 +157,7 @@ WifiPhyStateHelper::GetLastRxStartTime (void) const
   return m_startSync;
 }
 
-char const *
+const char *
 WifiPhyStateHelper::StateToString (enum WifiPhy::State state)
 {
   switch (state) {

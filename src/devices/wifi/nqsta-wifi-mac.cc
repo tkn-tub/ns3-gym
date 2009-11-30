@@ -501,7 +501,7 @@ NqstaWifiMac::SupportsSendFrom (void) const
 
 
 void 
-NqstaWifiMac::Receive (Ptr<Packet> packet, WifiMacHeader const *hdr)
+NqstaWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
 {
   NS_LOG_FUNCTION (this << packet << hdr);
   NS_ASSERT (!hdr->IsCtl ());

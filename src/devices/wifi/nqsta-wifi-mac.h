@@ -123,7 +123,7 @@ private:
   void SetActiveProbing (bool enable);
   bool GetActiveProbing (void) const;
   void ForwardUp (Ptr<Packet> packet, Mac48Address from, Mac48Address to);
-  void Receive (Ptr<Packet> packet, WifiMacHeader const *hdr);
+  void Receive (Ptr<Packet> packet, const WifiMacHeader *hdr);
   Mac48Address GetBroadcastBssid (void);
   void SendProbeRequest (void);
   void SendAssociationRequest (void);

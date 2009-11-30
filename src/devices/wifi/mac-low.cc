@@ -174,22 +174,22 @@ MacLowTransmissionParameters::DisableRts (void)
 bool 
 MacLowTransmissionParameters::MustWaitAck (void) const
 {
-  return (m_waitAck != ACK_NONE)?true:false;
+  return (m_waitAck != ACK_NONE);
 }
 bool 
 MacLowTransmissionParameters::MustWaitNormalAck (void) const
 {
-  return (m_waitAck == ACK_NORMAL)?true:false;
+  return (m_waitAck == ACK_NORMAL);
 }
 bool 
 MacLowTransmissionParameters::MustWaitFastAck (void) const
 {
-  return (m_waitAck == ACK_FAST)?true:false;
+  return (m_waitAck == ACK_FAST);
 }
 bool 
 MacLowTransmissionParameters::MustWaitSuperFastAck (void) const
 {
-  return (m_waitAck == ACK_SUPER_FAST)?true:false;
+  return (m_waitAck == ACK_SUPER_FAST);
 }
 bool 
 MacLowTransmissionParameters::MustSendRts (void) const
@@ -199,7 +199,7 @@ MacLowTransmissionParameters::MustSendRts (void) const
 bool 
 MacLowTransmissionParameters::HasDurationId (void) const
 {
-  return (m_overrideDurationId != Seconds (0))?true:false;
+  return (m_overrideDurationId != Seconds (0));
 }
 Time
 MacLowTransmissionParameters::GetDurationId (void) const
@@ -210,7 +210,7 @@ MacLowTransmissionParameters::GetDurationId (void) const
 bool 
 MacLowTransmissionParameters::HasNextPacket (void) const
 {
-  return (m_nextSize != 0)?true:false;
+  return (m_nextSize != 0);
 }
 uint32_t 
 MacLowTransmissionParameters::GetNextPacketSize (void) const
@@ -466,7 +466,7 @@ MacLow::RegisterDcfListener (MacLowDcfListener *listener)
 
 void 
 MacLow::StartTransmission (Ptr<const Packet> packet, 
-                           WifiMacHeader const*hdr, 
+                           const WifiMacHeader* hdr, 
                            MacLowTransmissionParameters params,
                            MacLowTransmissionListener *listener)
 {
@@ -760,8 +760,8 @@ MacLow::GetAckTxModeForData (Mac48Address to, WifiMode dataTxMode) const
 
 Time
 MacLow::CalculateOverallTxTime (Ptr<const Packet> packet,
-                                WifiMacHeader const*hdr, 
-                                MacLowTransmissionParameters const& params) const
+                                const WifiMacHeader* hdr, 
+                                const MacLowTransmissionParameters& params) const
 {
   Time txTime = Seconds (0);
   WifiMode rtsMode = GetRtsTxMode (packet, hdr);
@@ -784,8 +784,8 @@ MacLow::CalculateOverallTxTime (Ptr<const Packet> packet,
 
 Time
 MacLow::CalculateTransmissionTime (Ptr<const Packet> packet,
-                                   WifiMacHeader const*hdr, 
-                                   MacLowTransmissionParameters const& params) const
+                                   const WifiMacHeader* hdr, 
+                                   const MacLowTransmissionParameters& params) const
 {
   Time txTime = CalculateOverallTxTime (packet, hdr, params);
   if (params.HasNextPacket ()) 
@@ -908,7 +908,7 @@ MacLow::NotifyCtsTimeoutResetNow ()
 }
 
 void
-MacLow::ForwardDown (Ptr<const Packet> packet, WifiMacHeader const* hdr, 
+MacLow::ForwardDown (Ptr<const Packet> packet, const WifiMacHeader* hdr, 
                      WifiMode txMode)
 {
   NS_LOG_FUNCTION (this << packet << hdr << txMode);
