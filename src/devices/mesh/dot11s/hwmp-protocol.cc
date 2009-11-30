@@ -985,8 +985,7 @@ HwmpProtocol::RetryPathDiscovery (Mac48Address dst, uint8_t numOfRetry)
       m_preqTimeouts.erase (i);
       return;
     }
-  numOfRetry++;
-  if (numOfRetry >= m_dot11MeshHWMPmaxPREQretries)
+  if (numOfRetry > m_dot11MeshHWMPmaxPREQretries)
     {
       QueuedPacket packet = DequeueFirstPacketByDst (dst);
       //purge queue and delete entry from retryDatabase
@@ -1002,6 +1001,7 @@ HwmpProtocol::RetryPathDiscovery (Mac48Address dst, uint8_t numOfRetry)
       m_preqTimeouts.erase (i);
       return;
     }
+  numOfRetry++;
   uint32_t originator_seqno = GetNextHwmpSeqno ();
   uint32_t dst_seqno = m_rtable->LookupReactiveExpired (dst).seqnum;
   for (HwmpProtocolMacMap::const_iterator i = m_interfaces.begin (); i != m_interfaces.end (); i ++)

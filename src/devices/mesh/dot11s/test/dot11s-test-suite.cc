@@ -20,10 +20,10 @@
 #include "ns3/test.h"
 #include "ns3/packet.h"
 #include "ns3/simulator.h"
-#include "dot11s-mac-header.h"
-#include "hwmp-rtable.h"
-#include "peer-link-frame.h"
-#include "ie-dot11s-peer-management.h"
+#include "../dot11s-mac-header.h"
+#include "../hwmp-rtable.h"
+#include "../peer-link-frame.h"
+#include "../ie-dot11s-peer-management.h"
 
 namespace ns3 {
 namespace dot11s {
