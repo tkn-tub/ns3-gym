@@ -56,15 +56,22 @@ us a note on ns-developers mailing list.  </p>
 'context' (a 32bit integer which, by convention identifies a node by its id). Simulator::GetContext
 returns the context of the currently-executing event while Simulator::ScheduleWithContext creates an
 event with a context different from the execution context of the caller. This API is used
-by the ns-3 logging system to report the execution context of each log line.</li>
-
+by the ns-3 logging system to report the execution context of each log line.
 <li><b>Object::DoStart</b>: Users who need to complete their object setup at the start of a simulation
-can override this virtual method, perform their adhoc setup, and then, must chain up to their parent.</li>
-
+can override this virtual method, perform their adhoc setup, and then, must chain up to their parent.
 <li><b>Aod hoc On-Demand Distance Vector (AODV)</b> routing model, 
 <a href=http://www.ietf.org/rfc/rfc3561.txt>RFC 3561</a> </li>
+<li><b>Ipv4::IsDestinationAddress (Ipv4Address address, uint32_t iif)</b> Method added to support checks of whether a destination address should be accepted 
+as one of the host's own addresses.  RFC 1122 Strong/Weak end system behavior can be changed with a new attribute (WeakEsModel) in class Ipv4.  </li>
 
-<li><b>IPv6 extension support</b></li>
+<li><b>Net-anim interface</b>: Provides an interface to net-anim, a network animator for point-to-point 
+links in ns-3.  The interface generates a custom trace file for use with the NetAnim program.</li>
+
+<li><b>Topology Helpers</b>: New topology helpers have been introduced including PointToPointStarHelper, 
+PointToPointDumbbellHelper, PointToPointGridHelper, and CsmaStarHelper.</li>
+
+<li><b>IPv6 extensions support</b>: Provides API to add IPv6 extensions and options. Two examples (fragmentation
+and loose routing) are available.</li>
 </ul>
 
 <h2>Changes to existing API:</h2>
@@ -129,7 +136,37 @@ Simulator::SetScheduler (sched);
 </pre>
 
 <li> Extensions to IPv4 <b>Ping</b> application: verbose output and the ability to configure different ping 
-sizes and time intervals (via new attributes)</li>
+sizes and time intervals (via new attributes)
+
+<li><b>Topology Helpers</b>: Previously, topology helpers such as a point-to-point star existed in the 
+PointToPointHelper class in the form of a method (ex: PointToPointHelper::InstallStar).  These topology 
+helpers have been pulled out of the specific helper classes and created as separate classes.  Several 
+different topology helper classes now exist including PointToPointStarHelper, PointToPointGridHelper, 
+PointToPointDumbbellHelper, and CsmaStarHelper.  For example, a user wishes to create a 
+point-to-point star network:<br>
+Before:
+<pre>
+NodeContainer hubNode;
+NodeContainer spokeNodes;
+hubNode.Create (1);
+Ptr<Node> hub = hubNode.Get (0);
+spokeNodes.Create (nNodes - 1);
+
+PointToPointHelper pointToPoint;
+pointToPoint.SetDeviceAttribute ("DataRate", StringValue ("5Mbps"));
+pointToPoint.SetChannelAttribute ("Delay", StringValue ("2ms"));
+NetDeviceContainer hubDevices, spokeDevices;
+pointToPoint.InstallStar (hubNode.Get (0), spokeNodes, hubDevices, spokeDevices);
+</pre>
+After:
+<pre>
+PointToPointHelper pointToPoint;
+pointToPoint.SetDeviceAttribute ("DataRate", StringValue ("5Mbps"));
+pointToPoint.SetChannelAttribute ("Delay", StringValue ("2ms"));
+PointToPointStarHelper star (nSpokes, pointToPoint);
+</pre>
+
+</li>
 
 </ul>
 
