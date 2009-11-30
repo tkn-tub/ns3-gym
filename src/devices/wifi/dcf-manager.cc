@@ -457,14 +457,10 @@ DcfManager::GetAccessGrantStart (void) const
   Time rxAccessStart;
   if (!m_rxing) 
     {
-      rxAccessStart = m_lastRxEnd;
+      rxAccessStart = m_lastRxEnd + m_sifs;
       if (!m_lastRxReceivedOk)
         {
           rxAccessStart += m_eifsNoDifs;
-        }
-      else
-        {
-          rxAccessStart += m_sifs;
         }
     } 
   else 

@@ -431,14 +431,14 @@ DcfManagerTest::DoRun (void)
 
   // Test an EIFS
   // 
-  //  20          60     66           76      80       84       88       92       96   98
-  //   |    rx     | sifs | acktxttime | aifsn | bslot0 | bslot1 | bslot2 | bslot3 | tx |
-  //        |      | <---------eifs----------->|
+  //  20          60     66           76             86       90       94       98       102   106
+  //   |    rx     | sifs | acktxttime | sifs + aifsn | bslot0 | bslot1 | bslot2 | bslot3 | tx |
+  //        |      | <------eifs------>|
   //       30 request access. backoff slots: 4
   StartTest (4, 6, 10);
   AddDcfState (1);
   AddRxErrorEvt (20, 40);
-  AddAccessRequest (30, 2, 96, 0);
+  AddAccessRequest (30, 2, 102, 0);
   ExpectCollision (30, 4, 0); // backoff: 4 slots  
   EndTest ();
 
