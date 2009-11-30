@@ -34,14 +34,14 @@ public:
 
   WifiPhyStateHelper ();
 
-  void SetReceiveOkCallback (WifiPhy::SyncOkCallback callback);
-  void SetReceiveErrorCallback (WifiPhy::SyncErrorCallback callback);
+  void SetReceiveOkCallback (WifiPhy::RxOkCallback callback);
+  void SetReceiveErrorCallback (WifiPhy::RxErrorCallback callback);
   void RegisterListener (WifiPhyListener *listener);
   enum WifiPhy::State GetState (void);
   bool IsStateCcaBusy (void);
   bool IsStateIdle (void);
   bool IsStateBusy (void);
-  bool IsStateSync (void);
+  bool IsStateRx (void);
   bool IsStateTx (void);
   bool IsStateSwitching (void);
   Time GetStateDuration (void);
@@ -49,35 +49,34 @@ public:
   Time GetLastRxStartTime (void) const;
 
   void SwitchToTx (Time txDuration, Ptr<const Packet> packet, WifiMode txMode, WifiPreamble preamble, uint8_t txPower);
-  void SwitchToSync (Time syncDuration);
+  void SwitchToRx (Time rxDuration);
   void SwitchToChannelSwitching (Time switchingDuration); 
-  void SwitchFromSyncEndOk (Ptr<Packet> packet, double snr, WifiMode mode, enum WifiPreamble preamble);
-  void SwitchFromSyncEndError (Ptr<const Packet> packet, double snr);
+  void SwitchFromRxEndOk (Ptr<Packet> packet, double snr, WifiMode mode, enum WifiPreamble preamble);
+  void SwitchFromRxEndError (Ptr<const Packet> packet, double snr);
   void SwitchMaybeToCcaBusy (Time duration);
 
   TracedCallback<Time,Time,enum WifiPhy::State> m_stateLogger;
 private:
   typedef std::vector<WifiPhyListener *> Listeners;
 
-  const char *StateToString (enum WifiPhy::State state);
   void LogPreviousIdleAndCcaBusyStates (void);
 
   void NotifyTxStart (Time duration);
   void NotifyWakeup (void);
-  void NotifySyncStart (Time duration);
-  void NotifySyncEndOk (void);
-  void NotifySyncEndError (void);
+  void NotifyRxStart (Time duration);
+  void NotifyRxEndOk (void);
+  void NotifyRxEndError (void);
   void NotifyMaybeCcaBusyStart (Time duration);
   void NotifySwitchingStart (Time duration); 
-  void DoSwitchFromSync (void);
+  void DoSwitchFromRx (void);
 
-  bool m_syncing;
+  bool m_rxing;
   Time m_endTx;
-  Time m_endSync;
+  Time m_endRx;
   Time m_endCcaBusy;
   Time m_endSwitching; 
   Time m_startTx;
-  Time m_startSync;
+  Time m_startRx;
   Time m_startCcaBusy;
   Time m_startSwitching; 
   Time m_previousStateChangeTime;
@@ -86,8 +85,8 @@ private:
   TracedCallback<Ptr<const Packet>, double, WifiMode, enum WifiPreamble> m_rxOkTrace;
   TracedCallback<Ptr<const Packet>, double> m_rxErrorTrace;
   TracedCallback<Ptr<const Packet>,WifiMode,WifiPreamble,uint8_t> m_txTrace;
-  WifiPhy::SyncOkCallback m_syncOkCallback;
-  WifiPhy::SyncErrorCallback m_syncErrorCallback;
+  WifiPhy::RxOkCallback m_rxOkCallback;
+  WifiPhy::RxErrorCallback m_rxErrorCallback;
 };
 
 } // namespace ns3

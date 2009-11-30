@@ -50,13 +50,13 @@ WifiPhyStateHelper::GetTypeId (void)
 }
 
 WifiPhyStateHelper::WifiPhyStateHelper ()
-  : m_syncing (false),
+  : m_rxing (false),
     m_endTx (Seconds (0)),
-    m_endSync (Seconds (0)),
+    m_endRx (Seconds (0)),
     m_endCcaBusy (Seconds (0)),
     m_endSwitching (Seconds (0)), 
     m_startTx (Seconds (0)),
-    m_startSync (Seconds (0)),
+    m_startRx (Seconds (0)),
     m_startCcaBusy (Seconds (0)),
     m_startSwitching (Seconds (0)), 
     m_previousStateChangeTime (Seconds (0))
@@ -65,14 +65,14 @@ WifiPhyStateHelper::WifiPhyStateHelper ()
 }
 
 void 
-WifiPhyStateHelper::SetReceiveOkCallback (WifiPhy::SyncOkCallback callback)
+WifiPhyStateHelper::SetReceiveOkCallback (WifiPhy::RxOkCallback callback)
 {
-  m_syncOkCallback = callback;
+  m_rxOkCallback = callback;
 }
 void 
-WifiPhyStateHelper::SetReceiveErrorCallback (WifiPhy::SyncErrorCallback callback)
+WifiPhyStateHelper::SetReceiveErrorCallback (WifiPhy::RxErrorCallback callback)
 {
-  m_syncErrorCallback = callback;
+  m_rxErrorCallback = callback;
 }
 void 
 WifiPhyStateHelper::RegisterListener (WifiPhyListener *listener)
@@ -80,12 +80,6 @@ WifiPhyStateHelper::RegisterListener (WifiPhyListener *listener)
   m_listeners.push_back (listener);
 }
 
-bool 
-WifiPhyStateHelper::IsStateCcaBusy (void)
-{
-  return GetState () == WifiPhy::CCA_BUSY;
-}
- 
 bool 
 WifiPhyStateHelper::IsStateIdle (void)
 {
@@ -97,9 +91,14 @@ WifiPhyStateHelper::IsStateBusy (void)
   return (GetState () != WifiPhy::IDLE);
 }
 bool 
-WifiPhyStateHelper::IsStateSync (void)
+WifiPhyStateHelper::IsStateCcaBusy (void)
 {
-  return (GetState () == WifiPhy::SYNC);
+  return (GetState () == WifiPhy::CCA_BUSY);
+}
+bool 
+WifiPhyStateHelper::IsStateRx (void)
+{
+  return (GetState () == WifiPhy::RX);
 }
 bool 
 WifiPhyStateHelper::IsStateTx (void)
@@ -126,8 +125,8 @@ WifiPhyStateHelper::GetDelayUntilIdle (void)
   Time retval;
 
   switch (GetState ()) {
-  case WifiPhy::SYNC:
-    retval = m_endSync - Simulator::Now ();
+  case WifiPhy::RX:
+    retval = m_endRx - Simulator::Now ();
     break;
   case WifiPhy::TX:
     retval = m_endTx - Simulator::Now ();
@@ -142,8 +141,7 @@ WifiPhyStateHelper::GetDelayUntilIdle (void)
     retval = Seconds (0);
     break;
   default:
-    NS_ASSERT (false);
-    // NOTREACHED
+    NS_FATAL_ERROR ("Invalid WifiPhy state.");
     retval = Seconds (0);
     break;
   }
@@ -154,34 +152,7 @@ WifiPhyStateHelper::GetDelayUntilIdle (void)
 Time 
 WifiPhyStateHelper::GetLastRxStartTime (void) const
 {
-  return m_startSync;
-}
-
-const char *
-WifiPhyStateHelper::StateToString (enum WifiPhy::State state)
-{
-  switch (state) {
-  case WifiPhy::TX:
-    return "TX";
-    break;
-  case WifiPhy::CCA_BUSY:
-    return "CCA_BUSY";
-    break;
-  case WifiPhy::IDLE:
-    return "IDLE";
-    break;
-  case WifiPhy::SYNC:
-    return "SYNC";
-    break;
-  case WifiPhy::SWITCHING: 
-    return "SWITCHING";
-    break;
-  default:
-    NS_ASSERT (false);
-    // quiet compiler
-    return "INVALID";
-    break;
-  }
+  return m_startRx;
 }
 
 enum WifiPhy::State 
@@ -191,9 +162,9 @@ WifiPhyStateHelper::GetState (void)
     {
       return WifiPhy::TX;
     } 
-  else if (m_syncing) 
+  else if (m_rxing) 
     {
-      return WifiPhy::SYNC;
+      return WifiPhy::RX;
     } 
   else if (m_endSwitching > Simulator::Now ())  
     { 
@@ -218,21 +189,21 @@ WifiPhyStateHelper::NotifyTxStart (Time duration)
   }
 }
 void 
-WifiPhyStateHelper::NotifySyncStart (Time duration)
+WifiPhyStateHelper::NotifyRxStart (Time duration)
 {
   for (Listeners::const_iterator i = m_listeners.begin (); i != m_listeners.end (); i++) {
     (*i)->NotifyRxStart (duration);
   }
 }
 void 
-WifiPhyStateHelper::NotifySyncEndOk (void)
+WifiPhyStateHelper::NotifyRxEndOk (void)
 {
   for (Listeners::const_iterator i = m_listeners.begin (); i != m_listeners.end (); i++) {
     (*i)->NotifyRxEndOk ();
   }
 }
 void 
-WifiPhyStateHelper::NotifySyncEndError (void)
+WifiPhyStateHelper::NotifyRxEndError (void)
 {
   for (Listeners::const_iterator i = m_listeners.begin (); i != m_listeners.end (); i++) {
     (*i)->NotifyRxEndError ();
@@ -257,14 +228,14 @@ void
 WifiPhyStateHelper::LogPreviousIdleAndCcaBusyStates (void)
 {
   Time now = Simulator::Now ();
-  Time idleStart = Max (m_endCcaBusy, m_endSync);
+  Time idleStart = Max (m_endCcaBusy, m_endRx);
   idleStart = Max (idleStart, m_endTx);
   idleStart = Max (idleStart, m_endSwitching); 
   NS_ASSERT (idleStart <= now);
-  if (m_endCcaBusy > m_endSync && 
+  if (m_endCcaBusy > m_endRx && 
       m_endCcaBusy > m_endSwitching &&  
       m_endCcaBusy > m_endTx) {
-    Time ccaBusyStart = Max (m_endTx, m_endSync);
+    Time ccaBusyStart = Max (m_endTx, m_endRx);
     ccaBusyStart = Max (ccaBusyStart, m_startCcaBusy);
     ccaBusyStart = Max (ccaBusyStart, m_endSwitching); 
     m_stateLogger (ccaBusyStart, idleStart - ccaBusyStart, WifiPhy::CCA_BUSY);
@@ -280,16 +251,16 @@ WifiPhyStateHelper::SwitchToTx (Time txDuration, Ptr<const Packet> packet, WifiM
   NotifyTxStart (txDuration);
   Time now = Simulator::Now ();
   switch (GetState ()) {
-  case WifiPhy::SYNC:
+  case WifiPhy::RX:
     /* The packet which is being received as well
-     * as its endSync event are cancelled by the caller.
+     * as its endRx event are cancelled by the caller.
      */
-    m_syncing = false;
-    m_stateLogger (m_startSync, now - m_startSync, WifiPhy::SYNC);
-    m_endSync = now;
+    m_rxing = false;
+    m_stateLogger (m_startRx, now - m_startRx, WifiPhy::RX);
+    m_endRx = now;
     break;
   case WifiPhy::CCA_BUSY: {
-    Time ccaStart = Max (m_endSync, m_endTx);
+    Time ccaStart = Max (m_endRx, m_endTx);
     ccaStart = Max (ccaStart, m_startCcaBusy);
     ccaStart = Max (ccaStart, m_endSwitching); 
     m_stateLogger (ccaStart, now - ccaStart, WifiPhy::CCA_BUSY);
@@ -299,7 +270,7 @@ WifiPhyStateHelper::SwitchToTx (Time txDuration, Ptr<const Packet> packet, WifiM
     break;
   case WifiPhy::SWITCHING: 
   default:
-    NS_ASSERT (false);
+    NS_FATAL_ERROR ("Invalid WifiPhy state.");
     break;
   }
   m_stateLogger (now, txDuration, WifiPhy::TX);
@@ -308,33 +279,33 @@ WifiPhyStateHelper::SwitchToTx (Time txDuration, Ptr<const Packet> packet, WifiM
   m_startTx = now;
 }
 void
-WifiPhyStateHelper::SwitchToSync (Time rxDuration)
+WifiPhyStateHelper::SwitchToRx (Time rxDuration)
 {
   NS_ASSERT (IsStateIdle () || IsStateCcaBusy ());
-  NS_ASSERT (!m_syncing);
-  NotifySyncStart (rxDuration);
+  NS_ASSERT (!m_rxing);
+  NotifyRxStart (rxDuration);
   Time now = Simulator::Now ();
   switch (GetState ()) {
   case WifiPhy::IDLE:
     LogPreviousIdleAndCcaBusyStates ();
     break;
   case WifiPhy::CCA_BUSY: {
-    Time ccaStart = Max (m_endSync, m_endTx);
+    Time ccaStart = Max (m_endRx, m_endTx);
     ccaStart = Max (ccaStart, m_startCcaBusy);
     ccaStart = Max (ccaStart, m_endSwitching); 
     m_stateLogger (ccaStart, now - ccaStart, WifiPhy::CCA_BUSY);
   } break;
   case WifiPhy::SWITCHING: 
-  case WifiPhy::SYNC:
+  case WifiPhy::RX:
   case WifiPhy::TX:
-    NS_ASSERT (false);
+    NS_FATAL_ERROR ("Invalid WifiPhy state.");
     break;
   }
   m_previousStateChangeTime = now;
-  m_syncing = true;
-  m_startSync = now;
-  m_endSync = now + rxDuration;
-  NS_ASSERT (IsStateSync ());
+  m_rxing = true;
+  m_startRx = now;
+  m_endRx = now + rxDuration;
+  NS_ASSERT (IsStateRx ());
 }
 
 void 
@@ -343,16 +314,16 @@ WifiPhyStateHelper::SwitchToChannelSwitching (Time switchingDuration)
   NotifySwitchingStart (switchingDuration); 
   Time now = Simulator::Now ();
   switch (GetState ()) {
-  case WifiPhy::SYNC:
+  case WifiPhy::RX:
     /* The packet which is being received as well
-     * as its endSync event are cancelled by the caller.
+     * as its endRx event are cancelled by the caller.
      */
-    m_syncing = false;
-    m_stateLogger (m_startSync, now - m_startSync, WifiPhy::SYNC);
-    m_endSync = now;
+    m_rxing = false;
+    m_stateLogger (m_startRx, now - m_startRx, WifiPhy::RX);
+    m_endRx = now;
     break;
   case WifiPhy::CCA_BUSY: {
-    Time ccaStart = Max (m_endSync, m_endTx);
+    Time ccaStart = Max (m_endRx, m_endTx);
     ccaStart = Max (ccaStart, m_startCcaBusy);
     ccaStart = Max (ccaStart, m_endSwitching);  
     m_stateLogger (ccaStart, now - ccaStart, WifiPhy::CCA_BUSY);
@@ -363,7 +334,7 @@ WifiPhyStateHelper::SwitchToChannelSwitching (Time switchingDuration)
   case WifiPhy::TX:
   case WifiPhy::SWITCHING:
   default:
-    NS_ASSERT (false);
+    NS_FATAL_ERROR ("Invalid WifiPhy state.");
     break;
   }
   
@@ -380,39 +351,39 @@ WifiPhyStateHelper::SwitchToChannelSwitching (Time switchingDuration)
 }
 
 void 
-WifiPhyStateHelper::SwitchFromSyncEndOk (Ptr<Packet> packet, double snr, WifiMode mode, enum WifiPreamble preamble)
+WifiPhyStateHelper::SwitchFromRxEndOk (Ptr<Packet> packet, double snr, WifiMode mode, enum WifiPreamble preamble)
 {
   m_rxOkTrace (packet, snr, mode, preamble);
-  NotifySyncEndOk ();
-  DoSwitchFromSync ();
-  if (!m_syncOkCallback.IsNull ())
+  NotifyRxEndOk ();
+  DoSwitchFromRx ();
+  if (!m_rxOkCallback.IsNull ())
     {
-      m_syncOkCallback (packet, snr, mode, preamble);
+      m_rxOkCallback (packet, snr, mode, preamble);
     }
 
 }
 void 
-WifiPhyStateHelper::SwitchFromSyncEndError (Ptr<const Packet> packet, double snr)
+WifiPhyStateHelper::SwitchFromRxEndError (Ptr<const Packet> packet, double snr)
 {
   m_rxErrorTrace (packet, snr);
-  NotifySyncEndError ();
-  DoSwitchFromSync ();
-  if (!m_syncErrorCallback.IsNull ())
+  NotifyRxEndError ();
+  DoSwitchFromRx ();
+  if (!m_rxErrorCallback.IsNull ())
     {
-      m_syncErrorCallback (packet, snr);
+      m_rxErrorCallback (packet, snr);
     }
 }
 
 void
-WifiPhyStateHelper::DoSwitchFromSync (void)
+WifiPhyStateHelper::DoSwitchFromRx (void)
 {
-  NS_ASSERT (IsStateSync ());
-  NS_ASSERT (m_syncing);
+  NS_ASSERT (IsStateRx ());
+  NS_ASSERT (m_rxing);
 
   Time now = Simulator::Now ();
-  m_stateLogger (m_startSync, now - m_startSync, WifiPhy::SYNC);
+  m_stateLogger (m_startRx, now - m_startRx, WifiPhy::RX);
   m_previousStateChangeTime = now;
-  m_syncing = false;
+  m_rxing = false;
 
   NS_ASSERT (IsStateIdle () || IsStateCcaBusy ());
 }
@@ -429,7 +400,7 @@ WifiPhyStateHelper::SwitchMaybeToCcaBusy (Time duration)
   break;
   case WifiPhy::CCA_BUSY:
     break;
-  case WifiPhy::SYNC:
+  case WifiPhy::RX:
     break;
   case WifiPhy::TX:
     break;
