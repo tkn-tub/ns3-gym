@@ -177,10 +177,11 @@ PointToPointStarHelper star (nSpokes, pointToPoint);
 YansWifiPhy::CcaModelThreshold from -140.0 dBm to -99.0 dBm.  Rationale
 can be found <a href="http://www.nsnam.org/bugzilla/show_bug.cgi?id=689"> 
 here</a>.
+</li>
+<li> Default TTL of IPv4 broadcast datagrams changed from 1 to 64.</li>
+<li> Changed DcfManager::UpdateBackoff (): using flooring instead of rounding in calculation of remaining slots. <a href="http://www.nsnam.org/bugzilla/show_bug.cgi?id=695">
+  See bug 695.</a></li>
 </ul>
-<ul>
-<li> Default TTL of IPv4 broadcast datagrams changed from 1 to 64.
-</ul> 
 
 
 <hr>
