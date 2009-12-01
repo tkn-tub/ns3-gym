@@ -31,6 +31,7 @@
 #include "ns3/mesh-wifi-interface-mac.h"
 #include "ns3/mesh-wifi-interface-mac-plugin.h"
 #include "ns3/wifi-net-device.h"
+#include "ns3/trace-source-accessor.h"
 
 NS_LOG_COMPONENT_DEFINE ("PeerManagementProtocol");
 namespace ns3 {
@@ -69,6 +70,15 @@ PeerManagementProtocol::GetTypeId (void)
                     &PeerManagementProtocol::SetBeaconCollisionAvoidance, &PeerManagementProtocol::GetBeaconCollisionAvoidance),
                     MakeBooleanChecker ()
                   )
+  .AddTraceSource ("LinkOpen",
+                      "New peer link opened",
+                      MakeTraceSourceAccessor (&PeerManagementProtocol::m_linkOpenTraceSrc)
+                  )
+  .AddTraceSource ("LinkClose",
+                      "New peer link closed",
+                      MakeTraceSourceAccessor (&PeerManagementProtocol::m_linkCloseTraceSrc)
+                  )
+                 
                 ;
   return tid;
 }
@@ -434,6 +444,33 @@ PeerManagementProtocol::TimeToTu (Time x)
 {
   return (uint32_t) (x.GetMicroSeconds () / 1024);
 }
+
+void
+PeerManagementProtocol::NotifyLinkOpen (Mac48Address peerMp, Mac48Address peerIface, Mac48Address myIface, uint32_t interface)
+{
+  NS_LOG_LOGIC ("link_open " << myIface << " " << peerIface);
+  m_stats.linksOpened++;
+  m_stats.linksTotal++;
+  if (!m_peerStatusCallback.IsNull ())
+    {
+      m_peerStatusCallback (peerMp, peerIface, interface, true);
+    }
+  m_linkOpenTraceSrc (myIface, peerIface);
+}
+
+void
+PeerManagementProtocol::NotifyLinkClose (Mac48Address peerMp, Mac48Address peerIface, Mac48Address myIface, uint32_t interface)
+{
+  NS_LOG_LOGIC ("link_close " << myIface << " " << peerIface);
+  m_stats.linksClosed++;
+  m_stats.linksTotal--;
+  if (!m_peerStatusCallback.IsNull ())
+    {
+      m_peerStatusCallback (peerMp, peerIface, interface, false);
+    }
+  m_linkCloseTraceSrc (myIface, peerIface);
+}
+
 void
 PeerManagementProtocol::PeerLinkStatus (uint32_t interface, Mac48Address peerAddress,
     Mac48Address peerMeshPointAddress, PeerLink::PeerState ostate, PeerLink::PeerState nstate)
@@ -445,21 +482,11 @@ PeerManagementProtocol::PeerLinkStatus (uint32_t interface, Mac48Address peerAdd
       << ", at my interface ID:" << interface << ". State movement:" << ostate << " -> " << nstate);
   if ((nstate == PeerLink::ESTAB) && (ostate != PeerLink::ESTAB))
     {
-      m_stats.linksOpened++;
-      m_stats.linksTotal++;
-      if (!m_peerStatusCallback.IsNull ())
-        {
-          m_peerStatusCallback (peerMeshPointAddress, peerAddress, interface, true);
-        }
+      NotifyLinkOpen (peerMeshPointAddress, peerAddress, plugin->second->GetAddress (), interface);
     }
   if ((ostate == PeerLink::ESTAB) && (nstate != PeerLink::ESTAB))
     {
-      m_stats.linksClosed++;
-      m_stats.linksTotal--;
-      if (!m_peerStatusCallback.IsNull ())
-        {
-          m_peerStatusCallback (peerMeshPointAddress, peerAddress, interface, false);
-        }
+      NotifyLinkClose (peerMeshPointAddress, peerAddress, plugin->second->GetAddress (), interface);
     }
   if (nstate == PeerLink::IDLE)
     {
