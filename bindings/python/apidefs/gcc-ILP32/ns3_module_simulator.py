@@ -1486,6 +1486,14 @@ def register_Ns3RealtimeSimulatorImpl_methods(root_module, cls):
     cls.add_method('ScheduleRealtimeNow', 
                    'void', 
                    [param('ns3::EventImpl *', 'event')])
+    ## realtime-simulator-impl.h: void ns3::RealtimeSimulatorImpl::ScheduleRealtimeNowWithContext(uint32_t context, ns3::EventImpl * event) [member function]
+    cls.add_method('ScheduleRealtimeNowWithContext', 
+                   'void', 
+                   [param('uint32_t', 'context'), param('ns3::EventImpl *', 'event')])
+    ## realtime-simulator-impl.h: void ns3::RealtimeSimulatorImpl::ScheduleRealtimeWithContext(uint32_t context, ns3::Time const & time, ns3::EventImpl * event) [member function]
+    cls.add_method('ScheduleRealtimeWithContext', 
+                   'void', 
+                   [param('uint32_t', 'context'), param('ns3::Time const &', 'time'), param('ns3::EventImpl *', 'event')])
     ## realtime-simulator-impl.h: void ns3::RealtimeSimulatorImpl::ScheduleWithContext(uint32_t context, ns3::Time const & time, ns3::EventImpl * event) [member function]
     cls.add_method('ScheduleWithContext', 
                    'void', 
