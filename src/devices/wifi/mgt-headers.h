@@ -134,6 +134,84 @@ private:
 
 class MgtBeaconHeader : public MgtProbeResponseHeader {};
 
+/**
+ * \brief See IEEE 802.11 chapter 7.3.1.11
+ *
+ * Header format: | category: 1 | action value: 1 |
+ */
+class WifiActionHeader : public Header
+{
+public:
+  WifiActionHeader ();
+  ~WifiActionHeader ();
+
+  /* Compatible with open80211s implementation */
+  enum CategoryValue //table 7-24 staring from 4
+  {
+    MESH_PEERING_MGT = 30,
+    MESH_LINK_METRIC = 31,
+    MESH_PATH_SELECTION = 32,
+    MESH_INTERWORKING = 33,
+    MESH_RESOURCE_COORDINATION = 34,
+    MESH_PROXY_FORWARDING = 35,
+  };
+  /* Compatible with open80211s implementation */
+  enum PeerLinkMgtActionValue
+  {
+    PEER_LINK_OPEN = 0,
+    PEER_LINK_CONFIRM = 1,
+    PEER_LINK_CLOSE = 2,
+  };
+  enum LinkMetricActionValue
+  {
+    LINK_METRIC_REQUEST = 0,
+    LINK_METRIC_REPORT,
+  };
+  /* Compatible with open80211s implementation */
+  enum PathSelectionActionValue
+  {
+    PATH_SELECTION = 0,
+  };
+  enum InterworkActionValue
+  {
+    PORTAL_ANNOUNCEMENT = 0,
+  };
+  enum ResourceCoordinationActionValue
+  {
+    CONGESTION_CONTROL_NOTIFICATION = 0,
+    MDA_SETUP_REQUEST,
+    MDA_SETUP_REPLY,
+    MDAOP_ADVERTISMENT_REQUEST,
+    MDAOP_ADVERTISMENTS,
+    MDAOP_SET_TEARDOWN,
+    BEACON_TIMING_REQUEST,
+    BEACON_TIMING_RESPONSE,
+    TBTT_ADJUSTMENT_REQUEST,
+    MESH_CHANNEL_SWITCH_ANNOUNCEMENT,
+  };
+  typedef union
+  {
+    enum PeerLinkMgtActionValue peerLink;
+    enum LinkMetricActionValue linkMetrtic;
+    enum PathSelectionActionValue pathSelection;
+    enum InterworkActionValue interwork;
+    enum ResourceCoordinationActionValue resourceCoordination;
+  } ActionValue;
+  void   SetAction (enum CategoryValue type,ActionValue action);
+
+  CategoryValue GetCategory ();
+  ActionValue GetAction ();
+  static TypeId GetTypeId ();
+  virtual TypeId GetInstanceTypeId () const;
+  virtual void Print (std::ostream &os) const;
+  virtual uint32_t GetSerializedSize () const;
+  virtual void Serialize (Buffer::Iterator start) const;
+  virtual uint32_t Deserialize (Buffer::Iterator start);
+private:
+  uint8_t m_category;
+  uint8_t m_actionValue;
+};
+
 
 } // namespace ns3
 

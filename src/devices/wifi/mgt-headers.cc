@@ -388,5 +388,144 @@ MgtAssocResponseHeader::Deserialize (Buffer::Iterator start)
   i = m_rates.Deserialize (i);
   return i.GetDistanceFrom (start);
 }
+/**********************************************************
+ *   ActionFrame
+ **********************************************************/
+WifiActionHeader::WifiActionHeader ()
+{
+}
+WifiActionHeader::~WifiActionHeader ()
+{
+}
+void
+WifiActionHeader::SetAction (WifiActionHeader::CategoryValue type,
+    WifiActionHeader::ActionValue action)
+{
+  m_category = type;
+
+  switch (type)
+    {
+  case MESH_PEERING_MGT:
+    {
+      m_actionValue = action.peerLink;
+      break;
+    }
+  case MESH_PATH_SELECTION:
+    {
+      m_actionValue = action.pathSelection;
+      break;
+    }
+  case MESH_LINK_METRIC:
+  case MESH_INTERWORKING:
+  case MESH_RESOURCE_COORDINATION:
+  case MESH_PROXY_FORWARDING:
+    break;
+    }
+}
+WifiActionHeader::CategoryValue
+WifiActionHeader::GetCategory ()
+{
+  switch (m_category)
+    {
+  case MESH_PEERING_MGT:
+    return MESH_PEERING_MGT;
+  case MESH_LINK_METRIC:
+    return MESH_LINK_METRIC;
+  case MESH_PATH_SELECTION:
+    return MESH_PATH_SELECTION;
+  case MESH_INTERWORKING:
+    return MESH_INTERWORKING;
+  case MESH_RESOURCE_COORDINATION:
+    return MESH_RESOURCE_COORDINATION;
+  case MESH_PROXY_FORWARDING:
+    return MESH_PROXY_FORWARDING;
+  default:
+    NS_FATAL_ERROR ("Unknown action value");
+    return MESH_PEERING_MGT;
+    }
+}
+WifiActionHeader::ActionValue
+WifiActionHeader::GetAction ()
+{
+  ActionValue retval;
+  retval.peerLink = PEER_LINK_OPEN; // Needs to be initialized to something to quiet valgrind in default cases
+  switch (m_category)
+    {
+  case MESH_PEERING_MGT:
+    switch (m_actionValue)
+      {
+    case PEER_LINK_OPEN:
+      retval.peerLink = PEER_LINK_OPEN;
+      return retval;
+    case PEER_LINK_CONFIRM:
+      retval.peerLink = PEER_LINK_CONFIRM;
+      return retval;
+    case PEER_LINK_CLOSE:
+      retval.peerLink = PEER_LINK_CLOSE;
+      return retval;
+    default:
+      NS_FATAL_ERROR ("Unknown mesh peering management action code");
+      retval.peerLink = PEER_LINK_OPEN;  /* quiet compiler */
+      return retval;
+      }
+  case MESH_PATH_SELECTION:
+    switch (m_actionValue)
+      {
+    case PATH_SELECTION:
+      retval.pathSelection = PATH_SELECTION;
+      return retval;
+    default:
+      NS_FATAL_ERROR ("Unknown mesh path selection action code");
+      retval.peerLink = PEER_LINK_OPEN;  /* quiet compiler */
+      return retval;
+      }
+  case MESH_LINK_METRIC:
+    // not yet supported
+  case MESH_INTERWORKING:
+    // not yet supported
+  case MESH_RESOURCE_COORDINATION:
+    // not yet supported
+  default:
+    NS_FATAL_ERROR ("Unsupported mesh action");
+    retval.peerLink = PEER_LINK_OPEN;  /* quiet compiler */
+    return retval;
+    }
+}
+TypeId
+WifiActionHeader::GetTypeId ()
+{
+  static TypeId tid = TypeId ("ns3::WifiActionHeader")
+  .SetParent<Header> ()
+  .AddConstructor<WifiActionHeader> ();
+  return tid;
+}
+TypeId
+WifiActionHeader::GetInstanceTypeId () const
+{
+  return GetTypeId ();
+}
+void
+WifiActionHeader::Print (std::ostream &os) const
+{
+}
+uint32_t
+WifiActionHeader::GetSerializedSize () const
+{
+  return 2;
+}
+void
+WifiActionHeader::Serialize (Buffer::Iterator start) const
+{
+  start.WriteU8 (m_category);
+  start.WriteU8 (m_actionValue);
+}
+uint32_t
+WifiActionHeader::Deserialize (Buffer::Iterator start)
+{
+  Buffer::Iterator i = start;
+  m_category = i.ReadU8 ();
+  m_actionValue = i.ReadU8 ();
+  return i.GetDistanceFrom (start);
+}
 
 } // namespace ns3
