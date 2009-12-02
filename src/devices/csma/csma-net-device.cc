@@ -421,6 +421,10 @@ CsmaNetDevice::AddHeader (Ptr<Packet> p,   Mac48Address source,  Mac48Address de
   header.SetLengthType (lengthType);
   p->AddHeader (header);
 
+  if (Node::ChecksumEnabled ())
+    {
+      trailer.EnableFcs (true);
+    }
   trailer.CalcFcs (p);
   p->AddTrailer (trailer);
 }
@@ -747,6 +751,10 @@ CsmaNetDevice::Receive (Ptr<Packet> packet, Ptr<CsmaNetDevice> senderDevice)
 
   EthernetTrailer trailer;
   packet->RemoveTrailer (trailer);
+  if (Node::ChecksumEnabled ())
+    {
+      trailer.EnableFcs (true);
+    }
   trailer.CheckFcs (packet);
 
   EthernetHeader header (false);

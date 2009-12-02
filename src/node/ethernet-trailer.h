@@ -22,11 +22,11 @@
 #define ETHERNET_TRAILER_H
 
 #include "ns3/trailer.h"
+#include "ns3/packet.h"
 #include <string>
 
 namespace ns3 {
 
-class Packet;
 
 /**
  * \ingroup node
@@ -46,10 +46,10 @@ public:
   EthernetTrailer ();
 
   /**
-   * \brief Enable or disabled FCS checking and calculations
+   * \brief Enable or disable FCS checking and calculations
    * \param enable If true, enables FCS calculations.
    */
-  static void EnableFcs (bool enable);
+  void EnableFcs (bool enable);
   /**
    * \brief Updates the Fcs Field to the correct FCS
    * \param p Reference to a packet on which the FCS should be
@@ -89,18 +89,14 @@ public:
   virtual void Serialize (Buffer::Iterator end) const;
   virtual uint32_t Deserialize (Buffer::Iterator end);
 private:
-
-  /**
-   * Initializes the trailer parameters during construction.
-   */
-  void Init (void);
-
   /**
    * Enabled FCS calculations. If false, fcs is set to 0 and checkFCS
    * returns true.
    */
-  static bool m_calcFcs;
+  bool m_calcFcs;
   uint32_t m_fcs; /// Value of the fcs contained in the trailer
+
+  uint32_t DoCalcFcs (uint8_t *buffer, size_t len) const;
 
 };
 
