@@ -134,12 +134,17 @@ TapBridge::TapBridge ()
   m_ns3AddressRewritten (false)
 {
   NS_LOG_FUNCTION_NOARGS ();
+  m_packetBuffer = new uint8_t[65536];
   Start (m_tStart);
 }
 
 TapBridge::~TapBridge()
 {
   NS_LOG_FUNCTION_NOARGS ();
+
+  delete [] m_packetBuffer;
+  m_packetBuffer = 0;
+
   m_bridgedDevice = 0;
 }
 
@@ -179,6 +184,26 @@ TapBridge::StartTapDevice (void)
   NS_LOG_FUNCTION_NOARGS ();
 
   NS_ABORT_MSG_IF (m_sock != -1, "TapBridge::StartTapDevice(): Tap is already started");
+
+  //
+  // We're going to need a pointer to the realtime simulator implementation.
+  // It's important to remember that access to that implementation may happen 
+  // in a completely different thread than the simulator is running in (we're 
+  // going to spin up that thread below).  We are talking about multiple threads
+  // here, so it is very, very dangerous to do any kind of reference couning on
+  // a shared object that is unaware of what is happening.  What we are going to 
+  // do to address that is to get a reference to the realtime simulator here 
+  // where we are running in the context of a running simulator scheduler --
+  // recall we did a Simulator::Schedule of this method above.  We get the
+  // simulator implementation pointer in a single-threaded way and save the
+  // underlying raw pointer for use by the (other) read thread.  We must not
+  // free this pointer or we may delete the simulator out from under us an 
+  // everyone else.  We assume that the simulator implementation cannot be 
+  // replaced while the tap bridge is running and so will remain valid through
+  // the time during which the read thread is running.
+  //
+  Ptr<RealtimeSimulatorImpl> impl = DynamicCast<RealtimeSimulatorImpl> (Simulator::GetImplementation ());
+  m_rtImpl = GetPointer (impl);
 
   //
   // Spin up the tap bridge and start receiving packets.
@@ -643,7 +668,8 @@ TapBridge::ReadThread (void)
 
       NS_LOG_INFO ("TapBridge::ReadThread(): Received packet on node " << m_node->GetId ());
       NS_LOG_INFO ("TapBridge::ReadThread(): Scheduling handler");
-      DynamicCast<RealtimeSimulatorImpl> (Simulator::GetImplementation ())->ScheduleRealtimeNow (
+      NS_ASSERT_MSG (m_rtImpl, "EmuNetDevice::ReadThread(): Realtime simulator implementation pointer not set");
+      m_rtImpl->ScheduleRealtimeNowWithContext (GetNode ()->GetId (),
         MakeEvent (&TapBridge::ForwardToBridgedDevice, this, buf, len));
       buf = 0;
     }
@@ -699,7 +725,7 @@ TapBridge::ForwardToBridgedDevice (uint8_t *buf, uint32_t len)
   Ptr<Packet> p = Filter (packet, &src, &dst, &type);
   if (p == 0)
     {
-      NS_LOG_LOGIC ("Discarding packet as unfit for ns-3 consumption");
+      NS_LOG_LOGIC ("TapBridge::ForwardToBridgedDevice:  Discarding packet as unfit for ns-3 consumption");
       return;
     }
 
@@ -946,10 +972,14 @@ TapBridge::ReceiveFromBridgedDevice (
   NS_LOG_LOGIC ("Pkt destination is " << header.GetDestination ());
   NS_LOG_LOGIC ("Pkt LengthType is " << header.GetLengthType ());
   NS_LOG_LOGIC ("Pkt size is " << p->GetSize ());
-  NS_LOG_LOGIC ("End of receive packet handling on node " << m_node->GetId ());
 
-  uint32_t bytesWritten = write (m_sock, p->PeekData (), p->GetSize ());
+  NS_ASSERT_MSG (p->GetSize () <= 65536, "TapBridge::ReceiveFromBridgedDevice: Packet too big " << p->GetSize ());
+  p->CopyData (m_packetBuffer, p->GetSize ());
+
+  uint32_t bytesWritten = write (m_sock, m_packetBuffer, p->GetSize ());
   NS_ABORT_MSG_IF (bytesWritten != p->GetSize (), "TapBridge::ReceiveFromBridgedDevice(): Write error.");
+
+  NS_LOG_LOGIC ("End of receive packet handling on node " << m_node->GetId ());
   return true;
 }
 

@@ -3,6 +3,7 @@
 def build(bld):
     env = bld.env_of_name('default')
     if env['ENABLE_TAP']:
-        obj = bld.create_ns3_program('tap-wifi-dumbbell',
-                                     ['wifi', 'csma', 'point-to-point', 'tap-bridge', 'internet-stack'])
+        obj = bld.create_ns3_program('tap-csma', ['csma', 'tap-bridge', 'internet-stack'])
+        obj.source = 'tap-csma.cc'
+        obj = bld.create_ns3_program('tap-wifi-dumbbell', ['wifi', 'csma', 'point-to-point', 'tap-bridge', 'internet-stack'])
         obj.source = 'tap-wifi-dumbbell.cc'
