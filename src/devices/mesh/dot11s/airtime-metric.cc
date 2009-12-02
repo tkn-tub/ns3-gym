@@ -30,12 +30,6 @@ AirtimeLinkMetricCalculator::GetTypeId ()
   static TypeId tid = TypeId ("ns3::dot11s::AirtimeLinkMetricCalculator")
     .SetParent<Object> ()
     .AddConstructor<AirtimeLinkMetricCalculator> ()
-    .AddAttribute ( "OverheadNanosec",
-                    "Overhead expressed in nanoseconds:DIFS+ SIFS + 2 * PREAMBLE + ACK",
-                    UintegerValue (108000),
-                    MakeUintegerAccessor (&AirtimeLinkMetricCalculator::m_overheadNanosec),
-                    MakeUintegerChecker<uint32_t> (1)
-                  )
     .AddAttribute ( "TestLength",
                     "Rate should be estimated using test length.",
                      UintegerValue (1024),
@@ -60,7 +54,32 @@ AirtimeLinkMetricCalculator::GetTypeId ()
                   ;
   return tid;
 }
-
+AirtimeLinkMetricCalculator::AirtimeLinkMetricCalculator () :
+  m_overheadNanosec (0)
+{}
+void
+AirtimeLinkMetricCalculator::SetPhyStandard (WifiPhyStandard standard)
+{
+  switch (standard) {
+  case WIFI_PHY_STANDARD_80211a:
+  case WIFI_PHY_STANDARD_holland:
+    // 2 * PREAMBLE + DIFS + SIFS + ACK
+    m_overheadNanosec = (2 * 16 + 34 + 16 + 44) * 1000;
+    break;
+  case WIFI_PHY_STANDARD_80211b:
+    m_overheadNanosec = (2 * 144 + 50 + 16 + 304) * 1000;
+    break;
+  case WIFI_PHY_STANDARD_80211_10Mhz: 
+    m_overheadNanosec = (2 * 32 + 58 + 32 + 88) * 1000;
+    break;
+  case WIFI_PHY_STANDARD_80211_5Mhz:
+    m_overheadNanosec = (2 * 64 + 106 + 64 + 176) * 1000;
+    break;
+  default:
+    NS_ASSERT (false);
+    break;
+  }
+}
 uint32_t
 AirtimeLinkMetricCalculator::CalculateMetric (Mac48Address peerAddress, Ptr<MeshWifiInterfaceMac> mac)
 {
@@ -80,6 +99,7 @@ AirtimeLinkMetricCalculator::CalculateMetric (Mac48Address peerAddress, Ptr<Mesh
 
   WifiRemoteStation * station = mac->GetStationManager ()->Lookup (peerAddress);
   NS_ASSERT (station != 0);
+  NS_ASSERT (m_overheadNanosec != 0);
   Ptr<Packet> test_frame = Create<Packet> (m_testLength + m_meshHeaderLength);
   uint32_t rate =
       station->GetDataMode (test_frame, m_testLength + m_meshHeaderLength).GetDataRate ();

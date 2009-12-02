@@ -81,7 +81,8 @@ MeshWifiInterfaceMac::GetTypeId ()
                   ;
   return tid;
 }
-MeshWifiInterfaceMac::MeshWifiInterfaceMac ()
+MeshWifiInterfaceMac::MeshWifiInterfaceMac () :
+  m_standard (WIFI_PHY_STANDARD_80211a)
 {
   NS_LOG_FUNCTION (this);
 
@@ -747,7 +748,12 @@ MeshWifiInterfaceMac::FinishConfigureStandard (enum WifiPhyStandard standard)
       NS_ASSERT (false);
       break;
     }
+  m_standard = standard;
 }
-
+WifiPhyStandard
+MeshWifiInterfaceMac::GetPhyStandard () const
+{
+  return m_standard;
+}
 } // namespace ns3
 
