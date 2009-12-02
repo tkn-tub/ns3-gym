@@ -41,7 +41,7 @@ EthernetTrailer::EnableFcs (bool enable)
 }
 
 bool
-EthernetTrailer::CheckFcs (Ptr<Packet> p) const
+EthernetTrailer::CheckFcs (Ptr<const Packet> p) const
 {
   int len = p->GetSize ();
   uint8_t *buffer;
@@ -60,7 +60,7 @@ EthernetTrailer::CheckFcs (Ptr<Packet> p) const
 }
 
 void
-EthernetTrailer::CalcFcs (Ptr<Packet> p)
+EthernetTrailer::CalcFcs (Ptr<const Packet> p)
 {
   int len = p->GetSize ();
   uint8_t *buffer;
@@ -142,7 +142,7 @@ EthernetTrailer::Deserialize (Buffer::Iterator end)
 // This code is copied from /lib/crc32.c in the linux kernel.
 // It assumes little endian ordering.
 uint32_t
-EthernetTrailer::DoCalcFcs (uint8_t *buffer, size_t len) const
+EthernetTrailer::DoCalcFcs (uint8_t const *buffer, size_t len) const
 {
   uint32_t crc = 0xffffffff;
   int i;

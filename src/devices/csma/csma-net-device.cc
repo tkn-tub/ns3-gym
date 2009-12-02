@@ -429,15 +429,14 @@ CsmaNetDevice::AddHeader (Ptr<Packet> p,   Mac48Address source,  Mac48Address de
   p->AddTrailer (trailer);
 }
 
+#if 0
   bool 
 CsmaNetDevice::ProcessHeader (Ptr<Packet> p, uint16_t & param)
 {
   NS_LOG_FUNCTION (p << param);
 
   EthernetTrailer trailer;
-      
   p->RemoveTrailer (trailer);
-  trailer.CheckFcs (p);
 
   EthernetHeader header (false);
   p->RemoveHeader (header);
@@ -467,6 +466,7 @@ CsmaNetDevice::ProcessHeader (Ptr<Packet> p, uint16_t & param)
     }
   return true;
 }
+#endif
 
   void
 CsmaNetDevice::TransmitStart (void)
@@ -755,7 +755,15 @@ CsmaNetDevice::Receive (Ptr<Packet> packet, Ptr<CsmaNetDevice> senderDevice)
     {
       trailer.EnableFcs (true);
     }
+
   trailer.CheckFcs (packet);
+  bool crcGood = trailer.CheckFcs (packet);
+  if (!crcGood)
+    {
+      NS_LOG_INFO ("CRC error on Packet " << packet);
+      m_phyRxDropTrace (packet);
+      return;
+    }
 
   EthernetHeader header (false);
   packet->RemoveHeader (header);

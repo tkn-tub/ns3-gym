@@ -341,6 +341,11 @@ def register_Ns3MeshWifiInterfaceMac_methods(root_module, cls):
                    'ns3::Mac48Address', 
                    [], 
                    is_const=True)
+    ## mesh-wifi-interface-mac.h: ns3::WifiPhyStandard ns3::MeshWifiInterfaceMac::GetPhyStandard() const [member function]
+    cls.add_method('GetPhyStandard', 
+                   'ns3::WifiPhyStandard', 
+                   [], 
+                   is_const=True)
     ## mesh-wifi-interface-mac.h: ns3::Time ns3::MeshWifiInterfaceMac::GetPifs() const [member function]
     cls.add_method('GetPifs', 
                    'ns3::Time', 

@@ -2640,11 +2640,10 @@ def register_Ns3EthernetTrailer_methods(root_module, cls):
                    'uint32_t', 
                    [param('ns3::Buffer::Iterator', 'end')], 
                    is_virtual=True)
-    ## ethernet-trailer.h: static void ns3::EthernetTrailer::EnableFcs(bool enable) [member function]
+    ## ethernet-trailer.h: void ns3::EthernetTrailer::EnableFcs(bool enable) [member function]
     cls.add_method('EnableFcs', 
                    'void', 
-                   [param('bool', 'enable')], 
-                   is_static=True)
+                   [param('bool', 'enable')])
     ## ethernet-trailer.h: uint32_t ns3::EthernetTrailer::GetFcs() [member function]
     cls.add_method('GetFcs', 
                    'uint32_t', 
