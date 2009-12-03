@@ -58,7 +58,8 @@ OmnetDataOutput::DoDispose()
 
 inline bool isNumeric(const std::string& s) {
   char *endp;
-  strtod(s.c_str(), &endp);
+  double unused = strtod(s.c_str(), &endp); // declared with warn_unused_result
+  unused = unused; // quiet compiler
   return endp == s.c_str() + s.size();
 }
 

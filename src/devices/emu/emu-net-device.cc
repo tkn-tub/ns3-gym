@@ -718,6 +718,7 @@ EmuNetDevice::ForwardUp (uint8_t *buf, uint32_t len)
 
     default:
       NS_FATAL_ERROR ("invalid encapsulation mode");
+      protocol = 0; /* quiet compiler */
     }
 
   PacketType packetType;
