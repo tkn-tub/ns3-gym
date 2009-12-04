@@ -335,7 +335,7 @@ TimeUnit<N> Min (TimeUnit<N> const &ta, TimeUnit<N> const &tb)
 {
   HighPrecision a = ta.GetHighPrecision ();
   HighPrecision b = tb.GetHighPrecision ();  
-  return TimeUnit<N> (Max (a, b));
+  return TimeUnit<N> (Min (a, b));
 }
 
 // Explicit instatiation of the TimeUnit template for N=1, with a few
