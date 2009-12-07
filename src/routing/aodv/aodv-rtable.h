@@ -28,6 +28,7 @@
 #ifndef AODV_RTABLE_H
 #define AODV_RTABLE_H
 
+#include <stdint.h>
 #include <cassert>
 #include <map>
 #include <sys/types.h>
@@ -58,8 +59,8 @@ class RoutingTableEntry
 {
 public:
   /// c-to
-  RoutingTableEntry (Ptr<NetDevice> dev = 0,Ipv4Address dst = Ipv4Address(), bool vSeqNo = false, u_int32_t m_seqNo = 0,
-                    Ipv4InterfaceAddress iface = Ipv4InterfaceAddress(), u_int16_t  hops = 0,
+  RoutingTableEntry (Ptr<NetDevice> dev = 0,Ipv4Address dst = Ipv4Address(), bool vSeqNo = false, uint32_t m_seqNo = 0,
+                    Ipv4InterfaceAddress iface = Ipv4InterfaceAddress(), uint16_t  hops = 0,
                     Ipv4Address nextHop = Ipv4Address(), Time lifetime = Simulator::Now());
 
   ~RoutingTableEntry ();
