@@ -28,7 +28,7 @@
 #include "attribute.h"
 #include "object-base.h"
 #include "attribute-list.h"
-#include "object-ref-count.h"
+#include "simple-ref-count.h"
 
 
 namespace ns3 {
@@ -38,6 +38,11 @@ class AttributeAccessor;
 class AttributeValue;
 class AttributeList;
 class TraceSourceAccessor;
+
+struct ObjectDeleter
+{
+  inline static void Delete (Object *object);
+};
 
 /**
  * \ingroup core
@@ -56,7 +61,7 @@ class TraceSourceAccessor;
  * invoked from the Object::Unref method before destroying the object, even if the user 
  * did not call Object::Dispose directly.
  */
-class Object : public ObjectRefCount<Object,ObjectBase>
+class Object : public SimpleRefCount<Object,ObjectBase,ObjectDeleter>
 {
 public:
   static TypeId GetTypeId (void);
@@ -224,6 +229,7 @@ private:
 
   friend class ObjectFactory;
   friend class AggregateIterator;
+  friend class ObjectDeleter;
 
   /**
    * This data structure uses a classic C-style trick to 
@@ -268,7 +274,7 @@ private:
    * have a zero refcount. If yes, the object and all
    * its aggregates are deleted. If not, nothing is done.
    */
-  virtual void DoDelete (void);
+  void DoDelete (void);
 
   /**
    * Identifies the type of this object instance.
@@ -365,6 +371,12 @@ CreateObjectWithAttributes (std::string n1 = "", const AttributeValue & v1 = Emp
 } // namespace ns3
 
 namespace ns3 {
+
+void 
+ObjectDeleter::Delete (Object *object)
+{
+  object->DoDelete ();
+}
 
 /*************************************************************************
  *   The Object implementation which depends on templates

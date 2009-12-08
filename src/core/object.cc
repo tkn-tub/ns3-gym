@@ -267,9 +267,6 @@ Object::AggregateObject (Ptr<Object> o)
       current->m_aggregates = aggregates;
     }
 
-  // share the counts
-  ShareCount (other);
-
   // Finally, call NotifyNewAggregate on all the objects aggregates together.
   // We purposedly use the old aggregate buffers to iterate over the objects
   // because this allows us to assume that they will not change from under 
@@ -353,6 +350,19 @@ Object::CheckLoose (void) const
 void
 Object::DoDelete (void)
 {
+  // check if we really need to die
+  for (uint32_t i = 0; i < m_aggregates->n; i++)
+    {
+      Object *current = m_aggregates->buffer[i];
+      if (current->GetReferenceCount () > 0)
+        {
+          return;
+        }
+    }
+
+  // Now, we know that we are alone to use this aggregate so, 
+  // we can dispose and delete everything safely.
+
   uint32_t n = m_aggregates->n;
   // Ensure we are disposed.
   for (uint32_t i = 0; i < n; i++)
@@ -363,8 +373,6 @@ Object::DoDelete (void)
           current->DoDispose ();
         }
     }
-
-  int *count = PeekCountPtr ();
 
   // Now, actually delete all objects
   struct Aggregates *aggregates = m_aggregates;
@@ -377,8 +385,6 @@ Object::DoDelete (void)
       Object *current = aggregates->buffer[0];
       delete current;
     }
-
-  delete count;
 }
 } // namespace ns3
 
