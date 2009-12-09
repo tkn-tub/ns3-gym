@@ -3,8 +3,8 @@ from pybindgen import Module, FileCodeSink, param, retval, cppclass, typehandler
 def register_types(module):
     root_module = module.get_root()
     
-    ## simple-ref-count.h: ns3::SimpleRefCount<ns3::dot11s::IeBeaconTimingUnit, ns3::empty> [class]
-    module.add_class('SimpleRefCount', template_parameters=['ns3::dot11s::IeBeaconTimingUnit', 'ns3::empty'], parent=root_module['ns3::empty'])
+    ## simple-ref-count.h: ns3::SimpleRefCount<ns3::dot11s::IeBeaconTimingUnit, ns3::empty, ns3::DefaultDeleter<ns3::dot11s::IeBeaconTimingUnit> > [class]
+    module.add_class('SimpleRefCount', template_parameters=['ns3::dot11s::IeBeaconTimingUnit', 'ns3::empty', 'ns3::DefaultDeleter<ns3::dot11s::IeBeaconTimingUnit>'], parent=root_module['ns3::empty'])
     
     ## Register a nested module for the namespace Config
     
@@ -94,7 +94,7 @@ def register_types_ns3_dot11s(module):
     ## ie-dot11s-beacon-timing.h: ns3::dot11s::IeBeaconTiming [class]
     module.add_class('IeBeaconTiming', parent=root_module['ns3::WifiInformationElement'])
     ## ie-dot11s-beacon-timing.h: ns3::dot11s::IeBeaconTimingUnit [class]
-    module.add_class('IeBeaconTimingUnit', parent=root_module['ns3::SimpleRefCount< ns3::dot11s::IeBeaconTimingUnit, ns3::empty >'])
+    module.add_class('IeBeaconTimingUnit', parent=root_module['ns3::SimpleRefCount< ns3::dot11s::IeBeaconTimingUnit, ns3::empty, ns3::DefaultDeleter<ns3::dot11s::IeBeaconTimingUnit> >'])
     ## ie-dot11s-configuration.h: ns3::dot11s::IeConfiguration [class]
     module.add_class('IeConfiguration', parent=root_module['ns3::WifiInformationElement'])
     ## ie-dot11s-id.h: ns3::dot11s::IeMeshId [class]

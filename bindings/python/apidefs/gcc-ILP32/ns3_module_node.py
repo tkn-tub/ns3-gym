@@ -73,22 +73,22 @@ def register_types(module):
     module.add_class('LlcSnapHeader', parent=root_module['ns3::Header'])
     ## queue.h: ns3::Queue [class]
     module.add_class('Queue', parent=root_module['ns3::Object'])
-    ## simple-ref-count.h: ns3::SimpleRefCount<ns3::Ipv4MulticastRoute, ns3::empty> [class]
-    module.add_class('SimpleRefCount', template_parameters=['ns3::Ipv4MulticastRoute', 'ns3::empty'], parent=root_module['ns3::empty'])
-    ## simple-ref-count.h: ns3::SimpleRefCount<ns3::Ipv4Route, ns3::empty> [class]
-    module.add_class('SimpleRefCount', template_parameters=['ns3::Ipv4Route', 'ns3::empty'], parent=root_module['ns3::empty'])
-    ## simple-ref-count.h: ns3::SimpleRefCount<ns3::Ipv6MulticastRoute, ns3::empty> [class]
-    module.add_class('SimpleRefCount', template_parameters=['ns3::Ipv6MulticastRoute', 'ns3::empty'], parent=root_module['ns3::empty'])
-    ## simple-ref-count.h: ns3::SimpleRefCount<ns3::Ipv6Route, ns3::empty> [class]
-    module.add_class('SimpleRefCount', template_parameters=['ns3::Ipv6Route', 'ns3::empty'], parent=root_module['ns3::empty'])
-    ## simple-ref-count.h: ns3::SimpleRefCount<ns3::PbbAddressBlock, ns3::empty> [class]
-    module.add_class('SimpleRefCount', template_parameters=['ns3::PbbAddressBlock', 'ns3::empty'], parent=root_module['ns3::empty'])
-    ## simple-ref-count.h: ns3::SimpleRefCount<ns3::PbbMessage, ns3::empty> [class]
-    module.add_class('SimpleRefCount', template_parameters=['ns3::PbbMessage', 'ns3::empty'], parent=root_module['ns3::empty'])
-    ## simple-ref-count.h: ns3::SimpleRefCount<ns3::PbbPacket, ns3::Header> [class]
-    module.add_class('SimpleRefCount', template_parameters=['ns3::PbbPacket', 'ns3::Header'], parent=root_module['ns3::Header'])
-    ## simple-ref-count.h: ns3::SimpleRefCount<ns3::PbbTlv, ns3::empty> [class]
-    module.add_class('SimpleRefCount', template_parameters=['ns3::PbbTlv', 'ns3::empty'], parent=root_module['ns3::empty'])
+    ## simple-ref-count.h: ns3::SimpleRefCount<ns3::Ipv4MulticastRoute, ns3::empty, ns3::DefaultDeleter<ns3::Ipv4MulticastRoute> > [class]
+    module.add_class('SimpleRefCount', template_parameters=['ns3::Ipv4MulticastRoute', 'ns3::empty', 'ns3::DefaultDeleter<ns3::Ipv4MulticastRoute>'], parent=root_module['ns3::empty'])
+    ## simple-ref-count.h: ns3::SimpleRefCount<ns3::Ipv4Route, ns3::empty, ns3::DefaultDeleter<ns3::Ipv4Route> > [class]
+    module.add_class('SimpleRefCount', template_parameters=['ns3::Ipv4Route', 'ns3::empty', 'ns3::DefaultDeleter<ns3::Ipv4Route>'], parent=root_module['ns3::empty'])
+    ## simple-ref-count.h: ns3::SimpleRefCount<ns3::Ipv6MulticastRoute, ns3::empty, ns3::DefaultDeleter<ns3::Ipv6MulticastRoute> > [class]
+    module.add_class('SimpleRefCount', template_parameters=['ns3::Ipv6MulticastRoute', 'ns3::empty', 'ns3::DefaultDeleter<ns3::Ipv6MulticastRoute>'], parent=root_module['ns3::empty'])
+    ## simple-ref-count.h: ns3::SimpleRefCount<ns3::Ipv6Route, ns3::empty, ns3::DefaultDeleter<ns3::Ipv6Route> > [class]
+    module.add_class('SimpleRefCount', template_parameters=['ns3::Ipv6Route', 'ns3::empty', 'ns3::DefaultDeleter<ns3::Ipv6Route>'], parent=root_module['ns3::empty'])
+    ## simple-ref-count.h: ns3::SimpleRefCount<ns3::PbbAddressBlock, ns3::empty, ns3::DefaultDeleter<ns3::PbbAddressBlock> > [class]
+    module.add_class('SimpleRefCount', template_parameters=['ns3::PbbAddressBlock', 'ns3::empty', 'ns3::DefaultDeleter<ns3::PbbAddressBlock>'], parent=root_module['ns3::empty'])
+    ## simple-ref-count.h: ns3::SimpleRefCount<ns3::PbbMessage, ns3::empty, ns3::DefaultDeleter<ns3::PbbMessage> > [class]
+    module.add_class('SimpleRefCount', template_parameters=['ns3::PbbMessage', 'ns3::empty', 'ns3::DefaultDeleter<ns3::PbbMessage>'], parent=root_module['ns3::empty'])
+    ## simple-ref-count.h: ns3::SimpleRefCount<ns3::PbbPacket, ns3::Header, ns3::DefaultDeleter<ns3::PbbPacket> > [class]
+    module.add_class('SimpleRefCount', template_parameters=['ns3::PbbPacket', 'ns3::Header', 'ns3::DefaultDeleter<ns3::PbbPacket>'], parent=root_module['ns3::Header'])
+    ## simple-ref-count.h: ns3::SimpleRefCount<ns3::PbbTlv, ns3::empty, ns3::DefaultDeleter<ns3::PbbTlv> > [class]
+    module.add_class('SimpleRefCount', template_parameters=['ns3::PbbTlv', 'ns3::empty', 'ns3::DefaultDeleter<ns3::PbbTlv>'], parent=root_module['ns3::empty'])
     ## socket.h: ns3::Socket [class]
     module.add_class('Socket', parent=root_module['ns3::Object'])
     ## socket.h: ns3::Socket::SocketErrno [enumeration]
@@ -132,11 +132,11 @@ def register_types(module):
     ## ipv4-address.h: ns3::Ipv4MaskValue [class]
     module.add_class('Ipv4MaskValue', parent=root_module['ns3::AttributeValue'])
     ## ipv4-route.h: ns3::Ipv4MulticastRoute [class]
-    module.add_class('Ipv4MulticastRoute', parent=root_module['ns3::SimpleRefCount< ns3::Ipv4MulticastRoute, ns3::empty >'])
+    module.add_class('Ipv4MulticastRoute', parent=root_module['ns3::SimpleRefCount< ns3::Ipv4MulticastRoute, ns3::empty, ns3::DefaultDeleter<ns3::Ipv4MulticastRoute> >'])
     ## ipv4-raw-socket-factory.h: ns3::Ipv4RawSocketFactory [class]
     module.add_class('Ipv4RawSocketFactory', parent=root_module['ns3::SocketFactory'])
     ## ipv4-route.h: ns3::Ipv4Route [class]
-    module.add_class('Ipv4Route', parent=root_module['ns3::SimpleRefCount< ns3::Ipv4Route, ns3::empty >'])
+    module.add_class('Ipv4Route', parent=root_module['ns3::SimpleRefCount< ns3::Ipv4Route, ns3::empty, ns3::DefaultDeleter<ns3::Ipv4Route> >'])
     ## ipv4-routing-protocol.h: ns3::Ipv4RoutingProtocol [class]
     module.add_class('Ipv4RoutingProtocol', parent=root_module['ns3::Object'])
     ## ipv6.h: ns3::Ipv6 [class]
@@ -146,7 +146,7 @@ def register_types(module):
     ## ipv6-address.h: ns3::Ipv6AddressValue [class]
     module.add_class('Ipv6AddressValue', parent=root_module['ns3::AttributeValue'])
     ## ipv6-route.h: ns3::Ipv6MulticastRoute [class]
-    module.add_class('Ipv6MulticastRoute', parent=root_module['ns3::SimpleRefCount< ns3::Ipv6MulticastRoute, ns3::empty >'])
+    module.add_class('Ipv6MulticastRoute', parent=root_module['ns3::SimpleRefCount< ns3::Ipv6MulticastRoute, ns3::empty, ns3::DefaultDeleter<ns3::Ipv6MulticastRoute> >'])
     ## ipv6-address.h: ns3::Ipv6PrefixChecker [class]
     module.add_class('Ipv6PrefixChecker', parent=root_module['ns3::AttributeChecker'])
     ## ipv6-address.h: ns3::Ipv6PrefixValue [class]
@@ -154,7 +154,7 @@ def register_types(module):
     ## ipv6-raw-socket-factory.h: ns3::Ipv6RawSocketFactory [class]
     module.add_class('Ipv6RawSocketFactory', parent=root_module['ns3::SocketFactory'])
     ## ipv6-route.h: ns3::Ipv6Route [class]
-    module.add_class('Ipv6Route', parent=root_module['ns3::SimpleRefCount< ns3::Ipv6Route, ns3::empty >'])
+    module.add_class('Ipv6Route', parent=root_module['ns3::SimpleRefCount< ns3::Ipv6Route, ns3::empty, ns3::DefaultDeleter<ns3::Ipv6Route> >'])
     ## ipv6-routing-protocol.h: ns3::Ipv6RoutingProtocol [class]
     module.add_class('Ipv6RoutingProtocol', parent=root_module['ns3::Object'])
     ## mac48-address.h: ns3::Mac48AddressChecker [class]
@@ -170,21 +170,21 @@ def register_types(module):
     ## packet-socket-factory.h: ns3::PacketSocketFactory [class]
     module.add_class('PacketSocketFactory', parent=root_module['ns3::SocketFactory'])
     ## packetbb.h: ns3::PbbAddressBlock [class]
-    module.add_class('PbbAddressBlock', parent=root_module['ns3::SimpleRefCount< ns3::PbbAddressBlock, ns3::empty >'])
+    module.add_class('PbbAddressBlock', parent=root_module['ns3::SimpleRefCount< ns3::PbbAddressBlock, ns3::empty, ns3::DefaultDeleter<ns3::PbbAddressBlock> >'])
     ## packetbb.h: ns3::PbbAddressBlockIpv4 [class]
     module.add_class('PbbAddressBlockIpv4', parent=root_module['ns3::PbbAddressBlock'])
     ## packetbb.h: ns3::PbbAddressBlockIpv6 [class]
     module.add_class('PbbAddressBlockIpv6', parent=root_module['ns3::PbbAddressBlock'])
     ## packetbb.h: ns3::PbbMessage [class]
-    module.add_class('PbbMessage', parent=root_module['ns3::SimpleRefCount< ns3::PbbMessage, ns3::empty >'])
+    module.add_class('PbbMessage', parent=root_module['ns3::SimpleRefCount< ns3::PbbMessage, ns3::empty, ns3::DefaultDeleter<ns3::PbbMessage> >'])
     ## packetbb.h: ns3::PbbMessageIpv4 [class]
     module.add_class('PbbMessageIpv4', parent=root_module['ns3::PbbMessage'])
     ## packetbb.h: ns3::PbbMessageIpv6 [class]
     module.add_class('PbbMessageIpv6', parent=root_module['ns3::PbbMessage'])
     ## packetbb.h: ns3::PbbPacket [class]
-    module.add_class('PbbPacket', parent=root_module['ns3::SimpleRefCount< ns3::PbbPacket, ns3::Header >'])
+    module.add_class('PbbPacket', parent=root_module['ns3::SimpleRefCount< ns3::PbbPacket, ns3::Header, ns3::DefaultDeleter<ns3::PbbPacket> >'])
     ## packetbb.h: ns3::PbbTlv [class]
-    module.add_class('PbbTlv', parent=root_module['ns3::SimpleRefCount< ns3::PbbTlv, ns3::empty >'])
+    module.add_class('PbbTlv', parent=root_module['ns3::SimpleRefCount< ns3::PbbTlv, ns3::empty, ns3::DefaultDeleter<ns3::PbbTlv> >'])
     ## simple-channel.h: ns3::SimpleChannel [class]
     module.add_class('SimpleChannel', parent=root_module['ns3::Channel'])
     ## simple-net-device.h: ns3::SimpleNetDevice [class]
@@ -2626,14 +2626,14 @@ def register_Ns3EthernetTrailer_methods(root_module, cls):
     cls.add_constructor([param('ns3::EthernetTrailer const &', 'arg0')])
     ## ethernet-trailer.h: ns3::EthernetTrailer::EthernetTrailer() [constructor]
     cls.add_constructor([])
-    ## ethernet-trailer.h: void ns3::EthernetTrailer::CalcFcs(ns3::Ptr<ns3::Packet> p) [member function]
+    ## ethernet-trailer.h: void ns3::EthernetTrailer::CalcFcs(ns3::Ptr<ns3::Packet const> p) [member function]
     cls.add_method('CalcFcs', 
                    'void', 
-                   [param('ns3::Ptr< ns3::Packet >', 'p')])
-    ## ethernet-trailer.h: bool ns3::EthernetTrailer::CheckFcs(ns3::Ptr<ns3::Packet> p) const [member function]
+                   [param('ns3::Ptr< ns3::Packet const >', 'p')])
+    ## ethernet-trailer.h: bool ns3::EthernetTrailer::CheckFcs(ns3::Ptr<ns3::Packet const> p) const [member function]
     cls.add_method('CheckFcs', 
                    'bool', 
-                   [param('ns3::Ptr< ns3::Packet >', 'p')], 
+                   [param('ns3::Ptr< ns3::Packet const >', 'p')], 
                    is_const=True)
     ## ethernet-trailer.h: uint32_t ns3::EthernetTrailer::Deserialize(ns3::Buffer::Iterator end) [member function]
     cls.add_method('Deserialize', 

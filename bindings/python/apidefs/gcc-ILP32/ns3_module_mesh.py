@@ -7,12 +7,12 @@ def register_types(module):
     module.add_enum('WifiElementId', ['IE11S_MESH_CONFIGURATION', 'IE11S_MESH_ID', 'IE11S_LINK_METRIC_REPORT', 'IE11S_CONGESTION_NOTIFICATION', 'IE11S_PEERING_MANAGEMENT', 'IE11S_SUPP_MBSS_REG_CLASSES_CHANNELS', 'IE11S_MESH_CHANNEL_SWITCH_ANNOUNCEMENT', 'IE11S_MESH_TIM', 'IE11S_AWAKE_WINDOW', 'IE11S_BEACON_TIMING', 'IE11S_MCCAOP_SETUP_REQUEST', 'IE11S_MCCAOP_SETUP_REPLY', 'IE11S_MCCAOP_ADVERTISEMENT', 'IE11S_MCCAOP_RESERVATION_TEARDOWN', 'IE11S_PORTAL_ANNOUNCEMENT', 'IE11S_RANN', 'IE11S_PREQ', 'IE11S_PREP', 'IE11S_PERR', 'IE11S_PROXY_UPDATE', 'IE11S_PROXY_UPDATE_CONFIRMATION', 'IE11S_ABBREVIATED_HANDSHAKE', 'IE11S_MESH_PEERING_PROTOCOL_VERSION'])
     ## mesh-wifi-beacon.h: ns3::MeshWifiBeacon [class]
     module.add_class('MeshWifiBeacon')
-    ## simple-ref-count.h: ns3::SimpleRefCount<ns3::MeshWifiInterfaceMacPlugin, ns3::empty> [class]
-    module.add_class('SimpleRefCount', template_parameters=['ns3::MeshWifiInterfaceMacPlugin', 'ns3::empty'], parent=root_module['ns3::empty'])
-    ## simple-ref-count.h: ns3::SimpleRefCount<ns3::WifiInformationElement, ns3::empty> [class]
-    module.add_class('SimpleRefCount', template_parameters=['ns3::WifiInformationElement', 'ns3::empty'], parent=root_module['ns3::empty'])
+    ## simple-ref-count.h: ns3::SimpleRefCount<ns3::MeshWifiInterfaceMacPlugin, ns3::empty, ns3::DefaultDeleter<ns3::MeshWifiInterfaceMacPlugin> > [class]
+    module.add_class('SimpleRefCount', template_parameters=['ns3::MeshWifiInterfaceMacPlugin', 'ns3::empty', 'ns3::DefaultDeleter<ns3::MeshWifiInterfaceMacPlugin>'], parent=root_module['ns3::empty'])
+    ## simple-ref-count.h: ns3::SimpleRefCount<ns3::WifiInformationElement, ns3::empty, ns3::DefaultDeleter<ns3::WifiInformationElement> > [class]
+    module.add_class('SimpleRefCount', template_parameters=['ns3::WifiInformationElement', 'ns3::empty', 'ns3::DefaultDeleter<ns3::WifiInformationElement>'], parent=root_module['ns3::empty'])
     ## wifi-information-element-vector.h: ns3::WifiInformationElement [class]
-    module.add_class('WifiInformationElement', parent=root_module['ns3::SimpleRefCount< ns3::WifiInformationElement, ns3::empty >'])
+    module.add_class('WifiInformationElement', parent=root_module['ns3::SimpleRefCount< ns3::WifiInformationElement, ns3::empty, ns3::DefaultDeleter<ns3::WifiInformationElement> >'])
     ## wifi-information-element-vector.h: ns3::WifiInformationElementVector [class]
     module.add_class('WifiInformationElementVector', parent=root_module['ns3::Header'])
     ## mesh-l2-routing-protocol.h: ns3::MeshL2RoutingProtocol [class]
@@ -20,7 +20,7 @@ def register_types(module):
     ## mesh-wifi-interface-mac.h: ns3::MeshWifiInterfaceMac [class]
     module.add_class('MeshWifiInterfaceMac', parent=root_module['ns3::WifiMac'])
     ## mesh-wifi-interface-mac-plugin.h: ns3::MeshWifiInterfaceMacPlugin [class]
-    module.add_class('MeshWifiInterfaceMacPlugin', parent=root_module['ns3::SimpleRefCount< ns3::MeshWifiInterfaceMacPlugin, ns3::empty >'])
+    module.add_class('MeshWifiInterfaceMacPlugin', parent=root_module['ns3::SimpleRefCount< ns3::MeshWifiInterfaceMacPlugin, ns3::empty, ns3::DefaultDeleter<ns3::MeshWifiInterfaceMacPlugin> >'])
     ## mesh-point-device.h: ns3::MeshPointDevice [class]
     module.add_class('MeshPointDevice', parent=root_module['ns3::NetDevice'])
     
