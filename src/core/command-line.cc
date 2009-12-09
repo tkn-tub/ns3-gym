@@ -31,7 +31,34 @@ NS_LOG_COMPONENT_DEFINE ("CommandLine");
 
 namespace ns3 {
 
+CommandLine::CommandLine ()
+{}
+CommandLine::CommandLine (const CommandLine &cmd)
+{
+  Copy (cmd);
+}
+CommandLine &
+CommandLine::operator = (const CommandLine &cmd)
+{
+  Clear ();
+  Copy (cmd);
+  return *this;
+}
 CommandLine::~CommandLine ()
+{
+  Clear ();
+}
+void
+CommandLine::Copy (const CommandLine &cmd)
+{
+  for (Items::const_iterator i = cmd.m_items.begin (); 
+       i != cmd.m_items.end (); ++i)
+    {
+      m_items.push_back (*i);
+    }
+}
+void
+CommandLine::Clear (void)
 {
   for (Items::const_iterator i = m_items.begin (); i != m_items.end (); ++i)
     {

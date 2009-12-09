@@ -44,6 +44,9 @@ namespace ns3 {
 class CommandLine
 {
 public:
+  CommandLine ();
+  CommandLine (const CommandLine &cmd);
+  CommandLine &operator = (const CommandLine &cmd);
   ~CommandLine ();
 
   /**
@@ -109,6 +112,8 @@ private:
   void PrintGroup (std::string group) const;
   void PrintTypeIds (void) const;
   void PrintGroups (void) const;
+  void Copy (const CommandLine &cmd);
+  void Clear (void);
 
   typedef std::list<Item *> Items;
   Items m_items;
