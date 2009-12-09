@@ -637,7 +637,10 @@ RoutingProtocol::SendRequest (Ipv4Address dst)
   else
     {
       rreqHeader.SetUnknownSeqno (true);
-      RoutingTableEntry newEntry;
+      Ptr<NetDevice> dev = 0;
+      RoutingTableEntry newEntry (/*device=*/dev, /*dst=*/dst, /*validSeqNo=*/false, /*seqno=*/0,
+                                  /*iface=*/Ipv4InterfaceAddress(),/*hop=*/0,
+                                  /*nextHop=*/Ipv4Address(), /*lifeTime=*/Seconds(0));
       newEntry.SetFlag (IN_SEARCH);
       m_routingTable.AddRoute (newEntry);
     }
@@ -775,6 +778,7 @@ RoutingProtocol::UpdateRouteToNeighbor (Ipv4Address sender, Ipv4Address receiver
                                   /*hops=*/1, /*next hop=*/sender, /*lifetime=*/std::max (ActiveRouteTimeout, toNeighbor.GetLifeTime ()));
       m_routingTable.Update (newEntry);
     }
+
 }
 
 void
@@ -1470,6 +1474,7 @@ RoutingProtocol::SendRerrMessage (Ptr<Packet> packet, std::vector<Ipv4Address> p
       NS_LOG_LOGIC ("Broadcast RERR message from interface " << i->GetLocal());
       socket->Send (packet);
     }
+
 
 }
 
