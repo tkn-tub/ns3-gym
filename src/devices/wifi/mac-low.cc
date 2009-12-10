@@ -303,7 +303,15 @@ void
 MacLow::DoDispose (void)
 {
   NS_LOG_FUNCTION (this);
-  CancelAllEvents ();
+  m_normalAckTimeoutEvent.Cancel ();
+  m_fastAckTimeoutEvent.Cancel ();
+  m_superFastAckTimeoutEvent.Cancel ();
+  m_fastAckFailedTimeoutEvent.Cancel ();
+  m_ctsTimeoutEvent.Cancel ();
+  m_sendCtsEvent.Cancel ();
+  m_sendAckEvent.Cancel ();
+  m_sendDataEvent.Cancel ();
+  m_waitSifsEvent.Cancel ();
   m_phy = 0;
   m_stationManager = 0;
   delete m_phyMacLowListener;
