@@ -79,6 +79,7 @@ void PacketSink::DoDispose (void)
 {
   NS_LOG_FUNCTION (this);
   m_socket = 0;
+  m_socketList.clear ();
 
   // chain up
   Application::DoDispose ();
