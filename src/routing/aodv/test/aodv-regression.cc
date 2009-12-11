@@ -38,6 +38,7 @@
 #include "ns3/aodv-helper.h"
 #include "ns3/v4ping-helper.h"
 #include "ns3/nqos-wifi-mac-helper.h"
+#include "ns3/config.h"
 #include <sstream>
 
 /// Set to true to rewrite reference traces, leave false to run regression tests
@@ -53,7 +54,10 @@ class AodvRegressionTestSuite : public TestSuite
 public:
   AodvRegressionTestSuite () : TestSuite ("routing-aodv-regression", SYSTEM) 
   {
-    AddTestCase (new ChainRegressionTest);
+    // General RREQ-RREP-RRER test case
+    AddTestCase (new ChainRegressionTest ("aodv-chain-regression-test"));
+    // Bug 606 test case, should crash if bug is not fixed
+    AddTestCase (new ChainRegressionTest ("bug-606-test", Seconds (10), 3, Seconds (1)));
   }
 } g_aodvRegressionTestSuite;
  
@@ -61,14 +65,14 @@ public:
 //-----------------------------------------------------------------------------
 // ChainRegressionTest
 //-----------------------------------------------------------------------------
-/// Unique PCAP files prefix for this test
-const char * const ChainRegressionTest::PREFIX = "aodv-chain-regression-test";
-
-ChainRegressionTest::ChainRegressionTest () : TestCase ("AODV chain regression test"),
+ChainRegressionTest::ChainRegressionTest (const char * const prefix, Time t, uint32_t size, Time arpAliveTimeout) : 
+  TestCase ("AODV chain regression test"),
   m_nodes (0),
-  m_time (Seconds (10)),
-  m_size (5),
-  m_step (120)
+  m_prefix (prefix),
+  m_time (t),
+  m_size (size),
+  m_step (120),
+  m_arpAliveTimeout (arpAliveTimeout)
 {
 }
 
@@ -81,6 +85,8 @@ bool
 ChainRegressionTest::DoRun ()
 {
   SeedManager::SetSeed(12345);
+  Config::SetDefault ("ns3::ArpCache::AliveTimeout", TimeValue (m_arpAliveTimeout));
+  
   CreateNodes ();
   CreateDevices ();
   
@@ -146,7 +152,7 @@ ChainRegressionTest::CreateDevices ()
   p.Stop (m_time);
   
   // 4. write PCAP
-  std::string prefix = (WRITE_VECTORS ? NS_TEST_SOURCEDIR : GetTempDir ()) + PREFIX;
+  std::string prefix = (WRITE_VECTORS ? NS_TEST_SOURCEDIR : GetTempDir ()) + m_prefix;
   wifiPhy.EnablePcapAll (prefix);
 }
 
@@ -157,8 +163,8 @@ ChainRegressionTest::CheckResults ()
     {
       std::ostringstream os1, os2;
       // File naming conventions are hard-coded here.
-      os1 << NS_TEST_SOURCEDIR << PREFIX << "-" << i << "-0.pcap";
-      os2 << GetTempDir () << PREFIX << "-" << i << "-0.pcap";
+      os1 << NS_TEST_SOURCEDIR << m_prefix << "-" << i << "-0.pcap";
+      os2 << GetTempDir () << m_prefix << "-" << i << "-0.pcap";
       
       uint32_t sec(0), usec(0);
       bool diff = PcapFile::Diff (os1.str(), os2.str(), sec, usec);

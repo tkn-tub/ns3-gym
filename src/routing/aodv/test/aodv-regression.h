@@ -154,20 +154,31 @@ namespace aodv {
 class ChainRegressionTest : public TestCase
 {
 public:
-  ChainRegressionTest ();
+  /**
+   * Create test case
+   * 
+   * \param prefix              Unique file names prefix
+   * \param size                Number of nodes in the chain
+   * \param time                Simulation time
+   * \param arpAliveTimeout     ARP alive timeout, this is used to check that ARP and routing do not interfere
+   */
+  ChainRegressionTest (const char * const prefix, Time time = Seconds (10), uint32_t size = 5, Time arpAliveTimeout = Seconds (120));
   ~ChainRegressionTest ();  
+  
 private:
-  /// Unique PCAP files prefix for this test
-  static const char * const PREFIX;
   /// XXX It is important to have pointers here
   NodeContainer * m_nodes;
   
+  /// PCAP file names prefix
+  const std::string m_prefix;
   /// Total simulation time
   const Time m_time;
   /// Chain size
   const uint32_t m_size;
   /// Chain step, meters
   const double m_step;
+  /// ARP alive timeout
+  const Time m_arpAliveTimeout;
   
   /// Create test topology
   void CreateNodes ();
