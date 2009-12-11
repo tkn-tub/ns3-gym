@@ -64,8 +64,8 @@ CMD="select exp.input,avg(100-((rx.value*100)/tx.value)) \
     from Singletons rx, Singletons tx, Experiments exp \
     where rx.run = tx.run AND \
           rx.run = exp.run AND \
-          rx.name='receiver-rx-packets' AND \
-          tx.name='sender-tx-packets' \
+          rx.variable='receiver-rx-packets' AND \
+          tx.variable='sender-tx-packets' \
     group by exp.input \
     order by abs(exp.input) ASC;"
 
