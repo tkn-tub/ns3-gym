@@ -471,6 +471,14 @@ def create_ns3_program(bld, name, dependencies=('simulator',)):
             program.env.append_value('LINKFLAGS', '-Wl,-Bdynamic,--no-whole-archive')
     return program
 
+def add_examples_programs(bld):
+    env = bld.env_of_name('default')
+    if env['ENABLE_EXAMPLES']:
+        for dir in os.listdir('examples'):
+            if os.path.isdir(os.path.join('examples', dir)):
+                bld.add_subdirs(os.path.join('examples', dir))
+
+
 def add_scratch_programs(bld):
     all_modules = [mod[len("ns3-"):] for mod in bld.env['NS3_MODULES']]
     for filename in os.listdir("scratch"):
@@ -512,8 +520,8 @@ def build(bld):
     bld.add_subdirs('src')
     bld.add_subdirs('samples')
     bld.add_subdirs('utils')
-    bld.add_subdirs('examples')
 
+    add_examples_programs(bld)
     add_scratch_programs(bld)
 
     ## if --enabled-modules option was given, we disable building the
