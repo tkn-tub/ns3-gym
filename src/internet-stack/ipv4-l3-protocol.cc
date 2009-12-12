@@ -866,6 +866,59 @@ Ipv4L3Protocol::RemoveAddress (uint32_t i, uint32_t addressIndex)
   return false;
 }
 
+Ipv4Address 
+Ipv4L3Protocol::SelectSourceAddress (Ptr<const NetDevice> device,
+    Ipv4Address dst, Ipv4InterfaceAddress::InterfaceAddressScope_e scope)
+{
+  NS_LOG_FUNCTION (device << dst << scope);
+  Ipv4Address addr ("0.0.0.0");
+  Ipv4InterfaceAddress iaddr; 
+  bool found = false;
+
+  if (device != 0)
+    {
+      int32_t i = GetInterfaceForDevice (device);
+      NS_ASSERT_MSG (i >= 0, "No device found on node");
+      for (uint32_t j = 0; j < GetNAddresses (i); j++)
+        {
+          iaddr = GetAddress (i, j);
+          if (iaddr.IsSecondary ()) continue;
+          if (iaddr.GetScope () > scope) continue; 
+          if (dst.CombineMask (iaddr.GetMask ())  == iaddr.GetLocal ().CombineMask (iaddr.GetMask ()) )  
+            {
+              return iaddr.GetLocal ();
+            }
+          if (!found)
+            {
+              addr = iaddr.GetLocal ();
+              found = true;
+            }
+        }
+    }
+  if (found)
+    {
+      return addr;
+    }
+
+  // Iterate among all interfaces
+  for (uint32_t i = 0; i < GetNInterfaces (); i++)
+    {
+      for (uint32_t j = 0; j < GetNAddresses (i); j++)
+        {
+          iaddr = GetAddress (i, j);
+          if (iaddr.IsSecondary ()) continue;
+          if (iaddr.GetScope () != Ipv4InterfaceAddress::LINK 
+              && iaddr.GetScope () <= scope) 
+            {
+              return iaddr.GetLocal ();
+            }
+        }
+    }
+  NS_LOG_WARN ("Could not find source address for " << dst << " and scope " 
+    << scope << ", returning 0");
+  return addr;  
+}
+
 void 
 Ipv4L3Protocol::SetMetric (uint32_t i, uint16_t metric)
 {
