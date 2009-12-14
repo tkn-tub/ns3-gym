@@ -2467,6 +2467,11 @@ def register_Ns3Ipv4L3Protocol_methods(root_module, cls):
                    'bool', 
                    [param('uint32_t', 'interfaceIndex'), param('uint32_t', 'addressIndex')], 
                    is_virtual=True)
+    ## ipv4-l3-protocol.h: ns3::Ipv4Address ns3::Ipv4L3Protocol::SelectSourceAddress(ns3::Ptr<const ns3::NetDevice> device, ns3::Ipv4Address dst, ns3::Ipv4InterfaceAddress::InterfaceAddressScope_e scope) [member function]
+    cls.add_method('SelectSourceAddress', 
+                   'ns3::Ipv4Address', 
+                   [param('ns3::Ptr< ns3::NetDevice const >', 'device'), param('ns3::Ipv4Address', 'dst'), param('ns3::Ipv4InterfaceAddress::InterfaceAddressScope_e', 'scope')], 
+                   is_virtual=True)
     ## ipv4-l3-protocol.h: void ns3::Ipv4L3Protocol::SetMetric(uint32_t i, uint16_t metric) [member function]
     cls.add_method('SetMetric', 
                    'void', 

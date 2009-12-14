@@ -489,8 +489,8 @@ def register_Ns3CallbackBase_methods(root_module, cls):
 def register_Ns3CommandLine_methods(root_module, cls):
     ## command-line.h: ns3::CommandLine::CommandLine() [constructor]
     cls.add_constructor([])
-    ## command-line.h: ns3::CommandLine::CommandLine(ns3::CommandLine const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::CommandLine const &', 'arg0')])
+    ## command-line.h: ns3::CommandLine::CommandLine(ns3::CommandLine const & cmd) [copy constructor]
+    cls.add_constructor([param('ns3::CommandLine const &', 'cmd')])
     ## command-line.h: void ns3::CommandLine::AddValue(std::string const & name, std::string const & help, ns3::Callback<bool, std::string, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> callback) [member function]
     cls.add_method('AddValue', 
                    'void', 

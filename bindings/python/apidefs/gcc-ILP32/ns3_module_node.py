@@ -2774,6 +2774,11 @@ def register_Ns3Ipv4_methods(root_module, cls):
                    'bool', 
                    [param('uint32_t', 'interface'), param('uint32_t', 'addressIndex')], 
                    is_pure_virtual=True, is_virtual=True)
+    ## ipv4.h: ns3::Ipv4Address ns3::Ipv4::SelectSourceAddress(ns3::Ptr<const ns3::NetDevice> device, ns3::Ipv4Address dst, ns3::Ipv4InterfaceAddress::InterfaceAddressScope_e scope) [member function]
+    cls.add_method('SelectSourceAddress', 
+                   'ns3::Ipv4Address', 
+                   [param('ns3::Ptr< ns3::NetDevice const >', 'device'), param('ns3::Ipv4Address', 'dst'), param('ns3::Ipv4InterfaceAddress::InterfaceAddressScope_e', 'scope')], 
+                   is_pure_virtual=True, is_virtual=True)
     ## ipv4.h: void ns3::Ipv4::SetDown(uint32_t interface) [member function]
     cls.add_method('SetDown', 
                    'void', 
