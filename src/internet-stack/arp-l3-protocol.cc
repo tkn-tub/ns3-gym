@@ -315,7 +315,7 @@ ArpL3Protocol::SendArpRequest (Ptr<const ArpCache> cache, Ipv4Address to)
   ArpHeader arp;
   // need to pick a source address; use routing implementation to select
   Ptr<Ipv4L3Protocol> ipv4 = m_node->GetObject<Ipv4L3Protocol> ();
-  int32_t interface = ipv4->GetInterfaceForDevice (cache->GetDevice ());
+  ipv4->GetInterfaceForDevice (cache->GetDevice ());
   NS_ASSERT (interface >= 0);
   Ipv4Header header;
   header.SetDestination (to);
