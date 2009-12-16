@@ -219,6 +219,17 @@ Ipv4EndPointDemux::Lookup (Ipv4Address daddr, uint16_t dport,
                         << " does not match packet dport " << dport);
           continue;
         }
+      if (endP->GetBoundNetDevice ())
+        {
+          if (endP->GetBoundNetDevice () != incomingInterface->GetDevice ())
+            {
+              NS_LOG_LOGIC ("Skipping endpoint " << &endP
+                            << " because endpoint is bound to specific device and"
+                            << endP->GetBoundNetDevice ()
+                            << " does not match packet device " << incomingInterface->GetDevice ());
+              continue;
+            }
+        }
       bool subnetDirected = false;
       Ipv4Address incomingInterfaceAddr = daddr;  // may be a broadcast
       for (uint32_t i = 0; i < incomingInterface->GetNAddresses (); i++)

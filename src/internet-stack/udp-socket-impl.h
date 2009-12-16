@@ -77,6 +77,7 @@ public:
   virtual int GetSockName (Address &address) const; 
   virtual int MulticastJoinGroup (uint32_t interfaceIndex, const Address &groupAddress);
   virtual int MulticastLeaveGroup (uint32_t interfaceIndex, const Address &groupAddress);
+  virtual void BindToNetDevice (Ptr<NetDevice> netdevice);
 
 private:
   // Attributes set through UdpSocket base class 

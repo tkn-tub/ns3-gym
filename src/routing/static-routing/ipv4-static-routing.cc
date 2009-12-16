@@ -210,7 +210,7 @@ Ipv4StaticRouting::RemoveMulticastRoute(uint32_t index)
 }
 
 Ptr<Ipv4Route>
-Ipv4StaticRouting::LookupStatic (Ipv4Address dest)
+Ipv4StaticRouting::LookupStatic (Ipv4Address dest, Ptr<NetDevice> oif)
 {
   NS_LOG_FUNCTION_NOARGS ();
   Ptr<Ipv4Route> rtentry = 0;
@@ -229,6 +229,14 @@ Ipv4StaticRouting::LookupStatic (Ipv4Address dest)
       if (mask.IsMatch (dest, entry)) 
         {
           NS_LOG_LOGIC ("Found global network route " << j << ", mask length " << masklen << ", metric " << metric);
+          if (oif != 0)
+            {
+              if (oif != m_ipv4->GetNetDevice (j->GetInterface ()))
+                {
+                  NS_LOG_LOGIC ("Not on requested interface, skipping");
+                  continue;
+                }
+            }
           if (masklen < longest_mask) // Not interested if got shorter mask
             {
               NS_LOG_LOGIC ("Previous match longer, skipping");
@@ -254,7 +262,7 @@ Ipv4StaticRouting::LookupStatic (Ipv4Address dest)
           rtentry->SetOutputDevice (m_ipv4->GetNetDevice (interfaceIdx));
         }
     }
-  NS_LOG_LOGIC ("Matching route via " << rtentry << " at the end");
+  NS_LOG_LOGIC ("Matching route via " << rtentry->GetGateway () << " at the end");
   return rtentry;
 }
 
@@ -415,7 +423,7 @@ Ipv4StaticRouting::RemoveRoute (uint32_t index)
 }
 
 Ptr<Ipv4Route> 
-Ipv4StaticRouting::RouteOutput (Ptr<Packet> p, const Ipv4Header &header, uint32_t oif, Socket::SocketErrno &sockerr)
+Ipv4StaticRouting::RouteOutput (Ptr<Packet> p, const Ipv4Header &header, Ptr<NetDevice> oif, Socket::SocketErrno &sockerr)
 {
   NS_LOG_FUNCTION (this << header << oif);
   Ipv4Address destination = header.GetDestination ();
@@ -432,7 +440,7 @@ Ipv4StaticRouting::RouteOutput (Ptr<Packet> p, const Ipv4Header &header, uint32_
       // So, we just log it and fall through to LookupStatic ()
       NS_LOG_LOGIC ("RouteOutput()::Multicast destination");
     }
-  rtentry = LookupStatic (destination);
+  rtentry = LookupStatic (destination, oif);
   if (rtentry)
     { 
       sockerr = Socket::ERROR_NOTERROR;

@@ -52,6 +52,8 @@ us a note on ns-developers mailing list.  </p>
 <h2>New API:</h2>
 
 <ul>
+<li><b>Binding sockets to devices:</b> A method analogous to a SO_BINDTODEVICE
+socket option has been introduced to class Socket:  <pre>virtual void Socket::BindToNetDevice (Ptr<NetDevice> netdevice);</pre>
 <li><b>Simulator event contexts</b>: The Simulator API now keeps track of a per-event
 'context' (a 32bit integer which, by convention identifies a node by its id). Simulator::GetContext
 returns the context of the currently-executing event while Simulator::ScheduleWithContext creates an
@@ -76,6 +78,20 @@ and loose routing) are available.</li>
 
 <h2>Changes to existing API:</h2>
 <ul>
+<li><b>Ipv4RoutingProtocol::RouteOutput</b> no longer takes an outgoing 
+interface index but instead takes an outgoing device pointer; this affects all
+subclasses of Ipv4RoutingProtocol.
+<pre>
+-  virtual Ptr&lt;Ipv4Route&gt; RouteOutput (Ptr&lt;Packet&gt; p, const Ipv4Header &header, uint32_t oif, Socket::SocketErrno &sockerr) = 0;
++  virtual Ptr&lt;Ipv4Route&gt; RouteOutput (Ptr&lt;Packet&gt; p, const Ipv4Header &header, Ptr&lt;NetDevice&gt; oif, Socket::SocketErrno &sockerr) = 0;
+</pre>
+<li><b>Ipv6RoutingProtocol::RouteOutput</b> no longer takes an outgoing 
+interface index but instead takes an outgoing device pointer; this affects all
+subclasses of Ipv6RoutingProtocol.
+<pre>
+-  virtual Ptr&lt;Ipv6Route&gt; RouteOutput (Ptr&lt;Packet&gt; p, const Ipv6Header &header, uint32_t oif, Socket::SocketErrno &sockerr) = 0;
++  virtual Ptr&lt;Ipv6Route&gt; RouteOutput (Ptr&lt;Packet&gt; p, const Ipv6Header &header, Ptr&lt;NetDevice&gt; oif, Socket::SocketErrno &sockerr) = 0;
+</pre>
 <li><b>Application::Start</b> and <b>Application::Stop</b> have been renamed to
 <b>Application::SetStartTime</b> and <b>Application::SetStopTime</b>.
 <li><b>Channel::Send</b>: this method does not really exist but each subclass of the Channel

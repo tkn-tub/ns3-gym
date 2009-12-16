@@ -75,6 +75,19 @@ Ipv4EndPoint::SetPeer (Ipv4Address address, uint16_t port)
   m_peerPort = port;
 }
 
+void
+Ipv4EndPoint::BindToNetDevice (Ptr<NetDevice> netdevice)
+{
+  m_boundnetdevice = netdevice;
+  return;
+}
+
+Ptr<NetDevice> 
+Ipv4EndPoint::GetBoundNetDevice (void)
+{
+ return m_boundnetdevice;
+}
+
 void 
 Ipv4EndPoint::SetRxCallback (Callback<void,Ptr<Packet>, Ipv4Address, uint16_t> callback)
 {

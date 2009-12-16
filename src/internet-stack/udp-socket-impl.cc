@@ -296,7 +296,10 @@ int
 UdpSocketImpl::DoSendTo (Ptr<Packet> p, Ipv4Address dest, uint16_t port)
 {
   NS_LOG_FUNCTION (this << p << dest << port);
-
+  if (m_boundnetdevice)
+    {
+      NS_LOG_LOGIC("Bound interface number " << m_boundnetdevice->GetIfIndex());
+    }
   if (m_endPoint == 0)
     {
       if (Bind () == -1)
@@ -375,6 +378,12 @@ UdpSocketImpl::DoSendTo (Ptr<Packet> p, Ipv4Address dest, uint16_t port)
           Ipv4Address addri = iaddr.GetLocal ();
           if (addri == Ipv4Address ("127.0.0.1"))
             continue;
+          // Check if interface-bound socket
+          if (m_boundnetdevice) 
+            {
+              if (ipv4->GetNetDevice(i) != m_boundnetdevice)
+                continue;
+            }
           Ipv4Mask maski = iaddr.GetMask ();
           if (maski == Ipv4Mask::GetOnes ())
             {
@@ -413,7 +422,7 @@ UdpSocketImpl::DoSendTo (Ptr<Packet> p, Ipv4Address dest, uint16_t port)
       header.SetProtocol (UdpL4Protocol::PROT_NUMBER);
       Socket::SocketErrno errno_;
       Ptr<Ipv4Route> route;
-      uint32_t oif = 0; //specify non-zero if bound to a source address
+      Ptr<NetDevice> oif = m_boundnetdevice; //specify non-zero if bound to a specific device
       // TBD-- we could cache the route and just check its validity
       route = ipv4->GetRoutingProtocol ()->RouteOutput (p, header, oif, errno_); 
       if (route != 0)
@@ -553,6 +562,24 @@ UdpSocketImpl::MulticastLeaveGroup (uint32_t interface, const Address &groupAddr
    5) call ipv4->MulticastLeaveGroup () or Ipv6->MulticastLeaveGroup ()
   */
   return 0;
+}
+
+void
+UdpSocketImpl::BindToNetDevice (Ptr<NetDevice> netdevice)
+{
+  NS_LOG_FUNCTION (netdevice);
+  Socket::BindToNetDevice (netdevice); // Includes sanity check
+  if (m_endPoint == 0)
+    {
+      if (Bind () == -1)
+       {
+         NS_ASSERT (m_endPoint == 0);
+         return;
+       }
+      NS_ASSERT (m_endPoint != 0);
+    }
+  m_endPoint->BindToNetDevice (netdevice);
+  return;
 }
 
 void 

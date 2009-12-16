@@ -630,7 +630,7 @@ void Ipv6L3Protocol::Send (Ptr<Packet> packet, Ipv6Address source, Ipv6Address d
   /* 3) */
   NS_LOG_LOGIC ("Ipv6L3Protocol::Send case 3: passed in with no route " << destination);
   Socket::SocketErrno err;
-  uint32_t oif = 0;
+  Ptr<NetDevice> oif (0);
   Ptr<Ipv6Route> newRoute = 0;
 
   hdr = BuildHeader (source, destination, protocol, packet->GetSize (), ttl);
@@ -639,7 +639,7 @@ void Ipv6L3Protocol::Send (Ptr<Packet> packet, Ipv6Address source, Ipv6Address d
   {
     int32_t index = GetInterfaceForAddress (source);
     NS_ASSERT (index >= 0);
-    oif = index;
+    oif = GetNetDevice(index);
   }
 
   newRoute = m_routingProtocol->RouteOutput (packet, hdr, oif, err);
@@ -651,7 +651,7 @@ void Ipv6L3Protocol::Send (Ptr<Packet> packet, Ipv6Address source, Ipv6Address d
   else
   {
     NS_LOG_WARN ("No route to host, drop!");
-    m_dropTrace (hdr, packet, DROP_NO_ROUTE, oif);
+    m_dropTrace (hdr, packet, DROP_NO_ROUTE, GetInterfaceForDevice(oif));
   }
 }
 

@@ -74,7 +74,7 @@ public:
   Ipv4StaticRouting ();
   virtual ~Ipv4StaticRouting ();
 
-  virtual Ptr<Ipv4Route> RouteOutput (Ptr<Packet> p, const Ipv4Header &header, uint32_t oif, Socket::SocketErrno &sockerr);
+  virtual Ptr<Ipv4Route> RouteOutput (Ptr<Packet> p, const Ipv4Header &header, Ptr<NetDevice> oif, Socket::SocketErrno &sockerr);
 
   virtual bool RouteInput  (Ptr<const Packet> p, const Ipv4Header &header, Ptr<const NetDevice> idev,
                              UnicastForwardCallback ucb, MulticastForwardCallback mcb,
@@ -382,7 +382,7 @@ private:
   typedef std::list<Ipv4MulticastRoutingTableEntry *>::const_iterator MulticastRoutesCI;
   typedef std::list<Ipv4MulticastRoutingTableEntry *>::iterator MulticastRoutesI;
   
-  Ptr<Ipv4Route> LookupStatic (Ipv4Address dest);
+  Ptr<Ipv4Route> LookupStatic (Ipv4Address dest, Ptr<NetDevice> oif = 0);
   Ptr<Ipv4MulticastRoute> LookupStatic (Ipv4Address origin, Ipv4Address group,
                                     uint32_t interface);
 

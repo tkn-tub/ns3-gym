@@ -213,7 +213,7 @@ bool Ipv6StaticRouting::HasNetworkDest (Ipv6Address network, uint32_t interfaceI
   return false;
 }
 
-Ptr<Ipv6Route> Ipv6StaticRouting::LookupStatic (Ipv6Address dst, uint32_t interface)
+Ptr<Ipv6Route> Ipv6StaticRouting::LookupStatic (Ipv6Address dst, Ptr <NetDevice> interface)
 {
   NS_LOG_FUNCTION (this << dst << interface);
   Ptr<Ipv6Route> rtentry = 0;
@@ -224,12 +224,12 @@ Ptr<Ipv6Route> Ipv6StaticRouting::LookupStatic (Ipv6Address dst, uint32_t interf
   if (dst == Ipv6Address::GetAllNodesMulticast () || dst.IsSolicitedMulticast () || 
       dst == Ipv6Address::GetAllRoutersMulticast () || dst == Ipv6Address::GetAllHostsMulticast ())
   {
-    NS_ASSERT_MSG (interface > 0, "Try to send on link-local multicast address, and no interface index is given!");
+    NS_ASSERT_MSG (interface, "Try to send on link-local multicast address, and no interface index is given!");
     rtentry = Create<Ipv6Route> ();
-    rtentry->SetSource (SourceAddressSelection (interface, dst));
+    rtentry->SetSource (SourceAddressSelection (m_ipv6->GetInterfaceForDevice (interface), dst));
     rtentry->SetDestination (dst);
     rtentry->SetGateway (Ipv6Address::GetZero ());
-    rtentry->SetOutputDevice (m_ipv6->GetNetDevice (interface));
+    rtentry->SetOutputDevice (interface);
     return rtentry;
   }
 
@@ -248,7 +248,7 @@ Ptr<Ipv6Route> Ipv6StaticRouting::LookupStatic (Ipv6Address dst, uint32_t interf
       NS_LOG_LOGIC ("Found global network route " << j << ", mask length " << maskLen << ", metric " << metric);
 
       /* if interface is given, check the route will output on this interface */
-      if (!interface || interface == j->GetInterface ())
+      if (!interface || interface == m_ipv6->GetNetDevice (j->GetInterface ()))
       {
         if (maskLen < longestMask)
         {
@@ -483,7 +483,7 @@ void Ipv6StaticRouting::RemoveRoute (Ipv6Address network, Ipv6Prefix prefix, uin
   }
 }
 
-Ptr<Ipv6Route> Ipv6StaticRouting::RouteOutput (Ptr<Packet> p, const Ipv6Header &header, uint32_t oif, Socket::SocketErrno &sockerr)
+Ptr<Ipv6Route> Ipv6StaticRouting::RouteOutput (Ptr<Packet> p, const Ipv6Header &header, Ptr<NetDevice> oif, Socket::SocketErrno &sockerr)
 {
   NS_LOG_FUNCTION (this << header << oif);
   Ipv6Address destination = header.GetDestinationAddress ();

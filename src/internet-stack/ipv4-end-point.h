@@ -24,6 +24,7 @@
 #include <stdint.h>
 #include "ns3/ipv4-address.h"
 #include "ns3/callback.h"
+#include "ns3/net-device.h"
 
 namespace ns3 {
 
@@ -53,6 +54,9 @@ public:
   uint16_t GetPeerPort (void);
 
   void SetPeer (Ipv4Address address, uint16_t port);
+  
+  void BindToNetDevice (Ptr<NetDevice> netdevice);
+  Ptr<NetDevice> GetBoundNetDevice (void);
 
   // Called from socket implementations to get notified about important events.
   void SetRxCallback (Callback<void,Ptr<Packet>, Ipv4Address, uint16_t> callback);
@@ -77,6 +81,7 @@ private:
   uint16_t m_localPort;
   Ipv4Address m_peerAddr;
   uint16_t m_peerPort;
+  Ptr<NetDevice> m_boundnetdevice;
   Callback<void,Ptr<Packet>, Ipv4Address, uint16_t> m_rxCallback;
   Callback<void,Ipv4Address,uint8_t,uint8_t,uint8_t,uint32_t> m_icmpCallback;
   Callback<void> m_destroyCallback;

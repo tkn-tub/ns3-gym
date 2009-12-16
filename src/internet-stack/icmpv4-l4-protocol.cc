@@ -89,7 +89,7 @@ Icmpv4L4Protocol::SendMessage (Ptr<Packet> packet, Ipv4Address dest, uint8_t typ
   header.SetProtocol (PROT_NUMBER);
   Socket::SocketErrno errno_;
   Ptr<Ipv4Route> route;
-  uint32_t oif = 0; //specify non-zero if bound to a source address
+  Ptr<NetDevice> oif (0); //specify non-zero if bound to a source address
   route = ipv4->GetRoutingProtocol ()->RouteOutput (packet, header, oif, errno_);
   if (route != 0)
     {

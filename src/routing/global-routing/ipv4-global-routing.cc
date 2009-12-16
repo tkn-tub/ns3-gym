@@ -115,7 +115,7 @@ Ipv4GlobalRouting::AddASExternalRouteTo (Ipv4Address network,
 
 
 Ptr<Ipv4Route>
-Ipv4GlobalRouting::LookupGlobal (Ipv4Address dest)
+Ipv4GlobalRouting::LookupGlobal (Ipv4Address dest, Ptr<NetDevice> oif)
 {
   NS_LOG_FUNCTION_NOARGS ();
   NS_LOG_LOGIC ("Looking for route for destination " << dest);
@@ -131,6 +131,14 @@ Ipv4GlobalRouting::LookupGlobal (Ipv4Address dest)
       if ((*i)->GetDest ().IsEqual (dest)) 
         {
           NS_LOG_LOGIC ("Found global host route" << *i); 
+          if (oif != 0)
+            {
+              if (oif != m_ipv4->GetNetDevice(route->GetInterface ()))
+                {
+                  NS_LOG_LOGIC ("Not on requested interface, skipping");
+                  continue;
+                }
+            }
           route = (*i);
           found = true; 
           break;
@@ -148,6 +156,14 @@ Ipv4GlobalRouting::LookupGlobal (Ipv4Address dest)
           if (mask.IsMatch (dest, entry)) 
             {
               NS_LOG_LOGIC ("Found global network route" << *j); 
+              if (oif != 0)
+                {
+                  if (oif != m_ipv4->GetNetDevice(route->GetInterface ()))
+                    {
+                      NS_LOG_LOGIC ("Not on requested interface, skipping");
+                      continue;
+                    }
+                }
               route = (*j);
               found = true;
               break;
@@ -165,6 +181,14 @@ Ipv4GlobalRouting::LookupGlobal (Ipv4Address dest)
           if (mask.IsMatch (dest, entry))
             {
               NS_LOG_LOGIC ("Found external route" << *k);
+              if (oif != 0)
+                {
+                  if (oif != m_ipv4->GetNetDevice(route->GetInterface ()))
+                    {
+                      NS_LOG_LOGIC ("Not on requested interface, skipping");
+                      continue;
+                    }
+                }
               route = (*k);
               found = true;
               break;
@@ -332,7 +356,7 @@ Ipv4GlobalRouting::DoDispose (void)
 }
 
 Ptr<Ipv4Route>
-Ipv4GlobalRouting::RouteOutput (Ptr<Packet> p, const Ipv4Header &header, uint32_t oif, Socket::SocketErrno &sockerr)
+Ipv4GlobalRouting::RouteOutput (Ptr<Packet> p, const Ipv4Header &header, Ptr<NetDevice> oif, Socket::SocketErrno &sockerr)
 {      
 
 //
@@ -348,7 +372,7 @@ Ipv4GlobalRouting::RouteOutput (Ptr<Packet> p, const Ipv4Header &header, uint32_
 // See if this is a unicast packet we have a route for.
 //
   NS_LOG_LOGIC ("Unicast destination- looking up");
-  Ptr<Ipv4Route> rtentry = LookupGlobal (header.GetDestination());
+  Ptr<Ipv4Route> rtentry = LookupGlobal (header.GetDestination (), oif);
   if (rtentry)
     {
       sockerr = Socket::ERROR_NOTERROR;

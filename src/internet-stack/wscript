@@ -143,6 +143,7 @@ def build(bld):
         'icmpv6-l4-protocol.h',
         'ipv6-l4-protocol.h',
         'ndisc-cache.h',
+	'loopback-net-device.h'
        ]
 
     if bld.env['NSC_ENABLED']:

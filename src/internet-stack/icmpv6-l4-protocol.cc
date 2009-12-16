@@ -747,7 +747,7 @@ void Icmpv6L4Protocol::SendMessage (Ptr<Packet> packet, Ipv6Address dst, Icmpv6H
   SocketIpTtlTag tag;
   Socket::SocketErrno err;
   Ptr<Ipv6Route> route;
-  uint32_t oif = 0; //specify non-zero if bound to a source address
+  Ptr<NetDevice> oif (0); //specify non-zero if bound to a source address
   
   header.SetDestinationAddress (dst);
   route = ipv6->GetRoutingProtocol ()->RouteOutput (packet, header, oif, err);

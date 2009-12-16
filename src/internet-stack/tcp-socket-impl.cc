@@ -384,7 +384,7 @@ TcpSocketImpl::Connect (const Address & address)
       header.SetDestination (m_remoteAddress);
       Socket::SocketErrno errno_;
       Ptr<Ipv4Route> route;
-      uint32_t oif = 0; //specify non-zero if bound to a source address
+      Ptr<NetDevice> oif = m_boundnetdevice; //specify non-zero if bound to a source address
       // XXX here, cache the route in the endpoint?
       route = ipv4->GetRoutingProtocol ()->RouteOutput (Ptr<Packet> (), header, oif, errno_);
       if (route != 0)
@@ -480,7 +480,7 @@ int TcpSocketImpl::DoSendTo (Ptr<Packet> p, Ipv4Address ipv4, uint16_t port)
   // about payload sent, not with headers
   uint32_t sentSize = p->GetSize();
   m_tcp->Send (p, m_endPoint->GetLocalAddress (), ipv4,
-                  m_endPoint->GetLocalPort (), port);
+                  m_endPoint->GetLocalPort (), port, m_boundnetdevice);
   NotifyDataSent (sentSize);
   return 0;
 }
@@ -641,6 +641,24 @@ TcpSocketImpl::GetSockName (Address &address) const
 }
 
 void
+TcpSocketImpl::BindToNetDevice (Ptr<NetDevice> netdevice)
+{
+  NS_LOG_FUNCTION (netdevice);
+  Socket::BindToNetDevice (netdevice); // Includes sanity check
+  if (m_endPoint == 0)
+    {
+      if (Bind () == -1)
+       {
+         NS_ASSERT (m_endPoint == 0);
+         return;
+       }
+      NS_ASSERT (m_endPoint != 0);
+    }
+  m_endPoint->BindToNetDevice (netdevice);
+  return;
+}
+
+void
 TcpSocketImpl::ForwardUp (Ptr<Packet> packet, Ipv4Address ipv4, uint16_t port)
 {
   NS_LOG_DEBUG("Socket " << this << " got forward up" <<
@@ -787,7 +805,7 @@ void TcpSocketImpl::SendEmptyPacket (uint8_t flags)
   header.SetDestinationPort (m_remotePort);
   header.SetWindowSize (AdvertisedWindowSize());
   m_tcp->SendPacket (p, header, m_endPoint->GetLocalAddress (), 
-    m_remoteAddress);
+    m_remoteAddress, m_boundnetdevice);
   Time rto = m_rtt->RetransmitTimeout ();
   bool hasSyn = flags & TcpHeader::SYN;
   bool hasFin = flags & TcpHeader::FIN;
@@ -938,7 +956,7 @@ bool TcpSocketImpl::ProcessPacketAction (Actions_t a, Ptr<Packet> p,
             Ipv4Header header;
             Socket::SocketErrno errno_;
             Ptr<Ipv4Route> route;
-            uint32_t oif = 0; //specify non-zero if bound to a source address
+            Ptr<NetDevice> oif = m_boundnetdevice; //specify non-zero if bound to a source address
             header.SetDestination (m_remoteAddress);
             route = ipv4->GetRoutingProtocol ()->RouteOutput (Ptr<Packet> (), header, oif, errno_);
             if (route != 0)
@@ -1176,7 +1194,7 @@ bool TcpSocketImpl::SendPendingData (bool withAck)
       NS_LOG_LOGIC ("About to send a packet with flags: " << flags);
       m_tcp->SendPacket (p, header,
                          m_endPoint->GetLocalAddress (),
-                         m_remoteAddress);
+                         m_remoteAddress, m_boundnetdevice);
       m_rtt->SentSeq(m_nextTxSequence, sz);       // notify the RTT
       // Notify the application of the data being sent
       Simulator::ScheduleNow(&TcpSocketImpl::NotifyDataSent, this, sz);
@@ -1622,7 +1640,7 @@ void TcpSocketImpl::PersistTimeout ()
   tcpHeader.SetWindowSize (AdvertisedWindowSize());
 
   m_tcp->SendPacket (p, tcpHeader, m_endPoint->GetLocalAddress (),
-    m_remoteAddress);
+    m_remoteAddress, m_boundnetdevice);
   NS_LOG_LOGIC ("Schedule persist timeout at time " 
                     <<Simulator::Now ().GetSeconds () << " to expire at time "
                     << (Simulator::Now () + m_persistTime).GetSeconds());
@@ -1688,7 +1706,7 @@ void TcpSocketImpl::Retransmit ()
   tcpHeader.SetWindowSize (AdvertisedWindowSize());
 
   m_tcp->SendPacket (p, tcpHeader, m_endPoint->GetLocalAddress (),
-    m_remoteAddress);
+    m_remoteAddress, m_boundnetdevice);
 }
 
 void

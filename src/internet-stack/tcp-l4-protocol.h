@@ -28,6 +28,7 @@
 #include "ns3/ptr.h"
 #include "ns3/object-factory.h"
 #include "ipv4-l4-protocol.h"
+#include "ns3/net-device.h"
 
 namespace ns3 {
 
@@ -92,7 +93,7 @@ public:
    */
   void Send (Ptr<Packet> packet,
              Ipv4Address saddr, Ipv4Address daddr, 
-             uint16_t sport, uint16_t dport);
+             uint16_t sport, uint16_t dport, Ptr<NetDevice> oif = 0);
   /**
    * \brief Recieve a packet up the protocol stack
    * \param p The Packet to dump the contents into
@@ -119,7 +120,7 @@ private:
 private:
   friend class TcpSocketImpl;
   void SendPacket (Ptr<Packet>, const TcpHeader &,
-                  Ipv4Address, Ipv4Address);
+                  Ipv4Address, Ipv4Address, Ptr<NetDevice> oif = 0);
   static ObjectFactory GetDefaultRttEstimatorFactory (void);
   TcpL4Protocol (const TcpL4Protocol &o);
   TcpL4Protocol &operator = (const TcpL4Protocol &o);

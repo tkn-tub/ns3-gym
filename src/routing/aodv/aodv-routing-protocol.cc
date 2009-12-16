@@ -215,7 +215,7 @@ RoutingProtocol::Start ()
 
 Ptr<Ipv4Route>
 RoutingProtocol::RouteOutput (Ptr<Packet> p, const Ipv4Header &header,
-    uint32_t oif, Socket::SocketErrno &sockerr)
+    Ptr<NetDevice> oif, Socket::SocketErrno &sockerr)
 {
   NS_LOG_FUNCTION (this << header.GetDestination ());
   if (m_socketAddresses.empty ())

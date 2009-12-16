@@ -69,7 +69,7 @@ Ipv6ListRouting::DoDispose (void)
 }
 
 Ptr<Ipv6Route>
-Ipv6ListRouting::RouteOutput (Ptr<Packet> p, const Ipv6Header &header, uint32_t oif, enum Socket::SocketErrno &sockerr)
+Ipv6ListRouting::RouteOutput (Ptr<Packet> p, const Ipv6Header &header, Ptr<NetDevice> oif, enum Socket::SocketErrno &sockerr)
 {
   NS_LOG_FUNCTION (this << header.GetDestinationAddress () << header.GetSourceAddress () << oif);
   Ptr<Ipv6Route> route;
@@ -342,7 +342,7 @@ namespace ns3 {
 
 class Ipv6ARouting : public Ipv6RoutingProtocol {
 public:
-  Ptr<Ipv6Route> RouteOutput (Ptr<Packet> p, const Ipv6Header &header, uint32_t oif, Socket::SocketErrno &sockerr)  { return 0;}
+  Ptr<Ipv6Route> RouteOutput (Ptr<Packet> p, const Ipv6Header &header, Ptr<NetDevice> oif, Socket::SocketErrno &sockerr)  { return 0;}
   bool RouteInput  (Ptr<const Packet> p, const Ipv6Header &header, Ptr<const NetDevice> idev,
                              UnicastForwardCallback ucb, MulticastForwardCallback mcb,
                              LocalDeliverCallback lcb, ErrorCallback ecb) {return false;}
@@ -358,7 +358,7 @@ public:
 
 class Ipv6BRouting : public Ipv6RoutingProtocol {
 public:
-  Ptr<Ipv6Route> RouteOutput (Ptr<Packet> p, const Ipv6Header &header, uint32_t oif, Socket::SocketErrno &sockerr)  { return 0;}
+  Ptr<Ipv6Route> RouteOutput (Ptr<Packet> p, const Ipv6Header &header, Ptr<NetDevice> oif, Socket::SocketErrno &sockerr)  { return 0;}
   bool RouteInput  (Ptr<const Packet> p, const Ipv6Header &header, Ptr<const NetDevice> idev,
                              UnicastForwardCallback ucb, MulticastForwardCallback mcb,
                              LocalDeliverCallback lcb, ErrorCallback ecb) {return false;}
