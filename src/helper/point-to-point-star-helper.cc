@@ -54,7 +54,7 @@ PointToPointStarHelper::GetHub () const
 }
 
 Ptr<Node> 
-PointToPointStarHelper::GetSpoke (uint32_t i) const
+PointToPointStarHelper::GetSpokeNode (uint32_t i) const
 {
   return m_spokes.Get (i);
 }

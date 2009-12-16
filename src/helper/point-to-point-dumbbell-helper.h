@@ -30,30 +30,113 @@
 
 namespace ns3 {
   
+/**
+ * \brief A helper to make it easier to create a dumbbell topology
+ * with p2p links
+ */
 class PointToPointDumbbellHelper
 {
 public:
-  PointToPointDumbbellHelper (uint32_t nLeftLeaf,  // Number of left size leaf nodes
-           PointToPointHelper leftHelper,
-           uint32_t nRightLeaf, // Number of right side leaf nodes
-           PointToPointHelper rightHelper,
-           PointToPointHelper bottleneckHelper);
+  /**
+   * Create a PointToPointDumbbellHelper in order to easily create
+   * dumbbell topologies using p2p links
+   *
+   * \param nLeftLeaf number of left side leaf nodes in the dumbbell
+   *
+   * \param leftHelper PointToPointHelper used to install the links 
+   *                   between the left leaf nodes and the left-most 
+   *                   router
+   *
+   * \param nRightLeaf number of right side leaf nodes in the dumbbell
+   *
+   * \param rightHelper PointToPointHelper used to install the links 
+   *                    between the right leaf nodes and the right-most 
+   *                    router
+   *
+   * \param bottleneckHelper PointToPointHelper used to install the link 
+   *                         between the inner-routers, usually known as 
+   *                         the bottleneck link
+   */
+  PointToPointDumbbellHelper (uint32_t nLeftLeaf,
+                              PointToPointHelper leftHelper,
+                              uint32_t nRightLeaf,
+                              PointToPointHelper rightHelper,
+                              PointToPointHelper bottleneckHelper);
+
   ~PointToPointDumbbellHelper ();
+
 public:
-  Ptr<Node> GetLeft ()           const; // Get the left side bottleneck router
-  Ptr<Node> GetLeft (uint32_t)   const; // Get the i'th left side leaf
-  Ptr<Node> GetRight ()          const; // Get the right side bottleneck router
-  Ptr<Node> GetRight (uint32_t)  const; // Get the i'th right side leaf
-  Ipv4Address GetLeftIpv4Address (uint32_t)  const; // Get left leaf address
-  Ipv4Address GetRightIpv4Address (uint32_t) const; // Get right leaf address
-  uint32_t  LeftCount ()         const; // Number of left side nodes
-  uint32_t  RightCount ()        const; // Number of right side nodes
+  /**
+   * \returns pointer to the node of the left side bottleneck
+   *          router
+   */
+  Ptr<Node> GetLeft () const;
+  
+  /**
+   * \returns pointer to the i'th left side leaf node
+   */
+  Ptr<Node> GetLeft (uint32_t i) const;
+
+  /**
+   * \returns pointer to the node of the right side bottleneck
+   *          router
+   */
+  Ptr<Node> GetRight () const;
+
+  /**
+   * \returns pointer to the i'th left side leaf node
+   */
+  Ptr<Node> GetRight (uint32_t i) const;
+
+  /**
+   * \returns an Ipv4Address of the i'th left leaf
+   */
+  Ipv4Address GetLeftIpv4Address (uint32_t i ) const; // Get left leaf address
+
+  /**
+   * \returns an Ipv4Address of the i'th right leaf
+   */
+  Ipv4Address GetRightIpv4Address (uint32_t i) const; // Get right leaf address
+
+  /**
+   * \returns total number of left side leaf nodes
+   */
+  uint32_t  LeftCount () const;
+
+  /**
+   * \returns total number of right side leaf nodes
+   */
+  uint32_t  RightCount () const;
+
+  /**
+   * \param stack an InternetStackHelper which is used to install 
+   *              on every node in the dumbbell
+   */
   void      InstallStack (InternetStackHelper stack);
+
+  /**
+   * \param leftIp Ipv4AddressHelper to assign Ipv4 addresses to the
+   *               interfaces on the left side of the dumbbell
+   *
+   * \param rightIp Ipv4AddressHelper to assign Ipv4 addresses to the
+   *                interfaces on the right side of the dumbbell
+   *
+   * \param routerIp Ipv4AddressHelper to assign Ipv4 addresses to the 
+   *                 interfaces on the bottleneck link
+   */
   void      AssignIpv4Addresses (Ipv4AddressHelper leftIp,
-                            Ipv4AddressHelper rightIp,
-                            Ipv4AddressHelper routerIp);
-  // Add locations in the specified bounding box
-  // Arguments are uppler left x, upper left y, lower right x, lower right y
+                                 Ipv4AddressHelper rightIp,
+                                 Ipv4AddressHelper routerIp);
+
+  /**
+   * Sets up the node canvas locations for every node in the dumbbell.
+   * This is needed for use with the animation interface
+   *
+   * \param ulx upper left x value
+   * \param uly upper left y value
+   * \param lrx lower right x value
+   * \param lry lower right y value
+   */
   void      BoundingBox (double, double, double, double);
   
 private:
@@ -63,7 +146,6 @@ private:
   NetDeviceContainer     m_rightLeafDevices;
   NodeContainer          m_routers;
   NetDeviceContainer     m_routerDevices; // just two connecting the routers
-  // Device containers for the router devices connecting to the leaf devices
   NetDeviceContainer     m_leftRouterDevices;
   NetDeviceContainer     m_rightRouterDevices;
   Ipv4InterfaceContainer m_leftLeafInterfaces;
@@ -72,7 +154,7 @@ private:
   Ipv4InterfaceContainer m_rightRouterInterfaces;
   Ipv4InterfaceContainer m_routerInterfaces;
 };
-}
-#endif
 
+} // namespace ns3
 
+#endif /* POINT_TO_POINT_DUMBBELL_HELPER_H */

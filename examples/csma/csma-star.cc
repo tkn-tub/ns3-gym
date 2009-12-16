@@ -146,7 +146,7 @@ main (int argc, char *argv[])
     {
       AddressValue remoteAddress (InetSocketAddress (star.GetHubIpv4Address (i), port));
       onOffHelper.SetAttribute ("Remote", remoteAddress);
-      spokeApps.Add (onOffHelper.Install (star.GetSpoke (i)));
+      spokeApps.Add (onOffHelper.Install (star.GetSpokeNode (i)));
     }
 
   spokeApps.Start (Seconds (1.0));

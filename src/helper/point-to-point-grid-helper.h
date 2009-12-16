@@ -29,28 +29,95 @@
 
 namespace ns3 {
   
+/**
+ * \brief A helper to make it easier to create a grid topology
+ * with p2p links
+ */
 class PointToPointGridHelper 
 {
-  public: 
-    PointToPointGridHelper (uint32_t nRows, uint32_t nCols, PointToPointHelper pointToPoint);
-    ~PointToPointGridHelper ();
+public: 
+  /**
+   * Create a PointToPointGridHelper in order to easily create
+   * grid topologies using p2p links
+   *
+   * \param nRows total number of rows in the grid
+   *
+   * \param nCols total number of colums in the grid
+   *
+   * \param pointToPoint the PointToPointHelper which is used 
+   *                     to connect all of the nodes together 
+   *                     in the grid
+   */
+  PointToPointGridHelper (uint32_t nRows, 
+                          uint32_t nCols, 
+                          PointToPointHelper pointToPoint);
 
-    Ptr<Node> GetNode (uint32_t row, uint32_t col);
-    Ipv4Address GetIpv4Address (uint32_t row, uint32_t col);
+  ~PointToPointGridHelper ();
 
-    void InstallStack (InternetStackHelper stack);
-    void AssignIpv4Addresses (Ipv4AddressHelper rowIp, Ipv4AddressHelper colIp);
-    void BoundingBox (double ulx, double uly, double lrx, double lry);
+  /**
+   * \param row the row address of the node desired
+   *
+   * \param col the column address of the node desired
+   *
+   * \returns a pointer to the node specified by the 
+   *          (row, col) address
+   */
+  Ptr<Node> GetNode (uint32_t row, uint32_t col);
 
-  private:
-    uint32_t m_xSize;
-    uint32_t m_ySize;
-    std::vector<NetDeviceContainer> m_rowDevices;
-    std::vector<NetDeviceContainer> m_colDevices;
-    std::vector<Ipv4InterfaceContainer> m_rowInterfaces;
-    std::vector<Ipv4InterfaceContainer> m_colInterfaces;
-    std::vector<NodeContainer> m_nodes;
+  /**
+   * This returns an Ipv4 address at the node specified by 
+   * the (row, col) address.  Technically, a node will have 
+   * multiple interfaces in the grid; therefore, it also has 
+   * multiple Ipv4 addresses.  This method only returns one of 
+   * the addresses. If you picture the grid, the address returned 
+   * is the left row device of all the nodes, except the left-most 
+   * grid nodes, which returns the right row device.
+   *
+   * \param row the row address of the node desired
+   *
+   * \param col the column address of the node desired
+   *
+   * \returns Ipv4Address of one of the intefaces of the node 
+   *          specified by the (row, col) address
+   */
+  Ipv4Address GetIpv4Address (uint32_t row, uint32_t col);
 
+  /**
+   * \param stack an InternetStackHelper which is used to install 
+   *              on every node in the grid
+   */
+  void InstallStack (InternetStackHelper stack);
+
+  /**
+   * Assigns Ipv4 addresses to all the row and column interfaces
+   *
+   * \param rowIp the Ipv4AddressHelper used to assign Ipv4 addresses 
+   *              to all of the row interfaces in the grid
+   *
+   * \param colIp the Ipv4AddressHelper used to assign Ipv4 addresses 
+   *              to all of the row interfaces in the grid
+   */
+  void AssignIpv4Addresses (Ipv4AddressHelper rowIp, Ipv4AddressHelper colIp);
+
+  /**
+   * Sets up the node canvas locations for every node in the grid.
+   * This is needed for use with the animation interface
+   *
+   * \param ulx upper left x value
+   * \param uly upper left y value
+   * \param lrx lower right x value
+   * \param lry lower right y value
+   */
+  void BoundingBox (double ulx, double uly, double lrx, double lry);
+
+private:
+  uint32_t m_xSize;
+  uint32_t m_ySize;
+  std::vector<NetDeviceContainer> m_rowDevices;
+  std::vector<NetDeviceContainer> m_colDevices;
+  std::vector<Ipv4InterfaceContainer> m_rowInterfaces;
+  std::vector<Ipv4InterfaceContainer> m_colInterfaces;
+  std::vector<NodeContainer> m_nodes;
 };
 
 } // namespace ns3
