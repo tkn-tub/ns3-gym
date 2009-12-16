@@ -22,7 +22,9 @@
 #include "ns3/net-device.h"
 #include "ns3/ipv4-route.h"
 #include "ns3/ipv4-routing-table-entry.h"
+#include "ns3/boolean.h"
 #include "ipv4-global-routing.h"
+#include <vector>
 
 NS_LOG_COMPONENT_DEFINE ("Ipv4GlobalRouting");
 
@@ -35,11 +37,17 @@ Ipv4GlobalRouting::GetTypeId (void)
 { 
   static TypeId tid = TypeId ("ns3::Ipv4GlobalRouting")
     .SetParent<Object> ()
+    .AddAttribute ("RandomEcmpRouting",
+                   "Set to true if packets are randomly routed among ECMP; set to false for using only one route consistently",
+                   BooleanValue(false),
+                   MakeBooleanAccessor (&Ipv4GlobalRouting::m_randomEcmpRouting),
+                   MakeBooleanChecker ())
     ;
   return tid;
 }
 
 Ipv4GlobalRouting::Ipv4GlobalRouting () 
+: m_randomEcmpRouting (false) 
 {
   NS_LOG_FUNCTION_NOARGS ();
 }
@@ -120,9 +128,12 @@ Ipv4GlobalRouting::LookupGlobal (Ipv4Address dest, Ptr<NetDevice> oif)
   NS_LOG_FUNCTION_NOARGS ();
   NS_LOG_LOGIC ("Looking for route for destination " << dest);
   Ptr<Ipv4Route> rtentry = 0;
-  bool found = false;
   Ipv4RoutingTableEntry* route = 0;
+  // store all available routes that bring packets to their destination
+  typedef std::vector<Ipv4RoutingTableEntry*> RouteVec_t;
+  RouteVec_t allRoutes;
 
+  NS_LOG_LOGIC ("Number of m_hostRoutes = " << m_hostRoutes.size ());
   for (HostRoutesCI i = m_hostRoutes.begin (); 
        i != m_hostRoutes.end (); 
        i++) 
@@ -130,7 +141,6 @@ Ipv4GlobalRouting::LookupGlobal (Ipv4Address dest, Ptr<NetDevice> oif)
       NS_ASSERT ((*i)->IsHost ());
       if ((*i)->GetDest ().IsEqual (dest)) 
         {
-          NS_LOG_LOGIC ("Found global host route" << *i); 
           if (oif != 0)
             {
               if (oif != m_ipv4->GetNetDevice(route->GetInterface ()))
@@ -139,13 +149,13 @@ Ipv4GlobalRouting::LookupGlobal (Ipv4Address dest, Ptr<NetDevice> oif)
                   continue;
                 }
             }
-          route = (*i);
-          found = true; 
-          break;
+          allRoutes.push_back (*i);
+          NS_LOG_LOGIC (allRoutes.size () << "Found global host route" << *i); 
         }
     }
-  if (found == false)
+  if (allRoutes.size () == 0) // if no host route is found
     {
+      NS_LOG_LOGIC ("Number of m_networkRoutes" << m_networkRoutes.size ());
       for (NetworkRoutesI j = m_networkRoutes.begin (); 
            j != m_networkRoutes.end (); 
            j++) 
@@ -155,7 +165,6 @@ Ipv4GlobalRouting::LookupGlobal (Ipv4Address dest, Ptr<NetDevice> oif)
           Ipv4Address entry = (*j)->GetDestNetwork ();
           if (mask.IsMatch (dest, entry)) 
             {
-              NS_LOG_LOGIC ("Found global network route" << *j); 
               if (oif != 0)
                 {
                   if (oif != m_ipv4->GetNetDevice(route->GetInterface ()))
@@ -164,13 +173,12 @@ Ipv4GlobalRouting::LookupGlobal (Ipv4Address dest, Ptr<NetDevice> oif)
                       continue;
                     }
                 }
-              route = (*j);
-              found = true;
-              break;
+              allRoutes.push_back (*j);
+              NS_LOG_LOGIC (allRoutes.size () << "Found global network route" << *j);
             }
         }
     }
-  if (found == false)
+  if (allRoutes.size () == 0)  // consider external if no host/network found
     {
       for (ASExternalRoutesI k = m_ASexternalRoutes.begin ();
            k != m_ASexternalRoutes.end ();
@@ -190,13 +198,27 @@ Ipv4GlobalRouting::LookupGlobal (Ipv4Address dest, Ptr<NetDevice> oif)
                     }
                 }
               route = (*k);
-              found = true;
+              allRoutes.push_back (*k);
               break;
             }
         }
     }
-  if (found == true)
+  if (allRoutes.size () > 0 ) // if route(s) is found
     {
+      // pick up one of the routes uniformly at random if random
+      // ECMP routing is enabled, or always select the first route
+      // consistently if random ECMP routing is disabled
+      uint32_t selectIndex;
+      if (m_randomEcmpRouting)
+        {
+          selectIndex = m_rand.GetInteger (0, allRoutes.size ()-1);
+        }
+      else 
+        {
+          selectIndex = 0;
+        }
+      route = allRoutes.at (selectIndex);
+      // create a Ipv4Route object from the selected routing table entry
       rtentry = Create<Ipv4Route> ();
       rtentry->SetDestination (route->GetDest ());
       // XXX handle multi-address case

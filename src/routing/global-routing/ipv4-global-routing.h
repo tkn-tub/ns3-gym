@@ -27,6 +27,7 @@
 #include "ns3/ptr.h"
 #include "ns3/ipv4.h"
 #include "ns3/ipv4-routing-protocol.h"
+#include "ns3/random-variable.h"
 
 namespace ns3 {
 
@@ -212,6 +213,11 @@ protected:
   void DoDispose (void);
 
 private:
+  /// Set to true if packets are randomly routed among ECMP; set to false for using only one route consistently
+  bool m_randomEcmpRouting;
+  /// A uniform random number generator for randomly routing packets among ECMP 
+  UniformVariable m_rand;
+
   typedef std::list<Ipv4RoutingTableEntry *> HostRoutes;
   typedef std::list<Ipv4RoutingTableEntry *>::const_iterator HostRoutesCI;
   typedef std::list<Ipv4RoutingTableEntry *>::iterator HostRoutesI;
