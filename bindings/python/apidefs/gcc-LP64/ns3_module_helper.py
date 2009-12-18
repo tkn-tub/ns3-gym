@@ -505,25 +505,25 @@ def register_Ns3CsmaStarHelper_methods(root_module, cls):
                    'ns3::NetDeviceContainer', 
                    [], 
                    is_const=True)
-    ## csma-star-helper.h: ns3::Ipv4Address ns3::CsmaStarHelper::GetHubIpv4Address(uint32_t arg0) const [member function]
+    ## csma-star-helper.h: ns3::Ipv4Address ns3::CsmaStarHelper::GetHubIpv4Address(uint32_t i) const [member function]
     cls.add_method('GetHubIpv4Address', 
                    'ns3::Ipv4Address', 
-                   [param('uint32_t', 'arg0')], 
-                   is_const=True)
-    ## csma-star-helper.h: ns3::Ptr<ns3::Node> ns3::CsmaStarHelper::GetSpoke(uint32_t arg0) const [member function]
-    cls.add_method('GetSpoke', 
-                   'ns3::Ptr< ns3::Node >', 
-                   [param('uint32_t', 'arg0')], 
+                   [param('uint32_t', 'i')], 
                    is_const=True)
     ## csma-star-helper.h: ns3::NetDeviceContainer ns3::CsmaStarHelper::GetSpokeDevices() const [member function]
     cls.add_method('GetSpokeDevices', 
                    'ns3::NetDeviceContainer', 
                    [], 
                    is_const=True)
-    ## csma-star-helper.h: ns3::Ipv4Address ns3::CsmaStarHelper::GetSpokeIpv4Address(uint32_t arg0) const [member function]
+    ## csma-star-helper.h: ns3::Ipv4Address ns3::CsmaStarHelper::GetSpokeIpv4Address(uint32_t i) const [member function]
     cls.add_method('GetSpokeIpv4Address', 
                    'ns3::Ipv4Address', 
-                   [param('uint32_t', 'arg0')], 
+                   [param('uint32_t', 'i')], 
+                   is_const=True)
+    ## csma-star-helper.h: ns3::Ptr<ns3::Node> ns3::CsmaStarHelper::GetSpokeNode(uint32_t i) const [member function]
+    cls.add_method('GetSpokeNode', 
+                   'ns3::Ptr< ns3::Node >', 
+                   [param('uint32_t', 'i')], 
                    is_const=True)
     ## csma-star-helper.h: void ns3::CsmaStarHelper::InstallStack(ns3::InternetStackHelper stack) [member function]
     cls.add_method('InstallStack', 
@@ -1359,30 +1359,30 @@ def register_Ns3PointToPointDumbbellHelper_methods(root_module, cls):
                    'ns3::Ptr< ns3::Node >', 
                    [], 
                    is_const=True)
-    ## point-to-point-dumbbell-helper.h: ns3::Ptr<ns3::Node> ns3::PointToPointDumbbellHelper::GetLeft(uint32_t arg0) const [member function]
+    ## point-to-point-dumbbell-helper.h: ns3::Ptr<ns3::Node> ns3::PointToPointDumbbellHelper::GetLeft(uint32_t i) const [member function]
     cls.add_method('GetLeft', 
                    'ns3::Ptr< ns3::Node >', 
-                   [param('uint32_t', 'arg0')], 
+                   [param('uint32_t', 'i')], 
                    is_const=True)
-    ## point-to-point-dumbbell-helper.h: ns3::Ipv4Address ns3::PointToPointDumbbellHelper::GetLeftIpv4Address(uint32_t arg0) const [member function]
+    ## point-to-point-dumbbell-helper.h: ns3::Ipv4Address ns3::PointToPointDumbbellHelper::GetLeftIpv4Address(uint32_t i) const [member function]
     cls.add_method('GetLeftIpv4Address', 
                    'ns3::Ipv4Address', 
-                   [param('uint32_t', 'arg0')], 
+                   [param('uint32_t', 'i')], 
                    is_const=True)
     ## point-to-point-dumbbell-helper.h: ns3::Ptr<ns3::Node> ns3::PointToPointDumbbellHelper::GetRight() const [member function]
     cls.add_method('GetRight', 
                    'ns3::Ptr< ns3::Node >', 
                    [], 
                    is_const=True)
-    ## point-to-point-dumbbell-helper.h: ns3::Ptr<ns3::Node> ns3::PointToPointDumbbellHelper::GetRight(uint32_t arg0) const [member function]
+    ## point-to-point-dumbbell-helper.h: ns3::Ptr<ns3::Node> ns3::PointToPointDumbbellHelper::GetRight(uint32_t i) const [member function]
     cls.add_method('GetRight', 
                    'ns3::Ptr< ns3::Node >', 
-                   [param('uint32_t', 'arg0')], 
+                   [param('uint32_t', 'i')], 
                    is_const=True)
-    ## point-to-point-dumbbell-helper.h: ns3::Ipv4Address ns3::PointToPointDumbbellHelper::GetRightIpv4Address(uint32_t arg0) const [member function]
+    ## point-to-point-dumbbell-helper.h: ns3::Ipv4Address ns3::PointToPointDumbbellHelper::GetRightIpv4Address(uint32_t i) const [member function]
     cls.add_method('GetRightIpv4Address', 
                    'ns3::Ipv4Address', 
-                   [param('uint32_t', 'arg0')], 
+                   [param('uint32_t', 'i')], 
                    is_const=True)
     ## point-to-point-dumbbell-helper.h: void ns3::PointToPointDumbbellHelper::InstallStack(ns3::InternetStackHelper stack) [member function]
     cls.add_method('InstallStack', 
@@ -1525,29 +1525,29 @@ def register_Ns3PointToPointStarHelper_methods(root_module, cls):
     cls.add_method('AssignIpv4Addresses', 
                    'void', 
                    [param('ns3::Ipv4AddressHelper', 'address')])
-    ## point-to-point-star-helper.h: void ns3::PointToPointStarHelper::BoundingBox(double arg0, double arg1, double arg2, double arg3) [member function]
+    ## point-to-point-star-helper.h: void ns3::PointToPointStarHelper::BoundingBox(double ulx, double uly, double lrx, double lry) [member function]
     cls.add_method('BoundingBox', 
                    'void', 
-                   [param('double', 'arg0'), param('double', 'arg1'), param('double', 'arg2'), param('double', 'arg3')])
+                   [param('double', 'ulx'), param('double', 'uly'), param('double', 'lrx'), param('double', 'lry')])
     ## point-to-point-star-helper.h: ns3::Ptr<ns3::Node> ns3::PointToPointStarHelper::GetHub() const [member function]
     cls.add_method('GetHub', 
                    'ns3::Ptr< ns3::Node >', 
                    [], 
                    is_const=True)
-    ## point-to-point-star-helper.h: ns3::Ipv4Address ns3::PointToPointStarHelper::GetHubIpv4Address(uint32_t arg0) const [member function]
+    ## point-to-point-star-helper.h: ns3::Ipv4Address ns3::PointToPointStarHelper::GetHubIpv4Address(uint32_t i) const [member function]
     cls.add_method('GetHubIpv4Address', 
                    'ns3::Ipv4Address', 
-                   [param('uint32_t', 'arg0')], 
+                   [param('uint32_t', 'i')], 
                    is_const=True)
-    ## point-to-point-star-helper.h: ns3::Ptr<ns3::Node> ns3::PointToPointStarHelper::GetSpoke(uint32_t arg0) const [member function]
-    cls.add_method('GetSpoke', 
-                   'ns3::Ptr< ns3::Node >', 
-                   [param('uint32_t', 'arg0')], 
-                   is_const=True)
-    ## point-to-point-star-helper.h: ns3::Ipv4Address ns3::PointToPointStarHelper::GetSpokeIpv4Address(uint32_t arg0) const [member function]
+    ## point-to-point-star-helper.h: ns3::Ipv4Address ns3::PointToPointStarHelper::GetSpokeIpv4Address(uint32_t i) const [member function]
     cls.add_method('GetSpokeIpv4Address', 
                    'ns3::Ipv4Address', 
-                   [param('uint32_t', 'arg0')], 
+                   [param('uint32_t', 'i')], 
+                   is_const=True)
+    ## point-to-point-star-helper.h: ns3::Ptr<ns3::Node> ns3::PointToPointStarHelper::GetSpokeNode(uint32_t i) const [member function]
+    cls.add_method('GetSpokeNode', 
+                   'ns3::Ptr< ns3::Node >', 
+                   [param('uint32_t', 'i')], 
                    is_const=True)
     ## point-to-point-star-helper.h: void ns3::PointToPointStarHelper::InstallStack(ns3::InternetStackHelper stack) [member function]
     cls.add_method('InstallStack', 
