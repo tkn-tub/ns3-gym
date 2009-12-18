@@ -635,7 +635,13 @@ void Ipv6L3Protocol::Send (Ptr<Packet> packet, Ipv6Address source, Ipv6Address d
 
   hdr = BuildHeader (source, destination, protocol, packet->GetSize (), ttl);
 
-  if (!source.IsAny ())
+  //for link-local traffic, we need to determine the interface
+  if (source.IsLinkLocal() ||
+      destination.IsLinkLocal() ||
+      destination.IsAllNodesMulticast() ||
+      destination.IsAllRoutersMulticast() ||
+      destination.IsAllHostsMulticast() ||
+      destination.IsSolicitedMulticast())
   {
     int32_t index = GetInterfaceForAddress (source);
     NS_ASSERT (index >= 0);

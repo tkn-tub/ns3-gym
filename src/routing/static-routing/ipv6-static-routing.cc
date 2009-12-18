@@ -213,7 +213,7 @@ bool Ipv6StaticRouting::HasNetworkDest (Ipv6Address network, uint32_t interfaceI
   return false;
 }
 
-Ptr<Ipv6Route> Ipv6StaticRouting::LookupStatic (Ipv6Address dst, Ptr <NetDevice> interface)
+Ptr<Ipv6Route> Ipv6StaticRouting::LookupStatic (Ipv6Address dst, Ptr<NetDevice> interface)
 {
   NS_LOG_FUNCTION (this << dst << interface);
   Ptr<Ipv6Route> rtentry = 0;
