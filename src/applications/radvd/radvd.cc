@@ -208,6 +208,13 @@ void Radvd::Send (Ptr<RadvdInterface> config, Ipv6Address dst, bool reschedule)
   raHdr.CalculatePseudoHeaderChecksum (src, dst, p->GetSize () + raHdr.GetSerializedSize (), 58 /* ICMPv6 */);
   p->AddHeader (raHdr);
 
+  /* Router advertisements MUST always have a ttl of 255
+   * The ttl value should be set as a socket option, but this is not yet implemented
+   */
+  SocketIpTtlTag ttl;
+  ttl.SetTtl(255);
+  p->AddPacketTag(ttl);
+
   /* send RA */
   NS_LOG_LOGIC ("Send RA");
   m_socket->Send (p, 0);
