@@ -243,7 +243,7 @@ V4Ping::StopApplication (void)
       
       if (m_avgRtt.Count () > 0)
         os << "rtt min/avg/max/mdev = " << m_avgRtt.Min() << "/" << m_avgRtt.Avg() << "/"
-                                               << m_avgRtt.Max() << "/" << m_avgRtt.Err()
+                                               << m_avgRtt.Max() << "/" << m_avgRtt.Stddev()
                                                << " ms\n";
       std::cout << os.str();
     }
