@@ -305,7 +305,7 @@ private:
 namespace ns3 {
 
 PacketMetadata::PacketMetadata (uint32_t uid, uint32_t size)
-  : m_data (m_data = PacketMetadata::Create (10)),
+  : m_data (PacketMetadata::Create (10)),
     m_head (0xffff),
     m_tail (0xffff),
     m_used (0),
