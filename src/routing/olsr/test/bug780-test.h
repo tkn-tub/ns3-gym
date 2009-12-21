@@ -1,7 +1,5 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
- * Copyright (c) 2009 IITP RAS
- *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
@@ -18,23 +16,34 @@
  * Authors: Pavel Boyko <boyko@iitp.ru>
  */
 
-#include "hello-regression-test.h"
-#include "tc-regression-test.h"
-#include "bug780-test.h"
+#ifndef BUG780_REGRESSIONTEST_H_
+#define BUG780_REGRESSIONTEST_H_
+#include "ns3/test.h"
+#include "ns3/nstime.h"
+#include "ns3/node-container.h"
 
-namespace ns3 {
-namespace olsr {
-
-class RegressionTestSuite : public TestSuite
+namespace ns3
+{
+namespace olsr
+{
+class Bug780Test : public TestCase
 {
 public:
-  RegressionTestSuite () : TestSuite ("routing-olsr-regression", SYSTEM) 
-  {
-    AddTestCase (new HelloRegressionTest);
-    AddTestCase (new TcRegressionTest);
-    AddTestCase (new Bug780Test);
-  }
-} g_olsrRegressionTestSuite;
+  Bug780Test (); 
+  ~Bug780Test ();
+private:
+  /// Unique PCAP files prefix for this test
+  static const char * const PREFIX;
+  /// Total simulation time
+  const Time m_time;
+  /// Create & configure test network
+  void CreateNodes ();
+  /// Compare traces with reference ones
+  void CheckResults ();
+  /// Go
+  bool DoRun ();
+};
 
 }
 }
+#endif

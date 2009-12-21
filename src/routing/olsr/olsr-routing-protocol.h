@@ -81,6 +81,8 @@ public:
 
   void SetMainInterface (uint32_t interface);
 
+  void Dump (void);
+
 protected:
   virtual void DoStart (void);
 private:

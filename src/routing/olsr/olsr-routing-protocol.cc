@@ -140,7 +140,7 @@
 namespace ns3 {
 namespace olsr {
 
-NS_LOG_COMPONENT_DEFINE ("OlsrAgent");
+NS_LOG_COMPONENT_DEFINE ("OlsrRoutingProtocol");
 
 
 /********** OLSR class **********/
@@ -894,7 +894,7 @@ RoutingProtocol::RoutingTableComputation ()
       NS_LOG_LOGIC ("Looking at two-hop neighbor tuple: " << nb2hop_tuple);
 
       // a 2-hop neighbor which is not a neighbor node or the node itself
-      if (m_state.FindNeighborTuple (nb2hop_tuple.twoHopNeighborAddr))
+      if (m_state.FindSymNeighborTuple (nb2hop_tuple.twoHopNeighborAddr))
         {
           NS_LOG_LOGIC ("Two-hop neighbor tuple is also neighbor; skipped.");
           continue;
@@ -2641,12 +2641,15 @@ RoutingProtocol::RouteOutput (Ptr<Packet> p, const Ipv4Header &header, Ptr<NetDe
       rtentry->SetOutputDevice (m_ipv4->GetNetDevice (interfaceIdx));
       sockerr = Socket::ERROR_NOTERROR;
       NS_LOG_DEBUG ("Olsr node " << m_mainAddress 
-                    << ": RouteRequest for dest=" << header.GetDestination ()
+                    << ": RouteOutput for dest=" << header.GetDestination ()
                     << " --> nextHop=" << entry2.nextAddr
                     << " interface=" << entry2.interface);      NS_LOG_DEBUG ("Found route to " << rtentry->GetDestination () << " via nh " << rtentry->GetGateway () << " with source addr " << rtentry->GetSource () << " and output dev " << rtentry->GetOutputDevice());
     }
   else
     { 
+      NS_LOG_DEBUG ("Olsr node " << m_mainAddress 
+                    << ": RouteOutput for dest=" << header.GetDestination ()
+                    << " No route to host");
       sockerr = Socket::ERROR_NOROUTETOHOST;
     }
   return rtentry;
@@ -2706,7 +2709,7 @@ bool RoutingProtocol::RouteInput  (Ptr<const Packet> p,
       rtentry->SetOutputDevice (m_ipv4->GetNetDevice (interfaceIdx));
       
       NS_LOG_DEBUG ("Olsr node " << m_mainAddress
-                    << ": RouteRequest for dest=" << header.GetDestination ()
+                    << ": RouteInput for dest=" << header.GetDestination ()
                     << " --> nextHop=" << entry2.nextAddr
                     << " interface=" << entry2.interface);
       
@@ -2717,7 +2720,7 @@ bool RoutingProtocol::RouteInput  (Ptr<const Packet> p,
     {
 #ifdef NS3_LOG_ENABLE
       NS_LOG_DEBUG ("Olsr node " << m_mainAddress 
-                    << ": RouteRequest for dest=" << header.GetDestination ()
+                    << ": RouteInput for dest=" << header.GetDestination ()
                     << " --> NOT FOUND; ** Dumping routing table...");      for (std::map<Ipv4Address, RoutingTableEntry>::const_iterator iter = m_table.begin ();
            iter != m_table.end (); iter++)
         {           NS_LOG_DEBUG ("dest=" << iter->first << " --> next=" << iter->second.nextAddr                 
@@ -2956,6 +2959,36 @@ RoutingProtocol::IsMyOwnAddress (const Ipv4Address & a) const
   return false;
 }
 
+void
+RoutingProtocol::Dump (void)
+{
+  Time now = Simulator::Now ();
+  
+#ifdef NS3_LOG_ENABLE
+  NS_LOG_DEBUG ("Dumping for node with main address " << m_mainAddress);
+  NS_LOG_DEBUG (" Neighbor set");
+  for (NeighborSet::const_iterator iter = m_state.GetNeighbors ().begin ();
+         iter != m_state.GetNeighbors ().end (); iter++)
+    {
+      NS_LOG_DEBUG ("  " << *iter);
+    }
+  NS_LOG_DEBUG (" Two-hop neighbor set");
+  for (TwoHopNeighborSet::const_iterator iter = m_state.GetTwoHopNeighbors ().begin ();
+         iter != m_state.GetTwoHopNeighbors ().end (); iter++)
+    {
+      if (now < iter->expirationTime)
+        { 
+          NS_LOG_DEBUG ("  " << *iter);
+        }
+    }
+  NS_LOG_DEBUG (" Routing table");
+  for (std::map<Ipv4Address, RoutingTableEntry>::const_iterator iter = m_table.begin (); iter != m_table.end (); iter++)
+    {
+      NS_LOG_DEBUG ("  dest=" << iter->first << " --> next=" << iter->second.nextAddr << " via interface " << iter->second.interface);
+    }
+  NS_LOG_DEBUG ("");
+#endif  //NS3_LOG_ENABLE
+}
 
 }} // namespace olsr, ns3
 
