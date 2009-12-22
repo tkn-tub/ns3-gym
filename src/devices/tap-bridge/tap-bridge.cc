@@ -357,6 +357,7 @@ TapBridge::CreateTap (void)
       //
       // We want to get as much of this stuff automagically as possible.
       //
+      // For CONFIGURE_LOCAL mode only:
       // <IP-address> is the IP address we are going to set in the newly 
       // created Tap device on the Linux host.  At the point in the simulation
       // where devices are coming up, we should have all of our IP addresses
@@ -364,20 +365,39 @@ TapBridge::CreateTap (void)
       // the new Tap device from the IP address associated with the bridged
       // net device.
       //
+
+      bool wantIp = (m_mode == CONFIGURE_LOCAL);
+
       Ptr<NetDevice> nd = GetBridgedNetDevice ();
       Ptr<Node> n = nd->GetNode ();
       Ptr<Ipv4> ipv4 = n->GetObject<Ipv4> ();
-      uint32_t index = ipv4->GetInterfaceForDevice (nd);
-      if (ipv4->GetNAddresses (index) > 1)
-        {
-          NS_LOG_WARN ("Underlying bridged NetDevice has multiple IP addresses; using first one.");
-        }
-      Ipv4Address ipv4Address = ipv4->GetAddress (index, 0).GetLocal ();
 
-      //
-      // The net mask is sitting right there next to the ipv4 address.
-      //
-      Ipv4Mask ipv4Mask = ipv4->GetAddress (index, 0).GetMask ();
+      if (wantIp
+            && (ipv4 == 0)
+            && m_tapIp.IsBroadcast ()
+            && m_tapNetmask.IsEqual (Ipv4Mask::GetOnes ()))
+        {
+          NS_FATAL_ERROR ("TapBridge::CreateTap(): Tap device IP configuration requested but neither IP address nor IP netmask is provided");
+        }
+
+      // Some stub values to make tap-creator happy
+      Ipv4Address ipv4Address ("255.255.255.255");
+      Ipv4Mask ipv4Mask ("255.255.255.255");
+
+      if (ipv4 != 0)
+        {
+          uint32_t index = ipv4->GetInterfaceForDevice (nd);
+          if (ipv4->GetNAddresses (index) > 1)
+            {
+              NS_LOG_WARN ("Underlying bridged NetDevice has multiple IP addresses; using first one.");
+            }
+          ipv4Address = ipv4->GetAddress (index, 0).GetLocal ();
+
+          //
+          // The net mask is sitting right there next to the ipv4 address.
+          //
+          ipv4Mask = ipv4->GetAddress (index, 0).GetMask ();
+        }
 
       //
       // The MAC address should also already be assigned and waiting for us in
