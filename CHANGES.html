@@ -56,7 +56,7 @@ us a note on ns-developers mailing list.  </p>
 equal cost multipath for Ipv4GlobalRouting, and adds an attribute that
 can enable it with random packet distribution policy across equal cost routes.
 <li><b>Binding sockets to devices:</b> A method analogous to a SO_BINDTODEVICE
-socket option has been introduced to class Socket:  <pre>virtual void Socket::BindToNetDevice (Ptr<NetDevice> netdevice);</pre>
+socket option has been introduced to class Socket:  <pre>virtual void Socket::BindToNetDevice (Ptr&lt;NetDevice&gt; netdevice);</pre>
 <li><b>Simulator event contexts</b>: The Simulator API now keeps track of a per-event
 'context' (a 32bit integer which, by convention identifies a node by its id). Simulator::GetContext
 returns the context of the currently-executing event while Simulator::ScheduleWithContext creates an
@@ -168,7 +168,7 @@ Before:
 NodeContainer hubNode;
 NodeContainer spokeNodes;
 hubNode.Create (1);
-Ptr<Node> hub = hubNode.Get (0);
+Ptr&lt;Node&gt; hub = hubNode.Get (0);
 spokeNodes.Create (nNodes - 1);
 
 PointToPointHelper pointToPoint;
@@ -427,8 +427,8 @@ GlobalValue::Bind ("ChecksumEnabled", BooleanValue (true));
 <pre>
 -  static void EnablePcap (std::string filename, uint32_t nodeid, uint32_t deviceid);
 +         void EnablePcap (std::string filename, uint32_t nodeid, uint32_t deviceid);
--  static void EnablePcap (std::string filename, Ptr<NetDevice> nd);
-+         void EnablePcap (std::string filename, Ptr<NetDevice> nd);
+-  static void EnablePcap (std::string filename, Ptr&lt;NetDevice&gt; nd);
++         void EnablePcap (std::string filename, Ptr&lt;NetDevice&gt; nd);
 -  static void EnablePcap (std::string filename, std::string ndName);
 +         void EnablePcap (std::string filename, std::string ndName);
 -  static void EnablePcap (std::string filename, NetDeviceContainer d);
