@@ -54,7 +54,9 @@ Object::AggregateIterator::HasNext (void) const
 Ptr<const Object> 
 Object::AggregateIterator::Next (void)
 {
-  return m_object->m_aggregates->buffer[m_current];
+  Object *object = m_object->m_aggregates->buffer[m_current];
+  m_current++;
+  return object;
 }
 Object::AggregateIterator::AggregateIterator (Ptr<const Object> object)
   : m_object (object),
