@@ -27,6 +27,7 @@
 #include "ns3/ptr.h"
 #include "ns3/ipv4.h"
 #include "ns3/ipv4-routing-protocol.h"
+#include "ns3/random-variable.h"
 
 namespace ns3 {
 
@@ -80,7 +81,7 @@ public:
   Ipv4GlobalRouting ();
   virtual ~Ipv4GlobalRouting ();
 
-  virtual Ptr<Ipv4Route> RouteOutput (Ptr<Packet> p, const Ipv4Header &header, uint32_t oif, Socket::SocketErrno &sockerr);
+  virtual Ptr<Ipv4Route> RouteOutput (Ptr<Packet> p, const Ipv4Header &header, Ptr<NetDevice> oif, Socket::SocketErrno &sockerr);
 
   virtual bool RouteInput  (Ptr<const Packet> p, const Ipv4Header &header, Ptr<const NetDevice> idev,
                              UnicastForwardCallback ucb, MulticastForwardCallback mcb,
@@ -212,6 +213,11 @@ protected:
   void DoDispose (void);
 
 private:
+  /// Set to true if packets are randomly routed among ECMP; set to false for using only one route consistently
+  bool m_randomEcmpRouting;
+  /// A uniform random number generator for randomly routing packets among ECMP 
+  UniformVariable m_rand;
+
   typedef std::list<Ipv4RoutingTableEntry *> HostRoutes;
   typedef std::list<Ipv4RoutingTableEntry *>::const_iterator HostRoutesCI;
   typedef std::list<Ipv4RoutingTableEntry *>::iterator HostRoutesI;
@@ -222,7 +228,7 @@ private:
   typedef std::list<Ipv4RoutingTableEntry *>::const_iterator ASExternalRoutesCI;
   typedef std::list<Ipv4RoutingTableEntry *>::iterator ASExternalRoutesI;
 
-  Ptr<Ipv4Route> LookupGlobal (Ipv4Address dest);
+  Ptr<Ipv4Route> LookupGlobal (Ipv4Address dest, Ptr<NetDevice> oif = 0);
 
   HostRoutes m_hostRoutes;
   NetworkRoutes m_networkRoutes;

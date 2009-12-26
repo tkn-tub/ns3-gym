@@ -99,7 +99,7 @@ public:
 
   /// Compare information elements using Element ID
   friend bool operator< (WifiInformationElement const & a, WifiInformationElement const & b);
-  /// 
+  /// Compare two IE by ID & Length, than it calls DynamicCast and compares the body of elements
   virtual bool operator== (WifiInformationElement const & a) { return false; }
 };
 
@@ -141,13 +141,19 @@ public:
   virtual uint32_t DeserializeSingleIe (Buffer::Iterator start);
   ///Set maximum size to control overflow of the max packet length 
   void SetMaxSize (uint16_t size);
+  /// As soon as this is a vector, we define an Iterator
   typedef std::vector<Ptr<WifiInformationElement> >::iterator Iterator;
+  /// Returns Begin of the vector
   Iterator Begin ();
+  /// Returns End of the vector
   Iterator End ();
+  /// add an IE, if maxSize has exceeded, returns false
   bool AddInformationElement (Ptr<WifiInformationElement> element);
+  /// vector of pointers to information elements is the body of IeVector
   Ptr<WifiInformationElement> FindFirst (enum WifiElementId id) const;
 private:
   typedef std::vector<Ptr<WifiInformationElement> > IE_VECTOR;
+  /// Current number of bytes
   uint32_t GetSize () const;
   IE_VECTOR m_elements;
   /// Size in bytes (actually, max packet length)

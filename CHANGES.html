@@ -52,6 +52,11 @@ us a note on ns-developers mailing list.  </p>
 <h2>New API:</h2>
 
 <ul>
+<li><b>Equal-cost multipath for global routing:</b> Enables quagga's
+equal cost multipath for Ipv4GlobalRouting, and adds an attribute that
+can enable it with random packet distribution policy across equal cost routes.
+<li><b>Binding sockets to devices:</b> A method analogous to a SO_BINDTODEVICE
+socket option has been introduced to class Socket:  <pre>virtual void Socket::BindToNetDevice (Ptr&lt;NetDevice&gt; netdevice);</pre>
 <li><b>Simulator event contexts</b>: The Simulator API now keeps track of a per-event
 'context' (a 32bit integer which, by convention identifies a node by its id). Simulator::GetContext
 returns the context of the currently-executing event while Simulator::ScheduleWithContext creates an
@@ -64,16 +69,32 @@ can override this virtual method, perform their adhoc setup, and then, must chai
 <li><b>Ipv4::IsDestinationAddress (Ipv4Address address, uint32_t iif)</b> Method added to support checks of whether a destination address should be accepted 
 as one of the host's own addresses.  RFC 1122 Strong/Weak end system behavior can be changed with a new attribute (WeakEsModel) in class Ipv4.  </li>
 
-<li><b>Net-anim interface</b>: Provides an inteface to net-anim, a network animator for point-to-point 
-links in ns-3.  The interface generates a custom trace file for use with the NetAnim program.
+<li><b>Net-anim interface</b>: Provides an interface to net-anim, a network animator for point-to-point 
+links in ns-3.  The interface generates a custom trace file for use with the NetAnim program.</li>
 
 <li><b>Topology Helpers</b>: New topology helpers have been introduced including PointToPointStarHelper, 
-PointToPointDumbbellHelper, PointToPointGridHelper, and CsmaStarHelper.
+PointToPointDumbbellHelper, PointToPointGridHelper, and CsmaStarHelper.</li>
 
+<li><b>IPv6 extensions support</b>: Provides API to add IPv6 extensions and options. Two examples (fragmentation
+and loose routing) are available.</li>
 </ul>
 
 <h2>Changes to existing API:</h2>
 <ul>
+<li><b>Ipv4RoutingProtocol::RouteOutput</b> no longer takes an outgoing 
+interface index but instead takes an outgoing device pointer; this affects all
+subclasses of Ipv4RoutingProtocol.
+<pre>
+-  virtual Ptr&lt;Ipv4Route&gt; RouteOutput (Ptr&lt;Packet&gt; p, const Ipv4Header &header, uint32_t oif, Socket::SocketErrno &sockerr) = 0;
++  virtual Ptr&lt;Ipv4Route&gt; RouteOutput (Ptr&lt;Packet&gt; p, const Ipv4Header &header, Ptr&lt;NetDevice&gt; oif, Socket::SocketErrno &sockerr) = 0;
+</pre>
+<li><b>Ipv6RoutingProtocol::RouteOutput</b> no longer takes an outgoing 
+interface index but instead takes an outgoing device pointer; this affects all
+subclasses of Ipv6RoutingProtocol.
+<pre>
+-  virtual Ptr&lt;Ipv6Route&gt; RouteOutput (Ptr&lt;Packet&gt; p, const Ipv6Header &header, uint32_t oif, Socket::SocketErrno &sockerr) = 0;
++  virtual Ptr&lt;Ipv6Route&gt; RouteOutput (Ptr&lt;Packet&gt; p, const Ipv6Header &header, Ptr&lt;NetDevice&gt; oif, Socket::SocketErrno &sockerr) = 0;
+</pre>
 <li><b>Application::Start</b> and <b>Application::Stop</b> have been renamed to
 <b>Application::SetStartTime</b> and <b>Application::SetStopTime</b>.
 <li><b>Channel::Send</b>: this method does not really exist but each subclass of the Channel
@@ -147,7 +168,7 @@ Before:
 NodeContainer hubNode;
 NodeContainer spokeNodes;
 hubNode.Create (1);
-Ptr<Node> hub = hubNode.Get (0);
+Ptr&lt;Node&gt; hub = hubNode.Get (0);
 spokeNodes.Create (nNodes - 1);
 
 PointToPointHelper pointToPoint;
@@ -175,10 +196,11 @@ PointToPointStarHelper star (nSpokes, pointToPoint);
 YansWifiPhy::CcaModelThreshold from -140.0 dBm to -99.0 dBm.  Rationale
 can be found <a href="http://www.nsnam.org/bugzilla/show_bug.cgi?id=689"> 
 here</a>.
+</li>
+<li> Default TTL of IPv4 broadcast datagrams changed from 1 to 64.</li>
+<li> Changed DcfManager::UpdateBackoff (): using flooring instead of rounding in calculation of remaining slots. <a href="http://www.nsnam.org/bugzilla/show_bug.cgi?id=695">
+  See bug 695.</a></li>
 </ul>
-<ul>
-<li> Default TTL of IPv4 broadcast datagrams changed from 1 to 64.
-</ul> 
 
 
 <hr>
@@ -405,8 +427,8 @@ GlobalValue::Bind ("ChecksumEnabled", BooleanValue (true));
 <pre>
 -  static void EnablePcap (std::string filename, uint32_t nodeid, uint32_t deviceid);
 +         void EnablePcap (std::string filename, uint32_t nodeid, uint32_t deviceid);
--  static void EnablePcap (std::string filename, Ptr<NetDevice> nd);
-+         void EnablePcap (std::string filename, Ptr<NetDevice> nd);
+-  static void EnablePcap (std::string filename, Ptr&lt;NetDevice&gt; nd);
++         void EnablePcap (std::string filename, Ptr&lt;NetDevice&gt; nd);
 -  static void EnablePcap (std::string filename, std::string ndName);
 +         void EnablePcap (std::string filename, std::string ndName);
 -  static void EnablePcap (std::string filename, NetDeviceContainer d);

@@ -78,7 +78,7 @@ public:
 private:
   Callback<void, Ptr<Packet>, Mac48Address, Mac48Address> m_forwardUp;
   virtual void DoDispose (void);
-  void Receive (Ptr<Packet> packet, WifiMacHeader const *hdr);
+  void Receive (Ptr<Packet> packet, const WifiMacHeader *hdr);
   void ForwardUp (Ptr<Packet> packet, Mac48Address from, Mac48Address to);
   QadhocWifiMac &operator = (const QadhocWifiMac &);
   QadhocWifiMac (const QadhocWifiMac &);
@@ -87,7 +87,7 @@ private:
   * When an A-MSDU is received, is deaggregated by this method and all extracted packets are
   * forwarded up.
   */
-  void DeaggregateAmsduAndForward (Ptr<Packet> aggregatedPacket, WifiMacHeader const *hdr);
+  void DeaggregateAmsduAndForward (Ptr<Packet> aggregatedPacket, const WifiMacHeader *hdr);
 
   typedef std::map<AccessClass, Ptr<EdcaTxopN> > Queues;
   typedef std::list<std::pair<Ptr<Packet>, AmsduSubframeHeader> > DeaggregatedMsdus;

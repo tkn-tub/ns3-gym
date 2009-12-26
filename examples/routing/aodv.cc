@@ -204,8 +204,8 @@ AodvExample::InstallApplications ()
   
   ApplicationContainer p = ping.Install (nodes.Get (0));
   p.Start (Seconds (0));
-  p.Stop (Seconds (totalTime));
-
+  p.Stop (Seconds (totalTime) - Seconds(0.001));
+  
   // move node away
   Ptr<Node> node = nodes.Get (size/2);
   Ptr<MobilityModel> mob = node->GetObject<MobilityModel> ();

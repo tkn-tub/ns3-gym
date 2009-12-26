@@ -34,6 +34,11 @@
 #include "ipv6-interface.h"
 #include "ipv6-raw-socket-impl.h"
 #include "ipv6-autoconfigured-prefix.h"
+#include "ipv6-extension-demux.h"
+#include "ipv6-extension.h"
+#include "ipv6-extension-header.h"
+#include "ipv6-option-demux.h"
+#include "ipv6-option.h"
 #include "icmpv6-l4-protocol.h"
 #include "ndisc-cache.h"
 
@@ -113,7 +118,6 @@ void Ipv6L3Protocol::DoDispose ()
     (*it) = 0;
   }
   m_prefixes.clear ();
-
 
   m_node = 0;
   m_routingProtocol = 0;
@@ -626,16 +630,22 @@ void Ipv6L3Protocol::Send (Ptr<Packet> packet, Ipv6Address source, Ipv6Address d
   /* 3) */
   NS_LOG_LOGIC ("Ipv6L3Protocol::Send case 3: passed in with no route " << destination);
   Socket::SocketErrno err;
-  uint32_t oif = 0;
+  Ptr<NetDevice> oif (0);
   Ptr<Ipv6Route> newRoute = 0;
 
   hdr = BuildHeader (source, destination, protocol, packet->GetSize (), ttl);
 
-  if (!source.IsAny ())
+  //for link-local traffic, we need to determine the interface
+  if (source.IsLinkLocal() ||
+      destination.IsLinkLocal() ||
+      destination.IsAllNodesMulticast() ||
+      destination.IsAllRoutersMulticast() ||
+      destination.IsAllHostsMulticast() ||
+      destination.IsSolicitedMulticast())
   {
     int32_t index = GetInterfaceForAddress (source);
     NS_ASSERT (index >= 0);
-    oif = index;
+    oif = GetNetDevice(index);
   }
 
   newRoute = m_routingProtocol->RouteOutput (packet, hdr, oif, err);
@@ -647,7 +657,7 @@ void Ipv6L3Protocol::Send (Ptr<Packet> packet, Ipv6Address source, Ipv6Address d
   else
   {
     NS_LOG_WARN ("No route to host, drop!");
-    m_dropTrace (hdr, packet, DROP_NO_ROUTE, oif);
+    m_dropTrace (hdr, packet, DROP_NO_ROUTE, GetInterfaceForDevice(oif));
   }
 }
 
@@ -692,6 +702,26 @@ void Ipv6L3Protocol::Receive (Ptr<NetDevice> device, Ptr<const Packet> p, uint16
     socket->ForwardUp (packet, hdr, device);
   }
 
+  Ptr<Ipv6ExtensionDemux> ipv6ExtensionDemux = m_node->GetObject<Ipv6ExtensionDemux>();
+  Ptr<Ipv6Extension> ipv6Extension = 0;
+  uint8_t nextHeader = hdr.GetNextHeader ();
+  bool isDropped = false;
+
+  if (nextHeader == Ipv6Header::IPV6_EXT_HOP_BY_HOP)
+  {
+    ipv6Extension = ipv6ExtensionDemux->GetExtension (nextHeader);
+
+    if (ipv6Extension)
+    {
+      ipv6Extension->Process (packet, 0, hdr, hdr.GetDestinationAddress (), (uint8_t *)0, isDropped);
+    }
+
+    if (isDropped)
+    {
+      return;
+    }
+  }
+
   m_routingProtocol->RouteInput (packet, hdr, device,
     MakeCallback (&Ipv6L3Protocol::IpForward, this),
     MakeCallback (&Ipv6L3Protocol::IpMulticastForward, this),
@@ -717,15 +747,49 @@ void Ipv6L3Protocol::SendRealOut (Ptr<Ipv6Route> route, Ptr<Packet> packet, Ipv6
   Ptr<Ipv6Interface> outInterface = GetInterface (interface);
   NS_LOG_LOGIC ("Send via NetDevice ifIndex " << dev->GetIfIndex () << " Ipv6InterfaceIndex " << interface);
 
+  // Check packet size
+  std::list<Ptr<Packet> > fragments;
+
+  if (packet->GetSize () > (size_t)(dev->GetMtu () + 40)) /* 40 => size of IPv6 header */
+  {
+    // Router => drop
+    if (m_ipForward)
+    {
+      return;
+    }
+
+    Ptr<Ipv6ExtensionDemux> ipv6ExtensionDemux = m_node->GetObject<Ipv6ExtensionDemux> ();
+
+    packet->AddHeader (ipHeader);
+
+    // To get specific method GetFragments from Ipv6ExtensionFragmentation
+    Ipv6ExtensionFragment *ipv6Fragment = dynamic_cast<Ipv6ExtensionFragment *>(PeekPointer (ipv6ExtensionDemux->GetExtension (Ipv6Header::IPV6_EXT_FRAGMENTATION)));
+    ipv6Fragment->GetFragments (packet, outInterface->GetDevice ()->GetMtu (), fragments);
+  }
+
   if (!route->GetGateway ().IsEqual (Ipv6Address::GetAny ()))
   {
     if (outInterface->IsUp ())
     {
       NS_LOG_LOGIC ("Send to gateway " << route->GetGateway ());
-      packet->AddHeader (ipHeader);
-      NS_ASSERT (packet->GetSize () <= outInterface->GetDevice ()->GetMtu ());
-      m_txTrace (packet, interface);
-      outInterface->Send (packet, route->GetGateway ());
+
+      if (fragments.size () != 0)
+      {
+        std::ostringstream oss;
+
+        /* IPv6 header is already added in fragments */
+        for (std::list<Ptr<Packet> >::const_iterator it = fragments.begin (); it != fragments.end (); it++)
+        {
+          m_txTrace (*it, interface);
+          outInterface->Send (*it, route->GetGateway ());
+        }
+      }
+      else
+      {
+        packet->AddHeader (ipHeader);
+        m_txTrace (packet, interface);
+        outInterface->Send (packet, route->GetGateway ());
+      }
     }
     else
     {
@@ -737,11 +801,25 @@ void Ipv6L3Protocol::SendRealOut (Ptr<Ipv6Route> route, Ptr<Packet> packet, Ipv6
   {
     if (outInterface->IsUp ())
     {
-       NS_LOG_LOGIC ("Send to destination " << ipHeader.GetDestinationAddress ());
-       packet->AddHeader (ipHeader);
-       NS_ASSERT (packet->GetSize () <= outInterface->GetDevice ()->GetMtu ());
-       m_txTrace (packet, interface);
-       outInterface->Send (packet, ipHeader.GetDestinationAddress ());
+      NS_LOG_LOGIC ("Send to destination " << ipHeader.GetDestinationAddress ());
+
+      if (fragments.size () != 0)
+      {
+        std::ostringstream oss;
+        
+        /* IPv6 header is already added in fragments */
+        for (std::list<Ptr<Packet> >::const_iterator it = fragments.begin (); it != fragments.end (); it++)
+        {
+          m_txTrace (*it, interface);
+          outInterface->Send (*it, ipHeader.GetDestinationAddress ());
+        }
+      }
+      else
+      {
+        packet->AddHeader (ipHeader);
+        m_txTrace (packet, interface);
+        outInterface->Send (packet, ipHeader.GetDestinationAddress ());
+      }
     }
     else
     {
@@ -855,30 +933,88 @@ void Ipv6L3Protocol::LocalDeliver (Ptr<const Packet> packet, Ipv6Header const& i
 {
   NS_LOG_FUNCTION (this << packet << ip << iif);
   Ptr<Packet> p = packet->Copy ();
-  Ptr<Ipv6L4Protocol> protocol = GetProtocol (ip.GetNextHeader ());
+  Ptr<Ipv6L4Protocol> protocol = 0; 
+  Ptr<Ipv6ExtensionDemux> ipv6ExtensionDemux = m_node->GetObject<Ipv6ExtensionDemux>();
+  Ptr<Ipv6Extension> ipv6Extension = 0;
+  Ipv6Address src = ip.GetSourceAddress ();
+  Ipv6Address dst = ip.GetDestinationAddress ();
+  uint8_t nextHeader = ip.GetNextHeader ();
+  uint8_t nextHeaderPosition = 0;
+  bool isDropped = false;
 
-  if (protocol)
+  /* process hop-by-hop extension first if exists */
+  if (nextHeader == Ipv6Header::IPV6_EXT_HOP_BY_HOP)
   {
-    Ptr<Packet> copy = p->Copy ();
-    enum Ipv6L4Protocol::RxStatus_e status = protocol->Receive (p, ip.GetSourceAddress (), ip.GetDestinationAddress (), GetInterface (iif));
+    const uint8_t *buff = p->PeekData ();
 
-    switch (status)
+    nextHeader = *buff;
+    nextHeaderPosition = *(buff + 1);
+  }
+
+  /* process all the extensions found and the layer 4 protocol */
+  do {
+    /* it return 0 for non-extension (i.e. layer 4 protocol) */
+    ipv6Extension = ipv6ExtensionDemux->GetExtension (nextHeader);
+
+    if (ipv6Extension)
     {
-    case Ipv6L4Protocol::RX_OK:
-      break;
-    case Ipv6L4Protocol::RX_CSUM_FAILED:
-      break;
-    case Ipv6L4Protocol::RX_ENDPOINT_UNREACH:
-      if (ip.GetDestinationAddress ().IsMulticast ())
+      nextHeaderPosition += ipv6Extension->Process (p, nextHeaderPosition, ip, dst, &nextHeader, isDropped);
+
+      if (isDropped)
       {
-        /* do not rely on multicast address */
+        return;
+      }
+    }
+    else
+    {
+      protocol = GetProtocol (nextHeader);
+      // For ICMPv6 Error packets
+      Ptr<Packet> malformedPacket  = packet->Copy ();
+      malformedPacket->AddHeader (ip);
+
+      if (!protocol)
+      {
+        NS_LOG_LOGIC ("Unknown Next Header. Drop!");
+
+        if (nextHeaderPosition == 0)
+        {
+          GetIcmpv6 ()->SendErrorParameterError (malformedPacket, dst, Icmpv6Header::ICMPV6_UNKNOWN_NEXT_HEADER, 40);
+        }
+        else
+        {
+          GetIcmpv6 ()->SendErrorParameterError (malformedPacket, dst, Icmpv6Header::ICMPV6_UNKNOWN_NEXT_HEADER, ip.GetSerializedSize () + nextHeaderPosition);
+        }
+        m_dropTrace (ip, p, DROP_UNKNOWN_PROTOCOL, iif);
         break;
       }
+      else
+      {
+        p->RemoveAtStart (nextHeaderPosition);
+        /* protocol->Receive (p, src, dst, incomingInterface); */
+        
+        /* L4 protocol */
+        Ptr<Packet> copy = p->Copy ();
+        enum Ipv6L4Protocol::RxStatus_e status = protocol->Receive (p, ip.GetSourceAddress (), ip.GetDestinationAddress (), GetInterface (iif));
 
-      copy->AddHeader (ip);
-      GetIcmpv6 ()->SendErrorDestinationUnreachable (copy, ip.GetSourceAddress (), Icmpv6Header::ICMPV6_PORT_UNREACHABLE);
+        switch (status)
+        {
+        case Ipv6L4Protocol::RX_OK:
+          break;
+        case Ipv6L4Protocol::RX_CSUM_FAILED:
+          break;
+        case Ipv6L4Protocol::RX_ENDPOINT_UNREACH:
+          if (ip.GetDestinationAddress ().IsMulticast ())
+          {
+            /* do not rely on multicast address */
+            break;
+          }
+
+          copy->AddHeader (ip);
+          GetIcmpv6 ()->SendErrorDestinationUnreachable (copy, ip.GetSourceAddress (), Icmpv6Header::ICMPV6_PORT_UNREACHABLE);
+        }
+      }
     }
-  }
+  } while (ipv6Extension);
 }
 
 void Ipv6L3Protocol::RouteInputError (Ptr<const Packet> p, const Ipv6Header& ipHeader, Socket::SocketErrno sockErrno)
@@ -899,6 +1035,61 @@ Ipv6Header Ipv6L3Protocol::BuildHeader (Ipv6Address src, Ipv6Address dst, uint8_
   hdr.SetPayloadLength (payloadSize);
   hdr.SetHopLimit (ttl);
   return hdr;
+}
+
+void Ipv6L3Protocol::RegisterExtensions ()
+{
+  Ptr<Ipv6ExtensionDemux> ipv6ExtensionDemux = CreateObject<Ipv6ExtensionDemux> ();
+  ipv6ExtensionDemux->SetNode (m_node);
+
+  Ptr<Ipv6ExtensionHopByHop> hopbyhopExtension = CreateObject<Ipv6ExtensionHopByHop> ();
+  hopbyhopExtension->SetNode (m_node);
+  Ptr<Ipv6ExtensionDestination> destinationExtension = CreateObject<Ipv6ExtensionDestination> ();
+  destinationExtension->SetNode (m_node);
+  Ptr<Ipv6ExtensionFragment> fragmentExtension = CreateObject<Ipv6ExtensionFragment> ();
+  fragmentExtension->SetNode (m_node);
+  Ptr<Ipv6ExtensionRouting> routingExtension = CreateObject<Ipv6ExtensionRouting> ();
+  routingExtension->SetNode (m_node);
+  // Ptr<Ipv6ExtensionESP> espExtension = CreateObject<Ipv6ExtensionESP> ();
+  // Ptr<Ipv6ExtensionAH> ahExtension = CreateObject<Ipv6ExtensionAH> ();
+
+  ipv6ExtensionDemux->Insert (hopbyhopExtension);
+  ipv6ExtensionDemux->Insert (destinationExtension);
+  ipv6ExtensionDemux->Insert (fragmentExtension);
+  ipv6ExtensionDemux->Insert (routingExtension);
+  // ipv6ExtensionDemux->Insert (espExtension);
+  // ipv6ExtensionDemux->Insert (ahExtension);
+
+  Ptr<Ipv6ExtensionRoutingDemux> routingExtensionDemux = CreateObject<Ipv6ExtensionRoutingDemux> ();
+  routingExtensionDemux->SetNode (m_node);
+  Ptr<Ipv6ExtensionLooseRouting> looseRoutingExtension = CreateObject<Ipv6ExtensionLooseRouting> ();
+  looseRoutingExtension->SetNode (m_node);
+  routingExtensionDemux->Insert (looseRoutingExtension);
+
+  m_node->AggregateObject (routingExtensionDemux);
+  m_node->AggregateObject (ipv6ExtensionDemux);
+}
+
+void Ipv6L3Protocol::RegisterOptions ()
+{
+  Ptr<Ipv6OptionDemux> ipv6OptionDemux = CreateObject<Ipv6OptionDemux> ();
+  ipv6OptionDemux->SetNode (m_node);
+
+  Ptr<Ipv6OptionPad1> pad1Option = CreateObject<Ipv6OptionPad1> ();
+  pad1Option->SetNode (m_node);
+  Ptr<Ipv6OptionPadn> padnOption = CreateObject<Ipv6OptionPadn> ();
+  padnOption->SetNode (m_node);
+  Ptr<Ipv6OptionJumbogram> jumbogramOption = CreateObject<Ipv6OptionJumbogram> ();
+  jumbogramOption->SetNode (m_node);
+  Ptr<Ipv6OptionRouterAlert> routerAlertOption = CreateObject<Ipv6OptionRouterAlert> ();
+  routerAlertOption->SetNode (m_node);
+
+  ipv6OptionDemux->Insert (pad1Option);
+  ipv6OptionDemux->Insert (padnOption);
+  ipv6OptionDemux->Insert (jumbogramOption);
+  ipv6OptionDemux->Insert (routerAlertOption);
+
+  m_node->AggregateObject (ipv6OptionDemux);
 }
 
 } /* namespace ns3 */

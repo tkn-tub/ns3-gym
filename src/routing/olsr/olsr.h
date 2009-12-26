@@ -49,10 +49,10 @@
  * node); or ns3::OlsrHelper::InstallAll (void);
  *
  * In addition, the behavior of OLSR can be modified by changing certain
- * attributes.  The method ns3::OlsrHelper::SetAgent () can be used
+ * attributes.  The method ns3::OlsrHelper::Set () can be used
  * to set OLSR attributes.  These include HelloInterval, TcInterval,
  * MidInterval, Willingness.  Other parameters are defined as macros
- * in olsr-agent-impl.cc.
+ * in olsr-routing-protocol.cc.
  */
 
 

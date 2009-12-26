@@ -689,7 +689,7 @@ QstaWifiMac::GetSupportedRates (void) const
 }
 
 void
-QstaWifiMac::DeaggregateAmsduAndForward (Ptr<Packet> aggregatedPacket, WifiMacHeader const *hdr)
+QstaWifiMac::DeaggregateAmsduAndForward (Ptr<Packet> aggregatedPacket, const WifiMacHeader *hdr)
 {
   DeaggregatedMsdus packets = MsduAggregator::Deaggregate (aggregatedPacket);
   for (DeaggregatedMsdusCI i = packets.begin (); i != packets.end (); ++i)

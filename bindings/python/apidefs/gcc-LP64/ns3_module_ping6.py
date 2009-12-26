@@ -112,6 +112,10 @@ def register_Ns3Ping6_methods(root_module, cls):
     cls.add_method('SetRemote', 
                    'void', 
                    [param('ns3::Ipv6Address', 'ipv6')])
+    ## ping6.h: void ns3::Ping6::SetRouters(std::vector<ns3::Ipv6Address, std::allocator<ns3::Ipv6Address> > routers) [member function]
+    cls.add_method('SetRouters', 
+                   'void', 
+                   [param('std::vector< ns3::Ipv6Address >', 'routers')])
     ## ping6.h: void ns3::Ping6::DoDispose() [member function]
     cls.add_method('DoDispose', 
                    'void', 

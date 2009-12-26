@@ -32,8 +32,8 @@
 #include "ns3/trace-source-accessor.h"
 #include "ns3/channel.h"
 #include "ns3/system-thread.h"
-#include "ns3/realtime-simulator-impl.h"
 #include "ns3/mac48-address.h"
+#include "ns3/enum.h"
 
 #include <sys/wait.h>
 #include <sys/stat.h>
@@ -83,6 +83,12 @@ EmuNetDevice::GetTypeId (void)
                    TimeValue (Seconds (0.)),
                    MakeTimeAccessor (&EmuNetDevice::m_tStop),
                    MakeTimeChecker ())
+    .AddAttribute ("EncapsulationMode", 
+                   "The link-layer encapsulation type to use.",
+                   EnumValue (LLC),
+                   MakeEnumAccessor (&EmuNetDevice::SetEncapsulationMode),
+                   MakeEnumChecker (DIX, "Dix",
+                                    LLC, "Llc"))
 
     //
     // Transmit queueing discipline for the device which includes its own set
@@ -165,7 +171,6 @@ EmuNetDevice::GetTypeId (void)
   return tid;
 }
 
-
 EmuNetDevice::EmuNetDevice () 
 : 
   m_startEvent (),
@@ -178,11 +183,14 @@ EmuNetDevice::EmuNetDevice ()
   m_isMulticast (false)
 {
   NS_LOG_FUNCTION (this);
+  m_packetBuffer = new uint8_t[65536];
   Start (m_tStart);
 }
 
 EmuNetDevice::~EmuNetDevice ()
 {
+  delete [] m_packetBuffer;
+  m_packetBuffer = 0;
 }
 
 void 
@@ -191,6 +199,21 @@ EmuNetDevice::DoDispose()
   NS_LOG_FUNCTION_NOARGS ();
   m_node = 0;
   NetDevice::DoDispose ();
+}
+
+void 
+EmuNetDevice::SetEncapsulationMode (enum EncapsulationMode mode)
+{
+  NS_LOG_FUNCTION (mode);
+  m_encapMode = mode;
+  NS_LOG_LOGIC ("m_encapMode = " << m_encapMode);
+}
+
+EmuNetDevice::EncapsulationMode
+EmuNetDevice::GetEncapsulationMode (void) const
+{
+  NS_LOG_FUNCTION_NOARGS ();
+  return m_encapMode;
 }
 
 void
@@ -229,7 +252,28 @@ EmuNetDevice::StartDevice (void)
       NS_FATAL_ERROR ("EmuNetDevice::StartDevice(): Device is already started");
     }
 
+  //
+  // We're going to need a pointer to the realtime simulator implementation.
+  // It's important to remember that access to that implementation may happen 
+  // in a completely different thread than the simulator is running in (we're 
+  // going to spin up that thread below).  We are talking about multiple threads
+  // here, so it is very, very dangerous to do any kind of reference couning on
+  // a shared object that is unaware of what is happening.  What we are going to 
+  // do to address that is to get a reference to the realtime simulator here 
+  // where we are running in the context of a running simulator scheduler --
+  // recall we did a Simulator::Schedule of this method above.  We get the
+  // simulator implementation pointer in a single-threaded way and save the
+  // underlying raw pointer for use by the (other) read thread.  We must not
+  // free this pointer or we may delete the simulator out from under us an 
+  // everyone else.  We assume that the simulator implementation cannot be 
+  // replaced while the emu device is running and so will remain valid through
+  // the time during which the read thread is running.
+  //
+  Ptr<RealtimeSimulatorImpl> impl = DynamicCast<RealtimeSimulatorImpl> (Simulator::GetImplementation ());
+  m_rtImpl = GetPointer (impl);
+
   NS_LOG_LOGIC ("Creating socket");
+
   //
   // Call out to a separate process running as suid root in order to get a raw 
   // socket.  We do this to avoid having the entire simulation running as root.
@@ -308,6 +352,7 @@ EmuNetDevice::StartDevice (void)
       // This one is OK to enable at runtime
       m_isMulticast = true;
     }
+
   //
   // Now spin up a read thread to read packets.
   //
@@ -563,6 +608,10 @@ EmuNetDevice::FindCreator (std::string creatorName)
   locations.push_back ("../../../build/optimized/src/devices/emu/");
   locations.push_back ("../../../build/debug/src/devices/emu/");
 
+  // src/devices/emu (or build/debug/examples/emulation)
+  locations.push_back ("../../../../build/optimized/src/devices/emu/");
+  locations.push_back ("../../../../build/debug/src/devices/emu/");
+
   for (std::list<std::string>::const_iterator i = locations.begin (); i != locations.end (); ++i)
     {
       struct stat st;
@@ -632,31 +681,44 @@ EmuNetDevice::ForwardUp (uint8_t *buf, uint32_t len)
 
   uint16_t protocol;
   
-  //
-  // If the length/type is less than 1500, it corresponds to a length 
-  // interpretation packet.  In this case, it is an 802.3 packet and 
-  // will also have an 802.2 LLC header.  If greater than 1500, we
-  // find the protocol number (Ethernet type) directly.
-  //
-  if (header.GetLengthType () <= 1500)
+  switch (m_encapMode)
     {
-      LlcSnapHeader llc;
+    case LLC:
       //
-      // Check to see that the packet is long enough to possibly contain the
-      // header we want to remove before just naively calling.
+      // If the length/type is less than 1500, it corresponds to a length 
+      // interpretation packet.  In this case, it is an 802.3 packet and 
+      // will also have an 802.2 LLC header.  If greater than 1500, we
+      // find the protocol number (Ethernet type) directly.
       //
-      if (packet->GetSize() < llc.GetSerializedSize())
+      if (header.GetLengthType () <= 1500)
         {
-          m_phyRxDropTrace (originalPacket);
-          return;
-        }
+          LlcSnapHeader llc;
+          //
+          // Check to see that the packet is long enough to possibly contain the
+          // header we want to remove before just naively calling.
+          //
+          if (packet->GetSize() < llc.GetSerializedSize())
+            {
+              m_phyRxDropTrace (originalPacket);
+              return;
+            }
 
-      packet->RemoveHeader (llc);
-      protocol = llc.GetType ();
-    }
-  else
-    {
+          packet->RemoveHeader (llc);
+          protocol = llc.GetType ();
+        }
+      else
+        {
+          protocol = header.GetLengthType ();
+        }
+      break;
+
+    case DIX:
       protocol = header.GetLengthType ();
+      break;
+
+    default:
+      NS_FATAL_ERROR ("invalid encapsulation mode");
+      protocol = 0; /* quiet compiler */
     }
 
   PacketType packetType;
@@ -709,13 +771,9 @@ EmuNetDevice::ReadThread (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
 
-  //
-  // It's important to remember that we're in a completely different thread than the simulator is running in.  We
-  // need to synchronize with that other thread to get the packet up into ns-3.  What we will need to do is to schedule 
-  // a method to forward up the packet using the multithreaded simulator we are most certainly running.  However, I just 
-  // said it -- we are talking about two threads here, so it is very, very dangerous to do any kind of reference couning
-  // on a shared object.  Just don't do it.  So what we're going to do is to allocate a buffer on the heap and pass that
-  // buffer into the ns-3 context thread where it will create the packet.
+  // It's important to remember that we're in a completely different thread than the simulator is running in.
+  // We are talking about multiple threads here, so it is very, very dangerous to do any kind of reference couning
+  // on a shared object.
   //
 
   int32_t len = -1;
@@ -724,6 +782,10 @@ EmuNetDevice::ReadThread (void)
 
   for (;;) 
     {
+      //
+      // to avoid any issues with a shared reference counted packet, we allocate a buffer on the heap and pass that
+      // buffer into the ns-3 context thread where it will create the packet, copy the buffer and then free it.
+      //
       uint32_t bufferSize = 65536;
       uint8_t *buf = (uint8_t *)malloc (bufferSize);
       if (buf == 0)
@@ -743,8 +805,8 @@ EmuNetDevice::ReadThread (void)
 
       NS_LOG_INFO ("EmuNetDevice::ReadThread(): Received packet");
       NS_LOG_INFO ("EmuNetDevice::ReadThread(): Scheduling handler");
-      DynamicCast<RealtimeSimulatorImpl> (Simulator::GetImplementation ())->ScheduleRealtimeNow (
-        MakeEvent (&EmuNetDevice::ForwardUp, this, buf, len));
+      NS_ASSERT_MSG (m_rtImpl, "EmuNetDevice::ReadThread(): Realtime simulator implementation pointer not set");
+      m_rtImpl->ScheduleRealtimeNowWithContext (GetNode ()->GetId (), MakeEvent (&EmuNetDevice::ForwardUp, this, buf, len));
       buf = 0;
     }
 }
@@ -795,19 +857,30 @@ EmuNetDevice::SendFrom (Ptr<Packet> packet, const Address &src, const Address &d
   NS_LOG_LOGIC ("Transmit packet from " << source);
   NS_LOG_LOGIC ("Transmit packet to " << destination);
 
-  //
-  // We've got to pick either DIX (Ethernet) or LLC/SNAP (IEEE 802.3) as a 
-  // packet format.  IEEE 802.3 is slightly more formally correct, so we 
-  // go that route.
-  //
-  LlcSnapHeader llc;
-  llc.SetType (protocolNumber);
-  packet->AddHeader (llc);
-
   EthernetHeader header (false);
   header.SetSource (source);
   header.SetDestination (destination);
-  header.SetLengthType (packet->GetSize ());
+
+  switch (m_encapMode)
+    {
+    case LLC:
+      {
+        LlcSnapHeader llc;
+        llc.SetType (protocolNumber);
+        packet->AddHeader (llc);
+
+        header.SetLengthType (packet->GetSize ());
+      }
+      break;
+      
+    case DIX:
+      header.SetLengthType (protocolNumber);
+      break;
+      
+    default:
+      NS_FATAL_ERROR ("invalid encapsulation mode");
+    }
+  
   packet->AddHeader (header);
 
   //
@@ -827,7 +900,6 @@ EmuNetDevice::SendFrom (Ptr<Packet> packet, const Address &src, const Address &d
   m_promiscSnifferTrace (packet);
   m_snifferTrace (packet);
 
-
   struct sockaddr_ll ll;
   bzero (&ll, sizeof (ll));
 
@@ -837,8 +909,10 @@ EmuNetDevice::SendFrom (Ptr<Packet> packet, const Address &src, const Address &d
 
   NS_LOG_LOGIC ("calling sendto");
 
-  int32_t rc;
-  rc = sendto (m_sock, packet->PeekData (), packet->GetSize (), 0, reinterpret_cast<struct sockaddr *> (&ll), sizeof (ll));
+  NS_ASSERT_MSG (packet->GetSize () <= 65536, "EmuNetDevice::SendFrom(): Packet too big " << packet->GetSize ());
+  packet->CopyData (m_packetBuffer, packet->GetSize ());
+
+  int32_t rc = sendto (m_sock, m_packetBuffer, packet->GetSize (), 0, reinterpret_cast<struct sockaddr *> (&ll), sizeof (ll));
   NS_LOG_LOGIC ("sendto returns " << rc);
 
   return rc == -1 ? false : true;

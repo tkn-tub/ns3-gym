@@ -26,6 +26,7 @@
 #include "ns3/net-device.h"
 #include "ns3/event-id.h"
 #include "ns3/nstime.h"
+#include "ns3/traced-value.h"
 #include "ie-dot11s-beacon-timing.h"
 #include "ie-dot11s-peer-management.h"
 #include "peer-link.h"
@@ -200,6 +201,11 @@ private:
   Time TuToTime (uint32_t x);
   uint32_t TimeToTu (Time x);
   ///\}
+  
+  /// Aux. method to register open links
+  void NotifyLinkOpen (Mac48Address peerMp, Mac48Address peerIface, Mac48Address myIface, uint32_t interface);
+  /// Aux. method to register closed links
+  void NotifyLinkClose (Mac48Address peerMp, Mac48Address peerIface, Mac48Address myIface, uint32_t interface);
 private:
   PeerManagementProtocolMacMap m_plugins;
   Mac48Address m_address;
@@ -233,7 +239,14 @@ private:
    * bool is status - true when new link has appeared, false - when link was closed,
    */
   Callback <void, Mac48Address, Mac48Address, uint32_t, bool> m_peerStatusCallback;
-  ///\}
+  
+  /// Simple link open/close trace source type. Addresses are: src interface, dst interface
+  typedef TracedCallback <Mac48Address, Mac48Address> LinkEventCallback;
+  /// LinkOpen trace source
+  LinkEventCallback m_linkOpenTraceSrc;
+  /// LinkClose trace source
+  LinkEventCallback m_linkCloseTraceSrc;
+  
   ///\name Statistics:
   ///\{
   struct Statistics {

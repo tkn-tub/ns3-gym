@@ -23,6 +23,7 @@
 #define SIMPLE_REF_COUNT_H
 
 #include "empty.h"
+#include "default-deleter.h"
 #include <stdint.h>
 
 namespace ns3 {
@@ -39,12 +40,24 @@ namespace ns3 {
  * if needed. i.e., if your class has subclasses, _do_ mark your destructor
  * virtual.
  *
- * \internal
- * Note: we rely on the fairly common EBCO (empty base class optimization)
- * to get rid of the empty parent when the user does not provide
- * a non-trivial parent.
+ *
+ * This template takes 3 arguments but only the first argument is
+ * mandatory:
+ *    - T: the typename of the subclass which derives from this template
+ *      class. Yes, this is weird but it's a common C++ template pattern
+ *      whose name is CRTP (Curriously Recursive Template Pattern)
+ *    - PARENT: the typename of the parent of this template. By default,
+ *      this typename is 'ns3::empty' which is an empty class: compilers
+ *      which implement the RBCO optimization (empty base class optimization)
+ *      will make this a no-op
+ *    - DELETER: the typename of a class which implements a public static 
+ *      method named 'Delete'. This method will be called whenever the
+ *      SimpleRefCount template detects that no references to the object
+ *      it manages exist anymore.
+ *
+ * Interesting users of this class include ns3::Object as well as ns3::Packet.
  */
-template <typename T, typename PARENT = empty>
+template <typename T, typename PARENT = empty, typename DELETER = DefaultDeleter<T> >
 class SimpleRefCount : public PARENT
 {
 public:
@@ -79,7 +92,7 @@ public:
     m_count--;
     if (m_count == 0)
       {
-	delete static_cast<T*> (const_cast<SimpleRefCount *> (this));
+        DELETER::Delete (static_cast<T*> (const_cast<SimpleRefCount *> (this)));
       }
   }
 
@@ -87,11 +100,12 @@ public:
    * Get the reference count of the object.  
    * Normally not needed; for language bindings.
    */
-  uint32_t GetReferenceCount (void) const
+  inline uint32_t GetReferenceCount (void) const
   {
     return m_count;
   }
 
+  static void Cleanup (void) {}
 private:
   // Note we make this mutable so that the const methods can still
   // change it.

@@ -393,6 +393,20 @@ CsmaNetDevice::AddHeader (Ptr<Packet> p,   Mac48Address source,  Mac48Address de
       // in the old Ethernet Blue Book.
       //
       lengthType = protocolNumber;
+
+      //
+      // All Ethernet frames must carry a minimum payload of 46 bytes.  We need
+      // to pad out if we don't have enough bytes.  These must be real bytes 
+      // since they will be written to pcap files and compared in regression 
+      // trace files.
+      //
+      if (p->GetSize () < 46)
+        {
+          uint8_t buffer[46];
+          memset (buffer, 0, 46);
+          Ptr<Packet> padd = Create<Packet> (buffer, 46 - p->GetSize ());
+          p->AddAtEnd (padd);
+        }
       break;
     case LLC: 
       {
@@ -401,6 +415,21 @@ CsmaNetDevice::AddHeader (Ptr<Packet> p,   Mac48Address source,  Mac48Address de
         LlcSnapHeader llc;
         llc.SetType (protocolNumber);
         p->AddHeader (llc);
+
+        //
+        // All Ethernet frames must carry a minimum payload of 46 bytes.  The 
+        // LLC SNAP header counts as part of this payload.  We need to padd out
+        // if we don't have enough bytes.  These must be real bytes since they 
+        // will be written to pcap files and compared in regression trace files.
+        //
+        if (p->GetSize () < 46)
+          {
+            uint8_t buffer[46];
+            memset (buffer, 0, 46);
+            Ptr<Packet> padd = Create<Packet> (buffer, 46 - p->GetSize ());
+            p->AddAtEnd (padd);
+          }
+
         //
         // This corresponds to the length interpretation of the lengthType field,
         // but with an LLC/SNAP header added to the payload as in IEEE 802.2
@@ -421,19 +450,22 @@ CsmaNetDevice::AddHeader (Ptr<Packet> p,   Mac48Address source,  Mac48Address de
   header.SetLengthType (lengthType);
   p->AddHeader (header);
 
+  if (Node::ChecksumEnabled ())
+    {
+      trailer.EnableFcs (true);
+    }
   trailer.CalcFcs (p);
   p->AddTrailer (trailer);
 }
 
+#if 0
   bool 
 CsmaNetDevice::ProcessHeader (Ptr<Packet> p, uint16_t & param)
 {
   NS_LOG_FUNCTION (p << param);
 
   EthernetTrailer trailer;
-      
   p->RemoveTrailer (trailer);
-  trailer.CheckFcs (p);
 
   EthernetHeader header (false);
   p->RemoveHeader (header);
@@ -463,6 +495,7 @@ CsmaNetDevice::ProcessHeader (Ptr<Packet> p, uint16_t & param)
     }
   return true;
 }
+#endif
 
   void
 CsmaNetDevice::TransmitStart (void)
@@ -747,7 +780,19 @@ CsmaNetDevice::Receive (Ptr<Packet> packet, Ptr<CsmaNetDevice> senderDevice)
 
   EthernetTrailer trailer;
   packet->RemoveTrailer (trailer);
+  if (Node::ChecksumEnabled ())
+    {
+      trailer.EnableFcs (true);
+    }
+
   trailer.CheckFcs (packet);
+  bool crcGood = trailer.CheckFcs (packet);
+  if (!crcGood)
+    {
+      NS_LOG_INFO ("CRC error on Packet " << packet);
+      m_phyRxDropTrace (packet);
+      return;
+    }
 
   EthernetHeader header (false);
   packet->RemoveHeader (header);

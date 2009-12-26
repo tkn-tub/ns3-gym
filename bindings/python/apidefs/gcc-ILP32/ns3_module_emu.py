@@ -5,6 +5,8 @@ def register_types(module):
     
     ## emu-net-device.h: ns3::EmuNetDevice [class]
     module.add_class('EmuNetDevice', parent=root_module['ns3::NetDevice'])
+    ## emu-net-device.h: ns3::EmuNetDevice::EncapsulationMode [enumeration]
+    module.add_enum('EncapsulationMode', ['ILLEGAL', 'DIX', 'LLC'], outer_class=root_module['ns3::EmuNetDevice'])
     
     ## Register a nested module for the namespace Config
     
@@ -115,6 +117,11 @@ def register_Ns3EmuNetDevice_methods(root_module, cls):
                    'ns3::Ptr< ns3::Channel >', 
                    [], 
                    is_const=True, is_virtual=True)
+    ## emu-net-device.h: ns3::EmuNetDevice::EncapsulationMode ns3::EmuNetDevice::GetEncapsulationMode() const [member function]
+    cls.add_method('GetEncapsulationMode', 
+                   'ns3::EmuNetDevice::EncapsulationMode', 
+                   [], 
+                   is_const=True)
     ## emu-net-device.h: uint32_t ns3::EmuNetDevice::GetIfIndex() const [member function]
     cls.add_method('GetIfIndex', 
                    'uint32_t', 
@@ -194,6 +201,10 @@ def register_Ns3EmuNetDevice_methods(root_module, cls):
     cls.add_method('SetDataRate', 
                    'void', 
                    [param('ns3::DataRate', 'bps')])
+    ## emu-net-device.h: void ns3::EmuNetDevice::SetEncapsulationMode(ns3::EmuNetDevice::EncapsulationMode mode) [member function]
+    cls.add_method('SetEncapsulationMode', 
+                   'void', 
+                   [param('ns3::EmuNetDevice::EncapsulationMode', 'mode')])
     ## emu-net-device.h: void ns3::EmuNetDevice::SetIfIndex(uint32_t const index) [member function]
     cls.add_method('SetIfIndex', 
                    'void', 

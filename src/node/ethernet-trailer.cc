@@ -29,17 +29,10 @@ namespace ns3 {
 
 NS_OBJECT_ENSURE_REGISTERED (EthernetTrailer);
 
-bool EthernetTrailer::m_calcFcs = false;
-
 EthernetTrailer::EthernetTrailer ()
-{
-  Init();
-}
-
-void EthernetTrailer::Init()
-{
-  m_fcs = 0;
-}
+  : m_calcFcs (false),
+    m_fcs (0)
+{}
 
 void 
 EthernetTrailer::EnableFcs (bool enable)
@@ -48,23 +41,39 @@ EthernetTrailer::EnableFcs (bool enable)
 }
 
 bool
-EthernetTrailer::CheckFcs (Ptr<Packet> p) const
+EthernetTrailer::CheckFcs (Ptr<const Packet> p) const
 {
+  int len = p->GetSize ();
+  uint8_t *buffer;
+  uint32_t crc;
+
   if (!m_calcFcs)
     {
       return true;
-    } 
-  else 
-    {
-      NS_LOG_WARN ("FCS calculation is not yet enabled");
-      return false;
     }
+
+  buffer = new uint8_t[len];
+  p->CopyData (buffer, len);
+  crc = DoCalcFcs (buffer, len);
+  delete[] buffer;
+  return (m_fcs == crc);
 }
 
 void
-EthernetTrailer::CalcFcs (Ptr<Packet> p)
+EthernetTrailer::CalcFcs (Ptr<const Packet> p)
 {
-  NS_LOG_WARN ("FCS calculation is not yet enabled");
+  int len = p->GetSize ();
+  uint8_t *buffer;
+
+  if (!m_calcFcs)
+    {
+      return;
+    }
+
+  buffer = new uint8_t[len];
+  p->CopyData (buffer, len);
+  m_fcs = DoCalcFcs (buffer, len);
+  delete[] buffer;
 }
 
 void
@@ -128,6 +137,25 @@ EthernetTrailer::Deserialize (Buffer::Iterator end)
   m_fcs = i.ReadU32 ();
 
   return size;
+}
+
+// This code is copied from /lib/crc32.c in the linux kernel.
+// It assumes little endian ordering.
+uint32_t
+EthernetTrailer::DoCalcFcs (uint8_t const *buffer, size_t len) const
+{
+  uint32_t crc = 0xffffffff;
+  int i;
+
+  while (len--)
+    {
+      crc ^= *buffer++;
+      for (i = 0; i < 8; i++)
+        {
+	  crc = (crc >> 1) ^ ((crc & 1) ? 0xedb88320 : 0);
+	}
+    }
+  return ~crc;
 }
 
 }; // namespace ns3

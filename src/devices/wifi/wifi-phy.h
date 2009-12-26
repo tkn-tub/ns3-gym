@@ -120,39 +120,39 @@ public:
    */
   enum State {
     /**
-     * The PHY layer is synchronized upon a packet.
+     * The PHY layer is IDLE.
      */
-    SYNC,
+    IDLE,
+    /**
+     * The PHY layer has sense the medium busy through the CCA mechanism
+     */
+    CCA_BUSY,
     /**
      * The PHY layer is sending a packet.
      */
     TX,
     /**
-     * The PHY layer has sense the medium busy through
-     * the CCA mechanism
+     * The PHY layer is receiving a packet.
      */
-    CCA_BUSY,
-    /**
-     * The PHY layer is IDLE.
-     */
-    IDLE,
+    RX,
     /**
      * The PHY layer is switching to other channel.
      */
     SWITCHING
   };
+
   /**
    * arg1: packet received successfully
    * arg2: snr of packet
    * arg3: mode of packet
    * arg4: type of preamble used for packet.
    */
-  typedef Callback<void,Ptr<Packet>, double, WifiMode, enum WifiPreamble> SyncOkCallback;
+  typedef Callback<void,Ptr<Packet>, double, WifiMode, enum WifiPreamble> RxOkCallback;
   /**
    * arg1: packet received unsuccessfully
    * arg2: snr of packet
    */
-  typedef Callback<void,Ptr<const Packet>, double> SyncErrorCallback;
+  typedef Callback<void,Ptr<const Packet>, double> RxErrorCallback;
 
   static TypeId GetTypeId (void);
 
@@ -170,12 +170,12 @@ public:
    * \param callback the callback to invoke
    *        upon successful packet reception.
    */
-  virtual void SetReceiveOkCallback (SyncOkCallback callback) = 0;
+  virtual void SetReceiveOkCallback (RxOkCallback callback) = 0;
   /**
    * \param callback the callback to invoke
    *        upon erronous packet reception.
    */
-  virtual void SetReceiveErrorCallback (SyncErrorCallback callback) = 0;
+  virtual void SetReceiveErrorCallback (RxErrorCallback callback) = 0;
 
   /**
    * \param packet the packet to send
@@ -195,25 +195,29 @@ public:
   virtual void RegisterListener (WifiPhyListener *listener) = 0;
 
   /**
-   * \returns true of the current state of the PHY layer is WifiPhy::CCA_BUSY, false otherwise.
-   */
-  virtual bool IsStateCcaBusy (void) = 0;
-  /**
    * \returns true of the current state of the PHY layer is WifiPhy::IDLE, false otherwise.
    */
   virtual bool IsStateIdle (void) = 0;
+  /**
+   * \returns true of the current state of the PHY layer is WifiPhy::CCA_BUSY, false otherwise.
+   */
+  virtual bool IsStateCcaBusy (void) = 0;
   /**
    * \returns true of the current state of the PHY layer is not WifiPhy::IDLE, false otherwise.
    */
   virtual bool IsStateBusy (void) = 0;
   /**
-   * \returns true of the current state of the PHY layer is WifiPhy::SYNC, false otherwise.
+   * \returns true of the current state of the PHY layer is WifiPhy::RX, false otherwise.
    */
-  virtual bool IsStateSync (void) = 0;
+  virtual bool IsStateRx (void) = 0;
   /**
    * \returns true of the current state of the PHY layer is WifiPhy::TX, false otherwise.
    */
   virtual bool IsStateTx (void) = 0;
+  /**
+   * \returns true of the current state of the PHY layer is WifiPhy::SWITCHING, false otherwise.
+   */
+  virtual bool IsStateSwitching (void) = 0;
   /**
    * \returns the amount of time since the current state has started.
    */
@@ -253,7 +257,7 @@ public:
    *          the requested ber for the specified transmission mode. (W/W)
    */
   virtual double CalculateSnr (WifiMode txMode, double ber) const = 0;
-  
+
   /** 
    * \brief Set channel number. 
    * 
@@ -449,7 +453,12 @@ private:
 
 };
 
-} // namespace ns3
+/**
+ * \param os          output stream
+ * \param state       wifi state to stringify
+ */
+std::ostream& operator<< (std::ostream& os, enum WifiPhy::State state);
 
+} // namespace ns3
 
 #endif /* WIFI_PHY_H */

@@ -75,6 +75,7 @@ int
 main (int argc, char *argv[])
 {
   std::string deviceName ("eth1");
+  std::string encapMode ("Dix");
   uint32_t nNodes = 4;
 
   //
@@ -83,7 +84,9 @@ main (int argc, char *argv[])
   //
   CommandLine cmd;
   cmd.AddValue("deviceName", "device name", deviceName);
+  cmd.AddValue("encapsulationMode", "encapsulation mode of emu device (\"Dix\" [default] or \"Llc\")", encapMode);
   cmd.AddValue("nNodes", "number of nodes to create (>= 2)", nNodes);
+
   cmd.Parse (argc, argv);
 
   GlobalValue::Bind ("SimulatorImplementationType", 
@@ -110,6 +113,8 @@ main (int argc, char *argv[])
   NS_LOG_INFO ("Create channels.");
   EmuHelper emu;
   emu.SetAttribute ("DeviceName", StringValue (deviceName));
+  emu.SetAttribute ("EncapsulationMode", StringValue (encapMode));  
+
   NetDeviceContainer d = emu.Install (n);
 
   //
@@ -133,8 +138,8 @@ main (int argc, char *argv[])
   // Create a UdpEchoClient application to send UDP datagrams from node zero to node one.
   //
   uint32_t packetSize = 1024;
-  uint32_t maxPacketCount = 1;
-  Time interPacketInterval = Seconds (1.);
+  uint32_t maxPacketCount = 20;
+  Time interPacketInterval = Seconds (0.1);
   UdpEchoClientHelper client (i.GetAddress (1), 9);
   client.SetAttribute ("MaxPackets", UintegerValue (maxPacketCount));
   client.SetAttribute ("Interval", TimeValue (interPacketInterval));

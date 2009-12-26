@@ -33,8 +33,8 @@ def register_types(module):
     module.add_class('Event', outer_class=root_module['ns3::Scheduler'])
     ## scheduler.h: ns3::Scheduler::EventKey [struct]
     module.add_class('EventKey', outer_class=root_module['ns3::Scheduler'])
-    ## simple-ref-count.h: ns3::SimpleRefCount<ns3::EventImpl, ns3::empty> [class]
-    module.add_class('SimpleRefCount', template_parameters=['ns3::EventImpl', 'ns3::empty'], parent=root_module['ns3::empty'])
+    ## simple-ref-count.h: ns3::SimpleRefCount<ns3::EventImpl, ns3::empty, ns3::DefaultDeleter<ns3::EventImpl> > [class]
+    module.add_class('SimpleRefCount', template_parameters=['ns3::EventImpl', 'ns3::empty', 'ns3::DefaultDeleter<ns3::EventImpl>'], parent=root_module['ns3::empty'])
     ## simulator-impl.h: ns3::SimulatorImpl [class]
     module.add_class('SimulatorImpl', parent=root_module['ns3::Object'])
     ## synchronizer.h: ns3::Synchronizer [class]
@@ -46,7 +46,7 @@ def register_types(module):
     ## default-simulator-impl.h: ns3::DefaultSimulatorImpl [class]
     module.add_class('DefaultSimulatorImpl', parent=root_module['ns3::SimulatorImpl'])
     ## event-impl.h: ns3::EventImpl [class]
-    module.add_class('EventImpl', parent=root_module['ns3::SimpleRefCount< ns3::EventImpl, ns3::empty >'])
+    module.add_class('EventImpl', parent=root_module['ns3::SimpleRefCount< ns3::EventImpl, ns3::empty, ns3::DefaultDeleter<ns3::EventImpl> >'])
     ## heap-scheduler.h: ns3::HeapScheduler [class]
     module.add_class('HeapScheduler', parent=root_module['ns3::Scheduler'])
     ## list-scheduler.h: ns3::ListScheduler [class]
@@ -1486,6 +1486,14 @@ def register_Ns3RealtimeSimulatorImpl_methods(root_module, cls):
     cls.add_method('ScheduleRealtimeNow', 
                    'void', 
                    [param('ns3::EventImpl *', 'event')])
+    ## realtime-simulator-impl.h: void ns3::RealtimeSimulatorImpl::ScheduleRealtimeNowWithContext(uint32_t context, ns3::EventImpl * event) [member function]
+    cls.add_method('ScheduleRealtimeNowWithContext', 
+                   'void', 
+                   [param('uint32_t', 'context'), param('ns3::EventImpl *', 'event')])
+    ## realtime-simulator-impl.h: void ns3::RealtimeSimulatorImpl::ScheduleRealtimeWithContext(uint32_t context, ns3::Time const & time, ns3::EventImpl * event) [member function]
+    cls.add_method('ScheduleRealtimeWithContext', 
+                   'void', 
+                   [param('uint32_t', 'context'), param('ns3::Time const &', 'time'), param('ns3::EventImpl *', 'event')])
     ## realtime-simulator-impl.h: void ns3::RealtimeSimulatorImpl::ScheduleWithContext(uint32_t context, ns3::Time const & time, ns3::EventImpl * event) [member function]
     cls.add_method('ScheduleWithContext', 
                    'void', 

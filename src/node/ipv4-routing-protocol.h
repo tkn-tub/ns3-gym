@@ -66,13 +66,13 @@ public:
    * \param p packet to be routed.  Note that this method may modify the packet.
    *          Callers may also pass in a null pointer. 
    * \param header input parameter (used to form key to search for the route)
-   * \param oif Output interface index.  May be zero, or may be bound via
+   * \param oif Output interface Netdevice.  May be zero, or may be bound via
    *            socket options to a particular output interface.
    * \param sockerr Output parameter; socket errno 
    *
    * \returns a code that indicates what happened in the lookup
    */
-  virtual Ptr<Ipv4Route> RouteOutput (Ptr<Packet> p, const Ipv4Header &header, uint32_t oif, Socket::SocketErrno &sockerr) = 0;
+  virtual Ptr<Ipv4Route> RouteOutput (Ptr<Packet> p, const Ipv4Header &header, Ptr<NetDevice> oif, Socket::SocketErrno &sockerr) = 0;
   
   /**
    * \brief Route an input packet (to be forwarded or locally delivered)

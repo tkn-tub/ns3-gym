@@ -243,7 +243,7 @@ DcfManager::DcfManager ()
     m_lastSwitchingStart (MicroSeconds (0)), 
     m_lastSwitchingDuration (MicroSeconds (0)), 
     m_rxing (false),
-    m_slotTime (Seconds (0.0)),
+    m_slotTimeUs (0),
     m_sifs (Seconds (0.0)),
     m_phyListener (0),
     m_lowListener (0)
@@ -273,7 +273,7 @@ DcfManager::SetupLowListener (Ptr<MacLow> low)
 void 
 DcfManager::SetSlot (Time slotTime)
 {
-  m_slotTime = slotTime;
+  m_slotTimeUs = slotTime.GetMicroSeconds ();
 }
 void 
 DcfManager::SetSifs (Time sifs)
@@ -457,14 +457,10 @@ DcfManager::GetAccessGrantStart (void) const
   Time rxAccessStart;
   if (!m_rxing) 
     {
-      rxAccessStart = m_lastRxEnd;
+      rxAccessStart = m_lastRxEnd + m_sifs;
       if (!m_lastRxReceivedOk)
         {
           rxAccessStart += m_eifsNoDifs;
-        }
-      else
-        {
-          rxAccessStart += m_sifs;
         }
     } 
   else 
@@ -497,7 +493,7 @@ Time
 DcfManager::GetBackoffStartFor (DcfState *state)
 {
   Time mostRecentEvent = MostRecent (state->GetBackoffStart (),
-                                     GetAccessGrantStart () + Scalar (state->GetAifsn ()) * m_slotTime);
+                                     GetAccessGrantStart () + MicroSeconds (state->GetAifsn () * m_slotTimeUs));
   
   return mostRecentEvent;
 }
@@ -505,7 +501,7 @@ DcfManager::GetBackoffStartFor (DcfState *state)
 Time
 DcfManager::GetBackoffEndFor (DcfState *state)
 {
-  return GetBackoffStartFor (state) + Scalar (state->GetBackoffSlots ()) * m_slotTime;
+  return GetBackoffStartFor (state) + MicroSeconds (state->GetBackoffSlots () * m_slotTimeUs);
 }
 
 void
@@ -519,11 +515,11 @@ DcfManager::UpdateBackoff (void)
       Time backoffStart = GetBackoffStartFor (state);
       if (backoffStart <= Simulator::Now ())
         {
-          Scalar nSlots = (Simulator::Now () - backoffStart) / m_slotTime;
-          uint32_t nIntSlots = lrint (nSlots.GetDouble ());          
+          uint32_t nus = (Simulator::Now () - backoffStart).GetMicroSeconds ();
+          uint32_t nIntSlots = nus / m_slotTimeUs;
           uint32_t n = std::min (nIntSlots, state->GetBackoffSlots ());
           MY_DEBUG ("dcf " << k << " dec backoff slots=" << n);
-          Time backoffUpdateBound = backoffStart + Scalar (n) * m_slotTime;
+          Time backoffUpdateBound = backoffStart + MicroSeconds (n * m_slotTimeUs);
           state->UpdateBackoffSlotsNow (n, backoffUpdateBound);
         }
     }

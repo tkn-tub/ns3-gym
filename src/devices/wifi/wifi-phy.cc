@@ -416,6 +416,24 @@ WifiPhy::Get13_5mb5Mhz (void)
   return mode;
 }
 
+std::ostream& operator<< (std::ostream& os, enum WifiPhy::State state)
+{
+  switch (state) {
+  case WifiPhy::IDLE:
+    return (os << "IDLE");
+  case WifiPhy::CCA_BUSY:
+    return (os << "CCA_BUSY");
+  case WifiPhy::TX:
+    return (os << "TX");
+  case WifiPhy::RX:
+    return (os << "RX");
+  case WifiPhy::SWITCHING: 
+    return (os << "SWITCHING");
+  default:
+    NS_FATAL_ERROR ("Invalid WifiPhy state");
+    return (os << "INVALID");
+  }
+}
 
 } // namespace ns3
 

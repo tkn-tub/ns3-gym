@@ -48,11 +48,6 @@ class ErrorModel;
  * The Csma net device class is analogous to layer 1 and 2 of the
  * TCP stack. The NetDevice takes a raw packet of bytes and creates a
  * protocol specific packet from them. 
- *
- * Each Csma net device will receive all packets written to the Csma link. 
- * The ProcessHeader function can be used to filter out the packets such that
- * higher level layers only receive packets that are addressed to their
- * associated net devices
  */
 class CsmaNetDevice : public NetDevice 
 {
@@ -439,18 +434,6 @@ protected:
    * payload contained in this packet.
    */
   void AddHeader (Ptr<Packet> p, Mac48Address source, Mac48Address dest, uint16_t protocolNumber);
-
-  /**
-   * Removes, from a packet of data, all headers and trailers that
-   * relate to the packet type
-   *
-   * \param p Packet whose headers need to be processed
-   * \param param An integer parameter that can be set by the function
-   * to return information gathered in the header
-   * \return Returns true if the packet should be forwarded up the
-   * protocol stack.
-   */
-  bool ProcessHeader (Ptr<Packet> p, uint16_t & param);
 
 private:
 

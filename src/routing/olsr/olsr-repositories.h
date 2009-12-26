@@ -94,7 +94,8 @@ operator << (std::ostream &os, const LinkTuple &tuple)
      << ", neighborIfaceAddr=" << tuple.neighborIfaceAddr
      << ", symTime=" << tuple.symTime
      << ", asymTime=" << tuple.asymTime
-     << ", expTime=" << tuple.time;
+     << ", expTime=" << tuple.time
+     << ")";
   return os;
 }
 

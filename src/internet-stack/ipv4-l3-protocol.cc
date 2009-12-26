@@ -600,7 +600,7 @@ Ipv4L3Protocol::Send (Ptr<Packet> packet,
   // 5) packet is not broadcast, and route is NULL (e.g., a raw socket call)
   NS_LOG_LOGIC ("Ipv4L3Protocol::Send case 4:  passed in with no route " << destination);
   Socket::SocketErrno errno_; 
-  uint32_t oif = 0; // unused for now
+  Ptr<NetDevice> oif (0); // unused for now
   ipHeader = BuildHeader (source, destination, protocol, packet->GetSize (), ttl, mayFragment);
   Ptr<Ipv4Route> newRoute = m_routingProtocol->RouteOutput (packet, ipHeader, oif, errno_);
   if (newRoute)
@@ -864,6 +864,59 @@ Ipv4L3Protocol::RemoveAddress (uint32_t i, uint32_t addressIndex)
       return true;
     }
   return false;
+}
+
+Ipv4Address 
+Ipv4L3Protocol::SelectSourceAddress (Ptr<const NetDevice> device,
+    Ipv4Address dst, Ipv4InterfaceAddress::InterfaceAddressScope_e scope)
+{
+  NS_LOG_FUNCTION (device << dst << scope);
+  Ipv4Address addr ("0.0.0.0");
+  Ipv4InterfaceAddress iaddr; 
+  bool found = false;
+
+  if (device != 0)
+    {
+      int32_t i = GetInterfaceForDevice (device);
+      NS_ASSERT_MSG (i >= 0, "No device found on node");
+      for (uint32_t j = 0; j < GetNAddresses (i); j++)
+        {
+          iaddr = GetAddress (i, j);
+          if (iaddr.IsSecondary ()) continue;
+          if (iaddr.GetScope () > scope) continue; 
+          if (dst.CombineMask (iaddr.GetMask ())  == iaddr.GetLocal ().CombineMask (iaddr.GetMask ()) )  
+            {
+              return iaddr.GetLocal ();
+            }
+          if (!found)
+            {
+              addr = iaddr.GetLocal ();
+              found = true;
+            }
+        }
+    }
+  if (found)
+    {
+      return addr;
+    }
+
+  // Iterate among all interfaces
+  for (uint32_t i = 0; i < GetNInterfaces (); i++)
+    {
+      for (uint32_t j = 0; j < GetNAddresses (i); j++)
+        {
+          iaddr = GetAddress (i, j);
+          if (iaddr.IsSecondary ()) continue;
+          if (iaddr.GetScope () != Ipv4InterfaceAddress::LINK 
+              && iaddr.GetScope () <= scope) 
+            {
+              return iaddr.GetLocal ();
+            }
+        }
+    }
+  NS_LOG_WARN ("Could not find source address for " << dst << " and scope " 
+    << scope << ", returning 0");
+  return addr;  
 }
 
 void 

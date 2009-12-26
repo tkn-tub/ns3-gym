@@ -203,13 +203,13 @@ int Ipv6RawSocketImpl::SendTo (Ptr<Packet> p, uint32_t flags, const Address& toA
     hdr.SetDestinationAddress (dst);
     SocketErrno err = ERROR_NOTERROR;
     Ptr<Ipv6Route> route = 0;
-    uint32_t oif = 0; /* specify non-zero if bound to a source address */
+    Ptr<NetDevice> oif (0); /*specify non-zero if bound to a source address */
 
     if (!m_src.IsAny ())
     {
       int32_t index = ipv6->GetInterfaceForAddress (m_src);
       NS_ASSERT (index >= 0);
-      oif = index;
+      oif = ipv6->GetNetDevice (index);
     }
 
     route = ipv6->GetRoutingProtocol ()->RouteOutput (p, hdr, oif, err);

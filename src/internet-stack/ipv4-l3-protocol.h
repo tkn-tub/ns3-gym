@@ -176,6 +176,9 @@ public:
   Ipv4InterfaceAddress GetAddress (uint32_t interfaceIndex, uint32_t addressIndex) const;
   uint32_t GetNAddresses (uint32_t interface) const;
   bool RemoveAddress (uint32_t interfaceIndex, uint32_t addressIndex);
+  Ipv4Address SelectSourceAddress (Ptr<const NetDevice> device,
+    Ipv4Address dst, Ipv4InterfaceAddress::InterfaceAddressScope_e scope);
+
 
   void SetMetric (uint32_t i, uint16_t metric);
   uint16_t GetMetric (uint32_t i) const;

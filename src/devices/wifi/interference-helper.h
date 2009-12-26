@@ -102,7 +102,7 @@ private:
     NiChange (Time time, double delta);
     Time GetTime (void) const;
     double GetDelta (void) const;
-    bool operator < (NiChange const &o) const;
+    bool operator < (const NiChange& o) const;
   private:
     Time m_time;
     double m_delta;

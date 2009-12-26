@@ -276,7 +276,7 @@ std::ostream &operator << (std::ostream &os, const MacLowTransmissionParameters 
  */
 class MacLow : public Object {
 public:
-  typedef Callback<void, Ptr<Packet> , WifiMacHeader const*> MacLowRxCallback;
+  typedef Callback<void, Ptr<Packet>, const WifiMacHeader*> MacLowRxCallback;
 
   MacLow ();
   virtual ~MacLow ();
@@ -321,8 +321,8 @@ public:
    * the next packet transmission if one was selected.
    */
   Time CalculateTransmissionTime (Ptr<const Packet> packet,
-                                  WifiMacHeader const*hdr, 
-                                  MacLowTransmissionParameters const&parameters) const;
+                                  const WifiMacHeader* hdr, 
+                                  const MacLowTransmissionParameters& parameters) const;
 
   /**
    * \param packet packet to send
@@ -334,7 +334,7 @@ public:
    * of transmission events.
    */
   void StartTransmission (Ptr<const Packet> packet, 
-                          WifiMacHeader const*hdr, 
+                          const WifiMacHeader* hdr, 
                           MacLowTransmissionParameters parameters,
                           MacLowTransmissionListener *listener);
 
@@ -372,11 +372,11 @@ private:
   uint32_t GetSize (Ptr<const Packet> packet, const WifiMacHeader *hdr) const;
   Time NowUs (void) const;
   WifiRemoteStation *GetStation (Mac48Address to) const;
-  void ForwardDown (Ptr<const Packet> packet, WifiMacHeader const *hdr, 
+  void ForwardDown (Ptr<const Packet> packet, const WifiMacHeader *hdr, 
                     WifiMode txMode);
   Time CalculateOverallTxTime (Ptr<const Packet> packet,
-                               WifiMacHeader const*hdr, 
-                               MacLowTransmissionParameters const &params) const;
+                               const WifiMacHeader* hdr, 
+                               const MacLowTransmissionParameters &params) const;
   WifiMode GetRtsTxMode (Ptr<const Packet> packet, const WifiMacHeader *hdr) const;
   WifiMode GetDataTxMode (Ptr<const Packet> packet, const WifiMacHeader *hdr) const;
   WifiMode GetCtsTxModeForRts (Mac48Address to, WifiMode rtsTxMode) const;

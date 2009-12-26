@@ -228,10 +228,15 @@ void Icmpv6L4Protocol::HandleEchoRequest (Ptr<Packet> packet, Ipv6Address const 
 {
   NS_LOG_FUNCTION (this << packet << src << dst << interface);
   Icmpv6Echo request;
+  uint8_t buf[packet->GetSize ()];
+
   packet->RemoveHeader (request);
+  /* XXX IPv6 extension: obtain a fresh copy of data otherwise it crash... */
+  packet->CopyData (buf, packet->GetSize ());
+  Ptr<Packet> p = Create<Packet> (buf, packet->GetSize ());
 
   /* if we send message from ff02::* (link-local multicast), we use our link-local address */
-  SendEchoReply (dst.IsMulticast () ? interface->GetLinkLocalAddress ().GetAddress () : dst, src, request.GetId (), request.GetSeq (), packet);
+  SendEchoReply (dst.IsMulticast () ? interface->GetLinkLocalAddress ().GetAddress () : dst, src, request.GetId (), request.GetSeq (), p);
 }
 
 void Icmpv6L4Protocol::HandleRA (Ptr<Packet> packet, Ipv6Address const &src, Ipv6Address const &dst, Ptr<Ipv6Interface> interface)
@@ -742,7 +747,7 @@ void Icmpv6L4Protocol::SendMessage (Ptr<Packet> packet, Ipv6Address dst, Icmpv6H
   SocketIpTtlTag tag;
   Socket::SocketErrno err;
   Ptr<Ipv6Route> route;
-  uint32_t oif = 0; //specify non-zero if bound to a source address
+  Ptr<NetDevice> oif (0); //specify non-zero if bound to a source address
   
   header.SetDestinationAddress (dst);
   route = ipv6->GetRoutingProtocol ()->RouteOutput (packet, header, oif, err);

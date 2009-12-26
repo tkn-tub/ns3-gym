@@ -25,14 +25,6 @@
 #include <ostream>
 
 #define BUFFER_HEURISTICS 1
-#define BUFFER_USE_INLINE 1
-
-
-#ifdef BUFFER_USE_INLINE
-#define BUFFER_INLINE inline
-#else
-#define BUFFER_INLINE
-#endif
 
 namespace ns3 {
 
@@ -147,7 +139,7 @@ public:
        * Write the data in buffer and avance the iterator position
        * by one byte.
        */
-      BUFFER_INLINE void WriteU8 (uint8_t  data);
+      inline void WriteU8 (uint8_t  data);
       /**
        * \param data data to write in buffer
        * \param len number of times data must be written in buffer
@@ -155,7 +147,7 @@ public:
        * Write the data in buffer len times and avance the iterator position
        * by len byte.
        */
-      BUFFER_INLINE void WriteU8 (uint8_t data, uint32_t len);
+      inline void WriteU8 (uint8_t data, uint32_t len);
       /**
        * \param data data to write in buffer
        *
@@ -261,7 +253,7 @@ public:
        * Read data and advance the Iterator by the number of bytes
        * read.
        */
-      BUFFER_INLINE uint8_t  ReadU8 (void);
+      inline uint8_t  ReadU8 (void);
       /**
        * \return the two bytes read in the buffer.
        *
@@ -547,8 +539,6 @@ private:
 
 } // namespace ns3
 
-#ifdef BUFFER_USE_INLINE
-
 #include "ns3/assert.h"
 #include <string.h>
 
@@ -615,7 +605,5 @@ Buffer::Iterator::ReadU8 (void)
 
 
 } // namespace ns3
-
-#endif /* BUFFER_USE_INLINE */
 
 #endif /* BUFFER_H */

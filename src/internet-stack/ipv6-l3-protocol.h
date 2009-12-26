@@ -79,6 +79,7 @@ class Ipv6L3Protocol : public Ipv6
         DROP_NO_ROUTE, /**< No route to host */
         DROP_INTERFACE_DOWN, /**< Interface is down so can not send packet */
         DROP_ROUTE_ERROR, /**< Route error */
+        DROP_UNKNOWN_PROTOCOL, /**< Unkown L4 protocol */
       };
     
     /**
@@ -329,6 +330,16 @@ class Ipv6L3Protocol : public Ipv6
      */
     void RemoveAutoconfiguredAddress (uint32_t interface, Ipv6Address network, Ipv6Prefix mask, Ipv6Address defaultRouter);
 
+    /**
+     * \brief Register the IPv6 Extensions.
+     */
+    virtual void RegisterExtensions ();
+
+    /**
+     * \brief Register the IPv6 Options.
+     */
+    virtual void RegisterOptions ();
+
   protected:
     /**
      * \brief Dispose object.
@@ -345,6 +356,7 @@ class Ipv6L3Protocol : public Ipv6
   private:
     /* for unit-tests */
     friend class Ipv6L3ProtocolTestCase;
+    friend class Ipv6ExtensionLooseRouting;
 
     typedef std::list<Ptr<Ipv6Interface> > Ipv6InterfaceList;
     typedef std::list<Ptr<Ipv6RawSocketImpl> > SocketList;

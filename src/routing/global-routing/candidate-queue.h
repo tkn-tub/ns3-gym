@@ -178,9 +178,21 @@ private:
  * \param sr object to assign
  */
   CandidateQueue& operator= (CandidateQueue& sr);
+/**
+ * \brief return true if v1 < v2
+ *
+ * SPFVertexes are added into the queue according to the ordering
+ * defined by this method. If v1 should be popped before v2, this 
+ * method return true; false otherwise
+ *
+ * \return True if v1 should be popped before v2; false otherwise
+ */
+  static bool CompareSPFVertex (const SPFVertex* v1, const SPFVertex* v2);
 
   typedef std::list<SPFVertex*> CandidateList_t;
   CandidateList_t m_candidates;
+
+  friend std::ostream& operator<< (std::ostream& os, const CandidateQueue& q);
 };
 
 } // namespace ns3

@@ -438,7 +438,7 @@ EdcaTxopN::NotifyChannelSwitching (void)
 }
 
 void
-EdcaTxopN::Queue (Ptr<const Packet> packet, WifiMacHeader const &hdr)
+EdcaTxopN::Queue (Ptr<const Packet> packet, const WifiMacHeader &hdr)
 {
   NS_LOG_FUNCTION (this << packet << &hdr);
   WifiMacTrailer fcs;
@@ -652,7 +652,7 @@ EdcaTxopN::GetFragmentPacket (WifiMacHeader *hdr)
 }
 
 Mac48Address
-EdcaTxopN::MapSrcAddressForAggregation (WifiMacHeader const &hdr)
+EdcaTxopN::MapSrcAddressForAggregation (const WifiMacHeader &hdr)
 {
   Mac48Address retval;
   if (m_typeOfStation == STA || m_typeOfStation == ADHOC_STA)
@@ -667,7 +667,7 @@ EdcaTxopN::MapSrcAddressForAggregation (WifiMacHeader const &hdr)
 }
 
 Mac48Address
-EdcaTxopN::MapDestAddressForAggregation (WifiMacHeader const &hdr)
+EdcaTxopN::MapDestAddressForAggregation (const WifiMacHeader &hdr)
 {
   Mac48Address retval;
   if (m_typeOfStation == AP || m_typeOfStation == ADHOC_STA)

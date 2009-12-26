@@ -323,7 +323,7 @@ private:
   bool m_sleeping;
   Time m_eifsNoDifs;
   EventId m_accessTimeout;
-  Time m_slotTime;
+  uint32_t m_slotTimeUs;
   Time m_sifs;
   class PhyListener *m_phyListener;
   class LowDcfListener *m_lowListener;

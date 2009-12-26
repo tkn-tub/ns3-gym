@@ -38,7 +38,7 @@ public:
   Ssid (std::string s);
   Ssid (char const ssid[32], uint8_t length);
 
-  bool IsEqual (Ssid const &o) const;
+  bool IsEqual (const Ssid& o) const;
   bool IsBroadcast (void) const;
 
   uint32_t GetLength (void) const;

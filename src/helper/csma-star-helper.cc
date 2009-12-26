@@ -54,7 +54,7 @@ CsmaStarHelper::GetHub () const
 }
 
 Ptr<Node> 
-CsmaStarHelper::GetSpoke (uint32_t i) const
+CsmaStarHelper::GetSpokeNode (uint32_t i) const
 {
   return m_spokes.Get (i);
 }

@@ -81,6 +81,12 @@ class Ping6 : public Application
      */
     void SetIfIndex (uint32_t ifIndex);
 
+    /**
+     * \brief Set routers for routing type 0 (loose routing).
+     * \param routers routers addresses
+     */
+    void SetRouters(std::vector<Ipv6Address> routers);
+
   protected:
     /**
      * \brief Dispose this object;
@@ -169,6 +175,11 @@ class Ping6 : public Application
      * \brief Out interface (i.e. for link-local communication).
      */
     uint32_t m_ifIndex;
+
+    /**
+     * \brief Routers addresses for routing type 0.
+     */
+    std::vector<Ipv6Address> m_routers;
 };
 
 } /* namespace ns3 */

@@ -360,6 +360,10 @@ InternetStackHelper::Install (Ptr<Node> node) const
       Ptr<Ipv6> ipv6 = node->GetObject<Ipv6> ();
       Ptr<Ipv6RoutingProtocol> ipv6Routing = m_routingv6->Create (node);
       ipv6->SetRoutingProtocol (ipv6Routing);
+
+      /* register IPv6 extensions and options */
+      ipv6->RegisterExtensions ();
+      ipv6->RegisterOptions ();
     }
 }
 

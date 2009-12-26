@@ -42,7 +42,9 @@ namespace dot11s {
 class AirtimeLinkMetricCalculator : public Object
 {
 public:
+  AirtimeLinkMetricCalculator ();
   static TypeId GetTypeId ();
+  void SetPhyStandard (WifiPhyStandard standard);
   uint32_t CalculateMetric (Mac48Address peerAddress, Ptr<MeshWifiInterfaceMac> mac);
 private:
   /// Overhead expressed in nanoseconds:DIFS + SIFS + 2 * PREAMBLE + ACK

@@ -22,11 +22,11 @@
 #define ETHERNET_TRAILER_H
 
 #include "ns3/trailer.h"
+#include "ns3/packet.h"
 #include <string>
 
 namespace ns3 {
 
-class Packet;
 
 /**
  * \ingroup node
@@ -34,8 +34,7 @@ class Packet;
  * \brief Packet trailer for Ethernet
  *
  * This class can be used to add and verify the FCS at the end of an
- * ethernet packet. The actual FCS functionality is not yet coded and
- * so this acts more as a placeholder.
+ * Ethernet packet.
  */
 class EthernetTrailer : public Trailer 
 {
@@ -46,36 +45,45 @@ public:
   EthernetTrailer ();
 
   /**
-   * \brief Enable or disabled FCS checking and calculations
+   * \brief Enable or disable FCS checking and calculations
    * \param enable If true, enables FCS calculations.
    */
-  static void EnableFcs (bool enable);
+  void EnableFcs (bool enable);
+
   /**
    * \brief Updates the Fcs Field to the correct FCS
    * \param p Reference to a packet on which the FCS should be
-   * calculated. The packet should not currently contain an FCS
-   * trailer.
+   * calculated. The packet should not currently contain an 
+   * EthernetTrailer.
    */
-  void CalcFcs (Ptr<Packet> p);
+  void CalcFcs (Ptr<const Packet> p);
+
   /**
    * \brief Sets the FCS to a new value
    * \param fcs New FCS value
    */
   void SetFcs (uint32_t fcs);
+
   /**
    * \return the FCS contained in this trailer
    */
   uint32_t GetFcs ();
 
   /**
-   * \param p Reference to the packet on which the FCS should be
-   * calculated. The packet should not contain an FCS trailer.
-   * \return Returns true if the packet fcs is correct, false otherwise.
+   * Calculate an FCS on the provided packet and check this value against
+   * the FCS found when the trailer was deserialized (the one in the transmitted
+   * packet).
    *
    * If FCS checking is disabled, this method will always
    * return true.
+   *
+   * \param p Reference to the packet on which the FCS should be
+   * calculated. The packet should not contain an EthernetTrailer.
+   *
+   * \return Returns true if the Packet FCS matches the FCS in the trailer, 
+   * false otherwise.
    */
-  bool CheckFcs (Ptr<Packet> p) const;
+  bool CheckFcs (Ptr<const Packet> p) const;
 
   /**
    *\return Returns the size of the trailer
@@ -89,22 +97,17 @@ public:
   virtual void Serialize (Buffer::Iterator end) const;
   virtual uint32_t Deserialize (Buffer::Iterator end);
 private:
-
   /**
-   * Initializes the trailer parameters during construction.
-   */
-  void Init (void);
-
-  /**
-   * Enabled FCS calculations. If false, fcs is set to 0 and checkFCS
+   * Enabled FCS calculations. If false, m_fcs is set to 0 and CheckFcs
    * returns true.
    */
-  static bool m_calcFcs;
+  bool m_calcFcs;
   uint32_t m_fcs; /// Value of the fcs contained in the trailer
+
+  uint32_t DoCalcFcs (uint8_t const *buffer, size_t len) const;
 
 };
 
 } // namespace ns3
-
 
 #endif /* ETHERNET_TRAILER_H */

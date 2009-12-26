@@ -383,7 +383,7 @@ QapWifiMac::ForwardDown (Ptr<const Packet> packet, Mac48Address from, Mac48Addre
 
 void
 QapWifiMac::ForwardDown (Ptr<const Packet> packet, Mac48Address from, Mac48Address to,
-                         WifiMacHeader const *oldHdr)
+                         const WifiMacHeader *oldHdr)
 {
   /* For now Qos AP sends only Qos frame. In the future it should be able to 
      send frames also to Non-Qos Stas.
@@ -526,7 +526,7 @@ QapWifiMac::SendOneBeacon (void)
 }
 
 void
-QapWifiMac::TxOk (WifiMacHeader const &hdr)
+QapWifiMac::TxOk (const WifiMacHeader &hdr)
 {
   NS_LOG_FUNCTION (this);
   WifiRemoteStation *station = m_stationManager->Lookup (hdr.GetAddr1 ());
@@ -539,7 +539,7 @@ QapWifiMac::TxOk (WifiMacHeader const &hdr)
 }
 
 void
-QapWifiMac::TxFailed (WifiMacHeader const &hdr)
+QapWifiMac::TxFailed (const WifiMacHeader &hdr)
 {
   NS_LOG_FUNCTION (this);
   WifiRemoteStation *station = m_stationManager->Lookup (hdr.GetAddr1 ());
@@ -552,7 +552,7 @@ QapWifiMac::TxFailed (WifiMacHeader const &hdr)
 }
 
 void
-QapWifiMac::Receive (Ptr<Packet> packet, WifiMacHeader const *hdr)
+QapWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
 {
   NS_LOG_FUNCTION (this << packet << hdr);
 
@@ -690,7 +690,7 @@ QapWifiMac::Receive (Ptr<Packet> packet, WifiMacHeader const *hdr)
 }
 
 void
-QapWifiMac::DeaggregateAmsduAndForward (Ptr<Packet> aggregatedPacket, WifiMacHeader const *hdr)
+QapWifiMac::DeaggregateAmsduAndForward (Ptr<Packet> aggregatedPacket, const WifiMacHeader *hdr)
 {
   DeaggregatedMsdus packets = MsduAggregator::Deaggregate (aggregatedPacket);
   for (DeaggregatedMsdusCI i = packets.begin (); i != packets.end (); ++i)

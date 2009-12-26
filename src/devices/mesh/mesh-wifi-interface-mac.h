@@ -159,6 +159,7 @@ public:
   /// Enable/disable beacons
   void SetBeaconGeneration (bool enable);
   void SetQueue (AccessClass ac);
+  WifiPhyStandard GetPhyStandard () const;
   virtual void FinishConfigureStandard (enum WifiPhyStandard standard);
 private:
   /// Frame receive handler
@@ -246,7 +247,8 @@ private:
   ///\}
   TracedCallback<WifiMacHeader const &> m_txOkCallback;
   TracedCallback<WifiMacHeader const &> m_txErrCallback;
-
+  /// Current PHY standard: needed to configure metric
+  WifiPhyStandard m_standard;
 };
 
 } // namespace ns3

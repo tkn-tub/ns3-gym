@@ -85,10 +85,26 @@ def register_types(module):
     module.add_class('RandomPropagationLossModel', parent=root_module['ns3::PropagationLossModel'])
     ## rraa-wifi-manager.h: ns3::RraaWifiRemoteStation [class]
     module.add_class('RraaWifiRemoteStation', parent=root_module['ns3::WifiRemoteStation'])
-    ## simple-ref-count.h: ns3::SimpleRefCount<ns3::InterferenceHelper::Event, ns3::empty> [class]
-    module.add_class('SimpleRefCount', template_parameters=['ns3::InterferenceHelper::Event', 'ns3::empty'], parent=root_module['ns3::empty'])
+    ## simple-ref-count.h: ns3::SimpleRefCount<ns3::InterferenceHelper::Event, ns3::empty, ns3::DefaultDeleter<ns3::InterferenceHelper::Event> > [class]
+    module.add_class('SimpleRefCount', template_parameters=['ns3::InterferenceHelper::Event', 'ns3::empty', 'ns3::DefaultDeleter<ns3::InterferenceHelper::Event>'], parent=root_module['ns3::empty'])
     ## propagation-loss-model.h: ns3::ThreeLogDistancePropagationLossModel [class]
     module.add_class('ThreeLogDistancePropagationLossModel', parent=root_module['ns3::PropagationLossModel'])
+    ## mgt-headers.h: ns3::WifiActionHeader [class]
+    module.add_class('WifiActionHeader', parent=root_module['ns3::Header'])
+    ## mgt-headers.h: ns3::WifiActionHeader::CategoryValue [enumeration]
+    module.add_enum('CategoryValue', ['MESH_PEERING_MGT', 'MESH_LINK_METRIC', 'MESH_PATH_SELECTION', 'MESH_INTERWORKING', 'MESH_RESOURCE_COORDINATION', 'MESH_PROXY_FORWARDING'], outer_class=root_module['ns3::WifiActionHeader'])
+    ## mgt-headers.h: ns3::WifiActionHeader::PeerLinkMgtActionValue [enumeration]
+    module.add_enum('PeerLinkMgtActionValue', ['PEER_LINK_OPEN', 'PEER_LINK_CONFIRM', 'PEER_LINK_CLOSE'], outer_class=root_module['ns3::WifiActionHeader'])
+    ## mgt-headers.h: ns3::WifiActionHeader::LinkMetricActionValue [enumeration]
+    module.add_enum('LinkMetricActionValue', ['LINK_METRIC_REQUEST', 'LINK_METRIC_REPORT'], outer_class=root_module['ns3::WifiActionHeader'])
+    ## mgt-headers.h: ns3::WifiActionHeader::PathSelectionActionValue [enumeration]
+    module.add_enum('PathSelectionActionValue', ['PATH_SELECTION'], outer_class=root_module['ns3::WifiActionHeader'])
+    ## mgt-headers.h: ns3::WifiActionHeader::InterworkActionValue [enumeration]
+    module.add_enum('InterworkActionValue', ['PORTAL_ANNOUNCEMENT'], outer_class=root_module['ns3::WifiActionHeader'])
+    ## mgt-headers.h: ns3::WifiActionHeader::ResourceCoordinationActionValue [enumeration]
+    module.add_enum('ResourceCoordinationActionValue', ['CONGESTION_CONTROL_NOTIFICATION', 'MDA_SETUP_REQUEST', 'MDA_SETUP_REPLY', 'MDAOP_ADVERTISMENT_REQUEST', 'MDAOP_ADVERTISMENTS', 'MDAOP_SET_TEARDOWN', 'BEACON_TIMING_REQUEST', 'BEACON_TIMING_RESPONSE', 'TBTT_ADJUSTMENT_REQUEST', 'MESH_CHANNEL_SWITCH_ANNOUNCEMENT'], outer_class=root_module['ns3::WifiActionHeader'])
+    ## mgt-headers.h: ns3::WifiActionHeader::ActionValue [union]
+    module.add_class('ActionValue', outer_class=root_module['ns3::WifiActionHeader'])
     ## wifi-mac.h: ns3::WifiMac [class]
     module.add_class('WifiMac', parent=root_module['ns3::Object'])
     ## wifi-mac-header.h: ns3::WifiMacHeader [class]
@@ -100,7 +116,7 @@ def register_types(module):
     ## wifi-phy.h: ns3::WifiPhy [class]
     module.add_class('WifiPhy', parent=root_module['ns3::Object'])
     ## wifi-phy.h: ns3::WifiPhy::State [enumeration]
-    module.add_enum('State', ['SYNC', 'TX', 'CCA_BUSY', 'IDLE', 'SWITCHING'], outer_class=root_module['ns3::WifiPhy'])
+    module.add_enum('State', ['IDLE', 'CCA_BUSY', 'TX', 'RX', 'SWITCHING'], outer_class=root_module['ns3::WifiPhy'])
     ## wifi-remote-station-manager.h: ns3::WifiRemoteStationManager [class]
     module.add_class('WifiRemoteStationManager', parent=root_module['ns3::Object'])
     ## yans-wifi-phy.h: ns3::YansWifiPhy [class]
@@ -305,6 +321,8 @@ def register_methods(root_module):
     register_Ns3RandomPropagationLossModel_methods(root_module, root_module['ns3::RandomPropagationLossModel'])
     register_Ns3RraaWifiRemoteStation_methods(root_module, root_module['ns3::RraaWifiRemoteStation'])
     register_Ns3ThreeLogDistancePropagationLossModel_methods(root_module, root_module['ns3::ThreeLogDistancePropagationLossModel'])
+    register_Ns3WifiActionHeader_methods(root_module, root_module['ns3::WifiActionHeader'])
+    register_Ns3WifiActionHeaderActionValue_methods(root_module, root_module['ns3::WifiActionHeader::ActionValue'])
     register_Ns3WifiMac_methods(root_module, root_module['ns3::WifiMac'])
     register_Ns3WifiMacHeader_methods(root_module, root_module['ns3::WifiMacHeader'])
     register_Ns3WifiPhy_methods(root_module, root_module['ns3::WifiPhy'])
@@ -2145,6 +2163,72 @@ def register_Ns3ThreeLogDistancePropagationLossModel_methods(root_module, cls):
                    is_const=True, visibility='private', is_virtual=True)
     return
 
+def register_Ns3WifiActionHeader_methods(root_module, cls):
+    ## mgt-headers.h: ns3::WifiActionHeader::WifiActionHeader(ns3::WifiActionHeader const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::WifiActionHeader const &', 'arg0')])
+    ## mgt-headers.h: ns3::WifiActionHeader::WifiActionHeader() [constructor]
+    cls.add_constructor([])
+    ## mgt-headers.h: uint32_t ns3::WifiActionHeader::Deserialize(ns3::Buffer::Iterator start) [member function]
+    cls.add_method('Deserialize', 
+                   'uint32_t', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_virtual=True)
+    ## mgt-headers.h: ns3::WifiActionHeader::ActionValue ns3::WifiActionHeader::GetAction() [member function]
+    cls.add_method('GetAction', 
+                   'ns3::WifiActionHeader::ActionValue', 
+                   [])
+    ## mgt-headers.h: ns3::WifiActionHeader::CategoryValue ns3::WifiActionHeader::GetCategory() [member function]
+    cls.add_method('GetCategory', 
+                   'ns3::WifiActionHeader::CategoryValue', 
+                   [])
+    ## mgt-headers.h: ns3::TypeId ns3::WifiActionHeader::GetInstanceTypeId() const [member function]
+    cls.add_method('GetInstanceTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## mgt-headers.h: uint32_t ns3::WifiActionHeader::GetSerializedSize() const [member function]
+    cls.add_method('GetSerializedSize', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## mgt-headers.h: static ns3::TypeId ns3::WifiActionHeader::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## mgt-headers.h: void ns3::WifiActionHeader::Print(std::ostream & os) const [member function]
+    cls.add_method('Print', 
+                   'void', 
+                   [param('std::ostream &', 'os')], 
+                   is_const=True, is_virtual=True)
+    ## mgt-headers.h: void ns3::WifiActionHeader::Serialize(ns3::Buffer::Iterator start) const [member function]
+    cls.add_method('Serialize', 
+                   'void', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_const=True, is_virtual=True)
+    ## mgt-headers.h: void ns3::WifiActionHeader::SetAction(ns3::WifiActionHeader::CategoryValue type, ns3::WifiActionHeader::ActionValue action) [member function]
+    cls.add_method('SetAction', 
+                   'void', 
+                   [param('ns3::WifiActionHeader::CategoryValue', 'type'), param('ns3::WifiActionHeader::ActionValue', 'action')])
+    return
+
+def register_Ns3WifiActionHeaderActionValue_methods(root_module, cls):
+    ## mgt-headers.h: ns3::WifiActionHeader::ActionValue::ActionValue() [constructor]
+    cls.add_constructor([])
+    ## mgt-headers.h: ns3::WifiActionHeader::ActionValue::ActionValue(ns3::WifiActionHeader::ActionValue const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::WifiActionHeader::ActionValue const &', 'arg0')])
+    ## mgt-headers.h: ns3::WifiActionHeader::ActionValue::interwork [variable]
+    cls.add_instance_attribute('interwork', 'ns3::WifiActionHeader::InterworkActionValue', is_const=False)
+    ## mgt-headers.h: ns3::WifiActionHeader::ActionValue::linkMetrtic [variable]
+    cls.add_instance_attribute('linkMetrtic', 'ns3::WifiActionHeader::LinkMetricActionValue', is_const=False)
+    ## mgt-headers.h: ns3::WifiActionHeader::ActionValue::pathSelection [variable]
+    cls.add_instance_attribute('pathSelection', 'ns3::WifiActionHeader::PathSelectionActionValue', is_const=False)
+    ## mgt-headers.h: ns3::WifiActionHeader::ActionValue::peerLink [variable]
+    cls.add_instance_attribute('peerLink', 'ns3::WifiActionHeader::PeerLinkMgtActionValue', is_const=False)
+    ## mgt-headers.h: ns3::WifiActionHeader::ActionValue::resourceCoordination [variable]
+    cls.add_instance_attribute('resourceCoordination', 'ns3::WifiActionHeader::ResourceCoordinationActionValue', is_const=False)
+    return
+
 def register_Ns3WifiMac_methods(root_module, cls):
     ## wifi-mac.h: ns3::WifiMac::WifiMac() [constructor]
     cls.add_constructor([])
@@ -2959,8 +3043,13 @@ def register_Ns3WifiPhy_methods(root_module, cls):
                    'bool', 
                    [], 
                    is_pure_virtual=True, is_virtual=True)
-    ## wifi-phy.h: bool ns3::WifiPhy::IsStateSync() [member function]
-    cls.add_method('IsStateSync', 
+    ## wifi-phy.h: bool ns3::WifiPhy::IsStateRx() [member function]
+    cls.add_method('IsStateRx', 
+                   'bool', 
+                   [], 
+                   is_pure_virtual=True, is_virtual=True)
+    ## wifi-phy.h: bool ns3::WifiPhy::IsStateSwitching() [member function]
+    cls.add_method('IsStateSwitching', 
                    'bool', 
                    [], 
                    is_pure_virtual=True, is_virtual=True)
@@ -3306,8 +3395,8 @@ def register_Ns3YansWifiPhy_methods(root_module, cls):
                    'bool', 
                    [], 
                    is_virtual=True)
-    ## yans-wifi-phy.h: bool ns3::YansWifiPhy::IsStateSync() [member function]
-    cls.add_method('IsStateSync', 
+    ## yans-wifi-phy.h: bool ns3::YansWifiPhy::IsStateRx() [member function]
+    cls.add_method('IsStateRx', 
                    'bool', 
                    [], 
                    is_virtual=True)

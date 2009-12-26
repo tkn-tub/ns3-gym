@@ -223,7 +223,7 @@ class Ipv6StaticRouting : public Ipv6RoutingProtocol
      */
     bool HasNetworkDest (Ipv6Address dest, uint32_t interfaceIndex);
 
-    virtual Ptr<Ipv6Route> RouteOutput (Ptr<Packet> p, const Ipv6Header &header, uint32_t oif, Socket::SocketErrno &sockerr);
+    virtual Ptr<Ipv6Route> RouteOutput (Ptr<Packet> p, const Ipv6Header &header, Ptr<NetDevice> oif, Socket::SocketErrno &sockerr);
 
     virtual bool RouteInput  (Ptr<const Packet> p, const Ipv6Header &header, Ptr<const NetDevice> idev,
                              UnicastForwardCallback ucb, MulticastForwardCallback mcb,
@@ -258,7 +258,7 @@ class Ipv6StaticRouting : public Ipv6RoutingProtocol
      * \param interface output interface if any (put 0 otherwise)
      * \return Ipv6Route to route the packet to reach dest address
      */
-    Ptr<Ipv6Route> LookupStatic (Ipv6Address dest, uint32_t interface = 0);
+    Ptr<Ipv6Route> LookupStatic (Ipv6Address dest, Ptr<NetDevice> = 0);
 
     /**
      * \brief Lookup in the multicast forwarding table for destination.

@@ -113,9 +113,9 @@ InterferenceHelper::NiChange::GetDelta (void) const
   return m_delta;
 }
 bool 
-InterferenceHelper::NiChange::operator < (InterferenceHelper::NiChange const &o) const
+InterferenceHelper::NiChange::operator < (const InterferenceHelper::NiChange& o) const
 {
-  return (m_time < o.m_time)?true:false;
+  return (m_time < o.m_time);
 }
 
 /****************************************************************

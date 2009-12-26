@@ -23,6 +23,7 @@
 #include "ns3/simulator.h"
 #include "ns3/nstime.h"
 #include "ns3/log.h"
+#include "ns3/mgt-headers.h"
 #include "dot11s-mac-header.h"
 #include "hwmp-protocol-mac.h"
 #include "hwmp-tag.h"
@@ -94,10 +95,10 @@ HwmpProtocolMac::ReceiveAction (Ptr<Packet> packet, const WifiMacHeader & header
 {
   m_stats.rxMgt++;
   m_stats.rxMgtBytes += packet->GetSize ();
-  WifiMeshActionHeader actionHdr;
+  WifiActionHeader actionHdr;
   packet->RemoveHeader (actionHdr);
-  WifiMeshActionHeader::ActionValue actionValue = actionHdr.GetAction ();
-  if (actionHdr.GetCategory () != WifiMeshActionHeader::MESH_PATH_SELECTION)
+  WifiActionHeader::ActionValue actionValue = actionHdr.GetAction ();
+  if (actionHdr.GetCategory () != WifiActionHeader::MESH_PATH_SELECTION)
     {
       return true;
     }
@@ -203,13 +204,13 @@ HwmpProtocolMac::UpdateOutcomingFrame (Ptr<Packet> packet, WifiMacHeader & heade
   header.SetAddr1 (tag.GetAddress ());
   return true;
 }
-WifiMeshActionHeader
-HwmpProtocolMac::GetWifiMeshActionHeader ()
+WifiActionHeader
+HwmpProtocolMac::GetWifiActionHeader ()
 {
-  WifiMeshActionHeader actionHdr;
-  WifiMeshActionHeader::ActionValue action;
-  action.pathSelection = WifiMeshActionHeader::PATH_SELECTION;
-  actionHdr.SetAction (WifiMeshActionHeader::MESH_PATH_SELECTION, action);
+  WifiActionHeader actionHdr;
+  WifiActionHeader::ActionValue action;
+  action.pathSelection = WifiActionHeader::PATH_SELECTION;
+  actionHdr.SetAction (WifiActionHeader::MESH_PATH_SELECTION, action);
   return actionHdr;
 }
 void
@@ -230,7 +231,7 @@ HwmpProtocolMac::SendPreq (std::vector<IePreq> preq)
       elements.AddInformationElement(Ptr<IePreq> (&(*i)));
     }
   packet->AddHeader(elements);
-  packet->AddHeader (GetWifiMeshActionHeader ());
+  packet->AddHeader (GetWifiActionHeader ());
   //create 802.11 header:
   WifiMacHeader hdr;
   hdr.SetAction ();
@@ -300,7 +301,7 @@ HwmpProtocolMac::SendPrep (IePrep prep, Mac48Address receiver)
   WifiInformationElementVector elements;
   elements.AddInformationElement(Ptr<IePrep> (&prep));
   packet->AddHeader (elements);
-  packet->AddHeader (GetWifiMeshActionHeader ());
+  packet->AddHeader (GetWifiActionHeader ());
   //create 802.11 header:
   WifiMacHeader hdr;
   hdr.SetAction ();
@@ -341,7 +342,7 @@ HwmpProtocolMac::ForwardPerr (std::vector<HwmpProtocol::FailedDestination> faile
       elements.AddInformationElement(perr);
     }
   packet->AddHeader (elements);
-  packet->AddHeader (GetWifiMeshActionHeader ());
+  packet->AddHeader (GetWifiActionHeader ());
   //create 802.11 header:
   WifiMacHeader hdr;
   hdr.SetAction ();

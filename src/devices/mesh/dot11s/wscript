@@ -23,7 +23,14 @@ def build(bld):
         'hwmp-protocol-mac.cc',
         'hwmp-protocol.cc',
         'airtime-metric.cc',
-        'dot11s-test-suite.cc',
+        'test/dot11s-test-suite.cc',
+        'test/pmp-regression.cc',
+        'test/hwmp-reactive-regression.cc',
+        'test/hwmp-proactive-regression.cc',
+        'test/hwmp-simplest-regression.cc',
+        'test/hwmp-target-flags-regression.cc',
+        'test/regression.cc',
+
         ]
     headers = bld.new_task_gen('ns3header')
     headers.module = 'dot11s'

@@ -40,6 +40,7 @@ import ns3_module_nix_vector_routing
 import ns3_module_olsr
 import ns3_module_ping6
 import ns3_module_radvd
+import ns3_module_udp_client_server
 import ns3_module_udp_echo
 import ns3_module_mesh
 import ns3_module_helper
@@ -361,6 +362,17 @@ def register_types(module):
         ns3_module_radvd__local.register_types(module)
     
     root_module.end_section('ns3_module_radvd')
+    root_module.begin_section('ns3_module_udp_client_server')
+    ns3_module_udp_client_server.register_types(module)
+    
+    try:
+        import ns3_module_udp_client_server__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_udp_client_server__local.register_types(module)
+    
+    root_module.end_section('ns3_module_udp_client_server')
     root_module.begin_section('ns3_module_udp_echo')
     ns3_module_udp_echo.register_types(module)
     
@@ -813,6 +825,17 @@ def register_methods(root_module):
         ns3_module_radvd__local.register_methods(root_module)
     
     root_module.end_section('ns3_module_radvd')
+    root_module.begin_section('ns3_module_udp_client_server')
+    ns3_module_udp_client_server.register_methods(root_module)
+    
+    try:
+        import ns3_module_udp_client_server__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_udp_client_server__local.register_methods(root_module)
+    
+    root_module.end_section('ns3_module_udp_client_server')
     root_module.begin_section('ns3_module_udp_echo')
     ns3_module_udp_echo.register_methods(root_module)
     
@@ -1180,6 +1203,17 @@ def register_functions(root_module):
         ns3_module_radvd__local.register_functions(root_module)
     
     root_module.end_section('ns3_module_radvd')
+    root_module.begin_section('ns3_module_udp_client_server')
+    ns3_module_udp_client_server.register_functions(root_module)
+    
+    try:
+        import ns3_module_udp_client_server__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_udp_client_server__local.register_functions(root_module)
+    
+    root_module.end_section('ns3_module_udp_client_server')
     root_module.begin_section('ns3_module_udp_echo')
     ns3_module_udp_echo.register_functions(root_module)
     

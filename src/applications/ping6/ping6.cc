@@ -31,6 +31,7 @@
 #include "ns3/icmpv6-header.h"
 #include "ns3/ipv6-raw-socket-factory.h"
 #include "ns3/ipv6-header.h"
+#include "ns3/ipv6-extension-header.h"
 
 #include "ping6.h"
 
@@ -109,7 +110,7 @@ void Ping6::StartApplication ()
 
     m_socket->Bind (Inet6SocketAddress (m_localAddress, 0));
     m_socket->Connect (Inet6SocketAddress (m_peerAddress, 0));
-    m_socket->SetAttribute ("Protocol", UintegerValue (58)); /* ICMPv6 */
+    m_socket->SetAttribute ("Protocol", UintegerValue (Ipv6Header::IPV6_ICMPV6));
     m_socket->SetRecvCallback (MakeCallback (&Ping6::HandleRead, this));
   }
 
@@ -151,12 +152,17 @@ void Ping6::ScheduleTransmit (Time dt)
   m_sendEvent = Simulator::Schedule (dt, &Ping6::Send, this);
 }
 
+void Ping6::SetRouters (std::vector<Ipv6Address> routers)
+{
+  m_routers = routers;
+}
+
 void Ping6::Send ()
 {
   NS_LOG_FUNCTION_NOARGS ();
   NS_ASSERT (m_sendEvent.IsExpired ());
   Ptr<Packet> p = 0;
-  uint8_t data[4];
+  uint8_t data[m_size];
   Ipv6Address src;
   Ptr<Ipv6> ipv6 = GetNode ()->GetObject<Ipv6> ();
 
@@ -172,12 +178,14 @@ void Ping6::Send ()
     src = m_localAddress;
   }
 
+  NS_ASSERT_MSG (m_size >= 4, "ICMPv6 echo request payload size must be >= 4");
   data[0] = 0xDE;
   data[1] = 0xAD;
   data[2] = 0xBE;
   data[3] = 0xEF;
 
-  p = Create<Packet>(data, sizeof (data));
+  p = Create<Packet> (data, 4);
+  p->AddAtEnd (Create<Packet> (m_size - 4));
   Icmpv6Echo req (1);
 
   req.SetId (0xBEEF);
@@ -190,6 +198,20 @@ void Ping6::Send ()
 
   p->AddHeader (req);
   m_socket->Bind (Inet6SocketAddress (src, 0));
+
+  /* use Loose Routing (routing type 0) */
+  if (m_routers.size ())
+  {
+    Ipv6ExtensionLooseRoutingHeader routingHeader;
+    routingHeader.SetNextHeader (Ipv6Header::IPV6_ICMPV6);
+    routingHeader.SetLength (m_routers.size () * 16 + 8);
+    routingHeader.SetTypeRouting (0);
+    routingHeader.SetSegmentsLeft (m_routers.size ());
+    routingHeader.SetRoutersAddress (m_routers);
+    p->AddHeader (routingHeader);
+    m_socket->SetAttribute ("Protocol", UintegerValue (Ipv6Header::IPV6_EXT_ROUTING));
+  }
+
   m_socket->Send (p, 0);
   ++m_sent;
 

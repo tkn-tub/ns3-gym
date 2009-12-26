@@ -71,7 +71,9 @@ public:
   virtual void SetScheduler (ObjectFactory schedulerFactory);
   virtual uint32_t GetContext (void) const;
 
+  void ScheduleRealtimeWithContext (uint32_t context, Time const &time, EventImpl *event);
   void ScheduleRealtime (Time const &time, EventImpl *event);
+  void ScheduleRealtimeNowWithContext (uint32_t context, EventImpl *event);
   void ScheduleRealtimeNow (EventImpl *event);
   Time RealtimeNow (void) const;
 

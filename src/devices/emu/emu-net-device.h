@@ -32,6 +32,7 @@
 #include "ns3/ptr.h"
 #include "ns3/mac48-address.h"
 #include "ns3/system-thread.h"
+#include "ns3/realtime-simulator-impl.h"
 
 namespace ns3 {
 
@@ -45,6 +46,15 @@ class EmuNetDevice : public NetDevice
 {
 public:
   static TypeId GetTypeId (void);
+
+  /**
+   * Enumeration of the types of packets supported in the class.
+   */
+  enum EncapsulationMode {
+    ILLEGAL,     /**< Encapsulation mode not set */
+    DIX,         /**< DIX II / Ethernet II packet */
+    LLC,         /**< 802.2 LLC/SNAP Packet*/  
+  };
 
   /**
    * Construct a EmuNetDevice
@@ -175,6 +185,22 @@ public:
   virtual void SetPromiscReceiveCallback (PromiscReceiveCallback cb);
 
   virtual bool SupportsSendFrom (void) const;
+
+  /**
+   * Set the encapsulation mode of this device.
+   *
+   * \param mode The encapsulation mode of this device.
+   *
+   * \see SetFrameSize
+   */
+  void SetEncapsulationMode (EmuNetDevice::EncapsulationMode mode);
+
+  /**
+   * Get the encapsulation mode of this device.
+   *
+   * \returns The encapsulation mode of this device.
+   */
+  EmuNetDevice::EncapsulationMode  GetEncapsulationMode (void) const;
 
 private:
 
@@ -445,6 +471,13 @@ private:
   int32_t m_sll_ifindex;
 
   /**
+   * The type of packet that should be created by the AddHeader
+   * function and that should be processed by the ProcessHeader
+   * function.
+   */
+  EncapsulationMode m_encapMode;
+
+  /**
    * Flag indicating whether or not the link is up.  In this case,
    * whether or not the device is connected to a channel.
    */
@@ -471,6 +504,17 @@ private:
    * The unix/linux name of the underlying device (e.g., eth0)
    */
   std::string m_deviceName;
+
+  /**
+   * A 64K buffer to hold packet data while it is being sent.
+   */
+  uint8_t *m_packetBuffer;
+
+  /**
+   * A copy of a raw pointer to the required real-time simulator implementation.
+   * Never free this pointer!
+   */
+  RealtimeSimulatorImpl *m_rtImpl;
 };
 
 } // namespace ns3

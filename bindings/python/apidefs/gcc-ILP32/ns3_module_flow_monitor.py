@@ -5,18 +5,18 @@ def register_types(module):
     
     ## histogram.h: ns3::Histogram [class]
     module.add_class('Histogram')
-    ## simple-ref-count.h: ns3::SimpleRefCount<ns3::FlowClassifier, ns3::empty> [class]
-    module.add_class('SimpleRefCount', template_parameters=['ns3::FlowClassifier', 'ns3::empty'], parent=root_module['ns3::empty'])
-    ## simple-ref-count.h: ns3::SimpleRefCount<ns3::FlowProbe, ns3::empty> [class]
-    module.add_class('SimpleRefCount', template_parameters=['ns3::FlowProbe', 'ns3::empty'], parent=root_module['ns3::empty'])
+    ## simple-ref-count.h: ns3::SimpleRefCount<ns3::FlowClassifier, ns3::empty, ns3::DefaultDeleter<ns3::FlowClassifier> > [class]
+    module.add_class('SimpleRefCount', template_parameters=['ns3::FlowClassifier', 'ns3::empty', 'ns3::DefaultDeleter<ns3::FlowClassifier>'], parent=root_module['ns3::empty'])
+    ## simple-ref-count.h: ns3::SimpleRefCount<ns3::FlowProbe, ns3::empty, ns3::DefaultDeleter<ns3::FlowProbe> > [class]
+    module.add_class('SimpleRefCount', template_parameters=['ns3::FlowProbe', 'ns3::empty', 'ns3::DefaultDeleter<ns3::FlowProbe>'], parent=root_module['ns3::empty'])
     ## flow-classifier.h: ns3::FlowClassifier [class]
-    module.add_class('FlowClassifier', parent=root_module['ns3::SimpleRefCount< ns3::FlowClassifier, ns3::empty >'])
+    module.add_class('FlowClassifier', parent=root_module['ns3::SimpleRefCount< ns3::FlowClassifier, ns3::empty, ns3::DefaultDeleter<ns3::FlowClassifier> >'])
     ## flow-monitor.h: ns3::FlowMonitor [class]
     module.add_class('FlowMonitor', parent=root_module['ns3::Object'])
     ## flow-monitor.h: ns3::FlowMonitor::FlowStats [struct]
     module.add_class('FlowStats', outer_class=root_module['ns3::FlowMonitor'])
     ## flow-probe.h: ns3::FlowProbe [class]
-    module.add_class('FlowProbe', parent=root_module['ns3::SimpleRefCount< ns3::FlowProbe, ns3::empty >'])
+    module.add_class('FlowProbe', parent=root_module['ns3::SimpleRefCount< ns3::FlowProbe, ns3::empty, ns3::DefaultDeleter<ns3::FlowProbe> >'])
     ## flow-probe.h: ns3::FlowProbe::FlowStats [struct]
     module.add_class('FlowStats', outer_class=root_module['ns3::FlowProbe'])
     ## ipv4-flow-classifier.h: ns3::Ipv4FlowClassifier [class]

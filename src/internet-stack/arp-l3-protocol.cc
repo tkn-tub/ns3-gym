@@ -23,7 +23,6 @@
 #include "ns3/net-device.h"
 #include "ns3/object-vector.h"
 #include "ns3/trace-source-accessor.h"
-#include "ns3/ipv4-route.h"
 
 #include "ipv4-l3-protocol.h"
 #include "arp-l3-protocol.h"
@@ -316,25 +315,18 @@ ArpL3Protocol::SendArpRequest (Ptr<const ArpCache> cache, Ipv4Address to)
   ArpHeader arp;
   // need to pick a source address; use routing implementation to select
   Ptr<Ipv4L3Protocol> ipv4 = m_node->GetObject<Ipv4L3Protocol> ();
-  int32_t interface = ipv4->GetInterfaceForDevice (cache->GetDevice ());
-  NS_ASSERT (interface >= 0);
+  Ptr<NetDevice> device = cache->GetDevice ();
+  NS_ASSERT (device != 0);
   Ipv4Header header;
   header.SetDestination (to);
-  Socket::SocketErrno errno_;
   Ptr<Packet> packet = Create<Packet> ();
-  Ptr<Ipv4Route> route = ipv4->GetRoutingProtocol ()->RouteOutput (packet, header, interface, errno_);
-  NS_ASSERT (route != 0);
+  Ipv4Address source = ipv4->SelectSourceAddress (device,  to, Ipv4InterfaceAddress::GLOBAL);
   NS_LOG_LOGIC ("ARP: sending request from node "<<m_node->GetId ()<<
-            " || src: " << cache->GetDevice ()->GetAddress () <<
-            " / " << route->GetSource () <<
-            " || dst: " << cache->GetDevice ()->GetBroadcast () <<
-            " / " << to);
-  arp.SetRequest (cache->GetDevice ()->GetAddress (),
-		  route->GetSource (),
-                  cache->GetDevice ()->GetBroadcast (),
-                  to);
+            " || src: " << device->GetAddress () << " / " << source <<
+            " || dst: " << device->GetBroadcast () << " / " << to);
+  arp.SetRequest (device->GetAddress (), source, device->GetBroadcast (), to);
   packet->AddHeader (arp);
-  cache->GetDevice ()->Send (packet, cache->GetDevice ()->GetBroadcast (), PROT_NUMBER);
+  cache->GetDevice ()->Send (packet, device->GetBroadcast (), PROT_NUMBER);
 }
 
 void

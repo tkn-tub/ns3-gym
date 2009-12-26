@@ -20,6 +20,7 @@
 
 #include "hello-regression-test.h"
 #include "tc-regression-test.h"
+#include "bug780-test.h"
 
 namespace ns3 {
 namespace olsr {
@@ -31,6 +32,7 @@ public:
   {
     AddTestCase (new HelloRegressionTest);
     AddTestCase (new TcRegressionTest);
+    AddTestCase (new Bug780Test);
   }
 } g_olsrRegressionTestSuite;
 

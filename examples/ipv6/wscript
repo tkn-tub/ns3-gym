@@ -6,7 +6,7 @@ def build(bld):
 
     obj = bld.create_ns3_program('ping6', ['csma', 'internet-stack'])
     obj.source = 'ping6.cc'
-
+    
     obj = bld.create_ns3_program('radvd', ['csma', 'internet-stack'])
     obj.source = 'radvd.cc'
 
@@ -15,3 +15,10 @@ def build(bld):
 
     obj = bld.create_ns3_program('test-ipv6', ['point-to-point', 'internet-stack'])
     obj.source = 'test-ipv6.cc'
+    
+    obj = bld.create_ns3_program('fragmentation-ipv6', ['csma', 'internet-stack'])
+    obj.source = 'fragmentation-ipv6.cc'
+
+    obj = bld.create_ns3_program('loose-routing-ipv6', ['csma', 'internet-stack'])
+    obj.source = 'loose-routing-ipv6.cc'
+

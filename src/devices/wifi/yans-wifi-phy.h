@@ -82,8 +82,8 @@ public:
    * has a private attribute m_channelNumber that identifies the channel the 
    * PHY operates on. Channel switching cannot interrupt an ongoing transmission.
    * When PHY is in TX state, the channel switching is postponed until the end
-   * of the current transmission. When the PHY is in SYNC state, the channel 
-   * switching causes the drop of the sync packet. 
+   * of the current transmission. When the PHY is in RX state, the channel 
+   * switching causes the drop of the synchronized packet. 
    */ 
   void SetChannelNumber (uint16_t id);
   /// Return current channel number, see SetChannelNumber()
@@ -122,14 +122,14 @@ public:
   virtual double GetTxPowerStart (void) const;
   virtual double GetTxPowerEnd (void) const;
   virtual uint32_t GetNTxPower (void) const;
-  virtual void SetReceiveOkCallback (WifiPhy::SyncOkCallback callback);
-  virtual void SetReceiveErrorCallback (WifiPhy::SyncErrorCallback callback);
+  virtual void SetReceiveOkCallback (WifiPhy::RxOkCallback callback);
+  virtual void SetReceiveErrorCallback (WifiPhy::RxErrorCallback callback);
   virtual void SendPacket (Ptr<const Packet> packet, WifiMode mode, enum WifiPreamble preamble, uint8_t txPowerLevel);
   virtual void RegisterListener (WifiPhyListener *listener);
   virtual bool IsStateCcaBusy (void);
   virtual bool IsStateIdle (void);
   virtual bool IsStateBusy (void);
-  virtual bool IsStateSync (void);
+  virtual bool IsStateRx (void);
   virtual bool IsStateTx (void);
   virtual bool IsStateSwitching (void); 
   virtual Time GetStateDuration (void);
@@ -161,7 +161,7 @@ private:
   double WToDbm (double w) const;
   double RatioToDb (double ratio) const;
   double GetPowerDbm (uint8_t power) const;
-  void EndSync (Ptr<Packet> packet, Ptr<InterferenceHelper::Event> event);
+  void EndReceive (Ptr<Packet> packet, Ptr<InterferenceHelper::Event> event);
 
 private:
   double   m_edThresholdW;
@@ -177,7 +177,7 @@ private:
   Ptr<Object> m_device;
   Ptr<Object> m_mobility;
   Modes m_modes;
-  EventId m_endSyncEvent;
+  EventId m_endRxEvent;
   UniformVariable m_random;
   /// Standard-dependent center frequency of 0-th channel, MHz 
   double m_channelStartingFrequency;

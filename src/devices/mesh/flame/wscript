@@ -8,6 +8,8 @@ def build(bld):
         'flame-protocol-mac.cc',
         'flame-protocol.cc',
         'flame-test-suite.cc',
+        'test/flame-regression.cc',
+        'test/regression.cc',
         ]
     headers = bld.new_task_gen('ns3header')
     headers.module = 'flame'

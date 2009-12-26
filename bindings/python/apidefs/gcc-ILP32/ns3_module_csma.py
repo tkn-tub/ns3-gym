@@ -442,11 +442,6 @@ def register_Ns3CsmaNetDevice_methods(root_module, cls):
                    'void', 
                    [param('ns3::Ptr< ns3::Packet >', 'p'), param('ns3::Mac48Address', 'source'), param('ns3::Mac48Address', 'dest'), param('uint16_t', 'protocolNumber')], 
                    visibility='protected')
-    ## csma-net-device.h: bool ns3::CsmaNetDevice::ProcessHeader(ns3::Ptr<ns3::Packet> p, uint16_t & param) [member function]
-    cls.add_method('ProcessHeader', 
-                   'bool', 
-                   [param('ns3::Ptr< ns3::Packet >', 'p'), param('uint16_t &', 'param')], 
-                   visibility='protected')
     return
 
 def register_functions(root_module):
