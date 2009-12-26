@@ -57,7 +57,9 @@ RunSimulation (void)
   InetSocketAddress remote = InetSocketAddress (Ipv4Address::GetLoopback (), 80);
   source->Connect (remote);
 
-  GenerateTraffic (source, 500);
+  Simulator::ScheduleWithContext (source->GetNode ()->GetId (),
+				  Seconds (0.0),
+				  &GenerateTraffic, source, 500);
   PrintTraffic (sink);
 
 
