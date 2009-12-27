@@ -89,6 +89,7 @@ private:
 
   void ProcessOneEvent (void);
   uint64_t NextTs (void) const;
+  virtual void DoDispose (void);
 
   typedef std::list<EventId> DestroyEvents;
   DestroyEvents m_destroyEvents;

@@ -86,6 +86,10 @@ RealtimeSimulatorImpl::RealtimeSimulatorImpl ()
 }
 
 RealtimeSimulatorImpl::~RealtimeSimulatorImpl ()
+{}
+
+void
+RealtimeSimulatorImpl::DoDispose (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
   while (m_events->IsEmpty () == false)
@@ -95,6 +99,7 @@ RealtimeSimulatorImpl::~RealtimeSimulatorImpl ()
     }
   m_events = 0;
   m_synchronizer = 0;
+  SimulatorImpl::DoDispose ();
 }
 
 void

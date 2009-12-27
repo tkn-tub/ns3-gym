@@ -51,6 +51,7 @@ public:
 private:
   static Ptr<ChannelListPriv> *DoGet (void);
   static void Delete (void);
+  virtual void DoDispose (void);
   std::vector<Ptr<Channel> > m_channels;
 };
 
@@ -102,6 +103,9 @@ ChannelListPriv::ChannelListPriv ()
 }
 
 ChannelListPriv::~ChannelListPriv ()
+{}
+void
+ChannelListPriv::DoDispose (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
   for (std::vector<Ptr<Channel> >::iterator i = m_channels.begin ();
@@ -112,6 +116,7 @@ ChannelListPriv::~ChannelListPriv ()
       *i = 0;
     }
   m_channels.erase (m_channels.begin (), m_channels.end ());
+  Object::DoDispose ();
 }
 
 uint32_t

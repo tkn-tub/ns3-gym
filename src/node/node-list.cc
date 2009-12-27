@@ -50,6 +50,7 @@ public:
   static Ptr<NodeListPriv> Get (void);
   
 private:
+  virtual void DoDispose (void);
   static Ptr<NodeListPriv> *DoGet (void);
   static void Delete (void);
   std::vector<Ptr<Node> > m_nodes;
@@ -101,6 +102,9 @@ NodeListPriv::NodeListPriv ()
   NS_LOG_FUNCTION_NOARGS ();
 }
 NodeListPriv::~NodeListPriv ()
+{}
+void
+NodeListPriv::DoDispose (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
   for (std::vector<Ptr<Node> >::iterator i = m_nodes.begin ();
@@ -111,6 +115,7 @@ NodeListPriv::~NodeListPriv ()
       *i = 0;
     }
   m_nodes.erase (m_nodes.begin (), m_nodes.end ());
+  Object::DoDispose ();
 }
 
 

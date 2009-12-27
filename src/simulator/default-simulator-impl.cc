@@ -62,6 +62,10 @@ DefaultSimulatorImpl::DefaultSimulatorImpl ()
 }
 
 DefaultSimulatorImpl::~DefaultSimulatorImpl ()
+{}
+
+void 
+DefaultSimulatorImpl::DoDispose (void)
 {
   while (!m_events->IsEmpty ())
     {
@@ -69,8 +73,8 @@ DefaultSimulatorImpl::~DefaultSimulatorImpl ()
       next.impl->Unref ();
     }
   m_events = 0;
+  SimulatorImpl::DoDispose ();
 }
-
 void
 DefaultSimulatorImpl::Destroy ()
 {

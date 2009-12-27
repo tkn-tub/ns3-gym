@@ -60,6 +60,7 @@ public:
   virtual uint32_t GetContext (void) const;
 
 private:
+  virtual void DoDispose (void);
   void ProcessOneEvent (void);
   uint64_t NextTs (void) const;
   typedef std::list<EventId> DestroyEvents;
