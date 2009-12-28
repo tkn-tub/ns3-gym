@@ -75,11 +75,6 @@ void Ipv6Interface::DoSetup ()
   {
     return;
   }
-
-  if (!m_device->NeedsArp ())
-  {
-    return;
-  }
   
   /* set up link-local address */
   if (!DynamicCast<LoopbackNetDevice> (m_device)) /* no autoconf for ip6-localhost */
@@ -95,6 +90,10 @@ void Ipv6Interface::DoSetup ()
     {
       NS_ASSERT_MSG (false, "IPv6 autoconf for this kind of address not implemented.");
     }
+  }
+  else
+  {
+    return; /* no NDISC cache for ip6-localhost */
   }
 
   Ptr<Icmpv6L4Protocol> icmpv6 = m_node->GetObject<Ipv6L3Protocol> ()->GetIcmpv6 ();
