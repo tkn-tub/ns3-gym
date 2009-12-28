@@ -34,7 +34,7 @@ def register_types(module):
     ## scheduler.h: ns3::Scheduler::EventKey [struct]
     module.add_class('EventKey', outer_class=root_module['ns3::Scheduler'])
     ## simple-ref-count.h: ns3::SimpleRefCount<ns3::EventImpl, ns3::empty, ns3::DefaultDeleter<ns3::EventImpl> > [class]
-    module.add_class('SimpleRefCount', template_parameters=['ns3::EventImpl', 'ns3::empty', 'ns3::DefaultDeleter<ns3::EventImpl>'], parent=root_module['ns3::empty'])
+    module.add_class('SimpleRefCount', automatic_type_narrowing=True, template_parameters=['ns3::EventImpl', 'ns3::empty', 'ns3::DefaultDeleter<ns3::EventImpl>'], parent=root_module['ns3::empty'], memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'))
     ## simulator-impl.h: ns3::SimulatorImpl [class]
     module.add_class('SimulatorImpl', parent=root_module['ns3::Object'])
     ## synchronizer.h: ns3::Synchronizer [class]
@@ -1204,6 +1204,11 @@ def register_Ns3DefaultSimulatorImpl_methods(root_module, cls):
                    'void', 
                    [param('ns3::Time const &', 'time')], 
                    is_virtual=True)
+    ## default-simulator-impl.h: void ns3::DefaultSimulatorImpl::DoDispose() [member function]
+    cls.add_method('DoDispose', 
+                   'void', 
+                   [], 
+                   visibility='private', is_virtual=True)
     return
 
 def register_Ns3EventImpl_methods(root_module, cls):
@@ -1522,6 +1527,11 @@ def register_Ns3RealtimeSimulatorImpl_methods(root_module, cls):
                    'void', 
                    [param('ns3::Time const &', 'time')], 
                    is_virtual=True)
+    ## realtime-simulator-impl.h: void ns3::RealtimeSimulatorImpl::DoDispose() [member function]
+    cls.add_method('DoDispose', 
+                   'void', 
+                   [], 
+                   visibility='private', is_virtual=True)
     return
 
 def register_Ns3TimeChecker_methods(root_module, cls):

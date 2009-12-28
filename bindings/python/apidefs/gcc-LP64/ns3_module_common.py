@@ -50,9 +50,9 @@ def register_types(module):
     ## pcap-writer.h: ns3::PcapWriter [class]
     module.add_class('PcapWriter', parent=root_module['ns3::Object'])
     ## simple-ref-count.h: ns3::SimpleRefCount<ns3::AsciiWriter, ns3::empty, ns3::DefaultDeleter<ns3::AsciiWriter> > [class]
-    module.add_class('SimpleRefCount', template_parameters=['ns3::AsciiWriter', 'ns3::empty', 'ns3::DefaultDeleter<ns3::AsciiWriter>'], parent=root_module['ns3::empty'])
+    module.add_class('SimpleRefCount', automatic_type_narrowing=True, template_parameters=['ns3::AsciiWriter', 'ns3::empty', 'ns3::DefaultDeleter<ns3::AsciiWriter>'], parent=root_module['ns3::empty'], memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'))
     ## simple-ref-count.h: ns3::SimpleRefCount<ns3::Packet, ns3::empty, ns3::DefaultDeleter<ns3::Packet> > [class]
-    module.add_class('SimpleRefCount', template_parameters=['ns3::Packet', 'ns3::empty', 'ns3::DefaultDeleter<ns3::Packet>'], parent=root_module['ns3::empty'])
+    module.add_class('SimpleRefCount', automatic_type_narrowing=True, template_parameters=['ns3::Packet', 'ns3::empty', 'ns3::DefaultDeleter<ns3::Packet>'], parent=root_module['ns3::empty'], memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'))
     ## trailer.h: ns3::Trailer [class]
     module.add_class('Trailer', parent=root_module['ns3::Chunk'])
     ## ascii-writer.h: ns3::AsciiWriter [class]
@@ -70,7 +70,7 @@ def register_types(module):
     ## nix-vector.h: ns3::NixVector [class]
     module.add_class('NixVector', parent=root_module['ns3::Object'])
     ## packet.h: ns3::Packet [class]
-    module.add_class('Packet', parent=root_module['ns3::SimpleRefCount< ns3::Packet, ns3::empty, ns3::DefaultDeleter<ns3::Packet> >'], memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'))
+    module.add_class('Packet', parent=root_module['ns3::SimpleRefCount< ns3::Packet, ns3::empty, ns3::DefaultDeleter<ns3::Packet> >'])
     ## error-model.h: ns3::RateErrorModel [class]
     module.add_class('RateErrorModel', parent=root_module['ns3::ErrorModel'])
     

@@ -4,9 +4,9 @@ def register_types(module):
     root_module = module.get_root()
     
     ## simple-ref-count.h: ns3::SimpleRefCount<ns3::RadvdInterface, ns3::empty, ns3::DefaultDeleter<ns3::RadvdInterface> > [class]
-    module.add_class('SimpleRefCount', template_parameters=['ns3::RadvdInterface', 'ns3::empty', 'ns3::DefaultDeleter<ns3::RadvdInterface>'], parent=root_module['ns3::empty'])
+    module.add_class('SimpleRefCount', automatic_type_narrowing=True, template_parameters=['ns3::RadvdInterface', 'ns3::empty', 'ns3::DefaultDeleter<ns3::RadvdInterface>'], parent=root_module['ns3::empty'], memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'))
     ## simple-ref-count.h: ns3::SimpleRefCount<ns3::RadvdPrefix, ns3::empty, ns3::DefaultDeleter<ns3::RadvdPrefix> > [class]
-    module.add_class('SimpleRefCount', template_parameters=['ns3::RadvdPrefix', 'ns3::empty', 'ns3::DefaultDeleter<ns3::RadvdPrefix>'], parent=root_module['ns3::empty'])
+    module.add_class('SimpleRefCount', automatic_type_narrowing=True, template_parameters=['ns3::RadvdPrefix', 'ns3::empty', 'ns3::DefaultDeleter<ns3::RadvdPrefix>'], parent=root_module['ns3::empty'], memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'))
     ## radvd.h: ns3::Radvd [class]
     module.add_class('Radvd', parent=root_module['ns3::Application'])
     ## radvd-interface.h: ns3::RadvdInterface [class]

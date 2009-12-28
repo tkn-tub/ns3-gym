@@ -808,6 +808,10 @@ def register_Ns3OlsrRoutingProtocol_methods(root_module, cls):
     cls.add_constructor([param('ns3::olsr::RoutingProtocol const &', 'arg0')])
     ## olsr-routing-protocol.h: ns3::olsr::RoutingProtocol::RoutingProtocol() [constructor]
     cls.add_constructor([])
+    ## olsr-routing-protocol.h: void ns3::olsr::RoutingProtocol::Dump() [member function]
+    cls.add_method('Dump', 
+                   'void', 
+                   [])
     ## olsr-routing-protocol.h: static ns3::TypeId ns3::olsr::RoutingProtocol::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
