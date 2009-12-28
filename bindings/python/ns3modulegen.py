@@ -17,11 +17,17 @@ import pybindgen.settings
 from ns3modulegen_generated import module_init, register_types, register_methods, register_functions
 import ns3modulegen_core_customizations
 import callbacks_list
+import traceback
 
 this_script_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
 
 class ErrorHandler(pybindgen.settings.ErrorHandler):
     def handle_error(self, wrapper, exception, traceback_):
+        print >> sys.stderr
+        print >> sys.stderr, "---- location:"
+        traceback.print_stack()
+        print >> sys.stderr, "---- error:"
+        traceback.print_tb(traceback_)
         try:
             stack = wrapper.stack_where_defined
         except AttributeError:
@@ -31,7 +37,7 @@ class ErrorHandler(pybindgen.settings.ErrorHandler):
             stack.reverse()
             for (filename, line_number, function_name, text) in stack:
                 file_dir = os.path.dirname(os.path.abspath(filename))
-                if file_dir == this_script_dir:
+                if file_dir.startswith(this_script_dir):
                     print >> sys.stderr, "%s:%i: %r" % (os.path.join("..", "bindings", "python", os.path.basename(filename)),
                                                         line_number, exception)
                     break
