@@ -707,3 +707,14 @@ assert failed. file=../src/core/type-id.cc, line=138, cond="uid <= m_information
 @end verbatim
 @end smallformat
 
+Here is another example of how to use valgrind to debug a memory problem
+such as:
+@verbatim
+VALGR: TestSuite devices-mesh-dot11s-regression
+@end verbatim
+
+@smallformat
+@verbatim
+./waf --command-template="valgrind %s --basedir=`pwd` --suite=devices-mesh-dot11s-regression" --run test-runner
+@end verbatim
+@end smallformat
