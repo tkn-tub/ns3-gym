@@ -170,14 +170,79 @@ public:
              uint32_t &origLen, 
              uint32_t &readLen);
 
+  /**
+   * \brief Get the swap mode of the file.
+   *
+   * Pcap files use a magic number that is overloaded to identify both the 
+   * format of the file itself and the byte ordering of the file.  The magic
+   * number (and all data) is written into the file according to the native
+   * byte ordering of the writing system.  If a reading application reads
+   * the magic number identically (for example 0xa1b2c3d4) then no byte 
+   * swapping is required to correctly interpret the file data.  If the reading
+   * application sees the magic number is byte swapped (for example 0xd4c3b2a1)
+   * then it knows that it needs to byteswap appropriate fields in the format.
+   *
+   * GetSWapMode returns a value indicating whether or not the fields are being
+   * byteswapped.  Used primarily for testing the class itself, but may be 
+   * useful as a flag indicating a difference in endianness of the writing 
+   * system.
+   */
   bool GetSwapMode (void);
 
+  /*
+   * \brief Returns the magic number of the pcap file as defined by the magic_number
+   * field in the pcap global header.
+   *
+   * See http://wiki.wireshark.org/Development/LibpcapFileFormat
+   */ 
   uint32_t GetMagic (void);
+
+  /*
+   * \brief Returns the major version of the pcap file as defined by the version_major
+   * field in the pcap global header.
+   *
+   * See http://wiki.wireshark.org/Development/LibpcapFileFormat
+   */ 
   uint16_t GetVersionMajor (void);
+
+  /*
+   * \brief Returns the minor version of the pcap file as defined by the version_minor
+   * field in the pcap global header.
+   *
+   * See http://wiki.wireshark.org/Development/LibpcapFileFormat
+   */ 
   uint16_t GetVersionMinor (void);
+
+  /*
+   * \brief Returns the time zone offset of the pcap file as defined by the thiszone
+   * field in the pcap global header.
+   *
+   * See http://wiki.wireshark.org/Development/LibpcapFileFormat
+   */ 
   int32_t GetTimeZoneOffset (void);
+
+  /*
+   * \brief Returns the accuracy of timestamps field of the pcap file as defined
+   * by the sigfigs field in the pcap global header.
+   *
+   * See http://wiki.wireshark.org/Development/LibpcapFileFormat
+   */ 
   uint32_t GetSigFigs (void);
+
+  /*
+   * \brief Returns the max length of saved packets field of the pcap file as 
+   * defined by the snaplen field in the pcap global header.
+   *
+   * See http://wiki.wireshark.org/Development/LibpcapFileFormat
+   */ 
   uint32_t GetSnapLen (void);
+
+  /*
+   * \brief Returns the data link type field of the pcap file as defined by the 
+   * network field in the pcap global header.
+   *
+   * See http://wiki.wireshark.org/Development/LibpcapFileFormat
+   */ 
   uint32_t GetDataLinkType (void);
   
   /**
