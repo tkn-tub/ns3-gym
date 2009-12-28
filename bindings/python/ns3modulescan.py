@@ -26,28 +26,6 @@ import warnings
 warnings.filterwarnings(category=WrapperWarning, action='ignore')
 
 type_annotations = {
-    '::ns3::RefCountBase': {
-        'incref_method': 'Ref',
-        'decref_method': 'Unref',
-        'peekref_method': 'GetReferenceCount',
-        'automatic_type_narrowing': 'true',
-        },
-    '::ns3::Object': {
-        'incref_method': 'Ref',
-        'decref_method': 'Unref',
-        'peekref_method': 'GetReferenceCount',
-        'automatic_type_narrowing': 'true',
-        },
-    '::ns3::Packet': {
-        'incref_method': 'Ref',
-        'decref_method': 'Unref',
-        'peekref_method': 'GetReferenceCount',
-        },
-    '::ns3::CallbackImplBase': {
-        'incref_method': 'Ref',
-        'decref_method': 'Unref',
-        'peekref_method': 'GetReferenceCount',
-        },
     '::ns3::AttributeChecker': {
         'automatic_type_narrowing': 'true',
         'allow_subclassing': 'false',
@@ -174,6 +152,13 @@ def pre_scan_hook(dummy_module_parser,
         # no need for helper classes to allow subclassing in Python, I think...
         if pygccxml_definition.name.endswith('Helper'):
             global_annotations['allow_subclassing'] = 'false'
+
+        if pygccxml_definition.decl_string.startswith('::ns3::SimpleRefCount<'):
+            global_annotations['incref_method'] = 'Ref'
+            global_annotations['decref_method'] = 'Unref'
+            global_annotations['peekref_method'] = 'GetReferenceCount'
+            global_annotations['automatic_type_narrowing'] = 'true'
+            return
 
         if pygccxml_definition.decl_string.startswith('::ns3::Callback<'):
             # manually handled in ns3modulegen_core_customizations.py
