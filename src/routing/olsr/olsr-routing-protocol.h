@@ -59,17 +59,24 @@ struct RoutingTableEntry
     destAddr (), nextAddr (),
     interface (0), distance (0) {};
 };
+
 class RoutingProtocol;
+
 /// Testcase for MPR computation mechanism
 class OlsrMprTestCase : public TestCase {
 public:
   OlsrMprTestCase ();
   ~OlsrMprTestCase ();
+  /// \brief Run test case
   virtual bool DoRun (void);
   ;
 };
 
-
+///
+/// \ingroup olsr
+///
+/// \brief OLSR routing protocol for IPv4
+///
 class RoutingProtocol : public Ipv4RoutingProtocol
 {
 public:
@@ -79,8 +86,18 @@ public:
   RoutingProtocol ();
   virtual ~RoutingProtocol ();
 
+  ///
+  /// \brief Set the OLSR main address to the first address on the indicated
+  ///        interface 
+  /// \param interface IPv4 interface index
+  ///
   void SetMainInterface (uint32_t interface);
 
+  /// 
+  /// Dump the neighbor table, two-hop neighbor table, and routing table
+  /// to logging output (NS_LOG_DEBUG log level).  If logging is disabled,
+  /// this function does nothing.
+  /// 
   void Dump (void);
 
 protected:
@@ -114,8 +131,6 @@ private:
 
   Ptr<Ipv4> m_ipv4;
 	
-private:
-
   void Clear ();
   uint32_t GetSize () const { return m_table.size (); }
   std::vector<RoutingTableEntry> GetEntries () const;
