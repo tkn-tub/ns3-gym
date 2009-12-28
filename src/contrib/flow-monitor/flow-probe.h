@@ -38,6 +38,10 @@ class FlowMonitor;
 /// regarding only the packets that pass through that probe.
 class FlowProbe : public SimpleRefCount<FlowProbe>
 {
+private:
+  FlowProbe (FlowProbe const &);
+  FlowProbe& operator= (FlowProbe const &);
+  
 protected:
   
   FlowProbe (Ptr<FlowMonitor> flowMonitor);

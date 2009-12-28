@@ -41,7 +41,11 @@ typedef uint32_t FlowPacketId;
 /// particular flow capture method or classification system.
 class FlowClassifier : public SimpleRefCount<FlowClassifier>
 {
+private:
   FlowId m_lastNewFlowId;
+
+  FlowClassifier (FlowClassifier const &);
+  FlowClassifier& operator= (FlowClassifier const &);
 
 public:
 
