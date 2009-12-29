@@ -89,6 +89,9 @@ NscInterfaceImpl::gettime(unsigned int *sec, unsigned int *usec)
 }
 
 
+#undef NS_LOG_APPEND_CONTEXT
+#define NS_LOG_APPEND_CONTEXT                                   \
+  if (m_node) { std::clog << Simulator::Now ().GetSeconds () << " [node " << m_node->GetId () << "] "; } 
 
 TypeId 
 NscTcpL4Protocol::GetTypeId (void)

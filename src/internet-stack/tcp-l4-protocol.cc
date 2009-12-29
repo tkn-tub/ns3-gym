@@ -26,6 +26,7 @@
 
 #include "ns3/packet.h"
 #include "ns3/node.h"
+#include "ns3/simulator.h"
 #include "ns3/ipv4-route.h"
 
 #include "tcp-l4-protocol.h"
@@ -310,6 +311,9 @@ static TcpStateMachine tcpStateMachine; //only instance of a TcpStateMachine
 
 //TcpL4Protocol stuff----------------------------------------------------------
 
+#undef NS_LOG_APPEND_CONTEXT
+#define NS_LOG_APPEND_CONTEXT                                   \
+  if (m_node) { std::clog << Simulator::Now ().GetSeconds () << " [node " << m_node->GetId () << "] "; } 
 
 /* see http://www.iana.org/assignments/protocol-numbers */
 const uint8_t TcpL4Protocol::PROT_NUMBER = 6;
