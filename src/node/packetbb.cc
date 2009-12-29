@@ -2014,11 +2014,12 @@ void
 PbbAddressBlock::Serialize (Buffer::Iterator &start) const
 {
   start.WriteU8 (AddressSize ());
+  Buffer::Iterator bufref = start;
+  uint8_t flags = 0;
+  start.Next ();
 
   if (AddressSize () == 1)
     {
-      start.WriteU8 (0);
-
       uint8_t buf[GetAddressLength ()];
       SerializeAddress (buf, AddressBegin ());
       start.Write (buf, GetAddressLength ());
@@ -2026,14 +2027,12 @@ PbbAddressBlock::Serialize (Buffer::Iterator &start) const
       if (PrefixSize () == 1)
         {
           start.WriteU8 (PrefixFront ());
+          flags |= AHAS_SINGLE_PRE_LEN;
         }
+      bufref.WriteU8 (flags);
     }
   else if (AddressSize () > 0)
     {
-      Buffer::Iterator bufref = start;
-      uint8_t flags = 0;
-      start.Next ();
-
       uint8_t head[GetAddressLength ()];
       uint8_t tail[GetAddressLength ()];
       uint8_t headlen = 0;
