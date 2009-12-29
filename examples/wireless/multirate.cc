@@ -30,7 +30,7 @@
  * ./waf --run multirate
  *
  * To compile with commandline(useful for varying parameters or configurations):
- * ./waf --run "scratch/multirate.cc --packetSize=2000 --totalTime=50"
+ * ./waf --run "multirate --packetSize=2000 --totalTime=50"
  *
  * To turn on NS_LOG:
  * export NS_LOG=multirate=level_all
@@ -38,7 +38,7 @@
  *
  * To debug:
  * ./waf --shell
- * gdb ./build/debug/scratch/multirate
+ * gdb ./build/debug/examples/wireless/multirate
  *
  * To view pcap files:
  * tcpdump -nn -tt -r filename.pcap

@@ -59,7 +59,7 @@
 // For instance, for this configuration, the interfering frame arrives
 // at -90 dBm with a time offset of 3.2 microseconds:
 //
-// ./waf --run "scratch/wifi-simple-interference --Irss=-90 --delta=3.2"
+// ./waf --run "wifi-simple-interference --Irss=-90 --delta=3.2"
 //
 // Note that all ns-3 attributes (not just the ones exposed in the below
 // script) can be changed at command line; see the documentation.
@@ -67,7 +67,7 @@
 // This script can also be helpful to put the Wifi layer into verbose
 // logging mode; this command will turn on all wifi logging:
 // 
-// ./waf --run "scratch/wifi-simple-interference --verbose=1"
+// ./waf --run "wifi-simple-interference --verbose=1"
 //
 // When you are done, you will notice a pcap trace file in your directory.
 // If you have tcpdump installed, you can try this:
