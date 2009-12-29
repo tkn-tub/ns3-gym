@@ -50,7 +50,7 @@ public:
   uint32_t GetN (void) const;
 
   /**
-   * \param i interface index
+   * \param i index of ipInterfacePair in container
    * \param j interface address index (if interface has multiple addresses)
    * \returns the IPv4 address of the j'th address of the interface
    *  corresponding to index i.
