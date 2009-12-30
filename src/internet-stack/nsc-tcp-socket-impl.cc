@@ -572,7 +572,7 @@ bool NscTcpSocketImpl::ReadPendingData (void)
   if (err == 0 && len == 0)
     {
       NS_LOG_LOGIC ("ReadPendingData got EOF from socket");
-      m_state = CLOSED;
+      m_state = CLOSE_WAIT;
       return false;
     }
   m_errno = GetNativeNs3Errno(err);
