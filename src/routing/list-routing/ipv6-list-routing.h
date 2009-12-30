@@ -70,13 +70,13 @@ public:
    * Values may range between -32768 and +32767.  
    */
   virtual void AddRoutingProtocol (Ptr<Ipv6RoutingProtocol> routingProtocol, int16_t priority);
-  
+
   /**
    * \brief Get the number of routing protocols.
    * \return number of routing protocols in the list
    */
   virtual uint32_t GetNRoutingProtocols (void) const;
-  
+
   /**
    * \brief Get pointer to routing protocol stored at index, 
    *

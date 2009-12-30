@@ -44,15 +44,15 @@ TypeId Ipv6RawSocketImpl::GetTypeId ()
   static TypeId tid = TypeId ("ns3::Ipv6RawSocketImpl")
     .SetParent<Socket> ()
     .AddAttribute ("Protocol", "Protocol number to match.", 
-        UintegerValue (0),
-        MakeUintegerAccessor (&Ipv6RawSocketImpl::m_protocol),
-        MakeUintegerChecker<uint16_t> ())
+                   UintegerValue (0),
+                   MakeUintegerAccessor (&Ipv6RawSocketImpl::m_protocol),
+                   MakeUintegerChecker<uint16_t> ())
     .AddAttribute ("IcmpFilter", "Any ICMPv6 header whose type field matches a bit in this filter is dropped.",
-        UintegerValue (0),
-        MakeUintegerAccessor (&Ipv6RawSocketImpl::m_icmpFilter),
-        MakeUintegerChecker<uint32_t> ())
+                   UintegerValue (0),
+                   MakeUintegerAccessor (&Ipv6RawSocketImpl::m_icmpFilter),
+                   MakeUintegerChecker<uint32_t> ())
     ;
-    return tid;
+  return tid;
 }
 
 Ipv6RawSocketImpl::Ipv6RawSocketImpl ()
@@ -100,10 +100,10 @@ int Ipv6RawSocketImpl::Bind (const Address& address)
   NS_LOG_FUNCTION (this << address);
 
   if (!Inet6SocketAddress::IsMatchingType (address))
-  {
-    m_err = Socket::ERROR_INVAL;
-    return -1;
-  }
+    {
+      m_err = Socket::ERROR_INVAL;
+      return -1;
+    }
   Inet6SocketAddress ad = Inet6SocketAddress::ConvertFrom (address);
   m_src = ad.GetIpv6 ();
   return 0;
@@ -127,11 +127,11 @@ int Ipv6RawSocketImpl::Close ()
 {
   NS_LOG_FUNCTION_NOARGS ();
   Ptr<Ipv6L3Protocol> ipv6 = m_node->GetObject<Ipv6L3Protocol> ();
-  
+
   if (ipv6)
-  {
-    ipv6->DeleteRawSocket (this);
-  }
+    {
+      ipv6->DeleteRawSocket (this);
+    }
   return 0;
 }
 
@@ -152,12 +152,12 @@ int Ipv6RawSocketImpl::ShutdownRecv ()
 int Ipv6RawSocketImpl::Connect (const Address& address)
 {
   NS_LOG_FUNCTION (this << address);
-  
+
   if (!Inet6SocketAddress::IsMatchingType (address))
-  {
-    m_err = Socket::ERROR_INVAL;
-    return -1;
-  }
+    {
+      m_err = Socket::ERROR_INVAL;
+      return -1;
+    }
 
   Inet6SocketAddress ad = Inet6SocketAddress::ConvertFrom (address);
   m_dst = ad.GetIpv6 ();
@@ -183,61 +183,61 @@ int Ipv6RawSocketImpl::SendTo (Ptr<Packet> p, uint32_t flags, const Address& toA
   NS_LOG_FUNCTION (this << p << flags << toAddress);
 
   if (!Inet6SocketAddress::IsMatchingType (toAddress))
-  {
-    m_err = Socket::ERROR_INVAL;
-    return -1;
-  }
+    {
+      m_err = Socket::ERROR_INVAL;
+      return -1;
+    }
 
   if (m_shutdownSend)
-  {
-    return 0;
-  }
+    {
+      return 0;
+    }
 
   Inet6SocketAddress ad = Inet6SocketAddress::ConvertFrom (toAddress);
   Ptr<Ipv6L3Protocol> ipv6 = m_node->GetObject<Ipv6L3Protocol> ();
   Ipv6Address dst = ad.GetIpv6 ();
 
   if (ipv6->GetRoutingProtocol ())
-  {
-    Ipv6Header hdr;
-    hdr.SetDestinationAddress (dst);
-    SocketErrno err = ERROR_NOTERROR;
-    Ptr<Ipv6Route> route = 0;
-    Ptr<NetDevice> oif (0); /*specify non-zero if bound to a source address */
-
-    if (!m_src.IsAny ())
     {
-      int32_t index = ipv6->GetInterfaceForAddress (m_src);
-      NS_ASSERT (index >= 0);
-      oif = ipv6->GetNetDevice (index);
-    }
+      Ipv6Header hdr;
+      hdr.SetDestinationAddress (dst);
+      SocketErrno err = ERROR_NOTERROR;
+      Ptr<Ipv6Route> route = 0;
+      Ptr<NetDevice> oif (0); /*specify non-zero if bound to a source address */
 
-    route = ipv6->GetRoutingProtocol ()->RouteOutput (p, hdr, oif, err);
-
-    if (route)
-    {
-      NS_LOG_LOGIC ("Route exists");
-      if (m_protocol == Icmpv6L4Protocol::GetStaticProtocolNumber ())
-      {
-        /* calculate checksum here for ICMPv6 echo request (sent by ping6) 
-         * as we cannot determine source IPv6 address at application level 
-         */
-        if (*p->PeekData () == Icmpv6Header::ICMPV6_ECHO_REQUEST)
+      if (!m_src.IsAny ())
         {
-          Icmpv6Echo hdr (1);
-          p->RemoveHeader (hdr);
-          hdr.CalculatePseudoHeaderChecksum (route->GetSource (), dst, p->GetSize () + hdr.GetSerializedSize (), Icmpv6L4Protocol::GetStaticProtocolNumber ());
-          p->AddHeader (hdr);
+          int32_t index = ipv6->GetInterfaceForAddress (m_src);
+          NS_ASSERT (index >= 0);
+          oif = ipv6->GetNetDevice (index);
         }
-      }
 
-      ipv6->Send (p, route->GetSource (), dst, m_protocol, route);
+      route = ipv6->GetRoutingProtocol ()->RouteOutput (p, hdr, oif, err);
+
+      if (route)
+        {
+          NS_LOG_LOGIC ("Route exists");
+          if (m_protocol == Icmpv6L4Protocol::GetStaticProtocolNumber ())
+            {
+              /* calculate checksum here for ICMPv6 echo request (sent by ping6) 
+               * as we cannot determine source IPv6 address at application level 
+               */
+              if (*p->PeekData () == Icmpv6Header::ICMPV6_ECHO_REQUEST)
+                {
+                  Icmpv6Echo hdr (1);
+                  p->RemoveHeader (hdr);
+                  hdr.CalculatePseudoHeaderChecksum (route->GetSource (), dst, p->GetSize () + hdr.GetSerializedSize (), Icmpv6L4Protocol::GetStaticProtocolNumber ());
+                  p->AddHeader (hdr);
+                }
+            }
+
+          ipv6->Send (p, route->GetSource (), dst, m_protocol, route);
+        }
+      else
+        {
+          NS_LOG_DEBUG ("No route, dropped!");
+        }
     }
-    else
-    {
-      NS_LOG_DEBUG ("No route, dropped!");
-    }
-  }
   return 0;
 }
 
@@ -251,24 +251,24 @@ Ptr<Packet> Ipv6RawSocketImpl::Recv (uint32_t maxSize, uint32_t flags)
 Ptr<Packet> Ipv6RawSocketImpl::RecvFrom (uint32_t maxSize, uint32_t flags, Address& fromAddress)
 {
   NS_LOG_FUNCTION (this << maxSize << flags << fromAddress);
-  
+
   if (m_data.empty ())
-  {
-    return 0;
-  }
+    {
+      return 0;
+    }
 
   /* get packet */
   struct Data data = m_data.front ();
   m_data.pop_front ();
 
   if (data.packet->GetSize () > maxSize)
-  {
-    Ptr<Packet> first = data.packet->CreateFragment (0, maxSize);
-    data.packet->RemoveAtStart (maxSize);
-    m_data.push_front (data);
-    return first;
-  }
-  
+    {
+      Ptr<Packet> first = data.packet->CreateFragment (0, maxSize);
+      data.packet->RemoveAtStart (maxSize);
+      m_data.push_front (data);
+      return first;
+    }
+
   fromAddress = Inet6SocketAddress (data.fromIp, data.fromProtocol);
   return data.packet;
 }
@@ -285,9 +285,9 @@ uint32_t Ipv6RawSocketImpl::GetRxAvailable () const
   uint32_t rx = 0;
 
   for (std::list<Data>::const_iterator it = m_data.begin () ; it != m_data.end () ; ++it)
-  {
-    rx+= (it->packet)->GetSize ();
-  }
+    {
+      rx+= (it->packet)->GetSize ();
+    }
 
   return rx;
 }
@@ -297,39 +297,39 @@ bool Ipv6RawSocketImpl::ForwardUp (Ptr<const Packet> p, Ipv6Header hdr, Ptr<NetD
   NS_LOG_FUNCTION (this << *p << hdr << device);
 
   if (m_shutdownRecv)
-  {
-    return false;
-  }
+    {
+      return false;
+    }
 
   if ((m_src == Ipv6Address::GetAny () || hdr.GetDestinationAddress () == m_src) && 
-     (m_dst == Ipv6Address::GetAny () || hdr.GetSourceAddress () == m_dst) &&
-     hdr.GetNextHeader () == m_protocol)
-  {
-    Ptr<Packet> copy = p->Copy ();
-    
-    if (m_protocol == Icmpv6L4Protocol::GetStaticProtocolNumber ())
+      (m_dst == Ipv6Address::GetAny () || hdr.GetSourceAddress () == m_dst) &&
+      hdr.GetNextHeader () == m_protocol)
     {
-      /* filter */
-      Icmpv6Header icmpHeader;
-      copy->PeekHeader (icmpHeader);
-      uint8_t type = icmpHeader.GetType ();
+      Ptr<Packet> copy = p->Copy ();
 
-      if ((1 << type) & m_icmpFilter)
-      {
-        /* packet filtered */
-        return false;
-      }
+      if (m_protocol == Icmpv6L4Protocol::GetStaticProtocolNumber ())
+        {
+          /* filter */
+          Icmpv6Header icmpHeader;
+          copy->PeekHeader (icmpHeader);
+          uint8_t type = icmpHeader.GetType ();
+
+          if ((1 << type) & m_icmpFilter)
+            {
+              /* packet filtered */
+              return false;
+            }
+        }
+
+      copy->AddHeader (hdr);
+      struct Data data;
+      data.packet = copy;
+      data.fromIp = hdr.GetSourceAddress ();
+      data.fromProtocol = hdr.GetNextHeader ();
+      m_data.push_back (data);
+      NotifyDataRecv ();
+      return true;
     }
-    
-    copy->AddHeader (hdr);
-    struct Data data;
-    data.packet = copy;
-    data.fromIp = hdr.GetSourceAddress ();
-    data.fromProtocol = hdr.GetNextHeader ();
-    m_data.push_back (data);
-    NotifyDataRecv ();
-    return true;
-  }
   return false;
 }
 

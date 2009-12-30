@@ -124,13 +124,13 @@ void Icmpv6Header::Serialize (Buffer::Iterator start) const
 #endif
 
   if (m_calcChecksum)
-  {
-    i = start;
-    uint16_t checksum = i.CalculateIpChecksum (i.GetSize (), m_checksum);
-    i = start;
-    i.Next (2);
-    i.WriteU16 (checksum);
-  }
+    {
+      i = start;
+      uint16_t checksum = i.CalculateIpChecksum (i.GetSize (), m_checksum);
+      i = start;
+      i.Next (2);
+      i.WriteU16 (checksum);
+    }
 }
 
 void Icmpv6Header::CalculatePseudoHeaderChecksum (Ipv6Address src, Ipv6Address dst, uint16_t length, uint8_t protocol)
@@ -192,7 +192,7 @@ Icmpv6NS::Icmpv6NS (Ipv6Address target)
   /* test */
   /*
      m_reserved = 0xdeadbeef;
-   */
+     */
 }
 
 Icmpv6NS::~Icmpv6NS ()
@@ -244,13 +244,13 @@ void Icmpv6NS::Serialize (Buffer::Iterator start) const
   i.Write (buff_target, 16);
 
   if (m_calcChecksum)
-  {
-    i = start;
-    checksum = i.CalculateIpChecksum (i.GetSize (), m_checksum);
-    i = start;
-    i.Next (2);
-    i.WriteU16 (checksum);
-  }
+    {
+      i = start;
+      checksum = i.CalculateIpChecksum (i.GetSize (), m_checksum);
+      i = start;
+      i.Next (2);
+      i.WriteU16 (checksum);
+    }
 }
 
 uint32_t Icmpv6NS::Deserialize (Buffer::Iterator start)
@@ -371,32 +371,32 @@ void Icmpv6NA::Serialize (Buffer::Iterator start) const
   i.WriteU16 (0);
 
   if (m_flagR)
-  {
-    reserved |= (uint32_t)(1 << 31);
-  }
+    {
+      reserved |= (uint32_t)(1 << 31);
+    }
 
   if (m_flagS)
-  {
-    reserved |= (uint32_t)(1<< 30);
-  }
+    {
+      reserved |= (uint32_t)(1<< 30);
+    }
 
   if (m_flagO)
-  {
-    reserved |= (uint32_t)(1<< 29);
-  }
+    {
+      reserved |= (uint32_t)(1<< 29);
+    }
 
   i.WriteHtonU32 (reserved);
   m_target.Serialize (buff_target);
   i.Write (buff_target, 16);
 
   if (m_calcChecksum)
-  {
-    i = start;
-    checksum = i.CalculateIpChecksum (i.GetSize (), GetChecksum ());
-    i = start;
-    i.Next (2);
-    i.WriteU16 (checksum);
-  }
+    {
+      i = start;
+      checksum = i.CalculateIpChecksum (i.GetSize (), GetChecksum ());
+      i = start;
+      i.Next (2);
+      i.WriteU16 (checksum);
+    }
 }
 
 uint32_t Icmpv6NA::Deserialize (Buffer::Iterator start)
@@ -414,19 +414,19 @@ uint32_t Icmpv6NA::Deserialize (Buffer::Iterator start)
   m_flagO = false;
 
   if (m_reserved & (1 << 31))
-  {
-    m_flagR = true;
-  }
+    {
+      m_flagR = true;
+    }
 
   if (m_reserved & (1 << 30))
-  {
-    m_flagS = true;
-  }
+    {
+      m_flagS = true;
+    }
 
   if (m_reserved & (1 << 29))
-  {
-    m_flagO = true;
-  }
+    {
+      m_flagO = true;
+    }
 
   i.Read (buf, 16);
   m_target.Set (buf);
@@ -570,19 +570,19 @@ void Icmpv6RA::Serialize (Buffer::Iterator start) const
   i.WriteU8 (m_curHopLimit);
 
   if (m_flagM)
-  {
-    flags |= (uint8_t)(1<< 7);
-  }
+    {
+      flags |= (uint8_t)(1<< 7);
+    }
 
   if (m_flagO)
-  {
-    flags |= (uint8_t)(1<< 6);
-  }
+    {
+      flags |= (uint8_t)(1<< 6);
+    }
 
   if (m_flagH)
-  {
-    flags |= (uint8_t)(1<< 5);
-  }
+    {
+      flags |= (uint8_t)(1<< 5);
+    }
   i.WriteU8 (flags);
   i.WriteHtonU16 (GetLifeTime ());
   i.WriteHtonU32 (GetReachableTime ());
@@ -610,19 +610,19 @@ uint32_t Icmpv6RA::Deserialize (Buffer::Iterator start)
   m_flagH = false;
 
   if (m_flags & (1 << 7))
-  {
-    m_flagM = true;
-  }
+    {
+      m_flagM = true;
+    }
 
   if (m_flags & (1 << 6))
-  {
-    m_flagO = true;
-  }
+    {
+      m_flagO = true;
+    }
 
   if (m_flags & (1 << 5))
-  {
-    m_flagH = true;
-  }
+    {
+      m_flagH = true;
+    }
   SetLifeTime (i.ReadNtohU16 ());
   SetReachableTime (i.ReadNtohU32 ());
   SetRetransmissionTime (i.ReadNtohU32 ());
@@ -689,14 +689,14 @@ void Icmpv6RS::Serialize (Buffer::Iterator start) const
   i.WriteHtonU32 (m_reserved);
 
   if (m_calcChecksum)
-  {
-    i = start;
-    checksum = i.CalculateIpChecksum (i.GetSize (), GetChecksum ());
-  
-    i = start;
-    i.Next (2);
-    i.WriteU16 (checksum);
-  }
+    {
+      i = start;
+      checksum = i.CalculateIpChecksum (i.GetSize (), GetChecksum ());
+
+      i = start;
+      i.Next (2);
+      i.WriteU16 (checksum);
+    }
 }
 
 uint32_t Icmpv6RS::Deserialize (Buffer::Iterator start)
@@ -800,14 +800,14 @@ void Icmpv6Redirection::Serialize (Buffer::Iterator start) const
   i.Write (buff, 16);
 
   if (m_calcChecksum)
-  {
-    i = start;
-    checksum = i.CalculateIpChecksum (i.GetSize (), GetChecksum ());
+    {
+      i = start;
+      checksum = i.CalculateIpChecksum (i.GetSize (), GetChecksum ());
 
-    i = start;
-    i.Next (2);
-    i.WriteU16 (checksum);
-  }
+      i = start;
+      i.Next (2);
+      i.WriteU16 (checksum);
+    }
 }
 
 uint32_t Icmpv6Redirection::Deserialize (Buffer::Iterator start) 
@@ -912,13 +912,13 @@ void Icmpv6Echo::Serialize (Buffer::Iterator start) const
   i.WriteHtonU16 (m_seq);
 
   if (m_calcChecksum)
-  {
-    i = start;
-    checksum = i.CalculateIpChecksum (i.GetSize (), GetChecksum ());
-    i = start;
-    i.Next (2);
-    i.WriteU16 (checksum);
-  }
+    {
+      i = start;
+      checksum = i.CalculateIpChecksum (i.GetSize (), GetChecksum ());
+      i = start;
+      i.Next (2);
+      i.WriteU16 (checksum);
+    }
 }
 
 uint32_t Icmpv6Echo::Deserialize (Buffer::Iterator start)
@@ -1215,7 +1215,7 @@ TypeId Icmpv6ParameterError::GetInstanceTypeId () const
 
 Icmpv6ParameterError::Icmpv6ParameterError ()
   : m_packet (0),
-    m_ptr (0)
+  m_ptr (0)
 {
   SetType (ICMPV6_ERROR_PARAMETER_ERROR);
 }

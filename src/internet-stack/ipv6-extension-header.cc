@@ -45,7 +45,7 @@ TypeId Ipv6ExtensionHeader::GetInstanceTypeId () const
 }
 
 Ipv6ExtensionHeader::Ipv6ExtensionHeader ()
-: m_nextHeader (0),
+  : m_nextHeader (0),
   m_length (0),
   m_data (0)
 {
@@ -121,7 +121,7 @@ uint32_t Ipv6ExtensionHeader::Deserialize (Buffer::Iterator start)
 }
 
 OptionField::OptionField (uint32_t optionsOffset)
-: m_optionData (0),
+  : m_optionData (0),
   m_optionsOffset (optionsOffset)
 {
 }
@@ -325,7 +325,7 @@ TypeId Ipv6ExtensionFragmentHeader::GetInstanceTypeId () const
 }
 
 Ipv6ExtensionFragmentHeader::Ipv6ExtensionFragmentHeader ()
-: m_offset (0),
+  : m_offset (0),
   m_identification (0)
 {
 }
@@ -416,7 +416,7 @@ TypeId Ipv6ExtensionRoutingHeader::GetInstanceTypeId () const
 }
 
 Ipv6ExtensionRoutingHeader::Ipv6ExtensionRoutingHeader ()
-: m_typeRouting (0),
+  : m_typeRouting (0),
   m_segmentsLeft (0)
 {
 }
@@ -495,7 +495,7 @@ TypeId Ipv6ExtensionLooseRoutingHeader::GetInstanceTypeId () const
 }
 
 Ipv6ExtensionLooseRoutingHeader::Ipv6ExtensionLooseRoutingHeader ()
-: m_routersAddress (0)
+  : m_routersAddress (0)
 {
 }
 

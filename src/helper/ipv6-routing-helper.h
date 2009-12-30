@@ -43,7 +43,7 @@ public:
 
   /**
    * \internal
-   * Destroy an Ipv6 Ipv6RoutingHelper.
+   * \brief Destroy an Ipv6 Ipv6RoutingHelper.
    */
   virtual ~Ipv6RoutingHelper ();
 

@@ -57,26 +57,26 @@ NS_LOG_COMPONENT_DEFINE ("Icmpv6RedirectExample");
  */
 class StackHelper
 {
-  public:
-    /**
-     * \brief Print the routing table.
-     * \param n the node
-     */
-    inline void PrintRoutingTable (Ptr<Node>& n)
-    {
-      Ptr<Ipv6StaticRouting> routing = 0;
-      Ipv6StaticRoutingHelper routingHelper;
-      Ptr<Ipv6> ipv6 = n->GetObject<Ipv6> ();
-      uint32_t nbRoutes = 0;
-      Ipv6RoutingTableEntry route;
+public:
+  /**
+   * \brief Print the routing table.
+   * \param n the node
+   */
+  inline void PrintRoutingTable (Ptr<Node>& n)
+  {
+    Ptr<Ipv6StaticRouting> routing = 0;
+    Ipv6StaticRoutingHelper routingHelper;
+    Ptr<Ipv6> ipv6 = n->GetObject<Ipv6> ();
+    uint32_t nbRoutes = 0;
+    Ipv6RoutingTableEntry route;
 
-      routing = routingHelper.GetStaticRouting (ipv6);
+    routing = routingHelper.GetStaticRouting (ipv6);
 
-      std::cout << "Routing table of " << n << " : " << std::endl;
-      std::cout << "Destination\t\t\t\t" << "Gateway\t\t\t\t\t" << "Interface\t" << "Prefix to use" << std::endl;
+    std::cout << "Routing table of " << n << " : " << std::endl;
+    std::cout << "Destination\t\t\t\t" << "Gateway\t\t\t\t\t" << "Interface\t" << "Prefix to use" << std::endl;
 
-      nbRoutes = routing->GetNRoutes ();
-      for(uint32_t i = 0 ; i < nbRoutes ; i++)
+    nbRoutes = routing->GetNRoutes ();
+    for(uint32_t i = 0 ; i < nbRoutes ; i++)
       {
         route = routing->GetRoute (i);
         std::cout << route.GetDest () << "\t"
@@ -85,26 +85,25 @@ class StackHelper
           << route.GetPrefixToUse () << "\t"
           << std::endl;
       }
-    }
+  }
 
-    /**
-     * \brief Add an host route.
-     * \param n node 
-     * \param dst destination address
-     * \param nextHop next hop for destination
-     * \param interface output interface
-     */
-    inline void AddHostRouteTo (Ptr<Node>& n, Ipv6Address dst, Ipv6Address nextHop, uint32_t interface)
-    {
-      Ptr<Ipv6StaticRouting> routing = 0;
-      Ipv6StaticRoutingHelper routingHelper;
-      Ptr<Ipv6> ipv6 = n->GetObject<Ipv6> ();
+  /**
+   * \brief Add an host route.
+   * \param n node 
+   * \param dst destination address
+   * \param nextHop next hop for destination
+   * \param interface output interface
+   */
+  inline void AddHostRouteTo (Ptr<Node>& n, Ipv6Address dst, Ipv6Address nextHop, uint32_t interface)
+  {
+    Ptr<Ipv6StaticRouting> routing = 0;
+    Ipv6StaticRoutingHelper routingHelper;
+    Ptr<Ipv6> ipv6 = n->GetObject<Ipv6> ();
 
-      routing = routingHelper.GetStaticRouting (ipv6);
-      routing->AddHostRouteTo (dst, nextHop, interface);
-    }
+    routing = routingHelper.GetStaticRouting (ipv6);
+    routing->AddHostRouteTo (dst, nextHop, interface);
+  }
 };
-
 
 int main (int argc, char **argv)
 {
@@ -131,7 +130,7 @@ int main (int argc, char **argv)
   NodeContainer all(sta1, r1, r2, sta2);
 
   StackHelper stackHelper;
-  
+
   InternetStackHelper internetv6;
   internetv6.Install (all);
 
@@ -155,7 +154,7 @@ int main (int argc, char **argv)
   iic2.SetRouter (0, true);
 
   stackHelper.AddHostRouteTo (r1, iic2.GetAddress (1, 1), iic1.GetAddress (2, 1), iic1.GetInterfaceIndex (1));
-  
+
   Simulator::Schedule(Seconds(0.0), &StackHelper::PrintRoutingTable, &stackHelper, r1);
   Simulator::Schedule(Seconds(3.0), &StackHelper::PrintRoutingTable, &stackHelper, sta1);
 

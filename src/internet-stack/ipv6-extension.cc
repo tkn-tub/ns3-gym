@@ -523,7 +523,7 @@ void Ipv6ExtensionFragment::GetFragments (Ptr<Packet> packet, uint32_t maxFragme
 }
 
 Ipv6ExtensionFragment::Fragments::Fragments ()
-: m_moreFragment (0)
+  : m_moreFragment (0)
 {
 }
 

@@ -39,8 +39,7 @@ void Ipv6Route::SetDestination (Ipv6Address dest)
   m_dest = dest;
 }
 
-Ipv6Address
-Ipv6Route::GetDestination () const
+Ipv6Address Ipv6Route::GetDestination () const
 {
   return m_dest;
 }
@@ -77,8 +76,8 @@ Ptr<NetDevice> Ipv6Route::GetOutputDevice () const
 
 std::ostream& operator<< (std::ostream& os, Ipv6Route const& route)
 {
-   os << "source=" << route.GetSource () << " dest="<< route.GetDestination () <<" gw=" << route.GetGateway ();
-   return os;
+  os << "source=" << route.GetSource () << " dest="<< route.GetDestination () <<" gw=" << route.GetGateway ();
+  return os;
 }
 
 Ipv6MulticastRoute::Ipv6MulticastRoute ()
@@ -87,9 +86,9 @@ Ipv6MulticastRoute::Ipv6MulticastRoute ()
 
   /* Initialize array to MAX_TTL, which means that all interfaces are "off" */
   for (uint32_t i = 0; i < MAX_INTERFACES; i++)
-  {
-    m_ttls.push_back (initial_ttl);
-  }
+    {
+      m_ttls.push_back (initial_ttl);
+    }
 }
 
 Ipv6MulticastRoute::~Ipv6MulticastRoute ()
@@ -138,8 +137,8 @@ uint32_t Ipv6MulticastRoute::GetOutputTtl (uint32_t oif) const
 
 std::ostream& operator<< (std::ostream& os, Ipv6MulticastRoute const& route)
 {
-   os << "origin=" << route.GetOrigin () << " group="<< route.GetGroup () <<" parent=" << route.GetParent ();
-   return os;
+  os << "origin=" << route.GetOrigin () << " group="<< route.GetGroup () <<" parent=" << route.GetParent ();
+  return os;
 }
 
 } /* namespace ns3 */

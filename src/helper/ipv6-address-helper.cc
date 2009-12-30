@@ -45,12 +45,12 @@ Ipv6Address Ipv6AddressHelper::NewAddress (Address addr)
   NS_LOG_FUNCTION (this << addr);
 
   switch (addr.GetLength ())
-  {
+    {
     case 6:
       return Ipv6Address::MakeAutoconfiguredAddress (Mac48Address::ConvertFrom (addr), m_network);
     default:
       return Ipv6Address ("::");
-  }
+    }
   /* never reached */
   return Ipv6Address ("::");
 }
@@ -69,31 +69,31 @@ Ipv6InterfaceContainer Ipv6AddressHelper::Assign (const NetDeviceContainer &c)
   Ipv6InterfaceContainer retval;
 
   for (uint32_t i = 0; i < c.GetN (); ++i) 
-  {
-    Ptr<NetDevice> device = c.Get (i);
-
-    Ptr<Node> node = device->GetNode ();
-    NS_ASSERT_MSG (node, "Ipv6AddressHelper::Allocate (): Bad node");
-
-    Ptr<Ipv6> ipv6 = node->GetObject<Ipv6> ();
-    NS_ASSERT_MSG (ipv6, "Ipv6AddressHelper::Allocate (): Bad ipv6");
-    int32_t ifIndex = 0;
-
-    ifIndex = ipv6->GetInterfaceForDevice (device);
-    if (ifIndex == -1)
     {
-      ifIndex = ipv6->AddInterface (device);
+      Ptr<NetDevice> device = c.Get (i);
+
+      Ptr<Node> node = device->GetNode ();
+      NS_ASSERT_MSG (node, "Ipv6AddressHelper::Allocate (): Bad node");
+
+      Ptr<Ipv6> ipv6 = node->GetObject<Ipv6> ();
+      NS_ASSERT_MSG (ipv6, "Ipv6AddressHelper::Allocate (): Bad ipv6");
+      int32_t ifIndex = 0;
+
+      ifIndex = ipv6->GetInterfaceForDevice (device);
+      if (ifIndex == -1)
+        {
+          ifIndex = ipv6->AddInterface (device);
+        }
+      NS_ASSERT_MSG (ifIndex >= 0, "Ipv6AddressHelper::Allocate (): "
+                     "Interface index not found");
+
+      Ipv6InterfaceAddress ipv6Addr = Ipv6InterfaceAddress (NewAddress (device->GetAddress ()), m_prefix);
+      ipv6->SetMetric (ifIndex, 1);
+      ipv6->SetUp (ifIndex);
+      ipv6->AddAddress (ifIndex, ipv6Addr);
+
+      retval.Add (ipv6, ifIndex);
     }
-    NS_ASSERT_MSG (ifIndex >= 0, "Ipv6AddressHelper::Allocate (): "
-        "Interface index not found");
-
-    Ipv6InterfaceAddress ipv6Addr = Ipv6InterfaceAddress (NewAddress (device->GetAddress ()), m_prefix);
-    ipv6->SetMetric (ifIndex, 1);
-    ipv6->SetUp (ifIndex);
-    ipv6->AddAddress (ifIndex, ipv6Addr);
-
-    retval.Add (ipv6, ifIndex);
-  }
   return retval;
 }
 
@@ -102,34 +102,34 @@ Ipv6InterfaceContainer Ipv6AddressHelper::Assign (const NetDeviceContainer &c, s
   NS_LOG_FUNCTION_NOARGS ();
   Ipv6InterfaceContainer retval;
   for (uint32_t i = 0; i < c.GetN (); ++i) 
-  {
-    Ptr<NetDevice> device = c.Get (i);
-
-    Ptr<Node> node = device->GetNode ();
-    NS_ASSERT_MSG (node, "Ipv6AddressHelper::Allocate (): Bad node");
-
-    Ptr<Ipv6> ipv6 = node->GetObject<Ipv6> ();
-    NS_ASSERT_MSG (ipv6, "Ipv6AddressHelper::Allocate (): Bad ipv6");
-
-    int32_t ifIndex = ipv6->GetInterfaceForDevice (device);
-    if (ifIndex == -1)
     {
-      ifIndex = ipv6->AddInterface (device);
+      Ptr<NetDevice> device = c.Get (i);
+
+      Ptr<Node> node = device->GetNode ();
+      NS_ASSERT_MSG (node, "Ipv6AddressHelper::Allocate (): Bad node");
+
+      Ptr<Ipv6> ipv6 = node->GetObject<Ipv6> ();
+      NS_ASSERT_MSG (ipv6, "Ipv6AddressHelper::Allocate (): Bad ipv6");
+
+      int32_t ifIndex = ipv6->GetInterfaceForDevice (device);
+      if (ifIndex == -1)
+        {
+          ifIndex = ipv6->AddInterface (device);
+        }
+      NS_ASSERT_MSG (ifIndex >= 0, "Ipv6AddressHelper::Allocate (): "
+                     "Interface index not found");
+
+      ipv6->SetMetric (ifIndex, 1);
+      ipv6->SetUp (ifIndex);
+
+      if (withConfiguration.at (i))
+        {
+          Ipv6InterfaceAddress ipv6Addr = Ipv6InterfaceAddress (NewAddress (device->GetAddress ()), m_prefix);
+          ipv6->AddAddress (ifIndex, ipv6Addr);
+        }
+
+      retval.Add (ipv6, ifIndex);
     }
-    NS_ASSERT_MSG (ifIndex >= 0, "Ipv6AddressHelper::Allocate (): "
-        "Interface index not found");
-
-    ipv6->SetMetric (ifIndex, 1);
-    ipv6->SetUp (ifIndex);
-
-    if (withConfiguration.at (i))
-    {
-      Ipv6InterfaceAddress ipv6Addr = Ipv6InterfaceAddress (NewAddress (device->GetAddress ()), m_prefix);
-      ipv6->AddAddress (ifIndex, ipv6Addr);
-    }
-
-    retval.Add (ipv6, ifIndex);
-  }
   return retval;
 }
 
@@ -138,28 +138,28 @@ Ipv6InterfaceContainer Ipv6AddressHelper::AssignWithoutAddress (const NetDeviceC
   NS_LOG_FUNCTION_NOARGS ();
   Ipv6InterfaceContainer retval;
   for (uint32_t i = 0; i < c.GetN (); ++i) 
-  {
-    Ptr<NetDevice> device = c.Get (i);
-
-    Ptr<Node> node = device->GetNode ();
-    NS_ASSERT_MSG (node, "Ipv6AddressHelper::Allocate (): Bad node");
-
-    Ptr<Ipv6> ipv6 = node->GetObject<Ipv6> ();
-    NS_ASSERT_MSG (ipv6, "Ipv6AddressHelper::Allocate (): Bad ipv6");
-
-    int32_t ifIndex = ipv6->GetInterfaceForDevice (device);
-    if (ifIndex == -1)
     {
-      ifIndex = ipv6->AddInterface (device);
+      Ptr<NetDevice> device = c.Get (i);
+
+      Ptr<Node> node = device->GetNode ();
+      NS_ASSERT_MSG (node, "Ipv6AddressHelper::Allocate (): Bad node");
+
+      Ptr<Ipv6> ipv6 = node->GetObject<Ipv6> ();
+      NS_ASSERT_MSG (ipv6, "Ipv6AddressHelper::Allocate (): Bad ipv6");
+
+      int32_t ifIndex = ipv6->GetInterfaceForDevice (device);
+      if (ifIndex == -1)
+        {
+          ifIndex = ipv6->AddInterface (device);
+        }
+      NS_ASSERT_MSG (ifIndex >= 0, "Ipv6AddressHelper::Allocate (): "
+                     "Interface index not found");
+
+      ipv6->SetMetric (ifIndex, 1);
+      ipv6->SetUp (ifIndex);
+
+      retval.Add (ipv6, ifIndex);
     }
-    NS_ASSERT_MSG (ifIndex >= 0, "Ipv6AddressHelper::Allocate (): "
-        "Interface index not found");
-
-    ipv6->SetMetric (ifIndex, 1);
-    ipv6->SetUp (ifIndex);
-
-    retval.Add (ipv6, ifIndex);
-  }
   return retval;
 }
 

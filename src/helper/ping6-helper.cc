@@ -51,16 +51,16 @@ ApplicationContainer Ping6Helper::Install (NodeContainer c)
 {
   ApplicationContainer apps;
   for (NodeContainer::Iterator i = c.Begin (); i != c.End (); ++i)
-  {
-    Ptr<Node> node = *i;
-    Ptr<Ping6> client = m_factory.Create<Ping6> ();
-    client->SetLocal (m_localIp);
-    client->SetRemote (m_remoteIp);
-    client->SetIfIndex (m_ifIndex);
-    client->SetRouters (m_routers);
-    node->AddApplication (client);
-    apps.Add (client);
-  }
+    {
+      Ptr<Node> node = *i;
+      Ptr<Ping6> client = m_factory.Create<Ping6> ();
+      client->SetLocal (m_localIp);
+      client->SetRemote (m_remoteIp);
+      client->SetIfIndex (m_ifIndex);
+      client->SetRouters (m_routers);
+      node->AddApplication (client);
+      apps.Add (client);
+    }
   return apps;  
 }
 

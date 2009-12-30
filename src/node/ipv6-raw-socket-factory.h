@@ -38,12 +38,12 @@ class Socket;
  */
 class Ipv6RawSocketFactory : public SocketFactory
 {
-  public:
-    /** 
-     * \brief Get the type ID of this class.
-     * \return type ID
-     */
-    static TypeId GetTypeId (void);
+public:
+  /** 
+   * \brief Get the type ID of this class.
+   * \return type ID
+   */
+  static TypeId GetTypeId (void);
 };
 
 } // namespace ns3

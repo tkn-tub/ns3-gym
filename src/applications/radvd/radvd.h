@@ -45,97 +45,97 @@ namespace ns3
  */
 class Radvd : public Application
 {
-  public:
-     /**
-      * \brief Get the type ID.
-      * \return type ID
-      */
-     static TypeId GetTypeId (void);
+public:
+  /**
+   * \brief Get the type ID.
+   * \return type ID
+   */
+  static TypeId GetTypeId (void);
 
-     /**
-      * \brief Constructor.
-      */
-     Radvd ();
+  /**
+   * \brief Constructor.
+   */
+  Radvd ();
 
-    /**
-     * \brief Destructor.
-     */
-    virtual ~Radvd ();
+  /**
+   * \brief Destructor.
+   */
+  virtual ~Radvd ();
 
-    /**
-     * \brief Default value for maximum delay of RA (ms)
-     */
-    static const uint32_t MAX_RA_DELAY_TIME = 500;
+  /**
+   * \brief Default value for maximum delay of RA (ms)
+   */
+  static const uint32_t MAX_RA_DELAY_TIME = 500;
 
-    /**
-     * \brief Add configuration for an interface;
-     * \param routerInterface configuration
-     */
-    void AddConfiguration (Ptr<RadvdInterface> routerInterface);
+  /**
+   * \brief Add configuration for an interface;
+   * \param routerInterface configuration
+   */
+  void AddConfiguration (Ptr<RadvdInterface> routerInterface);
 
-  protected:
-    /**
-     * \brief Dispose the instance.
-     */
-    virtual void DoDispose ();
-  
-  private:
-    typedef std::list<Ptr<RadvdInterface> > RadvdInterfaceList;
-    typedef std::list<Ptr<RadvdInterface> >::iterator RadvdInterfaceListI;
-    typedef std::list<Ptr<RadvdInterface> >::const_iterator RadvdInterfaceListCI;
+protected:
+  /**
+   * \brief Dispose the instance.
+   */
+  virtual void DoDispose ();
 
-    typedef std::map<uint32_t, EventId> EventIdMap;
-    typedef std::map<uint32_t, EventId>::iterator EventIdMapI;
-    typedef std::map<uint32_t, EventId>::const_iterator EventIdMapCI;
+private:
+  typedef std::list<Ptr<RadvdInterface> > RadvdInterfaceList;
+  typedef std::list<Ptr<RadvdInterface> >::iterator RadvdInterfaceListI;
+  typedef std::list<Ptr<RadvdInterface> >::const_iterator RadvdInterfaceListCI;
 
-    /**
-     * \brief Start the application.
-     */
-    virtual void StartApplication ();
+  typedef std::map<uint32_t, EventId> EventIdMap;
+  typedef std::map<uint32_t, EventId>::iterator EventIdMapI;
+  typedef std::map<uint32_t, EventId>::const_iterator EventIdMapCI;
 
-    /**
-     * \brief Stop the application.
-     */
-    virtual void StopApplication ();
+  /**
+   * \brief Start the application.
+   */
+  virtual void StartApplication ();
 
-    /**
-     * \brief Schedule sending a packet.
-     * \param dt interval between packet
-     * \param config interface configuration
-     * \param eventId event ID associated
-     * \param dst IPv6 destination address
-     * \param reschedule if true another send will be reschedule (periodic)
-     */
-    void ScheduleTransmit (Time dt, Ptr<RadvdInterface> config, EventId& eventId, Ipv6Address dst = Ipv6Address::GetAllNodesMulticast (), bool reschedule = false);
+  /**
+   * \brief Stop the application.
+   */
+  virtual void StopApplication ();
 
-    /**
-     * \brief Send a packet.
-     * \param config interface configuration
-     * \param dst destination address (default ff02::1)
-     * \param reschedule if true another send will be reschedule (periodic)
-     */
-    void Send (Ptr<RadvdInterface> config, Ipv6Address dst = Ipv6Address::GetAllNodesMulticast (), bool reschedule = false);
+  /**
+   * \brief Schedule sending a packet.
+   * \param dt interval between packet
+   * \param config interface configuration
+   * \param eventId event ID associated
+   * \param dst IPv6 destination address
+   * \param reschedule if true another send will be reschedule (periodic)
+   */
+  void ScheduleTransmit (Time dt, Ptr<RadvdInterface> config, EventId& eventId, Ipv6Address dst = Ipv6Address::GetAllNodesMulticast (), bool reschedule = false);
 
-    /**
-     * \brief Handle received packet, especially router solicitation
-     * \param socket socket to read data from
-     */
-    void HandleRead (Ptr<Socket> socket);
+  /**
+   * \brief Send a packet.
+   * \param config interface configuration
+   * \param dst destination address (default ff02::1)
+   * \param reschedule if true another send will be reschedule (periodic)
+   */
+  void Send (Ptr<RadvdInterface> config, Ipv6Address dst = Ipv6Address::GetAllNodesMulticast (), bool reschedule = false);
 
-    /**
-     * \brief Raw socket to send RA.
-     */
-    Ptr<Socket> m_socket;
+  /**
+   * \brief Handle received packet, especially router solicitation
+   * \param socket socket to read data from
+   */
+  void HandleRead (Ptr<Socket> socket);
 
-    /**
-     * \brief List of configuration for interface.
-     */
-    RadvdInterfaceList m_configurations;
+  /**
+   * \brief Raw socket to send RA.
+   */
+  Ptr<Socket> m_socket;
 
-    /**
-     * \brief Event ID map.
-     */
-    EventIdMap m_eventIds;
+  /**
+   * \brief List of configuration for interface.
+   */
+  RadvdInterfaceList m_configurations;
+
+  /**
+   * \brief Event ID map.
+   */
+  EventIdMap m_eventIds;
 };
 
 } /* namespace ns3 */

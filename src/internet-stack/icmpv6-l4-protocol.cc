@@ -91,11 +91,11 @@ void Icmpv6L4Protocol::DoDispose ()
 {
   NS_LOG_FUNCTION_NOARGS ();
   for (CacheList::const_iterator it = m_cacheList.begin () ; it != m_cacheList.end () ; it++)
-  {
-    Ptr<NdiscCache> cache = *it;
-    cache->Dispose ();
-    cache = 0;
-  }
+    {
+      Ptr<NdiscCache> cache = *it;
+      cache->Dispose ();
+      cache = 0;
+    }
   m_cacheList.clear ();
 
   m_node = 0;
@@ -106,20 +106,20 @@ void Icmpv6L4Protocol::NotifyNewAggregate ()
 {
   NS_LOG_FUNCTION_NOARGS ();
   if (m_node == 0)
-  {
-    Ptr<Node> node = this->GetObject<Node> ();
-    if (node != 0)
     {
-      Ptr<Ipv6L3Protocol> ipv6 = this->GetObject<Ipv6L3Protocol> ();
-      if (ipv6 != 0)
-      {
-        this->SetNode (node);
-        ipv6->Insert (this);
-        Ptr<Ipv6RawSocketFactoryImpl> rawFactory = CreateObject<Ipv6RawSocketFactoryImpl> ();
-        ipv6->AggregateObject (rawFactory);
-      }
+      Ptr<Node> node = this->GetObject<Node> ();
+      if (node != 0)
+        {
+          Ptr<Ipv6L3Protocol> ipv6 = this->GetObject<Ipv6L3Protocol> ();
+          if (ipv6 != 0)
+            {
+              this->SetNode (node);
+              ipv6->Insert (this);
+              Ptr<Ipv6RawSocketFactoryImpl> rawFactory = CreateObject<Ipv6RawSocketFactoryImpl> ();
+              ipv6->AggregateObject (rawFactory);
+            }
+        }
     }
-  }
   Object::NotifyNewAggregate ();
 }
 
@@ -161,9 +161,9 @@ void Icmpv6L4Protocol::DoDAD (Ipv6Address target, Ptr<Ipv6Interface> interface)
   NS_ASSERT (ipv6);
 
   if(!m_alwaysDad)
-  {
-    return; 
-  }
+    {
+      return; 
+    }
 
   /* TODO : disable multicast loopback to prevent NS probing to be received by the sender */
 
@@ -181,18 +181,18 @@ enum Ipv6L4Protocol::RxStatus_e Icmpv6L4Protocol::Receive (Ptr<Packet> packet, I
   Ptr<Ipv6> ipv6 = m_node->GetObject<Ipv6> ();
 
   switch (*p->PeekData ()) /* very ugly! try to find something better in the future */
-  {
+    {
     case Icmpv6Header::ICMPV6_ND_ROUTER_SOLICITATION:
       if (ipv6->IsForwarding (ipv6->GetInterfaceForDevice (interface->GetDevice ())))
-      {
-        HandleRS (p, src, dst, interface);
-      }
+        {
+          HandleRS (p, src, dst, interface);
+        }
       break;
     case Icmpv6Header::ICMPV6_ND_ROUTER_ADVERTISEMENT:
       if (!ipv6->IsForwarding (ipv6->GetInterfaceForDevice (interface->GetDevice ())))
-      {
-        HandleRA (p, src, dst, interface);
-      }
+        {
+          HandleRA (p, src, dst, interface);
+        }
       break;
     case Icmpv6Header::ICMPV6_ND_NEIGHBOR_SOLICITATION:
       HandleNS (p, src, dst, interface);
@@ -219,7 +219,7 @@ enum Ipv6L4Protocol::RxStatus_e Icmpv6L4Protocol::Receive (Ptr<Packet> packet, I
     default:
       NS_LOG_LOGIC ("Unknown ICMPv6 message type=" << (uint8_t)*p->PeekData ());
       break;
-  }
+    }
 
   return Ipv6L4Protocol::RX_OK;
 }
@@ -256,40 +256,40 @@ void Icmpv6L4Protocol::HandleRA (Ptr<Packet> packet, Ipv6Address const &src, Ipv
   p->RemoveHeader (raHeader);
 
   while (next == true)
-  {
-    type = *p->PeekData ();
-
-    switch (type)
     {
-      case Icmpv6Header::ICMPV6_OPT_PREFIX:
-        p->RemoveHeader (prefixHdr);
-        ipv6->AddAutoconfiguredAddress (ipv6->GetInterfaceForDevice (interface->GetDevice ()), prefixHdr.GetPrefix (), prefixHdr.GetPrefixLength (), 
-                                        prefixHdr.GetFlags (), prefixHdr.GetValidTime (), prefixHdr.GetPreferredTime (), src);
-        break;
-      case Icmpv6Header::ICMPV6_OPT_MTU:
-        /* take in account the first MTU option */
-        if (!hasMtu)
+      type = *p->PeekData ();
+
+      switch (type)
         {
-          p->RemoveHeader (mtuHdr);
-          hasMtu = true;
-          /* XXX case of multiple prefix on single interface */
-          /* interface->GetDevice ()->SetMtu (m.GetMtu ()); */
+        case Icmpv6Header::ICMPV6_OPT_PREFIX:
+          p->RemoveHeader (prefixHdr);
+          ipv6->AddAutoconfiguredAddress (ipv6->GetInterfaceForDevice (interface->GetDevice ()), prefixHdr.GetPrefix (), prefixHdr.GetPrefixLength (), 
+                                          prefixHdr.GetFlags (), prefixHdr.GetValidTime (), prefixHdr.GetPreferredTime (), src);
+          break;
+        case Icmpv6Header::ICMPV6_OPT_MTU:
+          /* take in account the first MTU option */
+          if (!hasMtu)
+            {
+              p->RemoveHeader (mtuHdr);
+              hasMtu = true;
+              /* XXX case of multiple prefix on single interface */
+              /* interface->GetDevice ()->SetMtu (m.GetMtu ()); */
+            }
+          break;
+        case Icmpv6Header::ICMPV6_OPT_LINK_LAYER_SOURCE:
+          /* take in account the first LLA option */
+          if (!hasLla)
+            {
+              p->RemoveHeader (llaHdr);                   
+              ReceiveLLA (llaHdr, src, dst, interface);
+              hasLla = true;
+            }
+          break;
+        default:
+          /* unknow option, quit */
+          next = false;
         }
-        break;
-      case Icmpv6Header::ICMPV6_OPT_LINK_LAYER_SOURCE:
-        /* take in account the first LLA option */
-        if (!hasLla)
-        {
-          p->RemoveHeader (llaHdr);                   
-          ReceiveLLA (llaHdr, src, dst, interface);
-          hasLla = true;
-        }
-        break;
-      default:
-        /* unknow option, quit */
-        next = false;
     }
-  }
 }
 
 void Icmpv6L4Protocol::ReceiveLLA (Icmpv6OptionLinkLayerAddress lla, Ipv6Address const &src, Ipv6Address const &dst, Ptr<Ipv6Interface> interface)
@@ -298,63 +298,63 @@ void Icmpv6L4Protocol::ReceiveLLA (Icmpv6OptionLinkLayerAddress lla, Ipv6Address
   Address hardwareAddress;
   NdiscCache::Entry* entry = 0;
   Ptr<NdiscCache> cache = FindCache (interface->GetDevice ());
-  
+
   /* check if we have this address in our cache */ 
   entry = cache->Lookup (src);
 
   if (!entry)
-  {
-    entry = cache->Add (src);
-    entry->SetRouter (true);
-    entry->SetMacAddress (lla.GetAddress ());
-    entry->MarkReachable ();  
-    entry->StartReachableTimer ();        
-  }                    
+    {
+      entry = cache->Add (src);
+      entry->SetRouter (true);
+      entry->SetMacAddress (lla.GetAddress ());
+      entry->MarkReachable ();  
+      entry->StartReachableTimer ();        
+    }                    
   else
-  {
-    std::list<Ptr<Packet> > waiting;
-    if (entry->IsIncomplete ())
     {
-      entry->StopRetransmitTimer ();
-      // mark it to reachable 
-      waiting = entry->MarkReachable (lla.GetAddress ());
-      entry->StopReachableTimer ();
-      entry->StartReachableTimer ();
-      // send out waiting packet 
-      for (std::list<Ptr<Packet> >::const_iterator it = waiting.begin (); it != waiting.end (); it++)
-      {
-        cache->GetInterface ()->Send (*it, src);
-      }
-      entry->ClearWaitingPacket ();
-    }
-    else
-    {
-      if (entry->GetMacAddress ()!=lla.GetAddress ())
-      {
-        entry->SetMacAddress (lla.GetAddress ());
-        entry->MarkStale ();
-        entry->SetRouter (true);
-      }  
-      else
-      {
-        if (!entry->IsReachable ())
+      std::list<Ptr<Packet> > waiting;
+      if (entry->IsIncomplete ())
         {
-          entry->StopProbeTimer ();
-          entry->StopDelayTimer ();
+          entry->StopRetransmitTimer ();
+          // mark it to reachable 
           waiting = entry->MarkReachable (lla.GetAddress ());
-          if (entry->IsProbe ())
-          {
-            for (std::list<Ptr<Packet> >::const_iterator it = waiting.begin (); it != waiting.end (); it++)
+          entry->StopReachableTimer ();
+          entry->StartReachableTimer ();
+          // send out waiting packet 
+          for (std::list<Ptr<Packet> >::const_iterator it = waiting.begin (); it != waiting.end (); it++)
             {
               cache->GetInterface ()->Send (*it, src);
             }
-          }
-          entry->StopReachableTimer ();
-          entry->StartReachableTimer ();
-        }    
-      }
+          entry->ClearWaitingPacket ();
+        }
+      else
+        {
+          if (entry->GetMacAddress ()!=lla.GetAddress ())
+            {
+              entry->SetMacAddress (lla.GetAddress ());
+              entry->MarkStale ();
+              entry->SetRouter (true);
+            }  
+          else
+            {
+              if (!entry->IsReachable ())
+                {
+                  entry->StopProbeTimer ();
+                  entry->StopDelayTimer ();
+                  waiting = entry->MarkReachable (lla.GetAddress ());
+                  if (entry->IsProbe ())
+                    {
+                      for (std::list<Ptr<Packet> >::const_iterator it = waiting.begin (); it != waiting.end (); it++)
+                        {
+                          cache->GetInterface ()->Send (*it, src);
+                        }
+                    }
+                  entry->StopReachableTimer ();
+                  entry->StartReachableTimer ();
+                }    
+            }
+        }
     }
-  }
 }
 
 void Icmpv6L4Protocol::HandleRS (Ptr<Packet> packet, Ipv6Address const &src, Ipv6Address const &dst, Ptr<Ipv6Interface> interface)
@@ -369,28 +369,28 @@ void Icmpv6L4Protocol::HandleRS (Ptr<Packet> packet, Ipv6Address const &src, Ipv
   Ptr<NdiscCache> cache = FindCache (interface->GetDevice ());
 
   if (src != Ipv6Address::GetAny ())
-  {
-    /* XXX search all options following the RS header */
-    /* test if the next option is SourceLinkLayerAddress */
-    if (*packet->PeekData () != Icmpv6Header::ICMPV6_OPT_LINK_LAYER_SOURCE)
     {
-      return;
-    }
-    packet->RemoveHeader (lla);
-    NS_LOG_LOGIC ("Cache updated by RS");
+      /* XXX search all options following the RS header */
+      /* test if the next option is SourceLinkLayerAddress */
+      if (*packet->PeekData () != Icmpv6Header::ICMPV6_OPT_LINK_LAYER_SOURCE)
+        {
+          return;
+        }
+      packet->RemoveHeader (lla);
+      NS_LOG_LOGIC ("Cache updated by RS");
 
-    entry = cache->Lookup (src);
-    if (!entry)
-    {
-      entry = cache->Add (src);
-      entry->SetRouter (false);
-      entry->MarkStale (lla.GetAddress ());
+      entry = cache->Lookup (src);
+      if (!entry)
+        {
+          entry = cache->Add (src);
+          entry->SetRouter (false);
+          entry->MarkStale (lla.GetAddress ());
+        }
+      else if (entry->GetMacAddress () != lla.GetAddress ())
+        {
+          entry->MarkStale (lla.GetAddress ());
+        }
     }
-    else if (entry->GetMacAddress () != lla.GetAddress ())
-    {
-      entry->MarkStale (lla.GetAddress ());
-    }
-  }
 }
 
 void Icmpv6L4Protocol::HandleNS (Ptr<Packet> packet, Ipv6Address const &src, Ipv6Address const &dst, Ptr<Ipv6Interface> interface)
@@ -407,28 +407,28 @@ void Icmpv6L4Protocol::HandleNS (Ptr<Packet> packet, Ipv6Address const &src, Ipv
   Ipv6Address target = nsHeader.GetIpv6Target ();
 
   for (i = 0 ; i < nb ; i++)
-  {
-    ifaddr = interface->GetAddress (i);
-
-    if (ifaddr.GetAddress () == target)
     {
-      found = true;
-      break;
+      ifaddr = interface->GetAddress (i);
+
+      if (ifaddr.GetAddress () == target)
+        {
+          found = true;
+          break;
+        }
     }
-  }
 
   if (!found)
-  {
-    NS_LOG_LOGIC ("Not a NS for us");
-    return;
-  }
+    {
+      NS_LOG_LOGIC ("Not a NS for us");
+      return;
+    }
 
   if (packet->GetUid () == ifaddr.GetNsDadUid ())
-  {
-    /* don't process our own DAD probe */
-    NS_LOG_LOGIC ("Hey we receive our DAD probe!");
-    return;
-  }
+    {
+      /* don't process our own DAD probe */
+      NS_LOG_LOGIC ("Hey we receive our DAD probe!");
+      return;
+    }
 
   Icmpv6OptionLinkLayerAddress lla (1);
   Address hardwareAddress;
@@ -439,42 +439,42 @@ void Icmpv6L4Protocol::HandleNS (Ptr<Packet> packet, Ipv6Address const &src, Ipv
   /* XXX search all options following the NS header */
 
   if (src != Ipv6Address::GetAny ())
-  {
-    if (*packet->PeekData () != Icmpv6Header::ICMPV6_OPT_LINK_LAYER_SOURCE)
     {
-      return;
-    }
+      if (*packet->PeekData () != Icmpv6Header::ICMPV6_OPT_LINK_LAYER_SOURCE)
+        {
+          return;
+        }
 
-    /* Get LLA */
-    packet->RemoveHeader (lla);
+      /* Get LLA */
+      packet->RemoveHeader (lla);
 
-    entry = cache->Lookup (src);
-    if (!entry)
-    {
-      entry = cache->Add (src);
-      entry->SetRouter (false);
-      entry->MarkStale (lla.GetAddress ());
-    }
-    else if (entry->GetMacAddress () != lla.GetAddress ())
-    {
-      entry->MarkStale (lla.GetAddress ());
-    }
+      entry = cache->Lookup (src);
+      if (!entry)
+        {
+          entry = cache->Add (src);
+          entry->SetRouter (false);
+          entry->MarkStale (lla.GetAddress ());
+        }
+      else if (entry->GetMacAddress () != lla.GetAddress ())
+        {
+          entry->MarkStale (lla.GetAddress ());
+        }
 
-    flags = 3; /* S + O flags */
-  }
+      flags = 3; /* S + O flags */
+    }
   else
-  {
-    /* it means someone do a DAD */
-    flags = 1; /* O flag */
-  }
+    {
+      /* it means someone do a DAD */
+      flags = 1; /* O flag */
+    }
 
   /* send a NA to src */
   Ptr<Ipv6L3Protocol> ipv6 = m_node->GetObject<Ipv6L3Protocol> ();
 
   if (ipv6->IsForwarding (ipv6->GetInterfaceForDevice (interface->GetDevice ())))
-  {
-    flags += 4; /* R flag */
-  }
+    {
+      flags += 4; /* R flag */
+    }
 
   hardwareAddress = interface->GetDevice ()->GetAddress ();
   Ptr<Packet> p = ForgeNA (target.IsLinkLocal () ? interface->GetLinkLocalAddress ().GetAddress () : ifaddr.GetAddress (), src.IsAny () ? Ipv6Address::GetAllNodesMulticast () : src, &hardwareAddress, flags );
@@ -541,119 +541,119 @@ void Icmpv6L4Protocol::HandleNA (Ptr<Packet> packet, Ipv6Address const &src, Ipv
   entry = cache->Lookup (target);
 
   if (!entry)
-  {
-    /* ouch!! we are victim of a DAD */
-    Ipv6InterfaceAddress ifaddr;
-    bool found = false;
-    uint32_t i = 0;
-    uint32_t nb = 0;
-
-    for (i = 0 ; i < nb ; i++)
     {
-      if (ifaddr.GetAddress () == target)
-      {
-        found = true;
-        break;
-      }
-    }
+      /* ouch!! we are victim of a DAD */
+      Ipv6InterfaceAddress ifaddr;
+      bool found = false;
+      uint32_t i = 0;
+      uint32_t nb = 0;
 
-    if (found)
-    {
-      if (ifaddr.GetState () == Ipv6InterfaceAddress::TENTATIVE || ifaddr.GetState () == Ipv6InterfaceAddress::TENTATIVE_OPTIMISTIC)
-      {
-        interface->SetState (ifaddr.GetAddress (), Ipv6InterfaceAddress::INVALID);
-      }
+      for (i = 0 ; i < nb ; i++)
+        {
+          if (ifaddr.GetAddress () == target)
+            {
+              found = true;
+              break;
+            }
+        }
+
+      if (found)
+        {
+          if (ifaddr.GetState () == Ipv6InterfaceAddress::TENTATIVE || ifaddr.GetState () == Ipv6InterfaceAddress::TENTATIVE_OPTIMISTIC)
+            {
+              interface->SetState (ifaddr.GetAddress (), Ipv6InterfaceAddress::INVALID);
+            }
+        }
+      /* we have not initiated any communication with the target so... discard the NA */
+      return;
     }
-    /* we have not initiated any communication with the target so... discard the NA */
-    return;
-  }
 
   /* XXX search all options following the NA header */
   /* Get LLA */
   if (*packet->PeekData () != Icmpv6Header::ICMPV6_OPT_LINK_LAYER_TARGET)
-  {
-    return;
-  }
+    {
+      return;
+    }
   packet->RemoveHeader (lla);
 
   if (entry->IsIncomplete ())
-  {
-    /* we receive a NA so stop the retransmission timer */
-    entry->StopRetransmitTimer ();
+    {
+      /* we receive a NA so stop the retransmission timer */
+      entry->StopRetransmitTimer ();
 
-    if (naHeader.GetFlagS ())
-    {
-      /* mark it to reachable */
-      waiting = entry->MarkReachable (lla.GetAddress ());
-      entry->StopReachableTimer ();
-      entry->StartReachableTimer ();
-      /* send out waiting packet */
-      for (std::list<Ptr<Packet> >::const_iterator it = waiting.begin (); it != waiting.end (); it++)
-      {
-        cache->GetInterface ()->Send (*it, src);
-      }
-      entry->ClearWaitingPacket ();
-    }
-    else
-    {
-      entry->MarkStale (lla.GetAddress ());
-    }
-
-    if (naHeader.GetFlagR ())
-    {
-      entry->SetRouter (true);
-    }
-  }
-  else
-  {
-    /* we receive a NA so stop the probe timer or delay timer if any */
-    entry->StopProbeTimer ();
-    entry->StopDelayTimer ();
-
-    /* if the Flag O is clear and mac address differs from the cache */
-    if (!naHeader.GetFlagO () && lla.GetAddress ()!=entry->GetMacAddress ())
-    {
-      if (entry->IsReachable ())
-      {
-        entry->MarkStale ();
-      }
-      return;
-    }
-    else
-    {
-      if ((!naHeader.GetFlagO () && lla.GetAddress () == entry->GetMacAddress ()) || naHeader.GetFlagO ()) /* XXX lake "no target link-layer address option supplied" */
-      {
-        entry->SetMacAddress (lla.GetAddress ());
-
-        if (naHeader.GetFlagS ())
+      if (naHeader.GetFlagS ())
         {
-          if (!entry->IsReachable ())
-          {
-            if (entry->IsProbe ())
-            {
-              waiting = entry->MarkReachable (lla.GetAddress ());
-              for (std::list<Ptr<Packet> >::const_iterator it = waiting.begin (); it != waiting.end (); it++)
-              {
-                cache->GetInterface ()->Send (*it, src); 
-              }
-              entry->ClearWaitingPacket ();
-            }
-            else
-            {
-              entry->MarkReachable (lla.GetAddress ());
-            }
-          }
+          /* mark it to reachable */
+          waiting = entry->MarkReachable (lla.GetAddress ());
           entry->StopReachableTimer ();
           entry->StartReachableTimer ();
+          /* send out waiting packet */
+          for (std::list<Ptr<Packet> >::const_iterator it = waiting.begin (); it != waiting.end (); it++)
+            {
+              cache->GetInterface ()->Send (*it, src);
+            }
+          entry->ClearWaitingPacket ();
         }
-        else if (lla.GetAddress ()!=entry->GetMacAddress ())
+      else
         {
-          entry->MarkStale ();
+          entry->MarkStale (lla.GetAddress ());
         }
-        entry->SetRouter (naHeader.GetFlagR ());
-      }
+
+      if (naHeader.GetFlagR ())
+        {
+          entry->SetRouter (true);
+        }
     }
-  }
+  else
+    {
+      /* we receive a NA so stop the probe timer or delay timer if any */
+      entry->StopProbeTimer ();
+      entry->StopDelayTimer ();
+
+      /* if the Flag O is clear and mac address differs from the cache */
+      if (!naHeader.GetFlagO () && lla.GetAddress ()!=entry->GetMacAddress ())
+        {
+          if (entry->IsReachable ())
+            {
+              entry->MarkStale ();
+            }
+          return;
+        }
+      else
+        {
+          if ((!naHeader.GetFlagO () && lla.GetAddress () == entry->GetMacAddress ()) || naHeader.GetFlagO ()) /* XXX lake "no target link-layer address option supplied" */
+            {
+              entry->SetMacAddress (lla.GetAddress ());
+
+              if (naHeader.GetFlagS ())
+                {
+                  if (!entry->IsReachable ())
+                    {
+                      if (entry->IsProbe ())
+                        {
+                          waiting = entry->MarkReachable (lla.GetAddress ());
+                          for (std::list<Ptr<Packet> >::const_iterator it = waiting.begin (); it != waiting.end (); it++)
+                            {
+                              cache->GetInterface ()->Send (*it, src); 
+                            }
+                          entry->ClearWaitingPacket ();
+                        }
+                      else
+                        {
+                          entry->MarkReachable (lla.GetAddress ());
+                        }
+                    }
+                  entry->StopReachableTimer ();
+                  entry->StartReachableTimer ();
+                }
+              else if (lla.GetAddress ()!=entry->GetMacAddress ())
+                {
+                  entry->MarkStale ();
+                }
+              entry->SetRouter (naHeader.GetFlagR ());
+            }
+        }
+    }
 }
 
 void Icmpv6L4Protocol::HandleRedirection (Ptr<Packet> packet, Ipv6Address const &src, Ipv6Address const &dst, Ptr<Ipv6Interface> interface)
@@ -668,10 +668,10 @@ void Icmpv6L4Protocol::HandleRedirection (Ptr<Packet> packet, Ipv6Address const 
 
   /* little ugly try to find a better way */
   if (*p->PeekData () == Icmpv6Header::ICMPV6_OPT_LINK_LAYER_TARGET)
-  {
-    hasLla = true;
-    p->RemoveHeader (llOptionHeader);
-  }
+    {
+      hasLla = true;
+      p->RemoveHeader (llOptionHeader);
+    }
 
   Icmpv6OptionRedirected redirectedOptionHeader;
   p->RemoveHeader (redirectedOptionHeader);
@@ -680,50 +680,50 @@ void Icmpv6L4Protocol::HandleRedirection (Ptr<Packet> packet, Ipv6Address const 
   Ipv6Address redirDestination = redirectionHeader.GetDestination ();
 
   if (hasLla)
-  {
-    /* update the cache if needed */
-    NdiscCache::Entry* entry = 0;
-    Ptr<NdiscCache> cache = FindCache (interface->GetDevice ());
+    {
+      /* update the cache if needed */
+      NdiscCache::Entry* entry = 0;
+      Ptr<NdiscCache> cache = FindCache (interface->GetDevice ());
 
-    entry = cache->Lookup (redirTarget);
-    if (!entry)
-    {
-      entry = cache->Add (redirTarget);
-      /* destination and target different => necessarily a router */
-      entry->SetRouter (!redirTarget.IsEqual (redirDestination) ? true : false);
-      entry->SetMacAddress (llOptionHeader.GetAddress ());
-      entry->MarkStale ();
-    }
-    else
-    {
-      if (entry->IsIncomplete () || entry->GetMacAddress () != llOptionHeader.GetAddress ())
-      {
-        /* update entry to STALE */
-        if (entry->GetMacAddress ()!=llOptionHeader.GetAddress ())
+      entry = cache->Lookup (redirTarget);
+      if (!entry)
         {
+          entry = cache->Add (redirTarget);
+          /* destination and target different => necessarily a router */
+          entry->SetRouter (!redirTarget.IsEqual (redirDestination) ? true : false);
           entry->SetMacAddress (llOptionHeader.GetAddress ());
           entry->MarkStale ();
         }
-      }
       else
-      {
-        /* stay unchanged */
-      }
+        {
+          if (entry->IsIncomplete () || entry->GetMacAddress () != llOptionHeader.GetAddress ())
+            {
+              /* update entry to STALE */
+              if (entry->GetMacAddress ()!=llOptionHeader.GetAddress ())
+                {
+                  entry->SetMacAddress (llOptionHeader.GetAddress ());
+                  entry->MarkStale ();
+                }
+            }
+          else
+            {
+              /* stay unchanged */
+            }
+        }
     }
-  }
 
   /* add redirection in routing table */
   Ptr<Ipv6> ipv6 = m_node->GetObject<Ipv6> ();
 
   if (redirTarget.IsEqual (redirDestination))
-  {
-    ipv6->GetRoutingProtocol ()->NotifyAddRoute (redirDestination, Ipv6Prefix (128), Ipv6Address ("::"), ipv6->GetInterfaceForAddress (dst));
-  }
+    {
+      ipv6->GetRoutingProtocol ()->NotifyAddRoute (redirDestination, Ipv6Prefix (128), Ipv6Address ("::"), ipv6->GetInterfaceForAddress (dst));
+    }
   else
-  {
-    uint32_t ifIndex = ipv6->GetInterfaceForAddress (dst);
-    ipv6->GetRoutingProtocol ()->NotifyAddRoute (redirDestination, Ipv6Prefix (128), redirTarget, ifIndex);
-  }
+    {
+      uint32_t ifIndex = ipv6->GetInterfaceForAddress (dst);
+      ipv6->GetRoutingProtocol ()->NotifyAddRoute (redirDestination, Ipv6Prefix (128), redirTarget, ifIndex);
+    }
 }
 
 void Icmpv6L4Protocol::SendMessage (Ptr<Packet> packet, Ipv6Address src, Ipv6Address dst, uint8_t ttl)
@@ -748,25 +748,25 @@ void Icmpv6L4Protocol::SendMessage (Ptr<Packet> packet, Ipv6Address dst, Icmpv6H
   Socket::SocketErrno err;
   Ptr<Ipv6Route> route;
   Ptr<NetDevice> oif (0); //specify non-zero if bound to a source address
-  
+
   header.SetDestinationAddress (dst);
   route = ipv6->GetRoutingProtocol ()->RouteOutput (packet, header, oif, err);
- 
-  if (route != 0)
-  {
-    NS_LOG_LOGIC ("Route exists");
-    tag.SetTtl (ttl);
-    packet->AddPacketTag (tag);
-    Ipv6Address src = route->GetSource ();
 
-    icmpv6Hdr.CalculatePseudoHeaderChecksum (src, dst, packet->GetSize () + icmpv6Hdr.GetSerializedSize (), PROT_NUMBER);
-    packet->AddHeader (icmpv6Hdr);
-    ipv6->Send (packet, src, dst, PROT_NUMBER, route);
-  }
+  if (route != 0)
+    {
+      NS_LOG_LOGIC ("Route exists");
+      tag.SetTtl (ttl);
+      packet->AddPacketTag (tag);
+      Ipv6Address src = route->GetSource ();
+
+      icmpv6Hdr.CalculatePseudoHeaderChecksum (src, dst, packet->GetSize () + icmpv6Hdr.GetSerializedSize (), PROT_NUMBER);
+      packet->AddHeader (icmpv6Hdr);
+      ipv6->Send (packet, src, dst, PROT_NUMBER, route);
+    }
   else
-  {
-    NS_LOG_WARN ("drop icmp message");
-  }
+    {
+      NS_LOG_WARN ("drop icmp message");
+    }
 }
 
 void Icmpv6L4Protocol::SendNA (Ipv6Address src, Ipv6Address dst, Address* hardwareAddress, uint8_t flags)
@@ -780,17 +780,17 @@ void Icmpv6L4Protocol::SendNA (Ipv6Address src, Ipv6Address dst, Address* hardwa
   na.SetIpv6Target (src);
 
   if ((flags & 1))
-  {
-    na.SetFlagO (true);
-  }
+    {
+      na.SetFlagO (true);
+    }
   if ((flags & 2) && src != Ipv6Address::GetAny ())
-  {
-    na.SetFlagS (true);
-  }
+    {
+      na.SetFlagS (true);
+    }
   if ((flags & 4))
-  {
-    na.SetFlagR (true);
-  }
+    {
+      na.SetFlagR (true);
+    }
 
   p->AddHeader (llOption);
   na.CalculatePseudoHeaderChecksum (src, dst, p->GetSize () + na.GetSerializedSize (), PROT_NUMBER);
@@ -823,9 +823,9 @@ void Icmpv6L4Protocol::SendNS (Ipv6Address src, Ipv6Address dst, Ipv6Address tar
 
   /* if the source is unspec, multicast the NA to all-nodes multicast */
   if (src == Ipv6Address::GetAny ())
-  {
-    dst = Ipv6Address::GetAllNodesMulticast ();
-  }
+    {
+      dst = Ipv6Address::GetAllNodesMulticast ();
+    }
 
   NS_LOG_LOGIC ("Send NS ( from " << src << " to " << dst << " target " << target <<")");
 
@@ -844,9 +844,9 @@ void Icmpv6L4Protocol::SendRS (Ipv6Address src, Ipv6Address dst,  Address hardwa
 
   /* if the source is unspec, multicast the NA to all-nodes multicast */
   if (src != Ipv6Address::GetAny ())
-  {
-    p->AddHeader (llOption);
-  }
+    {
+      p->AddHeader (llOption);
+    }
 
   NS_LOG_LOGIC ("Send RS ( from " << src << " to " << dst << ")");
 
@@ -866,14 +866,14 @@ void Icmpv6L4Protocol::SendErrorDestinationUnreachable (Ptr<Packet> malformedPac
 
   /* 48 = sizeof IPv6 header + sizeof ICMPv6 error header */
   if (malformedPacketSize <= 1280 - 48)
-  {
-    header.SetPacket (malformedPacket);
-  }
+    {
+      header.SetPacket (malformedPacket);
+    }
   else
-  {
-    Ptr<Packet> fragment = malformedPacket->CreateFragment (0, 1280 - 48);
-    header.SetPacket (fragment);
-  }
+    {
+      Ptr<Packet> fragment = malformedPacket->CreateFragment (0, 1280 - 48);
+      header.SetPacket (fragment);
+    }
 
   header.SetCode (code);
   SendMessage (p, dst, header, 255);
@@ -890,14 +890,14 @@ void Icmpv6L4Protocol::SendErrorTooBig (Ptr<Packet> malformedPacket, Ipv6Address
 
   /* 48 = sizeof IPv6 header + sizeof ICMPv6 error header */
   if (malformedPacketSize <= 1280 - 48)  
-  {
-    header.SetPacket (malformedPacket);
-  }
+    {
+      header.SetPacket (malformedPacket);
+    }
   else
-  {
-    Ptr<Packet> fragment = malformedPacket->CreateFragment (0, 1280 - 48);
-    header.SetPacket (fragment);
-  }
+    {
+      Ptr<Packet> fragment = malformedPacket->CreateFragment (0, 1280 - 48);
+      header.SetPacket (fragment);
+    }
 
   header.SetCode (0);
   header.SetMtu (mtu);
@@ -915,14 +915,14 @@ void Icmpv6L4Protocol::SendErrorTimeExceeded (Ptr<Packet> malformedPacket, Ipv6A
 
   /* 48 = sizeof IPv6 header + sizeof ICMPv6 error header */
   if (malformedPacketSize <= 1280 - 48) 
-  {
-    header.SetPacket (malformedPacket);
-  }
+    {
+      header.SetPacket (malformedPacket);
+    }
   else
-  {
-    Ptr<Packet> fragment = malformedPacket->CreateFragment (0, 1280 - 48);
-    header.SetPacket (fragment);
-  }
+    {
+      Ptr<Packet> fragment = malformedPacket->CreateFragment (0, 1280 - 48);
+      header.SetPacket (fragment);
+    }
 
   header.SetCode (code);
   SendMessage (p, dst, header, 255);
@@ -939,14 +939,14 @@ void Icmpv6L4Protocol::SendErrorParameterError (Ptr<Packet> malformedPacket, Ipv
 
   /* 48 = sizeof IPv6 header + sizeof ICMPv6 error header */
   if (malformedPacketSize <= 1280 -48 )
-  {
-    header.SetPacket (malformedPacket);
-  }
+    {
+      header.SetPacket (malformedPacket);
+    }
   else
-  {
-    Ptr<Packet> fragment = malformedPacket->CreateFragment (0, 1280 - 48);
-    header.SetPacket (fragment);
-  }
+    {
+      Ptr<Packet> fragment = malformedPacket->CreateFragment (0, 1280 - 48);
+      header.SetPacket (fragment);
+    }
 
   header.SetCode (code);
   header.SetPtr (ptr);
@@ -966,34 +966,34 @@ void Icmpv6L4Protocol::SendRedirection (Ptr<Packet> redirectedPacket, Ipv6Addres
   Icmpv6OptionRedirected redirectedOptionHeader;
 
   if ((redirectedPacketSize % 8) != 0)
-  {
-    Ptr<Packet> pad = Create<Packet> (8 - (redirectedPacketSize % 8));
-    redirectedPacket->AddAtEnd (pad); 
-  }
+    {
+      Ptr<Packet> pad = Create<Packet> (8 - (redirectedPacketSize % 8));
+      redirectedPacket->AddAtEnd (pad); 
+    }
 
   if (redirHardwareTarget.GetLength ())
-  {
-    llOption.SetAddress (redirHardwareTarget);
-    llaSize = llOption.GetSerializedSize ();
-  }
+    {
+      llOption.SetAddress (redirHardwareTarget);
+      llaSize = llOption.GetSerializedSize ();
+    }
 
   /* 56 = sizeof IPv6 header + sizeof ICMPv6 error header + sizeof redirected option */
   if (redirectedPacketSize <= (1280 - 56 - llaSize))
-  {
-    redirectedOptionHeader.SetPacket (redirectedPacket);
-  }
+    {
+      redirectedOptionHeader.SetPacket (redirectedPacket);
+    }
   else
-  {
-    Ptr<Packet> fragment = redirectedPacket->CreateFragment (0, 1280 - 56 - llaSize);
-    redirectedOptionHeader.SetPacket (fragment);
-  }
+    {
+      Ptr<Packet> fragment = redirectedPacket->CreateFragment (0, 1280 - 56 - llaSize);
+      redirectedOptionHeader.SetPacket (fragment);
+    }
 
   p->AddHeader (redirectedOptionHeader);
 
   if (llaSize)
-  {
-    p->AddHeader (llOption);
-  }
+    {
+      p->AddHeader (llOption);
+    }
 
   Icmpv6Redirection redirectionHeader;
   redirectionHeader.SetTarget (redirTarget);
@@ -1017,17 +1017,17 @@ Ptr<Packet> Icmpv6L4Protocol::ForgeNA (Ipv6Address src, Ipv6Address dst, Address
   na.SetIpv6Target (src);
 
   if ((flags & 1))
-  {
-    na.SetFlagO (true);
-  }
+    {
+      na.SetFlagO (true);
+    }
   if ((flags & 2) && src != Ipv6Address::GetAny ())
-  {
-    na.SetFlagS (true);
-  }
+    {
+      na.SetFlagS (true);
+    }
   if ((flags & 4))
-  {
-    na.SetFlagR (true);
-  }
+    {
+      na.SetFlagR (true);
+    }
 
   na.CalculatePseudoHeaderChecksum (src, dst, p->GetSize () + na.GetSerializedSize (), PROT_NUMBER);
   p->AddHeader (na);
@@ -1037,7 +1037,7 @@ Ptr<Packet> Icmpv6L4Protocol::ForgeNA (Ipv6Address src, Ipv6Address dst, Address
   ipHeader.SetNextHeader (PROT_NUMBER);
   ipHeader.SetPayloadLength (p->GetSize ());
   ipHeader.SetHopLimit (255);
-  
+
   p->AddHeader (ipHeader);
 
   return p;
@@ -1053,9 +1053,9 @@ Ptr<Packet> Icmpv6L4Protocol::ForgeNS (Ipv6Address src, Ipv6Address dst, Ipv6Add
 
   /* if the source is unspec, multicast the NA to all-nodes multicast */
   if (src == Ipv6Address::GetAny ())
-  {
-    dst = Ipv6Address::GetAllNodesMulticast ();
-  }
+    {
+      dst = Ipv6Address::GetAllNodesMulticast ();
+    }
 
   NS_LOG_LOGIC ("Send NS ( from " << src << " to " << dst << " target " << target <<")");
 
@@ -1079,12 +1079,12 @@ Ptr<NdiscCache> Icmpv6L4Protocol::FindCache (Ptr<NetDevice> device)
   NS_LOG_FUNCTION (this << device);
 
   for (CacheList::const_iterator i = m_cacheList.begin () ; i != m_cacheList.end () ; i++)
-  {
-    if ((*i)->GetDevice () == device)
     {
-      return *i;
+      if ((*i)->GetDevice () == device)
+        {
+          return *i;
+        }
     }
-  }
 
   NS_ASSERT (false);
   /* quiet compiler */
@@ -1094,7 +1094,7 @@ Ptr<NdiscCache> Icmpv6L4Protocol::FindCache (Ptr<NetDevice> device)
 Ptr<NdiscCache> Icmpv6L4Protocol::CreateCache (Ptr<NetDevice> device, Ptr<Ipv6Interface> interface)
 {
   Ptr<NdiscCache> cache = CreateObject<NdiscCache> ();
-  
+
   cache->SetDevice (device, interface);
   device->AddLinkChangeCallback (MakeCallback (&NdiscCache::Flush, cache));
   m_cacheList.push_back (cache);
@@ -1106,10 +1106,10 @@ bool Icmpv6L4Protocol::Lookup (Ipv6Address dst, Ptr<NetDevice> device, Ptr<Ndisc
   NS_LOG_FUNCTION (this << dst << device << hardwareDestination);
 
   if (!cache)
-  {
-    /* try to find the cache */
-    cache = FindCache (device);
-  }
+    {
+      /* try to find the cache */
+      cache = FindCache (device);
+    }
 
   return cache->Lookup (dst);
 }
@@ -1119,68 +1119,68 @@ bool Icmpv6L4Protocol::Lookup (Ptr<Packet> p, Ipv6Address dst, Ptr<NetDevice> de
   NS_LOG_FUNCTION (this << p << dst << device << hardwareDestination);
 
   if (!cache)
-  {
-    /* try to find the cache */
-    cache = FindCache (device);
-  }
+    {
+      /* try to find the cache */
+      cache = FindCache (device);
+    }
 
   NdiscCache::Entry* entry = cache->Lookup (dst);
   if (entry)
-  {
-    if (entry->IsReachable () || entry->IsDelay ())
     {
-      /* XXX check reachability time */
-      /* send packet */
-      *hardwareDestination = entry->GetMacAddress ();
-      return true;
+      if (entry->IsReachable () || entry->IsDelay ())
+        {
+          /* XXX check reachability time */
+          /* send packet */
+          *hardwareDestination = entry->GetMacAddress ();
+          return true;
+        }
+      else if (entry->IsStale ())
+        {
+          /* start delay timer */
+          entry->StartDelayTimer ();
+          entry->MarkDelay ();
+          *hardwareDestination = entry->GetMacAddress ();
+          return true;
+        }
+      else /* PROBE */
+        {
+          /* queue packet */
+          entry->AddWaitingPacket (p);
+          return false;
+        }
     }
-    else if (entry->IsStale ())
-    {
-      /* start delay timer */
-      entry->StartDelayTimer ();
-      entry->MarkDelay ();
-      *hardwareDestination = entry->GetMacAddress ();
-      return true;
-    }
-    else /* PROBE */
-    {
-      /* queue packet */
-      entry->AddWaitingPacket (p);
-      return false;
-    }
-  }
   else
-  {
-    /* we contact this node for the first time
-     * add it to the cache and send an NS
-     */
-    Ipv6Address addr;
-    NdiscCache::Entry* entry = cache->Add (dst);
-    entry->MarkIncomplete (p);
-    entry->SetRouter (false);
+    {
+      /* we contact this node for the first time
+       * add it to the cache and send an NS
+       */
+      Ipv6Address addr;
+      NdiscCache::Entry* entry = cache->Add (dst);
+      entry->MarkIncomplete (p);
+      entry->SetRouter (false);
 
-    if (dst.IsLinkLocal ())
-    {
-      addr = cache->GetInterface ()->GetLinkLocalAddress ().GetAddress ();
-    }
-    else if (cache->GetInterface ()->GetNAddresses () == 1) /* an interface have at least one address (link-local) */
-    {
-      /* try to resolve global address without having global address so return! */
-      cache->Remove (entry);
+      if (dst.IsLinkLocal ())
+        {
+          addr = cache->GetInterface ()->GetLinkLocalAddress ().GetAddress ();
+        }
+      else if (cache->GetInterface ()->GetNAddresses () == 1) /* an interface have at least one address (link-local) */
+        {
+          /* try to resolve global address without having global address so return! */
+          cache->Remove (entry);
+          return false;
+        }
+      else
+        {
+          /* find source address that match destination */
+          addr = cache->GetInterface ()->GetAddressMatchingDestination (dst).GetAddress (); 
+        }
+
+      SendNS (addr, Ipv6Address::MakeSolicitedAddress (dst), dst, cache->GetDevice ()->GetAddress ());
+
+      /* start retransmit timer */
+      entry->StartRetransmitTimer ();
       return false;
     }
-    else
-    {
-      /* find source address that match destination */
-      addr = cache->GetInterface ()->GetAddressMatchingDestination (dst).GetAddress (); 
-    }
-
-    SendNS (addr, Ipv6Address::MakeSolicitedAddress (dst), dst, cache->GetDevice ()->GetAddress ());
-
-    /* start retransmit timer */
-    entry->StartRetransmitTimer ();
-    return false;
-  }
 
   return false;
 }
@@ -1193,39 +1193,39 @@ void Icmpv6L4Protocol::FunctionDadTimeout (Ptr<Icmpv6L4Protocol> icmpv6, Ipv6Int
   bool found = false;
   uint32_t i = 0;
   uint32_t nb = interface->GetNAddresses ();
-  
-  for (i = 0 ; i < nb ; i++)
-  {
-    ifaddr = interface->GetAddress (i);
 
-    if (ifaddr.GetAddress () == addr)
+  for (i = 0 ; i < nb ; i++)
     {
-      found = true;
-      break;
+      ifaddr = interface->GetAddress (i);
+
+      if (ifaddr.GetAddress () == addr)
+        {
+          found = true;
+          break;
+        }
     }
-  }
 
   /* for the moment, this function is always called, if we was victim of a DAD the address is INVALID 
    * and we do not set it to PREFERRED
    */
   if (found && ifaddr.GetState () != Ipv6InterfaceAddress::INVALID)
-  {
-    interface->SetState (ifaddr.GetAddress (), Ipv6InterfaceAddress::PREFERRED);
-    NS_LOG_LOGIC ("DAD OK, interface in state PREFERRED");
-
-    /* send an RS if our interface is not forwarding (router) and if address is a link-local ones
-     * (because we will send RS with it)
-     */
-    Ptr<Ipv6> ipv6 = icmpv6->m_node->GetObject<Ipv6> ();
-
-    if (!ipv6->IsForwarding (ipv6->GetInterfaceForDevice (interface->GetDevice ())) && addr.IsLinkLocal ()) 
     {
-      /* XXX because all nodes start at the same time, there will be many of RS arround 1 second of simulation time 
-       * TODO Add random delays before sending RS
+      interface->SetState (ifaddr.GetAddress (), Ipv6InterfaceAddress::PREFERRED);
+      NS_LOG_LOGIC ("DAD OK, interface in state PREFERRED");
+
+      /* send an RS if our interface is not forwarding (router) and if address is a link-local ones
+       * (because we will send RS with it)
        */
-      Simulator::Schedule (Seconds (0.0), &Icmpv6L4Protocol::SendRS, PeekPointer (icmpv6), ifaddr.GetAddress (), Ipv6Address::GetAllRoutersMulticast (), interface->GetDevice ()->GetAddress ());
+      Ptr<Ipv6> ipv6 = icmpv6->m_node->GetObject<Ipv6> ();
+
+      if (!ipv6->IsForwarding (ipv6->GetInterfaceForDevice (interface->GetDevice ())) && addr.IsLinkLocal ()) 
+        {
+          /* XXX because all nodes start at the same time, there will be many of RS arround 1 second of simulation time 
+           * TODO Add random delays before sending RS
+           */
+          Simulator::Schedule (Seconds (0.0), &Icmpv6L4Protocol::SendRS, PeekPointer (icmpv6), ifaddr.GetAddress (), Ipv6Address::GetAllRoutersMulticast (), interface->GetDevice ()->GetAddress ());
+        }
     }
-  }
 }
 
 } /* namespace ns3 */

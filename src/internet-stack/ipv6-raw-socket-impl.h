@@ -29,7 +29,7 @@
 
 namespace ns3
 {
-
+ 
 class NetDevice;
 class Node;
 
@@ -39,214 +39,214 @@ class Node;
  */
 class Ipv6RawSocketImpl : public Socket
 {
-  public:
-    /**
-     * \brief Get the type ID of this class.
-     * \return type ID
-     */
-    static TypeId GetTypeId ();
+public:
+  /**
+   * \brief Get the type ID of this class.
+   * \return type ID
+   */
+  static TypeId GetTypeId ();
 
-    /**
-     * \brief Constructor.
-     */
-    Ipv6RawSocketImpl ();
-    
-    /**
-     * \brief Destructor.
-     */
-    virtual ~Ipv6RawSocketImpl ();
+  /**
+   * \brief Constructor.
+   */
+  Ipv6RawSocketImpl ();
 
-    /**
-     * \brief Set the node.
-     * \param node node to set
-     */
-    void SetNode (Ptr<Node> node);
+  /**
+   * \brief Destructor.
+   */
+  virtual ~Ipv6RawSocketImpl ();
 
-    /**
-     * \brief Get last error number.
-     * \return error number
-     */
-    virtual enum Socket::SocketErrno GetErrno () const;
+  /**
+   * \brief Set the node.
+   * \param node node to set
+   */
+  void SetNode (Ptr<Node> node);
 
-    /**
-     * \brief Get node.
-     * \return node associated with this raw socket.
-     */
-    virtual Ptr<Node> GetNode () const;
+  /**
+   * \brief Get last error number.
+   * \return error number
+   */
+  virtual enum Socket::SocketErrno GetErrno () const;
 
-    /**
-     * \brief Bind the socket to address.
-     * \param address bind to this address
-     * \return 0 if success, -1 otherwise
-     */
-    virtual int Bind (const Address& address);
+  /**
+   * \brief Get node.
+   * \return node associated with this raw socket.
+   */
+  virtual Ptr<Node> GetNode () const;
 
-    /**
-     * \brief Bind socket.
-     * \return 0 if success, -1 otherwise
-     */
-    virtual int Bind ();
+  /**
+   * \brief Bind the socket to address.
+   * \param address bind to this address
+   * \return 0 if success, -1 otherwise
+   */
+  virtual int Bind (const Address& address);
 
-    /**
-     * \brief Get socket address.
-     * \param address socket address if method success
-     * \return 0 if success, -1 otherwise
-     */
-    virtual int GetSockName (Address& address) const;
+  /**
+   * \brief Bind socket.
+   * \return 0 if success, -1 otherwise
+   */
+  virtual int Bind ();
 
-    /**
-     * \brief Close the socket.
-     * \return 0 if success, -1 otherwise
-     */
-    virtual int Close ();
+  /**
+   * \brief Get socket address.
+   * \param address socket address if method success
+   * \return 0 if success, -1 otherwise
+   */
+  virtual int GetSockName (Address& address) const;
 
-    /**
-     * \brief Shutdown send capability.
-     * \return 0 if success, -1 otherwise
-     */
-    virtual int ShutdownSend ();
+  /**
+   * \brief Close the socket.
+   * \return 0 if success, -1 otherwise
+   */
+  virtual int Close ();
 
-    /**
-     * \brief Shutdown receive capability.
-     * \return 0 if success, -1 otherwise
-     */
-    virtual int ShutdownRecv ();
-     
-    /**
-     * \brief Connect to address.
-     * \param address address
-     * \return 0 if success, -1 otherwise
-     */
-    virtual int Connect (const Address& address);
+  /**
+   * \brief Shutdown send capability.
+   * \return 0 if success, -1 otherwise
+   */
+  virtual int ShutdownSend ();
 
-    /**
-     * \brief Listen.
-     * \return 0 if success, -1 otherwise
-     */
-    virtual int Listen ();
+  /**
+   * \brief Shutdown receive capability.
+   * \return 0 if success, -1 otherwise
+   */
+  virtual int ShutdownRecv ();
 
-    /**
-     * \brief Get TX size available.
-     * \return TX size
-     */
-    virtual uint32_t GetTxAvailable () const;
+  /**
+   * \brief Connect to address.
+   * \param address address
+   * \return 0 if success, -1 otherwise
+   */
+  virtual int Connect (const Address& address);
 
-    /**
-     * \brief Get RX size available.
-     * \return RX size
-     */
-    virtual uint32_t GetRxAvailable () const;
+  /**
+   * \brief Listen.
+   * \return 0 if success, -1 otherwise
+   */
+  virtual int Listen ();
 
-    /**
-     * \brief Send a packet.
-     * \param p packet to send
-     * \param flags additionnal flags
-     * \return 0 if success, -1 otherwise
-     */
-    virtual int Send (Ptr<Packet> p, uint32_t flags);
-    
-    /**
-     * \brief Send a packet.
-     * \param p packet to send
-     * \param flags additionnal flags
-     * \param toAddress destination address
-     * \return 0 if success, -1 otherwise
-     */
-    virtual int SendTo (Ptr<Packet> p, uint32_t flags, const Address& toAddress);
+  /**
+   * \brief Get TX size available.
+   * \return TX size
+   */
+  virtual uint32_t GetTxAvailable () const;
 
-    /**
-     * \brief Receive packet.
-     * \param maxSize maximum size
-     * \param flags additionnal flags
-     * \return packet received
-     */
-    virtual Ptr<Packet> Recv (uint32_t maxSize, uint32_t flags);
-    
-    /**
-     * \brief Receive packet.
-     * \param maxSize maximum size
-     * \param flags additionnal flags
-     * \param fromAddress source address
-     * \return packet received
-     */
-    virtual Ptr<Packet> RecvFrom (uint32_t maxSize, uint32_t flags, Address& fromAddress);
-    
-    /**
-     * \brief Set protocol field.
-     * \param protocol protocol to set
-     */
-    void SetProtocol (uint16_t protocol);
-    
-    /**
-     * \brief Forward up to receive method.
-     * \param p packet
-     * \param hdr IPv6 header
-     * \param device device
-     * \return true if forwarded, false otherwise
-     */
-    bool ForwardUp (Ptr<const Packet> p, Ipv6Header hdr, Ptr<NetDevice> device);
+  /**
+   * \brief Get RX size available.
+   * \return RX size
+   */
+  virtual uint32_t GetRxAvailable () const;
 
-  private:
-    /**
-     * \struct Data
-     * \brief IPv6 raw data and additionnal information.
-     */
-    struct Data
+  /**
+   * \brief Send a packet.
+   * \param p packet to send
+   * \param flags additionnal flags
+   * \return 0 if success, -1 otherwise
+   */
+  virtual int Send (Ptr<Packet> p, uint32_t flags);
+
+  /**
+   * \brief Send a packet.
+   * \param p packet to send
+   * \param flags additionnal flags
+   * \param toAddress destination address
+   * \return 0 if success, -1 otherwise
+   */
+  virtual int SendTo (Ptr<Packet> p, uint32_t flags, const Address& toAddress);
+
+  /**
+   * \brief Receive packet.
+   * \param maxSize maximum size
+   * \param flags additionnal flags
+   * \return packet received
+   */
+  virtual Ptr<Packet> Recv (uint32_t maxSize, uint32_t flags);
+
+  /**
+   * \brief Receive packet.
+   * \param maxSize maximum size
+   * \param flags additionnal flags
+   * \param fromAddress source address
+   * \return packet received
+   */
+  virtual Ptr<Packet> RecvFrom (uint32_t maxSize, uint32_t flags, Address& fromAddress);
+
+  /**
+   * \brief Set protocol field.
+   * \param protocol protocol to set
+   */
+  void SetProtocol (uint16_t protocol);
+
+  /**
+   * \brief Forward up to receive method.
+   * \param p packet
+   * \param hdr IPv6 header
+   * \param device device
+   * \return true if forwarded, false otherwise
+   */
+  bool ForwardUp (Ptr<const Packet> p, Ipv6Header hdr, Ptr<NetDevice> device);
+
+private:
+  /**
+   * \struct Data
+   * \brief IPv6 raw data and additionnal information.
+   */
+  struct Data
     {
       Ptr<Packet> packet; /**< Packet data */
       Ipv6Address fromIp; /**< Source address */
       uint16_t fromProtocol; /**< Protocol used */
     };
 
-    /**
-     * \brief Dispose object.
-     */
-    virtual void DoDispose ();
+  /**
+   * \brief Dispose object.
+   */
+  virtual void DoDispose ();
 
-    /**
-     * \brief Last error number.
-     */
-    enum Socket::SocketErrno m_err;
-    
-    /**
-     * \brief Node.
-     */
-    Ptr<Node> m_node;
+  /**
+   * \brief Last error number.
+   */
+  enum Socket::SocketErrno m_err;
 
-    /**
-     * \brief Source address.
-     */
-    Ipv6Address m_src;
+  /**
+   * \brief Node.
+   */
+  Ptr<Node> m_node;
 
-    /**
-     * \brief Destination address.
-     */
-    Ipv6Address m_dst;
+  /**
+   * \brief Source address.
+   */
+  Ipv6Address m_src;
 
-    /**
-     * \brief Protocol.
-     */
-    uint16_t m_protocol;
+  /**
+   * \brief Destination address.
+   */
+  Ipv6Address m_dst;
 
-    /**
-     * \brief Packet waiting to be processed.
-     */
-    std::list<struct Data> m_data;
+  /**
+   * \brief Protocol.
+   */
+  uint16_t m_protocol;
 
-    /**
-     * \brief Flag to shutdown send capability.
-     */
-    bool m_shutdownSend;
-    
-    /**
-     * \brief Flag to shutdown receive capability.
-     */
-    bool m_shutdownRecv;
+  /**
+   * \brief Packet waiting to be processed.
+   */
+  std::list<struct Data> m_data;
 
-    /**
-     * \brief ICMPv6 filter.
-     */
-    uint32_t m_icmpFilter;
+  /**
+   * \brief Flag to shutdown send capability.
+   */
+  bool m_shutdownSend;
+
+  /**
+   * \brief Flag to shutdown receive capability.
+   */
+  bool m_shutdownRecv;
+
+  /**
+   * \brief ICMPv6 filter.
+   */
+  uint32_t m_icmpFilter;
 };
 
 } /* namespace ns3 */

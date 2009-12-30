@@ -83,21 +83,21 @@ void Ipv6InterfaceAddress::SetAddress (Ipv6Address address)
   m_address = address;
 
   if (address.IsLocalhost ())
-  {
-    m_scope = HOST;
-    /* localhost address is always /128 prefix */
-    m_prefix = Ipv6Prefix (128);
-  }
+    {
+      m_scope = HOST;
+      /* localhost address is always /128 prefix */
+      m_prefix = Ipv6Prefix (128);
+    }
   if (address.IsLinkLocal ())
-  {
-    m_scope = LINKLOCAL;
-    /* link-local address is always /64 prefix */
-    m_prefix = Ipv6Prefix (64);
-  }
+    {
+      m_scope = LINKLOCAL;
+      /* link-local address is always /64 prefix */
+      m_prefix = Ipv6Prefix (64);
+    }
   else
-  {
-    m_scope = GLOBAL;
-  }
+    {
+      m_scope = GLOBAL;
+    }
 }
 
 Ipv6Prefix Ipv6InterfaceAddress::GetPrefix () const

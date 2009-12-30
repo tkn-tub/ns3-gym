@@ -48,271 +48,271 @@ class NdiscCache;
  */
 class Ipv6Interface : public Object
 {
-  public:
-    /**
-     * \brief Get the type ID
-     * \return type ID
-     */
-    static TypeId GetTypeId ();
+public:
+  /**
+   * \brief Get the type ID
+   * \return type ID
+   */
+  static TypeId GetTypeId ();
 
-    /**
-     * \brief Constructs an Ipv6Interface.
-     */
-    Ipv6Interface ();
+  /**
+   * \brief Constructs an Ipv6Interface.
+   */
+  Ipv6Interface ();
 
-    /**
-     * \brief Destructor.
-     */
-    virtual ~Ipv6Interface ();
+  /**
+   * \brief Destructor.
+   */
+  virtual ~Ipv6Interface ();
 
-    /**
-     * \brief Set node associated with interface.
-     * \param node node
-     */
-    void SetNode (Ptr<Node> node);
+  /**
+   * \brief Set node associated with interface.
+   * \param node node
+   */
+  void SetNode (Ptr<Node> node);
 
-    /**
-     * \brief Set the NetDevice.
-     * \param device NetDevice
-     */
-    void SetDevice (Ptr<NetDevice> device);
+  /**
+   * \brief Set the NetDevice.
+   * \param device NetDevice
+   */
+  void SetDevice (Ptr<NetDevice> device);
 
-    /**
-     * \brief Get the NetDevice.
-     * \return the NetDevice associated with this interface
-     */
-    virtual Ptr<NetDevice> GetDevice () const;
+  /**
+   * \brief Get the NetDevice.
+   * \return the NetDevice associated with this interface
+   */
+  virtual Ptr<NetDevice> GetDevice () const;
 
-    /**
-     * \brief Set the metric.
-     * \param metric configured routing metric (cost) of this interface
-     */
-    void SetMetric (uint16_t metric);
+  /**
+   * \brief Set the metric.
+   * \param metric configured routing metric (cost) of this interface
+   */
+  void SetMetric (uint16_t metric);
 
-    /**
-     * \brief Get the metric
-     * \return the metric
-     */
-    uint16_t GetMetric () const;
+  /**
+   * \brief Get the metric
+   * \return the metric
+   */
+  uint16_t GetMetric () const;
 
-    /**
-     * \brief Is the interface UP ?
-     * \return true if interface is enabled, false otherwise.
-     */
-    bool IsUp () const;
+  /**
+   * \brief Is the interface UP ?
+   * \return true if interface is enabled, false otherwise.
+   */
+  bool IsUp () const;
 
-    /**
-     * \brief Is the interface DOWN ?
-     * \return true if interface is disabled, false otherwise.
-     */
-    bool IsDown () const;
+  /**
+   * \brief Is the interface DOWN ?
+   * \return true if interface is disabled, false otherwise.
+   */
+  bool IsDown () const;
 
-    /**
-     * \brief Enable this interface.
-     */
-    void SetUp ();
+  /**
+   * \brief Enable this interface.
+   */
+  void SetUp ();
 
-    /**
-     * \brief Disable this interface.
-     */
-    void SetDown ();
+  /**
+   * \brief Disable this interface.
+   */
+  void SetDown ();
 
-    /**
-     * \brief If the interface allows forwarding packets.
-     * \return true if forwarding is enabled, false otherwise
-     */
-    bool IsForwarding () const;
+  /**
+   * \brief If the interface allows forwarding packets.
+   * \return true if forwarding is enabled, false otherwise
+   */
+  bool IsForwarding () const;
 
-    /**
-     * \brief Set forwarding enabled or not.
-     * \param forward forwarding state
-     */
-    void SetForwarding (bool forward);
+  /**
+   * \brief Set forwarding enabled or not.
+   * \param forward forwarding state
+   */
+  void SetForwarding (bool forward);
 
-    /**
-     * \brief Set the current hop limit.
-     * \param curHopLimit the value to set
-     */
-    void SetCurHopLimit (uint8_t curHopLimit);
+  /**
+   * \brief Set the current hop limit.
+   * \param curHopLimit the value to set
+   */
+  void SetCurHopLimit (uint8_t curHopLimit);
 
-    /**
-     * \brief Get the current hop limit value.
-     * \return current hop limit
-     */
-    uint8_t GetCurHopLimit () const;
+  /**
+   * \brief Get the current hop limit value.
+   * \return current hop limit
+   */
+  uint8_t GetCurHopLimit () const;
 
-    /**
-     * \brief Set the base reachable time.
-     * \param baseReachableTime the value to set
-     */
-    void SetBaseReachableTime (uint16_t baseReachableTime);
+  /**
+   * \brief Set the base reachable time.
+   * \param baseReachableTime the value to set
+   */
+  void SetBaseReachableTime (uint16_t baseReachableTime);
 
-    /**
-     * \brief Get the base reachable time.
-     * \return base reachable time
-     */
-    uint16_t GetBaseReachableTime () const;
+  /**
+   * \brief Get the base reachable time.
+   * \return base reachable time
+   */
+  uint16_t GetBaseReachableTime () const;
 
-    /**
-     * \brief Set the reachable time.
-     * \param reachableTime value to set
-     */
-    void SetReachableTime (uint16_t reachableTime);
+  /**
+   * \brief Set the reachable time.
+   * \param reachableTime value to set
+   */
+  void SetReachableTime (uint16_t reachableTime);
 
-    /**
-     * \brief Get the reachable time.
-     * \return reachable time
-     */
-    uint16_t GetReachableTime () const;
+  /**
+   * \brief Get the reachable time.
+   * \return reachable time
+   */
+  uint16_t GetReachableTime () const;
 
-    /**
-     * \brief Set the retransmission timer.
-     * \param retransTimer value to set
-     */
-    void SetRetransTimer (uint16_t retransTimer);
+  /**
+   * \brief Set the retransmission timer.
+   * \param retransTimer value to set
+   */
+  void SetRetransTimer (uint16_t retransTimer);
 
-    /**
-     * \brief Get the retransmission timer.
-     * \return retransmission timer
-     */
-    uint16_t GetRetransTimer () const;
+  /**
+   * \brief Get the retransmission timer.
+   * \return retransmission timer
+   */
+  uint16_t GetRetransTimer () const;
 
-    /**
-     * \brief Send a packet through this interface.
-     * \param p packet to send
-     * \param dest next hop address of packet.
-     *
-     * \note This method will eventually call the private SendTo
-     * method which must be implemented by subclasses.
-     */
-    void Send (Ptr<Packet> p, Ipv6Address dest);
+  /**
+   * \brief Send a packet through this interface.
+   * \param p packet to send
+   * \param dest next hop address of packet.
+   *
+   * \note This method will eventually call the private SendTo
+   * method which must be implemented by subclasses.
+   */
+  void Send (Ptr<Packet> p, Ipv6Address dest);
 
-    /**
-     * \brief Add an IPv6 address.
-     * \param iface address to add
-     * \return true if address was added, false otherwise
-     */
-    bool AddAddress (Ipv6InterfaceAddress iface);
-    
-    /**
-     * \brief Get link-local address from IPv6 interface.
-     * \return link-local Ipv6InterfaceAddress, assert if not found
-     */
-    Ipv6InterfaceAddress GetLinkLocalAddress () const;
+  /**
+   * \brief Add an IPv6 address.
+   * \param iface address to add
+   * \return true if address was added, false otherwise
+   */
+  bool AddAddress (Ipv6InterfaceAddress iface);
 
-    /**
-     * \brief Get an address from IPv6 interface.
-     * \param index index
-     * \return Ipv6InterfaceAddress address whose index is i
-     */
-    Ipv6InterfaceAddress GetAddress (uint32_t index) const;
+  /**
+   * \brief Get link-local address from IPv6 interface.
+   * \return link-local Ipv6InterfaceAddress, assert if not found
+   */
+  Ipv6InterfaceAddress GetLinkLocalAddress () const;
 
-    /**
-     * \brief Get an address which is in the same network prefix as destination.
-     * \param dst destination address
-     * \return Corresponding Ipv6InterfaceAddress or assert if not found
-     */
-    Ipv6InterfaceAddress GetAddressMatchingDestination (Ipv6Address dst);
+  /**
+   * \brief Get an address from IPv6 interface.
+   * \param index index
+   * \return Ipv6InterfaceAddress address whose index is i
+   */
+  Ipv6InterfaceAddress GetAddress (uint32_t index) const;
 
-    /**
-     * \brief Get number of addresses on this IPv6 interface.
-     * \return number of address
-     */
-    uint32_t GetNAddresses (void) const;
-  
-    /**
-     * \brief Remove an address from interface.
-     * \param index index to remove
-     * \return Ipv6InterfaceAddress address whose index is index
-     */
-    Ipv6InterfaceAddress RemoveAddress (uint32_t index);
-    
-    /**
-     * \brief Update state of an interface address.
-     * \param address IPv6 address
-     * \param state new state
-     */
-    void SetState (Ipv6Address address, Ipv6InterfaceAddress::State_e state);
+  /**
+   * \brief Get an address which is in the same network prefix as destination.
+   * \param dst destination address
+   * \return Corresponding Ipv6InterfaceAddress or assert if not found
+   */
+  Ipv6InterfaceAddress GetAddressMatchingDestination (Ipv6Address dst);
 
-    /**
-     * \brief Update NS DAD packet UID of an interface address.
-     * \param address IPv6 address
-     * \param uid packet UID 
-     */
-    void SetNsDadUid (Ipv6Address address, uint32_t uid);
+  /**
+   * \brief Get number of addresses on this IPv6 interface.
+   * \return number of address
+   */
+  uint32_t GetNAddresses (void) const;
 
-  protected:
-    /**
-     * \brief Dispose this object.
-     */
-    virtual void DoDispose ();
+  /**
+   * \brief Remove an address from interface.
+   * \param index index to remove
+   * \return Ipv6InterfaceAddress address whose index is index
+   */
+  Ipv6InterfaceAddress RemoveAddress (uint32_t index);
 
-  private:
-    typedef std::list<Ipv6InterfaceAddress> Ipv6InterfaceAddressList;
-    typedef std::list<Ipv6InterfaceAddress>::iterator Ipv6InterfaceAddressListI;
-    typedef std::list<Ipv6InterfaceAddress>::const_iterator Ipv6InterfaceAddressListCI;
+  /**
+   * \brief Update state of an interface address.
+   * \param address IPv6 address
+   * \param state new state
+   */
+  void SetState (Ipv6Address address, Ipv6InterfaceAddress::State_e state);
 
-    /**
-     * \brief Initialize interface.
-     */
-    void DoSetup ();
+  /**
+   * \brief Update NS DAD packet UID of an interface address.
+   * \param address IPv6 address
+   * \param uid packet UID 
+   */
+  void SetNsDadUid (Ipv6Address address, uint32_t uid);
 
-    /**
-     * \brief The addresses assigned to this interface.
-     */
-    Ipv6InterfaceAddressList m_addresses;
+protected:
+  /**
+   * \brief Dispose this object.
+   */
+  virtual void DoDispose ();
 
-    /**
-     * \brief The state of this interface.
-     */
-    bool m_ifup;
+private:
+  typedef std::list<Ipv6InterfaceAddress> Ipv6InterfaceAddressList;
+  typedef std::list<Ipv6InterfaceAddress>::iterator Ipv6InterfaceAddressListI;
+  typedef std::list<Ipv6InterfaceAddress>::const_iterator Ipv6InterfaceAddressListCI;
 
-    /**
-     * \brief Forwarding state.
-     */
-    bool m_forwarding;
+  /**
+   * \brief Initialize interface.
+   */
+  void DoSetup ();
 
-    /**
-     * \brief The metric.
-     */
-    uint16_t m_metric;
+  /**
+   * \brief The addresses assigned to this interface.
+   */
+  Ipv6InterfaceAddressList m_addresses;
 
-    /**
-     * \brief Node associated with this interface.
-     */
-    Ptr<Node> m_node;
+  /**
+   * \brief The state of this interface.
+   */
+  bool m_ifup;
 
-    /**
-     * \brief NetDevice associated with this interface.
-     */
-    Ptr<NetDevice> m_device;
+  /**
+   * \brief Forwarding state.
+   */
+  bool m_forwarding;
 
-    /**
-     * \brief Neighbor cache.
-     */
-    Ptr<NdiscCache> m_ndCache;
+  /**
+   * \brief The metric.
+   */
+  uint16_t m_metric;
 
-    /**
-     * \brief Current hop limit.
-     */
-    uint8_t m_curHopLimit;
+  /**
+   * \brief Node associated with this interface.
+   */
+  Ptr<Node> m_node;
 
-    /**
-     * \brief Base value used for computing the random reachable time value (in millisecond).
-     */
-    uint16_t m_baseReachableTime;
+  /**
+   * \brief NetDevice associated with this interface.
+   */
+  Ptr<NetDevice> m_device;
 
-    /**
-     * \brief Reachable time (in millisecond).
-     * The time a neighbor is considered reachable after receiving a reachability confirmation.
-     */
-    uint16_t m_reachableTime;
+  /**
+   * \brief Neighbor cache.
+   */
+  Ptr<NdiscCache> m_ndCache;
 
-    /**
-     * \brief Retransmission timer (in millisecond).
-     * Time between retransmission of NS.
-     */
-    uint16_t m_retransTimer;
+  /**
+   * \brief Current hop limit.
+   */
+  uint8_t m_curHopLimit;
+
+  /**
+   * \brief Base value used for computing the random reachable time value (in millisecond).
+   */
+  uint16_t m_baseReachableTime;
+
+  /**
+   * \brief Reachable time (in millisecond).
+   * The time a neighbor is considered reachable after receiving a reachability confirmation.
+   */
+  uint16_t m_reachableTime;
+
+  /**
+   * \brief Retransmission timer (in millisecond).
+   * Time between retransmission of NS.
+   */
+  uint16_t m_retransTimer;
 };
 
 } /* namespace ns3 */

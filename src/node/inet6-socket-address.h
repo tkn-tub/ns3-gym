@@ -35,105 +35,105 @@ namespace ns3 {
  */
 class Inet6SocketAddress
 {
-  public:
-    /**
-     * \brief Constructor.
-     * \param ipv6 the IPv6 address
-     * \param port the port
-     */
-    Inet6SocketAddress (Ipv6Address ipv6, uint16_t port);
+public:
+  /**
+   * \brief Constructor.
+   * \param ipv6 the IPv6 address
+   * \param port the port
+   */
+  Inet6SocketAddress (Ipv6Address ipv6, uint16_t port);
 
-    /**
-     * \brief Constructor (the port is set to zero).
-     * \param ipv6 the IPv6 address
-     */
-    Inet6SocketAddress (Ipv6Address ipv6);
+  /**
+   * \brief Constructor (the port is set to zero).
+   * \param ipv6 the IPv6 address
+   */
+  Inet6SocketAddress (Ipv6Address ipv6);
 
-    /**
-     * \brief Constructor (the address is set to "any").
-     * \param port the port
-     */
-    Inet6SocketAddress (uint16_t port);
+  /**
+   * \brief Constructor (the address is set to "any").
+   * \param port the port
+   */
+  Inet6SocketAddress (uint16_t port);
 
-    /**
-     * \brief Constructor.
-     * \param ipv6 string which represents an IPv6 address
-     * \param port the port
-     */
-    Inet6SocketAddress (const char* ipv6, uint16_t port);
+  /**
+   * \brief Constructor.
+   * \param ipv6 string which represents an IPv6 address
+   * \param port the port
+   */
+  Inet6SocketAddress (const char* ipv6, uint16_t port);
 
-    /**
-     * \brief Constructor.
-     * \param ipv6 string which represents an IPv6 address
-     */
-    Inet6SocketAddress (const char* ipv6);
+  /**
+   * \brief Constructor.
+   * \param ipv6 string which represents an IPv6 address
+   */
+  Inet6SocketAddress (const char* ipv6);
 
-    /**
-     * \brief Get the port.
-     * \return the port
-     */
-    uint16_t GetPort (void) const;
+  /**
+   * \brief Get the port.
+   * \return the port
+   */
+  uint16_t GetPort (void) const;
 
-    /**
-     * \brief Set the port
-     * \param port the port
-     */
-    void SetPort (uint16_t port);
+  /**
+   * \brief Set the port
+   * \param port the port
+   */
+  void SetPort (uint16_t port);
 
-    /**
-     * \brief Get the IPv6 address.
-     * \return the IPv6 address
-     */
-    Ipv6Address GetIpv6 (void) const;
+  /**
+   * \brief Get the IPv6 address.
+   * \return the IPv6 address
+   */
+  Ipv6Address GetIpv6 (void) const;
 
-    /**
-     * \brief Set the IPv6 address.
-     * \param ipv6 the address
-     */
-    void SetIpv6 (Ipv6Address ipv6);
+  /**
+   * \brief Set the IPv6 address.
+   * \param ipv6 the address
+   */
+  void SetIpv6 (Ipv6Address ipv6);
 
-    /**
-     * \brief If the address match.
-     * \param addr the address to test
-     * \return true if the address match, false otherwise
-     */
-    static bool IsMatchingType (const Address &addr);
+  /**
+   * \brief If the address match.
+   * \param addr the address to test
+   * \return true if the address match, false otherwise
+   */
+  static bool IsMatchingType (const Address &addr);
 
-    /**
-     * \brief Get an Address instance which represents this
-     * Inet6SocketAddress instance.
-     */
-    operator Address (void) const;
+  /**
+   * \brief Get an Address instance which represents this
+   * Inet6SocketAddress instance.
+   */
+  operator Address (void) const;
 
-    /**
-     * \brief Convert the address to a InetSocketAddress.
-     * \param addr the address to convert
-     * \return an Inet6SocketAddress instance corresponding to address
-     */
-    static Inet6SocketAddress ConvertFrom (const Address &addr);
+  /**
+   * \brief Convert the address to a InetSocketAddress.
+   * \param addr the address to convert
+   * \return an Inet6SocketAddress instance corresponding to address
+   */
+  static Inet6SocketAddress ConvertFrom (const Address &addr);
 
-  private:
-    /**
-     * \brief Convert to Address.
-     * \return Address instance
-     */
-    Address ConvertTo (void) const;
+private:
+  /**
+   * \brief Convert to Address.
+   * \return Address instance
+   */
+  Address ConvertTo (void) const;
 
-    /**
-     * \brief Get the type.
-     * \return the type of Inet6SocketAddress
-     */
-    static uint8_t GetType (void);
+  /**
+   * \brief Get the type.
+   * \return the type of Inet6SocketAddress
+   */
+  static uint8_t GetType (void);
 
-    /**
-     * \brief The IPv6 address.
-     */
-    Ipv6Address m_ipv6;
+  /**
+   * \brief The IPv6 address.
+   */
+  Ipv6Address m_ipv6;
 
-    /**
-     * \brief The port.
-     */
-    uint16_t m_port;
+  /**
+   * \brief The port.
+   */
+  uint16_t m_port;
 };
 
 } /* namespace ns3 */

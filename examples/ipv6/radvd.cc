@@ -56,31 +56,31 @@ int main (int argc, char** argv)
   LogComponentEnable ("Ping6Application", LOG_LEVEL_ALL);
 #endif
 
-	CommandLine cmd;
+  CommandLine cmd;
   cmd.Parse (argc, argv);
-  
-	NS_LOG_INFO ("Create nodes.");
-	Ptr<Node> n0 = CreateObject<Node> ();
-	Ptr<Node> r = CreateObject<Node> ();
-	Ptr<Node> n1 = CreateObject<Node> ();
 
-	NodeContainer net1 (n0, r);
-	NodeContainer net2 (r, n1);
-	NodeContainer all (n0, r, n1);
+  NS_LOG_INFO ("Create nodes.");
+  Ptr<Node> n0 = CreateObject<Node> ();
+  Ptr<Node> r = CreateObject<Node> ();
+  Ptr<Node> n1 = CreateObject<Node> ();
 
-	NS_LOG_INFO ("Create IPv6 Internet Stack");
+  NodeContainer net1 (n0, r);
+  NodeContainer net2 (r, n1);
+  NodeContainer all (n0, r, n1);
+
+  NS_LOG_INFO ("Create IPv6 Internet Stack");
   InternetStackHelper internetv6;
   internetv6.Install (all);
 
   NS_LOG_INFO ("Create channels.");
-	CsmaHelper csma;
+  CsmaHelper csma;
   csma.SetChannelAttribute ("DataRate", DataRateValue (5000000));
   csma.SetChannelAttribute ("Delay", TimeValue (MilliSeconds (2)));
-	NetDeviceContainer d1 = csma.Install (net1); /* n0 - R */
-	NetDeviceContainer d2 = csma.Install (net2); /* R - n1 */
+  NetDeviceContainer d1 = csma.Install (net1); /* n0 - R */
+  NetDeviceContainer d2 = csma.Install (net2); /* R - n1 */
 
-	NS_LOG_INFO ("Create networks and assign IPv6 Addresses.");
-	Ipv6AddressHelper ipv6;
+  NS_LOG_INFO ("Create networks and assign IPv6 Addresses.");
+  Ipv6AddressHelper ipv6;
 
   /* first subnet */
   ipv6.NewNetwork (Ipv6Address ("2001:1::"), 64);
@@ -143,7 +143,7 @@ int main (int argc, char** argv)
   apps.Start (Seconds (2.0));
   apps.Stop (Seconds (7.0));
 
-	std::ofstream ascii;
+  std::ofstream ascii;
   ascii.open ("radvd.tr");
   CsmaHelper::EnablePcapAll (std::string ("radvd"), true);
   CsmaHelper::EnableAsciiAll (ascii);

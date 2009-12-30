@@ -52,38 +52,38 @@ NS_LOG_COMPONENT_DEFINE ("RadvdExample");
  */
 class StackHelper
 {
-  public:
-    /**
-     * \brief Add an address to a IPv6 node.
-     * \param n node
-     * \param interface interface index
-     * \param address IPv6 address to add
-     */
-    inline void AddAddress (Ptr<Node>& n, uint32_t interface, Ipv6Address address)
-    {
-      Ptr<Ipv6> ipv6 = n->GetObject<Ipv6> ();
-      ipv6->AddAddress (interface, address);
-    }
+public:
+  /**
+   * \brief Add an address to a IPv6 node.
+   * \param n node
+   * \param interface interface index
+   * \param address IPv6 address to add
+   */
+  inline void AddAddress (Ptr<Node>& n, uint32_t interface, Ipv6Address address)
+  {
+    Ptr<Ipv6> ipv6 = n->GetObject<Ipv6> ();
+    ipv6->AddAddress (interface, address);
+  }
 
-    /**
-     * \brief Print the routing table.
-     * \param n the node
-     */
-    inline void PrintRoutingTable (Ptr<Node>& n)
-    {
-      Ptr<Ipv6StaticRouting> routing = 0;
-      Ipv6StaticRoutingHelper routingHelper;
-      Ptr<Ipv6> ipv6 = n->GetObject<Ipv6> ();
-      uint32_t nbRoutes = 0;
-      Ipv6RoutingTableEntry route;
+  /**
+   * \brief Print the routing table.
+   * \param n the node
+   */
+  inline void PrintRoutingTable (Ptr<Node>& n)
+  {
+    Ptr<Ipv6StaticRouting> routing = 0;
+    Ipv6StaticRoutingHelper routingHelper;
+    Ptr<Ipv6> ipv6 = n->GetObject<Ipv6> ();
+    uint32_t nbRoutes = 0;
+    Ipv6RoutingTableEntry route;
 
-      routing = routingHelper.GetStaticRouting (ipv6);
+    routing = routingHelper.GetStaticRouting (ipv6);
 
-      std::cout << "Routing table of " << n << " : " << std::endl;
-      std::cout << "Destination\t\t\t\t" << "Gateway\t\t\t\t\t" << "Interface\t" << "Prefix to use" << std::endl;
+    std::cout << "Routing table of " << n << " : " << std::endl;
+    std::cout << "Destination\t\t\t\t" << "Gateway\t\t\t\t\t" << "Interface\t" << "Prefix to use" << std::endl;
 
-      nbRoutes = routing->GetNRoutes ();
-      for (uint32_t i = 0 ; i < nbRoutes ; i++)
+    nbRoutes = routing->GetNRoutes ();
+    for (uint32_t i = 0 ; i < nbRoutes ; i++)
       {
         route = routing->GetRoute (i);
         std::cout << route.GetDest () << "\t"
@@ -92,7 +92,7 @@ class StackHelper
           << route.GetPrefixToUse () << "\t"
           << std::endl;
       }
-    }
+  }
 };
 
 int main (int argc, char** argv)
@@ -107,32 +107,32 @@ int main (int argc, char** argv)
   LogComponentEnable ("Ping6Application", LOG_LEVEL_ALL);
 #endif
 
-	CommandLine cmd;
+  CommandLine cmd;
   cmd.Parse (argc, argv);
-  
-	NS_LOG_INFO ("Create nodes.");
-	Ptr<Node> n0 = CreateObject<Node> ();
-	Ptr<Node> r = CreateObject<Node> ();
-	Ptr<Node> n1 = CreateObject<Node> ();
 
-	NodeContainer net1 (n0, r);
-	NodeContainer net2 (r, n1);
-	NodeContainer all (n0, r, n1);
+  NS_LOG_INFO ("Create nodes.");
+  Ptr<Node> n0 = CreateObject<Node> ();
+  Ptr<Node> r = CreateObject<Node> ();
+  Ptr<Node> n1 = CreateObject<Node> ();
+
+  NodeContainer net1 (n0, r);
+  NodeContainer net2 (r, n1);
+  NodeContainer all (n0, r, n1);
   StackHelper stackHelper;
 
-	NS_LOG_INFO ("Create IPv6 Internet Stack");
+  NS_LOG_INFO ("Create IPv6 Internet Stack");
   InternetStackHelper internetv6;
   internetv6.Install (all);
 
   NS_LOG_INFO ("Create channels.");
-	CsmaHelper csma;
+  CsmaHelper csma;
   csma.SetChannelAttribute ("DataRate", DataRateValue (5000000));
   csma.SetChannelAttribute ("Delay", TimeValue (MilliSeconds (2)));
-	NetDeviceContainer d1 = csma.Install (net1); /* n0 - R */
-	NetDeviceContainer d2 = csma.Install (net2); /* R - n1 */
+  NetDeviceContainer d1 = csma.Install (net1); /* n0 - R */
+  NetDeviceContainer d2 = csma.Install (net2); /* R - n1 */
 
-	NS_LOG_INFO ("Create networks and assign IPv6 Addresses.");
-	Ipv6AddressHelper ipv6;
+  NS_LOG_INFO ("Create networks and assign IPv6 Addresses.");
+  Ipv6AddressHelper ipv6;
 
   /* first subnet */
   ipv6.NewNetwork (Ipv6Address ("2001:1::"), 64);
@@ -208,7 +208,7 @@ int main (int argc, char** argv)
   /* at the end, RA addresses and routes should be cleared */
   Simulator::Schedule (Seconds (10.0), &StackHelper::PrintRoutingTable, &stackHelper, n0); 
 
-	std::ofstream ascii;
+  std::ofstream ascii;
   ascii.open ("radvd-two-prefix.tr");
   CsmaHelper::EnablePcapAll (std::string ("radvd-two-prefix"), true);
   CsmaHelper::EnableAsciiAll (ascii);

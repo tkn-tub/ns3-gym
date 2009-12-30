@@ -45,7 +45,7 @@ public:
 
   /**
    * \internal
-   * Destroy an Ipv6 Ipv6ListRoutingHelper.
+   * \brief Destroy an Ipv6 Ipv6ListRoutingHelper.
    */
   virtual ~Ipv6ListRoutingHelper ();
 

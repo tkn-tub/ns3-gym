@@ -70,31 +70,31 @@ void Ipv6Interface::DoDispose ()
 void Ipv6Interface::DoSetup ()
 {
   NS_LOG_FUNCTION_NOARGS ();
-  
+
   if (m_node == 0 || m_device == 0)
-  {
-    return;
-  }
-  
+    {
+      return;
+    }
+
   /* set up link-local address */
   if (!DynamicCast<LoopbackNetDevice> (m_device)) /* no autoconf for ip6-localhost */
-  {
-    Address addr = GetDevice ()->GetAddress ();
+    {
+      Address addr = GetDevice ()->GetAddress ();
 
-    if (Mac48Address::IsMatchingType (addr))
-    {
-      Ipv6InterfaceAddress ifaddr = Ipv6InterfaceAddress (Ipv6Address::MakeAutoconfiguredLinkLocalAddress (Mac48Address::ConvertFrom (addr)), Ipv6Prefix (64));
-      AddAddress (ifaddr);
+      if (Mac48Address::IsMatchingType (addr))
+        {
+          Ipv6InterfaceAddress ifaddr = Ipv6InterfaceAddress (Ipv6Address::MakeAutoconfiguredLinkLocalAddress (Mac48Address::ConvertFrom (addr)), Ipv6Prefix (64));
+          AddAddress (ifaddr);
+        }
+      else
+        {
+          NS_ASSERT_MSG (false, "IPv6 autoconf for this kind of address not implemented.");
+        }
     }
-    else
-    {
-      NS_ASSERT_MSG (false, "IPv6 autoconf for this kind of address not implemented.");
-    }
-  }
   else
-  {
-    return; /* no NDISC cache for ip6-localhost */
-  }
+    {
+      return; /* no NDISC cache for ip6-localhost */
+    }
 
   Ptr<Icmpv6L4Protocol> icmpv6 = m_node->GetObject<Ipv6L3Protocol> ()->GetIcmpv6 ();
   m_ndCache = icmpv6->CreateCache (m_device, this);
@@ -149,9 +149,9 @@ void Ipv6Interface::SetUp ()
   NS_LOG_FUNCTION_NOARGS ();
 
   if (m_ifup)
-  {
-    return;
-  }
+    {
+      return;
+    }
   m_ifup = true;
 }
 
@@ -181,30 +181,30 @@ bool Ipv6Interface::AddAddress (Ipv6InterfaceAddress iface)
 
   /* DAD handling */
   if (!addr.IsAny ())
-  {
-    for (Ipv6InterfaceAddressListCI it = m_addresses.begin () ; it != m_addresses.end () ; ++it)
     {
-      if ((*it).GetAddress () == addr)
-      {
-        return false;
-      }
-    }
+      for (Ipv6InterfaceAddressListCI it = m_addresses.begin () ; it != m_addresses.end () ; ++it)
+        {
+          if ((*it).GetAddress () == addr)
+            {
+              return false;
+            }
+        }
 
-    m_addresses.push_back (iface);
-    
-    if (!addr.IsAny () || !addr.IsLocalhost ())
-    {
-      /* DAD handling */
-      Ptr<Icmpv6L4Protocol> icmpv6 = m_node->GetObject<Ipv6L3Protocol> ()->GetIcmpv6 ();
+      m_addresses.push_back (iface);
 
-      if (icmpv6 && icmpv6->IsAlwaysDad ())
-      {
-        Simulator::Schedule (Seconds (0.), &Icmpv6L4Protocol::DoDAD, icmpv6, addr, this);
-        Simulator::Schedule (Seconds (1.), &Icmpv6L4Protocol::FunctionDadTimeout, icmpv6, this, addr);
-      }
+      if (!addr.IsAny () || !addr.IsLocalhost ())
+        {
+          /* DAD handling */
+          Ptr<Icmpv6L4Protocol> icmpv6 = m_node->GetObject<Ipv6L3Protocol> ()->GetIcmpv6 ();
+
+          if (icmpv6 && icmpv6->IsAlwaysDad ())
+            {
+              Simulator::Schedule (Seconds (0.), &Icmpv6L4Protocol::DoDAD, icmpv6, addr, this);
+              Simulator::Schedule (Seconds (1.), &Icmpv6L4Protocol::FunctionDadTimeout, icmpv6, this, addr);
+            }
+        }
+      return true;
     }
-    return true;
-  }
 
   /* bad address */
   return false;
@@ -216,12 +216,12 @@ Ipv6InterfaceAddress Ipv6Interface::GetLinkLocalAddress () const
   NS_LOG_FUNCTION_NOARGS ();
 
   for (Ipv6InterfaceAddressListCI it = m_addresses.begin () ; it != m_addresses.end () ; ++it)
-  {
-    if ((*it).GetAddress ().IsLinkLocal ())
     {
-      return (*it);
+      if ((*it).GetAddress ().IsLinkLocal ())
+        {
+          return (*it);
+        }
     }
-  }
   NS_ASSERT_MSG (false, "No link-local address on interface " << this);
   Ipv6InterfaceAddress addr;
   return addr; /* quiet compiler */
@@ -233,16 +233,16 @@ Ipv6InterfaceAddress Ipv6Interface::GetAddress (uint32_t index) const
   uint32_t i = 0;
 
   if (m_addresses.size () > index)
-  {
-    for (Ipv6InterfaceAddressListCI it = m_addresses.begin () ; it != m_addresses.end () ; ++it)
     {
-      if (i == index)
-      {
-        return (*it);
-      }
-     i++;
+      for (Ipv6InterfaceAddressListCI it = m_addresses.begin () ; it != m_addresses.end () ; ++it)
+        {
+          if (i == index)
+            {
+              return (*it);
+            }
+          i++;
+        }
     }
-  }
 
   NS_ASSERT_MSG (false, "Address " << index << " not found");
   Ipv6InterfaceAddress addr;
@@ -261,22 +261,22 @@ Ipv6InterfaceAddress Ipv6Interface::RemoveAddress (uint32_t index)
   uint32_t i = 0;
 
   if (m_addresses.size () < index)
-  {
-    NS_ASSERT_MSG (false, "Try to remove index that don't exist in Ipv6Interface::RemoveAddress");
-  }
-  
-  for (Ipv6InterfaceAddressListI it = m_addresses.begin () ; it != m_addresses.end () ; ++it)
-  {
-    if (i == index)
     {
-      Ipv6InterfaceAddress iface = (*it);
-      m_addresses.erase (it);
-      return iface;
+      NS_ASSERT_MSG (false, "Try to remove index that don't exist in Ipv6Interface::RemoveAddress");
     }
 
-    i++;
-  }
-  
+  for (Ipv6InterfaceAddressListI it = m_addresses.begin () ; it != m_addresses.end () ; ++it)
+    {
+      if (i == index)
+        {
+          Ipv6InterfaceAddress iface = (*it);
+          m_addresses.erase (it);
+          return iface;
+        }
+
+      i++;
+    }
+
   NS_ASSERT_MSG (false, "Address " << index << " not found");
   Ipv6InterfaceAddress addr;
   return addr;  /* quiet compiler */
@@ -285,18 +285,18 @@ Ipv6InterfaceAddress Ipv6Interface::RemoveAddress (uint32_t index)
 Ipv6InterfaceAddress Ipv6Interface::GetAddressMatchingDestination (Ipv6Address dst)
 {
   NS_LOG_FUNCTION (this << dst);
-  
+
   for (Ipv6InterfaceAddressList::const_iterator it = m_addresses.begin () ; it != m_addresses.end () ; ++it)
-  {
-    Ipv6InterfaceAddress ifaddr = (*it);
-
-    if (ifaddr.GetPrefix ().IsMatch (ifaddr.GetAddress (), dst))
     {
-      return ifaddr;
-    }
-  }
+      Ipv6InterfaceAddress ifaddr = (*it);
 
-/*  NS_ASSERT_MSG (false, "Not matching address."); */
+      if (ifaddr.GetPrefix ().IsMatch (ifaddr.GetAddress (), dst))
+        {
+          return ifaddr;
+        }
+    }
+
+  /*  NS_ASSERT_MSG (false, "Not matching address."); */
   Ipv6InterfaceAddress ret;
   return ret; /* quiet compiler */
 }
@@ -307,69 +307,69 @@ void Ipv6Interface::Send (Ptr<Packet> p, Ipv6Address dest)
   Ptr<Ipv6L3Protocol> ipv6 = m_node->GetObject<Ipv6L3Protocol> ();
 
   if (!IsUp ())
-  {
-    return;
-  }
-  
+    {
+      return;
+    }
+
   /* check if destination is localhost (::1) */
   if (DynamicCast<LoopbackNetDevice> (m_device))
-  {
-    /* XXX additional checks needed here (such as whether multicast
-     * goes to loopback)?
-     */
-    m_device->Send (p, m_device->GetBroadcast (), Ipv6L3Protocol::PROT_NUMBER);
-    return;
-  }
+    {
+      /* XXX additional checks needed here (such as whether multicast
+       * goes to loopback)?
+       */
+      m_device->Send (p, m_device->GetBroadcast (), Ipv6L3Protocol::PROT_NUMBER);
+      return;
+    }
 
   /* check if destination is for one of our interface */
   for (Ipv6InterfaceAddressListCI it = m_addresses.begin () ; it != m_addresses.end () ; ++it)
-  {
-    if (dest == (*it).GetAddress ())
     {
-      ipv6->Receive (m_device, p, Ipv6L3Protocol::PROT_NUMBER,
-                     m_device->GetBroadcast (),
-                     m_device->GetBroadcast (),
-                     NetDevice::PACKET_HOST // note: linux uses PACKET_LOOPBACK here
-                     );
-      return;
+      if (dest == (*it).GetAddress ())
+        {
+          ipv6->Receive (m_device, p, Ipv6L3Protocol::PROT_NUMBER,
+                         m_device->GetBroadcast (),
+                         m_device->GetBroadcast (),
+                         NetDevice::PACKET_HOST // note: linux uses PACKET_LOOPBACK here
+          );
+          return;
+        }
     }
-  }
 
   /* other address */
   if (m_device->NeedsArp ())
-  {
-    NS_LOG_LOGIC ("Needs ARP" << " " << dest);
-    Ptr<Icmpv6L4Protocol> icmpv6 = ipv6->GetIcmpv6 ();
-    Address hardwareDestination;
-    bool found = false;
-
-    NS_ASSERT (icmpv6);
-    
-    if (dest.IsMulticast ())
     {
-      NS_LOG_LOGIC ("IsMulticast");
-      NS_ASSERT_MSG (m_device->IsMulticast (), "Ipv6Interface::SendTo (): Sending multicast packet over non-multicast device");
+      NS_LOG_LOGIC ("Needs ARP" << " " << dest);
+      Ptr<Icmpv6L4Protocol> icmpv6 = ipv6->GetIcmpv6 ();
+      Address hardwareDestination;
+      bool found = false;
 
-      hardwareDestination = m_device->GetMulticast (dest);
-      found = true;
-    }
-    else
-    {
-      NS_LOG_LOGIC ("NDISC Lookup");
-      found = icmpv6->Lookup (p, dest, GetDevice (), m_ndCache, &hardwareDestination);
-    }
+      NS_ASSERT (icmpv6);
 
-    if (found)
-    {
-      NS_LOG_LOGIC ("Address Resolved.  Send.");
-      m_device ->Send (p, hardwareDestination, Ipv6L3Protocol::PROT_NUMBER);
+      if (dest.IsMulticast ())
+        {
+          NS_LOG_LOGIC ("IsMulticast");
+          NS_ASSERT_MSG (m_device->IsMulticast (), "Ipv6Interface::SendTo (): Sending multicast packet over non-multicast device");
+
+          hardwareDestination = m_device->GetMulticast (dest);
+          found = true;
+        }
+      else
+        {
+          NS_LOG_LOGIC ("NDISC Lookup");
+          found = icmpv6->Lookup (p, dest, GetDevice (), m_ndCache, &hardwareDestination);
+        }
+
+      if (found)
+        {
+          NS_LOG_LOGIC ("Address Resolved.  Send.");
+          m_device ->Send (p, hardwareDestination, Ipv6L3Protocol::PROT_NUMBER);
+        }
     }
-  }
   else
-  {
-    NS_LOG_LOGIC ("Doesn't need ARP");
-    m_device->Send (p, m_device->GetBroadcast (), Ipv6L3Protocol::PROT_NUMBER);
-  }
+    {
+      NS_LOG_LOGIC ("Doesn't need ARP");
+      m_device->Send (p, m_device->GetBroadcast (), Ipv6L3Protocol::PROT_NUMBER);
+    }
 }
 
 void Ipv6Interface::SetCurHopLimit (uint8_t curHopLimit)
@@ -425,13 +425,13 @@ void Ipv6Interface::SetState (Ipv6Address address, Ipv6InterfaceAddress::State_e
   NS_LOG_FUNCTION (this << address << state);
 
   for (Ipv6InterfaceAddressListI it = m_addresses.begin () ; it != m_addresses.end () ; ++it)
-  {
-    if ((*it).GetAddress () == address)
     {
-      (*it).SetState (state);
-      return;
+      if ((*it).GetAddress () == address)
+        {
+          (*it).SetState (state);
+          return;
+        }
     }
-  }
   /* not found, maybe address has expired */
 }
 
@@ -440,13 +440,13 @@ void Ipv6Interface::SetNsDadUid (Ipv6Address address, uint32_t uid)
   NS_LOG_FUNCTION (this << address << uid);
 
   for (Ipv6InterfaceAddressListI it = m_addresses.begin () ; it != m_addresses.end () ; ++it)
-  {
-    if ((*it).GetAddress () == address)
     {
-      (*it).SetNsDadUid (uid);
-      return;
+      if ((*it).GetAddress () == address)
+        {
+          (*it).SetNsDadUid (uid);
+          return;
+        }
     }
-  }
   /* not found, maybe address has expired */
 }
 

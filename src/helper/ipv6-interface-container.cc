@@ -62,9 +62,9 @@ void Ipv6InterfaceContainer::Add (std::string ipv6Name, uint32_t interface)
 void Ipv6InterfaceContainer::Add (Ipv6InterfaceContainer& c)
 {
   for (InterfaceVector::const_iterator it = c.m_interfaces.begin () ; it != c.m_interfaces.end () ; it++)
-  {
-    m_interfaces.push_back (*it);
-  }
+    {
+      m_interfaces.push_back (*it);
+    }
 }
 
 void Ipv6InterfaceContainer::SetRouter (uint32_t i, bool router)
@@ -73,24 +73,24 @@ void Ipv6InterfaceContainer::SetRouter (uint32_t i, bool router)
   ipv6->SetForwarding (m_interfaces[i].second, router);
 
   if (router)
-  {
-    uint32_t other;
-    /* assume first global address is index 1 (0 is link-local) */
-    Ipv6Address routerAddress = ipv6->GetAddress (m_interfaces[i].second, 1).GetAddress ();
-
-    for (other = 0 ; other < m_interfaces.size () ; other++)
     {
-      if (other != i)
-      {
-        Ptr<Ipv6StaticRouting> routing = 0;
-        Ipv6StaticRoutingHelper routingHelper;
+      uint32_t other;
+      /* assume first global address is index 1 (0 is link-local) */
+      Ipv6Address routerAddress = ipv6->GetAddress (m_interfaces[i].second, 1).GetAddress ();
 
-        ipv6 = m_interfaces[other].first;
-        routing = routingHelper.GetStaticRouting (ipv6);
-        routing->SetDefaultRoute (routerAddress, m_interfaces[other].second);
-      }
+      for (other = 0 ; other < m_interfaces.size () ; other++)
+        {
+          if (other != i)
+            {
+              Ptr<Ipv6StaticRouting> routing = 0;
+              Ipv6StaticRoutingHelper routingHelper;
+
+              ipv6 = m_interfaces[other].first;
+              routing = routingHelper.GetStaticRouting (ipv6);
+              routing->SetDefaultRoute (routerAddress, m_interfaces[other].second);
+            }
+        }
     }
-  }
 }
 
 void Ipv6InterfaceContainer::SetDefaultRoute (uint32_t i, uint32_t router)

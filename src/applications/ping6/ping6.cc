@@ -48,30 +48,30 @@ TypeId Ping6::GetTypeId ()
     .SetParent<Application>()
     .AddConstructor<Ping6>()
     .AddAttribute ("MaxPackets", 
-        "The maximum number of packets the application will send",
-        UintegerValue (100),
-        MakeUintegerAccessor (&Ping6::m_count),
-        MakeUintegerChecker<uint32_t>())
+                   "The maximum number of packets the application will send",
+                   UintegerValue (100),
+                   MakeUintegerAccessor (&Ping6::m_count),
+                   MakeUintegerChecker<uint32_t>())
     .AddAttribute ("Interval", 
-        "The time to wait between packets",
-        TimeValue (Seconds (1.0)),
-        MakeTimeAccessor (&Ping6::m_interval),
-        MakeTimeChecker ())
+                   "The time to wait between packets",
+                   TimeValue (Seconds (1.0)),
+                   MakeTimeAccessor (&Ping6::m_interval),
+                   MakeTimeChecker ())
     .AddAttribute ("RemoteIpv6", 
-        "The Ipv6Address of the outbound packets",
-        Ipv6AddressValue (),
-        MakeIpv6AddressAccessor (&Ping6::m_peerAddress),
-        MakeIpv6AddressChecker ())
+                   "The Ipv6Address of the outbound packets",
+                   Ipv6AddressValue (),
+                   MakeIpv6AddressAccessor (&Ping6::m_peerAddress),
+                   MakeIpv6AddressChecker ())
     .AddAttribute ("LocalIpv6", 
-        "Local Ipv6Address of the sender",
-        Ipv6AddressValue (),
-        MakeIpv6AddressAccessor (&Ping6::m_localAddress),
-        MakeIpv6AddressChecker ())
+                   "Local Ipv6Address of the sender",
+                   Ipv6AddressValue (),
+                   MakeIpv6AddressAccessor (&Ping6::m_localAddress),
+                   MakeIpv6AddressChecker ())
     .AddAttribute ("PacketSize", 
-        "Size of packets generated",
-        UintegerValue (100),
-        MakeUintegerAccessor (&Ping6::m_size),
-        MakeUintegerChecker<uint32_t>())
+                   "Size of packets generated",
+                   UintegerValue (100),
+                   MakeUintegerAccessor (&Ping6::m_size),
+                   MakeUintegerChecker<uint32_t>())
     ;
   return tid;
 }
@@ -102,17 +102,17 @@ void Ping6::StartApplication ()
   NS_LOG_FUNCTION_NOARGS ();
 
   if (!m_socket)
-  {
-    TypeId tid = TypeId::LookupByName ("ns3::Ipv6RawSocketFactory");
-    m_socket = Socket::CreateSocket (GetNode (), tid);
+    {
+      TypeId tid = TypeId::LookupByName ("ns3::Ipv6RawSocketFactory");
+      m_socket = Socket::CreateSocket (GetNode (), tid);
 
-    NS_ASSERT (m_socket);
+      NS_ASSERT (m_socket);
 
-    m_socket->Bind (Inet6SocketAddress (m_localAddress, 0));
-    m_socket->Connect (Inet6SocketAddress (m_peerAddress, 0));
-    m_socket->SetAttribute ("Protocol", UintegerValue (Ipv6Header::IPV6_ICMPV6));
-    m_socket->SetRecvCallback (MakeCallback (&Ping6::HandleRead, this));
-  }
+      m_socket->Bind (Inet6SocketAddress (m_localAddress, 0));
+      m_socket->Connect (Inet6SocketAddress (m_peerAddress, 0));
+      m_socket->SetAttribute ("Protocol", UintegerValue (Ipv6Header::IPV6_ICMPV6));
+      m_socket->SetRecvCallback (MakeCallback (&Ping6::HandleRead, this));
+    }
 
   ScheduleTransmit (Seconds (0.));
 }
@@ -134,9 +134,9 @@ void Ping6::StopApplication ()
   NS_LOG_FUNCTION_NOARGS ();
 
   if (m_socket)
-  {
-    m_socket->SetRecvCallback (MakeNullCallback<void, Ptr<Socket> >());
-  }
+    {
+      m_socket->SetRecvCallback (MakeNullCallback<void, Ptr<Socket> >());
+    }
 
   Simulator::Cancel (m_sendEvent);
 }
@@ -167,16 +167,16 @@ void Ping6::Send ()
   Ptr<Ipv6> ipv6 = GetNode ()->GetObject<Ipv6> ();
 
   if (m_ifIndex > 0)
-  {
-    /* hack to have ifIndex in Ipv6RawSocketImpl
-     * maybe add a SetIfIndex in Ipv6RawSocketImpl directly 
-     */
-    src = GetNode ()->GetObject<Ipv6> ()->GetAddress (m_ifIndex, 0).GetAddress ();
-  }
+    {
+      /* hack to have ifIndex in Ipv6RawSocketImpl
+       * maybe add a SetIfIndex in Ipv6RawSocketImpl directly 
+       */
+      src = GetNode ()->GetObject<Ipv6> ()->GetAddress (m_ifIndex, 0).GetAddress ();
+    }
   else
-  {
-    src = m_localAddress;
-  }
+    {
+      src = m_localAddress;
+    }
 
   NS_ASSERT_MSG (m_size >= 4, "ICMPv6 echo request payload size must be >= 4");
   data[0] = 0xDE;
@@ -191,7 +191,7 @@ void Ping6::Send ()
   req.SetId (0xBEEF);
   req.SetSeq (m_seq);
   m_seq++;
-  
+
   /* we do not calculate pseudo header checksum here, because we are not sure about 
    * source IPv6 address. Checksum is calculated in Ipv6RawSocketImpl.
    */
@@ -201,16 +201,16 @@ void Ping6::Send ()
 
   /* use Loose Routing (routing type 0) */
   if (m_routers.size ())
-  {
-    Ipv6ExtensionLooseRoutingHeader routingHeader;
-    routingHeader.SetNextHeader (Ipv6Header::IPV6_ICMPV6);
-    routingHeader.SetLength (m_routers.size () * 16 + 8);
-    routingHeader.SetTypeRouting (0);
-    routingHeader.SetSegmentsLeft (m_routers.size ());
-    routingHeader.SetRoutersAddress (m_routers);
-    p->AddHeader (routingHeader);
-    m_socket->SetAttribute ("Protocol", UintegerValue (Ipv6Header::IPV6_EXT_ROUTING));
-  }
+    {
+      Ipv6ExtensionLooseRoutingHeader routingHeader;
+      routingHeader.SetNextHeader (Ipv6Header::IPV6_ICMPV6);
+      routingHeader.SetLength (m_routers.size () * 16 + 8);
+      routingHeader.SetTypeRouting (0);
+      routingHeader.SetSegmentsLeft (m_routers.size ());
+      routingHeader.SetRoutersAddress (m_routers);
+      p->AddHeader (routingHeader);
+      m_socket->SetAttribute ("Protocol", UintegerValue (Ipv6Header::IPV6_EXT_ROUTING));
+    }
 
   m_socket->Send (p, 0);
   ++m_sent;
@@ -218,9 +218,9 @@ void Ping6::Send ()
   NS_LOG_INFO ("Sent " << p->GetSize () << " bytes to " << m_peerAddress);
 
   if (m_sent < m_count)
-  {
-    ScheduleTransmit (m_interval);
-  }
+    {
+      ScheduleTransmit (m_interval);
+    }
 }
 
 void Ping6::HandleRead (Ptr<Socket> socket)
@@ -230,28 +230,28 @@ void Ping6::HandleRead (Ptr<Socket> socket)
   Ptr<Packet> packet=0;
   Address from;
   while (packet = socket->RecvFrom (from))
-  {
-    if (Inet6SocketAddress::IsMatchingType (from))
     {
-      Ipv6Header hdr;
-      Icmpv6Echo reply (0);
-      Inet6SocketAddress address = Inet6SocketAddress::ConvertFrom (from);
+      if (Inet6SocketAddress::IsMatchingType (from))
+        {
+          Ipv6Header hdr;
+          Icmpv6Echo reply (0);
+          Inet6SocketAddress address = Inet6SocketAddress::ConvertFrom (from);
 
-      packet->RemoveHeader (hdr);
+          packet->RemoveHeader (hdr);
 
-      switch (*packet->PeekData ())
-      {
-        case Icmpv6Header::ICMPV6_ECHO_REPLY:
-          packet->RemoveHeader (reply);
+          switch (*packet->PeekData ())
+            {
+            case Icmpv6Header::ICMPV6_ECHO_REPLY:
+              packet->RemoveHeader (reply);
 
-          NS_LOG_INFO ("Received Echo Reply size  = " << std::dec << packet->GetSize () << " bytes from " << address.GetIpv6 () << " id =  " << (uint16_t)reply.GetId () << " seq = " << (uint16_t)reply.GetSeq ());
-          break;
-        default:
-          /* other type, discard */
-          break;
-      }
+              NS_LOG_INFO ("Received Echo Reply size  = " << std::dec << packet->GetSize () << " bytes from " << address.GetIpv6 () << " id =  " << (uint16_t)reply.GetId () << " seq = " << (uint16_t)reply.GetSeq ());
+              break;
+            default:
+              /* other type, discard */
+              break;
+            }
+        }
     }
-  }
 }
 
 } /* namespace ns3 */

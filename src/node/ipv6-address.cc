@@ -46,17 +46,17 @@ extern "C"
 static uint32_t lookuphash (unsigned char* k, uint32_t length, uint32_t level)
 {
 #define mix(a, b, c) \
-({ \
-    (a) -= (b); (a) -= (c); (a) ^= ((c) >> 13); \
-    (b) -= (c); (b) -= (a); (b) ^= ((a) << 8);  \
-    (c) -= (a); (c) -= (b); (c) ^= ((b) >> 13); \
-    (a) -= (b); (a) -= (c); (a) ^= ((c) >> 12); \
-    (b) -= (c); (b) -= (a); (b) ^= ((a) << 16); \
-    (c) -= (a); (c) -= (b); (c) ^= ((b) >> 5);  \
-    (a) -= (b); (a) -= (c); (a) ^= ((c) >> 3);  \
-    (b) -= (c); (b) -= (a); (b) ^= ((a) << 10); \
-    (c) -= (a); (c) -= (b); (c) ^= ((b) >> 15); \
-})
+  ({ \
+   (a) -= (b); (a) -= (c); (a) ^= ((c) >> 13); \
+   (b) -= (c); (b) -= (a); (b) ^= ((a) << 8);  \
+   (c) -= (a); (c) -= (b); (c) ^= ((b) >> 13); \
+   (a) -= (b); (a) -= (c); (a) ^= ((c) >> 12); \
+   (b) -= (c); (b) -= (a); (b) ^= ((a) << 16); \
+   (c) -= (a); (c) -= (b); (c) ^= ((b) >> 5);  \
+   (a) -= (b); (a) -= (c); (a) ^= ((c) >> 3);  \
+   (b) -= (c); (b) -= (a); (b) ^= ((a) << 10); \
+   (c) -= (a); (c) -= (b); (c) ^= ((b) >> 15); \
+   })
 
   typedef uint32_t  ub4;   /* unsigned 4-byte quantities */
   typedef unsigned  char ub1;   /* unsigned 1-byte quantities */
@@ -72,19 +72,19 @@ static uint32_t lookuphash (unsigned char* k, uint32_t length, uint32_t level)
 
   /* handle most of the key */
   while (len >= 12)
-  {
-    a += (k[0] + ((ub4)k[1] << 8) + ((ub4)k[2] << 16) + ((ub4)k[3] << 24));
-    b += (k[4] + ((ub4)k[5] << 8) + ((ub4)k[6] << 16) + ((ub4)k[7] << 24));
-    c += (k[8] + ((ub4)k[9] << 8) + ((ub4)k[10] << 16) + ((ub4)k[11] << 24));
-    mix (a, b, c);
-    k += 12; 
-    len -= 12;
-  }
+    {
+      a += (k[0] + ((ub4)k[1] << 8) + ((ub4)k[2] << 16) + ((ub4)k[3] << 24));
+      b += (k[4] + ((ub4)k[5] << 8) + ((ub4)k[6] << 16) + ((ub4)k[7] << 24));
+      c += (k[8] + ((ub4)k[9] << 8) + ((ub4)k[10] << 16) + ((ub4)k[11] << 24));
+      mix (a, b, c);
+      k += 12; 
+      len -= 12;
+    }
 
   /* handle the last 11 bytes */
   c += length;
   switch (len) /* all the case statements fall through */
-  {
+    {
     case 11: c += ((ub4)k[10] << 24);
     case 10: c += ((ub4)k[9] << 16);
     case 9 : c += ((ub4)k[8] << 8); /* the first byte of c is reserved for the length */
@@ -96,10 +96,10 @@ static uint32_t lookuphash (unsigned char* k, uint32_t length, uint32_t level)
     case 3 : a += ((ub4)k[2] << 16);
     case 2 : a += ((ub4)k[1] << 8);
     case 1 : a += k[0];
-    /* case 0: nothing left to add */
-  }
+             /* case 0: nothing left to add */
+    }
   mix (a, b, c);
-  
+
 #undef mix
 
   /* report the result */
@@ -135,108 +135,108 @@ static bool AsciiToIpv6Host (const char *address, uint8_t addr[16])
 
   /* Leading :: requires some special handling. */
   if (*address == ':')
-  {
-    if (*++address != ':')
     {
-      return (0);
+      if (*++address != ':')
+        {
+          return (0);
+        }
     }
-  }
   curtok = address;
 
   while ((ch = *address++) != '\0')
-  {
-    const char *pch = 0;
-
-    if ((pch = strchr ((xdigits = xdigits_l), ch)) == 0)
     {
-      pch = strchr ((xdigits = xdigits_u), ch);
-    }
+      const char *pch = 0;
 
-    if (pch != 0)
-    {
-      val <<= 4;
-      val |= (pch - xdigits);
+      if ((pch = strchr ((xdigits = xdigits_l), ch)) == 0)
+        {
+          pch = strchr ((xdigits = xdigits_u), ch);
+        }
 
-      if (++seen_xdigits > 4)
-      {
-        return (0);
-      }
-      continue;
-    }
-    if (ch == ':')
-    {
-      curtok = address;
+      if (pch != 0)
+        {
+          val <<= 4;
+          val |= (pch - xdigits);
 
-      if (!seen_xdigits)
-      {
-        if (colonp)
-          return (0);
-        colonp = tp;
-        continue;
-      }
+          if (++seen_xdigits > 4)
+            {
+              return (0);
+            }
+          continue;
+        }
+      if (ch == ':')
+        {
+          curtok = address;
 
-      if (tp + 2 > endp)
-      {
-        return (0);
-      }
+          if (!seen_xdigits)
+            {
+              if (colonp)
+                return (0);
+              colonp = tp;
+              continue;
+            }
 
-      *tp++ = (unsigned char) (val >> 8) & 0xff;
-      *tp++ = (unsigned char) val & 0xff;
-      seen_xdigits = 0;
-      val = 0;
-      continue;
-    }
+          if (tp + 2 > endp)
+            {
+              return (0);
+            }
 
-    /* TODO Handle IPv4 mapped address (2001::192.168.0.1) */
+          *tp++ = (unsigned char) (val >> 8) & 0xff;
+          *tp++ = (unsigned char) val & 0xff;
+          seen_xdigits = 0;
+          val = 0;
+          continue;
+        }
+
+      /* TODO Handle IPv4 mapped address (2001::192.168.0.1) */
 #if 0
-    if (ch == '.' && ((tp + 4 /*NS_INADDRSZ*/) <= endp) &&
-        inet_pton4(curtok, tp) > 0)
-    {
-      tp += 4 /*NS_INADDRSZ*/;
-      seen_xdigits = 0;
-      break;/* '\0' was seen by inet_pton4(). */
-    }
+      if (ch == '.' && ((tp + 4 /*NS_INADDRSZ*/) <= endp) &&
+          inet_pton4(curtok, tp) > 0)
+        {
+          tp += 4 /*NS_INADDRSZ*/;
+          seen_xdigits = 0;
+          break;/* '\0' was seen by inet_pton4(). */
+        }
 #endif
-    return (0);
-  }
+      return (0);
+    }
 
   if (seen_xdigits)
-  {
-    if (tp + 2 > endp)
     {
-      return (0);
+      if (tp + 2 > endp)
+        {
+          return (0);
+        }
+      *tp++ = (unsigned char) (val >> 8) & 0xff;
+      *tp++ = (unsigned char) val & 0xff;
     }
-    *tp++ = (unsigned char) (val >> 8) & 0xff;
-    *tp++ = (unsigned char) val & 0xff;
-  }
 
   if (colonp != 0)
-  {
-    /*
-     * Since some memmove ()'s erroneously fail to handle
-     * overlapping regions, we'll do the shift by hand.
-     */
-    const int n = tp - colonp;
-    int i = 0;
+    {
+      /*
+       * Since some memmove ()'s erroneously fail to handle
+       * overlapping regions, we'll do the shift by hand.
+       */
+      const int n = tp - colonp;
+      int i = 0;
 
-    if (tp == endp)
+      if (tp == endp)
+        {
+          return (0);
+        }
+
+      for (i = 1; i <= n; i++)
+        {
+          endp[- i] = colonp[n - i];
+          colonp[n - i] = 0;
+        }
+
+      tp = endp;
+    }
+
+  if (tp != endp)
     {
       return (0);
     }
-
-    for (i = 1; i <= n; i++)
-    {
-      endp[- i] = colonp[n - i];
-      colonp[n - i] = 0;
-    }
-
-    tp = endp;
-  }
-
-  if (tp != endp)
-  {
-    return (0);
-  }
 
   memcpy (addr, tmp, 16);
   return (1);
@@ -386,9 +386,9 @@ bool Ipv6Address::IsLocalhost () const
 bool Ipv6Address::IsMulticast () const
 {
   if (m_address[0] == 0xff)
-  {
-    return true;
-  }
+    {
+      return true;
+    }
   return false;
 }
 
@@ -404,9 +404,9 @@ Ipv6Address Ipv6Address::CombinePrefix (Ipv6Prefix const& prefix)
 
   /* a little bit ugly... */
   for (i = 0 ; i < 16 ; i++)
-  {
-    addr[i] = addr[i] & pref[i];
-  }
+    {
+      addr[i] = addr[i] & pref[i];
+    }
   ipv6.Set (addr);
   return ipv6;
 }
@@ -421,9 +421,9 @@ bool Ipv6Address::IsSolicitedMulticast () const
       buf[1] == 0x02 &&
       buf[11] == 0x01 &&
       buf[12] == 0xff)
-  {
-    return true;
-  }
+    {
+      return true;
+    }
   return false;
 }
 
@@ -533,18 +533,18 @@ bool Ipv6Address::IsLinkLocal () const
 {
   Ipv6Address linkLocal ("fe80::0");
   if (!IsMulticast () && ((Ipv6Address*)this)->CombinePrefix (Ipv6Prefix (64)) == linkLocal)
-  {
-    return true;
-  }
+    {
+      return true;
+    }
   return false;
 }
 
 bool Ipv6Address::IsEqual (const Ipv6Address& other) const
 {
   if (!memcmp (m_address, other.m_address, 16))
-  {
-    return true;
-  }
+    {
+      return true;
+    }
   return false;
 }
 
@@ -593,18 +593,18 @@ Ipv6Prefix::Ipv6Prefix (uint8_t prefix)
   memset (m_prefix, 0xff, nb);
 
   if (mod)
-  {
-    m_prefix[nb] = 0xff << (8-mod);
-  }
+    {
+      m_prefix[nb] = 0xff << (8-mod);
+    }
 
   if (nb < 16)
-  {
-    nb++;
-    for (i = nb; i < 16 ; i++)
     {
-      m_prefix[i] = 0x00;
+      nb++;
+      for (i = nb; i < 16 ; i++)
+        {
+          m_prefix[i] = 0x00;
+        }
     }
-  }
 }
 
 Ipv6Prefix::Ipv6Prefix (Ipv6Prefix const& prefix)
@@ -633,12 +633,12 @@ bool Ipv6Prefix::IsMatch (Ipv6Address a, Ipv6Address b) const
 
   /* a little bit ugly... */
   for (i = 0 ; i < 16 ; i++)
-  {
-    if ((addrA[i] & m_prefix[i]) != (addrB[i] & m_prefix[i]))
     {
-      return false;
+      if ((addrA[i] & m_prefix[i]) != (addrB[i] & m_prefix[i]))
+        {
+          return false;
+        }
     }
-  }
   return true;
 }
 
@@ -691,15 +691,15 @@ uint8_t Ipv6Prefix::GetPrefixLength () const
   uint8_t prefixLength = 0;
 
   for(i = 0 ; i < 16 ; i++)
-  {
-    uint8_t mask = m_prefix[i];
-
-    while(mask != 0)
     {
-      mask = mask << 1;
-      prefixLength++;
+      uint8_t mask = m_prefix[i];
+
+      while(mask != 0)
+        {
+          mask = mask << 1;
+          prefixLength++;
+        }
     }
-  }
 
   return prefixLength;
 }
@@ -707,9 +707,9 @@ uint8_t Ipv6Prefix::GetPrefixLength () const
 bool Ipv6Prefix::IsEqual (const Ipv6Prefix& other) const
 {
   if (!memcmp (m_prefix, other.m_prefix, 16))
-  {
-    return true;
-  }
+    {
+      return true;
+    }
   return false;
 }
 

@@ -109,9 +109,9 @@ Ipv6RoutingTableEntry::~Ipv6RoutingTableEntry ()
 bool Ipv6RoutingTableEntry::IsHost () const
 {
   if (m_destNetworkPrefix.IsEqual (Ipv6Prefix::GetOnes ()))
-  {
-    return true;
-  }
+    {
+      return true;
+    }
   return false;
 }
 
@@ -138,9 +138,9 @@ bool Ipv6RoutingTableEntry::IsNetwork () const
 bool Ipv6RoutingTableEntry::IsDefault () const
 {
   if (m_dest.IsEqual (Ipv6Address::GetZero ()))
-  {
-    return true;
-  }
+    {
+      return true;
+    }
   return false;
 }
 
@@ -157,9 +157,9 @@ Ipv6Prefix Ipv6RoutingTableEntry::GetDestNetworkPrefix () const
 bool Ipv6RoutingTableEntry::IsGateway () const
 {
   if (m_gateway.IsEqual (Ipv6Address::GetZero ()))
-  {
-    return false;
-  }
+    {
+      return false;
+    }
   return true;
 }
 
@@ -206,44 +206,44 @@ uint32_t Ipv6RoutingTableEntry::GetInterface () const
 std::ostream& operator<< (std::ostream& os, Ipv6RoutingTableEntry const& route)
 {
   if (route.IsDefault ())
-  {
-    NS_ASSERT (route.IsGateway ());
-    os << "default out =" << route.GetInterface () << ", next hop =" << route.GetGateway ();
-  }
+    {
+      NS_ASSERT (route.IsGateway ());
+      os << "default out =" << route.GetInterface () << ", next hop =" << route.GetGateway ();
+    }
   else if (route.IsHost ())
-  {
-    if (route.IsGateway ())
     {
-      os << "host ="<< route.GetDest () <<
-        ", out =" << route.GetInterface () <<
-        ", next hop =" << route.GetGateway ();
+      if (route.IsGateway ())
+        {
+          os << "host ="<< route.GetDest () <<
+            ", out =" << route.GetInterface () <<
+            ", next hop =" << route.GetGateway ();
+        }
+      else
+        {
+          os << "host =" << route.GetDest () <<
+            ", out =" << route.GetInterface ();
+        }
     }
-    else
-    {
-      os << "host =" << route.GetDest () <<
-        ", out =" << route.GetInterface ();
-    }
-  }
   else if (route.IsNetwork ())
-  {
-    if (route.IsGateway ())
     {
-      os << "network =" << route.GetDestNetwork () <<
-        ", mask =" << route.GetDestNetworkPrefix () <<
-        ",out =" << route.GetInterface () <<
-        ", next hop =" << route.GetGateway ();
+      if (route.IsGateway ())
+        {
+          os << "network =" << route.GetDestNetwork () <<
+            ", mask =" << route.GetDestNetworkPrefix () <<
+            ",out =" << route.GetInterface () <<
+            ", next hop =" << route.GetGateway ();
+        }
+      else
+        {
+          os << "network =" << route.GetDestNetwork () <<
+            ", mask =" << route.GetDestNetworkPrefix () <<
+            ",out =" << route.GetInterface ();
+        }
     }
-    else
-    {
-      os << "network =" << route.GetDestNetwork () <<
-        ", mask =" << route.GetDestNetworkPrefix () <<
-        ",out =" << route.GetInterface ();
-    }
-  }
   else
-  {
-    NS_ASSERT (false);
-  }
+    {
+      NS_ASSERT (false);
+    }
   return os;
 }
 
@@ -320,9 +320,9 @@ std::ostream& operator<< (std::ostream& os, Ipv6MulticastRoutingTableEntry const
     ", output interfaces =";
 
   for (uint32_t i = 0; i < route.GetNOutputInterfaces (); ++i)
-  {
-    os << route.GetOutputInterface (i) << " ";
-  }
+    {
+      os << route.GetOutputInterface (i) << " ";
+    }
 
   return os;
 }

@@ -37,60 +37,60 @@ namespace ns3
  */
 class Ipv6AddressHelper
 {
-  public:
-    /**
-     * \brief Constructor.
-     */
-    Ipv6AddressHelper ();
+public:
+  /**
+   * \brief Constructor.
+   */
+  Ipv6AddressHelper ();
 
-    /**
-     * \brief Allocate a new network.
-     * \param network The IPv6 network
-     * \param prefix The prefix
-     */
-    void NewNetwork (Ipv6Address network, Ipv6Prefix prefix);
+  /**
+   * \brief Allocate a new network.
+   * \param network The IPv6 network
+   * \param prefix The prefix
+   */
+  void NewNetwork (Ipv6Address network, Ipv6Prefix prefix);
 
-    /**
-     * \brief Allocate a new address.
-     * \param addr L2 address (currenty only ethernet address is supported)
-     * \return newly created Ipv6Address
-     */
-    Ipv6Address NewAddress (Address addr);
+  /**
+   * \brief Allocate a new address.
+   * \param addr L2 address (currenty only ethernet address is supported)
+   * \return newly created Ipv6Address
+   */
+  Ipv6Address NewAddress (Address addr);
 
-    /**
-     * \brief Allocate an Ipv6InterfaceContainer.
-     * \param c netdevice container
-     * \return newly created Ipv6InterfaceContainer
-     */
-    Ipv6InterfaceContainer Assign (const NetDeviceContainer &c);
+  /**
+   * \brief Allocate an Ipv6InterfaceContainer.
+   * \param c netdevice container
+   * \return newly created Ipv6InterfaceContainer
+   */
+  Ipv6InterfaceContainer Assign (const NetDeviceContainer &c);
 
-    /**
-     * \brief Allocate an Ipv6InterfaceContainer.
-     * \param c netdevice container
-     * \param withConfiguration true : interface statically configured, false : no static configuration
-     * \return newly created Ipv6InterfaceContainer
-     */
-    Ipv6InterfaceContainer Assign (const NetDeviceContainer &c, std::vector<bool> withConfiguration);
+  /**
+   * \brief Allocate an Ipv6InterfaceContainer.
+   * \param c netdevice container
+   * \param withConfiguration true : interface statically configured, false : no static configuration
+   * \return newly created Ipv6InterfaceContainer
+   */
+  Ipv6InterfaceContainer Assign (const NetDeviceContainer &c, std::vector<bool> withConfiguration);
 
-    /**
-     * \brief Allocate an Ipv6InterfaceContainer without static IPv6 configuration.
-     * \param c netdevice container
-     * \return newly created Ipv6InterfaceContainer
-     */
-    Ipv6InterfaceContainer AssignWithoutAddress (const NetDeviceContainer &c);
+  /**
+   * \brief Allocate an Ipv6InterfaceContainer without static IPv6 configuration.
+   * \param c netdevice container
+   * \return newly created Ipv6InterfaceContainer
+   */
+  Ipv6InterfaceContainer AssignWithoutAddress (const NetDeviceContainer &c);
 
-  private:
-    /**
-     * \internal
-     * \brief The IPv6 network.
-     */
-    Ipv6Address m_network;
+private:
+  /**
+   * \internal
+   * \brief The IPv6 network.
+   */
+  Ipv6Address m_network;
 
-    /**
-     * \internal
-     * \brief IPv6 The prefix (mask).
-     */
-    Ipv6Prefix m_prefix;
+  /**
+   * \internal
+   * \brief IPv6 The prefix (mask).
+   */
+  Ipv6Prefix m_prefix;
 };
 
 } /* namespace ns3 */

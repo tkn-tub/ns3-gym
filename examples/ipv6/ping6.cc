@@ -54,7 +54,7 @@ int main (int argc, char **argv)
 
   CommandLine cmd;
   cmd.Parse (argc, argv);
-  
+
   NS_LOG_INFO ("Create nodes.");
   NodeContainer n;
   n.Create (4);
@@ -84,10 +84,10 @@ int main (int argc, char **argv)
   Time interPacketInterval = Seconds (1.);
   Ping6Helper ping6;
 
-/*
-  ping6.SetLocal (i.GetAddress (0, 1)); 
-  ping6.SetRemote (i.GetAddress (1, 1));
-*/
+  /*
+     ping6.SetLocal (i.GetAddress (0, 1)); 
+     ping6.SetRemote (i.GetAddress (1, 1));
+     */
   ping6.SetIfIndex (i.GetInterfaceIndex (0));
   ping6.SetRemote (Ipv6Address::GetAllNodesMulticast ());
 
