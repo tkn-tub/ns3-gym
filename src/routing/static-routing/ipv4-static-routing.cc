@@ -268,7 +268,14 @@ Ipv4StaticRouting::LookupStatic (Ipv4Address dest, Ptr<NetDevice> oif)
           rtentry->SetOutputDevice (m_ipv4->GetNetDevice (interfaceIdx));
         }
     }
-  NS_LOG_LOGIC ("Matching route via " << rtentry->GetGateway () << " at the end");
+  if (rtentry != 0)
+    {
+      NS_LOG_LOGIC ("Matching route via " << rtentry->GetGateway () << " at the end");
+    }
+  else
+    {
+      NS_LOG_LOGIC ("No matching route to " << dest << " found");
+    }
   return rtentry;
 }
 
