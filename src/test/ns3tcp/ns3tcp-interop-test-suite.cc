@@ -282,7 +282,7 @@ Ns3TcpInteroperabilityTestCase::DoRun (void)
 
   if (m_writeVectors)
     {
-      PointToPointHelper::EnablePcapAll ("tcp-interop");
+      pointToPoint.EnablePcapAll ("tcp-interop");
     }
 
   Simulator::Stop (Seconds(20));

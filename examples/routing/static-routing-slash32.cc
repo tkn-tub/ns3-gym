@@ -126,7 +126,7 @@ main (int argc, char *argv[])
 
   std::ofstream ascii;
   ascii.open ("static-routing-slash32.tr");
-  PointToPointHelper::EnablePcapAll ("static-routing-slash32");
+  p2p.EnablePcapAll ("static-routing-slash32");
   PointToPointHelper::EnableAsciiAll (ascii);
 
   Simulator::Run ();

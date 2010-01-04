@@ -175,7 +175,7 @@ int main (int argc, char **argv)
 
   std::ofstream ascii;
   ascii.open ("icmpv6-redirect.tr");
-  CsmaHelper::EnablePcapAll ("icmpv6-redirect", true);
+  csma.EnablePcapAll ("icmpv6-redirect", true);
   CsmaHelper::EnableAsciiAll (ascii);
 
   /* Now, do the actual simulation. */

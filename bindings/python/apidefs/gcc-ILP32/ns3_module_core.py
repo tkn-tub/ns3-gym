@@ -3043,6 +3043,11 @@ def register_functions(root_module):
     module.add_function('MakeBooleanChecker', 
                         'ns3::Ptr< ns3::AttributeChecker const >', 
                         [])
+    ## callback.h: extern ns3::Callback<void,ns3::Ptr<const ns3::Packet>,ns3::empty,ns3::empty,ns3::empty,ns3::empty,ns3::empty,ns3::empty,ns3::empty,ns3::empty> ns3::MakeBoundCallback(void (*)( ::ns3::Ptr<ns3::PcapFileObject>,::ns3::Ptr<ns3::Packet const> ) * fnPtr, ns3::Ptr<ns3::PcapFileObject> a) [free function]
+    module.add_function('MakeBoundCallback', 
+                        'ns3::Callback< void, ns3::Ptr< ns3::Packet const >, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 
+                        [param('void ( * ) ( ns3::Ptr< ns3::PcapFileObject >, ns3::Ptr< ns3::Packet const > ) *', 'fnPtr'), param('ns3::Ptr< ns3::PcapFileObject >', 'a')], 
+                        template_parameters=['void', 'ns3::Ptr<ns3::PcapFileObject>', 'ns3::Ptr<ns3::PcapFileObject>', 'ns3::Ptr<ns3::Packet const>'])
     ## callback.h: extern ns3::Ptr<ns3::AttributeChecker const> ns3::MakeCallbackChecker() [free function]
     module.add_function('MakeCallbackChecker', 
                         'ns3::Ptr< ns3::AttributeChecker const >', 
@@ -3097,7 +3102,7 @@ def register_functions(root_module):
     module.add_function('TypeNameGet', 
                         'std::string', 
                         [], 
-                        template_parameters=['long long'])
+                        template_parameters=['long'])
     ## type-name.h: extern std::string ns3::TypeNameGet() [free function]
     module.add_function('TypeNameGet', 
                         'std::string', 

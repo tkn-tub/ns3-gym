@@ -160,7 +160,7 @@ int main (int argc, char **argv)
 
   std::ofstream ascii;
   ascii.open ("loose-routing-ipv6.tr");
-  CsmaHelper::EnablePcapAll ("loose-routing-ipv6", true);
+  csma.EnablePcapAll ("loose-routing-ipv6", true);
   CsmaHelper::EnableAsciiAll (ascii);
 
   NS_LOG_INFO ("Run Simulation.");

@@ -217,7 +217,8 @@ main (int argc, char *argv[])
   apps.Start (Seconds (1.0));
 
   wifiPhy.EnablePcapAll ("tap-wifi-dumbbell");
-  CsmaHelper::EnablePcapAll ("tap-wifi-dumbbell", false);
+
+  csmaRight.EnablePcapAll ("tap-wifi-dumbbell", false);
   Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
 
   Simulator::Stop (Seconds (60.));

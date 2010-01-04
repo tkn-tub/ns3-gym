@@ -152,7 +152,7 @@ int main (int argc, char** argv)
 
   std::ofstream ascii;
   ascii.open ("fragmentation-ipv6.tr");
-  CsmaHelper::EnablePcapAll (std::string ("fragmentation-ipv6"), true);
+  csma.EnablePcapAll (std::string ("fragmentation-ipv6"), true);
   CsmaHelper::EnableAsciiAll (ascii);
 
   NS_LOG_INFO ("Run Simulation.");

@@ -48,6 +48,8 @@ def build(bld):
         'point-to-point-star-helper.cc',
         'csma-star-helper.cc',
         'udp-client-server-helper.cc',
+        'pcap-helper.cc',
+        'pcap-user-helper.cc',
         ]
 
     headers = bld.new_task_gen('ns3header')
@@ -99,6 +101,8 @@ def build(bld):
         'point-to-point-star-helper.h',
         'csma-star-helper.h',
         'udp-client-server-helper.h',
+        'pcap-helper.h',
+        'pcap-user-helper.h',
         ]
 
     env = bld.env_of_name('default')

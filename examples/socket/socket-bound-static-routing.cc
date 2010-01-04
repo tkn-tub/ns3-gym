@@ -147,7 +147,7 @@ main (int argc, char *argv[])
   
   std::ofstream ascii;
   ascii.open ("socket-bound-static-routing.tr");
-  PointToPointHelper::EnablePcapAll ("socket-bound-static-routing");
+  p2p.EnablePcapAll ("socket-bound-static-routing");
   PointToPointHelper::EnableAsciiAll (ascii);
 
   LogComponentEnableAll (LOG_PREFIX_TIME);

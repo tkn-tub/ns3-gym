@@ -17,7 +17,9 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#include "csma-helper.h"
+
+#include "ns3/abort.h"
+#include "ns3/log.h"
 #include "ns3/simulator.h"
 #include "ns3/object-factory.h"
 #include "ns3/queue.h"
@@ -28,7 +30,13 @@
 #include "ns3/names.h"
 #include "ns3/pcap-writer.h"
 #include "ns3/ascii-writer.h"
+
+#include "pcap-helper.h"
+#include "csma-helper.h"
+
 #include <string>
+
+NS_LOG_COMPONENT_DEFINE ("CsmaHelper");
 
 namespace ns3 {
 
@@ -66,75 +74,31 @@ CsmaHelper::SetChannelAttribute (std::string n1, const AttributeValue &v1)
 }
 
 void 
-CsmaHelper::EnablePcap (std::string filename, uint32_t nodeid, uint32_t deviceid, bool promiscuous)
+CsmaHelper::EnablePcapInternal (std::string prefix, Ptr<NetDevice> nd, bool promiscuous)
 {
-  std::ostringstream oss;
-  oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::CsmaNetDevice/";
-  Config::MatchContainer matches = Config::LookupMatches (oss.str ());
-  if (matches.GetN () == 0)
+  //
+  // All of the Pcap enable functions vector through here including the ones
+  // that are wandering through all of devices on perhaps all of the nodes in
+  // the system.  We can only deal with devices of type CsmaNetDevice.
+  //
+  Ptr<CsmaNetDevice> device = nd->GetObject<CsmaNetDevice> ();
+  if (device == 0)
     {
+      NS_LOG_INFO ("CsmaHelper::EnablePcapInternal(): Device " << device << " not of type ns3::CsmaNetDevice");
       return;
     }
-  oss.str ("");
-  oss << filename << "-" << nodeid << "-" << deviceid << ".pcap";
-  Ptr<PcapWriter> pcap = CreateObject<PcapWriter> ();
-  pcap->Open (oss.str ());
-  pcap->WriteEthernetHeader ();
-  oss.str ("");
-  oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid;
+
+  PcapHelper pcapHelper;
+  std::string filename = pcapHelper.GetFilename (prefix, device);
+  Ptr<PcapFileObject> file = pcapHelper.CreateFile (filename, "w", PcapHelper::DLT_EN10MB);
   if (promiscuous)
     {
-      oss << "/$ns3::CsmaNetDevice/PromiscSniffer";
+      pcapHelper.HookDefaultSink<CsmaNetDevice> (device, "PromiscSniffer", file);
     }
   else
     {
-      oss << "/$ns3::CsmaNetDevice/Sniffer";
+      pcapHelper.HookDefaultSink<CsmaNetDevice> (device, "Sniffer", file);
     }
-  Config::ConnectWithoutContext (oss.str (), MakeBoundCallback (&CsmaHelper::SniffEvent, pcap));
-}
-
-void 
-CsmaHelper::EnablePcap (std::string filename, NetDeviceContainer d, bool promiscuous)
-{
-  for (NetDeviceContainer::Iterator i = d.Begin (); i != d.End (); ++i)
-    {
-      Ptr<NetDevice> dev = *i;
-      EnablePcap (filename, dev->GetNode ()->GetId (), dev->GetIfIndex (), promiscuous);
-    }
-}
-
-void 
-CsmaHelper::EnablePcap (std::string filename, Ptr<NetDevice> nd, bool promiscuous)
-{
-  EnablePcap (filename, nd->GetNode ()->GetId (), nd->GetIfIndex (), promiscuous);
-}
-
-void 
-CsmaHelper::EnablePcap (std::string filename, std::string ndName, bool promiscuous)
-{
-  Ptr<NetDevice> nd = Names::Find<NetDevice> (ndName);
-  EnablePcap (filename, nd->GetNode ()->GetId (), nd->GetIfIndex (), promiscuous);
-}
-
-void
-CsmaHelper::EnablePcap (std::string filename, NodeContainer n, bool promiscuous)
-{
-  NetDeviceContainer devs;
-  for (NodeContainer::Iterator i = n.Begin (); i != n.End (); ++i)
-    {
-      Ptr<Node> node = *i;
-      for (uint32_t j = 0; j < node->GetNDevices (); ++j)
-        {
-          devs.Add (node->GetDevice (j));
-        }
-    }
-  EnablePcap (filename, devs, promiscuous);
-}
-
-void
-CsmaHelper::EnablePcapAll (std::string filename, bool promiscuous)
-{
-  EnablePcap (filename, NodeContainer::GetGlobal (), promiscuous);
 }
 
 void 
@@ -266,12 +230,6 @@ CsmaHelper::InstallPriv (Ptr<Node> node, Ptr<CsmaChannel> channel) const
   device->Attach (channel);
 
   return device;
-}
-
-void 
-CsmaHelper::SniffEvent (Ptr<PcapWriter> writer, Ptr<const Packet> packet)
-{
-  writer->WritePacket (packet);
 }
 
 void 

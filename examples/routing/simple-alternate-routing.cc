@@ -154,7 +154,7 @@ main (int argc, char *argv[])
 
   std::ofstream ascii;
   ascii.open ("simple-alternate-routing.tr");
-  PointToPointHelper::EnablePcapAll ("simple-alternate-routing");
+  p2p.EnablePcapAll ("simple-alternate-routing");
   PointToPointHelper::EnableAsciiAll (ascii);
 
   NS_LOG_INFO ("Run Simulation.");

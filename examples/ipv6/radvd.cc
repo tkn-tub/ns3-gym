@@ -145,7 +145,7 @@ int main (int argc, char** argv)
 
   std::ofstream ascii;
   ascii.open ("radvd.tr");
-  CsmaHelper::EnablePcapAll (std::string ("radvd"), true);
+  csma.EnablePcapAll (std::string ("radvd"), true);
   CsmaHelper::EnableAsciiAll (ascii);
 
   NS_LOG_INFO ("Run Simulation.");

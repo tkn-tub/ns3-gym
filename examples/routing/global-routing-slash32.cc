@@ -121,7 +121,7 @@ main (int argc, char *argv[])
 
   std::ofstream ascii;
   ascii.open ("global-routing-slash32.tr", std::ios_base::binary | std::ios_base::out);
-  PointToPointHelper::EnablePcapAll ("global-routing-slash32");
+  p2p.EnablePcapAll ("global-routing-slash32");
   PointToPointHelper::EnableAsciiAll (ascii);
 
   Simulator::Run ();

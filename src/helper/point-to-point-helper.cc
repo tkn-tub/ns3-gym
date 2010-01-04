@@ -17,7 +17,9 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#include "point-to-point-helper.h"
+
+#include "ns3/abort.h"
+#include "ns3/log.h"
 #include "ns3/simulator.h"
 #include "ns3/point-to-point-net-device.h"
 #include "ns3/point-to-point-channel.h"
@@ -28,8 +30,12 @@
 #include "ns3/pcap-writer.h"
 #include "ns3/ascii-writer.h"
 
-namespace ns3 {
+#include "pcap-helper.h"
+#include "point-to-point-helper.h"
 
+NS_LOG_COMPONENT_DEFINE ("PointToPointHelper");
+
+namespace ns3 {
 
 PointToPointHelper::PointToPointHelper ()
 {
@@ -65,68 +71,24 @@ PointToPointHelper::SetChannelAttribute (std::string n1, const AttributeValue &v
 }
 
 void 
-PointToPointHelper::EnablePcap (std::string filename, uint32_t nodeid, uint32_t deviceid)
+PointToPointHelper::EnablePcapInternal (std::string prefix, Ptr<NetDevice> nd, bool promiscuous)
 {
-  std::ostringstream oss;
-  oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::PointToPointNetDevice/";
-  Config::MatchContainer matches = Config::LookupMatches (oss.str ());
-  if (matches.GetN () == 0)
+  //
+  // All of the Pcap enable functions vector through here including the ones
+  // that are wandering through all of devices on perhaps all of the nodes in
+  // the system.  We can only deal with devices of type PointToPointNetDevice.
+  //
+  Ptr<PointToPointNetDevice> device = nd->GetObject<PointToPointNetDevice> ();
+  if (device == 0)
     {
+      NS_LOG_INFO ("PointToPointHelper::EnablePcapInternal(): Device " << device << " not of type ns3::PointToPointNetDevice");
       return;
     }
-  oss.str ("");
-  oss << filename << "-" << nodeid << "-" << deviceid << ".pcap";
-  Ptr<PcapWriter> pcap = CreateObject<PcapWriter> ();
-  pcap->Open (oss.str ());
-  pcap->WritePppHeader ();
-  oss.str ("");
-  oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid;
-  oss << "/$ns3::PointToPointNetDevice/PromiscSniffer";
-  Config::ConnectWithoutContext (oss.str (), MakeBoundCallback (&PointToPointHelper::SniffEvent, pcap));
-}
 
-void 
-PointToPointHelper::EnablePcap (std::string filename, Ptr<NetDevice> nd)
-{
-  EnablePcap (filename, nd->GetNode ()->GetId (), nd->GetIfIndex ());
-}
-
-void 
-PointToPointHelper::EnablePcap (std::string filename, std::string ndName)
-{
-  Ptr<NetDevice> nd = Names::Find<NetDevice> (ndName);
-  EnablePcap (filename, nd->GetNode ()->GetId (), nd->GetIfIndex ());
-}
-
-void 
-PointToPointHelper::EnablePcap (std::string filename, NetDeviceContainer d)
-{
-  for (NetDeviceContainer::Iterator i = d.Begin (); i != d.End (); ++i)
-    {
-      Ptr<NetDevice> dev = *i;
-      EnablePcap (filename, dev->GetNode ()->GetId (), dev->GetIfIndex ());
-    }
-}
-
-void
-PointToPointHelper::EnablePcap (std::string filename, NodeContainer n)
-{
-  NetDeviceContainer devs;
-  for (NodeContainer::Iterator i = n.Begin (); i != n.End (); ++i)
-    {
-      Ptr<Node> node = *i;
-      for (uint32_t j = 0; j < node->GetNDevices (); ++j)
-        {
-          devs.Add (node->GetDevice (j));
-        }
-    }
-  EnablePcap (filename, devs);
-}
-
-void
-PointToPointHelper::EnablePcapAll (std::string filename)
-{
-  EnablePcap (filename, NodeContainer::GetGlobal ());
+  PcapHelper pcapHelper;
+  std::string filename = pcapHelper.GetFilename (prefix, device);
+  Ptr<PcapFileObject> file = pcapHelper.CreateFile (filename, "w", PcapHelper::DLT_PPP);
+  pcapHelper.HookDefaultSink<PointToPointNetDevice> (device, "PromiscSniffer", file);
 }
 
 void 
@@ -230,12 +192,6 @@ PointToPointHelper::Install (std::string aName, std::string bName)
   Ptr<Node> a = Names::Find<Node> (aName);
   Ptr<Node> b = Names::Find<Node> (bName);
   return Install (a, b);
-}
-
-void 
-PointToPointHelper::SniffEvent (Ptr<PcapWriter> writer, Ptr<const Packet> packet)
-{
-  writer->WritePacket (packet);
 }
 
 void

@@ -147,7 +147,7 @@ main (int argc, char *argv[])
 
   std::ofstream ascii;
   ascii.open ("simple-global-routing.tr");
-  PointToPointHelper::EnablePcapAll ("simple-global-routing");
+  p2p.EnablePcapAll ("simple-global-routing");
   PointToPointHelper::EnableAsciiAll (ascii);
 
   // Flow Monitor

@@ -29,6 +29,7 @@
 #include "ns3/config.h"
 #include "ns3/packet.h"
 
+#include "pcap-helper.h"
 #include "emu-helper.h"
 
 NS_LOG_COMPONENT_DEFINE ("EmuHelper");
@@ -66,75 +67,31 @@ EmuHelper::SetAttribute (std::string n1, const AttributeValue &v1)
 }
 
 void 
-EmuHelper::EnablePcap (std::string filename, uint32_t nodeid, uint32_t deviceid, bool promiscuous)
+EmuHelper::EnablePcapInternal (std::string prefix, Ptr<NetDevice> nd, bool promiscuous)
 {
-  NS_LOG_FUNCTION (filename << nodeid << deviceid << promiscuous);
-  std::ostringstream oss;
-  oss << filename << "-" << nodeid << "-" << deviceid << ".pcap";
-  Ptr<PcapWriter> pcap = CreateObject<PcapWriter> ();
-  pcap->Open (oss.str ());
-  pcap->WriteEthernetHeader ();
+  //
+  // All of the Pcap enable functions vector through here including the ones
+  // that are wandering through all of devices on perhaps all of the nodes in
+  // the system.  We can only deal with devices of type EmuNetDevice.
+  //
+  Ptr<EmuNetDevice> device = nd->GetObject<EmuNetDevice> ();
+  if (device == 0)
+    {
+      NS_LOG_INFO ("EmuHelper::EnablePcapInternal(): Device " << device << " not of type ns3::EmuNetDevice");
+      return;
+    }
 
-  oss.str ("");
-  oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid;
+  PcapHelper pcapHelper;
+  std::string filename = pcapHelper.GetFilename (prefix, device);
+  Ptr<PcapFileObject> file = pcapHelper.CreateFile (filename, "w", PcapHelper::DLT_EN10MB);
   if (promiscuous)
     {
-      oss << "/$ns3::EmuNetDevice/PromiscSniffer";
+      pcapHelper.HookDefaultSink<EmuNetDevice> (device, "PromiscSniffer", file);
     }
   else
     {
-      oss << "/$ns3::EmuNetDevice/Sniffer";
+      pcapHelper.HookDefaultSink<EmuNetDevice> (device, "Sniffer", file);
     }
-  Config::ConnectWithoutContext (oss.str (), MakeBoundCallback (&EmuHelper::SniffEvent, pcap));
-}
-
-void 
-EmuHelper::EnablePcap (std::string filename, Ptr<NetDevice> nd, bool promiscuous)
-{
-  NS_LOG_FUNCTION (filename << &nd << promiscuous);
-  EnablePcap (filename, nd->GetNode ()->GetId (), nd->GetIfIndex (), promiscuous);
-}
-
-void 
-EmuHelper::EnablePcap (std::string filename, std::string ndName, bool promiscuous)
-{
-  NS_LOG_FUNCTION (filename << ndName << promiscuous);
-  Ptr<NetDevice> nd = Names::Find<NetDevice> (ndName);
-  EnablePcap (filename, nd->GetNode ()->GetId (), nd->GetIfIndex (), promiscuous);
-}
-
-void 
-EmuHelper::EnablePcap (std::string filename, NetDeviceContainer d, bool promiscuous)
-{
-  NS_LOG_FUNCTION (filename << &d << promiscuous);
-  for (NetDeviceContainer::Iterator i = d.Begin (); i != d.End (); ++i)
-    {
-      Ptr<NetDevice> dev = *i;
-      EnablePcap (filename, dev->GetNode ()->GetId (), dev->GetIfIndex (), promiscuous);
-    }
-}
-
-void
-EmuHelper::EnablePcap (std::string filename, NodeContainer n, bool promiscuous)
-{
-  NS_LOG_FUNCTION (filename << &n << promiscuous);
-  NetDeviceContainer devs;
-  for (NodeContainer::Iterator i = n.Begin (); i != n.End (); ++i)
-    {
-      Ptr<Node> node = *i;
-      for (uint32_t j = 0; j < node->GetNDevices (); ++j)
-	{
-	  devs.Add (node->GetDevice (j));
-	}
-    }
-  EnablePcap (filename, devs, promiscuous);
-}
-
-void
-EmuHelper::EnablePcapAll (std::string filename, bool promiscuous)
-{
-  NS_LOG_FUNCTION (filename << promiscuous);
-  EnablePcap (filename, NodeContainer::GetGlobal (), promiscuous);
 }
 
 void 
@@ -231,13 +188,6 @@ EmuHelper::InstallPriv (Ptr<Node> node) const
   device->SetQueue (queue);
 
   return device;
-}
-
-void 
-EmuHelper::SniffEvent (Ptr<PcapWriter> writer, Ptr<const Packet> packet)
-{
-  NS_LOG_FUNCTION (writer << packet);
-  writer->WritePacket (packet);
 }
 
 void

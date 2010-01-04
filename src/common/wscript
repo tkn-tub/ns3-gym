@@ -21,6 +21,7 @@ def build(bld):
         'ascii-writer.cc',
         'pcap-file.cc',
         'pcap-file-test-suite.cc',
+        'pcap-file-object.cc',
         ]
 
     headers = bld.new_task_gen('ns3header')
@@ -43,4 +44,5 @@ def build(bld):
         'ascii-writer.h',
         'sgi-hashmap.h',
         'pcap-file.h',
+        'pcap-file-object.h',
         ]

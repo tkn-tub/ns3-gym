@@ -162,9 +162,9 @@ main (int argc, char *argv[])
 
   Simulator::Stop (Seconds (10.0));
 
-  PointToPointHelper::EnablePcapAll ("third");
+  pointToPoint.EnablePcapAll ("third");
   phy.EnablePcap ("third", apDevices.Get (0));
-  CsmaHelper::EnablePcap ("third", csmaDevices.Get (0), true);
+  csma.EnablePcap ("third", csmaDevices.Get (0), true);
 
   Simulator::Run ();
   Simulator::Destroy ();

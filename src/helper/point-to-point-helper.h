@@ -24,6 +24,7 @@
 #include "ns3/net-device-container.h"
 #include "ns3/node-container.h"
 #include "ns3/deprecated.h"
+#include "pcap-user-helper.h"
 #include <string>
 
 namespace ns3 {
@@ -37,7 +38,7 @@ class AsciiWriter;
 /**
  * \brief Build a set of PointToPointNetDevice objects
  */
-class PointToPointHelper
+class PointToPointHelper : public PcapUserHelper
 {
 public:
   /**
@@ -93,66 +94,6 @@ public:
    * by PointToPointHelper::Install
    */
   void SetChannelAttribute (std::string name, const AttributeValue &value);
-
-  /**
-   * \param filename filename prefix to use for pcap files.
-   * \param nodeid the id of the node to generate pcap output for.
-   * \param deviceid the id of the device to generate pcap output for.
-   *
-   * Generate a pcap file which contains the link-level data observed
-   * by the specified deviceid within the specified nodeid. The pcap
-   * data is stored in the file prefix-nodeid-deviceid.pcap.
-   *
-   * This method should be invoked after the network topology has 
-   * been fully constructed.
-   */
-  static void EnablePcap (std::string filename, uint32_t nodeid, uint32_t deviceid);
-
-  /**
-   * \param filename filename prefix to use for pcap files.
-   * \param nd Net device on which you want to enable tracing.
-   *
-   * Enable pcap output on each input device which is of the
-   * ns3::PointToPointNetDevice type.
-   */
-  static void EnablePcap (std::string filename, Ptr<NetDevice> nd);
-
-  /**
-   * \param filename filename prefix to use for pcap files.
-   * \param ndName Name of net device on which you want to enable tracing.
-   *
-   * Enable pcap output on each input device which is of the
-   * ns3::PointToPointNetDevice type.
-   */
-  static void EnablePcap (std::string filename, std::string ndName);
-
-  /**
-   * \param filename filename prefix to use for pcap files.
-   * \param d container of devices of type ns3::PointToPointNetDevice
-   *
-   * Enable pcap output on each input device which is of the
-   * ns3::PointToPointNetDevice type.
-   */
-  static void EnablePcap (std::string filename, NetDeviceContainer d);
-
-
-  /**
-   * \param filename filename prefix to use for pcap files.
-   * \param n container of nodes.
-   *
-   * Enable pcap output on each device which is of the
-   * ns3::PointToPointNetDevice type and which is located in one of the 
-   * input nodes.
-   */
-  static void EnablePcap (std::string filename, NodeContainer n);
-
-  /**
-   * \param filename filename prefix to use for pcap files.
-   *
-   * Enable pcap output on each device which is of the
-   * ns3::PointToPointNetDevice type
-   */
-  static void EnablePcapAll (std::string filename);
 
   /**
    * \param os output stream
@@ -241,8 +182,17 @@ public:
   NetDeviceContainer Install (std::string aNode, std::string bNode);
 
 private:
-  void EnablePcap (Ptr<Node> node, Ptr<NetDevice> device, Ptr<Queue> queue);
-  static void SniffEvent (Ptr<PcapWriter> writer, Ptr<const Packet> packet);
+  /**
+   * \brief Enable pcap output the indicated net device.
+   *
+   * NetDevice-specific implementation mechanism for hooking the trace and
+   * writing to the trace file.
+   *
+   * \param prefix Filename prefix to use for pcap files.
+   * \param nd Net device for which you want to enable tracing.
+   * \param promiscuous If true capture all possible packets available at the device.
+   */
+  virtual void EnablePcapInternal (std::string prefix, Ptr<NetDevice> nd, bool promiscuous = false);
 
   void EnableAscii (Ptr<Node> node, Ptr<NetDevice> device);
   static void AsciiRxEvent (Ptr<AsciiWriter> writer, std::string path, Ptr<const Packet> packet);

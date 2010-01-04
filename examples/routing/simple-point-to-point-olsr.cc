@@ -159,7 +159,7 @@ main (int argc, char *argv[])
 
   std::ofstream ascii;
   ascii.open ("simple-point-to-point-olsr.tr");
-  PointToPointHelper::EnablePcapAll ("simple-point-to-point-olsr");
+  p2p.EnablePcapAll ("simple-point-to-point-olsr");
   PointToPointHelper::EnableAsciiAll (ascii);
 
   Simulator::Stop (Seconds (30));

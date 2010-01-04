@@ -122,9 +122,9 @@ main (int argc, char *argv[])
 
   std::ofstream ascii;
   ascii.open ("mixed-global-routing.tr");
-  PointToPointHelper::EnablePcapAll ("mixed-global-routing");
+  p2p.EnablePcapAll ("mixed-global-routing");
   PointToPointHelper::EnableAsciiAll (ascii);
-  CsmaHelper::EnablePcapAll ("mixed-global-routing", false);
+  csma.EnablePcapAll ("mixed-global-routing", false);
   CsmaHelper::EnableAsciiAll (ascii);
 
 

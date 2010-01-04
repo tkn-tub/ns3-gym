@@ -394,7 +394,12 @@ main (int argc, char *argv[])
 
       // Let's do a pcap trace on the application source and sink, ifIndex 0
       // Csma captures in non-promiscuous mode
-      CsmaHelper::EnablePcap ("mixed-wireless", appSource->GetId (), 0, false);
+      CsmaHelper csma;
+#if 0
+      csma.EnablePcap ("mixed-wireless", appSource->GetId (), 0, false);
+#else
+      csma.EnablePcapAll ("mixed-wireless", false);
+#endif
       wifiPhy.EnablePcap ("mixed-wireless", appSink->GetId (), 0);
       wifiPhy.EnablePcap ("mixed-wireless", 9, 2);
       wifiPhy.EnablePcap ("mixed-wireless", 9, 0);

@@ -134,7 +134,7 @@ int main(int argc, char *argv[])
 	}
     }
 
-  CsmaHelper::EnablePcapAll ("tcp-nsc-zoo", false);
+  csma.EnablePcapAll ("tcp-nsc-zoo", false);
 
   Simulator::Stop (Seconds(100));
   Simulator::Run ();

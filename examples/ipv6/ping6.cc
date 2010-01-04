@@ -100,7 +100,7 @@ int main (int argc, char **argv)
 
   std::ofstream ascii;
   ascii.open ("ping6.tr");
-  CsmaHelper::EnablePcapAll (std::string ("ping6"), true);
+  csma.EnablePcapAll (std::string ("ping6"), true);
   CsmaHelper::EnableAsciiAll (ascii);
 
   NS_LOG_INFO ("Run Simulation.");

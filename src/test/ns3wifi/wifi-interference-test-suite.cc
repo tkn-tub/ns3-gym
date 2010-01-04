@@ -148,8 +148,9 @@ WifiInterferenceTestCase::WifiSimpleInterference (std::string phyMode,double Prs
   wifiPhy.Set ("RxGain", DoubleValue (0) ); 
   wifiPhy.Set ("CcaMode1Threshold", DoubleValue (0.0) );
   
-  // ns-3 support RadioTap and Prism tracing extensions for 802.11b
-  wifiPhy.SetPcapFormat (YansWifiPhyHelper::PCAP_FORMAT_80211_RADIOTAP); 
+  // ns-3 supports RadioTap and Prism tracing extensions for 802.11b
+  const uint32_t DLT_IEEE802_11_RADIO = 127;
+  wifiPhy.SetPcapDataLinkType (DLT_IEEE802_11_RADIO); 
   
   YansWifiChannelHelper wifiChannel ;
   wifiChannel.SetPropagationDelay ("ns3::ConstantSpeedPropagationDelayModel");

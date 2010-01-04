@@ -47,6 +47,8 @@ def register_types(module):
     module.add_class('Chunk', parent=root_module['ns3::ObjectBase'])
     ## header.h: ns3::Header [class]
     module.add_class('Header', parent=root_module['ns3::Chunk'])
+    ## pcap-file-object.h: ns3::PcapFileObject [class]
+    module.add_class('PcapFileObject', parent=root_module['ns3::Object'])
     ## pcap-writer.h: ns3::PcapWriter [class]
     module.add_class('PcapWriter', parent=root_module['ns3::Object'])
     ## simple-ref-count.h: ns3::SimpleRefCount<ns3::AsciiWriter, ns3::empty, ns3::DefaultDeleter<ns3::AsciiWriter> > [class]
@@ -175,6 +177,7 @@ def register_methods(root_module):
     register_Ns3TagBuffer_methods(root_module, root_module['ns3::TagBuffer'])
     register_Ns3Chunk_methods(root_module, root_module['ns3::Chunk'])
     register_Ns3Header_methods(root_module, root_module['ns3::Header'])
+    register_Ns3PcapFileObject_methods(root_module, root_module['ns3::PcapFileObject'])
     register_Ns3PcapWriter_methods(root_module, root_module['ns3::PcapWriter'])
     register_Ns3Trailer_methods(root_module, root_module['ns3::Trailer'])
     register_Ns3AsciiWriter_methods(root_module, root_module['ns3::AsciiWriter'])
@@ -946,6 +949,38 @@ def register_Ns3Header_methods(root_module, cls):
                    'void', 
                    [param('ns3::Buffer::Iterator', 'start')], 
                    is_pure_virtual=True, is_const=True, is_virtual=True)
+    return
+
+def register_Ns3PcapFileObject_methods(root_module, cls):
+    ## pcap-file-object.h: ns3::PcapFileObject::PcapFileObject(ns3::PcapFileObject const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::PcapFileObject const &', 'arg0')])
+    ## pcap-file-object.h: ns3::PcapFileObject::PcapFileObject() [constructor]
+    cls.add_constructor([])
+    ## pcap-file-object.h: void ns3::PcapFileObject::Close() [member function]
+    cls.add_method('Close', 
+                   'void', 
+                   [])
+    ## pcap-file-object.h: static ns3::TypeId ns3::PcapFileObject::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## pcap-file-object.h: bool ns3::PcapFileObject::Init(uint32_t dataLinkType, uint32_t snapLen=ns3::PcapFile::SNAPLEN_DEFAULT, int32_t tzCorrection=ns3::PcapFile::ZONE_DEFAULT) [member function]
+    cls.add_method('Init', 
+                   'bool', 
+                   [param('uint32_t', 'dataLinkType'), param('uint32_t', 'snapLen', default_value='ns3::PcapFile::SNAPLEN_DEFAULT'), param('int32_t', 'tzCorrection', default_value='ns3::PcapFile::ZONE_DEFAULT')])
+    ## pcap-file-object.h: bool ns3::PcapFileObject::Open(std::string const & filename, std::string const & mode) [member function]
+    cls.add_method('Open', 
+                   'bool', 
+                   [param('std::string const &', 'filename'), param('std::string const &', 'mode')])
+    ## pcap-file-object.h: bool ns3::PcapFileObject::Write(ns3::Time t, ns3::Ptr<ns3::Packet const> p) [member function]
+    cls.add_method('Write', 
+                   'bool', 
+                   [param('ns3::Time', 't'), param('ns3::Ptr< ns3::Packet const >', 'p')])
+    ## pcap-file-object.h: bool ns3::PcapFileObject::Write(ns3::Time t, uint8_t const * buffer, uint32_t length) [member function]
+    cls.add_method('Write', 
+                   'bool', 
+                   [param('ns3::Time', 't'), param('uint8_t const *', 'buffer'), param('uint32_t', 'length')])
     return
 
 def register_Ns3PcapWriter_methods(root_module, cls):

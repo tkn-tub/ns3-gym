@@ -148,7 +148,7 @@ main (int argc, char *argv[])
 
   std::ofstream ascii;
   ascii.open ("global-routing-injection32.tr", std::ios_base::binary | std::ios_base::out);
-  PointToPointHelper::EnablePcapAll ("global-routing-injection32");
+  p2p.EnablePcapAll ("global-routing-injection32");
   PointToPointHelper::EnableAsciiAll (ascii);
 
   Simulator::Run ();

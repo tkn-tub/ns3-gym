@@ -21,6 +21,7 @@
 #define CSMA_HELPER_H
 
 #include <string>
+
 #include "ns3/attribute.h"
 #include "ns3/object-factory.h"
 #include "ns3/net-device-container.h"
@@ -28,16 +29,17 @@
 #include "ns3/csma-channel.h"
 #include "ns3/deprecated.h"
 
+#include "pcap-user-helper.h"
+
 namespace ns3 {
 
 class Packet;
-class PcapWriter;
 class AsciiWriter;
 
 /**
  * \brief build a set of CsmaNetDevice objects
  */
-class CsmaHelper
+class CsmaHelper : public PcapUserHelper
 {
 public:
   /**
@@ -82,67 +84,6 @@ public:
    * by CsmaHelper::Install
    */
   void SetChannelAttribute (std::string n1, const AttributeValue &v1);
-
-  /**
-   * \param filename filename prefix to use for pcap files.
-   * \param nodeid the id of the node to generate pcap output for.
-   * \param deviceid the id of the device to generate pcap output for.
-   * \param promiscuous If true capture all possible packets available at the device.
-   *
-   * Generate a pcap file which contains the link-level data observed
-   * by the specified deviceid within the specified nodeid. The pcap
-   * data is stored in the file prefix-nodeid-deviceid.pcap.
-   *
-   * This method should be invoked after the network topology has 
-   * been fully constructed.
-   */
-  static void EnablePcap (std::string filename, uint32_t nodeid, uint32_t deviceid, bool promiscuous);
-
-  /**
-   * \param filename filename prefix to use for pcap files.
-   * \param nd Net device in which you want to enable tracing.
-   * \param promiscuous If true capture all possible packets available at the device.
-   *
-   * Enable pcap output the indicated net device.
-   */
-  static void EnablePcap (std::string filename, Ptr<NetDevice> nd, bool promiscuous);
-
-  /**
-   * \param filename filename prefix to use for pcap files.
-   * \param ndName The name of the net device in which you want to enable tracing.
-   * \param promiscuous If true capture all possible packets available at the device.
-   *
-   * Enable pcap output the indicated net device.
-   */
-  static void EnablePcap (std::string filename, std::string ndName, bool promiscuous);
-
-  /**
-   * \param filename filename prefix to use for pcap files.
-   * \param d container of devices of type ns3::CsmaNetDevice
-   * \param promiscuous If true capture all possible packets available at the device.
-   *
-   * Enable pcap output on each input device which is of the ns3::CsmaNetDevice type.
-   */
-  static void EnablePcap (std::string filename, NetDeviceContainer d, bool promiscuous);
-
-  /**
-   * \param filename filename prefix to use for pcap files.
-   * \param n container of nodes.
-   * \param promiscuous If true capture all possible packets available at the device.
-   *
-   * Enable pcap output on each device which is of the
-   * ns3::CsmaNetDevice type and which is located in one of the 
-   * input nodes.
-   */
-  static void EnablePcap (std::string filename, NodeContainer n, bool promiscuous);
-  /**
-   * \param filename filename prefix to use for pcap files.
-   * \param promiscuous If true capture all possible packets available at the device.
-   *
-   * Enable pcap output on each device which is of the
-   * ns3::CsmaNetDevice type
-   */
-  static void EnablePcapAll (std::string filename, bool promiscuous);
 
   /**
    * \param os output stream
@@ -291,10 +232,17 @@ private:
    */
   Ptr<NetDevice> InstallPriv (Ptr<Node> node, Ptr<CsmaChannel> channel) const;
 
-  /*
-   * \internal
+  /**
+   * \brief Enable pcap output the indicated net device.
+   *
+   * NetDevice-specific implementation mechanism for hooking the trace and
+   * writing to the trace file.
+   *
+   * \param prefix Filename prefix to use for pcap files.
+   * \param nd Net device for which you want to enable tracing.
+   * \param promiscuous If true capture all possible packets available at the device.
    */
-  static void SniffEvent (Ptr<PcapWriter> writer, Ptr<const Packet> packet);
+  virtual void EnablePcapInternal (std::string prefix, Ptr<NetDevice> nd, bool promiscuous = false);
 
   static void AsciiRxEvent (Ptr<AsciiWriter> writer, std::string path, Ptr<const Packet> packet);
   /*

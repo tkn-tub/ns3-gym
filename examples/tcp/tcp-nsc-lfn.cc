@@ -142,7 +142,7 @@ int main (int argc, char *argv[])
                                  MakeCallback (&CwndTracer));
 
   // This tells ns-3 to generate pcap traces.
-  PointToPointHelper::EnablePcapAll ("tcp-nsc-lfn");
+  p2p.EnablePcapAll ("tcp-nsc-lfn");
 
   Simulator::Stop (Seconds(900));
   Simulator::Run ();

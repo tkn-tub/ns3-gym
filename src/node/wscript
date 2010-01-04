@@ -48,6 +48,7 @@ def build(bld):
         'ipv6-routing-protocol.cc',
         'packetbb.cc',
         'packetbb-test-suite.cc',
+        'radiotap-header.cc',
         ]
 
     headers = bld.new_task_gen('ns3header')
@@ -96,4 +97,5 @@ def build(bld):
         'ipv6-raw-socket-factory.h',
         'ipv6-routing-protocol.h',
         'packetbb.h',
+        'radiotap-header.h',
         ]

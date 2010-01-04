@@ -210,7 +210,7 @@ int main (int argc, char** argv)
 
   std::ofstream ascii;
   ascii.open ("radvd-two-prefix.tr");
-  CsmaHelper::EnablePcapAll (std::string ("radvd-two-prefix"), true);
+  csma.EnablePcapAll (std::string ("radvd-two-prefix"), true);
   CsmaHelper::EnableAsciiAll (ascii);
 
   NS_LOG_INFO ("Run Simulation.");

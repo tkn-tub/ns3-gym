@@ -291,7 +291,7 @@ main (int argc, char *argv[])
 
   std::ofstream ascii;
   ascii.open ("virtual-net-device.tr");
-  PointToPointHelper::EnablePcapAll ("virtual-net-device");
+  p2p.EnablePcapAll ("virtual-net-device");
   PointToPointHelper::EnableAsciiAll (ascii);
 
   NS_LOG_INFO ("Run Simulation.");

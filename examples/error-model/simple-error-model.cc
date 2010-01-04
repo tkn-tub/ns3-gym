@@ -168,7 +168,7 @@ main (int argc, char *argv[])
 
   std::ofstream ascii;
   ascii.open ("simple-error-model.tr");
-  PointToPointHelper::EnablePcapAll ("simple-error-model");
+  p2p.EnablePcapAll ("simple-error-model");
   PointToPointHelper::EnableAsciiAll (ascii);
 
   NS_LOG_INFO ("Run Simulation.");

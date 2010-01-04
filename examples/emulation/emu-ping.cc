@@ -203,7 +203,8 @@ main (int argc, char *argv[])
   //
   // Enable a promiscuous pcap trace to see what is coming and going on our device.
   //
-  EmuHelper::EnablePcap ("emu-ping", device, true);
+  EmuHelper emu;
+  emu.EnablePcap ("emu-ping", device, true);
 
   //
   // Now, do the actual emulation.
