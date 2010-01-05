@@ -772,6 +772,12 @@ CsmaNetDevice::Receive (Ptr<Packet> packet, Ptr<CsmaNetDevice> senderDevice)
       return;
     }
 
+  if (m_receiveErrorModel && m_receiveErrorModel->IsCorrupt (packet) )
+    {
+      NS_LOG_LOGIC ("Dropping pkt due to error model ");
+      m_phyRxDropTrace (packet);
+    }
+
   //
   // Trace sinks will expect complete packets, not packets without some of the
   // headers.
@@ -800,76 +806,68 @@ CsmaNetDevice::Receive (Ptr<Packet> packet, Ptr<CsmaNetDevice> senderDevice)
   NS_LOG_LOGIC ("Pkt source is " << header.GetSource ());
   NS_LOG_LOGIC ("Pkt destination is " << header.GetDestination ());
 
-  if (m_receiveErrorModel && m_receiveErrorModel->IsCorrupt (packet) )
+  uint16_t protocol;
+  //
+  // If the length/type is less than 1500, it corresponds to a length 
+  // interpretation packet.  In this case, it is an 802.3 packet and 
+  // will also have an 802.2 LLC header.  If greater than 1500, we
+  // find the protocol number (Ethernet type) directly.
+  //
+  if (header.GetLengthType () <= 1500)
     {
-      NS_LOG_LOGIC ("Dropping pkt due to error model ");
-      m_phyRxDropTrace (packet);
+      LlcSnapHeader llc;
+      packet->RemoveHeader (llc);
+      protocol = llc.GetType ();
     }
   else
     {
-      uint16_t protocol;
-      //
-      // If the length/type is less than 1500, it corresponds to a length 
-      // interpretation packet.  In this case, it is an 802.3 packet and 
-      // will also have an 802.2 LLC header.  If greater than 1500, we
-      // find the protocol number (Ethernet type) directly.
-      //
-      if (header.GetLengthType () <= 1500)
-        {
-          LlcSnapHeader llc;
-          packet->RemoveHeader (llc);
-          protocol = llc.GetType ();
-        }
-      else
-        {
-          protocol = header.GetLengthType ();
-        }
+      protocol = header.GetLengthType ();
+    }
 
-      //
-      // Classify the packet based on its destination.
-      //
-      PacketType packetType;
+  //
+  // Classify the packet based on its destination.
+  //
+  PacketType packetType;
 
-      if (header.GetDestination ().IsBroadcast ())
-        {
-          packetType = PACKET_BROADCAST;
-        }
-      else if (header.GetDestination ().IsGroup ())
-        {
-          packetType = PACKET_MULTICAST;          
-        }
-      else if (header.GetDestination () == m_address)
-        {
-          packetType = PACKET_HOST;
-        }
-      else
-        {
-          packetType = PACKET_OTHERHOST;
-        }
+  if (header.GetDestination ().IsBroadcast ())
+    {
+      packetType = PACKET_BROADCAST;
+    }
+  else if (header.GetDestination ().IsGroup ())
+    {
+      packetType = PACKET_MULTICAST;          
+    }
+  else if (header.GetDestination () == m_address)
+    {
+      packetType = PACKET_HOST;
+    }
+  else
+    {
+      packetType = PACKET_OTHERHOST;
+    }
 
-      // 
-      // For all kinds of packetType we receive, we hit the promiscuous sniffer
-      // hook and pass a copy up to the promiscuous callback.  Pass a copy to 
-      // make sure that nobody messes with our packet.
-      //
-      m_promiscSnifferTrace (originalPacket);
-      if (!m_promiscRxCallback.IsNull ())
-        {
-          m_macPromiscRxTrace (originalPacket);
-          m_promiscRxCallback (this, packet, protocol, header.GetSource (), header.GetDestination (), packetType);
-        }
+  // 
+  // For all kinds of packetType we receive, we hit the promiscuous sniffer
+  // hook and pass a copy up to the promiscuous callback.  Pass a copy to 
+  // make sure that nobody messes with our packet.
+  //
+  m_promiscSnifferTrace (originalPacket);
+  if (!m_promiscRxCallback.IsNull ())
+    {
+      m_macPromiscRxTrace (originalPacket);
+      m_promiscRxCallback (this, packet, protocol, header.GetSource (), header.GetDestination (), packetType);
+    }
 
-      //
-      // If this packet is not destined for some other host, it must be for us
-      // as either a broadcast, multicast or unicast.  We need to hit the mac
-      // packet received trace hook and forward the packet up the stack.
-      //
-      if (packetType != PACKET_OTHERHOST)
-        {
-          m_snifferTrace (originalPacket);
-          m_macRxTrace (originalPacket);
-          m_rxCallback (this, packet, protocol, header.GetSource ());
-        }
+  //
+  // If this packet is not destined for some other host, it must be for us
+  // as either a broadcast, multicast or unicast.  We need to hit the mac
+  // packet received trace hook and forward the packet up the stack.
+  //
+  if (packetType != PACKET_OTHERHOST)
+    {
+      m_snifferTrace (originalPacket);
+      m_macRxTrace (originalPacket);
+      m_rxCallback (this, packet, protocol, header.GetSource ());
     }
 }
 
