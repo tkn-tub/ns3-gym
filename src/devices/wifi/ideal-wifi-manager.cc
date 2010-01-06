@@ -25,6 +25,11 @@
 
 namespace ns3 {
 
+struct IdealWifiRemoteStation : public WifiRemoteStation
+{
+  double m_lastSnr;
+};
+
 NS_OBJECT_ENSURE_REGISTERED (IdealWifiManager);
 
 TypeId 
@@ -60,12 +65,6 @@ IdealWifiManager::SetupPhy (Ptr<WifiPhy> phy)
   WifiRemoteStationManager::SetupPhy (phy);
 }
 
-WifiRemoteStation *
-IdealWifiManager::CreateStation (void)
-{
-  return new IdealWifiRemoteStation (this);
-}
-
 double 
 IdealWifiManager::GetSnrThreshold (WifiMode mode) const
 {
@@ -86,52 +85,61 @@ IdealWifiManager::AddModeSnrThreshold (WifiMode mode, double snr)
   m_thresholds.push_back (std::make_pair (snr,mode));
 }
 
-IdealWifiRemoteStation::IdealWifiRemoteStation (Ptr<IdealWifiManager> manager)
-  : m_manager (manager),
-    m_lastSnr (0.0)
-{}
-IdealWifiRemoteStation::~IdealWifiRemoteStation ()
-{}
-void 
-IdealWifiRemoteStation::DoReportRxOk (double rxSnr, WifiMode txMode)
-{}
-void 
-IdealWifiRemoteStation::DoReportRtsFailed (void)
-{}
-void 
-IdealWifiRemoteStation::DoReportDataFailed (void)
-{}
-void 
-IdealWifiRemoteStation::DoReportRtsOk (double ctsSnr, WifiMode ctsMode, double rtsSnr)
+WifiRemoteStation *
+IdealWifiManager::DoCreateStation (void) const
 {
-  m_lastSnr = rtsSnr;
+  IdealWifiRemoteStation *station = new IdealWifiRemoteStation ();
+  station->m_lastSnr = 0.0;
+  return station;
+}
+
+
+void 
+IdealWifiManager::DoReportRxOk (WifiRemoteStation *station,
+                                double rxSnr, WifiMode txMode)
+{}
+void 
+IdealWifiManager::DoReportRtsFailed (WifiRemoteStation *station)
+{}
+void 
+IdealWifiManager::DoReportDataFailed (WifiRemoteStation *station)
+{}
+void 
+IdealWifiManager::DoReportRtsOk (WifiRemoteStation *st,
+                                 double ctsSnr, WifiMode ctsMode, double rtsSnr)
+{
+  IdealWifiRemoteStation *station = (IdealWifiRemoteStation *)st;
+  station->m_lastSnr = rtsSnr;
 }
 void 
-IdealWifiRemoteStation::DoReportDataOk (double ackSnr, WifiMode ackMode, double dataSnr)
+IdealWifiManager::DoReportDataOk (WifiRemoteStation *st,
+                                  double ackSnr, WifiMode ackMode, double dataSnr)
 {
-  m_lastSnr = dataSnr;
+  IdealWifiRemoteStation *station = (IdealWifiRemoteStation *)st;
+  station->m_lastSnr = dataSnr;
 }
 void 
-IdealWifiRemoteStation::DoReportFinalRtsFailed (void)
+IdealWifiManager::DoReportFinalRtsFailed (WifiRemoteStation *station)
 {}
 void 
-IdealWifiRemoteStation::DoReportFinalDataFailed (void)
+IdealWifiManager::DoReportFinalDataFailed (WifiRemoteStation *station)
 {}
 
 WifiMode
-IdealWifiRemoteStation::DoGetDataMode (uint32_t size)
+IdealWifiManager::DoGetDataMode (WifiRemoteStation *st, uint32_t size)
 {
+  IdealWifiRemoteStation *station = (IdealWifiRemoteStation *)st;
   // We search within the Supported rate set the mode with the 
   // highest snr threshold possible which is smaller than m_lastSnr 
   // to ensure correct packet delivery.
   double maxThreshold = 0.0;
-  WifiMode maxMode = m_manager->GetDefaultMode ();
-  for (uint32_t i = 0; i < GetNSupportedModes (); i++)
+  WifiMode maxMode = GetDefaultMode ();
+  for (uint32_t i = 0; i < GetNSupported (station); i++)
     {
-      WifiMode mode = GetSupportedMode (i);
-      double threshold = m_manager->GetSnrThreshold (mode);
+      WifiMode mode = GetSupported (station, i);
+      double threshold = GetSnrThreshold (mode);
       if (threshold > maxThreshold && 
-          threshold < m_lastSnr)
+          threshold < station->m_lastSnr)
         {
           maxThreshold = threshold;
           maxMode = mode;
@@ -140,19 +148,20 @@ IdealWifiRemoteStation::DoGetDataMode (uint32_t size)
   return maxMode;
 }
 WifiMode
-IdealWifiRemoteStation::DoGetRtsMode (void)
+IdealWifiManager::DoGetRtsMode (WifiRemoteStation *st)
 {
+  IdealWifiRemoteStation *station = (IdealWifiRemoteStation *)st;
   // We search within the Basic rate set the mode with the highest 
   // snr threshold possible which is smaller than m_lastSnr to 
   // ensure correct packet delivery.
   double maxThreshold = 0.0;
-  WifiMode maxMode = m_manager->GetDefaultMode ();
-  for (uint32_t i = 0; i < m_manager->GetNBasicModes (); i++)
+  WifiMode maxMode = GetDefaultMode ();
+  for (uint32_t i = 0; i < GetNBasicModes (); i++)
     {
-      WifiMode mode = m_manager->GetBasicMode (i);
-      double threshold = m_manager->GetSnrThreshold (mode);
+      WifiMode mode = GetBasicMode (i);
+      double threshold = GetSnrThreshold (mode);
       if (threshold > maxThreshold && 
-          threshold < m_lastSnr)
+          threshold < station->m_lastSnr)
         {
           maxThreshold = threshold;
           maxMode = mode;
@@ -160,10 +169,11 @@ IdealWifiRemoteStation::DoGetRtsMode (void)
     }
   return maxMode;
 }
-Ptr<WifiRemoteStationManager>
-IdealWifiRemoteStation::GetManager (void) const
+
+bool 
+IdealWifiManager::IsLowLatency (void) const
 {
-  return m_manager;
+  return true;
 }
 
 } // namespace ns3

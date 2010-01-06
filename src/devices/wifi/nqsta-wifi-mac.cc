@@ -24,6 +24,7 @@
 #include "ns3/log.h"
 #include "ns3/node.h"
 #include "ns3/uinteger.h"
+#include "ns3/boolean.h"
 #include "ns3/trace-source-accessor.h"
 
 #include "nqsta-wifi-mac.h"
@@ -609,13 +610,12 @@ NqstaWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
               SetState (ASSOCIATED);
               NS_LOG_DEBUG ("assoc completed"); 
               SupportedRates rates = assocResp.GetSupportedRates ();
-              WifiRemoteStation *ap = m_stationManager->Lookup (hdr->GetAddr2 ());
               for (uint32_t i = 0; i < m_phy->GetNModes (); i++)
                 {
                   WifiMode mode = m_phy->GetMode (i);
                   if (rates.IsSupportedRate (mode.GetDataRate ()))
                     {
-                      ap->AddSupportedMode (mode);
+                      m_stationManager->AddSupportedMode (hdr->GetAddr2 (), mode);
                       if (rates.IsBasicRate (mode.GetDataRate ()))
                         {
                           m_stationManager->AddBasicMode (mode);

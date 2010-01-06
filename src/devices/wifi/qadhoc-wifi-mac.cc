@@ -243,16 +243,15 @@ QadhocWifiMac::Enqueue (Ptr<const Packet> packet, Mac48Address to)
   hdr.SetDsNotFrom ();
   hdr.SetDsNotTo ();
 
-  WifiRemoteStation *destination = m_stationManager->Lookup (to);
-  if (destination->IsBrandNew ())
+  if (m_stationManager->IsBrandNew (to))
     {
       // in adhoc mode, we assume that every destination
       // supports all the rates we support.
       for (uint32_t i = 0; i < m_phy->GetNModes (); i++)
         {
-          destination->AddSupportedMode (m_phy->GetMode (i));
+          m_stationManager->AddSupportedMode (to, m_phy->GetMode (i));
         }
-      destination->RecordDisassociated ();
+      m_stationManager->RecordDisassociated (to);
     }
 
   uint8_t tid = QosUtilsGetTidForPacket (packet);

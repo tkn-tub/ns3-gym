@@ -27,6 +27,19 @@ NS_LOG_COMPONENT_DEFINE ("OnoeWifiRemoteStation");
 
 namespace ns3 {
 
+struct OnoeWifiRemoteStation : public WifiRemoteStation
+{
+  Time m_nextModeUpdate;
+  uint32_t m_shortRetry;
+  uint32_t m_longRetry;
+  uint32_t m_tx_ok;
+  uint32_t m_tx_err;
+  uint32_t m_tx_retr;
+  uint32_t m_tx_upper;
+  uint32_t m_txrate;
+};
+
+
 NS_OBJECT_ENSURE_REGISTERED (OnoeWifiManager);
 
 TypeId
@@ -55,74 +68,76 @@ OnoeWifiManager::GetTypeId (void)
 OnoeWifiManager::OnoeWifiManager ()
 {}
 WifiRemoteStation *
-OnoeWifiManager::CreateStation (void)
+OnoeWifiManager::DoCreateStation (void) const
 {
-  return new OnoeWifiRemoteStation (this);
+  OnoeWifiRemoteStation *station = new OnoeWifiRemoteStation ();
+  station->m_nextModeUpdate = Simulator::Now () + m_updatePeriod;
+  station->m_shortRetry = 0;
+  station->m_longRetry = 0;
+  station->m_tx_ok = 0;
+  station->m_tx_err = 0;
+  station->m_tx_retr = 0;
+  station->m_tx_upper = 0;
+  station->m_txrate = 0;
+  return station;
 }
-
-OnoeWifiRemoteStation::OnoeWifiRemoteStation (Ptr<OnoeWifiManager> stations)
-  : m_stations (stations),
-    m_nextModeUpdate (Simulator::Now () + stations->m_updatePeriod),
-    m_shortRetry (0),
-    m_longRetry (0),
-    m_tx_ok (0),
-    m_tx_err (0),
-    m_tx_retr (0),
-    m_tx_upper (0),
-    m_txrate (0)
-{}
-OnoeWifiRemoteStation::~OnoeWifiRemoteStation ()
-{}
-
 void 
-OnoeWifiRemoteStation::DoReportRxOk (double rxSnr, WifiMode txMode)
+OnoeWifiManager::DoReportRxOk (WifiRemoteStation *station,
+                                     double rxSnr, WifiMode txMode)
 {}
 void 
-OnoeWifiRemoteStation::DoReportRtsFailed (void)
+OnoeWifiManager::DoReportRtsFailed (WifiRemoteStation *st)
 {
-  m_shortRetry++;
+  OnoeWifiRemoteStation *station = (OnoeWifiRemoteStation *)st;
+  station->m_shortRetry++;
 }
 void 
-OnoeWifiRemoteStation::DoReportDataFailed (void)
+OnoeWifiManager::DoReportDataFailed (WifiRemoteStation *st)
 {
-  m_longRetry++;
+  OnoeWifiRemoteStation *station = (OnoeWifiRemoteStation *)st;
+  station->m_longRetry++;
 }
 void 
-OnoeWifiRemoteStation::DoReportRtsOk (double ctsSnr, WifiMode ctsMode, double rtsSnr)
+OnoeWifiManager::DoReportRtsOk (WifiRemoteStation *station,
+                                      double ctsSnr, WifiMode ctsMode, double rtsSnr)
 {}
 void 
-OnoeWifiRemoteStation::DoReportDataOk (double ackSnr, WifiMode ackMode, double dataSnr)
+OnoeWifiManager::DoReportDataOk (WifiRemoteStation *st,
+                                       double ackSnr, WifiMode ackMode, double dataSnr)
 {
-  UpdateRetry ();
-  m_tx_ok++;
+  OnoeWifiRemoteStation *station = (OnoeWifiRemoteStation *)st;
+  UpdateRetry (station);
+  station->m_tx_ok++;
 }
 void 
-OnoeWifiRemoteStation::DoReportFinalRtsFailed (void)
+OnoeWifiManager::DoReportFinalRtsFailed (WifiRemoteStation *st)
 {
-  UpdateRetry ();
-  m_tx_err++;
+  OnoeWifiRemoteStation *station = (OnoeWifiRemoteStation *)st;
+  UpdateRetry (station);
+  station->m_tx_err++;
 }
 void 
-OnoeWifiRemoteStation::DoReportFinalDataFailed (void)
+OnoeWifiManager::DoReportFinalDataFailed (WifiRemoteStation *st)
 {
-  UpdateRetry ();
-  m_tx_err++;
+  OnoeWifiRemoteStation *station = (OnoeWifiRemoteStation *)st;
+  UpdateRetry (station);
+  station->m_tx_err++;
 }
 void
-OnoeWifiRemoteStation::UpdateRetry (void)
+OnoeWifiManager::UpdateRetry (OnoeWifiRemoteStation *station)
 {
-  m_tx_retr += m_shortRetry + m_longRetry;
-  m_shortRetry = 0;
-  m_longRetry = 0;
+  station->m_tx_retr += station->m_shortRetry + station->m_longRetry;
+  station->m_shortRetry = 0;
+  station->m_longRetry = 0;
 }
 void
-OnoeWifiRemoteStation::UpdateMode (void)
+OnoeWifiManager::UpdateMode (OnoeWifiRemoteStation *station)
 {
-  if (Simulator::Now () < m_nextModeUpdate)
+  if (Simulator::Now () < station->m_nextModeUpdate)
     {
       return;
     }
-  m_nextModeUpdate = Simulator::Now () + m_stations->m_updatePeriod;
+  station->m_nextModeUpdate = Simulator::Now () + m_updatePeriod;
   /**
    * The following 20 lines of code were copied from the Onoe
    * rate control kernel module used in the madwifi driver.
@@ -130,112 +145,116 @@ OnoeWifiRemoteStation::UpdateMode (void)
 
   int dir = 0, enough;
   uint32_t nrate;
-  enough = (m_tx_ok + m_tx_err >= 10);
+  enough = (station->m_tx_ok + station->m_tx_err >= 10);
 
   /* no packet reached -> down */
-  if (m_tx_err > 0 && m_tx_ok == 0)
+  if (station->m_tx_err > 0 && station->m_tx_ok == 0)
     dir = -1;
 
   /* all packets needs retry in average -> down */
-  if (enough && m_tx_ok < m_tx_retr)
+  if (enough && station->m_tx_ok < station->m_tx_retr)
     dir = -1;
 
   /* no error and less than rate_raise% of packets need retry -> up */
-  if (enough && m_tx_err == 0 &&
-      m_tx_retr < (m_tx_ok * m_stations->m_addCreditThreshold) / 100)
+  if (enough && station->m_tx_err == 0 &&
+      station->m_tx_retr < (station->m_tx_ok * m_addCreditThreshold) / 100)
     dir = 1;
 
-  NS_LOG_DEBUG (this << " ok " << m_tx_ok << " err " << m_tx_err << " retr " << m_tx_retr <<
-                " upper " << m_tx_upper << " dir " << dir);
+  NS_LOG_DEBUG (this << " ok " << station->m_tx_ok << " err " << station->m_tx_err << " retr " << station->m_tx_retr <<
+                " upper " << station->m_tx_upper << " dir " << dir);
 
-  nrate = m_txrate;
+  nrate = station->m_txrate;
   switch (dir) {
   case 0:
-    if (enough && m_tx_upper > 0)
-      m_tx_upper--;
+    if (enough && station->m_tx_upper > 0)
+      station->m_tx_upper--;
     break;
   case -1:
     if (nrate > 0) {
       nrate--;
     }
-    m_tx_upper = 0;
+    station->m_tx_upper = 0;
     break;
   case 1:
     /* raise rate if we hit rate_raise_threshold */
-    if (++m_tx_upper < m_stations->m_raiseThreshold)
+    if (++station->m_tx_upper < m_raiseThreshold)
       break;
-    m_tx_upper = 0;
-    if (nrate + 1 < GetNSupportedModes ()) {
+    station->m_tx_upper = 0;
+    if (nrate + 1 < GetNSupported (station)) {
       nrate++;
     }
     break;
   }
 
-  if (nrate != m_txrate) {
-    NS_ASSERT (nrate < GetNSupportedModes ());
-    m_txrate = nrate;
-    m_tx_ok = m_tx_err = m_tx_retr = m_tx_upper = 0;
+  if (nrate != station->m_txrate) {
+    NS_ASSERT (nrate < GetNSupported (station));
+    station->m_txrate = nrate;
+    station->m_tx_ok = station->m_tx_err = station->m_tx_retr = station->m_tx_upper = 0;
   } else if (enough)
-    m_tx_ok = m_tx_err = m_tx_retr = 0;
+    station->m_tx_ok = station->m_tx_err = station->m_tx_retr = 0;
 
 }
 
-Ptr<WifiRemoteStationManager>
-OnoeWifiRemoteStation::GetManager (void) const
-{
-  return m_stations;
-}
 WifiMode 
-OnoeWifiRemoteStation::DoGetDataMode (uint32_t size)
+OnoeWifiManager::DoGetDataMode (WifiRemoteStation *st,
+                                      uint32_t size)
 {
-  UpdateMode ();
-  NS_ASSERT (m_txrate < GetNSupportedModes ());
+  OnoeWifiRemoteStation *station = (OnoeWifiRemoteStation *)st;
+  UpdateMode (station);
+  NS_ASSERT (station->m_txrate < GetNSupported (station));
   uint32_t rateIndex;
-  if (m_longRetry < 4)
+  if (station->m_longRetry < 4)
     {
-      rateIndex = m_txrate;
+      rateIndex = station->m_txrate;
     }
-  else if (m_longRetry < 6)
+  else if (station->m_longRetry < 6)
     {
-      if (m_txrate > 0)
+      if (station->m_txrate > 0)
         {
-          rateIndex = m_txrate - 1;
+          rateIndex = station->m_txrate - 1;
         }
       else
         {
-          rateIndex = m_txrate;
+          rateIndex = station->m_txrate;
         }
     }
-  else if (m_longRetry < 8)
+  else if (station->m_longRetry < 8)
     {
-      if (m_txrate > 1)
+      if (station->m_txrate > 1)
         {
-          rateIndex = m_txrate - 2;
+          rateIndex = station->m_txrate - 2;
         }
       else
         {
-          rateIndex = m_txrate;
+          rateIndex = station->m_txrate;
         }
     }
   else
     {
-      if (m_txrate > 2)
+      if (station->m_txrate > 2)
         {
-          rateIndex = m_txrate - 3;
+          rateIndex = station->m_txrate - 3;
         }
       else
         {
-          rateIndex = m_txrate;
+          rateIndex = station->m_txrate;
         }
     }
-  return GetSupportedMode (rateIndex);
+  return GetSupported (station, rateIndex);
 }
 WifiMode 
-OnoeWifiRemoteStation::DoGetRtsMode (void)
+OnoeWifiManager::DoGetRtsMode (WifiRemoteStation *st)
 {
-  UpdateMode ();
+  OnoeWifiRemoteStation *station = (OnoeWifiRemoteStation *)st;
+  UpdateMode (station);
   // XXX: can we implement something smarter ?
-  return GetSupportedMode (0);
+  return GetSupported (station, 0);
+}
+
+bool 
+OnoeWifiManager::IsLowLatency (void) const
+{
+  return false;
 }
 
 } // namespace ns3

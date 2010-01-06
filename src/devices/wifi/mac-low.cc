@@ -24,6 +24,7 @@
 #include "ns3/tag.h"
 #include "ns3/log.h"
 #include "ns3/node.h"
+#include "ns3/double.h"
 
 #include "mac-low.h"
 #include "wifi-phy.h"
@@ -575,8 +576,8 @@ MacLow::ReceiveOk (Ptr<Packet> packet, double rxSnr, WifiMode txMode, WifiPreamb
         {
           NS_LOG_DEBUG ("rx RTS from=" << hdr.GetAddr2 () << ", schedule CTS");
           NS_ASSERT (m_sendCtsEvent.IsExpired ());
-          WifiRemoteStation *station = GetStation (hdr.GetAddr2 ());
-          station->ReportRxOk (rxSnr, txMode);
+          m_stationManager->ReportRxOk (hdr.GetAddr2 (), &hdr, 
+                                        rxSnr, txMode);
           m_sendCtsEvent = Simulator::Schedule (GetSifs (),
                                                 &MacLow::SendCtsAfterRts, this,
                                                 hdr.GetAddr2 (), 
@@ -597,9 +598,10 @@ MacLow::ReceiveOk (Ptr<Packet> packet, double rxSnr, WifiMode txMode, WifiPreamb
       NS_LOG_DEBUG ("receive cts from="<<m_currentHdr.GetAddr1 ());
       SnrTag tag;
       packet->RemovePacketTag (tag);
-      WifiRemoteStation *station = GetStation (m_currentHdr.GetAddr1 ());
-      station->ReportRxOk (rxSnr, txMode);
-      station->ReportRtsOk (rxSnr, txMode, tag.Get ());
+      m_stationManager->ReportRxOk (m_currentHdr.GetAddr1 (), &m_currentHdr,
+                                    rxSnr, txMode);
+      m_stationManager->ReportRtsOk (m_currentHdr.GetAddr1 (), &m_currentHdr,
+                                     rxSnr, txMode, tag.Get ());
       
       m_ctsTimeoutEvent.Cancel ();
       NotifyCtsTimeoutResetNow ();
@@ -621,9 +623,10 @@ MacLow::ReceiveOk (Ptr<Packet> packet, double rxSnr, WifiMode txMode, WifiPreamb
       NS_LOG_DEBUG ("receive ack from="<<m_currentHdr.GetAddr1 ());
       SnrTag tag;
       packet->RemovePacketTag (tag);
-      WifiRemoteStation *station = GetStation (m_currentHdr.GetAddr1 ());
-      station->ReportRxOk (rxSnr, txMode);
-      station->ReportDataOk (rxSnr, txMode, tag.Get ());
+      m_stationManager->ReportRxOk (m_currentHdr.GetAddr1 (), &m_currentHdr,
+                                    rxSnr, txMode);
+      m_stationManager->ReportDataOk (m_currentHdr.GetAddr1 (), &m_currentHdr,
+                                      rxSnr, txMode, tag.Get ());
       bool gotAck = false;
       if (m_txParams.MustWaitNormalAck () &&
           m_normalAckTimeoutEvent.IsRunning ()) 
@@ -655,8 +658,8 @@ MacLow::ReceiveOk (Ptr<Packet> packet, double rxSnr, WifiMode txMode, WifiPreamb
     } 
   else if (hdr.GetAddr1 () == m_self) 
     {
-      WifiRemoteStation *station = GetStation (hdr.GetAddr2 ());
-      station->ReportRxOk (rxSnr, txMode);
+      m_stationManager->ReportRxOk (hdr.GetAddr2 (), &hdr,
+                                    rxSnr, txMode);
       
       if (hdr.IsQosData () && hdr.IsQosNoAck ()) 
         {
@@ -743,7 +746,7 @@ WifiMode
 MacLow::GetRtsTxMode (Ptr<const Packet> packet, const WifiMacHeader *hdr) const
 {
   Mac48Address to = hdr->GetAddr1 ();
-  return GetStation (to)->GetRtsMode (packet);
+  return m_stationManager->GetRtsMode (to, hdr, packet);
 }
 WifiMode
 MacLow::GetDataTxMode (Ptr<const Packet> packet, const WifiMacHeader *hdr) const
@@ -751,18 +754,18 @@ MacLow::GetDataTxMode (Ptr<const Packet> packet, const WifiMacHeader *hdr) const
   Mac48Address to = hdr->GetAddr1 ();
   WifiMacTrailer fcs;
   uint32_t size =  packet->GetSize () + hdr->GetSize () + fcs.GetSerializedSize ();
-  return GetStation (to)->GetDataMode (packet, size);
+  return m_stationManager->GetDataMode (to, hdr, packet, size);
 }
 
 WifiMode
 MacLow::GetCtsTxModeForRts (Mac48Address to, WifiMode rtsTxMode) const
 {
-  return GetStation (to)->GetCtsMode (rtsTxMode);
+  return m_stationManager->GetCtsMode (to, rtsTxMode);
 }
 WifiMode
 MacLow::GetAckTxModeForData (Mac48Address to, WifiMode dataTxMode) const
 {
-  return GetStation (to)->GetAckMode (dataTxMode);
+  return m_stationManager->GetAckMode (to, dataTxMode);
 }
 
 
@@ -937,8 +940,7 @@ MacLow::CtsTimeout (void)
   // XXX: should check that there was no rx start before now.
   // we should restart a new cts timeout now until the expected
   // end of rx if there was a rx start before now.
-  WifiRemoteStation *station = GetStation (m_currentHdr.GetAddr1 ());
-  station->ReportRtsFailed ();
+  m_stationManager->ReportRtsFailed (m_currentHdr.GetAddr1 (), &m_currentHdr);
   m_currentPacket = 0;
   MacLowTransmissionListener *listener = m_listener;
   m_listener = 0;
@@ -952,8 +954,7 @@ MacLow::NormalAckTimeout (void)
   // XXX: should check that there was no rx start before now.
   // we should restart a new ack timeout now until the expected
   // end of rx if there was a rx start before now.
-  WifiRemoteStation *station = GetStation (m_currentHdr.GetAddr1 ());
-  station->ReportDataFailed ();
+  m_stationManager->ReportDataFailed (m_currentHdr.GetAddr1 (), &m_currentHdr);
   MacLowTransmissionListener *listener = m_listener;
   m_listener = 0;
   listener->MissedAck ();
@@ -962,8 +963,7 @@ void
 MacLow::FastAckTimeout (void)
 {
   NS_LOG_FUNCTION (this);
-  WifiRemoteStation *station = GetStation (m_currentHdr.GetAddr1 ());
-  station->ReportDataFailed ();
+  m_stationManager->ReportDataFailed (m_currentHdr.GetAddr1 (), &m_currentHdr);
   MacLowTransmissionListener *listener = m_listener;
   m_listener = 0;
   if (m_phy->IsStateIdle ()) 
@@ -980,8 +980,7 @@ void
 MacLow::SuperFastAckTimeout ()
 {
   NS_LOG_FUNCTION (this);
-  WifiRemoteStation *station = GetStation (m_currentHdr.GetAddr1 ());
-  station->ReportDataFailed ();
+  m_stationManager->ReportDataFailed (m_currentHdr.GetAddr1 (), &m_currentHdr);
   MacLowTransmissionListener *listener = m_listener;
   m_listener = 0;
   if (m_phy->IsStateIdle ()) 
@@ -1136,12 +1135,6 @@ MacLow::IsNavZero (void) const
     {
       return false;
     }
-}
-
-WifiRemoteStation *
-MacLow::GetStation (Mac48Address ad) const
-{
-  return m_stationManager->Lookup (ad);
 }
 
 void

@@ -46,67 +46,24 @@ public:
   virtual ~ArfWifiManager ();
 
 private:
-  friend class ArfWifiRemoteStation;
-  virtual class WifiRemoteStation *CreateStation (void);
+  // overriden from base class
+  virtual class WifiRemoteStation *DoCreateStation (void) const;
+  virtual void DoReportRxOk (WifiRemoteStation *station, 
+                             double rxSnr, WifiMode txMode);
+  virtual void DoReportRtsFailed (WifiRemoteStation *station);
+  virtual void DoReportDataFailed (WifiRemoteStation *station);
+  virtual void DoReportRtsOk (WifiRemoteStation *station,
+                              double ctsSnr, WifiMode ctsMode, double rtsSnr);
+  virtual void DoReportDataOk (WifiRemoteStation *station,
+                               double ackSnr, WifiMode ackMode, double dataSnr);
+  virtual void DoReportFinalRtsFailed (WifiRemoteStation *station);
+  virtual void DoReportFinalDataFailed (WifiRemoteStation *station);
+  virtual WifiMode DoGetDataMode (WifiRemoteStation *station, uint32_t size);
+  virtual WifiMode DoGetRtsMode (WifiRemoteStation *station);
+  virtual bool IsLowLatency (void) const;
+
   uint32_t m_timerThreshold;
   uint32_t m_successThreshold;
-};
-
-
-class ArfWifiRemoteStation : public WifiRemoteStation
-{
-public:
-  ArfWifiRemoteStation (Ptr<ArfWifiManager> manager);
-  virtual ~ArfWifiRemoteStation ();
-
-protected:
-  virtual void DoReportRxOk (double rxSnr, WifiMode txMode);
-  virtual void DoReportRtsFailed (void);
-  virtual void DoReportDataFailed (void);
-  virtual void DoReportRtsOk (double ctsSnr, WifiMode ctsMode, double rtsSnr);
-  virtual void DoReportDataOk (double ackSnr, WifiMode ackMode, double dataSnr);
-  virtual void DoReportFinalRtsFailed (void);
-  virtual void DoReportFinalDataFailed (void);
-
-private:
-  virtual Ptr<WifiRemoteStationManager> GetManager (void) const;
-  virtual WifiMode DoGetDataMode (uint32_t size);
-  virtual WifiMode DoGetRtsMode (void);
-
-  uint32_t m_timer;
-  uint32_t m_success;
-  uint32_t m_failed;
-  bool m_recovery;
-  uint32_t m_retry;
-  
-  uint32_t m_timerTimeout;
-  uint32_t m_successThreshold;
-
-  uint32_t m_rate;
-  
-  Ptr<ArfWifiManager> m_manager;
-  
-private:
-  // overriden by AarfMacStation.
-  virtual void ReportRecoveryFailure (void);
-  virtual void ReportFailure (void);
-
-  uint32_t GetMaxRate (void);
-  uint32_t GetMinRate (void);
-
-  bool NeedRecoveryFallback (void);
-  bool NeedNormalFallback (void);
-  
-protected:
-  // called by AarfMacStation.
-  uint32_t GetMinTimerTimeout (void);
-  uint32_t GetMinSuccessThreshold (void);
-  
-  uint32_t GetTimerTimeout (void);
-  uint32_t GetSuccessThreshold (void);
-  
-  void SetTimerTimeout (uint32_t timerTimeout);
-  void SetSuccessThreshold (uint32_t successThreshold);
 };
 
 } // namespace ns3

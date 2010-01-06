@@ -27,6 +27,7 @@
  */
 #include "aodv-routing-protocol.h"
 #include "ns3/log.h"
+#include "ns3/boolean.h"
 #include "ns3/random-variable.h"
 #include "ns3/inet-socket-address.h"
 #include "ns3/trace-source-accessor.h"

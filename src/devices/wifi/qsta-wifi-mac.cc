@@ -23,6 +23,7 @@
 #include "ns3/simulator.h"
 #include "ns3/string.h"
 #include "ns3/pointer.h"
+#include "ns3/boolean.h"
 
 #include "qos-tag.h"
 #include "edca-txop-n.h"
@@ -649,13 +650,12 @@ QstaWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
               m_state = ASSOCIATED;
               NS_LOG_DEBUG ("assoc completed"); 
               SupportedRates rates = assocResp.GetSupportedRates ();
-              WifiRemoteStation *ap = m_stationManager->Lookup (hdr->GetAddr2 ());
               for (uint32_t i = 0; i < m_phy->GetNModes (); i++)
                 {
                   WifiMode mode = m_phy->GetMode (i);
                   if (rates.IsSupportedRate (mode.GetDataRate ()))
                     {
-                      ap->AddSupportedMode (mode);
+                      m_stationManager->AddSupportedMode (hdr->GetAddr2 (), mode);
                       if (rates.IsBasicRate (mode.GetDataRate ()))
                         {
                           m_stationManager->AddBasicMode (mode);

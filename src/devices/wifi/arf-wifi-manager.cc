@@ -27,193 +27,20 @@ NS_LOG_COMPONENT_DEFINE ("ns3::ArfWifiManager");
 
 
 namespace ns3 {
+
+struct ArfWifiRemoteStation : public WifiRemoteStation
+{
+  uint32_t m_timer;
+  uint32_t m_success;
+  uint32_t m_failed;
+  bool m_recovery;
+  uint32_t m_retry;
   
-ArfWifiRemoteStation::ArfWifiRemoteStation (Ptr<ArfWifiManager> manager)
-  : m_manager (manager)
-{
-  m_successThreshold = m_manager->m_successThreshold;
-  m_timerTimeout = m_manager->m_timerThreshold;
-  m_rate = GetMinRate ();
+  uint32_t m_timerTimeout;
+  uint32_t m_successThreshold;
 
-  m_success = 0;
-  m_failed = 0;
-  m_recovery = false;
-  m_retry = 0;
-  m_timer = 0;
-}
-ArfWifiRemoteStation::~ArfWifiRemoteStation ()
-{}
-
-uint32_t
-ArfWifiRemoteStation::GetMaxRate (void)
-{
-  return GetNSupportedModes ();
-}
-uint32_t
-ArfWifiRemoteStation::GetMinRate (void)
-{
-  return 0;
-}
-
-bool 
-ArfWifiRemoteStation::NeedRecoveryFallback (void)
-{
-  if (m_retry == 1) 
-    {
-      return true;
-    } 
-  else 
-    {
-      return false;
-    }
-}
-bool 
-ArfWifiRemoteStation::NeedNormalFallback (void)
-{
-  int retryMod = (m_retry - 1) % 2;
-  if (retryMod == 1) 
-    {
-      return true;
-    } 
-  else 
-    {
-      return false;
-    }
-}
-
-
-
-void 
-ArfWifiRemoteStation::DoReportRtsFailed (void)
-{}
-/**
- * It is important to realize that "recovery" mode starts after failure of
- * the first transmission after a rate increase and ends at the first successful
- * transmission. Specifically, recovery mode transcends retransmissions boundaries.
- * Fundamentally, ARF handles each data transmission independently, whether it
- * is the initial transmission of a packet or the retransmission of a packet.
- * The fundamental reason for this is that there is a backoff between each data
- * transmission, be it an initial transmission or a retransmission.
- */
-void 
-ArfWifiRemoteStation::DoReportDataFailed (void)
-{
-  m_timer++;
-  m_failed++;
-  m_retry++;
-  m_success = 0;
-
-  if (m_recovery) 
-    {
-      NS_ASSERT (m_retry >= 1);
-      if (NeedRecoveryFallback ()) 
-        {
-          ReportRecoveryFailure ();
-          if (m_rate != GetMinRate ()) 
-            {
-              m_rate--;
-            }
-        }
-      m_timer = 0;
-    } 
-  else 
-    {
-      NS_ASSERT (m_retry >= 1);
-      if (NeedNormalFallback ()) 
-        {
-          ReportFailure ();
-          if (m_rate != GetMinRate ()) 
-            {
-              m_rate--;
-            }
-        }
-      if (m_retry >= 2) 
-        {
-          m_timer = 0;
-        }
-    }
-}
-void 
-ArfWifiRemoteStation::DoReportRxOk (double rxSnr, WifiMode txMode)
-{}
-void ArfWifiRemoteStation::DoReportRtsOk (double ctsSnr, WifiMode ctsMode, double rtsSnr)
-{
-  NS_LOG_DEBUG ("self="<<this<<" rts ok");
-}
-void ArfWifiRemoteStation::DoReportDataOk (double ackSnr, WifiMode ackMode, double dataSnr)
-{
-  m_timer++;
-  m_success++;
-  m_failed = 0;
-  m_recovery = false;
-  m_retry = 0;
-  NS_LOG_DEBUG ("self="<<this<<" data ok success="<<m_success<<", timer="<<m_timer);
-  if ((m_success == GetSuccessThreshold () ||
-       m_timer == GetTimerTimeout ()) &&
-      (m_rate < (GetMaxRate () - 1))) 
-    {
-      NS_LOG_DEBUG ("self="<<this<<" inc rate");
-      m_rate++;
-      m_timer = 0;
-      m_success = 0;
-      m_recovery = true;
-    }
-}
-void 
-ArfWifiRemoteStation::DoReportFinalRtsFailed (void)
-{}
-void 
-ArfWifiRemoteStation::DoReportFinalDataFailed (void)
-{}
-
-WifiMode
-ArfWifiRemoteStation::DoGetDataMode (uint32_t size)
-{
-  return GetSupportedMode (m_rate);
-}
-WifiMode
-ArfWifiRemoteStation::DoGetRtsMode (void)
-{
-  // XXX: we could/should implement the Arf algorithm for
-  // RTS only by picking a single rate within the BasicRateSet.
-  return GetSupportedMode (0);
-}
-
-void ArfWifiRemoteStation::ReportRecoveryFailure (void)
-{}
-void ArfWifiRemoteStation::ReportFailure (void)
-{}
-uint32_t ArfWifiRemoteStation::GetMinTimerTimeout (void)
-{
-  return m_manager->m_timerThreshold;
-}
-uint32_t ArfWifiRemoteStation::GetMinSuccessThreshold (void)
-{
-  return m_manager->m_successThreshold;
-}
-uint32_t ArfWifiRemoteStation::GetTimerTimeout (void)
-{
-  return m_timerTimeout;
-}
-uint32_t ArfWifiRemoteStation::GetSuccessThreshold (void)
-{
-  return m_successThreshold;
-}
-void ArfWifiRemoteStation::SetTimerTimeout (uint32_t timerTimeout)
-{
-  NS_ASSERT (timerTimeout >= m_manager->m_timerThreshold);
-  m_timerTimeout = timerTimeout;
-}
-void ArfWifiRemoteStation::SetSuccessThreshold (uint32_t successThreshold)
-{
-  NS_ASSERT (successThreshold >= m_manager->m_successThreshold);
-  m_successThreshold = successThreshold;
-}
-Ptr<WifiRemoteStationManager>
-ArfWifiRemoteStation::GetManager (void) const
-{
-  return m_manager;
-}
+  uint32_t m_rate;
+};
 
 NS_OBJECT_ENSURE_REGISTERED (ArfWifiManager);
 
@@ -241,9 +68,129 @@ ArfWifiManager::ArfWifiManager ()
 ArfWifiManager::~ArfWifiManager ()
 {}
 WifiRemoteStation *
-ArfWifiManager::CreateStation (void)
+ArfWifiManager::DoCreateStation (void) const
 {
-  return new ArfWifiRemoteStation (this);
+  ArfWifiRemoteStation *station = new ArfWifiRemoteStation ();
+
+  station->m_successThreshold = m_successThreshold;
+  station->m_timerTimeout = m_timerThreshold;
+  station->m_rate = 0;
+  station->m_success = 0;
+  station->m_failed = 0;
+  station->m_recovery = false;
+  station->m_retry = 0;
+  station->m_timer = 0;
+
+  return station;
+}
+
+void 
+ArfWifiManager::DoReportRtsFailed (WifiRemoteStation *station)
+{}
+/**
+ * It is important to realize that "recovery" mode starts after failure of
+ * the first transmission after a rate increase and ends at the first successful
+ * transmission. Specifically, recovery mode transcends retransmissions boundaries.
+ * Fundamentally, ARF handles each data transmission independently, whether it
+ * is the initial transmission of a packet or the retransmission of a packet.
+ * The fundamental reason for this is that there is a backoff between each data
+ * transmission, be it an initial transmission or a retransmission.
+ */
+void 
+ArfWifiManager::DoReportDataFailed (WifiRemoteStation *st)
+{
+  ArfWifiRemoteStation *station = (ArfWifiRemoteStation *)st;
+  station->m_timer++;
+  station->m_failed++;
+  station->m_retry++;
+  station->m_success = 0;
+
+  if (station->m_recovery) 
+    {
+      NS_ASSERT (station->m_retry >= 1);
+      if (station->m_retry == 1)
+        {
+          // need recovery fallback
+          if (station->m_rate != 0)
+            {
+              station->m_rate--;
+            }
+        }
+      station->m_timer = 0;
+    } 
+  else 
+    {
+      NS_ASSERT (station->m_retry >= 1);
+      if (((station->m_retry - 1) % 2) == 1)
+        {
+          // need normal fallback
+          if (station->m_rate != 0)
+            {
+              station->m_rate--;
+            }
+        }
+      if (station->m_retry >= 2) 
+        {
+          station->m_timer = 0;
+        }
+    }
+}
+void 
+ArfWifiManager::DoReportRxOk (WifiRemoteStation *station,
+                              double rxSnr, WifiMode txMode)
+{}
+void ArfWifiManager::DoReportRtsOk (WifiRemoteStation *station,
+                                    double ctsSnr, WifiMode ctsMode, double rtsSnr)
+{
+  NS_LOG_DEBUG ("station="<<station<<" rts ok");
+}
+void ArfWifiManager::DoReportDataOk (WifiRemoteStation *st,
+                                     double ackSnr, WifiMode ackMode, double dataSnr)
+{
+  ArfWifiRemoteStation *station = (ArfWifiRemoteStation *) st;
+  station->m_timer++;
+  station->m_success++;
+  station->m_failed = 0;
+  station->m_recovery = false;
+  station->m_retry = 0;
+  NS_LOG_DEBUG ("station=" << station << " data ok success=" << station->m_success << ", timer=" << station->m_timer);
+  if ((station->m_success == m_successThreshold ||
+       station->m_timer == m_timerThreshold) &&
+      (station->m_rate < (station->m_state->m_modes.size () - 1))) 
+    {
+      NS_LOG_DEBUG ("station="<<station<<" inc rate");
+      station->m_rate++;
+      station->m_timer = 0;
+      station->m_success = 0;
+      station->m_recovery = true;
+    }
+}
+void 
+ArfWifiManager::DoReportFinalRtsFailed (WifiRemoteStation *station)
+{}
+void 
+ArfWifiManager::DoReportFinalDataFailed (WifiRemoteStation *station)
+{}
+
+WifiMode
+ArfWifiManager::DoGetDataMode (WifiRemoteStation *st, uint32_t size)
+{
+  ArfWifiRemoteStation *station = (ArfWifiRemoteStation *) st;
+  return GetSupported (station, station->m_rate);
+}
+WifiMode
+ArfWifiManager::DoGetRtsMode (WifiRemoteStation *st)
+{
+  // XXX: we could/should implement the Arf algorithm for
+  // RTS only by picking a single rate within the BasicRateSet.
+  ArfWifiRemoteStation *station = (ArfWifiRemoteStation *) st;
+  return GetSupported (station, 0);
+}
+
+bool 
+ArfWifiManager::IsLowLatency (void) const
+{
+  return true;
 }
 
 } // namespace ns3

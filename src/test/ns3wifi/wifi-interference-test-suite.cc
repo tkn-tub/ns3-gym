@@ -28,6 +28,7 @@
 #include "ns3/config.h"
 #include "ns3/string.h"
 #include "ns3/uinteger.h"
+#include "ns3/double.h"
 #include "ns3/data-rate.h"
 #include "ns3/inet-socket-address.h"
 #include "ns3/internet-stack-helper.h"

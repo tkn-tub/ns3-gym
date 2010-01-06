@@ -17,8 +17,8 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#ifndef IDEAL_MAC_STATIONS_H
-#define IDEAL_MAC_STATIONS_H
+#ifndef IDEAL_WIFI_MANAGER_H
+#define IDEAL_WIFI_MANAGER_H
 
 #include <stdint.h>
 #include <vector>
@@ -50,12 +50,27 @@ public:
 
   virtual void SetupPhy (Ptr<WifiPhy> phy);
 
+private:
+  // overriden from base class
+  virtual class WifiRemoteStation *DoCreateStation (void) const;
+  virtual void DoReportRxOk (WifiRemoteStation *station, 
+                             double rxSnr, WifiMode txMode);
+  virtual void DoReportRtsFailed (WifiRemoteStation *station);
+  virtual void DoReportDataFailed (WifiRemoteStation *station);
+  virtual void DoReportRtsOk (WifiRemoteStation *station,
+                              double ctsSnr, WifiMode ctsMode, double rtsSnr);
+  virtual void DoReportDataOk (WifiRemoteStation *station,
+                               double ackSnr, WifiMode ackMode, double dataSnr);
+  virtual void DoReportFinalRtsFailed (WifiRemoteStation *station);
+  virtual void DoReportFinalDataFailed (WifiRemoteStation *station);
+  virtual WifiMode DoGetDataMode (WifiRemoteStation *station, uint32_t size);
+  virtual WifiMode DoGetRtsMode (WifiRemoteStation *station);
+  virtual bool IsLowLatency (void) const;
+
   // return the min snr needed to successfully transmit
   // data with this mode at the specified ber.
   double GetSnrThreshold (WifiMode mode) const;
   void AddModeSnrThreshold (WifiMode mode, double ber);
-private:
-  virtual class WifiRemoteStation *CreateStation (void);
 
   typedef std::vector<std::pair<double,WifiMode> > Thresholds;
 
@@ -65,31 +80,6 @@ private:
   double m_maxSnr;
 };
 
-class IdealWifiRemoteStation : public WifiRemoteStation
-{
-public:
-  IdealWifiRemoteStation (Ptr<IdealWifiManager> stations);
-
-  virtual ~IdealWifiRemoteStation ();
-
-protected:
-  virtual void DoReportRxOk (double rxSnr, WifiMode txMode);
-  virtual void DoReportRtsFailed (void);
-  virtual void DoReportDataFailed (void);
-  virtual void DoReportRtsOk (double ctsSnr, WifiMode ctsMode, double rtsSnr);
-  virtual void DoReportDataOk (double ackSnr, WifiMode ackMode, double dataSnr);
-  virtual void DoReportFinalRtsFailed (void);
-  virtual void DoReportFinalDataFailed (void);
-
-private:
-  virtual Ptr<WifiRemoteStationManager> GetManager (void) const;
-  virtual WifiMode DoGetDataMode (uint32_t size);
-  virtual WifiMode DoGetRtsMode (void);
-
-  Ptr<IdealWifiManager> m_manager;
-  double m_lastSnr;
-};
-
 } // namespace ns3
 
-#endif /* MAC_STA_H */
+#endif /* IDEAL_WIFI_MANAGER_H */

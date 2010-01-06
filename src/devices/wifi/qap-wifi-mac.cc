@@ -24,6 +24,7 @@
 #include "ns3/simulator.h"
 #include "ns3/string.h"
 #include "ns3/pointer.h"
+#include "ns3/boolean.h"
 
 #include "qos-tag.h"
 #include "qap-wifi-mac.h"
@@ -529,12 +530,11 @@ void
 QapWifiMac::TxOk (const WifiMacHeader &hdr)
 {
   NS_LOG_FUNCTION (this);
-  WifiRemoteStation *station = m_stationManager->Lookup (hdr.GetAddr1 ());
   if (hdr.IsAssocResp () && 
-      station->IsWaitAssocTxOk ()) 
+      m_stationManager->IsWaitAssocTxOk (hdr.GetAddr1 ())) 
     {
       NS_LOG_DEBUG ("associated with sta="<<hdr.GetAddr1 ());
-      station->RecordGotAssocTxOk ();
+      m_stationManager->RecordGotAssocTxOk (hdr.GetAddr1 ());
     }
 }
 
@@ -542,12 +542,11 @@ void
 QapWifiMac::TxFailed (const WifiMacHeader &hdr)
 {
   NS_LOG_FUNCTION (this);
-  WifiRemoteStation *station = m_stationManager->Lookup (hdr.GetAddr1 ());
   if (hdr.IsAssocResp () && 
-      station->IsWaitAssocTxOk ()) 
+      m_stationManager->IsWaitAssocTxOk (hdr.GetAddr1 ())) 
     {
       NS_LOG_DEBUG ("assoc failed with sta="<<hdr.GetAddr1 ());
-      station->RecordGotAssocTxFailed ();
+      m_stationManager->RecordGotAssocTxFailed (hdr.GetAddr1 ());
     }
 }
 
@@ -557,7 +556,6 @@ QapWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
   NS_LOG_FUNCTION (this << packet << hdr);
 
   Mac48Address from = hdr->GetAddr2 ();
-  WifiRemoteStation *fromStation = m_stationManager->Lookup (from);
   
   if (hdr->IsData ())
     {
@@ -565,10 +563,9 @@ QapWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
       if (!hdr->IsFromDs () && 
           hdr->IsToDs () &&
           bssid == GetAddress () &&
-          fromStation->IsAssociated ())
+          m_stationManager->IsAssociated (from))
         {
           Mac48Address to = hdr->GetAddr3 ();
-          WifiRemoteStation *toStation = m_stationManager->Lookup (to);
           
           if (to == GetAddress ())
             {
@@ -592,7 +589,7 @@ QapWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
                 }
             }
           else if (to.IsGroup () ||
-                   toStation->IsAssociated ())
+                   m_stationManager->IsAssociated (to))
             {
               NS_LOG_DEBUG ("forwarding frame from="<<from<<", to="<<to);
               Ptr<Packet> copy = packet->Copy ();
@@ -658,17 +655,17 @@ QapWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
                      WifiMode mode = m_phy->GetMode (j);
                      if (rates.IsSupportedRate (mode.GetDataRate ()))
                        {
-                         fromStation->AddSupportedMode (mode);
+                         m_stationManager->AddSupportedMode (from, mode);
                        }
-                    }
-                  fromStation->RecordWaitAssocTxOk ();
-                  // send assoc response with success status.
-                  SendAssocResp (hdr->GetAddr2 (), true);
-                }
+                   }
+                 m_stationManager->RecordWaitAssocTxOk (from);
+                 // send assoc response with success status.
+                 SendAssocResp (hdr->GetAddr2 (), true);
+               }
             }
           else if (hdr->IsDisassociation ()) 
             {
-              fromStation->RecordDisassociated ();
+              m_stationManager->RecordDisassociated (from);
             } 
           else if (hdr->IsReassocReq ()) 
             {

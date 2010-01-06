@@ -412,8 +412,7 @@ EdcaTxopN::MissedCts (void)
   if (!NeedRtsRetransmission ())
     {
       MY_DEBUG ("Cts Fail");
-      WifiRemoteStation *station = GetStation (m_currentHdr.GetAddr1 ());
-      station->ReportFinalRtsFailed ();
+      m_stationManager->ReportFinalRtsFailed (m_currentHdr.GetAddr1 (), &m_currentHdr);
       if (!m_txFailedCallback.IsNull ()) 
         {
           m_txFailedCallback (m_currentHdr);
@@ -443,8 +442,8 @@ EdcaTxopN::Queue (Ptr<const Packet> packet, const WifiMacHeader &hdr)
   NS_LOG_FUNCTION (this << packet << &hdr);
   WifiMacTrailer fcs;
   uint32_t fullPacketSize = hdr.GetSerializedSize () + packet->GetSize () + fcs.GetSerializedSize ();
-  WifiRemoteStation *station = GetStation (hdr.GetAddr1 ());
-  station->PrepareForQueue (packet, fullPacketSize);
+  m_stationManager->PrepareForQueue (hdr.GetAddr1 (), &hdr,
+                                     packet, fullPacketSize);
   m_queue->Enqueue (packet, hdr);
   StartAccessIfNeeded ();
 }
@@ -482,8 +481,7 @@ EdcaTxopN::MissedAck (void)
   if (!NeedDataRetransmission ()) 
     {
       MY_DEBUG ("Ack Fail");
-      WifiRemoteStation *station = GetStation (m_currentHdr.GetAddr1 ());
-      station->ReportFinalDataFailed ();
+      m_stationManager->ReportFinalDataFailed (m_currentHdr.GetAddr1 (), &m_currentHdr);
       if (!m_txFailedCallback.IsNull ()) 
         {
           m_txFailedCallback (m_currentHdr);
@@ -535,22 +533,22 @@ EdcaTxopN::StartAccessIfNeeded (void)
 bool
 EdcaTxopN::NeedRts (void)
 {
-  WifiRemoteStation *station = GetStation (m_currentHdr.GetAddr1 ());
-  return station->NeedRts (m_currentPacket);
+  return m_stationManager->NeedRts (m_currentHdr.GetAddr1 (), &m_currentHdr,
+                                    m_currentPacket);
 }
 
 bool
 EdcaTxopN::NeedRtsRetransmission (void)
 {
-  WifiRemoteStation *station = GetStation (m_currentHdr.GetAddr1 ());
-  return station->NeedRtsRetransmission (m_currentPacket);
+  return m_stationManager->NeedRtsRetransmission (m_currentHdr.GetAddr1 (), &m_currentHdr,
+                                                  m_currentPacket);
 }
 
 bool
 EdcaTxopN::NeedDataRetransmission (void)
 {
-  WifiRemoteStation *station = GetStation (m_currentHdr.GetAddr1 ());
-  return station->NeedDataRetransmission (m_currentPacket);
+  return m_stationManager->NeedDataRetransmission (m_currentHdr.GetAddr1 (), &m_currentHdr,
+                                                   m_currentPacket);
 }
 
 void
@@ -593,42 +591,37 @@ EdcaTxopN::Cancel (void)
 bool
 EdcaTxopN::NeedFragmentation (void) const
 {
-  WifiRemoteStation *station = GetStation (m_currentHdr.GetAddr1 ());
-  return station->NeedFragmentation (m_currentPacket);
+  return m_stationManager->NeedFragmentation (m_currentHdr.GetAddr1 (), &m_currentHdr,
+                                              m_currentPacket);
 }
 
 uint32_t
 EdcaTxopN::GetFragmentSize (void)
 {
-  WifiRemoteStation *station = GetStation (m_currentHdr.GetAddr1 ());
-  return station->GetFragmentSize (m_currentPacket, m_fragmentNumber);
+  return m_stationManager->GetFragmentSize (m_currentHdr.GetAddr1 (), &m_currentHdr,
+                                            m_currentPacket, m_fragmentNumber);
 }
 
 uint32_t
 EdcaTxopN::GetNextFragmentSize (void) 
 {
-  WifiRemoteStation *station = GetStation (m_currentHdr.GetAddr1 ());
-  return station->GetFragmentSize (m_currentPacket, m_fragmentNumber + 1);
+  return m_stationManager->GetFragmentSize (m_currentHdr.GetAddr1 (), &m_currentHdr,
+                                            m_currentPacket, m_fragmentNumber + 1);
 }
 
 uint32_t
 EdcaTxopN::GetFragmentOffset (void) 
 {
-  WifiRemoteStation *station = GetStation (m_currentHdr.GetAddr1 ());
-  return station->GetFragmentOffset (m_currentPacket, m_fragmentNumber);
+  return m_stationManager->GetFragmentOffset (m_currentHdr.GetAddr1 (), &m_currentHdr,
+                                              m_currentPacket, m_fragmentNumber);
 }
 
-WifiRemoteStation *
-EdcaTxopN::GetStation (Mac48Address ad) const
-{
-  return m_stationManager->Lookup (ad);
-}
 
 bool
 EdcaTxopN::IsLastFragment (void) const
 {
-  WifiRemoteStation *station = GetStation (m_currentHdr.GetAddr1 ());
-  return station->IsLastFragment (m_currentPacket, m_fragmentNumber);
+  return m_stationManager->IsLastFragment (m_currentHdr.GetAddr1 (), &m_currentHdr,
+                                           m_currentPacket, m_fragmentNumber);
 }
 
 Ptr<Packet>
