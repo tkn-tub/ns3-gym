@@ -94,22 +94,21 @@ AirtimeLinkMetricCalculator::CalculateMetric (Mac48Address peerAddress, Ptr<Mesh
    * Final result is expressed in units of 0.01 Time Unit = 10.24 us (as required by 802.11s draft)
    */
 
-  const double sec2ns = 1e9; // seconds -> nanoseconds conversion factor
-  const double ns2tu = 10240; // nanoseconds -> 0.01 TU conversion factor
+  //const double sec2ns = 1e9; // seconds -> nanoseconds conversion factor
+  //const double ns2tu = 10240; // nanoseconds -> 0.01 TU conversion factor
 
-  WifiRemoteStation * station = mac->GetStationManager ()->Lookup (peerAddress);
-  NS_ASSERT (station != 0);
-  NS_ASSERT (m_overheadNanosec != 0);
-  Ptr<Packet> test_frame = Create<Packet> (m_testLength + m_meshHeaderLength);
-  uint32_t rate =
-      station->GetDataMode (test_frame, m_testLength + m_meshHeaderLength).GetDataRate ();
-  uint32_t payload_nanosec = (uint32_t) (
-      (double) ((m_testLength + m_meshHeaderLength) * 8 /*octets -> bits*/) * sec2ns / ((double) rate));
-  uint32_t header_nanosec = (uint32_t) ((double) (m_headerLength * 8 /*octets -> bits*/* sec2ns)
-      / ((double) mac->GetStationManager () -> GetBasicMode (0).GetDataRate ()));
-  uint32_t metric = (uint32_t) (((double) (payload_nanosec + header_nanosec + m_overheadNanosec)) / ns2tu
-      * (station->GetAvgSlrc () + 1));
-  return metric;
+  //  WifiRemoteStation * station = mac->GetStationManager ()->Lookup (peerAddress);
+  //NS_ASSERT (station != 0);
+  //NS_ASSERT (m_overheadNanosec != 0);
+  //Ptr<Packet> test_frame = Create<Packet> (m_testLength + m_meshHeaderLength);
+  //uint32_t rate = station->GetDataMode (peerAddress, test_frame, m_testLength + m_meshHeaderLength).GetDataRate ();
+  //uint32_t payload_nanosec = (uint32_t) ((double) ((m_testLength + m_meshHeaderLength) * 8 /*octets -> bits*/) * sec2ns / ((double) rate));
+  //uint32_t header_nanosec = (uint32_t) ((double) (m_headerLength * 8 /*octets -> bits*/* sec2ns)
+  //                                      / ((double) mac->GetStationManager () -> GetBasicMode (0).GetDataRate ()));
+  //uint32_t metric = (uint32_t) (((double) (payload_nanosec + header_nanosec + m_overheadNanosec)) / ns2tu
+  //                       * (station->GetAvgSlrc () + 1));
+  //return metric;
+  return 0;
 }
 } //namespace dot11s
 } //namespace ns3
