@@ -78,9 +78,9 @@ class Ipv4NixVectorRouting : public Ipv4RoutingProtocol
     void ResetTotalNeighbors (void);
 
     /*  takes in the source node and dest IP and calls GetNodeByIp, 
-     *  BFS, and BuildNixVector to finally return the built 
-     *  nix-vector */
-    Ptr<NixVector> GetNixVector (Ptr<Node>, Ipv4Address);
+     *  BFS, accounting for any output interface specified, and finally 
+     *  BuildNixVector to return the built nix-vector */
+    Ptr<NixVector> GetNixVector (Ptr<Node>, Ipv4Address, Ptr<NetDevice>);
 
     /* checks the cache based on dest IP for the nix-vector */
     Ptr<NixVector> GetNixVectorInCache (Ipv4Address);
@@ -124,7 +124,8 @@ class Ipv4NixVectorRouting : public Ipv4RoutingProtocol
     bool BFS (uint32_t numberOfNodes, 
              Ptr<Node> source, 
              Ptr<Node> dest, 
-             std::vector< Ptr<Node> > & parentVector);
+             std::vector< Ptr<Node> > & parentVector,
+             Ptr<NetDevice> oif);
 
     void DoDispose (void);
 
