@@ -69,8 +69,12 @@ Queue::Enqueue (Ptr<Packet> p)
   bool retval = DoEnqueue (p);
   if (retval)
     {
-      m_nBytes += p->GetSize ();
+      uint32_t size = p->GetSize ();
+      m_nBytes += size;
+      m_nTotalReceivedBytes += size;
+      
       m_nPackets++;
+      m_nTotalReceivedPackets++;
     }
   return retval;
 }
