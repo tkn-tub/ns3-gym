@@ -30,6 +30,7 @@
 #include "ns3/assert.h"
 #include "ns3/global-value.h"
 #include "ns3/boolean.h"
+#include "ns3/simulator.h"
 
 NS_LOG_COMPONENT_DEFINE ("Node");
 
@@ -108,6 +109,8 @@ Node::AddDevice (Ptr<NetDevice> device)
   device->SetNode (this);
   device->SetIfIndex(index);
   device->SetReceiveCallback (MakeCallback (&Node::NonPromiscReceiveFromDevice, this));
+  Simulator::ScheduleWithContext (GetId (), Seconds (0.0), 
+                                  &NetDevice::Start, device);
   NotifyDeviceAdded (device);
   return index;
 }
@@ -130,6 +133,8 @@ Node::AddApplication (Ptr<Application> application)
   uint32_t index = m_applications.size ();
   m_applications.push_back (application);
   application->SetNode (this);
+  Simulator::ScheduleWithContext (GetId (), Seconds (0.0), 
+                                  &Application::Start, application);
   return index;
 }
 Ptr<Application> 
