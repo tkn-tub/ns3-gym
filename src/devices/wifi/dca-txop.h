@@ -141,7 +141,7 @@ private:
 
   void RestartAccessIfNeeded (void);
   void StartAccessIfNeeded (void);
-  bool NeedRts (void);
+  bool NeedRts (Ptr<const Packet> packet);
   bool NeedRtsRetransmission (void);
   bool NeedDataRetransmission (void);
   bool NeedFragmentation (void);

@@ -269,10 +269,10 @@ DcaTxop::Low (void)
 }
 
 bool
-DcaTxop::NeedRts (void)
+DcaTxop::NeedRts (Ptr<const Packet> packet)
 {
   WifiRemoteStation *station = GetStation (m_currentHdr.GetAddr1 ());
-  return station->NeedRts (m_currentPacket);
+  return station->NeedRts (packet);
 }
 
 bool
@@ -399,9 +399,16 @@ DcaTxop::NotifyAccessGranted (void)
       
       if (NeedFragmentation ()) 
         {
-          params.DisableRts ();
           WifiMacHeader hdr;
           Ptr<Packet> fragment = GetFragmentPacket (&hdr);
+          if (NeedRts (fragment))
+            {
+              params.EnableRts ();
+            }
+          else
+            {
+              params.DisableRts ();
+            }
           if (IsLastFragment ()) 
             {
               MY_DEBUG ("fragmenting last fragment size="<<fragment->GetSize ());
@@ -417,7 +424,7 @@ DcaTxop::NotifyAccessGranted (void)
         } 
       else 
         {
-          if (NeedRts ()) 
+          if (NeedRts (m_currentPacket)) 
             {
               params.EnableRts ();
               MY_DEBUG ("tx unicast rts");
