@@ -117,7 +117,7 @@ Ipv4NixVectorRouting::FlushIpv4RouteCache ()
 }
 
 Ptr<NixVector>
-Ipv4NixVectorRouting::GetNixVector (Ptr<Node> source, Ipv4Address dest, Ptr<NetDevice> oif)
+Ipv4NixVectorRouting::GetNixVector (Ptr<Node> source, Ipv4Address dest)
 {
   NS_LOG_FUNCTION_NOARGS ();
 
@@ -146,8 +146,7 @@ Ipv4NixVectorRouting::GetNixVector (Ptr<Node> source, Ipv4Address dest, Ptr<NetD
       // otherwise proceed as normal 
       // and build the nix vector
       std::vector< Ptr<Node> > parentVector;
-
-      BFS (NodeList::GetNNodes (), source, destNode, parentVector, oif);
+      BFS (NodeList::GetNNodes (), source, destNode, parentVector);
 
       if (BuildNixVector (parentVector, source->GetId (), destNode->GetId (), nixVector))
         {
@@ -496,7 +495,7 @@ Ipv4NixVectorRouting::RouteOutput (Ptr<Packet> p, const Ipv4Header &header, Ptr<
       NS_LOG_LOGIC ("Nix-vector not in cache, build: ");
       // Build the nix-vector, given this node and the
       // dest IP address
-      nixVectorInCache = GetNixVector (m_node, header.GetDestination (), oif);
+      nixVectorInCache = GetNixVector (m_node, header.GetDestination ());
 
       // cache it
       m_nixCache.insert (NixMap_t::value_type (header.GetDestination (), nixVectorInCache));
@@ -524,38 +523,18 @@ Ipv4NixVectorRouting::RouteOutput (Ptr<Packet> p, const Ipv4Header &header, Ptr<
       uint32_t numberOfBits = nixVectorForPacket->BitCount (m_totalNeighbors);
       uint32_t nodeIndex = nixVectorForPacket->ExtractNeighborIndex (numberOfBits);
 
-      // Search here in a cache for this node index 
-      // and look for a Ipv4Route
+      // Possibly search here in a cache for this node index 
+      // and look for a Ipv4Route.  If we have it, don't 
+      // need to do the next 3 lines.
       rtentry = GetIpv4RouteInCache (header.GetDestination ());
-
-      if (!rtentry || !(rtentry->GetOutputDevice () == oif))
+      // not in cache
+      if (!rtentry)
         {
-          // not in cache or a different specified output
-          // device is to be used
-
-          // first, make sure we erase existing (incorrect)
-          // rtentry from the map
-          if (rtentry)
-            {
-              m_ipv4RouteCache.erase(header.GetDestination ());
-            }
-
           NS_LOG_LOGIC ("Ipv4Route not in cache, build: ");
           Ipv4Address gatewayIp;
           uint32_t index = FindNetDeviceForNixIndex (nodeIndex, gatewayIp);
-          int32_t interfaceIndex = 0;
 
-          if (!oif)
-            {
-              interfaceIndex = (m_ipv4)->GetInterfaceForDevice(m_node->GetDevice(index));
-            }
-          else
-            {
-              interfaceIndex = (m_ipv4)->GetInterfaceForDevice(oif);
-            }
-
-          NS_ASSERT_MSG (interfaceIndex != -1, "Interface index not found for device");
-
+          uint32_t interfaceIndex = (m_ipv4)->GetInterfaceForDevice(m_node->GetDevice(index));
           Ipv4InterfaceAddress ifAddr = m_ipv4->GetAddress (interfaceIndex, 0);
 
           // start filling in the Ipv4Route info
@@ -564,15 +543,7 @@ Ipv4NixVectorRouting::RouteOutput (Ptr<Packet> p, const Ipv4Header &header, Ptr<
 
           rtentry->SetGateway (gatewayIp);
           rtentry->SetDestination (header.GetDestination ());
-
-          if (!oif)
-            {
-              rtentry->SetOutputDevice (m_ipv4->GetNetDevice (interfaceIndex));
-            }
-          else
-            {
-              rtentry->SetOutputDevice (oif);
-            }
+          rtentry->SetOutputDevice (m_ipv4->GetNetDevice (interfaceIndex));
 
           sockerr = Socket::ERROR_NOTERROR;
 
@@ -611,50 +582,143 @@ Ipv4NixVectorRouting::RouteInput (Ptr<const Packet> p, const Ipv4Header &header,
   // Get the nix-vector from the packet
   Ptr<NixVector> nixVector = p->GetNixVector();
 
-  // If nixVector isn't in packet, something went wrong
-  NS_ASSERT (nixVector);
-
-  // Get the interface number that we go out of, by extracting
-  // from the nix-vector
-  if (m_totalNeighbors == 0)
+  // make sure it exists, if not something
+  // went wrong
+  if (!nixVector)
     {
-      m_totalNeighbors = FindTotalNeighbors ();
-    }
-  uint32_t numberOfBits = nixVector->BitCount (m_totalNeighbors);
-  uint32_t nodeIndex = nixVector->ExtractNeighborIndex (numberOfBits);
+      NS_LOG_ERROR ("Nix-vector wasn't in the packet! Rebuild.");
 
-  rtentry = GetIpv4RouteInCache (header.GetDestination ());
-  // not in cache
-  if (!rtentry)
+      Ptr<NixVector> nixVectorInCache;
+
+      NS_LOG_DEBUG ("Dest IP from header: " << header.GetDestination ());
+
+      // check if cache
+      nixVectorInCache = GetNixVectorInCache(header.GetDestination ());
+
+      // not in cache
+      if (!nixVectorInCache)
+        {
+          NS_LOG_LOGIC ("RouteInput(): Nix-vector not in cache, build: ");
+
+          // Build the nix-vector, given this node and the
+          // dest IP address
+          nixVectorInCache = GetNixVector (m_node, header.GetDestination ());
+        }
+
+      // path exists
+      if (nixVectorInCache)
+        {
+          NS_LOG_LOGIC ("Nix-vector contents: " << *nixVectorInCache);
+
+          // cache it
+          m_nixCache.insert(NixMap_t::value_type(header.GetDestination (), nixVectorInCache));
+
+          // create a new nix vector to be used, 
+          // we want to keep the cached version clean
+          Ptr<NixVector> nixVectorForPacket;
+          nixVectorForPacket = CreateObject<NixVector> ();
+          nixVectorForPacket = nixVectorInCache->Copy(); 
+
+          // Get the interface number that we go out of, by extracting
+          // from the nix-vector
+          if (m_totalNeighbors == 0)
+            {
+              m_totalNeighbors = FindTotalNeighbors ();
+            }
+          uint32_t numberOfBits = nixVectorForPacket->BitCount (m_totalNeighbors);
+          uint32_t nodeIndex = nixVectorForPacket->ExtractNeighborIndex (numberOfBits);
+
+          rtentry = GetIpv4RouteInCache (header.GetDestination ());
+          // not in cache
+          if (!rtentry)
+            {
+              NS_LOG_LOGIC ("Ipv4Route not in cache, build: ");
+              Ipv4Address gatewayIp;
+              uint32_t index = FindNetDeviceForNixIndex (nodeIndex, gatewayIp);
+
+              uint32_t interfaceIndex = (m_ipv4)->GetInterfaceForDevice(m_node->GetDevice(index));
+              Ipv4InterfaceAddress ifAddr = m_ipv4->GetAddress (interfaceIndex, 0);
+
+              // start filling in the Ipv4Route info
+              rtentry = Create<Ipv4Route> ();
+              rtentry->SetSource (ifAddr.GetLocal ());
+
+              rtentry->SetGateway (Ipv4Address(gatewayIp));
+              rtentry->SetDestination (header.GetDestination ());
+              rtentry->SetOutputDevice (m_ipv4->GetNetDevice (interfaceIndex));
+
+              // add rtentry to cache
+              m_ipv4RouteCache.insert(Ipv4RouteMap_t::value_type(header.GetDestination (), rtentry));
+            }
+
+          NS_LOG_LOGIC ("Nix-vector contents: " << *nixVectorInCache << " : Remaining bits: " << nixVectorForPacket->GetRemainingBits());
+
+          // Add  nix-vector in the packet class 
+          // have to copy the packet first b/c 
+          // it is const
+          Ptr<Packet> newPacket = Create<Packet> ();
+          newPacket = p->Copy();
+
+          NS_LOG_LOGIC ("Adding Nix-vector to packet: " << *nixVectorForPacket);
+          newPacket->SetNixVector(nixVectorForPacket);
+
+          // call the unicast callback
+          // local deliver is handled by Ipv4StaticRoutingImpl
+          // so this code is never even called if the packet is
+          // destined for this node.
+          ucb (rtentry, newPacket, header);
+          return true;
+        }
+      else // path doesn't exist
+        {
+          NS_LOG_ERROR ("No path to the dest: " << header.GetDestination ());
+          return false;
+        }
+    }
+  else
     {
-      NS_LOG_LOGIC ("Ipv4Route not in cache, build: ");
-      Ipv4Address gatewayIp;
-      uint32_t index = FindNetDeviceForNixIndex (nodeIndex, gatewayIp);
-      uint32_t interfaceIndex = (m_ipv4)->GetInterfaceForDevice(m_node->GetDevice(index));
-      Ipv4InterfaceAddress ifAddr = m_ipv4->GetAddress (interfaceIndex, 0);
+      // Get the interface number that we go out of, by extracting
+      // from the nix-vector
+      if (m_totalNeighbors == 0)
+        {
+          m_totalNeighbors = FindTotalNeighbors ();
+        }
+      uint32_t numberOfBits = nixVector->BitCount (m_totalNeighbors);
+      uint32_t nodeIndex = nixVector->ExtractNeighborIndex (numberOfBits);
 
-      // start filling in the Ipv4Route info
-      rtentry = Create<Ipv4Route> ();
-      rtentry->SetSource (ifAddr.GetLocal ());
+      rtentry = GetIpv4RouteInCache (header.GetDestination ());
+      // not in cache
+      if (!rtentry)
+        {
+          NS_LOG_LOGIC ("Ipv4Route not in cache, build: ");
+          Ipv4Address gatewayIp;
+          uint32_t index = FindNetDeviceForNixIndex (nodeIndex, gatewayIp);
+          uint32_t interfaceIndex = (m_ipv4)->GetInterfaceForDevice(m_node->GetDevice(index));
+          Ipv4InterfaceAddress ifAddr = m_ipv4->GetAddress (interfaceIndex, 0);
 
-      rtentry->SetGateway (gatewayIp);
-      rtentry->SetDestination (header.GetDestination ());
-      rtentry->SetOutputDevice (m_ipv4->GetNetDevice (interfaceIndex));
+          // start filling in the Ipv4Route info
+          rtentry = Create<Ipv4Route> ();
+          rtentry->SetSource (ifAddr.GetLocal ());
 
-      // add rtentry to cache
-      m_ipv4RouteCache.insert(Ipv4RouteMap_t::value_type(header.GetDestination (), rtentry));
+          rtentry->SetGateway (gatewayIp);
+          rtentry->SetDestination (header.GetDestination ());
+          rtentry->SetOutputDevice (m_ipv4->GetNetDevice (interfaceIndex));
+
+          // add rtentry to cache
+          m_ipv4RouteCache.insert(Ipv4RouteMap_t::value_type(header.GetDestination (), rtentry));
+        }
+
+      NS_LOG_LOGIC ("At Node " << m_node->GetId() << ", Extracting " << numberOfBits << 
+                           " bits from Nix-vector: " << nixVector << " : " << *nixVector);
+
+      // call the unicast callback
+      // local deliver is handled by Ipv4StaticRoutingImpl
+      // so this code is never even called if the packet is
+      // destined for this node.
+      ucb (rtentry, p, header);
+
+      return true;
     }
-
-  NS_LOG_LOGIC ("At Node " << m_node->GetId() << ", Extracting " << numberOfBits << 
-                       " bits from Nix-vector: " << nixVector << " : " << *nixVector);
-
-  // call the unicast callback
-  // local deliver is handled by Ipv4StaticRoutingImpl
-  // so this code is never even called if the packet is
-  // destined for this node.
-  ucb (rtentry, p, header);
-
-  return true;
 }
 
 // virtual functions from Ipv4RoutingProtocol 
@@ -680,9 +744,7 @@ Ipv4NixVectorRouting::NotifyRemoveAddress (uint32_t interface, Ipv4InterfaceAddr
 }
 
 bool
-Ipv4NixVectorRouting::BFS (uint32_t numberOfNodes, Ptr<Node> source, 
-                           Ptr<Node> dest, std::vector< Ptr<Node> > & parentVector,
-                           Ptr<NetDevice> oif)
+Ipv4NixVectorRouting::BFS (uint32_t numberOfNodes, Ptr<Node> source, Ptr<Node> dest, std::vector< Ptr<Node> > & parentVector)
 {
   NS_LOG_FUNCTION_NOARGS ();
 
@@ -710,36 +772,41 @@ Ipv4NixVectorRouting::BFS (uint32_t numberOfNodes, Ptr<Node> source,
           return true;
         }
 
-      // if this is the first iteration of the loop and a 
-      // specific output interface was given, make sure 
-      // we go this way
-      if (currNode == source && oif)
+
+      // Iterate over the current node's adjacent vertices
+      // and push them into the queue
+      for (uint32_t i = 0; i < (currNode->GetNDevices ()); i++)
         {
+          // Get a net device from the node
+          // as well as the channel, and figure
+          // out the adjacent net device
+          Ptr<NetDevice> localNetDevice = currNode->GetDevice (i);
+
           // make sure that we can go this way
           if (ipv4)
             {
-              uint32_t interfaceIndex = (ipv4)->GetInterfaceForDevice(oif);
+              uint32_t interfaceIndex = (ipv4)->GetInterfaceForDevice(currNode->GetDevice(i));
               if (!(ipv4->IsUp (interfaceIndex)))
                 {
                   NS_LOG_LOGIC ("Ipv4Interface is down");
-                  return false;
+                  continue;
                 }
             }
-          if (!(oif->IsLinkUp ()))
-            {
-              NS_LOG_LOGIC ("Link is down.");
-              return false;
-            }
-          Ptr<Channel> channel = oif->GetChannel ();
+            if (!(localNetDevice->IsLinkUp ()))
+              {
+                NS_LOG_LOGIC ("Link is down.");
+                continue;
+              }
+          Ptr<Channel> channel = localNetDevice->GetChannel ();
           if (channel == 0)
             { 
-              return false;
+              continue;
             }
 
           // this function takes in the local net dev, and channnel, and
           // writes to the netDeviceContainer the adjacent net devs
           NetDeviceContainer netDeviceContainer;
-          GetAdjacentNetDevices (oif, channel, netDeviceContainer);
+          GetAdjacentNetDevices (localNetDevice, channel, netDeviceContainer);
 
           // Finally we can get the adjacent nodes
           // and scan through them.  We push them
@@ -757,63 +824,6 @@ Ipv4NixVectorRouting::BFS (uint32_t numberOfNodes, Ptr<Node> source,
                 {
                   parentVector.at (remoteNode->GetId ()) = currNode;
                   greyNodeList.push (remoteNode);
-                }
-            }
-        }
-      else
-        {
-          // Iterate over the current node's adjacent vertices
-          // and push them into the queue
-          for (uint32_t i = 0; i < (currNode->GetNDevices ()); i++)
-            {
-              // Get a net device from the node
-              // as well as the channel, and figure
-              // out the adjacent net device
-              Ptr<NetDevice> localNetDevice = currNode->GetDevice (i);
-
-              // make sure that we can go this way
-              if (ipv4)
-                {
-                  uint32_t interfaceIndex = (ipv4)->GetInterfaceForDevice(currNode->GetDevice(i));
-                  if (!(ipv4->IsUp (interfaceIndex)))
-                    {
-                      NS_LOG_LOGIC ("Ipv4Interface is down");
-                      continue;
-                    }
-                }
-                if (!(localNetDevice->IsLinkUp ()))
-                  {
-                    NS_LOG_LOGIC ("Link is down.");
-                    continue;
-                  }
-              Ptr<Channel> channel = localNetDevice->GetChannel ();
-              if (channel == 0)
-                { 
-                  continue;
-                }
-
-              // this function takes in the local net dev, and channnel, and
-              // writes to the netDeviceContainer the adjacent net devs
-              NetDeviceContainer netDeviceContainer;
-              GetAdjacentNetDevices (localNetDevice, channel, netDeviceContainer);
-
-              // Finally we can get the adjacent nodes
-              // and scan through them.  We push them
-              // to the greyNode queue, if they aren't 
-              // already there.
-              for (NetDeviceContainer::Iterator iter = netDeviceContainer.Begin (); iter != netDeviceContainer.End (); iter++)
-                {
-                  Ptr<Node> remoteNode = (*iter)->GetNode ();
-
-                  // check to see if this node has been pushed before
-                  // by checking to see if it has a parent
-                  // if it doesn't (null or 0), then set its parent and 
-                  // push to the queue
-                  if (parentVector.at (remoteNode->GetId ()) == 0)
-                    {
-                      parentVector.at (remoteNode->GetId ()) = currNode;
-                      greyNodeList.push (remoteNode);
-                    }
                 }
             }
         }
