@@ -148,9 +148,32 @@ WifiModeFactory::CreateBpsk (std::string uniqueName,
   item->standard = standard;
   return WifiMode (uid);
 }
+
+WifiMode 
+WifiModeFactory::CreateQpsk (std::string uniqueName,
+			     bool isMandatory,
+			     uint32_t bandwidth,
+			     uint32_t dataRate,
+			     uint32_t phyRate,
+                             enum WifiPhyStandard standard)
+{
+  WifiModeFactory *factory = GetFactory ();
+  uint32_t uid = factory->AllocateUid (uniqueName);
+  WifiModeItem *item = factory->Get (uid);
+  item->uniqueUid = uniqueName;
+  item->bandwidth = bandwidth;
+  item->dataRate = dataRate;
+  item->phyRate = phyRate;
+  item->modulation = WifiMode::QPSK;
+  item->constellationSize = 4;
+  item->isMandatory = isMandatory;
+  item->standard = standard;
+  return WifiMode (uid);
+}
+
 WifiMode 
 WifiModeFactory::CreateQam (std::string uniqueName,
-			     bool isMandatory,
+                            bool isMandatory,
 			    uint32_t bandwidth,
 			    uint32_t dataRate,
 			    uint32_t phyRate,

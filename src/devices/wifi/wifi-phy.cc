@@ -114,7 +114,7 @@ WifiPhy::Get9mba (void)
 WifiMode 
 WifiPhy::Get12mba (void)
 {
-  static WifiMode mode = WifiModeFactory::CreateBpsk ("wifia-12mbs",
+  static WifiMode mode = WifiModeFactory::CreateQpsk ("wifia-12mbs",
                                                       true,
                                                       20000000, 12000000, 24000000,
                                                       WIFI_PHY_STANDARD_80211a);
@@ -123,7 +123,7 @@ WifiPhy::Get12mba (void)
 WifiMode 
 WifiPhy::Get18mba (void)
 {
-  static WifiMode mode = WifiModeFactory::CreateBpsk ("wifia-18mbs",
+  static WifiMode mode = WifiModeFactory::CreateQpsk ("wifia-18mbs",
                                                       false,
                                                       20000000, 18000000, 24000000,
                                                       WIFI_PHY_STANDARD_80211a);
@@ -132,39 +132,43 @@ WifiPhy::Get18mba (void)
 WifiMode 
 WifiPhy::Get24mba (void)
 {
-  static WifiMode mode = WifiModeFactory::CreateBpsk ("wifia-24mbs",
-                                                      true,
-                                                      20000000, 24000000, 48000000,
-                                                      WIFI_PHY_STANDARD_80211a);
+  static WifiMode mode = WifiModeFactory::CreateQam ("wifia-24mbs",
+                                                     true,
+                                                     20000000, 24000000, 48000000,
+                                                     16,
+                                                     WIFI_PHY_STANDARD_80211a);
   return mode;
 }
 WifiMode 
 WifiPhy::Get36mba (void)
 {
-  static WifiMode mode = WifiModeFactory::CreateBpsk ("wifia-36mbs",
-                                                      false,
-                                                      20000000, 36000000, 48000000,
-                                                      WIFI_PHY_STANDARD_80211a);
+  static WifiMode mode = WifiModeFactory::CreateQam ("wifia-36mbs",
+                                                     false,
+                                                     20000000, 36000000, 48000000,
+                                                     16,
+                                                     WIFI_PHY_STANDARD_80211a);
   return mode;
 }
 
 WifiMode 
 WifiPhy::Get48mba (void)
 {
-  static WifiMode mode = WifiModeFactory::CreateBpsk ("wifia-48mbs",
-                                                      false,
-                                                      20000000, 48000000, 72000000,
-                                                      WIFI_PHY_STANDARD_80211a);
+  static WifiMode mode = WifiModeFactory::CreateQam ("wifia-48mbs",
+                                                     false,
+                                                     20000000, 48000000, 72000000,
+                                                     64,
+                                                     WIFI_PHY_STANDARD_80211a);
   return mode;
 }
 
 WifiMode 
 WifiPhy::Get54mba (void)
 {
-  static WifiMode mode = WifiModeFactory::CreateBpsk ("wifia-54mbs",
-                                                      false,
-                                                      20000000, 54000000, 72000000,
-                                                      WIFI_PHY_STANDARD_80211a);
+  static WifiMode mode = WifiModeFactory::CreateQam ("wifia-54mbs",
+                                                     false,
+                                                     20000000, 54000000, 72000000,
+                                                     64,
+                                                     WIFI_PHY_STANDARD_80211a);
   return mode;
 }
 
