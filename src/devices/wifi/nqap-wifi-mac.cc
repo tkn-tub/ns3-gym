@@ -606,6 +606,8 @@ NqapWifiMac::DoStart (void)
     {
       m_beaconEvent = Simulator::ScheduleNow (&NqapWifiMac::SendOneBeacon, this);
     }
+  m_dca->Start ();
+  m_beaconDca->Start ();
   WifiMac::DoStart ();
 }
 

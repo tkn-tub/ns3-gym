@@ -78,6 +78,7 @@ public:
 private:
   Callback<void, Ptr<Packet>, Mac48Address, Mac48Address> m_forwardUp;
   virtual void DoDispose (void);
+  void DoStart ();
   void Receive (Ptr<Packet> packet, const WifiMacHeader *hdr);
   void ForwardUp (Ptr<Packet> packet, Mac48Address from, Mac48Address to);
   QadhocWifiMac &operator = (const QadhocWifiMac &);
@@ -101,10 +102,6 @@ private:
   Ptr<EdcaTxopN> GetBKQueue (void) const;
 
   Queues m_queues;
-  Ptr<EdcaTxopN> m_voEdca;
-  Ptr<EdcaTxopN> m_viEdca;
-  Ptr<EdcaTxopN> m_beEdca;
-  Ptr<EdcaTxopN> m_bkEdca;
   Ptr<MacLow> m_low;
   Ptr<WifiPhy> m_phy;
   Ptr<WifiRemoteStationManager> m_stationManager;

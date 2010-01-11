@@ -686,5 +686,11 @@ EdcaTxopN::SetMsduAggregator (Ptr<MsduAggregator> aggr)
 {
   m_aggregator = aggr;
 }
-
+void
+EdcaTxopN::DoStart ()
+{
+  m_dcf->ResetCw ();
+  m_dcf->StartBackoffNow (m_rng->GetNext (0, m_dcf->GetCw ()));
+  ns3::Dcf::DoStart ();
+}
 } //namespace ns3

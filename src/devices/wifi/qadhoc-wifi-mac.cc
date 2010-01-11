@@ -108,10 +108,6 @@ QadhocWifiMac::DoDispose (void)
   m_dcfManager = 0;
   m_low = 0;
   m_phy = 0;
-  m_voEdca = 0;
-  m_viEdca = 0;
-  m_beEdca = 0;
-  m_bkEdca = 0;
   m_stationManager = 0;
   for (Queues::iterator i = m_queues.begin (); i != m_queues.end (); ++i)
     {
@@ -444,6 +440,15 @@ QadhocWifiMac::FinishConfigureStandard (enum WifiPhyStandard standard)
       NS_ASSERT (false);
       break;
     }
+}
+void
+QadhocWifiMac::DoStart ()
+{
+  for (Queues::iterator i = m_queues.begin (); i != m_queues.end (); ++i)
+    {
+      i->second->Start ();
+    }
+  WifiMac::DoStart ();
 }
 
 } //namespace ns3

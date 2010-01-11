@@ -298,4 +298,11 @@ AdhocWifiMac::TxFailed (const WifiMacHeader &hdr)
 {
   m_txErrCallback (hdr);
 }
+void
+AdhocWifiMac::DoStart ()
+{
+  m_dca->Start ();
+  WifiMac::DoStart ();
+}
+
 } // namespace ns3
