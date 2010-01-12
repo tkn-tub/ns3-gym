@@ -686,10 +686,5 @@ NqstaWifiMac::FinishConfigureStandard (enum WifiPhyStandard standard)
       break;
     }
 }
-void
-NqstaWifiMac::DoStart ()
-{
-  m_dca->Start ();
-  WifiMac::DoStart ();
-}
+
 } // namespace ns3

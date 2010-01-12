@@ -775,13 +775,5 @@ QstaWifiMac::FinishConfigureStandard (enum WifiPhyStandard standard)
     }
 }
 
-void
-QstaWifiMac::DoStart ()
-{
-  for (Queues::iterator i = m_queues.begin (); i != m_queues.end (); ++i)
-    {
-      i->second->Start ();
-    }
-  WifiMac::DoStart ();
-}
+
 }  //namespace ns3
