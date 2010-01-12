@@ -179,8 +179,6 @@ private:
   bool GetBeaconGeneration () const;
   /// Real d-tor
   virtual void DoDispose ();
-  ///Initiator at t=0
-  void DoStart ();
 
 private:
   typedef std::map<AccessClass, Ptr<DcaTxop> > Queues;

@@ -119,7 +119,6 @@ private:
     BEACON_MISSED,
     REFUSED
   };
-  void DoStart ();
   void SetBssid (Mac48Address bssid);
   void SetActiveProbing (bool enable);
   bool GetActiveProbing (void) const;

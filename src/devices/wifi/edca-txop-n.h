@@ -132,7 +132,6 @@ public:
   void SetMsduAggregator (Ptr<MsduAggregator> aggr);
 
 private:
-  void DoStart ();
   /**
    * This functions are used only to correctly set addresses in a-msdu subframe.
    * If aggregating sta is a STA (in an infrastructured network):
