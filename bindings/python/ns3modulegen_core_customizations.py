@@ -572,3 +572,14 @@ def add_std_ofstream(module):
                               Parameter.new("::std::ofstream::openmode", 'mode', default_value="std::ios_base::out")])
     ofstream.add_method('close', None, [])
 
+def add_ipv4_address_tp_hash(module):
+    module.body.writeln('''
+long
+_ns3_Ipv4Address_tp_hash (PyObject *obj)
+{
+   PyNs3Ipv4Address *addr = reinterpret_cast<PyNs3Ipv4Address *> (obj);
+   return static_cast<long> (ns3::Ipv4AddressHash () (*addr->obj));
+}
+''')
+    module.header.writeln('long _ns3_Ipv4Address_tp_hash (PyObject *obj);')
+    module['Ipv4Address'].pytype.slots['tp_hash'] = "_ns3_Ipv4Address_tp_hash"
