@@ -27,6 +27,7 @@ import Queue
 import signal
 import xml.dom.minidom
 import shutil
+import re
 
 #
 # XXX This should really be part of a waf command to list the configuration
@@ -670,7 +671,7 @@ def run_job_synchronously(shell_command, directory, valgrind):
     suppressions_path = os.path.join (base, VALGRIND_SUPPRESSIONS_FILE)
     path_cmd = os.path.join (NS3_BUILDDIR, NS3_ACTIVE_VARIANT, shell_command)
     if valgrind:
-        cmd = "valgrind --suppressions=%s --leak-check=full --error-exitcode=2 %s" % (suppressions_path, path_cmd)
+        cmd = "valgrind --suppressions=%s --leak-check=full --show-reachable=yes --error-exitcode=2 %s" % (suppressions_path, path_cmd)
     else:
         cmd = path_cmd
 
@@ -679,14 +680,26 @@ def run_job_synchronously(shell_command, directory, valgrind):
 
     start_time = time.time()
     proc = subprocess.Popen(cmd, shell = True, cwd = directory, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    stdout_results, stderr_results = proc.communicate()
     elapsed_time = time.time() - start_time
-
+    ##detect errors ignored by valgrind
+    error = False
+    if valgrind:
+      reg = re.compile ('still reachable: ([^ ]+) bytes')
+      for line in proc.stderr:
+          result = reg.search(line)
+          if result is None:
+              continue
+          if result.group(1) != "0":
+             error = True
+    stdout_results, stderr_results = proc.communicate()
+    retval = proc.returncode
+    if retval == 0 and error:
+        retval = 1
     if options.verbose:
-        print "Return code = ", proc.returncode
+        print "Return code = ", retval
         print "stderr = ", stderr_results
 
-    return (proc.returncode, stdout_results, stderr_results, elapsed_time)
+    return (retval, stdout_results, stderr_results, elapsed_time)
 
 #
 # This class defines a unit of testing work.  It will typically refer to
