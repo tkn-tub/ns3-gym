@@ -671,7 +671,8 @@ def run_job_synchronously(shell_command, directory, valgrind):
     suppressions_path = os.path.join (base, VALGRIND_SUPPRESSIONS_FILE)
     path_cmd = os.path.join (NS3_BUILDDIR, NS3_ACTIVE_VARIANT, shell_command)
     if valgrind:
-        cmd = "valgrind --suppressions=%s --leak-check=full --show-reachable=yes --error-exitcode=2 %s" % (suppressions_path, path_cmd)
+        cmd = "valgrind --suppressions=%s --leak-check=full --show-reachable=yes --error-exitcode=2 %s" % (suppressions_path, 
+            path_cmd)
     else:
         cmd = path_cmd
 
@@ -680,21 +681,23 @@ def run_job_synchronously(shell_command, directory, valgrind):
 
     start_time = time.time()
     proc = subprocess.Popen(cmd, shell = True, cwd = directory, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    elapsed_time = time.time() - start_time
-    ##detect errors ignored by valgrind
-    error = False
-    if valgrind:
-      reg = re.compile ('still reachable: ([^ ]+) bytes')
-      for line in proc.stderr:
-          result = reg.search(line)
-          if result is None:
-              continue
-          if result.group(1) != "0":
-             error = True
     stdout_results, stderr_results = proc.communicate()
+    elapsed_time = time.time() - start_time
+
     retval = proc.returncode
-    if retval == 0 and error:
-        retval = 1
+
+    #
+    # valgrind sometimes has its own idea about what kind of memory management
+    # errors are important.  We want to detect *any* leaks, so the way to do 
+    # that is to look for the presence of a valgrind leak summary section.
+    #
+    # If another error has occurred (like a test suite has failed), we don't 
+    # want to trump that error, so only do the valgrind output scan if the 
+    # test has otherwise passed (return code was zero).
+    #
+    if valgrind and retval == 0 and "== LEAK SUMMARY:" in stderr_results:
+        retval = 2
+    
     if options.verbose:
         print "Return code = ", retval
         print "stderr = ", stderr_results
