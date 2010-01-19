@@ -22,6 +22,7 @@ def build(bld):
         'pcap-file.cc',
         'pcap-file-test-suite.cc',
         'pcap-file-object.cc',
+        'output-stream-object.cc',
         ]
 
     headers = bld.new_task_gen('ns3header')
@@ -45,4 +46,5 @@ def build(bld):
         'sgi-hashmap.h',
         'pcap-file.h',
         'pcap-file-object.h',
+        'output-stream-object.h',
         ]

@@ -32,6 +32,7 @@
 #include "ns3/ascii-writer.h"
 
 #include "pcap-helper.h"
+#include "ascii-trace-helper.h"
 #include "csma-helper.h"
 
 #include <string>
@@ -99,6 +100,45 @@ CsmaHelper::EnablePcapInternal (std::string prefix, Ptr<NetDevice> nd, bool prom
     {
       pcapHelper.HookDefaultSink<CsmaNetDevice> (device, "Sniffer", file);
     }
+}
+
+void 
+CsmaHelper::EnableAsciiInternal (std::string prefix, Ptr<NetDevice> nd)
+{
+  //
+  // All of the ascii enable functions vector through here including the ones
+  // that are wandering through all of devices on perhaps all of the nodes in
+  // the system.  We can only deal with devices of type CsmaNetDevice.
+  //
+  Ptr<CsmaNetDevice> device = nd->GetObject<CsmaNetDevice> ();
+  if (device == 0)
+    {
+      NS_LOG_INFO ("CsmaHelper::EnableAsciiInternal(): Device " << device << " not of type ns3::CsmaNetDevice");
+      return;
+    }
+
+  //
+  // Set up an output stream object to deal with private ofstream copy 
+  // constructor and lifetime issues.  Let the helper decide the actual
+  // name of the file given the prefix.
+  //
+  AsciiTraceHelper asciiTraceHelper;
+  std::string filename = asciiTraceHelper.GetFilename (prefix, device);
+  Ptr<OutputStreamObject> stream = asciiTraceHelper.CreateFileStream (filename, "w");
+
+  //
+  // The MacRx trace source provides our "r" event.
+  //
+  asciiTraceHelper.HookDefaultReceiveSink<CsmaNetDevice> (device, "MacRx", stream);
+
+  //
+  // The "+", '-', and 'd' events are driven by trace sources actually in the
+  // transmit queue.
+  //
+  Ptr<Queue> queue = device->GetQueue ();
+  asciiTraceHelper.HookDefaultEnqueueSink<Queue> (queue, "Enqueue", stream);
+  asciiTraceHelper.HookDefaultDropSink<Queue> (queue, "Drop", stream);
+  asciiTraceHelper.HookDefaultDequeueSink<Queue> (queue, "Dequeue", stream);
 }
 
 void 

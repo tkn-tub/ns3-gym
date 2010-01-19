@@ -50,6 +50,8 @@ def build(bld):
         'udp-client-server-helper.cc',
         'pcap-helper.cc',
         'pcap-user-helper.cc',
+        'ascii-trace-user-helper.cc',
+        'ascii-trace-helper.cc',
         ]
 
     headers = bld.new_task_gen('ns3header')
@@ -103,6 +105,8 @@ def build(bld):
         'udp-client-server-helper.h',
         'pcap-helper.h',
         'pcap-user-helper.h',
+        'ascii-trace-user-helper.h',
+        'ascii-trace-helper.h',
         ]
 
     env = bld.env_of_name('default')

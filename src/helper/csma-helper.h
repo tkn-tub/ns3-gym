@@ -30,6 +30,7 @@
 #include "ns3/deprecated.h"
 
 #include "pcap-user-helper.h"
+#include "ascii-trace-user-helper.h"
 
 namespace ns3 {
 
@@ -39,7 +40,7 @@ class AsciiWriter;
 /**
  * \brief build a set of CsmaNetDevice objects
  */
-class CsmaHelper : public PcapUserHelper
+class CsmaHelper : public PcapUserHelper, public AsciiTraceUserHelper
 {
 public:
   /**
@@ -233,7 +234,8 @@ private:
   Ptr<NetDevice> InstallPriv (Ptr<Node> node, Ptr<CsmaChannel> channel) const;
 
   /**
-   * \brief Enable pcap output the indicated net device.
+   * \brief Enable pcap output on the indicated net device.
+   * \internal
    *
    * NetDevice-specific implementation mechanism for hooking the trace and
    * writing to the trace file.
@@ -244,7 +246,23 @@ private:
    */
   virtual void EnablePcapInternal (std::string prefix, Ptr<NetDevice> nd, bool promiscuous = false);
 
+  /**
+   * \brief Enable ascii trace output on the indicated net device.
+   * \internal
+   *
+   * NetDevice-specific implementation mechanism for hooking the trace and
+   * writing to the trace file.
+   *
+   * \param prefix Filename prefix to use for pcap files.
+   * \param nd Net device for which you want to enable tracing.
+   */
+  virtual void EnableAsciiInternal (std::string prefix, Ptr<NetDevice> nd);
+
+  /*
+   * \internal
+   */
   static void AsciiRxEvent (Ptr<AsciiWriter> writer, std::string path, Ptr<const Packet> packet);
+
   /*
    * \internal
    */

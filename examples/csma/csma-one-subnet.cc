@@ -122,6 +122,10 @@ main (int argc, char *argv[])
   std::ofstream ascii;
   ascii.open ("csma-one-subnet.tr", std::ios_base::binary | std::ios_base::out);
   CsmaHelper::EnableAsciiAll (ascii);
+
+  csma.EnableAsciiAllXXX ("csma-one-subnet");
+
+
 //
 // Also configure some tcpdump traces; each interface will be traced.
 // The output files will be named:
