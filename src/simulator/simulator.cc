@@ -291,6 +291,10 @@ void
 Simulator::Remove (const EventId &ev)
 {
   NS_LOG_FUNCTION (&ev);
+  if (*PeekImpl () == 0)
+    {
+      return;
+    }
   return GetImpl ()->Remove (ev);
 }
 
@@ -298,6 +302,10 @@ void
 Simulator::Cancel (const EventId &ev)
 {
   NS_LOG_FUNCTION (&ev);
+  if (*PeekImpl () == 0)
+    {
+      return;
+    }
   return GetImpl ()->Cancel (ev);
 }
 
@@ -305,6 +313,10 @@ bool
 Simulator::IsExpired (const EventId &id)
 {
   NS_LOG_FUNCTION (&id);
+  if (*PeekImpl () == 0)
+    {
+      return true;
+    }
   return GetImpl ()->IsExpired (id);
 }
 
