@@ -23,6 +23,7 @@
 #include "ns3/net-device.h"
 #include "ns3/ipv4.h"
 #include "ns3/ipv4-address-generator.h"
+#include "ns3/simulator.h"
 #include "ipv4-address-helper.h"
 
 NS_LOG_COMPONENT_DEFINE("Ipv4AddressHelper");
@@ -200,6 +201,7 @@ void
 NetworkAllocatorHelperTestCase::DoTeardown (void)
 {
   Ipv4AddressGenerator::Reset ();
+  Simulator::Destroy ();
 }
 bool
 NetworkAllocatorHelperTestCase::DoRun (void)
@@ -246,6 +248,7 @@ void
 AddressAllocatorHelperTestCase::DoTeardown (void)
 {
   Ipv4AddressGenerator::Reset ();
+  Simulator::Destroy ();
 }
 
 bool
@@ -337,6 +340,7 @@ void
 ResetAllocatorHelperTestCase::DoTeardown (void)
 {
   Ipv4AddressGenerator::Reset ();
+  Simulator::Destroy ();
 }
 
 static class Ipv4AddressHelperTestSuite : public TestSuite

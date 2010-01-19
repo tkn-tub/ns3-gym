@@ -31,30 +31,92 @@ http://www.nsnam.org/wiki/index.php/Installation
 New user-visible features
 -------------------------
 
-  a) The ns-3 logging macros (NS_LOG_*) now report automatically the node id
-     of the event which called the macro.
+  a) Ad hoc On-Demand Distance Vector (AODV) routing model (RFC 3561)
 
-  b) Ad hoc On-Demand Distance Vector (AODV) routing model according to RFC 3561. 
+  b) IPv6 extensions support to add IPv6 extensions and options.  Two 
+     examples (fragmentation and loose routing) are available.
 
-  c) Net-anim:
-     - interface for animation of point-to-point links.
-     - dumbbell, grid, and star examples in examples/animation
+  c) NetAnim interface: Provides an interface to the Qt-based NetAnim 
+     animator, which supports static, point-to-point topology-based 
+     packet animations.
 
-  d) Topology Helper classes:
+  d) New topology helpers have been introduced
      - PointToPointDumbbellHelper
      - PointToPointGridHelper
      - PointToPointStarHelper
      - CsmaStarHelper
 
-  e) IPv6 extensions support and two new examples for fragmentation and loose routing.
+  e) Equal-cost multipath for global routing: Enables quagga's equal 
+     cost multipath for Ipv4GlobalRouting, and adds an attribute that
+     can enable it with random packet distribution policy across 
+     equal cost routes.
+
+  f) Binding sockets to devices:  A method analogous to a SO_BINDTODEVICE
+     socket option has been introduced to class Socket
+
+  g) Object::DoStart: Users who need to complete their object setup at 
+     the start of a simulation can override this virtual method, perform their 
+     adhoc setup, and then, must chain up to their parent.
+
+  h) Ipv4::IsDestinationAddress method added to support checks of whether a 
+     destination address should be accepted as one of the host's own 
+     addresses.  
+
+  i) UniformDiscPositionAllocator added; distributes uniformly the nodes 
+     within a disc of given radius. 
+
+  j) ChannelNumber attribute added to YansWifiPhy. Now it is possible to 
+     setup wifi channel using WifiPhyHelper::Set() method.
+
+  k) WaypointMobilityModel provides a method to add mobility as a set of 
+     (time, position) pairs
 
 API changes from ns-3.6
 -----------------------
 API changes for this release are documented in the file CHANGES.html. 
 
+Bugs fixed
+----------
+The following lists many of the bugs that were fixed since ns-3.6, in
+many cases referencing the Bugzilla bug number
+   - bug 752: Object::DoStart is not executed for objects created at t > 0
+   - bug 767:  Incorrect modulation for 802.11a modes
+   - bug 725: wifi fragmentation and RTS cannot be used at the same time
+   - bug 782: CreateTap () requires IP address in modes other than 
+     CONFIGURE_LOCAL.
+   - bug 769: Queue::GetTotalReceived{Bytes,Packets}() broken
+   - bug 738 ReceiveErrorModel called too late
+   - Fix NSC improper response to FIN
+   - Fixed bug in serialization of PbbAddressBlock.
+   - Fix bug 780 (problem in RoutingTableComputation with asymetric links), 
+     while adding debugging methods to OLSR.  
+   - bug 759: Ipv6 uses wrong outgoing interface.
+   - bug 770: IPv6 size calculation for unknown options is wrong.
+   - bug 771: Radvd does not set ttl value.
+   - Fix bug 606:  Arp depends on IP routing system
+   - pad out CSMA payloads to 46 bytes if needed
+   - Drop CSMA packets with CRC errors, rescan, dox tweaks
+   - Add FCS capability to CSMA
+   - Mesh:Dot11s: fixed airtime metric
+   - Get emu working again:  Add Dix/Llc option, add and use contextual 
+     realtime schedule ops, don't refcount realtime simulator impl
+   - bug 695 - DcfManager::UpdateBackoff () uses slow HighPrecision::Div()
+   - bug 674 - EIFS is not handled correctly in DcfManager::GetAccessGrantStart
+   - bug 739 -  OLSR: Strange HTime value in HELLO messages 
+   - bug 746 -  UDP source address is not set to bound address
+   - bug 735 Update Olsr for local delivery
+   - bug 740 OLSR MprCompute () works wrong: fixed
+   - bug 729 Enable IPv6 over PPP.
+   - bug 645: fixes for opening stats file with OMNeT++
+   - bug 689: default energy detection and CCA thresholds are changed to be 
+     more realistic.
+   - bug 733: OLSR MPR Computation give incorrect result
+   - Mesh: HWMP: fixed proactive routes
+   - Mesh: fixed FLAME PATH_UPDATE procedure, fixed mesh.cc 
+
 Known issues
 ------------
-ns-3.6 build is known to fail on the following platforms:
+ns-3 builds have been known to fail on the following platforms:
   - gcc 3.3 and earlier
   - optimized builds on gcc 3.4.4 and 3.4.5
   - optimized builds on linux x86 gcc 4.0.x

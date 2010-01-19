@@ -143,7 +143,7 @@ WifiTest::DoRun (void)
   m_propDelay.SetTypeId ("ns3::RandomPropagationDelayModel");
   m_mac.SetTypeId ("ns3::AdhocWifiMac");
   RunOne ();
-
+  Simulator::Destroy ();
   return false;
 }
 

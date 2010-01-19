@@ -42,6 +42,7 @@ class WifiMode
  public:
   enum ModulationType {
     BPSK,
+    QPSK,
     DBPSK,
     DQPSK,
     QAM,
@@ -157,6 +158,25 @@ public:
    * Create a BPSK WifiMode.
    */
   static WifiMode CreateBpsk (std::string uniqueName,
+			      bool isMandatory,
+			      uint32_t bandwidth,
+			      uint32_t dataRate,
+			      uint32_t phyRate,
+                              enum WifiPhyStandard standard);
+  /**
+   * \param uniqueName the name of the associated WifiMode. This name
+   *        must be unique accross _all_ instances.
+   * \param isMandatory true if this WifiMode is mandatory, false otherwise.
+   * \param bandwidth the bandwidth (Hz) of the signal generated when the
+   *        associated WifiMode is used.
+   * \param dataRate the rate (bits/second) at which the user data is transmitted
+   * \param phyRate the rate (bits/second) at which the encoded user data is transmitted
+   * \param standard the Wifi Phy standard to apply
+   *        The phyRate includes FEC so, is typically higher than the dataRate.
+   *
+   * Create a QPSK WifiMode.
+   */
+  static WifiMode CreateQpsk (std::string uniqueName,
 			      bool isMandatory,
 			      uint32_t bandwidth,
 			      uint32_t dataRate,

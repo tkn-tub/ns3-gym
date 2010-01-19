@@ -474,7 +474,7 @@ struct AodvRtableEntryTest : public TestCase
     NS_TEST_EXPECT_MSG_EQ (rt.IsPrecursorListEmpty (), true, "trivial");
     rt.GetPrecursors (prec);
     NS_TEST_EXPECT_MSG_EQ (prec.size (), 2, "trivial");
-
+    Simulator::Destroy ();
     return GetErrorStatus ();
   }
 };
@@ -528,7 +528,7 @@ struct AodvRtableTest : public TestCase
     NS_TEST_EXPECT_MSG_EQ (rt.GetFlag (), INVALID, "trivial");
     NS_TEST_EXPECT_MSG_EQ (rtable.DeleteRoute (Ipv4Address ("1.2.3.4")), true, "trivial");
     NS_TEST_EXPECT_MSG_EQ (rtable.DeleteRoute (Ipv4Address ("1.2.3.4")), false, "trivial");
-
+    Simulator::Destroy ();
     return GetErrorStatus ();
   }
 };

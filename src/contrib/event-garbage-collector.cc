@@ -138,7 +138,7 @@ bool EventGarbageCollectorTestCase::DoRun (void)
   Simulator::Run ();
   NS_TEST_EXPECT_MSG_EQ (m_events, 0, "");
   NS_TEST_EXPECT_MSG_EQ (m_counter, 50, "");
-
+  Simulator::Destroy ();
   return false;
 }
 
