@@ -560,6 +560,7 @@ void
 AddressAllocatorTestCase::DoTeardown (void)
 {
   Ipv4AddressGenerator::Reset ();
+  Simulator::Destroy ();
 }
 
 
@@ -579,6 +580,7 @@ void
 NetworkAndAddressTestCase::DoTeardown (void)
 {
   Ipv4AddressGenerator::Reset ();
+  Simulator::Destroy ();
 }
 
 bool
@@ -695,6 +697,7 @@ void
 AddressCollisionTestCase::DoTeardown (void)
 {
   Ipv4AddressGenerator::Reset ();
+  Simulator::Destroy ();
 }
 bool
 AddressCollisionTestCase::DoRun (void)

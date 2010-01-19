@@ -135,7 +135,7 @@ Ipv6L3ProtocolTestCase::DoRun ()
 
   index = ipv6->GetInterfaceForAddress ("2001:ffff:5678:9000::1"); /* address we just remove */
   NS_TEST_ASSERT_MSG_EQ (index, (uint32_t) -1, "Address should not be found??");
-
+  Simulator::Destroy ();
   return false;
 }//end DoRun
 static class IPv6L3ProtocolTestSuite : public TestSuite
