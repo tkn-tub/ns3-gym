@@ -72,8 +72,16 @@ Ipv4Mask::Ipv4Mask (char const *mask)
 {
   if (*mask == ASCII_SLASH)
     {
-      m_mask = static_cast<uint32_t> (atoi (++mask));
-      NS_ASSERT (m_mask <= 32);
+      uint32_t plen = static_cast<uint32_t> (atoi (++mask));
+      NS_ASSERT (plen <= 32);
+      if (plen > 0)
+        {
+          m_mask = 0xffffffff << (32 - plen);
+        }
+      else
+        {
+          m_mask = 0;
+        }
     }
   else
     {
