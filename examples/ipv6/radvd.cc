@@ -143,10 +143,9 @@ int main (int argc, char** argv)
   apps.Start (Seconds (2.0));
   apps.Stop (Seconds (7.0));
 
-  std::ofstream ascii;
-  ascii.open ("radvd.tr");
+  AsciiTraceHelper ascii;
+  csma.EnableAsciiAll (ascii.CreateFileStream ("radvd.tr"));
   csma.EnablePcapAll (std::string ("radvd"), true);
-  CsmaHelper::EnableAsciiAll (ascii);
 
   NS_LOG_INFO ("Run Simulation.");
   Simulator::Run ();

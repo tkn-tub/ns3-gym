@@ -153,10 +153,9 @@ main (int argc, char *argv[])
 
 
   //configure tracing
-  std::ofstream ascii;
-  ascii.open ("tcp-star-server.tr");
+  AsciiTraceHelper ascii;
+  p2p.EnableAsciiAll (ascii.CreateFileStream ("tcp-star-server.tr"));
   p2p.EnablePcapAll ("tcp-star-server");
-  PointToPointHelper::EnableAsciiAll (ascii);
 
   NS_LOG_INFO ("Run Simulation.");
   Simulator::Run ();

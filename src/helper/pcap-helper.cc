@@ -102,7 +102,7 @@ PcapHelper::GetFilenameFromDevice (std::string prefix, Ptr<NetDevice> device, bo
     }
   else
     {
-      oss << "n" << node->GetId ();
+      oss << node->GetId ();
     }
 
   oss << "-";
@@ -113,7 +113,7 @@ PcapHelper::GetFilenameFromDevice (std::string prefix, Ptr<NetDevice> device, bo
     }
   else
     {
-      oss << "d" << device->GetIfIndex ();
+      oss << device->GetIfIndex ();
     }
 
   oss << ".pcap";

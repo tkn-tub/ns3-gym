@@ -208,10 +208,9 @@ int main (int argc, char** argv)
   /* at the end, RA addresses and routes should be cleared */
   Simulator::Schedule (Seconds (10.0), &StackHelper::PrintRoutingTable, &stackHelper, n0); 
 
-  std::ofstream ascii;
-  ascii.open ("radvd-two-prefix.tr");
+  AsciiTraceHelper ascii;
+  csma.EnableAsciiAll (ascii.CreateFileStream ("radvd-two-prefix.tr"));
   csma.EnablePcapAll (std::string ("radvd-two-prefix"), true);
-  CsmaHelper::EnableAsciiAll (ascii);
 
   NS_LOG_INFO ("Run Simulation.");
   Simulator::Run ();

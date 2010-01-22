@@ -47,6 +47,8 @@ def register_types(module):
     module.add_class('Chunk', parent=root_module['ns3::ObjectBase'])
     ## header.h: ns3::Header [class]
     module.add_class('Header', parent=root_module['ns3::Chunk'])
+    ## output-stream-object.h: ns3::OutputStreamObject [class]
+    module.add_class('OutputStreamObject', parent=root_module['ns3::Object'])
     ## pcap-file-object.h: ns3::PcapFileObject [class]
     module.add_class('PcapFileObject', parent=root_module['ns3::Object'])
     ## pcap-writer.h: ns3::PcapWriter [class]
@@ -177,6 +179,7 @@ def register_methods(root_module):
     register_Ns3TagBuffer_methods(root_module, root_module['ns3::TagBuffer'])
     register_Ns3Chunk_methods(root_module, root_module['ns3::Chunk'])
     register_Ns3Header_methods(root_module, root_module['ns3::Header'])
+    register_Ns3OutputStreamObject_methods(root_module, root_module['ns3::OutputStreamObject'])
     register_Ns3PcapFileObject_methods(root_module, root_module['ns3::PcapFileObject'])
     register_Ns3PcapWriter_methods(root_module, root_module['ns3::PcapWriter'])
     register_Ns3Trailer_methods(root_module, root_module['ns3::Trailer'])
@@ -951,6 +954,26 @@ def register_Ns3Header_methods(root_module, cls):
                    is_pure_virtual=True, is_const=True, is_virtual=True)
     return
 
+def register_Ns3OutputStreamObject_methods(root_module, cls):
+    ## output-stream-object.h: ns3::OutputStreamObject::OutputStreamObject(ns3::OutputStreamObject const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::OutputStreamObject const &', 'arg0')])
+    ## output-stream-object.h: ns3::OutputStreamObject::OutputStreamObject() [constructor]
+    cls.add_constructor([])
+    ## output-stream-object.h: std::ostream * ns3::OutputStreamObject::GetStream() [member function]
+    cls.add_method('GetStream', 
+                   'std::ostream *', 
+                   [])
+    ## output-stream-object.h: static ns3::TypeId ns3::OutputStreamObject::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## output-stream-object.h: void ns3::OutputStreamObject::SetStream(std::ostream * ostream) [member function]
+    cls.add_method('SetStream', 
+                   'void', 
+                   [param('std::ostream *', 'ostream')])
+    return
+
 def register_Ns3PcapFileObject_methods(root_module, cls):
     ## pcap-file-object.h: ns3::PcapFileObject::PcapFileObject(ns3::PcapFileObject const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::PcapFileObject const &', 'arg0')])
@@ -960,11 +983,39 @@ def register_Ns3PcapFileObject_methods(root_module, cls):
     cls.add_method('Close', 
                    'void', 
                    [])
+    ## pcap-file-object.h: uint32_t ns3::PcapFileObject::GetDataLinkType() [member function]
+    cls.add_method('GetDataLinkType', 
+                   'uint32_t', 
+                   [])
+    ## pcap-file-object.h: uint32_t ns3::PcapFileObject::GetMagic() [member function]
+    cls.add_method('GetMagic', 
+                   'uint32_t', 
+                   [])
+    ## pcap-file-object.h: uint32_t ns3::PcapFileObject::GetSigFigs() [member function]
+    cls.add_method('GetSigFigs', 
+                   'uint32_t', 
+                   [])
+    ## pcap-file-object.h: uint32_t ns3::PcapFileObject::GetSnapLen() [member function]
+    cls.add_method('GetSnapLen', 
+                   'uint32_t', 
+                   [])
+    ## pcap-file-object.h: int32_t ns3::PcapFileObject::GetTimeZoneOffset() [member function]
+    cls.add_method('GetTimeZoneOffset', 
+                   'int32_t', 
+                   [])
     ## pcap-file-object.h: static ns3::TypeId ns3::PcapFileObject::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
+    ## pcap-file-object.h: uint16_t ns3::PcapFileObject::GetVersionMajor() [member function]
+    cls.add_method('GetVersionMajor', 
+                   'uint16_t', 
+                   [])
+    ## pcap-file-object.h: uint16_t ns3::PcapFileObject::GetVersionMinor() [member function]
+    cls.add_method('GetVersionMinor', 
+                   'uint16_t', 
+                   [])
     ## pcap-file-object.h: bool ns3::PcapFileObject::Init(uint32_t dataLinkType, uint32_t snapLen=ns3::PcapFile::SNAPLEN_DEFAULT, int32_t tzCorrection=ns3::PcapFile::ZONE_DEFAULT) [member function]
     cls.add_method('Init', 
                    'bool', 

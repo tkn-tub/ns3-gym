@@ -235,6 +235,11 @@ def register_Ns3PointToPointNetDevice_methods(root_module, cls):
                    'ns3::Ptr< ns3::Node >', 
                    [], 
                    is_const=True, is_virtual=True)
+    ## point-to-point-net-device.h: ns3::Ptr<ns3::Queue> ns3::PointToPointNetDevice::GetQueue() const [member function]
+    cls.add_method('GetQueue', 
+                   'ns3::Ptr< ns3::Queue >', 
+                   [], 
+                   is_const=True)
     ## point-to-point-net-device.h: static ns3::TypeId ns3::PointToPointNetDevice::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 

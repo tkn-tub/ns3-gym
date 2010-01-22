@@ -289,10 +289,9 @@ main (int argc, char *argv[])
   apps.Start (Seconds (1.1));
   //apps.Stop (Seconds (10.0));
 
-  std::ofstream ascii;
-  ascii.open ("virtual-net-device.tr");
+  AsciiTraceHelper ascii;
+  p2p.EnableAsciiAll (ascii.CreateFileStream ("virtual-net-device.tr"));
   p2p.EnablePcapAll ("virtual-net-device");
-  PointToPointHelper::EnableAsciiAll (ascii);
 
   NS_LOG_INFO ("Run Simulation.");
   Simulator::Run ();

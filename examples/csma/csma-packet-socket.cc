@@ -116,9 +116,9 @@ main (int argc, char *argv[])
   // Configure tracing of all enqueue, dequeue, and NetDevice receive events
   // Trace output will be sent to the csma-packet-socket.tr file
   NS_LOG_INFO ("Configure Tracing.");
-  std::ofstream os;
-  os.open ("csma-packet-socket.tr", std::ios_base::binary | std::ios_base::out);
-  csma.EnableAsciiAll (os);
+
+  AsciiTraceHelper ascii;
+  csma.EnableAsciiAll (ascii.CreateFileStream ("csma-packet-socket.tr"));
 
   NS_LOG_INFO ("Run Simulation.");
   Simulator::Run ();

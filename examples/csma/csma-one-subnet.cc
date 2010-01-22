@@ -114,22 +114,21 @@ main (int argc, char *argv[])
   app = sink.Install (nodes.Get (0));
   app.Start (Seconds (0.0));
 
-//
-// Configure tracing of all enqueue, dequeue, and NetDevice receive events.
-// Trace output will be sent to the file "csma-one-subnet.tr"
-//
   NS_LOG_INFO ("Configure Tracing.");
-  std::ofstream ascii;
-  ascii.open ("csma-one-subnet.tr", std::ios_base::binary | std::ios_base::out);
-  CsmaHelper::EnableAsciiAll (ascii);
-
-  csma.EnableAsciiAllXXX ("csma-one-subnet");
-
+//
+// Configure ascii tracing of all enqueue, dequeue, and NetDevice receive 
+// events on all devices.  Trace output will be sent to the file 
+// "csma-one-subnet.tr"
+//
+  AsciiTraceHelper ascii;
+  csma.EnableAsciiAll (ascii.CreateFileStream ("csma-one-subnet.tr"));
 
 //
 // Also configure some tcpdump traces; each interface will be traced.
 // The output files will be named:
-//     csma-one-subnet-<nodeId>-<interfaceId>.pcap
+//
+//     csma-one-subnet-<node ID>-<device's interface index>.pcap
+//
 // and can be read by the "tcpdump -r" command (use "-tt" option to
 // display timestamps correctly)
 //

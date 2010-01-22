@@ -168,9 +168,8 @@ int main (int argc, char *argv[])
   //localSocket->SetAttribute("SndBufSize", UintegerValue(4096));
 
   //Ask for ASCII and pcap traces of network traffic
-  std::ofstream ascii;
-  ascii.open ("tcp-large-transfer.tr");
-  PointToPointHelper::EnableAsciiAll (ascii);
+  AsciiTraceHelper ascii;
+  p2p.EnableAsciiAll (ascii.CreateFileStream ("tcp-large-transfer.tr"));
   p2p.EnablePcapAll ("tcp-large-transfer");
 
   // Finally, set up the simulator to run.  The 1000 second hard limit is a

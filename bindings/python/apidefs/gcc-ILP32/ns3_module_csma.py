@@ -266,6 +266,11 @@ def register_Ns3CsmaNetDevice_methods(root_module, cls):
     cls.add_method('SetQueue', 
                    'void', 
                    [param('ns3::Ptr< ns3::Queue >', 'queue')])
+    ## csma-net-device.h: ns3::Ptr<ns3::Queue> ns3::CsmaNetDevice::GetQueue() const [member function]
+    cls.add_method('GetQueue', 
+                   'ns3::Ptr< ns3::Queue >', 
+                   [], 
+                   is_const=True)
     ## csma-net-device.h: void ns3::CsmaNetDevice::SetReceiveErrorModel(ns3::Ptr<ns3::ErrorModel> em) [member function]
     cls.add_method('SetReceiveErrorModel', 
                    'void', 
@@ -432,11 +437,6 @@ def register_Ns3CsmaNetDevice_methods(root_module, cls):
                    'void', 
                    [], 
                    visibility='protected', is_virtual=True)
-    ## csma-net-device.h: ns3::Ptr<ns3::Queue> ns3::CsmaNetDevice::GetQueue() const [member function]
-    cls.add_method('GetQueue', 
-                   'ns3::Ptr< ns3::Queue >', 
-                   [], 
-                   is_const=True, visibility='protected')
     ## csma-net-device.h: void ns3::CsmaNetDevice::AddHeader(ns3::Ptr<ns3::Packet> p, ns3::Mac48Address source, ns3::Mac48Address dest, uint16_t protocolNumber) [member function]
     cls.add_method('AddHeader', 
                    'void', 

@@ -157,10 +157,9 @@ main (int argc, char *argv[])
   apps.Start (Seconds (1.1));
   apps.Stop (Seconds (10.0));
 
-  std::ofstream ascii;
-  ascii.open ("simple-point-to-point-olsr.tr");
+  AsciiTraceHelper ascii;
+  p2p.EnableAsciiAll (ascii.CreateFileStream ("simple-point-to-point-olsr.tr"));
   p2p.EnablePcapAll ("simple-point-to-point-olsr");
-  PointToPointHelper::EnableAsciiAll (ascii);
 
   Simulator::Stop (Seconds (30));
 

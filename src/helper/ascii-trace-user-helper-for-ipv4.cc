@@ -69,7 +69,7 @@ AsciiTraceUserHelperForIpv4::EnableAsciiImpl (
   uint32_t interface)
 {
   Ptr<Ipv4> ipv4 = Names::Find<Ipv4> (ipv4Name);
-  EnableAsciiImpl (stream, prefix, ipv4, interface);
+  EnableAsciiInternal (stream, prefix, ipv4, interface);
 }
 
 //
@@ -99,7 +99,7 @@ AsciiTraceUserHelperForIpv4::EnableAsciiImpl (Ptr<OutputStreamObject> stream, st
   for (Ipv4InterfaceContainer::Iterator i = c.Begin (); i != c.End (); ++i)
     {
       std::pair<Ptr<Ipv4>, uint32_t> pair = *i;
-      EnableAsciiImpl (stream, prefix, pair.first, pair.second);
+      EnableAsciiInternal (stream, prefix, pair.first, pair.second);
     }
 }
 
@@ -135,7 +135,7 @@ AsciiTraceUserHelperForIpv4::EnableAsciiImpl (Ptr<OutputStreamObject> stream, st
         {
           for (uint32_t j = 0; j < ipv4->GetNInterfaces (); ++j)
             {
-              EnableAsciiImpl (stream, prefix, ipv4, j);
+              EnableAsciiInternal (stream, prefix, ipv4, j);
             }
         }
     }
@@ -200,7 +200,7 @@ AsciiTraceUserHelperForIpv4::EnableAsciiImpl (
       Ptr<Ipv4> ipv4 = node->GetObject<Ipv4> ();
       if (ipv4)
         {
-          EnableAsciiImpl (stream, prefix, ipv4, interface);
+          EnableAsciiInternal (stream, prefix, ipv4, interface);
         }
 
       return;

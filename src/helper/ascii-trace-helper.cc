@@ -52,9 +52,24 @@ AsciiTraceHelper::CreateFileStream (std::string filename, std::string filemode)
   NS_LOG_FUNCTION (filename << filemode);
 
   std::ofstream *ofstream = new std::ofstream;
+  std::ios_base::openmode mode;
 
-  ofstream->open (filename.c_str ());
-  NS_ABORT_MSG_UNLESS (ofstream->is_open (), "Unable to Open " << filename << " for mode " << filemode);
+  if (filemode == "a")
+    {
+      mode = std::ios_base::out | std::ios_base::app;
+    }
+  else if (filemode == "w")
+    {
+      mode = std::ios_base::out | std::ios_base::trunc;
+    }
+  else
+    {
+      NS_ABORT_MSG ("AsciiTraceHelper::CreateFileStream(): Unexpected file mode");
+    }
+
+  ofstream->open (filename.c_str (), mode);
+  NS_ABORT_MSG_UNLESS (ofstream->is_open (), "AsciiTraceHelper::CreateFileStream():  Unable to Open " << 
+                       filename << " for mode " << filemode);
   
   Ptr<OutputStreamObject> streamObject = CreateObject<OutputStreamObject> ();
   streamObject->SetStream (ofstream);
@@ -99,7 +114,7 @@ AsciiTraceHelper::GetFilenameFromDevice (std::string prefix, Ptr<NetDevice> devi
     }
   else
     {
-      oss << "n" << node->GetId ();
+      oss << node->GetId ();
     }
 
   oss << "-";
@@ -110,7 +125,7 @@ AsciiTraceHelper::GetFilenameFromDevice (std::string prefix, Ptr<NetDevice> devi
     }
   else
     {
-      oss << "d" << device->GetIfIndex ();
+      oss << device->GetIfIndex ();
     }
 
   oss << ".tr";

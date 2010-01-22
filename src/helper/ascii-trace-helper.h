@@ -81,7 +81,7 @@ public:
    * that can solve the problem so we use one of those to carry the stream
    * around and deal with the lifetime issues.
    */
-  Ptr<OutputStreamObject> CreateFileStream (std::string filename, std::string filemode);
+  Ptr<OutputStreamObject> CreateFileStream (std::string filename, std::string filemode = "w");
 
   /**
    * @brief Hook a trace source to the default enqueue operation trace sink that

@@ -166,10 +166,9 @@ main (int argc, char *argv[])
   pem->SetList (sampleList);
   d0d2.Get (1)->SetAttribute ("ReceiveErrorModel", PointerValue (pem));
 
-  std::ofstream ascii;
-  ascii.open ("simple-error-model.tr");
+  AsciiTraceHelper ascii;
+  p2p.EnableAsciiAll (ascii.CreateFileStream ("simple-error-model.tr"));
   p2p.EnablePcapAll ("simple-error-model");
-  PointToPointHelper::EnableAsciiAll (ascii);
 
   NS_LOG_INFO ("Run Simulation.");
   Simulator::Run ();    

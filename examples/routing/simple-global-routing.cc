@@ -145,10 +145,9 @@ main (int argc, char *argv[])
   apps.Start (Seconds (1.1));
   apps.Stop (Seconds (10.0));
 
-  std::ofstream ascii;
-  ascii.open ("simple-global-routing.tr");
+  AsciiTraceHelper ascii;
+  p2p.EnableAsciiAll (ascii.CreateFileStream ("simple-global-routing.tr"));
   p2p.EnablePcapAll ("simple-global-routing");
-  PointToPointHelper::EnableAsciiAll (ascii);
 
   // Flow Monitor
   Ptr<FlowMonitor> flowmon;

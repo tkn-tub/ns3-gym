@@ -73,6 +73,44 @@ def register_types(module):
     module.add_class('LlcSnapHeader', parent=root_module['ns3::Header'])
     ## queue.h: ns3::Queue [class]
     module.add_class('Queue', parent=root_module['ns3::Object'])
+    ## radiotap-header.h: ns3::RadiotapHeader [class]
+    module.add_class('RadiotapHeader', parent=root_module['ns3::Header'])
+    ## radiotap-header.h: ns3::RadiotapHeader [enumeration]
+    module.add_enum('', ['FRAME_FLAG_NONE'], outer_class=root_module['ns3::RadiotapHeader'])
+    ## radiotap-header.h: ns3::RadiotapHeader [enumeration]
+    module.add_enum('', ['FRAME_FLAG_CFP'], outer_class=root_module['ns3::RadiotapHeader'])
+    ## radiotap-header.h: ns3::RadiotapHeader [enumeration]
+    module.add_enum('', ['FRAME_FLAG_SHORT_PREAMBLE'], outer_class=root_module['ns3::RadiotapHeader'])
+    ## radiotap-header.h: ns3::RadiotapHeader [enumeration]
+    module.add_enum('', ['FRAME_FLAG_WEP'], outer_class=root_module['ns3::RadiotapHeader'])
+    ## radiotap-header.h: ns3::RadiotapHeader [enumeration]
+    module.add_enum('', ['FRAME_FLAG_FRAGMENTED'], outer_class=root_module['ns3::RadiotapHeader'])
+    ## radiotap-header.h: ns3::RadiotapHeader [enumeration]
+    module.add_enum('', ['FRAME_FLAG_FCS_INCLUDED'], outer_class=root_module['ns3::RadiotapHeader'])
+    ## radiotap-header.h: ns3::RadiotapHeader [enumeration]
+    module.add_enum('', ['FRAME_FLAG_DATA_PADDING'], outer_class=root_module['ns3::RadiotapHeader'])
+    ## radiotap-header.h: ns3::RadiotapHeader [enumeration]
+    module.add_enum('', ['FRAME_FLAG_BAD_FCS'], outer_class=root_module['ns3::RadiotapHeader'])
+    ## radiotap-header.h: ns3::RadiotapHeader [enumeration]
+    module.add_enum('', ['FRAME_FLAG_SHORT_GUARD'], outer_class=root_module['ns3::RadiotapHeader'])
+    ## radiotap-header.h: ns3::RadiotapHeader [enumeration]
+    module.add_enum('', ['CHANNEL_FLAG_NONE'], outer_class=root_module['ns3::RadiotapHeader'])
+    ## radiotap-header.h: ns3::RadiotapHeader [enumeration]
+    module.add_enum('', ['CHANNEL_FLAG_TURBO'], outer_class=root_module['ns3::RadiotapHeader'])
+    ## radiotap-header.h: ns3::RadiotapHeader [enumeration]
+    module.add_enum('', ['CHANNEL_FLAG_CCK'], outer_class=root_module['ns3::RadiotapHeader'])
+    ## radiotap-header.h: ns3::RadiotapHeader [enumeration]
+    module.add_enum('', ['CHANNEL_FLAG_OFDM'], outer_class=root_module['ns3::RadiotapHeader'])
+    ## radiotap-header.h: ns3::RadiotapHeader [enumeration]
+    module.add_enum('', ['CHANNEL_FLAG_SPECTRUM_2GHZ'], outer_class=root_module['ns3::RadiotapHeader'])
+    ## radiotap-header.h: ns3::RadiotapHeader [enumeration]
+    module.add_enum('', ['CHANNEL_FLAG_SPECTRUM_5GHZ'], outer_class=root_module['ns3::RadiotapHeader'])
+    ## radiotap-header.h: ns3::RadiotapHeader [enumeration]
+    module.add_enum('', ['CHANNEL_FLAG_PASSIVE'], outer_class=root_module['ns3::RadiotapHeader'])
+    ## radiotap-header.h: ns3::RadiotapHeader [enumeration]
+    module.add_enum('', ['CHANNEL_FLAG_DYNAMIC'], outer_class=root_module['ns3::RadiotapHeader'])
+    ## radiotap-header.h: ns3::RadiotapHeader [enumeration]
+    module.add_enum('', ['CHANNEL_FLAG_GFSK'], outer_class=root_module['ns3::RadiotapHeader'])
     ## simple-ref-count.h: ns3::SimpleRefCount<ns3::Ipv4MulticastRoute, ns3::empty, ns3::DefaultDeleter<ns3::Ipv4MulticastRoute> > [class]
     module.add_class('SimpleRefCount', automatic_type_narrowing=True, template_parameters=['ns3::Ipv4MulticastRoute', 'ns3::empty', 'ns3::DefaultDeleter<ns3::Ipv4MulticastRoute>'], parent=root_module['ns3::empty'], memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'))
     ## simple-ref-count.h: ns3::SimpleRefCount<ns3::Ipv4Route, ns3::empty, ns3::DefaultDeleter<ns3::Ipv4Route> > [class]
@@ -302,6 +340,7 @@ def register_methods(root_module):
     register_Ns3Ipv6Header_methods(root_module, root_module['ns3::Ipv6Header'])
     register_Ns3LlcSnapHeader_methods(root_module, root_module['ns3::LlcSnapHeader'])
     register_Ns3Queue_methods(root_module, root_module['ns3::Queue'])
+    register_Ns3RadiotapHeader_methods(root_module, root_module['ns3::RadiotapHeader'])
     register_Ns3Socket_methods(root_module, root_module['ns3::Socket'])
     register_Ns3SocketAddressTag_methods(root_module, root_module['ns3::SocketAddressTag'])
     register_Ns3SocketFactory_methods(root_module, root_module['ns3::SocketFactory'])
@@ -1862,6 +1901,110 @@ def register_Ns3Queue_methods(root_module, cls):
                    'ns3::Ptr< ns3::Packet const >', 
                    [], 
                    is_pure_virtual=True, is_const=True, visibility='private', is_virtual=True)
+    return
+
+def register_Ns3RadiotapHeader_methods(root_module, cls):
+    ## radiotap-header.h: ns3::RadiotapHeader::RadiotapHeader(ns3::RadiotapHeader const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::RadiotapHeader const &', 'arg0')])
+    ## radiotap-header.h: ns3::RadiotapHeader::RadiotapHeader() [constructor]
+    cls.add_constructor([])
+    ## radiotap-header.h: uint32_t ns3::RadiotapHeader::Deserialize(ns3::Buffer::Iterator start) [member function]
+    cls.add_method('Deserialize', 
+                   'uint32_t', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_virtual=True)
+    ## radiotap-header.h: uint8_t ns3::RadiotapHeader::GetAntennaNoisePower() const [member function]
+    cls.add_method('GetAntennaNoisePower', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True)
+    ## radiotap-header.h: uint8_t ns3::RadiotapHeader::GetAntennaSignalPower() const [member function]
+    cls.add_method('GetAntennaSignalPower', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True)
+    ## radiotap-header.h: uint16_t ns3::RadiotapHeader::GetChannelFlags() const [member function]
+    cls.add_method('GetChannelFlags', 
+                   'uint16_t', 
+                   [], 
+                   is_const=True)
+    ## radiotap-header.h: uint16_t ns3::RadiotapHeader::GetChannelFrequency() const [member function]
+    cls.add_method('GetChannelFrequency', 
+                   'uint16_t', 
+                   [], 
+                   is_const=True)
+    ## radiotap-header.h: uint8_t ns3::RadiotapHeader::GetFrameFlags() const [member function]
+    cls.add_method('GetFrameFlags', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True)
+    ## radiotap-header.h: ns3::TypeId ns3::RadiotapHeader::GetInstanceTypeId() const [member function]
+    cls.add_method('GetInstanceTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## radiotap-header.h: uint8_t ns3::RadiotapHeader::GetRate() const [member function]
+    cls.add_method('GetRate', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True)
+    ## radiotap-header.h: uint32_t ns3::RadiotapHeader::GetSerializedSize() const [member function]
+    cls.add_method('GetSerializedSize', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## radiotap-header.h: uint64_t ns3::RadiotapHeader::GetTsft() const [member function]
+    cls.add_method('GetTsft', 
+                   'uint64_t', 
+                   [], 
+                   is_const=True)
+    ## radiotap-header.h: static ns3::TypeId ns3::RadiotapHeader::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## radiotap-header.h: void ns3::RadiotapHeader::Print(std::ostream & os) const [member function]
+    cls.add_method('Print', 
+                   'void', 
+                   [param('std::ostream &', 'os')], 
+                   is_const=True, is_virtual=True)
+    ## radiotap-header.h: void ns3::RadiotapHeader::Serialize(ns3::Buffer::Iterator start) const [member function]
+    cls.add_method('Serialize', 
+                   'void', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_const=True, is_virtual=True)
+    ## radiotap-header.h: void ns3::RadiotapHeader::SetAntennaNoisePower(int8_t noise) [member function]
+    cls.add_method('SetAntennaNoisePower', 
+                   'void', 
+                   [param('int8_t', 'noise')])
+    ## radiotap-header.h: void ns3::RadiotapHeader::SetAntennaNoisePower(double noise) [member function]
+    cls.add_method('SetAntennaNoisePower', 
+                   'void', 
+                   [param('double', 'noise')])
+    ## radiotap-header.h: void ns3::RadiotapHeader::SetAntennaSignalPower(int8_t signal) [member function]
+    cls.add_method('SetAntennaSignalPower', 
+                   'void', 
+                   [param('int8_t', 'signal')])
+    ## radiotap-header.h: void ns3::RadiotapHeader::SetAntennaSignalPower(double signal) [member function]
+    cls.add_method('SetAntennaSignalPower', 
+                   'void', 
+                   [param('double', 'signal')])
+    ## radiotap-header.h: void ns3::RadiotapHeader::SetChannelFrequencyAndFlags(uint16_t frequency, uint16_t flags) [member function]
+    cls.add_method('SetChannelFrequencyAndFlags', 
+                   'void', 
+                   [param('uint16_t', 'frequency'), param('uint16_t', 'flags')])
+    ## radiotap-header.h: void ns3::RadiotapHeader::SetFrameFlags(uint8_t flags) [member function]
+    cls.add_method('SetFrameFlags', 
+                   'void', 
+                   [param('uint8_t', 'flags')])
+    ## radiotap-header.h: void ns3::RadiotapHeader::SetRate(uint8_t rate) [member function]
+    cls.add_method('SetRate', 
+                   'void', 
+                   [param('uint8_t', 'rate')])
+    ## radiotap-header.h: void ns3::RadiotapHeader::SetTsft(uint64_t tsft) [member function]
+    cls.add_method('SetTsft', 
+                   'void', 
+                   [param('uint64_t', 'tsft')])
     return
 
 def register_Ns3Socket_methods(root_module, cls):

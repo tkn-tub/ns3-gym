@@ -137,15 +137,14 @@ main (int argc, char *argv[])
   app = sink.Install (terminals.Get (0));
   app.Start (Seconds (0.0));
 
+  NS_LOG_INFO ("Configure Tracing.");
 
   //
   // Configure tracing of all enqueue, dequeue, and NetDevice receive events.
   // Trace output will be sent to the file "csma-bridge.tr"
   //
-  NS_LOG_INFO ("Configure Tracing.");
-  std::ofstream ascii;
-  ascii.open ("csma-bridge.tr");
-  CsmaHelper::EnableAsciiAll (ascii);
+  AsciiTraceHelper ascii;
+  csma.EnableAsciiAll (ascii.CreateFileStream ("csma-bridge.tr"));
 
   //
   // Also configure some tcpdump traces; each interface will be traced.

@@ -155,15 +155,13 @@ main (int argc, char *argv[])
   sinkC.Start (Seconds (1.0));
   sinkC.Stop (Seconds (10.0));
 
-  //
-  // Configure tracing of all enqueue, dequeue, and NetDevice receive events.
   NS_LOG_INFO ("Configure Tracing.");
   //
+  // Configure tracing of all enqueue, dequeue, and NetDevice receive events.
   // Ascii trace output will be sent to the file "csma-multicast.tr"
   //
-  std::ofstream ascii;
-  ascii.open ("csma-multicast.tr",std::ios_base::binary | std::ios_base::out);
-  CsmaHelper::EnableAsciiAll (ascii);
+  AsciiTraceHelper ascii;
+  csma.EnableAsciiAll (ascii.CreateFileStream ("csma-multicast.tr"));
 
   // Also configure some tcpdump traces; each interface will be traced.
   // The output files will be named:
@@ -171,6 +169,7 @@ main (int argc, char *argv[])
   // and can be read by the "tcpdump -r" command (use "-tt" option to
   // display timestamps correctly)
   csma.EnablePcapAll ("csma-multicast", false);
+
   //
   // Now, do the actual simulation.
   //

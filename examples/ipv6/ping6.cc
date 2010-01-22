@@ -98,10 +98,9 @@ int main (int argc, char **argv)
   apps.Start (Seconds (2.0));
   apps.Stop (Seconds (10.0));
 
-  std::ofstream ascii;
-  ascii.open ("ping6.tr");
+  AsciiTraceHelper ascii;
+  csma.EnableAsciiAll (ascii.CreateFileStream ("ping6.tr"));
   csma.EnablePcapAll (std::string ("ping6"), true);
-  CsmaHelper::EnableAsciiAll (ascii);
 
   NS_LOG_INFO ("Run Simulation.");
   Simulator::Run ();

@@ -216,10 +216,10 @@ int main (int argc, char *argv[])
 
   if (tracing == true)
     {
+      AsciiTraceHelper ascii;
+      wifiPhy.EnableAsciiAll (ascii.CreateFileStream ("wifi-simple-adhoc-grid.tr"));
       wifiPhy.EnablePcap ("wifi-simple-adhoc-grid", devices);
-      std::ofstream ascii;
-      ascii.open ("wifi-simple-adhoc-grid.tr");
-      YansWifiPhyHelper::EnableAsciiAll (ascii);
+
       // To do-- enable an IP-level trace that shows forwarding events only
     }
   

@@ -121,9 +121,9 @@ main (int argc, char *argv[])
   apps.Stop (Seconds (10.0));
 
   AsciiTraceHelper ascii;
-  Ptr<OutputStreamObject> stream = ascii.CreateFileStream ("mixed-global-routing.tr", "w");
+  Ptr<OutputStreamObject> stream = ascii.CreateFileStream ("mixed-global-routing.tr");
   p2p.EnableAsciiAll (stream);
-  csma,EnableAsciiAll (stream);
+  csma.EnableAsciiAll (stream);
 
   p2p.EnablePcapAll ("mixed-global-routing");
   csma.EnablePcapAll ("mixed-global-routing", false);

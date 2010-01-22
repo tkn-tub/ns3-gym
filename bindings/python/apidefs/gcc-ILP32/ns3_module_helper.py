@@ -7,6 +7,12 @@ def register_types(module):
     module.add_class('AnimationInterface')
     ## application-container.h: ns3::ApplicationContainer [class]
     module.add_class('ApplicationContainer')
+    ## ascii-trace-helper.h: ns3::AsciiTraceHelper [class]
+    module.add_class('AsciiTraceHelper', allow_subclassing=False)
+    ## ascii-trace-user-helper-for-device.h: ns3::AsciiTraceUserHelperForDevice [class]
+    module.add_class('AsciiTraceUserHelperForDevice', allow_subclassing=True)
+    ## ascii-trace-user-helper-for-ipv4.h: ns3::AsciiTraceUserHelperForIpv4 [class]
+    module.add_class('AsciiTraceUserHelperForIpv4', allow_subclassing=True)
     ## athstats-helper.h: ns3::AthstatsHelper [class]
     module.add_class('AthstatsHelper', allow_subclassing=False)
     ## bridge-helper.h: ns3::BridgeHelper [class]
@@ -15,8 +21,6 @@ def register_types(module):
     module.add_class('CsmaStarHelper', allow_subclassing=False)
     ## flow-monitor-helper.h: ns3::FlowMonitorHelper [class]
     module.add_class('FlowMonitorHelper', allow_subclassing=False)
-    ## internet-stack-helper.h: ns3::InternetStackHelper [class]
-    module.add_class('InternetStackHelper', allow_subclassing=False)
     ## ipv4-address-helper.h: ns3::Ipv4AddressHelper [class]
     module.add_class('Ipv4AddressHelper', allow_subclassing=False)
     ## ipv4-interface-container.h: ns3::Ipv4InterfaceContainer [class]
@@ -55,18 +59,30 @@ def register_types(module):
     module.add_class('PacketSocketHelper', allow_subclassing=False)
     ## pcap-helper.h: ns3::PcapHelper [class]
     module.add_class('PcapHelper', allow_subclassing=False)
-    ## pcap-helper.h: ns3::PcapHelper::DataLinkType [enumeration]
-    module.add_enum('DataLinkType', ['DLT_NULL', 'DLT_EN10MB', 'DLT_PPP', 'DLT_IEEE802_11', 'DLT_PRISM_HEADER', 'DLT_IEEE802_11_RADIO'], outer_class=root_module['ns3::PcapHelper'])
-    ## pcap-user-helper.h: ns3::PcapUserHelper [class]
-    module.add_class('PcapUserHelper', allow_subclassing=False)
+    ## pcap-helper.h: ns3::PcapHelper [enumeration]
+    module.add_enum('', ['DLT_NULL'], outer_class=root_module['ns3::PcapHelper'])
+    ## pcap-helper.h: ns3::PcapHelper [enumeration]
+    module.add_enum('', ['DLT_EN10MB'], outer_class=root_module['ns3::PcapHelper'])
+    ## pcap-helper.h: ns3::PcapHelper [enumeration]
+    module.add_enum('', ['DLT_PPP'], outer_class=root_module['ns3::PcapHelper'])
+    ## pcap-helper.h: ns3::PcapHelper [enumeration]
+    module.add_enum('', ['DLT_RAW'], outer_class=root_module['ns3::PcapHelper'])
+    ## pcap-helper.h: ns3::PcapHelper [enumeration]
+    module.add_enum('', ['DLT_IEEE802_11'], outer_class=root_module['ns3::PcapHelper'])
+    ## pcap-helper.h: ns3::PcapHelper [enumeration]
+    module.add_enum('', ['DLT_PRISM_HEADER'], outer_class=root_module['ns3::PcapHelper'])
+    ## pcap-helper.h: ns3::PcapHelper [enumeration]
+    module.add_enum('', ['DLT_IEEE802_11_RADIO'], outer_class=root_module['ns3::PcapHelper'])
+    ## pcap-user-helper-for-device.h: ns3::PcapUserHelperForDevice [class]
+    module.add_class('PcapUserHelperForDevice', allow_subclassing=True)
+    ## pcap-user-helper-for-ipv4.h: ns3::PcapUserHelperForIpv4 [class]
+    module.add_class('PcapUserHelperForIpv4', allow_subclassing=True)
     ## ping6-helper.h: ns3::Ping6Helper [class]
     module.add_class('Ping6Helper', allow_subclassing=False)
     ## point-to-point-dumbbell-helper.h: ns3::PointToPointDumbbellHelper [class]
     module.add_class('PointToPointDumbbellHelper', allow_subclassing=False)
     ## point-to-point-grid-helper.h: ns3::PointToPointGridHelper [class]
     module.add_class('PointToPointGridHelper', allow_subclassing=False)
-    ## point-to-point-helper.h: ns3::PointToPointHelper [class]
-    module.add_class('PointToPointHelper', allow_subclassing=False, parent=root_module['ns3::PcapUserHelper'])
     ## point-to-point-star-helper.h: ns3::PointToPointStarHelper [class]
     module.add_class('PointToPointStarHelper', allow_subclassing=False)
     ## tap-bridge-helper.h: ns3::TapBridgeHelper [class]
@@ -93,10 +109,6 @@ def register_types(module):
     module.add_class('YansWifiChannelHelper', allow_subclassing=False)
     ## aodv-helper.h: ns3::AodvHelper [class]
     module.add_class('AodvHelper', allow_subclassing=False, parent=root_module['ns3::Ipv4RoutingHelper'])
-    ## csma-helper.h: ns3::CsmaHelper [class]
-    module.add_class('CsmaHelper', allow_subclassing=False, parent=root_module['ns3::PcapUserHelper'])
-    ## emu-helper.h: ns3::EmuHelper [class]
-    module.add_class('EmuHelper', allow_subclassing=False, parent=root_module['ns3::PcapUserHelper'])
     ## ipv4-global-routing-helper.h: ns3::Ipv4GlobalRoutingHelper [class]
     module.add_class('Ipv4GlobalRoutingHelper', allow_subclassing=False, parent=root_module['ns3::Ipv4RoutingHelper'])
     ## ipv4-list-routing-helper.h: ns3::Ipv4ListRoutingHelper [class]
@@ -203,11 +215,13 @@ def register_types_ns3_olsr(module):
 def register_methods(root_module):
     register_Ns3AnimationInterface_methods(root_module, root_module['ns3::AnimationInterface'])
     register_Ns3ApplicationContainer_methods(root_module, root_module['ns3::ApplicationContainer'])
+    register_Ns3AsciiTraceHelper_methods(root_module, root_module['ns3::AsciiTraceHelper'])
+    register_Ns3AsciiTraceUserHelperForDevice_methods(root_module, root_module['ns3::AsciiTraceUserHelperForDevice'])
+    register_Ns3AsciiTraceUserHelperForIpv4_methods(root_module, root_module['ns3::AsciiTraceUserHelperForIpv4'])
     register_Ns3AthstatsHelper_methods(root_module, root_module['ns3::AthstatsHelper'])
     register_Ns3BridgeHelper_methods(root_module, root_module['ns3::BridgeHelper'])
     register_Ns3CsmaStarHelper_methods(root_module, root_module['ns3::CsmaStarHelper'])
     register_Ns3FlowMonitorHelper_methods(root_module, root_module['ns3::FlowMonitorHelper'])
-    register_Ns3InternetStackHelper_methods(root_module, root_module['ns3::InternetStackHelper'])
     register_Ns3Ipv4AddressHelper_methods(root_module, root_module['ns3::Ipv4AddressHelper'])
     register_Ns3Ipv4InterfaceContainer_methods(root_module, root_module['ns3::Ipv4InterfaceContainer'])
     register_Ns3Ipv4RoutingHelper_methods(root_module, root_module['ns3::Ipv4RoutingHelper'])
@@ -226,11 +240,11 @@ def register_methods(root_module):
     register_Ns3PacketSinkHelper_methods(root_module, root_module['ns3::PacketSinkHelper'])
     register_Ns3PacketSocketHelper_methods(root_module, root_module['ns3::PacketSocketHelper'])
     register_Ns3PcapHelper_methods(root_module, root_module['ns3::PcapHelper'])
-    register_Ns3PcapUserHelper_methods(root_module, root_module['ns3::PcapUserHelper'])
+    register_Ns3PcapUserHelperForDevice_methods(root_module, root_module['ns3::PcapUserHelperForDevice'])
+    register_Ns3PcapUserHelperForIpv4_methods(root_module, root_module['ns3::PcapUserHelperForIpv4'])
     register_Ns3Ping6Helper_methods(root_module, root_module['ns3::Ping6Helper'])
     register_Ns3PointToPointDumbbellHelper_methods(root_module, root_module['ns3::PointToPointDumbbellHelper'])
     register_Ns3PointToPointGridHelper_methods(root_module, root_module['ns3::PointToPointGridHelper'])
-    register_Ns3PointToPointHelper_methods(root_module, root_module['ns3::PointToPointHelper'])
     register_Ns3PointToPointStarHelper_methods(root_module, root_module['ns3::PointToPointStarHelper'])
     register_Ns3TapBridgeHelper_methods(root_module, root_module['ns3::TapBridgeHelper'])
     register_Ns3UdpClientHelper_methods(root_module, root_module['ns3::UdpClientHelper'])
@@ -244,8 +258,6 @@ def register_methods(root_module):
     register_Ns3WifiPhyHelper_methods(root_module, root_module['ns3::WifiPhyHelper'])
     register_Ns3YansWifiChannelHelper_methods(root_module, root_module['ns3::YansWifiChannelHelper'])
     register_Ns3AodvHelper_methods(root_module, root_module['ns3::AodvHelper'])
-    register_Ns3CsmaHelper_methods(root_module, root_module['ns3::CsmaHelper'])
-    register_Ns3EmuHelper_methods(root_module, root_module['ns3::EmuHelper'])
     register_Ns3Ipv4GlobalRoutingHelper_methods(root_module, root_module['ns3::Ipv4GlobalRoutingHelper'])
     register_Ns3Ipv4ListRoutingHelper_methods(root_module, root_module['ns3::Ipv4ListRoutingHelper'])
     register_Ns3Ipv4NixVectorHelper_methods(root_module, root_module['ns3::Ipv4NixVectorHelper'])
@@ -331,6 +343,185 @@ def register_Ns3ApplicationContainer_methods(root_module, cls):
     cls.add_method('Stop', 
                    'void', 
                    [param('ns3::Time', 'stop')])
+    return
+
+def register_Ns3AsciiTraceHelper_methods(root_module, cls):
+    ## ascii-trace-helper.h: ns3::AsciiTraceHelper::AsciiTraceHelper(ns3::AsciiTraceHelper const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::AsciiTraceHelper const &', 'arg0')])
+    ## ascii-trace-helper.h: ns3::AsciiTraceHelper::AsciiTraceHelper() [constructor]
+    cls.add_constructor([])
+    ## ascii-trace-helper.h: ns3::Ptr<ns3::OutputStreamObject> ns3::AsciiTraceHelper::CreateFileStream(std::string filename, std::string filemode="w") [member function]
+    cls.add_method('CreateFileStream', 
+                   'ns3::Ptr< ns3::OutputStreamObject >', 
+                   [param('std::string', 'filename'), param('std::string', 'filemode', default_value='"w"')])
+    ## ascii-trace-helper.h: static void ns3::AsciiTraceHelper::DefaultDequeueSinkWithContext(ns3::Ptr<ns3::OutputStreamObject> file, std::string context, ns3::Ptr<ns3::Packet const> p) [member function]
+    cls.add_method('DefaultDequeueSinkWithContext', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::OutputStreamObject >', 'file'), param('std::string', 'context'), param('ns3::Ptr< ns3::Packet const >', 'p')], 
+                   is_static=True)
+    ## ascii-trace-helper.h: static void ns3::AsciiTraceHelper::DefaultDequeueSinkWithoutContext(ns3::Ptr<ns3::OutputStreamObject> file, ns3::Ptr<ns3::Packet const> p) [member function]
+    cls.add_method('DefaultDequeueSinkWithoutContext', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::OutputStreamObject >', 'file'), param('ns3::Ptr< ns3::Packet const >', 'p')], 
+                   is_static=True)
+    ## ascii-trace-helper.h: static void ns3::AsciiTraceHelper::DefaultDropSinkWithContext(ns3::Ptr<ns3::OutputStreamObject> file, std::string context, ns3::Ptr<ns3::Packet const> p) [member function]
+    cls.add_method('DefaultDropSinkWithContext', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::OutputStreamObject >', 'file'), param('std::string', 'context'), param('ns3::Ptr< ns3::Packet const >', 'p')], 
+                   is_static=True)
+    ## ascii-trace-helper.h: static void ns3::AsciiTraceHelper::DefaultDropSinkWithoutContext(ns3::Ptr<ns3::OutputStreamObject> file, ns3::Ptr<ns3::Packet const> p) [member function]
+    cls.add_method('DefaultDropSinkWithoutContext', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::OutputStreamObject >', 'file'), param('ns3::Ptr< ns3::Packet const >', 'p')], 
+                   is_static=True)
+    ## ascii-trace-helper.h: static void ns3::AsciiTraceHelper::DefaultEnqueueSinkWithContext(ns3::Ptr<ns3::OutputStreamObject> file, std::string context, ns3::Ptr<ns3::Packet const> p) [member function]
+    cls.add_method('DefaultEnqueueSinkWithContext', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::OutputStreamObject >', 'file'), param('std::string', 'context'), param('ns3::Ptr< ns3::Packet const >', 'p')], 
+                   is_static=True)
+    ## ascii-trace-helper.h: static void ns3::AsciiTraceHelper::DefaultEnqueueSinkWithoutContext(ns3::Ptr<ns3::OutputStreamObject> file, ns3::Ptr<ns3::Packet const> p) [member function]
+    cls.add_method('DefaultEnqueueSinkWithoutContext', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::OutputStreamObject >', 'file'), param('ns3::Ptr< ns3::Packet const >', 'p')], 
+                   is_static=True)
+    ## ascii-trace-helper.h: static void ns3::AsciiTraceHelper::DefaultReceiveSinkWithContext(ns3::Ptr<ns3::OutputStreamObject> file, std::string context, ns3::Ptr<ns3::Packet const> p) [member function]
+    cls.add_method('DefaultReceiveSinkWithContext', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::OutputStreamObject >', 'file'), param('std::string', 'context'), param('ns3::Ptr< ns3::Packet const >', 'p')], 
+                   is_static=True)
+    ## ascii-trace-helper.h: static void ns3::AsciiTraceHelper::DefaultReceiveSinkWithoutContext(ns3::Ptr<ns3::OutputStreamObject> file, ns3::Ptr<ns3::Packet const> p) [member function]
+    cls.add_method('DefaultReceiveSinkWithoutContext', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::OutputStreamObject >', 'file'), param('ns3::Ptr< ns3::Packet const >', 'p')], 
+                   is_static=True)
+    ## ascii-trace-helper.h: std::string ns3::AsciiTraceHelper::GetFilenameFromDevice(std::string prefix, ns3::Ptr<ns3::NetDevice> device, bool useObjectNames=true) [member function]
+    cls.add_method('GetFilenameFromDevice', 
+                   'std::string', 
+                   [param('std::string', 'prefix'), param('ns3::Ptr< ns3::NetDevice >', 'device'), param('bool', 'useObjectNames', default_value='true')])
+    ## ascii-trace-helper.h: std::string ns3::AsciiTraceHelper::GetFilenameFromInterfacePair(std::string prefix, ns3::Ptr<ns3::Ipv4> ipv4, uint32_t interface, bool useObjectNames=true) [member function]
+    cls.add_method('GetFilenameFromInterfacePair', 
+                   'std::string', 
+                   [param('std::string', 'prefix'), param('ns3::Ptr< ns3::Ipv4 >', 'ipv4'), param('uint32_t', 'interface'), param('bool', 'useObjectNames', default_value='true')])
+    return
+
+def register_Ns3AsciiTraceUserHelperForDevice_methods(root_module, cls):
+    ## ascii-trace-user-helper-for-device.h: ns3::AsciiTraceUserHelperForDevice::AsciiTraceUserHelperForDevice() [constructor]
+    cls.add_constructor([])
+    ## ascii-trace-user-helper-for-device.h: ns3::AsciiTraceUserHelperForDevice::AsciiTraceUserHelperForDevice(ns3::AsciiTraceUserHelperForDevice const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::AsciiTraceUserHelperForDevice const &', 'arg0')])
+    ## ascii-trace-user-helper-for-device.h: void ns3::AsciiTraceUserHelperForDevice::EnableAscii(std::string prefix, ns3::Ptr<ns3::NetDevice> nd) [member function]
+    cls.add_method('EnableAscii', 
+                   'void', 
+                   [param('std::string', 'prefix'), param('ns3::Ptr< ns3::NetDevice >', 'nd')])
+    ## ascii-trace-user-helper-for-device.h: void ns3::AsciiTraceUserHelperForDevice::EnableAscii(ns3::Ptr<ns3::OutputStreamObject> stream, ns3::Ptr<ns3::NetDevice> nd) [member function]
+    cls.add_method('EnableAscii', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::OutputStreamObject >', 'stream'), param('ns3::Ptr< ns3::NetDevice >', 'nd')])
+    ## ascii-trace-user-helper-for-device.h: void ns3::AsciiTraceUserHelperForDevice::EnableAscii(std::string prefix, std::string ndName) [member function]
+    cls.add_method('EnableAscii', 
+                   'void', 
+                   [param('std::string', 'prefix'), param('std::string', 'ndName')])
+    ## ascii-trace-user-helper-for-device.h: void ns3::AsciiTraceUserHelperForDevice::EnableAscii(ns3::Ptr<ns3::OutputStreamObject> stream, std::string ndName) [member function]
+    cls.add_method('EnableAscii', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::OutputStreamObject >', 'stream'), param('std::string', 'ndName')])
+    ## ascii-trace-user-helper-for-device.h: void ns3::AsciiTraceUserHelperForDevice::EnableAscii(std::string prefix, ns3::NetDeviceContainer d) [member function]
+    cls.add_method('EnableAscii', 
+                   'void', 
+                   [param('std::string', 'prefix'), param('ns3::NetDeviceContainer', 'd')])
+    ## ascii-trace-user-helper-for-device.h: void ns3::AsciiTraceUserHelperForDevice::EnableAscii(ns3::Ptr<ns3::OutputStreamObject> stream, ns3::NetDeviceContainer d) [member function]
+    cls.add_method('EnableAscii', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::OutputStreamObject >', 'stream'), param('ns3::NetDeviceContainer', 'd')])
+    ## ascii-trace-user-helper-for-device.h: void ns3::AsciiTraceUserHelperForDevice::EnableAscii(std::string prefix, ns3::NodeContainer n) [member function]
+    cls.add_method('EnableAscii', 
+                   'void', 
+                   [param('std::string', 'prefix'), param('ns3::NodeContainer', 'n')])
+    ## ascii-trace-user-helper-for-device.h: void ns3::AsciiTraceUserHelperForDevice::EnableAscii(ns3::Ptr<ns3::OutputStreamObject> stream, ns3::NodeContainer n) [member function]
+    cls.add_method('EnableAscii', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::OutputStreamObject >', 'stream'), param('ns3::NodeContainer', 'n')])
+    ## ascii-trace-user-helper-for-device.h: void ns3::AsciiTraceUserHelperForDevice::EnableAscii(std::string prefix, uint32_t nodeid, uint32_t deviceid) [member function]
+    cls.add_method('EnableAscii', 
+                   'void', 
+                   [param('std::string', 'prefix'), param('uint32_t', 'nodeid'), param('uint32_t', 'deviceid')])
+    ## ascii-trace-user-helper-for-device.h: void ns3::AsciiTraceUserHelperForDevice::EnableAscii(ns3::Ptr<ns3::OutputStreamObject> stream, uint32_t nodeid, uint32_t deviceid) [member function]
+    cls.add_method('EnableAscii', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::OutputStreamObject >', 'stream'), param('uint32_t', 'nodeid'), param('uint32_t', 'deviceid')])
+    ## ascii-trace-user-helper-for-device.h: void ns3::AsciiTraceUserHelperForDevice::EnableAsciiAll(std::string prefix) [member function]
+    cls.add_method('EnableAsciiAll', 
+                   'void', 
+                   [param('std::string', 'prefix')])
+    ## ascii-trace-user-helper-for-device.h: void ns3::AsciiTraceUserHelperForDevice::EnableAsciiAll(ns3::Ptr<ns3::OutputStreamObject> stream) [member function]
+    cls.add_method('EnableAsciiAll', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::OutputStreamObject >', 'stream')])
+    ## ascii-trace-user-helper-for-device.h: void ns3::AsciiTraceUserHelperForDevice::EnableAsciiInternal(ns3::Ptr<ns3::OutputStreamObject> stream, std::string prefix, ns3::Ptr<ns3::NetDevice> nd) [member function]
+    cls.add_method('EnableAsciiInternal', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::OutputStreamObject >', 'stream'), param('std::string', 'prefix'), param('ns3::Ptr< ns3::NetDevice >', 'nd')], 
+                   is_pure_virtual=True, is_virtual=True)
+    return
+
+def register_Ns3AsciiTraceUserHelperForIpv4_methods(root_module, cls):
+    ## ascii-trace-user-helper-for-ipv4.h: ns3::AsciiTraceUserHelperForIpv4::AsciiTraceUserHelperForIpv4() [constructor]
+    cls.add_constructor([])
+    ## ascii-trace-user-helper-for-ipv4.h: ns3::AsciiTraceUserHelperForIpv4::AsciiTraceUserHelperForIpv4(ns3::AsciiTraceUserHelperForIpv4 const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::AsciiTraceUserHelperForIpv4 const &', 'arg0')])
+    ## ascii-trace-user-helper-for-ipv4.h: void ns3::AsciiTraceUserHelperForIpv4::EnableAscii(std::string prefix, ns3::Ptr<ns3::Ipv4> ipv4, uint32_t interface) [member function]
+    cls.add_method('EnableAscii', 
+                   'void', 
+                   [param('std::string', 'prefix'), param('ns3::Ptr< ns3::Ipv4 >', 'ipv4'), param('uint32_t', 'interface')])
+    ## ascii-trace-user-helper-for-ipv4.h: void ns3::AsciiTraceUserHelperForIpv4::EnableAscii(ns3::Ptr<ns3::OutputStreamObject> stream, ns3::Ptr<ns3::Ipv4> ipv4, uint32_t interface) [member function]
+    cls.add_method('EnableAscii', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::OutputStreamObject >', 'stream'), param('ns3::Ptr< ns3::Ipv4 >', 'ipv4'), param('uint32_t', 'interface')])
+    ## ascii-trace-user-helper-for-ipv4.h: void ns3::AsciiTraceUserHelperForIpv4::EnableAscii(std::string prefix, std::string ipv4Name, uint32_t interface) [member function]
+    cls.add_method('EnableAscii', 
+                   'void', 
+                   [param('std::string', 'prefix'), param('std::string', 'ipv4Name'), param('uint32_t', 'interface')])
+    ## ascii-trace-user-helper-for-ipv4.h: void ns3::AsciiTraceUserHelperForIpv4::EnableAscii(ns3::Ptr<ns3::OutputStreamObject> stream, std::string ipv4Name, uint32_t interface) [member function]
+    cls.add_method('EnableAscii', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::OutputStreamObject >', 'stream'), param('std::string', 'ipv4Name'), param('uint32_t', 'interface')])
+    ## ascii-trace-user-helper-for-ipv4.h: void ns3::AsciiTraceUserHelperForIpv4::EnableAscii(std::string prefix, ns3::Ipv4InterfaceContainer c) [member function]
+    cls.add_method('EnableAscii', 
+                   'void', 
+                   [param('std::string', 'prefix'), param('ns3::Ipv4InterfaceContainer', 'c')])
+    ## ascii-trace-user-helper-for-ipv4.h: void ns3::AsciiTraceUserHelperForIpv4::EnableAscii(ns3::Ptr<ns3::OutputStreamObject> stream, ns3::Ipv4InterfaceContainer c) [member function]
+    cls.add_method('EnableAscii', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::OutputStreamObject >', 'stream'), param('ns3::Ipv4InterfaceContainer', 'c')])
+    ## ascii-trace-user-helper-for-ipv4.h: void ns3::AsciiTraceUserHelperForIpv4::EnableAscii(std::string prefix, ns3::NodeContainer n) [member function]
+    cls.add_method('EnableAscii', 
+                   'void', 
+                   [param('std::string', 'prefix'), param('ns3::NodeContainer', 'n')])
+    ## ascii-trace-user-helper-for-ipv4.h: void ns3::AsciiTraceUserHelperForIpv4::EnableAscii(ns3::Ptr<ns3::OutputStreamObject> stream, ns3::NodeContainer n) [member function]
+    cls.add_method('EnableAscii', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::OutputStreamObject >', 'stream'), param('ns3::NodeContainer', 'n')])
+    ## ascii-trace-user-helper-for-ipv4.h: void ns3::AsciiTraceUserHelperForIpv4::EnableAscii(std::string prefix, uint32_t nodeid, uint32_t deviceid) [member function]
+    cls.add_method('EnableAscii', 
+                   'void', 
+                   [param('std::string', 'prefix'), param('uint32_t', 'nodeid'), param('uint32_t', 'deviceid')])
+    ## ascii-trace-user-helper-for-ipv4.h: void ns3::AsciiTraceUserHelperForIpv4::EnableAscii(ns3::Ptr<ns3::OutputStreamObject> stream, uint32_t nodeid, uint32_t interface) [member function]
+    cls.add_method('EnableAscii', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::OutputStreamObject >', 'stream'), param('uint32_t', 'nodeid'), param('uint32_t', 'interface')])
+    ## ascii-trace-user-helper-for-ipv4.h: void ns3::AsciiTraceUserHelperForIpv4::EnableAsciiAll(std::string prefix) [member function]
+    cls.add_method('EnableAsciiAll', 
+                   'void', 
+                   [param('std::string', 'prefix')])
+    ## ascii-trace-user-helper-for-ipv4.h: void ns3::AsciiTraceUserHelperForIpv4::EnableAsciiAll(ns3::Ptr<ns3::OutputStreamObject> stream) [member function]
+    cls.add_method('EnableAsciiAll', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::OutputStreamObject >', 'stream')])
+    ## ascii-trace-user-helper-for-ipv4.h: void ns3::AsciiTraceUserHelperForIpv4::EnableAsciiInternal(ns3::Ptr<ns3::OutputStreamObject> stream, std::string prefix, ns3::Ptr<ns3::Ipv4> ipv4, uint32_t interface) [member function]
+    cls.add_method('EnableAsciiInternal', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::OutputStreamObject >', 'stream'), param('std::string', 'prefix'), param('ns3::Ptr< ns3::Ipv4 >', 'ipv4'), param('uint32_t', 'interface')], 
+                   is_pure_virtual=True, is_virtual=True)
     return
 
 def register_Ns3AthstatsHelper_methods(root_module, cls):
@@ -456,76 +647,6 @@ def register_Ns3FlowMonitorHelper_methods(root_module, cls):
                    [param('std::string', 'n1'), param('ns3::AttributeValue const &', 'v1')])
     return
 
-def register_Ns3InternetStackHelper_methods(root_module, cls):
-    ## internet-stack-helper.h: ns3::InternetStackHelper::InternetStackHelper() [constructor]
-    cls.add_constructor([])
-    ## internet-stack-helper.h: ns3::InternetStackHelper::InternetStackHelper(ns3::InternetStackHelper const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::InternetStackHelper const &', 'arg0')])
-    ## internet-stack-helper.h: static void ns3::InternetStackHelper::EnableAscii(std::ostream & os, ns3::NodeContainer n) [member function]
-    cls.add_method('EnableAscii', 
-                   'void', 
-                   [param('std::ostream &', 'os'), param('ns3::NodeContainer', 'n')], 
-                   is_static=True)
-    ## internet-stack-helper.h: static void ns3::InternetStackHelper::EnableAsciiAll(std::ostream & os) [member function]
-    cls.add_method('EnableAsciiAll', 
-                   'void', 
-                   [param('std::ostream &', 'os')], 
-                   is_static=True)
-    ## internet-stack-helper.h: static void ns3::InternetStackHelper::EnablePcapAll(std::string filename) [member function]
-    cls.add_method('EnablePcapAll', 
-                   'void', 
-                   [param('std::string', 'filename')], 
-                   is_static=True)
-    ## internet-stack-helper.h: void ns3::InternetStackHelper::Install(std::string nodeName) const [member function]
-    cls.add_method('Install', 
-                   'void', 
-                   [param('std::string', 'nodeName')], 
-                   is_const=True)
-    ## internet-stack-helper.h: void ns3::InternetStackHelper::Install(ns3::Ptr<ns3::Node> node) const [member function]
-    cls.add_method('Install', 
-                   'void', 
-                   [param('ns3::Ptr< ns3::Node >', 'node')], 
-                   is_const=True)
-    ## internet-stack-helper.h: void ns3::InternetStackHelper::Install(ns3::NodeContainer c) const [member function]
-    cls.add_method('Install', 
-                   'void', 
-                   [param('ns3::NodeContainer', 'c')], 
-                   is_const=True)
-    ## internet-stack-helper.h: void ns3::InternetStackHelper::InstallAll() const [member function]
-    cls.add_method('InstallAll', 
-                   'void', 
-                   [], 
-                   is_const=True)
-    ## internet-stack-helper.h: void ns3::InternetStackHelper::Reset() [member function]
-    cls.add_method('Reset', 
-                   'void', 
-                   [])
-    ## internet-stack-helper.h: void ns3::InternetStackHelper::SetIpv4StackInstall(bool enable) [member function]
-    cls.add_method('SetIpv4StackInstall', 
-                   'void', 
-                   [param('bool', 'enable')])
-    ## internet-stack-helper.h: void ns3::InternetStackHelper::SetIpv6StackInstall(bool enable) [member function]
-    cls.add_method('SetIpv6StackInstall', 
-                   'void', 
-                   [param('bool', 'enable')])
-    ## internet-stack-helper.h: void ns3::InternetStackHelper::SetRoutingHelper(ns3::Ipv4RoutingHelper const & routing) [member function]
-    cls.add_method('SetRoutingHelper', 
-                   'void', 
-                   [param('ns3::Ipv4RoutingHelper const &', 'routing')])
-    ## internet-stack-helper.h: void ns3::InternetStackHelper::SetRoutingHelper(ns3::Ipv6RoutingHelper const & routing) [member function]
-    cls.add_method('SetRoutingHelper', 
-                   'void', 
-                   [param('ns3::Ipv6RoutingHelper const &', 'routing')])
-    ## internet-stack-helper.h: void ns3::InternetStackHelper::SetTcp(std::string tid) [member function]
-    cls.add_method('SetTcp', 
-                   'void', 
-                   [param('std::string', 'tid')])
-    ## internet-stack-helper.h: void ns3::InternetStackHelper::SetTcp(std::string tid, std::string attr, ns3::AttributeValue const & val) [member function]
-    cls.add_method('SetTcp', 
-                   'void', 
-                   [param('std::string', 'tid'), param('std::string', 'attr'), param('ns3::AttributeValue const &', 'val')])
-    return
-
 def register_Ns3Ipv4AddressHelper_methods(root_module, cls):
     ## ipv4-address-helper.h: ns3::Ipv4AddressHelper::Ipv4AddressHelper(ns3::Ipv4AddressHelper const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::Ipv4AddressHelper const &', 'arg0')])
@@ -572,6 +693,16 @@ def register_Ns3Ipv4InterfaceContainer_methods(root_module, cls):
     cls.add_method('Add', 
                    'void', 
                    [param('std::string', 'ipv4Name'), param('uint32_t', 'interface')])
+    ## ipv4-interface-container.h: __gnu_cxx::__normal_iterator<const std::pair<ns3::Ptr<ns3::Ipv4>, unsigned int>*,std::vector<std::pair<ns3::Ptr<ns3::Ipv4>, unsigned int>, std::allocator<std::pair<ns3::Ptr<ns3::Ipv4>, unsigned int> > > > ns3::Ipv4InterfaceContainer::Begin() const [member function]
+    cls.add_method('Begin', 
+                   '__gnu_cxx::__normal_iterator< std::pair< ns3::Ptr< ns3::Ipv4 >, unsigned int > const, std::vector< std::pair< ns3::Ptr< ns3::Ipv4 >, unsigned int > > >', 
+                   [], 
+                   is_const=True)
+    ## ipv4-interface-container.h: __gnu_cxx::__normal_iterator<const std::pair<ns3::Ptr<ns3::Ipv4>, unsigned int>*,std::vector<std::pair<ns3::Ptr<ns3::Ipv4>, unsigned int>, std::allocator<std::pair<ns3::Ptr<ns3::Ipv4>, unsigned int> > > > ns3::Ipv4InterfaceContainer::End() const [member function]
+    cls.add_method('End', 
+                   '__gnu_cxx::__normal_iterator< std::pair< ns3::Ptr< ns3::Ipv4 >, unsigned int > const, std::vector< std::pair< ns3::Ptr< ns3::Ipv4 >, unsigned int > > >', 
+                   [], 
+                   is_const=True)
     ## ipv4-interface-container.h: std::pair<ns3::Ptr<ns3::Ipv4>,unsigned int> ns3::Ipv4InterfaceContainer::Get(uint32_t i) const [member function]
     cls.add_method('Get', 
                    'std::pair< ns3::Ptr< ns3::Ipv4 >, unsigned int >', 
@@ -1128,45 +1259,85 @@ def register_Ns3PcapHelper_methods(root_module, cls):
     cls.add_method('CreateFile', 
                    'ns3::Ptr< ns3::PcapFileObject >', 
                    [param('std::string', 'filename'), param('std::string', 'filemode'), param('uint32_t', 'dataLinkType'), param('uint32_t', 'snapLen', default_value='65535'), param('int32_t', 'tzCorrection', default_value='0')])
-    ## pcap-helper.h: std::string ns3::PcapHelper::GetFilename(std::string prefix, ns3::Ptr<ns3::NetDevice> device, bool useObjectNames=true) [member function]
-    cls.add_method('GetFilename', 
+    ## pcap-helper.h: std::string ns3::PcapHelper::GetFilenameFromDevice(std::string prefix, ns3::Ptr<ns3::NetDevice> device, bool useObjectNames=true) [member function]
+    cls.add_method('GetFilenameFromDevice', 
                    'std::string', 
                    [param('std::string', 'prefix'), param('ns3::Ptr< ns3::NetDevice >', 'device'), param('bool', 'useObjectNames', default_value='true')])
+    ## pcap-helper.h: std::string ns3::PcapHelper::GetFilenameFromInterfacePair(std::string prefix, ns3::Ptr<ns3::Ipv4> ipv4, uint32_t interface, bool useObjectNames=true) [member function]
+    cls.add_method('GetFilenameFromInterfacePair', 
+                   'std::string', 
+                   [param('std::string', 'prefix'), param('ns3::Ptr< ns3::Ipv4 >', 'ipv4'), param('uint32_t', 'interface'), param('bool', 'useObjectNames', default_value='true')])
     return
 
-def register_Ns3PcapUserHelper_methods(root_module, cls):
-    ## pcap-user-helper.h: ns3::PcapUserHelper::PcapUserHelper() [constructor]
+def register_Ns3PcapUserHelperForDevice_methods(root_module, cls):
+    ## pcap-user-helper-for-device.h: ns3::PcapUserHelperForDevice::PcapUserHelperForDevice() [constructor]
     cls.add_constructor([])
-    ## pcap-user-helper.h: ns3::PcapUserHelper::PcapUserHelper(ns3::PcapUserHelper const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::PcapUserHelper const &', 'arg0')])
-    ## pcap-user-helper.h: void ns3::PcapUserHelper::EnablePcap(std::string prefix, ns3::Ptr<ns3::NetDevice> nd, bool promiscuous=false) [member function]
+    ## pcap-user-helper-for-device.h: ns3::PcapUserHelperForDevice::PcapUserHelperForDevice(ns3::PcapUserHelperForDevice const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::PcapUserHelperForDevice const &', 'arg0')])
+    ## pcap-user-helper-for-device.h: void ns3::PcapUserHelperForDevice::EnablePcap(std::string prefix, ns3::Ptr<ns3::NetDevice> nd, bool promiscuous=false) [member function]
     cls.add_method('EnablePcap', 
                    'void', 
                    [param('std::string', 'prefix'), param('ns3::Ptr< ns3::NetDevice >', 'nd'), param('bool', 'promiscuous', default_value='false')])
-    ## pcap-user-helper.h: void ns3::PcapUserHelper::EnablePcap(std::string prefix, std::string ndName, bool promiscuous=false) [member function]
+    ## pcap-user-helper-for-device.h: void ns3::PcapUserHelperForDevice::EnablePcap(std::string prefix, std::string ndName, bool promiscuous=false) [member function]
     cls.add_method('EnablePcap', 
                    'void', 
                    [param('std::string', 'prefix'), param('std::string', 'ndName'), param('bool', 'promiscuous', default_value='false')])
-    ## pcap-user-helper.h: void ns3::PcapUserHelper::EnablePcap(std::string filename, ns3::NetDeviceContainer d, bool promiscuous=false) [member function]
+    ## pcap-user-helper-for-device.h: void ns3::PcapUserHelperForDevice::EnablePcap(std::string prefix, ns3::NetDeviceContainer d, bool promiscuous=false) [member function]
     cls.add_method('EnablePcap', 
                    'void', 
-                   [param('std::string', 'filename'), param('ns3::NetDeviceContainer', 'd'), param('bool', 'promiscuous', default_value='false')])
-    ## pcap-user-helper.h: void ns3::PcapUserHelper::EnablePcap(std::string filename, ns3::NodeContainer n, bool promiscuous=false) [member function]
+                   [param('std::string', 'prefix'), param('ns3::NetDeviceContainer', 'd'), param('bool', 'promiscuous', default_value='false')])
+    ## pcap-user-helper-for-device.h: void ns3::PcapUserHelperForDevice::EnablePcap(std::string prefix, ns3::NodeContainer n, bool promiscuous=false) [member function]
     cls.add_method('EnablePcap', 
                    'void', 
-                   [param('std::string', 'filename'), param('ns3::NodeContainer', 'n'), param('bool', 'promiscuous', default_value='false')])
-    ## pcap-user-helper.h: void ns3::PcapUserHelper::EnablePcap(std::string filename, uint32_t nodeid, uint32_t deviceid, bool promiscuous=false) [member function]
+                   [param('std::string', 'prefix'), param('ns3::NodeContainer', 'n'), param('bool', 'promiscuous', default_value='false')])
+    ## pcap-user-helper-for-device.h: void ns3::PcapUserHelperForDevice::EnablePcap(std::string prefix, uint32_t nodeid, uint32_t deviceid, bool promiscuous=false) [member function]
     cls.add_method('EnablePcap', 
                    'void', 
-                   [param('std::string', 'filename'), param('uint32_t', 'nodeid'), param('uint32_t', 'deviceid'), param('bool', 'promiscuous', default_value='false')])
-    ## pcap-user-helper.h: void ns3::PcapUserHelper::EnablePcapAll(std::string filename, bool promiscuous=false) [member function]
+                   [param('std::string', 'prefix'), param('uint32_t', 'nodeid'), param('uint32_t', 'deviceid'), param('bool', 'promiscuous', default_value='false')])
+    ## pcap-user-helper-for-device.h: void ns3::PcapUserHelperForDevice::EnablePcapAll(std::string prefix, bool promiscuous=false) [member function]
     cls.add_method('EnablePcapAll', 
                    'void', 
-                   [param('std::string', 'filename'), param('bool', 'promiscuous', default_value='false')])
-    ## pcap-user-helper.h: void ns3::PcapUserHelper::EnablePcapInternal(std::string prefix, ns3::Ptr<ns3::NetDevice> nd, bool promiscuous) [member function]
+                   [param('std::string', 'prefix'), param('bool', 'promiscuous', default_value='false')])
+    ## pcap-user-helper-for-device.h: void ns3::PcapUserHelperForDevice::EnablePcapInternal(std::string prefix, ns3::Ptr<ns3::NetDevice> nd, bool promiscuous) [member function]
     cls.add_method('EnablePcapInternal', 
                    'void', 
                    [param('std::string', 'prefix'), param('ns3::Ptr< ns3::NetDevice >', 'nd'), param('bool', 'promiscuous')], 
+                   is_pure_virtual=True, is_virtual=True)
+    return
+
+def register_Ns3PcapUserHelperForIpv4_methods(root_module, cls):
+    ## pcap-user-helper-for-ipv4.h: ns3::PcapUserHelperForIpv4::PcapUserHelperForIpv4() [constructor]
+    cls.add_constructor([])
+    ## pcap-user-helper-for-ipv4.h: ns3::PcapUserHelperForIpv4::PcapUserHelperForIpv4(ns3::PcapUserHelperForIpv4 const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::PcapUserHelperForIpv4 const &', 'arg0')])
+    ## pcap-user-helper-for-ipv4.h: void ns3::PcapUserHelperForIpv4::EnablePcap(std::string prefix, ns3::Ptr<ns3::Ipv4> ipv4, uint32_t interface) [member function]
+    cls.add_method('EnablePcap', 
+                   'void', 
+                   [param('std::string', 'prefix'), param('ns3::Ptr< ns3::Ipv4 >', 'ipv4'), param('uint32_t', 'interface')])
+    ## pcap-user-helper-for-ipv4.h: void ns3::PcapUserHelperForIpv4::EnablePcap(std::string prefix, std::string ipv4Name, uint32_t interface) [member function]
+    cls.add_method('EnablePcap', 
+                   'void', 
+                   [param('std::string', 'prefix'), param('std::string', 'ipv4Name'), param('uint32_t', 'interface')])
+    ## pcap-user-helper-for-ipv4.h: void ns3::PcapUserHelperForIpv4::EnablePcap(std::string prefix, ns3::Ipv4InterfaceContainer c) [member function]
+    cls.add_method('EnablePcap', 
+                   'void', 
+                   [param('std::string', 'prefix'), param('ns3::Ipv4InterfaceContainer', 'c')])
+    ## pcap-user-helper-for-ipv4.h: void ns3::PcapUserHelperForIpv4::EnablePcap(std::string prefix, ns3::NodeContainer n) [member function]
+    cls.add_method('EnablePcap', 
+                   'void', 
+                   [param('std::string', 'prefix'), param('ns3::NodeContainer', 'n')])
+    ## pcap-user-helper-for-ipv4.h: void ns3::PcapUserHelperForIpv4::EnablePcap(std::string prefix, uint32_t nodeid, uint32_t interface) [member function]
+    cls.add_method('EnablePcap', 
+                   'void', 
+                   [param('std::string', 'prefix'), param('uint32_t', 'nodeid'), param('uint32_t', 'interface')])
+    ## pcap-user-helper-for-ipv4.h: void ns3::PcapUserHelperForIpv4::EnablePcapAll(std::string prefix) [member function]
+    cls.add_method('EnablePcapAll', 
+                   'void', 
+                   [param('std::string', 'prefix')])
+    ## pcap-user-helper-for-ipv4.h: void ns3::PcapUserHelperForIpv4::EnablePcapInternal(std::string prefix, ns3::Ptr<ns3::Ipv4> ipv4, uint32_t interface) [member function]
+    cls.add_method('EnablePcapInternal', 
+                   'void', 
+                   [param('std::string', 'prefix'), param('ns3::Ptr< ns3::Ipv4 >', 'ipv4'), param('uint32_t', 'interface')], 
                    is_pure_virtual=True, is_virtual=True)
     return
 
@@ -1285,70 +1456,6 @@ def register_Ns3PointToPointGridHelper_methods(root_module, cls):
     cls.add_method('InstallStack', 
                    'void', 
                    [param('ns3::InternetStackHelper', 'stack')])
-    return
-
-def register_Ns3PointToPointHelper_methods(root_module, cls):
-    ## point-to-point-helper.h: ns3::PointToPointHelper::PointToPointHelper(ns3::PointToPointHelper const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::PointToPointHelper const &', 'arg0')])
-    ## point-to-point-helper.h: ns3::PointToPointHelper::PointToPointHelper() [constructor]
-    cls.add_constructor([])
-    ## point-to-point-helper.h: static void ns3::PointToPointHelper::EnableAscii(std::ostream & os, uint32_t nodeid, uint32_t deviceid) [member function]
-    cls.add_method('EnableAscii', 
-                   'void', 
-                   [param('std::ostream &', 'os'), param('uint32_t', 'nodeid'), param('uint32_t', 'deviceid')], 
-                   is_static=True)
-    ## point-to-point-helper.h: static void ns3::PointToPointHelper::EnableAscii(std::ostream & os, ns3::NetDeviceContainer d) [member function]
-    cls.add_method('EnableAscii', 
-                   'void', 
-                   [param('std::ostream &', 'os'), param('ns3::NetDeviceContainer', 'd')], 
-                   is_static=True)
-    ## point-to-point-helper.h: static void ns3::PointToPointHelper::EnableAscii(std::ostream & os, ns3::NodeContainer n) [member function]
-    cls.add_method('EnableAscii', 
-                   'void', 
-                   [param('std::ostream &', 'os'), param('ns3::NodeContainer', 'n')], 
-                   is_static=True)
-    ## point-to-point-helper.h: static void ns3::PointToPointHelper::EnableAsciiAll(std::ostream & os) [member function]
-    cls.add_method('EnableAsciiAll', 
-                   'void', 
-                   [param('std::ostream &', 'os')], 
-                   is_static=True)
-    ## point-to-point-helper.h: ns3::NetDeviceContainer ns3::PointToPointHelper::Install(ns3::NodeContainer c) [member function]
-    cls.add_method('Install', 
-                   'ns3::NetDeviceContainer', 
-                   [param('ns3::NodeContainer', 'c')])
-    ## point-to-point-helper.h: ns3::NetDeviceContainer ns3::PointToPointHelper::Install(ns3::Ptr<ns3::Node> a, ns3::Ptr<ns3::Node> b) [member function]
-    cls.add_method('Install', 
-                   'ns3::NetDeviceContainer', 
-                   [param('ns3::Ptr< ns3::Node >', 'a'), param('ns3::Ptr< ns3::Node >', 'b')])
-    ## point-to-point-helper.h: ns3::NetDeviceContainer ns3::PointToPointHelper::Install(ns3::Ptr<ns3::Node> a, std::string bName) [member function]
-    cls.add_method('Install', 
-                   'ns3::NetDeviceContainer', 
-                   [param('ns3::Ptr< ns3::Node >', 'a'), param('std::string', 'bName')])
-    ## point-to-point-helper.h: ns3::NetDeviceContainer ns3::PointToPointHelper::Install(std::string aName, ns3::Ptr<ns3::Node> b) [member function]
-    cls.add_method('Install', 
-                   'ns3::NetDeviceContainer', 
-                   [param('std::string', 'aName'), param('ns3::Ptr< ns3::Node >', 'b')])
-    ## point-to-point-helper.h: ns3::NetDeviceContainer ns3::PointToPointHelper::Install(std::string aNode, std::string bNode) [member function]
-    cls.add_method('Install', 
-                   'ns3::NetDeviceContainer', 
-                   [param('std::string', 'aNode'), param('std::string', 'bNode')])
-    ## point-to-point-helper.h: void ns3::PointToPointHelper::SetChannelAttribute(std::string name, ns3::AttributeValue const & value) [member function]
-    cls.add_method('SetChannelAttribute', 
-                   'void', 
-                   [param('std::string', 'name'), param('ns3::AttributeValue const &', 'value')])
-    ## point-to-point-helper.h: void ns3::PointToPointHelper::SetDeviceAttribute(std::string name, ns3::AttributeValue const & value) [member function]
-    cls.add_method('SetDeviceAttribute', 
-                   'void', 
-                   [param('std::string', 'name'), param('ns3::AttributeValue const &', 'value')])
-    ## point-to-point-helper.h: void ns3::PointToPointHelper::SetQueue(std::string type, std::string n1="", ns3::AttributeValue const & v1=ns3::EmptyAttributeValue(), std::string n2="", ns3::AttributeValue const & v2=ns3::EmptyAttributeValue(), std::string n3="", ns3::AttributeValue const & v3=ns3::EmptyAttributeValue(), std::string n4="", ns3::AttributeValue const & v4=ns3::EmptyAttributeValue()) [member function]
-    cls.add_method('SetQueue', 
-                   'void', 
-                   [param('std::string', 'type'), param('std::string', 'n1', default_value='""'), param('ns3::AttributeValue const &', 'v1', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n2', default_value='""'), param('ns3::AttributeValue const &', 'v2', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n3', default_value='""'), param('ns3::AttributeValue const &', 'v3', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n4', default_value='""'), param('ns3::AttributeValue const &', 'v4', default_value='ns3::EmptyAttributeValue()')])
-    ## point-to-point-helper.h: void ns3::PointToPointHelper::EnablePcapInternal(std::string prefix, ns3::Ptr<ns3::NetDevice> nd, bool promiscuous=false) [member function]
-    cls.add_method('EnablePcapInternal', 
-                   'void', 
-                   [param('std::string', 'prefix'), param('ns3::Ptr< ns3::NetDevice >', 'nd'), param('bool', 'promiscuous', default_value='false')], 
-                   visibility='private', is_virtual=True)
     return
 
 def register_Ns3PointToPointStarHelper_methods(root_module, cls):
@@ -1681,150 +1788,6 @@ def register_Ns3AodvHelper_methods(root_module, cls):
     cls.add_method('Set', 
                    'void', 
                    [param('std::string', 'name'), param('ns3::AttributeValue const &', 'value')])
-    return
-
-def register_Ns3CsmaHelper_methods(root_module, cls):
-    ## csma-helper.h: ns3::CsmaHelper::CsmaHelper(ns3::CsmaHelper const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::CsmaHelper const &', 'arg0')])
-    ## csma-helper.h: ns3::CsmaHelper::CsmaHelper() [constructor]
-    cls.add_constructor([])
-    ## csma-helper.h: static void ns3::CsmaHelper::EnableAscii(std::ostream & os, uint32_t nodeid, uint32_t deviceid) [member function]
-    cls.add_method('EnableAscii', 
-                   'void', 
-                   [param('std::ostream &', 'os'), param('uint32_t', 'nodeid'), param('uint32_t', 'deviceid')], 
-                   is_static=True)
-    ## csma-helper.h: static void ns3::CsmaHelper::EnableAscii(std::ostream & os, ns3::NetDeviceContainer d) [member function]
-    cls.add_method('EnableAscii', 
-                   'void', 
-                   [param('std::ostream &', 'os'), param('ns3::NetDeviceContainer', 'd')], 
-                   is_static=True)
-    ## csma-helper.h: static void ns3::CsmaHelper::EnableAscii(std::ostream & os, ns3::NodeContainer n) [member function]
-    cls.add_method('EnableAscii', 
-                   'void', 
-                   [param('std::ostream &', 'os'), param('ns3::NodeContainer', 'n')], 
-                   is_static=True)
-    ## csma-helper.h: static void ns3::CsmaHelper::EnableAsciiAll(std::ostream & os) [member function]
-    cls.add_method('EnableAsciiAll', 
-                   'void', 
-                   [param('std::ostream &', 'os')], 
-                   is_static=True)
-    ## csma-helper.h: ns3::NetDeviceContainer ns3::CsmaHelper::Install(ns3::Ptr<ns3::Node> node) const [member function]
-    cls.add_method('Install', 
-                   'ns3::NetDeviceContainer', 
-                   [param('ns3::Ptr< ns3::Node >', 'node')], 
-                   is_const=True)
-    ## csma-helper.h: ns3::NetDeviceContainer ns3::CsmaHelper::Install(std::string name) const [member function]
-    cls.add_method('Install', 
-                   'ns3::NetDeviceContainer', 
-                   [param('std::string', 'name')], 
-                   is_const=True)
-    ## csma-helper.h: ns3::NetDeviceContainer ns3::CsmaHelper::Install(ns3::Ptr<ns3::Node> node, ns3::Ptr<ns3::CsmaChannel> channel) const [member function]
-    cls.add_method('Install', 
-                   'ns3::NetDeviceContainer', 
-                   [param('ns3::Ptr< ns3::Node >', 'node'), param('ns3::Ptr< ns3::CsmaChannel >', 'channel')], 
-                   is_const=True)
-    ## csma-helper.h: ns3::NetDeviceContainer ns3::CsmaHelper::Install(ns3::Ptr<ns3::Node> node, std::string channelName) const [member function]
-    cls.add_method('Install', 
-                   'ns3::NetDeviceContainer', 
-                   [param('ns3::Ptr< ns3::Node >', 'node'), param('std::string', 'channelName')], 
-                   is_const=True)
-    ## csma-helper.h: ns3::NetDeviceContainer ns3::CsmaHelper::Install(std::string nodeName, ns3::Ptr<ns3::CsmaChannel> channel) const [member function]
-    cls.add_method('Install', 
-                   'ns3::NetDeviceContainer', 
-                   [param('std::string', 'nodeName'), param('ns3::Ptr< ns3::CsmaChannel >', 'channel')], 
-                   is_const=True)
-    ## csma-helper.h: ns3::NetDeviceContainer ns3::CsmaHelper::Install(std::string nodeName, std::string channelName) const [member function]
-    cls.add_method('Install', 
-                   'ns3::NetDeviceContainer', 
-                   [param('std::string', 'nodeName'), param('std::string', 'channelName')], 
-                   is_const=True)
-    ## csma-helper.h: ns3::NetDeviceContainer ns3::CsmaHelper::Install(ns3::NodeContainer const & c) const [member function]
-    cls.add_method('Install', 
-                   'ns3::NetDeviceContainer', 
-                   [param('ns3::NodeContainer const &', 'c')], 
-                   is_const=True)
-    ## csma-helper.h: ns3::NetDeviceContainer ns3::CsmaHelper::Install(ns3::NodeContainer const & c, ns3::Ptr<ns3::CsmaChannel> channel) const [member function]
-    cls.add_method('Install', 
-                   'ns3::NetDeviceContainer', 
-                   [param('ns3::NodeContainer const &', 'c'), param('ns3::Ptr< ns3::CsmaChannel >', 'channel')], 
-                   is_const=True)
-    ## csma-helper.h: ns3::NetDeviceContainer ns3::CsmaHelper::Install(ns3::NodeContainer const & c, std::string channelName) const [member function]
-    cls.add_method('Install', 
-                   'ns3::NetDeviceContainer', 
-                   [param('ns3::NodeContainer const &', 'c'), param('std::string', 'channelName')], 
-                   is_const=True)
-    ## csma-helper.h: void ns3::CsmaHelper::SetChannelAttribute(std::string n1, ns3::AttributeValue const & v1) [member function]
-    cls.add_method('SetChannelAttribute', 
-                   'void', 
-                   [param('std::string', 'n1'), param('ns3::AttributeValue const &', 'v1')])
-    ## csma-helper.h: void ns3::CsmaHelper::SetDeviceAttribute(std::string n1, ns3::AttributeValue const & v1) [member function]
-    cls.add_method('SetDeviceAttribute', 
-                   'void', 
-                   [param('std::string', 'n1'), param('ns3::AttributeValue const &', 'v1')])
-    ## csma-helper.h: void ns3::CsmaHelper::SetQueue(std::string type, std::string n1="", ns3::AttributeValue const & v1=ns3::EmptyAttributeValue(), std::string n2="", ns3::AttributeValue const & v2=ns3::EmptyAttributeValue(), std::string n3="", ns3::AttributeValue const & v3=ns3::EmptyAttributeValue(), std::string n4="", ns3::AttributeValue const & v4=ns3::EmptyAttributeValue()) [member function]
-    cls.add_method('SetQueue', 
-                   'void', 
-                   [param('std::string', 'type'), param('std::string', 'n1', default_value='""'), param('ns3::AttributeValue const &', 'v1', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n2', default_value='""'), param('ns3::AttributeValue const &', 'v2', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n3', default_value='""'), param('ns3::AttributeValue const &', 'v3', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n4', default_value='""'), param('ns3::AttributeValue const &', 'v4', default_value='ns3::EmptyAttributeValue()')])
-    ## csma-helper.h: void ns3::CsmaHelper::EnablePcapInternal(std::string prefix, ns3::Ptr<ns3::NetDevice> nd, bool promiscuous=false) [member function]
-    cls.add_method('EnablePcapInternal', 
-                   'void', 
-                   [param('std::string', 'prefix'), param('ns3::Ptr< ns3::NetDevice >', 'nd'), param('bool', 'promiscuous', default_value='false')], 
-                   visibility='private', is_virtual=True)
-    return
-
-def register_Ns3EmuHelper_methods(root_module, cls):
-    ## emu-helper.h: ns3::EmuHelper::EmuHelper(ns3::EmuHelper const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::EmuHelper const &', 'arg0')])
-    ## emu-helper.h: ns3::EmuHelper::EmuHelper() [constructor]
-    cls.add_constructor([])
-    ## emu-helper.h: static void ns3::EmuHelper::EnableAscii(std::ostream & os, uint32_t nodeid, uint32_t deviceid) [member function]
-    cls.add_method('EnableAscii', 
-                   'void', 
-                   [param('std::ostream &', 'os'), param('uint32_t', 'nodeid'), param('uint32_t', 'deviceid')], 
-                   is_static=True)
-    ## emu-helper.h: static void ns3::EmuHelper::EnableAscii(std::ostream & os, ns3::NetDeviceContainer d) [member function]
-    cls.add_method('EnableAscii', 
-                   'void', 
-                   [param('std::ostream &', 'os'), param('ns3::NetDeviceContainer', 'd')], 
-                   is_static=True)
-    ## emu-helper.h: static void ns3::EmuHelper::EnableAscii(std::ostream & os, ns3::NodeContainer n) [member function]
-    cls.add_method('EnableAscii', 
-                   'void', 
-                   [param('std::ostream &', 'os'), param('ns3::NodeContainer', 'n')], 
-                   is_static=True)
-    ## emu-helper.h: static void ns3::EmuHelper::EnableAsciiAll(std::ostream & os) [member function]
-    cls.add_method('EnableAsciiAll', 
-                   'void', 
-                   [param('std::ostream &', 'os')], 
-                   is_static=True)
-    ## emu-helper.h: ns3::NetDeviceContainer ns3::EmuHelper::Install(ns3::Ptr<ns3::Node> node) const [member function]
-    cls.add_method('Install', 
-                   'ns3::NetDeviceContainer', 
-                   [param('ns3::Ptr< ns3::Node >', 'node')], 
-                   is_const=True)
-    ## emu-helper.h: ns3::NetDeviceContainer ns3::EmuHelper::Install(std::string nodeName) const [member function]
-    cls.add_method('Install', 
-                   'ns3::NetDeviceContainer', 
-                   [param('std::string', 'nodeName')], 
-                   is_const=True)
-    ## emu-helper.h: ns3::NetDeviceContainer ns3::EmuHelper::Install(ns3::NodeContainer const & c) const [member function]
-    cls.add_method('Install', 
-                   'ns3::NetDeviceContainer', 
-                   [param('ns3::NodeContainer const &', 'c')], 
-                   is_const=True)
-    ## emu-helper.h: void ns3::EmuHelper::SetAttribute(std::string n1, ns3::AttributeValue const & v1) [member function]
-    cls.add_method('SetAttribute', 
-                   'void', 
-                   [param('std::string', 'n1'), param('ns3::AttributeValue const &', 'v1')])
-    ## emu-helper.h: void ns3::EmuHelper::SetQueue(std::string type, std::string n1="", ns3::AttributeValue const & v1=ns3::EmptyAttributeValue(), std::string n2="", ns3::AttributeValue const & v2=ns3::EmptyAttributeValue(), std::string n3="", ns3::AttributeValue const & v3=ns3::EmptyAttributeValue(), std::string n4="", ns3::AttributeValue const & v4=ns3::EmptyAttributeValue()) [member function]
-    cls.add_method('SetQueue', 
-                   'void', 
-                   [param('std::string', 'type'), param('std::string', 'n1', default_value='""'), param('ns3::AttributeValue const &', 'v1', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n2', default_value='""'), param('ns3::AttributeValue const &', 'v2', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n3', default_value='""'), param('ns3::AttributeValue const &', 'v3', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n4', default_value='""'), param('ns3::AttributeValue const &', 'v4', default_value='ns3::EmptyAttributeValue()')])
-    ## emu-helper.h: void ns3::EmuHelper::EnablePcapInternal(std::string prefix, ns3::Ptr<ns3::NetDevice> nd, bool promiscuous=false) [member function]
-    cls.add_method('EnablePcapInternal', 
-                   'void', 
-                   [param('std::string', 'prefix'), param('ns3::Ptr< ns3::NetDevice >', 'nd'), param('bool', 'promiscuous', default_value='false')], 
-                   visibility='private', is_virtual=True)
     return
 
 def register_Ns3Ipv4GlobalRoutingHelper_methods(root_module, cls):

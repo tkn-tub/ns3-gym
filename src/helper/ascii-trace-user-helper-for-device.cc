@@ -65,7 +65,7 @@ void
 AsciiTraceUserHelperForDevice::EnableAsciiImpl (Ptr<OutputStreamObject> stream, std::string prefix, std::string ndName)
 {
   Ptr<NetDevice> nd = Names::Find<NetDevice> (ndName);
-  EnableAsciiImpl (stream, prefix, nd);
+  EnableAsciiInternal (stream, prefix, nd);
 }
 
 
@@ -96,7 +96,7 @@ AsciiTraceUserHelperForDevice::EnableAsciiImpl (Ptr<OutputStreamObject> stream, 
   for (NetDeviceContainer::Iterator i = d.Begin (); i != d.End (); ++i)
     {
       Ptr<NetDevice> dev = *i;
-      EnableAsciiImpl (stream, prefix, dev);
+      EnableAsciiInternal (stream, prefix, dev);
     }
 }
 
@@ -197,7 +197,7 @@ AsciiTraceUserHelperForDevice::EnableAsciiImpl (
 
       Ptr<NetDevice> nd = node->GetDevice (deviceid);
 
-      EnableAsciiImpl (stream, prefix, nd);
+      EnableAsciiInternal (stream, prefix, nd);
       return;
     }
 }

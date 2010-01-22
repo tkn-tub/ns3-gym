@@ -493,9 +493,8 @@ Experiment::Run (const WifiHelper &wifi, const YansWifiPhyHelper &wifiPhy,
 
   if (enableTracing)
     {
-      std::ofstream ascii;
-      ascii.open ((GetOutputFileName() + ".tr").c_str());
-      phy.EnableAsciiAll (ascii);
+      AsciiTraceHelper ascii;
+      phy.EnableAsciiAll (ascii.CreateFileStream (GetOutputFileName() + ".tr"));
     }
 
   Ptr<FlowMonitor> flowmon;
