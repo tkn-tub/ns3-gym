@@ -19,9 +19,11 @@
 #ifndef ASCII_TRACE_HELPER_H
 #define ASCII_TRACE_HELPER_H
 
+#include "ns3/assert.h"
 #include "ns3/net-device-container.h"
 #include "ns3/node-container.h"
 #include "ns3/simulator.h"
+#include "ns3/ipv4.h"
 #include "ns3/output-stream-object.h"
 
 namespace ns3 {
@@ -48,9 +50,16 @@ public:
 
   /**
    * @brief Let the ascii trace helper figure out a reasonable filename to use
-   * for the ascii trace file.
+   * for an ascii trace file associated with a device.
    */
-  std::string GetFilename (std::string prefix, Ptr<NetDevice> device, bool useObjectNames = true);
+  std::string GetFilenameFromDevice (std::string prefix, Ptr<NetDevice> device, bool useObjectNames = true);
+
+  /**
+   * @brief Let the ascii trace helper figure out a reasonable filename to use
+   * for an ascii trace file associated with a node.
+   */
+  std::string GetFilenameFromInterfacePair (std::string prefix, Ptr<Ipv4> ipv4, 
+                                            uint32_t interface, bool useObjectNames = true);
 
   /**
    * @brief Create and initialize an output stream object we'll use to write the 
@@ -75,54 +84,144 @@ public:
   Ptr<OutputStreamObject> CreateFileStream (std::string filename, std::string filemode);
 
   /**
-   * @brief Hook a trace source to the default enqueue operation trace sink
+   * @brief Hook a trace source to the default enqueue operation trace sink that
+   * does not accept nor log a trace context.
    */
-  template <typename T> void HookDefaultEnqueueSink (Ptr<T> object, std::string traceName, Ptr<OutputStreamObject> stream);
+  template <typename T> 
+  void HookDefaultEnqueueSinkWithoutContext (Ptr<T> object, std::string traceName, Ptr<OutputStreamObject> stream);
 
   /**
-   * @brief Hook a trace source to the default drop operation trace sink
+   * @brief Hook a trace source to the default enqueue operation trace sink that
+   * does accept and log a trace context.
    */
-  template <typename T> void HookDefaultDropSink (Ptr<T> object, std::string traceName, Ptr<OutputStreamObject> stream);
+  template <typename T> 
+  void HookDefaultEnqueueSinkWithContext (Ptr<T> object, std::string traceName, Ptr<OutputStreamObject> stream);
+
+  /**
+   * @brief Hook a trace source to the default drop operation trace sink that 
+   * does not accept nor log a trace context.
+   */
+  template <typename T> 
+  void HookDefaultDropSinkWithoutContext (Ptr<T> object, std::string traceName, Ptr<OutputStreamObject> stream);
+
+  /**
+   * @brief Hook a trace source to the default drop operation trace sink that 
+   * does accept and log a trace context.
+   */
+  template <typename T> 
+  void HookDefaultDropSinkWithContext (Ptr<T> object, std::string traceName, Ptr<OutputStreamObject> stream);
 
   /**
    * @brief Hook a trace source to the default dequeue operation trace sink
+   * that does not accept nor log a trace context.
    */
-  template <typename T> void HookDefaultDequeueSink (Ptr<T> object, std::string traceName, Ptr<OutputStreamObject> stream);
+  template <typename T> 
+  void HookDefaultDequeueSinkWithoutContext (Ptr<T> object, std::string traceName, Ptr<OutputStreamObject> stream);
+
+  /**
+   * @brief Hook a trace source to the default dequeue operation trace sink
+   * that does accept and log a trace context.
+   */
+  template <typename T> 
+  void HookDefaultDequeueSinkWithContext (Ptr<T> object, std::string traceName, Ptr<OutputStreamObject> stream);
 
   /**
    * @brief Hook a trace source to the default receive operation trace sink
+   * that does not accept nor log a trace context.
    */
-  template <typename T> void HookDefaultReceiveSink (Ptr<T> object, std::string traceName, Ptr<OutputStreamObject> stream);
+  template <typename T> 
+  void HookDefaultReceiveSinkWithoutContext (Ptr<T> object, std::string traceName, Ptr<OutputStreamObject> stream);
 
-private:
-  static void DefaultEnqueueSink (Ptr<OutputStreamObject> file, Ptr<const Packet> p);
-  static void DefaultDropSink (Ptr<OutputStreamObject> file, Ptr<const Packet> p);
-  static void DefaultDequeueSink (Ptr<OutputStreamObject> file, Ptr<const Packet> p);
-  static void DefaultReceiveSink (Ptr<OutputStreamObject> file, Ptr<const Packet> p);
+  /**
+   * @brief Hook a trace source to the default receive operation trace sink
+   * that does accept and log a trace context.
+   */
+  template <typename T> 
+  void HookDefaultReceiveSinkWithContext (Ptr<T> object, std::string traceName, Ptr<OutputStreamObject> stream);
+
+  static void DefaultEnqueueSinkWithoutContext (Ptr<OutputStreamObject> file, Ptr<const Packet> p);
+  static void DefaultEnqueueSinkWithContext (Ptr<OutputStreamObject> file, std::string context, Ptr<const Packet> p);
+
+  static void DefaultDropSinkWithoutContext (Ptr<OutputStreamObject> file, Ptr<const Packet> p);
+  static void DefaultDropSinkWithContext (Ptr<OutputStreamObject> file, std::string context, Ptr<const Packet> p);
+
+  static void DefaultDequeueSinkWithoutContext (Ptr<OutputStreamObject> file, Ptr<const Packet> p);
+  static void DefaultDequeueSinkWithContext (Ptr<OutputStreamObject> file, std::string context, Ptr<const Packet> p);
+
+  static void DefaultReceiveSinkWithoutContext (Ptr<OutputStreamObject> file, Ptr<const Packet> p);
+  static void DefaultReceiveSinkWithContext (Ptr<OutputStreamObject> file, std::string context, Ptr<const Packet> p);
 };
 
 template <typename T> void
-AsciiTraceHelper::HookDefaultEnqueueSink (Ptr<T> object, std::string tracename, Ptr<OutputStreamObject> file)
+AsciiTraceHelper::HookDefaultEnqueueSinkWithoutContext (Ptr<T> object, std::string tracename, Ptr<OutputStreamObject> file)
 {
-  object->TraceConnectWithoutContext (tracename.c_str (), MakeBoundCallback (&DefaultEnqueueSink, file));
+  bool result = object->TraceConnectWithoutContext (tracename, 
+                                                    MakeBoundCallback (&DefaultEnqueueSinkWithoutContext, file));
+  NS_ASSERT_MSG (result == true, "AsciiTraceHelper::HookDefaultEnqueueSinkWithoutContext():  Unable to hook \"" 
+                 << tracename << "\"");
 }
 
 template <typename T> void
-AsciiTraceHelper::HookDefaultDropSink (Ptr<T> object, std::string tracename, Ptr<OutputStreamObject> file)
+AsciiTraceHelper::HookDefaultEnqueueSinkWithContext (Ptr<T> object, std::string tracename, Ptr<OutputStreamObject> file)
 {
-  object->TraceConnectWithoutContext (tracename.c_str (), MakeBoundCallback (&DefaultDropSink, file));
+  std::string context ("XXX");
+  bool result = object->TraceConnect (tracename, context, MakeBoundCallback (&DefaultEnqueueSinkWithContext, file));
+  NS_ASSERT_MSG (result == true, "AsciiTraceHelper::HookDefaultEnqueueSinkWithContext():  Unable to hook \"" 
+                 << tracename << "\"");
 }
 
 template <typename T> void
-AsciiTraceHelper::HookDefaultDequeueSink (Ptr<T> object, std::string tracename, Ptr<OutputStreamObject> file)
+AsciiTraceHelper::HookDefaultDropSinkWithoutContext (Ptr<T> object, std::string tracename, Ptr<OutputStreamObject> file)
 {
-  object->TraceConnectWithoutContext (tracename.c_str (), MakeBoundCallback (&DefaultDequeueSink, file));
+  bool result = object->TraceConnectWithoutContext (tracename, 
+                                                    MakeBoundCallback (&DefaultDropSinkWithoutContext, file));
+  NS_ASSERT_MSG (result == true, "AsciiTraceHelper::HookDefaultDropSinkWithoutContext():  Unable to hook \"" 
+                 << tracename << "\"");
 }
 
 template <typename T> void
-AsciiTraceHelper::HookDefaultReceiveSink (Ptr<T> object, std::string tracename, Ptr<OutputStreamObject> file)
+AsciiTraceHelper::HookDefaultDropSinkWithContext (Ptr<T> object, std::string tracename, Ptr<OutputStreamObject> file)
 {
-  object->TraceConnectWithoutContext (tracename.c_str (), MakeBoundCallback (&DefaultReceiveSink, file));
+  std::string context ("XXX");
+  bool result = object->TraceConnect (tracename, context, MakeBoundCallback (&DefaultDropSinkWithContext, file));
+  NS_ASSERT_MSG (result == true, "AsciiTraceHelper::HookDefaultDropSinkWithContext():  Unable to hook \"" 
+                 << tracename << "\"");
+}
+
+template <typename T> void
+AsciiTraceHelper::HookDefaultDequeueSinkWithoutContext (Ptr<T> object, std::string tracename, Ptr<OutputStreamObject> file)
+{
+  bool result = object->TraceConnectWithoutContext (tracename, 
+                                                    MakeBoundCallback (&DefaultDequeueSinkWithoutContext, file));
+  NS_ASSERT_MSG (result == true, "AsciiTraceHelper::HookDefaultDequeueSinkWithoutContext():  Unable to hook \"" 
+                 << tracename << "\"");
+}
+
+template <typename T> void
+AsciiTraceHelper::HookDefaultDequeueSinkWithContext (Ptr<T> object, std::string tracename, Ptr<OutputStreamObject> file)
+{
+  std::string context ("XXX");
+  bool result = object->TraceConnect (tracename, context, MakeBoundCallback (&DefaultDequeueSinkWithContext, file));
+  NS_ASSERT_MSG (result == true, "AsciiTraceHelper::HookDefaultDequeueSinkWithContext():  Unable to hook \"" 
+                 << tracename << "\"");
+}
+
+template <typename T> void
+AsciiTraceHelper::HookDefaultReceiveSinkWithoutContext (Ptr<T> object, std::string tracename, Ptr<OutputStreamObject> file)
+{
+  bool result = object->TraceConnectWithoutContext (tracename, 
+                                                    MakeBoundCallback (&DefaultReceiveSinkWithoutContext, file));
+  NS_ASSERT_MSG (result == true, "AsciiTraceHelper::HookDefaultReceiveSinkWithoutContext():  Unable to hook \"" 
+                 << tracename << "\"");
+}
+
+template <typename T> void
+AsciiTraceHelper::HookDefaultReceiveSinkWithContext (Ptr<T> object, std::string tracename, Ptr<OutputStreamObject> file)
+{
+  std::string context ("XXX");
+  bool result = object->TraceConnect (tracename, context, MakeBoundCallback (&DefaultReceiveSinkWithContext, file));
+  NS_ASSERT_MSG (result == true, "AsciiTraceHelper::HookDefaultReceiveSinkWithContext():  Unable to hook \"" 
+                 << tracename << "\"");
 }
 
 } // namespace ns3

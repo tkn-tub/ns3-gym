@@ -20,25 +20,26 @@
 #ifndef POINT_TO_POINT_HELPER_H
 #define POINT_TO_POINT_HELPER_H
 
+#include <string>
+
 #include "ns3/object-factory.h"
 #include "ns3/net-device-container.h"
 #include "ns3/node-container.h"
 #include "ns3/deprecated.h"
-#include "pcap-user-helper.h"
-#include <string>
+
+#include "pcap-user-helper-for-device.h"
+#include "ascii-trace-user-helper-for-device.h"
 
 namespace ns3 {
 
 class Queue;
 class NetDevice;
 class Node;
-class PcapWriter;
-class AsciiWriter;
 
 /**
  * \brief Build a set of PointToPointNetDevice objects
  */
-class PointToPointHelper : public PcapUserHelper
+class PointToPointHelper : public PcapUserHelperForDevice, public AsciiTraceUserHelperForDevice
 {
 public:
   /**
@@ -94,48 +95,6 @@ public:
    * by PointToPointHelper::Install
    */
   void SetChannelAttribute (std::string name, const AttributeValue &value);
-
-  /**
-   * \param os output stream
-   * \param nodeid the id of the node to generate ascii output for.
-   * \param deviceid the id of the device to generate ascii output for.
-   *
-   * Enable ascii output on the specified deviceid within the
-   * specified nodeid if it is of type ns3::PointToPointNetDevice and dump 
-   * that to the specified stdc++ output stream.
-   */
-  static void EnableAscii (std::ostream &os, uint32_t nodeid, uint32_t deviceid);
-
-  /**
-   * \param os output stream
-   * \param d device container
-   *
-   * Enable ascii output on each device which is of the
-   * ns3::PointToPointNetDevice type and which is located in the input
-   * device container and dump that to the specified
-   * stdc++ output stream.
-   */
-  static void EnableAscii (std::ostream &os, NetDeviceContainer d);
-
-  /**
-   * \param os output stream
-   * \param n node container
-   *
-   * Enable ascii output on each device which is of the
-   * ns3::PointToPointNetDevice type and which is located in one
-   * of the input node and dump that to the specified
-   * stdc++ output stream.
-   */
-  static void EnableAscii (std::ostream &os, NodeContainer n);
-
-  /**
-   * \param os output stream
-   *
-   * Enable ascii output on each device which is of the
-   * ns3::PointToPointNetDevice type and dump that to the specified
-   * stdc++ output stream.
-   */
-  static void EnableAsciiAll (std::ostream &os);
 
   /**
    * \param c a set of nodes
@@ -194,11 +153,18 @@ private:
    */
   virtual void EnablePcapInternal (std::string prefix, Ptr<NetDevice> nd, bool promiscuous = false);
 
-  void EnableAscii (Ptr<Node> node, Ptr<NetDevice> device);
-  static void AsciiRxEvent (Ptr<AsciiWriter> writer, std::string path, Ptr<const Packet> packet);
-  static void AsciiEnqueueEvent (Ptr<AsciiWriter> writer, std::string path, Ptr<const Packet> packet);
-  static void AsciiDequeueEvent (Ptr<AsciiWriter> writer, std::string path, Ptr<const Packet> packet);
-  static void AsciiDropEvent (Ptr<AsciiWriter> writer, std::string path, Ptr<const Packet> packet);
+  /**
+   * \brief Enable ascii trace output on the indicated net device.
+   * \internal
+   *
+   * NetDevice-specific implementation mechanism for hooking the trace and
+   * writing to the trace file.
+   *
+   * \param stream The output stream object to use when logging ascii traces.
+   * \param prefix Filename prefix to use for ascii trace files.
+   * \param nd Net device for which you want to enable tracing.
+   */
+  virtual void EnableAsciiInternal (Ptr<OutputStreamObject> stream, std::string prefix, Ptr<NetDevice> nd);
 
   ObjectFactory m_queueFactory;
   ObjectFactory m_channelFactory;

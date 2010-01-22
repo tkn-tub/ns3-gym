@@ -74,7 +74,7 @@ AsciiTraceHelper::CreateFileStream (std::string filename, std::string filemode)
 }
 
 std::string
-AsciiTraceHelper::GetFilename (std::string prefix, Ptr<NetDevice> device, bool useObjectNames)
+AsciiTraceHelper::GetFilenameFromDevice (std::string prefix, Ptr<NetDevice> device, bool useObjectNames)
 {
   NS_LOG_FUNCTION (prefix << device << useObjectNames);
   NS_ABORT_MSG_UNLESS (prefix.size (), "Empty prefix string");
@@ -99,7 +99,7 @@ AsciiTraceHelper::GetFilename (std::string prefix, Ptr<NetDevice> device, bool u
     }
   else
     {
-      oss << node->GetId ();
+      oss << "n" << node->GetId ();
     }
 
   oss << "-";
@@ -110,7 +110,7 @@ AsciiTraceHelper::GetFilename (std::string prefix, Ptr<NetDevice> device, bool u
     }
   else
     {
-      oss << device->GetIfIndex ();
+      oss << "d" << device->GetIfIndex ();
     }
 
   oss << ".tr";
@@ -118,11 +118,46 @@ AsciiTraceHelper::GetFilename (std::string prefix, Ptr<NetDevice> device, bool u
   return oss.str ();
 }
 
+std::string
+AsciiTraceHelper::GetFilenameFromInterfacePair (std::string prefix, Ptr<Ipv4> ipv4, uint32_t interface, bool useObjectNames)
+{
+  NS_LOG_FUNCTION (prefix << ipv4 << interface << useObjectNames);
+  NS_ABORT_MSG_UNLESS (prefix.size (), "Empty prefix string");
+
+  std::ostringstream oss;
+  oss << prefix << "-";
+
+  std::string ipv4name;
+  std::string nodename;
+
+  Ptr<Node> node = ipv4->GetObject<Node> ();
+
+  if (useObjectNames)
+    {
+      ipv4name = Names::FindName (ipv4);
+      nodename = Names::FindName (node);
+    }
+
+  if (ipv4name.size ())
+    {
+      oss << ipv4name;
+    }
+  else if (nodename.size ())
+    {
+      oss << nodename;
+    }
+  else
+    {
+      oss << "n" << node->GetId ();
+    }
+
+  oss << "-i" << interface << ".tr";
+
+  return oss.str ();
+}
+
 //
-// The basic default trace sinks.  Ascii traces are collected for four 
-// operations:
-//
-// Enqueue:
+// One of the basic default trace sink sets.  Enqueue:
 //
 //   When a packet has been sent to a device for transmission, the device is
 //   expected to place the packet onto a transmit queue even if it does not
@@ -132,7 +167,22 @@ AsciiTraceHelper::GetFilename (std::string prefix, Ptr<NetDevice> device, bool u
 //   This is typically implemented by hooking the "TxQueue/Enqueue" trace hook
 //   in the device (actually the Queue in the device).
 //
-// Drop:
+void
+AsciiTraceHelper::DefaultEnqueueSinkWithoutContext (Ptr<OutputStreamObject> file, Ptr<const Packet> p)
+{
+  NS_LOG_FUNCTION (file << p);
+  *file->GetStream () << "+ " << Simulator::Now ().GetSeconds () << " " << *p << std::endl;
+}
+
+void
+AsciiTraceHelper::DefaultEnqueueSinkWithContext (Ptr<OutputStreamObject> file, std::string context, Ptr<const Packet> p)
+{
+  NS_LOG_FUNCTION (file << p);
+  *file->GetStream () << "+ " << Simulator::Now ().GetSeconds () << " " << context << " " << *p << std::endl;
+}
+
+//
+// One of the basic default trace sink sets.  Drop:
 //
 //   When a packet has been sent to a device for transmission, the device is
 //   expected to place the packet onto a transmit queue.  If this queue is 
@@ -143,7 +193,22 @@ AsciiTraceHelper::GetFilename (std::string prefix, Ptr<NetDevice> device, bool u
 //   This is typically implemented by hooking the "TxQueue/Drop" trace hook
 //   in the device (actually the Queue in the device).
 //
-// Dequeue:
+void
+AsciiTraceHelper::DefaultDropSinkWithoutContext (Ptr<OutputStreamObject> file, Ptr<const Packet> p)
+{
+  NS_LOG_FUNCTION (file << p);
+  *file->GetStream () << "d " << Simulator::Now ().GetSeconds () << " " << *p << std::endl;
+}
+
+void
+AsciiTraceHelper::DefaultDropSinkWithContext (Ptr<OutputStreamObject> file, std::string context, Ptr<const Packet> p)
+{
+  NS_LOG_FUNCTION (file << p);
+  *file->GetStream () << "d " << Simulator::Now ().GetSeconds () << " " << context << " " << *p << std::endl;
+}
+
+//
+// One of the basic default trace sink sets.  Dequeue:
 //
 //   When a packet has been sent to a device for transmission, the device is
 //   expected to place the packet onto a transmit queue even if it does not
@@ -155,7 +220,22 @@ AsciiTraceHelper::GetFilename (std::string prefix, Ptr<NetDevice> device, bool u
 //   This is typically implemented by hooking the "TxQueue/Dequeue" trace hook
 //   in the device (actually the Queue in the device).
 //
-// Receive:
+void
+AsciiTraceHelper::DefaultDequeueSinkWithoutContext (Ptr<OutputStreamObject> file, Ptr<const Packet> p)
+{
+  NS_LOG_FUNCTION (file << p);
+  *file->GetStream () << "- " << Simulator::Now ().GetSeconds () << " " << *p << std::endl;
+}
+
+void
+AsciiTraceHelper::DefaultDequeueSinkWithContext (Ptr<OutputStreamObject> file, std::string context, Ptr<const Packet> p)
+{
+  NS_LOG_FUNCTION (file << p);
+  *file->GetStream () << "- " << Simulator::Now ().GetSeconds () << " " << context << " " << *p << std::endl;
+}
+
+//
+// One of the basic default trace sink sets.  Receive:
 //
 //   When a packet is received by a device for transmission, the device is
 //   expected to trigger this event to indicate the reception has occurred.
@@ -164,34 +244,18 @@ AsciiTraceHelper::GetFilename (std::string prefix, Ptr<NetDevice> device, bool u
 //
 //   This is typically implemented by hooking the "MacRx" trace hook in the
 //   device.
-//
-
 void
-AsciiTraceHelper::DefaultEnqueueSink (Ptr<OutputStreamObject> file, Ptr<const Packet> p)
-{
-  NS_LOG_FUNCTION (file << p);
-  *file->GetStream () << "+ " << Simulator::Now ().GetSeconds () << " " << *p << std::endl;
-}
-
-void
-AsciiTraceHelper::DefaultDropSink (Ptr<OutputStreamObject> file, Ptr<const Packet> p)
-{
-  NS_LOG_FUNCTION (file << p);
-  *file->GetStream () << "d " << Simulator::Now ().GetSeconds () << " " << *p << std::endl;
-}
-
-void
-AsciiTraceHelper::DefaultDequeueSink (Ptr<OutputStreamObject> file, Ptr<const Packet> p)
-{
-  NS_LOG_FUNCTION (file << p);
-  *file->GetStream () << "- " << Simulator::Now ().GetSeconds () << " " << *p << std::endl;
-}
-
-void
-AsciiTraceHelper::DefaultReceiveSink (Ptr<OutputStreamObject> file, Ptr<const Packet> p)
+AsciiTraceHelper::DefaultReceiveSinkWithoutContext (Ptr<OutputStreamObject> file, Ptr<const Packet> p)
 {
   NS_LOG_FUNCTION (file << p);
   *file->GetStream () << "r " << Simulator::Now ().GetSeconds () << " " << *p << std::endl;
+}
+
+void
+AsciiTraceHelper::DefaultReceiveSinkWithContext (Ptr<OutputStreamObject> file, std::string context, Ptr<const Packet> p)
+{
+  NS_LOG_FUNCTION (file << p);
+  *file->GetStream () << "r " << Simulator::Now ().GetSeconds () << " " << context << " " << *p << std::endl;
 }
 
 } // namespace ns3

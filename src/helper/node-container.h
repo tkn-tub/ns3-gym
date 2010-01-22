@@ -189,10 +189,10 @@ public:
    * Nodes
    *
    * \code
-   *   uint32_t nNodes = continer.GetN ();
+   *   uint32_t nNodes = container.GetN ();
    *   for (uint32_t i = 0 i < nNodes; ++i)
    *     {
-   *       Ptr<Node> p = continer.Get (i)
+   *       Ptr<Node> p = container.Get (i)
    *       i->method ();  // some Node method
    *     }
    * \endcode

@@ -28,19 +28,17 @@
 #include "ns3/node-container.h"
 #include "ns3/csma-channel.h"
 #include "ns3/deprecated.h"
-
-#include "pcap-user-helper.h"
-#include "ascii-trace-user-helper.h"
+#include "pcap-user-helper-for-device.h"
+#include "ascii-trace-user-helper-for-device.h"
 
 namespace ns3 {
 
 class Packet;
-class AsciiWriter;
 
 /**
  * \brief build a set of CsmaNetDevice objects
  */
-class CsmaHelper : public PcapUserHelper, public AsciiTraceUserHelper
+class CsmaHelper : public PcapUserHelperForDevice, public AsciiTraceUserHelperForDevice
 {
 public:
   /**
@@ -85,45 +83,6 @@ public:
    * by CsmaHelper::Install
    */
   void SetChannelAttribute (std::string n1, const AttributeValue &v1);
-
-  /**
-   * \param os output stream
-   * \param nodeid the id of the node to generate ascii output for.
-   * \param deviceid the id of the device to generate ascii output for.
-   *
-   * Enable ascii output on the specified deviceid within the
-   * specified nodeid if it is of type ns3::CsmaNetDevice and dump 
-   * that to the specified stdc++ output stream.
-   */
-  static void EnableAscii (std::ostream &os, uint32_t nodeid, uint32_t deviceid);
-  /**
-   * \param os output stream
-   * \param d device container
-   *
-   * Enable ascii output on each device which is of the
-   * ns3::CsmaNetDevice type and which is located in the input
-   * device container and dump that to the specified
-   * stdc++ output stream.
-   */
-  static void EnableAscii (std::ostream &os, NetDeviceContainer d);
-  /**
-   * \param os output stream
-   * \param n node container
-   *
-   * Enable ascii output on each device which is of the
-   * ns3::CsmaNetDevice type and which is located in one
-   * of the input node and dump that to the specified
-   * stdc++ output stream.
-   */
-  static void EnableAscii (std::ostream &os, NodeContainer n);
-  /**
-   * \param os output stream
-   *
-   * Enable ascii output on each device which is of the
-   * ns3::CsmaNetDevice type and dump that to the specified
-   * stdc++ output stream.
-   */
-  static void EnableAsciiAll (std::ostream &os);
 
   /**
    * This method creates an ns3::CsmaChannel with the attributes configured by
@@ -253,30 +212,11 @@ private:
    * NetDevice-specific implementation mechanism for hooking the trace and
    * writing to the trace file.
    *
-   * \param prefix Filename prefix to use for pcap files.
+   * \param stream The output stream object to use when logging ascii traces.
+   * \param prefix Filename prefix to use for ascii trace files.
    * \param nd Net device for which you want to enable tracing.
    */
-  virtual void EnableAsciiInternal (std::string prefix, Ptr<NetDevice> nd);
-
-  /*
-   * \internal
-   */
-  static void AsciiRxEvent (Ptr<AsciiWriter> writer, std::string path, Ptr<const Packet> packet);
-
-  /*
-   * \internal
-   */
-  static void AsciiEnqueueEvent (Ptr<AsciiWriter> writer, std::string path, Ptr<const Packet> packet);
-
-  /*
-   * \internal
-   */
-  static void AsciiDequeueEvent (Ptr<AsciiWriter> writer, std::string path, Ptr<const Packet> packet);
-
-  /*
-   * \internal
-   */
-  static void AsciiDropEvent (Ptr<AsciiWriter> writer, std::string path, Ptr<const Packet> packet);
+  virtual void EnableAsciiInternal (Ptr<OutputStreamObject> stream, std::string prefix, Ptr<NetDevice> nd);
 
   ObjectFactory m_queueFactory;
   ObjectFactory m_deviceFactory;

@@ -18,56 +18,58 @@
 
 #include "ns3/abort.h"
 #include "ns3/names.h"
-#include "ascii-trace-user-helper.h"
+#include "pcap-user-helper-for-ipv4.h"
 
 namespace ns3 {
 
 void 
-AsciiTraceUserHelper::EnableAscii (std::string prefix, Ptr<NetDevice> nd)
+PcapUserHelperForIpv4::EnablePcap (std::string prefix, Ptr<Ipv4> ipv4, uint32_t interface)
 {
-  EnableAsciiInternal (prefix, nd);
+  EnablePcapInternal (prefix, ipv4, interface);
 }
 
 void 
-AsciiTraceUserHelper::EnableAscii (std::string prefix, std::string ndName)
+PcapUserHelperForIpv4::EnablePcap (std::string prefix, std::string ipv4Name, uint32_t interface)
 {
-  Ptr<NetDevice> nd = Names::Find<NetDevice> (ndName);
-  EnableAscii (prefix, nd);
+  Ptr<Ipv4> ipv4 = Names::Find<Ipv4> (ipv4Name);
+  EnablePcap (prefix, ipv4, interface);
 }
 
 void 
-AsciiTraceUserHelper::EnableAscii (std::string prefix, NetDeviceContainer d)
+PcapUserHelperForIpv4::EnablePcap (std::string prefix, Ipv4InterfaceContainer c)
 {
-  for (NetDeviceContainer::Iterator i = d.Begin (); i != d.End (); ++i)
+  for (Ipv4InterfaceContainer::Iterator i = c.Begin (); i != c.End (); ++i)
     {
-      Ptr<NetDevice> dev = *i;
-      EnableAscii (prefix, dev);
+      std::pair<Ptr<Ipv4>, uint32_t> pair = *i;
+      EnablePcap (prefix, pair.first, pair.second);
     }
 }
 
 void
-AsciiTraceUserHelper::EnableAscii (std::string prefix, NodeContainer n)
+PcapUserHelperForIpv4::EnablePcap (std::string prefix, NodeContainer n)
 {
-  NetDeviceContainer devs;
   for (NodeContainer::Iterator i = n.Begin (); i != n.End (); ++i)
     {
       Ptr<Node> node = *i;
-      for (uint32_t j = 0; j < node->GetNDevices (); ++j)
+      Ptr<Ipv4> ipv4 = node->GetObject<Ipv4> ();
+      if (ipv4)
         {
-          devs.Add (node->GetDevice (j));
+          for (uint32_t j = 0; j < ipv4->GetNInterfaces (); ++j)
+            {
+              EnablePcap (prefix, ipv4, j);
+            }
         }
     }
-  EnableAscii (prefix, devs);
 }
 
 void
-AsciiTraceUserHelper::EnableAsciiAllXXX (std::string prefix)
+PcapUserHelperForIpv4::EnablePcapAll (std::string prefix)
 {
-  EnableAscii (prefix, NodeContainer::GetGlobal ());
+  EnablePcap (prefix, NodeContainer::GetGlobal ());
 }
 
 void 
-AsciiTraceUserHelper::EnableAscii (std::string prefix, uint32_t nodeid, uint32_t deviceid)
+PcapUserHelperForIpv4::EnablePcap (std::string prefix, uint32_t nodeid, uint32_t interface)
 {
   NodeContainer n = NodeContainer::GetGlobal ();
 
@@ -79,12 +81,11 @@ AsciiTraceUserHelper::EnableAscii (std::string prefix, uint32_t nodeid, uint32_t
           continue;
         }
       
-      NS_ABORT_MSG_IF (deviceid >= node->GetNDevices (), 
-                       "AsciiTraceUserHelper::EnableAscii(): Unknown deviceid = " << deviceid);
-
-      Ptr<NetDevice> nd = node->GetDevice (deviceid);
-
-      EnableAscii (prefix, nd);
+      Ptr<Ipv4> ipv4 = node->GetObject<Ipv4> ();
+      if (ipv4)
+        {
+          EnablePcap (prefix, ipv4, interface);
+        }
       return;
     }
 }

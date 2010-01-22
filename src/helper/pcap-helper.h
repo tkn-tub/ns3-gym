@@ -19,10 +19,12 @@
 #ifndef PCAP_HELPER_H
 #define PCAP_HELPER_H
 
+#include "ns3/assert.h"
 #include "ns3/net-device-container.h"
 #include "ns3/node-container.h"
 #include "ns3/simulator.h"
 #include "ns3/pcap-file-object.h"
+#include "ns3/ipv4.h"
 
 namespace ns3 {
 
@@ -45,6 +47,7 @@ public:
   enum {DLT_NULL = 0};
   enum {DLT_EN10MB = 1};
   enum {DLT_PPP = 9};
+  enum {DLT_RAW = 101};
   enum {DLT_IEEE802_11 = 105};
   enum {DLT_PRISM_HEADER = 119};
   enum {DLT_IEEE802_11_RADIO = 127};
@@ -60,10 +63,17 @@ public:
   ~PcapHelper ();
 
   /**
-   * @brief Let the pcap helper figure out a reasonable filename to use for the
-   * pcap file.
+   * @brief Let the pcap helper figure out a reasonable filename to use for a
+   * pcap file associated with a device.
    */
-  std::string GetFilename (std::string prefix, Ptr<NetDevice> device, bool useObjectNames = true);
+  std::string GetFilenameFromDevice (std::string prefix, Ptr<NetDevice> device, bool useObjectNames = true);
+
+  /**
+   * @brief Let the pcap helper figure out a reasonable filename to use for the
+   * pcap file associated with a node.
+   */
+  std::string GetFilenameFromInterfacePair (std::string prefix, Ptr<Ipv4> ipv4, 
+                                            uint32_t interface, bool useObjectNames = true);
 
   /**
    * @brief Create and initialize a pcap file.
@@ -82,7 +92,8 @@ private:
 template <typename T> void
 PcapHelper::HookDefaultSink (Ptr<T> object, std::string tracename, Ptr<PcapFileObject> file)
 {
-  object->TraceConnectWithoutContext (tracename.c_str (), MakeBoundCallback (&DefaultSink, file));
+  bool result = object->TraceConnectWithoutContext (tracename.c_str (), MakeBoundCallback (&DefaultSink, file));
+  NS_ASSERT_MSG (result == true, "PcapHelper::HookDefaultSink():  Unable to hook \"" << tracename << "\"");
 }
 
 } // namespace ns3

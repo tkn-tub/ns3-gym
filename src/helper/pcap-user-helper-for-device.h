@@ -26,9 +26,10 @@
 namespace ns3 {
 
 /**
- * \brief Base class providing common pcap operations.
+ * \brief Base class providing common user-level pcap operations for helpers
+ * representing net devices.
  */
-class PcapUserHelper
+class PcapUserHelperForDevice
 {
 public:
   /**

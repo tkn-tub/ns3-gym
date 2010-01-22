@@ -18,25 +18,25 @@
 
 #include "ns3/abort.h"
 #include "ns3/names.h"
-#include "pcap-user-helper.h"
+#include "pcap-user-helper-for-device.h"
 
 namespace ns3 {
 
 void 
-PcapUserHelper::EnablePcap (std::string prefix, Ptr<NetDevice> nd, bool promiscuous)
+PcapUserHelperForDevice::EnablePcap (std::string prefix, Ptr<NetDevice> nd, bool promiscuous)
 {
   EnablePcapInternal (prefix, nd, promiscuous);
 }
 
 void 
-PcapUserHelper::EnablePcap (std::string prefix, std::string ndName, bool promiscuous)
+PcapUserHelperForDevice::EnablePcap (std::string prefix, std::string ndName, bool promiscuous)
 {
   Ptr<NetDevice> nd = Names::Find<NetDevice> (ndName);
   EnablePcap (prefix, nd, promiscuous);
 }
 
 void 
-PcapUserHelper::EnablePcap (std::string prefix, NetDeviceContainer d, bool promiscuous)
+PcapUserHelperForDevice::EnablePcap (std::string prefix, NetDeviceContainer d, bool promiscuous)
 {
   for (NetDeviceContainer::Iterator i = d.Begin (); i != d.End (); ++i)
     {
@@ -46,7 +46,7 @@ PcapUserHelper::EnablePcap (std::string prefix, NetDeviceContainer d, bool promi
 }
 
 void
-PcapUserHelper::EnablePcap (std::string prefix, NodeContainer n, bool promiscuous)
+PcapUserHelperForDevice::EnablePcap (std::string prefix, NodeContainer n, bool promiscuous)
 {
   NetDeviceContainer devs;
   for (NodeContainer::Iterator i = n.Begin (); i != n.End (); ++i)
@@ -61,13 +61,13 @@ PcapUserHelper::EnablePcap (std::string prefix, NodeContainer n, bool promiscuou
 }
 
 void
-PcapUserHelper::EnablePcapAll (std::string prefix, bool promiscuous)
+PcapUserHelperForDevice::EnablePcapAll (std::string prefix, bool promiscuous)
 {
   EnablePcap (prefix, NodeContainer::GetGlobal (), promiscuous);
 }
 
 void 
-PcapUserHelper::EnablePcap (std::string prefix, uint32_t nodeid, uint32_t deviceid, bool promiscuous)
+PcapUserHelperForDevice::EnablePcap (std::string prefix, uint32_t nodeid, uint32_t deviceid, bool promiscuous)
 {
   NodeContainer n = NodeContainer::GetGlobal ();
 
@@ -79,9 +79,9 @@ PcapUserHelper::EnablePcap (std::string prefix, uint32_t nodeid, uint32_t device
           continue;
         }
       
-      NS_ABORT_MSG_IF (deviceid >= node->GetNDevices (), "PcapUserHelper::EnablePcap(): Unknown deviceid = " << deviceid);
+      NS_ABORT_MSG_IF (deviceid >= node->GetNDevices (), "PcapUserHelperForDevice::EnablePcap(): Unknown deviceid = " 
+                       << deviceid);
       Ptr<NetDevice> nd = node->GetDevice (deviceid);
-
       EnablePcap (prefix, nd, promiscuous);
       return;
     }

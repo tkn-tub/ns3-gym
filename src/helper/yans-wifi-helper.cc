@@ -17,8 +17,9 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
+
 #include "pcap-helper.h"
-#include "pcap-user-helper.h"
+#include "ascii-trace-helper.h"
 #include "yans-wifi-helper.h"
 #include "ns3/error-rate-model.h"
 #include "ns3/propagation-loss-model.h"
@@ -40,21 +41,55 @@ NS_LOG_COMPONENT_DEFINE ("YansWifiHelper");
 
 namespace ns3 {
 
-static void AsciiPhyTxEvent (Ptr<AsciiWriter> writer, std::string path,
-                             Ptr<const Packet> packet,
-                             WifiMode mode, WifiPreamble preamble,
-                             uint8_t txLevel)
+static void 
+AsciiPhyTransmitSinkWithContext (
+  Ptr<OutputStreamObject> stream, 
+  std::string context, 
+  Ptr<const Packet> p,
+  WifiMode mode, 
+  WifiPreamble preamble,
+  uint8_t txLevel)
 {
-  writer->WritePacket (AsciiWriter::TX, path, packet);
+  NS_LOG_FUNCTION (stream << context << p << mode << preamble << txLevel);
+  *stream->GetStream () << "t " << Simulator::Now ().GetSeconds () << " " << context << " " << *p << std::endl;
 }
 
-static void AsciiPhyRxOkEvent (Ptr<AsciiWriter> writer, std::string path,
-                               Ptr<const Packet> packet, double snr, WifiMode mode,
-                               enum WifiPreamble preamble)
+static void 
+AsciiPhyTransmitSinkWithoutContext (
+  Ptr<OutputStreamObject> stream, 
+  Ptr<const Packet> p,
+  WifiMode mode, 
+  WifiPreamble preamble,
+  uint8_t txLevel)
 {
-  writer->WritePacket (AsciiWriter::RX, path, packet);
+  NS_LOG_FUNCTION (stream << p << mode << preamble << txLevel);
+  *stream->GetStream () << "t " << Simulator::Now ().GetSeconds () << " " << *p << std::endl;
 }
 
+static void 
+AsciiPhyReceiveSinkWithContext (
+  Ptr<OutputStreamObject> stream,
+  std::string context,
+  Ptr<const Packet> p, 
+  double snr, 
+  WifiMode mode,
+  enum WifiPreamble preamble)
+{
+  NS_LOG_FUNCTION (stream << context << p << snr << mode << preamble);
+  *stream->GetStream () << "r " << Simulator::Now ().GetSeconds () << " " << context << " " << *p << std::endl;
+}
+
+static void 
+AsciiPhyReceiveSinkWithoutContext (
+  Ptr<OutputStreamObject> stream,
+  Ptr<const Packet> p, 
+  double snr, 
+  WifiMode mode,
+  enum WifiPreamble preamble)
+{
+  NS_LOG_FUNCTION (stream << p << snr << mode << preamble);
+  *stream->GetStream () << "r " << Simulator::Now ().GetSeconds () << " " << *p << std::endl;
+}
 
 YansWifiChannelHelper::YansWifiChannelHelper ()
 {}
@@ -372,7 +407,7 @@ YansWifiPhyHelper::EnablePcapInternal (std::string prefix, Ptr<NetDevice> nd, bo
   NS_ABORT_MSG_IF (phy == 0, "YansWifiPhyHelper::EnablePcapInternal(): Phy layer in WifiNetDevice must be set");
 
   PcapHelper pcapHelper;
-  std::string filename = pcapHelper.GetFilename (prefix, device);
+  std::string filename = pcapHelper.GetFilenameFromDevice (prefix, device);
 
   Ptr<PcapFileObject> file = pcapHelper.CreateFile (filename, "w", m_pcapDlt);
 
@@ -381,45 +416,78 @@ YansWifiPhyHelper::EnablePcapInternal (std::string prefix, Ptr<NetDevice> nd, bo
 }
 
 void 
-YansWifiPhyHelper::EnableAscii (std::ostream &os, uint32_t nodeid, uint32_t deviceid)
+YansWifiPhyHelper::EnableAsciiInternal (Ptr<OutputStreamObject> stream, std::string prefix, Ptr<NetDevice> nd)
 {
-  Ptr<AsciiWriter> writer = AsciiWriter::Get (os);
+  //
+  // All of the ascii enable functions vector through here including the ones
+  // that are wandering through all of devices on perhaps all of the nodes in
+  // the system.  We can only deal with devices of type CsmaNetDevice.
+  //
+  Ptr<WifiNetDevice> device = nd->GetObject<WifiNetDevice> ();
+  if (device == 0)
+    {
+      NS_LOG_INFO ("YansWifiHelper::EnableAsciiInternal(): Device " << device << " not of type ns3::WifiNetDevice");
+      return;
+    }
+
+  //
+  // Our trace sinks are going to use packet printing, so we have to make sure
+  // that is turned on.
+  //
   Packet::EnablePrinting ();
+
+  uint32_t nodeid = nd->GetNode ()->GetId ();
+  uint32_t deviceid = nd->GetIfIndex ();
   std::ostringstream oss;
+
+  //
+  // If we are not provided an OutputStreamObject, we are expected to create 
+  // one using the usual trace filename conventions and write our traces 
+  // without a context since there will be one file per context and therefore
+  // the context would be redundant.
+  //
+  if (stream == 0)
+    {
+      //
+      // Set up an output stream object to deal with private ofstream copy 
+      // constructor and lifetime issues.  Let the helper decide the actual
+      // name of the file given the prefix.
+      //
+      AsciiTraceHelper asciiTraceHelper;
+      std::string filename = asciiTraceHelper.GetFilenameFromDevice (prefix, device);
+      Ptr<OutputStreamObject> theStream = asciiTraceHelper.CreateFileStream (filename, "w");
+
+      //
+      // We could go poking through the phy and the state looking for the 
+      // correct trace source, but we can let Config deal with that with 
+      // some search cost.  Since this is presumably happening at topology
+      // creation time, it doesn't seem much of a price to pay.
+      //
+      oss.str ("");
+      oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::WifiNetDevice/Phy/State/RxOk";
+      Config::ConnectWithoutContext (oss.str (), MakeBoundCallback (&AsciiPhyReceiveSinkWithoutContext, stream));
+
+      oss.str ("");
+      oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::WifiNetDevice/Phy/State/Tx";
+      Config::ConnectWithoutContext (oss.str (), MakeBoundCallback (&AsciiPhyTransmitSinkWithoutContext, stream));
+
+      return;
+    }
+
+  //
+  // If we are provided an OutputStreamObject, we are expected to use it, and
+  // to provide a context.  We are free to come up with our own context if we
+  // want, and use the AsciiTraceHelper Hook*WithContext functions, but for 
+  // compatibility and simplicity, we just use Config::Connect and let it deal
+  // with coming up with a context.
+  //
+  oss.str ("");
   oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::WifiNetDevice/Phy/State/RxOk";
-  Config::Connect (oss.str (), MakeBoundCallback (&AsciiPhyRxOkEvent, writer));
+  Config::Connect (oss.str (), MakeBoundCallback (&AsciiPhyReceiveSinkWithContext, stream));
+
   oss.str ("");
   oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::WifiNetDevice/Phy/State/Tx";
-  Config::Connect (oss.str (), MakeBoundCallback (&AsciiPhyTxEvent, writer));
-}
-void 
-YansWifiPhyHelper::EnableAscii (std::ostream &os, NetDeviceContainer d)
-{
-  for (NetDeviceContainer::Iterator i = d.Begin (); i != d.End (); ++i)
-    {
-      Ptr<NetDevice> dev = *i;
-      EnableAscii (os, dev->GetNode ()->GetId (), dev->GetIfIndex ());
-    }
-}
-void
-YansWifiPhyHelper::EnableAscii (std::ostream &os, NodeContainer n)
-{
-  NetDeviceContainer devs;
-  for (NodeContainer::Iterator i = n.Begin (); i != n.End (); ++i)
-    {
-      Ptr<Node> node = *i;
-      for (uint32_t j = 0; j < node->GetNDevices (); ++j)
-        {
-          devs.Add (node->GetDevice (j));
-        }
-    }
-  EnableAscii (os, devs);
-}
-
-void
-YansWifiPhyHelper::EnableAsciiAll (std::ostream &os)
-{
-  EnableAscii (os, NodeContainer::GetGlobal ());
+  Config::Connect (oss.str (), MakeBoundCallback (&AsciiPhyTransmitSinkWithContext, stream));
 }
 
 } // namespace ns3

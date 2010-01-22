@@ -174,8 +174,10 @@
 
 namespace ns3 {
 
+#if 0
 std::vector<InternetStackHelper::Trace> InternetStackHelper::m_traces;
 std::string InternetStackHelper::m_pcapBaseFilename;
+#endif
 
 InternetStackHelper::InternetStackHelper ()
   : m_routing (0),
@@ -270,6 +272,7 @@ void InternetStackHelper::SetIpv6StackInstall (bool enable)
 void
 InternetStackHelper::Cleanup (void)
 {
+#if 0
   uint32_t illegal = std::numeric_limits<uint32_t>::max ();
 
   for (std::vector<Trace>::iterator i = m_traces.begin ();
@@ -280,6 +283,7 @@ InternetStackHelper::Cleanup (void)
     i->writer = 0;
   }
   m_traces.clear ();
+#endif
 }
 
 void
@@ -373,6 +377,198 @@ InternetStackHelper::Install (std::string nodeName) const
   Ptr<Node> node = Names::Find<Node> (nodeName);
   Install (node);
 }
+
+void 
+InternetStackHelper::EnablePcapInternal (std::string prefix, Ptr<Ipv4> ipv4, uint32_t interface)
+{
+#if 0
+  //
+  // We would normally create the pcap file here, but we need to create a file
+  // for each interface.  This is because when the trace sink for Rx and Tx are
+  // called, we get the packet and an interface ID.  We want to group packets 
+  // to/from a given interface id into a pcap file, but we have no knowledge
+  // here about what interfaces are created.  So we have to go with the flow.
+  // Look for the file creation to happen in the 
+  //
+  PcapHelper pcapHelper;
+  std::string filename = pcapHelper.GetFilenameFromNode (prefix, node);
+  Ptr<PcapFileObject> file = pcapHelper.CreateFile (filename, "w", PcapHelper::DLT_RAW);
+
+  //
+  // We want to enable Tx and Rx traces on Ipv4L3Protocol if m_ipv4Enabled; and 
+  // we want to enable Tx and Rx traces on Ipv6L3Protocol if m_ipv6Enabled.  The
+  // simple way to do that is to let Config::Connect wander through the global 
+  // node list looking for <node> and then the appropriate protocols and trace 
+  // sources.  Since we have the node handy, we can be quicker about it, but it
+  // takes slightly more work here.
+  //
+  if (m_ipv4Enabled)
+    {
+      Ptr<Ipv4L3Protocol> ipv4L3Protocol = node->GetObject<Ipv4L3Protocol> ();
+      NS_ASSERT_MSG (ipv4L3Protocol, "InternetStackHelper::EnablePcapInternal(): "
+                     "m_ipv4Enabled and ipv4L3Protocol inconsistent");
+
+      bool result = ipv4L3Protocol->TraceConnectWithoutContext ("Tx", MakeBoundCallback (&DefaultSink, file));
+      NS_ASSERT_MSG (result == true, "InternetStackHelper::EnablePcapInternal():  Unable to connect ipv4L3Protocol \"Tx\"");
+
+      result = ipv4L3Protocol->TraceConnectWithoutContext ("Rx", MakeBoundCallback (&DefaultSink, file));
+      NS_ASSERT_MSG (result == true, "InternetStackHelper::EnablePcapInternal():  Unable to connect ipv4L3Protocol \"Rx\"");
+
+    }
+
+  if (m_ipv6Enabled)
+    {
+      Ptr<Ipv6L3Protocol> ipv6L3Protocol = node->GetObject<Ipv6L3Protocol> ();
+      NS_FATAL_ERROR_UNLESS (ipv6L3Protocol, "InternetStackHelper::EnablePcapInternal(): "
+                             "m_ipv6Enabled and ipv6L3Protocol inconsistent");
+
+      bool result = ipv6L3Protocol->TraceConnectWithoutContext ("Tx", MakeBoundCallback (&DefaultSink, file));
+      NS_ASSERT_MSG (result == true, "InternetStackHelper::EnablePcapInternal():  Unable to connect ipv6L3Protocol \"Tx\"");
+
+      result = ipv6L3Protocol->TraceConnectWithoutContext ("Rx", MakeBoundCallback (&DefaultSink, file));
+      NS_ASSERT_MSG (result == true, "InternetStackHelper::EnablePcapInternal():  Unable to connect ipv6L3Protocol \"Rx\"");
+
+    }
+#endif
+}
+
+
+
+#if 0
+  //
+  // We want to enable drop traces on Ipv4L3Protocol and ArpL3Protocol if 
+  // m_ipv4Enabled; and we want to enable the drop trace on Ipv6L3Protocol
+  // if enabled.  The simple way to do that is to let Config::Connect wander
+  // through the global node list looking for <node> and then the appropriate
+  // protocols and trace sources.  Since we have the node handy, we can be
+  // quicker about it, but it takes slightly more work here.
+  //
+  if (m_ipv4Enabled)
+    {
+      Ptr<Ipv4L3Protocol> ipv4L3Protocol = node->GetObject<Ipv4L3Protocol> ();
+      NS_ASSERT_MSG (ipv4L3Protocol, "InternetStackHelper::EnablePcapInternal(): "
+                     "m_ipv4Enabled and ipv4L3Protocol inconsistent");
+
+      bool result = ipv4L3Protocol->TraceConnectWithoutContext ("Drop", MakeBoundCallback (&DefaultSink, file));
+      NS_ASSERT_MSG (result == true, "InternetStackHelper::EnablePcapInternal():  Unable to connect ipv4L3Protocol \"Drop\"");
+
+      Ptr<ArpL3Protocol> arpL3Protocol = node->GetObject<ArpL3Protocol> ();
+      NS_ASSERT_MSG (arpL3Protocol, "InternetStackHelper::EnablePcapInternal(): "
+                     "m_ipv4Enabled and arpL3Protocol inconsistent");
+
+      result = arpL3Protocol->TraceConnectWithoutContext ("Drop", MakeBoundCallback (&DefaultSink, file));
+      NS_ASSERT_MSG (result == true, "InternetStackHelper::EnablePcapInternal():  Unable to connect arpL3Protocol \"Drop\"");
+    }
+
+  if (m_ipv6Enabled)
+    {
+      Ptr<Ipv6L3Protocol> ipv6L3Protocol = node->GetObject<Ipv6L3Protocol> ();
+      NS_FATAL_ERROR_UNLESS (ipv6L3Protocol, "InternetStackHelper::EnablePcapInternal(): "
+                             "m_ipv6Enabled and ipv6L3Protocol inconsistent");
+
+      bool result = ipv6L3Protocol->TraceConnectWithoutContext ("Drop", MakeBoundCallback (&DefaultSink, file));
+      NS_ASSERT_MSG (result == true, "InternetStackHelper::EnablePcapInternal():  Unable to connect ipv6L3Protocol \"Drop\"");
+    }
+#endif
+
+
+
+void 
+InternetStackHelper::EnableAsciiInternal (
+  Ptr<OutputStreamObject> stream, 
+  std::string prefix, 
+  Ptr<Ipv4> ipv4, 
+  uint32_t interface)
+{
+#if 0
+  //
+  // All of the ascii enable functions vector through here including the ones
+  // that are wandering through all of devices on perhaps all of the nodes in
+  // the system.  We can only deal with devices of type CsmaNetDevice.
+  //
+  Ptr<CsmaNetDevice> device = nd->GetObject<CsmaNetDevice> ();
+  if (device == 0)
+    {
+      NS_LOG_INFO ("CsmaHelper::EnableAsciiInternal(): Device " << device << " not of type ns3::CsmaNetDevice");
+      return;
+    }
+
+  //
+  // Our default trace sinks are going to use packet printing, so we have to 
+  // make sure that is turned on.
+  //
+  Packet::EnablePrinting ();
+
+  //
+  // If we are not provided an OutputStreamObject, we are expected to create 
+  // one using the usual trace filename conventions and do a Hook*WithoutContext
+  // since there will be one file per context and therefore the context would
+  // be redundant.
+  //
+  if (stream == 0)
+    {
+      //
+      // Set up an output stream object to deal with private ofstream copy 
+      // constructor and lifetime issues.  Let the helper decide the actual
+      // name of the file given the prefix.
+      //
+      AsciiTraceHelper asciiTraceHelper;
+      std::string filename = asciiTraceHelper.GetFilenameFromDevice (prefix, device);
+      Ptr<OutputStreamObject> theStream = asciiTraceHelper.CreateFileStream (filename, "w");
+
+      //
+      // The MacRx trace source provides our "r" event.
+      //
+      asciiTraceHelper.HookDefaultReceiveSinkWithoutContext<CsmaNetDevice> (device, "MacRx", theStream);
+
+      //
+      // The "+", '-', and 'd' events are driven by trace sources actually in the
+      // transmit queue.
+      //
+      Ptr<Queue> queue = device->GetQueue ();
+      asciiTraceHelper.HookDefaultEnqueueSinkWithoutContext<Queue> (queue, "Enqueue", theStream);
+      asciiTraceHelper.HookDefaultDropSinkWithoutContext<Queue> (queue, "Drop", theStream);
+      asciiTraceHelper.HookDefaultDequeueSinkWithoutContext<Queue> (queue, "Dequeue", theStream);
+
+      return;
+    }
+
+  //
+  // If we are provided an OutputStreamObject, we are expected to use it, and
+  // to providd a context.  We are free to come up with our own context if we
+  // want, and use the AsciiTraceHelper Hook*WithContext functions, but for 
+  // compatibility and simplicity, we just use Config::Connect and let it deal
+  // with the context.
+  //
+  // Note that we are going to use the default trace sinks provided by the 
+  // ascii trace helper.  There is actually no AsciiTraceHelper in sight here,
+  // but the default trace sinks are actually publicly available static 
+  // functions that are always there waiting for just such a case.
+  //
+  uint32_t nodeid = nd->GetNode ()->GetId ();
+  uint32_t deviceid = nd->GetIfIndex ();
+  std::ostringstream oss;
+
+  oss << "/NodeList/" << nd->GetNode ()->GetId () << "/DeviceList/" << deviceid << "/$ns3::CsmaNetDevice/MacRx";
+  Config::Connect (oss.str (), MakeBoundCallback (&AsciiTraceHelper::DefaultReceiveSinkWithContext, stream));
+
+  oss.str ("");
+  oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::CsmaNetDevice/TxQueue/Enqueue";
+  Config::Connect (oss.str (), MakeBoundCallback (&AsciiTraceHelper::DefaultEnqueueSinkWithContext, stream));
+
+  oss.str ("");
+  oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::CsmaNetDevice/TxQueue/Dequeue";
+  Config::Connect (oss.str (), MakeBoundCallback (&AsciiTraceHelper::DefaultDequeueSinkWithContext, stream));
+
+  oss.str ("");
+  oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::CsmaNetDevice/TxQueue/Drop";
+  Config::Connect (oss.str (), MakeBoundCallback (&AsciiTraceHelper::DefaultDropSinkWithContext, stream));
+#endif
+}
+
+
+
+#if 0
 void
 InternetStackHelper::EnableAscii (std::ostream &os, NodeContainer n)
 {
@@ -497,5 +693,6 @@ InternetStackHelper::AsciiDropEventIpv6 (Ptr<AsciiWriter> writer, std::string pa
   p->AddHeader (header);
   writer->WritePacket (AsciiWriter::DROP, path, p);
 }
+#endif
 
 } // namespace ns3

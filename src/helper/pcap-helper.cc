@@ -77,7 +77,7 @@ PcapHelper::CreateFile (
 }
 
 std::string
-PcapHelper::GetFilename (std::string prefix, Ptr<NetDevice> device, bool useObjectNames)
+PcapHelper::GetFilenameFromDevice (std::string prefix, Ptr<NetDevice> device, bool useObjectNames)
 {
   NS_LOG_FUNCTION (prefix << device << useObjectNames);
   NS_ABORT_MSG_UNLESS (prefix.size (), "Empty prefix string");
@@ -102,7 +102,7 @@ PcapHelper::GetFilename (std::string prefix, Ptr<NetDevice> device, bool useObje
     }
   else
     {
-      oss << node->GetId ();
+      oss << "n" << node->GetId ();
     }
 
   oss << "-";
@@ -113,10 +113,48 @@ PcapHelper::GetFilename (std::string prefix, Ptr<NetDevice> device, bool useObje
     }
   else
     {
-      oss << device->GetIfIndex ();
+      oss << "d" << device->GetIfIndex ();
     }
 
   oss << ".pcap";
+
+  return oss.str ();
+}
+
+std::string
+PcapHelper::GetFilenameFromInterfacePair (std::string prefix, Ptr<Ipv4> ipv4, uint32_t interface, bool useObjectNames)
+{
+  NS_LOG_FUNCTION (prefix << ipv4 << interface << useObjectNames);
+  NS_ABORT_MSG_UNLESS (prefix.size (), "Empty prefix string");
+
+  std::ostringstream oss;
+  oss << prefix << "-";
+
+  std::string ipv4name;
+  std::string nodename;
+
+  Ptr<Node> node = ipv4->GetObject<Node> ();
+
+  if (useObjectNames)
+    {
+      ipv4name = Names::FindName (ipv4);
+      nodename = Names::FindName (node);
+    }
+
+  if (ipv4name.size ())
+    {
+      oss << ipv4name;
+    }
+  else if (nodename.size ())
+    {
+      oss << nodename;
+    }
+  else
+    {
+      oss << "n" << node->GetId ();
+    }
+
+  oss << "-i" << interface << ".pcap";
 
   return oss.str ();
 }

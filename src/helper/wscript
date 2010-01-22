@@ -49,8 +49,10 @@ def build(bld):
         'csma-star-helper.cc',
         'udp-client-server-helper.cc',
         'pcap-helper.cc',
-        'pcap-user-helper.cc',
-        'ascii-trace-user-helper.cc',
+        'pcap-user-helper-for-device.cc',
+        'pcap-user-helper-for-ipv4.cc',
+        'ascii-trace-user-helper-for-device.cc',
+        'ascii-trace-user-helper-for-ipv4.cc',
         'ascii-trace-helper.cc',
         ]
 
@@ -104,8 +106,10 @@ def build(bld):
         'csma-star-helper.h',
         'udp-client-server-helper.h',
         'pcap-helper.h',
-        'pcap-user-helper.h',
-        'ascii-trace-user-helper.h',
+        'pcap-user-helper-for-device.h',
+        'pcap-user-helper-for-ipv4.h',
+        'ascii-trace-user-helper-for-device.h',
+        'ascii-trace-user-helper-for-ipv4.h',
         'ascii-trace-helper.h',
         ]
 

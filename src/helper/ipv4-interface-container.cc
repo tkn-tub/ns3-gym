@@ -16,6 +16,18 @@ Ipv4InterfaceContainer::Add (Ipv4InterfaceContainer other)
     }
 }
 
+Ipv4InterfaceContainer::Iterator 
+Ipv4InterfaceContainer::Begin (void) const
+{
+  return m_interfaces.begin ();
+}
+
+Ipv4InterfaceContainer::Iterator 
+Ipv4InterfaceContainer::End (void) const
+{
+  return m_interfaces.end ();
+}
+
 uint32_t 
 Ipv4InterfaceContainer::GetN (void) const
 {

@@ -104,6 +104,14 @@ public:
    */
   void SetQueue (Ptr<Queue> queue);
 
+  /**
+   * Get a copy of the attached Queue.
+   *
+   * @returns Ptr to the queue.
+   */
+  Ptr<Queue> GetQueue(void) const; 
+
+
 //
 // Pure virtual methods inherited from NetDevice we must implement.
 //
@@ -217,16 +225,6 @@ private:
    * Figure out where the raw socket creation process lives on the system.
    */
   std::string FindCreator (std::string creatorName);
-
-  /**
-   * Get a copy of the attached Queue.
-   *
-   * This method is provided for any derived class that may need to get
-   * direct access to the underlying queue.
-   *
-   * @returns Ptr to the queue.
-   */
-  Ptr<Queue> GetQueue(void) const; 
 
   /**
    * Spin up the device

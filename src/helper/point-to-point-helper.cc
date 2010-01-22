@@ -27,10 +27,9 @@
 #include "ns3/config.h"
 #include "ns3/packet.h"
 #include "ns3/names.h"
-#include "ns3/pcap-writer.h"
-#include "ns3/ascii-writer.h"
 
 #include "pcap-helper.h"
+#include "ascii-trace-helper.h"
 #include "point-to-point-helper.h"
 
 NS_LOG_COMPONENT_DEFINE ("PointToPointHelper");
@@ -86,59 +85,97 @@ PointToPointHelper::EnablePcapInternal (std::string prefix, Ptr<NetDevice> nd, b
     }
 
   PcapHelper pcapHelper;
-  std::string filename = pcapHelper.GetFilename (prefix, device);
+  std::string filename = pcapHelper.GetFilenameFromDevice (prefix, device);
   Ptr<PcapFileObject> file = pcapHelper.CreateFile (filename, "w", PcapHelper::DLT_PPP);
   pcapHelper.HookDefaultSink<PointToPointNetDevice> (device, "PromiscSniffer", file);
 }
 
 void 
-PointToPointHelper::EnableAscii (std::ostream &os, uint32_t nodeid, uint32_t deviceid)
+PointToPointHelper::EnableAsciiInternal (Ptr<OutputStreamObject> stream, std::string prefix, Ptr<NetDevice> nd)
 {
-  Ptr<AsciiWriter> writer = AsciiWriter::Get (os);
+  //
+  // All of the ascii enable functions vector through here including the ones
+  // that are wandering through all of devices on perhaps all of the nodes in
+  // the system.  We can only deal with devices of type PointToPointNetDevice.
+  //
+  Ptr<PointToPointNetDevice> device = nd->GetObject<PointToPointNetDevice> ();
+  if (device == 0)
+    {
+      NS_LOG_INFO ("PointToPointHelper::EnableAsciiInternal(): Device " << device << 
+                   " not of type ns3::PointToPointNetDevice");
+      return;
+    }
+
+  //
+  // Our default trace sinks are going to use packet printing, so we have to 
+  // make sure that is turned on.
+  //
   Packet::EnablePrinting ();
+
+  //
+  // If we are not provided an OutputStreamObject, we are expected to create 
+  // one using the usual trace filename conventions and do a Hook*WithoutContext
+  // since there will be one file per context and therefore the context would
+  // be redundant.
+  //
+  if (stream == 0)
+    {
+      //
+      // Set up an output stream object to deal with private ofstream copy 
+      // constructor and lifetime issues.  Let the helper decide the actual
+      // name of the file given the prefix.
+      //
+      AsciiTraceHelper asciiTraceHelper;
+      std::string filename = asciiTraceHelper.GetFilenameFromDevice (prefix, device);
+      Ptr<OutputStreamObject> theStream = asciiTraceHelper.CreateFileStream (filename, "w");
+
+      //
+      // The MacRx trace source provides our "r" event.
+      //
+      asciiTraceHelper.HookDefaultReceiveSinkWithoutContext<PointToPointNetDevice> (device, "MacRx", theStream);
+
+      //
+      // The "+", '-', and 'd' events are driven by trace sources actually in the
+      // transmit queue.
+      //
+      Ptr<Queue> queue = device->GetQueue ();
+      asciiTraceHelper.HookDefaultEnqueueSinkWithoutContext<Queue> (queue, "Enqueue", theStream);
+      asciiTraceHelper.HookDefaultDropSinkWithoutContext<Queue> (queue, "Drop", theStream);
+      asciiTraceHelper.HookDefaultDequeueSinkWithoutContext<Queue> (queue, "Dequeue", theStream);
+
+      return;
+    }
+
+  //
+  // If we are provided an OutputStreamObject, we are expected to use it, and
+  // to providd a context.  We are free to come up with our own context if we
+  // want, and use the AsciiTraceHelper Hook*WithContext functions, but for 
+  // compatibility and simplicity, we just use Config::Connect and let it deal
+  // with the context.
+  //
+  // Note that we are going to use the default trace sinks provided by the 
+  // ascii trace helper.  There is actually no AsciiTraceHelper in sight here,
+  // but the default trace sinks are actually publicly available static 
+  // functions that are always there waiting for just such a case.
+  //
+  uint32_t nodeid = nd->GetNode ()->GetId ();
+  uint32_t deviceid = nd->GetIfIndex ();
   std::ostringstream oss;
-  oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::PointToPointNetDevice/MacRx";
-  Config::Connect (oss.str (), MakeBoundCallback (&PointToPointHelper::AsciiRxEvent, writer));
+
+  oss << "/NodeList/" << nd->GetNode ()->GetId () << "/DeviceList/" << deviceid << "/$ns3::PointToPointNetDevice/MacRx";
+  Config::Connect (oss.str (), MakeBoundCallback (&AsciiTraceHelper::DefaultReceiveSinkWithContext, stream));
+
   oss.str ("");
   oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::PointToPointNetDevice/TxQueue/Enqueue";
-  Config::Connect (oss.str (), MakeBoundCallback (&PointToPointHelper::AsciiEnqueueEvent, writer));
+  Config::Connect (oss.str (), MakeBoundCallback (&AsciiTraceHelper::DefaultEnqueueSinkWithContext, stream));
+
   oss.str ("");
   oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::PointToPointNetDevice/TxQueue/Dequeue";
-  Config::Connect (oss.str (), MakeBoundCallback (&PointToPointHelper::AsciiDequeueEvent, writer));
+  Config::Connect (oss.str (), MakeBoundCallback (&AsciiTraceHelper::DefaultDequeueSinkWithContext, stream));
+
   oss.str ("");
   oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::PointToPointNetDevice/TxQueue/Drop";
-  Config::Connect (oss.str (), MakeBoundCallback (&PointToPointHelper::AsciiDropEvent, writer));
-}
-
-void 
-PointToPointHelper::EnableAscii (std::ostream &os, NetDeviceContainer d)
-{
-  for (NetDeviceContainer::Iterator i = d.Begin (); i != d.End (); ++i)
-    {
-      Ptr<NetDevice> dev = *i;
-      EnableAscii (os, dev->GetNode ()->GetId (), dev->GetIfIndex ());
-    }
-}
-
-void
-PointToPointHelper::EnableAscii (std::ostream &os, NodeContainer n)
-{
-  NetDeviceContainer devs;
-  for (NodeContainer::Iterator i = n.Begin (); i != n.End (); ++i)
-    {
-      Ptr<Node> node = *i;
-      for (uint32_t j = 0; j < node->GetNDevices (); ++j)
-        {
-          devs.Add (node->GetDevice (j));
-        }
-    }
-  EnableAscii (os, devs);
-}
-
-void
-PointToPointHelper::EnableAsciiAll (std::ostream &os)
-{
-  EnableAscii (os, NodeContainer::GetGlobal ());
+  Config::Connect (oss.str (), MakeBoundCallback (&AsciiTraceHelper::DefaultDropSinkWithContext, stream));
 }
 
 NetDeviceContainer 
@@ -192,31 +229,6 @@ PointToPointHelper::Install (std::string aName, std::string bName)
   Ptr<Node> a = Names::Find<Node> (aName);
   Ptr<Node> b = Names::Find<Node> (bName);
   return Install (a, b);
-}
-
-void
-PointToPointHelper::AsciiEnqueueEvent (Ptr<AsciiWriter> writer, std::string path,
-                                       Ptr<const Packet> packet)
-{
-  writer->WritePacket (AsciiWriter::ENQUEUE, path, packet);
-}
-
-void
-PointToPointHelper::AsciiDequeueEvent (Ptr<AsciiWriter> writer, std::string path, Ptr<const Packet> packet)
-{
-  writer->WritePacket (AsciiWriter::DEQUEUE, path, packet);
-}
-
-void
-PointToPointHelper::AsciiDropEvent (Ptr<AsciiWriter> writer, std::string path, Ptr<const Packet> packet)
-{
-  writer->WritePacket (AsciiWriter::DROP, path, packet);
-}
-
-void
-PointToPointHelper::AsciiRxEvent (Ptr<AsciiWriter> writer, std::string path, Ptr<const Packet> packet)
-{
-  writer->WritePacket (AsciiWriter::RX, path, packet);
 }
 
 } // namespace ns3

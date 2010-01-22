@@ -26,10 +26,10 @@
 #include "ns3/packet.h"
 #include "ns3/ptr.h"
 #include "ns3/object-factory.h"
-#include "ns3/pcap-writer.h"
-#include "ns3/ascii-writer.h"
 #include "ns3/ipv4-l3-protocol.h"
 #include "ns3/ipv6-l3-protocol.h"
+#include "pcap-user-helper-for-ipv4.h"
+#include "ascii-trace-user-helper-for-ipv4.h"
 
 namespace ns3 {
 
@@ -39,8 +39,15 @@ class Ipv6RoutingHelper;
 
 /**
  * \brief aggregate IP/TCP/UDP functionality to existing Nodes.
+ *
+ * This helper enables pcap and ascii tracing of events in the internet stack
+ * associated with a node.  This is substantially similar to the tracing
+ * that happens in device helpers, but the important difference is that, well,
+ * there is no device.  This means that the creation of output file names will
+ * change, and also the user-visible methods will not reference devices and
+ * therefore the number of trace enable methods is reduced.
  */
-class InternetStackHelper
+class InternetStackHelper : public PcapUserHelperForIpv4, public AsciiTraceUserHelperForIpv4
 {
 public:
   /**
@@ -145,43 +152,6 @@ public:
   void SetTcp (std::string tid, std::string attr, const AttributeValue &val); 
 
   /**
-   * \param os output stream
-   * \param n node container
-   *
-   * Enable ascii output on these drop traces, for each node in the NodeContainer..
-   * /NodeList/[i]/$ns3ArpL3Protocol/Drop 
-   * /NodeList/[i]/$ns3Ipv4L3Protocol/Drop 
-   * /NodeList/[i]/$ns3Ipv6L3Protocol/Drop 
-   */
-  static void EnableAscii (std::ostream &os, NodeContainer n);
-
-  /**
-   * \param os output stream
-   *
-   * Enable ascii output on these drop traces, for all nodes.
-   * /NodeList/[i]/$ns3ArpL3Protocol/Drop 
-   * /NodeList/[i]/$ns3Ipv4L3Protocol/Drop 
-   * /NodeList/[i]/$ns3Ipv6L3Protocol/Drop 
-   */
-  static void EnableAsciiAll (std::ostream &os);
-
-  /**
-   * Enable pcap output on each protocol instance which is of the
-   * ns3::Ipv4L3Protocol or ns3::Ipv6L3Protocol type.  Both Tx and 
-   * Rx events will be logged.
-   *
-   * \param filename filename prefix to use for pcap files.
-   *
-   * \warning If you perform multiple simulations in a single script,
-   * each iteration of the simulation will result in the trace files
-   * being overwritten.  We don't attempt to anticipate what a user
-   * might actually want to do, so we leave it up to them.  If you want
-   * to save any particular data, do so manually at inter-simulation 
-   * time.
-   */
-  static void EnablePcapAll (std::string filename);
-
-  /**
    * \brief Enable/disable IPv4 stack install.
    * \param enable enable state
    */
@@ -194,6 +164,28 @@ public:
   void SetIpv6StackInstall (bool enable);
 
 private:
+  /**
+   * @brief Enable pcap output the indicated Ipv4 and interface pair.
+   * @internal
+   *
+   * @param prefix Filename prefix to use for pcap files.
+   * @param ipv4 Ptr to the Ipv4 interface on which you want to enable tracing.
+   * @param interface Interface ID on the Ipv4 on which you want to enable tracing.
+   */
+  virtual void EnablePcapInternal (std::string prefix, Ptr<Ipv4> ipv4, uint32_t interface);
+
+  /**
+   * @brief Enable ascii trace output on the indicated Ipv4 and interface pair.
+   * @internal
+   *
+   * @param stream An OutputStreamObject representing an existing file to use
+   *               when writing trace data.
+   * @param prefix Filename prefix to use for ascii trace files.
+   * @param ipv4 Ptr to the Ipv4 interface on which you want to enable tracing.
+   * @param interface Interface ID on the Ipv4 on which you want to enable tracing.
+   */
+  virtual void EnableAsciiInternal (Ptr<OutputStreamObject> stream, std::string prefix, Ptr<Ipv4> ipv4, uint32_t interface);
+
   void Initialize (void);
   ObjectFactory m_tcpFactory;
   const Ipv4RoutingHelper *m_routing;
@@ -214,6 +206,7 @@ private:
    */
   static void Cleanup (void);
 
+#if 0
   /**
    * \internal
    */
@@ -261,6 +254,7 @@ private:
   static uint32_t GetNodeIndex (std::string context);
 
   static std::vector<Trace> m_traces;
+#endif
 
   /**
    * \brief IPv4 install state (enabled/disabled) ?
