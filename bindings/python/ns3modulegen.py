@@ -138,7 +138,8 @@ def main():
             pass
 
     if 'Threading' not in enabled_features:
-        for clsname in ['SystemThread', 'SystemMutex', 'SystemCondition', 'CriticalSection', 'SimpleRefCount< ns3::SystemThread, ns3::empty >']:
+        for clsname in ['SystemThread', 'SystemMutex', 'SystemCondition', 'CriticalSection',
+                        'SimpleRefCount< ns3::SystemThread, ns3::empty, ns3::DefaultDeleter<ns3::SystemThread> >']:
             root_module.classes.remove(root_module['ns3::%s' % clsname])
 
     if 'EmuNetDevice' not in enabled_features:
