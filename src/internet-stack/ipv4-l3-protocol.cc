@@ -442,7 +442,7 @@ Ipv4L3Protocol::Receive( Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t pr
         {
           if (ipv4Interface->IsUp ())
             {
-              m_rxTrace (packet, interface);
+              m_rxTrace (packet, m_node->GetObject<Ipv4> (), interface);
               break;
             }
           else
@@ -450,7 +450,7 @@ Ipv4L3Protocol::Receive( Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t pr
               NS_LOG_LOGIC ("Dropping received packet-- interface is down");
               Ipv4Header ipHeader;
               packet->RemoveHeader (ipHeader);
-              m_dropTrace (ipHeader, packet, DROP_INTERFACE_DOWN, interface);
+              m_dropTrace (ipHeader, packet, DROP_INTERFACE_DOWN, m_node->GetObject<Ipv4> (), interface);
               return;
             }
         }
@@ -465,7 +465,7 @@ Ipv4L3Protocol::Receive( Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t pr
 
   if (!ipHeader.IsChecksumOk ()) 
     {
-      m_dropTrace (ipHeader, packet, DROP_BAD_CHECKSUM, interface);
+      m_dropTrace (ipHeader, packet, DROP_BAD_CHECKSUM, m_node->GetObject<Ipv4> (), interface);
       return;
     }
 
@@ -547,7 +547,7 @@ Ipv4L3Protocol::Send (Ptr<Packet> packet,
 
           m_sendOutgoingTrace (ipHeader, packetCopy, ifaceIndex);
           packetCopy->AddHeader (ipHeader);
-          m_txTrace (packetCopy, ifaceIndex);
+          m_txTrace (packetCopy, m_node->GetObject<Ipv4> (), ifaceIndex);
           outInterface->Send (packetCopy, destination);
         }
       return;
@@ -571,7 +571,7 @@ Ipv4L3Protocol::Send (Ptr<Packet> packet,
               Ptr<Packet> packetCopy = packet->Copy ();
               m_sendOutgoingTrace (ipHeader, packetCopy, ifaceIndex);
               packetCopy->AddHeader (ipHeader);
-              m_txTrace (packetCopy, ifaceIndex);
+              m_txTrace (packetCopy, m_node->GetObject<Ipv4> (), ifaceIndex);
               outInterface->Send (packetCopy, destination);
               return;
             }
@@ -613,7 +613,7 @@ Ipv4L3Protocol::Send (Ptr<Packet> packet,
   else
     {
       NS_LOG_WARN ("No route to host.  Drop.");
-      m_dropTrace (ipHeader, packet, DROP_NO_ROUTE, 0);
+      m_dropTrace (ipHeader, packet, DROP_NO_ROUTE, m_node->GetObject<Ipv4> (), 0);
     }
 }
 
@@ -666,7 +666,7 @@ Ipv4L3Protocol::SendRealOut (Ptr<Ipv4Route> route,
   if (route == 0)
     {
       NS_LOG_WARN ("No route to host.  Drop.");
-      m_dropTrace (ipHeader, packet, DROP_NO_ROUTE, 0);
+      m_dropTrace (ipHeader, packet, DROP_NO_ROUTE, m_node->GetObject<Ipv4> (), 0);
       return;
     }
   packet->AddHeader (ipHeader);
@@ -682,7 +682,7 @@ Ipv4L3Protocol::SendRealOut (Ptr<Ipv4Route> route,
       if (outInterface->IsUp ())
         {
           NS_LOG_LOGIC ("Send to gateway " << route->GetGateway ());
-          m_txTrace (packet, interface);
+          m_txTrace (packet, m_node->GetObject<Ipv4> (), interface);
           outInterface->Send (packet, route->GetGateway ());
         }
       else
@@ -690,7 +690,7 @@ Ipv4L3Protocol::SendRealOut (Ptr<Ipv4Route> route,
           NS_LOG_LOGIC ("Dropping-- outgoing interface is down: " << route->GetGateway ());
           Ipv4Header ipHeader;
           packet->RemoveHeader (ipHeader);
-          m_dropTrace (ipHeader, packet, DROP_INTERFACE_DOWN, interface);
+          m_dropTrace (ipHeader, packet, DROP_INTERFACE_DOWN, m_node->GetObject<Ipv4> (), interface);
         }
     } 
   else 
@@ -698,7 +698,7 @@ Ipv4L3Protocol::SendRealOut (Ptr<Ipv4Route> route,
       if (outInterface->IsUp ())
         {
           NS_LOG_LOGIC ("Send to destination " << ipHeader.GetDestination ());
-          m_txTrace (packet, interface);
+          m_txTrace (packet, m_node->GetObject<Ipv4> (), interface);
           outInterface->Send (packet, ipHeader.GetDestination ());
         }
       else
@@ -706,7 +706,7 @@ Ipv4L3Protocol::SendRealOut (Ptr<Ipv4Route> route,
           NS_LOG_LOGIC ("Dropping-- outgoing interface is down: " << ipHeader.GetDestination ());
           Ipv4Header ipHeader;
           packet->RemoveHeader (ipHeader);
-          m_dropTrace (ipHeader, packet, DROP_INTERFACE_DOWN, interface);
+          m_dropTrace (ipHeader, packet, DROP_INTERFACE_DOWN, m_node->GetObject<Ipv4> (), interface);
         }
     }
 }
@@ -729,7 +729,7 @@ Ipv4L3Protocol::IpMulticastForward (Ptr<Ipv4MulticastRoute> mrtentry, Ptr<const 
           if (h.GetTtl () == 0)
             {
               NS_LOG_WARN ("TTL exceeded.  Drop.");
-              m_dropTrace (header, packet, DROP_TTL_EXPIRED, i);
+              m_dropTrace (header, packet, DROP_TTL_EXPIRED, m_node->GetObject<Ipv4> (), i);
               return;
             }
           NS_LOG_LOGIC ("Forward multicast via interface " << i);
@@ -766,7 +766,7 @@ Ipv4L3Protocol::IpForward (Ptr<Ipv4Route> rtentry, Ptr<const Packet> p, const Ip
           icmp->SendTimeExceededTtl (ipHeader, packet);
         }
       NS_LOG_WARN ("TTL exceeded.  Drop.");
-      m_dropTrace (header, packet, DROP_TTL_EXPIRED, interface);
+      m_dropTrace (header, packet, DROP_TTL_EXPIRED, m_node->GetObject<Ipv4> (), interface);
       return;
     }
   m_unicastForwardTrace (ipHeader, packet, interface);
@@ -1036,8 +1036,7 @@ Ipv4L3Protocol::RouteInputError (Ptr<const Packet> p, const Ipv4Header & ipHeade
 {
   NS_LOG_FUNCTION (this << p << ipHeader << sockErrno);
   NS_LOG_LOGIC ("Route input failure-- dropping packet to " << ipHeader << " with errno " << sockErrno); 
-  m_dropTrace (ipHeader, p, DROP_ROUTE_ERROR, 0);
+  m_dropTrace (ipHeader, p, DROP_ROUTE_ERROR, m_node->GetObject<Ipv4> (), 0);
 }
-
 
 }//namespace ns3
