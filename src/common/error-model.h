@@ -45,7 +45,8 @@ class Packet;
  * the packet is to be corrupted according to the underlying model.
  * Depending on the error model, the packet itself may have its packet
  * data buffer errored or not, or side information may be returned to
- * the client in the form of a packet tag.
+ * the client in the form of a packet tag.  (Note:  No such error models
+ * that actually error the bits in a packet presently exist).
  * The object can have state (resettable by Reset()).  
  * The object can also be enabled and disabled via two public member functions.
  * 
@@ -77,6 +78,9 @@ public:
   virtual ~ErrorModel ();
 
  /**
+  * Note:  Depending on the error model, this function may or may not
+  * alter the contents of the packet upon returning true.
+  *
   * \returns true if the Packet is to be considered as errored/corrupted
   * \param pkt Packet to apply error model to
   */

@@ -270,22 +270,49 @@ and no further routing protocols will be searched.
 
 @subsection Optimized Link State Routing (OLSR)
 
-This is the first dynamic routing protocol for @command{ns-3}.  The implementation
+This IPv4 routing protocol was originally ported from the OLSR-UM 
+implementation for ns-2.  The implementation
 is found in the src/routing/olsr directory, and an example script is in
 examples/simple-point-to-point-olsr.cc.
 
-The following commands will enable OLSR in a simulation.  
+Typically, OLSR is enabled in a main program by use of an OlsrHelper class
+that installs OLSR into an Ipv4ListRoutingProtocol object.  
+The following sample commands will enable OLSR in a simulation using
+this helper class along with some other routing helper objects.
+The setting of priority value 10, ahead of
+the staticRouting priority of 0, means that OLSR will be consulted for
+a route before the node's static routing table.  
 
 @verbatim
-  olsr::EnableAllNodes ();  // Start OLSR on all nodes
-  olsr::EnableNodes(InputIterator begin, InputIterator end); // Start on
-    // a list of nodes
-  olsr::EnableNode (Ptr<Node> node);  // Start OLSR on "node" only
+  NodeContainer c:
+  ...
+ // Enable OLSR
+  NS_LOG_INFO ("Enabling OLSR Routing.");
+  OlsrHelper olsr;
+
+  Ipv4StaticRoutingHelper staticRouting;
+
+  Ipv4ListRoutingHelper list;
+  list.Add (staticRouting, 0);
+  list.Add (olsr, 10);
+
+  InternetStackHelper internet;
+  internet.SetRoutingHelper (list);
+  internet.Install (c);
 @end verbatim
 
-Once instantiated, the agent can be started with the Start() command,
-and the OLSR "main interface" can be set with the SetMainInterface()
-command.  A number of protocol constants are defined in olsr-agent-impl.cc.
+Once installed,the OLSR "main interface" can be set with the 
+SetMainInterface() command.  If the user does not specify a main address,
+the protocol will select the first primary IP address that it finds, starting
+first the loopback interface and then the next non-loopback interface
+found, in order of Ipv4 interface index.  The loopback address of 127.0.0.1
+is not selected.  In addition, a number of protocol constants are defined in 
+olsr-routing-protocol.cc.
+
+Olsr is started at time zero of the simulation, based on a call to
+Object::Start() that eventually calls OlsrRoutingProtocol::DoStart().
+Note:  a patch to allow the user to start and stop the protocol at other
+times would be welcome.
 
 Presently, OLSR is limited to use with an Ipv4ListRouting object, and
 does not respond to dynamic changes to a device's IP address or link up/down

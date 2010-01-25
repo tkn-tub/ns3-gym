@@ -36,8 +36,6 @@
  * Here is a summary of software's main features:
  * - Mostly compliant with OLSR as documented in RFC 3626 (http://www.ietf.org/rfc/rfc3626.txt), with the following differences:
  *  - The use of multiple interfaces was not supported by the NS-2 version, but is supported in NS-3;
- *  - Unlike the NS-2 version, does not yet support MAC layer feedback as described in RFC 3626;
- *  - HNA (Host/Network Association) messages are almost-but-not-quite supported in this version.
  *
  * \section api API and Usage
  * 
@@ -53,6 +51,21 @@
  * to set OLSR attributes.  These include HelloInterval, TcInterval,
  * MidInterval, Willingness.  Other parameters are defined as macros
  * in olsr-routing-protocol.cc.
+ *
+ * \section list Open Issues
+ *
+ * - OLSR does not repond to the routing event notifications correspondingg
+ * to dynamic interface up and down (RoutingProtocol::NotifyInterfaceUp and
+ * RoutingProtocol::NotifyInterfaceDown) or address insertion/removal
+ * (RoutingProtocol::NotifyAddAddress and 
+ * RoutingProtocol::NotifyRemoveAddress).
+ * - HNA (Host/Network Association) messages are almost-but-not-quite supported in this version.
+ * - Unlike the NS-2 version, does not yet support MAC layer feedback as described in RFC 3626;
+ * - If a user binds a socket to a particular output device, OLSR will not
+ * consider that constraint in its route selection for locally originated
+ * packets
+ *   
+ * 
  */
 
 
