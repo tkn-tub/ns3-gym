@@ -316,8 +316,8 @@ line enables pcap tracing in the CSMA helper and there is an extra parameter
 you haven't encountered yet.
 
 @verbatim
-  PointToPointHelper::EnablePcapAll ("second");
-  CsmaHelper::EnablePcap ("second", csmaDevices.Get (1), true);
+  pointToPoint.EnablePcapAll ("second");
+  csma.EnablePcap ("second", csmaDevices.Get (1), true);
 @end verbatim
 
 The CSMA network is a multi-point-to-point network.  This means that there 
@@ -582,9 +582,9 @@ number and device number as parameters.  Go ahead and replace the
 @code{EnablePcap} calls with the calls below.
 
 @verbatim
-  PointToPointHelper::EnablePcap ("second", p2pNodes.Get (0)->GetId (), 0);
-  CsmaHelper::EnablePcap ("second", csmaNodes.Get (nCsma)->GetId (), 0, false);
-  CsmaHelper::EnablePcap ("second", csmaNodes.Get (nCsma-1)->GetId (), 0, false);
+  pointToPoint.EnablePcap ("second", p2pNodes.Get (0)->GetId (), 0);
+  csma.EnablePcap ("second", csmaNodes.Get (nCsma)->GetId (), 0, false);
+  csma.EnablePcap ("second", csmaNodes.Get (nCsma-1)->GetId (), 0, false);
 @end verbatim
 
 We know that we want to create a pcap file with the base name "second" and
@@ -1082,9 +1082,9 @@ loop.
 We create just enough tracing to cover all three networks:
 
 @verbatim
-  PointToPointHelper::EnablePcapAll ("third");
+  pointToPoint.EnablePcapAll ("third");
   phy.EnablePcap ("third", apDevices.Get (0));
-  CsmaHelper::EnablePcap ("third", csmaDevices.Get (0), true);
+  csma.EnablePcap ("third", csmaDevices.Get (0), true);
 @end verbatim
 
 These three lines of code will start pcap tracing on both of the point-to-point
