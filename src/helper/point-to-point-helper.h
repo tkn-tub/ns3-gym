@@ -27,8 +27,8 @@
 #include "ns3/node-container.h"
 #include "ns3/deprecated.h"
 
-#include "pcap-user-helper-for-device.h"
-#include "ascii-trace-user-helper-for-device.h"
+#include "pcap-helper.h"
+#include "ascii-trace-helper.h"
 
 namespace ns3 {
 

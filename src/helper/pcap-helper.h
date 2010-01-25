@@ -21,6 +21,7 @@
 
 #include "ns3/assert.h"
 #include "ns3/net-device-container.h"
+#include "ns3/ipv4-interface-container.h"
 #include "ns3/node-container.h"
 #include "ns3/simulator.h"
 #include "ns3/pcap-file-object.h"
@@ -95,6 +96,153 @@ PcapHelper::HookDefaultSink (Ptr<T> object, std::string tracename, Ptr<PcapFileO
   bool result = object->TraceConnectWithoutContext (tracename.c_str (), MakeBoundCallback (&DefaultSink, file));
   NS_ASSERT_MSG (result == true, "PcapHelper::HookDefaultSink():  Unable to hook \"" << tracename << "\"");
 }
+
+/**
+ * \brief Base class providing common user-level pcap operations for helpers
+ * representing net devices.
+ */
+class PcapUserHelperForDevice
+{
+public:
+  /**
+   * @brief Enable pcap output the indicated net device.
+   * @internal
+   *
+   * @param prefix Filename prefix to use for pcap files.
+   * @param nd Net device for which you want to enable tracing.
+   * @param promiscuous If true capture all possible packets available at the device.
+   */
+  virtual void EnablePcapInternal (std::string prefix, Ptr<NetDevice> nd, bool promiscuous) = 0;
+
+  /**
+   * @brief Enable pcap output the indicated net device.
+   *
+   * @param prefix Filename prefix to use for pcap files.
+   * @param nd Net device for which you want to enable tracing.
+   * @param promiscuous If true capture all possible packets available at the device.
+   */
+  void EnablePcap (std::string prefix, Ptr<NetDevice> nd, bool promiscuous = false);
+
+  /**
+   * @brief Enable pcap output the indicated net device using a device previously
+   * named using the ns-3 object name service.
+   *
+   * @param filename filename prefix to use for pcap files.
+   * @param ndName The name of the net device in which you want to enable tracing.
+   * @param promiscuous If true capture all possible packets available at the device.
+   */
+  void EnablePcap (std::string prefix, std::string ndName, bool promiscuous = false);
+
+  /**
+   * @brief Enable pcap output on each device in the container which is of the 
+   * appropriate type.
+   *
+   * @param prefix Filename prefix to use for pcap files.
+   * @param d container of devices of type ns3::CsmaNetDevice
+   * @param promiscuous If true capture all possible packets available at the device.
+   */
+  void EnablePcap (std::string prefix, NetDeviceContainer d, bool promiscuous = false);
+
+  /**
+   * @brief Enable pcap output on each device (which is of the appropriate type)
+   * in the nodes provided in the container.
+   *
+   * \param prefix Filename prefix to use for pcap files.
+   * \param n container of nodes.
+   * \param promiscuous If true capture all possible packets available at the device.
+   */
+  void EnablePcap (std::string prefix, NodeContainer n, bool promiscuous = false);
+
+  /**
+   * @brief Enable pcap output on each device (which is of the appropriate type)
+   * in the set of all nodes created in the simulation.
+   *
+   * @param prefix Filename prefix to use for pcap files.
+   * @param promiscuous If true capture all possible packets available at the device.
+   */
+  void EnablePcapAll (std::string prefix, bool promiscuous = false);
+
+  /**
+   * @brief Enable pcap output on the device specified by a global node-id (of
+   * a previously created node) and associated device-id.
+   *
+   * @param prefix Filename prefix to use for pcap files.
+   * @param promiscuous If true capture all possible packets available at the device.
+   */
+  void EnablePcap (std::string prefix, uint32_t nodeid, uint32_t deviceid, bool promiscuous = false);
+};
+
+/**
+ * \brief Base class providing common user-level pcap operations for helpers
+ * representing IPv4 protocols .
+ */
+class PcapUserHelperForIpv4
+{
+public:
+  /**
+   * @brief Enable pcap output the indicated Ipv4 and interface pair.
+   * @internal
+   *
+   * @param prefix Filename prefix to use for pcap files.
+   * @param ipv4 Ptr<Ipv4> on which you want to enable tracing.
+   * @param interface Interface on ipv4 on which you want to enable tracing.
+   */
+  virtual void EnablePcapInternal (std::string prefix, Ptr<Ipv4> ipv4, uint32_t interface) = 0;
+
+  /**
+   * @brief Enable pcap output the indicated Ipv4 and interface pair.
+   *
+   * @param prefix Filename prefix to use for pcap files.
+   * @param ipv4 Ptr<Ipv4> on which you want to enable tracing.
+   * @param interface Interface on ipv4 on which you want to enable tracing.
+   */
+  void EnablePcap (std::string prefix, Ptr<Ipv4> ipv4, uint32_t interface);
+
+  /**
+   * @brief Enable pcap output the indicated Ipv4 and interface pair using a
+   * Ptr<Ipv4> previously named using the ns-3 object name service.
+   *
+   * @param filename filename prefix to use for pcap files.
+   * @param ipv4Name Name of the Ptr<Ipv4> on which you want to enable tracing.
+   * @param interface Interface on ipv4 on which you want to enable tracing.
+   */
+  void EnablePcap (std::string prefix, std::string ipv4Name, uint32_t interface);
+
+  /**
+   * @brief Enable pcap output on each Ipv4 and interface pair in the container.
+   *
+   * @param prefix Filename prefix to use for pcap files.
+   * @param c Ipv4InterfaceContainer of Ipv4 and interface pairs
+   */
+  void EnablePcap (std::string prefix, Ipv4InterfaceContainer c);
+
+  /**
+   * @brief Enable pcap output on all Ipv4 and interface pairs existing in the
+   * nodes provided in the container.
+   *
+   * \param prefix Filename prefix to use for pcap files.
+   * \param n container of nodes.
+   */
+  void EnablePcap (std::string prefix, NodeContainer n);
+
+  /**
+   * @brief Enable pcap output on all Ipv4 and interface pairs existing in the 
+   * set of all nodes created in the simulation.
+   *
+   * @param prefix Filename prefix to use for pcap files.
+   */
+  void EnablePcapAll (std::string prefix);
+
+  /**
+   * @brief Enable pcap output on the Ipv4 and interface pair specified by a 
+   * global node-id (of a previously created node) and interface.  Since there
+   * can be only one Ipv4 aggregated to a node, the node-id unambiguously 
+   * determines the Ipv4.
+   *
+   * @param prefix Filename prefix to use for pcap files.
+   */
+  void EnablePcap (std::string prefix, uint32_t nodeid, uint32_t interface);
+};
 
 } // namespace ns3
 

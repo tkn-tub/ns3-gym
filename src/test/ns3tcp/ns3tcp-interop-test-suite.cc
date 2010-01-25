@@ -87,7 +87,7 @@ private:
   virtual bool DoRun (void);
   virtual void DoTeardown (void);
 
-  void Ipv4L3Tx (std::string context, Ptr<const Packet> packet, uint32_t interfaceIndex);
+  void Ipv4L3Tx (std::string context, Ptr<const Packet> packet, Ptr<Ipv4> ipv4, uint32_t interface);
 
   std::string m_pcapFilename;
   PcapFile m_pcapFile;
@@ -131,7 +131,7 @@ Ns3TcpInteroperabilityTestCase::DoTeardown (void)
 }
 
 void
-Ns3TcpInteroperabilityTestCase::Ipv4L3Tx (std::string context, Ptr<const Packet> packet, uint32_t interfaceIndex)
+Ns3TcpInteroperabilityTestCase::Ipv4L3Tx (std::string context, Ptr<const Packet> packet, Ptr<Ipv4> ipv4, uint32_t interface)
 {
   //
   // We're not testing IP so remove and toss the header.  In order to do this,

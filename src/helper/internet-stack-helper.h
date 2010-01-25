@@ -28,8 +28,8 @@
 #include "ns3/object-factory.h"
 #include "ns3/ipv4-l3-protocol.h"
 #include "ns3/ipv6-l3-protocol.h"
-#include "pcap-user-helper-for-ipv4.h"
-#include "ascii-trace-user-helper-for-ipv4.h"
+#include "pcap-helper.h"
+#include "ascii-trace-helper.h"
 
 namespace ns3 {
 
