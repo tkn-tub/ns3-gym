@@ -17,6 +17,8 @@
 @menu
 * Background::
 * Overview::
+* A Real Example::
+* Using Mid-Level Helpers::
 @end menu
 
 @c ============================================================================
@@ -1900,5 +1902,31 @@ file ``cwnd.png'' in all of its glory, that looks like:
 
 @sp 1
 @center @image{figures/cwnd,,,,png}
+
+@c ============================================================================
+@c Using Mid-Level Helpers
+@c ============================================================================
+@node Using Mid-Level Helpers
+@section Using Mid-Level Helpers
+
+In the previous section, we showed how to hook a trace source and get hopefully
+interesting information out of a simulation.  Perhaps you will recall that we 
+called logging to the standard output using @code{std::cout} a ``Blunt Instrument'' 
+much earlier in this chapter.  We also wrote about how it was a problem having
+to parse the log output in order to isolate interesting information.  It may 
+have occurred to you that we just spent a lot of time implementing an example
+that exhibits all of the problems we purport to fix with the @code{ns-3} tracing
+system!  You would be correct.  But, bear with us.  We're not done yet.
+
+One of the most important things we want to do is to is to have the ability to 
+easily control the amount of output coming out of the simulation; and we also 
+want to save those data to a file so we can refer back to it later.  We can use
+the mid-level trace helpers provided in @code{ns-3} to do just that and complete
+the picture.
+
+
+
+
+
 
 
