@@ -165,12 +165,14 @@ MyApp::ScheduleTx (void)
 static void
 CwndChange (Ptr<OutputStreamObject> stream, uint32_t oldCwnd, uint32_t newCwnd)
 {
+  NS_LOG_UNCOND (Simulator::Now ().GetSeconds () << "\t" << newCwnd);
   *stream->GetStream () << Simulator::Now ().GetSeconds () << "\t" << oldCwnd << "\t" << newCwnd << std::endl;
 }
 
 static void
 RxDrop (Ptr<PcapFileObject> file, Ptr<const Packet> p)
 {
+  NS_LOG_UNCOND ("RxDrop at " << Simulator::Now ().GetSeconds ());
   file->Write(Simulator::Now(), p);
 }
 
@@ -219,7 +221,7 @@ main (int argc, char *argv[])
   app->SetStopTime (Seconds (20.));
 
   PcapHelper pcapHelper;
-  Ptr<PcapFileObject> file = pcapHelper.CreateFile ("sixth.pcap", "w", PcapHelper::DLT_EN10MB);
+  Ptr<PcapFileObject> file = pcapHelper.CreateFile ("sixth.pcap", "w", PcapHelper::DLT_PPP);
   devices.Get (1)->TraceConnectWithoutContext("PhyRxDrop", MakeBoundCallback (&RxDrop, file));
 
   Simulator::Stop (Seconds(20));
