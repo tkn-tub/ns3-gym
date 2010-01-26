@@ -1924,9 +1924,215 @@ want to save those data to a file so we can refer back to it later.  We can use
 the mid-level trace helpers provided in @code{ns-3} to do just that and complete
 the picture.
 
+We provide a script that writes the cwnd change and drop events developed in 
+the example @code{fifth.cc } to disk in separate files.  The cwnd changes are 
+stored as a tab-separated ASCII file and the drop events are stored in a pcap
+file.  The changes to make this happen are quite small.
 
+@subsection A sixth.cc Walkthrough
 
+Let's take a look at the changes required to go from @code{fifth.cc} to 
+@code{sixth.cc}.  Open @code{examples/tutorial/fifth.cc} in your favorite 
+editor.  The first change is in the @code{#include} section where you will find
+two new include statements.
 
+@verbatim
+  #include "ns3/ascii-trace-helper.h"
+  #include "ns3/pcap-helper.h"
+@end verbatim
 
+There is a separate helper for ASCII-related files and pcap-related files.
+Like other helpers, these are classes designed to make tracing with text
+and pcap files as easy as possible.  You can see the next changes by searching
+for CwndChange.  You will find that we have changed the signatures for the 
+trace sinks and have added a single line to each sink that writes the traced
+information to the file.
+
+@verbatim
+  static void
+  CwndChange (Ptr<OutputStreamObject> stream, uint32_t oldCwnd, uint32_t newCwnd)
+  {
+    NS_LOG_UNCOND (Simulator::Now ().GetSeconds () << "\t" << newCwnd);
+    *stream->GetStream () << Simulator::Now ().GetSeconds () << "\t" << oldCwnd << "\t" << newCwnd << std::endl;
+  }
+  
+  static void
+  RxDrop (Ptr<PcapFileObject> file, Ptr<const Packet> p)
+  {
+    NS_LOG_UNCOND ("RxDrop at " << Simulator::Now ().GetSeconds ());
+    file->Write(Simulator::Now(), p);
+  }
+@end verbatim
+
+Notice that we have added a parameter to the @code{CwndChange} trace sink.  
+This is an @code{ns-3} object that holds a C++ output stream.  It turns out
+that this is a very simple object, but one that manages lifetime issues for
+the stream and solves a problem that many experienced C++ users run into.
+It turns out that the copy constructor for ostream is marked private.  This
+means that ostreams do not obey value semantics and cannot be used in 
+any mechanism that requires the stream to be copied.  Notice that we have
+added the following line in the @code{CwndChange} trace sink:
+
+@verbatim
+  *stream->GetStream () << Simulator::Now ().GetSeconds () << "\t" << oldCwnd << "\t" << newCwnd << std::endl;
+@end verbatim  
+
+This would be very familiar code if you replaced @code{*stream->GetStream ()}
+with @code{std::cout}, as in:
+
+@verbatim
+  std::cout << Simulator::Now ().GetSeconds () << "\t" << oldCwnd << "\t" << newCwnd << std::endl;
+@end verbatim  
+
+This illustrates that the @code{Ptr<OutputStreamObject>} is really just
+carrying around a @code{std::ofstream} for you, and you can use it here like 
+any other output stream.
+
+A similar situation happens in @code{RxDrop} except that the object being 
+passed around (a @code{Ptr<PcapFileObject>} represents a pcap file.  There
+is a one-liner in the trace sink to write a timestamp and the contents of the 
+packet being dropped to the pcap file:
+
+@end verbatim
+  file->Write(Simulator::Now(), p);
+@end verbatim
+
+Of course, if we have objects representing the two files, we need to create
+them somewhere and also cause them to be passed to the trace sinks.  If you 
+look in the @code{main} function, you will find new code to do just that:
+
+@verbatim
+  AsciiTraceHelper asciiTraceHelper;
+  Ptr<OutputStreamObject> stream = asciiTraceHelper.CreateFileStream ("sixth.cwnd");
+  ns3TcpSocket->TraceConnectWithoutContext ("CongestionWindow", MakeBoundCallback (&CwndChange, stream));
+
+  ...
+
+  PcapHelper pcapHelper;
+  Ptr<PcapFileObject> file = pcapHelper.CreateFile ("sixth.pcap", "w", PcapHelper::DLT_PPP);
+  devices.Get (1)->TraceConnectWithoutContext("PhyRxDrop", MakeBoundCallback (&RxDrop, file));
+@end verbatim
+
+In the first section of the code snippet above, we are creating the ASCII
+trace file, creating an object responsible for managing it and using a
+variant of the callback creation function to arrange for the object to be 
+passed to the sink.  The @code{AsciiTraceHelper} provides a rich set of
+functions to make using text files easy.  We are just going to illustrate
+the use of the file stream creation function here.
+
+The @code{CreateFileStream{}} function is basically going to instantiate
+a std::ofstream object and create a new file (or truncate an existing file).
+This ofstream is packaged up in an @code{ns-3} object for lifetime management
+and copy constructor issue resolution.
+
+We then take this @code{ns-3} object representing the file and pass it to
+@code{MakeBoundCallback()}.  This function creates a callback just like
+@code{MakeCallback()}, but it ``binds'' a new value to the callback.  This
+value is added to the callback before it is called.  Essentially, 
+@code{MakeBoundCallback(&CwndChange, stream)} causes the trace source to
+add the additional ``stream'' parameter to the front of the formal parameter
+list before invoking the callback.  This changes the required signature of
+the @code{CwndChange} sink to match the one shown above, which includes the
+``extra'' parameter @code{Ptr<OutputStreamObject> stream}.
+
+In the second section of code in the snippet above, we instantiate a 
+@code{PcapHelper} to do the same thing for our pcap trace file that we did
+with the @code{AsciiTraceHelper}. The line of code,
+
+@verbatim
+  Ptr<PcapFileObject> file = pcapHelper.CreateFile ("sixth.pcap", "w", PcapHelper::DLT_PPP);
+@end verbatim
+
+creates a pcap file named ``sixth.pcap'' with file mode ``w''.   This means that
+the new file is to truncated if an existing file with that name is found.  The
+final parameter is the ``data link type'' of the new pcap file.  These are 
+the same as the pcap library data link types defined in @code{bpf.h} if you are
+familar with pcap.  In this case, @code{DLT_PPP} indicates that the pcap file
+is going to contain packets prefixed with point to point headers.  This is true
+since the packets are coming from our point-to-point device driver.  Other
+common data link types are DLT_EN10MB (10 MB Ethernet) appropriate for csma
+devices and DLT_IEEE802_11 (IEEE 802.11) appropriate for wifi devices.
+
+The @code{ns-3} object representing the pcap file is returned and used in a
+bound callback exactly as it was in the text file case.
+
+If you now build and run this example,
+
+@verbatim
+  ./waf --run sixth
+@end verbatim
+
+you will see the same messages appear as when you ran ``fifth'', but two new 
+files will appear in the top-level directory of your @code{ns-3} distribution.
+
+@verbatim
+  sixth.cwnd  sixth.pcap
+@end verbatim
+
+Since ``sixth.cwnd'' is an ASCII text file, you can view it with @code{cat}
+or your favorite file viewer.
+
+@verbatim
+  1.20919 536     1072
+  1.21511 1072    1608
+  ...
+  9.30922 8893    8925
+  9.31754 8925    8957
+@end verbatim
+
+You have a tab separated file with a timestamp, an old congestion window and a
+new congestion window suitable for directly importing into your plot program.
+There are no extraneous prints in the file, no parsing or editing is required.
+
+Since ``sixth.pcap'' is a pcap file, you can fiew it with @code{tcpdump}.
+
+@verbatim
+  reading from file ../../sixth.pcap, link-type PPP (PPP)
+  1.251507 IP 10.1.1.1.49153 > 10.1.1.2.8080: . 17689:18225(536) ack 1 win 65535
+  1.411478 IP 10.1.1.1.49153 > 10.1.1.2.8080: . 33808:34312(504) ack 1 win 65535
+  ...
+  7.393557 IP 10.1.1.1.49153 > 10.1.1.2.8080: . 781568:782072(504) ack 1 win 65535
+  8.141483 IP 10.1.1.1.49153 > 10.1.1.2.8080: . 874632:875168(536) ack 1 win 65535
+@end verbatim
+
+You have a pcap file with the packets that were dropped in the simulation.  There
+are no other packets present in the file and there is nothing else present to
+make life difficult.
+
+It's been a long journey, but we are now at a point where we can appreciate the
+@code{ns-3} tracing system.  We have pulled important events out of the middle
+of a TCP implementation and a device driver.  We stored those events directly in
+files usable with commonly known tools.  We did this without modifying any of the
+core code involved, and we did this in only 18 lines of code:
+
+@verbatim
+  static void
+  CwndChange (Ptr<OutputStreamObject> stream, uint32_t oldCwnd, uint32_t newCwnd)
+  {
+    NS_LOG_UNCOND (Simulator::Now ().GetSeconds () << "\t" << newCwnd);
+    *stream->GetStream () << Simulator::Now ().GetSeconds () << "\t" << oldCwnd << "\t" << newCwnd << std::endl;
+  }
+
+  ...
+
+  AsciiTraceHelper asciiTraceHelper;
+  Ptr<OutputStreamObject> stream = asciiTraceHelper.CreateFileStream ("sixth.cwnd");
+  ns3TcpSocket->TraceConnectWithoutContext ("CongestionWindow", MakeBoundCallback (&CwndChange, stream));
+
+  ...
+
+  static void
+  RxDrop (Ptr<PcapFileObject> file, Ptr<const Packet> p)
+  {
+    NS_LOG_UNCOND ("RxDrop at " << Simulator::Now ().GetSeconds ());
+    file->Write(Simulator::Now(), p);
+  }
+
+  ...
+  
+  PcapHelper pcapHelper;
+  Ptr<PcapFileObject> file = pcapHelper.CreateFile ("sixth.pcap", "w", PcapHelper::DLT_PPP);
+  devices.Get (1)->TraceConnectWithoutContext("PhyRxDrop", MakeBoundCallback (&RxDrop, file));
+@end varbatim
 
 
