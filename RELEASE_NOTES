@@ -14,15 +14,20 @@ Release 3.7
 
 Availability
 ------------
-This release is not yet available
+This release is immediately available from:
+http://www.nsnam.org/releases/ns-allinone-3.7.tar.bz2
 
 Supported platforms
 -------------------
 ns-3.7 has been tested on the following platforms:
-  - linux x86 gcc 4.4.1, 4.2, 4.1, and, 3.4.6.
-  - linux x86_64 gcc 4.4.0, 4.3.2, 4.2.3, 4.2.1, 4.1.3, 3.4.6
-  - MacOS X ppc and x86 (gcc 4.0.x and 4.2.x)
+  - linux x86 gcc 4.4.0, 4.3.2, 4.2, 4.1.1, 4.1 and 3.4.6 (debug and optimized)
+  - linux x86_64 gcc 4.4.0, 4.3.2, 4.2.4, 4.2.3, 4.2.1, 4.1.3, 3.4.6 (debug and optimized)
+  - MacOS X ppc gcc 4.0.x and 4.2.x (debug and optimized)
   - cygwin gcc 3.4.4 (debug only), gcc 4.3.2 (debug and optimized)
+
+Unofficially supported platform
+-------------------
+- mingw gcc 3.4.5 (debug only)
 
 Not all ns-3 options are available on all platforms; consult the
 wiki for more information:
@@ -70,6 +75,12 @@ New user-visible features
 
   k) WaypointMobilityModel provides a method to add mobility as a set of 
      (time, position) pairs
+
+  l) 802.11p WiFi standards 
+  
+  m) UDP Client/Server application
+
+  n) Support transactions in the SQLite output interface, making it usable for larger amounts of data
 
 API changes from ns-3.6
 -----------------------
