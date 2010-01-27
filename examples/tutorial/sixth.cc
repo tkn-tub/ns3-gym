@@ -210,15 +210,15 @@ main (int argc, char *argv[])
 
   Ptr<Socket> ns3TcpSocket = Socket::CreateSocket (nodes.Get (0), TcpSocketFactory::GetTypeId ());
 
-  AsciiTraceHelper asciiTraceHelper;
-  Ptr<OutputStreamObject> stream = asciiTraceHelper.CreateFileStream ("sixth.cwnd");
-  ns3TcpSocket->TraceConnectWithoutContext ("CongestionWindow", MakeBoundCallback (&CwndChange, stream));
-
   Ptr<MyApp> app = CreateObject<MyApp> ();
   app->Setup (ns3TcpSocket, sinkAddress, 1040, 1000, DataRate ("1Mbps"));
   nodes.Get (0)->AddApplication (app);
   app->SetStartTime (Seconds (1.));
   app->SetStopTime (Seconds (20.));
+
+  AsciiTraceHelper asciiTraceHelper;
+  Ptr<OutputStreamObject> stream = asciiTraceHelper.CreateFileStream ("sixth.cwnd");
+  ns3TcpSocket->TraceConnectWithoutContext ("CongestionWindow", MakeBoundCallback (&CwndChange, stream));
 
   PcapHelper pcapHelper;
   Ptr<PcapFileObject> file = pcapHelper.CreateFile ("sixth.pcap", "w", PcapHelper::DLT_PPP);
