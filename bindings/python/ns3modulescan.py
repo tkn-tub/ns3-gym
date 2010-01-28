@@ -150,8 +150,8 @@ def pre_scan_hook(dummy_module_parser,
     ## classes
     if isinstance(pygccxml_definition, class_t):
         # no need for helper classes to allow subclassing in Python, I think...
-        if pygccxml_definition.name.endswith('Helper'):
-            global_annotations['allow_subclassing'] = 'false'
+        #if pygccxml_definition.name.endswith('Helper'):
+        #    global_annotations['allow_subclassing'] = 'false'
 
         if pygccxml_definition.decl_string.startswith('::ns3::SimpleRefCount<'):
             global_annotations['incref_method'] = 'Ref'
