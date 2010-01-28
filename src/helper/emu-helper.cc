@@ -27,8 +27,7 @@
 #include "ns3/config.h"
 #include "ns3/packet.h"
 
-#include "pcap-helper.h"
-#include "ascii-trace-helper.h"
+#include "trace-helper.h"
 #include "emu-helper.h"
 
 NS_LOG_COMPONENT_DEFINE ("EmuHelper");

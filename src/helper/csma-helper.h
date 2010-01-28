@@ -28,8 +28,7 @@
 #include "ns3/node-container.h"
 #include "ns3/csma-channel.h"
 #include "ns3/deprecated.h"
-#include "pcap-helper.h"
-#include "ascii-trace-helper.h"
+#include "trace-helper.h"
 
 namespace ns3 {
 
@@ -43,12 +42,8 @@ class Packet;
  * treated as "mixins".  A mixin is a self-contained class that
  * encapsulates a general attribute or a set of functionality that
  * may be of interest to many other classes.
- * 
- * Since the mixins below are self-contained and are explicitly 
- * designed to avoid naming conflicts through explicit resolution,
- * multiple inheritance problems are avoided.
  */
-class CsmaHelper : public PcapUserHelperForDevice, public AsciiTraceUserHelperForDevice
+class CsmaHelper : public TraceHelperForDevice
 {
 public:
   /**

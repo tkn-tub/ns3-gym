@@ -169,8 +169,7 @@
 #include "ipv4-global-routing-helper.h"
 #include "ipv6-list-routing-helper.h"
 #include "ipv6-static-routing-helper.h"
-#include "pcap-helper.h"
-#include "ascii-trace-helper.h"
+#include "trace-helper.h"
 #include <limits>
 #include <map>
 

@@ -28,6 +28,7 @@
 #include "ns3/node-container.h"
 #include "ns3/net-device-container.h"
 #include "ns3/wifi-phy-standard.h"
+#include "trace-helper.h"
 
 namespace ns3 {
 
@@ -42,10 +43,11 @@ class Node;
  * This base class must be implemented by new PHY implementation which wish to integrate
  * with the \ref ns3::WifiHelper class.
  */
-class WifiPhyHelper
+class WifiPhyHelper : public TraceHelperForDevice
 {
 public:
   virtual ~WifiPhyHelper ();
+
   /**
    * \param node the node on which the PHY object will reside
    * \param device the device within which the PHY object will reside

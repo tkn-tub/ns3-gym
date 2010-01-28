@@ -28,8 +28,7 @@
 #include "ns3/packet.h"
 #include "ns3/names.h"
 
-#include "pcap-helper.h"
-#include "ascii-trace-helper.h"
+#include "trace-helper.h"
 #include "point-to-point-helper.h"
 
 NS_LOG_COMPONENT_DEFINE ("PointToPointHelper");

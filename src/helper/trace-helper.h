@@ -16,20 +16,89 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef ASCII_TRACE_HELPER_H
-#define ASCII_TRACE_HELPER_H
+#ifndef TRACE_HELPER_H
+#define TRACE_HELPER_H
 
 #include "ns3/assert.h"
 #include "ns3/net-device-container.h"
-#include "ns3/ipv4.h"
 #include "ns3/ipv4-interface-container.h"
-#include "ns3/ipv6.h"
 #include "ns3/ipv6-interface-container.h"
 #include "ns3/node-container.h"
 #include "ns3/simulator.h"
+#include "ns3/pcap-file-object.h"
 #include "ns3/output-stream-object.h"
+#include "ns3/ipv4.h"
+#include "ns3/ipv6.h"
 
 namespace ns3 {
+
+/**
+ * \brief Manage pcap files for device models
+ *
+ * Handling pcap files is a common operation for ns-3 devices.  It is useful to
+ * provide a common base class for dealing with these ops.
+ */
+
+class PcapHelper
+{
+public:
+  //
+  // These are the data link types that will be written to the pcap file.  We
+  // don't include pcap-bpf.h to avoid an explicit dependency on the real pcap
+  // and we don't make an enumeration of all of the values to make it easy to
+  // pass new values in.
+  //
+  enum {DLT_NULL = 0};
+  enum {DLT_EN10MB = 1};
+  enum {DLT_PPP = 9};
+  enum {DLT_RAW = 101};
+  enum {DLT_IEEE802_11 = 105};
+  enum {DLT_PRISM_HEADER = 119};
+  enum {DLT_IEEE802_11_RADIO = 127};
+
+  /**
+   * @brief Create a pcap helper.
+   */
+  PcapHelper ();
+
+  /**
+   * @brief Destroy a pcap helper.
+   */
+  ~PcapHelper ();
+
+  /**
+   * @brief Let the pcap helper figure out a reasonable filename to use for a
+   * pcap file associated with a device.
+   */
+  std::string GetFilenameFromDevice (std::string prefix, Ptr<NetDevice> device, bool useObjectNames = true);
+
+  /**
+   * @brief Let the pcap helper figure out a reasonable filename to use for the
+   * pcap file associated with a node.
+   */
+  std::string GetFilenameFromInterfacePair (std::string prefix, Ptr<Object> object, 
+                                            uint32_t interface, bool useObjectNames = true);
+
+  /**
+   * @brief Create and initialize a pcap file.
+   */
+  Ptr<PcapFileObject> CreateFile (std::string filename, std::string filemode,
+                                  uint32_t dataLinkType,  uint32_t snapLen = 65535, int32_t tzCorrection = 0);
+  /**
+   * @brief Hook a trace source to the default trace sink
+   */
+  template <typename T> void HookDefaultSink (Ptr<T> object, std::string traceName, Ptr<PcapFileObject> file);
+
+private:
+  static void DefaultSink (Ptr<PcapFileObject> file, Ptr<const Packet> p);
+};
+
+template <typename T> void
+PcapHelper::HookDefaultSink (Ptr<T> object, std::string tracename, Ptr<PcapFileObject> file)
+{
+  bool result = object->TraceConnectWithoutContext (tracename.c_str (), MakeBoundCallback (&DefaultSink, file));
+  NS_ASSERT_MSG (result == true, "PcapHelper::HookDefaultSink():  Unable to hook \"" << tracename << "\"");
+}
 
 /**
  * \brief Manage ASCII trace files for device models
@@ -98,7 +167,8 @@ public:
    * does accept and log a trace context.
    */
   template <typename T> 
-  void HookDefaultEnqueueSinkWithContext (Ptr<T> object, std::string traceName, Ptr<OutputStreamObject> stream);
+  void HookDefaultEnqueueSinkWithContext (Ptr<T> object, 
+                                          std::string context, std::string traceName, Ptr<OutputStreamObject> stream);
 
   /**
    * @brief Hook a trace source to the default drop operation trace sink that 
@@ -112,7 +182,8 @@ public:
    * does accept and log a trace context.
    */
   template <typename T> 
-  void HookDefaultDropSinkWithContext (Ptr<T> object, std::string traceName, Ptr<OutputStreamObject> stream);
+  void HookDefaultDropSinkWithContext (Ptr<T> object, 
+                                       std::string context, std::string traceName, Ptr<OutputStreamObject> stream);
 
   /**
    * @brief Hook a trace source to the default dequeue operation trace sink
@@ -126,7 +197,8 @@ public:
    * that does accept and log a trace context.
    */
   template <typename T> 
-  void HookDefaultDequeueSinkWithContext (Ptr<T> object, std::string traceName, Ptr<OutputStreamObject> stream);
+  void HookDefaultDequeueSinkWithContext (Ptr<T> object, 
+                                          std::string context, std::string traceName, Ptr<OutputStreamObject> stream);
 
   /**
    * @brief Hook a trace source to the default receive operation trace sink
@@ -140,7 +212,8 @@ public:
    * that does accept and log a trace context.
    */
   template <typename T> 
-  void HookDefaultReceiveSinkWithContext (Ptr<T> object, std::string traceName, Ptr<OutputStreamObject> stream);
+  void HookDefaultReceiveSinkWithContext (Ptr<T> object, 
+                                          std::string context, std::string traceName, Ptr<OutputStreamObject> stream);
 
   static void DefaultEnqueueSinkWithoutContext (Ptr<OutputStreamObject> file, Ptr<const Packet> p);
   static void DefaultEnqueueSinkWithContext (Ptr<OutputStreamObject> file, std::string context, Ptr<const Packet> p);
@@ -165,10 +238,13 @@ AsciiTraceHelper::HookDefaultEnqueueSinkWithoutContext (Ptr<T> object, std::stri
 }
 
 template <typename T> void
-AsciiTraceHelper::HookDefaultEnqueueSinkWithContext (Ptr<T> object, std::string tracename, Ptr<OutputStreamObject> file)
+AsciiTraceHelper::HookDefaultEnqueueSinkWithContext (
+  Ptr<T> object, 
+  std::string context, 
+  std::string tracename, 
+  Ptr<OutputStreamObject> stream)
 {
-  std::string context ("XXX");
-  bool result = object->TraceConnect (tracename, context, MakeBoundCallback (&DefaultEnqueueSinkWithContext, file));
+  bool result = object->TraceConnect (tracename, context, MakeBoundCallback (&DefaultEnqueueSinkWithContext, stream));
   NS_ASSERT_MSG (result == true, "AsciiTraceHelper::HookDefaultEnqueueSinkWithContext():  Unable to hook \"" 
                  << tracename << "\"");
 }
@@ -183,10 +259,13 @@ AsciiTraceHelper::HookDefaultDropSinkWithoutContext (Ptr<T> object, std::string 
 }
 
 template <typename T> void
-AsciiTraceHelper::HookDefaultDropSinkWithContext (Ptr<T> object, std::string tracename, Ptr<OutputStreamObject> file)
+AsciiTraceHelper::HookDefaultDropSinkWithContext (
+  Ptr<T> object, 
+  std::string context,
+  std::string tracename, 
+  Ptr<OutputStreamObject> stream)
 {
-  std::string context ("XXX");
-  bool result = object->TraceConnect (tracename, context, MakeBoundCallback (&DefaultDropSinkWithContext, file));
+  bool result = object->TraceConnect (tracename, context, MakeBoundCallback (&DefaultDropSinkWithContext, stream));
   NS_ASSERT_MSG (result == true, "AsciiTraceHelper::HookDefaultDropSinkWithContext():  Unable to hook \"" 
                  << tracename << "\"");
 }
@@ -201,10 +280,13 @@ AsciiTraceHelper::HookDefaultDequeueSinkWithoutContext (Ptr<T> object, std::stri
 }
 
 template <typename T> void
-AsciiTraceHelper::HookDefaultDequeueSinkWithContext (Ptr<T> object, std::string tracename, Ptr<OutputStreamObject> file)
+AsciiTraceHelper::HookDefaultDequeueSinkWithContext (
+  Ptr<T> object, 
+  std::string context,
+  std::string tracename, 
+  Ptr<OutputStreamObject> stream)
 {
-  std::string context ("XXX");
-  bool result = object->TraceConnect (tracename, context, MakeBoundCallback (&DefaultDequeueSinkWithContext, file));
+  bool result = object->TraceConnect (tracename, context, MakeBoundCallback (&DefaultDequeueSinkWithContext, stream));
   NS_ASSERT_MSG (result == true, "AsciiTraceHelper::HookDefaultDequeueSinkWithContext():  Unable to hook \"" 
                  << tracename << "\"");
 }
@@ -219,40 +301,105 @@ AsciiTraceHelper::HookDefaultReceiveSinkWithoutContext (Ptr<T> object, std::stri
 }
 
 template <typename T> void
-AsciiTraceHelper::HookDefaultReceiveSinkWithContext (Ptr<T> object, std::string tracename, Ptr<OutputStreamObject> file)
+AsciiTraceHelper::HookDefaultReceiveSinkWithContext (
+  Ptr<T> object, 
+  std::string context,
+  std::string tracename, 
+  Ptr<OutputStreamObject> stream)
 {
-  std::string context ("XXX");
-  bool result = object->TraceConnect (tracename, context, MakeBoundCallback (&DefaultReceiveSinkWithContext, file));
+  bool result = object->TraceConnect (tracename, context, MakeBoundCallback (&DefaultReceiveSinkWithContext, stream));
   NS_ASSERT_MSG (result == true, "AsciiTraceHelper::HookDefaultReceiveSinkWithContext():  Unable to hook \"" 
                  << tracename << "\"");
 }
 
 /**
+ * \brief Base class providing common user-level pcap operations for helpers
+ * representing net devices.
+ */
+class PcapHelperForDevice
+{
+public:
+  /**
+   * @brief Enable pcap output the indicated net device.
+   * @internal
+   *
+   * @param prefix Filename prefix to use for pcap files.
+   * @param nd Net device for which you want to enable tracing.
+   * @param promiscuous If true capture all possible packets available at the device.
+   */
+  virtual void EnablePcapInternal (std::string prefix, Ptr<NetDevice> nd, bool promiscuous) = 0;
+
+  /**
+   * @brief Enable pcap output the indicated net device.
+   *
+   * @param prefix Filename prefix to use for pcap files.
+   * @param nd Net device for which you want to enable tracing.
+   * @param promiscuous If true capture all possible packets available at the device.
+   */
+  void EnablePcap (std::string prefix, Ptr<NetDevice> nd, bool promiscuous = false);
+
+  /**
+   * @brief Enable pcap output the indicated net device using a device previously
+   * named using the ns-3 object name service.
+   *
+   * @param filename filename prefix to use for pcap files.
+   * @param ndName The name of the net device in which you want to enable tracing.
+   * @param promiscuous If true capture all possible packets available at the device.
+   */
+  void EnablePcap (std::string prefix, std::string ndName, bool promiscuous = false);
+
+  /**
+   * @brief Enable pcap output on each device in the container which is of the 
+   * appropriate type.
+   *
+   * @param prefix Filename prefix to use for pcap files.
+   * @param d container of devices of type ns3::CsmaNetDevice
+   * @param promiscuous If true capture all possible packets available at the device.
+   */
+  void EnablePcap (std::string prefix, NetDeviceContainer d, bool promiscuous = false);
+
+  /**
+   * @brief Enable pcap output on each device (which is of the appropriate type)
+   * in the nodes provided in the container.
+   *
+   * \param prefix Filename prefix to use for pcap files.
+   * \param n container of nodes.
+   * \param promiscuous If true capture all possible packets available at the device.
+   */
+  void EnablePcap (std::string prefix, NodeContainer n, bool promiscuous = false);
+
+  /**
+   * @brief Enable pcap output on the device specified by a global node-id (of
+   * a previously created node) and associated device-id.
+   *
+   * @param prefix Filename prefix to use for pcap files.
+   * @param promiscuous If true capture all possible packets available at the device.
+   */
+  void EnablePcap (std::string prefix, uint32_t nodeid, uint32_t deviceid, bool promiscuous = false);
+
+  /**
+   * @brief Enable pcap output on each device (which is of the appropriate type)
+   * in the set of all nodes created in the simulation.
+   *
+   * @param prefix Filename prefix to use for pcap files.
+   * @param promiscuous If true capture all possible packets available at the device.
+   */
+  void EnablePcapAll (std::string prefix, bool promiscuous = false);
+};
+
+/**
  * @brief Class providing common pcap and ascii trace operations for helpers
  * working with devices.
  *
- * There are two basic flavors of ascii tracing.  The first kind will case a
- * trace file to be created for every traced device in the form 
- * <file prefix>-<node number>-<device index>.tr just like the pcap trace 
- * helpers would do.  Additionally, if the object name service is used to 
- * define either the node or device, the name will be substituted in the 
- * file name.  This form of ascii tracing does not include a context string
- * and makes it easier to determine the source of the event.
- *
- * The second kind of tracing is more like ns-2 tracing in that there is
- * one trace file into which all of the specified events of the specified
- * devices are written.  This form of ascii tracing does include a context
- * string and interleaves the trace hits from all of the devices into a 
- * single file.
- *
  * It would be nice to make this class completely independent of the pcap
- * trace user helper, but pybindgen doesn't support multiple inheritance
- * no matter how well behaved, so even mixins are out of the question.
- * Because of this, we have a basic tracing functionality that devices can
- * add that implements pcap tracing:  PcapUserHelperForDevice; and another
- * class that enables both pcap and ascii tracing.
+ * trace helper for devices, but pybindgen doesn't support multiple inheritance
+ * no matter how well behaved, so even mixins are out of the question. Because
+ * of this, we have a hierarchy of tracing functionality that devices can
+ * add.  If your device helper inherits from PcapHelperForDevice, you get pcap
+ * tracing.  If your device helper inherits from TraceHelperForDevice, you
+ * get both ascii and pcap tracing.
  */
-class TraceUserHelperForDevice : public PcapUserHelperForDevice
+class TraceHelperForDevice : public PcapHelperForDevice
 {
 public:
   /**
@@ -425,33 +572,91 @@ private:
 };
 
 /**
- * @brief Base class providing common ascii trace operations for helpers
- * working with Ipv4 interfaces.
- *
- * There are two basic flavors of ascii tracing.  The first kind will case a
- * trace file to be created for every traced device in the form 
- * <file prefix>-<node number>-<device index>.tr just like the pcap trace 
- * helpers would do.  Additionally, if the object name service is used to 
- * define either the node or device, the name will be substituted in the 
- * file name.  This form of ascii tracing does not include a context string
- * and makes it easier to determine the source of the event.
- *
- * The second kind of tracing is more like ns-2 tracing in that there is
- * one trace file into which all of the specified events of the specified
- * devices are written.  This form of ascii tracing does include a context
- * string and interleaves the trace hits from all of the devices into a 
- * single file.
+ * \brief Base class providing common user-level pcap operations for helpers
+ * representing IPv4 protocols .
+ */
+class PcapHelperForIpv4
+{
+public:
+  /**
+   * @brief Enable pcap output the indicated Ipv4 and interface pair.
+   * @internal
+   *
+   * @param prefix Filename prefix to use for pcap files.
+   * @param ipv4 Ptr<Ipv4> on which you want to enable tracing.
+   * @param interface Interface on ipv4 on which you want to enable tracing.
+   */
+  virtual void EnablePcapIpv4Internal (std::string prefix, Ptr<Ipv4> ipv4, uint32_t interface) = 0;
+
+  /**
+   * @brief Enable pcap output the indicated Ipv4 and interface pair.
+   *
+   * @param prefix Filename prefix to use for pcap files.
+   * @param ipv4 Ptr<Ipv4> on which you want to enable tracing.
+   * @param interface Interface on ipv4 on which you want to enable tracing.
+   */
+  void EnablePcapIpv4 (std::string prefix, Ptr<Ipv4> ipv4, uint32_t interface);
+
+  /**
+   * @brief Enable pcap output the indicated Ipv4 and interface pair using a
+   * Ptr<Ipv4> previously named using the ns-3 object name service.
+   *
+   * @param filename filename prefix to use for pcap files.
+   * @param ipv4Name Name of the Ptr<Ipv4> on which you want to enable tracing.
+   * @param interface Interface on ipv4 on which you want to enable tracing.
+   */
+  void EnablePcapIpv4 (std::string prefix, std::string ipv4Name, uint32_t interface);
+
+  /**
+   * @brief Enable pcap output on each Ipv4 and interface pair in the container.
+   *
+   * @param prefix Filename prefix to use for pcap files.
+   * @param c Ipv4InterfaceContainer of Ipv4 and interface pairs
+   */
+  void EnablePcapIpv4 (std::string prefix, Ipv4InterfaceContainer c);
+
+  /**
+   * @brief Enable pcap output on all Ipv4 and interface pairs existing in the
+   * nodes provided in the container.
+   *
+   * \param prefix Filename prefix to use for pcap files.
+   * \param n container of nodes.
+   */
+  void EnablePcapIpv4 (std::string prefix, NodeContainer n);
+
+  /**
+   * @brief Enable pcap output on the Ipv4 and interface pair specified by a 
+   * global node-id (of a previously created node) and interface.  Since there
+   * can be only one Ipv4 aggregated to a node, the node-id unambiguously 
+   * determines the Ipv4.
+   *
+   * @param prefix Filename prefix to use for pcap files.
+   */
+  void EnablePcapIpv4 (std::string prefix, uint32_t nodeid, uint32_t interface);
+
+  /**
+   * @brief Enable pcap output on all Ipv4 and interface pairs existing in the 
+   * set of all nodes created in the simulation.
+   *
+   * @param prefix Filename prefix to use for pcap files.
+   */
+  void EnablePcapIpv4All (std::string prefix);
+
+};
+
+/**
+ * @brief Base class providing common pcap and ascii trace operations for 
+ * helpers working with Ipv4 interfaces.
  *
  * It would be nice to make this class completely independent of the pcap
- * trace user helper, but pybindgen doesn't support multiple inheritance
- * no matter how well behaved, so even mixins are out of the question.
- * Because of this, we have a basic tracing functionality that devices can
- * add that implements pcap tracing:  PcapUserHelperForIpv4; and another
- * class that enables both pcap and ascii tracing: TraceUserHelperForIpv4.
- * The inheritance tree then continues with PcapUserHelperForIpv6 inheriting
- * from TraceUserHelperForIpv4.
+ * trace helper for Ipv4, but pybindgen doesn't support multiple inheritance
+ * no matter how well behaved, so even mixins are out of the question. Because
+ * of this, we have a hierarchy of tracing functionality that protocol helpers
+ * can add.  If your helper inherits from PcapHelperForIpv4, you get pcap
+ * tracing.  If your helper inherits from PcapAndAsciiHelperForIpv4, you
+ * get both ascii and pcap tracing.
  */
-class TraceUserHelperForIpv4 : public PcapUserHelperForIpv4
+class PcapAndAsciiHelperForIpv4 : public PcapHelperForIpv4
 {
 public:
   /**
@@ -635,24 +840,104 @@ private:
 };
 
 /**
- * @brief Base class providing common ascii trace operations for helpers
- * working with Ipv6 interfaces.
+ * \brief Base class providing common user-level ascii and pcap tracing
+ * for Ipv4 protocols plus pcap tracing for IPv6 protocols .
  *
- * There are two basic flavors of ascii tracing.  The first kind will case a
- * trace file to be created for every traced device in the form 
- * <file prefix>-<node number>-<device index>.tr just like the pcap trace 
- * helpers would do.  Additionally, if the object name service is used to 
- * define either the node or device, the name will be substituted in the 
- * file name.  This form of ascii tracing does not include a context string
- * and makes it easier to determine the source of the event.
- *
- * The second kind of tracing is more like ns-2 tracing in that there is
- * one trace file into which all of the specified events of the specified
- * devices are written.  This form of ascii tracing does include a context
- * string and interleaves the trace hits from all of the devices into a 
- * single file.
+ * It would be nice to make this class completely independent of the trace 
+ * helpers for Ipv4, but pybindgen doesn't support multiple inheritance
+ * no matter how well behaved, so even mixins are out of the question. Because
+ * of this, we have a hierarchy of tracing functionality that protocols can
+ * add.  If your protocol helper inherits from PcapHelperForIpv4, you get pcap
+ * tracing for Ipv4 protocols.  If your protocol helper inherits from 
+ * PcapAndAsciiHelperForIpv4, you get both ascii and pcap tracing for Ipv4
+ * protocols.  If you inherit from PcapAndAsciiHelperForIpv4AndPcapHelperForIpv6
+ * you get both ascii and pcap tracing for Ipv4 and pcap tracing for Ipv6.
  */
-class AsciiTraceUserHelperForIpv6
+class PcapAndAsciiHelperForIpv4AndPcapHelperForIpv6 : public PcapAndAsciiHelperForIpv4
+{
+public:
+  /**
+   * @brief Enable pcap output the indicated Ipv6 and interface pair.
+   * @internal
+   *
+   * @param prefix Filename prefix to use for pcap files.
+   * @param ipv6 Ptr<Ipv6> on which you want to enable tracing.
+   * @param interface Interface on ipv6 on which you want to enable tracing.
+   */
+  virtual void EnablePcapIpv6Internal (std::string prefix, Ptr<Ipv6> ipv6, uint32_t interface) = 0;
+
+  /**
+   * @brief Enable pcap output the indicated Ipv6 and interface pair.
+   *
+   * @param prefix Filename prefix to use for pcap files.
+   * @param ipv6 Ptr<Ipv6> on which you want to enable tracing.
+   * @param interface Interface on ipv6 on which you want to enable tracing.
+   */
+  void EnablePcapIpv6 (std::string prefix, Ptr<Ipv6> ipv6, uint32_t interface);
+
+  /**
+   * @brief Enable pcap output the indicated Ipv6 and interface pair using a
+   * Ptr<Ipv6> previously named using the ns-3 object name service.
+   *
+   * @param filename filename prefix to use for pcap files.
+   * @param ipv6Name Name of the Ptr<Ipv6> on which you want to enable tracing.
+   * @param interface Interface on ipv6 on which you want to enable tracing.
+   */
+  void EnablePcapIpv6 (std::string prefix, std::string ipv6Name, uint32_t interface);
+
+  /**
+   * @brief Enable pcap output on each Ipv6 and interface pair in the container.
+   *
+   * @param prefix Filename prefix to use for pcap files.
+   * @param c Ipv6InterfaceContainer of Ipv6 and interface pairs
+   */
+  void EnablePcapIpv6 (std::string prefix, Ipv6InterfaceContainer c);
+
+  /**
+   * @brief Enable pcap output on all Ipv6 and interface pairs existing in the
+   * nodes provided in the container.
+   *
+   * \param prefix Filename prefix to use for pcap files.
+   * \param n container of nodes.
+   */
+  void EnablePcapIpv6 (std::string prefix, NodeContainer n);
+
+  /**
+   * @brief Enable pcap output on the Ipv6 and interface pair specified by a 
+   * global node-id (of a previously created node) and interface.  Since there
+   * can be only one Ipv6 aggregated to a node, the node-id unambiguously 
+   * determines the Ipv6.
+   *
+   * @param prefix Filename prefix to use for pcap files.
+   */
+  void EnablePcapIpv6 (std::string prefix, uint32_t nodeid, uint32_t interface);
+
+  /**
+   * @brief Enable pcap output on all Ipv6 and interface pairs existing in the 
+   * set of all nodes created in the simulation.
+   *
+   * @param prefix Filename prefix to use for pcap files.
+   */
+  void EnablePcapIpv6All (std::string prefix);
+};
+
+/**
+ * @brief Base class providing common ascii trace operations for helpers
+ * working with Ipv4 and Ipv6 interfaces.
+ *
+ * It would be nice to make this class completely independent of the trace 
+ * helpers for Ipv4, and the pcap helper for Ipv6, but pybindgen doesn't support
+ * multiple inheritance no matter how well behaved, so even mixins are out of 
+ * the question. Because of this, we have a hierarchy of tracing functionality
+ * that protocoll helpers can add.  If your protocol helper inherits from 
+ * PcapHelperForIpv4, you get pcap tracing for Ipv4 protocols.  If your protocol
+ * helper inherits from PcapAndAsciiHelperForIpv4, you get both ascii and pcap 
+ * tracing for Ipv4 protocols.  If your helper inherits from 
+ * PcapAndAsciiHelperForIpv4AndPcapHelperForIpv6 you get both ascii and pcap 
+ * tracing for Ipv4 and pcap tracing for Ipv6.  If your device helper inherits
+ * from TraceHelperForProtocol, you get the full meal deal.
+ */
+class TraceHelperForProtocol : public PcapAndAsciiHelperForIpv4AndPcapHelperForIpv6
 {
 public:
   /**
@@ -841,4 +1126,4 @@ private:
 
 } // namespace ns3
 
-#endif /* ASCIITRACE_HELPER_H */
+#endif /* TRACE_HELPER_H */

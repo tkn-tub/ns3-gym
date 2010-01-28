@@ -36,7 +36,7 @@ all_modules = (
     'mobility',
     'devices/wifi',
     'helper',
-    'contrib/stats',
+#    'contrib/stats',
     'applications/v4ping',
     'devices/mesh',
     'devices/mesh/dot11s',

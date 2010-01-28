@@ -28,8 +28,7 @@
 #include "ns3/object-factory.h"
 #include "ns3/ipv4-l3-protocol.h"
 #include "ns3/ipv6-l3-protocol.h"
-#include "pcap-helper.h"
-#include "ascii-trace-helper.h"
+#include "trace-helper.h"
 
 namespace ns3 {
 
@@ -52,13 +51,8 @@ class Ipv6RoutingHelper;
  * treated as "mixins".  A mixin is a self-contained class that
  * encapsulates a general attribute or a set of functionality that
  * may be of interest to many other classes.
- * 
- * Since the mixins below are completely self-contained and are explicitly 
- * designed to avoid naming conflicts through explicit resolution, multiple
- * inheritance problems are avoided.
  */
-  class InternetStackHelper : public PcapUserHelperForIpv4, public AsciiTraceUserHelperForIpv4,
-                              public PcapUserHelperForIpv6, public AsciiTraceUserHelperForIpv6
+class InternetStackHelper : public TraceHelperForProtocol
 {
 public:
   /**

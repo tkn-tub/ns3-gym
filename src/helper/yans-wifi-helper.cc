@@ -18,8 +18,7 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 
-#include "pcap-helper.h"
-#include "ascii-trace-helper.h"
+#include "trace-helper.h"
 #include "yans-wifi-helper.h"
 #include "ns3/error-rate-model.h"
 #include "ns3/propagation-loss-model.h"
