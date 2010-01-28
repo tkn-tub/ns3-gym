@@ -191,10 +191,15 @@ namespace ns3 {
 // destroyed; but must be cleaned up at the end of time to avoid leaks.  A 
 // global map of interface pairs to pcap file objects seems to fit the bill.
 //
-typedef std::pair<Ptr<Ipv4>, uint32_t> InterfacePair;
-typedef std::map<InterfacePair, Ptr<PcapFileObject> > InterfaceFileMap;
+typedef std::pair<Ptr<Ipv4>, uint32_t> InterfacePairIpv4;
+typedef std::map<InterfacePairIpv4, Ptr<PcapFileObject> > InterfaceFileMapIpv4;
 
-static InterfaceFileMap g_interfaceFileMap;
+static InterfaceFileMapIpv4 g_interfaceFileMapIpv4;
+
+typedef std::pair<Ptr<Ipv6>, uint32_t> InterfacePairIpv6;
+typedef std::map<InterfacePairIpv6, Ptr<PcapFileObject> > InterfaceFileMapIpv6;
+
+static InterfaceFileMapIpv6 g_interfaceFileMapIpv6;
 
 InternetStackHelper::InternetStackHelper ()
   : m_routing (0),
@@ -383,27 +388,27 @@ Ipv4L3ProtocolRxTxSink (Ptr<const Packet> p, Ptr<Ipv4> ipv4, uint32_t interface)
 {
   NS_LOG_FUNCTION (p << ipv4 << interface);
 
-  InterfacePair pair = std::make_pair (ipv4, interface);
+  InterfacePairIpv4 pair = std::make_pair (ipv4, interface);
 
-  if (g_interfaceFileMap.find (pair) == g_interfaceFileMap.end ())
+  if (g_interfaceFileMapIpv4.find (pair) == g_interfaceFileMapIpv4.end ())
     {
       NS_LOG_INFO ("Ignoring packet to/from interface " << interface);
       return;
     }
 
-  Ptr<PcapFileObject> file = g_interfaceFileMap[pair];
+  Ptr<PcapFileObject> file = g_interfaceFileMapIpv4[pair];
   file->Write(Simulator::Now(), p);
 }
 
 void 
-InternetStackHelper::EnablePcapInternal (std::string prefix, Ptr<Ipv4> ipv4, uint32_t interface)
+InternetStackHelper::EnablePcapIpv4Internal (std::string prefix, Ptr<Ipv4> ipv4, uint32_t interface)
 {
   NS_LOG_FUNCTION (prefix << ipv4 << interface);
 
   PcapHelper pcapHelper;
   std::string filename = pcapHelper.GetFilenameFromInterfacePair (prefix, ipv4, interface);
   Ptr<PcapFileObject> file = pcapHelper.CreateFile (filename, "w", PcapHelper::DLT_RAW);
-  g_interfaceFileMap[std::make_pair (ipv4, interface)] = file;
+  g_interfaceFileMapIpv4[std::make_pair (ipv4, interface)] = file;
 
   if (m_ipv4Enabled)
     {
@@ -412,14 +417,63 @@ InternetStackHelper::EnablePcapInternal (std::string prefix, Ptr<Ipv4> ipv4, uin
       // node so we can get to Ipv4L3Protocol through Ipv4.
       //
       Ptr<Ipv4L3Protocol> ipv4L3Protocol = ipv4->GetObject<Ipv4L3Protocol> ();
-      NS_ASSERT_MSG (ipv4L3Protocol, "InternetStackHelper::EnablePcapInternal(): "
+      NS_ASSERT_MSG (ipv4L3Protocol, "InternetStackHelper::EnablePcapIpv4Internal(): "
                      "m_ipv4Enabled and ipv4L3Protocol inconsistent");
 
       bool result = ipv4L3Protocol->TraceConnectWithoutContext ("Tx", MakeCallback (&Ipv4L3ProtocolRxTxSink));
-      NS_ASSERT_MSG (result == true, "InternetStackHelper::EnablePcapInternal():  Unable to connect ipv4L3Protocol \"Tx\"");
+      NS_ASSERT_MSG (result == true, "InternetStackHelper::EnablePcapIpv4Internal():  "
+                     "Unable to connect ipv4L3Protocol \"Tx\"");
 
       result = ipv4L3Protocol->TraceConnectWithoutContext ("Rx", MakeCallback (&Ipv4L3ProtocolRxTxSink));
-      NS_ASSERT_MSG (result == true, "InternetStackHelper::EnablePcapInternal():  Unable to connect ipv4L3Protocol \"Rx\"");
+      NS_ASSERT_MSG (result == true, "InternetStackHelper::EnablePcapIpv4Internal():  "
+                     "Unable to connect ipv4L3Protocol \"Rx\"");
+    }
+}
+
+static void
+Ipv6L3ProtocolRxTxSink (Ptr<const Packet> p, Ptr<Ipv6> ipv6, uint32_t interface)
+{
+  NS_LOG_FUNCTION (p << ipv6 << interface);
+
+  InterfacePairIpv6 pair = std::make_pair (ipv6, interface);
+
+  if (g_interfaceFileMapIpv6.find (pair) == g_interfaceFileMapIpv6.end ())
+    {
+      NS_LOG_INFO ("Ignoring packet to/from interface " << interface);
+      return;
+    }
+
+  Ptr<PcapFileObject> file = g_interfaceFileMapIpv6[pair];
+  file->Write(Simulator::Now(), p);
+}
+
+void 
+InternetStackHelper::EnablePcapIpv6Internal (std::string prefix, Ptr<Ipv6> ipv6, uint32_t interface)
+{
+  NS_LOG_FUNCTION (prefix << ipv6 << interface);
+
+  PcapHelper pcapHelper;
+  std::string filename = pcapHelper.GetFilenameFromInterfacePair (prefix, ipv6, interface);
+  Ptr<PcapFileObject> file = pcapHelper.CreateFile (filename, "w", PcapHelper::DLT_RAW);
+  g_interfaceFileMapIpv6[std::make_pair (ipv6, interface)] = file;
+
+  if (m_ipv6Enabled)
+    {
+      //
+      // Ptr<Ipv6> is aggregated to node and Ipv6L3Protocol is aggregated to 
+      // node so we can get to Ipv6L3Protocol through Ipv6.
+      //
+      Ptr<Ipv6L3Protocol> ipv6L3Protocol = ipv6->GetObject<Ipv6L3Protocol> ();
+      NS_ASSERT_MSG (ipv6L3Protocol, "InternetStackHelper::EnablePcapIpv6Internal(): "
+                     "m_ipv6Enabled and ipv6L3Protocol inconsistent");
+
+      bool result = ipv6L3Protocol->TraceConnectWithoutContext ("Tx", MakeCallback (&Ipv6L3ProtocolRxTxSink));
+      NS_ASSERT_MSG (result == true, "InternetStackHelper::EnablePcapIpv6Internal():  "
+                     "Unable to connect ipv6L3Protocol \"Tx\"");
+
+      result = ipv6L3Protocol->TraceConnectWithoutContext ("Rx", MakeCallback (&Ipv6L3ProtocolRxTxSink));
+      NS_ASSERT_MSG (result == true, "InternetStackHelper::EnablePcapIpv6Internal():  "
+                     "Unable to connect ipv6L3Protocol \"Rx\"");
     }
 }
 
@@ -451,12 +505,18 @@ Ipv4L3ProtocolDropSinkWithContext (
 }
 
 void 
-InternetStackHelper::EnableAsciiInternal (
+InternetStackHelper::EnableAsciiIpv4Internal (
   Ptr<OutputStreamObject> stream, 
   std::string prefix, 
   Ptr<Ipv4> ipv4, 
   uint32_t interface)
 {
+  if (!m_ipv4Enabled)
+    {
+      NS_LOG_INFO ("Call to enable Ipv4 ascii tracing but Ipv4 not enabled");
+      return;
+    }
+
   //
   // Our trace sinks are going to use packet printing, so we have to 
   // make sure that is turned on.
@@ -497,7 +557,8 @@ InternetStackHelper::EnableAsciiInternal (
       Ptr<Ipv4L3Protocol> ipv4L3Protocol = ipv4->GetObject<Ipv4L3Protocol> ();
       bool result = ipv4L3Protocol->TraceConnectWithoutContext ("Drop", 
         MakeBoundCallback (&Ipv4L3ProtocolDropSinkWithoutContext, theStream));
-      NS_ASSERT_MSG (result == true, "InternetStackHelper::EnableAsciiInternal():  Unable to connect ipv4L3Protocol \"Drop\"");
+      NS_ASSERT_MSG (result == true, "InternetStackHelper::EnableAsciiIpv4Internal():  "
+                     "Unable to connect ipv4L3Protocol \"Drop\"");
       return;
     }
 
@@ -523,37 +584,95 @@ InternetStackHelper::EnableAsciiInternal (
   Config::Connect (oss.str (), MakeBoundCallback (&Ipv4L3ProtocolDropSinkWithContext, stream));
 }
 
-#if 0
-void
-InternetStackHelper::EnableAscii (std::ostream &os, NodeContainer n)
-{
-  Ptr<AsciiWriter> writer = AsciiWriter::Get (os);
-  Packet::EnablePrinting ();
-  std::ostringstream oss;
-  for (NodeContainer::Iterator i = n.Begin (); i != n.End (); ++i)
-    {
-      Ptr<Node> node = *i;
-      oss << "/NodeList/" << node->GetId () << "/$ns3::Ipv4L3Protocol/Drop";
-      Config::Connect (oss.str (), MakeBoundCallback (&InternetStackHelper::AsciiDropEventIpv4, writer));
-      oss.str ("");
-      oss << "/NodeList/" << node->GetId () << "/$ns3::ArpL3Protocol/Drop";
-      Config::Connect (oss.str (), MakeBoundCallback (&InternetStackHelper::AsciiDropEventArp, writer));
-      oss.str ("");
-      oss << "/NodeList/" << node->GetId () << "/$ns3::Ipv6L3Protocol/Drop";
-      Config::Connect (oss.str (), MakeBoundCallback (&InternetStackHelper::AsciiDropEventIpv6, writer));
-      oss.str ("");
-    }
-}
-
-void
-InternetStackHelper::AsciiDropEventIpv6 (Ptr<AsciiWriter> writer, std::string path,
-                                         Ipv6Header const &header, Ptr<const Packet> packet,
-                                         Ipv6L3Protocol::DropReason reason, uint32_t interface)
+static void
+Ipv6L3ProtocolDropSinkWithoutContext (
+  Ptr<OutputStreamObject> stream,
+  Ipv6Header const &header, 
+  Ptr<const Packet> packet,
+  Ipv6L3Protocol::DropReason reason, 
+  uint32_t interface)
 {
   Ptr<Packet> p = packet->Copy ();
   p->AddHeader (header);
-  writer->WritePacket (AsciiWriter::DROP, path, p);
+  *stream->GetStream () << "d " << Simulator::Now ().GetSeconds () << " " << *p << std::endl;
 }
-#endif
+
+static void
+Ipv6L3ProtocolDropSinkWithContext (
+  Ptr<OutputStreamObject> stream,
+  std::string context,
+  Ipv6Header const &header, 
+  Ptr<const Packet> packet,
+  Ipv6L3Protocol::DropReason reason, 
+  uint32_t interface)
+{
+  Ptr<Packet> p = packet->Copy ();
+  p->AddHeader (header);
+  *stream->GetStream () << "d " << Simulator::Now ().GetSeconds () << " " << context << " " << *p << std::endl;
+}
+
+void 
+InternetStackHelper::EnableAsciiIpv6Internal (
+  Ptr<OutputStreamObject> stream, 
+  std::string prefix, 
+  Ptr<Ipv6> ipv6, 
+  uint32_t interface)
+{
+  if (!m_ipv6Enabled)
+    {
+      NS_LOG_INFO ("Call to enable Ipv6 ascii tracing but Ipv6 not enabled");
+      return;
+    }
+
+  //
+  // Our trace sinks are going to use packet printing, so we have to 
+  // make sure that is turned on.
+  //
+  Packet::EnablePrinting ();
+
+  //
+  // If we are not provided an OutputStreamObject, we are expected to create 
+  // one using the usual trace filename conventions and do a Hook*WithoutContext
+  // since there will be one file per context and therefore the context would
+  // be redundant.
+  //
+  if (stream == 0)
+    {
+      //
+      // Set up an output stream object to deal with private ofstream copy 
+      // constructor and lifetime issues.  Let the helper decide the actual
+      // name of the file given the prefix.
+      //
+      AsciiTraceHelper asciiTraceHelper;
+      std::string filename = asciiTraceHelper.GetFilenameFromInterfacePair (prefix, ipv6, interface);
+      Ptr<OutputStreamObject> theStream = asciiTraceHelper.CreateFileStream (filename, "w");
+
+      //
+      // The drop sink for the Ipv6L3Protocol uses a different signature than
+      // the default sink, so we have to cook one up for ourselves.  We can get
+      // to the Ptr<Ipv6L3Protocol> through our Ptr<Ipv6> since they must both 
+      // be aggregated to the same node.
+      //
+      Ptr<Ipv6L3Protocol> ipv6L3Protocol = ipv6->GetObject<Ipv6L3Protocol> ();
+      bool result = ipv6L3Protocol->TraceConnectWithoutContext ("Drop", 
+        MakeBoundCallback (&Ipv6L3ProtocolDropSinkWithoutContext, theStream));
+      NS_ASSERT_MSG (result == true, "InternetStackHelper::EnableAsciiIpv6Internal():  "
+                     "Unable to connect ipv6L3Protocol \"Drop\"");
+      return;
+    }
+
+  //
+  // If we are provided an OutputStreamObject, we are expected to use it, and
+  // to providd a context.  We are free to come up with our own context if we
+  // want, and use the AsciiTraceHelper Hook*WithContext functions, but for 
+  // compatibility and simplicity, we just use Config::Connect and let it deal
+  // with the context.
+  //
+  Ptr<Node> node = ipv6->GetObject<Node> ();
+  std::ostringstream oss;
+
+  oss << "/NodeList/" << node->GetId () << "/$ns3::Ipv6L3Protocol/Drop";
+  Config::Connect (oss.str (), MakeBoundCallback (&Ipv6L3ProtocolDropSinkWithContext, stream));
+}
 
 } // namespace ns3

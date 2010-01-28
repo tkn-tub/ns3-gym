@@ -392,7 +392,7 @@ main (int argc, char *argv[])
      Ptr<OutputStreamObject> stream = ascii.CreateFileStream ("mixed-wireless.tr");
      wifiPhy.EnableAsciiAll (stream);
      csma.EnableAsciiAll (stream);
-     internet.EnableAsciiAll (stream);
+     internet.EnableAsciiIpv4All (stream);
 
       // Let's do a pcap trace on the application source and sink, ifIndex 0
       // Csma captures in non-promiscuous mode

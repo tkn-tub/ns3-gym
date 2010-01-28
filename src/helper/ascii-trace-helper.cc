@@ -134,28 +134,32 @@ AsciiTraceHelper::GetFilenameFromDevice (std::string prefix, Ptr<NetDevice> devi
 }
 
 std::string
-AsciiTraceHelper::GetFilenameFromInterfacePair (std::string prefix, Ptr<Ipv4> ipv4, uint32_t interface, bool useObjectNames)
+AsciiTraceHelper::GetFilenameFromInterfacePair (
+  std::string prefix, 
+  Ptr<Object> object, 
+  uint32_t interface, 
+  bool useObjectNames)
 {
-  NS_LOG_FUNCTION (prefix << ipv4 << interface << useObjectNames);
+  NS_LOG_FUNCTION (prefix << object << interface << useObjectNames);
   NS_ABORT_MSG_UNLESS (prefix.size (), "Empty prefix string");
 
   std::ostringstream oss;
   oss << prefix << "-";
 
-  std::string ipv4name;
+  std::string objname;
   std::string nodename;
 
-  Ptr<Node> node = ipv4->GetObject<Node> ();
+  Ptr<Node> node = object->GetObject<Node> ();
 
   if (useObjectNames)
     {
-      ipv4name = Names::FindName (ipv4);
+      objname = Names::FindName (object);
       nodename = Names::FindName (node);
     }
 
-  if (ipv4name.size ())
+  if (objname.size ())
     {
-      oss << ipv4name;
+      oss << objname;
     }
   else if (nodename.size ())
     {
@@ -456,80 +460,80 @@ AsciiTraceUserHelperForDevice::EnableAsciiImpl (
 // Public API
 //
 void 
-AsciiTraceUserHelperForIpv4::EnableAscii (std::string prefix, Ptr<Ipv4> ipv4, uint32_t interface)
+AsciiTraceUserHelperForIpv4::EnableAsciiIpv4 (std::string prefix, Ptr<Ipv4> ipv4, uint32_t interface)
 {
-  EnableAsciiInternal (Ptr<OutputStreamObject> (), prefix, ipv4, interface);
+  EnableAsciiIpv4Internal (Ptr<OutputStreamObject> (), prefix, ipv4, interface);
 }
 
 //
 // Public API
 //
 void 
-AsciiTraceUserHelperForIpv4::EnableAscii (Ptr<OutputStreamObject> stream, Ptr<Ipv4> ipv4, uint32_t interface)
+AsciiTraceUserHelperForIpv4::EnableAsciiIpv4 (Ptr<OutputStreamObject> stream, Ptr<Ipv4> ipv4, uint32_t interface)
 {
-  EnableAsciiInternal (stream, std::string (), ipv4, interface);
+  EnableAsciiIpv4Internal (stream, std::string (), ipv4, interface);
 }
 
 //
 // Public API
 //
 void 
-AsciiTraceUserHelperForIpv4::EnableAscii (std::string prefix, std::string ipv4Name, uint32_t interface)
+AsciiTraceUserHelperForIpv4::EnableAsciiIpv4 (std::string prefix, std::string ipv4Name, uint32_t interface)
 {
-  EnableAsciiImpl (Ptr<OutputStreamObject> (), prefix, ipv4Name, interface);
+  EnableAsciiIpv4Impl (Ptr<OutputStreamObject> (), prefix, ipv4Name, interface);
 }
 
 //
 // Public API
 //
 void 
-AsciiTraceUserHelperForIpv4::EnableAscii (Ptr<OutputStreamObject> stream, std::string ipv4Name, uint32_t interface)
+AsciiTraceUserHelperForIpv4::EnableAsciiIpv4 (Ptr<OutputStreamObject> stream, std::string ipv4Name, uint32_t interface)
 {
-  EnableAsciiImpl (stream, std::string (), ipv4Name, interface);
+  EnableAsciiIpv4Impl (stream, std::string (), ipv4Name, interface);
 }
 
 //
 // Private API
 //
 void 
-AsciiTraceUserHelperForIpv4::EnableAsciiImpl (
+AsciiTraceUserHelperForIpv4::EnableAsciiIpv4Impl (
   Ptr<OutputStreamObject> stream, 
   std::string prefix, 
   std::string ipv4Name, 
   uint32_t interface)
 {
   Ptr<Ipv4> ipv4 = Names::Find<Ipv4> (ipv4Name);
-  EnableAsciiInternal (stream, prefix, ipv4, interface);
+  EnableAsciiIpv4Internal (stream, prefix, ipv4, interface);
 }
 
 //
 // Public API
 //
 void 
-AsciiTraceUserHelperForIpv4::EnableAscii (std::string prefix, Ipv4InterfaceContainer c)
+AsciiTraceUserHelperForIpv4::EnableAsciiIpv4 (std::string prefix, Ipv4InterfaceContainer c)
 {
-  EnableAsciiImpl (Ptr<OutputStreamObject> (), prefix, c);
+  EnableAsciiIpv4Impl (Ptr<OutputStreamObject> (), prefix, c);
 }
 
 //
 // Public API
 //
 void 
-AsciiTraceUserHelperForIpv4::EnableAscii (Ptr<OutputStreamObject> stream, Ipv4InterfaceContainer c)
+AsciiTraceUserHelperForIpv4::EnableAsciiIpv4 (Ptr<OutputStreamObject> stream, Ipv4InterfaceContainer c)
 {
-  EnableAsciiImpl (stream, std::string (), c);
+  EnableAsciiIpv4Impl (stream, std::string (), c);
 }
 
 //
 // Private API
 //
 void 
-AsciiTraceUserHelperForIpv4::EnableAsciiImpl (Ptr<OutputStreamObject> stream, std::string prefix, Ipv4InterfaceContainer c)
+AsciiTraceUserHelperForIpv4::EnableAsciiIpv4Impl (Ptr<OutputStreamObject> stream, std::string prefix, Ipv4InterfaceContainer c)
 {
   for (Ipv4InterfaceContainer::Iterator i = c.Begin (); i != c.End (); ++i)
     {
       std::pair<Ptr<Ipv4>, uint32_t> pair = *i;
-      EnableAsciiInternal (stream, prefix, pair.first, pair.second);
+      EnableAsciiIpv4Internal (stream, prefix, pair.first, pair.second);
     }
 }
 
@@ -537,25 +541,25 @@ AsciiTraceUserHelperForIpv4::EnableAsciiImpl (Ptr<OutputStreamObject> stream, st
 // Public API
 //
 void
-AsciiTraceUserHelperForIpv4::EnableAscii (std::string prefix, NodeContainer n)
+AsciiTraceUserHelperForIpv4::EnableAsciiIpv4 (std::string prefix, NodeContainer n)
 {
-  EnableAsciiImpl (Ptr<OutputStreamObject> (), prefix, n);
+  EnableAsciiIpv4Impl (Ptr<OutputStreamObject> (), prefix, n);
 }
 
 //
 // Public API
 //
 void
-AsciiTraceUserHelperForIpv4::EnableAscii (Ptr<OutputStreamObject> stream, NodeContainer n)
+AsciiTraceUserHelperForIpv4::EnableAsciiIpv4 (Ptr<OutputStreamObject> stream, NodeContainer n)
 {
-  EnableAsciiImpl (stream, std::string (), n);
+  EnableAsciiIpv4Impl (stream, std::string (), n);
 }
 
 //
 // Private API
 //
 void
-AsciiTraceUserHelperForIpv4::EnableAsciiImpl (Ptr<OutputStreamObject> stream, std::string prefix, NodeContainer n)
+AsciiTraceUserHelperForIpv4::EnableAsciiIpv4Impl (Ptr<OutputStreamObject> stream, std::string prefix, NodeContainer n)
 {
   for (NodeContainer::Iterator i = n.Begin (); i != n.End (); ++i)
     {
@@ -565,7 +569,7 @@ AsciiTraceUserHelperForIpv4::EnableAsciiImpl (Ptr<OutputStreamObject> stream, st
         {
           for (uint32_t j = 0; j < ipv4->GetNInterfaces (); ++j)
             {
-              EnableAsciiInternal (stream, prefix, ipv4, j);
+              EnableAsciiIpv4Internal (stream, prefix, ipv4, j);
             }
         }
     }
@@ -575,43 +579,43 @@ AsciiTraceUserHelperForIpv4::EnableAsciiImpl (Ptr<OutputStreamObject> stream, st
 // Public API
 //
 void
-AsciiTraceUserHelperForIpv4::EnableAsciiAll (std::string prefix)
+AsciiTraceUserHelperForIpv4::EnableAsciiIpv4All (std::string prefix)
 {
-  EnableAsciiImpl (Ptr<OutputStreamObject> (), prefix, NodeContainer::GetGlobal ());
+  EnableAsciiIpv4Impl (Ptr<OutputStreamObject> (), prefix, NodeContainer::GetGlobal ());
 }
 
 //
 // Public API
 //
 void
-AsciiTraceUserHelperForIpv4::EnableAsciiAll (Ptr<OutputStreamObject> stream)
+AsciiTraceUserHelperForIpv4::EnableAsciiIpv4All (Ptr<OutputStreamObject> stream)
 {
-  EnableAsciiImpl (stream, std::string (), NodeContainer::GetGlobal ());
+  EnableAsciiIpv4Impl (stream, std::string (), NodeContainer::GetGlobal ());
 }
 
 //
 // Public API
 //
 void 
-AsciiTraceUserHelperForIpv4::EnableAscii (Ptr<OutputStreamObject> stream, uint32_t nodeid, uint32_t interface)
+AsciiTraceUserHelperForIpv4::EnableAsciiIpv4 (Ptr<OutputStreamObject> stream, uint32_t nodeid, uint32_t interface)
 {
-  EnableAsciiImpl (stream, std::string (), nodeid, interface);
+  EnableAsciiIpv4Impl (stream, std::string (), nodeid, interface);
 }
 
 //
 // Public API
 //
 void 
-AsciiTraceUserHelperForIpv4::EnableAscii (std::string prefix, uint32_t nodeid, uint32_t interface)
+AsciiTraceUserHelperForIpv4::EnableAsciiIpv4 (std::string prefix, uint32_t nodeid, uint32_t interface)
 {
-  EnableAsciiImpl (Ptr<OutputStreamObject> (), prefix, nodeid, interface);
+  EnableAsciiIpv4Impl (Ptr<OutputStreamObject> (), prefix, nodeid, interface);
 }
 
 //
 // Private API
 //
 void 
-AsciiTraceUserHelperForIpv4::EnableAsciiImpl (
+AsciiTraceUserHelperForIpv4::EnableAsciiIpv4Impl (
   Ptr<OutputStreamObject> stream, 
   std::string prefix, 
   uint32_t nodeid, 
@@ -630,7 +634,192 @@ AsciiTraceUserHelperForIpv4::EnableAsciiImpl (
       Ptr<Ipv4> ipv4 = node->GetObject<Ipv4> ();
       if (ipv4)
         {
-          EnableAsciiInternal (stream, prefix, ipv4, interface);
+          EnableAsciiIpv4Internal (stream, prefix, ipv4, interface);
+        }
+
+      return;
+    }
+}
+
+//
+// Public API
+//
+void 
+AsciiTraceUserHelperForIpv6::EnableAsciiIpv6 (std::string prefix, Ptr<Ipv6> ipv6, uint32_t interface)
+{
+  EnableAsciiIpv6Internal (Ptr<OutputStreamObject> (), prefix, ipv6, interface);
+}
+
+//
+// Public API
+//
+void 
+AsciiTraceUserHelperForIpv6::EnableAsciiIpv6 (Ptr<OutputStreamObject> stream, Ptr<Ipv6> ipv6, uint32_t interface)
+{
+  EnableAsciiIpv6Internal (stream, std::string (), ipv6, interface);
+}
+
+//
+// Public API
+//
+void 
+AsciiTraceUserHelperForIpv6::EnableAsciiIpv6 (std::string prefix, std::string ipv6Name, uint32_t interface)
+{
+  EnableAsciiIpv6Impl (Ptr<OutputStreamObject> (), prefix, ipv6Name, interface);
+}
+
+//
+// Public API
+//
+void 
+AsciiTraceUserHelperForIpv6::EnableAsciiIpv6 (Ptr<OutputStreamObject> stream, std::string ipv6Name, uint32_t interface)
+{
+  EnableAsciiIpv6Impl (stream, std::string (), ipv6Name, interface);
+}
+
+//
+// Private API
+//
+void 
+AsciiTraceUserHelperForIpv6::EnableAsciiIpv6Impl (
+  Ptr<OutputStreamObject> stream, 
+  std::string prefix, 
+  std::string ipv6Name, 
+  uint32_t interface)
+{
+  Ptr<Ipv6> ipv6 = Names::Find<Ipv6> (ipv6Name);
+  EnableAsciiIpv6Internal (stream, prefix, ipv6, interface);
+}
+
+//
+// Public API
+//
+void 
+AsciiTraceUserHelperForIpv6::EnableAsciiIpv6 (std::string prefix, Ipv6InterfaceContainer c)
+{
+  EnableAsciiIpv6Impl (Ptr<OutputStreamObject> (), prefix, c);
+}
+
+//
+// Public API
+//
+void 
+AsciiTraceUserHelperForIpv6::EnableAsciiIpv6 (Ptr<OutputStreamObject> stream, Ipv6InterfaceContainer c)
+{
+  EnableAsciiIpv6Impl (stream, std::string (), c);
+}
+
+//
+// Private API
+//
+void 
+AsciiTraceUserHelperForIpv6::EnableAsciiIpv6Impl (Ptr<OutputStreamObject> stream, std::string prefix, Ipv6InterfaceContainer c)
+{
+  for (Ipv6InterfaceContainer::Iterator i = c.Begin (); i != c.End (); ++i)
+    {
+      std::pair<Ptr<Ipv6>, uint32_t> pair = *i;
+      EnableAsciiIpv6Internal (stream, prefix, pair.first, pair.second);
+    }
+}
+
+//
+// Public API
+//
+void
+AsciiTraceUserHelperForIpv6::EnableAsciiIpv6 (std::string prefix, NodeContainer n)
+{
+  EnableAsciiIpv6Impl (Ptr<OutputStreamObject> (), prefix, n);
+}
+
+//
+// Public API
+//
+void
+AsciiTraceUserHelperForIpv6::EnableAsciiIpv6 (Ptr<OutputStreamObject> stream, NodeContainer n)
+{
+  EnableAsciiIpv6Impl (stream, std::string (), n);
+}
+
+//
+// Private API
+//
+void
+AsciiTraceUserHelperForIpv6::EnableAsciiIpv6Impl (Ptr<OutputStreamObject> stream, std::string prefix, NodeContainer n)
+{
+  for (NodeContainer::Iterator i = n.Begin (); i != n.End (); ++i)
+    {
+      Ptr<Node> node = *i;
+      Ptr<Ipv6> ipv6 = node->GetObject<Ipv6> ();
+      if (ipv6)
+        {
+          for (uint32_t j = 0; j < ipv6->GetNInterfaces (); ++j)
+            {
+              EnableAsciiIpv6Internal (stream, prefix, ipv6, j);
+            }
+        }
+    }
+}
+
+//
+// Public API
+//
+void
+AsciiTraceUserHelperForIpv6::EnableAsciiIpv6All (std::string prefix)
+{
+  EnableAsciiIpv6Impl (Ptr<OutputStreamObject> (), prefix, NodeContainer::GetGlobal ());
+}
+
+//
+// Public API
+//
+void
+AsciiTraceUserHelperForIpv6::EnableAsciiIpv6All (Ptr<OutputStreamObject> stream)
+{
+  EnableAsciiIpv6Impl (stream, std::string (), NodeContainer::GetGlobal ());
+}
+
+//
+// Public API
+//
+void 
+AsciiTraceUserHelperForIpv6::EnableAsciiIpv6 (Ptr<OutputStreamObject> stream, uint32_t nodeid, uint32_t interface)
+{
+  EnableAsciiIpv6Impl (stream, std::string (), nodeid, interface);
+}
+
+//
+// Public API
+//
+void 
+AsciiTraceUserHelperForIpv6::EnableAsciiIpv6 (std::string prefix, uint32_t nodeid, uint32_t interface)
+{
+  EnableAsciiIpv6Impl (Ptr<OutputStreamObject> (), prefix, nodeid, interface);
+}
+
+//
+// Private API
+//
+void 
+AsciiTraceUserHelperForIpv6::EnableAsciiIpv6Impl (
+  Ptr<OutputStreamObject> stream, 
+  std::string prefix, 
+  uint32_t nodeid, 
+  uint32_t interface)
+{
+  NodeContainer n = NodeContainer::GetGlobal ();
+
+  for (NodeContainer::Iterator i = n.Begin (); i != n.End (); ++i)
+    {
+      Ptr<Node> node = *i;
+      if (node->GetId () != nodeid) 
+        {
+          continue;
+        }
+
+      Ptr<Ipv6> ipv6 = node->GetObject<Ipv6> ();
+      if (ipv6)
+        {
+          EnableAsciiIpv6Internal (stream, prefix, ipv6, interface);
         }
 
       return;

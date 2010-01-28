@@ -31,6 +31,18 @@ Ipv6InterfaceContainer::Ipv6InterfaceContainer ()
 {
 }
 
+Ipv6InterfaceContainer::Iterator 
+Ipv6InterfaceContainer::Begin (void) const
+{
+  return m_interfaces.begin ();
+}
+
+Ipv6InterfaceContainer::Iterator 
+Ipv6InterfaceContainer::End (void) const
+{
+  return m_interfaces.end ();
+}
+
 uint32_t Ipv6InterfaceContainer::GetN () const
 {
   return m_interfaces.size ();

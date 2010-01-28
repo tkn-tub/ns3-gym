@@ -53,11 +53,12 @@ class Ipv6RoutingHelper;
  * encapsulates a general attribute or a set of functionality that
  * may be of interest to many other classes.
  * 
- * Since the mixins below are self-contained and are explicitly 
- * designed to avoid naming conflicts through explicit resolution,
- * multiple inheritance problems are avoided.
+ * Since the mixins below are completely self-contained and are explicitly 
+ * designed to avoid naming conflicts through explicit resolution, multiple
+ * inheritance problems are avoided.
  */
-class InternetStackHelper : public PcapUserHelperForIpv4, public AsciiTraceUserHelperForIpv4
+  class InternetStackHelper : public PcapUserHelperForIpv4, public AsciiTraceUserHelperForIpv4,
+                              public PcapUserHelperForIpv6, public AsciiTraceUserHelperForIpv6
 {
 public:
   /**
@@ -182,7 +183,8 @@ private:
    * @param ipv4 Ptr to the Ipv4 interface on which you want to enable tracing.
    * @param interface Interface ID on the Ipv4 on which you want to enable tracing.
    */
-  virtual void EnablePcapInternal (std::string prefix, Ptr<Ipv4> ipv4, uint32_t interface);
+  virtual void EnablePcapIpv4Internal (std::string prefix, 
+                                       Ptr<Ipv4> ipv4, uint32_t interface);
 
   /**
    * @brief Enable ascii trace output on the indicated Ipv4 and interface pair.
@@ -194,7 +196,32 @@ private:
    * @param ipv4 Ptr to the Ipv4 interface on which you want to enable tracing.
    * @param interface Interface ID on the Ipv4 on which you want to enable tracing.
    */
-  virtual void EnableAsciiInternal (Ptr<OutputStreamObject> stream, std::string prefix, Ptr<Ipv4> ipv4, uint32_t interface);
+  virtual void EnableAsciiIpv4Internal (Ptr<OutputStreamObject> stream, std::string prefix, 
+                                        Ptr<Ipv4> ipv4, uint32_t interface);
+
+  /**
+   * @brief Enable pcap output the indicated Ipv4 and interface pair.
+   * @internal
+   *
+   * @param prefix Filename prefix to use for pcap files.
+   * @param ipv4 Ptr to the Ipv4 interface on which you want to enable tracing.
+   * @param interface Interface ID on the Ipv4 on which you want to enable tracing.
+   */
+  virtual void EnablePcapIpv6Internal (std::string prefix, 
+                                       Ptr<Ipv6> ipv6, uint32_t interface);
+
+  /**
+   * @brief Enable ascii trace output on the indicated Ipv4 and interface pair.
+   * @internal
+   *
+   * @param stream An OutputStreamObject representing an existing file to use
+   *               when writing trace data.
+   * @param prefix Filename prefix to use for ascii trace files.
+   * @param ipv4 Ptr to the Ipv4 interface on which you want to enable tracing.
+   * @param interface Interface ID on the Ipv4 on which you want to enable tracing.
+   */
+  virtual void EnableAsciiIpv6Internal (Ptr<OutputStreamObject> stream, std::string prefix, 
+                                        Ptr<Ipv6> ipv6, uint32_t interface);
 
   void Initialize (void);
   ObjectFactory m_tcpFactory;
@@ -215,56 +242,6 @@ private:
    * \internal
    */
   static void Cleanup (void);
-
-#if 0
-  /**
-   * \internal
-   */
-  static void LogRxIp (std::string context, Ptr<const Packet> packet, uint32_t deviceId);
-
-  /**
-   * \internal
-   */
-  static void LogTxIp (std::string context, Ptr<const Packet> packet, uint32_t deviceId);
-
-  /**
-   * \internal
-   */
-  static Ptr<PcapWriter> GetStream (uint32_t nodeId, uint32_t interfaceId);
-
-  struct Trace {
-    uint32_t nodeId;
-    uint32_t interfaceId;
-    Ptr<PcapWriter> writer;
-  };
-
-  /**
-   * \internal
-   */
-  static void AsciiDropEventIpv4 (Ptr<AsciiWriter> writer, std::string path,
-                                  Ipv4Header const &header, Ptr<const Packet> packet,
-                                  Ipv4L3Protocol::DropReason reason, uint32_t interface);
-  /**
-   * \internal
-   */
-  static void AsciiDropEventArp (Ptr<AsciiWriter> writer, std::string path, Ptr<const Packet> packet);
-
-  /**
-   * \internal
-   */
-  static void AsciiDropEventIpv6 (Ptr<AsciiWriter> writer, std::string path,
-                                  Ipv6Header const &header, Ptr<const Packet> packet,
-                                  Ipv6L3Protocol::DropReason reason, uint32_t interface);
-
-  static std::string m_pcapBaseFilename;
-
-  /**
-   * \internal
-   */
-  static uint32_t GetNodeIndex (std::string context);
-
-  static std::vector<Trace> m_traces;
-#endif
 
   /**
    * \brief IPv4 install state (enabled/disabled) ?

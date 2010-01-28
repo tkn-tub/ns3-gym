@@ -122,28 +122,28 @@ PcapHelper::GetFilenameFromDevice (std::string prefix, Ptr<NetDevice> device, bo
 }
 
 std::string
-PcapHelper::GetFilenameFromInterfacePair (std::string prefix, Ptr<Ipv4> ipv4, uint32_t interface, bool useObjectNames)
+PcapHelper::GetFilenameFromInterfacePair (std::string prefix, Ptr<Object> object, uint32_t interface, bool useObjectNames)
 {
-  NS_LOG_FUNCTION (prefix << ipv4 << interface << useObjectNames);
+  NS_LOG_FUNCTION (prefix << object << interface << useObjectNames);
   NS_ABORT_MSG_UNLESS (prefix.size (), "Empty prefix string");
 
   std::ostringstream oss;
   oss << prefix << "-";
 
-  std::string ipv4name;
+  std::string objname;
   std::string nodename;
 
-  Ptr<Node> node = ipv4->GetObject<Node> ();
+  Ptr<Node> node = object->GetObject<Node> ();
 
   if (useObjectNames)
     {
-      ipv4name = Names::FindName (ipv4);
+      objname = Names::FindName (object);
       nodename = Names::FindName (node);
     }
 
-  if (ipv4name.size ())
+  if (objname.size ())
     {
-      oss << ipv4name;
+      oss << objname;
     }
   else if (nodename.size ())
     {
@@ -236,30 +236,30 @@ PcapUserHelperForDevice::EnablePcap (std::string prefix, uint32_t nodeid, uint32
 }
 
 void 
-PcapUserHelperForIpv4::EnablePcap (std::string prefix, Ptr<Ipv4> ipv4, uint32_t interface)
+PcapUserHelperForIpv4::EnablePcapIpv4 (std::string prefix, Ptr<Ipv4> ipv4, uint32_t interface)
 {
-  EnablePcapInternal (prefix, ipv4, interface);
+  EnablePcapIpv4Internal (prefix, ipv4, interface);
 }
 
 void 
-PcapUserHelperForIpv4::EnablePcap (std::string prefix, std::string ipv4Name, uint32_t interface)
+PcapUserHelperForIpv4::EnablePcapIpv4 (std::string prefix, std::string ipv4Name, uint32_t interface)
 {
   Ptr<Ipv4> ipv4 = Names::Find<Ipv4> (ipv4Name);
-  EnablePcap (prefix, ipv4, interface);
+  EnablePcapIpv4 (prefix, ipv4, interface);
 }
 
 void 
-PcapUserHelperForIpv4::EnablePcap (std::string prefix, Ipv4InterfaceContainer c)
+PcapUserHelperForIpv4::EnablePcapIpv4 (std::string prefix, Ipv4InterfaceContainer c)
 {
   for (Ipv4InterfaceContainer::Iterator i = c.Begin (); i != c.End (); ++i)
     {
       std::pair<Ptr<Ipv4>, uint32_t> pair = *i;
-      EnablePcap (prefix, pair.first, pair.second);
+      EnablePcapIpv4 (prefix, pair.first, pair.second);
     }
 }
 
 void
-PcapUserHelperForIpv4::EnablePcap (std::string prefix, NodeContainer n)
+PcapUserHelperForIpv4::EnablePcapIpv4 (std::string prefix, NodeContainer n)
 {
   for (NodeContainer::Iterator i = n.Begin (); i != n.End (); ++i)
     {
@@ -269,20 +269,20 @@ PcapUserHelperForIpv4::EnablePcap (std::string prefix, NodeContainer n)
         {
           for (uint32_t j = 0; j < ipv4->GetNInterfaces (); ++j)
             {
-              EnablePcap (prefix, ipv4, j);
+              EnablePcapIpv4 (prefix, ipv4, j);
             }
         }
     }
 }
 
 void
-PcapUserHelperForIpv4::EnablePcapAll (std::string prefix)
+PcapUserHelperForIpv4::EnablePcapIpv4All (std::string prefix)
 {
-  EnablePcap (prefix, NodeContainer::GetGlobal ());
+  EnablePcapIpv4 (prefix, NodeContainer::GetGlobal ());
 }
 
 void 
-PcapUserHelperForIpv4::EnablePcap (std::string prefix, uint32_t nodeid, uint32_t interface)
+PcapUserHelperForIpv4::EnablePcapIpv4 (std::string prefix, uint32_t nodeid, uint32_t interface)
 {
   NodeContainer n = NodeContainer::GetGlobal ();
 
@@ -297,7 +297,75 @@ PcapUserHelperForIpv4::EnablePcap (std::string prefix, uint32_t nodeid, uint32_t
       Ptr<Ipv4> ipv4 = node->GetObject<Ipv4> ();
       if (ipv4)
         {
-          EnablePcap (prefix, ipv4, interface);
+          EnablePcapIpv4 (prefix, ipv4, interface);
+        }
+      return;
+    }
+}
+
+void 
+PcapUserHelperForIpv6::EnablePcapIpv6 (std::string prefix, Ptr<Ipv6> ipv6, uint32_t interface)
+{
+  EnablePcapIpv6Internal (prefix, ipv6, interface);
+}
+
+void 
+PcapUserHelperForIpv6::EnablePcapIpv6 (std::string prefix, std::string ipv6Name, uint32_t interface)
+{
+  Ptr<Ipv6> ipv6 = Names::Find<Ipv6> (ipv6Name);
+  EnablePcapIpv6 (prefix, ipv6, interface);
+}
+
+void 
+PcapUserHelperForIpv6::EnablePcapIpv6 (std::string prefix, Ipv6InterfaceContainer c)
+{
+  for (Ipv6InterfaceContainer::Iterator i = c.Begin (); i != c.End (); ++i)
+    {
+      std::pair<Ptr<Ipv6>, uint32_t> pair = *i;
+      EnablePcapIpv6 (prefix, pair.first, pair.second);
+    }
+}
+
+void
+PcapUserHelperForIpv6::EnablePcapIpv6 (std::string prefix, NodeContainer n)
+{
+  for (NodeContainer::Iterator i = n.Begin (); i != n.End (); ++i)
+    {
+      Ptr<Node> node = *i;
+      Ptr<Ipv6> ipv6 = node->GetObject<Ipv6> ();
+      if (ipv6)
+        {
+          for (uint32_t j = 0; j < ipv6->GetNInterfaces (); ++j)
+            {
+              EnablePcapIpv6 (prefix, ipv6, j);
+            }
+        }
+    }
+}
+
+void
+PcapUserHelperForIpv6::EnablePcapIpv6All (std::string prefix)
+{
+  EnablePcapIpv6 (prefix, NodeContainer::GetGlobal ());
+}
+
+void 
+PcapUserHelperForIpv6::EnablePcapIpv6 (std::string prefix, uint32_t nodeid, uint32_t interface)
+{
+  NodeContainer n = NodeContainer::GetGlobal ();
+
+  for (NodeContainer::Iterator i = n.Begin (); i != n.End (); ++i)
+    {
+      Ptr<Node> node = *i;
+      if (node->GetId () != nodeid) 
+        {
+          continue;
+        }
+      
+      Ptr<Ipv6> ipv6 = node->GetObject<Ipv6> ();
+      if (ipv6)
+        {
+          EnablePcapIpv6 (prefix, ipv6, interface);
         }
       return;
     }

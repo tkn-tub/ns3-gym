@@ -194,7 +194,7 @@ main (int argc, char *argv[])
   Ptr<OutputStreamObject> stream = ascii.CreateFileStream ("dynamic-global-routing.tr");
   p2p.EnableAsciiAll (stream);
   csma.EnableAsciiAll (stream);
-  internet.EnableAsciiAll (stream);
+  internet.EnableAsciiIpv4All (stream);
 
   p2p.EnablePcapAll ("dynamic-global-routing");
   csma.EnablePcapAll ("dynamic-global-routing", false);
