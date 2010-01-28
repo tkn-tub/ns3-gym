@@ -37,6 +37,16 @@ class Packet;
 
 /**
  * \brief build a set of EmuNetDevice objects
+ *
+ * Normally we eschew multiple inheritance, however, the classes 
+ * PcapUserHelperForDevice and AsciiTraceUserHelperForDevice are
+ * treated as "mixins".  A mixin is a self-contained class that
+ * encapsulates a general attribute or a set of functionality that
+ * may be of interest to many other classes.
+ * 
+ * Since the mixins below are self-contained and are explicitly 
+ * designed to avoid naming conflicts through explicit resolution,
+ * multiple inheritance problems are avoided.
  */
 class EmuHelper : public PcapUserHelperForDevice, public AsciiTraceUserHelperForDevice
 {

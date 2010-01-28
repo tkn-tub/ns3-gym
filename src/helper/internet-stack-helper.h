@@ -46,6 +46,16 @@ class Ipv6RoutingHelper;
  * there is no device.  This means that the creation of output file names will
  * change, and also the user-visible methods will not reference devices and
  * therefore the number of trace enable methods is reduced.
+ *
+ * Normally we eschew multiple inheritance, however, the classes 
+ * PcapUserHelperForIpv4 and AsciiTraceUserHelperForIpv4 are
+ * treated as "mixins".  A mixin is a self-contained class that
+ * encapsulates a general attribute or a set of functionality that
+ * may be of interest to many other classes.
+ * 
+ * Since the mixins below are self-contained and are explicitly 
+ * designed to avoid naming conflicts through explicit resolution,
+ * multiple inheritance problems are avoided.
  */
 class InternetStackHelper : public PcapUserHelperForIpv4, public AsciiTraceUserHelperForIpv4
 {
