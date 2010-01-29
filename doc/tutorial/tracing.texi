@@ -1929,20 +1929,10 @@ file.  The changes to make this happen are quite small.
 
 Let's take a look at the changes required to go from @code{fifth.cc} to 
 @code{sixth.cc}.  Open @code{examples/tutorial/fifth.cc} in your favorite 
-editor.  The first change is in the @code{#include} section where you will find
-two new include statements.
-
-@verbatim
-  #include "ns3/ascii-trace-helper.h"
-  #include "ns3/pcap-helper.h"
-@end verbatim
-
-There is a separate helper for ASCII-related files and pcap-related files.
-Like other helpers, these are classes designed to make tracing with text
-and pcap files as easy as possible.  You can see the next changes by searching
-for CwndChange.  You will find that we have changed the signatures for the 
-trace sinks and have added a single line to each sink that writes the traced
-information to the file.
+editor.  You can see the first change by searching for CwndChange.  You will 
+find that we have changed the signatures for the trace sinks and have added 
+a single line to each sink that writes the traced information to a stream
+representing a file.
 
 @verbatim
   static void
@@ -1960,14 +1950,16 @@ information to the file.
   }
 @end verbatim
 
-Notice that we have added a parameter to the @code{CwndChange} trace sink.  
+We have added a ``stream'' parameter to the @code{CwndChange} trace sink.  
 This is an @code{ns-3} object that holds a C++ output stream.  It turns out
 that this is a very simple object, but one that manages lifetime issues for
 the stream and solves a problem that many experienced C++ users run into.
 It turns out that the copy constructor for ostream is marked private.  This
 means that ostreams do not obey value semantics and cannot be used in 
-any mechanism that requires the stream to be copied.  Notice that we have
-added the following line in the @code{CwndChange} trace sink:
+any mechanism that requires the stream to be copied.  This includes the
+callback system, which as you may recall, requires objects that obey value
+semantics.  Further notice that we have added the following line in the 
+@code{CwndChange} trace sink implementation:
 
 @verbatim
   *stream->GetStream () << Simulator::Now ().GetSeconds () << "\t" << oldCwnd << "\t" << newCwnd << std::endl;
@@ -1985,7 +1977,7 @@ carrying around a @code{std::ofstream} for you, and you can use it here like
 any other output stream.
 
 A similar situation happens in @code{RxDrop} except that the object being 
-passed around (a @code{Ptr<PcapFileObject>} represents a pcap file.  There
+passed around (a @code{Ptr<PcapFileObject>}) represents a pcap file.  There
 is a one-liner in the trace sink to write a timestamp and the contents of the 
 packet being dropped to the pcap file:
 
@@ -2012,9 +2004,9 @@ look in the @code{main} function, you will find new code to do just that:
 In the first section of the code snippet above, we are creating the ASCII
 trace file, creating an object responsible for managing it and using a
 variant of the callback creation function to arrange for the object to be 
-passed to the sink.  The @code{AsciiTraceHelper} provides a rich set of
-functions to make using text files easy.  We are just going to illustrate
-the use of the file stream creation function here.
+passed to the sink.  Our ASCII trace helpers provide a rich set of
+functions to make using text (ASCII) files easy.  We are just going to 
+illustrate the use of the file stream creation function here.
 
 The @code{CreateFileStream{}} function is basically going to instantiate
 a std::ofstream object and create a new file (or truncate an existing file).
@@ -2024,12 +2016,13 @@ and copy constructor issue resolution.
 We then take this @code{ns-3} object representing the file and pass it to
 @code{MakeBoundCallback()}.  This function creates a callback just like
 @code{MakeCallback()}, but it ``binds'' a new value to the callback.  This
-value is added to the callback before it is called.  Essentially, 
-@code{MakeBoundCallback(&CwndChange, stream)} causes the trace source to
-add the additional ``stream'' parameter to the front of the formal parameter
-list before invoking the callback.  This changes the required signature of
-the @code{CwndChange} sink to match the one shown above, which includes the
-``extra'' parameter @code{Ptr<OutputStreamObject> stream}.
+value is added to the callback before it is called.  
+
+Essentially, @code{MakeBoundCallback(&CwndChange, stream)} causes the trace 
+source to add the additional ``stream'' parameter to the front of the formal
+parameter list before invoking the callback.  This changes the required 
+signature of the @code{CwndChange} sink to match the one shown above, which
+includes the ``extra'' parameter @code{Ptr<OutputStreamObject> stream}.
 
 In the second section of code in the snippet above, we instantiate a 
 @code{PcapHelper} to do the same thing for our pcap trace file that we did
@@ -2047,10 +2040,13 @@ familar with pcap.  In this case, @code{DLT_PPP} indicates that the pcap file
 is going to contain packets prefixed with point to point headers.  This is true
 since the packets are coming from our point-to-point device driver.  Other
 common data link types are DLT_EN10MB (10 MB Ethernet) appropriate for csma
-devices and DLT_IEEE802_11 (IEEE 802.11) appropriate for wifi devices.
+devices and DLT_IEEE802_11 (IEEE 802.11) appropriate for wifi devices.  These
+are defined in @code{src/helper/trace-helper.h"} if you are interested in seeing
+the list.  The entries in the list match those in @code{bpf.h} but we duplicate
+them to avoid a pcap source dependence.
 
-The @code{ns-3} object representing the pcap file is returned and used in a
-bound callback exactly as it was in the text file case.
+A @code{ns-3} object representing the pcap file is returned from @code{CreateFile}
+and used in a bound callback exactly as it was in the ascii case.
 
 If you now build and run this example,
 
@@ -2153,7 +2149,7 @@ Perhaps you will recall seeing some of these variations:
 
 What may not be obvious, though, is that there is a consistent model for all of 
 the trace-related methods found in the system.  We will now take a little time
- and take a look at the ``big picture''.
+and take a look at the ``big picture''.
 
 There are currently two primary use cases of the tracing helpers in @code{ns-3}:
 Device helpers and protocol helpers.  Device helpers look at the problem
@@ -2184,6 +2180,16 @@ possible there are analogs for all methods in all classes.
   -----------------+------+-------|
 @end verbatim
 
+Let say at this point that @code{mixins} would probably be the best way to 
+approach the kind of class hierarchy found in @code{src/helper/trace-helper.h}
+but our Python bindings generator does not support multiple inheritance and so
+this choice is excluded for now.  We were forced to linearize the inheritance
+tree and use single inheritance for the trace functionality.  This results in a
+somewhat odd arrangement of classes, an unusual naming convention and implies
+a hierarchy of functionality avialable in those classes. This isn't really a
+concern for users of this functionality, but it does make our discussion here
+a bit more difficult in some cases.
+
 Let's take a quick look at all four of these cases.
 
 @subsection Pcap Tracing Device Helpers
@@ -2192,11 +2198,11 @@ The goal of these helpers is to make it easy to add a consistent pcap trace
 facility to an @code{ns-3} device.  We want all of the various flavors of
 pcap tracing to work the same across all devices, so the methods of these 
 helpers are inherited by device helpers.  Take a look at 
-@code{src/helper/pcap-helper.h} if you want to follow the discussion while 
+@code{src/helper/trace-helper.h} if you want to follow the discussion while 
 looking at real code.
 
-The class @code{PcapUserHelperForDevice} provides the high level functionality for
-using pcap tracing in an @code{ns-3} device.  Every device must implement a
+The class @code{PcapHelperForDevice} provides the high level functionality
+for using pcap tracing in an @code{ns-3} device.  Every device must implement a
 single virtual method inherited from this class.
 
 @verbatim
@@ -2230,7 +2236,7 @@ implements @code{EnablePcapInternal} correctly.
   void EnablePcapAll (std::string prefix, bool promiscuous = false);
 @end verbatim
 
-You are encouraged to peruse the Doxygen for class @code{PcapUserHelperForDevice}
+You are encouraged to peruse the Doxygen for class @code{PcapHelperForDevice}
 to find the details of these methods; but to summarize ...
 
 You can enable pcap tracing on a particular node/net-device pair by providing a
@@ -2334,12 +2340,15 @@ device, your pcap file name will automatically pick this up and be called
 @subsection Ascii Tracing Device Helpers
 
 The behavior of the ascii trace helpers is substantially similar to the pcap
-case.  Take a look at @code{src/helper/ascii-trace-helper.h} if you want to 
+case.  Take a look at @code{src/helper/trace-helper.h} if you want to 
 follow the discussion while looking at real code.
 
-The class @code{AsciitraceUserHelperForDevice} provides the high level 
-functionality for using ascii tracing in an @code{ns-3} device.  Every device
- must implement a single virtual method inherited from this class.
+The class @code{TraceHelperForDevice} adds the high level functionality for 
+using ascii tracing to class @code{PcapHelperForDevice}.  If a device helper
+inherits from class @code{TraceHelperForDevice} it gets both pcap and ascii
+tracing powers.  Along with the internal pcap function, every device must 
+also implement a single virtual method inherited from the ascii trace additions
+to this class.
 
 @verbatim
   virtual void EnableAsciiInternal (Ptr<OutputStreamObject> stream, std::string prefix, Ptr<NetDevice> nd) = 0;
@@ -2347,8 +2356,8 @@ functionality for using ascii tracing in an @code{ns-3} device.  Every device
 
 The signature of this method reflects the device-centric view of the situation
 at this level; and also the fact that the helper may be writing to a shared
-output stream.  All of the public methods inherited from class 
-@code{AsciiTraceUserHelperForDevice} reduce to calling this single device-
+output stream.  All of the public ascii-trace-related methods inherited from 
+class @code{TraceHelperForDevice} reduce to calling this single device-
 dependent implementation method.  For example, the lowest level ascii trace
 methods,
 
@@ -2357,8 +2366,8 @@ methods,
   void EnableAscii (Ptr<OutputStreamObject> stream, Ptr<NetDevice> nd);
 @verbatim
 
-will call the device implementation of @code{EnablePcapInternal} directly,
-providing either the prefix or the stream.  All other public ascii tracing 
+will call the device implementation of @code{EnableAsciiInternal} directly,
+providing either a valid prefix or stream.  All other public ascii tracing 
 methods will build on these low-level functions to provide additional user-level
 functionality.  What this means to the user is that all device helpers in the 
 system will have all of the ascii trace methods available; and these methods
@@ -2387,7 +2396,7 @@ will all work in the same way across devices if the devices implement
   void EnableAsciiAll (Ptr<OutputStreamObject> stream);
 @end verbatim
 
-You are encouraged to peruse the Doxygen for class @code{PcapUserHelperForDevice}
+You are encouraged to peruse the Doxygen for class @code{TraceHelperForDevice}
 to find the details of these methods; but to summarize ...
 
 There are twice as many methods available for ascii tracing as there were for
@@ -2560,39 +2569,41 @@ device, your ascii trace file name will automatically pick this up and be called
 The goal of these helpers is to make it easy to add a consistent pcap trace
 facility to protocols.  We want all of the various flavors of pcap tracing to 
 work the same across all protocols, so the methods of these helpers are 
-inherited by stack helpers.  Take a look at @code{src/helper/pcap-helper.h} 
+inherited by stack helpers.  Take a look at @code{src/helper/trace-helper.h} 
 if you want to follow the discussion while looking at real code.
 
 In this section we will be illustrating the methods as applied to the protocol
 @code{Ipv4}.  To specify traces in similar protocols, just substitute the
 appropriate type.  For example, use a @code{Ptr<Ipv6>} instead of a
-@code{Ptr<Ipv4>}.
+@code{Ptr<Ipv4>} and call @code{EnablePcapIpv6} instead of @code{EnablePcapIpv4}.
 
-The class @code{PcapUserHelperForIpv4} provides the high level functionality for
+The class @code{PcapHelperForIpv4} provides the high level functionality for
 using pcap tracing in the @code{Ipv4} protocol.  Every protocol enabling these
 methods must implement a single virtual method inherited from this class.  There
-will be a separate implementation for @code{Ipv6}, for examle, but the only
-difference will be in the method signatures.
+will be a separate implementation for @code{Ipv6}, for example, but the only
+difference will be in the method names and signatures.  Different method names
+are required to disambiguate class @code{Ipv4} from @coe{Ipv6} which are both 
+derived from class @code{Object}, and methods that share the same signature.
 
 @verbatim
-  virtual void EnablePcapInternal (std::string prefix, Ptr<Ipv4> ipv4, uint32_t interface) = 0;
+  virtual void EnablePcapIpv4Internal (std::string prefix, Ptr<Ipv4> ipv4, uint32_t interface) = 0;
 @end verbatim
 
 The signature of this method reflects the protocol and interface-centric view 
 of the situation at this level.  All of the public methods inherited from class 
-2@code{PcapUserHelperForIpv4} reduce to calling this single device-dependent
+@code{PcapHelperForIpv4} reduce to calling this single device-dependent
 implementation method.  For example, the lowest level pcap method,
 
 @verbatim
-  void EnablePcap (std::string prefix, Ptr<Ipv4> ipv4, uint32_t interface);
+  void EnablePcapIpv4 (std::string prefix, Ptr<Ipv4> ipv4, uint32_t interface);
 @verbatim
 
-will call the device implementation of @code{EnablePcapInternal} directly.  All
-other public pcap tracing methods build on this implementation to provide 
+will call the device implementation of @code{EnablePcapIpv4Internal} directly.
+All other public pcap tracing methods build on this implementation to provide 
 additional user-level functionality.  What this means to the user is that all 
 protocol helpers in the system will have all of the pcap trace methods 
 available; and these methods will all work in the same way across 
-protocols if the helper implements @code{EnablePcapInternal} correctly.
+protocols if the helper implements @code{EnablePcapIpv4Internal} correctly.
 
 @subsubsection Pcap Tracing Protocol Helper Methods
 
@@ -2604,15 +2615,15 @@ constraints.
 Note that just like in the device version, there are six methods:
 
 @verbatim
-  void EnablePcap (std::string prefix, Ptr<Ipv4> ipv4, uint32_t interface);
-  void EnablePcap (std::string prefix, std::string ipv4Name, uint32_t interface);
-  void EnablePcap (std::string prefix, Ipv4InterfaceContainer c);
-  void EnablePcap (std::string prefix, NodeContainer n);
-  void EnablePcap (std::string prefix, uint32_t nodeid, uint32_t interface);
-  void EnablePcapAll (std::string prefix);
+  void EnablePcapIpv4 (std::string prefix, Ptr<Ipv4> ipv4, uint32_t interface);
+  void EnablePcapIpv4 (std::string prefix, std::string ipv4Name, uint32_t interface);
+  void EnablePcapIpv4 (std::string prefix, Ipv4InterfaceContainer c);
+  void EnablePcapIpv4 (std::string prefix, NodeContainer n);
+  void EnablePcapIpv4 (std::string prefix, uint32_t nodeid, uint32_t interface);
+  void EnablePcapIpv4All (std::string prefix);
 @end verbatim
 
-You are encouraged to peruse the Doxygen for class @code{PcapUserHelperForIpv4}
+You are encouraged to peruse the Doxygen for class @code{PcapHelperForIpv4}
 to find the details of these methods; but to summarize ...
 
 You can enable pcap tracing on a particular protocol/interface pair by providing a
@@ -2621,7 +2632,7 @@ You can enable pcap tracing on a particular protocol/interface pair by providing
 @verbatim
   Ptr<Ipv4> ipv4 = node->GetObject<Ipv4> ();
   ...
-  helper.EnablePcap ("prefix", ipv4, 0);
+  helper.EnablePcapIpv4 ("prefix", ipv4, 0);
 @end verbatim
 
 You can enable pcap tracing on a particular node/net-device pair by providing a
@@ -2632,7 +2643,7 @@ string.  For example,
 @verbatim
   Names::Add ("serverIPv4" ...);
   ...
-  helper.EnablePcap ("prefix", "serverIpv4", 1);
+  helper.EnablePcapIpv4 ("prefix", "serverIpv4", 1);
 @end verbatim
 
 You can enable pcap tracing on a collection of protocol/interface pairs by 
@@ -2650,7 +2661,7 @@ enabled for the corresponding interface.  For example,
   ipv4.SetBase ("10.1.1.0", "255.255.255.0");
   Ipv4InterfaceContainer interfaces = ipv4.Assign (devices);
   ...
-  helper.EnablePcap ("prefix", interfaces);
+  helper.EnablePcapIpv4 ("prefix", interfaces);
 @end verbatim
 
 You can enable pcap tracing on a collection of protocol/interface pairs by 
@@ -2661,7 +2672,7 @@ enumerated and tracing is enabled on the resulting pairs.  For example,
 @verbatim
   NodeContainer n;
   ...
-  helper.EnablePcap ("prefix", n);
+  helper.EnablePcapIpv4 ("prefix", n);
 @end verbatim
 
 You can enable pcap tracing on the basis of node ID and interface as well.  In
@@ -2670,14 +2681,14 @@ protocol is looked up in the node.  The resulting protocol and interface are
 used to specify the resulting trace source.
 
 @verbatim
-  helper.EnablePcap ("prefix", 21, 1);
+  helper.EnablePcapIpv4 ("prefix", 21, 1);
 @end verbatim
 
 Finally, you can enable pcap tracing for all interfaces in the system, with
 associated protocol being the same type as that managed by the device helper.
 
 @verbatim
-  helper.EnablePcapAll ("prefix");
+  helper.EnablePcapIpv4All ("prefix");
 @end verbatim
 
 @subsubsection Pcap Tracing Protocol Helper Filename Selection
@@ -2712,61 +2723,66 @@ automatically become, ``prefix-nserverIpv4-i1.pcap''.
 @subsection Ascii Tracing Protocol Helpers
 
 The behavior of the ascii trace helpers is substantially similar to the pcap
-case.  Take a look at @code{src/helper/ascii-trace-helper.h} if you want to 
+case.  Take a look at @code{src/helper/trace-helper.h} if you want to 
 follow the discussion while looking at real code.
 
-The class @code{AsciitraceUserHelperForIpv4} provides the high level 
-functionality for using ascii tracing in an @code{ns-3} protocol.  Every 
-protocol must implement a single virtual method inherited from this class.
+In this section we will be illustrating the methods as applied to the protocol
+@code{Ipv4}.  To specify traces in similar protocols, just substitute the
+appropriate type.  For example, use a @code{Ptr<Ipv6>} instead of a
+@code{Ptr<Ipv4>} and call @code{EnableAsciiIpv6} instead of @code{EnableAsciiIpv4}.
+
+The class @code{PcapAndAsciiHelperForIpv4} adds the high level functionality
+for using ascii tracing to the PcapHelperForIpv4.  Every protocol must 
+additionally implement a single virtual method inherited from this class.
 
 @verbatim
-  virtual void EnableAsciiInternal (Ptr<OutputStreamObject> stream, std::string prefix, 
-                                    Ptr<Ipv4> ipv4, uint32_t interface) = 0;
+  virtual void EnableAsciiIpv4Internal (Ptr<OutputStreamObject> stream, std::string prefix, 
+                                        Ptr<Ipv4> ipv4, uint32_t interface) = 0;
 @end verbatim
 
 The signature of this method reflects the protocol- and interface-centric view 
 of the situation at this level; and also the fact that the helper may be writing
 to a shared output stream.  All of the public methods inherited from class 
-@code{AsciiTraceUserHelperForIpv4} reduce to calling this single device-
+@code{PcapAndAsciiTraceHelperForIpv4} reduce to calling this single device-
 dependent implementation method.  For example, the lowest level ascii trace
 methods,
 
 @verbatim
-  void EnableAscii (std::string prefix, Ptr<Ipv4> ipv4, uint32_t interface);
-  void EnableAscii (Ptr<OutputStreamObject> stream, Ptr<Ipv4> ipv4, uint32_t interface);
+  void EnableAsciiIpv4 (std::string prefix, Ptr<Ipv4> ipv4, uint32_t interface);
+  void EnableAsciiIpv4 (Ptr<OutputStreamObject> stream, Ptr<Ipv4> ipv4, uint32_t interface);
 @verbatim
 
-will call the device implementation of @code{EnablePcapInternal} directly,
+will call the device implementation of @code{EnableAsciiIpv4Internal} directly,
 providing either the prefix or the stream.  All other public ascii tracing 
 methods will build on these low-level functions to provide additional user-level
 functionality.  What this means to the user is that all device helpers in the 
 system will have all of the ascii trace methods available; and these methods
 will all work in the same way across protocols if the protocols implement 
-@code{EnablAsciiInternal} correctly.
+@code{EnablAsciiIpv4Internal} correctly.
 
 @subsubsection Ascii Tracing Device Helper Methods
 
 @verbatim
-  void EnableAscii (std::string prefix, Ptr<Ipv4> ipv4, uint32_t interface);
-  void EnableAscii (Ptr<OutputStreamObject> stream, Ptr<Ipv4> ipv4, uint32_t interface);
+  void EnableAsciiIpv4 (std::string prefix, Ptr<Ipv4> ipv4, uint32_t interface);
+  void EnableAsciiIpv4 (Ptr<OutputStreamObject> stream, Ptr<Ipv4> ipv4, uint32_t interface);
 
-  void EnableAscii (std::string prefix, std::string ipv4Name, uint32_t interface);
-  void EnableAscii (Ptr<OutputStreamObject> stream, std::string ipv4Name, uint32_t interface);
+  void EnableAsciiIpv4 (std::string prefix, std::string ipv4Name, uint32_t interface);
+  void EnableAsciiIpv4 (Ptr<OutputStreamObject> stream, std::string ipv4Name, uint32_t interface);
 
-  void EnableAscii (std::string prefix, Ipv4InterfaceContainer c);
-  void EnableAscii (Ptr<OutputStreamObject> stream, Ipv4InterfaceContainer c);
+  void EnableAsciiIpv4 (std::string prefix, Ipv4InterfaceContainer c);
+  void EnableAsciiIpv4 (Ptr<OutputStreamObject> stream, Ipv4InterfaceContainer c);
 
-  void EnableAscii (std::string prefix, NodeContainer n);
-  void EnableAscii (Ptr<OutputStreamObject> stream, NodeContainer n);
+  void EnableAsciiIpv4 (std::string prefix, NodeContainer n);
+  void EnableAsciiIpv4 (Ptr<OutputStreamObject> stream, NodeContainer n);
 
-  void EnableAscii (std::string prefix, uint32_t nodeid, uint32_t deviceid);
-  void EnableAscii (Ptr<OutputStreamObject> stream, uint32_t nodeid, uint32_t interface);
+  void EnableAsciiIpv4 (std::string prefix, uint32_t nodeid, uint32_t deviceid);
+  void EnableAsciiIpv4 (Ptr<OutputStreamObject> stream, uint32_t nodeid, uint32_t interface);
 
-  void EnableAsciiAll (std::string prefix);
-  void EnableAsciiAll (Ptr<OutputStreamObject> stream);
+  void EnableAsciiIpv4All (std::string prefix);
+  void EnableAsciiIpv4All (Ptr<OutputStreamObject> stream);
 @end verbatim
 
-You are encouraged to peruse the Doxygen for class @code{PcapUserHelperForIpv4}
+You are encouraged to peruse the Doxygen for class @code{PcapAndAsciiHelperForIpv4}
 to find the details of these methods; but to summarize ...
 
 There are twice as many methods available for ascii tracing as there were for
@@ -2785,7 +2801,7 @@ For example,
 @verbatim
   Ptr<Ipv4> ipv4;
   ...
-  helper.EnableAscii ("prefix", ipv4, 1);
+  helper.EnableAsciiIpv4 ("prefix", ipv4, 1);
 @end verbatim
 
 In this case, no trace contexts are written to the ascii trace file since they
@@ -2804,8 +2820,8 @@ refer to a single file.  We have already something similar to this in the
   ...
   Ptr<OutputStreamObject> stream = asciiTraceHelper.CreateFileStream ("trace-file-name.tr");
   ...
-  helper.EnableAscii (stream, protocol1, 1);
-  helper.EnableAscii (stream, protocol2, 1);
+  helper.EnableAsciiIpv4 (stream, protocol1, 1);
+  helper.EnableAsciiIpv4 (stream, protocol2, 1);
 @verbatim
 
 In this case, trace contexts are written to the ascii trace file since they
@@ -2824,8 +2840,8 @@ For example,
   Names::Add ("node1Ipv4" ...);
   Names::Add ("node2Ipv4" ...);
   ...
-  helper.EnableAscii ("prefix", "node1Ipv4", 1);
-  helper.EnableAscii ("prefix", "node2Ipv4", 1);
+  helper.EnableAsciiIpv4 ("prefix", "node1Ipv4", 1);
+  helper.EnableAsciiIpv4 ("prefix", "node2Ipv4", 1);
 @end verbatim
 
 This would result in two files named ``prefix-nnode1Ipv4-i1.tr'' and 
@@ -2839,8 +2855,8 @@ stream object, you can use that form as well:
   ...
   Ptr<OutputStreamObject> stream = asciiTraceHelper.CreateFileStream ("trace-file-name.tr");
   ...
-  helper.EnableAscii (stream, "node1Ipv4", 1);
-  helper.EnableAscii (stream, "node2Ipv4", 1);
+  helper.EnableAsciiIpv4 (stream, "node1Ipv4", 1);
+  helper.EnableAsciiIpv4 (stream, "node2Ipv4", 1);
 @end verbatim
 
 This would result in a single trace file called ``trace-file-name.tr'' that 
@@ -2864,7 +2880,7 @@ For example,
   Ipv4InterfaceContainer interfaces = ipv4.Assign (devices);
   ...
   ...
-  helper.EnableAscii ("prefix", interfaces);
+  helper.EnableAsciiIpv4 ("prefix", interfaces);
 @end verbatim
 
 This would result in a number of ascii trace files being created, each of which
@@ -2882,7 +2898,7 @@ traces into a single file is accomplished similarly to the examples above:
   ...
   Ptr<OutputStreamObject> stream = asciiTraceHelper.CreateFileStream ("trace-file-name.tr");
   ...
-  helper.EnableAscii (stream, interfaces);
+  helper.EnableAsciiIpv4 (stream, interfaces);
 @end verbatim
 
 You can enable ascii tracing on a collection of protocol/interface pairs by 
@@ -2893,7 +2909,7 @@ enumerated and tracing is enabled on the resulting pairs.  For example,
 @verbatim
   NodeContainer n;
   ...
-  helper.EnableAscii ("prefix", n);
+  helper.EnableAsciiIpv4 ("prefix", n);
 @end verbatim
 
 This would result in a number of ascii trace files being created, each of which
@@ -2906,7 +2922,7 @@ protocol is looked up in the node.  The resulting protocol and interface are
 used to specify the resulting trace source.
 
 @verbatim
-  helper.EnableAscii ("prefix", 21, 1);
+  helper.EnableAsciiIpv4 ("prefix", 21, 1);
 @end verbatim
 
 Of course, the traces can be combined into a single file as shown above.
@@ -2915,7 +2931,7 @@ Finally, you can enable ascii tracing for all interfaces in the system, with
 associated protocol being the same type as that managed by the device helper.
 
 @verbatim
-  helper.EnableAsciiAll ("prefix");
+  helper.EnableAsciiIpv4All ("prefix");
 @end verbatim
 
 This would result in a number of ascii trace files being created, one for

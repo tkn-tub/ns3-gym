@@ -20,7 +20,6 @@
 #include "ns3/simulator-module.h"
 #include "ns3/node-module.h"
 #include "ns3/helper-module.h"
-#include "ns3/trace-helper.h"
 
 using namespace ns3;
 

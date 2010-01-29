@@ -238,6 +238,26 @@ private:
   static void Cleanup (void);
 
   /**
+   * \internal
+   */
+  bool PcapHooked (Ptr<Ipv4> ipv4);
+
+  /**
+   * \internal
+   */
+  bool AsciiHooked (Ptr<Ipv4> ipv4);
+
+  /**
+   * \internal
+   */
+  bool PcapHooked (Ptr<Ipv6> ipv6);
+
+  /**
+   * \internal
+   */
+  bool AsciiHooked (Ptr<Ipv6> ipv6);
+
+  /**
    * \brief IPv4 install state (enabled/disabled) ?
    */
   bool m_ipv4Enabled;

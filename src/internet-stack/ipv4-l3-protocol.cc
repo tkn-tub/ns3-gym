@@ -447,7 +447,7 @@ Ipv4L3Protocol::Receive( Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t pr
             }
           else
             {
-              NS_LOG_LOGIC ("Dropping received packet-- interface is down");
+              NS_LOG_LOGIC ("Dropping received packet -- interface is down");
               Ipv4Header ipHeader;
               packet->RemoveHeader (ipHeader);
               m_dropTrace (ipHeader, packet, DROP_INTERFACE_DOWN, m_node->GetObject<Ipv4> (), interface);
@@ -465,6 +465,7 @@ Ipv4L3Protocol::Receive( Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t pr
 
   if (!ipHeader.IsChecksumOk ()) 
     {
+      NS_LOG_LOGIC ("Dropping received packet -- checksum not ok");
       m_dropTrace (ipHeader, packet, DROP_BAD_CHECKSUM, m_node->GetObject<Ipv4> (), interface);
       return;
     }
@@ -687,7 +688,7 @@ Ipv4L3Protocol::SendRealOut (Ptr<Ipv4Route> route,
         }
       else
         {
-          NS_LOG_LOGIC ("Dropping-- outgoing interface is down: " << route->GetGateway ());
+          NS_LOG_LOGIC ("Dropping -- outgoing interface is down: " << route->GetGateway ());
           Ipv4Header ipHeader;
           packet->RemoveHeader (ipHeader);
           m_dropTrace (ipHeader, packet, DROP_INTERFACE_DOWN, m_node->GetObject<Ipv4> (), interface);
@@ -703,7 +704,7 @@ Ipv4L3Protocol::SendRealOut (Ptr<Ipv4Route> route,
         }
       else
         {
-          NS_LOG_LOGIC ("Dropping-- outgoing interface is down: " << ipHeader.GetDestination ());
+          NS_LOG_LOGIC ("Dropping -- outgoing interface is down: " << ipHeader.GetDestination ());
           Ipv4Header ipHeader;
           packet->RemoveHeader (ipHeader);
           m_dropTrace (ipHeader, packet, DROP_INTERFACE_DOWN, m_node->GetObject<Ipv4> (), interface);

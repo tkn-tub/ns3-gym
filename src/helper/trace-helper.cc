@@ -476,13 +476,6 @@ PcapHelperForDevice::EnablePcap (std::string prefix, uint32_t nodeid, uint32_t d
     }
 }
 
-
-
-
-
-
-
-
 //
 // Public API
 //
