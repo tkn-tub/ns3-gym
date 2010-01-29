@@ -44,6 +44,7 @@ all_modules = (
     'applications/ping6',
     'applications/radvd',
     'test',
+    'test/perf',
     'test/ns3tcp',
     'test/ns3wifi',
     'contrib/flow-monitor',
@@ -72,6 +73,7 @@ def configure(conf):
     conf.sub_config('contrib')
     conf.sub_config('internet-stack')
     conf.sub_config('helper')
+    conf.sub_config('test')
 
     blddir = os.path.abspath(os.path.join(conf.blddir, conf.env.variant()))
     conf.env.append_value('NS3_MODULE_PATH', blddir)
