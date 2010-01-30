@@ -25,7 +25,7 @@
 
 using namespace ns3;
 
-NS_LOG_COMPONENT_DEFINE ("PerfPcap");
+//NS_LOG_COMPONENT_DEFINE ("PerfPcap");
 
 bool g_passheader = true;
 bool g_addheader = true;
@@ -87,10 +87,10 @@ main (int argc, char *argv[])
 
       Ptr<Packet> p = Create<Packet> (1024);
 
-      //      NS_LOG_UNCOND ("timing old style pcap file write of 1K packet");
-      //      NS_LOG_UNCOND ("g_addheader = " << g_addheader);
-      //      NS_LOG_UNCOND ("g_passheader = " << g_passheader);
-      //      NS_LOG_UNCOND ("n = " << n);
+      //NS_LOG_UNCOND ("timing old style pcap file write of 1K packet");
+      //NS_LOG_UNCOND ("g_addheader = " << g_addheader);
+      //NS_LOG_UNCOND ("g_passheader = " << g_passheader);
+      //NS_LOG_UNCOND ("n = " << n);
 
       SystemWallClockMs ms;
       ms.Start ();
@@ -116,10 +116,10 @@ main (int argc, char *argv[])
 
       Ptr<Packet> p = Create<Packet> (1024);
 
-      NS_LOG_UNCOND ("timing new style pcap file write of 1K packet");
-      NS_LOG_UNCOND ("g_addheader = " << g_addheader);
-      NS_LOG_UNCOND ("g_passheader = " << g_passheader);
-      NS_LOG_UNCOND ("n = " << n);
+      //NS_LOG_UNCOND ("timing new style pcap file write of 1K packet");
+      //NS_LOG_UNCOND ("g_addheader = " << g_addheader);
+      //NS_LOG_UNCOND ("g_passheader = " << g_passheader);
+      //NS_LOG_UNCOND ("n = " << n);
 
       SystemWallClockMs ms;
       ms.Start ();
@@ -132,5 +132,5 @@ main (int argc, char *argv[])
       et = ms.End ();
     }
 
-  //  NS_LOG_UNCOND ("elapsed time = " << et);
+  //NS_LOG_UNCOND ("elapsed time = " << et);
 }

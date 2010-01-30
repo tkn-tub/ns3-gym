@@ -186,7 +186,7 @@ AsciiTraceHelper::CreateFileStream (std::string filename, std::string filemode)
   NS_LOG_FUNCTION (filename << filemode);
 
   std::ofstream *ofstream = new std::ofstream;
-  std::ios_base::openmode mode;
+  std::ios_base::openmode mode = std::ios_base::out | std::ios_base::trunc;
 
   if (filemode == "a")
     {

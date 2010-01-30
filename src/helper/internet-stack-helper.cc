@@ -706,7 +706,7 @@ InternetStackHelper::EnableAsciiIpv4Internal (
           // be aggregated to the same node.
           //
           Ptr<Ipv4L3Protocol> ipv4L3Protocol = ipv4->GetObject<Ipv4L3Protocol> ();
-          bool result = ipv4L3Protocol->TraceConnectWithoutContext ("Drop", 
+          bool __attribute__ ((unused)) result = ipv4L3Protocol->TraceConnectWithoutContext ("Drop", 
             MakeBoundCallback (&Ipv4L3ProtocolDropSinkWithoutContext, theStream));
           NS_ASSERT_MSG (result == true, "InternetStackHelper::EanableAsciiIpv4Internal():  "
                          "Unable to connect ipv4L3Protocol \"Drop\"");
@@ -882,7 +882,7 @@ InternetStackHelper::EnableAsciiIpv6Internal (
           // be aggregated to the same node.
           //
           Ptr<Ipv6L3Protocol> ipv6L3Protocol = ipv6->GetObject<Ipv6L3Protocol> ();
-          bool result = ipv6L3Protocol->TraceConnectWithoutContext ("Drop", 
+          bool __attribute__ ((unused)) result = ipv6L3Protocol->TraceConnectWithoutContext ("Drop", 
             MakeBoundCallback (&Ipv6L3ProtocolDropSinkWithoutContext, theStream));
           NS_ASSERT_MSG (result == true, "InternetStackHelper::EnableAsciiIpv6Internal():  "
                          "Unable to connect ipv6L3Protocol \"Drop\"");

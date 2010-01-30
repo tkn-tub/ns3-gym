@@ -96,7 +96,8 @@ private:
 template <typename T> void
 PcapHelper::HookDefaultSink (Ptr<T> object, std::string tracename, Ptr<PcapFileObject> file)
 {
-  bool result = object->TraceConnectWithoutContext (tracename.c_str (), MakeBoundCallback (&DefaultSink, file));
+  bool __attribute__ ((unused)) result = 
+    object->TraceConnectWithoutContext (tracename.c_str (), MakeBoundCallback (&DefaultSink, file));
   NS_ASSERT_MSG (result == true, "PcapHelper::HookDefaultSink():  Unable to hook \"" << tracename << "\"");
 }
 
@@ -231,8 +232,8 @@ public:
 template <typename T> void
 AsciiTraceHelper::HookDefaultEnqueueSinkWithoutContext (Ptr<T> object, std::string tracename, Ptr<OutputStreamObject> file)
 {
-  bool result = object->TraceConnectWithoutContext (tracename, 
-                                                    MakeBoundCallback (&DefaultEnqueueSinkWithoutContext, file));
+  bool __attribute__ ((unused)) result = 
+    object->TraceConnectWithoutContext (tracename, MakeBoundCallback (&DefaultEnqueueSinkWithoutContext, file));
   NS_ASSERT_MSG (result == true, "AsciiTraceHelper::HookDefaultEnqueueSinkWithoutContext():  Unable to hook \"" 
                  << tracename << "\"");
 }
@@ -244,7 +245,8 @@ AsciiTraceHelper::HookDefaultEnqueueSinkWithContext (
   std::string tracename, 
   Ptr<OutputStreamObject> stream)
 {
-  bool result = object->TraceConnect (tracename, context, MakeBoundCallback (&DefaultEnqueueSinkWithContext, stream));
+  bool __attribute__ ((unused)) result = 
+    object->TraceConnect (tracename, context, MakeBoundCallback (&DefaultEnqueueSinkWithContext, stream));
   NS_ASSERT_MSG (result == true, "AsciiTraceHelper::HookDefaultEnqueueSinkWithContext():  Unable to hook \"" 
                  << tracename << "\"");
 }
@@ -252,8 +254,8 @@ AsciiTraceHelper::HookDefaultEnqueueSinkWithContext (
 template <typename T> void
 AsciiTraceHelper::HookDefaultDropSinkWithoutContext (Ptr<T> object, std::string tracename, Ptr<OutputStreamObject> file)
 {
-  bool result = object->TraceConnectWithoutContext (tracename, 
-                                                    MakeBoundCallback (&DefaultDropSinkWithoutContext, file));
+  bool __attribute__ ((unused)) result = 
+    object->TraceConnectWithoutContext (tracename, MakeBoundCallback (&DefaultDropSinkWithoutContext, file));
   NS_ASSERT_MSG (result == true, "AsciiTraceHelper::HookDefaultDropSinkWithoutContext():  Unable to hook \"" 
                  << tracename << "\"");
 }
@@ -265,7 +267,8 @@ AsciiTraceHelper::HookDefaultDropSinkWithContext (
   std::string tracename, 
   Ptr<OutputStreamObject> stream)
 {
-  bool result = object->TraceConnect (tracename, context, MakeBoundCallback (&DefaultDropSinkWithContext, stream));
+  bool __attribute__ ((unused)) result = 
+    object->TraceConnect (tracename, context, MakeBoundCallback (&DefaultDropSinkWithContext, stream));
   NS_ASSERT_MSG (result == true, "AsciiTraceHelper::HookDefaultDropSinkWithContext():  Unable to hook \"" 
                  << tracename << "\"");
 }
@@ -273,8 +276,8 @@ AsciiTraceHelper::HookDefaultDropSinkWithContext (
 template <typename T> void
 AsciiTraceHelper::HookDefaultDequeueSinkWithoutContext (Ptr<T> object, std::string tracename, Ptr<OutputStreamObject> file)
 {
-  bool result = object->TraceConnectWithoutContext (tracename, 
-                                                    MakeBoundCallback (&DefaultDequeueSinkWithoutContext, file));
+  bool __attribute__ ((unused)) result = 
+    object->TraceConnectWithoutContext (tracename, MakeBoundCallback (&DefaultDequeueSinkWithoutContext, file));
   NS_ASSERT_MSG (result == true, "AsciiTraceHelper::HookDefaultDequeueSinkWithoutContext():  Unable to hook \"" 
                  << tracename << "\"");
 }
@@ -286,7 +289,8 @@ AsciiTraceHelper::HookDefaultDequeueSinkWithContext (
   std::string tracename, 
   Ptr<OutputStreamObject> stream)
 {
-  bool result = object->TraceConnect (tracename, context, MakeBoundCallback (&DefaultDequeueSinkWithContext, stream));
+  bool __attribute__ ((unused)) result = 
+    object->TraceConnect (tracename, context, MakeBoundCallback (&DefaultDequeueSinkWithContext, stream));
   NS_ASSERT_MSG (result == true, "AsciiTraceHelper::HookDefaultDequeueSinkWithContext():  Unable to hook \"" 
                  << tracename << "\"");
 }
@@ -294,8 +298,8 @@ AsciiTraceHelper::HookDefaultDequeueSinkWithContext (
 template <typename T> void
 AsciiTraceHelper::HookDefaultReceiveSinkWithoutContext (Ptr<T> object, std::string tracename, Ptr<OutputStreamObject> file)
 {
-  bool result = object->TraceConnectWithoutContext (tracename, 
-                                                    MakeBoundCallback (&DefaultReceiveSinkWithoutContext, file));
+  bool __attribute__ ((unused)) result = 
+    object->TraceConnectWithoutContext (tracename, MakeBoundCallback (&DefaultReceiveSinkWithoutContext, file));
   NS_ASSERT_MSG (result == true, "AsciiTraceHelper::HookDefaultReceiveSinkWithoutContext():  Unable to hook \"" 
                  << tracename << "\"");
 }
@@ -307,7 +311,8 @@ AsciiTraceHelper::HookDefaultReceiveSinkWithContext (
   std::string tracename, 
   Ptr<OutputStreamObject> stream)
 {
-  bool result = object->TraceConnect (tracename, context, MakeBoundCallback (&DefaultReceiveSinkWithContext, stream));
+  bool __attribute__ ((unused)) result = 
+    object->TraceConnect (tracename, context, MakeBoundCallback (&DefaultReceiveSinkWithContext, stream));
   NS_ASSERT_MSG (result == true, "AsciiTraceHelper::HookDefaultReceiveSinkWithContext():  Unable to hook \"" 
                  << tracename << "\"");
 }
