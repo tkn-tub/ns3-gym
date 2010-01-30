@@ -16,8 +16,11 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "pcap-file-object.h"
 #include "ns3/log.h"
+
+#include "buffer.h"
+#include "header.h"
+#include "pcap-file-object.h"
 
 NS_LOG_COMPONENT_DEFINE ("PcapFileObject");
 
@@ -48,19 +51,19 @@ PcapFileObject::~PcapFileObject ()
 void
 PcapFileObject::Close (void)
 {
-  file.Close ();
+  m_file.Close ();
 }
 
 bool
 PcapFileObject::Open (std::string const &filename, std::string const &mode)
 {
-  return file.Open (filename, mode);
+  return m_file.Open (filename, mode);
 }
 
 bool
 PcapFileObject::Init (uint32_t dataLinkType, uint32_t snapLen, int32_t tzCorrection)
 {
-  return file.Init (dataLinkType, snapLen, tzCorrection);
+  return m_file.Init (dataLinkType, snapLen, tzCorrection);
 }
 
 bool
@@ -73,7 +76,32 @@ PcapFileObject::Write (Time t, Ptr<const Packet> p)
   uint32_t bufferSize = p->GetSize ();
   uint8_t *buffer = new uint8_t[bufferSize];
   p->CopyData (buffer, bufferSize);
-  bool rc = file.Write (s, us, buffer, bufferSize);
+  bool rc = m_file.Write (s, us, buffer, bufferSize);
+  delete [] buffer;
+  return rc;
+}
+
+bool
+PcapFileObject::Write (Time t, Header &header, Ptr<const Packet> p)
+{
+  uint64_t current = t.GetMicroSeconds ();
+  uint64_t s = current / 1000000;
+  uint64_t us = current % 1000000;
+
+  Buffer headerBuffer;
+  uint32_t headerSize = header.GetSerializedSize ();
+  uint32_t packetSize = p->GetSize ();
+  uint32_t bufferSize = headerSize + packetSize;
+
+  headerBuffer.AddAtStart (headerSize);
+  header.Serialize (headerBuffer.Begin ());
+
+  uint8_t *buffer = new uint8_t[bufferSize];
+
+  headerBuffer.Begin ().Read (buffer, headerSize);
+  p->CopyData (&buffer[headerSize], packetSize);
+  bool rc = m_file.Write (s, us, buffer, bufferSize);
+
   delete [] buffer;
   return rc;
 }
@@ -85,49 +113,49 @@ PcapFileObject::Write (Time t, uint8_t const *buffer, uint32_t length)
   uint64_t s = current / 1000000;
   uint64_t us = current % 1000000;
 
-  return file.Write (s, us, buffer, length);
+  return m_file.Write (s, us, buffer, length);
 }
 
 uint32_t
 PcapFileObject::GetMagic (void)
 {
-  return file.GetMagic ();
+  return m_file.GetMagic ();
 }
 
 uint16_t
 PcapFileObject::GetVersionMajor (void)
 {
-  return file.GetVersionMajor ();
+  return m_file.GetVersionMajor ();
 }
 
 uint16_t
 PcapFileObject::GetVersionMinor (void)
 {
-  return file.GetVersionMinor ();
+  return m_file.GetVersionMinor ();
 }
 
 int32_t
 PcapFileObject::GetTimeZoneOffset (void)
 {
-  return file.GetTimeZoneOffset ();
+  return m_file.GetTimeZoneOffset ();
 }
 
 uint32_t
 PcapFileObject::GetSigFigs (void)
 {
-  return file.GetSigFigs ();
+  return m_file.GetSigFigs ();
 }
 
 uint32_t
 PcapFileObject::GetSnapLen (void)
 {
-  return file.GetSnapLen ();
+  return m_file.GetSnapLen ();
 }
 
 uint32_t
 PcapFileObject::GetDataLinkType (void)
 {
-  return file.GetDataLinkType ();
+  return m_file.GetDataLinkType ();
 }
 
 } //namespace ns3

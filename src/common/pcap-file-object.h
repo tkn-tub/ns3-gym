@@ -48,6 +48,7 @@ public:
              int32_t tzCorrection = PcapFile::ZONE_DEFAULT);
 
   bool Write (Time t, Ptr<const Packet> p);
+  bool Write (Time t, Header &header, Ptr<const Packet> p);
   bool Write (Time t, uint8_t const *buffer, uint32_t length);
 
   uint32_t GetMagic (void);
@@ -59,7 +60,7 @@ public:
   uint32_t GetDataLinkType (void);
   
 private:
-  PcapFile file;
+  PcapFile m_file;
 };
 
 } //namespace ns3
