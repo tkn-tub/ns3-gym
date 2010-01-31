@@ -9,6 +9,56 @@ http://www.nsnam.org including tutorials: http://www.nsnam.org/tutorials.html
 Consult the file CHANGES.html for more detailed information about changed
 API and behavior across ns-3 releases.
 
+Release 3.8
+===========
+
+Availability
+------------
+This release is not yet available.
+
+Supported platforms
+-------------------
+ns-3.8 has been tested on the following platforms:
+  - linux x86 gcc 4.4.0, 4.3.2, 4.2, 4.1.1, 4.1 and 3.4.6 (debug and optimized)
+  - linux x86_64 gcc 4.4.0, 4.3.2, 4.2.4, 4.2.3, 4.2.1, 4.1.3, 3.4.6 (debug and optimized)
+  - MacOS X ppc gcc 4.0.x and 4.2.x (debug and optimized)
+  - cygwin gcc 3.4.4 (debug only), gcc 4.3.2 (debug and optimized)
+
+Unofficially supported platform
+-------------------
+- mingw gcc 3.4.5 (debug only)
+
+Not all ns-3 options are available on all platforms; consult the
+wiki for more information:
+http://www.nsnam.org/wiki/index.php/Installation
+
+New user-visible features
+-------------------------
+  a) 
+
+  b) 
+    
+  c) 
+
+API changes from ns-3.7
+-----------------------
+API changes for this release are documented in the file CHANGES.html. 
+
+Bugs fixed
+----------
+The following lists many of the bugs that were fixed since ns-3.7, in
+many cases referencing the Bugzilla bug number
+   - bug 747 - Listening TCP socket closes on RST
+   - bug 788 - OLSR_NEIGH_HOLD_TIME should be 3 times OLSR_REFRESH_INTERVAL 
+
+Known issues
+------------
+ns-3 builds have been known to fail on the following platforms:
+  - gcc 3.3 and earlier
+  - optimized builds on gcc 3.4.4 and 3.4.5
+  - optimized builds on linux x86 gcc 4.0.x
+
+
 Release 3.7
 ===========
 
