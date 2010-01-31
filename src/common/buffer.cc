@@ -39,6 +39,21 @@ NS_LOG_LOGIC (y << "start="<<m_start<<", end="<<m_end<<", zero start="<<m_zeroAr
 #define HEURISTICS(x)
 #endif
 
+namespace {
+
+static struct Zeroes
+{
+  Zeroes ()
+    : size (1000)
+  {
+    memset (buffer, 0, size);
+  }
+  char buffer[1000];
+  const uint32_t size;
+} g_zeroes;
+
+}
+
 //#define PRINT_STATS 1
 
 namespace ns3 {
@@ -694,10 +709,12 @@ Buffer::CopyData(std::ostream *os, uint32_t size) const
         { 
           size -= m_zeroAreaStart-m_start;
           tmpsize = std::min (m_zeroAreaEnd - m_zeroAreaStart, size);
-          char zero = 0;
-          for (uint32_t i = 0; i < tmpsize; ++i)
+          uint32_t left = tmpsize;
+          while (left > 0)
             {
-              os->write (&zero, 1);
+              uint32_t toWrite = std::min (left, g_zeroes.size);
+              os->write (g_zeroes.buffer, toWrite);
+              left -= toWrite;
             }
           if (size > tmpsize)
             {
