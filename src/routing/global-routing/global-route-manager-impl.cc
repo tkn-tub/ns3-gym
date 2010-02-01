@@ -222,53 +222,6 @@ SPFVertex::GetDistanceFromRoot (void) const
   return m_distanceFromRoot;
 }
 
-void 
-SPFVertex::SetOutgoingInterfaceId (int32_t id)
-{
-  NS_LOG_FUNCTION (id);
-
-  // always maintain only one output interface index when using setter/getter methods
-  m_rootOif = id;
-}
-
-uint32_t 
-SPFVertex::GetOutgoingInterfaceId (void) const
-{
-  NS_LOG_FUNCTION_NOARGS ();
-  return m_rootOif;
-}
-
-//void 
-//SPFVertex::MergeOutgoingInterfaceId (const SPFVertex* v)
-//{
-//  NS_LOG_FUNCTION (v);
-//
-//  NS_LOG_LOGIC ("Before merge, list of root out-going interfaces = " << m_rootOif);
-//  // combine the two lists first, and then remove any duplicated after
-//  m_rootOif.insert (m_rootOif.end (), 
-//    v->m_rootOif.begin (), v->m_rootOif.end ());
-//  // remove duplication
-//  m_rootOif.sort ();
-//  m_rootOif.unique ();
-//  NS_LOG_LOGIC ("After merge, list of root out-going interfaces = " << m_rootOif);
-//}
-
-  void 
-SPFVertex::SetNextHop (Ipv4Address nextHop)
-{
-  NS_LOG_FUNCTION (nextHop);
-
-  // always maintain only one nexthop when using setter/getter methods
-  m_nextHop = nextHop;
-}
-
-  Ipv4Address
-SPFVertex::GetNextHop (void) const
-{
-  NS_LOG_FUNCTION_NOARGS ();
-  return m_nextHop;
-}
-
   void
 SPFVertex::SetParent (SPFVertex* parent)
 {
