@@ -1637,11 +1637,6 @@ GlobalRouteManagerImpl::SPFAddASExternal (GlobalRoutingLSA *extlsa, SPFVertex *v
           Ipv4Address tempip = extlsa->GetLinkStateId ();
           tempip = tempip.CombineMask (tempmask);
 
-          NS_LOG_LOGIC (" Node " << node->GetId () <<
-              " add route to " << tempip <<
-              " with mask " << tempmask <<
-              " using next hop " << v->GetNextHop () <<
-              " via interface " << v->GetOutgoingInterfaceId ());
 //
 // Here's why we did all of that work.  We're going to add a host route to the
 // host address found in the m_linkData field of the point-to-point link
@@ -1662,20 +1657,28 @@ GlobalRouteManagerImpl::SPFAddASExternal (GlobalRoutingLSA *extlsa, SPFVertex *v
             }
           Ptr<Ipv4GlobalRouting> gr = router->GetRoutingProtocol ();
           NS_ASSERT (gr);
-          if (v->GetOutgoingInterfaceId () >= 0)
+          // walk through all next-hop-IPs and out-going-interfaces for reaching
+          // the stub network gateway 'v' from the root node
+          for (uint32_t i = 0; i < v->GetNRootExitDirections (); i++)
             {
-              gr->AddASExternalRouteTo (tempip, tempmask, v->GetNextHop (), v->GetOutgoingInterfaceId ());
-              NS_LOG_LOGIC ("Node " << node->GetId () <<
-                  " add network route to " << tempip <<
-                  " using next hop " << v->GetNextHop () <<
-                  " via interface " << v->GetOutgoingInterfaceId ());
-            }
-          else
-            {
-              NS_LOG_LOGIC ("Node " << node->GetId () <<
-                  " NOT able to add network route to " << tempip <<
-                  " using next hop " << v->GetNextHop () <<
-                  " since outgoing interface id is negative");
+              SPFVertex::NodeExit_t exit = v->GetRootExitDirection (i);
+              Ipv4Address nextHop = exit.first;
+              int32_t outIf = exit.second;
+              if (outIf >= 0)
+                {
+                  gr->AddASExternalRouteTo (tempip, tempmask, nextHop, outIf);
+                  NS_LOG_LOGIC ("(Route " << i << ") Node " << node->GetId () <<
+                    " add external network route to " << tempip <<
+                    " using next hop " << nextHop <<
+                    " via interface " << outIf);
+                }
+              else
+                {
+                  NS_LOG_LOGIC ("(Route " << i << ") Node " << node->GetId () <<
+                    " NOT able to add network route to " << tempip <<
+                    " using next hop " << nextHop <<
+                    " since outgoing interface id is negative");
+                }
             }
           return;
         } // if
