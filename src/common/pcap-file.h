@@ -105,6 +105,9 @@ public:
    */
   bool Open (std::string const &filename, std::string const &mode);
 
+  /**
+   * Close the underlying file.
+   */
   void Close (void);
 
   /**
