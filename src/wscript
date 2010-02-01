@@ -138,7 +138,7 @@ class ns3header_taskgen(TaskGen.task_gen):
                 raise Utils.WafError("source ns3 header file %s not found" % (filename,))
             dst_node = ns3_dir_node.find_or_declare(os.path.basename(filename))
             assert dst_node is not None
-            task = self.create_task('ns3header', self.env)
+            task = self.create_task('ns3header', env=self.env)
             task.set_inputs([src_node])
             task.set_outputs([dst_node])
 
@@ -243,7 +243,7 @@ class ns3moduleheader_taskgen(TaskGen.task_gen):
         module_obj = self.bld.name_to_obj("ns3-" + self.module, self.env)
         assert module_obj is not None
         all_headers_outputs = [ns3_dir_node.find_or_declare("%s-module.h" % self.module)]
-        task = self.create_task('gen_ns3_module_header', self.env)
+        task = self.create_task('gen_ns3_module_header', env=self.env)
         task.set_inputs(all_headers_inputs)
         task.set_outputs(all_headers_outputs)
         task.module = self.module
