@@ -50,14 +50,16 @@ you may get your code added as a contribution.
 @code{ns-3} provides another mechanism, called Tracing, that avoids some of the 
 problems inherent in the bulk output mechanisms.  It has several important 
 advantages.  First, you can reduce the amount of data you have to manage by only
-tracing the events of interest to you.  Second, if you use this method, you can 
-control the format of the output directly so you avoid the postprocessing step 
-with sed or awk script.  If you desire, your output can be formatted directly into
-a form acceptable by gnuplot, for example.  You can add hooks in the core which 
-can then be accessed by other users, but which will produce no information unless
-explicitly asked to do so.  For these reasons, we believe that the @code{ns-3}
-Tracing system is the best way to get information out of a simulation and is also
-therefore one of the most important mechanisms to understand in @command{ns-3}.
+tracing the events of interest to you (for large simulations, dumping everything
+to disk for post-processing can create I/O bottlenecks).  Second, if you use this
+method, you can control the format of the output directly so you avoid the 
+postprocessing step with sed or awk script.  If you desire, your output can be 
+formatted directly into a form acceptable by gnuplot, for example.  You can add 
+hooks in the core which can then be accessed by other users, but which will 
+produce no information unless explicitly asked to do so.  For these reasons, we 
+believe that the @code{ns-3} tracing system is the best way to get information 
+out of a simulation and is also therefore one of the most important mechanisms
+to understand in @command{ns-3}.
 
 @subsection Blunt Instruments
 There are many ways to get information out of a program.  The most 
@@ -153,21 +155,20 @@ may be forced to save huge log files to disk and process them down to a few line
 whenever you want to do anything.
 
 Since there are no guarantees in @code{ns-3} about the stability of @code{NS_LOG}
-messages, you may also discover that pieces of log output on which you depend 
+output, you may also discover that pieces of log output on which you depend 
 disappear or change between releases.  If you depend on the structure of the 
 output, you may find other messages being added or deleted which may affect your
 parsing code.
 
 For these reasons, we consider prints to @code{std::cout} and NS_LOG messages 
-simple ways to get more information out of @code{ns-3}, but they are really 
-unstable and quite blunt instruments.
+to be quick and dirty ways to get more information out of @code{ns-3}.
 
 It is desirable to have a stable facility using stable APIs that allow one to 
 reach into the core system and only get the information required.  It is
 desirable to be able to do this without having to change and recompile the
 core system.  Even better would be a system that notified the user when an item
 of interest changed or an interesting event happened so the user doesn't have 
-to actively go poke around in the system looking for things.
+to actively poke around in the system looking for things.
 
 The @command{ns-3} tracing system is designed to work along those lines and is 
 well-integrated with the Attribute and Config subsystems allowing for relatively
@@ -183,7 +184,7 @@ Trace sources are entities that can signal events that happen in a simulation an
 provide access to interesting underlying data.  For example, a trace source could
 indicate when a packet is received by a net device and provide access to the 
 packet contents for interested trace sinks.  A trace source might also indicate 
-when an iteresting state change happens in a model.  For example, the congestion
+when an interesting state change happens in a model.  For example, the congestion
 window of a TCP model is a prime candidate for a trace source.
 
 Trace sources are not useful by themselves; they must be connected to other pieces
