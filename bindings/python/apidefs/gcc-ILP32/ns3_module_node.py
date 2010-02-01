@@ -4580,11 +4580,6 @@ def register_Ns3PbbPacket_methods(root_module, cls):
                    'int', 
                    [], 
                    is_const=True)
-    ## packetbb.h: void ns3::PbbPacket::SerializePacketTlv(ns3::Buffer::Iterator & start) const [member function]
-    cls.add_method('SerializePacketTlv', 
-                   'void', 
-                   [param('ns3::Buffer::Iterator &', 'start')], 
-                   is_const=True, visibility='protected')
     return
 
 def register_Ns3PbbTlv_methods(root_module, cls):
