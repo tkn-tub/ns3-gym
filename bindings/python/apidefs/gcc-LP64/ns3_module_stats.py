@@ -13,8 +13,12 @@ def register_types(module):
     module.add_class('DataCollector', parent=root_module['ns3::Object'])
     ## data-output-interface.h: ns3::DataOutputInterface [class]
     module.add_class('DataOutputInterface', parent=root_module['ns3::Object'])
+    ## basic-data-calculators.h: ns3::MinMaxAvgTotalCalculator<unsigned int> [class]
+    module.add_class('MinMaxAvgTotalCalculator', template_parameters=['unsigned int'], parent=[root_module['ns3::DataCalculator'], root_module['ns3::StatisticalSummary']])
     ## omnet-data-output.h: ns3::OmnetDataOutput [class]
     module.add_class('OmnetDataOutput', parent=root_module['ns3::DataOutputInterface'])
+    ## packet-data-calculators.h: ns3::PacketSizeMinMaxAvgTotalCalculator [class]
+    module.add_class('PacketSizeMinMaxAvgTotalCalculator', parent=root_module['ns3::MinMaxAvgTotalCalculator< unsigned int >'])
     ## sqlite-data-output.h: ns3::SqliteDataOutput [class]
     module.add_class('SqliteDataOutput', parent=root_module['ns3::DataOutputInterface'])
     ## time-data-calculators.h: ns3::TimeMinMaxAvgTotalCalculator [class]
@@ -116,7 +120,9 @@ def register_methods(root_module):
     register_Ns3DataCalculator_methods(root_module, root_module['ns3::DataCalculator'])
     register_Ns3DataCollector_methods(root_module, root_module['ns3::DataCollector'])
     register_Ns3DataOutputInterface_methods(root_module, root_module['ns3::DataOutputInterface'])
+    register_Ns3MinMaxAvgTotalCalculator__Unsigned_int_methods(root_module, root_module['ns3::MinMaxAvgTotalCalculator< unsigned int >'])
     register_Ns3OmnetDataOutput_methods(root_module, root_module['ns3::OmnetDataOutput'])
+    register_Ns3PacketSizeMinMaxAvgTotalCalculator_methods(root_module, root_module['ns3::PacketSizeMinMaxAvgTotalCalculator'])
     register_Ns3SqliteDataOutput_methods(root_module, root_module['ns3::SqliteDataOutput'])
     register_Ns3TimeMinMaxAvgTotalCalculator_methods(root_module, root_module['ns3::TimeMinMaxAvgTotalCalculator'])
     register_Ns3CounterCalculator__Unsigned_int_methods(root_module, root_module['ns3::CounterCalculator< unsigned int >'])
@@ -364,6 +370,67 @@ def register_Ns3DataOutputInterface_methods(root_module, cls):
                    visibility='protected', is_virtual=True)
     return
 
+def register_Ns3MinMaxAvgTotalCalculator__Unsigned_int_methods(root_module, cls):
+    ## basic-data-calculators.h: ns3::MinMaxAvgTotalCalculator<unsigned int>::MinMaxAvgTotalCalculator(ns3::MinMaxAvgTotalCalculator<unsigned int> const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::MinMaxAvgTotalCalculator< unsigned int > const &', 'arg0')])
+    ## basic-data-calculators.h: ns3::MinMaxAvgTotalCalculator<unsigned int>::MinMaxAvgTotalCalculator() [constructor]
+    cls.add_constructor([])
+    ## basic-data-calculators.h: void ns3::MinMaxAvgTotalCalculator<unsigned int>::Output(ns3::DataOutputCallback & callback) const [member function]
+    cls.add_method('Output', 
+                   'void', 
+                   [param('ns3::DataOutputCallback &', 'callback')], 
+                   is_const=True, is_virtual=True)
+    ## basic-data-calculators.h: void ns3::MinMaxAvgTotalCalculator<unsigned int>::Update(unsigned int const i) [member function]
+    cls.add_method('Update', 
+                   'void', 
+                   [param('unsigned int const', 'i')])
+    ## basic-data-calculators.h: long int ns3::MinMaxAvgTotalCalculator<unsigned int>::getCount() const [member function]
+    cls.add_method('getCount', 
+                   'long int', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## basic-data-calculators.h: double ns3::MinMaxAvgTotalCalculator<unsigned int>::getMax() const [member function]
+    cls.add_method('getMax', 
+                   'double', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## basic-data-calculators.h: double ns3::MinMaxAvgTotalCalculator<unsigned int>::getMean() const [member function]
+    cls.add_method('getMean', 
+                   'double', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## basic-data-calculators.h: double ns3::MinMaxAvgTotalCalculator<unsigned int>::getMin() const [member function]
+    cls.add_method('getMin', 
+                   'double', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## basic-data-calculators.h: double ns3::MinMaxAvgTotalCalculator<unsigned int>::getSqrSum() const [member function]
+    cls.add_method('getSqrSum', 
+                   'double', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## basic-data-calculators.h: double ns3::MinMaxAvgTotalCalculator<unsigned int>::getStddev() const [member function]
+    cls.add_method('getStddev', 
+                   'double', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## basic-data-calculators.h: double ns3::MinMaxAvgTotalCalculator<unsigned int>::getSum() const [member function]
+    cls.add_method('getSum', 
+                   'double', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## basic-data-calculators.h: double ns3::MinMaxAvgTotalCalculator<unsigned int>::getVariance() const [member function]
+    cls.add_method('getVariance', 
+                   'double', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## basic-data-calculators.h: void ns3::MinMaxAvgTotalCalculator<unsigned int>::DoDispose() [member function]
+    cls.add_method('DoDispose', 
+                   'void', 
+                   [], 
+                   visibility='protected', is_virtual=True)
+    return
+
 def register_Ns3OmnetDataOutput_methods(root_module, cls):
     ## omnet-data-output.h: ns3::OmnetDataOutput::OmnetDataOutput(ns3::OmnetDataOutput const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::OmnetDataOutput const &', 'arg0')])
@@ -375,6 +442,26 @@ def register_Ns3OmnetDataOutput_methods(root_module, cls):
                    [param('ns3::DataCollector &', 'dc')], 
                    is_virtual=True)
     ## omnet-data-output.h: void ns3::OmnetDataOutput::DoDispose() [member function]
+    cls.add_method('DoDispose', 
+                   'void', 
+                   [], 
+                   visibility='protected', is_virtual=True)
+    return
+
+def register_Ns3PacketSizeMinMaxAvgTotalCalculator_methods(root_module, cls):
+    ## packet-data-calculators.h: ns3::PacketSizeMinMaxAvgTotalCalculator::PacketSizeMinMaxAvgTotalCalculator(ns3::PacketSizeMinMaxAvgTotalCalculator const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::PacketSizeMinMaxAvgTotalCalculator const &', 'arg0')])
+    ## packet-data-calculators.h: ns3::PacketSizeMinMaxAvgTotalCalculator::PacketSizeMinMaxAvgTotalCalculator() [constructor]
+    cls.add_constructor([])
+    ## packet-data-calculators.h: void ns3::PacketSizeMinMaxAvgTotalCalculator::FrameUpdate(std::string path, ns3::Ptr<ns3::Packet const> packet, ns3::Mac48Address realto) [member function]
+    cls.add_method('FrameUpdate', 
+                   'void', 
+                   [param('std::string', 'path'), param('ns3::Ptr< ns3::Packet const >', 'packet'), param('ns3::Mac48Address', 'realto')])
+    ## packet-data-calculators.h: void ns3::PacketSizeMinMaxAvgTotalCalculator::PacketUpdate(std::string path, ns3::Ptr<ns3::Packet const> packet) [member function]
+    cls.add_method('PacketUpdate', 
+                   'void', 
+                   [param('std::string', 'path'), param('ns3::Ptr< ns3::Packet const >', 'packet')])
+    ## packet-data-calculators.h: void ns3::PacketSizeMinMaxAvgTotalCalculator::DoDispose() [member function]
     cls.add_method('DoDispose', 
                    'void', 
                    [], 

@@ -46,7 +46,7 @@ def register_types(module):
     ## wifi-mode.h: ns3::WifiMode [class]
     module.add_class('WifiMode')
     ## wifi-mode.h: ns3::WifiMode::ModulationType [enumeration]
-    module.add_enum('ModulationType', ['BPSK', 'DBPSK', 'DQPSK', 'QAM', 'UNKNOWN'], outer_class=root_module['ns3::WifiMode'])
+    module.add_enum('ModulationType', ['BPSK', 'QPSK', 'DBPSK', 'DQPSK', 'QAM', 'UNKNOWN'], outer_class=root_module['ns3::WifiMode'])
     ## wifi-mode.h: ns3::WifiModeFactory [class]
     module.add_class('WifiModeFactory')
     ## wifi-phy.h: ns3::WifiPhyListener [class]
@@ -1092,6 +1092,11 @@ def register_Ns3WifiModeFactory_methods(root_module, cls):
     cls.add_method('CreateQam', 
                    'ns3::WifiMode', 
                    [param('std::string', 'uniqueName'), param('bool', 'isMandatory'), param('uint32_t', 'bandwidth'), param('uint32_t', 'dataRate'), param('uint32_t', 'phyRate'), param('uint8_t', 'constellationSize'), param('ns3::WifiPhyStandard', 'standard')], 
+                   is_static=True)
+    ## wifi-mode.h: static ns3::WifiMode ns3::WifiModeFactory::CreateQpsk(std::string uniqueName, bool isMandatory, uint32_t bandwidth, uint32_t dataRate, uint32_t phyRate, ns3::WifiPhyStandard standard) [member function]
+    cls.add_method('CreateQpsk', 
+                   'ns3::WifiMode', 
+                   [param('std::string', 'uniqueName'), param('bool', 'isMandatory'), param('uint32_t', 'bandwidth'), param('uint32_t', 'dataRate'), param('uint32_t', 'phyRate'), param('ns3::WifiPhyStandard', 'standard')], 
                    is_static=True)
     return
 
