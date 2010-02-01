@@ -202,7 +202,6 @@ private:
 class Packet : public SimpleRefCount<Packet>
 {
 public:
-  Ptr<Packet> Copy (void) const;
 
   /**
    * Create an empty packet with a new uid (as returned
@@ -346,7 +345,22 @@ public:
    */
   uint32_t CopyData (uint8_t *buffer, uint32_t size) const;
 
+  /**
+   * \param os pointer to output stream in which we want
+   *        to write the packet data.
+   * \param size the maximum number of bytes we want to write
+   *        in the output stream.
+   */
   void CopyData(std::ostream *os, uint32_t size) const;
+
+  /**
+   * \returns a COW copy of the packet.
+   *
+   * The returns packet will behave like an independent copy of
+   * the original packet, even though they both share the
+   * same datasets internally.
+   */
+  Ptr<Packet> Copy (void) const;
 
   /**
    * A packet is allocated a new uid when it is created
@@ -377,6 +391,14 @@ public:
    */
   void Print (std::ostream &os) const;
 
+  /**
+   * \returns an iterator which points to the first 'item'
+   * stored in this buffer. Note that this iterator will point
+   * to an empty array of items if you don't call EnablePrinting
+   * or EnableChecking before.
+   *
+   * \sa EnablePrinting EnableChecking
+   */
   PacketMetadata::ItemIterator BeginItem (void) const;
 
   /**

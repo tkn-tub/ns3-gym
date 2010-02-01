@@ -16,6 +16,7 @@
 
 #include <iostream>
 #include <fstream>
+#include <limits>
 
 #include "ns3/simulator-module.h"
 #include "ns3/node-module.h"
@@ -29,38 +30,56 @@ using namespace ns3;
 
 bool g_passheader = true;
 bool g_addheader = true;
+
+RadiotapHeader g_header;
+
 Time g_t(0.);
 
-static void
-WritePacket (Ptr<PcapFileObject> file, Ptr<const Packet>   packet)
+void
+PerfPcapNew (Ptr<PcapFileObject> file, Ptr<Packet> p, uint32_t n)
 {
   if (g_passheader)
     {
-      RadiotapHeader header;
-      header.SetTsft (0);
-      header.SetFrameFlags (RadiotapHeader::FRAME_FLAG_SHORT_PREAMBLE);
-      header.SetRate (0);
-      header.SetChannelFrequencyAndFlags (0, 0);
-
-      file->Write (g_t, header, packet);
-      return;
-    }
-
-  if (g_addheader)
-    {
-      RadiotapHeader header;
-      header.SetTsft (0);
-      header.SetFrameFlags (RadiotapHeader::FRAME_FLAG_SHORT_PREAMBLE);
-      header.SetRate (0);
-      header.SetChannelFrequencyAndFlags (0, 0);
-
-      Ptr<Packet> p = packet->Copy ();
-      p->AddHeader (header);
-      file->Write (g_t, p);
+      for (uint32_t i = 0; i < n; ++i)
+        {
+          if (g_passheader)
+            {
+              file->Write (g_t, g_header, p);
+            }
+        }
     }
   else
     {
-      file->Write (g_t, packet);
+      for (uint32_t i = 0; i < n; ++i)
+        {
+          if (g_addheader)
+            {
+              Ptr<Packet> pc = p->Copy ();
+              pc->AddHeader (g_header);
+              file->Write (g_t, pc);
+            }
+          else
+            {
+              file->Write (g_t, p);
+            }
+        }
+    }
+}
+
+void
+PerfPcapOld (PcapWriter &pcapWriter, Ptr<Packet> p, uint32_t n)
+{
+
+  for (uint32_t i = 0; i < n; ++i)
+    {
+      if (g_addheader)
+        {
+          pcapWriter.WriteWifiMonitorPacket (p, 0, 0, 0, true, false, 0., 0.);
+        }
+      else
+        {
+          pcapWriter.WritePacket (p);
+        }
     }
 }
 
@@ -68,17 +87,19 @@ int
 main (int argc, char *argv[])
 {
   uint32_t n = 100000;
+  uint32_t iter = 50;
   bool oldstyle = false;
 
   CommandLine cmd;
   cmd.AddValue ("addheader", "Add a header to the traces to trigger a deep copy", g_addheader);
   cmd.AddValue ("passheader", "Pass header as reference instead of adding it", g_passheader);
   cmd.AddValue ("n", "How many packets to write (defaults to 100000", n);
+  cmd.AddValue ("iter", "How many times to run the test looking for a min (defaults to 20)", iter);
   cmd.AddValue ("oldstyle", "run the old style pcap writer stuff if true", oldstyle);
   cmd.Parse (argc, argv);
 
-  uint64_t et;
-
+  uint64_t result = std::numeric_limits<uint64_t>::max ();
+  
   if (oldstyle)
     {
       PcapWriter pcapWriter;
@@ -87,50 +108,48 @@ main (int argc, char *argv[])
 
       Ptr<Packet> p = Create<Packet> (1024);
 
-      //NS_LOG_UNCOND ("timing old style pcap file write of 1K packet");
-      //NS_LOG_UNCOND ("g_addheader = " << g_addheader);
-      //NS_LOG_UNCOND ("g_passheader = " << g_passheader);
-      //NS_LOG_UNCOND ("n = " << n);
-
-      SystemWallClockMs ms;
-      ms.Start ();
-
-      for (uint32_t i = 0; i < n; ++i)
+      //
+      // This will probably run on a machine doing other things.  Run it some
+      // relatively large number of times and try to find a minimum, which
+      // will hopefully represent a time when it runs free of interference.
+      //
+      for (uint32_t i = 0; i < iter; ++i)
         {
-          if (g_addheader)
-            {
-              pcapWriter.WriteWifiMonitorPacket (p, 0, 0, 0, true, false, 0., 0.);
-            }
-          else
-            {
-              pcapWriter.WritePacket (p);
-            }
+          SystemWallClockMs ms;
+          ms.Start ();
+          PerfPcapOld (pcapWriter, p, n);
+          uint64_t et = ms.End ();
+          result = std::min (result, et);
+          std::cout << "."; std::cout.flush ();
         }
-
-      et = ms.End ();
+      std::cout << std::endl;
     }
   else
     {
       PcapHelper pcapHelper;
-      Ptr<PcapFileObject> file = pcapHelper.CreateFile ("perf-pcap.pcap", "w", PcapHelper::DLT_IEEE802_11_RADIO);
-
+      Ptr<PcapFileObject> file = pcapHelper.CreateFile ("perf-pcap.pcap", "w", PcapHelper::DLT_IEEE802_11_RADIO);  
       Ptr<Packet> p = Create<Packet> (1024);
 
-      //NS_LOG_UNCOND ("timing new style pcap file write of 1K packet");
-      //NS_LOG_UNCOND ("g_addheader = " << g_addheader);
-      //NS_LOG_UNCOND ("g_passheader = " << g_passheader);
-      //NS_LOG_UNCOND ("n = " << n);
+      g_header.SetTsft (0);
+      g_header.SetFrameFlags (RadiotapHeader::FRAME_FLAG_SHORT_PREAMBLE);
+      g_header.SetRate (0);
+      g_header.SetChannelFrequencyAndFlags (0, 0);
 
-      SystemWallClockMs ms;
-      ms.Start ();
-
-      for (uint32_t i = 0; i < n; ++i)
+      //
+      // This will probably run on a machine doing other things.  Run it some
+      // relatively large number of times and try to find a minimum, which
+      // will hopefully represent a time when it runs free of interference.
+      //
+      for (uint32_t i = 0; i < iter; ++i)
         {
-          WritePacket (file, p);
+          SystemWallClockMs ms;
+          ms.Start ();
+          PerfPcapNew (file, p, n);
+          uint64_t et = ms.End ();
+          result = std::min (result, et);
+          std::cout << "."; std::cout.flush ();
         }
-
-      et = ms.End ();
+      std::cout << std::endl;
     }
-
-  //NS_LOG_UNCOND ("elapsed time = " << et);
+  std::cout << "perf-pcap: " << result << "ms" << std::endl;
 }

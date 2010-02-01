@@ -631,7 +631,6 @@ public:
   bool operator!= (const PbbPacket &other) const;
 
 protected:
-  void SerializePacketTlv (Buffer::Iterator &start) const;
 
 private:
   PbbTlvBlock m_tlvList;

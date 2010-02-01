@@ -487,6 +487,8 @@ public:
    */
   void CopyData (std::ostream *os, uint32_t size) const;
 
+  uint32_t CopyData (uint8_t *buffer, uint32_t size) const;
+
   Buffer (Buffer const &o);
   Buffer &operator = (Buffer const &o);
   Buffer ();

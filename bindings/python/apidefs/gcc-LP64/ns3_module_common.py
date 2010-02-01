@@ -222,6 +222,11 @@ def register_Ns3Buffer_methods(root_module, cls):
                    'void', 
                    [param('std::ostream *', 'os'), param('uint32_t', 'size')], 
                    is_const=True)
+    ## buffer.h: uint32_t ns3::Buffer::CopyData(uint8_t * buffer, uint32_t size) const [member function]
+    cls.add_method('CopyData', 
+                   'uint32_t', 
+                   [param('uint8_t *', 'buffer'), param('uint32_t', 'size')], 
+                   is_const=True)
     ## buffer.h: ns3::Buffer ns3::Buffer::CreateFragment(uint32_t start, uint32_t length) const [member function]
     cls.add_method('CreateFragment', 
                    'ns3::Buffer', 
