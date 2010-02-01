@@ -222,53 +222,6 @@ SPFVertex::GetDistanceFromRoot (void) const
   return m_distanceFromRoot;
 }
 
-void 
-SPFVertex::SetOutgoingInterfaceId (int32_t id)
-{
-  NS_LOG_FUNCTION (id);
-
-  // always maintain only one output interface index when using setter/getter methods
-  m_rootOif = id;
-}
-
-uint32_t 
-SPFVertex::GetOutgoingInterfaceId (void) const
-{
-  NS_LOG_FUNCTION_NOARGS ();
-  return m_rootOif;
-}
-
-//void 
-//SPFVertex::MergeOutgoingInterfaceId (const SPFVertex* v)
-//{
-//  NS_LOG_FUNCTION (v);
-//
-//  NS_LOG_LOGIC ("Before merge, list of root out-going interfaces = " << m_rootOif);
-//  // combine the two lists first, and then remove any duplicated after
-//  m_rootOif.insert (m_rootOif.end (), 
-//    v->m_rootOif.begin (), v->m_rootOif.end ());
-//  // remove duplication
-//  m_rootOif.sort ();
-//  m_rootOif.unique ();
-//  NS_LOG_LOGIC ("After merge, list of root out-going interfaces = " << m_rootOif);
-//}
-
-  void 
-SPFVertex::SetNextHop (Ipv4Address nextHop)
-{
-  NS_LOG_FUNCTION (nextHop);
-
-  // always maintain only one nexthop when using setter/getter methods
-  m_nextHop = nextHop;
-}
-
-  Ipv4Address
-SPFVertex::GetNextHop (void) const
-{
-  NS_LOG_FUNCTION_NOARGS ();
-  return m_nextHop;
-}
-
   void
 SPFVertex::SetParent (SPFVertex* parent)
 {
@@ -1637,11 +1590,6 @@ GlobalRouteManagerImpl::SPFAddASExternal (GlobalRoutingLSA *extlsa, SPFVertex *v
           Ipv4Address tempip = extlsa->GetLinkStateId ();
           tempip = tempip.CombineMask (tempmask);
 
-          NS_LOG_LOGIC (" Node " << node->GetId () <<
-              " add route to " << tempip <<
-              " with mask " << tempmask <<
-              " using next hop " << v->GetNextHop () <<
-              " via interface " << v->GetOutgoingInterfaceId ());
 //
 // Here's why we did all of that work.  We're going to add a host route to the
 // host address found in the m_linkData field of the point-to-point link
@@ -1662,20 +1610,28 @@ GlobalRouteManagerImpl::SPFAddASExternal (GlobalRoutingLSA *extlsa, SPFVertex *v
             }
           Ptr<Ipv4GlobalRouting> gr = router->GetRoutingProtocol ();
           NS_ASSERT (gr);
-          if (v->GetOutgoingInterfaceId () >= 0)
+          // walk through all next-hop-IPs and out-going-interfaces for reaching
+          // the stub network gateway 'v' from the root node
+          for (uint32_t i = 0; i < v->GetNRootExitDirections (); i++)
             {
-              gr->AddASExternalRouteTo (tempip, tempmask, v->GetNextHop (), v->GetOutgoingInterfaceId ());
-              NS_LOG_LOGIC ("Node " << node->GetId () <<
-                  " add network route to " << tempip <<
-                  " using next hop " << v->GetNextHop () <<
-                  " via interface " << v->GetOutgoingInterfaceId ());
-            }
-          else
-            {
-              NS_LOG_LOGIC ("Node " << node->GetId () <<
-                  " NOT able to add network route to " << tempip <<
-                  " using next hop " << v->GetNextHop () <<
-                  " since outgoing interface id is negative");
+              SPFVertex::NodeExit_t exit = v->GetRootExitDirection (i);
+              Ipv4Address nextHop = exit.first;
+              int32_t outIf = exit.second;
+              if (outIf >= 0)
+                {
+                  gr->AddASExternalRouteTo (tempip, tempmask, nextHop, outIf);
+                  NS_LOG_LOGIC ("(Route " << i << ") Node " << node->GetId () <<
+                    " add external network route to " << tempip <<
+                    " using next hop " << nextHop <<
+                    " via interface " << outIf);
+                }
+              else
+                {
+                  NS_LOG_LOGIC ("(Route " << i << ") Node " << node->GetId () <<
+                    " NOT able to add network route to " << tempip <<
+                    " using next hop " << nextHop <<
+                    " since outgoing interface id is negative");
+                }
             }
           return;
         } // if

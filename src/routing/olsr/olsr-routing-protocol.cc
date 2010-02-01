@@ -72,7 +72,7 @@
 /********** Holding times **********/
 
 /// Neighbor holding time.
-#define OLSR_NEIGHB_HOLD_TIME	(Scalar (3) * m_helloInterval)
+#define OLSR_NEIGHB_HOLD_TIME	(Scalar (3) * OLSR_REFRESH_INTERVAL)
 /// Top holding time.
 #define OLSR_TOP_HOLD_TIME	(Scalar (3) * m_tcInterval)
 /// Dup holding time.

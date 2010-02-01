@@ -677,16 +677,6 @@ TcpSocketImpl::ForwardUp (Ptr<Packet> packet, Ipv4Address ipv4, uint16_t port)
   TcpHeader tcpHeader;
   packet->RemoveHeader (tcpHeader);
 
-  if (tcpHeader.GetFlags () & TcpHeader::RST)
-    { // Got an RST, just shut everything down
-      NotifyErrorClose();
-      CancelAllTimers();
-      m_endPoint->SetDestroyCallback(MakeNullCallback<void>());
-      m_tcp->DeAllocate (m_endPoint);
-      m_endPoint = 0;
-      return;
-    }
-      
   if (tcpHeader.GetFlags () & TcpHeader::ACK)
     {
       Time m = m_rtt->AckSeq (tcpHeader.GetAckNumber () );
@@ -721,14 +711,7 @@ Actions_t TcpSocketImpl::ProcessEvent (Events_t e)
   // class intended to be a singleton; see simulation-singleton.h
   SA stateAction = SimulationSingleton<TcpStateMachine>::Get ()->Lookup (m_state,e);
   NS_LOG_LOGIC ("TcpSocketImpl::ProcessEvent stateAction " << stateAction.action);
-  // debug
-  if (stateAction.action == RST_TX)
-    {
-      NS_LOG_LOGIC ("TcpSocketImpl " << this << " sending RST from state "
-              << saveState << " event " << e);
-      SendRST();
-      return NO_ACT;
-    }
+
   bool needCloseNotify = (stateAction.state == CLOSED && m_state != CLOSED 
     && e != TIMEOUT);
   m_state = stateAction.state;
@@ -925,6 +908,12 @@ bool TcpSocketImpl::ProcessPacketAction (Actions_t a, Ptr<Packet> p,
 
   switch (a)
   {
+    case RST_TX:
+      {
+        NS_LOG_LOGIC ("TcpSocketImpl " << this << " Action RST_TX");
+        SendRST();
+        return NO_ACT;
+      }
     case ACK_TX:
       NS_LOG_LOGIC ("TcpSocketImpl " << this <<" Action ACK_TX");
       if(tcpHeader.GetFlags() & TcpHeader::FIN)
