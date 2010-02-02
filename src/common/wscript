@@ -21,6 +21,10 @@ def build(bld):
         'ascii-writer.cc',
         'pcap-file.cc',
         'pcap-file-test-suite.cc',
+        'propagation-delay-model.cc',
+        'propagation-loss-model.cc',
+        'propagation-loss-model-test-suite.cc',
+        'jakes-propagation-loss-model.cc',
         ]
 
     headers = bld.new_task_gen('ns3header')
@@ -43,4 +47,7 @@ def build(bld):
         'ascii-writer.h',
         'sgi-hashmap.h',
         'pcap-file.h',
+        'propagation-delay-model.h',
+        'propagation-loss-model.h',
+        'jakes-propagation-loss-model.h',
         ]

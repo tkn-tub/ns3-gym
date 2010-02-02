@@ -3,10 +3,6 @@
 def build(bld):
     obj = bld.create_ns3_module('wifi', ['node'])
     obj.source = [
-        'propagation-delay-model.cc',
-        'propagation-loss-model.cc',
-        'propagation-loss-model-test-suite.cc',
-        'jakes-propagation-loss-model.cc',
         'wifi-channel.cc',
         'wifi-mode.cc',
         'ssid.cc',
@@ -63,9 +59,6 @@ def build(bld):
     headers = bld.new_task_gen('ns3header')
     headers.module = 'wifi'
     headers.source = [
-        'propagation-delay-model.h',
-        'propagation-loss-model.h',
-        'jakes-propagation-loss-model.h',
         'wifi-net-device.h',
         'wifi-channel.h',
         'wifi-mode.h',

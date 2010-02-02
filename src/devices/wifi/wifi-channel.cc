@@ -28,8 +28,8 @@
 #include "wifi-channel.h"
 #include "wifi-net-device.h"
 #include "yans-wifi-phy.h"
-#include "propagation-loss-model.h"
-#include "propagation-delay-model.h"
+#include "ns3/propagation-loss-model.h"
+#include "ns3/propagation-delay-model.h"
 
 NS_LOG_COMPONENT_DEFINE ("WifiChannel");
 
