@@ -34,3 +34,6 @@ def build(bld):
 
     obj = bld.create_ns3_program('wifi-simple-interference', ['core', 'simulator', 'mobility', 'wifi'])
     obj.source = 'wifi-simple-interference.cc'
+
+    obj = bld.create_ns3_program('wifi-blockack', ['core', 'simulator', 'mobility', 'wifi'])
+    obj.source = 'wifi-blockack.cc'
