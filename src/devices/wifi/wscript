@@ -54,8 +54,10 @@ def build(bld):
         'amsdu-subframe-header.cc',
         'msdu-standard-aggregator.cc',
         'minstrel-wifi-manager.cc',
+        'originator-block-ack-agreement.cc',
         'dcf.cc',
         'ctrl-headers.cc',
+        'block-ack-agreement.cc',
         ]
     headers = bld.new_task_gen('ns3header')
     headers.module = 'wifi'
@@ -103,8 +105,10 @@ def build(bld):
         'mac-rx-middle.h', 
         'mac-low.h',
         'minstrel-wifi-manager.h',
+        'originator-block-ack-agreement.h',
         'dcf.h',
         'ctrl-headers.h',
+        'block-ack-agreement.h',
         ]
 
     if bld.env['ENABLE_GSL']:
