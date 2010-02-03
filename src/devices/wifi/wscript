@@ -60,6 +60,7 @@ def build(bld):
         'qos-blocked-destinations.cc',
         'block-ack-agreement.cc',
         'block-ack-manager.cc',
+        'block-ack-test-suite.cc',
         ]
     headers = bld.new_task_gen('ns3header')
     headers.module = 'wifi'
