@@ -132,6 +132,13 @@ EdcaTxopN::GetTypeId (void)
                    MakeUintegerAccessor (&EdcaTxopN::SetBlockAckThreshold,
                                          &EdcaTxopN::GetBlockAckThreshold),
                    MakeUintegerChecker<uint8_t> (0, 64))
+    .AddAttribute ("BlockAckInactivityTimeout", "Represents max time (blocks of 1024 micro seconds) allowed for block ack\
+                                                 inactivity. If this value isn't equal to 0 a timer start after that a\
+                                                 block ack setup is completed and will be reset every time that a block\
+                                                 ack frame is received. If this value is 0, block ack inactivity timeout won't be used.",
+                   UintegerValue(0),
+                   MakeUintegerAccessor (&EdcaTxopN::m_blockAckInactivityTimeout),
+                   MakeUintegerChecker<uint16_t> ())
     ;
   return tid;
 }
@@ -847,6 +854,14 @@ EdcaTxopN::GotAddBaResponse (const MgtAddBaResponseHeader *respHdr, Mac48Address
 }
 
 void
+EdcaTxopN::GotDelBaFrame (const MgtDelBaHeader *delBaHdr, Mac48Address recipient)
+{
+  NS_LOG_FUNCTION (this);
+  MY_DEBUG ("received DELBA frame from="<<recipient);
+  m_baManager->TearDownBlockAck (recipient, delBaHdr->GetTid ());
+}
+
+void
 EdcaTxopN::GotBlockAck (const CtrlBAckResponseHeader *blockAck, Mac48Address recipient)
 {
   MY_DEBUG ("got block ack from="<<recipient);
@@ -904,7 +919,7 @@ EdcaTxopN::SetupBlockAckIfNeeded ()
     {
       /* Block ack setup */
       uint16_t startingSequence = m_txMiddle->GetNextSeqNumberByTidAndAddress (tid, recipient);
-      SendAddBaRequest (recipient, tid, startingSequence, 0, true);
+      SendAddBaRequest (recipient, tid, startingSequence, m_blockAckInactivityTimeout, true);
       return true;
     }
   return false;
@@ -960,6 +975,7 @@ EdcaTxopN::CompleteConfig (void)
   NS_LOG_FUNCTION (this);
   m_baManager->SetTxMiddle (m_txMiddle);
   m_low->RegisterBlockAckListenerForAc (m_ac, m_blockAckListener);
+  m_baManager->SetBlockAckInactivityCallback (MakeCallback (&EdcaTxopN::SendDelbaFrame, this));
 }
 
 void
@@ -1011,7 +1027,6 @@ EdcaTxopN::SendAddBaRequest (Mac48Address dest, uint8_t tid, uint16_t startSeq,
    * will choose how many packets it can receive under block ack.
    */
   reqHdr.SetBufferSize (0);
-  /* Also timeout field is not used for now */
   reqHdr.SetTimeout (timeout);
   reqHdr.SetStartingSequence (startSeq);
 

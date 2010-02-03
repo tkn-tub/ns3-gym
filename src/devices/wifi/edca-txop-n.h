@@ -49,6 +49,7 @@ class QosBlockedDestinations;
 class MsduAggregator;
 class MgtAddBaResponseHeader;
 class BlockAckManager;
+class MgtDelBaHeader;
 
 
 /* This queue contains packets for a particular access class.
@@ -118,6 +119,7 @@ public:
   void GotBlockAck (const CtrlBAckResponseHeader *blockAck, Mac48Address recipient);
   void MissedBlockAck (void);
   void GotAddBaResponse (const MgtAddBaResponseHeader *respHdr, Mac48Address recipient);
+  void GotDelBaFrame (const MgtDelBaHeader *delBaHdr, Mac48Address recipient);
   void MissedAck (void);
   void StartNext (void);
   void Cancel (void);
@@ -217,6 +219,7 @@ private:
   uint8_t m_blockAckThreshold;
   enum BlockAckType m_blockAckType;
   Time m_currentPacketTimestamp;
+  uint16_t m_blockAckInactivityTimeout;
 };
 
 }  //namespace ns3

@@ -730,6 +730,8 @@ QstaWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
           else
             {
               /* We must notify correct queue tear down of agreement */
+              AccessClass ac = QosUtilsMapTidToAc (delBaHdr.GetTid ());
+              m_queues[ac]->GotDelBaFrame (&delBaHdr, hdr->GetAddr2 ());
             }
         }
     }
