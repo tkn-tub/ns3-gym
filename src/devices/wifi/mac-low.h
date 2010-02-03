@@ -1,6 +1,7 @@
 /* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2005, 2006 INRIA
+ * Copyright (c) 2009 MIRKO BANCHI
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as 
@@ -16,6 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
+ * Author: Mirko Banchi <mk.banchi@gmail.com>
  */
 #ifndef MAC_LOW_H
 #define MAC_LOW_H
@@ -23,12 +25,15 @@
 #include <vector>
 #include <stdint.h>
 #include <ostream>
+#include <map>
 
 #include "wifi-mac-header.h"
 #include "wifi-mode.h"
 #include "wifi-preamble.h"
 #include "wifi-remote-station-manager.h"
 #include "ctrl-headers.h"
+#include "mgt-headers.h"
+#include "block-ack-agreement.h"
 #include "ns3/mac48-address.h"
 #include "ns3/callback.h"
 #include "ns3/event-id.h"
@@ -411,6 +416,27 @@ public:
    * occurs, pending MAC transmissions (RTS, CTS, DATA and ACK) are cancelled.
    */
   void NotifySwitchingStartNow (Time duration); 
+  /**
+   * \param respHdr Add block ack response from originator (action frame).
+   * \param originator Address of peer station involved in block ack mechanism.
+   * \param startingSeq Sequence number of the first MPDU of all packets for which block ack was negotiated.
+   * 
+   * This function is typically invoked only by ns3::QapWifiMac and ns3::QstaWifiMac.
+   * If we are transmitting an Add block ack response, MacLow must allocate buffers to collect
+   * all correctly received packets belonging to category for which block ack was negotiated.
+   * It's needed in order to send a Block ack after corresponding originator's Block ack request.
+   */
+  void CreateBlockAckAgreement (const MgtAddBaResponseHeader *respHdr, Mac48Address originator,
+                                uint16_t startingSeq);
+  /**
+   * \param originator Address of peer partecipating in Block Ack mechanism.
+   * \param tid TID for which Block Ack was created.
+   *
+   * Checks if exists an established block ack agreement with <i>originator</i>
+   * for tid <i>tid</i>. If the agreement exists, tears down it. This function is typically
+   * invoked when a DELBA frame is received from <i>originator</i>.
+   */
+  void DestroyBlockAckAgreement (Mac48Address originator, uint8_t tid);
 private:
   void CancelAllEvents (void);
   uint32_t GetAckSize (void) const;
@@ -456,6 +482,35 @@ private:
   void SendCurrentTxPacket (void);
   void StartDataTxTimers (void);
   virtual void DoDispose (void);
+  /**
+   * \param originator Address of peer partecipating in Block Ack mechanism.
+   * \param tid TID for which Block Ack was created.
+   * \param seq Starting sequence
+   *
+   * This function forward up all completed "old" packets with sequence number
+   * smaller than <i>seq</i>. All comparison are performed circularly mod 4096.
+   */
+  void RxCompleteBufferedPacketsWithSmallerSequence (uint16_t seq, Mac48Address originator, uint8_t tid);
+  /**
+   * \param originator Address of peer partecipating in Block Ack mechanism.
+   * \param tid TID for which Block Ack was created.
+   *
+   * This method is typically invoked when a MPDU with ack policy
+   * subfield set to Normal Ack is received and a block ack agreement
+   * for that packet exists.
+   * This happens when the originator of block ack has only few MPDUs to send.
+   * All completed MSDUs starting with starting sequence number of block ack
+   * agreement are forward up to WifiMac until there is an incomplete MSDU.
+   * See section 9.10.4 in IEEE802.11 standard for more details.
+   */
+  void RxCompleteBufferedPackets (Mac48Address originator, uint8_t tid);
+  /* 
+   * This method checks if exists a valid established block ack agreement. 
+   * If there is, store the packet without pass it up to WifiMac. The packet is buffered
+   * in order of increasing sequence control field. All comparison are performed
+   * circularly modulo 2^12.
+   */
+  bool StoreMpduIfNeeded (Ptr<Packet> packet, WifiMacHeader hdr);
 
   void SetupPhyMacLowListener (Ptr<WifiPhy> phy); 
 
@@ -494,6 +549,20 @@ private:
 
   // Listerner needed to monitor when a channel switching occurs. 
   class PhyMacLowListener *m_phyMacLowListener; 
+
+  /*
+   * BlockAck data structures.
+   */
+  typedef std::pair<Ptr<Packet>, WifiMacHeader> BufferedPacket;
+  typedef std::list<BufferedPacket>::iterator BufferedPacketI;
+
+  typedef std::pair<Mac48Address, uint8_t> AgreementKey;
+  typedef std::pair<BlockAckAgreement, std::list<BufferedPacket> > AgreementValue;
+
+  typedef std::map<AgreementKey, AgreementValue> Agreements;
+  typedef std::map<AgreementKey, AgreementValue>::iterator AgreementsI;
+
+  Agreements m_bAckAgreements;
 };
 
 } // namespace ns3

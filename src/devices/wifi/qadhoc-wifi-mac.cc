@@ -528,7 +528,7 @@ QadhocWifiMac::SendAddBaResponse (const MgtAddBaRequestHeader *reqHdr, Mac48Addr
   packet->AddHeader (actionHdr);
   
   /* ns3::MacLow have to buffer all correctly received packet for this block ack session */
-  //m_low->CreateIngoingAgreement (&respHdr, originator, reqHdr->GetStartingSequence ());
+  m_low->CreateBlockAckAgreement (&respHdr, originator, reqHdr->GetStartingSequence ());
 
   //Better a management queue? 
   m_queues[QosUtilsMapTidToAc (reqHdr->GetTid ())]->PushFront (packet, hdr);

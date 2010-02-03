@@ -1,6 +1,7 @@
 /* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2005,2006 INRIA
+ * Copyright (c) 2009 MIRKO BANCHI
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as 
@@ -16,6 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
+ * Author: Mirko Banchi <mk.banchi@gmail.com>
  */
 
 #include "ns3/assert.h"
@@ -28,6 +30,7 @@
 #include "mac-low.h"
 #include "wifi-phy.h"
 #include "wifi-mac-trailer.h"
+#include "qos-utils.h"
 
 NS_LOG_COMPONENT_DEFINE ("MacLow");
 
@@ -1296,6 +1299,140 @@ MacLow::SendAckAfterData (Mac48Address source, Time duration, WifiMode dataTxMod
   packet->AddPacketTag (tag);
 
   ForwardDown (packet, &ack, ackTxMode);
+}
+
+bool
+MacLow::StoreMpduIfNeeded (Ptr<Packet> packet, WifiMacHeader hdr)
+{
+  AgreementsI it = m_bAckAgreements.find (std::make_pair (hdr.GetAddr2 (), hdr.GetQosTid ()));
+  if (it != m_bAckAgreements.end ())
+   {
+     WifiMacTrailer fcs;
+     packet->RemoveTrailer (fcs);
+     BufferedPacket bufferedPacket (packet, hdr);
+
+     uint16_t endSequence = ((*it).second.first.GetStartingSequence () + 2047) % 4096;
+     uint16_t mappedSeqControl = QosUtilsMapSeqControlToUniqueInteger (hdr.GetSequenceControl () ,endSequence);
+
+     BufferedPacketI i = (*it).second.second.begin ();
+     for (; i != (*it).second.second.end () &&
+            QosUtilsMapSeqControlToUniqueInteger ((*i).second.GetSequenceControl (), endSequence) < mappedSeqControl; i++);
+     (*it).second.second.insert (i, bufferedPacket);
+     return true;
+   }
+  return false;
+}
+
+void
+MacLow::CreateBlockAckAgreement (const MgtAddBaResponseHeader *respHdr, Mac48Address originator,
+                                 uint16_t startingSeq)
+{
+  BlockAckAgreement agreement (originator, respHdr->GetTid ());
+  if (respHdr->IsImmediateBlockAck ())
+    {
+      agreement.SetImmediateBlockAck ();
+    }
+  else
+    {
+      agreement.SetDelayedBlockAck ();
+    }
+  agreement.SetAmsduSupport (respHdr->IsAmsduSupported ());
+  agreement.SetBufferSize (respHdr->GetBufferSize ());
+  agreement.SetTimeout (respHdr->GetTimeout ());
+  agreement.SetStartingSequence (startingSeq);
+  
+  std::list<BufferedPacket> buffer (0);
+  AgreementKey key (originator, respHdr->GetTid ());
+  AgreementValue value (agreement, buffer);
+  m_bAckAgreements.insert (std::make_pair (key, value));
+}
+
+void
+MacLow::DestroyBlockAckAgreement (Mac48Address originator, uint8_t tid)
+{
+  AgreementsI it = m_bAckAgreements.find (std::make_pair (originator, tid));
+  if (it != m_bAckAgreements.end ())
+    {
+      RxCompleteBufferedPacketsWithSmallerSequence (it->second.first.GetStartingSequence (), originator, tid);
+      RxCompleteBufferedPackets (originator, tid);
+      m_bAckAgreements.erase (it);
+    }
+}
+
+void
+MacLow::RxCompleteBufferedPacketsWithSmallerSequence (uint16_t seq, Mac48Address originator, uint8_t tid)
+{
+  AgreementsI it = m_bAckAgreements.find (std::make_pair (originator, tid));
+  if (it != m_bAckAgreements.end ())
+    {
+      BufferedPacketI i = (*it).second.second.begin ();
+      uint16_t endSequence = ((*it).second.first.GetStartingSequence () + 2047) % 4096;
+      uint16_t mappedStart = QosUtilsMapSeqControlToUniqueInteger (seq, endSequence);
+      uint16_t guard = (*it).second.first.GetStartingSequence ();
+      BufferedPacketI last = (*it).second.second.begin ();
+
+      for (; i != (*it).second.second.end () &&
+             QosUtilsMapSeqControlToUniqueInteger ((*i).second.GetSequenceNumber (), endSequence) < mappedStart;)
+        {
+          while (i != (*it).second.second.end () && guard == (*i).second.GetSequenceControl ())
+            {
+              if (!(*i).second.IsMoreFragments ())
+                {
+                  while (last != i)
+                    {
+                      m_rxCallback ((*last).first, &(*last).second);
+                      last++;
+                    }
+                  m_rxCallback ((*last).first, &(*last).second);
+                  last++;
+                }
+              guard = (*i).second.IsMoreFragments () ? (guard + 1) : ((guard + 16) & 0xfff0);
+            }
+          /* go to next packet */
+          while (i != (*it).second.second.end () && ((guard >> 4) & 0x0fff) == (*i).second.GetSequenceNumber ())
+            {
+              i++;
+            }
+          if (i != (*it).second.second.end ())
+            {
+              guard = (*i).second.GetSequenceControl () & 0xfff0;
+              last = i;
+            }
+        }
+      (*it).second.second.erase ((*it).second.second.begin (), i);
+    }
+}
+
+void
+MacLow::RxCompleteBufferedPackets (Mac48Address originator, uint8_t tid)
+{
+  AgreementsI it = m_bAckAgreements.find (std::make_pair (originator, tid));
+  if (it != m_bAckAgreements.end ())
+    {
+      uint16_t startingSeqCtrl = ((*it).second.first.GetStartingSequence ()<<4) & 0xfff0;
+      uint16_t guard = startingSeqCtrl;
+
+      BufferedPacketI lastComplete = (*it).second.second.begin ();
+      BufferedPacketI i = (*it).second.second.begin ();
+      for (;i != (*it).second.second.end() && guard == (*i).second.GetSequenceControl (); i++)
+        {
+          if (!(*i).second.IsMoreFragments ())
+            {
+              while (lastComplete != i)
+                {
+                  m_rxCallback ((*lastComplete).first, &(*lastComplete).second);
+                  lastComplete++;
+                }
+               m_rxCallback ((*lastComplete).first, &(*lastComplete).second);
+               lastComplete++;
+            }
+          guard = (*i).second.IsMoreFragments () ? (guard + 1) : ((guard + 16) & 0xfff0);
+        }
+      (*it).second.first.SetStartingSequence ((guard>>4)&0x0fff);
+      /* All packets already forwarded to WifiMac must be removed from buffer: 
+      [begin (), lastComplete) */
+      (*it).second.second.erase ((*it).second.second.begin (), lastComplete);
+    }
 }
 
 } // namespace ns3
