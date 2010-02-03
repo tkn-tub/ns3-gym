@@ -130,6 +130,7 @@ public:
   
   void Queue (Ptr<const Packet> packet, const WifiMacHeader &hdr);
   void SetMsduAggregator (Ptr<MsduAggregator> aggr);
+  void PushFront (Ptr<const Packet> packet, const WifiMacHeader &hdr);
 
 private:
   /**

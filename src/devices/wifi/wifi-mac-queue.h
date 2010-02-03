@@ -61,6 +61,7 @@ public:
   Time GetMaxDelay (void) const;
 
   void Enqueue (Ptr<const Packet> packet, const WifiMacHeader &hdr);
+  void PushFront (Ptr<const Packet> packet, const WifiMacHeader &hdr);
   Ptr<const Packet> Dequeue (WifiMacHeader *hdr);
   Ptr<const Packet> Peek (WifiMacHeader *hdr);
   /**

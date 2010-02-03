@@ -687,4 +687,16 @@ EdcaTxopN::SetMsduAggregator (Ptr<MsduAggregator> aggr)
   m_aggregator = aggr;
 }
 
+void
+EdcaTxopN::PushFront (Ptr<const Packet> packet, const WifiMacHeader &hdr)
+{
+  NS_LOG_FUNCTION (this << packet << &hdr);
+  WifiMacTrailer fcs;
+  uint32_t fullPacketSize = hdr.GetSerializedSize () + packet->GetSize () + fcs.GetSerializedSize ();
+  WifiRemoteStation *station = GetStation (hdr.GetAddr1 ());
+  station->PrepareForQueue (packet, fullPacketSize);
+  m_queue->PushFront (packet, hdr);
+  StartAccessIfNeeded ();
+}
+
 } //namespace ns3

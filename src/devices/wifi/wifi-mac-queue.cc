@@ -111,18 +111,19 @@ WifiMacQueue::Cleanup (void)
 
   Time now = Simulator::Now ();
   uint32_t n = 0;
-  PacketQueueI end = m_queue.begin ();
-  for (PacketQueueI i = m_queue.begin (); i != m_queue.end (); i++) 
+  for (PacketQueueI i = m_queue.begin (); i != m_queue.end ();) 
     {
       if (i->tstamp + m_maxDelay > now) 
         {
-          end = i;
-          break;
+          i++;
         }
-      n++;
+      else
+        {
+          i = m_queue.erase (i);
+          n++;
+        }
     }
   m_size -= n;
-  m_queue.erase (m_queue.begin (), end);
 }
 
 Ptr<const Packet>
@@ -258,6 +259,19 @@ WifiMacQueue::Remove (Ptr<const Packet> packet)
         }
     }
   return false;
+}
+
+void
+WifiMacQueue::PushFront (Ptr<const Packet> packet, const WifiMacHeader &hdr)
+{
+  Cleanup ();
+  if (m_size == m_maxSize)
+    {
+      return;
+    }
+  Time now = Simulator::Now ();
+  m_queue.push_front (Item (packet, hdr, now));
+  m_size++;
 }
 
 } // namespace ns3
