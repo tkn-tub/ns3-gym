@@ -122,6 +122,19 @@ WifiMacHeader::SetBeacon (void)
   m_ctrlType = TYPE_MGT;
   m_ctrlSubtype = 8;
 }
+void
+WifiMacHeader::SetBlockAckReq (void)
+{
+  m_ctrlType = TYPE_CTL;
+  m_ctrlSubtype = 8;
+}
+void
+WifiMacHeader::SetBlockAck (void)
+{
+  m_ctrlType = TYPE_CTL;
+  m_ctrlSubtype = 9;
+}
+
 void 
 WifiMacHeader::SetTypeData (void)
 {
@@ -347,6 +360,21 @@ void WifiMacHeader::SetQosAckPolicy (enum QosAckPolicy policy)
     m_qosAckPolicy = 3;
     break;
   }
+}
+void
+WifiMacHeader::SetQosNormalAck ()
+{
+  m_qosAckPolicy = 0;
+}
+void
+WifiMacHeader::SetQosBlockAck ()
+{
+  m_qosAckPolicy = 3;
+}
+void
+WifiMacHeader::SetQosNoAck ()
+{
+  m_qosAckPolicy = 1;
 }
 void WifiMacHeader::SetQosAmsdu (void)
 {
@@ -630,6 +658,16 @@ WifiMacHeader::IsMultihopAction (void) const
 {
   return (GetType () == WIFI_MAC_MGT_MULTIHOP_ACTION);
 }
+bool
+WifiMacHeader::IsBlockAckReq (void) const
+{
+  return (GetType () == WIFI_MAC_CTL_BACKREQ)?true:false;
+}
+bool
+WifiMacHeader::IsBlockAck (void) const
+{
+  return (GetType () == WIFI_MAC_CTL_BACKRESP)?true:false;
+}
 
 
 uint16_t 
@@ -808,8 +846,7 @@ WifiMacHeader::GetSize (void) const
       break;
     case SUBTYPE_CTL_BACKREQ:
     case SUBTYPE_CTL_BACKRESP:
-      // NOT IMPLEMENTED
-      NS_ASSERT (false);
+      size = 2+2+6+6;
       break;
     }
     break;
@@ -1018,8 +1055,7 @@ WifiMacHeader::Serialize (Buffer::Iterator i) const
       break;
     case SUBTYPE_CTL_BACKREQ:
     case SUBTYPE_CTL_BACKRESP:
-      // NOT IMPLEMENTED
-      NS_ASSERT (false);
+      WriteTo (i, m_addr2);
       break;
     default:
       //NOTREACHED
@@ -1068,8 +1104,7 @@ WifiMacHeader::Deserialize (Buffer::Iterator start)
       break;
     case SUBTYPE_CTL_BACKREQ:
     case SUBTYPE_CTL_BACKRESP:
-      // NOT IMPLEMENTED
-      NS_ASSERT (false);
+      ReadFrom (i, m_addr2);
       break;
     }
     break;
