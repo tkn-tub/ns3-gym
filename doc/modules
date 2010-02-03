@@ -60,5 +60,9 @@
  * @defgroup constants Constants
  * @brief Constants you can change
  *
+ * @defgroup utils Utils
+ * @brief The utils directory is for various programs and scripts related 
+ * to code coverage, test suites, style checking, and benchmarking.
+ * 
  * @defgroup contrib Contrib
  */
