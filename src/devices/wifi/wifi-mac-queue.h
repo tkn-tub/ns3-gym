@@ -92,6 +92,13 @@ public:
    * performed in linear time (O(n)).  
    */
   bool Remove (Ptr<const Packet> packet);
+  /**
+   * Returns number of QoS packets having tid equals to <i>tid</i> and address
+   * specified by <i>type</i> equals to <i>addr</i>.
+   */
+  uint32_t GetNPacketsByTidAndAddress (uint8_t tid,
+                                       WifiMacHeader::AddressType type,
+                                       Mac48Address addr);
   
   void Flush (void);
 

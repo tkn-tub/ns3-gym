@@ -274,4 +274,28 @@ WifiMacQueue::PushFront (Ptr<const Packet> packet, const WifiMacHeader &hdr)
   m_size++;
 }
 
+uint32_t
+WifiMacQueue::GetNPacketsByTidAndAddress (uint8_t tid, WifiMacHeader::AddressType type,
+                                          Mac48Address addr)
+{
+  Cleanup ();
+  uint32_t nPackets = 0;
+  if (!m_queue.empty ())
+    {
+      PacketQueueI it;
+      NS_ASSERT (type <= 4);
+      for (it = m_queue.begin (); it != m_queue.end (); it++)
+        {
+          if (GetAddressForPacket (type, it) == addr)
+            {
+              if (it->hdr.IsQosData () && it->hdr.GetQosTid () == tid)
+                {
+                  nPackets++;
+                }
+            }
+        }
+    }
+  return nPackets;
+}
+
 } // namespace ns3
