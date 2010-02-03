@@ -2610,8 +2610,6 @@ Ptr<Ipv4Route>
 RoutingProtocol::RouteOutput (Ptr<Packet> p, const Ipv4Header &header, Ptr<NetDevice> oif, Socket::SocketErrno &sockerr)
 {  
   NS_LOG_FUNCTION (this << " " << m_ipv4->GetObject<Node> ()->GetId() << " " << header.GetDestination () << " " << oif);
-  // TBD:  oif is unused; can be used to restrict the outgoing interface
-  // of the found route if application bound to a source interface
   Ptr<Ipv4Route> rtentry;
   RoutingTableEntry entry1, entry2;
   if (Lookup (header.GetDestination (), entry1) != 0)
@@ -2621,9 +2619,22 @@ RoutingProtocol::RouteOutput (Ptr<Packet> p, const Ipv4Header &header, Ptr<NetDe
         {
           NS_FATAL_ERROR ("FindSendEntry failure");
         }
+      uint32_t interfaceIdx = entry2.interface;
+      if (oif && m_ipv4->GetInterfaceForDevice (oif) != static_cast<int> (interfaceIdx))
+        {
+          // We do not attempt to perform a constrained routing search
+          // if the caller specifies the oif; we just enforce that 
+          // that the found route matches the requested outbound interface 
+          NS_LOG_DEBUG ("Olsr node " << m_mainAddress 
+                        << ": RouteOutput for dest=" << header.GetDestination ()
+                        << " Route interface " << interfaceIdx 
+                        << " does not match requested output interface "
+                        << m_ipv4->GetInterfaceForDevice (oif));
+          sockerr = Socket::ERROR_NOROUTETOHOST;
+          return rtentry;
+        }
       rtentry = Create<Ipv4Route> ();
       rtentry->SetDestination (header.GetDestination ());
-      uint32_t interfaceIdx = entry2.interface;
       // the source address is the interface address that matches
       // the destination address (when multiple are present on the 
       // outgoing interface, one is selected via scoping rules)
