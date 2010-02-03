@@ -788,6 +788,7 @@ QstaWifiMac::SetQueue (enum AccessClass ac)
   edca->SetManager (m_dcfManager);
   edca->SetTypeOfStation (STA);
   edca->SetTxMiddle (m_txMiddle);
+  edca->CompleteConfig ();
   m_queues.insert (std::make_pair(ac, edca));
 }
 

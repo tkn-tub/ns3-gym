@@ -31,6 +31,7 @@
 #include "wifi-mac-header.h"
 #include "qos-utils.h"
 #include "dcf.h"
+#include "ctrl-headers.h"
 
 #include <map>
 #include <list>
@@ -44,9 +45,10 @@ class MacTxMiddle;
 class WifiMacParameters;
 class WifiMacQueue;
 class RandomStream;
+class QosBlockedDestinations;
 class MsduAggregator;
 class MgtAddBaResponseHeader;
-class CtrlBAckResponseHeader;
+class BlockAckManager;
 
 
 /* This queue contains packets for a particular access class.
@@ -137,6 +139,10 @@ public:
   void Queue (Ptr<const Packet> packet, const WifiMacHeader &hdr);
   void SetMsduAggregator (Ptr<MsduAggregator> aggr);
   void PushFront (Ptr<const Packet> packet, const WifiMacHeader &hdr);
+  void CompleteConfig (void);
+  void SetBlockAckThreshold (uint8_t threshold);
+  uint8_t GetBlockAckThreshold (void) const;
+  
 
 private:
   /**
@@ -152,6 +158,29 @@ private:
   Mac48Address MapDestAddressForAggregation (const WifiMacHeader &hdr);
   EdcaTxopN &operator = (const EdcaTxopN &);
   EdcaTxopN (const EdcaTxopN &);
+
+  /* If number of packets in the queue reaches m_blockAckThreshold value, an ADDBARequest frame
+   * is sent to destination in order to setup a block ack.
+   */
+  bool SetupBlockAckIfNeeded ();
+  /* Sends an ADDBARequest to establish a block ack agreement with sta
+   * addressed by <i>recipient</i> for tid <i>tid</i>.
+   */
+  void SendAddBaRequest (Mac48Address recipient, uint8_t tid, uint16_t startSeq,
+                         uint16_t timeout, bool immediateBAck);
+  /* After that all packets, for which a block ack agreement was established, have been
+   * transmitted, we have to send a block ack request.
+   */
+  void SendBlockAckRequest (const struct Bar &bar);
+  /* For now is typically invoked to complete transmission of a packets sent with ack policy
+   * Block Ack: the packet is buffered and dcf is reset.
+   */
+  void CompleteTx (void);
+  /* Verifies if dequeued packet has to be transmitted with ack policy Block Ack. This happens
+   * if an established block ack agreement exists with the receiver.
+   */
+  void VerifyBlockAck (void);
+  
   
   class Dcf;
   class TransmissionListener;
@@ -177,6 +206,14 @@ private:
   WifiMacHeader m_currentHdr;
   Ptr<MsduAggregator> m_aggregator;
   TypeOfStation m_typeOfStation;
+  QosBlockedDestinations *m_qosBlockedDestinations;
+  BlockAckManager *m_baManager;
+  /*
+   * Represents the minimun number of packets for use of block ack.
+   */
+  uint8_t m_blockAckThreshold;
+  enum BlockAckType m_blockAckType;
+  Time m_currentPacketTimestamp;
 };
 
 }  //namespace ns3

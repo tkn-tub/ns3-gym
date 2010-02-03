@@ -458,6 +458,7 @@ QadhocWifiMac::SetQueue (enum AccessClass ac)
   edca->SetManager (m_dcfManager);
   edca->SetTypeOfStation (ADHOC_STA);
   edca->SetTxMiddle (m_txMiddle);
+  edca->CompleteConfig ();
   m_queues.insert (std::make_pair(ac, edca));
 }
 

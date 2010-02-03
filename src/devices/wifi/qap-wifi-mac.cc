@@ -801,6 +801,7 @@ QapWifiMac::SetQueue (enum AccessClass ac)
   edca->SetTxMiddle (m_txMiddle);
   edca->SetTxOkCallback (MakeCallback (&QapWifiMac::TxOk, this));
   edca->SetTxFailedCallback (MakeCallback (&QapWifiMac::TxFailed, this));
+  edca->CompleteConfig ();
   m_queues.insert (std::make_pair(ac, edca));
 }
 
