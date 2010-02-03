@@ -55,6 +55,7 @@ def build(bld):
         'msdu-standard-aggregator.cc',
         'minstrel-wifi-manager.cc',
         'dcf.cc',
+        'ctrl-headers.cc',
         ]
     headers = bld.new_task_gen('ns3header')
     headers.module = 'wifi'
@@ -103,6 +104,7 @@ def build(bld):
         'mac-low.h',
         'minstrel-wifi-manager.h',
         'dcf.h',
+        'ctrl-headers.h',
         ]
 
     if bld.env['ENABLE_GSL']:
