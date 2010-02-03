@@ -90,7 +90,7 @@ int main (int argc, char *argv[])
   double wifiX = 0.0;
 
   YansWifiPhyHelper wifiPhy = YansWifiPhyHelper::Default ();
-  wifiPhy.SetPcapDataLinkType (PcapHelper::DLT_IEEE802_11_RADIO); 
+  wifiPhy.SetPcapDataLinkType (YansWifiPhyHelper::DLT_IEEE802_11_RADIO); 
 
   for (uint32_t i = 0; i < nWifis; ++i)
     {

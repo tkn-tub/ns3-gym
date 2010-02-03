@@ -129,7 +129,7 @@ public:
    * any existing data.
    */
   bool Init (uint32_t dataLinkType, 
-             uint32_t snapLen = PcapFile::SNAPLEN_DEFAULT, 
+             uint32_t snapLen = std::numeric_limits<uint32_t>::max (), 
              int32_t tzCorrection = PcapFile::ZONE_DEFAULT);
 
   /**
@@ -226,6 +226,7 @@ public:
   
 private:
   PcapFile m_file;
+  uint32_t m_snapLen;
 };
 
 } //namespace ns3

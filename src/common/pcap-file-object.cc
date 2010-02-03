@@ -17,6 +17,7 @@
  */
 
 #include "ns3/log.h"
+#include "ns3/uinteger.h"
 
 #include "buffer.h"
 #include "header.h"
@@ -34,6 +35,11 @@ PcapFileObject::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::PcapFileObject")
     .SetParent<Object> ()
     .AddConstructor<PcapFileObject> ()
+    .AddAttribute ("CaptureSize",
+                   "Maximum length of captured packets (cf. pcap snaplen)",
+                   UintegerValue (PcapFile::SNAPLEN_DEFAULT),
+                   MakeUintegerAccessor (&PcapFileObject::m_snapLen),
+                   MakeUintegerChecker<uint32_t> (0, PcapFile::SNAPLEN_DEFAULT))
     ;
   return tid;
 }
@@ -63,7 +69,24 @@ PcapFileObject::Open (std::string const &filename, std::string const &mode)
 bool
 PcapFileObject::Init (uint32_t dataLinkType, uint32_t snapLen, int32_t tzCorrection)
 {
-  return m_file.Init (dataLinkType, snapLen, tzCorrection);
+  //
+  // If the user doesn't provide a snaplen, the default value will come in.  If
+  // this happens, we use the "CaptureSize" Attribute.  If the user does provide
+  // a snaplen, we use the one provided.
+  //
+  if (snapLen != std::numeric_limits<uint32_t>::max ())
+    {
+      return m_file.Init (dataLinkType, snapLen, tzCorrection);
+    } 
+  else
+    {
+      return m_file.Init (dataLinkType, m_snapLen, tzCorrection);
+    } 
+
+  //
+  // Quiet the compiler
+  //
+  return true;
 }
 
 bool

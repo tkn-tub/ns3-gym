@@ -201,45 +201,26 @@ public:
                           std::string n7 = "", const AttributeValue &v7 = EmptyAttributeValue ());
 
   /**
-   * PCAP formats 
-   * 
+   * An enumeration of the pcap data link types (DLTs) which this helper 
+   * supports.  See http://wiki.wireshark.org/Development/LibpcapFileFormat
+   * for more information on these formats.
    */
-  enum PcapFormat {   
-    PCAP_FORMAT_80211          = 1,
-    PCAP_FORMAT_80211_PRISM    = 2,
-    PCAP_FORMAT_80211_RADIOTAP = 3,
+  enum SupportedPcapDataLinkTypes {
+    DLT_IEEE802_11       = PcapHelper::DLT_IEEE802_11,       /**< IEEE 802.11 Wireless LAN headers on packets */
+    DLT_PRISM_HEADER     = PcapHelper::DLT_PRISM_HEADER,     /**< Include Prism monitor mode information */
+    DLT_IEEE802_11_RADIO = PcapHelper::DLT_IEEE802_11_RADIO  /**< Include Radiotap link layer information */
   };
-  
-  /** 
-   * Set the format of PCAP traces to be used. This function has to be
-   * called before EnablePcap(), so that the header of the pcap file
-   * can be written correctly.
-   *
-   * In madwifi, this corresponds to setting
-   * /proc/sys/net/ath0/dev_type to a particular value. See
-   * http://madwifi-project.org/wiki/UserDocs/MonitorModeInterface for
-   * more information.
-   * 
-   * @param format the PcapFormat to be used
-   */
-  void SetPcapFormat (enum PcapFormat format) NS_DEPRECATED; 
 
   /** 
    * Set the data link type of PCAP traces to be used. This function has to be
    * called before EnablePcap(), so that the header of the pcap file can be 
    * written correctly.
    *
-   * In madwifi, this corresponds to setting /proc/sys/net/ath0/dev_type to a 
-   * particular value, however we use the pcap DLT instead of the dev_type to
-   * avoid introducing another unnecessary definition. See
+   * @see SupportedPcapDataLinkTypes
    *
-   *   http://madwifi-project.org/wiki/UserDocs/MonitorModeInterface 
-   * 
-   * for more information.
-   * 
    * @param dlt The data link type of the pcap file (and packets) to be used
    */
-  void SetPcapDataLinkType (uint32_t dlt); 
+  void SetPcapDataLinkType (enum SupportedPcapDataLinkTypes dlt); 
 
 private:
   /**

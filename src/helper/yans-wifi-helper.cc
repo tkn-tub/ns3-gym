@@ -363,28 +363,22 @@ PcapSniffRxEvent (
 }
 
 void 
-YansWifiPhyHelper::SetPcapFormat (enum PcapFormat format)
+YansWifiPhyHelper::SetPcapDataLinkType (enum SupportedPcapDataLinkTypes dlt)
 {
-  switch (format)
+  switch (dlt)
     {
-    case PCAP_FORMAT_80211:
+    case DLT_IEEE802_11:
       m_pcapDlt = PcapHelper::DLT_IEEE802_11;
       return;
-    case PCAP_FORMAT_80211_PRISM:
+    case DLT_PRISM_HEADER:
       m_pcapDlt = PcapHelper::DLT_PRISM_HEADER;
       return;
-    case PCAP_FORMAT_80211_RADIOTAP:
+    case DLT_IEEE802_11_RADIO:
       m_pcapDlt = PcapHelper::DLT_IEEE802_11_RADIO;
       return;
     default:
       NS_ABORT_MSG ("YansWifiPhyHelper::SetPcapFormat(): Unexpected format");
     }
-}
-
-void 
-YansWifiPhyHelper::SetPcapDataLinkType (uint32_t dlt)
-{
-  m_pcapDlt = dlt;
 }
 
 void 

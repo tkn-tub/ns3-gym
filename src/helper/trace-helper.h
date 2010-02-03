@@ -48,13 +48,15 @@ public:
   // and we don't make an enumeration of all of the values to make it easy to
   // pass new values in.
   //
-  enum {DLT_NULL = 0};
-  enum {DLT_EN10MB = 1};
-  enum {DLT_PPP = 9};
-  enum {DLT_RAW = 101};
-  enum {DLT_IEEE802_11 = 105};
-  enum {DLT_PRISM_HEADER = 119};
-  enum {DLT_IEEE802_11_RADIO = 127};
+  enum {
+    DLT_NULL = 0,
+    DLT_EN10MB = 1,
+    DLT_PPP = 9,
+    DLT_RAW = 101,
+    DLT_IEEE802_11 = 105,
+    DLT_PRISM_HEADER = 119,
+    DLT_IEEE802_11_RADIO = 127
+  };
 
   /**
    * @brief Create a pcap helper.

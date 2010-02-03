@@ -117,15 +117,17 @@ public:
    */
   uint64_t GetTsft (void) const;
 
-  enum {FRAME_FLAG_NONE           = 0x00}; /**< No flags set */
-  enum {FRAME_FLAG_CFP            = 0x01}; /**< Frame sent/received during CFP */
-  enum {FRAME_FLAG_SHORT_PREAMBLE = 0x02}; /**< Frame sent/received with short preamble */
-  enum {FRAME_FLAG_WEP            = 0x04}; /**< Frame sent/received with WEP encryption */
-  enum {FRAME_FLAG_FRAGMENTED     = 0x08}; /**< Frame sent/received with fragmentation */
-  enum {FRAME_FLAG_FCS_INCLUDED   = 0x10}; /**< Frame includes FCS */
-  enum {FRAME_FLAG_DATA_PADDING   = 0x20}; /**< Frame has padding between 802.11 header and payload (to 32-bit boundary) */
-  enum {FRAME_FLAG_BAD_FCS        = 0x40}; /**< Frame failed FCS check */
-  enum {FRAME_FLAG_SHORT_GUARD    = 0x80};  /**< Frame used short guard interval (HT) */
+  enum {
+    FRAME_FLAG_NONE           = 0x00, /**< No flags set */
+    FRAME_FLAG_CFP            = 0x01, /**< Frame sent/received during CFP */
+    FRAME_FLAG_SHORT_PREAMBLE = 0x02, /**< Frame sent/received with short preamble */
+    FRAME_FLAG_WEP            = 0x04, /**< Frame sent/received with WEP encryption */
+    FRAME_FLAG_FRAGMENTED     = 0x08, /**< Frame sent/received with fragmentation */
+    FRAME_FLAG_FCS_INCLUDED   = 0x10, /**< Frame includes FCS */
+    FRAME_FLAG_DATA_PADDING   = 0x20, /**< Frame has padding between 802.11 header and payload (to 32-bit boundary) */
+    FRAME_FLAG_BAD_FCS        = 0x40, /**< Frame failed FCS check */
+    FRAME_FLAG_SHORT_GUARD    = 0x80  /**< Frame used short guard interval (HT) */
+  };
 
   /**
    * @brief Set the frame flags of the transmitted or received frame.
@@ -152,15 +154,17 @@ public:
    */
   uint8_t GetRate (void) const;
 
-  enum {CHANNEL_FLAG_NONE          = 0x0000}; /**< No flags set */
-  enum {CHANNEL_FLAG_TURBO         = 0x0010}; /**< Turbo Channel */
-  enum {CHANNEL_FLAG_CCK           = 0x0020}; /**< CCK channel */
-  enum {CHANNEL_FLAG_OFDM          = 0x0040}; /**< OFDM channel */
-  enum {CHANNEL_FLAG_SPECTRUM_2GHZ = 0x0080}; /**< 2 GHz spectrum channel */
-  enum {CHANNEL_FLAG_SPECTRUM_5GHZ = 0x0100}; /**< 5 GHz spectrum channel */
-  enum {CHANNEL_FLAG_PASSIVE       = 0x0200}; /**< Only passive scan allowed */
-  enum {CHANNEL_FLAG_DYNAMIC       = 0x0400}; /**< Dynamic CCK-OFDM channel */
-  enum {CHANNEL_FLAG_GFSK          = 0x0800};  /**< GFSK channel (FHSS PHY) */
+  enum {
+    CHANNEL_FLAG_NONE          = 0x0000, /**< No flags set */
+    CHANNEL_FLAG_TURBO         = 0x0010, /**< Turbo Channel */
+    CHANNEL_FLAG_CCK           = 0x0020, /**< CCK channel */
+    CHANNEL_FLAG_OFDM          = 0x0040, /**< OFDM channel */
+    CHANNEL_FLAG_SPECTRUM_2GHZ = 0x0080, /**< 2 GHz spectrum channel */
+    CHANNEL_FLAG_SPECTRUM_5GHZ = 0x0100, /**< 5 GHz spectrum channel */
+    CHANNEL_FLAG_PASSIVE       = 0x0200, /**< Only passive scan allowed */
+    CHANNEL_FLAG_DYNAMIC       = 0x0400, /**< Dynamic CCK-OFDM channel */
+    CHANNEL_FLAG_GFSK          = 0x0800  /**< GFSK channel (FHSS PHY) */
+  };
 
   /**
    * @brief Set the transmit/receive channel frequency and flags
@@ -238,21 +242,23 @@ public:
   uint8_t GetAntennaNoisePower (void) const;
 
 private:
-  enum {RADIOTAP_TSFT              = 0x00000001};
-  enum {RADIOTAP_FLAGS             = 0x00000002};
-  enum {RADIOTAP_RATE              = 0x00000004};
-  enum {RADIOTAP_CHANNEL           = 0x00000008};
-  enum {RADIOTAP_FHSS              = 0x00000010};
-  enum {RADIOTAP_DBM_ANTSIGNAL     = 0x00000020};
-  enum {RADIOTAP_DBM_ANTNOISE      = 0x00000040};
-  enum {RADIOTAP_LOCK_QUALITY      = 0x00000080};
-  enum {RADIOTAP_TX_ATTENUATION    = 0x00000100};
-  enum {RADIOTAP_DB_TX_ATTENUATION = 0x00000200};
-  enum {RADIOTAP_DBM_TX_POWER      = 0x00000200};
-  enum {RADIOTAP_ANTENNA           = 0x00000400};
-  enum {RADIOTAP_DB_ANTSIGNAL      = 0x00000800};
-  enum {RADIOTAP_DB_ANTNOISE       = 0x00001000};
-  enum {RADIOTAP_EXT               = 0x10000000};
+  enum {
+    RADIOTAP_TSFT              = 0x00000001,
+    RADIOTAP_FLAGS             = 0x00000002,
+    RADIOTAP_RATE              = 0x00000004,
+    RADIOTAP_CHANNEL           = 0x00000008,
+    RADIOTAP_FHSS              = 0x00000010,
+    RADIOTAP_DBM_ANTSIGNAL     = 0x00000020,
+    RADIOTAP_DBM_ANTNOISE      = 0x00000040,
+    RADIOTAP_LOCK_QUALITY      = 0x00000080,
+    RADIOTAP_TX_ATTENUATION    = 0x00000100,
+    RADIOTAP_DB_TX_ATTENUATION = 0x00000200,
+    RADIOTAP_DBM_TX_POWER      = 0x00000200,
+    RADIOTAP_ANTENNA           = 0x00000400,
+    RADIOTAP_DB_ANTSIGNAL      = 0x00000800,
+    RADIOTAP_DB_ANTNOISE       = 0x00001000,
+    RADIOTAP_EXT               = 0x10000000
+  };
  
     void CheckAddChannelField();
     
