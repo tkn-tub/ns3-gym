@@ -1,6 +1,7 @@
 /* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2006 INRIA
+ * Copyright (c) 2009 MIRKO BANCHI
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as 
@@ -16,6 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
+ * Author: Mirko Banchi <mk.banchi@gmail.com>
  */
 #ifndef MGT_HEADERS_H
 #define MGT_HEADERS_H
@@ -134,6 +136,10 @@ private:
 
 class MgtBeaconHeader : public MgtProbeResponseHeader {};
 
+/****************************
+*     Action frames
+*****************************/
+
 /**
  * \brief See IEEE 802.11 chapter 7.3.1.11
  *
@@ -148,6 +154,7 @@ public:
   /* Compatible with open80211s implementation */
   enum CategoryValue //table 7-24 staring from 4
   {
+    BLOCK_ACK = 3,
     MESH_PEERING_MGT = 30,
     MESH_LINK_METRIC = 31,
     MESH_PATH_SELECTION = 32,
@@ -189,6 +196,12 @@ public:
     TBTT_ADJUSTMENT_REQUEST,
     MESH_CHANNEL_SWITCH_ANNOUNCEMENT,
   };
+  enum BlockAckActionValue
+  {
+    BLOCK_ACK_ADDBA_REQUEST = 0,
+    BLOCK_ACK_ADDBA_RESPONSE = 1,
+    BLOCK_ACK_DELBA = 2
+  };
   typedef union
   {
     enum PeerLinkMgtActionValue peerLink;
@@ -196,6 +209,7 @@ public:
     enum PathSelectionActionValue pathSelection;
     enum InterworkActionValue interwork;
     enum ResourceCoordinationActionValue resourceCoordination;
+    enum BlockAckActionValue blockAck;
   } ActionValue;
   void   SetAction (enum CategoryValue type,ActionValue action);
 
@@ -212,6 +226,115 @@ private:
   uint8_t m_actionValue;
 };
 
+class MgtAddBaRequestHeader : public Header {
+public:
+  
+  MgtAddBaRequestHeader ();
+
+  static TypeId GetTypeId (void);
+  virtual TypeId GetInstanceTypeId (void) const;
+  virtual void Print (std::ostream &os) const;
+  virtual uint32_t GetSerializedSize (void) const;
+  virtual void Serialize (Buffer::Iterator start) const;
+  virtual uint32_t Deserialize (Buffer::Iterator start);
+
+  void SetDelayedBlockAck ();
+  void SetImmediateBlockAck ();
+  void SetTid (uint8_t tid);
+  void SetTimeout (uint16_t timeout);
+  void SetBufferSize (uint16_t size);
+  void SetStartingSequence (uint16_t seq);
+  void SetAmsduSupport (bool supported);
+  
+  uint16_t GetStartingSequence (void) const;
+  uint8_t GetTid (void) const;
+  bool IsImmediateBlockAck (void) const;
+  uint16_t GetTimeout (void) const;
+  uint16_t GetBufferSize (void) const;
+  bool IsAmsduSupported (void) const;
+  
+private:
+  uint16_t GetParameterSet (void) const;
+  void SetParameterSet (uint16_t params);
+  uint16_t GetStartingSequenceControl (void) const;
+  void SetStartingSequenceControl (uint16_t seqControl);
+  
+  uint8_t m_dialogToken; /* Not used for now */
+  uint8_t m_amsduSupport;
+  uint8_t m_policy;
+  uint8_t m_tid;
+  uint16_t m_bufferSize;
+  uint16_t m_timeoutValue;
+  uint16_t m_startingSeq;
+};
+ 
+class MgtAddBaResponseHeader : public Header {
+public:
+
+  MgtAddBaResponseHeader ();
+
+  static TypeId GetTypeId (void);
+  virtual TypeId GetInstanceTypeId (void) const;
+  virtual void Print (std::ostream &os) const;
+  virtual uint32_t GetSerializedSize (void) const;
+  virtual void Serialize (Buffer::Iterator start) const;
+  virtual uint32_t Deserialize (Buffer::Iterator start);
+
+  void SetDelayedBlockAck ();
+  void SetImmediateBlockAck ();
+  void SetTid (uint8_t tid);
+  void SetTimeout (uint16_t timeout);
+  void SetBufferSize (uint16_t size);
+  void SetStatusCode (StatusCode code);
+  void SetAmsduSupport (bool supported);
+
+  StatusCode GetStatusCode (void) const;
+  uint8_t GetTid (void) const;
+  bool IsImmediateBlockAck (void) const;
+  uint16_t GetTimeout (void) const;
+  uint16_t GetBufferSize (void) const;
+  bool IsAmsduSupported (void) const;
+
+private:
+  uint16_t GetParameterSet (void) const;
+  void SetParameterSet (uint16_t params);
+  
+  uint8_t m_dialogToken; /* Not used for now */
+  StatusCode m_code;
+  uint8_t m_amsduSupport;
+  uint8_t m_policy;
+  uint8_t m_tid;
+  uint16_t m_bufferSize;
+  uint16_t m_timeoutValue;
+};
+
+class MgtDelBaHeader : public Header {
+public:
+  MgtDelBaHeader ();
+
+  static TypeId GetTypeId (void);
+  virtual TypeId GetInstanceTypeId (void) const;
+  virtual void Print (std::ostream &os) const;
+  virtual uint32_t GetSerializedSize (void) const;
+  virtual void Serialize (Buffer::Iterator start) const;
+  virtual uint32_t Deserialize (Buffer::Iterator start);
+
+  bool IsByOriginator (void) const;
+  uint8_t GetTid (void) const;
+  void SetTid (uint8_t);
+  void SetByOriginator (void);
+  void SetByRecipient (void);
+
+private:
+  uint16_t GetParameterSet (void) const;
+  void SetParameterSet (uint16_t params);
+
+  uint16_t m_initiator;
+  uint16_t m_tid;
+  /* Not used for now.
+     Always set to 1: "Unspecified reason" */
+  uint16_t m_reasonCode;
+};
 
 } // namespace ns3
 
