@@ -198,6 +198,18 @@ QapWifiMac::SetAckTimeout (Time ackTimeout)
 }
 
 void 
+QapWifiMac::SetBasicBlockAckTimeout (Time blockAckTimeout)
+{
+  m_low->SetBasicBlockAckTimeout (blockAckTimeout);
+}
+
+void
+QapWifiMac::SetCompressedBlockAckTimeout (Time blockAckTimeout)
+{
+  m_low->SetCompressedBlockAckTimeout (blockAckTimeout);
+}
+
+void 
 QapWifiMac::SetCtsTimeout (Time ctsTimeout)
 {
   m_low->SetCtsTimeout (ctsTimeout);
@@ -231,6 +243,18 @@ Time
 QapWifiMac::GetAckTimeout (void) const
 {
   return m_low->GetAckTimeout ();
+}
+
+Time 
+QapWifiMac::GetBasicBlockAckTimeout () const
+{
+  return m_low->GetBasicBlockAckTimeout ();
+}
+
+Time 
+QapWifiMac::GetCompressedBlockAckTimeout () const
+{
+  return m_low->GetCompressedBlockAckTimeout ();
 }
 
 Time 

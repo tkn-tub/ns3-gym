@@ -147,6 +147,18 @@ QadhocWifiMac::SetAckTimeout (Time ackTimeout)
   m_low->SetAckTimeout (ackTimeout);
 }
 
+void 
+QadhocWifiMac::SetBasicBlockAckTimeout (Time blockAckTimeout)
+{
+  m_low->SetBasicBlockAckTimeout (blockAckTimeout);
+}
+
+void 
+QadhocWifiMac::SetCompressedBlockAckTimeout (Time blockAckTimeout)
+{
+  m_low->SetCompressedBlockAckTimeout (blockAckTimeout);
+}
+
 void
 QadhocWifiMac::SetCtsTimeout (Time ctsTimeout)
 {
@@ -181,6 +193,18 @@ Time
 QadhocWifiMac::GetAckTimeout (void) const
 {
   return m_low->GetAckTimeout ();
+}
+
+Time 
+QadhocWifiMac::GetBasicBlockAckTimeout (void) const
+{
+  return m_low->GetBasicBlockAckTimeout ();
+}
+
+Time 
+QadhocWifiMac::GetCompressedBlockAckTimeout (void) const
+{
+  return m_low->GetCompressedBlockAckTimeout ();
 }
 
 Time

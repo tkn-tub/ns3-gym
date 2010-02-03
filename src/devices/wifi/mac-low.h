@@ -95,6 +95,16 @@ public:
    */
   virtual void GotBlockAck (const CtrlBAckResponseHeader *blockAck, Mac48Address source);
   /**
+   * ns3::MacLow did not receive an expected BLOCK_ACK within
+   * BlockAckTimeout. This method is used only for immediate 
+   * block ack variant. With delayed block ack, the MissedAck method will be
+   * called instead: upon receipt of a block ack request, the rx station will
+   * reply with a normal ack frame. Later, when the rx station gets a txop, it
+   * will send the block ack back to the tx station which will reply with a
+   * normal ack to the rx station.
+   */
+  virtual void MissedBlockAck (void);
+  /**
    * Invoked when ns3::MacLow wants to start a new transmission
    * as configured by MacLowTransmissionParameters::EnableNextData.
    * The listener is expected to call again MacLow::StartTransmission
@@ -338,6 +348,8 @@ public:
 
   void SetAddress (Mac48Address ad);
   void SetAckTimeout (Time ackTimeout);
+  void SetBasicBlockAckTimeout (Time blockAckTimeout);
+  void SetCompressedBlockAckTimeout (Time blockAckTimeout);
   void SetCtsTimeout (Time ctsTimeout);
   void SetSifs (Time sifs);
   void SetSlotTime (Time slotTime);
@@ -345,6 +357,8 @@ public:
   void SetBssid (Mac48Address ad);
   Mac48Address GetAddress (void) const;
   Time GetAckTimeout (void) const;
+  Time GetBasicBlockAckTimeout () const;
+  Time GetCompressedBlockAckTimeout () const;
   Time GetCtsTimeout (void) const;
   Time GetSifs (void) const;
   Time GetSlotTime (void) const;
@@ -474,6 +488,7 @@ private:
   void FastAckTimeout (void);
   void SuperFastAckTimeout (void);
   void FastAckFailedTimeout (void);
+  void BlockAckTimeout (void);
   void CtsTimeout (void);
   void SendCtsAfterRts (Mac48Address source, Time duration, WifiMode txMode, double rtsSnr);
   void SendAckAfterData (Mac48Address source, Time duration, WifiMode txMode, double rtsSnr);
@@ -539,6 +554,7 @@ private:
   EventId m_fastAckTimeoutEvent;
   EventId m_superFastAckTimeoutEvent;
   EventId m_fastAckFailedTimeoutEvent;
+  EventId m_blockAckTimeoutEvent;
   EventId m_ctsTimeoutEvent;
   EventId m_sendCtsEvent;
   EventId m_sendAckEvent;
@@ -553,6 +569,8 @@ private:
   Mac48Address m_self;
   Mac48Address m_bssid;
   Time m_ackTimeout;
+  Time m_basicBlockAckTimeout;
+  Time m_compressedBlockAckTimeout;
   Time m_ctsTimeout;
   Time m_sifs;
   Time m_slotTime;

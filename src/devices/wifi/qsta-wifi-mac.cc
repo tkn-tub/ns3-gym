@@ -169,6 +169,18 @@ QstaWifiMac::SetAckTimeout (Time ackTimeout)
   m_low->SetAckTimeout (ackTimeout);
 }
 
+void 
+QstaWifiMac::SetBasicBlockAckTimeout (Time blockAckTimeout)
+{
+  m_low->SetBasicBlockAckTimeout (blockAckTimeout);
+}
+
+void 
+QstaWifiMac::SetCompressedBlockAckTimeout (Time blockAckTimeout)
+{
+  m_low->SetCompressedBlockAckTimeout (blockAckTimeout);
+}
+
 void
 QstaWifiMac::SetCtsTimeout (Time ctsTimeout)
 {
@@ -203,6 +215,18 @@ Time
 QstaWifiMac::GetAckTimeout (void) const
 {
  return m_low->GetAckTimeout ();
+}
+
+Time 
+QstaWifiMac::GetBasicBlockAckTimeout (void) const
+{
+  return m_low->GetBasicBlockAckTimeout ();
+}
+
+Time 
+QstaWifiMac::GetCompressedBlockAckTimeout (void) const
+{
+  return m_low->GetCompressedBlockAckTimeout ();
 }
 
 Time

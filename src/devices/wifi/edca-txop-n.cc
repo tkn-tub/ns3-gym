@@ -87,6 +87,9 @@ public:
   virtual void GotBlockAck (const CtrlBAckResponseHeader *blockAck, Mac48Address source) {
     m_txop->GotBlockAck (blockAck, source);
   }
+  virtual void MissedBlockAck (void) {
+    m_txop->MissedBlockAck ();
+  }
   virtual void StartNext (void) {
     m_txop->StartNext ();
   }
@@ -503,6 +506,20 @@ EdcaTxopN::MissedAck (void)
       m_currentHdr.SetRetry ();
       m_dcf->UpdateFailedCw ();
     }
+  m_dcf->StartBackoffNow (m_rng->GetNext (0, m_dcf->GetCw ()));
+  RestartAccessIfNeeded ();
+}
+
+void
+EdcaTxopN::MissedBlockAck (void)
+{
+  NS_LOG_FUNCTION (this);
+  MY_DEBUG ("missed block ack");
+  
+  MY_DEBUG ("Retransmit block ack request");
+  m_currentHdr.SetRetry ();
+  m_dcf->UpdateFailedCw ();
+  
   m_dcf->StartBackoffNow (m_rng->GetNext (0, m_dcf->GetCw ()));
   RestartAccessIfNeeded ();
 }

@@ -117,6 +117,9 @@ void
 MacLowTransmissionListener::GotBlockAck (const CtrlBAckResponseHeader *blockAck,
                                          Mac48Address source)
 {}
+void
+MacLowTransmissionListener::MissedBlockAck (void)
+{}
 MacLowDcfListener::MacLowDcfListener ()
 {}
 MacLowDcfListener::~MacLowDcfListener ()
@@ -319,6 +322,7 @@ MacLow::MacLow ()
     m_fastAckTimeoutEvent (),
     m_superFastAckTimeoutEvent (),
     m_fastAckFailedTimeoutEvent (),
+    m_blockAckTimeoutEvent (),
     m_ctsTimeoutEvent (),
     m_sendCtsEvent (),
     m_sendAckEvent (),
@@ -353,6 +357,7 @@ MacLow::DoDispose (void)
   m_fastAckTimeoutEvent.Cancel ();
   m_superFastAckTimeoutEvent.Cancel ();
   m_fastAckFailedTimeoutEvent.Cancel ();
+  m_blockAckTimeoutEvent.Cancel ();
   m_ctsTimeoutEvent.Cancel ();
   m_sendCtsEvent.Cancel ();
   m_sendAckEvent.Cancel ();
@@ -387,6 +392,11 @@ MacLow::CancelAllEvents (void)
   if (m_fastAckFailedTimeoutEvent.IsRunning ()) 
     {
       m_fastAckFailedTimeoutEvent.Cancel ();
+      oneRunning = true;
+    }
+  if (m_blockAckTimeoutEvent.IsRunning ())
+    {
+      m_blockAckTimeoutEvent.Cancel ();
       oneRunning = true;
     }
   if (m_ctsTimeoutEvent.IsRunning ()) 
@@ -445,6 +455,16 @@ MacLow::SetAckTimeout (Time ackTimeout)
 {
   m_ackTimeout = ackTimeout;
 }
+void
+MacLow::SetBasicBlockAckTimeout (Time blockAckTimeout)
+{
+  m_basicBlockAckTimeout = blockAckTimeout;
+}
+void
+MacLow::SetCompressedBlockAckTimeout (Time blockAckTimeout)
+{
+  m_compressedBlockAckTimeout = blockAckTimeout;
+}
 void 
 MacLow::SetCtsTimeout (Time ctsTimeout)
 {
@@ -479,6 +499,16 @@ Time
 MacLow::GetAckTimeout (void) const
 {
   return m_ackTimeout;
+}
+Time
+MacLow::GetBasicBlockAckTimeout () const
+{
+  return m_basicBlockAckTimeout;
+}
+Time
+MacLow::GetCompressedBlockAckTimeout () const
+{
+  return m_compressedBlockAckTimeout;
 }
 Time 
 MacLow::GetCtsTimeout (void) const
@@ -696,13 +726,13 @@ MacLow::ReceiveOk (Ptr<Packet> packet, double rxSnr, WifiMode txMode, WifiPreamb
         }
     } 
   else if (hdr.IsBlockAck () && hdr.GetAddr1 () == m_self &&
-          (m_txParams.MustWaitBasicBlockAck () || m_txParams.MustWaitCompressedBlockAck ())) 
-          //m_blockAckTimeoutEvent.IsRunning ())
+          (m_txParams.MustWaitBasicBlockAck () || m_txParams.MustWaitCompressedBlockAck ()) && 
+           m_blockAckTimeoutEvent.IsRunning ())
     {
       NS_LOG_DEBUG ("got block ack from "<<hdr.GetAddr2 ());
       CtrlBAckResponseHeader blockAck;
       packet->RemoveHeader (blockAck);
-      //m_blockAckTimeoutEvent.Cancel ();
+      m_blockAckTimeoutEvent.Cancel ();
       m_listener->GotBlockAck (&blockAck, hdr.GetAddr2 ());
     }
   else if (hdr.IsBlockAckReq () && hdr.GetAddr1 () == m_self)
@@ -868,7 +898,14 @@ MacLow::GetAckDuration (Mac48Address to, WifiMode dataTxMode) const
 Time
 MacLow::GetBlockAckDuration (Mac48Address to, WifiMode blockAckReqTxMode, enum BlockAckType type) const
 {
-  //WifiMode blockAckMode = GetBlockAckTxModeForBlockAckReq (to, blockAckReqTxMode);
+  /* 
+   * For immediate BlockAck we should transmit the frame with the same WifiMode
+   * as the BlockAckReq.
+   *
+   * from section 9.6 in IEEE802.11e:
+   * The BlockAck control frame shall be sent at the same rate and modulation class as
+   * the BlockAckReq frame if it is sent in response to a BlockAckReq frame.
+   */
   return m_phy->CalculateTxDuration (GetBlockAckSize (type), blockAckReqTxMode, WIFI_PREAMBLE_LONG);
 }
 Time
@@ -1129,6 +1166,18 @@ MacLow::FastAckTimeout (void)
     }
 }
 void
+MacLow::BlockAckTimeout (void)
+{
+  NS_LOG_FUNCTION (this);
+  NS_LOG_DEBUG ("block ack timeout");
+  
+  WifiRemoteStation *station = GetStation (m_currentHdr.GetAddr1 ());
+  station->ReportDataFailed ();
+  MacLowTransmissionListener *listener = m_listener;
+  m_listener = 0;
+  listener->MissedBlockAck ();
+}
+void
 MacLow::SuperFastAckTimeout ()
 {
   NS_LOG_FUNCTION (this);
@@ -1221,7 +1270,19 @@ MacLow::StartDataTxTimers (void)
       NotifyAckTimeoutStartNow (timerDelay);
       m_superFastAckTimeoutEvent = Simulator::Schedule (timerDelay, 
                                                         &MacLow::SuperFastAckTimeout, this);
-    } 
+    }
+  else if (m_txParams.MustWaitBasicBlockAck ())
+    {
+      Time timerDelay = txDuration + GetBasicBlockAckTimeout ();
+      NS_ASSERT (m_blockAckTimeoutEvent.IsExpired ());
+      m_blockAckTimeoutEvent = Simulator::Schedule (timerDelay, &MacLow::BlockAckTimeout, this);
+    }
+  else if (m_txParams.MustWaitCompressedBlockAck ())
+    {
+      Time timerDelay = txDuration + GetCompressedBlockAckTimeout ();
+      NS_ASSERT (m_blockAckTimeoutEvent.IsExpired ());
+      m_blockAckTimeoutEvent = Simulator::Schedule (timerDelay, &MacLow::BlockAckTimeout, this);
+    }
   else if (m_txParams.HasNextPacket ()) 
     {
       Time delay = txDuration + GetSifs ();
@@ -1573,9 +1634,6 @@ MacLow::SendBlockAckResponse (const CtrlBAckResponseHeader* blockAck, Mac48Addre
     {
       m_txParams.DisableAck ();
       duration -= GetSifs ();
-      /* from section 9.6 in IEEE802.11e:
-         The BlockAck control frame shall be sent at the same rate and modulation class as
-         the BlockAckReq frame if it is sent in response to a BlockAckReq frame.*/
       if (blockAck->IsBasic ())
         {
           duration -= GetBlockAckDuration (originator, blockAckReqTxMode, BASIC_BLOCK_ACK);

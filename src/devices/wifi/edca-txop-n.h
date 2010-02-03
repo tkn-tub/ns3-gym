@@ -114,6 +114,7 @@ public:
   void MissedCts (void);
   void GotAck (double snr, WifiMode txMode);
   void GotBlockAck (const CtrlBAckResponseHeader *blockAck, Mac48Address recipient);
+  void MissedBlockAck (void);
   void GotAddBaResponse (const MgtAddBaResponseHeader *respHdr, Mac48Address recipient);
   void MissedAck (void);
   void StartNext (void);

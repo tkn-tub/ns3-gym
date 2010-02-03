@@ -81,6 +81,10 @@ public:
   virtual void SetAddress (Mac48Address address);
   virtual void SetSsid (Ssid ssid);
   virtual Mac48Address GetBssid (void) const;
+  virtual void SetBasicBlockAckTimeout (Time blockAckTimeout);
+  virtual void SetCompressedBlockAckTimeout (Time blockAckTimeout);
+  virtual Time GetBasicBlockAckTimeout (void) const;
+  virtual Time GetCompressedBlockAckTimeout (void) const;
 
   void SetMaxMissedBeacons (uint32_t missed);
   void SetProbeRequestTimeout (Time timeout);
