@@ -32,6 +32,7 @@
 #include "wifi-mac-queue.h"
 #include "msdu-aggregator.h"
 #include "mgt-headers.h"
+#include "ctrl-headers.h"
 
 NS_LOG_COMPONENT_DEFINE ("EdcaTxopN");
 
@@ -82,6 +83,9 @@ public:
   }
   virtual void MissedAck (void) {
     m_txop->MissedAck ();
+  }
+  virtual void GotBlockAck (const CtrlBAckResponseHeader *blockAck, Mac48Address source) {
+    m_txop->GotBlockAck (blockAck, source);
   }
   virtual void StartNext (void) {
     m_txop->StartNext ();
@@ -706,6 +710,16 @@ EdcaTxopN::GotAddBaResponse (const MgtAddBaResponseHeader *respHdr, Mac48Address
   NS_LOG_FUNCTION (this);
   MY_DEBUG ("received AddBa response from "<<recipient);
   //?
+  RestartAccessIfNeeded ();
+}
+
+void
+EdcaTxopN::GotBlockAck (const CtrlBAckResponseHeader *blockAck, Mac48Address recipient)
+{
+  MY_DEBUG ("got block ack from="<<recipient);
+  m_currentPacket = 0;
+  m_dcf->ResetCw ();
+  m_dcf->StartBackoffNow (m_rng->GetNext (0, m_dcf->GetCw ()));
   RestartAccessIfNeeded ();
 }
 

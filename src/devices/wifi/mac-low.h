@@ -28,6 +28,7 @@
 #include "wifi-mode.h"
 #include "wifi-preamble.h"
 #include "wifi-remote-station-manager.h"
+#include "ctrl-headers.h"
 #include "ns3/mac48-address.h"
 #include "ns3/callback.h"
 #include "ns3/event-id.h"
@@ -75,6 +76,19 @@ public:
    * AckTimeout.
    */
   virtual void MissedAck (void) = 0;
+  /**
+   * \param blockAck Block ack response header
+   * \param source Address of block ack sender
+   *
+   * Invoked when ns3::MacLow receives a block ack frame.
+   * Block ack frame is received after a block ack request
+   * and contains information about the correct reception 
+   * of a set of packet for which a normal ack wasn't send.
+   * Default implementation for this method is empty. Every
+   * queue that intends to be notified by MacLow of reception
+   * of a block ack must redefine this function.
+   */
+  virtual void GotBlockAck (const CtrlBAckResponseHeader *blockAck, Mac48Address source);
   /**
    * Invoked when ns3::MacLow wants to start a new transmission
    * as configured by MacLowTransmissionParameters::EnableNextData.

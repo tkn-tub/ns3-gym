@@ -110,6 +110,10 @@ MacLowTransmissionListener::MacLowTransmissionListener ()
 {}
 MacLowTransmissionListener::~MacLowTransmissionListener ()
 {}
+void
+MacLowTransmissionListener::GotBlockAck (const CtrlBAckResponseHeader *blockAck,
+                                         Mac48Address source)
+{}
 MacLowDcfListener::MacLowDcfListener ()
 {}
 MacLowDcfListener::~MacLowDcfListener ()
