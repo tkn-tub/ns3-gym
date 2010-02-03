@@ -136,13 +136,14 @@ public:
   void NextFragment (void);
   Ptr<Packet> GetFragmentPacket (WifiMacHeader *hdr);
   
+  void SetAccessClass (enum AccessClass ac);
   void Queue (Ptr<const Packet> packet, const WifiMacHeader &hdr);
   void SetMsduAggregator (Ptr<MsduAggregator> aggr);
   void PushFront (Ptr<const Packet> packet, const WifiMacHeader &hdr);
   void CompleteConfig (void);
   void SetBlockAckThreshold (uint8_t threshold);
   uint8_t GetBlockAckThreshold (void) const;
-  
+  void SendDelbaFrame (Mac48Address addr, uint8_t tid, bool byOriginator);
 
 private:
   /**
@@ -181,9 +182,10 @@ private:
    */
   void VerifyBlockAck (void);
   
-  
+  AccessClass m_ac;
   class Dcf;
   class TransmissionListener;
+  class BlockAckEventListener;
   friend class Dcf;
   friend class TransmissionListener;
   Dcf *m_dcf;
@@ -194,6 +196,7 @@ private:
   Ptr<MacLow> m_low;
   MacTxMiddle *m_txMiddle;
   TransmissionListener *m_transmissionListener;
+  BlockAckEventListener *m_blockAckListener;
   RandomStream *m_rng;
   Ptr<WifiRemoteStationManager> m_stationManager;
   uint8_t m_fragmentNumber;

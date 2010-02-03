@@ -39,11 +39,13 @@
 #include "ns3/event-id.h"
 #include "ns3/packet.h"
 #include "ns3/nstime.h"
+#include "qos-utils.h"
 
 namespace ns3 {
 
 class WifiPhy;
 class WifiMac;
+class EdcaTxopN;
 
 /**
  * \brief listen to events coming from ns3::MacLow.
@@ -145,6 +147,25 @@ public:
   virtual void AckTimeoutReset () = 0;
   virtual void CtsTimeoutStart (Time duration) = 0;
   virtual void CtsTimeoutReset () = 0;
+};
+
+/**
+ * \brief listen for block ack events.
+ */
+class MacLowBlockAckEventListener {
+public:
+  MacLowBlockAckEventListener ();
+  virtual ~MacLowBlockAckEventListener ();
+  /**
+   * Typically is called in order to notify EdcaTxopN that a block ack inactivity
+   * timeout occurs for the block ack agreement identified by the pair <i>originator</i>, <i>tid</i>.
+   * 
+   * Rx station maintains an inactivity timer for each block ack
+   * agreement. Timer is reset when a frame with ack policy block ack
+   * or a block ack request are received. When this timer reaches zero
+   * this method is called and a delba frame is scheduled for transmission.
+   */
+  virtual void BlockAckInactivityTimeout (Mac48Address originator, uint8_t tid) = 0;
 };
 
 /**
@@ -451,6 +472,14 @@ public:
    * invoked when a DELBA frame is received from <i>originator</i>.
    */
   void DestroyBlockAckAgreement (Mac48Address originator, uint8_t tid);
+  /**
+   * \param ac Access class managed by the queue.
+   * \param listener The listener for the queue.
+   *
+   * The lifetime of the registered listener is typically equal to the lifetime of the queue
+   * associated to this AC.
+   */
+  void RegisterBlockAckListenerForAc (enum AccessClass ac, MacLowBlockAckEventListener *listener);
 private:
   void CancelAllEvents (void);
   uint32_t GetAckSize (void) const;
@@ -540,6 +569,13 @@ private:
    */
   void SendBlockAckResponse (const CtrlBAckResponseHeader* blockAck, Mac48Address originator, bool immediate,
                              Time duration, WifiMode blockAckReqTxMode);
+  /*
+   * Every time that a block ack request or a packet with ack policy equals to <i>block ack</i>
+   * are received, if a relative block ack agreement exists and the value of inactivity timeout
+   * is not 0, the timer is reset.
+   * see section 11.5.3 in IEEE802.11e for more details.
+   */
+  void ResetBlockAckInactivityTimerIfNeeded (BlockAckAgreement &agreement);
 
   void SetupPhyMacLowListener (Ptr<WifiPhy> phy); 
 
@@ -595,6 +631,9 @@ private:
   typedef std::map<AgreementKey, AgreementValue>::iterator AgreementsI;
 
   Agreements m_bAckAgreements;
+  
+  typedef std::map<AccessClass, MacLowBlockAckEventListener*> QueueListeners;
+  QueueListeners m_edcaListeners;
 };
 
 } // namespace ns3

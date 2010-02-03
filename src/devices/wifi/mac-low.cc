@@ -31,6 +31,7 @@
 #include "wifi-phy.h"
 #include "wifi-mac-trailer.h"
 #include "qos-utils.h"
+#include "edca-txop-n.h"
 
 NS_LOG_COMPONENT_DEFINE ("MacLow");
 
@@ -123,6 +124,11 @@ MacLowTransmissionListener::MissedBlockAck (void)
 MacLowDcfListener::MacLowDcfListener ()
 {}
 MacLowDcfListener::~MacLowDcfListener ()
+{}
+
+MacLowBlockAckEventListener::MacLowBlockAckEventListener ()
+{}
+MacLowBlockAckEventListener::~MacLowBlockAckEventListener ()
 {}
 
 MacLowTransmissionParameters::MacLowTransmissionParameters ()
@@ -745,6 +751,8 @@ MacLow::ReceiveOk (Ptr<Packet> packet, double rxSnr, WifiMode txMode, WifiPreamb
           if (it != m_bAckAgreements.end ())
             {
               NS_ASSERT (m_sendAckEvent.IsExpired ());
+              /* See section 11.5.3 in IEEE802.11 for mean of this timer */
+              ResetBlockAckInactivityTimerIfNeeded (it->second.first);
               if ((*it).second.first.IsImmediateBlockAck ())
                 {
                   NS_LOG_DEBUG ("rx blockAckRequest/sendImmediateBlockAck from="<< hdr.GetAddr2 ());
@@ -800,6 +808,12 @@ MacLow::ReceiveOk (Ptr<Packet> packet, double rxSnr, WifiMode txMode, WifiPreamb
                                                     txMode,
                                                     rxSnr);
             }
+          else if (hdr.IsQosBlockAck ())
+            {
+              AgreementsI it = m_bAckAgreements.find (std::make_pair (hdr.GetAddr2 (), hdr.GetQosTid ()));
+              /* See section 11.5.3 in IEEE802.11 for mean of this timer */
+              ResetBlockAckInactivityTimerIfNeeded (it->second.first);
+            }
           return;  
         }
       else if (hdr.IsQosData () && hdr.IsQosBlockAck ())
@@ -810,7 +824,10 @@ MacLow::ReceiveOk (Ptr<Packet> packet, double rxSnr, WifiMode txMode, WifiPreamb
              From section 11.5.3 in IEEE802.11e:
              When a recipient does not have an active Block ack for a TID, but receives
              data MPDUs with the Ack Policy subfield set to Block Ack, it shall discard
-             them [...]. */
+             them and shall send a DELBA frame using the normal access 
+             mechanisms. */
+          AccessClass ac = QosUtilsMapTidToAc (hdr.GetQosTid ());
+          m_edcaListeners[ac]->BlockAckInactivityTimeout (hdr.GetAddr2 (), hdr.GetQosTid ());
           return;
         }
       else if (hdr.IsQosData () && hdr.IsQosNoAck ()) 
@@ -1504,7 +1521,8 @@ void
 MacLow::CreateBlockAckAgreement (const MgtAddBaResponseHeader *respHdr, Mac48Address originator,
                                  uint16_t startingSeq)
 {
-  BlockAckAgreement agreement (originator, respHdr->GetTid ());
+  uint8_t tid = respHdr->GetTid ();
+  BlockAckAgreement agreement (originator, tid);
   if (respHdr->IsImmediateBlockAck ())
     {
       agreement.SetImmediateBlockAck ();
@@ -1522,6 +1540,19 @@ MacLow::CreateBlockAckAgreement (const MgtAddBaResponseHeader *respHdr, Mac48Add
   AgreementKey key (originator, respHdr->GetTid ());
   AgreementValue value (agreement, buffer);
   m_bAckAgreements.insert (std::make_pair (key, value));
+  
+  if (respHdr->GetTimeout () != 0)
+    {
+      AgreementsI it = m_bAckAgreements.find (std::make_pair (originator, respHdr->GetTid ()));
+      Time timeout = MicroSeconds (1024 * agreement.GetTimeout ());
+ 
+      AccessClass ac = QosUtilsMapTidToAc (agreement.GetTid ());
+      
+      it->second.first.m_inactivityEvent = Simulator::Schedule (timeout,
+                                                                &MacLowBlockAckEventListener::BlockAckInactivityTimeout,
+                                                                m_edcaListeners[ac],
+                                                                originator, tid);
+    }
 }
 
 void
@@ -1796,6 +1827,33 @@ MacLow::SendBlockAckAfterBlockAckRequest (const CtrlBAckRequestHeader reqHdr, Ma
     }
 
   SendBlockAckResponse (&blockAck, originator, immediate, duration, blockAckReqTxMode);
+}
+
+void
+MacLow::ResetBlockAckInactivityTimerIfNeeded (BlockAckAgreement &agreement)
+{
+  if (agreement.GetTimeout () != 0)
+    {
+      NS_ASSERT (agreement.m_inactivityEvent.IsRunning ());
+      agreement.m_inactivityEvent.Cancel ();
+      Time timeout = MicroSeconds (1024 * agreement.GetTimeout ());
+
+      AccessClass ac = QosUtilsMapTidToAc (agreement.GetTid ());
+      //std::map<AccessClass, MacLowTransmissionListener*>::iterator it = m_edcaListeners.find (ac);
+      //NS_ASSERT (it != m_edcaListeners.end ());
+
+      agreement.m_inactivityEvent = Simulator::Schedule (timeout, 
+                                                         &MacLowBlockAckEventListener::BlockAckInactivityTimeout, 
+                                                         m_edcaListeners[ac],
+                                                         agreement.GetPeer (),
+                                                         agreement.GetTid ());
+    }
+}
+
+void
+MacLow::RegisterBlockAckListenerForAc (enum AccessClass ac, MacLowBlockAckEventListener *listener)
+{
+  m_edcaListeners.insert (std::make_pair (ac, listener));
 }
 
 } // namespace ns3

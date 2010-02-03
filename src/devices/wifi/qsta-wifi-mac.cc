@@ -723,7 +723,9 @@ QstaWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
           packet->RemoveHeader (delBaHdr);
           if (delBaHdr.IsByOriginator ())
             {
-              /* Block ack agreement tear down */
+              /* Delba frame was sent by originator, this means that an ingoing established
+                 agreement exists in MacLow */
+              m_low->DestroyBlockAckAgreement (hdr->GetAddr2 (), delBaHdr.GetTid ());
             }
           else
             {
@@ -788,6 +790,7 @@ QstaWifiMac::SetQueue (enum AccessClass ac)
   edca->SetManager (m_dcfManager);
   edca->SetTypeOfStation (STA);
   edca->SetTxMiddle (m_txMiddle);
+  edca->SetAccessClass (ac);
   edca->CompleteConfig ();
   m_queues.insert (std::make_pair(ac, edca));
 }

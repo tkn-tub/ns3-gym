@@ -102,6 +102,22 @@ private:
   EdcaTxopN *m_txop;
 };
 
+class EdcaTxopN::BlockAckEventListener : public MacLowBlockAckEventListener
+{
+public:
+  BlockAckEventListener (EdcaTxopN *txop)
+    : MacLowBlockAckEventListener (),
+      m_txop (txop) {}
+  virtual ~BlockAckEventListener () {}
+
+  virtual void BlockAckInactivityTimeout (Mac48Address address, uint8_t tid) {
+    m_txop->SendDelbaFrame (address, tid, false);
+  }
+
+private:
+  EdcaTxopN *m_txop;
+};
+
 NS_OBJECT_ENSURE_REGISTERED (EdcaTxopN);
 
 TypeId
@@ -128,6 +144,7 @@ EdcaTxopN::EdcaTxopN ()
 {
   NS_LOG_FUNCTION (this);
   m_transmissionListener = new EdcaTxopN::TransmissionListener (this);
+  m_blockAckListener = new EdcaTxopN::BlockAckEventListener (this);
   m_dcf = new EdcaTxopN::Dcf (this);
   m_queue = CreateObject<WifiMacQueue> ();
   m_rng = new RealRandomStream ();
@@ -157,11 +174,13 @@ EdcaTxopN::DoDispose (void)
   delete m_rng;
   delete m_qosBlockedDestinations;
   delete m_baManager;
+  delete m_blockAckListener;
   m_transmissionListener = 0;
   m_dcf = 0;
   m_rng = 0;
   m_qosBlockedDestinations = 0;
   m_baManager = 0;
+  m_blockAckListener = 0;
   m_txMiddle = 0;
   m_aggregator = 0;
 }
@@ -527,6 +546,27 @@ EdcaTxopN::GotAck (double snr, WifiMode txMode)
         {
            m_txOkCallback (m_currentHdr);
         }
+      
+      if (m_currentHdr.IsAction ())
+        {
+          WifiActionHeader actionHdr;
+          Ptr<Packet> p = m_currentPacket->Copy ();
+          p->RemoveHeader (actionHdr);
+          if (actionHdr.GetCategory () == WifiActionHeader::BLOCK_ACK &&
+              actionHdr.GetAction ().blockAck == WifiActionHeader::BLOCK_ACK_DELBA)
+            {
+              MgtDelBaHeader delBa;
+              p->PeekHeader (delBa);
+              if (delBa.IsByOriginator ())
+                {
+                  m_baManager->TearDownBlockAck (m_currentHdr.GetAddr1 (), delBa.GetTid ());
+                }
+              else
+                {
+                  m_low->DestroyBlockAckAgreement (m_currentHdr.GetAddr1 (), delBa.GetTid ());
+                }
+            }
+        }
       m_currentPacket = 0;
          
       m_dcf->ResetCw ();
@@ -730,6 +770,12 @@ EdcaTxopN::GetFragmentPacket (WifiMacHeader *hdr)
   return fragment;
 }
 
+void
+EdcaTxopN::SetAccessClass (enum AccessClass ac)
+{
+  m_ac = ac;
+}
+
 Mac48Address
 EdcaTxopN::MapSrcAddressForAggregation (const WifiMacHeader &hdr)
 {
@@ -913,6 +959,7 @@ EdcaTxopN::CompleteConfig (void)
 {
   NS_LOG_FUNCTION (this);
   m_baManager->SetTxMiddle (m_txMiddle);
+  m_low->RegisterBlockAckListenerForAc (m_ac, m_blockAckListener);
 }
 
 void
@@ -990,6 +1037,40 @@ EdcaTxopN::SendAddBaRequest (Mac48Address dest, uint8_t tid, uint16_t startSeq,
   
   m_low->StartTransmission (m_currentPacket, &m_currentHdr, params, 
                             m_transmissionListener);
+}
+
+void
+EdcaTxopN::SendDelbaFrame (Mac48Address addr, uint8_t tid, bool byOriginator)
+{
+  WifiMacHeader hdr;
+  hdr.SetAction ();
+  hdr.SetAddr1 (addr);
+  hdr.SetAddr2 (m_low->GetAddress ());
+  hdr.SetAddr3 (m_low->GetAddress ());
+  hdr.SetDsNotTo ();
+  hdr.SetDsNotFrom ();
+
+  MgtDelBaHeader delbaHdr;
+  delbaHdr.SetTid (tid);
+  if (byOriginator)
+    {
+      delbaHdr.SetByOriginator ();
+    }
+  else
+    {
+      delbaHdr.SetByRecipient ();
+    }
+
+  WifiActionHeader actionHdr;
+  WifiActionHeader::ActionValue action;
+  action.blockAck = WifiActionHeader::BLOCK_ACK_DELBA;
+  actionHdr.SetAction (WifiActionHeader::BLOCK_ACK, action);
+  
+  Ptr<Packet> packet = Create<Packet> ();
+  packet->AddHeader (delbaHdr);
+  packet->AddHeader (actionHdr);
+
+  PushFront (packet, hdr);
 }
 
 } //namespace ns3
