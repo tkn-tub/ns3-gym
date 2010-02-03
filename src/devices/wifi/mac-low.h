@@ -440,6 +440,7 @@ public:
 private:
   void CancelAllEvents (void);
   uint32_t GetAckSize (void) const;
+  uint32_t GetBlockAckSize (enum BlockAckType type) const;
   uint32_t GetRtsSize (void) const;
   uint32_t GetCtsSize (void) const;
   uint32_t GetSize (Ptr<const Packet> packet, const WifiMacHeader *hdr) const;
@@ -454,8 +455,10 @@ private:
   WifiMode GetDataTxMode (Ptr<const Packet> packet, const WifiMacHeader *hdr) const;
   WifiMode GetCtsTxModeForRts (Mac48Address to, WifiMode rtsTxMode) const;
   WifiMode GetAckTxModeForData (Mac48Address to, WifiMode dataTxMode) const;
+
   Time GetCtsDuration (Mac48Address to, WifiMode rtsTxMode) const;
   Time GetAckDuration (Mac48Address to, WifiMode dataTxMode) const;
+  Time GetBlockAckDuration (Mac48Address to, WifiMode blockAckReqTxMode, enum BlockAckType type) const;
   void NotifyNav (const WifiMacHeader &hdr, WifiMode txMode, WifiPreamble preamble);
   void DoNavResetNow (Time duration);
   bool DoNavStartNow (Time duration);
@@ -511,6 +514,17 @@ private:
    * circularly modulo 2^12.
    */
   bool StoreMpduIfNeeded (Ptr<Packet> packet, WifiMacHeader hdr);
+  /*
+   * Invoked after that a block ack request has been received. Looks for corresponding
+   * block ack agreement and creates block ack bitmap on a received packets basis.
+   */
+  void SendBlockAckAfterBlockAckRequest (const CtrlBAckRequestHeader reqHdr, Mac48Address originator,
+                                         Time duration, WifiMode blockAckReqTxMode);
+  /*
+   * This method creates block ack frame with header equals to <i>blockAck</i> and start its transmission.
+   */
+  void SendBlockAckResponse (const CtrlBAckResponseHeader* blockAck, Mac48Address originator, bool immediate,
+                             Time duration, WifiMode blockAckReqTxMode);
 
   void SetupPhyMacLowListener (Ptr<WifiPhy> phy); 
 
