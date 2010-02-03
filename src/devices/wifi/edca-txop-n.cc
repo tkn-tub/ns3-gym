@@ -31,6 +31,7 @@
 #include "random-stream.h"
 #include "wifi-mac-queue.h"
 #include "msdu-aggregator.h"
+#include "mgt-headers.h"
 
 NS_LOG_COMPONENT_DEFINE ("EdcaTxopN");
 
@@ -697,6 +698,15 @@ EdcaTxopN::PushFront (Ptr<const Packet> packet, const WifiMacHeader &hdr)
   station->PrepareForQueue (packet, fullPacketSize);
   m_queue->PushFront (packet, hdr);
   StartAccessIfNeeded ();
+}
+
+void
+EdcaTxopN::GotAddBaResponse (const MgtAddBaResponseHeader *respHdr, Mac48Address recipient)
+{
+  NS_LOG_FUNCTION (this);
+  MY_DEBUG ("received AddBa response from "<<recipient);
+  //?
+  RestartAccessIfNeeded ();
 }
 
 } //namespace ns3

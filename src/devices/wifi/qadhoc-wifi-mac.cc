@@ -354,7 +354,39 @@ QadhocWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
     }
   else if (hdr->IsMgt ())
     {
-      //Handling action frames
+      if (hdr->IsAction ())
+        {
+          WifiActionHeader actionHdr;
+          packet->RemoveHeader (actionHdr);
+          if (actionHdr.GetCategory () == WifiActionHeader::BLOCK_ACK &&
+              actionHdr.GetAction().blockAck == WifiActionHeader::BLOCK_ACK_ADDBA_REQUEST)
+            {
+              MgtAddBaRequestHeader reqHdr;
+              packet->RemoveHeader (reqHdr);
+              SendAddBaResponse (&reqHdr, hdr->GetAddr2 ());
+            }
+          else if (actionHdr.GetCategory () == WifiActionHeader::BLOCK_ACK &&
+                   actionHdr.GetAction().blockAck == WifiActionHeader::BLOCK_ACK_ADDBA_REQUEST)
+            {
+              MgtAddBaResponseHeader respHdr;
+              packet->RemoveHeader (respHdr);
+              m_queues[QosUtilsMapTidToAc (respHdr.GetTid ())]->GotAddBaResponse (&respHdr, hdr->GetAddr2 ());
+            }
+          else if (actionHdr.GetCategory () == WifiActionHeader::BLOCK_ACK &&
+                   actionHdr.GetAction().blockAck == WifiActionHeader::BLOCK_ACK_DELBA)
+            {
+              MgtDelBaHeader delBaHdr;
+              packet->RemoveHeader (delBaHdr);
+              if (delBaHdr.IsByOriginator ())
+                {
+                  /* Block ack agreement tear down */
+                }
+              else
+                {
+                  /* We must notify correct queue tear down of agreement */
+                }
+            }
+        }
     }
 }
 
@@ -446,4 +478,59 @@ QadhocWifiMac::FinishConfigureStandard (enum WifiPhyStandard standard)
     }
 }
 
+
+void
+QadhocWifiMac::SendAddBaResponse (const MgtAddBaRequestHeader *reqHdr, Mac48Address originator)
+{
+  NS_LOG_FUNCTION (this);
+  WifiMacHeader hdr;
+  hdr.SetAction ();
+  hdr.SetAddr1 (originator);
+  hdr.SetAddr2 (m_low->GetAddress ());
+  hdr.SetAddr3 (m_low->GetAddress ());
+  hdr.SetDsNotFrom ();
+  hdr.SetDsNotTo ();
+
+  MgtAddBaResponseHeader respHdr;
+  StatusCode code;
+  code.SetSuccess ();
+  respHdr.SetStatusCode (code);
+  //Here a control about queues type?
+  respHdr.SetAmsduSupport (reqHdr->IsAmsduSupported ());
+
+  if (reqHdr->IsImmediateBlockAck ())
+    {
+      respHdr.SetImmediateBlockAck ();
+    }
+  else
+    {
+      respHdr.SetDelayedBlockAck ();
+    }
+  respHdr.SetTid (reqHdr->GetTid ());
+  /* For now there's not no control about limit of reception.
+     We assume that receiver has no limit on reception.
+     However we assume that a receiver sets a bufferSize in order to satisfy
+     next equation:
+     (bufferSize + 1) % 16 = 0
+     So if a recipient is able to buffer a packet, it should be also able to buffer
+     all possible packet's fragments.
+     See section 7.3.1.14 in IEEE802.11e for more details. */
+  respHdr.SetBufferSize (1023);
+  respHdr.SetTimeout (reqHdr->GetTimeout ());
+
+  WifiActionHeader actionHdr;
+  WifiActionHeader::ActionValue action;
+  action.blockAck = WifiActionHeader::BLOCK_ACK_ADDBA_RESPONSE;
+  actionHdr.SetAction (WifiActionHeader::BLOCK_ACK, action);
+
+  Ptr<Packet> packet = Create<Packet> ();
+  packet->AddHeader (respHdr);
+  packet->AddHeader (actionHdr);
+  
+  /* ns3::MacLow have to buffer all correctly received packet for this block ack session */
+  //m_low->CreateIngoingAgreement (&respHdr, originator, reqHdr->GetStartingSequence ());
+
+  //Better a management queue? 
+  m_queues[QosUtilsMapTidToAc (reqHdr->GetTid ())]->PushFront (packet, hdr);
+}
 } //namespace ns3

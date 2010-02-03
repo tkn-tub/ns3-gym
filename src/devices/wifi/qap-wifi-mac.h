@@ -47,6 +47,7 @@ class MacTxMiddle;
 class DcfManager;
 class AmsduSubframeHeader;
 class MsduAggregator;
+class MgtAddBaRequestHeader;
 
 class QapWifiMac : public WifiMac
 {
@@ -103,6 +104,7 @@ private:
   void TxFailed (const WifiMacHeader& hdr);
   void SendProbeResp (Mac48Address to);
   void SendAssocResp (Mac48Address to, bool success);
+  void SendAddBaResponse (const MgtAddBaRequestHeader *reqHdr, Mac48Address originator);
   void SendOneBeacon (void);
   SupportedRates GetSupportedRates (void) const;
   void SetBeaconGeneration (bool enable);

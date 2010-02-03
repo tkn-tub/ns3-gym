@@ -45,6 +45,7 @@ class MacLow;
 class WifiMacHeader;
 class AmsduSubframeHeader;
 class MsduAggregator;
+class MgtAddBaRequestHeader;
 
 class QstaWifiMac : public WifiMac
 {
@@ -100,6 +101,7 @@ private:
   void ProbeRequestTimeout (void);
   void SendAssociationRequest (void);
   void SendProbeRequest (void);
+  void SendAddBaResponse (const MgtAddBaRequestHeader *reqHdr, Mac48Address originator);
   void TryToEnsureAssociated (void);
   bool IsAssociated (void) const;
   bool IsWaitAssocResp (void) const;

@@ -45,6 +45,8 @@ class WifiMacParameters;
 class WifiMacQueue;
 class RandomStream;
 class MsduAggregator;
+class MgtAddBaResponseHeader;
+
 
 /* This queue contains packets for a particular access class.
  * possibles access classes are:
@@ -110,6 +112,7 @@ public:
   void GotCts (double snr, WifiMode txMode);
   void MissedCts (void);
   void GotAck (double snr, WifiMode txMode);
+  void GotAddBaResponse (const MgtAddBaResponseHeader *respHdr, Mac48Address recipient);
   void MissedAck (void);
   void StartNext (void);
   void Cancel (void);
