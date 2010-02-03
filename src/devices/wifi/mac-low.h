@@ -157,6 +157,18 @@ public:
    */
   void EnableSuperFastAck (void);
   /**
+   * Wait BASICBLOCKACKTimeout for a Basic Block Ack Response frame.
+   */
+  void EnableBasicBlockAck (void);
+  /**
+   * Wait COMPRESSEDBLOCKACKTimeout for a Compressed Block Ack Response frame.
+   */
+  void EnableCompressedBlockAck (void);
+  /**
+   * NOT IMPLEMENTED FOR NOW
+   */
+  void EnableMultiTidBlockAck (void);
+  /**
    * Send a RTS, and wait CTSTimeout for a CTS. If we get a 
    * CTS on time, call MacLowTransmissionListener::GotCts
    * and send data. Otherwise, call MacLowTransmissionListener::MissedCts
@@ -233,6 +245,24 @@ public:
    */
   bool MustWaitSuperFastAck (void) const;
   /**
+   * \returns true if block ack mechanism is used, false otherwise.
+   *
+   * \sa EnableBlockAck
+   */
+  bool MustWaitBasicBlockAck (void) const;
+  /**
+   * \returns true if compressed block ack mechanism is used, false otherwise.
+   *
+   * \sa EnableCompressedBlockAck
+   */
+  bool MustWaitCompressedBlockAck (void) const;
+  /**
+   * \returns true if multi-tid block ack mechanism is used, false otherwise.
+   *
+   * \sa EnableMultiTidBlockAck
+   */
+  bool MustWaitMultiTidBlockAck (void) const;
+  /**
    * \returns true if RTS should be sent and CTS waited for before 
    *          sending data, false otherwise.
    */
@@ -262,7 +292,10 @@ private:
     ACK_NONE,
     ACK_NORMAL,
     ACK_FAST,
-    ACK_SUPER_FAST
+    ACK_SUPER_FAST,
+    BLOCK_ACK_BASIC,
+    BLOCK_ACK_COMPRESSED,
+    BLOCK_ACK_MULTI_TID
   } m_waitAck;
   bool m_sendRts;
   Time m_overrideDurationId;

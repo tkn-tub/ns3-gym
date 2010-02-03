@@ -146,6 +146,21 @@ MacLowTransmissionParameters::EnableSuperFastAck (void)
 {
   m_waitAck = ACK_SUPER_FAST;
 }
+void
+MacLowTransmissionParameters::EnableBasicBlockAck (void)
+{
+  m_waitAck = BLOCK_ACK_BASIC;
+}
+void
+MacLowTransmissionParameters::EnableCompressedBlockAck (void)
+{
+  m_waitAck = BLOCK_ACK_COMPRESSED;
+}
+void
+MacLowTransmissionParameters::EnableMultiTidBlockAck (void)
+{
+  m_waitAck = BLOCK_ACK_MULTI_TID;
+}
 void 
 MacLowTransmissionParameters::EnableFastAck (void)
 {
@@ -190,6 +205,21 @@ bool
 MacLowTransmissionParameters::MustWaitSuperFastAck (void) const
 {
   return (m_waitAck == ACK_SUPER_FAST);
+}
+bool
+MacLowTransmissionParameters::MustWaitBasicBlockAck (void) const
+{
+  return (m_waitAck == BLOCK_ACK_BASIC)?true:false;
+}
+bool
+MacLowTransmissionParameters::MustWaitCompressedBlockAck (void) const
+{
+  return (m_waitAck == BLOCK_ACK_COMPRESSED)?true:false;
+}
+bool
+MacLowTransmissionParameters::MustWaitMultiTidBlockAck (void) const
+{
+  return (m_waitAck == BLOCK_ACK_MULTI_TID)?true:false;
 }
 bool 
 MacLowTransmissionParameters::MustSendRts (void) const
@@ -238,6 +268,15 @@ std::ostream &operator << (std::ostream &os, const MacLowTransmissionParameters 
     break;
   case MacLowTransmissionParameters::ACK_SUPER_FAST:
     os << "super-fast";
+    break;
+  case MacLowTransmissionParameters::BLOCK_ACK_BASIC:
+    os << "basic-block-ack";
+    break;
+  case MacLowTransmissionParameters::BLOCK_ACK_COMPRESSED:
+    os << "compressed-block-ack";
+    break;
+  case MacLowTransmissionParameters::BLOCK_ACK_MULTI_TID:
+    os << "multi-tid-block-ack";
     break;
   }
   os << "]";
