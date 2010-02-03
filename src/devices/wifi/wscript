@@ -57,6 +57,7 @@ def build(bld):
         'originator-block-ack-agreement.cc',
         'dcf.cc',
         'ctrl-headers.cc',
+        'qos-blocked-destinations.cc',
         'block-ack-agreement.cc',
         'block-ack-manager.cc',
         ]

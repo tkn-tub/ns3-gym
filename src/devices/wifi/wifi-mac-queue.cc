@@ -24,6 +24,7 @@
 #include "ns3/uinteger.h"
 
 #include "wifi-mac-queue.h"
+#include "qos-blocked-destinations.h"
 
 using namespace std;
 
@@ -296,6 +297,46 @@ WifiMacQueue::GetNPacketsByTidAndAddress (uint8_t tid, WifiMacHeader::AddressTyp
         }
     }
   return nPackets;
+}
+
+Ptr<const Packet>
+WifiMacQueue::DequeueFirstAvailable (WifiMacHeader *hdr, Time &timestamp,
+                                     const QosBlockedDestinations *blockedPackets)
+{
+  Cleanup ();
+  Ptr<const Packet> packet = 0;
+  for (PacketQueueI it = m_queue.begin (); it != m_queue.end (); it++)
+    {
+      if (!it->hdr.IsQosData () ||
+          !blockedPackets->IsBlocked (it->hdr.GetAddr1 (), it->hdr.GetQosTid ()))
+        {
+          *hdr = it->hdr;
+          timestamp = it->tstamp;
+          packet = it->packet;
+          m_queue.erase (it);
+          m_size--;
+          return packet;
+        }
+    }
+  return packet;
+}
+
+Ptr<const Packet>
+WifiMacQueue::PeekFirstAvailable (WifiMacHeader *hdr, Time &timestamp,
+                                  const QosBlockedDestinations *blockedPackets)
+{
+  Cleanup ();
+  for (PacketQueueI it = m_queue.begin (); it != m_queue.end (); it++)
+    {
+      if (!it->hdr.IsQosData () ||
+          !blockedPackets->IsBlocked (it->hdr.GetAddr1 (), it->hdr.GetQosTid ()))
+        {
+          *hdr = it->hdr;
+          timestamp = it->tstamp;
+          return it->packet;
+        }
+    }
+  return 0;
 }
 
 } // namespace ns3
