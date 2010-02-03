@@ -58,6 +58,7 @@ def build(bld):
         'dcf.cc',
         'ctrl-headers.cc',
         'block-ack-agreement.cc',
+        'block-ack-manager.cc',
         ]
     headers = bld.new_task_gen('ns3header')
     headers.module = 'wifi'
@@ -109,6 +110,7 @@ def build(bld):
         'dcf.h',
         'ctrl-headers.h',
         'block-ack-agreement.h',
+        'block-ack-manager.h',
         ]
 
     if bld.env['ENABLE_GSL']:
