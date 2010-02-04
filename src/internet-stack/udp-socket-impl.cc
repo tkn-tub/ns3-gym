@@ -583,9 +583,9 @@ UdpSocketImpl::BindToNetDevice (Ptr<NetDevice> netdevice)
 }
 
 void 
-UdpSocketImpl::ForwardUp (Ptr<Packet> packet, Ipv4Address ipv4, uint16_t port)
+UdpSocketImpl::ForwardUp (Ptr<Packet> packet, Ipv4Address saddr, Ipv4Address daddr, uint16_t port)
 {
-  NS_LOG_FUNCTION (this << packet << ipv4 << port);
+  NS_LOG_FUNCTION (this << packet << saddr << daddr << port);
 
   if (m_shutdownRecv)
     {
@@ -593,7 +593,7 @@ UdpSocketImpl::ForwardUp (Ptr<Packet> packet, Ipv4Address ipv4, uint16_t port)
     }
   if ((m_rxAvailable + packet->GetSize ()) <= m_rcvBufSize)
     {
-      Address address = InetSocketAddress (ipv4, port);
+      Address address = InetSocketAddress (saddr, port);
       SocketAddressTag tag;
       tag.SetAddress (address);
       packet->AddPacketTag (tag);
