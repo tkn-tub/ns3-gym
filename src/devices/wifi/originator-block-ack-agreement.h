@@ -34,7 +34,7 @@ public:
   OriginatorBlockAckAgreement ();
   OriginatorBlockAckAgreement (Mac48Address recipient, uint8_t tid);
   ~OriginatorBlockAckAgreement ();
-  /**                                     receive ADDBAResponse
+  /*                                      receive ADDBAResponse
    *  send ADDBARequest ---------------   status code = success  ---------------
    *  ----------------->|   PENDING    |------------------------>|  ESTABLISHED |-----
    *                    ---------------                          ---------------      |
@@ -52,9 +52,9 @@ public:
    *                        retryPkts + queuePkts      |               |
    *                                  >=               |               |
    *                         blockAckThreshold         |----------------
-   *                     
-   *
-   * represents the state for this agreement.
+   */                    
+   /**
+   * Represents the state for this agreement.
    *
    *  PENDING:
    *    If an agreement is in PENDING state it means that an ADDBARequest frame was sent to
