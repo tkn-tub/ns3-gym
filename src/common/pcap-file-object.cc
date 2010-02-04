@@ -92,21 +92,23 @@ PcapFileObject::Init (uint32_t dataLinkType, uint32_t snapLen, int32_t tzCorrect
 bool
 PcapFileObject::Write (Time t, Ptr<const Packet> p)
 {
+  uint8_t buffer[PcapFile::SNAPLEN_DEFAULT];
+
   uint64_t current = t.GetMicroSeconds ();
   uint64_t s = current / 1000000;
   uint64_t us = current % 1000000;
 
   uint32_t bufferSize = p->GetSize ();
-  uint8_t *buffer = new uint8_t[bufferSize];
   p->CopyData (buffer, bufferSize);
   bool rc = m_file.Write (s, us, buffer, bufferSize);
-  delete [] buffer;
   return rc;
 }
 
 bool
 PcapFileObject::Write (Time t, Header &header, Ptr<const Packet> p)
 {
+  uint8_t buffer[PcapFile::SNAPLEN_DEFAULT];
+
   uint64_t current = t.GetMicroSeconds ();
   uint64_t s = current / 1000000;
   uint64_t us = current % 1000000;
@@ -119,13 +121,10 @@ PcapFileObject::Write (Time t, Header &header, Ptr<const Packet> p)
   headerBuffer.AddAtStart (headerSize);
   header.Serialize (headerBuffer.Begin ());
 
-  uint8_t *buffer = new uint8_t[bufferSize];
-
   headerBuffer.Begin ().Read (buffer, headerSize);
   p->CopyData (&buffer[headerSize], packetSize);
   bool rc = m_file.Write (s, us, buffer, bufferSize);
 
-  delete [] buffer;
   return rc;
 }
 
