@@ -16,6 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Mirko Banchi <mk.banchi@gmail.com>
+ * Author: Cecchi Niccolò <insa@igeek.it>
  */
 #include "qos-utils.h"
 #include "qos-tag.h"
@@ -68,5 +69,17 @@ QosUtilsGetTidForPacket (Ptr<const Packet> packet)
     }
   return tid;
 }
+
+uint32_t
+QosUtilsMapSeqControlToUniqueInteger (uint16_t seqControl, uint16_t endSequence)
+{
+  uint32_t integer = 0;
+  uint16_t numberSeq = (seqControl>>4) & 0x0fff;
+  integer = (4096 - (endSequence + 1) + numberSeq) % 4096;
+  integer *= 16;
+  integer += (seqControl & 0x000f);
+  return integer; 
+}
+
 
 } //namespace ns3

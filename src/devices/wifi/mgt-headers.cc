@@ -1,6 +1,7 @@
 /* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2006 INRIA
+ * Copyright (c) 2009 MIRKO BANCHI
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as 
@@ -16,6 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
+ * Author: Mirko Banchi <mk.banchi@gmail.com>
  */
 #include "mgt-headers.h"
 #include "ns3/simulator.h"
@@ -405,6 +407,11 @@ WifiActionHeader::SetAction (WifiActionHeader::CategoryValue type,
 
   switch (type)
     {
+  case BLOCK_ACK:
+    {
+      m_actionValue = action.blockAck;
+      break;
+    }
   case MESH_PEERING_MGT:
     {
       m_actionValue = action.peerLink;
@@ -427,6 +434,8 @@ WifiActionHeader::GetCategory ()
 {
   switch (m_category)
     {
+  case BLOCK_ACK:
+    return BLOCK_ACK;
   case MESH_PEERING_MGT:
     return MESH_PEERING_MGT;
   case MESH_LINK_METRIC:
@@ -451,6 +460,19 @@ WifiActionHeader::GetAction ()
   retval.peerLink = PEER_LINK_OPEN; // Needs to be initialized to something to quiet valgrind in default cases
   switch (m_category)
     {
+  case BLOCK_ACK:
+    switch (m_actionValue)
+      {
+    case BLOCK_ACK_ADDBA_REQUEST:
+      retval.blockAck = BLOCK_ACK_ADDBA_REQUEST;
+      return retval;
+    case BLOCK_ACK_ADDBA_RESPONSE:
+      retval.blockAck = BLOCK_ACK_ADDBA_RESPONSE;
+      return retval;
+    case BLOCK_ACK_DELBA:
+      retval.blockAck = BLOCK_ACK_DELBA;
+      return retval;
+      }
   case MESH_PEERING_MGT:
     switch (m_actionValue)
       {
@@ -526,6 +548,451 @@ WifiActionHeader::Deserialize (Buffer::Iterator start)
   m_category = i.ReadU8 ();
   m_actionValue = i.ReadU8 ();
   return i.GetDistanceFrom (start);
+}
+
+/***************************************************
+*                 ADDBARequest
+****************************************************/
+
+NS_OBJECT_ENSURE_REGISTERED (MgtAddBaRequestHeader);
+
+MgtAddBaRequestHeader::MgtAddBaRequestHeader ()
+ : m_dialogToken (1),
+   m_amsduSupport (1),
+   m_bufferSize (0)
+{}
+
+TypeId
+MgtAddBaRequestHeader::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::MgtAddBaRequestHeader")
+    .SetParent<Header> ()
+    .AddConstructor<MgtAddBaRequestHeader> ();
+  ;
+  return tid;
+}
+
+TypeId
+MgtAddBaRequestHeader::GetInstanceTypeId (void) const
+{
+  return GetTypeId ();
+}
+
+void
+MgtAddBaRequestHeader::Print (std::ostream &os) const
+{}
+
+uint32_t
+MgtAddBaRequestHeader::GetSerializedSize (void) const
+{
+  uint32_t size = 0;
+  size += 1; //Dialog token
+  size += 2; //Block ack parameter set
+  size += 2; //Block ack timeout value
+  size += 2; //Starting sequence control
+  return size;
+}
+
+void
+MgtAddBaRequestHeader::Serialize (Buffer::Iterator start) const
+{
+  Buffer::Iterator i = start;
+  i.WriteU8 (m_dialogToken);
+  i.WriteHtolsbU16 (GetParameterSet ());
+  i.WriteHtolsbU16 (m_timeoutValue);
+  i.WriteHtolsbU16 (GetStartingSequenceControl ());
+}
+
+uint32_t
+MgtAddBaRequestHeader::Deserialize (Buffer::Iterator start)
+{
+  Buffer::Iterator i = start;
+  m_dialogToken = i.ReadU8 ();
+  SetParameterSet (i.ReadLsbtohU16 ());
+  m_timeoutValue = i.ReadLsbtohU16 ();
+  SetStartingSequenceControl (i.ReadLsbtohU16 ());
+  return i.GetDistanceFrom (start);
+}
+
+void
+MgtAddBaRequestHeader::SetDelayedBlockAck ()
+{
+  m_policy = 0;
+}
+
+void
+MgtAddBaRequestHeader::SetImmediateBlockAck ()
+{
+  m_policy = 1;
+}
+  
+void
+MgtAddBaRequestHeader::SetTid (uint8_t tid)
+{
+  NS_ASSERT (tid < 16);
+  m_tid = tid;
+}
+
+void
+MgtAddBaRequestHeader::SetTimeout (uint16_t timeout)
+{
+  m_timeoutValue = timeout;
+}
+
+void
+MgtAddBaRequestHeader::SetBufferSize (uint16_t size)
+{
+  m_bufferSize = size;
+}
+
+void
+MgtAddBaRequestHeader::SetStartingSequence (uint16_t seq)
+{
+  m_startingSeq = seq;
+}
+
+void
+MgtAddBaRequestHeader::SetAmsduSupport (bool supported)
+{
+  m_amsduSupport = supported;
+}
+
+uint8_t
+MgtAddBaRequestHeader::GetTid (void) const
+{
+  return m_tid;
+}
+
+bool
+MgtAddBaRequestHeader::IsImmediateBlockAck (void) const
+{
+  return (m_policy == 1)?true:false;
+}
+
+uint16_t
+MgtAddBaRequestHeader::GetTimeout (void) const
+{
+  return m_timeoutValue;
+}
+
+uint16_t
+MgtAddBaRequestHeader::GetBufferSize (void) const
+{
+  return m_bufferSize;
+}
+
+bool
+MgtAddBaRequestHeader::IsAmsduSupported (void) const
+{
+  return (m_amsduSupport == 1)?true:false;
+}
+
+uint16_t
+MgtAddBaRequestHeader::GetStartingSequence (void) const
+{
+  return m_startingSeq;
+}
+
+uint16_t
+MgtAddBaRequestHeader::GetStartingSequenceControl (void) const
+{
+  return (m_startingSeq << 4) & 0xfff0;
+}
+
+void
+MgtAddBaRequestHeader::SetStartingSequenceControl (uint16_t seqControl)
+{
+  m_startingSeq = (seqControl >> 4) & 0x0fff;
+}
+
+uint16_t
+MgtAddBaRequestHeader::GetParameterSet (void) const
+{
+  uint16_t res = 0;
+  res |= m_amsduSupport;
+  res |= m_policy << 1;
+  res |= m_tid << 2;
+  res |= m_bufferSize << 6;
+  return res;
+}
+
+void
+MgtAddBaRequestHeader::SetParameterSet (uint16_t params)
+{
+  m_amsduSupport = (params) & 0x01;
+  m_policy = (params >> 1) & 0x01;
+  m_tid = (params >> 2) & 0x0f;
+  m_bufferSize = (params >> 6) & 0x03ff;
+}
+
+/***************************************************
+*                 ADDBAResponse
+****************************************************/
+
+NS_OBJECT_ENSURE_REGISTERED (MgtAddBaResponseHeader);
+
+MgtAddBaResponseHeader::MgtAddBaResponseHeader ()
+  : m_dialogToken (1),
+    m_amsduSupport (1),
+    m_bufferSize (0)
+{}
+
+TypeId
+MgtAddBaResponseHeader::GetTypeId ()
+{
+  static TypeId tid = TypeId ("ns3::MgtAddBaResponseHeader")
+    .SetParent<Header> ()
+    .AddConstructor<MgtAddBaResponseHeader> ()
+  ;
+  return tid;
+}
+
+TypeId
+MgtAddBaResponseHeader::GetInstanceTypeId (void) const
+{
+  return GetTypeId ();
+}
+
+void
+MgtAddBaResponseHeader::Print (std::ostream &os) const
+{
+  os <<"status code="<<m_code;
+}
+
+uint32_t
+MgtAddBaResponseHeader::GetSerializedSize (void) const
+{
+  uint32_t size = 0;
+  size += 1; //Dialog token
+  size += m_code.GetSerializedSize (); //Status code
+  size += 2; //Block ack parameter set
+  size += 2; //Block ack timeout value
+  return size;
+}
+
+void
+MgtAddBaResponseHeader::Serialize (Buffer::Iterator start) const
+{
+  Buffer::Iterator i = start;
+  i.WriteU8 (m_dialogToken);
+  i = m_code.Serialize (i);
+  i.WriteHtolsbU16 (GetParameterSet ());
+  i.WriteHtolsbU16 (m_timeoutValue);
+}
+
+uint32_t
+MgtAddBaResponseHeader::Deserialize (Buffer::Iterator start)
+{
+  Buffer::Iterator i = start;
+  m_dialogToken = i.ReadU8 ();
+  i = m_code.Deserialize (i);
+  SetParameterSet (i.ReadLsbtohU16 ());
+  m_timeoutValue = i.ReadLsbtohU16 ();
+  return i.GetDistanceFrom (start);
+}
+
+void
+MgtAddBaResponseHeader::SetDelayedBlockAck ()
+{
+  m_policy = 0;
+}
+
+void
+MgtAddBaResponseHeader::SetImmediateBlockAck ()
+{
+  m_policy = 1;
+}
+
+void
+MgtAddBaResponseHeader::SetTid (uint8_t tid)
+{
+  NS_ASSERT (tid < 16);
+  m_tid = tid;
+}
+
+void
+MgtAddBaResponseHeader::SetTimeout (uint16_t timeout)
+{
+  m_timeoutValue = timeout;
+}
+
+void
+MgtAddBaResponseHeader::SetBufferSize (uint16_t size)
+{
+  m_bufferSize = size;
+}
+
+void
+MgtAddBaResponseHeader::SetStatusCode (StatusCode code)
+{
+  m_code = code;
+}
+
+void
+MgtAddBaResponseHeader::SetAmsduSupport (bool supported)
+{
+  m_amsduSupport = supported;
+}
+
+StatusCode
+MgtAddBaResponseHeader::GetStatusCode (void) const
+{
+  return m_code;
+}
+
+uint8_t
+MgtAddBaResponseHeader::GetTid (void) const
+{
+  return m_tid;
+}
+
+bool
+MgtAddBaResponseHeader::IsImmediateBlockAck (void) const
+{
+  return (m_policy == 1)?true:false;
+}
+
+uint16_t
+MgtAddBaResponseHeader::GetTimeout (void) const
+{
+  return m_timeoutValue;
+}
+
+uint16_t
+MgtAddBaResponseHeader::GetBufferSize (void) const
+{
+  return m_bufferSize;
+}
+
+bool
+MgtAddBaResponseHeader::IsAmsduSupported (void) const
+{
+  return (m_amsduSupport == 1)?true:false; 
+}
+
+uint16_t
+MgtAddBaResponseHeader::GetParameterSet (void) const
+{
+  uint16_t res = 0;
+  res |= m_amsduSupport;
+  res |= m_policy << 1;
+  res |= m_tid << 2;
+  res |= m_bufferSize << 6;
+  return res;
+}
+
+void
+MgtAddBaResponseHeader::SetParameterSet (uint16_t params)
+{
+  m_amsduSupport = (params) & 0x01;
+  m_policy = (params >> 1) & 0x01;
+  m_tid = (params >> 2) & 0x0f;
+  m_bufferSize = (params >> 6) & 0x03ff;
+}
+
+/***************************************************
+*                     DelBa
+****************************************************/
+
+NS_OBJECT_ENSURE_REGISTERED (MgtDelBaHeader);
+
+MgtDelBaHeader::MgtDelBaHeader ()
+  : m_reasonCode (1)
+{}
+
+TypeId
+MgtDelBaHeader::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::MgtDelBaHeader")
+    .SetParent<Header> ()
+    .AddConstructor<MgtDelBaHeader> ()
+  ;
+  return tid;
+}
+
+TypeId
+MgtDelBaHeader::GetInstanceTypeId (void) const
+{
+  return GetTypeId ();
+}
+
+void
+MgtDelBaHeader::Print (std::ostream &os) const
+{}
+
+uint32_t
+MgtDelBaHeader::GetSerializedSize (void) const
+{
+  uint32_t size = 0;
+  size += 2; //DelBa parameter set
+  size += 2; //Reason code
+  return size;
+}
+
+void
+MgtDelBaHeader::Serialize (Buffer::Iterator start) const
+{
+  Buffer::Iterator i = start;
+  i.WriteHtolsbU16 (GetParameterSet ());
+  i.WriteHtolsbU16 (m_reasonCode);
+}
+
+uint32_t
+MgtDelBaHeader::Deserialize (Buffer::Iterator start)
+{
+  Buffer::Iterator i = start;
+  SetParameterSet (i.ReadLsbtohU16 ());
+  m_reasonCode = i.ReadLsbtohU16 ();
+  return i.GetDistanceFrom (start);
+}
+
+bool
+MgtDelBaHeader::IsByOriginator (void) const
+{
+  return (m_initiator == 1)?true:false;
+}
+
+uint8_t
+MgtDelBaHeader::GetTid (void) const
+{
+  NS_ASSERT (m_tid < 16);
+  uint8_t tid = static_cast<uint8_t> (m_tid);
+  return tid;
+}
+
+void
+MgtDelBaHeader::SetByOriginator (void)
+{
+  m_initiator = 1;
+}
+
+void
+MgtDelBaHeader::SetByRecipient (void)
+{
+  m_initiator = 0;
+}
+
+void
+MgtDelBaHeader::SetTid (uint8_t tid)
+{
+  NS_ASSERT (tid < 16);
+  m_tid = static_cast<uint16_t> (tid);
+}
+
+uint16_t
+MgtDelBaHeader::GetParameterSet (void) const
+{
+  uint16_t res = 0;
+  res |= m_initiator << 11;
+  res |= m_tid << 12;
+  return res;
+}
+
+void
+MgtDelBaHeader::SetParameterSet (uint16_t params)
+{
+  m_initiator = (params >> 11) & 0x01;
+  m_tid = (params >> 12) & 0x0f;
 }
 
 } // namespace ns3

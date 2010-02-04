@@ -24,6 +24,7 @@
 #include "ns3/uinteger.h"
 
 #include "wifi-mac-queue.h"
+#include "qos-blocked-destinations.h"
 
 using namespace std;
 
@@ -111,18 +112,19 @@ WifiMacQueue::Cleanup (void)
 
   Time now = Simulator::Now ();
   uint32_t n = 0;
-  PacketQueueI end = m_queue.begin ();
-  for (PacketQueueI i = m_queue.begin (); i != m_queue.end (); i++) 
+  for (PacketQueueI i = m_queue.begin (); i != m_queue.end ();) 
     {
       if (i->tstamp + m_maxDelay > now) 
         {
-          end = i;
-          break;
+          i++;
         }
-      n++;
+      else
+        {
+          i = m_queue.erase (i);
+          n++;
+        }
     }
   m_size -= n;
-  m_queue.erase (m_queue.begin (), end);
 }
 
 Ptr<const Packet>
@@ -258,6 +260,83 @@ WifiMacQueue::Remove (Ptr<const Packet> packet)
         }
     }
   return false;
+}
+
+void
+WifiMacQueue::PushFront (Ptr<const Packet> packet, const WifiMacHeader &hdr)
+{
+  Cleanup ();
+  if (m_size == m_maxSize)
+    {
+      return;
+    }
+  Time now = Simulator::Now ();
+  m_queue.push_front (Item (packet, hdr, now));
+  m_size++;
+}
+
+uint32_t
+WifiMacQueue::GetNPacketsByTidAndAddress (uint8_t tid, WifiMacHeader::AddressType type,
+                                          Mac48Address addr)
+{
+  Cleanup ();
+  uint32_t nPackets = 0;
+  if (!m_queue.empty ())
+    {
+      PacketQueueI it;
+      NS_ASSERT (type <= 4);
+      for (it = m_queue.begin (); it != m_queue.end (); it++)
+        {
+          if (GetAddressForPacket (type, it) == addr)
+            {
+              if (it->hdr.IsQosData () && it->hdr.GetQosTid () == tid)
+                {
+                  nPackets++;
+                }
+            }
+        }
+    }
+  return nPackets;
+}
+
+Ptr<const Packet>
+WifiMacQueue::DequeueFirstAvailable (WifiMacHeader *hdr, Time &timestamp,
+                                     const QosBlockedDestinations *blockedPackets)
+{
+  Cleanup ();
+  Ptr<const Packet> packet = 0;
+  for (PacketQueueI it = m_queue.begin (); it != m_queue.end (); it++)
+    {
+      if (!it->hdr.IsQosData () ||
+          !blockedPackets->IsBlocked (it->hdr.GetAddr1 (), it->hdr.GetQosTid ()))
+        {
+          *hdr = it->hdr;
+          timestamp = it->tstamp;
+          packet = it->packet;
+          m_queue.erase (it);
+          m_size--;
+          return packet;
+        }
+    }
+  return packet;
+}
+
+Ptr<const Packet>
+WifiMacQueue::PeekFirstAvailable (WifiMacHeader *hdr, Time &timestamp,
+                                  const QosBlockedDestinations *blockedPackets)
+{
+  Cleanup ();
+  for (PacketQueueI it = m_queue.begin (); it != m_queue.end (); it++)
+    {
+      if (!it->hdr.IsQosData () ||
+          !blockedPackets->IsBlocked (it->hdr.GetAddr1 (), it->hdr.GetQosTid ()))
+        {
+          *hdr = it->hdr;
+          timestamp = it->tstamp;
+          return it->packet;
+        }
+    }
+  return 0;
 }
 
 } // namespace ns3

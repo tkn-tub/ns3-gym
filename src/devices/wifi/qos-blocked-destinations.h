@@ -16,34 +16,33 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  * Author: Mirko Banchi <mk.banchi@gmail.com>
  */
+#ifndef QOS_BLOCKED_DESTINATIONS_H
+#define QOS_BLOCKED_DESTINATIONS_H
 
-#ifndef MAC_TX_MIDDLE_H
-#define MAC_TX_MIDDLE_H
-
-#include <stdint.h>
-#include <map>
+#include <list>
 #include "ns3/mac48-address.h"
 
 namespace ns3 {
 
-class WifiMacHeader;
-
-class MacTxMiddle {
+class QosBlockedDestinations
+{
 public:
-  MacTxMiddle ();
-  ~MacTxMiddle ();
+  QosBlockedDestinations ();
+  ~QosBlockedDestinations ();
 
-  uint16_t GetNextSequenceNumberfor (const WifiMacHeader *hdr);
-  uint16_t GetNextSeqNumberByTidAndAddress (uint8_t tid, Mac48Address addr) const;
+  void Block (Mac48Address dest, uint8_t tid);
+  void Unblock (Mac48Address dest, uint8_t tid);
+  bool IsBlocked (Mac48Address dest, uint8_t tid) const;
 
 private:
-  std::map <Mac48Address,uint16_t*> m_qosSequences;
-  uint16_t m_sequence;
+  typedef std::list<std::pair<Mac48Address, uint8_t> > BlockedPackets;
+  typedef std::list<std::pair<Mac48Address, uint8_t> >::iterator BlockedPacketsI;
+  typedef std::list<std::pair<Mac48Address, uint8_t> >::const_iterator BlockedPacketsCI;
+  BlockedPackets m_blockedQosPackets;
 };
 
-} // namespace ns3
+} //namespace ns3
 
-#endif /* MAC_TX_MIDDLE_H */
+#endif /* QOS_BLOCKED_DESTINATIONS_H */

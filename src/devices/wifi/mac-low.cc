@@ -1,6 +1,7 @@
 /* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2005,2006 INRIA
+ * Copyright (c) 2009 MIRKO BANCHI
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as 
@@ -16,6 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
+ * Author: Mirko Banchi <mk.banchi@gmail.com>
  */
 
 #include "ns3/assert.h"
@@ -28,6 +30,8 @@
 #include "mac-low.h"
 #include "wifi-phy.h"
 #include "wifi-mac-trailer.h"
+#include "qos-utils.h"
+#include "edca-txop-n.h"
 
 NS_LOG_COMPONENT_DEFINE ("MacLow");
 
@@ -110,9 +114,21 @@ MacLowTransmissionListener::MacLowTransmissionListener ()
 {}
 MacLowTransmissionListener::~MacLowTransmissionListener ()
 {}
+void
+MacLowTransmissionListener::GotBlockAck (const CtrlBAckResponseHeader *blockAck,
+                                         Mac48Address source)
+{}
+void
+MacLowTransmissionListener::MissedBlockAck (void)
+{}
 MacLowDcfListener::MacLowDcfListener ()
 {}
 MacLowDcfListener::~MacLowDcfListener ()
+{}
+
+MacLowBlockAckEventListener::MacLowBlockAckEventListener ()
+{}
+MacLowBlockAckEventListener::~MacLowBlockAckEventListener ()
 {}
 
 MacLowTransmissionParameters::MacLowTransmissionParameters ()
@@ -145,6 +161,21 @@ void
 MacLowTransmissionParameters::EnableSuperFastAck (void)
 {
   m_waitAck = ACK_SUPER_FAST;
+}
+void
+MacLowTransmissionParameters::EnableBasicBlockAck (void)
+{
+  m_waitAck = BLOCK_ACK_BASIC;
+}
+void
+MacLowTransmissionParameters::EnableCompressedBlockAck (void)
+{
+  m_waitAck = BLOCK_ACK_COMPRESSED;
+}
+void
+MacLowTransmissionParameters::EnableMultiTidBlockAck (void)
+{
+  m_waitAck = BLOCK_ACK_MULTI_TID;
 }
 void 
 MacLowTransmissionParameters::EnableFastAck (void)
@@ -190,6 +221,21 @@ bool
 MacLowTransmissionParameters::MustWaitSuperFastAck (void) const
 {
   return (m_waitAck == ACK_SUPER_FAST);
+}
+bool
+MacLowTransmissionParameters::MustWaitBasicBlockAck (void) const
+{
+  return (m_waitAck == BLOCK_ACK_BASIC)?true:false;
+}
+bool
+MacLowTransmissionParameters::MustWaitCompressedBlockAck (void) const
+{
+  return (m_waitAck == BLOCK_ACK_COMPRESSED)?true:false;
+}
+bool
+MacLowTransmissionParameters::MustWaitMultiTidBlockAck (void) const
+{
+  return (m_waitAck == BLOCK_ACK_MULTI_TID)?true:false;
 }
 bool 
 MacLowTransmissionParameters::MustSendRts (void) const
@@ -239,6 +285,15 @@ std::ostream &operator << (std::ostream &os, const MacLowTransmissionParameters 
   case MacLowTransmissionParameters::ACK_SUPER_FAST:
     os << "super-fast";
     break;
+  case MacLowTransmissionParameters::BLOCK_ACK_BASIC:
+    os << "basic-block-ack";
+    break;
+  case MacLowTransmissionParameters::BLOCK_ACK_COMPRESSED:
+    os << "compressed-block-ack";
+    break;
+  case MacLowTransmissionParameters::BLOCK_ACK_MULTI_TID:
+    os << "multi-tid-block-ack";
+    break;
   }
   os << "]";
   return os;
@@ -273,6 +328,7 @@ MacLow::MacLow ()
     m_fastAckTimeoutEvent (),
     m_superFastAckTimeoutEvent (),
     m_fastAckFailedTimeoutEvent (),
+    m_blockAckTimeoutEvent (),
     m_ctsTimeoutEvent (),
     m_sendCtsEvent (),
     m_sendAckEvent (),
@@ -307,6 +363,7 @@ MacLow::DoDispose (void)
   m_fastAckTimeoutEvent.Cancel ();
   m_superFastAckTimeoutEvent.Cancel ();
   m_fastAckFailedTimeoutEvent.Cancel ();
+  m_blockAckTimeoutEvent.Cancel ();
   m_ctsTimeoutEvent.Cancel ();
   m_sendCtsEvent.Cancel ();
   m_sendAckEvent.Cancel ();
@@ -341,6 +398,11 @@ MacLow::CancelAllEvents (void)
   if (m_fastAckFailedTimeoutEvent.IsRunning ()) 
     {
       m_fastAckFailedTimeoutEvent.Cancel ();
+      oneRunning = true;
+    }
+  if (m_blockAckTimeoutEvent.IsRunning ())
+    {
+      m_blockAckTimeoutEvent.Cancel ();
       oneRunning = true;
     }
   if (m_ctsTimeoutEvent.IsRunning ()) 
@@ -399,6 +461,16 @@ MacLow::SetAckTimeout (Time ackTimeout)
 {
   m_ackTimeout = ackTimeout;
 }
+void
+MacLow::SetBasicBlockAckTimeout (Time blockAckTimeout)
+{
+  m_basicBlockAckTimeout = blockAckTimeout;
+}
+void
+MacLow::SetCompressedBlockAckTimeout (Time blockAckTimeout)
+{
+  m_compressedBlockAckTimeout = blockAckTimeout;
+}
 void 
 MacLow::SetCtsTimeout (Time ctsTimeout)
 {
@@ -433,6 +505,16 @@ Time
 MacLow::GetAckTimeout (void) const
 {
   return m_ackTimeout;
+}
+Time
+MacLow::GetBasicBlockAckTimeout () const
+{
+  return m_basicBlockAckTimeout;
+}
+Time
+MacLow::GetCompressedBlockAckTimeout () const
+{
+  return m_compressedBlockAckTimeout;
 }
 Time 
 MacLow::GetCtsTimeout (void) const
@@ -649,6 +731,53 @@ MacLow::ReceiveOk (Ptr<Packet> packet, double rxSnr, WifiMode txMode, WifiPreamb
                                                  &MacLow::WaitSifsAfterEndTx, this);
         }
     } 
+  else if (hdr.IsBlockAck () && hdr.GetAddr1 () == m_self &&
+          (m_txParams.MustWaitBasicBlockAck () || m_txParams.MustWaitCompressedBlockAck ()) && 
+           m_blockAckTimeoutEvent.IsRunning ())
+    {
+      NS_LOG_DEBUG ("got block ack from "<<hdr.GetAddr2 ());
+      CtrlBAckResponseHeader blockAck;
+      packet->RemoveHeader (blockAck);
+      m_blockAckTimeoutEvent.Cancel ();
+      m_listener->GotBlockAck (&blockAck, hdr.GetAddr2 ());
+    }
+  else if (hdr.IsBlockAckReq () && hdr.GetAddr1 () == m_self)
+    {
+      CtrlBAckRequestHeader blockAckReq;
+      packet->RemoveHeader (blockAckReq);
+      if (!blockAckReq.IsMultiTid ())
+        {
+          AgreementsI it = m_bAckAgreements.find (std::make_pair (hdr.GetAddr2 (), blockAckReq.GetTidInfo ()));
+          if (it != m_bAckAgreements.end ())
+            {
+              NS_ASSERT (m_sendAckEvent.IsExpired ());
+              /* See section 11.5.3 in IEEE802.11 for mean of this timer */
+              ResetBlockAckInactivityTimerIfNeeded (it->second.first);
+              if ((*it).second.first.IsImmediateBlockAck ())
+                {
+                  NS_LOG_DEBUG ("rx blockAckRequest/sendImmediateBlockAck from="<< hdr.GetAddr2 ());
+                  m_sendAckEvent = Simulator::Schedule (GetSifs (),
+                                                        &MacLow::SendBlockAckAfterBlockAckRequest, this,
+                                                        blockAckReq,
+                                                        hdr.GetAddr2 (), 
+                                                        hdr.GetDuration (),
+                                                        txMode);
+                }
+              else
+                {
+                  NS_FATAL_ERROR ("Delayed block ack not supported.");
+                }
+            }
+          else
+            {
+              NS_LOG_DEBUG ("There's not a valid agreement for this block ack request.");
+            }
+        }
+      else
+        {
+          NS_FATAL_ERROR ("Multi-tid block ack is not supported.");
+        }
+    }
   else if (hdr.IsCtl ()) 
     {
       NS_LOG_DEBUG ("rx drop " << hdr.GetTypeString ());
@@ -658,7 +787,50 @@ MacLow::ReceiveOk (Ptr<Packet> packet, double rxSnr, WifiMode txMode, WifiPreamb
       WifiRemoteStation *station = GetStation (hdr.GetAddr2 ());
       station->ReportRxOk (rxSnr, txMode);
       
-      if (hdr.IsQosData () && hdr.IsQosNoAck ()) 
+      if (hdr.IsQosData () && StoreMpduIfNeeded (packet, hdr)) 
+        {
+          /* From section 9.10.4 in IEEE802.11:
+             Upon the receipt of a QoS data frame from the originator for which
+             the Block Ack agreement exists, the recipient shall buffer the MSDU
+             regardless of the value of the Ack Policy subfield within the 
+             QoS Control field of the QoS data frame. */
+          if (hdr.IsQosAck ())
+            {
+              AgreementsI it = m_bAckAgreements.find (std::make_pair (hdr.GetAddr2 (), hdr.GetQosTid ()));
+              RxCompleteBufferedPacketsWithSmallerSequence (it->second.first.GetStartingSequence (),
+                                                            hdr.GetAddr2 (), hdr.GetQosTid ());
+              RxCompleteBufferedPackets (hdr.GetAddr2 (), hdr.GetQosTid ());
+              NS_ASSERT (m_sendAckEvent.IsExpired ());
+              m_sendAckEvent = Simulator::Schedule (GetSifs (),
+                                                    &MacLow::SendAckAfterData, this,
+                                                    hdr.GetAddr2 (), 
+                                                    hdr.GetDuration (),
+                                                    txMode,
+                                                    rxSnr);
+            }
+          else if (hdr.IsQosBlockAck ())
+            {
+              AgreementsI it = m_bAckAgreements.find (std::make_pair (hdr.GetAddr2 (), hdr.GetQosTid ()));
+              /* See section 11.5.3 in IEEE802.11 for mean of this timer */
+              ResetBlockAckInactivityTimerIfNeeded (it->second.first);
+            }
+          return;  
+        }
+      else if (hdr.IsQosData () && hdr.IsQosBlockAck ())
+        {
+          /* This happens if a packet with ack policy Block Ack is received and a block ack
+             agreement for that packet doesn't exist.
+
+             From section 11.5.3 in IEEE802.11e:
+             When a recipient does not have an active Block ack for a TID, but receives
+             data MPDUs with the Ack Policy subfield set to Block Ack, it shall discard
+             them and shall send a DELBA frame using the normal access 
+             mechanisms. */
+          AccessClass ac = QosUtilsMapTidToAc (hdr.GetQosTid ());
+          m_edcaListeners[ac]->BlockAckInactivityTimeout (hdr.GetAddr2 (), hdr.GetQosTid ());
+          return;
+        }
+      else if (hdr.IsQosData () && hdr.IsQosNoAck ()) 
         {
           NS_LOG_DEBUG ("rx unicast/noAck from="<<hdr.GetAddr2 ());
         } 
@@ -706,6 +878,27 @@ MacLow::GetAckSize (void) const
   ack.SetType (WIFI_MAC_CTL_ACK);
   return ack.GetSize () + 4;
 }
+uint32_t
+MacLow::GetBlockAckSize (enum BlockAckType type) const
+{
+  WifiMacHeader hdr;
+  hdr.SetType (WIFI_MAC_CTL_BACKRESP);
+  CtrlBAckResponseHeader blockAck;
+  if (type == BASIC_BLOCK_ACK)
+    {
+      blockAck.SetType (BASIC_BLOCK_ACK);
+    }
+  else if (type == COMPRESSED_BLOCK_ACK)
+    {
+      blockAck.SetType (COMPRESSED_BLOCK_ACK);
+    }
+  else if (type == MULTI_TID_BLOCK_ACK)
+    {
+      //Not implemented
+      NS_ASSERT (false);  
+    }
+  return hdr.GetSize () + blockAck.GetSerializedSize () + 4; 
+}
 uint32_t 
 MacLow::GetRtsSize (void) const
 {
@@ -718,6 +911,19 @@ MacLow::GetAckDuration (Mac48Address to, WifiMode dataTxMode) const
 {
   WifiMode ackMode = GetAckTxModeForData (to, dataTxMode);
   return m_phy->CalculateTxDuration (GetAckSize (), ackMode, WIFI_PREAMBLE_LONG);
+}
+Time
+MacLow::GetBlockAckDuration (Mac48Address to, WifiMode blockAckReqTxMode, enum BlockAckType type) const
+{
+  /* 
+   * For immediate BlockAck we should transmit the frame with the same WifiMode
+   * as the BlockAckReq.
+   *
+   * from section 9.6 in IEEE802.11e:
+   * The BlockAck control frame shall be sent at the same rate and modulation class as
+   * the BlockAckReq frame if it is sent in response to a BlockAckReq frame.
+   */
+  return m_phy->CalculateTxDuration (GetBlockAckSize (type), blockAckReqTxMode, WIFI_PREAMBLE_LONG);
 }
 Time
 MacLow::GetCtsDuration (Mac48Address to, WifiMode rtsTxMode) const
@@ -977,6 +1183,18 @@ MacLow::FastAckTimeout (void)
     }
 }
 void
+MacLow::BlockAckTimeout (void)
+{
+  NS_LOG_FUNCTION (this);
+  NS_LOG_DEBUG ("block ack timeout");
+  
+  WifiRemoteStation *station = GetStation (m_currentHdr.GetAddr1 ());
+  station->ReportDataFailed ();
+  MacLowTransmissionListener *listener = m_listener;
+  m_listener = 0;
+  listener->MissedBlockAck ();
+}
+void
 MacLow::SuperFastAckTimeout ()
 {
   NS_LOG_FUNCTION (this);
@@ -1069,7 +1287,19 @@ MacLow::StartDataTxTimers (void)
       NotifyAckTimeoutStartNow (timerDelay);
       m_superFastAckTimeoutEvent = Simulator::Schedule (timerDelay, 
                                                         &MacLow::SuperFastAckTimeout, this);
-    } 
+    }
+  else if (m_txParams.MustWaitBasicBlockAck ())
+    {
+      Time timerDelay = txDuration + GetBasicBlockAckTimeout ();
+      NS_ASSERT (m_blockAckTimeoutEvent.IsExpired ());
+      m_blockAckTimeoutEvent = Simulator::Schedule (timerDelay, &MacLow::BlockAckTimeout, this);
+    }
+  else if (m_txParams.MustWaitCompressedBlockAck ())
+    {
+      Time timerDelay = txDuration + GetCompressedBlockAckTimeout ();
+      NS_ASSERT (m_blockAckTimeoutEvent.IsExpired ());
+      m_blockAckTimeoutEvent = Simulator::Schedule (timerDelay, &MacLow::BlockAckTimeout, this);
+    }
   else if (m_txParams.HasNextPacket ()) 
     {
       Time delay = txDuration + GetSifs ();
@@ -1098,7 +1328,17 @@ MacLow::SendDataPacket (void)
     } 
   else 
     {
-      if (m_txParams.MustWaitAck ()) 
+      if (m_txParams.MustWaitBasicBlockAck ())
+        {
+          duration += GetSifs ();
+          duration += GetBlockAckDuration (m_currentHdr.GetAddr1 (), dataTxMode, BASIC_BLOCK_ACK);
+        }
+      else if (m_txParams.MustWaitCompressedBlockAck ())
+        {
+          duration += GetSifs ();
+          duration += GetBlockAckDuration (m_currentHdr.GetAddr1 (), dataTxMode, COMPRESSED_BLOCK_ACK);
+        }
+      else if (m_txParams.MustWaitAck ()) 
         {
           duration += GetSifs ();
           duration += GetAckDuration (m_currentHdr.GetAddr1 (), dataTxMode);
@@ -1253,6 +1493,367 @@ MacLow::SendAckAfterData (Mac48Address source, Time duration, WifiMode dataTxMod
   packet->AddPacketTag (tag);
 
   ForwardDown (packet, &ack, ackTxMode);
+}
+
+bool
+MacLow::StoreMpduIfNeeded (Ptr<Packet> packet, WifiMacHeader hdr)
+{
+  AgreementsI it = m_bAckAgreements.find (std::make_pair (hdr.GetAddr2 (), hdr.GetQosTid ()));
+  if (it != m_bAckAgreements.end ())
+   {
+     WifiMacTrailer fcs;
+     packet->RemoveTrailer (fcs);
+     BufferedPacket bufferedPacket (packet, hdr);
+
+     uint16_t endSequence = ((*it).second.first.GetStartingSequence () + 2047) % 4096;
+     uint16_t mappedSeqControl = QosUtilsMapSeqControlToUniqueInteger (hdr.GetSequenceControl () ,endSequence);
+
+     BufferedPacketI i = (*it).second.second.begin ();
+     for (; i != (*it).second.second.end () &&
+            QosUtilsMapSeqControlToUniqueInteger ((*i).second.GetSequenceControl (), endSequence) < mappedSeqControl; i++);
+     (*it).second.second.insert (i, bufferedPacket);
+     return true;
+   }
+  return false;
+}
+
+void
+MacLow::CreateBlockAckAgreement (const MgtAddBaResponseHeader *respHdr, Mac48Address originator,
+                                 uint16_t startingSeq)
+{
+  uint8_t tid = respHdr->GetTid ();
+  BlockAckAgreement agreement (originator, tid);
+  if (respHdr->IsImmediateBlockAck ())
+    {
+      agreement.SetImmediateBlockAck ();
+    }
+  else
+    {
+      agreement.SetDelayedBlockAck ();
+    }
+  agreement.SetAmsduSupport (respHdr->IsAmsduSupported ());
+  agreement.SetBufferSize (respHdr->GetBufferSize ());
+  agreement.SetTimeout (respHdr->GetTimeout ());
+  agreement.SetStartingSequence (startingSeq);
+  
+  std::list<BufferedPacket> buffer (0);
+  AgreementKey key (originator, respHdr->GetTid ());
+  AgreementValue value (agreement, buffer);
+  m_bAckAgreements.insert (std::make_pair (key, value));
+  
+  if (respHdr->GetTimeout () != 0)
+    {
+      AgreementsI it = m_bAckAgreements.find (std::make_pair (originator, respHdr->GetTid ()));
+      Time timeout = MicroSeconds (1024 * agreement.GetTimeout ());
+ 
+      AccessClass ac = QosUtilsMapTidToAc (agreement.GetTid ());
+      
+      it->second.first.m_inactivityEvent = Simulator::Schedule (timeout,
+                                                                &MacLowBlockAckEventListener::BlockAckInactivityTimeout,
+                                                                m_edcaListeners[ac],
+                                                                originator, tid);
+    }
+}
+
+void
+MacLow::DestroyBlockAckAgreement (Mac48Address originator, uint8_t tid)
+{
+  AgreementsI it = m_bAckAgreements.find (std::make_pair (originator, tid));
+  if (it != m_bAckAgreements.end ())
+    {
+      RxCompleteBufferedPacketsWithSmallerSequence (it->second.first.GetStartingSequence (), originator, tid);
+      RxCompleteBufferedPackets (originator, tid);
+      m_bAckAgreements.erase (it);
+    }
+}
+
+void
+MacLow::RxCompleteBufferedPacketsWithSmallerSequence (uint16_t seq, Mac48Address originator, uint8_t tid)
+{
+  AgreementsI it = m_bAckAgreements.find (std::make_pair (originator, tid));
+  if (it != m_bAckAgreements.end ())
+    {
+      BufferedPacketI i = (*it).second.second.begin ();
+      uint16_t endSequence = ((*it).second.first.GetStartingSequence () + 2047) % 4096;
+      uint16_t mappedStart = QosUtilsMapSeqControlToUniqueInteger (seq, endSequence);
+      uint16_t guard = (*it).second.first.GetStartingSequence ();
+      BufferedPacketI last = (*it).second.second.begin ();
+
+      for (; i != (*it).second.second.end () &&
+             QosUtilsMapSeqControlToUniqueInteger ((*i).second.GetSequenceNumber (), endSequence) < mappedStart;)
+        {
+          while (i != (*it).second.second.end () && guard == (*i).second.GetSequenceControl ())
+            {
+              if (!(*i).second.IsMoreFragments ())
+                {
+                  while (last != i)
+                    {
+                      m_rxCallback ((*last).first, &(*last).second);
+                      last++;
+                    }
+                  m_rxCallback ((*last).first, &(*last).second);
+                  last++;
+                }
+              guard = (*i).second.IsMoreFragments () ? (guard + 1) : ((guard + 16) & 0xfff0);
+            }
+          /* go to next packet */
+          while (i != (*it).second.second.end () && ((guard >> 4) & 0x0fff) == (*i).second.GetSequenceNumber ())
+            {
+              i++;
+            }
+          if (i != (*it).second.second.end ())
+            {
+              guard = (*i).second.GetSequenceControl () & 0xfff0;
+              last = i;
+            }
+        }
+      (*it).second.second.erase ((*it).second.second.begin (), i);
+    }
+}
+
+void
+MacLow::RxCompleteBufferedPackets (Mac48Address originator, uint8_t tid)
+{
+  AgreementsI it = m_bAckAgreements.find (std::make_pair (originator, tid));
+  if (it != m_bAckAgreements.end ())
+    {
+      uint16_t startingSeqCtrl = ((*it).second.first.GetStartingSequence ()<<4) & 0xfff0;
+      uint16_t guard = startingSeqCtrl;
+
+      BufferedPacketI lastComplete = (*it).second.second.begin ();
+      BufferedPacketI i = (*it).second.second.begin ();
+      for (;i != (*it).second.second.end() && guard == (*i).second.GetSequenceControl (); i++)
+        {
+          if (!(*i).second.IsMoreFragments ())
+            {
+              while (lastComplete != i)
+                {
+                  m_rxCallback ((*lastComplete).first, &(*lastComplete).second);
+                  lastComplete++;
+                }
+               m_rxCallback ((*lastComplete).first, &(*lastComplete).second);
+               lastComplete++;
+            }
+          guard = (*i).second.IsMoreFragments () ? (guard + 1) : ((guard + 16) & 0xfff0);
+        }
+      (*it).second.first.SetStartingSequence ((guard>>4)&0x0fff);
+      /* All packets already forwarded to WifiMac must be removed from buffer: 
+      [begin (), lastComplete) */
+      (*it).second.second.erase ((*it).second.second.begin (), lastComplete);
+    }
+}
+
+void
+MacLow::SendBlockAckResponse (const CtrlBAckResponseHeader* blockAck, Mac48Address originator, bool immediate,
+                              Time duration, WifiMode blockAckReqTxMode)
+{
+  Ptr<Packet> packet = Create<Packet> ();
+  packet->AddHeader (*blockAck);
+
+  WifiMacHeader hdr;
+  hdr.SetType (WIFI_MAC_CTL_BACKRESP);
+  hdr.SetAddr1 (originator);
+  hdr.SetAddr2 (GetAddress ());
+  hdr.SetDsNotFrom ();
+  hdr.SetDsNotTo ();
+  hdr.SetNoRetry ();
+  hdr.SetNoMoreFragments ();
+
+  m_currentPacket = packet;
+  m_currentHdr = hdr;
+  if (immediate)
+    {
+      m_txParams.DisableAck ();
+      duration -= GetSifs ();
+      if (blockAck->IsBasic ())
+        {
+          duration -= GetBlockAckDuration (originator, blockAckReqTxMode, BASIC_BLOCK_ACK);
+        }
+      else if (blockAck->IsCompressed ())
+        {
+          duration -= GetBlockAckDuration (originator, blockAckReqTxMode, COMPRESSED_BLOCK_ACK);
+        }
+      else if (blockAck->IsMultiTid ())
+        {
+          NS_FATAL_ERROR ("Multi-tid block ack is not supported.");
+        }
+    }
+  else
+    {
+      m_txParams.EnableAck ();
+      duration += GetSifs ();
+      duration += GetAckDuration (originator, blockAckReqTxMode);
+    }
+  m_txParams.DisableNextData ();
+
+  StartDataTxTimers ();
+
+  NS_ASSERT (duration >= MicroSeconds (0));
+  hdr.SetDuration (duration);
+  //here should be present a control about immediate or delayed block ack
+  //for now we assume immediate
+  packet->AddHeader (hdr);
+  WifiMacTrailer fcs;
+  packet->AddTrailer (fcs);
+  ForwardDown (packet, &hdr, blockAckReqTxMode);
+  m_currentPacket = 0;
+}
+
+void
+MacLow::SendBlockAckAfterBlockAckRequest (const CtrlBAckRequestHeader reqHdr, Mac48Address originator,
+                                          Time duration, WifiMode blockAckReqTxMode)
+{
+  NS_LOG_FUNCTION (this);
+  CtrlBAckResponseHeader blockAck;
+  uint8_t tid;
+  bool immediate = false;
+  if (!reqHdr.IsMultiTid ())
+    {
+      blockAck.SetStartingSequence (reqHdr.GetStartingSequence ());
+      blockAck.SetTidInfo (reqHdr.GetTidInfo ());
+      
+      tid = reqHdr.GetTidInfo ();
+      AgreementsI it;
+      it = m_bAckAgreements.find (std::make_pair (originator, tid));
+      if (it != m_bAckAgreements.end ())
+        {
+          immediate = (*it).second.first.IsImmediateBlockAck ();
+          uint16_t startingSeqCtrl = reqHdr.GetStartingSequenceControl ();
+
+          /* All packets with smaller sequence than starting sequence control must be passed up to Wifimac 
+           * See 9.10.3 in IEEE8022.11e standard.
+           */
+          RxCompleteBufferedPacketsWithSmallerSequence ((startingSeqCtrl>>4)&0xfff0, originator, tid);
+
+          std::list<BufferedPacket>::iterator i = (*it).second.second.begin ();
+
+          /* For more details about next operations see section 9.10.4 of IEEE802.11e standard */
+          if (reqHdr.IsBasic ())
+            {
+              blockAck.SetType (BASIC_BLOCK_ACK);
+              uint16_t guard = startingSeqCtrl;
+              std::list<BufferedPacket>::iterator lastComplete = (*it).second.second.begin ();
+              for (; i != (*it).second.second.end () && guard == (*i).second.GetSequenceControl (); i++)
+                {
+                  blockAck.SetReceivedFragment ((*i).second.GetSequenceNumber (),
+                                                (*i).second.GetFragmentNumber ());
+                   /* Section 9.10.4 in IEEE802.11n: the recipient shall pass up to WifiMac the 
+                    * MSDUs and A-MSDUs starting with the starting sequence number 
+                    * sequentially until there is an incomplete MSDU or A-MSDU in the buffer */
+                  if (!(*i).second.IsMoreFragments ())
+                    {
+                      while (lastComplete != i)
+                        {
+                          m_rxCallback ((*lastComplete).first, &(*lastComplete).second);
+                          lastComplete++;
+                        }
+                      m_rxCallback ((*lastComplete).first, &(*lastComplete).second);
+                      lastComplete++;
+                    }
+                  guard = (*i).second.IsMoreFragments () ? (guard + 1) : (guard + 16) & 0xfff0;
+                }
+              (*it).second.first.SetStartingSequence ((guard>>4)&0x0fff);
+              /* All packets already forwarded to WifiMac must be removed from buffer: 
+                 [begin (), lastComplete) */
+              (*it).second.second.erase ((*it).second.second.begin (), lastComplete);
+              for (i = lastComplete; i != (*it).second.second.end (); i++)
+                { 
+                  blockAck.SetReceivedFragment ((*i).second.GetSequenceNumber (),
+                                                (*i).second.GetFragmentNumber ());  
+                }
+            }
+          else if (reqHdr.IsCompressed ())
+            {
+              blockAck.SetType (COMPRESSED_BLOCK_ACK);
+              uint16_t guard = startingSeqCtrl;
+              std::list<BufferedPacket>::iterator lastComplete = (*it).second.second.begin ();
+              for (; i != (*it).second.second.end () && guard == (*i).second.GetSequenceControl (); i++)
+                {
+                  if (!(*i).second.IsMoreFragments ())
+                    {
+                      blockAck.SetReceivedPacket ((*i).second.GetSequenceNumber ());
+                      while (lastComplete != i)
+                        {
+                          m_rxCallback ((*lastComplete).first, &(*lastComplete).second);
+                          lastComplete++;
+                        }
+                      m_rxCallback ((*lastComplete).first, &(*lastComplete).second);
+                      lastComplete++;
+                    }
+                  guard = (*i).second.IsMoreFragments () ? (guard + 1) : (guard + 16) & 0xfff0;
+                }
+              (*it).second.first.SetStartingSequence ((guard>>4)&0x0fff);
+              /* All packets already forwarded to WifiMac must be removed from buffer:
+                 [begin (), lastcomplete) */
+              (*it).second.second.erase ((*it).second.second.begin (), lastComplete);
+              i = lastComplete;
+              if (i != (*it).second.second.end ())
+                {
+                  guard = (*i).second.GetSequenceControl () & 0xfff0;
+                }
+              for (; i != (*it).second.second.end ();)
+                {
+                  for (; i != (*it).second.second.end () && guard == (*i).second.GetSequenceControl (); i++)
+                    {
+                      if (!(*i).second.IsMoreFragments ())
+                        {
+                          guard = (guard + 16) & 0xfff0;
+                          blockAck.SetReceivedPacket ((*i).second.GetSequenceNumber ());
+                        }
+                      else
+                        {
+                          guard += 1;
+                        }
+                    }
+                  while (i != (*it).second.second.end () && ((guard >> 4) & 0x0fff) == (*i).second.GetSequenceNumber ())
+                    {
+                      i++;
+                    }
+                  if (i != (*it).second.second.end ())
+                    {
+                      guard = (*i).second.GetSequenceControl () & 0xfff0;
+                    }
+                }
+            }
+        }
+      else
+        {
+          NS_LOG_DEBUG ("there's not a valid block ack agreement with "<<originator);
+        }
+    }
+  else
+    {
+      NS_FATAL_ERROR ("Multi-tid block ack is not supported.");
+    }
+
+  SendBlockAckResponse (&blockAck, originator, immediate, duration, blockAckReqTxMode);
+}
+
+void
+MacLow::ResetBlockAckInactivityTimerIfNeeded (BlockAckAgreement &agreement)
+{
+  if (agreement.GetTimeout () != 0)
+    {
+      NS_ASSERT (agreement.m_inactivityEvent.IsRunning ());
+      agreement.m_inactivityEvent.Cancel ();
+      Time timeout = MicroSeconds (1024 * agreement.GetTimeout ());
+
+      AccessClass ac = QosUtilsMapTidToAc (agreement.GetTid ());
+      //std::map<AccessClass, MacLowTransmissionListener*>::iterator it = m_edcaListeners.find (ac);
+      //NS_ASSERT (it != m_edcaListeners.end ());
+
+      agreement.m_inactivityEvent = Simulator::Schedule (timeout, 
+                                                         &MacLowBlockAckEventListener::BlockAckInactivityTimeout, 
+                                                         m_edcaListeners[ac],
+                                                         agreement.GetPeer (),
+                                                         agreement.GetTid ());
+    }
+}
+
+void
+MacLow::RegisterBlockAckListenerForAc (enum AccessClass ac, MacLowBlockAckEventListener *listener)
+{
+  m_edcaListeners.insert (std::make_pair (ac, listener));
 }
 
 } // namespace ns3
