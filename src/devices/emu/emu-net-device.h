@@ -214,11 +214,6 @@ private:
   void CreateSocket (void);
 
   /**
-   * Figure out where the raw socket creation process lives on the system.
-   */
-  std::string FindCreator (std::string creatorName);
-
-  /**
    * Get a copy of the attached Queue.
    *
    * This method is provided for any derived class that may need to get

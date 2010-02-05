@@ -477,8 +477,8 @@ TapBridge::CreateTap (void)
       //
       // Execute the socket creation process image.
       //
-      status = ::execl (FindCreator ("tap-creator").c_str (), 
-                        FindCreator ("tap-creator").c_str (), // argv[0] (filename)
+      status = ::execlp ("tap-creator", 
+                        "tap-creator",                        // argv[0] (filename)
                         ossDeviceName.str ().c_str (),        // argv[1] (-d<device name>)
                         ossGateway.str ().c_str (),           // argv[2] (-g<gateway>)
                         ossIp.str ().c_str (),                // argv[3] (-i<IP address>)
@@ -489,10 +489,10 @@ TapBridge::CreateTap (void)
                         (char *)NULL);
 
       //
-      // If the execl successfully completes, it never returns.  If it returns it failed or the OS is
+      // If the execlp successfully completes, it never returns.  If it returns it failed or the OS is
       // broken.  In either case, we bail.
       //
-      NS_FATAL_ERROR ("TapBridge::CreateTap(): Back from execl(), errno = " << ::strerror (errno));
+      NS_FATAL_ERROR ("TapBridge::CreateTap(): Back from execlp(), errno = " << ::strerror (errno));
     }
   else
     {
@@ -612,44 +612,6 @@ TapBridge::CreateTap (void)
 	}
       NS_FATAL_ERROR ("Did not get the raw socket from the socket creator");
     }
-}
-
-std::string
-TapBridge::FindCreator (std::string creatorName)
-{
-  NS_LOG_FUNCTION (creatorName);
-
-  std::list<std::string> locations;
-
-  // The path to the bits if we're sitting in the root of the repo
-  locations.push_back ("./build/optimized/src/devices/tap-bridge/");
-  locations.push_back ("./build/debug/src/devices/tap-bridge/");
-
-  // if in src
-  locations.push_back ("../build/optimized/src/devices/tap-bridge/");
-  locations.push_back ("../build/debug/src/devices/tap-bridge/");
-
-  // if in src/devices
-  locations.push_back ("../../build/optimized/src/devices/tap-bridge/");
-  locations.push_back ("../../build/debug/src/devices/tap-bridge/");
-
-  // if in src/devices/tap-bridge
-  locations.push_back ("../../../build/optimized/src/devices/tap-bridge/");
-  locations.push_back ("../../../build/debug/src/devices/tap-bridge/");
-
-  for (std::list<std::string>::const_iterator i = locations.begin (); i != locations.end (); ++i)
-    {
-      struct stat st;
-
-      if (::stat ((*i + creatorName).c_str (), &st) == 0)
-	{
-          NS_LOG_INFO ("Found Creator " << *i + creatorName);                  
-	  return *i + creatorName;
-	}
-    }
-
-  NS_FATAL_ERROR ("TapBridge::FindCreator(): Couldn't find creator");
-  return ""; // quiet compiler
 }
 
 void
