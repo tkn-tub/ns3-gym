@@ -70,8 +70,6 @@ TcpSocketImpl::GetTypeId ()
     m_endPoint (0),
     m_node (0),
     m_tcp (0),
-    m_localAddress (Ipv4Address::GetZero ()),
-    m_localPort (0),
     m_errno (ERROR_NOTERROR),
     m_shutdownSend (false),
     m_shutdownRecv (false),
@@ -109,10 +107,6 @@ TcpSocketImpl::TcpSocketImpl(const TcpSocketImpl& sock)
     m_endPoint (0),
     m_node (sock.m_node),
     m_tcp (sock.m_tcp),
-    m_remoteAddress (sock.m_remoteAddress),
-    m_remotePort (sock.m_remotePort),
-    m_localAddress (sock.m_localAddress),
-    m_localPort (sock.m_localPort),
     m_errno (sock.m_errno),
     m_shutdownSend (sock.m_shutdownSend),
     m_shutdownRecv (sock.m_shutdownRecv),
@@ -266,8 +260,6 @@ TcpSocketImpl::FinishBind (void)
     }
   m_endPoint->SetRxCallback (MakeCallback (&TcpSocketImpl::ForwardUp, Ptr<TcpSocketImpl>(this)));
   m_endPoint->SetDestroyCallback (MakeCallback (&TcpSocketImpl::Destroy, Ptr<TcpSocketImpl>(this)));
-  m_localAddress = m_endPoint->GetLocalAddress ();
-  m_localPort = m_endPoint->GetLocalPort ();
   return 0;
 }
 
@@ -377,13 +369,12 @@ TcpSocketImpl::Connect (const Address & address)
       NS_ASSERT (m_endPoint != 0);
     }
   InetSocketAddress transport = InetSocketAddress::ConvertFrom (address);
-  m_remoteAddress = transport.GetIpv4 ();
-  m_remotePort = transport.GetPort ();
+  m_endPoint->SetPeer(transport.GetIpv4 (), transport.GetPort ());
   
   if (ipv4->GetRoutingProtocol () != 0)
     {
       Ipv4Header header;
-      header.SetDestination (m_remoteAddress);
+      header.SetDestination (m_endPoint->GetPeerAddress());
       Socket::SocketErrno errno_;
       Ptr<Ipv4Route> route;
       Ptr<NetDevice> oif = m_boundnetdevice; //specify non-zero if bound to a source address
@@ -396,7 +387,7 @@ TcpSocketImpl::Connect (const Address & address)
         }
       else
         {
-          NS_LOG_LOGIC ("TcpSocketImpl::Connect():  Route to " << m_remoteAddress << " does not exist");
+          NS_LOG_LOGIC ("TcpSocketImpl::Connect():  Route to " << m_endPoint->GetPeerAddress() << " does not exist");
           NS_LOG_ERROR (errno_);
           m_errno = errno_;
           return -1;
@@ -602,7 +593,7 @@ TcpSocketImpl::Recv (uint32_t maxSize, uint32_t flags)
     }
   }
   SocketAddressTag tag;
-  tag.SetAddress (InetSocketAddress (m_remoteAddress, m_remotePort));
+  tag.SetAddress (InetSocketAddress (m_endPoint->GetPeerAddress(), m_endPoint->GetPeerPort()));
   outPacket->AddPacketTag (tag);
   return outPacket;
 }
@@ -638,7 +629,8 @@ int
 TcpSocketImpl::GetSockName (Address &address) const
 {
   NS_LOG_FUNCTION_NOARGS ();
-  address = InetSocketAddress(m_localAddress, m_localPort);
+  address = InetSocketAddress(m_endPoint->GetLocalAddress (), 
+                              m_endPoint->GetLocalPort ());
   return 0;
 }
 
@@ -661,7 +653,7 @@ TcpSocketImpl::BindToNetDevice (Ptr<NetDevice> netdevice)
 }
 
 void
-TcpSocketImpl::ForwardUp (Ptr<Packet> packet, Ipv4Address ipv4, uint16_t port)
+TcpSocketImpl::ForwardUp (Ptr<Packet> packet, Ipv4Address saddr, Ipv4Address daddr, uint16_t port)
 {
   NS_LOG_DEBUG("Socket " << this << " got forward up" <<
                " dport " << m_endPoint->GetLocalPort() <<
@@ -669,7 +661,11 @@ TcpSocketImpl::ForwardUp (Ptr<Packet> packet, Ipv4Address ipv4, uint16_t port)
                " sport " << m_endPoint->GetPeerPort() <<
                " saddr " << m_endPoint->GetPeerAddress());
 
-  NS_LOG_FUNCTION (this << packet << ipv4 << port);
+  NS_LOG_FUNCTION (this << packet << saddr << daddr << port);
+
+  Address fromAddress = InetSocketAddress (saddr, port);
+  Address toAddress = InetSocketAddress (daddr, m_endPoint->GetLocalPort());
+
   if (m_shutdownRecv)
     {
       return;
@@ -695,11 +691,10 @@ TcpSocketImpl::ForwardUp (Ptr<Packet> packet, Ipv4Address ipv4, uint16_t port)
 
   Events_t event = SimulationSingleton<TcpStateMachine>::Get ()->FlagsEvent (tcpHeader.GetFlags () );
   Actions_t action = ProcessEvent (event); //updates the state
-  Address address = InetSocketAddress (ipv4, port);
   NS_LOG_DEBUG("Socket " << this << 
                " processing pkt action, " << action <<
                " current state " << m_state);
-  ProcessPacketAction (action, packet, tcpHeader, address);
+  ProcessPacketAction (action, packet, tcpHeader, fromAddress, toAddress);
 }
 
 Actions_t TcpSocketImpl::ProcessEvent (Events_t e)
@@ -727,7 +722,6 @@ Actions_t TcpSocketImpl::ProcessEvent (Events_t e)
     {
       Simulator::ScheduleNow(&TcpSocketImpl::ConnectionSucceeded, this);
       m_connected = true;
-      m_endPoint->SetPeer (m_remoteAddress, m_remotePort);
       NS_LOG_LOGIC ("TcpSocketImpl " << this << " Connected!");
     }
   if (saveState < CLOSING && (m_state == CLOSING || m_state == TIMED_WAIT) )
@@ -787,10 +781,10 @@ void TcpSocketImpl::SendEmptyPacket (uint8_t flags)
   header.SetSequenceNumber (m_nextTxSequence);
   header.SetAckNumber (m_nextRxSequence);
   header.SetSourcePort (m_endPoint->GetLocalPort ());
-  header.SetDestinationPort (m_remotePort);
+  header.SetDestinationPort (m_endPoint->GetPeerPort ());
   header.SetWindowSize (AdvertisedWindowSize());
   m_tcp->SendPacket (p, header, m_endPoint->GetLocalAddress (), 
-    m_remoteAddress, m_boundnetdevice);
+    m_endPoint->GetPeerAddress (), m_boundnetdevice);
   Time rto = m_rtt->RetransmitTimeout ();
   bool hasSyn = flags & TcpHeader::SYN;
   bool hasFin = flags & TcpHeader::FIN;
@@ -901,7 +895,8 @@ bool TcpSocketImpl::ProcessAction (Actions_t a)
 
 bool TcpSocketImpl::ProcessPacketAction (Actions_t a, Ptr<Packet> p,
                                      const TcpHeader& tcpHeader,
-                                     const Address& fromAddress)
+                                     const Address& fromAddress,
+                                     const Address& toAddress)
 {
   NS_LOG_FUNCTION (this << a << p  << fromAddress);
   Ptr<Ipv4> ipv4 = m_node->GetObject<Ipv4> ();
@@ -935,40 +930,18 @@ bool TcpSocketImpl::ProcessPacketAction (Actions_t a, Ptr<Packet> p,
           NS_LOG_LOGIC ("Cloned a TcpSocketImpl " << newSock);
           //this listening socket should do nothing more
           Simulator::ScheduleNow (&TcpSocketImpl::CompleteFork, newSock,
-                                  p, tcpHeader,fromAddress);
+                                  p, tcpHeader, fromAddress, toAddress);
           return true;
         }
-        // This is the cloned endpoint
-        m_endPoint->SetPeer (m_remoteAddress, m_remotePort);
+      else
+        {
+          // This is the cloned endpoint
+          // TCP SYN consumes one byte
+          m_nextRxSequence = tcpHeader.GetSequenceNumber () 
+                             + SequenceNumber (1);
+          SendEmptyPacket (TcpHeader::SYN | TcpHeader::ACK);
+        }
 
-        // Look up the source address
-        if (ipv4->GetRoutingProtocol () != 0)
-          {
-            Ipv4Header header;
-            Socket::SocketErrno errno_;
-            Ptr<Ipv4Route> route;
-            Ptr<NetDevice> oif = m_boundnetdevice; //specify non-zero if bound to a source address
-            header.SetDestination (m_remoteAddress);
-            route = ipv4->GetRoutingProtocol ()->RouteOutput (Ptr<Packet> (), header, oif, errno_);
-            if (route != 0)
-              {
-                NS_LOG_LOGIC ("Route exists");
-                m_endPoint->SetLocalAddress (route->GetSource ());
-              }
-            else
-              {
-                NS_LOG_ERROR (errno_);
-                m_errno = errno_;
-                return -1;
-              }
-          }
-        else
-          {
-            NS_FATAL_ERROR ("No Ipv4RoutingProtocol in the node");
-          }
-        // TCP SYN consumes one byte
-        m_nextRxSequence = tcpHeader.GetSequenceNumber() + SequenceNumber(1);
-        SendEmptyPacket (TcpHeader::SYN | TcpHeader::ACK);
       break;
     case ACK_TX_1:
       NS_LOG_LOGIC ("TcpSocketImpl " << this <<" Action ACK_TX_1");
@@ -1001,7 +974,8 @@ bool TcpSocketImpl::ProcessPacketAction (Actions_t a, Ptr<Packet> p,
                                  NEW_SEQ_RX,
                                  p,
                                  tcpHeader,
-                                 fromAddress);
+                                 fromAddress,
+                                 toAddress);
         }
       if (tcpHeader.GetAckNumber () < m_highestRxAck) //old ack, do nothing
       {
@@ -1025,7 +999,7 @@ bool TcpSocketImpl::ProcessPacketAction (Actions_t a, Ptr<Packet> p,
       break;
     case NEW_SEQ_RX:
       NS_LOG_LOGIC ("TcpSocketImpl " << this <<" Action NEW_SEQ_RX");
-      NewRx (p, tcpHeader, fromAddress); // Process new data received
+      NewRx (p, tcpHeader, fromAddress, toAddress); // Process new data received
       break;
     case PEER_CLOSE:
     {
@@ -1039,14 +1013,14 @@ bool TcpSocketImpl::ProcessPacketAction (Actions_t a, Ptr<Packet> p,
           NS_LOG_LOGIC ("TcpSocketImpl " << this << " setting pendingClose" 
             << " rxseq " << tcpHeader.GetSequenceNumber () 
             << " nextRxSeq " << m_nextRxSequence);
-          NewRx (p, tcpHeader, fromAddress);
+          NewRx (p, tcpHeader, fromAddress, toAddress);
           return true;
         }
       // Now we need to see if any data came with the FIN
       // if so, call NewRx
       if (p->GetSize () != 0)
         {
-          NewRx (p, tcpHeader, fromAddress);
+          NewRx (p, tcpHeader, fromAddress, toAddress);
         }
       ++m_nextRxSequence; //bump this to account for the FIN
       States_t saveState = m_state; // Used to see if app responds
@@ -1078,7 +1052,7 @@ bool TcpSocketImpl::ProcessPacketAction (Actions_t a, Ptr<Packet> p,
       NS_LOG_LOGIC ("TcpSocketImpl " << this <<" Action SERV_NOTIFY");
       NS_LOG_LOGIC ("TcpSocketImpl " << this << " Connected!");
       m_connected = true; // ! This is bogus; fix when we clone the tcp
-      m_endPoint->SetPeer (m_remoteAddress, m_remotePort);
+      m_endPoint->SetPeer (m_endPoint->GetPeerAddress(), m_endPoint->GetPeerPort());
       //treat the connection orientation final ack as a newack
       CommonNewAck (tcpHeader.GetAckNumber (), true);
       NotifyNewConnectionCreated (this, fromAddress);
@@ -1089,21 +1063,19 @@ bool TcpSocketImpl::ProcessPacketAction (Actions_t a, Ptr<Packet> p,
   return true;
 }
 
-void TcpSocketImpl::CompleteFork(Ptr<Packet> p, const TcpHeader& h, const Address& fromAddress)
+void TcpSocketImpl::CompleteFork(Ptr<Packet> p, const TcpHeader& h, const Address& fromAddress, const Address& toAddress)
 {
   // Get port and address from peer (connecting host)
-  m_remotePort = InetSocketAddress::ConvertFrom (fromAddress).GetPort ();
-  m_remoteAddress = InetSocketAddress::ConvertFrom (fromAddress).GetIpv4 ();
-  m_endPoint = m_tcp->Allocate (m_localAddress,
-                                m_localPort,
-                                m_remoteAddress,
-                                m_remotePort);
+  m_endPoint = m_tcp->Allocate (InetSocketAddress::ConvertFrom(toAddress).GetIpv4 (),
+                                InetSocketAddress::ConvertFrom(toAddress).GetPort (),
+                                InetSocketAddress::ConvertFrom (fromAddress).GetIpv4 (),
+                                InetSocketAddress::ConvertFrom (fromAddress).GetPort ());
   //the cloned socket with be in listen state, so manually change state
   m_state = SYN_RCVD;
   //equivalent to FinishBind
   m_endPoint->SetRxCallback (MakeCallback (&TcpSocketImpl::ForwardUp, Ptr<TcpSocketImpl>(this)));
   m_endPoint->SetDestroyCallback (MakeCallback (&TcpSocketImpl::Destroy, Ptr<TcpSocketImpl>(this)));
-  ProcessPacketAction(SYN_ACK_TX, p, h, fromAddress);
+  ProcessPacketAction(SYN_ACK_TX, p, h, fromAddress, toAddress);
  }
 
 void TcpSocketImpl::ConnectionSucceeded()
@@ -1165,7 +1137,7 @@ bool TcpSocketImpl::SendPendingData (bool withAck)
       header.SetSequenceNumber (m_nextTxSequence);
       header.SetAckNumber (m_nextRxSequence);
       header.SetSourcePort (m_endPoint->GetLocalPort());
-      header.SetDestinationPort (m_remotePort);
+      header.SetDestinationPort (m_endPoint->GetPeerPort());
       header.SetWindowSize (AdvertisedWindowSize());
       if (m_shutdownSend)
         {
@@ -1185,7 +1157,8 @@ bool TcpSocketImpl::SendPendingData (bool withAck)
       NS_LOG_LOGIC ("About to send a packet with flags: " << flags);
       m_tcp->SendPacket (p, header,
                          m_endPoint->GetLocalAddress (),
-                         m_remoteAddress, m_boundnetdevice);
+                         m_endPoint->GetPeerAddress (), 
+                         m_boundnetdevice);
       m_rtt->SentSeq(m_nextTxSequence, sz);       // notify the RTT
       // Notify the application of the data being sent
       Simulator::ScheduleNow(&TcpSocketImpl::NotifyDataSent, this, sz);
@@ -1243,7 +1216,8 @@ uint16_t TcpSocketImpl::AdvertisedWindowSize()
 
 void TcpSocketImpl::NewRx (Ptr<Packet> p,
                         const TcpHeader& tcpHeader, 
-                        const Address& fromAddress)
+                        const Address& fromAddress,
+                        const Address& toAddress)
 {
   NS_LOG_FUNCTION (this << p << "tcpHeader " << fromAddress);
   NS_LOG_LOGIC ("TcpSocketImpl " << this << " NewRx,"
@@ -1310,7 +1284,7 @@ void TcpSocketImpl::NewRx (Ptr<Packet> p,
         { // See if we can close now
           if (m_bufferedData.empty())
             {
-              ProcessPacketAction (PEER_CLOSE, p, tcpHeader, fromAddress);
+              ProcessPacketAction (PEER_CLOSE, p, tcpHeader, fromAddress, toAddress);
             }
         }
     }
@@ -1627,11 +1601,11 @@ void TcpSocketImpl::PersistTimeout ()
   tcpHeader.SetSequenceNumber (m_nextTxSequence);
   tcpHeader.SetAckNumber (m_nextRxSequence);
   tcpHeader.SetSourcePort (m_endPoint->GetLocalPort());
-  tcpHeader.SetDestinationPort (m_remotePort);
+  tcpHeader.SetDestinationPort (m_endPoint->GetPeerPort ());
   tcpHeader.SetWindowSize (AdvertisedWindowSize());
 
   m_tcp->SendPacket (p, tcpHeader, m_endPoint->GetLocalAddress (),
-    m_remoteAddress, m_boundnetdevice);
+    m_endPoint->GetPeerAddress (), m_boundnetdevice);
   NS_LOG_LOGIC ("Schedule persist timeout at time " 
                     <<Simulator::Now ().GetSeconds () << " to expire at time "
                     << (Simulator::Now () + m_persistTime).GetSeconds());
@@ -1692,12 +1666,12 @@ void TcpSocketImpl::Retransmit ()
   tcpHeader.SetSequenceNumber (m_nextTxSequence);
   tcpHeader.SetAckNumber (m_nextRxSequence);
   tcpHeader.SetSourcePort (m_endPoint->GetLocalPort());
-  tcpHeader.SetDestinationPort (m_remotePort);
+  tcpHeader.SetDestinationPort (m_endPoint->GetPeerPort ());
   tcpHeader.SetFlags (flags);
   tcpHeader.SetWindowSize (AdvertisedWindowSize());
 
   m_tcp->SendPacket (p, tcpHeader, m_endPoint->GetLocalAddress (),
-    m_remoteAddress, m_boundnetdevice);
+    m_endPoint->GetPeerAddress (), m_boundnetdevice);
 }
 
 void

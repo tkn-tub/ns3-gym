@@ -17,6 +17,7 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  * Contributions: Timo Bingmann <timo.bingmann@student.kit.edu>
+ * Contributions: Tom Hewer <tomhewer@mac.com> for Two Ray Ground Model
  */
 
 #include "propagation-loss-model.h"
@@ -231,6 +232,176 @@ FriisPropagationLossModel::DoCalcRxPower (double txPowerDbm,
   NS_LOG_DEBUG ("distance="<<distance<<"m, attenuation coefficient="<<pr<<"dB");
   return txPowerDbm + pr;
 }
+
+// ------------------------------------------------------------------------- //
+// -- Two-Ray Ground Model ported from NS-2 -- tomhewer@mac.com -- Nov09 //
+
+NS_OBJECT_ENSURE_REGISTERED (TwoRayGroundPropagationLossModel);
+
+const double TwoRayGroundPropagationLossModel::PI = 3.14159265358979323846;
+
+TypeId 
+TwoRayGroundPropagationLossModel::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::TwoRayGroundPropagationLossModel")
+    .SetParent<PropagationLossModel> ()
+    .AddConstructor<TwoRayGroundPropagationLossModel> ()
+    .AddAttribute ("Lambda",
+                   "The wavelength  (default is 5.15 GHz at 300 000 km/s).",
+                   DoubleValue (300000000.0 / 5.150e9),
+                   MakeDoubleAccessor (&TwoRayGroundPropagationLossModel::m_lambda),
+                   MakeDoubleChecker<double> ())
+    .AddAttribute ("SystemLoss", "The system loss",
+                   DoubleValue (1.0),
+                   MakeDoubleAccessor (&TwoRayGroundPropagationLossModel::m_systemLoss),
+                   MakeDoubleChecker<double> ())
+    .AddAttribute ("MinDistance",
+                   "The distance under which the propagation model refuses to give results (m)",
+                   DoubleValue (0.5),
+                   MakeDoubleAccessor (&TwoRayGroundPropagationLossModel::SetMinDistance,
+                                       &TwoRayGroundPropagationLossModel::GetMinDistance),
+                   MakeDoubleChecker<double> ())
+    .AddAttribute ("HeightAboveZ",
+                   "The height of the antenna (m) above the node's Z coordinate",
+                   DoubleValue (0),
+                   MakeDoubleAccessor (&TwoRayGroundPropagationLossModel::m_heightAboveZ),
+                   MakeDoubleChecker<double> ())
+  ;
+  return tid;
+}
+
+TwoRayGroundPropagationLossModel::TwoRayGroundPropagationLossModel ()
+{
+}
+void
+TwoRayGroundPropagationLossModel::SetSystemLoss (double systemLoss)
+{
+  m_systemLoss = systemLoss;
+}
+double
+TwoRayGroundPropagationLossModel::GetSystemLoss (void) const
+{
+  return m_systemLoss;
+}
+void
+TwoRayGroundPropagationLossModel::SetMinDistance (double minDistance)
+{
+  m_minDistance = minDistance;
+}
+double
+TwoRayGroundPropagationLossModel::GetMinDistance (void) const
+{
+  return m_minDistance;
+}
+void
+TwoRayGroundPropagationLossModel::SetHeightAboveZ (double heightAboveZ)
+{
+  m_heightAboveZ = heightAboveZ;
+}
+void 
+TwoRayGroundPropagationLossModel::SetLambda (double frequency, double speed)
+{
+  m_lambda = speed / frequency;
+}
+void 
+TwoRayGroundPropagationLossModel::SetLambda (double lambda)
+{
+  m_lambda = lambda;
+}
+double 
+TwoRayGroundPropagationLossModel::GetLambda (void) const
+{
+  return m_lambda;
+}
+
+double 
+TwoRayGroundPropagationLossModel::DbmToW (double dbm) const
+{
+  double mw = pow (10.0,dbm / 10.0);
+  return mw / 1000.0;
+}
+
+double
+TwoRayGroundPropagationLossModel::DbmFromW (double w) const
+{
+  double dbm = log10 (w * 1000.0) * 10.0;
+  return dbm;
+}
+
+double 
+TwoRayGroundPropagationLossModel::DoCalcRxPower (double txPowerDbm,
+                                                 Ptr<MobilityModel> a,
+                                                 Ptr<MobilityModel> b) const
+{
+  /*
+   * Two-Ray Ground equation:
+   *
+   * where Pt, Gt and Gr are in dBm units
+   * L, Ht and Hr are in meter units.
+   *
+   *   Pr      Gt * Gr * (Ht^2 * Hr^2)
+   *   -- =  (-------------------------)
+   *   Pt            d^4 * L
+   *
+   * Gt: tx gain (unit-less)
+   * Gr: rx gain (unit-less)
+   * Pt: tx power (dBm)
+   * d: distance (m)
+   * L: system loss
+   * Ht: Tx antenna height (m)
+   * Hr: Rx antenna height (m)
+   * lambda: wavelength (m)
+   *
+   * As with the Friis model we ignore tx and rx gain and output values
+   * are in dB or dBm
+   *
+   *                      (Ht * Ht) * (Hr * Hr)
+   * rx = tx + 10 log10 (-----------------------)
+   *                      (d * d * d * d) * L
+   */
+  double distance = a->GetDistanceFrom (b);
+  if (distance <= m_minDistance)
+    {
+      return txPowerDbm;
+    }
+
+  // Set the height of the Tx and Rx antennae
+  double txAntHeight = a->GetPosition ().z + m_heightAboveZ;
+  double rxAntHeight = b->GetPosition ().z + m_heightAboveZ;
+
+  // Calculate a crossover distance, under which we use Friis
+  /*
+   * 
+   * dCross = (4 * pi * Ht * Hr) / lambda
+   *
+   */
+
+  double dCross = (4 * PI * txAntHeight * rxAntHeight) / GetLambda ();
+  double tmp = 0;
+  if (distance <= dCross)
+    {
+      // We use Friis
+      double numerator = m_lambda * m_lambda;
+      tmp = PI * distance;
+      double denominator = 16 * tmp * tmp * m_systemLoss;
+      double pr = 10 * log10 (numerator / denominator);
+      NS_LOG_DEBUG ("Receiver within crossover (" << dCross << "m) for Two_ray path; using Friis");
+      NS_LOG_DEBUG ("distance=" << distance << "m, attenuation coefficient=" << pr << "dB");
+      return txPowerDbm + pr;
+    }
+  else   // Use Two-Ray Pathloss
+    {
+      tmp = txAntHeight * rxAntHeight;
+      double rayNumerator = tmp * tmp;
+      tmp = distance * distance;
+      double rayDenominator = tmp * tmp * m_systemLoss;
+      double rayPr = 10 * log10 (rayNumerator / rayDenominator);
+      NS_LOG_DEBUG ("distance=" << distance << "m, attenuation coefficient=" << rayPr << "dB");
+      return txPowerDbm + rayPr;
+
+    }
+}
+
 
 // ------------------------------------------------------------------------- //
 

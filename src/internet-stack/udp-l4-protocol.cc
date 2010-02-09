@@ -230,7 +230,7 @@ UdpL4Protocol::Receive(Ptr<Packet> packet,
   for (Ipv4EndPointDemux::EndPointsI endPoint = endPoints.begin ();
        endPoint != endPoints.end (); endPoint++)
     {
-      (*endPoint)->ForwardUp (packet->Copy (), source, udpHeader.GetSourcePort ());
+      (*endPoint)->ForwardUp (packet->Copy (), source, destination, udpHeader.GetSourcePort ());
     }
   return Ipv4L4Protocol::RX_OK;
 }

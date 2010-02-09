@@ -98,7 +98,7 @@ private:
   friend class UdpSocketFactory;
   // invoked by Udp class
   int FinishBind (void);
-  void ForwardUp (Ptr<Packet> p, Ipv4Address ipv4, uint16_t port);
+  void ForwardUp (Ptr<Packet> p, Ipv4Address saddr, Ipv4Address daddr, uint16_t port);
   void Destroy (void);
   int DoSend (Ptr<Packet> p);
   int DoSendTo (Ptr<Packet> p, const Address &daddr);

@@ -546,7 +546,7 @@ TcpL4Protocol::Receive (Ptr<Packet> packet,
   }
   NS_ASSERT_MSG (endPoints.size() == 1 , "Demux returned more than one endpoint");
   NS_LOG_LOGIC ("TcpL4Protocol "<<this<<" forwarding up to endpoint/socket");
-  (*endPoints.begin ())->ForwardUp (packet, source, tcpHeader.GetSourcePort ());
+  (*endPoints.begin ())->ForwardUp (packet, source, destination, tcpHeader.GetSourcePort ());
   return Ipv4L4Protocol::RX_OK;
 }
 

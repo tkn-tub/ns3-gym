@@ -463,6 +463,12 @@ Ipv4L3Protocol::Receive( Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t pr
     }
   packet->RemoveHeader (ipHeader);
 
+  // Trim any residual frame padding from underlying devices
+  if (ipHeader.GetPayloadSize () < packet->GetSize ())
+    {
+      packet->RemoveAtEnd (packet->GetSize () - ipHeader.GetPayloadSize ());
+    }
+
   if (!ipHeader.IsChecksumOk ()) 
     {
       NS_LOG_LOGIC ("Dropping received packet -- checksum not ok");

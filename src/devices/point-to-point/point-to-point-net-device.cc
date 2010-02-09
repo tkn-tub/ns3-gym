@@ -511,11 +511,19 @@ PointToPointNetDevice::Send(
       // Even if the transmitter is immediately available, we still enqueue and
       // dequeue the packet to hit the tracing hooks.
       //
-      m_queue->Enqueue (packet);
-      packet = m_queue->Dequeue ();
-      m_snifferTrace (packet);
-      m_promiscSnifferTrace (packet);
-      return TransmitStart (packet);
+      if (m_queue->Enqueue (packet) == true)
+        {
+          packet = m_queue->Dequeue ();
+          m_snifferTrace (packet);
+          m_promiscSnifferTrace (packet);
+          return TransmitStart (packet);
+        }
+      else
+        {
+          // Enqueue may fail (overflow)
+          m_macTxDropTrace (packet);
+          return false;
+        }
     }
   else
     {

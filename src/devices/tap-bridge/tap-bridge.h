@@ -234,16 +234,6 @@ private:
   /**
    * \internal
    *
-   * Figure out where the tap creation program lives on the system.
-   *
-   * \param creatorName The name of the program used to create the Tap.
-   * \returns A path name to use when you want to create a Tap.
-   */
-  std::string FindCreator (std::string creatorName);
-
-  /**
-   * \internal
-   *
    * Spin up the device
    */
   void StartTapDevice (void);

@@ -1,5 +1,7 @@
 ## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
 
+import os.path
+
 def configure(conf):
     if conf.env['ENABLE_THREADING']:
         conf.env['ENABLE_TAP'] = conf.check(header_name='linux/if_tun.h',
@@ -11,6 +13,11 @@ def configure(conf):
         conf.report_optional_feature("TapBridge", "Tap Bridge",
                                      False,
                                      "needs threading support which is not available")
+
+    if conf.env['ENABLE_TAP']:
+        blddir = os.path.abspath(os.path.join(conf.blddir, conf.env.variant()))
+        tapcreatordir = os.path.abspath(os.path.join(blddir, "src/devices/tap-bridge"))
+        conf.env.append_value('NS3_EXECUTABLE_PATH', tapcreatordir)
 
 def build(bld):
     module = bld.create_ns3_module('tap-bridge', ['node'])

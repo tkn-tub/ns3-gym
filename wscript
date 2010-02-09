@@ -697,12 +697,14 @@ class run_python_unit_tests_task(Task.TaskBase):
                         self.bld.env, proc_env, force_no_valgrind=True)
 
 def check_shell(bld):
-    if 'NS3_MODULE_PATH' not in os.environ:
+    if ('NS3_MODULE_PATH' not in os.environ) or ('NS3_EXECUTABLE_PATH' not in os.environ):
         return
     env = bld.env
     correct_modpath = os.pathsep.join(env['NS3_MODULE_PATH'])
     found_modpath = os.environ['NS3_MODULE_PATH']
-    if found_modpath != correct_modpath:
+    correct_execpath = os.pathsep.join(env['NS3_EXECUTABLE_PATH'])
+    found_execpath = os.environ['NS3_EXECUTABLE_PATH']
+    if (found_modpath != correct_modpath) or (correct_execpath != found_execpath):
         msg = ("Detected shell (./waf shell) with incorrect configuration\n"
                "=========================================================\n"
                "Possible reasons for this problem:\n"
@@ -728,7 +730,8 @@ def shell(ctx):
         shell = os.environ.get("SHELL", "/bin/sh")
 
     env = wutils.bld.env
-    wutils.run_argv([shell], env, {'NS3_MODULE_PATH': os.pathsep.join(env['NS3_MODULE_PATH'])})
+    os_env = {'NS3_MODULE_PATH': os.pathsep.join(env['NS3_MODULE_PATH']), 'NS3_EXECUTABLE_PATH': os.pathsep.join(env['NS3_EXECUTABLE_PATH'])}
+    wutils.run_argv([shell], env, os_env)
 
 def _doxygen(bld):
     env = wutils.bld.env
