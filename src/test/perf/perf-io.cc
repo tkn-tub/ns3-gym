@@ -16,17 +16,20 @@
 
 #include <time.h>
 #include <sys/time.h>
+
+#include <stdio.h>
+#include <stdlib.h>
+
 #include <iostream>
 #include <fstream>
-#include <limits>
 
 #include "ns3/simulator-module.h"
 #include "ns3/node-module.h"
 #include "ns3/core-module.h"
 #include "ns3/helper-module.h"
-#include "ns3/pcap-writer.h"
 
 using namespace ns3;
+using namespace std;
 
 static const uint64_t US_PER_NS = (uint64_t)1000;
 static const uint64_t US_PER_SEC = (uint64_t)1000000;
@@ -42,58 +45,22 @@ GetRealtimeInNs (void)
   return nsResult;
 }
 
-bool g_passheader = true;
-bool g_addheader = true;
-
-RadiotapHeader g_header;
-
-Time g_t(0.);
-
 void
-PerfPcapNew (Ptr<PcapFileObject> file, Ptr<Packet> p, uint32_t n)
+PerfFile (FILE *file, uint32_t n, const char *buffer, uint32_t size)
 {
-  if (g_passheader)
+  for (uint32_t i = 0; i < n; ++i)
     {
-      for (uint32_t i = 0; i < n; ++i)
-        {
-          if (g_passheader)
-            {
-              file->Write (g_t, g_header, p);
-            }
-        }
-    }
-  else
-    {
-      for (uint32_t i = 0; i < n; ++i)
-        {
-          if (g_addheader)
-            {
-              Ptr<Packet> pc = p->Copy ();
-              pc->AddHeader (g_header);
-              file->Write (g_t, pc);
-            }
-          else
-            {
-              file->Write (g_t, p);
-            }
-        }
+      fwrite (buffer, 1, size, file);
     }
 }
 
 void
-PerfPcapOld (PcapWriter &pcapWriter, Ptr<Packet> p, uint32_t n)
+PerfStream (ostream &stream, uint32_t n, const char *buffer, uint32_t size)
 {
 
   for (uint32_t i = 0; i < n; ++i)
     {
-      if (g_addheader)
-        {
-          pcapWriter.WriteWifiMonitorPacket (p, 0, 0, 0, true, false, 0., 0.);
-        }
-      else
-        {
-          pcapWriter.WritePacket (p);
-        }
+      stream.write (buffer, size);
     }
 }
 
@@ -102,22 +69,23 @@ main (int argc, char *argv[])
 {
   uint32_t n = 100000;
   uint32_t iter = 50;
-  bool oldstyle = false;
+  bool doStream = false;
+  bool binmode = true;
+ 
 
   CommandLine cmd;
-  cmd.AddValue ("addheader", "Add a header to the traces to trigger a deep copy", g_addheader);
-  cmd.AddValue ("passheader", "Pass header as reference instead of adding it", g_passheader);
-  cmd.AddValue ("n", "How many packets to write (defaults to 100000", n);
+  cmd.AddValue ("n", "How many times to write (defaults to 100000", n);
   cmd.AddValue ("iter", "How many times to run the test looking for a min (defaults to 50)", iter);
-  cmd.AddValue ("oldstyle", "run the old style pcap writer stuff if true", oldstyle);
+  cmd.AddValue ("doStream", "Run the C++ I/O benchmark otherwise the C I/O ", doStream);
+  cmd.AddValue ("binmode", "Select binary mode for the C++ I/O benchmark (defaults to true)", binmode);
   cmd.Parse (argc, argv);
 
   uint64_t result = std::numeric_limits<uint64_t>::max ();
   
-  if (oldstyle)
-    {
-      Ptr<Packet> p = Create<Packet> (1024);
+  char buffer[1024];
 
+  if (doStream)
+    {
       //
       // This will probably run on a machine doing other things.  Run it some
       // relatively large number of times and try to find a minimum, which
@@ -125,25 +93,27 @@ main (int argc, char *argv[])
       //
       for (uint32_t i = 0; i < iter; ++i)
         {
-          PcapWriter pcapWriter;
-          pcapWriter.Open ("perf-pcap.pcap");
-          pcapWriter.WriteWifiRadiotapHeader ();
+          ofstream stream;
+          if (binmode)
+            {
+              stream.open ("streamtest", std::ios_base::binary | std::ios_base::out);
+            }
+          else
+            {
+              stream.open ("streamtest", std::ios_base::out);
+            }
 
           uint64_t start = GetRealtimeInNs ();
-          PerfPcapOld (pcapWriter, p, n);
+          PerfStream (stream, n, buffer, 1024);
           uint64_t et = GetRealtimeInNs () - start;
-          result = std::min (result, et);
-          std::cout << "."; std::cout.flush ();
+          result = min (result, et);
+          stream.close ();
+          cout << "."; std::cout.flush ();
         }
-      std::cout << std::endl;
+      cout << std::endl;
     }
   else
     {
-      g_header.SetTsft (0);
-      g_header.SetFrameFlags (RadiotapHeader::FRAME_FLAG_SHORT_PREAMBLE);
-      g_header.SetRate (0);
-      g_header.SetChannelFrequencyAndFlags (0, 0);
-
       //
       // This will probably run on a machine doing other things.  Run it some
       // relatively large number of times and try to find a minimum, which
@@ -151,14 +121,14 @@ main (int argc, char *argv[])
       //
       for (uint32_t i = 0; i < iter; ++i)
         {
-          PcapHelper pcapHelper;
-          Ptr<PcapFileObject> file = pcapHelper.CreateFile ("perf-pcap.pcap", "w", PcapHelper::DLT_IEEE802_11_RADIO);  
-          Ptr<Packet> p = Create<Packet> (1024);
+          FILE *file = fopen ("filetest", "w");
 
           uint64_t start = GetRealtimeInNs ();
-          PerfPcapNew (file, p, n);
+          PerfFile (file, n, buffer, 1024);
           uint64_t et = GetRealtimeInNs () - start;
           result = std::min (result, et);
+          fclose (file);
+          file = 0;
           std::cout << "."; std::cout.flush ();
         }
       std::cout << std::endl;
