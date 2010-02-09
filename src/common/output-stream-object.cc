@@ -23,18 +23,6 @@ NS_LOG_COMPONENT_DEFINE ("OutputStreamObject");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (OutputStreamObject);
-
-TypeId 
-OutputStreamObject::GetTypeId (void)
-{
-  static TypeId tid = TypeId ("ns3::OutputStreamObject")
-    .SetParent<Object> ()
-    .AddConstructor<OutputStreamObject> ()
-    ;
-  return tid;
-}
-
 OutputStreamObject::OutputStreamObject ()
   : m_ostream (0)
 {

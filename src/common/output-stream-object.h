@@ -22,6 +22,7 @@
 #include <ostream>
 #include "ns3/object.h"
 #include "ns3/ptr.h"
+#include "ns3/simple-ref-count.h"
 
 namespace ns3 {
 
@@ -58,7 +59,7 @@ namespace ns3 {
  * Ptr<> wouldn't understand the operators and we would have to dereference it
  * to access the underlying object methods.  Since we would have to dereference
  * the Ptr<>, we don't bother and just expect the user to Get a saved pointer
- * to an ostream and dereference it him- or herself.  As in:
+ * to an ostream and dereference it him or herself.  As in:
  *
  * \verbatim
  *   void 
@@ -69,7 +70,7 @@ namespace ns3 {
  *   }
  * \endverbatim
  */
-class OutputStreamObject : public Object
+class OutputStreamObject : public SimpleRefCount<OutputStreamObject>
 {
 public:
   static TypeId GetTypeId (void);

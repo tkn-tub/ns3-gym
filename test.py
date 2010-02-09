@@ -135,6 +135,7 @@ example_tests = [
     ("tutorial/third", "True", "True"),
     ("tutorial/fourth", "True", "True"),
     ("tutorial/fifth", "True", "True"),
+    ("tutorial/sixth", "True", "True"),
 
     ("udp/udp-echo", "True", "True"),
 

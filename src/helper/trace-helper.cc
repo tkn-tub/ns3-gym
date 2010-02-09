@@ -205,7 +205,7 @@ AsciiTraceHelper::CreateFileStream (std::string filename, std::string filemode)
   NS_ABORT_MSG_UNLESS (ofstream->is_open (), "AsciiTraceHelper::CreateFileStream():  Unable to Open " << 
                        filename << " for mode " << filemode);
   
-  Ptr<OutputStreamObject> streamObject = CreateObject<OutputStreamObject> ();
+  Ptr<OutputStreamObject> streamObject = Create<OutputStreamObject> ();
   streamObject->SetStream (ofstream);
 
   //
