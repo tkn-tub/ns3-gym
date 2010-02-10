@@ -358,6 +358,7 @@ TcpSocketImpl::Connect (const Address & address)
   NS_LOG_FUNCTION (this << address);
 
   Ptr<Ipv4> ipv4 = m_node->GetObject<Ipv4> ();
+  NS_ASSERT (ipv4 != 0);
 
   if (m_endPoint == 0)
     {
@@ -772,11 +773,17 @@ void TcpSocketImpl::SendEmptyPacket (uint8_t flags)
   Ptr<Packet> p = Create<Packet> ();
   TcpHeader header;
 
+  if (m_endPoint == 0) 
+    {
+      NS_LOG_WARN ("Failed to send empty packet due to null endpoint");
+      return;
+    }
+
   if (flags & TcpHeader::FIN)
     {
       flags |= TcpHeader::ACK;
     }
-
+ 
   header.SetFlags (flags);
   header.SetSequenceNumber (m_nextTxSequence);
   header.SetAckNumber (m_nextRxSequence);
@@ -811,9 +818,12 @@ void TcpSocketImpl::SendRST()
   SendEmptyPacket(TcpHeader::RST);
   NotifyErrorClose();
   CancelAllTimers();
-  m_endPoint->SetDestroyCallback(MakeNullCallback<void>());
-  m_tcp->DeAllocate (m_endPoint);
-  m_endPoint = 0;
+  if (m_endPoint != 0) 
+    {
+      m_endPoint->SetDestroyCallback(MakeNullCallback<void>());
+      m_tcp->DeAllocate (m_endPoint);
+      m_endPoint = 0;
+    }
 }
 
   
@@ -1093,6 +1103,11 @@ bool TcpSocketImpl::SendPendingData (bool withAck)
     {
       return false; // No data exists
     }
+  if (m_endPoint == 0)
+    {
+      NS_LOG_INFO ("TcpSocketImpl::SendPendingData: No endpoint; m_shutdownSend=" << m_shutdownSend);
+      return false; // Is this the right way to handle this condition?
+    }
   uint32_t nPacketsSent = 0;
   while (m_pendingData->SizeFromSeq (m_firstPendingSequence, m_nextTxSequence))
     {
@@ -1142,7 +1157,7 @@ bool TcpSocketImpl::SendPendingData (bool withAck)
       if (m_shutdownSend)
         {
           m_errno = ERROR_SHUTDOWN;
-          return -1;
+          return false;
         }
 
       
