@@ -288,7 +288,7 @@ SteadyStateRandomWaypointTest::DoRun (void)
   double totalTime = 1000;
   // Create nodes
   NodeCount = 10000;
-  nodes.Create (NodeCount);
+  nodes.Create ((uint32_t) NodeCount);
   // Installmobility
   MobilityHelper mobility;
   mobility.SetMobilityModel ("ns3::SteadyStateRandomWaypointMobilityModel",
