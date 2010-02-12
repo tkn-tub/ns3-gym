@@ -14,19 +14,14 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-// Port of ns-2/tcl/ex/simple.tcl to ns-3
-//
 // Network topology
 //
 //       n0    n1   n2   n3
 //       |     |    |    |
 //     =====================
 //
-// - CBR/UDP flows from n0 to n1, and from n3 to n0
-// - UDP packet size of 210 bytes, with per-packet interval 0.00375 sec.
-//   (i.e., DataRate of 448,000 bps)
-// - DropTail queues 
-// - Tracing of queues and packet receptions to file "csma-one-subnet.tr"
+//  node n0,n1,n3 pings to node n2
+//  node n0 generates protocol 2 (IGMP) to node n3
 
 #include <iostream>
 #include <fstream>
@@ -83,8 +78,6 @@ main (int argc, char *argv[])
   ip.SetBase ("192.168.1.0", "255.255.255.0");
   Ipv4InterfaceContainer addresses = ip.Assign (devs);
 
-  // setup global router
-  Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
   NS_LOG_INFO ("Create Source");
   Config::SetDefault ("ns3::Ipv4RawSocketImpl::Protocol", StringValue ("2"));
   InetSocketAddress dst = InetSocketAddress (addresses.GetAddress (3));
