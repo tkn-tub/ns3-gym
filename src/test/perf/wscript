@@ -8,9 +8,6 @@ def build(bld):
     headers = bld.new_task_gen('ns3header')
     headers.module = 'perf'
 
-    obj = bld.create_ns3_program('perf-pcap', ['core', 'simulator', 'internet-stack'])
-    obj.source = 'perf-pcap.cc'
-
     obj = bld.create_ns3_program('perf-io', ['core'])
     obj.source = 'perf-io.cc'
 

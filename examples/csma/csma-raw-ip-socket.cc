@@ -14,19 +14,17 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-// Port of ns-2/tcl/ex/simple.tcl to ns-3
 //
 // Network topology
-//
+//    (sender)         (receiver)
 //       n0    n1   n2   n3
 //       |     |    |    |
 //     =====================
 //
-// - CBR/UDP flows from n0 to n1, and from n3 to n0
-// - UDP packet size of 210 bytes, with per-packet interval 0.00375 sec.
-//   (i.e., DataRate of 448,000 bps)
-// - DropTail queues 
-// - Tracing of queues and packet receptions to file "csma-one-subnet.tr"
+// Node n0 sends data to node n3 over a raw IP socket.  The protocol
+// number used is 2.
+// The default traffic rate is to send 1250 bytes/second for 10 kb/s 
+// The data rate can be toggled by command line argument
 
 #include <iostream>
 #include <fstream>
@@ -44,7 +42,9 @@ NS_LOG_COMPONENT_DEFINE ("CsmaPacketSocketExample");
 
 static void SinkRx (Ptr<const Packet> p, const Address &ad)
 {
-  //std::cout << *p << std::endl;
+  // Enable the below line to see the packet contents printed out at the
+  // receive sink
+  //std::cout << Simulator::Now().GetSeconds () << " " << *p << std::endl;
 }
 
 int
@@ -53,8 +53,9 @@ main (int argc, char *argv[])
 #if 0 
   LogComponentEnable ("CsmaPacketSocketExample", LOG_LEVEL_INFO);
 #endif
-
+  uint32_t dataRate = 10;
   CommandLine cmd;
+  cmd.AddValue ("dataRate", "application dataRate (Kb/s)", dataRate);
   cmd.Parse (argc, argv);
 
   // Here, we will explicitly create four nodes.
@@ -82,23 +83,24 @@ main (int argc, char *argv[])
   Ipv4InterfaceContainer addresses = ip.Assign (devs);
 
   NS_LOG_INFO ("Create Source");
+  // IP protocol configuration
   Config::SetDefault ("ns3::Ipv4RawSocketImpl::Protocol", StringValue ("2"));
   InetSocketAddress dst = InetSocketAddress (addresses.GetAddress (3));
   OnOffHelper onoff = OnOffHelper ("ns3::Ipv4RawSocketFactory", dst);
   onoff.SetAttribute ("OnTime", RandomVariableValue (ConstantVariable (1.0)));
   onoff.SetAttribute ("OffTime", RandomVariableValue (ConstantVariable (0.0)));
-  onoff.SetAttribute ("DataRate", DataRateValue (DataRate (6000)));
-  onoff.SetAttribute ("PacketSize", UintegerValue (1200));
+  onoff.SetAttribute ("DataRate", DataRateValue (DataRate (dataRate*1000)));
+  onoff.SetAttribute ("PacketSize", UintegerValue (1250));
 
   ApplicationContainer apps = onoff.Install (c.Get (0));
-  apps.Start (Seconds (1.0));
-  apps.Stop (Seconds (10.0));
+  apps.Start (Seconds (0.5));
+  apps.Stop (Seconds (11));
 
   NS_LOG_INFO ("Create Sink.");
   PacketSinkHelper sink = PacketSinkHelper ("ns3::Ipv4RawSocketFactory", dst);
   apps = sink.Install (c.Get (3));
   apps.Start (Seconds (0.0));
-  apps.Stop (Seconds (11.0));
+  apps.Stop (Seconds (12.0));
 
   NS_LOG_INFO ("Configure Tracing.");
   // first, pcap tracing in non-promiscuous mode

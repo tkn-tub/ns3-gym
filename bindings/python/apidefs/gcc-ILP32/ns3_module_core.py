@@ -93,6 +93,8 @@ def register_types(module):
     module.add_class('Vector3D')
     ## random-variable.h: ns3::WeibullVariable [class]
     module.add_class('WeibullVariable', parent=root_module['ns3::RandomVariable'])
+    ## random-variable.h: ns3::ZetaVariable [class]
+    module.add_class('ZetaVariable', parent=root_module['ns3::RandomVariable'])
     ## random-variable.h: ns3::ZipfVariable [class]
     module.add_class('ZipfVariable', parent=root_module['ns3::RandomVariable'])
     ## empty.h: ns3::empty [class]
@@ -351,6 +353,7 @@ def register_methods(root_module):
     register_Ns3Vector2D_methods(root_module, root_module['ns3::Vector2D'])
     register_Ns3Vector3D_methods(root_module, root_module['ns3::Vector3D'])
     register_Ns3WeibullVariable_methods(root_module, root_module['ns3::WeibullVariable'])
+    register_Ns3ZetaVariable_methods(root_module, root_module['ns3::ZetaVariable'])
     register_Ns3ZipfVariable_methods(root_module, root_module['ns3::ZipfVariable'])
     register_Ns3Empty_methods(root_module, root_module['ns3::empty'])
     register_Ns3ConstantVariable_methods(root_module, root_module['ns3::ConstantVariable'])
@@ -1575,11 +1578,20 @@ def register_Ns3WeibullVariable_methods(root_module, cls):
     cls.add_constructor([param('double', 'm'), param('double', 's'), param('double', 'b')])
     return
 
+def register_Ns3ZetaVariable_methods(root_module, cls):
+    ## random-variable.h: ns3::ZetaVariable::ZetaVariable(ns3::ZetaVariable const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::ZetaVariable const &', 'arg0')])
+    ## random-variable.h: ns3::ZetaVariable::ZetaVariable(double alpha) [constructor]
+    cls.add_constructor([param('double', 'alpha')])
+    ## random-variable.h: ns3::ZetaVariable::ZetaVariable() [constructor]
+    cls.add_constructor([])
+    return
+
 def register_Ns3ZipfVariable_methods(root_module, cls):
     ## random-variable.h: ns3::ZipfVariable::ZipfVariable(ns3::ZipfVariable const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::ZipfVariable const &', 'arg0')])
-    ## random-variable.h: ns3::ZipfVariable::ZipfVariable(long int n, double alpha) [constructor]
-    cls.add_constructor([param('long int', 'n'), param('double', 'alpha')])
+    ## random-variable.h: ns3::ZipfVariable::ZipfVariable(long int N, double alpha) [constructor]
+    cls.add_constructor([param('long int', 'N'), param('double', 'alpha')])
     ## random-variable.h: ns3::ZipfVariable::ZipfVariable() [constructor]
     cls.add_constructor([])
     return

@@ -87,6 +87,13 @@ type_annotations = {
     'extern void ns3::PythonCompleteConstruct(ns3::Ptr<ns3::Object> object, ns3::TypeId typeId, ns3::AttributeList const & attributes) [free function]': {
         'ignore': None # used transparently by, should not be wrapped
         },
+    'ns3::Ipv4RoutingTableEntry * ns3::GlobalRouter::GetInjectedRoute(uint32_t i) [member function]': {
+        'params': {'return': { 'caller_owns_return': 'false',}},
+        },
+    'ns3::Ipv4RoutingTableEntry * ns3::Ipv4GlobalRouting::GetRoute(uint32_t i) [member function]': {
+        'params': {'return': { 'caller_owns_return': 'false',}},
+        },
+
     }
 
 def get_ns3_relative_path(path):

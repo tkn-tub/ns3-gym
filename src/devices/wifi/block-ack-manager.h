@@ -58,6 +58,10 @@ struct Bar {
  */
 class BlockAckManager
 {
+private:
+  BlockAckManager (const BlockAckManager&);
+  BlockAckManager& operator= (const BlockAckManager&);
+
 public:
   BlockAckManager ();
   ~BlockAckManager ();

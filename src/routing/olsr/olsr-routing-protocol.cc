@@ -2815,7 +2815,7 @@ RoutingProtocol::AddEntry (Ipv4Address const &dest,
 
 
 std::vector<RoutingTableEntry>
-RoutingProtocol::GetEntries () const
+RoutingProtocol::GetRoutingTableEntries () const
 {
   std::vector<RoutingTableEntry> retval;
   for (std::map<Ipv4Address, RoutingTableEntry>::const_iterator iter = m_table.begin ();

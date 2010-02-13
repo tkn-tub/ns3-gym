@@ -584,7 +584,15 @@ TcpL4Protocol::Send (Ptr<Packet> packet,
       Socket::SocketErrno errno_;
       Ptr<Ipv4Route> route;
       Ptr<NetDevice> oif (0); //specify non-zero if bound to a source address
-      route = ipv4->GetRoutingProtocol ()->RouteOutput (packet, header, oif, errno_);
+      if (ipv4->GetRoutingProtocol () != 0)
+        {
+          route = ipv4->GetRoutingProtocol ()->RouteOutput (packet, header, oif, errno_);
+        }
+      else
+        {
+          NS_LOG_ERROR ("No IPV4 Routing Protocol");
+          route = 0;
+        }
       ipv4->Send (packet, saddr, daddr, PROT_NUMBER, route);
     }
 }
@@ -623,7 +631,15 @@ TcpL4Protocol::SendPacket (Ptr<Packet> packet, const TcpHeader &outgoing,
       header.SetProtocol (PROT_NUMBER);
       Socket::SocketErrno errno_;
       Ptr<Ipv4Route> route;
-      route = ipv4->GetRoutingProtocol ()->RouteOutput (packet, header, oif, errno_);
+      if (ipv4->GetRoutingProtocol () != 0)
+        {
+          route = ipv4->GetRoutingProtocol ()->RouteOutput (packet, header, oif, errno_);
+        }
+      else
+        {
+          NS_LOG_ERROR ("No IPV4 Routing Protocol");
+          route = 0;
+        }
       ipv4->Send (packet, saddr, daddr, PROT_NUMBER, route);
     }
   else

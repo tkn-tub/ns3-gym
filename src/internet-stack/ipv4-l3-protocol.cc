@@ -483,6 +483,7 @@ Ipv4L3Protocol::Receive( Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t pr
       socket->ForwardUp (packet, ipHeader, device);
     }
 
+  NS_ASSERT_MSG (m_routingProtocol != 0, "Need a routing protocol object to process packets");
   m_routingProtocol->RouteInput (packet, ipHeader, device, 
     MakeCallback (&Ipv4L3Protocol::IpForward, this),
     MakeCallback (&Ipv4L3Protocol::IpMulticastForward, this),
@@ -610,7 +611,15 @@ Ipv4L3Protocol::Send (Ptr<Packet> packet,
   Socket::SocketErrno errno_; 
   Ptr<NetDevice> oif (0); // unused for now
   ipHeader = BuildHeader (source, destination, protocol, packet->GetSize (), ttl, mayFragment);
-  Ptr<Ipv4Route> newRoute = m_routingProtocol->RouteOutput (packet, ipHeader, oif, errno_);
+  Ptr<Ipv4Route> newRoute;
+  if (m_routingProtocol != 0)
+    {
+      newRoute = m_routingProtocol->RouteOutput (packet, ipHeader, oif, errno_);
+    }
+  else
+    {
+      NS_LOG_ERROR ("Ipv4L3Protocol::Send: m_routingProtocol == 0");
+    }
   if (newRoute)
     {
       int32_t interface = GetInterfaceForDevice (newRoute->GetOutputDevice ());
