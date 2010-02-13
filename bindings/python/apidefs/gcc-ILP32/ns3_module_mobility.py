@@ -39,6 +39,8 @@ def register_types(module):
     module.add_class('RectangleChecker', parent=root_module['ns3::AttributeChecker'])
     ## rectangle.h: ns3::RectangleValue [class]
     module.add_class('RectangleValue', parent=root_module['ns3::AttributeValue'])
+    ## steady-state-random-waypoint-mobility-model.h: ns3::SteadyStateRandomWaypointMobilityModel [class]
+    module.add_class('SteadyStateRandomWaypointMobilityModel', parent=root_module['ns3::MobilityModel'])
     ## waypoint.h: ns3::WaypointChecker [class]
     module.add_class('WaypointChecker', parent=root_module['ns3::AttributeChecker'])
     ## waypoint-mobility-model.h: ns3::WaypointMobilityModel [class]
@@ -150,6 +152,7 @@ def register_methods(root_module):
     register_Ns3RandomWaypointMobilityModel_methods(root_module, root_module['ns3::RandomWaypointMobilityModel'])
     register_Ns3RectangleChecker_methods(root_module, root_module['ns3::RectangleChecker'])
     register_Ns3RectangleValue_methods(root_module, root_module['ns3::RectangleValue'])
+    register_Ns3SteadyStateRandomWaypointMobilityModel_methods(root_module, root_module['ns3::SteadyStateRandomWaypointMobilityModel'])
     register_Ns3WaypointChecker_methods(root_module, root_module['ns3::WaypointChecker'])
     register_Ns3WaypointMobilityModel_methods(root_module, root_module['ns3::WaypointMobilityModel'])
     register_Ns3WaypointValue_methods(root_module, root_module['ns3::WaypointValue'])
@@ -644,6 +647,38 @@ def register_Ns3RectangleValue_methods(root_module, cls):
     cls.add_method('Set', 
                    'void', 
                    [param('ns3::Rectangle const &', 'value')])
+    return
+
+def register_Ns3SteadyStateRandomWaypointMobilityModel_methods(root_module, cls):
+    ## steady-state-random-waypoint-mobility-model.h: ns3::SteadyStateRandomWaypointMobilityModel::SteadyStateRandomWaypointMobilityModel(ns3::SteadyStateRandomWaypointMobilityModel const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::SteadyStateRandomWaypointMobilityModel const &', 'arg0')])
+    ## steady-state-random-waypoint-mobility-model.h: ns3::SteadyStateRandomWaypointMobilityModel::SteadyStateRandomWaypointMobilityModel() [constructor]
+    cls.add_constructor([])
+    ## steady-state-random-waypoint-mobility-model.h: static ns3::TypeId ns3::SteadyStateRandomWaypointMobilityModel::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## steady-state-random-waypoint-mobility-model.h: void ns3::SteadyStateRandomWaypointMobilityModel::DoStart() [member function]
+    cls.add_method('DoStart', 
+                   'void', 
+                   [], 
+                   visibility='protected', is_virtual=True)
+    ## steady-state-random-waypoint-mobility-model.h: ns3::Vector ns3::SteadyStateRandomWaypointMobilityModel::DoGetPosition() const [member function]
+    cls.add_method('DoGetPosition', 
+                   'ns3::Vector', 
+                   [], 
+                   is_const=True, visibility='private', is_virtual=True)
+    ## steady-state-random-waypoint-mobility-model.h: ns3::Vector ns3::SteadyStateRandomWaypointMobilityModel::DoGetVelocity() const [member function]
+    cls.add_method('DoGetVelocity', 
+                   'ns3::Vector', 
+                   [], 
+                   is_const=True, visibility='private', is_virtual=True)
+    ## steady-state-random-waypoint-mobility-model.h: void ns3::SteadyStateRandomWaypointMobilityModel::DoSetPosition(ns3::Vector const & position) [member function]
+    cls.add_method('DoSetPosition', 
+                   'void', 
+                   [param('ns3::Vector const &', 'position')], 
+                   visibility='private', is_virtual=True)
     return
 
 def register_Ns3WaypointChecker_methods(root_module, cls):

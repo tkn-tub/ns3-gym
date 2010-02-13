@@ -76,41 +76,9 @@ def register_types(module):
     ## radiotap-header.h: ns3::RadiotapHeader [class]
     module.add_class('RadiotapHeader', parent=root_module['ns3::Header'])
     ## radiotap-header.h: ns3::RadiotapHeader [enumeration]
-    module.add_enum('', ['FRAME_FLAG_NONE'], outer_class=root_module['ns3::RadiotapHeader'])
+    module.add_enum('', ['FRAME_FLAG_NONE', 'FRAME_FLAG_CFP', 'FRAME_FLAG_SHORT_PREAMBLE', 'FRAME_FLAG_WEP', 'FRAME_FLAG_FRAGMENTED', 'FRAME_FLAG_FCS_INCLUDED', 'FRAME_FLAG_DATA_PADDING', 'FRAME_FLAG_BAD_FCS', 'FRAME_FLAG_SHORT_GUARD'], outer_class=root_module['ns3::RadiotapHeader'])
     ## radiotap-header.h: ns3::RadiotapHeader [enumeration]
-    module.add_enum('', ['FRAME_FLAG_CFP'], outer_class=root_module['ns3::RadiotapHeader'])
-    ## radiotap-header.h: ns3::RadiotapHeader [enumeration]
-    module.add_enum('', ['FRAME_FLAG_SHORT_PREAMBLE'], outer_class=root_module['ns3::RadiotapHeader'])
-    ## radiotap-header.h: ns3::RadiotapHeader [enumeration]
-    module.add_enum('', ['FRAME_FLAG_WEP'], outer_class=root_module['ns3::RadiotapHeader'])
-    ## radiotap-header.h: ns3::RadiotapHeader [enumeration]
-    module.add_enum('', ['FRAME_FLAG_FRAGMENTED'], outer_class=root_module['ns3::RadiotapHeader'])
-    ## radiotap-header.h: ns3::RadiotapHeader [enumeration]
-    module.add_enum('', ['FRAME_FLAG_FCS_INCLUDED'], outer_class=root_module['ns3::RadiotapHeader'])
-    ## radiotap-header.h: ns3::RadiotapHeader [enumeration]
-    module.add_enum('', ['FRAME_FLAG_DATA_PADDING'], outer_class=root_module['ns3::RadiotapHeader'])
-    ## radiotap-header.h: ns3::RadiotapHeader [enumeration]
-    module.add_enum('', ['FRAME_FLAG_BAD_FCS'], outer_class=root_module['ns3::RadiotapHeader'])
-    ## radiotap-header.h: ns3::RadiotapHeader [enumeration]
-    module.add_enum('', ['FRAME_FLAG_SHORT_GUARD'], outer_class=root_module['ns3::RadiotapHeader'])
-    ## radiotap-header.h: ns3::RadiotapHeader [enumeration]
-    module.add_enum('', ['CHANNEL_FLAG_NONE'], outer_class=root_module['ns3::RadiotapHeader'])
-    ## radiotap-header.h: ns3::RadiotapHeader [enumeration]
-    module.add_enum('', ['CHANNEL_FLAG_TURBO'], outer_class=root_module['ns3::RadiotapHeader'])
-    ## radiotap-header.h: ns3::RadiotapHeader [enumeration]
-    module.add_enum('', ['CHANNEL_FLAG_CCK'], outer_class=root_module['ns3::RadiotapHeader'])
-    ## radiotap-header.h: ns3::RadiotapHeader [enumeration]
-    module.add_enum('', ['CHANNEL_FLAG_OFDM'], outer_class=root_module['ns3::RadiotapHeader'])
-    ## radiotap-header.h: ns3::RadiotapHeader [enumeration]
-    module.add_enum('', ['CHANNEL_FLAG_SPECTRUM_2GHZ'], outer_class=root_module['ns3::RadiotapHeader'])
-    ## radiotap-header.h: ns3::RadiotapHeader [enumeration]
-    module.add_enum('', ['CHANNEL_FLAG_SPECTRUM_5GHZ'], outer_class=root_module['ns3::RadiotapHeader'])
-    ## radiotap-header.h: ns3::RadiotapHeader [enumeration]
-    module.add_enum('', ['CHANNEL_FLAG_PASSIVE'], outer_class=root_module['ns3::RadiotapHeader'])
-    ## radiotap-header.h: ns3::RadiotapHeader [enumeration]
-    module.add_enum('', ['CHANNEL_FLAG_DYNAMIC'], outer_class=root_module['ns3::RadiotapHeader'])
-    ## radiotap-header.h: ns3::RadiotapHeader [enumeration]
-    module.add_enum('', ['CHANNEL_FLAG_GFSK'], outer_class=root_module['ns3::RadiotapHeader'])
+    module.add_enum('', ['CHANNEL_FLAG_NONE', 'CHANNEL_FLAG_TURBO', 'CHANNEL_FLAG_CCK', 'CHANNEL_FLAG_OFDM', 'CHANNEL_FLAG_SPECTRUM_2GHZ', 'CHANNEL_FLAG_SPECTRUM_5GHZ', 'CHANNEL_FLAG_PASSIVE', 'CHANNEL_FLAG_DYNAMIC', 'CHANNEL_FLAG_GFSK'], outer_class=root_module['ns3::RadiotapHeader'])
     ## simple-ref-count.h: ns3::SimpleRefCount<ns3::Ipv4MulticastRoute, ns3::empty, ns3::DefaultDeleter<ns3::Ipv4MulticastRoute> > [class]
     module.add_class('SimpleRefCount', automatic_type_narrowing=True, template_parameters=['ns3::Ipv4MulticastRoute', 'ns3::empty', 'ns3::DefaultDeleter<ns3::Ipv4MulticastRoute>'], parent=root_module['ns3::empty'], memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'))
     ## simple-ref-count.h: ns3::SimpleRefCount<ns3::Ipv4Route, ns3::empty, ns3::DefaultDeleter<ns3::Ipv4Route> > [class]

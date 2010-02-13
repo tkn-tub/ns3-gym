@@ -47,12 +47,8 @@ def register_types(module):
     module.add_class('Chunk', parent=root_module['ns3::ObjectBase'])
     ## header.h: ns3::Header [class]
     module.add_class('Header', parent=root_module['ns3::Chunk'])
-    ## output-stream-object.h: ns3::OutputStreamObject [class]
-    module.add_class('OutputStreamObject', parent=root_module['ns3::Object'])
     ## pcap-file-object.h: ns3::PcapFileObject [class]
     module.add_class('PcapFileObject', parent=root_module['ns3::Object'])
-    ## pcap-writer.h: ns3::PcapWriter [class]
-    module.add_class('PcapWriter', parent=root_module['ns3::Object'])
     ## propagation-delay-model.h: ns3::PropagationDelayModel [class]
     module.add_class('PropagationDelayModel', parent=root_module['ns3::Object'])
     ## propagation-loss-model.h: ns3::PropagationLossModel [class]
@@ -61,8 +57,8 @@ def register_types(module):
     module.add_class('RandomPropagationDelayModel', parent=root_module['ns3::PropagationDelayModel'])
     ## propagation-loss-model.h: ns3::RandomPropagationLossModel [class]
     module.add_class('RandomPropagationLossModel', parent=root_module['ns3::PropagationLossModel'])
-    ## simple-ref-count.h: ns3::SimpleRefCount<ns3::AsciiWriter, ns3::empty, ns3::DefaultDeleter<ns3::AsciiWriter> > [class]
-    module.add_class('SimpleRefCount', automatic_type_narrowing=True, template_parameters=['ns3::AsciiWriter', 'ns3::empty', 'ns3::DefaultDeleter<ns3::AsciiWriter>'], parent=root_module['ns3::empty'], memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'))
+    ## simple-ref-count.h: ns3::SimpleRefCount<ns3::OutputStreamKeeper, ns3::empty, ns3::DefaultDeleter<ns3::OutputStreamKeeper> > [class]
+    module.add_class('SimpleRefCount', automatic_type_narrowing=True, template_parameters=['ns3::OutputStreamKeeper', 'ns3::empty', 'ns3::DefaultDeleter<ns3::OutputStreamKeeper>'], parent=root_module['ns3::empty'], memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'))
     ## simple-ref-count.h: ns3::SimpleRefCount<ns3::Packet, ns3::empty, ns3::DefaultDeleter<ns3::Packet> > [class]
     module.add_class('SimpleRefCount', automatic_type_narrowing=True, template_parameters=['ns3::Packet', 'ns3::empty', 'ns3::DefaultDeleter<ns3::Packet>'], parent=root_module['ns3::empty'], memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'))
     ## propagation-loss-model.h: ns3::ThreeLogDistancePropagationLossModel [class]
@@ -71,10 +67,6 @@ def register_types(module):
     module.add_class('Trailer', parent=root_module['ns3::Chunk'])
     ## propagation-loss-model.h: ns3::TwoRayGroundPropagationLossModel [class]
     module.add_class('TwoRayGroundPropagationLossModel', parent=root_module['ns3::PropagationLossModel'])
-    ## ascii-writer.h: ns3::AsciiWriter [class]
-    module.add_class('AsciiWriter', parent=root_module['ns3::SimpleRefCount< ns3::AsciiWriter, ns3::empty, ns3::DefaultDeleter<ns3::AsciiWriter> >'])
-    ## ascii-writer.h: ns3::AsciiWriter::Type [enumeration]
-    module.add_enum('Type', ['ENQUEUE', 'DEQUEUE', 'DROP', 'TX', 'RX'], outer_class=root_module['ns3::AsciiWriter'])
     ## propagation-delay-model.h: ns3::ConstantSpeedPropagationDelayModel [class]
     module.add_class('ConstantSpeedPropagationDelayModel', parent=root_module['ns3::PropagationDelayModel'])
     ## data-rate.h: ns3::DataRateChecker [class]
@@ -97,6 +89,8 @@ def register_types(module):
     module.add_class('NakagamiPropagationLossModel', parent=root_module['ns3::PropagationLossModel'])
     ## nix-vector.h: ns3::NixVector [class]
     module.add_class('NixVector', parent=root_module['ns3::Object'])
+    ## output-stream-keeper.h: ns3::OutputStreamKeeper [class]
+    module.add_class('OutputStreamKeeper', parent=root_module['ns3::SimpleRefCount< ns3::OutputStreamKeeper, ns3::empty, ns3::DefaultDeleter<ns3::OutputStreamKeeper> >'])
     ## packet.h: ns3::Packet [class]
     module.add_class('Packet', parent=root_module['ns3::SimpleRefCount< ns3::Packet, ns3::empty, ns3::DefaultDeleter<ns3::Packet> >'])
     ## error-model.h: ns3::RateErrorModel [class]
@@ -203,9 +197,7 @@ def register_methods(root_module):
     register_Ns3TagBuffer_methods(root_module, root_module['ns3::TagBuffer'])
     register_Ns3Chunk_methods(root_module, root_module['ns3::Chunk'])
     register_Ns3Header_methods(root_module, root_module['ns3::Header'])
-    register_Ns3OutputStreamObject_methods(root_module, root_module['ns3::OutputStreamObject'])
     register_Ns3PcapFileObject_methods(root_module, root_module['ns3::PcapFileObject'])
-    register_Ns3PcapWriter_methods(root_module, root_module['ns3::PcapWriter'])
     register_Ns3PropagationDelayModel_methods(root_module, root_module['ns3::PropagationDelayModel'])
     register_Ns3PropagationLossModel_methods(root_module, root_module['ns3::PropagationLossModel'])
     register_Ns3RandomPropagationDelayModel_methods(root_module, root_module['ns3::RandomPropagationDelayModel'])
@@ -213,7 +205,6 @@ def register_methods(root_module):
     register_Ns3ThreeLogDistancePropagationLossModel_methods(root_module, root_module['ns3::ThreeLogDistancePropagationLossModel'])
     register_Ns3Trailer_methods(root_module, root_module['ns3::Trailer'])
     register_Ns3TwoRayGroundPropagationLossModel_methods(root_module, root_module['ns3::TwoRayGroundPropagationLossModel'])
-    register_Ns3AsciiWriter_methods(root_module, root_module['ns3::AsciiWriter'])
     register_Ns3ConstantSpeedPropagationDelayModel_methods(root_module, root_module['ns3::ConstantSpeedPropagationDelayModel'])
     register_Ns3DataRateChecker_methods(root_module, root_module['ns3::DataRateChecker'])
     register_Ns3DataRateValue_methods(root_module, root_module['ns3::DataRateValue'])
@@ -225,6 +216,7 @@ def register_methods(root_module):
     register_Ns3LogDistancePropagationLossModel_methods(root_module, root_module['ns3::LogDistancePropagationLossModel'])
     register_Ns3NakagamiPropagationLossModel_methods(root_module, root_module['ns3::NakagamiPropagationLossModel'])
     register_Ns3NixVector_methods(root_module, root_module['ns3::NixVector'])
+    register_Ns3OutputStreamKeeper_methods(root_module, root_module['ns3::OutputStreamKeeper'])
     register_Ns3Packet_methods(root_module, root_module['ns3::Packet'])
     register_Ns3RateErrorModel_methods(root_module, root_module['ns3::RateErrorModel'])
     return
@@ -995,26 +987,6 @@ def register_Ns3Header_methods(root_module, cls):
                    is_pure_virtual=True, is_const=True, is_virtual=True)
     return
 
-def register_Ns3OutputStreamObject_methods(root_module, cls):
-    ## output-stream-object.h: ns3::OutputStreamObject::OutputStreamObject(ns3::OutputStreamObject const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::OutputStreamObject const &', 'arg0')])
-    ## output-stream-object.h: ns3::OutputStreamObject::OutputStreamObject() [constructor]
-    cls.add_constructor([])
-    ## output-stream-object.h: std::ostream * ns3::OutputStreamObject::GetStream() [member function]
-    cls.add_method('GetStream', 
-                   'std::ostream *', 
-                   [])
-    ## output-stream-object.h: static ns3::TypeId ns3::OutputStreamObject::GetTypeId() [member function]
-    cls.add_method('GetTypeId', 
-                   'ns3::TypeId', 
-                   [], 
-                   is_static=True)
-    ## output-stream-object.h: void ns3::OutputStreamObject::SetStream(std::ostream * ostream) [member function]
-    cls.add_method('SetStream', 
-                   'void', 
-                   [param('std::ostream *', 'ostream')])
-    return
-
 def register_Ns3PcapFileObject_methods(root_module, cls):
     ## pcap-file-object.h: ns3::PcapFileObject::PcapFileObject(ns3::PcapFileObject const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::PcapFileObject const &', 'arg0')])
@@ -1057,10 +1029,10 @@ def register_Ns3PcapFileObject_methods(root_module, cls):
     cls.add_method('GetVersionMinor', 
                    'uint16_t', 
                    [])
-    ## pcap-file-object.h: bool ns3::PcapFileObject::Init(uint32_t dataLinkType, uint32_t snapLen=ns3::PcapFile::SNAPLEN_DEFAULT, int32_t tzCorrection=ns3::PcapFile::ZONE_DEFAULT) [member function]
+    ## pcap-file-object.h: bool ns3::PcapFileObject::Init(uint32_t dataLinkType, uint32_t snapLen=std::numeric_limits<unsigned int>::max(), int32_t tzCorrection=ns3::PcapFile::ZONE_DEFAULT) [member function]
     cls.add_method('Init', 
                    'bool', 
-                   [param('uint32_t', 'dataLinkType'), param('uint32_t', 'snapLen', default_value='ns3::PcapFile::SNAPLEN_DEFAULT'), param('int32_t', 'tzCorrection', default_value='ns3::PcapFile::ZONE_DEFAULT')])
+                   [param('uint32_t', 'dataLinkType'), param('uint32_t', 'snapLen', default_value='std::numeric_limits<unsigned int>::max()'), param('int32_t', 'tzCorrection', default_value='ns3::PcapFile::ZONE_DEFAULT')])
     ## pcap-file-object.h: bool ns3::PcapFileObject::Open(std::string const & filename, std::string const & mode) [member function]
     cls.add_method('Open', 
                    'bool', 
@@ -1069,62 +1041,14 @@ def register_Ns3PcapFileObject_methods(root_module, cls):
     cls.add_method('Write', 
                    'bool', 
                    [param('ns3::Time', 't'), param('ns3::Ptr< ns3::Packet const >', 'p')])
+    ## pcap-file-object.h: bool ns3::PcapFileObject::Write(ns3::Time t, ns3::Header & header, ns3::Ptr<ns3::Packet const> p) [member function]
+    cls.add_method('Write', 
+                   'bool', 
+                   [param('ns3::Time', 't'), param('ns3::Header &', 'header'), param('ns3::Ptr< ns3::Packet const >', 'p')])
     ## pcap-file-object.h: bool ns3::PcapFileObject::Write(ns3::Time t, uint8_t const * buffer, uint32_t length) [member function]
     cls.add_method('Write', 
                    'bool', 
                    [param('ns3::Time', 't'), param('uint8_t const *', 'buffer'), param('uint32_t', 'length')])
-    return
-
-def register_Ns3PcapWriter_methods(root_module, cls):
-    ## pcap-writer.h: ns3::PcapWriter::PcapWriter(ns3::PcapWriter const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::PcapWriter const &', 'arg0')])
-    ## pcap-writer.h: ns3::PcapWriter::PcapWriter() [constructor]
-    cls.add_constructor([])
-    ## pcap-writer.h: static ns3::TypeId ns3::PcapWriter::GetTypeId() [member function]
-    cls.add_method('GetTypeId', 
-                   'ns3::TypeId', 
-                   [], 
-                   is_static=True)
-    ## pcap-writer.h: void ns3::PcapWriter::Open(std::string const & name) [member function]
-    cls.add_method('Open', 
-                   'void', 
-                   [param('std::string const &', 'name')])
-    ## pcap-writer.h: void ns3::PcapWriter::SetCaptureSize(uint32_t size) [member function]
-    cls.add_method('SetCaptureSize', 
-                   'void', 
-                   [param('uint32_t', 'size')])
-    ## pcap-writer.h: void ns3::PcapWriter::WriteEthernetHeader() [member function]
-    cls.add_method('WriteEthernetHeader', 
-                   'void', 
-                   [])
-    ## pcap-writer.h: void ns3::PcapWriter::WriteIpHeader() [member function]
-    cls.add_method('WriteIpHeader', 
-                   'void', 
-                   [])
-    ## pcap-writer.h: void ns3::PcapWriter::WritePacket(ns3::Ptr<ns3::Packet const> packet) [member function]
-    cls.add_method('WritePacket', 
-                   'void', 
-                   [param('ns3::Ptr< ns3::Packet const >', 'packet')])
-    ## pcap-writer.h: void ns3::PcapWriter::WritePppHeader() [member function]
-    cls.add_method('WritePppHeader', 
-                   'void', 
-                   [])
-    ## pcap-writer.h: void ns3::PcapWriter::WriteWifiHeader() [member function]
-    cls.add_method('WriteWifiHeader', 
-                   'void', 
-                   [])
-    ## pcap-writer.h: void ns3::PcapWriter::WriteWifiMonitorPacket(ns3::Ptr<ns3::Packet const> packet, uint16_t channelFreqMhz, uint16_t channelNumber, uint32_t rate, bool isShortPreamble, bool isTx, double signalDbm, double noiseDbm) [member function]
-    cls.add_method('WriteWifiMonitorPacket', 
-                   'void', 
-                   [param('ns3::Ptr< ns3::Packet const >', 'packet'), param('uint16_t', 'channelFreqMhz'), param('uint16_t', 'channelNumber'), param('uint32_t', 'rate'), param('bool', 'isShortPreamble'), param('bool', 'isTx'), param('double', 'signalDbm'), param('double', 'noiseDbm')])
-    ## pcap-writer.h: void ns3::PcapWriter::WriteWifiPrismHeader() [member function]
-    cls.add_method('WriteWifiPrismHeader', 
-                   'void', 
-                   [])
-    ## pcap-writer.h: void ns3::PcapWriter::WriteWifiRadiotapHeader() [member function]
-    cls.add_method('WriteWifiRadiotapHeader', 
-                   'void', 
-                   [])
     return
 
 def register_Ns3PropagationDelayModel_methods(root_module, cls):
@@ -1296,20 +1220,6 @@ def register_Ns3TwoRayGroundPropagationLossModel_methods(root_module, cls):
                    'double', 
                    [param('double', 'txPowerDbm'), param('ns3::Ptr< ns3::MobilityModel >', 'a'), param('ns3::Ptr< ns3::MobilityModel >', 'b')], 
                    is_const=True, visibility='private', is_virtual=True)
-    return
-
-def register_Ns3AsciiWriter_methods(root_module, cls):
-    ## ascii-writer.h: ns3::AsciiWriter::AsciiWriter(ns3::AsciiWriter const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::AsciiWriter const &', 'arg0')])
-    ## ascii-writer.h: static ns3::Ptr<ns3::AsciiWriter> ns3::AsciiWriter::Get(std::ostream & os) [member function]
-    cls.add_method('Get', 
-                   'ns3::Ptr< ns3::AsciiWriter >', 
-                   [param('std::ostream &', 'os')], 
-                   is_static=True)
-    ## ascii-writer.h: void ns3::AsciiWriter::WritePacket(ns3::AsciiWriter::Type type, std::string message, ns3::Ptr<ns3::Packet const> p) [member function]
-    cls.add_method('WritePacket', 
-                   'void', 
-                   [param('ns3::AsciiWriter::Type', 'type'), param('std::string', 'message'), param('ns3::Ptr< ns3::Packet const >', 'p')])
     return
 
 def register_Ns3ConstantSpeedPropagationDelayModel_methods(root_module, cls):
@@ -1645,6 +1555,26 @@ def register_Ns3NixVector_methods(root_module, cls):
                    'void', 
                    [param('ns3::Buffer::Iterator', 'i'), param('uint32_t', 'size')], 
                    is_const=True)
+    return
+
+def register_Ns3OutputStreamKeeper_methods(root_module, cls):
+    ## output-stream-keeper.h: ns3::OutputStreamKeeper::OutputStreamKeeper(ns3::OutputStreamKeeper const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::OutputStreamKeeper const &', 'arg0')])
+    ## output-stream-keeper.h: ns3::OutputStreamKeeper::OutputStreamKeeper() [constructor]
+    cls.add_constructor([])
+    ## output-stream-keeper.h: std::ostream * ns3::OutputStreamKeeper::GetStream() [member function]
+    cls.add_method('GetStream', 
+                   'std::ostream *', 
+                   [])
+    ## output-stream-keeper.h: static ns3::TypeId ns3::OutputStreamKeeper::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## output-stream-keeper.h: void ns3::OutputStreamKeeper::SetStream(std::ostream * ostream) [member function]
+    cls.add_method('SetStream', 
+                   'void', 
+                   [param('std::ostream *', 'ostream')])
     return
 
 def register_Ns3Packet_methods(root_module, cls):
