@@ -191,7 +191,7 @@ main (int argc, char *argv[])
 
 
   AsciiTraceHelper ascii;
-  Ptr<OutputStreamObject> stream = ascii.CreateFileStream ("dynamic-global-routing.tr");
+  Ptr<OutputStreamKeeper> stream = ascii.CreateFileStream ("dynamic-global-routing.tr");
   p2p.EnableAsciiAll (stream);
   csma.EnableAsciiAll (stream);
   internet.EnableAsciiIpv4All (stream);

@@ -138,7 +138,7 @@ private:
    * \param prefix Filename prefix to use for ascii trace files.
    * \param nd Net device for which you want to enable tracing.
    */
-  virtual void EnableAsciiInternal (Ptr<OutputStreamObject> stream, std::string prefix, Ptr<NetDevice> nd);
+  virtual void EnableAsciiInternal (Ptr<OutputStreamKeeper> stream, std::string prefix, Ptr<NetDevice> nd);
 
   ObjectFactory m_queueFactory;
   ObjectFactory m_deviceFactory;

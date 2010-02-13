@@ -389,7 +389,7 @@ main (int argc, char *argv[])
      // Let's set up some ns-2-like ascii traces, using another helper class
      //
      AsciiTraceHelper ascii;
-     Ptr<OutputStreamObject> stream = ascii.CreateFileStream ("mixed-wireless.tr");
+     Ptr<OutputStreamKeeper> stream = ascii.CreateFileStream ("mixed-wireless.tr");
      wifiPhy.EnableAsciiAll (stream);
      csma.EnableAsciiAll (stream);
      internet.EnableAsciiIpv4All (stream);

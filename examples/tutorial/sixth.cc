@@ -161,7 +161,7 @@ MyApp::ScheduleTx (void)
 }
 
 static void
-CwndChange (Ptr<OutputStreamObject> stream, uint32_t oldCwnd, uint32_t newCwnd)
+CwndChange (Ptr<OutputStreamKeeper> stream, uint32_t oldCwnd, uint32_t newCwnd)
 {
   NS_LOG_UNCOND (Simulator::Now ().GetSeconds () << "\t" << newCwnd);
   *stream->GetStream () << Simulator::Now ().GetSeconds () << "\t" << oldCwnd << "\t" << newCwnd << std::endl;
@@ -215,7 +215,7 @@ main (int argc, char *argv[])
   app->SetStopTime (Seconds (20.));
 
   AsciiTraceHelper asciiTraceHelper;
-  Ptr<OutputStreamObject> stream = asciiTraceHelper.CreateFileStream ("sixth.cwnd");
+  Ptr<OutputStreamKeeper> stream = asciiTraceHelper.CreateFileStream ("sixth.cwnd");
   ns3TcpSocket->TraceConnectWithoutContext ("CongestionWindow", MakeBoundCallback (&CwndChange, stream));
 
   PcapHelper pcapHelper;

@@ -180,7 +180,7 @@ AsciiTraceHelper::~AsciiTraceHelper ()
   NS_LOG_FUNCTION_NOARGS ();
 }
 
-Ptr<OutputStreamObject>
+Ptr<OutputStreamKeeper>
 AsciiTraceHelper::CreateFileStream (std::string filename, std::string filemode)
 {
   NS_LOG_FUNCTION (filename << filemode);
@@ -205,8 +205,8 @@ AsciiTraceHelper::CreateFileStream (std::string filename, std::string filemode)
   NS_ABORT_MSG_UNLESS (ofstream->is_open (), "AsciiTraceHelper::CreateFileStream():  Unable to Open " << 
                        filename << " for mode " << filemode);
   
-  Ptr<OutputStreamObject> streamObject = Create<OutputStreamObject> ();
-  streamObject->SetStream (ofstream);
+  Ptr<OutputStreamKeeper> StreamKeeper = Create<OutputStreamKeeper> ();
+  StreamKeeper->SetStream (ofstream);
 
   //
   // Note that the ascii trace helper promptly forgets all about the trace file.
@@ -219,7 +219,7 @@ AsciiTraceHelper::CreateFileStream (std::string filename, std::string filemode)
   // and the stream object will be destroyed, releasing the pointer and closing
   // the underlying file.
   //
-  return streamObject;
+  return StreamKeeper;
 }
 
 std::string
@@ -321,14 +321,14 @@ AsciiTraceHelper::GetFilenameFromInterfacePair (
 //   in the device (actually the Queue in the device).
 //
 void
-AsciiTraceHelper::DefaultEnqueueSinkWithoutContext (Ptr<OutputStreamObject> stream, Ptr<const Packet> p)
+AsciiTraceHelper::DefaultEnqueueSinkWithoutContext (Ptr<OutputStreamKeeper> stream, Ptr<const Packet> p)
 {
   NS_LOG_FUNCTION (stream << p);
   *stream->GetStream () << "+ " << Simulator::Now ().GetSeconds () << " " << *p << std::endl;
 }
 
 void
-AsciiTraceHelper::DefaultEnqueueSinkWithContext (Ptr<OutputStreamObject> stream, std::string context, Ptr<const Packet> p)
+AsciiTraceHelper::DefaultEnqueueSinkWithContext (Ptr<OutputStreamKeeper> stream, std::string context, Ptr<const Packet> p)
 {
   NS_LOG_FUNCTION (stream << p);
   *stream->GetStream () << "+ " << Simulator::Now ().GetSeconds () << " " << context << " " << *p << std::endl;
@@ -347,14 +347,14 @@ AsciiTraceHelper::DefaultEnqueueSinkWithContext (Ptr<OutputStreamObject> stream,
 //   in the device (actually the Queue in the device).
 //
 void
-AsciiTraceHelper::DefaultDropSinkWithoutContext (Ptr<OutputStreamObject> stream, Ptr<const Packet> p)
+AsciiTraceHelper::DefaultDropSinkWithoutContext (Ptr<OutputStreamKeeper> stream, Ptr<const Packet> p)
 {
   NS_LOG_FUNCTION (stream << p);
   *stream->GetStream () << "d " << Simulator::Now ().GetSeconds () << " " << *p << std::endl;
 }
 
 void
-AsciiTraceHelper::DefaultDropSinkWithContext (Ptr<OutputStreamObject> stream, std::string context, Ptr<const Packet> p)
+AsciiTraceHelper::DefaultDropSinkWithContext (Ptr<OutputStreamKeeper> stream, std::string context, Ptr<const Packet> p)
 {
   NS_LOG_FUNCTION (stream << p);
   *stream->GetStream () << "d " << Simulator::Now ().GetSeconds () << " " << context << " " << *p << std::endl;
@@ -374,14 +374,14 @@ AsciiTraceHelper::DefaultDropSinkWithContext (Ptr<OutputStreamObject> stream, st
 //   in the device (actually the Queue in the device).
 //
 void
-AsciiTraceHelper::DefaultDequeueSinkWithoutContext (Ptr<OutputStreamObject> stream, Ptr<const Packet> p)
+AsciiTraceHelper::DefaultDequeueSinkWithoutContext (Ptr<OutputStreamKeeper> stream, Ptr<const Packet> p)
 {
   NS_LOG_FUNCTION (stream << p);
   *stream->GetStream () << "- " << Simulator::Now ().GetSeconds () << " " << *p << std::endl;
 }
 
 void
-AsciiTraceHelper::DefaultDequeueSinkWithContext (Ptr<OutputStreamObject> stream, std::string context, Ptr<const Packet> p)
+AsciiTraceHelper::DefaultDequeueSinkWithContext (Ptr<OutputStreamKeeper> stream, std::string context, Ptr<const Packet> p)
 {
   NS_LOG_FUNCTION (stream << p);
   *stream->GetStream () << "- " << Simulator::Now ().GetSeconds () << " " << context << " " << *p << std::endl;
@@ -398,14 +398,14 @@ AsciiTraceHelper::DefaultDequeueSinkWithContext (Ptr<OutputStreamObject> stream,
 //   This is typically implemented by hooking the "MacRx" trace hook in the
 //   device.
 void
-AsciiTraceHelper::DefaultReceiveSinkWithoutContext (Ptr<OutputStreamObject> stream, Ptr<const Packet> p)
+AsciiTraceHelper::DefaultReceiveSinkWithoutContext (Ptr<OutputStreamKeeper> stream, Ptr<const Packet> p)
 {
   NS_LOG_FUNCTION (stream << p);
   *stream->GetStream () << "r " << Simulator::Now ().GetSeconds () << " " << *p << std::endl;
 }
 
 void
-AsciiTraceHelper::DefaultReceiveSinkWithContext (Ptr<OutputStreamObject> stream, std::string context, Ptr<const Packet> p)
+AsciiTraceHelper::DefaultReceiveSinkWithContext (Ptr<OutputStreamKeeper> stream, std::string context, Ptr<const Packet> p)
 {
   NS_LOG_FUNCTION (stream << p);
   *stream->GetStream () << "r " << Simulator::Now ().GetSeconds () << " " << context << " " << *p << std::endl;
@@ -482,14 +482,14 @@ PcapHelperForDevice::EnablePcap (std::string prefix, uint32_t nodeid, uint32_t d
 void 
 AsciiTraceHelperForDevice::EnableAscii (std::string prefix, Ptr<NetDevice> nd)
 {
-  EnableAsciiInternal (Ptr<OutputStreamObject> (), prefix, nd);
+  EnableAsciiInternal (Ptr<OutputStreamKeeper> (), prefix, nd);
 }
 
 //
 // Public API
 //
 void 
-AsciiTraceHelperForDevice::EnableAscii (Ptr<OutputStreamObject> stream, Ptr<NetDevice> nd)
+AsciiTraceHelperForDevice::EnableAscii (Ptr<OutputStreamKeeper> stream, Ptr<NetDevice> nd)
 {
   EnableAsciiInternal (stream, std::string (), nd);
 }
@@ -500,14 +500,14 @@ AsciiTraceHelperForDevice::EnableAscii (Ptr<OutputStreamObject> stream, Ptr<NetD
 void 
 AsciiTraceHelperForDevice::EnableAscii (std::string prefix, std::string ndName)
 {
-  EnableAsciiImpl (Ptr<OutputStreamObject> (), prefix, ndName);
+  EnableAsciiImpl (Ptr<OutputStreamKeeper> (), prefix, ndName);
 }
 
 //
 // Public API
 //
 void 
-AsciiTraceHelperForDevice::EnableAscii (Ptr<OutputStreamObject> stream, std::string ndName)
+AsciiTraceHelperForDevice::EnableAscii (Ptr<OutputStreamKeeper> stream, std::string ndName)
 {
   EnableAsciiImpl (stream, std::string (), ndName);
 }
@@ -516,7 +516,7 @@ AsciiTraceHelperForDevice::EnableAscii (Ptr<OutputStreamObject> stream, std::str
 // Private API
 //
 void 
-AsciiTraceHelperForDevice::EnableAsciiImpl (Ptr<OutputStreamObject> stream, std::string prefix, std::string ndName)
+AsciiTraceHelperForDevice::EnableAsciiImpl (Ptr<OutputStreamKeeper> stream, std::string prefix, std::string ndName)
 {
   Ptr<NetDevice> nd = Names::Find<NetDevice> (ndName);
   EnableAsciiInternal (stream, prefix, nd);
@@ -528,14 +528,14 @@ AsciiTraceHelperForDevice::EnableAsciiImpl (Ptr<OutputStreamObject> stream, std:
 void 
 AsciiTraceHelperForDevice::EnableAscii (std::string prefix, NetDeviceContainer d)
 {
-  EnableAsciiImpl (Ptr<OutputStreamObject> (), prefix, d);
+  EnableAsciiImpl (Ptr<OutputStreamKeeper> (), prefix, d);
 }
 
 //
 // Public API
 //
 void 
-AsciiTraceHelperForDevice::EnableAscii (Ptr<OutputStreamObject> stream, NetDeviceContainer d)
+AsciiTraceHelperForDevice::EnableAscii (Ptr<OutputStreamKeeper> stream, NetDeviceContainer d)
 {
   EnableAsciiImpl (stream, std::string (), d);
 }
@@ -544,7 +544,7 @@ AsciiTraceHelperForDevice::EnableAscii (Ptr<OutputStreamObject> stream, NetDevic
 // Private API
 //
 void 
-AsciiTraceHelperForDevice::EnableAsciiImpl (Ptr<OutputStreamObject> stream, std::string prefix, NetDeviceContainer d)
+AsciiTraceHelperForDevice::EnableAsciiImpl (Ptr<OutputStreamKeeper> stream, std::string prefix, NetDeviceContainer d)
 {
   for (NetDeviceContainer::Iterator i = d.Begin (); i != d.End (); ++i)
     {
@@ -559,14 +559,14 @@ AsciiTraceHelperForDevice::EnableAsciiImpl (Ptr<OutputStreamObject> stream, std:
 void
 AsciiTraceHelperForDevice::EnableAscii (std::string prefix, NodeContainer n)
 {
-  EnableAsciiImpl (Ptr<OutputStreamObject> (), prefix, n);
+  EnableAsciiImpl (Ptr<OutputStreamKeeper> (), prefix, n);
 }
 
 //
 // Public API
 //
 void
-AsciiTraceHelperForDevice::EnableAscii (Ptr<OutputStreamObject> stream, NodeContainer n)
+AsciiTraceHelperForDevice::EnableAscii (Ptr<OutputStreamKeeper> stream, NodeContainer n)
 {
   EnableAsciiImpl (stream, std::string (), n);
 }
@@ -575,7 +575,7 @@ AsciiTraceHelperForDevice::EnableAscii (Ptr<OutputStreamObject> stream, NodeCont
 // Private API
 //
 void
-AsciiTraceHelperForDevice::EnableAsciiImpl (Ptr<OutputStreamObject> stream, std::string prefix, NodeContainer n)
+AsciiTraceHelperForDevice::EnableAsciiImpl (Ptr<OutputStreamKeeper> stream, std::string prefix, NodeContainer n)
 {
   NetDeviceContainer devs;
   for (NodeContainer::Iterator i = n.Begin (); i != n.End (); ++i)
@@ -595,14 +595,14 @@ AsciiTraceHelperForDevice::EnableAsciiImpl (Ptr<OutputStreamObject> stream, std:
 void
 AsciiTraceHelperForDevice::EnableAsciiAll (std::string prefix)
 {
-  EnableAsciiImpl (Ptr<OutputStreamObject> (), prefix, NodeContainer::GetGlobal ());
+  EnableAsciiImpl (Ptr<OutputStreamKeeper> (), prefix, NodeContainer::GetGlobal ());
 }
 
 //
 // Public API
 //
 void
-AsciiTraceHelperForDevice::EnableAsciiAll (Ptr<OutputStreamObject> stream)
+AsciiTraceHelperForDevice::EnableAsciiAll (Ptr<OutputStreamKeeper> stream)
 {
   EnableAsciiImpl (stream, std::string (), NodeContainer::GetGlobal ());
 }
@@ -611,7 +611,7 @@ AsciiTraceHelperForDevice::EnableAsciiAll (Ptr<OutputStreamObject> stream)
 // Public API
 //
 void 
-AsciiTraceHelperForDevice::EnableAscii (Ptr<OutputStreamObject> stream, uint32_t nodeid, uint32_t deviceid)
+AsciiTraceHelperForDevice::EnableAscii (Ptr<OutputStreamKeeper> stream, uint32_t nodeid, uint32_t deviceid)
 {
   EnableAsciiImpl (stream, std::string (), nodeid, deviceid);
 }
@@ -622,7 +622,7 @@ AsciiTraceHelperForDevice::EnableAscii (Ptr<OutputStreamObject> stream, uint32_t
 void 
 AsciiTraceHelperForDevice::EnableAscii (std::string prefix, uint32_t nodeid, uint32_t deviceid)
 {
-  EnableAsciiImpl (Ptr<OutputStreamObject> (), prefix, nodeid, deviceid);
+  EnableAsciiImpl (Ptr<OutputStreamKeeper> (), prefix, nodeid, deviceid);
 }
 
 //
@@ -630,7 +630,7 @@ AsciiTraceHelperForDevice::EnableAscii (std::string prefix, uint32_t nodeid, uin
 //
 void 
 AsciiTraceHelperForDevice::EnableAsciiImpl (
-  Ptr<OutputStreamObject> stream, 
+  Ptr<OutputStreamKeeper> stream, 
   std::string prefix, 
   uint32_t nodeid, 
   uint32_t deviceid)
@@ -729,14 +729,14 @@ PcapHelperForIpv4::EnablePcapIpv4 (std::string prefix, uint32_t nodeid, uint32_t
 void 
 AsciiTraceHelperForIpv4::EnableAsciiIpv4 (std::string prefix, Ptr<Ipv4> ipv4, uint32_t interface)
 {
-  EnableAsciiIpv4Internal (Ptr<OutputStreamObject> (), prefix, ipv4, interface);
+  EnableAsciiIpv4Internal (Ptr<OutputStreamKeeper> (), prefix, ipv4, interface);
 }
 
 //
 // Public API
 //
 void 
-AsciiTraceHelperForIpv4::EnableAsciiIpv4 (Ptr<OutputStreamObject> stream, Ptr<Ipv4> ipv4, uint32_t interface)
+AsciiTraceHelperForIpv4::EnableAsciiIpv4 (Ptr<OutputStreamKeeper> stream, Ptr<Ipv4> ipv4, uint32_t interface)
 {
   EnableAsciiIpv4Internal (stream, std::string (), ipv4, interface);
 }
@@ -747,14 +747,14 @@ AsciiTraceHelperForIpv4::EnableAsciiIpv4 (Ptr<OutputStreamObject> stream, Ptr<Ip
 void 
 AsciiTraceHelperForIpv4::EnableAsciiIpv4 (std::string prefix, std::string ipv4Name, uint32_t interface)
 {
-  EnableAsciiIpv4Impl (Ptr<OutputStreamObject> (), prefix, ipv4Name, interface);
+  EnableAsciiIpv4Impl (Ptr<OutputStreamKeeper> (), prefix, ipv4Name, interface);
 }
 
 //
 // Public API
 //
 void 
-AsciiTraceHelperForIpv4::EnableAsciiIpv4 (Ptr<OutputStreamObject> stream, std::string ipv4Name, uint32_t interface)
+AsciiTraceHelperForIpv4::EnableAsciiIpv4 (Ptr<OutputStreamKeeper> stream, std::string ipv4Name, uint32_t interface)
 {
   EnableAsciiIpv4Impl (stream, std::string (), ipv4Name, interface);
 }
@@ -764,7 +764,7 @@ AsciiTraceHelperForIpv4::EnableAsciiIpv4 (Ptr<OutputStreamObject> stream, std::s
 //
 void 
 AsciiTraceHelperForIpv4::EnableAsciiIpv4Impl (
-  Ptr<OutputStreamObject> stream, 
+  Ptr<OutputStreamKeeper> stream, 
   std::string prefix, 
   std::string ipv4Name, 
   uint32_t interface)
@@ -779,14 +779,14 @@ AsciiTraceHelperForIpv4::EnableAsciiIpv4Impl (
 void 
 AsciiTraceHelperForIpv4::EnableAsciiIpv4 (std::string prefix, Ipv4InterfaceContainer c)
 {
-  EnableAsciiIpv4Impl (Ptr<OutputStreamObject> (), prefix, c);
+  EnableAsciiIpv4Impl (Ptr<OutputStreamKeeper> (), prefix, c);
 }
 
 //
 // Public API
 //
 void 
-AsciiTraceHelperForIpv4::EnableAsciiIpv4 (Ptr<OutputStreamObject> stream, Ipv4InterfaceContainer c)
+AsciiTraceHelperForIpv4::EnableAsciiIpv4 (Ptr<OutputStreamKeeper> stream, Ipv4InterfaceContainer c)
 {
   EnableAsciiIpv4Impl (stream, std::string (), c);
 }
@@ -795,7 +795,7 @@ AsciiTraceHelperForIpv4::EnableAsciiIpv4 (Ptr<OutputStreamObject> stream, Ipv4In
 // Private API
 //
 void 
-AsciiTraceHelperForIpv4::EnableAsciiIpv4Impl (Ptr<OutputStreamObject> stream, std::string prefix, Ipv4InterfaceContainer c)
+AsciiTraceHelperForIpv4::EnableAsciiIpv4Impl (Ptr<OutputStreamKeeper> stream, std::string prefix, Ipv4InterfaceContainer c)
 {
   for (Ipv4InterfaceContainer::Iterator i = c.Begin (); i != c.End (); ++i)
     {
@@ -810,14 +810,14 @@ AsciiTraceHelperForIpv4::EnableAsciiIpv4Impl (Ptr<OutputStreamObject> stream, st
 void
 AsciiTraceHelperForIpv4::EnableAsciiIpv4 (std::string prefix, NodeContainer n)
 {
-  EnableAsciiIpv4Impl (Ptr<OutputStreamObject> (), prefix, n);
+  EnableAsciiIpv4Impl (Ptr<OutputStreamKeeper> (), prefix, n);
 }
 
 //
 // Public API
 //
 void
-AsciiTraceHelperForIpv4::EnableAsciiIpv4 (Ptr<OutputStreamObject> stream, NodeContainer n)
+AsciiTraceHelperForIpv4::EnableAsciiIpv4 (Ptr<OutputStreamKeeper> stream, NodeContainer n)
 {
   EnableAsciiIpv4Impl (stream, std::string (), n);
 }
@@ -826,7 +826,7 @@ AsciiTraceHelperForIpv4::EnableAsciiIpv4 (Ptr<OutputStreamObject> stream, NodeCo
 // Private API
 //
 void
-AsciiTraceHelperForIpv4::EnableAsciiIpv4Impl (Ptr<OutputStreamObject> stream, std::string prefix, NodeContainer n)
+AsciiTraceHelperForIpv4::EnableAsciiIpv4Impl (Ptr<OutputStreamKeeper> stream, std::string prefix, NodeContainer n)
 {
   for (NodeContainer::Iterator i = n.Begin (); i != n.End (); ++i)
     {
@@ -848,14 +848,14 @@ AsciiTraceHelperForIpv4::EnableAsciiIpv4Impl (Ptr<OutputStreamObject> stream, st
 void
 AsciiTraceHelperForIpv4::EnableAsciiIpv4All (std::string prefix)
 {
-  EnableAsciiIpv4Impl (Ptr<OutputStreamObject> (), prefix, NodeContainer::GetGlobal ());
+  EnableAsciiIpv4Impl (Ptr<OutputStreamKeeper> (), prefix, NodeContainer::GetGlobal ());
 }
 
 //
 // Public API
 //
 void
-AsciiTraceHelperForIpv4::EnableAsciiIpv4All (Ptr<OutputStreamObject> stream)
+AsciiTraceHelperForIpv4::EnableAsciiIpv4All (Ptr<OutputStreamKeeper> stream)
 {
   EnableAsciiIpv4Impl (stream, std::string (), NodeContainer::GetGlobal ());
 }
@@ -864,7 +864,7 @@ AsciiTraceHelperForIpv4::EnableAsciiIpv4All (Ptr<OutputStreamObject> stream)
 // Public API
 //
 void 
-AsciiTraceHelperForIpv4::EnableAsciiIpv4 (Ptr<OutputStreamObject> stream, uint32_t nodeid, uint32_t interface)
+AsciiTraceHelperForIpv4::EnableAsciiIpv4 (Ptr<OutputStreamKeeper> stream, uint32_t nodeid, uint32_t interface)
 {
   EnableAsciiIpv4Impl (stream, std::string (), nodeid, interface);
 }
@@ -875,7 +875,7 @@ AsciiTraceHelperForIpv4::EnableAsciiIpv4 (Ptr<OutputStreamObject> stream, uint32
 void 
 AsciiTraceHelperForIpv4::EnableAsciiIpv4 (std::string prefix, uint32_t nodeid, uint32_t interface)
 {
-  EnableAsciiIpv4Impl (Ptr<OutputStreamObject> (), prefix, nodeid, interface);
+  EnableAsciiIpv4Impl (Ptr<OutputStreamKeeper> (), prefix, nodeid, interface);
 }
 
 //
@@ -883,7 +883,7 @@ AsciiTraceHelperForIpv4::EnableAsciiIpv4 (std::string prefix, uint32_t nodeid, u
 //
 void 
 AsciiTraceHelperForIpv4::EnableAsciiIpv4Impl (
-  Ptr<OutputStreamObject> stream, 
+  Ptr<OutputStreamKeeper> stream, 
   std::string prefix, 
   uint32_t nodeid, 
   uint32_t interface)
@@ -982,14 +982,14 @@ PcapHelperForIpv6::EnablePcapIpv6 (std::string prefix, uint32_t nodeid, uint32_t
 void 
 AsciiTraceHelperForIpv6::EnableAsciiIpv6 (std::string prefix, Ptr<Ipv6> ipv6, uint32_t interface)
 {
-  EnableAsciiIpv6Internal (Ptr<OutputStreamObject> (), prefix, ipv6, interface);
+  EnableAsciiIpv6Internal (Ptr<OutputStreamKeeper> (), prefix, ipv6, interface);
 }
 
 //
 // Public API
 //
 void 
-AsciiTraceHelperForIpv6::EnableAsciiIpv6 (Ptr<OutputStreamObject> stream, Ptr<Ipv6> ipv6, uint32_t interface)
+AsciiTraceHelperForIpv6::EnableAsciiIpv6 (Ptr<OutputStreamKeeper> stream, Ptr<Ipv6> ipv6, uint32_t interface)
 {
   EnableAsciiIpv6Internal (stream, std::string (), ipv6, interface);
 }
@@ -1000,14 +1000,14 @@ AsciiTraceHelperForIpv6::EnableAsciiIpv6 (Ptr<OutputStreamObject> stream, Ptr<Ip
 void 
 AsciiTraceHelperForIpv6::EnableAsciiIpv6 (std::string prefix, std::string ipv6Name, uint32_t interface)
 {
-  EnableAsciiIpv6Impl (Ptr<OutputStreamObject> (), prefix, ipv6Name, interface);
+  EnableAsciiIpv6Impl (Ptr<OutputStreamKeeper> (), prefix, ipv6Name, interface);
 }
 
 //
 // Public API
 //
 void 
-AsciiTraceHelperForIpv6::EnableAsciiIpv6 (Ptr<OutputStreamObject> stream, std::string ipv6Name, uint32_t interface)
+AsciiTraceHelperForIpv6::EnableAsciiIpv6 (Ptr<OutputStreamKeeper> stream, std::string ipv6Name, uint32_t interface)
 {
   EnableAsciiIpv6Impl (stream, std::string (), ipv6Name, interface);
 }
@@ -1017,7 +1017,7 @@ AsciiTraceHelperForIpv6::EnableAsciiIpv6 (Ptr<OutputStreamObject> stream, std::s
 //
 void 
 AsciiTraceHelperForIpv6::EnableAsciiIpv6Impl (
-  Ptr<OutputStreamObject> stream, 
+  Ptr<OutputStreamKeeper> stream, 
   std::string prefix, 
   std::string ipv6Name, 
   uint32_t interface)
@@ -1032,14 +1032,14 @@ AsciiTraceHelperForIpv6::EnableAsciiIpv6Impl (
 void 
 AsciiTraceHelperForIpv6::EnableAsciiIpv6 (std::string prefix, Ipv6InterfaceContainer c)
 {
-  EnableAsciiIpv6Impl (Ptr<OutputStreamObject> (), prefix, c);
+  EnableAsciiIpv6Impl (Ptr<OutputStreamKeeper> (), prefix, c);
 }
 
 //
 // Public API
 //
 void 
-AsciiTraceHelperForIpv6::EnableAsciiIpv6 (Ptr<OutputStreamObject> stream, Ipv6InterfaceContainer c)
+AsciiTraceHelperForIpv6::EnableAsciiIpv6 (Ptr<OutputStreamKeeper> stream, Ipv6InterfaceContainer c)
 {
   EnableAsciiIpv6Impl (stream, std::string (), c);
 }
@@ -1048,7 +1048,7 @@ AsciiTraceHelperForIpv6::EnableAsciiIpv6 (Ptr<OutputStreamObject> stream, Ipv6In
 // Private API
 //
 void 
-AsciiTraceHelperForIpv6::EnableAsciiIpv6Impl (Ptr<OutputStreamObject> stream, std::string prefix, Ipv6InterfaceContainer c)
+AsciiTraceHelperForIpv6::EnableAsciiIpv6Impl (Ptr<OutputStreamKeeper> stream, std::string prefix, Ipv6InterfaceContainer c)
 {
   for (Ipv6InterfaceContainer::Iterator i = c.Begin (); i != c.End (); ++i)
     {
@@ -1063,14 +1063,14 @@ AsciiTraceHelperForIpv6::EnableAsciiIpv6Impl (Ptr<OutputStreamObject> stream, st
 void
 AsciiTraceHelperForIpv6::EnableAsciiIpv6 (std::string prefix, NodeContainer n)
 {
-  EnableAsciiIpv6Impl (Ptr<OutputStreamObject> (), prefix, n);
+  EnableAsciiIpv6Impl (Ptr<OutputStreamKeeper> (), prefix, n);
 }
 
 //
 // Public API
 //
 void
-AsciiTraceHelperForIpv6::EnableAsciiIpv6 (Ptr<OutputStreamObject> stream, NodeContainer n)
+AsciiTraceHelperForIpv6::EnableAsciiIpv6 (Ptr<OutputStreamKeeper> stream, NodeContainer n)
 {
   EnableAsciiIpv6Impl (stream, std::string (), n);
 }
@@ -1079,7 +1079,7 @@ AsciiTraceHelperForIpv6::EnableAsciiIpv6 (Ptr<OutputStreamObject> stream, NodeCo
 // Private API
 //
 void
-AsciiTraceHelperForIpv6::EnableAsciiIpv6Impl (Ptr<OutputStreamObject> stream, std::string prefix, NodeContainer n)
+AsciiTraceHelperForIpv6::EnableAsciiIpv6Impl (Ptr<OutputStreamKeeper> stream, std::string prefix, NodeContainer n)
 {
   for (NodeContainer::Iterator i = n.Begin (); i != n.End (); ++i)
     {
@@ -1101,14 +1101,14 @@ AsciiTraceHelperForIpv6::EnableAsciiIpv6Impl (Ptr<OutputStreamObject> stream, st
 void
 AsciiTraceHelperForIpv6::EnableAsciiIpv6All (std::string prefix)
 {
-  EnableAsciiIpv6Impl (Ptr<OutputStreamObject> (), prefix, NodeContainer::GetGlobal ());
+  EnableAsciiIpv6Impl (Ptr<OutputStreamKeeper> (), prefix, NodeContainer::GetGlobal ());
 }
 
 //
 // Public API
 //
 void
-AsciiTraceHelperForIpv6::EnableAsciiIpv6All (Ptr<OutputStreamObject> stream)
+AsciiTraceHelperForIpv6::EnableAsciiIpv6All (Ptr<OutputStreamKeeper> stream)
 {
   EnableAsciiIpv6Impl (stream, std::string (), NodeContainer::GetGlobal ());
 }
@@ -1117,7 +1117,7 @@ AsciiTraceHelperForIpv6::EnableAsciiIpv6All (Ptr<OutputStreamObject> stream)
 // Public API
 //
 void 
-AsciiTraceHelperForIpv6::EnableAsciiIpv6 (Ptr<OutputStreamObject> stream, uint32_t nodeid, uint32_t interface)
+AsciiTraceHelperForIpv6::EnableAsciiIpv6 (Ptr<OutputStreamKeeper> stream, uint32_t nodeid, uint32_t interface)
 {
   EnableAsciiIpv6Impl (stream, std::string (), nodeid, interface);
 }
@@ -1128,7 +1128,7 @@ AsciiTraceHelperForIpv6::EnableAsciiIpv6 (Ptr<OutputStreamObject> stream, uint32
 void 
 AsciiTraceHelperForIpv6::EnableAsciiIpv6 (std::string prefix, uint32_t nodeid, uint32_t interface)
 {
-  EnableAsciiIpv6Impl (Ptr<OutputStreamObject> (), prefix, nodeid, interface);
+  EnableAsciiIpv6Impl (Ptr<OutputStreamKeeper> (), prefix, nodeid, interface);
 }
 
 //
@@ -1136,7 +1136,7 @@ AsciiTraceHelperForIpv6::EnableAsciiIpv6 (std::string prefix, uint32_t nodeid, u
 //
 void 
 AsciiTraceHelperForIpv6::EnableAsciiIpv6Impl (
-  Ptr<OutputStreamObject> stream, 
+  Ptr<OutputStreamKeeper> stream, 
   std::string prefix, 
   uint32_t nodeid, 
   uint32_t interface)

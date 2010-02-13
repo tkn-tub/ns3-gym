@@ -212,14 +212,14 @@ namespace ns3 {
 //
 typedef std::pair<Ptr<Ipv4>, uint32_t> InterfacePairIpv4; 
 typedef std::map<InterfacePairIpv4, Ptr<PcapFileObject> > InterfaceFileMapIpv4;  
-typedef std::map<InterfacePairIpv4, Ptr<OutputStreamObject> > InterfaceStreamMapIpv4;  
+typedef std::map<InterfacePairIpv4, Ptr<OutputStreamKeeper> > InterfaceStreamMapIpv4;  
 
 static InterfaceFileMapIpv4 g_interfaceFileMapIpv4; /**< A mapping of Ipv4/interface pairs to pcap files */
 static InterfaceStreamMapIpv4 g_interfaceStreamMapIpv4; /**< A mapping of Ipv4/interface pairs to ascii streams */
 
 typedef std::pair<Ptr<Ipv6>, uint32_t> InterfacePairIpv6;
 typedef std::map<InterfacePairIpv6, Ptr<PcapFileObject> > InterfaceFileMapIpv6;
-typedef std::map<InterfacePairIpv6, Ptr<OutputStreamObject> > InterfaceStreamMapIpv6;
+typedef std::map<InterfacePairIpv6, Ptr<OutputStreamKeeper> > InterfaceStreamMapIpv6;
 
 static InterfaceFileMapIpv6 g_interfaceFileMapIpv6; /**< A mapping of Ipv6/interface pairs to pcap files */
 static InterfaceStreamMapIpv6 g_interfaceStreamMapIpv6; /**< A mapping of Ipv6/interface pairs to pcap files */
@@ -572,7 +572,7 @@ InternetStackHelper::EnablePcapIpv6Internal (std::string prefix, Ptr<Ipv6> ipv6,
 
 static void
 Ipv4L3ProtocolDropSinkWithoutContext (
-  Ptr<OutputStreamObject> stream,
+  Ptr<OutputStreamKeeper> stream,
   Ipv4Header const &header, 
   Ptr<const Packet> packet,
   Ipv4L3Protocol::DropReason reason, 
@@ -599,7 +599,7 @@ Ipv4L3ProtocolDropSinkWithoutContext (
 
 static void
 Ipv4L3ProtocolDropSinkWithContext (
-  Ptr<OutputStreamObject> stream,
+  Ptr<OutputStreamKeeper> stream,
   std::string context,
   Ipv4Header const &header, 
   Ptr<const Packet> packet,
@@ -647,7 +647,7 @@ InternetStackHelper::AsciiHooked (Ptr<Ipv4> ipv4)
 
 void 
 InternetStackHelper::EnableAsciiIpv4Internal (
-  Ptr<OutputStreamObject> stream, 
+  Ptr<OutputStreamKeeper> stream, 
   std::string prefix, 
   Ptr<Ipv4> ipv4, 
   uint32_t interface)
@@ -665,7 +665,7 @@ InternetStackHelper::EnableAsciiIpv4Internal (
   Packet::EnablePrinting ();
 
   //
-  // If we are not provided an OutputStreamObject, we are expected to create 
+  // If we are not provided an OutputStreamKeeper, we are expected to create 
   // one using the usual trace filename conventions and hook WithoutContext
   // since there will be one file per context and therefore the context would
   // be redundant.
@@ -683,7 +683,7 @@ InternetStackHelper::EnableAsciiIpv4Internal (
       //
       AsciiTraceHelper asciiTraceHelper;
       std::string filename = asciiTraceHelper.GetFilenameFromInterfacePair (prefix, ipv4, interface);
-      Ptr<OutputStreamObject> theStream = asciiTraceHelper.CreateFileStream (filename, "w");
+      Ptr<OutputStreamKeeper> theStream = asciiTraceHelper.CreateFileStream (filename, "w");
 
       //
       // However, we only hook the trace sources once to avoid multiple trace sink
@@ -717,7 +717,7 @@ InternetStackHelper::EnableAsciiIpv4Internal (
     }
 
   //
-  // If we are provided an OutputStreamObject, we are expected to use it, and
+  // If we are provided an OutputStreamKeeper, we are expected to use it, and
   // to provide a context.  We are free to come up with our own context if we
   // want, and use the AsciiTraceHelper Hook*WithContext functions, but for 
   // compatibility and simplicity, we just use Config::Connect and let it deal
@@ -756,7 +756,7 @@ InternetStackHelper::EnableAsciiIpv4Internal (
 
 static void
 Ipv6L3ProtocolDropSinkWithoutContext (
-  Ptr<OutputStreamObject> stream,
+  Ptr<OutputStreamKeeper> stream,
   Ipv6Header const &header, 
   Ptr<const Packet> packet,
   Ipv6L3Protocol::DropReason reason, 
@@ -783,7 +783,7 @@ Ipv6L3ProtocolDropSinkWithoutContext (
 
 static void
 Ipv6L3ProtocolDropSinkWithContext (
-  Ptr<OutputStreamObject> stream,
+  Ptr<OutputStreamKeeper> stream,
   std::string context,
   Ipv6Header const &header, 
   Ptr<const Packet> packet,
@@ -831,7 +831,7 @@ InternetStackHelper::AsciiHooked (Ptr<Ipv6> ipv6)
 
 void 
 InternetStackHelper::EnableAsciiIpv6Internal (
-  Ptr<OutputStreamObject> stream, 
+  Ptr<OutputStreamKeeper> stream, 
   std::string prefix, 
   Ptr<Ipv6> ipv6, 
   uint32_t interface)
@@ -849,7 +849,7 @@ InternetStackHelper::EnableAsciiIpv6Internal (
   Packet::EnablePrinting ();
 
   //
-  // If we are not provided an OutputStreamObject, we are expected to create 
+  // If we are not provided an OutputStreamKeeper, we are expected to create 
   // one using the usual trace filename conventions and do a hook WithoutContext
   // since there will be one file per context and therefore the context would
   // be redundant.
@@ -867,7 +867,7 @@ InternetStackHelper::EnableAsciiIpv6Internal (
       //
       AsciiTraceHelper asciiTraceHelper;
       std::string filename = asciiTraceHelper.GetFilenameFromInterfacePair (prefix, ipv6, interface);
-      Ptr<OutputStreamObject> theStream = asciiTraceHelper.CreateFileStream (filename, "w");
+      Ptr<OutputStreamKeeper> theStream = asciiTraceHelper.CreateFileStream (filename, "w");
 
       //
       // However, we only hook the trace sources once to avoid multiple trace sink
@@ -893,7 +893,7 @@ InternetStackHelper::EnableAsciiIpv6Internal (
     }
 
   //
-  // If we are provided an OutputStreamObject, we are expected to use it, and
+  // If we are provided an OutputStreamKeeper, we are expected to use it, and
   // to provide a context.  We are free to come up with our own context if we
   // want, and use the AsciiTraceHelper Hook*WithContext functions, but for 
   // compatibility and simplicity, we just use Config::Connect and let it deal
