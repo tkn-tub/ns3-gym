@@ -135,7 +135,7 @@ If you want to store a newed object into a smart pointer,
 we recommend you to use the CreateObject template functions
 to create the object and store it in a smart pointer to avoid
 memory leaks. These functions are really small convenience
-functions and their goal is just is save you a small
+functions and their goal is just to save you a small
 bit of typing.
 
 @subsection CreateObject and Create
@@ -292,7 +292,7 @@ For example:
   factory.Set ("SystemLoss", DoubleValue (3.0));
   // Create another object
   Ptr<Object> object = m_factory.Create (); 
-Wend verbatim
+@end verbatim
 
 @node Downcasting
 @section Downcasting
