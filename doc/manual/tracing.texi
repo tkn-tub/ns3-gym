@@ -561,7 +561,7 @@ also implement a single virtual method inherited from the ascii trace additions
 to this class.
 
 @verbatim
-  virtual void EnableAsciiInternal (Ptr<OutputStreamObject> stream, std::string prefix, Ptr<NetDevice> nd) = 0;
+  virtual void EnableAsciiInternal (Ptr<OutputStreamKeeper> stream, std::string prefix, Ptr<NetDevice> nd) = 0;
 @end verbatim
 
 The signature of this method reflects the device-centric view of the situation
@@ -573,7 +573,7 @@ methods,
 
 @verbatim
   void EnableAscii (std::string prefix, Ptr<NetDevice> nd);
-  void EnableAscii (Ptr<OutputStreamObject> stream, Ptr<NetDevice> nd);
+  void EnableAscii (Ptr<OutputStreamKeeper> stream, Ptr<NetDevice> nd);
 @verbatim
 
 will call the device implementation of @code{EnableAsciiInternal} directly,
@@ -588,22 +588,22 @@ will all work in the same way across devices if the devices implement
 
 @verbatim
   void EnableAscii (std::string prefix, Ptr<NetDevice> nd);
-  void EnableAscii (Ptr<OutputStreamObject> stream, Ptr<NetDevice> nd);
+  void EnableAscii (Ptr<OutputStreamKeeper> stream, Ptr<NetDevice> nd);
 
   void EnableAscii (std::string prefix, std::string ndName);
-  void EnableAscii (Ptr<OutputStreamObject> stream, std::string ndName);
+  void EnableAscii (Ptr<OutputStreamKeeper> stream, std::string ndName);
 
   void EnableAscii (std::string prefix, NetDeviceContainer d);
-  void EnableAscii (Ptr<OutputStreamObject> stream, NetDeviceContainer d);
+  void EnableAscii (Ptr<OutputStreamKeeper> stream, NetDeviceContainer d);
 
   void EnableAscii (std::string prefix, NodeContainer n);
-  void EnableAscii (Ptr<OutputStreamObject> stream, NodeContainer n);
+  void EnableAscii (Ptr<OutputStreamKeeper> stream, NodeContainer n);
 
   void EnableAscii (std::string prefix, uint32_t nodeid, uint32_t deviceid);
-  void EnableAscii (Ptr<OutputStreamObject> stream, uint32_t nodeid, uint32_t deviceid);
+  void EnableAscii (Ptr<OutputStreamKeeper> stream, uint32_t nodeid, uint32_t deviceid);
 
   void EnableAsciiAll (std::string prefix);
-  void EnableAsciiAll (Ptr<OutputStreamObject> stream);
+  void EnableAsciiAll (Ptr<OutputStreamKeeper> stream);
 @end verbatim
 
 You are encouraged to peruse the Doxygen for class @code{TraceHelperForDevice}
@@ -642,7 +642,7 @@ above:
   Ptr<NetDevice> nd1;
   Ptr<NetDevice> nd2;
   ...
-  Ptr<OutputStreamObject> stream = asciiTraceHelper.CreateFileStream ("trace-file-name.tr");
+  Ptr<OutputStreamKeeper> stream = asciiTraceHelper.CreateFileStream ("trace-file-name.tr");
   ...
   helper.EnableAscii (stream, nd1);
   helper.EnableAscii (stream, nd2);
@@ -680,7 +680,7 @@ you can use that form as well:
   Names::Add ("server" ...);
   Names::Add ("server/eth0" ...);
   ...
-  Ptr<OutputStreamObject> stream = asciiTraceHelper.CreateFileStream ("trace-file-name.tr");
+  Ptr<OutputStreamKeeper> stream = asciiTraceHelper.CreateFileStream ("trace-file-name.tr");
   ...
   helper.EnableAscii (stream, "client/eth0");
   helper.EnableAscii (stream, "server/eth0");
@@ -710,7 +710,7 @@ traces into a single file is accomplished similarly to the examples above:
 @verbatim
   NetDeviceContainer d = ...;
   ...
-  Ptr<OutputStreamObject> stream = asciiTraceHelper.CreateFileStream ("trace-file-name.tr");
+  Ptr<OutputStreamKeeper> stream = asciiTraceHelper.CreateFileStream ("trace-file-name.tr");
   ...
   helper.EnableAscii (stream, d);
 @end verbatim
@@ -946,7 +946,7 @@ for using ascii tracing to the PcapHelperForIpv4.  Every protocol must
 additionally implement a single virtual method inherited from this class.
 
 @verbatim
-  virtual void EnableAsciiIpv4Internal (Ptr<OutputStreamObject> stream, std::string prefix, 
+  virtual void EnableAsciiIpv4Internal (Ptr<OutputStreamKeeper> stream, std::string prefix, 
                                         Ptr<Ipv4> ipv4, uint32_t interface) = 0;
 @end verbatim
 
@@ -959,7 +959,7 @@ methods,
 
 @verbatim
   void EnableAsciiIpv4 (std::string prefix, Ptr<Ipv4> ipv4, uint32_t interface);
-  void EnableAsciiIpv4 (Ptr<OutputStreamObject> stream, Ptr<Ipv4> ipv4, uint32_t interface);
+  void EnableAsciiIpv4 (Ptr<OutputStreamKeeper> stream, Ptr<Ipv4> ipv4, uint32_t interface);
 @verbatim
 
 will call the device implementation of @code{EnableAsciiIpv4Internal} directly,
@@ -974,22 +974,22 @@ will all work in the same way across protocols if the protocols implement
 
 @verbatim
   void EnableAsciiIpv4 (std::string prefix, Ptr<Ipv4> ipv4, uint32_t interface);
-  void EnableAsciiIpv4 (Ptr<OutputStreamObject> stream, Ptr<Ipv4> ipv4, uint32_t interface);
+  void EnableAsciiIpv4 (Ptr<OutputStreamKeeper> stream, Ptr<Ipv4> ipv4, uint32_t interface);
 
   void EnableAsciiIpv4 (std::string prefix, std::string ipv4Name, uint32_t interface);
-  void EnableAsciiIpv4 (Ptr<OutputStreamObject> stream, std::string ipv4Name, uint32_t interface);
+  void EnableAsciiIpv4 (Ptr<OutputStreamKeeper> stream, std::string ipv4Name, uint32_t interface);
 
   void EnableAsciiIpv4 (std::string prefix, Ipv4InterfaceContainer c);
-  void EnableAsciiIpv4 (Ptr<OutputStreamObject> stream, Ipv4InterfaceContainer c);
+  void EnableAsciiIpv4 (Ptr<OutputStreamKeeper> stream, Ipv4InterfaceContainer c);
 
   void EnableAsciiIpv4 (std::string prefix, NodeContainer n);
-  void EnableAsciiIpv4 (Ptr<OutputStreamObject> stream, NodeContainer n);
+  void EnableAsciiIpv4 (Ptr<OutputStreamKeeper> stream, NodeContainer n);
 
   void EnableAsciiIpv4 (std::string prefix, uint32_t nodeid, uint32_t deviceid);
-  void EnableAsciiIpv4 (Ptr<OutputStreamObject> stream, uint32_t nodeid, uint32_t interface);
+  void EnableAsciiIpv4 (Ptr<OutputStreamKeeper> stream, uint32_t nodeid, uint32_t interface);
 
   void EnableAsciiIpv4All (std::string prefix);
-  void EnableAsciiIpv4All (Ptr<OutputStreamObject> stream);
+  void EnableAsciiIpv4All (Ptr<OutputStreamKeeper> stream);
 @end verbatim
 
 You are encouraged to peruse the Doxygen for class @code{PcapAndAsciiHelperForIpv4}
@@ -1028,7 +1028,7 @@ refer to a single file.  We have already something similar to this in the
   Ptr<Ipv4> protocol1 = node1->GetObject<Ipv4> ();
   Ptr<Ipv4> protocol2 = node2->GetObject<Ipv4> ();
   ...
-  Ptr<OutputStreamObject> stream = asciiTraceHelper.CreateFileStream ("trace-file-name.tr");
+  Ptr<OutputStreamKeeper> stream = asciiTraceHelper.CreateFileStream ("trace-file-name.tr");
   ...
   helper.EnableAsciiIpv4 (stream, protocol1, 1);
   helper.EnableAsciiIpv4 (stream, protocol2, 1);
@@ -1063,7 +1063,7 @@ stream object, you can use that form as well:
   Names::Add ("node1Ipv4" ...);
   Names::Add ("node2Ipv4" ...);
   ...
-  Ptr<OutputStreamObject> stream = asciiTraceHelper.CreateFileStream ("trace-file-name.tr");
+  Ptr<OutputStreamKeeper> stream = asciiTraceHelper.CreateFileStream ("trace-file-name.tr");
   ...
   helper.EnableAsciiIpv4 (stream, "node1Ipv4", 1);
   helper.EnableAsciiIpv4 (stream, "node2Ipv4", 1);
@@ -1106,7 +1106,7 @@ traces into a single file is accomplished similarly to the examples above:
   ipv4.SetBase ("10.1.1.0", "255.255.255.0");
   Ipv4InterfaceContainer interfaces = ipv4.Assign (devices);
   ...
-  Ptr<OutputStreamObject> stream = asciiTraceHelper.CreateFileStream ("trace-file-name.tr");
+  Ptr<OutputStreamKeeper> stream = asciiTraceHelper.CreateFileStream ("trace-file-name.tr");
   ...
   helper.EnableAsciiIpv4 (stream, interfaces);
 @end verbatim
