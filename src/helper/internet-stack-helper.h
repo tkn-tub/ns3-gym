@@ -52,7 +52,8 @@ class Ipv6RoutingHelper;
  * encapsulates a general attribute or a set of functionality that
  * may be of interest to many other classes.
  */
-class InternetStackHelper : public TraceHelperForProtocol
+class InternetStackHelper : public PcapHelperForIpv4, public PcapHelperForIpv6, 
+                              public AsciiTraceHelperForIpv4, public AsciiTraceHelperForIpv6
 {
 public:
   /**

@@ -43,7 +43,7 @@ class Packet;
  * encapsulates a general attribute or a set of functionality that
  * may be of interest to many other classes.
  */
-class CsmaHelper : public TraceHelperForDevice
+class CsmaHelper : public PcapHelperForDevice, public AsciiTraceHelperForDevice
 {
 public:
   /**

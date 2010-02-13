@@ -40,11 +40,9 @@ class Node;
  *
  * Normally we eschew multiple inheritance, however, the classes 
  * PcapUserHelperForDevice and AsciiTraceUserHelperForDevice are
- * treated as "mixins".  A mixin is a self-contained class that
- * encapsulates a general attribute or a set of functionality that
- * may be of interest to many other classes.
+ * "mixins".
  */
-class PointToPointHelper : public TraceHelperForDevice
+class PointToPointHelper : public PcapHelperForDevice, public AsciiTraceHelperForDevice
 {
 public:
   /**

@@ -43,7 +43,7 @@ class Node;
  * This base class must be implemented by new PHY implementation which wish to integrate
  * with the \ref ns3::WifiHelper class.
  */
-class WifiPhyHelper : public TraceHelperForDevice
+class WifiPhyHelper
 {
 public:
   virtual ~WifiPhyHelper ();

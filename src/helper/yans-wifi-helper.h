@@ -136,7 +136,8 @@ private:
  * in this class correspond to PHY-level traces and come to us via WifiPhyHelper
  *
  */
-class YansWifiPhyHelper : public WifiPhyHelper
+class YansWifiPhyHelper : public WifiPhyHelper,
+                          public PcapHelperForDevice, public AsciiTraceHelperForDevice
 {
 public:
   /**

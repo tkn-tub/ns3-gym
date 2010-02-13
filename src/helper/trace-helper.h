@@ -395,18 +395,10 @@ public:
 };
 
 /**
- * @brief Class providing common pcap and ascii trace operations for helpers
- * working with devices.
- *
- * It would be nice to make this class completely independent of the pcap
- * trace helper for devices, but pybindgen doesn't support multiple inheritance
- * no matter how well behaved, so even mixins are out of the question. Because
- * of this, we have a hierarchy of tracing functionality that devices can
- * add.  If your device helper inherits from PcapHelperForDevice, you get pcap
- * tracing.  If your device helper inherits from TraceHelperForDevice, you
- * get both ascii and pcap tracing.
+ * \brief Base class providing common user-level ascii trace operations for helpers
+ * representing net devices.
  */
-class TraceHelperForDevice : public PcapHelperForDevice
+class AsciiTraceHelperForDevice
 {
 public:
   /**
@@ -579,7 +571,7 @@ private:
 };
 
 /**
- * \brief Base class providing common user-level pcap operations for helpers
+ * @brief Base class providing common user-level pcap operations for helpers
  * representing IPv4 protocols .
  */
 class PcapHelperForIpv4
@@ -652,18 +644,10 @@ public:
 };
 
 /**
- * @brief Base class providing common pcap and ascii trace operations for 
- * helpers working with Ipv4 interfaces.
- *
- * It would be nice to make this class completely independent of the pcap
- * trace helper for Ipv4, but pybindgen doesn't support multiple inheritance
- * no matter how well behaved, so even mixins are out of the question. Because
- * of this, we have a hierarchy of tracing functionality that protocol helpers
- * can add.  If your helper inherits from PcapHelperForIpv4, you get pcap
- * tracing.  If your helper inherits from PcapAndAsciiHelperForIpv4, you
- * get both ascii and pcap tracing.
+ * @brief Base class providing common user-level ascii trace operations for 
+ * helpers representing IPv4 protocols .
  */
-class PcapAndAsciiHelperForIpv4 : public PcapHelperForIpv4
+class AsciiTraceHelperForIpv4
 {
 public:
   /**
@@ -847,20 +831,10 @@ private:
 };
 
 /**
- * \brief Base class providing common user-level ascii and pcap tracing
- * for Ipv4 protocols plus pcap tracing for IPv6 protocols .
- *
- * It would be nice to make this class completely independent of the trace 
- * helpers for Ipv4, but pybindgen doesn't support multiple inheritance
- * no matter how well behaved, so even mixins are out of the question. Because
- * of this, we have a hierarchy of tracing functionality that protocols can
- * add.  If your protocol helper inherits from PcapHelperForIpv4, you get pcap
- * tracing for Ipv4 protocols.  If your protocol helper inherits from 
- * PcapAndAsciiHelperForIpv4, you get both ascii and pcap tracing for Ipv4
- * protocols.  If you inherit from PcapAndAsciiHelperForIpv4AndPcapHelperForIpv6
- * you get both ascii and pcap tracing for Ipv4 and pcap tracing for Ipv6.
+ * @brief Base class providing common user-level pcap operations for helpers
+ * representing IPv6 protocols .
  */
-class PcapAndAsciiHelperForIpv4AndPcapHelperForIpv6 : public PcapAndAsciiHelperForIpv4
+class PcapHelperForIpv6
 {
 public:
   /**
@@ -929,22 +903,10 @@ public:
 };
 
 /**
- * @brief Base class providing common ascii trace operations for helpers
- * working with Ipv4 and Ipv6 interfaces.
- *
- * It would be nice to make this class completely independent of the trace 
- * helpers for Ipv4, and the pcap helper for Ipv6, but pybindgen doesn't support
- * multiple inheritance no matter how well behaved, so even mixins are out of 
- * the question. Because of this, we have a hierarchy of tracing functionality
- * that protocoll helpers can add.  If your protocol helper inherits from 
- * PcapHelperForIpv4, you get pcap tracing for Ipv4 protocols.  If your protocol
- * helper inherits from PcapAndAsciiHelperForIpv4, you get both ascii and pcap 
- * tracing for Ipv4 protocols.  If your helper inherits from 
- * PcapAndAsciiHelperForIpv4AndPcapHelperForIpv6 you get both ascii and pcap 
- * tracing for Ipv4 and pcap tracing for Ipv6.  If your device helper inherits
- * from TraceHelperForProtocol, you get the full meal deal.
+ * @brief Base class providing common user-level ascii trace operations for
+ * helpers representing IPv6 protocols .
  */
-class TraceHelperForProtocol : public PcapAndAsciiHelperForIpv4AndPcapHelperForIpv6
+class AsciiTraceHelperForIpv6
 {
 public:
   /**
