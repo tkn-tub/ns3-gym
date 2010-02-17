@@ -1,3 +1,21 @@
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
+/*
+ *  This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation;
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * 
+ * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
+ */
+ 
 #include "attribute-iterator.h"
 #include "ns3/config.h"
 #include "ns3/log.h"
@@ -13,10 +31,12 @@ namespace ns3 {
 
 
 AttributeIterator::AttributeIterator ()
-{}
+{
+}
 
 AttributeIterator::~AttributeIterator ()
-{}
+{
+}
 
 void 
 AttributeIterator::Iterate (void)
@@ -38,9 +58,9 @@ AttributeIterator::IsExamined (Ptr<const Object> object)
   for (uint32_t i = 0; i < m_examined.size (); ++i)
     {
       if (object == m_examined[i])
-	{
-	  return true;
-	}
+        {
+          return true;
+        }
     }
   return false;
 }
@@ -74,28 +94,36 @@ AttributeIterator::GetCurrentPath (void) const
 
 void 
 AttributeIterator::DoStartVisitObject (Ptr<Object> object)
-{}
+{
+}
 void 
 AttributeIterator::DoEndVisitObject (void)
-{}
+{
+}
 void 
 AttributeIterator::DoStartVisitPointerAttribute (Ptr<Object> object, std::string name, Ptr<Object> item)
-{}
+{
+}
 void 
 AttributeIterator::DoEndVisitPointerAttribute (void)
-{}
+{
+}
 void 
 AttributeIterator::DoStartVisitArrayAttribute (Ptr<Object> object, std::string name, const ObjectVectorValue &vector)
-{}
+{
+}
 void 
 AttributeIterator::DoEndVisitArrayAttribute (void)
-{}
+{
+}
 void 
 AttributeIterator::DoStartVisitArrayItem (const ObjectVectorValue &vector, uint32_t index, Ptr<Object> item)
-{}
+{
+}
 void 
 AttributeIterator::DoEndVisitArrayItem (void)
-{}
+{
+}
 
 void 
 AttributeIterator::VisitAttribute (Ptr<Object> object, std::string name)
@@ -174,58 +202,59 @@ AttributeIterator::DoIterate (Ptr<Object> object)
     {
       NS_LOG_DEBUG ("store " << tid.GetName ());
       for (uint32_t i = 0; i < tid.GetAttributeN (); ++i)
-	{
-	  Ptr<const AttributeChecker> checker = tid.GetAttributeChecker (i);
-	  const PointerChecker *ptrChecker = dynamic_cast<const PointerChecker *> (PeekPointer (checker));
-	  if (ptrChecker != 0)
-	    {
-	      NS_LOG_DEBUG ("pointer attribute " << tid.GetAttributeName (i));
-	      PointerValue ptr;
-	      object->GetAttribute (tid.GetAttributeName (i), ptr);
-	      Ptr<Object> tmp = ptr.Get<Object> ();
-	      if (tmp != 0)
-		{
-		  StartVisitPointerAttribute (object, tid.GetAttributeName (i), tmp);
-		  m_examined.push_back (object);
-		  DoIterate (tmp);
-		  m_examined.pop_back ();
-		  EndVisitPointerAttribute ();
-		}
-	      continue;
-	    }
-	  // attempt to cast to an object vector.
-	  const ObjectVectorChecker *vectorChecker = dynamic_cast<const ObjectVectorChecker *> (PeekPointer (checker));
-	  if (vectorChecker != 0)
-	    {
-	      NS_LOG_DEBUG ("vector attribute " << tid.GetAttributeName (i));
-	      ObjectVectorValue vector;
-	      object->GetAttribute (tid.GetAttributeName (i), vector);
-	      StartVisitArrayAttribute (object, tid.GetAttributeName (i), vector);
-	      for (uint32_t j = 0; j < vector.GetN (); ++j)
-		{
-		  NS_LOG_DEBUG ("vector attribute item " << j);
-		  Ptr<Object> tmp = vector.Get (j);
-		  StartVisitArrayItem (vector, j, tmp);
-		  m_examined.push_back (object);
-		  DoIterate (tmp);
-		  m_examined.pop_back ();
-		  EndVisitArrayItem ();
-		}
-	      EndVisitArrayAttribute ();
-	      continue;
-	    }
-	  uint32_t flags = tid.GetAttributeFlags (i);
-	  Ptr<const AttributeAccessor> accessor = tid.GetAttributeAccessor (i);
-	  if ((flags & TypeId::ATTR_GET) && accessor->HasGetter () &&
-	      (flags & TypeId::ATTR_SET) && accessor->HasSetter ())
-	    {
-	      VisitAttribute (object, tid.GetAttributeName (i));
-	    }
-	  else
-	    {
-	      NS_LOG_DEBUG ("could not store " << tid.GetAttributeName (i));
-	    }
-	}
+        {
+          Ptr<const AttributeChecker> checker = tid.GetAttributeChecker (i);
+          const PointerChecker *ptrChecker = dynamic_cast<const PointerChecker *> (PeekPointer (checker));
+          if (ptrChecker != 0)
+            {
+              NS_LOG_DEBUG ("pointer attribute " << tid.GetAttributeName (i));
+              PointerValue ptr;
+              object->GetAttribute (tid.GetAttributeName (i), ptr);
+              Ptr<Object> tmp = ptr.Get<Object> ();
+              if (tmp != 0)
+                {
+                  StartVisitPointerAttribute (object, tid.GetAttributeName (i),
+                                              tmp);
+                  m_examined.push_back (object);
+                  DoIterate (tmp);
+                  m_examined.pop_back ();
+                  EndVisitPointerAttribute ();
+                }
+              continue;
+            }
+          // attempt to cast to an object vector.
+          const ObjectVectorChecker *vectorChecker = dynamic_cast<const ObjectVectorChecker *> (PeekPointer (checker));
+          if (vectorChecker != 0)
+            {
+              NS_LOG_DEBUG ("vector attribute " << tid.GetAttributeName (i));
+              ObjectVectorValue vector;
+              object->GetAttribute (tid.GetAttributeName (i), vector);
+              StartVisitArrayAttribute (object, tid.GetAttributeName (i), vector);
+              for (uint32_t j = 0; j < vector.GetN (); ++j)
+                {
+                  NS_LOG_DEBUG ("vector attribute item " << j);
+                  Ptr<Object> tmp = vector.Get (j);
+                  StartVisitArrayItem (vector, j, tmp);
+                  m_examined.push_back (object);
+                  DoIterate (tmp);
+                  m_examined.pop_back ();
+                  EndVisitArrayItem ();
+                }
+              EndVisitArrayAttribute ();
+              continue;
+            }
+          uint32_t flags = tid.GetAttributeFlags (i);
+          Ptr<const AttributeAccessor> accessor = tid.GetAttributeAccessor (i);
+          if ((flags & TypeId::ATTR_GET) && accessor->HasGetter () && 
+              (flags & TypeId::ATTR_SET) && accessor->HasSetter ())
+            {
+              VisitAttribute (object, tid.GetAttributeName (i));
+            }
+          else
+            {
+              NS_LOG_DEBUG ("could not store " << tid.GetAttributeName (i));
+            }
+        }
     }
   Object::AggregateIterator iter = object->GetAggregateIterator ();
   bool recursiveAggregate = false;
@@ -233,22 +262,22 @@ AttributeIterator::DoIterate (Ptr<Object> object)
     {
       Ptr<const Object> tmp = iter.Next ();
       if (IsExamined (tmp))
-	{
-	  recursiveAggregate = true;
-	}
+        {
+          recursiveAggregate = true;
+        }
     }
   if (!recursiveAggregate)
     {
       iter = object->GetAggregateIterator ();
       while (iter.HasNext ())
-	{
-	  Ptr<Object> tmp = const_cast<Object *> (PeekPointer (iter.Next ()));
-	  StartVisitObject (tmp);
-	  m_examined.push_back (object);
-	  DoIterate (tmp);
-	  m_examined.pop_back ();
-	  EndVisitObject ();
-	}
+        {
+          Ptr<Object> tmp = const_cast<Object *> (PeekPointer (iter.Next ()));
+          StartVisitObject (tmp);
+          m_examined.push_back (object);
+          DoIterate (tmp);
+          m_examined.pop_back ();
+          EndVisitObject ();
+        }
     }
 }
 
