@@ -87,17 +87,7 @@ main (int argc, char *argv[])
   nodes.Create (2);
 
   CsmaHelper csma;
-  csma.SetChannelAttribute ("DataRate", DataRateValue (10000000));
-  csma.SetChannelAttribute ("Delay", TimeValue (MilliSeconds (2)));
-
   NetDeviceContainer devices = csma.Install (nodes);
-
-  InternetStackHelper stack;
-  stack.Install (nodes);
-
-  Ipv4AddressHelper addresses;
-  addresses.SetBase ("10.0.0.0", "255.255.255.0");
-  Ipv4InterfaceContainer interfaces = addresses.Assign (devices);
 
   TapBridgeHelper tapBridge;
   tapBridge.SetAttribute ("Mode", StringValue ("UseBridge"));
