@@ -112,6 +112,7 @@ def dist_hook():
 
 def set_options(opt):
     # options provided by the modules
+    opt.tool_options('compiler_cc')
     opt.tool_options('compiler_cxx')
     opt.tool_options('cflags')
 
@@ -236,6 +237,7 @@ def configure(conf):
     conf.env['NS3_OPTIONAL_FEATURES'] = []
 
     conf.env['NS3_BUILDDIR'] = conf.blddir
+    conf.check_tool('compiler_cc')
     conf.check_tool('compiler_cxx')
     conf.check_tool('cflags')
     try:
@@ -387,6 +389,10 @@ def configure(conf):
     if have_gsl:
         conf.env.append_value('CXXDEFINES', "ENABLE_GSL")
         conf.env.append_value('CCDEFINES', "ENABLE_GSL")
+
+    # for compiling C code, copy over the CXX* flags
+    conf.env.append_value('CCFLAGS', conf.env['CXXFLAGS'])
+    conf.env.append_value('CCDEFINES', conf.env['CXXDEFINES'])
 
     # append user defined flags after all our ones
     for (confvar, envvar) in [['CCFLAGS', 'CCFLAGS_EXTRA'],
