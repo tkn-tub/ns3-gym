@@ -90,7 +90,7 @@ XmlConfigSave::Default (void)
     virtual void StartVisitTypeId (std::string name) {
       m_typeid = name;
     }
-    virtual void VisitAttribute (std::string name, std::string defaultValue) {
+    virtual void DoVisitAttribute (std::string name, std::string defaultValue) {
       int rc;
       rc = xmlTextWriterStartElement(m_writer, BAD_CAST "default");
        if (rc < 0) 

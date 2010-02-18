@@ -10,6 +10,7 @@
 * Object-oriented behavior::
 * Object base classes::
 * Memory management and class Ptr::
+* Object factories::
 * Downcasting::
 @end menu
 
@@ -62,7 +63,7 @@ These base classes are:
 @itemize @bullet
 @item @code{class Object}
 @item @code{class ObjectBase}
-@item @code{class RefCountBase}
+@item @code{class SimpleRefCount}
 @end itemize
 It is not required that ns-3 objects inherit from these class, but 
 those that do get special properties.  Classes deriving from 
@@ -75,7 +76,7 @@ those that do get special properties.  Classes deriving from
 
 Classes that derive from @code{class ObjectBase} get the first two
 properties above, but do not get smart pointers.  Classes that
-derive from @code{class RefCountBase} get only the smart-pointer
+derive from @code{class SimpleRefCount} get only the smart-pointer
 reference counting system.
 
 In practice, @code{class Object} is the variant of the three above that
@@ -134,7 +135,7 @@ If you want to store a newed object into a smart pointer,
 we recommend you to use the CreateObject template functions
 to create the object and store it in a smart pointer to avoid
 memory leaks. These functions are really small convenience
-functions and their goal is just is save you a small
+functions and their goal is just to save you a small
 bit of typing.
 
 @subsection CreateObject and Create
@@ -152,17 +153,18 @@ For objects deriving from @code{class Object}:
 Please do not create such objects using @code{operator new}; create them
 using @code{CreateObject()} instead.
 
-For objects deriving from @code{class RefCountBase}, or other
-objects that support usage of the smart pointer class
-(in particular, the ns-3 Packet class does not derive from RefCountBase
-in order to avoid a vtable, but separately implements @code{Ref ()} and 
-@code{Unref ()}),
+For objects deriving from @code{class SimpleRefCount}, or other
+objects that support usage of the smart pointer class,
 a templated helper function is available and recommended to be used:
 @verbatim
   Ptr<B> b = Create<B> ();
 @end verbatim  
 This is simply a wrapper around operator new that correctly handles
 the reference counting system.
+
+In summary, use @code{Create<B>} if B is not an object but just uses
+reference counting (e.g. @code{class Packet}), and use @code{CreateObject<B>}
+if B derives from @code{ns3::Object}.
 
 @subsection Aggregation
 
@@ -254,6 +256,43 @@ not know anything about energy models.
 
 We hope that this mode of programming will require much less 
 need for developers to modify the base classes.
+
+@node Object factories
+@section Object factories
+
+A common use case is to create lots of similarly configured objects.
+One can repeatedly call @code{CreateObject} but there is also a 
+factory design pattern in use in the ns-3 system.  It is heavily
+used in the "helper" API. 
+
+Class @code{ObjectFactory} can be used to instantiate objects and
+to configure the attributes on those objects 
+
+@verbatim
+  void SetTypeId (TypeId tid);
+  void Set (std::string name, const AttributeValue &value);
+  Ptr<T> Create (void) const;
+@end verbatim
+
+The first method allows one to use the ns-3 TypeId system to specify
+the type of objects created.  The second allows one to set 
+attributes on the objects to be created, and the third allows one
+to create the objects themselves. 
+
+For example:
+@verbatim
+  ObjectFactory factory;
+  // Make this factory create objects of type FriisPropagationLossModel
+  factory.SetTypeId ("ns3::FriisPropagationLossModel")
+  // Make this factory object change a default value of an attribute, for
+  // subsequently created objects
+  factory.Set ("SystemLoss", DoubleValue (2.0));
+  // Create one such object
+  Ptr<Object> object = m_factory.Create (); 
+  factory.Set ("SystemLoss", DoubleValue (3.0));
+  // Create another object
+  Ptr<Object> object = m_factory.Create (); 
+@end verbatim
 
 @node Downcasting
 @section Downcasting

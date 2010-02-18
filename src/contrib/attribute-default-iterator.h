@@ -1,6 +1,26 @@
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
+/*
+ *  This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation;
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * 
+ * Authors: Faker Moatamri <faker.moatamri@sophia.inria.fr>
+ *          Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
+ */
+ 
 #ifndef ATTRIBUTE_DEFAULT_ITERATOR_H
 #define ATTRIBUTE_DEFAULT_ITERATOR_H
 
+#include "ns3/type-id.h"
 #include <string>
 
 namespace ns3 {
@@ -9,11 +29,30 @@ class AttributeDefaultIterator
 {
 public:
   virtual ~AttributeDefaultIterator () = 0;
+  /**
+   * \brief This function will go through all the TypeIds and get only the attributes which are
+   * explicit values (not vectors or pointer or arrays) and apply StartVisitTypeId
+   * and VisitAttribute on the attributes in one TypeId. At the end of each TypeId
+   * EndVisitTypeId is called.
+   */
   void Iterate (void);
 private:
+  /**
+   * \brief Just an interface that needs to be implemented
+   */
   virtual void StartVisitTypeId (std::string name);
+  /**
+   * \brief Just an interface that needs to be implemented
+   */
   virtual void EndVisitTypeId (void);
-  virtual void VisitAttribute (std::string name, std::string defaultValue);
+  /**
+   * \brief This method can be implemented, otherwise, it will call DoVisitAttribute
+   */
+  virtual void VisitAttribute (TypeId tid, std::string name, std::string defaultValue, uint32_t index);
+  /**
+   * \brief This method is just an interface and needs to be implemented
+   */
+  virtual void DoVisitAttribute (std::string name, std::string defaultValue);
 };
 
 } // namespace ns3

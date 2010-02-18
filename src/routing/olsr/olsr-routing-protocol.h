@@ -100,6 +100,11 @@ public:
   /// 
   void Dump (void);
 
+  /**
+   * Return the list of routing table entries discovered by OLSR
+   **/
+  std::vector<RoutingTableEntry> GetRoutingTableEntries () const;
+
 protected:
   virtual void DoStart (void);
 private:
@@ -133,7 +138,6 @@ private:
 	
   void Clear ();
   uint32_t GetSize () const { return m_table.size (); }
-  std::vector<RoutingTableEntry> GetEntries () const;
   void RemoveEntry (const Ipv4Address &dest);
   void AddEntry (const Ipv4Address &dest,
                  const Ipv4Address &next,
