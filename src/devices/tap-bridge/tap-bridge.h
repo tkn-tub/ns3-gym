@@ -457,6 +457,13 @@ private:
    * Never free this pointer!
    */
   RealtimeSimulatorImpl *m_rtImpl;
+
+  /*
+   * a copy of the node id so the read thread doesn't have to GetNode() in
+   * in order to find the node ID.  Thread unsafe reference counting in 
+   * multithreaded apps is not a good thing.
+   */
+  uint32_t m_nodeId;
 };
 
 } // namespace ns3
