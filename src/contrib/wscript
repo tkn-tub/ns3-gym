@@ -29,11 +29,8 @@ def build(bld):
         'config-store.cc',
         'flow-id-tag.cc',
         'attribute-default-iterator.cc',
-        'model-node-creator.cc',
-        'model-typeid-creator.cc',
         'file-config.cc',
         'raw-text-config.cc',
-        'display-functions.cc',
         ]
 
     headers = bld.new_task_gen('ns3header')
@@ -50,7 +47,11 @@ def build(bld):
 
     if bld.env['ENABLE_GTK_CONFIG_STORE']:
         headers.source.append ('gtk-config-store.h')
-        module.source.append ('gtk-config-store.cc')
+        module.source.extend (['gtk-config-store.cc',
+                               'model-node-creator.cc',
+                               'model-typeid-creator.cc',
+                               'display-functions.cc',
+                               ])
         module.uselib = 'GTK_CONFIG_STORE'
 
     if bld.env['ENABLE_LIBXML2']:
