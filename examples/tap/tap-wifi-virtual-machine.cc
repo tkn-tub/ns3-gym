@@ -98,61 +98,48 @@ main (int argc, char *argv[])
   GlobalValue::Bind ("ChecksumEnabled", BooleanValue (true));
 
   //
-  // Create three ghost nodes.  The first will represent the virtual machine host
+  // Create two ghost nodes.  The first will represent the virtual machine host
   // on the left side of the network; and the second will represent the VM on 
-  // the right side.  The third node will be the wifi access point.
+  // the right side.
   //
   NodeContainer nodes;
-  nodes.Create (3);
+  nodes.Create (2);
 
   //
-  // Use the YANS helpers to get the PHY layer set up.  We'll just work with
-  // the defaults here.
+  // We're going to use 802.11 A so set up a wifi helper to reflect that.
   //
-  YansWifiPhyHelper wifiPhy = YansWifiPhyHelper::Default ();
+  WifiHelper wifi = WifiHelper::Default ();
+  wifi.SetStandard (WIFI_PHY_STANDARD_80211a);
+  wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager", "DataMode", StringValue ("wifia-54mbs"));
+
+  //
+  // No reason for pesky access points, so we'll use an ad-hoc network.
+  //
+  NqosWifiMacHelper wifiMac = NqosWifiMacHelper::Default ();
+  wifiMac.SetType ("ns3::AdhocWifiMac");
+
+  //
+  // Configure the physcial layer.
+  //
   YansWifiChannelHelper wifiChannel = YansWifiChannelHelper::Default ();
+  YansWifiPhyHelper wifiPhy = YansWifiPhyHelper::Default ();
   wifiPhy.SetChannel (wifiChannel.Create ());
 
   //
-  // Pick a reasonable sounding service set id for this network.
+  // Install the wireless devices onto our ghost nodes.
   //
-  Ssid ssid = Ssid ("demo");
+  NetDeviceContainer devices = wifi.Install (wifiPhy, wifiMac, nodes);
 
   //
-  // Use the Wifi helper to get a basic wifi setup.  We select station managers
-  // using the auto rate fallback (ARF) protocol.
+  // We need location information since we are talking about wifi, so add a
+  // constant position to the ghost nodes.
   //
-  WifiHelper wifi = WifiHelper::Default ();
-  wifi.SetRemoteStationManager ("ns3::ArfWifiManager");
-
-  //
-  // Use a non-quality-of-service MAC for the access point (AP).
-  //
-  NqosWifiMacHelper wifiMac = NqosWifiMacHelper::Default ();
-  wifiMac.SetType ("ns3::NqapWifiMac", 
-                   "Ssid", SsidValue (ssid), 
-                   "BeaconGeneration", BooleanValue (true), 
-                   "BeaconInterval", TimeValue (Seconds (2.5)));
-
-  //
-  // Install the Access point onto its ghost node.
-  //
-  wifi.Install (wifiPhy, wifiMac, nodes.Get (2));
-
-  //
-  // the remaining nodes are going to be station (STA) nodes eventually 
-  // connecting to "tap-left" and "tap-right".
-  //
-  wifiMac.SetType ("ns3::NqstaWifiMac", 
-                   "Ssid", SsidValue (ssid), 
-                   "ActiveProbing", BooleanValue (false));
-
-  NetDeviceContainer devices =  wifi.Install (wifiPhy, wifiMac, NodeContainer (nodes.Get (0), nodes.Get (1)));
-
-  //
-  // We need location information since we are talking about wifi, so add mobility
-  // models to all the nodes.
   MobilityHelper mobility;
+  Ptr<ListPositionAllocator> positionAlloc = CreateObject<ListPositionAllocator> ();
+  positionAlloc->Add (Vector (0.0, 0.0, 0.0));
+  positionAlloc->Add (Vector (5.0, 0.0, 0.0));
+  mobility.SetPositionAllocator (positionAlloc);
+  mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
   mobility.Install (nodes);
 
   //
@@ -175,12 +162,10 @@ main (int argc, char *argv[])
   tapBridge.SetAttribute ("DeviceName", StringValue ("tap-right"));
   tapBridge.Install (nodes.Get (1), devices.Get (1));
 
-  wifiPhy.EnablePcapAll ("tap-wifi-virtual-machine");
-
   //
   // Run the simulation for ten minutes to give the user time to play around
   //
-  Simulator::Stop (Seconds (60.));
+  Simulator::Stop (Seconds (600.));
   Simulator::Run ();
   Simulator::Destroy ();
 }
