@@ -50,16 +50,25 @@
 //       +-------|  tap   |    |  tap   |-------+
 //               | bridge |    | bridge |
 //               +--------+    +--------+
-//               |  CSMA  |    |  CSMA  |
+//               |  wifi  |    |  wifi  |
 //               +--------+    +--------+
 //                   |             |     
-//                   |             |     
-//                   |             |     
-//                   ===============
-//                   CSMA LAN 10.0.0
+//                 ((*))         ((*))
 //
-// The CSMA device on node zero is:  10.0.0.1
-// The CSMA device on node one is:   10.0.0.2
+//                   Wifi LAN 10.0.0
+//
+//                        ((*))
+//                          |
+//                     +--------+
+//                     |  wifi  |
+//                     +--------+
+//                     | access |
+//                     |  point |
+//                     +--------+
+//
+// The wifi device on node zero is:  10.0.0.1
+// The wifi device on node one is:   10.0.0.2
+// The wifi device (AP) is:          10.0.0.3
 //
 #include <iostream>
 #include <fstream>
@@ -67,11 +76,12 @@
 #include "ns3/simulator-module.h"
 #include "ns3/node-module.h"
 #include "ns3/core-module.h"
+#include "ns3/wifi-module.h"
 #include "ns3/helper-module.h"
 
 using namespace ns3;
 
-NS_LOG_COMPONENT_DEFINE ("TapCsmaVirtualMachineExample");
+NS_LOG_COMPONENT_DEFINE ("TapWifiVirtualMachineExample");
 
 int 
 main (int argc, char *argv[])
@@ -88,46 +98,89 @@ main (int argc, char *argv[])
   GlobalValue::Bind ("ChecksumEnabled", BooleanValue (true));
 
   //
-  // Create two ghost nodes.  The first will represent the virtual machine host
+  // Create three ghost nodes.  The first will represent the virtual machine host
   // on the left side of the network; and the second will represent the VM on 
-  // the right side.
+  // the right side.  The third node will be the wifi access point.
   //
   NodeContainer nodes;
-  nodes.Create (2);
+  nodes.Create (3);
 
   //
-  // Use a CsmaHelper to get a CSMA channel created, and the needed net 
-  // devices installed on both of the nodes.  The data rate and delay for the
-  // channel can be set through the command-line parser.  For example,
+  // Use the YANS helpers to get the PHY layer set up.  We'll just work with
+  // the defaults here.
   //
-  // ./waf --run "tap=csma-virtual-machine --ns3::CsmaChannel::DataRate=10000000"
+  YansWifiPhyHelper wifiPhy = YansWifiPhyHelper::Default ();
+  YansWifiChannelHelper wifiChannel = YansWifiChannelHelper::Default ();
+  wifiPhy.SetChannel (wifiChannel.Create ());
+
   //
-  CsmaHelper csma;
-  NetDeviceContainer devices = csma.Install (nodes);
+  // Pick a reasonable sounding service set id for this network.
+  //
+  Ssid ssid = Ssid ("demo");
+
+  //
+  // Use the Wifi helper to get a basic wifi setup.  We select station managers
+  // using the auto rate fallback (ARF) protocol.
+  //
+  WifiHelper wifi = WifiHelper::Default ();
+  wifi.SetRemoteStationManager ("ns3::ArfWifiManager");
+
+  //
+  // Use a non-quality-of-service MAC for the access point (AP).
+  //
+  NqosWifiMacHelper wifiMac = NqosWifiMacHelper::Default ();
+  wifiMac.SetType ("ns3::NqapWifiMac", 
+                   "Ssid", SsidValue (ssid), 
+                   "BeaconGeneration", BooleanValue (true), 
+                   "BeaconInterval", TimeValue (Seconds (2.5)));
+
+  //
+  // Install the Access point onto its ghost node.
+  //
+  wifi.Install (wifiPhy, wifiMac, nodes.Get (2));
+
+  //
+  // the remaining nodes are going to be station (STA) nodes eventually 
+  // connecting to "tap-left" and "tap-right".
+  //
+  wifiMac.SetType ("ns3::NqstaWifiMac", 
+                   "Ssid", SsidValue (ssid), 
+                   "ActiveProbing", BooleanValue (false));
+
+  NetDeviceContainer devices =  wifi.Install (wifiPhy, wifiMac, NodeContainer (nodes.Get (0), nodes.Get (1)));
+
+  //
+  // We need location information since we are talking about wifi, so add mobility
+  // models to all the nodes.
+  MobilityHelper mobility;
+  mobility.Install (nodes);
 
   //
   // Use the TapBridgeHelper to connect to the pre-configured tap devices for 
-  // the left side.  We go with "UseBridge" mode since the CSMA devices support
-  // promiscuous mode and can therefore make it appear that the bridge is 
-  // extended into ns-3.  The install method essentially bridges the specified
-  // tap to the specified CSMA device.
+  // the left side.  We go with "UseLocal" mode since the wifi devices do not
+  // support promiscuous mode (because of their natures0.  This is a special
+  // case mode that allows us to extend a linux bridge into ns-3 IFF we will
+  // only see traffic from one other device on that bridge.  That is the case
+  // for this configuration.
   //
   TapBridgeHelper tapBridge;
-  tapBridge.SetAttribute ("Mode", StringValue ("UseBridge"));
+  tapBridge.SetAttribute ("Mode", StringValue ("UseLocal"));
   tapBridge.SetAttribute ("DeviceName", StringValue ("tap-left"));
   tapBridge.Install (nodes.Get (0), devices.Get (0));
 
   //
-  // Connect the right side tap to the right side CSMA device on the right-side
+  // Connect the right side tap to the right side wifi device on the right-side
   // ghost node.
   //
   tapBridge.SetAttribute ("DeviceName", StringValue ("tap-right"));
   tapBridge.Install (nodes.Get (1), devices.Get (1));
 
+  wifiPhy.EnablePcapAll ("tap-wifi-virtual-machine");
+
   //
   // Run the simulation for ten minutes to give the user time to play around
   //
-  Simulator::Stop (Seconds (600.));
+  Simulator::Stop (Seconds (60.));
   Simulator::Run ();
   Simulator::Destroy ();
 }
