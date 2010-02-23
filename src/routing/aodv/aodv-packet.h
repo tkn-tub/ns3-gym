@@ -58,6 +58,7 @@ public:
 
   ///\name Header serialization/deserialization
   //\{
+  static TypeId GetTypeId ();
   TypeId GetInstanceTypeId () const;
   uint32_t GetSerializedSize () const;
   void Serialize (Buffer::Iterator start) const;
@@ -109,6 +110,7 @@ public:
 
   ///\name Header serialization/deserialization
   //\{
+  static TypeId GetTypeId ();
   TypeId GetInstanceTypeId () const;
   uint32_t GetSerializedSize () const;
   void Serialize (Buffer::Iterator start) const;
@@ -184,6 +186,7 @@ public:
       Ipv4Address (), Time lifetime = MilliSeconds (0));
   ///\name Header serialization/deserialization
   //\{
+  static TypeId GetTypeId ();
   TypeId GetInstanceTypeId () const;
   uint32_t GetSerializedSize () const;
   void Serialize (Buffer::Iterator start) const;
@@ -248,6 +251,7 @@ public:
 
   ///\name Header serialization/deserialization
   //\{
+  static TypeId GetTypeId ();
   TypeId GetInstanceTypeId () const;
   uint32_t GetSerializedSize () const;
   void Serialize (Buffer::Iterator start) const;
@@ -289,6 +293,7 @@ public:
 
   ///\name Header serialization/deserialization
   //\{
+  static TypeId GetTypeId ();
   TypeId GetInstanceTypeId () const;
   uint32_t GetSerializedSize () const;
   void Serialize (Buffer::Iterator i) const;

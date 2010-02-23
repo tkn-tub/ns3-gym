@@ -206,6 +206,14 @@ TapBridge::StartTapDevice (void)
   m_rtImpl = GetPointer (impl);
 
   //
+  // A similar story exists for the node ID.  We can't just naively do a
+  // GetNode ()->GetId () since GetNode is going to give us a Ptr<Node> which
+  // is reference counted.  We need to stash away the node ID for use in the
+  // read thread.
+  //
+  m_nodeId = GetNode ()->GetId ();
+
+  //
   // Spin up the tap bridge and start receiving packets.
   //
   NS_LOG_LOGIC ("Creating tap device");
@@ -648,11 +656,10 @@ TapBridge::ReadThread (void)
           return;
         }
 
-      NS_LOG_INFO ("TapBridge::ReadThread(): Received packet on node " << m_node->GetId ());
+      NS_LOG_INFO ("TapBridge::ReadThread(): Received packet on node " << m_nodeId);
       NS_LOG_INFO ("TapBridge::ReadThread(): Scheduling handler");
       NS_ASSERT_MSG (m_rtImpl, "EmuNetDevice::ReadThread(): Realtime simulator implementation pointer not set");
-      m_rtImpl->ScheduleRealtimeNowWithContext (GetNode ()->GetId (),
-        MakeEvent (&TapBridge::ForwardToBridgedDevice, this, buf, len));
+      m_rtImpl->ScheduleRealtimeNowWithContext (m_nodeId, MakeEvent (&TapBridge::ForwardToBridgedDevice, this, buf, len));
       buf = 0;
     }
 }

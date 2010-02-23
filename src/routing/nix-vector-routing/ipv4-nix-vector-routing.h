@@ -53,7 +53,7 @@ class Ipv4NixVectorRouting : public Ipv4RoutingProtocol
      *
      * @param node Node pointer 
      */
-    void SetNode (Ptr<Node>);
+    void SetNode (Ptr<Node> node);
 
     /** 
      * @brief Called when run-time link topology change occurs 

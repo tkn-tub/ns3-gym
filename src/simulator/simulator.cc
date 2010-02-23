@@ -336,7 +336,6 @@ Simulator::GetMaximumSimulationTime (void)
 uint32_t
 Simulator::GetContext (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
   return GetImpl ()->GetContext ();
 }
 

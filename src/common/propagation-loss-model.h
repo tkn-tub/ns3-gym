@@ -252,7 +252,9 @@ public:
    */
   double GetSystemLoss (void) const;
   /**
-   * \Set the model antenna height above the node's Z coordinate
+   * \param heightAboveZ the model antenna height above the node's Z coordinate
+   *
+   * Set the model antenna height above the node's Z coordinate
    */
   void SetHeightAboveZ (double heightAboveZ);
 

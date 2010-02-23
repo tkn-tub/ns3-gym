@@ -35,8 +35,8 @@ class Waypoint
 {
 public:
   /**
-   * \param _time time of waypoint.
-   * \param _position position of waypoint corresponding to the given time.
+   * \param waypointTime time of waypoint.
+   * \param waypointPosition position of waypoint corresponding to the given time.
    *
    * Create a waypoint.
    */

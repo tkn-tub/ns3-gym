@@ -41,7 +41,7 @@ RawTextConfigSave::Default (void)
     virtual void StartVisitTypeId (std::string name) {
       m_typeId = name;
     }
-    virtual void VisitAttribute (std::string name, std::string defaultValue) {
+    virtual void DoVisitAttribute (std::string name, std::string defaultValue) {
       *m_os << "default " << m_typeId << "::" << name << " \"" << defaultValue << "\"" << std::endl;
     }
     std::string m_typeId;

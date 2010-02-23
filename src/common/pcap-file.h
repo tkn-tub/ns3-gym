@@ -130,6 +130,9 @@ public:
    * time zone from UTC/GMT.  For example, Pacific Standard Time in the US is
    * GMT-8, so one would enter -8 for that correction.  Defaults to 0 (UTC).
    *
+   * \param swapMode Flag indicating a difference in endianness of the 
+   * writing system. Defaults to false.
+   *
    * \return false if the open succeeds, true otherwise.
    *
    * \warning Calling this method on an existing file will result in the loss
@@ -256,7 +259,7 @@ public:
    * \param  f1         First PCAP file name
    * \param  f2         Second PCAP file name
    * \param  sec        [out] Time stamp of first different packet, seconds. Undefined if files doesn't differ.
-   * \param  uses       [out] Time stamp of first different packet, microseconds. Undefined if files doesn't differ.
+   * \param  usec       [out] Time stamp of first different packet, microseconds. Undefined if files doesn't differ.
    * \param  snapLen    Snap length (if used)
    */
   static bool Diff (std::string const & f1, std::string const & f2, 

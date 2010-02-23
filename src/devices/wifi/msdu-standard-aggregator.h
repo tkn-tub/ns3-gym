@@ -32,7 +32,7 @@ public:
   MsduStandardAggregator ();
   ~MsduStandardAggregator ();
   /**
-   * \param packet Packet we have to insert into </i>aggregatedPacket</i>.
+   * \param packet Packet we have to insert into <i>aggregatedPacket</i>.
    * \param aggregatedPacket Packet that will contain <i>packet</i>, if aggregation is possible, 
    * \param src Source address of <i>packet</i>.
    * \param dest Destination address of <i>packet</i>.

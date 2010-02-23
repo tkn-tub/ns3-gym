@@ -272,6 +272,14 @@ EmuNetDevice::StartDevice (void)
   Ptr<RealtimeSimulatorImpl> impl = DynamicCast<RealtimeSimulatorImpl> (Simulator::GetImplementation ());
   m_rtImpl = GetPointer (impl);
 
+  //
+  // A similar story exists for the node ID.  We can't just naively do a
+  // GetNode ()->GetId () since GetNode is going to give us a Ptr<Node> which
+  // is reference counted.  We need to stash away the node ID for use in the
+  // read thread.
+  //
+  m_nodeId = GetNode ()->GetId ();
+
   NS_LOG_LOGIC ("Creating socket");
 
   //
@@ -757,10 +765,10 @@ EmuNetDevice::ReadThread (void)
           return;
         }
 
-      NS_LOG_INFO ("EmuNetDevice::ReadThread(): Received packet");
+      NS_LOG_INFO ("EmuNetDevice::EmuNetDevice(): Received packet on node " << m_nodeId);
       NS_LOG_INFO ("EmuNetDevice::ReadThread(): Scheduling handler");
       NS_ASSERT_MSG (m_rtImpl, "EmuNetDevice::ReadThread(): Realtime simulator implementation pointer not set");
-      m_rtImpl->ScheduleRealtimeNowWithContext (GetNode ()->GetId (), MakeEvent (&EmuNetDevice::ForwardUp, this, buf, len));
+      m_rtImpl->ScheduleRealtimeNowWithContext (m_nodeId, MakeEvent (&EmuNetDevice::ForwardUp, this, buf, len));
       buf = 0;
     }
 }
