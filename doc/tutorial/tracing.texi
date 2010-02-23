@@ -1937,7 +1937,7 @@ representing a file.
 
 @verbatim
   static void
-  CwndChange (Ptr<OutputStreamKeeper> stream, uint32_t oldCwnd, uint32_t newCwnd)
+  CwndChange (Ptr<OutputStreamWrapper> stream, uint32_t oldCwnd, uint32_t newCwnd)
   {
     NS_LOG_UNCOND (Simulator::Now ().GetSeconds () << "\t" << newCwnd);
     *stream->GetStream () << Simulator::Now ().GetSeconds () << "\t" << oldCwnd << "\t" << newCwnd << std::endl;
@@ -1973,7 +1973,7 @@ with @code{std::cout}, as in:
   std::cout << Simulator::Now ().GetSeconds () << "\t" << oldCwnd << "\t" << newCwnd << std::endl;
 @end verbatim  
 
-This illustrates that the @code{Ptr<OutputStreamKeeper>} is really just
+This illustrates that the @code{Ptr<OutputStreamWrapper>} is really just
 carrying around a @code{std::ofstream} for you, and you can use it here like 
 any other output stream.
 
@@ -1992,7 +1992,7 @@ look in the @code{main} function, you will find new code to do just that:
 
 @verbatim
   AsciiTraceHelper asciiTraceHelper;
-  Ptr<OutputStreamKeeper> stream = asciiTraceHelper.CreateFileStream ("sixth.cwnd");
+  Ptr<OutputStreamWrapper> stream = asciiTraceHelper.CreateFileStream ("sixth.cwnd");
   ns3TcpSocket->TraceConnectWithoutContext ("CongestionWindow", MakeBoundCallback (&CwndChange, stream));
 
   ...
@@ -2023,7 +2023,7 @@ Essentially, @code{MakeBoundCallback(&CwndChange, stream)} causes the trace
 source to add the additional ``stream'' parameter to the front of the formal
 parameter list before invoking the callback.  This changes the required 
 signature of the @code{CwndChange} sink to match the one shown above, which
-includes the ``extra'' parameter @code{Ptr<OutputStreamKeeper> stream}.
+includes the ``extra'' parameter @code{Ptr<OutputStreamWrapper> stream}.
 
 In the second section of code in the snippet above, we instantiate a 
 @code{PcapHelper} to do the same thing for our pcap trace file that we did
@@ -2054,13 +2054,13 @@ objects are declared in very similar ways,
 
 @verbatim
   Ptr<PcapFileWrapper> file ...
-  Ptr<OutputStreamKeeper> stream ...
+  Ptr<OutputStreamWrapper> stream ...
 @end verbatim
 
 The underlying objects are entirely different.  For example, the 
 Ptr<PcapFileWrapper> is a smart pointer to an @command{ns-3} Object that is a 
 fairly heaviweight thing that supports @code{Attributes} and is integrated into
-the config system.  The Ptr<OutputStreamKeeper>, on the other hand, is a smart 
+the config system.  The Ptr<OutputStreamWrapper>, on the other hand, is a smart 
 pointer to a reference counted object that is a very lightweight thing.
 Remember to always look at the object you are referencing before making any
 assumptions about the ``powers'' that object may have.  
@@ -2073,11 +2073,11 @@ distribution and notice,
 @end verbatim
 
 that class @code{PcapFileWrapper} is an @command{ns-3} Object by virtue of 
-its inheritance.  Then look at @code{src/common/output-stream-keeper.h} and 
+its inheritance.  Then look at @code{src/common/output-stream-wrapper.h} and 
 notice,
 
 @verbatim
-  class OutputStreamKeeper : public SimpleRefCount<OutputStreamKeeper>
+  class OutputStreamWrapper : public SimpleRefCount<OutputStreamWrapper>
 @end verbatim
 
 that this object is not an @command{ns-3} Object at all, it is ``merely'' a
@@ -2138,7 +2138,7 @@ core code involved, and we did this in only 18 lines of code:
 
 @verbatim
   static void
-  CwndChange (Ptr<OutputStreamKeeper> stream, uint32_t oldCwnd, uint32_t newCwnd)
+  CwndChange (Ptr<OutputStreamWrapper> stream, uint32_t oldCwnd, uint32_t newCwnd)
   {
     NS_LOG_UNCOND (Simulator::Now ().GetSeconds () << "\t" << newCwnd);
     *stream->GetStream () << Simulator::Now ().GetSeconds () << "\t" << oldCwnd << "\t" << newCwnd << std::endl;
@@ -2147,7 +2147,7 @@ core code involved, and we did this in only 18 lines of code:
   ...
 
   AsciiTraceHelper asciiTraceHelper;
-  Ptr<OutputStreamKeeper> stream = asciiTraceHelper.CreateFileStream ("sixth.cwnd");
+  Ptr<OutputStreamWrapper> stream = asciiTraceHelper.CreateFileStream ("sixth.cwnd");
   ns3TcpSocket->TraceConnectWithoutContext ("CongestionWindow", MakeBoundCallback (&CwndChange, stream));
 
   ...
@@ -2390,7 +2390,7 @@ also implement a single virtual method inherited from the ascii trace additions
 to this class.
 
 @verbatim
-  virtual void EnableAsciiInternal (Ptr<OutputStreamKeeper> stream, std::string prefix, Ptr<NetDevice> nd) = 0;
+  virtual void EnableAsciiInternal (Ptr<OutputStreamWrapper> stream, std::string prefix, Ptr<NetDevice> nd) = 0;
 @end verbatim
 
 The signature of this method reflects the device-centric view of the situation
@@ -2402,7 +2402,7 @@ methods,
 
 @verbatim
   void EnableAscii (std::string prefix, Ptr<NetDevice> nd);
-  void EnableAscii (Ptr<OutputStreamKeeper> stream, Ptr<NetDevice> nd);
+  void EnableAscii (Ptr<OutputStreamWrapper> stream, Ptr<NetDevice> nd);
 @verbatim
 
 will call the device implementation of @code{EnableAsciiInternal} directly,
@@ -2417,22 +2417,22 @@ will all work in the same way across devices if the devices implement
 
 @verbatim
   void EnableAscii (std::string prefix, Ptr<NetDevice> nd);
-  void EnableAscii (Ptr<OutputStreamKeeper> stream, Ptr<NetDevice> nd);
+  void EnableAscii (Ptr<OutputStreamWrapper> stream, Ptr<NetDevice> nd);
 
   void EnableAscii (std::string prefix, std::string ndName);
-  void EnableAscii (Ptr<OutputStreamKeeper> stream, std::string ndName);
+  void EnableAscii (Ptr<OutputStreamWrapper> stream, std::string ndName);
 
   void EnableAscii (std::string prefix, NetDeviceContainer d);
-  void EnableAscii (Ptr<OutputStreamKeeper> stream, NetDeviceContainer d);
+  void EnableAscii (Ptr<OutputStreamWrapper> stream, NetDeviceContainer d);
 
   void EnableAscii (std::string prefix, NodeContainer n);
-  void EnableAscii (Ptr<OutputStreamKeeper> stream, NodeContainer n);
+  void EnableAscii (Ptr<OutputStreamWrapper> stream, NodeContainer n);
 
   void EnableAscii (std::string prefix, uint32_t nodeid, uint32_t deviceid);
-  void EnableAscii (Ptr<OutputStreamKeeper> stream, uint32_t nodeid, uint32_t deviceid);
+  void EnableAscii (Ptr<OutputStreamWrapper> stream, uint32_t nodeid, uint32_t deviceid);
 
   void EnableAsciiAll (std::string prefix);
-  void EnableAsciiAll (Ptr<OutputStreamKeeper> stream);
+  void EnableAsciiAll (Ptr<OutputStreamWrapper> stream);
 @end verbatim
 
 You are encouraged to peruse the Doxygen for class @code{TraceHelperForDevice}
@@ -2471,7 +2471,7 @@ above:
   Ptr<NetDevice> nd1;
   Ptr<NetDevice> nd2;
   ...
-  Ptr<OutputStreamKeeper> stream = asciiTraceHelper.CreateFileStream ("trace-file-name.tr");
+  Ptr<OutputStreamWrapper> stream = asciiTraceHelper.CreateFileStream ("trace-file-name.tr");
   ...
   helper.EnableAscii (stream, nd1);
   helper.EnableAscii (stream, nd2);
@@ -2500,7 +2500,7 @@ belong to exactly one @code{Node}.  For example,
 
 This would result in two files named ``prefix-client-eth0.tr'' and 
 ``prefix-server-eth0.tr'' with traces for each device in the respective trace
-file.  Since all of the EnableAscii functions are overloaded to take a stream keeper,
+file.  Since all of the EnableAscii functions are overloaded to take a stream wrapper,
 you can use that form as well:
 
 @verbatim
@@ -2509,7 +2509,7 @@ you can use that form as well:
   Names::Add ("server" ...);
   Names::Add ("server/eth0" ...);
   ...
-  Ptr<OutputStreamKeeper> stream = asciiTraceHelper.CreateFileStream ("trace-file-name.tr");
+  Ptr<OutputStreamWrapper> stream = asciiTraceHelper.CreateFileStream ("trace-file-name.tr");
   ...
   helper.EnableAscii (stream, "client/eth0");
   helper.EnableAscii (stream, "server/eth0");
@@ -2539,7 +2539,7 @@ traces into a single file is accomplished similarly to the examples above:
 @verbatim
   NetDeviceContainer d = ...;
   ...
-  Ptr<OutputStreamKeeper> stream = asciiTraceHelper.CreateFileStream ("trace-file-name.tr");
+  Ptr<OutputStreamWrapper> stream = asciiTraceHelper.CreateFileStream ("trace-file-name.tr");
   ...
   helper.EnableAscii (stream, d);
 @end verbatim
@@ -2775,7 +2775,7 @@ for using ascii tracing to the PcapHelperForIpv4.  Every protocol must
 additionally implement a single virtual method inherited from this class.
 
 @verbatim
-  virtual void EnableAsciiIpv4Internal (Ptr<OutputStreamKeeper> stream, std::string prefix, 
+  virtual void EnableAsciiIpv4Internal (Ptr<OutputStreamWrapper> stream, std::string prefix, 
                                         Ptr<Ipv4> ipv4, uint32_t interface) = 0;
 @end verbatim
 
@@ -2788,7 +2788,7 @@ methods,
 
 @verbatim
   void EnableAsciiIpv4 (std::string prefix, Ptr<Ipv4> ipv4, uint32_t interface);
-  void EnableAsciiIpv4 (Ptr<OutputStreamKeeper> stream, Ptr<Ipv4> ipv4, uint32_t interface);
+  void EnableAsciiIpv4 (Ptr<OutputStreamWrapper> stream, Ptr<Ipv4> ipv4, uint32_t interface);
 @verbatim
 
 will call the device implementation of @code{EnableAsciiIpv4Internal} directly,
@@ -2803,22 +2803,22 @@ will all work in the same way across protocols if the protocols implement
 
 @verbatim
   void EnableAsciiIpv4 (std::string prefix, Ptr<Ipv4> ipv4, uint32_t interface);
-  void EnableAsciiIpv4 (Ptr<OutputStreamKeeper> stream, Ptr<Ipv4> ipv4, uint32_t interface);
+  void EnableAsciiIpv4 (Ptr<OutputStreamWrapper> stream, Ptr<Ipv4> ipv4, uint32_t interface);
 
   void EnableAsciiIpv4 (std::string prefix, std::string ipv4Name, uint32_t interface);
-  void EnableAsciiIpv4 (Ptr<OutputStreamKeeper> stream, std::string ipv4Name, uint32_t interface);
+  void EnableAsciiIpv4 (Ptr<OutputStreamWrapper> stream, std::string ipv4Name, uint32_t interface);
 
   void EnableAsciiIpv4 (std::string prefix, Ipv4InterfaceContainer c);
-  void EnableAsciiIpv4 (Ptr<OutputStreamKeeper> stream, Ipv4InterfaceContainer c);
+  void EnableAsciiIpv4 (Ptr<OutputStreamWrapper> stream, Ipv4InterfaceContainer c);
 
   void EnableAsciiIpv4 (std::string prefix, NodeContainer n);
-  void EnableAsciiIpv4 (Ptr<OutputStreamKeeper> stream, NodeContainer n);
+  void EnableAsciiIpv4 (Ptr<OutputStreamWrapper> stream, NodeContainer n);
 
   void EnableAsciiIpv4 (std::string prefix, uint32_t nodeid, uint32_t deviceid);
-  void EnableAsciiIpv4 (Ptr<OutputStreamKeeper> stream, uint32_t nodeid, uint32_t interface);
+  void EnableAsciiIpv4 (Ptr<OutputStreamWrapper> stream, uint32_t nodeid, uint32_t interface);
 
   void EnableAsciiIpv4All (std::string prefix);
-  void EnableAsciiIpv4All (Ptr<OutputStreamKeeper> stream);
+  void EnableAsciiIpv4All (Ptr<OutputStreamWrapper> stream);
 @end verbatim
 
 You are encouraged to peruse the Doxygen for class @code{PcapAndAsciiHelperForIpv4}
@@ -2857,7 +2857,7 @@ refer to a single file.  We have already something similar to this in the
   Ptr<Ipv4> protocol1 = node1->GetObject<Ipv4> ();
   Ptr<Ipv4> protocol2 = node2->GetObject<Ipv4> ();
   ...
-  Ptr<OutputStreamKeeper> stream = asciiTraceHelper.CreateFileStream ("trace-file-name.tr");
+  Ptr<OutputStreamWrapper> stream = asciiTraceHelper.CreateFileStream ("trace-file-name.tr");
   ...
   helper.EnableAsciiIpv4 (stream, protocol1, 1);
   helper.EnableAsciiIpv4 (stream, protocol2, 1);
@@ -2886,13 +2886,13 @@ For example,
 This would result in two files named ``prefix-nnode1Ipv4-i1.tr'' and 
 ``prefix-nnode2Ipv4-i1.tr'' with traces for each interface in the respective 
 trace file.  Since all of the EnableAscii functions are overloaded to take a 
-stream keeper, you can use that form as well:
+stream wrapper, you can use that form as well:
 
 @verbatim
   Names::Add ("node1Ipv4" ...);
   Names::Add ("node2Ipv4" ...);
   ...
-  Ptr<OutputStreamKeeper> stream = asciiTraceHelper.CreateFileStream ("trace-file-name.tr");
+  Ptr<OutputStreamWrapper> stream = asciiTraceHelper.CreateFileStream ("trace-file-name.tr");
   ...
   helper.EnableAsciiIpv4 (stream, "node1Ipv4", 1);
   helper.EnableAsciiIpv4 (stream, "node2Ipv4", 1);
@@ -2935,7 +2935,7 @@ traces into a single file is accomplished similarly to the examples above:
   ipv4.SetBase ("10.1.1.0", "255.255.255.0");
   Ipv4InterfaceContainer interfaces = ipv4.Assign (devices);
   ...
-  Ptr<OutputStreamKeeper> stream = asciiTraceHelper.CreateFileStream ("trace-file-name.tr");
+  Ptr<OutputStreamWrapper> stream = asciiTraceHelper.CreateFileStream ("trace-file-name.tr");
   ...
   helper.EnableAsciiIpv4 (stream, interfaces);
 @end verbatim

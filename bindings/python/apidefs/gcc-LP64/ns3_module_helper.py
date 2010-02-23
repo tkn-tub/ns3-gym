@@ -361,49 +361,49 @@ def register_Ns3AsciiTraceHelper_methods(root_module, cls):
     cls.add_constructor([param('ns3::AsciiTraceHelper const &', 'arg0')])
     ## trace-helper.h: ns3::AsciiTraceHelper::AsciiTraceHelper() [constructor]
     cls.add_constructor([])
-    ## trace-helper.h: ns3::Ptr<ns3::OutputStreamKeeper> ns3::AsciiTraceHelper::CreateFileStream(std::string filename, std::string filemode="w") [member function]
+    ## trace-helper.h: ns3::Ptr<ns3::OutputStreamWrapper> ns3::AsciiTraceHelper::CreateFileStream(std::string filename, std::string filemode="w") [member function]
     cls.add_method('CreateFileStream', 
-                   'ns3::Ptr< ns3::OutputStreamKeeper >', 
+                   'ns3::Ptr< ns3::OutputStreamWrapper >', 
                    [param('std::string', 'filename'), param('std::string', 'filemode', default_value='"w"')])
-    ## trace-helper.h: static void ns3::AsciiTraceHelper::DefaultDequeueSinkWithContext(ns3::Ptr<ns3::OutputStreamKeeper> file, std::string context, ns3::Ptr<ns3::Packet const> p) [member function]
+    ## trace-helper.h: static void ns3::AsciiTraceHelper::DefaultDequeueSinkWithContext(ns3::Ptr<ns3::OutputStreamWrapper> file, std::string context, ns3::Ptr<ns3::Packet const> p) [member function]
     cls.add_method('DefaultDequeueSinkWithContext', 
                    'void', 
-                   [param('ns3::Ptr< ns3::OutputStreamKeeper >', 'file'), param('std::string', 'context'), param('ns3::Ptr< ns3::Packet const >', 'p')], 
+                   [param('ns3::Ptr< ns3::OutputStreamWrapper >', 'file'), param('std::string', 'context'), param('ns3::Ptr< ns3::Packet const >', 'p')], 
                    is_static=True)
-    ## trace-helper.h: static void ns3::AsciiTraceHelper::DefaultDequeueSinkWithoutContext(ns3::Ptr<ns3::OutputStreamKeeper> file, ns3::Ptr<ns3::Packet const> p) [member function]
+    ## trace-helper.h: static void ns3::AsciiTraceHelper::DefaultDequeueSinkWithoutContext(ns3::Ptr<ns3::OutputStreamWrapper> file, ns3::Ptr<ns3::Packet const> p) [member function]
     cls.add_method('DefaultDequeueSinkWithoutContext', 
                    'void', 
-                   [param('ns3::Ptr< ns3::OutputStreamKeeper >', 'file'), param('ns3::Ptr< ns3::Packet const >', 'p')], 
+                   [param('ns3::Ptr< ns3::OutputStreamWrapper >', 'file'), param('ns3::Ptr< ns3::Packet const >', 'p')], 
                    is_static=True)
-    ## trace-helper.h: static void ns3::AsciiTraceHelper::DefaultDropSinkWithContext(ns3::Ptr<ns3::OutputStreamKeeper> file, std::string context, ns3::Ptr<ns3::Packet const> p) [member function]
+    ## trace-helper.h: static void ns3::AsciiTraceHelper::DefaultDropSinkWithContext(ns3::Ptr<ns3::OutputStreamWrapper> file, std::string context, ns3::Ptr<ns3::Packet const> p) [member function]
     cls.add_method('DefaultDropSinkWithContext', 
                    'void', 
-                   [param('ns3::Ptr< ns3::OutputStreamKeeper >', 'file'), param('std::string', 'context'), param('ns3::Ptr< ns3::Packet const >', 'p')], 
+                   [param('ns3::Ptr< ns3::OutputStreamWrapper >', 'file'), param('std::string', 'context'), param('ns3::Ptr< ns3::Packet const >', 'p')], 
                    is_static=True)
-    ## trace-helper.h: static void ns3::AsciiTraceHelper::DefaultDropSinkWithoutContext(ns3::Ptr<ns3::OutputStreamKeeper> file, ns3::Ptr<ns3::Packet const> p) [member function]
+    ## trace-helper.h: static void ns3::AsciiTraceHelper::DefaultDropSinkWithoutContext(ns3::Ptr<ns3::OutputStreamWrapper> file, ns3::Ptr<ns3::Packet const> p) [member function]
     cls.add_method('DefaultDropSinkWithoutContext', 
                    'void', 
-                   [param('ns3::Ptr< ns3::OutputStreamKeeper >', 'file'), param('ns3::Ptr< ns3::Packet const >', 'p')], 
+                   [param('ns3::Ptr< ns3::OutputStreamWrapper >', 'file'), param('ns3::Ptr< ns3::Packet const >', 'p')], 
                    is_static=True)
-    ## trace-helper.h: static void ns3::AsciiTraceHelper::DefaultEnqueueSinkWithContext(ns3::Ptr<ns3::OutputStreamKeeper> file, std::string context, ns3::Ptr<ns3::Packet const> p) [member function]
+    ## trace-helper.h: static void ns3::AsciiTraceHelper::DefaultEnqueueSinkWithContext(ns3::Ptr<ns3::OutputStreamWrapper> file, std::string context, ns3::Ptr<ns3::Packet const> p) [member function]
     cls.add_method('DefaultEnqueueSinkWithContext', 
                    'void', 
-                   [param('ns3::Ptr< ns3::OutputStreamKeeper >', 'file'), param('std::string', 'context'), param('ns3::Ptr< ns3::Packet const >', 'p')], 
+                   [param('ns3::Ptr< ns3::OutputStreamWrapper >', 'file'), param('std::string', 'context'), param('ns3::Ptr< ns3::Packet const >', 'p')], 
                    is_static=True)
-    ## trace-helper.h: static void ns3::AsciiTraceHelper::DefaultEnqueueSinkWithoutContext(ns3::Ptr<ns3::OutputStreamKeeper> file, ns3::Ptr<ns3::Packet const> p) [member function]
+    ## trace-helper.h: static void ns3::AsciiTraceHelper::DefaultEnqueueSinkWithoutContext(ns3::Ptr<ns3::OutputStreamWrapper> file, ns3::Ptr<ns3::Packet const> p) [member function]
     cls.add_method('DefaultEnqueueSinkWithoutContext', 
                    'void', 
-                   [param('ns3::Ptr< ns3::OutputStreamKeeper >', 'file'), param('ns3::Ptr< ns3::Packet const >', 'p')], 
+                   [param('ns3::Ptr< ns3::OutputStreamWrapper >', 'file'), param('ns3::Ptr< ns3::Packet const >', 'p')], 
                    is_static=True)
-    ## trace-helper.h: static void ns3::AsciiTraceHelper::DefaultReceiveSinkWithContext(ns3::Ptr<ns3::OutputStreamKeeper> file, std::string context, ns3::Ptr<ns3::Packet const> p) [member function]
+    ## trace-helper.h: static void ns3::AsciiTraceHelper::DefaultReceiveSinkWithContext(ns3::Ptr<ns3::OutputStreamWrapper> file, std::string context, ns3::Ptr<ns3::Packet const> p) [member function]
     cls.add_method('DefaultReceiveSinkWithContext', 
                    'void', 
-                   [param('ns3::Ptr< ns3::OutputStreamKeeper >', 'file'), param('std::string', 'context'), param('ns3::Ptr< ns3::Packet const >', 'p')], 
+                   [param('ns3::Ptr< ns3::OutputStreamWrapper >', 'file'), param('std::string', 'context'), param('ns3::Ptr< ns3::Packet const >', 'p')], 
                    is_static=True)
-    ## trace-helper.h: static void ns3::AsciiTraceHelper::DefaultReceiveSinkWithoutContext(ns3::Ptr<ns3::OutputStreamKeeper> file, ns3::Ptr<ns3::Packet const> p) [member function]
+    ## trace-helper.h: static void ns3::AsciiTraceHelper::DefaultReceiveSinkWithoutContext(ns3::Ptr<ns3::OutputStreamWrapper> file, ns3::Ptr<ns3::Packet const> p) [member function]
     cls.add_method('DefaultReceiveSinkWithoutContext', 
                    'void', 
-                   [param('ns3::Ptr< ns3::OutputStreamKeeper >', 'file'), param('ns3::Ptr< ns3::Packet const >', 'p')], 
+                   [param('ns3::Ptr< ns3::OutputStreamWrapper >', 'file'), param('ns3::Ptr< ns3::Packet const >', 'p')], 
                    is_static=True)
     ## trace-helper.h: std::string ns3::AsciiTraceHelper::GetFilenameFromDevice(std::string prefix, ns3::Ptr<ns3::NetDevice> device, bool useObjectNames=true) [member function]
     cls.add_method('GetFilenameFromDevice', 
@@ -424,54 +424,54 @@ def register_Ns3AsciiTraceHelperForDevice_methods(root_module, cls):
     cls.add_method('EnableAscii', 
                    'void', 
                    [param('std::string', 'prefix'), param('ns3::Ptr< ns3::NetDevice >', 'nd')])
-    ## trace-helper.h: void ns3::AsciiTraceHelperForDevice::EnableAscii(ns3::Ptr<ns3::OutputStreamKeeper> stream, ns3::Ptr<ns3::NetDevice> nd) [member function]
+    ## trace-helper.h: void ns3::AsciiTraceHelperForDevice::EnableAscii(ns3::Ptr<ns3::OutputStreamWrapper> stream, ns3::Ptr<ns3::NetDevice> nd) [member function]
     cls.add_method('EnableAscii', 
                    'void', 
-                   [param('ns3::Ptr< ns3::OutputStreamKeeper >', 'stream'), param('ns3::Ptr< ns3::NetDevice >', 'nd')])
+                   [param('ns3::Ptr< ns3::OutputStreamWrapper >', 'stream'), param('ns3::Ptr< ns3::NetDevice >', 'nd')])
     ## trace-helper.h: void ns3::AsciiTraceHelperForDevice::EnableAscii(std::string prefix, std::string ndName) [member function]
     cls.add_method('EnableAscii', 
                    'void', 
                    [param('std::string', 'prefix'), param('std::string', 'ndName')])
-    ## trace-helper.h: void ns3::AsciiTraceHelperForDevice::EnableAscii(ns3::Ptr<ns3::OutputStreamKeeper> stream, std::string ndName) [member function]
+    ## trace-helper.h: void ns3::AsciiTraceHelperForDevice::EnableAscii(ns3::Ptr<ns3::OutputStreamWrapper> stream, std::string ndName) [member function]
     cls.add_method('EnableAscii', 
                    'void', 
-                   [param('ns3::Ptr< ns3::OutputStreamKeeper >', 'stream'), param('std::string', 'ndName')])
+                   [param('ns3::Ptr< ns3::OutputStreamWrapper >', 'stream'), param('std::string', 'ndName')])
     ## trace-helper.h: void ns3::AsciiTraceHelperForDevice::EnableAscii(std::string prefix, ns3::NetDeviceContainer d) [member function]
     cls.add_method('EnableAscii', 
                    'void', 
                    [param('std::string', 'prefix'), param('ns3::NetDeviceContainer', 'd')])
-    ## trace-helper.h: void ns3::AsciiTraceHelperForDevice::EnableAscii(ns3::Ptr<ns3::OutputStreamKeeper> stream, ns3::NetDeviceContainer d) [member function]
+    ## trace-helper.h: void ns3::AsciiTraceHelperForDevice::EnableAscii(ns3::Ptr<ns3::OutputStreamWrapper> stream, ns3::NetDeviceContainer d) [member function]
     cls.add_method('EnableAscii', 
                    'void', 
-                   [param('ns3::Ptr< ns3::OutputStreamKeeper >', 'stream'), param('ns3::NetDeviceContainer', 'd')])
+                   [param('ns3::Ptr< ns3::OutputStreamWrapper >', 'stream'), param('ns3::NetDeviceContainer', 'd')])
     ## trace-helper.h: void ns3::AsciiTraceHelperForDevice::EnableAscii(std::string prefix, ns3::NodeContainer n) [member function]
     cls.add_method('EnableAscii', 
                    'void', 
                    [param('std::string', 'prefix'), param('ns3::NodeContainer', 'n')])
-    ## trace-helper.h: void ns3::AsciiTraceHelperForDevice::EnableAscii(ns3::Ptr<ns3::OutputStreamKeeper> stream, ns3::NodeContainer n) [member function]
+    ## trace-helper.h: void ns3::AsciiTraceHelperForDevice::EnableAscii(ns3::Ptr<ns3::OutputStreamWrapper> stream, ns3::NodeContainer n) [member function]
     cls.add_method('EnableAscii', 
                    'void', 
-                   [param('ns3::Ptr< ns3::OutputStreamKeeper >', 'stream'), param('ns3::NodeContainer', 'n')])
+                   [param('ns3::Ptr< ns3::OutputStreamWrapper >', 'stream'), param('ns3::NodeContainer', 'n')])
     ## trace-helper.h: void ns3::AsciiTraceHelperForDevice::EnableAscii(std::string prefix, uint32_t nodeid, uint32_t deviceid) [member function]
     cls.add_method('EnableAscii', 
                    'void', 
                    [param('std::string', 'prefix'), param('uint32_t', 'nodeid'), param('uint32_t', 'deviceid')])
-    ## trace-helper.h: void ns3::AsciiTraceHelperForDevice::EnableAscii(ns3::Ptr<ns3::OutputStreamKeeper> stream, uint32_t nodeid, uint32_t deviceid) [member function]
+    ## trace-helper.h: void ns3::AsciiTraceHelperForDevice::EnableAscii(ns3::Ptr<ns3::OutputStreamWrapper> stream, uint32_t nodeid, uint32_t deviceid) [member function]
     cls.add_method('EnableAscii', 
                    'void', 
-                   [param('ns3::Ptr< ns3::OutputStreamKeeper >', 'stream'), param('uint32_t', 'nodeid'), param('uint32_t', 'deviceid')])
+                   [param('ns3::Ptr< ns3::OutputStreamWrapper >', 'stream'), param('uint32_t', 'nodeid'), param('uint32_t', 'deviceid')])
     ## trace-helper.h: void ns3::AsciiTraceHelperForDevice::EnableAsciiAll(std::string prefix) [member function]
     cls.add_method('EnableAsciiAll', 
                    'void', 
                    [param('std::string', 'prefix')])
-    ## trace-helper.h: void ns3::AsciiTraceHelperForDevice::EnableAsciiAll(ns3::Ptr<ns3::OutputStreamKeeper> stream) [member function]
+    ## trace-helper.h: void ns3::AsciiTraceHelperForDevice::EnableAsciiAll(ns3::Ptr<ns3::OutputStreamWrapper> stream) [member function]
     cls.add_method('EnableAsciiAll', 
                    'void', 
-                   [param('ns3::Ptr< ns3::OutputStreamKeeper >', 'stream')])
-    ## trace-helper.h: void ns3::AsciiTraceHelperForDevice::EnableAsciiInternal(ns3::Ptr<ns3::OutputStreamKeeper> stream, std::string prefix, ns3::Ptr<ns3::NetDevice> nd) [member function]
+                   [param('ns3::Ptr< ns3::OutputStreamWrapper >', 'stream')])
+    ## trace-helper.h: void ns3::AsciiTraceHelperForDevice::EnableAsciiInternal(ns3::Ptr<ns3::OutputStreamWrapper> stream, std::string prefix, ns3::Ptr<ns3::NetDevice> nd) [member function]
     cls.add_method('EnableAsciiInternal', 
                    'void', 
-                   [param('ns3::Ptr< ns3::OutputStreamKeeper >', 'stream'), param('std::string', 'prefix'), param('ns3::Ptr< ns3::NetDevice >', 'nd')], 
+                   [param('ns3::Ptr< ns3::OutputStreamWrapper >', 'stream'), param('std::string', 'prefix'), param('ns3::Ptr< ns3::NetDevice >', 'nd')], 
                    is_pure_virtual=True, is_virtual=True)
     return
 
@@ -484,54 +484,54 @@ def register_Ns3AsciiTraceHelperForIpv4_methods(root_module, cls):
     cls.add_method('EnableAsciiIpv4', 
                    'void', 
                    [param('std::string', 'prefix'), param('ns3::Ptr< ns3::Ipv4 >', 'ipv4'), param('uint32_t', 'interface')])
-    ## trace-helper.h: void ns3::AsciiTraceHelperForIpv4::EnableAsciiIpv4(ns3::Ptr<ns3::OutputStreamKeeper> stream, ns3::Ptr<ns3::Ipv4> ipv4, uint32_t interface) [member function]
+    ## trace-helper.h: void ns3::AsciiTraceHelperForIpv4::EnableAsciiIpv4(ns3::Ptr<ns3::OutputStreamWrapper> stream, ns3::Ptr<ns3::Ipv4> ipv4, uint32_t interface) [member function]
     cls.add_method('EnableAsciiIpv4', 
                    'void', 
-                   [param('ns3::Ptr< ns3::OutputStreamKeeper >', 'stream'), param('ns3::Ptr< ns3::Ipv4 >', 'ipv4'), param('uint32_t', 'interface')])
+                   [param('ns3::Ptr< ns3::OutputStreamWrapper >', 'stream'), param('ns3::Ptr< ns3::Ipv4 >', 'ipv4'), param('uint32_t', 'interface')])
     ## trace-helper.h: void ns3::AsciiTraceHelperForIpv4::EnableAsciiIpv4(std::string prefix, std::string ipv4Name, uint32_t interface) [member function]
     cls.add_method('EnableAsciiIpv4', 
                    'void', 
                    [param('std::string', 'prefix'), param('std::string', 'ipv4Name'), param('uint32_t', 'interface')])
-    ## trace-helper.h: void ns3::AsciiTraceHelperForIpv4::EnableAsciiIpv4(ns3::Ptr<ns3::OutputStreamKeeper> stream, std::string ipv4Name, uint32_t interface) [member function]
+    ## trace-helper.h: void ns3::AsciiTraceHelperForIpv4::EnableAsciiIpv4(ns3::Ptr<ns3::OutputStreamWrapper> stream, std::string ipv4Name, uint32_t interface) [member function]
     cls.add_method('EnableAsciiIpv4', 
                    'void', 
-                   [param('ns3::Ptr< ns3::OutputStreamKeeper >', 'stream'), param('std::string', 'ipv4Name'), param('uint32_t', 'interface')])
+                   [param('ns3::Ptr< ns3::OutputStreamWrapper >', 'stream'), param('std::string', 'ipv4Name'), param('uint32_t', 'interface')])
     ## trace-helper.h: void ns3::AsciiTraceHelperForIpv4::EnableAsciiIpv4(std::string prefix, ns3::Ipv4InterfaceContainer c) [member function]
     cls.add_method('EnableAsciiIpv4', 
                    'void', 
                    [param('std::string', 'prefix'), param('ns3::Ipv4InterfaceContainer', 'c')])
-    ## trace-helper.h: void ns3::AsciiTraceHelperForIpv4::EnableAsciiIpv4(ns3::Ptr<ns3::OutputStreamKeeper> stream, ns3::Ipv4InterfaceContainer c) [member function]
+    ## trace-helper.h: void ns3::AsciiTraceHelperForIpv4::EnableAsciiIpv4(ns3::Ptr<ns3::OutputStreamWrapper> stream, ns3::Ipv4InterfaceContainer c) [member function]
     cls.add_method('EnableAsciiIpv4', 
                    'void', 
-                   [param('ns3::Ptr< ns3::OutputStreamKeeper >', 'stream'), param('ns3::Ipv4InterfaceContainer', 'c')])
+                   [param('ns3::Ptr< ns3::OutputStreamWrapper >', 'stream'), param('ns3::Ipv4InterfaceContainer', 'c')])
     ## trace-helper.h: void ns3::AsciiTraceHelperForIpv4::EnableAsciiIpv4(std::string prefix, ns3::NodeContainer n) [member function]
     cls.add_method('EnableAsciiIpv4', 
                    'void', 
                    [param('std::string', 'prefix'), param('ns3::NodeContainer', 'n')])
-    ## trace-helper.h: void ns3::AsciiTraceHelperForIpv4::EnableAsciiIpv4(ns3::Ptr<ns3::OutputStreamKeeper> stream, ns3::NodeContainer n) [member function]
+    ## trace-helper.h: void ns3::AsciiTraceHelperForIpv4::EnableAsciiIpv4(ns3::Ptr<ns3::OutputStreamWrapper> stream, ns3::NodeContainer n) [member function]
     cls.add_method('EnableAsciiIpv4', 
                    'void', 
-                   [param('ns3::Ptr< ns3::OutputStreamKeeper >', 'stream'), param('ns3::NodeContainer', 'n')])
+                   [param('ns3::Ptr< ns3::OutputStreamWrapper >', 'stream'), param('ns3::NodeContainer', 'n')])
     ## trace-helper.h: void ns3::AsciiTraceHelperForIpv4::EnableAsciiIpv4(std::string prefix, uint32_t nodeid, uint32_t deviceid) [member function]
     cls.add_method('EnableAsciiIpv4', 
                    'void', 
                    [param('std::string', 'prefix'), param('uint32_t', 'nodeid'), param('uint32_t', 'deviceid')])
-    ## trace-helper.h: void ns3::AsciiTraceHelperForIpv4::EnableAsciiIpv4(ns3::Ptr<ns3::OutputStreamKeeper> stream, uint32_t nodeid, uint32_t interface) [member function]
+    ## trace-helper.h: void ns3::AsciiTraceHelperForIpv4::EnableAsciiIpv4(ns3::Ptr<ns3::OutputStreamWrapper> stream, uint32_t nodeid, uint32_t interface) [member function]
     cls.add_method('EnableAsciiIpv4', 
                    'void', 
-                   [param('ns3::Ptr< ns3::OutputStreamKeeper >', 'stream'), param('uint32_t', 'nodeid'), param('uint32_t', 'interface')])
+                   [param('ns3::Ptr< ns3::OutputStreamWrapper >', 'stream'), param('uint32_t', 'nodeid'), param('uint32_t', 'interface')])
     ## trace-helper.h: void ns3::AsciiTraceHelperForIpv4::EnableAsciiIpv4All(std::string prefix) [member function]
     cls.add_method('EnableAsciiIpv4All', 
                    'void', 
                    [param('std::string', 'prefix')])
-    ## trace-helper.h: void ns3::AsciiTraceHelperForIpv4::EnableAsciiIpv4All(ns3::Ptr<ns3::OutputStreamKeeper> stream) [member function]
+    ## trace-helper.h: void ns3::AsciiTraceHelperForIpv4::EnableAsciiIpv4All(ns3::Ptr<ns3::OutputStreamWrapper> stream) [member function]
     cls.add_method('EnableAsciiIpv4All', 
                    'void', 
-                   [param('ns3::Ptr< ns3::OutputStreamKeeper >', 'stream')])
-    ## trace-helper.h: void ns3::AsciiTraceHelperForIpv4::EnableAsciiIpv4Internal(ns3::Ptr<ns3::OutputStreamKeeper> stream, std::string prefix, ns3::Ptr<ns3::Ipv4> ipv4, uint32_t interface) [member function]
+                   [param('ns3::Ptr< ns3::OutputStreamWrapper >', 'stream')])
+    ## trace-helper.h: void ns3::AsciiTraceHelperForIpv4::EnableAsciiIpv4Internal(ns3::Ptr<ns3::OutputStreamWrapper> stream, std::string prefix, ns3::Ptr<ns3::Ipv4> ipv4, uint32_t interface) [member function]
     cls.add_method('EnableAsciiIpv4Internal', 
                    'void', 
-                   [param('ns3::Ptr< ns3::OutputStreamKeeper >', 'stream'), param('std::string', 'prefix'), param('ns3::Ptr< ns3::Ipv4 >', 'ipv4'), param('uint32_t', 'interface')], 
+                   [param('ns3::Ptr< ns3::OutputStreamWrapper >', 'stream'), param('std::string', 'prefix'), param('ns3::Ptr< ns3::Ipv4 >', 'ipv4'), param('uint32_t', 'interface')], 
                    is_pure_virtual=True, is_virtual=True)
     return
 
@@ -544,54 +544,54 @@ def register_Ns3AsciiTraceHelperForIpv6_methods(root_module, cls):
     cls.add_method('EnableAsciiIpv6', 
                    'void', 
                    [param('std::string', 'prefix'), param('ns3::Ptr< ns3::Ipv6 >', 'ipv6'), param('uint32_t', 'interface')])
-    ## trace-helper.h: void ns3::AsciiTraceHelperForIpv6::EnableAsciiIpv6(ns3::Ptr<ns3::OutputStreamKeeper> stream, ns3::Ptr<ns3::Ipv6> ipv6, uint32_t interface) [member function]
+    ## trace-helper.h: void ns3::AsciiTraceHelperForIpv6::EnableAsciiIpv6(ns3::Ptr<ns3::OutputStreamWrapper> stream, ns3::Ptr<ns3::Ipv6> ipv6, uint32_t interface) [member function]
     cls.add_method('EnableAsciiIpv6', 
                    'void', 
-                   [param('ns3::Ptr< ns3::OutputStreamKeeper >', 'stream'), param('ns3::Ptr< ns3::Ipv6 >', 'ipv6'), param('uint32_t', 'interface')])
+                   [param('ns3::Ptr< ns3::OutputStreamWrapper >', 'stream'), param('ns3::Ptr< ns3::Ipv6 >', 'ipv6'), param('uint32_t', 'interface')])
     ## trace-helper.h: void ns3::AsciiTraceHelperForIpv6::EnableAsciiIpv6(std::string prefix, std::string ipv6Name, uint32_t interface) [member function]
     cls.add_method('EnableAsciiIpv6', 
                    'void', 
                    [param('std::string', 'prefix'), param('std::string', 'ipv6Name'), param('uint32_t', 'interface')])
-    ## trace-helper.h: void ns3::AsciiTraceHelperForIpv6::EnableAsciiIpv6(ns3::Ptr<ns3::OutputStreamKeeper> stream, std::string ipv6Name, uint32_t interface) [member function]
+    ## trace-helper.h: void ns3::AsciiTraceHelperForIpv6::EnableAsciiIpv6(ns3::Ptr<ns3::OutputStreamWrapper> stream, std::string ipv6Name, uint32_t interface) [member function]
     cls.add_method('EnableAsciiIpv6', 
                    'void', 
-                   [param('ns3::Ptr< ns3::OutputStreamKeeper >', 'stream'), param('std::string', 'ipv6Name'), param('uint32_t', 'interface')])
+                   [param('ns3::Ptr< ns3::OutputStreamWrapper >', 'stream'), param('std::string', 'ipv6Name'), param('uint32_t', 'interface')])
     ## trace-helper.h: void ns3::AsciiTraceHelperForIpv6::EnableAsciiIpv6(std::string prefix, ns3::Ipv6InterfaceContainer c) [member function]
     cls.add_method('EnableAsciiIpv6', 
                    'void', 
                    [param('std::string', 'prefix'), param('ns3::Ipv6InterfaceContainer', 'c')])
-    ## trace-helper.h: void ns3::AsciiTraceHelperForIpv6::EnableAsciiIpv6(ns3::Ptr<ns3::OutputStreamKeeper> stream, ns3::Ipv6InterfaceContainer c) [member function]
+    ## trace-helper.h: void ns3::AsciiTraceHelperForIpv6::EnableAsciiIpv6(ns3::Ptr<ns3::OutputStreamWrapper> stream, ns3::Ipv6InterfaceContainer c) [member function]
     cls.add_method('EnableAsciiIpv6', 
                    'void', 
-                   [param('ns3::Ptr< ns3::OutputStreamKeeper >', 'stream'), param('ns3::Ipv6InterfaceContainer', 'c')])
+                   [param('ns3::Ptr< ns3::OutputStreamWrapper >', 'stream'), param('ns3::Ipv6InterfaceContainer', 'c')])
     ## trace-helper.h: void ns3::AsciiTraceHelperForIpv6::EnableAsciiIpv6(std::string prefix, ns3::NodeContainer n) [member function]
     cls.add_method('EnableAsciiIpv6', 
                    'void', 
                    [param('std::string', 'prefix'), param('ns3::NodeContainer', 'n')])
-    ## trace-helper.h: void ns3::AsciiTraceHelperForIpv6::EnableAsciiIpv6(ns3::Ptr<ns3::OutputStreamKeeper> stream, ns3::NodeContainer n) [member function]
+    ## trace-helper.h: void ns3::AsciiTraceHelperForIpv6::EnableAsciiIpv6(ns3::Ptr<ns3::OutputStreamWrapper> stream, ns3::NodeContainer n) [member function]
     cls.add_method('EnableAsciiIpv6', 
                    'void', 
-                   [param('ns3::Ptr< ns3::OutputStreamKeeper >', 'stream'), param('ns3::NodeContainer', 'n')])
+                   [param('ns3::Ptr< ns3::OutputStreamWrapper >', 'stream'), param('ns3::NodeContainer', 'n')])
     ## trace-helper.h: void ns3::AsciiTraceHelperForIpv6::EnableAsciiIpv6(std::string prefix, uint32_t nodeid, uint32_t deviceid) [member function]
     cls.add_method('EnableAsciiIpv6', 
                    'void', 
                    [param('std::string', 'prefix'), param('uint32_t', 'nodeid'), param('uint32_t', 'deviceid')])
-    ## trace-helper.h: void ns3::AsciiTraceHelperForIpv6::EnableAsciiIpv6(ns3::Ptr<ns3::OutputStreamKeeper> stream, uint32_t nodeid, uint32_t interface) [member function]
+    ## trace-helper.h: void ns3::AsciiTraceHelperForIpv6::EnableAsciiIpv6(ns3::Ptr<ns3::OutputStreamWrapper> stream, uint32_t nodeid, uint32_t interface) [member function]
     cls.add_method('EnableAsciiIpv6', 
                    'void', 
-                   [param('ns3::Ptr< ns3::OutputStreamKeeper >', 'stream'), param('uint32_t', 'nodeid'), param('uint32_t', 'interface')])
+                   [param('ns3::Ptr< ns3::OutputStreamWrapper >', 'stream'), param('uint32_t', 'nodeid'), param('uint32_t', 'interface')])
     ## trace-helper.h: void ns3::AsciiTraceHelperForIpv6::EnableAsciiIpv6All(std::string prefix) [member function]
     cls.add_method('EnableAsciiIpv6All', 
                    'void', 
                    [param('std::string', 'prefix')])
-    ## trace-helper.h: void ns3::AsciiTraceHelperForIpv6::EnableAsciiIpv6All(ns3::Ptr<ns3::OutputStreamKeeper> stream) [member function]
+    ## trace-helper.h: void ns3::AsciiTraceHelperForIpv6::EnableAsciiIpv6All(ns3::Ptr<ns3::OutputStreamWrapper> stream) [member function]
     cls.add_method('EnableAsciiIpv6All', 
                    'void', 
-                   [param('ns3::Ptr< ns3::OutputStreamKeeper >', 'stream')])
-    ## trace-helper.h: void ns3::AsciiTraceHelperForIpv6::EnableAsciiIpv6Internal(ns3::Ptr<ns3::OutputStreamKeeper> stream, std::string prefix, ns3::Ptr<ns3::Ipv6> ipv6, uint32_t interface) [member function]
+                   [param('ns3::Ptr< ns3::OutputStreamWrapper >', 'stream')])
+    ## trace-helper.h: void ns3::AsciiTraceHelperForIpv6::EnableAsciiIpv6Internal(ns3::Ptr<ns3::OutputStreamWrapper> stream, std::string prefix, ns3::Ptr<ns3::Ipv6> ipv6, uint32_t interface) [member function]
     cls.add_method('EnableAsciiIpv6Internal', 
                    'void', 
-                   [param('ns3::Ptr< ns3::OutputStreamKeeper >', 'stream'), param('std::string', 'prefix'), param('ns3::Ptr< ns3::Ipv6 >', 'ipv6'), param('uint32_t', 'interface')], 
+                   [param('ns3::Ptr< ns3::OutputStreamWrapper >', 'stream'), param('std::string', 'prefix'), param('ns3::Ptr< ns3::Ipv6 >', 'ipv6'), param('uint32_t', 'interface')], 
                    is_pure_virtual=True, is_virtual=True)
     return
 
@@ -1612,10 +1612,10 @@ def register_Ns3PointToPointHelper_methods(root_module, cls):
     cls.add_method('SetQueue', 
                    'void', 
                    [param('std::string', 'type'), param('std::string', 'n1', default_value='""'), param('ns3::AttributeValue const &', 'v1', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n2', default_value='""'), param('ns3::AttributeValue const &', 'v2', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n3', default_value='""'), param('ns3::AttributeValue const &', 'v3', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n4', default_value='""'), param('ns3::AttributeValue const &', 'v4', default_value='ns3::EmptyAttributeValue()')])
-    ## point-to-point-helper.h: void ns3::PointToPointHelper::EnableAsciiInternal(ns3::Ptr<ns3::OutputStreamKeeper> stream, std::string prefix, ns3::Ptr<ns3::NetDevice> nd) [member function]
+    ## point-to-point-helper.h: void ns3::PointToPointHelper::EnableAsciiInternal(ns3::Ptr<ns3::OutputStreamWrapper> stream, std::string prefix, ns3::Ptr<ns3::NetDevice> nd) [member function]
     cls.add_method('EnableAsciiInternal', 
                    'void', 
-                   [param('ns3::Ptr< ns3::OutputStreamKeeper >', 'stream'), param('std::string', 'prefix'), param('ns3::Ptr< ns3::NetDevice >', 'nd')], 
+                   [param('ns3::Ptr< ns3::OutputStreamWrapper >', 'stream'), param('std::string', 'prefix'), param('ns3::Ptr< ns3::NetDevice >', 'nd')], 
                    visibility='private', is_virtual=True)
     ## point-to-point-helper.h: void ns3::PointToPointHelper::EnablePcapInternal(std::string prefix, ns3::Ptr<ns3::NetDevice> nd, bool promiscuous=false) [member function]
     cls.add_method('EnablePcapInternal', 
@@ -1970,10 +1970,10 @@ def register_Ns3YansWifiPhyHelper_methods(root_module, cls):
                    'ns3::Ptr< ns3::WifiPhy >', 
                    [param('ns3::Ptr< ns3::Node >', 'node'), param('ns3::Ptr< ns3::WifiNetDevice >', 'device')], 
                    is_const=True, visibility='private', is_virtual=True)
-    ## yans-wifi-helper.h: void ns3::YansWifiPhyHelper::EnableAsciiInternal(ns3::Ptr<ns3::OutputStreamKeeper> stream, std::string prefix, ns3::Ptr<ns3::NetDevice> nd) [member function]
+    ## yans-wifi-helper.h: void ns3::YansWifiPhyHelper::EnableAsciiInternal(ns3::Ptr<ns3::OutputStreamWrapper> stream, std::string prefix, ns3::Ptr<ns3::NetDevice> nd) [member function]
     cls.add_method('EnableAsciiInternal', 
                    'void', 
-                   [param('ns3::Ptr< ns3::OutputStreamKeeper >', 'stream'), param('std::string', 'prefix'), param('ns3::Ptr< ns3::NetDevice >', 'nd')], 
+                   [param('ns3::Ptr< ns3::OutputStreamWrapper >', 'stream'), param('std::string', 'prefix'), param('ns3::Ptr< ns3::NetDevice >', 'nd')], 
                    visibility='private', is_virtual=True)
     ## yans-wifi-helper.h: void ns3::YansWifiPhyHelper::EnablePcapInternal(std::string prefix, ns3::Ptr<ns3::NetDevice> nd, bool promiscuous) [member function]
     cls.add_method('EnablePcapInternal', 
@@ -2065,10 +2065,10 @@ def register_Ns3CsmaHelper_methods(root_module, cls):
     cls.add_method('SetQueue', 
                    'void', 
                    [param('std::string', 'type'), param('std::string', 'n1', default_value='""'), param('ns3::AttributeValue const &', 'v1', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n2', default_value='""'), param('ns3::AttributeValue const &', 'v2', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n3', default_value='""'), param('ns3::AttributeValue const &', 'v3', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n4', default_value='""'), param('ns3::AttributeValue const &', 'v4', default_value='ns3::EmptyAttributeValue()')])
-    ## csma-helper.h: void ns3::CsmaHelper::EnableAsciiInternal(ns3::Ptr<ns3::OutputStreamKeeper> stream, std::string prefix, ns3::Ptr<ns3::NetDevice> nd) [member function]
+    ## csma-helper.h: void ns3::CsmaHelper::EnableAsciiInternal(ns3::Ptr<ns3::OutputStreamWrapper> stream, std::string prefix, ns3::Ptr<ns3::NetDevice> nd) [member function]
     cls.add_method('EnableAsciiInternal', 
                    'void', 
-                   [param('ns3::Ptr< ns3::OutputStreamKeeper >', 'stream'), param('std::string', 'prefix'), param('ns3::Ptr< ns3::NetDevice >', 'nd')], 
+                   [param('ns3::Ptr< ns3::OutputStreamWrapper >', 'stream'), param('std::string', 'prefix'), param('ns3::Ptr< ns3::NetDevice >', 'nd')], 
                    visibility='private', is_virtual=True)
     ## csma-helper.h: void ns3::CsmaHelper::EnablePcapInternal(std::string prefix, ns3::Ptr<ns3::NetDevice> nd, bool promiscuous=false) [member function]
     cls.add_method('EnablePcapInternal', 
@@ -2105,10 +2105,10 @@ def register_Ns3EmuHelper_methods(root_module, cls):
     cls.add_method('SetQueue', 
                    'void', 
                    [param('std::string', 'type'), param('std::string', 'n1', default_value='""'), param('ns3::AttributeValue const &', 'v1', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n2', default_value='""'), param('ns3::AttributeValue const &', 'v2', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n3', default_value='""'), param('ns3::AttributeValue const &', 'v3', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n4', default_value='""'), param('ns3::AttributeValue const &', 'v4', default_value='ns3::EmptyAttributeValue()')])
-    ## emu-helper.h: void ns3::EmuHelper::EnableAsciiInternal(ns3::Ptr<ns3::OutputStreamKeeper> stream, std::string prefix, ns3::Ptr<ns3::NetDevice> nd) [member function]
+    ## emu-helper.h: void ns3::EmuHelper::EnableAsciiInternal(ns3::Ptr<ns3::OutputStreamWrapper> stream, std::string prefix, ns3::Ptr<ns3::NetDevice> nd) [member function]
     cls.add_method('EnableAsciiInternal', 
                    'void', 
-                   [param('ns3::Ptr< ns3::OutputStreamKeeper >', 'stream'), param('std::string', 'prefix'), param('ns3::Ptr< ns3::NetDevice >', 'nd')], 
+                   [param('ns3::Ptr< ns3::OutputStreamWrapper >', 'stream'), param('std::string', 'prefix'), param('ns3::Ptr< ns3::NetDevice >', 'nd')], 
                    visibility='private', is_virtual=True)
     ## emu-helper.h: void ns3::EmuHelper::EnablePcapInternal(std::string prefix, ns3::Ptr<ns3::NetDevice> nd, bool promiscuous=false) [member function]
     cls.add_method('EnablePcapInternal', 
@@ -2170,15 +2170,15 @@ def register_Ns3InternetStackHelper_methods(root_module, cls):
     cls.add_method('SetTcp', 
                    'void', 
                    [param('std::string', 'tid'), param('std::string', 'attr'), param('ns3::AttributeValue const &', 'val')])
-    ## internet-stack-helper.h: void ns3::InternetStackHelper::EnableAsciiIpv4Internal(ns3::Ptr<ns3::OutputStreamKeeper> stream, std::string prefix, ns3::Ptr<ns3::Ipv4> ipv4, uint32_t interface) [member function]
+    ## internet-stack-helper.h: void ns3::InternetStackHelper::EnableAsciiIpv4Internal(ns3::Ptr<ns3::OutputStreamWrapper> stream, std::string prefix, ns3::Ptr<ns3::Ipv4> ipv4, uint32_t interface) [member function]
     cls.add_method('EnableAsciiIpv4Internal', 
                    'void', 
-                   [param('ns3::Ptr< ns3::OutputStreamKeeper >', 'stream'), param('std::string', 'prefix'), param('ns3::Ptr< ns3::Ipv4 >', 'ipv4'), param('uint32_t', 'interface')], 
+                   [param('ns3::Ptr< ns3::OutputStreamWrapper >', 'stream'), param('std::string', 'prefix'), param('ns3::Ptr< ns3::Ipv4 >', 'ipv4'), param('uint32_t', 'interface')], 
                    visibility='private', is_virtual=True)
-    ## internet-stack-helper.h: void ns3::InternetStackHelper::EnableAsciiIpv6Internal(ns3::Ptr<ns3::OutputStreamKeeper> stream, std::string prefix, ns3::Ptr<ns3::Ipv6> ipv6, uint32_t interface) [member function]
+    ## internet-stack-helper.h: void ns3::InternetStackHelper::EnableAsciiIpv6Internal(ns3::Ptr<ns3::OutputStreamWrapper> stream, std::string prefix, ns3::Ptr<ns3::Ipv6> ipv6, uint32_t interface) [member function]
     cls.add_method('EnableAsciiIpv6Internal', 
                    'void', 
-                   [param('ns3::Ptr< ns3::OutputStreamKeeper >', 'stream'), param('std::string', 'prefix'), param('ns3::Ptr< ns3::Ipv6 >', 'ipv6'), param('uint32_t', 'interface')], 
+                   [param('ns3::Ptr< ns3::OutputStreamWrapper >', 'stream'), param('std::string', 'prefix'), param('ns3::Ptr< ns3::Ipv6 >', 'ipv6'), param('uint32_t', 'interface')], 
                    visibility='private', is_virtual=True)
     ## internet-stack-helper.h: void ns3::InternetStackHelper::EnablePcapIpv4Internal(std::string prefix, ns3::Ptr<ns3::Ipv4> ipv4, uint32_t interface) [member function]
     cls.add_method('EnablePcapIpv4Internal', 

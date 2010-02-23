@@ -57,8 +57,8 @@ def register_types(module):
     module.add_class('RandomPropagationDelayModel', parent=root_module['ns3::PropagationDelayModel'])
     ## propagation-loss-model.h: ns3::RandomPropagationLossModel [class]
     module.add_class('RandomPropagationLossModel', parent=root_module['ns3::PropagationLossModel'])
-    ## simple-ref-count.h: ns3::SimpleRefCount<ns3::OutputStreamKeeper, ns3::empty, ns3::DefaultDeleter<ns3::OutputStreamKeeper> > [class]
-    module.add_class('SimpleRefCount', automatic_type_narrowing=True, template_parameters=['ns3::OutputStreamKeeper', 'ns3::empty', 'ns3::DefaultDeleter<ns3::OutputStreamKeeper>'], parent=root_module['ns3::empty'], memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'))
+    ## simple-ref-count.h: ns3::SimpleRefCount<ns3::OutputStreamWrapper, ns3::empty, ns3::DefaultDeleter<ns3::OutputStreamWrapper> > [class]
+    module.add_class('SimpleRefCount', automatic_type_narrowing=True, template_parameters=['ns3::OutputStreamWrapper', 'ns3::empty', 'ns3::DefaultDeleter<ns3::OutputStreamWrapper>'], parent=root_module['ns3::empty'], memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'))
     ## simple-ref-count.h: ns3::SimpleRefCount<ns3::Packet, ns3::empty, ns3::DefaultDeleter<ns3::Packet> > [class]
     module.add_class('SimpleRefCount', automatic_type_narrowing=True, template_parameters=['ns3::Packet', 'ns3::empty', 'ns3::DefaultDeleter<ns3::Packet>'], parent=root_module['ns3::empty'], memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'))
     ## propagation-loss-model.h: ns3::ThreeLogDistancePropagationLossModel [class]
@@ -89,8 +89,8 @@ def register_types(module):
     module.add_class('NakagamiPropagationLossModel', parent=root_module['ns3::PropagationLossModel'])
     ## nix-vector.h: ns3::NixVector [class]
     module.add_class('NixVector', parent=root_module['ns3::Object'])
-    ## output-stream-keeper.h: ns3::OutputStreamKeeper [class]
-    module.add_class('OutputStreamKeeper', parent=root_module['ns3::SimpleRefCount< ns3::OutputStreamKeeper, ns3::empty, ns3::DefaultDeleter<ns3::OutputStreamKeeper> >'])
+    ## output-stream-wrapper.h: ns3::OutputStreamWrapper [class]
+    module.add_class('OutputStreamWrapper', parent=root_module['ns3::SimpleRefCount< ns3::OutputStreamWrapper, ns3::empty, ns3::DefaultDeleter<ns3::OutputStreamWrapper> >'])
     ## packet.h: ns3::Packet [class]
     module.add_class('Packet', parent=root_module['ns3::SimpleRefCount< ns3::Packet, ns3::empty, ns3::DefaultDeleter<ns3::Packet> >'])
     ## error-model.h: ns3::RateErrorModel [class]
@@ -216,7 +216,7 @@ def register_methods(root_module):
     register_Ns3LogDistancePropagationLossModel_methods(root_module, root_module['ns3::LogDistancePropagationLossModel'])
     register_Ns3NakagamiPropagationLossModel_methods(root_module, root_module['ns3::NakagamiPropagationLossModel'])
     register_Ns3NixVector_methods(root_module, root_module['ns3::NixVector'])
-    register_Ns3OutputStreamKeeper_methods(root_module, root_module['ns3::OutputStreamKeeper'])
+    register_Ns3OutputStreamWrapper_methods(root_module, root_module['ns3::OutputStreamWrapper'])
     register_Ns3Packet_methods(root_module, root_module['ns3::Packet'])
     register_Ns3RateErrorModel_methods(root_module, root_module['ns3::RateErrorModel'])
     return
@@ -1557,21 +1557,21 @@ def register_Ns3NixVector_methods(root_module, cls):
                    is_const=True)
     return
 
-def register_Ns3OutputStreamKeeper_methods(root_module, cls):
-    ## output-stream-keeper.h: ns3::OutputStreamKeeper::OutputStreamKeeper(ns3::OutputStreamKeeper const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::OutputStreamKeeper const &', 'arg0')])
-    ## output-stream-keeper.h: ns3::OutputStreamKeeper::OutputStreamKeeper() [constructor]
+def register_Ns3OutputStreamWrapper_methods(root_module, cls):
+    ## output-stream-wrapper.h: ns3::OutputStreamWrapper::OutputStreamWrapper(ns3::OutputStreamWrapper const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::OutputStreamWrapper const &', 'arg0')])
+    ## output-stream-wrapper.h: ns3::OutputStreamWrapper::OutputStreamWrapper() [constructor]
     cls.add_constructor([])
-    ## output-stream-keeper.h: std::ostream * ns3::OutputStreamKeeper::GetStream() [member function]
+    ## output-stream-wrapper.h: std::ostream * ns3::OutputStreamWrapper::GetStream() [member function]
     cls.add_method('GetStream', 
                    'std::ostream *', 
                    [])
-    ## output-stream-keeper.h: static ns3::TypeId ns3::OutputStreamKeeper::GetTypeId() [member function]
+    ## output-stream-wrapper.h: static ns3::TypeId ns3::OutputStreamWrapper::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
-    ## output-stream-keeper.h: void ns3::OutputStreamKeeper::SetStream(std::ostream * ostream) [member function]
+    ## output-stream-wrapper.h: void ns3::OutputStreamWrapper::SetStream(std::ostream * ostream) [member function]
     cls.add_method('SetStream', 
                    'void', 
                    [param('std::ostream *', 'ostream')])

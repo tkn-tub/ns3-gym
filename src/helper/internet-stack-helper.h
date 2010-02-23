@@ -185,13 +185,13 @@ private:
    * @brief Enable ascii trace output on the indicated Ipv4 and interface pair.
    * @internal
    *
-   * @param stream An OutputStreamKeeper representing an existing file to use
+   * @param stream An OutputStreamWrapper representing an existing file to use
    *               when writing trace data.
    * @param prefix Filename prefix to use for ascii trace files.
    * @param ipv4 Ptr to the Ipv4 interface on which you want to enable tracing.
    * @param interface Interface ID on the Ipv4 on which you want to enable tracing.
    */
-  virtual void EnableAsciiIpv4Internal (Ptr<OutputStreamKeeper> stream, std::string prefix, 
+  virtual void EnableAsciiIpv4Internal (Ptr<OutputStreamWrapper> stream, std::string prefix, 
                                         Ptr<Ipv4> ipv4, uint32_t interface);
 
   /**
@@ -209,13 +209,13 @@ private:
    * @brief Enable ascii trace output on the indicated Ipv4 and interface pair.
    * @internal
    *
-   * @param stream An OutputStreamKeeper representing an existing file to use
+   * @param stream An OutputStreamWrapper representing an existing file to use
    *               when writing trace data.
    * @param prefix Filename prefix to use for ascii trace files.
    * @param ipv4 Ptr to the Ipv4 interface on which you want to enable tracing.
    * @param interface Interface ID on the Ipv4 on which you want to enable tracing.
    */
-  virtual void EnableAsciiIpv6Internal (Ptr<OutputStreamKeeper> stream, std::string prefix, 
+  virtual void EnableAsciiIpv6Internal (Ptr<OutputStreamWrapper> stream, std::string prefix, 
                                         Ptr<Ipv6> ipv6, uint32_t interface);
 
   void Initialize (void);

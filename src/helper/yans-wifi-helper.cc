@@ -40,7 +40,7 @@ namespace ns3 {
 
 static void 
 AsciiPhyTransmitSinkWithContext (
-  Ptr<OutputStreamKeeper> stream, 
+  Ptr<OutputStreamWrapper> stream, 
   std::string context, 
   Ptr<const Packet> p,
   WifiMode mode, 
@@ -53,7 +53,7 @@ AsciiPhyTransmitSinkWithContext (
 
 static void 
 AsciiPhyTransmitSinkWithoutContext (
-  Ptr<OutputStreamKeeper> stream, 
+  Ptr<OutputStreamWrapper> stream, 
   Ptr<const Packet> p,
   WifiMode mode, 
   WifiPreamble preamble,
@@ -65,7 +65,7 @@ AsciiPhyTransmitSinkWithoutContext (
 
 static void 
 AsciiPhyReceiveSinkWithContext (
-  Ptr<OutputStreamKeeper> stream,
+  Ptr<OutputStreamWrapper> stream,
   std::string context,
   Ptr<const Packet> p, 
   double snr, 
@@ -78,7 +78,7 @@ AsciiPhyReceiveSinkWithContext (
 
 static void 
 AsciiPhyReceiveSinkWithoutContext (
-  Ptr<OutputStreamKeeper> stream,
+  Ptr<OutputStreamWrapper> stream,
   Ptr<const Packet> p, 
   double snr, 
   WifiMode mode,
@@ -407,7 +407,7 @@ YansWifiPhyHelper::EnablePcapInternal (std::string prefix, Ptr<NetDevice> nd, bo
 }
 
 void 
-YansWifiPhyHelper::EnableAsciiInternal (Ptr<OutputStreamKeeper> stream, std::string prefix, Ptr<NetDevice> nd)
+YansWifiPhyHelper::EnableAsciiInternal (Ptr<OutputStreamWrapper> stream, std::string prefix, Ptr<NetDevice> nd)
 {
   //
   // All of the ascii enable functions vector through here including the ones
@@ -432,7 +432,7 @@ YansWifiPhyHelper::EnableAsciiInternal (Ptr<OutputStreamKeeper> stream, std::str
   std::ostringstream oss;
 
   //
-  // If we are not provided an OutputStreamKeeper, we are expected to create 
+  // If we are not provided an OutputStreamWrapper, we are expected to create 
   // one using the usual trace filename conventions and write our traces 
   // without a context since there will be one file per context and therefore
   // the context would be redundant.
@@ -446,7 +446,7 @@ YansWifiPhyHelper::EnableAsciiInternal (Ptr<OutputStreamKeeper> stream, std::str
       //
       AsciiTraceHelper asciiTraceHelper;
       std::string filename = asciiTraceHelper.GetFilenameFromDevice (prefix, device);
-      Ptr<OutputStreamKeeper> theStream = asciiTraceHelper.CreateFileStream (filename, "w");
+      Ptr<OutputStreamWrapper> theStream = asciiTraceHelper.CreateFileStream (filename, "w");
 
       //
       // We could go poking through the phy and the state looking for the 
@@ -466,7 +466,7 @@ YansWifiPhyHelper::EnableAsciiInternal (Ptr<OutputStreamKeeper> stream, std::str
     }
 
   //
-  // If we are provided an OutputStreamKeeper, we are expected to use it, and
+  // If we are provided an OutputStreamWrapper, we are expected to use it, and
   // to provide a context.  We are free to come up with our own context if we
   // want, and use the AsciiTraceHelper Hook*WithContext functions, but for 
   // compatibility and simplicity, we just use Config::Connect and let it deal

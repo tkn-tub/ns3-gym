@@ -17,31 +17,31 @@
  */
 
 #include "ns3/log.h"
-#include "output-stream-keeper.h"
+#include "output-stream-wrapper.h"
 
-NS_LOG_COMPONENT_DEFINE ("OutputStreamKeeper");
+NS_LOG_COMPONENT_DEFINE ("OutputStreamWrapper");
 
 namespace ns3 {
 
-OutputStreamKeeper::OutputStreamKeeper ()
+OutputStreamWrapper::OutputStreamWrapper ()
   : m_ostream (0)
 {
 }
 
-OutputStreamKeeper::~OutputStreamKeeper ()
+OutputStreamWrapper::~OutputStreamWrapper ()
 {
   delete m_ostream;
   m_ostream = 0;
 }
 
 void
-OutputStreamKeeper::SetStream (std::ostream *ostream)
+OutputStreamWrapper::SetStream (std::ostream *ostream)
 {
   m_ostream = ostream;
 }
 
 std::ostream *
-OutputStreamKeeper::GetStream (void)
+OutputStreamWrapper::GetStream (void)
 {
   return m_ostream;
 }

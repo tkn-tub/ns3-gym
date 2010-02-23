@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef OUTPUT_STREAM_KEEPER_H
-#define OUTPUT_STREAM_KEEPER_H
+#ifndef OUTPUT_STREAM_WRAPPER_H
+#define OUTPUT_STREAM_WRAPPER_H
 
 #include <ostream>
 #include "ns3/object.h"
@@ -55,7 +55,7 @@ namespace ns3 {
  *
  * One could imagine having this object inherit from stream to get the various
  * overloaded operator<< defined, but we're going to be using a
- * Ptr<OutputStreamKeeper> when passing this object around.  In this case, the 
+ * Ptr<OutputStreamWrapper> when passing this object around.  In this case, the 
  * Ptr<> wouldn't understand the operators and we would have to dereference it
  * to access the underlying object methods.  Since we would have to dereference
  * the Ptr<>, we don't bother and just expect the user to Get a saved pointer
@@ -63,20 +63,20 @@ namespace ns3 {
  *
  * \verbatim
  *   void 
- *   TraceSink (Ptr<OutputStreamKeeper> streamKeeper, Ptr<const Packet> packet)
+ *   TraceSink (Ptr<OutputStreamWrapper> streamWrapper, Ptr<const Packet> packet)
  *   {
- *     std::ostream *stream = streamKeeper->GetStream ();
+ *     std::ostream *stream = streamWrapper->GetStream ();
  *     *stream << "got packet" << std::endl;
  *   }
  * \endverbatim
  */
-class OutputStreamKeeper : public SimpleRefCount<OutputStreamKeeper>
+class OutputStreamWrapper : public SimpleRefCount<OutputStreamWrapper>
 {
 public:
   static TypeId GetTypeId (void);
 
-  OutputStreamKeeper ();
-  ~OutputStreamKeeper ();
+  OutputStreamWrapper ();
+  ~OutputStreamWrapper ();
 
   void SetStream (std::ostream *ostream);
   std::ostream *GetStream (void);
@@ -87,4 +87,4 @@ private:
 
 } //namespace ns3
 
-#endif // OUTPUT_STREAM_KEEPER_H
+#endif // OUTPUT_STREAM_WRAPPER_H

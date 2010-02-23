@@ -26,7 +26,7 @@
 #include "ns3/node-container.h"
 #include "ns3/simulator.h"
 #include "ns3/pcap-file-wrapper.h"
-#include "ns3/output-stream-keeper.h"
+#include "ns3/output-stream-wrapper.h"
 #include "ns3/ipv4.h"
 #include "ns3/ipv6.h"
 
@@ -156,14 +156,14 @@ public:
    * that can solve the problem so we use one of those to carry the stream
    * around and deal with the lifetime issues.
    */
-  Ptr<OutputStreamKeeper> CreateFileStream (std::string filename, std::string filemode = "w");
+  Ptr<OutputStreamWrapper> CreateFileStream (std::string filename, std::string filemode = "w");
 
   /**
    * @brief Hook a trace source to the default enqueue operation trace sink that
    * does not accept nor log a trace context.
    */
   template <typename T> 
-  void HookDefaultEnqueueSinkWithoutContext (Ptr<T> object, std::string traceName, Ptr<OutputStreamKeeper> stream);
+  void HookDefaultEnqueueSinkWithoutContext (Ptr<T> object, std::string traceName, Ptr<OutputStreamWrapper> stream);
 
   /**
    * @brief Hook a trace source to the default enqueue operation trace sink that
@@ -171,14 +171,14 @@ public:
    */
   template <typename T> 
   void HookDefaultEnqueueSinkWithContext (Ptr<T> object, 
-                                          std::string context, std::string traceName, Ptr<OutputStreamKeeper> stream);
+                                          std::string context, std::string traceName, Ptr<OutputStreamWrapper> stream);
 
   /**
    * @brief Hook a trace source to the default drop operation trace sink that 
    * does not accept nor log a trace context.
    */
   template <typename T> 
-  void HookDefaultDropSinkWithoutContext (Ptr<T> object, std::string traceName, Ptr<OutputStreamKeeper> stream);
+  void HookDefaultDropSinkWithoutContext (Ptr<T> object, std::string traceName, Ptr<OutputStreamWrapper> stream);
 
   /**
    * @brief Hook a trace source to the default drop operation trace sink that 
@@ -186,14 +186,14 @@ public:
    */
   template <typename T> 
   void HookDefaultDropSinkWithContext (Ptr<T> object, 
-                                       std::string context, std::string traceName, Ptr<OutputStreamKeeper> stream);
+                                       std::string context, std::string traceName, Ptr<OutputStreamWrapper> stream);
 
   /**
    * @brief Hook a trace source to the default dequeue operation trace sink
    * that does not accept nor log a trace context.
    */
   template <typename T> 
-  void HookDefaultDequeueSinkWithoutContext (Ptr<T> object, std::string traceName, Ptr<OutputStreamKeeper> stream);
+  void HookDefaultDequeueSinkWithoutContext (Ptr<T> object, std::string traceName, Ptr<OutputStreamWrapper> stream);
 
   /**
    * @brief Hook a trace source to the default dequeue operation trace sink
@@ -201,14 +201,14 @@ public:
    */
   template <typename T> 
   void HookDefaultDequeueSinkWithContext (Ptr<T> object, 
-                                          std::string context, std::string traceName, Ptr<OutputStreamKeeper> stream);
+                                          std::string context, std::string traceName, Ptr<OutputStreamWrapper> stream);
 
   /**
    * @brief Hook a trace source to the default receive operation trace sink
    * that does not accept nor log a trace context.
    */
   template <typename T> 
-  void HookDefaultReceiveSinkWithoutContext (Ptr<T> object, std::string traceName, Ptr<OutputStreamKeeper> stream);
+  void HookDefaultReceiveSinkWithoutContext (Ptr<T> object, std::string traceName, Ptr<OutputStreamWrapper> stream);
 
   /**
    * @brief Hook a trace source to the default receive operation trace sink
@@ -216,23 +216,23 @@ public:
    */
   template <typename T> 
   void HookDefaultReceiveSinkWithContext (Ptr<T> object, 
-                                          std::string context, std::string traceName, Ptr<OutputStreamKeeper> stream);
+                                          std::string context, std::string traceName, Ptr<OutputStreamWrapper> stream);
 
-  static void DefaultEnqueueSinkWithoutContext (Ptr<OutputStreamKeeper> file, Ptr<const Packet> p);
-  static void DefaultEnqueueSinkWithContext (Ptr<OutputStreamKeeper> file, std::string context, Ptr<const Packet> p);
+  static void DefaultEnqueueSinkWithoutContext (Ptr<OutputStreamWrapper> file, Ptr<const Packet> p);
+  static void DefaultEnqueueSinkWithContext (Ptr<OutputStreamWrapper> file, std::string context, Ptr<const Packet> p);
 
-  static void DefaultDropSinkWithoutContext (Ptr<OutputStreamKeeper> file, Ptr<const Packet> p);
-  static void DefaultDropSinkWithContext (Ptr<OutputStreamKeeper> file, std::string context, Ptr<const Packet> p);
+  static void DefaultDropSinkWithoutContext (Ptr<OutputStreamWrapper> file, Ptr<const Packet> p);
+  static void DefaultDropSinkWithContext (Ptr<OutputStreamWrapper> file, std::string context, Ptr<const Packet> p);
 
-  static void DefaultDequeueSinkWithoutContext (Ptr<OutputStreamKeeper> file, Ptr<const Packet> p);
-  static void DefaultDequeueSinkWithContext (Ptr<OutputStreamKeeper> file, std::string context, Ptr<const Packet> p);
+  static void DefaultDequeueSinkWithoutContext (Ptr<OutputStreamWrapper> file, Ptr<const Packet> p);
+  static void DefaultDequeueSinkWithContext (Ptr<OutputStreamWrapper> file, std::string context, Ptr<const Packet> p);
 
-  static void DefaultReceiveSinkWithoutContext (Ptr<OutputStreamKeeper> file, Ptr<const Packet> p);
-  static void DefaultReceiveSinkWithContext (Ptr<OutputStreamKeeper> file, std::string context, Ptr<const Packet> p);
+  static void DefaultReceiveSinkWithoutContext (Ptr<OutputStreamWrapper> file, Ptr<const Packet> p);
+  static void DefaultReceiveSinkWithContext (Ptr<OutputStreamWrapper> file, std::string context, Ptr<const Packet> p);
 };
 
 template <typename T> void
-AsciiTraceHelper::HookDefaultEnqueueSinkWithoutContext (Ptr<T> object, std::string tracename, Ptr<OutputStreamKeeper> file)
+AsciiTraceHelper::HookDefaultEnqueueSinkWithoutContext (Ptr<T> object, std::string tracename, Ptr<OutputStreamWrapper> file)
 {
   bool __attribute__ ((unused)) result = 
     object->TraceConnectWithoutContext (tracename, MakeBoundCallback (&DefaultEnqueueSinkWithoutContext, file));
@@ -245,7 +245,7 @@ AsciiTraceHelper::HookDefaultEnqueueSinkWithContext (
   Ptr<T> object, 
   std::string context, 
   std::string tracename, 
-  Ptr<OutputStreamKeeper> stream)
+  Ptr<OutputStreamWrapper> stream)
 {
   bool __attribute__ ((unused)) result = 
     object->TraceConnect (tracename, context, MakeBoundCallback (&DefaultEnqueueSinkWithContext, stream));
@@ -254,7 +254,7 @@ AsciiTraceHelper::HookDefaultEnqueueSinkWithContext (
 }
 
 template <typename T> void
-AsciiTraceHelper::HookDefaultDropSinkWithoutContext (Ptr<T> object, std::string tracename, Ptr<OutputStreamKeeper> file)
+AsciiTraceHelper::HookDefaultDropSinkWithoutContext (Ptr<T> object, std::string tracename, Ptr<OutputStreamWrapper> file)
 {
   bool __attribute__ ((unused)) result = 
     object->TraceConnectWithoutContext (tracename, MakeBoundCallback (&DefaultDropSinkWithoutContext, file));
@@ -267,7 +267,7 @@ AsciiTraceHelper::HookDefaultDropSinkWithContext (
   Ptr<T> object, 
   std::string context,
   std::string tracename, 
-  Ptr<OutputStreamKeeper> stream)
+  Ptr<OutputStreamWrapper> stream)
 {
   bool __attribute__ ((unused)) result = 
     object->TraceConnect (tracename, context, MakeBoundCallback (&DefaultDropSinkWithContext, stream));
@@ -276,7 +276,7 @@ AsciiTraceHelper::HookDefaultDropSinkWithContext (
 }
 
 template <typename T> void
-AsciiTraceHelper::HookDefaultDequeueSinkWithoutContext (Ptr<T> object, std::string tracename, Ptr<OutputStreamKeeper> file)
+AsciiTraceHelper::HookDefaultDequeueSinkWithoutContext (Ptr<T> object, std::string tracename, Ptr<OutputStreamWrapper> file)
 {
   bool __attribute__ ((unused)) result = 
     object->TraceConnectWithoutContext (tracename, MakeBoundCallback (&DefaultDequeueSinkWithoutContext, file));
@@ -289,7 +289,7 @@ AsciiTraceHelper::HookDefaultDequeueSinkWithContext (
   Ptr<T> object, 
   std::string context,
   std::string tracename, 
-  Ptr<OutputStreamKeeper> stream)
+  Ptr<OutputStreamWrapper> stream)
 {
   bool __attribute__ ((unused)) result = 
     object->TraceConnect (tracename, context, MakeBoundCallback (&DefaultDequeueSinkWithContext, stream));
@@ -298,7 +298,7 @@ AsciiTraceHelper::HookDefaultDequeueSinkWithContext (
 }
 
 template <typename T> void
-AsciiTraceHelper::HookDefaultReceiveSinkWithoutContext (Ptr<T> object, std::string tracename, Ptr<OutputStreamKeeper> file)
+AsciiTraceHelper::HookDefaultReceiveSinkWithoutContext (Ptr<T> object, std::string tracename, Ptr<OutputStreamWrapper> file)
 {
   bool __attribute__ ((unused)) result = 
     object->TraceConnectWithoutContext (tracename, MakeBoundCallback (&DefaultReceiveSinkWithoutContext, file));
@@ -311,7 +311,7 @@ AsciiTraceHelper::HookDefaultReceiveSinkWithContext (
   Ptr<T> object, 
   std::string context,
   std::string tracename, 
-  Ptr<OutputStreamKeeper> stream)
+  Ptr<OutputStreamWrapper> stream)
 {
   bool __attribute__ ((unused)) result = 
     object->TraceConnect (tracename, context, MakeBoundCallback (&DefaultReceiveSinkWithContext, stream));
@@ -405,8 +405,8 @@ public:
    * @brief Enable ascii trace output on the indicated net device.
    * @internal
    *
-   * The implementation is expected to use a provided Ptr<OutputStreamKeeper>
-   * if it is non-null.  If the OutputStreamKeeper is null, the implementation
+   * The implementation is expected to use a provided Ptr<OutputStreamWrapper>
+   * if it is non-null.  If the OutputStreamWrapper is null, the implementation
    * is expected to use a provided prefix to construct a new file name for
    * each net device using the rules described in the class overview.
    *
@@ -419,12 +419,12 @@ public:
    * trace context could be important, so the device implementation is 
    * expected to TraceConnect.
    *
-   * @param stream An OutputStreamKeeper representing an existing file to use
+   * @param stream An OutputStreamWrapper representing an existing file to use
    *               when writing trace data.
    * @param prefix Filename prefix to use for ascii trace files.
    * @param nd Net device for which you want to enable tracing.
    */
-  virtual void EnableAsciiInternal (Ptr<OutputStreamKeeper> stream, std::string prefix, Ptr<NetDevice> nd) = 0;
+  virtual void EnableAsciiInternal (Ptr<OutputStreamWrapper> stream, std::string prefix, Ptr<NetDevice> nd) = 0;
 
   /**
    * @brief Enable ascii trace output on the indicated net device.
@@ -437,11 +437,11 @@ public:
   /**
    * @brief Enable ascii trace output on the indicated net device.
    *
-   * @param stream An OutputStreamKeeper representing an existing file to use
+   * @param stream An OutputStreamWrapper representing an existing file to use
    *               when writing trace data.
    * @param nd Net device for which you want to enable tracing.
    */
-  void EnableAscii (Ptr<OutputStreamKeeper> stream, Ptr<NetDevice> nd);
+  void EnableAscii (Ptr<OutputStreamWrapper> stream, Ptr<NetDevice> nd);
 
   /**
    * @brief Enable ascii trace output the indicated net device using a device 
@@ -456,11 +456,11 @@ public:
    * @brief Enable ascii trace output the indicated net device using a device 
    * previously named using the ns-3 object name service.
    *
-   * @param stream An OutputStreamKeeper representing an existing file to use
+   * @param stream An OutputStreamWrapper representing an existing file to use
    *               when writing trace data.
    * @param ndName The name of the net device in which you want to enable tracing.
    */
-  void EnableAscii (Ptr<OutputStreamKeeper> stream, std::string ndName);
+  void EnableAscii (Ptr<OutputStreamWrapper> stream, std::string ndName);
 
   /**
    * @brief Enable ascii trace output on each device in the container which is
@@ -475,11 +475,11 @@ public:
    * @brief Enable ascii trace output on each device in the container which is
    * of the appropriate type.
    *
-   * @param stream An OutputStreamKeeper representing an existing file to use
+   * @param stream An OutputStreamWrapper representing an existing file to use
    *               when writing trace data.
    * @param d container of devices of type ns3::CsmaNetDevice
    */
-  void EnableAscii (Ptr<OutputStreamKeeper> stream, NetDeviceContainer d);
+  void EnableAscii (Ptr<OutputStreamWrapper> stream, NetDeviceContainer d);
 
   /**
    * @brief Enable ascii trace output on each device (which is of the 
@@ -494,11 +494,11 @@ public:
    * @brief Enable ascii trace output on each device (which is of the 
    * appropriate type) in the nodes provided in the container.
    *
-   * @param stream An OutputStreamKeeper representing an existing file to use
+   * @param stream An OutputStreamWrapper representing an existing file to use
    *               when writing trace data.
    * \param n container of nodes.
    */
-  void EnableAscii (Ptr<OutputStreamKeeper> stream, NodeContainer n);
+  void EnableAscii (Ptr<OutputStreamWrapper> stream, NodeContainer n);
 
   /**
    * @brief Enable ascii trace output on each device (which is of the
@@ -512,10 +512,10 @@ public:
    * @brief Enable ascii trace output on each device (which is of the
    * appropriate type) in the set of all nodes created in the simulation.
    *
-   * @param stream An OutputStreamKeeper representing an existing file to use
+   * @param stream An OutputStreamWrapper representing an existing file to use
    *               when writing trace data.
    */
-  void EnableAsciiAll (Ptr<OutputStreamKeeper> stream);
+  void EnableAsciiAll (Ptr<OutputStreamWrapper> stream);
 
   /**
    * @brief Enable ascii trace output on the device specified by a global 
@@ -533,40 +533,40 @@ public:
    * @brief Enable ascii trace output on the device specified by a global 
    * node-id (of a previously created node) and associated device-id.
    *
-   * @param stream An OutputStreamKeeper representing an existing file to use
+   * @param stream An OutputStreamWrapper representing an existing file to use
    *               when writing trace data.
    * @param nodeid The node identifier/number of the node on which to enable
    *               ascii tracing
    * @param deviceid The device identifier/index of the device on which to enable
    *               ascii tracing
    */
-  void EnableAscii (Ptr<OutputStreamKeeper> stream, uint32_t nodeid, uint32_t deviceid);
+  void EnableAscii (Ptr<OutputStreamWrapper> stream, uint32_t nodeid, uint32_t deviceid);
 
 private:
   /**
    * @internal Avoid code duplication.
    */
-  void EnableAsciiImpl (Ptr<OutputStreamKeeper> stream, std::string prefix, uint32_t nodeid, uint32_t deviceid);
+  void EnableAsciiImpl (Ptr<OutputStreamWrapper> stream, std::string prefix, uint32_t nodeid, uint32_t deviceid);
 
   /**
    * @internal Avoid code duplication.
    */
-  void EnableAsciiImpl (Ptr<OutputStreamKeeper> stream, std::string prefix, NodeContainer n);
+  void EnableAsciiImpl (Ptr<OutputStreamWrapper> stream, std::string prefix, NodeContainer n);
 
   /**
    * @internal Avoid code duplication.
    */
-  void EnableAsciiImpl (Ptr<OutputStreamKeeper> stream, std::string prefix, NetDeviceContainer d);
+  void EnableAsciiImpl (Ptr<OutputStreamWrapper> stream, std::string prefix, NetDeviceContainer d);
 
   /**
    * @internal Avoid code duplication.
    */
-  void EnableAsciiImpl (Ptr<OutputStreamKeeper> stream, std::string prefix, std::string ndName);
+  void EnableAsciiImpl (Ptr<OutputStreamWrapper> stream, std::string prefix, std::string ndName);
 
   /**
    * @internal Avoid code duplication.
    */
-  void EnableAsciiImpl (Ptr<OutputStreamKeeper> stream, std::string prefix, Ptr<NetDevice> nd);
+  void EnableAsciiImpl (Ptr<OutputStreamWrapper> stream, std::string prefix, Ptr<NetDevice> nd);
 
 };
 
@@ -654,8 +654,8 @@ public:
    * @brief Enable ascii trace output on the indicated Ipv4 and interface pair.
    * @internal
    *
-   * The implementation is expected to use a provided Ptr<OutputStreamKeeper>
-   * if it is non-null.  If the OutputStreamKeeper is null, the implementation
+   * The implementation is expected to use a provided Ptr<OutputStreamWrapper>
+   * if it is non-null.  If the OutputStreamWrapper is null, the implementation
    * is expected to use a provided prefix to construct a new file name for
    * each net device using the rules described in the class overview.
    *
@@ -668,13 +668,13 @@ public:
    * context could be important, so the helper implementation is expected to 
    * TraceConnect.
    *
-   * @param stream An OutputStreamKeeper representing an existing file to use
+   * @param stream An OutputStreamWrapper representing an existing file to use
    *               when writing trace data.
    * @param prefix Filename prefix to use for ascii trace files.
    * @param ipv4 Ptr<Ipv4> on which you want to enable tracing.
    * @param interface The interface on which you want to enable tracing.
    */
-  virtual void EnableAsciiIpv4Internal (Ptr<OutputStreamKeeper> stream, std::string prefix, 
+  virtual void EnableAsciiIpv4Internal (Ptr<OutputStreamWrapper> stream, std::string prefix, 
                                     Ptr<Ipv4> ipv4, uint32_t interface) = 0;
 
   /**
@@ -689,12 +689,12 @@ public:
   /**
    * @brief Enable ascii trace output on the indicated Ipv4 and interface pair.
    *
-   * @param stream An OutputStreamKeeper representing an existing file to use
+   * @param stream An OutputStreamWrapper representing an existing file to use
    *               when writing trace data.
    * @param ipv4 Ptr<Ipv4> on which you want to enable tracing.
    * @param interface The interface on which you want to enable tracing.
    */
-  void EnableAsciiIpv4 (Ptr<OutputStreamKeeper> stream, Ptr<Ipv4> ipv4, uint32_t interface);
+  void EnableAsciiIpv4 (Ptr<OutputStreamWrapper> stream, Ptr<Ipv4> ipv4, uint32_t interface);
 
   /**
    * @brief Enable ascii trace output the indicated Ipv4 and interface pair
@@ -710,12 +710,12 @@ public:
    * @brief Enable ascii trace output the indicated net device using a device 
    * previously named using the ns-3 object name service.
    *
-   * @param stream An OutputStreamKeeper representing an existing file to use
+   * @param stream An OutputStreamWrapper representing an existing file to use
    *               when writing trace data.
    * @param ipv4Name The name of the Ipv4 on which you want to enable tracing.
    * @param interface The interface on which you want to enable tracing.
    */
-  void EnableAsciiIpv4 (Ptr<OutputStreamKeeper> stream, std::string ipv4Name, uint32_t interface);
+  void EnableAsciiIpv4 (Ptr<OutputStreamWrapper> stream, std::string ipv4Name, uint32_t interface);
 
   /**
    * @brief Enable ascii trace output on each Ipv4 and interface pair in the 
@@ -731,12 +731,12 @@ public:
    * @brief Enable ascii trace output on each device in the container which is
    * of the appropriate type.
    *
-   * @param stream An OutputStreamKeeper representing an existing file to use
+   * @param stream An OutputStreamWrapper representing an existing file to use
    *               when writing trace data.
    * @param c Ipv4InterfaceContainer of Ipv4 and interface pairs on which to 
    *          enable tracing.
    */
-  void EnableAsciiIpv4 (Ptr<OutputStreamKeeper> stream, Ipv4InterfaceContainer c);
+  void EnableAsciiIpv4 (Ptr<OutputStreamWrapper> stream, Ipv4InterfaceContainer c);
 
   /**
    * @brief Enable ascii trace output on all Ipv4 and interface pairs existing
@@ -751,11 +751,11 @@ public:
    * @brief Enable ascii trace output on all Ipv4 and interface pairs existing
    * in the nodes provided in the container.
    *
-   * @param stream An OutputStreamKeeper representing an existing file to use
+   * @param stream An OutputStreamWrapper representing an existing file to use
    *               when writing trace data.
    * \param n container of nodes.
    */
-  void EnableAsciiIpv4 (Ptr<OutputStreamKeeper> stream, NodeContainer n);
+  void EnableAsciiIpv4 (Ptr<OutputStreamWrapper> stream, NodeContainer n);
 
   /**
    * @brief Enable ascii trace output on all Ipv4 and interface pairs existing
@@ -769,10 +769,10 @@ public:
    * @brief Enable ascii trace output on each device (which is of the
    * appropriate type) in the set of all nodes created in the simulation.
    *
-   * @param stream An OutputStreamKeeper representing an existing file to use
+   * @param stream An OutputStreamWrapper representing an existing file to use
    *               when writing trace data.
    */
-  void EnableAsciiIpv4All (Ptr<OutputStreamKeeper> stream);
+  void EnableAsciiIpv4All (Ptr<OutputStreamWrapper> stream);
 
   /**
    * @brief Enable pcap output on the Ipv4 and interface pair specified by a 
@@ -794,39 +794,39 @@ public:
    * can be only one Ipv4 aggregated to a node, the node-id unambiguously 
    * determines the Ipv4.
    *
-   * @param stream An OutputStreamKeeper representing an existing file to use
+   * @param stream An OutputStreamWrapper representing an existing file to use
    *               when writing trace data.
    * @param nodeid The node identifier/number of the node on which to enable
    *               ascii tracing
    * @param interface The interface on which you want to enable tracing.
    */
-  void EnableAsciiIpv4 (Ptr<OutputStreamKeeper> stream, uint32_t nodeid, uint32_t interface);
+  void EnableAsciiIpv4 (Ptr<OutputStreamWrapper> stream, uint32_t nodeid, uint32_t interface);
 
 private:
   /**
    * @internal Avoid code duplication.
    */
-  void EnableAsciiIpv4Impl (Ptr<OutputStreamKeeper> stream, std::string prefix, uint32_t nodeid, uint32_t interface);
+  void EnableAsciiIpv4Impl (Ptr<OutputStreamWrapper> stream, std::string prefix, uint32_t nodeid, uint32_t interface);
 
   /**
    * @internal Avoid code duplication.
    */
-  void EnableAsciiIpv4Impl (Ptr<OutputStreamKeeper> stream, std::string prefix, NodeContainer n);
+  void EnableAsciiIpv4Impl (Ptr<OutputStreamWrapper> stream, std::string prefix, NodeContainer n);
 
   /**
    * @internal Avoid code duplication.
    */
-  void EnableAsciiIpv4Impl (Ptr<OutputStreamKeeper> stream, std::string prefix, Ipv4InterfaceContainer c);
+  void EnableAsciiIpv4Impl (Ptr<OutputStreamWrapper> stream, std::string prefix, Ipv4InterfaceContainer c);
 
   /**
    * @internal Avoid code duplication.
    */
-  void EnableAsciiIpv4Impl (Ptr<OutputStreamKeeper> stream, std::string prefix, std::string ipv4Name, uint32_t interface);
+  void EnableAsciiIpv4Impl (Ptr<OutputStreamWrapper> stream, std::string prefix, std::string ipv4Name, uint32_t interface);
 
   /**
    * @internal Avoid code duplication.
    */
-  void EnableAsciiIpv4Impl (Ptr<OutputStreamKeeper> stream, std::string prefix, Ptr<Ipv4> ipv4, uint32_t interface);
+  void EnableAsciiIpv4Impl (Ptr<OutputStreamWrapper> stream, std::string prefix, Ptr<Ipv4> ipv4, uint32_t interface);
 
 };
 
@@ -913,8 +913,8 @@ public:
    * @brief Enable ascii trace output on the indicated Ipv6 and interface pair.
    * @internal
    *
-   * The implementation is expected to use a provided Ptr<OutputStreamKeeper>
-   * if it is non-null.  If the OutputStreamKeeper is null, the implementation
+   * The implementation is expected to use a provided Ptr<OutputStreamWrapper>
+   * if it is non-null.  If the OutputStreamWrapper is null, the implementation
    * is expected to use a provided prefix to construct a new file name for
    * each net device using the rules described in the class overview.
    *
@@ -927,13 +927,13 @@ public:
    * context could be important, so the helper implementation is expected to 
    * TraceConnect.
    *
-   * @param stream An OutputStreamKeeper representing an existing file to use
+   * @param stream An OutputStreamWrapper representing an existing file to use
    *               when writing trace data.
    * @param prefix Filename prefix to use for ascii trace files.
    * @param ipv6 Ptr<Ipv6> on which you want to enable tracing.
    * @param interface The interface on which you want to enable tracing.
    */
-  virtual void EnableAsciiIpv6Internal (Ptr<OutputStreamKeeper> stream, std::string prefix, 
+  virtual void EnableAsciiIpv6Internal (Ptr<OutputStreamWrapper> stream, std::string prefix, 
                                         Ptr<Ipv6> ipv6, uint32_t interface) = 0;
 
   /**
@@ -949,12 +949,12 @@ public:
   /**
    * @brief Enable ascii trace output on the indicated Ipv6 and interface pair.
    *
-   * @param stream An OutputStreamKeeper representing an existing file to use
+   * @param stream An OutputStreamWrapper representing an existing file to use
    *               when writing trace data.
    * @param ipv6 Ptr<Ipv6> on which you want to enable tracing.
    * @param interface The interface on which you want to enable tracing.
    */
-  void EnableAsciiIpv6 (Ptr<OutputStreamKeeper> stream, 
+  void EnableAsciiIpv6 (Ptr<OutputStreamWrapper> stream, 
                         Ptr<Ipv6> ipv6, uint32_t interface);
 
   /**
@@ -972,12 +972,12 @@ public:
    * @brief Enable ascii trace output the indicated net device using a device 
    * previously named using the ns-3 object name service.
    *
-   * @param stream An OutputStreamKeeper representing an existing file to use
+   * @param stream An OutputStreamWrapper representing an existing file to use
    *               when writing trace data.
    * @param ipv6Name The name of the Ipv6 on which you want to enable tracing.
    * @param interface The interface on which you want to enable tracing.
    */
-  void EnableAsciiIpv6 (Ptr<OutputStreamKeeper> stream, 
+  void EnableAsciiIpv6 (Ptr<OutputStreamWrapper> stream, 
                         std::string ipv6Name, uint32_t interface);
 
   /**
@@ -994,12 +994,12 @@ public:
    * @brief Enable ascii trace output on each device in the container which is
    * of the appropriate type.
    *
-   * @param stream An OutputStreamKeeper representing an existing file to use
+   * @param stream An OutputStreamWrapper representing an existing file to use
    *               when writing trace data.
    * @param c Ipv6InterfaceContainer of Ipv6 and interface pairs on which to 
    *          enable tracing.
    */
-  void EnableAsciiIpv6 (Ptr<OutputStreamKeeper> stream, Ipv6InterfaceContainer c);
+  void EnableAsciiIpv6 (Ptr<OutputStreamWrapper> stream, Ipv6InterfaceContainer c);
 
   /**
    * @brief Enable ascii trace output on all Ipv6 and interface pairs existing
@@ -1014,11 +1014,11 @@ public:
    * @brief Enable ascii trace output on all Ipv6 and interface pairs existing
    * in the nodes provided in the container.
    *
-   * @param stream An OutputStreamKeeper representing an existing file to use
+   * @param stream An OutputStreamWrapper representing an existing file to use
    *               when writing trace data.
    * \param n container of nodes.
    */
-  void EnableAsciiIpv6 (Ptr<OutputStreamKeeper> stream, NodeContainer n);
+  void EnableAsciiIpv6 (Ptr<OutputStreamWrapper> stream, NodeContainer n);
 
   /**
    * @brief Enable pcap output on the Ipv6 and interface pair specified by a 
@@ -1040,13 +1040,13 @@ public:
    * can be only one Ipv6 aggregated to a node, the node-id unambiguously 
    * determines the Ipv6.
    *
-   * @param stream An OutputStreamKeeper representing an existing file to use
+   * @param stream An OutputStreamWrapper representing an existing file to use
    *               when writing trace data.
    * @param nodeid The node identifier/number of the node on which to enable
    *               ascii tracing
    * @param interface The interface on which you want to enable tracing.
    */
-  void EnableAsciiIpv6 (Ptr<OutputStreamKeeper> stream, uint32_t nodeid, uint32_t interface);
+  void EnableAsciiIpv6 (Ptr<OutputStreamWrapper> stream, uint32_t nodeid, uint32_t interface);
 
   /**
    * @brief Enable ascii trace output on all Ipv6 and interface pairs existing
@@ -1060,36 +1060,36 @@ public:
    * @brief Enable ascii trace output on each device (which is of the
    * appropriate type) in the set of all nodes created in the simulation.
    *
-   * @param stream An OutputStreamKeeper representing an existing file to use
+   * @param stream An OutputStreamWrapper representing an existing file to use
    *               when writing trace data.
    */
-  void EnableAsciiIpv6All (Ptr<OutputStreamKeeper> stream);
+  void EnableAsciiIpv6All (Ptr<OutputStreamWrapper> stream);
 
 private:
   /**
    * @internal Avoid code duplication.
    */
-  void EnableAsciiIpv6Impl (Ptr<OutputStreamKeeper> stream, std::string prefix, uint32_t nodeid, uint32_t interface);
+  void EnableAsciiIpv6Impl (Ptr<OutputStreamWrapper> stream, std::string prefix, uint32_t nodeid, uint32_t interface);
 
   /**
    * @internal Avoid code duplication.
    */
-  void EnableAsciiIpv6Impl (Ptr<OutputStreamKeeper> stream, std::string prefix, NodeContainer n);
+  void EnableAsciiIpv6Impl (Ptr<OutputStreamWrapper> stream, std::string prefix, NodeContainer n);
 
   /**
    * @internal Avoid code duplication.
    */
-  void EnableAsciiIpv6Impl (Ptr<OutputStreamKeeper> stream, std::string prefix, Ipv6InterfaceContainer c);
+  void EnableAsciiIpv6Impl (Ptr<OutputStreamWrapper> stream, std::string prefix, Ipv6InterfaceContainer c);
 
   /**
    * @internal Avoid code duplication.
    */
-  void EnableAsciiIpv6Impl (Ptr<OutputStreamKeeper> stream, std::string prefix, std::string ipv6Name, uint32_t interface);
+  void EnableAsciiIpv6Impl (Ptr<OutputStreamWrapper> stream, std::string prefix, std::string ipv6Name, uint32_t interface);
 
   /**
    * @internal Avoid code duplication.
    */
-  void EnableAsciiIpv6Impl (Ptr<OutputStreamKeeper> stream, std::string prefix, Ptr<Ipv6> ipv6, uint32_t interface);
+  void EnableAsciiIpv6Impl (Ptr<OutputStreamWrapper> stream, std::string prefix, Ptr<Ipv6> ipv6, uint32_t interface);
 
 };
 

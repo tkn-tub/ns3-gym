@@ -90,7 +90,7 @@ PointToPointHelper::EnablePcapInternal (std::string prefix, Ptr<NetDevice> nd, b
 }
 
 void 
-PointToPointHelper::EnableAsciiInternal (Ptr<OutputStreamKeeper> stream, std::string prefix, Ptr<NetDevice> nd)
+PointToPointHelper::EnableAsciiInternal (Ptr<OutputStreamWrapper> stream, std::string prefix, Ptr<NetDevice> nd)
 {
   //
   // All of the ascii enable functions vector through here including the ones
@@ -112,7 +112,7 @@ PointToPointHelper::EnableAsciiInternal (Ptr<OutputStreamKeeper> stream, std::st
   Packet::EnablePrinting ();
 
   //
-  // If we are not provided an OutputStreamKeeper, we are expected to create 
+  // If we are not provided an OutputStreamWrapper, we are expected to create 
   // one using the usual trace filename conventions and do a Hook*WithoutContext
   // since there will be one file per context and therefore the context would
   // be redundant.
@@ -126,7 +126,7 @@ PointToPointHelper::EnableAsciiInternal (Ptr<OutputStreamKeeper> stream, std::st
       //
       AsciiTraceHelper asciiTraceHelper;
       std::string filename = asciiTraceHelper.GetFilenameFromDevice (prefix, device);
-      Ptr<OutputStreamKeeper> theStream = asciiTraceHelper.CreateFileStream (filename, "w");
+      Ptr<OutputStreamWrapper> theStream = asciiTraceHelper.CreateFileStream (filename, "w");
 
       //
       // The MacRx trace source provides our "r" event.
@@ -146,7 +146,7 @@ PointToPointHelper::EnableAsciiInternal (Ptr<OutputStreamKeeper> stream, std::st
     }
 
   //
-  // If we are provided an OutputStreamKeeper, we are expected to use it, and
+  // If we are provided an OutputStreamWrapper, we are expected to use it, and
   // to providd a context.  We are free to come up with our own context if we
   // want, and use the AsciiTraceHelper Hook*WithContext functions, but for 
   // compatibility and simplicity, we just use Config::Connect and let it deal
