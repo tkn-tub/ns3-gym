@@ -1013,7 +1013,7 @@ public:
 };
 
 PcapFileTestSuite::PcapFileTestSuite ()
-  : TestSuite ("pcap-file-object", UNIT)
+  : TestSuite ("pcap-file", UNIT)
 {
   AddTestCase (new WriteModeCreateTestCase);
   AddTestCase (new ReadModeCreateTestCase);

@@ -25,7 +25,7 @@
 #include "ns3/ipv6-interface-container.h"
 #include "ns3/node-container.h"
 #include "ns3/simulator.h"
-#include "ns3/pcap-file-object.h"
+#include "ns3/pcap-file-wrapper.h"
 #include "ns3/output-stream-keeper.h"
 #include "ns3/ipv4.h"
 #include "ns3/ipv6.h"
@@ -84,19 +84,19 @@ public:
   /**
    * @brief Create and initialize a pcap file.
    */
-  Ptr<PcapFileObject> CreateFile (std::string filename, std::string filemode,
+  Ptr<PcapFileWrapper> CreateFile (std::string filename, std::string filemode,
                                   uint32_t dataLinkType,  uint32_t snapLen = 65535, int32_t tzCorrection = 0);
   /**
    * @brief Hook a trace source to the default trace sink
    */
-  template <typename T> void HookDefaultSink (Ptr<T> object, std::string traceName, Ptr<PcapFileObject> file);
+  template <typename T> void HookDefaultSink (Ptr<T> object, std::string traceName, Ptr<PcapFileWrapper> file);
 
 private:
-  static void DefaultSink (Ptr<PcapFileObject> file, Ptr<const Packet> p);
+  static void DefaultSink (Ptr<PcapFileWrapper> file, Ptr<const Packet> p);
 };
 
 template <typename T> void
-PcapHelper::HookDefaultSink (Ptr<T> object, std::string tracename, Ptr<PcapFileObject> file)
+PcapHelper::HookDefaultSink (Ptr<T> object, std::string tracename, Ptr<PcapFileWrapper> file)
 {
   bool __attribute__ ((unused)) result = 
     object->TraceConnectWithoutContext (tracename.c_str (), MakeBoundCallback (&DefaultSink, file));

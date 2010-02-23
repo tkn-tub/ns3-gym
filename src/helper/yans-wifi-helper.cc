@@ -27,7 +27,7 @@
 #include "ns3/yans-wifi-phy.h"
 #include "ns3/wifi-net-device.h"
 #include "ns3/radiotap-header.h"
-#include "ns3/pcap-file-object.h"
+#include "ns3/pcap-file-wrapper.h"
 #include "ns3/simulator.h"
 #include "ns3/config.h"
 #include "ns3/names.h"
@@ -241,7 +241,7 @@ YansWifiPhyHelper::Create (Ptr<Node> node, Ptr<WifiNetDevice> device) const
 
 static void 
 PcapSniffTxEvent (
-  Ptr<PcapFileObject> file,
+  Ptr<PcapFileWrapper> file,
   Ptr<const Packet>   packet,
   uint16_t            channelFreqMhz,
   uint16_t            channelNumber,
@@ -299,7 +299,7 @@ PcapSniffTxEvent (
 
 static void 
 PcapSniffRxEvent (
-  Ptr<PcapFileObject> file,
+  Ptr<PcapFileWrapper> file,
   Ptr<const Packet> packet,
   uint16_t channelFreqMhz,
   uint16_t channelNumber,
@@ -400,7 +400,7 @@ YansWifiPhyHelper::EnablePcapInternal (std::string prefix, Ptr<NetDevice> nd, bo
   PcapHelper pcapHelper;
   std::string filename = pcapHelper.GetFilenameFromDevice (prefix, device);
 
-  Ptr<PcapFileObject> file = pcapHelper.CreateFile (filename, "w", m_pcapDlt);
+  Ptr<PcapFileWrapper> file = pcapHelper.CreateFile (filename, "w", m_pcapDlt);
 
   phy->TraceConnectWithoutContext ("PromiscSnifferTx", MakeBoundCallback (&PcapSniffTxEvent, file));
   phy->TraceConnectWithoutContext ("PromiscSnifferRx", MakeBoundCallback (&PcapSniffRxEvent, file));

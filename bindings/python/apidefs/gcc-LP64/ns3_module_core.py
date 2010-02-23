@@ -3060,11 +3060,11 @@ def register_functions(root_module):
                         'ns3::Callback< void, ns3::Ptr< ns3::Packet const >, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 
                         [param('void ( * ) ( ns3::Ptr< ns3::OutputStreamKeeper >, ns3::Ptr< ns3::Packet const > ) *', 'fnPtr'), param('ns3::Ptr< ns3::OutputStreamKeeper >', 'a')], 
                         template_parameters=['void', 'ns3::Ptr<ns3::OutputStreamKeeper>', 'ns3::Ptr<ns3::OutputStreamKeeper>', 'ns3::Ptr<ns3::Packet const>'])
-    ## callback.h: extern ns3::Callback<void,ns3::Ptr<const ns3::Packet>,ns3::empty,ns3::empty,ns3::empty,ns3::empty,ns3::empty,ns3::empty,ns3::empty,ns3::empty> ns3::MakeBoundCallback(void (*)( ::ns3::Ptr<ns3::PcapFileObject>,::ns3::Ptr<ns3::Packet const> ) * fnPtr, ns3::Ptr<ns3::PcapFileObject> a) [free function]
+    ## callback.h: extern ns3::Callback<void,ns3::Ptr<const ns3::Packet>,ns3::empty,ns3::empty,ns3::empty,ns3::empty,ns3::empty,ns3::empty,ns3::empty,ns3::empty> ns3::MakeBoundCallback(void (*)( ::ns3::Ptr<ns3::PcapFileWrapper>,::ns3::Ptr<ns3::Packet const> ) * fnPtr, ns3::Ptr<ns3::PcapFileWrapper> a) [free function]
     module.add_function('MakeBoundCallback', 
                         'ns3::Callback< void, ns3::Ptr< ns3::Packet const >, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 
-                        [param('void ( * ) ( ns3::Ptr< ns3::PcapFileObject >, ns3::Ptr< ns3::Packet const > ) *', 'fnPtr'), param('ns3::Ptr< ns3::PcapFileObject >', 'a')], 
-                        template_parameters=['void', 'ns3::Ptr<ns3::PcapFileObject>', 'ns3::Ptr<ns3::PcapFileObject>', 'ns3::Ptr<ns3::Packet const>'])
+                        [param('void ( * ) ( ns3::Ptr< ns3::PcapFileWrapper >, ns3::Ptr< ns3::Packet const > ) *', 'fnPtr'), param('ns3::Ptr< ns3::PcapFileWrapper >', 'a')], 
+                        template_parameters=['void', 'ns3::Ptr<ns3::PcapFileWrapper>', 'ns3::Ptr<ns3::PcapFileWrapper>', 'ns3::Ptr<ns3::Packet const>'])
     ## callback.h: extern ns3::Callback<void,std::basic_string<char, std::char_traits<char>, std::allocator<char> >,ns3::Ptr<const ns3::Packet>,ns3::empty,ns3::empty,ns3::empty,ns3::empty,ns3::empty,ns3::empty,ns3::empty> ns3::MakeBoundCallback(void (*)( ::ns3::Ptr<ns3::OutputStreamKeeper>,::std::basic_string<char,std::char_traits<char>,std::allocator<char> >,::ns3::Ptr<ns3::Packet const> ) * fnPtr, ns3::Ptr<ns3::OutputStreamKeeper> a) [free function]
     module.add_function('MakeBoundCallback', 
                         'ns3::Callback< void, std::basic_string< char, std::char_traits< char >, std::allocator< char > >, ns3::Ptr< ns3::Packet const >, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 

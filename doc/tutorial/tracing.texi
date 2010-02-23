@@ -1944,7 +1944,7 @@ representing a file.
   }
   
   static void
-  RxDrop (Ptr<PcapFileObject> file, Ptr<const Packet> p)
+  RxDrop (Ptr<PcapFileWrapper> file, Ptr<const Packet> p)
   {
     NS_LOG_UNCOND ("RxDrop at " << Simulator::Now ().GetSeconds ());
     file->Write(Simulator::Now(), p);
@@ -1978,7 +1978,7 @@ carrying around a @code{std::ofstream} for you, and you can use it here like
 any other output stream.
 
 A similar situation happens in @code{RxDrop} except that the object being 
-passed around (a @code{Ptr<PcapFileObject>}) represents a pcap file.  There
+passed around (a @code{Ptr<PcapFileWrapper>}) represents a pcap file.  There
 is a one-liner in the trace sink to write a timestamp and the contents of the 
 packet being dropped to the pcap file:
 
@@ -1998,7 +1998,7 @@ look in the @code{main} function, you will find new code to do just that:
   ...
 
   PcapHelper pcapHelper;
-  Ptr<PcapFileObject> file = pcapHelper.CreateFile ("sixth.pcap", "w", PcapHelper::DLT_PPP);
+  Ptr<PcapFileWrapper> file = pcapHelper.CreateFile ("sixth.pcap", "w", PcapHelper::DLT_PPP);
   devices.Get (1)->TraceConnectWithoutContext("PhyRxDrop", MakeBoundCallback (&RxDrop, file));
 @end verbatim
 
@@ -2030,7 +2030,7 @@ In the second section of code in the snippet above, we instantiate a
 with the @code{AsciiTraceHelper}. The line of code,
 
 @verbatim
-  Ptr<PcapFileObject> file = pcapHelper.CreateFile ("sixth.pcap", "w", PcapHelper::DLT_PPP);
+  Ptr<PcapFileWrapper> file = pcapHelper.CreateFile ("sixth.pcap", "w", PcapHelper::DLT_PPP);
 @end verbatim
 
 creates a pcap file named ``sixth.pcap'' with file mode ``w''.   This means that
@@ -2053,12 +2053,12 @@ An important detour:  It is important to notice that even though both of these
 objects are declared in very similar ways,
 
 @verbatim
-  Ptr<PcapFileObject> file ...
+  Ptr<PcapFileWrapper> file ...
   Ptr<OutputStreamKeeper> stream ...
 @end verbatim
 
 The underlying objects are entirely different.  For example, the 
-Ptr<PcapFileObject> is a smart pointer to an @command{ns-3} Object that is a 
+Ptr<PcapFileWrapper> is a smart pointer to an @command{ns-3} Object that is a 
 fairly heaviweight thing that supports @code{Attributes} and is integrated into
 the config system.  The Ptr<OutputStreamKeeper>, on the other hand, is a smart 
 pointer to a reference counted object that is a very lightweight thing.
@@ -2069,10 +2069,10 @@ For example, take a look at @code{src/common/pcap-file-object.h} in the
 distribution and notice, 
 
 @verbatim
-  class PcapFileObject : public Object
+  class PcapFileWrapper : public Object
 @end verbatim
 
-that class @code{PcapFileObject} is an @command{ns-3} Object by virtue of 
+that class @code{PcapFileWrapper} is an @command{ns-3} Object by virtue of 
 its inheritance.  Then look at @code{src/common/output-stream-keeper.h} and 
 notice,
 
@@ -2153,7 +2153,7 @@ core code involved, and we did this in only 18 lines of code:
   ...
 
   static void
-  RxDrop (Ptr<PcapFileObject> file, Ptr<const Packet> p)
+  RxDrop (Ptr<PcapFileWrapper> file, Ptr<const Packet> p)
   {
     NS_LOG_UNCOND ("RxDrop at " << Simulator::Now ().GetSeconds ());
     file->Write(Simulator::Now(), p);
@@ -2162,7 +2162,7 @@ core code involved, and we did this in only 18 lines of code:
   ...
   
   PcapHelper pcapHelper;
-  Ptr<PcapFileObject> file = pcapHelper.CreateFile ("sixth.pcap", "w", PcapHelper::DLT_PPP);
+  Ptr<PcapFileWrapper> file = pcapHelper.CreateFile ("sixth.pcap", "w", PcapHelper::DLT_PPP);
   devices.Get (1)->TraceConnectWithoutContext("PhyRxDrop", MakeBoundCallback (&RxDrop, file));
 @end verbatim
 

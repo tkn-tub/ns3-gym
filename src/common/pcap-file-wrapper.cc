@@ -21,53 +21,53 @@
 
 #include "buffer.h"
 #include "header.h"
-#include "pcap-file-object.h"
+#include "pcap-file-wrapper.h"
 
-NS_LOG_COMPONENT_DEFINE ("PcapFileObject");
+NS_LOG_COMPONENT_DEFINE ("PcapFileWrapper");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (PcapFileObject);
+NS_OBJECT_ENSURE_REGISTERED (PcapFileWrapper);
 
 TypeId 
-PcapFileObject::GetTypeId (void)
+PcapFileWrapper::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::PcapFileObject")
+  static TypeId tid = TypeId ("ns3::PcapFileWrapper")
     .SetParent<Object> ()
-    .AddConstructor<PcapFileObject> ()
+    .AddConstructor<PcapFileWrapper> ()
     .AddAttribute ("CaptureSize",
                    "Maximum length of captured packets (cf. pcap snaplen)",
                    UintegerValue (PcapFile::SNAPLEN_DEFAULT),
-                   MakeUintegerAccessor (&PcapFileObject::m_snapLen),
+                   MakeUintegerAccessor (&PcapFileWrapper::m_snapLen),
                    MakeUintegerChecker<uint32_t> (0, PcapFile::SNAPLEN_DEFAULT))
     ;
   return tid;
 }
 
 
-PcapFileObject::PcapFileObject ()
+PcapFileWrapper::PcapFileWrapper ()
 {
 }
 
-PcapFileObject::~PcapFileObject ()
+PcapFileWrapper::~PcapFileWrapper ()
 {
   Close ();
 }
 
 void
-PcapFileObject::Close (void)
+PcapFileWrapper::Close (void)
 {
   m_file.Close ();
 }
 
 bool
-PcapFileObject::Open (std::string const &filename, std::string const &mode)
+PcapFileWrapper::Open (std::string const &filename, std::string const &mode)
 {
   return m_file.Open (filename, mode);
 }
 
 bool
-PcapFileObject::Init (uint32_t dataLinkType, uint32_t snapLen, int32_t tzCorrection)
+PcapFileWrapper::Init (uint32_t dataLinkType, uint32_t snapLen, int32_t tzCorrection)
 {
   //
   // If the user doesn't provide a snaplen, the default value will come in.  If
@@ -90,7 +90,7 @@ PcapFileObject::Init (uint32_t dataLinkType, uint32_t snapLen, int32_t tzCorrect
 }
 
 bool
-PcapFileObject::Write (Time t, Ptr<const Packet> p)
+PcapFileWrapper::Write (Time t, Ptr<const Packet> p)
 {
   uint8_t buffer[PcapFile::SNAPLEN_DEFAULT];
 
@@ -105,7 +105,7 @@ PcapFileObject::Write (Time t, Ptr<const Packet> p)
 }
 
 bool
-PcapFileObject::Write (Time t, Header &header, Ptr<const Packet> p)
+PcapFileWrapper::Write (Time t, Header &header, Ptr<const Packet> p)
 {
   uint8_t buffer[PcapFile::SNAPLEN_DEFAULT];
 
@@ -129,7 +129,7 @@ PcapFileObject::Write (Time t, Header &header, Ptr<const Packet> p)
 }
 
 bool
-PcapFileObject::Write (Time t, uint8_t const *buffer, uint32_t length)
+PcapFileWrapper::Write (Time t, uint8_t const *buffer, uint32_t length)
 {
   uint64_t current = t.GetMicroSeconds ();
   uint64_t s = current / 1000000;
@@ -139,43 +139,43 @@ PcapFileObject::Write (Time t, uint8_t const *buffer, uint32_t length)
 }
 
 uint32_t
-PcapFileObject::GetMagic (void)
+PcapFileWrapper::GetMagic (void)
 {
   return m_file.GetMagic ();
 }
 
 uint16_t
-PcapFileObject::GetVersionMajor (void)
+PcapFileWrapper::GetVersionMajor (void)
 {
   return m_file.GetVersionMajor ();
 }
 
 uint16_t
-PcapFileObject::GetVersionMinor (void)
+PcapFileWrapper::GetVersionMinor (void)
 {
   return m_file.GetVersionMinor ();
 }
 
 int32_t
-PcapFileObject::GetTimeZoneOffset (void)
+PcapFileWrapper::GetTimeZoneOffset (void)
 {
   return m_file.GetTimeZoneOffset ();
 }
 
 uint32_t
-PcapFileObject::GetSigFigs (void)
+PcapFileWrapper::GetSigFigs (void)
 {
   return m_file.GetSigFigs ();
 }
 
 uint32_t
-PcapFileObject::GetSnapLen (void)
+PcapFileWrapper::GetSnapLen (void)
 {
   return m_file.GetSnapLen ();
 }
 
 uint32_t
-PcapFileObject::GetDataLinkType (void)
+PcapFileWrapper::GetDataLinkType (void)
 {
   return m_file.GetDataLinkType ();
 }

@@ -168,7 +168,7 @@ CwndChange (Ptr<OutputStreamKeeper> stream, uint32_t oldCwnd, uint32_t newCwnd)
 }
 
 static void
-RxDrop (Ptr<PcapFileObject> file, Ptr<const Packet> p)
+RxDrop (Ptr<PcapFileWrapper> file, Ptr<const Packet> p)
 {
   NS_LOG_UNCOND ("RxDrop at " << Simulator::Now ().GetSeconds ());
   file->Write(Simulator::Now(), p);
@@ -219,7 +219,7 @@ main (int argc, char *argv[])
   ns3TcpSocket->TraceConnectWithoutContext ("CongestionWindow", MakeBoundCallback (&CwndChange, stream));
 
   PcapHelper pcapHelper;
-  Ptr<PcapFileObject> file = pcapHelper.CreateFile ("sixth.pcap", "w", PcapHelper::DLT_PPP);
+  Ptr<PcapFileWrapper> file = pcapHelper.CreateFile ("sixth.pcap", "w", PcapHelper::DLT_PPP);
   devices.Get (1)->TraceConnectWithoutContext("PhyRxDrop", MakeBoundCallback (&RxDrop, file));
 
   Simulator::Stop (Seconds(20));

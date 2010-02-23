@@ -88,7 +88,7 @@ CsmaHelper::EnablePcapInternal (std::string prefix, Ptr<NetDevice> nd, bool prom
 
   PcapHelper pcapHelper;
   std::string filename = pcapHelper.GetFilenameFromDevice (prefix, device);
-  Ptr<PcapFileObject> file = pcapHelper.CreateFile (filename, "w", PcapHelper::DLT_EN10MB);
+  Ptr<PcapFileWrapper> file = pcapHelper.CreateFile (filename, "w", PcapHelper::DLT_EN10MB);
   if (promiscuous)
     {
       pcapHelper.HookDefaultSink<CsmaNetDevice> (device, "PromiscSniffer", file);

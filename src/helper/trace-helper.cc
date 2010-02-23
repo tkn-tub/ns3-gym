@@ -27,7 +27,7 @@
 #include "ns3/node.h"
 #include "ns3/names.h"
 #include "ns3/net-device.h"
-#include "ns3/pcap-file-object.h"
+#include "ns3/pcap-file-wrapper.h"
 
 #include "trace-helper.h"
 
@@ -45,7 +45,7 @@ PcapHelper::~PcapHelper ()
   NS_LOG_FUNCTION_NOARGS ();
 }
 
-Ptr<PcapFileObject>
+Ptr<PcapFileWrapper>
 PcapHelper::CreateFile (
   std::string filename, 
   std::string filemode,  
@@ -55,7 +55,7 @@ PcapHelper::CreateFile (
 {
   NS_LOG_FUNCTION (filename << filemode << dataLinkType << snapLen << tzCorrection);
 
-  Ptr<PcapFileObject> file = CreateObject<PcapFileObject> ();
+  Ptr<PcapFileWrapper> file = CreateObject<PcapFileWrapper> ();
   bool err = file->Open (filename, filemode);
   NS_ABORT_MSG_IF (err, "Unable to Open " << filename << " for mode " << filemode);
 
@@ -164,7 +164,7 @@ PcapHelper::GetFilenameFromInterfacePair (std::string prefix, Ptr<Object> object
 // file which is good enough for most kinds of captures.
 //
 void
-PcapHelper::DefaultSink (Ptr<PcapFileObject> file, Ptr<const Packet> p)
+PcapHelper::DefaultSink (Ptr<PcapFileWrapper> file, Ptr<const Packet> p)
 {
   NS_LOG_FUNCTION (file << p);
   file->Write(Simulator::Now(), p);

@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PCAP_FILE_OBJECT_H
-#define PCAP_FILE_OBJECT_H
+#ifndef PCAP_FILE_WRAPPER_H
+#define PCAP_FILE_WRAPPER_H
 
 #include <string.h>
 #include "ns3/ptr.h"
@@ -31,16 +31,16 @@ namespace ns3 {
  * A class representing a pcap file tailored for use in model code.
  */
 
-class PcapFileObject : public Object
+class PcapFileWrapper : public Object
 {
 public:
   static TypeId GetTypeId (void);
 
-  PcapFileObject ();
-  ~PcapFileObject ();
+  PcapFileWrapper ();
+  ~PcapFileWrapper ();
 
   /**
-   * Create a new pcap file object representing a new or existing pcap file.
+   * Create a new pcap file wrapper representing a new or existing pcap file.
    * Semantics are similar to the C standard library function \c fopen
    *
    * Possible modes are:
@@ -104,7 +104,7 @@ public:
   void Close (void);
 
   /**
-   * Initialize the pcap file associated with this object.  This file must have
+   * Initialize the pcap file associated with this wrapper.  This file must have
    * been previously opened with write permissions.
    *
    * \param dataLinkType A data link type as defined in the pcap library.  If
@@ -231,5 +231,4 @@ private:
 
 } //namespace ns3
 
-#endif // PCAP_FILE_OBJECT_H
-
+#endif // PCAP_FILE_WRAPPER_H

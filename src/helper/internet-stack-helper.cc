@@ -193,7 +193,7 @@ namespace ns3 {
 // are going to multiplex receive and transmit callbacks for all Ipv4 and 
 // interface pairs through one callback.  We want packets to or from each 
 // distinct pair to go to an individual file, so we have got to demultiplex the
-// Ipv4 and interface pair into a corresponding Ptr<PcapFileObject> at the 
+// Ipv4 and interface pair into a corresponding Ptr<PcapFileWrapper> at the 
 // callback.
 //
 // A complication in this situation is that the trace sources are hooked on 
@@ -211,14 +211,14 @@ namespace ns3 {
 // bill.
 //
 typedef std::pair<Ptr<Ipv4>, uint32_t> InterfacePairIpv4; 
-typedef std::map<InterfacePairIpv4, Ptr<PcapFileObject> > InterfaceFileMapIpv4;  
+typedef std::map<InterfacePairIpv4, Ptr<PcapFileWrapper> > InterfaceFileMapIpv4;  
 typedef std::map<InterfacePairIpv4, Ptr<OutputStreamKeeper> > InterfaceStreamMapIpv4;  
 
 static InterfaceFileMapIpv4 g_interfaceFileMapIpv4; /**< A mapping of Ipv4/interface pairs to pcap files */
 static InterfaceStreamMapIpv4 g_interfaceStreamMapIpv4; /**< A mapping of Ipv4/interface pairs to ascii streams */
 
 typedef std::pair<Ptr<Ipv6>, uint32_t> InterfacePairIpv6;
-typedef std::map<InterfacePairIpv6, Ptr<PcapFileObject> > InterfaceFileMapIpv6;
+typedef std::map<InterfacePairIpv6, Ptr<PcapFileWrapper> > InterfaceFileMapIpv6;
 typedef std::map<InterfacePairIpv6, Ptr<OutputStreamKeeper> > InterfaceStreamMapIpv6;
 
 static InterfaceFileMapIpv6 g_interfaceFileMapIpv6; /**< A mapping of Ipv6/interface pairs to pcap files */
@@ -424,7 +424,7 @@ Ipv4L3ProtocolRxTxSink (Ptr<const Packet> p, Ptr<Ipv4> ipv4, uint32_t interface)
       return;
     }
 
-  Ptr<PcapFileObject> file = g_interfaceFileMapIpv4[pair];
+  Ptr<PcapFileWrapper> file = g_interfaceFileMapIpv4[pair];
   file->Write(Simulator::Now(), p);
 }
 
@@ -460,7 +460,7 @@ InternetStackHelper::EnablePcapIpv4Internal (std::string prefix, Ptr<Ipv4> ipv4,
   //
   PcapHelper pcapHelper;
   std::string filename = pcapHelper.GetFilenameFromInterfacePair (prefix, ipv4, interface);
-  Ptr<PcapFileObject> file = pcapHelper.CreateFile (filename, "w", PcapHelper::DLT_RAW);
+  Ptr<PcapFileWrapper> file = pcapHelper.CreateFile (filename, "w", PcapHelper::DLT_RAW);
 
   //
   // However, we only hook the trace source once to avoid multiple trace sink
@@ -506,7 +506,7 @@ Ipv6L3ProtocolRxTxSink (Ptr<const Packet> p, Ptr<Ipv6> ipv6, uint32_t interface)
       return;
     }
 
-  Ptr<PcapFileObject> file = g_interfaceFileMapIpv6[pair];
+  Ptr<PcapFileWrapper> file = g_interfaceFileMapIpv6[pair];
   file->Write(Simulator::Now(), p);
 }
 
@@ -542,7 +542,7 @@ InternetStackHelper::EnablePcapIpv6Internal (std::string prefix, Ptr<Ipv6> ipv6,
   //
   PcapHelper pcapHelper;
   std::string filename = pcapHelper.GetFilenameFromInterfacePair (prefix, ipv6, interface);
-  Ptr<PcapFileObject> file = pcapHelper.CreateFile (filename, "w", PcapHelper::DLT_RAW);
+  Ptr<PcapFileWrapper> file = pcapHelper.CreateFile (filename, "w", PcapHelper::DLT_RAW);
 
   //
   // However, we only hook the trace source once to avoid multiple trace sink
