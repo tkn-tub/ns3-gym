@@ -90,6 +90,7 @@ public:
    * \param daddr The destination Ipv4Address
    * \param sport The source port number
    * \param dport The destination port number
+   * \param oif The output interface bound. Defaults to null (unspecified).
    */
   void Send (Ptr<Packet> packet,
              Ipv4Address saddr, Ipv4Address daddr, 

@@ -67,7 +67,7 @@ public:
 
   /**
    * \brief Specify application start time
-   * \param startTime Start time for this application,
+   * \param start Start time for this application,
    *        relative to the current simulation time.
    *
    * Applications start at various times in the simulation scenario.
@@ -80,7 +80,7 @@ public:
   
   /**
    * \brief Specify application stop time
-   * \param stopTime Stop time for this application, relative to the
+   * \param stop Stop time for this application, relative to the
    *        current simulation time.
    *
    * Once an application has started, it is sometimes useful

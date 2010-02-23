@@ -61,7 +61,7 @@ public:
 
   /**
    * \brief creates a traceBasedStreamer application
-   * \param dataSize ip the destination ip address to which the stream will be sent
+   * \param ip the destination ip address to which the stream will be sent
    * \param port the destination udp port to which the stream will be sent
    * \param traceFile a path to an MPEG4 trace file formatted as follows:
    *  FrameNo Frametype   Time[ms]    Length [byte]
@@ -83,7 +83,7 @@ public:
 
   /**
    * \brief set the trace file to be used by the application
-   * \param traceFile a path to an MPEG4 trace file formatted as follows:
+   * \param filename a path to an MPEG4 trace file formatted as follows:
    *  Frame No Frametype   Time[ms]    Length [byte]
    *  Frame No Frametype   Time[ms]    Length [byte]
    *  ...

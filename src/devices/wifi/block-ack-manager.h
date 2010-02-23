@@ -109,6 +109,7 @@ public:
   /**
    * \param packet Packet to store.
    * \param hdr 802.11 header for packet.
+   * \param tStamp time stamp for packet
    *
    * Stores <i>packet</i> for a possible future retransmission. Retransmission occurs
    * if the packet, in a block ack frame, is indicated by recipient as not received.
@@ -156,6 +157,7 @@ public:
   /**
    * \param recipient Address of peer station involved in block ack mechanism.
    * \param tid Traffic ID of transmitted packet.
+   * \param startingSeq starting sequence field
    *
    * Puts corresponding agreement in established state and updates number of packets
    * and starting sequence field. Invoked typically after a block ack refresh.  
@@ -205,7 +207,8 @@ public:
    */
   void TearDownBlockAck (Mac48Address recipient, uint8_t tid);
   /**
-   * \param Sequence number of the packet which fragment is part of.
+   * \param sequenceNumber Sequence number of the packet which fragment is 
+   * part of.
    *
    * Returns true if another fragment with sequence number <i>sequenceNumber</i> is scheduled
    * for retransmission.
