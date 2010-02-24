@@ -50,6 +50,7 @@ public:
    * Construct a CsmaHelper.
    */
   CsmaHelper ();
+  virtual ~CsmaHelper () {}
 
   /**
    * \param type the type of queue
