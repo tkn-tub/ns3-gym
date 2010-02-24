@@ -2255,7 +2255,7 @@ implementation method.  For example, the lowest level pcap method,
 
 @verbatim
   void EnablePcap (std::string prefix, Ptr<NetDevice> nd, bool promiscuous = false);
-@verbatim
+@end verbatim
 
 will call the device implementation of @code{EnablePcapInternal} directly.  All
 other public pcap tracing methods build on this implementation to provide 

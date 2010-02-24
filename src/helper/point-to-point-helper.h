@@ -50,6 +50,7 @@ public:
    * point networks.
    */
   PointToPointHelper ();
+  virtual ~PointToPointHelper () {}
 
   /**
    * Each point to point net device must have a queue to pass packets through.
