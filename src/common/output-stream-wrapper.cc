@@ -37,6 +37,7 @@ OutputStreamWrapper::~OutputStreamWrapper ()
 void
 OutputStreamWrapper::SetStream (std::ostream *ostream)
 {
+  delete m_ostream;
   m_ostream = ostream;
 }
 
