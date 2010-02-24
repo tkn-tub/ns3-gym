@@ -387,6 +387,11 @@ def register_Ns3AodvRerrHeader_methods(root_module, cls):
                    'uint32_t', 
                    [], 
                    is_const=True, is_virtual=True)
+    ## aodv-packet.h: static ns3::TypeId ns3::aodv::RerrHeader::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
     ## aodv-packet.h: void ns3::aodv::RerrHeader::Print(std::ostream & os) const [member function]
     cls.add_method('Print', 
                    'void', 
@@ -744,6 +749,11 @@ def register_Ns3AodvRrepAckHeader_methods(root_module, cls):
                    'uint32_t', 
                    [], 
                    is_const=True, is_virtual=True)
+    ## aodv-packet.h: static ns3::TypeId ns3::aodv::RrepAckHeader::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
     ## aodv-packet.h: void ns3::aodv::RrepAckHeader::Print(std::ostream & os) const [member function]
     cls.add_method('Print', 
                    'void', 
@@ -813,6 +823,11 @@ def register_Ns3AodvRrepHeader_methods(root_module, cls):
                    'uint32_t', 
                    [], 
                    is_const=True, is_virtual=True)
+    ## aodv-packet.h: static ns3::TypeId ns3::aodv::RrepHeader::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
     ## aodv-packet.h: void ns3::aodv::RrepHeader::Print(std::ostream & os) const [member function]
     cls.add_method('Print', 
                    'void', 
@@ -919,6 +934,11 @@ def register_Ns3AodvRreqHeader_methods(root_module, cls):
                    'uint32_t', 
                    [], 
                    is_const=True, is_virtual=True)
+    ## aodv-packet.h: static ns3::TypeId ns3::aodv::RreqHeader::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
     ## aodv-packet.h: bool ns3::aodv::RreqHeader::GetUnknownSeqno() const [member function]
     cls.add_method('GetUnknownSeqno', 
                    'bool', 
@@ -999,6 +1019,11 @@ def register_Ns3AodvTypeHeader_methods(root_module, cls):
                    'uint32_t', 
                    [], 
                    is_const=True, is_virtual=True)
+    ## aodv-packet.h: static ns3::TypeId ns3::aodv::TypeHeader::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
     ## aodv-packet.h: bool ns3::aodv::TypeHeader::IsValid() const [member function]
     cls.add_method('IsValid', 
                    'bool', 

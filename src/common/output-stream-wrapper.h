@@ -73,8 +73,6 @@ namespace ns3 {
 class OutputStreamWrapper : public SimpleRefCount<OutputStreamWrapper>
 {
 public:
-  static TypeId GetTypeId (void);
-
   OutputStreamWrapper ();
   ~OutputStreamWrapper ();
 

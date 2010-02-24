@@ -1498,10 +1498,10 @@ def register_Ns3PointToPointDumbbellHelper_methods(root_module, cls):
     cls.add_method('AssignIpv4Addresses', 
                    'void', 
                    [param('ns3::Ipv4AddressHelper', 'leftIp'), param('ns3::Ipv4AddressHelper', 'rightIp'), param('ns3::Ipv4AddressHelper', 'routerIp')])
-    ## point-to-point-dumbbell-helper.h: void ns3::PointToPointDumbbellHelper::BoundingBox(double arg0, double arg1, double arg2, double arg3) [member function]
+    ## point-to-point-dumbbell-helper.h: void ns3::PointToPointDumbbellHelper::BoundingBox(double ulx, double uly, double lrx, double lry) [member function]
     cls.add_method('BoundingBox', 
                    'void', 
-                   [param('double', 'arg0'), param('double', 'arg1'), param('double', 'arg2'), param('double', 'arg3')])
+                   [param('double', 'ulx'), param('double', 'uly'), param('double', 'lrx'), param('double', 'lry')])
     ## point-to-point-dumbbell-helper.h: ns3::Ptr<ns3::Node> ns3::PointToPointDumbbellHelper::GetLeft() const [member function]
     cls.add_method('GetLeft', 
                    'ns3::Ptr< ns3::Node >', 

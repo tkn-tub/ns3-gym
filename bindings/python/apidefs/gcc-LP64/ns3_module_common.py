@@ -1566,11 +1566,6 @@ def register_Ns3OutputStreamWrapper_methods(root_module, cls):
     cls.add_method('GetStream', 
                    'std::ostream *', 
                    [])
-    ## output-stream-wrapper.h: static ns3::TypeId ns3::OutputStreamWrapper::GetTypeId() [member function]
-    cls.add_method('GetTypeId', 
-                   'ns3::TypeId', 
-                   [], 
-                   is_static=True)
     ## output-stream-wrapper.h: void ns3::OutputStreamWrapper::SetStream(std::ostream * ostream) [member function]
     cls.add_method('SetStream', 
                    'void', 

@@ -110,10 +110,10 @@ def register_Ns3Ipv4NixVectorRouting_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
-    ## ipv4-nix-vector-routing.h: void ns3::Ipv4NixVectorRouting::SetNode(ns3::Ptr<ns3::Node> arg0) [member function]
+    ## ipv4-nix-vector-routing.h: void ns3::Ipv4NixVectorRouting::SetNode(ns3::Ptr<ns3::Node> node) [member function]
     cls.add_method('SetNode', 
                    'void', 
-                   [param('ns3::Ptr< ns3::Node >', 'arg0')])
+                   [param('ns3::Ptr< ns3::Node >', 'node')])
     ## ipv4-nix-vector-routing.h: void ns3::Ipv4NixVectorRouting::DoDispose() [member function]
     cls.add_method('DoDispose', 
                    'void', 
