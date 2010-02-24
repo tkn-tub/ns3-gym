@@ -327,6 +327,16 @@ class PcapHelperForDevice
 {
 public:
   /**
+   * @brief Construct a PcapHelperForDevice
+   */
+  PcapHelperForDevice () {}
+
+  /**
+   * @brief Destroy a PcapHelperForDevice
+   */
+  virtual ~PcapHelperForDevice () {}
+
+  /**
    * @brief Enable pcap output the indicated net device.
    * @internal
    *
@@ -401,6 +411,16 @@ public:
 class AsciiTraceHelperForDevice
 {
 public:
+  /**
+   * @brief Construct an AsciiTraceHelperForDevice.
+   */
+  AsciiTraceHelperForDevice () {}
+
+  /**
+   * @brief Destroy an AsciiTraceHelperForDevice.
+   */
+  virtual ~AsciiTraceHelperForDevice () {}
+
   /**
    * @brief Enable ascii trace output on the indicated net device.
    * @internal
@@ -578,6 +598,16 @@ class PcapHelperForIpv4
 {
 public:
   /**
+   * @brief Construct a PcapHelperForIpv4.
+   */
+  PcapHelperForIpv4 () {}
+
+  /**
+   * @brief Destroy a PcapHelperForIpv4.
+   */
+  virtual ~PcapHelperForIpv4 () {}
+
+  /**
    * @brief Enable pcap output the indicated Ipv4 and interface pair.
    * @internal
    *
@@ -650,6 +680,16 @@ public:
 class AsciiTraceHelperForIpv4
 {
 public:
+  /**
+   * @brief Construct an AsciiTraceHelperForIpv4.
+   */
+  AsciiTraceHelperForIpv4 () {}
+
+  /**
+   * @brief Destroy an AsciiTraceHelperForIpv4
+   */
+  virtual ~AsciiTraceHelperForIpv4 () {}
+
   /**
    * @brief Enable ascii trace output on the indicated Ipv4 and interface pair.
    * @internal
@@ -838,6 +878,16 @@ class PcapHelperForIpv6
 {
 public:
   /**
+   * @brief Construct a PcapHelperForIpv6.
+   */
+  PcapHelperForIpv6 () {}
+
+  /**
+   * @brief Destroy a PcapHelperForIpv6
+   */
+  virtual ~PcapHelperForIpv6 () {}
+
+  /**
    * @brief Enable pcap output the indicated Ipv6 and interface pair.
    * @internal
    *
@@ -909,6 +959,16 @@ public:
 class AsciiTraceHelperForIpv6
 {
 public:
+  /**
+   * @brief Construct an AsciiTraceHelperForIpv6.
+   */
+  AsciiTraceHelperForIpv6 () {}
+
+  /**
+   * @brief Destroy an AsciiTraceHelperForIpv6
+   */
+  virtual ~AsciiTraceHelperForIpv6 () {}
+
   /**
    * @brief Enable ascii trace output on the indicated Ipv6 and interface pair.
    * @internal
