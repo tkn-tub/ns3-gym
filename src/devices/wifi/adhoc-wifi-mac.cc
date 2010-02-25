@@ -49,16 +49,12 @@ AdhocWifiMac::GetTypeId (void)
                    PointerValue (),
                    MakePointerAccessor (&AdhocWifiMac::GetDcaTxop),
                    MakePointerChecker<DcaTxop> ()) 
-  .AddTraceSource ( "TxOkHeader",
-                    "The header of successfully transmitted packet",
-                    MakeTraceSourceAccessor (
-                      &AdhocWifiMac::m_txOkCallback)
-                  )
-  .AddTraceSource ( "TxErrHeader",
-                    "The header of unsuccessfully transmitted packet",
-                    MakeTraceSourceAccessor (
-                      &AdhocWifiMac::m_txErrCallback)
-                  )
+    .AddTraceSource ("TxOkHeader",
+                   "The header of successfully transmitted packet",
+                   MakeTraceSourceAccessor (&AdhocWifiMac::m_txOkCallback))
+    .AddTraceSource ("TxErrHeader",
+                   "The header of unsuccessfully transmitted packet",
+                   MakeTraceSourceAccessor (&AdhocWifiMac::m_txErrCallback))
     ;
   return tid;
 }
