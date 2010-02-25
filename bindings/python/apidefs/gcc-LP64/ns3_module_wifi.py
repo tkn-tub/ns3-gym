@@ -47,16 +47,12 @@ def register_types(module):
     module.add_class('OriginatorBlockAckAgreement', parent=root_module['ns3::BlockAckAgreement'])
     ## originator-block-ack-agreement.h: ns3::OriginatorBlockAckAgreement::State [enumeration]
     module.add_enum('State', ['PENDING', 'ESTABLISHED', 'INACTIVE', 'UNSUCCESSFUL'], outer_class=root_module['ns3::OriginatorBlockAckAgreement'])
-    ## minstrel-wifi-manager.h: ns3::RateInfo [struct]
-    module.add_class('RateInfo')
     ## ssid.h: ns3::Ssid [class]
     module.add_class('Ssid')
     ## status-code.h: ns3::StatusCode [class]
     module.add_class('StatusCode')
     ## supported-rates.h: ns3::SupportedRates [class]
     module.add_class('SupportedRates')
-    ## rraa-wifi-manager.h: ns3::ThresholdsItem [struct]
-    module.add_class('ThresholdsItem')
     ## wifi-mode.h: ns3::WifiMode [class]
     module.add_class('WifiMode')
     ## wifi-mode.h: ns3::WifiMode::ModulationType [enumeration]
@@ -65,16 +61,14 @@ def register_types(module):
     module.add_class('WifiModeFactory')
     ## wifi-phy.h: ns3::WifiPhyListener [class]
     module.add_class('WifiPhyListener', allow_subclassing=True)
-    ## wifi-remote-station-manager.h: ns3::WifiRemoteStation [class]
-    module.add_class('WifiRemoteStation', allow_subclassing=True)
-    ## amrr-wifi-manager.h: ns3::AmrrWifiRemoteStation [class]
-    module.add_class('AmrrWifiRemoteStation', parent=root_module['ns3::WifiRemoteStation'])
-    ## arf-wifi-manager.h: ns3::ArfWifiRemoteStation [class]
-    module.add_class('ArfWifiRemoteStation', parent=root_module['ns3::WifiRemoteStation'])
-    ## constant-rate-wifi-manager.h: ns3::ConstantRateWifiRemoteStation [class]
-    module.add_class('ConstantRateWifiRemoteStation', parent=root_module['ns3::WifiRemoteStation'])
-    ## ideal-wifi-manager.h: ns3::IdealWifiRemoteStation [class]
-    module.add_class('IdealWifiRemoteStation', parent=root_module['ns3::WifiRemoteStation'])
+    ## wifi-remote-station-manager.h: ns3::WifiRemoteStation [struct]
+    module.add_class('WifiRemoteStation')
+    ## wifi-remote-station-manager.h: ns3::WifiRemoteStationInfo [class]
+    module.add_class('WifiRemoteStationInfo')
+    ## wifi-remote-station-manager.h: ns3::WifiRemoteStationState [struct]
+    module.add_class('WifiRemoteStationState')
+    ## wifi-remote-station-manager.h: ns3::WifiRemoteStationState [enumeration]
+    module.add_enum('', ['BRAND_NEW', 'DISASSOC', 'WAIT_ASSOC_TX_OK', 'GOT_ASSOC_TX_OK'], outer_class=root_module['ns3::WifiRemoteStationState'])
     ## mgt-headers.h: ns3::MgtAddBaRequestHeader [class]
     module.add_class('MgtAddBaRequestHeader', parent=root_module['ns3::Header'])
     ## mgt-headers.h: ns3::MgtAddBaResponseHeader [class]
@@ -89,14 +83,8 @@ def register_types(module):
     module.add_class('MgtProbeRequestHeader', parent=root_module['ns3::Header'])
     ## mgt-headers.h: ns3::MgtProbeResponseHeader [class]
     module.add_class('MgtProbeResponseHeader', parent=root_module['ns3::Header'])
-    ## minstrel-wifi-manager.h: ns3::MinstrelWifiRemoteStation [class]
-    module.add_class('MinstrelWifiRemoteStation', parent=root_module['ns3::WifiRemoteStation'])
-    ## onoe-wifi-manager.h: ns3::OnoeWifiRemoteStation [class]
-    module.add_class('OnoeWifiRemoteStation', parent=root_module['ns3::WifiRemoteStation'])
     ## qos-tag.h: ns3::QosTag [class]
     module.add_class('QosTag', parent=root_module['ns3::Tag'])
-    ## rraa-wifi-manager.h: ns3::RraaWifiRemoteStation [class]
-    module.add_class('RraaWifiRemoteStation', parent=root_module['ns3::WifiRemoteStation'])
     ## simple-ref-count.h: ns3::SimpleRefCount<ns3::InterferenceHelper::Event, ns3::empty, ns3::DefaultDeleter<ns3::InterferenceHelper::Event> > [class]
     module.add_class('SimpleRefCount', automatic_type_narrowing=True, template_parameters=['ns3::InterferenceHelper::Event', 'ns3::empty', 'ns3::DefaultDeleter<ns3::InterferenceHelper::Event>'], parent=root_module['ns3::empty'], memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'))
     ## mgt-headers.h: ns3::WifiActionHeader [class]
@@ -133,8 +121,10 @@ def register_types(module):
     module.add_class('WifiRemoteStationManager', parent=root_module['ns3::Object'])
     ## yans-wifi-phy.h: ns3::YansWifiPhy [class]
     module.add_class('YansWifiPhy', parent=root_module['ns3::WifiPhy'])
-    ## aarf-wifi-manager.h: ns3::AarfWifiRemoteStation [class]
-    module.add_class('AarfWifiRemoteStation', parent=root_module['ns3::ArfWifiRemoteStation'])
+    ## aarf-wifi-manager.h: ns3::AarfWifiManager [class]
+    module.add_class('AarfWifiManager', parent=root_module['ns3::WifiRemoteStationManager'])
+    ## aarfcd-wifi-manager.h: ns3::AarfcdWifiManager [class]
+    module.add_class('AarfcdWifiManager', parent=root_module['ns3::WifiRemoteStationManager'])
     ## adhoc-wifi-mac.h: ns3::AdhocWifiMac [class]
     module.add_class('AdhocWifiMac', parent=root_module['ns3::WifiMac'])
     ## amrr-wifi-manager.h: ns3::AmrrWifiManager [class]
@@ -143,6 +133,8 @@ def register_types(module):
     module.add_class('AmsduSubframeHeader', parent=root_module['ns3::Header'])
     ## arf-wifi-manager.h: ns3::ArfWifiManager [class]
     module.add_class('ArfWifiManager', parent=root_module['ns3::WifiRemoteStationManager'])
+    ## cara-wifi-manager.h: ns3::CaraWifiManager [class]
+    module.add_class('CaraWifiManager', parent=root_module['ns3::WifiRemoteStationManager'])
     ## constant-rate-wifi-manager.h: ns3::ConstantRateWifiManager [class]
     module.add_class('ConstantRateWifiManager', parent=root_module['ns3::WifiRemoteStationManager'])
     ## ctrl-headers.h: ns3::CtrlBAckRequestHeader [class]
@@ -195,19 +187,9 @@ def register_types(module):
     module.add_class('YansErrorRateModel', parent=root_module['ns3::ErrorRateModel'])
     ## yans-wifi-channel.h: ns3::YansWifiChannel [class]
     module.add_class('YansWifiChannel', parent=root_module['ns3::WifiChannel'])
-    ## aarf-wifi-manager.h: ns3::AarfWifiManager [class]
-    module.add_class('AarfWifiManager', parent=root_module['ns3::ArfWifiManager'])
     ## dca-txop.h: ns3::DcaTxop [class]
     module.add_class('DcaTxop', parent=root_module['ns3::Dcf'])
-    typehandlers.add_type_alias('std::vector< ns3::RateInfo, std::allocator< ns3::RateInfo > >', 'ns3::MinstrelRate')
-    typehandlers.add_type_alias('std::vector< ns3::RateInfo, std::allocator< ns3::RateInfo > >*', 'ns3::MinstrelRate*')
-    typehandlers.add_type_alias('std::vector< ns3::RateInfo, std::allocator< ns3::RateInfo > >&', 'ns3::MinstrelRate&')
-    typehandlers.add_type_alias('std::vector< std::vector< unsigned int, std::allocator< unsigned int > >, std::allocator< std::vector< unsigned int, std::allocator< unsigned int > > > >', 'ns3::SampleRate')
-    typehandlers.add_type_alias('std::vector< std::vector< unsigned int, std::allocator< unsigned int > >, std::allocator< std::vector< unsigned int, std::allocator< unsigned int > > > >*', 'ns3::SampleRate*')
-    typehandlers.add_type_alias('std::vector< std::vector< unsigned int, std::allocator< unsigned int > >, std::allocator< std::vector< unsigned int, std::allocator< unsigned int > > > >&', 'ns3::SampleRate&')
-    typehandlers.add_type_alias('std::vector< ns3::ThresholdsItem, std::allocator< ns3::ThresholdsItem > >', 'ns3::Thresholds')
-    typehandlers.add_type_alias('std::vector< ns3::ThresholdsItem, std::allocator< ns3::ThresholdsItem > >*', 'ns3::Thresholds*')
-    typehandlers.add_type_alias('std::vector< ns3::ThresholdsItem, std::allocator< ns3::ThresholdsItem > >&', 'ns3::Thresholds&')
+    module.add_container('std::vector< ns3::WifiMode >', 'ns3::WifiMode', container_type='vector')
     
     ## Register a nested module for the namespace Config
     
@@ -304,19 +286,15 @@ def register_methods(root_module):
     register_Ns3MacLowTransmissionParameters_methods(root_module, root_module['ns3::MacLowTransmissionParameters'])
     register_Ns3MacRxMiddle_methods(root_module, root_module['ns3::MacRxMiddle'])
     register_Ns3OriginatorBlockAckAgreement_methods(root_module, root_module['ns3::OriginatorBlockAckAgreement'])
-    register_Ns3RateInfo_methods(root_module, root_module['ns3::RateInfo'])
     register_Ns3Ssid_methods(root_module, root_module['ns3::Ssid'])
     register_Ns3StatusCode_methods(root_module, root_module['ns3::StatusCode'])
     register_Ns3SupportedRates_methods(root_module, root_module['ns3::SupportedRates'])
-    register_Ns3ThresholdsItem_methods(root_module, root_module['ns3::ThresholdsItem'])
     register_Ns3WifiMode_methods(root_module, root_module['ns3::WifiMode'])
     register_Ns3WifiModeFactory_methods(root_module, root_module['ns3::WifiModeFactory'])
     register_Ns3WifiPhyListener_methods(root_module, root_module['ns3::WifiPhyListener'])
     register_Ns3WifiRemoteStation_methods(root_module, root_module['ns3::WifiRemoteStation'])
-    register_Ns3AmrrWifiRemoteStation_methods(root_module, root_module['ns3::AmrrWifiRemoteStation'])
-    register_Ns3ArfWifiRemoteStation_methods(root_module, root_module['ns3::ArfWifiRemoteStation'])
-    register_Ns3ConstantRateWifiRemoteStation_methods(root_module, root_module['ns3::ConstantRateWifiRemoteStation'])
-    register_Ns3IdealWifiRemoteStation_methods(root_module, root_module['ns3::IdealWifiRemoteStation'])
+    register_Ns3WifiRemoteStationInfo_methods(root_module, root_module['ns3::WifiRemoteStationInfo'])
+    register_Ns3WifiRemoteStationState_methods(root_module, root_module['ns3::WifiRemoteStationState'])
     register_Ns3MgtAddBaRequestHeader_methods(root_module, root_module['ns3::MgtAddBaRequestHeader'])
     register_Ns3MgtAddBaResponseHeader_methods(root_module, root_module['ns3::MgtAddBaResponseHeader'])
     register_Ns3MgtAssocRequestHeader_methods(root_module, root_module['ns3::MgtAssocRequestHeader'])
@@ -324,10 +302,7 @@ def register_methods(root_module):
     register_Ns3MgtDelBaHeader_methods(root_module, root_module['ns3::MgtDelBaHeader'])
     register_Ns3MgtProbeRequestHeader_methods(root_module, root_module['ns3::MgtProbeRequestHeader'])
     register_Ns3MgtProbeResponseHeader_methods(root_module, root_module['ns3::MgtProbeResponseHeader'])
-    register_Ns3MinstrelWifiRemoteStation_methods(root_module, root_module['ns3::MinstrelWifiRemoteStation'])
-    register_Ns3OnoeWifiRemoteStation_methods(root_module, root_module['ns3::OnoeWifiRemoteStation'])
     register_Ns3QosTag_methods(root_module, root_module['ns3::QosTag'])
-    register_Ns3RraaWifiRemoteStation_methods(root_module, root_module['ns3::RraaWifiRemoteStation'])
     register_Ns3WifiActionHeader_methods(root_module, root_module['ns3::WifiActionHeader'])
     register_Ns3WifiActionHeaderActionValue_methods(root_module, root_module['ns3::WifiActionHeader::ActionValue'])
     register_Ns3WifiMac_methods(root_module, root_module['ns3::WifiMac'])
@@ -335,11 +310,13 @@ def register_methods(root_module):
     register_Ns3WifiPhy_methods(root_module, root_module['ns3::WifiPhy'])
     register_Ns3WifiRemoteStationManager_methods(root_module, root_module['ns3::WifiRemoteStationManager'])
     register_Ns3YansWifiPhy_methods(root_module, root_module['ns3::YansWifiPhy'])
-    register_Ns3AarfWifiRemoteStation_methods(root_module, root_module['ns3::AarfWifiRemoteStation'])
+    register_Ns3AarfWifiManager_methods(root_module, root_module['ns3::AarfWifiManager'])
+    register_Ns3AarfcdWifiManager_methods(root_module, root_module['ns3::AarfcdWifiManager'])
     register_Ns3AdhocWifiMac_methods(root_module, root_module['ns3::AdhocWifiMac'])
     register_Ns3AmrrWifiManager_methods(root_module, root_module['ns3::AmrrWifiManager'])
     register_Ns3AmsduSubframeHeader_methods(root_module, root_module['ns3::AmsduSubframeHeader'])
     register_Ns3ArfWifiManager_methods(root_module, root_module['ns3::ArfWifiManager'])
+    register_Ns3CaraWifiManager_methods(root_module, root_module['ns3::CaraWifiManager'])
     register_Ns3ConstantRateWifiManager_methods(root_module, root_module['ns3::ConstantRateWifiManager'])
     register_Ns3CtrlBAckRequestHeader_methods(root_module, root_module['ns3::CtrlBAckRequestHeader'])
     register_Ns3CtrlBAckResponseHeader_methods(root_module, root_module['ns3::CtrlBAckResponseHeader'])
@@ -366,7 +343,6 @@ def register_methods(root_module):
     register_Ns3WifiNetDevice_methods(root_module, root_module['ns3::WifiNetDevice'])
     register_Ns3YansErrorRateModel_methods(root_module, root_module['ns3::YansErrorRateModel'])
     register_Ns3YansWifiChannel_methods(root_module, root_module['ns3::YansWifiChannel'])
-    register_Ns3AarfWifiManager_methods(root_module, root_module['ns3::AarfWifiManager'])
     register_Ns3DcaTxop_methods(root_module, root_module['ns3::DcaTxop'])
     return
 
@@ -1135,37 +1111,6 @@ def register_Ns3OriginatorBlockAckAgreement_methods(root_module, cls):
                    [param('ns3::OriginatorBlockAckAgreement::State', 'state')])
     return
 
-def register_Ns3RateInfo_methods(root_module, cls):
-    ## minstrel-wifi-manager.h: ns3::RateInfo::RateInfo() [constructor]
-    cls.add_constructor([])
-    ## minstrel-wifi-manager.h: ns3::RateInfo::RateInfo(ns3::RateInfo const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::RateInfo const &', 'arg0')])
-    ## minstrel-wifi-manager.h: ns3::RateInfo::adjustedRetryCount [variable]
-    cls.add_instance_attribute('adjustedRetryCount', 'uint32_t', is_const=False)
-    ## minstrel-wifi-manager.h: ns3::RateInfo::attemptHist [variable]
-    cls.add_instance_attribute('attemptHist', 'uint64_t', is_const=False)
-    ## minstrel-wifi-manager.h: ns3::RateInfo::ewmaProb [variable]
-    cls.add_instance_attribute('ewmaProb', 'uint32_t', is_const=False)
-    ## minstrel-wifi-manager.h: ns3::RateInfo::numRateAttempt [variable]
-    cls.add_instance_attribute('numRateAttempt', 'uint32_t', is_const=False)
-    ## minstrel-wifi-manager.h: ns3::RateInfo::numRateSuccess [variable]
-    cls.add_instance_attribute('numRateSuccess', 'uint32_t', is_const=False)
-    ## minstrel-wifi-manager.h: ns3::RateInfo::perfectTxTime [variable]
-    cls.add_instance_attribute('perfectTxTime', 'ns3::Time', is_const=False)
-    ## minstrel-wifi-manager.h: ns3::RateInfo::prevNumRateAttempt [variable]
-    cls.add_instance_attribute('prevNumRateAttempt', 'uint32_t', is_const=False)
-    ## minstrel-wifi-manager.h: ns3::RateInfo::prevNumRateSuccess [variable]
-    cls.add_instance_attribute('prevNumRateSuccess', 'uint32_t', is_const=False)
-    ## minstrel-wifi-manager.h: ns3::RateInfo::prob [variable]
-    cls.add_instance_attribute('prob', 'uint32_t', is_const=False)
-    ## minstrel-wifi-manager.h: ns3::RateInfo::retryCount [variable]
-    cls.add_instance_attribute('retryCount', 'uint32_t', is_const=False)
-    ## minstrel-wifi-manager.h: ns3::RateInfo::successHist [variable]
-    cls.add_instance_attribute('successHist', 'uint64_t', is_const=False)
-    ## minstrel-wifi-manager.h: ns3::RateInfo::throughput [variable]
-    cls.add_instance_attribute('throughput', 'uint32_t', is_const=False)
-    return
-
 def register_Ns3Ssid_methods(root_module, cls):
     cls.add_output_stream_operator()
     ## ssid.h: ns3::Ssid::Ssid(ns3::Ssid const & arg0) [copy constructor]
@@ -1295,21 +1240,6 @@ def register_Ns3SupportedRates_methods(root_module, cls):
     cls.add_method('SetBasicRate', 
                    'void', 
                    [param('uint32_t', 'bs')])
-    return
-
-def register_Ns3ThresholdsItem_methods(root_module, cls):
-    ## rraa-wifi-manager.h: ns3::ThresholdsItem::ThresholdsItem() [constructor]
-    cls.add_constructor([])
-    ## rraa-wifi-manager.h: ns3::ThresholdsItem::ThresholdsItem(ns3::ThresholdsItem const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::ThresholdsItem const &', 'arg0')])
-    ## rraa-wifi-manager.h: ns3::ThresholdsItem::datarate [variable]
-    cls.add_instance_attribute('datarate', 'uint32_t', is_const=False)
-    ## rraa-wifi-manager.h: ns3::ThresholdsItem::ewnd [variable]
-    cls.add_instance_attribute('ewnd', 'uint32_t', is_const=False)
-    ## rraa-wifi-manager.h: ns3::ThresholdsItem::pmtl [variable]
-    cls.add_instance_attribute('pmtl', 'double', is_const=False)
-    ## rraa-wifi-manager.h: ns3::ThresholdsItem::pori [variable]
-    cls.add_instance_attribute('pori', 'double', is_const=False)
     return
 
 def register_Ns3WifiMode_methods(root_module, cls):
@@ -1446,478 +1376,51 @@ def register_Ns3WifiPhyListener_methods(root_module, cls):
     return
 
 def register_Ns3WifiRemoteStation_methods(root_module, cls):
-    ## wifi-remote-station-manager.h: ns3::WifiRemoteStation::WifiRemoteStation(ns3::WifiRemoteStation const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::WifiRemoteStation const &', 'arg0')])
     ## wifi-remote-station-manager.h: ns3::WifiRemoteStation::WifiRemoteStation() [constructor]
     cls.add_constructor([])
-    ## wifi-remote-station-manager.h: void ns3::WifiRemoteStation::AddSupportedMode(ns3::WifiMode mode) [member function]
-    cls.add_method('AddSupportedMode', 
-                   'void', 
-                   [param('ns3::WifiMode', 'mode')])
-    ## wifi-remote-station-manager.h: ns3::WifiMode ns3::WifiRemoteStation::GetAckMode(ns3::WifiMode dataMode) [member function]
-    cls.add_method('GetAckMode', 
-                   'ns3::WifiMode', 
-                   [param('ns3::WifiMode', 'dataMode')])
-    ## wifi-remote-station-manager.h: ns3::Mac48Address ns3::WifiRemoteStation::GetAddress() [member function]
-    cls.add_method('GetAddress', 
-                   'ns3::Mac48Address', 
-                   [])
-    ## wifi-remote-station-manager.h: double ns3::WifiRemoteStation::GetAvgSlrc() const [member function]
-    cls.add_method('GetAvgSlrc', 
+    ## wifi-remote-station-manager.h: ns3::WifiRemoteStation::WifiRemoteStation(ns3::WifiRemoteStation const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::WifiRemoteStation const &', 'arg0')])
+    ## wifi-remote-station-manager.h: ns3::WifiRemoteStation::m_slrc [variable]
+    cls.add_instance_attribute('m_slrc', 'uint32_t', is_const=False)
+    ## wifi-remote-station-manager.h: ns3::WifiRemoteStation::m_ssrc [variable]
+    cls.add_instance_attribute('m_ssrc', 'uint32_t', is_const=False)
+    ## wifi-remote-station-manager.h: ns3::WifiRemoteStation::m_state [variable]
+    cls.add_instance_attribute('m_state', 'ns3::WifiRemoteStationState *', is_const=False)
+    ## wifi-remote-station-manager.h: ns3::WifiRemoteStation::m_tid [variable]
+    cls.add_instance_attribute('m_tid', 'uint8_t', is_const=False)
+    return
+
+def register_Ns3WifiRemoteStationInfo_methods(root_module, cls):
+    ## wifi-remote-station-manager.h: ns3::WifiRemoteStationInfo::WifiRemoteStationInfo(ns3::WifiRemoteStationInfo const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::WifiRemoteStationInfo const &', 'arg0')])
+    ## wifi-remote-station-manager.h: ns3::WifiRemoteStationInfo::WifiRemoteStationInfo() [constructor]
+    cls.add_constructor([])
+    ## wifi-remote-station-manager.h: double ns3::WifiRemoteStationInfo::GetFrameErrorRate() const [member function]
+    cls.add_method('GetFrameErrorRate', 
                    'double', 
                    [], 
                    is_const=True)
-    ## wifi-remote-station-manager.h: ns3::WifiMode ns3::WifiRemoteStation::GetCtsMode(ns3::WifiMode rtsMode) [member function]
-    cls.add_method('GetCtsMode', 
-                   'ns3::WifiMode', 
-                   [param('ns3::WifiMode', 'rtsMode')])
-    ## wifi-remote-station-manager.h: ns3::WifiMode ns3::WifiRemoteStation::GetDataMode(ns3::Ptr<ns3::Packet const> packet, uint32_t fullPacketSize) [member function]
-    cls.add_method('GetDataMode', 
-                   'ns3::WifiMode', 
-                   [param('ns3::Ptr< ns3::Packet const >', 'packet'), param('uint32_t', 'fullPacketSize')])
-    ## wifi-remote-station-manager.h: uint32_t ns3::WifiRemoteStation::GetFragmentOffset(ns3::Ptr<ns3::Packet const> packet, uint32_t fragmentNumber) [member function]
-    cls.add_method('GetFragmentOffset', 
-                   'uint32_t', 
-                   [param('ns3::Ptr< ns3::Packet const >', 'packet'), param('uint32_t', 'fragmentNumber')], 
-                   is_virtual=True)
-    ## wifi-remote-station-manager.h: uint32_t ns3::WifiRemoteStation::GetFragmentSize(ns3::Ptr<ns3::Packet const> packet, uint32_t fragmentNumber) [member function]
-    cls.add_method('GetFragmentSize', 
-                   'uint32_t', 
-                   [param('ns3::Ptr< ns3::Packet const >', 'packet'), param('uint32_t', 'fragmentNumber')], 
-                   is_virtual=True)
-    ## wifi-remote-station-manager.h: ns3::WifiMode ns3::WifiRemoteStation::GetRtsMode(ns3::Ptr<ns3::Packet const> packet) [member function]
-    cls.add_method('GetRtsMode', 
-                   'ns3::WifiMode', 
-                   [param('ns3::Ptr< ns3::Packet const >', 'packet')])
-    ## wifi-remote-station-manager.h: static ns3::TypeId ns3::WifiRemoteStation::GetTypeId() [member function]
-    cls.add_method('GetTypeId', 
-                   'ns3::TypeId', 
-                   [], 
-                   is_static=True)
-    ## wifi-remote-station-manager.h: bool ns3::WifiRemoteStation::IsAssociated() const [member function]
-    cls.add_method('IsAssociated', 
-                   'bool', 
-                   [], 
-                   is_const=True)
-    ## wifi-remote-station-manager.h: bool ns3::WifiRemoteStation::IsBrandNew() const [member function]
-    cls.add_method('IsBrandNew', 
-                   'bool', 
-                   [], 
-                   is_const=True)
-    ## wifi-remote-station-manager.h: bool ns3::WifiRemoteStation::IsLastFragment(ns3::Ptr<ns3::Packet const> packet, uint32_t fragmentNumber) [member function]
-    cls.add_method('IsLastFragment', 
-                   'bool', 
-                   [param('ns3::Ptr< ns3::Packet const >', 'packet'), param('uint32_t', 'fragmentNumber')], 
-                   is_virtual=True)
-    ## wifi-remote-station-manager.h: bool ns3::WifiRemoteStation::IsWaitAssocTxOk() const [member function]
-    cls.add_method('IsWaitAssocTxOk', 
-                   'bool', 
-                   [], 
-                   is_const=True)
-    ## wifi-remote-station-manager.h: bool ns3::WifiRemoteStation::NeedDataRetransmission(ns3::Ptr<ns3::Packet const> packet) [member function]
-    cls.add_method('NeedDataRetransmission', 
-                   'bool', 
-                   [param('ns3::Ptr< ns3::Packet const >', 'packet')], 
-                   is_virtual=True)
-    ## wifi-remote-station-manager.h: bool ns3::WifiRemoteStation::NeedFragmentation(ns3::Ptr<ns3::Packet const> packet) [member function]
-    cls.add_method('NeedFragmentation', 
-                   'bool', 
-                   [param('ns3::Ptr< ns3::Packet const >', 'packet')], 
-                   is_virtual=True)
-    ## wifi-remote-station-manager.h: bool ns3::WifiRemoteStation::NeedRts(ns3::Ptr<ns3::Packet const> packet) [member function]
-    cls.add_method('NeedRts', 
-                   'bool', 
-                   [param('ns3::Ptr< ns3::Packet const >', 'packet')], 
-                   is_virtual=True)
-    ## wifi-remote-station-manager.h: bool ns3::WifiRemoteStation::NeedRtsRetransmission(ns3::Ptr<ns3::Packet const> packet) [member function]
-    cls.add_method('NeedRtsRetransmission', 
-                   'bool', 
-                   [param('ns3::Ptr< ns3::Packet const >', 'packet')], 
-                   is_virtual=True)
-    ## wifi-remote-station-manager.h: void ns3::WifiRemoteStation::PrepareForQueue(ns3::Ptr<ns3::Packet const> packet, uint32_t fullPacketSize) [member function]
-    cls.add_method('PrepareForQueue', 
-                   'void', 
-                   [param('ns3::Ptr< ns3::Packet const >', 'packet'), param('uint32_t', 'fullPacketSize')])
-    ## wifi-remote-station-manager.h: void ns3::WifiRemoteStation::RecordDisassociated() [member function]
-    cls.add_method('RecordDisassociated', 
+    ## wifi-remote-station-manager.h: void ns3::WifiRemoteStationInfo::NotifyTxFailed() [member function]
+    cls.add_method('NotifyTxFailed', 
                    'void', 
                    [])
-    ## wifi-remote-station-manager.h: void ns3::WifiRemoteStation::RecordGotAssocTxFailed() [member function]
-    cls.add_method('RecordGotAssocTxFailed', 
+    ## wifi-remote-station-manager.h: void ns3::WifiRemoteStationInfo::NotifyTxSuccess(uint32_t retryCounter) [member function]
+    cls.add_method('NotifyTxSuccess', 
                    'void', 
-                   [])
-    ## wifi-remote-station-manager.h: void ns3::WifiRemoteStation::RecordGotAssocTxOk() [member function]
-    cls.add_method('RecordGotAssocTxOk', 
-                   'void', 
-                   [])
-    ## wifi-remote-station-manager.h: void ns3::WifiRemoteStation::RecordWaitAssocTxOk() [member function]
-    cls.add_method('RecordWaitAssocTxOk', 
-                   'void', 
-                   [])
-    ## wifi-remote-station-manager.h: void ns3::WifiRemoteStation::ReportDataFailed() [member function]
-    cls.add_method('ReportDataFailed', 
-                   'void', 
-                   [])
-    ## wifi-remote-station-manager.h: void ns3::WifiRemoteStation::ReportDataOk(double ackSnr, ns3::WifiMode ackMode, double dataSnr) [member function]
-    cls.add_method('ReportDataOk', 
-                   'void', 
-                   [param('double', 'ackSnr'), param('ns3::WifiMode', 'ackMode'), param('double', 'dataSnr')])
-    ## wifi-remote-station-manager.h: void ns3::WifiRemoteStation::ReportFinalDataFailed() [member function]
-    cls.add_method('ReportFinalDataFailed', 
-                   'void', 
-                   [])
-    ## wifi-remote-station-manager.h: void ns3::WifiRemoteStation::ReportFinalRtsFailed() [member function]
-    cls.add_method('ReportFinalRtsFailed', 
-                   'void', 
-                   [])
-    ## wifi-remote-station-manager.h: void ns3::WifiRemoteStation::ReportRtsFailed() [member function]
-    cls.add_method('ReportRtsFailed', 
-                   'void', 
-                   [])
-    ## wifi-remote-station-manager.h: void ns3::WifiRemoteStation::ReportRtsOk(double ctsSnr, ns3::WifiMode ctsMode, double rtsSnr) [member function]
-    cls.add_method('ReportRtsOk', 
-                   'void', 
-                   [param('double', 'ctsSnr'), param('ns3::WifiMode', 'ctsMode'), param('double', 'rtsSnr')])
-    ## wifi-remote-station-manager.h: void ns3::WifiRemoteStation::ReportRxOk(double rxSnr, ns3::WifiMode txMode) [member function]
-    cls.add_method('ReportRxOk', 
-                   'void', 
-                   [param('double', 'rxSnr'), param('ns3::WifiMode', 'txMode')])
-    ## wifi-remote-station-manager.h: void ns3::WifiRemoteStation::Reset() [member function]
-    cls.add_method('Reset', 
-                   'void', 
-                   [])
-    ## wifi-remote-station-manager.h: void ns3::WifiRemoteStation::SetAddress(ns3::Mac48Address address) [member function]
-    cls.add_method('SetAddress', 
-                   'void', 
-                   [param('ns3::Mac48Address', 'address')])
-    ## wifi-remote-station-manager.h: uint32_t ns3::WifiRemoteStation::GetNSupportedModes() const [member function]
-    cls.add_method('GetNSupportedModes', 
-                   'uint32_t', 
-                   [], 
-                   is_const=True, visibility='protected')
-    ## wifi-remote-station-manager.h: ns3::WifiMode ns3::WifiRemoteStation::GetSupportedMode(uint32_t i) const [member function]
-    cls.add_method('GetSupportedMode', 
-                   'ns3::WifiMode', 
-                   [param('uint32_t', 'i')], 
-                   is_const=True, visibility='protected')
-    ## wifi-remote-station-manager.h: ns3::WifiMode ns3::WifiRemoteStation::DoGetDataMode(uint32_t size) [member function]
-    cls.add_method('DoGetDataMode', 
-                   'ns3::WifiMode', 
-                   [param('uint32_t', 'size')], 
-                   is_pure_virtual=True, visibility='private', is_virtual=True)
-    ## wifi-remote-station-manager.h: ns3::WifiMode ns3::WifiRemoteStation::DoGetRtsMode() [member function]
-    cls.add_method('DoGetRtsMode', 
-                   'ns3::WifiMode', 
-                   [], 
-                   is_pure_virtual=True, visibility='private', is_virtual=True)
-    ## wifi-remote-station-manager.h: void ns3::WifiRemoteStation::DoReportDataFailed() [member function]
-    cls.add_method('DoReportDataFailed', 
-                   'void', 
-                   [], 
-                   is_pure_virtual=True, visibility='private', is_virtual=True)
-    ## wifi-remote-station-manager.h: void ns3::WifiRemoteStation::DoReportDataOk(double ackSnr, ns3::WifiMode ackMode, double dataSnr) [member function]
-    cls.add_method('DoReportDataOk', 
-                   'void', 
-                   [param('double', 'ackSnr'), param('ns3::WifiMode', 'ackMode'), param('double', 'dataSnr')], 
-                   is_pure_virtual=True, visibility='private', is_virtual=True)
-    ## wifi-remote-station-manager.h: void ns3::WifiRemoteStation::DoReportFinalDataFailed() [member function]
-    cls.add_method('DoReportFinalDataFailed', 
-                   'void', 
-                   [], 
-                   is_pure_virtual=True, visibility='private', is_virtual=True)
-    ## wifi-remote-station-manager.h: void ns3::WifiRemoteStation::DoReportFinalRtsFailed() [member function]
-    cls.add_method('DoReportFinalRtsFailed', 
-                   'void', 
-                   [], 
-                   is_pure_virtual=True, visibility='private', is_virtual=True)
-    ## wifi-remote-station-manager.h: void ns3::WifiRemoteStation::DoReportRtsFailed() [member function]
-    cls.add_method('DoReportRtsFailed', 
-                   'void', 
-                   [], 
-                   is_pure_virtual=True, visibility='private', is_virtual=True)
-    ## wifi-remote-station-manager.h: void ns3::WifiRemoteStation::DoReportRtsOk(double ctsSnr, ns3::WifiMode ctsMode, double rtsSnr) [member function]
-    cls.add_method('DoReportRtsOk', 
-                   'void', 
-                   [param('double', 'ctsSnr'), param('ns3::WifiMode', 'ctsMode'), param('double', 'rtsSnr')], 
-                   is_pure_virtual=True, visibility='private', is_virtual=True)
-    ## wifi-remote-station-manager.h: void ns3::WifiRemoteStation::DoReportRxOk(double rxSnr, ns3::WifiMode txMode) [member function]
-    cls.add_method('DoReportRxOk', 
-                   'void', 
-                   [param('double', 'rxSnr'), param('ns3::WifiMode', 'txMode')], 
-                   is_pure_virtual=True, visibility='private', is_virtual=True)
-    ## wifi-remote-station-manager.h: ns3::Ptr<ns3::WifiRemoteStationManager> ns3::WifiRemoteStation::GetManager() const [member function]
-    cls.add_method('GetManager', 
-                   'ns3::Ptr< ns3::WifiRemoteStationManager >', 
-                   [], 
-                   is_pure_virtual=True, is_const=True, visibility='private', is_virtual=True)
+                   [param('uint32_t', 'retryCounter')])
     return
 
-def register_Ns3AmrrWifiRemoteStation_methods(root_module, cls):
-    ## amrr-wifi-manager.h: ns3::AmrrWifiRemoteStation::AmrrWifiRemoteStation(ns3::AmrrWifiRemoteStation const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::AmrrWifiRemoteStation const &', 'arg0')])
-    ## amrr-wifi-manager.h: ns3::AmrrWifiRemoteStation::AmrrWifiRemoteStation(ns3::Ptr<ns3::AmrrWifiManager> stations) [constructor]
-    cls.add_constructor([param('ns3::Ptr< ns3::AmrrWifiManager >', 'stations')])
-    ## amrr-wifi-manager.h: void ns3::AmrrWifiRemoteStation::DoReportDataFailed() [member function]
-    cls.add_method('DoReportDataFailed', 
-                   'void', 
-                   [], 
-                   visibility='protected', is_virtual=True)
-    ## amrr-wifi-manager.h: void ns3::AmrrWifiRemoteStation::DoReportDataOk(double ackSnr, ns3::WifiMode ackMode, double dataSnr) [member function]
-    cls.add_method('DoReportDataOk', 
-                   'void', 
-                   [param('double', 'ackSnr'), param('ns3::WifiMode', 'ackMode'), param('double', 'dataSnr')], 
-                   visibility='protected', is_virtual=True)
-    ## amrr-wifi-manager.h: void ns3::AmrrWifiRemoteStation::DoReportFinalDataFailed() [member function]
-    cls.add_method('DoReportFinalDataFailed', 
-                   'void', 
-                   [], 
-                   visibility='protected', is_virtual=True)
-    ## amrr-wifi-manager.h: void ns3::AmrrWifiRemoteStation::DoReportFinalRtsFailed() [member function]
-    cls.add_method('DoReportFinalRtsFailed', 
-                   'void', 
-                   [], 
-                   visibility='protected', is_virtual=True)
-    ## amrr-wifi-manager.h: void ns3::AmrrWifiRemoteStation::DoReportRtsFailed() [member function]
-    cls.add_method('DoReportRtsFailed', 
-                   'void', 
-                   [], 
-                   visibility='protected', is_virtual=True)
-    ## amrr-wifi-manager.h: void ns3::AmrrWifiRemoteStation::DoReportRtsOk(double ctsSnr, ns3::WifiMode ctsMode, double rtsSnr) [member function]
-    cls.add_method('DoReportRtsOk', 
-                   'void', 
-                   [param('double', 'ctsSnr'), param('ns3::WifiMode', 'ctsMode'), param('double', 'rtsSnr')], 
-                   visibility='protected', is_virtual=True)
-    ## amrr-wifi-manager.h: void ns3::AmrrWifiRemoteStation::DoReportRxOk(double rxSnr, ns3::WifiMode txMode) [member function]
-    cls.add_method('DoReportRxOk', 
-                   'void', 
-                   [param('double', 'rxSnr'), param('ns3::WifiMode', 'txMode')], 
-                   visibility='protected', is_virtual=True)
-    ## amrr-wifi-manager.h: ns3::WifiMode ns3::AmrrWifiRemoteStation::DoGetDataMode(uint32_t size) [member function]
-    cls.add_method('DoGetDataMode', 
-                   'ns3::WifiMode', 
-                   [param('uint32_t', 'size')], 
-                   visibility='private', is_virtual=True)
-    ## amrr-wifi-manager.h: ns3::WifiMode ns3::AmrrWifiRemoteStation::DoGetRtsMode() [member function]
-    cls.add_method('DoGetRtsMode', 
-                   'ns3::WifiMode', 
-                   [], 
-                   visibility='private', is_virtual=True)
-    ## amrr-wifi-manager.h: ns3::Ptr<ns3::WifiRemoteStationManager> ns3::AmrrWifiRemoteStation::GetManager() const [member function]
-    cls.add_method('GetManager', 
-                   'ns3::Ptr< ns3::WifiRemoteStationManager >', 
-                   [], 
-                   is_const=True, visibility='private', is_virtual=True)
-    return
-
-def register_Ns3ArfWifiRemoteStation_methods(root_module, cls):
-    ## arf-wifi-manager.h: ns3::ArfWifiRemoteStation::ArfWifiRemoteStation(ns3::ArfWifiRemoteStation const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::ArfWifiRemoteStation const &', 'arg0')])
-    ## arf-wifi-manager.h: ns3::ArfWifiRemoteStation::ArfWifiRemoteStation(ns3::Ptr<ns3::ArfWifiManager> manager) [constructor]
-    cls.add_constructor([param('ns3::Ptr< ns3::ArfWifiManager >', 'manager')])
-    ## arf-wifi-manager.h: void ns3::ArfWifiRemoteStation::DoReportDataFailed() [member function]
-    cls.add_method('DoReportDataFailed', 
-                   'void', 
-                   [], 
-                   visibility='protected', is_virtual=True)
-    ## arf-wifi-manager.h: void ns3::ArfWifiRemoteStation::DoReportDataOk(double ackSnr, ns3::WifiMode ackMode, double dataSnr) [member function]
-    cls.add_method('DoReportDataOk', 
-                   'void', 
-                   [param('double', 'ackSnr'), param('ns3::WifiMode', 'ackMode'), param('double', 'dataSnr')], 
-                   visibility='protected', is_virtual=True)
-    ## arf-wifi-manager.h: void ns3::ArfWifiRemoteStation::DoReportFinalDataFailed() [member function]
-    cls.add_method('DoReportFinalDataFailed', 
-                   'void', 
-                   [], 
-                   visibility='protected', is_virtual=True)
-    ## arf-wifi-manager.h: void ns3::ArfWifiRemoteStation::DoReportFinalRtsFailed() [member function]
-    cls.add_method('DoReportFinalRtsFailed', 
-                   'void', 
-                   [], 
-                   visibility='protected', is_virtual=True)
-    ## arf-wifi-manager.h: void ns3::ArfWifiRemoteStation::DoReportRtsFailed() [member function]
-    cls.add_method('DoReportRtsFailed', 
-                   'void', 
-                   [], 
-                   visibility='protected', is_virtual=True)
-    ## arf-wifi-manager.h: void ns3::ArfWifiRemoteStation::DoReportRtsOk(double ctsSnr, ns3::WifiMode ctsMode, double rtsSnr) [member function]
-    cls.add_method('DoReportRtsOk', 
-                   'void', 
-                   [param('double', 'ctsSnr'), param('ns3::WifiMode', 'ctsMode'), param('double', 'rtsSnr')], 
-                   visibility='protected', is_virtual=True)
-    ## arf-wifi-manager.h: void ns3::ArfWifiRemoteStation::DoReportRxOk(double rxSnr, ns3::WifiMode txMode) [member function]
-    cls.add_method('DoReportRxOk', 
-                   'void', 
-                   [param('double', 'rxSnr'), param('ns3::WifiMode', 'txMode')], 
-                   visibility='protected', is_virtual=True)
-    ## arf-wifi-manager.h: uint32_t ns3::ArfWifiRemoteStation::GetMinSuccessThreshold() [member function]
-    cls.add_method('GetMinSuccessThreshold', 
-                   'uint32_t', 
-                   [], 
-                   visibility='protected')
-    ## arf-wifi-manager.h: uint32_t ns3::ArfWifiRemoteStation::GetMinTimerTimeout() [member function]
-    cls.add_method('GetMinTimerTimeout', 
-                   'uint32_t', 
-                   [], 
-                   visibility='protected')
-    ## arf-wifi-manager.h: uint32_t ns3::ArfWifiRemoteStation::GetSuccessThreshold() [member function]
-    cls.add_method('GetSuccessThreshold', 
-                   'uint32_t', 
-                   [], 
-                   visibility='protected')
-    ## arf-wifi-manager.h: uint32_t ns3::ArfWifiRemoteStation::GetTimerTimeout() [member function]
-    cls.add_method('GetTimerTimeout', 
-                   'uint32_t', 
-                   [], 
-                   visibility='protected')
-    ## arf-wifi-manager.h: void ns3::ArfWifiRemoteStation::SetSuccessThreshold(uint32_t successThreshold) [member function]
-    cls.add_method('SetSuccessThreshold', 
-                   'void', 
-                   [param('uint32_t', 'successThreshold')], 
-                   visibility='protected')
-    ## arf-wifi-manager.h: void ns3::ArfWifiRemoteStation::SetTimerTimeout(uint32_t timerTimeout) [member function]
-    cls.add_method('SetTimerTimeout', 
-                   'void', 
-                   [param('uint32_t', 'timerTimeout')], 
-                   visibility='protected')
-    ## arf-wifi-manager.h: ns3::WifiMode ns3::ArfWifiRemoteStation::DoGetDataMode(uint32_t size) [member function]
-    cls.add_method('DoGetDataMode', 
-                   'ns3::WifiMode', 
-                   [param('uint32_t', 'size')], 
-                   visibility='private', is_virtual=True)
-    ## arf-wifi-manager.h: ns3::WifiMode ns3::ArfWifiRemoteStation::DoGetRtsMode() [member function]
-    cls.add_method('DoGetRtsMode', 
-                   'ns3::WifiMode', 
-                   [], 
-                   visibility='private', is_virtual=True)
-    ## arf-wifi-manager.h: ns3::Ptr<ns3::WifiRemoteStationManager> ns3::ArfWifiRemoteStation::GetManager() const [member function]
-    cls.add_method('GetManager', 
-                   'ns3::Ptr< ns3::WifiRemoteStationManager >', 
-                   [], 
-                   is_const=True, visibility='private', is_virtual=True)
-    ## arf-wifi-manager.h: void ns3::ArfWifiRemoteStation::ReportFailure() [member function]
-    cls.add_method('ReportFailure', 
-                   'void', 
-                   [], 
-                   visibility='private', is_virtual=True)
-    ## arf-wifi-manager.h: void ns3::ArfWifiRemoteStation::ReportRecoveryFailure() [member function]
-    cls.add_method('ReportRecoveryFailure', 
-                   'void', 
-                   [], 
-                   visibility='private', is_virtual=True)
-    return
-
-def register_Ns3ConstantRateWifiRemoteStation_methods(root_module, cls):
-    ## constant-rate-wifi-manager.h: ns3::ConstantRateWifiRemoteStation::ConstantRateWifiRemoteStation(ns3::ConstantRateWifiRemoteStation const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::ConstantRateWifiRemoteStation const &', 'arg0')])
-    ## constant-rate-wifi-manager.h: ns3::ConstantRateWifiRemoteStation::ConstantRateWifiRemoteStation(ns3::Ptr<ns3::ConstantRateWifiManager> stations) [constructor]
-    cls.add_constructor([param('ns3::Ptr< ns3::ConstantRateWifiManager >', 'stations')])
-    ## constant-rate-wifi-manager.h: void ns3::ConstantRateWifiRemoteStation::DoReportDataFailed() [member function]
-    cls.add_method('DoReportDataFailed', 
-                   'void', 
-                   [], 
-                   visibility='protected', is_virtual=True)
-    ## constant-rate-wifi-manager.h: void ns3::ConstantRateWifiRemoteStation::DoReportDataOk(double ackSnr, ns3::WifiMode ackMode, double dataSnr) [member function]
-    cls.add_method('DoReportDataOk', 
-                   'void', 
-                   [param('double', 'ackSnr'), param('ns3::WifiMode', 'ackMode'), param('double', 'dataSnr')], 
-                   visibility='protected', is_virtual=True)
-    ## constant-rate-wifi-manager.h: void ns3::ConstantRateWifiRemoteStation::DoReportFinalDataFailed() [member function]
-    cls.add_method('DoReportFinalDataFailed', 
-                   'void', 
-                   [], 
-                   visibility='protected', is_virtual=True)
-    ## constant-rate-wifi-manager.h: void ns3::ConstantRateWifiRemoteStation::DoReportFinalRtsFailed() [member function]
-    cls.add_method('DoReportFinalRtsFailed', 
-                   'void', 
-                   [], 
-                   visibility='protected', is_virtual=True)
-    ## constant-rate-wifi-manager.h: void ns3::ConstantRateWifiRemoteStation::DoReportRtsFailed() [member function]
-    cls.add_method('DoReportRtsFailed', 
-                   'void', 
-                   [], 
-                   visibility='protected', is_virtual=True)
-    ## constant-rate-wifi-manager.h: void ns3::ConstantRateWifiRemoteStation::DoReportRtsOk(double ctsSnr, ns3::WifiMode ctsMode, double rtsSnr) [member function]
-    cls.add_method('DoReportRtsOk', 
-                   'void', 
-                   [param('double', 'ctsSnr'), param('ns3::WifiMode', 'ctsMode'), param('double', 'rtsSnr')], 
-                   visibility='protected', is_virtual=True)
-    ## constant-rate-wifi-manager.h: void ns3::ConstantRateWifiRemoteStation::DoReportRxOk(double rxSnr, ns3::WifiMode txMode) [member function]
-    cls.add_method('DoReportRxOk', 
-                   'void', 
-                   [param('double', 'rxSnr'), param('ns3::WifiMode', 'txMode')], 
-                   visibility='protected', is_virtual=True)
-    ## constant-rate-wifi-manager.h: ns3::WifiMode ns3::ConstantRateWifiRemoteStation::DoGetDataMode(uint32_t size) [member function]
-    cls.add_method('DoGetDataMode', 
-                   'ns3::WifiMode', 
-                   [param('uint32_t', 'size')], 
-                   visibility='private', is_virtual=True)
-    ## constant-rate-wifi-manager.h: ns3::WifiMode ns3::ConstantRateWifiRemoteStation::DoGetRtsMode() [member function]
-    cls.add_method('DoGetRtsMode', 
-                   'ns3::WifiMode', 
-                   [], 
-                   visibility='private', is_virtual=True)
-    ## constant-rate-wifi-manager.h: ns3::Ptr<ns3::WifiRemoteStationManager> ns3::ConstantRateWifiRemoteStation::GetManager() const [member function]
-    cls.add_method('GetManager', 
-                   'ns3::Ptr< ns3::WifiRemoteStationManager >', 
-                   [], 
-                   is_const=True, visibility='private', is_virtual=True)
-    return
-
-def register_Ns3IdealWifiRemoteStation_methods(root_module, cls):
-    ## ideal-wifi-manager.h: ns3::IdealWifiRemoteStation::IdealWifiRemoteStation(ns3::IdealWifiRemoteStation const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::IdealWifiRemoteStation const &', 'arg0')])
-    ## ideal-wifi-manager.h: ns3::IdealWifiRemoteStation::IdealWifiRemoteStation(ns3::Ptr<ns3::IdealWifiManager> stations) [constructor]
-    cls.add_constructor([param('ns3::Ptr< ns3::IdealWifiManager >', 'stations')])
-    ## ideal-wifi-manager.h: void ns3::IdealWifiRemoteStation::DoReportDataFailed() [member function]
-    cls.add_method('DoReportDataFailed', 
-                   'void', 
-                   [], 
-                   visibility='protected', is_virtual=True)
-    ## ideal-wifi-manager.h: void ns3::IdealWifiRemoteStation::DoReportDataOk(double ackSnr, ns3::WifiMode ackMode, double dataSnr) [member function]
-    cls.add_method('DoReportDataOk', 
-                   'void', 
-                   [param('double', 'ackSnr'), param('ns3::WifiMode', 'ackMode'), param('double', 'dataSnr')], 
-                   visibility='protected', is_virtual=True)
-    ## ideal-wifi-manager.h: void ns3::IdealWifiRemoteStation::DoReportFinalDataFailed() [member function]
-    cls.add_method('DoReportFinalDataFailed', 
-                   'void', 
-                   [], 
-                   visibility='protected', is_virtual=True)
-    ## ideal-wifi-manager.h: void ns3::IdealWifiRemoteStation::DoReportFinalRtsFailed() [member function]
-    cls.add_method('DoReportFinalRtsFailed', 
-                   'void', 
-                   [], 
-                   visibility='protected', is_virtual=True)
-    ## ideal-wifi-manager.h: void ns3::IdealWifiRemoteStation::DoReportRtsFailed() [member function]
-    cls.add_method('DoReportRtsFailed', 
-                   'void', 
-                   [], 
-                   visibility='protected', is_virtual=True)
-    ## ideal-wifi-manager.h: void ns3::IdealWifiRemoteStation::DoReportRtsOk(double ctsSnr, ns3::WifiMode ctsMode, double rtsSnr) [member function]
-    cls.add_method('DoReportRtsOk', 
-                   'void', 
-                   [param('double', 'ctsSnr'), param('ns3::WifiMode', 'ctsMode'), param('double', 'rtsSnr')], 
-                   visibility='protected', is_virtual=True)
-    ## ideal-wifi-manager.h: void ns3::IdealWifiRemoteStation::DoReportRxOk(double rxSnr, ns3::WifiMode txMode) [member function]
-    cls.add_method('DoReportRxOk', 
-                   'void', 
-                   [param('double', 'rxSnr'), param('ns3::WifiMode', 'txMode')], 
-                   visibility='protected', is_virtual=True)
-    ## ideal-wifi-manager.h: ns3::WifiMode ns3::IdealWifiRemoteStation::DoGetDataMode(uint32_t size) [member function]
-    cls.add_method('DoGetDataMode', 
-                   'ns3::WifiMode', 
-                   [param('uint32_t', 'size')], 
-                   visibility='private', is_virtual=True)
-    ## ideal-wifi-manager.h: ns3::WifiMode ns3::IdealWifiRemoteStation::DoGetRtsMode() [member function]
-    cls.add_method('DoGetRtsMode', 
-                   'ns3::WifiMode', 
-                   [], 
-                   visibility='private', is_virtual=True)
-    ## ideal-wifi-manager.h: ns3::Ptr<ns3::WifiRemoteStationManager> ns3::IdealWifiRemoteStation::GetManager() const [member function]
-    cls.add_method('GetManager', 
-                   'ns3::Ptr< ns3::WifiRemoteStationManager >', 
-                   [], 
-                   is_const=True, visibility='private', is_virtual=True)
+def register_Ns3WifiRemoteStationState_methods(root_module, cls):
+    ## wifi-remote-station-manager.h: ns3::WifiRemoteStationState::WifiRemoteStationState() [constructor]
+    cls.add_constructor([])
+    ## wifi-remote-station-manager.h: ns3::WifiRemoteStationState::WifiRemoteStationState(ns3::WifiRemoteStationState const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::WifiRemoteStationState const &', 'arg0')])
+    ## wifi-remote-station-manager.h: ns3::WifiRemoteStationState::m_address [variable]
+    cls.add_instance_attribute('m_address', 'ns3::Mac48Address', is_const=False)
+    ## wifi-remote-station-manager.h: ns3::WifiRemoteStationState::m_info [variable]
+    cls.add_instance_attribute('m_info', 'ns3::WifiRemoteStationInfo', is_const=False)
+    ## wifi-remote-station-manager.h: ns3::WifiRemoteStationState::m_modes [variable]
+    cls.add_instance_attribute('m_modes', 'std::vector< ns3::WifiMode >', is_const=False)
     return
 
 def register_Ns3MgtAddBaRequestHeader_methods(root_module, cls):
@@ -2409,120 +1912,6 @@ def register_Ns3MgtProbeResponseHeader_methods(root_module, cls):
                    [param('ns3::SupportedRates', 'rates')])
     return
 
-def register_Ns3MinstrelWifiRemoteStation_methods(root_module, cls):
-    ## minstrel-wifi-manager.h: ns3::MinstrelWifiRemoteStation::MinstrelWifiRemoteStation(ns3::MinstrelWifiRemoteStation const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::MinstrelWifiRemoteStation const &', 'arg0')])
-    ## minstrel-wifi-manager.h: ns3::MinstrelWifiRemoteStation::MinstrelWifiRemoteStation(ns3::Ptr<ns3::MinstrelWifiManager> stations) [constructor]
-    cls.add_constructor([param('ns3::Ptr< ns3::MinstrelWifiManager >', 'stations')])
-    ## minstrel-wifi-manager.h: void ns3::MinstrelWifiRemoteStation::DoReportDataFailed() [member function]
-    cls.add_method('DoReportDataFailed', 
-                   'void', 
-                   [], 
-                   visibility='protected', is_virtual=True)
-    ## minstrel-wifi-manager.h: void ns3::MinstrelWifiRemoteStation::DoReportDataOk(double ackSnr, ns3::WifiMode ackMode, double dataSnr) [member function]
-    cls.add_method('DoReportDataOk', 
-                   'void', 
-                   [param('double', 'ackSnr'), param('ns3::WifiMode', 'ackMode'), param('double', 'dataSnr')], 
-                   visibility='protected', is_virtual=True)
-    ## minstrel-wifi-manager.h: void ns3::MinstrelWifiRemoteStation::DoReportFinalDataFailed() [member function]
-    cls.add_method('DoReportFinalDataFailed', 
-                   'void', 
-                   [], 
-                   visibility='protected', is_virtual=True)
-    ## minstrel-wifi-manager.h: void ns3::MinstrelWifiRemoteStation::DoReportFinalRtsFailed() [member function]
-    cls.add_method('DoReportFinalRtsFailed', 
-                   'void', 
-                   [], 
-                   visibility='protected', is_virtual=True)
-    ## minstrel-wifi-manager.h: void ns3::MinstrelWifiRemoteStation::DoReportRtsFailed() [member function]
-    cls.add_method('DoReportRtsFailed', 
-                   'void', 
-                   [], 
-                   visibility='protected', is_virtual=True)
-    ## minstrel-wifi-manager.h: void ns3::MinstrelWifiRemoteStation::DoReportRtsOk(double ctsSnr, ns3::WifiMode ctsMode, double rtsSnr) [member function]
-    cls.add_method('DoReportRtsOk', 
-                   'void', 
-                   [param('double', 'ctsSnr'), param('ns3::WifiMode', 'ctsMode'), param('double', 'rtsSnr')], 
-                   visibility='protected', is_virtual=True)
-    ## minstrel-wifi-manager.h: void ns3::MinstrelWifiRemoteStation::DoReportRxOk(double rxSnr, ns3::WifiMode txMode) [member function]
-    cls.add_method('DoReportRxOk', 
-                   'void', 
-                   [param('double', 'rxSnr'), param('ns3::WifiMode', 'txMode')], 
-                   visibility='protected', is_virtual=True)
-    ## minstrel-wifi-manager.h: ns3::WifiMode ns3::MinstrelWifiRemoteStation::DoGetDataMode(uint32_t size) [member function]
-    cls.add_method('DoGetDataMode', 
-                   'ns3::WifiMode', 
-                   [param('uint32_t', 'size')], 
-                   visibility='private', is_virtual=True)
-    ## minstrel-wifi-manager.h: ns3::WifiMode ns3::MinstrelWifiRemoteStation::DoGetRtsMode() [member function]
-    cls.add_method('DoGetRtsMode', 
-                   'ns3::WifiMode', 
-                   [], 
-                   visibility='private', is_virtual=True)
-    ## minstrel-wifi-manager.h: ns3::Ptr<ns3::WifiRemoteStationManager> ns3::MinstrelWifiRemoteStation::GetManager() const [member function]
-    cls.add_method('GetManager', 
-                   'ns3::Ptr< ns3::WifiRemoteStationManager >', 
-                   [], 
-                   is_const=True, visibility='private', is_virtual=True)
-    return
-
-def register_Ns3OnoeWifiRemoteStation_methods(root_module, cls):
-    ## onoe-wifi-manager.h: ns3::OnoeWifiRemoteStation::OnoeWifiRemoteStation(ns3::OnoeWifiRemoteStation const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::OnoeWifiRemoteStation const &', 'arg0')])
-    ## onoe-wifi-manager.h: ns3::OnoeWifiRemoteStation::OnoeWifiRemoteStation(ns3::Ptr<ns3::OnoeWifiManager> stations) [constructor]
-    cls.add_constructor([param('ns3::Ptr< ns3::OnoeWifiManager >', 'stations')])
-    ## onoe-wifi-manager.h: void ns3::OnoeWifiRemoteStation::DoReportDataFailed() [member function]
-    cls.add_method('DoReportDataFailed', 
-                   'void', 
-                   [], 
-                   visibility='protected', is_virtual=True)
-    ## onoe-wifi-manager.h: void ns3::OnoeWifiRemoteStation::DoReportDataOk(double ackSnr, ns3::WifiMode ackMode, double dataSnr) [member function]
-    cls.add_method('DoReportDataOk', 
-                   'void', 
-                   [param('double', 'ackSnr'), param('ns3::WifiMode', 'ackMode'), param('double', 'dataSnr')], 
-                   visibility='protected', is_virtual=True)
-    ## onoe-wifi-manager.h: void ns3::OnoeWifiRemoteStation::DoReportFinalDataFailed() [member function]
-    cls.add_method('DoReportFinalDataFailed', 
-                   'void', 
-                   [], 
-                   visibility='protected', is_virtual=True)
-    ## onoe-wifi-manager.h: void ns3::OnoeWifiRemoteStation::DoReportFinalRtsFailed() [member function]
-    cls.add_method('DoReportFinalRtsFailed', 
-                   'void', 
-                   [], 
-                   visibility='protected', is_virtual=True)
-    ## onoe-wifi-manager.h: void ns3::OnoeWifiRemoteStation::DoReportRtsFailed() [member function]
-    cls.add_method('DoReportRtsFailed', 
-                   'void', 
-                   [], 
-                   visibility='protected', is_virtual=True)
-    ## onoe-wifi-manager.h: void ns3::OnoeWifiRemoteStation::DoReportRtsOk(double ctsSnr, ns3::WifiMode ctsMode, double rtsSnr) [member function]
-    cls.add_method('DoReportRtsOk', 
-                   'void', 
-                   [param('double', 'ctsSnr'), param('ns3::WifiMode', 'ctsMode'), param('double', 'rtsSnr')], 
-                   visibility='protected', is_virtual=True)
-    ## onoe-wifi-manager.h: void ns3::OnoeWifiRemoteStation::DoReportRxOk(double rxSnr, ns3::WifiMode txMode) [member function]
-    cls.add_method('DoReportRxOk', 
-                   'void', 
-                   [param('double', 'rxSnr'), param('ns3::WifiMode', 'txMode')], 
-                   visibility='protected', is_virtual=True)
-    ## onoe-wifi-manager.h: ns3::WifiMode ns3::OnoeWifiRemoteStation::DoGetDataMode(uint32_t size) [member function]
-    cls.add_method('DoGetDataMode', 
-                   'ns3::WifiMode', 
-                   [param('uint32_t', 'size')], 
-                   visibility='private', is_virtual=True)
-    ## onoe-wifi-manager.h: ns3::WifiMode ns3::OnoeWifiRemoteStation::DoGetRtsMode() [member function]
-    cls.add_method('DoGetRtsMode', 
-                   'ns3::WifiMode', 
-                   [], 
-                   visibility='private', is_virtual=True)
-    ## onoe-wifi-manager.h: ns3::Ptr<ns3::WifiRemoteStationManager> ns3::OnoeWifiRemoteStation::GetManager() const [member function]
-    cls.add_method('GetManager', 
-                   'ns3::Ptr< ns3::WifiRemoteStationManager >', 
-                   [], 
-                   is_const=True, visibility='private', is_virtual=True)
-    return
-
 def register_Ns3QosTag_methods(root_module, cls):
     ## qos-tag.h: ns3::QosTag::QosTag(ns3::QosTag const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::QosTag const &', 'arg0')])
@@ -2573,68 +1962,6 @@ def register_Ns3QosTag_methods(root_module, cls):
     cls.add_method('SetUserPriority', 
                    'void', 
                    [param('ns3::UserPriority', 'up')])
-    return
-
-def register_Ns3RraaWifiRemoteStation_methods(root_module, cls):
-    ## rraa-wifi-manager.h: ns3::RraaWifiRemoteStation::RraaWifiRemoteStation(ns3::RraaWifiRemoteStation const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::RraaWifiRemoteStation const &', 'arg0')])
-    ## rraa-wifi-manager.h: ns3::RraaWifiRemoteStation::RraaWifiRemoteStation(ns3::Ptr<ns3::RraaWifiManager> stations) [constructor]
-    cls.add_constructor([param('ns3::Ptr< ns3::RraaWifiManager >', 'stations')])
-    ## rraa-wifi-manager.h: bool ns3::RraaWifiRemoteStation::NeedRts(ns3::Ptr<ns3::Packet const> packet) [member function]
-    cls.add_method('NeedRts', 
-                   'bool', 
-                   [param('ns3::Ptr< ns3::Packet const >', 'packet')], 
-                   is_virtual=True)
-    ## rraa-wifi-manager.h: void ns3::RraaWifiRemoteStation::DoReportDataFailed() [member function]
-    cls.add_method('DoReportDataFailed', 
-                   'void', 
-                   [], 
-                   visibility='protected', is_virtual=True)
-    ## rraa-wifi-manager.h: void ns3::RraaWifiRemoteStation::DoReportDataOk(double ackSnr, ns3::WifiMode ackMode, double dataSnr) [member function]
-    cls.add_method('DoReportDataOk', 
-                   'void', 
-                   [param('double', 'ackSnr'), param('ns3::WifiMode', 'ackMode'), param('double', 'dataSnr')], 
-                   visibility='protected', is_virtual=True)
-    ## rraa-wifi-manager.h: void ns3::RraaWifiRemoteStation::DoReportFinalDataFailed() [member function]
-    cls.add_method('DoReportFinalDataFailed', 
-                   'void', 
-                   [], 
-                   visibility='protected', is_virtual=True)
-    ## rraa-wifi-manager.h: void ns3::RraaWifiRemoteStation::DoReportFinalRtsFailed() [member function]
-    cls.add_method('DoReportFinalRtsFailed', 
-                   'void', 
-                   [], 
-                   visibility='protected', is_virtual=True)
-    ## rraa-wifi-manager.h: void ns3::RraaWifiRemoteStation::DoReportRtsFailed() [member function]
-    cls.add_method('DoReportRtsFailed', 
-                   'void', 
-                   [], 
-                   visibility='protected', is_virtual=True)
-    ## rraa-wifi-manager.h: void ns3::RraaWifiRemoteStation::DoReportRtsOk(double ctsSnr, ns3::WifiMode ctsMode, double rtsSnr) [member function]
-    cls.add_method('DoReportRtsOk', 
-                   'void', 
-                   [param('double', 'ctsSnr'), param('ns3::WifiMode', 'ctsMode'), param('double', 'rtsSnr')], 
-                   visibility='protected', is_virtual=True)
-    ## rraa-wifi-manager.h: void ns3::RraaWifiRemoteStation::DoReportRxOk(double rxSnr, ns3::WifiMode txMode) [member function]
-    cls.add_method('DoReportRxOk', 
-                   'void', 
-                   [param('double', 'rxSnr'), param('ns3::WifiMode', 'txMode')], 
-                   visibility='protected', is_virtual=True)
-    ## rraa-wifi-manager.h: ns3::WifiMode ns3::RraaWifiRemoteStation::DoGetDataMode(uint32_t size) [member function]
-    cls.add_method('DoGetDataMode', 
-                   'ns3::WifiMode', 
-                   [param('uint32_t', 'size')], 
-                   visibility='private', is_virtual=True)
-    ## rraa-wifi-manager.h: ns3::WifiMode ns3::RraaWifiRemoteStation::DoGetRtsMode() [member function]
-    cls.add_method('DoGetRtsMode', 
-                   'ns3::WifiMode', 
-                   [], 
-                   visibility='private', is_virtual=True)
-    ## rraa-wifi-manager.h: ns3::Ptr<ns3::WifiRemoteStationManager> ns3::RraaWifiRemoteStation::GetManager() const [member function]
-    cls.add_method('GetManager', 
-                   'ns3::Ptr< ns3::WifiRemoteStationManager >', 
-                   [], 
-                   is_const=True, visibility='private', is_virtual=True)
     return
 
 def register_Ns3WifiActionHeader_methods(root_module, cls):
@@ -3652,6 +2979,10 @@ def register_Ns3WifiRemoteStationManager_methods(root_module, cls):
     cls.add_method('AddBasicMode', 
                    'void', 
                    [param('ns3::WifiMode', 'mode')])
+    ## wifi-remote-station-manager.h: void ns3::WifiRemoteStationManager::AddSupportedMode(ns3::Mac48Address address, ns3::WifiMode mode) [member function]
+    cls.add_method('AddSupportedMode', 
+                   'void', 
+                   [param('ns3::Mac48Address', 'address'), param('ns3::WifiMode', 'mode')])
     ## wifi-remote-station-manager.h: __gnu_cxx::__normal_iterator<const ns3::WifiMode*,std::vector<ns3::WifiMode, std::allocator<ns3::WifiMode> > > ns3::WifiRemoteStationManager::BeginBasicModes() const [member function]
     cls.add_method('BeginBasicModes', 
                    '__gnu_cxx::__normal_iterator< ns3::WifiMode const *, std::vector< ns3::WifiMode > >', 
@@ -3662,21 +2993,45 @@ def register_Ns3WifiRemoteStationManager_methods(root_module, cls):
                    '__gnu_cxx::__normal_iterator< ns3::WifiMode const *, std::vector< ns3::WifiMode > >', 
                    [], 
                    is_const=True)
+    ## wifi-remote-station-manager.h: ns3::WifiMode ns3::WifiRemoteStationManager::GetAckMode(ns3::Mac48Address address, ns3::WifiMode dataMode) [member function]
+    cls.add_method('GetAckMode', 
+                   'ns3::WifiMode', 
+                   [param('ns3::Mac48Address', 'address'), param('ns3::WifiMode', 'dataMode')])
     ## wifi-remote-station-manager.h: ns3::WifiMode ns3::WifiRemoteStationManager::GetBasicMode(uint32_t i) const [member function]
     cls.add_method('GetBasicMode', 
                    'ns3::WifiMode', 
                    [param('uint32_t', 'i')], 
                    is_const=True)
+    ## wifi-remote-station-manager.h: ns3::WifiMode ns3::WifiRemoteStationManager::GetCtsMode(ns3::Mac48Address address, ns3::WifiMode rtsMode) [member function]
+    cls.add_method('GetCtsMode', 
+                   'ns3::WifiMode', 
+                   [param('ns3::Mac48Address', 'address'), param('ns3::WifiMode', 'rtsMode')])
+    ## wifi-remote-station-manager.h: ns3::WifiMode ns3::WifiRemoteStationManager::GetDataMode(ns3::Mac48Address address, ns3::WifiMacHeader const * header, ns3::Ptr<ns3::Packet const> packet, uint32_t fullPacketSize) [member function]
+    cls.add_method('GetDataMode', 
+                   'ns3::WifiMode', 
+                   [param('ns3::Mac48Address', 'address'), param('ns3::WifiMacHeader const *', 'header'), param('ns3::Ptr< ns3::Packet const >', 'packet'), param('uint32_t', 'fullPacketSize')])
     ## wifi-remote-station-manager.h: ns3::WifiMode ns3::WifiRemoteStationManager::GetDefaultMode() const [member function]
     cls.add_method('GetDefaultMode', 
                    'ns3::WifiMode', 
                    [], 
                    is_const=True)
+    ## wifi-remote-station-manager.h: uint32_t ns3::WifiRemoteStationManager::GetFragmentOffset(ns3::Mac48Address address, ns3::WifiMacHeader const * header, ns3::Ptr<ns3::Packet const> packet, uint32_t fragmentNumber) [member function]
+    cls.add_method('GetFragmentOffset', 
+                   'uint32_t', 
+                   [param('ns3::Mac48Address', 'address'), param('ns3::WifiMacHeader const *', 'header'), param('ns3::Ptr< ns3::Packet const >', 'packet'), param('uint32_t', 'fragmentNumber')])
+    ## wifi-remote-station-manager.h: uint32_t ns3::WifiRemoteStationManager::GetFragmentSize(ns3::Mac48Address address, ns3::WifiMacHeader const * header, ns3::Ptr<ns3::Packet const> packet, uint32_t fragmentNumber) [member function]
+    cls.add_method('GetFragmentSize', 
+                   'uint32_t', 
+                   [param('ns3::Mac48Address', 'address'), param('ns3::WifiMacHeader const *', 'header'), param('ns3::Ptr< ns3::Packet const >', 'packet'), param('uint32_t', 'fragmentNumber')])
     ## wifi-remote-station-manager.h: uint32_t ns3::WifiRemoteStationManager::GetFragmentationThreshold() const [member function]
     cls.add_method('GetFragmentationThreshold', 
                    'uint32_t', 
                    [], 
                    is_const=True)
+    ## wifi-remote-station-manager.h: ns3::WifiRemoteStationInfo ns3::WifiRemoteStationManager::GetInfo(ns3::Mac48Address address) [member function]
+    cls.add_method('GetInfo', 
+                   'ns3::WifiRemoteStationInfo', 
+                   [param('ns3::Mac48Address', 'address')])
     ## wifi-remote-station-manager.h: uint32_t ns3::WifiRemoteStationManager::GetMaxSlrc() const [member function]
     cls.add_method('GetMaxSlrc', 
                    'uint32_t', 
@@ -3702,28 +3057,106 @@ def register_Ns3WifiRemoteStationManager_methods(root_module, cls):
                    'uint32_t', 
                    [], 
                    is_const=True)
+    ## wifi-remote-station-manager.h: ns3::WifiMode ns3::WifiRemoteStationManager::GetRtsMode(ns3::Mac48Address address, ns3::WifiMacHeader const * header, ns3::Ptr<ns3::Packet const> packet) [member function]
+    cls.add_method('GetRtsMode', 
+                   'ns3::WifiMode', 
+                   [param('ns3::Mac48Address', 'address'), param('ns3::WifiMacHeader const *', 'header'), param('ns3::Ptr< ns3::Packet const >', 'packet')])
     ## wifi-remote-station-manager.h: static ns3::TypeId ns3::WifiRemoteStationManager::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
-    ## wifi-remote-station-manager.h: bool ns3::WifiRemoteStationManager::IsLowLatency() const [member function]
-    cls.add_method('IsLowLatency', 
+    ## wifi-remote-station-manager.h: bool ns3::WifiRemoteStationManager::IsAssociated(ns3::Mac48Address address) const [member function]
+    cls.add_method('IsAssociated', 
                    'bool', 
-                   [], 
+                   [param('ns3::Mac48Address', 'address')], 
                    is_const=True)
-    ## wifi-remote-station-manager.h: ns3::WifiRemoteStation * ns3::WifiRemoteStationManager::Lookup(ns3::Mac48Address address) [member function]
-    cls.add_method('Lookup', 
-                   'ns3::WifiRemoteStation *', 
+    ## wifi-remote-station-manager.h: bool ns3::WifiRemoteStationManager::IsBrandNew(ns3::Mac48Address address) const [member function]
+    cls.add_method('IsBrandNew', 
+                   'bool', 
+                   [param('ns3::Mac48Address', 'address')], 
+                   is_const=True)
+    ## wifi-remote-station-manager.h: bool ns3::WifiRemoteStationManager::IsLastFragment(ns3::Mac48Address address, ns3::WifiMacHeader const * header, ns3::Ptr<ns3::Packet const> packet, uint32_t fragmentNumber) [member function]
+    cls.add_method('IsLastFragment', 
+                   'bool', 
+                   [param('ns3::Mac48Address', 'address'), param('ns3::WifiMacHeader const *', 'header'), param('ns3::Ptr< ns3::Packet const >', 'packet'), param('uint32_t', 'fragmentNumber')])
+    ## wifi-remote-station-manager.h: bool ns3::WifiRemoteStationManager::IsWaitAssocTxOk(ns3::Mac48Address address) const [member function]
+    cls.add_method('IsWaitAssocTxOk', 
+                   'bool', 
+                   [param('ns3::Mac48Address', 'address')], 
+                   is_const=True)
+    ## wifi-remote-station-manager.h: bool ns3::WifiRemoteStationManager::NeedDataRetransmission(ns3::Mac48Address address, ns3::WifiMacHeader const * header, ns3::Ptr<ns3::Packet const> packet) [member function]
+    cls.add_method('NeedDataRetransmission', 
+                   'bool', 
+                   [param('ns3::Mac48Address', 'address'), param('ns3::WifiMacHeader const *', 'header'), param('ns3::Ptr< ns3::Packet const >', 'packet')])
+    ## wifi-remote-station-manager.h: bool ns3::WifiRemoteStationManager::NeedFragmentation(ns3::Mac48Address address, ns3::WifiMacHeader const * header, ns3::Ptr<ns3::Packet const> packet) [member function]
+    cls.add_method('NeedFragmentation', 
+                   'bool', 
+                   [param('ns3::Mac48Address', 'address'), param('ns3::WifiMacHeader const *', 'header'), param('ns3::Ptr< ns3::Packet const >', 'packet')])
+    ## wifi-remote-station-manager.h: bool ns3::WifiRemoteStationManager::NeedRts(ns3::Mac48Address address, ns3::WifiMacHeader const * header, ns3::Ptr<ns3::Packet const> packet) [member function]
+    cls.add_method('NeedRts', 
+                   'bool', 
+                   [param('ns3::Mac48Address', 'address'), param('ns3::WifiMacHeader const *', 'header'), param('ns3::Ptr< ns3::Packet const >', 'packet')])
+    ## wifi-remote-station-manager.h: bool ns3::WifiRemoteStationManager::NeedRtsRetransmission(ns3::Mac48Address address, ns3::WifiMacHeader const * header, ns3::Ptr<ns3::Packet const> packet) [member function]
+    cls.add_method('NeedRtsRetransmission', 
+                   'bool', 
+                   [param('ns3::Mac48Address', 'address'), param('ns3::WifiMacHeader const *', 'header'), param('ns3::Ptr< ns3::Packet const >', 'packet')])
+    ## wifi-remote-station-manager.h: void ns3::WifiRemoteStationManager::PrepareForQueue(ns3::Mac48Address address, ns3::WifiMacHeader const * header, ns3::Ptr<ns3::Packet const> packet, uint32_t fullPacketSize) [member function]
+    cls.add_method('PrepareForQueue', 
+                   'void', 
+                   [param('ns3::Mac48Address', 'address'), param('ns3::WifiMacHeader const *', 'header'), param('ns3::Ptr< ns3::Packet const >', 'packet'), param('uint32_t', 'fullPacketSize')])
+    ## wifi-remote-station-manager.h: void ns3::WifiRemoteStationManager::RecordDisassociated(ns3::Mac48Address address) [member function]
+    cls.add_method('RecordDisassociated', 
+                   'void', 
                    [param('ns3::Mac48Address', 'address')])
-    ## wifi-remote-station-manager.h: ns3::WifiRemoteStation * ns3::WifiRemoteStationManager::LookupNonUnicast() [member function]
-    cls.add_method('LookupNonUnicast', 
-                   'ns3::WifiRemoteStation *', 
-                   [])
+    ## wifi-remote-station-manager.h: void ns3::WifiRemoteStationManager::RecordGotAssocTxFailed(ns3::Mac48Address address) [member function]
+    cls.add_method('RecordGotAssocTxFailed', 
+                   'void', 
+                   [param('ns3::Mac48Address', 'address')])
+    ## wifi-remote-station-manager.h: void ns3::WifiRemoteStationManager::RecordGotAssocTxOk(ns3::Mac48Address address) [member function]
+    cls.add_method('RecordGotAssocTxOk', 
+                   'void', 
+                   [param('ns3::Mac48Address', 'address')])
+    ## wifi-remote-station-manager.h: void ns3::WifiRemoteStationManager::RecordWaitAssocTxOk(ns3::Mac48Address address) [member function]
+    cls.add_method('RecordWaitAssocTxOk', 
+                   'void', 
+                   [param('ns3::Mac48Address', 'address')])
+    ## wifi-remote-station-manager.h: void ns3::WifiRemoteStationManager::ReportDataFailed(ns3::Mac48Address address, ns3::WifiMacHeader const * header) [member function]
+    cls.add_method('ReportDataFailed', 
+                   'void', 
+                   [param('ns3::Mac48Address', 'address'), param('ns3::WifiMacHeader const *', 'header')])
+    ## wifi-remote-station-manager.h: void ns3::WifiRemoteStationManager::ReportDataOk(ns3::Mac48Address address, ns3::WifiMacHeader const * header, double ackSnr, ns3::WifiMode ackMode, double dataSnr) [member function]
+    cls.add_method('ReportDataOk', 
+                   'void', 
+                   [param('ns3::Mac48Address', 'address'), param('ns3::WifiMacHeader const *', 'header'), param('double', 'ackSnr'), param('ns3::WifiMode', 'ackMode'), param('double', 'dataSnr')])
+    ## wifi-remote-station-manager.h: void ns3::WifiRemoteStationManager::ReportFinalDataFailed(ns3::Mac48Address address, ns3::WifiMacHeader const * header) [member function]
+    cls.add_method('ReportFinalDataFailed', 
+                   'void', 
+                   [param('ns3::Mac48Address', 'address'), param('ns3::WifiMacHeader const *', 'header')])
+    ## wifi-remote-station-manager.h: void ns3::WifiRemoteStationManager::ReportFinalRtsFailed(ns3::Mac48Address address, ns3::WifiMacHeader const * header) [member function]
+    cls.add_method('ReportFinalRtsFailed', 
+                   'void', 
+                   [param('ns3::Mac48Address', 'address'), param('ns3::WifiMacHeader const *', 'header')])
+    ## wifi-remote-station-manager.h: void ns3::WifiRemoteStationManager::ReportRtsFailed(ns3::Mac48Address address, ns3::WifiMacHeader const * header) [member function]
+    cls.add_method('ReportRtsFailed', 
+                   'void', 
+                   [param('ns3::Mac48Address', 'address'), param('ns3::WifiMacHeader const *', 'header')])
+    ## wifi-remote-station-manager.h: void ns3::WifiRemoteStationManager::ReportRtsOk(ns3::Mac48Address address, ns3::WifiMacHeader const * header, double ctsSnr, ns3::WifiMode ctsMode, double rtsSnr) [member function]
+    cls.add_method('ReportRtsOk', 
+                   'void', 
+                   [param('ns3::Mac48Address', 'address'), param('ns3::WifiMacHeader const *', 'header'), param('double', 'ctsSnr'), param('ns3::WifiMode', 'ctsMode'), param('double', 'rtsSnr')])
+    ## wifi-remote-station-manager.h: void ns3::WifiRemoteStationManager::ReportRxOk(ns3::Mac48Address address, ns3::WifiMacHeader const * header, double rxSnr, ns3::WifiMode txMode) [member function]
+    cls.add_method('ReportRxOk', 
+                   'void', 
+                   [param('ns3::Mac48Address', 'address'), param('ns3::WifiMacHeader const *', 'header'), param('double', 'rxSnr'), param('ns3::WifiMode', 'txMode')])
     ## wifi-remote-station-manager.h: void ns3::WifiRemoteStationManager::Reset() [member function]
     cls.add_method('Reset', 
                    'void', 
                    [])
+    ## wifi-remote-station-manager.h: void ns3::WifiRemoteStationManager::Reset(ns3::Mac48Address address) [member function]
+    cls.add_method('Reset', 
+                   'void', 
+                   [param('ns3::Mac48Address', 'address')])
     ## wifi-remote-station-manager.h: void ns3::WifiRemoteStationManager::SetFragmentationThreshold(uint32_t threshold) [member function]
     cls.add_method('SetFragmentationThreshold', 
                    'void', 
@@ -3750,11 +3183,91 @@ def register_Ns3WifiRemoteStationManager_methods(root_module, cls):
                    'void', 
                    [], 
                    visibility='protected', is_virtual=True)
-    ## wifi-remote-station-manager.h: ns3::WifiRemoteStation * ns3::WifiRemoteStationManager::CreateStation() [member function]
-    cls.add_method('CreateStation', 
+    ## wifi-remote-station-manager.h: uint32_t ns3::WifiRemoteStationManager::GetNSupported(ns3::WifiRemoteStation const * station) const [member function]
+    cls.add_method('GetNSupported', 
+                   'uint32_t', 
+                   [param('ns3::WifiRemoteStation const *', 'station')], 
+                   is_const=True, visibility='protected')
+    ## wifi-remote-station-manager.h: ns3::WifiMode ns3::WifiRemoteStationManager::GetSupported(ns3::WifiRemoteStation const * station, uint32_t i) const [member function]
+    cls.add_method('GetSupported', 
+                   'ns3::WifiMode', 
+                   [param('ns3::WifiRemoteStation const *', 'station'), param('uint32_t', 'i')], 
+                   is_const=True, visibility='protected')
+    ## wifi-remote-station-manager.h: ns3::WifiRemoteStation * ns3::WifiRemoteStationManager::DoCreateStation() const [member function]
+    cls.add_method('DoCreateStation', 
                    'ns3::WifiRemoteStation *', 
                    [], 
+                   is_pure_virtual=True, is_const=True, visibility='private', is_virtual=True)
+    ## wifi-remote-station-manager.h: ns3::WifiMode ns3::WifiRemoteStationManager::DoGetDataMode(ns3::WifiRemoteStation * station, uint32_t size) [member function]
+    cls.add_method('DoGetDataMode', 
+                   'ns3::WifiMode', 
+                   [param('ns3::WifiRemoteStation *', 'station'), param('uint32_t', 'size')], 
                    is_pure_virtual=True, visibility='private', is_virtual=True)
+    ## wifi-remote-station-manager.h: ns3::WifiMode ns3::WifiRemoteStationManager::DoGetRtsMode(ns3::WifiRemoteStation * station) [member function]
+    cls.add_method('DoGetRtsMode', 
+                   'ns3::WifiMode', 
+                   [param('ns3::WifiRemoteStation *', 'station')], 
+                   is_pure_virtual=True, visibility='private', is_virtual=True)
+    ## wifi-remote-station-manager.h: bool ns3::WifiRemoteStationManager::DoNeedDataRetransmission(ns3::WifiRemoteStation * station, ns3::Ptr<ns3::Packet const> packet, bool normally) [member function]
+    cls.add_method('DoNeedDataRetransmission', 
+                   'bool', 
+                   [param('ns3::WifiRemoteStation *', 'station'), param('ns3::Ptr< ns3::Packet const >', 'packet'), param('bool', 'normally')], 
+                   visibility='private', is_virtual=True)
+    ## wifi-remote-station-manager.h: bool ns3::WifiRemoteStationManager::DoNeedFragmentation(ns3::WifiRemoteStation * station, ns3::Ptr<ns3::Packet const> packet, bool normally) [member function]
+    cls.add_method('DoNeedFragmentation', 
+                   'bool', 
+                   [param('ns3::WifiRemoteStation *', 'station'), param('ns3::Ptr< ns3::Packet const >', 'packet'), param('bool', 'normally')], 
+                   visibility='private', is_virtual=True)
+    ## wifi-remote-station-manager.h: bool ns3::WifiRemoteStationManager::DoNeedRts(ns3::WifiRemoteStation * station, ns3::Ptr<ns3::Packet const> packet, bool normally) [member function]
+    cls.add_method('DoNeedRts', 
+                   'bool', 
+                   [param('ns3::WifiRemoteStation *', 'station'), param('ns3::Ptr< ns3::Packet const >', 'packet'), param('bool', 'normally')], 
+                   visibility='private', is_virtual=True)
+    ## wifi-remote-station-manager.h: bool ns3::WifiRemoteStationManager::DoNeedRtsRetransmission(ns3::WifiRemoteStation * station, ns3::Ptr<ns3::Packet const> packet, bool normally) [member function]
+    cls.add_method('DoNeedRtsRetransmission', 
+                   'bool', 
+                   [param('ns3::WifiRemoteStation *', 'station'), param('ns3::Ptr< ns3::Packet const >', 'packet'), param('bool', 'normally')], 
+                   visibility='private', is_virtual=True)
+    ## wifi-remote-station-manager.h: void ns3::WifiRemoteStationManager::DoReportDataFailed(ns3::WifiRemoteStation * station) [member function]
+    cls.add_method('DoReportDataFailed', 
+                   'void', 
+                   [param('ns3::WifiRemoteStation *', 'station')], 
+                   is_pure_virtual=True, visibility='private', is_virtual=True)
+    ## wifi-remote-station-manager.h: void ns3::WifiRemoteStationManager::DoReportDataOk(ns3::WifiRemoteStation * station, double ackSnr, ns3::WifiMode ackMode, double dataSnr) [member function]
+    cls.add_method('DoReportDataOk', 
+                   'void', 
+                   [param('ns3::WifiRemoteStation *', 'station'), param('double', 'ackSnr'), param('ns3::WifiMode', 'ackMode'), param('double', 'dataSnr')], 
+                   is_pure_virtual=True, visibility='private', is_virtual=True)
+    ## wifi-remote-station-manager.h: void ns3::WifiRemoteStationManager::DoReportFinalDataFailed(ns3::WifiRemoteStation * station) [member function]
+    cls.add_method('DoReportFinalDataFailed', 
+                   'void', 
+                   [param('ns3::WifiRemoteStation *', 'station')], 
+                   is_pure_virtual=True, visibility='private', is_virtual=True)
+    ## wifi-remote-station-manager.h: void ns3::WifiRemoteStationManager::DoReportFinalRtsFailed(ns3::WifiRemoteStation * station) [member function]
+    cls.add_method('DoReportFinalRtsFailed', 
+                   'void', 
+                   [param('ns3::WifiRemoteStation *', 'station')], 
+                   is_pure_virtual=True, visibility='private', is_virtual=True)
+    ## wifi-remote-station-manager.h: void ns3::WifiRemoteStationManager::DoReportRtsFailed(ns3::WifiRemoteStation * station) [member function]
+    cls.add_method('DoReportRtsFailed', 
+                   'void', 
+                   [param('ns3::WifiRemoteStation *', 'station')], 
+                   is_pure_virtual=True, visibility='private', is_virtual=True)
+    ## wifi-remote-station-manager.h: void ns3::WifiRemoteStationManager::DoReportRtsOk(ns3::WifiRemoteStation * station, double ctsSnr, ns3::WifiMode ctsMode, double rtsSnr) [member function]
+    cls.add_method('DoReportRtsOk', 
+                   'void', 
+                   [param('ns3::WifiRemoteStation *', 'station'), param('double', 'ctsSnr'), param('ns3::WifiMode', 'ctsMode'), param('double', 'rtsSnr')], 
+                   is_pure_virtual=True, visibility='private', is_virtual=True)
+    ## wifi-remote-station-manager.h: void ns3::WifiRemoteStationManager::DoReportRxOk(ns3::WifiRemoteStation * station, double rxSnr, ns3::WifiMode txMode) [member function]
+    cls.add_method('DoReportRxOk', 
+                   'void', 
+                   [param('ns3::WifiRemoteStation *', 'station'), param('double', 'rxSnr'), param('ns3::WifiMode', 'txMode')], 
+                   is_pure_virtual=True, visibility='private', is_virtual=True)
+    ## wifi-remote-station-manager.h: bool ns3::WifiRemoteStationManager::IsLowLatency() const [member function]
+    cls.add_method('IsLowLatency', 
+                   'bool', 
+                   [], 
+                   is_pure_virtual=True, is_const=True, visibility='private', is_virtual=True)
     return
 
 def register_Ns3YansWifiPhy_methods(root_module, cls):
@@ -3988,26 +3501,143 @@ def register_Ns3YansWifiPhy_methods(root_module, cls):
                    visibility='private', is_virtual=True)
     return
 
-def register_Ns3AarfWifiRemoteStation_methods(root_module, cls):
-    ## aarf-wifi-manager.h: ns3::AarfWifiRemoteStation::AarfWifiRemoteStation(ns3::AarfWifiRemoteStation const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::AarfWifiRemoteStation const &', 'arg0')])
-    ## aarf-wifi-manager.h: ns3::AarfWifiRemoteStation::AarfWifiRemoteStation(ns3::Ptr<ns3::AarfWifiManager> stations) [constructor]
-    cls.add_constructor([param('ns3::Ptr< ns3::AarfWifiManager >', 'stations')])
-    ## aarf-wifi-manager.h: ns3::Ptr<ns3::WifiRemoteStationManager> ns3::AarfWifiRemoteStation::GetManager() const [member function]
-    cls.add_method('GetManager', 
-                   'ns3::Ptr< ns3::WifiRemoteStationManager >', 
+def register_Ns3AarfWifiManager_methods(root_module, cls):
+    ## aarf-wifi-manager.h: ns3::AarfWifiManager::AarfWifiManager(ns3::AarfWifiManager const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::AarfWifiManager const &', 'arg0')])
+    ## aarf-wifi-manager.h: ns3::AarfWifiManager::AarfWifiManager() [constructor]
+    cls.add_constructor([])
+    ## aarf-wifi-manager.h: static ns3::TypeId ns3::AarfWifiManager::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## aarf-wifi-manager.h: ns3::WifiRemoteStation * ns3::AarfWifiManager::DoCreateStation() const [member function]
+    cls.add_method('DoCreateStation', 
+                   'ns3::WifiRemoteStation *', 
                    [], 
                    is_const=True, visibility='private', is_virtual=True)
-    ## aarf-wifi-manager.h: void ns3::AarfWifiRemoteStation::ReportFailure() [member function]
-    cls.add_method('ReportFailure', 
-                   'void', 
-                   [], 
+    ## aarf-wifi-manager.h: ns3::WifiMode ns3::AarfWifiManager::DoGetDataMode(ns3::WifiRemoteStation * station, uint32_t size) [member function]
+    cls.add_method('DoGetDataMode', 
+                   'ns3::WifiMode', 
+                   [param('ns3::WifiRemoteStation *', 'station'), param('uint32_t', 'size')], 
                    visibility='private', is_virtual=True)
-    ## aarf-wifi-manager.h: void ns3::AarfWifiRemoteStation::ReportRecoveryFailure() [member function]
-    cls.add_method('ReportRecoveryFailure', 
-                   'void', 
-                   [], 
+    ## aarf-wifi-manager.h: ns3::WifiMode ns3::AarfWifiManager::DoGetRtsMode(ns3::WifiRemoteStation * station) [member function]
+    cls.add_method('DoGetRtsMode', 
+                   'ns3::WifiMode', 
+                   [param('ns3::WifiRemoteStation *', 'station')], 
                    visibility='private', is_virtual=True)
+    ## aarf-wifi-manager.h: void ns3::AarfWifiManager::DoReportDataFailed(ns3::WifiRemoteStation * station) [member function]
+    cls.add_method('DoReportDataFailed', 
+                   'void', 
+                   [param('ns3::WifiRemoteStation *', 'station')], 
+                   visibility='private', is_virtual=True)
+    ## aarf-wifi-manager.h: void ns3::AarfWifiManager::DoReportDataOk(ns3::WifiRemoteStation * station, double ackSnr, ns3::WifiMode ackMode, double dataSnr) [member function]
+    cls.add_method('DoReportDataOk', 
+                   'void', 
+                   [param('ns3::WifiRemoteStation *', 'station'), param('double', 'ackSnr'), param('ns3::WifiMode', 'ackMode'), param('double', 'dataSnr')], 
+                   visibility='private', is_virtual=True)
+    ## aarf-wifi-manager.h: void ns3::AarfWifiManager::DoReportFinalDataFailed(ns3::WifiRemoteStation * station) [member function]
+    cls.add_method('DoReportFinalDataFailed', 
+                   'void', 
+                   [param('ns3::WifiRemoteStation *', 'station')], 
+                   visibility='private', is_virtual=True)
+    ## aarf-wifi-manager.h: void ns3::AarfWifiManager::DoReportFinalRtsFailed(ns3::WifiRemoteStation * station) [member function]
+    cls.add_method('DoReportFinalRtsFailed', 
+                   'void', 
+                   [param('ns3::WifiRemoteStation *', 'station')], 
+                   visibility='private', is_virtual=True)
+    ## aarf-wifi-manager.h: void ns3::AarfWifiManager::DoReportRtsFailed(ns3::WifiRemoteStation * station) [member function]
+    cls.add_method('DoReportRtsFailed', 
+                   'void', 
+                   [param('ns3::WifiRemoteStation *', 'station')], 
+                   visibility='private', is_virtual=True)
+    ## aarf-wifi-manager.h: void ns3::AarfWifiManager::DoReportRtsOk(ns3::WifiRemoteStation * station, double ctsSnr, ns3::WifiMode ctsMode, double rtsSnr) [member function]
+    cls.add_method('DoReportRtsOk', 
+                   'void', 
+                   [param('ns3::WifiRemoteStation *', 'station'), param('double', 'ctsSnr'), param('ns3::WifiMode', 'ctsMode'), param('double', 'rtsSnr')], 
+                   visibility='private', is_virtual=True)
+    ## aarf-wifi-manager.h: void ns3::AarfWifiManager::DoReportRxOk(ns3::WifiRemoteStation * station, double rxSnr, ns3::WifiMode txMode) [member function]
+    cls.add_method('DoReportRxOk', 
+                   'void', 
+                   [param('ns3::WifiRemoteStation *', 'station'), param('double', 'rxSnr'), param('ns3::WifiMode', 'txMode')], 
+                   visibility='private', is_virtual=True)
+    ## aarf-wifi-manager.h: bool ns3::AarfWifiManager::IsLowLatency() const [member function]
+    cls.add_method('IsLowLatency', 
+                   'bool', 
+                   [], 
+                   is_const=True, visibility='private', is_virtual=True)
+    return
+
+def register_Ns3AarfcdWifiManager_methods(root_module, cls):
+    ## aarfcd-wifi-manager.h: ns3::AarfcdWifiManager::AarfcdWifiManager(ns3::AarfcdWifiManager const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::AarfcdWifiManager const &', 'arg0')])
+    ## aarfcd-wifi-manager.h: ns3::AarfcdWifiManager::AarfcdWifiManager() [constructor]
+    cls.add_constructor([])
+    ## aarfcd-wifi-manager.h: static ns3::TypeId ns3::AarfcdWifiManager::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## aarfcd-wifi-manager.h: ns3::WifiRemoteStation * ns3::AarfcdWifiManager::DoCreateStation() const [member function]
+    cls.add_method('DoCreateStation', 
+                   'ns3::WifiRemoteStation *', 
+                   [], 
+                   is_const=True, visibility='private', is_virtual=True)
+    ## aarfcd-wifi-manager.h: ns3::WifiMode ns3::AarfcdWifiManager::DoGetDataMode(ns3::WifiRemoteStation * station, uint32_t size) [member function]
+    cls.add_method('DoGetDataMode', 
+                   'ns3::WifiMode', 
+                   [param('ns3::WifiRemoteStation *', 'station'), param('uint32_t', 'size')], 
+                   visibility='private', is_virtual=True)
+    ## aarfcd-wifi-manager.h: ns3::WifiMode ns3::AarfcdWifiManager::DoGetRtsMode(ns3::WifiRemoteStation * station) [member function]
+    cls.add_method('DoGetRtsMode', 
+                   'ns3::WifiMode', 
+                   [param('ns3::WifiRemoteStation *', 'station')], 
+                   visibility='private', is_virtual=True)
+    ## aarfcd-wifi-manager.h: bool ns3::AarfcdWifiManager::DoNeedRts(ns3::WifiRemoteStation * station, ns3::Ptr<ns3::Packet const> packet, bool normally) [member function]
+    cls.add_method('DoNeedRts', 
+                   'bool', 
+                   [param('ns3::WifiRemoteStation *', 'station'), param('ns3::Ptr< ns3::Packet const >', 'packet'), param('bool', 'normally')], 
+                   visibility='private', is_virtual=True)
+    ## aarfcd-wifi-manager.h: void ns3::AarfcdWifiManager::DoReportDataFailed(ns3::WifiRemoteStation * station) [member function]
+    cls.add_method('DoReportDataFailed', 
+                   'void', 
+                   [param('ns3::WifiRemoteStation *', 'station')], 
+                   visibility='private', is_virtual=True)
+    ## aarfcd-wifi-manager.h: void ns3::AarfcdWifiManager::DoReportDataOk(ns3::WifiRemoteStation * station, double ackSnr, ns3::WifiMode ackMode, double dataSnr) [member function]
+    cls.add_method('DoReportDataOk', 
+                   'void', 
+                   [param('ns3::WifiRemoteStation *', 'station'), param('double', 'ackSnr'), param('ns3::WifiMode', 'ackMode'), param('double', 'dataSnr')], 
+                   visibility='private', is_virtual=True)
+    ## aarfcd-wifi-manager.h: void ns3::AarfcdWifiManager::DoReportFinalDataFailed(ns3::WifiRemoteStation * station) [member function]
+    cls.add_method('DoReportFinalDataFailed', 
+                   'void', 
+                   [param('ns3::WifiRemoteStation *', 'station')], 
+                   visibility='private', is_virtual=True)
+    ## aarfcd-wifi-manager.h: void ns3::AarfcdWifiManager::DoReportFinalRtsFailed(ns3::WifiRemoteStation * station) [member function]
+    cls.add_method('DoReportFinalRtsFailed', 
+                   'void', 
+                   [param('ns3::WifiRemoteStation *', 'station')], 
+                   visibility='private', is_virtual=True)
+    ## aarfcd-wifi-manager.h: void ns3::AarfcdWifiManager::DoReportRtsFailed(ns3::WifiRemoteStation * station) [member function]
+    cls.add_method('DoReportRtsFailed', 
+                   'void', 
+                   [param('ns3::WifiRemoteStation *', 'station')], 
+                   visibility='private', is_virtual=True)
+    ## aarfcd-wifi-manager.h: void ns3::AarfcdWifiManager::DoReportRtsOk(ns3::WifiRemoteStation * station, double ctsSnr, ns3::WifiMode ctsMode, double rtsSnr) [member function]
+    cls.add_method('DoReportRtsOk', 
+                   'void', 
+                   [param('ns3::WifiRemoteStation *', 'station'), param('double', 'ctsSnr'), param('ns3::WifiMode', 'ctsMode'), param('double', 'rtsSnr')], 
+                   visibility='private', is_virtual=True)
+    ## aarfcd-wifi-manager.h: void ns3::AarfcdWifiManager::DoReportRxOk(ns3::WifiRemoteStation * station, double rxSnr, ns3::WifiMode txMode) [member function]
+    cls.add_method('DoReportRxOk', 
+                   'void', 
+                   [param('ns3::WifiRemoteStation *', 'station'), param('double', 'rxSnr'), param('ns3::WifiMode', 'txMode')], 
+                   visibility='private', is_virtual=True)
+    ## aarfcd-wifi-manager.h: bool ns3::AarfcdWifiManager::IsLowLatency() const [member function]
+    cls.add_method('IsLowLatency', 
+                   'bool', 
+                   [], 
+                   is_const=True, visibility='private', is_virtual=True)
     return
 
 def register_Ns3AdhocWifiMac_methods(root_module, cls):
@@ -4165,11 +3795,61 @@ def register_Ns3AmrrWifiManager_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
-    ## amrr-wifi-manager.h: ns3::WifiRemoteStation * ns3::AmrrWifiManager::CreateStation() [member function]
-    cls.add_method('CreateStation', 
+    ## amrr-wifi-manager.h: ns3::WifiRemoteStation * ns3::AmrrWifiManager::DoCreateStation() const [member function]
+    cls.add_method('DoCreateStation', 
                    'ns3::WifiRemoteStation *', 
                    [], 
+                   is_const=True, visibility='private', is_virtual=True)
+    ## amrr-wifi-manager.h: ns3::WifiMode ns3::AmrrWifiManager::DoGetDataMode(ns3::WifiRemoteStation * station, uint32_t size) [member function]
+    cls.add_method('DoGetDataMode', 
+                   'ns3::WifiMode', 
+                   [param('ns3::WifiRemoteStation *', 'station'), param('uint32_t', 'size')], 
                    visibility='private', is_virtual=True)
+    ## amrr-wifi-manager.h: ns3::WifiMode ns3::AmrrWifiManager::DoGetRtsMode(ns3::WifiRemoteStation * station) [member function]
+    cls.add_method('DoGetRtsMode', 
+                   'ns3::WifiMode', 
+                   [param('ns3::WifiRemoteStation *', 'station')], 
+                   visibility='private', is_virtual=True)
+    ## amrr-wifi-manager.h: void ns3::AmrrWifiManager::DoReportDataFailed(ns3::WifiRemoteStation * station) [member function]
+    cls.add_method('DoReportDataFailed', 
+                   'void', 
+                   [param('ns3::WifiRemoteStation *', 'station')], 
+                   visibility='private', is_virtual=True)
+    ## amrr-wifi-manager.h: void ns3::AmrrWifiManager::DoReportDataOk(ns3::WifiRemoteStation * station, double ackSnr, ns3::WifiMode ackMode, double dataSnr) [member function]
+    cls.add_method('DoReportDataOk', 
+                   'void', 
+                   [param('ns3::WifiRemoteStation *', 'station'), param('double', 'ackSnr'), param('ns3::WifiMode', 'ackMode'), param('double', 'dataSnr')], 
+                   visibility='private', is_virtual=True)
+    ## amrr-wifi-manager.h: void ns3::AmrrWifiManager::DoReportFinalDataFailed(ns3::WifiRemoteStation * station) [member function]
+    cls.add_method('DoReportFinalDataFailed', 
+                   'void', 
+                   [param('ns3::WifiRemoteStation *', 'station')], 
+                   visibility='private', is_virtual=True)
+    ## amrr-wifi-manager.h: void ns3::AmrrWifiManager::DoReportFinalRtsFailed(ns3::WifiRemoteStation * station) [member function]
+    cls.add_method('DoReportFinalRtsFailed', 
+                   'void', 
+                   [param('ns3::WifiRemoteStation *', 'station')], 
+                   visibility='private', is_virtual=True)
+    ## amrr-wifi-manager.h: void ns3::AmrrWifiManager::DoReportRtsFailed(ns3::WifiRemoteStation * station) [member function]
+    cls.add_method('DoReportRtsFailed', 
+                   'void', 
+                   [param('ns3::WifiRemoteStation *', 'station')], 
+                   visibility='private', is_virtual=True)
+    ## amrr-wifi-manager.h: void ns3::AmrrWifiManager::DoReportRtsOk(ns3::WifiRemoteStation * station, double ctsSnr, ns3::WifiMode ctsMode, double rtsSnr) [member function]
+    cls.add_method('DoReportRtsOk', 
+                   'void', 
+                   [param('ns3::WifiRemoteStation *', 'station'), param('double', 'ctsSnr'), param('ns3::WifiMode', 'ctsMode'), param('double', 'rtsSnr')], 
+                   visibility='private', is_virtual=True)
+    ## amrr-wifi-manager.h: void ns3::AmrrWifiManager::DoReportRxOk(ns3::WifiRemoteStation * station, double rxSnr, ns3::WifiMode txMode) [member function]
+    cls.add_method('DoReportRxOk', 
+                   'void', 
+                   [param('ns3::WifiRemoteStation *', 'station'), param('double', 'rxSnr'), param('ns3::WifiMode', 'txMode')], 
+                   visibility='private', is_virtual=True)
+    ## amrr-wifi-manager.h: bool ns3::AmrrWifiManager::IsLowLatency() const [member function]
+    cls.add_method('IsLowLatency', 
+                   'bool', 
+                   [], 
+                   is_const=True, visibility='private', is_virtual=True)
     return
 
 def register_Ns3AmsduSubframeHeader_methods(root_module, cls):
@@ -4246,11 +3926,133 @@ def register_Ns3ArfWifiManager_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
-    ## arf-wifi-manager.h: ns3::WifiRemoteStation * ns3::ArfWifiManager::CreateStation() [member function]
-    cls.add_method('CreateStation', 
+    ## arf-wifi-manager.h: ns3::WifiRemoteStation * ns3::ArfWifiManager::DoCreateStation() const [member function]
+    cls.add_method('DoCreateStation', 
                    'ns3::WifiRemoteStation *', 
                    [], 
+                   is_const=True, visibility='private', is_virtual=True)
+    ## arf-wifi-manager.h: ns3::WifiMode ns3::ArfWifiManager::DoGetDataMode(ns3::WifiRemoteStation * station, uint32_t size) [member function]
+    cls.add_method('DoGetDataMode', 
+                   'ns3::WifiMode', 
+                   [param('ns3::WifiRemoteStation *', 'station'), param('uint32_t', 'size')], 
                    visibility='private', is_virtual=True)
+    ## arf-wifi-manager.h: ns3::WifiMode ns3::ArfWifiManager::DoGetRtsMode(ns3::WifiRemoteStation * station) [member function]
+    cls.add_method('DoGetRtsMode', 
+                   'ns3::WifiMode', 
+                   [param('ns3::WifiRemoteStation *', 'station')], 
+                   visibility='private', is_virtual=True)
+    ## arf-wifi-manager.h: void ns3::ArfWifiManager::DoReportDataFailed(ns3::WifiRemoteStation * station) [member function]
+    cls.add_method('DoReportDataFailed', 
+                   'void', 
+                   [param('ns3::WifiRemoteStation *', 'station')], 
+                   visibility='private', is_virtual=True)
+    ## arf-wifi-manager.h: void ns3::ArfWifiManager::DoReportDataOk(ns3::WifiRemoteStation * station, double ackSnr, ns3::WifiMode ackMode, double dataSnr) [member function]
+    cls.add_method('DoReportDataOk', 
+                   'void', 
+                   [param('ns3::WifiRemoteStation *', 'station'), param('double', 'ackSnr'), param('ns3::WifiMode', 'ackMode'), param('double', 'dataSnr')], 
+                   visibility='private', is_virtual=True)
+    ## arf-wifi-manager.h: void ns3::ArfWifiManager::DoReportFinalDataFailed(ns3::WifiRemoteStation * station) [member function]
+    cls.add_method('DoReportFinalDataFailed', 
+                   'void', 
+                   [param('ns3::WifiRemoteStation *', 'station')], 
+                   visibility='private', is_virtual=True)
+    ## arf-wifi-manager.h: void ns3::ArfWifiManager::DoReportFinalRtsFailed(ns3::WifiRemoteStation * station) [member function]
+    cls.add_method('DoReportFinalRtsFailed', 
+                   'void', 
+                   [param('ns3::WifiRemoteStation *', 'station')], 
+                   visibility='private', is_virtual=True)
+    ## arf-wifi-manager.h: void ns3::ArfWifiManager::DoReportRtsFailed(ns3::WifiRemoteStation * station) [member function]
+    cls.add_method('DoReportRtsFailed', 
+                   'void', 
+                   [param('ns3::WifiRemoteStation *', 'station')], 
+                   visibility='private', is_virtual=True)
+    ## arf-wifi-manager.h: void ns3::ArfWifiManager::DoReportRtsOk(ns3::WifiRemoteStation * station, double ctsSnr, ns3::WifiMode ctsMode, double rtsSnr) [member function]
+    cls.add_method('DoReportRtsOk', 
+                   'void', 
+                   [param('ns3::WifiRemoteStation *', 'station'), param('double', 'ctsSnr'), param('ns3::WifiMode', 'ctsMode'), param('double', 'rtsSnr')], 
+                   visibility='private', is_virtual=True)
+    ## arf-wifi-manager.h: void ns3::ArfWifiManager::DoReportRxOk(ns3::WifiRemoteStation * station, double rxSnr, ns3::WifiMode txMode) [member function]
+    cls.add_method('DoReportRxOk', 
+                   'void', 
+                   [param('ns3::WifiRemoteStation *', 'station'), param('double', 'rxSnr'), param('ns3::WifiMode', 'txMode')], 
+                   visibility='private', is_virtual=True)
+    ## arf-wifi-manager.h: bool ns3::ArfWifiManager::IsLowLatency() const [member function]
+    cls.add_method('IsLowLatency', 
+                   'bool', 
+                   [], 
+                   is_const=True, visibility='private', is_virtual=True)
+    return
+
+def register_Ns3CaraWifiManager_methods(root_module, cls):
+    ## cara-wifi-manager.h: ns3::CaraWifiManager::CaraWifiManager(ns3::CaraWifiManager const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::CaraWifiManager const &', 'arg0')])
+    ## cara-wifi-manager.h: ns3::CaraWifiManager::CaraWifiManager() [constructor]
+    cls.add_constructor([])
+    ## cara-wifi-manager.h: static ns3::TypeId ns3::CaraWifiManager::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## cara-wifi-manager.h: ns3::WifiRemoteStation * ns3::CaraWifiManager::DoCreateStation() const [member function]
+    cls.add_method('DoCreateStation', 
+                   'ns3::WifiRemoteStation *', 
+                   [], 
+                   is_const=True, visibility='private', is_virtual=True)
+    ## cara-wifi-manager.h: ns3::WifiMode ns3::CaraWifiManager::DoGetDataMode(ns3::WifiRemoteStation * station, uint32_t size) [member function]
+    cls.add_method('DoGetDataMode', 
+                   'ns3::WifiMode', 
+                   [param('ns3::WifiRemoteStation *', 'station'), param('uint32_t', 'size')], 
+                   visibility='private', is_virtual=True)
+    ## cara-wifi-manager.h: ns3::WifiMode ns3::CaraWifiManager::DoGetRtsMode(ns3::WifiRemoteStation * station) [member function]
+    cls.add_method('DoGetRtsMode', 
+                   'ns3::WifiMode', 
+                   [param('ns3::WifiRemoteStation *', 'station')], 
+                   visibility='private', is_virtual=True)
+    ## cara-wifi-manager.h: bool ns3::CaraWifiManager::DoNeedRts(ns3::WifiRemoteStation * station, ns3::Ptr<ns3::Packet const> packet, bool normally) [member function]
+    cls.add_method('DoNeedRts', 
+                   'bool', 
+                   [param('ns3::WifiRemoteStation *', 'station'), param('ns3::Ptr< ns3::Packet const >', 'packet'), param('bool', 'normally')], 
+                   visibility='private', is_virtual=True)
+    ## cara-wifi-manager.h: void ns3::CaraWifiManager::DoReportDataFailed(ns3::WifiRemoteStation * station) [member function]
+    cls.add_method('DoReportDataFailed', 
+                   'void', 
+                   [param('ns3::WifiRemoteStation *', 'station')], 
+                   visibility='private', is_virtual=True)
+    ## cara-wifi-manager.h: void ns3::CaraWifiManager::DoReportDataOk(ns3::WifiRemoteStation * station, double ackSnr, ns3::WifiMode ackMode, double dataSnr) [member function]
+    cls.add_method('DoReportDataOk', 
+                   'void', 
+                   [param('ns3::WifiRemoteStation *', 'station'), param('double', 'ackSnr'), param('ns3::WifiMode', 'ackMode'), param('double', 'dataSnr')], 
+                   visibility='private', is_virtual=True)
+    ## cara-wifi-manager.h: void ns3::CaraWifiManager::DoReportFinalDataFailed(ns3::WifiRemoteStation * station) [member function]
+    cls.add_method('DoReportFinalDataFailed', 
+                   'void', 
+                   [param('ns3::WifiRemoteStation *', 'station')], 
+                   visibility='private', is_virtual=True)
+    ## cara-wifi-manager.h: void ns3::CaraWifiManager::DoReportFinalRtsFailed(ns3::WifiRemoteStation * station) [member function]
+    cls.add_method('DoReportFinalRtsFailed', 
+                   'void', 
+                   [param('ns3::WifiRemoteStation *', 'station')], 
+                   visibility='private', is_virtual=True)
+    ## cara-wifi-manager.h: void ns3::CaraWifiManager::DoReportRtsFailed(ns3::WifiRemoteStation * station) [member function]
+    cls.add_method('DoReportRtsFailed', 
+                   'void', 
+                   [param('ns3::WifiRemoteStation *', 'station')], 
+                   visibility='private', is_virtual=True)
+    ## cara-wifi-manager.h: void ns3::CaraWifiManager::DoReportRtsOk(ns3::WifiRemoteStation * station, double ctsSnr, ns3::WifiMode ctsMode, double rtsSnr) [member function]
+    cls.add_method('DoReportRtsOk', 
+                   'void', 
+                   [param('ns3::WifiRemoteStation *', 'station'), param('double', 'ctsSnr'), param('ns3::WifiMode', 'ctsMode'), param('double', 'rtsSnr')], 
+                   visibility='private', is_virtual=True)
+    ## cara-wifi-manager.h: void ns3::CaraWifiManager::DoReportRxOk(ns3::WifiRemoteStation * station, double rxSnr, ns3::WifiMode txMode) [member function]
+    cls.add_method('DoReportRxOk', 
+                   'void', 
+                   [param('ns3::WifiRemoteStation *', 'station'), param('double', 'rxSnr'), param('ns3::WifiMode', 'txMode')], 
+                   visibility='private', is_virtual=True)
+    ## cara-wifi-manager.h: bool ns3::CaraWifiManager::IsLowLatency() const [member function]
+    cls.add_method('IsLowLatency', 
+                   'bool', 
+                   [], 
+                   is_const=True, visibility='private', is_virtual=True)
     return
 
 def register_Ns3ConstantRateWifiManager_methods(root_module, cls):
@@ -4258,26 +4060,66 @@ def register_Ns3ConstantRateWifiManager_methods(root_module, cls):
     cls.add_constructor([param('ns3::ConstantRateWifiManager const &', 'arg0')])
     ## constant-rate-wifi-manager.h: ns3::ConstantRateWifiManager::ConstantRateWifiManager() [constructor]
     cls.add_constructor([])
-    ## constant-rate-wifi-manager.h: ns3::WifiMode ns3::ConstantRateWifiManager::GetCtlMode() const [member function]
-    cls.add_method('GetCtlMode', 
-                   'ns3::WifiMode', 
-                   [], 
-                   is_const=True)
-    ## constant-rate-wifi-manager.h: ns3::WifiMode ns3::ConstantRateWifiManager::GetDataMode() const [member function]
-    cls.add_method('GetDataMode', 
-                   'ns3::WifiMode', 
-                   [], 
-                   is_const=True)
     ## constant-rate-wifi-manager.h: static ns3::TypeId ns3::ConstantRateWifiManager::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
-    ## constant-rate-wifi-manager.h: ns3::WifiRemoteStation * ns3::ConstantRateWifiManager::CreateStation() [member function]
-    cls.add_method('CreateStation', 
+    ## constant-rate-wifi-manager.h: ns3::WifiRemoteStation * ns3::ConstantRateWifiManager::DoCreateStation() const [member function]
+    cls.add_method('DoCreateStation', 
                    'ns3::WifiRemoteStation *', 
                    [], 
+                   is_const=True, visibility='private', is_virtual=True)
+    ## constant-rate-wifi-manager.h: ns3::WifiMode ns3::ConstantRateWifiManager::DoGetDataMode(ns3::WifiRemoteStation * station, uint32_t size) [member function]
+    cls.add_method('DoGetDataMode', 
+                   'ns3::WifiMode', 
+                   [param('ns3::WifiRemoteStation *', 'station'), param('uint32_t', 'size')], 
                    visibility='private', is_virtual=True)
+    ## constant-rate-wifi-manager.h: ns3::WifiMode ns3::ConstantRateWifiManager::DoGetRtsMode(ns3::WifiRemoteStation * station) [member function]
+    cls.add_method('DoGetRtsMode', 
+                   'ns3::WifiMode', 
+                   [param('ns3::WifiRemoteStation *', 'station')], 
+                   visibility='private', is_virtual=True)
+    ## constant-rate-wifi-manager.h: void ns3::ConstantRateWifiManager::DoReportDataFailed(ns3::WifiRemoteStation * station) [member function]
+    cls.add_method('DoReportDataFailed', 
+                   'void', 
+                   [param('ns3::WifiRemoteStation *', 'station')], 
+                   visibility='private', is_virtual=True)
+    ## constant-rate-wifi-manager.h: void ns3::ConstantRateWifiManager::DoReportDataOk(ns3::WifiRemoteStation * station, double ackSnr, ns3::WifiMode ackMode, double dataSnr) [member function]
+    cls.add_method('DoReportDataOk', 
+                   'void', 
+                   [param('ns3::WifiRemoteStation *', 'station'), param('double', 'ackSnr'), param('ns3::WifiMode', 'ackMode'), param('double', 'dataSnr')], 
+                   visibility='private', is_virtual=True)
+    ## constant-rate-wifi-manager.h: void ns3::ConstantRateWifiManager::DoReportFinalDataFailed(ns3::WifiRemoteStation * station) [member function]
+    cls.add_method('DoReportFinalDataFailed', 
+                   'void', 
+                   [param('ns3::WifiRemoteStation *', 'station')], 
+                   visibility='private', is_virtual=True)
+    ## constant-rate-wifi-manager.h: void ns3::ConstantRateWifiManager::DoReportFinalRtsFailed(ns3::WifiRemoteStation * station) [member function]
+    cls.add_method('DoReportFinalRtsFailed', 
+                   'void', 
+                   [param('ns3::WifiRemoteStation *', 'station')], 
+                   visibility='private', is_virtual=True)
+    ## constant-rate-wifi-manager.h: void ns3::ConstantRateWifiManager::DoReportRtsFailed(ns3::WifiRemoteStation * station) [member function]
+    cls.add_method('DoReportRtsFailed', 
+                   'void', 
+                   [param('ns3::WifiRemoteStation *', 'station')], 
+                   visibility='private', is_virtual=True)
+    ## constant-rate-wifi-manager.h: void ns3::ConstantRateWifiManager::DoReportRtsOk(ns3::WifiRemoteStation * station, double ctsSnr, ns3::WifiMode ctsMode, double rtsSnr) [member function]
+    cls.add_method('DoReportRtsOk', 
+                   'void', 
+                   [param('ns3::WifiRemoteStation *', 'station'), param('double', 'ctsSnr'), param('ns3::WifiMode', 'ctsMode'), param('double', 'rtsSnr')], 
+                   visibility='private', is_virtual=True)
+    ## constant-rate-wifi-manager.h: void ns3::ConstantRateWifiManager::DoReportRxOk(ns3::WifiRemoteStation * station, double rxSnr, ns3::WifiMode txMode) [member function]
+    cls.add_method('DoReportRxOk', 
+                   'void', 
+                   [param('ns3::WifiRemoteStation *', 'station'), param('double', 'rxSnr'), param('ns3::WifiMode', 'txMode')], 
+                   visibility='private', is_virtual=True)
+    ## constant-rate-wifi-manager.h: bool ns3::ConstantRateWifiManager::IsLowLatency() const [member function]
+    cls.add_method('IsLowLatency', 
+                   'bool', 
+                   [], 
+                   is_const=True, visibility='private', is_virtual=True)
     return
 
 def register_Ns3CtrlBAckRequestHeader_methods(root_module, cls):
@@ -4711,11 +4553,6 @@ def register_Ns3EdcaTxopN_methods(root_module, cls):
     cls.add_method('GetFragmentOffset', 
                    'uint32_t', 
                    [])
-    ## edca-txop-n.h: ns3::WifiRemoteStation * ns3::EdcaTxopN::GetStation(ns3::Mac48Address to) const [member function]
-    cls.add_method('GetStation', 
-                   'ns3::WifiRemoteStation *', 
-                   [param('ns3::Mac48Address', 'to')], 
-                   is_const=True)
     ## edca-txop-n.h: bool ns3::EdcaTxopN::IsLastFragment() const [member function]
     cls.add_method('IsLastFragment', 
                    'bool', 
@@ -4791,15 +4628,6 @@ def register_Ns3IdealWifiManager_methods(root_module, cls):
     cls.add_constructor([param('ns3::IdealWifiManager const &', 'arg0')])
     ## ideal-wifi-manager.h: ns3::IdealWifiManager::IdealWifiManager() [constructor]
     cls.add_constructor([])
-    ## ideal-wifi-manager.h: void ns3::IdealWifiManager::AddModeSnrThreshold(ns3::WifiMode mode, double ber) [member function]
-    cls.add_method('AddModeSnrThreshold', 
-                   'void', 
-                   [param('ns3::WifiMode', 'mode'), param('double', 'ber')])
-    ## ideal-wifi-manager.h: double ns3::IdealWifiManager::GetSnrThreshold(ns3::WifiMode mode) const [member function]
-    cls.add_method('GetSnrThreshold', 
-                   'double', 
-                   [param('ns3::WifiMode', 'mode')], 
-                   is_const=True)
     ## ideal-wifi-manager.h: static ns3::TypeId ns3::IdealWifiManager::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
@@ -4810,11 +4638,61 @@ def register_Ns3IdealWifiManager_methods(root_module, cls):
                    'void', 
                    [param('ns3::Ptr< ns3::WifiPhy >', 'phy')], 
                    is_virtual=True)
-    ## ideal-wifi-manager.h: ns3::WifiRemoteStation * ns3::IdealWifiManager::CreateStation() [member function]
-    cls.add_method('CreateStation', 
+    ## ideal-wifi-manager.h: ns3::WifiRemoteStation * ns3::IdealWifiManager::DoCreateStation() const [member function]
+    cls.add_method('DoCreateStation', 
                    'ns3::WifiRemoteStation *', 
                    [], 
+                   is_const=True, visibility='private', is_virtual=True)
+    ## ideal-wifi-manager.h: ns3::WifiMode ns3::IdealWifiManager::DoGetDataMode(ns3::WifiRemoteStation * station, uint32_t size) [member function]
+    cls.add_method('DoGetDataMode', 
+                   'ns3::WifiMode', 
+                   [param('ns3::WifiRemoteStation *', 'station'), param('uint32_t', 'size')], 
                    visibility='private', is_virtual=True)
+    ## ideal-wifi-manager.h: ns3::WifiMode ns3::IdealWifiManager::DoGetRtsMode(ns3::WifiRemoteStation * station) [member function]
+    cls.add_method('DoGetRtsMode', 
+                   'ns3::WifiMode', 
+                   [param('ns3::WifiRemoteStation *', 'station')], 
+                   visibility='private', is_virtual=True)
+    ## ideal-wifi-manager.h: void ns3::IdealWifiManager::DoReportDataFailed(ns3::WifiRemoteStation * station) [member function]
+    cls.add_method('DoReportDataFailed', 
+                   'void', 
+                   [param('ns3::WifiRemoteStation *', 'station')], 
+                   visibility='private', is_virtual=True)
+    ## ideal-wifi-manager.h: void ns3::IdealWifiManager::DoReportDataOk(ns3::WifiRemoteStation * station, double ackSnr, ns3::WifiMode ackMode, double dataSnr) [member function]
+    cls.add_method('DoReportDataOk', 
+                   'void', 
+                   [param('ns3::WifiRemoteStation *', 'station'), param('double', 'ackSnr'), param('ns3::WifiMode', 'ackMode'), param('double', 'dataSnr')], 
+                   visibility='private', is_virtual=True)
+    ## ideal-wifi-manager.h: void ns3::IdealWifiManager::DoReportFinalDataFailed(ns3::WifiRemoteStation * station) [member function]
+    cls.add_method('DoReportFinalDataFailed', 
+                   'void', 
+                   [param('ns3::WifiRemoteStation *', 'station')], 
+                   visibility='private', is_virtual=True)
+    ## ideal-wifi-manager.h: void ns3::IdealWifiManager::DoReportFinalRtsFailed(ns3::WifiRemoteStation * station) [member function]
+    cls.add_method('DoReportFinalRtsFailed', 
+                   'void', 
+                   [param('ns3::WifiRemoteStation *', 'station')], 
+                   visibility='private', is_virtual=True)
+    ## ideal-wifi-manager.h: void ns3::IdealWifiManager::DoReportRtsFailed(ns3::WifiRemoteStation * station) [member function]
+    cls.add_method('DoReportRtsFailed', 
+                   'void', 
+                   [param('ns3::WifiRemoteStation *', 'station')], 
+                   visibility='private', is_virtual=True)
+    ## ideal-wifi-manager.h: void ns3::IdealWifiManager::DoReportRtsOk(ns3::WifiRemoteStation * station, double ctsSnr, ns3::WifiMode ctsMode, double rtsSnr) [member function]
+    cls.add_method('DoReportRtsOk', 
+                   'void', 
+                   [param('ns3::WifiRemoteStation *', 'station'), param('double', 'ctsSnr'), param('ns3::WifiMode', 'ctsMode'), param('double', 'rtsSnr')], 
+                   visibility='private', is_virtual=True)
+    ## ideal-wifi-manager.h: void ns3::IdealWifiManager::DoReportRxOk(ns3::WifiRemoteStation * station, double rxSnr, ns3::WifiMode txMode) [member function]
+    cls.add_method('DoReportRxOk', 
+                   'void', 
+                   [param('ns3::WifiRemoteStation *', 'station'), param('double', 'rxSnr'), param('ns3::WifiMode', 'txMode')], 
+                   visibility='private', is_virtual=True)
+    ## ideal-wifi-manager.h: bool ns3::IdealWifiManager::IsLowLatency() const [member function]
+    cls.add_method('IsLowLatency', 
+                   'bool', 
+                   [], 
+                   is_const=True, visibility='private', is_virtual=True)
     return
 
 def register_Ns3MacLow_methods(root_module, cls):
@@ -4971,15 +4849,6 @@ def register_Ns3MinstrelWifiManager_methods(root_module, cls):
     cls.add_constructor([param('ns3::MinstrelWifiManager const &', 'arg0')])
     ## minstrel-wifi-manager.h: ns3::MinstrelWifiManager::MinstrelWifiManager() [constructor]
     cls.add_constructor([])
-    ## minstrel-wifi-manager.h: void ns3::MinstrelWifiManager::AddCalcTxTime(ns3::WifiMode mode, ns3::Time t) [member function]
-    cls.add_method('AddCalcTxTime', 
-                   'void', 
-                   [param('ns3::WifiMode', 'mode'), param('ns3::Time', 't')])
-    ## minstrel-wifi-manager.h: ns3::Time ns3::MinstrelWifiManager::GetCalcTxTime(ns3::WifiMode mode) const [member function]
-    cls.add_method('GetCalcTxTime', 
-                   'ns3::Time', 
-                   [param('ns3::WifiMode', 'mode')], 
-                   is_const=True)
     ## minstrel-wifi-manager.h: static ns3::TypeId ns3::MinstrelWifiManager::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
@@ -4990,11 +4859,61 @@ def register_Ns3MinstrelWifiManager_methods(root_module, cls):
                    'void', 
                    [param('ns3::Ptr< ns3::WifiPhy >', 'phy')], 
                    is_virtual=True)
-    ## minstrel-wifi-manager.h: ns3::WifiRemoteStation * ns3::MinstrelWifiManager::CreateStation() [member function]
-    cls.add_method('CreateStation', 
+    ## minstrel-wifi-manager.h: ns3::WifiRemoteStation * ns3::MinstrelWifiManager::DoCreateStation() const [member function]
+    cls.add_method('DoCreateStation', 
                    'ns3::WifiRemoteStation *', 
                    [], 
+                   is_const=True, visibility='private', is_virtual=True)
+    ## minstrel-wifi-manager.h: ns3::WifiMode ns3::MinstrelWifiManager::DoGetDataMode(ns3::WifiRemoteStation * station, uint32_t size) [member function]
+    cls.add_method('DoGetDataMode', 
+                   'ns3::WifiMode', 
+                   [param('ns3::WifiRemoteStation *', 'station'), param('uint32_t', 'size')], 
                    visibility='private', is_virtual=True)
+    ## minstrel-wifi-manager.h: ns3::WifiMode ns3::MinstrelWifiManager::DoGetRtsMode(ns3::WifiRemoteStation * station) [member function]
+    cls.add_method('DoGetRtsMode', 
+                   'ns3::WifiMode', 
+                   [param('ns3::WifiRemoteStation *', 'station')], 
+                   visibility='private', is_virtual=True)
+    ## minstrel-wifi-manager.h: void ns3::MinstrelWifiManager::DoReportDataFailed(ns3::WifiRemoteStation * station) [member function]
+    cls.add_method('DoReportDataFailed', 
+                   'void', 
+                   [param('ns3::WifiRemoteStation *', 'station')], 
+                   visibility='private', is_virtual=True)
+    ## minstrel-wifi-manager.h: void ns3::MinstrelWifiManager::DoReportDataOk(ns3::WifiRemoteStation * station, double ackSnr, ns3::WifiMode ackMode, double dataSnr) [member function]
+    cls.add_method('DoReportDataOk', 
+                   'void', 
+                   [param('ns3::WifiRemoteStation *', 'station'), param('double', 'ackSnr'), param('ns3::WifiMode', 'ackMode'), param('double', 'dataSnr')], 
+                   visibility='private', is_virtual=True)
+    ## minstrel-wifi-manager.h: void ns3::MinstrelWifiManager::DoReportFinalDataFailed(ns3::WifiRemoteStation * station) [member function]
+    cls.add_method('DoReportFinalDataFailed', 
+                   'void', 
+                   [param('ns3::WifiRemoteStation *', 'station')], 
+                   visibility='private', is_virtual=True)
+    ## minstrel-wifi-manager.h: void ns3::MinstrelWifiManager::DoReportFinalRtsFailed(ns3::WifiRemoteStation * station) [member function]
+    cls.add_method('DoReportFinalRtsFailed', 
+                   'void', 
+                   [param('ns3::WifiRemoteStation *', 'station')], 
+                   visibility='private', is_virtual=True)
+    ## minstrel-wifi-manager.h: void ns3::MinstrelWifiManager::DoReportRtsFailed(ns3::WifiRemoteStation * station) [member function]
+    cls.add_method('DoReportRtsFailed', 
+                   'void', 
+                   [param('ns3::WifiRemoteStation *', 'station')], 
+                   visibility='private', is_virtual=True)
+    ## minstrel-wifi-manager.h: void ns3::MinstrelWifiManager::DoReportRtsOk(ns3::WifiRemoteStation * station, double ctsSnr, ns3::WifiMode ctsMode, double rtsSnr) [member function]
+    cls.add_method('DoReportRtsOk', 
+                   'void', 
+                   [param('ns3::WifiRemoteStation *', 'station'), param('double', 'ctsSnr'), param('ns3::WifiMode', 'ctsMode'), param('double', 'rtsSnr')], 
+                   visibility='private', is_virtual=True)
+    ## minstrel-wifi-manager.h: void ns3::MinstrelWifiManager::DoReportRxOk(ns3::WifiRemoteStation * station, double rxSnr, ns3::WifiMode txMode) [member function]
+    cls.add_method('DoReportRxOk', 
+                   'void', 
+                   [param('ns3::WifiRemoteStation *', 'station'), param('double', 'rxSnr'), param('ns3::WifiMode', 'txMode')], 
+                   visibility='private', is_virtual=True)
+    ## minstrel-wifi-manager.h: bool ns3::MinstrelWifiManager::IsLowLatency() const [member function]
+    cls.add_method('IsLowLatency', 
+                   'bool', 
+                   [], 
+                   is_const=True, visibility='private', is_virtual=True)
     return
 
 def register_Ns3MsduAggregator_methods(root_module, cls):
@@ -5353,11 +5272,61 @@ def register_Ns3OnoeWifiManager_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
-    ## onoe-wifi-manager.h: ns3::WifiRemoteStation * ns3::OnoeWifiManager::CreateStation() [member function]
-    cls.add_method('CreateStation', 
+    ## onoe-wifi-manager.h: ns3::WifiRemoteStation * ns3::OnoeWifiManager::DoCreateStation() const [member function]
+    cls.add_method('DoCreateStation', 
                    'ns3::WifiRemoteStation *', 
                    [], 
+                   is_const=True, visibility='private', is_virtual=True)
+    ## onoe-wifi-manager.h: ns3::WifiMode ns3::OnoeWifiManager::DoGetDataMode(ns3::WifiRemoteStation * station, uint32_t size) [member function]
+    cls.add_method('DoGetDataMode', 
+                   'ns3::WifiMode', 
+                   [param('ns3::WifiRemoteStation *', 'station'), param('uint32_t', 'size')], 
                    visibility='private', is_virtual=True)
+    ## onoe-wifi-manager.h: ns3::WifiMode ns3::OnoeWifiManager::DoGetRtsMode(ns3::WifiRemoteStation * station) [member function]
+    cls.add_method('DoGetRtsMode', 
+                   'ns3::WifiMode', 
+                   [param('ns3::WifiRemoteStation *', 'station')], 
+                   visibility='private', is_virtual=True)
+    ## onoe-wifi-manager.h: void ns3::OnoeWifiManager::DoReportDataFailed(ns3::WifiRemoteStation * station) [member function]
+    cls.add_method('DoReportDataFailed', 
+                   'void', 
+                   [param('ns3::WifiRemoteStation *', 'station')], 
+                   visibility='private', is_virtual=True)
+    ## onoe-wifi-manager.h: void ns3::OnoeWifiManager::DoReportDataOk(ns3::WifiRemoteStation * station, double ackSnr, ns3::WifiMode ackMode, double dataSnr) [member function]
+    cls.add_method('DoReportDataOk', 
+                   'void', 
+                   [param('ns3::WifiRemoteStation *', 'station'), param('double', 'ackSnr'), param('ns3::WifiMode', 'ackMode'), param('double', 'dataSnr')], 
+                   visibility='private', is_virtual=True)
+    ## onoe-wifi-manager.h: void ns3::OnoeWifiManager::DoReportFinalDataFailed(ns3::WifiRemoteStation * station) [member function]
+    cls.add_method('DoReportFinalDataFailed', 
+                   'void', 
+                   [param('ns3::WifiRemoteStation *', 'station')], 
+                   visibility='private', is_virtual=True)
+    ## onoe-wifi-manager.h: void ns3::OnoeWifiManager::DoReportFinalRtsFailed(ns3::WifiRemoteStation * station) [member function]
+    cls.add_method('DoReportFinalRtsFailed', 
+                   'void', 
+                   [param('ns3::WifiRemoteStation *', 'station')], 
+                   visibility='private', is_virtual=True)
+    ## onoe-wifi-manager.h: void ns3::OnoeWifiManager::DoReportRtsFailed(ns3::WifiRemoteStation * station) [member function]
+    cls.add_method('DoReportRtsFailed', 
+                   'void', 
+                   [param('ns3::WifiRemoteStation *', 'station')], 
+                   visibility='private', is_virtual=True)
+    ## onoe-wifi-manager.h: void ns3::OnoeWifiManager::DoReportRtsOk(ns3::WifiRemoteStation * station, double ctsSnr, ns3::WifiMode ctsMode, double rtsSnr) [member function]
+    cls.add_method('DoReportRtsOk', 
+                   'void', 
+                   [param('ns3::WifiRemoteStation *', 'station'), param('double', 'ctsSnr'), param('ns3::WifiMode', 'ctsMode'), param('double', 'rtsSnr')], 
+                   visibility='private', is_virtual=True)
+    ## onoe-wifi-manager.h: void ns3::OnoeWifiManager::DoReportRxOk(ns3::WifiRemoteStation * station, double rxSnr, ns3::WifiMode txMode) [member function]
+    cls.add_method('DoReportRxOk', 
+                   'void', 
+                   [param('ns3::WifiRemoteStation *', 'station'), param('double', 'rxSnr'), param('ns3::WifiMode', 'txMode')], 
+                   visibility='private', is_virtual=True)
+    ## onoe-wifi-manager.h: bool ns3::OnoeWifiManager::IsLowLatency() const [member function]
+    cls.add_method('IsLowLatency', 
+                   'bool', 
+                   [], 
+                   is_const=True, visibility='private', is_virtual=True)
     return
 
 def register_Ns3QadhocWifiMac_methods(root_module, cls):
@@ -5894,30 +5863,71 @@ def register_Ns3RraaWifiManager_methods(root_module, cls):
     cls.add_constructor([param('ns3::RraaWifiManager const &', 'arg0')])
     ## rraa-wifi-manager.h: ns3::RraaWifiManager::RraaWifiManager() [constructor]
     cls.add_constructor([])
-    ## rraa-wifi-manager.h: ns3::ThresholdsItem ns3::RraaWifiManager::GetThresholds(ns3::WifiMode mode) const [member function]
-    cls.add_method('GetThresholds', 
-                   'ns3::ThresholdsItem', 
-                   [param('ns3::WifiMode', 'mode')], 
-                   is_const=True)
-    ## rraa-wifi-manager.h: ns3::Time ns3::RraaWifiManager::GetTimeout() const [member function]
-    cls.add_method('GetTimeout', 
-                   'ns3::Time', 
-                   [], 
-                   is_const=True)
     ## rraa-wifi-manager.h: static ns3::TypeId ns3::RraaWifiManager::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
-    ## rraa-wifi-manager.h: bool ns3::RraaWifiManager::OnlyBasic() [member function]
-    cls.add_method('OnlyBasic', 
-                   'bool', 
-                   [])
-    ## rraa-wifi-manager.h: ns3::WifiRemoteStation * ns3::RraaWifiManager::CreateStation() [member function]
-    cls.add_method('CreateStation', 
+    ## rraa-wifi-manager.h: ns3::WifiRemoteStation * ns3::RraaWifiManager::DoCreateStation() const [member function]
+    cls.add_method('DoCreateStation', 
                    'ns3::WifiRemoteStation *', 
                    [], 
+                   is_const=True, visibility='private', is_virtual=True)
+    ## rraa-wifi-manager.h: ns3::WifiMode ns3::RraaWifiManager::DoGetDataMode(ns3::WifiRemoteStation * station, uint32_t size) [member function]
+    cls.add_method('DoGetDataMode', 
+                   'ns3::WifiMode', 
+                   [param('ns3::WifiRemoteStation *', 'station'), param('uint32_t', 'size')], 
                    visibility='private', is_virtual=True)
+    ## rraa-wifi-manager.h: ns3::WifiMode ns3::RraaWifiManager::DoGetRtsMode(ns3::WifiRemoteStation * station) [member function]
+    cls.add_method('DoGetRtsMode', 
+                   'ns3::WifiMode', 
+                   [param('ns3::WifiRemoteStation *', 'station')], 
+                   visibility='private', is_virtual=True)
+    ## rraa-wifi-manager.h: bool ns3::RraaWifiManager::DoNeedRts(ns3::WifiRemoteStation * st, ns3::Ptr<ns3::Packet const> packet, bool normally) [member function]
+    cls.add_method('DoNeedRts', 
+                   'bool', 
+                   [param('ns3::WifiRemoteStation *', 'st'), param('ns3::Ptr< ns3::Packet const >', 'packet'), param('bool', 'normally')], 
+                   visibility='private', is_virtual=True)
+    ## rraa-wifi-manager.h: void ns3::RraaWifiManager::DoReportDataFailed(ns3::WifiRemoteStation * station) [member function]
+    cls.add_method('DoReportDataFailed', 
+                   'void', 
+                   [param('ns3::WifiRemoteStation *', 'station')], 
+                   visibility='private', is_virtual=True)
+    ## rraa-wifi-manager.h: void ns3::RraaWifiManager::DoReportDataOk(ns3::WifiRemoteStation * station, double ackSnr, ns3::WifiMode ackMode, double dataSnr) [member function]
+    cls.add_method('DoReportDataOk', 
+                   'void', 
+                   [param('ns3::WifiRemoteStation *', 'station'), param('double', 'ackSnr'), param('ns3::WifiMode', 'ackMode'), param('double', 'dataSnr')], 
+                   visibility='private', is_virtual=True)
+    ## rraa-wifi-manager.h: void ns3::RraaWifiManager::DoReportFinalDataFailed(ns3::WifiRemoteStation * station) [member function]
+    cls.add_method('DoReportFinalDataFailed', 
+                   'void', 
+                   [param('ns3::WifiRemoteStation *', 'station')], 
+                   visibility='private', is_virtual=True)
+    ## rraa-wifi-manager.h: void ns3::RraaWifiManager::DoReportFinalRtsFailed(ns3::WifiRemoteStation * station) [member function]
+    cls.add_method('DoReportFinalRtsFailed', 
+                   'void', 
+                   [param('ns3::WifiRemoteStation *', 'station')], 
+                   visibility='private', is_virtual=True)
+    ## rraa-wifi-manager.h: void ns3::RraaWifiManager::DoReportRtsFailed(ns3::WifiRemoteStation * station) [member function]
+    cls.add_method('DoReportRtsFailed', 
+                   'void', 
+                   [param('ns3::WifiRemoteStation *', 'station')], 
+                   visibility='private', is_virtual=True)
+    ## rraa-wifi-manager.h: void ns3::RraaWifiManager::DoReportRtsOk(ns3::WifiRemoteStation * station, double ctsSnr, ns3::WifiMode ctsMode, double rtsSnr) [member function]
+    cls.add_method('DoReportRtsOk', 
+                   'void', 
+                   [param('ns3::WifiRemoteStation *', 'station'), param('double', 'ctsSnr'), param('ns3::WifiMode', 'ctsMode'), param('double', 'rtsSnr')], 
+                   visibility='private', is_virtual=True)
+    ## rraa-wifi-manager.h: void ns3::RraaWifiManager::DoReportRxOk(ns3::WifiRemoteStation * station, double rxSnr, ns3::WifiMode txMode) [member function]
+    cls.add_method('DoReportRxOk', 
+                   'void', 
+                   [param('ns3::WifiRemoteStation *', 'station'), param('double', 'rxSnr'), param('ns3::WifiMode', 'txMode')], 
+                   visibility='private', is_virtual=True)
+    ## rraa-wifi-manager.h: bool ns3::RraaWifiManager::IsLowLatency() const [member function]
+    cls.add_method('IsLowLatency', 
+                   'bool', 
+                   [], 
+                   is_const=True, visibility='private', is_virtual=True)
     return
 
 def register_Ns3SsidChecker_methods(root_module, cls):
@@ -6235,23 +6245,6 @@ def register_Ns3YansWifiChannel_methods(root_module, cls):
     cls.add_method('SetPropagationLossModel', 
                    'void', 
                    [param('ns3::Ptr< ns3::PropagationLossModel >', 'loss')])
-    return
-
-def register_Ns3AarfWifiManager_methods(root_module, cls):
-    ## aarf-wifi-manager.h: ns3::AarfWifiManager::AarfWifiManager(ns3::AarfWifiManager const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::AarfWifiManager const &', 'arg0')])
-    ## aarf-wifi-manager.h: ns3::AarfWifiManager::AarfWifiManager() [constructor]
-    cls.add_constructor([])
-    ## aarf-wifi-manager.h: static ns3::TypeId ns3::AarfWifiManager::GetTypeId() [member function]
-    cls.add_method('GetTypeId', 
-                   'ns3::TypeId', 
-                   [], 
-                   is_static=True)
-    ## aarf-wifi-manager.h: ns3::WifiRemoteStation * ns3::AarfWifiManager::CreateStation() [member function]
-    cls.add_method('CreateStation', 
-                   'ns3::WifiRemoteStation *', 
-                   [], 
-                   visibility='private', is_virtual=True)
     return
 
 def register_Ns3DcaTxop_methods(root_module, cls):

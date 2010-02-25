@@ -385,6 +385,11 @@ def register_Ns3MeshWifiInterfaceMac_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
+    ## mesh-wifi-interface-mac.h: ns3::Ptr<ns3::WifiPhy> ns3::MeshWifiInterfaceMac::GetWifiPhy() const [member function]
+    cls.add_method('GetWifiPhy', 
+                   'ns3::Ptr< ns3::WifiPhy >', 
+                   [], 
+                   is_const=True)
     ## mesh-wifi-interface-mac.h: void ns3::MeshWifiInterfaceMac::InstallPlugin(ns3::Ptr<ns3::MeshWifiInterfaceMacPlugin> plugin) [member function]
     cls.add_method('InstallPlugin', 
                    'void', 

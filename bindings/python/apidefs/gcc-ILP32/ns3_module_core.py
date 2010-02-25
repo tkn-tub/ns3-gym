@@ -205,16 +205,6 @@ def register_types(module):
     module.add_class('Vector3DChecker', parent=root_module['ns3::AttributeChecker'])
     ## vector.h: ns3::Vector3DValue [class]
     module.add_class('Vector3DValue', parent=root_module['ns3::AttributeValue'])
-    ## traced-value.h: ns3::TracedValue<unsigned int> [class]
-    module.add_class('TracedValue', template_parameters=['unsigned int'])
-    ## traced-value.h: ns3::TracedValue<unsigned int> [class]
-    root_module['ns3::TracedValue< unsigned int >'].implicitly_converts_to(root_module['ns3::IntegerValue'])
-    ## traced-value.h: ns3::TracedValue<unsigned int> [class]
-    root_module['ns3::TracedValue< unsigned int >'].implicitly_converts_to(root_module['ns3::UintegerValue'])
-    ## traced-value.h: ns3::TracedValue<unsigned int> [class]
-    root_module['ns3::TracedValue< unsigned int >'].implicitly_converts_to(root_module['ns3::BooleanValue'])
-    ## traced-value.h: ns3::TracedValue<unsigned int> [class]
-    root_module['ns3::TracedValue< unsigned int >'].implicitly_converts_to(root_module['ns3::EnumValue'])
     module.add_container('std::list< ns3::Ptr< ns3::Packet > >', 'ns3::Ptr< ns3::Packet >', container_type='list')
     module.add_container('std::vector< ns3::Ptr< ns3::FlowProbe > >', 'ns3::Ptr< ns3::FlowProbe >', container_type='vector')
     module.add_container('std::list< ns3::Ptr< ns3::RadvdPrefix > >', 'ns3::Ptr< ns3::RadvdPrefix >', container_type='list')
@@ -428,7 +418,6 @@ def register_methods(root_module):
     register_Ns3Vector2DValue_methods(root_module, root_module['ns3::Vector2DValue'])
     register_Ns3Vector3DChecker_methods(root_module, root_module['ns3::Vector3DChecker'])
     register_Ns3Vector3DValue_methods(root_module, root_module['ns3::Vector3DValue'])
-    register_Ns3TracedValue__Unsigned_int_methods(root_module, root_module['ns3::TracedValue< unsigned int >'])
     register_Ns3ConfigMatchContainer_methods(root_module, root_module['ns3::Config::MatchContainer'])
     return
 
@@ -2908,48 +2897,6 @@ def register_Ns3Vector3DValue_methods(root_module, cls):
     cls.add_method('Set', 
                    'void', 
                    [param('ns3::Vector3D const &', 'value')])
-    return
-
-def register_Ns3TracedValue__Unsigned_int_methods(root_module, cls):
-    ## traced-value.h: ns3::TracedValue<unsigned int>::TracedValue() [constructor]
-    cls.add_constructor([])
-    ## traced-value.h: ns3::TracedValue<unsigned int>::TracedValue(ns3::TracedValue<unsigned int> const & o) [copy constructor]
-    cls.add_constructor([param('ns3::TracedValue< unsigned int > const &', 'o')])
-    ## traced-value.h: ns3::TracedValue<unsigned int>::TracedValue(unsigned int const & v) [constructor]
-    cls.add_constructor([param('unsigned int const &', 'v')])
-    ## traced-value.h: ns3::TracedValue<unsigned int>::TracedValue(ns3::IntegerValue const & value) [constructor]
-    cls.add_constructor([param('ns3::IntegerValue const &', 'value')])
-    ## traced-value.h: ns3::TracedValue<unsigned int>::TracedValue(ns3::UintegerValue const & value) [constructor]
-    cls.add_constructor([param('ns3::UintegerValue const &', 'value')])
-    ## traced-value.h: ns3::TracedValue<unsigned int>::TracedValue(ns3::BooleanValue const & value) [constructor]
-    cls.add_constructor([param('ns3::BooleanValue const &', 'value')])
-    ## traced-value.h: ns3::TracedValue<unsigned int>::TracedValue(ns3::EnumValue const & value) [constructor]
-    cls.add_constructor([param('ns3::EnumValue const &', 'value')])
-    ## traced-value.h: void ns3::TracedValue<unsigned int>::Connect(ns3::CallbackBase const & cb, std::basic_string<char,std::char_traits<char>,std::allocator<char> > path) [member function]
-    cls.add_method('Connect', 
-                   'void', 
-                   [param('ns3::CallbackBase const &', 'cb'), param('std::string', 'path')])
-    ## traced-value.h: void ns3::TracedValue<unsigned int>::ConnectWithoutContext(ns3::CallbackBase const & cb) [member function]
-    cls.add_method('ConnectWithoutContext', 
-                   'void', 
-                   [param('ns3::CallbackBase const &', 'cb')])
-    ## traced-value.h: void ns3::TracedValue<unsigned int>::Disconnect(ns3::CallbackBase const & cb, std::basic_string<char,std::char_traits<char>,std::allocator<char> > path) [member function]
-    cls.add_method('Disconnect', 
-                   'void', 
-                   [param('ns3::CallbackBase const &', 'cb'), param('std::string', 'path')])
-    ## traced-value.h: void ns3::TracedValue<unsigned int>::DisconnectWithoutContext(ns3::CallbackBase const & cb) [member function]
-    cls.add_method('DisconnectWithoutContext', 
-                   'void', 
-                   [param('ns3::CallbackBase const &', 'cb')])
-    ## traced-value.h: unsigned int ns3::TracedValue<unsigned int>::Get() const [member function]
-    cls.add_method('Get', 
-                   'unsigned int', 
-                   [], 
-                   is_const=True)
-    ## traced-value.h: void ns3::TracedValue<unsigned int>::Set(unsigned int const & v) [member function]
-    cls.add_method('Set', 
-                   'void', 
-                   [param('unsigned int const &', 'v')])
     return
 
 def register_Ns3ConfigMatchContainer_methods(root_module, cls):
