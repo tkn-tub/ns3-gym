@@ -45,6 +45,13 @@ AccessClass QosUtilsMapTidToAc (uint8_t tid);
  */
 uint8_t QosUtilsGetTidForPacket (Ptr<const Packet> packet);
 
+/*
+ * Next function is useful to correctly sort buffered packets under block ack.
+ * When an BAR is received from originator station, completed "old"
+ * (see section 9.10.3 in IEEE802.11e) packets must be forwarded up before "new" packets.
+ */
+uint32_t QosUtilsMapSeqControlToUniqueInteger (uint16_t seqControl, uint16_t endSequence);
+
 } //namespace ns3
 
 #endif /* QOS_UTILS_H */

@@ -24,11 +24,10 @@
 #include "ns3/names.h"
 #include "ns3/queue.h"
 #include "ns3/emu-net-device.h"
-#include "ns3/pcap-writer.h"
-#include "ns3/ascii-writer.h"
 #include "ns3/config.h"
 #include "ns3/packet.h"
 
+#include "trace-helper.h"
 #include "emu-helper.h"
 
 NS_LOG_COMPONENT_DEFINE ("EmuHelper");
@@ -66,133 +65,118 @@ EmuHelper::SetAttribute (std::string n1, const AttributeValue &v1)
 }
 
 void 
-EmuHelper::EnablePcap (std::string filename, uint32_t nodeid, uint32_t deviceid, bool promiscuous)
+EmuHelper::EnablePcapInternal (std::string prefix, Ptr<NetDevice> nd, bool promiscuous)
 {
-  NS_LOG_FUNCTION (filename << nodeid << deviceid << promiscuous);
-  std::ostringstream oss;
-  oss << filename << "-" << nodeid << "-" << deviceid << ".pcap";
-  Ptr<PcapWriter> pcap = CreateObject<PcapWriter> ();
-  pcap->Open (oss.str ());
-  pcap->WriteEthernetHeader ();
+  //
+  // All of the Pcap enable functions vector through here including the ones
+  // that are wandering through all of devices on perhaps all of the nodes in
+  // the system.  We can only deal with devices of type EmuNetDevice.
+  //
+  Ptr<EmuNetDevice> device = nd->GetObject<EmuNetDevice> ();
+  if (device == 0)
+    {
+      NS_LOG_INFO ("EmuHelper::EnablePcapInternal(): Device " << device << " not of type ns3::EmuNetDevice");
+      return;
+    }
 
-  oss.str ("");
-  oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid;
+  PcapHelper pcapHelper;
+  std::string filename = pcapHelper.GetFilenameFromDevice (prefix, device);
+  Ptr<PcapFileWrapper> file = pcapHelper.CreateFile (filename, "w", PcapHelper::DLT_EN10MB);
   if (promiscuous)
     {
-      oss << "/$ns3::EmuNetDevice/PromiscSniffer";
+      pcapHelper.HookDefaultSink<EmuNetDevice> (device, "PromiscSniffer", file);
     }
   else
     {
-      oss << "/$ns3::EmuNetDevice/Sniffer";
+      pcapHelper.HookDefaultSink<EmuNetDevice> (device, "Sniffer", file);
     }
-  Config::ConnectWithoutContext (oss.str (), MakeBoundCallback (&EmuHelper::SniffEvent, pcap));
 }
 
 void 
-EmuHelper::EnablePcap (std::string filename, Ptr<NetDevice> nd, bool promiscuous)
+EmuHelper::EnableAsciiInternal (Ptr<OutputStreamWrapper> stream, std::string prefix, Ptr<NetDevice> nd)
 {
-  NS_LOG_FUNCTION (filename << &nd << promiscuous);
-  EnablePcap (filename, nd->GetNode ()->GetId (), nd->GetIfIndex (), promiscuous);
-}
-
-void 
-EmuHelper::EnablePcap (std::string filename, std::string ndName, bool promiscuous)
-{
-  NS_LOG_FUNCTION (filename << ndName << promiscuous);
-  Ptr<NetDevice> nd = Names::Find<NetDevice> (ndName);
-  EnablePcap (filename, nd->GetNode ()->GetId (), nd->GetIfIndex (), promiscuous);
-}
-
-void 
-EmuHelper::EnablePcap (std::string filename, NetDeviceContainer d, bool promiscuous)
-{
-  NS_LOG_FUNCTION (filename << &d << promiscuous);
-  for (NetDeviceContainer::Iterator i = d.Begin (); i != d.End (); ++i)
+  //
+  // All of the ascii enable functions vector through here including the ones
+  // that are wandering through all of devices on perhaps all of the nodes in
+  // the system.  We can only deal with devices of type EmuNetDevice.
+  //
+  Ptr<EmuNetDevice> device = nd->GetObject<EmuNetDevice> ();
+  if (device == 0)
     {
-      Ptr<NetDevice> dev = *i;
-      EnablePcap (filename, dev->GetNode ()->GetId (), dev->GetIfIndex (), promiscuous);
+      NS_LOG_INFO ("EmuHelper::EnableAsciiInternal(): Device " << device << " not of type ns3::EmuNetDevice");
+      return;
     }
-}
 
-void
-EmuHelper::EnablePcap (std::string filename, NodeContainer n, bool promiscuous)
-{
-  NS_LOG_FUNCTION (filename << &n << promiscuous);
-  NetDeviceContainer devs;
-  for (NodeContainer::Iterator i = n.Begin (); i != n.End (); ++i)
-    {
-      Ptr<Node> node = *i;
-      for (uint32_t j = 0; j < node->GetNDevices (); ++j)
-	{
-	  devs.Add (node->GetDevice (j));
-	}
-    }
-  EnablePcap (filename, devs, promiscuous);
-}
-
-void
-EmuHelper::EnablePcapAll (std::string filename, bool promiscuous)
-{
-  NS_LOG_FUNCTION (filename << promiscuous);
-  EnablePcap (filename, NodeContainer::GetGlobal (), promiscuous);
-}
-
-void 
-EmuHelper::EnableAscii (std::ostream &os, uint32_t nodeid, uint32_t deviceid)
-{
-  NS_LOG_FUNCTION (&os << nodeid << deviceid);
-  Ptr<AsciiWriter> writer = AsciiWriter::Get (os);
+  //
+  // Our default trace sinks are going to use packet printing, so we have to 
+  // make sure that is turned on.
+  //
   Packet::EnablePrinting ();
+
+  //
+  // If we are not provided an OutputStreamWrapper, we are expected to create 
+  // one using the usual trace filename conventions and do a Hook*WithoutContext
+  // since there will be one file per context and therefore the context would
+  // be redundant.
+  //
+  if (stream == 0)
+    {
+      //
+      // Set up an output stream object to deal with private ofstream copy 
+      // constructor and lifetime issues.  Let the helper decide the actual
+      // name of the file given the prefix.
+      //
+      AsciiTraceHelper asciiTraceHelper;
+      std::string filename = asciiTraceHelper.GetFilenameFromDevice (prefix, device);
+      Ptr<OutputStreamWrapper> theStream = asciiTraceHelper.CreateFileStream (filename, "w");
+
+      //
+      // The MacRx trace source provides our "r" event.
+      //
+      asciiTraceHelper.HookDefaultReceiveSinkWithoutContext<EmuNetDevice> (device, "MacRx", theStream);
+
+      //
+      // The "+", '-', and 'd' events are driven by trace sources actually in the
+      // transmit queue.
+      //
+      Ptr<Queue> queue = device->GetQueue ();
+      asciiTraceHelper.HookDefaultEnqueueSinkWithoutContext<Queue> (queue, "Enqueue", theStream);
+      asciiTraceHelper.HookDefaultDropSinkWithoutContext<Queue> (queue, "Drop", theStream);
+      asciiTraceHelper.HookDefaultDequeueSinkWithoutContext<Queue> (queue, "Dequeue", theStream);
+
+      return;
+    }
+
+  //
+  // If we are provided an OutputStreamWrapper, we are expected to use it, and
+  // to providd a context.  We are free to come up with our own context if we
+  // want, and use the AsciiTraceHelper Hook*WithContext functions, but for 
+  // compatibility and simplicity, we just use Config::Connect and let it deal
+  // with the context.
+  //
+  // Note that we are going to use the default trace sinks provided by the 
+  // ascii trace helper.  There is actually no AsciiTraceHelper in sight here,
+  // but the default trace sinks are actually publicly available static 
+  // functions that are always there waiting for just such a case.
+  //
+  uint32_t nodeid = nd->GetNode ()->GetId ();
+  uint32_t deviceid = nd->GetIfIndex ();
   std::ostringstream oss;
 
-  oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::EmuNetDevice/MacRx";
-  Config::Connect (oss.str (), MakeBoundCallback (&EmuHelper::AsciiRxEvent, writer));
+  oss << "/NodeList/" << nd->GetNode ()->GetId () << "/DeviceList/" << deviceid << "/$ns3::EmuNetDevice/MacRx";
+  Config::Connect (oss.str (), MakeBoundCallback (&AsciiTraceHelper::DefaultReceiveSinkWithContext, stream));
 
   oss.str ("");
   oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::EmuNetDevice/TxQueue/Enqueue";
-  Config::Connect (oss.str (), MakeBoundCallback (&EmuHelper::AsciiEnqueueEvent, writer));
+  Config::Connect (oss.str (), MakeBoundCallback (&AsciiTraceHelper::DefaultEnqueueSinkWithContext, stream));
 
   oss.str ("");
   oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::EmuNetDevice/TxQueue/Dequeue";
-  Config::Connect (oss.str (), MakeBoundCallback (&EmuHelper::AsciiDequeueEvent, writer));
+  Config::Connect (oss.str (), MakeBoundCallback (&AsciiTraceHelper::DefaultDequeueSinkWithContext, stream));
 
   oss.str ("");
   oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::EmuNetDevice/TxQueue/Drop";
-  Config::Connect (oss.str (), MakeBoundCallback (&EmuHelper::AsciiDropEvent, writer));
-}
-
-void 
-EmuHelper::EnableAscii (std::ostream &os, NetDeviceContainer d)
-{
-  NS_LOG_FUNCTION (&os << &d);
-  for (NetDeviceContainer::Iterator i = d.Begin (); i != d.End (); ++i)
-    {
-      Ptr<NetDevice> dev = *i;
-      EnableAscii (os, dev->GetNode ()->GetId (), dev->GetIfIndex ());
-    }
-}
-
-void
-EmuHelper::EnableAscii (std::ostream &os, NodeContainer n)
-{
-  NS_LOG_FUNCTION (&os << &n);
-  NetDeviceContainer devs;
-  for (NodeContainer::Iterator i = n.Begin (); i != n.End (); ++i)
-    {
-      Ptr<Node> node = *i;
-      for (uint32_t j = 0; j < node->GetNDevices (); ++j)
-	{
-	  devs.Add (node->GetDevice (j));
-	}
-    }
-  EnableAscii (os, devs);
-}
-
-void
-EmuHelper::EnableAsciiAll (std::ostream &os)
-{
-  NS_LOG_FUNCTION (&os);
-  EnableAscii (os, NodeContainer::GetGlobal ());
+  Config::Connect (oss.str (), MakeBoundCallback (&AsciiTraceHelper::DefaultDropSinkWithContext, stream));
 }
 
 NetDeviceContainer
@@ -231,49 +215,6 @@ EmuHelper::InstallPriv (Ptr<Node> node) const
   device->SetQueue (queue);
 
   return device;
-}
-
-void 
-EmuHelper::SniffEvent (Ptr<PcapWriter> writer, Ptr<const Packet> packet)
-{
-  NS_LOG_FUNCTION (writer << packet);
-  writer->WritePacket (packet);
-}
-
-void
-EmuHelper::AsciiEnqueueEvent (Ptr<AsciiWriter> writer,
-                              std::string path,
-                              Ptr<const Packet> packet)
-{
-  NS_LOG_FUNCTION (writer << path << packet);
-  writer->WritePacket (AsciiWriter::ENQUEUE, path, packet);
-}
-
-void
-EmuHelper::AsciiDequeueEvent (Ptr<AsciiWriter> writer,
-                              std::string path,
-                              Ptr<const Packet> packet)
-{
-  NS_LOG_FUNCTION (writer << path << packet);
-  writer->WritePacket (AsciiWriter::DEQUEUE, path, packet);
-}
-
-void
-EmuHelper::AsciiDropEvent (Ptr<AsciiWriter> writer,
-                           std::string path,
-                           Ptr<const Packet> packet)
-{
-  NS_LOG_FUNCTION (writer << path << packet);
-  writer->WritePacket (AsciiWriter::DROP, path, packet);
-}
-
-void
-EmuHelper::AsciiRxEvent (Ptr<AsciiWriter> writer,
-                         std::string path,
-                         Ptr<const Packet> packet)
-{
-  NS_LOG_FUNCTION (writer << path << packet);
-  writer->WritePacket (AsciiWriter::RX, path, packet);
 }
 
 } // namespace ns3

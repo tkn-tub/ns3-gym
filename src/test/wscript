@@ -1,5 +1,8 @@
 ## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
 
+def configure(conf):
+    conf.sub_config('perf')
+
 def build(bld):
     test = bld.create_ns3_module('test', ['core'])
     test.source = [

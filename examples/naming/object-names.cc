@@ -153,6 +153,24 @@ main (int argc, char *argv[])
   //
   Config::Connect ("/Names/client/eth0/MacRx", MakeCallback (&RxEvent));
 
+  //
+  // Set up some pcap tracing on the CSMA devices.  The names of the trace 
+  // files will automatically correspond to the object names if present.
+  // In this case, you will find trace files called:
+  //
+  //   object-names-client-eth0.pcap
+  //   object-names-server-eth0.pcap
+  //
+  // since those nodes and devices have had names associated with them.  You
+  // will also see:
+  //
+  //   object-names-2-1.pcap
+  //   object-names-3-1.pcap
+  //
+  // since nodes two and three have no associated names.
+  //
+  csma.EnablePcapAll ("object-names");
+
   Simulator::Run ();
   Simulator::Destroy ();
 }

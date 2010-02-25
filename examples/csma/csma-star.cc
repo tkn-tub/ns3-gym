@@ -182,7 +182,7 @@ main (int argc, char *argv[])
   //
   // Do pcap tracing on all devices on all nodes.
   //
-  CsmaHelper::EnablePcapAll ("csma-star", false);
+  csma.EnablePcapAll ("csma-star", false);
 
   NS_LOG_INFO ("Run Simulation.");
   Simulator::Run ();

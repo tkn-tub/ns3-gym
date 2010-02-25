@@ -382,7 +382,7 @@ void NscTcpL4Protocol::wakeup()
   for (Ipv4EndPointDemux::EndPointsI endPoint = endPoints.begin ();
        endPoint != endPoints.end (); endPoint++) {
           // NSC HACK: (ab)use TcpSocket::ForwardUp for signalling
-          (*endPoint)->ForwardUp (NULL, Ipv4Address(), 0);
+          (*endPoint)->ForwardUp (NULL, Ipv4Address(), Ipv4Address(), 0);
   }
 }
 

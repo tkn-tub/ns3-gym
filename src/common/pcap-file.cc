@@ -398,7 +398,33 @@ PcapFile::Init (uint32_t dataLinkType, uint32_t snapLen, int32_t timeZoneCorrect
   m_fileHeader.m_type = dataLinkType;
 
   m_haveFileHeader = true;
-  m_swapMode = swapMode;
+
+  //
+  // We use pcap files for regression testing.  We do byte-for-byte comparisons
+  // in those tests to determine pass or fail.  If we allow big endian systems
+  // to write big endian headers, they will end up byte-swapped and the
+  // regression tests will fail.  Until we get rid of the regression tests, we
+  // have to pick an endianness and stick with it.  The precedent is little
+  // endian, so we set swap mode if required to pick little endian.
+  //
+  // We do want to allow a user or test suite to enable swapmode irrespective
+  // of what we decide here, so we allow setting swapmode from formal parameter
+  // as well.
+  //
+  // So, determine the endianness of the running system.
+  //
+  union {
+    uint32_t a;
+    uint8_t  b[4];
+  } u;
+
+  u.a = 1;
+  bool bigEndian = u.b[3];
+
+  //
+  // And set swap mode if requested or we are on a big-endian system.
+  //
+  m_swapMode = swapMode | bigEndian;
 
   return WriteFileHeader ();
 }

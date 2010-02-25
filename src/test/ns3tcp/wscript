@@ -13,5 +13,6 @@ def build(bld):
     if bld.env['NSC_ENABLED']:
         ns3tcp.source = [
             'ns3tcp-interop-test-suite.cc',
-            'ns3tcp-cwnd-test-suite.cc'
+            'ns3tcp-cwnd-test-suite.cc',
+            'ns3tcp-socket-test-suite.cc'
             ]

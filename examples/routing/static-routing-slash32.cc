@@ -124,10 +124,9 @@ main (int argc, char *argv[])
   apps.Start (Seconds (1.0));
   apps.Stop (Seconds (10.0));
 
-  std::ofstream ascii;
-  ascii.open ("static-routing-slash32.tr");
-  PointToPointHelper::EnablePcapAll ("static-routing-slash32");
-  PointToPointHelper::EnableAsciiAll (ascii);
+  AsciiTraceHelper ascii;
+  p2p.EnableAsciiAll (ascii.CreateFileStream ("static-routing-slash32.tr"));
+  p2p.EnablePcapAll ("static-routing-slash32");
 
   Simulator::Run ();
   Simulator::Destroy ();

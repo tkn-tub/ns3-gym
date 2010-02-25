@@ -93,6 +93,8 @@ def register_types(module):
     module.add_class('Vector3D')
     ## random-variable.h: ns3::WeibullVariable [class]
     module.add_class('WeibullVariable', parent=root_module['ns3::RandomVariable'])
+    ## random-variable.h: ns3::ZetaVariable [class]
+    module.add_class('ZetaVariable', parent=root_module['ns3::RandomVariable'])
     ## random-variable.h: ns3::ZipfVariable [class]
     module.add_class('ZipfVariable', parent=root_module['ns3::RandomVariable'])
     ## empty.h: ns3::empty [class]
@@ -351,6 +353,7 @@ def register_methods(root_module):
     register_Ns3Vector2D_methods(root_module, root_module['ns3::Vector2D'])
     register_Ns3Vector3D_methods(root_module, root_module['ns3::Vector3D'])
     register_Ns3WeibullVariable_methods(root_module, root_module['ns3::WeibullVariable'])
+    register_Ns3ZetaVariable_methods(root_module, root_module['ns3::ZetaVariable'])
     register_Ns3ZipfVariable_methods(root_module, root_module['ns3::ZipfVariable'])
     register_Ns3Empty_methods(root_module, root_module['ns3::empty'])
     register_Ns3ConstantVariable_methods(root_module, root_module['ns3::ConstantVariable'])
@@ -365,7 +368,6 @@ def register_methods(root_module):
     register_Ns3Object_methods(root_module, root_module['ns3::Object'])
     register_Ns3ObjectAggregateIterator_methods(root_module, root_module['ns3::Object::AggregateIterator'])
     register_Ns3ParetoVariable_methods(root_module, root_module['ns3::ParetoVariable'])
-    register_Ns3SimpleRefCount__Ns3AsciiWriter_Ns3Empty_Ns3DefaultDeleter__lt__ns3AsciiWriter__gt___methods(root_module, root_module['ns3::SimpleRefCount< ns3::AsciiWriter, ns3::empty, ns3::DefaultDeleter<ns3::AsciiWriter> >'])
     register_Ns3SimpleRefCount__Ns3AttributeAccessor_Ns3Empty_Ns3DefaultDeleter__lt__ns3AttributeAccessor__gt___methods(root_module, root_module['ns3::SimpleRefCount< ns3::AttributeAccessor, ns3::empty, ns3::DefaultDeleter<ns3::AttributeAccessor> >'])
     register_Ns3SimpleRefCount__Ns3AttributeChecker_Ns3Empty_Ns3DefaultDeleter__lt__ns3AttributeChecker__gt___methods(root_module, root_module['ns3::SimpleRefCount< ns3::AttributeChecker, ns3::empty, ns3::DefaultDeleter<ns3::AttributeChecker> >'])
     register_Ns3SimpleRefCount__Ns3AttributeValue_Ns3Empty_Ns3DefaultDeleter__lt__ns3AttributeValue__gt___methods(root_module, root_module['ns3::SimpleRefCount< ns3::AttributeValue, ns3::empty, ns3::DefaultDeleter<ns3::AttributeValue> >'])
@@ -379,6 +381,7 @@ def register_methods(root_module):
     register_Ns3SimpleRefCount__Ns3Ipv6MulticastRoute_Ns3Empty_Ns3DefaultDeleter__lt__ns3Ipv6MulticastRoute__gt___methods(root_module, root_module['ns3::SimpleRefCount< ns3::Ipv6MulticastRoute, ns3::empty, ns3::DefaultDeleter<ns3::Ipv6MulticastRoute> >'])
     register_Ns3SimpleRefCount__Ns3Ipv6Route_Ns3Empty_Ns3DefaultDeleter__lt__ns3Ipv6Route__gt___methods(root_module, root_module['ns3::SimpleRefCount< ns3::Ipv6Route, ns3::empty, ns3::DefaultDeleter<ns3::Ipv6Route> >'])
     register_Ns3SimpleRefCount__Ns3MeshWifiInterfaceMacPlugin_Ns3Empty_Ns3DefaultDeleter__lt__ns3MeshWifiInterfaceMacPlugin__gt___methods(root_module, root_module['ns3::SimpleRefCount< ns3::MeshWifiInterfaceMacPlugin, ns3::empty, ns3::DefaultDeleter<ns3::MeshWifiInterfaceMacPlugin> >'])
+    register_Ns3SimpleRefCount__Ns3OutputStreamWrapper_Ns3Empty_Ns3DefaultDeleter__lt__ns3OutputStreamWrapper__gt___methods(root_module, root_module['ns3::SimpleRefCount< ns3::OutputStreamWrapper, ns3::empty, ns3::DefaultDeleter<ns3::OutputStreamWrapper> >'])
     register_Ns3SimpleRefCount__Ns3Packet_Ns3Empty_Ns3DefaultDeleter__lt__ns3Packet__gt___methods(root_module, root_module['ns3::SimpleRefCount< ns3::Packet, ns3::empty, ns3::DefaultDeleter<ns3::Packet> >'])
     register_Ns3SimpleRefCount__Ns3PbbAddressBlock_Ns3Empty_Ns3DefaultDeleter__lt__ns3PbbAddressBlock__gt___methods(root_module, root_module['ns3::SimpleRefCount< ns3::PbbAddressBlock, ns3::empty, ns3::DefaultDeleter<ns3::PbbAddressBlock> >'])
     register_Ns3SimpleRefCount__Ns3PbbMessage_Ns3Empty_Ns3DefaultDeleter__lt__ns3PbbMessage__gt___methods(root_module, root_module['ns3::SimpleRefCount< ns3::PbbMessage, ns3::empty, ns3::DefaultDeleter<ns3::PbbMessage> >'])
@@ -1575,11 +1578,20 @@ def register_Ns3WeibullVariable_methods(root_module, cls):
     cls.add_constructor([param('double', 'm'), param('double', 's'), param('double', 'b')])
     return
 
+def register_Ns3ZetaVariable_methods(root_module, cls):
+    ## random-variable.h: ns3::ZetaVariable::ZetaVariable(ns3::ZetaVariable const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::ZetaVariable const &', 'arg0')])
+    ## random-variable.h: ns3::ZetaVariable::ZetaVariable(double alpha) [constructor]
+    cls.add_constructor([param('double', 'alpha')])
+    ## random-variable.h: ns3::ZetaVariable::ZetaVariable() [constructor]
+    cls.add_constructor([])
+    return
+
 def register_Ns3ZipfVariable_methods(root_module, cls):
     ## random-variable.h: ns3::ZipfVariable::ZipfVariable(ns3::ZipfVariable const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::ZipfVariable const &', 'arg0')])
-    ## random-variable.h: ns3::ZipfVariable::ZipfVariable(long int n, double alpha) [constructor]
-    cls.add_constructor([param('long int', 'n'), param('double', 'alpha')])
+    ## random-variable.h: ns3::ZipfVariable::ZipfVariable(long int N, double alpha) [constructor]
+    cls.add_constructor([param('long int', 'N'), param('double', 'alpha')])
     ## random-variable.h: ns3::ZipfVariable::ZipfVariable() [constructor]
     cls.add_constructor([])
     return
@@ -1780,18 +1792,6 @@ def register_Ns3ParetoVariable_methods(root_module, cls):
     cls.add_constructor([param('double', 'm'), param('double', 's'), param('double', 'b')])
     return
 
-def register_Ns3SimpleRefCount__Ns3AsciiWriter_Ns3Empty_Ns3DefaultDeleter__lt__ns3AsciiWriter__gt___methods(root_module, cls):
-    ## simple-ref-count.h: ns3::SimpleRefCount<ns3::AsciiWriter, ns3::empty, ns3::DefaultDeleter<ns3::AsciiWriter> >::SimpleRefCount() [constructor]
-    cls.add_constructor([])
-    ## simple-ref-count.h: ns3::SimpleRefCount<ns3::AsciiWriter, ns3::empty, ns3::DefaultDeleter<ns3::AsciiWriter> >::SimpleRefCount(ns3::SimpleRefCount<ns3::AsciiWriter, ns3::empty, ns3::DefaultDeleter<ns3::AsciiWriter> > const & o) [copy constructor]
-    cls.add_constructor([param('ns3::SimpleRefCount< ns3::AsciiWriter, ns3::empty, ns3::DefaultDeleter< ns3::AsciiWriter > > const &', 'o')])
-    ## simple-ref-count.h: static void ns3::SimpleRefCount<ns3::AsciiWriter, ns3::empty, ns3::DefaultDeleter<ns3::AsciiWriter> >::Cleanup() [member function]
-    cls.add_method('Cleanup', 
-                   'void', 
-                   [], 
-                   is_static=True)
-    return
-
 def register_Ns3SimpleRefCount__Ns3AttributeAccessor_Ns3Empty_Ns3DefaultDeleter__lt__ns3AttributeAccessor__gt___methods(root_module, cls):
     ## simple-ref-count.h: ns3::SimpleRefCount<ns3::AttributeAccessor, ns3::empty, ns3::DefaultDeleter<ns3::AttributeAccessor> >::SimpleRefCount() [constructor]
     cls.add_constructor([])
@@ -1942,6 +1942,18 @@ def register_Ns3SimpleRefCount__Ns3MeshWifiInterfaceMacPlugin_Ns3Empty_Ns3Defaul
     ## simple-ref-count.h: ns3::SimpleRefCount<ns3::MeshWifiInterfaceMacPlugin, ns3::empty, ns3::DefaultDeleter<ns3::MeshWifiInterfaceMacPlugin> >::SimpleRefCount(ns3::SimpleRefCount<ns3::MeshWifiInterfaceMacPlugin, ns3::empty, ns3::DefaultDeleter<ns3::MeshWifiInterfaceMacPlugin> > const & o) [copy constructor]
     cls.add_constructor([param('ns3::SimpleRefCount< ns3::MeshWifiInterfaceMacPlugin, ns3::empty, ns3::DefaultDeleter< ns3::MeshWifiInterfaceMacPlugin > > const &', 'o')])
     ## simple-ref-count.h: static void ns3::SimpleRefCount<ns3::MeshWifiInterfaceMacPlugin, ns3::empty, ns3::DefaultDeleter<ns3::MeshWifiInterfaceMacPlugin> >::Cleanup() [member function]
+    cls.add_method('Cleanup', 
+                   'void', 
+                   [], 
+                   is_static=True)
+    return
+
+def register_Ns3SimpleRefCount__Ns3OutputStreamWrapper_Ns3Empty_Ns3DefaultDeleter__lt__ns3OutputStreamWrapper__gt___methods(root_module, cls):
+    ## simple-ref-count.h: ns3::SimpleRefCount<ns3::OutputStreamWrapper, ns3::empty, ns3::DefaultDeleter<ns3::OutputStreamWrapper> >::SimpleRefCount() [constructor]
+    cls.add_constructor([])
+    ## simple-ref-count.h: ns3::SimpleRefCount<ns3::OutputStreamWrapper, ns3::empty, ns3::DefaultDeleter<ns3::OutputStreamWrapper> >::SimpleRefCount(ns3::SimpleRefCount<ns3::OutputStreamWrapper, ns3::empty, ns3::DefaultDeleter<ns3::OutputStreamWrapper> > const & o) [copy constructor]
+    cls.add_constructor([param('ns3::SimpleRefCount< ns3::OutputStreamWrapper, ns3::empty, ns3::DefaultDeleter< ns3::OutputStreamWrapper > > const &', 'o')])
+    ## simple-ref-count.h: static void ns3::SimpleRefCount<ns3::OutputStreamWrapper, ns3::empty, ns3::DefaultDeleter<ns3::OutputStreamWrapper> >::Cleanup() [member function]
     cls.add_method('Cleanup', 
                    'void', 
                    [], 
@@ -3043,6 +3055,21 @@ def register_functions(root_module):
     module.add_function('MakeBooleanChecker', 
                         'ns3::Ptr< ns3::AttributeChecker const >', 
                         [])
+    ## callback.h: extern ns3::Callback<void,ns3::Ptr<const ns3::Packet>,ns3::empty,ns3::empty,ns3::empty,ns3::empty,ns3::empty,ns3::empty,ns3::empty,ns3::empty> ns3::MakeBoundCallback(void (*)( ::ns3::Ptr<ns3::OutputStreamWrapper>,::ns3::Ptr<ns3::Packet const> ) * fnPtr, ns3::Ptr<ns3::OutputStreamWrapper> a) [free function]
+    module.add_function('MakeBoundCallback', 
+                        'ns3::Callback< void, ns3::Ptr< ns3::Packet const >, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 
+                        [param('void ( * ) ( ns3::Ptr< ns3::OutputStreamWrapper >, ns3::Ptr< ns3::Packet const > ) *', 'fnPtr'), param('ns3::Ptr< ns3::OutputStreamWrapper >', 'a')], 
+                        template_parameters=['void', 'ns3::Ptr<ns3::OutputStreamWrapper>', 'ns3::Ptr<ns3::OutputStreamWrapper>', 'ns3::Ptr<ns3::Packet const>'])
+    ## callback.h: extern ns3::Callback<void,ns3::Ptr<const ns3::Packet>,ns3::empty,ns3::empty,ns3::empty,ns3::empty,ns3::empty,ns3::empty,ns3::empty,ns3::empty> ns3::MakeBoundCallback(void (*)( ::ns3::Ptr<ns3::PcapFileWrapper>,::ns3::Ptr<ns3::Packet const> ) * fnPtr, ns3::Ptr<ns3::PcapFileWrapper> a) [free function]
+    module.add_function('MakeBoundCallback', 
+                        'ns3::Callback< void, ns3::Ptr< ns3::Packet const >, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 
+                        [param('void ( * ) ( ns3::Ptr< ns3::PcapFileWrapper >, ns3::Ptr< ns3::Packet const > ) *', 'fnPtr'), param('ns3::Ptr< ns3::PcapFileWrapper >', 'a')], 
+                        template_parameters=['void', 'ns3::Ptr<ns3::PcapFileWrapper>', 'ns3::Ptr<ns3::PcapFileWrapper>', 'ns3::Ptr<ns3::Packet const>'])
+    ## callback.h: extern ns3::Callback<void,std::basic_string<char, std::char_traits<char>, std::allocator<char> >,ns3::Ptr<const ns3::Packet>,ns3::empty,ns3::empty,ns3::empty,ns3::empty,ns3::empty,ns3::empty,ns3::empty> ns3::MakeBoundCallback(void (*)( ::ns3::Ptr<ns3::OutputStreamWrapper>,::std::basic_string<char,std::char_traits<char>,std::allocator<char> >,::ns3::Ptr<ns3::Packet const> ) * fnPtr, ns3::Ptr<ns3::OutputStreamWrapper> a) [free function]
+    module.add_function('MakeBoundCallback', 
+                        'ns3::Callback< void, std::basic_string< char, std::char_traits< char >, std::allocator< char > >, ns3::Ptr< ns3::Packet const >, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 
+                        [param('void ( * ) ( ns3::Ptr< ns3::OutputStreamWrapper >, std::string, ns3::Ptr< ns3::Packet const > ) *', 'fnPtr'), param('ns3::Ptr< ns3::OutputStreamWrapper >', 'a')], 
+                        template_parameters=['void', 'ns3::Ptr<ns3::OutputStreamWrapper>', 'ns3::Ptr<ns3::OutputStreamWrapper>', 'std::string', 'ns3::Ptr<ns3::Packet const>'])
     ## callback.h: extern ns3::Ptr<ns3::AttributeChecker const> ns3::MakeCallbackChecker() [free function]
     module.add_function('MakeCallbackChecker', 
                         'ns3::Ptr< ns3::AttributeChecker const >', 

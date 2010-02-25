@@ -381,20 +381,26 @@ main (int argc, char *argv[])
   /////////////////////////////////////////////////////////////////////////// 
 
   NS_LOG_INFO ("Configure Tracing.");
-  std::ofstream ascii;
   if (enableTracing == true)
    {
-      //
-      // Let's set up some ns-2-like ascii traces, using another helper class
-      //
-      ascii.open ("mixed-wireless.tr");
-      YansWifiPhyHelper::EnableAsciiAll (ascii);
-      CsmaHelper::EnableAsciiAll (ascii);
-      InternetStackHelper::EnableAsciiAll (ascii);
+      CsmaHelper csma;
+
+     //
+     // Let's set up some ns-2-like ascii traces, using another helper class
+     //
+     AsciiTraceHelper ascii;
+     Ptr<OutputStreamWrapper> stream = ascii.CreateFileStream ("mixed-wireless.tr");
+     wifiPhy.EnableAsciiAll (stream);
+     csma.EnableAsciiAll (stream);
+     internet.EnableAsciiIpv4All (stream);
 
       // Let's do a pcap trace on the application source and sink, ifIndex 0
       // Csma captures in non-promiscuous mode
-      CsmaHelper::EnablePcap ("mixed-wireless", appSource->GetId (), 0, false);
+#if 0
+      csma.EnablePcap ("mixed-wireless", appSource->GetId (), 0, false);
+#else
+      csma.EnablePcapAll ("mixed-wireless", false);
+#endif
       wifiPhy.EnablePcap ("mixed-wireless", appSink->GetId (), 0);
       wifiPhy.EnablePcap ("mixed-wireless", 9, 2);
       wifiPhy.EnablePcap ("mixed-wireless", 9, 0);

@@ -38,14 +38,30 @@ namespace ns3
 class Ipv6InterfaceContainer
 {
 public:
+  typedef std::vector<std::pair<Ptr<Ipv6>, uint32_t> >::const_iterator Iterator;
   /**
    * \brief Constructor.
    */
   Ipv6InterfaceContainer ();
 
   /**
-   * \brief Get the number of interfaces.
-   * \return the number of interfaces stored in this Ipv6InterfaceContainer.
+   * \returns the number of Ptr<Ipv6> and interface pairs stored in this 
+   * Ipv4InterfaceContainer.
+   *
+   * Pairs can be retrieved from the container in two ways.  First,
+   * directly by an index into the container, and second, using an iterator.
+   * This method is used in the direct method and is typically used to
+   * define an ending condition in a for-loop that runs through the stored
+   * Nodes
+   *
+   * \code
+   *   uint32_t nNodes = container.GetN ();
+   *   for (uint32_t i = 0 i < nNodes; ++i)
+   *     {
+   *       std::pair<Ptr<Ipv6>, uint32_t> pair = container.Get (i);
+   *       method (pair.first, pair.second);  // use the pair
+   *     }
+   * \endcode
    */
   uint32_t GetN (void) const;
 
@@ -70,6 +86,50 @@ public:
    * \param interface interface index
    */
   void Add (Ptr<Ipv6> ipv6, uint32_t interface);
+
+  /**
+   * \brief Get an iterator which refers to the first pair in the 
+   * container.
+   *
+   * Pairs can be retrieved from the container in two ways.  First,
+   * directly by an index into the container, and second, using an iterator.
+   * This method is used in the iterator method and is typically used in a 
+   * for-loop to run through the pairs
+   *
+   * \code
+   *   Ipv4InterfaceContainer::Iterator i;
+   *   for (i = container.Begin (); i != container.End (); ++i)
+   *     {
+   *       std::pair<Ptr<Ipv6>, uint32_t> pair = *i;
+   *       method (pair.first, pair.second);  // use the pair
+   *     }
+   * \endcode
+   *
+   * \returns an iterator which refers to the first pair in the container.
+   */
+  Iterator Begin (void) const;
+
+  /**
+   * \brief Get an iterator which indicates past-the-last Node in the 
+   * container.
+   *
+   * Nodes can be retrieved from the container in two ways.  First,
+   * directly by an index into the container, and second, using an iterator.
+   * This method is used in the iterator method and is typically used in a 
+   * for-loop to run through the Nodes
+   *
+   * \code
+   *   NodeContainer::Iterator i;
+   *   for (i = container.Begin (); i != container.End (); ++i)
+   *     {
+   *       std::pair<Ptr<Ipv6>, uint32_t> pair = *i;
+   *       method (pair.first, pair.second);  // use the pair
+   *     }
+   * \endcode
+   *
+   * \returns an iterator which indicates an ending condition for a loop.
+   */
+  Iterator End (void) const;
 
   /**
    * \brief Fusion with another Ipv6InterfaceContainer.

@@ -103,8 +103,8 @@ main (int argc, char *argv[])
 
   Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
 
-  PointToPointHelper::EnablePcapAll ("second");
-  CsmaHelper::EnablePcap ("second", csmaDevices.Get (1), true);
+  pointToPoint.EnablePcapAll ("second");
+  csma.EnablePcap ("second", csmaDevices.Get (1), true);
 
   Simulator::Run ();
   Simulator::Destroy ();

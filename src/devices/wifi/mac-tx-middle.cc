@@ -77,4 +77,17 @@ MacTxMiddle::GetNextSequenceNumberfor (const WifiMacHeader *hdr)
   return retval;
 }
 
+uint16_t
+MacTxMiddle::GetNextSeqNumberByTidAndAddress (uint8_t tid, Mac48Address addr) const
+{
+  NS_ASSERT (tid < 16);
+  uint16_t seq = 0;
+  std::map <Mac48Address,uint16_t*>::const_iterator it = m_qosSequences.find (addr);
+  if (it != m_qosSequences.end ())
+    {
+      return it->second[tid];
+    }
+  return seq;
+}
+
 } // namespace ns3

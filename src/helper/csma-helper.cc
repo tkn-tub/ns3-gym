@@ -17,7 +17,9 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#include "csma-helper.h"
+
+#include "ns3/abort.h"
+#include "ns3/log.h"
 #include "ns3/simulator.h"
 #include "ns3/object-factory.h"
 #include "ns3/queue.h"
@@ -26,9 +28,13 @@
 #include "ns3/config.h"
 #include "ns3/packet.h"
 #include "ns3/names.h"
-#include "ns3/pcap-writer.h"
-#include "ns3/ascii-writer.h"
+
+#include "trace-helper.h"
+#include "csma-helper.h"
+
 #include <string>
+
+NS_LOG_COMPONENT_DEFINE ("CsmaHelper");
 
 namespace ns3 {
 
@@ -66,123 +72,118 @@ CsmaHelper::SetChannelAttribute (std::string n1, const AttributeValue &v1)
 }
 
 void 
-CsmaHelper::EnablePcap (std::string filename, uint32_t nodeid, uint32_t deviceid, bool promiscuous)
+CsmaHelper::EnablePcapInternal (std::string prefix, Ptr<NetDevice> nd, bool promiscuous)
 {
-  std::ostringstream oss;
-  oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::CsmaNetDevice/";
-  Config::MatchContainer matches = Config::LookupMatches (oss.str ());
-  if (matches.GetN () == 0)
+  //
+  // All of the Pcap enable functions vector through here including the ones
+  // that are wandering through all of devices on perhaps all of the nodes in
+  // the system.  We can only deal with devices of type CsmaNetDevice.
+  //
+  Ptr<CsmaNetDevice> device = nd->GetObject<CsmaNetDevice> ();
+  if (device == 0)
     {
+      NS_LOG_INFO ("CsmaHelper::EnablePcapInternal(): Device " << device << " not of type ns3::CsmaNetDevice");
       return;
     }
-  oss.str ("");
-  oss << filename << "-" << nodeid << "-" << deviceid << ".pcap";
-  Ptr<PcapWriter> pcap = CreateObject<PcapWriter> ();
-  pcap->Open (oss.str ());
-  pcap->WriteEthernetHeader ();
-  oss.str ("");
-  oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid;
+
+  PcapHelper pcapHelper;
+  std::string filename = pcapHelper.GetFilenameFromDevice (prefix, device);
+  Ptr<PcapFileWrapper> file = pcapHelper.CreateFile (filename, "w", PcapHelper::DLT_EN10MB);
   if (promiscuous)
     {
-      oss << "/$ns3::CsmaNetDevice/PromiscSniffer";
+      pcapHelper.HookDefaultSink<CsmaNetDevice> (device, "PromiscSniffer", file);
     }
   else
     {
-      oss << "/$ns3::CsmaNetDevice/Sniffer";
+      pcapHelper.HookDefaultSink<CsmaNetDevice> (device, "Sniffer", file);
     }
-  Config::ConnectWithoutContext (oss.str (), MakeBoundCallback (&CsmaHelper::SniffEvent, pcap));
 }
 
 void 
-CsmaHelper::EnablePcap (std::string filename, NetDeviceContainer d, bool promiscuous)
+CsmaHelper::EnableAsciiInternal (Ptr<OutputStreamWrapper> stream, std::string prefix, Ptr<NetDevice> nd)
 {
-  for (NetDeviceContainer::Iterator i = d.Begin (); i != d.End (); ++i)
+  //
+  // All of the ascii enable functions vector through here including the ones
+  // that are wandering through all of devices on perhaps all of the nodes in
+  // the system.  We can only deal with devices of type CsmaNetDevice.
+  //
+  Ptr<CsmaNetDevice> device = nd->GetObject<CsmaNetDevice> ();
+  if (device == 0)
     {
-      Ptr<NetDevice> dev = *i;
-      EnablePcap (filename, dev->GetNode ()->GetId (), dev->GetIfIndex (), promiscuous);
+      NS_LOG_INFO ("CsmaHelper::EnableAsciiInternal(): Device " << device << " not of type ns3::CsmaNetDevice");
+      return;
     }
-}
 
-void 
-CsmaHelper::EnablePcap (std::string filename, Ptr<NetDevice> nd, bool promiscuous)
-{
-  EnablePcap (filename, nd->GetNode ()->GetId (), nd->GetIfIndex (), promiscuous);
-}
-
-void 
-CsmaHelper::EnablePcap (std::string filename, std::string ndName, bool promiscuous)
-{
-  Ptr<NetDevice> nd = Names::Find<NetDevice> (ndName);
-  EnablePcap (filename, nd->GetNode ()->GetId (), nd->GetIfIndex (), promiscuous);
-}
-
-void
-CsmaHelper::EnablePcap (std::string filename, NodeContainer n, bool promiscuous)
-{
-  NetDeviceContainer devs;
-  for (NodeContainer::Iterator i = n.Begin (); i != n.End (); ++i)
-    {
-      Ptr<Node> node = *i;
-      for (uint32_t j = 0; j < node->GetNDevices (); ++j)
-        {
-          devs.Add (node->GetDevice (j));
-        }
-    }
-  EnablePcap (filename, devs, promiscuous);
-}
-
-void
-CsmaHelper::EnablePcapAll (std::string filename, bool promiscuous)
-{
-  EnablePcap (filename, NodeContainer::GetGlobal (), promiscuous);
-}
-
-void 
-CsmaHelper::EnableAscii (std::ostream &os, uint32_t nodeid, uint32_t deviceid)
-{
-  Ptr<AsciiWriter> writer = AsciiWriter::Get (os);
+  //
+  // Our default trace sinks are going to use packet printing, so we have to 
+  // make sure that is turned on.
+  //
   Packet::EnablePrinting ();
+
+  //
+  // If we are not provided an OutputStreamWrapper, we are expected to create 
+  // one using the usual trace filename conventions and do a Hook*WithoutContext
+  // since there will be one file per context and therefore the context would
+  // be redundant.
+  //
+  if (stream == 0)
+    {
+      //
+      // Set up an output stream object to deal with private ofstream copy 
+      // constructor and lifetime issues.  Let the helper decide the actual
+      // name of the file given the prefix.
+      //
+      AsciiTraceHelper asciiTraceHelper;
+      std::string filename = asciiTraceHelper.GetFilenameFromDevice (prefix, device);
+      Ptr<OutputStreamWrapper> theStream = asciiTraceHelper.CreateFileStream (filename, "w");
+
+      //
+      // The MacRx trace source provides our "r" event.
+      //
+      asciiTraceHelper.HookDefaultReceiveSinkWithoutContext<CsmaNetDevice> (device, "MacRx", theStream);
+
+      //
+      // The "+", '-', and 'd' events are driven by trace sources actually in the
+      // transmit queue.
+      //
+      Ptr<Queue> queue = device->GetQueue ();
+      asciiTraceHelper.HookDefaultEnqueueSinkWithoutContext<Queue> (queue, "Enqueue", theStream);
+      asciiTraceHelper.HookDefaultDropSinkWithoutContext<Queue> (queue, "Drop", theStream);
+      asciiTraceHelper.HookDefaultDequeueSinkWithoutContext<Queue> (queue, "Dequeue", theStream);
+
+      return;
+    }
+
+  //
+  // If we are provided an OutputStreamWrapper, we are expected to use it, and
+  // to providd a context.  We are free to come up with our own context if we
+  // want, and use the AsciiTraceHelper Hook*WithContext functions, but for 
+  // compatibility and simplicity, we just use Config::Connect and let it deal
+  // with the context.
+  //
+  // Note that we are going to use the default trace sinks provided by the 
+  // ascii trace helper.  There is actually no AsciiTraceHelper in sight here,
+  // but the default trace sinks are actually publicly available static 
+  // functions that are always there waiting for just such a case.
+  //
+  uint32_t nodeid = nd->GetNode ()->GetId ();
+  uint32_t deviceid = nd->GetIfIndex ();
   std::ostringstream oss;
-  oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::CsmaNetDevice/MacRx";
-  Config::Connect (oss.str (), MakeBoundCallback (&CsmaHelper::AsciiRxEvent, writer));
+
+  oss << "/NodeList/" << nd->GetNode ()->GetId () << "/DeviceList/" << deviceid << "/$ns3::CsmaNetDevice/MacRx";
+  Config::Connect (oss.str (), MakeBoundCallback (&AsciiTraceHelper::DefaultReceiveSinkWithContext, stream));
+
   oss.str ("");
   oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::CsmaNetDevice/TxQueue/Enqueue";
-  Config::Connect (oss.str (), MakeBoundCallback (&CsmaHelper::AsciiEnqueueEvent, writer));
+  Config::Connect (oss.str (), MakeBoundCallback (&AsciiTraceHelper::DefaultEnqueueSinkWithContext, stream));
+
   oss.str ("");
   oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::CsmaNetDevice/TxQueue/Dequeue";
-  Config::Connect (oss.str (), MakeBoundCallback (&CsmaHelper::AsciiDequeueEvent, writer));
+  Config::Connect (oss.str (), MakeBoundCallback (&AsciiTraceHelper::DefaultDequeueSinkWithContext, stream));
+
   oss.str ("");
   oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::CsmaNetDevice/TxQueue/Drop";
-  Config::Connect (oss.str (), MakeBoundCallback (&CsmaHelper::AsciiDropEvent, writer));
-}
-void 
-CsmaHelper::EnableAscii (std::ostream &os, NetDeviceContainer d)
-{
-  for (NetDeviceContainer::Iterator i = d.Begin (); i != d.End (); ++i)
-    {
-      Ptr<NetDevice> dev = *i;
-      EnableAscii (os, dev->GetNode ()->GetId (), dev->GetIfIndex ());
-    }
-}
-void
-CsmaHelper::EnableAscii (std::ostream &os, NodeContainer n)
-{
-  NetDeviceContainer devs;
-  for (NodeContainer::Iterator i = n.Begin (); i != n.End (); ++i)
-    {
-      Ptr<Node> node = *i;
-      for (uint32_t j = 0; j < node->GetNDevices (); ++j)
-        {
-          devs.Add (node->GetDevice (j));
-        }
-    }
-  EnableAscii (os, devs);
-}
-
-void
-CsmaHelper::EnableAsciiAll (std::ostream &os)
-{
-  EnableAscii (os, NodeContainer::GetGlobal ());
+  Config::Connect (oss.str (), MakeBoundCallback (&AsciiTraceHelper::DefaultDropSinkWithContext, stream));
 }
 
 NetDeviceContainer
@@ -266,36 +267,6 @@ CsmaHelper::InstallPriv (Ptr<Node> node, Ptr<CsmaChannel> channel) const
   device->Attach (channel);
 
   return device;
-}
-
-void 
-CsmaHelper::SniffEvent (Ptr<PcapWriter> writer, Ptr<const Packet> packet)
-{
-  writer->WritePacket (packet);
-}
-
-void 
-CsmaHelper::AsciiEnqueueEvent (Ptr<AsciiWriter> writer, std::string path, Ptr<const Packet> packet)
-{
-  writer->WritePacket (AsciiWriter::ENQUEUE, path, packet);
-}
-
-void 
-CsmaHelper::AsciiDequeueEvent (Ptr<AsciiWriter> writer, std::string path, Ptr<const Packet> packet)
-{
-  writer->WritePacket (AsciiWriter::DEQUEUE, path, packet);
-}
-
-void 
-CsmaHelper::AsciiDropEvent (Ptr<AsciiWriter> writer, std::string path, Ptr<const Packet> packet)
-{
-  writer->WritePacket (AsciiWriter::DROP, path, packet);
-}
-
-void 
-CsmaHelper::AsciiRxEvent (Ptr<AsciiWriter> writer, std::string path, Ptr<const Packet> packet)
-{
-  writer->WritePacket (AsciiWriter::RX, path, packet);
 }
 
 } // namespace ns3

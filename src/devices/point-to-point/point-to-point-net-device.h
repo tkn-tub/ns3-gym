@@ -108,6 +108,13 @@ public:
   void SetQueue (Ptr<Queue> queue);
 
   /**
+   * Get a copy of the attached Queue.
+   *
+   * @returns Ptr to the queue.
+   */
+  Ptr<Queue> GetQueue(void) const; 
+
+  /**
    * Attach a receive ErrorModel to the PointToPointNetDevice.
    *
    * The PointToPointNetDevice may optionally include an ErrorModel in
@@ -260,16 +267,6 @@ public:
 private:
 
   virtual void DoDispose (void);
-
-  /**
-   * Get a copy of the attached Queue.
-   *
-   * This method is provided for any derived class that may need to get
-   * direct access to the underlying queue.
-   *
-   * @returns Ptr to the queue.
-   */
-  Ptr<Queue> GetQueue(void) const; 
 
 private:
   /**

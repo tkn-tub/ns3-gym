@@ -38,6 +38,7 @@ class WifiPhy;
 class DcfManager;
 class MacLow;
 class MacRxMiddle;
+class MgtAddBaRequestHeader;
 
 class QadhocWifiMac : public WifiMac
 {
@@ -73,6 +74,10 @@ public:
   virtual void SetAddress (Mac48Address address);
   virtual void SetSsid (Ssid ssid);
   virtual Mac48Address GetBssid (void) const;
+  virtual void SetBasicBlockAckTimeout (Time blockAckTimeout);
+  virtual void SetCompressedBlockAckTimeout (Time blockAckTimeout);
+  virtual Time GetBasicBlockAckTimeout (void) const;
+  virtual Time GetCompressedBlockAckTimeout (void) const;
 
 
 private:
@@ -82,7 +87,8 @@ private:
   void ForwardUp (Ptr<Packet> packet, Mac48Address from, Mac48Address to);
   QadhocWifiMac &operator = (const QadhocWifiMac &);
   QadhocWifiMac (const QadhocWifiMac &);
-
+  void SendAddBaResponse (const MgtAddBaRequestHeader *reqHdr, Mac48Address originator);
+  
   /**
   * When an A-MSDU is received, is deaggregated by this method and all extracted packets are
   * forwarded up.

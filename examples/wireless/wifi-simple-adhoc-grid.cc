@@ -159,8 +159,8 @@ int main (int argc, char *argv[])
   // This is one parameter that matters when using FixedRssLossModel
   // set it to zero; otherwise, gain will be added
   wifiPhy.Set ("RxGain", DoubleValue (-10) ); 
-  // ns-3 support RadioTap and Prism tracing extensions for 802.11b
-  wifiPhy.SetPcapFormat (YansWifiPhyHelper::PCAP_FORMAT_80211_RADIOTAP); 
+  // ns-3 supports RadioTap and Prism tracing extensions for 802.11b
+  wifiPhy.SetPcapDataLinkType (YansWifiPhyHelper::DLT_IEEE802_11_RADIO); 
 
   YansWifiChannelHelper wifiChannel ;
   wifiChannel.SetPropagationDelay ("ns3::ConstantSpeedPropagationDelayModel");
@@ -216,10 +216,10 @@ int main (int argc, char *argv[])
 
   if (tracing == true)
     {
+      AsciiTraceHelper ascii;
+      wifiPhy.EnableAsciiAll (ascii.CreateFileStream ("wifi-simple-adhoc-grid.tr"));
       wifiPhy.EnablePcap ("wifi-simple-adhoc-grid", devices);
-      std::ofstream ascii;
-      ascii.open ("wifi-simple-adhoc-grid.tr");
-      YansWifiPhyHelper::EnableAsciiAll (ascii);
+
       // To do-- enable an IP-level trace that shows forwarding events only
     }
   

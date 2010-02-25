@@ -23,8 +23,8 @@
 #include "adhoc-wifi-mac.h"
 #include "yans-wifi-phy.h"
 #include "arf-wifi-manager.h"
-#include "propagation-delay-model.h"
-#include "propagation-loss-model.h"
+#include "ns3/propagation-delay-model.h"
+#include "ns3/propagation-loss-model.h"
 #include "error-rate-model.h"
 #include "yans-error-rate-model.h"
 #include "ns3/constant-position-mobility-model.h"
@@ -143,7 +143,7 @@ WifiTest::DoRun (void)
   m_propDelay.SetTypeId ("ns3::RandomPropagationDelayModel");
   m_mac.SetTypeId ("ns3::AdhocWifiMac");
   RunOne ();
-
+  Simulator::Destroy ();
   return false;
 }
 

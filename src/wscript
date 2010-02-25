@@ -44,6 +44,7 @@ all_modules = (
     'applications/ping6',
     'applications/radvd',
     'test',
+    'test/perf',
     'test/ns3tcp',
     'test/ns3wifi',
     'contrib/flow-monitor',
@@ -72,6 +73,7 @@ def configure(conf):
     conf.sub_config('contrib')
     conf.sub_config('internet-stack')
     conf.sub_config('helper')
+    conf.sub_config('test')
 
     blddir = os.path.abspath(os.path.join(conf.blddir, conf.env.variant()))
     conf.env.append_value('NS3_MODULE_PATH', blddir)
@@ -83,13 +85,14 @@ def configure(conf):
 
 
 def create_ns3_module(bld, name, dependencies=()):
-    module = bld.new_task_gen('cxx')
+    module = bld.new_task_gen('cxx', 'cc')
     module.name = 'ns3-' + name
     module.target = module.name
     module.add_objects = ['ns3-' + dep for dep in dependencies]
     module.module_deps = list(dependencies)
     if not module.env['ENABLE_STATIC_NS3']:
         module.env.append_value('CXXFLAGS', module.env['shlib_CXXFLAGS'])
+        module.env.append_value('CCFLAGS', module.env['shlib_CXXFLAGS'])
     elif module.env['CXX_NAME'] in ['gcc', 'icc'] and \
             os.uname()[4] == 'x86_64' and \
             module.env['ENABLE_PYTHON_BINDINGS']:
@@ -97,8 +100,10 @@ def create_ns3_module(bld, name, dependencies=()):
         # when gcc is present and only when we want python bindings
         # (it's more efficient to not use this option if we can avoid it)
         module.env.append_value('CXXFLAGS', '-mcmodel=large')
+        module.env.append_value('CCFLAGS', '-mcmodel=large')
         
     module.env.append_value('CXXDEFINES', "NS3_MODULE_COMPILATION")
+    module.env.append_value('CCDEFINES', "NS3_MODULE_COMPILATION")
     return module
 
 def create_obj(bld, *args):
@@ -138,7 +143,7 @@ class ns3header_taskgen(TaskGen.task_gen):
                 raise Utils.WafError("source ns3 header file %s not found" % (filename,))
             dst_node = ns3_dir_node.find_or_declare(os.path.basename(filename))
             assert dst_node is not None
-            task = self.create_task('ns3header', self.env)
+            task = self.create_task('ns3header', env=self.env)
             task.set_inputs([src_node])
             task.set_outputs([dst_node])
 
@@ -243,7 +248,7 @@ class ns3moduleheader_taskgen(TaskGen.task_gen):
         module_obj = self.bld.name_to_obj("ns3-" + self.module, self.env)
         assert module_obj is not None
         all_headers_outputs = [ns3_dir_node.find_or_declare("%s-module.h" % self.module)]
-        task = self.create_task('gen_ns3_module_header', self.env)
+        task = self.create_task('gen_ns3_module_header', env=self.env)
         task.set_inputs(all_headers_inputs)
         task.set_outputs(all_headers_outputs)
         task.module = self.module

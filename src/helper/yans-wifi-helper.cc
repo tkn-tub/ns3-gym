@@ -17,6 +17,8 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
+
+#include "trace-helper.h"
 #include "yans-wifi-helper.h"
 #include "ns3/error-rate-model.h"
 #include "ns3/propagation-loss-model.h"
@@ -24,44 +26,67 @@
 #include "ns3/yans-wifi-channel.h"
 #include "ns3/yans-wifi-phy.h"
 #include "ns3/wifi-net-device.h"
-#include "ns3/pcap-writer.h"
-#include "ns3/ascii-writer.h"
+#include "ns3/radiotap-header.h"
+#include "ns3/pcap-file-wrapper.h"
 #include "ns3/simulator.h"
 #include "ns3/config.h"
 #include "ns3/names.h"
+#include "ns3/abort.h"
+#include "ns3/log.h"
+
+NS_LOG_COMPONENT_DEFINE ("YansWifiHelper");
 
 namespace ns3 {
 
-static void PcapSniffTxEvent (Ptr<PcapWriter> writer, Ptr<const Packet> packet, uint16_t channelFreqMhz,  uint16_t channelNumber, 
-                              uint32_t rate, bool isShortPreamble)
+static void 
+AsciiPhyTransmitSinkWithContext (
+  Ptr<OutputStreamWrapper> stream, 
+  std::string context, 
+  Ptr<const Packet> p,
+  WifiMode mode, 
+  WifiPreamble preamble,
+  uint8_t txLevel)
 {
-  const double unusedValue = 0;
-  writer->WriteWifiMonitorPacket(packet, channelFreqMhz, channelNumber, rate, isShortPreamble, true, unusedValue, unusedValue); 
+  NS_LOG_FUNCTION (stream << context << p << mode << preamble << txLevel);
+  *stream->GetStream () << "t " << Simulator::Now ().GetSeconds () << " " << context << " " << *p << std::endl;
 }
 
-
-static void PcapSniffRxEvent (Ptr<PcapWriter> writer, Ptr<const Packet> packet, uint16_t channelFreqMhz,  uint16_t channelNumber,
-                              uint32_t rate, bool isShortPreamble, double signalDbm, double noiseDbm)
+static void 
+AsciiPhyTransmitSinkWithoutContext (
+  Ptr<OutputStreamWrapper> stream, 
+  Ptr<const Packet> p,
+  WifiMode mode, 
+  WifiPreamble preamble,
+  uint8_t txLevel)
 {
-  writer->WriteWifiMonitorPacket(packet, channelFreqMhz, channelNumber, rate, isShortPreamble, false, signalDbm, noiseDbm); 
+  NS_LOG_FUNCTION (stream << p << mode << preamble << txLevel);
+  *stream->GetStream () << "t " << Simulator::Now ().GetSeconds () << " " << *p << std::endl;
 }
 
-
-static void AsciiPhyTxEvent (Ptr<AsciiWriter> writer, std::string path,
-                             Ptr<const Packet> packet,
-                             WifiMode mode, WifiPreamble preamble,
-                             uint8_t txLevel)
+static void 
+AsciiPhyReceiveSinkWithContext (
+  Ptr<OutputStreamWrapper> stream,
+  std::string context,
+  Ptr<const Packet> p, 
+  double snr, 
+  WifiMode mode,
+  enum WifiPreamble preamble)
 {
-  writer->WritePacket (AsciiWriter::TX, path, packet);
+  NS_LOG_FUNCTION (stream << context << p << snr << mode << preamble);
+  *stream->GetStream () << "r " << Simulator::Now ().GetSeconds () << " " << context << " " << *p << std::endl;
 }
 
-static void AsciiPhyRxOkEvent (Ptr<AsciiWriter> writer, std::string path,
-                               Ptr<const Packet> packet, double snr, WifiMode mode,
-                               enum WifiPreamble preamble)
+static void 
+AsciiPhyReceiveSinkWithoutContext (
+  Ptr<OutputStreamWrapper> stream,
+  Ptr<const Packet> p, 
+  double snr, 
+  WifiMode mode,
+  enum WifiPreamble preamble)
 {
-  writer->WritePacket (AsciiWriter::RX, path, packet);
+  NS_LOG_FUNCTION (stream << p << snr << mode << preamble);
+  *stream->GetStream () << "r " << Simulator::Now ().GetSeconds () << " " << *p << std::endl;
 }
-
 
 YansWifiChannelHelper::YansWifiChannelHelper ()
 {}
@@ -149,8 +174,7 @@ YansWifiChannelHelper::Create (void) const
 
 YansWifiPhyHelper::YansWifiPhyHelper ()
   : m_channel (0),
-    m_pcapFormat(PCAP_FORMAT_80211)
-    
+    m_pcapDlt(PcapHelper::DLT_IEEE802_11)
 {
   m_phy.SetTypeId ("ns3::YansWifiPhy");
 }
@@ -215,136 +239,246 @@ YansWifiPhyHelper::Create (Ptr<Node> node, Ptr<WifiNetDevice> device) const
   return phy;
 }
 
-
-void 
-YansWifiPhyHelper::SetPcapFormat (enum PcapFormat format)
+static void 
+PcapSniffTxEvent (
+  Ptr<PcapFileWrapper> file,
+  Ptr<const Packet>   packet,
+  uint16_t            channelFreqMhz,
+  uint16_t            channelNumber,
+  uint32_t            rate,
+  bool                isShortPreamble)
 {
-  m_pcapFormat = format;
+  uint32_t dlt = file->GetDataLinkType ();
+
+  switch (dlt)
+    {
+    case PcapHelper::DLT_IEEE802_11:
+      file->Write (Simulator::Now (), packet);
+      return;
+    case PcapHelper::DLT_PRISM_HEADER:
+      {
+        NS_FATAL_ERROR ("PcapSniffTxEvent(): DLT_PRISM_HEADER not implemented");
+        return;
+      }
+    case PcapHelper::DLT_IEEE802_11_RADIO:
+      {
+        Ptr<Packet> p = packet->Copy ();
+        RadiotapHeader header;
+        header.SetTsft (Simulator::Now ().GetMicroSeconds ());
+
+        if (isShortPreamble)
+          {
+            header.SetFrameFlags (RadiotapHeader::FRAME_FLAG_SHORT_PREAMBLE);
+          }
+        else
+          {
+            header.SetFrameFlags (RadiotapHeader::FRAME_FLAG_NONE);
+          }
+
+        header.SetRate (rate);
+
+        if (channelFreqMhz < 2500)
+          {
+            header.SetChannelFrequencyAndFlags (channelFreqMhz, 
+              RadiotapHeader::CHANNEL_FLAG_SPECTRUM_2GHZ | RadiotapHeader::CHANNEL_FLAG_CCK);
+          }
+        else
+          {
+            header.SetChannelFrequencyAndFlags (channelFreqMhz, 
+              RadiotapHeader::CHANNEL_FLAG_SPECTRUM_5GHZ | RadiotapHeader::CHANNEL_FLAG_OFDM);
+          }
+
+        p->AddHeader (header);
+        file->Write (Simulator::Now (), p);
+        return;
+      }
+    default:
+      NS_ABORT_MSG ("PcapSniffTxEvent(): Unexpected data link type " << dlt);
+    }
 }
 
+static void 
+PcapSniffRxEvent (
+  Ptr<PcapFileWrapper> file,
+  Ptr<const Packet> packet,
+  uint16_t channelFreqMhz,
+  uint16_t channelNumber,
+  uint32_t rate,
+  bool isShortPreamble,
+  double signalDbm,
+  double noiseDbm)
+{
+  uint32_t dlt = file->GetDataLinkType ();
+
+  switch (dlt)
+    {
+    case PcapHelper::DLT_IEEE802_11:
+      file->Write (Simulator::Now (), packet);
+      return;
+    case PcapHelper::DLT_PRISM_HEADER:
+      {
+        NS_FATAL_ERROR ("PcapSniffRxEvent(): DLT_PRISM_HEADER not implemented");
+        return;
+      }
+    case PcapHelper::DLT_IEEE802_11_RADIO:
+      {
+        Ptr<Packet> p = packet->Copy ();
+        RadiotapHeader header;
+        header.SetTsft (Simulator::Now ().GetMicroSeconds ());
+
+        if (isShortPreamble)
+          {
+            header.SetFrameFlags (RadiotapHeader::FRAME_FLAG_SHORT_PREAMBLE);
+          }
+        else
+          {
+            header.SetFrameFlags (RadiotapHeader::FRAME_FLAG_NONE);
+          }
+
+        header.SetRate (rate);
+
+        if (channelFreqMhz < 2500)
+          {
+            header.SetChannelFrequencyAndFlags (channelFreqMhz, 
+              RadiotapHeader::CHANNEL_FLAG_SPECTRUM_2GHZ | RadiotapHeader::CHANNEL_FLAG_CCK);
+          }
+        else
+          {
+            header.SetChannelFrequencyAndFlags (channelFreqMhz, 
+              RadiotapHeader::CHANNEL_FLAG_SPECTRUM_5GHZ | RadiotapHeader::CHANNEL_FLAG_OFDM);
+          }
+
+        header.SetAntennaSignalPower (signalDbm);
+        header.SetAntennaNoisePower (noiseDbm);
+
+        p->AddHeader (header);
+        file->Write (Simulator::Now (), p);
+        return;
+      }
+    default:
+      NS_ABORT_MSG ("PcapSniffRxEvent(): Unexpected data link type " << dlt);
+    }
+}
 
 void 
-YansWifiPhyHelper::EnablePcap (std::string filename, uint32_t nodeid, uint32_t deviceid)
+YansWifiPhyHelper::SetPcapDataLinkType (enum SupportedPcapDataLinkTypes dlt)
 {
-  std::ostringstream oss;
-  oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::WifiNetDevice/Phy/";
-  Config::MatchContainer matches = Config::LookupMatches (oss.str ());
-  if (matches.GetN () == 0)
+  switch (dlt)
     {
+    case DLT_IEEE802_11:
+      m_pcapDlt = PcapHelper::DLT_IEEE802_11;
+      return;
+    case DLT_PRISM_HEADER:
+      m_pcapDlt = PcapHelper::DLT_PRISM_HEADER;
+      return;
+    case DLT_IEEE802_11_RADIO:
+      m_pcapDlt = PcapHelper::DLT_IEEE802_11_RADIO;
+      return;
+    default:
+      NS_ABORT_MSG ("YansWifiPhyHelper::SetPcapFormat(): Unexpected format");
+    }
+}
+
+void 
+YansWifiPhyHelper::EnablePcapInternal (std::string prefix, Ptr<NetDevice> nd, bool promiscuous)
+{
+  //
+  // All of the Pcap enable functions vector through here including the ones
+  // that are wandering through all of devices on perhaps all of the nodes in
+  // the system.  We can only deal with devices of type WifiNetDevice.
+  //
+  Ptr<WifiNetDevice> device = nd->GetObject<WifiNetDevice> ();
+  if (device == 0)
+    {
+      NS_LOG_INFO ("YansWifiHelper::EnablePcapInternal(): Device " << &device << " not of type ns3::WifiNetDevice");
       return;
     }
-  oss.str ("");
-  oss << filename << "-" << nodeid << "-" << deviceid << ".pcap";
-  Ptr<PcapWriter> pcap = CreateObject<PcapWriter> ();
-  pcap->Open (oss.str ());
 
-  switch (m_pcapFormat) {
-  case PCAP_FORMAT_80211:
-    pcap->WriteWifiHeader ();  
-    break;
-  case PCAP_FORMAT_80211_RADIOTAP:
-    pcap->WriteWifiRadiotapHeader ();  
-    break;
-  case PCAP_FORMAT_80211_PRISM:
-    pcap->WriteWifiPrismHeader ();  
-    break;
-  }
-  
-  oss.str ("");
-  oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid;
-  oss << "/$ns3::WifiNetDevice/Phy/PromiscSnifferTx";
-  Config::ConnectWithoutContext (oss.str (), MakeBoundCallback (&PcapSniffTxEvent, pcap));
+  Ptr<WifiPhy> phy = device->GetPhy ();
+  NS_ABORT_MSG_IF (phy == 0, "YansWifiPhyHelper::EnablePcapInternal(): Phy layer in WifiNetDevice must be set");
 
-  oss.str ("");
-  oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid;
-  oss << "/$ns3::WifiNetDevice/Phy/PromiscSnifferRx";
-  Config::ConnectWithoutContext (oss.str (), MakeBoundCallback (&PcapSniffRxEvent, pcap));  
+  PcapHelper pcapHelper;
+  std::string filename = pcapHelper.GetFilenameFromDevice (prefix, device);
+
+  Ptr<PcapFileWrapper> file = pcapHelper.CreateFile (filename, "w", m_pcapDlt);
+
+  phy->TraceConnectWithoutContext ("PromiscSnifferTx", MakeBoundCallback (&PcapSniffTxEvent, file));
+  phy->TraceConnectWithoutContext ("PromiscSnifferRx", MakeBoundCallback (&PcapSniffRxEvent, file));
 }
 
 void 
-YansWifiPhyHelper::EnablePcap (std::string filename, NetDeviceContainer d)
+YansWifiPhyHelper::EnableAsciiInternal (Ptr<OutputStreamWrapper> stream, std::string prefix, Ptr<NetDevice> nd)
 {
-  for (NetDeviceContainer::Iterator i = d.Begin (); i != d.End (); ++i)
+  //
+  // All of the ascii enable functions vector through here including the ones
+  // that are wandering through all of devices on perhaps all of the nodes in
+  // the system.  We can only deal with devices of type CsmaNetDevice.
+  //
+  Ptr<WifiNetDevice> device = nd->GetObject<WifiNetDevice> ();
+  if (device == 0)
     {
-      Ptr<NetDevice> dev = *i;
-      EnablePcap (filename, dev->GetNode ()->GetId (), dev->GetIfIndex ());
+      NS_LOG_INFO ("YansWifiHelper::EnableAsciiInternal(): Device " << device << " not of type ns3::WifiNetDevice");
+      return;
     }
-}
 
-void 
-YansWifiPhyHelper::EnablePcap (std::string filename, Ptr<NetDevice> nd)
-{
-  EnablePcap (filename, nd->GetNode ()->GetId (), nd->GetIfIndex ());
-}
-
-void 
-YansWifiPhyHelper::EnablePcap (std::string filename, std::string ndName)
-{
-  Ptr<NetDevice> nd = Names::Find<NetDevice> (ndName);
-  EnablePcap (filename, nd->GetNode ()->GetId (), nd->GetIfIndex ());
-}
-
-void
-YansWifiPhyHelper::EnablePcap (std::string filename, NodeContainer n)
-{
-  NetDeviceContainer devs;
-  for (NodeContainer::Iterator i = n.Begin (); i != n.End (); ++i)
-    {
-      Ptr<Node> node = *i;
-      for (uint32_t j = 0; j < node->GetNDevices (); ++j)
-        {
-          devs.Add (node->GetDevice (j));
-        }
-    }
-  EnablePcap (filename, devs);
-}
-
-void
-YansWifiPhyHelper::EnablePcapAll (std::string filename)
-{
-  EnablePcap (filename, NodeContainer::GetGlobal ());
-}
-
-void 
-YansWifiPhyHelper::EnableAscii (std::ostream &os, uint32_t nodeid, uint32_t deviceid)
-{
-  Ptr<AsciiWriter> writer = AsciiWriter::Get (os);
+  //
+  // Our trace sinks are going to use packet printing, so we have to make sure
+  // that is turned on.
+  //
   Packet::EnablePrinting ();
+
+  uint32_t nodeid = nd->GetNode ()->GetId ();
+  uint32_t deviceid = nd->GetIfIndex ();
   std::ostringstream oss;
+
+  //
+  // If we are not provided an OutputStreamWrapper, we are expected to create 
+  // one using the usual trace filename conventions and write our traces 
+  // without a context since there will be one file per context and therefore
+  // the context would be redundant.
+  //
+  if (stream == 0)
+    {
+      //
+      // Set up an output stream object to deal with private ofstream copy 
+      // constructor and lifetime issues.  Let the helper decide the actual
+      // name of the file given the prefix.
+      //
+      AsciiTraceHelper asciiTraceHelper;
+      std::string filename = asciiTraceHelper.GetFilenameFromDevice (prefix, device);
+      Ptr<OutputStreamWrapper> theStream = asciiTraceHelper.CreateFileStream (filename, "w");
+
+      //
+      // We could go poking through the phy and the state looking for the 
+      // correct trace source, but we can let Config deal with that with 
+      // some search cost.  Since this is presumably happening at topology
+      // creation time, it doesn't seem much of a price to pay.
+      //
+      oss.str ("");
+      oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::WifiNetDevice/Phy/State/RxOk";
+      Config::ConnectWithoutContext (oss.str (), MakeBoundCallback (&AsciiPhyReceiveSinkWithoutContext, stream));
+
+      oss.str ("");
+      oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::WifiNetDevice/Phy/State/Tx";
+      Config::ConnectWithoutContext (oss.str (), MakeBoundCallback (&AsciiPhyTransmitSinkWithoutContext, stream));
+
+      return;
+    }
+
+  //
+  // If we are provided an OutputStreamWrapper, we are expected to use it, and
+  // to provide a context.  We are free to come up with our own context if we
+  // want, and use the AsciiTraceHelper Hook*WithContext functions, but for 
+  // compatibility and simplicity, we just use Config::Connect and let it deal
+  // with coming up with a context.
+  //
+  oss.str ("");
   oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::WifiNetDevice/Phy/State/RxOk";
-  Config::Connect (oss.str (), MakeBoundCallback (&AsciiPhyRxOkEvent, writer));
+  Config::Connect (oss.str (), MakeBoundCallback (&AsciiPhyReceiveSinkWithContext, stream));
+
   oss.str ("");
   oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::WifiNetDevice/Phy/State/Tx";
-  Config::Connect (oss.str (), MakeBoundCallback (&AsciiPhyTxEvent, writer));
-}
-void 
-YansWifiPhyHelper::EnableAscii (std::ostream &os, NetDeviceContainer d)
-{
-  for (NetDeviceContainer::Iterator i = d.Begin (); i != d.End (); ++i)
-    {
-      Ptr<NetDevice> dev = *i;
-      EnableAscii (os, dev->GetNode ()->GetId (), dev->GetIfIndex ());
-    }
-}
-void
-YansWifiPhyHelper::EnableAscii (std::ostream &os, NodeContainer n)
-{
-  NetDeviceContainer devs;
-  for (NodeContainer::Iterator i = n.Begin (); i != n.End (); ++i)
-    {
-      Ptr<Node> node = *i;
-      for (uint32_t j = 0; j < node->GetNDevices (); ++j)
-        {
-          devs.Add (node->GetDevice (j));
-        }
-    }
-  EnableAscii (os, devs);
-}
-
-void
-YansWifiPhyHelper::EnableAsciiAll (std::ostream &os)
-{
-  EnableAscii (os, NodeContainer::GetGlobal ());
+  Config::Connect (oss.str (), MakeBoundCallback (&AsciiPhyTransmitSinkWithContext, stream));
 }
 
 } // namespace ns3

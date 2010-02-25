@@ -20,24 +20,29 @@
 #ifndef POINT_TO_POINT_HELPER_H
 #define POINT_TO_POINT_HELPER_H
 
+#include <string>
+
 #include "ns3/object-factory.h"
 #include "ns3/net-device-container.h"
 #include "ns3/node-container.h"
 #include "ns3/deprecated.h"
-#include <string>
+
+#include "trace-helper.h"
 
 namespace ns3 {
 
 class Queue;
 class NetDevice;
 class Node;
-class PcapWriter;
-class AsciiWriter;
 
 /**
  * \brief Build a set of PointToPointNetDevice objects
+ *
+ * Normally we eschew multiple inheritance, however, the classes 
+ * PcapUserHelperForDevice and AsciiTraceUserHelperForDevice are
+ * "mixins".
  */
-class PointToPointHelper
+class PointToPointHelper : public PcapHelperForDevice, public AsciiTraceHelperForDevice
 {
 public:
   /**
@@ -45,6 +50,7 @@ public:
    * point networks.
    */
   PointToPointHelper ();
+  virtual ~PointToPointHelper () {}
 
   /**
    * Each point to point net device must have a queue to pass packets through.
@@ -95,108 +101,6 @@ public:
   void SetChannelAttribute (std::string name, const AttributeValue &value);
 
   /**
-   * \param filename filename prefix to use for pcap files.
-   * \param nodeid the id of the node to generate pcap output for.
-   * \param deviceid the id of the device to generate pcap output for.
-   *
-   * Generate a pcap file which contains the link-level data observed
-   * by the specified deviceid within the specified nodeid. The pcap
-   * data is stored in the file prefix-nodeid-deviceid.pcap.
-   *
-   * This method should be invoked after the network topology has 
-   * been fully constructed.
-   */
-  static void EnablePcap (std::string filename, uint32_t nodeid, uint32_t deviceid);
-
-  /**
-   * \param filename filename prefix to use for pcap files.
-   * \param nd Net device on which you want to enable tracing.
-   *
-   * Enable pcap output on each input device which is of the
-   * ns3::PointToPointNetDevice type.
-   */
-  static void EnablePcap (std::string filename, Ptr<NetDevice> nd);
-
-  /**
-   * \param filename filename prefix to use for pcap files.
-   * \param ndName Name of net device on which you want to enable tracing.
-   *
-   * Enable pcap output on each input device which is of the
-   * ns3::PointToPointNetDevice type.
-   */
-  static void EnablePcap (std::string filename, std::string ndName);
-
-  /**
-   * \param filename filename prefix to use for pcap files.
-   * \param d container of devices of type ns3::PointToPointNetDevice
-   *
-   * Enable pcap output on each input device which is of the
-   * ns3::PointToPointNetDevice type.
-   */
-  static void EnablePcap (std::string filename, NetDeviceContainer d);
-
-
-  /**
-   * \param filename filename prefix to use for pcap files.
-   * \param n container of nodes.
-   *
-   * Enable pcap output on each device which is of the
-   * ns3::PointToPointNetDevice type and which is located in one of the 
-   * input nodes.
-   */
-  static void EnablePcap (std::string filename, NodeContainer n);
-
-  /**
-   * \param filename filename prefix to use for pcap files.
-   *
-   * Enable pcap output on each device which is of the
-   * ns3::PointToPointNetDevice type
-   */
-  static void EnablePcapAll (std::string filename);
-
-  /**
-   * \param os output stream
-   * \param nodeid the id of the node to generate ascii output for.
-   * \param deviceid the id of the device to generate ascii output for.
-   *
-   * Enable ascii output on the specified deviceid within the
-   * specified nodeid if it is of type ns3::PointToPointNetDevice and dump 
-   * that to the specified stdc++ output stream.
-   */
-  static void EnableAscii (std::ostream &os, uint32_t nodeid, uint32_t deviceid);
-
-  /**
-   * \param os output stream
-   * \param d device container
-   *
-   * Enable ascii output on each device which is of the
-   * ns3::PointToPointNetDevice type and which is located in the input
-   * device container and dump that to the specified
-   * stdc++ output stream.
-   */
-  static void EnableAscii (std::ostream &os, NetDeviceContainer d);
-
-  /**
-   * \param os output stream
-   * \param n node container
-   *
-   * Enable ascii output on each device which is of the
-   * ns3::PointToPointNetDevice type and which is located in one
-   * of the input node and dump that to the specified
-   * stdc++ output stream.
-   */
-  static void EnableAscii (std::ostream &os, NodeContainer n);
-
-  /**
-   * \param os output stream
-   *
-   * Enable ascii output on each device which is of the
-   * ns3::PointToPointNetDevice type and dump that to the specified
-   * stdc++ output stream.
-   */
-  static void EnableAsciiAll (std::ostream &os);
-
-  /**
    * \param c a set of nodes
    *
    * This method creates a ns3::PointToPointChannel with the
@@ -241,14 +145,30 @@ public:
   NetDeviceContainer Install (std::string aNode, std::string bNode);
 
 private:
-  void EnablePcap (Ptr<Node> node, Ptr<NetDevice> device, Ptr<Queue> queue);
-  static void SniffEvent (Ptr<PcapWriter> writer, Ptr<const Packet> packet);
+  /**
+   * \brief Enable pcap output the indicated net device.
+   *
+   * NetDevice-specific implementation mechanism for hooking the trace and
+   * writing to the trace file.
+   *
+   * \param prefix Filename prefix to use for pcap files.
+   * \param nd Net device for which you want to enable tracing.
+   * \param promiscuous If true capture all possible packets available at the device.
+   */
+  virtual void EnablePcapInternal (std::string prefix, Ptr<NetDevice> nd, bool promiscuous = false);
 
-  void EnableAscii (Ptr<Node> node, Ptr<NetDevice> device);
-  static void AsciiRxEvent (Ptr<AsciiWriter> writer, std::string path, Ptr<const Packet> packet);
-  static void AsciiEnqueueEvent (Ptr<AsciiWriter> writer, std::string path, Ptr<const Packet> packet);
-  static void AsciiDequeueEvent (Ptr<AsciiWriter> writer, std::string path, Ptr<const Packet> packet);
-  static void AsciiDropEvent (Ptr<AsciiWriter> writer, std::string path, Ptr<const Packet> packet);
+  /**
+   * \brief Enable ascii trace output on the indicated net device.
+   * \internal
+   *
+   * NetDevice-specific implementation mechanism for hooking the trace and
+   * writing to the trace file.
+   *
+   * \param stream The output stream object to use when logging ascii traces.
+   * \param prefix Filename prefix to use for ascii trace files.
+   * \param nd Net device for which you want to enable tracing.
+   */
+  virtual void EnableAsciiInternal (Ptr<OutputStreamWrapper> stream, std::string prefix, Ptr<NetDevice> nd);
 
   ObjectFactory m_queueFactory;
   ObjectFactory m_channelFactory;

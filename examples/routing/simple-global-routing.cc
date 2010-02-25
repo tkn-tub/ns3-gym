@@ -13,11 +13,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * ns-2 simple.tcl script (ported from ns-2)
- * Originally authored by Steve McCanne, 12/19/1996
  */
 
-// Port of ns-2/tcl/ex/simple.tcl to ns-3
 //
 // Network topology
 //
@@ -145,10 +142,9 @@ main (int argc, char *argv[])
   apps.Start (Seconds (1.1));
   apps.Stop (Seconds (10.0));
 
-  std::ofstream ascii;
-  ascii.open ("simple-global-routing.tr");
-  PointToPointHelper::EnablePcapAll ("simple-global-routing");
-  PointToPointHelper::EnableAsciiAll (ascii);
+  AsciiTraceHelper ascii;
+  p2p.EnableAsciiAll (ascii.CreateFileStream ("simple-global-routing.tr"));
+  p2p.EnablePcapAll ("simple-global-routing");
 
   // Flow Monitor
   Ptr<FlowMonitor> flowmon;

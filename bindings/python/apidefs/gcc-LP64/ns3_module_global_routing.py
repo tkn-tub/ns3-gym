@@ -331,7 +331,7 @@ def register_Ns3GlobalRouter_methods(root_module, cls):
                    [])
     ## global-router-interface.h: ns3::Ipv4RoutingTableEntry * ns3::GlobalRouter::GetInjectedRoute(uint32_t i) [member function]
     cls.add_method('GetInjectedRoute', 
-                   'ns3::Ipv4RoutingTableEntry *', 
+                   retval('ns3::Ipv4RoutingTableEntry *', caller_owns_return=False), 
                    [param('uint32_t', 'i')])
     ## global-router-interface.h: void ns3::GlobalRouter::RemoveInjectedRoute(uint32_t i) [member function]
     cls.add_method('RemoveInjectedRoute', 
@@ -379,7 +379,7 @@ def register_Ns3Ipv4GlobalRouting_methods(root_module, cls):
                    [])
     ## ipv4-global-routing.h: ns3::Ipv4RoutingTableEntry * ns3::Ipv4GlobalRouting::GetRoute(uint32_t i) [member function]
     cls.add_method('GetRoute', 
-                   'ns3::Ipv4RoutingTableEntry *', 
+                   retval('ns3::Ipv4RoutingTableEntry *', caller_owns_return=False), 
                    [param('uint32_t', 'i')])
     ## ipv4-global-routing.h: static ns3::TypeId ns3::Ipv4GlobalRouting::GetTypeId() [member function]
     cls.add_method('GetTypeId', 

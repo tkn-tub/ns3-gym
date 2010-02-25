@@ -119,10 +119,9 @@ main (int argc, char *argv[])
   apps.Start (Seconds (1.0));
   apps.Stop (Seconds (10.0));
 
-  std::ofstream ascii;
-  ascii.open ("global-routing-slash32.tr", std::ios_base::binary | std::ios_base::out);
-  PointToPointHelper::EnablePcapAll ("global-routing-slash32");
-  PointToPointHelper::EnableAsciiAll (ascii);
+  AsciiTraceHelper ascii;
+  p2p.EnableAsciiAll (ascii.CreateFileStream ("global-routing-slash32.tr"));
+  p2p.EnablePcapAll ("global-routing-slash32");
 
   Simulator::Run ();
   Simulator::Destroy ();

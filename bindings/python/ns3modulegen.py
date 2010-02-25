@@ -95,6 +95,7 @@ def main():
     ns3modulegen_core_customizations.CommandLine_customizations(root_module)
     ns3modulegen_core_customizations.TypeId_customizations(root_module)
     ns3modulegen_core_customizations.add_std_ofstream(root_module)
+    ns3modulegen_core_customizations.add_ipv4_address_tp_hash(root_module)
 
 
     for local_module in LOCAL_MODULES:
@@ -137,7 +138,8 @@ def main():
             pass
 
     if 'Threading' not in enabled_features:
-        for clsname in ['SystemThread', 'SystemMutex', 'SystemCondition', 'CriticalSection', 'SimpleRefCount< ns3::SystemThread, ns3::empty >']:
+        for clsname in ['SystemThread', 'SystemMutex', 'SystemCondition', 'CriticalSection',
+                        'SimpleRefCount< ns3::SystemThread, ns3::empty, ns3::DefaultDeleter<ns3::SystemThread> >']:
             root_module.classes.remove(root_module['ns3::%s' % clsname])
 
     if 'EmuNetDevice' not in enabled_features:

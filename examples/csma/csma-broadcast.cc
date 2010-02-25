@@ -107,14 +107,17 @@ main (int argc, char *argv[])
   app.Start (Seconds (1.0));
   app.Stop (Seconds (10.0));
 
+  // Configure ascii tracing of all enqueue, dequeue, and NetDevice receive 
+  // events on all devices.  Trace output will be sent to the file 
+  // "csma-one-subnet.tr"
+  AsciiTraceHelper ascii;
+  csma.EnableAsciiAll (ascii.CreateFileStream ("csma-broadcast.tr"));
+
   // Also configure some tcpdump traces; each interface will be traced
   // The output files will be named 
   // csma-broadcast-<nodeId>-<interfaceId>.pcap
   // and can be read by the "tcpdump -tt -r" command 
-  CsmaHelper::EnablePcapAll ("csma-broadcast", false);
-  std::ofstream ascii;
-  ascii.open ("csma-broadcast.tr", std::ios_base::binary | std::ios_base::out);
-  CsmaHelper::EnableAsciiAll (ascii);
+  csma.EnablePcapAll ("csma-broadcast", false);
 
   NS_LOG_INFO ("Run Simulation.");
   Simulator::Run ();    

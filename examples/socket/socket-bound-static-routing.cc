@@ -145,10 +145,9 @@ main (int argc, char *argv[])
   dstSocket->Bind (dst);
   dstSocket->SetRecvCallback (MakeCallback (&dstSocketRecv));
   
-  std::ofstream ascii;
-  ascii.open ("socket-bound-static-routing.tr");
-  PointToPointHelper::EnablePcapAll ("socket-bound-static-routing");
-  PointToPointHelper::EnableAsciiAll (ascii);
+  AsciiTraceHelper ascii;
+  p2p.EnableAsciiAll (ascii.CreateFileStream ("socket-bound-static-routing.tr"));
+  p2p.EnablePcapAll ("socket-bound-static-routing");
 
   LogComponentEnableAll (LOG_PREFIX_TIME);
   LogComponentEnable ("SocketBoundRoutingExample", LOG_LEVEL_INFO);

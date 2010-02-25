@@ -137,7 +137,7 @@ public:
    * \param lrx lower right x value
    * \param lry lower right y value
    */
-  void      BoundingBox (double, double, double, double);
+  void      BoundingBox (double ulx, double uly, double lrx, double lry);
   
 private:
   NodeContainer          m_leftLeaf;

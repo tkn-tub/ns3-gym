@@ -47,6 +47,7 @@ class MacTxMiddle;
 class DcfManager;
 class AmsduSubframeHeader;
 class MsduAggregator;
+class MgtAddBaRequestHeader;
 
 class QapWifiMac : public WifiMac
 {
@@ -81,6 +82,10 @@ public:
   virtual void SetAddress (Mac48Address address);
   virtual void SetSsid (Ssid ssid);
   virtual Mac48Address GetBssid (void) const;
+  virtual void SetBasicBlockAckTimeout (Time blockAckTimeout);
+  virtual void SetCompressedBlockAckTimeout (Time blockAckTimeout);
+  virtual Time GetBasicBlockAckTimeout (void) const;
+  virtual Time GetCompressedBlockAckTimeout (void) const;
 
   void SetBeaconInterval (Time interval);
   Time GetBeaconInterval (void) const;
@@ -103,6 +108,7 @@ private:
   void TxFailed (const WifiMacHeader& hdr);
   void SendProbeResp (Mac48Address to);
   void SendAssocResp (Mac48Address to, bool success);
+  void SendAddBaResponse (const MgtAddBaRequestHeader *reqHdr, Mac48Address originator);
   void SendOneBeacon (void);
   SupportedRates GetSupportedRates (void) const;
   void SetBeaconGeneration (bool enable);

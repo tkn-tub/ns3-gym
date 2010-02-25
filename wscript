@@ -112,6 +112,7 @@ def dist_hook():
 
 def set_options(opt):
     # options provided by the modules
+    opt.tool_options('compiler_cc')
     opt.tool_options('compiler_cxx')
     opt.tool_options('cflags')
 
@@ -236,6 +237,7 @@ def configure(conf):
     conf.env['NS3_OPTIONAL_FEATURES'] = []
 
     conf.env['NS3_BUILDDIR'] = conf.blddir
+    conf.check_tool('compiler_cc')
     conf.check_tool('compiler_cxx')
     conf.check_tool('cflags')
     try:
@@ -277,8 +279,6 @@ def configure(conf):
     conf.setenv(variant_name)
     env = variant_env
 
-    env.append_value('CXXDEFINES', 'RUN_SELF_TESTS')
-    
     if env['COMPILER_CXX'] == 'g++' and 'CXXFLAGS' not in os.environ:
         if conf.check_compilation_flag('-Wno-error=deprecated-declarations'):
             env.append_value('CXXFLAGS', '-Wno-error=deprecated-declarations')
@@ -387,6 +387,10 @@ def configure(conf):
     if have_gsl:
         conf.env.append_value('CXXDEFINES', "ENABLE_GSL")
         conf.env.append_value('CCDEFINES', "ENABLE_GSL")
+
+    # for compiling C code, copy over the CXX* flags
+    conf.env.append_value('CCFLAGS', conf.env['CXXFLAGS'])
+    conf.env.append_value('CCDEFINES', conf.env['CXXDEFINES'])
 
     # append user defined flags after all our ones
     for (confvar, envvar) in [['CCFLAGS', 'CCFLAGS_EXTRA'],
@@ -697,12 +701,14 @@ class run_python_unit_tests_task(Task.TaskBase):
                         self.bld.env, proc_env, force_no_valgrind=True)
 
 def check_shell(bld):
-    if 'NS3_MODULE_PATH' not in os.environ:
+    if ('NS3_MODULE_PATH' not in os.environ) or ('NS3_EXECUTABLE_PATH' not in os.environ):
         return
     env = bld.env
     correct_modpath = os.pathsep.join(env['NS3_MODULE_PATH'])
     found_modpath = os.environ['NS3_MODULE_PATH']
-    if found_modpath != correct_modpath:
+    correct_execpath = os.pathsep.join(env['NS3_EXECUTABLE_PATH'])
+    found_execpath = os.environ['NS3_EXECUTABLE_PATH']
+    if (found_modpath != correct_modpath) or (correct_execpath != found_execpath):
         msg = ("Detected shell (./waf shell) with incorrect configuration\n"
                "=========================================================\n"
                "Possible reasons for this problem:\n"
@@ -728,7 +734,8 @@ def shell(ctx):
         shell = os.environ.get("SHELL", "/bin/sh")
 
     env = wutils.bld.env
-    wutils.run_argv([shell], env, {'NS3_MODULE_PATH': os.pathsep.join(env['NS3_MODULE_PATH'])})
+    os_env = {'NS3_MODULE_PATH': os.pathsep.join(env['NS3_MODULE_PATH']), 'NS3_EXECUTABLE_PATH': os.pathsep.join(env['NS3_EXECUTABLE_PATH'])}
+    wutils.run_argv([shell], env, os_env)
 
 def _doxygen(bld):
     env = wutils.bld.env

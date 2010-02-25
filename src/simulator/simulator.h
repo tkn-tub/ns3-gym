@@ -75,7 +75,7 @@ public:
   static Ptr<SimulatorImpl> GetImplementation (void);
 
   /**
-   * \param scheduler a new event scheduler
+   * \param schedulerFactory a new event scheduler factory
    *
    * The event scheduler can be set at any time: the events scheduled
    * in the previous scheduler will be transfered to the new scheduler

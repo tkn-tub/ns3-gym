@@ -105,10 +105,9 @@ main (int argc, char *argv[])
   apps.Start (Seconds (2.0));
   apps.Stop (Seconds (10.0));
 
-  std::ofstream ascii;
-  ascii.open ("realtime-udp-echo.tr");
-  CsmaHelper::EnablePcapAll ("realtime-udp-echo", false);
-  CsmaHelper::EnableAsciiAll (ascii);
+  AsciiTraceHelper ascii;
+  csma.EnableAsciiAll (ascii.CreateFileStream ("realtime-udp-echo.tr"));
+  csma.EnablePcapAll ("realtime-udp-echo", false);
 
   //
   // Now, do the actual simulation.

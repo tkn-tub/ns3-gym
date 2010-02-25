@@ -36,9 +36,8 @@
 
 NS_LOG_COMPONENT_DEFINE ("DcaTxop");
 
-#define MY_DEBUG(x) \
-  NS_LOG_DEBUG (m_low->GetAddress () << " " << x)
-
+#undef NS_LOG_APPEND_CONTEXT
+#define NS_LOG_APPEND_CONTEXT if (m_low != 0) {std::clog << "[mac=" << m_low->GetAddress () << "] ";}
 
 namespace ns3 {
 
@@ -263,10 +262,10 @@ DcaTxop::Low (void)
 }
 
 bool
-DcaTxop::NeedRts (void)
+DcaTxop::NeedRts (Ptr<const Packet> packet, const WifiMacHeader *header)
 {
-  return m_stationManager->NeedRts (m_currentHdr.GetAddr1 (), &m_currentHdr,
-                                    m_currentPacket);
+  return m_stationManager->NeedRts (header->GetAddr1 (), header,
+                                    packet);
 }
 
 bool
@@ -355,7 +354,7 @@ DcaTxop::NotifyAccessGranted (void)
     {
       if (m_queue->IsEmpty ()) 
         {
-          MY_DEBUG ("queue empty");
+          NS_LOG_DEBUG ("queue empty");
           return;
         }
       m_currentPacket = m_queue->Dequeue (&m_currentHdr);
@@ -366,7 +365,7 @@ DcaTxop::NotifyAccessGranted (void)
       m_currentHdr.SetNoMoreFragments ();
       m_currentHdr.SetNoRetry ();
       m_fragmentNumber = 0;
-      MY_DEBUG ("dequeued size="<<m_currentPacket->GetSize ()<<
+      NS_LOG_DEBUG ("dequeued size="<<m_currentPacket->GetSize ()<<
                     ", to="<<m_currentHdr.GetAddr1 ()<<
                     ", seq="<<m_currentHdr.GetSequenceControl ()); 
     }
@@ -385,7 +384,7 @@ DcaTxop::NotifyAccessGranted (void)
       m_dcf->ResetCw ();
       m_dcf->StartBackoffNow (m_rng->GetNext (0, m_dcf->GetCw ()));
       StartAccessIfNeeded ();
-      MY_DEBUG ("tx broadcast");
+      NS_LOG_DEBUG ("tx broadcast");
     } 
   else 
     {
@@ -393,17 +392,24 @@ DcaTxop::NotifyAccessGranted (void)
       
       if (NeedFragmentation ()) 
         {
-          params.DisableRts ();
           WifiMacHeader hdr;
           Ptr<Packet> fragment = GetFragmentPacket (&hdr);
+          if (NeedRts (fragment, &hdr))
+            {
+              params.EnableRts ();
+            }
+          else
+            {
+              params.DisableRts ();
+            }
           if (IsLastFragment ()) 
             {
-              MY_DEBUG ("fragmenting last fragment size="<<fragment->GetSize ());
+              NS_LOG_DEBUG ("fragmenting last fragment size="<<fragment->GetSize ());
               params.DisableNextData ();
             } 
           else 
             {
-              MY_DEBUG ("fragmenting size="<<fragment->GetSize ());
+              NS_LOG_DEBUG ("fragmenting size="<<fragment->GetSize ());
               params.EnableNextData (GetNextFragmentSize ());
             }
           Low ()->StartTransmission (fragment, &hdr, params, 
@@ -411,15 +417,15 @@ DcaTxop::NotifyAccessGranted (void)
         } 
       else 
         {
-          if (NeedRts ()) 
+          if (NeedRts (m_currentPacket, &m_currentHdr)) 
             {
               params.EnableRts ();
-              MY_DEBUG ("tx unicast rts");
+              NS_LOG_DEBUG ("tx unicast rts");
             } 
           else 
             {
               params.DisableRts ();
-              MY_DEBUG ("tx unicast");
+              NS_LOG_DEBUG ("tx unicast");
             }
           params.DisableNextData ();
           Low ()->StartTransmission (m_currentPacket, &m_currentHdr,
@@ -438,7 +444,7 @@ void
 DcaTxop::NotifyCollision (void)
 {
   NS_LOG_FUNCTION (this);
-  MY_DEBUG ("collision");
+  NS_LOG_DEBUG ("collision");
   m_dcf->StartBackoffNow (m_rng->GetNext (0, m_dcf->GetCw ()));
   RestartAccessIfNeeded ();
 }
@@ -454,16 +460,16 @@ void
 DcaTxop::GotCts (double snr, WifiMode txMode)
 {
   NS_LOG_FUNCTION (this << snr << txMode);
-  MY_DEBUG ("got cts");
+  NS_LOG_DEBUG ("got cts");
 }
 void 
 DcaTxop::MissedCts (void)
 {
   NS_LOG_FUNCTION (this);
-  MY_DEBUG ("missed cts");
+  NS_LOG_DEBUG ("missed cts");
   if (!NeedRtsRetransmission ())
     {
-      MY_DEBUG ("Cts Fail");
+      NS_LOG_DEBUG ("Cts Fail");
       m_stationManager->ReportFinalRtsFailed (m_currentHdr.GetAddr1 (), &m_currentHdr);
       if (!m_txFailedCallback.IsNull ()) 
         {
@@ -487,7 +493,7 @@ DcaTxop::GotAck (double snr, WifiMode txMode)
   if (!NeedFragmentation () ||
       IsLastFragment ()) 
     {
-      MY_DEBUG ("got ack. tx done.");
+      NS_LOG_DEBUG ("got ack. tx done.");
       if (!m_txOkCallback.IsNull ()) 
         {
           m_txOkCallback (m_currentHdr);
@@ -503,17 +509,17 @@ DcaTxop::GotAck (double snr, WifiMode txMode)
     } 
   else 
     {
-      MY_DEBUG ("got ack. tx not done, size="<<m_currentPacket->GetSize ());
+      NS_LOG_DEBUG ("got ack. tx not done, size="<<m_currentPacket->GetSize ());
     }
 }
 void 
 DcaTxop::MissedAck (void)
 {
   NS_LOG_FUNCTION (this);
-  MY_DEBUG ("missed ack");
+  NS_LOG_DEBUG ("missed ack");
   if (!NeedDataRetransmission ()) 
     {
-      MY_DEBUG ("Ack Fail");
+      NS_LOG_DEBUG ("Ack Fail");
       m_stationManager->ReportFinalDataFailed (m_currentHdr.GetAddr1 (), &m_currentHdr);
       if (!m_txFailedCallback.IsNull ()) 
         {
@@ -525,7 +531,7 @@ DcaTxop::MissedAck (void)
     } 
   else 
     {
-      MY_DEBUG ("Retransmit");
+      NS_LOG_DEBUG ("Retransmit");
       m_currentHdr.SetRetry ();
       m_dcf->UpdateFailedCw ();
     }
@@ -536,7 +542,7 @@ void
 DcaTxop::StartNext (void)
 {
   NS_LOG_FUNCTION (this);
-  MY_DEBUG ("start next packet fragment");
+  NS_LOG_DEBUG ("start next packet fragment");
   /* this callback is used only for fragments. */
   NextFragment ();
   WifiMacHeader hdr;
@@ -560,7 +566,7 @@ void
 DcaTxop::Cancel (void)
 {
   NS_LOG_FUNCTION (this);
-  MY_DEBUG ("transmission cancelled");
+  NS_LOG_DEBUG ("transmission cancelled");
   /**
    * This happens in only one case: in an AP, you have two DcaTxop:
    *   - one is used exclusively for beacons and has a high priority.

@@ -206,6 +206,14 @@ TapBridge::StartTapDevice (void)
   m_rtImpl = GetPointer (impl);
 
   //
+  // A similar story exists for the node ID.  We can't just naively do a
+  // GetNode ()->GetId () since GetNode is going to give us a Ptr<Node> which
+  // is reference counted.  We need to stash away the node ID for use in the
+  // read thread.
+  //
+  m_nodeId = GetNode ()->GetId ();
+
+  //
   // Spin up the tap bridge and start receiving packets.
   //
   NS_LOG_LOGIC ("Creating tap device");
@@ -477,8 +485,8 @@ TapBridge::CreateTap (void)
       //
       // Execute the socket creation process image.
       //
-      status = ::execl (FindCreator ("tap-creator").c_str (), 
-                        FindCreator ("tap-creator").c_str (), // argv[0] (filename)
+      status = ::execlp ("tap-creator", 
+                        "tap-creator",                        // argv[0] (filename)
                         ossDeviceName.str ().c_str (),        // argv[1] (-d<device name>)
                         ossGateway.str ().c_str (),           // argv[2] (-g<gateway>)
                         ossIp.str ().c_str (),                // argv[3] (-i<IP address>)
@@ -489,10 +497,10 @@ TapBridge::CreateTap (void)
                         (char *)NULL);
 
       //
-      // If the execl successfully completes, it never returns.  If it returns it failed or the OS is
+      // If the execlp successfully completes, it never returns.  If it returns it failed or the OS is
       // broken.  In either case, we bail.
       //
-      NS_FATAL_ERROR ("TapBridge::CreateTap(): Back from execl(), errno = " << ::strerror (errno));
+      NS_FATAL_ERROR ("TapBridge::CreateTap(): Back from execlp(), errno = " << ::strerror (errno));
     }
   else
     {
@@ -614,44 +622,6 @@ TapBridge::CreateTap (void)
     }
 }
 
-std::string
-TapBridge::FindCreator (std::string creatorName)
-{
-  NS_LOG_FUNCTION (creatorName);
-
-  std::list<std::string> locations;
-
-  // The path to the bits if we're sitting in the root of the repo
-  locations.push_back ("./build/optimized/src/devices/tap-bridge/");
-  locations.push_back ("./build/debug/src/devices/tap-bridge/");
-
-  // if in src
-  locations.push_back ("../build/optimized/src/devices/tap-bridge/");
-  locations.push_back ("../build/debug/src/devices/tap-bridge/");
-
-  // if in src/devices
-  locations.push_back ("../../build/optimized/src/devices/tap-bridge/");
-  locations.push_back ("../../build/debug/src/devices/tap-bridge/");
-
-  // if in src/devices/tap-bridge
-  locations.push_back ("../../../build/optimized/src/devices/tap-bridge/");
-  locations.push_back ("../../../build/debug/src/devices/tap-bridge/");
-
-  for (std::list<std::string>::const_iterator i = locations.begin (); i != locations.end (); ++i)
-    {
-      struct stat st;
-
-      if (::stat ((*i + creatorName).c_str (), &st) == 0)
-	{
-          NS_LOG_INFO ("Found Creator " << *i + creatorName);                  
-	  return *i + creatorName;
-	}
-    }
-
-  NS_FATAL_ERROR ("TapBridge::FindCreator(): Couldn't find creator");
-  return ""; // quiet compiler
-}
-
 void
 TapBridge::ReadThread (void)
 {
@@ -686,11 +656,10 @@ TapBridge::ReadThread (void)
           return;
         }
 
-      NS_LOG_INFO ("TapBridge::ReadThread(): Received packet on node " << m_node->GetId ());
+      NS_LOG_INFO ("TapBridge::ReadThread(): Received packet on node " << m_nodeId);
       NS_LOG_INFO ("TapBridge::ReadThread(): Scheduling handler");
       NS_ASSERT_MSG (m_rtImpl, "EmuNetDevice::ReadThread(): Realtime simulator implementation pointer not set");
-      m_rtImpl->ScheduleRealtimeNowWithContext (GetNode ()->GetId (),
-        MakeEvent (&TapBridge::ForwardToBridgedDevice, this, buf, len));
+      m_rtImpl->ScheduleRealtimeNowWithContext (m_nodeId, MakeEvent (&TapBridge::ForwardToBridgedDevice, this, buf, len));
       buf = 0;
     }
 }

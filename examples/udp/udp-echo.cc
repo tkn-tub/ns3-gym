@@ -118,10 +118,9 @@ main (int argc, char *argv[])
   client.SetFill(apps.Get (0), fill, sizeof(fill), 1024);
 #endif
 
-  std::ofstream ascii;
-  ascii.open ("udp-echo.tr");
-  CsmaHelper::EnablePcapAll ("udp-echo", false);
-  CsmaHelper::EnableAsciiAll (ascii);
+  AsciiTraceHelper ascii;
+  csma.EnableAsciiAll (ascii.CreateFileStream ("udp-echo.tr"));
+  csma.EnablePcapAll ("udp-echo", false);
 
 //
 // Now, do the actual simulation.

@@ -15,7 +15,7 @@ import Build
 import Utils
 
 ## https://launchpad.net/pybindgen/
-REQUIRED_PYBINDGEN_VERSION = (0, 12, 0, 710)
+REQUIRED_PYBINDGEN_VERSION = (0, 13, 0, 745)
 REQUIRED_PYGCCXML_VERSION = (0, 9, 5)
 
 
@@ -346,7 +346,7 @@ class all_ns3_headers_taskgen(TaskGen.task_gen):
                         all_headers_inputs.append(node)
         assert all_headers_inputs
         all_headers_outputs = [self.path.find_or_declare("everything.h")]
-        task = self.create_task('gen_everything_h', self.env)
+        task = self.create_task('gen_everything_h', env=self.env)
         task.set_inputs(all_headers_inputs)
         task.set_outputs(all_headers_outputs)
 

@@ -87,6 +87,13 @@ type_annotations = {
     'extern void ns3::PythonCompleteConstruct(ns3::Ptr<ns3::Object> object, ns3::TypeId typeId, ns3::AttributeList const & attributes) [free function]': {
         'ignore': None # used transparently by, should not be wrapped
         },
+    'ns3::Ipv4RoutingTableEntry * ns3::GlobalRouter::GetInjectedRoute(uint32_t i) [member function]': {
+        'params': {'return': { 'caller_owns_return': 'false',}},
+        },
+    'ns3::Ipv4RoutingTableEntry * ns3::Ipv4GlobalRouting::GetRoute(uint32_t i) [member function]': {
+        'params': {'return': { 'caller_owns_return': 'false',}},
+        },
+
     }
 
 def get_ns3_relative_path(path):
@@ -150,8 +157,8 @@ def pre_scan_hook(dummy_module_parser,
     ## classes
     if isinstance(pygccxml_definition, class_t):
         # no need for helper classes to allow subclassing in Python, I think...
-        if pygccxml_definition.name.endswith('Helper'):
-            global_annotations['allow_subclassing'] = 'false'
+        #if pygccxml_definition.name.endswith('Helper'):
+        #    global_annotations['allow_subclassing'] = 'false'
 
         if pygccxml_definition.decl_string.startswith('::ns3::SimpleRefCount<'):
             global_annotations['incref_method'] = 'Ref'

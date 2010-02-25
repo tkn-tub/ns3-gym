@@ -323,7 +323,7 @@ Ns3TcpCwndTestCase1::DoRun (void)
 
   if (m_writeResults)
     {
-      PointToPointHelper::EnablePcapAll ("tcp-cwnd");
+      pointToPoint.EnablePcapAll ("tcp-cwnd");
     }
 
   Simulator::Stop (Seconds(2));
@@ -490,7 +490,8 @@ Ns3TcpCwndTestCase2::DoRun (void)
   if (m_writeResults)
     {
       // Write a pcap for tcp cwnd testcase with out-of-order delivery
-      PointToPointHelper::EnablePcapAll ("tcp-cwnd-ood");
+      PointToPointHelper pointToPoint;
+      pointToPoint.EnablePcapAll ("tcp-cwnd-ood");
     }
 
   // Finally, set up the simulator to run.

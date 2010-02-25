@@ -44,6 +44,63 @@ to this file based on your experience, please contribute a patch or drop
 us a note on ns-developers mailing list.  </p>
 
 <hr>
+<h1>Changes from ns-3.7 to ns-3.8</h1>
+
+<h2>Changes to build system:</h2>
+
+<h2>New API:</h2>
+
+<h2>Changes to existing API:</h2>
+<ul>
+</pre>
+<li><b>Tracing Helpers</b>: The organization of helpers for both pcap and ascii
+tracing, in devices and protocols, has been reworked.  Instead of each device 
+and protocol helper re-implementing trace enable methods, classes have been 
+developed to implement user-level tracing in a consistent way; and device and 
+protocol helpers use those classes to provide tracing functionality.<br>
+In addition to consistent operation across all helpers, the object name service
+has been integrated into the trace file naming scheme.<br>
+The internet stack helper has been extensively massaged to make it easier to 
+manage traces originating from protocols.  It used to be the case that there 
+was essentially no opportunity to filter tracing on interfaces, and resulting
+trace file names collided with those created by devices.  File names are now
+disambiguated and one can enable traces on a protocol/interface basis analogously
+to the node/device granularity of device-based helpers.<br>
+The primary user-visible results of this change are that trace-related functions
+have been changed from static functions to method calls; and a new object has
+been developed to hold streams for ascii traces.<br>
+New functionality is present for ascii traces.  It is now possible to create
+multiple ascii trace files automatically just as was possible for pcap trace 
+files.<br>
+The implementation of the helper code has been designed also to provide 
+functionality to make it easier for sophisticated users to hook traces of 
+various kinds and write results to (file) streams.
+Before:
+<pre>
+  CsmaHelper::EnablePcapAll ();
+
+  std::ofstream ascii;
+  ascii.open ("csma-one-subnet.tr", std::ios_base::binary | std::ios_base::out);
+  CsmaHelper::EnableAsciiAll (ascii);
+
+  InternetStackHelper::EnableAsciiAll (ascii);
+</pre>
+After:
+<pre>
+  CsmaHelper csmaHelper;
+  InternetStackHelper stack;
+  csmaHelper.EnablePcapAll ();
+
+  AsciiTraceHelper ascii;
+  csma.EnableAsciiAll (ascii.CreateFileStream ("csma-one-subnet.tr"));
+
+  stack.EnableAsciiIpv4All (stream);
+
+</pre>
+
+
+
+<hr>
 <h1>Changes from ns-3.6 to ns-3.7</h1>
 
 
@@ -64,7 +121,7 @@ event with a context different from the execution context of the caller. This AP
 by the ns-3 logging system to report the execution context of each log line.
 <li><b>Object::DoStart</b>: Users who need to complete their object setup at the start of a simulation
 can override this virtual method, perform their adhoc setup, and then, must chain up to their parent.
-<li><b>Aod hoc On-Demand Distance Vector (AODV)</b> routing model, 
+<li><b>Ad hoc On-Demand Distance Vector (AODV)</b> routing model, 
 <a href=http://www.ietf.org/rfc/rfc3561.txt>RFC 3561</a> </li>
 <li><b>Ipv4::IsDestinationAddress (Ipv4Address address, uint32_t iif)</b> Method added to support checks of whether a destination address should be accepted 
 as one of the host's own addresses.  RFC 1122 Strong/Weak end system behavior can be changed with a new attribute (WeakEsModel) in class Ipv4.  </li>

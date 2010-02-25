@@ -69,6 +69,63 @@ WifiMac::GetDefaultCtsAckTimeout (void)
   return ctsTimeout;
 }
 
+Time
+WifiMac::GetDefaultBasicBlockAckDelay (void)
+{
+  // This value must be rivisited
+  return MicroSeconds (250);
+}
+Time
+WifiMac::GetDefaultCompressedBlockAckDelay (void)
+{
+  // This value must be rivisited
+  return MicroSeconds (68);
+}
+Time
+WifiMac::GetDefaultBasicBlockAckTimeout (void)
+{
+  Time blockAckTimeout = GetDefaultSifs ();
+  blockAckTimeout += GetDefaultBasicBlockAckDelay ();
+  blockAckTimeout += MicroSeconds (GetDefaultMaxPropagationDelay ().GetMicroSeconds () * 2);
+  blockAckTimeout += GetDefaultSlot ();
+  return blockAckTimeout;
+}
+Time
+WifiMac::GetDefaultCompressedBlockAckTimeout (void)
+{
+  Time blockAckTimeout = GetDefaultSifs ();
+  blockAckTimeout += GetDefaultCompressedBlockAckDelay ();
+  blockAckTimeout += MicroSeconds (GetDefaultMaxPropagationDelay ().GetMicroSeconds () * 2);
+  blockAckTimeout += GetDefaultSlot ();
+  return blockAckTimeout;
+}
+
+void
+WifiMac::SetBasicBlockAckTimeout (Time blockAckTimeout)
+{
+  //this method must be implemented by QoS WifiMacs
+}
+
+Time
+WifiMac::GetBasicBlockAckTimeout (void) const
+{
+  //this method must be implemented by QoS WifiMacs
+  return MicroSeconds (0);
+}
+
+void
+WifiMac::SetCompressedBlockAckTimeout (Time blockAckTimeout)
+{
+  //this methos must be implemented by QoS WifiMacs
+}
+
+Time
+WifiMac::GetCompressedBlockAckTimeout (void) const
+{
+  //this method must be implemented by QoS WifiMacs
+  return MicroSeconds (0);
+}
+
 TypeId 
 WifiMac::GetTypeId (void)
 {
@@ -83,6 +140,16 @@ WifiMac::GetTypeId (void)
                    TimeValue (GetDefaultCtsAckTimeout ()),
                    MakeTimeAccessor (&WifiMac::GetAckTimeout,
                                      &WifiMac::SetAckTimeout),
+                   MakeTimeChecker ())
+    .AddAttribute ("BasicBlockAckTimeout", "When this timeout expires, the BASIC_BLOCK_ACK_REQ/BASIC_BLOCK_ACK handshake has failed.",
+                   TimeValue (GetDefaultBasicBlockAckTimeout ()),
+                   MakeTimeAccessor (&WifiMac::GetBasicBlockAckTimeout,
+                                     &WifiMac::SetBasicBlockAckTimeout),
+                   MakeTimeChecker ())
+    .AddAttribute ("CompressedBlockAckTimeout", "When this timeout expires, the COMPRESSED_BLOCK_ACK_REQ/COMPRESSED_BLOCK_ACK handshake has failed.",
+                   TimeValue (GetDefaultCompressedBlockAckTimeout ()),
+                   MakeTimeAccessor (&WifiMac::GetCompressedBlockAckTimeout,
+                                     &WifiMac::SetCompressedBlockAckTimeout),
                    MakeTimeChecker ())
     .AddAttribute ("Sifs", "The value of the SIFS constant.",
                    TimeValue (GetDefaultSifs ()),

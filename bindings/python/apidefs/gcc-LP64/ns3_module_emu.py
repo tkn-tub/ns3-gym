@@ -147,6 +147,11 @@ def register_Ns3EmuNetDevice_methods(root_module, cls):
                    'ns3::Ptr< ns3::Node >', 
                    [], 
                    is_const=True, is_virtual=True)
+    ## emu-net-device.h: ns3::Ptr<ns3::Queue> ns3::EmuNetDevice::GetQueue() const [member function]
+    cls.add_method('GetQueue', 
+                   'ns3::Ptr< ns3::Queue >', 
+                   [], 
+                   is_const=True)
     ## emu-net-device.h: static ns3::TypeId ns3::EmuNetDevice::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 

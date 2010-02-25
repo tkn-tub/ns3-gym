@@ -112,6 +112,11 @@ def get_proc_env(os_env=None):
     else:
         proc_env['PYTHONPATH'] = pymoddir
 
+    if 'PATH' in proc_env:
+        proc_env['PATH'] = os.pathsep.join(list(env['NS3_EXECUTABLE_PATH']) + [proc_env['PATH']])
+    else:
+        proc_env['PATH'] = os.pathsep.join(list(env['NS3_EXECUTABLE_PATH']))
+
     return proc_env
 
 def run_argv(argv, env, os_env=None, cwd=None, force_no_valgrind=False):
@@ -121,16 +126,12 @@ def run_argv(argv, env, os_env=None, cwd=None, force_no_valgrind=False):
             raise Utils.WafError("Options --command-template and --valgrind are conflicting")
         if not env['VALGRIND']:
             raise Utils.WafError("valgrind is not installed")
-        argv = [env['VALGRIND'], "--leak-check=full", "--error-exitcode=1"] + argv
+        argv = [env['VALGRIND'], "--leak-check=full", "--show-reachable=yes", "--error-exitcode=1"] + argv
         proc = subprocess.Popen(argv, env=proc_env, cwd=cwd, stderr=subprocess.PIPE)
-        reg = re.compile ('definitely lost: ([^ ]+) bytes')
         error = False
         for line in proc.stderr:
             sys.stderr.write(line)
-            result = reg.search(line)
-            if result is None:
-                continue
-            if result.group(1) != "0":
+            if "== LEAK SUMMARY" in line:
                 error = True
         retval = proc.wait()
         if retval == 0 and error:

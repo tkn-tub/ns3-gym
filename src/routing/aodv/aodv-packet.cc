@@ -40,9 +40,18 @@ TypeHeader::TypeHeader (MessageType t) :
 }
 
 TypeId
+TypeHeader::GetTypeId ()
+{
+  static TypeId tid = TypeId ("ns3::aodv::TypeHeader")
+      .SetParent<Header> ()
+      ;
+  return tid;
+}
+
+TypeId
 TypeHeader::GetInstanceTypeId () const
 {
-  return TypeId ();
+  return GetTypeId ();
 }
 
 uint32_t
@@ -135,9 +144,19 @@ RreqHeader::RreqHeader (uint8_t flags, uint8_t reserved, uint8_t hopCount, uint3
 }
 
 TypeId
+RreqHeader::GetTypeId ()
+{
+  static TypeId tid = TypeId ("ns3::aodv::RreqHeader")
+      .SetParent<Header> ()
+      .AddConstructor<RreqHeader> ()
+      ;
+  return tid;
+}
+
+TypeId
 RreqHeader::GetInstanceTypeId () const
 {
-  return TypeId ();
+  return GetTypeId ();
 }
 
 uint32_t
@@ -262,9 +281,19 @@ RrepHeader::RrepHeader (uint8_t prefixSize, uint8_t hopCount, Ipv4Address dst,
 }
 
 TypeId
+RrepHeader::GetTypeId ()
+{
+  static TypeId tid = TypeId ("ns3::aodv::RrepHeader")
+      .SetParent<Header> ()
+      .AddConstructor<RrepHeader> ()
+      ;
+  return tid;
+}
+
+TypeId
 RrepHeader::GetInstanceTypeId () const
 {
-  return TypeId ();
+  return GetTypeId ();
 }
 
 uint32_t
@@ -393,9 +422,19 @@ RrepAckHeader::RrepAckHeader () :
 }
 
 TypeId
+RrepAckHeader::GetTypeId ()
+{
+  static TypeId tid = TypeId ("ns3::aodv::RrepAckHeader")
+      .SetParent<Header> ()
+      .AddConstructor<RrepAckHeader> ()
+      ;
+  return tid;
+}
+
+TypeId
 RrepAckHeader::GetInstanceTypeId () const
 {
-  return TypeId ();
+  return GetTypeId ();
 }
 
 uint32_t
@@ -447,9 +486,19 @@ RerrHeader::RerrHeader () :
 }
 
 TypeId
+RerrHeader::GetTypeId ()
+{
+  static TypeId tid = TypeId ("ns3::aodv::RerrHeader")
+      .SetParent<Header> ()
+      .AddConstructor<RerrHeader> ()
+      ;
+  return tid;
+}
+
+TypeId
 RerrHeader::GetInstanceTypeId () const
 {
-  return TypeId ();
+  return GetTypeId ();
 }
 
 uint32_t

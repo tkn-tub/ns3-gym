@@ -173,10 +173,9 @@ int main (int argc, char **argv)
   apps.Start (Seconds (2.0));
   apps.Stop (Seconds (10.0));
 
-  std::ofstream ascii;
-  ascii.open ("icmpv6-redirect.tr");
-  CsmaHelper::EnablePcapAll ("icmpv6-redirect", true);
-  CsmaHelper::EnableAsciiAll (ascii);
+  AsciiTraceHelper ascii;
+  csma.EnableAsciiAll (ascii.CreateFileStream ("icmpv6-redirect.tr"));
+  csma.EnablePcapAll ("icmpv6-redirect", true);
 
   /* Now, do the actual simulation. */
   NS_LOG_INFO ("Run Simulation.");

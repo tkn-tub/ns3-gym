@@ -31,6 +31,17 @@ if sys.platform == 'win32':
 else:
     dev_null = open("/dev/null", "w")
 
+fcntl = fd = fl = None
+try:
+    import fcntl
+except ImportError:
+    pass
+else:
+    fd = dev_null.fileno()
+    fl = fcntl.fcntl(fd, fcntl.F_GETFD)
+    fcntl.fcntl(fd, fcntl.F_SETFD, fl | fcntl.FD_CLOEXEC)
+del fcntl, fd, fl
+
 def _open_out_file(filename):
     if filename in ['NUL:', '/dev/null']:
         return dev_null

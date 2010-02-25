@@ -32,6 +32,7 @@
 namespace ns3 {
 
 class WifiMacParameters;
+class QosBlockedDestinations;
 
 /**
  * \brief a 802.11e-specific queue.
@@ -61,6 +62,7 @@ public:
   Time GetMaxDelay (void) const;
 
   void Enqueue (Ptr<const Packet> packet, const WifiMacHeader &hdr);
+  void PushFront (Ptr<const Packet> packet, const WifiMacHeader &hdr);
   Ptr<const Packet> Dequeue (WifiMacHeader *hdr);
   Ptr<const Packet> Peek (WifiMacHeader *hdr);
   /**
@@ -91,12 +93,33 @@ public:
    * performed in linear time (O(n)).  
    */
   bool Remove (Ptr<const Packet> packet);
-  
+  /**
+   * Returns number of QoS packets having tid equals to <i>tid</i> and address
+   * specified by <i>type</i> equals to <i>addr</i>.
+   */
+  uint32_t GetNPacketsByTidAndAddress (uint8_t tid,
+                                       WifiMacHeader::AddressType type,
+                                       Mac48Address addr);
+  /**
+   * Returns first available packet for transmission. A packet could be no available
+   * if it's a QoS packet with a tid and an address1 fields equal to <i>tid</i> and <i>addr</i>
+   * respectively that index a pending agreement in the BlockAckManager object.
+   * So that packet must not be transmitted until reception of an ADDBA response frame from station
+   * addressed by <i>addr</i>. This method removes the packet from queue. 
+   */
+  Ptr<const Packet> DequeueFirstAvailable (WifiMacHeader *hdr,
+                                           Time &tStamp,
+                                           const QosBlockedDestinations *blockedPackets);
+  /**
+   * Returns first available packet for transmission. The packet isn't removed from queue.
+   */
+  Ptr<const Packet> PeekFirstAvailable (WifiMacHeader *hdr,
+                                        Time &tStamp,
+                                        const QosBlockedDestinations *blockedPackets);
   void Flush (void);
 
   bool IsEmpty (void);
   uint32_t GetSize (void);
-
 private:
   struct Item;
   

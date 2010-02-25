@@ -109,7 +109,7 @@ main (int argc, char *argv[])
   //
   // Do pcap tracing on all point-to-point devices on all nodes.
   //
-  PointToPointHelper::EnablePcapAll ("star");
+  pointToPoint.EnablePcapAll ("star");
 
   NS_LOG_INFO ("Run Simulation.");
   Simulator::Run ();

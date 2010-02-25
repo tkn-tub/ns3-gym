@@ -151,10 +151,9 @@ int main (int argc, char** argv)
   apps.Start (Seconds (2.0));
   apps.Stop (Seconds (20.0));
 
-  std::ofstream ascii;
-  ascii.open ("simple-routing-ping6.tr");
-  CsmaHelper::EnablePcapAll (std::string ("simple-routing-ping6"), true);
-  CsmaHelper::EnableAsciiAll (ascii);
+  AsciiTraceHelper ascii;
+  csma.EnableAsciiAll (ascii.CreateFileStream ("simple-routing-ping6.tr"));
+  csma.EnablePcapAll ("simple-routing-ping6", true);
 
   NS_LOG_INFO ("Run Simulation.");
   Simulator::Run ();

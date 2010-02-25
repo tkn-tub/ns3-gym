@@ -37,6 +37,7 @@ public:
   ~MacTxMiddle ();
 
   uint16_t GetNextSequenceNumberfor (const WifiMacHeader *hdr);
+  uint16_t GetNextSeqNumberByTidAndAddress (uint8_t tid, Mac48Address addr) const;
 
 private:
   std::map <Mac48Address,uint16_t*> m_qosSequences;

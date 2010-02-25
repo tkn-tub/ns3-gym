@@ -14,8 +14,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Based on simple-global-routing.cc
- * ns-2 simple.tcl script (ported from ns-2)
- * Originally authored by Steve McCanne, 12/19/1996
  */
 
 // Network topology
@@ -289,10 +287,9 @@ main (int argc, char *argv[])
   apps.Start (Seconds (1.1));
   //apps.Stop (Seconds (10.0));
 
-  std::ofstream ascii;
-  ascii.open ("virtual-net-device.tr");
-  PointToPointHelper::EnablePcapAll ("virtual-net-device");
-  PointToPointHelper::EnableAsciiAll (ascii);
+  AsciiTraceHelper ascii;
+  p2p.EnableAsciiAll (ascii.CreateFileStream ("virtual-net-device.tr"));
+  p2p.EnablePcapAll ("virtual-net-device");
 
   NS_LOG_INFO ("Run Simulation.");
   Simulator::Run ();

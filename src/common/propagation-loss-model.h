@@ -18,6 +18,7 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  * Contributions: Timo Bingmann <timo.bingmann@student.kit.edu>
  * Contributions: Gary Pei <guangyu.pei@boeing.com> for fixed RSS
+ * Contributions: Tom Hewer <tomhewer@mac.com> for two ray ground model
  */
 
 #ifndef PROPAGATION_LOSS_MODEL_H
@@ -180,6 +181,97 @@ private:
   double m_lambda;
   double m_systemLoss;
   double m_minDistance;
+};
+
+/*
+ *
+ * \brief a Two-Ray Ground propagation loss model ported from NS2
+ *
+ * Two-ray ground reflection model.
+ *
+ * \f$ Pr = \frac{Pt * Gt * Gr * (ht^2 * hr^2)}{d^4 * L} \f$
+ *
+ * The original equation in Rappaport's book assumes L = 1.
+ * To be consistent with the free space equation, L is added here.
+ *
+ * Ht and Hr are set at the respective nodes z coordinate plus a model parameter
+ * set via SetHeightAboveZ.
+ *
+ * The two-ray model does not give a good result for short distances, due to the
+ * oscillation caused by constructive and destructive combination of the two
+ * rays. Instead the Friis free-space model is used for small distances. 
+ *
+ * The crossover distance, below which Friis is used, is calculated as follows:
+ *
+ * \f$ dCross = \frac{(4 * pi * Ht * Hr)}{lambda} \f$
+ */
+
+class TwoRayGroundPropagationLossModel : public PropagationLossModel
+{
+public:
+  static TypeId GetTypeId (void);
+  TwoRayGroundPropagationLossModel ();
+  /**
+   * \param frequency (Hz)
+   * \param speed (m/s)
+   *
+   * Set the main wavelength used in the TwoRayGround model 
+   * calculation.
+   */
+  void SetLambda (double frequency, double speed);
+  /**
+   * \param lambda (m) the wavelength
+   *
+   * Set the main wavelength used in the TwoRayGround model 
+   * calculation.
+   */
+  void SetLambda (double lambda);
+  /**
+   * \param systemLoss (dimension-less)
+   *
+   * Set the system loss used by the TwoRayGround propagation model.
+   */
+  void SetSystemLoss (double systemLoss);
+  /**
+   * \param minDistance the minimum distance
+   *
+   * Below this distance, the txpower is returned
+   * unmodified as the rxpower.
+   */
+  void SetMinDistance (double minDistance);
+  /**
+   * \returns the minimum distance.
+   */
+  double GetMinDistance (void) const;
+  /**
+   * \returns the current wavelength (m)
+   */
+  double GetLambda (void) const;
+  /**
+   * \returns the current system loss (dimention-less)
+   */
+  double GetSystemLoss (void) const;
+  /**
+   * \param heightAboveZ the model antenna height above the node's Z coordinate
+   *
+   * Set the model antenna height above the node's Z coordinate
+   */
+  void SetHeightAboveZ (double heightAboveZ);
+
+private:
+  TwoRayGroundPropagationLossModel (const TwoRayGroundPropagationLossModel &o);
+  TwoRayGroundPropagationLossModel & operator = (const TwoRayGroundPropagationLossModel &o);
+  virtual double DoCalcRxPower (double txPowerDbm,
+                                Ptr<MobilityModel> a,
+                                Ptr<MobilityModel> b) const;
+  double DbmToW (double dbm) const;
+  double DbmFromW (double w) const;
+
+  static const double PI;
+  double m_lambda;
+  double m_systemLoss;
+  double m_minDistance;
+  double m_heightAboveZ;
 };
 
 /**

@@ -102,6 +102,8 @@ public:
   void SetBeacon (void);
   void SetTypeData (void);
   void SetAction ();
+  void SetBlockAckReq (void);
+  void SetBlockAck (void);
   void SetMultihopAction();
   void SetDsFrom (void);
   void SetDsNotFrom (void);
@@ -125,6 +127,9 @@ public:
   void SetQosEosp ();
   void SetQosNoEosp ();
   void SetQosAckPolicy (enum QosAckPolicy);
+  void SetQosNormalAck (void);
+  void SetQosBlockAck (void);
+  void SetQosNoAck (void);
   void SetQosAmsdu (void);
   void SetQosNoAmsdu (void);
   void SetQosTxopLimit (uint8_t txop);
@@ -145,6 +150,8 @@ public:
   bool IsRts (void) const;
   bool IsCts (void) const;
   bool IsAck (void) const;
+  bool IsBlockAckReq (void) const;
+  bool IsBlockAck (void) const;
   bool IsAssocReq (void) const;
   bool IsAssocResp (void) const;
   bool IsReassocReq (void) const;

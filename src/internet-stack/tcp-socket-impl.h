@@ -101,7 +101,7 @@ private:
   friend class Tcp;
   // invoked by Tcp class
   int FinishBind (void);
-  void ForwardUp (Ptr<Packet> p, Ipv4Address ipv4, uint16_t port);
+  void ForwardUp (Ptr<Packet> p, Ipv4Address saddr, Ipv4Address daddr, uint16_t port);
   void Destroy (void);
   int DoSendTo (Ptr<Packet> p, const Address &daddr);
   int DoSendTo (Ptr<Packet> p, Ipv4Address daddr, uint16_t dport);
@@ -114,10 +114,11 @@ private:
                       Ipv4Address saddr, Ipv4Address daddr);
   bool ProcessPacketAction (Actions_t a, Ptr<Packet> p,
                                        const TcpHeader& tcpHeader,
-                                       const Address& fromAddress);
+                                       const Address& fromAddress,
+                                       const Address& toAddress);
   Actions_t ProcessEvent (Events_t e);
   bool SendPendingData(bool withAck = false);
-  void CompleteFork(Ptr<Packet>, const TcpHeader&, const Address& fromAddress);
+  void CompleteFork(Ptr<Packet>, const TcpHeader&, const Address& fromAddress, const Address& toAddress);
   void ConnectionSucceeded();
   
   //methods for window management
@@ -131,7 +132,7 @@ private:
   uint16_t AdvertisedWindowSize();
 
   // Manage data tx/rx
-  void NewRx (Ptr<Packet>, const TcpHeader&, const Address&);
+  void NewRx (Ptr<Packet>, const TcpHeader&, const Address& fromAddress, const Address& toAddress);
   void RxBufFinishInsert (SequenceNumber);
   Ptr<TcpSocketImpl> Copy ();
   virtual void NewAck (SequenceNumber seq); 
@@ -178,11 +179,7 @@ private:
   Ipv4EndPoint *m_endPoint;
   Ptr<Node> m_node;
   Ptr<TcpL4Protocol> m_tcp;
-  Ipv4Address m_remoteAddress;
-  uint16_t m_remotePort;
-  //these two are so that the socket/endpoint cloning works
-  Ipv4Address m_localAddress;
-  uint16_t m_localPort;
+
   enum SocketErrno m_errno;
   bool m_shutdownSend;
   bool m_shutdownRecv;

@@ -125,6 +125,13 @@ public:
   void SetQueue (Ptr<Queue> queue);
 
   /**
+   * Get a copy of the attached Queue.
+   *
+   * \return a pointer to the queue.
+   */
+  Ptr<Queue> GetQueue (void) const; 
+
+  /**
    * Attach a receive ErrorModel to the CsmaNetDevice.
    *
    * The CsmaNetDevice may optionally include an ErrorModel in
@@ -412,16 +419,6 @@ protected:
    * cycles in reference counted objects held by the device.
    */
   virtual void DoDispose (void);
-
-  /**
-   * Get a copy of the attached Queue.
-   *
-   * This method is provided for any derived class that may need to get
-   * direct access to the underlying queue.
-   *
-   * \return a pointer to the queue.
-   */
-  Ptr<Queue> GetQueue (void) const; 
 
   /**
    * Adds the necessary headers and trailers to a packet of data in order to

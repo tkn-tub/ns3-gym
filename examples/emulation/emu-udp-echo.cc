@@ -150,7 +150,7 @@ main (int argc, char *argv[])
 
   std::ofstream ascii;
   ascii.open ("emu-udp-echo.tr");
-  EmuHelper::EnablePcapAll ("emu-udp-echo", true);
+  emu.EnablePcapAll ("emu-udp-echo", true);
 
   //
   // Now, do the actual simulation.

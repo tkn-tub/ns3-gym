@@ -272,6 +272,14 @@ EmuNetDevice::StartDevice (void)
   Ptr<RealtimeSimulatorImpl> impl = DynamicCast<RealtimeSimulatorImpl> (Simulator::GetImplementation ());
   m_rtImpl = GetPointer (impl);
 
+  //
+  // A similar story exists for the node ID.  We can't just naively do a
+  // GetNode ()->GetId () since GetNode is going to give us a Ptr<Node> which
+  // is reference counted.  We need to stash away the node ID for use in the
+  // read thread.
+  //
+  m_nodeId = GetNode ()->GetId ();
+
   NS_LOG_LOGIC ("Creating socket");
 
   //
@@ -444,16 +452,16 @@ EmuNetDevice::CreateSocket (void)
       //
       // Execute the socket creation process image.
       //
-      status = ::execl (FindCreator ("emu-sock-creator").c_str (), 
+      status = ::execlp ("emu-sock-creator", 
                         "emu-sock-creator",                             // argv[0] (filename)
                         oss.str ().c_str (),                            // argv[1] (-p<path?
                         (char *)NULL);
 
       //
-      // If the execl successfully completes, it never returns.  If it returns it failed or the OS is
+      // If the execlp successfully completes, it never returns.  If it returns it failed or the OS is
       // broken.  In either case, we bail.
       //
-      NS_FATAL_ERROR ("EmuNetDevice::CreateSocket(): Back from execl(), errno = " << ::strerror (errno));
+      NS_FATAL_ERROR ("EmuNetDevice::CreateSocket(): Back from execlp(), errno = " << ::strerror (errno));
     }
   else
     {
@@ -579,52 +587,6 @@ EmuNetDevice::CreateSocket (void)
 	}
       NS_FATAL_ERROR ("Did not get the raw socket from the socket creator");
     }
-}
-
-std::string
-EmuNetDevice::FindCreator (std::string creatorName)
-{
-  NS_LOG_FUNCTION (creatorName);
-
-  std::list<std::string> locations;
-
-  // The path to the bits if we're sitting there with them
-  locations.push_back ("./");
-  locations.push_back ("./");
-
-  // The path to the bits if we're sitting in the root of the repo
-  locations.push_back ("./build/optimized/src/devices/emu/");
-  locations.push_back ("./build/debug/src/devices/emu/");
-
-  // if at the level of src (or build)
-  locations.push_back ("../build/optimized/src/devices/emu/");
-  locations.push_back ("../build/debug/src/devices/emu/");
-
-  // src/devices (or build/debug)
-  locations.push_back ("../../build/optimized/src/devices/emu/");
-  locations.push_back ("../../build/debug/src/devices/emu/");
-
-  // src/devices/emu (or build/debug/examples)
-  locations.push_back ("../../../build/optimized/src/devices/emu/");
-  locations.push_back ("../../../build/debug/src/devices/emu/");
-
-  // src/devices/emu (or build/debug/examples/emulation)
-  locations.push_back ("../../../../build/optimized/src/devices/emu/");
-  locations.push_back ("../../../../build/debug/src/devices/emu/");
-
-  for (std::list<std::string>::const_iterator i = locations.begin (); i != locations.end (); ++i)
-    {
-      struct stat st;
-
-      if (::stat ((*i + creatorName).c_str (), &st) == 0)
-	{
-          NS_LOG_INFO ("Found Creator " << *i + creatorName);                  
-	  return *i + creatorName;
-	}
-    }
-
-  NS_FATAL_ERROR ("EmuNetDevice::FindCreator(): Couldn't find creator");
-  return ""; // quiet compiler
 }
 
 void
@@ -803,10 +765,10 @@ EmuNetDevice::ReadThread (void)
           return;
         }
 
-      NS_LOG_INFO ("EmuNetDevice::ReadThread(): Received packet");
+      NS_LOG_INFO ("EmuNetDevice::EmuNetDevice(): Received packet on node " << m_nodeId);
       NS_LOG_INFO ("EmuNetDevice::ReadThread(): Scheduling handler");
       NS_ASSERT_MSG (m_rtImpl, "EmuNetDevice::ReadThread(): Realtime simulator implementation pointer not set");
-      m_rtImpl->ScheduleRealtimeNowWithContext (GetNode ()->GetId (), MakeEvent (&EmuNetDevice::ForwardUp, this, buf, len));
+      m_rtImpl->ScheduleRealtimeNowWithContext (m_nodeId, MakeEvent (&EmuNetDevice::ForwardUp, this, buf, len));
       buf = 0;
     }
 }

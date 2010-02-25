@@ -190,13 +190,14 @@ main (int argc, char *argv[])
   apps2.Stop (Seconds (16.0));
 
 
-  std::ofstream ascii;
-  ascii.open ("dynamic-global-routing.tr", std::ios_base::binary | std::ios_base::out);
-  PointToPointHelper::EnablePcapAll ("dynamic-global-routing");
-  PointToPointHelper::EnableAsciiAll (ascii);
-  CsmaHelper::EnablePcapAll ("dynamic-global-routing", false);
-  CsmaHelper::EnableAsciiAll (ascii);
-  InternetStackHelper::EnableAsciiAll (ascii);
+  AsciiTraceHelper ascii;
+  Ptr<OutputStreamWrapper> stream = ascii.CreateFileStream ("dynamic-global-routing.tr");
+  p2p.EnableAsciiAll (stream);
+  csma.EnableAsciiAll (stream);
+  internet.EnableAsciiIpv4All (stream);
+
+  p2p.EnablePcapAll ("dynamic-global-routing");
+  csma.EnablePcapAll ("dynamic-global-routing", false);
  
   Ptr<Node> n1 = c.Get (1);
   Ptr<Ipv4> ipv41 = n1->GetObject<Ipv4> ();

@@ -1,6 +1,7 @@
 /* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2005, 2006 INRIA
+ * Copyright (c) 2009 MIRKO BANCHI
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as 
@@ -16,6 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
+ * Author: Mirko Banchi <mk.banchi@gmail.com>
  */
 #ifndef MAC_LOW_H
 #define MAC_LOW_H
@@ -23,21 +25,27 @@
 #include <vector>
 #include <stdint.h>
 #include <ostream>
+#include <map>
 
 #include "wifi-mac-header.h"
 #include "wifi-mode.h"
 #include "wifi-preamble.h"
 #include "wifi-remote-station-manager.h"
+#include "ctrl-headers.h"
+#include "mgt-headers.h"
+#include "block-ack-agreement.h"
 #include "ns3/mac48-address.h"
 #include "ns3/callback.h"
 #include "ns3/event-id.h"
 #include "ns3/packet.h"
 #include "ns3/nstime.h"
+#include "qos-utils.h"
 
 namespace ns3 {
 
 class WifiPhy;
 class WifiMac;
+class EdcaTxopN;
 
 /**
  * \brief listen to events coming from ns3::MacLow.
@@ -75,6 +83,29 @@ public:
    * AckTimeout.
    */
   virtual void MissedAck (void) = 0;
+  /**
+   * \param blockAck Block ack response header
+   * \param source Address of block ack sender
+   *
+   * Invoked when ns3::MacLow receives a block ack frame.
+   * Block ack frame is received after a block ack request
+   * and contains information about the correct reception 
+   * of a set of packet for which a normal ack wasn't send.
+   * Default implementation for this method is empty. Every
+   * queue that intends to be notified by MacLow of reception
+   * of a block ack must redefine this function.
+   */
+  virtual void GotBlockAck (const CtrlBAckResponseHeader *blockAck, Mac48Address source);
+  /**
+   * ns3::MacLow did not receive an expected BLOCK_ACK within
+   * BlockAckTimeout. This method is used only for immediate 
+   * block ack variant. With delayed block ack, the MissedAck method will be
+   * called instead: upon receipt of a block ack request, the rx station will
+   * reply with a normal ack frame. Later, when the rx station gets a txop, it
+   * will send the block ack back to the tx station which will reply with a
+   * normal ack to the rx station.
+   */
+  virtual void MissedBlockAck (void);
   /**
    * Invoked when ns3::MacLow wants to start a new transmission
    * as configured by MacLowTransmissionParameters::EnableNextData.
@@ -119,6 +150,25 @@ public:
 };
 
 /**
+ * \brief listen for block ack events.
+ */
+class MacLowBlockAckEventListener {
+public:
+  MacLowBlockAckEventListener ();
+  virtual ~MacLowBlockAckEventListener ();
+  /**
+   * Typically is called in order to notify EdcaTxopN that a block ack inactivity
+   * timeout occurs for the block ack agreement identified by the pair <i>originator</i>, <i>tid</i>.
+   * 
+   * Rx station maintains an inactivity timer for each block ack
+   * agreement. Timer is reset when a frame with ack policy block ack
+   * or a block ack request are received. When this timer reaches zero
+   * this method is called and a delba frame is scheduled for transmission.
+   */
+  virtual void BlockAckInactivityTimeout (Mac48Address originator, uint8_t tid) = 0;
+};
+
+/**
  * \brief control how a packet is transmitted.
  *
  * The ns3::MacLow::StartTransmission method expects
@@ -156,6 +206,18 @@ public:
    *    MacLowTransmissionListener::MissedAck
    */
   void EnableSuperFastAck (void);
+  /**
+   * Wait BASICBLOCKACKTimeout for a Basic Block Ack Response frame.
+   */
+  void EnableBasicBlockAck (void);
+  /**
+   * Wait COMPRESSEDBLOCKACKTimeout for a Compressed Block Ack Response frame.
+   */
+  void EnableCompressedBlockAck (void);
+  /**
+   * NOT IMPLEMENTED FOR NOW
+   */
+  void EnableMultiTidBlockAck (void);
   /**
    * Send a RTS, and wait CTSTimeout for a CTS. If we get a 
    * CTS on time, call MacLowTransmissionListener::GotCts
@@ -233,6 +295,24 @@ public:
    */
   bool MustWaitSuperFastAck (void) const;
   /**
+   * \returns true if block ack mechanism is used, false otherwise.
+   *
+   * \sa EnableBlockAck
+   */
+  bool MustWaitBasicBlockAck (void) const;
+  /**
+   * \returns true if compressed block ack mechanism is used, false otherwise.
+   *
+   * \sa EnableCompressedBlockAck
+   */
+  bool MustWaitCompressedBlockAck (void) const;
+  /**
+   * \returns true if multi-tid block ack mechanism is used, false otherwise.
+   *
+   * \sa EnableMultiTidBlockAck
+   */
+  bool MustWaitMultiTidBlockAck (void) const;
+  /**
    * \returns true if RTS should be sent and CTS waited for before 
    *          sending data, false otherwise.
    */
@@ -262,7 +342,10 @@ private:
     ACK_NONE,
     ACK_NORMAL,
     ACK_FAST,
-    ACK_SUPER_FAST
+    ACK_SUPER_FAST,
+    BLOCK_ACK_BASIC,
+    BLOCK_ACK_COMPRESSED,
+    BLOCK_ACK_MULTI_TID
   } m_waitAck;
   bool m_sendRts;
   Time m_overrideDurationId;
@@ -286,6 +369,8 @@ public:
 
   void SetAddress (Mac48Address ad);
   void SetAckTimeout (Time ackTimeout);
+  void SetBasicBlockAckTimeout (Time blockAckTimeout);
+  void SetCompressedBlockAckTimeout (Time blockAckTimeout);
   void SetCtsTimeout (Time ctsTimeout);
   void SetSifs (Time sifs);
   void SetSlotTime (Time slotTime);
@@ -293,6 +378,8 @@ public:
   void SetBssid (Mac48Address ad);
   Mac48Address GetAddress (void) const;
   Time GetAckTimeout (void) const;
+  Time GetBasicBlockAckTimeout () const;
+  Time GetCompressedBlockAckTimeout () const;
   Time GetCtsTimeout (void) const;
   Time GetSifs (void) const;
   Time GetSlotTime (void) const;
@@ -364,9 +451,39 @@ public:
    * occurs, pending MAC transmissions (RTS, CTS, DATA and ACK) are cancelled.
    */
   void NotifySwitchingStartNow (Time duration); 
+  /**
+   * \param respHdr Add block ack response from originator (action frame).
+   * \param originator Address of peer station involved in block ack mechanism.
+   * \param startingSeq Sequence number of the first MPDU of all packets for which block ack was negotiated.
+   * 
+   * This function is typically invoked only by ns3::QapWifiMac and ns3::QstaWifiMac.
+   * If we are transmitting an Add block ack response, MacLow must allocate buffers to collect
+   * all correctly received packets belonging to category for which block ack was negotiated.
+   * It's needed in order to send a Block ack after corresponding originator's Block ack request.
+   */
+  void CreateBlockAckAgreement (const MgtAddBaResponseHeader *respHdr, Mac48Address originator,
+                                uint16_t startingSeq);
+  /**
+   * \param originator Address of peer partecipating in Block Ack mechanism.
+   * \param tid TID for which Block Ack was created.
+   *
+   * Checks if exists an established block ack agreement with <i>originator</i>
+   * for tid <i>tid</i>. If the agreement exists, tears down it. This function is typically
+   * invoked when a DELBA frame is received from <i>originator</i>.
+   */
+  void DestroyBlockAckAgreement (Mac48Address originator, uint8_t tid);
+  /**
+   * \param ac Access class managed by the queue.
+   * \param listener The listener for the queue.
+   *
+   * The lifetime of the registered listener is typically equal to the lifetime of the queue
+   * associated to this AC.
+   */
+  void RegisterBlockAckListenerForAc (enum AccessClass ac, MacLowBlockAckEventListener *listener);
 private:
   void CancelAllEvents (void);
   uint32_t GetAckSize (void) const;
+  uint32_t GetBlockAckSize (enum BlockAckType type) const;
   uint32_t GetRtsSize (void) const;
   uint32_t GetCtsSize (void) const;
   uint32_t GetSize (Ptr<const Packet> packet, const WifiMacHeader *hdr) const;
@@ -380,8 +497,10 @@ private:
   WifiMode GetDataTxMode (Ptr<const Packet> packet, const WifiMacHeader *hdr) const;
   WifiMode GetCtsTxModeForRts (Mac48Address to, WifiMode rtsTxMode) const;
   WifiMode GetAckTxModeForData (Mac48Address to, WifiMode dataTxMode) const;
+
   Time GetCtsDuration (Mac48Address to, WifiMode rtsTxMode) const;
   Time GetAckDuration (Mac48Address to, WifiMode dataTxMode) const;
+  Time GetBlockAckDuration (Mac48Address to, WifiMode blockAckReqTxMode, enum BlockAckType type) const;
   void NotifyNav (const WifiMacHeader &hdr, WifiMode txMode, WifiPreamble preamble);
   void DoNavResetNow (Time duration);
   bool DoNavStartNow (Time duration);
@@ -397,6 +516,7 @@ private:
   void FastAckTimeout (void);
   void SuperFastAckTimeout (void);
   void FastAckFailedTimeout (void);
+  void BlockAckTimeout (void);
   void CtsTimeout (void);
   void SendCtsAfterRts (Mac48Address source, Time duration, WifiMode txMode, double rtsSnr);
   void SendAckAfterData (Mac48Address source, Time duration, WifiMode txMode, double rtsSnr);
@@ -408,6 +528,53 @@ private:
   void SendCurrentTxPacket (void);
   void StartDataTxTimers (void);
   virtual void DoDispose (void);
+  /**
+   * \param originator Address of peer partecipating in Block Ack mechanism.
+   * \param tid TID for which Block Ack was created.
+   * \param seq Starting sequence
+   *
+   * This function forward up all completed "old" packets with sequence number
+   * smaller than <i>seq</i>. All comparison are performed circularly mod 4096.
+   */
+  void RxCompleteBufferedPacketsWithSmallerSequence (uint16_t seq, Mac48Address originator, uint8_t tid);
+  /**
+   * \param originator Address of peer partecipating in Block Ack mechanism.
+   * \param tid TID for which Block Ack was created.
+   *
+   * This method is typically invoked when a MPDU with ack policy
+   * subfield set to Normal Ack is received and a block ack agreement
+   * for that packet exists.
+   * This happens when the originator of block ack has only few MPDUs to send.
+   * All completed MSDUs starting with starting sequence number of block ack
+   * agreement are forward up to WifiMac until there is an incomplete MSDU.
+   * See section 9.10.4 in IEEE802.11 standard for more details.
+   */
+  void RxCompleteBufferedPackets (Mac48Address originator, uint8_t tid);
+  /* 
+   * This method checks if exists a valid established block ack agreement. 
+   * If there is, store the packet without pass it up to WifiMac. The packet is buffered
+   * in order of increasing sequence control field. All comparison are performed
+   * circularly modulo 2^12.
+   */
+  bool StoreMpduIfNeeded (Ptr<Packet> packet, WifiMacHeader hdr);
+  /*
+   * Invoked after that a block ack request has been received. Looks for corresponding
+   * block ack agreement and creates block ack bitmap on a received packets basis.
+   */
+  void SendBlockAckAfterBlockAckRequest (const CtrlBAckRequestHeader reqHdr, Mac48Address originator,
+                                         Time duration, WifiMode blockAckReqTxMode);
+  /*
+   * This method creates block ack frame with header equals to <i>blockAck</i> and start its transmission.
+   */
+  void SendBlockAckResponse (const CtrlBAckResponseHeader* blockAck, Mac48Address originator, bool immediate,
+                             Time duration, WifiMode blockAckReqTxMode);
+  /*
+   * Every time that a block ack request or a packet with ack policy equals to <i>block ack</i>
+   * are received, if a relative block ack agreement exists and the value of inactivity timeout
+   * is not 0, the timer is reset.
+   * see section 11.5.3 in IEEE802.11e for more details.
+   */
+  void ResetBlockAckInactivityTimerIfNeeded (BlockAckAgreement &agreement);
 
   void SetupPhyMacLowListener (Ptr<WifiPhy> phy); 
 
@@ -422,6 +589,7 @@ private:
   EventId m_fastAckTimeoutEvent;
   EventId m_superFastAckTimeoutEvent;
   EventId m_fastAckFailedTimeoutEvent;
+  EventId m_blockAckTimeoutEvent;
   EventId m_ctsTimeoutEvent;
   EventId m_sendCtsEvent;
   EventId m_sendAckEvent;
@@ -436,6 +604,8 @@ private:
   Mac48Address m_self;
   Mac48Address m_bssid;
   Time m_ackTimeout;
+  Time m_basicBlockAckTimeout;
+  Time m_compressedBlockAckTimeout;
   Time m_ctsTimeout;
   Time m_sifs;
   Time m_slotTime;
@@ -446,6 +616,23 @@ private:
 
   // Listerner needed to monitor when a channel switching occurs. 
   class PhyMacLowListener *m_phyMacLowListener; 
+
+  /*
+   * BlockAck data structures.
+   */
+  typedef std::pair<Ptr<Packet>, WifiMacHeader> BufferedPacket;
+  typedef std::list<BufferedPacket>::iterator BufferedPacketI;
+
+  typedef std::pair<Mac48Address, uint8_t> AgreementKey;
+  typedef std::pair<BlockAckAgreement, std::list<BufferedPacket> > AgreementValue;
+
+  typedef std::map<AgreementKey, AgreementValue> Agreements;
+  typedef std::map<AgreementKey, AgreementValue>::iterator AgreementsI;
+
+  Agreements m_bAckAgreements;
+  
+  typedef std::map<AccessClass, MacLowBlockAckEventListener*> QueueListeners;
+  QueueListeners m_edcaListeners;
 };
 
 } // namespace ns3

@@ -695,6 +695,12 @@ void Ipv6L3Protocol::Receive (Ptr<NetDevice> device, Ptr<const Packet> p, uint16
   Ipv6Header hdr;
   packet->RemoveHeader (hdr);
 
+  // Trim any residual frame padding from underlying devices
+  if (hdr.GetPayloadLength () < packet->GetSize ())
+    {
+      packet->RemoveAtEnd (packet->GetSize () - hdr.GetPayloadLength ());
+    }
+
   /* forward up to IPv6 raw sockets */
   for (SocketList::iterator it = m_sockets.begin () ; it != m_sockets.end () ; ++it)
     {

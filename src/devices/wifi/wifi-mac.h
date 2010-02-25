@@ -179,6 +179,13 @@ public:
    * \param linkDown the callback to invoke when the link becomes down.
    */
   virtual void SetLinkDownCallback (Callback<void> linkDown) = 0;
+  /* Next functions are not pure vitual so non Qos WifiMacs are not
+   * forced to implement them.
+   */
+  virtual void SetBasicBlockAckTimeout (Time blockAckTimeout);
+  virtual Time GetBasicBlockAckTimeout (void) const;
+  virtual void SetCompressedBlockAckTimeout (Time blockAckTimeout);
+  virtual Time GetCompressedBlockAckTimeout (void) const;
 
   /**
    * Public method used to fire a MacTx trace.  Implemented for encapsulation 
@@ -224,6 +231,10 @@ private:
   static Time GetDefaultEifsNoDifs (void);
   static Time GetDefaultCtsAckDelay (void);
   static Time GetDefaultCtsAckTimeout (void);
+  static Time GetDefaultBasicBlockAckDelay (void);
+  static Time GetDefaultBasicBlockAckTimeout (void);
+  static Time GetDefaultCompressedBlockAckDelay (void);
+  static Time GetDefaultCompressedBlockAckTimeout (void);
   /**
    * \param standard the phy standard to be used
    *

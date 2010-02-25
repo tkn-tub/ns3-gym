@@ -104,6 +104,14 @@ public:
    */
   void SetQueue (Ptr<Queue> queue);
 
+  /**
+   * Get a copy of the attached Queue.
+   *
+   * @returns Ptr to the queue.
+   */
+  Ptr<Queue> GetQueue(void) const; 
+
+
 //
 // Pure virtual methods inherited from NetDevice we must implement.
 //
@@ -217,16 +225,6 @@ private:
    * Figure out where the raw socket creation process lives on the system.
    */
   std::string FindCreator (std::string creatorName);
-
-  /**
-   * Get a copy of the attached Queue.
-   *
-   * This method is provided for any derived class that may need to get
-   * direct access to the underlying queue.
-   *
-   * @returns Ptr to the queue.
-   */
-  Ptr<Queue> GetQueue(void) const; 
 
   /**
    * Spin up the device
@@ -515,6 +513,13 @@ private:
    * Never free this pointer!
    */
   RealtimeSimulatorImpl *m_rtImpl;
+
+  /*
+   * a copy of the node id so the read thread doesn't have to GetNode() in
+   * in order to find the node ID.  Thread unsafe reference counting in 
+   * multithreaded apps is not a good thing.
+   */
+  uint32_t m_nodeId;
 };
 
 } // namespace ns3

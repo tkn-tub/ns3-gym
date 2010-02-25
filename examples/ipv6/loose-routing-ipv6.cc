@@ -158,10 +158,9 @@ int main (int argc, char **argv)
   apps.Start (Seconds (1.0));
   apps.Stop (Seconds (10.0));
 
-  std::ofstream ascii;
-  ascii.open ("loose-routing-ipv6.tr");
-  CsmaHelper::EnablePcapAll ("loose-routing-ipv6", true);
-  CsmaHelper::EnableAsciiAll (ascii);
+  AsciiTraceHelper ascii;
+  csma.EnableAsciiAll (ascii.CreateFileStream ("loose-routing-ipv6.tr"));
+  csma.EnablePcapAll ("loose-routing-ipv6", true);
 
   NS_LOG_INFO ("Run Simulation.");
   Simulator::Run ();

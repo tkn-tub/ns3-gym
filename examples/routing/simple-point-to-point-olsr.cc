@@ -13,11 +13,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * ns-2 simple.tcl script (ported from ns-2)
- * Originally authored by Steve McCanne, 12/19/1996
  */
 
-// Port of ns-2/tcl/ex/simple.tcl to ns-3
+//
+// Simple example of OLSR routing over some point-to-point links
 //
 // Network topology
 //
@@ -157,10 +156,9 @@ main (int argc, char *argv[])
   apps.Start (Seconds (1.1));
   apps.Stop (Seconds (10.0));
 
-  std::ofstream ascii;
-  ascii.open ("simple-point-to-point-olsr.tr");
-  PointToPointHelper::EnablePcapAll ("simple-point-to-point-olsr");
-  PointToPointHelper::EnableAsciiAll (ascii);
+  AsciiTraceHelper ascii;
+  p2p.EnableAsciiAll (ascii.CreateFileStream ("simple-point-to-point-olsr.tr"));
+  p2p.EnablePcapAll ("simple-point-to-point-olsr");
 
   Simulator::Stop (Seconds (30));
 

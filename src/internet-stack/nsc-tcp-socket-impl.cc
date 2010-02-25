@@ -465,7 +465,7 @@ NscTcpSocketImpl::GetRxAvailable (void) const
 }
 
 void
-NscTcpSocketImpl::ForwardUp (Ptr<Packet> packet, Ipv4Address ipv4, uint16_t port)
+NscTcpSocketImpl::ForwardUp (Ptr<Packet> packet, Ipv4Address saddr, Ipv4Address daddr, uint16_t port)
 {
   NSCWakeup();
 }

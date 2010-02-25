@@ -150,10 +150,9 @@ int main (int argc, char** argv)
   apps.Start (Seconds (2.0));
   apps.Stop (Seconds (20.0));
 
-  std::ofstream ascii;
-  ascii.open ("fragmentation-ipv6.tr");
-  CsmaHelper::EnablePcapAll (std::string ("fragmentation-ipv6"), true);
-  CsmaHelper::EnableAsciiAll (ascii);
+  AsciiTraceHelper ascii;
+  csma.EnableAsciiAll (ascii.CreateFileStream ("fragmentation-ipv6.tr"));
+  csma.EnablePcapAll (std::string ("fragmentation-ipv6"), true);
 
   NS_LOG_INFO ("Run Simulation.");
   Simulator::Run ();

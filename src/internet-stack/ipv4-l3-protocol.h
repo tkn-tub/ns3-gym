@@ -258,10 +258,10 @@ private:
   TracedCallback<const Ipv4Header &, Ptr<const Packet>, uint32_t> m_localDeliverTrace;
 
   // The following two traces pass a packet with an IP header
-  TracedCallback<Ptr<const Packet>, uint32_t> m_txTrace;
-  TracedCallback<Ptr<const Packet>, uint32_t> m_rxTrace;
+  TracedCallback<Ptr<const Packet>, Ptr<Ipv4>,  uint32_t> m_txTrace;
+  TracedCallback<Ptr<const Packet>, Ptr<Ipv4>, uint32_t> m_rxTrace;
   // <ip-header, payload, reason, ifindex> (ifindex not valid if reason is DROP_NO_ROUTE)
-  TracedCallback<const Ipv4Header &, Ptr<const Packet>, DropReason, uint32_t> m_dropTrace;
+  TracedCallback<const Ipv4Header &, Ptr<const Packet>, DropReason, Ptr<Ipv4>, uint32_t> m_dropTrace;
 
   Ptr<Ipv4RoutingProtocol> m_routingProtocol;
 

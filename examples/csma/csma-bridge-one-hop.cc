@@ -209,23 +209,23 @@ main (int argc, char *argv[])
   sink2.Start (Seconds (1.1));
   sink2.Stop (Seconds (10.0));
 
+  NS_LOG_INFO ("Configure Tracing.");
+
   //
   // Configure tracing of all enqueue, dequeue, and NetDevice receive events.
   // Trace output will be sent to the file "csma-bridge-one-hop.tr"
   //
-  NS_LOG_INFO ("Configure Tracing.");
-  std::ofstream ascii;
-  ascii.open ("csma-bridge-one-hop.tr");
-  CsmaHelper::EnableAsciiAll (ascii);
+  AsciiTraceHelper ascii;
+  csma.EnableAsciiAll (ascii.CreateFileStream ("csma-bridge-one-hop.tr"));
 
   //
   // Also configure some tcpdump traces; each interface will be traced.
   // The output files will be named:
-  //     csma-bridge-<nodeId>-<interfaceId>.pcap
+  //     csma-bridge-one-hop-<nodeId>-<interfaceId>.pcap
   // and can be read by the "tcpdump -r" command (use "-tt" option to
   // display timestamps correctly)
   //
-  CsmaHelper::EnablePcapAll ("csma-bridge-one-hop", false);
+  csma.EnablePcapAll ("csma-bridge-one-hop", false);
 
   //
   // Now, do the actual simulation.

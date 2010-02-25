@@ -13,12 +13,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * ns-2 simple.tcl script (ported from ns-2)
- * Originally authored by Steve McCanne, 12/19/1996
  */
 
-// Port of ns-2/tcl/ex/simple.tcl to ns-3
-//
 // Network topology
 //
 //  n0
@@ -166,10 +162,9 @@ main (int argc, char *argv[])
   pem->SetList (sampleList);
   d0d2.Get (1)->SetAttribute ("ReceiveErrorModel", PointerValue (pem));
 
-  std::ofstream ascii;
-  ascii.open ("simple-error-model.tr");
-  PointToPointHelper::EnablePcapAll ("simple-error-model");
-  PointToPointHelper::EnableAsciiAll (ascii);
+  AsciiTraceHelper ascii;
+  p2p.EnableAsciiAll (ascii.CreateFileStream ("simple-error-model.tr"));
+  p2p.EnablePcapAll ("simple-error-model");
 
   NS_LOG_INFO ("Run Simulation.");
   Simulator::Run ();    

@@ -26,10 +26,9 @@
 #include "ns3/packet.h"
 #include "ns3/ptr.h"
 #include "ns3/object-factory.h"
-#include "ns3/pcap-writer.h"
-#include "ns3/ascii-writer.h"
 #include "ns3/ipv4-l3-protocol.h"
 #include "ns3/ipv6-l3-protocol.h"
+#include "trace-helper.h"
 
 namespace ns3 {
 
@@ -39,8 +38,22 @@ class Ipv6RoutingHelper;
 
 /**
  * \brief aggregate IP/TCP/UDP functionality to existing Nodes.
+ *
+ * This helper enables pcap and ascii tracing of events in the internet stack
+ * associated with a node.  This is substantially similar to the tracing
+ * that happens in device helpers, but the important difference is that, well,
+ * there is no device.  This means that the creation of output file names will
+ * change, and also the user-visible methods will not reference devices and
+ * therefore the number of trace enable methods is reduced.
+ *
+ * Normally we eschew multiple inheritance, however, the classes 
+ * PcapUserHelperForIpv4 and AsciiTraceUserHelperForIpv4 are
+ * treated as "mixins".  A mixin is a self-contained class that
+ * encapsulates a general attribute or a set of functionality that
+ * may be of interest to many other classes.
  */
-class InternetStackHelper
+class InternetStackHelper : public PcapHelperForIpv4, public PcapHelperForIpv6, 
+                              public AsciiTraceHelperForIpv4, public AsciiTraceHelperForIpv6
 {
 public:
   /**
@@ -145,43 +158,6 @@ public:
   void SetTcp (std::string tid, std::string attr, const AttributeValue &val); 
 
   /**
-   * \param os output stream
-   * \param n node container
-   *
-   * Enable ascii output on these drop traces, for each node in the NodeContainer..
-   * /NodeList/[i]/$ns3ArpL3Protocol/Drop 
-   * /NodeList/[i]/$ns3Ipv4L3Protocol/Drop 
-   * /NodeList/[i]/$ns3Ipv6L3Protocol/Drop 
-   */
-  static void EnableAscii (std::ostream &os, NodeContainer n);
-
-  /**
-   * \param os output stream
-   *
-   * Enable ascii output on these drop traces, for all nodes.
-   * /NodeList/[i]/$ns3ArpL3Protocol/Drop 
-   * /NodeList/[i]/$ns3Ipv4L3Protocol/Drop 
-   * /NodeList/[i]/$ns3Ipv6L3Protocol/Drop 
-   */
-  static void EnableAsciiAll (std::ostream &os);
-
-  /**
-   * Enable pcap output on each protocol instance which is of the
-   * ns3::Ipv4L3Protocol or ns3::Ipv6L3Protocol type.  Both Tx and 
-   * Rx events will be logged.
-   *
-   * \param filename filename prefix to use for pcap files.
-   *
-   * \warning If you perform multiple simulations in a single script,
-   * each iteration of the simulation will result in the trace files
-   * being overwritten.  We don't attempt to anticipate what a user
-   * might actually want to do, so we leave it up to them.  If you want
-   * to save any particular data, do so manually at inter-simulation 
-   * time.
-   */
-  static void EnablePcapAll (std::string filename);
-
-  /**
    * \brief Enable/disable IPv4 stack install.
    * \param enable enable state
    */
@@ -194,6 +170,54 @@ public:
   void SetIpv6StackInstall (bool enable);
 
 private:
+  /**
+   * @brief Enable pcap output the indicated Ipv4 and interface pair.
+   * @internal
+   *
+   * @param prefix Filename prefix to use for pcap files.
+   * @param ipv4 Ptr to the Ipv4 interface on which you want to enable tracing.
+   * @param interface Interface ID on the Ipv4 on which you want to enable tracing.
+   */
+  virtual void EnablePcapIpv4Internal (std::string prefix, 
+                                       Ptr<Ipv4> ipv4, uint32_t interface);
+
+  /**
+   * @brief Enable ascii trace output on the indicated Ipv4 and interface pair.
+   * @internal
+   *
+   * @param stream An OutputStreamWrapper representing an existing file to use
+   *               when writing trace data.
+   * @param prefix Filename prefix to use for ascii trace files.
+   * @param ipv4 Ptr to the Ipv4 interface on which you want to enable tracing.
+   * @param interface Interface ID on the Ipv4 on which you want to enable tracing.
+   */
+  virtual void EnableAsciiIpv4Internal (Ptr<OutputStreamWrapper> stream, std::string prefix, 
+                                        Ptr<Ipv4> ipv4, uint32_t interface);
+
+  /**
+   * @brief Enable pcap output the indicated Ipv4 and interface pair.
+   * @internal
+   *
+   * @param prefix Filename prefix to use for pcap files.
+   * @param ipv4 Ptr to the Ipv4 interface on which you want to enable tracing.
+   * @param interface Interface ID on the Ipv4 on which you want to enable tracing.
+   */
+  virtual void EnablePcapIpv6Internal (std::string prefix, 
+                                       Ptr<Ipv6> ipv6, uint32_t interface);
+
+  /**
+   * @brief Enable ascii trace output on the indicated Ipv4 and interface pair.
+   * @internal
+   *
+   * @param stream An OutputStreamWrapper representing an existing file to use
+   *               when writing trace data.
+   * @param prefix Filename prefix to use for ascii trace files.
+   * @param ipv4 Ptr to the Ipv4 interface on which you want to enable tracing.
+   * @param interface Interface ID on the Ipv4 on which you want to enable tracing.
+   */
+  virtual void EnableAsciiIpv6Internal (Ptr<OutputStreamWrapper> stream, std::string prefix, 
+                                        Ptr<Ipv6> ipv6, uint32_t interface);
+
   void Initialize (void);
   ObjectFactory m_tcpFactory;
   const Ipv4RoutingHelper *m_routing;
@@ -217,50 +241,22 @@ private:
   /**
    * \internal
    */
-  static void LogRxIp (std::string context, Ptr<const Packet> packet, uint32_t deviceId);
+  bool PcapHooked (Ptr<Ipv4> ipv4);
 
   /**
    * \internal
    */
-  static void LogTxIp (std::string context, Ptr<const Packet> packet, uint32_t deviceId);
+  bool AsciiHooked (Ptr<Ipv4> ipv4);
 
   /**
    * \internal
    */
-  static Ptr<PcapWriter> GetStream (uint32_t nodeId, uint32_t interfaceId);
-
-  struct Trace {
-    uint32_t nodeId;
-    uint32_t interfaceId;
-    Ptr<PcapWriter> writer;
-  };
+  bool PcapHooked (Ptr<Ipv6> ipv6);
 
   /**
    * \internal
    */
-  static void AsciiDropEventIpv4 (Ptr<AsciiWriter> writer, std::string path,
-                                  Ipv4Header const &header, Ptr<const Packet> packet,
-                                  Ipv4L3Protocol::DropReason reason, uint32_t interface);
-  /**
-   * \internal
-   */
-  static void AsciiDropEventArp (Ptr<AsciiWriter> writer, std::string path, Ptr<const Packet> packet);
-
-  /**
-   * \internal
-   */
-  static void AsciiDropEventIpv6 (Ptr<AsciiWriter> writer, std::string path,
-                                  Ipv6Header const &header, Ptr<const Packet> packet,
-                                  Ipv6L3Protocol::DropReason reason, uint32_t interface);
-
-  static std::string m_pcapBaseFilename;
-
-  /**
-   * \internal
-   */
-  static uint32_t GetNodeIndex (std::string context);
-
-  static std::vector<Trace> m_traces;
+  bool AsciiHooked (Ptr<Ipv6> ipv6);
 
   /**
    * \brief IPv4 install state (enabled/disabled) ?

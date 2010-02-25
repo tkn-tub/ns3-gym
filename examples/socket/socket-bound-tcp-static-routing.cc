@@ -161,10 +161,9 @@ main (int argc, char *argv[])
   apps.Start (Seconds (0.0));
   apps.Stop (Seconds (10.0));
   
-  std::ofstream ascii;
-  ascii.open ("socket-bound-tcp-static-routing.tr");
-  PointToPointHelper::EnablePcapAll ("socket-bound-tcp-static-routing");
-  PointToPointHelper::EnableAsciiAll (ascii);
+  AsciiTraceHelper ascii;
+  p2p.EnableAsciiAll (ascii.CreateFileStream ("socket-bound-tcp-static-routing.tr"));
+  p2p.EnablePcapAll ("socket-bound-tcp-static-routing");
 
   LogComponentEnableAll (LOG_PREFIX_TIME);
   LogComponentEnable ("SocketBoundTcpRoutingExample", LOG_LEVEL_INFO);

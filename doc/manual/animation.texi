@@ -8,23 +8,22 @@
 @end menu
 
 Animation is an important tool for network simulation. While ns-3 does 
-not contain a graphical animation tool, it does provide an animation interface 
-for use with stand-alone animators. Currently, the animation 
-interface only supports point-to-point links; however, we hope
-to support other link types such as CSMA and wireless in the near future.
-The animation interface in ns-3 allows the generation of a custom trace 
-file to be used by an animation program.
-
-An existing stand-alone program, NetAnim, uses these custom traces to 
-graphically display the simulation. NetAnim depicts packets traveling 
-on point-to-point links as they travel from node to node.
+not contain a default graphical animation tool, it does provide an 
+animation interface for use with stand-alone animators.  One such
+animator called NetAnim, presently supporting packet flow animation
+for point-to-point links, has been developed.  Other animators and
+visualization tools are in development; they may make use of the
+existing animation interface or may develop new ones,   
 
 @node Animation interface
 @section Animation interface
 
+The animation interface uses underlying ns-3 trace sources to construct
+a timestamped ASCII file that can be read by a standalone animator.
 The animation interface in ns-3 currently only supports point-to-point 
-links and can generate a custom trace file for use by an animation 
-program.  A snippet from a sample trace file is shown below.
+links; however, we hope
+to support other link types such as CSMA and wireless in the near future.
+A snippet from a sample trace file is shown below.
 
 @verbatim
 0.0 N 0 4 5.5

@@ -94,7 +94,7 @@ Ipv4L3ProtocolTestCase::DoRun (void)
   Ipv4InterfaceAddress output = interface->GetAddress (2);
   NS_TEST_ASSERT_MSG_EQ (ifaceAddr4, output,
       "The addresses should be identical");
-
+  Simulator::Destroy ();
   return false;
 }
 
