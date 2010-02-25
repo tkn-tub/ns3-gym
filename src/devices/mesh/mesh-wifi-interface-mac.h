@@ -91,7 +91,8 @@ public:
   virtual void  SetAddress (Mac48Address address);
   virtual void  SetSsid (Ssid ssid);
   //\}
-
+  ///Needed to obtain phy to calculate TX-duration
+  Ptr<WifiPhy> GetWifiPhy () const;
   ///\name Each mesh point interfaces must know the mesh point address
   //\{
   void SetMeshPointAddress (Mac48Address);

@@ -24,6 +24,8 @@
 
 namespace ns3 {
 
+class AarfcdWifiRemoteStation;
+
 /**
  * \brief an implementation of the AARF-CD algorithm
  *
@@ -40,13 +42,38 @@ public:
   virtual ~AarfcdWifiManager ();
 
 private:
-  friend class AarfcdWifiRemoteStation;
-  virtual WifiRemoteStation *CreateStation (void);
+  // overriden from base class
+  virtual class WifiRemoteStation *DoCreateStation (void) const;
+  virtual void DoReportRxOk (WifiRemoteStation *station, 
+                             double rxSnr, WifiMode txMode);
+  virtual void DoReportRtsFailed (WifiRemoteStation *station);
+  virtual void DoReportDataFailed (WifiRemoteStation *station);
+  virtual void DoReportRtsOk (WifiRemoteStation *station,
+                              double ctsSnr, WifiMode ctsMode, double rtsSnr);
+  virtual void DoReportDataOk (WifiRemoteStation *station,
+                               double ackSnr, WifiMode ackMode, double dataSnr);
+  virtual void DoReportFinalRtsFailed (WifiRemoteStation *station);
+  virtual void DoReportFinalDataFailed (WifiRemoteStation *station);
+  virtual WifiMode DoGetDataMode (WifiRemoteStation *station, uint32_t size);
+  virtual WifiMode DoGetRtsMode (WifiRemoteStation *station);
+  virtual bool DoNeedRts (WifiRemoteStation *station, 
+                          Ptr<const Packet> packet, bool normally);
+  virtual bool IsLowLatency (void) const;
+
+  void CheckRts (AarfcdWifiRemoteStation *station);
+  void IncreaseRtsWnd (AarfcdWifiRemoteStation *station);
+  void ResetRtsWnd (AarfcdWifiRemoteStation *station);
+  void TurnOffRts (AarfcdWifiRemoteStation *station);
+  void TurnOnRts (AarfcdWifiRemoteStation *station);
+
+  // aarf fields below
   uint32_t m_minTimerThreshold;
   uint32_t m_minSuccessThreshold;
   double m_successK;
   uint32_t m_maxSuccessThreshold;
   double m_timerK;
+
+  // aarf-cd fields below
   uint32_t m_minRtsWnd;
   uint32_t m_maxRtsWnd;
   bool m_rtsFailsAsDataFails;
@@ -54,59 +81,6 @@ private:
   bool m_turnOnRtsAfterRateIncrease;
 };
 
-
-class AarfcdWifiRemoteStation : public WifiRemoteStation
-{
-public:
-  AarfcdWifiRemoteStation (Ptr<AarfcdWifiManager> manager);
-  virtual ~AarfcdWifiRemoteStation ();
-
-
-private:
-  virtual void DoReportRxOk (double rxSnr, WifiMode txMode);
-  virtual void DoReportRtsFailed (void);
-  virtual void DoReportDataFailed (void);
-  virtual void DoReportRtsOk (double ctsSnr, WifiMode ctsMode, double rtsSnr);
-  virtual void DoReportDataOk (double ackSnr, WifiMode ackMode, double dataSnr);
-  virtual void DoReportFinalRtsFailed (void);
-  virtual void DoReportFinalDataFailed (void);
-  virtual Ptr<WifiRemoteStationManager> GetManager (void) const;
-  virtual WifiMode DoGetDataMode (uint32_t size);
-  virtual WifiMode DoGetRtsMode (void);
-  virtual bool NeedRts (Ptr<const Packet> packet);
-
-  void ReportRecoveryFailure (void);
-  void ReportFailure (void);
-  uint32_t GetMaxRate (void);
-  uint32_t GetMinRate (void);
-  void CheckRts (void);
-  void IncreaseRtsWnd (void);
-  void ResetRtsWnd (void);
-  void TurnOffRts (void);
-  void TurnOnRts (void);
-
-  bool NeedRecoveryFallback (void);
-  bool NeedNormalFallback (void);
-
-  uint32_t m_timer;
-  uint32_t m_success;
-  uint32_t m_failed;
-  bool m_recovery;
-  bool m_justModifyRate;
-  uint32_t m_retry;
-  
-  uint32_t m_successThreshold;
-  uint32_t m_timerTimeout;
-
-  uint32_t m_rate;
-  bool m_rtsOn;
-  uint32_t m_rtsWnd;
-  uint32_t m_rtsCounter;
-  bool m_haveASuccess;
-  
-  Ptr<AarfcdWifiManager> m_manager;
-};
-
 } // namespace ns3
 
-#endif /* MAARF_MAC_STATIONS_H */
+#endif /* AARFCD_WIFI_MANAGER_H */

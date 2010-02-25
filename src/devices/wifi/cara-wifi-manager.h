@@ -42,48 +42,28 @@ public:
   virtual ~CaraWifiManager ();
 
 private:
-  friend class CaraWifiRemoteStation;
-  virtual class WifiRemoteStation *CreateStation (void);
+  // overriden from base class
+  virtual class WifiRemoteStation *DoCreateStation (void) const;
+  virtual void DoReportRxOk (WifiRemoteStation *station, 
+                             double rxSnr, WifiMode txMode);
+  virtual void DoReportRtsFailed (WifiRemoteStation *station);
+  virtual void DoReportDataFailed (WifiRemoteStation *station);
+  virtual void DoReportRtsOk (WifiRemoteStation *station,
+                              double ctsSnr, WifiMode ctsMode, double rtsSnr);
+  virtual void DoReportDataOk (WifiRemoteStation *station,
+                               double ackSnr, WifiMode ackMode, double dataSnr);
+  virtual void DoReportFinalRtsFailed (WifiRemoteStation *station);
+  virtual void DoReportFinalDataFailed (WifiRemoteStation *station);
+  virtual WifiMode DoGetDataMode (WifiRemoteStation *station, uint32_t size);
+  virtual WifiMode DoGetRtsMode (WifiRemoteStation *station);
+  virtual bool DoNeedRts (WifiRemoteStation *station,
+                          Ptr<const Packet> packet, bool normally);
+  virtual bool IsLowLatency (void) const;
+
   uint32_t m_timerTimeout;
   uint32_t m_successThreshold;
   uint32_t m_failureThreshold;
   uint32_t m_probeThreshold;
-};
-
-
-class CaraWifiRemoteStation : public WifiRemoteStation
-{
-public:
-  CaraWifiRemoteStation (Ptr<CaraWifiManager> manager);
-  virtual ~CaraWifiRemoteStation ();
-
-private:
-  virtual Ptr<WifiRemoteStationManager> GetManager (void) const;
-  virtual void DoReportRtsFailed (void);
-  virtual void DoReportDataFailed (void);
-  virtual void DoReportRtsOk (double ctsSnr, WifiMode ctsMode, double rtsSnr);
-  virtual void DoReportDataOk (double ackSnr, WifiMode ackMode, double dataSnr);
-  virtual void DoReportFinalRtsFailed (void);
-  virtual void DoReportFinalDataFailed (void);
-  virtual void DoReportRxOk (double rxSnr, WifiMode txMode);
-  virtual WifiMode DoGetDataMode (uint32_t size);
-  virtual WifiMode DoGetRtsMode (void);
-
-  virtual bool NeedRts (Ptr<const Packet> packet);
-
-  uint32_t m_timer;
-  uint32_t m_success;
-  uint32_t m_failed;
-  
-  uint32_t m_rate;
-  
-  Ptr<CaraWifiManager> m_manager;
-  
-  uint32_t GetMaxRate (void);
-  uint32_t GetMinRate (void);
-
-  bool NeedNormalFallback (void);
-  
 };
 
 } // namespace ns3

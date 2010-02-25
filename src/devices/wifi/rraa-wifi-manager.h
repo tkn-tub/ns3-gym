@@ -25,14 +25,7 @@
 
 namespace ns3 {
 
-struct ThresholdsItem {
-  uint32_t datarate;
-  double pori;
-  double pmtl;
-  uint32_t ewnd;
-};
-
-typedef std::vector<ThresholdsItem> Thresholds;
+class RraaWifiRemoteStation;
 
 /**
  * \brief Robust Rate Adaptation Algorithm
@@ -49,11 +42,44 @@ public:
 
   RraaWifiManager ();
   virtual ~RraaWifiManager ();
-  bool OnlyBasic (void);
-  Time GetTimeout (void) const;
-  ThresholdsItem GetThresholds (WifiMode mode) const;
+
 private:
-  virtual class WifiRemoteStation *CreateStation (void);  
+
+  struct ThresholdsItem 
+  {
+    uint32_t datarate;
+    double pori;
+    double pmtl;
+    uint32_t ewnd;
+  };
+
+  // overriden from base class
+  virtual class WifiRemoteStation *DoCreateStation (void) const;
+  virtual void DoReportRxOk (WifiRemoteStation *station, 
+                             double rxSnr, WifiMode txMode);
+  virtual void DoReportRtsFailed (WifiRemoteStation *station);
+  virtual void DoReportDataFailed (WifiRemoteStation *station);
+  virtual void DoReportRtsOk (WifiRemoteStation *station,
+                              double ctsSnr, WifiMode ctsMode, double rtsSnr);
+  virtual void DoReportDataOk (WifiRemoteStation *station,
+                               double ackSnr, WifiMode ackMode, double dataSnr);
+  virtual void DoReportFinalRtsFailed (WifiRemoteStation *station);
+  virtual void DoReportFinalDataFailed (WifiRemoteStation *station);
+  virtual WifiMode DoGetDataMode (WifiRemoteStation *station, uint32_t size);
+  virtual WifiMode DoGetRtsMode (WifiRemoteStation *station);
+  virtual bool DoNeedRts (WifiRemoteStation *st,
+                          Ptr<const Packet> packet, bool normally);
+  virtual bool IsLowLatency (void) const;
+
+  uint32_t GetMaxRate (RraaWifiRemoteStation *station);
+  uint32_t GetMinRate (RraaWifiRemoteStation *station);
+  void CheckTimeout (RraaWifiRemoteStation *station);
+  void RunBasicAlgorithm (RraaWifiRemoteStation *station);
+  void ARts (RraaWifiRemoteStation *station);
+  void ResetCountersBasic (RraaWifiRemoteStation *station);
+  struct ThresholdsItem GetThresholds (WifiMode mode) const;
+  struct ThresholdsItem GetThresholds (RraaWifiRemoteStation *station, uint32_t rate) const;
+
   bool m_basic;
   Time m_timeout;
   uint32_t m_ewndfor54;
@@ -78,49 +104,6 @@ private:
   double m_pmtlfor18;
   double m_pmtlfor12;
   double m_pmtlfor9;
-};
-
-
-class RraaWifiRemoteStation : public WifiRemoteStation
-{
-public:
-  RraaWifiRemoteStation (Ptr<RraaWifiManager> stations);
-  virtual ~RraaWifiRemoteStation ();
-
-  virtual bool NeedRts (Ptr<const Packet> packet);
-protected:
-  virtual void DoReportRxOk (double rxSnr, WifiMode txMode);
-  virtual void DoReportRtsFailed (void);
-  virtual void DoReportDataFailed (void);
-  virtual void DoReportRtsOk (double ctsSnr, WifiMode ctsMode, double rtsSnr);
-  virtual void DoReportDataOk (double ackSnr, WifiMode ackMode, double dataSnr);
-  virtual void DoReportFinalRtsFailed (void);
-  virtual void DoReportFinalDataFailed (void);
-
-private:
-  virtual Ptr<WifiRemoteStationManager> GetManager (void) const;
-  virtual WifiMode DoGetDataMode (uint32_t size);
-  virtual WifiMode DoGetRtsMode (void);
-  uint32_t GetMaxRate (void);
-  uint32_t GetMinRate (void);
-  ThresholdsItem GetThresholds (uint32_t rate);
-  void CheckTimeout (void);
-  void RunBasicAlgorithm (void);
-  void ARts (void);
-  void ResetCountersBasic (void);
-
-  uint32_t m_counter;
-  uint32_t m_failed;
-  uint32_t m_rtsWnd;
-  uint32_t m_rtsCounter;
-  Time m_lastReset;
-  bool m_rtsOn;
-  bool m_lastFrameFail;
-  bool m_initialized;
-
-  uint32_t m_rate;
-
-  Ptr<RraaWifiManager> m_stations;
 };
 
 } // namespace ns3

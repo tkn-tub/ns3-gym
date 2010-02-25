@@ -25,6 +25,8 @@
 
 namespace ns3 {
 
+class OnoeWifiRemoteStation;
+
 /**
  * \brief an implementation of rate control algorithm developed 
  *        by Atsushi Onoe
@@ -42,47 +44,28 @@ public:
   OnoeWifiManager ();
 
 private:
-  friend class OnoeWifiRemoteStation;
-  virtual WifiRemoteStation *CreateStation (void);
+  // overriden from base class
+  virtual class WifiRemoteStation *DoCreateStation (void) const;
+  virtual void DoReportRxOk (WifiRemoteStation *station, 
+                             double rxSnr, WifiMode txMode);
+  virtual void DoReportRtsFailed (WifiRemoteStation *station);
+  virtual void DoReportDataFailed (WifiRemoteStation *station);
+  virtual void DoReportRtsOk (WifiRemoteStation *station,
+                              double ctsSnr, WifiMode ctsMode, double rtsSnr);
+  virtual void DoReportDataOk (WifiRemoteStation *station,
+                               double ackSnr, WifiMode ackMode, double dataSnr);
+  virtual void DoReportFinalRtsFailed (WifiRemoteStation *station);
+  virtual void DoReportFinalDataFailed (WifiRemoteStation *station);
+  virtual WifiMode DoGetDataMode (WifiRemoteStation *station, uint32_t size);
+  virtual WifiMode DoGetRtsMode (WifiRemoteStation *station);
+  virtual bool IsLowLatency (void) const;
+
+  void UpdateRetry (OnoeWifiRemoteStation *station);
+  void UpdateMode (OnoeWifiRemoteStation *station);
 
   Time m_updatePeriod;
   uint32_t m_addCreditThreshold;
   uint32_t m_raiseThreshold;
-};
-
-class OnoeWifiRemoteStation : public WifiRemoteStation
-{
-public:
-  OnoeWifiRemoteStation (Ptr<OnoeWifiManager> stations);
-
-  virtual ~OnoeWifiRemoteStation ();
-
-protected:
-  virtual void DoReportRxOk (double rxSnr, WifiMode txMode);
-  virtual void DoReportRtsFailed (void);
-  virtual void DoReportDataFailed (void);
-  virtual void DoReportRtsOk (double ctsSnr, WifiMode ctsMode, double rtsSnr);
-  virtual void DoReportDataOk (double ackSnr, WifiMode ackMode, double dataSnr);
-  virtual void DoReportFinalRtsFailed (void);
-  virtual void DoReportFinalDataFailed (void);
-
-private:
-  virtual Ptr<WifiRemoteStationManager> GetManager (void) const;
-  virtual WifiMode DoGetDataMode (uint32_t size);
-  virtual WifiMode DoGetRtsMode (void);
-
-  void UpdateRetry (void);
-  void UpdateMode (void);
-
-  Ptr<OnoeWifiManager> m_stations;
-  Time m_nextModeUpdate;
-  uint32_t m_shortRetry;
-  uint32_t m_longRetry;
-  uint32_t m_tx_ok;
-  uint32_t m_tx_err;
-  uint32_t m_tx_retr;
-  uint32_t m_tx_upper;
-  uint32_t m_txrate;
 };
 
 } // namespace ns3

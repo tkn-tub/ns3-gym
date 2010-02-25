@@ -488,7 +488,6 @@ private:
   uint32_t GetCtsSize (void) const;
   uint32_t GetSize (Ptr<const Packet> packet, const WifiMacHeader *hdr) const;
   Time NowUs (void) const;
-  WifiRemoteStation *GetStation (Mac48Address to) const;
   void ForwardDown (Ptr<const Packet> packet, const WifiMacHeader *hdr, 
                     WifiMode txMode);
   Time CalculateOverallTxTime (Ptr<const Packet> packet,

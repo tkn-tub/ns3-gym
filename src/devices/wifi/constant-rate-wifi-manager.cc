@@ -25,50 +25,6 @@
 
 namespace ns3 {
 
-ConstantRateWifiRemoteStation::ConstantRateWifiRemoteStation (Ptr<ConstantRateWifiManager> manager)
-  : m_manager (manager)
-{}
-ConstantRateWifiRemoteStation::~ConstantRateWifiRemoteStation ()
-{}
-
-void 
-ConstantRateWifiRemoteStation::DoReportRxOk (double rxSnr, WifiMode txMode)
-{}
-void 
-ConstantRateWifiRemoteStation::DoReportRtsFailed (void)
-{}
-void 
-ConstantRateWifiRemoteStation::DoReportDataFailed (void)
-{}
-void 
-ConstantRateWifiRemoteStation::DoReportRtsOk (double ctsSnr, WifiMode ctsMode, double rtsSnr)
-{}
-void 
-ConstantRateWifiRemoteStation::DoReportDataOk (double ackSnr, WifiMode ackMode, double dataSnr)
-{}
-void 
-ConstantRateWifiRemoteStation::DoReportFinalRtsFailed (void)
-{}
-void 
-ConstantRateWifiRemoteStation::DoReportFinalDataFailed (void)
-{}
-
-WifiMode 
-ConstantRateWifiRemoteStation::DoGetDataMode (uint32_t size)
-{
-  return m_manager->GetDataMode ();
-}
-WifiMode 
-ConstantRateWifiRemoteStation::DoGetRtsMode (void)
-{
-  return m_manager->GetCtlMode ();
-}
-Ptr<WifiRemoteStationManager>
-ConstantRateWifiRemoteStation::GetManager (void) const
-{
-  return m_manager;
-}
-
 NS_OBJECT_ENSURE_REGISTERED (ConstantRateWifiManager);
 
 TypeId 
@@ -94,22 +50,57 @@ ConstantRateWifiManager::ConstantRateWifiManager ()
 ConstantRateWifiManager::~ConstantRateWifiManager ()
 {}
 
-WifiMode 
-ConstantRateWifiManager::GetDataMode (void) const
+
+WifiRemoteStation *
+ConstantRateWifiManager::DoCreateStation (void) const
+{
+  WifiRemoteStation *station = new WifiRemoteStation ();
+  return station;
+}
+
+
+void 
+ConstantRateWifiManager::DoReportRxOk (WifiRemoteStation *station,
+                                double rxSnr, WifiMode txMode)
+{}
+void 
+ConstantRateWifiManager::DoReportRtsFailed (WifiRemoteStation *station)
+{}
+void 
+ConstantRateWifiManager::DoReportDataFailed (WifiRemoteStation *station)
+{}
+void 
+ConstantRateWifiManager::DoReportRtsOk (WifiRemoteStation *st,
+                                 double ctsSnr, WifiMode ctsMode, double rtsSnr)
+{
+}
+void 
+ConstantRateWifiManager::DoReportDataOk (WifiRemoteStation *st,
+                                  double ackSnr, WifiMode ackMode, double dataSnr)
+{
+}
+void 
+ConstantRateWifiManager::DoReportFinalRtsFailed (WifiRemoteStation *station)
+{}
+void 
+ConstantRateWifiManager::DoReportFinalDataFailed (WifiRemoteStation *station)
+{}
+
+WifiMode
+ConstantRateWifiManager::DoGetDataMode (WifiRemoteStation *st, uint32_t size)
 {
   return m_dataMode;
 }
-WifiMode 
-ConstantRateWifiManager::GetCtlMode (void) const
+WifiMode
+ConstantRateWifiManager::DoGetRtsMode (WifiRemoteStation *st)
 {
   return m_ctlMode;
 }
 
-
-WifiRemoteStation *
-ConstantRateWifiManager::CreateStation (void)
+bool 
+ConstantRateWifiManager::IsLowLatency (void) const
 {
-  return new ConstantRateWifiRemoteStation (this);
+  return true;
 }
 
 } // namespace ns3

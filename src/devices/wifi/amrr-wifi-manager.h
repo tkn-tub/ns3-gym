@@ -25,6 +25,8 @@
 
 namespace ns3 {
 
+class AmrrWifiRemoteStation;
+
 /**
  * \brief AMRR Rate control algorithm
  *
@@ -41,60 +43,38 @@ public:
   AmrrWifiManager ();
 
 private:
-  friend class AmrrWifiRemoteStation;
-  virtual WifiRemoteStation *CreateStation (void);
+  // overriden from base class
+  virtual class WifiRemoteStation *DoCreateStation (void) const;
+  virtual void DoReportRxOk (WifiRemoteStation *station, 
+                             double rxSnr, WifiMode txMode);
+  virtual void DoReportRtsFailed (WifiRemoteStation *station);
+  virtual void DoReportDataFailed (WifiRemoteStation *station);
+  virtual void DoReportRtsOk (WifiRemoteStation *station,
+                              double ctsSnr, WifiMode ctsMode, double rtsSnr);
+  virtual void DoReportDataOk (WifiRemoteStation *station,
+                               double ackSnr, WifiMode ackMode, double dataSnr);
+  virtual void DoReportFinalRtsFailed (WifiRemoteStation *station);
+  virtual void DoReportFinalDataFailed (WifiRemoteStation *station);
+  virtual WifiMode DoGetDataMode (WifiRemoteStation *station, uint32_t size);
+  virtual WifiMode DoGetRtsMode (WifiRemoteStation *station);
+  virtual bool IsLowLatency (void) const;
+
+  void UpdateRetry (AmrrWifiRemoteStation *station);
+  void UpdateMode (AmrrWifiRemoteStation *station);
+  void ResetCnt (AmrrWifiRemoteStation *station);
+  void IncreaseRate (AmrrWifiRemoteStation *station);
+  void DecreaseRate (AmrrWifiRemoteStation *station);
+  bool IsMinRate (AmrrWifiRemoteStation *station) const;
+  bool IsMaxRate (AmrrWifiRemoteStation *station) const;
+  bool IsSuccess (AmrrWifiRemoteStation *station) const;
+  bool IsFailure (AmrrWifiRemoteStation *station) const;
+  bool IsEnough (AmrrWifiRemoteStation *station) const;
 
   Time m_updatePeriod;
   double m_failureRatio;
   double m_successRatio;
   uint32_t m_maxSuccessThreshold;
   uint32_t m_minSuccessThreshold;
-};
-
-/**
- */
-class AmrrWifiRemoteStation : public WifiRemoteStation
-{
-public:
-  AmrrWifiRemoteStation (Ptr<AmrrWifiManager> stations);
-
-  virtual ~AmrrWifiRemoteStation ();
-
-protected:
-  virtual void DoReportRxOk (double rxSnr, WifiMode txMode);
-  virtual void DoReportRtsFailed (void);
-  virtual void DoReportDataFailed (void);
-  virtual void DoReportRtsOk (double ctsSnr, WifiMode ctsMode, double rtsSnr);
-  virtual void DoReportDataOk (double ackSnr, WifiMode ackMode, double dataSnr);
-  virtual void DoReportFinalRtsFailed (void);
-  virtual void DoReportFinalDataFailed (void);
-
-private:
-  virtual Ptr<WifiRemoteStationManager> GetManager (void) const;
-  virtual WifiMode DoGetDataMode (uint32_t size);
-  virtual WifiMode DoGetRtsMode (void);
-
-  void UpdateRetry (void);
-  void UpdateMode (void);
-  void ResetCnt (void);
-  void IncreaseRate (void);
-  void DecreaseRate (void);
-  bool IsMinRate (void) const;
-  bool IsMaxRate (void) const;
-  bool IsSuccess (void) const;
-  bool IsFailure (void) const;
-  bool IsEnough (void) const;
-
-  Ptr<AmrrWifiManager> m_stations;
-  Time m_nextModeUpdate;
-  uint32_t m_tx_ok;
-  uint32_t m_tx_err;
-  uint32_t m_tx_retr;
-  uint32_t m_retry;
-  uint32_t m_txrate;
-  uint32_t m_successThreshold;
-  uint32_t m_success;
-  bool m_recovery;
 };
 
 } // namespace ns3

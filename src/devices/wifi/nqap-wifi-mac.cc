@@ -21,6 +21,7 @@
 #include "ns3/log.h"
 #include "ns3/simulator.h"
 #include "ns3/node.h"
+#include "ns3/boolean.h"
 
 #include "nqap-wifi-mac.h"
 #include "dca-txop.h"
@@ -416,24 +417,22 @@ void
 NqapWifiMac::TxOk (const WifiMacHeader &hdr)
 {
   NS_LOG_FUNCTION (this);
-  WifiRemoteStation *station = m_stationManager->Lookup (hdr.GetAddr1 ());
   if (hdr.IsAssocResp () && 
-      station->IsWaitAssocTxOk ()) 
+      m_stationManager->IsWaitAssocTxOk (hdr.GetAddr1 ())) 
     {
       NS_LOG_DEBUG ("associated with sta="<<hdr.GetAddr1 ());
-      station->RecordGotAssocTxOk ();
+      m_stationManager->RecordGotAssocTxOk (hdr.GetAddr1 ());
     }
 }
 void 
 NqapWifiMac::TxFailed (const WifiMacHeader &hdr)
 {
   NS_LOG_FUNCTION (this);
-  WifiRemoteStation *station = m_stationManager->Lookup (hdr.GetAddr1 ());
   if (hdr.IsAssocResp () && 
-      station->IsWaitAssocTxOk ()) 
+      m_stationManager->IsWaitAssocTxOk (hdr.GetAddr1 ())) 
     {
       NS_LOG_DEBUG ("assoc failed with sta="<<hdr.GetAddr1 ());
-      station->RecordGotAssocTxFailed ();
+      m_stationManager->RecordGotAssocTxFailed (hdr.GetAddr1 ());
     }
 }
 void 
@@ -442,7 +441,6 @@ NqapWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
   NS_LOG_FUNCTION (this << packet << hdr);
 
   Mac48Address from = hdr->GetAddr2 ();
-  WifiRemoteStation *fromStation = m_stationManager->Lookup (from);
 
   if (hdr->IsData ()) 
     {
@@ -450,17 +448,16 @@ NqapWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
       if (!hdr->IsFromDs () && 
           hdr->IsToDs () &&
           bssid == GetAddress () &&
-          fromStation->IsAssociated ()) 
+          m_stationManager->IsAssociated (from)) 
         {
           Mac48Address to = hdr->GetAddr3 ();
-          WifiRemoteStation *toStation = m_stationManager->Lookup (to);
           if (to == GetAddress ()) 
             {
               NS_LOG_DEBUG ("frame for me from="<<from);
               ForwardUp (packet, from, bssid);
             } 
           else if (to.IsGroup () ||
-                   toStation->IsAssociated ())
+                   m_stationManager->IsAssociated (to))
             {
               NS_LOG_DEBUG ("forwarding frame from="<<from<<", to="<<to);
               Ptr<Packet> copy = packet->Copy ();
@@ -530,17 +527,17 @@ NqapWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
                       WifiMode mode = m_phy->GetMode (j);
                       if (rates.IsSupportedRate (mode.GetDataRate ()))
                         {
-                          fromStation->AddSupportedMode (mode);
+                          m_stationManager->AddSupportedMode (from, mode);
                         }
                     }
-                  fromStation->RecordWaitAssocTxOk ();
+                  m_stationManager->RecordWaitAssocTxOk (from);
                   // send assoc response with success status.
                   SendAssocResp (hdr->GetAddr2 (), true);
                 }
             } 
           else if (hdr->IsDisassociation ()) 
             {
-              fromStation->RecordDisassociated ();
+              m_stationManager->RecordDisassociated (from);
             } 
           else if (hdr->IsReassocReq ()) 
             {

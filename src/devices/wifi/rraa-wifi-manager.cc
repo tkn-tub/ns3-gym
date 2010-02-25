@@ -30,162 +30,21 @@ NS_LOG_COMPONENT_DEFINE ("RraaWifiManager");
 
 namespace ns3 {
 
+struct RraaWifiRemoteStation : public WifiRemoteStation
+{
+  uint32_t m_counter;
+  uint32_t m_failed;
+  uint32_t m_rtsWnd;
+  uint32_t m_rtsCounter;
+  Time m_lastReset;
+  bool m_rtsOn;
+  bool m_lastFrameFail;
+  bool m_initialized;
+
+  uint32_t m_rate;
+};
+
 NS_OBJECT_ENSURE_REGISTERED(RraaWifiManager);
-  
-RraaWifiRemoteStation::RraaWifiRemoteStation (Ptr<RraaWifiManager> stations)
-  : m_stations (stations)
-{
-  m_initialized = false;
-  m_rtsWnd = 0;
-  m_rtsCounter = 0;
-  m_rtsOn = false;
-  m_lastFrameFail = false;
-}
-
-RraaWifiRemoteStation::~RraaWifiRemoteStation ()
-{}
-
-void
-RraaWifiRemoteStation::ResetCountersBasic (void)
-{
-  if (!m_initialized) {
-    m_rate = GetMaxRate ();
-    m_initialized = true;
-  }
-  m_failed = 0;
-  m_counter = GetThresholds (m_rate).ewnd;
-  m_lastReset = Simulator::Now ();
-}
-
-Ptr<WifiRemoteStationManager>
-RraaWifiRemoteStation::GetManager (void) const
-{
-  return m_stations;
-}
-
-uint32_t
-RraaWifiRemoteStation::GetMaxRate (void)
-{
-  return GetNSupportedModes () - 1;
-}
-uint32_t
-RraaWifiRemoteStation::GetMinRate (void)
-{
-  return 0;
-}
-
-ThresholdsItem
-RraaWifiRemoteStation::GetThresholds (uint32_t rate) 
-{
-  WifiMode mode = GetSupportedMode (rate);
-  return m_stations->GetThresholds (mode);
-}
-
-
-void 
-RraaWifiRemoteStation::DoReportRtsFailed (void)
-{}
-
-void 
-RraaWifiRemoteStation::DoReportDataFailed (void)
-{
-  m_lastFrameFail = true;
-  CheckTimeout ();
-  m_counter--;
-  m_failed++;
-  RunBasicAlgorithm ();
-}
-void 
-RraaWifiRemoteStation::DoReportRxOk (double rxSnr, WifiMode txMode)
-{}
-void 
-RraaWifiRemoteStation::DoReportRtsOk (double ctsSnr, WifiMode ctsMode, double rtsSnr)
-{
-  NS_LOG_DEBUG ("self="<<this<<" rts ok");
-}
-void 
-RraaWifiRemoteStation::DoReportDataOk (double ackSnr, WifiMode ackMode, double dataSnr)
-{
-  m_lastFrameFail = false;
-  CheckTimeout ();
-  m_counter--;
-  RunBasicAlgorithm ();
-}
-void 
-RraaWifiRemoteStation::DoReportFinalRtsFailed (void)
-{}
-void 
-RraaWifiRemoteStation::DoReportFinalDataFailed (void)
-{}
-
-WifiMode
-RraaWifiRemoteStation::DoGetDataMode (uint32_t size)
-{
-  if (!m_initialized)
-    ResetCountersBasic ();
-  return GetSupportedMode (m_rate);
-}
-WifiMode
-RraaWifiRemoteStation::DoGetRtsMode (void)
-{
-  return GetSupportedMode (0);
-}
-
-bool
-RraaWifiRemoteStation::NeedRts (Ptr<const Packet> packet)
-{
-  if (m_stations->OnlyBasic ())
-    return WifiRemoteStation::NeedRts (packet);
-  ARts ();
-  return m_rtsOn;
-}
-
-void
-RraaWifiRemoteStation::CheckTimeout (void)
-{
-  Time d = Simulator::Now () - m_lastReset;
-  if (m_counter == 0 || d > m_stations->GetTimeout ()) {
-    ResetCountersBasic ();
-  }
-}
-
-void
-RraaWifiRemoteStation::RunBasicAlgorithm (void)
-{
-  ThresholdsItem thresholds = GetThresholds (m_rate);
-  double ploss = (double) m_failed / (double) thresholds.ewnd;
-  if (m_counter == 0 || ploss > thresholds.pmtl) {
-    if (m_rate > GetMinRate () && ploss > thresholds.pmtl) {
-      m_rate--;
-    }
-    else if (m_rate < GetMaxRate () && ploss < thresholds.pori) {
-      m_rate++;
-    }
-    ResetCountersBasic ();
-  }
-}
-
-void
-RraaWifiRemoteStation::ARts (void)
-{
-  if (!m_rtsOn && m_lastFrameFail) {
-    m_rtsWnd++;
-    m_rtsCounter = m_rtsWnd;
-  }
-  else if ((m_rtsOn && m_lastFrameFail) || 
-           (!m_rtsOn && !m_lastFrameFail)) {
-    m_rtsWnd = m_rtsWnd / 2;
-    m_rtsCounter = m_rtsWnd;
-  }
-  if (m_rtsCounter > 0) {
-    m_rtsOn = true;
-    m_rtsCounter--;
-  }
-  else {
-    m_rtsOn = false;
-  }
-}
-
 
 TypeId 
 RraaWifiManager::GetTypeId (void)
@@ -323,87 +182,251 @@ RraaWifiManager::RraaWifiManager ()
 RraaWifiManager::~RraaWifiManager ()
 {}
 
+
 WifiRemoteStation *
-RraaWifiManager::CreateStation (void)
+RraaWifiManager::DoCreateStation (void) const
 {
-  return new RraaWifiRemoteStation (this);
+  RraaWifiRemoteStation *station = new RraaWifiRemoteStation ();
+  station->m_initialized = false;
+  station->m_rtsWnd = 0;
+  station->m_rtsCounter = 0;
+  station->m_rtsOn = false;
+  station->m_lastFrameFail = false;
+  return station;
+}
+
+void
+RraaWifiManager::ResetCountersBasic (RraaWifiRemoteStation *station)
+{
+  if (!station->m_initialized)
+    {
+      station->m_rate = GetMaxRate (station);
+      station->m_initialized = true;
+    }
+  station->m_failed = 0;
+  station->m_counter = GetThresholds (station, station->m_rate).ewnd;
+  station->m_lastReset = Simulator::Now ();
+}
+
+uint32_t
+RraaWifiManager::GetMaxRate (RraaWifiRemoteStation *station)
+{
+  return GetNSupported (station) - 1;
+}
+uint32_t
+RraaWifiManager::GetMinRate (RraaWifiRemoteStation *station)
+{
+  return 0;
+}
+
+
+void 
+RraaWifiManager::DoReportRtsFailed (WifiRemoteStation *st)
+{}
+
+void 
+RraaWifiManager::DoReportDataFailed (WifiRemoteStation *st)
+{
+  RraaWifiRemoteStation *station = (RraaWifiRemoteStation *) st;
+  station->m_lastFrameFail = true;
+  CheckTimeout (station);
+  station->m_counter--;
+  station->m_failed++;
+  RunBasicAlgorithm (station);
+}
+void 
+RraaWifiManager::DoReportRxOk (WifiRemoteStation *st,
+                               double rxSnr, WifiMode txMode)
+{}
+void 
+RraaWifiManager::DoReportRtsOk (WifiRemoteStation *st,
+                                double ctsSnr, WifiMode ctsMode, double rtsSnr)
+{
+  NS_LOG_DEBUG ("self="<<st<<" rts ok");
+}
+void 
+RraaWifiManager::DoReportDataOk (WifiRemoteStation *st,
+                                 double ackSnr, WifiMode ackMode, double dataSnr)
+{
+  RraaWifiRemoteStation *station = (RraaWifiRemoteStation *) st;
+  station->m_lastFrameFail = false;
+  CheckTimeout (station);
+  station->m_counter--;
+  RunBasicAlgorithm (station);
+}
+void 
+RraaWifiManager::DoReportFinalRtsFailed (WifiRemoteStation *st)
+{}
+void 
+RraaWifiManager::DoReportFinalDataFailed (WifiRemoteStation *st)
+{}
+
+WifiMode
+RraaWifiManager::DoGetDataMode (WifiRemoteStation *st,
+                                uint32_t size)
+{
+  RraaWifiRemoteStation *station = (RraaWifiRemoteStation *) st;
+  if (!station->m_initialized)
+    {
+      ResetCountersBasic (station);
+    }
+  return GetSupported (station, station->m_rate);
+}
+WifiMode
+RraaWifiManager::DoGetRtsMode (WifiRemoteStation *st)
+{
+  return GetSupported (st, 0);
 }
 
 bool
-RraaWifiManager::OnlyBasic (void)
+RraaWifiManager::DoNeedRts (WifiRemoteStation *st,
+                            Ptr<const Packet> packet, bool normally)
 {
-  return m_basic;
+  RraaWifiRemoteStation *station = (RraaWifiRemoteStation *) st;
+  if (m_basic)
+    {
+      return normally;
+    }
+  ARts (station);
+  return station->m_rtsOn;
 }
 
-Time
-RraaWifiManager::GetTimeout (void) const
+void
+RraaWifiManager::CheckTimeout (RraaWifiRemoteStation *station)
 {
-  return m_timeout;
+  Time d = Simulator::Now () - station->m_lastReset;
+  if (station->m_counter == 0 || d > m_timeout) 
+    {
+      ResetCountersBasic (station);
+    }
 }
 
-ThresholdsItem
+void
+RraaWifiManager::RunBasicAlgorithm (RraaWifiRemoteStation *station)
+{
+  ThresholdsItem thresholds = GetThresholds (station, station->m_rate);
+  double ploss = (double) station->m_failed / (double) thresholds.ewnd;
+  if (station->m_counter == 0 || 
+      ploss > thresholds.pmtl) 
+    {
+      if (station->m_rate > GetMinRate (station) && 
+          ploss > thresholds.pmtl) 
+        {
+          station->m_rate--;
+        }
+      else if (station->m_rate < GetMaxRate (station) && 
+               ploss < thresholds.pori) 
+        {
+          station->m_rate++;
+        }
+      ResetCountersBasic (station);
+    }
+}
+
+void
+RraaWifiManager::ARts (RraaWifiRemoteStation *station)
+{
+  if (!station->m_rtsOn && 
+      station->m_lastFrameFail) 
+    {
+      station->m_rtsWnd++;
+      station->m_rtsCounter = station->m_rtsWnd;
+    }
+  else if ((station->m_rtsOn && station->m_lastFrameFail) || 
+           (!station->m_rtsOn && !station->m_lastFrameFail)) 
+    {
+      station->m_rtsWnd = station->m_rtsWnd / 2;
+      station->m_rtsCounter = station->m_rtsWnd;
+    }
+  if (station->m_rtsCounter > 0) 
+    {
+      station->m_rtsOn = true;
+      station->m_rtsCounter--;
+    }
+  else 
+    {
+      station->m_rtsOn = false;
+    }
+}
+
+struct RraaWifiManager::ThresholdsItem
+RraaWifiManager::GetThresholds (RraaWifiRemoteStation *station, 
+                                uint32_t rate) const
+{
+  WifiMode mode = GetSupported (station, rate);
+  return GetThresholds (mode);
+}
+
+struct RraaWifiManager::ThresholdsItem
 RraaWifiManager::GetThresholds (WifiMode mode) const
 {
-  switch (mode.GetDataRate () / 1000000) {
-  case 54: {
-    ThresholdsItem mode54 = {54000000, 
-                             0.0, 
-                             m_pmtlfor54, 
-                             m_ewndfor54};
-    return mode54;
-  } break;
-  case 48: {
-    ThresholdsItem mode48 = {48000000, 
-                             m_porifor48, 
-                             m_pmtlfor48, 
-                             m_ewndfor48};
-    return mode48;
-  } break;
-  case 36: {
-    ThresholdsItem mode36 = {36000000, 
-                             m_porifor36, 
-                             m_pmtlfor36, 
-                             m_ewndfor36};
-    return mode36;
-  } break;
-  case 24: {
-    ThresholdsItem mode24 = {24000000, 
-                             m_porifor24, 
-                             m_pmtlfor24, 
-                             m_ewndfor24};
-    return mode24;
-  } break;
-  case 18: {
-    ThresholdsItem mode18 = {18000000, 
-                             m_porifor18, 
-                             m_pmtlfor18, 
-                             m_ewndfor18};
-    return mode18;
-  } break;
-  case 12: {
-    ThresholdsItem mode12 = {12000000, 
-                             m_porifor12, 
-                             m_pmtlfor12, 
-                             m_ewndfor12};
-    return mode12;
-  } break;
-  case 9: {
-    ThresholdsItem mode9 =  {9000000, 
-                             m_porifor9, 
-                             m_pmtlfor9, 
-                             m_ewndfor9};
-    return mode9;
-  } break;
-  case 6: {
-    ThresholdsItem mode6 =  {6000000, 
-                             m_porifor6, 
-                             1.0, 
-                             m_ewndfor6};
-    return mode6;
-  } break;
-  }
+  switch (mode.GetDataRate () / 1000000) 
+    {
+    case 54: {
+      ThresholdsItem mode54 = {54000000, 
+                               0.0, 
+                               m_pmtlfor54, 
+                               m_ewndfor54};
+      return mode54;
+    } break;
+    case 48: {
+      ThresholdsItem mode48 = {48000000, 
+                               m_porifor48, 
+                               m_pmtlfor48, 
+                               m_ewndfor48};
+      return mode48;
+    } break;
+    case 36: {
+      ThresholdsItem mode36 = {36000000, 
+                               m_porifor36, 
+                               m_pmtlfor36, 
+                               m_ewndfor36};
+      return mode36;
+    } break;
+    case 24: {
+      ThresholdsItem mode24 = {24000000, 
+                               m_porifor24, 
+                               m_pmtlfor24, 
+                               m_ewndfor24};
+      return mode24;
+    } break;
+    case 18: {
+      ThresholdsItem mode18 = {18000000, 
+                               m_porifor18, 
+                               m_pmtlfor18, 
+                               m_ewndfor18};
+      return mode18;
+    } break;
+    case 12: {
+      ThresholdsItem mode12 = {12000000, 
+                               m_porifor12, 
+                               m_pmtlfor12, 
+                               m_ewndfor12};
+      return mode12;
+    } break;
+    case 9: {
+      ThresholdsItem mode9 =  {9000000, 
+                               m_porifor9, 
+                               m_pmtlfor9, 
+                               m_ewndfor9};
+      return mode9;
+    } break;
+    case 6: {
+      ThresholdsItem mode6 =  {6000000, 
+                               m_porifor6, 
+                               1.0, 
+                               m_ewndfor6};
+      return mode6;
+    } break;
+    }
   NS_ASSERT_MSG(false, "Thresholds for an unknown mode are asked");
   return ThresholdsItem ();
+}
+
+bool
+RraaWifiManager::IsLowLatency (void) const
+{
+  return true;
 }
 
 } // namespace ns3

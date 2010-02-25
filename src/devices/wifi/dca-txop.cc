@@ -224,16 +224,10 @@ DcaTxop::Queue (Ptr<const Packet> packet, const WifiMacHeader &hdr)
   NS_LOG_FUNCTION (this << packet << &hdr);
   WifiMacTrailer fcs;
   uint32_t fullPacketSize = hdr.GetSerializedSize () + packet->GetSize () + fcs.GetSerializedSize ();
-  WifiRemoteStation *station = GetStation (hdr.GetAddr1 ());
-  station->PrepareForQueue (packet, fullPacketSize);
+  m_stationManager->PrepareForQueue (hdr.GetAddr1 (), &hdr,
+                                     packet, fullPacketSize);
   m_queue->Enqueue (packet, hdr);
   StartAccessIfNeeded ();
-}
-
-WifiRemoteStation *
-DcaTxop::GetStation (Mac48Address ad) const
-{
-  return m_stationManager->Lookup (ad);
 }
 
 void
@@ -268,30 +262,30 @@ DcaTxop::Low (void)
 }
 
 bool
-DcaTxop::NeedRts (Ptr<const Packet> packet)
+DcaTxop::NeedRts (Ptr<const Packet> packet, const WifiMacHeader *header)
 {
-  WifiRemoteStation *station = GetStation (m_currentHdr.GetAddr1 ());
-  return station->NeedRts (packet);
+  return m_stationManager->NeedRts (header->GetAddr1 (), header,
+                                    packet);
 }
 
 bool
 DcaTxop::NeedRtsRetransmission (void)
 {
-  WifiRemoteStation *station = GetStation (m_currentHdr.GetAddr1 ());
-  return station->NeedRtsRetransmission (m_currentPacket);
+  return m_stationManager->NeedRtsRetransmission (m_currentHdr.GetAddr1 (), &m_currentHdr,
+                                                  m_currentPacket);
 }
 
 bool
 DcaTxop::NeedDataRetransmission (void)
 {
-  WifiRemoteStation *station = GetStation (m_currentHdr.GetAddr1 ());
-  return station->NeedDataRetransmission (m_currentPacket);
+  return m_stationManager->NeedDataRetransmission (m_currentHdr.GetAddr1 (), &m_currentHdr,
+                                                   m_currentPacket);
 }
 bool
 DcaTxop::NeedFragmentation (void)
 {
-  WifiRemoteStation *station = GetStation (m_currentHdr.GetAddr1 ());
-  return station->NeedFragmentation (m_currentPacket);
+  return m_stationManager->NeedFragmentation (m_currentHdr.GetAddr1 (), &m_currentHdr,
+                                              m_currentPacket);
 }
 
 void
@@ -303,28 +297,28 @@ DcaTxop::NextFragment (void)
 uint32_t
 DcaTxop::GetFragmentSize (void)
 {
-  WifiRemoteStation *station = GetStation (m_currentHdr.GetAddr1 ());
-  return station->GetFragmentSize (m_currentPacket, m_fragmentNumber);
+  return m_stationManager->GetFragmentSize (m_currentHdr.GetAddr1 (), &m_currentHdr,
+                                            m_currentPacket, m_fragmentNumber);
 }
 bool
 DcaTxop::IsLastFragment (void) 
 {
-  WifiRemoteStation *station = GetStation (m_currentHdr.GetAddr1 ());
-  return station->IsLastFragment (m_currentPacket, m_fragmentNumber);
+  return m_stationManager->IsLastFragment (m_currentHdr.GetAddr1 (), &m_currentHdr,
+                                           m_currentPacket, m_fragmentNumber);
 }
 
 uint32_t
 DcaTxop::GetNextFragmentSize (void) 
 {
-  WifiRemoteStation *station = GetStation (m_currentHdr.GetAddr1 ());
-  return station->GetFragmentSize (m_currentPacket, m_fragmentNumber + 1);
+  return m_stationManager->GetFragmentSize (m_currentHdr.GetAddr1 (), &m_currentHdr,
+                                            m_currentPacket, m_fragmentNumber + 1);
 }
 
 uint32_t
 DcaTxop::GetFragmentOffset (void) 
 {
-  WifiRemoteStation *station = GetStation (m_currentHdr.GetAddr1 ());
-  return station->GetFragmentOffset (m_currentPacket, m_fragmentNumber);
+  return m_stationManager->GetFragmentOffset (m_currentHdr.GetAddr1 (), &m_currentHdr,
+                                              m_currentPacket, m_fragmentNumber);
 }
 
 Ptr<Packet>
@@ -400,7 +394,7 @@ DcaTxop::NotifyAccessGranted (void)
         {
           WifiMacHeader hdr;
           Ptr<Packet> fragment = GetFragmentPacket (&hdr);
-          if (NeedRts (fragment))
+          if (NeedRts (fragment, &hdr))
             {
               params.EnableRts ();
             }
@@ -423,7 +417,7 @@ DcaTxop::NotifyAccessGranted (void)
         } 
       else 
         {
-          if (NeedRts (m_currentPacket)) 
+          if (NeedRts (m_currentPacket, &m_currentHdr)) 
             {
               params.EnableRts ();
               NS_LOG_DEBUG ("tx unicast rts");
@@ -476,8 +470,7 @@ DcaTxop::MissedCts (void)
   if (!NeedRtsRetransmission ())
     {
       NS_LOG_DEBUG ("Cts Fail");
-      WifiRemoteStation *station = GetStation (m_currentHdr.GetAddr1 ());
-      station->ReportFinalRtsFailed ();
+      m_stationManager->ReportFinalRtsFailed (m_currentHdr.GetAddr1 (), &m_currentHdr);
       if (!m_txFailedCallback.IsNull ()) 
         {
           m_txFailedCallback (m_currentHdr);
@@ -527,8 +520,7 @@ DcaTxop::MissedAck (void)
   if (!NeedDataRetransmission ()) 
     {
       NS_LOG_DEBUG ("Ack Fail");
-      WifiRemoteStation *station = GetStation (m_currentHdr.GetAddr1 ());
-      station->ReportFinalDataFailed ();
+      m_stationManager->ReportFinalDataFailed (m_currentHdr.GetAddr1 (), &m_currentHdr);
       if (!m_txFailedCallback.IsNull ()) 
         {
           m_txFailedCallback (m_currentHdr);

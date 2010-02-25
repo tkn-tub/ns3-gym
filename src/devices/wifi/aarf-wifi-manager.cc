@@ -22,11 +22,29 @@
 
 #include "ns3/double.h"
 #include "ns3/uinteger.h"
+#include "ns3/log.h"
 
 #define Min(a,b) ((a<b)?a:b)
 #define Max(a,b) ((a>b)?a:b)
 
+NS_LOG_COMPONENT_DEFINE ("ns3::AarfWifiManager");
+
 namespace ns3 {
+
+struct AarfWifiRemoteStation : public WifiRemoteStation
+{
+  uint32_t m_timer;
+  uint32_t m_success;
+  uint32_t m_failed;
+  bool m_recovery;
+  uint32_t m_retry;
+  
+  uint32_t m_timerTimeout;
+  uint32_t m_successThreshold;
+
+  uint32_t m_rate;
+};
+
 
 NS_OBJECT_ENSURE_REGISTERED (AarfWifiManager);
 
@@ -34,7 +52,7 @@ TypeId
 AarfWifiManager::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::AarfWifiManager")
-    .SetParent<ArfWifiManager> ()
+    .SetParent<WifiRemoteStationManager> ()
     .AddConstructor<AarfWifiManager> ()
     .AddAttribute ("SuccessK", "Multiplication factor for the success threshold in the AARF algorithm.",
                    DoubleValue (2.0),
@@ -68,44 +86,139 @@ AarfWifiManager::AarfWifiManager ()
 {}
 AarfWifiManager::~AarfWifiManager ()
 {}
+
 WifiRemoteStation *
-AarfWifiManager::CreateStation (void)
+AarfWifiManager::DoCreateStation (void) const
 {
-  return new AarfWifiRemoteStation (this);
-}
+  AarfWifiRemoteStation *station = new AarfWifiRemoteStation ();
 
+  station->m_successThreshold = m_minSuccessThreshold;
+  station->m_timerTimeout = m_minTimerThreshold;
+  station->m_rate = 0;
+  station->m_success = 0;
+  station->m_failed = 0;
+  station->m_recovery = false;
+  station->m_retry = 0;
+  station->m_timer = 0;
 
-
-
-AarfWifiRemoteStation::AarfWifiRemoteStation (Ptr<AarfWifiManager> manager)
-  : ArfWifiRemoteStation (manager),
-    m_manager (manager)
-{}
-
-
-AarfWifiRemoteStation::~AarfWifiRemoteStation ()
-{}
-
-Ptr<WifiRemoteStationManager> 
-AarfWifiRemoteStation::GetManager (void) const
-{
-  return m_manager;
+  return station;
 }
 
 void 
-AarfWifiRemoteStation::ReportRecoveryFailure (void)
+AarfWifiManager::DoReportRtsFailed (WifiRemoteStation *station)
+{}
+/**
+ * It is important to realize that "recovery" mode starts after failure of
+ * the first transmission after a rate increase and ends at the first successful
+ * transmission. Specifically, recovery mode transcends retransmissions boundaries.
+ * Fundamentally, ARF handles each data transmission independently, whether it
+ * is the initial transmission of a packet or the retransmission of a packet.
+ * The fundamental reason for this is that there is a backoff between each data
+ * transmission, be it an initial transmission or a retransmission.
+ */
+void 
+AarfWifiManager::DoReportDataFailed (WifiRemoteStation *st)
 {
-  SetSuccessThreshold ((int)(Min (GetSuccessThreshold () * m_manager->m_successK,
-                                  m_manager->m_maxSuccessThreshold)));
-  SetTimerTimeout ((int)(Max (GetMinTimerTimeout (),
-                              GetSuccessThreshold () * m_manager->m_timerK)));
+  AarfWifiRemoteStation *station = (AarfWifiRemoteStation *)st;
+  station->m_timer++;
+  station->m_failed++;
+  station->m_retry++;
+  station->m_success = 0;
+
+  if (station->m_recovery) 
+    {
+      NS_ASSERT (station->m_retry >= 1);
+      if (station->m_retry == 1)
+        {
+          // need recovery fallback
+          station->m_successThreshold = (int)(Min (station->m_successThreshold * m_successK,
+                                                   m_maxSuccessThreshold));
+          station->m_timerTimeout = (int)(Max (station->m_timerTimeout * m_timerK,
+                                               m_minSuccessThreshold));
+          if (station->m_rate != 0)
+            {
+              station->m_rate--;
+            }
+        }
+      station->m_timer = 0;
+    } 
+  else 
+    {
+      NS_ASSERT (station->m_retry >= 1);
+      if (((station->m_retry - 1) % 2) == 1)
+        {
+          // need normal fallback
+          station->m_timerTimeout = m_minTimerThreshold;
+          station->m_successThreshold = m_minSuccessThreshold;
+          if (station->m_rate != 0)
+            {
+              station->m_rate--;
+            }
+        }
+      if (station->m_retry >= 2) 
+        {
+          station->m_timer = 0;
+        }
+    }
+}
+void 
+AarfWifiManager::DoReportRxOk (WifiRemoteStation *station,
+                              double rxSnr, WifiMode txMode)
+{}
+void 
+AarfWifiManager::DoReportRtsOk (WifiRemoteStation *station,
+                                double ctsSnr, WifiMode ctsMode, double rtsSnr)
+{
+  NS_LOG_DEBUG ("station=" << station << " rts ok");
+}
+void 
+AarfWifiManager::DoReportDataOk (WifiRemoteStation *st,
+                                 double ackSnr, WifiMode ackMode, double dataSnr)
+{
+  AarfWifiRemoteStation *station = (AarfWifiRemoteStation *) st;
+  station->m_timer++;
+  station->m_success++;
+  station->m_failed = 0;
+  station->m_recovery = false;
+  station->m_retry = 0;
+  NS_LOG_DEBUG ("station=" << station << " data ok success=" << station->m_success << ", timer=" << station->m_timer);
+  if ((station->m_success == station->m_successThreshold ||
+       station->m_timer == station->m_timerTimeout) &&
+      (station->m_rate < (GetNSupported (station) - 1))) 
+    {
+      NS_LOG_DEBUG ("station="<<station<<" inc rate");
+      station->m_rate++;
+      station->m_timer = 0;
+      station->m_success = 0;
+      station->m_recovery = true;
+    }
+}
+void 
+AarfWifiManager::DoReportFinalRtsFailed (WifiRemoteStation *station)
+{}
+void 
+AarfWifiManager::DoReportFinalDataFailed (WifiRemoteStation *station)
+{}
+
+WifiMode
+AarfWifiManager::DoGetDataMode (WifiRemoteStation *st, uint32_t size)
+{
+  AarfWifiRemoteStation *station = (AarfWifiRemoteStation *) st;
+  return GetSupported (station, station->m_rate);
+}
+WifiMode
+AarfWifiManager::DoGetRtsMode (WifiRemoteStation *st)
+{
+  // XXX: we could/should implement the Aarf algorithm for
+  // RTS only by picking a single rate within the BasicRateSet.
+  AarfWifiRemoteStation *station = (AarfWifiRemoteStation *) st;
+  return GetSupported (station, 0);
 }
 
-void 
-AarfWifiRemoteStation::ReportFailure (void)
+bool 
+AarfWifiManager::IsLowLatency (void) const
 {
-  SetTimerTimeout (GetMinTimerTimeout ());
-  SetSuccessThreshold (GetMinSuccessThreshold ());
+  return true;
 }
 
 } // namespace ns3

@@ -32,34 +32,34 @@ namespace ns3 {
  * A Practical Approach</i>, by M. Lacage, M.H. Manshaei, and 
  * T. Turletti.
  */
-class AarfWifiManager : public ArfWifiManager 
+class AarfWifiManager : public WifiRemoteStationManager 
 {
 public:
   static TypeId GetTypeId (void);
   AarfWifiManager ();
   virtual ~AarfWifiManager ();
 private:
-  friend class AarfWifiRemoteStation;
-  virtual class WifiRemoteStation *CreateStation (void);
+  // overriden from base class
+  virtual class WifiRemoteStation *DoCreateStation (void) const;
+  virtual void DoReportRxOk (WifiRemoteStation *station, 
+                             double rxSnr, WifiMode txMode);
+  virtual void DoReportRtsFailed (WifiRemoteStation *station);
+  virtual void DoReportDataFailed (WifiRemoteStation *station);
+  virtual void DoReportRtsOk (WifiRemoteStation *station,
+                              double ctsSnr, WifiMode ctsMode, double rtsSnr);
+  virtual void DoReportDataOk (WifiRemoteStation *station,
+                               double ackSnr, WifiMode ackMode, double dataSnr);
+  virtual void DoReportFinalRtsFailed (WifiRemoteStation *station);
+  virtual void DoReportFinalDataFailed (WifiRemoteStation *station);
+  virtual WifiMode DoGetDataMode (WifiRemoteStation *station, uint32_t size);
+  virtual WifiMode DoGetRtsMode (WifiRemoteStation *station);
+  virtual bool IsLowLatency (void) const;
+
   uint32_t m_minTimerThreshold;
   uint32_t m_minSuccessThreshold;
   double m_successK;
   uint32_t m_maxSuccessThreshold;
   double m_timerK;
-};
-
-class AarfWifiRemoteStation : public ArfWifiRemoteStation
-{
-public:
-  AarfWifiRemoteStation (Ptr<AarfWifiManager> stations);
-  virtual ~AarfWifiRemoteStation ();
-
-private:
-  virtual void ReportRecoveryFailure (void);
-  virtual void ReportFailure (void);
-  virtual Ptr<WifiRemoteStationManager> GetManager (void) const;
-
-  Ptr<AarfWifiManager> m_manager;
 };
 
 } // namespace ns3

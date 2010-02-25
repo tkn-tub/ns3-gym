@@ -141,14 +141,13 @@ private:
 
   void RestartAccessIfNeeded (void);
   void StartAccessIfNeeded (void);
-  bool NeedRts (Ptr<const Packet> packet);
+  bool NeedRts (Ptr<const Packet> packet, const WifiMacHeader *header);
   bool NeedRtsRetransmission (void);
   bool NeedDataRetransmission (void);
   bool NeedFragmentation (void);
   uint32_t GetNextFragmentSize (void);
   uint32_t GetFragmentSize (void);
   uint32_t GetFragmentOffset (void);
-  WifiRemoteStation *GetStation (Mac48Address to) const;
   bool IsLastFragment (void);
   void NextFragment (void);
   Ptr<Packet> GetFragmentPacket (WifiMacHeader *hdr);

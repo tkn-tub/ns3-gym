@@ -133,7 +133,6 @@ public:
   uint32_t GetNextFragmentSize (void);
   uint32_t GetFragmentSize (void);
   uint32_t GetFragmentOffset (void);
-  WifiRemoteStation *GetStation (Mac48Address to) const;
   bool IsLastFragment (void) const;
   void NextFragment (void);
   Ptr<Packet> GetFragmentPacket (WifiMacHeader *hdr);
