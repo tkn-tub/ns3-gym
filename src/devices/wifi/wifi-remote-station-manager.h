@@ -399,7 +399,7 @@ private:
    * \attention Calling this method twice gives different results,
    * because it resets time of last update.
    */
-  double CalculateAveragingCoeffitient ();
+  double CalculateAveragingCoefficient ();
   ///averaging coefficient depends on the memory time
   Time m_memoryTime;
   ///when last update has occured

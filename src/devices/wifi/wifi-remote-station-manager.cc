@@ -740,7 +740,7 @@ WifiRemoteStationInfo::WifiRemoteStationInfo () :
 {}
 
 double
-WifiRemoteStationInfo::CalculateAveragingCoeffitient ()
+WifiRemoteStationInfo::CalculateAveragingCoefficient ()
 {
   double retval = exp((double)
       (m_lastUpdate.GetMicroSeconds () - Simulator::Now ().GetMicroSeconds()) / (double)m_memoryTime.GetMicroSeconds ()
