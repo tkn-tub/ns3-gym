@@ -416,10 +416,10 @@ def register_Ns3AsciiTraceHelper_methods(root_module, cls):
     return
 
 def register_Ns3AsciiTraceHelperForDevice_methods(root_module, cls):
-    ## trace-helper.h: ns3::AsciiTraceHelperForDevice::AsciiTraceHelperForDevice() [constructor]
-    cls.add_constructor([])
     ## trace-helper.h: ns3::AsciiTraceHelperForDevice::AsciiTraceHelperForDevice(ns3::AsciiTraceHelperForDevice const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::AsciiTraceHelperForDevice const &', 'arg0')])
+    ## trace-helper.h: ns3::AsciiTraceHelperForDevice::AsciiTraceHelperForDevice() [constructor]
+    cls.add_constructor([])
     ## trace-helper.h: void ns3::AsciiTraceHelperForDevice::EnableAscii(std::string prefix, ns3::Ptr<ns3::NetDevice> nd) [member function]
     cls.add_method('EnableAscii', 
                    'void', 
@@ -476,10 +476,10 @@ def register_Ns3AsciiTraceHelperForDevice_methods(root_module, cls):
     return
 
 def register_Ns3AsciiTraceHelperForIpv4_methods(root_module, cls):
-    ## trace-helper.h: ns3::AsciiTraceHelperForIpv4::AsciiTraceHelperForIpv4() [constructor]
-    cls.add_constructor([])
     ## trace-helper.h: ns3::AsciiTraceHelperForIpv4::AsciiTraceHelperForIpv4(ns3::AsciiTraceHelperForIpv4 const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::AsciiTraceHelperForIpv4 const &', 'arg0')])
+    ## trace-helper.h: ns3::AsciiTraceHelperForIpv4::AsciiTraceHelperForIpv4() [constructor]
+    cls.add_constructor([])
     ## trace-helper.h: void ns3::AsciiTraceHelperForIpv4::EnableAsciiIpv4(std::string prefix, ns3::Ptr<ns3::Ipv4> ipv4, uint32_t interface) [member function]
     cls.add_method('EnableAsciiIpv4', 
                    'void', 
@@ -536,10 +536,10 @@ def register_Ns3AsciiTraceHelperForIpv4_methods(root_module, cls):
     return
 
 def register_Ns3AsciiTraceHelperForIpv6_methods(root_module, cls):
-    ## trace-helper.h: ns3::AsciiTraceHelperForIpv6::AsciiTraceHelperForIpv6() [constructor]
-    cls.add_constructor([])
     ## trace-helper.h: ns3::AsciiTraceHelperForIpv6::AsciiTraceHelperForIpv6(ns3::AsciiTraceHelperForIpv6 const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::AsciiTraceHelperForIpv6 const &', 'arg0')])
+    ## trace-helper.h: ns3::AsciiTraceHelperForIpv6::AsciiTraceHelperForIpv6() [constructor]
+    cls.add_constructor([])
     ## trace-helper.h: void ns3::AsciiTraceHelperForIpv6::EnableAsciiIpv6(std::string prefix, ns3::Ptr<ns3::Ipv6> ipv6, uint32_t interface) [member function]
     cls.add_method('EnableAsciiIpv6', 
                    'void', 
@@ -1351,10 +1351,10 @@ def register_Ns3PcapHelper_methods(root_module, cls):
     return
 
 def register_Ns3PcapHelperForDevice_methods(root_module, cls):
-    ## trace-helper.h: ns3::PcapHelperForDevice::PcapHelperForDevice() [constructor]
-    cls.add_constructor([])
     ## trace-helper.h: ns3::PcapHelperForDevice::PcapHelperForDevice(ns3::PcapHelperForDevice const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::PcapHelperForDevice const &', 'arg0')])
+    ## trace-helper.h: ns3::PcapHelperForDevice::PcapHelperForDevice() [constructor]
+    cls.add_constructor([])
     ## trace-helper.h: void ns3::PcapHelperForDevice::EnablePcap(std::string prefix, ns3::Ptr<ns3::NetDevice> nd, bool promiscuous=false) [member function]
     cls.add_method('EnablePcap', 
                    'void', 
@@ -1387,10 +1387,10 @@ def register_Ns3PcapHelperForDevice_methods(root_module, cls):
     return
 
 def register_Ns3PcapHelperForIpv4_methods(root_module, cls):
-    ## trace-helper.h: ns3::PcapHelperForIpv4::PcapHelperForIpv4() [constructor]
-    cls.add_constructor([])
     ## trace-helper.h: ns3::PcapHelperForIpv4::PcapHelperForIpv4(ns3::PcapHelperForIpv4 const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::PcapHelperForIpv4 const &', 'arg0')])
+    ## trace-helper.h: ns3::PcapHelperForIpv4::PcapHelperForIpv4() [constructor]
+    cls.add_constructor([])
     ## trace-helper.h: void ns3::PcapHelperForIpv4::EnablePcapIpv4(std::string prefix, ns3::Ptr<ns3::Ipv4> ipv4, uint32_t interface) [member function]
     cls.add_method('EnablePcapIpv4', 
                    'void', 
@@ -1423,10 +1423,10 @@ def register_Ns3PcapHelperForIpv4_methods(root_module, cls):
     return
 
 def register_Ns3PcapHelperForIpv6_methods(root_module, cls):
-    ## trace-helper.h: ns3::PcapHelperForIpv6::PcapHelperForIpv6() [constructor]
-    cls.add_constructor([])
     ## trace-helper.h: ns3::PcapHelperForIpv6::PcapHelperForIpv6(ns3::PcapHelperForIpv6 const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::PcapHelperForIpv6 const &', 'arg0')])
+    ## trace-helper.h: ns3::PcapHelperForIpv6::PcapHelperForIpv6() [constructor]
+    cls.add_constructor([])
     ## trace-helper.h: void ns3::PcapHelperForIpv6::EnablePcapIpv6(std::string prefix, ns3::Ptr<ns3::Ipv6> ipv6, uint32_t interface) [member function]
     cls.add_method('EnablePcapIpv6', 
                    'void', 
