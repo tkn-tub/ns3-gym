@@ -25,11 +25,11 @@
 #include "ns3/packet.h"
 #include "ns3/traced-callback.h"
 #include "ns3/mac48-address.h"
-#include "wifi-remote-station-manager.h"
 #include <string>
 
 namespace ns3 {
 
+class WifiRemoteStationManager;
 class WifiChannel;
 class WifiPhy;
 class WifiMac;

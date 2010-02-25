@@ -577,6 +577,13 @@ WifiRemoteStationManager::GetAckMode (Mac48Address address, WifiMode dataMode)
   return GetControlAnswerMode (address, dataMode);
 }
 
+WifiRemoteStationInfo 
+WifiRemoteStationManager::GetInfo (Mac48Address address)
+{
+  struct WifiRemoteStationState *state = LookupState (address);
+  return state->m_info;
+}
+
 WifiRemoteStationState *
 WifiRemoteStationManager::LookupState (Mac48Address address) const
 {
@@ -752,14 +759,14 @@ WifiRemoteStationInfo::CalculateAveragingCoefficient ()
 void
 WifiRemoteStationInfo::NotifyTxSuccess (uint32_t retryCounter)
 {
-  double coefficient = CalculateAveragingCoeffitient ();
+  double coefficient = CalculateAveragingCoefficient ();
   m_failAvg = (double)retryCounter / (1 + (double) retryCounter) * (1.0 - coefficient) + coefficient * m_failAvg;
 }
 
 void
 WifiRemoteStationInfo::NotifyTxFailed ()
 {
-  double coefficient = CalculateAveragingCoeffitient ();
+  double coefficient = CalculateAveragingCoefficient ();
   m_failAvg = (1.0 - coefficient) + coefficient * m_failAvg;
 }
 
