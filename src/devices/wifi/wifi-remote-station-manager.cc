@@ -599,6 +599,7 @@ WifiRemoteStationManager::LookupState (Mac48Address address) const
   state->m_state = WifiRemoteStationState::BRAND_NEW;
   state->m_address = address;
   state->m_modes.push_back (GetDefaultMode ());
+  const_cast<WifiRemoteStationManager *> (this)->m_states.push_back (state);
   return state;
 }
 WifiRemoteStation *
