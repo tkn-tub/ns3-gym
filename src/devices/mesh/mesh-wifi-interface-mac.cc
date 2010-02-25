@@ -196,6 +196,11 @@ MeshWifiInterfaceMac::SetWifiPhy (Ptr<WifiPhy> phy)
   m_dcfManager->SetupPhyListener (phy);
   m_low->SetPhy (phy);
 }
+Ptr<WifiPhy>
+MeshWifiInterfaceMac::GetWifiPhy () const
+{
+  return m_phy;
+}
 void
 MeshWifiInterfaceMac::SetWifiRemoteStationManager (Ptr<WifiRemoteStationManager> stationManager)
 {

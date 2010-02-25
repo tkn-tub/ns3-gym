@@ -26,6 +26,7 @@
 #include "ns3/traced-callback.h"
 #include "ns3/packet.h"
 #include "ns3/object.h"
+#include "ns3/nstime.h"
 #include "wifi-mode.h"
 
 namespace ns3 {
@@ -233,11 +234,8 @@ public:
    *          handshake.
    */
   WifiMode GetAckMode (Mac48Address address, WifiMode dataMode);
-  /**
-   * \return exponentially weighted average SLRC, this is used by Airtime link metric of 802.11s
-   */
-  double GetAvgSlrc (Mac48Address address) const;
-
+  /// Find a remote station by its remote address and TID taken from MAC header
+  WifiRemoteStation *Lookup (Mac48Address address, const WifiMacHeader *header) const;
 protected:
   virtual void DoDispose (void);
   // for convenience
@@ -336,7 +334,6 @@ private:
                              double rxSnr, WifiMode txMode) = 0;
 
   WifiRemoteStationState *LookupState (Mac48Address address) const;
-  WifiRemoteStation *Lookup (Mac48Address address, const WifiMacHeader *header) const;
   WifiRemoteStation *Lookup (Mac48Address address, uint8_t tid) const;
   WifiMode GetControlAnswerMode (Mac48Address address, WifiMode reqMode);
   uint32_t GetNFragments (Ptr<const Packet> packet);
@@ -375,6 +372,41 @@ private:
   TracedCallback<Mac48Address> m_macTxFinalDataFailed;
 
 };
+/**
+ * \brief Tid independent remote station statistics
+ *
+ * Structure is similar to struct sta_info in Linux kernel (see
+ * net/mac80211/sta_info.h)
+ */
+class WifiRemoteStationInfo
+{
+public:
+  WifiRemoteStationInfo ();
+  /**
+   * \brief Updates average frame error rate when data or RTS
+   * was transmitted successfully.
+   * \param retryCounter is slrc or ssrc value at the moment of
+   * success transmission.
+   */
+  void NotifyTxSuccess (uint32_t retryCounter);
+  /// Updates average frame error rate when final data or RTS has failed.
+  void NotifyTxFailed ();
+  /// Returns frame error rate (probability that frame is corrupted due to transmission error).
+  double GetFrameErrorRate () const;
+private:
+  /**
+   * \brief Calculate averaging coefficient for frame error rate. Depends on time of the last update.
+   * \attention Calling this method twice gives different results,
+   * because it resets time of last update.
+   */
+  double CalculateAveragingCoeffitient ();
+  ///averaging coefficient depends on the memory time
+  Time m_memoryTime;
+  ///when last update has occured
+  Time m_lastUpdate;
+  /// moving percentage of failed frames
+  double m_failAvg;
+};
 
 struct WifiRemoteStationState
 {
@@ -388,6 +420,7 @@ struct WifiRemoteStationState
     } m_state;
   SupportedModes m_modes;
   Mac48Address m_address;
+  WifiRemoteStationInfo m_info;
 };
 
 /**
@@ -403,7 +436,6 @@ struct WifiRemoteStation
   struct WifiRemoteStationState *m_state;
   uint32_t m_ssrc;
   uint32_t m_slrc;
-  double m_avgSlrc;
   uint8_t m_tid;
 };
 

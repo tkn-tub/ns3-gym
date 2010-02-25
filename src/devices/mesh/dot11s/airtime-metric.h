@@ -44,8 +44,9 @@ class AirtimeLinkMetricCalculator : public Object
 public:
   AirtimeLinkMetricCalculator ();
   static TypeId GetTypeId ();
-  void SetPhyStandard (WifiPhyStandard standard);
   uint32_t CalculateMetric (Mac48Address peerAddress, Ptr<MeshWifiInterfaceMac> mac);
+  void SetTestLength (uint16_t testLength);
+  void SetHeaderTid (uint8_t tid);
 private:
   /// Overhead expressed in nanoseconds:DIFS + SIFS + 2 * PREAMBLE + ACK
   uint32_t m_overheadNanosec;
@@ -55,6 +56,8 @@ private:
   uint16_t m_headerLength;
   /// meshHeader length (minimum 6 octets)
   uint16_t m_meshHeaderLength;
+  Ptr<Packet> m_testFrame;
+  WifiMacHeader m_testHeader;
 };
 } //namespace dot11s
 } //namespace ns3

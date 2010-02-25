@@ -34,15 +34,15 @@ AirtimeLinkMetricCalculator::GetTypeId ()
                     "Rate should be estimated using test length.",
                      UintegerValue (1024),
                      MakeUintegerAccessor (
-                         &AirtimeLinkMetricCalculator::m_testLength),
+                         &AirtimeLinkMetricCalculator::SetTestLength),
                      MakeUintegerChecker<uint16_t> (1)
                   )
-    .AddAttribute ( "Dot11MacHeaderLength",
-                    "Length of the 802.11 header",
-                    UintegerValue (36),
+    .AddAttribute ( "Dot11MetricTid",
+                    "TID used to calculate metric (data rate)",
+                    UintegerValue (0),
                     MakeUintegerAccessor (
-                        &AirtimeLinkMetricCalculator::m_headerLength),
-                    MakeUintegerChecker<uint16_t> (0)
+                        &AirtimeLinkMetricCalculator::SetHeaderTid),
+                    MakeUintegerChecker<uint8_t> (0)
                   )
     .AddAttribute ( "Dot11sMeshHeaderLength",
                     "Length of the mesh header",
@@ -56,36 +56,26 @@ AirtimeLinkMetricCalculator::GetTypeId ()
 }
 AirtimeLinkMetricCalculator::AirtimeLinkMetricCalculator () :
   m_overheadNanosec (0)
-{}
-void
-AirtimeLinkMetricCalculator::SetPhyStandard (WifiPhyStandard standard)
 {
-  switch (standard) {
-  case WIFI_PHY_STANDARD_80211a:
-  case WIFI_PHY_STANDARD_holland:
-    // 2 * PREAMBLE + DIFS + SIFS + ACK
-    m_overheadNanosec = (2 * 16 + 34 + 16 + 44) * 1000;
-    break;
-  case WIFI_PHY_STANDARD_80211b:
-    m_overheadNanosec = (2 * 144 + 50 + 16 + 304) * 1000;
-    break;
-  case WIFI_PHY_STANDARD_80211_10Mhz: 
-    m_overheadNanosec = (2 * 32 + 58 + 32 + 88) * 1000;
-    break;
-  case WIFI_PHY_STANDARD_80211_5Mhz:
-    m_overheadNanosec = (2 * 64 + 106 + 64 + 176) * 1000;
-    break;
-  default:
-    NS_ASSERT (false);
-    break;
-  }
+}
+void
+AirtimeLinkMetricCalculator::SetHeaderTid (uint8_t tid)
+{
+  m_testHeader.SetDsFrom ();
+  m_testHeader.SetDsTo ();
+  m_testHeader.SetQosTid (tid);
+}
+void
+AirtimeLinkMetricCalculator::SetTestLength (uint16_t testLength)
+{
+  m_testFrame = Create<Packet> (testLength + 6 /*Mesh header*/ + 36/*802.11 header*/);
 }
 uint32_t
 AirtimeLinkMetricCalculator::CalculateMetric (Mac48Address peerAddress, Ptr<MeshWifiInterfaceMac> mac)
 {
   /* Airtime link metric is defined in 11B.10 of 802.11s Draft D3.0 as:
    *
-   * airtime = (O + Bt/r)* (1 + average retry counter), where
+   * airtime = (O + Bt/r) /  (1 - frame error rate), where
    * o  -- the PHY dependent channel access which includes frame headers, training sequences,
    *       access protocol frames, etc.
    * bt -- the test packet length in bits (8192 by default),
@@ -93,22 +83,23 @@ AirtimeLinkMetricCalculator::CalculateMetric (Mac48Address peerAddress, Ptr<Mesh
    *
    * Final result is expressed in units of 0.01 Time Unit = 10.24 us (as required by 802.11s draft)
    */
-
-  //const double sec2ns = 1e9; // seconds -> nanoseconds conversion factor
-  //const double ns2tu = 10240; // nanoseconds -> 0.01 TU conversion factor
-
-  //  WifiRemoteStation * station = mac->GetStationManager ()->Lookup (peerAddress);
-  //NS_ASSERT (station != 0);
-  //NS_ASSERT (m_overheadNanosec != 0);
-  //Ptr<Packet> test_frame = Create<Packet> (m_testLength + m_meshHeaderLength);
-  //uint32_t rate = station->GetDataMode (peerAddress, test_frame, m_testLength + m_meshHeaderLength).GetDataRate ();
-  //uint32_t payload_nanosec = (uint32_t) ((double) ((m_testLength + m_meshHeaderLength) * 8 /*octets -> bits*/) * sec2ns / ((double) rate));
-  //uint32_t header_nanosec = (uint32_t) ((double) (m_headerLength * 8 /*octets -> bits*/* sec2ns)
-  //                                      / ((double) mac->GetStationManager () -> GetBasicMode (0).GetDataRate ()));
-  //uint32_t metric = (uint32_t) (((double) (payload_nanosec + header_nanosec + m_overheadNanosec)) / ns2tu
-  //                       * (station->GetAvgSlrc () + 1));
-  //return metric;
-  return 0;
+  NS_ASSERT (!peerAddress.IsGroup ());
+  //obtain current rate:
+  WifiMode mode = mac->GetStationManager ()->GetDataMode (peerAddress, &m_testHeader, m_testFrame, m_testFrame->GetSize ());
+  //obtain frame error rate:
+  double failAvg = mac->GetStationManager ()->Lookup (peerAddress, &m_testHeader)->m_state->m_info.GetFrameErrorRate ();
+  NS_ASSERT (failAvg < 1.0);
+  //calculate metric
+  uint32_t metric = (uint32_t)((double)(/*Overhead + payload*/
+      mac->GetPifs () + mac->GetSlot () + mac->GetEifsNoDifs () + //DIFS + SIFS + AckTxTime = PIFS + SLOT + EifsNoDifs
+      mac->GetWifiPhy () ->CalculateTxDuration (m_testFrame->GetSize (), mode, WIFI_PREAMBLE_LONG)
+      ).GetMicroSeconds () / (10.24 * (1.0 - failAvg)));
+  std::cout << "pure overhead is " << (uint32_t)((double)(/*Overhead + payload*/
+      mac->GetPifs () + mac->GetSlot () + mac->GetEifsNoDifs ()
+      ).GetMicroSeconds ()/10.24) << "\n";
+  std::cout << "mode is:" << mode.GetDataRate () << "\n";
+  std::cout << "Metric is :" << metric << "\n";
+  return metric;
 }
 } //namespace dot11s
 } //namespace ns3

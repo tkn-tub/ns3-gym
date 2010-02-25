@@ -19,6 +19,7 @@
  */
 
 #include "wifi-remote-station-manager.h"
+#include "ns3/simulator.h"
 #include "ns3/assert.h"
 #include "ns3/log.h"
 #include "ns3/tag.h"
@@ -177,10 +178,6 @@ WifiRemoteStationManager::GetTypeId (void)
     .AddTraceSource ("MacTxFinalDataFailed", 
                      "The transmission of a data packet has exceeded the maximum number of attempts",
                      MakeTraceSourceAccessor (&WifiRemoteStationManager::m_macTxFinalDataFailed))
-    .AddAttribute("AvgSlrcCoefficient", "The weigh of the slrc count in the slrc avg calculation",
-                  DoubleValue (0.9),
-                  MakeDoubleAccessor (&WifiRemoteStationManager::m_avgSlrcCoefficient),
-                  MakeDoubleChecker<double> ())
     ;
   return tid;
 }
@@ -397,6 +394,7 @@ WifiRemoteStationManager::ReportRtsOk (Mac48Address address, const WifiMacHeader
 {
   NS_ASSERT (!address.IsGroup ());
   WifiRemoteStation *station = Lookup (address, header);
+  station->m_state->m_info.NotifyTxSuccess (station->m_ssrc);
   station->m_ssrc = 0;
   DoReportRtsOk (station, ctsSnr, ctsMode, rtsSnr);
 }
@@ -406,7 +404,7 @@ WifiRemoteStationManager::ReportDataOk (Mac48Address address, const WifiMacHeade
 {
   NS_ASSERT (!address.IsGroup ());
   WifiRemoteStation *station = Lookup (address, header);
-  station->m_avgSlrc = station->m_avgSlrc * m_avgSlrcCoefficient + (double) station->m_slrc * (1 - m_avgSlrcCoefficient);
+  station->m_state->m_info.NotifyTxSuccess (station->m_slrc);
   station->m_slrc = 0;
   DoReportDataOk (station, ackSnr, ackMode, dataSnr);
 }
@@ -415,6 +413,7 @@ WifiRemoteStationManager::ReportFinalRtsFailed (Mac48Address address, const Wifi
 {
   NS_ASSERT (!address.IsGroup ());
   WifiRemoteStation *station = Lookup (address, header);
+  station->m_state->m_info.NotifyTxFailed ();
   station->m_ssrc = 0;
   m_macTxFinalRtsFailed (address);
   DoReportFinalRtsFailed (station);
@@ -424,6 +423,7 @@ WifiRemoteStationManager::ReportFinalDataFailed (Mac48Address address, const Wif
 {
   NS_ASSERT (!address.IsGroup ());
   WifiRemoteStation *station = Lookup (address, header);
+  station->m_state->m_info.NotifyTxFailed ();
   station->m_slrc = 0;
   m_macTxFinalDataFailed (address);
   DoReportFinalDataFailed (station);
@@ -576,14 +576,6 @@ WifiRemoteStationManager::GetAckMode (Mac48Address address, WifiMode dataMode)
   NS_ASSERT (!address.IsGroup ());
   return GetControlAnswerMode (address, dataMode);
 }
-double
-WifiRemoteStationManager::GetAvgSlrc (Mac48Address address) const
-{
-  NS_FATAL_ERROR ("XXX");
-  NS_ASSERT (!address.IsGroup ());
-  WifiRemoteStation *station = Lookup (address, (uint8_t)0);
-  return station->m_avgSlrc;
-}
 
 WifiRemoteStationState *
 WifiRemoteStationManager::LookupState (Mac48Address address) const
@@ -633,7 +625,6 @@ WifiRemoteStationManager::Lookup (Mac48Address address, uint8_t tid) const
   station->m_state = state;
   station->m_ssrc = 0;
   station->m_slrc = 0;
-  station->m_avgSlrc = 0;
   // XXX
   const_cast<WifiRemoteStationManager *> (this)->m_stations.push_back (station);
   return station;
@@ -741,5 +732,40 @@ WifiRemoteStationManager::GetNSupported (const WifiRemoteStation *station) const
   return station->m_state->m_modes.size ();
 }
 
+//WifiRemoteStationInfo constructor
+WifiRemoteStationInfo::WifiRemoteStationInfo () :
+  m_memoryTime (Seconds (1.0)),
+  m_lastUpdate (Seconds (0.0)),
+  m_failAvg (0.0)
+{}
 
+double
+WifiRemoteStationInfo::CalculateAveragingCoeffitient ()
+{
+  double retval = exp((double)
+      (m_lastUpdate.GetMicroSeconds () - Simulator::Now ().GetMicroSeconds()) / (double)m_memoryTime.GetMicroSeconds ()
+      );
+  m_lastUpdate = Simulator::Now ();
+  return retval;
+}
+
+void
+WifiRemoteStationInfo::NotifyTxSuccess (uint32_t retryCounter)
+{
+  double coefficient = CalculateAveragingCoeffitient ();
+  m_failAvg = (double)retryCounter / (1 + (double) retryCounter) * (1.0 - coefficient) + coefficient * m_failAvg;
+}
+
+void
+WifiRemoteStationInfo::NotifyTxFailed ()
+{
+  double coefficient = CalculateAveragingCoeffitient ();
+  m_failAvg = (1.0 - coefficient) + coefficient * m_failAvg;
+}
+
+double
+WifiRemoteStationInfo::GetFrameErrorRate () const
+{
+  return m_failAvg;
+}
 } // namespace ns3
