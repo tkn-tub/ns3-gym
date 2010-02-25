@@ -453,40 +453,77 @@ FileHeaderTestCase::DoRun (void)
   uint32_t val32;
   uint16_t val16;
 
+  //
+  // Because the regression tests require that pcap file output be compared 
+  // byte-by-byte, we had to decide on a single format for written pcap files.
+  // This was little endian.  So we have to do something special with big-
+  // endian machines here.
+  //
+  // When a big endian machine writes a pcap file, it is forced into swap
+  // mode and actually writes little endian files.  This is automagically
+  // fixed up when using a PcapFile to read the values, but when a big-
+  // endian machine reads these values directly, they will be swapped.
+  //
+  // We can remove this nonsense when we get rid of the pcap-file-comparison
+  // regression tests.
+  //
+  // So, determine the endian-ness of the running system, and if we're on
+  // a big-endian machine, swap all of the results below before checking.
+  //
+  union {
+    uint32_t a;
+    uint8_t  b[4];
+  } u;
+
+  u.a = 1;
+  bool bigEndian = u.b[3];
+
   size_t result = fread (&val32, sizeof(val32), 1, p);
   NS_TEST_ASSERT_MSG_EQ (result, 1, "Unable to fread() magic number");
+  if (bigEndian) val32 = Swap (val32);
   NS_TEST_ASSERT_MSG_EQ (val32, 0xa1b2c3d4, "Magic number written incorrectly");
 
   result = fread (&val16, sizeof(val16), 1, p);
   NS_TEST_ASSERT_MSG_EQ (result, 1, "Unable to fread() version major");
+  if (bigEndian) val16 = Swap (val16);
   NS_TEST_ASSERT_MSG_EQ (val16, 2, "Version major written incorrectly");
 
   result = fread (&val16, sizeof(val16), 1, p);
   NS_TEST_ASSERT_MSG_EQ (result, 1, "Unable to fread() version minor");
+  if (bigEndian) val16 = Swap (val16);
   NS_TEST_ASSERT_MSG_EQ (val16, 4, "Version minor written incorrectly");
 
   result = fread (&val32, sizeof(val32), 1, p);
   NS_TEST_ASSERT_MSG_EQ (result, 1, "Unable to fread() time zone correction");
+  if (bigEndian) val32 = Swap (val32);
   NS_TEST_ASSERT_MSG_EQ (val32, 7, "Version minor written incorrectly");
 
   result = fread (&val32, sizeof(val32), 1, p);
   NS_TEST_ASSERT_MSG_EQ (result, 1, "Unable to fread() sig figs");
+  if (bigEndian) val32 = Swap (val32);
   NS_TEST_ASSERT_MSG_EQ (val32, 0, "Sig figs written incorrectly");
 
   result = fread (&val32, sizeof(val32), 1, p);
   NS_TEST_ASSERT_MSG_EQ (result, 1, "Unable to fread() snap length");
+  if (bigEndian) val32 = Swap (val32);
   NS_TEST_ASSERT_MSG_EQ (val32, 5678, "Snap length written incorrectly");
 
   result = fread (&val32, sizeof(val32), 1, p);
   NS_TEST_ASSERT_MSG_EQ (result, 1, "Unable to fread() data link type");
+  if (bigEndian) val32 = Swap (val32);
   NS_TEST_ASSERT_MSG_EQ (val32, 1234, "Data length type written incorrectly");
 
   fclose (p);
   p = 0;
 
   //
-  // We wrote a native-endian file out correctly, now let's see if we can read
+  // We wrote a little-endian file out correctly, now let's see if we can read
   // it back in correctly.
+  //
+  // As mentioned above, when a big endian machine writes a pcap file, it is 
+  // forced into swap mode and actually writes little endian files.  This is 
+  // automagically fixed up when using a PcapFile to read the values, so we 
+  // don't have to do anything special here.
   //
   err = f.Open (m_testFilename, "r");
   NS_TEST_ASSERT_MSG_EQ (err, false, "Open (existing-initialized-file " << m_testFilename << ", \"r\") returns error");
@@ -508,7 +545,10 @@ FileHeaderTestCase::DoRun (void)
   //
   // Initialize the pcap file header, turning on swap mode manually to force
   // the pcap file header to be written out in foreign-endian form, whichever
-  // endian-ness that might be.
+  // endian-ness that might be.  Since big-endian machines are automatically 
+  // forced into swap mode, the <true> parameter to f.Init() below is actually
+  // a no-op and we're always writing foreign-endian files.  In that case, 
+  // this test case is really just a duplicate of the previous.
   //
   err = f.Init (1234, 5678, 7, true);
   NS_TEST_ASSERT_MSG_EQ (err, false, "Init (1234, 5678, 7) returns error");
@@ -554,7 +594,10 @@ FileHeaderTestCase::DoRun (void)
 
   //
   // We wrote an opposite-endian file out correctly, now let's see if we can read
-  // it back in correctly.
+  // it back in correctly.  Again, in the case of a big-endian machine, we already
+  // did this test and it is just a duplicate.  What we don't test on a big endian
+  // machine is writing out a big-endian file by default, but we can't do that 
+  // since it breaks regression testing.
   //
   err = f.Open (m_testFilename, "r");
   NS_TEST_ASSERT_MSG_EQ (err, false, "Open (existing-initialized-file " << m_testFilename << ", \"r\") returns error");
@@ -676,20 +719,49 @@ RecordHeaderTestCase::DoRun (void)
 
   uint32_t val32;
 
+  //
+  // Because the regression tests require that pcap file output be compared 
+  // byte-by-byte, we had to decide on a single format for written pcap files.
+  // This was little endian.  So we have to do something special with big-
+  // endian machines here.
+  //
+  // When a big endian machine writes a pcap file, it is forced into swap
+  // mode and actually writes little endian files.  This is automagically
+  // fixed up when using a PcapFile to read the values, but when a big-
+  // endian machine reads these values directly, they will be swapped.
+  //
+  // We can remove this nonsense when we get rid of the pcap-file-comparison
+  // regression tests.
+  //
+  // So, determine the endian-ness of the running system, and if we're on
+  // a big-endian machine, swap all of the results below before checking.
+  //
+  union {
+    uint32_t a;
+    uint8_t  b[4];
+  } u;
+
+  u.a = 1;
+  bool bigEndian = u.b[3];
+
   size_t result = fread (&val32, sizeof(val32), 1, p);
   NS_TEST_ASSERT_MSG_EQ (result, 1, "Unable to fread() seconds timestamp");
+  if (bigEndian) val32 = Swap (val32);
   NS_TEST_ASSERT_MSG_EQ (val32, 1234, "Seconds timestamp written incorrectly");
 
   result = fread (&val32, sizeof(val32), 1, p);
   NS_TEST_ASSERT_MSG_EQ (result, 1, "Unable to fread() microseconds timestamp");
+  if (bigEndian) val32 = Swap (val32);
   NS_TEST_ASSERT_MSG_EQ (val32, 5678, "Microseconds timestamp written incorrectly");
 
   result = fread (&val32, sizeof(val32), 1, p);
   NS_TEST_ASSERT_MSG_EQ (result, 1, "Unable to fread() included length");
+  if (bigEndian) val32 = Swap (val32);
   NS_TEST_ASSERT_MSG_EQ (val32, 43, "Included length written incorrectly");
 
   result = fread (&val32, sizeof(val32), 1, p);
   NS_TEST_ASSERT_MSG_EQ (result, 1, "Unable to fread() actual length");
+  if (bigEndian) val32 = Swap (val32);
   NS_TEST_ASSERT_MSG_EQ (val32, 128, "Actual length written incorrectly");
 
   //
@@ -710,7 +782,7 @@ RecordHeaderTestCase::DoRun (void)
   p = 0;
 
   //
-  // Let's see if the PcapFile object can figure out how to do the same thing
+  // Let's see if the PcapFile object can figure out how to do the same thing and
   // correctly read in a packet.
   //
   err = f.Open (m_testFilename, "r");
@@ -736,7 +808,12 @@ RecordHeaderTestCase::DoRun (void)
 
   //
   // We have to check to make sure that the pcap record header is swapped 
-  // correctly.  Open the file in write mode to clear the data.
+  // correctly.  Since big-endian machines are automatically forced into 
+  // swap mode, the <true> parameter to f.Init() below is actually
+  // a no-op and we're always writing foreign-endian files.  In that case, 
+  // this test case is really just a duplicate of the previous.
+  //
+  // Open the file in write mode to clear the data.
   //
   err = f.Open (m_testFilename, "w");
   NS_TEST_ASSERT_MSG_EQ (err, false, "Open (" << m_testFilename << ", \"w\") returns error");
