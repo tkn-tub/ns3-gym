@@ -954,6 +954,14 @@ def run_tests():
     make_library_path()
 
     #
+    # If lots of logging is enabled, we can crash Python when it tries to 
+    # save all of the text.  We just don't allow logging to be turned on when
+    # test.py runs.  If you want to see logging output from your tests, you
+    # have to run them using the test-runner directly.
+    #
+    os.environ["NS_LOG"] = ""
+
+    #
     # There are a couple of options that imply we can to exit before starting
     # up a bunch of threads and running tests.  Let's detect these cases and 
     # handle them without doing all of the hard work.
