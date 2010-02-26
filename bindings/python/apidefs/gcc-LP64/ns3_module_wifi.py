@@ -3778,6 +3778,11 @@ def register_Ns3AdhocWifiMac_methods(root_module, cls):
                    'void', 
                    [], 
                    visibility='private', is_virtual=True)
+    ## adhoc-wifi-mac.h: void ns3::AdhocWifiMac::DoStart() [member function]
+    cls.add_method('DoStart', 
+                   'void', 
+                   [], 
+                   visibility='private', is_virtual=True)
     ## adhoc-wifi-mac.h: void ns3::AdhocWifiMac::FinishConfigureStandard(ns3::WifiPhyStandard standard) [member function]
     cls.add_method('FinishConfigureStandard', 
                    'void', 
@@ -4599,6 +4604,11 @@ def register_Ns3EdcaTxopN_methods(root_module, cls):
     cls.add_method('SendDelbaFrame', 
                    'void', 
                    [param('ns3::Mac48Address', 'addr'), param('uint8_t', 'tid'), param('bool', 'byOriginator')])
+    ## edca-txop-n.h: void ns3::EdcaTxopN::DoStart() [member function]
+    cls.add_method('DoStart', 
+                   'void', 
+                   [], 
+                   visibility='private', is_virtual=True)
     return
 
 def register_Ns3ErrorRateModel_methods(root_module, cls):
@@ -5250,6 +5260,11 @@ def register_Ns3NqstaWifiMac_methods(root_module, cls):
     cls.add_method('StartActiveAssociation', 
                    'void', 
                    [])
+    ## nqsta-wifi-mac.h: void ns3::NqstaWifiMac::DoStart() [member function]
+    cls.add_method('DoStart', 
+                   'void', 
+                   [], 
+                   visibility='private', is_virtual=True)
     ## nqsta-wifi-mac.h: void ns3::NqstaWifiMac::DoDispose() [member function]
     cls.add_method('DoDispose', 
                    'void', 
@@ -5484,6 +5499,11 @@ def register_Ns3QadhocWifiMac_methods(root_module, cls):
                    is_const=True, is_virtual=True)
     ## qadhoc-wifi-mac.h: void ns3::QadhocWifiMac::DoDispose() [member function]
     cls.add_method('DoDispose', 
+                   'void', 
+                   [], 
+                   visibility='private', is_virtual=True)
+    ## qadhoc-wifi-mac.h: void ns3::QadhocWifiMac::DoStart() [member function]
+    cls.add_method('DoStart', 
                    'void', 
                    [], 
                    visibility='private', is_virtual=True)
@@ -5846,6 +5866,11 @@ def register_Ns3QstaWifiMac_methods(root_module, cls):
     cls.add_method('StartActiveAssociation', 
                    'void', 
                    [])
+    ## qsta-wifi-mac.h: void ns3::QstaWifiMac::DoStart() [member function]
+    cls.add_method('DoStart', 
+                   'void', 
+                   [], 
+                   visibility='private', is_virtual=True)
     ## qsta-wifi-mac.h: void ns3::QstaWifiMac::DoDispose() [member function]
     cls.add_method('DoDispose', 
                    'void', 
@@ -6317,6 +6342,11 @@ def register_Ns3DcaTxop_methods(root_module, cls):
     cls.add_method('Queue', 
                    'void', 
                    [param('ns3::Ptr< ns3::Packet const >', 'packet'), param('ns3::WifiMacHeader const &', 'hdr')])
+    ## dca-txop.h: void ns3::DcaTxop::DoStart() [member function]
+    cls.add_method('DoStart', 
+                   'void', 
+                   [], 
+                   visibility='private', is_virtual=True)
     ## dca-txop.h: void ns3::DcaTxop::DoDispose() [member function]
     cls.add_method('DoDispose', 
                    'void', 

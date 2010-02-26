@@ -243,7 +243,7 @@ private:
    * @param nd Net device for which you want to enable tracing.
    * @param promiscuous If true capture all possible packets available at the device.
    */
-  virtual void EnablePcapInternal (std::string prefix, Ptr<NetDevice> nd, bool promiscuous);
+  virtual void EnablePcapInternal (std::string prefix, Ptr<NetDevice> nd, bool explicitFilename, bool promiscuous);
 
   /**
    * \brief Enable ascii trace output on the indicated net device.

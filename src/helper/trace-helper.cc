@@ -412,16 +412,16 @@ AsciiTraceHelper::DefaultReceiveSinkWithContext (Ptr<OutputStreamWrapper> stream
 }
 
 void 
-PcapHelperForDevice::EnablePcap (std::string prefix, Ptr<NetDevice> nd, bool promiscuous)
+PcapHelperForDevice::EnablePcap (std::string prefix, Ptr<NetDevice> nd, bool explicitFilename, bool promiscuous)
 {
-  EnablePcapInternal (prefix, nd, promiscuous);
+  EnablePcapInternal (prefix, nd, explicitFilename, promiscuous);
 }
 
 void 
-PcapHelperForDevice::EnablePcap (std::string prefix, std::string ndName, bool promiscuous)
+PcapHelperForDevice::EnablePcap (std::string prefix, std::string ndName, bool explicitFilename, bool promiscuous)
 {
   Ptr<NetDevice> nd = Names::Find<NetDevice> (ndName);
-  EnablePcap (prefix, nd, promiscuous);
+  EnablePcap (prefix, nd, explicitFilename, promiscuous);
 }
 
 void 
@@ -430,7 +430,7 @@ PcapHelperForDevice::EnablePcap (std::string prefix, NetDeviceContainer d, bool 
   for (NetDeviceContainer::Iterator i = d.Begin (); i != d.End (); ++i)
     {
       Ptr<NetDevice> dev = *i;
-      EnablePcap (prefix, dev, promiscuous);
+      EnablePcap (prefix, dev, false, promiscuous);
     }
 }
 

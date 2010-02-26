@@ -153,9 +153,10 @@ private:
    *
    * \param prefix Filename prefix to use for pcap files.
    * \param nd Net device for which you want to enable tracing.
+   * \param explicitFilename Treat the prefix as an explicit filename if true
    * \param promiscuous If true capture all possible packets available at the device.
    */
-  virtual void EnablePcapInternal (std::string prefix, Ptr<NetDevice> nd, bool promiscuous = false);
+  virtual void EnablePcapInternal (std::string prefix, Ptr<NetDevice> nd, bool implicitFilename, bool promiscuous);
 
   /**
    * \brief Enable ascii trace output on the indicated net device.

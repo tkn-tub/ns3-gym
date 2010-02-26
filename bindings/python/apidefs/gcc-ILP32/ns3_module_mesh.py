@@ -514,6 +514,11 @@ def register_Ns3MeshWifiInterfaceMac_methods(root_module, cls):
                    'void', 
                    [], 
                    visibility='private', is_virtual=True)
+    ## mesh-wifi-interface-mac.h: void ns3::MeshWifiInterfaceMac::DoStart() [member function]
+    cls.add_method('DoStart', 
+                   'void', 
+                   [], 
+                   visibility='private', is_virtual=True)
     ## mesh-wifi-interface-mac.h: void ns3::MeshWifiInterfaceMac::ForwardUp(ns3::Ptr<ns3::Packet> packet, ns3::Mac48Address src, ns3::Mac48Address dst) [member function]
     cls.add_method('ForwardUp', 
                    'void', 

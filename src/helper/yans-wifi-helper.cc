@@ -380,7 +380,7 @@ YansWifiPhyHelper::SetPcapDataLinkType (enum SupportedPcapDataLinkTypes dlt)
 }
 
 void 
-YansWifiPhyHelper::EnablePcapInternal (std::string prefix, Ptr<NetDevice> nd, bool promiscuous)
+YansWifiPhyHelper::EnablePcapInternal (std::string prefix, Ptr<NetDevice> nd, bool explicitFilename, bool promiscuous)
 {
   //
   // All of the Pcap enable functions vector through here including the ones
@@ -398,7 +398,15 @@ YansWifiPhyHelper::EnablePcapInternal (std::string prefix, Ptr<NetDevice> nd, bo
   NS_ABORT_MSG_IF (phy == 0, "YansWifiPhyHelper::EnablePcapInternal(): Phy layer in WifiNetDevice must be set");
 
   PcapHelper pcapHelper;
-  std::string filename = pcapHelper.GetFilenameFromDevice (prefix, device);
+  std::string filename;
+  if (explicitFilename)
+    {
+      filename = prefix;
+    }
+  else
+    {
+      filename = pcapHelper.GetFilenameFromDevice (prefix, device);
+    }
 
   Ptr<PcapFileWrapper> file = pcapHelper.CreateFile (filename, "w", m_pcapDlt);
 

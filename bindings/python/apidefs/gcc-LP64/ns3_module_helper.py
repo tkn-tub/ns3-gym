@@ -1355,14 +1355,14 @@ def register_Ns3PcapHelperForDevice_methods(root_module, cls):
     cls.add_constructor([param('ns3::PcapHelperForDevice const &', 'arg0')])
     ## trace-helper.h: ns3::PcapHelperForDevice::PcapHelperForDevice() [constructor]
     cls.add_constructor([])
-    ## trace-helper.h: void ns3::PcapHelperForDevice::EnablePcap(std::string prefix, ns3::Ptr<ns3::NetDevice> nd, bool promiscuous=false) [member function]
+    ## trace-helper.h: void ns3::PcapHelperForDevice::EnablePcap(std::string prefix, ns3::Ptr<ns3::NetDevice> nd, bool explicitFilename=false, bool promiscuous=false) [member function]
     cls.add_method('EnablePcap', 
                    'void', 
-                   [param('std::string', 'prefix'), param('ns3::Ptr< ns3::NetDevice >', 'nd'), param('bool', 'promiscuous', default_value='false')])
-    ## trace-helper.h: void ns3::PcapHelperForDevice::EnablePcap(std::string prefix, std::string ndName, bool promiscuous=false) [member function]
+                   [param('std::string', 'prefix'), param('ns3::Ptr< ns3::NetDevice >', 'nd'), param('bool', 'explicitFilename', default_value='false'), param('bool', 'promiscuous', default_value='false')])
+    ## trace-helper.h: void ns3::PcapHelperForDevice::EnablePcap(std::string prefix, std::string ndName, bool explicitFilename=false, bool promiscuous=false) [member function]
     cls.add_method('EnablePcap', 
                    'void', 
-                   [param('std::string', 'prefix'), param('std::string', 'ndName'), param('bool', 'promiscuous', default_value='false')])
+                   [param('std::string', 'prefix'), param('std::string', 'ndName'), param('bool', 'explicitFilename', default_value='false'), param('bool', 'promiscuous', default_value='false')])
     ## trace-helper.h: void ns3::PcapHelperForDevice::EnablePcap(std::string prefix, ns3::NetDeviceContainer d, bool promiscuous=false) [member function]
     cls.add_method('EnablePcap', 
                    'void', 
@@ -1379,10 +1379,10 @@ def register_Ns3PcapHelperForDevice_methods(root_module, cls):
     cls.add_method('EnablePcapAll', 
                    'void', 
                    [param('std::string', 'prefix'), param('bool', 'promiscuous', default_value='false')])
-    ## trace-helper.h: void ns3::PcapHelperForDevice::EnablePcapInternal(std::string prefix, ns3::Ptr<ns3::NetDevice> nd, bool promiscuous) [member function]
+    ## trace-helper.h: void ns3::PcapHelperForDevice::EnablePcapInternal(std::string prefix, ns3::Ptr<ns3::NetDevice> nd, bool explicitFilename, bool promiscuous) [member function]
     cls.add_method('EnablePcapInternal', 
                    'void', 
-                   [param('std::string', 'prefix'), param('ns3::Ptr< ns3::NetDevice >', 'nd'), param('bool', 'promiscuous')], 
+                   [param('std::string', 'prefix'), param('ns3::Ptr< ns3::NetDevice >', 'nd'), param('bool', 'explicitFilename'), param('bool', 'promiscuous')], 
                    is_pure_virtual=True, is_virtual=True)
     return
 
@@ -1617,10 +1617,10 @@ def register_Ns3PointToPointHelper_methods(root_module, cls):
                    'void', 
                    [param('ns3::Ptr< ns3::OutputStreamWrapper >', 'stream'), param('std::string', 'prefix'), param('ns3::Ptr< ns3::NetDevice >', 'nd')], 
                    visibility='private', is_virtual=True)
-    ## point-to-point-helper.h: void ns3::PointToPointHelper::EnablePcapInternal(std::string prefix, ns3::Ptr<ns3::NetDevice> nd, bool promiscuous=false) [member function]
+    ## point-to-point-helper.h: void ns3::PointToPointHelper::EnablePcapInternal(std::string prefix, ns3::Ptr<ns3::NetDevice> nd, bool implicitFilename, bool promiscuous) [member function]
     cls.add_method('EnablePcapInternal', 
                    'void', 
-                   [param('std::string', 'prefix'), param('ns3::Ptr< ns3::NetDevice >', 'nd'), param('bool', 'promiscuous', default_value='false')], 
+                   [param('std::string', 'prefix'), param('ns3::Ptr< ns3::NetDevice >', 'nd'), param('bool', 'implicitFilename'), param('bool', 'promiscuous')], 
                    visibility='private', is_virtual=True)
     return
 
@@ -1975,10 +1975,10 @@ def register_Ns3YansWifiPhyHelper_methods(root_module, cls):
                    'void', 
                    [param('ns3::Ptr< ns3::OutputStreamWrapper >', 'stream'), param('std::string', 'prefix'), param('ns3::Ptr< ns3::NetDevice >', 'nd')], 
                    visibility='private', is_virtual=True)
-    ## yans-wifi-helper.h: void ns3::YansWifiPhyHelper::EnablePcapInternal(std::string prefix, ns3::Ptr<ns3::NetDevice> nd, bool promiscuous) [member function]
+    ## yans-wifi-helper.h: void ns3::YansWifiPhyHelper::EnablePcapInternal(std::string prefix, ns3::Ptr<ns3::NetDevice> nd, bool explicitFilename, bool promiscuous) [member function]
     cls.add_method('EnablePcapInternal', 
                    'void', 
-                   [param('std::string', 'prefix'), param('ns3::Ptr< ns3::NetDevice >', 'nd'), param('bool', 'promiscuous')], 
+                   [param('std::string', 'prefix'), param('ns3::Ptr< ns3::NetDevice >', 'nd'), param('bool', 'explicitFilename'), param('bool', 'promiscuous')], 
                    visibility='private', is_virtual=True)
     return
 
@@ -2070,10 +2070,10 @@ def register_Ns3CsmaHelper_methods(root_module, cls):
                    'void', 
                    [param('ns3::Ptr< ns3::OutputStreamWrapper >', 'stream'), param('std::string', 'prefix'), param('ns3::Ptr< ns3::NetDevice >', 'nd')], 
                    visibility='private', is_virtual=True)
-    ## csma-helper.h: void ns3::CsmaHelper::EnablePcapInternal(std::string prefix, ns3::Ptr<ns3::NetDevice> nd, bool promiscuous=false) [member function]
+    ## csma-helper.h: void ns3::CsmaHelper::EnablePcapInternal(std::string prefix, ns3::Ptr<ns3::NetDevice> nd, bool explicitFilename, bool promiscuous) [member function]
     cls.add_method('EnablePcapInternal', 
                    'void', 
-                   [param('std::string', 'prefix'), param('ns3::Ptr< ns3::NetDevice >', 'nd'), param('bool', 'promiscuous', default_value='false')], 
+                   [param('std::string', 'prefix'), param('ns3::Ptr< ns3::NetDevice >', 'nd'), param('bool', 'explicitFilename'), param('bool', 'promiscuous')], 
                    visibility='private', is_virtual=True)
     return
 
@@ -2110,10 +2110,10 @@ def register_Ns3EmuHelper_methods(root_module, cls):
                    'void', 
                    [param('ns3::Ptr< ns3::OutputStreamWrapper >', 'stream'), param('std::string', 'prefix'), param('ns3::Ptr< ns3::NetDevice >', 'nd')], 
                    visibility='private', is_virtual=True)
-    ## emu-helper.h: void ns3::EmuHelper::EnablePcapInternal(std::string prefix, ns3::Ptr<ns3::NetDevice> nd, bool promiscuous=false) [member function]
+    ## emu-helper.h: void ns3::EmuHelper::EnablePcapInternal(std::string prefix, ns3::Ptr<ns3::NetDevice> nd, bool explicitFilename, bool promiscuous) [member function]
     cls.add_method('EnablePcapInternal', 
                    'void', 
-                   [param('std::string', 'prefix'), param('ns3::Ptr< ns3::NetDevice >', 'nd'), param('bool', 'promiscuous', default_value='false')], 
+                   [param('std::string', 'prefix'), param('ns3::Ptr< ns3::NetDevice >', 'nd'), param('bool', 'explicitFilename'), param('bool', 'promiscuous')], 
                    visibility='private', is_virtual=True)
     return
 
