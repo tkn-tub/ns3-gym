@@ -724,6 +724,16 @@ MeshWifiInterfaceMac::TxFailed (WifiMacHeader const &hdr)
 {
   m_txErrCallback (hdr);
 }
+void
+MeshWifiInterfaceMac::DoStart ()
+{
+  m_beaconDca->Start ();
+  for (Queues::iterator i = m_queues.begin (); i != m_queues.end (); i ++)
+  {
+    i->second->Start ();
+  }
+  WifiMac::DoStart ();
+}
 
 void 
 MeshWifiInterfaceMac::FinishConfigureStandard (enum WifiPhyStandard standard)

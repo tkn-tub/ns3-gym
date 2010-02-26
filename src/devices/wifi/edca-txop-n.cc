@@ -1080,5 +1080,11 @@ EdcaTxopN::SendDelbaFrame (Mac48Address addr, uint8_t tid, bool byOriginator)
 
   PushFront (packet, hdr);
 }
-
+void
+EdcaTxopN::DoStart ()
+{
+  m_dcf->ResetCw ();
+  m_dcf->StartBackoffNow (m_rng->GetNext (0, m_dcf->GetCw ()));
+  ns3::Dcf::DoStart ();
+}
 } //namespace ns3

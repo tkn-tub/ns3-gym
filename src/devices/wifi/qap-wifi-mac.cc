@@ -851,6 +851,11 @@ QapWifiMac::FinishConfigureStandard (enum WifiPhyStandard standard)
 void
 QapWifiMac::DoStart (void)
 {
+  m_beaconDca->Start ();
+  for (Queues::iterator i = m_queues.begin (); i != m_queues.end (); ++i)
+    {
+      i->second->Start ();
+    }
   m_beaconEvent.Cancel ();
   if (m_enableBeaconGeneration)
     {

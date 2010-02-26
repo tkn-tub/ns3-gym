@@ -121,7 +121,7 @@ private:
 
   // Inherited from ns3::Object
   Ptr<MacLow> Low (void);
-
+  void DoStart ();
   /* dcf notifications forwarded here */
   bool NeedsAccess (void) const;
   void NotifyAccessGranted (void);

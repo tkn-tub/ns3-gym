@@ -796,6 +796,15 @@ QstaWifiMac::SetQueue (enum AccessClass ac)
   edca->CompleteConfig ();
   m_queues.insert (std::make_pair(ac, edca));
 }
+void
+QstaWifiMac::DoStart ()
+{
+  for (Queues::iterator i = m_queues.begin (); i != m_queues.end (); ++i)
+    {
+      i->second->Start ();
+    }
+  WifiMac::DoStart ();
+}
 
 void 
 QstaWifiMac::FinishConfigureStandard (enum WifiPhyStandard standard)

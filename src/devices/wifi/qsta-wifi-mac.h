@@ -92,6 +92,7 @@ public:
   void StartActiveAssociation (void);
 
 private:
+  void DoStart ();
   void SetBssid (Mac48Address bssid);
   Mac48Address GetBroadcastBssid (void);
   void Receive (Ptr<Packet> p, const WifiMacHeader *hdr);
