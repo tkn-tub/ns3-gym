@@ -337,6 +337,18 @@ TapBridge::CreateTap (void)
   //
   std::string path = TapBufferToString((uint8_t *)&un, len);
   NS_LOG_INFO ("Encoded Unix socket as \"" << path << "\"");
+
+  //
+  // Tom Goff reports the possiblility of a deadlock when trying to acquire the
+  // python GIL here.  He says that this might be due to trying to access Python
+  // objects after fork() without calling PyOS_AfterFork() to properly reset 
+  // Python state (including the GIL).  Originally these next three lines were
+  // done after the fork, but were moved here to work around the deadlock.
+  //
+  Ptr<NetDevice> nd = GetBridgedNetDevice ();
+  Ptr<Node> n = nd->GetNode ();
+  Ptr<Ipv4> ipv4 = n->GetObject<Ipv4> ();
+
   //
   // Fork and exec the process to create our socket.  If we're us (the parent)
   // we wait for the child (the creator) to complete and read the socket it 
@@ -375,10 +387,6 @@ TapBridge::CreateTap (void)
       //
 
       bool wantIp = (m_mode == CONFIGURE_LOCAL);
-
-      Ptr<NetDevice> nd = GetBridgedNetDevice ();
-      Ptr<Node> n = nd->GetNode ();
-      Ptr<Ipv4> ipv4 = n->GetObject<Ipv4> ();
 
       if (wantIp
             && (ipv4 == 0)
