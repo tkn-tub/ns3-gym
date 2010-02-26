@@ -249,8 +249,7 @@ void
 MinstrelWifiManager::DoReportRxOk (WifiRemoteStation *st,
                                    double rxSnr, WifiMode txMode)
 {
-  MinstrelWifiRemoteStation *station = (MinstrelWifiRemoteStation *)st;
-  NS_LOG_DEBUG("DoReportRxOk m_txrate=" << station->m_txrate);
+  NS_LOG_DEBUG("DoReportRxOk m_txrate=" << ((MinstrelWifiRemoteStation *)st)->m_txrate);
 }
 
 void
