@@ -82,6 +82,7 @@ public:
 private:
   // inherited from Object base class.
   virtual void DoDispose (void);
+  void DoStart ();
   /* invoked by the MacLows. */
   void ForwardUp (Ptr<Packet> packet, const WifiMacHeader *hdr);
   AdhocWifiMac (const AdhocWifiMac & ctor_arg);

@@ -147,6 +147,7 @@ public:
   void SendDelbaFrame (Mac48Address addr, uint8_t tid, bool byOriginator);
 
 private:
+  void DoStart ();
   /**
    * This functions are used only to correctly set addresses in a-msdu subframe.
    * If aggregating sta is a STA (in an infrastructured network):

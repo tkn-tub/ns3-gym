@@ -268,6 +268,13 @@ DcaTxop::NeedRts (Ptr<const Packet> packet, const WifiMacHeader *header)
                                     packet);
 }
 
+void
+DcaTxop::DoStart ()
+{
+  m_dcf->ResetCw ();
+  m_dcf->StartBackoffNow (m_rng->GetNext (0, m_dcf->GetCw ()));
+  ns3::Dcf::DoStart ();
+}
 bool
 DcaTxop::NeedRtsRetransmission (void)
 {
