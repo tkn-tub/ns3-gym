@@ -94,11 +94,6 @@ AirtimeLinkMetricCalculator::CalculateMetric (Mac48Address peerAddress, Ptr<Mesh
       mac->GetPifs () + mac->GetSlot () + mac->GetEifsNoDifs () + //DIFS + SIFS + AckTxTime = PIFS + SLOT + EifsNoDifs
       mac->GetWifiPhy () ->CalculateTxDuration (m_testFrame->GetSize (), mode, WIFI_PREAMBLE_LONG)
       ).GetMicroSeconds () / (10.24 * (1.0 - failAvg)));
-  std::cout << "pure overhead is " << (uint32_t)((double)(/*Overhead + payload*/
-      mac->GetPifs () + mac->GetSlot () + mac->GetEifsNoDifs ()
-      ).GetMicroSeconds ()/10.24) << "\n";
-  std::cout << "mode is:" << mode.GetDataRate () << "\n";
-  std::cout << "Metric is :" << metric << "\n";
   return metric;
 }
 } //namespace dot11s
