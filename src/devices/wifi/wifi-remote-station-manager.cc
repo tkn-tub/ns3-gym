@@ -630,6 +630,7 @@ WifiRemoteStationManager::Lookup (Mac48Address address, uint8_t tid) const
   
   WifiRemoteStation *station = DoCreateStation ();
   station->m_state = state;
+  station->m_tid = tid;
   station->m_ssrc = 0;
   station->m_slrc = 0;
   // XXX
