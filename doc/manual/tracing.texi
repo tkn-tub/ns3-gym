@@ -16,7 +16,7 @@ this is the tracing subsystem.
 * Tracing Motivation::
 * Overview::
 * Using the Tracing API::
-* Using the Tracing Helpers::
+* Using Trace Helpers::
 * Tracing implementation details::
 @end menu
 
@@ -340,8 +340,8 @@ core of the simulator;
 sinks. 
 @end itemize
 
-@node Using the Tracing Helpers
-@section Using the Tracing Helpers
+@node Using Trace Helpers
+@section Using Trace Helpers
 
 The @code{ns-3} trace helpers provide a rich environment for configuring and
 selecting different trace events and writing them to files.  In previous
@@ -390,17 +390,13 @@ possible there are analogs for all methods in all classes.
   -----------------+------+-------|
 @end verbatim
 
-Let say at this point that @code{mixins} would probably be the best way to 
-approach the kind of class hierarchy found in @code{src/helper/trace-helper.h}
-but our Python bindings generator does not support multiple inheritance and so
-this choice is excluded for now.  We were forced to linearize the inheritance
-tree and use single inheritance for the trace functionality.  This results in a
-somewhat odd arrangement of classes, an unusual naming convention and implies
-a hierarchy of functionality avialable in those classes. This isn't really a
-concern for users of this functionality, but it does make our discussion here
-a bit more difficult in some cases.
+We use an approach called a @code{mixin} to add tracing functionality to our 
+helper classes.  A @code{mixin} is a class that provides functionality to that
+is inherited by a subclass.  Inheriting from a mixin is not considered a form 
+of specialization but is really a way to collect functionality. 
 
-Let's take a quick look at all four of these cases.
+Let's take a quick look at all four of these cases and their respective 
+@code{mixins}.
 
 @subsection Pcap Tracing Device Helpers
 
@@ -411,9 +407,9 @@ helpers are inherited by device helpers.  Take a look at
 @code{src/helper/trace-helper.h} if you want to follow the discussion while 
 looking at real code.
 
-The class @code{PcapHelperForDevice} provides the high level functionality
-for using pcap tracing in an @code{ns-3} device.  Every device must implement a
-single virtual method inherited from this class.
+The class @code{PcapHelperForDevice} is a @code{mixin} provides the high level 
+functionality for using pcap tracing in an @code{ns-3} device.  Every device 
+must implement a single virtual method inherited from this class.
 
 @verbatim
   virtual void EnablePcapInternal (std::string prefix, Ptr<NetDevice> nd, bool promiscuous) = 0;
@@ -425,8 +421,8 @@ at this level.  All of the public methods inherited from class
 implementation method.  For example, the lowest level pcap method,
 
 @verbatim
-  void EnablePcap (std::string prefix, Ptr<NetDevice> nd, bool promiscuous = false);
-@verbatim
+  void EnablePcap (std::string prefix, Ptr<NetDevice> nd, bool promiscuous = false, bool explicitFilename = false);
+@end verbatim
 
 will call the device implementation of @code{EnablePcapInternal} directly.  All
 other public pcap tracing methods build on this implementation to provide 
@@ -438,13 +434,30 @@ implements @code{EnablePcapInternal} correctly.
 @subsubsection Pcap Tracing Device Helper Methods
 
 @verbatim
-  void EnablePcap (std::string prefix, Ptr<NetDevice> nd, bool promiscuous = false);
-  void EnablePcap (std::string prefix, std::string ndName, bool promiscuous = false);
+  void EnablePcap (std::string prefix, Ptr<NetDevice> nd, bool promiscuous = false, bool explicitFilename = false);
+  void EnablePcap (std::string prefix, std::string ndName, bool promiscuous = false, bool explicitFilenaqme = false);
   void EnablePcap (std::string prefix, NetDeviceContainer d, bool promiscuous = false);
   void EnablePcap (std::string prefix, NodeContainer n, bool promiscuous = false);
   void EnablePcap (std::string prefix, uint32_t nodeid, uint32_t deviceid, bool promiscuous = false);
   void EnablePcapAll (std::string prefix, bool promiscuous = false);
 @end verbatim
+
+In each of the methods shown above, there is a default parameter called 
+@code{promiscuous} that defaults to false.  This parameter indicates that the
+trace should not be gathered in promiscuous mode.  If you do want your traces
+to include all traffic seen by the device (and if the device supports a 
+promiscuous mode) simply add a true parameter to any of the calls above.  For example,
+
+@verbatim
+  Ptr<NetDevice> nd;
+  ...
+  helper.EnablePcap ("prefix", nd, true);
+@end verbatim
+
+will enable promiscuous mode captures on the @code{NetDevice} specified by @code{nd}.
+
+The first two methods also include a default parameter called @code{explicitFilename}
+that will be discussed below.
 
 You are encouraged to peruse the Doxygen for class @code{PcapHelperForDevice}
 to find the details of these methods; but to summarize ...
@@ -514,25 +527,11 @@ same type as that managed by the device helper.
   helper.EnablePcapAll ("prefix");
 @end verbatim
 
-In each of these cases, there is an additional parameter that defaults to false.
-This parameter indicates that the trace should not be gathered in promiscuous
-mode.  If you do want your traces to include all traffic seen by the device
-(and the device supports promiscuous mode) simply add a true parameter to any
-of the calls above.  For example,
-
-@verbatim
-  Ptr<NetDevice> nd;
-  ...
-  helper.EnablePcap ("prefix", nd, true);
-@end verbatim
-
-will enable promiscuous mode captures on the @code{NetDevice} specified by @code{nd}.
-
 @subsubsection Pcap Tracing Device Helper Filename Selection
 
-Implicit in all of the method descriptions above is the construction of the
-complete filenames by the implementation method.  By convention, pcap traces
-in the @code{ns-3} system are of the form ``<prefix>-<node id>-<device id>.pcap''
+Implicit in the method descriptions above is the construction of a complete 
+filename by the implementation method.  By convention, pcap traces in the 
+@code{ns-3} system are of the form ``<prefix>-<node id>-<device id>.pcap''
 
 As previously mentioned, every node in the system will have a system-assigned
 node id; and every device will have an interface index (also called a device id)
@@ -547,18 +546,40 @@ to node 21, the resulting pcap trace file name will automatically become,
 device, your pcap file name will automatically pick this up and be called
 ``prefix-server-eth0.pcap''.
 
+Finally, two of the methods shown above,
+
+@verbatim
+  void EnablePcap (std::string prefix, Ptr<NetDevice> nd, bool promiscuous = false, bool explicitFilename = false);
+  void EnablePcap (std::string prefix, std::string ndName, bool promiscuous = false, bool explicitFilenaqme = false);
+@end verbatim
+
+have a default parameter called @code{explicitFilename}.  When set to true,
+this parameter disables the automatic filename completion mechanism and allows
+you to create an explicit filename.  This option is only available in the 
+methods which enable pcap tracing on a single device.  
+
+For example, in order to arrange for a device helper to create a single 
+promiscuous pcap capture file of a specific name (``my-pcap-file.pcap'') on a
+given device, one could:
+
+@verbatim
+  Ptr<NetDevice> nd;
+  ...
+  helper.EnablePcap ("my-pcap-file.pcap", nd, true, true);
+@end verbatim
+
+The first @code{true} parameter enables promiscuous mode traces and the second
+tells the helper to interpret the @code{prefix} parameter as a complete filename.
+
 @subsection Ascii Tracing Device Helpers
 
-The behavior of the ascii trace helpers is substantially similar to the pcap
-case.  Take a look at @code{src/helper/trace-helper.h} if you want to 
+The behavior of the ascii trace helper @code{mixin} is substantially similar to 
+the pcap version.  Take a look at @code{src/helper/trace-helper.h} if you want to 
 follow the discussion while looking at real code.
 
-The class @code{TraceHelperForDevice} adds the high level functionality for 
-using ascii tracing to class @code{PcapHelperForDevice}.  If a device helper
-inherits from class @code{TraceHelperForDevice} it gets both pcap and ascii
-tracing powers.  Along with the internal pcap function, every device must 
-also implement a single virtual method inherited from the ascii trace additions
-to this class.
+The class @code{AsciiTraceHelperForDevice} adds the high level functionality for 
+using ascii tracing to a device helper class.  As in the pcap case, every device
+must implement a single virtual method inherited from the ascii trace @code{mixin}.
 
 @verbatim
   virtual void EnableAsciiInternal (Ptr<OutputStreamWrapper> stream, std::string prefix, Ptr<NetDevice> nd) = 0;
@@ -567,7 +588,7 @@ to this class.
 The signature of this method reflects the device-centric view of the situation
 at this level; and also the fact that the helper may be writing to a shared
 output stream.  All of the public ascii-trace-related methods inherited from 
-class @code{TraceHelperForDevice} reduce to calling this single device-
+class @code{AsciiTraceHelperForDevice} reduce to calling this single device-
 dependent implementation method.  For example, the lowest level ascii trace
 methods,
 
@@ -635,8 +656,7 @@ have the suffix ``.tr'' instead of ``.pcap''.
 
 If you want to enable ascii tracing on more than one net device and have all 
 traces sent to a single file, you can do that as well by using an object to
-refer to a single file.  We have already seen this in the ``cwnd'' example
-above:
+refer to a single file:
 
 @verbatim
   Ptr<NetDevice> nd1;
@@ -671,7 +691,7 @@ belong to exactly one @code{Node}.  For example,
 
 This would result in two files named ``prefix-client-eth0.tr'' and 
 ``prefix-server-eth0.tr'' with traces for each device in the respective trace
-file.  Since all of the EnableAscii functions are overloaded to take a stream object,
+file.  Since all of the EnableAscii functions are overloaded to take a stream wrapper,
 you can use that form as well:
 
 @verbatim
@@ -776,7 +796,7 @@ device, your ascii trace file name will automatically pick this up and be called
 
 @subsection Pcap Tracing Protocol Helpers
 
-The goal of these helpers is to make it easy to add a consistent pcap trace
+The goal of these @code{mixins} is to make it easy to add a consistent pcap trace
 facility to protocols.  We want all of the various flavors of pcap tracing to 
 work the same across all protocols, so the methods of these helpers are 
 inherited by stack helpers.  Take a look at @code{src/helper/trace-helper.h} 
@@ -788,7 +808,7 @@ appropriate type.  For example, use a @code{Ptr<Ipv6>} instead of a
 @code{Ptr<Ipv4>} and call @code{EnablePcapIpv6} instead of @code{EnablePcapIpv4}.
 
 The class @code{PcapHelperForIpv4} provides the high level functionality for
-using pcap tracing in the @code{Ipv4} protocol.  Every protocol enabling these
+using pcap tracing in the @code{Ipv4} protocol.  Each protocol helper enabling these
 methods must implement a single virtual method inherited from this class.  There
 will be a separate implementation for @code{Ipv6}, for example, but the only
 difference will be in the method names and signatures.  Different method names
@@ -941,9 +961,9 @@ In this section we will be illustrating the methods as applied to the protocol
 appropriate type.  For example, use a @code{Ptr<Ipv6>} instead of a
 @code{Ptr<Ipv4>} and call @code{EnableAsciiIpv6} instead of @code{EnableAsciiIpv4}.
 
-The class @code{PcapAndAsciiHelperForIpv4} adds the high level functionality
-for using ascii tracing to the PcapHelperForIpv4.  Every protocol must 
-additionally implement a single virtual method inherited from this class.
+The class @code{AsciiTraceHelperForIpv4} adds the high level functionality
+for using ascii tracing to a protocol helper.  Each protocol that enables these
+methods must implement a single virtual method inherited from this class.
 
 @verbatim
   virtual void EnableAsciiIpv4Internal (Ptr<OutputStreamWrapper> stream, std::string prefix, 
@@ -1057,7 +1077,7 @@ For example,
 This would result in two files named ``prefix-nnode1Ipv4-i1.tr'' and 
 ``prefix-nnode2Ipv4-i1.tr'' with traces for each interface in the respective 
 trace file.  Since all of the EnableAscii functions are overloaded to take a 
-stream object, you can use that form as well:
+stream wrapper, you can use that form as well:
 
 @verbatim
   Names::Add ("node1Ipv4" ...);
