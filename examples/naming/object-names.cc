@@ -171,6 +171,12 @@ main (int argc, char *argv[])
   //
   csma.EnablePcapAll ("object-names");
 
+  //
+  // We can also create a trace file with a name we completely control by
+  // overriding a couple of default parameters.
+  //
+  csma.EnablePcap ("client-device.pcap", d.Get (0), false, true);
+
   Simulator::Run ();
   Simulator::Destroy ();
 }
