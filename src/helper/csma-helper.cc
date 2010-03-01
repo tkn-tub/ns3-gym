@@ -72,7 +72,7 @@ CsmaHelper::SetChannelAttribute (std::string n1, const AttributeValue &v1)
 }
 
 void 
-CsmaHelper::EnablePcapInternal (std::string prefix, Ptr<NetDevice> nd, bool explicitFilename, bool promiscuous)
+CsmaHelper::EnablePcapInternal (std::string prefix, Ptr<NetDevice> nd, bool promiscuous, bool explicitFilename)
 {
   //
   // All of the Pcap enable functions vector through here including the ones

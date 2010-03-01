@@ -342,20 +342,20 @@ public:
    *
    * @param prefix Filename prefix to use for pcap files.
    * @param nd Net device for which you want to enable tracing.
-   * @param explicitFilename Treat the prefix as an explicit filename if true
    * @param promiscuous If true capture all possible packets available at the device.
+   * @param explicitFilename Treat the prefix as an explicit filename if true
    */
-  virtual void EnablePcapInternal (std::string prefix, Ptr<NetDevice> nd, bool explicitFilename, bool promiscuous) = 0;
+  virtual void EnablePcapInternal (std::string prefix, Ptr<NetDevice> nd, bool promiscuous, bool explicitFilename) = 0;
 
   /**
    * @brief Enable pcap output the indicated net device.
    *
    * @param prefix Filename prefix to use for pcap files.
    * @param nd Net device for which you want to enable tracing.
-   * @param explicitFilename Treat the prefix as an explicit filename if true
    * @param promiscuous If true capture all possible packets available at the device.
+   * @param explicitFilename Treat the prefix as an explicit filename if true
    */
-  void EnablePcap (std::string prefix, Ptr<NetDevice> nd, bool explicitFilename = false, bool promiscuous = false);
+  void EnablePcap (std::string prefix, Ptr<NetDevice> nd, bool promiscuous = false, bool explicitFilename = false);
 
   /**
    * @brief Enable pcap output the indicated net device using a device previously
@@ -363,10 +363,10 @@ public:
    *
    * @param filename filename prefix to use for pcap files.
    * @param ndName The name of the net device in which you want to enable tracing.
-   * @param explicitFilename Treat the prefix as an explicit filename if true
    * @param promiscuous If true capture all possible packets available at the device.
+   * @param explicitFilename Treat the prefix as an explicit filename if true
    */
-  void EnablePcap (std::string prefix, std::string ndName, bool explicitFilename = false, bool promiscuous = false);
+  void EnablePcap (std::string prefix, std::string ndName, bool promiscuous = false, bool explicitFilename = false);
 
   /**
    * @brief Enable pcap output on each device in the container which is of the 
