@@ -213,6 +213,8 @@ public:
    * \return true on success
    */
   bool LookupRoute (Ipv4Address dst, RoutingTableEntry & rt);
+  /// Lookup route in VALID state
+  bool LookupValidRoute (Ipv4Address dst, RoutingTableEntry & rt);
   /// Update routing table
   bool Update (RoutingTableEntry & rt);
   /// Set routing table entry flags

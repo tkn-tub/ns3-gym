@@ -188,6 +188,14 @@ RoutingTable::LookupRoute (Ipv4Address id, RoutingTableEntry & rt)
 }
 
 bool
+RoutingTable::LookupValidRoute (Ipv4Address id, RoutingTableEntry & rt)
+{
+  if (! LookupRoute (id, rt))
+    return false;
+  return (rt.GetFlag () == VALID);
+}
+
+bool
 RoutingTable::DeleteRoute (Ipv4Address dst)
 {
   Purge ();

@@ -274,23 +274,20 @@ RoutingProtocol::RouteOutput (Ptr<Packet> p, const Ipv4Header &header,
   Ptr<Ipv4Route> route;
   Ipv4Address dst = header.GetDestination ();
   RoutingTableEntry rt;
-  if (m_routingTable.LookupRoute (dst, rt))
+  if (m_routingTable.LookupValidRoute (dst, rt))
     {
-      if (rt.GetFlag () == VALID)
+      route = rt.GetRoute ();
+      NS_ASSERT (route != 0);
+      NS_LOG_DEBUG ("Exist route to " << route->GetDestination() << " from interface " << route->GetSource());
+      if (oif != 0 && route->GetOutputDevice () != oif)
         {
-          route = rt.GetRoute ();
-          NS_ASSERT (route != 0);
-          NS_LOG_DEBUG ("Exist route to " << route->GetDestination() << " from interface " << route->GetSource());
-          if (oif != 0 && route->GetOutputDevice () != oif)
-            {
-              NS_LOG_DEBUG ("Output device doesn't match. Dropped.");
-              sockerr = Socket::ERROR_NOROUTETOHOST;
-              return Ptr<Ipv4Route> ();
-            }
-          UpdateRouteLifeTime (dst, ActiveRouteTimeout);
-          UpdateRouteLifeTime (route->GetGateway (), ActiveRouteTimeout);
-          return route;
+          NS_LOG_DEBUG ("Output device doesn't match. Dropped.");
+          sockerr = Socket::ERROR_NOROUTETOHOST;
+          return Ptr<Ipv4Route> ();
         }
+      UpdateRouteLifeTime (dst, ActiveRouteTimeout);
+      UpdateRouteLifeTime (route->GetGateway (), ActiveRouteTimeout);
+      return route;
     }
 
   // Valid route not found, in this case we return loopback. 
@@ -403,7 +400,7 @@ RoutingProtocol::RouteInput (Ptr<const Packet> p, const Ipv4Header &header,
     {
       UpdateRouteLifeTime (origin, ActiveRouteTimeout);
       RoutingTableEntry toOrigin;
-      if (m_routingTable.LookupRoute (origin, toOrigin))
+      if (m_routingTable.LookupValidRoute (origin, toOrigin))
         {
           UpdateRouteLifeTime (toOrigin.GetNextHop (), ActiveRouteTimeout);
           m_nb.Update (toOrigin.GetNextHop (), ActiveRouteTimeout);
@@ -1159,7 +1156,7 @@ RoutingProtocol::RecvReply (Ptr<Packet> p, Ipv4Address receiver, Ipv4Address sen
     }
 
   RoutingTableEntry toOrigin;
-  if (!m_routingTable.LookupRoute (rrepHeader.GetOrigin (), toOrigin))
+  if (! m_routingTable.LookupRoute (rrepHeader.GetOrigin (), toOrigin) || toOrigin.GetFlag () == IN_SEARCH)
     {
       return; // Impossible! drop.
     }
@@ -1167,23 +1164,25 @@ RoutingProtocol::RecvReply (Ptr<Packet> p, Ipv4Address receiver, Ipv4Address sen
   m_routingTable.Update (toOrigin);
 
   // Update information about precursors
-  m_routingTable.LookupRoute (rrepHeader.GetDst (), toDst);
-  toDst.InsertPrecursor (toOrigin.GetNextHop ());
-  m_routingTable.Update (toDst);
+  if (m_routingTable.LookupValidRoute (rrepHeader.GetDst (), toDst))
+    {
+      toDst.InsertPrecursor (toOrigin.GetNextHop ());
+      m_routingTable.Update (toDst);
 
-  RoutingTableEntry toNextHopToDst;
-  m_routingTable.LookupRoute (toDst.GetNextHop (), toNextHopToDst);
-  toNextHopToDst.InsertPrecursor (toOrigin.GetNextHop ());
-  m_routingTable.Update (toNextHopToDst);
+      RoutingTableEntry toNextHopToDst;
+      m_routingTable.LookupRoute (toDst.GetNextHop (), toNextHopToDst);
+      toNextHopToDst.InsertPrecursor (toOrigin.GetNextHop ());
+      m_routingTable.Update (toNextHopToDst);
 
-  toOrigin.InsertPrecursor (toDst.GetNextHop ());
-  m_routingTable.Update (toOrigin);
+      toOrigin.InsertPrecursor (toDst.GetNextHop ());
+      m_routingTable.Update (toOrigin);
 
-  RoutingTableEntry toNextHopToOrigin;
-  m_routingTable.LookupRoute (toOrigin.GetNextHop (), toNextHopToOrigin);
-  toNextHopToOrigin.InsertPrecursor (toDst.GetNextHop ());
-  m_routingTable.Update (toNextHopToOrigin);
-
+      RoutingTableEntry toNextHopToOrigin;
+      m_routingTable.LookupRoute (toOrigin.GetNextHop (), toNextHopToOrigin);
+      toNextHopToOrigin.InsertPrecursor (toDst.GetNextHop ());
+      m_routingTable.Update (toNextHopToOrigin);
+    }
+      
   Ptr<Packet> packet = Create<Packet> ();
   packet->AddHeader (rrepHeader);
   TypeHeader tHeader (AODVTYPE_RREP);
@@ -1305,8 +1304,7 @@ RoutingProtocol::RouteRequestTimerExpire (Ipv4Address dst)
 {
   NS_LOG_LOGIC(this);
   RoutingTableEntry toDst;
-  m_routingTable.LookupRoute (dst, toDst);
-  if (toDst.GetFlag () == VALID)
+  if (m_routingTable.LookupValidRoute (dst, toDst))
     {
       SendPacketFromQueue (dst, toDst.GetRoute ());
       NS_LOG_LOGIC ("route to " << dst << " found");
@@ -1471,18 +1469,14 @@ RoutingProtocol::SendRerrWhenNoRouteToForward (Ipv4Address dst,
   Ptr<Packet> packet = Create<Packet> ();
   packet->AddHeader (rerrHeader);
   packet->AddHeader (TypeHeader (AODVTYPE_RERR));
-  if (m_routingTable.LookupRoute (origin, toOrigin))
+  if (m_routingTable.LookupValidRoute (origin, toOrigin))
     {
-      if (toOrigin.GetFlag () == VALID)
-        {
-          Ptr<Socket> socket = FindSocketWithInterfaceAddress (
-              toOrigin.GetInterface ());
-          NS_ASSERT (socket);
-          NS_LOG_LOGIC ("Unicast RERR to the source of the data transmission");
-          socket->SendTo (packet, 0, InetSocketAddress (toOrigin.GetNextHop (), AODV_PORT));
-        }
-
-    }
+      Ptr<Socket> socket = FindSocketWithInterfaceAddress (
+          toOrigin.GetInterface ());
+      NS_ASSERT (socket);
+      NS_LOG_LOGIC ("Unicast RERR to the source of the data transmission");
+      socket->SendTo (packet, 0, InetSocketAddress (toOrigin.GetNextHop (), AODV_PORT));
+     }
   else
     {
       for (std::map<Ptr<Socket> , Ipv4InterfaceAddress>::const_iterator i =
@@ -1511,40 +1505,26 @@ RoutingProtocol::SendRerrMessage (Ptr<Packet> packet, std::vector<Ipv4Address> p
   if (precursors.size () == 1)
     {
       RoutingTableEntry toPrecursor;
-      if (!m_routingTable.LookupRoute (precursors.front (), toPrecursor))
-        return;
-      Ptr<Socket> socket = FindSocketWithInterfaceAddress (toPrecursor.GetInterface ());
-      NS_ASSERT (socket);
-      if (toPrecursor.GetFlag () == VALID)
+      if (m_routingTable.LookupValidRoute (precursors.front (), toPrecursor))
         {
+          Ptr<Socket> socket = FindSocketWithInterfaceAddress (toPrecursor.GetInterface ());
+          NS_ASSERT (socket);
           NS_LOG_LOGIC ("one precursor => unicast RERR to " << toPrecursor.GetDestination() << " from " << toPrecursor.GetInterface ().GetLocal ());
           socket->SendTo (packet, 0, InetSocketAddress (precursors.front (), AODV_PORT));
         }
-      else
-        NS_LOG_LOGIC ("One precursor, but no valid route to this precursor");
       return;
     }
 
   //  Should only transmit RERR on those interfaces which have precursor nodes for the broken route
   std::vector<Ipv4InterfaceAddress> ifaces;
   RoutingTableEntry toPrecursor;
-  for (std::vector<Ipv4Address>::const_iterator i = precursors.begin (); i
-      != precursors.end (); ++i)
+  for (std::vector<Ipv4Address>::const_iterator i = precursors.begin (); i != precursors.end (); ++i)
     {
-      if (!m_routingTable.LookupRoute (*i, toPrecursor))
-        break;
-      bool result = true;
-      for (std::vector<Ipv4InterfaceAddress>::const_iterator i =
-          ifaces.begin (); i != ifaces.end (); ++i)
+      if (m_routingTable.LookupValidRoute (*i, toPrecursor) && 
+          std::find (ifaces.begin (), ifaces.end (), toPrecursor.GetInterface ()) == ifaces.end ())
         {
-          if (*i == toPrecursor.GetInterface ())
-            {
-              result = false;
-              break;
-            }
+            ifaces.push_back (toPrecursor.GetInterface ());
         }
-      if (result)
-        ifaces.push_back (toPrecursor.GetInterface ());
     }
 
   for (std::vector<Ipv4InterfaceAddress>::const_iterator i = ifaces.begin (); i != ifaces.end (); ++i)
