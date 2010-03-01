@@ -128,7 +128,9 @@ private:
   Ptr<Ipv4> m_ipv4;
   /// Raw socket per each IP interface, map socket -> iface address (IP + mask)
   std::map< Ptr<Socket>, Ipv4InterfaceAddress > m_socketAddresses;
-
+  /// Loopback device used to defer RREQ until packet will be fully formed
+  Ptr<NetDevice> m_lo; 
+  
   /// Routing table
   RoutingTable m_routingTable;
   /// A "drop-front" queue used by the routing layer to buffer packets to which it does not have a route.
@@ -146,14 +148,11 @@ private:
   /// Number of RREQs used for RREQ rate control
   uint16_t m_rreqCount;
 
-  /// Unicast callback for own packets
-  UnicastForwardCallback m_scb;
-  /// Error callback for own packets
-  ErrorCallback m_ecb;
-
 private:
   /// Start protocol operation
   void Start ();
+  /// Queue packet and send route request
+  void DeferredRouteOutput (Ptr<const Packet> p, const Ipv4Header & header, UnicastForwardCallback ucb, ErrorCallback ecb);
   /// If route exists and valid, forward packet.
   bool Forwarding (Ptr<const Packet> p, const Ipv4Header & header, UnicastForwardCallback ucb, ErrorCallback ecb);
   /**
@@ -180,6 +179,8 @@ private:
   Ptr<Socket> FindSocketWithInterfaceAddress (Ipv4InterfaceAddress iface) const;
   /// Process hello message
   void ProcessHello (RrepHeader const & rrepHeader, Ipv4Address receiverIfaceAddr);
+  /// Create loopback route for given header
+  Ptr<Ipv4Route> LoopbackRoute (const Ipv4Header & header) const;
   
   ///\name Receive control packets
   //\{
@@ -199,8 +200,6 @@ private:
   //\{
   /// Forward packet from route request queue
   void SendPacketFromQueue (Ipv4Address dst, Ptr<Ipv4Route> route);
-  /// Aux. send helper
-  void Send (Ptr<Ipv4Route>, Ptr<const Packet>, const Ipv4Header &);
   /// Send hello
   void SendHello ();
   /// Send RREQ
@@ -228,9 +227,6 @@ private:
   void SendRerrWhenNoRouteToForward (Ipv4Address dst, uint32_t dstSeqNo, Ipv4Address origin);
   //\}
   
-  /// Notify that packet is dropped for some reason 
-  void Drop(Ptr<const Packet>, const Ipv4Header &, Socket::SocketErrno);
-
   /// Hello timer
   Timer m_htimer;
   /// Schedule next send of hello message
@@ -245,7 +241,6 @@ private:
   void RouteRequestTimerExpire (Ipv4Address dst);
   /// Mark link to neighbor node as unidirectional for blacklistTimeout
   void AckTimerExpire (Ipv4Address neighbor,  Time blacklistTimeout);
-
 };
 
 }

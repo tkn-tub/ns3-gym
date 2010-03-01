@@ -19,6 +19,8 @@
  */
 
 #include "aodv-regression.h"
+#include "bug-772.h"
+#include "loopback.h"
 
 #include "ns3/mesh-helper.h"
 #include "ns3/simulator.h"
@@ -58,6 +60,12 @@ public:
     AddTestCase (new ChainRegressionTest ("aodv-chain-regression-test"));
     // Bug 606 test case, should crash if bug is not fixed
     AddTestCase (new ChainRegressionTest ("bug-606-test", Seconds (10), 3, Seconds (1)));
+    // Bug 772 UDP test case
+    AddTestCase (new Bug772ChainTest ("udp-chain-test", "ns3::UdpSocketFactory", Seconds (3), 10));
+    // Bug 772 TCP test case
+    AddTestCase (new Bug772ChainTest ("tcp-chain-test", "ns3::TcpSocketFactory", Seconds (3), 10));
+    // Ping loopback test case
+    AddTestCase (new LoopbackTestCase ());
   }
 } g_aodvRegressionTestSuite;
  

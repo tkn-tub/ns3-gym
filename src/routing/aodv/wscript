@@ -13,6 +13,8 @@ def build(bld):
         'aodv-routing-protocol.cc',
         'aodv-test-suite.cc',
         'test/aodv-regression.cc',
+        'test/bug-772.cc',
+        'test/loopback.cc',
         ]
 
     headers = bld.new_task_gen('ns3header')
