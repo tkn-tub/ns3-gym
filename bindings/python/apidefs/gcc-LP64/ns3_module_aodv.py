@@ -540,6 +540,10 @@ def register_Ns3AodvRoutingTable_methods(root_module, cls):
     cls.add_method('LookupRoute', 
                    'bool', 
                    [param('ns3::Ipv4Address', 'dst'), param('ns3::aodv::RoutingTableEntry &', 'rt')])
+    ## aodv-rtable.h: bool ns3::aodv::RoutingTable::LookupValidRoute(ns3::Ipv4Address dst, ns3::aodv::RoutingTableEntry & rt) [member function]
+    cls.add_method('LookupValidRoute', 
+                   'bool', 
+                   [param('ns3::Ipv4Address', 'dst'), param('ns3::aodv::RoutingTableEntry &', 'rt')])
     ## aodv-rtable.h: bool ns3::aodv::RoutingTable::MarkLinkAsUnidirectional(ns3::Ipv4Address neighbor, ns3::Time blacklistTimeout) [member function]
     cls.add_method('MarkLinkAsUnidirectional', 
                    'bool', 

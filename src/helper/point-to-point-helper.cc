@@ -100,7 +100,11 @@ PointToPointHelper::EnablePcapInternal (std::string prefix, Ptr<NetDevice> nd, b
 }
 
 void 
-PointToPointHelper::EnableAsciiInternal (Ptr<OutputStreamWrapper> stream, std::string prefix, Ptr<NetDevice> nd)
+PointToPointHelper::EnableAsciiInternal (
+  Ptr<OutputStreamWrapper> stream, 
+  std::string prefix, 
+  Ptr<NetDevice> nd,
+  bool explicitFilename)
 {
   //
   // All of the ascii enable functions vector through here including the ones
@@ -135,7 +139,17 @@ PointToPointHelper::EnableAsciiInternal (Ptr<OutputStreamWrapper> stream, std::s
       // name of the file given the prefix.
       //
       AsciiTraceHelper asciiTraceHelper;
-      std::string filename = asciiTraceHelper.GetFilenameFromDevice (prefix, device);
+
+      std::string filename;
+      if (explicitFilename)
+        {
+          filename = prefix;
+        }
+      else
+        {
+          filename = asciiTraceHelper.GetFilenameFromDevice (prefix, device);
+        }
+
       Ptr<OutputStreamWrapper> theStream = asciiTraceHelper.CreateFileStream (filename, "w");
 
       //

@@ -2241,7 +2241,7 @@ functionality for using pcap tracing in an @code{ns-3} device.  Every device
 must implement a single virtual method inherited from this class.
 
 @verbatim
-  virtual void EnablePcapInternal (std::string prefix, Ptr<NetDevice> nd, bool promiscuous) = 0;
+  virtual void EnablePcapInternal (std::string prefix, Ptr<NetDevice> nd, bool promiscuous, bool explicitFilename) = 0;
 @end verbatim
 
 The signature of this method reflects the device-centric view of the situation
@@ -2264,7 +2264,7 @@ implements @code{EnablePcapInternal} correctly.
 
 @verbatim
   void EnablePcap (std::string prefix, Ptr<NetDevice> nd, bool promiscuous = false, bool explicitFilename = false);
-  void EnablePcap (std::string prefix, std::string ndName, bool promiscuous = false, bool explicitFilenaqme = false);
+  void EnablePcap (std::string prefix, std::string ndName, bool promiscuous = false, bool explicitFilename = false);
   void EnablePcap (std::string prefix, NetDeviceContainer d, bool promiscuous = false);
   void EnablePcap (std::string prefix, NodeContainer n, bool promiscuous = false);
   void EnablePcap (std::string prefix, uint32_t nodeid, uint32_t deviceid, bool promiscuous = false);
@@ -2411,7 +2411,11 @@ using ascii tracing to a device helper class.  As in the pcap case, every device
 must implement a single virtual method inherited from the ascii trace @code{mixin}.
 
 @verbatim
-  virtual void EnableAsciiInternal (Ptr<OutputStreamWrapper> stream, std::string prefix, Ptr<NetDevice> nd) = 0;
+  virtual void EnableAsciiInternal (Ptr<OutputStreamWrapper> stream, 
+                                    std::string prefix, 
+                                    Ptr<NetDevice> nd,
+                                    bool explicitFilename) = 0;
+
 @end verbatim
 
 The signature of this method reflects the device-centric view of the situation
@@ -2422,7 +2426,7 @@ dependent implementation method.  For example, the lowest level ascii trace
 methods,
 
 @verbatim
-  void EnableAscii (std::string prefix, Ptr<NetDevice> nd);
+  void EnableAscii (std::string prefix, Ptr<NetDevice> nd, bool explicitFilename = false);
   void EnableAscii (Ptr<OutputStreamWrapper> stream, Ptr<NetDevice> nd);
 @verbatim
 
@@ -2437,10 +2441,10 @@ will all work in the same way across devices if the devices implement
 @subsubsection Ascii Tracing Device Helper Methods
 
 @verbatim
-  void EnableAscii (std::string prefix, Ptr<NetDevice> nd);
+  void EnableAscii (std::string prefix, Ptr<NetDevice> nd, bool explicitFilename = false);
   void EnableAscii (Ptr<OutputStreamWrapper> stream, Ptr<NetDevice> nd);
 
-  void EnableAscii (std::string prefix, std::string ndName);
+  void EnableAscii (std::string prefix, std::string ndName, bool explicitFilename = false);
   void EnableAscii (Ptr<OutputStreamWrapper> stream, std::string ndName);
 
   void EnableAscii (std::string prefix, NetDeviceContainer d);
@@ -2449,11 +2453,11 @@ will all work in the same way across devices if the devices implement
   void EnableAscii (std::string prefix, NodeContainer n);
   void EnableAscii (Ptr<OutputStreamWrapper> stream, NodeContainer n);
 
-  void EnableAscii (std::string prefix, uint32_t nodeid, uint32_t deviceid);
-  void EnableAscii (Ptr<OutputStreamWrapper> stream, uint32_t nodeid, uint32_t deviceid);
-
   void EnableAsciiAll (std::string prefix);
   void EnableAsciiAll (Ptr<OutputStreamWrapper> stream);
+
+  void EnableAscii (std::string prefix, uint32_t nodeid, uint32_t deviceid, bool explicitFilename);
+  void EnableAscii (Ptr<OutputStreamWrapper> stream, uint32_t nodeid, uint32_t deviceid);
 @end verbatim
 
 You are encouraged to peruse the Doxygen for class @code{TraceHelperForDevice}
@@ -2477,6 +2481,9 @@ exactly one @code{Node}.  For example,
   ...
   helper.EnableAscii ("prefix", nd);
 @end verbatim
+
+The first four methods also include a default parameter called @code{explicitFilename}
+that operate similar to equivalent parameters in the pcap case.
 
 In this case, no trace contexts are written to the ascii trace file since they
 would be redundant.  The system will pick the file name to be created using
@@ -2624,6 +2631,11 @@ to node 21, the resulting ascii trace file name will automatically become,
 device, your ascii trace file name will automatically pick this up and be called
 ``prefix-server-eth0.tr''.
 
+Several of the methods have a default parameter called @code{explicitFilename}.
+When set to true, this parameter disables the automatic filename completion 
+mechanism and allows you to create an explicit filename.  This option is only
+available in the methods which take a prefix and enable tracing on a single device.  
+
 @subsection Pcap Tracing Protocol Helpers
 
 The goal of these @code{mixins} is to make it easy to add a consistent pcap trace
@@ -2646,7 +2658,10 @@ are required to disambiguate class @code{Ipv4} from @coe{Ipv6} which are both
 derived from class @code{Object}, and methods that share the same signature.
 
 @verbatim
-  virtual void EnablePcapIpv4Internal (std::string prefix, Ptr<Ipv4> ipv4, uint32_t interface) = 0;
+  virtual void EnablePcapIpv4Internal (std::string prefix, 
+                                       Ptr<Ipv4> ipv4, 
+                                       uint32_t interface,
+                                       bool explicitFilename) = 0;
 @end verbatim
 
 The signature of this method reflects the protocol and interface-centric view 
@@ -2655,7 +2670,7 @@ of the situation at this level.  All of the public methods inherited from class
 implementation method.  For example, the lowest level pcap method,
 
 @verbatim
-  void EnablePcapIpv4 (std::string prefix, Ptr<Ipv4> ipv4, uint32_t interface);
+  void EnablePcapIpv4 (std::string prefix, Ptr<Ipv4> ipv4, uint32_t interface, bool explicitFilename = false);
 @verbatim
 
 will call the device implementation of @code{EnablePcapIpv4Internal} directly.
@@ -2675,11 +2690,11 @@ constraints.
 Note that just like in the device version, there are six methods:
 
 @verbatim
-  void EnablePcapIpv4 (std::string prefix, Ptr<Ipv4> ipv4, uint32_t interface);
-  void EnablePcapIpv4 (std::string prefix, std::string ipv4Name, uint32_t interface);
+  void EnablePcapIpv4 (std::string prefix, Ptr<Ipv4> ipv4, uint32_t interface, bool explicitFilename = false);
+  void EnablePcapIpv4 (std::string prefix, std::string ipv4Name, uint32_t interface, bool explicitFilename = false);
   void EnablePcapIpv4 (std::string prefix, Ipv4InterfaceContainer c);
   void EnablePcapIpv4 (std::string prefix, NodeContainer n);
-  void EnablePcapIpv4 (std::string prefix, uint32_t nodeid, uint32_t interface);
+  void EnablePcapIpv4 (std::string prefix, uint32_t nodeid, uint32_t interface, bool explicitFilename);
   void EnablePcapIpv4All (std::string prefix);
 @end verbatim
 
@@ -2780,6 +2795,11 @@ For example, if you use the object name service to assign the name ``serverIpv4'
 to the Ptr<Ipv4> on node 21, the resulting pcap trace file name will 
 automatically become, ``prefix-nserverIpv4-i1.pcap''.
 
+Several of the methods have a default parameter called @code{explicitFilename}.
+When set to true, this parameter disables the automatic filename completion 
+mechanism and allows you to create an explicit filename.  This option is only
+available in the methods which take a prefix and enable tracing on a single device.  
+
 @subsection Ascii Tracing Protocol Helpers
 
 The behavior of the ascii trace helpers is substantially similar to the pcap
@@ -2796,8 +2816,11 @@ for using ascii tracing to a protocol helper.  Each protocol that enables these
 methods must implement a single virtual method inherited from this class.
 
 @verbatim
-  virtual void EnableAsciiIpv4Internal (Ptr<OutputStreamWrapper> stream, std::string prefix, 
-                                        Ptr<Ipv4> ipv4, uint32_t interface) = 0;
+  virtual void EnableAsciiIpv4Internal (Ptr<OutputStreamWrapper> stream, 
+                                        std::string prefix, 
+                                        Ptr<Ipv4> ipv4, 
+                                        uint32_t interface,
+                                        bool explicitFilename) = 0;
 @end verbatim
 
 The signature of this method reflects the protocol- and interface-centric view 
@@ -2808,7 +2831,7 @@ dependent implementation method.  For example, the lowest level ascii trace
 methods,
 
 @verbatim
-  void EnableAsciiIpv4 (std::string prefix, Ptr<Ipv4> ipv4, uint32_t interface);
+  void EnableAsciiIpv4 (std::string prefix, Ptr<Ipv4> ipv4, uint32_t interface, bool explicitFilename = false);
   void EnableAsciiIpv4 (Ptr<OutputStreamWrapper> stream, Ptr<Ipv4> ipv4, uint32_t interface);
 @verbatim
 
@@ -2820,13 +2843,13 @@ system will have all of the ascii trace methods available; and these methods
 will all work in the same way across protocols if the protocols implement 
 @code{EnablAsciiIpv4Internal} correctly.
 
-@subsubsection Ascii Tracing Device Helper Methods
+@subsubsection Ascii Tracing Protocol Helper Methods
 
 @verbatim
-  void EnableAsciiIpv4 (std::string prefix, Ptr<Ipv4> ipv4, uint32_t interface);
+  void EnableAsciiIpv4 (std::string prefix, Ptr<Ipv4> ipv4, uint32_t interface, bool explicitFilename = false);
   void EnableAsciiIpv4 (Ptr<OutputStreamWrapper> stream, Ptr<Ipv4> ipv4, uint32_t interface);
 
-  void EnableAsciiIpv4 (std::string prefix, std::string ipv4Name, uint32_t interface);
+  void EnableAsciiIpv4 (std::string prefix, std::string ipv4Name, uint32_t interface, bool explicitFilename = false);
   void EnableAsciiIpv4 (Ptr<OutputStreamWrapper> stream, std::string ipv4Name, uint32_t interface);
 
   void EnableAsciiIpv4 (std::string prefix, Ipv4InterfaceContainer c);
@@ -2835,11 +2858,11 @@ will all work in the same way across protocols if the protocols implement
   void EnableAsciiIpv4 (std::string prefix, NodeContainer n);
   void EnableAsciiIpv4 (Ptr<OutputStreamWrapper> stream, NodeContainer n);
 
-  void EnableAsciiIpv4 (std::string prefix, uint32_t nodeid, uint32_t deviceid);
-  void EnableAsciiIpv4 (Ptr<OutputStreamWrapper> stream, uint32_t nodeid, uint32_t interface);
-
   void EnableAsciiIpv4All (std::string prefix);
   void EnableAsciiIpv4All (Ptr<OutputStreamWrapper> stream);
+
+  void EnableAsciiIpv4 (std::string prefix, uint32_t nodeid, uint32_t deviceid, bool explicitFilename);
+  void EnableAsciiIpv4 (Ptr<OutputStreamWrapper> stream, uint32_t nodeid, uint32_t interface);
 @end verbatim
 
 You are encouraged to peruse the Doxygen for class @code{PcapAndAsciiHelperForIpv4}
@@ -3000,7 +3023,7 @@ helper.  All of these files will follow the <prefix>-n<node id>-i<interface.tr
 convention.  Combining all of the traces into a single file is accomplished 
 similarly to the examples above.
 
-@subsubsection Ascii Tracing Device Helper Filename Selection
+@subsubsection Ascii Tracing Protocol Helper Filename Selection
 
 Implicit in the prefix-style method descriptions above is the construction of the
 complete filenames by the implementation method.  By convention, ascii traces
@@ -3019,6 +3042,11 @@ You can always use the @code{ns-3} object name service to make this more clear.
 For example, if you use the object name service to assign the name ``serverIpv4''
 to the protocol on node 21, and also specify interface one, the resulting ascii 
 trace file name will automatically become, ``prefix-nserverIpv4-1.tr''.
+
+Several of the methods have a default parameter called @code{explicitFilename}.
+When set to true, this parameter disables the automatic filename completion 
+mechanism and allows you to create an explicit filename.  This option is only
+available in the methods which take a prefix and enable tracing on a single device.  
 
 @c ============================================================================
 @c Summary

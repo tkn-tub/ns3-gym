@@ -103,7 +103,11 @@ EmuHelper::EnablePcapInternal (std::string prefix, Ptr<NetDevice> nd, bool promi
 }
 
 void 
-EmuHelper::EnableAsciiInternal (Ptr<OutputStreamWrapper> stream, std::string prefix, Ptr<NetDevice> nd)
+EmuHelper::EnableAsciiInternal (
+  Ptr<OutputStreamWrapper> stream, 
+  std::string prefix, 
+  Ptr<NetDevice> nd,
+  bool explicitFilename)
 {
   //
   // All of the ascii enable functions vector through here including the ones
@@ -137,7 +141,17 @@ EmuHelper::EnableAsciiInternal (Ptr<OutputStreamWrapper> stream, std::string pre
       // name of the file given the prefix.
       //
       AsciiTraceHelper asciiTraceHelper;
-      std::string filename = asciiTraceHelper.GetFilenameFromDevice (prefix, device);
+
+      std::string filename;
+      if (explicitFilename)
+        {
+          filename = prefix;
+        }
+      else
+        {
+          filename = asciiTraceHelper.GetFilenameFromDevice (prefix, device);
+        }
+
       Ptr<OutputStreamWrapper> theStream = asciiTraceHelper.CreateFileStream (filename, "w");
 
       //

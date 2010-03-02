@@ -110,7 +110,11 @@ CsmaHelper::EnablePcapInternal (std::string prefix, Ptr<NetDevice> nd, bool prom
 }
 
 void 
-CsmaHelper::EnableAsciiInternal (Ptr<OutputStreamWrapper> stream, std::string prefix, Ptr<NetDevice> nd)
+CsmaHelper::EnableAsciiInternal (
+  Ptr<OutputStreamWrapper> stream, 
+  std::string prefix, 
+  Ptr<NetDevice> nd,
+  bool explicitFilename)
 {
   //
   // All of the ascii enable functions vector through here including the ones
@@ -144,7 +148,17 @@ CsmaHelper::EnableAsciiInternal (Ptr<OutputStreamWrapper> stream, std::string pr
       // name of the file given the prefix.
       //
       AsciiTraceHelper asciiTraceHelper;
-      std::string filename = asciiTraceHelper.GetFilenameFromDevice (prefix, device);
+
+      std::string filename;
+      if (explicitFilename)
+        {
+          filename = prefix;
+        }
+      else
+        {
+          filename = asciiTraceHelper.GetFilenameFromDevice (prefix, device);
+        }
+
       Ptr<OutputStreamWrapper> theStream = asciiTraceHelper.CreateFileStream (filename, "w");
 
       //

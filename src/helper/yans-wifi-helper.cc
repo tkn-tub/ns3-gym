@@ -398,6 +398,7 @@ YansWifiPhyHelper::EnablePcapInternal (std::string prefix, Ptr<NetDevice> nd, bo
   NS_ABORT_MSG_IF (phy == 0, "YansWifiPhyHelper::EnablePcapInternal(): Phy layer in WifiNetDevice must be set");
 
   PcapHelper pcapHelper;
+
   std::string filename;
   if (explicitFilename)
     {
@@ -415,7 +416,11 @@ YansWifiPhyHelper::EnablePcapInternal (std::string prefix, Ptr<NetDevice> nd, bo
 }
 
 void 
-YansWifiPhyHelper::EnableAsciiInternal (Ptr<OutputStreamWrapper> stream, std::string prefix, Ptr<NetDevice> nd)
+YansWifiPhyHelper::EnableAsciiInternal (
+  Ptr<OutputStreamWrapper> stream, 
+  std::string prefix, 
+  Ptr<NetDevice> nd,
+  bool explicitFilename)
 {
   //
   // All of the ascii enable functions vector through here including the ones
@@ -453,8 +458,16 @@ YansWifiPhyHelper::EnableAsciiInternal (Ptr<OutputStreamWrapper> stream, std::st
       // name of the file given the prefix.
       //
       AsciiTraceHelper asciiTraceHelper;
-      std::string filename = asciiTraceHelper.GetFilenameFromDevice (prefix, device);
-      Ptr<OutputStreamWrapper> theStream = asciiTraceHelper.CreateFileStream (filename, "w");
+
+      std::string filename;
+      if (explicitFilename)
+        {
+          filename = prefix;
+        }
+      else
+        {
+          filename = asciiTraceHelper.GetFilenameFromDevice (prefix, device);
+        }
 
       //
       // We could go poking through the phy and the state looking for the 

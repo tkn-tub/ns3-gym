@@ -179,7 +179,9 @@ private:
    * @param interface Interface ID on the Ipv4 on which you want to enable tracing.
    */
   virtual void EnablePcapIpv4Internal (std::string prefix, 
-                                       Ptr<Ipv4> ipv4, uint32_t interface);
+                                       Ptr<Ipv4> ipv4, 
+                                       uint32_t interface,
+                                       bool explicitFilename);
 
   /**
    * @brief Enable ascii trace output on the indicated Ipv4 and interface pair.
@@ -191,8 +193,11 @@ private:
    * @param ipv4 Ptr to the Ipv4 interface on which you want to enable tracing.
    * @param interface Interface ID on the Ipv4 on which you want to enable tracing.
    */
-  virtual void EnableAsciiIpv4Internal (Ptr<OutputStreamWrapper> stream, std::string prefix, 
-                                        Ptr<Ipv4> ipv4, uint32_t interface);
+  virtual void EnableAsciiIpv4Internal (Ptr<OutputStreamWrapper> stream, 
+                                        std::string prefix, 
+                                        Ptr<Ipv4> ipv4, 
+                                        uint32_t interface,
+                                        bool explicitFilename);
 
   /**
    * @brief Enable pcap output the indicated Ipv4 and interface pair.
@@ -203,7 +208,9 @@ private:
    * @param interface Interface ID on the Ipv4 on which you want to enable tracing.
    */
   virtual void EnablePcapIpv6Internal (std::string prefix, 
-                                       Ptr<Ipv6> ipv6, uint32_t interface);
+                                       Ptr<Ipv6> ipv6, 
+                                       uint32_t interface,
+                                       bool explicitFilename);
 
   /**
    * @brief Enable ascii trace output on the indicated Ipv4 and interface pair.
@@ -215,8 +222,11 @@ private:
    * @param ipv4 Ptr to the Ipv4 interface on which you want to enable tracing.
    * @param interface Interface ID on the Ipv4 on which you want to enable tracing.
    */
-  virtual void EnableAsciiIpv6Internal (Ptr<OutputStreamWrapper> stream, std::string prefix, 
-                                        Ptr<Ipv6> ipv6, uint32_t interface);
+  virtual void EnableAsciiIpv6Internal (Ptr<OutputStreamWrapper> stream, 
+                                        std::string prefix, 
+                                        Ptr<Ipv6> ipv6, 
+                                        uint32_t interface,
+                                        bool explicitFilename);
 
   void Initialize (void);
   ObjectFactory m_tcpFactory;

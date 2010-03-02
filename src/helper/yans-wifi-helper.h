@@ -244,7 +244,10 @@ private:
    * @param promiscuous If true capture all possible packets available at the device.
    * @param explicitFilename Treat the prefix as an explicit filename if true
    */
-  virtual void EnablePcapInternal (std::string prefix, Ptr<NetDevice> nd, bool promiscuous, bool explicitFilename);
+  virtual void EnablePcapInternal (std::string prefix, 
+                                   Ptr<NetDevice> nd, 
+                                   bool promiscuous, 
+                                   bool explicitFilename);
 
   /**
    * \brief Enable ascii trace output on the indicated net device.
@@ -257,7 +260,10 @@ private:
    * \param prefix Filename prefix to use for ascii trace files.
    * \param nd Net device for which you want to enable tracing.
    */
-  virtual void EnableAsciiInternal (Ptr<OutputStreamWrapper> stream, std::string prefix, Ptr<NetDevice> nd);
+  virtual void EnableAsciiInternal (Ptr<OutputStreamWrapper> stream, 
+                                    std::string prefix, 
+                                    Ptr<NetDevice> nd,
+                                    bool explicitFilename);
 
   ObjectFactory m_phy;
   ObjectFactory m_errorRateModel;

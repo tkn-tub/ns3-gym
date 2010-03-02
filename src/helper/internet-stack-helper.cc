@@ -444,7 +444,7 @@ InternetStackHelper::PcapHooked (Ptr<Ipv4> ipv4)
 }
 
 void 
-InternetStackHelper::EnablePcapIpv4Internal (std::string prefix, Ptr<Ipv4> ipv4, uint32_t interface)
+InternetStackHelper::EnablePcapIpv4Internal (std::string prefix, Ptr<Ipv4> ipv4, uint32_t interface, bool explicitFilename)
 {
   NS_LOG_FUNCTION (prefix << ipv4 << interface);
 
@@ -459,7 +459,17 @@ InternetStackHelper::EnablePcapIpv4Internal (std::string prefix, Ptr<Ipv4> ipv4,
   // irrespective of how many times we want to trace a particular protocol.
   //
   PcapHelper pcapHelper;
-  std::string filename = pcapHelper.GetFilenameFromInterfacePair (prefix, ipv4, interface);
+
+  std::string filename;
+  if (explicitFilename)
+    {
+      filename = prefix;
+    }
+  else
+    {
+      filename = pcapHelper.GetFilenameFromInterfacePair (prefix, ipv4, interface);
+    }
+
   Ptr<PcapFileWrapper> file = pcapHelper.CreateFile (filename, "w", PcapHelper::DLT_RAW);
 
   //
@@ -526,7 +536,7 @@ InternetStackHelper::PcapHooked (Ptr<Ipv6> ipv6)
 }
 
 void 
-InternetStackHelper::EnablePcapIpv6Internal (std::string prefix, Ptr<Ipv6> ipv6, uint32_t interface)
+InternetStackHelper::EnablePcapIpv6Internal (std::string prefix, Ptr<Ipv6> ipv6, uint32_t interface, bool explicitFilename)
 {
   NS_LOG_FUNCTION (prefix << ipv6 << interface);
 
@@ -541,7 +551,17 @@ InternetStackHelper::EnablePcapIpv6Internal (std::string prefix, Ptr<Ipv6> ipv6,
   // irrespective of how many times we want to trace a particular protocol.
   //
   PcapHelper pcapHelper;
-  std::string filename = pcapHelper.GetFilenameFromInterfacePair (prefix, ipv6, interface);
+
+  std::string filename;
+  if (explicitFilename)
+    {
+      filename = prefix;
+    }
+  else
+    {
+      filename = pcapHelper.GetFilenameFromInterfacePair (prefix, ipv6, interface);
+    }
+
   Ptr<PcapFileWrapper> file = pcapHelper.CreateFile (filename, "w", PcapHelper::DLT_RAW);
 
   //
@@ -650,7 +670,8 @@ InternetStackHelper::EnableAsciiIpv4Internal (
   Ptr<OutputStreamWrapper> stream, 
   std::string prefix, 
   Ptr<Ipv4> ipv4, 
-  uint32_t interface)
+  uint32_t interface,
+  bool explicitFilename)
 {
   if (!m_ipv4Enabled)
     {
@@ -682,7 +703,17 @@ InternetStackHelper::EnableAsciiIpv4Internal (
       // protocol.
       //
       AsciiTraceHelper asciiTraceHelper;
-      std::string filename = asciiTraceHelper.GetFilenameFromInterfacePair (prefix, ipv4, interface);
+
+      std::string filename;
+      if (explicitFilename)
+        {
+          filename = prefix;
+        }
+      else
+        {
+          filename = asciiTraceHelper.GetFilenameFromInterfacePair (prefix, ipv4, interface);
+        }
+
       Ptr<OutputStreamWrapper> theStream = asciiTraceHelper.CreateFileStream (filename, "w");
 
       //
@@ -834,7 +865,8 @@ InternetStackHelper::EnableAsciiIpv6Internal (
   Ptr<OutputStreamWrapper> stream, 
   std::string prefix, 
   Ptr<Ipv6> ipv6, 
-  uint32_t interface)
+  uint32_t interface,
+  bool explicitFilename)
 {
   if (!m_ipv6Enabled)
     {
@@ -866,7 +898,17 @@ InternetStackHelper::EnableAsciiIpv6Internal (
       // protocol.
       //
       AsciiTraceHelper asciiTraceHelper;
-      std::string filename = asciiTraceHelper.GetFilenameFromInterfacePair (prefix, ipv6, interface);
+
+      std::string filename;
+      if (explicitFilename)
+        {
+          filename = prefix;
+        }
+      else
+        {
+          filename = asciiTraceHelper.GetFilenameFromInterfacePair (prefix, ipv6, interface);
+        }
+
       Ptr<OutputStreamWrapper> theStream = asciiTraceHelper.CreateFileStream (filename, "w");
 
       //
