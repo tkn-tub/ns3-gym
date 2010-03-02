@@ -63,6 +63,7 @@ AirtimeLinkMetricCalculator::SetHeaderTid (uint8_t tid)
 {
   m_testHeader.SetDsFrom ();
   m_testHeader.SetDsTo ();
+  m_testHeader.SetTypeData ();
   m_testHeader.SetQosTid (tid);
 }
 void
