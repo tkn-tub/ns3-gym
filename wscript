@@ -207,18 +207,23 @@ def set_options(opt):
     opt.sub_options('src/internet-stack')
 
 
-def _check_compilation_flag(conf, flag):
+def _check_compilation_flag(conf, flag, mode='cxx'):
     """
     Checks if the C++ compiler accepts a certain compilation flag or flags
     flag: can be a string or a list of strings
     """
 
     env = conf.env.copy()
-    env.append_value('CXXFLAGS', flag)
+    if mode == 'cxx':
+        fname = 'test.cc'
+        env.append_value('CXXFLAGS', flag)
+    else:
+        fname = 'test.c'
+        env.append_value('CCFLAGS', flag)
     try:
         retval = conf.run_c_code(code='#include <stdio.h>\nint main() { return 0; }\n',
-                                 env=env, compile_filename='test.cc',
-                                 compile_mode='cxx',type='cprogram', execute=False)
+                                 env=env, compile_filename=fname,
+                                 compile_mode=mode, type='cprogram', execute=False)
     except Configure.ConfigurationError:
         ok = False
     else:
@@ -279,10 +284,6 @@ def configure(conf):
     conf.setenv(variant_name)
     env = variant_env
 
-    if env['COMPILER_CXX'] == 'g++' and 'CXXFLAGS' not in os.environ:
-        if conf.check_compilation_flag('-Wno-error=deprecated-declarations'):
-            env.append_value('CXXFLAGS', '-Wno-error=deprecated-declarations')
-        
     if Options.options.build_profile == 'debug':
         env.append_value('CXXDEFINES', 'NS3_ASSERT_ENABLE')
         env.append_value('CXXDEFINES', 'NS3_LOG_ENABLE')
@@ -391,6 +392,13 @@ def configure(conf):
     # for compiling C code, copy over the CXX* flags
     conf.env.append_value('CCFLAGS', conf.env['CXXFLAGS'])
     conf.env.append_value('CCDEFINES', conf.env['CXXDEFINES'])
+
+    if env['COMPILER_CXX'] == 'g++' and 'CXXFLAGS' not in os.environ:
+        if conf.check_compilation_flag('-Wno-error=deprecated-declarations', mode='cxx'):
+            env.append_value('CXXFLAGS', '-Wno-error=deprecated-declarations')
+    if env['COMPILER_CC'] == 'gcc' and 'CCFLAGS' not in os.environ:
+        if conf.check_compilation_flag('-Wno-error=deprecated-declarations', mode='cc'):
+            env.append_value('CCFLAGS', '-Wno-error=deprecated-declarations')        
 
     # append user defined flags after all our ones
     for (confvar, envvar) in [['CCFLAGS', 'CCFLAGS_EXTRA'],
