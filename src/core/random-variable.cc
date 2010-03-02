@@ -516,6 +516,7 @@ public:
 
   /**
    * \brief Constructs an exponential random variable with a specified mean
+   *
    * \param m Mean value for the random variable
    */
   explicit ExponentialVariableImpl (double m);
@@ -619,15 +620,17 @@ public:
   ParetoVariableImpl ();
 
   /**
-   * Constructs a pareto random variable with specified mean and shape
+   * \brief Constructs a pareto random variable with specified mean and shape
    * parameter of 1.5
+   *
    * \param m Mean value of the distribution
    */
   explicit ParetoVariableImpl (double m);
 
   /**
-   * Constructs a pareto random variable with the specified mean value and
-   * shape parameter.
+   * \brief Constructs a pareto random variable with the specified mean
+   * value and shape parameter. Beware, s must be strictly greater than 1.
+   *
    * \param m Mean value of the distribution
    * \param s Shape parameter for the distribution
    */
@@ -635,7 +638,7 @@ public:
 
   /**
    * \brief Constructs a pareto random variable with the specified mean
-   * \brief value, shape (alpha), and upper bound.
+   * value, shape (alpha), and upper bound. Beware, s must be strictly greater than 1.
    *
    * Since pareto distributions can theoretically return unbounded values,
    * it is sometimes useful to specify a fixed upper limit.  Note however
@@ -647,6 +650,28 @@ public:
    */
   ParetoVariableImpl (double m, double s, double b);
 
+  /**
+   * \brief Constructs a pareto random variable with the specified scale and shape
+   * parameters.
+   *
+   * \param params the two parameters, respectively scale and shape, of the distribution
+   */
+  ParetoVariableImpl (std::pair<double, double> params);
+
+  /**
+   * \brief Constructs a pareto random variable with the specified
+   * scale, shape (alpha), and upper bound.
+   *
+   * Since pareto distributions can theoretically return unbounded values,
+   * it is sometimes useful to specify a fixed upper limit.  Note however
+   * when the upper limit is specified, the true mean of the distribution
+   * is slightly smaller than the mean value specified.
+   *
+   * \param params the two parameters, respectively scale and shape, of the distribution
+   * \param b Upper limit on returned values
+   */
+  ParetoVariableImpl (std::pair<double, double> params, double b);
+
   ParetoVariableImpl (const ParetoVariableImpl& c);
 
   /**
@@ -656,42 +681,56 @@ public:
   virtual RandomVariableBase* Copy () const;
 
 private:
-  double m_mean;  // Mean value of RV
+  double m_scale; // Scale value of RV
   double m_shape; // Shape parameter
   double m_bound; // Upper bound on value (if non-zero)
 };
 
 ParetoVariableImpl::ParetoVariableImpl ()
-  : m_mean (1.0),
+  : m_scale (0.5 / 1.5),
     m_shape (1.5),
     m_bound (0)
 {
 }
 
 ParetoVariableImpl::ParetoVariableImpl (double m)
-  : m_mean (m),
+  : m_scale (m * 0.5 / 1.5),
     m_shape (1.5),
     m_bound (0)
 {
 }
 
 ParetoVariableImpl::ParetoVariableImpl (double m, double s)
-  : m_mean (m),
+  : m_scale (m * (s - 1.0) / s),
     m_shape (s),
     m_bound (0)
 {
 }
 
 ParetoVariableImpl::ParetoVariableImpl (double m, double s, double b)
-  : m_mean (m),
+  : m_scale (m * (s - 1.0) / s),
     m_shape (s),
+    m_bound (b)
+{
+}
+
+ParetoVariableImpl::ParetoVariableImpl (std::pair<double, double> params)
+  : m_scale (params.first),
+    m_shape (params.second),
+    m_bound (0)
+{
+}
+
+ParetoVariableImpl::ParetoVariableImpl (std::pair<double, double> params, double b)
+  : m_scale (params.first),
+    m_shape (params.second),
     m_bound (b)
 {
 }
 
 ParetoVariableImpl::ParetoVariableImpl (const ParetoVariableImpl& c)
   : RandomVariableBase (c),
-    m_mean (c.m_mean),
+    m_scale (c.m_scale),
     m_shape (c.m_shape),
     m_bound (c.m_bound)
 {
@@ -703,10 +742,9 @@ double ParetoVariableImpl::GetValue ()
     {
       m_generator = new RngStream ();
     }
-  double scale = m_mean * ( m_shape - 1.0) / m_shape;
   while (1)
     {
-      double r = (scale * ( 1.0 / pow (m_generator->RandU01 (), 1.0 / m_shape)));
+      double r = (m_scale * ( 1.0 / pow (m_generator->RandU01 (), 1.0 / m_shape)));
       if (m_bound == 0 || r <= m_bound)
         {
           return r;
@@ -734,6 +772,14 @@ ParetoVariable::ParetoVariable (double m, double s)
 }
 ParetoVariable::ParetoVariable (double m, double s, double b)
   : RandomVariable (ParetoVariableImpl (m, s, b))
+{
+}
+ParetoVariable::ParetoVariable (std::pair<double, double> params)
+  : RandomVariable (ParetoVariableImpl (params))
+{
+}
+ParetoVariable::ParetoVariable (std::pair<double, double> params, double b)
+  : RandomVariable (ParetoVariableImpl (params, b))
 {
 }
 

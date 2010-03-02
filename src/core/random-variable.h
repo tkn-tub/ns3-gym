@@ -358,21 +358,23 @@ class ParetoVariable : public RandomVariable
 {
 public:
   /**
-   * Constructs a pareto random variable with a mean of 1 and a shape
+   * \brief Constructs a pareto random variable with a mean of 1 and a shape
    * parameter of 1.5
    */
   ParetoVariable ();
 
   /**
-   * Constructs a pareto random variable with specified mean and shape
+   * \brief Constructs a pareto random variable with specified mean and shape
    * parameter of 1.5
+   *
    * \param m Mean value of the distribution
    */
   explicit ParetoVariable (double m);
 
   /**
-   * Constructs a pareto random variable with the specified mean value and
-   * shape parameter.
+   * \brief Constructs a pareto random variable with the specified mean
+   * value and shape parameter. Beware, s must be strictly greater than 1.
+   *
    * \param m Mean value of the distribution
    * \param s Shape parameter for the distribution
    */
@@ -380,7 +382,7 @@ public:
 
   /**
    * \brief Constructs a pareto random variable with the specified mean
-   * \brief value, shape (alpha), and upper bound.
+   * value, shape (alpha), and upper bound. Beware, s must be strictly greater than 1.
    *
    * Since pareto distributions can theoretically return unbounded values,
    * it is sometimes useful to specify a fixed upper limit.  Note however
@@ -391,6 +393,28 @@ public:
    * \param b Upper limit on returned values
    */
   ParetoVariable (double m, double s, double b);
+
+  /**
+   * \brief Constructs a pareto random variable with the specified scale and shape
+   * parameters.
+   *
+   * \param params the two parameters, respectively scale and shape, of the distribution
+   */
+  ParetoVariable (std::pair<double, double> params);
+
+  /**
+   * \brief Constructs a pareto random variable with the specified
+   * scale, shape (alpha), and upper bound.
+   *
+   * Since pareto distributions can theoretically return unbounded values,
+   * it is sometimes useful to specify a fixed upper limit.  Note however
+   * when the upper limit is specified, the true mean of the distribution
+   * is slightly smaller than the mean value specified.
+   *
+   * \param params the two parameters, respectively scale and shape, of the distribution
+   * \param b Upper limit on returned values
+   */
+  ParetoVariable (std::pair<double, double> params, double b);
 
 };
 
