@@ -630,8 +630,17 @@ int
 TcpSocketImpl::GetSockName (Address &address) const
 {
   NS_LOG_FUNCTION_NOARGS ();
-  address = InetSocketAddress(m_endPoint->GetLocalAddress (), 
-                              m_endPoint->GetLocalPort ());
+  if (m_endPoint != 0)
+    {
+      address = InetSocketAddress (m_endPoint->GetLocalAddress (), 
+                                   m_endPoint->GetLocalPort ());
+    } 
+  else
+    {
+      // It is possible to call this method on a socket without a name
+      // in which case, behavior is unspecified
+      address = InetSocketAddress (Ipv4Address::GetZero (), 0);
+    }
   return 0;
 }
 
