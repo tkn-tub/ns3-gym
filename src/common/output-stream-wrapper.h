@@ -29,29 +29,22 @@ namespace ns3 {
 /*
  * @brief A class encapsulating an STL output stream.
  *
- * One of the common issues users run into when trying to use tracing in ns-3
- * is actually due to a design decision made in the C++ stream library.  
+ * This class wraps a pointer to a C++ std::ostream and provides 
+ * reference counting of the object.  This class is recommended for users 
+ * who want to pass output streams in the ns-3 APIs, such as in callbacks
+ * or tracing.
  *
- * It is not widely known, but copy and assignment of iostreams is forbidden by 
- * std::basic_ios<>.  This is because it is not possible to predict the 
- * semantics of the stream desired by a user.
+ * This class is motivated by the fact that in C++, copy and assignment of 
+ * iostreams is forbidden by std::basic_ios<>, because it is not possible 
+ * to predict the semantics of the stream desired by a user.
  *
  * When writing traced information to a file, the tempting ns-3 idiom is to 
  * create a bound callback with an ofstream as the bound object.  Unfortunately,
  * this implies a copy construction in order to get the ofstream object into the
- * callback.  This operation, as mentioned above, is forbidden by the STL.  One
- * could use a global ostream and pass a pointer to it, but that is pretty ugly.  
- * One could also create an ostream on the stack and pass a pointer to it in the
- * callback, but object lifetime issues will quickly rear their ugly heads.  It
- * turns out that ns-3 has a nifty reference counted object that can solve the 
- * value semantics and object lifetime issues, so we provide one of those to 
- * carry the stream around.
- *
- * The experienced C++ wizard may ask, "what's the point of such a simple class."
- * but this isn't oriented toward them.  We use this to make a simple thing 
- * simple to do for new users; and also as a simple example of ns-3 objects at a
- * high level.  We know of a couple of high-powered experienced developers that 
- * have been tripped up by this and decided that it must be an ns-3 bug.
+ * callback.  This operation, as mentioned above, is forbidden by the STL.  
+ * Using this class in ns-3 APIs is generally preferable to passing global 
+ * pointers to ostream objects, or passing a pointer to a stack allocated 
+ * ostream (which creates object lifetime issues). 
  *
  * One could imagine having this object inherit from stream to get the various
  * overloaded operator<< defined, but we're going to be using a
@@ -69,6 +62,10 @@ namespace ns3 {
  *     *stream << "got packet" << std::endl;
  *   }
  * \endverbatim
+ *
+ *
+ * This class uses a basic ns-3 reference counting base class but is not 
+ * an ns3::Object with attributes, TypeId, or aggregation.
  */
 class OutputStreamWrapper : public SimpleRefCount<OutputStreamWrapper>
 {
@@ -76,7 +73,22 @@ public:
   OutputStreamWrapper ();
   ~OutputStreamWrapper ();
 
+  /**
+   * Deletes any previously set stream object and sets the stream wrapper to 
+   * hold the provided stream..
+   *
+   * \param ostream a pointer to the std::ostream to be encapsulated
+   */
   void SetStream (std::ostream *ostream);
+
+  /**
+   * Return a pointer to an ostream previously set in the wrapper.
+   *
+   * \see SetStream
+   *
+   * \returns a pointer to the encapsulated std::ostream, or 0 if none has
+   *  been previously set
+   */
   std::ostream *GetStream (void);
   
 private:

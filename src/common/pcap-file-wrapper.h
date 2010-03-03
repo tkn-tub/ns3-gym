@@ -29,9 +29,11 @@
 namespace ns3 {
 
 /*
- * A class representing a pcap file tailored for use in model code.
+ * A class that wraps a PcapFile as an ns3::Object and provides a higher-layer
+ * ns-3 interface to the low-level public methods of PcapFile.  Users are
+ * encouraged to use this object instead of class ns3::PcapFile in ns-3
+ * public APIs.
  */
-
 class PcapFileWrapper : public Object
 {
 public:
