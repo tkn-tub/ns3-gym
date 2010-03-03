@@ -245,6 +245,66 @@ RandomRectanglePositionAllocator::GetNext (void) const
   return Vector (x, y, 0.0);
 }
 
+
+NS_OBJECT_ENSURE_REGISTERED (RandomBoxPositionAllocator);
+
+TypeId
+RandomBoxPositionAllocator::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::RandomBoxPositionAllocator")
+    .SetParent<PositionAllocator> ()
+    .SetGroupName ("Mobility")
+    .AddConstructor<RandomBoxPositionAllocator> ()
+    .AddAttribute ("X",
+                   "A random variable which represents the x coordinate of a position in a random box.",
+                   RandomVariableValue (UniformVariable (0.0, 1.0)),
+                   MakeRandomVariableAccessor (&RandomBoxPositionAllocator::m_x),
+                   MakeRandomVariableChecker ())
+    .AddAttribute ("Y",
+                   "A random variable which represents the y coordinate of a position in a random box.",
+                   RandomVariableValue (UniformVariable (0.0, 1.0)),
+                   MakeRandomVariableAccessor (&RandomBoxPositionAllocator::m_y),
+                   MakeRandomVariableChecker ())
+    .AddAttribute ("Z",
+                   "A random variable which represents the z coordinate of a position in a random box.",
+                   RandomVariableValue (UniformVariable (0.0, 1.0)),
+                   MakeRandomVariableAccessor (&RandomBoxPositionAllocator::m_z),
+                   MakeRandomVariableChecker ());
+  return tid;
+}
+
+RandomBoxPositionAllocator::RandomBoxPositionAllocator ()
+{}
+RandomBoxPositionAllocator::~RandomBoxPositionAllocator ()
+{}
+
+void 
+RandomBoxPositionAllocator::SetX (RandomVariable x)
+{
+  m_x = x;
+}
+void 
+RandomBoxPositionAllocator::SetY (RandomVariable y)
+{
+  m_y = y;
+}
+void 
+RandomBoxPositionAllocator::SetZ (RandomVariable z)
+{
+  m_z = z;
+}
+
+Vector
+RandomBoxPositionAllocator::GetNext (void) const
+{
+  double x = m_x.GetValue ();
+  double y = m_y.GetValue ();
+  double z = m_z.GetValue ();
+  return Vector (x, y, z);
+}
+
+
+
 NS_OBJECT_ENSURE_REGISTERED (RandomDiscPositionAllocator);
 
 TypeId

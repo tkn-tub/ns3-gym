@@ -22,6 +22,7 @@
 
 #include "ns3/nstime.h"
 #include "ns3/vector.h"
+#include "ns3/box.h"
 
 namespace ns3 {
 
@@ -43,6 +44,7 @@ class ConstantVelocityHelper
   void Unpause (void);
 
   void UpdateWithBounds (const Rectangle &rectangle) const;
+  void UpdateWithBounds (const Box &bounds) const;
   void Update (void) const;
  private:
   mutable Time m_lastUpdate;

@@ -181,6 +181,28 @@ private:
 };
 
 /**
+ * \brief allocate random positions within a 3D box
+ * according to a set of three random variables.
+ */
+class RandomBoxPositionAllocator : public PositionAllocator
+{
+public:
+  static TypeId GetTypeId (void);
+  RandomBoxPositionAllocator ();
+  virtual ~RandomBoxPositionAllocator ();
+
+  void SetX (RandomVariable x);
+  void SetY (RandomVariable y);
+  void SetZ (RandomVariable z);
+
+  virtual Vector GetNext (void) const;
+private:
+  RandomVariable m_x;
+  RandomVariable m_y;
+  RandomVariable m_z;
+};
+
+/**
  * \brief allocate random positions within a disc
  * according to a given distribution for the polar coordinates of each
  * node with respect to the provided center of the disc 

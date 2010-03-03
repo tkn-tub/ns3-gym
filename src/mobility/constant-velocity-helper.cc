@@ -19,6 +19,7 @@
  */
 #include "ns3/simulator.h"
 #include "ns3/rectangle.h"
+#include "ns3/box.h"
 #include "constant-velocity-helper.h"
 
 namespace ns3 {
@@ -87,6 +88,18 @@ ConstantVelocityHelper::UpdateWithBounds (const Rectangle &bounds) const
   m_position.x = std::max (bounds.xMin, m_position.x);
   m_position.y = std::min (bounds.yMax, m_position.y);
   m_position.y = std::max (bounds.yMin, m_position.y);
+}
+
+void
+ConstantVelocityHelper::UpdateWithBounds (const Box &bounds) const
+{
+  Update ();
+  m_position.x = std::min (bounds.xMax, m_position.x);
+  m_position.x = std::max (bounds.xMin, m_position.x);
+  m_position.y = std::min (bounds.yMax, m_position.y);
+  m_position.y = std::max (bounds.yMin, m_position.y);
+  m_position.z = std::min (bounds.zMax, m_position.z);
+  m_position.z = std::max (bounds.zMin, m_position.z);
 }
 
 void 
