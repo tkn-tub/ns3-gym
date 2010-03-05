@@ -1312,17 +1312,17 @@ available during configuration time.  In particular, an @command{ns-3}
 communicate between @code{Nodes}.  An @command{ns-3} @code{Application} 
 always has a ``Start Time'' and a ``Stop Time'' associated with it.  In the
 vast majority of cases, an @code{Application} will not attempt to create 
-a dynamic object until its @code{StartApplication} method is called.  This
-is to ensure that the simulation is completely configured before the app
-tries to do anything (what would happen if it tried to connect to a node
-that didn't exist yet during configuration time).  The answer to this 
-issue is to 1) create a simulator event that is run after the dynamic object
-is created and hook the trace when that event is executed; or 2) create the
-dynamic object at configuration time, hook it then, and give the object to
-the system to use during simulation time.  We took the second approach in
-the @code{fifth.cc} example.  This decision required us to create the 
-@code{MyApp} @code{Application}, the entire purpose of which is to 
-take a @code{Socket} as a parameter.  
+a dynamic object until its @code{StartApplication} method is called at some
+``Start Time''.  This is to ensure that the simulation is completely 
+configured before the app tries to do anything (what would happen if it tried
+to connect to a node that didn't exist yet during configuration time).  The 
+answer to this issue is to 1) create a simulator event that is run after the 
+dynamic object is created and hook the trace when that event is executed; or
+2) create the dynamic object at configuration time, hook it then, and give 
+the object to the system to use during simulation time.  We took the second 
+approach in the @code{fifth.cc} example.  This decision required us to create
+the @code{MyApp} @code{Application}, the entire purpose of which is to take 
+a @code{Socket} as a parameter.  
 
 @subsection A fifth.cc Walkthrough
 
@@ -1438,15 +1438,22 @@ You can see that this class inherits from the @command{ns-3} @code{Application}
 class.  Take a look at @code{src/node/application.h} if you are interested in 
 what is inherited.  The @code{MyApp} class is obligated to override the 
 @code{StartApplication} and @code{StopApplication} methods.  These methods are
-called when the corresponding base class @code{Start} and @code{Stop} methods are
-called during simulation time.  
+automatically called when @code{MyApp} is required to start and stop sending
+data during the simulation.
 
-@subsubsection How Applications are Started and Stopped
+@subsubsection How Applications are Started and Stopped (optional)
 
 It is worthwhile to spend a bit of time explaining how events actually get 
-started in the system.  The most common way to start pumping events is to start
-an @code{Application}.  This is done as the result of the following (hopefully)
-familar lines of an @command{ns-3} script:
+started in the system.  This is another fairly deep explanation, and can be
+ignored if you aren't planning on venturing down into the guts of the system.
+It is useful, however, in that the discussion touches on how some very important
+parts of @code{ns-3} work and exposes some important idioms.  If you are 
+planning on implementing new models, you probably want to understand this
+section.
+
+The most common way to start pumping events is to start an @code{Application}.
+This is done as the result of the following (hopefully) familar lines of an 
+@command{ns-3} script:
 
 @verbatim
   ApplicationContainer apps = ...
@@ -1458,33 +1465,127 @@ The application container code (see @code{src/helper/application-container.h} if
 you are interested) loops through its contained applications and calls,
 
 @verbatim
-  app->Start (startTime);
-  app->Stop (stopTime);
+  app->SetStartTime (startTime);
 @end verbatim
 
-on each of them.  The @code{Start} method of an @code{Application} calls 
-@code{Application::ScheduleStart} (see @code{src/helper/application-container.cc})
-which, in turn, schedules an event to start the @code{Application}:
+as a result of the @code{apps.Start} call and
 
 @verbatim
-  Simulator::Schedule (startTime, &Application::StartApplication, this);
+  app->SetStopTime (stopTime);
 @end verbatim
 
-Since @code{MyApp} inherits from @code{Application} and overrides 
-@code{StartApplication}, this bit of code causes the simulator to execute
-something that is effectively like,
+as a result of the @code{apps.Stop} call.
+
+The ulitmate result of these calls is that we want to have the simulator 
+automatically make calls into our @code{Applications} to tell them when to
+start and stop.  In the case of @code{MyApp}, it inherits from class
+@code{Application} and overrides @code{StartApplication}, and 
+@code{StopApplication}.  These are the functions that will be called by
+the simulator at the appropriate time.  In the case of @code{MyApp} you
+will find that @code{MyApp::StartApplication} does the initial @code{Bind},
+and @code{Connect} on the socket, and then starts data flowing by calling
+@code{MyApp::SendPacket}.  @code{MyApp::StopApplication} stops generating
+packets by cancelling any pending send events and closing the socket.
+
+One of the nice things about @command{ns-3} is that you can completely 
+ignore the implementation details of how your @code{Application} is 
+``automagically'' called by the simulator at the correct time.  But since
+we have already ventured deep into @command{ns-3} already, let's go for it.
+
+If you look at @code{src/node/application.cc} you will find that the
+@code{SetStartTime} method of an @code{Application} just sets the member 
+variable @code{m_startTime} and the @code{SetStopTime} method just sets 
+@code{m_stopTime}.  From there, without some hints, the trail will probably
+end.
+
+The key to picking up the trail again is to know that there is a global 
+list of all of the nodes in the system.  Whenever you create a node in 
+a simulation, a pointer to that node is added to the global @code{NodeList}.
+
+Take a look at @code{src/node/node-list.cc} and search for 
+@code{NodeList::Add}.  The public static implementation calls into a private
+implementation called @code{NodeListPriv::Add}.  This is a relatively common
+idom in @command{ns-3}.  So, take a look at @code{NodeListPriv::Add}.  There
+you will find,
 
 @verbatim
-  this->StartApplication (startTime);
+  Simulator::ScheduleWithContext (index, TimeStep (0), &Node::Start, node);
 @end verbatim
 
-where the @code{this} pointer, if you have kept it all straight, is the pointer
-to the @code{Application} in the container.  It is then expected that another 
-event will be scheduled in the overridden @code{StartApplication} that will 
-begin doing some application-specific function, like sending packets.  
+This tells you that whenever a @code{Node} is created in a simulation, as
+a side-effect, a call to that node's @code{Start} method is scheduled for
+you that happens at time zero.  Don't read too much into that name, yet.
+It doesn't mean that the node is going to start doing anything, it can be
+interpreted as an informational call into the @code{Node} telling it that 
+the simulation has started, not a call for action telling the @code{Node}
+to start doing something.
 
-@code{StopApplication} operates in a similar manner and tells the @code{Application}
-to stop generating events.
+So, @code{NodeList::Add} indirectly schedules a call to @code{Node::Start}
+at time zero to advise a new node that the simulation has started.  If you 
+look in @code{src/node/node.h} you will, however, not find a method called
+@code{Node::Start}.  It turns out that the @code{Start} method is inherited
+from class @code{Object}.  All objects in the system can be notified when
+the simulation starts, and objects of class @code{Node} are just one kind
+of those objects.
+
+Take a look at @code{src/core/object.cc} next and search for @code{Object::Start}.
+This code is not as straightforward as you might have expected since 
+@command{ns-3} @code{Objects} support aggregation.  The code in 
+@code{Object::Start} then loops through all of the objects that have been
+aggretated together and calls their @code{DoStart} method.  This is another
+idiom that is very common in @command{ns-3}.  There is a public API method,
+that stays constant across implementations, that calls a private implementation
+method that is inherited and implemented by subclasses.  The names are typically
+something like @code{MethodName} for the public API and @code{DoMethodName} for
+the private API.
+
+This tells us that we should look for a @code{Node::DoStart} method in 
+@code{src/node/node.cc} for the method that will continue our trail.  If you
+locate the code, you will find a method that loops through all of the devices
+in the node and then all of the applications in the node calling 
+@code{device->Start} and @code{application->Start} respectively.
+
+You may already know that classes @code{Device} and @code{Application} both
+inherit from class @code{Object} and so the next step will be to look at
+what happens when @code{Application::DoStart} is called.  Take a look at
+@code{src/node/application.cc} and you will find:
+
+@verbatim
+  void
+  Application::DoStart (void)
+  {
+    m_startEvent = Simulator::Schedule (m_startTime, &Application::StartApplication, this);
+    if (m_stopTime != TimeStep (0))
+      {
+        m_stopEvent = Simulator::Schedule (m_stopTime, &Application::StopApplication, this);
+      }
+    Object::DoStart ();
+  }
+@end verbatim
+
+Here, we finally come to the end of the trail.  If you have kept it all straight,
+when you implement an @command{ns-3} @code{Application}, your new application 
+inherits from class @code{Application}.  You override the @code{StartApplication}
+and @code{StopApplication} methods and provide mechanisms for starting and 
+stopping the flow of data out of your new @code{Application}.  When a @code{Node}
+is created in the simulation, it is added to a global @code{NodeList}.  The act
+of adding a node to this @code{NodeList} causes a simulator event to be scheduled
+for time zero which calls the @code{Node::Start} method of the newly added 
+@code{Node} to be called when the simulation starts.  Since a @code{Node} inherits
+from @code{Object}, this calls the @code{Object::Start} method on the @code{Node}
+which, in turn, calls the @code{DoStart} methods on all of the @code{Objects}
+aggregated to the @code{Node} (think mobility models).  Since the @code{Node}
+@code{Object} has overridden @code{DoStart}, that method is called when the 
+simulation starts.  The @code{Node::DoStart} method calls the @code{Start} methods
+of all of the @code{Applications} on the node.  Since @code{Applications} are
+also @code{Objects}, this causes @code{Application::DoStart} to be called.  When
+@code{Application::DoStart} is called, it schedules events for the 
+@code{StartApplication} and @code{StopApplication} calls on the @code{Application}.
+These calls are designed to start and stop the flow of data from the 
+@code{Application}
+
+This has been another fairly long journey, but it only has to be made once, and
+you now understand another very deep piece of @command{ns-3}.
 
 @subsubsection The MyApp Application
 
@@ -1548,10 +1649,10 @@ method.
 
 The above code is the overridden implementation @code{Application::StartApplication}
 that will be automatically called by the simulator to start our @code{Application}
-running.  You can see that it does a @code{Socket} @code{Bind} operation.  If
-you are familiar with Berkeley Sockets this shouldn't be a surprise.  It performs
-the required work on the local side of the connection just as you might expect.
-The following @code{Connect} will do what is required to establish a connection 
+running at the appropriate time.  You can see that it does a @code{Socket} @code{Bind}
+operation.  If you are familiar with Berkeley Sockets this shouldn't be a surprise.
+It performs the required work on the local side of the connection just as you might 
+expect.  The following @code{Connect} will do what is required to establish a connection 
 with the TCP at @code{Address} m_peer.  It should now be clear why we need to defer
 a lot of this to simulation time, since the @code{Connect} is going to need a fully
 functioning network to complete.  After the @code{Connect}, the @code{Application} 
