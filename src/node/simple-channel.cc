@@ -22,6 +22,9 @@
 #include "ns3/simulator.h"
 #include "ns3/packet.h"
 #include "ns3/node.h"
+#include "ns3/log.h"
+
+NS_LOG_COMPONENT_DEFINE ("SimpleChannel");
 
 namespace ns3 {
 
@@ -43,6 +46,7 @@ SimpleChannel::Send (Ptr<Packet> p, uint16_t protocol,
 		     Mac48Address to, Mac48Address from,
 		     Ptr<SimpleNetDevice> sender)
 {
+  NS_LOG_FUNCTION (p << protocol << to << from << sender);
   for (std::vector<Ptr<SimpleNetDevice> >::const_iterator i = m_devices.begin (); i != m_devices.end (); ++i)
     {
       Ptr<SimpleNetDevice> tmp = *i;
