@@ -63,7 +63,7 @@ private:
   void ForwardLogger (const Ipv4Header &ipHeader, Ptr<const Packet> ipPayload, uint32_t interface);
   void ForwardUpLogger (const Ipv4Header &ipHeader, Ptr<const Packet> ipPayload, uint32_t interface);
   void DropLogger (const Ipv4Header &ipHeader, Ptr<const Packet> ipPayload,
-                   Ipv4L3Protocol::DropReason reason, uint32_t ifIndex);
+                   Ipv4L3Protocol::DropReason reason, Ptr<Ipv4> ipv4, uint32_t ifIndex);
 
   Ptr<Ipv4FlowClassifier> m_classifier;
 };

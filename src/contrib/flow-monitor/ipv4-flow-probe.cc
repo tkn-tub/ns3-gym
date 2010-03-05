@@ -115,7 +115,7 @@ Ipv4FlowProbe::ForwardUpLogger (const Ipv4Header &ipHeader, Ptr<const Packet> ip
 
 void
 Ipv4FlowProbe::DropLogger (const Ipv4Header &ipHeader, Ptr<const Packet> ipPayload,
-                           Ipv4L3Protocol::DropReason reason, uint32_t ifIndex)
+                           Ipv4L3Protocol::DropReason reason, Ptr<Ipv4> ipv4, uint32_t ifIndex)
 {
 #if 0
   switch (reason)
