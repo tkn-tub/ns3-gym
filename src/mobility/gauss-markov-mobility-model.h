@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Dan Broyles <dbroyl01@ku.edu>
- * Thanks to the students and faculty in the ResiliNets initiative 
- * at Kansas University, https://wiki.ittc.ku.edu/resilinets/Main_Page
+ * Thanks to Kevin Peters, faculty advisor James P.G. Sterbenz, and the ResiliNets 
+ * initiative at The University of Kansas, https://wiki.ittc.ku.edu/resilinets
  */
 #ifndef GAUSS_MARKOV_MOBILITY_MODEL_H
 #define GAUSS_MARKOV_MOBILITY_MODEL_H
