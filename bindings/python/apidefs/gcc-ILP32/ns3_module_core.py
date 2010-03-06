@@ -1779,6 +1779,10 @@ def register_Ns3ParetoVariable_methods(root_module, cls):
     cls.add_constructor([param('double', 'm'), param('double', 's')])
     ## random-variable.h: ns3::ParetoVariable::ParetoVariable(double m, double s, double b) [constructor]
     cls.add_constructor([param('double', 'm'), param('double', 's'), param('double', 'b')])
+    ## random-variable.h: ns3::ParetoVariable::ParetoVariable(std::pair<double,double> params) [constructor]
+    cls.add_constructor([param('std::pair< double, double >', 'params')])
+    ## random-variable.h: ns3::ParetoVariable::ParetoVariable(std::pair<double,double> params, double b) [constructor]
+    cls.add_constructor([param('std::pair< double, double >', 'params'), param('double', 'b')])
     return
 
 def register_Ns3SimpleRefCount__Ns3AttributeAccessor_Ns3Empty_Ns3DefaultDeleter__lt__ns3AttributeAccessor__gt___methods(root_module, cls):
