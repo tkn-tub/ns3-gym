@@ -1,0 +1,112 @@
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
+/*
+ *  Copyright (c) 2007,2008, 2009 INRIA, UDcast
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation;
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * Author: Mohamed Amine Ismail <amine.ismail@sophia.inria.fr>
+ *                              <amine.ismail@udcast.com>
+ */
+
+/**
+ * \brief This class represents a record (handled by SnrToBlockErrorRate manager) that keeps a mapping between
+ * an SNR value and its corresponding (1) Bit Error Rate, (2) Block Error Rate, (3) Standard deviation, (4 and 5)
+ * confidence interval.
+ *
+ */
+
+#ifndef SNRTOBLOCKERRORRATERECORD_H_
+#define SNRTOBLOCKERRORRATERECORD_H_
+namespace ns3 {
+
+class SNRToBlockErrorRateRecord
+{
+public:
+  /**
+   * \brief creates a record and sets its values
+   * \param snrValue The SNR value
+   * \param bitErrorRate the BER
+   * \param BlockErrorRate the BlcER
+   * \param sigma2 the standard deviation
+   * \param I1 the lower boundary of the confidence interval
+   * \param I2 the upper boundary of the confidence interval
+   */
+  SNRToBlockErrorRateRecord (double snrValue, double bitErrorRate,
+                             double BlockErrorRate, double sigma2, double I1, double I2);
+  ~SNRToBlockErrorRateRecord (void);
+
+  /**
+   * \return the SNR value
+   */
+  double GetSNRValue (void);
+  /**
+   * \return the BER value
+   */
+  double GetBitErrorRate (void);
+  /**
+   * \return the BlcER value
+   */
+  double GetBlockErrorRate (void);
+  /**
+   * \return the standard deviation
+   */
+  double GetSigma2 (void);
+  /**
+   * \return the lower boundary of the confidence interval
+   */
+  double GetI1 (void);
+  /**
+   * \return the upper boundary of the confidence interval
+   */
+  double GetI2 (void);
+  /**
+   * \brief copy a record
+   * \return a copy of this record
+   */
+  SNRToBlockErrorRateRecord *
+  Copy ();
+
+  /**
+   * \brief set the snr value
+   */
+  void SetSNRValue (double);
+  /**
+   * \brief set the BER value
+   */
+  void SetBitErrorRate (double);
+  /**
+   * \brief set the BlcER value
+   */
+  void SetBlockErrorRate (double);
+  /**
+   * \brief set the lower boundary of the confidence interval
+   */
+  void SetI1 (double);
+  /**
+   * \brief set the upper boundary of the confidence interval
+   */
+  void SetI2 (double);
+
+private:
+  double m_snrValue;
+  double m_bitErrorRate;
+  double m_blockErrorRate;
+  double m_sigma2;
+  double m_i1; // The lower boundary of the confidence interval
+  double m_i2; // The upper boundary of the confidence interval
+};
+
+}
+
+#endif /* SNRTOBLOCKERRORRATE_H_ */

@@ -1,0 +1,111 @@
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
+/*
+ *  Copyright (c) 2007,2008, 2009 INRIA, UDcast
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation;
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * Author: Mohamed Amine Ismail <amine.ismail@sophia.inria.fr>
+ *                              <amine.ismail@udcast.com>
+ */
+
+#include <list>
+#include "wimax-channel.h"
+#include "bvec.h"
+#include "wimax-phy.h"
+#include "ns3/propagation-loss-model.h"
+
+#ifndef SIMPLEOFDMSENDPARAM_H_
+#define SIMPLEOFDMSENDPARAM_H_
+
+namespace ns3 {
+class simpleOfdmSendParam
+{
+public:
+  simpleOfdmSendParam (void);
+  simpleOfdmSendParam (const bvec &fecBlock, uint32_t burstSize,
+                       bool isFirstBlock, uint64_t Frequency,
+                       WimaxPhy::ModulationType modulationType, uint8_t direction,
+                       double rxPowerDbm);
+  ~simpleOfdmSendParam (void);
+  /**
+   * \brief sent the fec block to send
+   * \param fecBlock the fec block to send
+   */
+  void SetFecBlock (const bvec &fecBlock);
+  /**
+   * \brief set the busrt size
+   * \param burstSize the burst size in bytes
+   */
+  void SetBurstSize (uint32_t burstSize);
+  /**
+   * \param isFirstBlock Set to true if this fec block is the fisrt one in the burst, set to false otherwise
+   */
+  void SetIsFirstBlock (bool isFirstBlock);
+  /**
+   * \param Frequency set the frequency of the channel in wich this fec block will be sent
+   */
+  void SetFrequency (uint64_t Frequency);
+  /**
+   * \param modulationType the modulation type used to send this fec block
+   */
+  void SetModulationType (WimaxPhy::ModulationType modulationType);
+  /**
+   * \param direction the direction on which this fec block will be sent
+   */
+  void SetDirection (uint8_t direction);
+  /**
+   * \param rxPowerDbm the received power
+   */
+  void SetRxPowerDbm (double rxPowerDbm);
+  /**
+   * \return the fec block
+   */
+  bvec GetFecBlock (void);
+  /**
+   * \return the burst size
+   */
+  uint32_t GetBurstSize (void);
+  /**
+   * \return true if this fec block is the first one in the burst, false otherwise
+   */
+  bool GetIsFirstBlock (void);
+  /**
+   * \return the frequency on which the fec block is sent/received
+   */
+  uint64_t GetFrequency (void);
+  /**
+   * \return the mdoulation type used to send this fec block
+   */
+  WimaxPhy::ModulationType GetModulationType (void);
+  /**
+   * \return the direction on which this fec block was sent. UP or DOWN
+   */
+  uint8_t GetDirection (void);
+  /**
+   * \return the Received power
+   */
+  double GetRxPowerDbm (void);
+
+private:
+  bvec m_fecBlock;
+  uint32_t m_burstSize;
+  bool m_isFirstBlock;
+  uint64_t m_frequency;
+  WimaxPhy::ModulationType m_modulationType;
+  uint8_t m_direction;
+  double m_rxPowerDbm;
+
+};
+} // namespace ns3
+#endif /* SIMPLEOFDMSENDPARAM_H_ */

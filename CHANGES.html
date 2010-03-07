@@ -49,7 +49,23 @@ us a note on ns-developers mailing list.  </p>
 <h2>Changes to build system:</h2>
 
 <h2>New API:</h2>
-
+<ul>
+<li><b>WiMAX net device</b>: The developed WiMAX model attempts to provide an accurate MAC and
+PHY level implementation of the 802.16 specification with the Point-to-Multipoint (PMP) mode and the WirelessMAN-OFDM 
+PHY layer. By adding WimaxNetDevice objects to ns-3 nodes, one can create models of
+802.16-based networks. The source code for the WiMAX models lives in the directory src/devices/wimax.
+The model is mainly composed of three layers:
+<ul>
+<li>The convergence sublayer (CS)
+<li>The MAC Common Part Sublayer (MAC-CPS)
+<li>The Physical layer
+</ul>
+The main way that users who write simulation scripts will typically
+interact with the Wimax models is through the helper API and through
+the publicly visible attributes of the model.
+The helper API is defined in src/helper/wimax-helper.{cc,h}.
+Three examples containing some code that shows how to setup a 802.16 network are located under examples/wimax/ 
+</ul>
 <h2>Changes to existing API:</h2>
 <ul>
 </pre>
@@ -95,9 +111,7 @@ After:
   csma.EnableAsciiAll (ascii.CreateFileStream ("csma-one-subnet.tr"));
 
   stack.EnableAsciiIpv4All (stream);
-
 </pre>
-
 
 
 <hr>

@@ -49,6 +49,7 @@ all_modules = (
     'test/ns3wifi',
     'contrib/flow-monitor',
     'applications/udp-client-server',
+    'devices/wimax',
     )
 
 def set_options(opt):

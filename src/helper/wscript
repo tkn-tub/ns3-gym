@@ -49,6 +49,7 @@ def build(bld):
         'csma-star-helper.cc',
         'udp-client-server-helper.cc',
         'trace-helper.cc',
+        'wimax-helper.cc',
         ]
 
     headers = bld.new_task_gen('ns3header')
@@ -101,6 +102,7 @@ def build(bld):
         'csma-star-helper.h',
         'udp-client-server-helper.h',
         'trace-helper.h',
+        'wimax-helper.h',
         ]
 
     env = bld.env_of_name('default')
