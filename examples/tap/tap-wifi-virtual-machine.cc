@@ -55,7 +55,7 @@
 //                   |             |     
 //                 ((*))         ((*))
 //
-//                   Wifi LAN 10.0.0
+//                       Wifi LAN
 //
 //                        ((*))
 //                          |
@@ -65,10 +65,6 @@
 //                     | access |
 //                     |  point |
 //                     +--------+
-//
-// The wifi device on node zero is:  10.0.0.1
-// The wifi device on node one is:   10.0.0.2
-// The wifi device (AP) is:          10.0.0.3
 //
 #include <iostream>
 #include <fstream>

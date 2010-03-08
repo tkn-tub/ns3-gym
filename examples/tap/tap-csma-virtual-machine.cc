@@ -56,10 +56,7 @@
 //                   |             |     
 //                   |             |     
 //                   ===============
-//                   CSMA LAN 10.0.0
-//
-// The CSMA device on node zero is:  10.0.0.1
-// The CSMA device on node one is:   10.0.0.2
+//                      CSMA LAN
 //
 #include <iostream>
 #include <fstream>
