@@ -146,7 +146,7 @@ localhost
 localhost
 localhost
 ...
-@endverbatim
+@end verbatim
 
 Or if you have a cluster of machines, you can name them.
 
