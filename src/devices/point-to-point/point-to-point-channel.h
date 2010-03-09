@@ -69,7 +69,7 @@ public:
    * \param txTime Transmit time to apply
    * \returns true if successful (currently always true)
    */
-  bool TransmitStart (Ptr<Packet> p, Ptr<PointToPointNetDevice> src, Time txTime);
+  virtual bool TransmitStart (Ptr<Packet> p, Ptr<PointToPointNetDevice> src, Time txTime);
 
   /**
    * \brief Get number of devices on this channel
@@ -90,6 +90,35 @@ public:
    * \returns Ptr to NetDevice requested
    */
   virtual Ptr<NetDevice> GetDevice (uint32_t i) const;
+
+protected:
+  /*
+   * \brief Get the delay associated with this channel
+   * \returns Time delay
+   */
+  Time GetDelay (void) const;
+
+  /*
+   * \brief Check to make sure the link is initialized
+   * \returns true if initialized, asserts otherwise
+   */
+  bool IsInitialized (void) const;
+
+  /*
+   * \brief Get the net-device source 
+   * \param i the link requested
+   * \returns Ptr to PointToPointNetDevice source for the 
+   * specified link
+   */
+  Ptr<PointToPointNetDevice> GetSource (uint32_t i) const;
+
+  /*
+   * \brief Get the net-device destination
+   * \param i the link requested
+   * \returns Ptr to PointToPointNetDevice destination for 
+   * the specifed link
+   */
+  Ptr<PointToPointNetDevice> GetDestination (uint32_t i) const;
 
 private:
   // Each point to point link has exactly two net devices

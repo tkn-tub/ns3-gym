@@ -97,6 +97,14 @@ NodeContainer::Create (uint32_t n)
     }
 }
 void 
+NodeContainer::Create (uint32_t n, uint32_t systemId)
+{
+  for (uint32_t i = 0; i < n; i++)
+    {
+      m_nodes.push_back (CreateObject<Node> (systemId));
+    }
+}
+void 
 NodeContainer::Add (NodeContainer other)
 {
   for (Iterator i = other.Begin (); i != other.End (); i++)

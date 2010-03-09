@@ -353,42 +353,43 @@ PacketMetadataTest::CheckHistory (Ptr<Packet> p, const char *file, int line, uin
   return false;
 }
 
-#define ADD_HEADER(p, n)                        \
-  {                                             \
-    HistoryHeader<n> header;                    \
-    p->AddHeader (header);                      \
+#define ADD_HEADER(p, n)                                           \
+  {                                                                \
+    HistoryHeader<n> header;                                       \
+    p->AddHeader (header);                                         \
   }
-#define ADD_TRAILER(p, n)                       \
-  {                                             \
-    HistoryTrailer<n> trailer;                  \
-    p->AddTrailer (trailer);                    \
+#define ADD_TRAILER(p, n)                                          \
+  {                                                                \
+    HistoryTrailer<n> trailer;                                     \
+    p->AddTrailer (trailer);                                       \
   }
-#define REM_HEADER(p, n)                        \
-  {                                             \
-    HistoryHeader<n> header;                    \
-    p->RemoveHeader (header);                   \
+#define REM_HEADER(p, n)                                           \
+  {                                                                \
+    HistoryHeader<n> header;                                       \
+    p->RemoveHeader (header);                                      \
   }
-#define REM_TRAILER(p, n)                       \
-  {                                             \
-    HistoryTrailer<n> trailer;                  \
-    p->RemoveTrailer (trailer);                 \
+#define REM_TRAILER(p, n)                                          \
+  {                                                                \
+    HistoryTrailer<n> trailer;                                     \
+    p->RemoveTrailer (trailer);                                    \
   }
-#define CHECK_HISTORY(p, ...)                   \
-  {                                             \
-    if (!CheckHistory (p, __FILE__,             \
-                      __LINE__, __VA_ARGS__))   \
-      {                                         \
-        result = false;                         \
-      }                                         \
-    Buffer buffer;                              \
-    buffer = p->Serialize ();                   \
-    Ptr<Packet> otherPacket = Create<Packet> ();\
-    otherPacket->Deserialize  (buffer);         \
-    if (!CheckHistory (otherPacket, __FILE__,   \
-                      __LINE__, __VA_ARGS__))   \
-      {                                         \
-        result = false;                         \
-      }                                         \
+#define CHECK_HISTORY(p, ...)                                      \
+  {                                                                \
+    if (!CheckHistory (p, __FILE__,                                \
+                      __LINE__, __VA_ARGS__))                      \
+      {                                                            \
+        result = false;                                            \
+      }                                                            \
+    uint32_t size = p->GetSerializedSize ();                       \
+    uint8_t* buffer = new uint8_t[size];                           \
+    p->Serialize (buffer, size);                                   \
+    Ptr<Packet> otherPacket = Create<Packet> (buffer, size, true); \
+    delete [] buffer;                                              \
+    if (!CheckHistory (otherPacket, __FILE__,                      \
+                      __LINE__, __VA_ARGS__))                      \
+      {                                                            \
+        result = false;                                            \
+      }                                                            \
   }
 
 
@@ -413,6 +414,7 @@ PacketMetadataTest::DoRun (void)
   ADD_TRAILER (p, 100);
   CHECK_HISTORY (p, 2, 10, 100);
 
+  
   p = Create<Packet> (10);
   ADD_HEADER (p, 1);
   ADD_HEADER (p, 2);

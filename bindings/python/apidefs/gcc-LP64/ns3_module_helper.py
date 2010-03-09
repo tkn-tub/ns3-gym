@@ -1202,6 +1202,10 @@ def register_Ns3NodeContainer_methods(root_module, cls):
     cls.add_method('Create', 
                    'void', 
                    [param('uint32_t', 'n')])
+    ## node-container.h: void ns3::NodeContainer::Create(uint32_t n, uint32_t systemId) [member function]
+    cls.add_method('Create', 
+                   'void', 
+                   [param('uint32_t', 'n'), param('uint32_t', 'systemId')])
     ## node-container.h: __gnu_cxx::__normal_iterator<const ns3::Ptr<ns3::Node>*,std::vector<ns3::Ptr<ns3::Node>, std::allocator<ns3::Ptr<ns3::Node> > > > ns3::NodeContainer::End() const [member function]
     cls.add_method('End', 
                    '__gnu_cxx::__normal_iterator< ns3::Ptr< ns3::Node > const, std::vector< ns3::Ptr< ns3::Node > > >', 

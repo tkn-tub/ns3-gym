@@ -105,17 +105,27 @@ class NixVector : public Object
      */
     uint32_t GetSerializedSize (void) const;
     /**
-     * \param i Buffer iterator for writing
+     * \return zero if buffer not large enough
      *
-     * \param size number of bytes to write
+     * \param buffer points to serialization buffer
+     *
+     * \param maxSize max number of bytes to write
+     *
+     * This nix-vector is serialized into the raw character 
+     * buffer parameter.
      */
-    void Serialize (Buffer::Iterator i, uint32_t size) const;
+    uint32_t Serialize (uint32_t* buffer, uint32_t maxSize) const;
     /**
-     * \return the number of bytes deserialized
+     * \return zero if a complete nix-vector is not deserialized
      *
-     * \param i Buffer iterator for reading
+     * \param buffer points to buffer for deserialization
+     *
+     * \param size number of bytes to deserialize
+     *
+     * The raw character buffer containing all the nix-vector 
+     * information is deserialized into this nix-vector.
      */
-    uint32_t Deserialize (Buffer::Iterator i);
+    uint32_t Deserialize (uint32_t* buffer, uint32_t size);
     /**
      * \return number of bits of numberOfNeighbors
      *

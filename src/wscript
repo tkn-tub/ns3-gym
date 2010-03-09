@@ -50,6 +50,7 @@ all_modules = (
     'contrib/flow-monitor',
     'applications/udp-client-server',
     'devices/wimax',
+    'mpi',
     )
 
 def set_options(opt):

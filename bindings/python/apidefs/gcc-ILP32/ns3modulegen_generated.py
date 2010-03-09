@@ -17,6 +17,7 @@ import ns3_module_simulator
 import ns3_module_test
 import ns3_module_common
 import ns3_module_mobility
+import ns3_module_mpi
 import ns3_module_contrib
 import ns3_module_node
 import ns3_module_bridge
@@ -109,6 +110,17 @@ def register_types(module):
         ns3_module_mobility__local.register_types(module)
     
     root_module.end_section('ns3_module_mobility')
+    root_module.begin_section('ns3_module_mpi')
+    ns3_module_mpi.register_types(module)
+    
+    try:
+        import ns3_module_mpi__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_mpi__local.register_types(module)
+    
+    root_module.end_section('ns3_module_mpi')
     root_module.begin_section('ns3_module_contrib')
     ns3_module_contrib.register_types(module)
     
@@ -572,6 +584,17 @@ def register_methods(root_module):
         ns3_module_mobility__local.register_methods(root_module)
     
     root_module.end_section('ns3_module_mobility')
+    root_module.begin_section('ns3_module_mpi')
+    ns3_module_mpi.register_methods(root_module)
+    
+    try:
+        import ns3_module_mpi__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_mpi__local.register_methods(root_module)
+    
+    root_module.end_section('ns3_module_mpi')
     root_module.begin_section('ns3_module_contrib')
     ns3_module_contrib.register_methods(root_module)
     
@@ -950,6 +973,17 @@ def register_functions(root_module):
         ns3_module_mobility__local.register_functions(root_module)
     
     root_module.end_section('ns3_module_mobility')
+    root_module.begin_section('ns3_module_mpi')
+    ns3_module_mpi.register_functions(root_module)
+    
+    try:
+        import ns3_module_mpi__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_mpi__local.register_functions(root_module)
+    
+    root_module.end_section('ns3_module_mpi')
     root_module.begin_section('ns3_module_contrib')
     ns3_module_contrib.register_functions(root_module)
     

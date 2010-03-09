@@ -36,7 +36,8 @@ New user-visible features
 -------------------------
   a) WiMAX net device: Allow to simulated IEEE 802.16 point to multi-point based networks 
 
-  b) 
+  b) Distributed simulation for point-to-point networks using the Message 
+     Passing Interface (MPI) standard.
     
   c) 
 

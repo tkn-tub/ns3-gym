@@ -268,6 +268,15 @@ Buffer::Buffer (uint32_t dataSize)
   Initialize (dataSize);
 }
 
+Buffer::Buffer (uint32_t dataSize, bool initialize)
+{
+  NS_LOG_FUNCTION (this << dataSize << initialize);
+  if (initialize == true)
+    {
+      Initialize (dataSize);
+    }
+}
+
 bool
 Buffer::CheckInternalState (void) const
 {
@@ -665,6 +674,139 @@ Buffer::CreateFullCopy (void) const
     }
   NS_ASSERT (CheckInternalState ());
   return *this;
+}
+
+uint32_t 
+Buffer::GetSerializedSize (void) const
+{
+  uint32_t dataStart = (m_zeroAreaStart - m_start + 3) & (~0x3);
+  uint32_t dataEnd = (m_end - m_zeroAreaEnd + 3) & (~0x3);
+
+  // total size 4-bytes for dataStart length 
+  // + X number of bytes for dataStart 
+  // + 4-bytes for dataEnd length 
+  // + X number of bytes for dataEnd
+  uint32_t sz = sizeof (uint32_t)
+    + sizeof (uint32_t)
+    + dataStart
+    + sizeof (uint32_t)
+    + dataEnd;
+
+  return sz;
+}
+
+uint32_t
+Buffer::Serialize (uint8_t* buffer, uint32_t maxSize) const
+{
+  uint32_t* p = (uint32_t*)buffer;
+  uint32_t size = 0;
+  
+  NS_LOG_FUNCTION (this);
+
+  // Add the zero data length
+  if (size + 4 <= maxSize)
+    {
+      size += 4;
+      *p++ = m_zeroAreaEnd - m_zeroAreaStart;
+    }
+  else
+    {
+      return 0;
+    }
+
+  // Add the length of actual start data
+  uint32_t dataStartLength = m_zeroAreaStart - m_start;
+  if (size + 4 <= maxSize)
+    {
+      size += 4;
+      *p++ = dataStartLength;
+    }
+  else
+    {
+      return 0;
+    }
+
+  // Add the actual data
+  if (size + ((dataStartLength + 3) & (~3))  <= maxSize)
+    {
+      size += (dataStartLength + 3) & (~3);
+      memcpy(p, m_data->m_data + m_start, dataStartLength);
+      p += (((dataStartLength + 3) & (~3))/4); // Advance p, insuring 4 byte boundary
+    }
+  else
+    {
+      return 0;
+    }
+
+  // Add the length of the actual end data
+  uint32_t dataEndLength = m_end - m_zeroAreaEnd;
+  if (size + 4 <= maxSize)
+    {
+      size += 4;
+      *p++ = dataEndLength;
+    }
+  else
+    {
+      return 0;
+    }
+
+  // Add the actual data
+  if (size + ((dataEndLength + 3) & (~3)) <= maxSize)
+    {
+      size += (dataEndLength + 3) & (~3);
+      memcpy(p, m_data->m_data+m_zeroAreaStart,dataEndLength);
+      p += (((dataEndLength + 3) & (~3))/4); // Advance p, insuring 4 byte boundary
+    }
+  else
+    {
+      return 0;
+    }
+
+  // Serialzed everything successfully
+  return 1;
+}
+
+uint32_t 
+Buffer::Deserialize (uint8_t *buffer, uint32_t size)
+{
+  uint32_t* p = (uint32_t*)buffer;
+  uint32_t sizeCheck = size-4;
+
+  NS_ASSERT (sizeCheck >= 4);
+  uint32_t zeroDataLength = *p++;
+  sizeCheck -= 4;
+
+  // Create zero bytes
+  Initialize (zeroDataLength);
+  
+  // Add start data
+  NS_ASSERT (sizeCheck >= 4);
+  uint32_t dataStartLength = *p++;
+  sizeCheck -= 4;
+  AddAtStart (dataStartLength);
+
+  NS_ASSERT (sizeCheck >= dataStartLength);
+  Begin ().Write ((uint8_t*)p, dataStartLength);
+  p += (((dataStartLength+3)&(~3))/4);
+  sizeCheck -= ((dataStartLength+3)&(~3));
+
+  // Add end data
+  NS_ASSERT (sizeCheck >= 4);
+  uint32_t dataEndLength = *p++;
+  sizeCheck -= 4;
+  AddAtEnd (dataEndLength);
+
+  NS_ASSERT (sizeCheck >= dataEndLength);
+  Buffer::Iterator tmp = End ();
+  tmp.Prev (dataEndLength);
+  tmp.Write ((uint8_t*)p, dataEndLength);
+  p += (((dataEndLength+3)&(~3))/4);
+  sizeCheck -= ((dataEndLength+3)&(~3));
+  
+  NS_ASSERT (sizeCheck == 0);
+  // return zero if buffer did not 
+  // contain a complete message
+  return (sizeCheck != 0) ? 0 : 1;
 }
 
 int32_t 

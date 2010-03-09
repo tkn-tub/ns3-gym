@@ -9,6 +9,8 @@ def register_types(module):
     module.add_class('PointToPointChannel', parent=root_module['ns3::Channel'])
     ## point-to-point-net-device.h: ns3::PointToPointNetDevice [class]
     module.add_class('PointToPointNetDevice', parent=root_module['ns3::NetDevice'])
+    ## point-to-point-remote-channel.h: ns3::PointToPointRemoteChannel [class]
+    module.add_class('PointToPointRemoteChannel', parent=root_module['ns3::PointToPointChannel'])
     
     ## Register a nested module for the namespace Config
     
@@ -94,6 +96,7 @@ def register_methods(root_module):
     register_Ns3PppHeader_methods(root_module, root_module['ns3::PppHeader'])
     register_Ns3PointToPointChannel_methods(root_module, root_module['ns3::PointToPointChannel'])
     register_Ns3PointToPointNetDevice_methods(root_module, root_module['ns3::PointToPointNetDevice'])
+    register_Ns3PointToPointRemoteChannel_methods(root_module, root_module['ns3::PointToPointRemoteChannel'])
     return
 
 def register_Ns3PppHeader_methods(root_module, cls):
@@ -173,7 +176,28 @@ def register_Ns3PointToPointChannel_methods(root_module, cls):
     ## point-to-point-channel.h: bool ns3::PointToPointChannel::TransmitStart(ns3::Ptr<ns3::Packet> p, ns3::Ptr<ns3::PointToPointNetDevice> src, ns3::Time txTime) [member function]
     cls.add_method('TransmitStart', 
                    'bool', 
-                   [param('ns3::Ptr< ns3::Packet >', 'p'), param('ns3::Ptr< ns3::PointToPointNetDevice >', 'src'), param('ns3::Time', 'txTime')])
+                   [param('ns3::Ptr< ns3::Packet >', 'p'), param('ns3::Ptr< ns3::PointToPointNetDevice >', 'src'), param('ns3::Time', 'txTime')], 
+                   is_virtual=True)
+    ## point-to-point-channel.h: ns3::Time ns3::PointToPointChannel::GetDelay() const [member function]
+    cls.add_method('GetDelay', 
+                   'ns3::Time', 
+                   [], 
+                   is_const=True, visibility='protected')
+    ## point-to-point-channel.h: ns3::Ptr<ns3::PointToPointNetDevice> ns3::PointToPointChannel::GetDestination(uint32_t i) const [member function]
+    cls.add_method('GetDestination', 
+                   'ns3::Ptr< ns3::PointToPointNetDevice >', 
+                   [param('uint32_t', 'i')], 
+                   is_const=True, visibility='protected')
+    ## point-to-point-channel.h: ns3::Ptr<ns3::PointToPointNetDevice> ns3::PointToPointChannel::GetSource(uint32_t i) const [member function]
+    cls.add_method('GetSource', 
+                   'ns3::Ptr< ns3::PointToPointNetDevice >', 
+                   [param('uint32_t', 'i')], 
+                   is_const=True, visibility='protected')
+    ## point-to-point-channel.h: bool ns3::PointToPointChannel::IsInitialized() const [member function]
+    cls.add_method('IsInitialized', 
+                   'bool', 
+                   [], 
+                   is_const=True, visibility='protected')
     return
 
 def register_Ns3PointToPointNetDevice_methods(root_module, cls):
@@ -349,6 +373,23 @@ def register_Ns3PointToPointNetDevice_methods(root_module, cls):
                    'void', 
                    [], 
                    visibility='private', is_virtual=True)
+    return
+
+def register_Ns3PointToPointRemoteChannel_methods(root_module, cls):
+    ## point-to-point-remote-channel.h: ns3::PointToPointRemoteChannel::PointToPointRemoteChannel(ns3::PointToPointRemoteChannel const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::PointToPointRemoteChannel const &', 'arg0')])
+    ## point-to-point-remote-channel.h: ns3::PointToPointRemoteChannel::PointToPointRemoteChannel() [constructor]
+    cls.add_constructor([])
+    ## point-to-point-remote-channel.h: static ns3::TypeId ns3::PointToPointRemoteChannel::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## point-to-point-remote-channel.h: bool ns3::PointToPointRemoteChannel::TransmitStart(ns3::Ptr<ns3::Packet> p, ns3::Ptr<ns3::PointToPointNetDevice> src, ns3::Time txTime) [member function]
+    cls.add_method('TransmitStart', 
+                   'bool', 
+                   [param('ns3::Ptr< ns3::Packet >', 'p'), param('ns3::Ptr< ns3::PointToPointNetDevice >', 'src'), param('ns3::Time', 'txTime')], 
+                   is_virtual=True)
     return
 
 def register_functions(root_module):

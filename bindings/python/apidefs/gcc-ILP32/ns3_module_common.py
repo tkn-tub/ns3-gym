@@ -265,6 +265,10 @@ def register_Ns3Buffer_methods(root_module, cls):
                    'ns3::Buffer', 
                    [], 
                    is_const=True)
+    ## buffer.h: uint32_t ns3::Buffer::Deserialize(uint8_t * buffer, uint32_t size) [member function]
+    cls.add_method('Deserialize', 
+                   'uint32_t', 
+                   [param('uint8_t *', 'buffer'), param('uint32_t', 'size')])
     ## buffer.h: ns3::Buffer::Iterator ns3::Buffer::End() const [member function]
     cls.add_method('End', 
                    'ns3::Buffer::Iterator', 
@@ -278,6 +282,11 @@ def register_Ns3Buffer_methods(root_module, cls):
     ## buffer.h: int32_t ns3::Buffer::GetCurrentStartOffset() const [member function]
     cls.add_method('GetCurrentStartOffset', 
                    'int32_t', 
+                   [], 
+                   is_const=True)
+    ## buffer.h: uint32_t ns3::Buffer::GetSerializedSize() const [member function]
+    cls.add_method('GetSerializedSize', 
+                   'uint32_t', 
                    [], 
                    is_const=True)
     ## buffer.h: uint32_t ns3::Buffer::GetSize() const [member function]
@@ -298,6 +307,11 @@ def register_Ns3Buffer_methods(root_module, cls):
     cls.add_method('RemoveAtStart', 
                    'void', 
                    [param('uint32_t', 'start')])
+    ## buffer.h: uint32_t ns3::Buffer::Serialize(uint8_t * buffer, uint32_t maxSize) const [member function]
+    cls.add_method('Serialize', 
+                   'uint32_t', 
+                   [param('uint8_t *', 'buffer'), param('uint32_t', 'maxSize')], 
+                   is_const=True)
     return
 
 def register_Ns3BufferIterator_methods(root_module, cls):
@@ -583,8 +597,8 @@ def register_Ns3DataRate_methods(root_module, cls):
     return
 
 def register_Ns3PacketMetadata_methods(root_module, cls):
-    ## packet-metadata.h: ns3::PacketMetadata::PacketMetadata(uint32_t uid, uint32_t size) [constructor]
-    cls.add_constructor([param('uint32_t', 'uid'), param('uint32_t', 'size')])
+    ## packet-metadata.h: ns3::PacketMetadata::PacketMetadata(uint64_t uid, uint32_t size) [constructor]
+    cls.add_constructor([param('uint64_t', 'uid'), param('uint32_t', 'size')])
     ## packet-metadata.h: ns3::PacketMetadata::PacketMetadata(ns3::PacketMetadata const & o) [copy constructor]
     cls.add_constructor([param('ns3::PacketMetadata const &', 'o')])
     ## packet-metadata.h: void ns3::PacketMetadata::AddAtEnd(ns3::PacketMetadata const & o) [member function]
@@ -613,10 +627,10 @@ def register_Ns3PacketMetadata_methods(root_module, cls):
                    'ns3::PacketMetadata', 
                    [param('uint32_t', 'start'), param('uint32_t', 'end')], 
                    is_const=True)
-    ## packet-metadata.h: uint32_t ns3::PacketMetadata::Deserialize(ns3::Buffer::Iterator i) [member function]
+    ## packet-metadata.h: uint32_t ns3::PacketMetadata::Deserialize(uint8_t * buffer, uint32_t size) [member function]
     cls.add_method('Deserialize', 
                    'uint32_t', 
-                   [param('ns3::Buffer::Iterator', 'i')])
+                   [param('uint8_t *', 'buffer'), param('uint32_t', 'size')])
     ## packet-metadata.h: static void ns3::PacketMetadata::Enable() [member function]
     cls.add_method('Enable', 
                    'void', 
@@ -632,9 +646,9 @@ def register_Ns3PacketMetadata_methods(root_module, cls):
                    'uint32_t', 
                    [], 
                    is_const=True)
-    ## packet-metadata.h: uint32_t ns3::PacketMetadata::GetUid() const [member function]
+    ## packet-metadata.h: uint64_t ns3::PacketMetadata::GetUid() const [member function]
     cls.add_method('GetUid', 
-                   'uint32_t', 
+                   'uint64_t', 
                    [], 
                    is_const=True)
     ## packet-metadata.h: void ns3::PacketMetadata::RemoveAtEnd(uint32_t end) [member function]
@@ -653,10 +667,10 @@ def register_Ns3PacketMetadata_methods(root_module, cls):
     cls.add_method('RemoveTrailer', 
                    'void', 
                    [param('ns3::Trailer const &', 'trailer'), param('uint32_t', 'size')])
-    ## packet-metadata.h: void ns3::PacketMetadata::Serialize(ns3::Buffer::Iterator i, uint32_t size) const [member function]
+    ## packet-metadata.h: uint32_t ns3::PacketMetadata::Serialize(uint8_t * buffer, uint32_t maxSize) const [member function]
     cls.add_method('Serialize', 
-                   'void', 
-                   [param('ns3::Buffer::Iterator', 'i'), param('uint32_t', 'size')], 
+                   'uint32_t', 
+                   [param('uint8_t *', 'buffer'), param('uint32_t', 'maxSize')], 
                    is_const=True)
     return
 
@@ -1523,10 +1537,10 @@ def register_Ns3NixVector_methods(root_module, cls):
                    'ns3::Ptr< ns3::NixVector >', 
                    [], 
                    is_const=True)
-    ## nix-vector.h: uint32_t ns3::NixVector::Deserialize(ns3::Buffer::Iterator i) [member function]
+    ## nix-vector.h: uint32_t ns3::NixVector::Deserialize(uint32_t * buffer, uint32_t size) [member function]
     cls.add_method('Deserialize', 
                    'uint32_t', 
-                   [param('ns3::Buffer::Iterator', 'i')])
+                   [param('uint32_t *', 'buffer'), param('uint32_t', 'size')])
     ## nix-vector.h: void ns3::NixVector::DumpNixVector(std::ostream & os) const [member function]
     cls.add_method('DumpNixVector', 
                    'void', 
@@ -1550,10 +1564,10 @@ def register_Ns3NixVector_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
-    ## nix-vector.h: void ns3::NixVector::Serialize(ns3::Buffer::Iterator i, uint32_t size) const [member function]
+    ## nix-vector.h: uint32_t ns3::NixVector::Serialize(uint32_t * buffer, uint32_t maxSize) const [member function]
     cls.add_method('Serialize', 
-                   'void', 
-                   [param('ns3::Buffer::Iterator', 'i'), param('uint32_t', 'size')], 
+                   'uint32_t', 
+                   [param('uint32_t *', 'buffer'), param('uint32_t', 'maxSize')], 
                    is_const=True)
     return
 
@@ -1580,6 +1594,8 @@ def register_Ns3Packet_methods(root_module, cls):
     cls.add_constructor([param('ns3::Packet const &', 'o')])
     ## packet.h: ns3::Packet::Packet(uint32_t size) [constructor]
     cls.add_constructor([param('uint32_t', 'size')])
+    ## packet.h: ns3::Packet::Packet(uint8_t const * buffer, uint32_t size, bool magic) [constructor]
+    cls.add_constructor([param('uint8_t const *', 'buffer'), param('uint32_t', 'size'), param('bool', 'magic')])
     ## packet.h: ns3::Packet::Packet(uint8_t const * buffer, uint32_t size) [constructor]
     cls.add_constructor([param('uint8_t const *', 'buffer'), param('uint32_t', 'size')])
     ## packet.h: void ns3::Packet::AddAtEnd(ns3::Ptr<ns3::Packet const> packet) [member function]
@@ -1633,10 +1649,6 @@ def register_Ns3Packet_methods(root_module, cls):
                    'ns3::Ptr< ns3::Packet >', 
                    [param('uint32_t', 'start'), param('uint32_t', 'length')], 
                    is_const=True)
-    ## packet.h: void ns3::Packet::Deserialize(ns3::Buffer buffer) [member function]
-    cls.add_method('Deserialize', 
-                   'void', 
-                   [param('ns3::Buffer', 'buffer')])
     ## packet.h: static void ns3::Packet::EnableChecking() [member function]
     cls.add_method('EnableChecking', 
                    'void', 
@@ -1667,14 +1679,19 @@ def register_Ns3Packet_methods(root_module, cls):
                    'ns3::PacketTagIterator', 
                    [], 
                    is_const=True)
+    ## packet.h: uint32_t ns3::Packet::GetSerializedSize() const [member function]
+    cls.add_method('GetSerializedSize', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
     ## packet.h: uint32_t ns3::Packet::GetSize() const [member function]
     cls.add_method('GetSize', 
                    'uint32_t', 
                    [], 
                    is_const=True)
-    ## packet.h: uint32_t ns3::Packet::GetUid() const [member function]
+    ## packet.h: uint64_t ns3::Packet::GetUid() const [member function]
     cls.add_method('GetUid', 
-                   'uint32_t', 
+                   'uint64_t', 
                    [], 
                    is_const=True)
     ## packet.h: uint8_t const * ns3::Packet::PeekData() const [member function]
@@ -1739,10 +1756,10 @@ def register_Ns3Packet_methods(root_module, cls):
     cls.add_method('RemoveTrailer', 
                    'uint32_t', 
                    [param('ns3::Trailer &', 'trailer')])
-    ## packet.h: ns3::Buffer ns3::Packet::Serialize() const [member function]
+    ## packet.h: uint32_t ns3::Packet::Serialize(uint8_t * buffer, uint32_t maxSize) const [member function]
     cls.add_method('Serialize', 
-                   'ns3::Buffer', 
-                   [], 
+                   'uint32_t', 
+                   [param('uint8_t *', 'buffer'), param('uint32_t', 'maxSize')], 
                    is_const=True)
     ## packet.h: void ns3::Packet::SetNixVector(ns3::Ptr<ns3::NixVector> arg0) [member function]
     cls.add_method('SetNixVector', 

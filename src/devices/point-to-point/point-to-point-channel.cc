@@ -124,4 +124,30 @@ PointToPointChannel::GetDevice (uint32_t i) const
   return GetPointToPointDevice (i);
 }
 
+Time
+PointToPointChannel::GetDelay (void) const
+{
+  return m_delay;
+}
+
+Ptr<PointToPointNetDevice>
+PointToPointChannel::GetSource (uint32_t i) const
+{
+  return m_link[i].m_src;
+}
+
+Ptr<PointToPointNetDevice>
+PointToPointChannel::GetDestination (uint32_t i) const
+{
+  return m_link[i].m_dst;
+}
+
+bool
+PointToPointChannel::IsInitialized (void) const
+{
+  NS_ASSERT (m_link[0].m_state != INITIALIZING);
+  NS_ASSERT (m_link[1].m_state != INITIALIZING);
+  return true;
+}
+
 } // namespace ns3
