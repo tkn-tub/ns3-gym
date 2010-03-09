@@ -18,6 +18,7 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  * Contributions: Timo Bingmann <timo.bingmann@student.kit.edu>
  * Contributions: Tom Hewer <tomhewer@mac.com> for Two Ray Ground Model
+ *                Pavel Boyko <boyko@iitp.ru> for matrix
  */
 
 #include "propagation-loss-model.h"
@@ -710,6 +711,81 @@ FixedRssLossModel::DoCalcRxPower (double txPowerDbm,
                                            Ptr<MobilityModel> b) const
 {
   return m_rss;
+}
+
+// ------------------------------------------------------------------------- //
+
+NS_OBJECT_ENSURE_REGISTERED (MatrixPropagationLossModel);
+
+TypeId 
+MatrixPropagationLossModel::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::TopologicalPropagationLossModel")
+    .SetParent<PropagationLossModel> ()
+    .AddConstructor<MatrixPropagationLossModel> ()
+    .AddAttribute ("DefaultLoss", "The default value for propagation loss, dB.",
+                   DoubleValue (std::numeric_limits<double>::max ()),
+                   MakeDoubleAccessor (&MatrixPropagationLossModel::m_default),
+                   MakeDoubleChecker<double> ())
+    ;
+  return tid;
+}
+
+MatrixPropagationLossModel::MatrixPropagationLossModel ()
+  : PropagationLossModel (), m_default (std::numeric_limits<double>::max ())
+{
+}
+
+MatrixPropagationLossModel::~MatrixPropagationLossModel ()
+{
+}
+
+void 
+MatrixPropagationLossModel::SetDefaultLoss (double loss)
+{
+  m_default = loss;
+}
+
+void
+MatrixPropagationLossModel::SetLoss (Ptr<Node> a, Ptr<Node> b, double loss, bool symmetric)
+{
+  Ptr<MobilityModel> ma = a->GetObject<MobilityModel> ();
+  Ptr<MobilityModel> mb = b->GetObject<MobilityModel> ();
+  NS_ASSERT (ma != 0 && mb != 0);
+
+  MobilityPair p = std::make_pair(ma, mb);
+  std::map<MobilityPair, double>::iterator i = m_loss.find (p);
+  
+  if (i == m_loss.end ())
+    {
+      m_loss.insert (std::make_pair (p, loss));
+    }
+  else
+    {
+      i->second = loss;
+    }
+
+  if (symmetric)
+    {
+      SetLoss (b, a, loss, false);
+    }
+}
+
+double 
+MatrixPropagationLossModel::DoCalcRxPower (double txPowerDbm,
+                                           Ptr<MobilityModel> a,
+                                           Ptr<MobilityModel> b) const
+{
+  std::map<MobilityPair, double>::const_iterator i = m_loss.find (std::make_pair (a, b));
+  
+  if (i != m_loss.end ())
+    {
+      return txPowerDbm - i->second;
+    }
+  else
+    {
+      return txPowerDbm - m_default;
+    }
 }
 
 // ------------------------------------------------------------------------- //

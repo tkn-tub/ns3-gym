@@ -367,6 +367,42 @@ LogDistancePropagationLossModelTestCase::DoRun (void)
   return GetErrorStatus ();
 }
 
+struct MatrixPropagationLossModelTestCase : public TestCase
+{
+  MatrixPropagationLossModelTestCase () : TestCase ("Test MatrixPropagationLossModel") {}
+  
+  bool DoRun ()
+  {
+    Ptr<Node> n[3];
+    Ptr<MobilityModel> m[3];
+    for (int i = 0; i < 3; ++i)
+      {
+        n[i] = CreateObject<Node> ();
+        m[i] = CreateObject<ConstantPositionMobilityModel> ();
+        n[i]->AggregateObject (m[i]);
+      }
+    
+    MatrixPropagationLossModel loss;
+    // no loss by default
+    loss.SetDefaultLoss (0);       
+    // -10 dB for 0 -> 1 and 1 -> 0
+    loss.SetLoss (n[0], n[1], 10); 
+    // -30 dB from 0 to 2 and -100 dB from 2 to 0
+    loss.SetLoss (n[0], n[2], 30, /*symmetric = */false); 
+    loss.SetLoss (n[2], n[0], 100, /*symmetric = */false); 
+    // default from 1 to 2
+    
+    NS_TEST_ASSERT_MSG_EQ (loss.CalcRxPower (0, m[0], m[1]), -10, "Loss 0 -> 1 incorrect");
+    NS_TEST_ASSERT_MSG_EQ (loss.CalcRxPower (0, m[1], m[0]), -10, "Loss 1 -> 0 incorrect");
+    NS_TEST_ASSERT_MSG_EQ (loss.CalcRxPower (0, m[0], m[2]), -30, "Loss 0 -> 2 incorrect");
+    NS_TEST_ASSERT_MSG_EQ (loss.CalcRxPower (0, m[2], m[0]), -100, "Loss 2 -> 0 incorrect");
+    NS_TEST_ASSERT_MSG_EQ (loss.CalcRxPower (0, m[1], m[2]), 0, "Loss 1 -> 2 incorrect");
+    NS_TEST_ASSERT_MSG_EQ (loss.CalcRxPower (0, m[2], m[1]), 0, "Loss 2 -> 1 incorrect");
+    
+    return GetErrorStatus ();
+  }
+};
+
 class PropagationLossModelsTestSuite : public TestSuite
 {
 public:
@@ -379,6 +415,7 @@ PropagationLossModelsTestSuite::PropagationLossModelsTestSuite ()
   AddTestCase (new FriisPropagationLossModelTestCase);
   AddTestCase (new TwoRayGroundPropagationLossModelTestCase);
   AddTestCase (new LogDistancePropagationLossModelTestCase);
+  AddTestCase (new MatrixPropagationLossModelTestCase);
 }
 
 PropagationLossModelsTestSuite WifiPropagationLossModelsTestSuite;
