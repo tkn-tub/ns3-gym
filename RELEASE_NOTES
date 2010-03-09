@@ -39,7 +39,9 @@ New user-visible features
   b) Distributed simulation for point-to-point networks using the Message 
      Passing Interface (MPI) standard.
     
-  c) 
+  c) Matrix propagation loss model uses a two-dimensional matrix of pathloss indexed 
+     by source and destination nodes.
+
 
 API changes from ns-3.7
 -----------------------
