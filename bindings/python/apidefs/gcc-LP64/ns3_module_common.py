@@ -69,10 +69,6 @@ def register_types(module):
     module.add_class('TwoRayGroundPropagationLossModel', parent=root_module['ns3::PropagationLossModel'])
     ## propagation-delay-model.h: ns3::ConstantSpeedPropagationDelayModel [class]
     module.add_class('ConstantSpeedPropagationDelayModel', parent=root_module['ns3::PropagationDelayModel'])
-    ## cost231-propagation-loss-model.h: ns3::Cost231PropagationLossModel [class]
-    module.add_class('Cost231PropagationLossModel', parent=root_module['ns3::PropagationLossModel'])
-    ## cost231-propagation-loss-model.h: ns3::Cost231PropagationLossModel::Environment [enumeration]
-    module.add_enum('Environment', ['SubUrban', 'MediumCity', 'Metropolitan'], outer_class=root_module['ns3::Cost231PropagationLossModel'])
     ## data-rate.h: ns3::DataRateChecker [class]
     module.add_class('DataRateChecker', parent=root_module['ns3::AttributeChecker'])
     ## data-rate.h: ns3::DataRateValue [class]
@@ -89,8 +85,6 @@ def register_types(module):
     module.add_class('ListErrorModel', parent=root_module['ns3::ErrorModel'])
     ## propagation-loss-model.h: ns3::LogDistancePropagationLossModel [class]
     module.add_class('LogDistancePropagationLossModel', parent=root_module['ns3::PropagationLossModel'])
-    ## propagation-loss-model.h: ns3::MatrixPropagationLossModel [class]
-    module.add_class('MatrixPropagationLossModel', parent=root_module['ns3::PropagationLossModel'])
     ## propagation-loss-model.h: ns3::NakagamiPropagationLossModel [class]
     module.add_class('NakagamiPropagationLossModel', parent=root_module['ns3::PropagationLossModel'])
     ## nix-vector.h: ns3::NixVector [class]
@@ -212,7 +206,6 @@ def register_methods(root_module):
     register_Ns3Trailer_methods(root_module, root_module['ns3::Trailer'])
     register_Ns3TwoRayGroundPropagationLossModel_methods(root_module, root_module['ns3::TwoRayGroundPropagationLossModel'])
     register_Ns3ConstantSpeedPropagationDelayModel_methods(root_module, root_module['ns3::ConstantSpeedPropagationDelayModel'])
-    register_Ns3Cost231PropagationLossModel_methods(root_module, root_module['ns3::Cost231PropagationLossModel'])
     register_Ns3DataRateChecker_methods(root_module, root_module['ns3::DataRateChecker'])
     register_Ns3DataRateValue_methods(root_module, root_module['ns3::DataRateValue'])
     register_Ns3ErrorModel_methods(root_module, root_module['ns3::ErrorModel'])
@@ -221,7 +214,6 @@ def register_methods(root_module):
     register_Ns3JakesPropagationLossModel_methods(root_module, root_module['ns3::JakesPropagationLossModel'])
     register_Ns3ListErrorModel_methods(root_module, root_module['ns3::ListErrorModel'])
     register_Ns3LogDistancePropagationLossModel_methods(root_module, root_module['ns3::LogDistancePropagationLossModel'])
-    register_Ns3MatrixPropagationLossModel_methods(root_module, root_module['ns3::MatrixPropagationLossModel'])
     register_Ns3NakagamiPropagationLossModel_methods(root_module, root_module['ns3::NakagamiPropagationLossModel'])
     register_Ns3NixVector_methods(root_module, root_module['ns3::NixVector'])
     register_Ns3OutputStreamWrapper_methods(root_module, root_module['ns3::OutputStreamWrapper'])
@@ -236,8 +228,6 @@ def register_Ns3Buffer_methods(root_module, cls):
     cls.add_constructor([])
     ## buffer.h: ns3::Buffer::Buffer(uint32_t dataSize) [constructor]
     cls.add_constructor([param('uint32_t', 'dataSize')])
-    ## buffer.h: ns3::Buffer::Buffer(uint32_t dataSize, bool initialize) [constructor]
-    cls.add_constructor([param('uint32_t', 'dataSize'), param('bool', 'initialize')])
     ## buffer.h: bool ns3::Buffer::AddAtEnd(uint32_t end) [member function]
     cls.add_method('AddAtEnd', 
                    'bool', 
@@ -1272,87 +1262,6 @@ def register_Ns3ConstantSpeedPropagationDelayModel_methods(root_module, cls):
                    [param('double', 'speed')])
     return
 
-def register_Ns3Cost231PropagationLossModel_methods(root_module, cls):
-    ## cost231-propagation-loss-model.h: static ns3::TypeId ns3::Cost231PropagationLossModel::GetTypeId() [member function]
-    cls.add_method('GetTypeId', 
-                   'ns3::TypeId', 
-                   [], 
-                   is_static=True)
-    ## cost231-propagation-loss-model.h: ns3::Cost231PropagationLossModel::Cost231PropagationLossModel() [constructor]
-    cls.add_constructor([])
-    ## cost231-propagation-loss-model.h: double ns3::Cost231PropagationLossModel::GetLoss(ns3::Ptr<ns3::MobilityModel> a, ns3::Ptr<ns3::MobilityModel> b) const [member function]
-    cls.add_method('GetLoss', 
-                   'double', 
-                   [param('ns3::Ptr< ns3::MobilityModel >', 'a'), param('ns3::Ptr< ns3::MobilityModel >', 'b')], 
-                   is_const=True)
-    ## cost231-propagation-loss-model.h: void ns3::Cost231PropagationLossModel::SetBSAntennaHeight(double height) [member function]
-    cls.add_method('SetBSAntennaHeight', 
-                   'void', 
-                   [param('double', 'height')])
-    ## cost231-propagation-loss-model.h: void ns3::Cost231PropagationLossModel::SetSSAntennaHeight(double height) [member function]
-    cls.add_method('SetSSAntennaHeight', 
-                   'void', 
-                   [param('double', 'height')])
-    ## cost231-propagation-loss-model.h: void ns3::Cost231PropagationLossModel::SetEnvironment(ns3::Cost231PropagationLossModel::Environment env) [member function]
-    cls.add_method('SetEnvironment', 
-                   'void', 
-                   [param('ns3::Cost231PropagationLossModel::Environment', 'env')])
-    ## cost231-propagation-loss-model.h: void ns3::Cost231PropagationLossModel::SetLambda(double lambda) [member function]
-    cls.add_method('SetLambda', 
-                   'void', 
-                   [param('double', 'lambda')])
-    ## cost231-propagation-loss-model.h: void ns3::Cost231PropagationLossModel::SetMinDistance(double minDistance) [member function]
-    cls.add_method('SetMinDistance', 
-                   'void', 
-                   [param('double', 'minDistance')])
-    ## cost231-propagation-loss-model.h: double ns3::Cost231PropagationLossModel::GetBSAntennaHeight() const [member function]
-    cls.add_method('GetBSAntennaHeight', 
-                   'double', 
-                   [], 
-                   is_const=True)
-    ## cost231-propagation-loss-model.h: double ns3::Cost231PropagationLossModel::GetSSAntennaHeight() const [member function]
-    cls.add_method('GetSSAntennaHeight', 
-                   'double', 
-                   [], 
-                   is_const=True)
-    ## cost231-propagation-loss-model.h: ns3::Cost231PropagationLossModel::Environment ns3::Cost231PropagationLossModel::GetEnvironment() const [member function]
-    cls.add_method('GetEnvironment', 
-                   'ns3::Cost231PropagationLossModel::Environment', 
-                   [], 
-                   is_const=True)
-    ## cost231-propagation-loss-model.h: double ns3::Cost231PropagationLossModel::GetMinDistance() const [member function]
-    cls.add_method('GetMinDistance', 
-                   'double', 
-                   [], 
-                   is_const=True)
-    ## cost231-propagation-loss-model.h: double ns3::Cost231PropagationLossModel::GetLambda() const [member function]
-    cls.add_method('GetLambda', 
-                   'double', 
-                   [], 
-                   is_const=True)
-    ## cost231-propagation-loss-model.h: void ns3::Cost231PropagationLossModel::SetLambda(double frequency, double speed) [member function]
-    cls.add_method('SetLambda', 
-                   'void', 
-                   [param('double', 'frequency'), param('double', 'speed')])
-    ## cost231-propagation-loss-model.h: double ns3::Cost231PropagationLossModel::GetShadowing() [member function]
-    cls.add_method('GetShadowing', 
-                   'double', 
-                   [])
-    ## cost231-propagation-loss-model.h: void ns3::Cost231PropagationLossModel::SetShadowing(double shadowing) [member function]
-    cls.add_method('SetShadowing', 
-                   'void', 
-                   [param('double', 'shadowing')])
-    ## cost231-propagation-loss-model.h: double ns3::Cost231PropagationLossModel::cost231_formula(double d) [member function]
-    cls.add_method('cost231_formula', 
-                   'double', 
-                   [param('double', 'd')])
-    ## cost231-propagation-loss-model.h: double ns3::Cost231PropagationLossModel::DoCalcRxPower(double txPowerDbm, ns3::Ptr<ns3::MobilityModel> a, ns3::Ptr<ns3::MobilityModel> b) const [member function]
-    cls.add_method('DoCalcRxPower', 
-                   'double', 
-                   [param('double', 'txPowerDbm'), param('ns3::Ptr< ns3::MobilityModel >', 'a'), param('ns3::Ptr< ns3::MobilityModel >', 'b')], 
-                   is_const=True, visibility='private', is_virtual=True)
-    return
-
 def register_Ns3DataRateChecker_methods(root_module, cls):
     ## data-rate.h: ns3::DataRateChecker::DataRateChecker() [constructor]
     cls.add_constructor([])
@@ -1587,29 +1496,6 @@ def register_Ns3LogDistancePropagationLossModel_methods(root_module, cls):
                    'void', 
                    [param('double', 'referenceDistance'), param('double', 'referenceLoss')])
     ## propagation-loss-model.h: double ns3::LogDistancePropagationLossModel::DoCalcRxPower(double txPowerDbm, ns3::Ptr<ns3::MobilityModel> a, ns3::Ptr<ns3::MobilityModel> b) const [member function]
-    cls.add_method('DoCalcRxPower', 
-                   'double', 
-                   [param('double', 'txPowerDbm'), param('ns3::Ptr< ns3::MobilityModel >', 'a'), param('ns3::Ptr< ns3::MobilityModel >', 'b')], 
-                   is_const=True, visibility='private', is_virtual=True)
-    return
-
-def register_Ns3MatrixPropagationLossModel_methods(root_module, cls):
-    ## propagation-loss-model.h: static ns3::TypeId ns3::MatrixPropagationLossModel::GetTypeId() [member function]
-    cls.add_method('GetTypeId', 
-                   'ns3::TypeId', 
-                   [], 
-                   is_static=True)
-    ## propagation-loss-model.h: ns3::MatrixPropagationLossModel::MatrixPropagationLossModel() [constructor]
-    cls.add_constructor([])
-    ## propagation-loss-model.h: void ns3::MatrixPropagationLossModel::SetLoss(ns3::Ptr<ns3::Node> a, ns3::Ptr<ns3::Node> b, double loss, bool symmetric=true) [member function]
-    cls.add_method('SetLoss', 
-                   'void', 
-                   [param('ns3::Ptr< ns3::Node >', 'a'), param('ns3::Ptr< ns3::Node >', 'b'), param('double', 'loss'), param('bool', 'symmetric', default_value='true')])
-    ## propagation-loss-model.h: void ns3::MatrixPropagationLossModel::SetDefaultLoss(double arg0) [member function]
-    cls.add_method('SetDefaultLoss', 
-                   'void', 
-                   [param('double', 'arg0')])
-    ## propagation-loss-model.h: double ns3::MatrixPropagationLossModel::DoCalcRxPower(double txPowerDbm, ns3::Ptr<ns3::MobilityModel> a, ns3::Ptr<ns3::MobilityModel> b) const [member function]
     cls.add_method('DoCalcRxPower', 
                    'double', 
                    [param('double', 'txPowerDbm'), param('ns3::Ptr< ns3::MobilityModel >', 'a'), param('ns3::Ptr< ns3::MobilityModel >', 'b')], 
