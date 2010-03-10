@@ -35,6 +35,7 @@ import ns3_module_tap_bridge
 import ns3_module_v4ping
 import ns3_module_virtual_net_device
 import ns3_module_wifi
+import ns3_module_wimax
 import ns3_module_aodv
 import ns3_module_flow_monitor
 import ns3_module_nix_vector_routing
@@ -308,6 +309,17 @@ def register_types(module):
         ns3_module_wifi__local.register_types(module)
     
     root_module.end_section('ns3_module_wifi')
+    root_module.begin_section('ns3_module_wimax')
+    ns3_module_wimax.register_types(module)
+    
+    try:
+        import ns3_module_wimax__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_wimax__local.register_types(module)
+    
+    root_module.end_section('ns3_module_wimax')
     root_module.begin_section('ns3_module_aodv')
     ns3_module_aodv.register_types(module)
     
@@ -442,6 +454,10 @@ def register_types(module):
     root_module.end_section('ns3_module_flame')
     module.add_container('std::vector< unsigned int >', 'unsigned int', container_type='vector')
     module.add_container('std::vector< bool >', 'bool', container_type='vector')
+    module.add_container('std::vector< ns3::ServiceFlow * >', 'ns3::ServiceFlow *', container_type='vector')
+    module.add_container('ns3::bvec', 'bool', container_type='vector')
+    module.add_container('std::vector< ns3::SSRecord * >', 'ns3::SSRecord *', container_type='vector')
+    module.add_container('std::list< std::pair< ns3::OfdmDlMapIe *, ns3::Ptr< ns3::PacketBurst > > >', 'std::pair< ns3::OfdmDlMapIe *, ns3::Ptr< ns3::PacketBurst > >', container_type='list')
     module.add_container('std::vector< unsigned long >', 'long unsigned int', container_type='vector')
     module.add_container('std::list< unsigned int >', 'unsigned int', container_type='list')
     module.add_container('std::list< std::pair< ns3::Ptr< ns3::Packet >, ns3::AmsduSubframeHeader > >', 'std::pair< ns3::Ptr< ns3::Packet >, ns3::AmsduSubframeHeader >', container_type='list')
@@ -782,6 +798,17 @@ def register_methods(root_module):
         ns3_module_wifi__local.register_methods(root_module)
     
     root_module.end_section('ns3_module_wifi')
+    root_module.begin_section('ns3_module_wimax')
+    ns3_module_wimax.register_methods(root_module)
+    
+    try:
+        import ns3_module_wimax__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_wimax__local.register_methods(root_module)
+    
+    root_module.end_section('ns3_module_wimax')
     root_module.begin_section('ns3_module_aodv')
     ns3_module_aodv.register_methods(root_module)
     
@@ -1171,6 +1198,17 @@ def register_functions(root_module):
         ns3_module_wifi__local.register_functions(root_module)
     
     root_module.end_section('ns3_module_wifi')
+    root_module.begin_section('ns3_module_wimax')
+    ns3_module_wimax.register_functions(root_module)
+    
+    try:
+        import ns3_module_wimax__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_wimax__local.register_functions(root_module)
+    
+    root_module.end_section('ns3_module_wimax')
     root_module.begin_section('ns3_module_aodv')
     ns3_module_aodv.register_functions(root_module)
     
