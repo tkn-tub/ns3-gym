@@ -815,7 +815,7 @@ uint8_t
 SimpleOfdmWimaxPhy::DoGetFrameDurationCode (void) const
 {
   uint16_t duration = 0;
-  duration = (uint16_t) (GetFrameDuration ().GetSeconds () * 10000);
+  duration = (uint16_t)(GetFrameDuration ().GetSeconds () * 10000);
   switch (duration)
     {
     case 25:

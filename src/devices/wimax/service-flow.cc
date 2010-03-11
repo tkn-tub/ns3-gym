@@ -251,7 +251,10 @@ ServiceFlow::GetRecord (void) const
 Ptr<WimaxMacQueue>
 ServiceFlow::GetQueue (void) const
 {
-  if (!m_connection) return 0;
+  if (!m_connection)
+    {
+      return 0;
+    }
   return m_connection->GetQueue ();
 }
 
@@ -264,14 +267,20 @@ ServiceFlow::GetSchedulingType (void) const
 bool
 ServiceFlow::HasPackets (void) const
 {
-  if (!m_connection) return false;
+  if (!m_connection)
+    {
+      return false;
+    }
   return m_connection->HasPackets ();
 }
 
 bool
 ServiceFlow::HasPackets (MacHeaderType::HeaderType packetType) const
 {
-  if (!m_connection) return false;
+  if (!m_connection)
+    {
+      return false;
+    }
   return m_connection->HasPackets (packetType);
 }
 
@@ -282,20 +291,21 @@ ServiceFlow::CleanUpQueue (void)
   Time timeStamp;
   Ptr<Packet> packet;
   Time currentTime = Simulator::Now ();
-  if (m_connection){
-    while (m_connection->HasPackets ())
-      {
-        packet = m_connection->GetQueue ()->Peek (hdr, timeStamp);
+  if (m_connection)
+    {
+      while (m_connection->HasPackets ())
+        {
+          packet = m_connection->GetQueue ()->Peek (hdr, timeStamp);
 
-        if (currentTime - timeStamp > MilliSeconds (GetMaximumLatency ()))
-          {
-            m_connection->Dequeue ();
-          }
-        else
-          {
-            break;
-          }
-      }
+          if (currentTime - timeStamp > MilliSeconds (GetMaximumLatency ()))
+            {
+              m_connection->Dequeue ();
+            }
+          else
+            {
+              break;
+            }
+        }
     }
 }
 

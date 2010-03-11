@@ -76,7 +76,7 @@ Ns3WimaxFragmentationTestCase::DoRun (void)
   Cid cid;
   WimaxConnection *connectionTx = new WimaxConnection (cid, Cid::TRANSPORT);
   WimaxConnection *connectionRx = new WimaxConnection (cid, Cid::TRANSPORT);
-  bool testResult=false;
+  bool testResult = false;
 
   // A Packet of 1000 bytes has been created.
   // It will be fragmentated into 4 fragments and then defragmentated into fullPacket.
@@ -115,8 +115,8 @@ Ns3WimaxFragmentationTestCase::DoRun (void)
           if (((tmpType >> 2) & 1) != 1)
             {
               // The packet is not a fragment
-               testResult=true;
-               break;
+              testResult = true;
+              break;
             }
         }
 
@@ -128,19 +128,19 @@ Ns3WimaxFragmentationTestCase::DoRun (void)
       if (fc == 1 && i != 0)
         {
           // the fragment in not the first one
-           testResult=true;
-           break;
+          testResult = true;
+          break;
         }
       if (fc == 2 && i != 3)
         {
           // the fragment in not the latest one
-           testResult=true;
-           break;
+          testResult = true;
+          break;
         }
       if ((fc == 3 && i != 1) && (fc == 3 && i != 2))
         {
           // the fragment in not the middle one
-          testResult= true;
+          testResult = true;
           break;
         }
 
@@ -170,7 +170,7 @@ Ns3WimaxFragmentationTestCase::DoRun (void)
           if (fullPacket->GetSize () != 1000)
             {
               // The defragmentation is correct.
-              testResult= true; // Test is passed
+              testResult = true; // Test is passed
               break;
             }
         }

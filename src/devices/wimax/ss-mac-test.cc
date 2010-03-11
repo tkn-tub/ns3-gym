@@ -88,14 +88,12 @@ Ns3WimaxNetworkEntryTestCase::DoRun (void)
                           WimaxHelper::DEVICE_TYPE_BASE_STATION,
                           WimaxHelper::SIMPLE_PHY_TYPE_OFDM,
                           scheduler);
-  Simulator::Stop (Seconds (0.5));
+  Simulator::Stop (Seconds (1));
   Simulator::Run ();
   for (int i = 0; i < 10; i++)
     {
-      if (ssDevs.Get (i)->GetObject<SubscriberStationNetDevice> ()->IsRegistered () == false)
-        {
-          return true; // Test fail because SS[i] is not registered
-        }
+      NS_TEST_EXPECT_MSG_EQ (ssDevs.Get (i)->GetObject<SubscriberStationNetDevice> ()->IsRegistered (),true,
+                             "SS[" << i << "] IsNotRegistered");
     }
   Simulator::Destroy ();
   return (false); // Test was ok, all the SS are registered
@@ -151,14 +149,12 @@ Ns3WimaxManagementConnectionsTestCase::DoRun (void)
                           WimaxHelper::DEVICE_TYPE_BASE_STATION,
                           WimaxHelper::SIMPLE_PHY_TYPE_OFDM,
                           scheduler);
-  Simulator::Stop (Seconds (0.5));
+  Simulator::Stop (Seconds (1));
   Simulator::Run ();
   for (int i = 0; i < 10; i++)
     {
-      if (ssDevs.Get (i)->GetObject<SubscriberStationNetDevice> ()->GetAreManagementConnectionsAllocated () == false)
-        {
-          return true; // Test fail because management connections of SS[i] are not allocated
-        }
+      NS_TEST_EXPECT_MSG_EQ (ssDevs.Get (i)->GetObject<SubscriberStationNetDevice> ()->GetAreManagementConnectionsAllocated (),
+                             true, "Management connections for SS[" << i << "] are not allocated");
     }
   Simulator::Destroy ();
   return (false);
