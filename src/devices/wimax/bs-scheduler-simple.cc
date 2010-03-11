@@ -41,8 +41,7 @@ namespace ns3 {
 
 NS_OBJECT_ENSURE_REGISTERED ( BSSchedulerSimple);
 
-TypeId
-BSSchedulerSimple::GetTypeId (void)
+TypeId BSSchedulerSimple::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::BSSchedulerSimple").SetParent<Object> ().AddConstructor<BSSchedulerSimple> ();
   return tid;
@@ -83,11 +82,10 @@ BSSchedulerSimple::GetDownlinkBursts (void) const
   return m_downlinkBursts;
 }
 
-void
-BSSchedulerSimple::AddDownlinkBurst (Ptr<const WimaxConnection> connection,
-                                     uint8_t diuc,
-                                     WimaxPhy::ModulationType modulationType,
-                                     Ptr<PacketBurst> burst)
+void BSSchedulerSimple::AddDownlinkBurst (Ptr<const WimaxConnection> connection,
+                                          uint8_t diuc,
+                                          WimaxPhy::ModulationType modulationType,
+                                          Ptr<PacketBurst> burst)
 {
   OfdmDlMapIe *dlMapIe = new OfdmDlMapIe ();
   dlMapIe->SetCid (connection->GetCid ());
@@ -105,23 +103,20 @@ BSSchedulerSimple::AddDownlinkBurst (Ptr<const WimaxConnection> connection,
   m_downlinkBursts->push_back (std::make_pair (dlMapIe, burst));
 }
 
-void
-BSSchedulerSimple::Schedule (void)
+void BSSchedulerSimple::Schedule (void)
 {
-  Ptr<WimaxConnection> connection, prevConnection;
+  Ptr<WimaxConnection> connection;
   WimaxPhy::ModulationType modulationType = WimaxPhy::MODULATION_TYPE_BPSK_12;
   uint8_t diuc = OfdmDlBurstProfile::DIUC_BURST_PROFILE_1;
   uint32_t nrSymbolsRequired = 0;
   GenericMacHeader hdr;
   Ptr<Packet> packet;
-  Ptr<PacketBurst> burst = Create<PacketBurst> ();
+  Ptr<PacketBurst> burst;
   ServiceFlow::SchedulingType schedulingType = ServiceFlow::SF_TYPE_NONE;
   uint32_t availableSymbols = GetBs ()->GetNrDlSymbols ();
 
   while (SelectConnection (connection))
     {
-      prevConnection = connection;
-
       if (connection != GetBs ()->GetInitialRangingConnection () && connection != GetBs ()->GetBroadcastConnection ())
         {
           /* determines modulation/DIUC only once per burst as it is always same for a particular CID */
@@ -152,82 +147,65 @@ BSSchedulerSimple::Schedule (void)
       if (schedulingType == ServiceFlow::SF_TYPE_UGS)
         {
           nrSymbolsRequired = connection->GetServiceFlow ()->GetRecord ()->GetGrantSize ();
-
-          burst = CreateUgsBurst (connection->GetServiceFlow (), modulationType, nrSymbolsRequired);
-        }
-      else
-        {
-          packet = connection->GetQueue ()->Peek (hdr);
-          nrSymbolsRequired = GetBs ()->GetPhy ()->GetNrSymbols (packet->GetSize (), modulationType);
-        }
-
-      /* PIRO: packet fragmentation
-        actually, packet fragmentation for UGS connections has not been implemented yet */
-      if (availableSymbols < nrSymbolsRequired && schedulingType == ServiceFlow::SF_TYPE_UGS)
-        {
-          break;
-        }
-
-      if (schedulingType != ServiceFlow::SF_TYPE_UGS)
-        {
-          if (availableSymbols < nrSymbolsRequired
-              && !CheckForFragmentation (connection, availableSymbols, modulationType))
+          if (nrSymbolsRequired < availableSymbols)
             {
-              break;
-            }
-          else if (availableSymbols < nrSymbolsRequired
-                   && CheckForFragmentation (connection, availableSymbols, modulationType))
-            {
-              uint32_t availableByte = GetBs ()->GetPhy ()->
-                GetNrBytes (availableSymbols, modulationType);
-              packet = connection->Dequeue (MacHeaderType::HEADER_TYPE_GENERIC, availableByte);
+              burst = CreateUgsBurst (connection->GetServiceFlow (), modulationType, nrSymbolsRequired);
             }
           else
             {
-              packet = connection->Dequeue ();
+              burst = CreateUgsBurst (connection->GetServiceFlow (), modulationType, availableSymbols);
             }
-
-          NS_ASSERT_MSG (hdr.GetCid () == connection->GetCid (),
-                         "Base station: Error while scheduling connection: header CID != connection CID");
-
-          /* create a new burst if CID for this packet is different, add previous burst to the list */
           if (burst->GetNPackets () != 0)
             {
+              uint32_t BurstSizeSymbols =  GetBs ()->GetPhy ()->GetNrSymbols (burst->GetSize (), modulationType);
               AddDownlinkBurst (connection, diuc, modulationType, burst);
-              burst = Create<PacketBurst> ();
+              availableSymbols -= BurstSizeSymbols;
             }
-
-          burst->AddPacket (packet);
         }
-
-      availableSymbols -= nrSymbolsRequired;
-      schedulingType = ServiceFlow::SF_TYPE_NONE;
+      else
+        {
+          burst = Create<PacketBurst> ();
+          while (availableSymbols >= 0 && connection->HasPackets () == true)
+            {
+              uint32_t FirstPacketSize = connection->GetQueue ()->GetFirstPacketRequiredByte (MacHeaderType::HEADER_TYPE_GENERIC);
+              nrSymbolsRequired = GetBs ()->GetPhy ()->GetNrSymbols (FirstPacketSize, modulationType);
+              if (availableSymbols < nrSymbolsRequired && CheckForFragmentation (connection,
+                                                                                 availableSymbols,
+                                                                                 modulationType))
+                {
+                  uint32_t availableByte = GetBs ()->GetPhy ()->GetNrBytes (availableSymbols, modulationType);
+                  packet = connection->Dequeue (MacHeaderType::HEADER_TYPE_GENERIC, availableByte);
+                  availableSymbols = 0;
+                }
+              else
+                {
+                  packet = connection->Dequeue ();
+                  availableSymbols -= nrSymbolsRequired;
+                }
+              burst->AddPacket (packet);
+            }
+          AddDownlinkBurst (connection, diuc, modulationType, burst);
+        }
+      if (availableSymbols <= 0)
+        {
+          break;
+        }
     }
 
-  if (burst->GetNPackets ())
-    {
-      AddDownlinkBurst (prevConnection, diuc, modulationType, burst);
-    }
 
   if (m_downlinkBursts->size ())
     {
       NS_LOG_DEBUG ("BS scheduler, number of bursts: " << m_downlinkBursts->size () << ", symbols left: "
-                                                       << availableSymbols << std::endl << "BS scheduler, queues:"
-                                                       << " IR "
-                                                       << GetBs ()->GetInitialRangingConnection ()->GetQueue ()->GetSize ()
-                                                       << " broadcast "
-                                                       << GetBs ()->GetBroadcastConnection ()->GetQueue ()->GetSize ()
-                                                       << " basic "
-                                                       << GetBs ()->GetConnectionManager ()->GetNPackets (Cid::BASIC, ServiceFlow::SF_TYPE_NONE)
-                                                       << " primary "
-                                                       << GetBs ()->GetConnectionManager ()->GetNPackets (Cid::PRIMARY, ServiceFlow::SF_TYPE_NONE)
-                                                       << " transport "
+                                                       << availableSymbols << std::endl << "BS scheduler, queues:" << " IR "
+                                                       << GetBs ()->GetInitialRangingConnection ()->GetQueue ()->GetSize () << " broadcast "
+                                                       << GetBs ()->GetBroadcastConnection ()->GetQueue ()->GetSize () << " basic "
+                                                       << GetBs ()->GetConnectionManager ()->GetNPackets (Cid::BASIC, ServiceFlow::SF_TYPE_NONE) << " primary "
+                                                       << GetBs ()->GetConnectionManager ()->GetNPackets (Cid::PRIMARY, ServiceFlow::SF_TYPE_NONE) << " transport "
                                                        << GetBs ()->GetConnectionManager ()->GetNPackets (Cid::TRANSPORT, ServiceFlow::SF_TYPE_ALL));
     }
 }
 
-bool
-BSSchedulerSimple::SelectConnection (Ptr<WimaxConnection> &connection)
+bool BSSchedulerSimple::SelectConnection (Ptr<WimaxConnection> &connection)
 {
   connection = 0;
   Time currentTime = Simulator::Now ();
@@ -335,10 +313,9 @@ BSSchedulerSimple::SelectConnection (Ptr<WimaxConnection> &connection)
   return false;
 }
 
-Ptr<PacketBurst>
-BSSchedulerSimple::CreateUgsBurst (ServiceFlow *serviceFlow,
-                                   WimaxPhy::ModulationType modulationType,
-                                   uint32_t availableSymbols)
+Ptr<PacketBurst> BSSchedulerSimple::CreateUgsBurst (ServiceFlow *serviceFlow,
+                                                    WimaxPhy::ModulationType modulationType,
+                                                    uint32_t availableSymbols)
 {
   Time timeStamp;
   GenericMacHeader hdr;
@@ -346,24 +323,31 @@ BSSchedulerSimple::CreateUgsBurst (ServiceFlow *serviceFlow,
   Ptr<PacketBurst> burst = Create<PacketBurst> ();
   uint32_t nrSymbolsRequired = 0;
 
-  serviceFlow->CleanUpQueue ();
-
+  // serviceFlow->CleanUpQueue ();
+  Ptr<WimaxConnection> connection = serviceFlow->GetConnection ();
   while (serviceFlow->HasPackets ())
     {
-      packet = serviceFlow->GetQueue ()->Peek (hdr, timeStamp);
-      nrSymbolsRequired = GetBs ()->GetPhy ()->GetNrSymbols (packet->GetSize (), modulationType);
-
-      if (nrSymbolsRequired > availableSymbols)
+      uint32_t FirstPacketSize = connection->GetQueue ()->GetFirstPacketRequiredByte (MacHeaderType::HEADER_TYPE_GENERIC);
+      nrSymbolsRequired = GetBs ()->GetPhy ()->GetNrSymbols (FirstPacketSize,modulationType);
+      if (availableSymbols < nrSymbolsRequired && CheckForFragmentation (connection,
+                                                                         availableSymbols,
+                                                                         modulationType))
         {
-
+          uint32_t availableByte = GetBs ()->GetPhy ()->GetNrBytes (availableSymbols, modulationType);
+          packet = connection->Dequeue (MacHeaderType::HEADER_TYPE_GENERIC, availableByte);
+          availableSymbols = 0;
+        }
+      else
+        {
+          packet = connection->Dequeue ();
+          availableSymbols -= nrSymbolsRequired;
+        }
+      burst->AddPacket (packet);
+      if (availableSymbols <= 0)
+        {
           break;
         }
-
-      packet = serviceFlow->GetConnection ()->Dequeue ();
-      burst->AddPacket (packet);
     }
-
-  NS_ASSERT_MSG (burst->GetSize (), "Base station: Error while creating UGS burst: burst size = 0");
   return burst;
 }
 

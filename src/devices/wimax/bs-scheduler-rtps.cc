@@ -162,10 +162,10 @@ BSSchedulerRtps::Schedule (void)
     }
 }
 
-Ptr<PacketBurst>
-BSSchedulerRtps::CreateUgsBurst (ServiceFlow *serviceFlow,
-                                 WimaxPhy::ModulationType modulationType,
-                                 uint32_t availableSymbols)
+
+Ptr<PacketBurst> BSSchedulerRtps::CreateUgsBurst (ServiceFlow *serviceFlow,
+                                                  WimaxPhy::ModulationType modulationType,
+                                                  uint32_t availableSymbols)
 {
   Time timeStamp;
   GenericMacHeader hdr;
@@ -173,26 +173,34 @@ BSSchedulerRtps::CreateUgsBurst (ServiceFlow *serviceFlow,
   Ptr<PacketBurst> burst = Create<PacketBurst> ();
   uint32_t nrSymbolsRequired = 0;
 
-  serviceFlow->CleanUpQueue ();
-
+  // serviceFlow->CleanUpQueue ();
+  Ptr<WimaxConnection> connection = serviceFlow->GetConnection ();
   while (serviceFlow->HasPackets ())
     {
-      packet = serviceFlow->GetQueue ()->Peek (hdr, timeStamp);
-      nrSymbolsRequired = GetBs ()->GetPhy ()->GetNrSymbols (packet->GetSize (), modulationType);
-
-      if (nrSymbolsRequired > availableSymbols)
+      uint32_t FirstPacketSize = connection->GetQueue ()->GetFirstPacketRequiredByte (MacHeaderType::HEADER_TYPE_GENERIC);
+      nrSymbolsRequired = GetBs ()->GetPhy ()->GetNrSymbols (FirstPacketSize,modulationType);
+      if (availableSymbols < nrSymbolsRequired && CheckForFragmentation (connection,
+                                                                         availableSymbols,
+                                                                         modulationType))
         {
-
+          uint32_t availableByte = GetBs ()->GetPhy ()->GetNrBytes (availableSymbols, modulationType);
+          packet = connection->Dequeue (MacHeaderType::HEADER_TYPE_GENERIC, availableByte);
+          availableSymbols = 0;
+        }
+      else
+        {
+          packet = connection->Dequeue ();
+          availableSymbols -= nrSymbolsRequired;
+        }
+      burst->AddPacket (packet);
+      if (availableSymbols <= 0)
+        {
           break;
         }
-
-      packet = serviceFlow->GetConnection ()->Dequeue ();
-      burst->AddPacket (packet);
     }
-
-  NS_ASSERT_MSG (burst->GetSize (), "Base station: Error while creating UGS burst: burts size=0");
   return burst;
 }
+
 
 bool
 BSSchedulerRtps::SelectConnection (Ptr<WimaxConnection> &connection)

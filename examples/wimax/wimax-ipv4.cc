@@ -157,7 +157,7 @@ int main (int argc, char *argv[])
       udpClient[i] = UdpClientHelper (SSinterfaces.GetAddress (i), 100 + (i * 10));
       udpClient[i].SetAttribute ("MaxPackets", UintegerValue (1200));
       udpClient[i].SetAttribute ("Interval", TimeValue (Seconds (0.12)));
-      udpClient[i].SetAttribute ("PacketSize", UintegerValue (1024));
+      udpClient[i].SetAttribute ("PacketSize", UintegerValue (800));
 
       clientApps[i] = udpClient[i].Install (ssNodes.Get (i + (nbSS / 2)));
       clientApps[i].Start (Seconds (1));
