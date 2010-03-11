@@ -576,8 +576,9 @@ UplinkSchedulerSimple::ProcessBandwidthRequest (const BandwidthRequestHeader &bw
 void
 UplinkSchedulerSimple::OnSetRequestedBandwidth (ServiceFlowRecord *sfr)
 {
-  // virtual function on UplinkScheduler
-  // this is not necessary on this implementation
+  // m_grantedBandwidth must be reset to zero
+  uint32_t grantedBandwidth = 0;
+  sfr->SetGrantedBandwidth (grantedBandwidth);
 }
 
 } // namespace ns3

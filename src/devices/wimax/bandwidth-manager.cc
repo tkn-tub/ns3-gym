@@ -182,6 +182,7 @@ BandwidthManager::ProcessBandwidthRequest (const BandwidthRequestHeader &bwReque
   else
     {
       serviceFlow->GetRecord ()->SetRequestedBandwidth (bwRequestHdr.GetBr ());
+      bs->GetUplinkScheduler()->OnSetRequestedBandwidth(serviceFlow->GetRecord());
     }
   bs->GetUplinkScheduler ()->ProcessBandwidthRequest (bwRequestHdr);
   // update backlogged
