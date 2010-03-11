@@ -123,7 +123,7 @@ public:
   void SetHopCount (uint8_t count) { m_hopCount = count; }
   uint8_t GetHopCount () const { return m_hopCount; }
   void SetId (uint32_t id) { m_requestID = id; }
-  uint8_t GetId () const { return m_requestID; }
+  uint32_t GetId () const { return m_requestID; }
   void SetDst (Ipv4Address a) { m_dst = a; }
   Ipv4Address GetDst () const { return m_dst; }
   void SetDstSeqno (uint32_t s) { m_dstSeqNo = s; }
