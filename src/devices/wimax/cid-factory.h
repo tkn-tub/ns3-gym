@@ -45,12 +45,6 @@ class CidFactory
 {
 public:
   /**
-   * \param m the value of the 'm' parameter to use for this factory
-   *
-   * The semantics of this parameter are defined in Table 345 ieee-802.16-2004
-   */
-  CidFactory (uint16_t m);
-  /**
    * Create a cid factory with a default value for m of 0x5500.
    */
   CidFactory (void);

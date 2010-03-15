@@ -64,7 +64,6 @@ public:
   std::list<Ptr<Packet> >::const_iterator End (void) const;
 private:
   void DoDispose (void);
-  friend bool operator == (const PacketBurst &a, const PacketBurst &b);
   std::list<Ptr<Packet> > m_packets;
 };
 } // namespace ns3

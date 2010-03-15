@@ -74,11 +74,6 @@ public:
   void SetLambda (double frequency, double speed);
   double GetShadowing (void);
   void SetShadowing (double shadowing);
-  /**
-   * \param d the distnace between the sender and the receiver
-   * \returns the bulk path loss
-   */
-  double cost231_formula (double d); // the formula that calculates the bulk path loss
 private:
   virtual double DoCalcRxPower (double txPowerDbm, Ptr<MobilityModel> a, Ptr<MobilityModel> b) const;
   double m_BSAntennaHeight; // in meter

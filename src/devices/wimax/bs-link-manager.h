@@ -57,6 +57,9 @@ public:
    */
   void VerifyInvitedRanging (Cid cid, uint8_t uiuc);
 private:
+  BSLinkManager (const BSLinkManager &);
+  BSLinkManager & operator= (const BSLinkManager &);
+
   void PerformRanging (Cid cid, RngReq rngreq);
   void PerformInitialRanging (Cid cid, RngReq *rngreq, RngRsp *rngrsp);
   void PerformInvitedRanging (Cid cid, RngRsp *rngrsp);

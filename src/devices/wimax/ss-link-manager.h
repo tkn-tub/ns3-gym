@@ -64,6 +64,9 @@ public:
                                 SubscriberStationNetDevice::EventType eventType,
                                 bool deleteUlParameters, EventId &eventId);
 private:
+  SSLinkManager (const SSLinkManager &);
+  SSLinkManager & operator= (const SSLinkManager &);
+
   void EndScanning (bool status, uint64_t frequency);
   void StartSynchronizing (void);
   bool SearchForDlChannel (uint8_t channel);

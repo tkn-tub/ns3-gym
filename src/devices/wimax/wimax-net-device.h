@@ -214,13 +214,13 @@ public:
   virtual Address GetMulticast (Ipv4Address multicastGroup) const;
   virtual bool IsBridge (void) const;
 
-  Ptr<Object> GetMobility (void);
-  void SetMobility (Ptr<Object> mobility);
-
   bool IsPromisc (void);
   void NotifyPromiscTrace (Ptr<Packet> p);
 
 private:
+  WimaxNetDevice (const WimaxNetDevice &);
+  WimaxNetDevice & operator= (const WimaxNetDevice &);
+
   virtual bool DoSend (Ptr<Packet> packet,
                        const Mac48Address& source,
                        const Mac48Address& dest,

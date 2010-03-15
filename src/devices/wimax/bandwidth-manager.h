@@ -64,6 +64,9 @@ public:
   void SetSubframeRatio (void);
   uint32_t GetSymbolsPerFrameAllocated (void);
 private:
+  BandwidthManager (const BandwidthManager &);
+  BandwidthManager& operator= (const BandwidthManager &);
+
   Ptr<WimaxNetDevice> m_device;
   uint16_t m_nrBwReqsSent;
 };
