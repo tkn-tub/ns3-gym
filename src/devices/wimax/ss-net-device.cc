@@ -1031,8 +1031,7 @@ SubscriberStationNetDevice::DoReceive (Ptr<Packet> packet)
                   // This is the first or middle fragment.
                   // Take the fragment queue, store the fragment into the queue
                   NS_LOG_INFO ( "\t Received the first or the middle fragment" << std::endl);
-                  GetConnectionManager ()->GetConnection (cid)
-                  ->FragmentEnqueue (packet);
+                  GetConnectionManager ()->GetConnection (cid)->FragmentEnqueue (packet);
                 }
             }
         }

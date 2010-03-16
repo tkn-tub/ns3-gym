@@ -38,19 +38,22 @@ namespace ns3 {
 class ManagementMessageType : public Header
 {
 public:
+  /*
+   * Section 6.3.2.3 MAC Management messages page 42, Table 14 page 43
+   */
   enum MessageType
   {
-    MESSAGE_TYPE_DL_MAP,
-    MESSAGE_TYPE_DCD,
-    MESSAGE_TYPE_UL_MAP,
-    MESSAGE_TYPE_UCD,
-    MESSAGE_TYPE_RNG_REQ,
-    MESSAGE_TYPE_RNG_RSP,
-    MESSAGE_TYPE_REG_REQ,
-    MESSAGE_TYPE_REG_RSP,
-    MESSAGE_TYPE_DSA_REQ,
-    MESSAGE_TYPE_DSA_RSP,
-    MESSAGE_TYPE_DSA_ACK
+    MESSAGE_TYPE_UCD = 0,
+    MESSAGE_TYPE_DCD = 1,
+    MESSAGE_TYPE_DL_MAP = 2,
+    MESSAGE_TYPE_UL_MAP = 3,
+    MESSAGE_TYPE_RNG_REQ = 4,
+    MESSAGE_TYPE_RNG_RSP = 5,
+    MESSAGE_TYPE_REG_REQ = 6,
+    MESSAGE_TYPE_REG_RSP = 7,
+    MESSAGE_TYPE_DSA_REQ = 11,
+    MESSAGE_TYPE_DSA_RSP = 12,
+    MESSAGE_TYPE_DSA_ACK = 13
   };
 
   ManagementMessageType (void);

@@ -241,6 +241,7 @@ SimpleOfdmWimaxPhy::Send (SendParams *params)
   Send (o_params->GetBurst (),
         (WimaxPhy::ModulationType) o_params->GetModulationType (),
         o_params->GetDirection ());
+
 }
 
 WimaxPhy::PhyType
@@ -263,6 +264,7 @@ SimpleOfdmWimaxPhy::Send (Ptr<PacketBurst> burst,
       SetBlockParameters (burst->GetSize (), modulationType);
       CreateFecBlocks (buffer, modulationType);
       StartSendFecBlock (true, modulationType, direction);
+      m_traceTx (burst);
     }
 }
 
@@ -459,8 +461,8 @@ void
 SimpleOfdmWimaxPhy::EndReceive (Ptr<const PacketBurst> burst)
 {
   Ptr<PacketBurst> b = burst->Copy ();
-  m_traceRx (burst);
   GetReceiveCallback () (b);
+  m_traceRx (burst);
 }
 
 bvec
