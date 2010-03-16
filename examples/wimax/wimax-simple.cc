@@ -153,6 +153,8 @@ int main (int argc, char *argv[])
   clientApps.Stop (Seconds (duration));
 
   Simulator::Stop (Seconds (duration + 0.1));
+  wimax.EnablePcap("ss0", ssNodes.Get (0)->GetId (), ss[0]->GetIfIndex ());
+  wimax.EnablePcap("ss1", ssNodes.Get (0)->GetId (), ss[0]->GetIfIndex ());
 
   IpcsClassifierRecord DlClassifierUgs (Ipv4Address ("0.0.0.0"),
                                         Ipv4Mask ("0.0.0.0"),

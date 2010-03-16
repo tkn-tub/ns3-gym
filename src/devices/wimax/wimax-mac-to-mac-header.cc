@@ -74,7 +74,16 @@ WimaxMacToMacHeader::GetSizeOfLen (void) const
 uint32_t
 WimaxMacToMacHeader::GetSerializedSize (void) const
 {
-  return 20 + GetSizeOfLen () ;
+  uint8_t sizeOfLen = GetSizeOfLen ();
+  if (sizeOfLen==1)
+    {
+      return 20 ;
+    }
+  else
+    {
+      return 20 + sizeOfLen -1 ;
+    }
+  //return 19+sizeOfLen;
 }
 
 void
@@ -112,7 +121,7 @@ WimaxMacToMacHeader::Serialize (Buffer::Iterator i) const
     }
   else
     {
-      i.WriteU8 ((lenSize - 1) | 0x80);
+      i.WriteU8 ((lenSize-1) | 0x80);
       for (int j = 0; j < lenSize - 1; j++)
         {
           i.WriteU8 ((uint8_t)(m_len >> ((lenSize - 1 - 1 - j) * 8)));

@@ -545,7 +545,7 @@ static void PcapSniffTxEvent (Ptr<PcapFileWrapper> file,
   std::list<Ptr<Packet> > packets = burst->GetPackets ();
   for (std::list<Ptr<Packet> >::iterator iter = packets.begin (); iter != packets.end (); ++iter)
     {
-      WimaxMacToMacHeader m2m((*iter)->GetSize()+1);
+      WimaxMacToMacHeader m2m((*iter)->GetSize());
       (*iter)->AddHeader(m2m);
       file->Write (Simulator::Now (), (*iter));
     }
@@ -556,7 +556,7 @@ static void PcapSniffRxEvent (Ptr<PcapFileWrapper> file, Ptr<const PacketBurst> 
   std::list<Ptr<Packet> > packets = burst->GetPackets ();
   for (std::list<Ptr<Packet> >::iterator iter = packets.begin (); iter != packets.end (); ++iter)
     {
-      WimaxMacToMacHeader m2m((*iter)->GetSize()+1);
+      WimaxMacToMacHeader m2m((*iter)->GetSize());
       (*iter)->AddHeader(m2m);
       file->Write (Simulator::Now (), (*iter));
     }
