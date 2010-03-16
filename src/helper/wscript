@@ -50,6 +50,7 @@ def build(bld):
         'udp-client-server-helper.cc',
         'trace-helper.cc',
         'wimax-helper.cc',
+        'topology-reader-helper.cc',
         ]
 
     headers = bld.new_task_gen('ns3header')
@@ -103,6 +104,7 @@ def build(bld):
         'udp-client-server-helper.h',
         'trace-helper.h',
         'wimax-helper.h',
+        'topology-reader-helper.h',
         ]
 
     env = bld.env_of_name('default')

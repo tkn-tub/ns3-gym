@@ -51,6 +51,7 @@ all_modules = (
     'applications/udp-client-server',
     'devices/wimax',
     'mpi',
+    'contrib/topology-read',
     )
 
 def set_options(opt):

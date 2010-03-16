@@ -58,6 +58,9 @@ public:
   void DoDispose (void);
 protected:
 private:
+  SSScheduler (const SSScheduler &);
+  SSScheduler & operator= (const SSScheduler &);
+
   Ptr<WimaxConnection> SelectConnection (void);
   Ptr<SubscriberStationNetDevice> m_ss;
   bool m_pollMe;

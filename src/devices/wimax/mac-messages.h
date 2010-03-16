@@ -341,7 +341,6 @@ class DsaRsp : public Header
 public:
   DsaRsp (void);
   ~DsaRsp (void);
-  DsaRsp (ServiceFlow sf);
 
   void SetTransactionId (uint16_t transactionId);
   uint16_t GetTransactionId (void) const;

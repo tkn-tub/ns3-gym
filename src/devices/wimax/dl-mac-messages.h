@@ -95,7 +95,6 @@ public:
   void SetTtg (uint8_t ttg);
   void SetRtg (uint8_t rtg);
 
-  void SetChnlSwitchFrameNr (uint32_t chnlSwitchFrameNr);
   void SetBaseStationId (Mac48Address baseStationId);
   void SetFrameDurationCode (uint8_t frameDurationCode);
   void SetFrameNumber (uint32_t frameNumber);
@@ -104,7 +103,6 @@ public:
   uint8_t GetTtg (void) const;
   uint8_t GetRtg (void) const;
 
-  uint32_t GetChnlSwitchFrameNr (void) const;
   Mac48Address GetBaseStationId (void) const;
   uint8_t GetFrameDurationCode (void) const;
   uint32_t GetFrameNumber (void) const;

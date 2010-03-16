@@ -118,14 +118,6 @@ public:
    */
   uint8_t GetMaxInvitedRangRetries (void) const;
   /**
-   * \param maxDsaResponseRetries the number of retries on DSA request message
-   */
-  void SetMaxDsaReqRetries (uint8_t maxDsaResponseRetries);
-  /**
-   * \returns the number of retries on DSA request message
-   */
-  uint8_t GetMaxDsaReqRetries (void) const;
-  /**
    * \param rangReqOppSize The ranging opportunity size in symbols
    */
   void SetRangReqOppSize (uint8_t rangReqOppSize);

@@ -62,9 +62,6 @@ public:
   uint8_t GetInvitedRangRetries (void) const;
   void ResetInvitedRangingRetries (void);
   void IncrementInvitedRangingRetries (void);
-  uint8_t GetDsaReqRetries (void) const;
-  void ResetDsaReqRetries (void);
-  void IncrementDsaReqRetries (void);
   void SetModulationType (WimaxPhy::ModulationType modulationType);
   WimaxPhy::ModulationType GetModulationType (void) const;
 

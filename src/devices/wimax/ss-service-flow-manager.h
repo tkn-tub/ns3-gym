@@ -70,15 +70,9 @@ public:
    * \return the maximum retries on DSA request message
    */
   uint8_t GetMaxDsaReqRetries (void) const;
-  /**
-   * \return the maximum retries on DSA response message
-   */
-  uint8_t GetMaxDsaRspRetries (void) const;
 
   EventId GetDsaRspTimeoutEvent (void) const;
   EventId GetDsaAckTimeoutEvent (void) const;
-
-  void AllocateServiceFlows (const DsaReq &dsaReq, Cid cid);
 
   void InitiateServiceFlows (void);
 

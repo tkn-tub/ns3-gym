@@ -51,7 +51,6 @@ public:
   ~ServiceFlowManager (void);
   void DoDispose (void);
 
-  void defineServiceFlow (void);
   void AddServiceFlow (ServiceFlow * serviceFlow);
   ServiceFlow* GetServiceFlow (uint32_t sfid) const;
   ServiceFlow* GetServiceFlow (Cid cid) const;

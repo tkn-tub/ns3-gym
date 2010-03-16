@@ -66,6 +66,9 @@ public:
                                                    const RngReq *rngreq);
   uint8_t GetBurstProfileToRequest (void);
 private:
+  BurstProfileManager (const BurstProfileManager &);
+  BurstProfileManager& operator= (const BurstProfileManager &);
+
   Ptr<WimaxNetDevice> m_device;
 };
 
