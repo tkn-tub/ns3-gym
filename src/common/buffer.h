@@ -393,7 +393,7 @@ public:
   /**
    * \return the number of bytes stored in this buffer.
    */
-  uint32_t GetSize (void) const;
+  inline uint32_t GetSize (void) const;
 
   /**
    * \return a pointer to the start of the internal 
@@ -633,6 +633,11 @@ Buffer::Iterator::ReadU8 (void)
     }
 }
 
+uint32_t 
+Buffer::GetSize (void) const
+{
+  return m_end - m_start;
+}
 
 } // namespace ns3
 
