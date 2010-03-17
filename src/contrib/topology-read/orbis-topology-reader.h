@@ -61,6 +61,10 @@ public:
    */
   virtual NodeContainer Read (void);
 
+private:
+  OrbisTopologyReader (const OrbisTopologyReader&);
+  OrbisTopologyReader& operator= (const OrbisTopologyReader&);
+
   // end class OrbisTopologyReader
 };
 
