@@ -594,16 +594,12 @@ BaseStationNetDevice::DoSend (Ptr<Packet> packet,
   Ptr<PacketBurst> burst = Create<PacketBurst> ();
   ServiceFlow *serviceFlow = 0;
 
-  // drop packet if no SS is registered with the BS, the destination SS is not yet registered or if queue is full
-
   NS_LOG_INFO ("BS (" << source << "):");
   NS_LOG_INFO ("\tSending packet...");
   NS_LOG_INFO ("\t\tDestination: " << dest);
   NS_LOG_INFO ("\t\tPaket Size:  " << packet->GetSize ());
   NS_LOG_INFO ("\t\tProtocol:    " << protocolNumber);
 
-  NS_LOG_INFO ("TraceDelay: TX (BS), To: " << dest << ", Uid: " << packet->GetUid () << ", time: "
-                                           << (Simulator::Now ()).GetSeconds () << ", Packet Size:  " << packet->GetSize ());
 
   if (protocolNumber == 2048)
     {

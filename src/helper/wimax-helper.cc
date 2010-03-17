@@ -534,19 +534,16 @@ WimaxHelper::EnableAsciiInternal (Ptr<OutputStreamWrapper> stream,
   EnableAsciiForConnection (stream, nodeid, deviceid, (char*) "SubscriberStationNetDevice", (char*) "BasicConnection");
   EnableAsciiForConnection (stream, nodeid, deviceid, (char*) "SubscriberStationNetDevice", (char*) "PrimaryConnection");
 
-  }
+}
 
 static void PcapSniffTxEvent (Ptr<PcapFileWrapper> file,
-                              Ptr<const PacketBurst> burst,
-                              WimaxPhy::ModulationType modulationType,
-                              uint16_t m_nrBlocks,
-                              uint16_t m_blockSize)
+                              Ptr<const PacketBurst> burst)
 {
   std::list<Ptr<Packet> > packets = burst->GetPackets ();
   for (std::list<Ptr<Packet> >::iterator iter = packets.begin (); iter != packets.end (); ++iter)
     {
-      WimaxMacToMacHeader m2m((*iter)->GetSize()+1);
-      (*iter)->AddHeader(m2m);
+      WimaxMacToMacHeader m2m ((*iter)->GetSize ());
+      (*iter)->AddHeader (m2m);
       file->Write (Simulator::Now (), (*iter));
     }
 }
@@ -556,8 +553,8 @@ static void PcapSniffRxEvent (Ptr<PcapFileWrapper> file, Ptr<const PacketBurst> 
   std::list<Ptr<Packet> > packets = burst->GetPackets ();
   for (std::list<Ptr<Packet> >::iterator iter = packets.begin (); iter != packets.end (); ++iter)
     {
-      WimaxMacToMacHeader m2m((*iter)->GetSize()+1);
-      (*iter)->AddHeader(m2m);
+      WimaxMacToMacHeader m2m ((*iter)->GetSize ());
+      (*iter)->AddHeader (m2m);
       file->Write (Simulator::Now (), (*iter));
     }
 }
@@ -568,7 +565,7 @@ WimaxHelper::EnablePcapInternal (std::string prefix, Ptr<NetDevice> nd, bool exp
   //
   // All of the Pcap enable functions vector through here including the ones
   // that are wandering through all of devices on perhaps all of the nodes in
-  // the system.  We can only deal with devices of type WifiNetDevice.
+  // the system.  We can only deal with devices of type WimaxNetDevice.
   //
   Ptr<WimaxNetDevice> device = nd->GetObject<WimaxNetDevice> ();
   if (device == 0)

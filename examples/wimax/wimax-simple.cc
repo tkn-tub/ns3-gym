@@ -154,6 +154,10 @@ int main (int argc, char *argv[])
 
   Simulator::Stop (Seconds (duration + 0.1));
 
+  wimax.EnablePcap ("wimax-simple-ss0", ssNodes.Get (0)->GetId (), ss[0]->GetIfIndex ());
+  wimax.EnablePcap ("wimax-simple-ss1", ssNodes.Get (1)->GetId (), ss[1]->GetIfIndex ());
+  wimax.EnablePcap ("wimax-simple-bs0", bsNodes.Get (0)->GetId (), bs->GetIfIndex ());
+
   IpcsClassifierRecord DlClassifierUgs (Ipv4Address ("0.0.0.0"),
                                         Ipv4Mask ("0.0.0.0"),
                                         SSinterfaces.GetAddress (0),

@@ -121,7 +121,7 @@ Tlv::Serialize (Buffer::Iterator i) const
     }
   else
     {
-      i.WriteU8 ((lenSize - 1) | WIMAX_TLV_EXTENDED_LENGTH_MASK);
+      i.WriteU8 ((lenSize-1) | WIMAX_TLV_EXTENDED_LENGTH_MASK);
       for (int j = 0; j < lenSize - 1; j++)
         {
           i.WriteU8 ((uint8_t)(m_length >> ((lenSize - 1 - 1 - j) * 8)));

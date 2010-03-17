@@ -232,7 +232,7 @@ private:
   Time m_blockTime;
 
   TracedCallback<Ptr<const PacketBurst> > m_traceRx;
-  TracedCallback<Ptr<const PacketBurst>, WimaxPhy::ModulationType, uint16_t, uint16_t> m_traceTx;
+  TracedCallback<Ptr<const PacketBurst> > m_traceTx;
 
   // data rates for this Phy
   uint32_t m_dataRateBpsk12, m_dataRateQpsk12, m_dataRateQpsk34, m_dataRateQam16_12, m_dataRateQam16_34,

@@ -280,6 +280,11 @@ Buffer::Buffer (uint32_t dataSize, bool initialize)
 bool
 Buffer::CheckInternalState (void) const
 {
+#if 0
+  // If you want to modify any code in this file, enable this checking code.
+  // Otherwise, there is not much point is enabling it because the
+  // current implementation has been fairly seriously tested and the cost
+  // of this constant checking is pretty high, even for a debug build.
   bool offsetsOk = 
     m_start <= m_zeroAreaStart &&
     m_zeroAreaStart <= m_zeroAreaEnd &&
@@ -300,6 +305,9 @@ Buffer::CheckInternalState (void) const
                           ", " << (internalSizeOk?"true":"false") << " ");
     }
   return ok;
+#else
+  return true;
+#endif
 }
 
 void
@@ -374,13 +382,6 @@ Buffer::~Buffer ()
     {
       Recycle (m_data);
     }
-}
-
-uint32_t 
-Buffer::GetSize (void) const
-{
-  NS_ASSERT (CheckInternalState ());
-  return m_end - m_start;
 }
 
 Buffer::Iterator 
