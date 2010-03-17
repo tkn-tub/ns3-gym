@@ -24,6 +24,8 @@
 #include "ns3/node.h"
 #include "node-container.h"
 #include "ipv4-routing-helper.h"
+#include <map>
+#include <set>
 
 namespace ns3 {
 
@@ -57,6 +59,14 @@ public:
    */
   OlsrHelper* Copy (void) const;
 
+ /**
+   * \param node the node for which an exception is to be defined
+   * \param interface an interface of node on which OLSR is not to be installed
+   *
+   * This method allows the user to specify an interface on which OLSR is not to be installed on
+   */
+  void ExcludeInterface (Ptr<Node> node, uint32_t interface);
+
   /**
    * \param node the node on which the routing protocol will run
    * \returns a newly-created routing protocol
@@ -72,6 +82,7 @@ public:
    * This method controls the attributes of ns3::olsr::RoutingProtocol
    */
   void Set (std::string name, const AttributeValue &value);
+
 private:
   /**
    * \internal
@@ -80,6 +91,8 @@ private:
    */
   OlsrHelper &operator = (const OlsrHelper &o);
   ObjectFactory m_agentFactory;
+
+  std::map< Ptr<Node>, std::set<uint32_t> > m_interfaceExclusions;
 };
 
 } // namespace ns3

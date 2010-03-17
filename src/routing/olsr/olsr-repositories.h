@@ -231,6 +231,61 @@ operator << (std::ostream &os, const TopologyTuple &tuple)
   return os;
 }
 
+/// Association
+struct Association
+{
+  Ipv4Address networkAddr;
+  Ipv4Mask netmask;
+};
+
+static inline bool
+operator == (const Association &a, const Association &b)
+{
+  return (a.networkAddr == b.networkAddr
+          && a.netmask == b.netmask);
+}
+
+static inline std::ostream&
+operator << (std::ostream &os, const Association &tuple)
+{
+  os << "Association(networkAddr=" << tuple.networkAddr
+     << ", netmask=" << tuple.netmask
+     << ")";
+  return os;
+}
+
+/// An Association Tuple
+struct AssociationTuple
+{
+  /// Main address of the gateway.
+  Ipv4Address gatewayAddr;
+  /// Network Address of network reachable through gatewayAddr
+  Ipv4Address networkAddr;
+  /// Netmask of network reachable through gatewayAddr
+  Ipv4Mask netmask;
+  /// Time at which this tuple expires and must be removed
+  Time expirationTime;
+};
+
+static inline bool
+operator == (const AssociationTuple &a, const AssociationTuple &b)
+{
+  return (a.gatewayAddr == b.gatewayAddr
+          && a.networkAddr == b.networkAddr
+          && a.netmask == b.netmask);
+}
+
+static inline std::ostream&
+operator << (std::ostream &os, const AssociationTuple &tuple)
+{
+  os << "AssociationTuple(gatewayAddr=" << tuple.gatewayAddr
+     << ", networkAddr=" << tuple.networkAddr
+     << ", netmask=" << tuple.netmask
+     << ", expirationTime=" << tuple.expirationTime
+     << ")";
+  return os;
+}
+
 
 typedef std::set<Ipv4Address> 			MprSet;	///< MPR Set type.
 typedef std::vector<MprSelectorTuple>		MprSelectorSet;	///< MPR Selector Set type.
@@ -240,6 +295,8 @@ typedef std::vector<TwoHopNeighborTuple>	TwoHopNeighborSet; ///< 2-hop Neighbor 
 typedef std::vector<TopologyTuple>		TopologySet;	///< Topology Set type.
 typedef std::vector<DuplicateTuple>		DuplicateSet;	///< Duplicate Set type.
 typedef std::vector<IfaceAssocTuple>		IfaceAssocSet; ///< Interface Association Set type.
+typedef std::vector<AssociationTuple>		AssociationSet; ///< Association Set type.
+typedef std::vector<Association>		Associations; ///< Association Set type.
 
 
 }}; // namespace ns3, olsr

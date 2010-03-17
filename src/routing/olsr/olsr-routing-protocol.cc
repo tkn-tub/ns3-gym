@@ -41,6 +41,7 @@
 #include "ns3/random-variable.h"
 #include "ns3/inet-socket-address.h"
 #include "ns3/ipv4-routing-protocol.h"
+#include "ns3/ipv4-routing-table-entry.h"
 #include "ns3/ipv4-route.h"
 #include "ns3/boolean.h"
 #include "ns3/uinteger.h"
@@ -79,7 +80,8 @@
 #define OLSR_DUP_HOLD_TIME	Seconds (30)
 /// MID holding time.
 #define OLSR_MID_HOLD_TIME	(Scalar (3) * m_midInterval)
-
+/// HNA holding time.
+#define OLSR_HNA_HOLD_TIME  (Scalar (3) * m_hnaInterval)
 
 /********** Link types **********/
 
@@ -165,6 +167,10 @@ RoutingProtocol::GetTypeId (void)
                    TimeValue (Seconds (5)),
                    MakeTimeAccessor (&RoutingProtocol::m_midInterval),
                    MakeTimeChecker ())
+    .AddAttribute ("HnaInterval", "HNA messages emission interval.  Normally it is equal to TcInterval.",
+                   TimeValue (Seconds (5)),
+                   MakeTimeAccessor (&RoutingProtocol::m_hnaInterval),
+                   MakeTimeChecker ())
     .AddAttribute ("Willingness", "Willingness of a node to carry and forward traffic for other nodes.",
                    EnumValue (OLSR_WILL_DEFAULT),
                    MakeEnumAccessor (&RoutingProtocol::m_willingness),
@@ -185,12 +191,16 @@ RoutingProtocol::GetTypeId (void)
 
 
 RoutingProtocol::RoutingProtocol ()
-  : m_ipv4 (0),
+  : m_routingTableAssociation (0),
+    m_ipv4 (0),
     m_helloTimer (Timer::CANCEL_ON_DESTROY),
     m_tcTimer (Timer::CANCEL_ON_DESTROY),
     m_midTimer (Timer::CANCEL_ON_DESTROY),
+    m_hnaTimer (Timer::CANCEL_ON_DESTROY),    
     m_queuedMessagesTimer (Timer::CANCEL_ON_DESTROY)
-{}
+{
+  m_hnaRoutingTable = Create<Ipv4StaticRouting> ();
+}
 
 RoutingProtocol::~RoutingProtocol ()
 {}
@@ -204,6 +214,7 @@ RoutingProtocol::SetIpv4 (Ptr<Ipv4> ipv4)
   m_helloTimer.SetFunction (&RoutingProtocol::HelloTimerExpire, this);
   m_tcTimer.SetFunction (&RoutingProtocol::TcTimerExpire, this);
   m_midTimer.SetFunction (&RoutingProtocol::MidTimerExpire, this);
+  m_hnaTimer.SetFunction (&RoutingProtocol::HnaTimerExpire, this);
   m_queuedMessagesTimer.SetFunction (&RoutingProtocol::SendQueuedMessages, this);
 
   m_packetSequenceNumber = OLSR_MAX_SEQ_NUM;
@@ -213,11 +224,15 @@ RoutingProtocol::SetIpv4 (Ptr<Ipv4> ipv4)
   m_linkTupleTimerFirstTime = true;
 
   m_ipv4 = ipv4;
+  
+  m_hnaRoutingTable->SetIpv4 (ipv4);
 }
 
 void RoutingProtocol::DoDispose ()
 {
   m_ipv4 = 0;
+  m_hnaRoutingTable = 0;
+  m_routingTableAssociation = 0;
 
   for (std::map< Ptr<Socket>, Ipv4InterfaceAddress >::iterator iter = m_socketAddresses.begin ();
        iter != m_socketAddresses.end (); iter++)
@@ -251,6 +266,8 @@ void RoutingProtocol::DoStart ()
   NS_LOG_DEBUG ("Starting OLSR on node " << m_mainAddress);
 
   Ipv4Address loopback ("127.0.0.1");
+
+  bool canRunOlsr = false;
   for (uint32_t i = 0; i < m_ipv4->GetNInterfaces (); i++)
     {
       Ipv4Address addr = m_ipv4->GetAddress (i, 0).GetLocal ();
@@ -269,6 +286,9 @@ void RoutingProtocol::DoStart ()
           NS_ASSERT (GetMainAddress (addr) == m_mainAddress);
         }
 
+      if(m_interfaceExclusions.find (i) != m_interfaceExclusions.end ())
+        continue;
+
       // Create a socket to listen only on this interface
       Ptr<Socket> socket = Socket::CreateSocket (GetObject<Node> (), 
         UdpSocketFactory::GetTypeId()); 
@@ -279,13 +299,19 @@ void RoutingProtocol::DoStart ()
         }
       socket->Connect (InetSocketAddress (Ipv4Address (0xffffffff), OLSR_PORT_NUMBER));
       m_socketAddresses[socket] = m_ipv4->GetAddress (i, 0);
+
+      canRunOlsr = true;
     }
 
-  HelloTimerExpire ();
-  TcTimerExpire ();
-  MidTimerExpire ();
+  if(canRunOlsr)
+   {
+      HelloTimerExpire ();
+      TcTimerExpire ();
+      MidTimerExpire ();
+      HnaTimerExpire ();      
 
-  NS_LOG_DEBUG ("OLSR on node " << m_mainAddress << " started");
+      NS_LOG_DEBUG ("OLSR on node " << m_mainAddress << " started");
+   }
 }
 
 void RoutingProtocol::SetMainInterface (uint32_t interface)
@@ -293,6 +319,10 @@ void RoutingProtocol::SetMainInterface (uint32_t interface)
   m_mainAddress = m_ipv4->GetAddress (interface, 0).GetLocal ();
 }
 
+void RoutingProtocol::SetInterfaceExclusions (std::set<uint32_t> exceptions)
+{
+  m_interfaceExclusions = exceptions;
+}
 
 //
 // \brief Processes an incoming %OLSR packet following RFC 3626 specification.
@@ -397,6 +427,12 @@ RoutingProtocol::RecvOlsr (Ptr<Socket> socket)
                             <<  " received MID message of size " << messageHeader.GetSerializedSize ());
               ProcessMid (messageHeader, senderIfaceAddr);
               break;
+            case olsr::MessageHeader::HNA_MESSAGE:
+              NS_LOG_DEBUG (Simulator::Now ().GetSeconds ()
+                            << "s OLSR node " << m_mainAddress
+                            <<  " received HNA message of size " << messageHeader.GetSerializedSize ());
+              ProcessHna (messageHeader, senderIfaceAddr);
+              break; 
 
             default:
               NS_LOG_DEBUG ("OLSR message type " <<
@@ -1039,6 +1075,53 @@ RoutingProtocol::RoutingTableComputation ()
         }
     }
 
+  // 5. For each tuple in the association set,
+  //    If there is no entry in the routing table with:
+  //        R_dest_addr     == A_network_addr/A_netmask
+  //   then a new routing entry is created.
+  const AssociationSet &associationSet = m_state.GetAssociationSet ();
+  for (AssociationSet::const_iterator it = associationSet.begin ();
+       it != associationSet.end (); it++)
+    {
+      AssociationTuple const &tuple = *it;
+      RoutingTableEntry gatewayEntry;
+      
+      bool gatewayEntryExists = Lookup (tuple.gatewayAddr, gatewayEntry);
+      bool addRoute = false;
+      
+      uint32_t routeIndex = 0;
+      
+      for (routeIndex = 0; routeIndex < m_hnaRoutingTable->GetNRoutes (); routeIndex++)
+        {
+          Ipv4RoutingTableEntry route = m_hnaRoutingTable->GetRoute (routeIndex);
+          if (route.GetDestNetwork () == tuple.networkAddr &&
+              route.GetDestNetworkMask () == tuple.netmask)
+            {
+              break;
+            }
+        }
+    
+      if (routeIndex == m_hnaRoutingTable->GetNRoutes ())
+        {
+          addRoute = true;
+        }
+      else if(gatewayEntryExists && m_hnaRoutingTable->GetMetric (routeIndex) > gatewayEntry.distance)
+        {
+          m_hnaRoutingTable->RemoveRoute(routeIndex);
+          addRoute = true;
+        }
+        
+      if(addRoute && gatewayEntryExists)
+        {
+          m_hnaRoutingTable->AddNetworkRouteTo (tuple.networkAddr,
+                                                tuple.netmask,
+                                                gatewayEntry.nextAddr,
+                                                gatewayEntry.interface,
+                                                gatewayEntry.distance);
+                                             
+        }
+    }
+
   NS_LOG_DEBUG ("Node " << m_mainAddress << ": RoutingTableComputation end.");
   m_routingTableChanged (GetSize ());
 }
@@ -1280,6 +1363,67 @@ RoutingProtocol::ProcessMid (const olsr::MessageHeader &msg,
   NS_LOG_DEBUG ("Node " << m_mainAddress << " ProcessMid from " << senderIface << " -> END.");
 }
 
+///
+/// \brief Processes a HNA message following RFC 3626 specification.
+///
+/// The Host Network Association Set is updated (if needed) with the information
+/// of the received HNA message.
+///
+/// \param msg the %OLSR message which contains the HNA message.
+/// \param sender_iface the address of the interface where the message was sent from.
+///
+void
+RoutingProtocol::ProcessHna (const olsr::MessageHeader &msg,
+                       const Ipv4Address &senderIface)
+{
+
+  const olsr::MessageHeader::Hna &hna = msg.GetHna ();
+  Time now = Simulator::Now ();
+  
+  // 1. If the sender interface of this message is not in the symmetric
+  // 1-hop neighborhood of this node, the message MUST be discarded.
+  const LinkTuple *link_tuple = m_state.FindSymLinkTuple (senderIface, now);
+  if (link_tuple == NULL)
+    return;
+  
+  // 2. Otherwise, for each (network address, netmask) pair in the
+  // message:
+  
+  for (std::vector<olsr::MessageHeader::Hna::Association>::const_iterator it = hna.associations.begin();
+       it != hna.associations.end() ; it++)
+    {
+      AssociationTuple *tuple = m_state.FindAssociationTuple(msg.GetOriginatorAddress(),it->address,it->mask);
+  
+      // 2.1  if an entry in the association set already exists, where:
+      //          A_gateway_addr == originator address
+      //          A_network_addr == network address
+      //          A_netmask      == netmask
+      //      then the holding time for that tuple MUST be set to:
+      //          A_time         =  current time + validity time
+      if(tuple != NULL)
+        {
+          tuple->expirationTime = now + msg.GetVTime ();
+        }
+        
+      // 2.2 otherwise, a new tuple MUST be recorded with:
+      //          A_gateway_addr =  originator address
+      //          A_network_addr =  network address
+      //          A_netmask      =  netmask
+      //          A_time         =  current time + validity time
+      else
+        {
+          const AssociationTuple &assocTuple = (AssociationTuple){msg.GetOriginatorAddress(),it->address,it->mask,now + msg.GetVTime ()};
+          
+          AddAssociationTuple (assocTuple);
+          
+          //Schedule Association Tuple deletion
+          Simulator::Schedule (DELAY (assocTuple.expirationTime),
+                               &RoutingProtocol::AssociationTupleTimerExpire, this,
+                               assocTuple.gatewayAddr,assocTuple.networkAddr,assocTuple.netmask);
+        }
+        
+    }
+}
 
 ///
 /// \brief OLSR's default forwarding algorithm.
@@ -1447,7 +1591,7 @@ void
 RoutingProtocol::SendHello ()
 {
   NS_LOG_FUNCTION (this);
-  
+    
   olsr::MessageHeader msg;
   Time now = Simulator::Now ();
 
@@ -1569,6 +1713,7 @@ RoutingProtocol::SendTc ()
   
   olsr::MessageHeader::Tc &tc = msg.GetTc ();
   tc.ansn = m_ansn;
+      
   for (MprSelectorSet::const_iterator mprsel_tuple = m_state.GetMprSelectors ().begin();
        mprsel_tuple != m_state.GetMprSelectors ().end(); mprsel_tuple++)
     {
@@ -1619,6 +1764,94 @@ RoutingProtocol::SendMid ()
   msg.SetMessageSequenceNumber (GetMessageSequenceNumber ());
 
   QueueMessage (msg, JITTER);
+}
+
+///
+/// \brief Creates a new %OLSR HNA message which is buffered for being sent later on.
+///
+void
+RoutingProtocol::SendHna ()
+{
+
+  olsr::MessageHeader msg;
+
+  msg.SetVTime (OLSR_HNA_HOLD_TIME);
+  msg.SetOriginatorAddress (m_mainAddress);
+  msg.SetTimeToLive (255);
+  msg.SetHopCount (0);
+  msg.SetMessageSequenceNumber (GetMessageSequenceNumber ());
+  olsr::MessageHeader::Hna &hna = msg.GetHna ();
+  
+  std::vector<olsr::MessageHeader::Hna::Association>
+    &associations = hna.associations;
+      
+  if (m_routingTableAssociation != 0)
+    {
+      // Add (NetworkAddr, Netmask) entries from Associated Routing Table to HNA message.
+      for (uint32_t i = 0; i < m_routingTableAssociation->GetNRoutes (); i++)
+        {
+          Ipv4RoutingTableEntry route = m_routingTableAssociation->GetRoute (i);
+          
+          std::set<uint32_t>::const_iterator ci = m_interfaceExclusions.find (route.GetInterface ());
+                  
+          if (ci != m_interfaceExclusions.end ())
+            {
+              olsr::MessageHeader::Hna::Association assoc = {route.GetDestNetwork (), route.GetDestNetworkMask ()};
+              associations.push_back(assoc);
+            }
+        }
+    }
+    
+  int size = associations.size ();
+
+  // Add (NetworkAddr, Netmask) entries specified using AddHostNetworkAssociation () to HNA message.
+  for (Associations::const_iterator it = m_state.GetAssociations ().begin ();
+        it != m_state.GetAssociations ().end (); it++)
+    {
+      // Check if the entry has already been added from the Associated Routing Table
+      std::vector<olsr::MessageHeader::Hna::Association>::const_iterator ci = associations.begin ();
+      bool found = false;
+      for (int i = 0; i < size; i++)
+        {
+          if (it->networkAddr == ci->address && it->netmask == ci->mask)
+            {
+              found = true;
+              break;
+            }
+          ci++;
+        }
+      
+      if(!found)
+        {
+          olsr::MessageHeader::Hna::Association assoc = {it->networkAddr,it->netmask};
+          associations.push_back(assoc);
+        }
+    }
+    
+  if(associations.size () == 0)
+    return;
+  
+  QueueMessage (msg, JITTER);
+}
+
+///
+/// \brief Injects a (networkAddr, netmask) tuple for which the node
+///        can generate an HNA message for
+///
+void
+RoutingProtocol::AddHostNetworkAssociation (Ipv4Address networkAddr, Ipv4Mask netmask)
+{
+  m_state.InsertAssociation ((Association) {networkAddr, netmask});
+}
+
+///
+/// \brief Adds an Ipv4StaticRouting protocol Association
+///        can generate an HNA message for
+///
+void
+RoutingProtocol::SetRoutingTableAssociation (Ptr<Ipv4StaticRouting> routingTable)
+{
+  m_routingTableAssociation = routingTable;
 }
 
 ///
@@ -2301,6 +2534,29 @@ RoutingProtocol::RemoveIfaceAssocTuple (const IfaceAssocTuple &tuple)
   m_state.EraseIfaceAssocTuple (tuple);
 }
 
+///
+/// \brief Adds a host network association tuple to the Association Set.
+///
+/// \param tuple the host network association tuple to be added.
+///
+void
+RoutingProtocol::AddAssociationTuple (const AssociationTuple &tuple)
+{
+  m_state.InsertAssociationTuple (tuple);
+}
+
+///
+/// \brief Removes a host network association tuple from the Association Set.
+///
+/// \param tuple the host network association tuple to be removed.
+///
+void
+RoutingProtocol::RemoveAssociationTuple (const AssociationTuple &tuple)
+{
+  m_state.EraseAssociationTuple (tuple);
+}
+
+
 
 uint16_t RoutingProtocol::GetPacketSequenceNumber ()
 {
@@ -2355,6 +2611,24 @@ RoutingProtocol::MidTimerExpire ()
 {
   SendMid ();
   m_midTimer.Schedule (m_midInterval);
+}
+
+///
+/// \brief Sends an HNA message (if the node has associated hosts/networks) and reschedules the HNA timer.
+/// \param e The event which has expired.
+///
+void
+RoutingProtocol::HnaTimerExpire ()
+{
+  if (m_state.GetAssociations ().size () > 0 || m_routingTableAssociation !=0)
+    {
+      SendHna ();
+    }
+  else
+    {
+      NS_LOG_DEBUG ("Not sending any HNA, no associations to advertise.");
+    }
+  m_hnaTimer.Schedule (m_hnaInterval);
 }
 
 ///
@@ -2537,6 +2811,29 @@ RoutingProtocol::IfaceAssocTupleTimerExpire (Ipv4Address ifaceAddr)
     }
 }
 
+/// \brief Removes tuple_ if expired. Else timer is rescheduled to expire at tuple_->time().
+/// \param e The event which has expired.
+///
+void
+RoutingProtocol::AssociationTupleTimerExpire (Ipv4Address gatewayAddr, Ipv4Address networkAddr, Ipv4Mask netmask)
+{
+  AssociationTuple *tuple = m_state.FindAssociationTuple (gatewayAddr, networkAddr, netmask);
+  if (tuple == NULL)
+    {
+      return;
+    }
+  if (tuple->expirationTime < Simulator::Now ())
+    {
+      RemoveAssociationTuple (*tuple);
+    }
+  else
+    {
+      m_events.Track (Simulator::Schedule (DELAY (tuple->expirationTime),
+                                           &RoutingProtocol::AssociationTupleTimerExpire,
+                                           this, gatewayAddr, networkAddr, netmask));
+    }
+}
+
 ///
 /// \brief Clears the routing table and frees the memory assigned to each one of its entries.
 ///
@@ -2612,6 +2909,8 @@ RoutingProtocol::RouteOutput (Ptr<Packet> p, const Ipv4Header &header, Ptr<NetDe
   NS_LOG_FUNCTION (this << " " << m_ipv4->GetObject<Node> ()->GetId() << " " << header.GetDestination () << " " << oif);
   Ptr<Ipv4Route> rtentry;
   RoutingTableEntry entry1, entry2;
+  bool found = false;
+  
   if (Lookup (header.GetDestination (), entry1) != 0)
     {
       bool foundSendEntry = FindSendEntry (entry1, entry2);
@@ -2654,10 +2953,23 @@ RoutingProtocol::RouteOutput (Ptr<Packet> p, const Ipv4Header &header, Ptr<NetDe
       NS_LOG_DEBUG ("Olsr node " << m_mainAddress 
                     << ": RouteOutput for dest=" << header.GetDestination ()
                     << " --> nextHop=" << entry2.nextAddr
-                    << " interface=" << entry2.interface);      NS_LOG_DEBUG ("Found route to " << rtentry->GetDestination () << " via nh " << rtentry->GetGateway () << " with source addr " << rtentry->GetSource () << " and output dev " << rtentry->GetOutputDevice());
+                    << " interface=" << entry2.interface);
+      NS_LOG_DEBUG ("Found route to " << rtentry->GetDestination () << " via nh " << rtentry->GetGateway () << " with source addr " << rtentry->GetSource () << " and output dev " << rtentry->GetOutputDevice());
+      found = true;
     }
   else
     { 
+      rtentry = m_hnaRoutingTable->RouteOutput (p, header, oif, sockerr);
+      
+      if (rtentry)
+        {
+          found = true;
+          NS_LOG_DEBUG ("Found route to " << rtentry->GetDestination () << " via nh " << rtentry->GetGateway () << " with source addr " << rtentry->GetSource () << " and output dev " << rtentry->GetOutputDevice());
+        }
+    }
+    
+  if (!found)
+    {
       NS_LOG_DEBUG ("Olsr node " << m_mainAddress 
                     << ": RouteOutput for dest=" << header.GetDestination ()
                     << " No route to host");
@@ -2729,18 +3041,30 @@ bool RoutingProtocol::RouteInput  (Ptr<const Packet> p,
     }
   else
     {
-#ifdef NS3_LOG_ENABLE
-      NS_LOG_DEBUG ("Olsr node " << m_mainAddress 
-                    << ": RouteInput for dest=" << header.GetDestination ()
-                    << " --> NOT FOUND; ** Dumping routing table...");      for (std::map<Ipv4Address, RoutingTableEntry>::const_iterator iter = m_table.begin ();
-           iter != m_table.end (); iter++)
-        {           NS_LOG_DEBUG ("dest=" << iter->first << " --> next=" << iter->second.nextAddr                 
-                        << " via interface " << iter->second.interface);
+      if(m_hnaRoutingTable->RouteInput (p, header, idev, ucb, mcb, lcb, ecb))
+        {
+          return true;
         }
+      else
+        {
+        
+#ifdef NS3_LOG_ENABLE
+          NS_LOG_DEBUG ("Olsr node " << m_mainAddress 
+                    << ": RouteInput for dest=" << header.GetDestination ()
+                    << " --> NOT FOUND; ** Dumping routing table...");      
+                    
+          for (std::map<Ipv4Address, RoutingTableEntry>::const_iterator iter = m_table.begin ();
+             iter != m_table.end (); iter++)
+          { 
+            NS_LOG_DEBUG ("dest=" << iter->first << " --> next=" << iter->second.nextAddr                 
+                        << " via interface " << iter->second.interface);
+          }
       
-      NS_LOG_DEBUG ("** Routing table dump end.");
+          NS_LOG_DEBUG ("** Routing table dump end.");
 #endif // NS3_LOG_ENABLE
-      return false;
+
+          return false;
+        }
     }
 }
 void 
