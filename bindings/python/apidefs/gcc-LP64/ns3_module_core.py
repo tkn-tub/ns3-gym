@@ -206,6 +206,8 @@ def register_types(module):
     ## vector.h: ns3::Vector3DValue [class]
     module.add_class('Vector3DValue', parent=root_module['ns3::AttributeValue'])
     module.add_container('std::list< ns3::Ptr< ns3::Packet > >', 'ns3::Ptr< ns3::Packet >', container_type='list')
+    module.add_container('std::list< ns3::Ptr< ns3::Packet const > >', 'ns3::Ptr< ns3::Packet const >', container_type='list')
+    module.add_container('std::vector< ns3::Ptr< ns3::WimaxConnection > >', 'ns3::Ptr< ns3::WimaxConnection >', container_type='vector')
     module.add_container('std::vector< ns3::Ptr< ns3::FlowProbe > >', 'ns3::Ptr< ns3::FlowProbe >', container_type='vector')
     module.add_container('std::list< ns3::Ptr< ns3::RadvdPrefix > >', 'ns3::Ptr< ns3::RadvdPrefix >', container_type='list')
     module.add_container('std::vector< ns3::Ptr< ns3::NetDevice > >', 'ns3::Ptr< ns3::NetDevice >', container_type='vector')
