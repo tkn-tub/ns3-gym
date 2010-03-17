@@ -98,7 +98,7 @@ def register_types(module):
     ## mac-messages.h: ns3::ManagementMessageType [class]
     module.add_class('ManagementMessageType', parent=root_module['ns3::Header'])
     ## mac-messages.h: ns3::ManagementMessageType::MessageType [enumeration]
-    module.add_enum('MessageType', ['MESSAGE_TYPE_DL_MAP', 'MESSAGE_TYPE_DCD', 'MESSAGE_TYPE_UL_MAP', 'MESSAGE_TYPE_UCD', 'MESSAGE_TYPE_RNG_REQ', 'MESSAGE_TYPE_RNG_RSP', 'MESSAGE_TYPE_REG_REQ', 'MESSAGE_TYPE_REG_RSP', 'MESSAGE_TYPE_DSA_REQ', 'MESSAGE_TYPE_DSA_RSP', 'MESSAGE_TYPE_DSA_ACK'], outer_class=root_module['ns3::ManagementMessageType'])
+    module.add_enum('MessageType', ['MESSAGE_TYPE_UCD', 'MESSAGE_TYPE_DCD', 'MESSAGE_TYPE_DL_MAP', 'MESSAGE_TYPE_UL_MAP', 'MESSAGE_TYPE_RNG_REQ', 'MESSAGE_TYPE_RNG_RSP', 'MESSAGE_TYPE_REG_REQ', 'MESSAGE_TYPE_REG_RSP', 'MESSAGE_TYPE_DSA_REQ', 'MESSAGE_TYPE_DSA_RSP', 'MESSAGE_TYPE_DSA_ACK'], outer_class=root_module['ns3::ManagementMessageType'])
     ## ofdm-downlink-frame-prefix.h: ns3::OfdmDownlinkFramePrefix [class]
     module.add_class('OfdmDownlinkFramePrefix', parent=root_module['ns3::Header'])
     ## send-params.h: ns3::OfdmSendParams [class]
