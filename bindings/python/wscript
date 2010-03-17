@@ -19,6 +19,26 @@ REQUIRED_PYBINDGEN_VERSION = (0, 14, 0, 755)
 REQUIRED_PYGCCXML_VERSION = (0, 9, 5)
 
 
+
+from TaskGen import feature, after
+import Task, ccroot
+
+@feature('pch')
+@after('apply_link')
+def process_pch(self):
+    node = self.path.find_resource(self.pch)
+    assert node
+    tsk = self.create_task('gchx')
+    tsk.set_inputs(node)
+    tsk.set_outputs(node.parent.find_or_declare(node.name + '.gch'))
+
+comp_line = '${CXX} ${CXXFLAGS} ${CPPFLAGS} ${_CXXINCFLAGS} ${_CXXDEFFLAGS} ${SRC} -o ${TGT}'
+cls = Task.simple_task_type('gchx', comp_line, before='cc cxx')
+cls.scan = ccroot.scan
+
+
+
+
 def add_to_python_path(path):
     if os.environ.get('PYTHONPATH', ''):
         os.environ['PYTHONPATH'] = path + os.pathsep + os.environ.get('PYTHONPATH')
@@ -44,9 +64,14 @@ def set_options(opt):
                    help=('Path to an existing pybindgen source tree to use.'),
                    default=None,
                    dest='with_pybindgen', type="string")
+    opt.add_option('--enable-python-pch',
+                   help=("Enable precompiled headers when compiling python bindings, to speed up compilation."),
+                   action="store_true", default=False,
+                   dest='enable_python_pch')
 
 
 def configure(conf):
+    conf.env['ENABLE_PYTHON_PCH'] = Options.options.enable_python_pch
     conf.env['ENABLE_PYTHON_BINDINGS'] = False
     if Options.options.python_disable:
         conf.report_optional_feature("python", "Python Bindings", False,
@@ -246,7 +271,7 @@ def calc_header_include(path):
 
 
 class gen_everything_h_task(Task.Task):
-    before = 'cc cxx'
+    before = 'cc cxx gchx'
     after = 'ns3header_task'
     color = 'BLUE'
 
@@ -384,7 +409,7 @@ class python_scan_task(Task.TaskBase):
     """Uses gccxml to scan the file 'everything.h' and extract API definitions.
     """
     after = 'gen_everything_h_task'
-    before = 'cc cxx'
+    before = 'cc cxx gchx'
     color = "BLUE"
     def __init__(self, curdirnode, env, bld, target, cflags):
         self.bld = bld
@@ -495,7 +520,7 @@ def build(bld):
             ]
         target = [
             'ns3module.cc',
-            'ns3module.h',
+            'pch/ns3module.h',
             ]
         if not debug:
             target.append('ns3modulegen.log')
@@ -526,15 +551,18 @@ def build(bld):
         bindgen = bld.new_task_gen('command', source=source, target=target, command=argv)
         bindgen.env['FEATURES'] = ','.join(features)
         bindgen.dep_vars = ['FEATURES']
-        bindgen.before = 'cxx'
+        bindgen.before = 'cxx gchx'
         bindgen.after = 'gen_everything_h_task'
         bindgen.name = "pybindgen-command"
-
-        pymod = bld.new_task_gen('cxx', 'shlib', 'pyext')
-        if sys.platform == 'cygwin':
-            pymod.features.append('implib') # workaround for WAF bug #472
+ 
+        features = 'cxx cshlib pyext'
+        if env['ENABLE_PYTHON_PCH']:
+            features += ' pch'
+        pymod = bld.new_task_gen(features=features)
         pymod.source = ['ns3module.cc', 'ns3module_helpers.cc']
-        pymod.includes = '.'
+        pymod.includes = '. pch'
+        if env['ENABLE_PYTHON_PCH']:
+            pymod.pch = 'pch/ns3module.h'
         for module in scanned_modules:
             pymod.source.append("ns3_module_%s.cc" % module)
         pymod.target = 'ns3/_ns3'
