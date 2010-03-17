@@ -556,6 +556,7 @@ def register_types_ns3_internal(module):
 def register_types_ns3_olsr(module):
     root_module = module.get_root()
     
+    module.add_container('std::set< unsigned int >', 'unsigned int', container_type='set')
 
 def register_methods(root_module):
     root_module.begin_section('ns3_module_core')
