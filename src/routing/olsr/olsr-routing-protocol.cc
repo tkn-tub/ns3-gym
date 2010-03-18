@@ -1751,7 +1751,7 @@ RoutingProtocol::SendMid ()
   for (uint32_t i = 0; i < m_ipv4->GetNInterfaces (); i++)
     {
       Ipv4Address addr = m_ipv4->GetAddress (i, 0).GetLocal ();
-      if (addr != m_mainAddress && addr != loopback)
+      if (addr != m_mainAddress && addr != loopback && m_interfaceExclusions.find (i) == m_interfaceExclusions.end ())
         mid.interfaceAddresses.push_back (addr);
     }
   if (mid.interfaceAddresses.size () == 0)
@@ -2603,7 +2603,6 @@ RoutingProtocol::TcTimerExpire ()
 
 ///
 /// \brief Sends a MID message (if the node has more than one interface) and resets the MID timer.
-/// \warning Currently it does nothing because there is no support for multiple interfaces.
 /// \param e The event which has expired.
 ///
 void
@@ -2788,7 +2787,6 @@ RoutingProtocol::TopologyTupleTimerExpire (Ipv4Address destAddr, Ipv4Address las
 
 ///
 /// \brief Removes tuple_ if expired. Else timer is rescheduled to expire at tuple_->time().
-/// \warning Actually this is never invoked because there is no support for multiple interfaces.
 /// \param e The event which has expired.
 ///
 void
