@@ -1412,8 +1412,12 @@ RoutingProtocol::ProcessHna (const olsr::MessageHeader &msg,
       //          A_time         =  current time + validity time
       else
         {
-          const AssociationTuple &assocTuple = (AssociationTuple){msg.GetOriginatorAddress(),it->address,it->mask,now + msg.GetVTime ()};
-          
+          AssociationTuple assocTuple = {
+            msg.GetOriginatorAddress(),
+            it->address,
+            it->mask,
+            now + msg.GetVTime ()
+          };
           AddAssociationTuple (assocTuple);
           
           //Schedule Association Tuple deletion
