@@ -254,7 +254,7 @@ public:
    * \returns the size in bytes of the packet (including the zero-filled
    *          initial payload)
    */
-  uint32_t GetSize (void) const;
+  inline uint32_t GetSize (void) const;
   /**
    * Add header to this packet. This method invokes the
    * Header::GetSerializedSize and Header::Serialize
@@ -610,6 +610,16 @@ std::ostream& operator<< (std::ostream& os, const Packet &packet);
  * means that most of the time, these operations will not trigger
  * data copies and will thus be still very fast.
  */
+
+} // namespace ns3
+
+namespace ns3 {
+
+uint32_t 
+Packet::GetSize (void) const
+{
+  return m_buffer.GetSize ();
+}
 
 } // namespace ns3
 

@@ -487,4 +487,60 @@ OlsrState::FindNeighborInterfaces (const Ipv4Address &neighborMainAddr) const
   return retval;
 }
 
+/********** Host-Network Association Set Manipulation **********/
+
+AssociationTuple*
+OlsrState::FindAssociationTuple (const Ipv4Address &gatewayAddr, const Ipv4Address &networkAddr, const Ipv4Mask &netmask)
+{
+  for (AssociationSet::iterator it = m_associationSet.begin ();
+	it != m_associationSet.end (); it++)
+    {
+      if (it->gatewayAddr == gatewayAddr and it->networkAddr == networkAddr and it->netmask == netmask)
+        {
+          return &(*it);
+        }
+    }
+   return NULL;
+}
+
+void
+OlsrState::EraseAssociationTuple (const AssociationTuple &tuple)
+{
+  for (AssociationSet::iterator it = m_associationSet.begin ();
+       it != m_associationSet.end (); it++)
+    {
+      if (*it == tuple)
+        {
+          m_associationSet.erase (it);
+          break;
+        }
+    }
+}
+
+void
+OlsrState::InsertAssociationTuple (const AssociationTuple &tuple)
+{
+  m_associationSet.push_back (tuple);
+}
+
+void
+OlsrState::EraseAssociation (const Association &tuple)
+{
+  for (Associations::iterator it = m_associations.begin ();
+       it != m_associations.end (); it++)
+    {
+      if (*it == tuple)
+        {
+          m_associations.erase (it);
+          break;
+        }
+    }
+}
+
+void
+OlsrState::InsertAssociation (const Association &tuple)
+{
+  m_associations.push_back(tuple);
+}
+
 } // namespace ns3

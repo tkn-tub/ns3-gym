@@ -190,6 +190,10 @@ private:
   void AddLink (Link link);
 
 private:
+
+  TopologyReader (const TopologyReader&);
+  TopologyReader& operator= (const TopologyReader&);
+
   std::string m_fileName;
   std::list<Link> m_linksList;
 

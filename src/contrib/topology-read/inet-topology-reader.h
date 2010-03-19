@@ -66,6 +66,10 @@ public:
    */
   virtual NodeContainer Read (void);
 
+private:
+  InetTopologyReader (const InetTopologyReader&);
+  InetTopologyReader& operator= (const InetTopologyReader&);
+
   // end class InetTopologyReader
 };
 

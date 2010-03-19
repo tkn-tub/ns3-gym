@@ -24,7 +24,7 @@ class SmartPointerTransformation(typehandlers.TypeTransformation):
     """
     def __init__(self):
         super(SmartPointerTransformation, self).__init__()
-        self.rx = re.compile(r'(ns3::|::ns3::|)Ptr<([^>]+)>')
+        self.rx = re.compile(r'(ns3::|::ns3::|)Ptr<([^>]+)>\s*$')
 
     def _get_untransformed_type_traits(self, name):
         m = self.rx.match(name)
@@ -350,180 +350,21 @@ static ns3::TypeId GetTypeId (void)
             "NS_OBJECT_ENSURE_REGISTERED (%s);" % helper_class.name)
     Object.add_helper_class_hook(helper_class_hook)
 
-    ## Replace all class constructors with a generic constructor based on CreateObjectWithAttributes<T> (AttributeList)
-    module.header.writeln('''
-namespace ns3 {
+    def ns3_object_instance_creation_function(cpp_class, code_block, lvalue,
+                                              parameters, construct_type_name):
+        assert lvalue
+        assert not lvalue.startswith('None')
+        if cpp_class.cannot_be_constructed:
+            raise CodeGenerationError("%s cannot be constructed (%s)"
+                                      % cpp_class.full_name)
+        if cpp_class.incomplete_type:
+            raise CodeGenerationError("%s cannot be constructed (incomplete type)"
+                                      % cpp_class.full_name)
+        code_block.write_code("%s = new %s(%s);" % (lvalue, construct_type_name, parameters))
+        code_block.write_code("%s->Ref ();" % (lvalue))
+        code_block.write_code("ns3::CompleteConstruct(%s);" % (lvalue, ))
 
-void PythonCompleteConstruct (Ptr<Object> object, TypeId typeId, const AttributeList &attributes);
-
-template <typename T>
-Ptr<T> CreateObjectPython (PyObject *pyobj, const AttributeList &attributes)
-{
-  Ptr<T> p = Ptr<T> (new T (), false);
-  p->set_pyobj (pyobj);
-  PythonCompleteConstruct (p, T::GetTypeId (), attributes);
-  return p;  
-}
-
-} // namespace ns3
-
-''')
-    
-    for cls in module.classes:
-        if not cls.is_subclass(Object):
-            continue
-        cls.constructors = [] # clear the list of constructors
-
-        ## add our own custom constructor, if possible
-        try:
-            construct_name = cls.get_construct_name()
-        except CodeGenerationError:
-            construct_name = None
-
-        if construct_name and not cls.helper_class:
-            construct_code = '''
-    ns3::Ptr< %(CONSTRUCT_NAME)s > obj = ns3::CreateObjectWithAttributes< %(CONSTRUCT_NAME)s > (attrList);
-    obj->Ref ();
-    self->obj = ns3::PeekPointer (obj);
-''' % dict (CONSTRUCT_NAME=construct_name)
-
-        elif not construct_name and not cls.helper_class:
-            continue
-
-        elif not construct_name and cls.helper_class:
-            construct_code = '''
-    if (self->ob_type != &%(PYTYPESTRUCT)s)
-    {
-        ns3::Ptr< %(HELPER_CLASS_NAME)s > obj = ns3::CreateObjectPython< %(HELPER_CLASS_NAME)s > ((PyObject *)self, attrList);
-        obj->Ref ();
-        self->obj = ns3::PeekPointer (obj);
-    } else {
-        PyErr_SetString(PyExc_TypeError, "Class cannot be constructed (unless subclassed)");
-        {
-            PyObject *exc_type, *traceback;
-            PyErr_Fetch(&exc_type, return_exception, &traceback);
-            Py_XDECREF(exc_type);
-            Py_XDECREF(traceback);
-        }
-        return -1;
-    }
-''' % dict (CONSTRUCT_NAME=construct_name, HELPER_CLASS_NAME=cls.helper_class.name,
-            PYTYPESTRUCT=cls.pytypestruct)
-
-        elif construct_name and cls.helper_class:
-            construct_code = '''
-    if (self->ob_type != &%(PYTYPESTRUCT)s)
-    {
-        ns3::Ptr< %(HELPER_CLASS_NAME)s > obj = ns3::CreateObjectPython< %(HELPER_CLASS_NAME)s > ((PyObject *)self, attrList);
-        obj->Ref ();
-        self->obj = ns3::PeekPointer (obj);
-    } else {
-        ns3::Ptr< %(CONSTRUCT_NAME)s > obj = ns3::CreateObjectWithAttributes< %(CONSTRUCT_NAME)s > (attrList);
-        obj->Ref ();
-        self->obj = ns3::PeekPointer (obj);
-    }
-''' % dict (CONSTRUCT_NAME=construct_name, HELPER_CLASS_NAME=cls.helper_class.name,
-            PYTYPESTRUCT=cls.pytypestruct)
-        else:
-            raise AssertionError
-
-        wrapper_name = "_wrap_create_object_%s" % (cls.mangled_full_name,) 
-        constructor = '''
-static int %(WRAPPER_NAME)s (%(PYSTRUCT)s *self, PyObject *args, PyObject *kwargs, PyObject **return_exception)
-{
-    if (PyTuple_Size(args)) {
-        PyErr_SetString(PyExc_TypeError, "positional arguments not supported "
-                        "for ns3.Object constructors, only keyword arguments"
-                        " should be used (AttributeName=Value)");
-        {
-            PyObject *exc_type, *traceback;
-            PyErr_Fetch(&exc_type, return_exception, &traceback);
-            Py_XDECREF(exc_type);
-            Py_XDECREF(traceback);
-        }
-        return -1;
-    }
-    ns3::AttributeList attrList;
-    if (kwargs && KwargsToAttributeList(kwargs, %(CLASS_NAME)s::GetTypeId(), attrList)) {
-        {
-            PyObject *exc_type, *traceback;
-            PyErr_Fetch(&exc_type, return_exception, &traceback);
-            Py_XDECREF(exc_type);
-            Py_XDECREF(traceback);
-        }
-        return -1;
-    }
-    %(CONSTRUCT_CODE)s
-    PyNs3ObjectBase_wrapper_registry[(void *) self->obj] = (PyObject *) self;
-    return 0;
-}
-''' % dict(WRAPPER_NAME=wrapper_name, PYSTRUCT=cls.pystruct, CLASS_NAME=cls.full_name,
-           CONSTRUCT_CODE=construct_code, PURE_VIRTUALS=cls.have_pure_virtual_methods)
-        cls.add_constructor(CustomCppConstructorWrapper(wrapper_name, constructor))
-
-
-    # Generate conversion function from PyObject* to AttributeValue
-#     sink = module.body
-#     sink.writeln('''
-# Ptr<AttributeValue> AttributeValueFromPyObject (PyObject *obj)
-# {
-#     // note: needs to check for bool first, because bool is a subclass of int
-#     if (PyBool_Check(obj)) {
-#         return Create<BooleanValue>(PyObject_IsTrue(obj));
-#     } else if (PyInt_Check(obj)) {
-#         return Create<IntegerValue>(PyInt_AsLong(obj));
-#     } else if (PyLong_Check(obj)) {
-#         return Create<IntegerValue>(PyLong_AsLongLong(obj));
-#     } else if (PyFloat_Check(obj)) {
-#         return Create<DoubleValue>(PyFloat_AsDouble(obj));
-#     }
-
-# ''')
-    
-
-
-    ## ---------------------------------------------------------------------
-    ## -------------- write the KwargsToAttributeList function -------------
-    ## ---------------------------------------------------------------------
-    Attribute = module['ns3::AttributeValue']
-    module.after_forward_declarations.writeln(
-        'int KwargsToAttributeList(PyObject *kwargs, ns3::TypeId tid, ns3::AttributeList &oAttrList);')
-
-    module.body.writeln(
-'''
-int KwargsToAttributeList(PyObject *kwargs, ns3::TypeId tid, ns3::AttributeList &oAttrList)
-{
-    PyObject *key, *value;
-    Py_ssize_t pos = 0;
-
-    while (PyDict_Next(kwargs, &pos, &key, &value)) {
-        if (!PyString_Check(key)) {
-            PyErr_SetString(PyExc_TypeError, "kwargs keys must be strings");
-            return -1;
-        }
-        if (PyObject_IsInstance(value, (PyObject*) &%s)) {
-            oAttrList.SetWithTid(tid, PyString_AsString(key), *((%s *) value)->obj);''' \
-    % (Attribute.pytypestruct, Attribute.pystruct))
-
-    for conversion_source in Attribute.get_all_implicit_conversions():
-        module.body.writeln('''
-        } else if (PyObject_IsInstance(value, (PyObject*) &%s)) {
-            oAttrList.SetWithTid(tid, PyString_AsString(key), *((%s *) value)->obj);''' \
-                        % (conversion_source.pytypestruct, conversion_source.pystruct))
-
-    possible_type_names = ", ".join([cls.name for cls in [Attribute] + Attribute.get_all_implicit_conversions()])
-    module.body.writeln('''
-        } else {
-            PyErr_Format(PyExc_TypeError, \"parameter must an instance of one of the types (%s), not %%s\", value->ob_type->tp_name);
-            return -1;
-        }''' % (possible_type_names))
-
-    module.body.writeln(
-'''
-    }
-    return 0;
-}
-''')
+    Object.set_instance_creation_function(ns3_object_instance_creation_function)
 
 
 def Attribute_customizations(module):

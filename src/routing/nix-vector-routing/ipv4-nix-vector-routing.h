@@ -115,10 +115,11 @@ class Ipv4NixVectorRouting : public Ipv4RoutingProtocol
     uint32_t FindNetDeviceForNixIndex (uint32_t nodeIndex, Ipv4Address & gatewayIp);
 
     /* Breadth first search algorithm
-     * Param1: Vector containing all nodes in the graph
+     * Param1: total number of nodes
      * Param2: Source Node
      * Param3: Dest Node
      * Param4: (returned) Parent vector for retracing routes
+     * Param5: specific output interface to use from source node, if not null
      * Returns: false if dest not found, true o.w.
      */
     bool BFS (uint32_t numberOfNodes, 

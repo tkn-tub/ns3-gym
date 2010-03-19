@@ -225,12 +225,6 @@ Packet::GetNixVector (void) const
   return m_nixVector;
 } 
 
-uint32_t 
-Packet::GetSize (void) const
-{
-  return m_buffer.GetSize ();
-}
-
 void
 Packet::AddHeader (const Header &header)
 {
