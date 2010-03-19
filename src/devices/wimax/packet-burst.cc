@@ -76,7 +76,10 @@ Ptr<PacketBurst> PacketBurst::Copy (void) const
 void
 PacketBurst::AddPacket (Ptr<Packet> packet)
 {
-  m_packets.push_back (packet);
+  if (packet)
+    {
+      m_packets.push_back (packet);
+    }
 }
 
 std::list<Ptr<Packet> >
