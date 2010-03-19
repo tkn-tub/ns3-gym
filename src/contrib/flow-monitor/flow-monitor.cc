@@ -63,6 +63,14 @@ FlowMonitor::GetTypeId (void)
                    DoubleValue (20),
                    MakeDoubleAccessor (&FlowMonitor::m_packetSizeBinWidth),
                    MakeDoubleChecker <double> ())
+    .AddAttribute ("FlowInterruptionsBinWidth", ("The width used in the flowInterruptions histogram."),
+                   DoubleValue (0.250),
+                   MakeDoubleAccessor (&FlowMonitor::m_flowInterruptionsBinWidth),
+                   MakeDoubleChecker <double> ())
+    .AddAttribute ("FlowInterruptionsMinTime", ("The minimum inter-arrival time that is considered a flow interruption."),
+                   TimeValue (Seconds (0.5)),
+                   MakeTimeAccessor (&FlowMonitor::m_flowInterruptionsMinTime),
+                   MakeTimeChecker ())
     ;
   return tid;
 }
@@ -100,6 +108,7 @@ FlowMonitor::GetStatsForFlow (FlowId flowId)
       ref.delayHistogram.SetDefaultBinWidth (m_delayBinWidth);
       ref.jitterHistogram.SetDefaultBinWidth (m_jitterBinWidth);
       ref.packetSizeHistogram.SetDefaultBinWidth (m_packetSizeBinWidth);
+      ref.flowInterruptionsHistogram.SetDefaultBinWidth (m_flowInterruptionsBinWidth);
       return ref;
     }
   else
@@ -205,6 +214,15 @@ FlowMonitor::ReportLastRx (Ptr<FlowProbe> probe, uint32_t flowId, uint32_t packe
   if (stats.rxPackets == 1)
     {
       stats.timeFirstRxPacket = now;
+    }
+  else
+    {
+      // measure possible flow interruptions
+      Time interArrivalTime = now - stats.timeLastRxPacket;
+      if (interArrivalTime > m_flowInterruptionsMinTime)
+        {
+          stats.flowInterruptionsHistogram.AddValue (interArrivalTime.GetSeconds ());
+        }
     }
   stats.timeLastRxPacket = now;
   stats.timesForwarded += tracked->second.timesForwarded;
@@ -418,6 +436,7 @@ FlowMonitor::SerializeToXmlStream (std::ostream &os, int indent, bool enableHist
           flowI->second.delayHistogram.SerializeToXmlStream (os, indent, "delayHistogram");
           flowI->second.jitterHistogram.SerializeToXmlStream (os, indent, "jitterHistogram");
           flowI->second.packetSizeHistogram.SerializeToXmlStream (os, indent, "packetSizeHistogram");
+          flowI->second.flowInterruptionsHistogram.SerializeToXmlStream (os, indent, "flowInterruptionsHistogram");
         }
       indent -= 2;
 
