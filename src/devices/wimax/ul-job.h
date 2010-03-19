@@ -38,7 +38,7 @@ enum ReqType
   DATA, UNICAST_POLLING
 };
 
-class UlJob
+class UlJob : public Object
 {
   /**
    * \brief this class implements a structure to compute the priority of service flows
@@ -97,7 +97,7 @@ private:
 };
 
 
-class PriorityUlJob
+class PriorityUlJob : public Object
 {
 
   /**
@@ -109,13 +109,13 @@ public:
   int GetPriority (void);
   void SetPriority (int priority);
 
-  UlJob *
+  Ptr<UlJob>
   GetUlJob (void);
-  void SetUlJob (UlJob *job);
+  void SetUlJob (Ptr<UlJob> job);
 
 private:
   int m_priority;
-  UlJob *m_job;
+  Ptr<UlJob> m_job;
 };
 
 struct SortProcess : public std::binary_function<PriorityUlJob*, PriorityUlJob*, bool>
@@ -145,6 +145,35 @@ struct SortProcess : public std::binary_function<PriorityUlJob*, PriorityUlJob*,
       }
   }
 };
+
+struct SortProcessPtr: public std::binary_function< Ptr<PriorityUlJob>, Ptr<PriorityUlJob>, bool>
+{
+  bool operator () (Ptr<PriorityUlJob>& left, Ptr<PriorityUlJob>& right) const
+  { //return true if left is logically less then right for given comparison
+    if (left->GetPriority () < right->GetPriority ())
+      {
+        return true;
+      }
+    else if (left->GetPriority () == right->GetPriority ())
+      {
+        int32_t leftBacklogged = left->GetUlJob ()->GetServiceFlow ()->GetRecord ()->GetBacklogged ();
+        int32_t rightBacklogged = left->GetUlJob ()->GetServiceFlow ()->GetRecord ()->GetBacklogged ();
+        if (leftBacklogged <= rightBacklogged)
+          {
+            return true;
+          }
+        else
+          {
+            return false;
+          }
+      }
+    else
+      {
+        return false;
+      }
+  }
+};
+
 
 } // namespace ns3
 

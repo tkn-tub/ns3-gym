@@ -144,14 +144,14 @@ public:
    *
    * \brief Enqueue a job in a priority queue.
    */
-  void EnqueueJob (UlJob::JobPriority priority, UlJob job);
+  void EnqueueJob (UlJob::JobPriority priority, Ptr<UlJob> job);
 
   /**
    * \param priority Priority of queue
    *
    * \brief Dequeue a job from a priority queue.
    */
-  UlJob DequeueJob (UlJob::JobPriority priority);
+  Ptr<UlJob> DequeueJob (UlJob::JobPriority priority);
 
   void ProcessBandwidthRequest (const BandwidthRequestHeader &bwRequestHdr);
 
@@ -172,14 +172,14 @@ public:
    *
    * Sum the amount of symbols of each job of a queue
    */
-  uint32_t CountSymbolsQueue (std::list<UlJob> jobs);
+  uint32_t CountSymbolsQueue (std::list<Ptr<UlJob> > jobs);
 
   /**
    * \param job job
    *
    * Count the amount of symbols of a job.
    */
-  uint32_t CountSymbolsJobs (UlJob job);
+  uint32_t CountSymbolsJobs (Ptr<UlJob> job);
 
   void OnSetRequestedBandwidth (ServiceFlowRecord *sfr);
 
@@ -190,16 +190,25 @@ public:
    *
    * Create and fill information of a job.
    */
-  UlJob *
+  Ptr<UlJob>
   CreateUlJob (SSRecord *ssRecord, enum ServiceFlow::SchedulingType schedType, ReqType reqType);
+
+  uint32_t
+  GetPendingSize (ServiceFlow* serviceFlow);
+
+  bool
+  ServiceBandwidthRequestsBytes (ServiceFlow *serviceFlow,
+      enum ServiceFlow::SchedulingType schedulingType, OfdmUlMapIe &ulMapIe,
+      const WimaxPhy::ModulationType modulationType,
+      uint32_t &symbolsToAllocation, uint32_t &availableSymbols, uint32_t allocationSizeBytes);
 
 private:
   std::list<OfdmUlMapIe> m_uplinkAllocations;
 
   // queues for scheduler
-  std::list<UlJob> m_uplinkJobs_high;
-  std::list<UlJob> m_uplinkJobs_inter;
-  std::list<UlJob> m_uplinkJobs_low;
+  std::list<Ptr<UlJob> > m_uplinkJobs_high;
+  std::list<Ptr<UlJob> > m_uplinkJobs_inter;
+  std::list<Ptr<UlJob> > m_uplinkJobs_low;
 
   // interval to reset window
   Time m_windowInterval;

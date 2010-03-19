@@ -24,7 +24,7 @@
 
 namespace ns3 {
 
-UlJob::UlJob (void)
+UlJob::UlJob (void): m_deadline(Seconds (0)), m_size (0)
 {
 }
 
@@ -55,12 +55,6 @@ UlJob::SetSchedulingType (ServiceFlow::SchedulingType schedulingType)
   m_schedulingType = schedulingType;
 }
 
-/*
- void UlJob::SetSchedulingType (uint8_t schedulingType)
- {
- m_schedulingType = schedulingType;
- }
- */
 ReqType
 UlJob::GetType (void)
 {
@@ -159,13 +153,13 @@ PriorityUlJob::SetPriority (int priority)
   m_priority = priority;
 }
 
-UlJob *
+Ptr<UlJob>
 PriorityUlJob::GetUlJob (void)
 {
   return m_job;
 }
 void
-PriorityUlJob::SetUlJob (UlJob *job)
+PriorityUlJob::SetUlJob (Ptr<UlJob> job)
 {
   m_job = job;
 }
