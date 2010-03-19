@@ -123,6 +123,7 @@ public:
     /// This attribute also tracks the number of lost bytes.  See also
     /// comment in attribute packetsDropped.
     std::vector<uint64_t> bytesDropped; // bytesDropped[reasonCode] => number of dropped bytes
+    Histogram flowInterruptionsHistogram; // histogram of durations of flow interruptions
   };
 
   // --- basic methods ---
@@ -232,6 +233,8 @@ private:
   double m_delayBinWidth;
   double m_jitterBinWidth;
   double m_packetSizeBinWidth;
+  double m_flowInterruptionsBinWidth;
+  Time m_flowInterruptionsMinTime;
 
   FlowStats& GetStatsForFlow (FlowId flowId);
   void PeriodicCheckForLostPackets ();
