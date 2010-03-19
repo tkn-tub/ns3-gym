@@ -33,6 +33,7 @@ OlsrHelper::OlsrHelper ()
 OlsrHelper::OlsrHelper (const OlsrHelper &o)
   : m_agentFactory (o.m_agentFactory)
 {
+  m_interfaceExclusions = o.m_interfaceExclusions;
 }
 
 OlsrHelper* 
@@ -41,10 +42,36 @@ OlsrHelper::Copy (void) const
   return new OlsrHelper (*this); 
 }
 
+void
+OlsrHelper::ExcludeInterface (Ptr<Node> node, uint32_t interface)
+{
+  std::map< Ptr<Node>, std::set<uint32_t> >::iterator it = m_interfaceExclusions.find (node);
+
+  if(it == m_interfaceExclusions.end ())
+    {
+      std::set<uint32_t> interfaces;
+      interfaces.insert (interface);
+    
+      m_interfaceExclusions.insert (std::make_pair (node, std::set<uint32_t> (interfaces) ));
+    }
+  else
+    {
+      it->second.insert (interface);
+    }
+}
+
 Ptr<Ipv4RoutingProtocol> 
 OlsrHelper::Create (Ptr<Node> node) const
 {
   Ptr<olsr::RoutingProtocol> agent = m_agentFactory.Create<olsr::RoutingProtocol> ();
+
+  std::map<Ptr<Node>, std::set<uint32_t> >::const_iterator it = m_interfaceExclusions.find (node);
+
+  if(it != m_interfaceExclusions.end ())
+    {
+      agent->SetInterfaceExclusions (it->second);
+    }
+
   node->AggregateObject (agent);
   return agent;
 }

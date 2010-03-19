@@ -23,10 +23,12 @@
 #include "ns3/simulator.h"
 #include "ns3/point-to-point-net-device.h"
 #include "ns3/point-to-point-channel.h"
+#include "ns3/point-to-point-remote-channel.h"
 #include "ns3/queue.h"
 #include "ns3/config.h"
 #include "ns3/packet.h"
 #include "ns3/names.h"
+#include "ns3/mpi-interface.h"
 
 #include "trace-helper.h"
 #include "point-to-point-helper.h"
@@ -40,6 +42,7 @@ PointToPointHelper::PointToPointHelper ()
   m_queueFactory.SetTypeId ("ns3::DropTailQueue");
   m_deviceFactory.SetTypeId ("ns3::PointToPointNetDevice");
   m_channelFactory.SetTypeId ("ns3::PointToPointChannel");
+  m_remoteChannelFactory.SetTypeId ("ns3::PointToPointRemoteChannel");
 }
 
 void 
@@ -66,6 +69,7 @@ void
 PointToPointHelper::SetChannelAttribute (std::string n1, const AttributeValue &v1)
 {
   m_channelFactory.Set (n1, v1);
+  m_remoteChannelFactory.Set (n1, v1);
 }
 
 void 
@@ -223,7 +227,30 @@ PointToPointHelper::Install (Ptr<Node> a, Ptr<Node> b)
   b->AddDevice (devB);
   Ptr<Queue> queueB = m_queueFactory.Create<Queue> ();
   devB->SetQueue (queueB);
-  Ptr<PointToPointChannel> channel = m_channelFactory.Create<PointToPointChannel> ();
+  // If MPI is enabled, we need to see if both nodes have the same system id 
+  // (rank), and the rank is the same as this instance.  If both are true, 
+  //use a normal p2p channel, otherwise use a remote channel
+  bool useNormalChannel = true;
+  Ptr<PointToPointChannel> channel = 0;
+  if (MpiInterface::IsEnabled())
+    {
+      uint32_t n1SystemId = a->GetSystemId ();
+      uint32_t n2SystemId = b->GetSystemId ();
+      uint32_t currSystemId = MpiInterface::GetSystemId ();
+      if (n1SystemId != currSystemId || n2SystemId != currSystemId) 
+        {
+          useNormalChannel = false;
+        }
+    }
+  if (useNormalChannel)
+    {
+      channel = m_channelFactory.Create<PointToPointChannel> ();
+    }
+  else
+    {
+      channel = m_remoteChannelFactory.Create<PointToPointRemoteChannel> ();
+    }
+    
   devA->Attach (channel);
   devB->Attach (channel);
   container.Add (devA);

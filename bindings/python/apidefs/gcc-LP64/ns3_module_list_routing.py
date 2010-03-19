@@ -111,7 +111,7 @@ def register_Ns3Ipv4ListRouting_methods(root_module, cls):
     ## ipv4-list-routing.h: ns3::Ptr<ns3::Ipv4RoutingProtocol> ns3::Ipv4ListRouting::GetRoutingProtocol(uint32_t index, int16_t & priority) const [member function]
     cls.add_method('GetRoutingProtocol', 
                    'ns3::Ptr< ns3::Ipv4RoutingProtocol >', 
-                   [param('uint32_t', 'index'), param('int16_t &', 'priority')], 
+                   [param('uint32_t', 'index'), param('int16_t &', 'priority', direction=2)], 
                    is_const=True, is_virtual=True)
     ## ipv4-list-routing.h: static ns3::TypeId ns3::Ipv4ListRouting::GetTypeId() [member function]
     cls.add_method('GetTypeId', 

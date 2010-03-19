@@ -268,9 +268,23 @@ Buffer::Buffer (uint32_t dataSize)
   Initialize (dataSize);
 }
 
+Buffer::Buffer (uint32_t dataSize, bool initialize)
+{
+  NS_LOG_FUNCTION (this << dataSize << initialize);
+  if (initialize == true)
+    {
+      Initialize (dataSize);
+    }
+}
+
 bool
 Buffer::CheckInternalState (void) const
 {
+#if 0
+  // If you want to modify any code in this file, enable this checking code.
+  // Otherwise, there is not much point is enabling it because the
+  // current implementation has been fairly seriously tested and the cost
+  // of this constant checking is pretty high, even for a debug build.
   bool offsetsOk = 
     m_start <= m_zeroAreaStart &&
     m_zeroAreaStart <= m_zeroAreaEnd &&
@@ -291,6 +305,9 @@ Buffer::CheckInternalState (void) const
                           ", " << (internalSizeOk?"true":"false") << " ");
     }
   return ok;
+#else
+  return true;
+#endif
 }
 
 void
@@ -365,13 +382,6 @@ Buffer::~Buffer ()
     {
       Recycle (m_data);
     }
-}
-
-uint32_t 
-Buffer::GetSize (void) const
-{
-  NS_ASSERT (CheckInternalState ());
-  return m_end - m_start;
 }
 
 Buffer::Iterator 
@@ -667,6 +677,139 @@ Buffer::CreateFullCopy (void) const
   return *this;
 }
 
+uint32_t 
+Buffer::GetSerializedSize (void) const
+{
+  uint32_t dataStart = (m_zeroAreaStart - m_start + 3) & (~0x3);
+  uint32_t dataEnd = (m_end - m_zeroAreaEnd + 3) & (~0x3);
+
+  // total size 4-bytes for dataStart length 
+  // + X number of bytes for dataStart 
+  // + 4-bytes for dataEnd length 
+  // + X number of bytes for dataEnd
+  uint32_t sz = sizeof (uint32_t)
+    + sizeof (uint32_t)
+    + dataStart
+    + sizeof (uint32_t)
+    + dataEnd;
+
+  return sz;
+}
+
+uint32_t
+Buffer::Serialize (uint8_t* buffer, uint32_t maxSize) const
+{
+  uint32_t* p = (uint32_t*)buffer;
+  uint32_t size = 0;
+  
+  NS_LOG_FUNCTION (this);
+
+  // Add the zero data length
+  if (size + 4 <= maxSize)
+    {
+      size += 4;
+      *p++ = m_zeroAreaEnd - m_zeroAreaStart;
+    }
+  else
+    {
+      return 0;
+    }
+
+  // Add the length of actual start data
+  uint32_t dataStartLength = m_zeroAreaStart - m_start;
+  if (size + 4 <= maxSize)
+    {
+      size += 4;
+      *p++ = dataStartLength;
+    }
+  else
+    {
+      return 0;
+    }
+
+  // Add the actual data
+  if (size + ((dataStartLength + 3) & (~3))  <= maxSize)
+    {
+      size += (dataStartLength + 3) & (~3);
+      memcpy(p, m_data->m_data + m_start, dataStartLength);
+      p += (((dataStartLength + 3) & (~3))/4); // Advance p, insuring 4 byte boundary
+    }
+  else
+    {
+      return 0;
+    }
+
+  // Add the length of the actual end data
+  uint32_t dataEndLength = m_end - m_zeroAreaEnd;
+  if (size + 4 <= maxSize)
+    {
+      size += 4;
+      *p++ = dataEndLength;
+    }
+  else
+    {
+      return 0;
+    }
+
+  // Add the actual data
+  if (size + ((dataEndLength + 3) & (~3)) <= maxSize)
+    {
+      size += (dataEndLength + 3) & (~3);
+      memcpy(p, m_data->m_data+m_zeroAreaStart,dataEndLength);
+      p += (((dataEndLength + 3) & (~3))/4); // Advance p, insuring 4 byte boundary
+    }
+  else
+    {
+      return 0;
+    }
+
+  // Serialzed everything successfully
+  return 1;
+}
+
+uint32_t 
+Buffer::Deserialize (uint8_t *buffer, uint32_t size)
+{
+  uint32_t* p = (uint32_t*)buffer;
+  uint32_t sizeCheck = size-4;
+
+  NS_ASSERT (sizeCheck >= 4);
+  uint32_t zeroDataLength = *p++;
+  sizeCheck -= 4;
+
+  // Create zero bytes
+  Initialize (zeroDataLength);
+  
+  // Add start data
+  NS_ASSERT (sizeCheck >= 4);
+  uint32_t dataStartLength = *p++;
+  sizeCheck -= 4;
+  AddAtStart (dataStartLength);
+
+  NS_ASSERT (sizeCheck >= dataStartLength);
+  Begin ().Write ((uint8_t*)p, dataStartLength);
+  p += (((dataStartLength+3)&(~3))/4);
+  sizeCheck -= ((dataStartLength+3)&(~3));
+
+  // Add end data
+  NS_ASSERT (sizeCheck >= 4);
+  uint32_t dataEndLength = *p++;
+  sizeCheck -= 4;
+  AddAtEnd (dataEndLength);
+
+  NS_ASSERT (sizeCheck >= dataEndLength);
+  Buffer::Iterator tmp = End ();
+  tmp.Prev (dataEndLength);
+  tmp.Write ((uint8_t*)p, dataEndLength);
+  p += (((dataEndLength+3)&(~3))/4);
+  sizeCheck -= ((dataEndLength+3)&(~3));
+  
+  NS_ASSERT (sizeCheck == 0);
+  // return zero if buffer did not 
+  // contain a complete message
+  return (sizeCheck != 0) ? 0 : 1;
+}
+
 int32_t 
 Buffer::GetCurrentStartOffset (void) const
 {
@@ -874,11 +1017,28 @@ Buffer::Iterator::Write (Iterator start, Iterator end)
   NS_ASSERT (m_data != start.m_data);
   uint32_t size = end.m_current - start.m_current;
   Iterator cur = start;
-  for (uint32_t i = 0; i < size; i++)
+  NS_ASSERT (CheckNoZero (m_current, m_current + size));
+  if (start.m_current <= start.m_zeroStart)
     {
-      uint8_t data = cur.ReadU8 ();
-      WriteU8 (data);
+      uint32_t toCopy = std::min (size, start.m_zeroStart - start.m_current);
+      memcpy (&m_data[m_current], &start.m_data[start.m_current], toCopy);
+      start.m_current += toCopy;
+      m_current += toCopy;
+      size -= toCopy;
     }
+  if (start.m_current <= start.m_zeroEnd)
+    {
+      uint32_t toCopy = std::min (size, start.m_zeroEnd - start.m_current);
+      memset (&m_data[m_current], 0, toCopy);
+      start.m_current += toCopy;
+      m_current += toCopy;
+      size -= toCopy;
+    }
+  uint32_t toCopy = std::min (size, start.m_dataEnd - start.m_current);
+  uint8_t *from = &start.m_data[start.m_current - (start.m_zeroEnd-start.m_zeroStart)];
+  uint8_t *to = &m_data[m_current];
+  memcpy (to, from, toCopy);
+  m_current += toCopy;
 }
 
 void 
@@ -974,10 +1134,18 @@ Buffer::Iterator::WriteHtonU64 (uint64_t data)
 void 
 Buffer::Iterator::Write (uint8_t const*buffer, uint32_t size)
 {
-  for (uint32_t i = 0; i < size; i++)
+  NS_ASSERT (CheckNoZero (m_current, size));
+  uint8_t *to;
+  if (m_current <= m_zeroStart)
     {
-      WriteU8 (buffer[i]);
+      to = &m_data[m_current];
     }
+  else
+    {
+      to = &m_data[m_current - (m_zeroEnd - m_zeroStart)];
+    }
+  memcpy (to, buffer, size);
+  m_current += size;
 }
 
 uint16_t 
@@ -1467,6 +1635,23 @@ BufferTest::DoRun (void)
   frag0.AddAtEnd (frag1);
   ENSURE_WRITTEN_BYTES (buffer, 7, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x66);
   ENSURE_WRITTEN_BYTES (frag0, 7, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x66);
+
+  buffer = Buffer (5);
+  buffer.AddAtStart (2);
+  i = buffer.Begin ();
+  i.WriteU8 (0x1);
+  i.WriteU8 (0x2);
+  buffer.AddAtEnd (2);
+  i = buffer.End ();
+  i.Prev (2);
+  i.WriteU8 (0x3);
+  i.WriteU8 (0x4);
+  ENSURE_WRITTEN_BYTES (buffer, 9, 0x1, 0x2, 0x00, 0x00, 0x00, 0x00, 0x00, 0x3, 0x4);
+  Buffer other;
+  other.AddAtStart (9);
+  i = other.Begin ();
+  i.Write (buffer.Begin (), buffer.End ());
+  ENSURE_WRITTEN_BYTES (other, 9, 0x1, 0x2, 0x00, 0x00, 0x00, 0x00, 0x00, 0x3, 0x4);
 
   return GetErrorStatus ();
 }

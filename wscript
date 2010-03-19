@@ -195,6 +195,10 @@ def set_options(opt):
                    help=('Compile NS-3 statically: works only on linux, without python'),
                    dest='enable_static', action='store_true',
                    default=False)
+    opt.add_option('--enable-mpi',
+                   help=('Compile NS-3 with MPI and distributed simulation support'),
+                   dest='enable_mpi', action='store_true',
+                   default=False)
     opt.add_option('--doxygen-no-build',
                    help=('Run doxygen to generate html documentation from source comments, '
                          'but do not wait for ns-3 to finish the full build.'),
@@ -319,6 +323,27 @@ def configure(conf):
     if Options.options.enable_modules:
         conf.env['NS3_ENABLED_MODULES'] = ['ns3-'+mod for mod in
                                            Options.options.enable_modules.split(',')]
+    # for MPI
+    conf.find_program('mpic++', var='MPI')
+    if Options.options.enable_mpi and conf.env['MPI']:
+        p = subprocess.Popen([conf.env['MPI'], '-showme:compile'], stdout=subprocess.PIPE)
+        flags = p.stdout.read().rstrip().split()
+        p.wait()
+        env.append_value("CXXFLAGS_MPI", flags)
+
+        p = subprocess.Popen([conf.env['MPI'], '-showme:link'], stdout=subprocess.PIPE)
+        flags = p.stdout.read().rstrip().split()
+        p.wait()
+        env.append_value("LINKFLAGS_MPI", flags)
+
+        env.append_value('CXXDEFINES', 'NS3_MPI')
+        conf.report_optional_feature("mpi", "MPI Support", True, '')
+        conf.env['ENABLE_MPI'] = True
+    else:
+        if Options.options.enable_mpi:
+            conf.report_optional_feature("mpi", "MPI Support", False, 'mpic++ not found')
+        else:
+            conf.report_optional_feature("mpi", "MPI Support", False, 'option --enable-mpi not selected')
 
     # for suid bits
     conf.find_program('sudo', var='SUDO')

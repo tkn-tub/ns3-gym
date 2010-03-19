@@ -1,0 +1,23 @@
+## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
+import sys
+
+import Options
+
+
+def build(bld):
+  env = bld.env_of_name('default')
+  sim = bld.create_ns3_module('mpi', ['core', 'simulator'])
+  sim.source = [
+      'distributed-simulator-impl.cc',
+      'mpi-interface.cc',
+      ]
+
+  headers = bld.new_task_gen('ns3header')
+  headers.module = 'mpi'
+  headers.source = [
+      'distributed-simulator-impl.h',
+      'mpi-interface.h',
+      ]
+
+  if env['ENABLE_MPI']:
+      sim.uselib = 'MPI'

@@ -106,6 +106,13 @@ DefaultSimulatorImpl::SetScheduler (ObjectFactory schedulerFactory)
   m_events = scheduler;
 }
 
+// System ID for non-distributed simulation is always zero
+uint32_t 
+DefaultSimulatorImpl::GetSystemId (void) const
+{
+  return 0;
+}
+
 void
 DefaultSimulatorImpl::ProcessOneEvent (void)
 {

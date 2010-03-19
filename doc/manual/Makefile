@@ -58,6 +58,7 @@ CHAPTERS = \
 	python.texi \
 	random.texi \
 	realtime.texi \
+  distributed.texi \
 	routing.texi \
 	simple.texi \
 	sockets.texi \

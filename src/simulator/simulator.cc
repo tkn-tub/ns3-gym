@@ -339,6 +339,21 @@ Simulator::GetContext (void)
   return GetImpl ()->GetContext ();
 }
 
+uint32_t
+Simulator::GetSystemId (void)
+{
+  NS_LOG_FUNCTION_NOARGS ();
+
+  if (*PeekImpl () != 0)
+    {
+      return GetImpl ()->GetSystemId ();
+    }
+  else
+    {
+      return 0;
+    }
+}
+
 void
 Simulator::SetImplementation (Ptr<SimulatorImpl> impl)
 {

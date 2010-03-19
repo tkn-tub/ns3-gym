@@ -4970,6 +4970,10 @@ def register_Ns3SimpleNetDevice_methods(root_module, cls):
                    'void', 
                    [param('ns3::Callback< bool, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet const >, unsigned short, ns3::Address const &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'cb')], 
                    is_virtual=True)
+    ## simple-net-device.h: void ns3::SimpleNetDevice::SetReceiveErrorModel(ns3::Ptr<ns3::ErrorModel> em) [member function]
+    cls.add_method('SetReceiveErrorModel', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::ErrorModel >', 'em')])
     ## simple-net-device.h: bool ns3::SimpleNetDevice::SupportsSendFrom() const [member function]
     cls.add_method('SupportsSendFrom', 
                    'bool', 

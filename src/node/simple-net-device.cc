@@ -21,6 +21,12 @@
 #include "simple-channel.h"
 #include "node.h"
 #include "ns3/packet.h"
+#include "ns3/log.h"
+#include "ns3/pointer.h"
+#include "ns3/error-model.h"
+#include "ns3/trace-source-accessor.h"
+
+NS_LOG_COMPONENT_DEFINE ("SimpleNetDevice");
 
 namespace ns3 {
 
@@ -30,6 +36,14 @@ SimpleNetDevice::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::SimpleNetDevice")
     .SetParent<NetDevice> ()
     .AddConstructor<SimpleNetDevice> ()
+    .AddAttribute ("ReceiveErrorModel",
+                   "The receiver error model used to simulate packet loss",
+                   PointerValue (),
+                   MakePointerAccessor (&SimpleNetDevice::m_receiveErrorModel),
+                   MakePointerChecker<ErrorModel> ())
+    .AddTraceSource ("PhyRxDrop",
+                     "Trace source indicating a packet has been dropped by the device during reception",
+                     MakeTraceSourceAccessor (&SimpleNetDevice::m_phyRxDropTrace))
     ;
   return tid;
 }
@@ -45,7 +59,15 @@ void
 SimpleNetDevice::Receive (Ptr<Packet> packet, uint16_t protocol, 
 			  Mac48Address to, Mac48Address from)
 {
+  NS_LOG_FUNCTION (packet << protocol << to << from);
   NetDevice::PacketType packetType;
+
+  if (m_receiveErrorModel && m_receiveErrorModel->IsCorrupt (packet) )
+    {
+      m_phyRxDropTrace (packet);
+      return;
+    }
+
   if (to == m_address)
     {
       packetType = NetDevice::PACKET_HOST;
@@ -74,6 +96,12 @@ SimpleNetDevice::SetChannel (Ptr<SimpleChannel> channel)
 {
   m_channel = channel;
   m_channel->Add (this);
+}
+
+void
+SimpleNetDevice::SetReceiveErrorModel (Ptr<ErrorModel> em)
+{
+  m_receiveErrorModel = em;
 }
 
 void 
@@ -164,6 +192,7 @@ SimpleNetDevice::IsBridge (void) const
 bool 
 SimpleNetDevice::Send(Ptr<Packet> packet, const Address& dest, uint16_t protocolNumber)
 {
+  NS_LOG_FUNCTION (packet << dest << protocolNumber);
   Mac48Address to = Mac48Address::ConvertFrom (dest);
   m_channel->Send (packet, protocolNumber, to, m_address, this);
   return true;
@@ -203,6 +232,7 @@ SimpleNetDevice::DoDispose (void)
 {
   m_channel = 0;
   m_node = 0;
+  m_receiveErrorModel = 0;
   NetDevice::DoDispose ();
 }
 

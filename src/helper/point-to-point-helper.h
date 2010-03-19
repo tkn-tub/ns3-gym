@@ -116,7 +116,9 @@ public:
    * \param a first node
    * \param b second node
    *
-   * Saves you from having to construct a temporary NodeContainer.
+   * Saves you from having to construct a temporary NodeContainer. 
+   * Also, if MPI is enabled, for distributed simulations, 
+   * appropriate remote point-to-point channels are created.
    */
   NetDeviceContainer Install (Ptr<Node> a, Ptr<Node> b);
 
@@ -177,6 +179,7 @@ private:
 
   ObjectFactory m_queueFactory;
   ObjectFactory m_channelFactory;
+  ObjectFactory m_remoteChannelFactory;
   ObjectFactory m_deviceFactory;
 };
 

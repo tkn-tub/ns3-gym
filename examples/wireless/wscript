@@ -37,3 +37,7 @@ def build(bld):
 
     obj = bld.create_ns3_program('wifi-blockack', ['core', 'simulator', 'mobility', 'wifi'])
     obj.source = 'wifi-blockack.cc'
+    
+    obj = bld.create_ns3_program('wifi-hidden-terminal', ['core', 'simulator', 'mobility', 'wifi', 'flow-monitor'])
+    obj.source = 'wifi-hidden-terminal.cc'
+

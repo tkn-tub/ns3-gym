@@ -770,6 +770,12 @@ public:
    * to delegate events to their own subclass of the EventImpl base class.
    */
   static EventId ScheduleNow (const Ptr<EventImpl> &event);
+
+  /**
+   * \returns the system id for this simulator; used for 
+   *          MPI or other distributed simulations
+   */
+  static uint32_t GetSystemId (void);
 private:
   Simulator ();
   ~Simulator ();

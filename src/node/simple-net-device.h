@@ -24,14 +24,21 @@
 #include "mac48-address.h"
 #include <stdint.h>
 #include <string>
+#include "ns3/traced-callback.h"
 
 namespace ns3 {
 
 class SimpleChannel;
 class Node;
+class ErrorModel;
 
 /**
  * \ingroup netdevice
+ *
+ * This device does not have a helper and assumes 48-bit mac addressing;
+ * the default address assigned to each device is zero, so you must 
+ * assign a real address to use it.  There is also the possibility to
+ * add an ErrorModel if you want to force losses on the device.
  * 
  * \brief simple net device for simple things and testing
  */
@@ -43,6 +50,17 @@ public:
 
   void Receive (Ptr<Packet> packet, uint16_t protocol, Mac48Address to, Mac48Address from);
   void SetChannel (Ptr<SimpleChannel> channel);
+
+  /**
+   * Attach a receive ErrorModel to the SimpleNetDevice.
+   *
+   * The SimpleNetDevice may optionally include an ErrorModel in
+   * the packet receive chain.
+   *
+   * \see ErrorModel
+   * \param em Ptr to the ErrorModel.
+   */
+  void SetReceiveErrorModel(Ptr<ErrorModel> em);
 
   // inherited from NetDevice base class.
   virtual void SetIfIndex(const uint32_t index);
@@ -82,6 +100,16 @@ private:
   uint16_t m_mtu;
   uint32_t m_ifIndex;
   Mac48Address m_address;
+  Ptr<ErrorModel> m_receiveErrorModel;
+  /**
+   * The trace source fired when the phy layer drops a packet it has received
+   * due to the error model being active.  Although SimpleNetDevice doesn't 
+   * really have a Phy model, we choose this trace source name for alignment
+   * with other trace sources.
+   *
+   * \see class CallBackTraceSource
+   */
+  TracedCallback<Ptr<const Packet> > m_phyRxDropTrace;
 };
 
 } // namespace ns3

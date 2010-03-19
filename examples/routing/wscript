@@ -33,6 +33,10 @@ def build(bld):
                                  ['point-to-point', 'internet-stack', 'olsr'])
     obj.source = 'simple-point-to-point-olsr.cc'
 
+    obj = bld.create_ns3_program('olsr-hna',
+                                 ['core', 'simulator', 'mobility', 'wifi'])
+    obj.source = 'olsr-hna.cc'
+
     obj = bld.create_ns3_program('nix-simple',
                                  ['point-to-point', 'internet-stack', 'nix-vector-routing'])
     obj.source = 'nix-simple.cc'

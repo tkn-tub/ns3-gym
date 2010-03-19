@@ -96,6 +96,7 @@ Simulator version:
 * Logging::
 * Tracing::
 * RealTime::
+* Distributed::
 * Packets::
 * Helpers::
 * Python::
@@ -140,6 +141,7 @@ Simulator version:
 @include log.texi
 @include tracing.texi
 @include realtime.texi
+@include distributed.texi
 @include packets.texi
 @include helpers.texi
 @include python.texi

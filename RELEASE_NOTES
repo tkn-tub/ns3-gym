@@ -34,11 +34,14 @@ http://www.nsnam.org/wiki/index.php/Installation
 
 New user-visible features
 -------------------------
-  a) 
+  a) WiMAX net device: Allow to simulated IEEE 802.16 point to multi-point based networks 
 
-  b) 
+  b) Distributed simulation for point-to-point networks using the Message 
+     Passing Interface (MPI) standard.
     
-  c) 
+  c) Matrix propagation loss model uses a two-dimensional matrix of pathloss indexed 
+     by source and destination nodes.
+
 
 API changes from ns-3.7
 -----------------------

@@ -317,6 +317,11 @@ def register_Ns3Simulator_methods(root_module, cls):
                    'ns3::Time', 
                    [], 
                    is_static=True)
+    ## simulator.h: static uint32_t ns3::Simulator::GetSystemId() [member function]
+    cls.add_method('GetSystemId', 
+                   'uint32_t', 
+                   [], 
+                   is_static=True)
     ## simulator.h: static bool ns3::Simulator::IsExpired(ns3::EventId const & id) [member function]
     cls.add_method('IsExpired', 
                    'bool', 
@@ -795,6 +800,11 @@ def register_Ns3SimulatorImpl_methods(root_module, cls):
                    'ns3::Time', 
                    [], 
                    is_pure_virtual=True, is_const=True, is_virtual=True)
+    ## simulator-impl.h: uint32_t ns3::SimulatorImpl::GetSystemId() const [member function]
+    cls.add_method('GetSystemId', 
+                   'uint32_t', 
+                   [], 
+                   is_pure_virtual=True, is_const=True, is_virtual=True)
     ## simulator-impl.h: bool ns3::SimulatorImpl::IsExpired(ns3::EventId const & ev) const [member function]
     cls.add_method('IsExpired', 
                    'bool', 
@@ -1129,6 +1139,11 @@ def register_Ns3DefaultSimulatorImpl_methods(root_module, cls):
                    'ns3::Time', 
                    [], 
                    is_const=True, is_virtual=True)
+    ## default-simulator-impl.h: uint32_t ns3::DefaultSimulatorImpl::GetSystemId() const [member function]
+    cls.add_method('GetSystemId', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True, is_virtual=True)
     ## default-simulator-impl.h: static ns3::TypeId ns3::DefaultSimulatorImpl::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
@@ -1423,6 +1438,11 @@ def register_Ns3RealtimeSimulatorImpl_methods(root_module, cls):
                    'ns3::RealtimeSimulatorImpl::SynchronizationMode', 
                    [], 
                    is_const=True)
+    ## realtime-simulator-impl.h: uint32_t ns3::RealtimeSimulatorImpl::GetSystemId() const [member function]
+    cls.add_method('GetSystemId', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True, is_virtual=True)
     ## realtime-simulator-impl.h: static ns3::TypeId ns3::RealtimeSimulatorImpl::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 

@@ -53,6 +53,7 @@ public:
   virtual Time GetDelayLeft (const EventId &id) const = 0;
   virtual Time GetMaximumSimulationTime (void) const = 0;
   virtual void SetScheduler (ObjectFactory schedulerFactory) = 0;
+  virtual uint32_t GetSystemId () const = 0; 
   virtual uint32_t GetContext (void) const = 0;
 };
 

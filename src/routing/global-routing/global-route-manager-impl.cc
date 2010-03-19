@@ -34,6 +34,7 @@
 #include "ns3/ipv4.h"
 #include "ns3/ipv4-routing-protocol.h"
 #include "ns3/ipv4-list-routing.h"
+#include "ns3/mpi-interface.h"
 #include "global-router-interface.h"
 #include "global-route-manager-impl.h"
 #include "candidate-queue.h"
@@ -697,6 +698,13 @@ GlobalRouteManagerImpl::InitializeRoutes ()
 //
       Ptr<GlobalRouter> rtr = 
         node->GetObject<GlobalRouter> ();
+
+      // Ignore nodes that are not assigned to our systemId (distributed sim)
+      if (node->GetSystemId () != MpiInterface::GetSystemId ()) 
+        {
+          continue;
+        }
+      
 //
 // if the node has a global router interface, then run the global routing
 // algorithms.

@@ -222,74 +222,105 @@ NixVector::ExtractNeighborIndex (uint32_t numberOfBits)
 uint32_t
 NixVector::GetSerializedSize (void) const
 {
-  uint32_t totalSizeInBytes;
+  uint32_t totalSizeInBytes = 0;
   totalSizeInBytes = sizeof (m_used) + sizeof (m_currentVectorBitSize) + 
                      sizeof (m_totalBitSize) + (4 * m_nixVector.size ());
 
-  // add four to this to account 
-  // for the nix-vector length 
-  // entry
-  return totalSizeInBytes+4;
-}
-
-void
-NixVector::Serialize (Buffer::Iterator i, uint32_t size) const
-{
-  uint32_t bytesWritten = 0;
-
-  i.WriteU32 (size);
-  bytesWritten += 4;
-
-  i.WriteU32 (m_used);
-  bytesWritten += 4;
-
-  i.WriteU32 (m_currentVectorBitSize);
-  bytesWritten += 4;
-
-  i.WriteU32 (m_totalBitSize);
-  bytesWritten += 4;
-
-  for (uint32_t j = 0; j < m_nixVector.size (); j++)
-    {
-      i.WriteU32 (m_nixVector.at(j));
-      bytesWritten += 4;
-    }
-
-  NS_ASSERT (bytesWritten == size);
+  return totalSizeInBytes;
 }
 
 uint32_t
-NixVector::Deserialize (Buffer::Iterator i)
+NixVector::Serialize (uint32_t* buffer, uint32_t maxSize) const
 {
   NS_LOG_FUNCTION (this);
-  uint32_t totalSize = i.ReadU32 ();
-  uint32_t size = totalSize;
-  size -= 4;
+  uint32_t* p = buffer;
+  uint32_t size = 0;
 
-  NS_ASSERT (size >= 4);
-  m_used = i.ReadU32 ();
-  size -=4;
+  if (size + 4 <= maxSize)
+    {
+      size += 4;
+      // grab number of used bits
+      *p++ = m_used;
+    }
+  else
+    {
+      return 0;
+    }
 
-  NS_ASSERT (size >= 4);
-  m_currentVectorBitSize = i.ReadU32 ();
-  size -=4;
+  if (size + 4 <= maxSize)
+    {
+      size += 4;
+      // grab number of current used bits
+      // for the front vector
+      *p++ = m_currentVectorBitSize;
+    }
+  else
+    {
+      return 0;
+    }
 
-  NS_ASSERT (size >= 4);
-  m_totalBitSize = i.ReadU32 ();
-  size -=4;
+  if (size + 4 <= maxSize)
+    {
+      size += 4;
+      // grab total bit size
+      *p++ = m_totalBitSize;
+    }
+  else 
+    {
+      return 0;
+    }
+  for (uint32_t j = 0; j < m_nixVector.size (); j++)
+    {
+      if (size + 4 <= maxSize)
+        {
+          size += 4;
+          *p++ = m_nixVector.at(j);
+        }
+      else
+        {
+          return 0;
+        }
+    }
+
+  // Serialized successfully
+  return 1;
+}
+
+uint32_t
+NixVector::Deserialize (uint32_t* buffer, uint32_t size)
+{
+  NS_LOG_FUNCTION (this);
+  uint32_t* p = buffer;
+  uint32_t sizeCheck = size - 4;
+
+  NS_ASSERT (sizeCheck >= 4);
+  m_used = *p++;
+  sizeCheck -= 4;
+
+  NS_ASSERT (sizeCheck >= 4);
+  m_currentVectorBitSize = *p++;
+  sizeCheck -= 4;
+
+  NS_ASSERT (sizeCheck >= 4);
+  m_totalBitSize = *p++;
+  sizeCheck -= 4;
 
   // make sure the nix-vector
   // is empty
   m_nixVector.clear ();
-  while (size > 0)
+  while (sizeCheck > 0)
     {
-      NS_ASSERT (size >= 4);
-      m_nixVector.push_back (i.ReadU32 ());
-      size -=4;
+      NS_ASSERT (sizeCheck >= 4);
+      uint32_t nix = *p++;
+      m_nixVector.push_back (nix);
+      sizeCheck -= 4;
     }
 
-  NS_ASSERT (size == 0);
-  return totalSize;
+  NS_ASSERT (sizeCheck == 0);
+
+  // return zero if an entire nix-vector was 
+  // not deserialized
+  return (sizeCheck != 0) ? 0 : 1;
 }
 
 void

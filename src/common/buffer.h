@@ -393,7 +393,7 @@ public:
   /**
    * \return the number of bytes stored in this buffer.
    */
-  uint32_t GetSize (void) const;
+  inline uint32_t GetSize (void) const;
 
   /**
    * \return a pointer to the start of the internal 
@@ -476,6 +476,33 @@ public:
 
   Buffer CreateFullCopy (void) const;
 
+  /**
+   * \return the number of bytes required for serialization 
+   */
+  uint32_t GetSerializedSize (void) const;
+
+  /**
+   * \return zero if buffer not large enough
+   * \param buffer points to serialization buffer
+   * \param maxSize max number of bytes to write
+   *
+   * This buffer's contents are serialized into the raw 
+   * character buffer parameter. Note: The zero length 
+   * data is not copied entirely. Only the length of 
+   * zero byte data is serialized.
+   */
+  uint32_t Serialize (uint8_t* buffer, uint32_t maxSize) const;
+
+  /**
+   * \return zero if a complete buffer is not deserialized
+   * \param buffer points to buffer for deserialization
+   * \param size number of bytes to deserialize
+   *
+   * The raw character buffer is deserialized and all the 
+   * data is placed into this buffer.
+   */
+  uint32_t Deserialize (uint8_t* buffer, uint32_t size);
+  
   int32_t GetCurrentStartOffset (void) const;
   int32_t GetCurrentEndOffset (void) const;
 
@@ -493,6 +520,7 @@ public:
   Buffer &operator = (Buffer const &o);
   Buffer ();
   Buffer (uint32_t dataSize);
+  Buffer (uint32_t dataSize, bool initialize);
   ~Buffer ();
 private:
 
@@ -605,6 +633,11 @@ Buffer::Iterator::ReadU8 (void)
     }
 }
 
+uint32_t 
+Buffer::GetSize (void) const
+{
+  return m_end - m_start;
+}
 
 } // namespace ns3
 

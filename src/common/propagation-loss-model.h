@@ -19,6 +19,7 @@
  * Contributions: Timo Bingmann <timo.bingmann@student.kit.edu>
  * Contributions: Gary Pei <guangyu.pei@boeing.com> for fixed RSS
  * Contributions: Tom Hewer <tomhewer@mac.com> for two ray ground model
+ *                Pavel Boyko <boyko@iitp.ru> for matrix
  */
 
 #ifndef PROPAGATION_LOSS_MODEL_H
@@ -26,6 +27,8 @@
 
 #include "ns3/object.h"
 #include "ns3/random-variable.h"
+#include "ns3/node.h"
+#include <map>
 
 namespace ns3 {
 
@@ -460,6 +463,44 @@ private:
                                 Ptr<MobilityModel> a,
                                 Ptr<MobilityModel> b) const;
   double m_rss;
+};
+
+/**
+ * \brief The propagation loss is fixed for each pair of nodes and doesn't depend on their actual positions.
+ * 
+ * This is supposed to be used by synthetic tests. Note that by default propagation loss is assumed to be symmetric.
+ */
+class MatrixPropagationLossModel : public PropagationLossModel
+{
+public:
+  static TypeId GetTypeId (void);
+  
+  MatrixPropagationLossModel ();
+  virtual ~MatrixPropagationLossModel ();
+  
+  /**
+   * \brief Set loss (in dB, positive) between pair of nodes.
+   * 
+   * \param a           Source node
+   * \param b           Destination node
+   * \param loss        a -> b path loss, positive in dB
+   * \param symmetric   If true (default), both a->b and b->a paths will be affected
+   */ 
+  void SetLoss (Ptr<Node> a, Ptr<Node> b, double loss, bool symmetric = true);
+  /// Set default loss (in dB, positive) to be used, \infty if not set
+  void SetDefaultLoss (double);
+  
+private:
+  virtual double DoCalcRxPower (double txPowerDbm,
+                               Ptr<MobilityModel> a,
+                               Ptr<MobilityModel> b) const;
+private:
+  /// default loss
+  double m_default; 
+  
+  typedef std::pair< Ptr<MobilityModel>, Ptr<MobilityModel> > MobilityPair; 
+  /// Fixed loss between pair of nodes
+  std::map<MobilityPair, double> m_loss;
 };
 
 } // namespace ns3

@@ -127,6 +127,8 @@ example_tests = [
     ("tcp/tcp-nsc-zoo", "ENABLE_NSC == True", "True"),
     ("tcp/tcp-star-server", "True", "True"),
 
+    ("topology-read/topology-read --input=../../examples/topology-read/Inet_small_toposample.txt", "True", "True"),
+
     ("tunneling/virtual-net-device", "True", "True"),
 
     ("tutorial/first", "True", "True"),
@@ -150,6 +152,10 @@ example_tests = [
     ("wireless/wifi-simple-infra", "True", "True"),
     ("wireless/wifi-simple-interference", "True", "True"),
     ("wireless/wifi-wired-bridging", "True", "True"),
+
+    ("wimax/wimax-simple", "True", "True"),
+    ("wimax/wimax-ipv4", "True", "True"),
+    ("wimax/wimax-multicast", "True", "True"),
 ]
 
 #

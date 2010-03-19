@@ -827,6 +827,13 @@ RealtimeSimulatorImpl::GetMaximumSimulationTime (void) const
   return TimeStep (0x7fffffffffffffffLL);
 }
 
+// System ID for non-distributed simulation is always zero
+uint32_t 
+RealtimeSimulatorImpl::GetSystemId (void) const
+{
+  return 0;
+}
+
 uint32_t
 RealtimeSimulatorImpl::GetContext (void) const
 {

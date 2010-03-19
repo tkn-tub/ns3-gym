@@ -1,0 +1,80 @@
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
+/*
+ * Copyright (c) 2010 Universita' di Firenze, Italy
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation;
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * Author: Tommaso Pecorella (tommaso.pecorella@unifi.it)
+ * Author: Valerio Sartini (valesar@gmail.com)
+ */
+
+#include "ns3/object.h"
+#include "ns3/topology-reader-helper.h"
+#include "ns3/inet-topology-reader.h"
+#include "ns3/orbis-topology-reader.h"
+#include "ns3/log.h"
+
+namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("TopologyReaderHelper");
+
+TopologyReaderHelper::TopologyReaderHelper ()
+{
+  m_inFile = 0;
+}
+
+void
+TopologyReaderHelper::SetFileName (const std::string fileName)
+{
+  m_fileName = fileName;
+}
+
+void
+TopologyReaderHelper::SetFileType (const std::string fileType)
+{
+  m_fileType = fileType;
+}
+
+
+Ptr<TopologyReader>
+TopologyReaderHelper::GetTopologyReader ()
+{
+  if (!m_inFile)
+    {
+      NS_ASSERT_MSG (!m_fileType.empty (), "Missing File Type");
+      NS_ASSERT_MSG (!m_fileName.empty (), "Missing File Name");
+
+      if (m_fileType == "Orbis")
+        {
+          NS_LOG_INFO ("Creating Orbis formatted data input.");
+          m_inFile = CreateObject<OrbisTopologyReader> ();
+        }
+      else if (m_fileType == "Inet")
+        {
+          NS_LOG_INFO ("Creating Inet formatted data input.");
+          m_inFile = CreateObject<InetTopologyReader> ();
+        }
+      else
+        {
+          NS_ASSERT_MSG (false, "Wrong (unknown) File Type");
+        }
+
+      m_inFile->SetFileName (m_fileName);
+    }
+  return m_inFile;
+}
+
+
+
+} // namespace ns3

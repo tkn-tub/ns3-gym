@@ -913,9 +913,9 @@ def register_Ns3AodvRreqHeader_methods(root_module, cls):
                    'uint8_t', 
                    [], 
                    is_const=True)
-    ## aodv-packet.h: uint8_t ns3::aodv::RreqHeader::GetId() const [member function]
+    ## aodv-packet.h: uint32_t ns3::aodv::RreqHeader::GetId() const [member function]
     cls.add_method('GetId', 
-                   'uint8_t', 
+                   'uint32_t', 
                    [], 
                    is_const=True)
     ## aodv-packet.h: ns3::TypeId ns3::aodv::RreqHeader::GetInstanceTypeId() const [member function]

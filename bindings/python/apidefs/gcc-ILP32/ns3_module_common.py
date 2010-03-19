@@ -69,6 +69,10 @@ def register_types(module):
     module.add_class('TwoRayGroundPropagationLossModel', parent=root_module['ns3::PropagationLossModel'])
     ## propagation-delay-model.h: ns3::ConstantSpeedPropagationDelayModel [class]
     module.add_class('ConstantSpeedPropagationDelayModel', parent=root_module['ns3::PropagationDelayModel'])
+    ## cost231-propagation-loss-model.h: ns3::Cost231PropagationLossModel [class]
+    module.add_class('Cost231PropagationLossModel', parent=root_module['ns3::PropagationLossModel'])
+    ## cost231-propagation-loss-model.h: ns3::Cost231PropagationLossModel::Environment [enumeration]
+    module.add_enum('Environment', ['SubUrban', 'MediumCity', 'Metropolitan'], outer_class=root_module['ns3::Cost231PropagationLossModel'])
     ## data-rate.h: ns3::DataRateChecker [class]
     module.add_class('DataRateChecker', parent=root_module['ns3::AttributeChecker'])
     ## data-rate.h: ns3::DataRateValue [class]
@@ -85,6 +89,8 @@ def register_types(module):
     module.add_class('ListErrorModel', parent=root_module['ns3::ErrorModel'])
     ## propagation-loss-model.h: ns3::LogDistancePropagationLossModel [class]
     module.add_class('LogDistancePropagationLossModel', parent=root_module['ns3::PropagationLossModel'])
+    ## propagation-loss-model.h: ns3::MatrixPropagationLossModel [class]
+    module.add_class('MatrixPropagationLossModel', parent=root_module['ns3::PropagationLossModel'])
     ## propagation-loss-model.h: ns3::NakagamiPropagationLossModel [class]
     module.add_class('NakagamiPropagationLossModel', parent=root_module['ns3::PropagationLossModel'])
     ## nix-vector.h: ns3::NixVector [class]
@@ -206,6 +212,7 @@ def register_methods(root_module):
     register_Ns3Trailer_methods(root_module, root_module['ns3::Trailer'])
     register_Ns3TwoRayGroundPropagationLossModel_methods(root_module, root_module['ns3::TwoRayGroundPropagationLossModel'])
     register_Ns3ConstantSpeedPropagationDelayModel_methods(root_module, root_module['ns3::ConstantSpeedPropagationDelayModel'])
+    register_Ns3Cost231PropagationLossModel_methods(root_module, root_module['ns3::Cost231PropagationLossModel'])
     register_Ns3DataRateChecker_methods(root_module, root_module['ns3::DataRateChecker'])
     register_Ns3DataRateValue_methods(root_module, root_module['ns3::DataRateValue'])
     register_Ns3ErrorModel_methods(root_module, root_module['ns3::ErrorModel'])
@@ -214,6 +221,7 @@ def register_methods(root_module):
     register_Ns3JakesPropagationLossModel_methods(root_module, root_module['ns3::JakesPropagationLossModel'])
     register_Ns3ListErrorModel_methods(root_module, root_module['ns3::ListErrorModel'])
     register_Ns3LogDistancePropagationLossModel_methods(root_module, root_module['ns3::LogDistancePropagationLossModel'])
+    register_Ns3MatrixPropagationLossModel_methods(root_module, root_module['ns3::MatrixPropagationLossModel'])
     register_Ns3NakagamiPropagationLossModel_methods(root_module, root_module['ns3::NakagamiPropagationLossModel'])
     register_Ns3NixVector_methods(root_module, root_module['ns3::NixVector'])
     register_Ns3OutputStreamWrapper_methods(root_module, root_module['ns3::OutputStreamWrapper'])
@@ -228,6 +236,8 @@ def register_Ns3Buffer_methods(root_module, cls):
     cls.add_constructor([])
     ## buffer.h: ns3::Buffer::Buffer(uint32_t dataSize) [constructor]
     cls.add_constructor([param('uint32_t', 'dataSize')])
+    ## buffer.h: ns3::Buffer::Buffer(uint32_t dataSize, bool initialize) [constructor]
+    cls.add_constructor([param('uint32_t', 'dataSize'), param('bool', 'initialize')])
     ## buffer.h: bool ns3::Buffer::AddAtEnd(uint32_t end) [member function]
     cls.add_method('AddAtEnd', 
                    'bool', 
@@ -265,6 +275,10 @@ def register_Ns3Buffer_methods(root_module, cls):
                    'ns3::Buffer', 
                    [], 
                    is_const=True)
+    ## buffer.h: uint32_t ns3::Buffer::Deserialize(uint8_t * buffer, uint32_t size) [member function]
+    cls.add_method('Deserialize', 
+                   'uint32_t', 
+                   [param('uint8_t *', 'buffer'), param('uint32_t', 'size')])
     ## buffer.h: ns3::Buffer::Iterator ns3::Buffer::End() const [member function]
     cls.add_method('End', 
                    'ns3::Buffer::Iterator', 
@@ -278,6 +292,11 @@ def register_Ns3Buffer_methods(root_module, cls):
     ## buffer.h: int32_t ns3::Buffer::GetCurrentStartOffset() const [member function]
     cls.add_method('GetCurrentStartOffset', 
                    'int32_t', 
+                   [], 
+                   is_const=True)
+    ## buffer.h: uint32_t ns3::Buffer::GetSerializedSize() const [member function]
+    cls.add_method('GetSerializedSize', 
+                   'uint32_t', 
                    [], 
                    is_const=True)
     ## buffer.h: uint32_t ns3::Buffer::GetSize() const [member function]
@@ -298,6 +317,11 @@ def register_Ns3Buffer_methods(root_module, cls):
     cls.add_method('RemoveAtStart', 
                    'void', 
                    [param('uint32_t', 'start')])
+    ## buffer.h: uint32_t ns3::Buffer::Serialize(uint8_t * buffer, uint32_t maxSize) const [member function]
+    cls.add_method('Serialize', 
+                   'uint32_t', 
+                   [param('uint8_t *', 'buffer'), param('uint32_t', 'maxSize')], 
+                   is_const=True)
     return
 
 def register_Ns3BufferIterator_methods(root_module, cls):
@@ -583,8 +607,8 @@ def register_Ns3DataRate_methods(root_module, cls):
     return
 
 def register_Ns3PacketMetadata_methods(root_module, cls):
-    ## packet-metadata.h: ns3::PacketMetadata::PacketMetadata(uint32_t uid, uint32_t size) [constructor]
-    cls.add_constructor([param('uint32_t', 'uid'), param('uint32_t', 'size')])
+    ## packet-metadata.h: ns3::PacketMetadata::PacketMetadata(uint64_t uid, uint32_t size) [constructor]
+    cls.add_constructor([param('uint64_t', 'uid'), param('uint32_t', 'size')])
     ## packet-metadata.h: ns3::PacketMetadata::PacketMetadata(ns3::PacketMetadata const & o) [copy constructor]
     cls.add_constructor([param('ns3::PacketMetadata const &', 'o')])
     ## packet-metadata.h: void ns3::PacketMetadata::AddAtEnd(ns3::PacketMetadata const & o) [member function]
@@ -613,10 +637,10 @@ def register_Ns3PacketMetadata_methods(root_module, cls):
                    'ns3::PacketMetadata', 
                    [param('uint32_t', 'start'), param('uint32_t', 'end')], 
                    is_const=True)
-    ## packet-metadata.h: uint32_t ns3::PacketMetadata::Deserialize(ns3::Buffer::Iterator i) [member function]
+    ## packet-metadata.h: uint32_t ns3::PacketMetadata::Deserialize(uint8_t * buffer, uint32_t size) [member function]
     cls.add_method('Deserialize', 
                    'uint32_t', 
-                   [param('ns3::Buffer::Iterator', 'i')])
+                   [param('uint8_t *', 'buffer'), param('uint32_t', 'size')])
     ## packet-metadata.h: static void ns3::PacketMetadata::Enable() [member function]
     cls.add_method('Enable', 
                    'void', 
@@ -632,9 +656,9 @@ def register_Ns3PacketMetadata_methods(root_module, cls):
                    'uint32_t', 
                    [], 
                    is_const=True)
-    ## packet-metadata.h: uint32_t ns3::PacketMetadata::GetUid() const [member function]
+    ## packet-metadata.h: uint64_t ns3::PacketMetadata::GetUid() const [member function]
     cls.add_method('GetUid', 
-                   'uint32_t', 
+                   'uint64_t', 
                    [], 
                    is_const=True)
     ## packet-metadata.h: void ns3::PacketMetadata::RemoveAtEnd(uint32_t end) [member function]
@@ -653,10 +677,10 @@ def register_Ns3PacketMetadata_methods(root_module, cls):
     cls.add_method('RemoveTrailer', 
                    'void', 
                    [param('ns3::Trailer const &', 'trailer'), param('uint32_t', 'size')])
-    ## packet-metadata.h: void ns3::PacketMetadata::Serialize(ns3::Buffer::Iterator i, uint32_t size) const [member function]
+    ## packet-metadata.h: uint32_t ns3::PacketMetadata::Serialize(uint8_t * buffer, uint32_t maxSize) const [member function]
     cls.add_method('Serialize', 
-                   'void', 
-                   [param('ns3::Buffer::Iterator', 'i'), param('uint32_t', 'size')], 
+                   'uint32_t', 
+                   [param('uint8_t *', 'buffer'), param('uint32_t', 'maxSize')], 
                    is_const=True)
     return
 
@@ -1248,6 +1272,83 @@ def register_Ns3ConstantSpeedPropagationDelayModel_methods(root_module, cls):
                    [param('double', 'speed')])
     return
 
+def register_Ns3Cost231PropagationLossModel_methods(root_module, cls):
+    ## cost231-propagation-loss-model.h: static ns3::TypeId ns3::Cost231PropagationLossModel::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## cost231-propagation-loss-model.h: ns3::Cost231PropagationLossModel::Cost231PropagationLossModel() [constructor]
+    cls.add_constructor([])
+    ## cost231-propagation-loss-model.h: double ns3::Cost231PropagationLossModel::GetLoss(ns3::Ptr<ns3::MobilityModel> a, ns3::Ptr<ns3::MobilityModel> b) const [member function]
+    cls.add_method('GetLoss', 
+                   'double', 
+                   [param('ns3::Ptr< ns3::MobilityModel >', 'a'), param('ns3::Ptr< ns3::MobilityModel >', 'b')], 
+                   is_const=True)
+    ## cost231-propagation-loss-model.h: void ns3::Cost231PropagationLossModel::SetBSAntennaHeight(double height) [member function]
+    cls.add_method('SetBSAntennaHeight', 
+                   'void', 
+                   [param('double', 'height')])
+    ## cost231-propagation-loss-model.h: void ns3::Cost231PropagationLossModel::SetSSAntennaHeight(double height) [member function]
+    cls.add_method('SetSSAntennaHeight', 
+                   'void', 
+                   [param('double', 'height')])
+    ## cost231-propagation-loss-model.h: void ns3::Cost231PropagationLossModel::SetEnvironment(ns3::Cost231PropagationLossModel::Environment env) [member function]
+    cls.add_method('SetEnvironment', 
+                   'void', 
+                   [param('ns3::Cost231PropagationLossModel::Environment', 'env')])
+    ## cost231-propagation-loss-model.h: void ns3::Cost231PropagationLossModel::SetLambda(double lambda) [member function]
+    cls.add_method('SetLambda', 
+                   'void', 
+                   [param('double', 'lambda')])
+    ## cost231-propagation-loss-model.h: void ns3::Cost231PropagationLossModel::SetMinDistance(double minDistance) [member function]
+    cls.add_method('SetMinDistance', 
+                   'void', 
+                   [param('double', 'minDistance')])
+    ## cost231-propagation-loss-model.h: double ns3::Cost231PropagationLossModel::GetBSAntennaHeight() const [member function]
+    cls.add_method('GetBSAntennaHeight', 
+                   'double', 
+                   [], 
+                   is_const=True)
+    ## cost231-propagation-loss-model.h: double ns3::Cost231PropagationLossModel::GetSSAntennaHeight() const [member function]
+    cls.add_method('GetSSAntennaHeight', 
+                   'double', 
+                   [], 
+                   is_const=True)
+    ## cost231-propagation-loss-model.h: ns3::Cost231PropagationLossModel::Environment ns3::Cost231PropagationLossModel::GetEnvironment() const [member function]
+    cls.add_method('GetEnvironment', 
+                   'ns3::Cost231PropagationLossModel::Environment', 
+                   [], 
+                   is_const=True)
+    ## cost231-propagation-loss-model.h: double ns3::Cost231PropagationLossModel::GetMinDistance() const [member function]
+    cls.add_method('GetMinDistance', 
+                   'double', 
+                   [], 
+                   is_const=True)
+    ## cost231-propagation-loss-model.h: double ns3::Cost231PropagationLossModel::GetLambda() const [member function]
+    cls.add_method('GetLambda', 
+                   'double', 
+                   [], 
+                   is_const=True)
+    ## cost231-propagation-loss-model.h: void ns3::Cost231PropagationLossModel::SetLambda(double frequency, double speed) [member function]
+    cls.add_method('SetLambda', 
+                   'void', 
+                   [param('double', 'frequency'), param('double', 'speed')])
+    ## cost231-propagation-loss-model.h: double ns3::Cost231PropagationLossModel::GetShadowing() [member function]
+    cls.add_method('GetShadowing', 
+                   'double', 
+                   [])
+    ## cost231-propagation-loss-model.h: void ns3::Cost231PropagationLossModel::SetShadowing(double shadowing) [member function]
+    cls.add_method('SetShadowing', 
+                   'void', 
+                   [param('double', 'shadowing')])
+    ## cost231-propagation-loss-model.h: double ns3::Cost231PropagationLossModel::DoCalcRxPower(double txPowerDbm, ns3::Ptr<ns3::MobilityModel> a, ns3::Ptr<ns3::MobilityModel> b) const [member function]
+    cls.add_method('DoCalcRxPower', 
+                   'double', 
+                   [param('double', 'txPowerDbm'), param('ns3::Ptr< ns3::MobilityModel >', 'a'), param('ns3::Ptr< ns3::MobilityModel >', 'b')], 
+                   is_const=True, visibility='private', is_virtual=True)
+    return
+
 def register_Ns3DataRateChecker_methods(root_module, cls):
     ## data-rate.h: ns3::DataRateChecker::DataRateChecker() [constructor]
     cls.add_constructor([])
@@ -1488,6 +1589,29 @@ def register_Ns3LogDistancePropagationLossModel_methods(root_module, cls):
                    is_const=True, visibility='private', is_virtual=True)
     return
 
+def register_Ns3MatrixPropagationLossModel_methods(root_module, cls):
+    ## propagation-loss-model.h: static ns3::TypeId ns3::MatrixPropagationLossModel::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## propagation-loss-model.h: ns3::MatrixPropagationLossModel::MatrixPropagationLossModel() [constructor]
+    cls.add_constructor([])
+    ## propagation-loss-model.h: void ns3::MatrixPropagationLossModel::SetLoss(ns3::Ptr<ns3::Node> a, ns3::Ptr<ns3::Node> b, double loss, bool symmetric=true) [member function]
+    cls.add_method('SetLoss', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Node >', 'a'), param('ns3::Ptr< ns3::Node >', 'b'), param('double', 'loss'), param('bool', 'symmetric', default_value='true')])
+    ## propagation-loss-model.h: void ns3::MatrixPropagationLossModel::SetDefaultLoss(double arg0) [member function]
+    cls.add_method('SetDefaultLoss', 
+                   'void', 
+                   [param('double', 'arg0')])
+    ## propagation-loss-model.h: double ns3::MatrixPropagationLossModel::DoCalcRxPower(double txPowerDbm, ns3::Ptr<ns3::MobilityModel> a, ns3::Ptr<ns3::MobilityModel> b) const [member function]
+    cls.add_method('DoCalcRxPower', 
+                   'double', 
+                   [param('double', 'txPowerDbm'), param('ns3::Ptr< ns3::MobilityModel >', 'a'), param('ns3::Ptr< ns3::MobilityModel >', 'b')], 
+                   is_const=True, visibility='private', is_virtual=True)
+    return
+
 def register_Ns3NakagamiPropagationLossModel_methods(root_module, cls):
     ## propagation-loss-model.h: static ns3::TypeId ns3::NakagamiPropagationLossModel::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
@@ -1523,10 +1647,10 @@ def register_Ns3NixVector_methods(root_module, cls):
                    'ns3::Ptr< ns3::NixVector >', 
                    [], 
                    is_const=True)
-    ## nix-vector.h: uint32_t ns3::NixVector::Deserialize(ns3::Buffer::Iterator i) [member function]
+    ## nix-vector.h: uint32_t ns3::NixVector::Deserialize(uint32_t * buffer, uint32_t size) [member function]
     cls.add_method('Deserialize', 
                    'uint32_t', 
-                   [param('ns3::Buffer::Iterator', 'i')])
+                   [param('uint32_t *', 'buffer'), param('uint32_t', 'size')])
     ## nix-vector.h: void ns3::NixVector::DumpNixVector(std::ostream & os) const [member function]
     cls.add_method('DumpNixVector', 
                    'void', 
@@ -1550,10 +1674,10 @@ def register_Ns3NixVector_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
-    ## nix-vector.h: void ns3::NixVector::Serialize(ns3::Buffer::Iterator i, uint32_t size) const [member function]
+    ## nix-vector.h: uint32_t ns3::NixVector::Serialize(uint32_t * buffer, uint32_t maxSize) const [member function]
     cls.add_method('Serialize', 
-                   'void', 
-                   [param('ns3::Buffer::Iterator', 'i'), param('uint32_t', 'size')], 
+                   'uint32_t', 
+                   [param('uint32_t *', 'buffer'), param('uint32_t', 'maxSize')], 
                    is_const=True)
     return
 
@@ -1580,6 +1704,8 @@ def register_Ns3Packet_methods(root_module, cls):
     cls.add_constructor([param('ns3::Packet const &', 'o')])
     ## packet.h: ns3::Packet::Packet(uint32_t size) [constructor]
     cls.add_constructor([param('uint32_t', 'size')])
+    ## packet.h: ns3::Packet::Packet(uint8_t const * buffer, uint32_t size, bool magic) [constructor]
+    cls.add_constructor([param('uint8_t const *', 'buffer'), param('uint32_t', 'size'), param('bool', 'magic')])
     ## packet.h: ns3::Packet::Packet(uint8_t const * buffer, uint32_t size) [constructor]
     cls.add_constructor([param('uint8_t const *', 'buffer'), param('uint32_t', 'size')])
     ## packet.h: void ns3::Packet::AddAtEnd(ns3::Ptr<ns3::Packet const> packet) [member function]
@@ -1633,10 +1759,6 @@ def register_Ns3Packet_methods(root_module, cls):
                    'ns3::Ptr< ns3::Packet >', 
                    [param('uint32_t', 'start'), param('uint32_t', 'length')], 
                    is_const=True)
-    ## packet.h: void ns3::Packet::Deserialize(ns3::Buffer buffer) [member function]
-    cls.add_method('Deserialize', 
-                   'void', 
-                   [param('ns3::Buffer', 'buffer')])
     ## packet.h: static void ns3::Packet::EnableChecking() [member function]
     cls.add_method('EnableChecking', 
                    'void', 
@@ -1667,14 +1789,19 @@ def register_Ns3Packet_methods(root_module, cls):
                    'ns3::PacketTagIterator', 
                    [], 
                    is_const=True)
+    ## packet.h: uint32_t ns3::Packet::GetSerializedSize() const [member function]
+    cls.add_method('GetSerializedSize', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
     ## packet.h: uint32_t ns3::Packet::GetSize() const [member function]
     cls.add_method('GetSize', 
                    'uint32_t', 
                    [], 
                    is_const=True)
-    ## packet.h: uint32_t ns3::Packet::GetUid() const [member function]
+    ## packet.h: uint64_t ns3::Packet::GetUid() const [member function]
     cls.add_method('GetUid', 
-                   'uint32_t', 
+                   'uint64_t', 
                    [], 
                    is_const=True)
     ## packet.h: uint8_t const * ns3::Packet::PeekData() const [member function]
@@ -1739,10 +1866,10 @@ def register_Ns3Packet_methods(root_module, cls):
     cls.add_method('RemoveTrailer', 
                    'uint32_t', 
                    [param('ns3::Trailer &', 'trailer')])
-    ## packet.h: ns3::Buffer ns3::Packet::Serialize() const [member function]
+    ## packet.h: uint32_t ns3::Packet::Serialize(uint8_t * buffer, uint32_t maxSize) const [member function]
     cls.add_method('Serialize', 
-                   'ns3::Buffer', 
-                   [], 
+                   'uint32_t', 
+                   [param('uint8_t *', 'buffer'), param('uint32_t', 'maxSize')], 
                    is_const=True)
     ## packet.h: void ns3::Packet::SetNixVector(ns3::Ptr<ns3::NixVector> arg0) [member function]
     cls.add_method('SetNixVector', 

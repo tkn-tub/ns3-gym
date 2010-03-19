@@ -290,6 +290,8 @@ def register_Ns3FlowMonitorFlowStats_methods(root_module, cls):
     cls.add_instance_attribute('delayHistogram', 'ns3::Histogram', is_const=False)
     ## flow-monitor.h: ns3::FlowMonitor::FlowStats::delaySum [variable]
     cls.add_instance_attribute('delaySum', 'ns3::Time', is_const=False)
+    ## flow-monitor.h: ns3::FlowMonitor::FlowStats::flowInterruptionsHistogram [variable]
+    cls.add_instance_attribute('flowInterruptionsHistogram', 'ns3::Histogram', is_const=False)
     ## flow-monitor.h: ns3::FlowMonitor::FlowStats::jitterHistogram [variable]
     cls.add_instance_attribute('jitterHistogram', 'ns3::Histogram', is_const=False)
     ## flow-monitor.h: ns3::FlowMonitor::FlowStats::jitterSum [variable]

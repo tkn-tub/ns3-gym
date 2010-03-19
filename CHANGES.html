@@ -50,9 +50,41 @@ us a note on ns-developers mailing list.  </p>
 
 <h2>New API:</h2>
 
+<ul>
+<li><b>Matrix propagation loss model:</b> This radio propagation model uses a two-dimensional matrix
+of pathloss indexed by source and destination nodes.
+
+<li><b>WiMAX net device</b>: The developed WiMAX model attempts to provide an accurate MAC and
+PHY level implementation of the 802.16 specification with the Point-to-Multipoint (PMP) mode and the WirelessMAN-OFDM 
+PHY layer. By adding WimaxNetDevice objects to ns-3 nodes, one can create models of
+802.16-based networks. The source code for the WiMAX models lives in the directory src/devices/wimax.
+The model is mainly composed of three layers:
+<ul>
+<li>The convergence sublayer (CS)
+<li>The MAC Common Part Sublayer (MAC-CPS)
+<li>The Physical layer
+</ul>
+The main way that users who write simulation scripts will typically
+interact with the Wimax models is through the helper API and through
+the publicly visible attributes of the model.
+The helper API is defined in src/helper/wimax-helper.{cc,h}.
+Three examples containing some code that shows how to setup a 802.16 network are located under examples/wimax/ 
+
+<li><b>MPI Interface for distributed simulation:</b> Enables access
+to necessary MPI information such as MPI rank and size.
+
+<li><b>Point-to-point remote channel:</b> Enables point-to-point 
+connection between net-devices on different simulators, for use 
+with distributed simulation.
+
+<li><b>GetSystemId in simulator:</b> For use with distributed 
+simulation, GetSystemId returns zero by non-distributed 
+simulators.  For the distributed simulator, it returns the 
+MPI rank.
+</ul>
+
 <h2>Changes to existing API:</h2>
 <ul>
-</pre>
 <li><b>Tracing Helpers</b>: The organization of helpers for both pcap and ascii
 tracing, in devices and protocols, has been reworked.  Instead of each device 
 and protocol helper re-implementing trace enable methods, classes have been 
@@ -95,10 +127,54 @@ After:
   csma.EnableAsciiAll (ascii.CreateFileStream ("csma-one-subnet.tr"));
 
   stack.EnableAsciiIpv4All (stream);
-
 </pre>
 
 
+<li><b>Serialization and Deserialization</b> in buffer, nix-vector, 
+packet-metadata, and packet has been modified to use raw character 
+buffers, rather than the Buffer class
+<pre>
++ uint32_t Buffer::GetSerializedSize (void) const;
++ uint32_t Buffer::Serialize (uint8_t* buffer, uint32_t maxSize) const;
++ uint32_t Buffer::Deserialize (uint8_t* buffer, uint32_t size); 
+
+- void NixVector::Serialize (Buffer::Iterator i, uint32_t size) const;
++ uint32_t NixVector::Serialize (uint32_t* buffer, uint32_t maxSize) const;
+- uint32_t NixVector::Deserialize (Buffer::Iterator i);
++ uint32_t NixVector::Deserialize (uint32_t* buffer, uint32_t size);
+
+- void PacketMetadata::Serialize (Buffer::Iterator i, uint32_t size) const;
++ uint32_t PacketMetadata::Serialize (uint8_t* buffer, uint32_t maxSize) const;
+- uint32_t PacketMetadata::Deserialize (Buffer::Iterator i);
++ uint32_t PacketMetadata::Deserialize (uint8_t* buffer, uint32_t size);
+
++ uint32_t Packet::GetSerializedSize (void) const;
+- Buffer Packet::Serialize (void) const;
++ uint32_t Packet::Serialize (uint8_t* buffer, uint32_t maxSize) const;
+- void Packet::Deserialize (Buffer buffer);
++ Packet::Packet (uint8_t const*buffer, uint32_t size, bool magic);
+</pre>
+<li><b>PacketMetadata uid</b> has been changed to a 64-bit value. The 
+lower 32 bits give the uid, while the upper 32-bits give the MPI rank 
+for distributed simulations. For non-distributed simulations, the 
+upper 32 bits are simply zero.
+<pre>
+- inline PacketMetadata (uint32_t uid, uint32_t size);
++ inline PacketMetadata (uint64_t uid, uint32_t size);
+- uint32_t GetUid (void) const;
++ uint64_t GetUid (void) const;
+- PacketMetadata::PacketMetadata (uint32_t uid, uint32_t size);
++ PacketMetadata::PacketMetadata (uint64_t uid, uint32_t size); 
+
+- uint32_t Packet::GetUid (void) const;
++ uint64_t Packet::GetUid (void) const;
+</pre>
+</ul>
+
+<h2>Changed behavior:</h2>
+<ul>
+
+</ul>
 
 <hr>
 <h1>Changes from ns-3.6 to ns-3.7</h1>

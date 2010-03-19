@@ -127,7 +127,7 @@ public:
   static void Enable (void);
   static void EnableChecking (void);
 
-  inline PacketMetadata (uint32_t uid, uint32_t size);
+  inline PacketMetadata (uint64_t uid, uint32_t size);
   inline PacketMetadata (PacketMetadata const &o);
   inline PacketMetadata &operator = (PacketMetadata const& o);
   inline ~PacketMetadata ();
@@ -151,15 +151,63 @@ public:
   void RemoveAtStart (uint32_t start);
   void RemoveAtEnd (uint32_t end);
 
-  uint32_t GetUid (void) const;
+  uint64_t GetUid (void) const;
 
   uint32_t GetSerializedSize (void) const;
-  void Serialize (Buffer::Iterator i, uint32_t size) const;
-  uint32_t Deserialize (Buffer::Iterator i);
 
   ItemIterator BeginItem (Buffer buffer) const;
 
+  // Serialization to/from raw uint8_t*
+  uint32_t Serialize   (uint8_t* buffer, uint32_t maxSize) const;
+  uint32_t Deserialize (uint8_t* buffer, uint32_t size);
+  
 private:
+  // Helper for the raw serilization/deserialization
+  static uint8_t* AddToRawU8 (const uint8_t& data,
+                              uint8_t* start,
+                              uint8_t* current,
+                              uint32_t maxSize);
+
+  static uint8_t* AddToRawU16 (const uint16_t& data,
+                               uint8_t* start,
+                               uint8_t* current,
+                               uint32_t maxSize);
+
+  static uint8_t* AddToRawU32 (const uint32_t& data,
+                               uint8_t* start,
+                               uint8_t* current,
+                               uint32_t maxSize);
+
+  static uint8_t* AddToRawU64 (const uint64_t& data,
+                               uint8_t* start,
+                               uint8_t* current,
+                               uint32_t maxSize);
+
+  static uint8_t* AddToRaw (const uint8_t* data,
+                            uint32_t dataSize,
+                            uint8_t* start,
+                            uint8_t* current,
+                            uint32_t maxSize);
+  
+  static uint8_t* ReadFromRawU8 (uint8_t& data,
+                                 uint8_t* start,
+                                 uint8_t* current,
+                                 uint32_t maxSize);
+
+  static uint8_t* ReadFromRawU16 (uint16_t& data,
+                                  uint8_t* start,
+                                  uint8_t* current,
+                                  uint32_t maxSize);
+
+  static uint8_t* ReadFromRawU32 (uint32_t& data,
+                                  uint8_t* start,
+                                  uint8_t* current,
+                                  uint32_t maxSize);
+
+  static uint8_t* ReadFromRawU64 (uint64_t& data,
+                                  uint8_t* start,
+                                  uint8_t* current,
+                                  uint32_t maxSize);
   struct Data {
     /* number of references to this struct Data instance. */
     uint16_t m_count;
@@ -231,9 +279,9 @@ private:
     /* the packetUid of the packet in which this header or trailer
        was first added. It could be different from the m_packetUid
        field if the user has aggregated multiple packets into one.
-       stored as a fixed-size 32 bit integer.
+       stored as a fixed-size 64 bit integer.
      */
-    uint32_t packetUid;
+    uint64_t packetUid;
   };
 
   class DataFreeList : public std::vector<struct Data *>
@@ -297,15 +345,15 @@ private:
   uint16_t m_head;
   uint16_t m_tail;
   uint16_t m_used;
-  uint32_t m_packetUid;
+  uint64_t m_packetUid;
 };
 
 }; // namespace ns3
 
 namespace ns3 {
 
-PacketMetadata::PacketMetadata (uint32_t uid, uint32_t size)
-  : m_data (PacketMetadata::Create (10)),
+PacketMetadata::PacketMetadata (uint64_t uid, uint32_t size)
+  : m_data (m_data = PacketMetadata::Create (10)),
     m_head (0xffff),
     m_tail (0xffff),
     m_used (0),

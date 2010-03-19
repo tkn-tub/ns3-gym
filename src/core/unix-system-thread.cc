@@ -62,7 +62,7 @@ private:
 };
 
 SystemThreadImpl::SystemThreadImpl (Callback<void> callback)
-  : m_callback (callback)
+  : m_callback (callback), m_break (false)
 {
   NS_LOG_FUNCTION_NOARGS ();
   // Make sure we have a SIGALRM handler which does not terminate
@@ -141,7 +141,7 @@ SystemThreadImpl::DoRun (void *arg)
 // class above.
 //
 SystemThread::SystemThread (Callback<void> callback) 
-  : m_impl (new SystemThreadImpl (callback))
+  : m_impl (new SystemThreadImpl (callback)), m_break (false)
 {
   NS_LOG_FUNCTION_NOARGS ();
 }

@@ -222,6 +222,17 @@ public:
    */
   Packet (uint32_t size);
   /**
+   * Create a new packet from the serialized buffer. This new packet 
+   * is identical to the serialized packet contained in the buffer 
+   * and is magically deserialized for you
+   * 
+   * \param buffer the serialized packet to be created
+   * \param size the size of the packet for deserialization
+   * \param magic allows packet deserialization; 
+   *        asserts when set to false
+   */
+  Packet (uint8_t const*buffer, uint32_t size, bool magic);
+  /**
    * Create a packet with payload filled with the content
    * of this buffer. The input data is copied: the input
    * buffer is untouched.
@@ -243,7 +254,7 @@ public:
    * \returns the size in bytes of the packet (including the zero-filled
    *          initial payload)
    */
-  uint32_t GetSize (void) const;
+  inline uint32_t GetSize (void) const;
   /**
    * Add header to this packet. This method invokes the
    * Header::GetSerializedSize and Header::Serialize
@@ -379,7 +390,7 @@ public:
    * \returns an integer identifier which uniquely
    *          identifies this packet.
    */
-  uint32_t GetUid (void) const;
+  uint64_t GetUid (void) const;
 
   /**
    * \param os output stream in which the data should be printed.
@@ -420,36 +431,24 @@ public:
   static void EnableChecking (void);
 
   /**
-   * \returns a byte buffer
+   * For packet serializtion, the total size is checked 
+   * in order to determine the size of the buffer 
+   * required for serialization
    *
-   * This method creates a serialized representation of a Packet object
-   * ready to be transmitted over a network to another system. This
-   * serialized representation contains a copy of the packet byte buffer,
-   * the tag list, and the packet metadata (if there is one).
-   *
-   * This method will trigger calls to the Serialize and GetSerializedSize
-   * methods of each tag stored in this packet.
-   *
-   * This method will typically be used by parallel simulations where
-   * the simulated system is partitioned and each partition runs on
-   * a different CPU.
+   * \returns number of bytes required for packet 
+   * serialization
    */
-  Buffer Serialize (void) const;
-  /**
-   * \param buffer a byte buffer
+  uint32_t GetSerializedSize (void) const;
+
+  /*
+   * \param buffer a raw byte buffer to which the packet will be serialized
+   * \param maxSize the max size of the buffer for bounds checking
    *
-   * This method reads a byte buffer as created by Packet::Serialize
-   * and restores the state of the Packet to what it was prior to
-   * calling Serialize.
+   * A packet is completely serialized and placed into the raw byte buffer
    *
-   * This method will trigger calls to the Deserialize method
-   * of each tag stored in this packet.
-   *
-   * This method will typically be used by parallel simulations where
-   * the simulated system is partitioned and each partition runs on
-   * a different CPU.
+   * \returns zero if buffer size was too small
    */
-  void Deserialize (Buffer buffer);
+  uint32_t Serialize (uint8_t* buffer, uint32_t maxSize) const;
 
   /**
    * \param tag the new tag to add to this packet
@@ -556,6 +555,9 @@ public:
 private:
   Packet (const Buffer &buffer, const ByteTagList &byteTagList, 
           const PacketTagList &packetTagList, const PacketMetadata &metadata);
+
+  uint32_t Deserialize (uint8_t const*buffer, uint32_t size);
+  
   Buffer m_buffer;
   ByteTagList m_byteTagList;
   PacketTagList m_packetTagList;
@@ -608,6 +610,16 @@ std::ostream& operator<< (std::ostream& os, const Packet &packet);
  * means that most of the time, these operations will not trigger
  * data copies and will thus be still very fast.
  */
+
+} // namespace ns3
+
+namespace ns3 {
+
+uint32_t 
+Packet::GetSize (void) const
+{
+  return m_buffer.GetSize ();
+}
 
 } // namespace ns3
 
