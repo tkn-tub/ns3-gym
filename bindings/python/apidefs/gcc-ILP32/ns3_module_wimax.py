@@ -35,8 +35,6 @@ def register_types(module):
     module.add_enum('Uiuc', ['UIUC_INITIAL_RANGING', 'UIUC_REQ_REGION_FULL', 'UIUC_REQ_REGION_FOCUSED', 'UIUC_FOCUSED_CONTENTION_IE', 'UIUC_BURST_PROFILE_5', 'UIUC_BURST_PROFILE_6', 'UIUC_BURST_PROFILE_7', 'UIUC_BURST_PROFILE_8', 'UIUC_BURST_PROFILE_9', 'UIUC_BURST_PROFILE_10', 'UIUC_BURST_PROFILE_11', 'UIUC_BURST_PROFILE_12', 'UIUC_SUBCH_NETWORK_ENTRY', 'UIUC_END_OF_MAP'], outer_class=root_module['ns3::OfdmUlBurstProfile'])
     ## ul-mac-messages.h: ns3::OfdmUlMapIe [class]
     module.add_class('OfdmUlMapIe')
-    ## ul-job.h: ns3::PriorityUlJob [class]
-    module.add_class('PriorityUlJob')
     ## snr-to-block-error-rate-manager.h: ns3::SNRToBlockErrorRateManager [class]
     module.add_class('SNRToBlockErrorRateManager')
     ## snr-to-block-error-rate-record.h: ns3::SNRToBlockErrorRateRecord [class]
@@ -71,10 +69,6 @@ def register_types(module):
     module.add_class('U8TlvValue', parent=root_module['ns3::TlvValue'])
     ## ul-mac-messages.h: ns3::UcdChannelEncodings [class]
     module.add_class('UcdChannelEncodings', allow_subclassing=True)
-    ## ul-job.h: ns3::UlJob [class]
-    module.add_class('UlJob')
-    ## ul-job.h: ns3::UlJob::JobPriority [enumeration]
-    module.add_enum('JobPriority', ['LOW', 'INTERMEDIATE', 'HIGH'], outer_class=root_module['ns3::UlJob'])
     ## wimax-tlv.h: ns3::VectorTlvValue [class]
     module.add_class('VectorTlvValue', parent=root_module['ns3::TlvValue'])
     ## simple-ofdm-send-param.h: ns3::simpleOfdmSendParam [class]
@@ -111,6 +105,8 @@ def register_types(module):
     module.add_class('PortRangeTlvValue', parent=root_module['ns3::TlvValue'])
     ## wimax-tlv.h: ns3::PortRangeTlvValue::PortRange [struct]
     module.add_class('PortRange', outer_class=root_module['ns3::PortRangeTlvValue'])
+    ## ul-job.h: ns3::PriorityUlJob [class]
+    module.add_class('PriorityUlJob', parent=root_module['ns3::Object'])
     ## wimax-tlv.h: ns3::ProtocolTlvValue [class]
     module.add_class('ProtocolTlvValue', parent=root_module['ns3::TlvValue'])
     ## mac-messages.h: ns3::RngReq [class]
@@ -137,6 +133,10 @@ def register_types(module):
     module.add_enum('CommonTypes', ['HMAC_TUPLE', 'MAC_VERSION_ENCODING', 'CURRENT_TRANSMIT_POWER', 'DOWNLINK_SERVICE_FLOW', 'UPLINK_SERVICE_FLOW', 'VENDOR_ID_EMCODING', 'VENDOR_SPECIFIC_INFORMATION'], outer_class=root_module['ns3::Tlv'])
     ## ul-mac-messages.h: ns3::Ucd [class]
     module.add_class('Ucd', parent=root_module['ns3::Header'])
+    ## ul-job.h: ns3::UlJob [class]
+    module.add_class('UlJob', parent=root_module['ns3::Object'])
+    ## ul-job.h: ns3::UlJob::JobPriority [enumeration]
+    module.add_enum('JobPriority', ['LOW', 'INTERMEDIATE', 'HIGH'], outer_class=root_module['ns3::UlJob'])
     ## ul-mac-messages.h: ns3::UlMap [class]
     module.add_class('UlMap', parent=root_module['ns3::Header'])
     ## bs-uplink-scheduler.h: ns3::UplinkScheduler [class]
@@ -226,7 +226,6 @@ def register_types(module):
     module.add_container('std::vector< ns3::DlFramePrefixIe >', 'ns3::DlFramePrefixIe', container_type='vector')
     module.add_container('std::vector< ns3::OfdmUlBurstProfile >', 'ns3::OfdmUlBurstProfile', container_type='vector')
     module.add_container('std::list< ns3::OfdmUlMapIe >', 'ns3::OfdmUlMapIe', container_type='list')
-    module.add_container('std::list< ns3::UlJob >', 'ns3::UlJob', container_type='list')
     module.add_container('std::deque< ns3::WimaxMacQueue::QueueElement >', 'ns3::WimaxMacQueue::QueueElement', container_type='dequeue')
     module.add_container('std::vector< ns3::OfdmDlBurstProfile >', 'ns3::OfdmDlBurstProfile', container_type='vector')
     module.add_container('std::list< ns3::OfdmDlMapIe >', 'ns3::OfdmDlMapIe', container_type='list')
@@ -326,7 +325,6 @@ def register_methods(root_module):
     register_Ns3OfdmDlMapIe_methods(root_module, root_module['ns3::OfdmDlMapIe'])
     register_Ns3OfdmUlBurstProfile_methods(root_module, root_module['ns3::OfdmUlBurstProfile'])
     register_Ns3OfdmUlMapIe_methods(root_module, root_module['ns3::OfdmUlMapIe'])
-    register_Ns3PriorityUlJob_methods(root_module, root_module['ns3::PriorityUlJob'])
     register_Ns3SNRToBlockErrorRateManager_methods(root_module, root_module['ns3::SNRToBlockErrorRateManager'])
     register_Ns3SNRToBlockErrorRateRecord_methods(root_module, root_module['ns3::SNRToBlockErrorRateRecord'])
     register_Ns3SSRecord_methods(root_module, root_module['ns3::SSRecord'])
@@ -339,7 +337,6 @@ def register_methods(root_module):
     register_Ns3U32TlvValue_methods(root_module, root_module['ns3::U32TlvValue'])
     register_Ns3U8TlvValue_methods(root_module, root_module['ns3::U8TlvValue'])
     register_Ns3UcdChannelEncodings_methods(root_module, root_module['ns3::UcdChannelEncodings'])
-    register_Ns3UlJob_methods(root_module, root_module['ns3::UlJob'])
     register_Ns3VectorTlvValue_methods(root_module, root_module['ns3::VectorTlvValue'])
     register_Ns3SimpleOfdmSendParam_methods(root_module, root_module['ns3::simpleOfdmSendParam'])
     register_Ns3ClassificationRuleVectorTlvValue_methods(root_module, root_module['ns3::ClassificationRuleVectorTlvValue'])
@@ -354,6 +351,7 @@ def register_methods(root_module):
     register_Ns3PacketBurst_methods(root_module, root_module['ns3::PacketBurst'])
     register_Ns3PortRangeTlvValue_methods(root_module, root_module['ns3::PortRangeTlvValue'])
     register_Ns3PortRangeTlvValuePortRange_methods(root_module, root_module['ns3::PortRangeTlvValue::PortRange'])
+    register_Ns3PriorityUlJob_methods(root_module, root_module['ns3::PriorityUlJob'])
     register_Ns3ProtocolTlvValue_methods(root_module, root_module['ns3::ProtocolTlvValue'])
     register_Ns3RngReq_methods(root_module, root_module['ns3::RngReq'])
     register_Ns3RngRsp_methods(root_module, root_module['ns3::RngRsp'])
@@ -363,6 +361,7 @@ def register_methods(root_module):
     register_Ns3SsServiceFlowManager_methods(root_module, root_module['ns3::SsServiceFlowManager'])
     register_Ns3Tlv_methods(root_module, root_module['ns3::Tlv'])
     register_Ns3Ucd_methods(root_module, root_module['ns3::Ucd'])
+    register_Ns3UlJob_methods(root_module, root_module['ns3::UlJob'])
     register_Ns3UlMap_methods(root_module, root_module['ns3::UlMap'])
     register_Ns3UplinkScheduler_methods(root_module, root_module['ns3::UplinkScheduler'])
     register_Ns3UplinkSchedulerMBQoS_methods(root_module, root_module['ns3::UplinkSchedulerMBQoS'])
@@ -1039,29 +1038,6 @@ def register_Ns3OfdmUlMapIe_methods(root_module, cls):
                    'ns3::Buffer::Iterator', 
                    [param('ns3::Buffer::Iterator', 'start')], 
                    is_const=True)
-    return
-
-def register_Ns3PriorityUlJob_methods(root_module, cls):
-    ## ul-job.h: ns3::PriorityUlJob::PriorityUlJob(ns3::PriorityUlJob const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::PriorityUlJob const &', 'arg0')])
-    ## ul-job.h: ns3::PriorityUlJob::PriorityUlJob() [constructor]
-    cls.add_constructor([])
-    ## ul-job.h: int ns3::PriorityUlJob::GetPriority() [member function]
-    cls.add_method('GetPriority', 
-                   'int', 
-                   [])
-    ## ul-job.h: ns3::UlJob * ns3::PriorityUlJob::GetUlJob() [member function]
-    cls.add_method('GetUlJob', 
-                   'ns3::UlJob *', 
-                   [])
-    ## ul-job.h: void ns3::PriorityUlJob::SetPriority(int priority) [member function]
-    cls.add_method('SetPriority', 
-                   'void', 
-                   [param('int', 'priority')])
-    ## ul-job.h: void ns3::PriorityUlJob::SetUlJob(ns3::UlJob * job) [member function]
-    cls.add_method('SetUlJob', 
-                   'void', 
-                   [param('ns3::UlJob *', 'job')])
     return
 
 def register_Ns3SNRToBlockErrorRateManager_methods(root_module, cls):
@@ -2151,78 +2127,6 @@ def register_Ns3UcdChannelEncodings_methods(root_module, cls):
                    is_pure_virtual=True, is_const=True, visibility='private', is_virtual=True)
     return
 
-def register_Ns3UlJob_methods(root_module, cls):
-    cls.add_binary_comparison_operator('==')
-    ## ul-job.h: ns3::UlJob::UlJob(ns3::UlJob const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::UlJob const &', 'arg0')])
-    ## ul-job.h: ns3::UlJob::UlJob() [constructor]
-    cls.add_constructor([])
-    ## ul-job.h: ns3::Time ns3::UlJob::GetDeadline() [member function]
-    cls.add_method('GetDeadline', 
-                   'ns3::Time', 
-                   [])
-    ## ul-job.h: ns3::Time ns3::UlJob::GetPeriod() [member function]
-    cls.add_method('GetPeriod', 
-                   'ns3::Time', 
-                   [])
-    ## ul-job.h: ns3::Time ns3::UlJob::GetReleaseTime() [member function]
-    cls.add_method('GetReleaseTime', 
-                   'ns3::Time', 
-                   [])
-    ## ul-job.h: ns3::ServiceFlow::SchedulingType ns3::UlJob::GetSchedulingType() [member function]
-    cls.add_method('GetSchedulingType', 
-                   'ns3::ServiceFlow::SchedulingType', 
-                   [])
-    ## ul-job.h: ns3::ServiceFlow * ns3::UlJob::GetServiceFlow() [member function]
-    cls.add_method('GetServiceFlow', 
-                   'ns3::ServiceFlow *', 
-                   [])
-    ## ul-job.h: uint32_t ns3::UlJob::GetSize() [member function]
-    cls.add_method('GetSize', 
-                   'uint32_t', 
-                   [])
-    ## ul-job.h: ns3::SSRecord * ns3::UlJob::GetSsRecord() [member function]
-    cls.add_method('GetSsRecord', 
-                   'ns3::SSRecord *', 
-                   [])
-    ## ul-job.h: ns3::ReqType ns3::UlJob::GetType() [member function]
-    cls.add_method('GetType', 
-                   'ns3::ReqType', 
-                   [])
-    ## ul-job.h: void ns3::UlJob::SetDeadline(ns3::Time deadline) [member function]
-    cls.add_method('SetDeadline', 
-                   'void', 
-                   [param('ns3::Time', 'deadline')])
-    ## ul-job.h: void ns3::UlJob::SetPeriod(ns3::Time period) [member function]
-    cls.add_method('SetPeriod', 
-                   'void', 
-                   [param('ns3::Time', 'period')])
-    ## ul-job.h: void ns3::UlJob::SetReleaseTime(ns3::Time releaseTime) [member function]
-    cls.add_method('SetReleaseTime', 
-                   'void', 
-                   [param('ns3::Time', 'releaseTime')])
-    ## ul-job.h: void ns3::UlJob::SetSchedulingType(ns3::ServiceFlow::SchedulingType schedulingType) [member function]
-    cls.add_method('SetSchedulingType', 
-                   'void', 
-                   [param('ns3::ServiceFlow::SchedulingType', 'schedulingType')])
-    ## ul-job.h: void ns3::UlJob::SetServiceFlow(ns3::ServiceFlow * serviceFlow) [member function]
-    cls.add_method('SetServiceFlow', 
-                   'void', 
-                   [param('ns3::ServiceFlow *', 'serviceFlow')])
-    ## ul-job.h: void ns3::UlJob::SetSize(uint32_t size) [member function]
-    cls.add_method('SetSize', 
-                   'void', 
-                   [param('uint32_t', 'size')])
-    ## ul-job.h: void ns3::UlJob::SetSsRecord(ns3::SSRecord * ssRecord) [member function]
-    cls.add_method('SetSsRecord', 
-                   'void', 
-                   [param('ns3::SSRecord *', 'ssRecord')])
-    ## ul-job.h: void ns3::UlJob::SetType(ns3::ReqType type) [member function]
-    cls.add_method('SetType', 
-                   'void', 
-                   [param('ns3::ReqType', 'type')])
-    return
-
 def register_Ns3VectorTlvValue_methods(root_module, cls):
     ## wimax-tlv.h: ns3::VectorTlvValue::VectorTlvValue(ns3::VectorTlvValue const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::VectorTlvValue const &', 'arg0')])
@@ -2761,6 +2665,29 @@ def register_Ns3PortRangeTlvValuePortRange_methods(root_module, cls):
     cls.add_instance_attribute('PortHigh', 'uint16_t', is_const=False)
     ## wimax-tlv.h: ns3::PortRangeTlvValue::PortRange::PortLow [variable]
     cls.add_instance_attribute('PortLow', 'uint16_t', is_const=False)
+    return
+
+def register_Ns3PriorityUlJob_methods(root_module, cls):
+    ## ul-job.h: ns3::PriorityUlJob::PriorityUlJob(ns3::PriorityUlJob const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::PriorityUlJob const &', 'arg0')])
+    ## ul-job.h: ns3::PriorityUlJob::PriorityUlJob() [constructor]
+    cls.add_constructor([])
+    ## ul-job.h: int ns3::PriorityUlJob::GetPriority() [member function]
+    cls.add_method('GetPriority', 
+                   'int', 
+                   [])
+    ## ul-job.h: ns3::Ptr<ns3::UlJob> ns3::PriorityUlJob::GetUlJob() [member function]
+    cls.add_method('GetUlJob', 
+                   'ns3::Ptr< ns3::UlJob >', 
+                   [])
+    ## ul-job.h: void ns3::PriorityUlJob::SetPriority(int priority) [member function]
+    cls.add_method('SetPriority', 
+                   'void', 
+                   [param('int', 'priority')])
+    ## ul-job.h: void ns3::PriorityUlJob::SetUlJob(ns3::Ptr<ns3::UlJob> job) [member function]
+    cls.add_method('SetUlJob', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::UlJob >', 'job')])
     return
 
 def register_Ns3ProtocolTlvValue_methods(root_module, cls):
@@ -3411,6 +3338,78 @@ def register_Ns3Ucd_methods(root_module, cls):
                    [param('uint8_t', 'requestBackoffStart')])
     return
 
+def register_Ns3UlJob_methods(root_module, cls):
+    cls.add_binary_comparison_operator('==')
+    ## ul-job.h: ns3::UlJob::UlJob(ns3::UlJob const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::UlJob const &', 'arg0')])
+    ## ul-job.h: ns3::UlJob::UlJob() [constructor]
+    cls.add_constructor([])
+    ## ul-job.h: ns3::Time ns3::UlJob::GetDeadline() [member function]
+    cls.add_method('GetDeadline', 
+                   'ns3::Time', 
+                   [])
+    ## ul-job.h: ns3::Time ns3::UlJob::GetPeriod() [member function]
+    cls.add_method('GetPeriod', 
+                   'ns3::Time', 
+                   [])
+    ## ul-job.h: ns3::Time ns3::UlJob::GetReleaseTime() [member function]
+    cls.add_method('GetReleaseTime', 
+                   'ns3::Time', 
+                   [])
+    ## ul-job.h: ns3::ServiceFlow::SchedulingType ns3::UlJob::GetSchedulingType() [member function]
+    cls.add_method('GetSchedulingType', 
+                   'ns3::ServiceFlow::SchedulingType', 
+                   [])
+    ## ul-job.h: ns3::ServiceFlow * ns3::UlJob::GetServiceFlow() [member function]
+    cls.add_method('GetServiceFlow', 
+                   'ns3::ServiceFlow *', 
+                   [])
+    ## ul-job.h: uint32_t ns3::UlJob::GetSize() [member function]
+    cls.add_method('GetSize', 
+                   'uint32_t', 
+                   [])
+    ## ul-job.h: ns3::SSRecord * ns3::UlJob::GetSsRecord() [member function]
+    cls.add_method('GetSsRecord', 
+                   'ns3::SSRecord *', 
+                   [])
+    ## ul-job.h: ns3::ReqType ns3::UlJob::GetType() [member function]
+    cls.add_method('GetType', 
+                   'ns3::ReqType', 
+                   [])
+    ## ul-job.h: void ns3::UlJob::SetDeadline(ns3::Time deadline) [member function]
+    cls.add_method('SetDeadline', 
+                   'void', 
+                   [param('ns3::Time', 'deadline')])
+    ## ul-job.h: void ns3::UlJob::SetPeriod(ns3::Time period) [member function]
+    cls.add_method('SetPeriod', 
+                   'void', 
+                   [param('ns3::Time', 'period')])
+    ## ul-job.h: void ns3::UlJob::SetReleaseTime(ns3::Time releaseTime) [member function]
+    cls.add_method('SetReleaseTime', 
+                   'void', 
+                   [param('ns3::Time', 'releaseTime')])
+    ## ul-job.h: void ns3::UlJob::SetSchedulingType(ns3::ServiceFlow::SchedulingType schedulingType) [member function]
+    cls.add_method('SetSchedulingType', 
+                   'void', 
+                   [param('ns3::ServiceFlow::SchedulingType', 'schedulingType')])
+    ## ul-job.h: void ns3::UlJob::SetServiceFlow(ns3::ServiceFlow * serviceFlow) [member function]
+    cls.add_method('SetServiceFlow', 
+                   'void', 
+                   [param('ns3::ServiceFlow *', 'serviceFlow')])
+    ## ul-job.h: void ns3::UlJob::SetSize(uint32_t size) [member function]
+    cls.add_method('SetSize', 
+                   'void', 
+                   [param('uint32_t', 'size')])
+    ## ul-job.h: void ns3::UlJob::SetSsRecord(ns3::SSRecord * ssRecord) [member function]
+    cls.add_method('SetSsRecord', 
+                   'void', 
+                   [param('ns3::SSRecord *', 'ssRecord')])
+    ## ul-job.h: void ns3::UlJob::SetType(ns3::ReqType type) [member function]
+    cls.add_method('SetType', 
+                   'void', 
+                   [param('ns3::ReqType', 'type')])
+    return
+
 def register_Ns3UlMap_methods(root_module, cls):
     ## ul-mac-messages.h: ns3::UlMap::UlMap(ns3::UlMap const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::UlMap const &', 'arg0')])
@@ -3659,35 +3658,39 @@ def register_Ns3UplinkSchedulerMBQoS_methods(root_module, cls):
     cls.add_method('CheckMinimumBandwidth', 
                    'void', 
                    [param('uint32_t &', 'availableSymbols')])
-    ## bs-uplink-scheduler-mbqos.h: uint32_t ns3::UplinkSchedulerMBQoS::CountSymbolsJobs(ns3::UlJob job) [member function]
+    ## bs-uplink-scheduler-mbqos.h: uint32_t ns3::UplinkSchedulerMBQoS::CountSymbolsJobs(ns3::Ptr<ns3::UlJob> job) [member function]
     cls.add_method('CountSymbolsJobs', 
                    'uint32_t', 
-                   [param('ns3::UlJob', 'job')])
-    ## bs-uplink-scheduler-mbqos.h: uint32_t ns3::UplinkSchedulerMBQoS::CountSymbolsQueue(std::list<ns3::UlJob, std::allocator<ns3::UlJob> > jobs) [member function]
+                   [param('ns3::Ptr< ns3::UlJob >', 'job')])
+    ## bs-uplink-scheduler-mbqos.h: uint32_t ns3::UplinkSchedulerMBQoS::CountSymbolsQueue(std::list<ns3::Ptr<ns3::UlJob>, std::allocator<ns3::Ptr<ns3::UlJob> > > jobs) [member function]
     cls.add_method('CountSymbolsQueue', 
                    'uint32_t', 
-                   [param('std::list< ns3::UlJob >', 'jobs')])
-    ## bs-uplink-scheduler-mbqos.h: ns3::UlJob * ns3::UplinkSchedulerMBQoS::CreateUlJob(ns3::SSRecord * ssRecord, ns3::ServiceFlow::SchedulingType schedType, ns3::ReqType reqType) [member function]
+                   [param('std::list< ns3::Ptr< ns3::UlJob > >', 'jobs')])
+    ## bs-uplink-scheduler-mbqos.h: ns3::Ptr<ns3::UlJob> ns3::UplinkSchedulerMBQoS::CreateUlJob(ns3::SSRecord * ssRecord, ns3::ServiceFlow::SchedulingType schedType, ns3::ReqType reqType) [member function]
     cls.add_method('CreateUlJob', 
-                   'ns3::UlJob *', 
+                   'ns3::Ptr< ns3::UlJob >', 
                    [param('ns3::SSRecord *', 'ssRecord'), param('ns3::ServiceFlow::SchedulingType', 'schedType'), param('ns3::ReqType', 'reqType')])
-    ## bs-uplink-scheduler-mbqos.h: ns3::UlJob ns3::UplinkSchedulerMBQoS::DequeueJob(ns3::UlJob::JobPriority priority) [member function]
+    ## bs-uplink-scheduler-mbqos.h: ns3::Ptr<ns3::UlJob> ns3::UplinkSchedulerMBQoS::DequeueJob(ns3::UlJob::JobPriority priority) [member function]
     cls.add_method('DequeueJob', 
-                   'ns3::UlJob', 
+                   'ns3::Ptr< ns3::UlJob >', 
                    [param('ns3::UlJob::JobPriority', 'priority')])
     ## bs-uplink-scheduler-mbqos.h: ns3::Time ns3::UplinkSchedulerMBQoS::DetermineDeadline(ns3::ServiceFlow * serviceFlow) [member function]
     cls.add_method('DetermineDeadline', 
                    'ns3::Time', 
                    [param('ns3::ServiceFlow *', 'serviceFlow')])
-    ## bs-uplink-scheduler-mbqos.h: void ns3::UplinkSchedulerMBQoS::EnqueueJob(ns3::UlJob::JobPriority priority, ns3::UlJob job) [member function]
+    ## bs-uplink-scheduler-mbqos.h: void ns3::UplinkSchedulerMBQoS::EnqueueJob(ns3::UlJob::JobPriority priority, ns3::Ptr<ns3::UlJob> job) [member function]
     cls.add_method('EnqueueJob', 
                    'void', 
-                   [param('ns3::UlJob::JobPriority', 'priority'), param('ns3::UlJob', 'job')])
+                   [param('ns3::UlJob::JobPriority', 'priority'), param('ns3::Ptr< ns3::UlJob >', 'job')])
     ## bs-uplink-scheduler-mbqos.h: void ns3::UplinkSchedulerMBQoS::GetChannelDescriptorsToUpdate(bool & arg0, bool & arg1, bool & arg2, bool & arg3) [member function]
     cls.add_method('GetChannelDescriptorsToUpdate', 
                    'void', 
                    [param('bool &', 'arg0'), param('bool &', 'arg1'), param('bool &', 'arg2'), param('bool &', 'arg3')], 
                    is_virtual=True)
+    ## bs-uplink-scheduler-mbqos.h: uint32_t ns3::UplinkSchedulerMBQoS::GetPendingSize(ns3::ServiceFlow * serviceFlow) [member function]
+    cls.add_method('GetPendingSize', 
+                   'uint32_t', 
+                   [param('ns3::ServiceFlow *', 'serviceFlow')])
     ## bs-uplink-scheduler-mbqos.h: static ns3::TypeId ns3::UplinkSchedulerMBQoS::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
@@ -3728,6 +3731,10 @@ def register_Ns3UplinkSchedulerMBQoS_methods(root_module, cls):
                    'bool', 
                    [param('ns3::ServiceFlow *', 'serviceFlow'), param('ns3::ServiceFlow::SchedulingType', 'schedulingType'), param('ns3::OfdmUlMapIe &', 'ulMapIe'), param('ns3::WimaxPhy::ModulationType const', 'modulationType'), param('uint32_t &', 'symbolsToAllocation'), param('uint32_t &', 'availableSymbols')], 
                    is_virtual=True)
+    ## bs-uplink-scheduler-mbqos.h: bool ns3::UplinkSchedulerMBQoS::ServiceBandwidthRequestsBytes(ns3::ServiceFlow * serviceFlow, ns3::ServiceFlow::SchedulingType schedulingType, ns3::OfdmUlMapIe & ulMapIe, ns3::WimaxPhy::ModulationType const modulationType, uint32_t & symbolsToAllocation, uint32_t & availableSymbols, uint32_t allocationSizeBytes) [member function]
+    cls.add_method('ServiceBandwidthRequestsBytes', 
+                   'bool', 
+                   [param('ns3::ServiceFlow *', 'serviceFlow'), param('ns3::ServiceFlow::SchedulingType', 'schedulingType'), param('ns3::OfdmUlMapIe &', 'ulMapIe'), param('ns3::WimaxPhy::ModulationType const', 'modulationType'), param('uint32_t &', 'symbolsToAllocation'), param('uint32_t &', 'availableSymbols'), param('uint32_t', 'allocationSizeBytes')])
     ## bs-uplink-scheduler-mbqos.h: void ns3::UplinkSchedulerMBQoS::ServiceUnsolicitedGrants(ns3::SSRecord const * ssRecord, ns3::ServiceFlow::SchedulingType schedulingType, ns3::OfdmUlMapIe & ulMapIe, ns3::WimaxPhy::ModulationType const modulationType, uint32_t & symbolsToAllocation, uint32_t & availableSymbols) [member function]
     cls.add_method('ServiceUnsolicitedGrants', 
                    'void', 
