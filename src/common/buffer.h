@@ -209,7 +209,7 @@ public:
        * by two bytes. The data is written in least significant byte order and the
        * input data is expected to be in host order.
        */
-      void WriteHtonU16 (uint16_t data);
+      inline void WriteHtonU16 (uint16_t data);
       /**
        * \param data data to write in buffer
        *
@@ -217,7 +217,7 @@ public:
        * by four bytes. The data is written in network order and the
        * input data is expected to be in host order.
        */
-      void WriteHtonU32 (uint32_t data);
+      inline void WriteHtonU32 (uint32_t data);
       /**
        * \param data data to write in buffer
        *
@@ -285,7 +285,7 @@ public:
        * read.
        * The data is read in network format and return in host format.
        */
-      uint16_t ReadNtohU16 (void);
+      inline uint16_t ReadNtohU16 (void);
       /**
        * \return the four bytes read in the buffer.
        *
@@ -293,7 +293,7 @@ public:
        * read.
        * The data is read in network format and return in host format.
        */
-      uint32_t ReadNtohU32 (void);
+      inline uint32_t ReadNtohU32 (void);
       /**
        * \return the eight bytes read in the buffer.
        *
@@ -363,6 +363,8 @@ public:
       void Construct (const Buffer *buffer);
       bool CheckNoZero (uint32_t start, uint32_t end) const;
       bool Check (uint32_t i) const;
+      uint16_t SlowReadNtohU16 (void);
+      uint32_t SlowReadNtohU32 (void);
 
     /* offset in virtual bytes from the start of the data buffer to the
      * start of the "virtual zero area".
@@ -606,6 +608,96 @@ Buffer::Iterator::WriteU8 (uint8_t  data, uint32_t len)
       memset (buffer, data, len);
       m_current += len;
     }
+}
+
+void 
+Buffer::Iterator::WriteHtonU16 (uint16_t data)
+{
+  NS_ASSERT (CheckNoZero (m_current, m_current + 2));
+  uint8_t *buffer;
+  if (m_current + 2 <= m_zeroStart)
+    {
+      buffer = &m_data[m_current];
+    }
+  else
+    {
+      buffer = &m_data[m_current - (m_zeroEnd - m_zeroStart)];
+    }
+  buffer[0] = (data >> 8)& 0xff;
+  buffer[1] = (data >> 0)& 0xff;
+  m_current+= 2;
+}
+
+void 
+Buffer::Iterator::WriteHtonU32 (uint32_t data)
+{
+  NS_ASSERT (CheckNoZero (m_current, m_current + 4));
+  uint8_t *buffer;
+  if (m_current + 4 <= m_zeroStart)
+    {
+      buffer = &m_data[m_current];
+    }
+  else
+    {
+      buffer = &m_data[m_current - (m_zeroEnd - m_zeroStart)];
+    }
+  buffer[0] = (data >> 24)& 0xff;
+  buffer[1] = (data >> 16)& 0xff;
+  buffer[2] = (data >> 8)& 0xff;
+  buffer[3] = (data >> 0)& 0xff;
+  m_current+= 4;
+}
+
+uint16_t 
+Buffer::Iterator::ReadNtohU16 (void)
+{
+  uint8_t *buffer;
+  if (m_current + 2 <= m_zeroStart)
+    {
+      buffer = &m_data[m_current];
+    }
+  else if (m_current >= m_zeroEnd)
+    {
+      buffer = &m_data[m_current];
+    }
+  else
+    {
+      return SlowReadNtohU16 ();
+    }
+  uint16_t retval = 0;
+  retval |= buffer[0];
+  retval <<= 8;
+  retval |= buffer[1];
+  m_current += 2;
+  return retval;
+}
+
+uint32_t 
+Buffer::Iterator::ReadNtohU32 (void)
+{
+  uint8_t *buffer;
+  if (m_current + 4 <= m_zeroStart)
+    {
+      buffer = &m_data[m_current];
+    }
+  else if (m_current >= m_zeroEnd)
+    {
+      buffer = &m_data[m_current];
+    }
+  else
+    {
+      return SlowReadNtohU32 ();
+    }
+  uint32_t retval = 0;
+  retval |= buffer[0];
+  retval <<= 8;
+  retval |= buffer[1];
+  retval <<= 8;
+  retval |= buffer[2];
+  retval <<= 8;
+  retval |= buffer[3];
+  m_current += 4;
+  return retval;
 }
 
 uint8_t  

@@ -138,7 +138,7 @@ static uint64_t g_nCreates = 0;
 #endif /* BUFFER_HEURISTICS */
 
 static struct LocalStaticDestructor {
-  LocalStaticDestructor(void)
+  ~LocalStaticDestructor(void)
   {
 #ifdef PRINT_STATS
 #ifdef BUFFER_HEURISTICS
@@ -1106,20 +1106,6 @@ Buffer::Iterator::WriteHtolsbU64 (uint64_t data)
 }
 
 void 
-Buffer::Iterator::WriteHtonU16 (uint16_t data)
-{
-  WriteU8 ((data >> 8) & 0xff);
-  WriteU8 ((data >> 0) & 0xff);
-}
-void 
-Buffer::Iterator::WriteHtonU32 (uint32_t data)
-{
-  WriteU8 ((data >> 24) & 0xff);
-  WriteU8 ((data >> 16) & 0xff);
-  WriteU8 ((data >> 8) & 0xff);
-  WriteU8 ((data >> 0) & 0xff);
-}
-void 
 Buffer::Iterator::WriteHtonU64 (uint64_t data)
 {
   WriteU8 ((data >> 56) & 0xff);
@@ -1205,7 +1191,7 @@ Buffer::Iterator::ReadU64 (void)
   return data;
 }
 uint16_t 
-Buffer::Iterator::ReadNtohU16 (void)
+Buffer::Iterator::SlowReadNtohU16 (void)
 {
   uint16_t retval = 0;
   retval |= ReadU8 ();
@@ -1214,7 +1200,7 @@ Buffer::Iterator::ReadNtohU16 (void)
   return retval;
 }
 uint32_t 
-Buffer::Iterator::ReadNtohU32 (void)
+Buffer::Iterator::SlowReadNtohU32 (void)
 {
   uint32_t retval = 0;
   retval |= ReadU8 ();
