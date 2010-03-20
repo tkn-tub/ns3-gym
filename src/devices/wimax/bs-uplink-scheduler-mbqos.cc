@@ -303,6 +303,7 @@ UplinkSchedulerMBQoS::Schedule (void)
                    (grant has been referred by different names e.g. transmission opportunity, slot,         uplink allocation, etc)*/
                   if (ssRecord->GetHasServiceFlowUgs ())
                     {
+                      NS_LOG_DEBUG ("At " << Simulator::Now ().GetSeconds () << " offering be unicast polling");
                       // Recover period interval information for UGS flow
                       Time frame_duration = GetBs ()->GetPhy ()->GetFrameDuration ();
                       Time
@@ -331,30 +332,31 @@ UplinkSchedulerMBQoS::Schedule (void)
                   // enqueue allocate unicast polls for rtPS flows if bandwidth is available
                   if (ssRecord->GetHasServiceFlowRtps ())
                     {
-                      UlJob *jobRTPSPoll = CreateUlJob (ssRecord, ServiceFlow::SF_TYPE_RTPS, UNICAST_POLLING);
-                      EnqueueJob (UlJob::HIGH, *jobRTPSPoll);
-                      delete jobRTPSPoll;
+                      NS_LOG_DEBUG ("At " << Simulator::Now ().GetSeconds () << " offering rtps unicast polling");
+                      Ptr<UlJob> jobRTPSPoll = CreateUlJob (ssRecord, ServiceFlow::SF_TYPE_RTPS, UNICAST_POLLING);
+                      EnqueueJob (UlJob::HIGH, jobRTPSPoll);
                     }
 
                   if (ssRecord->GetHasServiceFlowNrtps ())
                     {
+                      NS_LOG_DEBUG ("At " << Simulator::Now ().GetSeconds () << " offering nrtps unicast polling");
                       // allocate unicast polls for nrtPS flows if bandwidth is available
-                      UlJob *jobNRTPSPoll = CreateUlJob (ssRecord, ServiceFlow::SF_TYPE_NRTPS, UNICAST_POLLING);
-                      EnqueueJob (UlJob::HIGH, *jobNRTPSPoll);
-                      delete jobNRTPSPoll;
+                      Ptr<UlJob> jobNRTPSPoll = CreateUlJob (ssRecord, ServiceFlow::SF_TYPE_NRTPS, UNICAST_POLLING);
+                      EnqueueJob (UlJob::HIGH, jobNRTPSPoll);
                     }
 
                   if (ssRecord->GetHasServiceFlowBe ())
                     {
+                      NS_LOG_DEBUG ("At " << Simulator::Now ().GetSeconds () << " offering be unicast polling");
                       // finally allocate unicast polls for BE flows if bandwidth is available
-                      UlJob *jobBEPoll = CreateUlJob (ssRecord, ServiceFlow::SF_TYPE_BE, UNICAST_POLLING);
-                      EnqueueJob (UlJob::HIGH, *jobBEPoll);
-                      delete jobBEPoll;
+                      Ptr<UlJob> jobBEPoll = CreateUlJob (ssRecord, ServiceFlow::SF_TYPE_BE, UNICAST_POLLING);
+                      EnqueueJob (UlJob::HIGH, jobBEPoll);
                     }
                 }
             }
         }
     }
+  NS_LOG_DEBUG ("At " << Simulator::Now (). GetSeconds ()<< " high queue has " << m_uplinkJobs_high.size ()<< " jobs - after sched");
 
   availableSymbolsAux = availableSymbols;
   uint32_t symbolsUsed = 0;
@@ -369,13 +371,14 @@ UplinkSchedulerMBQoS::Schedule (void)
   CheckMinimumBandwidth (availableSymbolsAux);
 
   // Scheduling high priority queue
+  NS_LOG_DEBUG ("At " << Simulator::Now (). GetSeconds ()<< " high queue has " << m_uplinkJobs_high.size ()<< " jobs");
   while ((availableSymbols) && (!m_uplinkJobs_high.empty ()))
     {
 
-      UlJob job = m_uplinkJobs_high.front ();
+      Ptr<UlJob> job = m_uplinkJobs_high.front ();
       OfdmUlMapIe ulMapIe;
-      SSRecord * ssRecord = job.GetSsRecord ();
-      enum ServiceFlow::SchedulingType schedulingType = job.GetSchedulingType ();
+      SSRecord * ssRecord = job->GetSsRecord ();
+      enum ServiceFlow::SchedulingType schedulingType = job->GetSchedulingType ();
 
       Cid cid = ssRecord->GetBasicCid ();
       ulMapIe.SetCid (cid);
@@ -384,7 +387,7 @@ UplinkSchedulerMBQoS::Schedule (void)
       ulMapIe.SetUiuc (GetBs ()->GetBurstProfileManager ()->GetBurstProfile (modulationType,
                                                                              WimaxNetDevice::DIRECTION_UPLINK));
 
-      ReqType reqType = job.GetType ();
+      ReqType reqType = job->GetType ();
 
       if (reqType == UNICAST_POLLING)
         {
@@ -397,24 +400,28 @@ UplinkSchedulerMBQoS::Schedule (void)
         }
       else if (reqType == DATA)
         {
-          ServiceBandwidthRequests (ssRecord,
+          ServiceFlow *serviceFlow = job->GetServiceFlow ();
+          uint32_t allocSizeBytes = job->GetSize ();
+          ServiceBandwidthRequestsBytes (serviceFlow,
                                     schedulingType,
                                     ulMapIe,
                                     modulationType,
                                     symbolsToAllocation,
-                                    availableSymbols);
+                                         availableSymbols,
+                                         allocSizeBytes);
         }
       m_uplinkJobs_high.pop_front ();
     }
 
+  NS_LOG_DEBUG ("At " << Simulator::Now (). GetSeconds ()<< " interqueue has " << m_uplinkJobs_inter.size ()<< " jobs");
   /* Scheduling intermediate priority queue */
   while ((availableSymbols) && (!m_uplinkJobs_inter.empty ()))
     {
-
-      UlJob job = m_uplinkJobs_inter.front ();
+      NS_LOG_DEBUG ("At " << Simulator::Now (). GetSeconds ()<< " Scheduling interqueue");
+      Ptr<UlJob> job = m_uplinkJobs_inter.front ();
       OfdmUlMapIe ulMapIe;
-      SSRecord * ssRecord = job.GetSsRecord ();
-      enum ServiceFlow::SchedulingType schedulingType = job.GetSchedulingType ();
+      SSRecord * ssRecord = job->GetSsRecord ();
+      enum ServiceFlow::SchedulingType schedulingType = job->GetSchedulingType ();
 
       Cid cid = ssRecord->GetBasicCid ();
       ulMapIe.SetCid (cid);
@@ -423,7 +430,7 @@ UplinkSchedulerMBQoS::Schedule (void)
       ulMapIe.SetUiuc (GetBs ()->GetBurstProfileManager ()->GetBurstProfile (modulationType,
                                                                              WimaxNetDevice::DIRECTION_UPLINK));
 
-      ReqType reqType = job.GetType ();
+      ReqType reqType = job->GetType ();
 
       if (reqType == DATA)
         {
@@ -445,10 +452,10 @@ UplinkSchedulerMBQoS::Schedule (void)
   while ((availableSymbols) && (!m_uplinkJobs_low.empty ()))
     {
 
-      UlJob job = m_uplinkJobs_low.front ();
+      Ptr<UlJob> job = m_uplinkJobs_low.front ();
       OfdmUlMapIe ulMapIe;
-      SSRecord * ssRecord = job.GetSsRecord ();
-      enum ServiceFlow::SchedulingType schedulingType = job.GetSchedulingType ();
+      SSRecord * ssRecord = job->GetSsRecord ();
+      enum ServiceFlow::SchedulingType schedulingType = job->GetSchedulingType ();
 
       Cid cid = ssRecord->GetBasicCid ();
       ulMapIe.SetCid (cid);
@@ -457,7 +464,7 @@ UplinkSchedulerMBQoS::Schedule (void)
       ulMapIe.SetUiuc (GetBs ()->GetBurstProfileManager ()->GetBurstProfile (modulationType,
                                                                              WimaxNetDevice::DIRECTION_UPLINK));
 
-      ReqType reqType = job.GetType ();
+      ReqType reqType = job->GetType ();
 
       if (reqType == DATA)
         {
@@ -486,13 +493,66 @@ UplinkSchedulerMBQoS::Schedule (void)
   GetBs ()->GetBandwidthManager ()->SetSubframeRatio ();
 }
 
+bool UplinkSchedulerMBQoS::ServiceBandwidthRequestsBytes (ServiceFlow *serviceFlow,
+    enum ServiceFlow::SchedulingType schedulingType, OfdmUlMapIe &ulMapIe,
+    const WimaxPhy::ModulationType modulationType,
+    uint32_t &symbolsToAllocation, uint32_t &availableSymbols, uint32_t allocationSizeBytes)
+{
+  uint32_t allocSizeBytes = allocationSizeBytes;
+  uint32_t allocSizeSymbols = 0;
+  uint16_t sduSize = 0;
+
+  ServiceFlowRecord *record = serviceFlow->GetRecord ();
+  sduSize = serviceFlow->GetSduSize ();
+
+  uint32_t requiredBandwidth = record->GetRequestedBandwidth ();
+
+  if (requiredBandwidth > 0)
+    {
+      allocSizeSymbols = GetBs ()->GetPhy ()->GetNrSymbols (allocSizeBytes, modulationType);
+
+      if (availableSymbols < allocSizeSymbols)
+        {
+          allocSizeSymbols = availableSymbols;
+        }
+
+      if (availableSymbols >= allocSizeSymbols)
+        {
+          NS_LOG_DEBUG (
+              "At " << Simulator::Now ().GetSeconds ()<<" BS uplink scheduler, "
+                  << serviceFlow->GetSchedulingTypeStr ()
+                  << " allocation, size: " << allocSizeSymbols << " symbols"
+                  << ", CID: "
+                  << serviceFlow->GetConnection ()->GetCid ()
+                  << ", SFID: " << serviceFlow->GetSfid ()
+                  << ", bw requested: " << record->GetRequestedBandwidth ()
+                  << ", bw granted: " << allocSizeBytes
+                  << std::endl);
+
+          record->UpdateGrantedBandwidthTemp (allocSizeBytes);
+          record->UpdateGrantedBandwidth (allocSizeBytes);
+          record->UpdateRequestedBandwidth (-allocSizeBytes);
+
+          record->UpdateBwSinceLastExpiry (allocSizeBytes);
+
+
+          AddUplinkAllocation (ulMapIe, allocSizeSymbols, symbolsToAllocation,
+              availableSymbols);
+        } else
+        {
+          return false;
+        }
+    }
+  return true;
+}
+
 uint32_t
-UplinkSchedulerMBQoS::CountSymbolsQueue (std::list<UlJob> jobs)
+UplinkSchedulerMBQoS::CountSymbolsQueue (std::list<Ptr<UlJob> > jobs)
 {
   uint32_t symbols = 0;
-  for (std::list<UlJob>::iterator iter = jobs.begin (); iter != jobs.end (); ++iter)
+  for (std::list<Ptr<UlJob> >::iterator iter = jobs.begin (); iter != jobs.end (); ++iter)
     {
-      UlJob job = *iter;
+      Ptr<UlJob> job = *iter;
 
       // count symbols
       symbols += CountSymbolsJobs (job);
@@ -500,10 +560,10 @@ UplinkSchedulerMBQoS::CountSymbolsQueue (std::list<UlJob> jobs)
   return symbols;
 }
 
-UlJob *
+Ptr<UlJob>
 UplinkSchedulerMBQoS::CreateUlJob (SSRecord *ssRecord, enum ServiceFlow::SchedulingType schedType, ReqType reqType)
 {
-  UlJob *job = new UlJob ();
+  Ptr<UlJob> job = CreateObject <UlJob> ();
   job->SetSsRecord (ssRecord);
   job->SetSchedulingType (schedType);
   job->SetServiceFlow (*(ssRecord->GetServiceFlows (schedType).begin ()));
@@ -512,16 +572,22 @@ UplinkSchedulerMBQoS::CreateUlJob (SSRecord *ssRecord, enum ServiceFlow::Schedul
 }
 
 uint32_t
-UplinkSchedulerMBQoS::CountSymbolsJobs (UlJob job)
+UplinkSchedulerMBQoS::CountSymbolsJobs (Ptr<UlJob> job)
 {
-  SSRecord *ssRecord = job.GetSsRecord ();
-  ServiceFlow *serviceFlow = job.GetServiceFlow ();
+  SSRecord *ssRecord = job->GetSsRecord ();
+  ServiceFlow *serviceFlow = job->GetServiceFlow ();
   uint32_t allocationSize = 0;
 
-  if (job.GetType () == UNICAST_POLLING)
+  if (job->GetType () == UNICAST_POLLING)
     {
       // if polling
-      allocationSize = GetBs ()->GetBandwidthManager ()->CalculateAllocationSize (ssRecord, serviceFlow);
+      Time currentTime = Simulator::Now ();
+      allocationSize = 0;
+      if ((currentTime - serviceFlow->GetRecord ()->GetGrantTimeStamp ()).GetMilliSeconds ()
+          >= serviceFlow->GetUnsolicitedPollingInterval ())
+        {
+          allocationSize = GetBs ()->GetBwReqOppSize ();
+        }
     }
   else
     {
@@ -547,7 +613,7 @@ UplinkSchedulerMBQoS::CountSymbolsJobs (UlJob job)
 }
 
 void
-UplinkSchedulerMBQoS::EnqueueJob (UlJob::JobPriority priority, UlJob job)
+UplinkSchedulerMBQoS::EnqueueJob (UlJob::JobPriority priority, Ptr<UlJob> job)
 {
   switch (priority)
     {
@@ -562,10 +628,10 @@ UplinkSchedulerMBQoS::EnqueueJob (UlJob::JobPriority priority, UlJob job)
     }
 }
 
-UlJob
+Ptr<UlJob>
 UplinkSchedulerMBQoS::DequeueJob (UlJob::JobPriority priority)
 {
-  UlJob job_front;
+  Ptr<UlJob> job_front;
   switch (priority)
     {
     case UlJob::HIGH:
@@ -589,32 +655,74 @@ UplinkSchedulerMBQoS::CheckDeadline (uint32_t &availableSymbols)
   // for each request in the imermediate queue
   if (m_uplinkJobs_inter.size () > 0)
     {
-      std::list<UlJob>::iterator iter = m_uplinkJobs_inter.begin ();
-      std::list<UlJob>::iterator iterPrev = m_uplinkJobs_inter.begin ();
+      std::list<Ptr<UlJob> >::iterator iter = m_uplinkJobs_inter.begin ();
+      std::list<Ptr<UlJob> >::iterator iterPrev = m_uplinkJobs_inter.begin ();
 
       while (iter != m_uplinkJobs_inter.end () && availableSymbols)
         {
-          UlJob job = *iter;
+          Ptr<UlJob> job = *iter;
 
           // garantee delay bound for rtps connections
-          if (job.GetSchedulingType () == ServiceFlow::SF_TYPE_RTPS)
+          if (job->GetSchedulingType () == ServiceFlow::SF_TYPE_RTPS)
             {
-              Time deadline = job.GetDeadline ();
+              Time deadline = job->GetDeadline ();
               Time frame_duration = GetBs ()->GetPhy ()->GetFrameDuration ();
 
               Scalar frame = ((deadline - Simulator::Now ()) / frame_duration);
 
+              NS_LOG_DEBUG ("At " << Simulator::Now ().GetSeconds () << " reserved traffic rate: "
+                                << job->GetServiceFlow ()->GetMinReservedTrafficRate ()
+                                <<" deadline: "<<job->GetDeadline ().GetSeconds () << " frame start: "<<GetBs ()->m_frameStartTime.GetSeconds ()
+                                <<" frame duration: "<< frame_duration );
+
               // should be schedule in this frame to max latency
-              if (frame.GetDouble () <= 3)
+              if (frame.GetDouble () >= 3)
                 {
+
                   if (availableSymbols)
                     {
+                      uint32_t availableBytes =  GetBs ()->GetPhy ()->GetNrBytes (availableSymbols,job->GetSsRecord ()->GetModulationType ());
+                      uint32_t allocationSize = job->GetSize ();
+                      if (allocationSize > availableBytes)
+                        {
+                          allocationSize = availableBytes;
+                        }
+
+
+                      if (allocationSize == 0)
+                        {
+                          continue;
+                        }
+
+                      uint32_t symbolsToAllocate = GetBs ()->GetPhy ()->GetNrSymbols(allocationSize, job->GetSsRecord ()->GetModulationType ());
+                      if (symbolsToAllocate > availableSymbols)
+                        {
+                          symbolsToAllocate = availableSymbols;
+                          allocationSize = GetBs ()->GetPhy ()->GetNrBytes (symbolsToAllocate,job->GetSsRecord ()->GetModulationType ());
+                        }
+
+                      job->SetSize (job->GetSize () - allocationSize);
+
+                       Ptr<UlJob> newJob =  CreateObject<UlJob> ();
+                       // Record data in job
+                       newJob->SetSsRecord (job->GetSsRecord ());
+                       newJob->SetServiceFlow (job->GetServiceFlow ());
+                       newJob->SetSize (allocationSize);
+                       newJob->SetDeadline (job->GetDeadline ());
+                       newJob->SetReleaseTime (job->GetReleaseTime ());
+                       newJob->SetSchedulingType (job->GetSchedulingType ());
+                       newJob->SetPeriod (job->GetPeriod ());
+                       newJob->SetType (job->GetType ());
+
+                       EnqueueJob (UlJob::HIGH, newJob);
+
                       // migrate request
-                      UlJob jobTmp = job;
-                      availableSymbols -= CountSymbolsJobs (job);
-                      EnqueueJob (UlJob::HIGH, jobTmp);
-                      m_uplinkJobs_inter.erase (iter);
-                      iter = m_uplinkJobs_inter.begin ();
+                       iter++;
+                       if ((job->GetSize () - allocationSize) == 0)
+                         {
+                           m_uplinkJobs_inter.remove (job);
+                         }
+
                     }
                 }
               else
@@ -633,7 +741,7 @@ UplinkSchedulerMBQoS::CheckDeadline (uint32_t &availableSymbols)
 void
 UplinkSchedulerMBQoS::CheckMinimumBandwidth (uint32_t &availableSymbols)
 {
-  std::list<PriorityUlJob> priorityUlJobs;
+  std::list<Ptr<PriorityUlJob> > priorityUlJobs;
 
   // For each connection of type rtPS or nrtPS
   std::vector<SSRecord*> *ssRecords = GetBs ()->GetSSManager ()->GetSSRecords ();
@@ -654,23 +762,23 @@ UplinkSchedulerMBQoS::CheckMinimumBandwidth (uint32_t &availableSymbols)
     }
 
   // for each request in the imermediate queue
-  for (std::list<UlJob>::const_iterator iter = m_uplinkJobs_inter.begin (); iter != m_uplinkJobs_inter.end (); ++iter)
+  for (std::list<Ptr<UlJob> >::const_iterator iter = m_uplinkJobs_inter.begin (); iter != m_uplinkJobs_inter.end (); ++iter)
     {
-      UlJob job = *iter;
-      // SSRecord ssRecord = job.GetSsRecord();
-      ServiceFlow *serviceFlow = job.GetServiceFlow ();
-      if ((job.GetSchedulingType () == ServiceFlow::SF_TYPE_RTPS || job.GetSchedulingType ()
+      Ptr<UlJob> job = *iter;
+      // SSRecord ssRecord = job->GetSsRecord();
+      ServiceFlow *serviceFlow = job->GetServiceFlow ();
+      if ((job->GetSchedulingType () == ServiceFlow::SF_TYPE_RTPS || job->GetSchedulingType ()
            == ServiceFlow::SF_TYPE_NRTPS) && (serviceFlow->GetRecord ()->GetBacklogged () > 0))
         {
           uint32_t minReservedTrafficRate = serviceFlow->GetMinReservedTrafficRate ();
           uint32_t grantedBandwidth = serviceFlow->GetRecord ()->GetBwSinceLastExpiry ();
 
-          PriorityUlJob priorityUlJob;
-          priorityUlJob.SetUlJob (&job);
+          Ptr<PriorityUlJob> priorityUlJob = CreateObject<PriorityUlJob> ();
+          priorityUlJob->SetUlJob (job);
           // pri_array
           if (minReservedTrafficRate <= grantedBandwidth)
             {
-              priorityUlJob.SetPriority (-10000);
+              priorityUlJob->SetPriority (-10000);
             }
           else
             {
@@ -688,7 +796,7 @@ UplinkSchedulerMBQoS::CheckMinimumBandwidth (uint32_t &availableSymbols)
                 }
               int priority = serviceFlow->GetRecord ()->GetBackloggedTemp ()
                 - (serviceFlow->GetRecord ()->GetGrantedBandwidthTemp () - minReservedTrafficRate);
-              priorityUlJob.SetPriority (priority);
+              priorityUlJob->SetPriority (priority);
               serviceFlow->GetRecord ()->SetGrantedBandwidthTemp (serviceFlow->GetRecord ()->GetGrantedBandwidthTemp ()
                                                                   + allocationSize);
               serviceFlow->GetRecord ()->SetBackloggedTemp (serviceFlow->GetRecord ()->GetBackloggedTemp ()
@@ -699,13 +807,13 @@ UplinkSchedulerMBQoS::CheckMinimumBandwidth (uint32_t &availableSymbols)
         }
     }
 
-  priorityUlJobs.sort (SortProcess ());
+  priorityUlJobs.sort (SortProcessPtr ());
 
-  for (std::list<PriorityUlJob>::const_iterator iter = priorityUlJobs.begin (); iter != priorityUlJobs.end (); ++iter)
+  for (std::list<Ptr<PriorityUlJob> >::const_iterator iter = priorityUlJobs.begin (); iter != priorityUlJobs.end (); ++iter)
     {
-      PriorityUlJob priorityUlJob = *iter;
-      UlJob *job_priority = priorityUlJob.GetUlJob ();
-      UlJob job = *job_priority;
+      Ptr<PriorityUlJob> priorityUlJob = *iter;
+      Ptr<UlJob> job_priority = priorityUlJob->GetUlJob ();
+      Ptr<UlJob> job = job_priority;
       if (availableSymbols)
         {
           availableSymbols -= CountSymbolsJobs (job);
@@ -849,6 +957,7 @@ UplinkSchedulerMBQoS::ServiceBandwidthRequests (ServiceFlow *serviceFlow,
             {
               serviceFlow->GetRecord ()->IncreaseBacklogged (-allocSizeBytes);
             }
+          serviceFlow->GetRecord ()->SetLastGrantTime (Simulator::Now ());
 
           AddUplinkAllocation (ulMapIe, allocSizeSymbols, symbolsToAllocation, availableSymbols);
         }
@@ -932,18 +1041,14 @@ UplinkSchedulerMBQoS::SetupServiceFlow (SSRecord *ssRecord, ServiceFlow *service
       break;
     case ServiceFlow::SF_TYPE_RTPS:
       {
-        if (serviceFlow->GetSduSize () > bytesPerFrame)
-          {
-            delayNrFrames = (uint8_t)(serviceFlow->GetSduSize () / bytesPerFrame);
-          }
-
-        uint16_t interval = delayNrFrames * frameDurationMSec;
-        serviceFlow->SetUnsolicitedPollingInterval (interval);
+        serviceFlow->SetUnsolicitedPollingInterval (20);
       }
       break;
     case ServiceFlow::SF_TYPE_NRTPS:
       {
         // no real-time guarantees are given to NRTPS, serviced based on available bandwidth
+        uint16_t interval = 1000;
+        serviceFlow->SetUnsolicitedPollingInterval (interval);
       }
       break;
     case ServiceFlow::SF_TYPE_BE:
@@ -956,19 +1061,60 @@ UplinkSchedulerMBQoS::SetupServiceFlow (SSRecord *ssRecord, ServiceFlow *service
     }
 }
 
+uint32_t UplinkSchedulerMBQoS::GetPendingSize (ServiceFlow* serviceFlow)
+{
+  uint32_t size = 0;
+  std::list<Ptr <PriorityUlJob> > priorityUlJobs;
+
+  // for each request in the imermediate queue
+  for (std::list<Ptr<UlJob> >::const_iterator iter = m_uplinkJobs_inter.begin (); iter
+      != m_uplinkJobs_inter.end (); ++iter)
+    {
+      Ptr<UlJob> job = *iter;
+
+      ServiceFlow *serviceFlowJob = job->GetServiceFlow ();
+
+      if (serviceFlowJob == serviceFlow)
+        {
+          size += job->GetSize ();
+        }
+    }
+  return size;
+}
+
 void
 UplinkSchedulerMBQoS::ProcessBandwidthRequest (const BandwidthRequestHeader &bwRequestHdr)
 {
   // Enqueue requests for uplink scheduler.
-  UlJob *job = new UlJob ();
+  Ptr<UlJob> job = CreateObject <UlJob> ();
   Ptr<WimaxConnection> connection = GetBs ()->GetConnectionManager ()->GetConnection (bwRequestHdr.GetCid ());
   SSRecord *ssRecord = GetBs ()->GetSSManager ()->GetSSRecord (connection->GetCid ());
   ServiceFlow *serviceFlow = connection->GetServiceFlow ();
 
-  u_int32_t size = bwRequestHdr.GetBr ();
+  uint32_t size = bwRequestHdr.GetBr ();
+  uint32_t pendingSize = GetPendingSize (serviceFlow);
+
+  if (size > pendingSize)
+    {
+      size -= pendingSize;
+    }
+  else
+    {
+      size = 0;
+    }
+
+  if (size == 0)
+    {
+      return;
+    }
+
+
   Time deadline = DetermineDeadline (serviceFlow);
   Time currentTime = Simulator::Now ();
   Time period = deadline; // So that deadline is properly updated..
+
+  NS_LOG_DEBUG ("At "<<Simulator::Now ().GetSeconds ()<<" at BS uplink scheduler, processing bandwidth request from." <<
+        ssRecord->GetMacAddress () << " and sf " << serviceFlow->GetSchedulingType () <<" with deadline in " << deadline.GetSeconds () << " and size " << size << " aggreg size " << bwRequestHdr.GetBr ());
 
   // Record data in job
   job->SetSsRecord (ssRecord);
@@ -984,16 +1130,16 @@ UplinkSchedulerMBQoS::ProcessBandwidthRequest (const BandwidthRequestHeader &bwR
   switch (serviceFlow->GetSchedulingType ())
     {
     case ServiceFlow::SF_TYPE_RTPS:
-      EnqueueJob (UlJob::INTERMEDIATE, *job);
+      EnqueueJob (UlJob::INTERMEDIATE, job);
       break;
     case ServiceFlow::SF_TYPE_NRTPS:
-      EnqueueJob (UlJob::INTERMEDIATE, *job);
+      EnqueueJob (UlJob::INTERMEDIATE, job);
       break;
     case ServiceFlow::SF_TYPE_BE:
-      EnqueueJob (UlJob::LOW, *job);
+      EnqueueJob (UlJob::LOW, job);
       break;
     default:
-      EnqueueJob (UlJob::LOW, *job);
+      EnqueueJob (UlJob::LOW, job);
       break;
     }
 }

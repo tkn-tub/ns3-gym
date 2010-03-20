@@ -226,7 +226,6 @@ BSSchedulerRtps::BSSchedulerBroadcastConnection (uint32_t &availableSymbols)
       packet = connection->GetQueue ()->Peek (hdr);
       nrSymbolsRequired = GetBs ()->GetPhy ()->GetNrSymbols (packet->GetSize (), modulationType);
 
-      // PIRO: check for fragmentation
       if (availableSymbols < nrSymbolsRequired
           && !CheckForFragmentation (connection, availableSymbols, modulationType))
         {
@@ -460,15 +459,18 @@ BSSchedulerRtps::BSSchedulerUGSConnection (uint32_t &availableSymbols)
 
           nrSymbolsRequired = connection->GetServiceFlow ()->GetRecord ()->GetGrantSize ();
 
-          // PIRO: packet fragmentation for UGS connections has not been implemented yet!
+          // Packet fragmentation for UGS connections has not been implemented yet!
           if (availableSymbols > nrSymbolsRequired)
             {
               availableSymbols -= nrSymbolsRequired;
               burst = CreateUgsBurst (connection->GetServiceFlow (), modulationType, nrSymbolsRequired);
-              AddDownlinkBurst (connection, diuc, modulationType, burst);
-              currentTime = Simulator::Now ();
-              serviceFlowRecord->SetDlTimeStamp (currentTime);
-              burst = Create<PacketBurst> ();
+              if (burst->GetNPackets () != 0)
+                {
+                  AddDownlinkBurst (connection, diuc, modulationType, burst);
+                  currentTime = Simulator::Now ();
+                  serviceFlowRecord->SetDlTimeStamp (currentTime);
+                  burst = Create<PacketBurst> ();
+                }
             }
         }
     }
@@ -562,6 +564,7 @@ BSSchedulerRtps::BSSchedulerRTPSConnection (uint32_t &availableSymbols)
   // Downlink Bandwidth Allocation
   for (int i = 0; i < nbConnection; i++)
     {
+
       packet = rtPSConnection[i]->GetQueue ()->Peek (hdr);
       uint32_t symbolsForPacketTransmission = 0;
       burst = Create<PacketBurst> ();
