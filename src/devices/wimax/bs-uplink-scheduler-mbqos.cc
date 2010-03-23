@@ -782,9 +782,9 @@ UplinkSchedulerMBQoS::CheckMinimumBandwidth (uint32_t &availableSymbols)
             }
           else
             {
-              u_int32_t allocationSize = serviceFlow->GetRecord ()->GetRequestedBandwidth ()
+              uint32_t allocationSize = serviceFlow->GetRecord ()->GetRequestedBandwidth ()
                 - serviceFlow->GetRecord ()->GetGrantedBandwidth ();
-              u_int32_t sduSize = serviceFlow->GetSduSize ();
+              uint32_t sduSize = serviceFlow->GetSduSize ();
 
               if (allocationSize > 0)
                 {
