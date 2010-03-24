@@ -64,7 +64,7 @@ TestDoubleIsEqual (const double x1, const double x2, const double epsilon)
   //
   {
     double max = (fabs (x1) > fabs (x2)) ? x1 : x2;
-    frexp (max, &exponent);
+    (void)frexp (max, &exponent);
   }
 
   //

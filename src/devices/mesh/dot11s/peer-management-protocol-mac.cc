@@ -264,7 +264,7 @@ PeerManagementProtocolMac::GetAddress () const
     }
   else
     {
-      return Mac48Address::Mac48Address ();
+      return Mac48Address ();
     }
 }
 void
@@ -310,7 +310,7 @@ PeerManagementProtocolMac::Report (std::ostream & os) const
 void
 PeerManagementProtocolMac::ResetStats ()
 {
-  m_stats = Statistics::Statistics ();
+  m_stats = Statistics ();
 }
 uint32_t
 PeerManagementProtocolMac::GetLinkMetric (Mac48Address peerAddress)

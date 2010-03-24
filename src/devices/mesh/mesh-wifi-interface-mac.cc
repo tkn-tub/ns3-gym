@@ -696,7 +696,7 @@ MeshWifiInterfaceMac::Report (std::ostream & os) const
 void
 MeshWifiInterfaceMac::ResetStats ()
 {
-  m_stats = Statistics::Statistics ();
+  m_stats = Statistics ();
 }
 void
 MeshWifiInterfaceMac::SetQueue (AccessClass ac)

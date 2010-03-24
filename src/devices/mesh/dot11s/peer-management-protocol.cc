@@ -555,7 +555,7 @@ PeerManagementProtocol::Report (std::ostream & os) const
 void
 PeerManagementProtocol::ResetStats ()
 {
-  m_stats = Statistics::Statistics (m_stats.linksTotal); // don't reset number of links
+  m_stats = Statistics (m_stats.linksTotal); // don't reset number of links
   for (PeerManagementProtocolMacMap::const_iterator plugins = m_plugins.begin (); plugins != m_plugins.end (); plugins++)
     {
       plugins->second->ResetStats ();

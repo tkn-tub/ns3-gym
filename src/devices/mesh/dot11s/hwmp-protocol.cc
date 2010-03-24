@@ -1155,7 +1155,7 @@ HwmpProtocol::Report (std::ostream & os) const
 void
 HwmpProtocol::ResetStats ()
 {
-  m_stats = Statistics::Statistics ();
+  m_stats = Statistics ();
   for (HwmpProtocolMacMap::const_iterator plugin = m_interfaces.begin (); plugin != m_interfaces.end (); plugin ++)
     {
       plugin->second->ResetStats ();

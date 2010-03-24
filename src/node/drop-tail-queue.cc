@@ -115,7 +115,7 @@ DropTailQueue::DoDequeue (void)
   if (m_packets.empty()) 
     {
       NS_LOG_LOGIC ("Queue empty");
-      return false;
+      return 0;
     }
 
   Ptr<Packet> p = m_packets.front ();
@@ -138,7 +138,7 @@ DropTailQueue::DoPeek (void) const
   if (m_packets.empty()) 
     {
       NS_LOG_LOGIC ("Queue empty");
-      return false;
+      return 0;
     }
 
   Ptr<Packet> p = m_packets.front ();

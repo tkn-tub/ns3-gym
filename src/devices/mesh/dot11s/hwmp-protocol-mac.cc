@@ -474,7 +474,7 @@ HwmpProtocolMac::Report (std::ostream & os) const
 void
 HwmpProtocolMac::ResetStats ()
 {
-  m_stats = Statistics::Statistics ();
+  m_stats = Statistics ();
 }
 
 } //namespace dot11s
