@@ -45,8 +45,6 @@
 
 NS_LOG_COMPONENT_DEFINE ("TcpSocketImpl");
 
-using namespace std;
-
 namespace ns3 {
 
 NS_OBJECT_ENSURE_REGISTERED (TcpSocketImpl);
