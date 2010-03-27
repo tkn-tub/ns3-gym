@@ -1511,6 +1511,11 @@ void TcpSocketImpl::CommonNewAck (SequenceNumber ack, bool skipTimer)
                         Simulator::GetDelayLeft (m_retxEvent)).GetSeconds());
           m_retxEvent.Cancel ();
         }
+      else if (m_pendingData->SizeFromSeq (m_firstPendingSequence, m_highestRxAck) > 0)
+        {
+          // Remove from front, if possible
+          m_firstPendingSequence += m_pendingData->RemoveToSeq (m_firstPendingSequence, m_highestRxAck);
+        }
     }
   // Try to send more data
   SendPendingData (m_connected);

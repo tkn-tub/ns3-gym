@@ -220,4 +220,36 @@ Ptr<Packet> PendingData::CopyFromSeq (uint32_t s, const SequenceNumber& f, const
   NS_LOG_FUNCTION (this << s << f << o);
   return CopyFromOffset (s, OffsetFromSeq(f,o));
 }
+
+uint32_t
+PendingData::RemoveToSeq (const SequenceNumber& seqFront, const SequenceNumber& seqOffset)
+{
+  NS_LOG_FUNCTION (this << seqFront << seqOffset);
+  uint32_t count = OffsetFromSeq (seqFront, seqOffset);
+  NS_ASSERT_MSG (count <= size, "Trying to remove more data than in the buffer"); 
+  if (count == size)
+    {
+      Clear ();
+      return size;
+    }
+  // Remove whole packets, if possible, from the front of the data
+  // Do not perform buffer manipulations within packet; if a whole packet
+  // cannot be removed, leave it alone
+  std::vector<Ptr<Packet> >::iterator endI = data.begin ();
+  uint32_t current = 0;
+  // Any packet whose data has been completely acked can be removed
+  for (std::vector<Ptr<Packet> >::iterator dataI = data.begin (); dataI < data.end (); dataI++)
+    {
+      if (current + (*dataI)->GetSize () > count)
+        {
+          break;
+        }
+      current += (*dataI)->GetSize ();
+      ++endI;
+    }
+  data.erase (data.begin (), endI);
+  size -= current;
+  return current;
+}
+
 }//namepsace ns3

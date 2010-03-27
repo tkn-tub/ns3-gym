@@ -92,6 +92,16 @@ public:
   virtual Ptr<Packet> CopyFromOffset (uint32_t, uint32_t);  // Size, offset, ret packet
   // Copy data, size, offset specified by sequence difference
   virtual Ptr<Packet> CopyFromSeq (uint32_t, const SequenceNumber&, const SequenceNumber&);
+  /**
+   * Permits object to clear any pending data between seqFront and 
+   * seqOffset - 1).  Callers should check the return value to determine
+   * whether any data was removed from the front.
+   *
+   * \param seqFront sequence number to start to try to remove from 
+   * \param seqOffset first sequence number in buffer that should be retained
+   * \return number of bytes from the front that were removed from the buffer
+   */
+  virtual uint32_t RemoveToSeq (const SequenceNumber& seqFront, const SequenceNumber& seqOffset);
   PendingData*   Copy () const;          // Create a copy of this header
   PendingData*   CopyS (uint32_t);         // Copy with new size
   PendingData*   CopySD (uint32_t, uint8_t*); // Copy with new size, new data
