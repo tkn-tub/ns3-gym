@@ -39,8 +39,22 @@ New user-visible features
   b) Distributed simulation for point-to-point networks using the Message 
      Passing Interface (MPI) standard.
     
-  c) Matrix propagation loss model uses a two-dimensional matrix of pathloss indexed 
+  c) Matrix propagation loss model uses a two-dimensional matrix of path loss indexed 
      by source and destination nodes.
+
+  d) Topology read system: Allows quick and easy creation of large topologies by reading 
+     Inet or Orbis files
+
+  e) Gauss-Markov mobility model: Adds 3-d adaptation of Gauss-Markov mobility model which 
+     has both memory and variability
+
+  f) Steady-state random waypoint mobility model: Based on random waypoint mobility (RWM) model for case when 
+     speed, pause and position are uniformly distributed random variables. However, initial values of these 
+     parameters are not from uniform distribution but from stationary distribution of RWM model.
+
+  g) Two-ray ground propagation loss model: Calculates the crossover distance under which Friis is used. 
+     The antenna height is set to the nodes z coordinate, but can be added to using the model parameter 
+     SetHeightAboveZ, which will affect ALL stations
 
 
 API changes from ns-3.7
@@ -51,8 +65,47 @@ Bugs fixed
 ----------
 The following lists many of the bugs that were fixed since ns-3.7, in
 many cases referencing the Bugzilla bug number
+   - bug 184 - GtkConfigStore do not support ConfigureDefault
+   - bug 407 - OLSR is missing HNA support
+   - bug 414 - No ReceiveErrorModel in SimpleNetDevice
+   - bug 602 - WifiRemoteStation lacks information about the access class of outgoing packets
+   - bug 622 - [PATCH] Friendly names for pcap traces
+   - bug 683 - Helper methods for pcap tracing with explicit filenames
+   - bug 706 - Backoff counting when starting NS.
+   - bug 720 - TapBridge creation fails from a script outside the ns3 tree
+   - bug 731 - Send function in point-to-point-net-device fails to check the return value of the Dequeue function
    - bug 747 - Listening TCP socket closes on RST
+   - bug 748 - Cloned TCP socket uses wrong source address
+   - bug 772 - AODV is unable to correctly buffer packets waiting for route reply
+   - bug 777 - AODV ignores specified outgoing interface in RouteOutput()
+   - bug 778 - OLSR ignores specified outgoing interface in RouteOutput()
+   - bug 787 - Addition of Two Ray Ground model to propagation loss model and tests
    - bug 788 - OLSR_NEIGH_HOLD_TIME should be 3 times OLSR_REFRESH_INTERVAL 
+   - bug 789 - [PATCH] Globalrouting externalroutes to use the new GetRootExitDirections()
+   - bug 794 - Ipv4Mask constructor for "/yy"-notation is wrong
+   - bug 796 - TCP bug in ns-3-dev branch : Crash detected during retesting of Chord on ns-3-dev branch
+   - bug 797 - Enhancements to src/core/random-variable.cc/h
+   - bug 804 - null-pointer references in 3.7 internet stack
+   - bug 806 - TCP doesn't work over a CSMA link
+   - bug 809 - Missing Python binding for Ipv4GlobalRouting::GetRoute
+   - bug 810 - In TCP, Socket::GetSockName() does not return the local socket address
+   - bug 812 - Assert when getting socket in RecvReply for AODV
+   - bug 814 - Function logging causing assert in wireless examples
+   - bug 815 - waf shell file descriptor leak
+   - bug 816 - tap-creator deadlock when python bindings enabled
+   - bug 817 - Pareto rng constructors using scale and shape instead of mean and shape
+   - bug 820 - Bad things happen in test.py when logging is enabled
+   - bug 821 - AODV asserts with function logging enabled
+   - bug 828 - PacketSocket::Close does not unregister protocol handler
+   - bug 829 - TCP unbound memory problem (pending data)
+   - bug 834 - Incorrect signature of Ipv4FlowProbe::DropLogger
+   - bug 836 - Delay is incremented over time with BsUplinkSchedulerSimple and BsUplinkSchedulerRtps
+   - bug 838 - ns-3 can't compile on MacOS with 32bit processor
+   - bug 839 - TestSuite wimax-ss-mac-layer crashes on Darwin 9.8.0 Power Macintosh
+   - bug 840 - BS scheduler does not support fragmentation for UGS flows
+   - bug 844 - YansWifiPhy::GetPowerDbm off-by-one problem when calculating Tx power
+   - bug 849 - stray patch files in lwip directory
+   - bug 850 - Ipv4GlobalRouting::LookupGlobal bug
 
 Known issues
 ------------

@@ -52,7 +52,7 @@ us a note on ns-developers mailing list.  </p>
 
 <ul>
 <li><b>Matrix propagation loss model:</b> This radio propagation model uses a two-dimensional matrix
-of pathloss indexed by source and destination nodes.
+of path loss indexed by source and destination nodes.
 
 <li><b>WiMAX net device</b>: The developed WiMAX model attempts to provide an accurate MAC and
 PHY level implementation of the 802.16 specification with the Point-to-Multipoint (PMP) mode and the WirelessMAN-OFDM 
@@ -81,6 +81,21 @@ with distributed simulation.
 simulation, GetSystemId returns zero by non-distributed 
 simulators.  For the distributed simulator, it returns the 
 MPI rank.
+
+<li><b>Enhancements to src/core/random-variable.cc/h:</b> New Zeta random variable generator. The Zeta random 
+distribution is tightly related to the Zipf distribution (already in ns-3.7). See the documentation, 
+especially because sometimes the Zeta distribution is called Zipf and viceversa. Here we conform to the 
+Wikipedia naming convention, i.e., Zipf is bounded while Zeta isn't. 
+
+<li><b>Two-ray ground propagation loss model:</b> Calculates the crossover distance under which Friis is used. The antenna 
+height is set to the nodes z coordinate, but can be added to using the model parameter SetHeightAboveZ, which 
+will affect ALL stations
+
+<li><b>Pareto random variable</b> has two new constructors to specify scale and shape:
+<pre>
+ParetoVariable (std::pair<double, double> params);
+ParetoVariable (std::pair<double, double> params, double b);
+</pre>
 </ul>
 
 <h2>Changes to existing API:</h2>
@@ -169,6 +184,8 @@ upper 32 bits are simply zero.
 - uint32_t Packet::GetUid (void) const;
 + uint64_t Packet::GetUid (void) const;
 </pre>
+
+<li><b>Moved propagation models</b> from src/devices/wifi to src/common
 </ul>
 
 <h2>Changed behavior:</h2>
