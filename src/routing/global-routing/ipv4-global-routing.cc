@@ -128,7 +128,6 @@ Ipv4GlobalRouting::LookupGlobal (Ipv4Address dest, Ptr<NetDevice> oif)
   NS_LOG_FUNCTION_NOARGS ();
   NS_LOG_LOGIC ("Looking for route for destination " << dest);
   Ptr<Ipv4Route> rtentry = 0;
-  Ipv4RoutingTableEntry* route = 0;
   // store all available routes that bring packets to their destination
   typedef std::vector<Ipv4RoutingTableEntry*> RouteVec_t;
   RouteVec_t allRoutes;
@@ -143,7 +142,7 @@ Ipv4GlobalRouting::LookupGlobal (Ipv4Address dest, Ptr<NetDevice> oif)
         {
           if (oif != 0)
             {
-              if (oif != m_ipv4->GetNetDevice(route->GetInterface ()))
+              if (oif != m_ipv4->GetNetDevice((*i)->GetInterface ()))
                 {
                   NS_LOG_LOGIC ("Not on requested interface, skipping");
                   continue;
@@ -167,7 +166,7 @@ Ipv4GlobalRouting::LookupGlobal (Ipv4Address dest, Ptr<NetDevice> oif)
             {
               if (oif != 0)
                 {
-                  if (oif != m_ipv4->GetNetDevice(route->GetInterface ()))
+                  if (oif != m_ipv4->GetNetDevice((*j)->GetInterface ()))
                     {
                       NS_LOG_LOGIC ("Not on requested interface, skipping");
                       continue;
@@ -191,13 +190,12 @@ Ipv4GlobalRouting::LookupGlobal (Ipv4Address dest, Ptr<NetDevice> oif)
               NS_LOG_LOGIC ("Found external route" << *k);
               if (oif != 0)
                 {
-                  if (oif != m_ipv4->GetNetDevice(route->GetInterface ()))
+                  if (oif != m_ipv4->GetNetDevice((*k)->GetInterface ()))
                     {
                       NS_LOG_LOGIC ("Not on requested interface, skipping");
                       continue;
                     }
                 }
-              route = (*k);
               allRoutes.push_back (*k);
               break;
             }
@@ -217,7 +215,7 @@ Ipv4GlobalRouting::LookupGlobal (Ipv4Address dest, Ptr<NetDevice> oif)
         {
           selectIndex = 0;
         }
-      route = allRoutes.at (selectIndex);
+      Ipv4RoutingTableEntry* route = allRoutes.at (selectIndex); 
       // create a Ipv4Route object from the selected routing table entry
       rtentry = Create<Ipv4Route> ();
       rtentry->SetDestination (route->GetDest ());
