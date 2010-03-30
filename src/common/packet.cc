@@ -126,6 +126,12 @@ Packet::Packet ()
   : m_buffer (),
     m_byteTagList (),
     m_packetTagList (),
+    /* The upper 32 bits of the packet id in 
+     * metadata is for the system id. For non-
+     * distributed simulations, this is simply 
+     * zero.  The lower 32 bits are for the 
+     * global UID
+     */
     m_metadata ((uint64_t)Simulator::GetSystemId () << 32 | m_globalUid, 0),
     m_nixVector (0)
 {
@@ -162,6 +168,12 @@ Packet::Packet (uint32_t size)
   : m_buffer (size),
     m_byteTagList (),
     m_packetTagList (),
+    /* The upper 32 bits of the packet id in 
+     * metadata is for the system id. For non-
+     * distributed simulations, this is simply 
+     * zero.  The lower 32 bits are for the 
+     * global UID
+     */
     m_metadata ((uint64_t)Simulator::GetSystemId () << 32 | m_globalUid, size),
     m_nixVector (0)
 {
@@ -182,6 +194,12 @@ Packet::Packet (uint8_t const*buffer, uint32_t size)
   : m_buffer (),
     m_byteTagList (),
     m_packetTagList (),
+    /* The upper 32 bits of the packet id in 
+     * metadata is for the system id. For non-
+     * distributed simulations, this is simply 
+     * zero.  The lower 32 bits are for the 
+     * global UID
+     */
     m_metadata ((uint64_t)Simulator::GetSystemId () << 32 | m_globalUid, size),
     m_nixVector (0)
 {
