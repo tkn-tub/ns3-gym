@@ -361,7 +361,7 @@ public:
    * @brief Enable pcap output the indicated net device using a device previously
    * named using the ns-3 object name service.
    *
-   * @param filename filename prefix to use for pcap files.
+   * @param prefix filename prefix to use for pcap files.
    * @param ndName The name of the net device in which you want to enable tracing.
    * @param promiscuous If true capture all possible packets available at the device.
    * @param explicitFilename Treat the prefix as an explicit filename if true
@@ -393,6 +393,8 @@ public:
    * a previously created node) and associated device-id.
    *
    * @param prefix Filename prefix to use for pcap files.
+   * @param nodeid the node id
+   * @param deviceid the device id
    * @param promiscuous If true capture all possible packets available at the device.
    */
   void EnablePcap (std::string prefix, uint32_t nodeid, uint32_t deviceid, bool promiscuous = false);
@@ -475,7 +477,7 @@ public:
    * @brief Enable ascii trace output the indicated net device using a device 
    * previously named using the ns-3 object name service.
    *
-   * @param filename filename prefix to use for ascii files.
+   * @param prefix filename prefix to use for ascii files.
    * @param ndName The name of the net device in which you want to enable tracing.
    * @param explicitFilename Treat the prefix as an explicit filename if true
    */
@@ -648,7 +650,7 @@ public:
    * @brief Enable pcap output the indicated Ipv4 and interface pair using a
    * Ptr<Ipv4> previously named using the ns-3 object name service.
    *
-   * @param filename filename prefix to use for pcap files.
+   * @param prefix filename prefix to use for pcap files.
    * @param ipv4Name Name of the Ptr<Ipv4> on which you want to enable tracing.
    * @param interface Interface on ipv4 on which you want to enable tracing.
    * @param explicitFilename Treat the prefix as an explicit filename if true.
@@ -679,10 +681,8 @@ public:
    * determines the Ipv4.
    *
    * @param prefix Filename prefix to use for pcap files.
-   * @param nodeid The node identifier/number of the node on which to enable
-   *               ascii tracing
-   * @param deviceid The device identifier/index of the device on which to enable
-   *               ascii tracing
+   * @param nodeid The node identifier/number of the node on which to enable tracing.
+   * @param interface Interface on ipv4 on which you want to enable tracing.
    * @param explicitFilename Treat the prefix as an explicit filename if true
    */
   void EnablePcapIpv4 (std::string prefix, uint32_t nodeid, uint32_t interface, bool explicitFilename);
@@ -769,7 +769,7 @@ public:
    * @brief Enable ascii trace output the indicated Ipv4 and interface pair
    * using an Ipv4 previously named using the ns-3 object name service.
    *
-   * @param filename filename prefix to use for ascii files.
+   * @param prefix filename prefix to use for ascii files.
    * @param ipv4Name The name of the Ipv4 on which you want to enable tracing.
    * @param interface The interface on which you want to enable tracing.
    * @param explicitFilename Treat the prefix as an explicit filename if true.
@@ -853,8 +853,8 @@ public:
    * @param prefix Filename prefix to use when creating ascii trace files
    * @param nodeid The node identifier/number of the node on which to enable
    *               ascii tracing
-   * @param interface The device identifier/index of the device on which to enable
-   *               ascii tracing
+   * @param deviceid The device identifier/index of the device on which to enable
+   *                 ascii tracing
    * @param explicitFilename Treat the prefix as an explicit filename if true
    */
   void EnableAsciiIpv4 (std::string prefix, uint32_t nodeid, uint32_t deviceid, bool explicitFilename);
@@ -958,7 +958,7 @@ public:
    * @brief Enable pcap output the indicated Ipv6 and interface pair using a
    * Ptr<Ipv6> previously named using the ns-3 object name service.
    *
-   * @param filename filename prefix to use for pcap files.
+   * @param prefix filename prefix to use for pcap files.
    * @param ipv6Name Name of the Ptr<Ipv6> on which you want to enable tracing.
    * @param interface Interface on ipv6 on which you want to enable tracing.
    * @param explicitFilename Treat the prefix as an explicit filename if true.
@@ -989,6 +989,8 @@ public:
    * determines the Ipv6.
    *
    * @param prefix Filename prefix to use for pcap files.
+   * @param nodeid The node identifier/number of the node on which to enable tracing.
+   * @param interface Interface on ipv6 on which you want to enable tracing.
    * @param explicitFilename Treat the prefix as an explicit filename if true
    */
   void EnablePcapIpv6 (std::string prefix, uint32_t nodeid, uint32_t interface, bool explicitFilename);
@@ -1074,7 +1076,7 @@ public:
    * @brief Enable ascii trace output the indicated Ipv6 and interface pair
    * using an Ipv6 previously named using the ns-3 object name service.
    *
-   * @param filename filename prefix to use for ascii files.
+   * @param prefix filename prefix to use for ascii files.
    * @param ipv6Name The name of the Ipv6 on which you want to enable tracing.
    * @param interface The interface on which you want to enable tracing.
    * @param explicitFilename Treat the prefix as an explicit filename if true.

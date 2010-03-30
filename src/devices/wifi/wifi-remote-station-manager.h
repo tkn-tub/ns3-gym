@@ -142,6 +142,8 @@ public:
   void RecordDisassociated (Mac48Address address);
 
   /**
+   * \param address remote address
+   * \param header MAC header
    * \param packet the packet to queue
    * \param fullPacketSize the size of the packet after its 802.11 MAC header has been added.
    *
@@ -153,6 +155,8 @@ public:
   void PrepareForQueue (Mac48Address address, const WifiMacHeader *header,
                         Ptr<const Packet> packet, uint32_t fullPacketSize);
   /**
+   * \param address remote address
+   * \param header MAC header
    * \param packet the packet to send
    * \param fullPacketSize the size of the packet after its 802.11 MAC header has been added.
    * \returns the transmission mode to use to send this packet
@@ -160,6 +164,8 @@ public:
   WifiMode GetDataMode (Mac48Address address, const WifiMacHeader *header,
                         Ptr<const Packet> packet, uint32_t fullPacketSize);
   /**
+   * \param address remote address
+   * \param header MAC header
    * \param packet the packet to send
    * \returns the transmission mode to use to send the RTS prior to the
    *          transmission of the data packet itself.
@@ -200,6 +206,8 @@ public:
   void ReportFinalDataFailed (Mac48Address address, const WifiMacHeader *header);
 
   /**
+   * \param address remote address
+   * \param header MAC header
    * \param rxSnr the snr of the packet received
    * \param txMode the transmission mode used for the packet received.
    *
@@ -209,6 +217,8 @@ public:
                    double rxSnr, WifiMode txMode);
 
   /**
+   * \param address remote address
+   * \param header MAC header
    * \param packet the packet to send
    * \returns true if we want to use an RTS/CTS handshake for this
    *          packet before sending it, false otherwise.
@@ -216,6 +226,8 @@ public:
   bool NeedRts (Mac48Address address, const WifiMacHeader *header,
                 Ptr<const Packet> packet);
   /**
+   * \param address remote address
+   * \param header MAC header
    * \param packet the packet to send
    * \returns true if we want to restart a failed RTS/CTS 
    *          handshake, false otherwise.
@@ -223,6 +235,8 @@ public:
   bool NeedRtsRetransmission (Mac48Address address, const WifiMacHeader *header,
                               Ptr<const Packet> packet);
   /**
+   * \param address remote address
+   * \param header MAC header
    * \param packet the packet to send
    * \returns true if we want to resend a packet 
    *          after a failed transmission attempt, false otherwise.
@@ -231,12 +245,16 @@ public:
                                Ptr<const Packet> packet);
 
   /**
+   * \param address remote address
+   * \param header MAC header
    * \param packet the packet to send
    * \returns true if this packet should be fragmented, false otherwise.
    */
   bool NeedFragmentation (Mac48Address address, const WifiMacHeader *header,
                                   Ptr<const Packet> packet);
   /**
+   * \param address remote address
+   * \param header MAC header
    * \param packet the packet to send
    * \param fragmentNumber the fragment index of the next fragment to send (starts at zero).
    * \returns the size of the corresponding fragment.
@@ -244,6 +262,8 @@ public:
   uint32_t GetFragmentSize (Mac48Address address, const WifiMacHeader *header,
                             Ptr<const Packet> packet, uint32_t fragmentNumber);
   /**
+   * \param address remote address
+   * \param header MAC header
    * \param packet the packet to send
    * \param fragmentNumber the fragment index of the next fragment to send (starts at zero).
    * \returns the offset within the original packet where this fragment starts.
@@ -251,6 +271,8 @@ public:
   uint32_t GetFragmentOffset (Mac48Address address, const WifiMacHeader *header,
                               Ptr<const Packet> packet, uint32_t fragmentNumber);
   /**
+   * \param address remote address
+   * \param header MAC header
    * \param packet the packet to send
    * \param fragmentNumber the fragment index of the next fragment to send (starts at zero).
    * \returns true if this is the last fragment, false otherwise.
@@ -259,12 +281,14 @@ public:
                        Ptr<const Packet> packet, uint32_t fragmentNumber);
 
   /**
+   * \param address remote address
    * \param rtsMode the transmission mode used to send an RTS we just received
    * \returns the transmission mode to use for the CTS to complete the RTS/CTS
    *          handshake.
    */
   WifiMode GetCtsMode (Mac48Address address, WifiMode rtsMode);
   /**
+   * \param address
    * \param dataMode the transmission mode used to send an ACK we just received
    * \returns the transmission mode to use for the ACK to complete the data/ACK
    *          handshake.
