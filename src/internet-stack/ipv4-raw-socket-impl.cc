@@ -184,10 +184,14 @@ Ipv4RawSocketImpl::SendTo (Ptr<Packet> p, uint32_t flags,
         {
           NS_LOG_LOGIC ("Route exists");
           ipv4->Send (p, route->GetSource (), dst, m_protocol, route);
+          NotifyDataSent (p->GetSize ());
+          NotifySend (GetTxAvailable ());
+          return p->GetSize();
         }
       else
         {
           NS_LOG_DEBUG ("dropped because no outgoing route.");
+          return -1;
         }
     }
   return 0;

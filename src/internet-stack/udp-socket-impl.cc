@@ -414,6 +414,9 @@ UdpSocketImpl::DoSendTo (Ptr<Packet> p, Ipv4Address dest, uint16_t port)
     {
       m_udp->Send(p->Copy (), m_endPoint->GetLocalAddress(), dest,
                   m_endPoint->GetLocalPort(), port, 0);
+      NotifyDataSent (p->GetSize ());
+      NotifySend (GetTxAvailable ());
+      return p->GetSize();
     }
   else if (ipv4->GetRoutingProtocol () != 0)
     {
