@@ -221,6 +221,8 @@ Ipv4RawSocketImpl::RecvFrom (uint32_t maxSize, uint32_t flags,
     }
   struct Data data = m_recv.front ();
   m_recv.pop_front ();
+  InetSocketAddress inet = InetSocketAddress (data.fromIp, data.fromProtocol);
+  fromAddress = inet;
   if (data.packet->GetSize () > maxSize)
     {
       Ptr<Packet> first = data.packet->CreateFragment (0, maxSize);
@@ -228,8 +230,6 @@ Ipv4RawSocketImpl::RecvFrom (uint32_t maxSize, uint32_t flags,
       m_recv.push_front (data);
       return first;
     }
-  InetSocketAddress inet = InetSocketAddress (data.fromIp, data.fromProtocol);
-  fromAddress = inet;
   return data.packet;
 }
 
