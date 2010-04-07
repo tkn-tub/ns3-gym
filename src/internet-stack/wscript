@@ -142,6 +142,7 @@ def build(bld):
         'arp-cache.h',
         'icmpv6-l4-protocol.h',
         'ipv6-l4-protocol.h',
+        'ipv6-interface.h',
         'ndisc-cache.h',
 	'loopback-net-device.h'
        ]
