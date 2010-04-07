@@ -106,6 +106,8 @@ many cases referencing the Bugzilla bug number
    - bug 844 - YansWifiPhy::GetPowerDbm off-by-one problem when calculating Tx power
    - bug 849 - stray patch files in lwip directory
    - bug 850 - Ipv4GlobalRouting::LookupGlobal bug
+   - bug 864 - Invalid return value in UdpSocketImpl::Send and Ipv4RawSocketImpl::Send
+   - bug 865 - Ipv4RawSocketImpl::RecvFrom does not return from address all the time.
 
 Known issues
 ------------
