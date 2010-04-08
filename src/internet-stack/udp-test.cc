@@ -256,6 +256,16 @@ UdpSocketImplTest::DoRun (void)
   m_receivedPacket = 0;
   m_receivedPacket2 = 0;
 
+  // Simple Link-local multicast test
+
+  txSocket->BindToNetDevice (txDev1);
+  SendData (txSocket, "224.0.0.9");
+  NS_TEST_EXPECT_MSG_EQ (m_receivedPacket->GetSize (), 0, "first socket should not receive it (it is bound specifically to the second interface's address");
+  NS_TEST_EXPECT_MSG_EQ (m_receivedPacket2->GetSize (), 123, "recv2: 224.0.0.9");
+
+  m_receivedPacket->RemoveAllByteTags ();
+  m_receivedPacket2->RemoveAllByteTags ();
+
   Simulator::Destroy ();
 
   return GetErrorStatus ();

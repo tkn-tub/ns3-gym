@@ -222,6 +222,20 @@ Ipv4StaticRouting::LookupStatic (Ipv4Address dest, Ptr<NetDevice> oif)
   Ptr<Ipv4Route> rtentry = 0;
   uint16_t longest_mask = 0;
   uint32_t shortest_metric = 0xffffffff;
+  /* when sending on local multicast, there have to be interface specified */
+  if (dest.IsLocalMulticast ())
+    {
+      NS_ASSERT_MSG (oif, "Try to send on link-local multicast address, and no interface index is given!");
+
+      rtentry = Create<Ipv4Route> ();
+      rtentry->SetDestination (dest);
+      rtentry->SetGateway (Ipv4Address::GetZero ());
+      rtentry->SetOutputDevice (oif);
+      rtentry->SetSource (m_ipv4->GetAddress (oif->GetIfIndex (), 0).GetLocal ());
+      return rtentry;
+    }
+
+
   for (NetworkRoutesI i = m_networkRoutes.begin (); 
        i != m_networkRoutes.end (); 
        i++) 

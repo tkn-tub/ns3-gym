@@ -240,6 +240,13 @@ Ipv4Address::IsMulticast (void) const
   return (m_address >= 0xe0000000 && m_address <= 0xefffffff);
 }
 
+bool 
+Ipv4Address::IsLocalMulticast (void) const
+{
+  // Link-Local multicast address is 224.0.0.0/24
+  return (m_address & 0xffffff00) == 0xe0000000;
+}
+
 void
 Ipv4Address::Serialize (uint8_t buf[4]) const
 {

@@ -112,6 +112,10 @@ public:
     */
   bool IsMulticast (void) const;
   /**
+    * \return true only if address is in local multicast address scope, 224.0.0.0/24
+    */
+  bool IsLocalMulticast (void) const;
+  /**
    * \brief Combine this address with a network mask
    *
    * This method returns an IPv4 address that is this address combined

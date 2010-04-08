@@ -539,8 +539,8 @@ Ipv4L3Protocol::Send (Ptr<Packet> packet,
   // 4) packet is not broadcast, and is passed in with a route entry but route->GetGateway is not set (e.g., on-demand)
   // 5) packet is not broadcast, and route is NULL (e.g., a raw socket call, or ICMP)
   
-  // 1) packet is destined to limited broadcast address
-  if (destination.IsBroadcast ()) 
+  // 1) packet is destined to limited broadcast address or link-local multicast address
+  if (destination.IsBroadcast () || destination.IsLocalMulticast ())
     {
       NS_LOG_LOGIC ("Ipv4L3Protocol::Send case 1:  limited broadcast");
       ipHeader = BuildHeader (source, destination, protocol, packet->GetSize (), ttl, mayFragment);
