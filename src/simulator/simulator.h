@@ -102,11 +102,11 @@ public:
    */
   static bool IsFinished (void);
   /**
-   * If Simulator::isFinished returns true, the behavior of this
+   * If Simulator::IsFinished returns true, the behavior of this
    * method is undefined. Otherwise, it returns the microsecond-based
    * time of the next event expected to be scheduled.
    */
-  static Time Next (void);
+  static Time Next (void) NS_DEPRECATED;
 
   /**
    * Run the simulation until one of:
@@ -121,7 +121,7 @@ public:
   /**
    * Process only the next simulation event, then return immediately.
    */
-  static void RunOneEvent (void);
+  static void RunOneEvent (void) NS_DEPRECATED;
 
   /**
    * If an event invokes this method, it will be the last
@@ -751,7 +751,7 @@ public:
    * This method will be typically used by language bindings
    * to delegate events to their own subclass of the EventImpl base class.
    */
-  static void ScheduleWithContext (uint32_t context, Time const &time, const Ptr<EventImpl> &event);
+  static void ScheduleWithContext (uint32_t context, const Time &time, EventImpl *event);
 
   /**
    * \param event the event to schedule
@@ -781,7 +781,6 @@ private:
   ~Simulator ();
 
   static EventId DoSchedule (Time const &time, EventImpl *event);  
-  static void DoScheduleWithContext (uint32_t context, Time const &time, EventImpl *event);
   static EventId DoScheduleNow (EventImpl *event);
   static EventId DoScheduleDestroy (EventImpl *event);
 };
@@ -886,7 +885,7 @@ EventId Simulator::Schedule (Time const &time, void (*f) (U1,U2,U3,U4,U5), T1 a1
 template <typename MEM, typename OBJ>
 void Simulator::ScheduleWithContext (uint32_t context, Time const &time, MEM mem_ptr, OBJ obj)
 {
-  DoScheduleWithContext (context, time, MakeEvent (mem_ptr, obj));
+  ScheduleWithContext (context, time, MakeEvent (mem_ptr, obj));
 }
 
 
@@ -894,28 +893,28 @@ template <typename MEM, typename OBJ,
           typename T1>
 void Simulator::ScheduleWithContext (uint32_t context, Time const &time, MEM mem_ptr, OBJ obj, T1 a1)
 {
-  return DoScheduleWithContext (context, time, MakeEvent (mem_ptr, obj, a1));
+  return ScheduleWithContext (context, time, MakeEvent (mem_ptr, obj, a1));
 }
 
 template <typename MEM, typename OBJ,
           typename T1, typename T2>
 void Simulator::ScheduleWithContext (uint32_t context, Time const &time, MEM mem_ptr, OBJ obj, T1 a1, T2 a2)
 {
-  return DoScheduleWithContext (context, time, MakeEvent (mem_ptr, obj, a1, a2));
+  return ScheduleWithContext (context, time, MakeEvent (mem_ptr, obj, a1, a2));
 }
 
 template <typename MEM, typename OBJ,
           typename T1, typename T2, typename T3>
 void Simulator::ScheduleWithContext (uint32_t context, Time const &time, MEM mem_ptr, OBJ obj, T1 a1, T2 a2, T3 a3)
 {
-  return DoScheduleWithContext (context, time, MakeEvent (mem_ptr, obj, a1, a2, a3));
+  return ScheduleWithContext (context, time, MakeEvent (mem_ptr, obj, a1, a2, a3));
 }
 
 template <typename MEM, typename OBJ,
           typename T1, typename T2, typename T3, typename T4>
 void Simulator::ScheduleWithContext (uint32_t context, Time const &time, MEM mem_ptr, OBJ obj, T1 a1, T2 a2, T3 a3, T4 a4)
 {
-  return DoScheduleWithContext (context, time, MakeEvent (mem_ptr, obj, a1, a2, a3, a4));
+  return ScheduleWithContext (context, time, MakeEvent (mem_ptr, obj, a1, a2, a3, a4));
 }
 
 template <typename MEM, typename OBJ,
@@ -923,41 +922,41 @@ template <typename MEM, typename OBJ,
 void Simulator::ScheduleWithContext (uint32_t context, Time const &time, MEM mem_ptr, OBJ obj,
                              T1 a1, T2 a2, T3 a3, T4 a4, T5 a5)
 {
-  return DoScheduleWithContext (context, time, MakeEvent (mem_ptr, obj, a1, a2, a3, a4, a5));
+  return ScheduleWithContext (context, time, MakeEvent (mem_ptr, obj, a1, a2, a3, a4, a5));
 }
 
 template <typename U1, typename T1>
 void Simulator::ScheduleWithContext (uint32_t context, Time const &time, void (*f) (U1), T1 a1)
 {
-  return DoScheduleWithContext (context, time, MakeEvent (f, a1));
+  return ScheduleWithContext (context, time, MakeEvent (f, a1));
 }
 
 template <typename U1, typename U2,
           typename T1, typename T2>
 void Simulator::ScheduleWithContext (uint32_t context, Time const &time, void (*f) (U1,U2), T1 a1, T2 a2)
 {
-  return DoScheduleWithContext (context, time, MakeEvent (f, a1, a2));
+  return ScheduleWithContext (context, time, MakeEvent (f, a1, a2));
 }
 
 template <typename U1, typename U2, typename U3,
           typename T1, typename T2, typename T3>
 void Simulator::ScheduleWithContext (uint32_t context, Time const &time, void (*f) (U1,U2,U3), T1 a1, T2 a2, T3 a3)
 {
-  return DoScheduleWithContext (context, time, MakeEvent (f, a1, a2, a3));
+  return ScheduleWithContext (context, time, MakeEvent (f, a1, a2, a3));
 }
 
 template <typename U1, typename U2, typename U3, typename U4,
           typename T1, typename T2, typename T3, typename T4>
 void Simulator::ScheduleWithContext (uint32_t context, Time const &time, void (*f) (U1,U2,U3,U4), T1 a1, T2 a2, T3 a3, T4 a4)
 {
-  return DoScheduleWithContext (context, time, MakeEvent (f, a1, a2, a3, a4));
+  return ScheduleWithContext (context, time, MakeEvent (f, a1, a2, a3, a4));
 }
 
 template <typename U1, typename U2, typename U3, typename U4, typename U5,
           typename T1, typename T2, typename T3, typename T4, typename T5>
 void Simulator::ScheduleWithContext (uint32_t context, Time const &time, void (*f) (U1,U2,U3,U4,U5), T1 a1, T2 a2, T3 a3, T4 a4, T5 a5)
 {
-  return DoScheduleWithContext (context, time, MakeEvent (f, a1, a2, a3, a4, a5));
+  return ScheduleWithContext (context, time, MakeEvent (f, a1, a2, a3, a4, a5));
 }
 
 
