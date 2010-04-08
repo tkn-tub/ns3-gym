@@ -120,9 +120,8 @@ void
 Ipv4RawSocketImplTest::DoSendData (Ptr<Socket> socket, std::string to)
 {
   Address realTo = InetSocketAddress (Ipv4Address(to.c_str()), 0);
-  socket->SendTo (Create<Packet> (123), 0, realTo);
-  // NS_TEST_EXPECT_MSG_NE (socket->SendTo (Create<Packet> (123), 0, realTo),
-  //                        -1, to);
+  NS_TEST_EXPECT_MSG_EQ (socket->SendTo (Create<Packet> (123), 0, realTo),
+                         123, to);
 }
 
 void
@@ -205,7 +204,7 @@ Ipv4RawSocketImplTest::DoRun (void)
   // Create the IPv4 Raw sockets
   Ptr<SocketFactory> rxSocketFactory = rxNode->GetObject<Ipv4RawSocketFactory> ();
   Ptr<Socket> rxSocket = rxSocketFactory->CreateSocket ();
-  NS_TEST_EXPECT_MSG_EQ (rxSocket->Bind (InetSocketAddress (Ipv4Address ("0.0.0.0.0"), 0)), 0, "trivial");
+  NS_TEST_EXPECT_MSG_EQ (rxSocket->Bind (InetSocketAddress (Ipv4Address ("0.0.0.0"), 0)), 0, "trivial");
   rxSocket->SetRecvCallback (MakeCallback (&Ipv4RawSocketImplTest::ReceivePkt, this));
 
   Ptr<Socket> rxSocket2 = rxSocketFactory->CreateSocket ();
@@ -230,7 +229,7 @@ Ipv4RawSocketImplTest::DoRun (void)
 
   SendData (txSocket, "255.255.255.255");
   NS_TEST_EXPECT_MSG_EQ (m_receivedPacket->GetSize (), 143, "recv: 255.255.255.255");
-  NS_TEST_EXPECT_MSG_EQ (m_receivedPacket2->GetSize (), 143, "second socket should not receive it (it is bound specifically to the second interface's address");
+  NS_TEST_EXPECT_MSG_EQ (m_receivedPacket2->GetSize (), 0, "second socket should not receive it (it is bound specifically to the second interface's address");
 
   m_receivedPacket->RemoveAllByteTags ();
   m_receivedPacket2->RemoveAllByteTags ();
@@ -240,9 +239,7 @@ Ipv4RawSocketImplTest::DoRun (void)
 
   txSocket->Bind (InetSocketAddress (Ipv4Address ("10.0.0.2"), 0));
   SendData (txSocket, "224.0.0.9");
-#if 0
   NS_TEST_EXPECT_MSG_EQ (m_receivedPacket->GetSize (), 143, "recv: 224.0.0.9");
-#endif
   NS_TEST_EXPECT_MSG_EQ (m_receivedPacket2->GetSize (), 0, "second socket should not receive it (it is bound specifically to the second interface's address");
 
   m_receivedPacket->RemoveAllByteTags ();

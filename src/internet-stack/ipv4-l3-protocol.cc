@@ -594,7 +594,7 @@ Ipv4L3Protocol::Send (Ptr<Packet> packet,
       ipHeader = BuildHeader (source, destination, protocol, packet->GetSize (), ttl, mayFragment);
       int32_t interface = GetInterfaceForDevice (route->GetOutputDevice ());
       m_sendOutgoingTrace (ipHeader, packet, interface);
-      SendRealOut (route, packet, ipHeader);
+      SendRealOut (route, packet->Copy (), ipHeader);
       return; 
     } 
   // 4) packet is not broadcast, and is passed in with a route entry but route->GetGateway is not set (e.g., on-demand)
@@ -624,7 +624,7 @@ Ipv4L3Protocol::Send (Ptr<Packet> packet,
     {
       int32_t interface = GetInterfaceForDevice (newRoute->GetOutputDevice ());
       m_sendOutgoingTrace (ipHeader, packet, interface);
-      SendRealOut (newRoute, packet, ipHeader);
+      SendRealOut (newRoute, packet->Copy (), ipHeader);
     }
   else
     {

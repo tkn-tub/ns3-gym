@@ -110,6 +110,7 @@ many cases referencing the Bugzilla bug number
    - bug 865 - Ipv4RawSocketImpl::RecvFrom does not return from address all the time.
    - bug 859 - Output interface estimation for the source address bound socket in IPv4 Raw socket
    - bug 857 - Link-Local Multicast handle in Ipv4 Output processing 
+   - bug 868 - invalid packet size after Ipv4L3Protocol::Send
 
 Known issues
 ------------
