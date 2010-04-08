@@ -178,6 +178,14 @@ Ipv4RawSocketImpl::SendTo (Ptr<Packet> p, uint32_t flags,
       SocketErrno errno_ = ERROR_NOTERROR;//do not use errno as it is the standard C last error number 
       Ptr<Ipv4Route> route;
       Ptr<NetDevice> oif = m_boundnetdevice; //specify non-zero if bound to a source address
+      if (!oif && m_src != Ipv4Address::GetAny ())
+        {
+          int32_t index = ipv4->GetInterfaceForAddress (m_src);
+          NS_ASSERT (index >= 0);
+          oif = ipv4->GetNetDevice (index);
+          NS_LOG_LOGIC ("Set index " << oif << "from source " << m_src);
+        }
+
       // TBD-- we could cache the route and just check its validity
       route = ipv4->GetRoutingProtocol ()->RouteOutput (p, header, oif, errno_);
       if (route != 0)
