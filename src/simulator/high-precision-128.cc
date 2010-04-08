@@ -221,25 +221,48 @@ HighPrecision::Div (HighPrecision const &o)
   HP128INC (m_ndivs++);
   EnsureSlow ();
   const_cast<HighPrecision &> (o).EnsureSlow ();
-  cairo_quorem128_t qr;
-  qr = _cairo_int128_divrem (m_slowValue, o.m_slowValue);
-  m_slowValue = _cairo_int128_lsl (qr.quo, 64);
+
+  cairo_int128_t result = Div128 (m_slowValue, o.m_slowValue);
+  m_slowValue = result;
+  return false;
+}
+
+cairo_int128_t
+HighPrecision::Div128 (cairo_int128_t sa, cairo_int128_t sb)
+{
+  bool negResult, negA, negB;
+  // take the sign of the operands
+  negA = _cairo_int128_negative (sa);
+  negB = _cairo_int128_negative (sb);
+  // the result is negative only if one of the operand is negative
+  negResult = (negA && !negB) || (!negA && negB);
+  // now take the absolute part to make sure that the resulting operands are positive
+  cairo_uint128_t a, b;
+  a = _cairo_int128_to_uint128 (sa);
+  b = _cairo_int128_to_uint128 (sb);
+  a = negA ? _cairo_uint128_negate (a):a;
+  b = negB ? _cairo_uint128_negate (b):b;
+
+  cairo_uquorem128_t qr = _cairo_uint128_divrem (a, b);
+  cairo_uint128_t result = _cairo_uint128_lsl (qr.quo, 64);
   // Now, manage the remainder
-  cairo_int128_t div = o.m_slowValue;
-  cairo_int128_t tmp;
-  tmp = _cairo_int128_rsa (qr.rem, 64);
-  cairo_int128_t zero = _cairo_int64_to_int128 (0);
-  if (_cairo_int128_eq (tmp, zero))
+  cairo_uint128_t tmp = _cairo_uint128_rsl (qr.rem, 64);
+  cairo_uint128_t zero = _cairo_uint64_to_uint128 (0);
+  cairo_uint128_t rem, div;
+  if (_cairo_uint128_eq (tmp, zero))
     {
-      qr.rem = _cairo_int128_lsl (qr.rem, 64);
+      rem = _cairo_uint128_lsl (qr.rem, 64);
+      div = b;
     }
   else
     {
-      div = _cairo_int128_rsa (div, 64);
+      rem = qr.rem;
+      div = _cairo_uint128_rsl (b, 64);
     }
-  qr = _cairo_int128_divrem (qr.rem, div);
-  m_slowValue = _cairo_int128_add (m_slowValue, qr.quo);
-  return false;
+  qr = _cairo_uint128_divrem (rem, div);
+  result = _cairo_uint128_add (result, qr.quo);
+  result = negResult ? _cairo_uint128_negate (result):result;
+  return _cairo_uint128_to_int128 (result);
 }
 int 
 HighPrecision::SlowCompare (HighPrecision const &o) const
@@ -428,6 +451,37 @@ Hp128Bug455TestCase::DoRun (void)
 }
 
 
+class Hp128Bug863TestCase : public TestCase
+{
+public:
+  Hp128Bug863TestCase();
+  virtual bool DoRun (void);
+};
+
+Hp128Bug863TestCase::Hp128Bug863TestCase()
+  : TestCase("Test case for bug 863")
+{}
+bool 
+Hp128Bug863TestCase::DoRun (void)
+{
+  HighPrecision a = HighPrecision (0.9);
+  a.Div (HighPrecision (1));
+  NS_TEST_ASSERT_MSG_EQ (a.GetDouble (), 0.9, "The original testcase");
+  a = HighPrecision (0.5);
+  a.Div(HighPrecision (0.5));
+  NS_TEST_ASSERT_MSG_EQ (a.GetDouble (), 1.0, "Simple test for division");
+  a = HighPrecision (-0.5);
+  a.Div(HighPrecision (0.5));
+  NS_TEST_ASSERT_MSG_EQ (a.GetDouble (), -1.0, "first argument negative");
+  a = HighPrecision (0.5);
+  a.Div(HighPrecision (-0.5));
+  NS_TEST_ASSERT_MSG_EQ (a.GetDouble (), -1.0, "second argument negative");
+  a = HighPrecision (-0.5);
+  a.Div(HighPrecision (-0.5));
+  NS_TEST_ASSERT_MSG_EQ (a.GetDouble (), 1.0, "both arguments negative");
+
+  return false;
+}
 
 static class HighPrecision128TestSuite : public TestSuite
 {
@@ -437,6 +491,7 @@ public:
   {
     AddTestCase (new Hp128ArithmeticTestCase());
     AddTestCase (new Hp128Bug455TestCase());
+    AddTestCase (new Hp128Bug863TestCase());
   }
 } g_highPrecision128TestSuite;
 

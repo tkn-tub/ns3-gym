@@ -106,6 +106,7 @@ private:
   bool SlowMul (HighPrecision const &o);
   int SlowCompare (HighPrecision const &o) const;
   cairo_uint128_t  Mul128(cairo_uint128_t , cairo_uint128_t );
+  cairo_int128_t Div128 (cairo_int128_t sa, cairo_int128_t sb);
   inline void EnsureSlow (void);
 
   static const double MAX_64;

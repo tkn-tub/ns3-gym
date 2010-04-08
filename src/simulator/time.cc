@@ -683,6 +683,24 @@ ConversionTestCase::DoRun (void)
 }
 #endif
 
+class Bug863TestCase : public TestCase
+{
+public:
+  Bug863TestCase ();
+  virtual bool DoRun (void);
+};
+
+Bug863TestCase::Bug863TestCase ()
+  : TestCase ("Bug 863")
+{}
+
+bool Bug863TestCase::DoRun (void)
+{
+  Scalar result = Scalar (0.9) / Scalar (1.0);
+  NS_TEST_ASSERT_MSG_EQ ((result == Scalar (0.9)), true, "Invalid arithmetic result");
+  return false;
+}
+
 static class TimeTestSuite : public TestSuite
 {
 public:
@@ -693,6 +711,7 @@ public:
     AddTestCase(new OperationsTimeTestCase());
     AddTestCase(new TimeStepTestCase());
     AddTestCase(new GlobalPrecisionTestCase());
+    AddTestCase (new Bug863TestCase ());
     //AddTestCase(new ConversionTestCase());
   }
 } g_timeTestSuite;
