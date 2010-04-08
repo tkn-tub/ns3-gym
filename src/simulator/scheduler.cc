@@ -23,15 +23,16 @@
 
 namespace ns3 {
 
-Scheduler::~Scheduler () 
-{}
+Scheduler::~Scheduler ()
+{
+}
 
-TypeId 
+TypeId
 Scheduler::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::Scheduler")
     .SetParent<Object> ()
-    ;
+  ;
   return tid;
 }
 

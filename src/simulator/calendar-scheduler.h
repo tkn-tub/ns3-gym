@@ -44,7 +44,7 @@ class EventImpl;
  * slightly tweak the resizing heuristics to obtain a better distribution of events
  * across buckets.
  */
-class CalendarScheduler : public Scheduler 
+class CalendarScheduler : public Scheduler
 {
 public:
   static TypeId GetTypeId (void);
@@ -63,7 +63,7 @@ private:
   void ResizeDown (void);
   void Resize (uint32_t newSize);
   uint32_t CalculateNewWidth (void);
-  void Init (uint32_t nBuckets, 
+  void Init (uint32_t nBuckets,
              uint64_t width,
              uint64_t startPrio);
   inline uint32_t Hash (uint64_t key) const;

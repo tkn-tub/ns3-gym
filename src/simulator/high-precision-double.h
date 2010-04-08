@@ -31,13 +31,13 @@ namespace ns3 {
  * So, it is a nice shortcut but in no way a complete solution.
  */
 
-class HighPrecision 
+class HighPrecision
 {
 public:
   HighPrecision ();
   HighPrecision (int64_t value, bool dummy);
   HighPrecision (double value);
-  
+
   int64_t GetInteger (void) const;
   double GetDouble (void) const;
   bool Add (HighPrecision const &o);

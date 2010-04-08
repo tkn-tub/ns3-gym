@@ -32,10 +32,10 @@ namespace ns3 {
  * \ingroup scheduler
  * \brief a std::map event scheduler
  *
- * This class implements the an event scheduler using an std::map 
+ * This class implements the an event scheduler using an std::map
  * data structure.
  */
-class MapScheduler : public Scheduler 
+class MapScheduler : public Scheduler
 {
 public:
   static TypeId GetTypeId (void);
@@ -49,7 +49,6 @@ public:
   virtual Event RemoveNext (void);
   virtual void Remove (const Event &ev);
 private:
-
   typedef std::map<Scheduler::EventKey, EventImpl*> EventMap;
   typedef std::map<Scheduler::EventKey, EventImpl*>::iterator EventMapI;
   typedef std::map<Scheduler::EventKey, EventImpl*>::const_iterator EventMapCI;

@@ -27,15 +27,18 @@ namespace ns3 {
 
 HighPrecision::HighPrecision ()
   : m_value (0.0)
-{}
+{
+}
 
 HighPrecision::HighPrecision (int64_t value, bool dummy)
   : m_value ((double)value)
-{}
+{
+}
 
 HighPrecision::HighPrecision (double value)
   : m_value (value)
-{}
+{
+}
 
 int64_t
 HighPrecision::GetInteger (void) const
@@ -43,41 +46,41 @@ HighPrecision::GetInteger (void) const
   return (int64_t)floor (m_value);
 }
 
-double 
+double
 HighPrecision::GetDouble (void) const
 {
   return m_value;
 }
-bool 
+bool
 HighPrecision::Add (HighPrecision const &o)
 {
   m_value += o.m_value;
   return false;
 }
-bool 
+bool
 HighPrecision::Sub (HighPrecision const &o)
 {
   m_value -= o.m_value;
   return false;
 }
-bool 
+bool
 HighPrecision::Mul (HighPrecision const &o)
 {
   m_value *= o.m_value;
   return false;
 }
-bool 
+bool
 HighPrecision::Div (HighPrecision const &o)
 {
   m_value /= o.m_value;
   return false;
 }
-int 
+int
 HighPrecision::Compare (HighPrecision const &o) const
 {
   return 0;
 }
-HighPrecision 
+HighPrecision
 HighPrecision::Zero (void)
 {
   return HighPrecision (0,0);

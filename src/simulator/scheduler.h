@@ -36,9 +36,9 @@ class EventImpl;
  * \ingroup scheduler
  * \brief Maintain the event list
  *
- * This base class specifies the interface used to maintain the 
- * event list. If you want to provide a new event list scheduler, 
- * you need to create a subclass of this base class and implement 
+ * This base class specifies the interface used to maintain the
+ * event list. If you want to provide a new event list scheduler,
+ * you need to create a subclass of this base class and implement
  * all the pure virtual methods defined here.
  *
  * The only tricky aspect of this API is the memory management of
@@ -52,15 +52,17 @@ class EventImpl;
  */
 class Scheduler : public Object
 {
- public:
+public:
   static TypeId GetTypeId (void);
 
-  struct EventKey {
+  struct EventKey
+  {
     uint64_t m_ts;
     uint32_t m_uid;
     uint32_t m_context;
   };
-  struct Event {
+  struct Event
+  {
     EventImpl *impl;
     EventKey key;
   };
@@ -106,8 +108,8 @@ inline bool operator < (const Scheduler::EventKey &a, const Scheduler::EventKey 
     {
       return true;
     }
-  else if (a.m_ts == b.m_ts &&
-           a.m_uid < b.m_uid)
+  else if (a.m_ts == b.m_ts
+           && a.m_uid < b.m_uid)
     {
       return true;
     }
@@ -126,8 +128,8 @@ inline bool operator > (const Scheduler::EventKey &a, const Scheduler::EventKey 
     {
       return true;
     }
-  else if (a.m_ts == b.m_ts &&
-           a.m_uid > b.m_uid)
+  else if (a.m_ts == b.m_ts
+           && a.m_uid > b.m_uid)
     {
       return true;
     }

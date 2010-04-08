@@ -42,31 +42,33 @@ class TimerImpl;
  * management policies. These policies are specified at construction time
  * and cannot be changed after.
  */
-class Timer 
+class Timer
 {
 public:
   /**
    * The policy to use to manager the internal timer when and
    * instance of the Timer class is destroyed.
    */
-  enum DestroyPolicy {
+  enum DestroyPolicy
+  {
     /**
      * This policy cancels the event from the destructor of the Timer
      * to verify that the event has already expired.
      */
-    CANCEL_ON_DESTROY = (1<<3),
+    CANCEL_ON_DESTROY = (1 << 3),
     /**
      * This policy removes the event from the simulation event list
      * when the destructor of the Timer is invoked.
      */
-    REMOVE_ON_DESTROY = (1<<4),
+    REMOVE_ON_DESTROY = (1 << 4),
     /**
      * This policy enforces a check from the destructor of the Timer
      * to verify that the timer has already expired.
      */
-    CHECK_ON_DESTROY = (1<<5)
+    CHECK_ON_DESTROY = (1 << 5)
   };
-  enum State {
+  enum State
+  {
     RUNNING,
     EXPIRED,
     SUSPENDED,
@@ -180,7 +182,7 @@ public:
    */
   void Cancel (void);
   /**
-   * Remove from the simulation event-list the currently-running event 
+   * Remove from the simulation event-list the currently-running event
    * if there is one. Do nothing otherwise.
    */
   void Remove (void);
@@ -202,14 +204,14 @@ public:
    */
   enum Timer::State GetState (void) const;
   /**
-   * Schedule a new event using the currently-configured delay, function, 
+   * Schedule a new event using the currently-configured delay, function,
    * and arguments.
    */
   void Schedule (void);
   /**
    * \param delay the delay to use
    *
-   * Schedule a new event using the specified delay (ignore the delay set by 
+   * Schedule a new event using the specified delay (ignore the delay set by
    * Timer::SetDelay), function, and arguments.
    */
   void Schedule (Time delay);
@@ -228,9 +230,9 @@ public:
   void Resume (void);
 
 private:
-
-  enum {
-    TIMER_SUSPENDED = (1<<7)
+  enum
+  {
+    TIMER_SUSPENDED = (1 << 7)
   };
 
   int m_flags;
@@ -248,14 +250,14 @@ namespace ns3 {
 
 
 template <typename FN>
-void 
+void
 Timer::SetFunction (FN fn)
 {
   delete m_impl;
   m_impl = MakeTimerImpl (fn);
 }
 template <typename MEM_PTR, typename OBJ_PTR>
-void 
+void
 Timer::SetFunction (MEM_PTR memPtr, OBJ_PTR objPtr)
 {
   delete m_impl;
@@ -263,7 +265,7 @@ Timer::SetFunction (MEM_PTR memPtr, OBJ_PTR objPtr)
 }
 
 template <typename T1>
-void 
+void
 Timer::SetArguments (T1 a1)
 {
   if (m_impl == 0)
@@ -274,7 +276,7 @@ Timer::SetArguments (T1 a1)
   m_impl->SetArgs (a1);
 }
 template <typename T1, typename T2>
-void 
+void
 Timer::SetArguments (T1 a1, T2 a2)
 {
   if (m_impl == 0)
@@ -286,7 +288,7 @@ Timer::SetArguments (T1 a1, T2 a2)
 }
 
 template <typename T1, typename T2, typename T3>
-void 
+void
 Timer::SetArguments (T1 a1, T2 a2, T3 a3)
 {
   if (m_impl == 0)
@@ -298,7 +300,7 @@ Timer::SetArguments (T1 a1, T2 a2, T3 a3)
 }
 
 template <typename T1, typename T2, typename T3, typename T4>
-void 
+void
 Timer::SetArguments (T1 a1, T2 a2, T3 a3, T4 a4)
 {
   if (m_impl == 0)
@@ -310,7 +312,7 @@ Timer::SetArguments (T1 a1, T2 a2, T3 a3, T4 a4)
 }
 
 template <typename T1, typename T2, typename T3, typename T4, typename T5>
-void 
+void
 Timer::SetArguments (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5)
 {
   if (m_impl == 0)
@@ -322,7 +324,7 @@ Timer::SetArguments (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5)
 }
 
 template <typename T1, typename T2, typename T3, typename T4, typename T5, typename T6>
-void 
+void
 Timer::SetArguments (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6)
 {
   if (m_impl == 0)

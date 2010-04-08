@@ -37,9 +37,9 @@ class EventImpl;
  * This class implements an event scheduler using an std::list
  * data structure, that is, a double linked-list.
  */
-class ListScheduler : public Scheduler 
+class ListScheduler : public Scheduler
 {
- public:
+public:
   static TypeId GetTypeId (void);
 
   ListScheduler ();
@@ -51,8 +51,7 @@ class ListScheduler : public Scheduler
   virtual Event RemoveNext (void);
   virtual void Remove (const Event &ev);
 
- private:
-
+private:
   typedef std::list<Event> Events;
   typedef std::list<Event>::iterator EventsI;
   Events m_events;

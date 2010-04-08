@@ -29,8 +29,10 @@ namespace ns3 {
 
 class TimerImpl
 {
-public:  
-  virtual ~TimerImpl () {}
+public:
+  virtual ~TimerImpl ()
+  {
+  }
 
   template <typename T1>
   void SetArgs (T1 a1);
@@ -38,13 +40,13 @@ public:
   void SetArgs (T1 a1, T2 a2);
   template <typename T1, typename T2, typename T3>
   void SetArgs (T1 a1, T2 a2, T3 a3);
-  template <typename T1, typename T2, typename T3, 
+  template <typename T1, typename T2, typename T3,
             typename T4>
   void SetArgs (T1 a1, T2 a2, T3 a3, T4 a4);
-  template <typename T1, typename T2, typename T3, 
+  template <typename T1, typename T2, typename T3,
             typename T4, typename T5>
   void SetArgs (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5);
-  template <typename T1, typename T2, typename T3, 
+  template <typename T1, typename T2, typename T3,
             typename T4, typename T5, typename T6>
   void SetArgs (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6);
 
@@ -107,12 +109,16 @@ MakeTimerImpl (IntToType<0>, FN fn)
 {
   struct FnTimerImplZero : public TimerImpl
   {
-    FnTimerImplZero (FN fn) 
-      : m_fn (fn) {}
-    virtual EventId Schedule (const Time &delay) {
+    FnTimerImplZero (FN fn)
+      : m_fn (fn)
+    {
+    }
+    virtual EventId Schedule (const Time &delay)
+    {
       return Simulator::Schedule (delay, m_fn);
     }
-    virtual void Invoke (void) {
+    virtual void Invoke (void)
+    {
       m_fn ();
     }
     FN m_fn;
@@ -130,15 +136,20 @@ MakeTimerImpl (IntToType<1>, FN fn)
 
   struct FnTimerImplOne : public TimerImplOne<T1Parameter>
   {
-    FnTimerImplOne (FN fn) 
-      : m_fn (fn) {}
-    virtual void SetArguments (T1Parameter a1) {
+    FnTimerImplOne (FN fn)
+      : m_fn (fn)
+    {
+    }
+    virtual void SetArguments (T1Parameter a1)
+    {
       m_a1 = a1;
     }
-    virtual EventId Schedule (const Time &delay) {
+    virtual EventId Schedule (const Time &delay)
+    {
       return Simulator::Schedule (delay, m_fn, m_a1);
     }
-    virtual void Invoke (void) {
+    virtual void Invoke (void)
+    {
       m_fn (m_a1);
     }
     FN m_fn;
@@ -160,16 +171,21 @@ MakeTimerImpl (IntToType<2>, FN fn)
 
   struct FnTimerImplTwo : public TimerImplTwo<T1Parameter,T2Parameter>
   {
-    FnTimerImplTwo (FN fn) 
-      : m_fn (fn) {}
-    virtual void SetArguments (T1Parameter a1, T2Parameter a2) {
+    FnTimerImplTwo (FN fn)
+      : m_fn (fn)
+    {
+    }
+    virtual void SetArguments (T1Parameter a1, T2Parameter a2)
+    {
       m_a1 = a1;
       m_a2 = a2;
     }
-    virtual EventId Schedule (const Time &delay) {
+    virtual EventId Schedule (const Time &delay)
+    {
       return Simulator::Schedule (delay, m_fn, m_a1, m_a2);
     }
-    virtual void Invoke (void) {
+    virtual void Invoke (void)
+    {
       m_fn (m_a1, m_a2);
     }
     FN m_fn;
@@ -195,17 +211,22 @@ MakeTimerImpl (IntToType<3>, FN fn)
 
   struct FnTimerImplThree : public TimerImplThree<T1Parameter,T2Parameter,T3Parameter>
   {
-    FnTimerImplThree (FN fn) 
-      : m_fn (fn) {}
-    virtual void SetArguments (T1Parameter a1, T2Parameter a2, T3Parameter a3) {
+    FnTimerImplThree (FN fn)
+      : m_fn (fn)
+    {
+    }
+    virtual void SetArguments (T1Parameter a1, T2Parameter a2, T3Parameter a3)
+    {
       m_a1 = a1;
       m_a2 = a2;
       m_a3 = a3;
     }
-    virtual EventId Schedule (const Time &delay) {
+    virtual EventId Schedule (const Time &delay)
+    {
       return Simulator::Schedule (delay, m_fn, m_a1, m_a2, m_a3);
     }
-    virtual void Invoke (void) {
+    virtual void Invoke (void)
+    {
       m_fn (m_a1, m_a2, m_a3);
     }
     FN m_fn;
@@ -235,18 +256,23 @@ MakeTimerImpl (IntToType<4>, FN fn)
 
   struct FnTimerImplFour : public TimerImplFour<T1Parameter,T2Parameter,T3Parameter,T4Parameter>
   {
-    FnTimerImplFour (FN fn) 
-      : m_fn (fn) {}
-    virtual void SetArguments (T1Parameter a1, T2Parameter a2, T3Parameter a3, T4Parameter a4) {
+    FnTimerImplFour (FN fn)
+      : m_fn (fn)
+    {
+    }
+    virtual void SetArguments (T1Parameter a1, T2Parameter a2, T3Parameter a3, T4Parameter a4)
+    {
       m_a1 = a1;
       m_a2 = a2;
       m_a3 = a3;
       m_a4 = a4;
     }
-    virtual EventId Schedule (const Time &delay) {
+    virtual EventId Schedule (const Time &delay)
+    {
       return Simulator::Schedule (delay, m_fn, m_a1, m_a2, m_a3, m_a4);
     }
-    virtual void Invoke (void) {
+    virtual void Invoke (void)
+    {
       m_fn (m_a1, m_a2, m_a3, m_a4);
     }
     FN m_fn;
@@ -280,19 +306,24 @@ MakeTimerImpl (IntToType<5>, FN fn)
 
   struct FnTimerImplFive : public TimerImplFive<T1Parameter,T2Parameter,T3Parameter,T4Parameter,T5Parameter>
   {
-    FnTimerImplFive (FN fn) 
-      : m_fn (fn) {}
-    virtual void SetArguments (T1Parameter a1, T2Parameter a2, T3Parameter a3, T4Parameter a4, T5Parameter a5) {
+    FnTimerImplFive (FN fn)
+      : m_fn (fn)
+    {
+    }
+    virtual void SetArguments (T1Parameter a1, T2Parameter a2, T3Parameter a3, T4Parameter a4, T5Parameter a5)
+    {
       m_a1 = a1;
       m_a2 = a2;
       m_a3 = a3;
       m_a4 = a4;
       m_a5 = a5;
     }
-    virtual EventId Schedule (const Time &delay) {
+    virtual EventId Schedule (const Time &delay)
+    {
       return Simulator::Schedule (delay, m_fn, m_a1, m_a2, m_a3, m_a4, m_a5);
     }
-    virtual void Invoke (void) {
+    virtual void Invoke (void)
+    {
       m_fn (m_a1, m_a2, m_a3, m_a4, m_a5);
     }
     FN m_fn;
@@ -330,9 +361,12 @@ MakeTimerImpl (IntToType<6>, FN fn)
 
   struct FnTimerImplSix : public TimerImplSix<T1Parameter,T2Parameter,T3Parameter,T4Parameter,T5Parameter,T6Parameter>
   {
-    FnTimerImplSix (FN fn) 
-      : m_fn (fn) {}
-    virtual void SetArguments (T1Parameter a1, T2Parameter a2, T3Parameter a3, T4Parameter a4, T5Parameter a5, T6Parameter a6) {
+    FnTimerImplSix (FN fn)
+      : m_fn (fn)
+    {
+    }
+    virtual void SetArguments (T1Parameter a1, T2Parameter a2, T3Parameter a3, T4Parameter a4, T5Parameter a5, T6Parameter a6)
+    {
       m_a1 = a1;
       m_a2 = a2;
       m_a3 = a3;
@@ -340,10 +374,12 @@ MakeTimerImpl (IntToType<6>, FN fn)
       m_a5 = a5;
       m_a6 = a6;
     }
-    virtual EventId Schedule (const Time &delay) {
+    virtual EventId Schedule (const Time &delay)
+    {
       return Simulator::Schedule (delay, m_fn, m_a1, m_a2, m_a3, m_a4, m_a5, m_a6);
     }
-    virtual void Invoke (void) {
+    virtual void Invoke (void)
+    {
       m_fn (m_a1, m_a2, m_a3, m_a4, m_a5, m_a6);
     }
     FN m_fn;
@@ -365,7 +401,8 @@ struct TimerImplMemberTraits;
 template <typename T>
 struct TimerImplMemberTraits<T *>
 {
-  static T &GetReference (T *p) {
+  static T &GetReference (T *p)
+  {
     return *p;
   }
 };
@@ -375,7 +412,7 @@ TimerImpl *
 MakeTimerImpl (MEM_PTR memPtr, OBJ_PTR objPtr)
 {
   NS_ASSERT (TypeTraits<MEM_PTR>::IsPointerToMember);
-  return MakeTimerImpl (IntToType<TypeTraits<MEM_PTR>::PointerToMemberTraits::nArgs> () , memPtr, objPtr);
+  return MakeTimerImpl (IntToType<TypeTraits<MEM_PTR>::PointerToMemberTraits::nArgs> (), memPtr, objPtr);
 }
 
 template <typename MEM_PTR, typename OBJ_PTR>
@@ -384,13 +421,18 @@ MakeTimerImpl (IntToType<0>, MEM_PTR memPtr, OBJ_PTR objPtr)
 {
   struct MemFnTimerImplZero : public TimerImpl
   {
-    MemFnTimerImplZero (MEM_PTR memPtr, OBJ_PTR objPtr) 
-      : m_memPtr (memPtr), m_objPtr (objPtr) {}
-    virtual EventId Schedule (const Time &delay) {
+    MemFnTimerImplZero (MEM_PTR memPtr, OBJ_PTR objPtr)
+      : m_memPtr (memPtr),
+        m_objPtr (objPtr)
+    {
+    }
+    virtual EventId Schedule (const Time &delay)
+    {
       return Simulator::Schedule (delay, m_memPtr, m_objPtr);
     }
-    virtual void Invoke (void) {
-      (TimerImplMemberTraits<OBJ_PTR>::GetReference (m_objPtr).*m_memPtr) (); 
+    virtual void Invoke (void)
+    {
+      (TimerImplMemberTraits<OBJ_PTR>::GetReference (m_objPtr).*m_memPtr)();
     }
     MEM_PTR m_memPtr;
     OBJ_PTR m_objPtr;
@@ -405,19 +447,25 @@ MakeTimerImpl (IntToType<1>, MEM_PTR memPtr, OBJ_PTR objPtr)
   typedef typename TypeTraits<MEM_PTR>::PointerToMemberTraits::Arg1Type T1;
   typedef typename TimerTraits<T1>::ParameterType T1Parameter;
   typedef typename TimerTraits<T1>::StoredType T1Stored;
-  
+
   struct MemFnTimerImplOne : public TimerImplOne<T1Parameter>
   {
-    MemFnTimerImplOne (MEM_PTR memPtr, OBJ_PTR objPtr) 
-      : m_memPtr (memPtr), m_objPtr (objPtr) {}
-    virtual void SetArguments (T1Parameter a1) {
+    MemFnTimerImplOne (MEM_PTR memPtr, OBJ_PTR objPtr)
+      : m_memPtr (memPtr),
+        m_objPtr (objPtr)
+    {
+    }
+    virtual void SetArguments (T1Parameter a1)
+    {
       m_a1 = a1;
     }
-    virtual EventId Schedule (const Time &delay) {
+    virtual EventId Schedule (const Time &delay)
+    {
       return Simulator::Schedule (delay, m_memPtr, m_objPtr, m_a1);
     }
-    virtual void Invoke (void) {
-      (TimerImplMemberTraits<OBJ_PTR>::GetReference (m_objPtr).*m_memPtr) (m_a1); 
+    virtual void Invoke (void)
+    {
+      (TimerImplMemberTraits<OBJ_PTR>::GetReference (m_objPtr).*m_memPtr)(m_a1);
     }
     MEM_PTR m_memPtr;
     OBJ_PTR m_objPtr;
@@ -436,20 +484,26 @@ MakeTimerImpl (IntToType<2>, MEM_PTR memPtr, OBJ_PTR objPtr)
   typedef typename TypeTraits<MEM_PTR>::PointerToMemberTraits::Arg2Type T2;
   typedef typename TimerTraits<T2>::ParameterType T2Parameter;
   typedef typename TimerTraits<T2>::StoredType T2Stored;
-  
+
   struct MemFnTimerImplTwo : public TimerImplTwo<T1Parameter,T2Parameter>
   {
-    MemFnTimerImplTwo (MEM_PTR memPtr, OBJ_PTR objPtr) 
-      : m_memPtr (memPtr), m_objPtr (objPtr) {}
-    virtual void SetArguments (T1Parameter a1, T2Parameter a2) {
+    MemFnTimerImplTwo (MEM_PTR memPtr, OBJ_PTR objPtr)
+      : m_memPtr (memPtr),
+        m_objPtr (objPtr)
+    {
+    }
+    virtual void SetArguments (T1Parameter a1, T2Parameter a2)
+    {
       m_a1 = a1;
       m_a2 = a2;
     }
-    virtual EventId Schedule (const Time &delay) {
+    virtual EventId Schedule (const Time &delay)
+    {
       return Simulator::Schedule (delay, m_memPtr, m_objPtr, m_a1, m_a2);
     }
-    virtual void Invoke (void) {
-      (TimerImplMemberTraits<OBJ_PTR>::GetReference (m_objPtr).*m_memPtr) (m_a1, m_a2); 
+    virtual void Invoke (void)
+    {
+      (TimerImplMemberTraits<OBJ_PTR>::GetReference (m_objPtr).*m_memPtr)(m_a1, m_a2);
     }
     MEM_PTR m_memPtr;
     OBJ_PTR m_objPtr;
@@ -472,21 +526,27 @@ MakeTimerImpl (IntToType<3>, MEM_PTR memPtr, OBJ_PTR objPtr)
   typedef typename TypeTraits<MEM_PTR>::PointerToMemberTraits::Arg3Type T3;
   typedef typename TimerTraits<T3>::ParameterType T3Parameter;
   typedef typename TimerTraits<T3>::StoredType T3Stored;
-  
+
   struct MemFnTimerImplThree : public TimerImplThree<T1Parameter,T2Parameter,T3Parameter>
   {
-    MemFnTimerImplThree (MEM_PTR memPtr, OBJ_PTR objPtr) 
-      : m_memPtr (memPtr), m_objPtr (objPtr) {}
-    virtual void SetArguments (T1Parameter a1, T2Parameter a2, T3Parameter a3) {
+    MemFnTimerImplThree (MEM_PTR memPtr, OBJ_PTR objPtr)
+      : m_memPtr (memPtr),
+        m_objPtr (objPtr)
+    {
+    }
+    virtual void SetArguments (T1Parameter a1, T2Parameter a2, T3Parameter a3)
+    {
       m_a1 = a1;
       m_a2 = a2;
       m_a3 = a3;
     }
-    virtual EventId Schedule (const Time &delay) {
+    virtual EventId Schedule (const Time &delay)
+    {
       return Simulator::Schedule (delay, m_memPtr, m_objPtr, m_a1, m_a2, m_a3);
     }
-    virtual void Invoke (void) {
-      (TimerImplMemberTraits<OBJ_PTR>::GetReference (m_objPtr).*m_memPtr) (m_a1, m_a2, m_a3); 
+    virtual void Invoke (void)
+    {
+      (TimerImplMemberTraits<OBJ_PTR>::GetReference (m_objPtr).*m_memPtr)(m_a1, m_a2, m_a3);
     }
     MEM_PTR m_memPtr;
     OBJ_PTR m_objPtr;
@@ -513,22 +573,28 @@ MakeTimerImpl (IntToType<4>, MEM_PTR memPtr, OBJ_PTR objPtr)
   typedef typename TypeTraits<MEM_PTR>::PointerToMemberTraits::Arg4Type T4;
   typedef typename TimerTraits<T4>::ParameterType T4Parameter;
   typedef typename TimerTraits<T4>::StoredType T4Stored;
-  
+
   struct MemFnTimerImplFour : public TimerImplFour<T1Parameter,T2Parameter,T3Parameter,T4Parameter>
   {
-    MemFnTimerImplFour (MEM_PTR memPtr, OBJ_PTR objPtr) 
-      : m_memPtr (memPtr), m_objPtr (objPtr) {}
-    virtual void SetArguments (T1Parameter a1, T2Parameter a2, T3Parameter a3, T4Parameter a4) {
+    MemFnTimerImplFour (MEM_PTR memPtr, OBJ_PTR objPtr)
+      : m_memPtr (memPtr),
+        m_objPtr (objPtr)
+    {
+    }
+    virtual void SetArguments (T1Parameter a1, T2Parameter a2, T3Parameter a3, T4Parameter a4)
+    {
       m_a1 = a1;
       m_a2 = a2;
       m_a3 = a3;
       m_a4 = a4;
     }
-    virtual EventId Schedule (const Time &delay) {
+    virtual EventId Schedule (const Time &delay)
+    {
       return Simulator::Schedule (delay, m_memPtr, m_objPtr, m_a1, m_a2, m_a3, m_a4);
     }
-    virtual void Invoke (void) {
-      (TimerImplMemberTraits<OBJ_PTR>::GetReference (m_objPtr).*m_memPtr) (m_a1, m_a2, m_a3, m_a4); 
+    virtual void Invoke (void)
+    {
+      (TimerImplMemberTraits<OBJ_PTR>::GetReference (m_objPtr).*m_memPtr)(m_a1, m_a2, m_a3, m_a4);
     }
     MEM_PTR m_memPtr;
     OBJ_PTR m_objPtr;
@@ -559,23 +625,29 @@ MakeTimerImpl (IntToType<5>, MEM_PTR memPtr, OBJ_PTR objPtr)
   typedef typename TypeTraits<MEM_PTR>::PointerToMemberTraits::Arg5Type T5;
   typedef typename TimerTraits<T5>::ParameterType T5Parameter;
   typedef typename TimerTraits<T5>::StoredType T5Stored;
-  
+
   struct MemFnTimerImplFive : public TimerImplFive<T1Parameter,T2Parameter,T3Parameter,T4Parameter,T5Parameter>
   {
-    MemFnTimerImplFive (MEM_PTR memPtr, OBJ_PTR objPtr) 
-      : m_memPtr (memPtr), m_objPtr (objPtr) {}
-    virtual void SetArguments (T1Parameter a1, T2Parameter a2, T3Parameter a3, T4Parameter a4,T5Parameter a5) {
+    MemFnTimerImplFive (MEM_PTR memPtr, OBJ_PTR objPtr)
+      : m_memPtr (memPtr),
+        m_objPtr (objPtr)
+    {
+    }
+    virtual void SetArguments (T1Parameter a1, T2Parameter a2, T3Parameter a3, T4Parameter a4,T5Parameter a5)
+    {
       m_a1 = a1;
       m_a2 = a2;
       m_a3 = a3;
       m_a4 = a4;
       m_a5 = a5;
     }
-    virtual EventId Schedule (const Time &delay) {
+    virtual EventId Schedule (const Time &delay)
+    {
       return Simulator::Schedule (delay, m_memPtr, m_objPtr, m_a1, m_a2, m_a3, m_a4, m_a5);
     }
-    virtual void Invoke (void) {
-      (TimerImplMemberTraits<OBJ_PTR>::GetReference (m_objPtr).*m_memPtr) (m_a1, m_a2, m_a3, m_a4, m_a5); 
+    virtual void Invoke (void)
+    {
+      (TimerImplMemberTraits<OBJ_PTR>::GetReference (m_objPtr).*m_memPtr)(m_a1, m_a2, m_a3, m_a4, m_a5);
     }
     MEM_PTR m_memPtr;
     OBJ_PTR m_objPtr;
@@ -610,12 +682,16 @@ MakeTimerImpl (IntToType<6>, MEM_PTR memPtr, OBJ_PTR objPtr)
   typedef typename TypeTraits<MEM_PTR>::PointerToMemberTraits::Arg6Type T6;
   typedef typename TimerTraits<T6>::ParameterType T6Parameter;
   typedef typename TimerTraits<T6>::StoredType T6Stored;
-  
+
   struct MemFnTimerImplSix : public TimerImplSix<T1Parameter,T2Parameter,T3Parameter,T4Parameter,T5Parameter,T6Parameter>
   {
-    MemFnTimerImplSix (MEM_PTR memPtr, OBJ_PTR objPtr) 
-      : m_memPtr (memPtr), m_objPtr (objPtr) {}
-    virtual void SetArguments (T1Parameter a1, T2Parameter a2, T3Parameter a3, T4Parameter a4,T5Parameter a5,T6Parameter a6) {
+    MemFnTimerImplSix (MEM_PTR memPtr, OBJ_PTR objPtr)
+      : m_memPtr (memPtr),
+        m_objPtr (objPtr)
+    {
+    }
+    virtual void SetArguments (T1Parameter a1, T2Parameter a2, T3Parameter a3, T4Parameter a4,T5Parameter a5,T6Parameter a6)
+    {
       m_a1 = a1;
       m_a2 = a2;
       m_a3 = a3;
@@ -623,11 +699,13 @@ MakeTimerImpl (IntToType<6>, MEM_PTR memPtr, OBJ_PTR objPtr)
       m_a5 = a5;
       m_a6 = a6;
     }
-    virtual EventId Schedule (const Time &delay) {
+    virtual EventId Schedule (const Time &delay)
+    {
       return Simulator::Schedule (delay, m_memPtr, m_objPtr, m_a1, m_a2, m_a3, m_a4, m_a5, m_a6);
     }
-    virtual void Invoke (void) {
-      (TimerImplMemberTraits<OBJ_PTR>::GetReference (m_objPtr).*m_memPtr) (m_a1, m_a2, m_a3, m_a4, m_a5, m_a6); 
+    virtual void Invoke (void)
+    {
+      (TimerImplMemberTraits<OBJ_PTR>::GetReference (m_objPtr).*m_memPtr)(m_a1, m_a2, m_a3, m_a4, m_a5, m_a6);
     }
     MEM_PTR m_memPtr;
     OBJ_PTR m_objPtr;
@@ -676,7 +754,7 @@ TimerImpl::SetArgs (T1 a1, T2 a2)
 }
 
 template <typename T1, typename T2, typename T3>
-void 
+void
 TimerImpl::SetArgs (T1 a1, T2 a2, T3 a3)
 {
   typedef struct TimerImplThree<
@@ -694,7 +772,7 @@ TimerImpl::SetArgs (T1 a1, T2 a2, T3 a3)
 }
 
 template <typename T1, typename T2, typename T3, typename T4>
-void 
+void
 TimerImpl::SetArgs (T1 a1, T2 a2, T3 a3, T4 a4)
 {
   typedef struct TimerImplFour<
@@ -713,7 +791,7 @@ TimerImpl::SetArgs (T1 a1, T2 a2, T3 a3, T4 a4)
 }
 
 template <typename T1, typename T2, typename T3, typename T4, typename T5>
-void 
+void
 TimerImpl::SetArgs (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5)
 {
   typedef struct TimerImplFive<
@@ -733,7 +811,7 @@ TimerImpl::SetArgs (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5)
 }
 
 template <typename T1, typename T2, typename T3, typename T4, typename T5, typename T6>
-void 
+void
 TimerImpl::SetArgs (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6)
 {
   typedef struct TimerImplSix<

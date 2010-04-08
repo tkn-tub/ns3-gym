@@ -33,7 +33,8 @@ namespace ns3 {
 
 namespace TimeStepPrecision {
 
-enum precision_t {
+enum precision_t
+{
   S  = 0,
   MS = 3,
   US = 6,
@@ -44,7 +45,7 @@ enum precision_t {
 /**
  * \param precision the new precision to use
  *
- * This should be invoked before any Time object 
+ * This should be invoked before any Time object
  * is created. i.e., it should be invoked at the very start
  * of every simulation. The unit specified by this method
  * is used as the unit of the internal simulation time
@@ -67,8 +68,8 @@ precision_t Get (void);
  * \ingroup time
  * \brief keep track of time unit.
  *
- * This template class is used to keep track of the value 
- * of a specific time unit: the type TimeUnit<1> is used to 
+ * This template class is used to keep track of the value
+ * of a specific time unit: the type TimeUnit<1> is used to
  * keep track of seconds, the type TimeUnit<2> is used to keep
  * track of seconds squared, the type TimeUnit<-1> is used to
  * keep track of 1/seconds, etc.
@@ -76,11 +77,11 @@ precision_t Get (void);
  * This base class defines all the functionality shared by all
  * these time unit objects: it defines all the classic arithmetic
  * operators +, -, *, /, and all the classic comparison operators:
- * ==, !=, <, >, <=, >=. It is thus easy to add, substract, or 
+ * ==, !=, <, >, <=, >=. It is thus easy to add, substract, or
  * multiply multiple TimeUnit objects. The return type of any such
  * arithmetic expression is always a TimeUnit object.
  *
- * The ns3::Scalar, ns3::Time, ns3::TimeSquare, and ns3::TimeInvert classes 
+ * The ns3::Scalar, ns3::Time, ns3::TimeSquare, and ns3::TimeInvert classes
  * are aliases for the TimeUnit<0>, TimeUnit<1>, TimeUnit<2> and TimeUnit<-1>
  * types respectively.
  *
@@ -96,7 +97,7 @@ precision_t Get (void);
  * Scalar s = t4;
  * \endcode
  *
- * If you try to assign the result of an expression which does not 
+ * If you try to assign the result of an expression which does not
  * match the type of the variable it is assigned to, you will get a
  * compiler error. For example, the following will not compile:
  * \code
@@ -143,11 +144,11 @@ public:
    * This is really an internal method exported for the needs of
    * the implementation. Please, Do not try to use this method, ever.
    *
-   * \return the ns3::HighPrecision object which holds the value 
+   * \return the ns3::HighPrecision object which holds the value
    *         stored in this Time<N> type.
    */
   HighPrecision const &GetHighPrecision (void) const;
-  HighPrecision *PeekHighPrecision (void);
+  HighPrecision * PeekHighPrecision (void);
 
 private:
   HighPrecision m_data;
@@ -156,11 +157,13 @@ private:
 template <int N>
 TimeUnit<N>::TimeUnit ()
   : m_data ()
-{}
+{
+}
 template <int N>
 TimeUnit<N>::TimeUnit (TimeUnit const &o)
   : m_data (o.m_data)
-{}
+{
+}
 template <int N>
 TimeUnit<N>
 TimeUnit<N>::operator = (TimeUnit const &o)
@@ -171,7 +174,8 @@ TimeUnit<N>::operator = (TimeUnit const &o)
 template <int N>
 TimeUnit<N>::TimeUnit (HighPrecision data)
   : m_data (data)
-{}
+{
+}
 
 template <int N>
 HighPrecision const &
@@ -192,62 +196,62 @@ TimeUnit<N>::IsZero (void) const
   return m_data.Compare (HighPrecision::Zero ()) == 0;
 }
 template <int N>
-bool 
+bool
 TimeUnit<N>::IsNegative (void) const
 {
   return m_data.Compare (HighPrecision::Zero ()) <= 0;
 }
 template <int N>
-bool 
+bool
 TimeUnit<N>::IsPositive (void) const
 {
   return m_data.Compare (HighPrecision::Zero ()) >= 0;
 }
 template <int N>
-bool 
+bool
 TimeUnit<N>::IsStrictlyNegative (void) const
 {
   return m_data.Compare (HighPrecision::Zero ()) < 0;
 }
 template <int N>
-bool 
+bool
 TimeUnit<N>::IsStrictlyPositive (void) const
 {
   return m_data.Compare (HighPrecision::Zero ()) > 0;
 }
 
 template <int N>
-bool 
+bool
 operator == (TimeUnit<N> const &lhs, TimeUnit<N> const &rhs)
 {
   return lhs.GetHighPrecision ().Compare (rhs.GetHighPrecision ()) == 0;
 }
 template <int N>
-bool 
+bool
 operator != (TimeUnit<N> const &lhs, TimeUnit<N> const &rhs)
 {
   return lhs.GetHighPrecision ().Compare (rhs.GetHighPrecision ()) != 0;
 }
 template <int N>
-bool 
+bool
 operator <= (TimeUnit<N> const &lhs, TimeUnit<N> const &rhs)
 {
   return lhs.GetHighPrecision ().Compare (rhs.GetHighPrecision ()) <= 0;
 }
 template <int N>
-bool 
+bool
 operator >= (TimeUnit<N> const &lhs, TimeUnit<N> const &rhs)
 {
   return lhs.GetHighPrecision ().Compare (rhs.GetHighPrecision ()) >= 0;
 }
 template <int N>
-bool 
+bool
 operator < (TimeUnit<N> const &lhs, TimeUnit<N> const &rhs)
 {
   return lhs.GetHighPrecision ().Compare (rhs.GetHighPrecision ()) < 0;
 }
 template <int N>
-bool 
+bool
 operator > (TimeUnit<N> const &lhs, TimeUnit<N> const &rhs)
 {
   return lhs.GetHighPrecision ().Compare (rhs.GetHighPrecision ()) > 0;
@@ -267,31 +271,33 @@ TimeUnit<N> operator - (TimeUnit<N> const &lhs, TimeUnit<N> const &rhs)
   return TimeUnit<N> (retval);
 }
 template <int N1, int N2>
-TimeUnit<N1+N2> operator * (TimeUnit<N1> const &lhs, TimeUnit<N2> const &rhs)
+TimeUnit<N1 + N2> operator * (TimeUnit<N1> const &lhs, TimeUnit<N2> const &rhs)
 {
   HighPrecision retval = lhs.GetHighPrecision ();
   retval.Mul (rhs.GetHighPrecision ());
-  //    std::cout << lhs.GetHighPrecision().GetInteger() << " * " 
-  //              << rhs.GetHighPrecision().GetInteger() 
+  //    std::cout << lhs.GetHighPrecision().GetInteger() << " * "
+  //              << rhs.GetHighPrecision().GetInteger()
   //              << " = " << retval.GetInteger() << std::endl;
-  return TimeUnit<N1+N2> (retval);
+  return TimeUnit<N1 + N2> (retval);
 }
 template <int N1, int N2>
-TimeUnit<N1-N2> operator / (TimeUnit<N1> const &lhs, TimeUnit<N2> const &rhs)
+TimeUnit<N1 - N2> operator / (TimeUnit<N1> const &lhs, TimeUnit<N2> const &rhs)
 {
   NS_ASSERT (rhs.GetHighPrecision ().GetDouble () != 0);
   HighPrecision retval = lhs.GetHighPrecision ();
   retval.Div (rhs.GetHighPrecision ());
-  return TimeUnit<N1-N2> (retval);
+  return TimeUnit<N1 - N2> (retval);
 }
 template <int N>
-TimeUnit<N> &operator += (TimeUnit<N> &lhs, TimeUnit<N> const &rhs) {
+TimeUnit<N> &operator += (TimeUnit<N> &lhs, TimeUnit<N> const &rhs)
+{
   HighPrecision *lhsv = lhs.PeekHighPrecision ();
   lhsv->Add (rhs.GetHighPrecision ());
   return lhs;
 }
 template <int N>
-TimeUnit<N> &operator -= (TimeUnit<N> &lhs, TimeUnit<N> const &rhs) {
+TimeUnit<N> &operator -= (TimeUnit<N> &lhs, TimeUnit<N> const &rhs)
+{
   HighPrecision *lhsv = lhs.PeekHighPrecision ();
   lhsv->Sub (rhs.GetHighPrecision ());
   return lhs;
@@ -320,7 +326,7 @@ template <int N>
 TimeUnit<N> Max (TimeUnit<N> const &ta, TimeUnit<N> const &tb)
 {
   HighPrecision a = ta.GetHighPrecision ();
-  HighPrecision b = tb.GetHighPrecision ();  
+  HighPrecision b = tb.GetHighPrecision ();
   return TimeUnit<N> (Max (a, b));
 }
 /**
@@ -334,7 +340,7 @@ template <int N>
 TimeUnit<N> Min (TimeUnit<N> const &ta, TimeUnit<N> const &tb)
 {
   HighPrecision a = ta.GetHighPrecision ();
-  HighPrecision b = tb.GetHighPrecision ();  
+  HighPrecision b = tb.GetHighPrecision ();
   return TimeUnit<N> (Min (a, b));
 }
 
@@ -349,7 +355,6 @@ class TimeUnit<1>
 {
   // -*- New methods -*-
 public:
-
   /**
    * \brief String constructor
    * Construct TimeUnit<1> object from common time expressions like "
@@ -366,7 +371,7 @@ public:
    * occur.
    * \param s The string to parse into a TimeUnit<1>
    */
-  TimeUnit<1>(const std::string& s);
+  TimeUnit<1> (const std::string & s);
   /**
    * \returns an approximation in seconds of the time stored in this
    *          instance.
@@ -376,7 +381,7 @@ public:
   /**
    * \returns an approximation in milliseconds of the time stored in this
    *          instance.
-   */  
+   */
   int64_t GetMilliSeconds (void) const;
   /**
    * \returns an approximation in microseconds of the time stored in this
@@ -407,39 +412,52 @@ public:
   // -*- The rest is the the same as in the generic template class -*-
 public:
   TimeUnit ()
-    : m_data () 
-  {}
+    : m_data ()
+  {
+  }
   TimeUnit (TimeUnit const &o)
-    : m_data (o.m_data) {}
-  TimeUnit operator = (TimeUnit const &o) {
+    : m_data (o.m_data)
+  {
+  }
+  TimeUnit operator = (TimeUnit const &o)
+  {
     m_data = o.m_data;
     return *this;
   }
   TimeUnit (HighPrecision data)
-    : m_data (data) {}
-  bool IsZero (void) const {
+    : m_data (data)
+  {
+  }
+  bool IsZero (void) const
+  {
     return m_data.Compare (HighPrecision::Zero ()) == 0;
   }
-  bool IsNegative (void) const {
+  bool IsNegative (void) const
+  {
     return m_data.Compare (HighPrecision::Zero ()) <= 0;
   }
-  bool IsPositive (void) const {
+  bool IsPositive (void) const
+  {
     return m_data.Compare (HighPrecision::Zero ()) >= 0;
   }
-  bool IsStrictlyNegative (void) const {
+  bool IsStrictlyNegative (void) const
+  {
     return m_data.Compare (HighPrecision::Zero ()) < 0;
   }
-  bool IsStrictlyPositive (void) const {
+  bool IsStrictlyPositive (void) const
+  {
     return m_data.Compare (HighPrecision::Zero ()) > 0;
   }
-  HighPrecision const &GetHighPrecision (void) const {
+  HighPrecision const &GetHighPrecision (void) const
+  {
     return m_data;
   }
-  HighPrecision *PeekHighPrecision (void) {
+  HighPrecision * PeekHighPrecision (void)
+  {
     return &m_data;
   }
 
-  static uint64_t UnitsToTimestep (uint64_t unitValue, 
+  static uint64_t UnitsToTimestep (uint64_t unitValue,
                                    uint64_t unitFactor);
 
 private:
@@ -476,7 +494,7 @@ private:
  * of the ns3::TimeUnit class template)
  * To scale a Time instance, you can multiply it with an instance of
  * the ns3::Scalar class.
- * Time instances can also be manipulated through the following non-member 
+ * Time instances can also be manipulated through the following non-member
  * functions:
  *  - \ref ns3-Time-Abs ns3::Abs
  *  - \ref ns3-Time-Max ns3::Max
@@ -484,7 +502,7 @@ private:
  *
  * The Time class has the following additional methods not available in
  * the generic TimeUnit template:
- * 
+ *
  * \code
  * double GetSeconds (void) const;
  * \endcode
@@ -611,35 +629,48 @@ public:
   // -*- The rest is the the same as in the generic template class -*-
 public:
   TimeUnit ()
-    : m_data () 
-  {};
+    : m_data ()
+  {
+  }
   TimeUnit (TimeUnit const &o)
-    : m_data (o.m_data) {}
-  TimeUnit operator = (TimeUnit const &o) {
+    : m_data (o.m_data)
+  {
+  }
+  TimeUnit operator = (TimeUnit const &o)
+  {
     m_data = o.m_data;
     return *this;
   }
   TimeUnit (HighPrecision data)
-    : m_data (data) {}
-  bool IsZero (void) const {
+    : m_data (data)
+  {
+  }
+  bool IsZero (void) const
+  {
     return m_data.Compare (HighPrecision::Zero ()) == 0;
   }
-  bool IsNegative (void) const {
+  bool IsNegative (void) const
+  {
     return m_data.Compare (HighPrecision::Zero ()) <= 0;
   }
-  bool IsPositive (void) const {
+  bool IsPositive (void) const
+  {
     return m_data.Compare (HighPrecision::Zero ()) >= 0;
   }
-  bool IsStrictlyNegative (void) const {
+  bool IsStrictlyNegative (void) const
+  {
     return m_data.Compare (HighPrecision::Zero ()) < 0;
   }
-  bool IsStrictlyPositive (void) const {
+  bool IsStrictlyPositive (void) const
+  {
     return m_data.Compare (HighPrecision::Zero ()) > 0;
   }
-  HighPrecision const &GetHighPrecision (void) const {
+  HighPrecision const &GetHighPrecision (void) const
+  {
     return m_data;
   }
-  HighPrecision *PeekHighPrecision (void) {
+  HighPrecision * PeekHighPrecision (void)
+  {
     return &m_data;
   }
 
@@ -652,7 +683,7 @@ private:
  *
  * This class is used both to construct scalar values to multiply
  * ns3::Time instances and to hold the return value of
- * an expression which returns a scalar. For example, the 
+ * an expression which returns a scalar. For example, the
  * following code will output on your terminal 1.5:
  * \code
  * Scalar s0 = Scalar (1.5);

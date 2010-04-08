@@ -32,13 +32,13 @@ NS_LOG_COMPONENT_DEFINE ("CalendarScheduler");
 
 NS_OBJECT_ENSURE_REGISTERED (CalendarScheduler);
 
-TypeId 
+TypeId
 CalendarScheduler::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::CalendarScheduler")
     .SetParent<Scheduler> ()
     .AddConstructor<CalendarScheduler> ()
-    ;
+  ;
   return tid;
 }
 
@@ -55,7 +55,7 @@ CalendarScheduler::~CalendarScheduler ()
   m_buckets = 0;
 }
 void
-CalendarScheduler::Init (uint32_t nBuckets, 
+CalendarScheduler::Init (uint32_t nBuckets,
                          uint64_t width,
                          uint64_t startPrio)
 {
@@ -70,7 +70,7 @@ CalendarScheduler::Init (uint32_t nBuckets,
 void
 CalendarScheduler::PrintInfo (void)
 {
-  std::cout << "nBuckets=" << m_nBuckets << ", width=" << m_width<< std::endl;
+  std::cout << "nBuckets=" << m_nBuckets << ", width=" << m_width << std::endl;
   std::cout << "Bucket Distribution ";
   for (uint32_t i = 0; i < m_nBuckets; i++)
     {
@@ -95,7 +95,7 @@ CalendarScheduler::DoInsert (const Event &ev)
 
   // insert in bucket list.
   Bucket::iterator end = m_buckets[bucket].end ();
-  for (Bucket::iterator i = m_buckets[bucket].begin (); i != end; ++i) 
+  for (Bucket::iterator i = m_buckets[bucket].begin (); i != end; ++i)
     {
       if (ev.key < i->key)
         {
@@ -113,7 +113,7 @@ CalendarScheduler::Insert (const Event &ev)
   m_qSize++;
   ResizeUp ();
 }
-bool 
+bool
 CalendarScheduler::IsEmpty (void) const
 {
   return m_qSize == 0;
@@ -126,23 +126,25 @@ CalendarScheduler::PeekNext (void) const
   uint32_t i = m_lastBucket;
   uint64_t bucketTop = m_bucketTop;
   Scheduler::Event minEvent = {0, {~0, ~0}};
-  do {
-    if (!m_buckets[i].empty ())
-      {
-        Scheduler::Event next = m_buckets[i].front ();
-        if (next.key.m_ts < bucketTop)
-          {
-            return next;
-          }
-        if (next.key < minEvent.key)
-          {
-            minEvent = next;
-          }
-      }
-    i++;
-    i %= m_nBuckets;
-    bucketTop += m_width;
-  } while (i != m_lastBucket);
+  do
+    {
+      if (!m_buckets[i].empty ())
+        {
+          Scheduler::Event next = m_buckets[i].front ();
+          if (next.key.m_ts < bucketTop)
+            {
+              return next;
+            }
+          if (next.key < minEvent.key)
+            {
+              minEvent = next;
+            }
+        }
+      i++;
+      i %= m_nBuckets;
+      bucketTop += m_width;
+    }
+  while (i != m_lastBucket);
 
   return minEvent;
 }
@@ -153,27 +155,29 @@ CalendarScheduler::DoRemoveNext (void)
   uint32_t i = m_lastBucket;
   uint64_t bucketTop = m_bucketTop;
   Scheduler::Event minEvent = {0, {~0, ~0}};
-  do {
-    if (!m_buckets[i].empty ())
-      {
-        Scheduler::Event next = m_buckets[i].front ();
-        if (next.key.m_ts < bucketTop)
-          {
-            m_lastBucket = i;
-            m_lastPrio = next.key.m_ts;
-            m_bucketTop = bucketTop;
-            m_buckets[i].pop_front ();
-            return next;
-          }
-        if (next.key < minEvent.key)
-          {
-            minEvent = next;
-          }
-      }
-    i++;
-    i %= m_nBuckets;
-    bucketTop += m_width;
-  } while (i != m_lastBucket);
+  do
+    {
+      if (!m_buckets[i].empty ())
+        {
+          Scheduler::Event next = m_buckets[i].front ();
+          if (next.key.m_ts < bucketTop)
+            {
+              m_lastBucket = i;
+              m_lastPrio = next.key.m_ts;
+              m_bucketTop = bucketTop;
+              m_buckets[i].pop_front ();
+              return next;
+            }
+          if (next.key < minEvent.key)
+            {
+              minEvent = next;
+            }
+        }
+      i++;
+      i %= m_nBuckets;
+      bucketTop += m_width;
+    }
+  while (i != m_lastBucket);
 
   m_lastPrio = minEvent.key.m_ts;
   m_lastBucket = Hash (minEvent.key.m_ts);
@@ -190,8 +194,8 @@ CalendarScheduler::RemoveNext (void)
   NS_ASSERT (!IsEmpty ());
 
   Scheduler::Event ev = DoRemoveNext ();
-  NS_LOG_LOGIC ("remove ts=" << ev.key.m_ts << 
-                ", key=" << ev.key.m_uid << 
+  NS_LOG_LOGIC ("remove ts=" << ev.key.m_ts <<
+                ", key=" << ev.key.m_uid <<
                 ", from bucket=" << m_lastBucket);
   m_qSize--;
   ResizeDown ();
@@ -221,16 +225,16 @@ CalendarScheduler::Remove (const Event &ev)
   NS_ASSERT (false);
 }
 
-void 
+void
 CalendarScheduler::ResizeUp (void)
 {
-  if (m_qSize > m_nBuckets * 2 && 
-      m_nBuckets < 32768)
+  if (m_qSize > m_nBuckets * 2
+      && m_nBuckets < 32768)
     {
       Resize (m_nBuckets * 2);
     }
 }
-void 
+void
 CalendarScheduler::ResizeDown (void)
 {
   if (m_qSize < m_nBuckets / 2)
@@ -242,7 +246,7 @@ CalendarScheduler::ResizeDown (void)
 uint32_t
 CalendarScheduler::CalculateNewWidth (void)
 {
-  if (m_qSize < 2) 
+  if (m_qSize < 2)
     {
       return 1;
     }
@@ -266,14 +270,14 @@ CalendarScheduler::CalculateNewWidth (void)
   uint32_t lastBucket = m_lastBucket;
   uint64_t bucketTop = m_bucketTop;
   uint64_t lastPrio = m_lastPrio;
- 
+
   // gather requested events
   for (uint32_t i = 0; i < nSamples; i++)
     {
       samples.push_back (DoRemoveNext ());
     }
   // put them back
-  for (std::list<Scheduler::Event>::const_iterator i = samples.begin (); 
+  for (std::list<Scheduler::Event>::const_iterator i = samples.begin ();
        i != samples.end (); ++i)
     {
       DoInsert (*i);
@@ -326,20 +330,20 @@ CalendarScheduler::DoResize (uint32_t newSize, uint32_t newWidth)
   for (uint32_t i = 0; i < oldNBuckets; i++)
     {
       Bucket::iterator end = oldBuckets[i].end ();
-      for (Bucket::iterator j = oldBuckets[i].begin (); j != end; ++j) 
+      for (Bucket::iterator j = oldBuckets[i].begin (); j != end; ++j)
         {
           DoInsert (*j);
         }
     }
   delete [] oldBuckets;
 }
-void 
+void
 CalendarScheduler::Resize (uint32_t newSize)
 {
   NS_LOG_FUNCTION (this << newSize);
 
-  //PrintInfo ();
-  uint32_t newWidth = CalculateNewWidth ();  
+  // PrintInfo ();
+  uint32_t newWidth = CalculateNewWidth ();
   DoResize (newSize, newWidth);
 }
 

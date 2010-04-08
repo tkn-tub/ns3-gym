@@ -31,20 +31,22 @@ namespace ns3 {
 
 NS_OBJECT_ENSURE_REGISTERED (MapScheduler);
 
-TypeId 
+TypeId
 MapScheduler::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::MapScheduler")
     .SetParent<Scheduler> ()
     .AddConstructor<MapScheduler> ()
-    ;
+  ;
   return tid;
 }
 
 MapScheduler::MapScheduler ()
-{}
+{
+}
 MapScheduler::~MapScheduler ()
-{}
+{
+}
 
 void
 MapScheduler::Insert (const Event &ev)
@@ -67,7 +69,7 @@ MapScheduler::PeekNext (void) const
   NS_LOG_FUNCTION (this);
   EventMapCI i = m_list.begin ();
   NS_ASSERT (i != m_list.end ());
-  
+
   Event ev;
   ev.impl = i->second;
   ev.key = i->first;

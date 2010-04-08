@@ -28,23 +28,25 @@ Timer::Timer ()
     m_delay (FemtoSeconds (0)),
     m_event (),
     m_impl (0)
-{}
+{
+}
 
 Timer::Timer (enum DestroyPolicy destroyPolicy)
   : m_flags (destroyPolicy),
     m_delay (FemtoSeconds (0)),
     m_event (),
     m_impl (0)
-{}
+{
+}
 
 Timer::~Timer ()
 {
   if (m_flags & CHECK_ON_DESTROY)
     {
       if (m_event.IsRunning ())
-	{
-	  NS_FATAL_ERROR ("Event is still running while destroying.");
-	}
+        {
+          NS_FATAL_ERROR ("Event is still running while destroying.");
+        }
     }
   else if (m_flags & CANCEL_ON_DESTROY)
     {
@@ -57,12 +59,12 @@ Timer::~Timer ()
   delete m_impl;
 }
 
-void 
+void
 Timer::SetDelay (const Time &time)
 {
   m_delay = time;
 }
-Time 
+Time
 Timer::GetDelay (void) const
 {
   return m_delay;
@@ -70,39 +72,40 @@ Timer::GetDelay (void) const
 Time
 Timer::GetDelayLeft (void) const
 {
-  switch (GetState ()) {
-  case Timer::RUNNING:
-    return Simulator::GetDelayLeft (m_event);
-    break;
-  case Timer::EXPIRED:
-    return TimeStep (0);
-    break;
-  case Timer::SUSPENDED:
-    return m_delayLeft;
-    break;
-  default:
-    NS_ASSERT (false);
-    return TimeStep (0);
-    break;
-  }
+  switch (GetState ())
+    {
+    case Timer::RUNNING:
+      return Simulator::GetDelayLeft (m_event);
+      break;
+    case Timer::EXPIRED:
+      return TimeStep (0);
+      break;
+    case Timer::SUSPENDED:
+      return m_delayLeft;
+      break;
+    default:
+      NS_ASSERT (false);
+      return TimeStep (0);
+      break;
+    }
 }
 
-void 
+void
 Timer::Cancel (void)
 {
   Simulator::Cancel (m_event);
 }
-void 
+void
 Timer::Remove (void)
 {
   Simulator::Remove (m_event);
 }
-bool 
+bool
 Timer::IsExpired (void) const
 {
   return !IsSuspended () && m_event.IsExpired ();
 }
-bool 
+bool
 Timer::IsRunning (void) const
 {
   return !IsSuspended () && m_event.IsRunning ();
@@ -112,7 +115,7 @@ Timer::IsSuspended (void) const
 {
   return (m_flags & TIMER_SUSPENDED) == TIMER_SUSPENDED;
 }
-enum Timer::State 
+enum Timer::State
 Timer::GetState (void) const
 {
   if (IsRunning ())
@@ -123,20 +126,20 @@ Timer::GetState (void) const
     {
       return Timer::EXPIRED;
     }
-  else 
+  else
     {
       NS_ASSERT (IsSuspended ());
       return Timer::SUSPENDED;
     }
 }
 
-void 
+void
 Timer::Schedule (void)
 {
   Schedule (m_delay);
 }
 
-void 
+void
 Timer::Schedule (Time delay)
 {
   NS_ASSERT (m_impl != 0);
@@ -173,25 +176,35 @@ Timer::Resume (void)
 
 namespace {
 void bari (int)
-{}
+{
+}
 void bar2i (int, int)
-{}
+{
+}
 void bar3i (int, int, int)
-{}
+{
+}
 void bar4i (int, int, int, int)
-{}
+{
+}
 void bar5i (int, int, int, int, int)
-{}
+{
+}
 void bar6i (int, int, int, int, int, int)
-{}
+{
+}
 void barcir (const int &)
-{}
+{
+}
 void barir (int &)
-{}
+{
+}
 void barip (int *)
-{}
+{
+}
 void barcip (const int *)
-{}
+{
+}
 } // anonymous namespace
 
 namespace ns3 {
@@ -205,8 +218,9 @@ public:
 
 TimerStateTestCase::TimerStateTestCase ()
   : TestCase ("Check correct state transitions")
-{}
-bool 
+{
+}
+bool
 TimerStateTestCase::DoRun (void)
 {
   Timer timer = Timer (Timer::CANCEL_ON_DESTROY);
@@ -247,21 +261,42 @@ public:
   TimerTemplateTestCase ();
   virtual bool DoRun (void);
   virtual void DoTeardown (void);
-  void bazi (int) {}
-  void baz2i (int, int) {}
-  void baz3i (int, int, int) {}
-  void baz4i (int, int, int, int) {}
-  void baz5i (int, int, int, int, int) {}
-  void baz6i (int, int, int, int, int, int) {}
-  void bazcir (const int&) {}
-  void bazir (int&) {}
-  void bazip (int *) {}
-  void bazcip (const int *) {}
+  void bazi (int)
+  {
+  }
+  void baz2i (int, int)
+  {
+  }
+  void baz3i (int, int, int)
+  {
+  }
+  void baz4i (int, int, int, int)
+  {
+  }
+  void baz5i (int, int, int, int, int)
+  {
+  }
+  void baz6i (int, int, int, int, int, int)
+  {
+  }
+  void bazcir (const int&)
+  {
+  }
+  void bazir (int&)
+  {
+  }
+  void bazip (int *)
+  {
+  }
+  void bazcip (const int *)
+  {
+  }
 };
 
 TimerTemplateTestCase::TimerTemplateTestCase ()
   : TestCase ("Check that template magic is working")
-{}
+{
+}
 
 bool
 TimerTemplateTestCase::DoRun (void)
@@ -289,7 +324,7 @@ TimerTemplateTestCase::DoRun (void)
   timer.SetArguments (c);
   // the following call cannot possibly work and is flagged by
   // a runtime error.
-  //timer.SetArguments (0.0);
+  // timer.SetArguments (0.0);
   timer.SetDelay (Seconds (1.0));
   timer.Schedule ();
 
@@ -309,8 +344,8 @@ TimerTemplateTestCase::DoRun (void)
   timer.SetFunction (&bar5i);
   timer.SetArguments (1, 1, 1, 1, 1);
   // unsupported in simulator class
-  //timer.SetFunction (&bar6i);
-  //timer.SetArguments (1, 1, 1, 1, 1, 1);
+  // timer.SetFunction (&bar6i);
+  // timer.SetArguments (1, 1, 1, 1, 1, 1);
 
   timer.SetFunction (&TimerTemplateTestCase::baz2i, this);
   timer.SetArguments (1, 1);
@@ -321,8 +356,8 @@ TimerTemplateTestCase::DoRun (void)
   timer.SetFunction (&TimerTemplateTestCase::baz5i, this);
   timer.SetArguments (1, 1, 1, 1, 1);
   // unsupported in simulator class
-  //timer.SetFunction (&TimerTemplateTestCase::baz6i, this);
-  //timer.SetArguments (1, 1, 1, 1, 1, 1);
+  // timer.SetFunction (&TimerTemplateTestCase::baz6i, this);
+  // timer.SetArguments (1, 1, 1, 1, 1, 1);
 
   Simulator::Run ();
   Simulator::Destroy ();

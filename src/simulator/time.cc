@@ -39,7 +39,7 @@ static const uint64_t PS_FACTOR = (uint64_t)1000000 * (uint64_t)1000000;
 static const uint64_t FS_FACTOR = (uint64_t)1000000 * (uint64_t)1000000 * (uint64_t)1000;
 static uint64_t g_tsPrecFactor = NS_FACTOR;
 
-static GlobalValue g_precisionDefaultValue ("TimeStepPrecision", 
+static GlobalValue g_precisionDefaultValue ("TimeStepPrecision",
                                             "The time unit of the internal 64 bit integer time.",
                                             EnumValue (NS),
                                             MakeEnumChecker (NS, "NS",
@@ -58,76 +58,76 @@ Get (void)
   return (precision_t) v.Get ();
 }
 
-void 
+void
 Set (precision_t precision)
 {
   g_precisionDefaultValue.SetValue (EnumValue (precision));
-  g_tsPrecFactor = (uint64_t)pow(10, precision);
+  g_tsPrecFactor = (uint64_t)pow (10, precision);
 }
 
 } // namespace TimeStepPrecision
 
-TimeUnit<1>::TimeUnit(const std::string& s)
+TimeUnit<1>::TimeUnit (const std::string& s)
 {
-  std::string::size_type n = s.find_first_not_of("0123456789.");
+  std::string::size_type n = s.find_first_not_of ("0123456789.");
   if (n != std::string::npos)
-  { // Found non-numeric
-    std::istringstream iss;
-    iss.str (s.substr(0, n));
-    double r;
-    iss >> r;
-    std::string trailer = s.substr(n, std::string::npos);
-    if (trailer == std::string("s"))
-    {
-      m_data = HighPrecision (r * TimeStepPrecision::g_tsPrecFactor);
-      return;
+    { // Found non-numeric
+      std::istringstream iss;
+      iss.str (s.substr (0, n));
+      double r;
+      iss >> r;
+      std::string trailer = s.substr (n, std::string::npos);
+      if (trailer == std::string ("s"))
+        {
+          m_data = HighPrecision (r * TimeStepPrecision::g_tsPrecFactor);
+          return;
+        }
+      if (trailer == std::string ("ms"))
+        {
+          m_data = HighPrecision ((int64_t)(r * (TimeStepPrecision::g_tsPrecFactor / pow (10,3))),
+                                  false);
+          return;
+        }
+      if (trailer == std::string ("us"))
+        {
+          m_data = HighPrecision ((int64_t)(r * (TimeStepPrecision::g_tsPrecFactor / pow (10,6))),
+                                  false);
+          return;
+        }
+      if (trailer == std::string ("ns"))
+        {
+          m_data = HighPrecision ((int64_t)(r * (TimeStepPrecision::g_tsPrecFactor / pow (10,9))),
+                                  false);
+          return;
+        }
+      if (trailer == std::string ("ps"))
+        {
+          m_data = HighPrecision ((int64_t)(r * (TimeStepPrecision::g_tsPrecFactor / pow (10,12))),
+                                  false);
+          return;
+        }
+      if (trailer == std::string ("fs"))
+        {
+          m_data = HighPrecision ((int64_t)(r * (TimeStepPrecision::g_tsPrecFactor / pow (10,15))),
+                                  false);
+          return;
+        }
+      NS_FATAL_ERROR ("Can't Parse Time " << s);
     }
-    if (trailer == std::string("ms"))
-    {
-      m_data = HighPrecision ((int64_t)(r * (TimeStepPrecision::g_tsPrecFactor/pow(10,3))), 
-                              false);
-      return;
-    }
-    if (trailer == std::string("us"))
-    {
-      m_data = HighPrecision ((int64_t)(r * (TimeStepPrecision::g_tsPrecFactor/pow(10,6))), 
-                              false);
-      return;
-    }
-    if (trailer == std::string("ns"))
-    {
-      m_data = HighPrecision ((int64_t)(r * (TimeStepPrecision::g_tsPrecFactor/pow(10,9))), 
-                              false);
-      return;
-    }
-    if (trailer == std::string("ps"))
-    {
-      m_data = HighPrecision ((int64_t)(r * (TimeStepPrecision::g_tsPrecFactor/pow(10,12))), 
-                              false);
-      return;
-    }
-    if (trailer == std::string("fs"))
-    {
-      m_data = HighPrecision ((int64_t)(r * (TimeStepPrecision::g_tsPrecFactor/pow(10,15))), 
-                              false);
-      return;
-    }
-    NS_FATAL_ERROR("Can't Parse Time "<<s);
-  }
-  //else
-  //they didn't provide units, assume seconds
+  // else
+  // they didn't provide units, assume seconds
   std::istringstream iss;
-  iss. str (s);
+  iss.str (s);
   double v;
   iss >> v;
   m_data = HighPrecision (v * TimeStepPrecision::g_tsPrecFactor);
 }
 
-double 
+double
 TimeUnit<1>::GetSeconds (void) const
 {
   double timeValue = GetHighPrecision ().GetDouble ();
-  return timeValue/TimeStepPrecision::g_tsPrecFactor;
+  return timeValue / TimeStepPrecision::g_tsPrecFactor;
 }
 
 int64_t
@@ -149,43 +149,43 @@ TimeUnit<1>::ConvertToUnits (int64_t timeValue, uint64_t unitFactor) const
 }
 
 
-int64_t 
+int64_t
 TimeUnit<1>::GetMilliSeconds (void) const
 {
-  int64_t ts = GetTimeStep();
-  int64_t ms = ConvertToUnits(ts, TimeStepPrecision::MS_FACTOR);
+  int64_t ts = GetTimeStep ();
+  int64_t ms = ConvertToUnits (ts, TimeStepPrecision::MS_FACTOR);
 
   return ms;
 }
-int64_t 
+int64_t
 TimeUnit<1>::GetMicroSeconds (void) const
 {
-  int64_t ts = GetTimeStep();
-  int64_t us = ConvertToUnits(ts, TimeStepPrecision::US_FACTOR);
+  int64_t ts = GetTimeStep ();
+  int64_t us = ConvertToUnits (ts, TimeStepPrecision::US_FACTOR);
 
   return us;
 }
-int64_t 
+int64_t
 TimeUnit<1>::GetNanoSeconds (void) const
 {
-  int64_t ts = GetTimeStep();
-  int64_t ns = ConvertToUnits(ts, TimeStepPrecision::NS_FACTOR);
+  int64_t ts = GetTimeStep ();
+  int64_t ns = ConvertToUnits (ts, TimeStepPrecision::NS_FACTOR);
 
   return ns;
 }
-int64_t 
+int64_t
 TimeUnit<1>::GetPicoSeconds (void) const
 {
-  int64_t ts = GetTimeStep();
-  int64_t ps = ConvertToUnits(ts, TimeStepPrecision::PS_FACTOR);
+  int64_t ts = GetTimeStep ();
+  int64_t ps = ConvertToUnits (ts, TimeStepPrecision::PS_FACTOR);
 
   return ps;
 }
-int64_t 
+int64_t
 TimeUnit<1>::GetFemtoSeconds (void) const
 {
-  int64_t ts = GetTimeStep();
-  int64_t fs = ConvertToUnits(ts, TimeStepPrecision::FS_FACTOR);
+  int64_t ts = GetTimeStep ();
+  int64_t fs = ConvertToUnits (ts, TimeStepPrecision::FS_FACTOR);
 
   return fs;
 }
@@ -201,30 +201,31 @@ TimeUnit<1>::GetTimeStep (void) const
 }
 
 
-std::ostream& 
+std::ostream&
 operator<< (std::ostream& os, const Time & time)
 {
   std::string unit;
-  switch (TimeStepPrecision::Get ()) {
-  case TimeStepPrecision::S:
-    unit = "s";
-    break;
-  case TimeStepPrecision::MS:
-    unit = "ms";
-    break;
-  case TimeStepPrecision::US:
-    unit = "us";
-    break;
-  case TimeStepPrecision::NS:
-    unit = "ns";
-    break;
-  case TimeStepPrecision::PS:
-    unit = "ps";
-    break;
-  case TimeStepPrecision::FS:
-    unit = "fs";
-    break;
-  }
+  switch (TimeStepPrecision::Get ())
+    {
+    case TimeStepPrecision::S:
+      unit = "s";
+      break;
+    case TimeStepPrecision::MS:
+      unit = "ms";
+      break;
+    case TimeStepPrecision::US:
+      unit = "us";
+      break;
+    case TimeStepPrecision::NS:
+      unit = "ns";
+      break;
+    case TimeStepPrecision::PS:
+      unit = "ps";
+      break;
+    case TimeStepPrecision::FS:
+      unit = "fs";
+      break;
+    }
   os << time.GetTimeStep () << unit;
   return os;
 }
@@ -232,17 +233,17 @@ std::istream& operator>> (std::istream& is, Time & time)
 {
   std::string value;
   is >> value;
-  std::string::size_type n = value.find_first_not_of("0123456789.");
+  std::string::size_type n = value.find_first_not_of ("0123456789.");
   if (n == std::string::npos)
     {
       is.setstate (std::ios_base::failbit);
       return is;
     }
-  std::string trailer = value.substr(n, value.size ()-n);
+  std::string trailer = value.substr (n, value.size () - n);
   std::istringstream iss;
-  iss.str (value.substr(0, n));
+  iss.str (value.substr (0, n));
 
-  if (trailer == std::string("s"))
+  if (trailer == std::string ("s"))
     {
       double v;
       iss >> v;
@@ -255,23 +256,23 @@ std::istream& operator>> (std::istream& is, Time & time)
     {
       is.setstate (std::ios_base::failbit);
     }
-  else if (trailer == std::string("ms"))
+  else if (trailer == std::string ("ms"))
     {
       time = MilliSeconds (integer);
     }
-  else if (trailer == std::string("us"))
+  else if (trailer == std::string ("us"))
     {
       time = MicroSeconds (integer);
     }
-  else if (trailer == std::string("ns"))
+  else if (trailer == std::string ("ns"))
     {
       time = NanoSeconds (integer);
     }
-  else if (trailer == std::string("ps"))
+  else if (trailer == std::string ("ps"))
     {
       time = PicoSeconds (integer);
     }
-  else if (trailer == std::string("fs"))
+  else if (trailer == std::string ("fs"))
     {
       time = FemtoSeconds (integer);
     }
@@ -290,7 +291,7 @@ Time Seconds (double seconds)
 }
 
 uint64_t
-TimeUnit<1>::UnitsToTimestep (uint64_t unitValue, 
+TimeUnit<1>::UnitsToTimestep (uint64_t unitValue,
                               uint64_t unitFactor)
 {
   uint64_t precFactor;
@@ -313,30 +314,30 @@ ATTRIBUTE_CHECKER_IMPLEMENT (Time);
 
 Time MilliSeconds (uint64_t ms)
 {
-  uint64_t ts = TimeUnit<1>::UnitsToTimestep(ms, TimeStepPrecision::MS_FACTOR);
-  return TimeStep(ts);
+  uint64_t ts = TimeUnit<1>::UnitsToTimestep (ms, TimeStepPrecision::MS_FACTOR);
+  return TimeStep (ts);
 }
 
 Time MicroSeconds (uint64_t us)
 {
-  uint64_t ts = TimeUnit<1>::UnitsToTimestep(us, TimeStepPrecision::US_FACTOR);
-  return TimeStep(ts);
+  uint64_t ts = TimeUnit<1>::UnitsToTimestep (us, TimeStepPrecision::US_FACTOR);
+  return TimeStep (ts);
 }
 
 Time NanoSeconds (uint64_t ns)
 {
-  uint64_t ts = TimeUnit<1>::UnitsToTimestep(ns, TimeStepPrecision::NS_FACTOR);
-  return TimeStep(ts);
+  uint64_t ts = TimeUnit<1>::UnitsToTimestep (ns, TimeStepPrecision::NS_FACTOR);
+  return TimeStep (ts);
 }
 Time PicoSeconds (uint64_t ps)
 {
-  uint64_t ts = TimeUnit<1>::UnitsToTimestep(ps, TimeStepPrecision::PS_FACTOR);
-  return TimeStep(ts);
+  uint64_t ts = TimeUnit<1>::UnitsToTimestep (ps, TimeStepPrecision::PS_FACTOR);
+  return TimeStep (ts);
 }
 Time FemtoSeconds (uint64_t fs)
 {
-  uint64_t ts = TimeUnit<1>::UnitsToTimestep(fs, TimeStepPrecision::FS_FACTOR);
-  return TimeStep(ts);
+  uint64_t ts = TimeUnit<1>::UnitsToTimestep (fs, TimeStepPrecision::FS_FACTOR);
+  return TimeStep (ts);
 }
 
 
@@ -351,7 +352,8 @@ Time TimeStep (uint64_t ts)
 
 TimeUnit<0>::TimeUnit (double scalar)
   : m_data (HighPrecision (scalar))
-{}
+{
+}
 
 double
 TimeUnit<0>::GetDouble (void) const
@@ -365,86 +367,87 @@ TimeUnit<0>::GetDouble (void) const
 
 namespace ns3 {
 
-#define PRECISION(mult) (pow(10,-((double)(ns3::TimeStepPrecision::Get ())))*mult)
+#define PRECISION(mult) (pow (10,-((double)(ns3::TimeStepPrecision::Get ()))) * mult)
 #define ASSERT_MSG_EQ(a,b,mult,msg)                                     \
-  NS_TEST_ASSERT_MSG_EQ(((a)<((b)-PRECISION(mult)) || (a)>((b)+PRECISION(mult))),false, \
-                        msg << " Values are not equal within requested precision range: " << \
-                        (a) << "!=" << (b) << " ~ " << PRECISION(mult))
+  NS_TEST_ASSERT_MSG_EQ (((a) < ((b) - PRECISION (mult)) || (a) > ((b) + PRECISION (mult))),false, \
+                         msg << " Values are not equal within requested precision range: " << \
+                         (a) << "!=" << (b) << " ~ " << PRECISION (mult))
 #define ASSERT_MSG_EQ_INT(a,b,mult,msg) \
-  ASSERT_MSG_EQ(((int64_t)(a)),((int64_t)(b)),mult,msg)
+  ASSERT_MSG_EQ (((int64_t)(a)),((int64_t)(b)),mult,msg)
 #define ASSERT_EQ(a,b)                          \
-  ASSERT_MSG_EQ(a,b,1,"")
+  ASSERT_MSG_EQ (a,b,1,"")
 
 class OldTimeTestCase : public TestCase
 {
 public:
-  OldTimeTestCase();
+  OldTimeTestCase ();
   virtual bool DoRun (void);
 };
 
-OldTimeTestCase::OldTimeTestCase()
-  : TestCase("Sanity check of common time operations")
-{}
-bool 
+OldTimeTestCase::OldTimeTestCase ()
+  : TestCase ("Sanity check of common time operations")
+{
+}
+bool
 OldTimeTestCase::DoRun (void)
-{  
-  NS_TEST_ASSERT_MSG_EQ(TimeStepPrecision::Get(), 
-                        TimeStepPrecision::NS,
-                        "Invalid precision mode");
+{
+  NS_TEST_ASSERT_MSG_EQ (TimeStepPrecision::Get (),
+                         TimeStepPrecision::NS,
+                         "Invalid precision mode");
 
   Time t0 = Seconds (10.0);
-  ASSERT_EQ(t0.GetSeconds(), 10.0);
+  ASSERT_EQ (t0.GetSeconds (), 10.0);
 
   Time t1 = Seconds (11.0);
-  ASSERT_EQ(t1.GetSeconds(), 11.0);
+  ASSERT_EQ (t1.GetSeconds (), 11.0);
 
   t0 = Seconds (1.5);
-  ASSERT_EQ(t0.GetSeconds(), 1.5);
+  ASSERT_EQ (t0.GetSeconds (), 1.5);
 
   t0 = Seconds (-1.5);
-  ASSERT_EQ(t0.GetSeconds(), -1.5);
+  ASSERT_EQ (t0.GetSeconds (), -1.5);
 
   t0 = MilliSeconds ((uint64_t)10.0);
-  ASSERT_EQ(t0.GetSeconds(), 0.01);
+  ASSERT_EQ (t0.GetSeconds (), 0.01);
 
   t1 = MilliSeconds ((uint64_t)11.0);
-  ASSERT_EQ(t1.GetSeconds(), 0.011);
+  ASSERT_EQ (t1.GetSeconds (), 0.011);
 
 
   Time t2, t3;
 
   t2 = t1 - t0;
-  NS_TEST_ASSERT_MSG_EQ(t2.IsStrictlyPositive (),true, "Variable should be positive");
-  ASSERT_EQ(t2.GetSeconds(), t1.GetSeconds()-t0.GetSeconds());
+  NS_TEST_ASSERT_MSG_EQ (t2.IsStrictlyPositive (),true, "Variable should be positive");
+  ASSERT_EQ (t2.GetSeconds (), t1.GetSeconds () - t0.GetSeconds ());
 
   t2 = t1 - t1;
-  NS_TEST_ASSERT_MSG_EQ(t2.IsZero (),true, "Variable should be zero");
-  ASSERT_EQ(t2.GetSeconds(), t1.GetSeconds()-t1.GetSeconds());
+  NS_TEST_ASSERT_MSG_EQ (t2.IsZero (),true, "Variable should be zero");
+  ASSERT_EQ (t2.GetSeconds (), t1.GetSeconds () - t1.GetSeconds ());
 
   t2 = t0 - t1;
-  NS_TEST_ASSERT_MSG_EQ(t2.IsStrictlyNegative (),true, "Variable should be negative");
-  ASSERT_EQ(t2.GetSeconds(), t0.GetSeconds()-t1.GetSeconds());
+  NS_TEST_ASSERT_MSG_EQ (t2.IsStrictlyNegative (),true, "Variable should be negative");
+  ASSERT_EQ (t2.GetSeconds (), t0.GetSeconds () - t1.GetSeconds ());
 
   Time tmp = MilliSeconds (0);
-  NS_TEST_ASSERT_MSG_EQ((MilliSeconds (0) == NanoSeconds(0)), true, "Zero is not Zero ?");
-  NS_TEST_ASSERT_MSG_EQ((MilliSeconds (0) > NanoSeconds(0)), false, "Zero is bigger than Zero ?");
-  NS_TEST_ASSERT_MSG_EQ((MilliSeconds (0) < NanoSeconds(0)), false, "Zero is smaller than Zero ?");
+  NS_TEST_ASSERT_MSG_EQ ((MilliSeconds (0) == NanoSeconds (0)), true, "Zero is not Zero ?");
+  NS_TEST_ASSERT_MSG_EQ ((MilliSeconds (0) > NanoSeconds (0)), false, "Zero is bigger than Zero ?");
+  NS_TEST_ASSERT_MSG_EQ ((MilliSeconds (0) < NanoSeconds (0)), false, "Zero is smaller than Zero ?");
 
   Time t4 = Seconds (10.0) * Scalar (1.5);
-  ASSERT_EQ(t4.GetSeconds(), 15.0);
+  ASSERT_EQ (t4.GetSeconds (), 15.0);
 
   Time t5 = NanoSeconds (10) * Scalar (1.5);
-  ASSERT_EQ(t5.GetNanoSeconds(), 15.0);
+  ASSERT_EQ (t5.GetNanoSeconds (), 15.0);
 
   Time t6 = Seconds (10.0) * Scalar (15) / Scalar (10);
-  ASSERT_EQ(t6.GetSeconds (), 15.0);
+  ASSERT_EQ (t6.GetSeconds (), 15.0);
 
   Time t7 = NanoSeconds (10) * Scalar (15) / Scalar (10);
-  ASSERT_EQ(t7.GetNanoSeconds (), 15.0);
+  ASSERT_EQ (t7.GetNanoSeconds (), 15.0);
 
-  ASSERT_EQ((t1 + t2).GetSeconds (), t1.GetSeconds()+t2.GetSeconds());
+  ASSERT_EQ ((t1 + t2).GetSeconds (), t1.GetSeconds () + t2.GetSeconds ());
 
-  ASSERT_EQ((t1 / t2).GetDouble (), t1.GetSeconds()/t2.GetSeconds());
+  ASSERT_EQ ((t1 / t2).GetDouble (), t1.GetSeconds () / t2.GetSeconds ());
 
   return false;
 }
@@ -452,54 +455,55 @@ OldTimeTestCase::DoRun (void)
 class OperationsTimeTestCase : public TestCase
 {
 public:
-  OperationsTimeTestCase();
-  virtual bool DoRun(void);
+  OperationsTimeTestCase ();
+  virtual bool DoRun (void);
 };
 
-OperationsTimeTestCase::OperationsTimeTestCase()
+OperationsTimeTestCase::OperationsTimeTestCase ()
   : TestCase ("Check the +, -, * and / operators for the TimeUnit<1>")
-{}
+{
+}
 
 bool
-OperationsTimeTestCase::DoRun(void)
+OperationsTimeTestCase::DoRun (void)
 {
   // What happens if you set these values ?
   //  t0 = Seconds ((uint64_t)10.0);
   //  t1 = Seconds ((uint64_t)11.0);
 
-  Time t0 = MilliSeconds(10);
-  Time t1 = MilliSeconds(11);
+  Time t0 = MilliSeconds (10);
+  Time t1 = MilliSeconds (11);
 
-  ASSERT_EQ((t0-t1).GetSeconds(),
-            (t0.GetSeconds()-t1.GetSeconds()));
-  ASSERT_EQ(((t0-t1) * t0 / t0).GetSeconds(),
-            ((t0.GetSeconds()-t1.GetSeconds()) * t0.GetSeconds () / t0.GetSeconds ()));
-  ASSERT_EQ(((t0-t1) * t0 / t1).GetSeconds(),
-            ((t0.GetSeconds()-t1.GetSeconds()) * t0.GetSeconds () / t1.GetSeconds ()));
-  ASSERT_EQ((t0 * (t0-t1) / t1).GetSeconds(),
-            (t0.GetSeconds () * (t0.GetSeconds()-t1.GetSeconds()) / t1.GetSeconds ()));
-  ASSERT_EQ((t0 * t1 / (t0-t1)).GetSeconds(),
-            (t0.GetSeconds () * t1.GetSeconds() / (t0.GetSeconds()-t1.GetSeconds())));
-  ASSERT_EQ((t0 * (t1 / (t0-t1))).GetSeconds(),
-            (t0.GetSeconds () * (t1.GetSeconds() / (t0.GetSeconds()-t1.GetSeconds()))));
-  ASSERT_EQ(((t0 * t1) / (t0-t1)).GetSeconds(),
-            ((t0.GetSeconds () * t1.GetSeconds()) / (t0.GetSeconds()-t1.GetSeconds())));
-  ASSERT_EQ((t0 / t1 * (t0-t1)).GetSeconds(),
-            (t0.GetSeconds () / t1.GetSeconds() * (t0.GetSeconds()-t1.GetSeconds())));
-  ASSERT_EQ(((t0 / t1) * (t0-t1)).GetSeconds(),
-              (t0.GetSeconds () / t1.GetSeconds()) * (t0.GetSeconds()-t1.GetSeconds()));
-  ASSERT_EQ((t0 * Scalar(10.0)).GetSeconds (), (t0.GetSeconds () * 10.0));
-  ASSERT_EQ((Scalar(10.0) * t0).GetSeconds (), (10.0 * t0.GetSeconds ()));
+  ASSERT_EQ ((t0 - t1).GetSeconds (),
+             (t0.GetSeconds () - t1.GetSeconds ()));
+  ASSERT_EQ (((t0 - t1) * t0 / t0).GetSeconds (),
+             ((t0.GetSeconds () - t1.GetSeconds ()) * t0.GetSeconds () / t0.GetSeconds ()));
+  ASSERT_EQ (((t0 - t1) * t0 / t1).GetSeconds (),
+             ((t0.GetSeconds () - t1.GetSeconds ()) * t0.GetSeconds () / t1.GetSeconds ()));
+  ASSERT_EQ ((t0 * (t0 - t1) / t1).GetSeconds (),
+             (t0.GetSeconds () * (t0.GetSeconds () - t1.GetSeconds ()) / t1.GetSeconds ()));
+  ASSERT_EQ ((t0 * t1 / (t0 - t1)).GetSeconds (),
+             (t0.GetSeconds () * t1.GetSeconds () / (t0.GetSeconds () - t1.GetSeconds ())));
+  ASSERT_EQ ((t0 * (t1 / (t0 - t1))).GetSeconds (),
+             (t0.GetSeconds () * (t1.GetSeconds () / (t0.GetSeconds () - t1.GetSeconds ()))));
+  ASSERT_EQ (((t0 * t1) / (t0 - t1)).GetSeconds (),
+             ((t0.GetSeconds () * t1.GetSeconds ()) / (t0.GetSeconds () - t1.GetSeconds ())));
+  ASSERT_EQ ((t0 / t1 * (t0 - t1)).GetSeconds (),
+             (t0.GetSeconds () / t1.GetSeconds () * (t0.GetSeconds () - t1.GetSeconds ())));
+  ASSERT_EQ (((t0 / t1) * (t0 - t1)).GetSeconds (),
+             (t0.GetSeconds () / t1.GetSeconds ()) * (t0.GetSeconds () - t1.GetSeconds ()));
+  ASSERT_EQ ((t0 * Scalar (10.0)).GetSeconds (), (t0.GetSeconds () * 10.0));
+  ASSERT_EQ ((Scalar (10.0) * t0).GetSeconds (), (10.0 * t0.GetSeconds ()));
 
   // Note: we need to multiply by 1e9 because GetSeconds is multiplying
-  ASSERT_EQ(((t0/(t1*(t0-t1))).GetHighPrecision().GetDouble() * 1e9),
-             (t0.GetSeconds()/(t1.GetSeconds()*(t0.GetSeconds()-t1.GetSeconds()))));
+  ASSERT_EQ (((t0 / (t1 * (t0 - t1))).GetHighPrecision ().GetDouble () * 1e9),
+             (t0.GetSeconds () / (t1.GetSeconds () * (t0.GetSeconds () - t1.GetSeconds ()))));
 
-  ASSERT_EQ((t0/t1).GetDouble(),(t0.GetSeconds()/t1.GetSeconds()));
+  ASSERT_EQ ((t0 / t1).GetDouble (),(t0.GetSeconds () / t1.GetSeconds ()));
 
 
-  ASSERT_EQ((t0 * t1 / ((t0-t1) * t0)).GetDouble (),
-            (t0.GetSeconds () * t1.GetSeconds () / ((t0.GetSeconds () - t1.GetSeconds()) * t0.GetSeconds ())));
+  ASSERT_EQ ((t0 * t1 / ((t0 - t1) * t0)).GetDouble (),
+             (t0.GetSeconds () * t1.GetSeconds () / ((t0.GetSeconds () - t1.GetSeconds ()) * t0.GetSeconds ())));
   return false;
 }
 
@@ -511,8 +515,9 @@ public:
 };
 
 TimeStepTestCase::TimeStepTestCase ()
-  : TestCase("Check boundaries of TimeStep")
-{}
+  : TestCase ("Check boundaries of TimeStep")
+{
+}
 bool
 TimeStepTestCase::DoRun (void)
 {
@@ -537,30 +542,31 @@ public:
 
 GlobalPrecisionTestCase::GlobalPrecisionTestCase ()
   : TestCase ("Check that global value actually changes the underlying precision")
-{}
+{
+}
 #define CHECK_PRECISION(prec) \
-  Config::SetGlobal ("TimeStepPrecision", StringValue (#prec)); \
-  NS_TEST_ASSERT_MSG_EQ(TimeStepPrecision::Get(), TimeStepPrecision::prec, "Could not set precision " << #prec)
-bool 
+  Config::SetGlobal ("TimeStepPrecision", StringValue (# prec)); \
+  NS_TEST_ASSERT_MSG_EQ (TimeStepPrecision::Get (), TimeStepPrecision::prec, "Could not set precision " << # prec)
+bool
 GlobalPrecisionTestCase::DoRun (void)
 {
-  CHECK_PRECISION(S);
-  CHECK_PRECISION(MS);
-  CHECK_PRECISION(US);
-  CHECK_PRECISION(NS);
-  CHECK_PRECISION(PS);
-  CHECK_PRECISION(FS);
+  CHECK_PRECISION (S);
+  CHECK_PRECISION (MS);
+  CHECK_PRECISION (US);
+  CHECK_PRECISION (NS);
+  CHECK_PRECISION (PS);
+  CHECK_PRECISION (FS);
   return false;
 }
 
-void 
+void
 GlobalPrecisionTestCase::DoTeardown (void)
 {
   TimeStepPrecision::Set (TimeStepPrecision::NS);
 }
 
 #if 0
-// disable this test because it triggers crazy 
+// disable this test because it triggers crazy
 // compiler behavior (ICE+unbounded memory usage)
 class ConversionTestCase : public TestCase
 {
@@ -572,7 +578,8 @@ public:
 
 ConversionTestCase::ConversionTestCase ()
   : TestCase ("Check crazy time conversions")
-{}
+{
+}
 
 void ConversionTestCase::DoTeardown (void)
 {
@@ -581,103 +588,103 @@ void ConversionTestCase::DoTeardown (void)
 
 #define CHECK_CONVERSIONS(tmp)                                          \
   do {                                                                  \
-    double val = tmp;                                                   \
-    Time t_sec = Seconds(val);                                          \
-    ASSERT_MSG_EQ(t_sec.GetSeconds(), val*1e0, 1e0, "conv sec s");          \
-    ASSERT_MSG_EQ_INT(t_sec.GetMilliSeconds(), val*1e3, 1e3, "conv sec ms"); \
-    ASSERT_MSG_EQ_INT(t_sec.GetMicroSeconds(), val*1e6, 1e6, "conv sec us"); \
-    ASSERT_MSG_EQ_INT(t_sec.GetNanoSeconds(), val*1e9, 1e9, "conv sec ns"); \
-    ASSERT_MSG_EQ_INT(t_sec.GetPicoSeconds(), val*1e12, 1e12, "conv sec ps"); \
-    ASSERT_MSG_EQ_INT(t_sec.GetFemtoSeconds(), val*1e15, 1e15, "conv sec fs"); \
-    uint64_t int_val = (uint64_t)val;                                  \
-    Time t_ms = MilliSeconds(int_val);                                 \
-    ASSERT_MSG_EQ(t_ms.GetSeconds(), val*1e-3, 1e0, "conv ms s");       \
-    ASSERT_MSG_EQ_INT(t_ms.GetMilliSeconds(), val*1e0, 1e3, "conv ms ms");     \
-    ASSERT_MSG_EQ_INT(t_ms.GetMicroSeconds(), val*1e3, 1e6, "conv ms us"); \
-    ASSERT_MSG_EQ_INT(t_ms.GetNanoSeconds(), val*1e6, 1e9, "conv ms ns");  \
-    ASSERT_MSG_EQ_INT(t_ms.GetPicoSeconds(), val*1e9, 1e12, "conv ms fs"); \
-    ASSERT_MSG_EQ_INT(t_ms.GetFemtoSeconds(), val*1e12, 1e15, "conv ms ps"); \
-    Time t_us = MicroSeconds(int_val);                                     \
-    ASSERT_MSG_EQ(t_us.GetSeconds(), val*1e-6, 1e0, "conv us s");       \
-    ASSERT_MSG_EQ_INT(t_us.GetMilliSeconds(), val*1e-3, 1e3, "conv us ms"); \
-    ASSERT_MSG_EQ_INT(t_us.GetMicroSeconds(), val*1e0, 1e6, "conv us us");     \
-    ASSERT_MSG_EQ_INT(t_us.GetNanoSeconds(), val*1e3, 1e9, "conv us ns");  \
-    ASSERT_MSG_EQ_INT(t_us.GetPicoSeconds(), val*1e6, 1e12, "conv us ps"); \
-    ASSERT_MSG_EQ_INT(t_us.GetFemtoSeconds(), val*1e9, 1e15, "conv us fs"); \
-    Time t_ns = NanoSeconds(int_val);                                      \
-    ASSERT_MSG_EQ(t_ns.GetSeconds(), val*1e-9, 1e0, "conv ns s");       \
-    ASSERT_MSG_EQ_INT(t_ns.GetMilliSeconds(), val*1e-6, 1e3, "conv ns ms"); \
-    ASSERT_MSG_EQ_INT(t_ns.GetMicroSeconds(), val*1e-3, 1e6, "conv ns us"); \
-    ASSERT_MSG_EQ_INT(t_ns.GetNanoSeconds(), val*1e0, 1e9, "conv ns ns");      \
-    ASSERT_MSG_EQ_INT(t_ns.GetPicoSeconds(), val*1e3, 1e12, "conv ns ps"); \
-    ASSERT_MSG_EQ_INT(t_ns.GetFemtoSeconds(), val*1e6, 1e15, "conv ns fs"); \
-    Time t_ps = PicoSeconds(int_val);                                      \
-    ASSERT_MSG_EQ(t_ps.GetSeconds(), val*1e-12, 1e0, "conv ps s");      \
-    ASSERT_MSG_EQ_INT(t_ps.GetMilliSeconds(), val*1e-9, 1e3, "conv ps ms"); \
-    ASSERT_MSG_EQ_INT(t_ps.GetMicroSeconds(), val*1e-6, 1e6, "conv ps us"); \
-    ASSERT_MSG_EQ_INT(t_ps.GetNanoSeconds(), val*1e-3, 1e9, "conv ps ns");  \
-    ASSERT_MSG_EQ_INT(t_ps.GetPicoSeconds(), val*1e0, 1e12, "conv ps ps");     \
-    ASSERT_MSG_EQ_INT(t_ps.GetFemtoSeconds(), val*1e3, 1e15, "conv ps fs"); \
-    Time t_fs = FemtoSeconds(int_val);                                     \
-    ASSERT_MSG_EQ(t_fs.GetSeconds(), val*1e-15, 1e0, "conv fs sec");    \
-    ASSERT_MSG_EQ_INT(t_fs.GetMilliSeconds(), val*1e-12, 1e3, "conv fs ms"); \
-    ASSERT_MSG_EQ_INT(t_fs.GetMicroSeconds(), val*1e-9, 1e6, "conv fs us"); \
-    ASSERT_MSG_EQ_INT(t_fs.GetNanoSeconds(), val*1e-6, 1e9, "conv fs ns");  \
-    ASSERT_MSG_EQ_INT(t_fs.GetPicoSeconds(), val*1e-3, 1e12, "conv fs ps"); \
-    ASSERT_MSG_EQ_INT(t_fs.GetFemtoSeconds(), val*1e0, 1e15, "conv fs fs");    \
-  } while (false)
+      double val = tmp;                                                   \
+      Time t_sec = Seconds (val);                                          \
+      ASSERT_MSG_EQ (t_sec.GetSeconds (), val * 1e0, 1e0, "conv sec s");          \
+      ASSERT_MSG_EQ_INT (t_sec.GetMilliSeconds (), val * 1e3, 1e3, "conv sec ms"); \
+      ASSERT_MSG_EQ_INT (t_sec.GetMicroSeconds (), val * 1e6, 1e6, "conv sec us"); \
+      ASSERT_MSG_EQ_INT (t_sec.GetNanoSeconds (), val * 1e9, 1e9, "conv sec ns"); \
+      ASSERT_MSG_EQ_INT (t_sec.GetPicoSeconds (), val * 1e12, 1e12, "conv sec ps"); \
+      ASSERT_MSG_EQ_INT (t_sec.GetFemtoSeconds (), val * 1e15, 1e15, "conv sec fs"); \
+      uint64_t int_val = (uint64_t)val;                                  \
+      Time t_ms = MilliSeconds (int_val);                                 \
+      ASSERT_MSG_EQ (t_ms.GetSeconds (), val * 1e-3, 1e0, "conv ms s");       \
+      ASSERT_MSG_EQ_INT (t_ms.GetMilliSeconds (), val * 1e0, 1e3, "conv ms ms");     \
+      ASSERT_MSG_EQ_INT (t_ms.GetMicroSeconds (), val * 1e3, 1e6, "conv ms us"); \
+      ASSERT_MSG_EQ_INT (t_ms.GetNanoSeconds (), val * 1e6, 1e9, "conv ms ns");  \
+      ASSERT_MSG_EQ_INT (t_ms.GetPicoSeconds (), val * 1e9, 1e12, "conv ms fs"); \
+      ASSERT_MSG_EQ_INT (t_ms.GetFemtoSeconds (), val * 1e12, 1e15, "conv ms ps"); \
+      Time t_us = MicroSeconds (int_val);                                     \
+      ASSERT_MSG_EQ (t_us.GetSeconds (), val * 1e-6, 1e0, "conv us s");       \
+      ASSERT_MSG_EQ_INT (t_us.GetMilliSeconds (), val * 1e-3, 1e3, "conv us ms"); \
+      ASSERT_MSG_EQ_INT (t_us.GetMicroSeconds (), val * 1e0, 1e6, "conv us us");     \
+      ASSERT_MSG_EQ_INT (t_us.GetNanoSeconds (), val * 1e3, 1e9, "conv us ns");  \
+      ASSERT_MSG_EQ_INT (t_us.GetPicoSeconds (), val * 1e6, 1e12, "conv us ps"); \
+      ASSERT_MSG_EQ_INT (t_us.GetFemtoSeconds (), val * 1e9, 1e15, "conv us fs"); \
+      Time t_ns = NanoSeconds (int_val);                                      \
+      ASSERT_MSG_EQ (t_ns.GetSeconds (), val * 1e-9, 1e0, "conv ns s");       \
+      ASSERT_MSG_EQ_INT (t_ns.GetMilliSeconds (), val * 1e-6, 1e3, "conv ns ms"); \
+      ASSERT_MSG_EQ_INT (t_ns.GetMicroSeconds (), val * 1e-3, 1e6, "conv ns us"); \
+      ASSERT_MSG_EQ_INT (t_ns.GetNanoSeconds (), val * 1e0, 1e9, "conv ns ns");      \
+      ASSERT_MSG_EQ_INT (t_ns.GetPicoSeconds (), val * 1e3, 1e12, "conv ns ps"); \
+      ASSERT_MSG_EQ_INT (t_ns.GetFemtoSeconds (), val * 1e6, 1e15, "conv ns fs"); \
+      Time t_ps = PicoSeconds (int_val);                                      \
+      ASSERT_MSG_EQ (t_ps.GetSeconds (), val * 1e-12, 1e0, "conv ps s");      \
+      ASSERT_MSG_EQ_INT (t_ps.GetMilliSeconds (), val * 1e-9, 1e3, "conv ps ms"); \
+      ASSERT_MSG_EQ_INT (t_ps.GetMicroSeconds (), val * 1e-6, 1e6, "conv ps us"); \
+      ASSERT_MSG_EQ_INT (t_ps.GetNanoSeconds (), val * 1e-3, 1e9, "conv ps ns");  \
+      ASSERT_MSG_EQ_INT (t_ps.GetPicoSeconds (), val * 1e0, 1e12, "conv ps ps");     \
+      ASSERT_MSG_EQ_INT (t_ps.GetFemtoSeconds (), val * 1e3, 1e15, "conv ps fs"); \
+      Time t_fs = FemtoSeconds (int_val);                                     \
+      ASSERT_MSG_EQ (t_fs.GetSeconds (), val * 1e-15, 1e0, "conv fs sec");    \
+      ASSERT_MSG_EQ_INT (t_fs.GetMilliSeconds (), val * 1e-12, 1e3, "conv fs ms"); \
+      ASSERT_MSG_EQ_INT (t_fs.GetMicroSeconds (), val * 1e-9, 1e6, "conv fs us"); \
+      ASSERT_MSG_EQ_INT (t_fs.GetNanoSeconds (), val * 1e-6, 1e9, "conv fs ns");  \
+      ASSERT_MSG_EQ_INT (t_fs.GetPicoSeconds (), val * 1e-3, 1e12, "conv fs ps"); \
+      ASSERT_MSG_EQ_INT (t_fs.GetFemtoSeconds (), val * 1e0, 1e15, "conv fs fs");    \
+    } while (false)
 
 bool
 ConversionTestCase::DoRun (void)
 {
-  CHECK_CONVERSIONS(5);
-  CHECK_CONVERSIONS(0);
-  CHECK_CONVERSIONS(783);
-  CHECK_CONVERSIONS(1132);
+  CHECK_CONVERSIONS (5);
+  CHECK_CONVERSIONS (0);
+  CHECK_CONVERSIONS (783);
+  CHECK_CONVERSIONS (1132);
   // triggers overflow
   // XXX
   // CHECK_CONVERSIONS(3341039);
 
   TimeStepPrecision::Set (TimeStepPrecision::US);
-  CHECK_CONVERSIONS(7);
-  CHECK_CONVERSIONS(546);
-  CHECK_CONVERSIONS(6231);
+  CHECK_CONVERSIONS (7);
+  CHECK_CONVERSIONS (546);
+  CHECK_CONVERSIONS (6231);
   // triggers overflow
   // XXX
   // CHECK_CONVERSIONS(1234639);
 
   TimeStepPrecision::Set (TimeStepPrecision::MS);
-  CHECK_CONVERSIONS(3);
-  CHECK_CONVERSIONS(134);
-  CHECK_CONVERSIONS(2341);
+  CHECK_CONVERSIONS (3);
+  CHECK_CONVERSIONS (134);
+  CHECK_CONVERSIONS (2341);
   // triggers overflow
   // XXX
   // CHECK_CONVERSIONS(8956239);
 
   TimeStepPrecision::Set (TimeStepPrecision::NS);
-  CHECK_CONVERSIONS(4);
-  CHECK_CONVERSIONS(342);
-  CHECK_CONVERSIONS(1327);
+  CHECK_CONVERSIONS (4);
+  CHECK_CONVERSIONS (342);
+  CHECK_CONVERSIONS (1327);
   // triggers overflow
   // XXX
   // CHECK_CONVERSIONS(5439627);
 
   TimeStepPrecision::Set (TimeStepPrecision::PS);
-  CHECK_CONVERSIONS(4);
-  CHECK_CONVERSIONS(342);
-  CHECK_CONVERSIONS(1327);
+  CHECK_CONVERSIONS (4);
+  CHECK_CONVERSIONS (342);
+  CHECK_CONVERSIONS (1327);
   // triggers overflow
   // XXX
   // CHECK_CONVERSIONS(5439627);
 
   TimeStepPrecision::Set (TimeStepPrecision::NS);
-  CHECK_CONVERSIONS(12);
+  CHECK_CONVERSIONS (12);
 
   TimeStepPrecision::Set (TimeStepPrecision::S);
-  CHECK_CONVERSIONS(7);
+  CHECK_CONVERSIONS (7);
 
   TimeStepPrecision::Set (TimeStepPrecision::FS);
-  CHECK_CONVERSIONS(5);
+  CHECK_CONVERSIONS (5);
 
   return false;
 }
@@ -692,7 +699,8 @@ public:
 
 Bug863TestCase::Bug863TestCase ()
   : TestCase ("Bug 863")
-{}
+{
+}
 
 bool Bug863TestCase::DoRun (void)
 {
@@ -704,15 +712,15 @@ bool Bug863TestCase::DoRun (void)
 static class TimeTestSuite : public TestSuite
 {
 public:
-  TimeTestSuite()
-    : TestSuite("time", UNIT)
+  TimeTestSuite ()
+    : TestSuite ("time", UNIT)
   {
-    AddTestCase(new OldTimeTestCase());
-    AddTestCase(new OperationsTimeTestCase());
-    AddTestCase(new TimeStepTestCase());
-    AddTestCase(new GlobalPrecisionTestCase());
+    AddTestCase (new OldTimeTestCase ());
+    AddTestCase (new OperationsTimeTestCase ());
+    AddTestCase (new TimeStepTestCase ());
+    AddTestCase (new GlobalPrecisionTestCase ());
     AddTestCase (new Bug863TestCase ());
-    //AddTestCase(new ConversionTestCase());
+    // AddTestCase(new ConversionTestCase());
   }
 } g_timeTestSuite;
 

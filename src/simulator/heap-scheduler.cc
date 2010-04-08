@@ -31,13 +31,13 @@ namespace ns3 {
 
 NS_OBJECT_ENSURE_REGISTERED (HeapScheduler);
 
-TypeId 
+TypeId
 HeapScheduler::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::HeapScheduler")
     .SetParent<Scheduler> ()
     .AddConstructor<HeapScheduler> ()
-    ;
+  ;
   return tid;
 }
 
@@ -51,24 +51,25 @@ HeapScheduler::HeapScheduler ()
 }
 
 HeapScheduler::~HeapScheduler ()
-{}
+{
+}
 
-uint32_t 
+uint32_t
 HeapScheduler::Parent (uint32_t id) const
 {
   return id / 2;
 }
-uint32_t 
+uint32_t
 HeapScheduler::Sibling (uint32_t id) const
 {
   return id + 1;
 }
-uint32_t 
+uint32_t
 HeapScheduler::LeftChild (uint32_t id) const
 {
   return id * 2;
 }
-uint32_t 
+uint32_t
 HeapScheduler::RightChild (uint32_t id) const
 {
   return id * 2 + 1;
@@ -83,7 +84,7 @@ HeapScheduler::Root (void) const
 bool
 HeapScheduler::IsRoot (uint32_t id) const
 {
-  return (id == Root ())?true:false;
+  return (id == Root ()) ? true : false;
 }
 
 uint32_t
@@ -96,11 +97,11 @@ HeapScheduler::Last (void) const
 bool
 HeapScheduler::IsBottom (uint32_t id) const
 {
-  return (id >= m_heap.size ())?true:false;
+  return (id >= m_heap.size ()) ? true : false;
 }
 
 void
-HeapScheduler::Exch (uint32_t a, uint32_t b) 
+HeapScheduler::Exch (uint32_t a, uint32_t b)
 {
   NS_ASSERT (b < m_heap.size () && a < m_heap.size ());
   NS_LOG_DEBUG ("Exch " << a << ", " << b);
@@ -115,27 +116,27 @@ HeapScheduler::IsLessStrictly (uint32_t a, uint32_t b) const
   return m_heap[a] < m_heap[b];
 }
 
-uint32_t 
+uint32_t
 HeapScheduler::Smallest (uint32_t a, uint32_t b) const
 {
-  return IsLessStrictly (a,b)?a:b;
+  return IsLessStrictly (a,b) ? a : b;
 }
 
 bool
 HeapScheduler::IsEmpty (void) const
 {
-  return (m_heap.size () == 1)?true:false;
+  return (m_heap.size () == 1) ? true : false;
 }
 
 void
 HeapScheduler::BottomUp (void)
 {
   uint32_t index = Last ();
-  while (!IsRoot (index) && 
-         IsLessStrictly (index, Parent (index))) 
-    { 
-      Exch(index, Parent (index)); 
-      index = Parent (index); 
+  while (!IsRoot (index)
+         && IsLessStrictly (index, Parent (index)))
+    {
+      Exch (index, Parent (index));
+      index = Parent (index);
     }
 }
 
@@ -144,11 +145,11 @@ HeapScheduler::TopDown (uint32_t start)
 {
   uint32_t index = start;
   uint32_t right = RightChild (index);
-  while (!IsBottom (right)) 
+  while (!IsBottom (right))
     {
       uint32_t left = LeftChild (index);
       uint32_t tmp = Smallest (left, right);
-      if (IsLessStrictly (index, tmp)) 
+      if (IsLessStrictly (index, tmp))
         {
           return;
         }
@@ -156,17 +157,17 @@ HeapScheduler::TopDown (uint32_t start)
       index = tmp;
       right = RightChild (index);
     }
-  if (IsBottom (index)) 
+  if (IsBottom (index))
     {
       return;
     }
   NS_ASSERT (!IsBottom (index));
   uint32_t left = LeftChild (index);
-  if (IsBottom (left)) 
+  if (IsBottom (left))
     {
       return;
     }
-  if (IsLessStrictly (index, left)) 
+  if (IsLessStrictly (index, left))
     {
       return;
     }

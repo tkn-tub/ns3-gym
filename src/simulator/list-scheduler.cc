@@ -29,25 +29,27 @@ namespace ns3 {
 
 NS_OBJECT_ENSURE_REGISTERED (ListScheduler);
 
-TypeId 
+TypeId
 ListScheduler::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::ListScheduler")
     .SetParent<Scheduler> ()
     .AddConstructor<ListScheduler> ()
-    ;
+  ;
   return tid;
 }
 
 ListScheduler::ListScheduler ()
-{}
+{
+}
 ListScheduler::~ListScheduler ()
-{}
+{
+}
 
 void
 ListScheduler::Insert (const Event &ev)
 {
-  for (EventsI i = m_events.begin (); i != m_events.end (); i++) 
+  for (EventsI i = m_events.begin (); i != m_events.end (); i++)
     {
       if (ev.key < i->key)
         {
@@ -57,7 +59,7 @@ ListScheduler::Insert (const Event &ev)
     }
   m_events.push_back (ev);
 }
-bool 
+bool
 ListScheduler::IsEmpty (void) const
 {
   return m_events.empty ();
@@ -79,7 +81,7 @@ ListScheduler::RemoveNext (void)
 void
 ListScheduler::Remove (const Event &ev)
 {
-  for (EventsI i = m_events.begin (); i != m_events.end (); i++) 
+  for (EventsI i = m_events.begin (); i != m_events.end (); i++)
     {
       if (i->key.m_uid == ev.key.m_uid)
         {
