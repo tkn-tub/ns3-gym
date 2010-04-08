@@ -163,30 +163,23 @@ HighPrecision::SlowMul (HighPrecision const &o)
  * of the operands to produce a signed 128 bits result.
  */
 cairo_int128_t
-HighPrecision::Mul128(cairo_int128_t a, cairo_int128_t b )
+HighPrecision::Mul128(cairo_int128_t sa, cairo_int128_t sb )
 {
-  //Implement the 128 bits multiplication
-  cairo_int128_t result;
-  cairo_uint128_t hiPart,loPart,midPart;
-  bool resultNegative = false, signA = false,signB = false;
+  bool negResult, negA, negB;
 
-  //take the sign of the operands
-  signA = _cairo_int128_negative (a);
-  signB = _cairo_int128_negative (b);
-  //the result is negative only if one of the operand is negative
-  if ((signA == true && signB == false) ||(signA == false && signB == true))
-    {
-  	 resultNegative = true;
-    }
-  //now take the absolute part to make sure that the resulting operands are positive
-  if (signA == true)
-  {
-	  a = _cairo_int128_negate (a);
-  }
-  if (signB == true)
-  {
-  	  b = _cairo_int128_negate (b);
-  }
+  negA = _cairo_int128_negative (sa);
+  negB = _cairo_int128_negative (sb);
+  // the result is negative only if one of the operand is negative
+  negResult = (negA && !negB) || (!negA && negB);
+  // now take the absolute part to make sure that the resulting operands are positive
+  cairo_uint128_t a, b;
+  a = _cairo_int128_to_uint128 (sa);
+  b = _cairo_int128_to_uint128 (sb);
+  a = negA ? _cairo_uint128_negate (a):a;
+  b = negB ? _cairo_uint128_negate (b):b;
+
+  cairo_uint128_t result;
+  cairo_uint128_t hiPart,loPart,midPart;
 
   //Multiplying (a.h 2^64 + a.l) x (b.h 2^64 + b.l) =
   //			2^128 a.h b.h + 2^64*(a.h b.l+b.h a.l) + a.l b.l
@@ -195,7 +188,7 @@ HighPrecision::Mul128(cairo_int128_t a, cairo_int128_t b )
   loPart = _cairo_uint64x64_128_mul (a.lo, b.lo);
   //compute the middle part 2^64*(a.h b.l+b.h a.l)
   midPart = _cairo_uint128_add(_cairo_uint64x64_128_mul(a.lo, b.hi),
-		  _cairo_uint64x64_128_mul(a.hi, b.lo)) ;
+                               _cairo_uint64x64_128_mul(a.hi, b.lo)) ;
   //truncate the low part
   result.lo = _cairo_uint64_add(loPart.hi,midPart.lo);
   //compute the high part 2^128 a.h b.h
@@ -204,15 +197,12 @@ HighPrecision::Mul128(cairo_int128_t a, cairo_int128_t b )
   result.hi = _cairo_uint64_add(hiPart.lo,midPart.hi);
   //if the high part is not zero, put a warning
   if (hiPart.hi !=0)
-  {
-	  NS_FATAL_ERROR("High precision 128 bits multiplication error: multiplication overflow.");
-  }
-  //add the sign to the result
-  if (resultNegative)
-  {
-	 result = _cairo_int128_negate (result);
-  }
-  return result;
+    {
+      NS_FATAL_ERROR("High precision 128 bits multiplication error: multiplication overflow.");
+    }
+  // add the sign to the result
+  result = negResult ? _cairo_uint128_negate (result):result;
+  return _cairo_uint128_to_int128 (result);
 }
 
 bool 
