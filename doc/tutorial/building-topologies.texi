@@ -694,6 +694,99 @@ You can now see that node 101 is really the participant in the echo exchange.
 @end verbatim
 
 @c ========================================================================
+@c Models, Attributes and Reality
+@c ========================================================================
+@node Models, Attributes and Reality
+@section Models, Attributes and Reality
+
+This is a convenient place to make a small excursion and make an important
+point.  It may or may not be obvious to you, but whenever one is using a 
+simulation, it is important to understand exactly what is being modeled and
+what is not.  It is tempting, for example, to think of the CSMA devices 
+and channels used in the previous section as if they were real Ethernet 
+devices; and to expect a simulation result to directly reflect what will 
+happen in a real Ethernet.  This is not the case.  
+
+A model is, by definition, an abstraction of reality.  It is ultimately the 
+responsibility of the simulation script author to determine the so-called
+``range of accuracy'' and ``domain of applicability'' of the simulation as
+a whole, and therefore its consitiuent parts.
+
+In some cases, like @code{Csma}, it can be fairly easy to determine what is 
+@emph{not} modeled.  By reading the model description (@code{csma.h}) you 
+can find that there is no collision detection in the CSMA model and decide
+on how applicable its use will be in your simulation or what caveats you 
+may want to include with your results.  In other cases, it can be quite easy
+to configure behaviors that might not agree with any reality you can go out
+and buy.  It will prove worthwhile to spend some time investigating a few
+such instances, and how easily you can swerve outside the bounds of reality
+in your simulations.
+
+As you have seen, @command{ns-3} provides @code{Attributes} which a user
+can easily set to change model behavior.  Consider two of the @code{Attributes}
+of the @code{CsmaNetDevice}:  @code{Mtu} and @code{EncapsulationMode}.  
+The @code{Mtu} attribute indicates the Maximum Transmission Unit to the 
+device.  This is the size of the largest Protocol Data Unit (PDU) that the
+device can send.  
+
+The MTU defaults to 1500 bytes in the @code{CsmaNetDevice}.  This default
+corresponds to a number found in RFC 894, ``A Standard for the Transmission
+of IP Datagrams over Ethernet Networks.''  The number is actually derived 
+from the maximum packet size for 10Base5 (full-spec Ethernet) networks -- 
+1518 bytes.  If you subtract the DIX encapsulation overhead for Ethernet 
+packets (18 bytes) you will end up with a maximum possible data size (MTU) 
+of 1500 bytes.  One can also find that the @code{MTU} for IEEE 802.3 networks
+is 1492 bytes.  This is because LLC/SNAP encapsulation adds an extra eight 
+bytes of overhead to the packet.  In both cases, the underlying hardware can
+only send 1518 bytes, but the data size is different.
+
+In order to set the encapsulation mode, the @code{CsmaNetDevice} provides
+an @code{Attribute} called @code{EncapsulationMode} which can take on the 
+values @code{Dix} or @code{Llc}.  These correspond to Ethernet and LLC/SNAP
+framing respectively.
+
+If one leaves the @code{Mtu} at 1500 bytes and changes the encapsulation mode
+to @code{Llc}, the result will be a network that encapsulates 1500 byte PDUs
+with LLC/SNAP framing resulting in packets of 1526 bytes, which would be 
+illegal in many networks, since they can transmit a maximum of 1518 bytes per
+packet.  This would most likely result in a simulation that quite subtly does
+not reflect the reality you might be expecting.
+
+Just to complicate the picture, there exist jumbo frames (1500 < MTU <= 9000 bytes)
+and super-jumbo (MTU > 9000 bytes) frames that are not officially sanctioned
+by IEEE but are avialable in some high-speed (Gigabit) networks and NICs.  One
+could leave the encapsulation mode set to @code{Dix}, and set the @code{Mtu}
+@code{Attribute} on a @code{CsmaNetDevice} to 64000 bytes -- even though an 
+associated @code{CsmaChannel DataRate} was set at 10 megabits per second.  
+This would essentially model an Ethernet switch made out of vampire-tapped
+1980s-style 10Base5 networks that support super-jumbo datagrams.  This is
+certainly not something that was ever made, nor is likely to ever be made,
+but it is quite easy for you to configure.
+
+In the previous example, you used the command line to create a simulation that
+had 100 @code{Csma} nodes.  You could have just as easily created a simulation
+with 500 nodes.  If you were actually modeling that 10Base5 vampire-tap network,
+the maximum length of a full-spec Ethernet cable is 500 meters, with a minimum 
+tap spacing of 2.5 meters.  That means there could only be 200 taps on a 
+real network.  You could have quite easily built an illegal network in that
+way as well.  This may or may not result in a meaningful simulation depending
+on what you are trying to model.
+
+Similar situations can occur in many places in @command{ns-3} and in any
+simulator.  For example, you may be able to position nodes in such a way that
+they occupy the same space at the same time, or you may be able to configure
+amplifiers or noise levels that violate the basic laws of physics.
+
+@command{ns-3} generally favors flexibility, and many models will allow freely
+setting @code{Attributes} without trying to enforce any arbitrary consistency
+or particular underlying spec.
+
+The thing to take home from this is that @command{ns-3} is going to provide a
+super-flexible base for you to experiment with.  It is up to you to understand
+what you are asking the system to do and to  make sure that the simulations you
+create have some meaning and some connection with a reality defined by you.
+
+@c ========================================================================
 @c Building a Wireless Network Topology
 @c ========================================================================
 @node Building a Wireless Network Topology
