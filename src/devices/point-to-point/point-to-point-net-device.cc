@@ -41,17 +41,16 @@ PointToPointNetDevice::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::PointToPointNetDevice")
     .SetParent<NetDevice> ()
     .AddConstructor<PointToPointNetDevice> ()
+    .AddAttribute ("Mtu", "The MAC-level Maximum Transmission Unit",
+                   UintegerValue (DEFAULT_MTU),
+                   MakeUintegerAccessor (&PointToPointNetDevice::SetMtu,
+                                         &PointToPointNetDevice::GetMtu),
+                   MakeUintegerChecker<uint16_t> ())                   
     .AddAttribute ("Address", 
                    "The MAC address of this device.",
                    Mac48AddressValue (Mac48Address ("ff:ff:ff:ff:ff:ff")),
                    MakeMac48AddressAccessor (&PointToPointNetDevice::m_address),
                    MakeMac48AddressChecker ())
-    .AddAttribute ("FrameSize", 
-                   "The maximum size of a packet sent over this device.",
-                   UintegerValue (DEFAULT_FRAME_SIZE),
-                   MakeUintegerAccessor (&PointToPointNetDevice::SetFrameSize,
-                                         &PointToPointNetDevice::GetFrameSize),
-                   MakeUintegerChecker<uint16_t> ())
     .AddAttribute ("DataRate", 
                    "The default data rate for point to point links",
                    DataRateValue (DataRate ("32768b/s")),
@@ -152,16 +151,6 @@ PointToPointNetDevice::PointToPointNetDevice ()
   m_currentPkt (0)
 {
   NS_LOG_FUNCTION (this);
-
-  //
-  // A quick sanity check to ensure consistent constants.
-  //
-  PppHeader ppp;
-  NS_ASSERT_MSG (PPP_OVERHEAD == ppp.GetSerializedSize (), 
-                 "PointToPointNetDevice::PointToPointNetDevice(): PPP_OVERHEAD inconsistent");
-
-  m_frameSize = DEFAULT_FRAME_SIZE;
-  m_mtu = MtuFromFrameSize (m_frameSize);
 }
 
 PointToPointNetDevice::~PointToPointNetDevice ()
@@ -594,65 +583,11 @@ PointToPointNetDevice::GetRemote (void) const
   return Address ();
 }
 
-  uint32_t
-PointToPointNetDevice::MtuFromFrameSize (uint32_t frameSize)
-{
-  NS_LOG_FUNCTION (frameSize);
-  NS_ASSERT_MSG (frameSize <= std::numeric_limits<uint16_t>::max (), 
-                 "PointToPointNetDevice::MtuFromFrameSize(): Frame size should be derived from 16-bit quantity: " << 
-                 frameSize);
-  PppHeader ppp;
-  NS_ASSERT_MSG ((uint32_t)frameSize >= ppp.GetSerializedSize (), 
-                 "PointToPointNetDevice::MtuFromFrameSize(): Given frame size too small to support PPP");
-  return frameSize - ppp.GetSerializedSize ();
-}
-  
-  uint32_t
-PointToPointNetDevice::FrameSizeFromMtu (uint32_t mtu)
-{
-  NS_LOG_FUNCTION (mtu);
-
-  PppHeader ppp;
-  return mtu + ppp.GetSerializedSize ();
-}
-
-  void 
-PointToPointNetDevice::SetFrameSize (uint16_t frameSize)
-{
-  NS_LOG_FUNCTION (frameSize);
-
-  m_frameSize = frameSize;
-  m_mtu = MtuFromFrameSize (frameSize);
-
-  NS_LOG_LOGIC ("m_frameSize = " << m_frameSize);
-  NS_LOG_LOGIC ("m_mtu = " << m_mtu);
-}
-
-  uint16_t
-PointToPointNetDevice::GetFrameSize (void) const
-{
-  return m_frameSize;
-}
-
   bool
 PointToPointNetDevice::SetMtu (uint16_t mtu)
 {
-  NS_LOG_FUNCTION (mtu);
-
-  uint32_t newFrameSize = FrameSizeFromMtu (mtu);
-
-  if (newFrameSize > std::numeric_limits<uint16_t>::max ())
-    {
-      NS_LOG_WARN ("PointToPointNetDevice::SetMtu(): Frame size overflow, MTU not set.");
-      return false;
-    }
-
-  m_frameSize = newFrameSize;
+  NS_LOG_FUNCTION (this << mtu);
   m_mtu = mtu;
-
-  NS_LOG_LOGIC ("m_frameSize = " << m_frameSize);
-  NS_LOG_LOGIC ("m_mtu = " << m_mtu);
-
   return true;
 }
 

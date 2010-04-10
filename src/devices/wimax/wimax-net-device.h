@@ -68,7 +68,6 @@ public:
   static TypeId GetTypeId (void);
   WimaxNetDevice (void);
   virtual ~WimaxNetDevice (void);
-  uint32_t GetMaxMsduSize (void) const;
   /**
    * \param ttg transmit/receive transition gap
    */
@@ -221,6 +220,10 @@ private:
   WimaxNetDevice (const WimaxNetDevice &);
   WimaxNetDevice & operator= (const WimaxNetDevice &);
 
+  static const uint16_t MAX_MSDU_SIZE = 1500;
+  // recommended by wimax forum.
+  static const uint16_t DEFAULT_MSDU_SIZE = 1400;
+
   virtual bool DoSend (Ptr<Packet> packet,
                        const Mac48Address& source,
                        const Mac48Address& dest,
@@ -239,7 +242,6 @@ private:
   std::string m_name;
   bool m_linkUp;
   Callback<void> m_linkChange;
-  uint32_t m_maxMsduSize;
   mutable uint16_t m_mtu;
 
   // temp, shall be in BS. defined here to allow SS to access. SS shall actually determine it from DLFP, shall be moved to BS after DLFP is implemented

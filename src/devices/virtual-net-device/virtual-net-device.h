@@ -91,8 +91,7 @@ public:
   void SetSupportsSendFrom (bool supportsSendFrom);
 
   /**
-   * \brief Configure the reported MTU for the virtual device. The
-   * default value is 65535.
+   * \brief Configure the reported MTU for the virtual device.
    * \param mtu MTU value to set
    * \return whether the MTU value was within legal bounds
    */

@@ -63,6 +63,10 @@ EmuNetDevice::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::EmuNetDevice")
     .SetParent<NetDevice> ()
     .AddConstructor<EmuNetDevice> ()
+    .AddAttribute ("Mtu", "The MAC-level Maximum Transmission Unit",
+                   UintegerValue (0), // arbitrary un-used value because no setter
+                   MakeUintegerAccessor (&EmuNetDevice::GetMtu),
+                   MakeUintegerChecker<uint16_t> ())                   
     .AddAttribute ("Address", 
                    "The ns-3 MAC address of this (virtual) device.",
                    Mac48AddressValue (Mac48Address ("ff:ff:ff:ff:ff:ff")),

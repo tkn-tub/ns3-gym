@@ -57,6 +57,12 @@ TypeId WimaxNetDevice::GetTypeId (void)
 
     .SetParent<NetDevice> ()
 
+    .AddAttribute ("Mtu", "The MAC-level Maximum Transmission Unit",
+                   UintegerValue (DEFAULT_MSDU_SIZE),
+                   MakeUintegerAccessor (&WimaxNetDevice::SetMtu,
+                                         &WimaxNetDevice::GetMtu),
+                   MakeUintegerChecker<uint16_t> (0,MAX_MSDU_SIZE))
+
     .AddAttribute ("Phy",
                    "The PHY layer attached to this device.",
                    PointerValue (),
@@ -80,12 +86,6 @@ TypeId WimaxNetDevice::GetTypeId (void)
                    UintegerValue (0),
                    MakeUintegerAccessor (&WimaxNetDevice::GetTtg, &WimaxNetDevice::SetTtg),
                    MakeUintegerChecker<uint16_t> (0, 120))
-
-    .AddAttribute ("MaxMsduSize",
-                   "The maximum size of an MSDU accepted by the MAC layer.",
-                   UintegerValue (1500),
-                   MakeUintegerAccessor (&WimaxNetDevice::m_maxMsduSize),
-                   MakeUintegerChecker<uint16_t> (1, 1500))
 
     .AddAttribute ("ConnectionManager",
                    "The connection manager attached to this device.",
@@ -127,8 +127,7 @@ TypeId WimaxNetDevice::GetTypeId (void)
 }
 
 WimaxNetDevice::WimaxNetDevice (void)
-  : m_mtu (0),
-    m_state (0),
+  : m_state (0),
     m_symbolIndex (0),
     m_ttg (0),
     m_rtg (0)
@@ -164,11 +163,6 @@ WimaxNetDevice::DoDispose (void)
   NetDevice::DoDispose ();
 }
 
-uint32_t
-WimaxNetDevice::GetMaxMsduSize (void) const
-{
-  return m_maxMsduSize;
-}
 
 void
 WimaxNetDevice::SetTtg (uint16_t ttg)
@@ -233,7 +227,7 @@ WimaxNetDevice::GetPhyChannel (void) const
 bool
 WimaxNetDevice::SetMtu (const uint16_t mtu)
 {
-  if (mtu > m_maxMsduSize || mtu == 0)
+  if (mtu > MAX_MSDU_SIZE)
     {
       return false;
     }
@@ -244,10 +238,6 @@ WimaxNetDevice::SetMtu (const uint16_t mtu)
 uint16_t
 WimaxNetDevice::GetMtu (void) const
 {
-  if (m_mtu == 0)
-    {
-      m_mtu = m_maxMsduSize;
-    }
   return m_mtu;
 }
 

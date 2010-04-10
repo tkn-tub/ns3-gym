@@ -33,13 +33,6 @@ TypeId NetDevice::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::NetDevice")
     .SetParent<Object> ()
-    .AddAttribute ("Mtu", "The MAC-level Maximum Transmission Unit",
-                   TypeId::ATTR_SET | TypeId::ATTR_GET,
-                   UintegerValue (0xffff),
-                   MakeUintegerAccessor (&NetDevice::SetMtu,
-                                         &NetDevice::GetMtu),
-                   MakeUintegerChecker<uint16_t> ())
-                   
     ;
   return tid;
 }

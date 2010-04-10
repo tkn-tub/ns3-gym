@@ -42,6 +42,11 @@ WifiNetDevice::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::WifiNetDevice")
     .SetParent<NetDevice> ()
     .AddConstructor<WifiNetDevice> ()
+    .AddAttribute ("Mtu", "The MAC-level Maximum Transmission Unit",
+                   UintegerValue (MAX_MSDU_SIZE),
+                   MakeUintegerAccessor (&WifiNetDevice::SetMtu,
+                                         &WifiNetDevice::GetMtu),
+                   MakeUintegerChecker<uint16_t> (1,MAX_MSDU_SIZE))
     .AddAttribute ("Channel", "The channel attached to this device",
                    PointerValue (),
                    MakePointerAccessor (&WifiNetDevice::DoGetChannel),
@@ -66,8 +71,7 @@ WifiNetDevice::GetTypeId (void)
 }
 
 WifiNetDevice::WifiNetDevice ()
-  : m_mtu (0),
-    m_configComplete (false)
+  : m_configComplete (false)
 {
   NS_LOG_FUNCTION_NOARGS ();
 }
@@ -187,9 +191,7 @@ WifiNetDevice::GetAddress (void) const
 bool 
 WifiNetDevice::SetMtu (const uint16_t mtu)
 {
-  UintegerValue maxMsduSize;
-  m_mac->GetAttribute ("MaxMsduSize", maxMsduSize);
-  if (mtu > maxMsduSize.Get () || mtu == 0)
+  if (mtu > MAX_MSDU_SIZE)
     {
       return false;
     }
@@ -199,12 +201,6 @@ WifiNetDevice::SetMtu (const uint16_t mtu)
 uint16_t 
 WifiNetDevice::GetMtu (void) const
 {
-  if (m_mtu == 0)
-    {
-      UintegerValue maxMsduSize;
-      m_mac->GetAttribute ("MaxMsduSize", maxMsduSize);
-      m_mtu = maxMsduSize.Get ();
-    }
   return m_mtu;
 }
 bool 

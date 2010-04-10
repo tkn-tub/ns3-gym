@@ -111,10 +111,6 @@ public:
    * Unused for now.
    */
   Time GetMaxPropagationDelay (void) const;
-  /**
-   * \returns the maximum size of a MAC-level data payload.
-   */
-  uint32_t GetMaxMsduSize (void) const;
 
   /**
    * \returns the MAC address associated to this MAC layer.
@@ -246,7 +242,6 @@ private:
   virtual void FinishConfigureStandard (enum WifiPhyStandard standard) = 0;
 
   Time m_maxPropagationDelay;
-  uint32_t m_maxMsduSize;
 
   void Configure80211a (void);
   void Configure80211b (void);

@@ -33,6 +33,7 @@
 #include "ns3/simulator.h"
 #include "ns3/realtime-simulator-impl.h"
 #include "ns3/system-thread.h"
+#include "ns3/uinteger.h"
 
 #include <sys/wait.h>
 #include <sys/stat.h>
@@ -74,6 +75,11 @@ TapBridge::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::TapBridge")
     .SetParent<NetDevice> ()
     .AddConstructor<TapBridge> ()
+    .AddAttribute ("Mtu", "The MAC-level Maximum Transmission Unit",
+                   UintegerValue (0),
+                   MakeUintegerAccessor (&TapBridge::SetMtu,
+                                         &TapBridge::GetMtu),
+                   MakeUintegerChecker<uint16_t> ())                   
     .AddAttribute ("DeviceName", 
                    "The name of the tap device to create.",
                    StringValue (""),
@@ -126,7 +132,6 @@ TapBridge::GetTypeId (void)
 TapBridge::TapBridge ()
 : m_node (0),
   m_ifIndex (0),
-  m_mtu (0),
   m_sock (-1),
   m_startEvent (),
   m_stopEvent (),

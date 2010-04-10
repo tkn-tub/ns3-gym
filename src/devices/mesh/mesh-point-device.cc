@@ -39,6 +39,11 @@ MeshPointDevice::GetTypeId ()
   static TypeId tid = TypeId ("ns3::MeshPointDevice")
   .SetParent<NetDevice> ()
   .AddConstructor<MeshPointDevice> ()
+  .AddAttribute ("Mtu", "The MAC-level Maximum Transmission Unit",
+                 UintegerValue (0xffff),
+                 MakeUintegerAccessor (&MeshPointDevice::SetMtu,
+                                       &MeshPointDevice::GetMtu),
+                 MakeUintegerChecker<uint16_t> ())                   
   .AddAttribute ( "RoutingProtocol",
                   "The mesh routing protocol used by this mesh point.",
                   PointerValue (),
@@ -50,7 +55,7 @@ MeshPointDevice::GetTypeId ()
 }
 
 MeshPointDevice::MeshPointDevice () :
-  m_ifIndex (0), m_mtu (1500)
+  m_ifIndex (0)
 {
   NS_LOG_FUNCTION_NOARGS ();
   m_channel = CreateObject<BridgeChannel> ();

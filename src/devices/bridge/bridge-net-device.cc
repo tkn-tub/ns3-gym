@@ -22,6 +22,7 @@
 #include "ns3/log.h"
 #include "ns3/boolean.h"
 #include "ns3/simulator.h"
+#include "ns3/uinteger.h"
 
 NS_LOG_COMPONENT_DEFINE ("BridgeNetDevice");
 
@@ -36,6 +37,11 @@ BridgeNetDevice::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::BridgeNetDevice")
     .SetParent<NetDevice> ()
     .AddConstructor<BridgeNetDevice> ()
+    .AddAttribute ("Mtu", "The MAC-level Maximum Transmission Unit",
+                   UintegerValue (1500),
+                   MakeUintegerAccessor (&BridgeNetDevice::SetMtu,
+                                         &BridgeNetDevice::GetMtu),
+                   MakeUintegerChecker<uint16_t> ())                   
     .AddAttribute ("EnableLearning",
                    "Enable the learning mode of the Learning Bridge",
                    BooleanValue (true),
@@ -53,8 +59,7 @@ BridgeNetDevice::GetTypeId (void)
 
 BridgeNetDevice::BridgeNetDevice ()
   : m_node (0),
-    m_ifIndex (0),
-    m_mtu (0xffff)
+    m_ifIndex (0)
 {
   NS_LOG_FUNCTION_NOARGS ();
   m_channel = CreateObject<BridgeChannel> ();

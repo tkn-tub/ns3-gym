@@ -175,11 +175,6 @@ WifiMac::GetTypeId (void)
                    TimeValue (GetDefaultMaxPropagationDelay ()),
                    MakeTimeAccessor (&WifiMac::m_maxPropagationDelay),
                    MakeTimeChecker ())
-    .AddAttribute ("MaxMsduSize", "The maximum size of an MSDU accepted by the MAC layer."
-                   "This value conforms to the specification.",
-		   UintegerValue (2304),
-		   MakeUintegerAccessor (&WifiMac::m_maxMsduSize),
-		   MakeUintegerChecker<uint16_t> (1,2304))
     .AddAttribute ("Ssid", "The ssid we want to belong to.",
 		   SsidValue (Ssid ("default")),
 		   MakeSsidAccessor (&WifiMac::GetSsid,
@@ -230,12 +225,6 @@ Time
 WifiMac::GetMaxPropagationDelay (void) const
 {
   return m_maxPropagationDelay;
-}
-
-uint32_t 
-WifiMac::GetMaxMsduSize (void) const
-{
-  return m_maxMsduSize;
 }
 
 void 

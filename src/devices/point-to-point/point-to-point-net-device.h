@@ -138,109 +138,6 @@ public:
    */
   void Receive (Ptr<Packet> p);
 
-  /**
-   * \brief Set the max frame size of L2 frames sent over this device.
-   *
-   * We use the following terminology.  MTU is the maximum sized payload 
-   * of the point-to-point frame.  For example, if the MTU is 1500 bytes, 
-   * then any IP datagram sent to the device must be smaller for equal to 
-   * the MTU.  The MTU is an attribute of base class NetDevice.
-   *
-   * The maximum frame size is the maximum size of the L2 frame that can
-   * be sent on the channel.  Typically this is a bit larger than the MTU
-   * to account for framing and header overhead.  Note that the maximum
-   * frame size constrains the MTU unless the L2 performs segmentation
-   * and reassembly.
-   *
-   * In real serial channel (HDLC, for example), the wire idles (sends 
-   * all ones) until the channel begins sending a packet.
-   * A frame on the wire starts with a flag character (01111110).  This is 
-   * followed by what is usually called the packet: * address, control, 
-   * payload, and a Frame Check Sequence (FCS).  This is followed by 
-   * another flag character.  If the flag characters are used, then bit 
-   * stuffing must be used to prevent flag characters from appearing in 
-   * the packet and confusing the receiver.  But, this isn't a real link, 
-   * it's a simulation of a device similar to a point-to-point device, and 
-   * we have no good reason to add framing bits and therefore to do 
-   * bit-stuffing.  So, in the case of the point-to-point device, the frame 
-   * size is equal to the packet size.  Since these two values are defined 
-   * to be equal, there is no danger in assuming they are identical.  
-   * We define packet size to be equal to frame size and this excludes 
-   * the flag characters.  We define a single (MAC-level) MTU that 
-   * corresponds to the payload size of the packet, which is the 
-   * IP-centric view of the term as seen in RFC 791.
-   *
-   * To make this concrete, consider an example PPP framing on a 
-   * synchronous link.  In this framing scheme, a real serial frame on the 
-   * wire starts with a flag character, address and control characters, 
-   * then a 16-bit PPP protocol ID (0x21 = IP).  Then we would see the 
-   * actual payload we are supposed to send, presumably an IP datagram.  
-   * At then we see the FCS and finally another flag character to end 
-   * the frame.  We ignore the flag bits on this device since it they are 
-   * not needed.  We aren't really using HDLC to send frames across the 
-   * link, so we don't need the address and control bits either.  In fact,
-   * to encapsulate using unframed PPP all we need to do is prepend the 
-   * two-byte protocol ID.
-   *
-   * Typically the limiting factor in frame size is due to hardware 
-   * limitations in the underlying HDLC controller receive FIFO buffer size.  
-   * This number can vary widely.  For example, the Motorola MC92460 has 
-   * a 64 KByte maximum frame size;  the Intel IXP4XX series has a 16 
-   * KByte size.  Older USARTs have a maximum frame size around 2KBytes, 
-   * and typical PPP links on the Internet have their MTU set to 1500 
-   * bytes since this is what will typically be used on Ethernet segments
-   * and will avoid path MTU issues.  We choose to make the default MTU 
-   * 1500 bytes which then fixes the maximum frame size
-   * as described below.
-   *
-   * So, there are really two related variables at work here.  There 
-   * is the maximum frame size that can be sent over the
-   * link and there is the MTU.
-   *
-   * So, what do we do since these values must always be consistent in the 
-   * driver?  We want to actually allow a user to change these variables, 
-   * but we want the results (even at intermediate stages of her ultimate 
-   * change) to be consistent.  We certainly don't want to require that 
-   * users must understand the details of PPP encapsulation in order to 
-   * set these variables.  We therefore link these variables as follows:
-   *
-   * - If the user is changing the MTU, he or she is interested in 
-   *   getting that part of the system set, so the frame size
-   *   will be changed to make it consistent;
-   *
-   * - If the user is changing the frame size, he or she is interested 
-   *   in getting that part of the system set, so the MTU will be changed 
-   *   to make it consistent;
-   *
-   * - You cannot define the MTU and frame size separately -- they are 
-   *   always tied together by the overhead of the PPP encapsulation.  
-   *   This is not a restriction.  Consider what this means.  Perhaps you 
-   *   want to set the frame size to some large number and the MTU to 
-   *   some small number.  The largest packet you can send is going to 
-   *   be limited by the MTU, so it is not possible to send a frame 
-   *   larger than the MTU plus overhead.  Having the ability to set a  
-   *   larger frame size is not useful.
-   * 
-   * So, if a user calls SetFrameSize, we assume that the maximum frame 
-   * size is the interesting thing for that user and we just adjust 
-   * the MTU to a new "correct value" based on the current encapsulation 
-   * mode.  If a user calls SetMtu, we assume that the MTU is the 
-   * interesting property for that user, and we adjust the frame size to 
-   * a new "correct value" for the current encapsulation mode.  If a 
-   * user calls SetEncapsulationMode, then we take the MTU as the free 
-   * variable and set its value to match the current frame size.
-   *
-   * \param frameSize The max frame size of packets sent over this device.
-   */
-  void SetFrameSize (uint16_t frameSize);
-
-  /**
-   * Get the max frame size of packets sent over this device.
-   *
-   * \returns The max frame size of packets sent over this device.
-   */
-  uint16_t GetFrameSize (void) const;
-
   // The remaining methods are documented in ns3::NetDevice*
   
   virtual void SetIfIndex(const uint32_t index);
@@ -287,19 +184,6 @@ private:
   virtual void DoDispose (void);
 
 private:
-  /**
-   * Calculate the value for the MTU that would result from 
-   * setting the frame size to the given value.
-   * \param frameSize size of frame
-   */
-  uint32_t MtuFromFrameSize (uint32_t frameSize);
-
-  /**
-   * Calculate the value for the frame size that would be required
-   * to be able to set the MTU to the given value.
-   * \param mtu MTU
-   */
-  uint32_t FrameSizeFromMtu (uint32_t mtu);
 
   /**
    * \returns the address of the remote device connected to this device
@@ -544,15 +428,6 @@ private:
   TracedCallback<> m_linkChangeCallbacks;
 
   static const uint16_t DEFAULT_MTU = 1500;
-  static const uint16_t PPP_OVERHEAD = 2;
-  static const uint16_t DEFAULT_FRAME_SIZE = DEFAULT_MTU + PPP_OVERHEAD;
-
-  /**
-   * The frame size/packet size.  This corresponds to the maximum 
-   * number of bytes that can be transmitted as a packet without framing.
-   * This corresponds to the 1518 byte packet size often seen on Ethernet.
-   */
-  uint32_t m_frameSize;
 
   /**
    * The Maxmimum Transmission Unit.  This corresponds to the maximum 

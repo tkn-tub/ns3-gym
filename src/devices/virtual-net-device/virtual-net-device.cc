@@ -27,6 +27,7 @@
 #include "virtual-net-device.h"
 #include "ns3/channel.h"
 #include "ns3/trace-source-accessor.h"
+#include "ns3/uinteger.h"
 
 
 NS_LOG_COMPONENT_DEFINE ("VirtualNetDevice");
@@ -41,6 +42,11 @@ VirtualNetDevice::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::VirtualNetDevice")
     .SetParent<NetDevice> ()
     .AddConstructor<VirtualNetDevice> ()
+    .AddAttribute ("Mtu", "The MAC-level Maximum Transmission Unit",
+                   UintegerValue (1500),
+                   MakeUintegerAccessor (&VirtualNetDevice::SetMtu,
+                                         &VirtualNetDevice::GetMtu),
+                   MakeUintegerChecker<uint16_t> ())                   
     .AddTraceSource ("MacTx", 
                      "Trace source indicating a packet has arrived for transmission by this device",
                      MakeTraceSourceAccessor (&VirtualNetDevice::m_macTxTrace))
@@ -69,7 +75,6 @@ VirtualNetDevice::VirtualNetDevice ()
 {
   m_needsArp = false;
   m_supportsSendFrom = true;
-  m_mtu = 65535;
   m_isPointToPoint = true;
 }
 
