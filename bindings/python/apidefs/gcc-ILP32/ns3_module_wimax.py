@@ -5745,11 +5745,6 @@ def register_Ns3WimaxNetDevice_methods(root_module, cls):
                    is_static=True)
     ## wimax-net-device.h: ns3::WimaxNetDevice::WimaxNetDevice() [constructor]
     cls.add_constructor([])
-    ## wimax-net-device.h: uint32_t ns3::WimaxNetDevice::GetMaxMsduSize() const [member function]
-    cls.add_method('GetMaxMsduSize', 
-                   'uint32_t', 
-                   [], 
-                   is_const=True)
     ## wimax-net-device.h: void ns3::WimaxNetDevice::SetTtg(uint16_t ttg) [member function]
     cls.add_method('SetTtg', 
                    'void', 

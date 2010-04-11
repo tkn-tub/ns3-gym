@@ -336,7 +336,7 @@ def register_Ns3Simulator_methods(root_module, cls):
     cls.add_method('Next', 
                    'ns3::Time', 
                    [], 
-                   is_static=True)
+                   is_static=True, deprecated=True)
     ## simulator.h: static ns3::Time ns3::Simulator::Now() [member function]
     cls.add_method('Now', 
                    'ns3::Time', 
@@ -351,7 +351,7 @@ def register_Ns3Simulator_methods(root_module, cls):
     cls.add_method('RunOneEvent', 
                    'void', 
                    [], 
-                   is_static=True)
+                   is_static=True, deprecated=True)
     ## simulator.h: static void ns3::Simulator::SetImplementation(ns3::Ptr<ns3::SimulatorImpl> impl) [member function]
     cls.add_method('SetImplementation', 
                    'void', 

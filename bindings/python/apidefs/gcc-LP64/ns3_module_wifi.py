@@ -2086,11 +2086,6 @@ def register_Ns3WifiMac_methods(root_module, cls):
                    'ns3::Time', 
                    [], 
                    is_pure_virtual=True, is_const=True, is_virtual=True)
-    ## wifi-mac.h: uint32_t ns3::WifiMac::GetMaxMsduSize() const [member function]
-    cls.add_method('GetMaxMsduSize', 
-                   'uint32_t', 
-                   [], 
-                   is_const=True)
     ## wifi-mac.h: ns3::Time ns3::WifiMac::GetMaxPropagationDelay() const [member function]
     cls.add_method('GetMaxPropagationDelay', 
                    'ns3::Time', 

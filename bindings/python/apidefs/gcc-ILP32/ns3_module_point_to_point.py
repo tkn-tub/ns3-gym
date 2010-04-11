@@ -229,11 +229,6 @@ def register_Ns3PointToPointNetDevice_methods(root_module, cls):
                    'ns3::Ptr< ns3::Channel >', 
                    [], 
                    is_const=True, is_virtual=True)
-    ## point-to-point-net-device.h: uint16_t ns3::PointToPointNetDevice::GetFrameSize() const [member function]
-    cls.add_method('GetFrameSize', 
-                   'uint16_t', 
-                   [], 
-                   is_const=True)
     ## point-to-point-net-device.h: uint32_t ns3::PointToPointNetDevice::GetIfIndex() const [member function]
     cls.add_method('GetIfIndex', 
                    'uint32_t', 
@@ -322,10 +317,6 @@ def register_Ns3PointToPointNetDevice_methods(root_module, cls):
     cls.add_method('SetDataRate', 
                    'void', 
                    [param('ns3::DataRate', 'bps')])
-    ## point-to-point-net-device.h: void ns3::PointToPointNetDevice::SetFrameSize(uint16_t frameSize) [member function]
-    cls.add_method('SetFrameSize', 
-                   'void', 
-                   [param('uint16_t', 'frameSize')])
     ## point-to-point-net-device.h: void ns3::PointToPointNetDevice::SetIfIndex(uint32_t const index) [member function]
     cls.add_method('SetIfIndex', 
                    'void', 

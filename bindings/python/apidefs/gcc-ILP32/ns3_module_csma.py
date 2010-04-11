@@ -295,15 +295,6 @@ def register_Ns3CsmaNetDevice_methods(root_module, cls):
     cls.add_method('SetReceiveEnable', 
                    'void', 
                    [param('bool', 'enable')])
-    ## csma-net-device.h: void ns3::CsmaNetDevice::SetFrameSize(uint16_t frameSize) [member function]
-    cls.add_method('SetFrameSize', 
-                   'void', 
-                   [param('uint16_t', 'frameSize')])
-    ## csma-net-device.h: uint16_t ns3::CsmaNetDevice::GetFrameSize() const [member function]
-    cls.add_method('GetFrameSize', 
-                   'uint16_t', 
-                   [], 
-                   is_const=True)
     ## csma-net-device.h: void ns3::CsmaNetDevice::SetEncapsulationMode(ns3::CsmaNetDevice::EncapsulationMode mode) [member function]
     cls.add_method('SetEncapsulationMode', 
                    'void', 
