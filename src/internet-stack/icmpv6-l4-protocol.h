@@ -206,7 +206,6 @@ public:
    * we received a NA with matched target address, we could not use 
    * the address, else the address pass from TENTATIVE to PERMANENT.
    *
-   * \param addr IPv6 address to test
    * \param target target address
    * \param interface interface
    */
