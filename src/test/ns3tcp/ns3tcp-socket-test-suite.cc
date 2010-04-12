@@ -34,6 +34,7 @@
 #include "ns3/tcp-socket-factory.h"
 #include "ns3/node-container.h"
 #include "ns3/simulator.h"
+#include "ns3tcp-socket-writer.h"
 
 using namespace ns3;
 
@@ -44,85 +45,6 @@ NS_LOG_COMPONENT_DEFINE ("Ns3SocketTest");
 // ===========================================================================
 //
 //
-//  Simple class to write data to sockets
-class SocketWriter : public Application
-{
-public:
-  SocketWriter ();
-  virtual ~SocketWriter ();
-  void Setup (Ptr<Node> node, Address peer);
-  void Connect ();
-  void Write (uint32_t numBytes);
-  void Close ();
-
-private:
-  virtual void StartApplication (void);
-  virtual void StopApplication (void);
-  Address m_peer;
-  Ptr<Node> m_node;
-  Ptr<Socket> m_socket;
-  bool m_isSetup;
-  bool m_isConnected;
-};
-
-SocketWriter::SocketWriter () : m_node (0), m_socket (0), m_isSetup (false), m_isConnected (false)
-{
-}
-
-SocketWriter::~SocketWriter ()
-{
-  m_socket = 0;
-  m_node = 0;
-}
-
-void
-SocketWriter::StartApplication ()
-{
-  m_socket = Socket::CreateSocket (m_node, TcpSocketFactory::GetTypeId ());
-  m_socket->Bind ();
-}
-
-void
-SocketWriter::StopApplication ()
-{
-}
-
-void
-SocketWriter::Setup (Ptr<Node> node, Address peer)
-{
-  m_peer = peer;
-  m_node = node;
-  m_isSetup = true;
-}
-
-void
-SocketWriter::Connect ()
-{
-  if (!m_isSetup)
-    {
-      NS_FATAL_ERROR ("Forgot to call Setup() first");
-    }
-  m_socket->Connect (m_peer);
-  m_isConnected = true;
-}
-
-void
-SocketWriter::Write (uint32_t numBytes)
-{
-  if (!m_isConnected)
-    {
-      Connect ();
-    }
-  Ptr<Packet> packet = Create<Packet> (numBytes);
-  m_socket->Send (packet);
-}
-
-void
-SocketWriter::Close ()
-{
-  m_socket->Close ();
-}
-
 class Ns3TcpSocketTestCase1 : public TestCase
 {
 public:
