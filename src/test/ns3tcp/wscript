@@ -12,6 +12,7 @@ def build(bld):
         ]
     ns3tcp.source = [
         'ns3tcp-socket-writer.cc',
+        'ns3tcp-loss-test-suite.cc',
         ]
     if bld.env['NSC_ENABLED']:
         ns3tcp.source.append ('ns3tcp-interop-test-suite.cc')
