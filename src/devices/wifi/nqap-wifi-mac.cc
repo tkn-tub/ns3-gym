@@ -312,13 +312,19 @@ void
 NqapWifiMac::Enqueue (Ptr<const Packet> packet, Mac48Address to, Mac48Address from)
 {
   NS_LOG_FUNCTION (this << packet << to << from);
-  ForwardDown (packet, from, to);
+  if (to.IsBroadcast () || m_stationManager->IsAssociated (to))
+    {
+      ForwardDown (packet, from, to);
+    }
 }
 void 
 NqapWifiMac::Enqueue (Ptr<const Packet> packet, Mac48Address to)
 {
   NS_LOG_FUNCTION (this << packet << to);
-  ForwardDown (packet, m_low->GetAddress (), to);
+  if (to.IsBroadcast () || m_stationManager->IsAssociated (to))
+    {
+      ForwardDown (packet, m_low->GetAddress (), to);
+    }
 }
 bool 
 NqapWifiMac::SupportsSendFrom (void) const
