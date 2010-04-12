@@ -68,7 +68,7 @@ undergo build and test cycles every day to verify that all is well.
 
 @node Testpy
 @section Test.py
-The buildbots use a Python program, @command{test.py}, that is reponsible for 
+The buildbots use a Python program, @command{test.py}, that is responsible for 
 running all of the tests and collecting the resulting reports into a human-
 readable form.  This program is also available for use by users and developers
 as well.
@@ -107,7 +107,7 @@ This mode is indented to be used by users who are interested in determining if
 their distribution is working correctly, and by developers who are interested
 in determining if changes they have made have caused any regressions.
 
-There are a number of options available to control the behavir of @code{test.py}.
+There are a number of options available to control the behavior of @code{test.py}.
 if you run @code{test.py --help} you should see a command summary like:
 
 @verbatim

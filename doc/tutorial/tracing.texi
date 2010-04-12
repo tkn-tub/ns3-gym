@@ -34,7 +34,7 @@ mechanisms and parsing their content to extract interesting information; or
 somehow developing an output mechanism that conveys exactly (and perhaps only) 
 the information wanted.
 
-Using pre-defined bulk output mechansims has the advantage of not requiring any
+Using pre-defined bulk output mechanisms has the advantage of not requiring any
 changes to @code{ns-3}, but it does require programming.  Often, pcap or NS_LOG
 output messages are gathered during simulation runs and separately run through 
 scripts that use grep, sed or awk to parse the messages and reduce and transform
@@ -761,7 +761,7 @@ The difference is due to the fact that two @code{GetObject} calls are implied
 in the string found in the documentation.  The first, for @code{$ns3::MobilityModel}
 will query the aggregation for the base class.  The second implied 
 @code{GetObject} call, for @code{$ns3::RandomWalk2dMobilityModel}, is used to ``cast''
-the base class to the concrete imlementation class.  The documentation shows 
+the base class to the concrete implementation class.  The documentation shows 
 both of these operations for you.  It turns out that the actual Attribute you are
 going to be looking for is found in the base class as we have seen.
 
@@ -1476,7 +1476,7 @@ as a result of the @code{apps.Start} call and
 
 as a result of the @code{apps.Stop} call.
 
-The ulitmate result of these calls is that we want to have the simulator 
+The ultimate result of these calls is that we want to have the simulator 
 automatically make calls into our @code{Applications} to tell them when to
 start and stop.  In the case of @code{MyApp}, it inherits from class
 @code{Application} and overrides @code{StartApplication}, and 
@@ -1532,7 +1532,7 @@ Take a look at @code{src/core/object.cc} next and search for @code{Object::Start
 This code is not as straightforward as you might have expected since 
 @command{ns-3} @code{Objects} support aggregation.  The code in 
 @code{Object::Start} then loops through all of the objects that have been
-aggretated together and calls their @code{DoStart} method.  This is another
+aggregated together and calls their @code{DoStart} method.  This is another
 idiom that is very common in @command{ns-3}.  There is a public API method,
 that stays constant across implementations, that calls a private implementation
 method that is inherited and implemented by subclasses.  The names are typically
@@ -1730,7 +1730,7 @@ has sent enough.
   }
 @end verbatim
 
-Here, you see that @code{ScheduleTx} does exactly that.  If the @code{Applciation}
+Here, you see that @code{ScheduleTx} does exactly that.  If the @code{Application}
 is running (if @code{StopApplication} has not been called) it will schedule a 
 new event, which calls @code{SendPacket} again.  The alert reader will spot
 something that also trips up new users.  The data rate of an @code{Application} is
@@ -2297,7 +2297,7 @@ of specifying which traces should be enabled through a node, device pair.  For
 example, you may want to specify that pcap tracing should be enabled on a 
 particular device on a specific node.  This follows from the @code{ns-3} device
 conceptual model, and also the conceptual models of the various device helpers.
-Following naturallyu from this, the files created follow a 
+Following naturally from this, the files created follow a 
 <prefix>-<node>-<device> naming convention.  
 
 Protocol helpers look at the problem of specifying which traces should be
@@ -2480,7 +2480,7 @@ Finally, two of the methods shown above,
 
 @verbatim
   void EnablePcap (std::string prefix, Ptr<NetDevice> nd, bool promiscuous = false, bool explicitFilename = false);
-  void EnablePcap (std::string prefix, std::string ndName, bool promiscuous = false, bool explicitFilenaqme = false);
+  void EnablePcap (std::string prefix, std::string ndName, bool promiscuous = false, bool explicitFilename = false);
 @end verbatim
 
 have a default parameter called @code{explicitFilename}.  When set to true,
@@ -2876,7 +2876,7 @@ taken for devices in the @code{ns-3} system are of the form
 there is a one-to-one correspondence between protocols and @code{Nodes}.
 This is because protocol @code{Objects} are aggregated to @code{Node Objects}.
 Since there is no global protocol id in the system, we use the corresponding
-node id in file naming.  Threfore there is a possibility for file name 
+node id in file naming.  Therefore there is a possibility for file name 
 collisions in automatically chosen trace file names.  For this reason, the
 file name convention is changed for protocol traces.
 
@@ -3133,7 +3133,7 @@ in the @code{ns-3} system are of the form ``<prefix>-<node id>-<device id>.tr''
 As previously mentioned, every node in the system will have a system-assigned
 node id.  Since there is a one-to-one correspondence between protocols and nodes
 we use to node-id to identify the protocol identity.  Every interface on a 
-given rotocol will have an interface index (also called simply an interface) 
+given protocol will have an interface index (also called simply an interface) 
 relative to its protocol.  By default, then, an ascii trace file created as a result
 of enabling tracing on the first device of node 21, using the prefix ``prefix'',
 would be ``prefix-n21-i1.tr''.  Use the prefix to disambiguate multiple protocols
@@ -3164,7 +3164,7 @@ collection of pre-defined outputs to a fine granularity.  There are mid-level
 helper functions to allow more sophisticated users to customize how information
 is extracted and saved; and there are low-level core functions to allow expert
 users to alter the system to present new and previously unexported information
-in a way that will be immediatly accessible to users at higher levels.
+in a way that will be immediately accessible to users at higher levels.
 
 This is a very comprehensive system, and we realize that it is a lot to 
 digest, especially for new users or those not intimately familiar with C++

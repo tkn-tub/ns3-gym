@@ -106,7 +106,7 @@ these steps could be followed to resolve the conflict:
 Also, it may be necessary to add the openmpi bin directory to PATH in order to 
 execute mpic++ and mpirun from the command line.  Alternatively, the full path 
 to these executables can be used.  Finally, if openmpi complains about the 
-inablility to open shared libraries, such as libmpi_cxx.so.0, it may be 
+inability to open shared libraries, such as libmpi_cxx.so.0, it may be 
 necessary to add the openmpi lib directory to LD_LIBRARY_PATH.
 
 @subsection Building and Running Examples

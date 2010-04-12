@@ -20,7 +20,7 @@ other important resources that are available to those interested in using or
 writing scripts, models and even those interested in making contributions to
 the core ns-3 system.  We provide an overview of some of the 
 important abstractions, design patterns and idioms used when writing 
-ns-3 scripts, and then dig right in by begining to write simulation 
+ns-3 scripts, and then dig right in by beginning to write simulation 
 scripts, run them and interpret results.
 
 After completing this tutorial, one should be able to:
@@ -749,8 +749,8 @@ an easy to use model.
 Topology helper functions use the abstractions (described above) of Network
 Interface Cards and Cables.  When you think of adding a new kind of network,
 you may think of going out to the local computer retailer and buying a kit.
-This kit might include a nework cable and some number of peripheral cards and
-thier associated software drivers.  You can think of topology helpers in 
+This kit might include a network cable and some number of peripheral cards and
+their associated software drivers.  You can think of topology helpers in 
 roughly the same way.  Instead of buying a kit for a given type of network,
 you will use a topology helper class for a given type of network, to accomplish
 the equivalent of installing the network ``kit.''
@@ -758,7 +758,7 @@ the equivalent of installing the network ``kit.''
 @section Important Idioms
 Now that we have identified that there are C++ classes in the system called
 @code{Node} and @code{InternetNode}, we need to understand how to bring
-objects of these classes into existance, and manage their lifetimes.  Let's
+objects of these classes into existence, and manage their lifetimes.  Let's
 examine this in some detail here.
 
 @cindex InternetNode
@@ -1164,7 +1164,7 @@ To summarize: The magic happens in the assignment operator.  Class
 Therefore, there exists a standard conversion from an @code{InternetNode *} 
 to a @code{Node *} and by extension from an @code{InternetNode &} to a
 @code{Node &}.  This conversion is applied automatically (and invisibly) 
-during paramater passing in the assignment operator we are examining.
+during parameter passing in the assignment operator we are examining.
 
 @cindex base class
 This is a rather involved way of saying there's an invisible pointer cast
@@ -1202,7 +1202,7 @@ like:
 @cindex InternetNode
 @cindex smart pointer
 Now we know that this is really a simple statement.  We create an
-@code{InternetNode} object on the heap (indirecly using operator @code{new}
+@code{InternetNode} object on the heap (indirectly using operator @code{new}
 and passing no parameters to its constructor) and assign responsibility for
 managing the new object's lifetime to a smart pointer.  This smart pointer is 
 a pointer to a @code{Node} object, so there was a hidden cast from 
@@ -1366,7 +1366,7 @@ was used in the example):
 @end itemize
 
 C++ will attempt to promote parameters appropriately, but you will typically
-see constructions that respect the type corrrectness of the constructor, as
+see constructions that respect the type correctness of the constructor, as
 in @code{Seconds (1.)} and @code{MilliSeconds (2)}.  Notice that the code
 @code{Seconds (1)} will work just as well as @code{Seconds (1.)} since the 
 integer 1 will be automatically promoted to a double 1. in the former code.
@@ -1547,7 +1547,7 @@ application as named parameters for clarity.  We are telling the application
 to generate 1024 byte packets (@code{packetSize = 1024}); and to send these
 packets to port 7 (@code{port = 7;}).  The application is told to send at most
 one packet (@code{maxPacketCount = 1;}); and to delay for one second between
-packet sends (@code{interpacketInterval = Seconds(1.)}) which is not used since
+packet sends (@code{interPacketInterval = Seconds(1.)}) which is not used since
 only one packet is sent.  We will defer addressing the type @code{Time} until
 we discuss the simulator engine.  For now just understand the semantics are
 to wait for one second.
@@ -1780,17 +1780,17 @@ In ns-3 an event is basically a pre-packaged function call called a
 a more descriptive term --- an object (in the object-oriented programming 
 sense) that can be called as if it was a function.  Typically one uses a
 functor to implement @emph{deferred execution} of a function or method.  The
-most commonly encoutered form of deferred execution is in a @emph{callback}
+most commonly encountered form of deferred execution is in a @emph{callback}
 from an I/O system.  In this case, the goal would be to start an I/O
 operation and return immediately, without having to wait for the operation 
-to complete.  One asks the I/O subsytem to notify you when an operation is
+to complete.  One asks the I/O subsystem to notify you when an operation is
 complete by calling some function you provide.  This provided function is
 known as a callback function.  [Imagine calling someone on the telephone and
 asking them to do something for you.  You also ask them to @emph{call you back}
 when they are done.]  Events in the ns-3 system work conceptually
 the same way, except that instead of an I/O completion driving the process,
 the arrival of some simulated time drives the process.  The ns-3 
-deferred exectution mechanism is via a class called @code{Callback}.
+deferred execution mechanism is via a class called @code{Callback}.
 
 @cindex Time
 @cindex Callback

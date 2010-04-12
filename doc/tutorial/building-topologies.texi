@@ -710,7 +710,7 @@ happen in a real Ethernet.  This is not the case.
 A model is, by definition, an abstraction of reality.  It is ultimately the 
 responsibility of the simulation script author to determine the so-called
 ``range of accuracy'' and ``domain of applicability'' of the simulation as
-a whole, and therefore its consitiuent parts.
+a whole, and therefore its constituent parts.
 
 In some cases, like @code{Csma}, it can be fairly easy to determine what is 
 @emph{not} modeled.  By reading the model description (@code{csma.h}) you 
@@ -754,7 +754,7 @@ not reflect the reality you might be expecting.
 
 Just to complicate the picture, there exist jumbo frames (1500 < MTU <= 9000 bytes)
 and super-jumbo (MTU > 9000 bytes) frames that are not officially sanctioned
-by IEEE but are avialable in some high-speed (Gigabit) networks and NICs.  One
+by IEEE but are available in some high-speed (Gigabit) networks and NICs.  One
 could leave the encapsulation mode set to @code{Dix}, and set the @code{Mtu}
 @code{Attribute} on a @code{CsmaNetDevice} to 64000 bytes -- even though an 
 associated @code{CsmaChannel DataRate} was set at 10 megabits per second.  

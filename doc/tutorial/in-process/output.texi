@@ -72,7 +72,7 @@ For Internet nodes, the ASCII trace wrapper is a wrapper around
 the @command{ns-3} low-level 
 tracing system that lets you get access to underlying trace events easily.  
 The output of a trace of a simulation run is an ASCII file --- thus the name.  
-In the spririt of keeping things simple, you won't be able to control or 
+In the spirit of keeping things simple, you won't be able to control or 
 configure the output at this stage.
 
 For those familiar with @command{ns-2} output, this type of trace is
@@ -191,7 +191,7 @@ is created it is given an identifying number that monotonically increases from
 zero.  Therefore, @code{nodeid=0} means that the node in which the given trace
 event originated is the first node we created.  In the case of our script, 
 this first node is is the node pointed to by the smart pointer @code{n0}.  Not
-too surpsisingly, this is also the node to which we attached the
+too surprisingly, this is also the node to which we attached the
 @code{UdpEchoClient}.  The device number is local to each node, and so the
 device given by @code{device=0} is the first net device that we added to the
 node in question.  In our simulation, this corresponds to the 
@@ -339,7 +339,7 @@ one has received the UDP echo packet and the @code{UdpEchoServer Application}
 on that node has turned the packet around.  Just as node zero needed to ARP
 for the MAC address of node one, now node one must ARP for the MAC address of
 node zero.  We see the ARP request enqueued on the transmit queue of node one;
-then we see the ARP request dequeued from the tranmit queue of node one (and
+then we see the ARP request dequeued from the transmit queue of node one (and
 implicitly transmitted to node zero).  Then we see an ARP response enqueued
 on the transmit queue of node zero; and finally the ARP response dequeued (and
 implicitly transmitted back to node one).
@@ -396,7 +396,7 @@ tcpdump and Wireshark can be used..
 The code used to enable pcap tracing is similar to that for ASCII tracing.  
 We have provided another file, @code{tutorial-csma-echo-pcap-trace.cc} that 
 uses the pcap trace wrapper.  We have added the code to include the pcap 
-trace wrapper defintions:
+trace wrapper definitions:
 
 @verbatim
   #include "ns3/pcap-trace.h"
@@ -447,7 +447,7 @@ those nodes.
 
 @subsubsection Reading output with Wireshark
 @cindex Wireshark
-If you are unfamilar with Wireshark, there is a web site available from which
+If you are unfamiliar with Wireshark, there is a web site available from which
 you can download programs and documentation:  @uref{http://www.wireshark.org/}.
 
 If you have Wireshark available, you can open each of the trace files and

@@ -415,7 +415,7 @@ default or require support from the underlying system to work properly.
 For instance, to enable XmlTo, the library libxml-2.0 must be found on the
 system.  If this library were not found, the corresponding @command{ns-3} feature 
 would not be enabled and a message would be displayed.  Note further that there is 
-a feature to use the progarm @code{sudo} to set the suid bit of certain programs.
+a feature to use the program @code{sudo} to set the suid bit of certain programs.
 This is not enabled by default and so this feature is reported as ``not enabled.''
 
 Now go ahead and switch back to the debug build.
