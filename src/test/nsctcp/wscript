@@ -1,0 +1,15 @@
+## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
+
+def configure(conf):
+    pass
+
+def build(bld):
+    nsctcp = bld.create_ns3_module('nsctcp')
+    headers = bld.new_task_gen('ns3header')
+    headers.module = 'nsctcp'
+    headers.source = [
+        ]
+    if bld.env['NSC_ENABLED']:
+        nsctcp.source = [
+            'nsctcp-loss-test-suite.cc',
+            ]

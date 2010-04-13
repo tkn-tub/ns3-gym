@@ -51,6 +51,7 @@ all_modules = (
     'test',
     'test/perf',
     'test/ns3tcp',
+    'test/nsctcp',
     'test/ns3wifi',
     'contrib/flow-monitor',
     'applications/udp-client-server',
