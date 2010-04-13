@@ -16,6 +16,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include "receive-list-error-model.h"
+
 #include "ns3/log.h"
 #include "ns3/abort.h"
 #include "ns3/test.h"
@@ -129,7 +131,7 @@ Ns3TcpLossTestCase1::DoRun (void)
   sampleList.push_back (0);
   sampleList.push_back (1);
   // This time, we'll explicitly create the error model we want
-  Ptr<ListErrorModel> pem = CreateObject<ListErrorModel> ();
+  Ptr<ReceiveListErrorModel> pem = CreateObject<ReceiveListErrorModel> ();
   pem->SetList (sampleList);
   devices.Get (1)->SetAttribute ("ReceiveErrorModel", PointerValue (pem));
 
@@ -235,9 +237,9 @@ Ns3TcpLossTestCase2::DoRun (void)
 
   std::list<uint32_t> sampleList;
   // Lose first data segment
-  sampleList.push_back (15);
+  sampleList.push_back (2);
   // This time, we'll explicitly create the error model we want
-  Ptr<ListErrorModel> pem = CreateObject<ListErrorModel> ();
+  Ptr<ReceiveListErrorModel> pem = CreateObject<ReceiveListErrorModel> ();
   pem->SetList (sampleList);
   devices.Get (1)->SetAttribute ("ReceiveErrorModel", PointerValue (pem));
 
@@ -273,7 +275,7 @@ Ns3TcpLossTestSuite::Ns3TcpLossTestSuite ()
   : TestSuite ("ns3-tcp-loss", SYSTEM)
 {
   AddTestCase (new Ns3TcpLossTestCase1);
-  //AddTestCase (new Ns3TcpLossTestCase2);
+  AddTestCase (new Ns3TcpLossTestCase2);
 }
 
 Ns3TcpLossTestSuite ns3TcpLossTestSuite;
