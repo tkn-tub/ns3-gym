@@ -674,10 +674,6 @@ TcpSocketImpl::ForwardUp (Ptr<Packet> packet, Ipv4Address saddr, Ipv4Address dad
   Address fromAddress = InetSocketAddress (saddr, port);
   Address toAddress = InetSocketAddress (daddr, m_endPoint->GetLocalPort());
 
-  if (m_shutdownRecv)
-    {
-      return;
-    }
   TcpHeader tcpHeader;
   packet->RemoveHeader (tcpHeader);
 
@@ -735,7 +731,10 @@ Actions_t TcpSocketImpl::ProcessEvent (Events_t e)
   if (saveState < CLOSING && (m_state == CLOSING || m_state == TIMED_WAIT) )
     {
       NS_LOG_LOGIC ("TcpSocketImpl peer closing, send EOF to application");
-      NotifyDataRecv ();
+      if (!m_shutdownRecv)
+        {
+          NotifyDataRecv ();
+        }
     }
 
   if (needCloseNotify && !m_closeNotified)
@@ -1296,7 +1295,10 @@ void TcpSocketImpl::NewRx (Ptr<Packet> p,
       m_rxAvailable += p->GetSize ();
       RxBufFinishInsert (tcpHeader.GetSequenceNumber ());
       m_rxBufSize += p->GetSize ();
-      NotifyDataRecv ();
+      if (!m_shutdownRecv)
+        {
+          NotifyDataRecv ();
+        }
       if (m_closeNotified)
         {
           NS_LOG_LOGIC ("Tcp " << this << " HuH?  Got data after closeNotif");
@@ -1392,7 +1394,10 @@ void TcpSocketImpl::NewRx (Ptr<Packet> p,
       m_rxAvailable += p->GetSize ();
       m_rxBufSize += p->GetSize();
       RxBufFinishInsert(start);
-      NotifyDataRecv ();
+      if (!m_shutdownRecv)
+        {
+          NotifyDataRecv ();
+        }
     }
   else
     { // debug
