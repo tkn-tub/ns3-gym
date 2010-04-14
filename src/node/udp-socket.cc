@@ -39,7 +39,7 @@ UdpSocket::GetTypeId (void)
     .SetParent<Socket> ()
     .AddAttribute ("RcvBufSize",
                    "UdpSocket maximum receive buffer size (bytes)",
-                   UintegerValue (0xffffffffl),
+                   UintegerValue (131072),
                    MakeUintegerAccessor (&UdpSocket::GetRcvBufSize,
                                          &UdpSocket::SetRcvBufSize),
                    MakeUintegerChecker<uint32_t> ())
