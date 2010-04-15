@@ -1372,10 +1372,8 @@ def run_tests():
         if job.is_break:
             continue
 
-        if job.is_example:
+        if job.is_example or job.is_pyexample:
             kind = "Example"
-        elif job.is_pyexample:
-            kind = "PythonExample"
         else:
             kind = "TestSuite"
 

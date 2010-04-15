@@ -55,7 +55,8 @@ TypeId DropTailQueue::GetTypeId (void)
 
 DropTailQueue::DropTailQueue () :
   Queue (),
-  m_packets ()
+  m_packets (),
+  m_bytesInQueue (0)
 {
   NS_LOG_FUNCTION_NOARGS ();
 }
