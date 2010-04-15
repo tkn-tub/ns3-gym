@@ -174,8 +174,8 @@ python_tests = [
 
     ("routing/simple-routing-ping6.py", "True"),
 
-    ("tap/tap-csma-virtual-machine.py", "True"),
-    ("tap/tap-wifi-virtual-machine.py", "True"),
+    ("tap/tap-csma-virtual-machine.py", "False"), # requires enable-sudo
+    ("tap/tap-wifi-virtual-machine.py", "False"), # requires enable-sudo
 
     ("tutorial/first.py", "True"),
 
