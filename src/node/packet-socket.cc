@@ -43,7 +43,7 @@ PacketSocket::GetTypeId (void)
                      MakeTraceSourceAccessor (&PacketSocket::m_dropTrace))
     .AddAttribute ("RcvBufSize",
                    "PacketSocket maximum receive buffer size (bytes)",
-                   UintegerValue (0xffffffffl),
+                   UintegerValue (131072),
                    MakeUintegerAccessor (&PacketSocket::m_rcvBufSize),
                    MakeUintegerChecker<uint32_t> ())
     ;
