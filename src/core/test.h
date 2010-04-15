@@ -30,6 +30,7 @@
 
 #include "ns3/system-wall-clock-ms.h"
 
+extern bool gBreakOnFailure;
 
 // 
 // Note on below macros:
@@ -67,6 +68,7 @@
   do {                                                                                                  \
     if (!((actual) == (limit)))                                                                         \
       {                                                                                                 \
+        if (gBreakOnFailure) {*(int *)0 = 0;}                                                           \
         std::ostringstream msgStream;                                                                   \
         msgStream << msg;                                                                               \
         std::ostringstream actualStream;                                                                \
@@ -121,6 +123,7 @@
   do {                                                                                                  \
     if (!((actual) == (limit)))                                                                         \
       {                                                                                                 \
+        if (gBreakOnFailure) {*(int *)0 = 0;}                                                           \
         std::ostringstream msgStream;                                                                   \
         msgStream << msg;                                                                               \
         std::ostringstream actualStream;                                                                \
@@ -173,6 +176,7 @@
   do {                                                                                                                \
     if ((actual) > (limit) + (tol) || (actual) < (limit) - (tol))                                                     \
       {                                                                                                               \
+        if (gBreakOnFailure) {*(int *)0 = 0;}                                                                         \
         std::ostringstream msgStream;                                                                                 \
         msgStream << msg;                                                                                             \
         std::ostringstream actualStream;                                                                              \
@@ -251,6 +255,7 @@
   do {                                                                                                                \
     if ((actual) > (limit) + (tol) || (actual) < (limit) - (tol))                                                     \
       {                                                                                                               \
+        if (gBreakOnFailure) {*(int *)0 = 0;}                                                                         \
         std::ostringstream msgStream;                                                                                 \
         msgStream << msg;                                                                                             \
         std::ostringstream actualStream;                                                                              \
@@ -326,6 +331,7 @@
   do {                                                                                                  \
     if (!((actual) != (limit)))                                                                         \
       {                                                                                                 \
+        if (gBreakOnFailure) {*(int *)0 = 0;}                                                           \
         std::ostringstream msgStream;                                                                   \
         msgStream << msg;                                                                               \
         std::ostringstream actualStream;                                                                \
@@ -379,6 +385,7 @@
   do {                                                                                                  \
     if (!((actual) != (limit)))                                                                         \
       {                                                                                                 \
+        if (gBreakOnFailure) {*(int *)0 = 0;}                                                           \
         std::ostringstream msgStream;                                                                   \
         msgStream << msg;                                                                               \
         std::ostringstream actualStream;                                                                \
@@ -429,6 +436,7 @@
   do {                                                                                                   \
     if (!((actual) < (limit)))                                                                           \
       {                                                                                                  \
+        if (gBreakOnFailure) {*(int *)0 = 0;}                                                            \
         std::ostringstream msgStream;                                                                    \
         msgStream << msg;                                                                                \
         std::ostringstream actualStream;                                                                 \
@@ -472,6 +480,7 @@
   do {                                                                                                   \
     if (!((actual) < (limit)))                                                                           \
       {                                                                                                  \
+        if (gBreakOnFailure) {*(int *)0 = 0;}                                                            \
         std::ostringstream msgStream;                                                                    \
         msgStream << msg;                                                                                \
         std::ostringstream actualStream;                                                                 \
@@ -511,6 +520,7 @@
   do {                                                                                                   \
     if (!((actual) > (limit)))                                                                           \
       {                                                                                                  \
+        if (gBreakOnFailure) {*(int *)0 = 0;}                                                            \
         std::ostringstream msgStream;                                                                    \
         msgStream << msg;                                                                                \
         std::ostringstream actualStream;                                                                 \
@@ -554,6 +564,7 @@
   do {                                                                                                   \
     if (!((actual) > (limit)))                                                                           \
       {                                                                                                  \
+        if (gBreakOnFailure) {*(int *)0 = 0;}                                                            \
         std::ostringstream msgStream;                                                                    \
         msgStream << msg;                                                                                \
         std::ostringstream actualStream;                                                                 \

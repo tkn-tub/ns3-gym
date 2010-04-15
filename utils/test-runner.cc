@@ -30,6 +30,8 @@
 #include <dirent.h>
 #include <string.h>
 
+extern bool gBreakOnFailure;
+
 using namespace ns3;
 
 //
@@ -172,6 +174,8 @@ main (int argc, char *argv[])
   bool doSuite = false;
   bool doKinds = false;
 
+  gBreakOnFailure = false;
+
   bool haveBasedir = false;
   bool haveTempdir = false;
   bool haveOutfile = false;
@@ -183,9 +187,15 @@ main (int argc, char *argv[])
   std::string outfileName;
   std::string typeName;
 
+
   for (int i = 1; i < argc; ++i)
     {
       std::string arg(argv[i]);
+
+      if (arg.find ("--assert") != std::string::npos)
+        {
+          gBreakOnFailure = true;
+        }
 
       if (arg.find ("--basedir=") != std::string::npos)
         {
@@ -249,6 +259,7 @@ main (int argc, char *argv[])
   //
   if (doHelp)
     {
+      std::cout << "  --assert:               Tell tests to segfault (like assert) if an error is detected" << std::endl;
       std::cout << "  --basedir=dir:          Set the base directory (where to find src) to \"dir\"" << std::endl;
       std::cout << "  --tempdir=dir:          Set the temporary directory (where to find data files) to \"dir\"" << std::endl;
       std::cout << "  --constrain=test-type:  Constrain checks to test suites of type \"test-type\"" << std::endl;

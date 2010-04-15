@@ -21,8 +21,9 @@
 #include "abort.h"
 #include <math.h>
 
-namespace ns3 {
+bool gBreakOnFailure = false;
 
+namespace ns3 {
 
 //
 // XML files have restrictions on certain characters that may be present in
