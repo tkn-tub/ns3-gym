@@ -159,6 +159,30 @@ example_tests = [
 ]
 
 #
+# A list of python examples to run as smoke tests just to ensure that they 
+# runnable over time.  Also a condition under which to run the example (from
+# the waf configuration)
+#
+# XXX Should this not be read from a configuration file somewhere and not
+# hardcoded.
+#
+python_tests = [
+    ("csma/csma-bridge.py", "True"),
+
+    ("flowmon/wifi-olsr-flowmon.py", "True"),
+
+    ("routing/simple-routing-ping6.py", "True"),
+
+    ("tap/tap-csma-virtual-machine.py", "True"),
+    ("tap/tap-wifi-virtual-machine.py", "True"),
+
+    ("tutorial/first.py", "True"),
+
+    ("wireless/wifi-ap.py", "True"),
+    ("wireless/mixed-wireless.py", "True"),
+]
+
+#
 # The test suites are going to want to output status.  They are running
 # concurrently.  This means that unless we are careful, the output of
 # the test suites will be interleaved.  Rather than introducing a lock
@@ -673,10 +697,15 @@ def make_library_path():
 #
 VALGRIND_SUPPRESSIONS_FILE = "testpy.supp"
 
-def run_job_synchronously(shell_command, directory, valgrind):
+def run_job_synchronously(shell_command, directory, valgrind, is_python):
     (base, build) = os.path.split (NS3_BUILDDIR)
     suppressions_path = os.path.join (base, VALGRIND_SUPPRESSIONS_FILE)
-    path_cmd = os.path.join (NS3_BUILDDIR, NS3_ACTIVE_VARIANT, shell_command)
+
+    if is_python:
+        path_cmd = "python " + os.path.join (base, shell_command)
+    else:
+        path_cmd = os.path.join (NS3_BUILDDIR, NS3_ACTIVE_VARIANT, shell_command)
+
     if valgrind:
         cmd = "valgrind --suppressions=%s --leak-check=full --show-reachable=yes --error-exitcode=2 %s" % (suppressions_path, 
             path_cmd)
@@ -720,6 +749,7 @@ class Job:
         self.is_break = False
         self.is_skip = False
         self.is_example = False
+        self.is_pyexample = False
         self.shell_command = ""
         self.display_name = ""
         self.basedir = ""
@@ -752,6 +782,15 @@ class Job:
     #
     def set_is_example(self, is_example):
         self.is_example = is_example
+
+    #
+    # Examples are treated differently than standard test suites.  This is
+    # mostly because they are completely unaware that they are being run as 
+    # tests.  So we have to do some special case processing to make them look
+    # like tests.
+    #
+    def set_is_pyexample(self, is_pyexample):
+        self.is_pyexample = is_pyexample
 
     #
     # This is the shell command that will be executed in the job.  For example,
@@ -867,13 +906,14 @@ class worker_thread(threading.Thread):
                 if options.verbose:
                     print "Launch %s" % job.shell_command
 
-                if job.is_example:
+                if job.is_example or job.is_pyexample:
                     #
                     # If we have an example, the shell command is all we need to
-                    # know.  It will be something like "examples/udp-echo"
+                    # know.  It will be something like "examples/udp-echo" or 
+                    # "examples/mixed-wireless.py"
                     #
                     (job.returncode, standard_out, standard_err, et) = run_job_synchronously(job.shell_command, 
-                        job.cwd, options.valgrind)
+                        job.cwd, options.valgrind, job.is_pyexample)
                 else:
                     #
                     # If we're a test suite, we need to provide a little more info
@@ -882,7 +922,7 @@ class worker_thread(threading.Thread):
                     #
                     (job.returncode, standard_out, standard_err, et) = run_job_synchronously(job.shell_command + 
                         " --basedir=%s --tempdir=%s --out=%s" % (job.basedir, job.tempdir, job.tmp_file_name), 
-                        job.cwd, options.valgrind)
+                        job.cwd, options.valgrind, False)
 
                 job.set_elapsed_time(et)
 
@@ -974,12 +1014,12 @@ def run_tests():
     #
     if options.kinds:
         path_cmd = os.path.join("utils", "test-runner --kinds")
-        (rc, standard_out, standard_err, et) = run_job_synchronously(path_cmd, os.getcwd(), False)
+        (rc, standard_out, standard_err, et) = run_job_synchronously(path_cmd, os.getcwd(), False, False)
         print standard_out
 
     if options.list:
         path_cmd = os.path.join("utils", "test-runner --list")
-        (rc, standard_out, standard_err, et) = run_job_synchronously(path_cmd, os.getcwd(), False)
+        (rc, standard_out, standard_err, et) = run_job_synchronously(path_cmd, os.getcwd(), False, False)
         print standard_out
 
     if options.kinds or options.list:
@@ -1028,8 +1068,8 @@ def run_tests():
 
     #
     # We need to figure out what test suites to execute.  We are either given one 
-    # suite or example explicitly via the --suite or --example option, or we
-    # need to call into the test runner and ask it to list all of the available
+    # suite or example explicitly via the --suite or --example/--pyexample option,
+    # or we need to call into the test runner and ask it to list all of the available
     # test suites.  Further, we need to provide the constraint information if it
     # has been given to us.
     # 
@@ -1040,7 +1080,8 @@ def run_tests():
     #  ./test.py --constrain=core:                          run all of the suites of all kinds
     #  ./test.py --constrain=unit:                          run all unit suites
     #  ./test,py --suite=some-test-suite:                   run a single suite
-    #  ./test,py --example=udp-echo:                        run no test suites
+    #  ./test,py --example=udp/udp-echo:                    run no test suites
+    #  ./test,py --pyexample=wireless/mixed-wireless.py:    run no test suites
     #  ./test,py --suite=some-suite --example=some-example: run the single suite
     #
     # We can also use the --constrain option to provide an ordering of test 
@@ -1048,13 +1089,13 @@ def run_tests():
     #
     if len(options.suite):
         suites = options.suite + "\n"
-    elif len(options.example) == 0:
+    elif len(options.example) == 0 and len(options.pyexample) == 0:
         if len(options.constrain):
             path_cmd = os.path.join("utils", "test-runner --list --constrain=%s" % options.constrain)
-            (rc, suites, standard_err, et) = run_job_synchronously(path_cmd, os.getcwd(), False)
+            (rc, suites, standard_err, et) = run_job_synchronously(path_cmd, os.getcwd(), False, False)
         else:
             path_cmd = os.path.join("utils", "test-runner --list")
-            (rc, suites, standard_err, et) = run_job_synchronously(path_cmd, os.getcwd(), False)
+            (rc, suites, standard_err, et) = run_job_synchronously(path_cmd, os.getcwd(), False, False)
     else:
         suites = ""
 
@@ -1124,6 +1165,7 @@ def run_tests():
         if len(test):
             job = Job()
             job.set_is_example(False)
+            job.set_is_pyexample(False)
             job.set_display_name(test)
             job.set_tmp_file_name(os.path.join(testpy_output_dir, "%s.xml" % test))
             job.set_cwd(os.getcwd())
@@ -1181,20 +1223,21 @@ def run_tests():
     #  ./test,py:                                           run all of the examples
     #  ./test.py --constrain=unit                           run no examples
     #  ./test.py --constrain=example                        run all of the examples
-    #  ./test,py --suite=some-test-suite:                   run no examples
-    #  ./test,py --example=some-example:                    run the single example
-    #  ./test,py --suite=some-suite --example=some-example: run the single example
+    #  ./test.py --suite=some-test-suite:                   run no examples
+    #  ./test.py --example=some-example:                    run the single example
+    #  ./test.py --suite=some-suite --example=some-example: run the single example
     #
     # XXX could use constrain to separate out examples used for performance 
     # testing
     #
-    if len(options.suite) == 0 and len(options.example) == 0:
+    if len(options.suite) == 0 and len(options.example) == 0 and len(options.pyexample) == 0:
         if len(options.constrain) == 0 or options.constrain == "example":
             if ENABLE_EXAMPLES:
                 for test, do_run, do_valgrind_run in example_tests:
                     if eval(do_run):
                         job = Job()
                         job.set_is_example(True)
+                        job.set_is_pyexample(False)
                         job.set_display_name(test)
                         job.set_tmp_file_name("")
                         job.set_cwd(testpy_output_dir)
@@ -1219,6 +1262,7 @@ def run_tests():
         #
         job = Job()
         job.set_is_example(True)
+        job.set_is_pyexample(False)
         job.set_display_name(options.example)
         job.set_tmp_file_name("")
         job.set_cwd(testpy_output_dir)
@@ -1227,7 +1271,73 @@ def run_tests():
         job.set_shell_command("examples/%s" % options.example)
         
         if options.verbose:
-            print "Queue %s" % test
+            print "Queue %s" % options.example
+
+        input_queue.put(job)
+        jobs = jobs + 1
+        total_tests = total_tests + 1
+
+    #
+    # Run some Python examples as smoke tests.  We have a list of all of
+    # the example programs it makes sense to try and run.  Each example will
+    # have a condition associated with it that must evaluate to true for us
+    # to try and execute it.  This is used to determine if the example has
+    # a dependency that is not satisfied.
+    #
+    # We don't care at all how the trace files come out, so we just write them 
+    # to a single temporary directory.
+    #
+    # We need to figure out what python examples to execute.  We are either 
+    # given one pyexample explicitly via the --pyexample option, or we
+    # need to walk the list of python examples
+    #
+    # This translates into allowing the following options with respect to the 
+    # suites
+    #
+    #  ./test.py --constrain=pyexample           run all of the python examples
+    #  ./test.py --pyexample=some-example.py:    run the single python example
+    #
+    if len(options.suite) == 0 and len(options.example) == 0 and len(options.pyexample) == 0:
+        if len(options.constrain) == 0 or options.constrain == "pyexample":
+            if ENABLE_EXAMPLES:
+                for test, do_run in python_tests:
+                    if eval(do_run):
+                        job = Job()
+                        job.set_is_example(False)
+                        job.set_is_pyexample(True)
+                        job.set_display_name(test)
+                        job.set_tmp_file_name("")
+                        job.set_cwd(testpy_output_dir)
+                        job.set_basedir(os.getcwd())
+                        job.set_tempdir(testpy_output_dir)
+                        job.set_shell_command("examples/%s" % test)
+
+                        if options.valgrind and not eval(do_valgrind_run):
+                            job.set_is_skip (True)
+
+                        if options.verbose:
+                            print "Queue %s" % test
+
+                        input_queue.put(job)
+                        jobs = jobs + 1
+                        total_tests = total_tests + 1
+
+    elif len(options.pyexample):
+        #
+        # If you tell me to run a python example, I will try and run the example
+        # irrespective of any condition.
+        #
+        job = Job()
+        job.set_is_pyexample(True)
+        job.set_display_name(options.pyexample)
+        job.set_tmp_file_name("")
+        job.set_cwd(testpy_output_dir)
+        job.set_basedir(os.getcwd())
+        job.set_tempdir(testpy_output_dir)
+        job.set_shell_command("examples/%s" % options.pyexample)
+        
+        if options.verbose:
+            print "Queue %s" % options.pyexample
 
         input_queue.put(job)
         jobs = jobs + 1
@@ -1263,6 +1373,8 @@ def run_tests():
 
         if job.is_example:
             kind = "Example"
+        elif job.is_pyexample:
+            kind = "PythonExample"
         else:
             kind = "TestSuite"
 
@@ -1285,7 +1397,7 @@ def run_tests():
 
         print "%s: %s %s" % (status, kind, job.display_name)
 
-        if job.is_example == True:
+        if job.is_example or job.is_pyexample:
             #
             # Examples are the odd man out here.  They are written without any
             # knowledge that they are going to be run as a test, so we need to 
@@ -1468,9 +1580,20 @@ def main(argv):
     parser.add_option("-n", "--nowaf", action="store_true", dest="nowaf", default=False,
                       help="do not run waf before starting testing")
 
+    parser.add_option("-p", "--pyexample", action="store", type="string", dest="pyexample", default="",
+                      metavar="PYEXAMPLE",
+                      help="specify a single python example to run")
+
+    parser.add_option("-r", "--retain", action="store_true", dest="retain", default=False,
+                      help="retain all temporary files (which are normally deleted)")
+
     parser.add_option("-s", "--suite", action="store", type="string", dest="suite", default="",
                       metavar="TEST-SUITE",
                       help="specify a single test suite to run")
+
+    parser.add_option("-t", "--text", action="store", type="string", dest="text", default="",
+                      metavar="TEXT-FILE",
+                      help="write detailed test results into TEXT-FILE.txt")
 
     parser.add_option("-v", "--verbose", action="store_true", dest="verbose", default=False,
                       help="print progress and informational messages")
@@ -1478,13 +1601,6 @@ def main(argv):
     parser.add_option("-w", "--web", "--html", action="store", type="string", dest="html", default="",
                       metavar="HTML-FILE",
                       help="write detailed test results into HTML-FILE.html")
-
-    parser.add_option("-r", "--retain", action="store_true", dest="retain", default=False,
-                      help="retain all temporary files (which are normally deleted)")
-
-    parser.add_option("-t", "--text", action="store", type="string", dest="text", default="",
-                      metavar="TEXT-FILE",
-                      help="write detailed test results into TEXT-FILE.txt")
 
     parser.add_option("-x", "--xml", action="store", type="string", dest="xml", default="",
                       metavar="XML-FILE",
