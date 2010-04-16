@@ -2099,7 +2099,7 @@ look in the @code{main} function, you will find new code to do just that:
   ...
 
   PcapHelper pcapHelper;
-  Ptr<PcapFileWrapper> file = pcapHelper.CreateFile ("sixth.pcap", "w", PcapHelper::DLT_PPP);
+  Ptr<PcapFileWrapper> file = pcapHelper.CreateFile ("sixth.pcap", std::ios::out, PcapHelper::DLT_PPP);
   devices.Get (1)->TraceConnectWithoutContext("PhyRxDrop", MakeBoundCallback (&RxDrop, file));
 @end verbatim
 
