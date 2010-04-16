@@ -92,13 +92,13 @@ def main(argv):
     apps.Stop(ns3.Seconds(20.0));
 
     print "Tracing"
-    ascii = ns3.ofstream("simple-routing-ping6.tr");
-    ns3.CsmaHelper.EnableAsciiAll(ascii);
-    ns3.CsmaHelper.EnablePcapAll("simple-routing-ping6", True);
+    ascii = ns3.AsciiTraceHelper()
+    csma.EnableAsciiAll(ascii.CreateFileStream("simple-routing-ping6.tr"))
+    csma.EnablePcapAll("simple-routing-ping6", True)
 
     # Run Simulation     
-    ns3.Simulator.Run();
-    ns3.Simulator.Destroy();
+    ns3.Simulator.Run()
+    ns3.Simulator.Destroy()
 
 if __name__ == '__main__':
     import sys
