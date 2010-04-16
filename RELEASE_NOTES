@@ -112,14 +112,16 @@ many cases referencing the Bugzilla bug number
    - bug 856 - initialize vbl
    - bug 857 - Link-Local Multicast handle in Ipv4 Output processing 
    - bug 859 - Output interface estimation for the source address bound socket in IPv4 Raw socket
+   - bug 862 - NotifyInterfaceUp() Adds network route even when netmask is /32
    - bug 863 - Wrong Scalar arithmetics
    - bug 864 - Invalid return value in UdpSocketImpl::Send and Ipv4RawSocketImpl::Send
    - bug 865 - Ipv4RawSocketImpl::RecvFrom does not return from address all the time.
    - bug 866 - WiMAX mobility models not aggregated to Node
+   - bug 867 - Minor bug in Ipv4L3Protocol::Send()
    - bug 868 - invalid packet size after Ipv4L3Protocol::Send
    - bug 872 - ns3::PcapFileWrapper::Write explodes stack
    - bug 876 - Tcp socket does not handle ShutdownRecv correctly
-   
+   - bug 880 - Node sending a packet to itself via 127.0.0.1 aborts
 
 Known issues
 ------------
