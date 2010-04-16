@@ -19,6 +19,7 @@
  */
 #include "loopback-net-device.h"
 #include "ns3/log.h"
+#include "ns3/simulator.h"
 #include "ns3/channel.h"
 #include "ns3/node.h"
 #include "ns3/packet.h"
@@ -178,7 +179,7 @@ LoopbackNetDevice::Send (Ptr<Packet> packet, const Address& dest, uint16_t proto
   NS_LOG_FUNCTION (packet << " " << dest << " " << protocolNumber);
   Mac48Address to = Mac48Address::ConvertFrom (dest);
   NS_ASSERT_MSG (to == GetBroadcast () || to == m_address, "Invalid destination address");
-  Receive (packet, protocolNumber, to, m_address);
+  Simulator::ScheduleWithContext (m_node->GetId (), Seconds (0.0), &LoopbackNetDevice::Receive, this, packet, protocolNumber, to, m_address);
   return true;
 }
 
@@ -189,7 +190,7 @@ LoopbackNetDevice::SendFrom(Ptr<Packet> packet, const Address& source, const Add
   Mac48Address to = Mac48Address::ConvertFrom (dest);
   Mac48Address from = Mac48Address::ConvertFrom (source);
   NS_ASSERT_MSG (to.IsBroadcast () || to == m_address, "Invalid destination address");
-  Receive (packet, protocolNumber, to, from);
+  Simulator::ScheduleWithContext (m_node->GetId (), Seconds (0.0), &LoopbackNetDevice::Receive, this, packet, protocolNumber, to, from);
   return true;
 }
 
