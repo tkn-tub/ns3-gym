@@ -114,12 +114,12 @@ Ns3TcpInteroperabilityTestCase::DoSetup (void)
 
   if (m_writeVectors)
     {
-      m_pcapFile.Open (m_pcapFilename, "w");
+      m_pcapFile.Open (m_pcapFilename, std::ios::out|std::ios::binary);
       m_pcapFile.Init(PCAP_LINK_TYPE, PCAP_SNAPLEN);
     }
   else
     {
-      m_pcapFile.Open (m_pcapFilename, "r");
+      m_pcapFile.Open (m_pcapFilename, std::ios::in|std::ios::binary);
       NS_ABORT_MSG_UNLESS (m_pcapFile.GetDataLinkType () == PCAP_LINK_TYPE, "Wrong response vectors in directory");
     }
 }
