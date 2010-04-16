@@ -256,6 +256,7 @@ WifiMacQueue::Remove (Ptr<const Packet> packet)
       if (it->packet == packet)
         {
           m_queue.erase (it);
+          m_size--;
           return true;
         }
     }
