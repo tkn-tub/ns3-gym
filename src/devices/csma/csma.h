@@ -133,13 +133,18 @@
  *
  * The CsmaChannel provides following Attributes:
  *
- * - DataRate:      The bitrate for packet transmission on connected devices;
- * - Delay:       The speed of light transmission delay for the channel.
+ * - DataRate:  The bitrate for packet transmission on connected devices;
+ * - Delay:     The speed of light transmission delay for the channel.
  *
  * \section CsmaNetDeviceModel CSMA Net Device Model
  *
- * The CSMA network device appears somewhat like an Ethernet device.  The
- * CsmaNetDevice provides following Attributes:
+ * The CSMA network device appears somewhat like an Ethernet device,, but it
+ * is important to understand that it does not model an Ethernet device.  As
+ * mentioned above, it does not model collisions.  The CSMA model also provides
+ * users with the ability to configure the device into other states that are
+ * not compatible with strictly Ethernet or IEEE 802.3 devices. 
+ *
+ * The CsmaNetDevice provides following Attributes:
  *
  * - Address:           The Mac48Address of the device;
  * - SendEnable:        Enable packet transmission if true;
@@ -150,6 +155,47 @@
  * - InterframeGap:     The optional time to wait between "frames";
  * - Rx:                A trace source for received packets;
  * - Drop:              A trace source for dropped packets.
+ *
+ * We recommend thinking carefully about changing these Attributes, since
+ * it can result in behavior that surprises users.  We allow this because
+ * we believe flexibility is important.  As an example of a possibly 
+ * surprising effect of changing Attributes, consider the following:
+ *
+ * The Mtu Attribute indicates the Maximum Transmission Unit to the device.
+ * This is the size of the largest Protocol Data Unit (PDU) that the
+ * device can send.  This Attribute defaults to 1500 bytes and corresponds
+ * to a number found in RFC 894, "A Standard for the Transmission of IP 
+ * Datagrams over Ethernet Networks."  The number is actually derived 
+ * from the maximum packet size for 10Base5 (full-spec Ethernet) networks -- 
+ * 1518 bytes.  If you subtract DIX encapsulation overhead for Ethernet 
+ * packets (18 bytes) you will end up with a maximum possible data size (MTU) 
+ * of 1500 bytes.  One can also find that the MTU for IEEE 802.3 networks
+ * is 1492 bytes.  This is because LLC/SNAP encapsulation adds an extra eight 
+ * bytes of overhead to the packet.  In both cases, the underlying network 
+ * hardware is limited to 1518 bytes, but the MTU is different because the
+ * encapsulation is different.
+ *
+ * If one leaves the Mtu Attribute at 1500 bytes and changes the encapsulation
+ * mode Attribute to Llc, the result will be a network that encapsulates 1500
+ * byte PDUs with LLC/SNAP framing resulting in packets of 1526 bytes.  This
+ * would be illegal in many networks, but we allow you do do this.  This
+ * results in a simulation that quite subtly does not reflect what you might 
+ * be expecting since a real device would balk at sending a 1526 byte packet.
+ *
+ * There also exist jumbo frames (1500 < MTU <= 9000 bytes) and super-jumbo 
+ * (MTU > 9000 bytes) frames that are not officially sanctioned by IEEE but 
+ * are available in some high-speed (Gigabit) networks and NICs.  In the 
+ * CSMA model, one could leave the encapsulation mode set to Dix, and set the
+ * Mtu to 64000 bytes -- even though an associated CsmaChannel DataRate was 
+ * left at 10 megabits per second (certainly not Gigabit Ethernet).  This 
+ * would essentially model an Ethernet switch made out of vampire-tapped
+ * 1980s-style 10Base5 networks that support super-jumbo datagrams, which is
+ * certainly not something that was ever made, nor is likely to ever be made;
+ * however it is quite easy for you to configure.
+ *
+ * Be careful about assumptions regarding what CSMA is actually modelling and
+ * how configuration (Attributes) may allow you to swerve considerably away
+ * from reality.
  *
  * The CsmaNetDevice supports the assignment of a "receive error model."
  * This is an ErrorModel object that is used to simulate data corruption
