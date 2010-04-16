@@ -504,6 +504,9 @@ PcapFile::Diff (std::string const & f1, std::string const & f2,
       diff = true;
     }
 
+  delete[] data1;
+  delete[] data2;
+
   return diff;
 }
 
