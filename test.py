@@ -575,10 +575,11 @@ def read_waf_config():
 # its own shared libraries, so ns-3 doesn't hardcode a shared library search
 # path -- it is cooked up dynamically, so we do that too.
 #
-def make_library_path():
+def make_paths():
     have_DYLD_LIBRARY_PATH = False
     have_LD_LIBRARY_PATH = False
     have_PATH = False
+    have_PYTHONPATH = False
 
     keys = os.environ.keys()
     for key in keys:
@@ -588,6 +589,18 @@ def make_library_path():
             have_LD_LIBRARY_PATH = True
         if key == "PATH":
             have_PATH = True
+        if key == "PYTHONPATH":
+            have_PYTHONPATH = True
+
+    pypath = os.environ["PYTHONPATH"] = os.path.join (NS3_BUILDDIR, NS3_ACTIVE_VARIANT, "bindings", "python")
+
+    if not have_PYTHONPATH:
+        os.environ["PYTHONPATH"] = pypath
+    else:
+        os.environ["PYTHONPATH"] += ":" + pypath
+
+    if options.verbose:
+        print "os.environ[\"PYTHONPATH\"] == %s" % os.environ["PYTHONPATH"]
 
     if sys.platform == "darwin":
         if not have_DYLD_LIBRARY_PATH:
@@ -998,7 +1011,7 @@ def run_tests():
     #
     read_waf_active_variant()
     read_waf_config()
-    make_library_path()
+    make_paths()
 
     #
     # If lots of logging is enabled, we can crash Python when it tries to 
