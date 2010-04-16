@@ -598,7 +598,7 @@ Ipv4L3Protocol::Send (Ptr<Packet> packet,
       return; 
     } 
   // 4) packet is not broadcast, and is passed in with a route entry but route->GetGateway is not set (e.g., on-demand)
-  if (route && route->GetGateway () != Ipv4Address ())
+  if (route && route->GetGateway () == Ipv4Address ())
     {
       // This could arise because the synchronous RouteOutput() call
       // returned to the transport protocol with a source address but
