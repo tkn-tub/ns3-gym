@@ -71,14 +71,16 @@ TempDir (void)
   //
   // The final path to the directory is going to look something like
   // 
-  //   /tmp/14.30.29.32767
+  //   /tmp/ns3-14.30.29.32767
   //
   // The first segment comes from one of the temporary directory env 
-  // variables or /tmp if not found.  The directory name starts with the
-  // local time (in this case 14.30.29 -- which is 2:30 and 29 seconds PM).
+  // variables or /tmp if not found.  The directory name starts with an
+  // identifier telling folks who is making all of the temp directories
+  // and then the local time (in this case 14.30.29 -- which is 2:30 and
+  // 29 seconds PM).
   //
   char dirname[1024];
-  snprintf (dirname, sizeof(dirname),  "%s/%d.%d.%d.%ld", path, tm_now->tm_hour, tm_now->tm_min, tm_now->tm_sec, n);
+  snprintf (dirname, sizeof(dirname),  "%s/ns-3.%d.%d.%d.%ld", path, tm_now->tm_hour, tm_now->tm_min, tm_now->tm_sec, n);
 
   if (mkdir (dirname, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH) == 0)
     {
@@ -90,6 +92,13 @@ TempDir (void)
     }
 }
 
+//
+// Test suites may need to figure out where their source directory is in order
+// to find test vectors.  To do that they will need to know  where the base 
+// directory of the distribution is (the directory in which "src" is found).
+// It is painful for a user debugging test suites to always provide that dir
+// so we try and find it in the current directory tree.
+//
 std::string
 BaseDir (void)
 {
@@ -382,11 +391,8 @@ main (int argc, char *argv[])
   if (haveBasedir == false)
     {
       //
-      // Test suites are possibly going to need to figure out where their 
-      // source directory is, and to do that they will need to know  where 
-      // the base directory of the distribution is (the directory in which 
-      // "src" is found).  If we don't have it, we can try and find it in
-      // the current directory tree.
+      // No basedir was provided.  If we don't have it, we can try and find it 
+      // in the current directory tree.
       //
       basedir = BaseDir ();
       if (basedir.size ()) 
