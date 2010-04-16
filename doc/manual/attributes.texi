@@ -514,6 +514,24 @@ the attribute system:
 
 @subsubsection Initialization order
 
+Attributes in the system must not depend on the state of any other Attribute
+in this system.  This is because an ordering of Attribute initialization is
+not specified, nor enforced, by the system.  A specific example of this 
+can be seen in automated configuration programs such as @code{ns3::ConfigStore}.  
+Although a given model may arrange it so that Attributes are initialized in
+a particular order, another automatic configurator may decide independently 
+to change Attributes in, for example, alphabetic order.  
+
+Because of this non-specific ordering, no Attribute in the system may have
+any dependence on any other Attribute.  As a corollary, Attribute setters must
+never fail due to the state of another Attribute.  No Attribute setter may 
+change (set) any other Attribute value as a result of changing its value.
+
+This is a very strong restriction and there are cases where Atrributes must
+set consistently to allow correct operation.  To this end we do allow for 
+consistency checking @emph{when the attribute is used} (cf. NS_ASSERT_MSG 
+or NS_ABORT_MSG).
+
 In general, the attribute code to assign values to the underlying
 class member variables is executed after an object is constructed.
 But what if you need the values assigned before the constructor
