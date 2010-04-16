@@ -489,6 +489,7 @@ You should see something like the following:
   'build' finished successfully (0.353s)
   --assert:               Tell tests to segfault (like assert) if an error is detected
   --basedir=dir:          Set the base directory (where to find src) to ``dir''
+  --tempdir=dir:          Set the temporary directory (where to find data files) to ``dir''
   --constrain=test-type:  Constrain checks to test suites of type ``test-type''
   --help:                 Print this message
   --kinds:                List all of the available kinds of tests
@@ -560,14 +561,15 @@ Just as in the basedir case, it can be annoying to continually have to provide
 a @code{--tempdir}, so the test runner will figure one out for you if you don't
 provide one.  It first looks for environment variables named @code{TMP} and 
 @code{TEMP} and uses those.  If neither @code{TMP} nor @code{TEMP} are defined
-it picks @code{/tmp}.  The code then tacks on the time (hh.mm.ss} followed by
-a large randome number and creates a directory of that name to be used as the
+it picks @code{/tmp}.  The code then tacks on an identifier indicating what 
+created the directory (ns-3) then the time (hh.mm.ss} followed by a large random
+number.  The test runner creates a directory of that name to be used as the
 temporary directory.  Temporary files then go into a directory that will be
 named something like,
 
 @smallformat
 @verbatim
-  /tmp/10.25.37.61537845
+  /tmp/ns-3.10.25.37.61537845
 @end verbatim
 @end smallformat
 
