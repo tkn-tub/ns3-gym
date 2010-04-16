@@ -60,7 +60,7 @@ PacketLossCounter::SetBitMapSize (uint16_t winSize)
       delete [] m_receiveBitMap;
     }
   m_receiveBitMap = new uint8_t [m_bitMapSize] ();
-  memset (m_receiveBitMap,0,m_bitMapSize);
+  memset (m_receiveBitMap,1,m_bitMapSize);
 }
 
 uint32_t
