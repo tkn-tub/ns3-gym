@@ -367,7 +367,7 @@ of specifying which traces should be enabled through a node, device pair.  For
 example, you may want to specify that pcap tracing should be enabled on a 
 particular device on a specific node.  This follows from the @code{ns-3} device
 conceptual model, and also the conceptual models of the various device helpers.
-Following naturallyu from this, the files created follow a 
+Following naturally from this, the files created follow a 
 <prefix>-<node>-<device> naming convention.  
 
 Protocol helpers look at the problem of specifying which traces should be
@@ -435,7 +435,7 @@ implements @code{EnablePcapInternal} correctly.
 
 @verbatim
   void EnablePcap (std::string prefix, Ptr<NetDevice> nd, bool promiscuous = false, bool explicitFilename = false);
-  void EnablePcap (std::string prefix, std::string ndName, bool promiscuous = false, bool explicitFilenaqme = false);
+  void EnablePcap (std::string prefix, std::string ndName, bool promiscuous = false, bool explicitFilename = false);
   void EnablePcap (std::string prefix, NetDeviceContainer d, bool promiscuous = false);
   void EnablePcap (std::string prefix, NodeContainer n, bool promiscuous = false);
   void EnablePcap (std::string prefix, uint32_t nodeid, uint32_t deviceid, bool promiscuous = false);
@@ -550,7 +550,7 @@ Finally, two of the methods shown above,
 
 @verbatim
   void EnablePcap (std::string prefix, Ptr<NetDevice> nd, bool promiscuous = false, bool explicitFilename = false);
-  void EnablePcap (std::string prefix, std::string ndName, bool promiscuous = false, bool explicitFilenaqme = false);
+  void EnablePcap (std::string prefix, std::string ndName, bool promiscuous = false, bool explicitFilename = false);
 @end verbatim
 
 have a default parameter called @code{explicitFilename}.  When set to true,
@@ -930,7 +930,7 @@ taken for devices in the @code{ns-3} system are of the form
 there is a one-to-one correspondence between protocols and @code{Nodes}.
 This is because protocol @code{Objects} are aggregated to @code{Node Objects}.
 Since there is no global protocol id in the system, we use the corresponding
-node id in file naming.  Threfore there is a possibility for file name 
+node id in file naming.  Therefore there is a possibility for file name 
 collisions in automatically chosen trace file names.  For this reason, the
 file name convention is changed for protocol traces.
 
@@ -1179,7 +1179,7 @@ in the @code{ns-3} system are of the form ``<prefix>-<node id>-<device id>.tr''
 As previously mentioned, every node in the system will have a system-assigned
 node id.  Since there is a one-to-one correspondence between protocols and nodes
 we use to node-id to identify the protocol identity.  Every interface on a 
-given rotocol will have an interface index (also called simply an interface) 
+given protocol will have an interface index (also called simply an interface) 
 relative to its protocol.  By default, then, an ascii trace file created as a result
 of enabling tracing on the first device of node 21, using the prefix ``prefix'',
 would be ``prefix-n21-i1.tr''.  Use the prefix to disambiguate multiple protocols

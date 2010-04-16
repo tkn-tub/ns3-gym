@@ -311,12 +311,7 @@ SimpleOfdmWimaxPhy::EndSendFecBlock (WimaxPhy::ModulationType modulationType,
     }
   else
     {
-      Simulator::Schedule (Seconds (0),
-                           &SimpleOfdmWimaxPhy::StartSendFecBlock,
-                           this,
-                           false,
-                           modulationType,
-                           direction);
+      StartSendFecBlock(false,modulationType,direction);
     }
 }
 
@@ -392,7 +387,7 @@ SimpleOfdmWimaxPhy::StartReceive (const bvec &fecBlock,
               SetBlockParameters (burstSize, modulationType);
               m_blockTime = GetBlockTransmissionTime (modulationType);
             }
-          Simulator::Schedule (Seconds (0),
+          Simulator::Schedule (m_blockTime,
                                &SimpleOfdmWimaxPhy::EndReceiveFecBlock,
                                this,
                                fecBlock,

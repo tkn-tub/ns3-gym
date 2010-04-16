@@ -794,10 +794,12 @@ def register_Ns3PacketTagListTagData_methods(root_module, cls):
     return
 
 def register_Ns3PcapFile_methods(root_module, cls):
-    ## pcap-file.h: ns3::PcapFile::PcapFile(ns3::PcapFile const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::PcapFile const &', 'arg0')])
     ## pcap-file.h: ns3::PcapFile::PcapFile() [constructor]
     cls.add_constructor([])
+    ## pcap-file.h: void ns3::PcapFile::Clear() [member function]
+    cls.add_method('Clear', 
+                   'void', 
+                   [])
     ## pcap-file.h: void ns3::PcapFile::Close() [member function]
     cls.add_method('Close', 
                    'void', 
@@ -807,6 +809,16 @@ def register_Ns3PcapFile_methods(root_module, cls):
                    'bool', 
                    [param('std::string const &', 'f1'), param('std::string const &', 'f2'), param('uint32_t &', 'sec'), param('uint32_t &', 'usec'), param('uint32_t', 'snapLen', default_value='ns3::PcapFile::SNAPLEN_DEFAULT')], 
                    is_static=True)
+    ## pcap-file.h: bool ns3::PcapFile::Eof() const [member function]
+    cls.add_method('Eof', 
+                   'bool', 
+                   [], 
+                   is_const=True)
+    ## pcap-file.h: bool ns3::PcapFile::Fail() const [member function]
+    cls.add_method('Fail', 
+                   'bool', 
+                   [], 
+                   is_const=True)
     ## pcap-file.h: uint32_t ns3::PcapFile::GetDataLinkType() [member function]
     cls.add_method('GetDataLinkType', 
                    'uint32_t', 
@@ -839,22 +851,30 @@ def register_Ns3PcapFile_methods(root_module, cls):
     cls.add_method('GetVersionMinor', 
                    'uint16_t', 
                    [])
-    ## pcap-file.h: bool ns3::PcapFile::Init(uint32_t dataLinkType, uint32_t snapLen=ns3::PcapFile::SNAPLEN_DEFAULT, int32_t timeZoneCorrection=ns3::PcapFile::ZONE_DEFAULT, bool swapMode=false) [member function]
+    ## pcap-file.h: void ns3::PcapFile::Init(uint32_t dataLinkType, uint32_t snapLen=ns3::PcapFile::SNAPLEN_DEFAULT, int32_t timeZoneCorrection=ns3::PcapFile::ZONE_DEFAULT, bool swapMode=false) [member function]
     cls.add_method('Init', 
-                   'bool', 
+                   'void', 
                    [param('uint32_t', 'dataLinkType'), param('uint32_t', 'snapLen', default_value='ns3::PcapFile::SNAPLEN_DEFAULT'), param('int32_t', 'timeZoneCorrection', default_value='ns3::PcapFile::ZONE_DEFAULT'), param('bool', 'swapMode', default_value='false')])
-    ## pcap-file.h: bool ns3::PcapFile::Open(std::string const & filename, std::string const & mode) [member function]
+    ## pcap-file.h: void ns3::PcapFile::Open(std::string const & filename, std::_Ios_Openmode mode) [member function]
     cls.add_method('Open', 
-                   'bool', 
-                   [param('std::string const &', 'filename'), param('std::string const &', 'mode')])
-    ## pcap-file.h: bool ns3::PcapFile::Read(uint8_t * const data, uint32_t maxBytes, uint32_t & tsSec, uint32_t & tsUsec, uint32_t & inclLen, uint32_t & origLen, uint32_t & readLen) [member function]
+                   'void', 
+                   [param('std::string const &', 'filename'), param('std::_Ios_Openmode', 'mode')])
+    ## pcap-file.h: void ns3::PcapFile::Read(uint8_t * const data, uint32_t maxBytes, uint32_t & tsSec, uint32_t & tsUsec, uint32_t & inclLen, uint32_t & origLen, uint32_t & readLen) [member function]
     cls.add_method('Read', 
-                   'bool', 
+                   'void', 
                    [param('uint8_t * const', 'data'), param('uint32_t', 'maxBytes'), param('uint32_t &', 'tsSec'), param('uint32_t &', 'tsUsec'), param('uint32_t &', 'inclLen'), param('uint32_t &', 'origLen'), param('uint32_t &', 'readLen')])
-    ## pcap-file.h: bool ns3::PcapFile::Write(uint32_t tsSec, uint32_t tsUsec, uint8_t const * const data, uint32_t totalLen) [member function]
+    ## pcap-file.h: void ns3::PcapFile::Write(uint32_t tsSec, uint32_t tsUsec, uint8_t const * const data, uint32_t totalLen) [member function]
     cls.add_method('Write', 
-                   'bool', 
+                   'void', 
                    [param('uint32_t', 'tsSec'), param('uint32_t', 'tsUsec'), param('uint8_t const * const', 'data'), param('uint32_t', 'totalLen')])
+    ## pcap-file.h: void ns3::PcapFile::Write(uint32_t tsSec, uint32_t tsUsec, ns3::Ptr<ns3::Packet const> p) [member function]
+    cls.add_method('Write', 
+                   'void', 
+                   [param('uint32_t', 'tsSec'), param('uint32_t', 'tsUsec'), param('ns3::Ptr< ns3::Packet const >', 'p')])
+    ## pcap-file.h: void ns3::PcapFile::Write(uint32_t tsSec, uint32_t tsUsec, ns3::Header & header, ns3::Ptr<ns3::Packet const> p) [member function]
+    cls.add_method('Write', 
+                   'void', 
+                   [param('uint32_t', 'tsSec'), param('uint32_t', 'tsUsec'), param('ns3::Header &', 'header'), param('ns3::Ptr< ns3::Packet const >', 'p')])
     ## pcap-file.h: ns3::PcapFile::SNAPLEN_DEFAULT [variable]
     cls.add_static_attribute('SNAPLEN_DEFAULT', 'uint32_t const', is_const=True)
     ## pcap-file.h: ns3::PcapFile::ZONE_DEFAULT [variable]
@@ -1012,21 +1032,66 @@ def register_Ns3Header_methods(root_module, cls):
     return
 
 def register_Ns3PcapFileWrapper_methods(root_module, cls):
-    ## pcap-file-wrapper.h: ns3::PcapFileWrapper::PcapFileWrapper(ns3::PcapFileWrapper const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::PcapFileWrapper const &', 'arg0')])
+    ## pcap-file-wrapper.h: static ns3::TypeId ns3::PcapFileWrapper::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
     ## pcap-file-wrapper.h: ns3::PcapFileWrapper::PcapFileWrapper() [constructor]
     cls.add_constructor([])
+    ## pcap-file-wrapper.h: bool ns3::PcapFileWrapper::Fail() const [member function]
+    cls.add_method('Fail', 
+                   'bool', 
+                   [], 
+                   is_const=True)
+    ## pcap-file-wrapper.h: bool ns3::PcapFileWrapper::Eof() const [member function]
+    cls.add_method('Eof', 
+                   'bool', 
+                   [], 
+                   is_const=True)
+    ## pcap-file-wrapper.h: void ns3::PcapFileWrapper::Clear() [member function]
+    cls.add_method('Clear', 
+                   'void', 
+                   [])
+    ## pcap-file-wrapper.h: void ns3::PcapFileWrapper::Open(std::string const & filename, std::_Ios_Openmode mode) [member function]
+    cls.add_method('Open', 
+                   'void', 
+                   [param('std::string const &', 'filename'), param('std::_Ios_Openmode', 'mode')])
     ## pcap-file-wrapper.h: void ns3::PcapFileWrapper::Close() [member function]
     cls.add_method('Close', 
                    'void', 
                    [])
-    ## pcap-file-wrapper.h: uint32_t ns3::PcapFileWrapper::GetDataLinkType() [member function]
-    cls.add_method('GetDataLinkType', 
-                   'uint32_t', 
-                   [])
+    ## pcap-file-wrapper.h: void ns3::PcapFileWrapper::Init(uint32_t dataLinkType, uint32_t snapLen=std::numeric_limits<unsigned int>::max(), int32_t tzCorrection=ns3::PcapFile::ZONE_DEFAULT) [member function]
+    cls.add_method('Init', 
+                   'void', 
+                   [param('uint32_t', 'dataLinkType'), param('uint32_t', 'snapLen', default_value='std::numeric_limits<unsigned int>::max()'), param('int32_t', 'tzCorrection', default_value='ns3::PcapFile::ZONE_DEFAULT')])
+    ## pcap-file-wrapper.h: void ns3::PcapFileWrapper::Write(ns3::Time t, ns3::Ptr<ns3::Packet const> p) [member function]
+    cls.add_method('Write', 
+                   'void', 
+                   [param('ns3::Time', 't'), param('ns3::Ptr< ns3::Packet const >', 'p')])
+    ## pcap-file-wrapper.h: void ns3::PcapFileWrapper::Write(ns3::Time t, ns3::Header & header, ns3::Ptr<ns3::Packet const> p) [member function]
+    cls.add_method('Write', 
+                   'void', 
+                   [param('ns3::Time', 't'), param('ns3::Header &', 'header'), param('ns3::Ptr< ns3::Packet const >', 'p')])
+    ## pcap-file-wrapper.h: void ns3::PcapFileWrapper::Write(ns3::Time t, uint8_t const * buffer, uint32_t length) [member function]
+    cls.add_method('Write', 
+                   'void', 
+                   [param('ns3::Time', 't'), param('uint8_t const *', 'buffer'), param('uint32_t', 'length')])
     ## pcap-file-wrapper.h: uint32_t ns3::PcapFileWrapper::GetMagic() [member function]
     cls.add_method('GetMagic', 
                    'uint32_t', 
+                   [])
+    ## pcap-file-wrapper.h: uint16_t ns3::PcapFileWrapper::GetVersionMajor() [member function]
+    cls.add_method('GetVersionMajor', 
+                   'uint16_t', 
+                   [])
+    ## pcap-file-wrapper.h: uint16_t ns3::PcapFileWrapper::GetVersionMinor() [member function]
+    cls.add_method('GetVersionMinor', 
+                   'uint16_t', 
+                   [])
+    ## pcap-file-wrapper.h: int32_t ns3::PcapFileWrapper::GetTimeZoneOffset() [member function]
+    cls.add_method('GetTimeZoneOffset', 
+                   'int32_t', 
                    [])
     ## pcap-file-wrapper.h: uint32_t ns3::PcapFileWrapper::GetSigFigs() [member function]
     cls.add_method('GetSigFigs', 
@@ -1036,43 +1101,10 @@ def register_Ns3PcapFileWrapper_methods(root_module, cls):
     cls.add_method('GetSnapLen', 
                    'uint32_t', 
                    [])
-    ## pcap-file-wrapper.h: int32_t ns3::PcapFileWrapper::GetTimeZoneOffset() [member function]
-    cls.add_method('GetTimeZoneOffset', 
-                   'int32_t', 
+    ## pcap-file-wrapper.h: uint32_t ns3::PcapFileWrapper::GetDataLinkType() [member function]
+    cls.add_method('GetDataLinkType', 
+                   'uint32_t', 
                    [])
-    ## pcap-file-wrapper.h: static ns3::TypeId ns3::PcapFileWrapper::GetTypeId() [member function]
-    cls.add_method('GetTypeId', 
-                   'ns3::TypeId', 
-                   [], 
-                   is_static=True)
-    ## pcap-file-wrapper.h: uint16_t ns3::PcapFileWrapper::GetVersionMajor() [member function]
-    cls.add_method('GetVersionMajor', 
-                   'uint16_t', 
-                   [])
-    ## pcap-file-wrapper.h: uint16_t ns3::PcapFileWrapper::GetVersionMinor() [member function]
-    cls.add_method('GetVersionMinor', 
-                   'uint16_t', 
-                   [])
-    ## pcap-file-wrapper.h: bool ns3::PcapFileWrapper::Init(uint32_t dataLinkType, uint32_t snapLen=std::numeric_limits<unsigned int>::max(), int32_t tzCorrection=ns3::PcapFile::ZONE_DEFAULT) [member function]
-    cls.add_method('Init', 
-                   'bool', 
-                   [param('uint32_t', 'dataLinkType'), param('uint32_t', 'snapLen', default_value='std::numeric_limits<unsigned int>::max()'), param('int32_t', 'tzCorrection', default_value='ns3::PcapFile::ZONE_DEFAULT')])
-    ## pcap-file-wrapper.h: bool ns3::PcapFileWrapper::Open(std::string const & filename, std::string const & mode) [member function]
-    cls.add_method('Open', 
-                   'bool', 
-                   [param('std::string const &', 'filename'), param('std::string const &', 'mode')])
-    ## pcap-file-wrapper.h: bool ns3::PcapFileWrapper::Write(ns3::Time t, ns3::Ptr<ns3::Packet const> p) [member function]
-    cls.add_method('Write', 
-                   'bool', 
-                   [param('ns3::Time', 't'), param('ns3::Ptr< ns3::Packet const >', 'p')])
-    ## pcap-file-wrapper.h: bool ns3::PcapFileWrapper::Write(ns3::Time t, ns3::Header & header, ns3::Ptr<ns3::Packet const> p) [member function]
-    cls.add_method('Write', 
-                   'bool', 
-                   [param('ns3::Time', 't'), param('ns3::Header &', 'header'), param('ns3::Ptr< ns3::Packet const >', 'p')])
-    ## pcap-file-wrapper.h: bool ns3::PcapFileWrapper::Write(ns3::Time t, uint8_t const * buffer, uint32_t length) [member function]
-    cls.add_method('Write', 
-                   'bool', 
-                   [param('ns3::Time', 't'), param('uint8_t const *', 'buffer'), param('uint32_t', 'length')])
     return
 
 def register_Ns3PropagationDelayModel_methods(root_module, cls):

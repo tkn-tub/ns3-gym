@@ -327,7 +327,8 @@ def main(argv):
     #  Let's do a pcap trace on the backbone devices
     wifiPhy.EnablePcap("mixed-wireless", backboneDevices)
     #  Let's additionally trace the application Sink, ifIndex 0
-    ns3.CsmaHelper.EnablePcap("mixed-wireless", appSink.GetId(), 0, False)
+    csma = ns3.CsmaHelper()
+    csma.EnablePcapAll("mixed-wireless", False)
 
 #   #ifdef ENABLE_FOR_TRACING_EXAMPLE
 #     Config.Connect("/NodeList/*/$MobilityModel/CourseChange",

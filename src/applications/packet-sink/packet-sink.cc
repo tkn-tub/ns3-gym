@@ -96,6 +96,7 @@ void PacketSink::StartApplication()    // Called at time specified by Start
       m_socket = Socket::CreateSocket (GetNode(), m_tid);
       m_socket->Bind (m_local);
       m_socket->Listen ();
+      m_socket->ShutdownSend ();
       if (addressUtils::IsMulticast (m_local))
         {
           Ptr<UdpSocket> udpSocket = DynamicCast<UdpSocket> (m_socket);

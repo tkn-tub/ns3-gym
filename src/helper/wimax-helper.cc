@@ -480,7 +480,7 @@ WimaxHelper::EnableAsciiInternal (Ptr<OutputStreamWrapper> stream,
         {
           filename = asciiTraceHelper.GetFilenameFromDevice (prefix, device);
         }
-      Ptr<OutputStreamWrapper> theStream = asciiTraceHelper.CreateFileStream (filename, "w");
+      Ptr<OutputStreamWrapper> theStream = asciiTraceHelper.CreateFileStream (filename);
 
       uint32_t nodeid = nd->GetNode ()->GetId ();
       uint32_t deviceid = nd->GetIfIndex ();
@@ -586,7 +586,7 @@ WimaxHelper::EnablePcapInternal (std::string prefix, Ptr<NetDevice> nd, bool exp
       filename = pcapHelper.GetFilenameFromDevice (prefix, device);
     }
 
-  Ptr<PcapFileWrapper> file = pcapHelper.CreateFile (filename, "w", PcapHelper::DLT_EN10MB);
+  Ptr<PcapFileWrapper> file = pcapHelper.CreateFile (filename, std::ios::out, PcapHelper::DLT_EN10MB);
 
   phy->TraceConnectWithoutContext ("Tx", MakeBoundCallback (&PcapSniffTxEvent, file));
   phy->TraceConnectWithoutContext ("Rx", MakeBoundCallback (&PcapSniffRxEvent, file));

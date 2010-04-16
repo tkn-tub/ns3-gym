@@ -65,7 +65,7 @@ as well as ns-3 mobility models
 @item Initial Ranging
 @item Service Flow Initialization
 @item Management Connection
-@item Transport Intialization
+@item Transport Initialization
 @item UGS, rtPS, nrtPS, and BE connections
 @end itemize
 

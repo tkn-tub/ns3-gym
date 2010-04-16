@@ -167,7 +167,7 @@ public:
    * encapsulated in an abstract Address to avoid dependencies on the exact
    * MAC address format.
    *
-   * A default imlementation of GetMulticast is provided, but this
+   * A default implementation of GetMulticast is provided, but this
    * method simply NS_ASSERTS.  In the case of net devices that do not support
    * multicast, clients are expected to test NetDevice::IsMulticast and avoid
    * attempting to map multicast packets.  Subclasses of NetDevice that do

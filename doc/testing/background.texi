@@ -33,7 +33,7 @@ misused.
 
 There are also a number of different philosophical approaches to software 
 testing.  For example, some organizations advocate writing test programs
-before actually imlementing the desired software, yielding ``test-driven 
+before actually implementing the desired software, yielding ``test-driven 
 development.''  Some organizations advocate testing from a customer perspective
 as soon as possible, following a parallel with the agile development process:
 ``test early and test often.''  This is sometimes called ``agile testing.''  It
@@ -92,7 +92,7 @@ not-so-slow PHY-level model of the 802.11a specification.''
 
 Once this is done, one can develop an abstract model of the target system.  This
 is typically an exercise in managing the tradeoffs between complexity, resource
-requiremens and accuracy.  The process of developing an abstract model has been
+requirements and accuracy.  The process of developing an abstract model has been
 called @emph{model qualification} in the literature.  In the case of a TCP 
 protocol, this process results in a design for a collection of objects, 
 interactions and behaviors that will fully implement RFC 793 in @command{ns-3}.
@@ -140,7 +140,7 @@ generating or simulating resource exhaustion of various kinds.  This genre of
 testing is called ``stress testing.''
 
 The system and its components may be exposed to so-called ``clean tests'' that
-demostrate a positive result -- that is that the system operates correctly in 
+demonstrate a positive result -- that is that the system operates correctly in 
 response to a large variation of expected configurations.  
 
 The system and its components may also be exposed to ``dirty tests'' which 
@@ -203,7 +203,7 @@ existing functionality.  There are many kinds of regressions that may occur
 in practice.
 
 A @emph{local regression} is one in which a change affects the changed component
-directy.  For example, if a component is modified to allocate and free memory
+directly.  For example, if a component is modified to allocate and free memory
 but stale pointers are used, the component itself fails.
 
 A @emph{remote regression} is one in which a change to one component breaks

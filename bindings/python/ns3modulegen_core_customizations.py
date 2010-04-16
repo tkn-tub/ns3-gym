@@ -413,6 +413,16 @@ def add_std_ofstream(module):
                               Parameter.new("::std::ofstream::openmode", 'mode', default_value="std::ios_base::out")])
     ofstream.add_method('close', None, [])
 
+    import pybindgen.typehandlers.base
+    for alias in "std::_Ios_Openmode", "std::ios::openmode":
+        pybindgen.typehandlers.base.param_type_matcher.add_type_alias(alias, "int")
+
+    for flag in 'in', 'out', 'ate', 'app', 'trunc', 'binary':
+        module.after_init.write_code('PyModule_AddIntConstant(m, (char *) "STD_IOS_%s", std::ios::%s);'
+                                     % (flag.upper(), flag))
+
+
+
 def add_ipv4_address_tp_hash(module):
     module.body.writeln('''
 long

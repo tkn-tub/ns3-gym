@@ -22,9 +22,14 @@
 #define PCAP_FILE_H
 
 #include <string>
+#include <fstream>
 #include <stdint.h>
+#include "ns3/ptr.h"
 
 namespace ns3 {
+
+class Packet;
+class Header;
 
 /*
  * A class representing a pcap file.  This allows easy creation, writing and 
@@ -43,67 +48,35 @@ public:
   ~PcapFile ();
 
   /**
+   * \return true if the 'fail' bit is set in the underlying iostream, false otherwise.
+   */
+  bool Fail (void) const;
+  /**
+   * \return true if the 'eof' bit is set in the underlying iostream, false otherwise.
+   */
+  bool Eof (void) const;
+  /**
+   * Clear all state bits of the underlying iostream.
+   */
+  void Clear (void);
+
+  /**
    * Create a new pcap file or open an existing pcap file.  Semantics are
-   * similar to the C standard library function \c fopen, but differ in that
+   * similar to the stdc++ io stream classes, but differ in that
    * positions in the file are based on packets not characters.  For example
    * if the file is opened for reading, the file position indicator (seek
    * position) points to the beginning of the first packet in the file, not
    * zero (which would point to the start of the pcap header).
    *
-   * Possible modes are:
-   *
-   * \verbatim
-   * "r":   Open a file for reading.  The file must exist.  The pcap header
-   *        is assumed to exist in the file and will be read and checked.
-   *        The file seek position indicator is set to point to the first 
-   *        packet on exit.
-   *
-   * "w":   Create an empty file for writing. If a file with the same name 
-   *        already exists its content is erased and the file is treated as a 
-   *        new empty pcap file.  The file is assumed not to have a pcap 
-   *        header and the caller is responsible for calling Init before saving
-   *        any packet data.  The file seek position indicator is set to point 
-   *        to the beginning of the file on exit since there will be no pcap
-   *        header.
-   *
-   * "a":   Append to an existing file. This mode allows for adding packet data
-   *        to the end of an existing pcap file.  The file must exist and have a
-   *        valid pcap header written (N.B. this is different from standard fopen
-   *        semantics).  The file seek position indicator is set to point 
-   *        to the end of the file on exit.
-   *
-   * "r+":  Open a file for update -- both reading and writing. The file must 
-   *        exist.  The pcap header is assumed to have been written to the 
-   *        file and will be read and checked.  The file seek position indicator
-   *        is set to point to the first packet on exit.
-   *
-   * "w+":  Create an empty file for both reading and writing.  If a file with
-   *        the same name already exists, its content is erased and the file is 
-   *        treated as a new empty pcap file.  Since this new file will not have
-   *        a pcap header, the caller is responsible for calling Init before 
-   *        saving any packet data.  On exit, the file seek position indicator is
-   *        set to point to the beginning of the file.
-   *
-   * "a+"   Open a file for reading and appending.  The file must exist and have a
-   *        valid pcap header written (N.B. this is different from standard fopen
-   *        semantics).  The file seek position indicator is set to point 
-   *        to the end of the file on exit.  Existing content is preserved.
-   * \endverbatim
-   *
    * Since a pcap file is always a binary file, the file type is automatically 
-   * selected as a binary file.  For example, providing a mode string "a+" 
-   * results in the underlying OS file being opened in "a+b" mode.
+   * selected as a binary file (fstream::binary is automatically ored with the mode
+   * field).
    *
    * \param filename String containing the name of the file.
    *
-   * \param mode String containing the access mode for the file.
-   *
-   * \returns Error indication that should be interpreted as, "did an error 
-   * happen"?  That is, the method returns false if the open succeeds, true 
-   * otherwise.  The errno variable will be set by the OS to to provide a 
-   * more descriptive failure indication.
+   * \param mode the access mode for the file.
    */
-  bool Open (std::string const &filename, std::string const &mode);
+  void Open (std::string const &filename, std::ios::openmode mode);
 
   /**
    * Close the underlying file.
@@ -138,7 +111,7 @@ public:
    * \warning Calling this method on an existing file will result in the loss
    * any existing data.
    */
-  bool Init (uint32_t dataLinkType, 
+  void Init (uint32_t dataLinkType, 
              uint32_t snapLen = SNAPLEN_DEFAULT, 
              int32_t timeZoneCorrection = ZONE_DEFAULT,
              bool swapMode = false);
@@ -151,9 +124,29 @@ public:
    * \param data        Data buffer
    * \param totalLen    Total packet length
    * 
-   * \return true on error, false otherwise
    */
-  bool Write (uint32_t tsSec, uint32_t tsUsec, uint8_t const * const data, uint32_t totalLen);
+  void Write (uint32_t tsSec, uint32_t tsUsec, uint8_t const * const data, uint32_t totalLen);
+
+  /**
+   * \brief Write next packet to file
+   * 
+   * \param tsSec       Packet timestamp, seconds 
+   * \param tsUsec      Packet timestamp, microseconds
+   * \param p           Packet to write
+   * 
+   */
+  void Write (uint32_t tsSec, uint32_t tsUsec, Ptr<const Packet> p);
+  /**
+   * \brief Write next packet to file
+   * 
+   * \param tsSec       Packet timestamp, seconds 
+   * \param tsUsec      Packet timestamp, microseconds
+   * \param header      Header to write, in front of packet
+   * \param p           Packet to write
+   * 
+   */
+  void Write (uint32_t tsSec, uint32_t tsUsec, Header &header, Ptr<const Packet> p);
+
 
   /**
    * \brief Read next packet from file
@@ -166,9 +159,8 @@ public:
    * \param origLen     [out] Original length
    * \param readLen     [out] Number of bytes read
    * 
-   * \return true if read failed, false otherwise
    */
-  bool Read (uint8_t * const data, 
+  void Read (uint8_t * const data, 
              uint32_t maxBytes,
              uint32_t &tsSec, 
              uint32_t &tsUsec, 
@@ -290,13 +282,13 @@ private:
   void Swap (PcapFileHeader *from, PcapFileHeader *to);
   void Swap (PcapRecordHeader *from, PcapRecordHeader *to);
 
-  bool WriteFileHeader (void);
-  bool ReadAndVerifyFileHeader (void);
+  void WriteFileHeader (void);
+  uint32_t WritePacketHeader (uint32_t tsSec, uint32_t tsUsec, uint32_t totalLen);
+  void ReadAndVerifyFileHeader (void);
 
   std::string    m_filename;
-  FILE          *m_filePtr;
+  std::fstream   m_file;
   PcapFileHeader m_fileHeader;
-  bool m_haveFileHeader;
   bool m_swapMode;
 };
 

@@ -145,23 +145,19 @@ SimpleOfdmWimaxChannel::Send (Time BlockTime,
   double rxPowerDbm = 0;
   Ptr<MobilityModel> senderMobility = 0;
   Ptr<MobilityModel> receiverMobility = 0;
-  if (phy->GetMobility ())
-    {
-      senderMobility = phy->GetMobility ()->GetObject<MobilityModel> ();
-    }
+  senderMobility = phy->GetDevice ()->GetNode ()->GetObject<MobilityModel> ();
 
   for (std::list<Ptr<SimpleOfdmWimaxPhy> >::iterator iter = m_phyList.begin (); iter != m_phyList.end (); ++iter)
     {
-      double delay = 0;
+      Time delay = Seconds(0);
       if (phy != *iter)
         {
-          if ((*iter)->GetMobility ())
-            {
-              receiverMobility = (*iter)->GetMobility ()->GetObject<MobilityModel> ();
-            }
+          double distance = 0;
+          receiverMobility = (*iter)->GetDevice ()->GetNode ()->GetObject<MobilityModel> ();
           if (receiverMobility != 0 && senderMobility != 0 && m_loss != 0)
             {
-              delay = (senderMobility->GetDistanceFrom (receiverMobility)) / 300000000LL;
+              distance = senderMobility->GetDistanceFrom (receiverMobility);
+              delay =  Seconds(distance/300000000.0);
               rxPowerDbm = m_loss->CalcRxPower (rxPowerDbm, senderMobility, receiverMobility);
             }
           simpleOfdmSendParam * param = new simpleOfdmSendParam (fecBlock,
@@ -183,7 +179,7 @@ SimpleOfdmWimaxChannel::Send (Time BlockTime,
               dstNode = dstNetDevice->GetObject<NetDevice> ()->GetNode ()->GetId ();
             }
           Simulator::ScheduleWithContext (dstNode,
-                                          Seconds (delay) + BlockTime,
+                                          delay,
                                           &SimpleOfdmWimaxChannel::EndSend,
                                           this,
                                           *iter,
@@ -196,7 +192,6 @@ SimpleOfdmWimaxChannel::Send (Time BlockTime,
 void
 SimpleOfdmWimaxChannel::EndSend (Ptr<SimpleOfdmWimaxPhy> rxphy, simpleOfdmSendParam * param)
 {
-  // std::cout << "END_SEND ";
   rxphy->StartReceive (param->GetFecBlock (),
                        param->GetBurstSize (),
                        param->GetIsFirstBlock (),

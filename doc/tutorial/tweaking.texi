@@ -628,7 +628,7 @@ to some other value than one.
 How would you go about that?  Give it a try.  Remember you have to comment 
 out the place we override the default @code{Attribute} and explicitly set 
 @code{MaxPackets} in the script.  Then you have to rebuild the script.  You 
-will also have to find the syntax for actually setting the new default atribute
+will also have to find the syntax for actually setting the new default attribute
 value using the command line help facility.  Once you have this figured out 
 you should be able to control the number of packets echoed from the command 
 line.  Since we're nice folks, we'll tell you that your command line should 
@@ -1037,7 +1037,7 @@ the client in the first dump at 2.514648 seconds.
 
 @subsubsection Reading output with Wireshark
 @cindex Wireshark
-If you are unfamilar with Wireshark, there is a web site available from which
+If you are unfamiliar with Wireshark, there is a web site available from which
 you can download programs and documentation:  @uref{http://www.wireshark.org/}.
 
 Wireshark is a graphical user interface which can be used for displaying these

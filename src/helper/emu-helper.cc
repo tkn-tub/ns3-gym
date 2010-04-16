@@ -91,7 +91,7 @@ EmuHelper::EnablePcapInternal (std::string prefix, Ptr<NetDevice> nd, bool promi
       filename = pcapHelper.GetFilenameFromDevice (prefix, device);
     }
 
-  Ptr<PcapFileWrapper> file = pcapHelper.CreateFile (filename, "w", PcapHelper::DLT_EN10MB);
+  Ptr<PcapFileWrapper> file = pcapHelper.CreateFile (filename, std::ios::out, PcapHelper::DLT_EN10MB);
   if (promiscuous)
     {
       pcapHelper.HookDefaultSink<EmuNetDevice> (device, "PromiscSniffer", file);
@@ -152,7 +152,7 @@ EmuHelper::EnableAsciiInternal (
           filename = asciiTraceHelper.GetFilenameFromDevice (prefix, device);
         }
 
-      Ptr<OutputStreamWrapper> theStream = asciiTraceHelper.CreateFileStream (filename, "w");
+      Ptr<OutputStreamWrapper> theStream = asciiTraceHelper.CreateFileStream (filename);
 
       //
       // The MacRx trace source provides our "r" event.

@@ -45,7 +45,7 @@ TcpSocket::GetTypeId (void)
                    MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("RcvBufSize",
                    "TcpSocket maximum receive buffer size (bytes)",
-                   UintegerValue (0xffffffffl),
+                   UintegerValue (131072),
                    MakeUintegerAccessor (&TcpSocket::GetRcvBufSize,
                                          &TcpSocket::SetRcvBufSize),
                    MakeUintegerChecker<uint32_t> ())

@@ -150,7 +150,7 @@ int main (int argc, char *argv[])
   BSPosition = CreateObject<ConstantPositionMobilityModel> ();
 
   BSPosition->SetPosition (Vector (1000, 0, 0));
-  dev->GetPhy ()->SetMobility (BSPosition);
+  bsNodes.Get (0)->AggregateObject (BSPosition);
   bsDevs.Add (dev);
   if (verbose)
     {
@@ -169,7 +169,7 @@ int main (int argc, char *argv[])
 
       ss[i] = ssDevs.Get (i)->GetObject<SubscriberStationNetDevice> ();
       ss[i]->SetModulationType (WimaxPhy::MODULATION_TYPE_QAM16_12);
-      ss[i]->GetPhy ()->SetMobility (SSPosition[i]);
+      ssNodes.Get (i)->AggregateObject (SSPosition[i]);
 
     }
 

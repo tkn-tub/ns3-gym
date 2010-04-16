@@ -86,7 +86,7 @@ Ns2MobilityHelper::LayoutObjectStore (const ObjectStore &store) const
               continue;
             }
           Ptr<ConstantVelocityMobilityModel> model = GetMobilityModel (line.substr (startNodeId + 1, 
-                                                                               endNodeId - startNodeId), 
+                                                                               endNodeId - (startNodeId + 1)), 
                                                                   store);
           if (model == 0)
             {

@@ -251,7 +251,7 @@ The caller defines a specific part of the functor that really is just there to
 implement the specific operator() method,
 
 @verbatim
-  template <typname T, typename ARG>
+  template <typename T, typename ARG>
   class SpecificFunctor : public Functor
    {
    public:
@@ -305,7 +305,7 @@ case, provides the integer argument:
   void 
   LibraryFunction (Functor functor)
   {
-    // Ececute the library function
+    // Execute the library function
     functor(1234);
   }
 @end verbatim
@@ -362,7 +362,7 @@ Consider also the following main program snippet:
 @end verbatim
 
 This is an example of a C-style callback -- one which does not include or need
-a @code{this} pointer.  The function template @code{Callback} is esentially the
+a @code{this} pointer.  The function template @code{Callback} is essentially the
 declaration of the variable containing the pointer-to-function.  In the example
 above, we explicitly showed a pointer to a function that returned an integer and
 took a single integer as a parameter,  The @code{Callback} template function is
@@ -551,7 +551,7 @@ bound arguments.  Conceptually, it extends the specific functor described above
 with one or more bound arguments
 
 @verbatim
-  template <typname T, typename ARG, typename BOUND_ARG>
+  template <typename T, typename ARG, typename BOUND_ARG>
   class SpecificFunctor : public Functor
    {
    public:
@@ -581,7 +581,7 @@ the single parameter, as in
   m_promiscSnifferTrace (m_currentPkt);
 @end verbatim
 
-the imlpementation of @code{operator()} adds the bound parameter into the actual
+the implementation of @code{operator()} adds the bound parameter into the actual
 function call:
 
 @verbatim

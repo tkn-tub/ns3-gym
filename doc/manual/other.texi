@@ -901,7 +901,7 @@ after this initialization.  They are:
     Ipv4AddressGenerator::SeedAddress (mask, baseAddress);
 @end verbatim
 
-We provide an IP address generator class to allow us to programatically 
+We provide an IP address generator class to allow us to programmatically
 allocate IP addresses.  The first call to @code{SeedNetwork} gives the
 address generator a starting network number to use when generating addresses.
 The second call to @code{SeedAddress} gives the address generator a starting
@@ -1011,7 +1011,7 @@ relatively abstract bus class, we can create bus networks with 4, 40 or 4000
 nodes with no additional effort.
 
 A use of the bus network class is shown in the file 
-@code{bus-netowrk.cc} located in the @code{tutorial} directory.  The
+@code{bus-network.cc} located in the @code{tutorial} directory.  The
 interesting code is,
 
 @verbatim

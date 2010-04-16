@@ -4,5 +4,6 @@
  *
  * \section Ns3TcpTestsOverview ns-3 Tcp Implementation Tests Overview
  *
- * ns-3 has a TCP implemtation and we test it a litte.
+ * Includes tests of ns-3 TCP as well as tests involving the mix
+ * of ns-3 and Network Simulation Cradle (nsc) TCP models.
  */

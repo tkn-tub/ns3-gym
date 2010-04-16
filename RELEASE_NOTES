@@ -96,9 +96,12 @@ many cases referencing the Bugzilla bug number
    - bug 817 - Pareto rng constructors using scale and shape instead of mean and shape
    - bug 820 - Bad things happen in test.py when logging is enabled
    - bug 821 - AODV asserts with function logging enabled
+   - bug 822 - Move Mtu attribute from NetDevice base class to subclasses
    - bug 828 - PacketSocket::Close does not unregister protocol handler
    - bug 829 - TCP unbound memory problem (pending data)
+   - bug 833 - OnOffApplication with PacketSocket: sniffs all traffic
    - bug 834 - Incorrect signature of Ipv4FlowProbe::DropLogger
+   - bug 835 - Unlimited receive queues in sockets == evil
    - bug 836 - Delay is incremented over time with BsUplinkSchedulerSimple and BsUplinkSchedulerRtps
    - bug 838 - ns-3 can't compile on MacOS with 32bit processor
    - bug 839 - TestSuite wimax-ss-mac-layer crashes on Darwin 9.8.0 Power Macintosh
@@ -106,11 +109,17 @@ many cases referencing the Bugzilla bug number
    - bug 844 - YansWifiPhy::GetPowerDbm off-by-one problem when calculating Tx power
    - bug 849 - stray patch files in lwip directory
    - bug 850 - Ipv4GlobalRouting::LookupGlobal bug
+   - bug 856 - initialize vbl
+   - bug 857 - Link-Local Multicast handle in Ipv4 Output processing 
+   - bug 859 - Output interface estimation for the source address bound socket in IPv4 Raw socket
+   - bug 863 - Wrong Scalar arithmetics
    - bug 864 - Invalid return value in UdpSocketImpl::Send and Ipv4RawSocketImpl::Send
    - bug 865 - Ipv4RawSocketImpl::RecvFrom does not return from address all the time.
-   - bug 859 - Output interface estimation for the source address bound socket in IPv4 Raw socket
-   - bug 857 - Link-Local Multicast handle in Ipv4 Output processing 
+   - bug 866 - WiMAX mobility models not aggregated to Node
    - bug 868 - invalid packet size after Ipv4L3Protocol::Send
+   - bug 872 - ns3::PcapFileWrapper::Write explodes stack
+   - bug 876 - Tcp socket does not handle ShutdownRecv correctly
+   
 
 Known issues
 ------------

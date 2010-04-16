@@ -512,6 +512,8 @@ def add_examples_programs(bld):
     env = bld.env_of_name('default')
     if env['ENABLE_EXAMPLES']:
         for dir in os.listdir('examples'):
+            if dir.startswith('.') or dir == 'CVS':
+                continue
             if os.path.isdir(os.path.join('examples', dir)):
                 bld.add_subdirs(os.path.join('examples', dir))
 

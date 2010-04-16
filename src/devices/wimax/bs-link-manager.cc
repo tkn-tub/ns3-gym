@@ -93,11 +93,12 @@ BSLinkManager::ProcessRangingRequest (Cid cid, RngReq rngreq)
                    * m_bs->GetSymbolDuration ().GetSeconds ());
     }
 
-  NS_ASSERT_MSG (Simulator::Now () >= m_bs->GetUlSubframeStartTime () && Simulator::Now () < irIntervalBoundary,
-                 "Base station: Error while processing ranging request: out of time");
   tries++;
 
-  PerformRanging (cid, rngreq);
+  if (Simulator::Now () >= m_bs->GetUlSubframeStartTime () && Simulator::Now () < irIntervalBoundary)
+    {
+       PerformRanging (cid, rngreq);
+    }
 }
 
 void

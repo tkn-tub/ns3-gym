@@ -16,6 +16,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include "receive-list-error-model.h"
+
 #include "ns3/log.h"
 #include "ns3/abort.h"
 #include "ns3/test.h"
@@ -26,7 +28,6 @@
 #include "ns3/data-rate.h"
 #include "ns3/inet-socket-address.h"
 #include "ns3/point-to-point-helper.h"
-#include "ns3/csma-helper.h"
 #include "ns3/internet-stack-helper.h"
 #include "ns3/ipv4-global-routing-helper.h"
 #include "ns3/ipv4-address-helper.h"
@@ -34,22 +35,24 @@
 #include "ns3/tcp-socket-factory.h"
 #include "ns3/node-container.h"
 #include "ns3/simulator.h"
+#include "ns3/error-model.h"
+#include "ns3/pointer.h"
 #include "ns3tcp-socket-writer.h"
 
 using namespace ns3;
 
-NS_LOG_COMPONENT_DEFINE ("Ns3SocketTest");
+NS_LOG_COMPONENT_DEFINE ("Ns3TcpLossTest");
 
 // ===========================================================================
-// Tests of TCP implementations from the application/socket perspective
+// Tests of TCP implementation loss behavior
 // ===========================================================================
 //
-//
-class Ns3TcpSocketTestCase1 : public TestCase
+
+class Ns3TcpLossTestCase1 : public TestCase
 {
 public:
-  Ns3TcpSocketTestCase1 ();
-  virtual ~Ns3TcpSocketTestCase1 () {}
+  Ns3TcpLossTestCase1 ();
+  virtual ~Ns3TcpLossTestCase1 () {}
 
 private:
   virtual bool DoRun (void);
@@ -61,20 +64,20 @@ private:
   TestVectors<uint32_t> m_responses;
 };
 
-Ns3TcpSocketTestCase1::Ns3TcpSocketTestCase1 ()
-  : TestCase ("Check that ns-3 TCP successfully transfers an application data write of various sizes (point-to-point)"),
+Ns3TcpLossTestCase1::Ns3TcpLossTestCase1 ()
+  : TestCase ("Check that ns-3 TCP survives loss of first two SYNs"),
     m_writeResults (false)
 {
 }
 
 void 
-Ns3TcpSocketTestCase1::SinkRx (std::string path, Ptr<const Packet> p, const Address &address)
+Ns3TcpLossTestCase1::SinkRx (std::string path, Ptr<const Packet> p, const Address &address)
 {
   m_responses.Add (p->GetSize ());
 }
 
 bool
-Ns3TcpSocketTestCase1::DoRun (void)
+Ns3TcpLossTestCase1::DoRun (void)
 {
   uint16_t sinkPort = 50000;
   double sinkStopTime = 40;  // sec; will trigger Socket::Close
@@ -89,7 +92,7 @@ Ns3TcpSocketTestCase1::DoRun (void)
 
   PointToPointHelper pointToPoint;
   pointToPoint.SetDeviceAttribute ("DataRate", StringValue ("5Mbps"));
-  pointToPoint.SetChannelAttribute ("Delay", StringValue ("2ms"));
+  pointToPoint.SetChannelAttribute ("Delay", StringValue ("200ms"));
 
   NetDeviceContainer devices;
   devices = pointToPoint.Install (n0, n1);
@@ -116,24 +119,26 @@ Ns3TcpSocketTestCase1::DoRun (void)
   apps.Stop (sinkStopTimeObj);
 
   Config::Connect ("/NodeList/*/ApplicationList/*/$ns3::PacketSink/Rx",
-                   MakeCallback (&Ns3TcpSocketTestCase1::SinkRx, this));
+                   MakeCallback (&Ns3TcpLossTestCase1::SinkRx, this));
 
   Simulator::Schedule(Seconds (2), &SocketWriter::Connect, socketWriter);
-  // Send 1, 10, 100, 1000 bytes
-  Simulator::Schedule(Seconds (10), &SocketWriter::Write, socketWriter, 1);
-  m_inputs.Add (1);
-  Simulator::Schedule(Seconds (12), &SocketWriter::Write, socketWriter, 10);
-  m_inputs.Add (10);
-  Simulator::Schedule(Seconds (14), &SocketWriter::Write, socketWriter, 100);
-  m_inputs.Add (100);
-  Simulator::Schedule(Seconds (16), &SocketWriter::Write, socketWriter, 1000);
-  m_inputs.Add (536);
-  m_inputs.Add (464);  // ns-3 TCP default segment size of 536
+  Simulator::Schedule(Seconds (10), &SocketWriter::Write, socketWriter, 500);
+  m_inputs.Add (500);
   Simulator::Schedule(writerStopTimeObj, &SocketWriter::Close, socketWriter);
+
+  std::list<uint32_t> sampleList;
+  // Lose first two SYNs
+  sampleList.push_back (0);
+  sampleList.push_back (1);
+  // This time, we'll explicitly create the error model we want
+  Ptr<ReceiveListErrorModel> pem = CreateObject<ReceiveListErrorModel> ();
+  pem->SetList (sampleList);
+  devices.Get (1)->SetAttribute ("ReceiveErrorModel", PointerValue (pem));
 
   if (m_writeResults)
     {
-      pointToPoint.EnablePcapAll ("tcp-socket-test-case-1");
+      pointToPoint.EnablePcapAll ("tcp-loss-test-case-1");
+      pointToPoint.EnableAsciiAll ("tcp-loss-test-case-1");
     }
 
   Simulator::Stop (simStopTimeObj);
@@ -152,11 +157,11 @@ Ns3TcpSocketTestCase1::DoRun (void)
   return GetErrorStatus ();
 }
 
-class Ns3TcpSocketTestCase2 : public TestCase
+class Ns3TcpLossTestCase2 : public TestCase
 {
 public:
-  Ns3TcpSocketTestCase2 ();
-  virtual ~Ns3TcpSocketTestCase2 () {}
+  Ns3TcpLossTestCase2 ();
+  virtual ~Ns3TcpLossTestCase2 () {}
 
 private:
   virtual bool DoRun (void);
@@ -168,42 +173,38 @@ private:
   TestVectors<uint32_t> m_responses;
 };
 
-Ns3TcpSocketTestCase2::Ns3TcpSocketTestCase2 ()
-  : TestCase ("Check to see that ns-3 TCP successfully transfers an application data write of various sizes (CSMA)"),
+Ns3TcpLossTestCase2::Ns3TcpLossTestCase2 ()
+  : TestCase ("Check that ns-3 TCP survives loss of first data packet"),
     m_writeResults (false)
 {
 }
 
 void 
-Ns3TcpSocketTestCase2::SinkRx (std::string path, Ptr<const Packet> p, const Address &address)
+Ns3TcpLossTestCase2::SinkRx (std::string path, Ptr<const Packet> p, const Address &address)
 {
   m_responses.Add (p->GetSize ());
 }
 
 bool
-Ns3TcpSocketTestCase2::DoRun (void)
+Ns3TcpLossTestCase2::DoRun (void)
 {
   uint16_t sinkPort = 50000;
   double sinkStopTime = 40;  // sec; will trigger Socket::Close
-  double writerStopTime = 30;  // sec; will trigger Socket::Close
+  double writerStopTime = 12;  // sec; will trigger Socket::Close
   double simStopTime = 60;  // sec
   Time sinkStopTimeObj = Seconds (sinkStopTime);
   Time writerStopTimeObj = Seconds (writerStopTime);
   Time simStopTimeObj= Seconds (simStopTime);
 
-  Config::SetDefault ("ns3::TcpSocket::SegmentSize", UintegerValue (1000));
+  Ptr<Node> n0 = CreateObject<Node> ();
+  Ptr<Node> n1 = CreateObject<Node> ();
 
-  NodeContainer nodes;
-  nodes.Create (2);
-  Ptr<Node> n0 = nodes.Get (0);
-  Ptr<Node> n1 = nodes.Get (1);
-
-  CsmaHelper csma;
-  csma.SetChannelAttribute ("DataRate", StringValue ("5Mbps"));
-  csma.SetChannelAttribute ("Delay", StringValue ("2ms"));
+  PointToPointHelper pointToPoint;
+  pointToPoint.SetDeviceAttribute ("DataRate", StringValue ("5Mbps"));
+  pointToPoint.SetChannelAttribute ("Delay", StringValue ("200ms"));
 
   NetDeviceContainer devices;
-  devices = csma.Install (nodes);
+  devices = pointToPoint.Install (n0, n1);
 
   InternetStackHelper internet;
   internet.InstallAll ();
@@ -227,29 +228,27 @@ Ns3TcpSocketTestCase2::DoRun (void)
   apps.Stop (sinkStopTimeObj);
 
   Config::Connect ("/NodeList/*/ApplicationList/*/$ns3::PacketSink/Rx",
-                   MakeCallback (&Ns3TcpSocketTestCase2::SinkRx, this));
+                   MakeCallback (&Ns3TcpLossTestCase2::SinkRx, this));
 
   Simulator::Schedule(Seconds (2), &SocketWriter::Connect, socketWriter);
-  // Send 1, 10, 100, 1000 bytes
-  // PointToPoint default MTU is 576 bytes, which leaves 536 bytes for TCP
-  Simulator::Schedule(Seconds (10), &SocketWriter::Write, socketWriter, 1);
-  m_inputs.Add (1);
-  Simulator::Schedule(Seconds (12), &SocketWriter::Write, socketWriter, 10);
-  m_inputs.Add (10);
-  Simulator::Schedule(Seconds (14), &SocketWriter::Write, socketWriter, 100);
-  m_inputs.Add (100);
-  Simulator::Schedule(Seconds (16), &SocketWriter::Write, socketWriter, 1000);
-  m_inputs.Add (1000);
-  // Next packet will fragment
-  Simulator::Schedule(Seconds (16), &SocketWriter::Write, socketWriter, 1001);
-  m_inputs.Add (1000);
-  m_inputs.Add (1);
+  Simulator::Schedule(Seconds (10), &SocketWriter::Write, socketWriter, 500);
+  m_inputs.Add (500);
   Simulator::Schedule(writerStopTimeObj, &SocketWriter::Close, socketWriter);
+
+  std::list<uint32_t> sampleList;
+  // Lose first data segment
+  sampleList.push_back (2);
+  // This time, we'll explicitly create the error model we want
+  Ptr<ReceiveListErrorModel> pem = CreateObject<ReceiveListErrorModel> ();
+  pem->SetList (sampleList);
+  devices.Get (1)->SetAttribute ("ReceiveErrorModel", PointerValue (pem));
 
   if (m_writeResults)
     {
-      csma.EnablePcapAll ("tcp-socket-test-case-2", false);
+      pointToPoint.EnablePcapAll ("tcp-loss-test-case-2");
+      pointToPoint.EnableAsciiAll ("tcp-loss-test-case-2");
     }
+
   Simulator::Stop (simStopTimeObj);
   Simulator::Run ();
   Simulator::Destroy ();
@@ -266,17 +265,17 @@ Ns3TcpSocketTestCase2::DoRun (void)
   return GetErrorStatus ();
 }
 
-class Ns3TcpSocketTestSuite : public TestSuite
+class Ns3TcpLossTestSuite : public TestSuite
 {
 public:
-  Ns3TcpSocketTestSuite ();
+  Ns3TcpLossTestSuite ();
 };
 
-Ns3TcpSocketTestSuite::Ns3TcpSocketTestSuite ()
-  : TestSuite ("ns3-tcp-socket", SYSTEM)
+Ns3TcpLossTestSuite::Ns3TcpLossTestSuite ()
+  : TestSuite ("ns3-tcp-loss", SYSTEM)
 {
-  AddTestCase (new Ns3TcpSocketTestCase1);
-  AddTestCase (new Ns3TcpSocketTestCase2);
+  AddTestCase (new Ns3TcpLossTestCase1);
+  AddTestCase (new Ns3TcpLossTestCase2);
 }
 
-Ns3TcpSocketTestSuite ns3TcpSocketTestSuite;
+Ns3TcpLossTestSuite ns3TcpLossTestSuite;

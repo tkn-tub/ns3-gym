@@ -39,7 +39,7 @@ the ns-3 tracing, logging, visualization and statistics gathering tools.
 In what can be viewed as essentially an inverse configuration, we allow ``real'' 
 machines running native applications and protocol stacks to integrate with
 an ns-3 simulation.  This allows for the simulation of large networks connected
-to a real mahince, and also enables virtualization.  A simulation of this kind
+to a real machine, and also enables virtualization.  A simulation of this kind
 is shown in the following figure:
 
 @float Figure,fig:emulated-channel

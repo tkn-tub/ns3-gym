@@ -218,7 +218,7 @@ attempted.  The default maximum number of retries is 1000.
 @section Using the CsmaNetDevice
 
 The CSMA net devices and channels are typically created and configured using
-the associated @code{CsmaHelper} object.  The various ns3 device dhelpers 
+the associated @code{CsmaHelper} object.  The various ns3 device helpers 
 generally work in a similar way, and their use is seen in many of our example
 programs.
 

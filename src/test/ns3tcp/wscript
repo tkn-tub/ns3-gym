@@ -10,9 +10,12 @@ def build(bld):
     headers.source = [
         'ns3tcp.h',
         ]
+    ns3tcp.source = [
+        'ns3tcp-socket-writer.cc',
+        'ns3tcp-loss-test-suite.cc',
+        'receive-list-error-model.cc',
+        ]
     if bld.env['NSC_ENABLED']:
-        ns3tcp.source = [
-            'ns3tcp-interop-test-suite.cc',
-            'ns3tcp-cwnd-test-suite.cc',
-            'ns3tcp-socket-test-suite.cc'
-            ]
+        ns3tcp.source.append ('ns3tcp-interop-test-suite.cc')
+        ns3tcp.source.append ('ns3tcp-cwnd-test-suite.cc')
+        ns3tcp.source.append ('ns3tcp-socket-test-suite.cc')
