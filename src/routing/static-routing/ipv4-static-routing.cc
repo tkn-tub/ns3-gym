@@ -608,7 +608,8 @@ Ipv4StaticRouting::NotifyInterfaceUp (uint32_t i)
   for (uint32_t j = 0; j < m_ipv4->GetNAddresses (i); j++)
     {
       if (m_ipv4->GetAddress (i,j).GetLocal () != Ipv4Address () &&
-          m_ipv4->GetAddress (i,j).GetMask () != Ipv4Mask ())
+          m_ipv4->GetAddress (i,j).GetMask () != Ipv4Mask () &&
+          m_ipv4->GetAddress (i,j).GetMask () != Ipv4Mask::GetOnes())
         {
           AddNetworkRouteTo (m_ipv4->GetAddress (i,j).GetLocal ().CombineMask (m_ipv4->GetAddress (i,j).GetMask ()),
                              m_ipv4->GetAddress (i,j).GetMask (), i);
