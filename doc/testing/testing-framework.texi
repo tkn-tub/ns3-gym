@@ -360,7 +360,7 @@ numbers of temporary files.  Usually, the content of these files is not interest
 however in some cases it can be useful (for debugging purposes) to view these files.
 @code{test.py} provides a @command{--retain} option which will cause these temporary
 files to be kept after the run is completed.  The files are saved in a directory 
-named @code{testpy} under a subdirectory named according to the current Coordinated
+named @code{testpy-output} under a subdirectory named according to the current Coordinated
 Universal Time (also known as Greenwich Mean Time).
 
 @verbatim
