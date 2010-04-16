@@ -99,7 +99,8 @@ PointToPointHelper::EnablePcapInternal (std::string prefix, Ptr<NetDevice> nd, b
       filename = pcapHelper.GetFilenameFromDevice (prefix, device);
     }
 
-  Ptr<PcapFileWrapper> file = pcapHelper.CreateFile (filename, "w", PcapHelper::DLT_PPP);
+  Ptr<PcapFileWrapper> file = pcapHelper.CreateFile (filename, std::ios::out, 
+                                                     PcapHelper::DLT_PPP);
   pcapHelper.HookDefaultSink<PointToPointNetDevice> (device, "PromiscSniffer", file);
 }
 
@@ -154,7 +155,7 @@ PointToPointHelper::EnableAsciiInternal (
           filename = asciiTraceHelper.GetFilenameFromDevice (prefix, device);
         }
 
-      Ptr<OutputStreamWrapper> theStream = asciiTraceHelper.CreateFileStream (filename, "w");
+      Ptr<OutputStreamWrapper> theStream = asciiTraceHelper.CreateFileStream (filename);
 
       //
       // The MacRx trace source provides our "r" event.

@@ -84,7 +84,7 @@ public:
   /**
    * @brief Create and initialize a pcap file.
    */
-  Ptr<PcapFileWrapper> CreateFile (std::string filename, std::string filemode,
+  Ptr<PcapFileWrapper> CreateFile (std::string filename, std::ios::openmode filemode,
                                   uint32_t dataLinkType,  uint32_t snapLen = 65535, int32_t tzCorrection = 0);
   /**
    * @brief Hook a trace source to the default trace sink
@@ -156,7 +156,8 @@ public:
    * that can solve the problem so we use one of those to carry the stream
    * around and deal with the lifetime issues.
    */
-  Ptr<OutputStreamWrapper> CreateFileStream (std::string filename, std::string filemode = "w");
+  Ptr<OutputStreamWrapper> CreateFileStream (std::string filename, 
+                                             std::ios::openmode filemode = std::ios::out);
 
   /**
    * @brief Hook a trace source to the default enqueue operation trace sink that

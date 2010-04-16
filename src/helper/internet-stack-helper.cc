@@ -470,7 +470,7 @@ InternetStackHelper::EnablePcapIpv4Internal (std::string prefix, Ptr<Ipv4> ipv4,
       filename = pcapHelper.GetFilenameFromInterfacePair (prefix, ipv4, interface);
     }
 
-  Ptr<PcapFileWrapper> file = pcapHelper.CreateFile (filename, "w", PcapHelper::DLT_RAW);
+  Ptr<PcapFileWrapper> file = pcapHelper.CreateFile (filename, std::ios::out, PcapHelper::DLT_RAW);
 
   //
   // However, we only hook the trace source once to avoid multiple trace sink
@@ -562,7 +562,7 @@ InternetStackHelper::EnablePcapIpv6Internal (std::string prefix, Ptr<Ipv6> ipv6,
       filename = pcapHelper.GetFilenameFromInterfacePair (prefix, ipv6, interface);
     }
 
-  Ptr<PcapFileWrapper> file = pcapHelper.CreateFile (filename, "w", PcapHelper::DLT_RAW);
+  Ptr<PcapFileWrapper> file = pcapHelper.CreateFile (filename, std::ios::out, PcapHelper::DLT_RAW);
 
   //
   // However, we only hook the trace source once to avoid multiple trace sink
@@ -714,7 +714,7 @@ InternetStackHelper::EnableAsciiIpv4Internal (
           filename = asciiTraceHelper.GetFilenameFromInterfacePair (prefix, ipv4, interface);
         }
 
-      Ptr<OutputStreamWrapper> theStream = asciiTraceHelper.CreateFileStream (filename, "w");
+      Ptr<OutputStreamWrapper> theStream = asciiTraceHelper.CreateFileStream (filename);
 
       //
       // However, we only hook the trace sources once to avoid multiple trace sink
@@ -909,7 +909,7 @@ InternetStackHelper::EnableAsciiIpv6Internal (
           filename = asciiTraceHelper.GetFilenameFromInterfacePair (prefix, ipv6, interface);
         }
 
-      Ptr<OutputStreamWrapper> theStream = asciiTraceHelper.CreateFileStream (filename, "w");
+      Ptr<OutputStreamWrapper> theStream = asciiTraceHelper.CreateFileStream (filename);
 
       //
       // However, we only hook the trace sources once to avoid multiple trace sink

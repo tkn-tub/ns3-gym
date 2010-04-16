@@ -19,10 +19,12 @@
  */
 
 #include <iostream>
-#include <stdio.h>
-#include <stdlib.h>
 #include <cstring>
-
+#include "ns3/assert.h"
+#include "ns3/packet.h"
+#include "ns3/fatal-error.h"
+#include "ns3/header.h"
+#include "ns3/buffer.h"
 #include "pcap-file.h"
 //
 // This file is used as part of the ns-3 test framework, so please refrain from 
@@ -41,28 +43,37 @@ const uint16_t VERSION_MINOR = 4;             /**< Minor version of supported pc
 const int32_t  SIGFIGS_DEFAULT = 0;           /**< Significant figures for timestamps (libpcap doesn't even bother) */
 
 PcapFile::PcapFile ()
-  : m_filename (""),
-    m_filePtr (0),
-    m_haveFileHeader (false),
+  : m_file (),
     m_swapMode (false)
-{
-}
+{}
 
 PcapFile::~PcapFile ()
 {
   Close ();
 }
 
+
+bool 
+PcapFile::Fail (void) const
+{
+  return m_file.fail ();
+}
+bool 
+PcapFile::Eof (void) const
+{
+  return m_file.eof ();
+}
+void 
+PcapFile::Clear (void)
+{
+  m_file.clear ();
+}
+
+
 void
 PcapFile::Close (void)
 {
-  if (m_filePtr)
-    {
-      fclose (m_filePtr);
-    }
-  m_filePtr = 0;
-  m_filename = "";
-  m_haveFileHeader = false;
+  m_file.close ();
 }
 
 uint32_t
@@ -152,18 +163,14 @@ PcapFile::Swap (PcapRecordHeader *from, PcapRecordHeader *to)
   to->m_origLen = Swap (from->m_origLen);
 }
 
-bool
+void
 PcapFile::WriteFileHeader (void)
 {
   //
   // If we're initializing the file, we need to write the pcap file header
   // at the start of the file.
   //
-  int result = fseek (m_filePtr, 0, SEEK_SET);
-  if (result)
-    {
-      return true;
-    }
+  m_file.seekp (0, std::ios::beg);
  
   //
   // We have the ability to write out the pcap file header in a foreign endian
@@ -191,57 +198,34 @@ PcapFile::WriteFileHeader (void)
   // Watch out for memory alignment differences between machines, so write
   // them all individually.
   //
-  result = 0;
-
-  result |= (fwrite (&headerOut->m_magicNumber, sizeof(headerOut->m_magicNumber), 1, m_filePtr) != 1);
-  result |= (fwrite (&headerOut->m_versionMajor, sizeof(headerOut->m_versionMajor), 1, m_filePtr) != 1);
-  result |= (fwrite (&headerOut->m_versionMinor, sizeof(headerOut->m_versionMinor), 1, m_filePtr) != 1);
-  result |= (fwrite (&headerOut->m_zone, sizeof(headerOut->m_zone), 1, m_filePtr) != 1);
-  result |= (fwrite (&headerOut->m_sigFigs, sizeof(headerOut->m_sigFigs), 1, m_filePtr) != 1);
-  result |= (fwrite (&headerOut->m_snapLen, sizeof(headerOut->m_snapLen), 1, m_filePtr) != 1);
-  result |= (fwrite (&headerOut->m_type, sizeof(headerOut->m_type), 1, m_filePtr) != 1);
-
-  //
-  // If any of the fwrites above did not succeed in writinging the correct
-  // number of objects, result will be nonzero and will indicate an error.
-  //
-  return result != 0;
+  m_file.write ((const char *)&headerOut->m_magicNumber, sizeof(headerOut->m_magicNumber));
+  m_file.write ((const char *)&headerOut->m_versionMajor, sizeof(headerOut->m_versionMajor));
+  m_file.write ((const char *)&headerOut->m_versionMinor, sizeof(headerOut->m_versionMinor));
+  m_file.write ((const char *)&headerOut->m_zone, sizeof(headerOut->m_zone));
+  m_file.write ((const char *)&headerOut->m_sigFigs, sizeof(headerOut->m_sigFigs));
+  m_file.write ((const char *)&headerOut->m_snapLen, sizeof(headerOut->m_snapLen));
+  m_file.write ((const char *)&headerOut->m_type, sizeof(headerOut->m_type));
 }
 
-bool
+void
 PcapFile::ReadAndVerifyFileHeader (void)
 {
   //
   // Pcap file header is always at the start of the file
   //
-  int result = fseek (m_filePtr, 0, SEEK_SET);
-  if (result)
-    {
-      return true;
-    }
+  m_file.seekg (0, std::ios::beg);
 
   //
   // Watch out for memory alignment differences between machines, so read
   // them all individually.
   //
-  result = 0;
-
-  result |= (fread (&m_fileHeader.m_magicNumber, sizeof(m_fileHeader.m_magicNumber), 1, m_filePtr) != 1);
-  result |= (fread (&m_fileHeader.m_versionMajor, sizeof(m_fileHeader.m_versionMajor), 1, m_filePtr) != 1);
-  result |= (fread (&m_fileHeader.m_versionMinor, sizeof(m_fileHeader.m_versionMinor), 1, m_filePtr) != 1);
-  result |= (fread (&m_fileHeader.m_zone, sizeof(m_fileHeader.m_zone), 1, m_filePtr) != 1);
-  result |= (fread (&m_fileHeader.m_sigFigs, sizeof(m_fileHeader.m_sigFigs), 1, m_filePtr) != 1);
-  result |= (fread (&m_fileHeader.m_snapLen, sizeof(m_fileHeader.m_snapLen), 1, m_filePtr) != 1);
-  result |= (fread (&m_fileHeader.m_type, sizeof(m_fileHeader.m_type), 1, m_filePtr) != 1);
-
-  //
-  // If any of the freads above did not succeed in reading the correct number of 
-  // objects, result will be nonzero.
-  //
-  if (result)
-    {
-      return true;
-    }
+  m_file.read ((char *)&m_fileHeader.m_magicNumber, sizeof(m_fileHeader.m_magicNumber));
+  m_file.read ((char *)&m_fileHeader.m_versionMajor, sizeof(m_fileHeader.m_versionMajor));
+  m_file.read ((char *)&m_fileHeader.m_versionMinor, sizeof(m_fileHeader.m_versionMinor));
+  m_file.read ((char *)&m_fileHeader.m_zone, sizeof(m_fileHeader.m_zone));
+  m_file.read ((char *)&m_fileHeader.m_sigFigs, sizeof(m_fileHeader.m_sigFigs));
+  m_file.read ((char *)&m_fileHeader.m_snapLen, sizeof(m_fileHeader.m_snapLen));
+  m_file.read ((char *)&m_fileHeader.m_type, sizeof(m_fileHeader.m_type));
 
   //
   // There are four possible magic numbers that can be there.  Normal and byte
@@ -251,14 +235,15 @@ PcapFile::ReadAndVerifyFileHeader (void)
   if (m_fileHeader.m_magicNumber != MAGIC && m_fileHeader.m_magicNumber != SWAPPED_MAGIC && 
       m_fileHeader.m_magicNumber != NS_MAGIC && m_fileHeader.m_magicNumber != NS_SWAPPED_MAGIC)
     {
-      return true;
+      m_file.setstate (std::ios::failbit);
     }
 
   //
   // If the magic number is swapped, then we can assume that everything else we read
   // is swapped.
   //
-  m_swapMode = (m_fileHeader.m_magicNumber == SWAPPED_MAGIC || m_fileHeader.m_magicNumber == NS_SWAPPED_MAGIC) ? true : false;
+  m_swapMode = (m_fileHeader.m_magicNumber == SWAPPED_MAGIC 
+                || m_fileHeader.m_magicNumber == NS_SWAPPED_MAGIC) ? true : false;
 
   if (m_swapMode)
     {
@@ -270,7 +255,7 @@ PcapFile::ReadAndVerifyFileHeader (void)
   //
   if (m_fileHeader.m_versionMajor != VERSION_MAJOR || m_fileHeader.m_versionMinor != VERSION_MINOR)
     {
-      return true;
+      m_file.setstate (std::ios::failbit);
     }
 
   //
@@ -279,111 +264,34 @@ PcapFile::ReadAndVerifyFileHeader (void)
   //
   if (m_fileHeader.m_zone < -12 || m_fileHeader.m_zone > 12)
     {
-      return true;
+      m_file.setstate (std::ios::failbit);
     }
 
-  m_haveFileHeader = true;
-  return false;
+  if (m_file.fail ())
+    {
+      m_file.close ();
+    }
 }
 
-bool
-PcapFile::Open (std::string const &filename, std::string const &mode)
+void
+PcapFile::Open (std::string const &filename, std::ios::openmode mode)
 {
-  //
-  // If opening a new file, implicit close of any existing file required.
-  //
-  Close ();
-        
+  NS_ASSERT ((mode & std::ios::app) == 0);
+  NS_ASSERT (!m_file.fail ());
   //
   // All pcap files are binary files, so we just do this automatically.
   //
-  std::string realMode = mode + "b";
+  mode |= std::ios::binary;
 
-  //
-  // Our modes may be subtly different from the standard fopen semantics since
-  // we need to have a pcap file header to succeed in some cases; so we need 
-  // to process different modes according to our own definitions of the modes.
-  //
-  // In the case of read modes, we must read, check and save the pcap file
-  // header as well as just opening the file.
-  //
-  // In the case of write modes, we just pass the call on through to the 
-  // library.
-  //
-  // In the case of append modes, we change the semantics to require the
-  // given file to exist.  We can't just create a file since we can't make up
-  // a pcap file header on our own.
-  //
-  if (realMode == "rb" || realMode == "r+b")
+  m_file.open (filename.c_str (), mode);
+  if (mode & std::ios::in)
     {
-      m_filePtr = fopen (filename.c_str (), realMode.c_str ());
-      if (m_filePtr == 0)
-        {
-          return true;
-        }
-      m_filename = filename;
-      return ReadAndVerifyFileHeader ();
-    }
-  else if (realMode == "wb" || realMode == "w+b")
-    {
-      m_filePtr = fopen (filename.c_str (), realMode.c_str ());
-      if (m_filePtr)
-        {
-          m_filename = filename;
-          return false;
-        }
-      else
-        {
-          return true;
-        }
-    }
-  else if (realMode == "ab" || realMode == "a+b")
-    {
-      //
-      // Remember that semantics for append are different here.  We never create
-      // a file since we can't make up a pcap file header.  We first have to 
-      // open the file in read-only mode and check to see that it exists and
-      // read the file header.  If this all works out, then we can go ahead and
-      // open the file in append mode and seek to the end (imlicitly).
-      //
-      m_filePtr = fopen (filename.c_str (), "rb");
-      if (m_filePtr == 0)
-        {
-          return true;
-        }
-
-      bool result = ReadAndVerifyFileHeader ();
-      if (result == true)
-        {
-          Close ();
-          return true;
-        }
-
-      //
-      // We have a properly initialized file and have the pcap file header
-      // loaded and checked.  This means that the file meets all of the 
-      // critera for opening in append mode, but the file is in read-only mode
-      // now -- we must close it and open it in the correct mode.
-      //
-      fclose (m_filePtr);
-      m_filePtr = 0;
-
-      m_filePtr = fopen (filename.c_str (), realMode.c_str ());
-      if (m_filePtr == 0)
-        {
-          return true;
-        }
-
-      m_filename = filename;
-      return false;
-    }
-  else
-    {
-      return true;
+      // will set the fail bit if file header is invalid.
+      ReadAndVerifyFileHeader ();
     }
 }
 
-bool
+void
 PcapFile::Init (uint32_t dataLinkType, uint32_t snapLen, int32_t timeZoneCorrection, bool swapMode)
 {
   //
@@ -396,8 +304,6 @@ PcapFile::Init (uint32_t dataLinkType, uint32_t snapLen, int32_t timeZoneCorrect
   m_fileHeader.m_sigFigs = 0;
   m_fileHeader.m_snapLen = snapLen;
   m_fileHeader.m_type = dataLinkType;
-
-  m_haveFileHeader = true;
 
   //
   // We use pcap files for regression testing.  We do byte-for-byte comparisons
@@ -426,16 +332,13 @@ PcapFile::Init (uint32_t dataLinkType, uint32_t snapLen, int32_t timeZoneCorrect
   //
   m_swapMode = swapMode | bigEndian;
 
-  return WriteFileHeader ();
+  WriteFileHeader ();
 }
 
-bool
-PcapFile::Write (uint32_t tsSec, uint32_t tsUsec, uint8_t const * const data, uint32_t totalLen)
+uint32_t
+PcapFile::WritePacketHeader (uint32_t tsSec, uint32_t tsUsec, uint32_t totalLen)
 {
-  if (m_haveFileHeader == false)
-    {
-      return true;
-    }
+  NS_ASSERT (m_file.good ());
 
   uint32_t inclLen = totalLen > m_fileHeader.m_snapLen ? m_fileHeader.m_snapLen : totalLen;
 
@@ -454,19 +357,44 @@ PcapFile::Write (uint32_t tsSec, uint32_t tsUsec, uint8_t const * const data, ui
   // Watch out for memory alignment differences between machines, so write
   // them all individually.
   //
-  uint32_t result = 0;
-
-  result |= (fwrite (&header.m_tsSec, sizeof(header.m_tsSec), 1, m_filePtr) != 1);
-  result |= (fwrite (&header.m_tsUsec, sizeof(header.m_tsUsec), 1, m_filePtr) != 1);
-  result |= (fwrite (&header.m_inclLen, sizeof(header.m_inclLen), 1, m_filePtr) != 1);
-  result |= (fwrite (&header.m_origLen, sizeof(header.m_origLen), 1, m_filePtr) != 1);
-
-  result |= fwrite (data, 1, inclLen, m_filePtr) != inclLen;
-
-  return result != 0;
+  m_file.write ((const char *)&header.m_tsSec, sizeof(header.m_tsSec));
+  m_file.write ((const char *)&header.m_tsUsec, sizeof(header.m_tsUsec));
+  m_file.write ((const char *)&header.m_inclLen, sizeof(header.m_inclLen));
+  m_file.write ((const char *)&header.m_origLen, sizeof(header.m_origLen));
+  return inclLen;
 }
 
-bool
+void
+PcapFile::Write (uint32_t tsSec, uint32_t tsUsec, uint8_t const * const data, uint32_t totalLen)
+{
+  uint32_t inclLen = WritePacketHeader (tsSec, tsUsec, totalLen);
+  m_file.write ((const char *)data, inclLen);
+}
+
+void 
+PcapFile::Write (uint32_t tsSec, uint32_t tsUsec, Ptr<const Packet> p)
+{
+  uint32_t inclLen = WritePacketHeader (tsSec, tsUsec, p->GetSize ());
+  p->CopyData (&m_file, inclLen);
+}
+
+void 
+PcapFile::Write (uint32_t tsSec, uint32_t tsUsec, Header &header, Ptr<const Packet> p)
+{
+  uint32_t headerSize = header.GetSerializedSize ();
+  uint32_t totalSize = headerSize + p->GetSize ();
+  uint32_t inclLen = WritePacketHeader (tsSec, tsUsec, totalSize);
+
+  Buffer headerBuffer;
+  headerBuffer.AddAtStart (headerSize);
+  header.Serialize (headerBuffer.Begin ());
+  uint32_t toCopy = std::min (headerSize, inclLen);
+  headerBuffer.CopyData (&m_file, toCopy);
+  inclLen -= toCopy;
+  p->CopyData (&m_file, inclLen);
+}
+
+void
 PcapFile::Read (
   uint8_t * const data, 
   uint32_t maxBytes,
@@ -476,10 +404,7 @@ PcapFile::Read (
   uint32_t &origLen,
   uint32_t &readLen)
 {
-  if (m_haveFileHeader == false)
-    {
-      return true;
-    }
+  NS_ASSERT (m_file.good ());
 
   PcapRecordHeader header;
 
@@ -487,21 +412,10 @@ PcapFile::Read (
   // Watch out for memory alignment differences between machines, so read
   // them all individually.
   //
-  uint32_t result = 0;
-
-  result |= (fread (&header.m_tsSec, sizeof(header.m_tsSec), 1, m_filePtr) != 1);
-  result |= (fread (&header.m_tsUsec, sizeof(header.m_tsUsec), 1, m_filePtr) != 1);
-  result |= (fread (&header.m_inclLen, sizeof(header.m_inclLen), 1, m_filePtr) != 1);
-  result |= (fread (&header.m_origLen, sizeof(header.m_origLen), 1, m_filePtr) != 1);
-
-  //
-  // If any of the freads above did not succeed in reading the correct number of 
-  // objects, result will be nonzero.
-  //
-  if (result)
-    {
-      return true;
-    }
+  m_file.read ((char *)&header.m_tsSec, sizeof(header.m_tsSec));
+  m_file.read ((char *)&header.m_tsUsec, sizeof(header.m_tsUsec));
+  m_file.read ((char *)&header.m_inclLen, sizeof(header.m_inclLen));
+  m_file.read ((char *)&header.m_origLen, sizeof(header.m_origLen));
 
   if (m_swapMode)
     {
@@ -521,11 +435,7 @@ PcapFile::Read (
   // for example, to figure out what is going on.
   //
   readLen = maxBytes < header.m_inclLen ? maxBytes : header.m_inclLen;
-  result = fread (data, 1, readLen, m_filePtr) != readLen;
-  if (result)
-    {
-      return result;
-    }
+  m_file.read ((char *)data, readLen);
 
   //
   // To keep the file pointer pointed in the right place, however, we always
@@ -533,15 +443,8 @@ PcapFile::Read (
   //
   if (readLen < header.m_inclLen)
     {
-      uint64_t pos = ftell (m_filePtr);
-      int result = fseek (m_filePtr, pos + header.m_inclLen - readLen, SEEK_SET);
-      if (result)
-        {
-          return true;
-        }
+      m_file.seekg (header.m_inclLen - readLen, std::ios::cur);
     }
-
-  return false;
 }
 
 bool
@@ -549,59 +452,58 @@ PcapFile::Diff (std::string const & f1, std::string const & f2,
                 uint32_t & sec, uint32_t & usec, 
                 uint32_t snapLen)
 {
-  PcapFile pcap[2];
-  for (int i = 0; i < 2; ++i)
+  PcapFile pcap1, pcap2;
+  pcap1.Open (f1, std::ios::in);
+  pcap2.Open (f2, std::ios::in);
+  bool bad = pcap1.Fail () || pcap2.Fail ();
+  if (bad)
     {
-      std::string const & file = (i == 0) ? f1 : f2;
-      bool err = pcap[i].Open (file, "r");
-      if (err)
-        {
-          // Can't open file
-          return true;
-        }
+      return true;
     }
   
-  uint8_t data[2][snapLen];
-  uint32_t tsSec[2], tsUsec[2], inclLen[2], origLen[2], readLen[2];
-  bool err[2];
-  bool diff(false);
+  uint8_t *data1 = new uint8_t [snapLen] ();
+  uint8_t *data2 = new uint8_t [snapLen] ();
+  uint32_t tsSec1, tsSec2;
+  uint32_t tsUsec1, tsUsec2;
+  uint32_t inclLen1, inclLen2;
+  uint32_t origLen1, origLen2;
+  uint32_t readLen1, readLen2;
+  bool diff = false;
   
-  while (1)
+  while (!pcap1.Eof () && !pcap2.Eof ()
+         && !pcap1.Fail () && !pcap2.Fail ())
     {
-      for (int i = 0; i < 2; ++i)
-        err[i] = pcap[i].Read (data[i], snapLen, tsSec[i], tsUsec[i], inclLen[i], origLen[i], readLen[i]);
-    
-      sec = tsSec[0];
-      usec = tsUsec[0];
-      
-      if (err[0] != err[1])
-        {
-          diff = true; // Read status doesn't match
-          break;
-        }
-      
-      if (err[0]) break; // nothing left
-      
-      if (tsSec[0] != tsSec[1] || tsUsec[0] != tsUsec[1])
+      pcap1.Read (data1, snapLen, tsSec1, tsUsec1, inclLen1, origLen1, readLen1);
+      pcap2.Read (data2, snapLen, tsSec2, tsUsec2, inclLen2, origLen2, readLen2);
+
+      if (tsSec1 != tsSec2 || tsUsec1 != tsUsec2)
         {
           diff = true; // Next packet timestamps do not match
           break;
         }
       
-      if (readLen[0] != readLen[1])
+      if (readLen1 != readLen2)
         {
           diff = true; // Packet lengths do not match
           break;
         }
       
-      if (std::memcmp(data[0], data[1], readLen[0]) != 0)
+      if (std::memcmp(data1, data2, readLen1) != 0)
         {
           diff = true; // Packet data do not match
           break;
         }
     }  
-  pcap[0].Close ();
-  pcap[1].Close ();
+  sec = tsSec1;
+  usec = tsUsec1;
+
+  bad = pcap1.Fail () || pcap2.Fail ();
+  bool eof = pcap1.Eof () && pcap2.Eof ();
+  if (bad && !eof)
+    {
+      diff = true;
+    }
+
   return diff;
 }
 

@@ -54,19 +54,36 @@ PcapFileWrapper::~PcapFileWrapper ()
   Close ();
 }
 
+
+bool 
+PcapFileWrapper::Fail (void) const
+{
+  return m_file.Fail ();
+}
+bool 
+PcapFileWrapper::Eof (void) const
+{
+  return m_file.Eof ();
+}
+void 
+PcapFileWrapper::Clear (void)
+{
+  m_file.Clear ();
+}
+
 void
 PcapFileWrapper::Close (void)
 {
   m_file.Close ();
 }
 
-bool
-PcapFileWrapper::Open (std::string const &filename, std::string const &mode)
+void
+PcapFileWrapper::Open (std::string const &filename, std::ios::openmode mode)
 {
-  return m_file.Open (filename, mode);
+  m_file.Open (filename, mode);
 }
 
-bool
+void
 PcapFileWrapper::Init (uint32_t dataLinkType, uint32_t snapLen, int32_t tzCorrection)
 {
   //
@@ -76,66 +93,42 @@ PcapFileWrapper::Init (uint32_t dataLinkType, uint32_t snapLen, int32_t tzCorrec
   //
   if (snapLen != std::numeric_limits<uint32_t>::max ())
     {
-      return m_file.Init (dataLinkType, snapLen, tzCorrection);
+      m_file.Init (dataLinkType, snapLen, tzCorrection);
     } 
   else
     {
-      return m_file.Init (dataLinkType, m_snapLen, tzCorrection);
+      m_file.Init (dataLinkType, m_snapLen, tzCorrection);
     } 
-
-  //
-  // Quiet the compiler
-  //
-  return true;
 }
 
-bool
+void
 PcapFileWrapper::Write (Time t, Ptr<const Packet> p)
 {
-  uint8_t buffer[PcapFile::SNAPLEN_DEFAULT];
-
   uint64_t current = t.GetMicroSeconds ();
   uint64_t s = current / 1000000;
   uint64_t us = current % 1000000;
 
-  uint32_t bufferSize = p->GetSize ();
-  p->CopyData (buffer, bufferSize);
-  bool rc = m_file.Write (s, us, buffer, bufferSize);
-  return rc;
+  m_file.Write (s, us, p);
 }
 
-bool
+void
 PcapFileWrapper::Write (Time t, Header &header, Ptr<const Packet> p)
 {
-  uint8_t buffer[PcapFile::SNAPLEN_DEFAULT];
-
   uint64_t current = t.GetMicroSeconds ();
   uint64_t s = current / 1000000;
   uint64_t us = current % 1000000;
 
-  Buffer headerBuffer;
-  uint32_t headerSize = header.GetSerializedSize ();
-  uint32_t packetSize = p->GetSize ();
-  uint32_t bufferSize = headerSize + packetSize;
-
-  headerBuffer.AddAtStart (headerSize);
-  header.Serialize (headerBuffer.Begin ());
-
-  headerBuffer.Begin ().Read (buffer, headerSize);
-  p->CopyData (&buffer[headerSize], packetSize);
-  bool rc = m_file.Write (s, us, buffer, bufferSize);
-
-  return rc;
+  m_file.Write (s, us, header, p);
 }
 
-bool
+void
 PcapFileWrapper::Write (Time t, uint8_t const *buffer, uint32_t length)
 {
   uint64_t current = t.GetMicroSeconds ();
   uint64_t s = current / 1000000;
   uint64_t us = current % 1000000;
 
-  return m_file.Write (s, us, buffer, length);
+  m_file.Write (s, us, buffer, length);
 }
 
 uint32_t

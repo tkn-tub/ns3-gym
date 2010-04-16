@@ -48,7 +48,7 @@ PcapHelper::~PcapHelper ()
 Ptr<PcapFileWrapper>
 PcapHelper::CreateFile (
   std::string filename, 
-  std::string filemode,  
+  std::ios::openmode filemode,
   uint32_t    dataLinkType, 
   uint32_t    snapLen, 
   int32_t     tzCorrection)
@@ -56,11 +56,11 @@ PcapHelper::CreateFile (
   NS_LOG_FUNCTION (filename << filemode << dataLinkType << snapLen << tzCorrection);
 
   Ptr<PcapFileWrapper> file = CreateObject<PcapFileWrapper> ();
-  bool err = file->Open (filename, filemode);
-  NS_ABORT_MSG_IF (err, "Unable to Open " << filename << " for mode " << filemode);
+  file->Open (filename, filemode);
+  NS_ABORT_MSG_IF (file->Fail (), "Unable to Open " << filename << " for mode " << filemode);
 
-  err = file->Init (dataLinkType, snapLen, tzCorrection);
-  NS_ABORT_MSG_IF (err, "Unable to Init " << filename);
+  file->Init (dataLinkType, snapLen, tzCorrection);
+  NS_ABORT_MSG_IF (file->Fail (), "Unable to Init " << filename);
 
   //
   // Note that the pcap helper promptly forgets all about the pcap file.  We
@@ -181,27 +181,13 @@ AsciiTraceHelper::~AsciiTraceHelper ()
 }
 
 Ptr<OutputStreamWrapper>
-AsciiTraceHelper::CreateFileStream (std::string filename, std::string filemode)
+AsciiTraceHelper::CreateFileStream (std::string filename, std::ios::openmode filemode)
 {
   NS_LOG_FUNCTION (filename << filemode);
 
   std::ofstream *ofstream = new std::ofstream;
-  std::ios_base::openmode mode = std::ios_base::out | std::ios_base::trunc;
 
-  if (filemode == "a")
-    {
-      mode = std::ios_base::out | std::ios_base::app;
-    }
-  else if (filemode == "w")
-    {
-      mode = std::ios_base::out | std::ios_base::trunc;
-    }
-  else
-    {
-      NS_ABORT_MSG ("AsciiTraceHelper::CreateFileStream(): Unexpected file mode");
-    }
-
-  ofstream->open (filename.c_str (), mode);
+  ofstream->open (filename.c_str (), filemode);
   NS_ABORT_MSG_UNLESS (ofstream->is_open (), "AsciiTraceHelper::CreateFileStream():  Unable to Open " << 
                        filename << " for mode " << filemode);
   
