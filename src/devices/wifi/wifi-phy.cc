@@ -59,7 +59,7 @@ WifiPhy::GetTypeId (void)
                      "Trace source indicating a packet has begun transmitting over the channel medium",
                      MakeTraceSourceAccessor (&WifiPhy::m_phyTxBeginTrace))
     .AddTraceSource ("PhyTxEnd", 
-                     "Trace source indicating a packet has been completely transmitted over the channel",
+                     "Trace source indicating a packet has been completely transmitted over the channel. NOTE: the only official WifiPhy implementation available to this date (YansWifiPhy) never fires this trace source.",
                      MakeTraceSourceAccessor (&WifiPhy::m_phyTxEndTrace))
     .AddTraceSource ("PhyTxDrop", 
                      "Trace source indicating a packet has been dropped by the device during transmission",
