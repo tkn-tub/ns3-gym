@@ -73,6 +73,48 @@ AddInternetStack (Ptr<Node> node)
 }
 
 
+class UdpSocketLoopbackTest: public TestCase
+{
+public:
+  UdpSocketLoopbackTest ();
+  virtual bool DoRun (void);
+
+  void ReceivePkt (Ptr<Socket> socket);
+  Ptr<Packet> m_receivedPacket;
+};
+
+UdpSocketLoopbackTest::UdpSocketLoopbackTest ()
+  : TestCase ("UDP loopback test") 
+{
+}
+
+void UdpSocketLoopbackTest::ReceivePkt (Ptr<Socket> socket)
+{
+  uint32_t availableData;
+  availableData = socket->GetRxAvailable ();
+  m_receivedPacket = socket->Recv (std::numeric_limits<uint32_t>::max(), 0);
+  NS_ASSERT (availableData == m_receivedPacket->GetSize ());
+}
+
+bool
+UdpSocketLoopbackTest::DoRun ()
+{
+  Ptr<Node> rxNode = CreateObject<Node> ();
+  AddInternetStack (rxNode);
+
+  Ptr<SocketFactory> rxSocketFactory = rxNode->GetObject<UdpSocketFactory> ();
+  Ptr<Socket> rxSocket = rxSocketFactory->CreateSocket ();
+  rxSocket->Bind (InetSocketAddress (Ipv4Address::GetAny(), 80));
+  rxSocket->SetRecvCallback (MakeCallback (&UdpSocketLoopbackTest::ReceivePkt, this));
+
+  Ptr<Socket> txSocket = rxSocketFactory->CreateSocket ();
+  txSocket->SendTo (Create<Packet> (246), 0, InetSocketAddress ("127.0.0.1", 80));
+  Simulator::Run ();
+  Simulator::Destroy ();
+  NS_TEST_EXPECT_MSG_EQ (m_receivedPacket->GetSize (), 246, "first socket should not receive it (it is bound specifically to the second interface's address");
+  return GetErrorStatus ();
+}
+
 class UdpSocketImplTest: public TestCase
 {
   Ptr<Packet> m_receivedPacket;
@@ -89,7 +131,6 @@ public:
   void ReceivePkt (Ptr<Socket> socket);
   void ReceivePkt2 (Ptr<Socket> socket);
 };
-
 
 UdpSocketImplTest::UdpSocketImplTest ()
   : TestCase ("UDP socket implementation") 
@@ -270,6 +311,7 @@ UdpSocketImplTest::DoRun (void)
 
   return GetErrorStatus ();
 }
+
 //-----------------------------------------------------------------------------
 class UdpTestSuite : public TestSuite
 {
@@ -277,6 +319,7 @@ public:
   UdpTestSuite () : TestSuite ("udp", UNIT)
   {
     AddTestCase (new UdpSocketImplTest);
+    AddTestCase (new UdpSocketLoopbackTest);
   }
 } g_udpTestSuite;
 
