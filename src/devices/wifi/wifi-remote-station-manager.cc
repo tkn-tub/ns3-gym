@@ -138,7 +138,7 @@ WifiRemoteStationManager::GetTypeId (void)
                    " transmission of each packet is obtained before sending the next. Otherwise, we modelize a "
                    " high-latency device, that is a device where we cannot update our decision about tx parameters"
                    " after every packet transmission.",
-                   BooleanValue (true),
+                   BooleanValue (true), // this value is ignored because there is no setter
                    MakeBooleanAccessor (&WifiRemoteStationManager::IsLowLatency),
                    MakeBooleanChecker ())
     .AddAttribute ("MaxSsrc", "The maximum number of retransmission attempts for an RTS. This value"
@@ -332,8 +332,14 @@ WifiRemoteStationManager::PrepareForQueue (Mac48Address address, const WifiMacHe
     {
       return;
     }
-  TxModeTag tag = TxModeTag (GetRtsMode (address, header, packet), 
-                             GetDataMode (address, header, packet, fullPacketSize));
+  WifiRemoteStation *station = Lookup (address, header);
+  WifiMode rts = DoGetRtsMode (station);
+  WifiMode data = DoGetDataMode (station, fullPacketSize);
+  TxModeTag tag;
+  // first, make sure that the tag is not here anymore.
+  ConstCast<Packet> (packet)->RemovePacketTag (tag);
+  tag = TxModeTag (rts, data);
+  // and then, add it back
   packet->AddPacketTag (tag);
 }
 WifiMode
@@ -346,10 +352,9 @@ WifiRemoteStationManager::GetDataMode (Mac48Address address, const WifiMacHeader
     }
   if (!IsLowLatency ())
     {
-      // Note: removing the packet below is wrong: what happens in case of retransmissions ???
       TxModeTag tag;
       bool found;
-      found = ConstCast<Packet> (packet)->RemovePacketTag (tag);
+      found = ConstCast<Packet> (packet)->PeekPacketTag (tag);
       NS_ASSERT (found);
       return tag.GetDataMode ();
     }
@@ -364,7 +369,7 @@ WifiRemoteStationManager::GetRtsMode (Mac48Address address, const WifiMacHeader 
     {
       TxModeTag tag;
       bool found;
-      found = ConstCast<Packet> (packet)->RemovePacketTag (tag);
+      found = ConstCast<Packet> (packet)->PeekPacketTag (tag);
       NS_ASSERT (found);
       return tag.GetRtsMode ();
     }
