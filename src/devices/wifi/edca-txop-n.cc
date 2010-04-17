@@ -362,7 +362,7 @@ EdcaTxopN::NotifyAccessGranted (void)
     }
   MacLowTransmissionParameters params;
   params.DisableOverrideDurationId ();
-  if (m_currentHdr.GetAddr1 ().IsBroadcast ()) 
+  if (m_currentHdr.GetAddr1 ().IsGroup ()) 
     {
       params.DisableRts ();
       params.DisableAck ();

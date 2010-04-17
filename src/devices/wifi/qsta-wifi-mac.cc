@@ -569,7 +569,7 @@ QstaWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
   NS_LOG_FUNCTION (this);
   NS_ASSERT (!hdr->IsCtl ());
   if (hdr->GetAddr1 () != GetAddress () &&
-      !hdr->GetAddr1 ().IsBroadcast ())
+      !hdr->GetAddr1 ().IsGroup ())
     {
       NS_LOG_LOGIC ("packet is not for us");
     }
