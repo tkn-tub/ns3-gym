@@ -45,6 +45,7 @@ interesting_config_items = [
     "ENABLE_NSC",
     "ENABLE_REAL_TIME",
     "ENABLE_EXAMPLES",
+    "ENABLE_PYTHON_BINDINGS",
 ]
 
 ENABLE_NSC = False
@@ -1313,7 +1314,7 @@ def run_tests():
     #
     if len(options.suite) == 0 and len(options.example) == 0 and len(options.pyexample) == 0:
         if len(options.constrain) == 0 or options.constrain == "pyexample":
-            if ENABLE_EXAMPLES:
+            if ENABLE_EXAMPLES and ENABLE_PYTHON_BINDINGS:
                 for test, do_run in python_tests:
                     if eval(do_run):
                         job = Job()
