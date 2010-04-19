@@ -417,6 +417,11 @@ PcapFile::Read (
   m_file.read ((char *)&header.m_inclLen, sizeof(header.m_inclLen));
   m_file.read ((char *)&header.m_origLen, sizeof(header.m_origLen));
 
+  if (m_file.fail ())
+    {
+      return;
+    }
+
   if (m_swapMode)
     {
       Swap (&header, &header);
@@ -470,11 +475,17 @@ PcapFile::Diff (std::string const & f1, std::string const & f2,
   uint32_t readLen1, readLen2;
   bool diff = false;
   
-  while (!pcap1.Eof () && !pcap2.Eof ()
-         && !pcap1.Fail () && !pcap2.Fail ())
+  while (!pcap1.Eof () && !pcap2.Eof ())
     {
       pcap1.Read (data1, snapLen, tsSec1, tsUsec1, inclLen1, origLen1, readLen1);
       pcap2.Read (data2, snapLen, tsSec2, tsUsec2, inclLen2, origLen2, readLen2);
+
+      bool bad = pcap1.Fail () || pcap2.Fail ();
+      if (bad)
+        {
+          diff = true;
+          break;
+        }
 
       if (tsSec1 != tsSec2 || tsUsec1 != tsUsec2)
         {
