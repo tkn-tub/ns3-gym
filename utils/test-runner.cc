@@ -143,6 +143,7 @@ BaseDir (void)
                 }
             }
         }
+      closedir (dp);
 
       //
       // If there's a file named VERSION and a file named LICENSE in this
