@@ -227,6 +227,11 @@ PcapFile::ReadAndVerifyFileHeader (void)
   m_file.read ((char *)&m_fileHeader.m_snapLen, sizeof(m_fileHeader.m_snapLen));
   m_file.read ((char *)&m_fileHeader.m_type, sizeof(m_fileHeader.m_type));
 
+  if (m_file.fail ())
+    {
+      return;
+    }
+
   //
   // There are four possible magic numbers that can be there.  Normal and byte
   // swapped versions of the standard magic number, and normal and byte swapped
