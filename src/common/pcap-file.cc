@@ -480,10 +480,14 @@ PcapFile::Diff (std::string const & f1, std::string const & f2,
       pcap1.Read (data1, snapLen, tsSec1, tsUsec1, inclLen1, origLen1, readLen1);
       pcap2.Read (data2, snapLen, tsSec2, tsUsec2, inclLen2, origLen2, readLen2);
 
-      bool bad = pcap1.Fail () || pcap2.Fail ();
-      if (bad)
+      bool same = pcap1.Fail () == pcap2.Fail ();
+      if (!same)
         {
           diff = true;
+          break;
+        }
+      if (pcap1.Eof ())
+        {
           break;
         }
 
