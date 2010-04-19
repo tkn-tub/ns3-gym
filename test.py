@@ -1314,7 +1314,7 @@ def run_tests():
     #
     if len(options.suite) == 0 and len(options.example) == 0 and len(options.pyexample) == 0:
         if len(options.constrain) == 0 or options.constrain == "pyexample":
-            if ENABLE_EXAMPLES and ENABLE_PYTHON_BINDINGS:
+            if ENABLE_EXAMPLES:
                 for test, do_run in python_tests:
                     if eval(do_run):
                         job = Job()
@@ -1327,7 +1327,22 @@ def run_tests():
                         job.set_tempdir(testpy_output_dir)
                         job.set_shell_command("examples/%s" % test)
 
-                        if options.valgrind and not eval(do_valgrind_run):
+                        #
+                        # Python programs and valgrind do not work and play
+                        # well together, so we skip them under valgrind.
+                        # We go through the trouble of doing all of this
+                        # work to report the skipped tests in a consistent
+                        # way throught the output formatter.
+                        #
+                        if options.valgrind:
+                            job.set_is_skip (True)
+
+                        #
+                        # The user can disable python bindings, so we need
+                        # to pay attention to that and give some feedback
+                        # that we're not testing them
+                        #
+                        if not ENABLE_PYTHON_BINDINGS:
                             job.set_is_skip (True)
 
                         if options.verbose:
