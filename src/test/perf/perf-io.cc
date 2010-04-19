@@ -27,6 +27,7 @@
 #include "ns3/node-module.h"
 #include "ns3/core-module.h"
 #include "ns3/helper-module.h"
+#include "ns3/abort.h"
 
 using namespace ns3;
 using namespace std;
@@ -50,7 +51,10 @@ PerfFile (FILE *file, uint32_t n, const char *buffer, uint32_t size)
 {
   for (uint32_t i = 0; i < n; ++i)
     {
-      size_t __attribute__ ((unused)) result = fwrite (buffer, 1, size, file);
+      if (fwrite (buffer, 1, size, file) !=  size)
+        {
+          NS_ABORT_MSG ("PerfFile():  fwrite error");
+        }
     }
 }
 

@@ -18,6 +18,7 @@
 
 #include "ns3/test.h"
 #include "ns3/assert.h"
+#include "ns3/abort.h"
 
 #include <iostream>
 #include <fstream>
@@ -107,7 +108,10 @@ BaseDir (void)
   // depends on the leading '/'
   //
   char pathbuf[PATH_MAX];
-  char * __attribute__ ((unused)) p = getcwd (pathbuf, sizeof(pathbuf));
+  if (getcwd (pathbuf, sizeof(pathbuf)) == NULL)
+    {
+      NS_ABORT_MSG ("Basedir():  unable to getcwd()");
+    }
 
   //
   // Walk up the directory tree looking for a directory that has files that
