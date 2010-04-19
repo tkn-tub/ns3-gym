@@ -107,7 +107,7 @@ BaseDir (void)
   // depends on the leading '/'
   //
   char pathbuf[PATH_MAX];
-  getcwd (pathbuf, sizeof(pathbuf));
+  char * __attribute__ ((unused)) p = getcwd (pathbuf, sizeof(pathbuf));
 
   //
   // Walk up the directory tree looking for a directory that has files that

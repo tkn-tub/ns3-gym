@@ -50,7 +50,7 @@ PerfFile (FILE *file, uint32_t n, const char *buffer, uint32_t size)
 {
   for (uint32_t i = 0; i < n; ++i)
     {
-      fwrite (buffer, 1, size, file);
+      size_t __attribute__ ((unused)) result = fwrite (buffer, 1, size, file);
     }
 }
 
