@@ -69,12 +69,12 @@ def register_types(module):
     typehandlers.add_type_alias('ns3::TimeUnit< - 1 >', 'ns3::TimeInvert')
     typehandlers.add_type_alias('ns3::TimeUnit< - 1 >*', 'ns3::TimeInvert*')
     typehandlers.add_type_alias('ns3::TimeUnit< - 1 >&', 'ns3::TimeInvert&')
-    typehandlers.add_type_alias('ns3::TimeUnit< 0 >', 'ns3::Scalar')
-    typehandlers.add_type_alias('ns3::TimeUnit< 0 >*', 'ns3::Scalar*')
-    typehandlers.add_type_alias('ns3::TimeUnit< 0 >&', 'ns3::Scalar&')
     typehandlers.add_type_alias('ns3::TimeUnit< 1 >', 'ns3::Time')
     typehandlers.add_type_alias('ns3::TimeUnit< 1 >*', 'ns3::Time*')
     typehandlers.add_type_alias('ns3::TimeUnit< 1 >&', 'ns3::Time&')
+    typehandlers.add_type_alias('ns3::TimeUnit< 0 >', 'ns3::Scalar')
+    typehandlers.add_type_alias('ns3::TimeUnit< 0 >*', 'ns3::Scalar*')
+    typehandlers.add_type_alias('ns3::TimeUnit< 0 >&', 'ns3::Scalar&')
     
     ## Register a nested module for the namespace Config
     
