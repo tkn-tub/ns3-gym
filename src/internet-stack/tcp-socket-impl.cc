@@ -694,6 +694,19 @@ TcpSocketImpl::ForwardUp (Ptr<Packet> packet, Ipv4Address saddr, Ipv4Address dad
   m_rxWindowSize = tcpHeader.GetWindowSize (); //update the flow control window
 
   Events_t event = SimulationSingleton<TcpStateMachine>::Get ()->FlagsEvent (tcpHeader.GetFlags () );
+  // Given an ACK_RX event and FIN_WAIT_1, CLOSING, or LAST_ACK state, 
+  // we have to check the sequence numbers to determine if the 
+  // ACK is for the FIN
+  if ((m_state == FIN_WAIT_1 || m_state == CLOSING 
+                             || m_state == LAST_ACK) && event == ACK_RX)
+    {
+      if (tcpHeader.GetSequenceNumber () == m_nextRxSequence)
+        {
+          // This ACK is for the fin, change event to 
+          // recognize this
+          event = FIN_ACKED;
+        }
+    }
   Actions_t action = ProcessEvent (event); //updates the state
   NS_LOG_DEBUG("Socket " << this << 
                " processing pkt action, " << action <<
@@ -1648,7 +1661,7 @@ void TcpSocketImpl::PersistTimeout ()
 void TcpSocketImpl::Retransmit ()
 {
   NS_LOG_FUNCTION (this);
-  uint8_t flags = TcpHeader::NONE;
+  uint8_t flags = TcpHeader::ACK;
   if (m_state == SYN_SENT) 
     {
       if (m_cnCount > 0) 

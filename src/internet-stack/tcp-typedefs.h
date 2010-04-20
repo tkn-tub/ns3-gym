@@ -56,8 +56,9 @@ typedef enum {
   SYN_ACK_RX,   // 8
   FIN_RX,       // 9
   FIN_ACK_RX,   // 10
-  RST_RX,       // 11
-  BAD_FLAGS,    // 12
+  FIN_ACKED,    // 11
+  RST_RX,       // 12
+  BAD_FLAGS,    // 13
   LAST_EVENT } Events_t;
 
 typedef enum {

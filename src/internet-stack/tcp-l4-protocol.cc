@@ -158,7 +158,8 @@ TcpStateMachine::TcpStateMachine()
   aT[LAST_ACK][SEQ_RECV]    = SA (LAST_ACK,    NEW_SEQ_RX);
   aT[LAST_ACK][APP_CLOSE]   = SA (CLOSED,      NO_ACT);
   aT[LAST_ACK][TIMEOUT]     = SA (CLOSED,      NO_ACT);
-  aT[LAST_ACK][ACK_RX]      = SA (CLOSED,      APP_CLOSED);
+  aT[LAST_ACK][ACK_RX]      = SA (LAST_ACK,    NO_ACT);
+  aT[LAST_ACK][FIN_ACKED]   = SA (CLOSED,      APP_CLOSED);
   aT[LAST_ACK][SYN_RX]      = SA (CLOSED,      RST_TX);
   aT[LAST_ACK][SYN_ACK_RX]  = SA (CLOSED,      RST_TX);
   aT[LAST_ACK][FIN_RX]      = SA (LAST_ACK,    FIN_ACK_TX);
@@ -173,7 +174,8 @@ TcpStateMachine::TcpStateMachine()
   aT[FIN_WAIT_1][SEQ_RECV]    = SA (FIN_WAIT_1, NEW_SEQ_RX);
   aT[FIN_WAIT_1][APP_CLOSE]   = SA (FIN_WAIT_1, NO_ACT);
   aT[FIN_WAIT_1][TIMEOUT]     = SA (FIN_WAIT_1, NO_ACT);
-  aT[FIN_WAIT_1][ACK_RX]      = SA (FIN_WAIT_2, NEW_ACK);
+  aT[FIN_WAIT_1][ACK_RX]      = SA (FIN_WAIT_1, NEW_ACK);
+  aT[FIN_WAIT_1][FIN_ACKED]   = SA (FIN_WAIT_2, NEW_ACK);
   aT[FIN_WAIT_1][SYN_RX]      = SA (CLOSED,     RST_TX);
   aT[FIN_WAIT_1][SYN_ACK_RX]  = SA (CLOSED,     RST_TX);
   aT[FIN_WAIT_1][FIN_RX]      = SA (CLOSING,    ACK_TX);
@@ -203,7 +205,8 @@ TcpStateMachine::TcpStateMachine()
   aT[CLOSING][SEQ_RECV]    = SA (CLOSED,      RST_TX);
   aT[CLOSING][APP_CLOSE]   = SA (CLOSED,      RST_TX);
   aT[CLOSING][TIMEOUT]     = SA (CLOSING,     NO_ACT);
-  aT[CLOSING][ACK_RX]      = SA (TIMED_WAIT,  NO_ACT);
+  aT[CLOSING][ACK_RX]      = SA (CLOSING,     NO_ACT);
+  aT[CLOSING][FIN_ACKED]   = SA (TIMED_WAIT,  NO_ACT);
   aT[CLOSING][SYN_RX]      = SA (CLOSED,      RST_TX);
   aT[CLOSING][SYN_ACK_RX]  = SA (CLOSED,      RST_TX);
   aT[CLOSING][FIN_RX]      = SA (CLOSED,      ACK_TX);
