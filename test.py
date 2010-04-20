@@ -912,7 +912,7 @@ class worker_thread(threading.Thread):
                 if options.verbose:
                     print "Skip %s" % job.shell_command
                 self.output_queue.put(job)
-                return
+                continue
 
             #
             # Otherwise go about the business of running tests as normal.
