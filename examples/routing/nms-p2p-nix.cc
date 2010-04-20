@@ -428,17 +428,6 @@ main (int argc, char *argv[])
   TIMER_NOW (routingEnd);
   cout << "Routing tables population took " 
        << TIMER_DIFF (routingEnd, routingStart) << endl;
-#if 0 
-  std::ofstream ascii;
-  ascii.open("nms_p2p_nix.tr");
-  PointToPointHelper::EnableAsciiAll(ascii);
-  CsmaHelper::EnableAsciiAll(ascii);
-#endif
-
-#if 0
-  PointToPointHelper::EnablePcapAll("nms_p2p");
-  CsmaHelper::EnablePcapAll("nms_csma");
-#endif
 
   Simulator::ScheduleNow (Progress);
   cout << "Running simulator..." << endl;

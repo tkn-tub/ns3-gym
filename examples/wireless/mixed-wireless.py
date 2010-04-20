@@ -316,9 +316,10 @@ def main(argv):
     #  Let's set up some ns-2-like ascii traces, using another helper class
     # 
     #std.ofstream ascii
-    #ascii.open("mixed-wireless.tr")
-    #WifiHelper.EnableAsciiAll(ascii)
-    #CsmaHelper.EnableAsciiAll(ascii)
+    #ascii = ns3.AsciiTraceHelper();
+    #stream = ascii.CreateFileStream("mixed-wireless.tr");
+    #wifiPhy.EnableAsciiAll(stream);
+    #csma.EnableAsciiAll(stream);
     print "(tracing not done for Python)"
     #  Look at nodes 11, 13 only
     # WifiHelper.EnableAscii(ascii, 11, 0); 
