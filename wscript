@@ -784,6 +784,13 @@ def _doxygen(bld):
         return
 
     prog = program_obj.path.find_or_declare(ccroot.get_target_name(program_obj)).abspath(env)
+
+    if not os.path.exists(prog):
+        Logs.error("print-introspected-doxygen has not been built yet."
+                   " You need to build ns-3 at least once before "
+                   "generating doxygen docs...")
+        raise SystemExit(1)
+
     out = open(os.path.join('doc', 'introspected-doxygen.h'), 'w')
 
     if subprocess.Popen([prog], stdout=out, env=proc_env).wait():
