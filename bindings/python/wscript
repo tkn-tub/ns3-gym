@@ -15,7 +15,7 @@ import Build
 import Utils
 
 ## https://launchpad.net/pybindgen/
-REQUIRED_PYBINDGEN_VERSION = (0, 14, 0, 760)
+REQUIRED_PYBINDGEN_VERSION = (0, 14, 1)
 REQUIRED_PYGCCXML_VERSION = (0, 9, 5)
 
 
