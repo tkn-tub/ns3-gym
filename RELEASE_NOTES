@@ -65,6 +65,7 @@ Bugs fixed
 ----------
 The following lists many of the bugs that were fixed since ns-3.7, in
 many cases referencing the Bugzilla bug number
+   - bug 155 - std::ostream & os" parameters not Python friendly
    - bug 184 - GtkConfigStore do not support ConfigureDefault
    - bug 407 - OLSR is missing HNA support
    - bug 414 - No ReceiveErrorModel in SimpleNetDevice
@@ -85,18 +86,24 @@ many cases referencing the Bugzilla bug number
    - bug 794 - Ipv4Mask constructor for "/yy"-notation is wrong
    - bug 796 - TCP bug in ns-3-dev branch : Crash detected during retesting of Chord on ns-3-dev branch
    - bug 797 - Enhancements to src/core/random-variable.cc/h
+   - bug 801 - ns-3.7 and SVN not coexisting nicely
    - bug 804 - null-pointer references in 3.7 internet stack
    - bug 806 - TCP doesn't work over a CSMA link
+   - bug 807 - ns2-mobility-helper.cc: node id parsed wrong
    - bug 809 - Missing Python binding for Ipv4GlobalRouting::GetRoute
    - bug 810 - In TCP, Socket::GetSockName() does not return the local socket address
    - bug 812 - Assert when getting socket in RecvReply for AODV
+   - bug 813 - Nqos AP sends packet to non associated STA
    - bug 814 - Function logging causing assert in wireless examples
    - bug 815 - waf shell file descriptor leak
    - bug 816 - tap-creator deadlock when python bindings enabled
    - bug 817 - Pareto rng constructors using scale and shape instead of mean and shape
+   - bug 818 - TCP Socket implementation does not set ACK flag on retransmits
+   - bug 819 - Build break when gtk not installed
    - bug 820 - Bad things happen in test.py when logging is enabled
    - bug 821 - AODV asserts with function logging enabled
    - bug 822 - Move Mtu attribute from NetDevice base class to subclasses
+   - bug 825 - UDP-Client-server's packet loss counter not properly reset
    - bug 828 - PacketSocket::Close does not unregister protocol handler
    - bug 829 - TCP unbound memory problem (pending data)
    - bug 833 - OnOffApplication with PacketSocket: sniffs all traffic
@@ -106,12 +113,16 @@ many cases referencing the Bugzilla bug number
    - bug 838 - ns-3 can't compile on MacOS with 32bit processor
    - bug 839 - TestSuite wimax-ss-mac-layer crashes on Darwin 9.8.0 Power Macintosh
    - bug 840 - BS scheduler does not support fragmentation for UGS flows
+   - bug 841 - Multicast transmission breaks with QoS Wifi
    - bug 844 - YansWifiPhy::GetPowerDbm off-by-one problem when calculating Tx power
+   - bug 847 - Segfaults on BaseStationNetDevice with OnOffApplication and rtPS sched
    - bug 849 - stray patch files in lwip directory
    - bug 850 - Ipv4GlobalRouting::LookupGlobal bug
    - bug 856 - initialize vbl
    - bug 857 - Link-Local Multicast handle in Ipv4 Output processing 
    - bug 859 - Output interface estimation for the source address bound socket in IPv4 Raw socket
+   - bug 860 - waf sometimes dies while executing ns3header or gen_ns3_module_header tasks in case of 
+               parallel jobs
    - bug 862 - NotifyInterfaceUp() Adds network route even when netmask is /32
    - bug 863 - Wrong Scalar arithmetics
    - bug 864 - Invalid return value in UdpSocketImpl::Send and Ipv4RawSocketImpl::Send
@@ -120,8 +131,11 @@ many cases referencing the Bugzilla bug number
    - bug 867 - Minor bug in Ipv4L3Protocol::Send()
    - bug 868 - invalid packet size after Ipv4L3Protocol::Send
    - bug 872 - ns3::PcapFileWrapper::Write explodes stack
+   - bug 873 - Queue occupancy counter not decremented in WifiMacQueue::Remove()
    - bug 876 - Tcp socket does not handle ShutdownRecv correctly
+   - bug 877 - python bindings broken with multiple inheritance ?
    - bug 880 - Node sending a packet to itself via 127.0.0.1 aborts
+   - bug 885 - Error in Ascii tracing in Python examples
 
 Known issues
 ------------
