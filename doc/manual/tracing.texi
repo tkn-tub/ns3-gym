@@ -906,7 +906,7 @@ enumerated and tracing is enabled on the resulting pairs.  For example,
 @end verbatim
 
 You can enable pcap tracing on the basis of node ID and interface as well.  In
-this case, the node-id is translated to a @code{Ptr{Node} and the appropriate
+this case, the node-id is translated to a @code{Ptr<Node>} and the appropriate
 protocol is looked up in the node.  The resulting protocol and interface are
 used to specify the resulting trace source.
 
@@ -1147,7 +1147,7 @@ follows the <prefix>-<node id>-<device id>.tr convention.  Combining all of the
 traces into a single file is accomplished similarly to the examples above:
 
 You can enable pcap tracing on the basis of node ID and device ID as well.  In
-this case, the node-id is translated to a @code{Ptr{Node} and the appropriate
+this case, the node-id is translated to a @code{Ptr<Node>} and the appropriate
 protocol is looked up in the node.  The resulting protocol and interface are
 used to specify the resulting trace source.
 
