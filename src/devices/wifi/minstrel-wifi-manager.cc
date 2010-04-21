@@ -486,7 +486,7 @@ MinstrelWifiManager::DoGetRtsMode (WifiRemoteStation *st)
 bool 
 MinstrelWifiManager::IsLowLatency (void) const
 {
-  return false;
+  return true;
 }
 uint32_t 
 MinstrelWifiManager::GetNextSample (MinstrelWifiRemoteStation *station)
@@ -782,7 +782,7 @@ MinstrelWifiManager::InitSampleTable (MinstrelWifiRemoteStation *station)
             {
               newIndex = (newIndex + 1)%GetNSupported (station);
             }
-          station->m_sampleTable[newIndex][col] = i+1;
+          station->m_sampleTable[newIndex][col] = i;
 
         }
     }
