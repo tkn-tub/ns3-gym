@@ -2083,7 +2083,7 @@ passed around (a @code{Ptr<PcapFileWrapper>}) represents a pcap file.  There
 is a one-liner in the trace sink to write a timestamp and the contents of the 
 packet being dropped to the pcap file:
 
-@end verbatim
+@verbatim
   file->Write(Simulator::Now(), p);
 @end verbatim
 
