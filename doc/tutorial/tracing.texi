@@ -2755,7 +2755,7 @@ using pcap tracing in the @code{Ipv4} protocol.  Each protocol helper enabling t
 methods must implement a single virtual method inherited from this class.  There
 will be a separate implementation for @code{Ipv6}, for example, but the only
 difference will be in the method names and signatures.  Different method names
-are required to disambiguate class @code{Ipv4} from @coe{Ipv6} which are both 
+are required to disambiguate class @code{Ipv4} from @code{Ipv6} which are both 
 derived from class @code{Object}, and methods that share the same signature.
 
 @verbatim
