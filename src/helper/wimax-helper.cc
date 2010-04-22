@@ -80,7 +80,7 @@ Ptr<WimaxPhy> WimaxHelper::CreatePhy (PhyType phyType)
       phy = CreateObject<SimpleOfdmWimaxPhy> ();
       if (!m_channel)
         {
-          m_channel = CreateObject<SimpleOfdmWimaxChannel> ();
+          m_channel = CreateObject<SimpleOfdmWimaxChannel> (SimpleOfdmWimaxChannel::COST231_PROPAGATION);
         }
       break;
     default:
@@ -89,6 +89,15 @@ Ptr<WimaxPhy> WimaxHelper::CreatePhy (PhyType phyType)
     }
 
   return phy;
+}
+
+void WimaxHelper::SetPropagationLossModel (SimpleOfdmWimaxChannel::PropModel propagationModel)
+{
+  if (!m_channel)
+    {
+      m_channel = CreateObject<SimpleOfdmWimaxChannel> ();
+    }
+  m_channel->GetObject<SimpleOfdmWimaxChannel> ()->SetPropagationModel (propagationModel);
 }
 
 Ptr<WimaxPhy> WimaxHelper::CreatePhy (PhyType phyType, char * SNRTraceFilePath, bool activateLoss)
@@ -104,7 +113,7 @@ Ptr<WimaxPhy> WimaxHelper::CreatePhy (PhyType phyType, char * SNRTraceFilePath, 
       sphy->ActivateLoss (activateLoss);
       if (!m_channel)
         {
-          m_channel = CreateObject<SimpleOfdmWimaxChannel> ();
+          m_channel = CreateObject<SimpleOfdmWimaxChannel> (SimpleOfdmWimaxChannel::COST231_PROPAGATION);
         }
       break;
     default:
