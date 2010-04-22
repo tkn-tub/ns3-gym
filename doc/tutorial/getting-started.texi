@@ -29,6 +29,26 @@
 @node Downloading ns-3
 @section Downloading ns-3
 
+@cindex Prerequisites
+@cindex Dependencies
+The @command{ns-3} system as a whole is a fairly complex system and has a
+number of dependencies on other components.  Along with the systems you will
+most likely deal with every day (the GNU toolchain, Mercurial, you programmer
+editor) you will need to ensure that a number of additional libraries are
+present on your system before proceeding.  @command{ns-3} provides a wiki
+for your reading pleasure that includes pages with many useful hints and tips.
+One such page is the ``Installation'' page,
+@uref{http://www.nsnam.org/wiki/index.php/Installation}.
+
+The ``Prerequisites'' section of this wiki page explains which packages are 
+required to support common @command{ns-3} options, and also provides the 
+commands used to install them for common Linux variants.  Cygwin users will
+have to use the Cygwin installer (if you are a Cygwin user, you used it to
+install Cygwin). 
+
+You may want to take this opportunity to explore the @command{ns-3} wiki 
+a bit since there really is a wealth of information there. 
+
 @cindex Linux
 @cindex Cygwin
 @cindex GNU
@@ -37,9 +57,10 @@
 @cindex Waf
 From this point forward, we are going to assume that the reader is working in
 Linux or a Linux emulation environment (Linux, Cygwin, etc.) and has the GNU
-toolchain installed and verified.  We are also going to assume that you have
-Mercurial and Waf installed and running on the target system as described in
-the Getting Started section of the  @command{ns-3} web site: 
+toolchain installed and verified along with the prerequisites mentioned 
+above.  We are also going to assume that you have Mercurial and Waf installed
+and running on the target system as described in the ``Getting Started'' section 
+of the  @command{ns-3} web site: 
 @uref{http://www.nsnam.org/getting_started.html}.
 
 @cindex tarball
