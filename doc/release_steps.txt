@@ -94,10 +94,21 @@ Steps in doing an ns-3 release
      -- edit ~/bin/update-doxygen-release file and change RELEASE variable 
         to the right version number 
      -- run ~/bin/update-doxygen-release
-15. Final checks
+15. build release documentation
+   - if this is final release (not RC)
+     -- archive old release documentation in /var/www/html/docs/release 
+        by creating release specific folder and moving current 
+        documenation into this folder
+     -- from ns-3.x/doc, enter manual/ testing/ and tutorial directories 
+        and build the documentation using make
+     -- copy this newly created documentation into 
+        /var/www/html/docs/release making sure to copy only the 
+        necessary files
+16. Final checks
+   - check manual, testing, and tutorial documentation links
    - download tarball from web, build and run regression tests for as many
      targets as you can
    - download release from mercurial, build and run regression tests for as
      many targets as you can
    - test and verify until you're confident the release is solid.
-16. announce to ns-developers, with summary of release notes
+17. announce to ns-developers, with summary of release notes

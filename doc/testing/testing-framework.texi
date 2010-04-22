@@ -562,7 +562,7 @@ a @code{--tempdir}, so the test runner will figure one out for you if you don't
 provide one.  It first looks for environment variables named @code{TMP} and 
 @code{TEMP} and uses those.  If neither @code{TMP} nor @code{TEMP} are defined
 it picks @code{/tmp}.  The code then tacks on an identifier indicating what 
-created the directory (ns-3) then the time (hh.mm.ss} followed by a large random
+created the directory (ns-3) then the time (hh.mm.ss) followed by a large random
 number.  The test runner creates a directory of that name to be used as the
 temporary directory.  Temporary files then go into a directory that will be
 named something like,

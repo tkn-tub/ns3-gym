@@ -60,7 +60,7 @@ PacketLossCounter::SetBitMapSize (uint16_t winSize)
       delete [] m_receiveBitMap;
     }
   m_receiveBitMap = new uint8_t [m_bitMapSize] ();
-  memset (m_receiveBitMap,1,m_bitMapSize);
+  memset (m_receiveBitMap,0xFF,m_bitMapSize);
 }
 
 uint32_t
@@ -103,17 +103,14 @@ PacketLossCounter::SetBit(uint32_t seqNum, bool val)
 void
 PacketLossCounter::NotifyReceived (uint32_t seqNum)
 {
-  if (seqNum>(uint32_t)(m_bitMapSize*8)-1)
+  for (uint32_t i=m_lastMaxSeqNum+1; i<=seqNum;i++)
     {
-      for (uint32_t i=m_lastMaxSeqNum+1; i<=seqNum;i++)
+      if (GetBit(i)!=1)
         {
-          if (GetBit(i)!=1)
-            {
-              NS_LOG_INFO ("Packet lost: " << i-(m_bitMapSize*8));
-              m_lost++;
-            }
-          SetBit(i, 0);
+          NS_LOG_INFO ("Packet lost: " << i-(m_bitMapSize*8));
+          m_lost++;
         }
+      SetBit(i, 0);
     }
   SetBit(seqNum, 1);
   if (seqNum>m_lastMaxSeqNum)

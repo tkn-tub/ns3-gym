@@ -50,17 +50,17 @@ public:
   };
   /**
    * \brief Creates a channel and sets the propagation model
-   * \param propModel the propagation model to used
+   * \param propModel the propagation model to use
    */
   SimpleOfdmWimaxChannel (PropModel propModel);
   /**
-   * \brief Sends a fec block to all connected physical dxdevices
+   * \brief Sends a fec block to all connected physical devices
    * \param BlockTime the time needed to send the block
    * \param fecBlock the fec block being sent
    * \param burstSize the size of the burst
    * \param phy the sender device
    * \param isFirstBlock true if this block is the first one, false otherwise
-   * \param frequency the frequency on wich the block is sent
+   * \param frequency the frequency on which the block is sent
    * \param modulationType the modulation used to send the fec block
    * \param direction uplink or downlink
    * \param txPowerDbm the transmission power

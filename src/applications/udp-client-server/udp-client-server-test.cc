@@ -208,6 +208,7 @@ PacketLossCounterTestCase::~PacketLossCounterTestCase ()
 bool PacketLossCounterTestCase::DoRun (void)
 {
   PacketLossCounter lossCounter(32);
+  lossCounter.NotifyReceived(32); //out of order
   for (uint32_t i=0;i<64;i++)
     {
       lossCounter.NotifyReceived(i);
