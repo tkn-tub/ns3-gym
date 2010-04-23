@@ -18,7 +18,7 @@
  * Authors: Kirill Andreev <andreev@iitp.ru>
  */
 
-#ifndef MESH_PERING_PROTOCOL_H
+#ifndef MESH_PEERING_PROTOCOL_H
 #define MESH_PEERING_PROTOCOL_H
 
 #include "ns3/wifi-information-element-vector.h"
