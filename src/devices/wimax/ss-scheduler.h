@@ -45,7 +45,7 @@ public:
   bool GetPollMe (void) const;
   /**
    * \return a list of packet to be sent in the next opportunity
-   * \param availableSymbols the available ressources in symbols
+   * \param availableSymbols the available resources in symbols
    * \param modulationType the used modulation
    * \param packetType the type of packets to select from
    * \param connection the connection from wich packets will be selected

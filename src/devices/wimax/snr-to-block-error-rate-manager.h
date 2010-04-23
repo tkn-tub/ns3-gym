@@ -21,7 +21,7 @@
 
 
 /**
- * \brief This class handels the  SNR to BlcER traces.  A path to a repository containing trace files should be provided.
+ * \brief This class handles the  SNR to BlcER traces.  A path to a repository containing trace files should be provided.
  * If no repository is provided the traces form default-traces.h will be loaded.
  * A valid repository should contain 7 files, one for each modulation and coding scheme.
  * The names of the files should respect the following format: modulation0.txt for modulation 0, modulation1.txt for

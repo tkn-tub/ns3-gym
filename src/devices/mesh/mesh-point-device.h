@@ -36,7 +36,7 @@ class Node;
  * \brief Virtual net device modeling mesh point.
  *
  * Mesh point is a virtual net device which is responsible for
- *   - Aggreagating and coordinating 1..* real devices -- mesh interfaces, see MeshInterfaceDevice class.
+ *   - Aggregating and coordinating 1..* real devices -- mesh interfaces, see MeshInterfaceDevice class.
  *   - Hosting all mesh-related level 2 protocols.
  *
  * One of hosted L2 protocols must inplement L2RoutingProtocol interface and is used for packets forwarding.
@@ -81,7 +81,7 @@ public:
 
   ///\name Protocols
   //\{
-  /// Register routing protocol to be used. Protocol must be alredy installed on this mesh point.
+  /// Register routing protocol to be used. Protocol must be already installed on this mesh point.
   void SetRoutingProtocol (Ptr<MeshL2RoutingProtocol> protocol);
   /// Access current routing protocol
   Ptr<MeshL2RoutingProtocol> GetRoutingProtocol () const;

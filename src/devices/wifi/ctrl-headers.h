@@ -125,7 +125,7 @@ private:
 
   /**
    * This function is used to correctly index in both bitmap
-   * and compressed bitmap, one bit or one block of 16 bits respectly.
+   * and compressed bitmap, one bit or one block of 16 bits respectively.
    * If we are using basic block ack, return value represents index of 
    * block of 16 bits for packet having sequence number equals to <i>seq</i>.
    * If we are using compressed block ack, return value represents bit 

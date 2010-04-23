@@ -80,14 +80,14 @@ public:
   /**
    * \brief process a DSA-ACK message
    * \param dsaAck the message to process
-   * \param cid the identifier of the connection on which the meassge was received
+   * \param cid the identifier of the connection on which the message was received
    */
   void ProcessDsaAck (const DsaAck &dsaAck, Cid cid);
 
   /**
    * \brief process a DSA-Req message
    * \param dsaReq the message to process
-   * \param cid the identifier of the connection on which the meassge was received
+   * \param cid the identifier of the connection on which the message was received
    */
   ServiceFlow* ProcessDsaReq (const DsaReq &dsaReq, Cid cid);
 

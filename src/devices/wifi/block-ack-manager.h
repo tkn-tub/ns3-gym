@@ -96,7 +96,7 @@ public:
    * \param tid Tid Traffic id of transmitted packet.
    *
    * Invoked when a recipient reject a block ack agreement or when a Delba frame
-   * is Received/Trasmitted.
+   * is Received/Transmitted.
    */
   void DestroyAgreement (Mac48Address recipient, uint8_t tid);
   /**
@@ -125,7 +125,7 @@ public:
   bool HasBar (struct Bar &bar);
   /**
    * Returns true if there are packets that need of retransmission or at least a
-   * BAR is sheduled. Returns false othewise.
+   * BAR is scheduled. Returns false otherwise.
    */
   bool HasPackets (void) const;
   /**
@@ -135,7 +135,7 @@ public:
    * Invoked upon receipt of a block ack frame. Typically, this function, is called
    * by ns3::EdcaTxopN object. Performs a check on which MPDUs, previously sent
    * with ack policy set to Block Ack, were correctly received by the recipient. 
-   * An acknowldeged MPDU is removed from the buffer, retransmitted otherwise.  
+   * An acknowledged MPDU is removed from the buffer, retransmitted otherwise.  
    */
   void NotifyGotBlockAck (const CtrlBAckResponseHeader *blockAck, Mac48Address recipient);
   /**
@@ -150,7 +150,7 @@ public:
    * \param recipient Address of peer station involved in block ack mechanism.
    * \param tid Traffic ID.
    *
-   * Returns number of packets for a specific agreeemnt that need retransmission.
+   * Returns number of packets for a specific agreement that need retransmission.
    * This methods doesn't return number of MPDUs that need retransmission but number MSDUs.
    */
   uint32_t GetNRetryNeededPackets (Mac48Address recipient, uint8_t tid) const;
@@ -203,7 +203,7 @@ public:
    * \param tid Traffic ID.
    *
    * This method is invoked by EdcaTxopN object upon receipt of a DELBA frame
-   * from recipient. The relative block ack agreement is destroied.
+   * from recipient. The relative block ack agreement is destroyed.
    */
   void TearDownBlockAck (Mac48Address recipient, uint8_t tid);
   /**
@@ -246,7 +246,7 @@ private:
    */
   Ptr<Packet> ScheduleBlockAckReqIfNeeded (Mac48Address recipient, uint8_t tid);
   /**
-   * This method removes packets whose lifetime was exceded.
+   * This method removes packets whose lifetime was exceeded.
    */
   void CleanupBuffers (void);
   void InactivityTimeout (Mac48Address, uint8_t);
@@ -282,7 +282,7 @@ private:
   Agreements m_agreements;
   /**
    * This list contains all iterators to stored packets that need to be retransmitted.
-   * A packet needs retransmission if it's indicated as not correctly recevied in a block ack
+   * A packet needs retransmission if it's indicated as not correctly received in a block ack
    * frame.
    */
   std::list<PacketQueueI> m_retryPackets;

@@ -88,7 +88,7 @@ public:
   void SetChannelNumber (uint16_t id);
   /// Return current channel number, see SetChannelNumber()
   uint16_t GetChannelNumber () const;
-  /// Return current center channel frequency in MHz, see SetСhannelNumber()
+  /// Return current center channel frequency in MHz, see SetChannelNumber()
   double GetChannelFrequencyMhz() const;
   
   void StartReceivePacket (Ptr<Packet> packet,

@@ -260,7 +260,7 @@ public:
    * \param duration expected duration of channel switching period
    *
    * Notify the DCF that a channel switching period has just started.
-   * During swtiching state, new packets can be enqueued in DcaTxop/EdcaTxop
+   * During switching state, new packets can be enqueued in DcaTxop/EdcaTxop
    * but they won't access to the medium until the end of the channel switching.
    */
   void NotifySwitchingStartNow (Time duration); 

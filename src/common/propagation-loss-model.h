@@ -167,7 +167,7 @@ public:
    */
   double GetLambda (void) const;
   /**
-   * \returns the current system loss (dimention-less)
+   * \returns the current system loss (dimension-less)
    */
   double GetSystemLoss (void) const;
 
@@ -251,7 +251,7 @@ public:
    */
   double GetLambda (void) const;
   /**
-   * \returns the current system loss (dimention-less)
+   * \returns the current system loss (dimension-less)
    */
   double GetSystemLoss (void) const;
   /**

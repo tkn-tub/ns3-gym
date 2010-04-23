@@ -539,7 +539,7 @@ public:
   Ptr<PbbMessage> MessageFront (void);
 
   /**
-   * \return a cosnt smart pointer to the first message in this packet.
+   * \return a const smart pointer to the first message in this packet.
    */
   const Ptr<PbbMessage> MessageFront (void) const;
 
@@ -549,7 +549,7 @@ public:
   Ptr<PbbMessage> MessageBack (void);
 
   /**
-   * \return a cosnt smart pointer to the last message in this packet.
+   * \return a const smart pointer to the last message in this packet.
    */
   const Ptr<PbbMessage> MessageBack (void) const;
 

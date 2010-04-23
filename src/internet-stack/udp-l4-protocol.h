@@ -101,7 +101,7 @@ public:
    * \param icmpType The type of the message from the ICMP header
    * \param icmpCode The message code from the ICMP header
    * \param icmpInfo 32-bit integer carrying informational value of varying semantics.
-   * \param payloadSource The IP source addresss from the IP header of the packet
+   * \param payloadSource The IP source address from the IP header of the packet
    * \param payloadDestination The IP destination address from the IP header of the packet
    * \param payload Payload of the ICMP packet
    */

@@ -34,7 +34,7 @@ using namespace ns3;
  * \verbatim
  *      1    2    3    4    5    6
  *      |    |    |    |    |<---|--->  ARP request (first attempt has failed!)
- *      |....|....|....|....|....|      ARP reauest
+ *      |....|....|....|....|....|      ARP request
  *      |<---|--->|    |    |    |      ARP request
  *  <---|--->|    |    |    |    |      PREQ       } This order is broken
  *  <---|--->|    |    |    |    |      ARP request} due to BroadcastDca 
@@ -51,13 +51,13 @@ using namespace ns3;
  *      |....|....|....|....|....|      Data
  *      |<---|    |    |    |    |      Data
  *  <---|--->|    |    |    |    |      ARP request
- *      |....|....|....|....|....|      ARP reauest
+ *      |....|....|....|....|....|      ARP request
  *      |    |    |    |    |<---|--->  ARP request
  *      |    |    |    |    |<---|      ARP response
  *      |....|....|....|....|....|      ARP response
  *      |<---|    |    |    |    |      ARP response
  *      |--->|    |    |    |    |      Data
- * At 5 station number 4 dissapears, and PERR is forwarded from 3 to 1
+ * At 5 station number 4 disappears, and PERR is forwarded from 3 to 1
  * and from 5 to 6, and station 6 starts path discovery procedure
  * again:
  *      |    |<---|         |--->|      PERR (one due to beacon loss and one due to TX error)

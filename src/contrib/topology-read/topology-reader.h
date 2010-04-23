@@ -125,7 +125,7 @@ private:
   };
 
   /**
-   * \brief Contant iterator to the list of the links.
+   * \brief Constant iterator to the list of the links.
    */
   typedef std::list< Link >::const_iterator ConstLinksIterator;
 

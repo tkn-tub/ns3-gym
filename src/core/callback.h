@@ -371,7 +371,7 @@ public:
   Callback () {}
 
   // There are two dummy args below to ensure that this constructor is
-  // always properly disambiguited by the c++ compiler
+  // always properly disambiguated by the c++ compiler
   template <typename FUNCTOR>
   Callback (FUNCTOR const &functor, bool, bool) 
     : CallbackBase (Create<FunctorCallbackImpl<FUNCTOR,R,T1,T2,T3,T4,T5,T6,T7,T8,T9> > (functor))

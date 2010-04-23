@@ -25,7 +25,7 @@
  *
  * - Address:       The ns3::Mac48Address of the device (if desired);
  * - DataRate:      The data rate (ns3::DataRate) of the device;
- * - TxQueue:       The trasmit queue (ns3::Queue) used by the device;
+ * - TxQueue:       The transmit queue (ns3::Queue) used by the device;
  * - InterframeGap: The optional ns3::Time to wait between "frames";
  * - Rx:            A trace source for received packets;
  * - Drop:          A trace source for dropped packets.
@@ -79,7 +79,7 @@
  *
  * When a packet is sent to the Point-to-Point net device for transmission it 
  * always passes through the transmit queue.  The transmit queue in the 
- * PoiintToPointNetDevice inherits from Queue, and therefore inherits three 
+ * PointToPointNetDevice inherits from Queue, and therefore inherits three 
  * trace sources:
  *
  * - An Enqueue operation source (see Queue::m_traceEnqueue);

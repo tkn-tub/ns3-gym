@@ -56,12 +56,12 @@ AmrrWifiManager::GetTypeId (void)
                    MakeTimeAccessor (&AmrrWifiManager::m_updatePeriod),
                    MakeTimeChecker ())
     .AddAttribute ("FailureRatio",
-                   "Ratio of minimum erronous transmissions needed to switch to a lower rate",
+                   "Ratio of minimum erroneous transmissions needed to switch to a lower rate",
                    DoubleValue (1.0/3.0),
                    MakeDoubleAccessor (&AmrrWifiManager::m_failureRatio),
                    MakeDoubleChecker<double> (0.0, 1.0))
     .AddAttribute ("SuccessRatio",
-                   "Ratio of maximum erronous transmissions needed to switch to a higher rate",
+                   "Ratio of maximum erroneous transmissions needed to switch to a higher rate",
                    DoubleValue (1.0/10.0),
                    MakeDoubleAccessor (&AmrrWifiManager::m_successRatio),
                    MakeDoubleChecker<double> (0.0, 1.0))

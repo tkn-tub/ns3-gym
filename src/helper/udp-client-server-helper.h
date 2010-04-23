@@ -77,7 +77,7 @@ private:
 
 /**
  * \brief Create a client application which sends udp packets carrying
- *  a 32bit sequence numbre and a 64 bit time stamp.
+ *  a 32bit sequence number and a 64 bit time stamp.
  *
  */
 class UdpClientHelper

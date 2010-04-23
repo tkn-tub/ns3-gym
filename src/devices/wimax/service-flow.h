@@ -35,7 +35,7 @@ class WimaxConnection;
 class ServiceFlow
 {
 /**
- * This class implemets service flows as described by the IEEE-802.16 standard
+ * This class implements service flows as described by the IEEE-802.16 standard
  */
 public:
   enum Direction

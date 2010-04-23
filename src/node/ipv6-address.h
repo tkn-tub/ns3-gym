@@ -103,7 +103,7 @@ public :
 
   /**
    * \brief Serialize this address to a 16-byte buffer.
-   * \param buf the output buffer to which this address gets overwritter with this
+   * \param buf the output buffer to which this address gets overwritten with this
    * Ipv6Address
    */
   void Serialize (uint8_t buf[16]) const;
@@ -372,7 +372,7 @@ public:
   /**
    * \brief Print this address to the given output stream.
    *
-   * The print format is in the typicall "2001:660:4701::1".
+   * The print format is in the typical "2001:660:4701::1".
    * \param os the output stream to which this Ipv6Address is printed
    */
   void Print (std::ostream &os) const;

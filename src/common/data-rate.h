@@ -77,7 +77,7 @@ public:
    *
    * Construct a data rate from an integer.  This class only supports positive
    * integer data rates in units of bits/s, meaning 1bit/s is the smallest 
-   * non-trivial bitrate availiable.
+   * non-trivial bitrate available.
    * \param bps bit/s value
    */
   DataRate (uint64_t bps);
@@ -95,7 +95,7 @@ public:
    *
    * Calculates the transmission time at this data rate
    * \param bytes The number of bytes (not bits) for which to calculate
-   * \return The tranmission time in seconds for the number of bytes specified
+   * \return The transmission time in seconds for the number of bytes specified
    */
   double CalculateTxTime(uint32_t bytes) const;
   

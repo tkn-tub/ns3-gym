@@ -56,7 +56,7 @@ public:
    *
    * \param node The node to install the device in
    * \param c Container of NetDevices to add as bridge ports
-   * \returns A containter holding the added net device.
+   * \returns A container holding the added net device.
    */
   NetDeviceContainer Install (Ptr<Node> node, NetDeviceContainer c);
   /**
@@ -67,7 +67,7 @@ public:
    *
    * \param nodeName The name of the node to install the device in
    * \param c Container of NetDevices to add as bridge ports
-   * \returns A containter holding the added net device.
+   * \returns A container holding the added net device.
    */
   NetDeviceContainer Install (std::string nodeName, NetDeviceContainer c);
 private:

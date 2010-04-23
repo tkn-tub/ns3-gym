@@ -141,7 +141,7 @@ private:
   bool m_shutdownRecv;
   bool m_connected;
   
-  //manage the state infomation
+  //manage the state information
   States_t m_state;
   bool m_closeOnEmpty;
 

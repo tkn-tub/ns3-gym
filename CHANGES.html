@@ -1172,7 +1172,7 @@ buffer.
 In the case of a receiver window collapse, when a advertised zero-window
 packet is received, the sender enters the persist probing state in which
 it sends probe packets with one payload byte at exponentially backed-off
-intervals up to 60s.  The reciever will continue to send advertised 
+intervals up to 60s.  The receiver will continue to send advertised 
 zero-window ACKs of the old data so long as the receiver buffer remains full.
 When the receiver window clears up due to an application read, the TCP
 will finally ACK the probe byte, and update its advertised window appropriately.

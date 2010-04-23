@@ -173,7 +173,7 @@ public:
   virtual void SetReceiveOkCallback (RxOkCallback callback) = 0;
   /**
    * \param callback the callback to invoke
-   *        upon erronous packet reception.
+   *        upon erroneous packet reception.
    */
   virtual void SetReceiveErrorCallback (RxErrorCallback callback) = 0;
 

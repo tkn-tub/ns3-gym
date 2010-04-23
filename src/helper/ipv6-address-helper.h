@@ -52,7 +52,7 @@ public:
 
   /**
    * \brief Allocate a new address.
-   * \param addr L2 address (currenty only ethernet address is supported)
+   * \param addr L2 address (currently only ethernet address is supported)
    * \return newly created Ipv6Address
    */
   Ipv6Address NewAddress (Address addr);

@@ -214,7 +214,7 @@ private:
   QosBlockedDestinations *m_qosBlockedDestinations;
   BlockAckManager *m_baManager;
   /*
-   * Represents the minimun number of packets for use of block ack.
+   * Represents the minimum number of packets for use of block ack.
    */
   uint8_t m_blockAckThreshold;
   enum BlockAckType m_blockAckType;

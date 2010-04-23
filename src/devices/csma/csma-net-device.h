@@ -78,7 +78,7 @@ public:
   virtual ~CsmaNetDevice ();
 
   /**
-   * Set the inteframe gap used to separate packets.  The interframe gap
+   * Set the interframe gap used to separate packets.  The interframe gap
    * defines the minimum space required between packets sent by this device.
    * As in Ethernet, it defaults to 96 bit times.
    *
@@ -337,7 +337,7 @@ protected:
 private:
 
   /**
-   * Operator = is declared but not implemented.  This disables the assigment
+   * Operator = is declared but not implemented.  This disables the assignment
    * operator for CsmaNetDevice objects.
    * \param o object to copy
    */
@@ -695,7 +695,7 @@ private:
   static const uint16_t DEFAULT_MTU = 1500;
 
   /**
-   * The Maxmimum Transmission Unit.  This corresponds to the maximum 
+   * The Maximum Transmission Unit.  This corresponds to the maximum 
    * number of bytes that can be transmitted as seen from higher layers.
    * This corresponds to the 1500 byte MTU size often seen on IP over 
    * Ethernet.

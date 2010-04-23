@@ -79,7 +79,7 @@ public:
     DROP_NO_ROUTE, /**< No route to host */
     DROP_INTERFACE_DOWN, /**< Interface is down so can not send packet */
     DROP_ROUTE_ERROR, /**< Route error */
-    DROP_UNKNOWN_PROTOCOL, /**< Unkown L4 protocol */
+    DROP_UNKNOWN_PROTOCOL, /**< Unknown L4 protocol */
   };
 
   /**

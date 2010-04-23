@@ -85,14 +85,14 @@ public:
   uint32_t GetNBytes (void) const;
 
   /**
-   * \return The total number of bytes recieved by this Queue since the
+   * \return The total number of bytes received by this Queue since the
    * simulation began, or since ResetStatistics was called, according to 
    * whichever happened more recently
    * 
    */
   uint32_t GetTotalReceivedBytes (void) const;
   /**
-   * \return The total number of packets recieved by this Queue since the
+   * \return The total number of packets received by this Queue since the
    * simulation began, or since ResetStatistics was called, according to 
    * whichever happened more recently
    */
@@ -110,8 +110,8 @@ public:
    */
   uint32_t GetTotalDroppedPackets (void) const;
   /**
-   * Resets the counts for dropped packets, dropped bytes, recieved packets, and
-   * recieved bytes.
+   * Resets the counts for dropped packets, dropped bytes, received packets, and
+   * received bytes.
    */
   void ResetStatistics (void);
 

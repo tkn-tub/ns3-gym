@@ -118,10 +118,10 @@ public:
    * Applications
    *
    * \code
-   *   uint32_t nApplications = continer.GetN ();
+   *   uint32_t nApplications = container.GetN ();
    *   for (uint32_t i = 0 i < nApplications; ++i)
    *     {
-   *       Ptr<Application> p = continer.Get (i)
+   *       Ptr<Application> p = container.Get (i)
    *       i->method ();  // some Application method
    *     }
    * \endcode
@@ -177,7 +177,7 @@ public:
   void Add (std::string name);
 
   /**
-   * \brief Arrange for all of the Applications in this containter to Start()
+   * \brief Arrange for all of the Applications in this container to Start()
    * at the Time given as a parameter.
    *
    * All Applications need to be provided with a starting simulation time and
@@ -193,7 +193,7 @@ public:
   void Start (Time start);
 
   /**
-   * \brief Arrange for all of the Applications in this containter to Stop()
+   * \brief Arrange for all of the Applications in this container to Stop()
    * at the Time given as a parameter.
    *
    * All Applications need to be provided with a starting simulation time and

@@ -73,11 +73,11 @@ public:
 
   /*
    * \brief This function adds a downlink burst to the list of downlink bursts
-   * scheduled for the next dowlink sub-frame
+   * scheduled for the next downlink sub-frame
    * \param connection a pointer to connection in wich the burst will be sent
-   * \param diuc dowlink iuc
+   * \param diuc downlink iuc
    * \param modulationType the modulation type of the burst
-   * \param burst the dowlink burst to add to the dowlink sub frame
+   * \param burst the downlink burst to add to the downlink sub frame
    */
   void AddDownlinkBurst (Ptr<const WimaxConnection> connection, uint8_t diuc,
                          WimaxPhy::ModulationType modulationType, Ptr<PacketBurst> burst);
@@ -86,7 +86,7 @@ public:
    */
   void Schedule (void);
   /**
-   * \brief Check for IR and Broadcast connections that have packets to trasmit.
+   * \brief Check for IR and Broadcast connections that have packets to transmit.
    * \param connection will point to a initial ranging or broadcast connection
    * wich have packets to transmit
    * \returns false if no initial ranging or broadcast connection has packets
@@ -94,7 +94,7 @@ public:
    */
   bool SelectIRandBCConnection (Ptr<WimaxConnection> &connection);
   /**
-   * \brief Check for Basic and Primary connections that have packets to trasmit.
+   * \brief Check for Basic and Primary connections that have packets to transmit.
    * \param connection will point to a basic or primary connection
    * wich have packets to transmit
    * \returns false if no basic or primary connection has packets
@@ -102,22 +102,22 @@ public:
    */
   bool SelectMenagementConnection (Ptr<WimaxConnection> &connection);
   /**
-   * \brief Check for UGS connections that have packets to trasmit.
+   * \brief Check for UGS connections that have packets to transmit.
    *
    * The method return the UGS connection that have packets to transmits,
    * according to the MaxLatency specifications.
    */
   bool SelectUGSConnection (Ptr<WimaxConnection> &connection);
   /**
-   * \brief Check for rtPS connections that have packets to trasmit.
+   * \brief Check for rtPS connections that have packets to transmit.
    */
   bool SelectRTPSConnection (Ptr<WimaxConnection> &connection);
   /**
-   * \brief Check for nrtPS connections that have packets to trasmit.
+   * \brief Check for nrtPS connections that have packets to transmit.
    */
   bool SelectNRTPSConnection (Ptr<WimaxConnection> &connection);
   /**
-   * \brief Check for BE connections that have packets to trasmit.
+   * \brief Check for BE connections that have packets to transmit.
    */
   bool SelectBEConnection (Ptr<WimaxConnection> &connection);
 
@@ -164,7 +164,7 @@ public:
    * This method represent the DL Scheduler for rtPS  connections.
    * The scheduler is designed to serve all rtPS connections that
    * have at least one packet to transmit, every DL Subframe.
-   * To each rtPS conenctions are allocated,  at the beginning,
+   * To each rtPS connections are allocated,  at the beginning,
    * the bandwidth to transmit a quota of data equal to the
    * queue length.
    * If the sum of all pre-allocated bandwidth exceed the available
@@ -186,7 +186,7 @@ public:
   void BSSchedulerBEConnection (uint32_t &availableSymbols);
 
   /*
-   * \brief Creates a dowlink UGS burst
+   * \brief Creates a downlink UGS burst
    * \param serviceFlow the service flow of the burst
    * \param modulationType the modulation type to be used for the burst
    * \param availableSymbols maximum number of OFDM symbols to be used by the burst

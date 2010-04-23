@@ -142,7 +142,7 @@ public:
    * read somehow.  This method also provides that functionality, by sending a
    * SIGALRM signal to the possibly blocked thread.
    *
-   * @warning Uses SIGALRM to notifiy threads possibly blocked on IO.  Beware
+   * @warning Uses SIGALRM to notify threads possibly blocked on IO.  Beware
    * if you are using signals.
    * @see Break
    */

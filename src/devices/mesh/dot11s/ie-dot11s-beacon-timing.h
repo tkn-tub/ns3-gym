@@ -62,7 +62,7 @@ class IeBeaconTiming : public WifiInformationElement
 public:
   /**
    * \ingroup dot11s
-   * This type is a list of timing elements obtained from neigbours with their beacons:
+   * This type is a list of timing elements obtained from neighbours with their beacons:
    */
   typedef std::vector< Ptr<IeBeaconTimingUnit> > NeighboursTimingUnitsList;
 

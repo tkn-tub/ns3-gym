@@ -199,7 +199,7 @@ public:
    * 
    * \param interface Interface number of an IPv6 interface
    * \param addressIndex index of Ipv6InterfaceAddress 
-   * \returns the Ipv6InterfaceAddress associated to the interface and addresIndex
+   * \returns the Ipv6InterfaceAddress associated to the interface and addressIndex
    */
   virtual Ipv6InterfaceAddress GetAddress (uint32_t interface, uint32_t addressIndex) const = 0;
 

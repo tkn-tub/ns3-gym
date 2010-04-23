@@ -540,7 +540,7 @@ extern bool gBreakOnFailure;
  * \brief Test that an actual value is greater than a limit and report and abort
  * if not.
  *
- * Check to see if the actaul value found in a test case is greater than the 
+ * Check to see if the actual value found in a test case is greater than the 
  * limit value.  If the actual value is greater nothing happens, but if the 
  * check fails, an error is reported in a consistent way and the execution
  * of the current test case is aborted.

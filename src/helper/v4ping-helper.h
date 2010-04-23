@@ -46,7 +46,7 @@ public:
 
   /**
    * Install a pinger application on the provided Node.  The Node is specified
-   * by a string that must have previosly been associated with a Node using the
+   * by a string that must have previously been associated with a Node using the
    * Object Name Service.
    *
    * \param nodeName The node to install the V4PingApplication on.

@@ -123,7 +123,7 @@ public:
   /** 
    *  \brief Spread/not spread frequency channels of MP interfaces. 
    * 
-   *  If set to true different non-overlaping 20MHz frequency 
+   *  If set to true different non-overlapping 20MHz frequency 
    *  channels will be assigned to different mesh point interfaces.
    */
   enum ChannelPolicy

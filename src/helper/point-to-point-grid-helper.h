@@ -77,7 +77,7 @@ public:
    *
    * \param col the column address of the node desired
    *
-   * \returns Ipv4Address of one of the intefaces of the node 
+   * \returns Ipv4Address of one of the interfaces of the node 
    *          specified by the (row, col) address
    */
   Ipv4Address GetIpv4Address (uint32_t row, uint32_t col);

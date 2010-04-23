@@ -55,11 +55,11 @@ public:
   GetDownlinkBursts (void) const = 0;
   /*
    * \brief This function adds a downlink burst to the list of downlink bursts
-   * scheduled for the next dowlink sub-frame
+   * scheduled for the next downlink sub-frame
    * \param connection a pointer to connection in wich the burst will be sent
-   * \param diuc dowlink iuc
+   * \param diuc downlink iuc
    * \param modulationType the modulation type of the burst
-   * \param burst the dowlink burst to add to the dowlink sub frame
+   * \param burst the downlink burst to add to the downlink sub frame
    */
   virtual void AddDownlinkBurst (Ptr<const WimaxConnection> connection,
                                  uint8_t diuc,
@@ -78,7 +78,7 @@ public:
   virtual bool SelectConnection (Ptr<WimaxConnection> &connection) = 0;
 
   /*
-   * \brief Creates a dowlink UGS burst
+   * \brief Creates a downlink UGS burst
    * \param serviceFlow the service flow of the burst
    * \param modulationType the modulation type to be used for the burst
    * \param availableSymbols maximum number of OFDM symbols to be used by the burst

@@ -464,7 +464,7 @@ public:
   void CreateBlockAckAgreement (const MgtAddBaResponseHeader *respHdr, Mac48Address originator,
                                 uint16_t startingSeq);
   /**
-   * \param originator Address of peer partecipating in Block Ack mechanism.
+   * \param originator Address of peer participating in Block Ack mechanism.
    * \param tid TID for which Block Ack was created.
    *
    * Checks if exists an established block ack agreement with <i>originator</i>
@@ -529,7 +529,7 @@ private:
   void StartDataTxTimers (void);
   virtual void DoDispose (void);
   /**
-   * \param originator Address of peer partecipating in Block Ack mechanism.
+   * \param originator Address of peer participating in Block Ack mechanism.
    * \param tid TID for which Block Ack was created.
    * \param seq Starting sequence
    *
@@ -538,7 +538,7 @@ private:
    */
   void RxCompleteBufferedPacketsWithSmallerSequence (uint16_t seq, Mac48Address originator, uint8_t tid);
   /**
-   * \param originator Address of peer partecipating in Block Ack mechanism.
+   * \param originator Address of peer participating in Block Ack mechanism.
    * \param tid TID for which Block Ack was created.
    *
    * This method is typically invoked when a MPDU with ack policy

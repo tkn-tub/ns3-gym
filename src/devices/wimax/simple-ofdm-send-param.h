@@ -44,12 +44,12 @@ public:
    */
   void SetFecBlock (const bvec &fecBlock);
   /**
-   * \brief set the busrt size
+   * \brief set the burst size
    * \param burstSize the burst size in bytes
    */
   void SetBurstSize (uint32_t burstSize);
   /**
-   * \param isFirstBlock Set to true if this fec block is the fisrt one in the burst, set to false otherwise
+   * \param isFirstBlock Set to true if this fec block is the first one in the burst, set to false otherwise
    */
   void SetIsFirstBlock (bool isFirstBlock);
   /**
@@ -85,7 +85,7 @@ public:
    */
   uint64_t GetFrequency (void);
   /**
-   * \return the mdoulation type used to send this fec block
+   * \return the modulation type used to send this fec block
    */
   WimaxPhy::ModulationType GetModulationType (void);
   /**

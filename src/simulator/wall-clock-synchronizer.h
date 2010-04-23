@@ -49,7 +49,7 @@ namespace ns3 {
  * be on the order of nanoseconds.
  *
  * Now, just because we can measure time in nanoseconds doesn't mean we can
- * put our process to sleep to nanosecond resolution.  We are eventualy going
+ * put our process to sleep to nanosecond resolution.  We are eventually going
  * to use the function clock_nanosleep () to sleep until a simulation Time
  * specified by the caller. 
  *

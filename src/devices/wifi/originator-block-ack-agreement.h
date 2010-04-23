@@ -24,7 +24,7 @@
 
 namespace ns3 {
 
-/* \brief Maintains the state and information about trasmitted MPDUs with ack policy block ack
+/* \brief Maintains the state and information about transmitted MPDUs with ack policy block ack
  *        for an originator station.
  */
 class OriginatorBlockAckAgreement : public BlockAckAgreement
@@ -62,17 +62,17 @@ public:
    *    ADDBAResponse frame.
    *  
    *  ESTABLISHED:
-   *    The block ack is active and all packets relative to this agreement are trasmitted
+   *    The block ack is active and all packets relative to this agreement are transmitted
    *    with ack policy set to block ack.
    *  
    *  INACTIVE:
    *    In our implementation, block ack tear-down happens only if an inactivity timeout occurs
    *    so we could have an active block ack but a number of packets that doesn't reach the value of
-   *    m_blockAckThreshold (see ns3::BlocAckManager). In these conditions the agreement becomes
+   *    m_blockAckThreshold (see ns3::BlockAckManager). In these conditions the agreement becomes
    *    INACTIVE until that the number of packets reaches the value of m_blockAckThreshold again.
    *
    *  UNSUCCESSFUL (not used for now):
-   *    The agremeent's state becomes UNSUCCESSFUL if:
+   *    The agreement's state becomes UNSUCCESSFUL if:
    *     
    *    - its previous state was PENDING and an ADDBAResponse frame wasn't received from
    *      recipient station within an interval of time defined by m_bAckSetupTimeout attribute

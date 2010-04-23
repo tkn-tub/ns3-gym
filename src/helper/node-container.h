@@ -237,12 +237,12 @@ public:
   void Create (uint32_t n);
 
   /**
-   * \brief Create n nodes with specifiec systemId for distributed simulations 
+   * \brief Create n nodes with specified systemId for distributed simulations 
    * and append pointers to them to the end of this NodeContainer.
    *
    * Nodes are at the heart of any ns-3 simulation.  One of the first tasks that
    * any simulation needs to do is to create a number of nodes.  This method
-   * automates that task, and adds the ability to specifiy systemId for 
+   * automates that task, and adds the ability to specify systemId for 
    * distributed simulations.
    *
    * \param n The number of Nodes to create

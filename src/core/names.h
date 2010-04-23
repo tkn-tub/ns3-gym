@@ -111,7 +111,7 @@ public:
    * string actually refers to a previously named object, "under" which you want
    * to accomplish some naming action.
    * 
-   * However, the path is sometimes not avialable, and you only have the object 
+   * However, the path is sometimes not available, and you only have the object 
    * that is represented by the path in the names name space.  To support this 
    * use-case in a reasonably high-performance way, the path string is can be 
    * replaced by the object pointer to which that path would refer.  In the spirit
@@ -211,7 +211,7 @@ public:
    * string actually refers to a previously named object, "under" which you want
    * to accomplish some naming action.
    * 
-   * However, the path is sometimes not avialable, and you only have the object 
+   * However, the path is sometimes not available, and you only have the object 
    * that is represented by the path in the names name space.  To support this 
    * use-case in a reasonably high-performance way, the path string is can be 
    * replaced by the object pointer to which that path would refer.  In the spirit
@@ -250,7 +250,7 @@ public:
    *
    * This method returns the name of the object, e.g., "eth0".
    *
-   * \param object A spart pointer to an object for which you want to find
+   * \param object A smart pointer to an object for which you want to find
    *               its name.
    *
    * \returns a string containing the name of the object if found, otherwise
@@ -269,7 +269,7 @@ public:
    *
    * This method returns the name path of the object, e.g., "Names/client/eth0".
    *
-   * \param object A spart pointer to an object for which you want to find
+   * \param object A smart pointer to an object for which you want to find
    *               its fullname.
    *
    * \returns a string containing the name path of the object, otherwise
@@ -341,7 +341,7 @@ public:
    * convenient: Names::Find ("/Names/server/eth0") or, using the split path and 
    * name approach, Names::Find ("/Names/server", "eth0").
    *
-   * However, the path is sometimes not avialable, and you only have the object 
+   * However, the path is sometimes not available, and you only have the object 
    * that is represented by the path in the names name space.  To support this 
    * use-case in a reasonably high-performance way, the path string is can be 
    * replaced by the object pointer to which that path would refer.  In the spirit
@@ -393,7 +393,7 @@ private:
    *
    * \brief Non-templated internal version of Names::Find
    *
-   * \param context A spart pointer to an object under which you want to look 
+   * \param context A smart pointer to an object under which you want to look 
    *                for the provided name.
    * \param name A string containing the name to look for.
    *

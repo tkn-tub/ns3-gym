@@ -662,7 +662,7 @@ UplinkSchedulerMBQoS::CheckDeadline (uint32_t &availableSymbols)
         {
           Ptr<UlJob> job = *iter;
 
-          // garantee delay bound for rtps connections
+          // guarantee delay bound for rtps connections
           if (job->GetSchedulingType () == ServiceFlow::SF_TYPE_RTPS)
             {
               Time deadline = job->GetDeadline ();

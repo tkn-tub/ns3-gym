@@ -51,7 +51,7 @@ namespace ns3 {
  * If you want to store a newed object into a smart pointer,
  * we recommend you to use the Create template functions
  * to create the object and store it in a smart pointer to avoid
- * memory leaks. These functions are really small conveniance
+ * memory leaks. These functions are really small convenience
  * functions and their goal is just is save you a small
  * bit of typing.
  */

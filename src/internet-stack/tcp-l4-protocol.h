@@ -46,7 +46,7 @@ class Ipv4EndPoint;
  * 
  * This class allocates "endpoint" objects (ns3::Ipv4EndPoint) for TCP,
  * and SHOULD checksum packets its receives from the socket layer going down
- * the stack , but currently checksumming is disabled.  It also recieves 
+ * the stack , but currently checksumming is disabled.  It also receives 
  * packets from IP, and forwards them up to the endpoints.
 */
 
@@ -96,7 +96,7 @@ public:
              Ipv4Address saddr, Ipv4Address daddr, 
              uint16_t sport, uint16_t dport, Ptr<NetDevice> oif = 0);
   /**
-   * \brief Recieve a packet up the protocol stack
+   * \brief Receive a packet up the protocol stack
    * \param p The Packet to dump the contents into
    * \param source The source's Ipv4Address
    * \param destination The destinations Ipv4Address

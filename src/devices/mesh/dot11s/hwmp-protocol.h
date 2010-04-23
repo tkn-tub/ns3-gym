@@ -98,7 +98,7 @@ private:
   struct PathError
   {
     std::vector<FailedDestination> destinations; ///< destination list: Mac48Address and sequence number
-    std::vector<std::pair<uint32_t, Mac48Address> > receivers; ///< list of PathError receivrs (in case of unicast PERR)
+    std::vector<std::pair<uint32_t, Mac48Address> > receivers; ///< list of PathError receivers (in case of unicast PERR)
   };
   /// Packet waiting its routing information
   struct QueuedPacket
@@ -138,7 +138,7 @@ private:
   PathError MakePathError (std::vector<FailedDestination> destinations);
   ///\brief Forwards a received path error
   void ForwardPathError (PathError perr);
-  ///\brief Pasess a selg-generated PERR to interface-plugin
+  ///\brief Passes a self-generated PERR to interface-plugin
   void InitiatePathError (PathError perr);
   /// \return list of addresses where a PERR should be sent to
   std::vector<std::pair<uint32_t, Mac48Address> > GetPerrReceivers (std::vector<FailedDestination> failedDest);

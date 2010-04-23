@@ -86,7 +86,7 @@ public:
    * EmuHelper::SetDeviceAttribute and then adds the device to the node.
    *
    * \param node The node to install the device in
-   * \returns A containter holding the added net device.
+   * \returns A container holding the added net device.
    */
   NetDeviceContainer Install (Ptr<Node> node) const;
 
@@ -95,7 +95,7 @@ public:
    * EmuHelper::SetDeviceAttribute and then adds the device to the node.
    *
    * \param nodeName The name of the node to install the device in
-   * \returns A containter holding the added net device.
+   * \returns A container holding the added net device.
    */
   NetDeviceContainer Install (std::string nodeName) const;
 
@@ -105,7 +105,7 @@ public:
    * EmuHelper::SetDeviceAttribute); adds the device to the node.
    *
    * \param c The NodeContainer holding the nodes to be changed.
-   * \returns A containter holding the added net devices.
+   * \returns A container holding the added net devices.
    */
   NetDeviceContainer Install (const NodeContainer &c) const;
 

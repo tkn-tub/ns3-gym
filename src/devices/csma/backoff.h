@@ -42,7 +42,7 @@ public:
   uint32_t m_minSlots; 
 
   /**
-   * Maximim number of backoff slots (when multiplied by m_slotTime, determines maximum backoff time)
+   * Maximum number of backoff slots (when multiplied by m_slotTime, determines maximum backoff time)
    */
   uint32_t m_maxSlots; 
 

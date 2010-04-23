@@ -62,7 +62,7 @@ public:
   /**
    * \brief Method used to detect peer link changes
    *
-   * \param cb is a callback, which notifyes, that on interface (uint32_t), peer link
+   * \param cb is a callback, which notifies, that on interface (uint32_t), peer link
    * with address (Mac48Address) was opened (bool is true) or closed (bool is false) 
    */
   void  SetLinkStatusCallback (Callback<void, uint32_t, Mac48Address, bool> cb);
@@ -120,7 +120,7 @@ private:
     TOR1,       ///< Timeout of retry timer
     TOR2,       ///< also timeout of retry timer
     TOC,        ///< Timeout of confirm timer
-    TOH,        ///< Timeout of holding (gracefull closing) timer
+    TOH,        ///< Timeout of holding (graceful closing) timer
   };
   /// State transition
   void StateMachine (PeerEvent event, PmpReasonCode = REASON11S_RESERVED);

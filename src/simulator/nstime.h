@@ -344,7 +344,7 @@ TimeUnit<N> Min (TimeUnit<N> const &ta, TimeUnit<N> const &tb)
   return TimeUnit<N> (Min (a, b));
 }
 
-// Explicit instatiation of the TimeUnit template for N=1, with a few
+// Explicit instantiation of the TimeUnit template for N=1, with a few
 // additional methods that should not be available for N!=1
 // \class TimeUnit<1>
 
@@ -616,7 +616,7 @@ Time FemtoSeconds (uint64_t fs);
 // internal function not publicly documented
 Time TimeStep (uint64_t ts);
 
-// Explicit instatiation of the TimeUnit template for N=0, with a few
+// Explicit instantiation of the TimeUnit template for N=0, with a few
 // additional methods that should not be available for N != 0
 template <>
 class TimeUnit<0>

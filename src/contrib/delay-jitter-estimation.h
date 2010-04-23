@@ -22,7 +22,7 @@ public:
    * record within the packet the tx time which is used upon
    * packet reception to calculate the delay and jitter. The
    * tx time is stored in the packet as an ns3::Tag which means
-   * that it does not use any network ressources and is not
+   * that it does not use any network resources and is not
    * taken into account in transmission delay calculations.
    */
   static void PrepareTx (Ptr<const Packet> packet);

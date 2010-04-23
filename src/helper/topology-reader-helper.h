@@ -50,7 +50,7 @@ public:
 
   /**
    * \brief Gets a Ptr<TopologyReader> to the actual TopologyReader.
-   * \return the created Topoloy Reader (or null if there was an error).
+   * \return the created Topology Reader (or null if there was an error).
    */
   Ptr<TopologyReader> GetTopologyReader ();
 

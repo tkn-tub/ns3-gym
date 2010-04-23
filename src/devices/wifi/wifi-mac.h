@@ -142,7 +142,7 @@ public:
    * dequeued as soon as the DCF function determines that
    * access it granted to this MAC.  The extra parameter "from" allows
    * this device to operate in a bridged mode, forwarding received
-   * frames without altering the source addresss.
+   * frames without altering the source address.
    */
   virtual void Enqueue (Ptr<const Packet> packet, Mac48Address to, Mac48Address from) = 0;
   /**
@@ -175,7 +175,7 @@ public:
    * \param linkDown the callback to invoke when the link becomes down.
    */
   virtual void SetLinkDownCallback (Callback<void> linkDown) = 0;
-  /* Next functions are not pure vitual so non Qos WifiMacs are not
+  /* Next functions are not pure virtual so non Qos WifiMacs are not
    * forced to implement them.
    */
   virtual void SetBasicBlockAckTimeout (Time blockAckTimeout);

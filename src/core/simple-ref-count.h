@@ -45,7 +45,7 @@ namespace ns3 {
  * mandatory:
  *    - T: the typename of the subclass which derives from this template
  *      class. Yes, this is weird but it's a common C++ template pattern
- *      whose name is CRTP (Curriously Recursive Template Pattern)
+ *      whose name is CRTP (Curiously Recursive Template Pattern)
  *    - PARENT: the typename of the parent of this template. By default,
  *      this typename is 'ns3::empty' which is an empty class: compilers
  *      which implement the RBCO optimization (empty base class optimization)
@@ -75,7 +75,7 @@ public:
    * Increment the reference count. This method should not be called
    * by user code. SimpleRefCount instances are expected to be used in
    * conjunction with the Ptr template which would make calling Ref
-   * unecessary and dangerous.
+   * unnecessary and dangerous.
    */
   inline void Ref (void) const
   {
@@ -85,7 +85,7 @@ public:
    * Decrement the reference count. This method should not be called
    * by user code. SimpleRefCount instances are expected to be used in 
    * conjunction with the Ptr template which would make calling Ref
-   * unecessary and dangerous.
+   * unnecessary and dangerous.
    */
   inline void Unref (void) const
   {

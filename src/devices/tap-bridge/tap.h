@@ -8,7 +8,7 @@
  * precisely, hosts that support Tun/Tap devices) into ns-3 simulations.  The 
  * goal is to make it appear to a "real" host node in that it has an ns-3 net
  * device as a local device.  The concept of a "real host" is a bit slippery
- * since the "real host" may actually be virtualized using readily avialable
+ * since the "real host" may actually be virtualized using readily available
  * technologies such as VMware, VirtualBox or OpenVZ.
  *
  * Since we are, in essence, connecting the inputs and outputs of an ns-3 net 
@@ -150,7 +150,7 @@
  *
  * One particular use case for this mode is in the OpenVZ environment.  There it
  * is possible to create a Tap device on the "Hardware Node" and move it into a
- * Virtual Private Server.  If the TapBrige is able to use an existing tap device
+ * Virtual Private Server.  If the TapBridge is able to use an existing tap device
  * it is then possible to avoid the overhead of an OS bridge in that environment.
  *
  * \subsection TapBridgeUseBridgeMode TapBridge UseBridge Mode
@@ -246,7 +246,7 @@
 
  * The TapBridge appears to an ns-3 simulation as a channel-less net device.
  * This device must not have an IP address associated with it, but the bridged
- * (ns-3) net device must have an IP adress.  Be aware that this is the inverse
+ * (ns-3) net device must have an IP address.  Be aware that this is the inverse
  * of an ns-3 BridgeNetDevice (or a conventional bridge in general) which 
  * demands that its bridge ports not have IP addresses, but allows the bridge 
  * device itself to have an IP address.  
@@ -297,7 +297,7 @@
  * The upshot is that the Tap Bridge appears to bridge a tap device on a
  * Linux host in the "real world" to an ns-3 net device in the simulation.
  * Because the TAP device and the bridged ns-3 net device have the same MAC
- * address and the network tap IPC link is not exernalized, this particular
+ * address and the network tap IPC link is not externalized, this particular
  * kind of bridge makes it appear that a ns-3 net device is actually installed
  * in the Linux host.
  *

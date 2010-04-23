@@ -330,7 +330,7 @@ SPFVertex::InheritAllRootExitDirections (const SPFVertex* vertex)
 {
   NS_LOG_FUNCTION (vertex);
 
-  // discard all exit direction currently assoicated with this vertex,
+  // discard all exit direction currently associated with this vertex,
   // and copy all the exit directions from the given vertex
   if (m_ecmpRootExits.size () > 0)
     {

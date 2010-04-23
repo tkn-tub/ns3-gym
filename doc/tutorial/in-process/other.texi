@@ -1787,7 +1787,7 @@ constructor to be used when an instance of your class is created using
   AddConstructor<A> ();
 @end verbatim
 
-You can interpret this as explaining to the @command{ns-3} object ssytem that
+You can interpret this as explaining to the @command{ns-3} object system that
 you have a constructor named @code{A::A} which takes no parameters.  You are
 saying that this constructor should be used when @code{CreateObject} is called
 with no parameters.

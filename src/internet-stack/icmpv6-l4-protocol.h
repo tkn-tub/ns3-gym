@@ -233,7 +233,7 @@ public:
   /**
    * \brief Send a Neighbor Solicitation.
    * \param src source IPv6 address
-   * \param dst destination IPv6 addresss
+   * \param dst destination IPv6 address
    * \param target target IPv6 address
    * \param hardwareAddress our mac address
    */
@@ -285,7 +285,7 @@ public:
   /**
    * \brief Forge a Neighbor Solicitation.
    * \param src source IPv6 address
-   * \param dst destination IPv6 addresss
+   * \param dst destination IPv6 address
    * \param target target IPv6 address
    * \param hardwareAddress our mac address
    * \return NS packet (with IPv6 header)
@@ -295,7 +295,7 @@ public:
   /**
    * \brief Forge a Neighbor Advertisement.
    * \param src source IPv6 address
-   * \param dst destination IPv6 addresss
+   * \param dst destination IPv6 address
    * \param hardwareAddress our mac address
    * \param flags flags (bitfield => R (4), S (2), O (1))
    * \return NA packet (with IPv6 header)
@@ -305,7 +305,7 @@ public:
   /**
    * \brief Forge a Router Solicitation.
    * \param src source IPv6 address
-   * \param dst destination IPv6 addresss
+   * \param dst destination IPv6 address
    * \param hardwareAddress our mac address
    * \return RS packet (with IPv6 header)
    */

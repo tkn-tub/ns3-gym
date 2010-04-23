@@ -60,11 +60,11 @@ public:
    */
   bool IsBroadcast (void) const;
   /**
-   * \return true if the cid is a paddin cid, false otherwise
+   * \return true if the cid is a padding cid, false otherwise
    */
   bool IsPadding (void) const;
   /**
-   * \return true if the cid is an intial ranging cid, false otherwise
+   * \return true if the cid is an initial ranging cid, false otherwise
    */
   bool IsInitialRanging (void) const;
   /**

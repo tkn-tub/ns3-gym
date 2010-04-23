@@ -113,14 +113,14 @@ Ipv6L3ProtocolTestCase::DoRun ()
   interface2->AddAddress (ifaceAddr3);
 
   uint32_t num = interface->GetNAddresses ();
-  NS_TEST_ASSERT_MSG_EQ (num, 3, "Number of adresses should be 3??"); /* 2 global addresses + link-local ones */
+  NS_TEST_ASSERT_MSG_EQ (num, 3, "Number of addresses should be 3??"); /* 2 global addresses + link-local ones */
 
   num = interface2->GetNAddresses ();
   NS_TEST_ASSERT_MSG_EQ (num, 2, "1 global addresses + link-local ones"); /* 1 global addresses + link-local ones */
 
   interface->RemoveAddress (2);
   num = interface->GetNAddresses ();
-  NS_TEST_ASSERT_MSG_EQ (num, 2, "Number of adresses should be 2??");
+  NS_TEST_ASSERT_MSG_EQ (num, 2, "Number of addresses should be 2??");
 
   Ipv6InterfaceAddress output = interface->GetAddress (1);
   NS_TEST_ASSERT_MSG_EQ (ifaceAddr1, output,
@@ -131,7 +131,7 @@ Ipv6L3ProtocolTestCase::DoRun ()
   NS_TEST_ASSERT_MSG_EQ (index, 1, "We should get one address??"); /* link-local address is always index 0 */
 
   index = ipv6->GetInterfaceForAddress ("2001:ffff:5678:9001::2");
-  NS_TEST_ASSERT_MSG_EQ (index, 2, "Number of adresses should be 2??");
+  NS_TEST_ASSERT_MSG_EQ (index, 2, "Number of addresses should be 2??");
 
   index = ipv6->GetInterfaceForAddress ("2001:ffff:5678:9000::1"); /* address we just remove */
   NS_TEST_ASSERT_MSG_EQ (index, (uint32_t) -1, "Address should not be found??");

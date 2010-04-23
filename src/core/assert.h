@@ -43,7 +43,7 @@
 
 /**
  * \ingroup assert
- * \param condition condition to verifiy.
+ * \param condition condition to verify.
  *
  * At runtime, in debugging builds, if this condition is not
  * true, the program prints the source file, line number and 
@@ -66,7 +66,7 @@
 
 /**
  * \ingroup assert
- * \param condition condition to verifiy.
+ * \param condition condition to verify.
  * \param message message to output
  *
  * At runtime, in debugging builds, if this condition is not

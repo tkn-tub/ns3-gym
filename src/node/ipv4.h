@@ -199,7 +199,7 @@ public:
    * 
    * \param interface Interface number of an Ipv4 interface
    * \param addressIndex index of Ipv4InterfaceAddress 
-   * \returns the Ipv4InterfaceAddress associated to the interface and addresIndex
+   * \returns the Ipv4InterfaceAddress associated to the interface and addressIndex
    */
   virtual Ipv4InterfaceAddress GetAddress (uint32_t interface, uint32_t addressIndex) const = 0;
 

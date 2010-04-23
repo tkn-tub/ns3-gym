@@ -54,7 +54,7 @@
  *
  * \section list Open Issues
  *
- * - OLSR does not repond to the routing event notifications correspondingg
+ * - OLSR does not respond to the routing event notifications corresponding
  * to dynamic interface up and down (RoutingProtocol::NotifyInterfaceUp and
  * RoutingProtocol::NotifyInterfaceDown) or address insertion/removal
  * (RoutingProtocol::NotifyAddAddress and 

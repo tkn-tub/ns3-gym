@@ -25,7 +25,7 @@
 namespace ns3 {
 
 /**
- * \brief a hierachical mobility model.
+ * \brief a hierarchical mobility model.
  * 
  * This model allows you to specify the position of a child object
  * relative to a parent object.
@@ -41,7 +41,7 @@ namespace ns3 {
  * Setting the position on this model is always done using world
  * absolute coordinates, and it changes only the child mobility model
  * position, never the parent.  The child mobility model always uses a
- * coordinate sytem relative to the parent model position.
+ * coordinate system relative to the parent model position.
  *
  * @note: as a special case, the parent model may be NULL, which is
  * semantically equivalent to having a ConstantPositionMobilityModel

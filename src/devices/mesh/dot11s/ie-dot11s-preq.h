@@ -132,7 +132,7 @@ private:
   /**
    * how many destinations we support
    */
-  uint8_t m_maxSize; //TODO: make as an attrubute
+  uint8_t m_maxSize; //TODO: make as an attribute
   /**
    * Fields of information element:
    */

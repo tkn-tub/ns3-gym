@@ -41,7 +41,7 @@ class Ipv6OptionHeader : public Header
      * \brief represents the alignment requirements of an option header
      *
      * Represented as factor*n+offset (eg. 8n+2) See RFC 2460.
-     * No alignemt is represented as 1n+0.
+     * No alignment is represented as 1n+0.
      */
     struct Alignment
     {
@@ -78,7 +78,7 @@ class Ipv6OptionHeader : public Header
     void SetType (uint8_t type);
 
     /**
-     * \brief Get the type of the optionr.
+     * \brief Get the type of the option.
      * \return the type of the option
      */
     uint8_t GetType () const;
@@ -125,7 +125,7 @@ class Ipv6OptionHeader : public Header
      * \brief Get the Alignment requirement of this option header
      * \return The required alignment
      *
-     * Subclasses should only implement this method, if special alignemt is
+     * Subclasses should only implement this method, if special alignment is
      * required. Default is no alignment (1n+0).
      */
     virtual Alignment GetAlignment () const;

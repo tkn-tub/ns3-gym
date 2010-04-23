@@ -94,7 +94,7 @@ public:
  * @brief Pop the Shortest Path First Vertex pointer at the top of the queue.
  * @internal
  *
- * The caller is given the responsiblity for releasing the resources 
+ * The caller is given the responsibility for releasing the resources 
  * associated with the vertex.
  *
  * @see SPFVertex

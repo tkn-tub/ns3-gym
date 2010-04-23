@@ -1506,7 +1506,7 @@ void TcpSocketImpl::CommonNewAck (SequenceNumber ack, bool skipTimer)
     }
   NS_LOG_LOGIC ("TCP " << this << " NewAck " << ack 
            << " numberAck " << (ack - m_highestRxAck)); // Number bytes ack'ed
-  m_highestRxAck = ack;         // Note the highest recieved Ack
+  m_highestRxAck = ack;         // Note the highest received Ack
   if (GetTxAvailable () > 0)
     {
       NotifySend (GetTxAvailable ());

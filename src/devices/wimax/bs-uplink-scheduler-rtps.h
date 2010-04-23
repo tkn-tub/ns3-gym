@@ -102,7 +102,7 @@ public:
    * The scheduler is designed to serve all rtPS connections that
    * have at least one packet to transmit, every UL Subframe.
    * The methos selects all rtPS connection that have al least one
-   * packet to transmit. To each rtPS conenctions are allocated,
+   * packet to transmit. To each rtPS connections are allocated,
    * at the beginning, the bandwidth to transmit a quota of data equal
    * to (RequestedBandwidth - GrantedBandwidth).
    * If the sum of all pre-allocated bandwidth exceed the available

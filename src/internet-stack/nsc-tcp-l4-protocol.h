@@ -75,7 +75,7 @@ public:
   void DeAllocate (Ipv4EndPoint *endPoint);
 
   /**
-   * \brief Recieve a packet up the protocol stack
+   * \brief Receive a packet up the protocol stack
    * \param p The Packet to dump the contents into
    * \param source The source's Ipv4Address
    * \param destination The destinations Ipv4Address

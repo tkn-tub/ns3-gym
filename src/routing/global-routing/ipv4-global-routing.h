@@ -173,10 +173,10 @@ public:
  * \brief Get a route from the global unicast routing table.
  *
  * Externally, the unicast global routing table appears simply as a table with
- * n entries.  The one sublety of note is that if a default route has been set
+ * n entries.  The one subtlety of note is that if a default route has been set
  * it will appear as the zeroth entry in the table.  This means that if you
  * add only a default route, the table will have one entry that can be accessed
- * either by explicity calling GetDefaultRoute () or by calling GetRoute (0).
+ * either by explicitly calling GetDefaultRoute () or by calling GetRoute (0).
  * 
  * Similarly, if the default route has been set, calling RemoveRoute (0) will
  * remove the default route.
@@ -195,7 +195,7 @@ public:
  * \brief Remove a route from the global unicast routing table.
  *
  * Externally, the unicast global routing table appears simply as a table with
- * n entries.  The one sublety of note is that if a default route has been set
+ * n entries.  The one subtlety of note is that if a default route has been set
  * it will appear as the zeroth entry in the table.  This means that if the
  * default route has been set, calling RemoveRoute (0) will remove the
  * default route.

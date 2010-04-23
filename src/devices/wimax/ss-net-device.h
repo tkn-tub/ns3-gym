@@ -253,7 +253,7 @@ public:
   void AddServiceFlow (ServiceFlow sf);
   void SetTimer (EventId eventId, EventId &event);
   /**
-   * \returns true if the SS is registered to a BS, flase otherwise
+   * \returns true if the SS is registered to a BS, false otherwise
    */
   bool IsRegistered (void) const;
   Time GetTimeToAllocation (Time defferTime);

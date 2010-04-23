@@ -122,7 +122,7 @@ private:
   uint16_t m_len;
   Cid m_cid;
   uint8_t m_hcs; // Header Check Sequence
-  uint8_t c_hcs; // calculated header check sequence; this is used to check if the receveid header is correrct or not
+  uint8_t c_hcs; // calculated header check sequence; this is used to check if the received header is correct or not
 
 
 };
@@ -187,7 +187,7 @@ private:
   uint32_t m_br; // Bandwidth Request
   Cid m_cid; // Connection identifier
   uint8_t m_hcs; // Header Check Sequence
-  uint8_t c_hcs; // calculated header check sequence; this is used to check if the receveid header is correrct or not
+  uint8_t c_hcs; // calculated header check sequence; this is used to check if the received header is correct or not
 
 };
 

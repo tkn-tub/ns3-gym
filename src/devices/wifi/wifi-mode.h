@@ -146,7 +146,7 @@ class WifiModeFactory
 public:
   /**
    * \param uniqueName the name of the associated WifiMode. This name
-   *        must be unique accross _all_ instances.
+   *        must be unique across _all_ instances.
    * \param isMandatory true if this WifiMode is mandatory, false otherwise.
    * \param bandwidth the bandwidth (Hz) of the signal generated when the
    *        associated WifiMode is used.
@@ -165,7 +165,7 @@ public:
                               enum WifiPhyStandard standard);
   /**
    * \param uniqueName the name of the associated WifiMode. This name
-   *        must be unique accross _all_ instances.
+   *        must be unique across _all_ instances.
    * \param isMandatory true if this WifiMode is mandatory, false otherwise.
    * \param bandwidth the bandwidth (Hz) of the signal generated when the
    *        associated WifiMode is used.
@@ -184,7 +184,7 @@ public:
                               enum WifiPhyStandard standard);
   /**
    * \param uniqueName the name of the associated WifiMode. This name
-   *        must be unique accross _all_ instances.
+   *        must be unique across _all_ instances.
    * \param isMandatory true if this WifiMode is mandatory, false otherwise.
    * \param bandwidth the bandwidth (Hz) of the signal generated when the
    *        associated WifiMode is used.
@@ -206,7 +206,7 @@ public:
 
   /**
    * \param uniqueName the name of the associated WifiMode. This name
-   *        must be unique accross _all_ instances.
+   *        must be unique across _all_ instances.
    * \param isMandatory true if this WifiMode is mandatory, false otherwise.
    * \param bandwidth the bandwidth (Hz) of the signal generated when the
    *        associated WifiMode is used.
@@ -225,7 +225,7 @@ public:
                               enum WifiPhyStandard standard);
   /**
    * \param uniqueName the name of the associated WifiMode. This name
-   *        must be unique accross _all_ instances.
+   *        must be unique across _all_ instances.
    * \param isMandatory true if this WifiMode is mandatory, false otherwise.
    * \param bandwidth the bandwidth (Hz) of the signal generated when the
    *        associated WifiMode is used.

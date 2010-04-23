@@ -245,7 +245,7 @@ public:
  * Class SequentialVariable defines a random number generator that
  * returns a sequential sequence.  The sequence monotonically
  * increases for a period, then wraps around to the low value
- * and begins monotonicaly increasing again.
+ * and begins monotonically increasing again.
  */
 class SequentialVariable : public RandomVariable
 {
@@ -506,7 +506,7 @@ public:
    * \brief Construct a normal random variable with specified mean and variance
    * \param m Mean value
    * \param v Variance
-   * \param b Bound.  The NormalVariable is bounded symetrically about the mean
+   * \param b Bound.  The NormalVariable is bounded symmetrically about the mean
    * [mean-bound,mean+bound]
    */
   NormalVariable (double m, double v, double b);
@@ -521,8 +521,8 @@ public:
  * series of calls to the CDF member function, specifying a
  * value and the probability that the function value is less than
  * the specified value.  When values are requested,
- * a uniform random variable is used to select a probabililty,
- * and the return value is interpreted linerarly between the
+ * a uniform random variable is used to select a probability,
+ * and the return value is interpreted linearly between the
  * two appropriate points in the CDF.  The method is known
  * as inverse transform sampling:
  * (http://en.wikipedia.org/wiki/Inverse_transform_sampling).
@@ -780,7 +780,7 @@ public:
  * \brief Triangularly Distributed random var
  * \ingroup randomvariable
  *
- * This distribution is a triangular distribution.  The probablility density
+ * This distribution is a triangular distribution.  The probability density
  * is in the shape of a triangle.
  */
 class TriangularVariable : public RandomVariable

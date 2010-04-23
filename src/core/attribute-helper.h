@@ -82,7 +82,7 @@ MakeSimpleAttributeChecker (std::string name, std::string underlying)
  *  2) The more complex macros.
  *
  * The simple macros are implemented in terms of the complex
- * macros and should generally be prefered over the complex macros:
+ * macros and should generally be preferred over the complex macros:
  *    - \ref ATTRIBUTE_HELPER_HEADER, and,
  *    - \ref ATTRIBUTE_HELPER_CPP,
  */

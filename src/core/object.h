@@ -205,7 +205,7 @@ protected:
    * copy aggregated objects. i.e., if your object instance
    * is already aggregated to another object and if you invoke
    * this copy constructor, the new object instance will be
-   * a pristine standlone object instance not aggregated to
+   * a pristine standalone object instance not aggregated to
    * any other object. It is thus _your_ responsability
    * as a caller of this method to do what needs to be done
    * (if it is needed) to ensure that the object stays in a

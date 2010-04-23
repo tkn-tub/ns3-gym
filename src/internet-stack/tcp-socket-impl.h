@@ -54,7 +54,7 @@ class TcpHeader;
  * control.  Finite send buffer semantics are modeled, but as of yet, finite
  * receive buffer modelling is unimplemented.
  *
- * The closedown of these sockets is as of yet not compliant with the relevent
+ * The closedown of these sockets is as of yet not compliant with the relevant
  * RFCs, i.e. the FIN handshaking isn't correct.  While this is visible at the
  * PCAP tracing level, it has no effect on the statistics users are interested
  * in, i.e. throughput, delay, etc. of actual payload data.
@@ -185,7 +185,7 @@ private:
   bool m_shutdownRecv;
   bool m_connected;
   
-  //manage the state infomation
+  //manage the state information
   States_t m_state;
   bool m_closeNotified;
   bool m_closeRequestNotified;
@@ -199,7 +199,7 @@ private:
   SequenceNumber m_highestRxAck;
   SequenceNumber m_lastRxAck;
   
-  //sequence info, reciever side
+  //sequence info, receiver side
   SequenceNumber m_nextRxSequence; //next expected sequence
 
   //Rx buffer

@@ -123,7 +123,7 @@ public:
 
   /**
    * \param availableSymbols available symbols in the uplink frame.
-   * \brief Check if Minimum bandwidth is garantee. Migrate requests if necessary.
+   * \brief Check if Minimum bandwidth is guarantee. Migrate requests if necessary.
    *
    * This method first calculate a priority value for each request
    * in the intermediate queue. Then, sorts the intermediate queue

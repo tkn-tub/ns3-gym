@@ -413,7 +413,7 @@ public:
  *
  * @see RoutingEnvironment::AllocateRouterId ()
  * @see GlobalRouting::GetRouterId ()
- * @returns The Ipv4Address stored as the advetising router.
+ * @returns The Ipv4Address stored as the advertising router.
  */
   Ipv4Address GetAdvertisingRouter (void) const;
 
@@ -611,7 +611,7 @@ public:
  * This is a fairly expensive operation in that every time it is called
  * the current list of LSAs is built by walking connected point-to-point
  * channels and peeking into adjacent IPV4 stacks to get address information.
- * This is done to allow for limited dymanics of the Global Routing 
+ * This is done to allow for limited dynamics of the Global Routing 
  * environment.  By that we mean that you can discover new link state 
  * advertisements after a network topology change by calling DiscoverLSAs 
  * and then by reading those advertisements.

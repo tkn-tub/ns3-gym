@@ -140,7 +140,7 @@ public:
   bool Synchronize (uint64_t tsCurrent, uint64_t tsDelay);
 
 /**
- * @brief Tell a posible simulator thread waiting in the Synchronize method
+ * @brief Tell a possible simulator thread waiting in the Synchronize method
  * that an event has happened which demands a reevaluation of the wait time.
  * This will cause the thread to wake and return to the simulator proper
  * where it can get its bearings.
@@ -151,7 +151,7 @@ public:
   void Signal (void);
 
 /**
- * @brief Set the condition variable that tells a posible simulator thread 
+ * @brief Set the condition variable that tells a possible simulator thread 
  * waiting in the Synchronize method that an event has happened which demands
  * a reevaluation of the wait time.
  *
@@ -265,7 +265,7 @@ protected:
   virtual bool DoSynchronize (uint64_t nsCurrent, uint64_t nsDelay) = 0;
 
 /**
- * @brief Declaration of the method used to tell a posible simulator thread 
+ * @brief Declaration of the method used to tell a possible simulator thread 
  * waiting in the DoSynchronize method that an event has happened which
  * demands a reevaluation of the wait time.
  *
@@ -275,7 +275,7 @@ protected:
 
 /**
  * @brief Declaration of the method used to set the condition variable that 
- * tells a posible simulator thread waiting in the Synchronize method that an
+ * tells a possible simulator thread waiting in the Synchronize method that an
  * event has happened which demands a reevaluation of the wait time.
  *
  * @see Synchronizer::SetCondition

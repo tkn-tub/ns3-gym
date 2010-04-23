@@ -85,7 +85,7 @@ public:
                 std::string n6 = "", const AttributeValue &v6 = EmptyAttributeValue (),
                 std::string n7 = "", const AttributeValue &v7 = EmptyAttributeValue ());
   /**
-   * Set the class, type and attribuytes for the Msdu agregator
+   * Set the class, type and attributes for the Msdu aggregator
    *
    * \param accessClass access class for which we are setting aggregator. Possibilities
    *  are: AC_BK, AC_BE, AC_VI, AC_VO.

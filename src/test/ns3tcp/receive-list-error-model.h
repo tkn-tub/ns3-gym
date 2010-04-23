@@ -16,7 +16,7 @@
  * This code should be moved to src/common/error-model.h during ns-3.9 
  * release cycle with some minor modifications, such as adding GetTypeId 
  * method and logging to all methods. This can be done by uncommenting 
- * relavent code below.
+ * relevant code below.
  */
 #ifndef RECEIVE_LIST_ERROR_MODEL_H
 #define RECEIVE_LIST_ERROR_MODEL_H

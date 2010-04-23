@@ -105,7 +105,7 @@ private:
   /**
    * \brief Application specific startup code
    *
-   * The StartApplication method is called at the start time specifed by Start
+   * The StartApplication method is called at the start time specified by Start
    * This method should be overridden by all or most application
    * subclasses.
    */
@@ -114,7 +114,7 @@ private:
   /**
    * \brief Application specific shutdown code
    *
-   * The StopApplication method is called at the stop time specifed by Stop
+   * The StopApplication method is called at the stop time specified by Stop
    * This method should be overridden by all or most application
    * subclasses.
    */

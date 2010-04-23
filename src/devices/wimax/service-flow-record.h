@@ -31,7 +31,7 @@ namespace ns3 {
 class ServiceFlowRecord
 {
   /**
-   * \brief this class implements a structure to manage some paramaters and statistics related to a service flow
+   * \brief this class implements a structure to manage some parameters and statistics related to a service flow
    */
 public:
   ServiceFlowRecord (void);

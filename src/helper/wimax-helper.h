@@ -103,7 +103,7 @@ public:
    *  \param deviceid the id of the net device for which you want to enable tracing.
    *  \param netdevice the type of net device for which you want to enable tracing (SubscriberStationNetDevice,
    *   BaseStationNetDevice or WimaxNetDevice)
-   *  \param connection the conection for which you want to enable tracing (InitialRangingConnection,
+   *  \param connection the connection for which you want to enable tracing (InitialRangingConnection,
    *   BroadcastConnection, BasicConnection, PrimaryConnection).
    */
   static void EnableAsciiForConnection (Ptr<OutputStreamWrapper> oss,

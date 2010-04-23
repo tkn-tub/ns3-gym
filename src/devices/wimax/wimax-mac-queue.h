@@ -50,7 +50,7 @@ public:
   /**
    * \brief Enqueue a packet
    * \param packet the packet to enqueue
-   * \param hdrType the mac headre type of the packet
+   * \param hdrType the mac header type of the packet
    * \param hdr the header of the packet
    */
   bool Enqueue (Ptr<Packet> packet, const MacHeaderType &hdrType,

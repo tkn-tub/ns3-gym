@@ -138,7 +138,7 @@
  *
  * \section CsmaNetDeviceModel CSMA Net Device Model
  *
- * The CSMA network device appears somewhat like an Ethernet device,, but it
+ * The CSMA network device appears somewhat like an Ethernet device, but it
  * is important to understand that it does not model an Ethernet device.  As
  * mentioned above, it does not model collisions.  The CSMA model also provides
  * users with the ability to configure the device into other states that are
@@ -151,7 +151,7 @@
  * - ReceiveEnable:     Enable packet reception if true;
  * - EncapsulationMode: Type of link layer encapsulation to use;
  * - RxErrorModel:      The receive error model;
- * - TxQueue:           The trasmit queue used by the device;
+ * - TxQueue:           The transmit queue used by the device;
  * - InterframeGap:     The optional time to wait between "frames";
  * - Rx:                A trace source for received packets;
  * - Drop:              A trace source for dropped packets.
@@ -274,13 +274,13 @@
  * the random exponential backoff handler if a timeout is detected.
  *
  * Case (3) implies that a packet is dequeued from the transmit queue if it is 
- * unable to be transmittted according to the backoff rules.  It is important 
+ * unable to be transmitted according to the backoff rules.  It is important 
  * to understand that this will appear as a Dequeued packet and it is easy to 
  * incorrectly assume that the packet was transmitted since it passed through
  * the transmit queue.  In fact, a packet is actually dropped by the net device
  * in this case.  The reason for this behavior is due to the definition of the 
  * Queue Drop event.  The m_traceDrop event is, by defintion, fired when a 
- * packet cannot be enqueued on the transmit queue becasue it is full.  This 
+ * packet cannot be enqueued on the transmit queue because it is full.  This 
  * event only fires if the queue is full and we do not overload this event
  * to indicate that the CsmaChannel is "full."
  *

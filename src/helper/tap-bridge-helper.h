@@ -54,7 +54,7 @@ public:
   TapBridgeHelper (Ipv4Address gateway);
 
   /*
-   * Set an attribute in the underlying TabBridge net device when these
+   * Set an attribute in the underlying TapBridge net device when these
    * devices are automatically created.
    *
    * \param n1 the name of the attribute to set
@@ -76,7 +76,7 @@ public:
   /**
    * This method installs a TapBridge on the specified Node and forms the 
    * bridge with the NetDevice specified.  The node is specified by a 
-   * name string that has previously been assoicated with the Node using
+   * name string that has previously been associated with the Node using
    * the Object Name Service.  The NetDevice is specified by a Ptr<NetDevice>.
    *
    * \param nodeName The name of the Node to install the TapBridge in
@@ -88,7 +88,7 @@ public:
   /**
    * This method installs a TapBridge on the specified Node and forms the 
    * bridge with the NetDevice specified.  The NetDevice is specified by a 
-   * name string that has previously been assoicated with the NetDevice
+   * name string that has previously been associated with the NetDevice
    * using the Object Name Service.
    *
    * \param node The Ptr<Node> to install the TapBridge in
@@ -100,9 +100,9 @@ public:
   /**
    * This method installs a TapBridge on the specified Node and forms the 
    * bridge with the NetDevice specified.  The node is specified by a 
-   * name string that has previously been assoicated with the Node using
+   * name string that has previously been associated with the Node using
    * the Object Name Service.  The NetDevice is specified by a name 
-   * string that has prevously been associated with the Object Name 
+   * string that has previously been associated with the Object Name 
    * Service.
    *
    * \param nodeName The name of the Node to install the TapBridge in

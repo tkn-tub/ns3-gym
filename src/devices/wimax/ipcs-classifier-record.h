@@ -54,8 +54,8 @@ public:
                         uint8_t protocol,
                         uint8_t priority);
   /**
-   * \brief Decodes a TLV and creates a calssifier
-   * \param tlv the TLV to decode and from wich the classifier parameters will be extracted
+   * \brief Decodes a TLV and creates a classifier
+   * \param tlv the TLV to decode and from which the classifier parameters will be extracted
    */
   IpcsClassifierRecord (Tlv tlv);
   /**

@@ -258,7 +258,7 @@ private:
    * Forward a packet received from the tap device to the bridged ns-3 
    * device
    *
-   * \param buf A character buffer containing the actaul packet bits that were
+   * \param buf A character buffer containing the actual packet bits that were
    *            received from the host.
    * \param buf The length of the buffer.
    */

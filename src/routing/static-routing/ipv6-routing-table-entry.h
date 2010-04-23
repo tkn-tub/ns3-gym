@@ -213,7 +213,7 @@ private:
   /**
    * \brief Constructor.
    * \param dest destination address
-   * \param prefix destiation prefix
+   * \param prefix destination prefix
    * \param interface interface index
    */
   Ipv6RoutingTableEntry (Ipv6Address dest, Ipv6Prefix prefix, uint32_t interface);

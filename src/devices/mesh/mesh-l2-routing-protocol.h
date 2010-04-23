@@ -39,7 +39,7 @@ class MeshPointDevice;
  * Every mesh routing protocol must implement this interface. Each mesh point (MeshPointDevice) is supposed
  * to know single L2RoutingProtocol to work with, see MeshPointDevice::SetRoutingProtocol ().
  *
- * This interface is similar to ipv4 routiong protocol base class.
+ * This interface is similar to ipv4 routing protocol base class.
  */
 class MeshL2RoutingProtocol : public Object
 {
@@ -52,7 +52,7 @@ public:
    * Callback to be invoked when route discovery  procedure is completed.
    *
    * \param flag        indicating whether a route was actually found and all needed information is
-   *                    added to the packet succesfully
+   *                    added to the packet successfully
    *
    * \param packet      for which the route was resolved. All routing information for MAC layer
    *                    must be stored in proper tags (like in case of HWMP, when WifiMacHeader
@@ -64,7 +64,7 @@ public:
    *
    * \param src         source address of the packet
    *
-   * \param dst         destiation address of the packet
+   * \param dst         destination address of the packet
    *
    * \param protocol    ethernet 'Protocol' field, needed to form a proper MAC-layer header
    *
@@ -101,7 +101,7 @@ public:
    * remove all its information: tags, header, etc. So,
    * MeshPointDevice must call this method when passing a packet to
    * upper layer.
-   * \returns true if packet shall not be dropeed, false otherwise.
+   * \returns true if packet shall not be dropped, false otherwise.
    * \param fromIface     the incoming interface of the packet
    * \param source        source address
    * \param destination   destination address

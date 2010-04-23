@@ -81,7 +81,7 @@ public:
   void SetDataRate (DataRate bps);
 
   /**
-   * Set the inteframe gap used to separate packets.  The interframe gap
+   * Set the interframe gap used to separate packets.  The interframe gap
    * defines the minimum space required between packets sent by this device.
    *
    * @param t the interframe gap time
@@ -215,7 +215,7 @@ private:
    * The TransmitStart method is the method that is used internally in the
    * PointToPointNetDevice to begin the process of sending a packet out on
    * the channel.  The corresponding method is called on the channel to let
-   * it know that the physical device this class represents has virually
+   * it know that the physical device this class represents has virtually
    * started sending signals.  An event is scheduled for the time at which
    * the bits have been completely transmitted.
    *
@@ -430,7 +430,7 @@ private:
   static const uint16_t DEFAULT_MTU = 1500;
 
   /**
-   * The Maxmimum Transmission Unit.  This corresponds to the maximum 
+   * The Maximum Transmission Unit.  This corresponds to the maximum 
    * number of bytes that can be transmitted as seen from higher layers.
    * This corresponds to the 1500 byte MTU size often seen on IP over 
    * Ethernet.

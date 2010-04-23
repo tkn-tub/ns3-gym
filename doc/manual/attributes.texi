@@ -527,7 +527,7 @@ any dependence on any other Attribute.  As a corollary, Attribute setters must
 never fail due to the state of another Attribute.  No Attribute setter may 
 change (set) any other Attribute value as a result of changing its value.
 
-This is a very strong restriction and there are cases where Atrributes must
+This is a very strong restriction and there are cases where Attributes must
 set consistently to allow correct operation.  To this end we do allow for 
 consistency checking @emph{when the attribute is used} (cf. NS_ASSERT_MSG 
 or NS_ABORT_MSG).

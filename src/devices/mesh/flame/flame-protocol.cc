@@ -117,7 +117,7 @@ FlameProtocol::GetTypeId ()
                     MakeTimeChecker ()
                     )
     .AddAttribute ( "MaxCost",
-                    "Cost threshold after which packet will be dropeed",
+                    "Cost threshold after which packet will be dropped",
                     UintegerValue (32),
                     MakeUintegerAccessor (
                         &FlameProtocol::m_maxCost),

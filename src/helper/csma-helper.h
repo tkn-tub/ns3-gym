@@ -97,7 +97,7 @@ public:
    * to the node and attaches the channel to the device.
    *
    * \param node The node to install the device in
-   * \returns A containter holding the added net device.
+   * \returns A container holding the added net device.
    */
   NetDeviceContainer Install (Ptr<Node> node) const;
 
@@ -108,7 +108,7 @@ public:
    * to the node and attaches the channel to the device.
    *
    * \param name The name of the node to install the device in
-   * \returns A containter holding the added net device.
+   * \returns A container holding the added net device.
    */
   NetDeviceContainer Install (std::string name) const;
 
@@ -119,7 +119,7 @@ public:
    *
    * \param node The node to install the device in
    * \param channel The channel to attach to the device.
-   * \returns A containter holding the added net device.
+   * \returns A container holding the added net device.
    */
   NetDeviceContainer Install (Ptr<Node> node, Ptr<CsmaChannel> channel) const;
 
@@ -130,7 +130,7 @@ public:
    *
    * \param node The node to install the device in
    * \param channelName The name of the channel to attach to the device.
-   * \returns A containter holding the added net device.
+   * \returns A container holding the added net device.
    */
   NetDeviceContainer Install (Ptr<Node> node, std::string channelName) const;
 
@@ -140,8 +140,8 @@ public:
    * attaches the provided channel to the device.
    *
    * \param nodeName The name of the node to install the device in
-   * \param channel The chanel to attach to the device.
-   * \returns A containter holding the added net device.
+   * \param channel The channel to attach to the device.
+   * \returns A container holding the added net device.
    */
   NetDeviceContainer Install (std::string nodeName, Ptr<CsmaChannel> channel) const;
 
@@ -151,8 +151,8 @@ public:
    * attaches the provided channel to the device.
    *
    * \param nodeName The name of the node to install the device in
-   * \param channelName The name of the chanel to attach to the device.
-   * \returns A containter holding the added net device.
+   * \param channelName The name of the channel to attach to the device.
+   * \returns A container holding the added net device.
    */
   NetDeviceContainer Install (std::string nodeName, std::string channelName) const;
 
@@ -164,7 +164,7 @@ public:
    * node; and attaches the channel to the device.
    *
    * \param c The NodeContainer holding the nodes to be changed.
-   * \returns A containter holding the added net devices.
+   * \returns A container holding the added net devices.
    */
   NetDeviceContainer Install (const NodeContainer &c) const;
 
@@ -176,7 +176,7 @@ public:
    *
    * \param c The NodeContainer holding the nodes to be changed.
    * \param channel The channel to attach to the devices.
-   * \returns A containter holding the added net devices.
+   * \returns A container holding the added net devices.
    */
   NetDeviceContainer Install (const NodeContainer &c, Ptr<CsmaChannel> channel) const;
 
@@ -188,7 +188,7 @@ public:
    *
    * \param c The NodeContainer holding the nodes to be changed.
    * \param channelName The name of the channel to attach to the devices.
-   * \returns A containter holding the added net devices.
+   * \returns A container holding the added net devices.
    */
   NetDeviceContainer Install (const NodeContainer &c, std::string channelName) const;
 

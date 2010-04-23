@@ -155,5 +155,5 @@ class Ipv4NixVectorRouting : public Ipv4RoutingProtocol
      * number of bits */
     uint32_t m_totalNeighbors;
 };
-} // namepace ns3
+} // namespace ns3
 #endif

@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
- * Modified by Emmanuelle Laprise to remove dependance on LLC headers
+ * Modified by Emmanuelle Laprise to remove dependence on LLC headers
  */
 #ifndef NET_DEVICE_H
 #define NET_DEVICE_H

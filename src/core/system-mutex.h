@@ -71,7 +71,7 @@ private:
  * @brief A class which provides a simple way to implement a Critical Section.
  *
  * When more than one SystemThread needs to access a shared resource, we
- * conrol access by acquiring a SystemMutex.  The CriticalSection class uses
+ * control access by acquiring a SystemMutex.  The CriticalSection class uses
  * the C++ scoping rules to automatically perform the required Lock and Unlock
  * operations to implement a Critical Section.
  *

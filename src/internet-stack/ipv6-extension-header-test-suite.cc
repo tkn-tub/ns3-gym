@@ -101,7 +101,7 @@ public:
     header.Serialize(buf.Begin());
 
     const uint8_t* data = buf.PeekData();
-    NS_TEST_EXPECT_MSG_EQ(*(data+2), OptionWithoutAlignmentHeader::TYPE, "option without alignemt is not first in header field");
+    NS_TEST_EXPECT_MSG_EQ(*(data+2), OptionWithoutAlignmentHeader::TYPE, "option without alignment is not first in header field");
 
     return GetErrorStatus();
   }

@@ -79,7 +79,7 @@ PeerManagementProtocolMac::Receive (Ptr<Packet> const_packet, const WifiMacHeade
           m_protocol->ReceiveBeacon (m_ifIndex, header.GetAddr2 (), MicroSeconds (
               beacon_hdr.GetBeaconIntervalUs ()), beaconTiming);
         }
-      // Beacon shall not be dropeed. May be needed to another plugins
+      // Beacon shall not be dropped. May be needed to another plugins
       return true;
     }
   if (header.IsAction ())

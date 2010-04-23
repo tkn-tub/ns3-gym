@@ -116,7 +116,7 @@ protected:
    * \brief Get the net-device destination
    * \param i the link requested
    * \returns Ptr to PointToPointNetDevice destination for 
-   * the specifed link
+   * the specified link
    */
   Ptr<PointToPointNetDevice> GetDestination (uint32_t i) const;
 
@@ -131,7 +131,7 @@ private:
    * The trace source for the packet transmission animation events that the 
    * device can fire.
    * Arguments to the callback are the packet, transmitting
-   * net device, receiving net device, transmittion time and 
+   * net device, receiving net device, transmission time and 
    * packet receipt time.
    *
    * @see class CallBackTraceSource

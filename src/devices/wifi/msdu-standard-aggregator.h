@@ -45,7 +45,7 @@ public:
 private:
   /*  Calculates how much padding must be added to the end of aggregated packet,
       after that a new packet is added.
-      Each A-MSDU subframe is padded so that its length is multiple of 4 octects.
+      Each A-MSDU subframe is padded so that its length is multiple of 4 octets.
    */
   uint32_t CalculatePadding (Ptr<const Packet> packet);
 

@@ -162,7 +162,7 @@ public:
   Time GetUlSubframeStartTime (void) const;
   uint8_t GetRangingOppNumber (void) const;
   /**
-   * \returns a pointer to the SS manegr
+   * \returns a pointer to the SS manager
    */
   Ptr<SSManager> GetSSManager (void) const;
   /**

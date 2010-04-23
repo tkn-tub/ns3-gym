@@ -373,7 +373,7 @@ public:
   void MergeRootExitDirections (const SPFVertex* vertex);
   /**
    * \brief Inherit all root exit directions from a given vertex to 'this' vertex
-   * \param vertex The vertex from which all root exit directions are to be inherrited
+   * \param vertex The vertex from which all root exit directions are to be inherited
    *
    * After the call of this method, the original root exit directions
    * in 'this' vertex are all lost.

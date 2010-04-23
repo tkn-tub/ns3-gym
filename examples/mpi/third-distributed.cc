@@ -193,7 +193,7 @@ main (int argc, char *argv[])
       serverApps.Stop (Seconds (10.0));
     }
 
-  // If the simulator has sytem id 0, then 
+  // If the simulator has system id 0, then 
   // it should contain the client application, 
   // since it is on one of the wifi nodes
   if (systemId == 0)
