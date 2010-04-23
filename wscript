@@ -28,8 +28,11 @@ import Configure
 import Scripting
 
 sys.path.insert(0, os.path.abspath('waf-tools'))
+try:
+    import cflags # override the build profiles from waf
+finally:
+    sys.path.pop(0)
 
-import cflags # override the build profiles from waf
 cflags.profiles = {
 	# profile name: [optimization_level, warnings_level, debug_level]
 	'debug':     [0, 2, 3],
@@ -248,12 +251,12 @@ def configure(conf):
     conf.env['NS3_BUILDDIR'] = conf.blddir
     conf.check_tool('compiler_cc')
     conf.check_tool('compiler_cxx')
-    conf.check_tool('cflags')
+    conf.check_tool('cflags', ['waf-tools'])
     try:
-        conf.check_tool('pkgconfig')
+        conf.check_tool('pkgconfig', ['waf-tools'])
     except Configure.ConfigurationError:
         pass
-    conf.check_tool('command')
+    conf.check_tool('command', ['waf-tools'])
 
     # Check for the location of regression reference traces
     if Options.options.regression_traces is not None:
