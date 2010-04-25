@@ -87,6 +87,7 @@ many cases referencing the Bugzilla bug number
    - bug 796 - TCP bug in ns-3-dev branch : Crash detected during retesting of Chord on ns-3-dev branch
    - bug 797 - Enhancements to src/core/random-variable.cc/h
    - bug 801 - ns-3.7 and SVN not coexisting nicely
+   - bug 802 - Minstrel algorithm causes segmentation fault
    - bug 804 - null-pointer references in 3.7 internet stack
    - bug 806 - TCP doesn't work over a CSMA link
    - bug 807 - ns2-mobility-helper.cc: node id parsed wrong
@@ -118,6 +119,7 @@ many cases referencing the Bugzilla bug number
    - bug 847 - Segfaults on BaseStationNetDevice with OnOffApplication and rtPS sched
    - bug 849 - stray patch files in lwip directory
    - bug 850 - Ipv4GlobalRouting::LookupGlobal bug
+   - bug 855 - waf dies badly when switching from debug to optimized build or vice versa
    - bug 856 - initialize vbl
    - bug 857 - Link-Local Multicast handle in Ipv4 Output processing 
    - bug 859 - Output interface estimation for the source address bound socket in IPv4 Raw socket
@@ -136,6 +138,8 @@ many cases referencing the Bugzilla bug number
    - bug 877 - python bindings broken with multiple inheritance ?
    - bug 880 - Node sending a packet to itself via 127.0.0.1 aborts
    - bug 885 - Error in Ascii tracing in Python examples
+   - bug 891 - WiMAX device helper does not include propagation loss model by default 
+   - bug 894 - ./waf --run error message upon segfault
 
 Known issues
 ------------
