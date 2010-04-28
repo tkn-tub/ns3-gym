@@ -1052,7 +1052,7 @@ EmuNetDevice::IsBridge (void) const
 void
 EmuNetDevice::SetPromiscReceiveCallback (PromiscReceiveCallback cb)
 {
-  NS_FATAL_ERROR ("EmuNetDevice::SetPromiscReceiveCallback(): Not implemented");
+  m_promiscRxCallback = cb;
 }
 
   bool 
