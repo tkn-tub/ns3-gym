@@ -274,6 +274,7 @@ public:
 Ns3TcpLossTestSuite::Ns3TcpLossTestSuite ()
   : TestSuite ("ns3-tcp-loss", SYSTEM)
 {
+  Packet::EnablePrinting ();  // Enable packet metadata for all test cases
   AddTestCase (new Ns3TcpLossTestCase1);
   AddTestCase (new Ns3TcpLossTestCase2);
 }
