@@ -24,10 +24,6 @@ ns-3.8 has been tested on the following platforms:
   - MacOS X ppc gcc 4.0.x and 4.2.x (debug and optimized)
   - cygwin gcc 3.4.4 (debug only), gcc 4.3.2 (debug and optimized)
 
-Unofficially supported platform
--------------------
-- mingw gcc 3.4.5 (debug only)
-
 Not all ns-3 options are available on all platforms; consult the
 wiki for more information:
 http://www.nsnam.org/wiki/index.php/Installation
@@ -138,8 +134,10 @@ many cases referencing the Bugzilla bug number
    - bug 877 - python bindings broken with multiple inheritance ?
    - bug 880 - Node sending a packet to itself via 127.0.0.1 aborts
    - bug 885 - Error in Ascii tracing in Python examples
+   - bug 888 - Writing ascii trace to addtional tests fails
    - bug 891 - WiMAX device helper does not include propagation loss model by default 
    - bug 894 - ./waf --run error message upon segfault
+   - bug 899 - EmuNetDevice::SetPromiscReceiveCallback not implemented
 
 Known issues
 ------------
