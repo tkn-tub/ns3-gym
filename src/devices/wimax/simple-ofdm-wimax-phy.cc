@@ -333,7 +333,7 @@ SimpleOfdmWimaxPhy::StartReceive (const bvec &fecBlock,
 
   UniformVariable URNG;
   uint8_t drop = 0;
-  double Nwb = -114 + m_noiseFigure + 10 * log (GetBandwidth () / 1000000000) / 2.303;
+  double Nwb = -114 + m_noiseFigure + 10 * log (GetBandwidth () / 1000000000.0) / 2.303;
   double SNR = rxPower - Nwb;
 
   SNRToBlockErrorRateRecord * record = m_snrToBlockErrorRateManager->GetSNRToBlockErrorRateRecord (SNR, modulationType);

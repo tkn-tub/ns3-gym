@@ -137,6 +137,7 @@ many cases referencing the Bugzilla bug number
    - bug 888 - Writing ascii trace to addtional tests fails
    - bug 891 - WiMAX device helper does not include propagation loss model by default 
    - bug 894 - ./waf --run error message upon segfault
+   - bug 895 - SimpleOfdmWimaxPhy SNR computation
    - bug 899 - EmuNetDevice::SetPromiscReceiveCallback not implemented
 
 Known issues
