@@ -31,7 +31,7 @@ Steps in doing an ns-3 release
    - hg push 
 6. clone the tagged ns-3-dev and place it on the repository
    - ssh code.nsnam.org; sudo bash; su code;
-   - cp -r /home/code/repos/ns-3-dev /home/code/repos/ns-3.1x
+   - cp -r /home/code/repos/ns-3-dev /home/code/repos/ns-3.x
    - cd /home/code/repos/ns-3.x/.hg and edit the hgrc appropriately:
      "description = ns-3.x release
       name = ns-3.x"
@@ -48,7 +48,7 @@ Steps in doing an ns-3 release
 
 9. Run the tests on the new release (debug and optimized) like a user would
    You need to use ns-3-allinone since you will use that to make the distro
-   - hg clone http://code.nsnam.org/ns-3-allinone ns-3-allinone-3.x
+   - hg clone http://code.nsnam.org/ns-3-allinone ns-3-allinone-3.x-test
    - cd !$
    - ./download.py -n ns-3.x -r ns-3.x-ref-traces
    - ./build.py
@@ -65,8 +65,12 @@ Steps in doing an ns-3 release
    - ./waf --valgrind --regression (for valgrind version)
    - There should be no regression errors at this time
 10. Create final tarballs
-   - cd into ns-3-allinone level
+    You need to work with a clean ns-3-allinone-3.x directory
+   - hg clone http://code.nsnam.org/ns-3-allinone ns-3-allinone-3.x
+   - cd !$
+   - ./download.py -n ns-3.x -r ns-3.x-ref-traces
    - ./dist.py
+   - notice we did not build here
    - this will create an ns-allinone-3.x.tar.bz2 tarball
 11. upload "ns-allinone-3.x.tar.bz2" to the /var/www/html/releases/ directory on 
    the www.nsnam.org server
@@ -83,7 +87,6 @@ Steps in doing an ns-3 release
      (consider "grep 'ns-3\.' *.html" for a new release)
      (consider "grep 'RCx' *.html" for a new RC)
    - update references to releases in scripts/
-
    - update roadmap on wiki
    - commit and push changes
 14. update the server
