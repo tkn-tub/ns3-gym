@@ -229,6 +229,48 @@ private:
   
 };
 
+/**
+ * \brief Provide a list of Packets to corrupt
+ *
+ * This model also processes a user-generated list of packets to
+ * corrupt, except that the list corresponds to the sequence of
+ * received packets as observed by this error model, and not the
+ * Packet UID.
+ * 
+ * Reset() on this model will clear the list
+ *
+ * IsCorrupt() will not modify the packet data buffer
+ */
+class ReceiveListErrorModel : public ErrorModel
+{
+public:
+  static TypeId GetTypeId (void);
+  ReceiveListErrorModel ();
+  virtual ~ReceiveListErrorModel ();
+
+  /**
+   * \return a copy of the underlying list
+   */
+  std::list<uint32_t> GetList (void) const;
+  /**
+   * \param packetlist The list of packets to error.
+   *
+   * This method overwrites any previously provided list.
+   */
+  void SetList (const std::list<uint32_t> &packetlist);
+
+private:
+  virtual bool DoCorrupt (Ptr<Packet> p);
+  virtual void DoReset (void);
+
+  typedef std::list<uint32_t> PacketList;
+  typedef std::list<uint32_t>::const_iterator PacketListCI;
+
+  PacketList m_packetList;
+  uint32_t m_timesInvoked;
+  
+};
+
 
 } //namespace ns3
 #endif

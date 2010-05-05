@@ -298,5 +298,73 @@ ListErrorModel::DoReset (void)
   m_packetList.clear();
 }
 
+//
+// ReceiveListErrorModel
+//
+
+NS_OBJECT_ENSURE_REGISTERED (ReceiveListErrorModel);
+
+TypeId ReceiveListErrorModel::GetTypeId (void)
+{ 
+  static TypeId tid = TypeId ("ns3::ReceiveListErrorModel")
+    .SetParent<ErrorModel> ()
+    .AddConstructor<ReceiveListErrorModel> ()
+    ;
+  return tid;
+}
+
+
+ReceiveListErrorModel::ReceiveListErrorModel () :
+  m_timesInvoked (0)
+{
+  NS_LOG_FUNCTION_NOARGS ();
+}
+
+ReceiveListErrorModel::~ReceiveListErrorModel () 
+{
+  NS_LOG_FUNCTION_NOARGS ();
+}
+
+std::list<uint32_t> 
+ReceiveListErrorModel::GetList (void) const 
+{ 
+  NS_LOG_FUNCTION_NOARGS ();
+  return m_packetList; 
+}
+
+void 
+ReceiveListErrorModel::SetList (const std::list<uint32_t> &packetlist)
+{ 
+  NS_LOG_FUNCTION_NOARGS ();
+  m_packetList = packetlist;
+}
+
+bool 
+ReceiveListErrorModel::DoCorrupt (Ptr<Packet> p) 
+{ 
+  NS_LOG_FUNCTION_NOARGS ();
+  if (!IsEnabled ())
+    {
+      return false;  
+    }
+  m_timesInvoked += 1;
+  for (PacketListCI i = m_packetList.begin (); 
+    i != m_packetList.end (); i++) 
+    {
+      if (m_timesInvoked - 1 == *i)
+      {
+        return true;
+      }
+    }
+  return false;
+}
+
+void 
+ReceiveListErrorModel::DoReset (void) 
+{ 
+  NS_LOG_FUNCTION_NOARGS ();
+  m_packetList.clear();
+}
+
 
 } //namespace ns3

@@ -37,7 +37,6 @@
 #include "ns3/error-model.h"
 #include "ns3/pointer.h"
 #include "../ns3tcp/ns3tcp-socket-writer.h"
-#include "../ns3tcp/receive-list-error-model.h"
 
 using namespace ns3;
 
