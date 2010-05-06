@@ -362,9 +362,13 @@ static ns3::TypeId GetTypeId (void)
                                       % cpp_class.full_name)
         code_block.write_code("%s = new %s(%s);" % (lvalue, construct_type_name, parameters))
         code_block.write_code("%s->Ref ();" % (lvalue))
+
+    def ns3_object_post_instance_creation_function(cpp_class, code_block, lvalue,
+                                                   parameters, construct_type_name):
         code_block.write_code("ns3::CompleteConstruct(%s);" % (lvalue, ))
 
     Object.set_instance_creation_function(ns3_object_instance_creation_function)
+    Object.set_post_instance_creation_function(ns3_object_post_instance_creation_function)
 
 
 def Attribute_customizations(module):

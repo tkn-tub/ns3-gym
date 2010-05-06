@@ -145,5 +145,13 @@ class TestSimulator(unittest.TestCase):
         self.assertEqual(cmd.test_xxx, "123")
         self.assertEqual(foo.test_foo, "xpto")
 
+    def testSubclass(self):
+        class MyNode(ns3.Node):
+            def __init__(self):
+                super(MyNode, self).__init__()
+
+        node = MyNode()
+
+
 if __name__ == '__main__':
     unittest.main()
