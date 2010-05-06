@@ -287,10 +287,10 @@ NixVector::Serialize (uint32_t* buffer, uint32_t maxSize) const
 }
 
 uint32_t
-NixVector::Deserialize (uint32_t* buffer, uint32_t size)
+NixVector::Deserialize (const uint32_t* buffer, uint32_t size)
 {
   NS_LOG_FUNCTION (this);
-  uint32_t* p = buffer;
+  const uint32_t* p = buffer;
   uint32_t sizeCheck = size - 4;
 
   NS_ASSERT (sizeCheck >= 4);

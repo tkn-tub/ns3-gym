@@ -699,7 +699,7 @@ Buffer::GetSerializedSize (void) const
 uint32_t
 Buffer::Serialize (uint8_t* buffer, uint32_t maxSize) const
 {
-  uint32_t* p = (uint32_t*)buffer;
+  uint32_t* p = reinterpret_cast<uint32_t *> (buffer);
   uint32_t size = 0;
   
   NS_LOG_FUNCTION (this);
@@ -768,9 +768,9 @@ Buffer::Serialize (uint8_t* buffer, uint32_t maxSize) const
 }
 
 uint32_t 
-Buffer::Deserialize (uint8_t *buffer, uint32_t size)
+Buffer::Deserialize (const uint8_t *buffer, uint32_t size)
 {
-  uint32_t* p = (uint32_t*)buffer;
+  const uint32_t* p = reinterpret_cast<const uint32_t *> (buffer);
   uint32_t sizeCheck = size-4;
 
   NS_ASSERT (sizeCheck >= 4);
@@ -787,8 +787,8 @@ Buffer::Deserialize (uint8_t *buffer, uint32_t size)
   AddAtStart (dataStartLength);
 
   NS_ASSERT (sizeCheck >= dataStartLength);
-  Begin ().Write ((uint8_t*)p, dataStartLength);
-  p += (((dataStartLength+3)&(~3))/4);
+  Begin ().Write (reinterpret_cast<uint8_t *> (const_cast<uint32_t *> (p)), dataStartLength);
+  p += (((dataStartLength+3)&(~3))/4); // Advance p, insuring 4 byte boundary
   sizeCheck -= ((dataStartLength+3)&(~3));
 
   // Add end data
@@ -800,8 +800,8 @@ Buffer::Deserialize (uint8_t *buffer, uint32_t size)
   NS_ASSERT (sizeCheck >= dataEndLength);
   Buffer::Iterator tmp = End ();
   tmp.Prev (dataEndLength);
-  tmp.Write ((uint8_t*)p, dataEndLength);
-  p += (((dataEndLength+3)&(~3))/4);
+  tmp.Write (reinterpret_cast<uint8_t *> (const_cast<uint32_t *> (p)), dataEndLength);
+  p += (((dataEndLength+3)&(~3))/4); // Advance p, insuring 4 byte boundary
   sizeCheck -= ((dataEndLength+3)&(~3));
   
   NS_ASSERT (sizeCheck == 0);

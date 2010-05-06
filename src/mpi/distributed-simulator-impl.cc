@@ -1,7 +1,5 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
- * Copyright (c) 2005,2006 INRIA
- *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
@@ -362,7 +360,7 @@ DistributedSimulatorImpl::Schedule (Time const &time, EventImpl *event)
   NS_ASSERT (tAbsolute >= TimeStep (m_currentTs));
   Scheduler::Event ev;
   ev.impl = event;
-  ev.key.m_ts = (uint64_t) tAbsolute.GetTimeStep ();
+  ev.key.m_ts = static_cast<uint64_t> (tAbsolute.GetTimeStep ());
   ev.key.m_context = GetContext ();
   ev.key.m_uid = m_uid;
   m_uid++;

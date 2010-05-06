@@ -125,7 +125,7 @@ class NixVector : public Object
      * The raw character buffer containing all the nix-vector 
      * information is deserialized into this nix-vector.
      */
-    uint32_t Deserialize (uint32_t* buffer, uint32_t size);
+    uint32_t Deserialize (const uint32_t* buffer, uint32_t size);
     /**
      * \return number of bits of numberOfNeighbors
      *

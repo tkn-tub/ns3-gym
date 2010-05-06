@@ -149,8 +149,8 @@ MpiInterface::Enable (int* pargc, char*** pargv)
   // Initialize the MPI interface
   MPI_Init (pargc, pargv);
   MPI_Barrier (MPI_COMM_WORLD);
-  MPI_Comm_rank (MPI_COMM_WORLD, (int*)&m_sid);
-  MPI_Comm_size (MPI_COMM_WORLD, (int*)&m_size);
+  MPI_Comm_rank (MPI_COMM_WORLD, reinterpret_cast <int *> (&m_sid));
+  MPI_Comm_size (MPI_COMM_WORLD, reinterpret_cast <int *> (&m_size));
   m_enabled = true;
   m_initialized = true;
   // Post a non-blocking receive for all peers
@@ -180,19 +180,19 @@ MpiInterface::SendPacket (Ptr<Packet> p, const Time& rxTime, uint32_t node, uint
   i->SetBuffer (buffer);
   // Add the time, dest node and dest device
   uint64_t t = rxTime.GetNanoSeconds ();
-  uint64_t* pTime = (uint64_t*)buffer;
+  uint64_t* pTime = reinterpret_cast <uint64_t *> (buffer);
   *pTime++ = t;
-  uint32_t* pData = (uint32_t*)pTime;
+  uint32_t* pData = reinterpret_cast<uint32_t *> (pTime);
   *pData++ = node;
   *pData++ = dev;
   // Serialize the packet
-  p->Serialize ((uint8_t*)pData, serializedSize);
+  p->Serialize (reinterpret_cast<uint8_t *> (pData), serializedSize);
 
   // Find the system id for the destination node
   Ptr<Node> destNode = NodeList::GetNode (node);
   uint32_t nodeSysId = destNode->GetSystemId ();
 
-  MPI_Isend ((void*)i->GetBuffer (), serializedSize + 16, MPI_CHAR, nodeSysId,
+  MPI_Isend (reinterpret_cast<void *> (i->GetBuffer ()), serializedSize + 16, MPI_CHAR, nodeSysId,
              0, MPI_COMM_WORLD, (i->GetRequest ()));
   m_txCount++;
 #else
@@ -220,9 +220,9 @@ MpiInterface::ReceiveMessages ()
       m_rxCount++; // Count this receive
 
       // Get the meta data first
-      uint64_t* pTime = (uint64_t*)m_pRxBuffers[index];
+      uint64_t* pTime = reinterpret_cast<uint64_t *> (m_pRxBuffers[index]);
       uint64_t nanoSeconds = *pTime++;
-      uint32_t* pData = (uint32_t*)pTime;
+      uint32_t* pData = reinterpret_cast<uint32_t *> (pTime);
       uint32_t node = *pData++;
       uint32_t dev  = *pData++;
 
@@ -230,7 +230,7 @@ MpiInterface::ReceiveMessages ()
 
       count -= sizeof (nanoSeconds) + sizeof (node) + sizeof (dev);
 
-      Ptr<Packet> p = Create<Packet> ((uint8_t*)pData, count, true);
+      Ptr<Packet> p = Create<Packet> (reinterpret_cast<uint8_t *> (pData), count, true);
 
       // Find the correct node/device to schedule receive event
       Ptr<Node> pNode = NodeList::GetNode (node);

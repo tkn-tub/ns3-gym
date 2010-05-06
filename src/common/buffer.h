@@ -503,7 +503,7 @@ public:
    * The raw character buffer is deserialized and all the 
    * data is placed into this buffer.
    */
-  uint32_t Deserialize (uint8_t* buffer, uint32_t size);
+  uint32_t Deserialize (const uint8_t* buffer, uint32_t size);
   
   int32_t GetCurrentStartOffset (void) const;
   int32_t GetCurrentEndOffset (void) const;

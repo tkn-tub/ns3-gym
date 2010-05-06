@@ -132,7 +132,7 @@ Packet::Packet ()
      * zero.  The lower 32 bits are for the 
      * global UID
      */
-    m_metadata ((uint64_t)Simulator::GetSystemId () << 32 | m_globalUid, 0),
+    m_metadata (static_cast<uint64_t> (Simulator::GetSystemId ()) << 32 | m_globalUid, 0),
     m_nixVector (0)
 {
   m_globalUid++;
@@ -174,7 +174,7 @@ Packet::Packet (uint32_t size)
      * zero.  The lower 32 bits are for the 
      * global UID
      */
-    m_metadata ((uint64_t)Simulator::GetSystemId () << 32 | m_globalUid, size),
+    m_metadata (static_cast<uint64_t> (Simulator::GetSystemId ()) << 32 | m_globalUid, size),
     m_nixVector (0)
 {
   m_globalUid++;
@@ -200,7 +200,7 @@ Packet::Packet (uint8_t const*buffer, uint32_t size)
      * zero.  The lower 32 bits are for the 
      * global UID
      */
-    m_metadata ((uint64_t)Simulator::GetSystemId () << 32 | m_globalUid, size),
+    m_metadata (static_cast<uint64_t> (Simulator::GetSystemId ()) << 32 | m_globalUid, size),
     m_nixVector (0)
 {
   m_globalUid++;
@@ -601,7 +601,7 @@ uint32_t Packet::GetSerializedSize (void) const
 uint32_t 
 Packet::Serialize (uint8_t* buffer, uint32_t maxSize) const
 {
-  uint32_t* p = (uint32_t*)buffer;
+  uint32_t* p = reinterpret_cast<uint32_t *> (buffer);
   uint32_t size = 0;
 
   // if nix-vector exists, serialize it
@@ -666,7 +666,7 @@ Packet::Serialize (uint8_t* buffer, uint32_t maxSize) const
 
       // serialize the metadata
       uint32_t serialized = 
-        m_metadata.Serialize ((uint8_t*)p, metaSize); 
+        m_metadata.Serialize (reinterpret_cast<uint8_t *> (p), metaSize); 
       if (serialized)
         {
           // increment p by metaSize bytes
@@ -695,7 +695,7 @@ Packet::Serialize (uint8_t* buffer, uint32_t maxSize) const
 
       // serialize the buffer
       uint32_t serialized = 
-        m_buffer.Serialize ((uint8_t*)p, bufSize);
+        m_buffer.Serialize (reinterpret_cast<uint8_t *> (p), bufSize);
       if (serialized)
         {
           // increment p by bufSize bytes
@@ -717,11 +717,11 @@ Packet::Serialize (uint8_t* buffer, uint32_t maxSize) const
 }
 
 uint32_t 
-Packet::Deserialize (uint8_t const*buffer, uint32_t size)
+Packet::Deserialize (const uint8_t* buffer, uint32_t size)
 {
   NS_LOG_FUNCTION (this);
 
-  uint32_t* p = (uint32_t*)buffer;
+  const uint32_t* p = reinterpret_cast<const uint32_t *> (buffer);
 
   // read nix-vector
   NS_ASSERT (!m_nixVector);
@@ -762,7 +762,7 @@ Packet::Deserialize (uint8_t const*buffer, uint32_t size)
   NS_ASSERT (size >= 0);
 
   uint32_t metadataDeserialized = 
-    m_metadata.Deserialize ((uint8_t*)p, metaSize);
+    m_metadata.Deserialize (reinterpret_cast<const uint8_t *> (p), metaSize);
   if (!metadataDeserialized)
     {
       // meta-data not deserialized 
@@ -782,7 +782,7 @@ Packet::Deserialize (uint8_t const*buffer, uint32_t size)
   NS_ASSERT (size >= 0);
 
   uint32_t bufferDeserialized =
-    m_buffer.Deserialize ((uint8_t*)p, bufSize);
+    m_buffer.Deserialize (reinterpret_cast<const uint8_t *> (p), bufSize);
   if (!bufferDeserialized)
     {
       // buffer not deserialized 

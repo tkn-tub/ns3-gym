@@ -159,7 +159,7 @@ public:
 
   // Serialization to/from raw uint8_t*
   uint32_t Serialize   (uint8_t* buffer, uint32_t maxSize) const;
-  uint32_t Deserialize (uint8_t* buffer, uint32_t size);
+  uint32_t Deserialize (const uint8_t* buffer, uint32_t size);
   
 private:
   // Helper for the raw serilization/deserialization
@@ -190,23 +190,23 @@ private:
                             uint32_t maxSize);
   
   static uint8_t* ReadFromRawU8 (uint8_t& data,
-                                 uint8_t* start,
-                                 uint8_t* current,
+                                 const uint8_t* start,
+                                 const uint8_t* current,
                                  uint32_t maxSize);
 
   static uint8_t* ReadFromRawU16 (uint16_t& data,
-                                  uint8_t* start,
-                                  uint8_t* current,
+                                  const uint8_t* start,
+                                  const uint8_t* current,
                                   uint32_t maxSize);
 
   static uint8_t* ReadFromRawU32 (uint32_t& data,
-                                  uint8_t* start,
-                                  uint8_t* current,
+                                  const uint8_t* start,
+                                  const uint8_t* current,
                                   uint32_t maxSize);
 
   static uint8_t* ReadFromRawU64 (uint64_t& data,
-                                  uint8_t* start,
-                                  uint8_t* current,
+                                  const uint8_t* start,
+                                  const uint8_t* current,
                                   uint32_t maxSize);
   struct Data {
     /* number of references to this struct Data instance. */
