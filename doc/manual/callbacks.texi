@@ -380,8 +380,8 @@ by extending the callback implementation).
 So in the above example, we have a declared a callback named "one" that will
 eventually hold a function pointer.  The signature of the function that it will
 hold must return double and must support two double arguments.  If one tries 
-to pass a function whose signature does not match the declared callback, the 
-compilation will fail.
+to pass a function whose signature does not match the declared callback, a
+run-time NS_FATAL_ERROR will be raised.
 
 Now, we need to tie together this callback instance and the actual target function
 (CbOne).  Notice above that CbOne has the same function signature types as the 
