@@ -264,17 +264,18 @@ PcapSniffTxEvent (
       {
         Ptr<Packet> p = packet->Copy ();
         RadiotapHeader header;
+        uint8_t frameFlags = RadiotapHeader::FRAME_FLAG_NONE;
         header.SetTsft (Simulator::Now ().GetMicroSeconds ());
+
+        // Our capture includes the FCS, so we set the flag to say so.
+        frameFlags |= RadiotapHeader::FRAME_FLAG_FCS_INCLUDED;
 
         if (isShortPreamble)
           {
-            header.SetFrameFlags (RadiotapHeader::FRAME_FLAG_SHORT_PREAMBLE);
-          }
-        else
-          {
-            header.SetFrameFlags (RadiotapHeader::FRAME_FLAG_NONE);
+            frameFlags |= RadiotapHeader::FRAME_FLAG_SHORT_PREAMBLE;
           }
 
+        header.SetFrameFlags (frameFlags);
         header.SetRate (rate);
 
         if (channelFreqMhz < 2500)
@@ -324,17 +325,18 @@ PcapSniffRxEvent (
       {
         Ptr<Packet> p = packet->Copy ();
         RadiotapHeader header;
+        uint8_t frameFlags = RadiotapHeader::FRAME_FLAG_NONE;
         header.SetTsft (Simulator::Now ().GetMicroSeconds ());
+
+        // Our capture includes the FCS, so we set the flag to say so.
+        frameFlags |= RadiotapHeader::FRAME_FLAG_FCS_INCLUDED;
 
         if (isShortPreamble)
           {
-            header.SetFrameFlags (RadiotapHeader::FRAME_FLAG_SHORT_PREAMBLE);
-          }
-        else
-          {
-            header.SetFrameFlags (RadiotapHeader::FRAME_FLAG_NONE);
+            frameFlags |= RadiotapHeader::FRAME_FLAG_SHORT_PREAMBLE;
           }
 
+        header.SetFrameFlags (frameFlags);
         header.SetRate (rate);
 
         if (channelFreqMhz < 2500)
