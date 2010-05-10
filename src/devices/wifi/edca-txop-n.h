@@ -144,6 +144,7 @@ public:
   void CompleteConfig (void);
   void SetBlockAckThreshold (uint8_t threshold);
   uint8_t GetBlockAckThreshold (void) const;
+  void SetBlockAckInactivityTimeout (uint16_t timeout);
   void SendDelbaFrame (Mac48Address addr, uint8_t tid, bool byOriginator);
 
 private:

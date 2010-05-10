@@ -137,7 +137,7 @@ EdcaTxopN::GetTypeId (void)
                                                  block ack setup is completed and will be reset every time that a block\
                                                  ack frame is received. If this value is 0, block ack inactivity timeout won't be used.",
                    UintegerValue(0),
-                   MakeUintegerAccessor (&EdcaTxopN::m_blockAckInactivityTimeout),
+                   MakeUintegerAccessor (&EdcaTxopN::SetBlockAckInactivityTimeout),
                    MakeUintegerChecker<uint16_t> ())
     ;
   return tid;
@@ -976,6 +976,12 @@ EdcaTxopN::SetBlockAckThreshold (uint8_t threshold)
 {
   m_blockAckThreshold = threshold;
   m_baManager->SetBlockAckThreshold (threshold);
+}
+
+void
+EdcaTxopN::SetBlockAckInactivityTimeout (uint16_t timeout)
+{
+  m_blockAckInactivityTimeout = timeout;
 }
 
 uint8_t

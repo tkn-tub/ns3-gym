@@ -71,17 +71,17 @@ int main (int argc, char const* argv[])
   Ssid ssid ("My-network");
   
   mac.SetType ("ns3::QstaWifiMac", "Ssid" , SsidValue (ssid), "ActiveProbing", BooleanValue (false));
+  /* setting blockack threshold for sta's BE queue */
+  mac.SetBlockAckThresholdForAc (AC_BE, 2);
+  /* setting block inactivity timeout to 3*1024 = 3072 microseconds */ 
+  //mac.SetBlockAckInactivityTimeoutForAc (AC_BE, 3);
   NetDeviceContainer staDevice = wifi.Install (phy, mac, sta);
 
   mac.SetType ("ns3::QapWifiMac", "Ssid", SsidValue (ssid), "BeaconGeneration", BooleanValue (true),
                "BeaconInterval", TimeValue (Seconds (2.5)));
+  mac.SetBlockAckThresholdForAc (AC_BE, 0);
   NetDeviceContainer apDevice = wifi.Install (phy, mac, ap);
-
-  /* setting blockack threshold for sta's BE queue */
-  Config::Set ("/NodeList/0/DeviceList/0/Mac/BE_EdcaTxopN/BlockAckThreshold", UintegerValue (2));
-  /* setting block inactivity timeout to 3*1024 = 3072 microseconds */ 
-  //Config::Set ("/NodeList/0/DeviceList/0/Mac/BE_EdcaTxopN/BlockAckInactivityTimeout", UintegerValue (3));
-
+  
   /* Setting mobility model */
   MobilityHelper mobility;
 

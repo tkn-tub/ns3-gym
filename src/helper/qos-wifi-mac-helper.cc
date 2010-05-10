@@ -92,18 +92,38 @@ QosWifiMacHelper::SetMsduAggregatorForAc (AccessClass accessClass, std::string t
 }
 
 void
+QosWifiMacHelper::SetBlockAckThresholdForAc (enum AccessClass accessClass, uint8_t threshold)
+{
+  m_bAckThresholds[accessClass] = threshold;
+}
+
+void
+QosWifiMacHelper::SetBlockAckInactivityTimeoutForAc (enum AccessClass accessClass, uint16_t timeout)
+{
+  m_bAckInactivityTimeouts[accessClass] = timeout;
+}
+
+void
 QosWifiMacHelper::Setup (Ptr<WifiMac> mac, enum AccessClass ac, std::string dcaAttrName) const
 {
   std::map<AccessClass, ObjectFactory>::const_iterator it = m_aggregators.find (ac);
+  PointerValue ptr;
+  mac->GetAttribute (dcaAttrName, ptr);
+  Ptr<EdcaTxopN> edca = ptr.Get<EdcaTxopN> ();
+  
   if (it != m_aggregators.end ())
     {
       ObjectFactory factory = it->second;
-
-      PointerValue ptr;
-      mac->GetAttribute (dcaAttrName, ptr);
-      Ptr<EdcaTxopN> edca = ptr.Get<EdcaTxopN> ();
       Ptr<MsduAggregator> aggregator = factory.Create<MsduAggregator> ();
       edca->SetMsduAggregator (aggregator);
+    }
+  if (m_bAckThresholds.find (ac) != m_bAckThresholds.end ())
+    {
+      edca->SetBlockAckThreshold (m_bAckThresholds.find(ac)->second);
+    }
+  if (m_bAckInactivityTimeouts.find (ac) != m_bAckInactivityTimeouts.end ())
+    {
+      edca->SetBlockAckInactivityTimeout (m_bAckInactivityTimeouts.find(ac)->second);
     }
 }
 
