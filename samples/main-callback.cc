@@ -54,5 +54,19 @@ int main (int argc, char *argv[])
   //int retTwoNull = two (20.0);
   NS_ASSERT (two.IsNull ());
 
+#if 0
+  // The below type mismatch between CbOne() and callback two will fail to 
+  // compile if enabled in this program.
+  two = MakeCallback (&CbOne);
+#endif
+
+#if 0
+  // This is a slightly different example, in which the code will compile
+  // but because callbacks are type-safe, will cause a fatal error at runtime 
+  // (the difference here is that Assign() is called instead of operator=)
+  Callback<void, float> three;
+  three.Assign (MakeCallback (&CbOne));
+#endif
+
   return 0;
 }
