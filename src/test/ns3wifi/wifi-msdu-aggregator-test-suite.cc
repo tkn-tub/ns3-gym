@@ -83,7 +83,7 @@ WifiMsduAggregatorThroughputTest::DoRun (void)
   wifiMac.SetType ("ns3::QapWifiMac",
                    "Ssid", SsidValue (ssid),
                    "BeaconGeneration", BooleanValue (true),
-                   "BeaconInterval", TimeValue (MilliSeconds (102.4)));
+                   "BeaconInterval", TimeValue (MicroSeconds (102400)));
   wifiMac.SetMsduAggregatorForAc (AC_BE, "ns3::MsduStandardAggregator",
                                   "MaxAmsduSize", UintegerValue (4000));
   NetDeviceContainer apDev = wifi.Install (wifiPhy, wifiMac, ap);
