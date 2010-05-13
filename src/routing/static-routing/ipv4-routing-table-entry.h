@@ -51,11 +51,13 @@ public:
    */
   Ipv4RoutingTableEntry (Ipv4RoutingTableEntry const *route);
   /**
-   * \return True if this route is a host route; false otherwise
+   * \return True if this route is a host route (mask of all ones); false otherwise
    */
   bool IsHost (void) const;
   /**
-   * \return The IPv4 address of the destination of this route
+   * \return True if this route is not a host route (mask is not all ones); false otherwise
+   *
+   * This method is implemented as !IsHost ().
    */
   bool IsNetwork (void) const;
   /**
