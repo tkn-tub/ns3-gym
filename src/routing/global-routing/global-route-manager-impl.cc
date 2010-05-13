@@ -1765,7 +1765,7 @@ GlobalRouteManagerImpl::SPFIntraAddStub (GlobalRoutingLinkRecord *l, SPFVertex* 
           NS_ASSERT_MSG (v->GetLSA (), 
             "GlobalRouteManagerImpl::SPFIntraAddRouter (): "
             "Expected valid LSA in SPFVertex* v");
-          Ipv4Mask tempmask ("255.255.255.0");
+          Ipv4Mask tempmask (l->GetLinkData ().Get ());
           Ipv4Address tempip = l->GetLinkId ();
           tempip = tempip.CombineMask (tempmask);
 //

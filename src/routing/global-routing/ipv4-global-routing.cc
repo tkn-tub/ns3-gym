@@ -159,7 +159,6 @@ Ipv4GlobalRouting::LookupGlobal (Ipv4Address dest, Ptr<NetDevice> oif)
            j != m_networkRoutes.end (); 
            j++) 
         {
-          NS_ASSERT ((*j)->IsNetwork () || (*j)->IsDefault ());
           Ipv4Mask mask = (*j)->GetDestNetworkMask ();
           Ipv4Address entry = (*j)->GetDestNetwork ();
           if (mask.IsMatch (dest, entry)) 
