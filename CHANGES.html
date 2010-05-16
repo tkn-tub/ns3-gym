@@ -49,6 +49,19 @@ us a note on ns-developers mailing list.  </p>
 <h2>Changes to build system:</h2>
 
 <h2>New API:</h2>
+<ul>
+<li><b>Wifi set block ack threshold:"</b> Two methods for setting block ack
+parameters for a specific access class: 
+<pre>
+void QosWifiMacHelper::SetBlockAckThresholdForAc (enum AccessClass accessClass, uint8_t threshold);
+void QosWifiMacHelper::SetBlockAckInactivityTimeoutForAc (enum AccessClass accessClass, uint16_t timeout);
+</pre>
+</ul>
+<ul><b>Receive List Error Model:"</b>  Another basic error model that allows
+the user to specify a list of received packets that should be errored.  The
+list corresponds not to the packet UID but to the sequence of received
+packets as observed by the error model.   See src/common/error-model.h
+</ul>
 
 <h2>Changes to existing API:</h2>
 

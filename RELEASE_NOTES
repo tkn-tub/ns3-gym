@@ -32,8 +32,14 @@ Bugs fixed
 The following lists many of the bugs that were fixed since ns-3.7, in
 many cases referencing the Bugzilla bug number
 
+   - IPv4 global routing code; stub networks were assumed to be /24
+     and added as /24 networks even if the mask is actually different
+   - bug 842 - ns-3-dev crashes using block acks
+   - OLSR was generating messages on non-OLSR interfaces
    - bug 861 - Forwarding drops (due to no route found) were not being logged 
                in IPv4 or IPv6 ascii traces
+   - ICMPv4 objects not properly registered; affected serialization code
+   - bug 875 - Set FCS included flag in Radiotap header
 
 Known issues
 ------------
