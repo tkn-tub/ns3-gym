@@ -200,24 +200,25 @@ connected to.  The phy objects are created in the next step.
 
 The @code{ns3::NqosWifiMacHelper} and @code{ns3::QosWifiMacHelper} configure an
 object factory to create instances of a @code{ns3::WifiMac}. They are used to
-configure MAC parameters like type of MAC, values of contention windows and so on.
+configure MAC parameters like type of MAC.
 Setting up a non-QoS MAC layers the object we use is @code{ns3::NqosWifiMacHelper}.
-For example the following user code configures a non-QoS MAC sta and changes its default
-values for contention window and Aifsn:
+For example the following user code configures a non-QoS MAC sta:
 @smallformat
 @example
   NqosWifiMacHelper wifiMacHelper = NqosWifiMacHelper::Default ();
   Ssid ssid = Ssid ("ns-3-ssid");
   wifiMacHelper.SetType ("ns3::NqstaWifiMac", "Ssid", SsidValue (ssid), 
 "ActiveProbing", BooleanValue (false));
-  wifiMacHelper.SetDcaParameters ("MinCw", UintegerValue (20), "Aifsn", 
-UintegerValue (3));
 @end example
 @end smallformat
 
 Setting up a QoS MACs we use a @code{ns3::QosWifiMacHelper} instead.
-This object could be also used to change default EDCA parameters, and to set a possible MSDU aggregator
-for a particular access class in order to use 802.11n MSDU aggregation feature.
+This object could be also used to set:
+@itemize @bullet
+@item a MSDU aggregator for a particular access class in order to use 802.11n MSDU aggregation feature;
+@item block ack parameters like threshold (number of packets for which block ack mechanism should be used) and inactivity timeout.
+@end itemize
+
 A possible user code:
 @smallformat
 @example
@@ -228,11 +229,10 @@ A possible user code:
     "BeaconInterval", TimeValue (Seconds (2.5)));
   wifiMacHelper.SetMsduAggregatorForAc (AC_VO, "ns3::MsduStandardAggregator", 
     "MaxAmsduSize", UintegerValue (3839));
+  wifiMacHelper.SetBlockAckThresholdForAc (AC_BE, 10);
+  wifiMacHelper.SetBlockAckInactivityTimeoutForAc (AC_BE, 5);
 @end example
 @end smallformat
-
-Call to QosWifiMacHelper::Default () is needed in order to set default EDCA parameters properly for all
-access classes; otherwise we should set them one by one.
 
 @subsection WifiHelper
 
