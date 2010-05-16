@@ -297,7 +297,7 @@ void RoutingProtocol::DoStart ()
         {
           NS_FATAL_ERROR ("Failed to bind() OLSR receive socket");
         }
-      socket->Connect (InetSocketAddress (Ipv4Address (0xffffffff), OLSR_PORT_NUMBER));
+      socket->Connect (InetSocketAddress (addr.GetSubnetDirectedBroadcast (m_ipv4->GetAddress (i, 0).GetMask ()), OLSR_PORT_NUMBER));
       m_socketAddresses[socket] = m_ipv4->GetAddress (i, 0);
 
       canRunOlsr = true;
@@ -1542,7 +1542,11 @@ RoutingProtocol::SendPacket (Ptr<Packet> packet,
   m_txPacketTrace (header, containedMessages);
 
   // Send it
-  m_socketAddresses.begin ()->first->Send (packet);
+  for (std::map<Ptr<Socket> , Ipv4InterfaceAddress>::const_iterator i =
+      m_socketAddresses.begin (); i != m_socketAddresses.end (); i++)
+    {
+      i->first->Send (packet);
+    }
 }
 
 ///
