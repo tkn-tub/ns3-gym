@@ -1565,16 +1565,16 @@ MacLow::RxCompleteBufferedPacketsWithSmallerSequence (uint16_t seq, Mac48Address
   AgreementsI it = m_bAckAgreements.find (std::make_pair (originator, tid));
   if (it != m_bAckAgreements.end ())
     {
-      BufferedPacketI i = (*it).second.second.begin ();
       uint16_t endSequence = ((*it).second.first.GetStartingSequence () + 2047) % 4096;
       uint16_t mappedStart = QosUtilsMapSeqControlToUniqueInteger (seq, endSequence);
-      uint16_t guard = (*it).second.first.GetStartingSequence ();
+      uint16_t guard = (*it).second.second.begin ()->second.GetSequenceControl() & 0xfff0;
       BufferedPacketI last = (*it).second.second.begin ();
 
+      BufferedPacketI i = (*it).second.second.begin ();
       for (; i != (*it).second.second.end () &&
              QosUtilsMapSeqControlToUniqueInteger ((*i).second.GetSequenceNumber (), endSequence) < mappedStart;)
         {
-          while (i != (*it).second.second.end () && guard == (*i).second.GetSequenceControl ())
+          if (guard == (*i).second.GetSequenceControl ())
             {
               if (!(*i).second.IsMoreFragments ())
                 {
@@ -1585,18 +1585,34 @@ MacLow::RxCompleteBufferedPacketsWithSmallerSequence (uint16_t seq, Mac48Address
                     }
                   m_rxCallback ((*last).first, &(*last).second);
                   last++;
+                  /* go to next packet */
+                  while (i != (*it).second.second.end () && ((guard >> 4) & 0x0fff) == (*i).second.GetSequenceNumber ())
+                    {
+                      i++;
+                    }
+                  if (i != (*it).second.second.end ())
+                    {
+                      guard = (*i).second.GetSequenceControl () & 0xfff0;
+                      last = i;
+                    }
                 }
-              guard = (*i).second.IsMoreFragments () ? (guard + 1) : ((guard + 16) & 0xfff0);
+              else
+                {
+                  guard++;
+                }
             }
-          /* go to next packet */
-          while (i != (*it).second.second.end () && ((guard >> 4) & 0x0fff) == (*i).second.GetSequenceNumber ())
+          else
             {
-              i++;
-            }
-          if (i != (*it).second.second.end ())
-            {
-              guard = (*i).second.GetSequenceControl () & 0xfff0;
-              last = i;
+              /* go to next packet */
+              while (i != (*it).second.second.end () && ((guard >> 4) & 0x0fff) == (*i).second.GetSequenceNumber ())
+                {
+                  i++;
+                }
+              if (i != (*it).second.second.end ())
+                {
+                  guard = (*i).second.GetSequenceControl () & 0xfff0;
+                  last = i;
+                }
             }
         }
       (*it).second.second.erase ((*it).second.second.begin (), i);
