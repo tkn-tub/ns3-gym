@@ -728,12 +728,15 @@ void Ipv6L3Protocol::Receive (Ptr<NetDevice> device, Ptr<const Packet> p, uint16
         }
     }
 
-  m_routingProtocol->RouteInput (packet, hdr, device,
+  if (! m_routingProtocol->RouteInput (packet, hdr, device,
                                  MakeCallback (&Ipv6L3Protocol::IpForward, this),
                                  MakeCallback (&Ipv6L3Protocol::IpMulticastForward, this),
                                  MakeCallback (&Ipv6L3Protocol::LocalDeliver, this),
-                                 MakeCallback (&Ipv6L3Protocol::RouteInputError, this)
-  );
+                                 MakeCallback (&Ipv6L3Protocol::RouteInputError, this)))
+    {
+      NS_LOG_WARN ("No route found for forwarding packet.  Drop.");
+      m_dropTrace (hdr, packet, DROP_NO_ROUTE, interface);
+    }
 }
 
 void Ipv6L3Protocol::SendRealOut (Ptr<Ipv6Route> route, Ptr<Packet> packet, Ipv6Header const& ipHeader)

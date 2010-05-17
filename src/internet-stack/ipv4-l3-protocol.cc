@@ -484,12 +484,17 @@ Ipv4L3Protocol::Receive( Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t pr
     }
 
   NS_ASSERT_MSG (m_routingProtocol != 0, "Need a routing protocol object to process packets");
-  m_routingProtocol->RouteInput (packet, ipHeader, device, 
+  if (! m_routingProtocol->RouteInput (packet, ipHeader, device, 
     MakeCallback (&Ipv4L3Protocol::IpForward, this),
     MakeCallback (&Ipv4L3Protocol::IpMulticastForward, this),
     MakeCallback (&Ipv4L3Protocol::LocalDeliver, this),
     MakeCallback (&Ipv4L3Protocol::RouteInputError, this)
-  );
+  ))
+    {
+      NS_LOG_WARN ("No route found for forwarding packet.  Drop.");
+      m_dropTrace (ipHeader, packet, DROP_NO_ROUTE, m_node->GetObject<Ipv4> (), interface);
+    }
+
 
 }
 
