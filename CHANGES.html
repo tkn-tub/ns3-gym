@@ -67,6 +67,14 @@ packets as observed by the error model.   See src/common/error-model.h
 
 <h2>Changed behavior:</h2>
 <ul>
+<li><b>Queue trace behavior during Enqueue changed:</b> The behavior of the
+Enqueue trace source has been changed to be more intuitive and to agree with
+documentation.  Enqueue and Drop events in src/node/queue.cc are now mutually
+exclusive.  In the past, the meaning of an Enqueue event was that the Queue
+Enqueue operation was being attempted; and this could be followed by a Drop
+event if the Queue was full.  The new behavior is such that a packet is either
+Enqueue'd successfully or Drop'ped.
+
 <li><b>Drop trace logged for Ipv4/6 forwarding failure:</b> Fixed bug 861; this 
 will add ascii traces (drops) in Ipv4 and Ipv6 traces for forwarding failures
 </ul>
