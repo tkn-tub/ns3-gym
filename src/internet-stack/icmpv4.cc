@@ -27,6 +27,8 @@ namespace ns3 {
  *        Icmpv4Header
  ********************************************************/
 
+NS_OBJECT_ENSURE_REGISTERED (Icmpv4Header);
+
 TypeId 
 Icmpv4Header::GetTypeId (void)
 {
@@ -114,6 +116,9 @@ Icmpv4Header::GetCode (void) const
 /********************************************************
  *        Icmpv4Echo
  ********************************************************/
+
+NS_OBJECT_ENSURE_REGISTERED (Icmpv4Echo);
+
 void 
 Icmpv4Echo::SetIdentifier (uint16_t id)
 {
@@ -234,6 +239,8 @@ Icmpv4Echo::Print (std::ostream &os) const
  *        Icmpv4DestinationUnreachable
  ********************************************************/
 
+NS_OBJECT_ENSURE_REGISTERED (Icmpv4DestinationUnreachable);
+
 TypeId 
 Icmpv4DestinationUnreachable::GetTypeId (void)
 {
@@ -341,6 +348,8 @@ Icmpv4DestinationUnreachable::Print (std::ostream &os) const
 /********************************************************
  *        Icmpv4TimeExceeded
  ********************************************************/
+
+NS_OBJECT_ENSURE_REGISTERED (Icmpv4TimeExceeded);
 
 TypeId 
 Icmpv4TimeExceeded::GetTypeId (void)
