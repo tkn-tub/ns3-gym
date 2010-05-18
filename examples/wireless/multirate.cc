@@ -543,11 +543,8 @@ int main (int argc, char *argv[])
   experiment = Experiment ("multirate");
 
   //for commandline input
-  if (!experiment.CommandSetup(argc, argv))
-    {
-      std::cout << "Configuration failed..." << std::endl;
-      exit(1);
-    }
+  NS_ASSERT_MSG (experiment.CommandSetup(argc, argv),
+                 "Configuration failed...");
 
   // disable fragmentation
   // set value to 0 for enabling fragmentation
@@ -571,12 +568,12 @@ int main (int argc, char *argv[])
   wifi.SetRemoteStationManager (experiment.GetRateManager());
 
   //printing out selection confirmation
-  std::cout << "Scenario: " << experiment.GetScenario () << std::endl;
-  std::cout << "Rts Threshold: " << experiment.GetRtsThreshold() << std::endl;
-  std::cout << "Name:  " << experiment.GetOutputFileName() << std::endl;
-  std::cout << "Rate:  " << experiment.GetRateManager() << std::endl;
-  std::cout << "Routing: " << experiment.IsRouting() << std::endl;
-  std::cout << "Mobility: " << experiment.IsMobility() << std::endl;
+  NS_LOG_INFO ("Scenario: " << experiment.GetScenario ());
+  NS_LOG_INFO ("Rts Threshold: " << experiment.GetRtsThreshold());
+  NS_LOG_INFO ("Name:  " << experiment.GetOutputFileName());
+  NS_LOG_INFO ("Rate:  " << experiment.GetRateManager());
+  NS_LOG_INFO ("Routing: " << experiment.IsRouting());
+  NS_LOG_INFO ("Mobility: " << experiment.IsMobility());
 
   dataset = experiment.Run (wifi, wifiPhy, wifiMac, wifiChannel, mobility);
 

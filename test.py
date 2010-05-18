@@ -144,7 +144,13 @@ example_tests = [
     ("udp/udp-echo", "True", "True"),
 
     ("wireless/mixed-wireless", "True", "True"),
-    ("wireless/multirate", "False", "True"), # Takes too long to run
+    ("wireless/multirate --totalTime=1.5s --rateManager=ns3::AarfcdWifiManager", "True", "True"), 
+    ("wireless/multirate --totalTime=1.5s --rateManager=ns3::AmrrWifiManager", "True", "True"), 
+    ("wireless/multirate --totalTime=1.5s --rateManager=ns3::CaraWifiManager", "True", "True"), 
+    ("wireless/multirate --totalTime=1.5s --rateManager=ns3::IdealWifiManager", "True", "True"), 
+    ("wireless/multirate --totalTime=1.5s --rateManager=ns3::MinstrelWifiManager", "True", "True"), 
+    ("wireless/multirate --totalTime=1.5s --rateManager=ns3::OnoeWifiManager", "True", "True"), 
+    ("wireless/multirate --totalTime=1.5s --rateManager=ns3::RraaWifiManager", "True", "True"), 
     ("wireless/simple-wifi-frame-aggregation", "True", "True"),
     ("wireless/wifi-adhoc", "False", "True"), # Takes too long to run
     ("wireless/wifi-ap --verbose=0", "True", "True"), # Don't let it spew to stdout
