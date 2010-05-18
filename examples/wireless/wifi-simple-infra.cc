@@ -160,9 +160,7 @@ int main (int argc, char *argv[])
   NetDeviceContainer staDevice = wifi.Install (wifiPhy, wifiMac, c.Get(0));
   NetDeviceContainer devices = staDevice;
   // setup ap.
-  wifiMac.SetType ("ns3::NqapWifiMac", "Ssid", SsidValue (ssid),
-                   "BeaconGeneration", BooleanValue (true),
-                   "BeaconInterval", TimeValue (Seconds (2.5)));
+  wifiMac.SetType ("ns3::NqapWifiMac", "Ssid", SsidValue (ssid));
   NetDeviceContainer apDevice = wifi.Install (wifiPhy, wifiMac, c.Get(1));
   devices.Add (apDevice);
 

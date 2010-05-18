@@ -99,9 +99,7 @@ main (int argc, char *argv[])
   staDevices = wifi.Install (phy, mac, wifiStaNodes);
 
   mac.SetType ("ns3::NqapWifiMac", 
-    "Ssid", SsidValue (ssid),
-    "BeaconGeneration", BooleanValue (true),
-    "BeaconInterval", TimeValue (Seconds (2.5)));
+    "Ssid", SsidValue (ssid));
 
   NetDeviceContainer apDevices;
   apDevices = wifi.Install (phy, mac, wifiApNode);

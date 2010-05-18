@@ -77,8 +77,7 @@ int main (int argc, char const* argv[])
   //mac.SetBlockAckInactivityTimeoutForAc (AC_BE, 3);
   NetDeviceContainer staDevice = wifi.Install (phy, mac, sta);
 
-  mac.SetType ("ns3::QapWifiMac", "Ssid", SsidValue (ssid), "BeaconGeneration", BooleanValue (true),
-               "BeaconInterval", TimeValue (Seconds (2.5)));
+  mac.SetType ("ns3::QapWifiMac", "Ssid", SsidValue (ssid));
   mac.SetBlockAckThresholdForAc (AC_BE, 0);
   NetDeviceContainer apDevice = wifi.Install (phy, mac, ap);
   

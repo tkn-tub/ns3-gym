@@ -155,9 +155,7 @@ int main (int argc, char *argv[])
                "ActiveProbing", BooleanValue (false));
   staDevs = wifi.Install (wifiPhy, wifiMac, stas);
   // setup ap.
-  wifiMac.SetType ("ns3::NqapWifiMac", "Ssid", SsidValue (ssid),
-               "BeaconGeneration", BooleanValue (true),
-               "BeaconInterval", TimeValue (Seconds (2.5)));
+  wifiMac.SetType ("ns3::NqapWifiMac", "Ssid", SsidValue (ssid));
   wifi.Install (wifiPhy, wifiMac, ap);
 
   // mobility.

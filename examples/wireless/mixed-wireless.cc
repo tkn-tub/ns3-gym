@@ -283,9 +283,7 @@ main (int argc, char *argv[])
                "ActiveProbing", BooleanValue (false));
       NetDeviceContainer staDevices = wifiInfra.Install (wifiPhy, macInfra, stas);
       // setup ap.
-      macInfra.SetType ("ns3::NqapWifiMac", "Ssid", SsidValue (ssid),
-               "BeaconGeneration", BooleanValue (true),
-               "BeaconInterval", TimeValue (Seconds (2.5)));
+      macInfra.SetType ("ns3::NqapWifiMac", "Ssid", SsidValue (ssid));
       NetDeviceContainer apDevices = wifiInfra.Install (wifiPhy, macInfra, backbone.Get (i));
       // Collect all of these new devices
       NetDeviceContainer infraDevices (apDevices, staDevices);

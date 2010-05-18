@@ -140,9 +140,7 @@ main (int argc, char *argv[])
   wifi.SetRemoteStationManager ("ns3::ArfWifiManager");
 
   wifiMac.SetType ("ns3::NqapWifiMac", 
-                   "Ssid", SsidValue (ssid), 
-                   "BeaconGeneration", BooleanValue (true), 
-                   "BeaconInterval", TimeValue (Seconds (2.5)));
+                   "Ssid", SsidValue (ssid));
   NetDeviceContainer devicesLeft = wifi.Install (wifiPhy, wifiMac, nodesLeft.Get (0));
 
 

@@ -50,7 +50,7 @@ NqapWifiMac::GetTypeId (void)
     .SetParent<WifiMac> ()
     .AddConstructor<NqapWifiMac> ()
     .AddAttribute ("BeaconInterval", "Delay between two beacons",
-                   TimeValue (Seconds (0.1)),
+                   TimeValue (MicroSeconds (102400)),
                    MakeTimeAccessor (&NqapWifiMac::GetBeaconInterval,
                                      &NqapWifiMac::SetBeaconInterval),
                    MakeTimeChecker ())
@@ -280,6 +280,10 @@ void
 NqapWifiMac::SetBeaconInterval (Time interval)
 {
   NS_LOG_FUNCTION (this << interval);
+  if ((interval.GetMicroSeconds () % 1024) != 0)
+    {
+      NS_LOG_WARN ("beacon interval should be multiple of 1024us, see IEEE Std. 802.11-2007, section 11.1.1.1");
+    }
   m_beaconInterval = interval;
 }
 void

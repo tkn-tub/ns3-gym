@@ -78,9 +78,7 @@ int main (int argc, char *argv[])
   staDevices = wifi.Install (phy, mac, wifiNodes);
   
   mac.SetType ("ns3::QapWifiMac", 
-    "Ssid", SsidValue (ssid),
-    "BeaconGeneration", BooleanValue (true),
-    "BeaconInterval", TimeValue (Seconds (2.5)));
+    "Ssid", SsidValue (ssid));
   mac.SetMsduAggregatorForAc (AC_BE, "ns3::MsduStandardAggregator", 
                                      "MaxAmsduSize", UintegerValue (7935));
 
