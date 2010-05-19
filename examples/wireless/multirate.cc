@@ -43,10 +43,9 @@
  * To view pcap files:
  * tcpdump -nn -tt -r filename.pcap
  *
- * To monitor the files
+ * To monitor the files:
  * tail -f filename.pcap
  *
- * Sidenote: Simulation might take sometime 
  */
 
 #include "ns3/core-module.h"
@@ -124,15 +123,15 @@ Experiment::Experiment ()
 
 Experiment::Experiment (std::string name) : 
   m_output (name),
-  totalTime (50), //use shorter time for faster simulation 
+  totalTime (0.3), 
   bytesTotal(0),
   packetSize (2000),
   gridSize (10), //10x10 grid  for a total of 100 nodes
   nodeDistance (30),
   port (5000),
-  expMean (4), //flows being exponentially distributed
+  expMean (0.1), //flows being exponentially distributed
   scenario (4), 
-  enablePcap (false), // will flood the directory with *.pcap files
+  enablePcap (false), 
   enableTracing (true),
   enableFlowMon (true),
   enableRouting (false),
@@ -173,7 +172,8 @@ Experiment::CheckThroughput()
   bytesTotal = 0;
   m_output.Add ((Simulator::Now ()).GetSeconds (), mbs);
 
-  Simulator::Schedule (Seconds (1.0), &Experiment::CheckThroughput, this);
+  //check throughput every 1/10 of a second 
+  Simulator::Schedule (Seconds (0.1), &Experiment::CheckThroughput, this);
 }
 
 Vector
@@ -281,7 +281,7 @@ Experiment::SendMultiDestinations(Ptr<Node> sender, NodeContainer c)
   // ExponentialVariable params: (mean, upperbound)
   ExponentialVariable ev(expMean, totalTime);
 
-  double start=1, stop=totalTime;
+  double start=0.0, stop=totalTime;
   uint32_t destIndex; 
 
   for (uint32_t i=0; i < c.GetN (); i++)
