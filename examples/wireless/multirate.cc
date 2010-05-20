@@ -133,7 +133,7 @@ Experiment::Experiment (std::string name) :
   scenario (4), 
   enablePcap (false), 
   enableTracing (true),
-  enableFlowMon (true),
+  enableFlowMon (false),
   enableRouting (false),
   enableMobility (false),
   rtsThreshold ("2200"), //0 for enabling rts/cts
@@ -542,6 +542,7 @@ int main (int argc, char *argv[])
   Experiment experiment;
   experiment = Experiment ("multirate");
 
+  experiment.CommandSetup(argc, argv);
   //for commandline input
   NS_ASSERT_MSG (experiment.CommandSetup(argc, argv),
                  "Configuration failed...");

@@ -148,7 +148,6 @@ example_tests = [
     ("wireless/multirate --totalTime=0.3s --rateManager=ns3::AmrrWifiManager", "True", "True"), 
     ("wireless/multirate --totalTime=0.3s --rateManager=ns3::CaraWifiManager", "True", "True"), 
     ("wireless/multirate --totalTime=0.3s --rateManager=ns3::IdealWifiManager", "True", "True"), 
-    ("wireless/multirate --totalTime=0.3s --rateManager=ns3::MinstrelWifiManager", "True", "True"), 
     ("wireless/multirate --totalTime=0.3s --rateManager=ns3::OnoeWifiManager", "True", "True"), 
     ("wireless/multirate --totalTime=0.3s --rateManager=ns3::RraaWifiManager", "True", "True"), 
     ("wireless/simple-wifi-frame-aggregation", "True", "True"),
