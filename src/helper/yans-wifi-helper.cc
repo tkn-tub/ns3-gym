@@ -471,6 +471,7 @@ YansWifiPhyHelper::EnableAsciiInternal (
           filename = asciiTraceHelper.GetFilenameFromDevice (prefix, device);
         }
 
+      Ptr<OutputStreamWrapper> theStream = asciiTraceHelper.CreateFileStream (filename);
       //
       // We could go poking through the phy and the state looking for the 
       // correct trace source, but we can let Config deal with that with 
@@ -479,11 +480,11 @@ YansWifiPhyHelper::EnableAsciiInternal (
       //
       oss.str ("");
       oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::WifiNetDevice/Phy/State/RxOk";
-      Config::ConnectWithoutContext (oss.str (), MakeBoundCallback (&AsciiPhyReceiveSinkWithoutContext, stream));
+      Config::ConnectWithoutContext (oss.str (), MakeBoundCallback (&AsciiPhyReceiveSinkWithoutContext, theStream));
 
       oss.str ("");
       oss << "/NodeList/" << nodeid << "/DeviceList/" << deviceid << "/$ns3::WifiNetDevice/Phy/State/Tx";
-      Config::ConnectWithoutContext (oss.str (), MakeBoundCallback (&AsciiPhyTransmitSinkWithoutContext, stream));
+      Config::ConnectWithoutContext (oss.str (), MakeBoundCallback (&AsciiPhyTransmitSinkWithoutContext, theStream));
 
       return;
     }
