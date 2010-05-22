@@ -1008,6 +1008,9 @@ def run_tests():
 
         proc = subprocess.Popen(waf_cmd, shell = True)
         proc.communicate()
+        if proc.returncode:
+            print >> sys.stderr, "Waf died. Not running tests"
+            return proc.returncode
 
     #
     # Pull some interesting configuration information out of waf, primarily
