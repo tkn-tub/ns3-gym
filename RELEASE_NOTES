@@ -40,6 +40,7 @@ many cases referencing the Bugzilla bug number
                in IPv4 or IPv6 ascii traces
    - ICMPv4 objects not properly registered; affected serialization code
    - bug 875 - Set FCS included flag in Radiotap header
+   - bug 702 - Global routing doesn't respond to interface events
 
 Known issues
 ------------

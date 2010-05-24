@@ -33,22 +33,28 @@
  * The model assumes that all nodes on an ns-3 channel are reachable to
  * one another, regardless of whether the nodes can use the channel
  * successfully (in the case of wireless).  Therefore, this model
- * should typically be used only on wired topologies.  API does not
- * yet exist to control the subset of a topology to which this global
- * static routing is applied.
+ * should typically be used only on wired topologies.  Layer-2 bridge
+ * devices are supported.  API does not yet exist to control the subset 
+ * of a topology to which this global static routing is applied.
  * 
- * This model also does not yet deal with the possible presence of
- * layer-2 relays such as switches, bridges, and hubs, although ns-3 does
- * not have such devices yet.
+ * If the topology changes during the simulation, by default, routing
+ * will not adjust.  There are two ways to make it adjust.
+ * - Set the attribute Ipv4GlobalRouting::RespondToInterfaceEvents to true 
+ * - Manually call the sequence of GlobalRouteManager methods to delte global
+ *   routes, build global routing database, and initialize routes.
+ *   There is a helper method that encapsulates this 
+ *   (Ipv4GlobalRoutingHelper::RecomputeRoutingTables())
  * 
  * \section api API and Usage
  * 
  * Users must include ns3/global-route-manager.h header file.  After the
  * IPv4 topology has been built and addresses assigned, users call
  * ns3::GlobalRouteManager::PopulateRoutingTables (), prior to the 
- * ns3::Simulator::Run() call.  There are no other attributes or
- * public methods that are typically called, or ways to parameterize
- * the behavior.
+ * ns3::Simulator::Run() call.  
+ *
+ * There are two attributes of Ipv4GlobalRouting that govern behavior.
+ * - Ipv4GlobalRouting::RandomEcmpRouting
+ * - Ipv4GlobalRouting::RespondToInterfaceEvents  
  *
  * \section impl Implementation
  *
