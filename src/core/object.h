@@ -229,7 +229,7 @@ private:
 
   friend class ObjectFactory;
   friend class AggregateIterator;
-  friend class ObjectDeleter;
+  friend struct ObjectDeleter;
 
   /**
    * This data structure uses a classic C-style trick to 
