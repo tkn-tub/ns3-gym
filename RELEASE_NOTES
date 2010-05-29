@@ -41,6 +41,7 @@ many cases referencing the Bugzilla bug number
    - ICMPv4 objects not properly registered; affected serialization code
    - bug 875 - Set FCS included flag in Radiotap header
    - bug 702 - Global routing doesn't respond to interface events
+   - bug 906 - NSC TCP socket fork did not copy txbuffersize over
 
 Known issues
 ------------
