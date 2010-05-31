@@ -42,6 +42,8 @@ many cases referencing the Bugzilla bug number
    - bug 875 - Set FCS included flag in Radiotap header
    - bug 702 - Global routing doesn't respond to interface events
    - bug 906 - NSC TCP socket fork did not copy txbuffersize over
+   - bug 828: PacketSocket::Close does not unregister protocol handler
+   - bug 900:  RawTextConfigLoad::Default does not load configurations
 
 Known issues
 ------------
