@@ -3005,9 +3005,21 @@ bool RoutingProtocol::RouteInput  (Ptr<const Packet> p,
   uint32_t iif = m_ipv4->GetInterfaceForDevice (idev);
   if (m_ipv4->IsDestinationAddress (dst, iif))
     {
-        NS_LOG_LOGIC ("Local delivery to " << dst);
-        lcb (p, header, iif);
-        return true;
+      if (!lcb.IsNull ())
+        {
+          NS_LOG_LOGIC ("Local delivery to " << dst);
+          lcb (p, header, iif);
+          return true;
+        }
+      else
+        {
+          // The local delivery callback is null.  This may be a multicast
+          // or broadcast packet, so return false so that another 
+          // multicast routing protocol can handle it.  It should be possible
+          // to extend this to explicitly check whether it is a unicast
+          // packet, and invoke the error callback if so
+          return false;
+        }
     }
   
   // Forwarding
