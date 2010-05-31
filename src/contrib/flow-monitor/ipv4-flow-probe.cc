@@ -25,16 +25,125 @@
 #include "ns3/flow-monitor.h"
 #include "ns3/log.h"
 #include "ns3/pointer.h"
+#include "ns3/config.h"
+#include "ns3/flow-id-tag.h"
 
 namespace ns3 {
 
-NS_LOG_COMPONENT_DEFINE ("Ipv4FlowProbe");
-  
+using namespace std;
 
-Ipv4FlowProbe::~Ipv4FlowProbe ()
+NS_LOG_COMPONENT_DEFINE ("Ipv4FlowProbe");
+
+            //////////////////////////////////////
+            // Ipv4FlowProbeTag class implementation //
+            //////////////////////////////////////
+
+class Ipv4FlowProbeTag : public Tag
 {
-}
+public:
+  static TypeId GetTypeId (void);
+  virtual TypeId GetInstanceTypeId (void) const;
+  virtual uint32_t GetSerializedSize (void) const;
+  virtual void Serialize (TagBuffer buf) const;
+  virtual void Deserialize (TagBuffer buf);
+  virtual void Print (std::ostream &os) const;
+  Ipv4FlowProbeTag ();
+  Ipv4FlowProbeTag (uint32_t flowId, uint32_t packetId, uint32_t packetSize);
+  void SetFlowId (uint32_t flowId);
+  void SetPacketId (uint32_t packetId);
+  void SetPacketSize (uint32_t packetSize);
+  uint32_t GetFlowId (void) const;
+  uint32_t GetPacketId (void) const;
+  uint32_t GetPacketSize (void) const;
+private:
+  uint32_t m_flowId;
+  uint32_t m_packetId;
+  uint32_t m_packetSize;
   
+};
+
+TypeId 
+Ipv4FlowProbeTag::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::Ipv4FlowProbeTag")
+    .SetParent<Tag> ()
+    .AddConstructor<Ipv4FlowProbeTag> ()
+    ;
+  return tid;
+}
+TypeId 
+Ipv4FlowProbeTag::GetInstanceTypeId (void) const
+{
+  return GetTypeId ();
+}
+uint32_t 
+Ipv4FlowProbeTag::GetSerializedSize (void) const
+{
+  return 4 + 4 + 4;
+}
+void 
+Ipv4FlowProbeTag::Serialize (TagBuffer buf) const
+{
+  buf.WriteU32 (m_flowId);
+  buf.WriteU32 (m_packetId);
+  buf.WriteU32 (m_packetSize);
+}
+void 
+Ipv4FlowProbeTag::Deserialize (TagBuffer buf)
+{
+  m_flowId = buf.ReadU32 ();
+  m_packetId = buf.ReadU32 ();
+  m_packetSize = buf.ReadU32 ();
+}
+void 
+Ipv4FlowProbeTag::Print (std::ostream &os) const
+{
+  os << "FlowId=" << m_flowId;
+  os << "PacketId=" << m_packetId;
+  os << "PacketSize=" << m_packetSize;
+}
+Ipv4FlowProbeTag::Ipv4FlowProbeTag ()
+  : Tag () 
+{}
+
+Ipv4FlowProbeTag::Ipv4FlowProbeTag (uint32_t flowId, uint32_t packetId, uint32_t packetSize)
+  : Tag (), m_flowId (flowId), m_packetId (packetId), m_packetSize (packetSize)
+{}
+
+void
+Ipv4FlowProbeTag::SetFlowId (uint32_t id)
+{
+  m_flowId = id;
+}
+void
+Ipv4FlowProbeTag::SetPacketId (uint32_t id)
+{
+  m_packetId = id;
+}
+void
+Ipv4FlowProbeTag::SetPacketSize (uint32_t size)
+{
+  m_packetSize = size;
+}
+uint32_t
+Ipv4FlowProbeTag::GetFlowId (void) const
+{
+  return m_flowId;
+}  
+uint32_t
+Ipv4FlowProbeTag::GetPacketId (void) const
+{
+  return m_packetId;
+} 
+uint32_t
+Ipv4FlowProbeTag::GetPacketSize (void) const
+{
+  return m_packetSize;
+} 
+
+            ////////////////////////////////////////
+            // Ipv4FlowProbe class implementation //
+            ////////////////////////////////////////
 
 Ipv4FlowProbe::Ipv4FlowProbe (Ptr<FlowMonitor> monitor,
                               Ptr<Ipv4FlowClassifier> classifier,
@@ -67,6 +176,11 @@ Ipv4FlowProbe::Ipv4FlowProbe (Ptr<FlowMonitor> monitor,
     {
       NS_FATAL_ERROR ("trace fail");
     }
+
+  // code copied from point-to-point-helper.cc
+  std::ostringstream oss;
+  oss << "/NodeList/" << node->GetId () << "/DeviceList/*/TxQueue/Drop";
+  Config::ConnectWithoutContext (oss.str (), MakeCallback (&Ipv4FlowProbe::QueueDropLogger, Ptr<Ipv4FlowProbe> (this)));
 }
 
 void
@@ -81,6 +195,11 @@ Ipv4FlowProbe::SendOutgoingLogger (const Ipv4Header &ipHeader, Ptr<const Packet>
       NS_LOG_DEBUG ("ReportFirstTx ("<<this<<", "<<flowId<<", "<<packetId<<", "<<size<<"); "
                     << ipHeader << *ipPayload);
       m_flowMonitor->ReportFirstTx (this, flowId, packetId, size);
+
+      // tag the packet with the flow id and packet id, so that the packet can be identified even
+      // when Ipv4Header is not accessible at some non-IPv4 protocol layer
+      Ipv4FlowProbeTag fTag (flowId, packetId, size);
+      ipPayload->AddPacketTag (fTag);
     }
 }
 
@@ -107,6 +226,13 @@ Ipv4FlowProbe::ForwardUpLogger (const Ipv4Header &ipHeader, Ptr<const Packet> ip
   
   if (m_classifier->Classify (ipHeader, ipPayload, &flowId, &packetId))
     {
+      // remove the tags that are added by Ipv4FlowProbe::SendOutgoingLogger ()
+      Ipv4FlowProbeTag fTag;
+
+      // ConstCast: see http://www.nsnam.org/bugzilla/show_bug.cgi?id=904
+      bool tagFound = ConstCast<Packet> (ipPayload)->RemovePacketTag (fTag);
+      NS_ASSERT_MSG (tagFound, "Ipv4FlowProbeTag is missing");
+
       uint32_t size = (ipPayload->GetSize () + ipHeader.GetSerializedSize ());
       NS_LOG_DEBUG ("ReportLastRx ("<<this<<", "<<flowId<<", "<<packetId<<", "<<size<<");");
       m_flowMonitor->ReportLastRx (this, flowId, packetId, size);
@@ -140,9 +266,16 @@ Ipv4FlowProbe::DropLogger (const Ipv4Header &ipHeader, Ptr<const Packet> ipPaylo
 
   if (m_classifier->Classify (ipHeader, ipPayload, &flowId, &packetId))
     {
+      // remove the tags that are added by Ipv4FlowProbe::SendOutgoingLogger ()
+      Ipv4FlowProbeTag fTag;
+
+      // ConstCast: see http://www.nsnam.org/bugzilla/show_bug.cgi?id=904
+      bool tagFound = ConstCast<Packet> (ipPayload)->RemovePacketTag (fTag);
+      NS_ASSERT_MSG (tagFound, "Ipv4FlowProbeTag is missing");
+
       uint32_t size = (ipPayload->GetSize () + ipHeader.GetSerializedSize ());
-      NS_LOG_DEBUG ("Drop ("<<this<<", "<<flowId<<", "<<packetId<<", "<<size<<", " << reason
-                    << ", destIp=" << ipHeader.GetDestination () << "); "
+      NS_LOG_DEBUG ("Drop ("<<this<<", "<<flowId<<", "<<packetId<<", "<<size<<", " << reason 
+                    << ", destIp=" << ipHeader.GetDestination () << "); " 
                     << "HDR: " << ipHeader << " PKT: " << *ipPayload);
 
       DropReason myReason;
@@ -171,7 +304,25 @@ Ipv4FlowProbe::DropLogger (const Ipv4Header &ipHeader, Ptr<const Packet> ipPaylo
     }
 }
 
+void 
+Ipv4FlowProbe::QueueDropLogger (Ptr<const Packet> ipPayload)
+{
+  // remove the tags that are added by Ipv4FlowProbe::SendOutgoingLogger ()
+  Ipv4FlowProbeTag fTag;
 
+  // ConstCast: see http://www.nsnam.org/bugzilla/show_bug.cgi?id=904
+  bool tagFound = ConstCast<Packet> (ipPayload)->RemovePacketTag (fTag);
+  NS_ASSERT_MSG (tagFound, "FlowProbeTag is missing");
+  
+  FlowId flowId = fTag.GetFlowId ();
+  FlowPacketId packetId = fTag.GetPacketId ();
+  uint32_t size = fTag.GetPacketSize ();
+
+  NS_LOG_DEBUG ("Drop ("<<this<<", "<<flowId<<", "<<packetId<<", "<<size<<", " << DROP_QUEUE 
+                << "); ");
+
+  m_flowMonitor->ReportDrop (this, flowId, packetId, size, DROP_QUEUE);
+}
 
 } // namespace ns3
 
