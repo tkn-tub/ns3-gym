@@ -185,6 +185,10 @@ PacketSocket::Close(void)
       m_errno = ERROR_BADF;
       return -1;
     }
+  else if (m_state == STATE_BOUND || m_state == STATE_CONNECTED)
+    {
+      m_node->UnregisterProtocolHandler (MakeCallback (&PacketSocket::ForwardUp, this));
+    }
   m_state = STATE_CLOSED;
   m_shutdownSend = true;
   m_shutdownRecv = true;
