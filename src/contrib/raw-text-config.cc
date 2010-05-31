@@ -120,7 +120,7 @@ RawTextConfigLoad::Default (void)
     {
       NS_LOG_DEBUG ("type=" << type << ", name=" << name << ", value=" << value);
       value = Strip (value);
-      if (type == "global")
+      if (type == "default")
 	{
 	  Config::SetDefault (name, StringValue (value));
 	}
