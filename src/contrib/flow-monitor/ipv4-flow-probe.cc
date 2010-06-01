@@ -183,6 +183,10 @@ Ipv4FlowProbe::Ipv4FlowProbe (Ptr<FlowMonitor> monitor,
   Config::ConnectWithoutContext (oss.str (), MakeCallback (&Ipv4FlowProbe::QueueDropLogger, Ptr<Ipv4FlowProbe> (this)));
 }
 
+Ipv4FlowProbe::~Ipv4FlowProbe ()
+{
+}
+
 void
 Ipv4FlowProbe::SendOutgoingLogger (const Ipv4Header &ipHeader, Ptr<const Packet> ipPayload, uint32_t interface)
 {
