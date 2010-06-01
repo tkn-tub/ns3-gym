@@ -234,7 +234,8 @@ Ipv4FlowProbe::ForwardUpLogger (const Ipv4Header &ipHeader, Ptr<const Packet> ip
       Ipv4FlowProbeTag fTag;
 
       // ConstCast: see http://www.nsnam.org/bugzilla/show_bug.cgi?id=904
-      bool tagFound = ConstCast<Packet> (ipPayload)->RemovePacketTag (fTag);
+      bool tagFound;
+      tagFound = ConstCast<Packet> (ipPayload)->RemovePacketTag (fTag);
       NS_ASSERT_MSG (tagFound, "Ipv4FlowProbeTag is missing");
 
       uint32_t size = (ipPayload->GetSize () + ipHeader.GetSerializedSize ());
@@ -274,7 +275,8 @@ Ipv4FlowProbe::DropLogger (const Ipv4Header &ipHeader, Ptr<const Packet> ipPaylo
       Ipv4FlowProbeTag fTag;
 
       // ConstCast: see http://www.nsnam.org/bugzilla/show_bug.cgi?id=904
-      bool tagFound = ConstCast<Packet> (ipPayload)->RemovePacketTag (fTag);
+      bool tagFound;
+      tagFound = ConstCast<Packet> (ipPayload)->RemovePacketTag (fTag);
       NS_ASSERT_MSG (tagFound, "Ipv4FlowProbeTag is missing");
 
       uint32_t size = (ipPayload->GetSize () + ipHeader.GetSerializedSize ());
@@ -315,7 +317,8 @@ Ipv4FlowProbe::QueueDropLogger (Ptr<const Packet> ipPayload)
   Ipv4FlowProbeTag fTag;
 
   // ConstCast: see http://www.nsnam.org/bugzilla/show_bug.cgi?id=904
-  bool tagFound = ConstCast<Packet> (ipPayload)->RemovePacketTag (fTag);
+  bool tagFound;
+  tagFound = ConstCast<Packet> (ipPayload)->RemovePacketTag (fTag);
   NS_ASSERT_MSG (tagFound, "FlowProbeTag is missing");
   
   FlowId flowId = fTag.GetFlowId ();
