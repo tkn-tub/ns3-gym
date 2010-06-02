@@ -948,7 +948,7 @@ class worker_thread(threading.Thread):
 
                 if options.verbose:
                     print "returncode = %d" % job.returncode
-                    print "---------- beign standard out ----------"
+                    print "---------- begin standard out ----------"
                     print standard_out
                     print "---------- begin standard err ----------"
                     print standard_err
