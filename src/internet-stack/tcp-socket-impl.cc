@@ -82,6 +82,7 @@ TcpSocketImpl::GetTypeId ()
     m_highestRxAck (0),
     m_lastRxAck (0),
     m_nextRxSequence (0),
+    m_finSequence (0),
     m_rxAvailable (0),
     m_rxBufSize (0),
     m_pendingData (0),
@@ -119,6 +120,7 @@ TcpSocketImpl::TcpSocketImpl(const TcpSocketImpl& sock)
     m_highestRxAck (sock.m_highestRxAck),
     m_lastRxAck (sock.m_lastRxAck),
     m_nextRxSequence (sock.m_nextRxSequence),
+    m_finSequence (sock.m_finSequence),
     m_rxAvailable (0),
     m_rxBufSize (0),
     m_pendingData (0),
@@ -345,6 +347,7 @@ TcpSocketImpl::Close (void)
                    " deferring close, state " << m_state);
       return 0;
     }
+  m_finSequence = m_nextTxSequence + SequenceNumber (1);
   Actions_t action  = ProcessEvent (APP_CLOSE);
   ProcessAction (action);
   return 0;
@@ -943,6 +946,7 @@ bool TcpSocketImpl::ProcessPacketAction (Actions_t a, Ptr<Packet> p,
       if(tcpHeader.GetFlags() & TcpHeader::FIN)
       {
         ++m_nextRxSequence; //bump this to account for the FIN
+        m_nextTxSequence = m_finSequence;
       }
       SendEmptyPacket (TcpHeader::ACK);
       break;
@@ -1037,19 +1041,27 @@ bool TcpSocketImpl::ProcessPacketAction (Actions_t a, Ptr<Packet> p,
       // out of sequence.  If so, note pending close and process
       // new sequence rx
       if (tcpHeader.GetSequenceNumber () != m_nextRxSequence)
-        { // process close later
-          m_pendingClose = true;
-          NS_LOG_LOGIC ("TcpSocketImpl " << this << " setting pendingClose" 
-            << " rxseq " << tcpHeader.GetSequenceNumber () 
-            << " nextRxSeq " << m_nextRxSequence);
-          NewRx (p, tcpHeader, fromAddress, toAddress);
-          return true;
+        {
+          if (m_finSequence != m_nextRxSequence)
+            {
+              // process close later
+              m_finSequence = tcpHeader.GetSequenceNumber () + SequenceNumber (p->GetSize ());
+              m_pendingClose = true;
+              NS_LOG_LOGIC ("TcpSocketImpl " << this << " setting pendingClose" 
+                << " rxseq " << tcpHeader.GetSequenceNumber () 
+                << " nextRxSeq " << m_nextRxSequence);
+              NewRx (p, tcpHeader, fromAddress, toAddress);
+              return true;
+            }
         }
       // Now we need to see if any data came with the FIN
-      // if so, call NewRx
+      // if so, call NewRx, unless NewRx was already called
       if (p->GetSize () != 0)
         {
-          NewRx (p, tcpHeader, fromAddress, toAddress);
+          if (m_finSequence != m_nextRxSequence)
+            {
+              NewRx (p, tcpHeader, fromAddress, toAddress);
+            }
         }
       ++m_nextRxSequence; //bump this to account for the FIN
       States_t saveState = m_state; // Used to see if app responds
@@ -1159,6 +1171,7 @@ bool TcpSocketImpl::SendPendingData (bool withAck)
           m_nextTxSequence + SequenceNumber (sz));
       if (m_closeOnEmpty && (remainingData == 0))
         {
+          m_finSequence = m_nextTxSequence + SequenceNumber (1 + sz);
           flags = TcpHeader::FIN;
           m_state = FIN_WAIT_1;
         }
@@ -1322,6 +1335,7 @@ void TcpSocketImpl::NewRx (Ptr<Packet> p,
           if (m_bufferedData.empty())
             {
               ProcessPacketAction (PEER_CLOSE, p, tcpHeader, fromAddress, toAddress);
+              return;
             }
         }
     }
