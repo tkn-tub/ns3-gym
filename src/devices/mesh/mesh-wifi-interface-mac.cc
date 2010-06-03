@@ -102,7 +102,10 @@ MeshWifiInterfaceMac::MeshWifiInterfaceMac () :
   m_beaconDca->SetMaxCw (0);
   m_beaconDca->SetAifsn (1);
   m_beaconDca->SetManager (m_dcfManager);
-  
+
+  // Construct the EDCAFs. The ordering is important - highest
+  // priority (see Table 9-1 in IEEE 802.11-2007) must be created
+  // first.
   SetQueue (AC_VO);
   SetQueue (AC_VI);
   SetQueue (AC_BE);
@@ -402,7 +405,7 @@ MeshWifiInterfaceMac::ForwardDown (Ptr<const Packet> const_packet, Mac48Address 
     }
   //Classify: application sets a tag, which is removed here
   // Get Qos tag:
-  AccessClass ac = AC_BE;
+  AcIndex ac = AC_BE;
   QosTag tag;
   if (packet->RemovePacketTag (tag))
     {
@@ -699,7 +702,7 @@ MeshWifiInterfaceMac::ResetStats ()
   m_stats = Statistics ();
 }
 void
-MeshWifiInterfaceMac::SetQueue (AccessClass ac)
+MeshWifiInterfaceMac::SetQueue (AcIndex ac)
 {
   if (m_queues.find (ac) != m_queues.end ())
     {

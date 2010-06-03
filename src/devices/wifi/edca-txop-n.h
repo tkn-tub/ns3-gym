@@ -137,7 +137,7 @@ public:
   void NextFragment (void);
   Ptr<Packet> GetFragmentPacket (WifiMacHeader *hdr);
   
-  void SetAccessClass (enum AccessClass ac);
+  void SetAccessCategory (enum AcIndex ac);
   void Queue (Ptr<const Packet> packet, const WifiMacHeader &hdr);
   void SetMsduAggregator (Ptr<MsduAggregator> aggr);
   void PushFront (Ptr<const Packet> packet, const WifiMacHeader &hdr);
@@ -185,7 +185,7 @@ private:
    */
   void VerifyBlockAck (void);
   
-  AccessClass m_ac;
+  AcIndex m_ac;
   class Dcf;
   class TransmissionListener;
   class BlockAckEventListener;

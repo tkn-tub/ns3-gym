@@ -92,7 +92,7 @@ public:
   void StartBeaconing (void);
 
 private:
-  typedef std::map<AccessClass, Ptr<EdcaTxopN> > Queues;
+  typedef std::map<AcIndex, Ptr<EdcaTxopN> > Queues;
   typedef std::list<std::pair<Ptr<Packet>, AmsduSubframeHeader> > DeaggregatedMsdus;
   typedef std::list<std::pair<Ptr<Packet>, AmsduSubframeHeader> >::const_iterator DeaggregatedMsdusCI;
   
@@ -122,7 +122,7 @@ private:
   Ptr<EdcaTxopN> GetVIQueue (void) const;
   Ptr<EdcaTxopN> GetBEQueue (void) const;
   Ptr<EdcaTxopN> GetBKQueue (void) const;
-  void SetQueue (enum AccessClass ac);
+  void SetQueue (enum AcIndex ac);
 
   virtual void FinishConfigureStandard (enum WifiPhyStandard standard);
 

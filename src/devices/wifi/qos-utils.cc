@@ -23,7 +23,7 @@
 
 namespace ns3 {
 
-AccessClass
+AcIndex
 QosUtilsMapTidToAc (uint8_t tid)
 {
   switch (tid) {

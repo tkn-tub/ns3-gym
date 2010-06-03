@@ -106,6 +106,9 @@ QapWifiMac::QapWifiMac ()
   m_beaconDca->SetLow (m_low);
   m_beaconDca->SetManager (m_dcfManager);
 
+  // Construct the EDCAFs. The ordering is important - highest
+  // priority (see Table 9-1 in IEEE 802.11-2007) must be created
+  // first.
   SetQueue (AC_VO);
   SetQueue (AC_VI);
   SetQueue (AC_BE);
@@ -399,7 +402,7 @@ QapWifiMac::ForwardDown (Ptr<const Packet> packet, Mac48Address from, Mac48Addre
   if (tid < 8)
     {
       hdr.SetQosTid (tid);
-      AccessClass ac = QosUtilsMapTidToAc (tid);
+      AcIndex ac = QosUtilsMapTidToAc (tid);
       m_queues[ac]->Queue (packet, hdr);
     }
   else
@@ -435,7 +438,7 @@ QapWifiMac::ForwardDown (Ptr<const Packet> packet, Mac48Address from, Mac48Addre
   hdr.SetDsFrom ();
   hdr.SetDsNotTo ();
 
-  AccessClass ac = QosUtilsMapTidToAc (oldHdr->GetQosTid ());
+  AcIndex ac = QosUtilsMapTidToAc (oldHdr->GetQosTid ());
   m_queues[ac]->Queue (packet, hdr);
 }
 
@@ -737,7 +740,7 @@ QapWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
                   else
                     {
                       /* We must notify correct queue tear down of agreement */
-                      AccessClass ac = QosUtilsMapTidToAc (delBaHdr.GetTid ());
+                      AcIndex ac = QosUtilsMapTidToAc (delBaHdr.GetTid ());
                       m_queues[ac]->GotDelBaFrame (&delBaHdr, hdr->GetAddr2 ());
                     }
                 }
@@ -803,7 +806,7 @@ QapWifiMac::GetBKQueue (void) const
 }
 
 void
-QapWifiMac::SetQueue (enum AccessClass ac)
+QapWifiMac::SetQueue (enum AcIndex ac)
 {
   Ptr<EdcaTxopN> edca = CreateObject<EdcaTxopN> ();
   edca->SetLow (m_low);
@@ -812,7 +815,7 @@ QapWifiMac::SetQueue (enum AccessClass ac)
   edca->SetTxMiddle (m_txMiddle);
   edca->SetTxOkCallback (MakeCallback (&QapWifiMac::TxOk, this));
   edca->SetTxFailedCallback (MakeCallback (&QapWifiMac::TxFailed, this));
-  edca->SetAccessClass (ac);
+  edca->SetAccessCategory (ac);
   edca->CompleteConfig ();
   m_queues.insert (std::make_pair(ac, edca));
 }
