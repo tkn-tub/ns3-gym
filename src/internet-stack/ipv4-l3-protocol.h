@@ -162,6 +162,15 @@ public:
    */
   void Send (Ptr<Packet> packet, Ipv4Address source, 
 	     Ipv4Address destination, uint8_t protocol, Ptr<Ipv4Route> route);
+  /**
+   * \param packet packet to send
+   * \param ipHeader IP Heeader
+   * \param route route entry
+   *
+   * Higher-level layers call this method to send a packet with IPv4 Header
+   * (Intend to be used with IpHeaderInclude attribute.)
+   */
+  void Send (Ptr<Packet> packet, Ipv4Header ipHeader, Ptr<Ipv4Route> route);
 
   uint32_t AddInterface (Ptr<NetDevice> device);
   Ptr<Ipv4Interface> GetInterface (uint32_t i) const;

@@ -59,6 +59,7 @@ private:
   bool m_shutdownSend;
   bool m_shutdownRecv;
   uint32_t m_icmpFilter;
+  bool m_iphdrincl;
 };
 
 } // namespace ns3

@@ -33,6 +33,7 @@
 #include "ns3/log.h"
 #include "ns3/node.h"
 #include "ns3/inet-socket-address.h"
+#include "ns3/boolean.h"
 
 #include "arp-l3-protocol.h"
 #include "ipv4-l3-protocol.h"
@@ -74,6 +75,8 @@ class Ipv4RawSocketImplTest: public TestCase
   Ptr<Packet> m_receivedPacket2;
   void DoSendData (Ptr<Socket> socket, std::string to);
   void SendData (Ptr<Socket> socket, std::string to);
+  void DoSendData_IpHdr (Ptr<Socket> socket, std::string to);
+  void SendData_IpHdr (Ptr<Socket> socket, std::string to);
 
 public:
   virtual bool DoRun (void);
@@ -136,6 +139,35 @@ Ipv4RawSocketImplTest::SendData (Ptr<Socket> socket, std::string to)
   m_receivedPacket2 = Create<Packet> ();
   Simulator::ScheduleWithContext (socket->GetNode ()->GetId (), Seconds (0),
                                   &Ipv4RawSocketImplTest::DoSendData, this, socket, to);
+  Simulator::Run ();
+}
+
+void
+Ipv4RawSocketImplTest::DoSendData_IpHdr (Ptr<Socket> socket, std::string to)
+{
+  Address realTo = InetSocketAddress (Ipv4Address(to.c_str()), 0);
+  socket->SetAttribute ("IpHeaderInclude", BooleanValue (true));
+  Ptr<Packet> p = Create<Packet> (123);
+  Ipv4Header ipHeader;
+  ipHeader.SetSource (Ipv4Address ("10.0.0.2"));
+  ipHeader.SetDestination (Ipv4Address (to.c_str ()));
+  ipHeader.SetProtocol (0);
+  ipHeader.SetPayloadSize (p->GetSize ());
+  ipHeader.SetTtl (255);
+  p->AddHeader (ipHeader);
+
+  NS_TEST_EXPECT_MSG_EQ (socket->SendTo (p, 0, realTo),
+                         143, to);
+  socket->SetAttribute ("IpHeaderInclude", BooleanValue (false));
+}
+
+void
+Ipv4RawSocketImplTest::SendData_IpHdr (Ptr<Socket> socket, std::string to)
+{
+  m_receivedPacket = Create<Packet> ();
+  m_receivedPacket2 = Create<Packet> ();
+  Simulator::ScheduleWithContext (socket->GetNode ()->GetId (), Seconds (0),
+                                  &Ipv4RawSocketImplTest::DoSendData_IpHdr, this, socket, to);
   Simulator::Run ();
 }
 
@@ -224,6 +256,14 @@ Ipv4RawSocketImplTest::DoRun (void)
   // Unicast test
   SendData (txSocket, "10.0.0.1");
   NS_TEST_EXPECT_MSG_EQ (m_receivedPacket->GetSize (), 143, "recv: 10.0.0.1");
+  NS_TEST_EXPECT_MSG_EQ (m_receivedPacket2->GetSize (), 0, "second interface should not receive it");
+
+  m_receivedPacket->RemoveAllByteTags ();
+  m_receivedPacket2->RemoveAllByteTags ();
+
+  // Unicast w/ header test
+  SendData_IpHdr (txSocket, "10.0.0.1");
+  NS_TEST_EXPECT_MSG_EQ (m_receivedPacket->GetSize (), 143, "recv(hdrincl): 10.0.0.1");
   NS_TEST_EXPECT_MSG_EQ (m_receivedPacket2->GetSize (), 0, "second interface should not receive it");
 
   m_receivedPacket->RemoveAllByteTags ();
