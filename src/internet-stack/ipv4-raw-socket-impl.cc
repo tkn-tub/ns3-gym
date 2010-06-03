@@ -1,3 +1,4 @@
+#include <netinet/in.h>
 #include "ipv4-raw-socket-impl.h"
 #include "ipv4-l3-protocol.h"
 #include "icmpv4.h"
@@ -238,7 +239,10 @@ Ipv4RawSocketImpl::RecvFrom (uint32_t maxSize, uint32_t flags,
   if (data.packet->GetSize () > maxSize)
     {
       Ptr<Packet> first = data.packet->CreateFragment (0, maxSize);
-      data.packet->RemoveAtStart (maxSize);
+      if (!(flags & MSG_PEEK))
+        {
+          data.packet->RemoveAtStart (maxSize);
+        }
       m_recv.push_front (data);
       return first;
     }

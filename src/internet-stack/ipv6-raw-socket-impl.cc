@@ -18,6 +18,7 @@
  * Author: Sebastien Vincent <vincent@clarinet.u-strasbg.fr>
  */
 
+#include <netinet/in.h>
 #include "ns3/inet6-socket-address.h"
 #include "ns3/node.h"
 #include "ns3/packet.h"
@@ -264,7 +265,10 @@ Ptr<Packet> Ipv6RawSocketImpl::RecvFrom (uint32_t maxSize, uint32_t flags, Addre
   if (data.packet->GetSize () > maxSize)
     {
       Ptr<Packet> first = data.packet->CreateFragment (0, maxSize);
-      data.packet->RemoveAtStart (maxSize);
+      if (!(flags & MSG_PEEK))
+        {
+          data.packet->RemoveAtStart (maxSize);
+        }
       m_data.push_front (data);
       return first;
     }
