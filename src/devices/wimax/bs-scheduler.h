@@ -26,7 +26,7 @@
 #include <list>
 #include "ns3/packet.h"
 #include "wimax-phy.h"
-#include "packet-burst.h"
+#include "ns3/packet-burst.h"
 #include "dl-mac-messages.h"
 #include "service-flow.h"
 

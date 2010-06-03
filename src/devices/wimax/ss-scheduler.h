@@ -25,7 +25,7 @@
 
 #include <stdint.h>
 #include "ns3/packet.h"
-#include "packet-burst.h"
+#include "ns3/packet-burst.h"
 #include "wimax-phy.h"
 #include "wimax-mac-header.h"
 

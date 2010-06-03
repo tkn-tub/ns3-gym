@@ -28,7 +28,7 @@
 #include "wimax-net-device.h"
 #include "simple-ofdm-wimax-phy.h"
 #include "wimax-channel.h"
-#include "packet-burst.h"
+#include "ns3/packet-burst.h"
 #include "wimax-mac-header.h"
 #include "simple-ofdm-wimax-channel.h"
 #include "ns3/trace-source-accessor.h"

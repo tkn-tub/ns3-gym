@@ -21,7 +21,7 @@
 #include "bs-scheduler.h"
 #include "ns3/simulator.h"
 #include "bs-net-device.h"
-#include "packet-burst.h"
+#include "ns3/packet-burst.h"
 #include "cid.h"
 #include "wimax-mac-header.h"
 #include "ss-record.h"

@@ -27,7 +27,7 @@
 #include "ns3/packet.h"
 #include "wimax-net-device.h"
 #include "wimax-channel.h"
-#include "packet-burst.h"
+#include "ns3/packet-burst.h"
 #include "burst-profile-manager.h"
 #include <list>
 #include "send-params.h"

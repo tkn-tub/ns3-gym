@@ -26,7 +26,7 @@
 #include "bs-uplink-scheduler.h"
 #include "bs-net-device.h"
 #include "wimax-phy.h"
-#include "packet-burst.h"
+#include "ns3/packet-burst.h"
 #include "ss-record.h"
 #include "bs-scheduler.h"
 #include "wimax-mac-queue.h"
