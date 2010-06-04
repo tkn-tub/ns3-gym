@@ -463,10 +463,10 @@ def register_Ns3MeshWifiInterfaceMac_methods(root_module, cls):
                    'void', 
                    [param('ns3::Time', 'pifs')], 
                    is_virtual=True)
-    ## mesh-wifi-interface-mac.h: void ns3::MeshWifiInterfaceMac::SetQueue(ns3::AccessClass ac) [member function]
+    ## mesh-wifi-interface-mac.h: void ns3::MeshWifiInterfaceMac::SetQueue(ns3::AcIndex ac) [member function]
     cls.add_method('SetQueue', 
                    'void', 
-                   [param('ns3::AccessClass', 'ac')])
+                   [param('ns3::AcIndex', 'ac')])
     ## mesh-wifi-interface-mac.h: void ns3::MeshWifiInterfaceMac::SetRandomStartDelay(ns3::Time interval) [member function]
     cls.add_method('SetRandomStartDelay', 
                    'void', 

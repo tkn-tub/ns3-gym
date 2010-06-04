@@ -47,6 +47,8 @@ def register_types(module):
     module.add_class('Chunk', parent=root_module['ns3::ObjectBase'])
     ## header.h: ns3::Header [class]
     module.add_class('Header', parent=root_module['ns3::Chunk'])
+    ## packet-burst.h: ns3::PacketBurst [class]
+    module.add_class('PacketBurst', parent=root_module['ns3::Object'])
     ## pcap-file-wrapper.h: ns3::PcapFileWrapper [class]
     module.add_class('PcapFileWrapper', parent=root_module['ns3::Object'])
     ## propagation-delay-model.h: ns3::PropagationDelayModel [class]
@@ -205,6 +207,7 @@ def register_methods(root_module):
     register_Ns3TagBuffer_methods(root_module, root_module['ns3::TagBuffer'])
     register_Ns3Chunk_methods(root_module, root_module['ns3::Chunk'])
     register_Ns3Header_methods(root_module, root_module['ns3::Header'])
+    register_Ns3PacketBurst_methods(root_module, root_module['ns3::PacketBurst'])
     register_Ns3PcapFileWrapper_methods(root_module, root_module['ns3::PcapFileWrapper'])
     register_Ns3PropagationDelayModel_methods(root_module, root_module['ns3::PropagationDelayModel'])
     register_Ns3PropagationLossModel_methods(root_module, root_module['ns3::PropagationLossModel'])
@@ -278,10 +281,10 @@ def register_Ns3Buffer_methods(root_module, cls):
                    'ns3::Buffer', 
                    [], 
                    is_const=True)
-    ## buffer.h: uint32_t ns3::Buffer::Deserialize(uint8_t * buffer, uint32_t size) [member function]
+    ## buffer.h: uint32_t ns3::Buffer::Deserialize(uint8_t const * buffer, uint32_t size) [member function]
     cls.add_method('Deserialize', 
                    'uint32_t', 
-                   [param('uint8_t *', 'buffer'), param('uint32_t', 'size')])
+                   [param('uint8_t const *', 'buffer'), param('uint32_t', 'size')])
     ## buffer.h: ns3::Buffer::Iterator ns3::Buffer::End() const [member function]
     cls.add_method('End', 
                    'ns3::Buffer::Iterator', 
@@ -640,10 +643,10 @@ def register_Ns3PacketMetadata_methods(root_module, cls):
                    'ns3::PacketMetadata', 
                    [param('uint32_t', 'start'), param('uint32_t', 'end')], 
                    is_const=True)
-    ## packet-metadata.h: uint32_t ns3::PacketMetadata::Deserialize(uint8_t * buffer, uint32_t size) [member function]
+    ## packet-metadata.h: uint32_t ns3::PacketMetadata::Deserialize(uint8_t const * buffer, uint32_t size) [member function]
     cls.add_method('Deserialize', 
                    'uint32_t', 
-                   [param('uint8_t *', 'buffer'), param('uint32_t', 'size')])
+                   [param('uint8_t const *', 'buffer'), param('uint32_t', 'size')])
     ## packet-metadata.h: static void ns3::PacketMetadata::Enable() [member function]
     cls.add_method('Enable', 
                    'void', 
@@ -1032,6 +1035,57 @@ def register_Ns3Header_methods(root_module, cls):
                    'void', 
                    [param('ns3::Buffer::Iterator', 'start')], 
                    is_pure_virtual=True, is_const=True, is_virtual=True)
+    return
+
+def register_Ns3PacketBurst_methods(root_module, cls):
+    ## packet-burst.h: ns3::PacketBurst::PacketBurst(ns3::PacketBurst const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::PacketBurst const &', 'arg0')])
+    ## packet-burst.h: ns3::PacketBurst::PacketBurst() [constructor]
+    cls.add_constructor([])
+    ## packet-burst.h: void ns3::PacketBurst::AddPacket(ns3::Ptr<ns3::Packet> packet) [member function]
+    cls.add_method('AddPacket', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Packet >', 'packet')])
+    ## packet-burst.h: std::_List_const_iterator<ns3::Ptr<ns3::Packet> > ns3::PacketBurst::Begin() const [member function]
+    cls.add_method('Begin', 
+                   'std::_List_const_iterator< ns3::Ptr< ns3::Packet > >', 
+                   [], 
+                   is_const=True)
+    ## packet-burst.h: ns3::Ptr<ns3::PacketBurst> ns3::PacketBurst::Copy() const [member function]
+    cls.add_method('Copy', 
+                   'ns3::Ptr< ns3::PacketBurst >', 
+                   [], 
+                   is_const=True)
+    ## packet-burst.h: std::_List_const_iterator<ns3::Ptr<ns3::Packet> > ns3::PacketBurst::End() const [member function]
+    cls.add_method('End', 
+                   'std::_List_const_iterator< ns3::Ptr< ns3::Packet > >', 
+                   [], 
+                   is_const=True)
+    ## packet-burst.h: uint32_t ns3::PacketBurst::GetNPackets() const [member function]
+    cls.add_method('GetNPackets', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## packet-burst.h: std::list<ns3::Ptr<ns3::Packet>, std::allocator<ns3::Ptr<ns3::Packet> > > ns3::PacketBurst::GetPackets() const [member function]
+    cls.add_method('GetPackets', 
+                   'std::list< ns3::Ptr< ns3::Packet > >', 
+                   [], 
+                   is_const=True)
+    ## packet-burst.h: uint32_t ns3::PacketBurst::GetSize() const [member function]
+    cls.add_method('GetSize', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## packet-burst.h: static ns3::TypeId ns3::PacketBurst::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## packet-burst.h: void ns3::PacketBurst::DoDispose() [member function]
+    cls.add_method('DoDispose', 
+                   'void', 
+                   [], 
+                   visibility='private', is_virtual=True)
     return
 
 def register_Ns3PcapFileWrapper_methods(root_module, cls):
@@ -1682,10 +1736,10 @@ def register_Ns3NixVector_methods(root_module, cls):
                    'ns3::Ptr< ns3::NixVector >', 
                    [], 
                    is_const=True)
-    ## nix-vector.h: uint32_t ns3::NixVector::Deserialize(uint32_t * buffer, uint32_t size) [member function]
+    ## nix-vector.h: uint32_t ns3::NixVector::Deserialize(uint32_t const * buffer, uint32_t size) [member function]
     cls.add_method('Deserialize', 
                    'uint32_t', 
-                   [param('uint32_t *', 'buffer'), param('uint32_t', 'size')])
+                   [param('uint32_t const *', 'buffer'), param('uint32_t', 'size')])
     ## nix-vector.h: void ns3::NixVector::DumpNixVector(std::ostream & os) const [member function]
     cls.add_method('DumpNixVector', 
                    'void', 

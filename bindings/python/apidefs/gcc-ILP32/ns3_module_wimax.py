@@ -99,8 +99,6 @@ def register_types(module):
     module.add_class('OfdmSendParams', parent=root_module['ns3::SendParams'])
     ## ul-mac-messages.h: ns3::OfdmUcdChannelEncodings [class]
     module.add_class('OfdmUcdChannelEncodings', parent=root_module['ns3::UcdChannelEncodings'])
-    ## packet-burst.h: ns3::PacketBurst [class]
-    module.add_class('PacketBurst', parent=root_module['ns3::Object'])
     ## wimax-tlv.h: ns3::PortRangeTlvValue [class]
     module.add_class('PortRangeTlvValue', parent=root_module['ns3::TlvValue'])
     ## wimax-tlv.h: ns3::PortRangeTlvValue::PortRange [struct]
@@ -348,7 +346,6 @@ def register_methods(root_module):
     register_Ns3OfdmDownlinkFramePrefix_methods(root_module, root_module['ns3::OfdmDownlinkFramePrefix'])
     register_Ns3OfdmSendParams_methods(root_module, root_module['ns3::OfdmSendParams'])
     register_Ns3OfdmUcdChannelEncodings_methods(root_module, root_module['ns3::OfdmUcdChannelEncodings'])
-    register_Ns3PacketBurst_methods(root_module, root_module['ns3::PacketBurst'])
     register_Ns3PortRangeTlvValue_methods(root_module, root_module['ns3::PortRangeTlvValue'])
     register_Ns3PortRangeTlvValuePortRange_methods(root_module, root_module['ns3::PortRangeTlvValue::PortRange'])
     register_Ns3PriorityUlJob_methods(root_module, root_module['ns3::PriorityUlJob'])
@@ -2562,57 +2559,6 @@ def register_Ns3OfdmUcdChannelEncodings_methods(root_module, cls):
                    'ns3::Buffer::Iterator', 
                    [param('ns3::Buffer::Iterator', 'start')], 
                    is_const=True, visibility='private', is_virtual=True)
-    return
-
-def register_Ns3PacketBurst_methods(root_module, cls):
-    ## packet-burst.h: ns3::PacketBurst::PacketBurst(ns3::PacketBurst const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::PacketBurst const &', 'arg0')])
-    ## packet-burst.h: ns3::PacketBurst::PacketBurst() [constructor]
-    cls.add_constructor([])
-    ## packet-burst.h: void ns3::PacketBurst::AddPacket(ns3::Ptr<ns3::Packet> packet) [member function]
-    cls.add_method('AddPacket', 
-                   'void', 
-                   [param('ns3::Ptr< ns3::Packet >', 'packet')])
-    ## packet-burst.h: std::_List_const_iterator<ns3::Ptr<ns3::Packet> > ns3::PacketBurst::Begin() const [member function]
-    cls.add_method('Begin', 
-                   'std::_List_const_iterator< ns3::Ptr< ns3::Packet > >', 
-                   [], 
-                   is_const=True)
-    ## packet-burst.h: ns3::Ptr<ns3::PacketBurst> ns3::PacketBurst::Copy() const [member function]
-    cls.add_method('Copy', 
-                   'ns3::Ptr< ns3::PacketBurst >', 
-                   [], 
-                   is_const=True)
-    ## packet-burst.h: std::_List_const_iterator<ns3::Ptr<ns3::Packet> > ns3::PacketBurst::End() const [member function]
-    cls.add_method('End', 
-                   'std::_List_const_iterator< ns3::Ptr< ns3::Packet > >', 
-                   [], 
-                   is_const=True)
-    ## packet-burst.h: uint32_t ns3::PacketBurst::GetNPackets() const [member function]
-    cls.add_method('GetNPackets', 
-                   'uint32_t', 
-                   [], 
-                   is_const=True)
-    ## packet-burst.h: std::list<ns3::Ptr<ns3::Packet>, std::allocator<ns3::Ptr<ns3::Packet> > > ns3::PacketBurst::GetPackets() const [member function]
-    cls.add_method('GetPackets', 
-                   'std::list< ns3::Ptr< ns3::Packet > >', 
-                   [], 
-                   is_const=True)
-    ## packet-burst.h: uint32_t ns3::PacketBurst::GetSize() const [member function]
-    cls.add_method('GetSize', 
-                   'uint32_t', 
-                   [], 
-                   is_const=True)
-    ## packet-burst.h: static ns3::TypeId ns3::PacketBurst::GetTypeId() [member function]
-    cls.add_method('GetTypeId', 
-                   'ns3::TypeId', 
-                   [], 
-                   is_static=True)
-    ## packet-burst.h: void ns3::PacketBurst::DoDispose() [member function]
-    cls.add_method('DoDispose', 
-                   'void', 
-                   [], 
-                   visibility='private', is_virtual=True)
     return
 
 def register_Ns3PortRangeTlvValue_methods(root_module, cls):

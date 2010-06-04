@@ -11,8 +11,8 @@ def register_types(module):
     module.add_enum('WifiPhyStandard', ['WIFI_PHY_STANDARD_80211a', 'WIFI_PHY_STANDARD_80211b', 'WIFI_PHY_STANDARD_80211_10Mhz', 'WIFI_PHY_STANDARD_80211_5Mhz', 'WIFI_PHY_STANDARD_holland', 'WIFI_PHY_STANDARD_80211p_CCH', 'WIFI_PHY_STANDARD_80211p_SCH', 'WIFI_PHY_UNKNOWN'])
     ## qos-tag.h: ns3::UserPriority [enumeration]
     module.add_enum('UserPriority', ['UP_BK', 'UP_BE', 'UP_EE', 'UP_CL', 'UP_VI', 'UP_VO', 'UP_NC'])
-    ## qos-utils.h: ns3::AccessClass [enumeration]
-    module.add_enum('AccessClass', ['AC_VO', 'AC_VI', 'AC_BE', 'AC_BK', 'AC_BE_NQOS', 'AC_UNDEF'])
+    ## qos-utils.h: ns3::AcIndex [enumeration]
+    module.add_enum('AcIndex', ['AC_BE', 'AC_BK', 'AC_VI', 'AC_VO', 'AC_BE_NQOS', 'AC_UNDEF'])
     ## edca-txop-n.h: ns3::TypeOfStation [enumeration]
     module.add_enum('TypeOfStation', ['STA', 'AP', 'ADHOC_STA'])
     ## ctrl-headers.h: ns3::BlockAckType [enumeration]
@@ -47,6 +47,8 @@ def register_types(module):
     module.add_class('OriginatorBlockAckAgreement', parent=root_module['ns3::BlockAckAgreement'])
     ## originator-block-ack-agreement.h: ns3::OriginatorBlockAckAgreement::State [enumeration]
     module.add_enum('State', ['PENDING', 'ESTABLISHED', 'INACTIVE', 'UNSUCCESSFUL'], outer_class=root_module['ns3::OriginatorBlockAckAgreement'])
+    ## minstrel-wifi-manager.h: ns3::RateInfo [struct]
+    module.add_class('RateInfo')
     ## ssid.h: ns3::Ssid [class]
     module.add_class('Ssid')
     ## status-code.h: ns3::StatusCode [class]
@@ -190,6 +192,12 @@ def register_types(module):
     ## dca-txop.h: ns3::DcaTxop [class]
     module.add_class('DcaTxop', parent=root_module['ns3::Dcf'])
     module.add_container('std::vector< ns3::WifiMode >', 'ns3::WifiMode', container_type='vector')
+    typehandlers.add_type_alias('std::vector< ns3::RateInfo, std::allocator< ns3::RateInfo > >', 'ns3::MinstrelRate')
+    typehandlers.add_type_alias('std::vector< ns3::RateInfo, std::allocator< ns3::RateInfo > >*', 'ns3::MinstrelRate*')
+    typehandlers.add_type_alias('std::vector< ns3::RateInfo, std::allocator< ns3::RateInfo > >&', 'ns3::MinstrelRate&')
+    typehandlers.add_type_alias('std::vector< std::vector< unsigned int, std::allocator< unsigned int > >, std::allocator< std::vector< unsigned int, std::allocator< unsigned int > > > >', 'ns3::SampleRate')
+    typehandlers.add_type_alias('std::vector< std::vector< unsigned int, std::allocator< unsigned int > >, std::allocator< std::vector< unsigned int, std::allocator< unsigned int > > > >*', 'ns3::SampleRate*')
+    typehandlers.add_type_alias('std::vector< std::vector< unsigned int, std::allocator< unsigned int > >, std::allocator< std::vector< unsigned int, std::allocator< unsigned int > > > >&', 'ns3::SampleRate&')
     
     ## Register a nested module for the namespace Config
     
@@ -286,6 +294,7 @@ def register_methods(root_module):
     register_Ns3MacLowTransmissionParameters_methods(root_module, root_module['ns3::MacLowTransmissionParameters'])
     register_Ns3MacRxMiddle_methods(root_module, root_module['ns3::MacRxMiddle'])
     register_Ns3OriginatorBlockAckAgreement_methods(root_module, root_module['ns3::OriginatorBlockAckAgreement'])
+    register_Ns3RateInfo_methods(root_module, root_module['ns3::RateInfo'])
     register_Ns3Ssid_methods(root_module, root_module['ns3::Ssid'])
     register_Ns3StatusCode_methods(root_module, root_module['ns3::StatusCode'])
     register_Ns3SupportedRates_methods(root_module, root_module['ns3::SupportedRates'])
@@ -1109,6 +1118,37 @@ def register_Ns3OriginatorBlockAckAgreement_methods(root_module, cls):
     cls.add_method('SetState', 
                    'void', 
                    [param('ns3::OriginatorBlockAckAgreement::State', 'state')])
+    return
+
+def register_Ns3RateInfo_methods(root_module, cls):
+    ## minstrel-wifi-manager.h: ns3::RateInfo::RateInfo() [constructor]
+    cls.add_constructor([])
+    ## minstrel-wifi-manager.h: ns3::RateInfo::RateInfo(ns3::RateInfo const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::RateInfo const &', 'arg0')])
+    ## minstrel-wifi-manager.h: ns3::RateInfo::adjustedRetryCount [variable]
+    cls.add_instance_attribute('adjustedRetryCount', 'uint32_t', is_const=False)
+    ## minstrel-wifi-manager.h: ns3::RateInfo::attemptHist [variable]
+    cls.add_instance_attribute('attemptHist', 'uint64_t', is_const=False)
+    ## minstrel-wifi-manager.h: ns3::RateInfo::ewmaProb [variable]
+    cls.add_instance_attribute('ewmaProb', 'uint32_t', is_const=False)
+    ## minstrel-wifi-manager.h: ns3::RateInfo::numRateAttempt [variable]
+    cls.add_instance_attribute('numRateAttempt', 'uint32_t', is_const=False)
+    ## minstrel-wifi-manager.h: ns3::RateInfo::numRateSuccess [variable]
+    cls.add_instance_attribute('numRateSuccess', 'uint32_t', is_const=False)
+    ## minstrel-wifi-manager.h: ns3::RateInfo::perfectTxTime [variable]
+    cls.add_instance_attribute('perfectTxTime', 'ns3::Time', is_const=False)
+    ## minstrel-wifi-manager.h: ns3::RateInfo::prevNumRateAttempt [variable]
+    cls.add_instance_attribute('prevNumRateAttempt', 'uint32_t', is_const=False)
+    ## minstrel-wifi-manager.h: ns3::RateInfo::prevNumRateSuccess [variable]
+    cls.add_instance_attribute('prevNumRateSuccess', 'uint32_t', is_const=False)
+    ## minstrel-wifi-manager.h: ns3::RateInfo::prob [variable]
+    cls.add_instance_attribute('prob', 'uint32_t', is_const=False)
+    ## minstrel-wifi-manager.h: ns3::RateInfo::retryCount [variable]
+    cls.add_instance_attribute('retryCount', 'uint32_t', is_const=False)
+    ## minstrel-wifi-manager.h: ns3::RateInfo::successHist [variable]
+    cls.add_instance_attribute('successHist', 'uint64_t', is_const=False)
+    ## minstrel-wifi-manager.h: ns3::RateInfo::throughput [variable]
+    cls.add_instance_attribute('throughput', 'uint32_t', is_const=False)
     return
 
 def register_Ns3Ssid_methods(root_module, cls):
@@ -2225,15 +2265,15 @@ def register_Ns3WifiMac_methods(root_module, cls):
                    'bool', 
                    [], 
                    is_pure_virtual=True, is_const=True, is_virtual=True)
-    ## wifi-mac.h: void ns3::WifiMac::ConfigureCCHDcf(ns3::Ptr<ns3::Dcf> dcf, uint32_t cwmin, uint32_t cwmax, ns3::AccessClass ac) [member function]
+    ## wifi-mac.h: void ns3::WifiMac::ConfigureCCHDcf(ns3::Ptr<ns3::Dcf> dcf, uint32_t cwmin, uint32_t cwmax, ns3::AcIndex ac) [member function]
     cls.add_method('ConfigureCCHDcf', 
                    'void', 
-                   [param('ns3::Ptr< ns3::Dcf >', 'dcf'), param('uint32_t', 'cwmin'), param('uint32_t', 'cwmax'), param('ns3::AccessClass', 'ac')], 
+                   [param('ns3::Ptr< ns3::Dcf >', 'dcf'), param('uint32_t', 'cwmin'), param('uint32_t', 'cwmax'), param('ns3::AcIndex', 'ac')], 
                    visibility='protected')
-    ## wifi-mac.h: void ns3::WifiMac::ConfigureDcf(ns3::Ptr<ns3::Dcf> dcf, uint32_t cwmin, uint32_t cwmax, ns3::AccessClass ac) [member function]
+    ## wifi-mac.h: void ns3::WifiMac::ConfigureDcf(ns3::Ptr<ns3::Dcf> dcf, uint32_t cwmin, uint32_t cwmax, ns3::AcIndex ac) [member function]
     cls.add_method('ConfigureDcf', 
                    'void', 
-                   [param('ns3::Ptr< ns3::Dcf >', 'dcf'), param('uint32_t', 'cwmin'), param('uint32_t', 'cwmax'), param('ns3::AccessClass', 'ac')], 
+                   [param('ns3::Ptr< ns3::Dcf >', 'dcf'), param('uint32_t', 'cwmin'), param('uint32_t', 'cwmax'), param('ns3::AcIndex', 'ac')], 
                    visibility='protected')
     ## wifi-mac.h: void ns3::WifiMac::FinishConfigureStandard(ns3::WifiPhyStandard standard) [member function]
     cls.add_method('FinishConfigureStandard', 
@@ -4566,10 +4606,10 @@ def register_Ns3EdcaTxopN_methods(root_module, cls):
     cls.add_method('GetFragmentPacket', 
                    'ns3::Ptr< ns3::Packet >', 
                    [param('ns3::WifiMacHeader *', 'hdr')])
-    ## edca-txop-n.h: void ns3::EdcaTxopN::SetAccessClass(ns3::AccessClass ac) [member function]
-    cls.add_method('SetAccessClass', 
+    ## edca-txop-n.h: void ns3::EdcaTxopN::SetAccessCategory(ns3::AcIndex ac) [member function]
+    cls.add_method('SetAccessCategory', 
                    'void', 
-                   [param('ns3::AccessClass', 'ac')])
+                   [param('ns3::AcIndex', 'ac')])
     ## edca-txop-n.h: void ns3::EdcaTxopN::Queue(ns3::Ptr<ns3::Packet const> packet, ns3::WifiMacHeader const & hdr) [member function]
     cls.add_method('Queue', 
                    'void', 
@@ -4595,6 +4635,10 @@ def register_Ns3EdcaTxopN_methods(root_module, cls):
                    'uint8_t', 
                    [], 
                    is_const=True)
+    ## edca-txop-n.h: void ns3::EdcaTxopN::SetBlockAckInactivityTimeout(uint16_t timeout) [member function]
+    cls.add_method('SetBlockAckInactivityTimeout', 
+                   'void', 
+                   [param('uint16_t', 'timeout')])
     ## edca-txop-n.h: void ns3::EdcaTxopN::SendDelbaFrame(ns3::Mac48Address addr, uint8_t tid, bool byOriginator) [member function]
     cls.add_method('SendDelbaFrame', 
                    'void', 
@@ -4775,10 +4819,10 @@ def register_Ns3MacLow_methods(root_module, cls):
     cls.add_method('ReceiveOk', 
                    'void', 
                    [param('ns3::Ptr< ns3::Packet >', 'packet'), param('double', 'rxSnr'), param('ns3::WifiMode', 'txMode'), param('ns3::WifiPreamble', 'preamble')])
-    ## mac-low.h: void ns3::MacLow::RegisterBlockAckListenerForAc(ns3::AccessClass ac, ns3::MacLowBlockAckEventListener * listener) [member function]
+    ## mac-low.h: void ns3::MacLow::RegisterBlockAckListenerForAc(ns3::AcIndex ac, ns3::MacLowBlockAckEventListener * listener) [member function]
     cls.add_method('RegisterBlockAckListenerForAc', 
                    'void', 
-                   [param('ns3::AccessClass', 'ac'), param('ns3::MacLowBlockAckEventListener *', 'listener')])
+                   [param('ns3::AcIndex', 'ac'), param('ns3::MacLowBlockAckEventListener *', 'listener')])
     ## mac-low.h: void ns3::MacLow::RegisterDcfListener(ns3::MacLowDcfListener * listener) [member function]
     cls.add_method('RegisterDcfListener', 
                    'void', 
@@ -6367,9 +6411,9 @@ def register_functions(root_module):
     module.add_function('QosUtilsMapSeqControlToUniqueInteger', 
                         'uint32_t', 
                         [param('uint16_t', 'seqControl'), param('uint16_t', 'endSequence')])
-    ## qos-utils.h: extern ns3::AccessClass ns3::QosUtilsMapTidToAc(uint8_t tid) [free function]
+    ## qos-utils.h: extern ns3::AcIndex ns3::QosUtilsMapTidToAc(uint8_t tid) [free function]
     module.add_function('QosUtilsMapTidToAc', 
-                        'ns3::AccessClass', 
+                        'ns3::AcIndex', 
                         [param('uint8_t', 'tid')])
     register_functions_ns3_Config(module.get_submodule('Config'), root_module)
     register_functions_ns3_TimeStepPrecision(module.get_submodule('TimeStepPrecision'), root_module)
