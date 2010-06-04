@@ -524,9 +524,7 @@ Ipv4L3Protocol::Send (Ptr<Packet> packet,
                       Ptr<Ipv4Route> route)
 {
   NS_LOG_FUNCTION (this << packet << ipHeader << route);
-  Ipv4Header hdr;
-  packet->RemoveHeader (hdr);
-  SendRealOut (route, packet, hdr);
+  SendRealOut (route, packet, ipHeader);
 }
 
 void 

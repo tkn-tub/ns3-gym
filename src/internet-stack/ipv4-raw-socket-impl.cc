@@ -195,7 +195,7 @@ Ipv4RawSocketImpl::SendTo (Ptr<Packet> p, uint32_t flags,
         }
       else
         {
-          p->PeekHeader (header);
+          p->RemoveHeader (header);
           dst = header.GetDestination ();
         }
       SocketErrno errno_ = ERROR_NOTERROR;//do not use errno as it is the standard C last error number 

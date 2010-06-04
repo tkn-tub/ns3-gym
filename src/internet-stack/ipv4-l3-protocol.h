@@ -164,7 +164,7 @@ public:
 	     Ipv4Address destination, uint8_t protocol, Ptr<Ipv4Route> route);
   /**
    * \param packet packet to send
-   * \param ipHeader IP Heeader
+   * \param ipHeader IP Header
    * \param route route entry
    *
    * Higher-level layers call this method to send a packet with IPv4 Header
