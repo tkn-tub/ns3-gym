@@ -1401,7 +1401,7 @@ MacLow::SendCtsAfterRts (Mac48Address source, Time duration, WifiMode rtsTxMode,
   WifiMacTrailer fcs;
   packet->AddTrailer (fcs);
 
-  struct SnrTag tag;
+  SnrTag tag;
   tag.Set (rtsSnr);
   packet->AddPacketTag (tag);
 
@@ -1480,7 +1480,7 @@ MacLow::SendAckAfterData (Mac48Address source, Time duration, WifiMode dataTxMod
   WifiMacTrailer fcs;
   packet->AddTrailer (fcs);
 
-  struct SnrTag tag;
+  SnrTag tag;
   tag.Set (dataSnr);
   packet->AddPacketTag (tag);
 
