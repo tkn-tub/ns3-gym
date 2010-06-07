@@ -114,7 +114,6 @@ private:
   class Dcf;
   friend class Dcf;
   friend class TransmissionListener;
-  friend class WifiRemoteStation;
 
   DcaTxop &operator = (const DcaTxop &);
   DcaTxop (const DcaTxop &o);

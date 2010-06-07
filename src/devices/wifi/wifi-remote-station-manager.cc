@@ -585,7 +585,7 @@ WifiRemoteStationManager::GetAckMode (Mac48Address address, WifiMode dataMode)
 WifiRemoteStationInfo 
 WifiRemoteStationManager::GetInfo (Mac48Address address)
 {
-  struct WifiRemoteStationState *state = LookupState (address);
+  WifiRemoteStationState *state = LookupState (address);
   return state->m_info;
 }
 

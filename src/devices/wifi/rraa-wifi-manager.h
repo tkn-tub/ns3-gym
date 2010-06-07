@@ -54,7 +54,7 @@ private:
   };
 
   // overriden from base class
-  virtual class WifiRemoteStation *DoCreateStation (void) const;
+  virtual WifiRemoteStation *DoCreateStation (void) const;
   virtual void DoReportRxOk (WifiRemoteStation *station, 
                              double rxSnr, WifiMode txMode);
   virtual void DoReportRtsFailed (WifiRemoteStation *station);

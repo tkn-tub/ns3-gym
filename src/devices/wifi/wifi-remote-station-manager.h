@@ -31,8 +31,8 @@
 
 namespace ns3 {
 
-class WifiRemoteStation;
-class WifiRemoteStationState;
+struct WifiRemoteStation;
+struct WifiRemoteStationState;
 class WifiPhy;
 class WifiMacHeader;
 
@@ -363,7 +363,7 @@ private:
   /**
    * \return a new station data structure
    */
-  virtual class WifiRemoteStation *DoCreateStation (void) const = 0;
+  virtual WifiRemoteStation *DoCreateStation (void) const = 0;
   /**
    * \param station the station with which we need to communicate
    * \param size size of the packet or fragment we want to send
@@ -460,7 +460,7 @@ struct WifiRemoteStationState
  */
 struct WifiRemoteStation
 {
-  struct WifiRemoteStationState *m_state;
+  WifiRemoteStationState *m_state;
   uint32_t m_ssrc;
   uint32_t m_slrc;
   uint8_t m_tid;
