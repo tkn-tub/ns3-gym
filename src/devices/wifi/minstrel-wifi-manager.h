@@ -39,7 +39,7 @@
 
 namespace ns3 {
 
-class MinstrelWifiRemoteStation;
+struct MinstrelWifiRemoteStation;
 
 /**
  * A struct to contain all information related to a data rate

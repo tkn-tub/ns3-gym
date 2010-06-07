@@ -25,7 +25,7 @@
 
 namespace ns3 {
 
-class OnoeWifiRemoteStation;
+struct OnoeWifiRemoteStation;
 
 /**
  * \brief an implementation of rate control algorithm developed 

@@ -25,7 +25,7 @@
 
 namespace ns3 {
 
-class RraaWifiRemoteStation;
+struct RraaWifiRemoteStation;
 
 /**
  * \brief Robust Rate Adaptation Algorithm

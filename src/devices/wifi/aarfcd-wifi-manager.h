@@ -24,7 +24,7 @@
 
 namespace ns3 {
 
-class AarfcdWifiRemoteStation;
+struct AarfcdWifiRemoteStation;
 
 /**
  * \brief an implementation of the AARF-CD algorithm

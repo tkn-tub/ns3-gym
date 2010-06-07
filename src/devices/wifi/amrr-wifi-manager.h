@@ -25,7 +25,7 @@
 
 namespace ns3 {
 
-class AmrrWifiRemoteStation;
+struct AmrrWifiRemoteStation;
 
 /**
  * \brief AMRR Rate control algorithm
