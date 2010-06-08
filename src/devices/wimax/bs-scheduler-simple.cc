@@ -177,10 +177,14 @@ void BSSchedulerSimple::Schedule (void)
                   packet = connection->Dequeue (MacHeaderType::HEADER_TYPE_GENERIC, availableByte);
                   availableSymbols = 0;
                 }
-              else
+              else if (availableSymbols >= nrSymbolsRequired)
                 {
                   packet = connection->Dequeue ();
                   availableSymbols -= nrSymbolsRequired;
+                }
+              else
+                {
+                  break;
                 }
               burst->AddPacket (packet);
             }
