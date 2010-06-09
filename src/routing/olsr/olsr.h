@@ -52,6 +52,10 @@
  * MidInterval, Willingness.  Other parameters are defined as macros
  * in olsr-routing-protocol.cc.
  *
+ * Host Network Association (HNA) is supported in this implementation
+ * of OLSR. Refer to examples/routing/olsr-hna.cc to see how the API
+ * is used.
+ *
  * \section list Open Issues
  *
  * - OLSR does not respond to the routing event notifications corresponding
@@ -59,12 +63,7 @@
  * RoutingProtocol::NotifyInterfaceDown) or address insertion/removal
  * (RoutingProtocol::NotifyAddAddress and 
  * RoutingProtocol::NotifyRemoveAddress).
- * - HNA (Host/Network Association) messages are almost-but-not-quite supported in this version.
  * - Unlike the NS-2 version, does not yet support MAC layer feedback as described in RFC 3626;
- * - If a user binds a socket to a particular output device, OLSR will not
- * consider that constraint in its route selection for locally originated
- * packets
- *   
  * 
  */
 
