@@ -45,7 +45,6 @@ class Node;
 class Socket;
 class Ipv4RawSocketImpl;
 class Ipv4L4Protocol;
-class Ipv4L4Protocol;
 class Icmpv4L4Protocol;
 
 
