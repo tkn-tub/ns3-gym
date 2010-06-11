@@ -1,7 +1,7 @@
 ## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
 
 def build(bld):
-    helper = bld.create_ns3_module('helper', ['internet-stack', 'wifi', 'point-to-point', 'csma', 'olsr', 'global-routing', 'onoff', 'packet-sink', 'udp-echo'])
+    helper = bld.create_ns3_module('helper', ['internet-stack', 'wifi', 'point-to-point', 'csma', 'olsr', 'global-routing', 'onoff', 'packet-sink', 'udp-echo', 'spectrum'])
     helper.source = [
         'node-container.cc',
         'net-device-container.cc',
@@ -22,6 +22,8 @@ def build(bld):
         'udp-echo-helper.cc',
         'bridge-helper.cc',
         'yans-wifi-helper.cc',
+        'spectrum-helper.cc',
+        'adhoc-aloha-noack-ideal-phy-helper.cc',
         'v4ping-helper.cc',
         'nqos-wifi-mac-helper.cc',
         'qos-wifi-mac-helper.cc',
@@ -51,6 +53,8 @@ def build(bld):
         'trace-helper.cc',
         'wimax-helper.cc',
         'topology-reader-helper.cc',
+        'waveform-generator-helper.cc',
+        'spectrum-analyzer-helper.cc',
         ]
 
     headers = bld.new_task_gen('ns3header')
@@ -75,6 +79,8 @@ def build(bld):
         'udp-echo-helper.h',
         'bridge-helper.h',
         'yans-wifi-helper.h',
+        'spectrum-helper.h',
+        'adhoc-aloha-noack-ideal-phy-helper.h',
         'v4ping-helper.h',
         'nqos-wifi-mac-helper.h',
         'qos-wifi-mac-helper.h',
@@ -105,6 +111,8 @@ def build(bld):
         'trace-helper.h',
         'wimax-helper.h',
         'topology-reader-helper.h',
+        'waveform-generator-helper.h',
+        'spectrum-analyzer-helper.h',
         ]
 
     env = bld.env_of_name('default')

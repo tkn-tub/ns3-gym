@@ -119,6 +119,9 @@ example_tests = [
     ("routing/static-routing-slash32", "True", "True"),
     ("routing/aodv", "True", "True"),
 
+    ("spectrum/adhoc-aloha-ideal-phy", "True", "True"),
+    ("spectrum/adhoc-aloha-ideal-phy-with-microwave-oven", "True", "True"),
+
     ("stats/wifi-example-sim", "True", "True"),
 
     ("tap/tap-wifi-dumbbell", "False", "True"), # Requires manual configuration

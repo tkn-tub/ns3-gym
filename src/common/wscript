@@ -27,6 +27,13 @@ def build(bld):
         'propagation-loss-model-test-suite.cc',
         'jakes-propagation-loss-model.cc',
         'cost231-propagation-loss-model.cc',
+        'spectrum-model.cc',
+        'spectrum-value.cc',
+        'spectrum-value-test.cc',
+        'spectrum-converter.cc',
+        'spectrum-type.cc',
+        'spectrum-propagation-loss-model.cc',
+        'friis-spectrum-propagation-loss.cc',
         ]
 
     headers = bld.new_task_gen('ns3header')
@@ -54,4 +61,10 @@ def build(bld):
         'propagation-loss-model.h',
         'jakes-propagation-loss-model.h',
         'cost231-propagation-loss-model.h',
+        'spectrum-model.h',
+        'spectrum-value.h',
+        'spectrum-converter.h',
+        'spectrum-type.h',
+        'spectrum-propagation-loss-model.h',
+        'friis-spectrum-propagation-loss.h',
         ]
