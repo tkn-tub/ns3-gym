@@ -138,8 +138,7 @@ MultiModelSpectrumChannel::AddRx (Ptr<SpectrumPhy> phy)
            ++txInfoIterator)
         {
           Ptr<const SpectrumModel> txSpectrumModel = txInfoIterator->second.m_txSpectrumModel;
-          SpectrumModelUid_t txSpectrumModelUid = txSpectrumModel->GetUid ();
-          NS_LOG_LOGIC ("Creating converters between SpectrumModelUids " << txSpectrumModelUid << " and " << rxSpectrumModelUid );
+          NS_LOG_LOGIC ("Creating converters between SpectrumModelUids " << txSpectrumModel->GetUid () << " and " << rxSpectrumModelUid );
           SpectrumConverter converter (txSpectrumModel, rxSpectrumModel);
           std::pair<SpectrumConverterMap_t::iterator, bool> ret2;
           ret2 = txInfoIterator->second.m_spectrumConverterMap.insert (std::make_pair (rxSpectrumModelUid, converter));                     
