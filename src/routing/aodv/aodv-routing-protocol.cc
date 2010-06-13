@@ -245,6 +245,7 @@ RoutingProtocol::DoDispose ()
 void
 RoutingProtocol::Start ()
 {
+  NS_LOG_FUNCTION (this);
   if (EnableHello)
     {
       m_nb.ScheduleTimer ();
@@ -306,6 +307,7 @@ void
 RoutingProtocol::DeferredRouteOutput (Ptr<const Packet> p, const Ipv4Header & header, 
     UnicastForwardCallback ucb, ErrorCallback ecb)
 {
+  NS_LOG_FUNCTION (this << p << header);
   NS_ASSERT (p != 0 && p != Ptr<Packet> ());
 
   QueueEntry newEntry (p, header, ucb, ecb);
@@ -418,6 +420,7 @@ bool
 RoutingProtocol::Forwarding (Ptr<const Packet> p, const Ipv4Header & header,
     UnicastForwardCallback ucb, ErrorCallback ecb)
 {
+  NS_LOG_FUNCTION (this);
   Ipv4Address dst = header.GetDestination ();
   Ipv4Address origin = header.GetSource ();
   m_routingTable.Purge ();
@@ -659,6 +662,7 @@ RoutingProtocol::NotifyRemoveAddress (uint32_t i, Ipv4InterfaceAddress address)
 bool
 RoutingProtocol::IsMyOwnAddress (Ipv4Address src)
 {
+  NS_LOG_FUNCTION (this << src);
   for (std::map<Ptr<Socket> , Ipv4InterfaceAddress>::const_iterator j =
       m_socketAddresses.begin (); j != m_socketAddresses.end (); ++j)
     {
@@ -674,6 +678,7 @@ RoutingProtocol::IsMyOwnAddress (Ipv4Address src)
 Ptr<Ipv4Route> 
 RoutingProtocol::LoopbackRoute (const Ipv4Header & hdr) const
 {
+  NS_LOG_FUNCTION (this << hdr);
   NS_ASSERT (m_lo != 0);
   Ptr<Ipv4Route> rt = Create<Ipv4Route> ();
   rt->SetDestination (hdr.GetDestination ());
@@ -760,6 +765,7 @@ RoutingProtocol::SendRequest (Ipv4Address dst)
 void
 RoutingProtocol::ScheduleRreqRetry (Ipv4Address dst)
 {
+  NS_LOG_FUNCTION (this << dst);
   if (m_addressReqTimer.find (dst) == m_addressReqTimer.end ())
     {
       Timer timer (Timer::CANCEL_ON_DESTROY);
@@ -778,7 +784,7 @@ RoutingProtocol::ScheduleRreqRetry (Ipv4Address dst)
 void
 RoutingProtocol::RecvAodv (Ptr<Socket> socket)
 {
-  NS_LOG_FUNCTION (this);
+  NS_LOG_FUNCTION (this << socket);
   Address sourceAddress;
   Ptr<Packet> packet = socket->RecvFrom (sourceAddress);
   InetSocketAddress inetSourceAddr = InetSocketAddress::ConvertFrom (sourceAddress);
@@ -822,6 +828,7 @@ RoutingProtocol::RecvAodv (Ptr<Socket> socket)
 bool
 RoutingProtocol::UpdateRouteLifeTime (Ipv4Address addr, Time lifetime)
 {
+  NS_LOG_FUNCTION (this << addr << lifetime);
   RoutingTableEntry rt;
   if (m_routingTable.LookupRoute (addr, rt))
     {
@@ -1006,7 +1013,7 @@ RoutingProtocol::SendReply (RreqHeader const & rreqHeader, RoutingTableEntry con
 void
 RoutingProtocol::SendReplyByIntermediateNode (RoutingTableEntry & toDst, RoutingTableEntry & toOrigin, bool gratRep)
 {
-  NS_LOG_FUNCTION(this);
+  NS_LOG_FUNCTION (this);
   RrepHeader rrepHeader (/*prefix size=*/0, /*hops=*/toDst.GetHop (), /*dst=*/toDst.GetDestination (), /*dst seqno=*/toDst.GetSeqNo (),
                          /*origin=*/toOrigin.GetDestination (), /*lifetime=*/toDst.GetLifeTime ());
   /* If the node we received a RREQ for is a neighbor we are
@@ -1342,7 +1349,7 @@ RoutingProtocol::RouteRequestTimerExpire (Ipv4Address dst)
 void
 RoutingProtocol::HelloTimerExpire ()
 {
-  NS_LOG_FUNCTION(this);
+  NS_LOG_FUNCTION (this);
   SendHello ();
   m_htimer.Cancel ();
   Time t = Scalar(0.01)*MilliSeconds(UniformVariable().GetInteger (0, 100));
@@ -1352,6 +1359,7 @@ RoutingProtocol::HelloTimerExpire ()
 void
 RoutingProtocol::RreqRateLimitTimerExpire ()
 {
+  NS_LOG_FUNCTION (this);
   m_rreqCount = 0;
   m_rreqRateLimitTimer.Schedule (Seconds (1));
 }
@@ -1359,14 +1367,14 @@ RoutingProtocol::RreqRateLimitTimerExpire ()
 void
 RoutingProtocol::AckTimerExpire (Ipv4Address neighbor, Time blacklistTimeout)
 {
-  NS_LOG_FUNCTION(this);
+  NS_LOG_FUNCTION (this);
   m_routingTable.MarkLinkAsUnidirectional (neighbor, blacklistTimeout);
 }
 
 void
 RoutingProtocol::SendHello ()
 {
-  NS_LOG_FUNCTION(this);
+  NS_LOG_FUNCTION (this);
   /* Broadcast a RREP with TTL = 1 with the RREP message fields set as follows:
    *   Destination IP Address         The node's IP address.
    *   Destination Sequence Number    The node's latest sequence number.
@@ -1390,7 +1398,7 @@ RoutingProtocol::SendHello ()
 void
 RoutingProtocol::SendPacketFromQueue (Ipv4Address dst, Ptr<Ipv4Route> route)
 {
-  NS_LOG_FUNCTION(this);
+  NS_LOG_FUNCTION (this);
   QueueEntry queueEntry;
   while (m_queue.Dequeue (dst, queueEntry))
     {
@@ -1494,7 +1502,7 @@ RoutingProtocol::SendRerrWhenNoRouteToForward (Ipv4Address dst,
 void
 RoutingProtocol::SendRerrMessage (Ptr<Packet> packet, std::vector<Ipv4Address> precursors)
 {
-  NS_LOG_FUNCTION(this);
+  NS_LOG_FUNCTION (this);
 
   if (precursors.empty ())
     {
@@ -1539,6 +1547,7 @@ RoutingProtocol::SendRerrMessage (Ptr<Packet> packet, std::vector<Ipv4Address> p
 Ptr<Socket>
 RoutingProtocol::FindSocketWithInterfaceAddress (Ipv4InterfaceAddress addr ) const
 {
+  NS_LOG_FUNCTION (this << addr);
   for (std::map<Ptr<Socket> , Ipv4InterfaceAddress>::const_iterator j =
       m_socketAddresses.begin (); j != m_socketAddresses.end (); ++j)
     {
