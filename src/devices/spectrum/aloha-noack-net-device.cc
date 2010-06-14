@@ -263,6 +263,13 @@ AlohaNoackNetDevice::GetPhy () const
 }
 
 
+void
+AlohaNoackNetDevice::SetChannel (Ptr<Channel> c)
+{
+  NS_LOG_FUNCTION (this << c);
+  m_channel = c;
+}
+
 
 Ptr<Channel>
 AlohaNoackNetDevice::GetChannel (void) const

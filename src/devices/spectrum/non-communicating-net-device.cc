@@ -196,6 +196,12 @@ NonCommunicatingNetDevice::GetPhy () const
 }
 
 
+void
+NonCommunicatingNetDevice::SetChannel (Ptr<Channel> c)
+{
+  NS_LOG_FUNCTION (this << c);
+  m_channel = c;
+}
 
 Ptr<Channel>
 NonCommunicatingNetDevice::GetChannel (void) const

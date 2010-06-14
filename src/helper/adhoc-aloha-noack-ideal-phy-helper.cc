@@ -126,6 +126,7 @@ AdhocAlohaNoackIdealPhyHelper::Install (NodeContainer c) const
 
       NS_ASSERT_MSG (m_channel, "you forgot to call AdhocAlohaNoackIdealPhyHelper::SetChannel ()");
       phy->SetChannel (m_channel);
+      dev->SetChannel (m_channel);
       m_channel->AddRx (phy);
 
       phy->SetPhyMacTxEndCallback   (MakeCallback (&AlohaNoackNetDevice::NotifyTransmissionEnd, dev));

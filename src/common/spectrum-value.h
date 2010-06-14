@@ -74,6 +74,10 @@ public:
    */
   SpectrumValue (Ptr<const SpectrumModel> sm);
 
+
+  SpectrumValue ();
+  
+
   /**
    * Access value at given frequency index
    *
@@ -517,6 +521,14 @@ private:
 
 std::ostream& operator << (std::ostream& os, const SpectrumValue& pvf);
 
+double Norm (const SpectrumValue& x);
+double Sum (const SpectrumValue& x);
+double Prod (const SpectrumValue& x);
+SpectrumValue Pow (const SpectrumValue& base, double exp);
+SpectrumValue Pow (double base, const SpectrumValue& exp);
+SpectrumValue Log10 (const SpectrumValue&  arg);
+SpectrumValue Log2 (const SpectrumValue&  arg);
+SpectrumValue Log (const SpectrumValue&  arg);
 
 
 } // namespace ns3

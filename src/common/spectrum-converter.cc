@@ -29,6 +29,9 @@ NS_LOG_COMPONENT_DEFINE ("SpectrumConverter");
 
 namespace ns3 {
 
+SpectrumConverter::SpectrumConverter ()
+{
+}
 
 SpectrumConverter::SpectrumConverter (Ptr<const SpectrumModel> fromSpectrumModel, Ptr<const SpectrumModel> toSpectrumModel)
 {

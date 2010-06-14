@@ -153,6 +153,8 @@ SpectrumAnalyzerHelper::Install (NodeContainer c) const
       NS_ASSERT_MSG (m_channel, "you forgot to call SpectrumAnalyzerHelper::SetChannel ()");
       m_channel->AddRx (phy);
 
+      dev->SetChannel (m_channel);
+
       uint32_t devId = node->AddDevice (dev);
       devices.Add (dev);
 

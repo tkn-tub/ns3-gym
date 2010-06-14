@@ -108,7 +108,8 @@ WaveformGeneratorHelper::Install (NodeContainer c) const
 
       NS_ASSERT_MSG (m_channel, "you forgot to call WaveformGeneratorHelper::SetChannel ()");
       phy->SetChannel (m_channel);
-      //m_channel->AddRx (phy);
+      dev->SetChannel (m_channel);
+
 
       node->AddDevice (dev);
       devices.Add (dev);

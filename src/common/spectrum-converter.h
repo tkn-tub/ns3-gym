@@ -50,6 +50,8 @@ public:
    */
   SpectrumConverter (Ptr<const SpectrumModel> fromSpectrumModel, Ptr<const SpectrumModel> toSpectrumModel);
 
+  SpectrumConverter ();
+  
 
 
   /**

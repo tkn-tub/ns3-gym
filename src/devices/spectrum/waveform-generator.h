@@ -112,16 +112,6 @@ public:
 
 
   /**
-   * Set the time resolution of the generated waveforms.
-   *
-   * @param resolution time resolution of the generated
-   * waveforms. This determines both the duration of waveforms, and
-   * the time between subsequent waveforms (i.e., they are generated
-   * back to back during the active portion of the generator cycle).
-   */
-  void SetResolution (Time resolution);
-
-  /**
    * Start the waveform generator
    *
    */
