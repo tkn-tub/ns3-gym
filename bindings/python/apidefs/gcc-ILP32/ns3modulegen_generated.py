@@ -29,6 +29,7 @@ import ns3_module_list_routing
 import ns3_module_onoff
 import ns3_module_packet_sink
 import ns3_module_point_to_point
+import ns3_module_spectrum
 import ns3_module_static_routing
 import ns3_module_stats
 import ns3_module_tap_bridge
@@ -244,6 +245,17 @@ def register_types(module):
         ns3_module_point_to_point__local.register_types(module)
     
     root_module.end_section('ns3_module_point_to_point')
+    root_module.begin_section('ns3_module_spectrum')
+    ns3_module_spectrum.register_types(module)
+    
+    try:
+        import ns3_module_spectrum__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_spectrum__local.register_types(module)
+    
+    root_module.end_section('ns3_module_spectrum')
     root_module.begin_section('ns3_module_static_routing')
     ns3_module_static_routing.register_types(module)
     
@@ -469,6 +481,7 @@ def register_types(module):
     module.add_container('std::vector< ns3::ServiceFlow * >', 'ns3::ServiceFlow *', container_type='vector')
     module.add_container('ns3::bvec', 'bool', container_type='vector')
     module.add_container('std::vector< ns3::SSRecord * >', 'ns3::SSRecord *', container_type='vector')
+    module.add_container('std::vector< double >', 'double', container_type='vector')
     module.add_container('std::map< std::string, std::string >', ('std::string', 'std::string'), container_type='map')
     module.add_container('std::list< std::pair< ns3::OfdmDlMapIe *, ns3::Ptr< ns3::PacketBurst > > >', 'std::pair< ns3::OfdmDlMapIe *, ns3::Ptr< ns3::PacketBurst > >', container_type='list')
     module.add_container('std::vector< unsigned long long >', 'long long unsigned int', container_type='vector')
@@ -746,6 +759,17 @@ def register_methods(root_module):
         ns3_module_point_to_point__local.register_methods(root_module)
     
     root_module.end_section('ns3_module_point_to_point')
+    root_module.begin_section('ns3_module_spectrum')
+    ns3_module_spectrum.register_methods(root_module)
+    
+    try:
+        import ns3_module_spectrum__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_spectrum__local.register_methods(root_module)
+    
+    root_module.end_section('ns3_module_spectrum')
     root_module.begin_section('ns3_module_static_routing')
     ns3_module_static_routing.register_methods(root_module)
     
@@ -1157,6 +1181,17 @@ def register_functions(root_module):
         ns3_module_point_to_point__local.register_functions(root_module)
     
     root_module.end_section('ns3_module_point_to_point')
+    root_module.begin_section('ns3_module_spectrum')
+    ns3_module_spectrum.register_functions(root_module)
+    
+    try:
+        import ns3_module_spectrum__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_spectrum__local.register_functions(root_module)
+    
+    root_module.end_section('ns3_module_spectrum')
     root_module.begin_section('ns3_module_static_routing')
     ns3_module_static_routing.register_functions(root_module)
     
