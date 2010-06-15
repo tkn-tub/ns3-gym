@@ -26,6 +26,10 @@ http://www.nsnam.org/wiki/index.php/Installation
 
 New user-visible features
 -------------------------
+   - A new OFDM error rate model for WiFi (NistErrorRateModel); this model
+     has been validated in clear-channel testbed tests.  For 802.11b, it
+     uses the same underlying model as the YansErrorRateModel, but it differs
+     from YansErrorRateModel for OFDM modes (802.11a/g).
 
 Bugs fixed
 ----------
