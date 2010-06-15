@@ -291,13 +291,14 @@ void RoutingProtocol::DoStart ()
 
       // Create a socket to listen only on this interface
       Ptr<Socket> socket = Socket::CreateSocket (GetObject<Node> (), 
-        UdpSocketFactory::GetTypeId()); 
+                                                 UdpSocketFactory::GetTypeId());
+      socket->SetAllowBroadcast (true);
+      InetSocketAddress inetAddr (addr.GetSubnetDirectedBroadcast (m_ipv4->GetAddress (i, 0).GetMask ()), OLSR_PORT_NUMBER);
       socket->SetRecvCallback (MakeCallback (&RoutingProtocol::RecvOlsr,  this));
-      if (socket->Bind (InetSocketAddress (addr, OLSR_PORT_NUMBER)))
+      if (socket->Bind (inetAddr))
         {
-          NS_FATAL_ERROR ("Failed to bind() OLSR receive socket");
+          NS_FATAL_ERROR ("Failed to bind() OLSR socket");
         }
-      socket->Connect (InetSocketAddress (addr.GetSubnetDirectedBroadcast (m_ipv4->GetAddress (i, 0).GetMask ()), OLSR_PORT_NUMBER));
       m_socketAddresses[socket] = m_ipv4->GetAddress (i, 0);
 
       canRunOlsr = true;
@@ -1142,6 +1143,8 @@ RoutingProtocol::ProcessHello (const olsr::MessageHeader &msg,
                          const Ipv4Address &receiverIface,
                          const Ipv4Address &senderIface)
 {
+  NS_LOG_FUNCTION (msg << receiverIface << senderIface);
+  
   const olsr::MessageHeader::Hello &hello = msg.GetHello ();
 
   LinkSensing (msg, hello, receiverIface, senderIface);
@@ -1545,7 +1548,8 @@ RoutingProtocol::SendPacket (Ptr<Packet> packet,
   for (std::map<Ptr<Socket> , Ipv4InterfaceAddress>::const_iterator i =
       m_socketAddresses.begin (); i != m_socketAddresses.end (); i++)
     {
-      i->first->Send (packet);
+      Ipv4Address bcast = i->second.GetLocal ().GetSubnetDirectedBroadcast (i->second.GetMask ());
+      i->first->SendTo (packet, 0, InetSocketAddress (bcast, OLSR_PORT_NUMBER));
     }
 }
 
