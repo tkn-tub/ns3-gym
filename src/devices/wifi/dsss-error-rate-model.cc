@@ -17,7 +17,10 @@
  *
  * Author: Gary Pei <guangyu.pei@boeing.com>
  */
+#include "ns3/log.h"
 #include "dsss-error-rate-model.h"
+
+NS_LOG_COMPONENT_DEFINE ("DsssErrorRateModel");
 
 namespace ns3 {
 
