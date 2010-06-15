@@ -463,4 +463,16 @@ PacketSocket::GetSockName (Address &address) const
   return 0;
 }
 
+void
+PacketSocket::SetAllowBroadcast (bool allowBroadcast)
+{
+  NS_FATAL_ERROR ("not implemented");
+}
+
+bool
+PacketSocket::GetAllowBroadcast () const
+{
+  return true;
+}
+
 }//namespace ns3

@@ -96,6 +96,8 @@ public:
     Address &fromAddress);
   virtual int GetSockName (Address &address) const; 
   virtual void BindToNetDevice (Ptr<NetDevice> netdevice);
+  virtual void SetAllowBroadcast (bool allowBroadcast);
+  virtual bool GetAllowBroadcast () const;
 
 private:
   friend class Tcp;

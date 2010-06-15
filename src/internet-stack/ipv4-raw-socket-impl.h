@@ -1,3 +1,4 @@
+/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
 #ifndef IPV4_RAW_SOCKET_IMPL_H
 #define IPV4_RAW_SOCKET_IMPL_H
 
@@ -41,6 +42,9 @@ public:
 
   void SetProtocol (uint16_t protocol);
   bool ForwardUp (Ptr<const Packet> p, Ipv4Header ipHeader, Ptr<NetDevice> device);
+  virtual void SetAllowBroadcast (bool allowBroadcast);
+  virtual bool GetAllowBroadcast () const;
+
 private:
   virtual void DoDispose (void);
 

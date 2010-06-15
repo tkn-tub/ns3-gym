@@ -1,3 +1,4 @@
+/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
 #include <netinet/in.h>
 #include "ipv4-raw-socket-impl.h"
 #include "ipv4-l3-protocol.h"
@@ -323,6 +324,21 @@ Ipv4RawSocketImpl::ForwardUp (Ptr<const Packet> p, Ipv4Header ipHeader, Ptr<NetD
       return true;
     }
   return false;
+}
+
+void
+Ipv4RawSocketImpl::SetAllowBroadcast (bool allowBroadcast)
+{
+  if (!allowBroadcast)
+    {
+      NS_FATAL_ERROR ("not implemented");
+    }
+}
+
+bool
+Ipv4RawSocketImpl::GetAllowBroadcast () const
+{
+  return true;
 }
 
 } // namespace ns3

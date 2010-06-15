@@ -82,6 +82,8 @@ public:
   virtual Ptr<Packet> RecvFrom (uint32_t maxSize, uint32_t flags,
     Address &fromAddress);
   virtual int GetSockName (Address &address) const; 
+  virtual void SetAllowBroadcast (bool allowBroadcast);
+  virtual bool GetAllowBroadcast () const;
 
 private:
   void NSCWakeup(void);

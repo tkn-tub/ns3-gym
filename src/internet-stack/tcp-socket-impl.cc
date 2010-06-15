@@ -1855,6 +1855,18 @@ TcpSocketImpl::GetDelAckMaxCount (void) const
   return m_delAckMaxCount;
 }
 
+void
+TcpSocketImpl::SetAllowBroadcast (bool allowBroadcast)
+{
+  NS_FATAL_ERROR ("not implemented");
+}
+
+bool
+TcpSocketImpl::GetAllowBroadcast () const
+{
+  return false;
+}
+
 }//namespace ns3
 
 

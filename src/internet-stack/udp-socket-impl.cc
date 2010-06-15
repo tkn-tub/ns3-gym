@@ -703,5 +703,20 @@ UdpSocketImpl::GetMtuDiscover (void) const
   return m_mtuDiscover;
 }
 
+void
+UdpSocketImpl::SetAllowBroadcast (bool allowBroadcast)
+{
+  if (!allowBroadcast)
+    {
+      NS_FATAL_ERROR ("not implemented");
+    }
+}
+
+bool
+UdpSocketImpl::GetAllowBroadcast () const
+{
+  return true;
+}
+
 
 } //namespace ns3

@@ -337,5 +337,20 @@ bool Ipv6RawSocketImpl::ForwardUp (Ptr<const Packet> p, Ipv6Header hdr, Ptr<NetD
   return false;
 }
 
+void
+Ipv6RawSocketImpl::SetAllowBroadcast (bool allowBroadcast)
+{
+  if (!allowBroadcast) 
+    {
+      NS_FATAL_ERROR ("not implemented");
+    }
+}
+
+bool
+Ipv6RawSocketImpl::GetAllowBroadcast () const
+{
+  return true;
+}
+
 } /* namespace ns3 */
 
