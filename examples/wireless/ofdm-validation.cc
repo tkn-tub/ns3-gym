@@ -34,14 +34,14 @@ int main (int argc, char *argv[])
   std::ofstream nistfile ("nist-frame-success-rate.plt");
   std::vector <std::string> modes;
 
-  modes.push_back ("wifia-6mbs");
-  modes.push_back ("wifia-9mbs");
-  modes.push_back ("wifia-12mbs");
-  modes.push_back ("wifia-18mbs");
-  modes.push_back ("wifia-24mbs");
-  modes.push_back ("wifia-36mbs");
-  modes.push_back ("wifia-48mbs");
-  modes.push_back ("wifia-54mbs");
+  modes.push_back ("OfdmRate6Mbps");
+  modes.push_back ("OfdmRate9Mbps");
+  modes.push_back ("OfdmRate12Mbps");
+  modes.push_back ("OfdmRate18Mbps");
+  modes.push_back ("OfdmRate24Mbps");
+  modes.push_back ("OfdmRate36Mbps");
+  modes.push_back ("OfdmRate48Mbps");
+  modes.push_back ("OfdmRate54Mbps");
 
   CommandLine cmd;
   cmd.AddValue ("FrameSize", "The frame size", FrameSize);
