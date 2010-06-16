@@ -26,6 +26,17 @@ http://www.nsnam.org/wiki/index.php/Installation
 
 New user-visible features
 -------------------------
+
+   - A reorganisation of the construction of Wi-Fi transmit rates has
+     been undertaken with the aim of simplifying the task of
+     supporting further IEEE 802.11 PHYs. This work has been completed
+     under the auspices of Bug 871. A consequence of this work is that
+     WifiModes have a new (hopefully future-proof) naming, and
+     simulations which specify rates by name will need updating. The
+     list of new rate names is given in the error message produced
+     when an attempt is made to use any invalid rate name (including
+     those that were previously valid).
+
    - A new OFDM error rate model for WiFi (NistErrorRateModel); this model
      has been validated in clear-channel testbed tests.  For 802.11b, it
      uses the same underlying model as the YansErrorRateModel, but it differs
@@ -50,6 +61,7 @@ many cases referencing the Bugzilla bug number
    - bug 900:  RawTextConfigLoad::Default does not load configurations
    - bug 858 - support MSG_PEEK in IPv4/IPv6 raw socket
    - bug 932 - Support IP_HDRINCL option for Ipv4RawSocket
+   - bug 871 - naming for WifiPhyStandard
 
 Known issues
 ------------

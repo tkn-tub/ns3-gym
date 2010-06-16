@@ -274,34 +274,34 @@ public:
   
   virtual Ptr<WifiChannel> GetChannel (void) const = 0;
 
-  static WifiMode Get6mba (void);
-  static WifiMode Get9mba (void);
-  static WifiMode Get12mba (void);
-  static WifiMode Get18mba (void);
-  static WifiMode Get24mba (void);
-  static WifiMode Get36mba (void);
-  static WifiMode Get48mba (void);
-  static WifiMode Get54mba (void);
-  static WifiMode Get1mbb (void);
-  static WifiMode Get2mbb (void);
-  static WifiMode Get5_5mbb (void);
-  static WifiMode Get11mbb (void);
-  static WifiMode Get3mb10Mhz (void);
-  static WifiMode Get4_5mb10Mhz (void);
-  static WifiMode Get6mb10Mhz (void);
-  static WifiMode Get9mb10Mhz (void);
-  static WifiMode Get12mb10Mhz (void);
-  static WifiMode Get18mb10Mhz (void);
-  static WifiMode Get24mb10Mhz (void);
-  static WifiMode Get27mb10Mhz (void);
-  static WifiMode Get1_5mb5Mhz (void);
-  static WifiMode Get2_25mb5Mhz (void);
-  static WifiMode Get3mb5Mhz (void);
-  static WifiMode Get4_5mb5Mhz (void);
-  static WifiMode Get6mb5Mhz (void);
-  static WifiMode Get9mb5Mhz (void);
-  static WifiMode Get12mb5Mhz (void);
-  static WifiMode Get13_5mb5Mhz (void);
+  static WifiMode GetDsssRate1Mbps ();
+  static WifiMode GetDsssRate2Mbps ();
+  static WifiMode GetDsssRate5_5Mbps ();
+  static WifiMode GetDsssRate11Mbps ();
+  static WifiMode GetOfdmRate6Mbps ();
+  static WifiMode GetOfdmRate9Mbps ();
+  static WifiMode GetOfdmRate12Mbps ();
+  static WifiMode GetOfdmRate18Mbps ();
+  static WifiMode GetOfdmRate24Mbps ();
+  static WifiMode GetOfdmRate36Mbps ();
+  static WifiMode GetOfdmRate48Mbps ();
+  static WifiMode GetOfdmRate54Mbps ();
+  static WifiMode GetOfdmRate3MbpsBW10MHz ();
+  static WifiMode GetOfdmRate4_5MbpsBW10MHz ();
+  static WifiMode GetOfdmRate6MbpsBW10MHz ();
+  static WifiMode GetOfdmRate9MbpsBW10MHz ();
+  static WifiMode GetOfdmRate12MbpsBW10MHz ();
+  static WifiMode GetOfdmRate18MbpsBW10MHz ();
+  static WifiMode GetOfdmRate24MbpsBW10MHz ();
+  static WifiMode GetOfdmRate27MbpsBW10MHz ();
+  static WifiMode GetOfdmRate1_5MbpsBW5MHz ();
+  static WifiMode GetOfdmRate2_25MbpsBW5MHz ();
+  static WifiMode GetOfdmRate3MbpsBW5MHz ();
+  static WifiMode GetOfdmRate4_5MbpsBW5MHz ();
+  static WifiMode GetOfdmRate6MbpsBW5MHz ();
+  static WifiMode GetOfdmRate9MbpsBW5MHz ();
+  static WifiMode GetOfdmRate12MbpsBW5MHz ();
+  static WifiMode GetOfdmRate13_5MbpsBW5MHz ();
 
 
   /**

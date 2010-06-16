@@ -69,8 +69,8 @@ void experiment (bool enableCtsRts)
   // 5. Install wireless devices
   WifiHelper wifi;
   wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager", 
-                                "DataMode",StringValue ("wifib-2mbs"), 
-                                "ControlMode",StringValue ("wifib-1mbs"));
+                                "DataMode",StringValue ("DsssRate2Mbps"), 
+                                "ControlMode",StringValue ("DsssRate1Mbps"));
   YansWifiPhyHelper wifiPhy =  YansWifiPhyHelper::Default ();
   wifiPhy.SetChannel (wifiChannel);
   NqosWifiMacHelper wifiMac = NqosWifiMacHelper::Default ();

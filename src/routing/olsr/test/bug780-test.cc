@@ -96,7 +96,7 @@ Bug780Test::CreateNodes (void)
 {
   int nWifis = 3;
   double SimTime = 200.0;
-  std::string phyMode ("wifib-1mbs");
+  std::string phyMode ("DsssRate1Mbps");
 
   //sending one packets per sec
   // Fix non-unicast data rate to be the same as that of unicast

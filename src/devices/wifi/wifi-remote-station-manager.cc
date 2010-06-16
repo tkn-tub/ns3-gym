@@ -559,7 +559,7 @@ WifiRemoteStationManager::GetControlAnswerMode (Mac48Address address, WifiMode r
     {
       if (i->GetPhyRate () > mode.GetPhyRate () &&
           i->GetPhyRate () <= reqMode.GetPhyRate () &&
-          i->GetModulationType () == reqMode.GetModulationType ())
+          i->GetModulationClass () == reqMode.GetModulationClass ())
         {
           mode = *i;
         }

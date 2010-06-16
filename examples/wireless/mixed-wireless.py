@@ -117,7 +117,7 @@ def main(argv):
     mac = ns3.NqosWifiMacHelper.Default()
     mac.SetType("ns3::AdhocWifiMac")
     wifi.SetRemoteStationManager("ns3::ConstantRateWifiManager",
-                                  "DataMode", ns3.StringValue("wifia-54mbs"))
+                                  "DataMode", ns3.StringValue("OfdmRate54Mbps"))
     wifiPhy = ns3.YansWifiPhyHelper.Default()
     wifiChannel = ns3.YansWifiChannelHelper.Default()
     wifiPhy.SetChannel(wifiChannel.Create())

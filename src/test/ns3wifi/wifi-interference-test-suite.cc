@@ -230,7 +230,7 @@ bool
 WifiInterferenceTestCase::DoRun (void)
 {
 
-  std::string phyMode ("wifib-1mbs");
+  std::string phyMode ("DsssRate1Mbps");
   double Prss = -90;  // -dBm
   double Irss = -90;  // -dBm
   double delta = 0;  // microseconds

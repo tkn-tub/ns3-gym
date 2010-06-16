@@ -115,63 +115,63 @@ InterferenceHelperTxDurationTest::DoRun (void)
   bool retval = true;
 
   // IEEE Std 802.11-2007 Table 18-2 "Example of LENGTH calculations for CCK"
-  retval = retval 
-    && CheckPayloadDuration (1023, WifiPhy::Get11mbb (), 744)     
-    && CheckPayloadDuration (1024, WifiPhy::Get11mbb (), 745)
-    && CheckPayloadDuration (1025, WifiPhy::Get11mbb (), 746)
-    && CheckPayloadDuration (1026, WifiPhy::Get11mbb (), 747);
+  retval = retval
+    && CheckPayloadDuration (1023, WifiPhy::GetDsssRate11Mbps (), 744)
+    && CheckPayloadDuration (1024, WifiPhy::GetDsssRate11Mbps (), 745)
+    && CheckPayloadDuration (1025, WifiPhy::GetDsssRate11Mbps (), 746)
+    && CheckPayloadDuration (1026, WifiPhy::GetDsssRate11Mbps (), 747);
 
 
   // Similar, but we add PLCP preamble and header durations
   // and we test different rates.
   // The payload durations for modes other than 11mbb have been
   // calculated by hand according to  IEEE Std 802.11-2007 18.2.3.5 
-  retval = retval 
-    && CheckTxDuration (1023, WifiPhy::Get11mbb (), WIFI_PREAMBLE_SHORT, 744 + 96)     
-    && CheckTxDuration (1024, WifiPhy::Get11mbb (), WIFI_PREAMBLE_SHORT, 745 + 96)
-    && CheckTxDuration (1025, WifiPhy::Get11mbb (), WIFI_PREAMBLE_SHORT, 746 + 96)
-    && CheckTxDuration (1026, WifiPhy::Get11mbb (), WIFI_PREAMBLE_SHORT, 747 + 96)
-    && CheckTxDuration (1023, WifiPhy::Get11mbb (), WIFI_PREAMBLE_LONG, 744 + 192)     
-    && CheckTxDuration (1024, WifiPhy::Get11mbb (), WIFI_PREAMBLE_LONG, 745 + 192)
-    && CheckTxDuration (1025, WifiPhy::Get11mbb (), WIFI_PREAMBLE_LONG, 746 + 192)
-    && CheckTxDuration (1026, WifiPhy::Get11mbb (), WIFI_PREAMBLE_LONG, 747 + 192)
-    && CheckTxDuration (1023, WifiPhy::Get5_5mbb (), WIFI_PREAMBLE_SHORT, 1488 + 96)     
-    && CheckTxDuration (1024, WifiPhy::Get5_5mbb (), WIFI_PREAMBLE_SHORT, 1490 + 96)
-    && CheckTxDuration (1025, WifiPhy::Get5_5mbb (), WIFI_PREAMBLE_SHORT, 1491 + 96)
-    && CheckTxDuration (1026, WifiPhy::Get5_5mbb (), WIFI_PREAMBLE_SHORT, 1493 + 96)
-    && CheckTxDuration (1023, WifiPhy::Get5_5mbb (), WIFI_PREAMBLE_LONG, 1488 + 192)     
-    && CheckTxDuration (1024, WifiPhy::Get5_5mbb (), WIFI_PREAMBLE_LONG, 1490 + 192)
-    && CheckTxDuration (1025, WifiPhy::Get5_5mbb (), WIFI_PREAMBLE_LONG, 1491 + 192)
-    && CheckTxDuration (1026, WifiPhy::Get5_5mbb (), WIFI_PREAMBLE_LONG, 1493 + 192)
-    && CheckTxDuration (1023, WifiPhy::Get2mbb (), WIFI_PREAMBLE_SHORT, 4092 + 96)     
-    && CheckTxDuration (1024, WifiPhy::Get2mbb (), WIFI_PREAMBLE_SHORT, 4096 + 96)
-    && CheckTxDuration (1025, WifiPhy::Get2mbb (), WIFI_PREAMBLE_SHORT, 4100 + 96)
-    && CheckTxDuration (1026, WifiPhy::Get2mbb (), WIFI_PREAMBLE_SHORT, 4104 + 96)
-    && CheckTxDuration (1023, WifiPhy::Get2mbb (), WIFI_PREAMBLE_LONG, 4092 + 192)     
-    && CheckTxDuration (1024, WifiPhy::Get2mbb (), WIFI_PREAMBLE_LONG, 4096 + 192)
-    && CheckTxDuration (1025, WifiPhy::Get2mbb (), WIFI_PREAMBLE_LONG, 4100 + 192)
-    && CheckTxDuration (1026, WifiPhy::Get2mbb (), WIFI_PREAMBLE_LONG, 4104 + 192)      
-    && CheckTxDuration (1023, WifiPhy::Get1mbb (), WIFI_PREAMBLE_SHORT, 8184 + 96)     
-    && CheckTxDuration (1024, WifiPhy::Get1mbb (), WIFI_PREAMBLE_SHORT, 8192 + 96)
-    && CheckTxDuration (1025, WifiPhy::Get1mbb (), WIFI_PREAMBLE_SHORT, 8200 + 96)
-    && CheckTxDuration (1026, WifiPhy::Get1mbb (), WIFI_PREAMBLE_SHORT, 8208 + 96)
-    && CheckTxDuration (1023, WifiPhy::Get1mbb (), WIFI_PREAMBLE_LONG, 8184 + 192)     
-    && CheckTxDuration (1024, WifiPhy::Get1mbb (), WIFI_PREAMBLE_LONG, 8192 + 192)
-    && CheckTxDuration (1025, WifiPhy::Get1mbb (), WIFI_PREAMBLE_LONG, 8200 + 192)
-    && CheckTxDuration (1026, WifiPhy::Get1mbb (), WIFI_PREAMBLE_LONG, 8208 + 192);
+  retval = retval
+    && CheckTxDuration (1023, WifiPhy::GetDsssRate11Mbps (), WIFI_PREAMBLE_SHORT, 744 + 96)
+    && CheckTxDuration (1024, WifiPhy::GetDsssRate11Mbps (), WIFI_PREAMBLE_SHORT, 745 + 96)
+    && CheckTxDuration (1025, WifiPhy::GetDsssRate11Mbps (), WIFI_PREAMBLE_SHORT, 746 + 96)
+    && CheckTxDuration (1026, WifiPhy::GetDsssRate11Mbps (), WIFI_PREAMBLE_SHORT, 747 + 96)
+    && CheckTxDuration (1023, WifiPhy::GetDsssRate11Mbps (), WIFI_PREAMBLE_LONG, 744 + 192)
+    && CheckTxDuration (1024, WifiPhy::GetDsssRate11Mbps (), WIFI_PREAMBLE_LONG, 745 + 192)
+    && CheckTxDuration (1025, WifiPhy::GetDsssRate11Mbps (), WIFI_PREAMBLE_LONG, 746 + 192)
+    && CheckTxDuration (1026, WifiPhy::GetDsssRate11Mbps (), WIFI_PREAMBLE_LONG, 747 + 192)
+    && CheckTxDuration (1023, WifiPhy::GetDsssRate5_5Mbps (), WIFI_PREAMBLE_SHORT, 1488 + 96)
+    && CheckTxDuration (1024, WifiPhy::GetDsssRate5_5Mbps (), WIFI_PREAMBLE_SHORT, 1490 + 96)
+    && CheckTxDuration (1025, WifiPhy::GetDsssRate5_5Mbps (), WIFI_PREAMBLE_SHORT, 1491 + 96)
+    && CheckTxDuration (1026, WifiPhy::GetDsssRate5_5Mbps (), WIFI_PREAMBLE_SHORT, 1493 + 96)
+    && CheckTxDuration (1023, WifiPhy::GetDsssRate5_5Mbps (), WIFI_PREAMBLE_LONG, 1488 + 192)
+    && CheckTxDuration (1024, WifiPhy::GetDsssRate5_5Mbps (), WIFI_PREAMBLE_LONG, 1490 + 192)
+    && CheckTxDuration (1025, WifiPhy::GetDsssRate5_5Mbps (), WIFI_PREAMBLE_LONG, 1491 + 192)
+    && CheckTxDuration (1026, WifiPhy::GetDsssRate5_5Mbps (), WIFI_PREAMBLE_LONG, 1493 + 192)
+    && CheckTxDuration (1023, WifiPhy::GetDsssRate2Mbps (), WIFI_PREAMBLE_SHORT, 4092 + 96)
+    && CheckTxDuration (1024, WifiPhy::GetDsssRate2Mbps (), WIFI_PREAMBLE_SHORT, 4096 + 96)
+    && CheckTxDuration (1025, WifiPhy::GetDsssRate2Mbps (), WIFI_PREAMBLE_SHORT, 4100 + 96)
+    && CheckTxDuration (1026, WifiPhy::GetDsssRate2Mbps (), WIFI_PREAMBLE_SHORT, 4104 + 96)
+    && CheckTxDuration (1023, WifiPhy::GetDsssRate2Mbps (), WIFI_PREAMBLE_LONG, 4092 + 192)
+    && CheckTxDuration (1024, WifiPhy::GetDsssRate2Mbps (), WIFI_PREAMBLE_LONG, 4096 + 192)
+    && CheckTxDuration (1025, WifiPhy::GetDsssRate2Mbps (), WIFI_PREAMBLE_LONG, 4100 + 192)
+    && CheckTxDuration (1026, WifiPhy::GetDsssRate2Mbps (), WIFI_PREAMBLE_LONG, 4104 + 192)
+    && CheckTxDuration (1023, WifiPhy::GetDsssRate1Mbps (), WIFI_PREAMBLE_SHORT, 8184 + 96)
+    && CheckTxDuration (1024, WifiPhy::GetDsssRate1Mbps (), WIFI_PREAMBLE_SHORT, 8192 + 96)
+    && CheckTxDuration (1025, WifiPhy::GetDsssRate1Mbps (), WIFI_PREAMBLE_SHORT, 8200 + 96)
+    && CheckTxDuration (1026, WifiPhy::GetDsssRate1Mbps (), WIFI_PREAMBLE_SHORT, 8208 + 96)
+    && CheckTxDuration (1023, WifiPhy::GetDsssRate1Mbps (), WIFI_PREAMBLE_LONG, 8184 + 192)
+    && CheckTxDuration (1024, WifiPhy::GetDsssRate1Mbps (), WIFI_PREAMBLE_LONG, 8192 + 192)
+    && CheckTxDuration (1025, WifiPhy::GetDsssRate1Mbps (), WIFI_PREAMBLE_LONG, 8200 + 192)
+    && CheckTxDuration (1026, WifiPhy::GetDsssRate1Mbps (), WIFI_PREAMBLE_LONG, 8208 + 192);
 
   // values from http://mailman.isi.edu/pipermail/ns-developers/2009-July/006226.html
-  retval = retval && CheckTxDuration (14, WifiPhy::Get1mbb (), WIFI_PREAMBLE_LONG, 304);
+  retval = retval && CheckTxDuration (14, WifiPhy::GetDsssRate1Mbps (), WIFI_PREAMBLE_LONG, 304);
 
   // values from
   // http://www.oreillynet.com/pub/a/wireless/2003/08/08/wireless_throughput.html
   retval = retval 
-    && CheckTxDuration (1536, WifiPhy::Get11mbb (), WIFI_PREAMBLE_LONG, 1310)
-    && CheckTxDuration (76, WifiPhy::Get11mbb (), WIFI_PREAMBLE_LONG, 248)
-    && CheckTxDuration (14, WifiPhy::Get11mbb (), WIFI_PREAMBLE_LONG, 203)
-    && CheckTxDuration (1536, WifiPhy::Get54mba (), WIFI_PREAMBLE_LONG, 248)
-    && CheckTxDuration (76, WifiPhy::Get54mba (), WIFI_PREAMBLE_LONG, 32)
-    && CheckTxDuration (14, WifiPhy::Get54mba (), WIFI_PREAMBLE_LONG, 24);
+    && CheckTxDuration (1536, WifiPhy::GetDsssRate11Mbps (), WIFI_PREAMBLE_LONG, 1310)
+    && CheckTxDuration (76, WifiPhy::GetDsssRate11Mbps (), WIFI_PREAMBLE_LONG, 248)
+    && CheckTxDuration (14, WifiPhy::GetDsssRate11Mbps (), WIFI_PREAMBLE_LONG, 203)
+    && CheckTxDuration (1536, WifiPhy::GetOfdmRate54Mbps (), WIFI_PREAMBLE_LONG, 248)
+    && CheckTxDuration (76, WifiPhy::GetOfdmRate54Mbps (), WIFI_PREAMBLE_LONG, 32)
+    && CheckTxDuration (14, WifiPhy::GetOfdmRate54Mbps (), WIFI_PREAMBLE_LONG, 24);
 
   return (!retval);
 }

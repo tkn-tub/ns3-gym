@@ -146,7 +146,7 @@ main (int argc, char *argv[])
   NqosWifiMacHelper mac = NqosWifiMacHelper::Default ();
   mac.SetType ("ns3::AdhocWifiMac");
   wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager",
-                                "DataMode", StringValue ("wifia-54mbs"));
+                                "DataMode", StringValue ("OfdmRate54Mbps"));
   YansWifiPhyHelper wifiPhy = YansWifiPhyHelper::Default ();
   YansWifiChannelHelper wifiChannel = YansWifiChannelHelper::Default ();
   wifiPhy.SetChannel (wifiChannel.Create ());

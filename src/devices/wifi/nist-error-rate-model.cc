@@ -190,77 +190,90 @@ NistErrorRateModel::GetFec64QamBer (double snr, uint32_t nbits,
 double 
 NistErrorRateModel::GetChunkSuccessRate (WifiMode mode, double snr, uint32_t nbits) const
 {
-  if (mode == WifiPhy::Get6mba () || mode == WifiPhy::Get3mb10Mhz () || mode == WifiPhy::Get1_5mb5Mhz ())
+  if (mode.GetModulationClass () == WIFI_MOD_CLASS_OFDM)
     {
-      return GetFecBpskBer (snr, 
-                            nbits,
-                            1 // b value
-                            );
+      if (mode.GetConstellationSize () == 2)
+        {
+          if (mode.GetCodeRate () == WIFI_CODE_RATE_1_2)
+            {
+              return GetFecBpskBer (snr,
+                                    nbits,
+                                    1 // b value
+                                    );
+            }
+          else
+            {
+              return GetFecBpskBer (snr,
+                                    nbits,
+                                    3 // b value
+                                    );
+            }
+        }
+      else if (mode.GetConstellationSize () == 4)
+        {
+          if (mode.GetCodeRate () == WIFI_CODE_RATE_1_2)
+            {
+              return GetFecQpskBer (snr,
+                                    nbits,
+                                    1 // b value
+                                    );
+            }
+          else
+            {
+              return GetFecQpskBer (snr,
+                                    nbits,
+                                    3 // b value
+                                    );
+            }
+        }
+      else if (mode.GetConstellationSize () == 16)
+        {
+          if (mode.GetCodeRate () == WIFI_CODE_RATE_1_2)
+            {
+              return GetFec16QamBer (snr,
+                                     nbits,
+                                     1 // b value
+                                     );
+            }
+          else
+            {
+              return GetFec16QamBer (snr,
+                                     nbits,
+                                     3 // b value
+                                     );
+            }
+        }
+      else if (mode.GetConstellationSize () == 64)
+        {
+          if (mode.GetCodeRate () == WIFI_CODE_RATE_2_3)
+            {
+              return GetFec64QamBer (snr,
+                                     nbits,
+                                     2 // b value
+                                     );
+            }
+          else
+            {
+              return GetFec64QamBer (snr,
+                                     nbits,
+                                     3 // b value
+                                     );
+            }
+        }
     }
-  else if (mode == WifiPhy::Get9mba () || mode == WifiPhy::Get4_5mb10Mhz () || mode == WifiPhy::Get2_25mb5Mhz ())
+  else if (mode.GetModulationClass () == WIFI_MOD_CLASS_DSSS)
     {
-      return GetFecBpskBer (snr, 
-                            nbits,
-                            3 // b value
-                            );
-    }
-  else if (mode == WifiPhy::Get12mba () || mode == WifiPhy::Get6mb10Mhz () || mode == WifiPhy::Get3mb5Mhz ())
-    {
-      return GetFecQpskBer (snr, 
-                            nbits,
-                            1 // b value
-                            );
-    }
-  else if (mode == WifiPhy::Get18mba () || mode == WifiPhy::Get9mb10Mhz () || mode == WifiPhy::Get4_5mb5Mhz ())
-    {
-      return GetFecQpskBer (snr, 
-                            nbits,
-                            3 // b value
-                            );
-    }
-  else if (mode == WifiPhy::Get24mba () || mode == WifiPhy::Get12mb10Mhz () || mode == WifiPhy::Get6mb5Mhz ())
-    {
-      return GetFec16QamBer (snr, 
-                             nbits,
-                             1 // b value
-                             );
-    }
-  else if (mode == WifiPhy::Get36mba () || mode == WifiPhy::Get18mb10Mhz () || mode == WifiPhy::Get9mb5Mhz ())
-    {
-      return GetFec16QamBer (snr, 
-                             nbits,
-                             3 // b value
-                             );
-    }
-  else if (mode == WifiPhy::Get48mba () || mode == WifiPhy::Get24mb10Mhz () || mode == WifiPhy::Get12mb5Mhz ())
-    {
-      return GetFec64QamBer (snr, 
-                             nbits,
-                             2 // b value
-                             );
-    }
-  else if (mode == WifiPhy::Get54mba () || mode == WifiPhy::Get27mb10Mhz () || mode == WifiPhy::Get13_5mb5Mhz ())
-    {
-      return GetFec64QamBer (snr, 
-                             nbits,
-                             3 // b value
-                             );
-    }
-  else if (mode == WifiPhy::Get1mbb ())
-    {
-      return DsssErrorRateModel::GetDsssDbpskSuccessRate (snr,nbits);
-    }
-  else if (mode == WifiPhy::Get2mbb ())
-    {
-      return DsssErrorRateModel::GetDsssDqpskSuccessRate (snr,nbits);
-    }
-  else if (mode == WifiPhy::Get5_5mbb ())
-    {
-      return DsssErrorRateModel::GetDsssDqpskCck5_5SuccessRate (snr,nbits);
-    }
-  else if (mode == WifiPhy::Get11mbb ())
-    {
-      return DsssErrorRateModel::GetDsssDqpskCck11SuccessRate (snr,nbits);
+      switch (mode.GetDataRate ())
+        {
+        case 1000000:
+          return DsssErrorRateModel::GetDsssDbpskSuccessRate (snr, nbits);
+        case 2000000:
+          return DsssErrorRateModel::GetDsssDqpskSuccessRate (snr, nbits);
+        case 5500000:
+          return DsssErrorRateModel::GetDsssDqpskCck5_5SuccessRate (snr, nbits);
+        case 11000000:
+          return DsssErrorRateModel::GetDsssDqpskCck11SuccessRate (snr, nbits);
+        }
     }
   return 0;
 }

@@ -93,85 +93,6 @@ WifiPhy::~WifiPhy ()
   NS_LOG_FUNCTION (this);
 }
 
-WifiMode 
-WifiPhy::Get6mba (void)
-{
-  static WifiMode mode = WifiModeFactory::CreateBpsk ("wifia-6mbs",
-                                                      true,
-                                                      20000000, 6000000, 12000000,
-                                                      WIFI_PHY_STANDARD_80211a);
-  return mode;
-}
-WifiMode 
-WifiPhy::Get9mba (void)
-{
-  static WifiMode mode = WifiModeFactory::CreateBpsk ("wifia-9mbs",
-                                                      false,
-                                                      20000000, 9000000, 12000000,
-                                                      WIFI_PHY_STANDARD_80211a);
-  return mode;
-}
-WifiMode 
-WifiPhy::Get12mba (void)
-{
-  static WifiMode mode = WifiModeFactory::CreateQpsk ("wifia-12mbs",
-                                                      true,
-                                                      20000000, 12000000, 24000000,
-                                                      WIFI_PHY_STANDARD_80211a);
-  return mode;
-}
-WifiMode 
-WifiPhy::Get18mba (void)
-{
-  static WifiMode mode = WifiModeFactory::CreateQpsk ("wifia-18mbs",
-                                                      false,
-                                                      20000000, 18000000, 24000000,
-                                                      WIFI_PHY_STANDARD_80211a);
-  return mode;
-}
-WifiMode 
-WifiPhy::Get24mba (void)
-{
-  static WifiMode mode = WifiModeFactory::CreateQam ("wifia-24mbs",
-                                                     true,
-                                                     20000000, 24000000, 48000000,
-                                                     16,
-                                                     WIFI_PHY_STANDARD_80211a);
-  return mode;
-}
-WifiMode 
-WifiPhy::Get36mba (void)
-{
-  static WifiMode mode = WifiModeFactory::CreateQam ("wifia-36mbs",
-                                                     false,
-                                                     20000000, 36000000, 48000000,
-                                                     16,
-                                                     WIFI_PHY_STANDARD_80211a);
-  return mode;
-}
-
-WifiMode 
-WifiPhy::Get48mba (void)
-{
-  static WifiMode mode = WifiModeFactory::CreateQam ("wifia-48mbs",
-                                                     false,
-                                                     20000000, 48000000, 72000000,
-                                                     64,
-                                                     WIFI_PHY_STANDARD_80211a);
-  return mode;
-}
-
-WifiMode 
-WifiPhy::Get54mba (void)
-{
-  static WifiMode mode = WifiModeFactory::CreateQam ("wifia-54mbs",
-                                                     false,
-                                                     20000000, 54000000, 72000000,
-                                                     64,
-                                                     WIFI_PHY_STANDARD_80211a);
-  return mode;
-}
-
 void 
 WifiPhy::NotifyTxBegin (Ptr<const Packet> packet)
 {
@@ -220,203 +141,382 @@ WifiPhy::NotifyPromiscSniffTx (Ptr<const Packet> packet, uint16_t channelFreqMhz
   m_phyPromiscSniffTxTrace (packet, channelFreqMhz, channelNumber, rate, isShortPreamble);
 }
 
-WifiMode 
-WifiPhy::Get1mbb (void)
+
+/**
+ * Clause 15 rates (DSSS)
+ */
+
+WifiMode
+WifiPhy::GetDsssRate1Mbps ()
 {
-  static WifiMode mode = WifiModeFactory::CreateDbpsk ("wifib-1mbs",
-                                                      true,
-                                                      22000000, 1000000, 1000000,
-                                                      WIFI_PHY_STANDARD_80211b);
+  static WifiMode mode =
+    WifiModeFactory::CreateWifiMode ("DsssRate1Mbps",
+                                     WIFI_MOD_CLASS_DSSS,
+                                     true,
+                                     22000000, 1000000,
+                                     WIFI_CODE_RATE_UNDEFINED,
+                                     2);
   return mode;
 }
 
-WifiMode 
-WifiPhy::Get2mbb (void)
+WifiMode
+WifiPhy::GetDsssRate2Mbps ()
 {
-  static WifiMode mode = WifiModeFactory::CreateDqpsk ("wifib-2mbs",
-                                                      true,
-                                                      22000000, 2000000, 2000000,
-                                                      WIFI_PHY_STANDARD_80211b);
+  static WifiMode mode =
+    WifiModeFactory::CreateWifiMode ("DsssRate2Mbps",
+                                     WIFI_MOD_CLASS_DSSS,
+                                     true,
+                                     22000000, 2000000,
+                                     WIFI_CODE_RATE_UNDEFINED,
+                                     4);
   return mode;
 }
 
-WifiMode 
-WifiPhy::Get5_5mbb (void)
+
+/**
+ * Clause 18 rates (HR/DSSS)
+ */
+WifiMode
+WifiPhy::GetDsssRate5_5Mbps ()
 {
-  static WifiMode mode = WifiModeFactory::CreateDqpsk ("wifib-5.5mbs",
-                                                      true,
-                                                      22000000, 5500000, 5500000,
-                                                      WIFI_PHY_STANDARD_80211b);
+  static WifiMode mode =
+    WifiModeFactory::CreateWifiMode ("DsssRate5_5Mbps",
+                                     WIFI_MOD_CLASS_DSSS,
+                                     true,
+                                     22000000, 5500000,
+                                     WIFI_CODE_RATE_UNDEFINED,
+                                     4);
   return mode;
 }
 
-WifiMode 
-WifiPhy::Get11mbb (void)
+WifiMode
+WifiPhy::GetDsssRate11Mbps ()
 {
-  static WifiMode mode = WifiModeFactory::CreateDqpsk ("wifib-11mbs",
-                                                      true,
-                                                      22000000, 11000000, 11000000,
-                                                      WIFI_PHY_STANDARD_80211b);
+  static WifiMode mode =
+    WifiModeFactory::CreateWifiMode ("DsssRate11Mbps",
+                                     WIFI_MOD_CLASS_DSSS,
+                                     true,
+                                     22000000, 11000000,
+                                     WIFI_CODE_RATE_UNDEFINED,
+                                     4);
   return mode;
 }
 
-WifiMode 
-WifiPhy::Get3mb10Mhz (void)
+
+/**
+ * Clause 17 rates (OFDM)
+ */
+WifiMode
+WifiPhy::GetOfdmRate6Mbps ()
 {
-  static WifiMode mode = WifiModeFactory::CreateBpsk ("wifi-3mbs-10Mhz",
-                                                      true,
-                                                      10000000, 3000000, 6000000,
-                                                      WIFI_PHY_STANDARD_80211_10Mhz);
+  static WifiMode mode =
+    WifiModeFactory::CreateWifiMode ("OfdmRate6Mbps",
+                                     WIFI_MOD_CLASS_OFDM,
+                                     true,
+                                     20000000, 6000000,
+                                     WIFI_CODE_RATE_1_2,
+                                     2);
   return mode;
 }
 
-WifiMode 
-WifiPhy::Get4_5mb10Mhz (void)
+WifiMode
+WifiPhy::GetOfdmRate9Mbps ()
 {
-  static WifiMode mode = WifiModeFactory::CreateBpsk ("wifi-4.5mbs-10Mhz",
-                                                      false,
-                                                      10000000, 4500000, 6000000,
-                                                      WIFI_PHY_STANDARD_80211_10Mhz);
+  static WifiMode mode =
+    WifiModeFactory::CreateWifiMode ("OfdmRate9Mbps",
+                                     WIFI_MOD_CLASS_OFDM,
+                                     false,
+                                     20000000, 9000000,
+                                     WIFI_CODE_RATE_3_4,
+                                     2);
   return mode;
 }
 
-WifiMode 
-WifiPhy::Get6mb10Mhz (void)
+WifiMode
+WifiPhy::GetOfdmRate12Mbps ()
 {
-  static WifiMode mode = WifiModeFactory::CreateBpsk ("wifi-6mbs-10Mhz",
-                                                      true,
-                                                      10000000, 6000000, 12000000,
-                                                      WIFI_PHY_STANDARD_80211_10Mhz);
+  static WifiMode mode =
+    WifiModeFactory::CreateWifiMode ("OfdmRate12Mbps",
+                                     WIFI_MOD_CLASS_OFDM,
+                                     true,
+                                     20000000, 12000000,
+                                     WIFI_CODE_RATE_1_2,
+                                     4);
   return mode;
 }
 
-WifiMode 
-WifiPhy::Get9mb10Mhz (void)
+WifiMode
+WifiPhy::GetOfdmRate18Mbps ()
 {
-  static WifiMode mode = WifiModeFactory::CreateBpsk ("wifi-9mbs-10Mhz",
-                                                      false,
-                                                      10000000, 9000000, 12000000,
-                                                      WIFI_PHY_STANDARD_80211_10Mhz);
+  static WifiMode mode =
+    WifiModeFactory::CreateWifiMode ("OfdmRate18Mbps",
+                                     WIFI_MOD_CLASS_OFDM,
+                                     false,
+                                     20000000, 18000000,
+                                     WIFI_CODE_RATE_3_4,
+                                     4);
   return mode;
 }
 
-WifiMode 
-WifiPhy::Get12mb10Mhz (void)
+WifiMode
+WifiPhy::GetOfdmRate24Mbps ()
 {
-  static WifiMode mode = WifiModeFactory::CreateBpsk ("wifi-12mbs-10Mhz",
-                                                      true,
-                                                      10000000, 12000000, 24000000,
-                                                      WIFI_PHY_STANDARD_80211_10Mhz);
+  static WifiMode mode =
+    WifiModeFactory::CreateWifiMode ("OfdmRate24Mbps",
+                                     WIFI_MOD_CLASS_OFDM,
+                                     true,
+                                     20000000, 24000000,
+                                     WIFI_CODE_RATE_1_2,
+                                     16);
   return mode;
 }
 
-WifiMode 
-WifiPhy::Get18mb10Mhz (void)
+WifiMode
+WifiPhy::GetOfdmRate36Mbps ()
 {
-  static WifiMode mode = WifiModeFactory::CreateBpsk ("wifi-18mbs-10Mhz",
-                                                      false,
-                                                      10000000, 18000000, 24000000,
-                                                      WIFI_PHY_STANDARD_80211_10Mhz);
+  static WifiMode mode =
+    WifiModeFactory::CreateWifiMode ("OfdmRate36Mbps",
+                                     WIFI_MOD_CLASS_OFDM,
+                                     false,
+                                     20000000, 36000000,
+                                     WIFI_CODE_RATE_3_4,
+                                     16);
   return mode;
 }
 
-WifiMode 
-WifiPhy::Get24mb10Mhz (void)
+WifiMode
+WifiPhy::GetOfdmRate48Mbps ()
 {
-  static WifiMode mode = WifiModeFactory::CreateBpsk ("wifi-24mbs-10Mhz",
-                                                      false,
-                                                      10000000, 24000000, 36000000,
-                                                      WIFI_PHY_STANDARD_80211_10Mhz);
+  static WifiMode mode =
+    WifiModeFactory::CreateWifiMode ("OfdmRate48Mbps",
+                                     WIFI_MOD_CLASS_OFDM,
+                                     false,
+                                     20000000, 48000000,
+                                     WIFI_CODE_RATE_2_3,
+                                     64);
   return mode;
 }
 
-WifiMode 
-WifiPhy::Get27mb10Mhz (void)
+WifiMode
+WifiPhy::GetOfdmRate54Mbps ()
 {
-  static WifiMode mode = WifiModeFactory::CreateBpsk ("wifi-27mbs-10Mhz",
-                                                      false,
-                                                      10000000, 27000000, 36000000,
-                                                      WIFI_PHY_STANDARD_80211_10Mhz);
+  static WifiMode mode =
+    WifiModeFactory::CreateWifiMode ("OfdmRate54Mbps",
+                                     WIFI_MOD_CLASS_OFDM,
+                                     false,
+                                     20000000, 54000000,
+                                     WIFI_CODE_RATE_3_4,
+                                     64);
   return mode;
 }
 
-WifiMode 
-WifiPhy::Get1_5mb5Mhz (void)
+/* 10 MHz channel rates */
+WifiMode
+WifiPhy::GetOfdmRate3MbpsBW10MHz ()
 {
-  static WifiMode mode = WifiModeFactory::CreateBpsk ("wifi-1_5mbs-5Mhz",
-                                                      true,
-                                                      5000000, 1500000, 3000000,
-                                                      WIFI_PHY_STANDARD_80211_5Mhz);
+  static WifiMode mode =
+    WifiModeFactory::CreateWifiMode ("OfdmRate3MbpsBW10MHz",
+                                     WIFI_MOD_CLASS_OFDM,
+                                     true,
+                                     10000000, 3000000,
+                                     WIFI_CODE_RATE_1_2,
+                                     2);
   return mode;
 }
 
-WifiMode 
-WifiPhy::Get2_25mb5Mhz (void)
+WifiMode
+WifiPhy::GetOfdmRate4_5MbpsBW10MHz ()
 {
-  static WifiMode mode = WifiModeFactory::CreateBpsk ("wifi-2.25mbs-5Mhz",
-                                                      false,
-                                                      5000000, 2250000, 3000000,
-                                                      WIFI_PHY_STANDARD_80211_5Mhz);
+  static WifiMode mode =
+    WifiModeFactory::CreateWifiMode ("OfdmRate4_5MbpsBW10MHz",
+                                     WIFI_MOD_CLASS_OFDM,
+                                     false,
+                                     10000000, 4500000,
+                                     WIFI_CODE_RATE_3_4,
+                                     2);
   return mode;
 }
 
-WifiMode 
-WifiPhy::Get3mb5Mhz (void)
+WifiMode
+WifiPhy::GetOfdmRate6MbpsBW10MHz ()
 {
-  static WifiMode mode = WifiModeFactory::CreateBpsk ("wifi-3mbs-5Mhz",
-                                                      true,
-                                                      5000000, 3000000, 6000000,
-                                                      WIFI_PHY_STANDARD_80211_5Mhz);
+  static WifiMode mode =
+    WifiModeFactory::CreateWifiMode ("OfdmRate6MbpsBW10MHz",
+                                     WIFI_MOD_CLASS_OFDM,
+                                     true,
+                                     10000000, 6000000,
+                                     WIFI_CODE_RATE_1_2,
+                                     4);
   return mode;
 }
 
-WifiMode 
-WifiPhy::Get4_5mb5Mhz (void)
+WifiMode
+WifiPhy::GetOfdmRate9MbpsBW10MHz ()
 {
-  static WifiMode mode = WifiModeFactory::CreateBpsk ("wifi-4.5mbs-5Mhz",
-                                                      false,
-                                                      5000000, 4500000, 6000000,
-                                                      WIFI_PHY_STANDARD_80211_5Mhz);
+  static WifiMode mode =
+    WifiModeFactory::CreateWifiMode ("OfdmRate9MbpsBW10MHz",
+                                     WIFI_MOD_CLASS_OFDM,
+                                     false,
+                                     10000000, 9000000,
+                                     WIFI_CODE_RATE_3_4,
+                                     4);
   return mode;
 }
 
-WifiMode 
-WifiPhy::Get6mb5Mhz (void)
+WifiMode
+WifiPhy::GetOfdmRate12MbpsBW10MHz ()
 {
-  static WifiMode mode = WifiModeFactory::CreateBpsk ("wifi-6mbs-5Mhz",
-                                                      true,
-                                                      5000000, 6000000, 12000000,
-                                                      WIFI_PHY_STANDARD_80211_5Mhz);
+  static WifiMode mode =
+    WifiModeFactory::CreateWifiMode ("OfdmRate12MbpsBW10MHz",
+                                     WIFI_MOD_CLASS_OFDM,
+                                     true,
+                                     10000000, 12000000,
+                                     WIFI_CODE_RATE_1_2,
+                                     16);
   return mode;
 }
 
-WifiMode 
-WifiPhy::Get9mb5Mhz (void)
+WifiMode
+WifiPhy::GetOfdmRate18MbpsBW10MHz ()
 {
-  static WifiMode mode = WifiModeFactory::CreateBpsk ("wifi-9mbs-5Mhz",
-                                                      false,
-                                                      5000000, 9000000, 12000000,
-                                                      WIFI_PHY_STANDARD_80211_5Mhz);
+  static WifiMode mode =
+    WifiModeFactory::CreateWifiMode ("OfdmRate18MbpsBW10MHz",
+                                     WIFI_MOD_CLASS_OFDM,
+                                     false,
+                                     10000000, 18000000,
+                                     WIFI_CODE_RATE_3_4,
+                                     16);
   return mode;
 }
 
-WifiMode 
-WifiPhy::Get12mb5Mhz (void)
+WifiMode
+WifiPhy::GetOfdmRate24MbpsBW10MHz ()
 {
-  static WifiMode mode = WifiModeFactory::CreateBpsk ("wifi-12mbs-5Mhz",
-                                                      false,
-                                                      5000000, 12000000, 18000000,
-                                                      WIFI_PHY_STANDARD_80211_5Mhz);
+  static WifiMode mode =
+    WifiModeFactory::CreateWifiMode ("OfdmRate24MbpsBW10MHz",
+                                     WIFI_MOD_CLASS_OFDM,
+                                     false,
+                                     10000000, 24000000,
+                                     WIFI_CODE_RATE_2_3,
+                                     64);
   return mode;
 }
 
-WifiMode 
-WifiPhy::Get13_5mb5Mhz (void)
+WifiMode
+WifiPhy::GetOfdmRate27MbpsBW10MHz ()
 {
-  static WifiMode mode = WifiModeFactory::CreateBpsk ("wifi-13.5mbs-5Mhz",
-                                                      false,
-                                                      5000000, 13500000, 18000000,
-                                                      WIFI_PHY_STANDARD_80211_5Mhz);
+  static WifiMode mode =
+    WifiModeFactory::CreateWifiMode ("OfdmRate27MbpsBW10MHz",
+                                     WIFI_MOD_CLASS_OFDM,
+                                     false,
+                                     10000000, 27000000,
+                                     WIFI_CODE_RATE_3_4,
+                                     64);
+  return mode;
+}
+
+/* 5 MHz channel rates */
+WifiMode
+WifiPhy::GetOfdmRate1_5MbpsBW5MHz ()
+{
+  static WifiMode mode =
+    WifiModeFactory::CreateWifiMode ("OfdmRate1_5MbpsBW5MHz",
+                                     WIFI_MOD_CLASS_OFDM,
+                                     true,
+                                     5000000, 1500000,
+                                     WIFI_CODE_RATE_1_2,
+                                     2);
+  return mode;
+}
+
+WifiMode
+WifiPhy::GetOfdmRate2_25MbpsBW5MHz ()
+{
+  static WifiMode mode =
+    WifiModeFactory::CreateWifiMode ("OfdmRate2_25MbpsBW5MHz",
+                                     WIFI_MOD_CLASS_OFDM,
+                                     false,
+                                     5000000, 2250000,
+                                     WIFI_CODE_RATE_3_4,
+                                     2);
+  return mode;
+}
+
+WifiMode
+WifiPhy::GetOfdmRate3MbpsBW5MHz ()
+{
+  static WifiMode mode =
+    WifiModeFactory::CreateWifiMode ("OfdmRate3MbpsBW5MHz",
+                                     WIFI_MOD_CLASS_OFDM,
+                                     true,
+                                     5000000, 3000000,
+                                     WIFI_CODE_RATE_1_2,
+                                     4);
+  return mode;
+}
+
+WifiMode
+WifiPhy::GetOfdmRate4_5MbpsBW5MHz ()
+{
+  static WifiMode mode =
+    WifiModeFactory::CreateWifiMode ("OfdmRate4_5MbpsBW5MHz",
+                                     WIFI_MOD_CLASS_OFDM,
+                                     false,
+                                     5000000, 4500000,
+                                     WIFI_CODE_RATE_3_4,
+                                     4);
+  return mode;
+}
+
+WifiMode
+WifiPhy::GetOfdmRate6MbpsBW5MHz ()
+{
+  static WifiMode mode =
+    WifiModeFactory::CreateWifiMode ("OfdmRate6MbpsBW5MHz",
+                                     WIFI_MOD_CLASS_OFDM,
+                                     true,
+                                     5000000, 6000000,
+                                     WIFI_CODE_RATE_1_2,
+                                     16);
+  return mode;
+}
+
+WifiMode
+WifiPhy::GetOfdmRate9MbpsBW5MHz ()
+{
+  static WifiMode mode =
+    WifiModeFactory::CreateWifiMode ("OfdmRate9MbpsBW5MHz",
+                                     WIFI_MOD_CLASS_OFDM,
+                                     false,
+                                     5000000, 9000000,
+                                     WIFI_CODE_RATE_3_4,
+                                     16);
+  return mode;
+}
+
+WifiMode
+WifiPhy::GetOfdmRate12MbpsBW5MHz ()
+{
+  static WifiMode mode =
+    WifiModeFactory::CreateWifiMode ("OfdmRate12MbpsBW5MHz",
+                                     WIFI_MOD_CLASS_OFDM,
+                                     false,
+                                     5000000, 12000000,
+                                     WIFI_CODE_RATE_2_3,
+                                     64);
+  return mode;
+}
+
+WifiMode
+WifiPhy::GetOfdmRate13_5MbpsBW5MHz ()
+{
+  static WifiMode mode =
+    WifiModeFactory::CreateWifiMode ("OfdmRate13_5MbpsBW5MHz",
+                                     WIFI_MOD_CLASS_OFDM,
+                                     false,
+                                     5000000, 13500000,
+                                     WIFI_CODE_RATE_3_4,
+                                     64);
   return mode;
 }
 
@@ -447,34 +547,34 @@ static class Constructor
 {
 public:
   Constructor () {
-    ns3::WifiPhy::Get6mba ();
-    ns3::WifiPhy::Get9mba ();
-    ns3::WifiPhy::Get12mba ();
-    ns3::WifiPhy::Get18mba ();
-    ns3::WifiPhy::Get24mba ();
-    ns3::WifiPhy::Get36mba ();
-    ns3::WifiPhy::Get48mba ();
-    ns3::WifiPhy::Get54mba ();
-    ns3::WifiPhy::Get1mbb ();
-    ns3::WifiPhy::Get2mbb ();
-    ns3::WifiPhy::Get5_5mbb ();
-    ns3::WifiPhy::Get11mbb ();
-    ns3::WifiPhy::Get3mb10Mhz ();
-    ns3::WifiPhy::Get4_5mb10Mhz ();
-    ns3::WifiPhy::Get6mb10Mhz ();
-    ns3::WifiPhy::Get9mb10Mhz ();
-    ns3::WifiPhy::Get12mb10Mhz ();
-    ns3::WifiPhy::Get18mb10Mhz ();
-    ns3::WifiPhy::Get24mb10Mhz ();
-    ns3::WifiPhy::Get27mb10Mhz ();
-    ns3::WifiPhy::Get1_5mb5Mhz ();
-    ns3::WifiPhy::Get2_25mb5Mhz ();
-    ns3::WifiPhy::Get3mb5Mhz ();
-    ns3::WifiPhy::Get4_5mb5Mhz ();
-    ns3::WifiPhy::Get6mb5Mhz ();
-    ns3::WifiPhy::Get9mb5Mhz ();
-    ns3::WifiPhy::Get12mb5Mhz ();
-    ns3::WifiPhy::Get13_5mb5Mhz ();
+    ns3::WifiPhy::GetDsssRate1Mbps ();
+    ns3::WifiPhy::GetDsssRate2Mbps ();
+    ns3::WifiPhy::GetDsssRate5_5Mbps ();
+    ns3::WifiPhy::GetDsssRate11Mbps ();
+    ns3::WifiPhy::GetOfdmRate6Mbps ();
+    ns3::WifiPhy::GetOfdmRate9Mbps ();
+    ns3::WifiPhy::GetOfdmRate12Mbps ();
+    ns3::WifiPhy::GetOfdmRate18Mbps ();
+    ns3::WifiPhy::GetOfdmRate24Mbps ();
+    ns3::WifiPhy::GetOfdmRate36Mbps ();
+    ns3::WifiPhy::GetOfdmRate48Mbps ();
+    ns3::WifiPhy::GetOfdmRate54Mbps ();
+    ns3::WifiPhy::GetOfdmRate3MbpsBW10MHz ();
+    ns3::WifiPhy::GetOfdmRate4_5MbpsBW10MHz ();
+    ns3::WifiPhy::GetOfdmRate6MbpsBW10MHz ();
+    ns3::WifiPhy::GetOfdmRate9MbpsBW10MHz ();
+    ns3::WifiPhy::GetOfdmRate12MbpsBW10MHz ();
+    ns3::WifiPhy::GetOfdmRate18MbpsBW10MHz ();
+    ns3::WifiPhy::GetOfdmRate24MbpsBW10MHz ();
+    ns3::WifiPhy::GetOfdmRate27MbpsBW10MHz ();
+    ns3::WifiPhy::GetOfdmRate1_5MbpsBW5MHz ();
+    ns3::WifiPhy::GetOfdmRate2_25MbpsBW5MHz ();
+    ns3::WifiPhy::GetOfdmRate3MbpsBW5MHz ();
+    ns3::WifiPhy::GetOfdmRate4_5MbpsBW5MHz ();
+    ns3::WifiPhy::GetOfdmRate6MbpsBW5MHz ();
+    ns3::WifiPhy::GetOfdmRate9MbpsBW5MHz ();
+    ns3::WifiPhy::GetOfdmRate12MbpsBW5MHz ();
+    ns3::WifiPhy::GetOfdmRate13_5MbpsBW5MHz ();
   }
 } g_constructor;
 }

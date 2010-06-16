@@ -82,7 +82,7 @@ PsrExperiment::PsrExperiment ()
 {}
 PsrExperiment::Input::Input ()
   : distance (5.0),
-    txMode ("wifia-6mbs"),
+    txMode ("OfdmRate6Mbps"),
     txPowerLevel (0),
     packetSize (2304),
     nPackets (400)
@@ -202,8 +202,8 @@ CollisionExperiment::Input::Input ()
   : interval (MicroSeconds (0)),
     xA (-5),
     xB (5),
-    txModeA ("wifia-6mbs"),
-    txModeB ("wifia-6mbs"),
+    txModeA ("OfdmRate6Mbps"),
+    txModeB ("OfdmRate6Mbps"),
     txPowerLevelA (0),
     txPowerLevelB (0),
     packetSizeA (2304),
@@ -310,35 +310,35 @@ static void PrintPsrVsDistance (int argc, char *argv[])
       PsrExperiment experiment;
       struct PsrExperiment::Output output;
 
-      input.txMode = "wifia-6mbs";
+      input.txMode = "OfdmRate6Mbps";
       output = experiment.Run (input);
       std::cout << " " << CalcPsr (output, input);
     
-      input.txMode = "wifia-9mbs";
+      input.txMode = "OfdmRate9Mbps";
       output = experiment.Run (input);
       std::cout << " " << CalcPsr (output, input);
 
-      input.txMode = "wifia-12mbs";
+      input.txMode = "OfdmRate12Mbps";
       output = experiment.Run (input);
       std::cout << " " << CalcPsr (output, input);
 
-      input.txMode = "wifia-18mbs";
+      input.txMode = "OfdmRate18Mbps";
       output = experiment.Run (input);
       std::cout << " " << CalcPsr (output, input);
 
-      input.txMode = "wifia-24mbs";
+      input.txMode = "OfdmRate24Mbps";
       output = experiment.Run (input);
       std::cout << " " << CalcPsr (output, input);
 
-      input.txMode = "wifia-36mbs";
+      input.txMode = "OfdmRate36Mbps";
       output = experiment.Run (input);
       std::cout << " " << CalcPsr (output, input);
 
-      input.txMode = "wifia-48mbs";
+      input.txMode = "OfdmRate48Mbps";
       output = experiment.Run (input);
       std::cout << " " << CalcPsr (output, input);
 
-      input.txMode = "wifia-54mbs";
+      input.txMode = "OfdmRate54Mbps";
       output = experiment.Run (input);
       std::cout << " " << CalcPsr (output, input);
 
