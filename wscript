@@ -421,12 +421,18 @@ def configure(conf):
     conf.env.append_value('CCFLAGS', conf.env['CXXFLAGS'])
     conf.env.append_value('CCDEFINES', conf.env['CXXDEFINES'])
 
-    if env['COMPILER_CXX'] == 'g++' and 'CXXFLAGS' not in os.environ:
-        if conf.check_compilation_flag('-Wno-error=deprecated-declarations', mode='cxx'):
-            env.append_value('CXXFLAGS', '-Wno-error=deprecated-declarations')
-    if env['COMPILER_CC'] == 'gcc' and 'CCFLAGS' not in os.environ:
-        if conf.check_compilation_flag('-Wno-error=deprecated-declarations', mode='cc'):
-            env.append_value('CCFLAGS', '-Wno-error=deprecated-declarations')        
+    def add_gcc_flag(flag):
+        if env['COMPILER_CXX'] == 'g++' and 'CXXFLAGS' not in os.environ:
+            if conf.check_compilation_flag(flag, mode='cxx'):
+                env.append_value('CXXFLAGS', flag)
+        if env['COMPILER_CC'] == 'gcc' and 'CCFLAGS' not in os.environ:
+            if conf.check_compilation_flag(flag, mode='cc'):
+                env.append_value('CCFLAGS', flag)
+
+    add_gcc_flag('-Wno-error=deprecated-declarations')
+    add_gcc_flag('-fstrict-aliasing')
+    add_gcc_flag('-Wstrict-aliasing')
+
 
     # append user defined flags after all our ones
     for (confvar, envvar) in [['CCFLAGS', 'CCFLAGS_EXTRA'],
