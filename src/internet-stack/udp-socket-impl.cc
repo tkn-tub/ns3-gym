@@ -66,6 +66,7 @@ UdpSocketImpl::UdpSocketImpl ()
     m_rxAvailable (0)
 {
   NS_LOG_FUNCTION_NOARGS ();
+  m_allowBroadcast = false;
 }
 
 UdpSocketImpl::~UdpSocketImpl ()
@@ -370,6 +371,11 @@ UdpSocketImpl::DoSendTo (Ptr<Packet> p, Ipv4Address dest, uint16_t port)
   //
   if (dest.IsBroadcast ())
     {
+      if (!m_allowBroadcast)
+        {
+          m_errno = ERROR_OPNOTSUPP;
+          return -1;
+        }
       NS_LOG_LOGIC ("Limited broadcast start.");
       for (uint32_t i = 0; i < ipv4->GetNInterfaces (); i++ )
         {
@@ -431,6 +437,21 @@ UdpSocketImpl::DoSendTo (Ptr<Packet> p, Ipv4Address dest, uint16_t port)
       if (route != 0)
         {
           NS_LOG_LOGIC ("Route exists");
+          if (!m_allowBroadcast)
+            {
+              uint32_t outputIfIndex = ipv4->GetInterfaceForDevice (route->GetOutputDevice ());
+              uint32_t ifNAddr = ipv4->GetNAddresses (outputIfIndex);
+              for (uint32_t addrI = 0; addrI < ifNAddr; ++addrI)
+                {
+                  Ipv4InterfaceAddress ifAddr = ipv4->GetAddress (outputIfIndex, addrI);
+                  if (dest == ifAddr.GetBroadcast ())
+                    {
+                      m_errno = ERROR_OPNOTSUPP;
+                      return -1;
+                    }
+                }
+            }
+          
           header.SetSource (route->GetSource ());
           m_udp->Send (p->Copy (), header.GetSource (), header.GetDestination (),
                        m_endPoint->GetLocalPort (), port, route);
@@ -706,10 +727,7 @@ UdpSocketImpl::GetMtuDiscover (void) const
 void
 UdpSocketImpl::SetAllowBroadcast (bool allowBroadcast)
 {
-  if (!allowBroadcast)
-    {
-      NS_FATAL_ERROR ("not implemented");
-    }
+  m_allowBroadcast = allowBroadcast;
 }
 
 bool

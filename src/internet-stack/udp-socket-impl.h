@@ -120,7 +120,8 @@ private:
   bool m_shutdownSend;
   bool m_shutdownRecv;
   bool m_connected;
-
+  bool m_allowBroadcast;
+  
   std::queue<Ptr<Packet> > m_deliveryQueue;
   uint32_t m_rxAvailable;
   
