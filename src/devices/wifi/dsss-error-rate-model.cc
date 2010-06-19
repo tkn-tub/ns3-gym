@@ -19,6 +19,7 @@
  */
 #include "ns3/log.h"
 #include "dsss-error-rate-model.h"
+#include <math.h>
 
 NS_LOG_COMPONENT_DEFINE ("DsssErrorRateModel");
 
