@@ -66,7 +66,7 @@ ShannonSpectrumErrorModel::EvaluateChunk (const SpectrumValue& sinr, Time durati
     }
   NS_ASSERT (vi == CapacityPerHertz.ConstValuesEnd ());
   NS_LOG_LOGIC ("ChunkCapacity = " << capacity);
-  m_deliverableBytes += capacity * duration.GetSeconds () / 8;
+  m_deliverableBytes += static_cast<uint32_t> (capacity * duration.GetSeconds () / 8);
   NS_LOG_LOGIC ("DeliverableBytes = " << m_deliverableBytes);
 }
 
