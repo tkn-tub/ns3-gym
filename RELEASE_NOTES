@@ -42,6 +42,9 @@ New user-visible features
      uses the same underlying model as the YansErrorRateModel, but it differs
      from YansErrorRateModel for OFDM modes (802.11a/g).
 
+   - A brand new NS-2 mobility trace reader supports BonnMotion, SUMO, TraNS, 
+     etc. traces.
+
 Bugs fixed
 ----------
 The following lists many of the bugs that were fixed since ns-3.7, in
