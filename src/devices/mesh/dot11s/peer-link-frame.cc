@@ -140,10 +140,7 @@ PeerLinkFrameStart::Serialize (Buffer::Iterator start) const
 {
   Buffer::Iterator i = start;
   NS_ASSERT (m_subtype < 3);
-  i.WriteU8 (IE11S_MESH_PEERING_PROTOCOL_VERSION);
-  i.WriteU8 (m_protocol.GetInformationSize ());
-  m_protocol.SerializeInformation (i);
-  i.Next (m_protocol.GetInformationSize ());
+  i = m_protocol.SerializeIE (i);
   if ((uint8_t) (WifiActionHeader::PEER_LINK_CLOSE) != m_subtype)
     {
       i.WriteHtolsbU16 (m_capability);
@@ -158,17 +155,11 @@ PeerLinkFrameStart::Serialize (Buffer::Iterator start) const
     }
   if ((uint8_t) (WifiActionHeader::PEER_LINK_CONFIRM) != m_subtype)
     {
-      i.WriteU8 (IE11S_MESH_ID);
-      i.WriteU8 (m_meshId.GetInformationSize ());
-      m_meshId.SerializeInformation (i);
-      i.Next (m_meshId.GetInformationSize ());
+      i = m_meshId.SerializeIE (i);
     }
   if ((uint8_t) (WifiActionHeader::PEER_LINK_CLOSE) != m_subtype)
     {
-      i.WriteU8 (IE11S_MESH_CONFIGURATION);
-      i.WriteU8 (m_config.GetInformationSize ());
-      m_config.SerializeInformation (i);
-      i.Next (m_config.GetInformationSize ());
+      i = m_config.SerializeIE (i);
     }
   else
     {

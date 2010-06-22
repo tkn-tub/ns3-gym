@@ -136,25 +136,50 @@ class WifiInformationElement : public SimpleRefCount<WifiInformationElement>
 {
 public:
   virtual ~WifiInformationElement ();
+  /// Serialize entire IE including Element ID and length fields
+  Buffer::Iterator SerializeIE (Buffer::Iterator i) const;
+  /// Deserialize entire IE, which must be present. The iterator
+  /// passed in must be pointing at the Element ID (i.e., the very
+  /// first octet) of the correct type of information element,
+  /// otherwise this method will generate a fatal error.
+  Buffer::Iterator DeserializeIE (Buffer::Iterator i);
+  /// Deserialize entire IE if it is present. The iterator passed in
+  /// must be pointing at the Element ID of an information element. If
+  /// the Element ID is not the one that the given class is interested
+  /// in then it will return the same iterator.
+  Buffer::Iterator DeserializeOptionalIE (Buffer::Iterator i);
+  /// Get the size of the serialized IE including Element ID and
+  /// length fields.
+  uint16_t GetSerializedSize () const;
+
   ///\name Each subclass must implement
   //\{
-  virtual void Print (std::ostream &os) const = 0;
   /// Own unique Element ID
   virtual WifiInformationElementId ElementId () const = 0;
-  /// Length of serialized information
+  /// Length of serialized information (i.e., the length of the body
+  /// of the IE, not including the Element ID and length octets. This
+  /// is the value that will appear in the second octet of the entire
+  /// IE - the length field)
   virtual uint8_t GetInformationSize () const = 0;
-  /// Serialize information
+  /// Serialize information (i.e., the body of the IE, not including
+  /// the Element ID and length octets)
   virtual void SerializeInformation (Buffer::Iterator start) const = 0;
-  /// Deserialize information
+  /// Deserialize information (i.e., the body of the IE, not including
+  /// the Element ID and length octets)
   virtual uint8_t DeserializeInformation (Buffer::Iterator start,
                                           uint8_t length) = 0;
   //\}
 
+  /// In addition, a subclass may optionally override the following...
+  //\{
+  /// Generate human-readable form of IE
+  virtual void Print (std::ostream &os) const;
   /// Compare information elements using Element ID
   virtual bool operator< (WifiInformationElement const & a) const;
   /// Compare two IEs for equality by ID & Length, and then through
   /// memcmp of serialised version
   virtual bool operator== (WifiInformationElement const & a) const;
+  //\}
 };
 
 }

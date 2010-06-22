@@ -25,6 +25,60 @@ namespace ns3 {
 WifiInformationElement::~WifiInformationElement ()
 {}
 
+void
+WifiInformationElement::Print (std::ostream &os) const
+{}
+
+uint16_t
+WifiInformationElement::GetSerializedSize () const
+{
+  return (2 + GetInformationSize ());
+}
+  
+Buffer::Iterator
+WifiInformationElement::SerializeIE (Buffer::Iterator i) const
+{
+  i.WriteU8 (ElementId ());
+  i.WriteU8 (GetInformationSize ());
+  SerializeInformation (i);
+  i.Next (GetInformationSize ());
+  return i;
+}
+
+Buffer::Iterator
+WifiInformationElement::DeserializeIE (Buffer::Iterator i)
+{
+  Buffer::Iterator start = i;
+  i = DeserializeOptionalIE (i);
+  // This IE was not optional, so confirm that we did actually
+  // deserialise something.
+  NS_ASSERT (i.GetDistanceFrom (start) != 0);
+  return i;
+}
+
+Buffer::Iterator
+WifiInformationElement::DeserializeOptionalIE (Buffer::Iterator i)
+{
+  Buffer::Iterator start = i;
+  uint8_t elementId = i.ReadU8 ();
+
+  // If the element here isn't the one we're after then we immediately
+  // return the iterator we were passed indicating that we haven't
+  // taken anything from the buffer.
+  if (elementId != ElementId ())
+    {
+      return start;
+    }
+
+  uint8_t length = i.ReadU8 ();
+
+  DeserializeInformation (i, length);
+  i.Next (length);
+
+  return i;
+}
+
+
 bool
 WifiInformationElement::operator< (WifiInformationElement const & a) const
 {
