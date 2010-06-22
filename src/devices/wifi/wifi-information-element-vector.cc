@@ -131,7 +131,7 @@ WifiInformationElementVector::AddInformationElement (Ptr<WifiInformationElement>
   return true;
 }
 Ptr<WifiInformationElement>
-WifiInformationElementVector::FindFirst (WifiElementId id) const
+WifiInformationElementVector::FindFirst (WifiInformationElementId id) const
 {
   for (IE_VECTOR::const_iterator i = m_elements.begin (); i != m_elements.end (); i++)
     {

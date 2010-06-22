@@ -92,7 +92,7 @@ IePreq::IePreq () :
       m_destCount (0)
 {
 }
-WifiElementId
+WifiInformationElementId
 IePreq::ElementId () const
 {
   return IE11S_PREQ;

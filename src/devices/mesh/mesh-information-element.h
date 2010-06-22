@@ -25,33 +25,33 @@
 
 namespace ns3 {
 
-#define IE11S_LINK_METRIC_REPORT               ((WifiElementId)20)
-#define IE11S_CONGESTION_NOTIFICATION          ((WifiElementId)21)
-#define IE11S_SUPP_MBSS_REG_CLASSES_CHANNELS   ((WifiElementId)23)
-#define IE11S_MESH_CHANNEL_SWITCH_ANNOUNCEMENT ((WifiElementId)24)
-#define IE11S_MESH_TIM                         ((WifiElementId)25)
-#define IE11S_AWAKE_WINDOW                     ((WifiElementId)26)
-#define IE11S_BEACON_TIMING                    ((WifiElementId)27)
-#define IE11S_MCCAOP_SETUP_REQUEST             ((WifiElementId)28)
-#define IE11S_MCCAOP_SETUP_REPLY               ((WifiElementId)29)
-#define IE11S_MCCAOP_ADVERTISEMENT             ((WifiElementId)30)
-#define IE11S_MCCAOP_RESERVATION_TEARDOWN      ((WifiElementId)31)
-#define IE11S_PORTAL_ANNOUNCEMENT              ((WifiElementId)32)
-#define IE11S_PROXY_UPDATE                     ((WifiElementId)37)
-#define IE11S_PROXY_UPDATE_CONFIRMATION        ((WifiElementId)38)
-#define IE11S_ABBREVIATED_HANDSHAKE            ((WifiElementId)39)
+#define IE11S_LINK_METRIC_REPORT               ((WifiInformationElementId)20)
+#define IE11S_CONGESTION_NOTIFICATION          ((WifiInformationElementId)21)
+#define IE11S_SUPP_MBSS_REG_CLASSES_CHANNELS   ((WifiInformationElementId)23)
+#define IE11S_MESH_CHANNEL_SWITCH_ANNOUNCEMENT ((WifiInformationElementId)24)
+#define IE11S_MESH_TIM                         ((WifiInformationElementId)25)
+#define IE11S_AWAKE_WINDOW                     ((WifiInformationElementId)26)
+#define IE11S_BEACON_TIMING                    ((WifiInformationElementId)27)
+#define IE11S_MCCAOP_SETUP_REQUEST             ((WifiInformationElementId)28)
+#define IE11S_MCCAOP_SETUP_REPLY               ((WifiInformationElementId)29)
+#define IE11S_MCCAOP_ADVERTISEMENT             ((WifiInformationElementId)30)
+#define IE11S_MCCAOP_RESERVATION_TEARDOWN      ((WifiInformationElementId)31)
+#define IE11S_PORTAL_ANNOUNCEMENT              ((WifiInformationElementId)32)
+#define IE11S_PROXY_UPDATE                     ((WifiInformationElementId)37)
+#define IE11S_PROXY_UPDATE_CONFIRMATION        ((WifiInformationElementId)38)
+#define IE11S_ABBREVIATED_HANDSHAKE            ((WifiInformationElementId)39)
   /* begin of open80211s-compatible IDs */
-#define IE11S_MESH_CONFIGURATION               ((WifiElementId)51)
-#define IE11S_MESH_ID                          ((WifiElementId)52)
-#define IE11S_PEERING_MANAGEMENT               ((WifiElementId)55)
+#define IE11S_MESH_CONFIGURATION               ((WifiInformationElementId)51)
+#define IE11S_MESH_ID                          ((WifiInformationElementId)52)
+#define IE11S_PEERING_MANAGEMENT               ((WifiInformationElementId)55)
   /* end of open80211s-compatible IDs */
-#define IE11S_RANN                             ((WifiElementId)67)
+#define IE11S_RANN                             ((WifiInformationElementId)67)
   /* begin of open80211s-compatible IDs */
-#define IE11S_PREQ                             ((WifiElementId)68)
-#define IE11S_PREP                             ((WifiElementId)69)
-#define IE11S_PERR                             ((WifiElementId)70)
+#define IE11S_PREQ                             ((WifiInformationElementId)68)
+#define IE11S_PREP                             ((WifiInformationElementId)69)
+#define IE11S_PERR                             ((WifiInformationElementId)70)
   /* end of open80211s-compatible IDs */
-#define IE11S_MESH_PEERING_PROTOCOL_VERSION    ((WifiElementId)74)
+#define IE11S_MESH_PEERING_PROTOCOL_VERSION    ((WifiInformationElementId)74)
 
 }
 

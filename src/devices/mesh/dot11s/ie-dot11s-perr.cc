@@ -29,7 +29,7 @@ IePerr::IePerr ()
 IePerr::~IePerr ()
 {
 }
-WifiElementId
+WifiInformationElementId
 IePerr::ElementId () const
 {
   return IE11S_PERR;

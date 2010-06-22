@@ -49,7 +49,7 @@ IeMeshId::IeMeshId (std::string s)
       len++;
     }
 }
-WifiElementId
+WifiInformationElementId
 IeMeshId::ElementId () const
 {
   return IE11S_MESH_ID;

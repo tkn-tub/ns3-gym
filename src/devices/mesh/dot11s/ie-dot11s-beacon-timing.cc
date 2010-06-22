@@ -62,7 +62,7 @@ IeBeaconTimingUnit::GetBeaconInterval () const
 /*******************************************
  * IeBeaconTiming
  *******************************************/
-WifiElementId
+WifiInformationElementId
 IeBeaconTiming::ElementId () const
 {
   return IE11S_BEACON_TIMING;

@@ -35,7 +35,7 @@
  * Management. Information Elements (IEs) have a common format, each
  * starting with a single octet - the Element ID, which indicates the
  * specific type of IE (a type to represent the options here is
- * defined as WifiElementId). The next octet is a length field and
+ * defined as WifiInformationElementId). The next octet is a length field and
  * encodes the number of octets in the third and final field, which is
  * the IE Information field.
  *
@@ -67,55 +67,55 @@ namespace ns3 {
  * duplication of IE IDs in the #definitions below (and in files which
  * declare "subclasses" of WifiInformationElement). Sorry.
  */
-typedef uint8_t WifiElementId;
+typedef uint8_t WifiInformationElementId;
 
 
 /**
  * Here we have definition of all Information Element IDs in IEEE
- * 802.11-2007. See the comments for WifiElementId - this could
+ * 802.11-2007. See the comments for WifiInformationElementId - this could
  * probably be done in a considerably tidier manner.
  */
-#define IE_SSID                                ((WifiElementId)0)
-#define IE_SUPPORTED_RATES                     ((WifiElementId)1)
-#define IE_FH_PARAMETER_SET                    ((WifiElementId)2)
-#define IE_DS_PARAMETER_SET                    ((WifiElementId)3)
-#define IE_CF_PARAMETER_SET                    ((WifiElementId)4)
-#define IE_TIM                                 ((WifiElementId)5)
-#define IE_IBSS_PARAMETER_SET                  ((WifiElementId)6)
-#define IE_COUNTRY                             ((WifiElementId)7)
-#define IE_HOPPING_PATTERN_PARAMETERS          ((WifiElementId)8)
-#define IE_HOPPING_PATTERN_TABLE               ((WifiElementId)9)
-#define IE_REQUEST                             ((WifiElementId)10)
-#define IE_BSS_LOAD                            ((WifiElementId)11)
-#define IE_EDCA_PARAMETER_SET                  ((WifiElementId)12)
-#define IE_TSPEC                               ((WifiElementId)13)
-#define IE_TCLAS                               ((WifiElementId)14)
-#define IE_SCHEDULE                            ((WifiElementId)15)
-#define IE_CHALLENGE_TEXT                      ((WifiElementId)16)
+#define IE_SSID                                ((WifiInformationElementId)0)
+#define IE_SUPPORTED_RATES                     ((WifiInformationElementId)1)
+#define IE_FH_PARAMETER_SET                    ((WifiInformationElementId)2)
+#define IE_DS_PARAMETER_SET                    ((WifiInformationElementId)3)
+#define IE_CF_PARAMETER_SET                    ((WifiInformationElementId)4)
+#define IE_TIM                                 ((WifiInformationElementId)5)
+#define IE_IBSS_PARAMETER_SET                  ((WifiInformationElementId)6)
+#define IE_COUNTRY                             ((WifiInformationElementId)7)
+#define IE_HOPPING_PATTERN_PARAMETERS          ((WifiInformationElementId)8)
+#define IE_HOPPING_PATTERN_TABLE               ((WifiInformationElementId)9)
+#define IE_REQUEST                             ((WifiInformationElementId)10)
+#define IE_BSS_LOAD                            ((WifiInformationElementId)11)
+#define IE_EDCA_PARAMETER_SET                  ((WifiInformationElementId)12)
+#define IE_TSPEC                               ((WifiInformationElementId)13)
+#define IE_TCLAS                               ((WifiInformationElementId)14)
+#define IE_SCHEDULE                            ((WifiInformationElementId)15)
+#define IE_CHALLENGE_TEXT                      ((WifiInformationElementId)16)
 // 17 to 31 are reserved in 802.11-2007
-#define IE_POWER_CONSTRAINT                    ((WifiElementId)32)
-#define IE_POWER_CAPABILITY                    ((WifiElementId)33)
-#define IE_TPC_REQUEST                         ((WifiElementId)34)
-#define IE_TPC_REPORT                          ((WifiElementId)35)
-#define IE_SUPPORTED_CHANNELS                  ((WifiElementId)36)
-#define IE_CHANNEL_SWITCH_ANNOUNCEMENT         ((WifiElementId)37)
-#define IE_MEASUREMENT_REQUEST                 ((WifiElementId)38)
-#define IE_MEASUREMENT_REPORT                  ((WifiElementId)39)
-#define IE_QUIET                               ((WifiElementId)40)
-#define IE_IBSS_DFS                            ((WifiElementId)41)
-#define IE_ERP_INFORMATION                     ((WifiElementId)42)
-#define IE_TS_DELAY                            ((WifiElementId)43)
-#define IE_TCLAS_PROCESSING                    ((WifiElementId)44)
+#define IE_POWER_CONSTRAINT                    ((WifiInformationElementId)32)
+#define IE_POWER_CAPABILITY                    ((WifiInformationElementId)33)
+#define IE_TPC_REQUEST                         ((WifiInformationElementId)34)
+#define IE_TPC_REPORT                          ((WifiInformationElementId)35)
+#define IE_SUPPORTED_CHANNELS                  ((WifiInformationElementId)36)
+#define IE_CHANNEL_SWITCH_ANNOUNCEMENT         ((WifiInformationElementId)37)
+#define IE_MEASUREMENT_REQUEST                 ((WifiInformationElementId)38)
+#define IE_MEASUREMENT_REPORT                  ((WifiInformationElementId)39)
+#define IE_QUIET                               ((WifiInformationElementId)40)
+#define IE_IBSS_DFS                            ((WifiInformationElementId)41)
+#define IE_ERP_INFORMATION                     ((WifiInformationElementId)42)
+#define IE_TS_DELAY                            ((WifiInformationElementId)43)
+#define IE_TCLAS_PROCESSING                    ((WifiInformationElementId)44)
 // 45 is reserved in 802.11-2007
-#define IE_QOS_CAPABILITY                      ((WifiElementId)46)
+#define IE_QOS_CAPABILITY                      ((WifiInformationElementId)46)
 // 47 is reserved in 802.11-2007
-#define IE_RSN                                 ((WifiElementId)48)
+#define IE_RSN                                 ((WifiInformationElementId)48)
 // 49 is reserved in 802.11-2007
-#define IE_EXTENDED_SUPPORTED_RATES            ((WifiElementId)50)
+#define IE_EXTENDED_SUPPORTED_RATES            ((WifiInformationElementId)50)
 // 51 to 126 are reserved in 802.11-2007
-#define IE_EXTENDED_CAPABILITIES               ((WifiElementId)127)
+#define IE_EXTENDED_CAPABILITIES               ((WifiInformationElementId)127)
 // 128 to 220 are reserved in 802.11-2007
-#define IE_VENDOR_SPECIFIC                     ((WifiElementId)221)
+#define IE_VENDOR_SPECIFIC                     ((WifiInformationElementId)221)
 // 222 to 255 are reserved in 802.11-2007
 
 
@@ -140,7 +140,7 @@ public:
   //\{
   virtual void Print (std::ostream &os) const = 0;
   /// Own unique Element ID
-  virtual WifiElementId ElementId () const = 0;
+  virtual WifiInformationElementId ElementId () const = 0;
   /// Length of serialized information
   virtual uint8_t GetInformationSize () const = 0;
   /// Serialize information

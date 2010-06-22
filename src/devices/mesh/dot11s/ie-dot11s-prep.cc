@@ -36,7 +36,7 @@ IePrep::IePrep () :
       m_originatorSeqNumber (0)
 {
 }
-WifiElementId
+WifiInformationElementId
 IePrep::ElementId () const
 {
   return IE11S_PREP;

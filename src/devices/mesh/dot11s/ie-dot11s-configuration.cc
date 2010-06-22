@@ -93,7 +93,7 @@ Dot11sMeshCapability::Is (uint16_t cap, uint8_t n) const
   uint16_t mask = 1 << n;
   return (cap & mask);
 }
-WifiElementId
+WifiInformationElementId
 IeConfiguration::ElementId () const
 {
   return IE11S_MESH_CONFIGURATION;

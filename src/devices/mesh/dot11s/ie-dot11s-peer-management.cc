@@ -30,7 +30,7 @@ IePeerManagement::IePeerManagement () :
   m_length (3), m_subtype (PEER_OPEN), m_localLinkId (0), m_peerLinkId (0), m_reasonCode (REASON11S_RESERVED)
 {
 }
-WifiElementId
+WifiInformationElementId
 IePeerManagement::ElementId () const
 {
   return IE11S_PEERING_MANAGEMENT;

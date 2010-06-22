@@ -35,7 +35,7 @@ public:
    * \name Inherited from WifiInformationElement
    * \{
    */
-  virtual WifiElementId ElementId () const;
+  virtual WifiInformationElementId ElementId () const;
   virtual uint8_t  GetInformationSize () const;
   virtual void SerializeInformation (Buffer::Iterator i) const;
   virtual uint8_t DeserializeInformation (Buffer::Iterator i, uint8_t length);

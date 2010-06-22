@@ -34,7 +34,7 @@ IeRann::IeRann () :
       m_destSeqNumber (0), m_metric (0)
 {
 }
-WifiElementId
+WifiInformationElementId
 IeRann::ElementId () const
 {
   return IE11S_RANN;

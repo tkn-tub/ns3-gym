@@ -83,7 +83,7 @@ public:
   /// add an IE, if maxSize has exceeded, returns false
   bool AddInformationElement (Ptr<WifiInformationElement> element);
   /// vector of pointers to information elements is the body of IeVector
-  Ptr<WifiInformationElement> FindFirst (WifiElementId id) const;
+  Ptr<WifiInformationElement> FindFirst (WifiInformationElementId id) const;
 
   virtual bool operator== (const WifiInformationElementVector & a) const;
 protected:

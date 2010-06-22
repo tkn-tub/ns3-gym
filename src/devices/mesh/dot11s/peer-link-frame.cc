@@ -184,7 +184,7 @@ PeerLinkFrameStart::Deserialize (Buffer::Iterator start)
       uint8_t id = i.ReadU8 ();
       uint8_t length = i.ReadU8 ();
       m_protocol.DeserializeInformation (i, length);
-      if ((m_protocol.ElementId () != (WifiElementId) id) || (m_protocol.GetInformationSize () != length))
+      if ((m_protocol.ElementId () != (WifiInformationElementId) id) || (m_protocol.GetInformationSize () != length))
         {
           NS_FATAL_ERROR ("Broken frame: Element ID does not match IE itself!");
         }
@@ -207,7 +207,7 @@ PeerLinkFrameStart::Deserialize (Buffer::Iterator start)
       uint8_t id = i.ReadU8 ();
       uint8_t length = i.ReadU8 ();
       m_meshId.DeserializeInformation (i, length);
-      if ((m_meshId.ElementId () != (WifiElementId) id) || (m_meshId.GetInformationSize () != length))
+      if ((m_meshId.ElementId () != (WifiInformationElementId) id) || (m_meshId.GetInformationSize () != length))
         {
           NS_FATAL_ERROR ("Broken frame: Element ID does not match IE itself!");
         }
@@ -218,7 +218,7 @@ PeerLinkFrameStart::Deserialize (Buffer::Iterator start)
       uint8_t id = i.ReadU8 ();
       uint8_t length = i.ReadU8 ();
       m_config. DeserializeInformation (i, length);
-      if ((m_config.ElementId () != (WifiElementId) id) || (m_config.GetInformationSize () != length))
+      if ((m_config.ElementId () != (WifiInformationElementId) id) || (m_config.GetInformationSize () != length))
         {
           NS_FATAL_ERROR ("Broken frame: Element ID does not match IE itself!");
         }
