@@ -1,6 +1,6 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
- * Copyright (c) 2006 INRIA
+ * Copyright (c) 2006 INRIA, 2010 NICTA
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -16,13 +16,16 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
+ *         Quincy Tse <quincy.tse@nicta.com.au>
  */
-#ifndef ASSERT_H
-#define ASSERT_H
+#ifndef NS_ASSERT_H
+#define NS_ASSERT_H
 
 #ifdef NS3_ASSERT_ENABLE
 
 #include <iostream>
+
+#include "fatal-error.h"
 
 /**
  * \ingroup core
@@ -39,6 +42,15 @@
  * not true, the program halts. These checks are built
  * into the program only in debugging builds. They are
  * removed in optimized builds.
+ *
+ * These macro are intended to check certain conditions
+ * to be true. Do not put code that also have side effects
+ * that your program relies on (eg. code that advances
+ * an iterator and return false at end of file) because
+ * the code will not be executed on release builds!!
+ *
+ * If assertion-style checks are required for release
+ * builds, use NS_ABORT_UNLESS and NS_ABORT_MSG_UNLESS.
  */
 
 /**
@@ -47,18 +59,16 @@
  *
  * At runtime, in debugging builds, if this condition is not
  * true, the program prints the source file, line number and 
- * unverified condition and halts by dereferencing a null pointer.
+ * unverified condition and halts by calling std::terminate
  */
 #define NS_ASSERT(condition)                                    \
   do                                                            \
     {                                                           \
       if (!(condition))                                         \
         {                                                       \
-          std::cerr << "assert failed. file=" << __FILE__ <<    \
-            ", line=" << __LINE__ << ", cond=\""#condition <<   \
-            "\"" << std::endl;                                  \
-          int *a = 0;                                           \
-          *a = 0;                                               \
+          std::cerr << "assert failed. cond=\"" <<              \
+            #condition << "\", ";                               \
+          NS_FATAL_ERROR_NO_MSG();                              \
         }                                                       \
     }                                                           \
   while (false)
@@ -71,18 +81,18 @@
  *
  * At runtime, in debugging builds, if this condition is not
  * true, the program prints the message to output and
- * halts by dereferencing a null pointer.
+ * halts by calling std::terminate.
  */
-#define NS_ASSERT_MSG(condition, message)       \
-  do                                            \
-    {                                           \
-      if (!(condition))                         \
-        {                                       \
-          std::cerr << message << std::endl;    \
-          int *a = 0;                           \
-          *a = 0;                               \
-        }                                       \
-    }                                           \
+#define NS_ASSERT_MSG(condition, message)             \
+  do                                                  \
+    {                                                 \
+      if (!(condition))                               \
+        {                                             \
+          std::cerr << "assert failed. cond=\"" <<    \
+            #condition << "\", ";                     \
+          NS_FATAL_ERROR (message);                   \
+        }                                             \
+    }                                                 \
   while (false)
 
 #else /* NS3_ASSERT_ENABLE */
