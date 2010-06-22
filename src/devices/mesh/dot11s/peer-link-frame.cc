@@ -151,7 +151,7 @@ PeerLinkFrameStart::Serialize (Buffer::Iterator start) const
     }
   if ((uint8_t) (WifiActionHeader::PEER_LINK_CLOSE) != m_subtype)
     {
-      i = m_rates.Serialize (i);
+      i = m_rates.SerializeIE (i);
     }
   if ((uint8_t) (WifiActionHeader::PEER_LINK_CONFIRM) != m_subtype)
     {
@@ -191,7 +191,7 @@ PeerLinkFrameStart::Deserialize (Buffer::Iterator start)
     }
   if ((uint8_t) (WifiActionHeader::PEER_LINK_CLOSE) != m_subtype)
     {
-      i = m_rates.Deserialize (i);
+      i = m_rates.DeserializeIE (i);
     }
   if ((uint8_t) (WifiActionHeader::PEER_LINK_CONFIRM) != m_subtype)
     {

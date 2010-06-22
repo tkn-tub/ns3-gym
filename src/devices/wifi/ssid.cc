@@ -20,8 +20,6 @@
 #include "ssid.h"
 #include "ns3/assert.h"
 
-#define ELEMENT_ID (0)
-
 namespace ns3 {
 
 Ssid::Ssid ()
@@ -92,17 +90,6 @@ Ssid::IsBroadcast (void) const
     }
   return false;
 }
-uint32_t 
-Ssid::GetLength (void) const
-{
-  uint8_t size = 0;
-  while (m_ssid[size] != 0 && size < 32) 
-    {
-      size++;
-    }
-  NS_ASSERT (size <= 32);
-  return size;
-}
 
 char *
 Ssid::PeekString (void) const
@@ -112,30 +99,32 @@ Ssid::PeekString (void) const
   return (char *)m_ssid;
 }
 
-uint32_t 
-Ssid::GetSerializedSize (void) const
+WifiInformationElementId
+Ssid::ElementId () const
 {
-  return 1 + 1 + m_length;
+  return IE_SSID;
 }
-Buffer::Iterator 
-Ssid::Serialize (Buffer::Iterator i) const
+
+uint8_t
+Ssid::GetInformationSize () const
+{
+  return m_length;
+}
+
+void
+Ssid::SerializeInformation (Buffer::Iterator start) const
 {
   NS_ASSERT (m_length <= 32);
-  i.WriteU8 (ELEMENT_ID);
-  i.WriteU8 (m_length);
-  i.Write (m_ssid, m_length);
-  return i;
+  start.Write (m_ssid, m_length);
 }
-Buffer::Iterator 
-Ssid::Deserialize (Buffer::Iterator i)
+uint8_t
+Ssid::DeserializeInformation (Buffer::Iterator start,
+                              uint8_t length)
 {
-  uint8_t elementId;
-  elementId = i.ReadU8 ();
-  NS_ASSERT (elementId == ELEMENT_ID);
-  m_length = i.ReadU8 ();
+  m_length = length;
   NS_ASSERT (m_length <= 32);
-  i.Read (m_ssid, m_length);
-  return i;
+  start.Read (m_ssid, m_length);
+  return length;
 }
 
 ATTRIBUTE_HELPER_CPP (Ssid);

@@ -24,8 +24,6 @@
 
 NS_LOG_COMPONENT_DEFINE ("SupportedRates");
 
-#define ELEMENT_ID (1)
-
 namespace ns3 {
 
 SupportedRates::SupportedRates ()
@@ -101,29 +99,30 @@ SupportedRates::GetRate (uint8_t i) const
 {
   return (m_rates[i]&0x7f) * 500000;
 }
-uint32_t 
-SupportedRates::GetSerializedSize (void) const
+
+WifiInformationElementId
+SupportedRates::ElementId () const
 {
-  return m_nRates + 1 + 1;
+  return IE_SUPPORTED_RATES;
 }
-Buffer::Iterator 
-SupportedRates::Serialize (Buffer::Iterator start) const
+uint8_t
+SupportedRates::GetInformationSize () const
 {
-  start.WriteU8 (ELEMENT_ID);
-  start.WriteU8 (m_nRates);
+  return m_nRates;
+}
+void
+SupportedRates::SerializeInformation (Buffer::Iterator start) const
+{
   start.Write (m_rates, m_nRates);
-  return start;
 }
-Buffer::Iterator 
-SupportedRates::Deserialize (Buffer::Iterator start)
+uint8_t
+SupportedRates::DeserializeInformation (Buffer::Iterator start,
+                                        uint8_t length)
 {
-  uint8_t elementId;
-  elementId = start.ReadU8 ();
-  NS_ASSERT (elementId == ELEMENT_ID);
-  m_nRates = start.ReadU8 ();
-  NS_ASSERT (m_nRates <= 8);
+  NS_ASSERT (length <= 8);
+  m_nRates = length;
   start.Read (m_rates, m_nRates);
-  return start;
+  return m_nRates;
 }
 
 std::ostream &operator << (std::ostream &os, const SupportedRates &rates)

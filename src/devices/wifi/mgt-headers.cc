@@ -87,15 +87,15 @@ void
 MgtProbeRequestHeader::Serialize (Buffer::Iterator start) const
 {  
   Buffer::Iterator i = start;
-  i = m_ssid.Serialize (i);
-  i = m_rates.Serialize (i);
+  i = m_ssid.SerializeIE (i);
+  i = m_rates.SerializeIE (i);
 }
 uint32_t
 MgtProbeRequestHeader::Deserialize (Buffer::Iterator start)
 {
   Buffer::Iterator i = start;
-  i = m_ssid.Deserialize (i);
-  i = m_rates.Deserialize (i);
+  i = m_ssid.DeserializeIE (i);
+  i = m_rates.DeserializeIE (i);
   return i.GetDistanceFrom (start);
 }
 
@@ -196,8 +196,8 @@ MgtProbeResponseHeader::Serialize (Buffer::Iterator start) const
   i.WriteHtonU64 (Simulator::Now ().GetMicroSeconds ());
   i.WriteHtonU16 (m_beaconInterval / 1024);
   i = m_capability.Serialize (i);
-  i = m_ssid.Serialize (i);
-  i = m_rates.Serialize (i);
+  i = m_ssid.SerializeIE (i);
+  i = m_rates.SerializeIE (i);
   //i.WriteU8 (0, 3); // ds parameter set.
 }
 uint32_t
@@ -208,8 +208,8 @@ MgtProbeResponseHeader::Deserialize (Buffer::Iterator start)
   m_beaconInterval = i.ReadNtohU16 ();
   m_beaconInterval *= 1024;
   i = m_capability.Deserialize (i);
-  i = m_ssid.Deserialize (i);
-  i = m_rates.Deserialize (i);
+  i = m_ssid.DeserializeIE (i);
+  i = m_rates.DeserializeIE (i);
   //i.Next (3); // ds parameter set
   return i.GetDistanceFrom (start);
 }
@@ -293,8 +293,8 @@ MgtAssocRequestHeader::Serialize (Buffer::Iterator start) const
   Buffer::Iterator i = start;
   i = m_capability.Serialize (i);
   i.WriteHtonU16 (m_listenInterval);
-  i = m_ssid.Serialize (i);
-  i = m_rates.Serialize (i);
+  i = m_ssid.SerializeIE (i);
+  i = m_rates.SerializeIE (i);
 }
 uint32_t
 MgtAssocRequestHeader::Deserialize (Buffer::Iterator start)
@@ -302,8 +302,8 @@ MgtAssocRequestHeader::Deserialize (Buffer::Iterator start)
   Buffer::Iterator i = start;
   i = m_capability.Deserialize (i);
   m_listenInterval = i.ReadNtohU16 ();
-  i = m_ssid.Deserialize (i);
-  i = m_rates.Deserialize (i);
+  i = m_ssid.DeserializeIE (i);
+  i = m_rates.DeserializeIE (i);
   return i.GetDistanceFrom (start);
 }
 
@@ -378,7 +378,7 @@ MgtAssocResponseHeader::Serialize (Buffer::Iterator start) const
   i = m_capability.Serialize (i);
   i = m_code.Serialize (i);
   i.WriteHtonU16 (m_aid);
-  i = m_rates.Serialize (i);
+  i = m_rates.SerializeIE (i);
 }
 uint32_t
 MgtAssocResponseHeader::Deserialize (Buffer::Iterator start)
@@ -387,7 +387,7 @@ MgtAssocResponseHeader::Deserialize (Buffer::Iterator start)
   i = m_capability.Deserialize (i);
   i = m_code.Deserialize (i);
   m_aid = i.ReadNtohU16 ();
-  i = m_rates.Deserialize (i);
+  i = m_rates.DeserializeIE (i);
   return i.GetDistanceFrom (start);
 }
 /**********************************************************

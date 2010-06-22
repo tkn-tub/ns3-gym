@@ -23,6 +23,7 @@
 #include <stdint.h>
 #include "ns3/buffer.h"
 #include "ns3/attribute-helper.h"
+#include "ns3/wifi-information-element.h"
 
 namespace ns3 {
 
@@ -30,7 +31,7 @@ namespace ns3 {
  * \brief a IEEE 802.11 SSID
  *
  */
-class Ssid 
+class Ssid : public WifiInformationElement
 {
 public:
   // broadcast ssid
@@ -41,12 +42,13 @@ public:
   bool IsEqual (const Ssid& o) const;
   bool IsBroadcast (void) const;
 
-  uint32_t GetLength (void) const;
   char *PeekString (void) const;
 
-  uint32_t GetSerializedSize (void) const;
-  Buffer::Iterator Serialize (Buffer::Iterator i) const;
-  Buffer::Iterator Deserialize (Buffer::Iterator i);
+  WifiInformationElementId ElementId () const;
+  uint8_t GetInformationSize () const;
+  void SerializeInformation (Buffer::Iterator start) const;
+  uint8_t DeserializeInformation (Buffer::Iterator start,
+                                  uint8_t length);
 
 private:
   uint8_t m_ssid[33];

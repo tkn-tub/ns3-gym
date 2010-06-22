@@ -23,10 +23,11 @@
 #include <stdint.h>
 #include <ostream>
 #include "ns3/buffer.h"
+#include "ns3/wifi-information-element.h"
 
 namespace ns3 {
 
-class SupportedRates {
+class SupportedRates : public WifiInformationElement {
 public:
   SupportedRates ();
 
@@ -39,9 +40,11 @@ public:
   uint8_t GetNRates (void) const;
   uint32_t GetRate (uint8_t i) const;
 
-  uint32_t GetSerializedSize (void) const;
-  Buffer::Iterator Serialize (Buffer::Iterator start) const;
-  Buffer::Iterator Deserialize (Buffer::Iterator start);
+  WifiInformationElementId ElementId () const;
+  uint8_t GetInformationSize () const;
+  void SerializeInformation (Buffer::Iterator start) const;
+  uint8_t DeserializeInformation (Buffer::Iterator start,
+                                  uint8_t length);
 private:
   uint8_t m_nRates;
   uint8_t m_rates[8];
