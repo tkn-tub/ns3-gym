@@ -133,6 +133,7 @@ example_tests = [
     ("tcp/tcp-star-server", "True", "True"),
 
     ("topology-read/topology-read --input=../../examples/topology-read/Inet_small_toposample.txt", "True", "True"),
+    ("topology-read/topology-read --format=Rocketfuel --input=../../examples/topology-read/RocketFuel_toposample_1239_weights.txt", "True", "True"),
 
     ("tunneling/virtual-net-device", "True", "True"),
 

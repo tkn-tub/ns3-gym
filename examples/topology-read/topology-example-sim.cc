@@ -62,7 +62,7 @@ int main (int argc, char *argv[])
 
   // Set up command line parameters used to control the experiment.
   CommandLine cmd;
-  cmd.AddValue ("format", "Format to use for data input [Orbis|Inet].",
+  cmd.AddValue ("format", "Format to use for data input [Orbis|Inet|Rocketfuel].",
                 format);
   cmd.AddValue ("input", "Name of the input file.",
                 input);

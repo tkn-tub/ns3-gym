@@ -65,6 +65,7 @@ many cases referencing the Bugzilla bug number
    - bug 858 - support MSG_PEEK in IPv4/IPv6 raw socket
    - bug 932 - Support IP_HDRINCL option for Ipv4RawSocket
    - bug 871 - naming for WifiPhyStandard
+   - bug 946 - Rocketfuel topology dataset support for topology reader
 
 Known issues
 ------------

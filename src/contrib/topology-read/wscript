@@ -6,6 +6,7 @@ def build(bld):
        'topology-reader.cc',
        'inet-topology-reader.cc',
        'orbis-topology-reader.cc',
+       'rocketfuel-topology-reader.cc',
         ]
     headers = bld.new_task_gen('ns3header')
     headers.module = 'topology-read'
@@ -13,5 +14,6 @@ def build(bld):
        'topology-reader.h',
        'inet-topology-reader.h',
        'orbis-topology-reader.h',
+       'rocketfuel-topology-reader.h',
         ]
 
