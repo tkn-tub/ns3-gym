@@ -143,9 +143,6 @@ public:
   virtual void ConfigureStandard (enum WifiPhyStandard standard);
 
 private:
-  typedef std::vector<WifiMode> Modes;
-
-private:
   YansWifiPhy (const YansWifiPhy &o);
   virtual void DoDispose (void);
   void Configure80211a (void);
@@ -176,7 +173,45 @@ private:
   uint16_t m_channelNumber;
   Ptr<Object> m_device;
   Ptr<Object> m_mobility;
-  Modes m_modes;
+
+  /**
+   * This vector holds the set of transmission modes that this
+   * WifiPhy(-derived class) can support. In conversation we call this
+   * the DeviceRateSet (not a term you'll find in the standard), and
+   * it is a superset of standard-defined parameters such as the
+   * OperationalRateSet, and the BSSBasicRateSet (which, themselves,
+   * have a superset/subset relationship).
+   *
+   * Mandatory rates relevant to this WifiPhy can be found by
+   * iterating over this vector looking for WifiMode objects for which
+   * WifiMode::IsMandatory() is true.
+   *
+   * A quick note is appropriate here (well, here is as good a place
+   * as any I can find)...
+   *
+   * In the standard there is no text that explicitly precludes
+   * production of a device that does not support some rates that are
+   * mandatory (according to the standard) for PHYs that the device
+   * happens to fully or partially support.
+   *
+   * This approach is taken by some devices which choose to only support,
+   * for example, 6 and 9 Mbps ERP-OFDM rates for cost and power
+   * consumption reasons (i.e., these devices don't need to be designed
+   * for and waste current on the increased linearity requirement of
+   * higher-order constellations when 6 and 9 Mbps more than meet their
+   * data requirements). The wording of the standard allows such devices
+   * to have an OperationalRateSet which includes 6 and 9 Mbps ERP-OFDM
+   * rates, despite 12 and 24 Mbps being "mandatory" rates for the
+   * ERP-OFDM PHY.
+   *
+   * Now this doesn't actually have any impact on code, yet. It is,
+   * however, something that we need to keep in mind for the
+   * future. Basically, the key point is that we can't be making
+   * assumptions like "the Operational Rate Set will contain all the
+   * mandatory rates".
+   */
+  WifiModeList m_deviceRateSet;
+
   EventId m_endRxEvent;
   UniformVariable m_random;
   /// Standard-dependent center frequency of 0-th channel, MHz 

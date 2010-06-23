@@ -240,14 +240,42 @@ public:
    *          the transmission of these bytes.
    */
   virtual Time CalculateTxDuration (uint32_t size, WifiMode payloadMode, enum WifiPreamble preamble) const = 0;
-  
+
   /**
+   * The WifiPhy::GetNModes() and WifiPhy::GetMode() methods are used
+   * (e.g., by a WifiRemoteStationManager) to determine the set of
+   * transmission/reception modes that this WifiPhy(-derived class)
+   * can support - a set of WifiMode objects which we call the
+   * DeviceRateSet, and which is stored as WifiPhy::m_deviceRateSet.
+   *
+   * It is important to note that the DeviceRateSet is a superset (not
+   * necessarily proper) of the OperationalRateSet (which is
+   * logically, if not actually, a property of the associated
+   * WifiRemoteStationManager), which itself is a superset (again, not
+   * necessarily proper) of the BSSBasicRateSet.
+   *
    * \returns the number of transmission modes supported by this PHY.
+   *
+   * \sa WifiPhy::GetMode()
    */
   virtual uint32_t GetNModes (void) const = 0;
   /**
+   * The WifiPhy::GetNModes() and WifiPhy::GetMode() methods are used
+   * (e.g., by a WifiRemoteStationManager) to determine the set of
+   * transmission/reception modes that this WifiPhy(-derived class)
+   * can support - a set of WifiMode objects which we call the
+   * DeviceRateSet, and which is stored as WifiPhy::m_deviceRateSet.
+   *
+   * It is important to note that the DeviceRateSet is a superset (not
+   * necessarily proper) of the OperationalRateSet (which is
+   * logically, if not actually, a property of the associated
+   * WifiRemoteStationManager), which itself is a superset (again, not
+   * necessarily proper) of the BSSBasicRateSet.
+   *
    * \param mode index in array of supported modes
    * \returns the mode whose index is specified.
+   *
+   * \sa WifiPhy::GetNModes()
    */
   virtual WifiMode GetMode (uint32_t mode) const = 0;
   /**

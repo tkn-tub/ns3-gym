@@ -205,6 +205,12 @@ WifiRemoteStationManager::DoDispose (void)
 void
 WifiRemoteStationManager::SetupPhy (Ptr<WifiPhy> phy)
 {
+  // We need to track our PHY because it is the object that knows the
+  // full set of transmit rates that are supported. We need to know
+  // this in order to find the relevant mandatory rates when chosing a
+  // transmit rate for automatic control responses like
+  // acknowledgements.
+  m_wifiPhy = phy;
   m_defaultTxMode = phy->GetMode (0);
   Reset ();
 }
@@ -255,7 +261,7 @@ WifiRemoteStationManager::Reset (Mac48Address address)
 {
   NS_ASSERT (!address.IsGroup ());
   WifiRemoteStationState *state = LookupState (address);
-  state->m_modes.clear ();
+  state->m_operationalRateSet.clear ();
   AddSupportedMode (address, GetDefaultMode ());
 }
 void
@@ -263,7 +269,7 @@ WifiRemoteStationManager::AddSupportedMode (Mac48Address address, WifiMode mode)
 {
   NS_ASSERT (!address.IsGroup ());
   WifiRemoteStationState *state = LookupState (address);
-  for (WifiRemoteStationState::SupportedModes::const_iterator i = state->m_modes.begin (); i != state->m_modes.end (); i++)
+  for (WifiModeListIterator i = state->m_operationalRateSet.begin (); i != state->m_operationalRateSet.end (); i++)
     {
       if ((*i) == mode)
         {
@@ -271,7 +277,7 @@ WifiRemoteStationManager::AddSupportedMode (Mac48Address address, WifiMode mode)
           return;
         }
     }
-  state->m_modes.push_back (mode);
+  state->m_operationalRateSet.push_back (mode);
 }
 bool
 WifiRemoteStationManager::IsBrandNew (Mac48Address address) const
@@ -533,39 +539,105 @@ WifiMode
 WifiRemoteStationManager::GetControlAnswerMode (Mac48Address address, WifiMode reqMode)
 {
   /**
-   * see ieee 802.11e, section 9.6:
-   * 
-   * To allow the transmitting STA to calculate the contents of 
-   * the Duration/ID field, a STA responding to a received frame 
-   * shall transmit its Control Response frame (either CTS or ACK) 
-   * frames, other than the Block-Ack control frame, at the highest 
-   * rate in the BSSBasicRateSet parameter that is less than or equal 
-   * to the rate of the immediately previous frame in the frame 
-   * exchange sequence (as defined in 9.79.12) and that is of the
-   * same modulation type as the received frame. If no rate in the 
-   * basic rate set meets these conditions, then the control frame 
-   * sent in response to a received frame shall be transmitted at 
-   * the highest mandatory rate of the PHY that is less than or equal 
-   * to the rate of the received frame, and that is of the same 
-   * modulation type as the received frame. In addition, the Control 
-   * Response frame shall be sent using the same PHY options as the
-   * received frame, unless they conflict with the requirement to use 
-   * the BSSBasicRateSet parameter.
+   * The standard has relatively unambiguous rules for selecting a
+   * control response rate (the below is quoted from IEEE 802.11-2007,
+   * Section 9.6):
+   *
+   *   To allow the transmitting STA to calculate the contents of the
+   *   Duration/ID field, a STA responding to a received frame shall
+   *   transmit its Control Response frame (either CTS or ACK), other
+   *   than the BlockAck control frame, at the highest rate in the
+   *   BSSBasicRateSet parameter that is less than or equal to the
+   *   rate of the immediately previous frame in the frame exchange
+   *   sequence (as defined in 9.12) and that is of the same
+   *   modulation class (see 9.6.1) as the received frame...
    */
   WifiMode mode = GetDefaultMode ();
+  bool found = false;
 
   // First, search the BSS Basic Rate set
-  for (WifiRemoteStationManager::BasicModesIterator i = BeginBasicModes (); i != EndBasicModes (); i++)
+  for (WifiModeListIterator i = m_bssBasicRateSet.begin ();
+       i != m_bssBasicRateSet.end (); i++)
     {
-      if (i->GetPhyRate () > mode.GetPhyRate () &&
-          i->GetPhyRate () <= reqMode.GetPhyRate () &&
-          i->GetModulationClass () == reqMode.GetModulationClass ())
+      if ((!found || i->GetPhyRate () > mode.GetPhyRate ())
+          && i->GetPhyRate () <= reqMode.GetPhyRate ()
+          && i->GetModulationClass () == reqMode.GetModulationClass ())
         {
           mode = *i;
+          // We've found a potentially-suitable transmit rate, but we
+          // need to continue and consider all the basic rates before
+          // we can be sure we've got the right one.
+          found = true;
         }
     }
-  // no need to search Mandatory rate set because it is included
-  // within the Basic rate set.
+
+  // If we found a suitable rate in the BSSBasicRateSet, then we are
+  // done and can return that mode.
+  if (found)
+    {
+      return mode;
+    }
+
+  /**
+   * If no suitable basic rate was found, we search the mandatory
+   * rates. The standard (IEEE 802.11-2007, Section 9.6) says:
+   *
+   *   ...If no rate contained in the BSSBasicRateSet parameter meets
+   *   these conditions, then the control frame sent in response to a
+   *   received frame shall be transmitted at the highest mandatory
+   *   rate of the PHY that is less than or equal to the rate of the
+   *   received frame, and that is of the same modulation class as the
+   *   received frame. In addition, the Control Response frame shall
+   *   be sent using the same PHY options as the received frame,
+   *   unless they conflict with the requirement to use the
+   *   BSSBasicRateSet parameter.
+   *
+   * TODO: Note that we're ignoring the last sentence for now, because
+   * there is not yet any manipulation here of PHY options.
+   */
+  for (uint32_t idx = 0; idx < m_wifiPhy->GetNModes (); idx++)
+    {
+      WifiMode thismode = m_wifiPhy->GetMode (idx);
+
+      /* If the rate:
+       *
+       *  - is a mandatory rate for the PHY, and
+       *  - is equal to or faster than our current best choice, and
+       *  - is less than or equal to the rate of the received frame, and
+       *  - is of the same modulation class as the received frame
+       *
+       * ...then it's our best choice so far.
+       */
+      if (thismode.IsMandatory ()
+          && (!found || thismode.GetPhyRate () > mode.GetPhyRate ())
+          && thismode.GetPhyRate () <= reqMode.GetPhyRate ()
+          && thismode.GetModulationClass () == reqMode.GetModulationClass ())
+        {
+          mode = thismode;
+          // As above; we've found a potentially-suitable transmit
+          // rate, but we need to continue and consider all the
+          // mandatory rates before we can be sure we've got the right
+          // one.
+          found = true;
+        }
+    }
+
+  /**
+   * If we still haven't found a suitable rate for the response then
+   * someone has messed up the simulation config. This probably means
+   * that the WifiPhyStandard is not set correctly, or that a rate that
+   * is not supported by the PHY has been explicitly requested in a
+   * WifiRemoteStationManager (or descendant) configuration.
+   *
+   * Either way, it is serious - we can either disobey the standard or
+   * fail, and I have chosen to do the latter...
+   */
+  if (!found)
+    {
+      NS_FATAL_ERROR ("Can't find response rate for " << reqMode
+                      << ". Check standard and selected rates match.");
+    }
+
   return mode;
 }
 
@@ -602,7 +674,7 @@ WifiRemoteStationManager::LookupState (Mac48Address address) const
   WifiRemoteStationState *state = new WifiRemoteStationState ();
   state->m_state = WifiRemoteStationState::BRAND_NEW;
   state->m_address = address;
-  state->m_modes.push_back (GetDefaultMode ());
+  state->m_operationalRateSet.push_back (GetDefaultMode ());
   const_cast<WifiRemoteStationManager *> (this)->m_states.push_back (state);
   return state;
 }
@@ -657,8 +729,8 @@ WifiRemoteStationManager::Reset (void)
       delete (*i);
     }
   m_stations.clear ();
-  m_basicModes.clear ();
-  m_basicModes.push_back (m_defaultTxMode);
+  m_bssBasicRateSet.clear ();
+  m_bssBasicRateSet.push_back (m_defaultTxMode);
   NS_ASSERT (m_defaultTxMode.IsMandatory ());
 }
 void 
@@ -671,30 +743,19 @@ WifiRemoteStationManager::AddBasicMode (WifiMode mode)
           return;
         }
     }
-  m_basicModes.push_back (mode);
+  m_bssBasicRateSet.push_back (mode);
 }
 uint32_t 
 WifiRemoteStationManager::GetNBasicModes (void) const
 {
-  return m_basicModes.size ();
+  return m_bssBasicRateSet.size ();
 }
 WifiMode 
 WifiRemoteStationManager::GetBasicMode (uint32_t i) const
 {
-  NS_ASSERT (i < m_basicModes.size ());
-  return m_basicModes[i];
+  NS_ASSERT (i < m_bssBasicRateSet.size ());
+  return m_bssBasicRateSet[i];
 }
-WifiRemoteStationManager::BasicModesIterator 
-WifiRemoteStationManager::BeginBasicModes (void) const
-{
-  return m_basicModes.begin ();
-}
-WifiRemoteStationManager::BasicModesIterator 
-WifiRemoteStationManager::EndBasicModes (void) const
-{
-  return m_basicModes.end ();
-}
-
 WifiMode
 WifiRemoteStationManager::GetNonUnicastMode (void) const
 {
@@ -737,12 +798,12 @@ WifiMode
 WifiRemoteStationManager::GetSupported (const WifiRemoteStation *station, uint32_t i) const
 {
   NS_ASSERT (i < GetNSupported (station));
-  return station->m_state->m_modes[i];
+  return station->m_state->m_operationalRateSet[i];
 }
 uint32_t 
 WifiRemoteStationManager::GetNSupported (const WifiRemoteStation *station) const
 {
-  return station->m_state->m_modes.size ();
+  return station->m_state->m_operationalRateSet.size ();
 }
 
 //WifiRemoteStationInfo constructor

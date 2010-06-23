@@ -163,6 +163,15 @@ std::istream & operator >> (std::istream &is, WifiMode &mode);
 ATTRIBUTE_HELPER_HEADER (WifiMode);
 
 /**
+ * In various parts of the code, folk are interested in maintaining a
+ * list of transmission modes. The vector class provides a good basis
+ * for this, but we here add some syntactic sugar by defining a
+ * WifiModeList type, and a corresponding iterator.
+ */
+typedef std::vector<WifiMode> WifiModeList;
+typedef WifiModeList::const_iterator WifiModeListIterator;
+
+/**
  * \brief create WifiMode class instances and keep track of them.
  *
  * This factory ensures that each WifiMode created has a unique name
