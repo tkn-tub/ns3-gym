@@ -115,6 +115,7 @@ Bug780Test::CreateNodes (void)
 
   // Add a non-QoS upper mac, and disable rate control
   NqosWifiMacHelper wifiMac = NqosWifiMacHelper::Default ();
+  wifi.SetStandard (WIFI_PHY_STANDARD_80211b);
   wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager",
       "DataMode",StringValue(phyMode),
       "ControlMode",StringValue(phyMode));
