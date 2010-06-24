@@ -11,11 +11,19 @@ def register_types(module):
     module.add_class('InetTopologyReader', parent=root_module['ns3::TopologyReader'])
     ## orbis-topology-reader.h: ns3::OrbisTopologyReader [class]
     module.add_class('OrbisTopologyReader', parent=root_module['ns3::TopologyReader'])
+    ## rocketfuel-topology-reader.h: ns3::RocketfuelTopologyReader [class]
+    module.add_class('RocketfuelTopologyReader', parent=root_module['ns3::TopologyReader'])
     
     ## Register a nested module for the namespace Config
     
     nested_module = module.add_cpp_namespace('Config')
     register_types_ns3_Config(nested_module)
+    
+    
+    ## Register a nested module for the namespace FatalImpl
+    
+    nested_module = module.add_cpp_namespace('FatalImpl')
+    register_types_ns3_FatalImpl(nested_module)
     
     
     ## Register a nested module for the namespace TimeStepPrecision
@@ -64,6 +72,10 @@ def register_types_ns3_Config(module):
     root_module = module.get_root()
     
 
+def register_types_ns3_FatalImpl(module):
+    root_module = module.get_root()
+    
+
 def register_types_ns3_TimeStepPrecision(module):
     root_module = module.get_root()
     
@@ -97,6 +109,7 @@ def register_methods(root_module):
     register_Ns3TopologyReaderLink_methods(root_module, root_module['ns3::TopologyReader::Link'])
     register_Ns3InetTopologyReader_methods(root_module, root_module['ns3::InetTopologyReader'])
     register_Ns3OrbisTopologyReader_methods(root_module, root_module['ns3::OrbisTopologyReader'])
+    register_Ns3RocketfuelTopologyReader_methods(root_module, root_module['ns3::RocketfuelTopologyReader'])
     return
 
 def register_Ns3TopologyReader_methods(root_module, cls):
@@ -224,9 +237,25 @@ def register_Ns3OrbisTopologyReader_methods(root_module, cls):
                    is_virtual=True)
     return
 
+def register_Ns3RocketfuelTopologyReader_methods(root_module, cls):
+    ## rocketfuel-topology-reader.h: static ns3::TypeId ns3::RocketfuelTopologyReader::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## rocketfuel-topology-reader.h: ns3::RocketfuelTopologyReader::RocketfuelTopologyReader() [constructor]
+    cls.add_constructor([])
+    ## rocketfuel-topology-reader.h: ns3::NodeContainer ns3::RocketfuelTopologyReader::Read() [member function]
+    cls.add_method('Read', 
+                   'ns3::NodeContainer', 
+                   [], 
+                   is_virtual=True)
+    return
+
 def register_functions(root_module):
     module = root_module
     register_functions_ns3_Config(module.get_submodule('Config'), root_module)
+    register_functions_ns3_FatalImpl(module.get_submodule('FatalImpl'), root_module)
     register_functions_ns3_TimeStepPrecision(module.get_submodule('TimeStepPrecision'), root_module)
     register_functions_ns3_addressUtils(module.get_submodule('addressUtils'), root_module)
     register_functions_ns3_aodv(module.get_submodule('aodv'), root_module)
@@ -237,6 +266,9 @@ def register_functions(root_module):
     return
 
 def register_functions_ns3_Config(module, root_module):
+    return
+
+def register_functions_ns3_FatalImpl(module, root_module):
     return
 
 def register_functions_ns3_TimeStepPrecision(module, root_module):

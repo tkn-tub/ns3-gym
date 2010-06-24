@@ -145,6 +145,12 @@ def register_types(module):
     register_types_ns3_Config(nested_module)
     
     
+    ## Register a nested module for the namespace FatalImpl
+    
+    nested_module = module.add_cpp_namespace('FatalImpl')
+    register_types_ns3_FatalImpl(nested_module)
+    
+    
     ## Register a nested module for the namespace TimeStepPrecision
     
     nested_module = module.add_cpp_namespace('TimeStepPrecision')
@@ -188,6 +194,10 @@ def register_types(module):
     
 
 def register_types_ns3_Config(module):
+    root_module = module.get_root()
+    
+
+def register_types_ns3_FatalImpl(module):
     root_module = module.get_root()
     
 
@@ -2029,16 +2039,12 @@ def register_Ns3NixVector_methods(root_module, cls):
 def register_Ns3OutputStreamWrapper_methods(root_module, cls):
     ## output-stream-wrapper.h: ns3::OutputStreamWrapper::OutputStreamWrapper(ns3::OutputStreamWrapper const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::OutputStreamWrapper const &', 'arg0')])
-    ## output-stream-wrapper.h: ns3::OutputStreamWrapper::OutputStreamWrapper() [constructor]
-    cls.add_constructor([])
+    ## output-stream-wrapper.h: ns3::OutputStreamWrapper::OutputStreamWrapper(std::string filename, std::_Ios_Openmode filemode) [constructor]
+    cls.add_constructor([param('std::string', 'filename'), param('std::_Ios_Openmode', 'filemode')])
     ## output-stream-wrapper.h: std::ostream * ns3::OutputStreamWrapper::GetStream() [member function]
     cls.add_method('GetStream', 
                    'std::ostream *', 
                    [])
-    ## output-stream-wrapper.h: void ns3::OutputStreamWrapper::SetStream(std::ostream * ostream) [member function]
-    cls.add_method('SetStream', 
-                   'void', 
-                   [param('std::ostream *', 'ostream')])
     return
 
 def register_Ns3Packet_methods(root_module, cls):
@@ -2351,6 +2357,7 @@ def register_functions(root_module):
                         'double', 
                         [param('ns3::SpectrumValue const &', 'x')])
     register_functions_ns3_Config(module.get_submodule('Config'), root_module)
+    register_functions_ns3_FatalImpl(module.get_submodule('FatalImpl'), root_module)
     register_functions_ns3_TimeStepPrecision(module.get_submodule('TimeStepPrecision'), root_module)
     register_functions_ns3_addressUtils(module.get_submodule('addressUtils'), root_module)
     register_functions_ns3_aodv(module.get_submodule('aodv'), root_module)
@@ -2361,6 +2368,9 @@ def register_functions(root_module):
     return
 
 def register_functions_ns3_Config(module, root_module):
+    return
+
+def register_functions_ns3_FatalImpl(module, root_module):
     return
 
 def register_functions_ns3_TimeStepPrecision(module, root_module):

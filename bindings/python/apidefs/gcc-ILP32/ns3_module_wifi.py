@@ -197,10 +197,16 @@ def register_types(module):
     module.add_class('YansWifiChannel', parent=root_module['ns3::WifiChannel'])
     ## dca-txop.h: ns3::DcaTxop [class]
     module.add_class('DcaTxop', parent=root_module['ns3::Dcf'])
-    module.add_container('std::vector< ns3::WifiMode >', 'ns3::WifiMode', container_type='vector')
+    module.add_container('ns3::WifiModeList', 'ns3::WifiMode', container_type='vector')
+    typehandlers.add_type_alias('__gnu_cxx::__normal_iterator< ns3::WifiMode const *, std::vector< ns3::WifiMode, std::allocator< ns3::WifiMode > > >', 'ns3::WifiModeListIterator')
+    typehandlers.add_type_alias('__gnu_cxx::__normal_iterator< ns3::WifiMode const *, std::vector< ns3::WifiMode, std::allocator< ns3::WifiMode > > >*', 'ns3::WifiModeListIterator*')
+    typehandlers.add_type_alias('__gnu_cxx::__normal_iterator< ns3::WifiMode const *, std::vector< ns3::WifiMode, std::allocator< ns3::WifiMode > > >&', 'ns3::WifiModeListIterator&')
     typehandlers.add_type_alias('std::vector< ns3::RateInfo, std::allocator< ns3::RateInfo > >', 'ns3::MinstrelRate')
     typehandlers.add_type_alias('std::vector< ns3::RateInfo, std::allocator< ns3::RateInfo > >*', 'ns3::MinstrelRate*')
     typehandlers.add_type_alias('std::vector< ns3::RateInfo, std::allocator< ns3::RateInfo > >&', 'ns3::MinstrelRate&')
+    typehandlers.add_type_alias('std::vector< ns3::WifiMode, std::allocator< ns3::WifiMode > >', 'ns3::WifiModeList')
+    typehandlers.add_type_alias('std::vector< ns3::WifiMode, std::allocator< ns3::WifiMode > >*', 'ns3::WifiModeList*')
+    typehandlers.add_type_alias('std::vector< ns3::WifiMode, std::allocator< ns3::WifiMode > >&', 'ns3::WifiModeList&')
     typehandlers.add_type_alias('std::vector< std::vector< unsigned int, std::allocator< unsigned int > >, std::allocator< std::vector< unsigned int, std::allocator< unsigned int > > > >', 'ns3::SampleRate')
     typehandlers.add_type_alias('std::vector< std::vector< unsigned int, std::allocator< unsigned int > >, std::allocator< std::vector< unsigned int, std::allocator< unsigned int > > > >*', 'ns3::SampleRate*')
     typehandlers.add_type_alias('std::vector< std::vector< unsigned int, std::allocator< unsigned int > >, std::allocator< std::vector< unsigned int, std::allocator< unsigned int > > > >&', 'ns3::SampleRate&')
@@ -209,6 +215,12 @@ def register_types(module):
     
     nested_module = module.add_cpp_namespace('Config')
     register_types_ns3_Config(nested_module)
+    
+    
+    ## Register a nested module for the namespace FatalImpl
+    
+    nested_module = module.add_cpp_namespace('FatalImpl')
+    register_types_ns3_FatalImpl(nested_module)
     
     
     ## Register a nested module for the namespace TimeStepPrecision
@@ -254,6 +266,10 @@ def register_types(module):
     
 
 def register_types_ns3_Config(module):
+    root_module = module.get_root()
+    
+
+def register_types_ns3_FatalImpl(module):
     root_module = module.get_root()
     
 
@@ -1469,8 +1485,8 @@ def register_Ns3WifiRemoteStationState_methods(root_module, cls):
     cls.add_instance_attribute('m_address', 'ns3::Mac48Address', is_const=False)
     ## wifi-remote-station-manager.h: ns3::WifiRemoteStationState::m_info [variable]
     cls.add_instance_attribute('m_info', 'ns3::WifiRemoteStationInfo', is_const=False)
-    ## wifi-remote-station-manager.h: ns3::WifiRemoteStationState::m_modes [variable]
-    cls.add_instance_attribute('m_modes', 'std::vector< ns3::WifiMode >', is_const=False)
+    ## wifi-remote-station-manager.h: ns3::WifiRemoteStationState::m_operationalRateSet [variable]
+    cls.add_instance_attribute('m_operationalRateSet', 'ns3::WifiModeList', is_const=False)
     return
 
 def register_Ns3MgtAddBaRequestHeader_methods(root_module, cls):
@@ -3028,16 +3044,6 @@ def register_Ns3WifiRemoteStationManager_methods(root_module, cls):
     cls.add_method('AddSupportedMode', 
                    'void', 
                    [param('ns3::Mac48Address', 'address'), param('ns3::WifiMode', 'mode')])
-    ## wifi-remote-station-manager.h: __gnu_cxx::__normal_iterator<const ns3::WifiMode*,std::vector<ns3::WifiMode, std::allocator<ns3::WifiMode> > > ns3::WifiRemoteStationManager::BeginBasicModes() const [member function]
-    cls.add_method('BeginBasicModes', 
-                   '__gnu_cxx::__normal_iterator< ns3::WifiMode const *, std::vector< ns3::WifiMode > >', 
-                   [], 
-                   is_const=True)
-    ## wifi-remote-station-manager.h: __gnu_cxx::__normal_iterator<const ns3::WifiMode*,std::vector<ns3::WifiMode, std::allocator<ns3::WifiMode> > > ns3::WifiRemoteStationManager::EndBasicModes() const [member function]
-    cls.add_method('EndBasicModes', 
-                   '__gnu_cxx::__normal_iterator< ns3::WifiMode const *, std::vector< ns3::WifiMode > >', 
-                   [], 
-                   is_const=True)
     ## wifi-remote-station-manager.h: ns3::WifiMode ns3::WifiRemoteStationManager::GetAckMode(ns3::Mac48Address address, ns3::WifiMode dataMode) [member function]
     cls.add_method('GetAckMode', 
                    'ns3::WifiMode', 
@@ -6443,6 +6449,7 @@ def register_functions(root_module):
                         'ns3::AcIndex', 
                         [param('uint8_t', 'tid')])
     register_functions_ns3_Config(module.get_submodule('Config'), root_module)
+    register_functions_ns3_FatalImpl(module.get_submodule('FatalImpl'), root_module)
     register_functions_ns3_TimeStepPrecision(module.get_submodule('TimeStepPrecision'), root_module)
     register_functions_ns3_addressUtils(module.get_submodule('addressUtils'), root_module)
     register_functions_ns3_aodv(module.get_submodule('aodv'), root_module)
@@ -6453,6 +6460,9 @@ def register_functions(root_module):
     return
 
 def register_functions_ns3_Config(module, root_module):
+    return
+
+def register_functions_ns3_FatalImpl(module, root_module):
     return
 
 def register_functions_ns3_TimeStepPrecision(module, root_module):

@@ -233,6 +233,12 @@ def register_types(module):
     register_types_ns3_Config(nested_module)
     
     
+    ## Register a nested module for the namespace FatalImpl
+    
+    nested_module = module.add_cpp_namespace('FatalImpl')
+    register_types_ns3_FatalImpl(nested_module)
+    
+    
     ## Register a nested module for the namespace TimeStepPrecision
     
     nested_module = module.add_cpp_namespace('TimeStepPrecision')
@@ -281,6 +287,10 @@ def register_types_ns3_Config(module):
     ## config.h: ns3::Config::MatchContainer [class]
     module.add_class('MatchContainer')
     module.add_container('std::vector< ns3::Ptr< ns3::Object > >', 'ns3::Ptr< ns3::Object >', container_type='vector')
+
+def register_types_ns3_FatalImpl(module):
+    root_module = module.get_root()
+    
 
 def register_types_ns3_TimeStepPrecision(module):
     root_module = module.get_root()
@@ -3156,6 +3166,7 @@ def register_functions(root_module):
                         [], 
                         template_parameters=['unsigned char'])
     register_functions_ns3_Config(module.get_submodule('Config'), root_module)
+    register_functions_ns3_FatalImpl(module.get_submodule('FatalImpl'), root_module)
     register_functions_ns3_TimeStepPrecision(module.get_submodule('TimeStepPrecision'), root_module)
     register_functions_ns3_addressUtils(module.get_submodule('addressUtils'), root_module)
     register_functions_ns3_aodv(module.get_submodule('aodv'), root_module)
@@ -3222,6 +3233,21 @@ def register_functions_ns3_Config(module, root_module):
     module.add_function('UnregisterRootNamespaceObject', 
                         'void', 
                         [param('ns3::Ptr< ns3::Object >', 'obj')])
+    return
+
+def register_functions_ns3_FatalImpl(module, root_module):
+    ## fatal-impl.h: extern void ns3::FatalImpl::FlushStreams() [free function]
+    module.add_function('FlushStreams', 
+                        'void', 
+                        [])
+    ## fatal-impl.h: extern void ns3::FatalImpl::RegisterStream(std::ostream * stream) [free function]
+    module.add_function('RegisterStream', 
+                        'void', 
+                        [param('std::ostream *', 'stream')])
+    ## fatal-impl.h: extern void ns3::FatalImpl::UnregisterStream(std::ostream * stream) [free function]
+    module.add_function('UnregisterStream', 
+                        'void', 
+                        [param('std::ostream *', 'stream')])
     return
 
 def register_functions_ns3_TimeStepPrecision(module, root_module):

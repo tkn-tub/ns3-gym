@@ -142,6 +142,12 @@ def register_types(module):
     register_types_ns3_Config(nested_module)
     
     
+    ## Register a nested module for the namespace FatalImpl
+    
+    nested_module = module.add_cpp_namespace('FatalImpl')
+    register_types_ns3_FatalImpl(nested_module)
+    
+    
     ## Register a nested module for the namespace TimeStepPrecision
     
     nested_module = module.add_cpp_namespace('TimeStepPrecision')
@@ -185,6 +191,10 @@ def register_types(module):
     
 
 def register_types_ns3_Config(module):
+    root_module = module.get_root()
+    
+
+def register_types_ns3_FatalImpl(module):
     root_module = module.get_root()
     
 
@@ -3953,6 +3963,7 @@ def register_Ns3LoopbackNetDevice_methods(root_module, cls):
 def register_functions(root_module):
     module = root_module
     register_functions_ns3_Config(module.get_submodule('Config'), root_module)
+    register_functions_ns3_FatalImpl(module.get_submodule('FatalImpl'), root_module)
     register_functions_ns3_TimeStepPrecision(module.get_submodule('TimeStepPrecision'), root_module)
     register_functions_ns3_addressUtils(module.get_submodule('addressUtils'), root_module)
     register_functions_ns3_aodv(module.get_submodule('aodv'), root_module)
@@ -3963,6 +3974,9 @@ def register_functions(root_module):
     return
 
 def register_functions_ns3_Config(module, root_module):
+    return
+
+def register_functions_ns3_FatalImpl(module, root_module):
     return
 
 def register_functions_ns3_TimeStepPrecision(module, root_module):
