@@ -34,6 +34,7 @@ import ns3_module_static_routing
 import ns3_module_stats
 import ns3_module_tap_bridge
 import ns3_module_topology_read
+import ns3_module_uan
 import ns3_module_v4ping
 import ns3_module_virtual_net_device
 import ns3_module_wifi
@@ -300,6 +301,17 @@ def register_types(module):
         ns3_module_topology_read__local.register_types(module)
     
     root_module.end_section('ns3_module_topology_read')
+    root_module.begin_section('ns3_module_uan')
+    ns3_module_uan.register_types(module)
+    
+    try:
+        import ns3_module_uan__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_uan__local.register_types(module)
+    
+    root_module.end_section('ns3_module_uan')
     root_module.begin_section('ns3_module_v4ping')
     ns3_module_v4ping.register_types(module)
     
@@ -478,15 +490,19 @@ def register_types(module):
     root_module.end_section('ns3_module_flame')
     module.add_container('std::vector< unsigned int >', 'unsigned int', container_type='vector')
     module.add_container('std::vector< bool >', 'bool', container_type='vector')
+    module.add_container('std::list< std::pair< ns3::Ptr< ns3::Packet >, ns3::UanAddress > >', 'std::pair< ns3::Ptr< ns3::Packet >, ns3::UanAddress >', container_type='list')
     module.add_container('std::vector< ns3::ServiceFlow * >', 'ns3::ServiceFlow *', container_type='vector')
+    module.add_container('std::vector< std::complex< double > >', 'std::complex< double >', container_type='vector')
+    module.add_container('std::vector< double >', 'double', container_type='vector')
     module.add_container('ns3::bvec', 'bool', container_type='vector')
     module.add_container('std::vector< ns3::SSRecord * >', 'ns3::SSRecord *', container_type='vector')
-    module.add_container('std::vector< double >', 'double', container_type='vector')
     module.add_container('std::map< std::string, std::string >', ('std::string', 'std::string'), container_type='map')
+    module.add_container('std::set< unsigned char >', 'unsigned char', container_type='set')
     module.add_container('std::list< std::pair< ns3::OfdmDlMapIe *, ns3::Ptr< ns3::PacketBurst > > >', 'std::pair< ns3::OfdmDlMapIe *, ns3::Ptr< ns3::PacketBurst > >', container_type='list')
     module.add_container('std::vector< unsigned long long >', 'long long unsigned int', container_type='vector')
     module.add_container('std::list< unsigned int >', 'unsigned int', container_type='list')
     module.add_container('std::list< std::pair< ns3::Ptr< ns3::Packet >, ns3::AmsduSubframeHeader > >', 'std::pair< ns3::Ptr< ns3::Packet >, ns3::AmsduSubframeHeader >', container_type='list')
+    module.add_container('std::vector< std::pair< ns3::Ptr< ns3::UanNetDevice >, ns3::Ptr< ns3::UanTransducer > > >', 'std::pair< ns3::Ptr< ns3::UanNetDevice >, ns3::Ptr< ns3::UanTransducer > >', container_type='vector')
     
     ## Register a nested module for the namespace Config
     
@@ -824,6 +840,17 @@ def register_methods(root_module):
         ns3_module_topology_read__local.register_methods(root_module)
     
     root_module.end_section('ns3_module_topology_read')
+    root_module.begin_section('ns3_module_uan')
+    ns3_module_uan.register_methods(root_module)
+    
+    try:
+        import ns3_module_uan__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_uan__local.register_methods(root_module)
+    
+    root_module.end_section('ns3_module_uan')
     root_module.begin_section('ns3_module_v4ping')
     ns3_module_v4ping.register_methods(root_module)
     
@@ -1246,6 +1273,17 @@ def register_functions(root_module):
         ns3_module_topology_read__local.register_functions(root_module)
     
     root_module.end_section('ns3_module_topology_read')
+    root_module.begin_section('ns3_module_uan')
+    ns3_module_uan.register_functions(root_module)
+    
+    try:
+        import ns3_module_uan__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_uan__local.register_functions(root_module)
+    
+    root_module.end_section('ns3_module_uan')
     root_module.begin_section('ns3_module_v4ping')
     ns3_module_v4ping.register_functions(root_module)
     
