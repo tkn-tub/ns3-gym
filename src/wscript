@@ -43,6 +43,8 @@ all_modules = (
     'helper',
     'contrib/stats',
     'applications/v4ping',
+    'devices/uan',
+    'devices/mesh',
     'devices/spectrum',
     'devices/mesh',   
     'devices/mesh/dot11s',
