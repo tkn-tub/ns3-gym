@@ -89,6 +89,15 @@ are <em>Ofdm</em> and <em>Dsss</em>. For modulation classes where
 optional reduced-bandwidth transmission is possible, this is captured
 in the final part of the form above, with <em>b</em> specifying the
 nominal signal bandwidth in megahertz.
+
+<li><b>Consolidation of classes support Wi-Fi Information Elements:</b>
+When the <em>mesh</em> module was introduced it added a class
+hierarchy for modelling of the various Information Elements that were
+required. In this release, this class hierarchy has extended by moving
+the base classes (WifiInformationElement and
+WifiInformationElementVector) into the <em>wifi</em> module. This
+change is intended to ease the addition of support for modelling of
+further Wi-Fi functionality.
 </ul>
 
 <h2>Changed behavior:</h2>

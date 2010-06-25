@@ -66,6 +66,7 @@ many cases referencing the Bugzilla bug number
    - bug 932 - Support IP_HDRINCL option for Ipv4RawSocket
    - bug 871 - naming for WifiPhyStandard
    - bug 946 - Rocketfuel topology dataset support for topology reader
+   - bug 881 - Reorganise to allow wider use of WifiInformationElement
 
 Known issues
 ------------
