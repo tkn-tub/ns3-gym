@@ -22,7 +22,7 @@
 #define PERR_INFORMATION_ELEMENT_H
 
 #include "ns3/mac48-address.h"
-#include "ns3/wifi-information-element-vector.h"
+#include "ns3/mesh-information-element-vector.h"
 #include "ns3/hwmp-protocol.h"
 
 namespace ns3 {

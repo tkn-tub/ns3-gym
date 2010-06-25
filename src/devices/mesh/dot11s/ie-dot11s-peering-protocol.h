@@ -21,7 +21,7 @@
 #ifndef MESH_PEERING_PROTOCOL_H
 #define MESH_PEERING_PROTOCOL_H
 
-#include "ns3/wifi-information-element-vector.h"
+#include "ns3/mesh-information-element-vector.h"
 
 namespace ns3
 {

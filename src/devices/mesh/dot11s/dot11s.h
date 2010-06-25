@@ -43,14 +43,6 @@
  * If peer link between sender and receiver does not exist, the packet will be dropped.
  * So, the plug-in to peer management protocol is the first in the list of
  * ns3::MeshWifiInterfaceMacPlugin
- * \subsection IE Implementation of Information elements
- * To make a model of 802.11s stack, we need to implement large quantity of information
- * elements and have an ability to add them in a beacon. Also we have to parse beacon
- * and extract proper information elements from it. So, two classes ns3::WifiInformationElement
- * and ns3::WifiInformationElementVector support this functionality. The former keeps all
- * internal structure of information element and its elementId. It has methods
- * ns3::WifiInformationElement::SerializeInformation and ns3::WifiInformationElement::DeserializeInformation.
- * The latter is ns3::WifiInformationElementVector adds all stored information elements to a packet.
  * \subsection PMP Peer management protocol
  * Peer management protocol consists of three main parts:
  *      - Protocol itself ns3::dot11s::PeerManagementProtocol, which keeps all active peer links on interfaces,

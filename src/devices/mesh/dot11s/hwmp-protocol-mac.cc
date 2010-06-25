@@ -102,10 +102,10 @@ HwmpProtocolMac::ReceiveAction (Ptr<Packet> packet, const WifiMacHeader & header
     {
       return true;
     }
-  WifiInformationElementVector elements;
+  MeshInformationElementVector elements;
   packet->RemoveHeader (elements);
   std::vector<HwmpProtocol::FailedDestination> failedDestinations;
-  for (WifiInformationElementVector::Iterator i = elements.Begin(); i != elements.End(); i ++)
+  for (MeshInformationElementVector::Iterator i = elements.Begin(); i != elements.End(); i ++)
     {
       if ((*i)->ElementId () == IE11S_RANN)
         {
@@ -225,7 +225,7 @@ void
 HwmpProtocolMac::SendPreq (std::vector<IePreq> preq)
 {
   Ptr<Packet> packet = Create<Packet> ();
-  WifiInformationElementVector elements;
+  MeshInformationElementVector elements;
   for (std::vector<IePreq>::iterator i = preq.begin (); i != preq.end (); i++)
     {
       elements.AddInformationElement(Ptr<IePreq> (&(*i)));
@@ -298,7 +298,7 @@ HwmpProtocolMac::SendPrep (IePrep prep, Mac48Address receiver)
   NS_LOG_FUNCTION_NOARGS ();
   //Create packet
   Ptr<Packet> packet = Create<Packet> ();
-  WifiInformationElementVector elements;
+  MeshInformationElementVector elements;
   elements.AddInformationElement(Ptr<IePrep> (&prep));
   packet->AddHeader (elements);
   packet->AddHeader (GetWifiActionHeader ());
@@ -323,7 +323,7 @@ HwmpProtocolMac::ForwardPerr (std::vector<HwmpProtocol::FailedDestination> faile
   NS_LOG_FUNCTION_NOARGS ();
   Ptr<Packet> packet = Create<Packet> ();
   Ptr<IePerr> perr = Create <IePerr> ();
-  WifiInformationElementVector elements;
+  MeshInformationElementVector elements;
   for (std::vector<HwmpProtocol::FailedDestination>::const_iterator i = failedDestinations.begin (); i
       != failedDestinations.end (); i++)
     {

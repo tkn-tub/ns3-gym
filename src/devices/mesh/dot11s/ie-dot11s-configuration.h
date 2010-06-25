@@ -23,7 +23,7 @@
 #ifndef MESH_CONFIGURATION_H
 #define MESH_CONFIGURATION_H
 
-#include "ns3/wifi-information-element-vector.h"
+#include "ns3/mesh-information-element-vector.h"
 
 namespace ns3 {
 namespace dot11s {

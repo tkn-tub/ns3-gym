@@ -25,7 +25,7 @@
 #include "ns3/packet.h"
 #include "ns3/mgt-headers.h"        // from wifi module
 #include "ns3/wifi-mac-header.h"
-#include "ns3/wifi-information-element-vector.h"
+#include "ns3/mesh-information-element-vector.h"
 
 namespace ns3 {
 
