@@ -280,18 +280,18 @@ def register_Ns3Dot11sIeBeaconTiming_methods(root_module, cls):
     cls.add_method('DelNeighboursTimingElementUnit', 
                    'void', 
                    [param('uint16_t', 'aid'), param('ns3::Time', 'last_beacon'), param('ns3::Time', 'beacon_interval')])
-    ## ie-dot11s-beacon-timing.h: uint8_t ns3::dot11s::IeBeaconTiming::DeserializeInformation(ns3::Buffer::Iterator i, uint8_t length) [member function]
-    cls.add_method('DeserializeInformation', 
+    ## ie-dot11s-beacon-timing.h: uint8_t ns3::dot11s::IeBeaconTiming::DeserializeInformationField(ns3::Buffer::Iterator i, uint8_t length) [member function]
+    cls.add_method('DeserializeInformationField', 
                    'uint8_t', 
                    [param('ns3::Buffer::Iterator', 'i'), param('uint8_t', 'length')], 
                    is_virtual=True)
-    ## ie-dot11s-beacon-timing.h: ns3::WifiElementId ns3::dot11s::IeBeaconTiming::ElementId() const [member function]
+    ## ie-dot11s-beacon-timing.h: ns3::WifiInformationElementId ns3::dot11s::IeBeaconTiming::ElementId() const [member function]
     cls.add_method('ElementId', 
-                   'ns3::WifiElementId', 
+                   'ns3::WifiInformationElementId', 
                    [], 
                    is_const=True, is_virtual=True)
-    ## ie-dot11s-beacon-timing.h: uint8_t ns3::dot11s::IeBeaconTiming::GetInformationSize() const [member function]
-    cls.add_method('GetInformationSize', 
+    ## ie-dot11s-beacon-timing.h: uint8_t ns3::dot11s::IeBeaconTiming::GetInformationFieldSize() const [member function]
+    cls.add_method('GetInformationFieldSize', 
                    'uint8_t', 
                    [], 
                    is_const=True, is_virtual=True)
@@ -304,8 +304,8 @@ def register_Ns3Dot11sIeBeaconTiming_methods(root_module, cls):
                    'void', 
                    [param('std::ostream &', 'os')], 
                    is_const=True, is_virtual=True)
-    ## ie-dot11s-beacon-timing.h: void ns3::dot11s::IeBeaconTiming::SerializeInformation(ns3::Buffer::Iterator i) const [member function]
-    cls.add_method('SerializeInformation', 
+    ## ie-dot11s-beacon-timing.h: void ns3::dot11s::IeBeaconTiming::SerializeInformationField(ns3::Buffer::Iterator i) const [member function]
+    cls.add_method('SerializeInformationField', 
                    'void', 
                    [param('ns3::Buffer::Iterator', 'i')], 
                    is_const=True, is_virtual=True)
@@ -353,18 +353,18 @@ def register_Ns3Dot11sIeConfiguration_methods(root_module, cls):
     cls.add_constructor([param('ns3::dot11s::IeConfiguration const &', 'arg0')])
     ## ie-dot11s-configuration.h: ns3::dot11s::IeConfiguration::IeConfiguration() [constructor]
     cls.add_constructor([])
-    ## ie-dot11s-configuration.h: uint8_t ns3::dot11s::IeConfiguration::DeserializeInformation(ns3::Buffer::Iterator i, uint8_t length) [member function]
-    cls.add_method('DeserializeInformation', 
+    ## ie-dot11s-configuration.h: uint8_t ns3::dot11s::IeConfiguration::DeserializeInformationField(ns3::Buffer::Iterator i, uint8_t length) [member function]
+    cls.add_method('DeserializeInformationField', 
                    'uint8_t', 
                    [param('ns3::Buffer::Iterator', 'i'), param('uint8_t', 'length')], 
                    is_virtual=True)
-    ## ie-dot11s-configuration.h: ns3::WifiElementId ns3::dot11s::IeConfiguration::ElementId() const [member function]
+    ## ie-dot11s-configuration.h: ns3::WifiInformationElementId ns3::dot11s::IeConfiguration::ElementId() const [member function]
     cls.add_method('ElementId', 
-                   'ns3::WifiElementId', 
+                   'ns3::WifiInformationElementId', 
                    [], 
                    is_const=True, is_virtual=True)
-    ## ie-dot11s-configuration.h: uint8_t ns3::dot11s::IeConfiguration::GetInformationSize() const [member function]
-    cls.add_method('GetInformationSize', 
+    ## ie-dot11s-configuration.h: uint8_t ns3::dot11s::IeConfiguration::GetInformationFieldSize() const [member function]
+    cls.add_method('GetInformationFieldSize', 
                    'uint8_t', 
                    [], 
                    is_const=True, is_virtual=True)
@@ -389,8 +389,8 @@ def register_Ns3Dot11sIeConfiguration_methods(root_module, cls):
                    'void', 
                    [param('std::ostream &', 'os')], 
                    is_const=True, is_virtual=True)
-    ## ie-dot11s-configuration.h: void ns3::dot11s::IeConfiguration::SerializeInformation(ns3::Buffer::Iterator i) const [member function]
-    cls.add_method('SerializeInformation', 
+    ## ie-dot11s-configuration.h: void ns3::dot11s::IeConfiguration::SerializeInformationField(ns3::Buffer::Iterator i) const [member function]
+    cls.add_method('SerializeInformationField', 
                    'void', 
                    [param('ns3::Buffer::Iterator', 'i')], 
                    is_const=True, is_virtual=True)
@@ -417,18 +417,18 @@ def register_Ns3Dot11sIeMeshId_methods(root_module, cls):
     cls.add_constructor([])
     ## ie-dot11s-id.h: ns3::dot11s::IeMeshId::IeMeshId(std::string s) [constructor]
     cls.add_constructor([param('std::string', 's')])
-    ## ie-dot11s-id.h: uint8_t ns3::dot11s::IeMeshId::DeserializeInformation(ns3::Buffer::Iterator start, uint8_t length) [member function]
-    cls.add_method('DeserializeInformation', 
+    ## ie-dot11s-id.h: uint8_t ns3::dot11s::IeMeshId::DeserializeInformationField(ns3::Buffer::Iterator start, uint8_t length) [member function]
+    cls.add_method('DeserializeInformationField', 
                    'uint8_t', 
                    [param('ns3::Buffer::Iterator', 'start'), param('uint8_t', 'length')], 
                    is_virtual=True)
-    ## ie-dot11s-id.h: ns3::WifiElementId ns3::dot11s::IeMeshId::ElementId() const [member function]
+    ## ie-dot11s-id.h: ns3::WifiInformationElementId ns3::dot11s::IeMeshId::ElementId() const [member function]
     cls.add_method('ElementId', 
-                   'ns3::WifiElementId', 
+                   'ns3::WifiInformationElementId', 
                    [], 
                    is_const=True, is_virtual=True)
-    ## ie-dot11s-id.h: uint8_t ns3::dot11s::IeMeshId::GetInformationSize() const [member function]
-    cls.add_method('GetInformationSize', 
+    ## ie-dot11s-id.h: uint8_t ns3::dot11s::IeMeshId::GetInformationFieldSize() const [member function]
+    cls.add_method('GetInformationFieldSize', 
                    'uint8_t', 
                    [], 
                    is_const=True, is_virtual=True)
@@ -452,8 +452,8 @@ def register_Ns3Dot11sIeMeshId_methods(root_module, cls):
                    'void', 
                    [param('std::ostream &', 'os')], 
                    is_const=True, is_virtual=True)
-    ## ie-dot11s-id.h: void ns3::dot11s::IeMeshId::SerializeInformation(ns3::Buffer::Iterator i) const [member function]
-    cls.add_method('SerializeInformation', 
+    ## ie-dot11s-id.h: void ns3::dot11s::IeMeshId::SerializeInformationField(ns3::Buffer::Iterator i) const [member function]
+    cls.add_method('SerializeInformationField', 
                    'void', 
                    [param('ns3::Buffer::Iterator', 'i')], 
                    is_const=True, is_virtual=True)
@@ -506,18 +506,18 @@ def register_Ns3Dot11sIePeerManagement_methods(root_module, cls):
     cls.add_constructor([param('ns3::dot11s::IePeerManagement const &', 'arg0')])
     ## ie-dot11s-peer-management.h: ns3::dot11s::IePeerManagement::IePeerManagement() [constructor]
     cls.add_constructor([])
-    ## ie-dot11s-peer-management.h: uint8_t ns3::dot11s::IePeerManagement::DeserializeInformation(ns3::Buffer::Iterator i, uint8_t length) [member function]
-    cls.add_method('DeserializeInformation', 
+    ## ie-dot11s-peer-management.h: uint8_t ns3::dot11s::IePeerManagement::DeserializeInformationField(ns3::Buffer::Iterator i, uint8_t length) [member function]
+    cls.add_method('DeserializeInformationField', 
                    'uint8_t', 
                    [param('ns3::Buffer::Iterator', 'i'), param('uint8_t', 'length')], 
                    is_virtual=True)
-    ## ie-dot11s-peer-management.h: ns3::WifiElementId ns3::dot11s::IePeerManagement::ElementId() const [member function]
+    ## ie-dot11s-peer-management.h: ns3::WifiInformationElementId ns3::dot11s::IePeerManagement::ElementId() const [member function]
     cls.add_method('ElementId', 
-                   'ns3::WifiElementId', 
+                   'ns3::WifiInformationElementId', 
                    [], 
                    is_const=True, is_virtual=True)
-    ## ie-dot11s-peer-management.h: uint8_t ns3::dot11s::IePeerManagement::GetInformationSize() const [member function]
-    cls.add_method('GetInformationSize', 
+    ## ie-dot11s-peer-management.h: uint8_t ns3::dot11s::IePeerManagement::GetInformationFieldSize() const [member function]
+    cls.add_method('GetInformationFieldSize', 
                    'uint8_t', 
                    [], 
                    is_const=True, is_virtual=True)
@@ -546,8 +546,8 @@ def register_Ns3Dot11sIePeerManagement_methods(root_module, cls):
                    'void', 
                    [param('std::ostream &', 'os')], 
                    is_const=True, is_virtual=True)
-    ## ie-dot11s-peer-management.h: void ns3::dot11s::IePeerManagement::SerializeInformation(ns3::Buffer::Iterator i) const [member function]
-    cls.add_method('SerializeInformation', 
+    ## ie-dot11s-peer-management.h: void ns3::dot11s::IePeerManagement::SerializeInformationField(ns3::Buffer::Iterator i) const [member function]
+    cls.add_method('SerializeInformationField', 
                    'void', 
                    [param('ns3::Buffer::Iterator', 'i')], 
                    is_const=True, is_virtual=True)

@@ -24,8 +24,6 @@
 #include "ns3/packet.h"
 #include "uan-tx-mode.h"
 #include "ns3/uan-prop-model.h"
-// #include "uan-channel.h"
-// #include "uan-phy.h"
 
 #include <list>
 namespace ns3 {
@@ -42,6 +40,12 @@ class UanChannel;
 class UanPacketArrival
 {
 public:
+
+  /* default constructor so python scan works */
+  UanPacketArrival ()
+  {
+  }
+
   /**
    * \param packet Packet arriving
    * \param rxPowerDb RX signal power in dB of arriving packet

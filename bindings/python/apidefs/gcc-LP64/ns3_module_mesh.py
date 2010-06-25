@@ -3,18 +3,12 @@ from pybindgen import Module, FileCodeSink, param, retval, cppclass, typehandler
 def register_types(module):
     root_module = module.get_root()
     
-    ## wifi-information-element-vector.h: ns3::WifiElementId [enumeration]
-    module.add_enum('WifiElementId', ['IE11S_MESH_CONFIGURATION', 'IE11S_MESH_ID', 'IE11S_LINK_METRIC_REPORT', 'IE11S_CONGESTION_NOTIFICATION', 'IE11S_PEERING_MANAGEMENT', 'IE11S_SUPP_MBSS_REG_CLASSES_CHANNELS', 'IE11S_MESH_CHANNEL_SWITCH_ANNOUNCEMENT', 'IE11S_MESH_TIM', 'IE11S_AWAKE_WINDOW', 'IE11S_BEACON_TIMING', 'IE11S_MCCAOP_SETUP_REQUEST', 'IE11S_MCCAOP_SETUP_REPLY', 'IE11S_MCCAOP_ADVERTISEMENT', 'IE11S_MCCAOP_RESERVATION_TEARDOWN', 'IE11S_PORTAL_ANNOUNCEMENT', 'IE11S_RANN', 'IE11S_PREQ', 'IE11S_PREP', 'IE11S_PERR', 'IE11S_PROXY_UPDATE', 'IE11S_PROXY_UPDATE_CONFIRMATION', 'IE11S_ABBREVIATED_HANDSHAKE', 'IE11S_MESH_PEERING_PROTOCOL_VERSION'])
     ## mesh-wifi-beacon.h: ns3::MeshWifiBeacon [class]
     module.add_class('MeshWifiBeacon')
     ## simple-ref-count.h: ns3::SimpleRefCount<ns3::MeshWifiInterfaceMacPlugin, ns3::empty, ns3::DefaultDeleter<ns3::MeshWifiInterfaceMacPlugin> > [class]
     module.add_class('SimpleRefCount', automatic_type_narrowing=True, template_parameters=['ns3::MeshWifiInterfaceMacPlugin', 'ns3::empty', 'ns3::DefaultDeleter<ns3::MeshWifiInterfaceMacPlugin>'], parent=root_module['ns3::empty'], memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'))
-    ## simple-ref-count.h: ns3::SimpleRefCount<ns3::WifiInformationElement, ns3::empty, ns3::DefaultDeleter<ns3::WifiInformationElement> > [class]
-    module.add_class('SimpleRefCount', automatic_type_narrowing=True, template_parameters=['ns3::WifiInformationElement', 'ns3::empty', 'ns3::DefaultDeleter<ns3::WifiInformationElement>'], parent=root_module['ns3::empty'], memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'))
-    ## wifi-information-element-vector.h: ns3::WifiInformationElement [class]
-    module.add_class('WifiInformationElement', parent=root_module['ns3::SimpleRefCount< ns3::WifiInformationElement, ns3::empty, ns3::DefaultDeleter<ns3::WifiInformationElement> >'])
-    ## wifi-information-element-vector.h: ns3::WifiInformationElementVector [class]
-    module.add_class('WifiInformationElementVector', parent=root_module['ns3::Header'])
+    ## mesh-information-element-vector.h: ns3::MeshInformationElementVector [class]
+    module.add_class('MeshInformationElementVector', parent=root_module['ns3::WifiInformationElementVector'])
     ## mesh-l2-routing-protocol.h: ns3::MeshL2RoutingProtocol [class]
     module.add_class('MeshL2RoutingProtocol', parent=root_module['ns3::Object'])
     ## mesh-wifi-interface-mac.h: ns3::MeshWifiInterfaceMac [class]
@@ -116,8 +110,7 @@ def register_types_ns3_olsr(module):
 
 def register_methods(root_module):
     register_Ns3MeshWifiBeacon_methods(root_module, root_module['ns3::MeshWifiBeacon'])
-    register_Ns3WifiInformationElement_methods(root_module, root_module['ns3::WifiInformationElement'])
-    register_Ns3WifiInformationElementVector_methods(root_module, root_module['ns3::WifiInformationElementVector'])
+    register_Ns3MeshInformationElementVector_methods(root_module, root_module['ns3::MeshInformationElementVector'])
     register_Ns3MeshL2RoutingProtocol_methods(root_module, root_module['ns3::MeshL2RoutingProtocol'])
     register_Ns3MeshWifiInterfaceMac_methods(root_module, root_module['ns3::MeshWifiInterfaceMac'])
     register_Ns3MeshWifiInterfaceMacPlugin_methods(root_module, root_module['ns3::MeshWifiInterfaceMacPlugin'])
@@ -153,102 +146,16 @@ def register_Ns3MeshWifiBeacon_methods(root_module, cls):
                    is_const=True)
     return
 
-def register_Ns3WifiInformationElement_methods(root_module, cls):
-    cls.add_binary_comparison_operator('<')
-    cls.add_binary_comparison_operator('==')
-    ## wifi-information-element-vector.h: ns3::WifiInformationElement::WifiInformationElement() [constructor]
+def register_Ns3MeshInformationElementVector_methods(root_module, cls):
+    ## mesh-information-element-vector.h: ns3::MeshInformationElementVector::MeshInformationElementVector() [constructor]
     cls.add_constructor([])
-    ## wifi-information-element-vector.h: ns3::WifiInformationElement::WifiInformationElement(ns3::WifiInformationElement const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::WifiInformationElement const &', 'arg0')])
-    ## wifi-information-element-vector.h: uint8_t ns3::WifiInformationElement::DeserializeInformation(ns3::Buffer::Iterator start, uint8_t length) [member function]
-    cls.add_method('DeserializeInformation', 
-                   'uint8_t', 
-                   [param('ns3::Buffer::Iterator', 'start'), param('uint8_t', 'length')], 
-                   is_pure_virtual=True, is_virtual=True)
-    ## wifi-information-element-vector.h: ns3::WifiElementId ns3::WifiInformationElement::ElementId() const [member function]
-    cls.add_method('ElementId', 
-                   'ns3::WifiElementId', 
-                   [], 
-                   is_pure_virtual=True, is_const=True, is_virtual=True)
-    ## wifi-information-element-vector.h: uint8_t ns3::WifiInformationElement::GetInformationSize() const [member function]
-    cls.add_method('GetInformationSize', 
-                   'uint8_t', 
-                   [], 
-                   is_pure_virtual=True, is_const=True, is_virtual=True)
-    ## wifi-information-element-vector.h: void ns3::WifiInformationElement::Print(std::ostream & os) const [member function]
-    cls.add_method('Print', 
-                   'void', 
-                   [param('std::ostream &', 'os')], 
-                   is_pure_virtual=True, is_const=True, is_virtual=True)
-    ## wifi-information-element-vector.h: void ns3::WifiInformationElement::SerializeInformation(ns3::Buffer::Iterator start) const [member function]
-    cls.add_method('SerializeInformation', 
-                   'void', 
-                   [param('ns3::Buffer::Iterator', 'start')], 
-                   is_pure_virtual=True, is_const=True, is_virtual=True)
-    return
-
-def register_Ns3WifiInformationElementVector_methods(root_module, cls):
-    cls.add_binary_comparison_operator('==')
-    ## wifi-information-element-vector.h: ns3::WifiInformationElementVector::WifiInformationElementVector(ns3::WifiInformationElementVector const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::WifiInformationElementVector const &', 'arg0')])
-    ## wifi-information-element-vector.h: ns3::WifiInformationElementVector::WifiInformationElementVector() [constructor]
-    cls.add_constructor([])
-    ## wifi-information-element-vector.h: bool ns3::WifiInformationElementVector::AddInformationElement(ns3::Ptr<ns3::WifiInformationElement> element) [member function]
-    cls.add_method('AddInformationElement', 
-                   'bool', 
-                   [param('ns3::Ptr< ns3::WifiInformationElement >', 'element')])
-    ## wifi-information-element-vector.h: __gnu_cxx::__normal_iterator<ns3::Ptr<ns3::WifiInformationElement>*,std::vector<ns3::Ptr<ns3::WifiInformationElement>, std::allocator<ns3::Ptr<ns3::WifiInformationElement> > > > ns3::WifiInformationElementVector::Begin() [member function]
-    cls.add_method('Begin', 
-                   '__gnu_cxx::__normal_iterator< ns3::Ptr< ns3::WifiInformationElement >, std::vector< ns3::Ptr< ns3::WifiInformationElement > > >', 
-                   [])
-    ## wifi-information-element-vector.h: uint32_t ns3::WifiInformationElementVector::Deserialize(ns3::Buffer::Iterator start) [member function]
-    cls.add_method('Deserialize', 
-                   'uint32_t', 
-                   [param('ns3::Buffer::Iterator', 'start')], 
-                   is_virtual=True)
-    ## wifi-information-element-vector.h: uint32_t ns3::WifiInformationElementVector::DeserializeSingleIe(ns3::Buffer::Iterator start) [member function]
+    ## mesh-information-element-vector.h: ns3::MeshInformationElementVector::MeshInformationElementVector(ns3::MeshInformationElementVector const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::MeshInformationElementVector const &', 'arg0')])
+    ## mesh-information-element-vector.h: uint32_t ns3::MeshInformationElementVector::DeserializeSingleIe(ns3::Buffer::Iterator start) [member function]
     cls.add_method('DeserializeSingleIe', 
                    'uint32_t', 
                    [param('ns3::Buffer::Iterator', 'start')], 
                    is_virtual=True)
-    ## wifi-information-element-vector.h: __gnu_cxx::__normal_iterator<ns3::Ptr<ns3::WifiInformationElement>*,std::vector<ns3::Ptr<ns3::WifiInformationElement>, std::allocator<ns3::Ptr<ns3::WifiInformationElement> > > > ns3::WifiInformationElementVector::End() [member function]
-    cls.add_method('End', 
-                   '__gnu_cxx::__normal_iterator< ns3::Ptr< ns3::WifiInformationElement >, std::vector< ns3::Ptr< ns3::WifiInformationElement > > >', 
-                   [])
-    ## wifi-information-element-vector.h: ns3::Ptr<ns3::WifiInformationElement> ns3::WifiInformationElementVector::FindFirst(ns3::WifiElementId id) const [member function]
-    cls.add_method('FindFirst', 
-                   'ns3::Ptr< ns3::WifiInformationElement >', 
-                   [param('ns3::WifiElementId', 'id')], 
-                   is_const=True)
-    ## wifi-information-element-vector.h: ns3::TypeId ns3::WifiInformationElementVector::GetInstanceTypeId() const [member function]
-    cls.add_method('GetInstanceTypeId', 
-                   'ns3::TypeId', 
-                   [], 
-                   is_const=True, is_virtual=True)
-    ## wifi-information-element-vector.h: uint32_t ns3::WifiInformationElementVector::GetSerializedSize() const [member function]
-    cls.add_method('GetSerializedSize', 
-                   'uint32_t', 
-                   [], 
-                   is_const=True, is_virtual=True)
-    ## wifi-information-element-vector.h: static ns3::TypeId ns3::WifiInformationElementVector::GetTypeId() [member function]
-    cls.add_method('GetTypeId', 
-                   'ns3::TypeId', 
-                   [], 
-                   is_static=True)
-    ## wifi-information-element-vector.h: void ns3::WifiInformationElementVector::Print(std::ostream & os) const [member function]
-    cls.add_method('Print', 
-                   'void', 
-                   [param('std::ostream &', 'os')], 
-                   is_const=True, is_virtual=True)
-    ## wifi-information-element-vector.h: void ns3::WifiInformationElementVector::Serialize(ns3::Buffer::Iterator start) const [member function]
-    cls.add_method('Serialize', 
-                   'void', 
-                   [param('ns3::Buffer::Iterator', 'start')], 
-                   is_const=True, is_virtual=True)
-    ## wifi-information-element-vector.h: void ns3::WifiInformationElementVector::SetMaxSize(uint16_t size) [member function]
-    cls.add_method('SetMaxSize', 
-                   'void', 
-                   [param('uint16_t', 'size')])
     return
 
 def register_Ns3MeshL2RoutingProtocol_methods(root_module, cls):

@@ -381,6 +381,8 @@ def register_Ns3UanModesList_methods(root_module, cls):
 def register_Ns3UanPacketArrival_methods(root_module, cls):
     ## uan-transducer.h: ns3::UanPacketArrival::UanPacketArrival(ns3::UanPacketArrival const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::UanPacketArrival const &', 'arg0')])
+    ## uan-transducer.h: ns3::UanPacketArrival::UanPacketArrival() [constructor]
+    cls.add_constructor([])
     ## uan-transducer.h: ns3::UanPacketArrival::UanPacketArrival(ns3::Ptr<ns3::Packet> packet, double rxPowerDb, ns3::UanTxMode txMode, ns3::UanPdp pdp, ns3::Time arrTime) [constructor]
     cls.add_constructor([param('ns3::Ptr< ns3::Packet >', 'packet'), param('double', 'rxPowerDb'), param('ns3::UanTxMode', 'txMode'), param('ns3::UanPdp', 'pdp'), param('ns3::Time', 'arrTime')])
     ## uan-transducer.h: ns3::Time ns3::UanPacketArrival::GetArrivalTime() const [member function]

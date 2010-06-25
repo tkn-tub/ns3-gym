@@ -55,12 +55,8 @@ def register_types(module):
     module.add_enum('State', ['PENDING', 'ESTABLISHED', 'INACTIVE', 'UNSUCCESSFUL'], outer_class=root_module['ns3::OriginatorBlockAckAgreement'])
     ## minstrel-wifi-manager.h: ns3::RateInfo [struct]
     module.add_class('RateInfo')
-    ## ssid.h: ns3::Ssid [class]
-    module.add_class('Ssid')
     ## status-code.h: ns3::StatusCode [class]
     module.add_class('StatusCode')
-    ## supported-rates.h: ns3::SupportedRates [class]
-    module.add_class('SupportedRates')
     ## wifi-mode.h: ns3::WifiMode [class]
     module.add_class('WifiMode')
     ## wifi-mode.h: ns3::WifiModeFactory [class]
@@ -93,6 +89,8 @@ def register_types(module):
     module.add_class('QosTag', parent=root_module['ns3::Tag'])
     ## simple-ref-count.h: ns3::SimpleRefCount<ns3::InterferenceHelper::Event, ns3::empty, ns3::DefaultDeleter<ns3::InterferenceHelper::Event> > [class]
     module.add_class('SimpleRefCount', automatic_type_narrowing=True, template_parameters=['ns3::InterferenceHelper::Event', 'ns3::empty', 'ns3::DefaultDeleter<ns3::InterferenceHelper::Event>'], parent=root_module['ns3::empty'], memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'))
+    ## simple-ref-count.h: ns3::SimpleRefCount<ns3::WifiInformationElement, ns3::empty, ns3::DefaultDeleter<ns3::WifiInformationElement> > [class]
+    module.add_class('SimpleRefCount', automatic_type_narrowing=True, template_parameters=['ns3::WifiInformationElement', 'ns3::empty', 'ns3::DefaultDeleter<ns3::WifiInformationElement>'], parent=root_module['ns3::empty'], memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'))
     ## mgt-headers.h: ns3::WifiActionHeader [class]
     module.add_class('WifiActionHeader', parent=root_module['ns3::Header'])
     ## mgt-headers.h: ns3::WifiActionHeader::CategoryValue [enumeration]
@@ -111,6 +109,10 @@ def register_types(module):
     module.add_enum('BlockAckActionValue', ['BLOCK_ACK_ADDBA_REQUEST', 'BLOCK_ACK_ADDBA_RESPONSE', 'BLOCK_ACK_DELBA'], outer_class=root_module['ns3::WifiActionHeader'])
     ## mgt-headers.h: ns3::WifiActionHeader::ActionValue [union]
     module.add_class('ActionValue', outer_class=root_module['ns3::WifiActionHeader'])
+    ## wifi-information-element.h: ns3::WifiInformationElement [class]
+    module.add_class('WifiInformationElement', parent=root_module['ns3::SimpleRefCount< ns3::WifiInformationElement, ns3::empty, ns3::DefaultDeleter<ns3::WifiInformationElement> >'])
+    ## wifi-information-element-vector.h: ns3::WifiInformationElementVector [class]
+    module.add_class('WifiInformationElementVector', parent=root_module['ns3::Header'])
     ## wifi-mac.h: ns3::WifiMac [class]
     module.add_class('WifiMac', parent=root_module['ns3::Object'])
     ## wifi-mac-header.h: ns3::WifiMacHeader [class]
@@ -179,10 +181,14 @@ def register_types(module):
     module.add_class('QstaWifiMac', parent=root_module['ns3::WifiMac'])
     ## rraa-wifi-manager.h: ns3::RraaWifiManager [class]
     module.add_class('RraaWifiManager', parent=root_module['ns3::WifiRemoteStationManager'])
+    ## ssid.h: ns3::Ssid [class]
+    module.add_class('Ssid', parent=root_module['ns3::WifiInformationElement'])
     ## ssid.h: ns3::SsidChecker [class]
     module.add_class('SsidChecker', parent=root_module['ns3::AttributeChecker'])
     ## ssid.h: ns3::SsidValue [class]
     module.add_class('SsidValue', parent=root_module['ns3::AttributeValue'])
+    ## supported-rates.h: ns3::SupportedRates [class]
+    module.add_class('SupportedRates', parent=root_module['ns3::WifiInformationElement'])
     ## wifi-channel.h: ns3::WifiChannel [class]
     module.add_class('WifiChannel', parent=root_module['ns3::Channel'])
     ## wifi-mode.h: ns3::WifiModeChecker [class]
@@ -198,6 +204,9 @@ def register_types(module):
     ## dca-txop.h: ns3::DcaTxop [class]
     module.add_class('DcaTxop', parent=root_module['ns3::Dcf'])
     module.add_container('ns3::WifiModeList', 'ns3::WifiMode', container_type='vector')
+    typehandlers.add_type_alias('uint8_t', 'ns3::WifiInformationElementId')
+    typehandlers.add_type_alias('uint8_t*', 'ns3::WifiInformationElementId*')
+    typehandlers.add_type_alias('uint8_t&', 'ns3::WifiInformationElementId&')
     typehandlers.add_type_alias('__gnu_cxx::__normal_iterator< ns3::WifiMode const *, std::vector< ns3::WifiMode, std::allocator< ns3::WifiMode > > >', 'ns3::WifiModeListIterator')
     typehandlers.add_type_alias('__gnu_cxx::__normal_iterator< ns3::WifiMode const *, std::vector< ns3::WifiMode, std::allocator< ns3::WifiMode > > >*', 'ns3::WifiModeListIterator*')
     typehandlers.add_type_alias('__gnu_cxx::__normal_iterator< ns3::WifiMode const *, std::vector< ns3::WifiMode, std::allocator< ns3::WifiMode > > >&', 'ns3::WifiModeListIterator&')
@@ -318,9 +327,7 @@ def register_methods(root_module):
     register_Ns3MacRxMiddle_methods(root_module, root_module['ns3::MacRxMiddle'])
     register_Ns3OriginatorBlockAckAgreement_methods(root_module, root_module['ns3::OriginatorBlockAckAgreement'])
     register_Ns3RateInfo_methods(root_module, root_module['ns3::RateInfo'])
-    register_Ns3Ssid_methods(root_module, root_module['ns3::Ssid'])
     register_Ns3StatusCode_methods(root_module, root_module['ns3::StatusCode'])
-    register_Ns3SupportedRates_methods(root_module, root_module['ns3::SupportedRates'])
     register_Ns3WifiMode_methods(root_module, root_module['ns3::WifiMode'])
     register_Ns3WifiModeFactory_methods(root_module, root_module['ns3::WifiModeFactory'])
     register_Ns3WifiPhyListener_methods(root_module, root_module['ns3::WifiPhyListener'])
@@ -337,6 +344,8 @@ def register_methods(root_module):
     register_Ns3QosTag_methods(root_module, root_module['ns3::QosTag'])
     register_Ns3WifiActionHeader_methods(root_module, root_module['ns3::WifiActionHeader'])
     register_Ns3WifiActionHeaderActionValue_methods(root_module, root_module['ns3::WifiActionHeader::ActionValue'])
+    register_Ns3WifiInformationElement_methods(root_module, root_module['ns3::WifiInformationElement'])
+    register_Ns3WifiInformationElementVector_methods(root_module, root_module['ns3::WifiInformationElementVector'])
     register_Ns3WifiMac_methods(root_module, root_module['ns3::WifiMac'])
     register_Ns3WifiMacHeader_methods(root_module, root_module['ns3::WifiMacHeader'])
     register_Ns3WifiPhy_methods(root_module, root_module['ns3::WifiPhy'])
@@ -368,8 +377,10 @@ def register_methods(root_module):
     register_Ns3QapWifiMac_methods(root_module, root_module['ns3::QapWifiMac'])
     register_Ns3QstaWifiMac_methods(root_module, root_module['ns3::QstaWifiMac'])
     register_Ns3RraaWifiManager_methods(root_module, root_module['ns3::RraaWifiManager'])
+    register_Ns3Ssid_methods(root_module, root_module['ns3::Ssid'])
     register_Ns3SsidChecker_methods(root_module, root_module['ns3::SsidChecker'])
     register_Ns3SsidValue_methods(root_module, root_module['ns3::SsidValue'])
+    register_Ns3SupportedRates_methods(root_module, root_module['ns3::SupportedRates'])
     register_Ns3WifiChannel_methods(root_module, root_module['ns3::WifiChannel'])
     register_Ns3WifiModeChecker_methods(root_module, root_module['ns3::WifiModeChecker'])
     register_Ns3WifiModeValue_methods(root_module, root_module['ns3::WifiModeValue'])
@@ -1207,52 +1218,6 @@ def register_Ns3RateInfo_methods(root_module, cls):
     cls.add_instance_attribute('throughput', 'uint32_t', is_const=False)
     return
 
-def register_Ns3Ssid_methods(root_module, cls):
-    cls.add_output_stream_operator()
-    ## ssid.h: ns3::Ssid::Ssid(ns3::Ssid const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::Ssid const &', 'arg0')])
-    ## ssid.h: ns3::Ssid::Ssid() [constructor]
-    cls.add_constructor([])
-    ## ssid.h: ns3::Ssid::Ssid(std::string s) [constructor]
-    cls.add_constructor([param('std::string', 's')])
-    ## ssid.h: ns3::Ssid::Ssid(char const * ssid, uint8_t length) [constructor]
-    cls.add_constructor([param('char const *', 'ssid'), param('uint8_t', 'length')])
-    ## ssid.h: ns3::Buffer::Iterator ns3::Ssid::Deserialize(ns3::Buffer::Iterator i) [member function]
-    cls.add_method('Deserialize', 
-                   'ns3::Buffer::Iterator', 
-                   [param('ns3::Buffer::Iterator', 'i')])
-    ## ssid.h: uint32_t ns3::Ssid::GetLength() const [member function]
-    cls.add_method('GetLength', 
-                   'uint32_t', 
-                   [], 
-                   is_const=True)
-    ## ssid.h: uint32_t ns3::Ssid::GetSerializedSize() const [member function]
-    cls.add_method('GetSerializedSize', 
-                   'uint32_t', 
-                   [], 
-                   is_const=True)
-    ## ssid.h: bool ns3::Ssid::IsBroadcast() const [member function]
-    cls.add_method('IsBroadcast', 
-                   'bool', 
-                   [], 
-                   is_const=True)
-    ## ssid.h: bool ns3::Ssid::IsEqual(ns3::Ssid const & o) const [member function]
-    cls.add_method('IsEqual', 
-                   'bool', 
-                   [param('ns3::Ssid const &', 'o')], 
-                   is_const=True)
-    ## ssid.h: char * ns3::Ssid::PeekString() const [member function]
-    cls.add_method('PeekString', 
-                   'char *', 
-                   [], 
-                   is_const=True)
-    ## ssid.h: ns3::Buffer::Iterator ns3::Ssid::Serialize(ns3::Buffer::Iterator i) const [member function]
-    cls.add_method('Serialize', 
-                   'ns3::Buffer::Iterator', 
-                   [param('ns3::Buffer::Iterator', 'i')], 
-                   is_const=True)
-    return
-
 def register_Ns3StatusCode_methods(root_module, cls):
     cls.add_output_stream_operator()
     ## status-code.h: ns3::StatusCode::StatusCode(ns3::StatusCode const & arg0) [copy constructor]
@@ -1286,56 +1251,6 @@ def register_Ns3StatusCode_methods(root_module, cls):
     cls.add_method('SetSuccess', 
                    'void', 
                    [])
-    return
-
-def register_Ns3SupportedRates_methods(root_module, cls):
-    cls.add_output_stream_operator()
-    ## supported-rates.h: ns3::SupportedRates::SupportedRates(ns3::SupportedRates const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::SupportedRates const &', 'arg0')])
-    ## supported-rates.h: ns3::SupportedRates::SupportedRates() [constructor]
-    cls.add_constructor([])
-    ## supported-rates.h: void ns3::SupportedRates::AddSupportedRate(uint32_t bs) [member function]
-    cls.add_method('AddSupportedRate', 
-                   'void', 
-                   [param('uint32_t', 'bs')])
-    ## supported-rates.h: ns3::Buffer::Iterator ns3::SupportedRates::Deserialize(ns3::Buffer::Iterator start) [member function]
-    cls.add_method('Deserialize', 
-                   'ns3::Buffer::Iterator', 
-                   [param('ns3::Buffer::Iterator', 'start')])
-    ## supported-rates.h: uint8_t ns3::SupportedRates::GetNRates() const [member function]
-    cls.add_method('GetNRates', 
-                   'uint8_t', 
-                   [], 
-                   is_const=True)
-    ## supported-rates.h: uint32_t ns3::SupportedRates::GetRate(uint8_t i) const [member function]
-    cls.add_method('GetRate', 
-                   'uint32_t', 
-                   [param('uint8_t', 'i')], 
-                   is_const=True)
-    ## supported-rates.h: uint32_t ns3::SupportedRates::GetSerializedSize() const [member function]
-    cls.add_method('GetSerializedSize', 
-                   'uint32_t', 
-                   [], 
-                   is_const=True)
-    ## supported-rates.h: bool ns3::SupportedRates::IsBasicRate(uint32_t bs) const [member function]
-    cls.add_method('IsBasicRate', 
-                   'bool', 
-                   [param('uint32_t', 'bs')], 
-                   is_const=True)
-    ## supported-rates.h: bool ns3::SupportedRates::IsSupportedRate(uint32_t bs) const [member function]
-    cls.add_method('IsSupportedRate', 
-                   'bool', 
-                   [param('uint32_t', 'bs')], 
-                   is_const=True)
-    ## supported-rates.h: ns3::Buffer::Iterator ns3::SupportedRates::Serialize(ns3::Buffer::Iterator start) const [member function]
-    cls.add_method('Serialize', 
-                   'ns3::Buffer::Iterator', 
-                   [param('ns3::Buffer::Iterator', 'start')], 
-                   is_const=True)
-    ## supported-rates.h: void ns3::SupportedRates::SetBasicRate(uint32_t bs) [member function]
-    cls.add_method('SetBasicRate', 
-                   'void', 
-                   [param('uint32_t', 'bs')])
     return
 
 def register_Ns3WifiMode_methods(root_module, cls):
@@ -2096,6 +2011,127 @@ def register_Ns3WifiActionHeaderActionValue_methods(root_module, cls):
     cls.add_instance_attribute('peerLink', 'ns3::WifiActionHeader::PeerLinkMgtActionValue', is_const=False)
     ## mgt-headers.h: ns3::WifiActionHeader::ActionValue::resourceCoordination [variable]
     cls.add_instance_attribute('resourceCoordination', 'ns3::WifiActionHeader::ResourceCoordinationActionValue', is_const=False)
+    return
+
+def register_Ns3WifiInformationElement_methods(root_module, cls):
+    cls.add_binary_comparison_operator('<')
+    cls.add_binary_comparison_operator('==')
+    ## wifi-information-element.h: ns3::WifiInformationElement::WifiInformationElement() [constructor]
+    cls.add_constructor([])
+    ## wifi-information-element.h: ns3::WifiInformationElement::WifiInformationElement(ns3::WifiInformationElement const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::WifiInformationElement const &', 'arg0')])
+    ## wifi-information-element.h: ns3::Buffer::Iterator ns3::WifiInformationElement::Deserialize(ns3::Buffer::Iterator i) [member function]
+    cls.add_method('Deserialize', 
+                   'ns3::Buffer::Iterator', 
+                   [param('ns3::Buffer::Iterator', 'i')])
+    ## wifi-information-element.h: ns3::Buffer::Iterator ns3::WifiInformationElement::DeserializeIfPresent(ns3::Buffer::Iterator i) [member function]
+    cls.add_method('DeserializeIfPresent', 
+                   'ns3::Buffer::Iterator', 
+                   [param('ns3::Buffer::Iterator', 'i')])
+    ## wifi-information-element.h: uint8_t ns3::WifiInformationElement::DeserializeInformationField(ns3::Buffer::Iterator start, uint8_t length) [member function]
+    cls.add_method('DeserializeInformationField', 
+                   'uint8_t', 
+                   [param('ns3::Buffer::Iterator', 'start'), param('uint8_t', 'length')], 
+                   is_pure_virtual=True, is_virtual=True)
+    ## wifi-information-element.h: ns3::WifiInformationElementId ns3::WifiInformationElement::ElementId() const [member function]
+    cls.add_method('ElementId', 
+                   'ns3::WifiInformationElementId', 
+                   [], 
+                   is_pure_virtual=True, is_const=True, is_virtual=True)
+    ## wifi-information-element.h: uint8_t ns3::WifiInformationElement::GetInformationFieldSize() const [member function]
+    cls.add_method('GetInformationFieldSize', 
+                   'uint8_t', 
+                   [], 
+                   is_pure_virtual=True, is_const=True, is_virtual=True)
+    ## wifi-information-element.h: uint16_t ns3::WifiInformationElement::GetSerializedSize() const [member function]
+    cls.add_method('GetSerializedSize', 
+                   'uint16_t', 
+                   [], 
+                   is_const=True)
+    ## wifi-information-element.h: void ns3::WifiInformationElement::Print(std::ostream & os) const [member function]
+    cls.add_method('Print', 
+                   'void', 
+                   [param('std::ostream &', 'os')], 
+                   is_const=True, is_virtual=True)
+    ## wifi-information-element.h: ns3::Buffer::Iterator ns3::WifiInformationElement::SerializeIE(ns3::Buffer::Iterator i) const [member function]
+    cls.add_method('SerializeIE', 
+                   'ns3::Buffer::Iterator', 
+                   [param('ns3::Buffer::Iterator', 'i')], 
+                   is_const=True)
+    ## wifi-information-element.h: void ns3::WifiInformationElement::SerializeInformationField(ns3::Buffer::Iterator start) const [member function]
+    cls.add_method('SerializeInformationField', 
+                   'void', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_pure_virtual=True, is_const=True, is_virtual=True)
+    return
+
+def register_Ns3WifiInformationElementVector_methods(root_module, cls):
+    cls.add_binary_comparison_operator('==')
+    ## wifi-information-element-vector.h: ns3::WifiInformationElementVector::WifiInformationElementVector(ns3::WifiInformationElementVector const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::WifiInformationElementVector const &', 'arg0')])
+    ## wifi-information-element-vector.h: ns3::WifiInformationElementVector::WifiInformationElementVector() [constructor]
+    cls.add_constructor([])
+    ## wifi-information-element-vector.h: bool ns3::WifiInformationElementVector::AddInformationElement(ns3::Ptr<ns3::WifiInformationElement> element) [member function]
+    cls.add_method('AddInformationElement', 
+                   'bool', 
+                   [param('ns3::Ptr< ns3::WifiInformationElement >', 'element')])
+    ## wifi-information-element-vector.h: __gnu_cxx::__normal_iterator<ns3::Ptr<ns3::WifiInformationElement>*,std::vector<ns3::Ptr<ns3::WifiInformationElement>, std::allocator<ns3::Ptr<ns3::WifiInformationElement> > > > ns3::WifiInformationElementVector::Begin() [member function]
+    cls.add_method('Begin', 
+                   '__gnu_cxx::__normal_iterator< ns3::Ptr< ns3::WifiInformationElement >, std::vector< ns3::Ptr< ns3::WifiInformationElement > > >', 
+                   [])
+    ## wifi-information-element-vector.h: uint32_t ns3::WifiInformationElementVector::Deserialize(ns3::Buffer::Iterator start) [member function]
+    cls.add_method('Deserialize', 
+                   'uint32_t', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_virtual=True)
+    ## wifi-information-element-vector.h: uint32_t ns3::WifiInformationElementVector::DeserializeSingleIe(ns3::Buffer::Iterator start) [member function]
+    cls.add_method('DeserializeSingleIe', 
+                   'uint32_t', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_virtual=True)
+    ## wifi-information-element-vector.h: __gnu_cxx::__normal_iterator<ns3::Ptr<ns3::WifiInformationElement>*,std::vector<ns3::Ptr<ns3::WifiInformationElement>, std::allocator<ns3::Ptr<ns3::WifiInformationElement> > > > ns3::WifiInformationElementVector::End() [member function]
+    cls.add_method('End', 
+                   '__gnu_cxx::__normal_iterator< ns3::Ptr< ns3::WifiInformationElement >, std::vector< ns3::Ptr< ns3::WifiInformationElement > > >', 
+                   [])
+    ## wifi-information-element-vector.h: ns3::Ptr<ns3::WifiInformationElement> ns3::WifiInformationElementVector::FindFirst(ns3::WifiInformationElementId id) const [member function]
+    cls.add_method('FindFirst', 
+                   'ns3::Ptr< ns3::WifiInformationElement >', 
+                   [param('ns3::WifiInformationElementId', 'id')], 
+                   is_const=True)
+    ## wifi-information-element-vector.h: ns3::TypeId ns3::WifiInformationElementVector::GetInstanceTypeId() const [member function]
+    cls.add_method('GetInstanceTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## wifi-information-element-vector.h: uint32_t ns3::WifiInformationElementVector::GetSerializedSize() const [member function]
+    cls.add_method('GetSerializedSize', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## wifi-information-element-vector.h: static ns3::TypeId ns3::WifiInformationElementVector::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## wifi-information-element-vector.h: void ns3::WifiInformationElementVector::Print(std::ostream & os) const [member function]
+    cls.add_method('Print', 
+                   'void', 
+                   [param('std::ostream &', 'os')], 
+                   is_const=True, is_virtual=True)
+    ## wifi-information-element-vector.h: void ns3::WifiInformationElementVector::Serialize(ns3::Buffer::Iterator start) const [member function]
+    cls.add_method('Serialize', 
+                   'void', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_const=True, is_virtual=True)
+    ## wifi-information-element-vector.h: void ns3::WifiInformationElementVector::SetMaxSize(uint16_t size) [member function]
+    cls.add_method('SetMaxSize', 
+                   'void', 
+                   [param('uint16_t', 'size')])
+    ## wifi-information-element-vector.h: uint32_t ns3::WifiInformationElementVector::GetSize() const [member function]
+    cls.add_method('GetSize', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True, visibility='protected')
     return
 
 def register_Ns3WifiMac_methods(root_module, cls):
@@ -6027,6 +6063,53 @@ def register_Ns3RraaWifiManager_methods(root_module, cls):
                    is_const=True, visibility='private', is_virtual=True)
     return
 
+def register_Ns3Ssid_methods(root_module, cls):
+    cls.add_output_stream_operator()
+    ## ssid.h: ns3::Ssid::Ssid(ns3::Ssid const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::Ssid const &', 'arg0')])
+    ## ssid.h: ns3::Ssid::Ssid() [constructor]
+    cls.add_constructor([])
+    ## ssid.h: ns3::Ssid::Ssid(std::string s) [constructor]
+    cls.add_constructor([param('std::string', 's')])
+    ## ssid.h: ns3::Ssid::Ssid(char const * ssid, uint8_t length) [constructor]
+    cls.add_constructor([param('char const *', 'ssid'), param('uint8_t', 'length')])
+    ## ssid.h: uint8_t ns3::Ssid::DeserializeInformationField(ns3::Buffer::Iterator start, uint8_t length) [member function]
+    cls.add_method('DeserializeInformationField', 
+                   'uint8_t', 
+                   [param('ns3::Buffer::Iterator', 'start'), param('uint8_t', 'length')], 
+                   is_virtual=True)
+    ## ssid.h: ns3::WifiInformationElementId ns3::Ssid::ElementId() const [member function]
+    cls.add_method('ElementId', 
+                   'ns3::WifiInformationElementId', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## ssid.h: uint8_t ns3::Ssid::GetInformationFieldSize() const [member function]
+    cls.add_method('GetInformationFieldSize', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## ssid.h: bool ns3::Ssid::IsBroadcast() const [member function]
+    cls.add_method('IsBroadcast', 
+                   'bool', 
+                   [], 
+                   is_const=True)
+    ## ssid.h: bool ns3::Ssid::IsEqual(ns3::Ssid const & o) const [member function]
+    cls.add_method('IsEqual', 
+                   'bool', 
+                   [param('ns3::Ssid const &', 'o')], 
+                   is_const=True)
+    ## ssid.h: char * ns3::Ssid::PeekString() const [member function]
+    cls.add_method('PeekString', 
+                   'char *', 
+                   [], 
+                   is_const=True)
+    ## ssid.h: void ns3::Ssid::SerializeInformationField(ns3::Buffer::Iterator start) const [member function]
+    cls.add_method('SerializeInformationField', 
+                   'void', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_const=True, is_virtual=True)
+    return
+
 def register_Ns3SsidChecker_methods(root_module, cls):
     ## ssid.h: ns3::SsidChecker::SsidChecker() [constructor]
     cls.add_constructor([])
@@ -6065,6 +6148,62 @@ def register_Ns3SsidValue_methods(root_module, cls):
     cls.add_method('Set', 
                    'void', 
                    [param('ns3::Ssid const &', 'value')])
+    return
+
+def register_Ns3SupportedRates_methods(root_module, cls):
+    cls.add_output_stream_operator()
+    ## supported-rates.h: ns3::SupportedRates::SupportedRates(ns3::SupportedRates const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::SupportedRates const &', 'arg0')])
+    ## supported-rates.h: ns3::SupportedRates::SupportedRates() [constructor]
+    cls.add_constructor([])
+    ## supported-rates.h: void ns3::SupportedRates::AddSupportedRate(uint32_t bs) [member function]
+    cls.add_method('AddSupportedRate', 
+                   'void', 
+                   [param('uint32_t', 'bs')])
+    ## supported-rates.h: uint8_t ns3::SupportedRates::DeserializeInformationField(ns3::Buffer::Iterator start, uint8_t length) [member function]
+    cls.add_method('DeserializeInformationField', 
+                   'uint8_t', 
+                   [param('ns3::Buffer::Iterator', 'start'), param('uint8_t', 'length')], 
+                   is_virtual=True)
+    ## supported-rates.h: ns3::WifiInformationElementId ns3::SupportedRates::ElementId() const [member function]
+    cls.add_method('ElementId', 
+                   'ns3::WifiInformationElementId', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## supported-rates.h: uint8_t ns3::SupportedRates::GetInformationFieldSize() const [member function]
+    cls.add_method('GetInformationFieldSize', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## supported-rates.h: uint8_t ns3::SupportedRates::GetNRates() const [member function]
+    cls.add_method('GetNRates', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True)
+    ## supported-rates.h: uint32_t ns3::SupportedRates::GetRate(uint8_t i) const [member function]
+    cls.add_method('GetRate', 
+                   'uint32_t', 
+                   [param('uint8_t', 'i')], 
+                   is_const=True)
+    ## supported-rates.h: bool ns3::SupportedRates::IsBasicRate(uint32_t bs) const [member function]
+    cls.add_method('IsBasicRate', 
+                   'bool', 
+                   [param('uint32_t', 'bs')], 
+                   is_const=True)
+    ## supported-rates.h: bool ns3::SupportedRates::IsSupportedRate(uint32_t bs) const [member function]
+    cls.add_method('IsSupportedRate', 
+                   'bool', 
+                   [param('uint32_t', 'bs')], 
+                   is_const=True)
+    ## supported-rates.h: void ns3::SupportedRates::SerializeInformationField(ns3::Buffer::Iterator start) const [member function]
+    cls.add_method('SerializeInformationField', 
+                   'void', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_const=True, is_virtual=True)
+    ## supported-rates.h: void ns3::SupportedRates::SetBasicRate(uint32_t bs) [member function]
+    cls.add_method('SetBasicRate', 
+                   'void', 
+                   [param('uint32_t', 'bs')])
     return
 
 def register_Ns3WifiChannel_methods(root_module, cls):
