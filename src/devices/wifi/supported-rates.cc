@@ -106,17 +106,17 @@ SupportedRates::ElementId () const
   return IE_SUPPORTED_RATES;
 }
 uint8_t
-SupportedRates::GetInformationSize () const
+SupportedRates::GetInformationFieldSize () const
 {
   return m_nRates;
 }
 void
-SupportedRates::SerializeInformation (Buffer::Iterator start) const
+SupportedRates::SerializeInformationField (Buffer::Iterator start) const
 {
   start.Write (m_rates, m_nRates);
 }
 uint8_t
-SupportedRates::DeserializeInformation (Buffer::Iterator start,
+SupportedRates::DeserializeInformationField (Buffer::Iterator start,
                                         uint8_t length)
 {
   NS_ASSERT (length <= 8);

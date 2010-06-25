@@ -86,7 +86,7 @@ MeshInformationElementVector::DeserializeSingleIe(Buffer::Iterator start)
     {
       NS_FATAL_ERROR ("Check max size for information element!");
     }
-  newElement->DeserializeInformation (i, length);
+  newElement->DeserializeInformationField (i, length);
   i.Next (length);
   m_elements.push_back (newElement);
   return i.GetDistanceFrom(start);

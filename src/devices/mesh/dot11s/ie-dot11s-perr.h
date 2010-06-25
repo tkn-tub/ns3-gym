@@ -47,10 +47,10 @@ public:
    * \{
    */
   virtual WifiInformationElementId ElementId () const;
-  virtual void SerializeInformation (Buffer::Iterator i) const;
-  virtual uint8_t DeserializeInformation (Buffer::Iterator start, uint8_t length);
+  virtual void SerializeInformationField (Buffer::Iterator i) const;
+  virtual uint8_t DeserializeInformationField (Buffer::Iterator start, uint8_t length);
   virtual void Print (std::ostream& os) const;
-  virtual uint8_t GetInformationSize () const;
+  virtual uint8_t GetInformationFieldSize () const;
   ///\}
 private:
   std::vector<HwmpProtocol::FailedDestination> m_addressUnits;

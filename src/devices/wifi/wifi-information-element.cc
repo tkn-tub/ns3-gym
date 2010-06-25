@@ -32,24 +32,24 @@ WifiInformationElement::Print (std::ostream &os) const
 uint16_t
 WifiInformationElement::GetSerializedSize () const
 {
-  return (2 + GetInformationSize ());
+  return (2 + GetInformationFieldSize ());
 }
   
 Buffer::Iterator
 WifiInformationElement::SerializeIE (Buffer::Iterator i) const
 {
   i.WriteU8 (ElementId ());
-  i.WriteU8 (GetInformationSize ());
-  SerializeInformation (i);
-  i.Next (GetInformationSize ());
+  i.WriteU8 (GetInformationFieldSize ());
+  SerializeInformationField (i);
+  i.Next (GetInformationFieldSize ());
   return i;
 }
 
 Buffer::Iterator
-WifiInformationElement::DeserializeIE (Buffer::Iterator i)
+WifiInformationElement::Deserialize (Buffer::Iterator i)
 {
   Buffer::Iterator start = i;
-  i = DeserializeOptionalIE (i);
+  i = DeserializeIfPresent (i);
   // This IE was not optional, so confirm that we did actually
   // deserialise something.
   NS_ASSERT (i.GetDistanceFrom (start) != 0);
@@ -57,7 +57,7 @@ WifiInformationElement::DeserializeIE (Buffer::Iterator i)
 }
 
 Buffer::Iterator
-WifiInformationElement::DeserializeOptionalIE (Buffer::Iterator i)
+WifiInformationElement::DeserializeIfPresent (Buffer::Iterator i)
 {
   Buffer::Iterator start = i;
   uint8_t elementId = i.ReadU8 ();
@@ -72,7 +72,7 @@ WifiInformationElement::DeserializeOptionalIE (Buffer::Iterator i)
 
   uint8_t length = i.ReadU8 ();
 
-  DeserializeInformation (i, length);
+  DeserializeInformationField (i, length);
   i.Next (length);
 
   return i;
@@ -91,17 +91,17 @@ WifiInformationElement::operator== (WifiInformationElement const & a) const
     if (ElementId () != a.ElementId ())
         return false;
 
-    if (GetInformationSize () != a.GetInformationSize ())
+    if (GetInformationFieldSize () != a.GetInformationFieldSize ())
         return false;
 
-    uint32_t ieSize = GetInformationSize ();
+    uint32_t ieSize = GetInformationFieldSize ();
 
     Buffer myIe, hisIe;
     myIe.AddAtEnd (ieSize);
     hisIe.AddAtEnd (ieSize);
 
-    SerializeInformation (myIe.Begin ());
-    a.SerializeInformation (hisIe.Begin ());
+    SerializeInformationField (myIe.Begin ());
+    a.SerializeInformationField (hisIe.Begin ());
 
     return (memcmp(myIe.PeekData (), hisIe.PeekData (), ieSize) == 0);
 }

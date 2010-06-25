@@ -106,19 +106,19 @@ Ssid::ElementId () const
 }
 
 uint8_t
-Ssid::GetInformationSize () const
+Ssid::GetInformationFieldSize () const
 {
   return m_length;
 }
 
 void
-Ssid::SerializeInformation (Buffer::Iterator start) const
+Ssid::SerializeInformationField (Buffer::Iterator start) const
 {
   NS_ASSERT (m_length <= 32);
   start.Write (m_ssid, m_length);
 }
 uint8_t
-Ssid::DeserializeInformation (Buffer::Iterator start,
+Ssid::DeserializeInformationField (Buffer::Iterator start,
                               uint8_t length)
 {
   m_length = length;

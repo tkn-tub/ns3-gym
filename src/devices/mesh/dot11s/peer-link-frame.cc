@@ -123,11 +123,11 @@ PeerLinkFrameStart::GetSerializedSize () const
     }
   if ((uint8_t) (WifiActionHeader::PEER_LINK_CONFIRM) != m_subtype)
     {
-      size += m_meshId.GetInformationSize () + 2;
+      size += m_meshId.GetInformationFieldSize () + 2;
     }
   if ((uint8_t) (WifiActionHeader::PEER_LINK_CLOSE) != m_subtype)
     {
-      size += m_config.GetInformationSize () + 2;
+      size += m_config.GetInformationFieldSize () + 2;
     }
   else
     {
@@ -174,12 +174,12 @@ PeerLinkFrameStart::Deserialize (Buffer::Iterator start)
   {
       uint8_t id = i.ReadU8 ();
       uint8_t length = i.ReadU8 ();
-      m_protocol.DeserializeInformation (i, length);
-      if ((m_protocol.ElementId () != (WifiInformationElementId) id) || (m_protocol.GetInformationSize () != length))
+      m_protocol.DeserializeInformationField (i, length);
+      if ((m_protocol.ElementId () != (WifiInformationElementId) id) || (m_protocol.GetInformationFieldSize () != length))
         {
           NS_FATAL_ERROR ("Broken frame: Element ID does not match IE itself!");
         }
-      i.Next (m_protocol.GetInformationSize ());
+      i.Next (m_protocol.GetInformationFieldSize ());
     }
   if ((uint8_t) (WifiActionHeader::PEER_LINK_CLOSE) != m_subtype)
     {
@@ -191,29 +191,29 @@ PeerLinkFrameStart::Deserialize (Buffer::Iterator start)
     }
   if ((uint8_t) (WifiActionHeader::PEER_LINK_CLOSE) != m_subtype)
     {
-      i = m_rates.DeserializeIE (i);
+      i = m_rates.Deserialize (i);
     }
   if ((uint8_t) (WifiActionHeader::PEER_LINK_CONFIRM) != m_subtype)
     {
       uint8_t id = i.ReadU8 ();
       uint8_t length = i.ReadU8 ();
-      m_meshId.DeserializeInformation (i, length);
-      if ((m_meshId.ElementId () != (WifiInformationElementId) id) || (m_meshId.GetInformationSize () != length))
+      m_meshId.DeserializeInformationField (i, length);
+      if ((m_meshId.ElementId () != (WifiInformationElementId) id) || (m_meshId.GetInformationFieldSize () != length))
         {
           NS_FATAL_ERROR ("Broken frame: Element ID does not match IE itself!");
         }
-      i.Next (m_meshId.GetInformationSize ());
+      i.Next (m_meshId.GetInformationFieldSize ());
     }
   if ((uint8_t) (WifiActionHeader::PEER_LINK_CLOSE) != m_subtype)
     {
       uint8_t id = i.ReadU8 ();
       uint8_t length = i.ReadU8 ();
-      m_config. DeserializeInformation (i, length);
-      if ((m_config.ElementId () != (WifiInformationElementId) id) || (m_config.GetInformationSize () != length))
+      m_config. DeserializeInformationField (i, length);
+      if ((m_config.ElementId () != (WifiInformationElementId) id) || (m_config.GetInformationFieldSize () != length))
         {
           NS_FATAL_ERROR ("Broken frame: Element ID does not match IE itself!");
         }
-      i.Next (m_config.GetInformationSize ());
+      i.Next (m_config.GetInformationFieldSize ());
     }
   else
     {

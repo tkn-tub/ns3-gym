@@ -42,9 +42,9 @@
  * The class ns3::WifiInformationElement provides a base for classes
  * which represent specific Information Elements. This class defines
  * pure virtual methods for serialisation
- * (ns3::WifiInformationElement::SerializeInformation) and
+ * (ns3::WifiInformationElement::SerializeInformationField) and
  * deserialisation
- * (ns3::WifiInformationElement::DeserializeInformation) of IEs, from
+ * (ns3::WifiInformationElement::DeserializeInformationField) of IEs, from
  * or to data members or other objects that simulation objects use to
  * maintain the relevant state.
  *
@@ -142,12 +142,12 @@ public:
   /// passed in must be pointing at the Element ID (i.e., the very
   /// first octet) of the correct type of information element,
   /// otherwise this method will generate a fatal error.
-  Buffer::Iterator DeserializeIE (Buffer::Iterator i);
+  Buffer::Iterator Deserialize (Buffer::Iterator i);
   /// Deserialize entire IE if it is present. The iterator passed in
   /// must be pointing at the Element ID of an information element. If
   /// the Element ID is not the one that the given class is interested
   /// in then it will return the same iterator.
-  Buffer::Iterator DeserializeOptionalIE (Buffer::Iterator i);
+  Buffer::Iterator DeserializeIfPresent (Buffer::Iterator i);
   /// Get the size of the serialized IE including Element ID and
   /// length fields.
   uint16_t GetSerializedSize () const;
@@ -160,14 +160,14 @@ public:
   /// of the IE, not including the Element ID and length octets. This
   /// is the value that will appear in the second octet of the entire
   /// IE - the length field)
-  virtual uint8_t GetInformationSize () const = 0;
+  virtual uint8_t GetInformationFieldSize () const = 0;
   /// Serialize information (i.e., the body of the IE, not including
   /// the Element ID and length octets)
-  virtual void SerializeInformation (Buffer::Iterator start) const = 0;
+  virtual void SerializeInformationField (Buffer::Iterator start) const = 0;
   /// Deserialize information (i.e., the body of the IE, not including
   /// the Element ID and length octets)
-  virtual uint8_t DeserializeInformation (Buffer::Iterator start,
-                                          uint8_t length) = 0;
+  virtual uint8_t DeserializeInformationField (Buffer::Iterator start,
+                                               uint8_t length) = 0;
   //\}
 
   /// In addition, a subclass may optionally override the following...

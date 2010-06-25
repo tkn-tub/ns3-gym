@@ -41,9 +41,9 @@ public:
   uint32_t GetRate (uint8_t i) const;
 
   WifiInformationElementId ElementId () const;
-  uint8_t GetInformationSize () const;
-  void SerializeInformation (Buffer::Iterator start) const;
-  uint8_t DeserializeInformation (Buffer::Iterator start,
+  uint8_t GetInformationFieldSize () const;
+  void SerializeInformationField (Buffer::Iterator start) const;
+  uint8_t DeserializeInformationField (Buffer::Iterator start,
                                   uint8_t length);
 private:
   uint8_t m_nRates;

@@ -123,7 +123,7 @@ IeBeaconTiming::ClearTimingElement ()
   m_neighbours.clear ();
 }
 uint8_t
-IeBeaconTiming::GetInformationSize () const
+IeBeaconTiming::GetInformationFieldSize () const
 {
   return (5 * m_numOfUnits );
 }
@@ -140,7 +140,7 @@ IeBeaconTiming::Print (std::ostream& os) const
   os << "</information_element>" << std::endl;
 }
 void
-IeBeaconTiming::SerializeInformation (Buffer::Iterator i) const
+IeBeaconTiming::SerializeInformationField (Buffer::Iterator i) const
 {
   for (NeighboursTimingUnitsList::const_iterator j = m_neighbours.begin (); j != m_neighbours.end (); j++)
     {
@@ -150,7 +150,7 @@ IeBeaconTiming::SerializeInformation (Buffer::Iterator i) const
     }
 }
 uint8_t
-IeBeaconTiming::DeserializeInformation (Buffer::Iterator start, uint8_t length)
+IeBeaconTiming::DeserializeInformationField (Buffer::Iterator start, uint8_t length)
 {
   Buffer::Iterator i = start;
   m_numOfUnits = length / 5;

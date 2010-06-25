@@ -145,7 +145,7 @@ IePrep::IncrementMetric (uint32_t metric)
 }
 
 void
-IePrep::SerializeInformation (Buffer::Iterator i) const
+IePrep::SerializeInformationField (Buffer::Iterator i) const
 {
   i.WriteU8 (m_flags);
   i.WriteU8 (m_hopcount);
@@ -158,7 +158,7 @@ IePrep::SerializeInformation (Buffer::Iterator i) const
   i.WriteHtolsbU32 (m_originatorSeqNumber);
 }
 uint8_t
-IePrep::DeserializeInformation (Buffer::Iterator start, uint8_t length)
+IePrep::DeserializeInformationField (Buffer::Iterator start, uint8_t length)
 {
   Buffer::Iterator i = start;
   m_flags = i.ReadU8 ();
@@ -173,7 +173,7 @@ IePrep::DeserializeInformation (Buffer::Iterator start, uint8_t length)
   return i.GetDistanceFrom (start);
 }
 uint8_t
-IePrep::GetInformationSize () const
+IePrep::GetInformationFieldSize () const
 {
   uint32_t retval = 1 //Flags
       + 1 //Hopcount

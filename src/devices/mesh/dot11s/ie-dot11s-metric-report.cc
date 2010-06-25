@@ -37,7 +37,7 @@ IeLinkMetricReport::ElementId () const
   return IE11S_LINK_METRIC_REPORT;
 }
 uint8_t
-IeLinkMetricReport::GetInformationSize (void) const
+IeLinkMetricReport::GetInformationFieldSize (void) const
 {
   return sizeof (uint32_t);
 }
@@ -52,12 +52,12 @@ IeLinkMetricReport::SetMetric (uint32_t metric)
   m_metric = metric;
 }
 void
-IeLinkMetricReport::SerializeInformation (Buffer::Iterator i) const
+IeLinkMetricReport::SerializeInformationField (Buffer::Iterator i) const
 {
   i.WriteHtolsbU32 (m_metric);
 }
 uint8_t
-IeLinkMetricReport::DeserializeInformation (Buffer::Iterator start, uint8_t length)
+IeLinkMetricReport::DeserializeInformationField (Buffer::Iterator start, uint8_t length)
 {
   Buffer::Iterator i = start;
   m_metric = i.ReadLsbtohU32 ();

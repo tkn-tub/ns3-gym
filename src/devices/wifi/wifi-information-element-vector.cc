@@ -92,7 +92,7 @@ WifiInformationElementVector::DeserializeSingleIe(Buffer::Iterator start)
     {
       NS_FATAL_ERROR ("Check max size for information element!");
     }
-  newElement->DeserializeInformation (i, length);
+  newElement->DeserializeInformationField (i, length);
   i.Next (length);
   m_elements.push_back (newElement);
   return i.GetDistanceFrom(start);
@@ -120,7 +120,7 @@ WifiInformationElementVector::End ()
 bool
 WifiInformationElementVector::AddInformationElement (Ptr<WifiInformationElement> element)
 {
-  if (element->GetInformationSize () + 2 + GetSize () > m_maxSize)
+  if (element->GetInformationFieldSize () + 2 + GetSize () > m_maxSize)
     {
       return false;
     }
@@ -155,7 +155,7 @@ WifiInformationElementVector::GetSize () const
   uint32_t size = 0;
   for (IE_VECTOR::const_iterator i = m_elements.begin (); i != m_elements.end (); i++)
     {
-      size += ((*i)->GetInformationSize () + 2);
+      size += ((*i)->GetInformationFieldSize () + 2);
     }
   return size;
 }

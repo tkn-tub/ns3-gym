@@ -45,9 +45,9 @@ public:
   char *PeekString (void) const;
 
   WifiInformationElementId ElementId () const;
-  uint8_t GetInformationSize () const;
-  void SerializeInformation (Buffer::Iterator start) const;
-  uint8_t DeserializeInformation (Buffer::Iterator start,
+  uint8_t GetInformationFieldSize () const;
+  void SerializeInformationField (Buffer::Iterator start) const;
+  uint8_t DeserializeInformationField (Buffer::Iterator start,
                                   uint8_t length);
 
 private:
