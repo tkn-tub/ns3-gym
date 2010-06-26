@@ -418,8 +418,6 @@ def register_Ns3UanPdp_methods(root_module, cls):
     cls.add_constructor([param('ns3::UanPdp const &', 'arg0')])
     ## uan-prop-model.h: ns3::UanPdp::UanPdp() [constructor]
     cls.add_constructor([])
-    ## uan-prop-model.h: ns3::UanPdp::UanPdp(uint32_t numTaps, ns3::Time resolution) [constructor]
-    cls.add_constructor([param('uint32_t', 'numTaps'), param('ns3::Time', 'resolution')])
     ## uan-prop-model.h: ns3::UanPdp::UanPdp(std::vector<ns3::Tap, std::allocator<ns3::Tap> > taps, ns3::Time resolution) [constructor]
     cls.add_constructor([param('std::vector< ns3::Tap >', 'taps'), param('ns3::Time', 'resolution')])
     ## uan-prop-model.h: ns3::UanPdp::UanPdp(std::vector<std::complex<double>,std::allocator<std::complex<double> > > arrivals, ns3::Time resolution) [constructor]

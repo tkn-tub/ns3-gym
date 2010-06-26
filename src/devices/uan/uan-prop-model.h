@@ -92,12 +92,6 @@ public:
    */
   UanPdp ();
   /**
-   * \brief Create PDP object with provided number of taps and resolution
-   * \param numTaps Number of taps in this PDP
-   * \resolution Time resolution of this PDP
-   */
-  UanPdp (uint32_t numTaps, Time resolution);
-  /**
    * \brief Create PDP object from a vector of Tap objects
    * \param taps Taps to include in this PDP
    * \param resolution Resolution of PDP object
