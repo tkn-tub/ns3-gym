@@ -140,7 +140,7 @@ Ns2MobilityHelper::GetMobilityModel (std::string idString, const ObjectStore &st
 {
   std::istringstream iss;
   iss.str (idString);
-  uint32_t id;
+  uint32_t id (0);
   iss >> id;
   Ptr<Object> object = store.Get (id);
   if (object == 0)
@@ -317,8 +317,8 @@ ParseNs2Line (const string& str)
       string x;
       s >> x;
       ret.tokens.push_back (x);
-      int ii;
-      double d;
+      int ii (0);
+      double d (0);
       if (HasNodeIdNumber (x))
         {
           x = GetNodeIdFromToken (x);
@@ -351,8 +351,8 @@ ParseNs2Line (const string& str)
         }
 
       // Re calculate values
-      int ii;
-      double d;
+      int ii (0);
+      double d (0);
       ret.has_ival[tokensLength - 1] = IsVal<int> (x, ii);
       ret.ivals[tokensLength - 1] = ii;
       ret.has_dval[tokensLength - 1] = IsVal<double> (x, d);
