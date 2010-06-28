@@ -57,7 +57,7 @@ class UanTxMode;
  * (This work is, as of yet, unpublished)
  */
 
-class UanMacRcGw : public ns3::UanMac
+class UanMacRcGw : public UanMac
 {
 public:
   UanMacRcGw ();

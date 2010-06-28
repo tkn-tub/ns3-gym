@@ -40,8 +40,8 @@ namespace ns3 {
  * "System Design Considerations for Undersea Networks: Link and Multiple Access Protocols,"
  * Selected Areas in Communications, IEEE Journal on , vol.26, no.9, pp.1720-1730, December 2008
  */
-class UanMacCw : public ns3::UanMac,
-                 public ns3::UanPhyListener
+class UanMacCw : public UanMac,
+                 public UanPhyListener
 {
 public:
   UanMacCw ();

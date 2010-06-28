@@ -38,7 +38,7 @@ namespace ns3 {
  * Adds prop. delay measure, and frame number info to
  * transmitted data packet
  */
-class UanHeaderRcData : public ns3::Header
+class UanHeaderRcData : public Header
 {
 public:
   UanHeaderRcData ();
@@ -90,7 +90,7 @@ private:
  *
  * Contains frame #, retry #, # frames, length, and timestamp
  */
-class UanHeaderRcRts : public ns3::Header
+class UanHeaderRcRts : public Header
 {
 public:
   UanHeaderRcRts ();
@@ -249,7 +249,7 @@ private:
  * RTS tx period, rate #, and retry rate #
  */
 
-class UanHeaderRcCts : public ns3::Header
+class UanHeaderRcCts : public Header
 {
 public:
   UanHeaderRcCts ();

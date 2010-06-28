@@ -39,7 +39,7 @@ class UanTxMode;
  * are immediately transmitted.  This MAC attaches a UanHeaderCommon
  * to outgoing packets for address information.  (The type field is not used)
  */
-class UanMacAloha : public ns3::UanMac
+class UanMacAloha : public UanMac
 {
 public:
   UanMacAloha ();

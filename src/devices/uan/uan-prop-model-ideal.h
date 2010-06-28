@@ -31,7 +31,7 @@ namespace ns3 {
  *
  * \brief Ideal propagation model (no pathloss, impulse PDP)
  */
-class UanPropModelIdeal : public ns3::UanPropModel
+class UanPropModelIdeal : public UanPropModel
 {
 public:
   UanPropModelIdeal ();

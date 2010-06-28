@@ -133,7 +133,7 @@ private:
  * lentracy@u.washington.edu
  * (This work is, as of yet, unpublished)
  */
-class UanMacRc : public ns3::UanMac
+class UanMacRc : public UanMac
 {
 public:
   enum {

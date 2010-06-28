@@ -31,7 +31,7 @@ namespace ns3 {
  *
  * This class will only allow attached Phy's to receive packets if not in TX mode
  */
-class UanTransducerHd : public ns3::UanTransducer
+class UanTransducerHd : public UanTransducer
 {
 public:
   UanTransducerHd ();

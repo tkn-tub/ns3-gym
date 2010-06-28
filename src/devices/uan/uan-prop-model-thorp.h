@@ -31,7 +31,7 @@ class UanTxMode;
  * \class UanPropModelThorp
  * \brief Uses Thorp's approximation to compute pathloss.  Assumes implulse PDP.
  */
-class UanPropModelThorp : public ns3::UanPropModel
+class UanPropModelThorp : public UanPropModel
 {
 public:
   UanPropModelThorp ();

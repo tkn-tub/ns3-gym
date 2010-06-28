@@ -25,7 +25,7 @@
 
 namespace ns3 {
 
-class UanNoiseModel : public ns3::Object
+class UanNoiseModel : public Object
 {
 public:
   /**

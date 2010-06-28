@@ -38,7 +38,7 @@ namespace ns3 {
  * Can be set to any derived class using attributes of UanPhy
  * to implement different models.
  */
-class UanPhyCalcSinr : public ns3::Object
+class UanPhyCalcSinr : public Object
 {
 
 public:
@@ -84,7 +84,7 @@ public:
  * Used in UanPhy for determining probability of packet error based on received SINR and
  * modulation (mode).  Can be set in UanPhy via attributes
  */
-class UanPhyPer : public ns3::Object
+class UanPhyPer : public Object
 {
 public:
   /**
@@ -141,7 +141,7 @@ public:
  *
  * \brief Base class for UAN Phy models
  */
-class UanPhy : public ns3::Object
+class UanPhy : public Object
 {
 public:
   /// Enum defining possible Phy states

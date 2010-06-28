@@ -34,7 +34,7 @@ namespace ns3 {
  * Header includes 1 byte src address, 1 byte dest address,
  * and a 1 byte type field.
  */
-class UanHeaderCommon : public ns3::Header
+class UanHeaderCommon : public Header
 {
 public:
   UanHeaderCommon ();
