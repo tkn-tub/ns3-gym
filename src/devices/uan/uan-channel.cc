@@ -40,13 +40,12 @@
 NS_LOG_COMPONENT_DEFINE ("UanChannel");
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED ( UanChannel);
+NS_OBJECT_ENSURE_REGISTERED (UanChannel);
 
 TypeId
 UanChannel::GetTypeId ()
 {
-  static TypeId tid =
-    TypeId ("ns3::UanChannel")
+  static TypeId tid = TypeId ("ns3::UanChannel")
     .SetParent<Channel> ()
     .AddConstructor<UanChannel> ()
     .AddAttribute ("PropagationModel",

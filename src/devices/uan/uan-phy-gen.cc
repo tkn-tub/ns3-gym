@@ -251,8 +251,7 @@ UanPhyPerUmodem::~UanPhyPerUmodem ()
 
 TypeId UanPhyPerUmodem::GetTypeId (void)
 {
-  static TypeId tid =
-    TypeId ("ns3::UanPhyPerUmodem")
+  static TypeId tid = TypeId ("ns3::UanPhyPerUmodem")
     .SetParent<Object> ()
     .AddConstructor<UanPhyPerUmodem> ()
   ;

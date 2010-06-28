@@ -91,7 +91,7 @@ UanMacRcGw::DoDispose ()
 TypeId
 UanMacRcGw::GetTypeId (void)
 {
-  TypeId tid = TypeId ("ns3::UanMacRcGw")
+  static TypeId tid = TypeId ("ns3::UanMacRcGw")
     .SetParent<UanMac> ()
     .AddConstructor<UanMacRcGw> ()
     .AddAttribute ("MaxReservations",

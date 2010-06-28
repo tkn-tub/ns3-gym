@@ -190,7 +190,7 @@ UanMacRc::DoDispose ()
 TypeId
 UanMacRc::GetTypeId (void)
 {
-  TypeId tid = TypeId ("ns3::UanMacRc")
+  static TypeId tid = TypeId ("ns3::UanMacRc")
     .SetParent<UanMac> ()
     .AddConstructor<UanMacRc> ()
     .AddAttribute ("RetryRate",

@@ -25,6 +25,12 @@
 
 namespace ns3 {
 
+NS_OBJECT_ENSURE_REGISTERED (UanHeaderRcData);
+NS_OBJECT_ENSURE_REGISTERED (UanHeaderRcRts);
+NS_OBJECT_ENSURE_REGISTERED (UanHeaderRcCtsGlobal);
+NS_OBJECT_ENSURE_REGISTERED (UanHeaderRcCts);
+NS_OBJECT_ENSURE_REGISTERED (UanHeaderRcAck);
+
 UanHeaderRcData::UanHeaderRcData ()
   : Header (),
     m_frameNo (0),
@@ -43,7 +49,6 @@ UanHeaderRcData::UanHeaderRcData (uint8_t frameNo, Time propDelay)
 UanHeaderRcData::~UanHeaderRcData ()
 {
 }
-
 
 TypeId
 UanHeaderRcData::GetTypeId ()

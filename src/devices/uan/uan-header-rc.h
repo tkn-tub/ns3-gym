@@ -190,7 +190,7 @@ public:
   UanHeaderRcCtsGlobal (Time wt, Time ts, uint16_t rate, uint16_t retryRate);
   ~UanHeaderRcCtsGlobal ();
 
-  static TypeId GetTypeId ();
+  static TypeId GetTypeId (void);
 
   /**
    * \param rate Rate number corresponding to data rate of current cycle
