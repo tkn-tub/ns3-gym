@@ -137,7 +137,7 @@ class WifiInformationElement : public SimpleRefCount<WifiInformationElement>
 public:
   virtual ~WifiInformationElement ();
   /// Serialize entire IE including Element ID and length fields
-  Buffer::Iterator SerializeIE (Buffer::Iterator i) const;
+  Buffer::Iterator Serialize (Buffer::Iterator i) const;
   /// Deserialize entire IE, which must be present. The iterator
   /// passed in must be pointing at the Element ID (i.e., the very
   /// first octet) of the correct type of information element,

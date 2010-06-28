@@ -140,7 +140,7 @@ PeerLinkFrameStart::Serialize (Buffer::Iterator start) const
 {
   Buffer::Iterator i = start;
   NS_ASSERT (m_subtype < 3);
-  i = m_protocol.SerializeIE (i);
+  i = m_protocol.Serialize (i);
   if ((uint8_t) (WifiActionHeader::PEER_LINK_CLOSE) != m_subtype)
     {
       i.WriteHtolsbU16 (m_capability);
@@ -151,15 +151,15 @@ PeerLinkFrameStart::Serialize (Buffer::Iterator start) const
     }
   if ((uint8_t) (WifiActionHeader::PEER_LINK_CLOSE) != m_subtype)
     {
-      i = m_rates.SerializeIE (i);
+      i = m_rates.Serialize (i);
     }
   if ((uint8_t) (WifiActionHeader::PEER_LINK_CONFIRM) != m_subtype)
     {
-      i = m_meshId.SerializeIE (i);
+      i = m_meshId.Serialize (i);
     }
   if ((uint8_t) (WifiActionHeader::PEER_LINK_CLOSE) != m_subtype)
     {
-      i = m_config.SerializeIE (i);
+      i = m_config.Serialize (i);
     }
   else
     {

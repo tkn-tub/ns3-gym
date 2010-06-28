@@ -36,7 +36,7 @@ WifiInformationElement::GetSerializedSize () const
 }
   
 Buffer::Iterator
-WifiInformationElement::SerializeIE (Buffer::Iterator i) const
+WifiInformationElement::Serialize (Buffer::Iterator i) const
 {
   i.WriteU8 (ElementId ());
   i.WriteU8 (GetInformationFieldSize ());

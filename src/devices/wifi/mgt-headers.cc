@@ -87,8 +87,8 @@ void
 MgtProbeRequestHeader::Serialize (Buffer::Iterator start) const
 {  
   Buffer::Iterator i = start;
-  i = m_ssid.SerializeIE (i);
-  i = m_rates.SerializeIE (i);
+  i = m_ssid.Serialize (i);
+  i = m_rates.Serialize (i);
 }
 uint32_t
 MgtProbeRequestHeader::Deserialize (Buffer::Iterator start)
@@ -196,8 +196,8 @@ MgtProbeResponseHeader::Serialize (Buffer::Iterator start) const
   i.WriteHtonU64 (Simulator::Now ().GetMicroSeconds ());
   i.WriteHtonU16 (m_beaconInterval / 1024);
   i = m_capability.Serialize (i);
-  i = m_ssid.SerializeIE (i);
-  i = m_rates.SerializeIE (i);
+  i = m_ssid.Serialize (i);
+  i = m_rates.Serialize (i);
   //i.WriteU8 (0, 3); // ds parameter set.
 }
 uint32_t
@@ -293,8 +293,8 @@ MgtAssocRequestHeader::Serialize (Buffer::Iterator start) const
   Buffer::Iterator i = start;
   i = m_capability.Serialize (i);
   i.WriteHtonU16 (m_listenInterval);
-  i = m_ssid.SerializeIE (i);
-  i = m_rates.SerializeIE (i);
+  i = m_ssid.Serialize (i);
+  i = m_rates.Serialize (i);
 }
 uint32_t
 MgtAssocRequestHeader::Deserialize (Buffer::Iterator start)
@@ -378,7 +378,7 @@ MgtAssocResponseHeader::Serialize (Buffer::Iterator start) const
   i = m_capability.Serialize (i);
   i = m_code.Serialize (i);
   i.WriteHtonU16 (m_aid);
-  i = m_rates.SerializeIE (i);
+  i = m_rates.Serialize (i);
 }
 uint32_t
 MgtAssocResponseHeader::Deserialize (Buffer::Iterator start)

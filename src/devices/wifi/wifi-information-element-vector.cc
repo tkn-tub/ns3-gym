@@ -59,7 +59,7 @@ WifiInformationElementVector::Serialize (Buffer::Iterator start) const
 {
   for(IE_VECTOR::const_iterator i = m_elements.begin (); i != m_elements.end (); i ++)
     {
-      start = (*i)->SerializeIE (start);
+      start = (*i)->Serialize (start);
     }
 }
 uint32_t
