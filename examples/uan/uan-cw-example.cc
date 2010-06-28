@@ -127,8 +127,7 @@ Experiment::ReceivePacket (Ptr<Socket> socket)
 Gnuplot2dDataset
 Experiment::Run (UanHelper &uan)
 {
-  //uan.SetMac ("ns3::UanMacCw", "CW", UintegerValue (m_cwMin), "SlotTime", TimeValue (m_slotTime));
-  uan.SetMac ("ns3::UanMacAloha");
+  uan.SetMac ("ns3::UanMacCw", "CW", UintegerValue (m_cwMin), "SlotTime", TimeValue (m_slotTime));
   NodeContainer nc = NodeContainer ();
   NodeContainer sink = NodeContainer ();
   nc.Create (m_numNodes);
