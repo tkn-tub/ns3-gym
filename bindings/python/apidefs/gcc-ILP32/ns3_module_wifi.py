@@ -2053,8 +2053,8 @@ def register_Ns3WifiInformationElement_methods(root_module, cls):
                    'void', 
                    [param('std::ostream &', 'os')], 
                    is_const=True, is_virtual=True)
-    ## wifi-information-element.h: ns3::Buffer::Iterator ns3::WifiInformationElement::SerializeIE(ns3::Buffer::Iterator i) const [member function]
-    cls.add_method('SerializeIE', 
+    ## wifi-information-element.h: ns3::Buffer::Iterator ns3::WifiInformationElement::Serialize(ns3::Buffer::Iterator i) const [member function]
+    cls.add_method('Serialize', 
                    'ns3::Buffer::Iterator', 
                    [param('ns3::Buffer::Iterator', 'i')], 
                    is_const=True)
