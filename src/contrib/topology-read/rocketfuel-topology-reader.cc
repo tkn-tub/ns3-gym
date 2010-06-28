@@ -335,6 +335,7 @@ RocketfuelTopologyReader::Read (void)
           if (ret != 0)
             {
               regerror (ret, &regex, errbuf, sizeof (errbuf));
+              regfree (&regex);
               break;
             }
 
@@ -342,6 +343,7 @@ RocketfuelTopologyReader::Read (void)
           if (ret == REG_NOMATCH)
             {
               NS_LOG_WARN ("match failed (maps file): %s" << buf);
+              regfree (&regex);
               break;
             }
         }
@@ -351,6 +353,7 @@ RocketfuelTopologyReader::Read (void)
           if (ret != 0)
             {
               regerror (ret, &regex, errbuf, sizeof (errbuf));
+              regfree (&regex);
               break;
             }
 
@@ -358,11 +361,12 @@ RocketfuelTopologyReader::Read (void)
           if (ret == REG_NOMATCH)
             {
               NS_LOG_WARN ("match failed (weights file): %s" << buf);
+              regfree (&regex);
               break;
             }
         }
 
-      line = strdup (buf);
+      line = buf;
       argc = 0;
 
       /* regmatch[0] is the entire strings that matched */
