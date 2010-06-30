@@ -31,13 +31,13 @@ namespace ns3 {
  */
 class WimaxMacToMacHeader : public Header
 {
-  static TypeId GetTypeId (void);
-  virtual TypeId GetInstanceTypeId (void) const;
 public:
   WimaxMacToMacHeader ();
   ~WimaxMacToMacHeader ();
   WimaxMacToMacHeader (uint32_t len);
 
+  static TypeId GetTypeId (void);
+  virtual TypeId GetInstanceTypeId (void) const;
   uint32_t GetSerializedSize (void) const;
   void Serialize (Buffer::Iterator start) const;
   uint32_t Deserialize (Buffer::Iterator start);

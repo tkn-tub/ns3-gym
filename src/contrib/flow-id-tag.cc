@@ -21,6 +21,8 @@
 
 namespace ns3 {
 
+NS_OBJECT_ENSURE_REGISTERED (FlowIdTag);
+
 TypeId 
 FlowIdTag::GetTypeId (void)
 {

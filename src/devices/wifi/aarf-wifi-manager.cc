@@ -27,7 +27,7 @@
 #define Min(a,b) ((a<b)?a:b)
 #define Max(a,b) ((a>b)?a:b)
 
-NS_LOG_COMPONENT_DEFINE ("ns3::AarfWifiManager");
+NS_LOG_COMPONENT_DEFINE ("AarfWifiManager");
 
 namespace ns3 {
 

@@ -33,6 +33,8 @@ NS_LOG_COMPONENT_DEFINE ("PacketSocket");
 
 namespace ns3 {
 
+NS_OBJECT_ENSURE_REGISTERED (PacketSocket);
+
 TypeId
 PacketSocket::GetTypeId (void)
 {

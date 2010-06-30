@@ -25,6 +25,9 @@
 
 namespace ns3 {
 namespace flame {
+
+NS_OBJECT_ENSURE_REGISTERED (FlameHeader);
+
 FlameHeader::FlameHeader () :
   m_cost (0), m_seqno (0), m_origDst (Mac48Address ()), m_origSrc (Mac48Address ())
 {
@@ -35,7 +38,7 @@ FlameHeader::~FlameHeader ()
 TypeId
 FlameHeader::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::FlameHeader")
+  static TypeId tid = TypeId ("ns3::flame::FlameHeader")
     .SetParent<Header> ()
     .AddConstructor<FlameHeader> ();
   return tid;

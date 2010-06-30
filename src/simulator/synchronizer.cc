@@ -20,10 +20,12 @@
 
 namespace ns3 {
 
+NS_OBJECT_ENSURE_REGISTERED (Synchronizer);
+
 TypeId 
 Synchronizer::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("Synchronizer")
+  static TypeId tid = TypeId ("ns3::Synchronizer")
     .SetParent<Object> ()
     ;
   return tid;

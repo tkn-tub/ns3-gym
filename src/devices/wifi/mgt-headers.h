@@ -215,7 +215,7 @@ public:
 
   CategoryValue GetCategory ();
   ActionValue GetAction ();
-  static TypeId GetTypeId ();
+  static TypeId GetTypeId (void);
   virtual TypeId GetInstanceTypeId () const;
   virtual void Print (std::ostream &os) const;
   virtual uint32_t GetSerializedSize () const;

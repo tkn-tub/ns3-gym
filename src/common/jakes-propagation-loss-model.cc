@@ -31,6 +31,8 @@ NS_LOG_COMPONENT_DEFINE ("Jakes");
 
 namespace ns3 {
 
+NS_OBJECT_ENSURE_REGISTERED (JakesPropagationLossModel);
+
 class JakesPropagationLossModel::PathCoefficients 
 {
 public:
@@ -124,8 +126,6 @@ JakesPropagationLossModel::PathCoefficients::GetLoss (void)
   NS_LOG_DEBUG ("Jakes coef "<< k << " (" << 10 * log10 (k) << "dB)");
   return 10 * log10 (k);
 }
-
-NS_OBJECT_ENSURE_REGISTERED (JakesPropagationLossModel);
 
 const double JakesPropagationLossModel::PI = 3.14159265358979323846;
 
