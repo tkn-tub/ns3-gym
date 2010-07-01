@@ -209,7 +209,7 @@ UanPdp::SumTapsFromMaxC (Time delay, Time duration) const
 
   uint32_t numTaps =  (uint32_t)(duration.GetSeconds () / (double) m_resolution.GetSeconds () + 0.5);
   double maxAmp = -1;
-  uint32_t maxTapIndex;
+  uint32_t maxTapIndex = 0;
 
   for (uint32_t i = 0; i < GetNTaps (); i++)
     {
@@ -241,7 +241,7 @@ UanPdp::SumTapsFromMaxNc (Time delay, Time duration) const
 
   uint32_t numTaps =  (uint32_t)(duration.GetSeconds () / (double) m_resolution.GetSeconds () + 0.5);
   double maxAmp = -1;
-  uint32_t maxTapIndex;
+  uint32_t maxTapIndex = 0;
 
   for (uint32_t i = 0; i < GetNTaps (); i++)
     {

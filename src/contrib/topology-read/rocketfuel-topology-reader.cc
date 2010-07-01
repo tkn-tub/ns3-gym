@@ -307,7 +307,7 @@ RocketfuelTopologyReader::Read (void)
       int argc;
       char *argv[REGMATCH_MAX];
       char *buf;
-      enum RF_FileType ftype;
+      enum RF_FileType ftype = RF_UNKNOWN;
 
       lineNumber++;
       line.clear ();
