@@ -71,7 +71,7 @@ public:
 
   class Iterator
   {
-  public:
+public:
     struct Item 
     {
       TypeId tid;
@@ -80,14 +80,14 @@ public:
       int32_t end;
       TagBuffer buf;
       Item (TagBuffer buf);
-    private:
+private:
       friend class ByteTagList;
       friend class ByteTagList::Iterator;
     };
     bool HasNext (void) const;
     struct ByteTagList::Iterator::Item Next (void);
     uint32_t GetOffsetStart (void) const;
-  private:
+private:
     friend class ByteTagList;
     Iterator (uint8_t *start, uint8_t *end, int32_t offsetStart, int32_t offsetEnd);
     void PrepareForNext (void);
@@ -112,7 +112,7 @@ public:
    *        be completed. Typically, the return value of Tag::GetSerializedSize
    * \param start offset which uniquely identifies the first byte tagged by this tag.
    * \param end offset which uniquely identifies the last byte tagged by this tag.
-   * \returns a buffer which can be used to write the tag data.     
+   * \returns a buffer which can be used to write the tag data.
    *
    * 
    */

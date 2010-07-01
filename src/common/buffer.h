@@ -94,304 +94,304 @@ public:
    */
   class Iterator 
   {
-  public:
-      Iterator ();
-      /**
-       * go forward by one byte
-       */
-      void Next (void);
-      /**
-       * go backward by one byte
-       */
-      void Prev (void);
-      /**
-       * \param delta number of bytes to go forward
-       */
-      void Next (uint32_t delta);
-      /**
-       * \param delta number of bytes to go backward
-       */
-      void Prev (uint32_t delta);
-      /**
-       * \param o the second iterator
-       * \return number of bytes included between the two iterators
-       *
-       * This method works only if the two iterators point
-       * to the same underlying buffer. Debug builds ensure
-       * this with an assert.
-       */
-      uint32_t GetDistanceFrom (Iterator const &o) const;
-      
-      /**
-       * \return true if this iterator points to the end of the byte array.
-       *     false otherwise.
-       */
-      bool IsEnd (void) const;
-      /**
-       * \return true if this iterator points to the start of the byte array.
-       *     false otherwise.
-       */
-      bool IsStart (void) const;
+public:
+    Iterator ();
+    /**
+     * go forward by one byte
+     */
+    void Next (void);
+    /**
+     * go backward by one byte
+     */
+    void Prev (void);
+    /**
+     * \param delta number of bytes to go forward
+     */
+    void Next (uint32_t delta);
+    /**
+     * \param delta number of bytes to go backward
+     */
+    void Prev (uint32_t delta);
+    /**
+     * \param o the second iterator
+     * \return number of bytes included between the two iterators
+     *
+     * This method works only if the two iterators point
+     * to the same underlying buffer. Debug builds ensure
+     * this with an assert.
+     */
+    uint32_t GetDistanceFrom (Iterator const &o) const;
 
-      /**
-       * \param data data to write in buffer
-       *
-       * Write the data in buffer and avance the iterator position
-       * by one byte.
-       */
-      inline void WriteU8 (uint8_t  data);
-      /**
-       * \param data data to write in buffer
-       * \param len number of times data must be written in buffer
-       *
-       * Write the data in buffer len times and avance the iterator position
-       * by len byte.
-       */
-      inline void WriteU8 (uint8_t data, uint32_t len);
-      /**
-       * \param data data to write in buffer
-       *
-       * Write the data in buffer and avance the iterator position
-       * by two bytes. The format of the data written in the byte
-       * buffer is non-portable. We only ensure that readU16 will
-       * return exactly what we wrote with writeU16 if the program
-       * is run on the same machine.
-       */
-      void WriteU16 (uint16_t data);
-      /**
-       * \param data data to write in buffer
-       *
-       * Write the data in buffer and avance the iterator position
-       * by four bytes. The format of the data written in the byte
-       * buffer is non-portable. We only ensure that readU32 will
-       * return exactly what we wrote with writeU32 if the program
-       * is run on the same machine.
-       */
-      void WriteU32 (uint32_t data);
-      /**
-       * \param data data to write in buffer
-       *
-       * Write the data in buffer and avance the iterator position
-       * by eight bytes. The format of the data written in the byte
-       * buffer is non-portable. We only ensure that readU64 will
-       * return exactly what we wrote with writeU64 if the program
-       * is run on the same machine.
-       */
-      void WriteU64 (uint64_t data);
-      /**
-       * \param data data to write in buffer
-       *
-       * Write the data in buffer and avance the iterator position
-       * by two bytes. The data is written in network order and the
-       * input data is expected to be in host order.
-       */
-      void WriteHtolsbU16 (uint16_t data);
-      /**
-       * \param data data to write in buffer
-       *
-       * Write the data in buffer and avance the iterator position
-       * by four bytes. The data is written in least significant byte order and the
-       * input data is expected to be in host order.
-       */
-      void WriteHtolsbU32 (uint32_t data);
-      /**
-       * \param data data to write in buffer
-       *
-       * Write the data in buffer and avance the iterator position
-       * by eight bytes. The data is written in least significant byte order and the
-       * input data is expected to be in host order.
-       */
-      void WriteHtolsbU64 (uint64_t data);
-      /**
-       * \param data data to write in buffer
-       *
-       * Write the data in buffer and avance the iterator position
-       * by two bytes. The data is written in least significant byte order and the
-       * input data is expected to be in host order.
-       */
-      inline void WriteHtonU16 (uint16_t data);
-      /**
-       * \param data data to write in buffer
-       *
-       * Write the data in buffer and avance the iterator position
-       * by four bytes. The data is written in network order and the
-       * input data is expected to be in host order.
-       */
-      inline void WriteHtonU32 (uint32_t data);
-      /**
-       * \param data data to write in buffer
-       *
-       * Write the data in buffer and avance the iterator position
-       * by eight bytes. The data is written in network order and the
-       * input data is expected to be in host order.
-       */
-      void WriteHtonU64 (uint64_t data);
-      /**
-       * \param buffer a byte buffer to copy in the internal buffer.
-       * \param size number of bytes to copy.
-       *
-       * Write the data in buffer and avance the iterator position
-       * by size bytes.
-       */
-      void Write (uint8_t const*buffer, uint32_t size);
-      /**
-       * \param start the start of the data to copy
-       * \param end the end of the data to copy
-       *
-       * Write the data delimited by start and end in internal buffer 
-       * and avance the iterator position by the number of bytes
-       * copied.
-       * The input interators _must_ not point to the same Buffer as
-       * we do to avoid overlapping copies. This is enforced 
-       * in debug builds by asserts.
-       */
-      void Write (Iterator start, Iterator end);
+    /**
+     * \return true if this iterator points to the end of the byte array.
+     *     false otherwise.
+     */
+    bool IsEnd (void) const;
+    /**
+     * \return true if this iterator points to the start of the byte array.
+     *     false otherwise.
+     */
+    bool IsStart (void) const;
 
-      /**
-       * \return the byte read in the buffer.
-       *
-       * Read data and advance the Iterator by the number of bytes
-       * read.
-       */
-      inline uint8_t  ReadU8 (void);
-      /**
-       * \return the two bytes read in the buffer.
-       *
-       * Read data and advance the Iterator by the number of bytes
-       * read.
-       * The data is read in the format written by writeU16.
-       */
-      uint16_t ReadU16 (void);
-      /**
-       * \return the four bytes read in the buffer.
-       *
-       * Read data and advance the Iterator by the number of bytes
-       * read.
-       * The data is read in the format written by writeU32.
-       */
-      uint32_t ReadU32 (void);
-      /**
-       * \return the eight bytes read in the buffer.
-       *
-       * Read data and advance the Iterator by the number of bytes
-       * read.
-       * The data is read in the format written by writeU64.
-       */
-      uint64_t ReadU64 (void);
-      /**
-       * \return the two bytes read in the buffer.
-       *
-       * Read data and advance the Iterator by the number of bytes
-       * read.
-       * The data is read in network format and return in host format.
-       */
-      inline uint16_t ReadNtohU16 (void);
-      /**
-       * \return the four bytes read in the buffer.
-       *
-       * Read data and advance the Iterator by the number of bytes
-       * read.
-       * The data is read in network format and return in host format.
-       */
-      inline uint32_t ReadNtohU32 (void);
-      /**
-       * \return the eight bytes read in the buffer.
-       *
-       * Read data and advance the Iterator by the number of bytes
-       * read.
-       * The data is read in network format and return in host format.
-       */
-      uint64_t ReadNtohU64 (void);
-      /**
-       * \return the two bytes read in the buffer.
-       *
-       * Read data and advance the Iterator by the number of bytes
-       * read.
-       * The data is read in network format and return in host format.
-       */
-      uint16_t ReadLsbtohU16 (void);
-      /**
-       * \return the four bytes read in the buffer.
-       *
-       * Read data and advance the Iterator by the number of bytes
-       * read.
-       * The data is read in network format and return in host format.
-       */
-      uint32_t ReadLsbtohU32 (void);
-      /**
-       * \return the eight bytes read in the buffer.
-       *
-       * Read data and advance the Iterator by the number of bytes
-       * read.
-       * The data is read in network format and return in host format.
-       */
-      uint64_t ReadLsbtohU64 (void);
-      /**
-       * \param buffer buffer to copy data into
-       * \param size number of bytes to copy
-       *
-       * Copy size bytes of data from the internal buffer to the
-       * input buffer and avance the Iterator by the number of
-       * bytes read.
-       */
-      void Read (uint8_t *buffer, uint32_t size);
+    /**
+     * \param data data to write in buffer
+     *
+     * Write the data in buffer and avance the iterator position
+     * by one byte.
+     */
+    inline void WriteU8 (uint8_t  data);
+    /**
+     * \param data data to write in buffer
+     * \param len number of times data must be written in buffer
+     *
+     * Write the data in buffer len times and avance the iterator position
+     * by len byte.
+     */
+    inline void WriteU8 (uint8_t data, uint32_t len);
+    /**
+     * \param data data to write in buffer
+     *
+     * Write the data in buffer and avance the iterator position
+     * by two bytes. The format of the data written in the byte
+     * buffer is non-portable. We only ensure that readU16 will
+     * return exactly what we wrote with writeU16 if the program
+     * is run on the same machine.
+     */
+    void WriteU16 (uint16_t data);
+    /**
+     * \param data data to write in buffer
+     *
+     * Write the data in buffer and avance the iterator position
+     * by four bytes. The format of the data written in the byte
+     * buffer is non-portable. We only ensure that readU32 will
+     * return exactly what we wrote with writeU32 if the program
+     * is run on the same machine.
+     */
+    void WriteU32 (uint32_t data);
+    /**
+     * \param data data to write in buffer
+     *
+     * Write the data in buffer and avance the iterator position
+     * by eight bytes. The format of the data written in the byte
+     * buffer is non-portable. We only ensure that readU64 will
+     * return exactly what we wrote with writeU64 if the program
+     * is run on the same machine.
+     */
+    void WriteU64 (uint64_t data);
+    /**
+     * \param data data to write in buffer
+     *
+     * Write the data in buffer and avance the iterator position
+     * by two bytes. The data is written in network order and the
+     * input data is expected to be in host order.
+     */
+    void WriteHtolsbU16 (uint16_t data);
+    /**
+     * \param data data to write in buffer
+     *
+     * Write the data in buffer and avance the iterator position
+     * by four bytes. The data is written in least significant byte order and the
+     * input data is expected to be in host order.
+     */
+    void WriteHtolsbU32 (uint32_t data);
+    /**
+     * \param data data to write in buffer
+     *
+     * Write the data in buffer and avance the iterator position
+     * by eight bytes. The data is written in least significant byte order and the
+     * input data is expected to be in host order.
+     */
+    void WriteHtolsbU64 (uint64_t data);
+    /**
+     * \param data data to write in buffer
+     *
+     * Write the data in buffer and avance the iterator position
+     * by two bytes. The data is written in least significant byte order and the
+     * input data is expected to be in host order.
+     */
+    inline void WriteHtonU16 (uint16_t data);
+    /**
+     * \param data data to write in buffer
+     *
+     * Write the data in buffer and avance the iterator position
+     * by four bytes. The data is written in network order and the
+     * input data is expected to be in host order.
+     */
+    inline void WriteHtonU32 (uint32_t data);
+    /**
+     * \param data data to write in buffer
+     *
+     * Write the data in buffer and avance the iterator position
+     * by eight bytes. The data is written in network order and the
+     * input data is expected to be in host order.
+     */
+    void WriteHtonU64 (uint64_t data);
+    /**
+     * \param buffer a byte buffer to copy in the internal buffer.
+     * \param size number of bytes to copy.
+     *
+     * Write the data in buffer and avance the iterator position
+     * by size bytes.
+     */
+    void Write (uint8_t const*buffer, uint32_t size);
+    /**
+     * \param start the start of the data to copy
+     * \param end the end of the data to copy
+     *
+     * Write the data delimited by start and end in internal buffer
+     * and avance the iterator position by the number of bytes
+     * copied.
+     * The input interators _must_ not point to the same Buffer as
+     * we do to avoid overlapping copies. This is enforced
+     * in debug builds by asserts.
+     */
+    void Write (Iterator start, Iterator end);
 
-      /**
-       * \brief Calculate the checksum.
-       * \param size size of the buffer.
-       * \return checksum
-       */
-      uint16_t CalculateIpChecksum(uint16_t size);
+    /**
+     * \return the byte read in the buffer.
+     *
+     * Read data and advance the Iterator by the number of bytes
+     * read.
+     */
+    inline uint8_t  ReadU8 (void);
+    /**
+     * \return the two bytes read in the buffer.
+     *
+     * Read data and advance the Iterator by the number of bytes
+     * read.
+     * The data is read in the format written by writeU16.
+     */
+    uint16_t ReadU16 (void);
+    /**
+     * \return the four bytes read in the buffer.
+     *
+     * Read data and advance the Iterator by the number of bytes
+     * read.
+     * The data is read in the format written by writeU32.
+     */
+    uint32_t ReadU32 (void);
+    /**
+     * \return the eight bytes read in the buffer.
+     *
+     * Read data and advance the Iterator by the number of bytes
+     * read.
+     * The data is read in the format written by writeU64.
+     */
+    uint64_t ReadU64 (void);
+    /**
+     * \return the two bytes read in the buffer.
+     *
+     * Read data and advance the Iterator by the number of bytes
+     * read.
+     * The data is read in network format and return in host format.
+     */
+    inline uint16_t ReadNtohU16 (void);
+    /**
+     * \return the four bytes read in the buffer.
+     *
+     * Read data and advance the Iterator by the number of bytes
+     * read.
+     * The data is read in network format and return in host format.
+     */
+    inline uint32_t ReadNtohU32 (void);
+    /**
+     * \return the eight bytes read in the buffer.
+     *
+     * Read data and advance the Iterator by the number of bytes
+     * read.
+     * The data is read in network format and return in host format.
+     */
+    uint64_t ReadNtohU64 (void);
+    /**
+     * \return the two bytes read in the buffer.
+     *
+     * Read data and advance the Iterator by the number of bytes
+     * read.
+     * The data is read in network format and return in host format.
+     */
+    uint16_t ReadLsbtohU16 (void);
+    /**
+     * \return the four bytes read in the buffer.
+     *
+     * Read data and advance the Iterator by the number of bytes
+     * read.
+     * The data is read in network format and return in host format.
+     */
+    uint32_t ReadLsbtohU32 (void);
+    /**
+     * \return the eight bytes read in the buffer.
+     *
+     * Read data and advance the Iterator by the number of bytes
+     * read.
+     * The data is read in network format and return in host format.
+     */
+    uint64_t ReadLsbtohU64 (void);
+    /**
+     * \param buffer buffer to copy data into
+     * \param size number of bytes to copy
+     *
+     * Copy size bytes of data from the internal buffer to the
+     * input buffer and avance the Iterator by the number of
+     * bytes read.
+     */
+    void Read (uint8_t *buffer, uint32_t size);
 
-      /**
-       * \brief Calculate the checksum.
-       * \param size size of the buffer.
-       * \param initialChecksum initial value
-       * \return checksum
-       */
-      uint16_t CalculateIpChecksum(uint16_t size, uint32_t initialChecksum);
+    /**
+     * \brief Calculate the checksum.
+     * \param size size of the buffer.
+     * \return checksum
+     */
+    uint16_t CalculateIpChecksum(uint16_t size);
 
-      /**
-       * \returns the size of the underlying buffer we are iterating
-       */
-      uint32_t GetSize (void) const;
+    /**
+     * \brief Calculate the checksum.
+     * \param size size of the buffer.
+     * \param initialChecksum initial value
+     * \return checksum
+     */
+    uint16_t CalculateIpChecksum(uint16_t size, uint32_t initialChecksum);
 
-  private:
-      friend class Buffer;
-      Iterator (Buffer const*buffer);
-      Iterator (Buffer const*buffer, bool);
-      void Construct (const Buffer *buffer);
-      bool CheckNoZero (uint32_t start, uint32_t end) const;
-      bool Check (uint32_t i) const;
-      uint16_t SlowReadNtohU16 (void);
-      uint32_t SlowReadNtohU32 (void);
+    /**
+     * \returns the size of the underlying buffer we are iterating
+     */
+    uint32_t GetSize (void) const;
+
+private:
+    friend class Buffer;
+    Iterator (Buffer const*buffer);
+    Iterator (Buffer const*buffer, bool);
+    void Construct (const Buffer *buffer);
+    bool CheckNoZero (uint32_t start, uint32_t end) const;
+    bool Check (uint32_t i) const;
+    uint16_t SlowReadNtohU16 (void);
+    uint32_t SlowReadNtohU32 (void);
     std::string GetReadErrorMessage (void) const;
     std::string GetWriteErrorMessage (void) const;
 
     /* offset in virtual bytes from the start of the data buffer to the
      * start of the "virtual zero area".
      */
-      uint32_t m_zeroStart;
+    uint32_t m_zeroStart;
     /* offset in virtual bytes from the start of the data buffer to the
      * end of the "virtual zero area".
      */
-      uint32_t m_zeroEnd;
+    uint32_t m_zeroEnd;
     /* offset in virtual bytes from the start of the data buffer to the
      * start of the data which can be read by this iterator
      */
-      uint32_t m_dataStart;
+    uint32_t m_dataStart;
     /* offset in virtual bytes from the start of the data buffer to the
      * end of the data which can be read by this iterator
      */
-      uint32_t m_dataEnd;
+    uint32_t m_dataEnd;
     /* offset in virtual bytes from the start of the data buffer to the
      * current position represented by this iterator.
      */
-      uint32_t m_current;
+    uint32_t m_current;
     /* a pointer to the underlying byte buffer. All offsets are relative
      * to this pointer.
      */
-      uint8_t *m_data;
+    uint8_t *m_data;
   };
 
   /**
@@ -506,7 +506,7 @@ public:
    * data is placed into this buffer.
    */
   uint32_t Deserialize (const uint8_t* buffer, uint32_t size);
-  
+
   int32_t GetCurrentStartOffset (void) const;
   int32_t GetCurrentEndOffset (void) const;
 
@@ -592,7 +592,7 @@ Buffer::Iterator::WriteU8 (uint8_t data)
   else
     {
       m_data[m_current - (m_zeroEnd-m_zeroStart)] = data;
-      m_current++;      
+      m_current++;
     }
 }
 
@@ -707,7 +707,7 @@ Buffer::Iterator::ReadNtohU32 (void)
   return retval;
 }
 
-uint8_t  
+uint8_t
 Buffer::Iterator::ReadU8 (void)
 {
   NS_ASSERT_MSG (m_current >= m_dataStart &&

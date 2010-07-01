@@ -112,11 +112,11 @@ public:
   };
   class ItemIterator 
   {
-  public:
+public:
     ItemIterator (const PacketMetadata *metadata, Buffer buffer);
     bool HasNext (void) const;
     Item Next (void);
-  private:
+private:
     const PacketMetadata *m_metadata;
     Buffer m_buffer;
     uint16_t m_current;
@@ -160,7 +160,7 @@ public:
   // Serialization to/from raw uint8_t*
   uint32_t Serialize   (uint8_t* buffer, uint32_t maxSize) const;
   uint32_t Deserialize (const uint8_t* buffer, uint32_t size);
-  
+
 private:
   // Helper for the raw serilization/deserialization
   static uint8_t* AddToRawU8 (const uint8_t& data,
@@ -188,7 +188,7 @@ private:
                             uint8_t* start,
                             uint8_t* current,
                             uint32_t maxSize);
-  
+
   static uint8_t* ReadFromRawU8 (uint8_t& data,
                                  const uint8_t* start,
                                  const uint8_t* current,
@@ -286,7 +286,7 @@ private:
 
   class DataFreeList : public std::vector<struct Data *>
   {
-  public:
+public:
     ~DataFreeList ();
   };
 
@@ -323,7 +323,7 @@ private:
   static void Recycle (struct PacketMetadata::Data *data);
   static struct PacketMetadata::Data *Allocate (uint32_t n);
   static void Deallocate (struct PacketMetadata::Data *data);
-  
+
   static DataFreeList m_freeList;
   static bool m_enable;
   static bool m_enableChecking;
@@ -335,7 +335,7 @@ private:
 
   static uint32_t m_maxSize;
   static uint16_t m_chunkUid;
-  
+
   struct Data *m_data;
   /**
      head -(next)-> tail

@@ -56,7 +56,7 @@ public:
    */
   class Item
   {
-  public:
+public:
     /**
      * \returns the ns3::TypeId associated to this tag.
      */
@@ -82,7 +82,7 @@ public:
      * the underlying tag.
      */
     void GetTag (Tag &tag) const;
-  private:
+private:
     friend class ByteTagIterator;
     Item (TypeId tid, uint32_t start, uint32_t end, TagBuffer buffer);
     TypeId m_tid;
@@ -118,7 +118,7 @@ public:
    */
   class Item 
   {
-  public:
+public:
     /**
      * \returns the ns3::TypeId associated to this tag.
      */
@@ -132,7 +132,7 @@ public:
      * the underlying tag.
      */
     void GetTag (Tag &tag) const;
-  private:
+private:
     friend class PacketTagIterator;
     Item (const struct PacketTagList::TagData *data);
     const struct PacketTagList::TagData *m_data;
@@ -209,7 +209,7 @@ public:
    */
   Packet ();
   Packet (const Packet &o);
-  Packet &operator = (const Packet &o);  
+  Packet &operator = (const Packet &o);
   /**
    * Create a packet with a zero-filled payload.
    * The memory necessary for the payload is not allocated:
@@ -278,7 +278,7 @@ public:
    *
    * \param header a reference to the header to read from the internal buffer.
    * \returns the number of bytes read from the packet.
-   */  
+   */
   uint32_t PeekHeader (Header &header) const;
   /**
    * Add trailer to this packet. This method invokes the
@@ -333,7 +333,7 @@ public:
    * \param size number of bytes from remove
    */
   void RemoveAtStart (uint32_t size);
-  
+
   /**
    * If you try to change the content of the buffer
    * returned by this method, you will die.
@@ -557,7 +557,7 @@ private:
           const PacketTagList &packetTagList, const PacketMetadata &metadata);
 
   uint32_t Deserialize (uint8_t const*buffer, uint32_t size);
-  
+
   Buffer m_buffer;
   ByteTagList m_byteTagList;
   PacketTagList m_packetTagList;

@@ -80,12 +80,13 @@ namespace ns3 {
 
 PacketTagList::PacketTagList ()
   : m_next ()
-{}
+{
+}
 
 PacketTagList::PacketTagList (PacketTagList const &o)
   : m_next (o.m_next)
 {
-  if (m_next != 0) 
+  if (m_next != 0)
     {
       m_next->count++;
     }

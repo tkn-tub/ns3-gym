@@ -29,9 +29,9 @@
 NS_LOG_COMPONENT_DEFINE ("Buffer");
 
 #define LOG_INTERNAL_STATE(y)                                                                    \
-NS_LOG_LOGIC (y << "start="<<m_start<<", end="<<m_end<<", zero start="<<m_zeroAreaStart<<              \
-          ", zero end="<<m_zeroAreaEnd<<", count="<<m_data->m_count<<", size="<<m_data->m_size<<   \
-          ", dirty start="<<m_data->m_dirtyStart<<", dirty end="<<m_data->m_dirtyEnd)
+  NS_LOG_LOGIC (y << "start="<<m_start<<", end="<<m_end<<", zero start="<<m_zeroAreaStart<<              \
+                ", zero end="<<m_zeroAreaEnd<<", count="<<m_data->m_count<<", size="<<m_data->m_size<<   \
+                ", dirty start="<<m_data->m_dirtyStart<<", dirty end="<<m_data->m_dirtyEnd)
 
 #ifdef BUFFER_HEURISTICS
 #define HEURISTICS(x) x
@@ -300,9 +300,9 @@ Buffer::CheckInternalState (void) const
   if (!ok)
     {
       LOG_INTERNAL_STATE ("check " << this << 
-                          ", " << (offsetsOk?"true":"false") << 
-                          ", " << (dirtyOk?"true":"false") << 
-                          ", " << (internalSizeOk?"true":"false") << " ");
+                          ", " << (offsetsOk ? "true" : "false") <<
+                          ", " << (dirtyOk ? "true" : "false") <<
+                          ", " << (internalSizeOk ? "true" : "false") << " ");
     }
   return ok;
 #else
@@ -361,9 +361,9 @@ Buffer::operator = (Buffer const&o)
       m_data->m_count++;
     }
   HEURISTICS (
-  g_recommendedStart = std::max (g_recommendedStart, m_maxZeroAreaStart);
-  m_maxZeroAreaStart = o.m_maxZeroAreaStart;
-  );
+    g_recommendedStart = std::max (g_recommendedStart, m_maxZeroAreaStart);
+    m_maxZeroAreaStart = o.m_maxZeroAreaStart;
+    );
   m_zeroAreaStart = o.m_zeroAreaStart;
   m_zeroAreaEnd = o.m_zeroAreaEnd;
   m_start = o.m_start;
@@ -701,7 +701,7 @@ Buffer::Serialize (uint8_t* buffer, uint32_t maxSize) const
 {
   uint32_t* p = reinterpret_cast<uint32_t *> (buffer);
   uint32_t size = 0;
-  
+
   NS_LOG_FUNCTION (this);
 
   // Add the zero data length
@@ -779,7 +779,7 @@ Buffer::Deserialize (const uint8_t *buffer, uint32_t size)
 
   // Create zero bytes
   Initialize (zeroDataLength);
-  
+
   // Add start data
   NS_ASSERT (sizeCheck >= 4);
   uint32_t dataStartLength = *p++;
@@ -803,7 +803,7 @@ Buffer::Deserialize (const uint8_t *buffer, uint32_t size)
   tmp.Write (reinterpret_cast<uint8_t *> (const_cast<uint32_t *> (p)), dataEndLength);
   p += (((dataEndLength+3)&(~3))/4); // Advance p, insuring 4 byte boundary
   sizeCheck -= ((dataEndLength+3)&(~3));
-  
+
   NS_ASSERT (sizeCheck == 0);
   // return zero if buffer did not 
   // contain a complete message
@@ -913,7 +913,8 @@ Buffer::Iterator::Iterator ()
     m_dataEnd (0),
     m_current (0),
     m_data (0)
-{}
+{
+}
 Buffer::Iterator::Iterator (Buffer const*buffer)
 {
   Construct (buffer);
@@ -1002,8 +1003,8 @@ bool
 Buffer::Iterator::Check (uint32_t i) const
 {
   return i >= m_dataStart && 
-    !(i >= m_zeroStart && i < m_zeroEnd) &&
-    i <= m_dataEnd;
+         !(i >= m_zeroStart && i < m_zeroEnd) &&
+         i <= m_dataEnd;
 }
 
 
@@ -1315,7 +1316,7 @@ Buffer::Iterator::CalculateIpChecksum(uint16_t size, uint32_t initialChecksum)
     sum += ReadU16 ();
 
   if (size & 1)
-     sum += ReadU8 ();
+    sum += ReadU8 ();
 
   while (sum >> 16)
     sum = (sum & 0xffff) + (sum >> 16);
@@ -1373,7 +1374,7 @@ Buffer::Iterator::GetWriteErrorMessage (void) const
 //-----------------------------------------------------------------------------
 // Unit tests
 //-----------------------------------------------------------------------------
-class BufferTest: public TestCase {
+class BufferTest : public TestCase {
 private:
   bool EnsureWrittenBytes (Buffer b, uint32_t n, uint8_t array[]);
 public:
@@ -1383,7 +1384,8 @@ public:
 
 
 BufferTest::BufferTest ()
-  : TestCase ("Buffer") {}
+  : TestCase ("Buffer") {
+}
 
 bool
 BufferTest::EnsureWrittenBytes (Buffer b, uint32_t n, uint8_t array[])
@@ -1429,11 +1431,11 @@ BufferTest::EnsureWrittenBytes (Buffer b, uint32_t n, uint8_t array[])
  */
 #define ENSURE_WRITTEN_BYTES(buffer, n, ...)     \
   {                                              \
-  uint8_t bytes[] = {__VA_ARGS__};             \
-  if (!EnsureWrittenBytes (buffer, n , bytes)) \
-    {                                          \
-      SetErrorStatus (false);                  \
-    }                                          \
+    uint8_t bytes[] = {__VA_ARGS__};             \
+    if (!EnsureWrittenBytes (buffer, n, bytes)) \
+      {                                          \
+        SetErrorStatus (false);                  \
+      }                                          \
   }
 
 bool
@@ -1533,8 +1535,8 @@ BufferTest::DoRun (void)
 
   // test self-assignment
   {
-      Buffer a = o;
-      a = a;
+    Buffer a = o;
+    a = a;
   }
 
   // test Remove start.
@@ -1635,7 +1637,7 @@ BufferTest::DoRun (void)
 
     Buffer inputBuffer;
     Buffer outputBuffer;
-    
+
     inputBuffer.AddAtEnd (actualSize);
     {
       Buffer::Iterator iter = inputBuffer.Begin ();
