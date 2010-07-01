@@ -1017,7 +1017,8 @@ Buffer::Iterator::Write (Iterator start, Iterator end)
   NS_ASSERT (m_data != start.m_data);
   uint32_t size = end.m_current - start.m_current;
   Iterator cur = start;
-  NS_ASSERT (CheckNoZero (m_current, m_current + size));
+  NS_ASSERT_MSG (CheckNoZero (m_current, m_current + size),
+                 GetWriteErrorMessage ());
   if (start.m_current <= start.m_zeroStart)
     {
       uint32_t toCopy = std::min (size, start.m_zeroStart - start.m_current);
@@ -1120,7 +1121,8 @@ Buffer::Iterator::WriteHtonU64 (uint64_t data)
 void 
 Buffer::Iterator::Write (uint8_t const*buffer, uint32_t size)
 {
-  NS_ASSERT (CheckNoZero (m_current, size));
+  NS_ASSERT_MSG (CheckNoZero (m_current, size),
+                 GetWriteErrorMessage ());
   uint8_t *to;
   if (m_current <= m_zeroStart)
     {
@@ -1325,6 +1327,48 @@ Buffer::Iterator::GetSize (void) const
 {
   return m_dataEnd - m_dataStart;
 }
+
+
+std::string 
+Buffer::Iterator::GetReadErrorMessage (void) const
+{
+  std::string str = "You have attempted to read beyond the bounds of the "
+    "available buffer space. This usually indicates that a "
+    "Header::Deserialize or Trailer::Deserialize method "
+    "is trying to read data which was not written by "
+    "a Header::Serialize or Trailer::Serialize method. "
+    "In short: check the code of your Serialize and Deserialize "
+    "methods.";
+  return str;
+}
+std::string 
+Buffer::Iterator::GetWriteErrorMessage (void) const
+{
+  std::string str;
+  if (m_current < m_dataStart)
+    {
+      str = "You have attempted to write before the start of the available "
+        "buffer space. This usually indicates that Trailer::GetSerializedSize "
+        "returned a size which is too small compared to what Trailer::Serialize "
+        "is actually using.";
+    }
+  else if (m_current >= m_dataEnd)
+    {
+      str = "You have attempted to write after the end of the available "
+        "buffer space. This usually indicates that Header::GetSerializedSize "
+        "returned a size which is too small compared to what Header::Serialize "
+        "is actually using.";
+    }
+  else
+    {
+      NS_ASSERT (m_current >= m_zeroStart && m_current < m_zeroEnd);
+      str = "You have attempted to write inside the payload area of the "
+        "buffer. This usually indicates that your Serialize method uses more "
+        "buffer space than what your GetSerialized method returned.";
+    }
+  return str;
+}
+
 
 //-----------------------------------------------------------------------------
 // Unit tests

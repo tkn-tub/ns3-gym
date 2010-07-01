@@ -365,6 +365,8 @@ public:
       bool Check (uint32_t i) const;
       uint16_t SlowReadNtohU16 (void);
       uint32_t SlowReadNtohU32 (void);
+    std::string GetReadErrorMessage (void) const;
+    std::string GetWriteErrorMessage (void) const;
 
     /* offset in virtual bytes from the start of the data buffer to the
      * start of the "virtual zero area".
@@ -579,7 +581,8 @@ namespace ns3 {
 void
 Buffer::Iterator::WriteU8 (uint8_t data)
 {
-  NS_ASSERT (Check (m_current));
+  NS_ASSERT_MSG (Check (m_current),
+                 GetWriteErrorMessage ());
 
   if (m_current < m_zeroStart)
     {
@@ -596,7 +599,8 @@ Buffer::Iterator::WriteU8 (uint8_t data)
 void 
 Buffer::Iterator::WriteU8 (uint8_t  data, uint32_t len)
 {
-  NS_ASSERT (CheckNoZero (m_current, m_current + len));
+  NS_ASSERT_MSG (CheckNoZero (m_current, m_current + len),
+                 GetWriteErrorMessage ());
   if (m_current <= m_zeroStart)
     {
       memset (&(m_data[m_current]), data, len);
@@ -613,7 +617,8 @@ Buffer::Iterator::WriteU8 (uint8_t  data, uint32_t len)
 void 
 Buffer::Iterator::WriteHtonU16 (uint16_t data)
 {
-  NS_ASSERT (CheckNoZero (m_current, m_current + 2));
+  NS_ASSERT_MSG (CheckNoZero (m_current, m_current + 2),
+                 GetWriteErrorMessage ());
   uint8_t *buffer;
   if (m_current + 2 <= m_zeroStart)
     {
@@ -631,7 +636,9 @@ Buffer::Iterator::WriteHtonU16 (uint16_t data)
 void 
 Buffer::Iterator::WriteHtonU32 (uint32_t data)
 {
-  NS_ASSERT (CheckNoZero (m_current, m_current + 4));
+  NS_ASSERT_MSG (CheckNoZero (m_current, m_current + 4),
+                 GetWriteErrorMessage ());
+
   uint8_t *buffer;
   if (m_current + 4 <= m_zeroStart)
     {
@@ -703,8 +710,9 @@ Buffer::Iterator::ReadNtohU32 (void)
 uint8_t  
 Buffer::Iterator::ReadU8 (void)
 {
-  NS_ASSERT (m_current >= m_dataStart &&
-             m_current <= m_dataEnd);
+  NS_ASSERT_MSG (m_current >= m_dataStart &&
+                 m_current <= m_dataEnd,
+                 GetReadErrorMessage ());
 
   if (m_current < m_zeroStart)
     {
