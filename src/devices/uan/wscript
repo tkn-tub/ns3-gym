@@ -22,7 +22,7 @@ def build(bld):
         'uan-header-rc.cc',
         'uan-mac-rc.cc',
         'uan-mac-rc-gw.cc',
-        'uan-test.cc'
+#        'uan-test.cc'
         ]
     headers = bld.new_task_gen('ns3header')
     headers.module = 'uan'
