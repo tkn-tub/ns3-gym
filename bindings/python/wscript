@@ -365,7 +365,7 @@ class all_ns3_headers_taskgen(TaskGen.task_gen):
 
                     for source in ns3headers.to_list(ns3headers.source):
                         #source = os.path.basename(source)
-                        node = ns3_dir_node.find_or_declare(source)
+                        node = ns3_dir_node.find_or_declare(os.path.basename(source))
                         if node is None:
                             raise Utils.WafError("missing header file %s" % (source,))
                         all_headers_inputs.append(node)
