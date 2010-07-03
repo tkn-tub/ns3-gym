@@ -26,6 +26,13 @@ namespace ns3 {
   
 Ptr<SpectrumModel> g_WifiSpectrumModel5Mhz;
 
+WifiSpectrumValueHelper::~WifiSpectrumValueHelper ()
+{
+}
+
+WifiSpectrumValue5MhzFactory::~WifiSpectrumValue5MhzFactory ()
+{
+}
 
 class WifiSpectrumModel5MhzInitializer
 {
