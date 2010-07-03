@@ -655,7 +655,7 @@ UanMacRcGw::ComputeExpBOverA (uint32_t n, uint32_t a, uint32_t ldlh, std::vector
 {
 
   double sum = 0;
-  uint32_t lt = 8.0 * (m_ctsSizeN + ldlh + m_ackSize);
+  uint32_t lt = 8 * (m_ctsSizeN + ldlh + m_ackSize);
   for (uint32_t k = 1; k <= n; k++)
     {
       double num = 8.0 * m_ctsSizeG + k * lt;
