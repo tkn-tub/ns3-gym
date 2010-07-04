@@ -35,7 +35,7 @@ namespace ns3 {
 class WifiSpectrumValueHelper 
 {
 public:
-
+  virtual ~WifiSpectrumValueHelper ();
   /*
    *
    * @param value the constant value
@@ -78,7 +78,7 @@ public:
 class WifiSpectrumValue5MhzFactory
 {
 public:
-
+  virtual ~WifiSpectrumValue5MhzFactory ();
   // inherited from WifiSpectrumValue
   virtual Ptr<SpectrumValue> CreateConstant (double psd);
   virtual Ptr<SpectrumValue> CreateTxPowerSpectralDensity (double txPower, uint32_t channel);

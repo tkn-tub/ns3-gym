@@ -923,7 +923,7 @@ SubscriberStationNetDevice::DoReceive (Ptr<Packet> packet)
               m_linkManager->PerformRanging (cid, rngrsp);
               break;
             default:
-              NS_FATAL_ERROR ("Invalid management message type");
+              NS_LOG_ERROR ("Invalid management message type");
             }
         }
       else if (m_basicConnection != 0 && cid == m_basicConnection->GetCid () && !fragmentation)
@@ -942,7 +942,7 @@ SubscriberStationNetDevice::DoReceive (Ptr<Packet> packet)
               m_linkManager->PerformRanging (cid, rngrsp);
               break;
             default:
-              NS_FATAL_ERROR ("Invalid management message type");
+              NS_LOG_ERROR ("Invalid management message type");
             }
         }
       else if (m_primaryConnection != 0 && cid == m_primaryConnection->GetCid () && !fragmentation)
@@ -974,7 +974,7 @@ SubscriberStationNetDevice::DoReceive (Ptr<Packet> packet)
                by BS is not supported, ignore*/
               break;
             default:
-              NS_FATAL_ERROR ("Invalid management message type");
+              NS_LOG_ERROR ("Invalid management message type");
             }
         }
       else if (GetConnectionManager ()->GetConnection (cid)) // transport connection

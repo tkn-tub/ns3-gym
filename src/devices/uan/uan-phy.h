@@ -109,6 +109,7 @@ public:
 class UanPhyListener
 {
 public:
+  virtual ~UanPhyListener () {}
   /**
    * \brief Function called when Phy object begins receiving packet
    */

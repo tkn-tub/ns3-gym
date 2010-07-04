@@ -148,6 +148,7 @@ SimpleOfdmWimaxPhy::InitSimpleOfdmWimaxPhy (void)
   m_txPower = 30; // dBm
   SetBandwidth (10000000); // 10Mhz
   m_nbErroneousBlock = 0;
+  m_nrRecivedFecBlocks = 0;
   m_snrToBlockErrorRateManager = new SNRToBlockErrorRateManager ();
 }
 
@@ -260,43 +261,51 @@ SimpleOfdmWimaxPhy::Send (Ptr<PacketBurst> burst,
     {
       m_currentBurstSize = burst->GetSize ();
       m_nrFecBlocksSent = 0;
-      bvec buffer = ConvertBurstToBits (burst);
+      m_currentBurst = burst;
       SetBlockParameters (burst->GetSize (), modulationType);
-      CreateFecBlocks (buffer, modulationType);
-      StartSendFecBlock (true, modulationType, direction);
+      NotifyTxBegin(m_currentBurst);
+      StartSendDummyFecBlock (true, modulationType, direction);
       m_traceTx (burst);
     }
 }
 
 void
-SimpleOfdmWimaxPhy::StartSendFecBlock (bool isFirstBlock,
-                                       WimaxPhy::ModulationType modulationType,
-                                       uint8_t direction)
+SimpleOfdmWimaxPhy::StartSendDummyFecBlock (bool isFirstBlock,
+                                            WimaxPhy::ModulationType modulationType,
+                                            uint8_t direction)
 {
   SetState (PHY_STATE_TX);
-  bvec fecBlock = m_fecBlocks->front ();
-
-  m_fecBlocks->pop_front ();
+  bool isLastFecBlock = 0;
   if (isFirstBlock)
     {
       m_blockTime = GetBlockTransmissionTime (modulationType);
     }
 
-  Simulator::Schedule (m_blockTime, &SimpleOfdmWimaxPhy::EndSendFecBlock, this, modulationType, direction);
-
   SimpleOfdmWimaxChannel *channel = dynamic_cast<SimpleOfdmWimaxChannel*> (PeekPointer (GetChannel ()));
 
-  NotifyTxBegin (fecBlock);
-  channel->Send (m_blockTime,
-                 fecBlock,
-                 m_currentBurstSize,
-                 this,
-                 isFirstBlock,
-                 GetTxFrequency (),
-                 modulationType,
-                 direction,
-                 m_txPower);
+  if (m_nrRemainingBlocksToSend==1)
+    {
+      isLastFecBlock = true;
+    }
+  else
+    {
+      isLastFecBlock = false;
+    }
+    channel->Send (m_blockTime,
+                   m_currentBurstSize,
+                   this,
+                   isFirstBlock,
+                   isLastFecBlock,
+                   GetTxFrequency (),
+                   modulationType,
+                   direction,
+                   m_txPower,
+                   m_currentBurst);
+
+  m_nrRemainingBlocksToSend --;
+  Simulator::Schedule (m_blockTime, &SimpleOfdmWimaxPhy::EndSendFecBlock, this, modulationType, direction);
 }
+
 
 void
 SimpleOfdmWimaxPhy::EndSendFecBlock (WimaxPhy::ModulationType modulationType,
@@ -304,14 +313,16 @@ SimpleOfdmWimaxPhy::EndSendFecBlock (WimaxPhy::ModulationType modulationType,
 {
   m_nrFecBlocksSent++;
   SetState (PHY_STATE_IDLE);
-  // this is the last FEC block of the burst
+
   if (m_nrFecBlocksSent * m_blockSize == m_currentBurstSize * 8 + m_paddingBits)
     {
-      NS_ASSERT_MSG (m_fecBlocks->size () == 0, "Error while sending a fec block: size of the fec bloc !=0");
+      // this is the last FEC block of the burst
+      NS_ASSERT_MSG (m_nrRemainingBlocksToSend == 0, "Error while sending a burst");
+      NotifyTxEnd(m_currentBurst);
     }
   else
     {
-      StartSendFecBlock(false,modulationType,direction);
+      StartSendDummyFecBlock(false,modulationType,direction);
     }
 }
 
@@ -322,13 +333,13 @@ SimpleOfdmWimaxPhy::EndSend (void)
 }
 
 void
-SimpleOfdmWimaxPhy::StartReceive (const bvec &fecBlock,
-                                  uint32_t burstSize,
+SimpleOfdmWimaxPhy::StartReceive (uint32_t burstSize,
                                   bool isFirstBlock,
                                   uint64_t frequency,
                                   WimaxPhy::ModulationType modulationType,
                                   uint8_t direction,
-                                  double rxPower)
+                                  double rxPower,
+                                  Ptr<PacketBurst> burst)
 {
 
   UniformVariable URNG;
@@ -380,21 +391,23 @@ SimpleOfdmWimaxPhy::StartReceive (const bvec &fecBlock,
     case PHY_STATE_IDLE:
       if (frequency == GetRxFrequency ())
         {
-          NotifyRxBegin (fecBlock);
           if (isFirstBlock)
             {
+              NotifyRxBegin(burst);
               m_receivedFecBlocks->clear ();
+              m_nrRecivedFecBlocks=0;
               SetBlockParameters (burstSize, modulationType);
               m_blockTime = GetBlockTransmissionTime (modulationType);
             }
+
           Simulator::Schedule (m_blockTime,
                                &SimpleOfdmWimaxPhy::EndReceiveFecBlock,
                                this,
-                               fecBlock,
                                burstSize,
                                modulationType,
                                direction,
-                               drop);
+                               drop,
+                               burst);
 
           SetState (PHY_STATE_RX);
         }
@@ -412,44 +425,37 @@ SimpleOfdmWimaxPhy::StartReceive (const bvec &fecBlock,
 }
 
 void
-SimpleOfdmWimaxPhy::EndReceiveFecBlock (bvec fecBlock,
-                                        uint32_t burstSize,
+SimpleOfdmWimaxPhy::EndReceiveFecBlock (uint32_t burstSize,
                                         WimaxPhy::ModulationType modulationType,
                                         uint8_t direction,
-                                        uint8_t drop)
+                                        uint8_t drop,
+                                        Ptr<PacketBurst> burst)
 {
-  NS_ASSERT_MSG ((uint32_t) fecBlock.size () == GetFecBlockSize (modulationType),
-                 "Error while receiving FEC block: The FEC bloc size is not correctly received: " << fecBlock.size ()
-                                                                                                  << "Should be:"
-                                                                                                  << GetFecBlockSize (modulationType));
-
   SetState (PHY_STATE_IDLE);
-  m_receivedFecBlocks->push_back (fecBlock);
+  m_nrRecivedFecBlocks++;
+
   if (drop == true)
     {
       m_nbErroneousBlock++;
     }
 
-  uint16_t recblocks = m_receivedFecBlocks->size ();
-
-  // all blocks received, concatenate them to re-create the burst
-  if ((uint32_t) recblocks * m_blockSize == burstSize * 8 + m_paddingBits)
+  if ((uint32_t) m_nrRecivedFecBlocks * m_blockSize == burstSize * 8 + m_paddingBits)
     {
+      NotifyRxEnd (burst);
       if (m_nbErroneousBlock == 0)
         {
           Simulator::Schedule (Seconds (0),
                                &SimpleOfdmWimaxPhy::EndReceive,
                                this,
-                               ConvertBitsToBurst (RecreateBuffer ()));
+                               burst);
         }
       else
         {
-          NotifyRxDrop (fecBlock);
+          NotifyRxDrop (burst);
         }
       m_nbErroneousBlock = 0;
-      m_receivedFecBlocks->clear ();
+      m_nrRecivedFecBlocks = 0;
     }
-  NotifyRxEnd (fecBlock);
 }
 
 void
@@ -790,7 +796,7 @@ SimpleOfdmWimaxPhy::SetBlockParameters (uint32_t burstSize, WimaxPhy::Modulation
   m_blockSize = GetFecBlockSize (modulationType);
   m_nrBlocks = GetNrBlocks (burstSize, modulationType);
   m_paddingBits = (m_nrBlocks * m_blockSize) - (burstSize * 8);
-
+  m_nrRemainingBlocksToSend = m_nrBlocks;
   NS_ASSERT_MSG (m_paddingBits >= 0, "Size of padding bytes < 0");
 }
 
@@ -1050,39 +1056,39 @@ SimpleOfdmWimaxPhy::SetTraceFilePath (std::string path)
 }
 
 void
-SimpleOfdmWimaxPhy::NotifyTxBegin (bvec packet)
+SimpleOfdmWimaxPhy::NotifyTxBegin (Ptr<PacketBurst> burst)
 {
-  m_phyTxBeginTrace (packet);
+  m_phyTxBeginTrace (burst);
 }
 
 void
-SimpleOfdmWimaxPhy::NotifyTxEnd (bvec packet)
+SimpleOfdmWimaxPhy::NotifyTxEnd (Ptr<PacketBurst> burst)
 {
-  m_phyTxEndTrace (packet);
+  m_phyTxEndTrace (burst);
 }
 
 void
-SimpleOfdmWimaxPhy::NotifyTxDrop (bvec packet)
+SimpleOfdmWimaxPhy::NotifyTxDrop (Ptr<PacketBurst> burst)
 {
-  m_phyTxDropTrace (packet);
+  m_phyTxDropTrace (burst);
 }
 
 void
-SimpleOfdmWimaxPhy::NotifyRxBegin (bvec packet)
+SimpleOfdmWimaxPhy::NotifyRxBegin (Ptr<PacketBurst> burst)
 {
-  m_phyRxBeginTrace (packet);
+  m_phyRxBeginTrace (burst);
 }
 
 void
-SimpleOfdmWimaxPhy::NotifyRxEnd (bvec packet)
+SimpleOfdmWimaxPhy::NotifyRxEnd (Ptr<PacketBurst> burst)
 {
-  m_phyRxEndTrace (packet);
+  m_phyRxEndTrace (burst);
 }
 
 void
-SimpleOfdmWimaxPhy::NotifyRxDrop (bvec packet)
+SimpleOfdmWimaxPhy::NotifyRxDrop (Ptr<PacketBurst> burst)
 {
-  m_phyRxDropTrace (packet);
+  m_phyRxDropTrace (burst);
 }
 
 } // namespace ns3

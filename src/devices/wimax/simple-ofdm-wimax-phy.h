@@ -98,15 +98,16 @@ public:
    * \param modulationType the modulation used to transmit this fec Block
    * \param direction set to uplink and downlink
    * \param rxPower the received power.
+   * \param burst the burst to be sent
    */
 
-  void StartReceive (const bvec &fecBlock,
-                     uint32_t burstSize,
+  void StartReceive (uint32_t burstSize,
                      bool isFirstBlock,
                      uint64_t frequency,
                      WimaxPhy::ModulationType modulationType,
                      uint8_t direction,
-                     double rxPower);
+                     double rxPower,
+                     Ptr<PacketBurst> burst);
 
   /**
    * \return the bandwidth
@@ -140,37 +141,37 @@ public:
    * Public method used to fire a PhyTxBegin trace.  Implemented for encapsulation
    * purposes.
    */
-  void NotifyTxBegin (bvec packet);
+  void NotifyTxBegin (Ptr<PacketBurst> burst);
 
   /**
    * Public method used to fire a PhyTxEnd trace.  Implemented for encapsulation
    * purposes.
    */
-  void NotifyTxEnd (bvec packet);
+  void NotifyTxEnd (Ptr<PacketBurst> burst);
 
   /**
    * Public method used to fire a PhyTxDrop trace.  Implemented for encapsulation
    * purposes.
    */
-  void NotifyTxDrop (bvec packet);
+  void NotifyTxDrop (Ptr<PacketBurst> burst);
 
   /**
    * Public method used to fire a PhyRxBegin trace.  Implemented for encapsulation
    * purposes.
    */
-  void NotifyRxBegin (bvec packet);
+  void NotifyRxBegin (Ptr<PacketBurst> burst);
 
   /**
    * Public method used to fire a PhyRxEnd trace.  Implemented for encapsulation
    * purposes.
    */
-  void NotifyRxEnd (bvec packet);
+  void NotifyRxEnd (Ptr<PacketBurst> burst);
 
   /**
    * Public method used to fire a PhyRxDrop trace.  Implemented for encapsulation
    * purposes.
    */
-  void NotifyRxDrop (bvec packet);
+  void NotifyRxDrop (Ptr<PacketBurst> burst);
 private:
   Time DoGetTransmissionTime (uint32_t size, WimaxPhy::ModulationType modulationType) const;
   uint64_t DoGetNrSymbols (uint32_t size, WimaxPhy::ModulationType modulationType) const;
@@ -187,14 +188,14 @@ private:
   void EndSend (void);
   void EndSendFecBlock (WimaxPhy::ModulationType modulationType, uint8_t direction);
   void EndReceive (Ptr<const PacketBurst> burst);
-  void EndReceiveFecBlock (bvec fecBlock,
-                           uint32_t burstSize,
+  void EndReceiveFecBlock (uint32_t burstSize,
                            WimaxPhy::ModulationType modulationType,
                            uint8_t direction,
-                           uint8_t drop);
-  void StartSendFecBlock (bool isFirstBlock,
-                          WimaxPhy::ModulationType modulationType,
-                          uint8_t direction);
+                           uint8_t drop,
+                           Ptr<PacketBurst> burst);
+  void StartSendDummyFecBlock (bool isFirstBlock,
+                               WimaxPhy::ModulationType modulationType,
+                               uint8_t direction);
   Time GetBlockTransmissionTime (WimaxPhy::ModulationType modulationType) const;
   void DoSetDataRates (void);
   void InitSimpleOfdmWimaxPhy (void);
@@ -240,9 +241,12 @@ private:
 
   // parameters to store for a per burst life-time
   uint16_t m_nrBlocks;
+  uint16_t m_nrRemainingBlocksToSend;
+  Ptr<PacketBurst> m_currentBurst;
   uint16_t m_blockSize;
   uint32_t m_paddingBits;
-  uint8_t m_nbErroneousBlock;
+  uint16_t m_nbErroneousBlock;
+  uint16_t m_nrRecivedFecBlocks;
   uint16_t m_nfft;
   double m_g;
   double m_bandWidth;
@@ -256,7 +260,7 @@ private:
    *
    * \see class CallBackTraceSource
    */
-  TracedCallback<bvec> m_phyTxBeginTrace;
+  TracedCallback <Ptr<PacketBurst > >  m_phyTxBeginTrace;
 
   /**
    * The trace source fired when a packet ends the transmission process on
@@ -264,7 +268,7 @@ private:
    *
    * \see class CallBackTraceSource
    */
-  TracedCallback<bvec> m_phyTxEndTrace;
+  TracedCallback<Ptr<PacketBurst > > m_phyTxEndTrace;
 
   /**
    * The trace source fired when the phy layer drops a packet as it tries
@@ -272,7 +276,7 @@ private:
    *
    * \see class CallBackTraceSource
    */
-  TracedCallback<bvec> m_phyTxDropTrace;
+  TracedCallback<Ptr<PacketBurst > > m_phyTxDropTrace;
 
   /**
    * The trace source fired when a packet begins the reception process from
@@ -280,7 +284,7 @@ private:
    *
    * \see class CallBackTraceSource
    */
-  TracedCallback<bvec> m_phyRxBeginTrace;
+  TracedCallback<Ptr<PacketBurst > > m_phyRxBeginTrace;
 
   /**
    * The trace source fired when a packet ends the reception process from
@@ -288,14 +292,14 @@ private:
    *
    * \see class CallBackTraceSource
    */
-  TracedCallback<bvec> m_phyRxEndTrace;
+  TracedCallback<Ptr<PacketBurst > > m_phyRxEndTrace;
 
   /**
    * The trace source fired when the phy layer drops a packet it has received.
    *
    * \see class CallBackTraceSource
    */
-  TracedCallback<bvec> m_phyRxDropTrace;
+  TracedCallback<Ptr<PacketBurst > > m_phyRxDropTrace;
 
   SNRToBlockErrorRateManager * m_snrToBlockErrorRateManager;
 
