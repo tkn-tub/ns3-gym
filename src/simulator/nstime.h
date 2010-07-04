@@ -27,7 +27,6 @@
 #include <math.h>
 #include <ostream>
 #include "high-precision.h"
-#include "cairo-wideint-private.h"
 
 namespace ns3 {
 
