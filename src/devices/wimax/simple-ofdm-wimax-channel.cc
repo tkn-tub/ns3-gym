@@ -133,20 +133,21 @@ SimpleOfdmWimaxChannel::DoGetDevice (uint32_t index) const
 
 void
 SimpleOfdmWimaxChannel::Send (Time BlockTime,
-                              const bvec &fecBlock,
                               uint32_t burstSize,
                               Ptr<WimaxPhy> phy,
                               bool isFirstBlock,
+                              bool isLastBlock,
                               uint64_t frequency,
                               WimaxPhy::ModulationType modulationType,
                               uint8_t direction,
-                              double txPowerDbm)
+                              double txPowerDbm,
+                              Ptr<PacketBurst> burst)
 {
   double rxPowerDbm = 0;
   Ptr<MobilityModel> senderMobility = 0;
   Ptr<MobilityModel> receiverMobility = 0;
   senderMobility = phy->GetDevice ()->GetNode ()->GetObject<MobilityModel> ();
-
+  simpleOfdmSendParam * param;
   for (std::list<Ptr<SimpleOfdmWimaxPhy> >::iterator iter = m_phyList.begin (); iter != m_phyList.end (); ++iter)
     {
       Time delay = Seconds(0);
@@ -160,14 +161,14 @@ SimpleOfdmWimaxChannel::Send (Time BlockTime,
               delay =  Seconds(distance/300000000.0);
               rxPowerDbm = m_loss->CalcRxPower (txPowerDbm, senderMobility, receiverMobility);
             }
-          simpleOfdmSendParam * param = new simpleOfdmSendParam (fecBlock,
-                                                                 burstSize,
-                                                                 isFirstBlock,
-                                                                 frequency,
-                                                                 modulationType,
-                                                                 direction,
-                                                                 rxPowerDbm);
 
+          param = new simpleOfdmSendParam (burstSize,
+                                           isFirstBlock,
+                                           frequency,
+                                           modulationType,
+                                           direction,
+                                           rxPowerDbm,
+                                           burst);
           Ptr<Object> dstNetDevice = (*iter)->GetDevice ();
           uint32_t dstNode;
           if (dstNetDevice == 0)
@@ -180,7 +181,7 @@ SimpleOfdmWimaxChannel::Send (Time BlockTime,
             }
           Simulator::ScheduleWithContext (dstNode,
                                           delay,
-                                          &SimpleOfdmWimaxChannel::EndSend,
+                                          &SimpleOfdmWimaxChannel::EndSendDummyBlock,
                                           this,
                                           *iter,
                                           param);
@@ -190,17 +191,16 @@ SimpleOfdmWimaxChannel::Send (Time BlockTime,
 }
 
 void
-SimpleOfdmWimaxChannel::EndSend (Ptr<SimpleOfdmWimaxPhy> rxphy, simpleOfdmSendParam * param)
+SimpleOfdmWimaxChannel::EndSendDummyBlock (Ptr<SimpleOfdmWimaxPhy> rxphy, simpleOfdmSendParam * param)
 {
-  rxphy->StartReceive (param->GetFecBlock (),
-                       param->GetBurstSize (),
+  rxphy->StartReceive (param->GetBurstSize (),
                        param->GetIsFirstBlock (),
                        param->GetFrequency (),
                        param->GetModulationType (),
                        param->GetDirection (),
-                       param->GetRxPowerDbm ());
+                       param->GetRxPowerDbm (),
+                       param->GetBurst());
   delete param;
 }
-
 }
 // namespace ns3

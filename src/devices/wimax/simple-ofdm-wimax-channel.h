@@ -53,22 +53,26 @@ public:
    * \param propModel the propagation model to use
    */
   SimpleOfdmWimaxChannel (PropModel propModel);
+
   /**
-   * \brief Sends a fec block to all connected physical devices
+   * \brief Sends a dummy fec block to all connected physical devices
    * \param BlockTime the time needed to send the block
    * \param fecBlock the fec block being sent
    * \param burstSize the size of the burst
    * \param phy the sender device
    * \param isFirstBlock true if this block is the first one, false otherwise
+   * \param isLastBlock true if this block is the last one, false otherwise
    * \param frequency the frequency on which the block is sent
    * \param modulationType the modulation used to send the fec block
    * \param direction uplink or downlink
    * \param txPowerDbm the transmission power
+   * \param burst the packet burst to send
    */
-  void Send (Time BlockTime, const bvec &fecBlock,
+  void Send (Time BlockTime,
              uint32_t burstSize, Ptr<WimaxPhy> phy, bool isFirstBlock,
+             bool isLastBlock,
              uint64_t frequency, WimaxPhy::ModulationType modulationType,
-             uint8_t direction, double txPowerDbm);
+             uint8_t direction, double txPowerDbm, Ptr<PacketBurst> burts);
   /**
    * \brief sets the propagation model
    * \param propModel the propagation model to used
@@ -79,7 +83,7 @@ private:
   void DoAttach (Ptr<WimaxPhy> phy);
   std::list<Ptr<SimpleOfdmWimaxPhy> > m_phyList;
   uint32_t DoGetNDevices (void) const;
-  void EndSend (Ptr<SimpleOfdmWimaxPhy> rxphy, simpleOfdmSendParam * param);
+  void EndSendDummyBlock  (Ptr<SimpleOfdmWimaxPhy> rxphy, simpleOfdmSendParam * param);
   Ptr<NetDevice> DoGetDevice (uint32_t i) const;
   Ptr<PropagationLossModel> m_loss;
 };

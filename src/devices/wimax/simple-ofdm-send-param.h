@@ -37,6 +37,10 @@ public:
                        bool isFirstBlock, uint64_t Frequency,
                        WimaxPhy::ModulationType modulationType, uint8_t direction,
                        double rxPowerDbm);
+  simpleOfdmSendParam (uint32_t burstSize,
+                       bool isFirstBlock, uint64_t Frequency,
+                       WimaxPhy::ModulationType modulationType, uint8_t direction,
+                       double rxPowerDbm, Ptr<PacketBurst> burst);
   ~simpleOfdmSendParam (void);
   /**
    * \brief sent the fec block to send
@@ -96,6 +100,10 @@ public:
    * \return the Received power
    */
   double GetRxPowerDbm (void);
+  /**
+   * \return the received burst
+   */
+  Ptr<PacketBurst> GetBurst(void);
 
 private:
   bvec m_fecBlock;
@@ -105,6 +113,7 @@ private:
   WimaxPhy::ModulationType m_modulationType;
   uint8_t m_direction;
   double m_rxPowerDbm;
+  Ptr<PacketBurst> m_burst;
 
 };
 } // namespace ns3

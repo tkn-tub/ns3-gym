@@ -53,6 +53,23 @@ simpleOfdmSendParam::simpleOfdmSendParam (const bvec &fecBlock,
   m_rxPowerDbm = rxPowerDbm;
 }
 
+simpleOfdmSendParam::simpleOfdmSendParam (uint32_t burstSize,
+                                          bool isFirstBlock,
+                                          uint64_t Frequency,
+                                          WimaxPhy::ModulationType modulationType,
+                                          uint8_t direction,
+                                          double rxPowerDbm,
+                                          Ptr<PacketBurst> burst)
+{
+  m_burstSize = burstSize;
+  m_isFirstBlock = isFirstBlock;
+  m_frequency = Frequency;
+  m_modulationType = modulationType;
+  m_direction = direction;
+  m_rxPowerDbm = rxPowerDbm;
+  m_burst = burst;
+}
+
 simpleOfdmSendParam::~simpleOfdmSendParam (void)
 {
 
@@ -129,6 +146,11 @@ double
 simpleOfdmSendParam::GetRxPowerDbm (void)
 {
   return m_rxPowerDbm;
+}
+Ptr<PacketBurst>
+simpleOfdmSendParam::GetBurst (void)
+{
+  return m_burst;
 }
 
 }
