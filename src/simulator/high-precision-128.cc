@@ -2,60 +2,20 @@
 #include "ns3/fatal-error.h"
 #include <math.h>
 
-#define MAX_64 18446744073709551615.0
-
 namespace ns3 {
 
-HighPrecision::HighPrecision ()
-  : m_value (0)
-{}
-HighPrecision::HighPrecision (int64_t value, bool dummy)
-  : m_value (value)
-{
-  m_value <<= 64;
-}
+#define HP128_MAX_64 18446744073709551615.0
+
 HighPrecision::HighPrecision (double value)
 {
   bool is_negative = value < 0;
   value = is_negative?-value:value;
   double hi = floor (value);
-  double lo = (value - hi) * MAX_64;
+  double lo = (value - hi) * HP128_MAX_64;
   m_value = hi;
   m_value <<= 64;
   m_value += lo;
   m_value = is_negative?-m_value:m_value;
-}
-
-int64_t HighPrecision::GetInteger (void) const
-{
-  int128_t v = m_value >> 64;
-  return v;
-}
-double 
-HighPrecision::GetDouble (void) const
-{
-  bool is_negative = m_value < 0;
-  uint128_t value = is_negative ? -m_value:m_value;
-  uint64_t hi = value >> 64;
-  uint64_t lo = value;
-  double flo = lo;
-  flo /= MAX_64;
-  double retval = hi;
-  retval += flo;
-  retval = is_negative ? -retval : retval;
-  return retval;
-}
-bool 
-HighPrecision::Add (HighPrecision const &o)
-{
-  m_value += o.m_value;
-  return true;
-}
-bool 
-HighPrecision::Sub (HighPrecision const &o)
-{
-  m_value -= o.m_value;
-  return true;
 }
 #define MASK_LO ((((uint128_t)1)<<64)-1)
 #define MASK_HI (~MASK_LO)
@@ -139,18 +99,6 @@ HighPrecision::Div (HighPrecision const &o)
   result = negResult ? -result:result;
   m_value = result;
   return true;
-}
-
-int 
-HighPrecision::Compare (HighPrecision const &o) const
-{
-  return (m_value < o.m_value)?-1:(m_value == o.m_value)?0:1;
-}
-
-HighPrecision
-HighPrecision::Zero (void)
-{
-  return HighPrecision ();
 }
 
 } // namespace ns3

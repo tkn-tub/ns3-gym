@@ -28,30 +28,89 @@ typedef __uint128_t uint128_t;
 typedef __int128_t int128_t;
 #endif
 
-//#define HP_INLINE inline
-#define HP_INLINE
-
 namespace ns3 {
 
 class HighPrecision
 {
 public:
-  HP_INLINE HighPrecision ();
-  HP_INLINE HighPrecision (int64_t value, bool dummy);
-  HP_INLINE HighPrecision (double value);
+  inline HighPrecision ();
+  inline HighPrecision (int64_t value, bool dummy);
+  HighPrecision (double value);
 
-  HP_INLINE int64_t GetInteger (void) const;
-  HP_INLINE double GetDouble (void) const;
-  HP_INLINE bool Add (HighPrecision const &o);
-  HP_INLINE bool Sub (HighPrecision const &o);
-  HP_INLINE bool Mul (HighPrecision const &o);
-  HP_INLINE bool Div (HighPrecision const &o);
+  inline int64_t GetInteger (void) const;
+  inline double GetDouble (void) const;
+  inline bool Add (HighPrecision const &o);
+  inline bool Sub (HighPrecision const &o);
+  bool Mul (HighPrecision const &o);
+  bool Div (HighPrecision const &o);
 
-  HP_INLINE int Compare (HighPrecision const &o) const;
-  HP_INLINE static HighPrecision Zero (void);
+  inline int Compare (HighPrecision const &o) const;
+  inline static HighPrecision Zero (void);
 private:
   int128_t m_value;
 };
+
+} // namespace ns3
+
+namespace ns3 {
+
+HighPrecision::HighPrecision ()
+  : m_value (0)
+{}
+HighPrecision::HighPrecision (int64_t value, bool dummy)
+  : m_value (value)
+{
+  m_value <<= 64;
+}
+
+
+double 
+HighPrecision::GetDouble (void) const
+{
+#define HP128_MAX_64 18446744073709551615.0
+  bool is_negative = m_value < 0;
+  uint128_t value = is_negative ? -m_value:m_value;
+  uint64_t hi = value >> 64;
+  uint64_t lo = value;
+  double flo = lo;
+  flo /= HP128_MAX_64;
+  double retval = hi;
+  retval += flo;
+  retval = is_negative ? -retval : retval;
+  return retval;
+#undef HP128_MAX_64
+}
+
+int64_t HighPrecision::GetInteger (void) const
+{
+  int128_t v = m_value >> 64;
+  return v;
+}
+
+bool 
+HighPrecision::Add (HighPrecision const &o)
+{
+  m_value += o.m_value;
+  return true;
+}
+bool 
+HighPrecision::Sub (HighPrecision const &o)
+{
+  m_value -= o.m_value;
+  return true;
+}
+
+int 
+HighPrecision::Compare (HighPrecision const &o) const
+{
+  return (m_value < o.m_value)?-1:(m_value == o.m_value)?0:1;
+}
+
+HighPrecision
+HighPrecision::Zero (void)
+{
+  return HighPrecision ();
+}
 
 } // namespace ns3
 
