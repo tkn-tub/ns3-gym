@@ -15,18 +15,26 @@ def set_options(opt):
 
 
 def configure(conf):
+    a = conf.check(type_name='uint128_t', define_name='HAVE_UINT128_T')
+    b = conf.check(type_name='__uint128_t', define_name='HAVE___UINT128_T')
+
+
     if Options.options.high_precision_as_double:
         conf.define('USE_HIGH_PRECISION_DOUBLE', 1)
         conf.env['USE_HIGH_PRECISION_DOUBLE'] = 1
         highprec = 'long double'
-    else:
-        conf.env['USE_HIGH_PRECISION_DOUBLE'] = 0
+    elif a or b:
+        conf.define('USE_HIGH_PRECISION_128', 1)
+        conf.env['USE_HIGH_PRECISION_128'] = 1
         highprec = '128-bit integer'
+    else:
+        conf.define('USE_HIGH_PRECISION_CAIRO', 1)
+        conf.env['USE_HIGH_PRECISION_CAIRO'] = 1
+        highprec = 'cairo 128-bit integer'
 
     conf.check_message_custom('high precision time', 'implementation', highprec)
 
     conf.check(header_name='stdint.h', define_name='HAVE_STDINT_H')
-
     conf.check(header_name='inttypes.h', define_name='HAVE_INTTYPES_H')
 
     conf.check(header_name='sys/inttypes.h', define_name='HAVE_SYS_INT_TYPES_H')
@@ -96,7 +104,10 @@ def build(bld):
         headers.source.extend([
             'high-precision-double.h',
             ])
-    else:
+    elif env['USE_HIGH_PRECISION_128']:
+        headers.source.extend(['high-precision-128.h'])
+        sim.source.extend(['high-precision-128.cc'])
+    elif env['USE_HIGH_PRECISION_CAIRO']:
         sim.source.extend([
             'high-precision-128.cc',
             'cairo-wideint.c',

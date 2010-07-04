@@ -17,8 +17,8 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#ifndef HIGH_PRECISION_128_H
-#define HIGH_PRECISION_128_H
+#ifndef HIGH_PRECISION_CAIRO_H
+#define HIGH_PRECISION_CAIRO_H
 
 #include <stdint.h>
 #include "cairo-wideint-private.h"
@@ -258,4 +258,4 @@ HighPrecision::Zero (void)
 
 }; // namespace ns3
 
-#endif /* HIGH_PRECISION_128_H */
+#endif /* HIGH_PRECISION_CAIRO_H */

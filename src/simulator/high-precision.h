@@ -23,11 +23,13 @@
 #include <stdint.h>
 #include "ns3/simulator-config.h"
 
-#ifdef USE_HIGH_PRECISION_DOUBLE
+#if defined (USE_HIGH_PRECISION_DOUBLE)
 #include "high-precision-double.h"
-#else /* USE_HIGH_PRECISION_DOUBLE */
+#elif defined (USE_HIGH_PRECISION_128)
 #include "high-precision-128.h"
-#endif /* USE_HIGH_PRECISION_DOUBLE */
+#elif defined (USE_HIGH_PRECISION_CAIRO)
+#include "high-precision-cairo.h"
+#endif
 
 namespace ns3 {
 
