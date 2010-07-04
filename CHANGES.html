@@ -62,8 +62,43 @@ the user to specify a list of received packets that should be errored.  The
 list corresponds not to the packet UID but to the sequence of received
 packets as observed by the error model.   See src/common/error-model.h
 </ul>
+<ul><b>Respond to interface events:"</b> New attribute for Ipv4GlobalRouting,
+"RespondToInterfaceEvents", which when enabled, will cause global routes
+to be recomputed upon any interface or address notification event from IPv4.
+</ul>
 
 <h2>Changes to existing API:</h2>
+
+<ul>
+<li><b>Changes to construction and naming of Wi-Fi transmit rates:</b>
+A reorganisation of the construction of Wi-Fi transmit rates has been
+undertaken with the aim of simplifying the task of supporting further
+IEEE 802.11 PHYs. This work has been completed under the auspices of
+Bug 871.
+
+From the viewpoint of simulation scripts not part of the ns-3
+distribution, the key change is that WifiMode names of the form
+wifi<em>x</em>-<em>n</em>mbs are now invalid. Names now take the
+form <em>Cccc</em>Rate<em>n</em>Mbps[BW<em>b</em>MHz],
+where <em>n</em> is the root bitrate in megabits-per-second as before
+(with only significant figures included, and an underscore replacing
+any decimal point), and <em>Cccc</em> is a representation of the
+Modulation Class as defined in Table 9-2 of IEEE
+Std. 802.11-2007. Currently-supported options for <em>Cccc</em>
+are <em>Ofdm</em> and <em>Dsss</em>. For modulation classes where
+optional reduced-bandwidth transmission is possible, this is captured
+in the final part of the form above, with <em>b</em> specifying the
+nominal signal bandwidth in megahertz.
+
+<li><b>Consolidation of classes support Wi-Fi Information Elements:</b>
+When the <em>mesh</em> module was introduced it added a class
+hierarchy for modelling of the various Information Elements that were
+required. In this release, this class hierarchy has extended by moving
+the base classes (WifiInformationElement and
+WifiInformationElementVector) into the <em>wifi</em> module. This
+change is intended to ease the addition of support for modelling of
+further Wi-Fi functionality.
+</ul>
 
 <h2>Changed behavior:</h2>
 <ul>

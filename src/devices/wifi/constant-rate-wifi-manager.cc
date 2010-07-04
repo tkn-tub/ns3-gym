@@ -34,11 +34,11 @@ ConstantRateWifiManager::GetTypeId (void)
     .SetParent<WifiRemoteStationManager> ()
     .AddConstructor<ConstantRateWifiManager> ()
     .AddAttribute ("DataMode", "The transmission mode to use for every data packet transmission",
-                   StringValue ("wifia-6mbs"),
+                   StringValue ("OfdmRate6Mbps"),
                    MakeWifiModeAccessor (&ConstantRateWifiManager::m_dataMode),
                    MakeWifiModeChecker ())
     .AddAttribute ("ControlMode", "The transmission mode to use for every control packet transmission.",
-                   StringValue ("wifia-6mbs"),
+                   StringValue ("OfdmRate6Mbps"),
                    MakeWifiModeAccessor (&ConstantRateWifiManager::m_ctlMode),
                    MakeWifiModeChecker ())
     ;

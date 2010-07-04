@@ -185,14 +185,7 @@ AsciiTraceHelper::CreateFileStream (std::string filename, std::ios::openmode fil
 {
   NS_LOG_FUNCTION (filename << filemode);
 
-  std::ofstream *ofstream = new std::ofstream;
-
-  ofstream->open (filename.c_str (), filemode);
-  NS_ABORT_MSG_UNLESS (ofstream->is_open (), "AsciiTraceHelper::CreateFileStream():  Unable to Open " << 
-                       filename << " for mode " << filemode);
-  
-  Ptr<OutputStreamWrapper> StreamWrapper = Create<OutputStreamWrapper> ();
-  StreamWrapper->SetStream (ofstream);
+  Ptr<OutputStreamWrapper> StreamWrapper = Create<OutputStreamWrapper> (filename, filemode);
 
   //
   // Note that the ascii trace helper promptly forgets all about the trace file.

@@ -829,7 +829,7 @@ MacLow::ReceiveOk (Ptr<Packet> packet, double rxSnr, WifiMode txMode, WifiPreamb
              data MPDUs with the Ack Policy subfield set to Block Ack, it shall discard
              them and shall send a DELBA frame using the normal access 
              mechanisms. */
-          AccessClass ac = QosUtilsMapTidToAc (hdr.GetQosTid ());
+          AcIndex ac = QosUtilsMapTidToAc (hdr.GetQosTid ());
           m_edcaListeners[ac]->BlockAckInactivityTimeout (hdr.GetAddr2 (), hdr.GetQosTid ());
           return;
         }
@@ -1401,7 +1401,7 @@ MacLow::SendCtsAfterRts (Mac48Address source, Time duration, WifiMode rtsTxMode,
   WifiMacTrailer fcs;
   packet->AddTrailer (fcs);
 
-  struct SnrTag tag;
+  SnrTag tag;
   tag.Set (rtsSnr);
   packet->AddPacketTag (tag);
 
@@ -1480,7 +1480,7 @@ MacLow::SendAckAfterData (Mac48Address source, Time duration, WifiMode dataTxMod
   WifiMacTrailer fcs;
   packet->AddTrailer (fcs);
 
-  struct SnrTag tag;
+  SnrTag tag;
   tag.Set (dataSnr);
   packet->AddPacketTag (tag);
 
@@ -1538,7 +1538,7 @@ MacLow::CreateBlockAckAgreement (const MgtAddBaResponseHeader *respHdr, Mac48Add
       AgreementsI it = m_bAckAgreements.find (std::make_pair (originator, respHdr->GetTid ()));
       Time timeout = MicroSeconds (1024 * agreement.GetTimeout ());
  
-      AccessClass ac = QosUtilsMapTidToAc (agreement.GetTid ());
+      AcIndex ac = QosUtilsMapTidToAc (agreement.GetTid ());
       
       it->second.first.m_inactivityEvent = Simulator::Schedule (timeout,
                                                                 &MacLowBlockAckEventListener::BlockAckInactivityTimeout,
@@ -1846,8 +1846,8 @@ MacLow::ResetBlockAckInactivityTimerIfNeeded (BlockAckAgreement &agreement)
       agreement.m_inactivityEvent.Cancel ();
       Time timeout = MicroSeconds (1024 * agreement.GetTimeout ());
 
-      AccessClass ac = QosUtilsMapTidToAc (agreement.GetTid ());
-      //std::map<AccessClass, MacLowTransmissionListener*>::iterator it = m_edcaListeners.find (ac);
+      AcIndex ac = QosUtilsMapTidToAc (agreement.GetTid ());
+      //std::map<AcIndex, MacLowTransmissionListener*>::iterator it = m_edcaListeners.find (ac);
       //NS_ASSERT (it != m_edcaListeners.end ());
 
       agreement.m_inactivityEvent = Simulator::Schedule (timeout, 
@@ -1859,7 +1859,7 @@ MacLow::ResetBlockAckInactivityTimerIfNeeded (BlockAckAgreement &agreement)
 }
 
 void
-MacLow::RegisterBlockAckListenerForAc (enum AccessClass ac, MacLowBlockAckEventListener *listener)
+MacLow::RegisterBlockAckListenerForAc (enum AcIndex ac, MacLowBlockAckEventListener *listener)
 {
   m_edcaListeners.insert (std::make_pair (ac, listener));
 }

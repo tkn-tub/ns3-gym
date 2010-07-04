@@ -25,7 +25,7 @@
 #include "ns3/node.h"
 #include "ss-net-device.h"
 #include "wimax-phy.h"
-#include "packet-burst.h"
+#include "ns3/packet-burst.h"
 #include <algorithm>
 #include "dl-mac-messages.h"
 #include "ul-mac-messages.h"

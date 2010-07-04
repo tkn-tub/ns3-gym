@@ -479,7 +479,7 @@ public:
    * The lifetime of the registered listener is typically equal to the lifetime of the queue
    * associated to this AC.
    */
-  void RegisterBlockAckListenerForAc (enum AccessClass ac, MacLowBlockAckEventListener *listener);
+  void RegisterBlockAckListenerForAc (enum AcIndex ac, MacLowBlockAckEventListener *listener);
 private:
   void CancelAllEvents (void);
   uint32_t GetAckSize (void) const;
@@ -631,7 +631,7 @@ private:
 
   Agreements m_bAckAgreements;
   
-  typedef std::map<AccessClass, MacLowBlockAckEventListener*> QueueListeners;
+  typedef std::map<AcIndex, MacLowBlockAckEventListener*> QueueListeners;
   QueueListeners m_edcaListeners;
 };
 

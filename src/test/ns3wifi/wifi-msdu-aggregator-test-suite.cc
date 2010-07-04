@@ -70,7 +70,7 @@ WifiMsduAggregatorThroughputTest::DoRun (void)
   // scenario with 802.11b rates (transmit rate fixed to 1 Mbps, no
   // less), but this approach tests the bit we need to without unduly
   // increasing the complexity of the simulation.
-  std::string phyMode ("wifib-1mbs");
+  std::string phyMode ("DsssRate1Mbps");
   wifi.SetStandard (WIFI_PHY_STANDARD_80211b);
   wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager",
                                 "DataMode", StringValue (phyMode),

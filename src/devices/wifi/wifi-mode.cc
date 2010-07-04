@@ -18,7 +18,9 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 #include "wifi-mode.h"
+#include "ns3/simulator.h"
 #include "ns3/assert.h"
+#include "ns3/log.h"
 
 namespace ns3 {
 
@@ -35,10 +37,7 @@ std::istream & operator >> (std::istream &is, WifiMode &mode)
 {
   std::string str;
   is >> str;
-  if (!WifiModeFactory::GetFactory ()->Search (str, &mode))
-    {
-      is.setstate (std::ios_base::badbit);
-    }
+  mode = WifiModeFactory::GetFactory ()->Search (str);
   return is;
 }
 
@@ -60,23 +59,11 @@ WifiMode::GetDataRate (void) const
   struct WifiModeFactory::WifiModeItem *item = WifiModeFactory::GetFactory ()->Get (m_uid);
   return item->dataRate;
 }
-bool 
-WifiMode::IsModulationBpsk (void) const
+enum WifiCodeRate 
+WifiMode::GetCodeRate (void) const
 {
   struct WifiModeFactory::WifiModeItem *item = WifiModeFactory::GetFactory ()->Get (m_uid);
-  return item->modulation == WifiMode::BPSK;
-}
-bool 
-WifiMode::IsModulationQam (void) const
-{
-  struct WifiModeFactory::WifiModeItem *item = WifiModeFactory::GetFactory ()->Get (m_uid);
-  return item->modulation == WifiMode::QAM;
-}
-enum WifiMode::ModulationType 
-WifiMode::GetModulationType (void) const
-{
-  struct WifiModeFactory::WifiModeItem *item = WifiModeFactory::GetFactory ()->Get (m_uid);
-  return item->modulation;
+  return item->codingRate;
 }
 uint8_t 
 WifiMode::GetConstellationSize (void) const
@@ -102,11 +89,11 @@ WifiMode::GetUid (void) const
 {
   return m_uid;
 }
-enum WifiPhyStandard 
-WifiMode::GetStandard () const
+enum WifiModulationClass
+WifiMode::GetModulationClass () const
 {
   struct WifiModeFactory::WifiModeItem *item = WifiModeFactory::GetFactory ()->Get (m_uid);
-  return item->standard;
+  return item->modClass;
 }
 WifiMode::WifiMode ()
   : m_uid (0)
@@ -116,10 +103,7 @@ WifiMode::WifiMode (uint32_t uid)
 {}
 WifiMode::WifiMode (std::string name)
 {
-  if (!WifiModeFactory::GetFactory ()->Search (name, this))
-    {
-      NS_FATAL_ERROR ("Invalid requested wifi mode: " << name);
-    }
+  *this = WifiModeFactory::GetFactory ()->Search (name);
 }
 
 ATTRIBUTE_HELPER_CPP (WifiMode);
@@ -127,130 +111,96 @@ ATTRIBUTE_HELPER_CPP (WifiMode);
 WifiModeFactory::WifiModeFactory ()
 {}
 
-WifiMode 
-WifiModeFactory::CreateBpsk (std::string uniqueName,
-			     bool isMandatory,
-			     uint32_t bandwidth,
-			     uint32_t dataRate,
-			     uint32_t phyRate,
-                             enum WifiPhyStandard standard)
-{
-  WifiModeFactory *factory = GetFactory ();
-  uint32_t uid = factory->AllocateUid (uniqueName);
-  WifiModeItem *item = factory->Get (uid);
-  item->uniqueUid = uniqueName;
-  item->bandwidth = bandwidth;
-  item->dataRate = dataRate;
-  item->phyRate = phyRate;
-  item->modulation = WifiMode::BPSK;
-  item->constellationSize = 2;
-  item->isMandatory = isMandatory;
-  item->standard = standard;
-  return WifiMode (uid);
-}
 
 WifiMode 
-WifiModeFactory::CreateQpsk (std::string uniqueName,
-			     bool isMandatory,
-			     uint32_t bandwidth,
-			     uint32_t dataRate,
-			     uint32_t phyRate,
-                             enum WifiPhyStandard standard)
+WifiModeFactory::CreateWifiMode (std::string uniqueName,
+                                 enum WifiModulationClass modClass,
+                                 bool isMandatory,
+                                 uint32_t bandwidth,
+                                 uint32_t dataRate,
+                                 enum WifiCodeRate codingRate,
+                                 uint8_t constellationSize)
 {
   WifiModeFactory *factory = GetFactory ();
   uint32_t uid = factory->AllocateUid (uniqueName);
   WifiModeItem *item = factory->Get (uid);
   item->uniqueUid = uniqueName;
-  item->bandwidth = bandwidth;
-  item->dataRate = dataRate;
-  item->phyRate = phyRate;
-  item->modulation = WifiMode::QPSK;
-  item->constellationSize = 4;
-  item->isMandatory = isMandatory;
-  item->standard = standard;
-  return WifiMode (uid);
-}
+  item->modClass = modClass;
+  // The modulation class for this WifiMode must be valid.
+  NS_ASSERT (modClass != WIFI_MOD_CLASS_UNKNOWN);
 
-WifiMode 
-WifiModeFactory::CreateQam (std::string uniqueName,
-                            bool isMandatory,
-			    uint32_t bandwidth,
-			    uint32_t dataRate,
-			    uint32_t phyRate,
-			    uint8_t constellationSize,
-                            enum WifiPhyStandard standard)
-{
-  WifiModeFactory *factory = GetFactory ();
-  uint32_t uid = factory->AllocateUid (uniqueName);
-  WifiModeItem *item = factory->Get (uid);
-  item->uniqueUid = uniqueName;
   item->bandwidth = bandwidth;
   item->dataRate = dataRate;
-  item->phyRate = phyRate;
-  item->modulation = WifiMode::QAM;
+
+  item->codingRate = codingRate;
+
+  switch (codingRate) {
+  case WIFI_CODE_RATE_3_4:
+    item->phyRate = dataRate * 4 / 3;
+    break;
+  case WIFI_CODE_RATE_2_3:
+    item->phyRate = dataRate * 3 / 2;
+    break;
+  case WIFI_CODE_RATE_1_2:
+    item->phyRate = dataRate * 2 / 1;
+    break;
+  case WIFI_CODE_RATE_UNDEFINED:
+  default:
+    item->phyRate = dataRate;
+    break;
+  }
+
+  // Check for compatibility between modulation class and coding
+  // rate. If modulation class is DSSS then coding rate must be
+  // undefined, and vice versa. I could have done this with an
+  // assertion, but it seems better to always give the error (i.e.,
+  // not only in non-optimised builds) and the cycles that extra test
+  // here costs are only suffered at simulation setup.
+  if ((codingRate == WIFI_CODE_RATE_UNDEFINED) != (modClass == WIFI_MOD_CLASS_DSSS))
+    {
+      NS_FATAL_ERROR ("Error in creation of WifiMode named " << uniqueName << std::endl
+                      << "Code rate must be WIFI_CODE_RATE_UNDEFINED iff Modulation Class is WIFI_MOD_CLASS_DSSS");
+    }
+
   item->constellationSize = constellationSize;
   item->isMandatory = isMandatory;
-  item->standard = standard;
+
   return WifiMode (uid);
 }
-WifiMode 
-WifiModeFactory::CreateDbpsk (std::string uniqueName,
-			     bool isMandatory,
-			     uint32_t bandwidth,
-			     uint32_t dataRate,
-			     uint32_t phyRate,
-                             enum WifiPhyStandard standard)
+
+WifiMode
+WifiModeFactory::Search (std::string name)
 {
-  WifiModeFactory *factory = GetFactory ();
-  uint32_t uid = factory->AllocateUid (uniqueName);
-  WifiModeItem *item = factory->Get (uid);
-  item->uniqueUid = uniqueName;
-  item->bandwidth = bandwidth;
-  item->dataRate = dataRate;
-  item->phyRate = phyRate;
-  item->modulation = WifiMode::DBPSK;
-  item->constellationSize = 2;
-  item->isMandatory = isMandatory;
-  item->standard = standard;
-  return WifiMode (uid);
-}
-WifiMode 
-WifiModeFactory::CreateDqpsk (std::string uniqueName,
-			     bool isMandatory,
-			     uint32_t bandwidth,
-			     uint32_t dataRate,
-			     uint32_t phyRate,
-                             enum WifiPhyStandard standard)
-{
-  WifiModeFactory *factory = GetFactory ();
-  uint32_t uid = factory->AllocateUid (uniqueName);
-  WifiModeItem *item = factory->Get (uid);
-  item->uniqueUid = uniqueName;
-  item->bandwidth = bandwidth;
-  item->dataRate = dataRate;
-  item->phyRate = phyRate;
-  item->modulation = WifiMode::DQPSK;
-  item->constellationSize = 4;
-  item->isMandatory = isMandatory;
-  item->standard = standard;
-  return WifiMode (uid);
-}
-bool 
-WifiModeFactory::Search (std::string name, WifiMode *mode)
-{
+  WifiModeItemList::const_iterator i;
   uint32_t j = 0;
-  for (WifiModeItemList::const_iterator i = m_itemList.begin ();
-       i != m_itemList.end (); i++)
+  for (i = m_itemList.begin (); i != m_itemList.end (); i++)
     {
       if (i->uniqueUid == name)
 	{
-          *mode = WifiMode (j);
-	  return true;
+          return WifiMode (j);
 	}
       j++;
     }
-  *mode = WifiMode (0);
-  return false;
+
+  // If we get here then a matching WifiMode was not found above. This
+  // is a fatal problem, but we try to be helpful by displaying the
+  // list of WifiModes that are supported.
+  NS_LOG_UNCOND ("Could not find match for WifiMode named \""
+                  << name << "\". Valid options are:");
+  for (i = m_itemList.begin (); i != m_itemList.end (); i++)
+    {
+      NS_LOG_UNCOND ("  " << i->uniqueUid);
+    }
+  // Empty fatal error to die. We've already unconditionally logged
+  // the helpful information.
+  NS_FATAL_ERROR ("");
+
+  // This next line is unreachable because of the fatal error
+  // immediately above, and that is fortunate, because we have no idea
+  // what is in WifiMode (0), but we do know it is not what our caller
+  // has requested by name. It's here only because it's the safest
+  // thing that'll give valid code.
+  return WifiMode (0);
 }
 
 uint32_t
@@ -291,10 +241,10 @@ WifiModeFactory::GetFactory (void)
       item->bandwidth = 0;
       item->dataRate = 0;
       item->phyRate = 0;
-      item->modulation = WifiMode::UNKNOWN;
+      item->modClass = WIFI_MOD_CLASS_UNKNOWN;
       item->constellationSize = 0;
+      item->codingRate = WIFI_CODE_RATE_UNDEFINED;
       item->isMandatory = false;
-      item->standard = WIFI_PHY_UNKNOWN;
       isFirstTime = false;
     }
   return &factory;

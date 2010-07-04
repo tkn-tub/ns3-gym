@@ -158,7 +158,7 @@ SimpleOfdmWimaxChannel::Send (Time BlockTime,
             {
               distance = senderMobility->GetDistanceFrom (receiverMobility);
               delay =  Seconds(distance/300000000.0);
-              rxPowerDbm = m_loss->CalcRxPower (rxPowerDbm, senderMobility, receiverMobility);
+              rxPowerDbm = m_loss->CalcRxPower (txPowerDbm, senderMobility, receiverMobility);
             }
           simpleOfdmSendParam * param = new simpleOfdmSendParam (fecBlock,
                                                                  burstSize,

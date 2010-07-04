@@ -156,7 +156,7 @@ void ArfWifiManager::DoReportDataOk (WifiRemoteStation *st,
   NS_LOG_DEBUG ("station=" << station << " data ok success=" << station->m_success << ", timer=" << station->m_timer);
   if ((station->m_success == m_successThreshold ||
        station->m_timer == m_timerThreshold) &&
-      (station->m_rate < (station->m_state->m_modes.size () - 1))) 
+      (station->m_rate < (station->m_state->m_operationalRateSet.size () - 1)))
     {
       NS_LOG_DEBUG ("station="<<station<<" inc rate");
       station->m_rate++;

@@ -60,35 +60,38 @@ ByteTagIterator::Item::Item (TypeId tid, uint32_t start, uint32_t end, TagBuffer
     m_start (start),
     m_end (end),
     m_buffer (buffer)
-{}
-bool 
+{
+}
+bool
 ByteTagIterator::HasNext (void) const
 {
   return m_current.HasNext ();
 }
-ByteTagIterator::Item 
+ByteTagIterator::Item
 ByteTagIterator::Next (void)
 {
   ByteTagList::Iterator::Item i = m_current.Next ();
-  return ByteTagIterator::Item (i.tid, 
-                                i.start-m_current.GetOffsetStart (), 
-                                i.end-m_current.GetOffsetStart (), 
+  return ByteTagIterator::Item (i.tid,
+                                i.start-m_current.GetOffsetStart (),
+                                i.end-m_current.GetOffsetStart (),
                                 i.buf);
 }
 ByteTagIterator::ByteTagIterator (ByteTagList::Iterator i)
   : m_current (i)
-{}
+{
+}
 
 
 PacketTagIterator::PacketTagIterator (const struct PacketTagList::TagData *head)
   : m_current (head)
-{}
-bool 
+{
+}
+bool
 PacketTagIterator::HasNext (void) const
 {
   return m_current != 0;
 }
-PacketTagIterator::Item 
+PacketTagIterator::Item
 PacketTagIterator::Next (void)
 {
   NS_ASSERT (HasNext ());
@@ -99,13 +102,14 @@ PacketTagIterator::Next (void)
 
 PacketTagIterator::Item::Item (const struct PacketTagList::TagData *data)
   : m_data (data)
-{}
-TypeId 
+{
+}
+TypeId
 PacketTagIterator::Item::GetTypeId (void) const
 {
   return m_data->tid;
 }
-void 
+void
 PacketTagIterator::Item::GetTag (Tag &tag) const
 {
   NS_ASSERT (tag.GetInstanceTypeId () == m_data->tid);
@@ -145,7 +149,7 @@ Packet::Packet (const Packet &o)
     m_metadata (o.m_metadata)
 {
   o.m_nixVector ? m_nixVector = o.m_nixVector->Copy () 
-                : m_nixVector = 0;
+    : m_nixVector = 0;
 }
 
 Packet &
@@ -160,7 +164,7 @@ Packet::operator = (const Packet &o)
   m_packetTagList = o.m_packetTagList;
   m_metadata = o.m_metadata;
   o.m_nixVector ? m_nixVector = o.m_nixVector->Copy () 
-                : m_nixVector = 0;
+    : m_nixVector = 0;
   return *this;
 }
 
@@ -216,7 +220,8 @@ Packet::Packet (const Buffer &buffer,  const ByteTagList &byteTagList,
     m_packetTagList (packetTagList),
     m_metadata (metadata),
     m_nixVector (0)
-{}
+{
+}
 
 Ptr<Packet>
 Packet::CreateFragment (uint32_t start, uint32_t length) const
@@ -429,41 +434,41 @@ Packet::Print (std::ostream &os) const
       if (item.isFragment)
         {
           switch (item.type) {
-          case PacketMetadata::Item::PAYLOAD:
-            os << "Payload";
-            break;
-          case PacketMetadata::Item::HEADER:
-          case PacketMetadata::Item::TRAILER:
-            os << item.tid.GetName ();
-            break;
-          }
+            case PacketMetadata::Item::PAYLOAD:
+              os << "Payload";
+              break;
+            case PacketMetadata::Item::HEADER:
+            case PacketMetadata::Item::TRAILER:
+              os << item.tid.GetName ();
+              break;
+            }
           os << " Fragment [" << item.currentTrimedFromStart<<":"
              << (item.currentTrimedFromStart + item.currentSize) << "]";
         }
       else
         {
           switch (item.type) {
-          case PacketMetadata::Item::PAYLOAD:
-            os << "Payload (size=" << item.currentSize << ")";
-            break;
-          case PacketMetadata::Item::HEADER:
-          case PacketMetadata::Item::TRAILER:
-            os << item.tid.GetName () << " (";
-            {
-              NS_ASSERT (item.tid.HasConstructor ());
-              Callback<ObjectBase *> constructor = item.tid.GetConstructor ();
-              NS_ASSERT (!constructor.IsNull ());
-              ObjectBase *instance = constructor ();
-              NS_ASSERT (instance != 0);
-              Chunk *chunk = dynamic_cast<Chunk *> (instance);
-              NS_ASSERT (chunk != 0);
-              chunk->Deserialize (item.current);
-              chunk->Print (os);
-              delete chunk;
+            case PacketMetadata::Item::PAYLOAD:
+              os << "Payload (size=" << item.currentSize << ")";
+              break;
+            case PacketMetadata::Item::HEADER:
+            case PacketMetadata::Item::TRAILER:
+              os << item.tid.GetName () << " (";
+              {
+                NS_ASSERT (item.tid.HasConstructor ());
+                Callback<ObjectBase *> constructor = item.tid.GetConstructor ();
+                NS_ASSERT (!constructor.IsNull ());
+                ObjectBase *instance = constructor ();
+                NS_ASSERT (instance != 0);
+                Chunk *chunk = dynamic_cast<Chunk *> (instance);
+                NS_ASSERT (chunk != 0);
+                chunk->Deserialize (item.current);
+                chunk->Print (os);
+                delete chunk;
+              }
+              os << ")";
+              break;
             }
-            os << ")";
-            break;
-          }          
         }
       if (i.HasNext ())
         {
@@ -482,58 +487,58 @@ Packet::Print (std::ostream &os) const
       if (item.isFragment)
         {
           switch (item.type) {
-          case PacketMetadata::Item::PAYLOAD:
-            os << "Payload";
-            break;
-          case PacketMetadata::Item::HEADER:
-          case PacketMetadata::Item::TRAILER:
-            os << item.tid.GetName ();
-            break;
-          }
+            case PacketMetadata::Item::PAYLOAD:
+              os << "Payload";
+              break;
+            case PacketMetadata::Item::HEADER:
+            case PacketMetadata::Item::TRAILER:
+              os << item.tid.GetName ();
+              break;
+            }
           os << " Fragment [" << item.currentTrimedFromStart<<":"
              << (item.currentTrimedFromStart + item.currentSize) << "]";
         }
       else
         {
           switch (item.type) {
-          case PacketMetadata::Item::PAYLOAD:
-            os << "Payload (size=" << item.currentSize << ")";
-            break;
-          case PacketMetadata::Item::HEADER:
-          case PacketMetadata::Item::TRAILER:
-            os << item.tid.GetName () << "(";
-            {
-              NS_ASSERT (item.tid.HasConstructor ());
-              Callback<ObjectBase *> constructor = item.tid.GetConstructor ();
-              NS_ASSERT (constructor.IsNull ());
-              ObjectBase *instance = constructor ();
-              NS_ASSERT (instance != 0);
-              Chunk *chunk = dynamic_cast<Chunk *> (instance);
-              NS_ASSERT (chunk != 0);
-              chunk->Deserialize (item.current);
-              for (uint32_t j = 0; j < item.tid.GetAttributeN (); j++)
-                {
-                  std::string attrName = item.tid.GetAttributeName (j);
-                  std::string value;
-                  bool ok = chunk->GetAttribute (attrName, value);
-                  NS_ASSERT (ok);
-                  os << attrName << "=" << value;
-                  if ((j + 1) < item.tid.GetAttributeN ())
-                    {
-                      os << ",";
-                    }
-                }
+            case PacketMetadata::Item::PAYLOAD:
+              os << "Payload (size=" << item.currentSize << ")";
+              break;
+            case PacketMetadata::Item::HEADER:
+            case PacketMetadata::Item::TRAILER:
+              os << item.tid.GetName () << "(";
+              {
+                NS_ASSERT (item.tid.HasConstructor ());
+                Callback<ObjectBase *> constructor = item.tid.GetConstructor ();
+                NS_ASSERT (constructor.IsNull ());
+                ObjectBase *instance = constructor ();
+                NS_ASSERT (instance != 0);
+                Chunk *chunk = dynamic_cast<Chunk *> (instance);
+                NS_ASSERT (chunk != 0);
+                chunk->Deserialize (item.current);
+                for (uint32_t j = 0; j < item.tid.GetAttributeN (); j++)
+                  {
+                    std::string attrName = item.tid.GetAttributeName (j);
+                    std::string value;
+                    bool ok = chunk->GetAttribute (attrName, value);
+                    NS_ASSERT (ok);
+                    os << attrName << "=" << value;
+                    if ((j + 1) < item.tid.GetAttributeN ())
+                      {
+                        os << ",";
+                      }
+                  }
+              }
+              os << ")";
+              break;
             }
-            os << ")";
-            break;
-          }          
         }
       if (i.HasNext ())
         {
           os << " ";
         }
     }
-#endif   
+#endif
 }
 
 PacketMetadata::ItemIterator 
@@ -594,10 +599,10 @@ uint32_t Packet::GetSerializedSize (void) const
 
   // add 4-bytes for entry of total length of buffer 
   size += 4;
-  
+
   return size;
 }
-  
+
 uint32_t 
 Packet::Serialize (uint8_t* buffer, uint32_t maxSize) const
 {
@@ -733,20 +738,20 @@ Packet::Deserialize (const uint8_t* buffer, uint32_t size)
   NS_ASSERT (size >= 0);
 
   if (nixSize > 4)
-  {
-    Ptr<NixVector> nix = CreateObject<NixVector> ();
-    uint32_t nixDeserialized = nix->Deserialize (p, nixSize);
-    if (!nixDeserialized)
-      {
-        // nix-vector not deserialized 
-        // completely
-        return 0;
-      }
-    m_nixVector = nix;
-    // increment p by nixSize ensuring 
-    // 4-byte boundary
-    p += ((((nixSize - 4) + 3) & (~3)) / 4);
-  }
+    {
+      Ptr<NixVector> nix = CreateObject<NixVector> ();
+      uint32_t nixDeserialized = nix->Deserialize (p, nixSize);
+      if (!nixDeserialized)
+        {
+          // nix-vector not deserialized
+          // completely
+          return 0;
+        }
+      m_nixVector = nix;
+      // increment p by nixSize ensuring
+      // 4-byte boundary
+      p += ((((nixSize - 4) + 3) & (~3)) / 4);
+    }
 
   // read tags
   //XXX
@@ -789,7 +794,7 @@ Packet::Deserialize (const uint8_t* buffer, uint32_t size)
       // completely
       return 0;
     }
-  
+
   // return zero if did not deserialize the 
   // number of expected bytes
   return (size == 0);
@@ -912,7 +917,7 @@ public:
       .SetParent<Tag> ()
       .AddConstructor<ATestTag<N> > ()
       .HideFromDocumentation ()
-      ;
+    ;
     return tid;
   }
   virtual TypeId GetInstanceTypeId (void) const {
@@ -962,7 +967,7 @@ public:
       .SetParent<Header> ()
       .AddConstructor<ATestHeader<N> > ()
       .HideFromDocumentation ()
-      ;
+    ;
     return tid;
   }
   virtual TypeId GetInstanceTypeId (void) const {
@@ -1013,7 +1018,7 @@ public:
       .SetParent<Header> ()
       .AddConstructor<ATestTrailer<N> > ()
       .HideFromDocumentation ()
-      ;
+    ;
     return tid;
   }
   virtual TypeId GetInstanceTypeId (void) const {
@@ -1053,7 +1058,7 @@ struct Expected
 {
   Expected (uint32_t n_, uint32_t start_, uint32_t end_)
     : n (n_), start (start_), end (end_) {}
-  
+
   uint32_t n;
   uint32_t start;
   uint32_t end;
@@ -1067,7 +1072,7 @@ struct Expected
 #define CHECK(p, n, ...)                                \
   DoCheck (p, __FILE__, __LINE__, n, __VA_ARGS__)
 
-class PacketTest: public TestCase 
+class PacketTest : public TestCase
 {
 public:
   PacketTest ();
@@ -1078,7 +1083,8 @@ private:
 
 
 PacketTest::PacketTest ()
-  : TestCase ("Packet") {}
+  : TestCase ("Packet") {
+}
 
 void
 PacketTest::DoCheck (Ptr<const Packet> p, const char *file, int line, uint32_t n, ...)
@@ -1125,7 +1131,7 @@ PacketTest::DoRun (void)
   Ptr<Packet> packet = Create<Packet> ();
   packet->AddAtEnd (pkt1);
   packet->AddAtEnd (pkt2);
-  
+
   NS_TEST_EXPECT_MSG_EQ (packet->GetSize (), 11, "trivial");
 
   std::string msg = std::string (reinterpret_cast<const char *>(packet->PeekData ()),
@@ -1215,7 +1221,7 @@ PacketTest::DoRun (void)
     CHECK (tmp, 1, E (20, 0, 100));
     tmp->AddTrailer (ATestTrailer<10> ());
     CHECK (tmp, 1, E (20, 0, 100));
-    
+
   }
 
   {
@@ -1280,7 +1286,7 @@ PacketTest::DoRun (void)
   }
 
   {
-    // bug 572                                                                  
+    // bug 572
     Ptr<Packet> tmp = Create<Packet> (1000);
     tmp->AddByteTag (ATestTag<20> ());
     CHECK (tmp, 1, E (20, 0, 1000));

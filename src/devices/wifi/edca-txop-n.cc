@@ -771,7 +771,7 @@ EdcaTxopN::GetFragmentPacket (WifiMacHeader *hdr)
 }
 
 void
-EdcaTxopN::SetAccessClass (enum AccessClass ac)
+EdcaTxopN::SetAccessCategory (enum AcIndex ac)
 {
   m_ac = ac;
 }

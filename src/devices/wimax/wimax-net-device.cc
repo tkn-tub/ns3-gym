@@ -27,7 +27,7 @@
 #include "ns3/packet.h"
 #include "wimax-net-device.h"
 #include "wimax-channel.h"
-#include "packet-burst.h"
+#include "ns3/packet-burst.h"
 #include "burst-profile-manager.h"
 #include <list>
 #include "send-params.h"
@@ -43,7 +43,7 @@ NS_LOG_COMPONENT_DEFINE ("WimaxNetDevice");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED ( WimaxNetDevice);
+NS_OBJECT_ENSURE_REGISTERED (WimaxNetDevice);
 
 uint32_t WimaxNetDevice::m_nrFrames = 0;
 uint8_t WimaxNetDevice::m_direction = ~0;

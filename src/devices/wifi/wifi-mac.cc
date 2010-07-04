@@ -356,7 +356,7 @@ WifiMac::Configure80211p_SCH (void)
 }
 
 void
-WifiMac::ConfigureDcf (Ptr<Dcf> dcf, uint32_t cwmin, uint32_t cwmax, enum AccessClass ac)
+WifiMac::ConfigureDcf (Ptr<Dcf> dcf, uint32_t cwmin, uint32_t cwmax, enum AcIndex ac)
 {
   /* see IEE802.11 section 7.3.2.29 */
   switch (ac) {
@@ -392,7 +392,7 @@ WifiMac::ConfigureDcf (Ptr<Dcf> dcf, uint32_t cwmin, uint32_t cwmax, enum Access
 }
 
 void
-WifiMac::ConfigureCCHDcf (Ptr<Dcf> dcf, uint32_t cwmin, uint32_t cwmax, enum AccessClass ac)
+WifiMac::ConfigureCCHDcf (Ptr<Dcf> dcf, uint32_t cwmin, uint32_t cwmax, enum AcIndex ac)
 {
   /* see IEEE 1609.4-2006 section 6.3.1, Table 1 */
   switch (ac) {

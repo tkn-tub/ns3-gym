@@ -109,6 +109,9 @@ QstaWifiMac::QstaWifiMac ()
   m_dcfManager = new DcfManager ();
   m_dcfManager->SetupLowListener (m_low);
 
+  // Construct the EDCAFs. The ordering is important - highest
+  // priority (see Table 9-1 in IEEE 802.11-2007) must be created
+  // first.
   SetQueue (AC_VO);
   SetQueue (AC_VI);
   SetQueue (AC_BE);
@@ -546,7 +549,7 @@ QstaWifiMac::Enqueue (Ptr<const Packet> packet, Mac48Address to)
   if (tid < 8)
     {
       hdr.SetQosTid (tid);
-      AccessClass ac = QosUtilsMapTidToAc (tid);
+      AcIndex ac = QosUtilsMapTidToAc (tid);
       m_queues[ac]->Queue (packet, hdr);
     }
   else
@@ -730,7 +733,7 @@ QstaWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
           else
             {
               /* We must notify correct queue tear down of agreement */
-              AccessClass ac = QosUtilsMapTidToAc (delBaHdr.GetTid ());
+              AcIndex ac = QosUtilsMapTidToAc (delBaHdr.GetTid ());
               m_queues[ac]->GotDelBaFrame (&delBaHdr, hdr->GetAddr2 ());
             }
         }
@@ -785,14 +788,14 @@ QstaWifiMac::GetBKQueue (void) const
 }
 
 void
-QstaWifiMac::SetQueue (enum AccessClass ac)
+QstaWifiMac::SetQueue (enum AcIndex ac)
 {
   Ptr<EdcaTxopN> edca = CreateObject<EdcaTxopN> ();
   edca->SetLow (m_low);
   edca->SetManager (m_dcfManager);
   edca->SetTypeOfStation (STA);
   edca->SetTxMiddle (m_txMiddle);
-  edca->SetAccessClass (ac);
+  edca->SetAccessCategory (ac);
   edca->CompleteConfig ();
   m_queues.insert (std::make_pair(ac, edca));
 }

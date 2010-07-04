@@ -383,6 +383,20 @@ StaticCast (Ptr<T2> const&p)
 }
 
 
+template <typename T>
+Ptr<T> Copy (Ptr<T> object)
+{
+  Ptr<T> p = Ptr<T> (new T (*PeekPointer (object)), false);
+  return p;
+}
+
+template <typename T>
+Ptr<T> Copy (Ptr<const T> object)
+{
+  Ptr<T> p = Ptr<T> (new T (*PeekPointer (object)), false);
+  return p;
+}
+
 /****************************************************
  *      Member method implementations.
  ***************************************************/

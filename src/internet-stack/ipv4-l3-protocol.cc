@@ -520,6 +520,15 @@ Ipv4L3Protocol::IsUnicast (Ipv4Address ad, Ipv4Mask interfaceMask) const
 
 void 
 Ipv4L3Protocol::Send (Ptr<Packet> packet, 
+                      Ipv4Header ipHeader,
+                      Ptr<Ipv4Route> route)
+{
+  NS_LOG_FUNCTION (this << packet << ipHeader << route);
+  SendRealOut (route, packet, ipHeader);
+}
+
+void 
+Ipv4L3Protocol::Send (Ptr<Packet> packet, 
             Ipv4Address source, 
             Ipv4Address destination,
             uint8_t protocol,

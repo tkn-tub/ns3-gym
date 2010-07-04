@@ -344,6 +344,7 @@ SocketAddressTag::GetAddress (void) const
   return m_address;
 }
 
+NS_OBJECT_ENSURE_REGISTERED (SocketAddressTag);
 
 TypeId
 SocketAddressTag::GetTypeId (void)
@@ -396,6 +397,7 @@ SocketIpTtlTag::GetTtl (void) const
   return m_ttl;
 }
 
+NS_OBJECT_ENSURE_REGISTERED (SocketIpTtlTag);
 
 TypeId
 SocketIpTtlTag::GetTypeId (void)
@@ -451,6 +453,8 @@ SocketSetDontFragmentTag::IsEnabled (void) const
 {
   return m_dontFragment;
 }
+
+NS_OBJECT_ENSURE_REGISTERED (SocketSetDontFragmentTag);
 
 TypeId 
 SocketSetDontFragmentTag::GetTypeId (void)

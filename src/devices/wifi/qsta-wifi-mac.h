@@ -121,13 +121,13 @@ private:
   QstaWifiMac &operator = (const QstaWifiMac &);
   QstaWifiMac (const QstaWifiMac &);
   virtual void FinishConfigureStandard (enum WifiPhyStandard standard);
-  void SetQueue (enum AccessClass ac);
+  void SetQueue (enum AcIndex ac);
   Ptr<EdcaTxopN> GetVOQueue (void) const;
   Ptr<EdcaTxopN> GetVIQueue (void) const;
   Ptr<EdcaTxopN> GetBEQueue (void) const;
   Ptr<EdcaTxopN> GetBKQueue (void) const;
 
-  typedef std::map<AccessClass, Ptr<EdcaTxopN> > Queues;
+  typedef std::map<AcIndex, Ptr<EdcaTxopN> > Queues;
   typedef std::list<std::pair<Ptr<Packet>, AmsduSubframeHeader> > DeaggregatedMsdus;
   typedef std::list<std::pair<Ptr<Packet>, AmsduSubframeHeader> >::const_iterator DeaggregatedMsdusCI;
     

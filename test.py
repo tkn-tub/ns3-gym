@@ -119,6 +119,9 @@ example_tests = [
     ("routing/static-routing-slash32", "True", "True"),
     ("routing/aodv", "True", "True"),
 
+    ("spectrum/adhoc-aloha-ideal-phy", "True", "True"),
+    ("spectrum/adhoc-aloha-ideal-phy-with-microwave-oven", "True", "True"),
+
     ("stats/wifi-example-sim", "True", "True"),
 
     ("tap/tap-wifi-dumbbell", "False", "True"), # Requires manual configuration
@@ -130,6 +133,7 @@ example_tests = [
     ("tcp/tcp-star-server", "True", "True"),
 
     ("topology-read/topology-read --input=../../examples/topology-read/Inet_small_toposample.txt", "True", "True"),
+    ("topology-read/topology-read --format=Rocketfuel --input=../../examples/topology-read/RocketFuel_toposample_1239_weights.txt", "True", "True"),
 
     ("tunneling/virtual-net-device", "True", "True"),
 
@@ -144,13 +148,13 @@ example_tests = [
     ("udp/udp-echo", "True", "True"),
 
     ("wireless/mixed-wireless", "True", "True"),
-    ("wireless/multirate --totalTime=1.5s --rateManager=ns3::AarfcdWifiManager", "True", "True"), 
-    ("wireless/multirate --totalTime=1.5s --rateManager=ns3::AmrrWifiManager", "True", "True"), 
-    ("wireless/multirate --totalTime=1.5s --rateManager=ns3::CaraWifiManager", "True", "True"), 
-    ("wireless/multirate --totalTime=1.5s --rateManager=ns3::IdealWifiManager", "True", "True"), 
-    ("wireless/multirate --totalTime=1.5s --rateManager=ns3::MinstrelWifiManager", "True", "True"), 
-    ("wireless/multirate --totalTime=1.5s --rateManager=ns3::OnoeWifiManager", "True", "True"), 
-    ("wireless/multirate --totalTime=1.5s --rateManager=ns3::RraaWifiManager", "True", "True"), 
+    ("wireless/multirate --totalTime=0.3s --rateManager=ns3::AarfcdWifiManager", "True", "True"), 
+    ("wireless/multirate --totalTime=0.3s --rateManager=ns3::AmrrWifiManager", "True", "True"), 
+    ("wireless/multirate --totalTime=0.3s --rateManager=ns3::CaraWifiManager", "True", "True"), 
+    ("wireless/multirate --totalTime=0.3s --rateManager=ns3::IdealWifiManager", "True", "True"), 
+    ("wireless/multirate --totalTime=0.3s --rateManager=ns3::MinstrelWifiManager", "True", "True"), 
+    ("wireless/multirate --totalTime=0.3s --rateManager=ns3::OnoeWifiManager", "True", "True"), 
+    ("wireless/multirate --totalTime=0.3s --rateManager=ns3::RraaWifiManager", "True", "True"), 
     ("wireless/simple-wifi-frame-aggregation", "True", "True"),
     ("wireless/wifi-adhoc", "False", "True"), # Takes too long to run
     ("wireless/wifi-ap --verbose=0", "True", "True"), # Don't let it spew to stdout
@@ -949,7 +953,7 @@ class worker_thread(threading.Thread):
 
                 if options.verbose:
                     print "returncode = %d" % job.returncode
-                    print "---------- beign standard out ----------"
+                    print "---------- begin standard out ----------"
                     print standard_out
                     print "---------- begin standard err ----------"
                     print standard_err
@@ -1009,6 +1013,9 @@ def run_tests():
 
         proc = subprocess.Popen(waf_cmd, shell = True)
         proc.communicate()
+        if proc.returncode:
+            print >> sys.stderr, "Waf died. Not running tests"
+            return proc.returncode
 
     #
     # Pull some interesting configuration information out of waf, primarily

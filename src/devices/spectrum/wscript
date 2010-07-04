@@ -1,0 +1,43 @@
+## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
+
+def build(bld):
+
+    module = bld.create_ns3_module('spectrum', ['core', 'node'])
+    module.source = [
+        'single-model-spectrum-channel.cc',
+        'multi-model-spectrum-channel.cc',
+        'spectrum-interference.cc',
+        'spectrum-error-model.cc',
+        'spectrum-interference-test.cc',
+        'spectrum-model-ism2400MHz-res1MHz.cc',
+        'spectrum-model-300kHz-300GHz-log.cc', 
+        'wifi-spectrum-value-helper.cc',
+        'waveform-generator.cc',
+        'spectrum-analyzer.cc',
+        'aloha-noack-mac-header.cc',
+        'aloha-noack-net-device.cc',
+        'half-duplex-ideal-phy.cc',
+        'non-communicating-net-device.cc',
+        'microwave-oven-spectrum-value-helper.cc',
+        ]
+    
+    headers = bld.new_task_gen('ns3header')
+    headers.module = 'spectrum'
+    headers.source = [
+        'single-model-spectrum-channel.h', 
+        'multi-model-spectrum-channel.h',
+        'spectrum-interference.h',
+        'spectrum-error-model.h',
+        'spectrum-model-ism2400MHz-res1MHz.h',
+        'spectrum-model-300kHz-300GHz-log.h',
+        'wifi-spectrum-value-helper.h',
+        'waveform-generator.h',       
+        'spectrum-analyzer.h',
+        'aloha-noack-mac-header.h',
+        'aloha-noack-net-device.h',
+        'half-duplex-ideal-phy.h',
+        'non-communicating-net-device.h',
+        'microwave-oven-spectrum-value-helper.h',
+        ]
+
+

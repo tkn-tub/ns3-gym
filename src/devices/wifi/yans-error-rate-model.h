@@ -21,26 +21,11 @@
 #define YANS_ERROR_RATE_MODEL_H
 
 #include <stdint.h>
-#ifdef ENABLE_GSL
-#include <gsl/gsl_math.h>
-#include <gsl/gsl_integration.h>
-#include <gsl/gsl_cdf.h>
-#include <gsl/gsl_sf_bessel.h>
-#endif
 #include "wifi-mode.h"
 #include "error-rate-model.h"
+#include "dsss-error-rate-model.h"
 
 namespace ns3 {
-
-#ifdef ENABLE_GSL
-typedef struct FunctionParameterType
-{
- double beta;
- double n;
-} FunctionParameters;
-
-double IntegralFunction (double x, void *params);
-#endif
 
 /**
  * \brief Model the error rate for different modulations.
@@ -92,19 +77,6 @@ private:
                        uint32_t phyRate,
                        uint32_t m, uint32_t dfree,
                        uint32_t adFree, uint32_t adFreePlusOne) const;
-  double DqpskFunction (double x) const;
-  double Get80211bDsssDbpskSuccessRate (double sinr, uint32_t nbits) const;
-  double Get80211bDsssDqpskSuccessRate (double sinr,uint32_t nbits) const;
-  double Get80211bDsssDqpskCck5_5SuccessRate (double sinr,uint32_t nbits) const;
-  double Get80211bDsssDqpskCck11SuccessRate (double sinr,uint32_t nbits) const;
-#ifdef ENABLE_GSL
-  double SymbolErrorProb16Cck (double e2) const; /// equation (18) in Pursley's paper
-  double SymbolErrorProb256Cck (double e1) const; /// equation (17) in Pursley's paper
-#else
-private:
-  static const double WLAN_SIR_PERFECT;
-  static const double WLAN_SIR_IMPOSSIBLE;
-#endif
 };
 
 

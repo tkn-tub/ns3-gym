@@ -92,7 +92,7 @@ IePreq::IePreq () :
       m_destCount (0)
 {
 }
-WifiElementId
+WifiInformationElementId
 IePreq::ElementId () const
 {
   return IE11S_PREQ;
@@ -211,7 +211,7 @@ IePreq::IncrementMetric (uint32_t metric)
   m_metric += metric;
 }
 void
-IePreq::SerializeInformation (Buffer::Iterator i) const
+IePreq::SerializeInformationField (Buffer::Iterator i) const
 {
   i.WriteU8 (m_flags);
   i.WriteU8 (m_hopCount);
@@ -250,7 +250,7 @@ IePreq::SerializeInformation (Buffer::Iterator i) const
     }
 }
 uint8_t
-IePreq::DeserializeInformation (Buffer::Iterator start, uint8_t length)
+IePreq::DeserializeInformationField (Buffer::Iterator start, uint8_t length)
 {
   Buffer::Iterator i = start;
   m_flags = i.ReadU8 ();
@@ -292,7 +292,7 @@ IePreq::DeserializeInformation (Buffer::Iterator start, uint8_t length)
   return i.GetDistanceFrom (start);
 }
 uint8_t
-IePreq::GetInformationSize () const
+IePreq::GetInformationFieldSize () const
 {
   uint8_t retval = 1 //Flags
       + 1 //Hopcount
@@ -423,7 +423,7 @@ IePreq::MayAddAddress (Mac48Address originator)
     {
       return false;
     }
-  if ((GetInformationSize () + 11) > 255)
+  if ((GetInformationFieldSize () + 11) > 255)
     {
       return false;
     }
@@ -432,7 +432,7 @@ IePreq::MayAddAddress (Mac48Address originator)
 bool
 IePreq::IsFull () const
 {
-  return ((GetInformationSize () + 11) > 255);
+  return ((GetInformationFieldSize () + 11) > 255);
 }
 std::ostream &
 operator << (std::ostream &os, const IePreq &a)

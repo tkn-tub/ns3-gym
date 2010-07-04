@@ -57,7 +57,7 @@ private:
 #define OFDM_SEND_PARAMS_H
 
 #include <stdint.h>
-#include "packet-burst.h"
+#include "ns3/packet-burst.h"
 
 namespace ns3 {
 

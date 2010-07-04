@@ -31,7 +31,7 @@ NS_LOG_COMPONENT_DEFINE ("WimaxMacQueue");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED ( WimaxMacQueue);
+NS_OBJECT_ENSURE_REGISTERED (WimaxMacQueue);
 
 WimaxMacQueue::QueueElement::QueueElement (void)
   : m_packet (Create<Packet> ()),
@@ -191,13 +191,12 @@ WimaxMacQueue::Dequeue (MacHeaderType::HeaderType packetType)
           /*check because may be it is a bandwidth request packet (in which case a Bandwidth Request Header
             has already been added to the packet) in which case Generic MAC Header will not be added to it.
             this will only happen in the case of SS as only SS sends the bandwidth request packet. */
+          m_bytes -= element.GetSize ();
           if (element.m_hdrType.GetType () == MacHeaderType::HEADER_TYPE_GENERIC)
             {
               packet->AddHeader (element.m_hdr);
             }
           packet->AddHeader (element.m_hdrType);
-
-          m_bytes -= element.GetSize ();
 
           m_traceDequeue (packet);
           return packet;

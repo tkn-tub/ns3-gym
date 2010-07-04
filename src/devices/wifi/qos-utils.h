@@ -26,11 +26,21 @@
 
 namespace ns3 {
 
-enum AccessClass {
-  AC_VO = 0,
-  AC_VI = 1,
-  AC_BE = 2,
-  AC_BK = 3,
+/* This enumeration defines the Access Categories as an enumeration
+ * with values corresponding to the AC index (ACI) values specified in
+ * Table 7-36 of IEEE 802.11-2007.
+ */
+enum AcIndex {
+  /** Best Effort */
+  AC_BE = 0,
+  /** Background */
+  AC_BK = 1,
+  /** Video */
+  AC_VI = 2,
+  /** Voice */
+  AC_VO = 3,
+
+  /** Total number of ACs */
   AC_BE_NQOS = 4,
   AC_UNDEF
 };
@@ -38,7 +48,7 @@ enum AccessClass {
 /* Maps TID (Traffic ID) to Access classes.
  * For more details see table 9-1 of IEEE802.11 standard.
  */
-AccessClass QosUtilsMapTidToAc (uint8_t tid);
+AcIndex QosUtilsMapTidToAc (uint8_t tid);
 
 /* If a qos tag is attached to the packet, returns a value < 8.
    A value >= 8 is returned otherwise.

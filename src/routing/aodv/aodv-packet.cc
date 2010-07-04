@@ -34,6 +34,8 @@ namespace ns3
 namespace aodv
 {
 
+NS_OBJECT_ENSURE_REGISTERED (TypeHeader);
+
 TypeHeader::TypeHeader (MessageType t) :
   m_type (t), m_valid (true)
 {
@@ -142,6 +144,8 @@ RreqHeader::RreqHeader (uint8_t flags, uint8_t reserved, uint8_t hopCount, uint3
                        m_dstSeqNo (dstSeqNo), m_origin(origin),  m_originSeqNo (originSeqNo)
 {
 }
+
+NS_OBJECT_ENSURE_REGISTERED (RreqHeader);
 
 TypeId
 RreqHeader::GetTypeId ()
@@ -279,6 +283,8 @@ RrepHeader::RrepHeader (uint8_t prefixSize, uint8_t hopCount, Ipv4Address dst,
 {
   m_lifeTime = uint32_t (lifeTime.GetMilliSeconds ());
 }
+
+NS_OBJECT_ENSURE_REGISTERED (RrepHeader);
 
 TypeId
 RrepHeader::GetTypeId ()
@@ -421,6 +427,7 @@ RrepAckHeader::RrepAckHeader () :
 {
 }
 
+NS_OBJECT_ENSURE_REGISTERED (RrepAckHeader);
 TypeId
 RrepAckHeader::GetTypeId ()
 {
@@ -484,6 +491,8 @@ RerrHeader::RerrHeader () :
   m_flag (0), m_reserved (0)
 {
 }
+
+NS_OBJECT_ENSURE_REGISTERED (RerrHeader);
 
 TypeId
 RerrHeader::GetTypeId ()

@@ -26,6 +26,8 @@
 NS_LOG_COMPONENT_DEFINE ("RadiotapHeader");  
 
 namespace ns3 {
+
+NS_OBJECT_ENSURE_REGISTERED (RadiotapHeader);
  
 RadiotapHeader::RadiotapHeader()
   : m_length(8),
@@ -43,7 +45,7 @@ RadiotapHeader::RadiotapHeader()
  
 TypeId RadiotapHeader::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("RadiotapHeader")
+  static TypeId tid = TypeId ("ns3::RadiotapHeader")
     .SetParent<Header> ()
     .AddConstructor<RadiotapHeader> ()
     ;

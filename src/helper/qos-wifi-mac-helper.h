@@ -87,7 +87,7 @@ public:
   /**
    * Set the class, type and attributes for the Msdu aggregator
    *
-   * \param accessClass access class for which we are setting aggregator. Possibilities
+   * \param ac access category for which we are setting aggregator. Possibilities
    *  are: AC_BK, AC_BE, AC_VI, AC_VO.
    * \param type the type of ns3::MsduAggregator to create.
    * \param n0 the name of the attribute to set
@@ -102,7 +102,7 @@ public:
    * All the attributes specified in this method should exist
    * in the requested aggregator.
    */
-  void SetMsduAggregatorForAc (AccessClass accessClass, std::string type,
+  void SetMsduAggregatorForAc (AcIndex ac, std::string type,
                                std::string n0 = "", const AttributeValue &v0 = EmptyAttributeValue (),
                                std::string n1 = "", const AttributeValue &v1 = EmptyAttributeValue (),
                                std::string n2 = "", const AttributeValue &v2 = EmptyAttributeValue (),
@@ -112,11 +112,11 @@ public:
    * If number of packets in the respective queue reaches this value block ack mechanism
    * is used.
    *
-   * \param accessClass access class for which we are setting block ack threshold. Possibilities
+   * \param ac access category for which we are setting block ack threshold. Possibilities
    * are: AC_BK, AC_BE, AC_VI, AC_VO.
    * \param threshold the threshold (number of packets)
    */
-  void SetBlockAckThresholdForAc (enum AccessClass accessClass, uint8_t threshold);
+  void SetBlockAckThresholdForAc (enum AcIndex ac, uint8_t threshold);
   /**
    * Sets value of block ack inactivity timeout for a specific access class. <i>timeout</i>
    * represents number of blocks of 1024 microseconds. When this timer expires the relative
@@ -124,11 +124,11 @@ public:
    * that a block ack request or a MPDU with ack policy BLOCK ACK is received.
    * Timer is reset in a originator station every time that a block ack frame is received.
    * 
-   * \param accessClass access class for which we are setting block ack threshold. Possibilities
+   * \param ac access category for which we are setting block ack threshold. Possibilities
    * are: AC_BK, AC_BE, AC_VI, AC_VO.
    * \param timeout number of block of 1024 microseconds.
    */
-  void SetBlockAckInactivityTimeoutForAc (enum AccessClass accessClass, uint16_t timeout);
+  void SetBlockAckInactivityTimeoutForAc (enum AcIndex ac, uint16_t timeout);
 private:
   /**
    * \internal
@@ -137,17 +137,17 @@ private:
    * This method implements the pure virtual method defined in \ref ns3::WifiMacHelper.
    */
   virtual Ptr<WifiMac> Create (void) const;
-  void Setup (Ptr<WifiMac> mac, enum AccessClass ac, std::string dcaAttrName) const;
+  void Setup (Ptr<WifiMac> mac, enum AcIndex ac, std::string dcaAttrName) const;
 
 
   ObjectFactory m_mac;
-  std::map<AccessClass, ObjectFactory> m_aggregators;
+  std::map<AcIndex, ObjectFactory> m_aggregators;
   /* 
-   * Next maps contain, for every access class, the values for block ack threshold and
-   * block ack inactivity timeout.
+   * Next maps contain, for every access category, the values for
+   * block ack threshold and block ack inactivity timeout.
    */
-  std::map<AccessClass, uint8_t> m_bAckThresholds;
-  std::map<AccessClass, uint16_t> m_bAckInactivityTimeouts;
+  std::map<AcIndex, uint8_t> m_bAckThresholds;
+  std::map<AcIndex, uint16_t> m_bAckInactivityTimeouts;
 };
 
 } //namespace ns3

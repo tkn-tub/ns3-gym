@@ -167,10 +167,10 @@ int main (int argc, char *argv[])
   std::ofstream outfile ("clear-channel.plt");
   std::vector <std::string> modes;
 
-  modes.push_back ("wifib-1mbs");
-  modes.push_back ("wifib-2mbs");
-  modes.push_back ("wifib-5.5mbs");
-  modes.push_back ("wifib-11mbs");
+  modes.push_back ("DsssRate1Mbps");
+  modes.push_back ("DsssRate2Mbps");
+  modes.push_back ("DsssRate5_5Mbps");
+  modes.push_back ("DsssRate11Mbps");
   // disable fragmentation
   Config::SetDefault ("ns3::WifiRemoteStationManager::FragmentationThreshold", StringValue ("2200"));
   Config::SetDefault ("ns3::WifiRemoteStationManager::RtsCtsThreshold", StringValue ("2200"));

@@ -43,7 +43,7 @@ public:
   void SetFileName (const std::string fileName);
 
   /**
-   * \brief Sets the input file type. Supported file types are "Orbis" and "Inet".
+   * \brief Sets the input file type. Supported file types are "Orbis", "Inet", "Rocketfuel".
    * \param fileType the input file type.
    */
   void SetFileType (const std::string fileType);

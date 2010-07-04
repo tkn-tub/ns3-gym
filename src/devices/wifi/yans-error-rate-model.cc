@@ -27,11 +27,6 @@ namespace ns3 {
 
 NS_OBJECT_ENSURE_REGISTERED (YansErrorRateModel);
 
-#ifndef ENABLE_GSL
-const double YansErrorRateModel::WLAN_SIR_PERFECT = 10.0; 
-const double YansErrorRateModel::WLAN_SIR_IMPOSSIBLE = 0.1; 
-#endif
-
 TypeId 
 YansErrorRateModel::GetTypeId (void)
 {
@@ -176,251 +171,128 @@ YansErrorRateModel::GetFecQamBer (double snr, uint32_t nbits,
 double 
 YansErrorRateModel::GetChunkSuccessRate (WifiMode mode, double snr, uint32_t nbits) const
 {
-  if (mode == WifiPhy::Get6mba () || mode == WifiPhy::Get3mb10Mhz () || mode == WifiPhy::Get1_5mb5Mhz ())
+  if (mode.GetModulationClass () == WIFI_MOD_CLASS_OFDM)
     {
-      return GetFecBpskBer (snr, 
-                            nbits,
-                            mode.GetBandwidth (), // signal spread
-                            mode.GetPhyRate (), // phy rate
-                            10, // dFree
-                            11 // adFree
-                            );      
+      if (mode.GetConstellationSize () == 2)
+        {
+          if (mode.GetCodeRate () == WIFI_CODE_RATE_1_2)
+            {
+              return GetFecBpskBer (snr,
+                                    nbits,
+                                    mode.GetBandwidth (), // signal spread
+                                    mode.GetPhyRate (), // phy rate
+                                    10, // dFree
+                                    11 // adFree
+                                    );
+            }
+          else
+            {
+              return GetFecBpskBer (snr,
+                                    nbits,
+                                    mode.GetBandwidth (), // signal spread
+                                    mode.GetPhyRate (), // phy rate
+                                    5, // dFree
+                                    8 // adFree
+                                    );
+            }
+        }
+      else if (mode.GetConstellationSize () == 4)
+        {
+          if (mode.GetCodeRate () == WIFI_CODE_RATE_1_2)
+            {
+              return GetFecQamBer (snr,
+                                   nbits,
+                                   mode.GetBandwidth (), // signal spread
+                                   mode.GetPhyRate (), // phy rate
+                                   4,  // m
+                                   10, // dFree
+                                   11, // adFree
+                                   0   // adFreePlusOne
+                                   );
+            }
+          else
+            {
+              return GetFecQamBer (snr,
+                                   nbits,
+                                   mode.GetBandwidth (), // signal spread
+                                   mode.GetPhyRate (), // phy rate
+                                   4, // m
+                                   5, // dFree
+                                   8, // adFree
+                                   31 // adFreePlusOne
+                                   );
+            }
+        }
+      else if (mode.GetConstellationSize () == 16)
+        {
+          if (mode.GetCodeRate () == WIFI_CODE_RATE_1_2)
+            {
+              return GetFecQamBer (snr,
+                                   nbits,
+                                   mode.GetBandwidth (), // signal spread
+                                   mode.GetPhyRate (), // phy rate
+                                   16, // m
+                                   10, // dFree
+                                   11, // adFree
+                                   0   // adFreePlusOne
+                                   );
+            }
+          else
+            {
+              return GetFecQamBer (snr,
+                                   nbits,
+                                   mode.GetBandwidth (), // signal spread
+                                   mode.GetPhyRate (), // phy rate
+                                   16, // m
+                                   5,  // dFree
+                                   8,  // adFree
+                                   31  // adFreePlusOne
+                                   );
+            }
+        }
+      else if (mode.GetConstellationSize () == 64)
+        {
+          if (mode.GetCodeRate () == WIFI_CODE_RATE_2_3)
+            {
+              return GetFecQamBer (snr,
+                                   nbits,
+                                   mode.GetBandwidth (), // signal spread
+                                   mode.GetPhyRate (), // phy rate
+                                   64, // m
+                                   6,  // dFree
+                                   1,  // adFree
+                                   16  // adFreePlusOne
+                                   );
+            }
+          else
+            {
+              return GetFecQamBer (snr,
+                                   nbits,
+                                   mode.GetBandwidth (), // signal spread
+                                   mode.GetPhyRate (), // phy rate
+                                   64, // m
+                                   5,  // dFree
+                                   8,  // adFree
+                                   31  // adFreePlusOne
+                                   );
+            }
+        }
     }
-  else if (mode == WifiPhy::Get9mba () || mode == WifiPhy::Get4_5mb10Mhz () || mode == WifiPhy::Get2_25mb5Mhz ())
+  else if (mode.GetModulationClass () == WIFI_MOD_CLASS_DSSS)
     {
-      return GetFecBpskBer (snr, 
-                            nbits,
-                            mode.GetBandwidth (), // signal spread
-                            mode.GetPhyRate (), // phy rate
-                            5, // dFree
-                            8 // adFree
-                            );
-    }
-  else if (mode == WifiPhy::Get12mba () || mode == WifiPhy::Get6mb10Mhz () || mode == WifiPhy::Get3mb5Mhz ())
-    {
-      return GetFecQamBer (snr, 
-                           nbits,
-                           mode.GetBandwidth (), // signal spread
-                           mode.GetPhyRate (), // phy rate
-                           4,  // m 
-                           10, // dFree
-                           11, // adFree
-                           0   // adFreePlusOne
-                           );
-    }
-  else if (mode == WifiPhy::Get18mba () || mode == WifiPhy::Get9mb10Mhz () || mode == WifiPhy::Get4_5mb5Mhz ())
-    {
-      return GetFecQamBer (snr, 
-                           nbits,
-                           mode.GetBandwidth (), // signal spread
-                           mode.GetPhyRate (), // phy rate
-                           4, // m
-                           5, // dFree
-                           8, // adFree
-                           31 // adFreePlusOne
-                           );
-    }
-  else if (mode == WifiPhy::Get24mba () || mode == WifiPhy::Get12mb10Mhz () || mode == WifiPhy::Get6mb5Mhz ())
-    {
-      return GetFecQamBer (snr, 
-                           nbits,
-                           mode.GetBandwidth (), // signal spread
-                           mode.GetPhyRate (), // phy rate
-                           16, // m
-                           10, // dFree
-                           11, // adFree
-                           0   // adFreePlusOne
-                           );
-    }
-  else if (mode == WifiPhy::Get36mba () || mode == WifiPhy::Get18mb10Mhz () || mode == WifiPhy::Get9mb5Mhz ())
-    {
-      return GetFecQamBer (snr, 
-                           nbits,
-                           mode.GetBandwidth (), // signal spread
-                           mode.GetPhyRate (), // phy rate
-                           16, // m
-                           5,  // dFree
-                           8,  // adFree
-                           31  // adFreePlusOne
-                           );
-    }
-  else if (mode == WifiPhy::Get48mba () || mode == WifiPhy::Get24mb10Mhz () || mode == WifiPhy::Get12mb5Mhz ())
-    {
-      return GetFecQamBer (snr, 
-                           nbits,
-                           mode.GetBandwidth (), // signal spread
-                           mode.GetPhyRate (), // phy rate
-                           64, // m
-                           6,  // dFree
-                           1,  // adFree
-                           16  // adFreePlusOne
-                           );
-    }
-  else if (mode == WifiPhy::Get54mba () || mode == WifiPhy::Get27mb10Mhz () || mode == WifiPhy::Get13_5mb5Mhz ())
-    {
-      return GetFecQamBer (snr, 
-                           nbits,
-                           mode.GetBandwidth (), // signal spread
-                           mode.GetPhyRate (), // phy rate
-                           64, // m
-                           5,  // dFree
-                           8,  // adFree
-                           31  // adFreePlusOne
-                           );
-    }
-  else if (mode == WifiPhy::Get1mbb ())
-    {
-      return Get80211bDsssDbpskSuccessRate (snr,nbits);
-    }
-  else if (mode == WifiPhy::Get2mbb ())
-    {
-      return Get80211bDsssDqpskSuccessRate (snr,nbits);
-    }
-  else if (mode == WifiPhy::Get5_5mbb ())
-    {
-      return Get80211bDsssDqpskCck5_5SuccessRate (snr,nbits);
-    }
-  else if (mode == WifiPhy::Get11mbb ())
-    {
-      return Get80211bDsssDqpskCck11SuccessRate (snr,nbits);
+      switch (mode.GetDataRate ())
+        {
+        case 1000000:
+          return DsssErrorRateModel::GetDsssDbpskSuccessRate (snr, nbits);
+        case 2000000:
+          return DsssErrorRateModel::GetDsssDqpskSuccessRate (snr, nbits);
+        case 5500000:
+          return DsssErrorRateModel::GetDsssDqpskCck5_5SuccessRate (snr, nbits);
+        case 11000000:
+          return DsssErrorRateModel::GetDsssDqpskCck11SuccessRate (snr, nbits);
+        }
     }
   return 0;
 }
-
-// 802.11b ber based on "Wireless Network Coexistence: Wireless
-// LAN in the 21st Century" by Robert Morrow page 187
-double 
-YansErrorRateModel::DqpskFunction (double x) const
-{
-  return ((sqrt (2.0) + 1.0) / sqrt (8.0*3.1415926*sqrt (2.0)))
-         *(1.0/sqrt (x))
-         *exp ( - (2.0 - sqrt (2.0)) * x) ;
-}
-
-double 
-YansErrorRateModel::Get80211bDsssDbpskSuccessRate (double sinr, uint32_t nbits) const
-{
-  double EbN0 = sinr * 22000000.0 / 1000000.0; // 1 bit per symbol with 1 MSPS
-  double ber = 0.5 * exp (-EbN0);
-  return pow ((1.0 - ber), nbits);
-}
-
-double 
-YansErrorRateModel::Get80211bDsssDqpskSuccessRate (double sinr,uint32_t nbits) const
-{
-  double EbN0 = sinr * 22000000.0 / 1000000.0 / 2.0; // 2 bits per symbol, 1 MSPS
-  double ber = DqpskFunction (EbN0);
-  return pow ((1.0 - ber), nbits);
-}
-
-double 
-YansErrorRateModel::Get80211bDsssDqpskCck5_5SuccessRate (double sinr,uint32_t nbits) const
-{
-#ifdef ENABLE_GSL
-  // symbol error probability
-  double EbN0 = sinr * 22000000.0 / 1375000.0 / 4.0;
-  double sep = SymbolErrorProb16Cck (4.0*EbN0/2.0);
-  return pow (1.0-sep,nbits/4.0);
-#else
-  NS_LOG_WARN ("Running a 802.11b CCK Matlab model less accurate than GSL model"); 
-  // The matlab model
-  double ber; 
-  if (sinr > WLAN_SIR_PERFECT)
-    {
-       ber = 0.0 ;
-    }
-  else if (sinr < WLAN_SIR_IMPOSSIBLE)
-    {
-       ber = 0.5;
-    }
-  else
-    { // fitprops.coeff from matlab berfit
-       double a1 =  5.3681634344056195e-001;
-       double a2 =  3.3092430025608586e-003;
-       double a3 =  4.1654372361004000e-001;
-       double a4 =  1.0288981434358866e+000;
-       ber = a1 * exp (-(pow ((sinr-a2)/a3,a4)));
-     }
-  return pow ((1.0 - ber), nbits);
-#endif
-}
-
-double 
-YansErrorRateModel::Get80211bDsssDqpskCck11SuccessRate (double sinr,uint32_t nbits) const
-{
-#ifdef ENABLE_GSL
- // symbol error probability
-  double EbN0 = sinr * 22000000.0 / 1375000.0 / 8.0;
-  double sep = SymbolErrorProb256Cck (8.0*EbN0/2.0);
-  return pow (1.0-sep,nbits/8.0);
-#else
-  NS_LOG_WARN ("Running a 802.11b CCK Matlab model less accurate than GSL model"); 
-  // The matlab model
-  double ber; 
-  if (sinr > WLAN_SIR_PERFECT)
-    {
-       ber = 0.0 ;
-    }
-  else if (sinr < WLAN_SIR_IMPOSSIBLE)
-    {
-       ber = 0.5;
-    }
-  else
-    { // fitprops.coeff from matlab berfit
-       double a1 =  7.9056742265333456e-003;
-       double a2 = -1.8397449399176360e-001;
-       double a3 =  1.0740689468707241e+000;
-       double a4 =  1.0523316904502553e+000;
-       double a5 =  3.0552298746496687e-001;
-       double a6 =  2.2032715128698435e+000;
-       ber =  (a1*sinr*sinr+a2*sinr+a3)/(sinr*sinr*sinr+a4*sinr*sinr+a5*sinr+a6);
-     }
-  return pow ((1.0 - ber), nbits);
-#endif
-}
-
-#ifdef ENABLE_GSL
-double 
-IntegralFunction (double x, void *params)
-{
-  double beta = ((FunctionParameters *) params)->beta;
-  double n = ((FunctionParameters *) params)->n;
-  double IntegralFunction = pow (2*gsl_cdf_ugaussian_P (x+ beta) - 1, n-1) 
-                            * exp (-x*x/2.0) / sqrt (2.0 * M_PI);
-  return IntegralFunction;
-}
-
-double 
-YansErrorRateModel::SymbolErrorProb16Cck (double e2) const
-{
-  double sep;
-  double error;
- 
-  FunctionParameters params;
-  params.beta = sqrt (2.0*e2);
-  params.n = 8.0;
-
-  gsl_integration_workspace * w = gsl_integration_workspace_alloc (1000); 
- 
-  gsl_function F;
-  F.function = &IntegralFunction;
-  F.params = &params;
-
-  gsl_integration_qagiu (&F,-params.beta, 0, 1e-7, 1000, w, &sep, &error);
-  gsl_integration_workspace_free (w);
-  if (error == 0.0) 
-    {
-       sep = 1.0;
-    }
-
-  return 1.0 - sep;
-}
-
-double YansErrorRateModel::SymbolErrorProb256Cck (double e1) const
-{
-  return 1.0 - pow (1.0 - SymbolErrorProb16Cck (e1/2.0), 2.0);
-}
-
-#endif
 
 } // namespace ns3

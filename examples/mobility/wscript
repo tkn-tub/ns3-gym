@@ -1,0 +1,6 @@
+## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
+
+def build(bld):
+    obj = bld.create_ns3_program('ns2-mobility-trace', ['core', 'simulator', 'mobility', 'wifi', 'mesh'])
+    obj.source = 'ns2-mobility-trace.cc'
+

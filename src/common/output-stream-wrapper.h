@@ -19,7 +19,7 @@
 #ifndef OUTPUT_STREAM_WRAPPER_H
 #define OUTPUT_STREAM_WRAPPER_H
 
-#include <ostream>
+#include <fstream>
 #include "ns3/object.h"
 #include "ns3/ptr.h"
 #include "ns3/simple-ref-count.h"
@@ -70,29 +70,20 @@ namespace ns3 {
 class OutputStreamWrapper : public SimpleRefCount<OutputStreamWrapper>
 {
 public:
-  OutputStreamWrapper ();
+  OutputStreamWrapper (std::string filename, std::ios::openmode filemode);
   ~OutputStreamWrapper ();
-
-  /**
-   * Deletes any previously set stream object and sets the stream wrapper to 
-   * hold the provided stream..
-   *
-   * \param ostream a pointer to the std::ostream to be encapsulated
-   */
-  void SetStream (std::ostream *ostream);
 
   /**
    * Return a pointer to an ostream previously set in the wrapper.
    *
    * \see SetStream
    *
-   * \returns a pointer to the encapsulated std::ostream, or 0 if none has
-   *  been previously set
+   * \returns a pointer to the encapsulated std::ostream
    */
   std::ostream *GetStream (void);
   
 private:
-  std::ostream *m_ostream;
+  std::ofstream *m_ostream;
 };
 
 } //namespace ns3

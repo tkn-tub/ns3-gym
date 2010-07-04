@@ -133,6 +133,7 @@ BandwidthManager::SelectFlowForRequest (uint32_t &bytesToRequest)
             {
               // bandwidth is requested for all packets
               bytesToRequest = serviceFlow->GetQueue ()->GetQueueLengthWithMACOverhead ();
+              break;
             }
         }
     }

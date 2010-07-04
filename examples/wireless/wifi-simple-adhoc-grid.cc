@@ -109,7 +109,7 @@ static void GenerateTraffic (Ptr<Socket> socket, uint32_t pktSize,
 
 int main (int argc, char *argv[])
 {
-  std::string phyMode ("wifib-1mbs");
+  std::string phyMode ("DsssRate1Mbps");
   double distance = 500;  // m
   uint32_t packetSize = 1000; // bytes
   uint32_t numPackets = 1;
@@ -169,6 +169,7 @@ int main (int argc, char *argv[])
 
   // Add a non-QoS upper mac, and disable rate control
   NqosWifiMacHelper wifiMac = NqosWifiMacHelper::Default ();
+  wifi.SetStandard (WIFI_PHY_STANDARD_80211b);
   wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager",
                                 "DataMode",StringValue(phyMode),
                                    "ControlMode",StringValue(phyMode));

@@ -1,3 +1,4 @@
+#include <netinet/in.h>
 #include "ipv4-raw-socket-impl.h"
 #include "ipv4-l3-protocol.h"
 #include "icmpv4.h"
@@ -5,6 +6,7 @@
 #include "ns3/node.h"
 #include "ns3/packet.h"
 #include "ns3/uinteger.h"
+#include "ns3/boolean.h"
 #include "ns3/log.h"
 
 NS_LOG_COMPONENT_DEFINE ("Ipv4RawSocketImpl");
@@ -27,6 +29,19 @@ Ipv4RawSocketImpl::GetTypeId (void)
 		   UintegerValue (0),
 		   MakeUintegerAccessor (&Ipv4RawSocketImpl::m_icmpFilter),
 		   MakeUintegerChecker<uint32_t> ())
+    // 
+    //  from raw (7), linux, returned length of Send/Recv should be
+    // 
+    //            | IP_HDRINC on  |      off    |
+    //  ----------+---------------+-------------+-
+    //  Send(Ipv4)| hdr + payload | payload     |
+    //  Recv(Ipv4)| hdr + payload | hdr+payload |
+    //  ----------+---------------+-------------+-
+    .AddAttribute ("IpHeaderInclude", 
+		   "Include IP Header information (a.k.a setsockopt (IP_HDRINCL)).",
+		   BooleanValue (false),
+		   MakeBooleanAccessor (&Ipv4RawSocketImpl::m_iphdrincl),
+		   MakeBooleanChecker ())
     ;
   return tid;
 }
@@ -173,8 +188,16 @@ Ipv4RawSocketImpl::SendTo (Ptr<Packet> p, uint32_t flags,
   if (ipv4->GetRoutingProtocol ())
     {
       Ipv4Header header;
-      header.SetDestination (dst);
-      header.SetProtocol (m_protocol);
+      if (!m_iphdrincl)
+        {
+          header.SetDestination (dst);
+          header.SetProtocol (m_protocol);
+        }
+      else
+        {
+          p->RemoveHeader (header);
+          dst = header.GetDestination ();
+        }
       SocketErrno errno_ = ERROR_NOTERROR;//do not use errno as it is the standard C last error number 
       Ptr<Ipv4Route> route;
       Ptr<NetDevice> oif = m_boundnetdevice; //specify non-zero if bound to a source address
@@ -191,7 +214,14 @@ Ipv4RawSocketImpl::SendTo (Ptr<Packet> p, uint32_t flags,
       if (route != 0)
         {
           NS_LOG_LOGIC ("Route exists");
-          ipv4->Send (p, route->GetSource (), dst, m_protocol, route);
+          if (!m_iphdrincl)
+            {
+              ipv4->Send (p, route->GetSource (), dst, m_protocol, route);
+            }
+          else
+            {
+              ipv4->Send (p, header, route);
+            }
           NotifyDataSent (p->GetSize ());
           NotifySend (GetTxAvailable ());
           return p->GetSize();
@@ -238,7 +268,10 @@ Ipv4RawSocketImpl::RecvFrom (uint32_t maxSize, uint32_t flags,
   if (data.packet->GetSize () > maxSize)
     {
       Ptr<Packet> first = data.packet->CreateFragment (0, maxSize);
-      data.packet->RemoveAtStart (maxSize);
+      if (!(flags & MSG_PEEK))
+        {
+          data.packet->RemoveAtStart (maxSize);
+        }
       m_recv.push_front (data);
       return first;
     }

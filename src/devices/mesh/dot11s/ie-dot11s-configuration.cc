@@ -93,7 +93,7 @@ Dot11sMeshCapability::Is (uint16_t cap, uint8_t n) const
   uint16_t mask = 1 << n;
   return (cap & mask);
 }
-WifiElementId
+WifiInformationElementId
 IeConfiguration::ElementId () const
 {
   return IE11S_MESH_CONFIGURATION;
@@ -105,7 +105,7 @@ IeConfiguration::IeConfiguration () :
 {
 }
 uint8_t
-IeConfiguration::GetInformationSize () const
+IeConfiguration::GetInformationFieldSize () const
 {
   return 1 // Version
       + 4 // APSPId
@@ -117,7 +117,7 @@ IeConfiguration::GetInformationSize () const
       + m_meshCap.GetSerializedSize ();
 }
 void
-IeConfiguration::SerializeInformation (Buffer::Iterator i) const
+IeConfiguration::SerializeInformationField (Buffer::Iterator i) const
 {
   i.WriteU8 (1); //Version
   // Active Path Selection Protocol ID:
@@ -134,7 +134,7 @@ IeConfiguration::SerializeInformation (Buffer::Iterator i) const
   m_meshCap.Serialize (i);
 }
 uint8_t
-IeConfiguration::DeserializeInformation (Buffer::Iterator i, uint8_t length)
+IeConfiguration::DeserializeInformationField (Buffer::Iterator i, uint8_t length)
 {
   Buffer::Iterator start = i;
   uint8_t version;

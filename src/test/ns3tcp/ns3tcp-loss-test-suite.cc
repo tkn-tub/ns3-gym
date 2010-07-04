@@ -41,6 +41,10 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("Ns3TcpLossTest");
 
+const bool WRITE_VECTORS = false;           // set to true to write response vectors
+const uint32_t PCAP_LINK_TYPE = 1187373553; // Some large random number -- we use to verify data was written by this program
+const uint32_t PCAP_SNAPLEN   = 64;         // Don't bother to save much data
+
 // ===========================================================================
 // Tests of TCP implementation loss behavior
 // ===========================================================================
@@ -53,25 +57,103 @@ public:
   virtual ~Ns3TcpLossTestCase1 () {}
 
 private:
+  virtual void DoSetup (void);
   virtual bool DoRun (void);
+  virtual void DoTeardown (void);
+
+  std::string m_pcapFilename;
+  PcapFile m_pcapFile;
+  bool m_writeVectors;
   bool m_writeResults;
 
-  void SinkRx (std::string path, Ptr<const Packet> p, const Address &address);
+  void Ipv4L3Tx (std::string context, Ptr<const Packet> packet, Ptr<Ipv4> ipv4, uint32_t interface);
 
-  TestVectors<uint32_t> m_inputs;
-  TestVectors<uint32_t> m_responses;
 };
 
 Ns3TcpLossTestCase1::Ns3TcpLossTestCase1 ()
   : TestCase ("Check that ns-3 TCP survives loss of first two SYNs"),
+    m_writeVectors (WRITE_VECTORS),
     m_writeResults (false)
 {
 }
 
-void 
-Ns3TcpLossTestCase1::SinkRx (std::string path, Ptr<const Packet> p, const Address &address)
+void
+Ns3TcpLossTestCase1::DoSetup (void)
 {
-  m_responses.Add (p->GetSize ());
+    //
+    // We expect there to be a file called ns3tcp-loss1-response-vectors.pcap" in
+    // the source directory of this file.
+    //
+    m_pcapFilename = NS_TEST_SOURCEDIR + "ns3tcp-loss1-response-vectors.pcap";
+
+    if (m_writeVectors)
+      {
+        m_pcapFile.Open (m_pcapFilename, std::ios::out|std::ios::binary);
+        m_pcapFile.Init(PCAP_LINK_TYPE, PCAP_SNAPLEN);
+      }
+    else
+      {
+        m_pcapFile.Open (m_pcapFilename, std::ios::in|std::ios::binary);
+        NS_ABORT_MSG_UNLESS (m_pcapFile.GetDataLinkType () == PCAP_LINK_TYPE, "Wrong response vectors in directory");
+      }
+}
+
+void
+Ns3TcpLossTestCase1::DoTeardown (void)
+{
+    m_pcapFile.Close ();
+}
+
+void
+Ns3TcpLossTestCase1::Ipv4L3Tx (std::string context, Ptr<const Packet> packet, Ptr<Ipv4> ipv4, uint32_t interface)
+{
+  //
+  // We're not testing IP so remove and toss the header.  In order to do this,
+  // though, we need to copy the packet since we have a const version.
+  //
+  Ptr<Packet> p = packet->Copy ();
+  Ipv4Header ipHeader;
+  p->RemoveHeader (ipHeader);
+
+  //
+  // What is left is the TCP header and any data that may be sent.  We aren't
+  // sending any TCP data, so we expect what remains is only TCP header, which
+  // is a small thing to save.
+  //
+  if (m_writeVectors)
+    {
+      //
+      // Save the TCP under test response for later testing.
+      //
+      Time tNow = Simulator::Now ();
+      int64_t tMicroSeconds = tNow.GetMicroSeconds ();
+      m_pcapFile.Write (uint32_t (tMicroSeconds / 1000000), 
+                        uint32_t (tMicroSeconds % 1000000), 
+                        p->PeekData(), 
+                        p->GetSize ());
+    }
+  else
+    {
+      //
+      // Read the TCP under test expected response from the expected vector
+      // file and see if it still does the right thing.
+      //
+      uint8_t expected[PCAP_SNAPLEN];
+      uint32_t tsSec, tsUsec, inclLen, origLen, readLen;
+      m_pcapFile.Read (expected, sizeof(expected), tsSec, tsUsec, inclLen, origLen, readLen);
+
+      uint8_t const *actual = p->PeekData();
+
+      uint32_t result = memcmp(actual, expected, readLen);
+
+      //
+      // Avoid streams of errors -- only report the first.
+      //
+      if (GetErrorStatus () == false)
+        {
+          NS_TEST_EXPECT_MSG_EQ (result, 0, "Expected data comparison error");
+        }
+    }
 }
 
 bool
@@ -116,12 +198,11 @@ Ns3TcpLossTestCase1::DoRun (void)
   apps.Start (Seconds (0.0));
   apps.Stop (sinkStopTimeObj);
 
-  Config::Connect ("/NodeList/*/ApplicationList/*/$ns3::PacketSink/Rx",
-                   MakeCallback (&Ns3TcpLossTestCase1::SinkRx, this));
+  Config::Connect ("/NodeList/0/$ns3::Ipv4L3Protocol/Tx",
+                   MakeCallback (&Ns3TcpLossTestCase1::Ipv4L3Tx, this));
 
   Simulator::Schedule(Seconds (2), &SocketWriter::Connect, socketWriter);
   Simulator::Schedule(Seconds (10), &SocketWriter::Write, socketWriter, 500);
-  m_inputs.Add (500);
   Simulator::Schedule(writerStopTimeObj, &SocketWriter::Close, socketWriter);
 
   std::list<uint32_t> sampleList;
@@ -143,15 +224,6 @@ Ns3TcpLossTestCase1::DoRun (void)
   Simulator::Run ();
   Simulator::Destroy ();
 
-  // Compare inputs and outputs
-  NS_TEST_ASSERT_MSG_EQ (m_inputs.GetN (), m_responses.GetN (), "Incorrect number of expected receive events");
-  for (uint32_t i = 0; i < m_responses.GetN (); i++)
-    {
-      uint32_t in = m_inputs.Get (i);
-      uint32_t out = m_responses.Get (i);
-      NS_TEST_ASSERT_MSG_EQ (in, out, "Mismatch:  expected " << in << " bytes, got " << out << " bytes");
-    }
-
   return GetErrorStatus ();
 }
 
@@ -162,25 +234,102 @@ public:
   virtual ~Ns3TcpLossTestCase2 () {}
 
 private:
+  virtual void DoSetup (void);
   virtual bool DoRun (void);
+  virtual void DoTeardown (void);
+
+  std::string m_pcapFilename;
+  PcapFile m_pcapFile;
+  bool m_writeVectors;
   bool m_writeResults;
 
-  void SinkRx (std::string path, Ptr<const Packet> p, const Address &address);
-
-  TestVectors<uint32_t> m_inputs;
-  TestVectors<uint32_t> m_responses;
+  void Ipv4L3Tx (std::string context, Ptr<const Packet> packet, Ptr<Ipv4> ipv4, uint32_t interface);
 };
 
 Ns3TcpLossTestCase2::Ns3TcpLossTestCase2 ()
   : TestCase ("Check that ns-3 TCP survives loss of first data packet"),
+    m_writeVectors (WRITE_VECTORS),
     m_writeResults (false)
 {
 }
 
-void 
-Ns3TcpLossTestCase2::SinkRx (std::string path, Ptr<const Packet> p, const Address &address)
+void
+Ns3TcpLossTestCase2::DoSetup (void)
 {
-  m_responses.Add (p->GetSize ());
+    //
+    // We expect there to be a file called ns3tcp-loss1-response-vectors.pcap" in
+    // the source directory of this file.
+    //
+    m_pcapFilename = NS_TEST_SOURCEDIR + "ns3tcp-loss2-response-vectors.pcap";
+
+    if (m_writeVectors)
+      {
+        m_pcapFile.Open (m_pcapFilename, std::ios::out|std::ios::binary);
+        m_pcapFile.Init(PCAP_LINK_TYPE, PCAP_SNAPLEN);
+      }
+    else
+      {
+        m_pcapFile.Open (m_pcapFilename, std::ios::in|std::ios::binary);
+        NS_ABORT_MSG_UNLESS (m_pcapFile.GetDataLinkType () == PCAP_LINK_TYPE, "Wrong response vectors in directory");
+      }
+}
+
+void
+Ns3TcpLossTestCase2::DoTeardown (void)
+{
+    m_pcapFile.Close ();
+}
+
+void
+Ns3TcpLossTestCase2::Ipv4L3Tx (std::string context, Ptr<const Packet> packet, Ptr<Ipv4> ipv4, uint32_t interface)
+{
+  //
+  // We're not testing IP so remove and toss the header.  In order to do this,
+  // though, we need to copy the packet since we have a const version.
+  //
+  Ptr<Packet> p = packet->Copy ();
+  Ipv4Header ipHeader;
+  p->RemoveHeader (ipHeader);
+
+  //
+  // What is left is the TCP header and any data that may be sent.  We aren't
+  // sending any TCP data, so we expect what remains is only TCP header, which
+  // is a small thing to save.
+  //
+  if (m_writeVectors)
+    {
+      //
+      // Save the TCP under test response for later testing.
+      //
+      Time tNow = Simulator::Now ();
+      int64_t tMicroSeconds = tNow.GetMicroSeconds ();
+      m_pcapFile.Write (uint32_t (tMicroSeconds / 1000000), 
+                        uint32_t (tMicroSeconds % 1000000), 
+                        p->PeekData(), 
+                        p->GetSize ());
+    }
+  else
+    {
+      //
+      // Read the TCP under test expected response from the expected vector
+      // file and see if it still does the right thing.
+      //
+      uint8_t expected[PCAP_SNAPLEN];
+      uint32_t tsSec, tsUsec, inclLen, origLen, readLen;
+      m_pcapFile.Read (expected, sizeof(expected), tsSec, tsUsec, inclLen, origLen, readLen);
+
+      uint8_t const *actual = p->PeekData();
+
+      uint32_t result = memcmp(actual, expected, readLen);
+
+      //
+      // Avoid streams of errors -- only report the first.
+      //
+      if (GetErrorStatus () == false)
+        {
+          NS_TEST_EXPECT_MSG_EQ (result, 0, "Expected data comparison error");
+        }
+    }
 }
 
 bool
@@ -225,12 +374,11 @@ Ns3TcpLossTestCase2::DoRun (void)
   apps.Start (Seconds (0.0));
   apps.Stop (sinkStopTimeObj);
 
-  Config::Connect ("/NodeList/*/ApplicationList/*/$ns3::PacketSink/Rx",
-                   MakeCallback (&Ns3TcpLossTestCase2::SinkRx, this));
+  Config::Connect ("/NodeList/0/$ns3::Ipv4L3Protocol/Tx",
+                   MakeCallback (&Ns3TcpLossTestCase2::Ipv4L3Tx, this));
 
   Simulator::Schedule(Seconds (2), &SocketWriter::Connect, socketWriter);
   Simulator::Schedule(Seconds (10), &SocketWriter::Write, socketWriter, 500);
-  m_inputs.Add (500);
   Simulator::Schedule(writerStopTimeObj, &SocketWriter::Close, socketWriter);
 
   std::list<uint32_t> sampleList;
@@ -250,15 +398,6 @@ Ns3TcpLossTestCase2::DoRun (void)
   Simulator::Stop (simStopTimeObj);
   Simulator::Run ();
   Simulator::Destroy ();
-
-  // Compare inputs and outputs
-  NS_TEST_ASSERT_MSG_EQ (m_inputs.GetN (), m_responses.GetN (), "Incorrect number of expected receive events");
-  for (uint32_t i = 0; i < m_responses.GetN (); i++)
-    {
-      uint32_t in = m_inputs.Get (i);
-      uint32_t out = m_responses.Get (i);
-      NS_TEST_ASSERT_MSG_EQ (in, out, "Mismatch:  expected " << in << " bytes, got " << out << " bytes");
-    }
 
   return GetErrorStatus ();
 }

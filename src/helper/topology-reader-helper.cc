@@ -23,6 +23,7 @@
 #include "ns3/topology-reader-helper.h"
 #include "ns3/inet-topology-reader.h"
 #include "ns3/orbis-topology-reader.h"
+#include "ns3/rocketfuel-topology-reader.h"
 #include "ns3/log.h"
 
 namespace ns3 {
@@ -64,6 +65,11 @@ TopologyReaderHelper::GetTopologyReader ()
         {
           NS_LOG_INFO ("Creating Inet formatted data input.");
           m_inFile = CreateObject<InetTopologyReader> ();
+        }
+      else if (m_fileType == "Rocketfuel")
+        {
+          NS_LOG_INFO ("Creating Rocketfuel formatted data input.");
+          m_inFile = CreateObject<RocketfuelTopologyReader> ();
         }
       else
         {

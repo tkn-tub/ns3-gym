@@ -31,6 +31,8 @@ NS_LOG_COMPONENT_DEFINE ("ObjectBase");
 
 namespace ns3 {
 
+NS_OBJECT_ENSURE_REGISTERED (ObjectBase);
+
 static TypeId
 GetObjectIid (void)
 {

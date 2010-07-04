@@ -22,7 +22,7 @@
 namespace ns3 {
 namespace dot11s {
 uint8_t
-IePeeringProtocol::GetInformationSize () const
+IePeeringProtocol::GetInformationFieldSize () const
 {
   return 1;
 }
@@ -30,18 +30,18 @@ IePeeringProtocol::IePeeringProtocol () :
   m_protocol (0)
 {
 }
-WifiElementId
+WifiInformationElementId
 IePeeringProtocol::ElementId () const
 {
   return IE11S_MESH_PEERING_PROTOCOL_VERSION;
 }
 void
-IePeeringProtocol::SerializeInformation (Buffer::Iterator i) const
+IePeeringProtocol::SerializeInformationField (Buffer::Iterator i) const
 {
   i.WriteU8 (m_protocol);
 }
 uint8_t
-IePeeringProtocol::DeserializeInformation (Buffer::Iterator i, uint8_t length)
+IePeeringProtocol::DeserializeInformationField (Buffer::Iterator i, uint8_t length)
 {
   Buffer::Iterator start = i;
   m_protocol = i.ReadU8 ();

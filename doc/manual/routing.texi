@@ -147,6 +147,16 @@ at time 5 seconds:
     &Ipv4GlobalRoutingHelper::RecomputeRoutingTables);
 @end verbatim
 
+There are two attributes that govern the behavior.  The first is 
+Ipv4GlobalRouting::RandomEcmpRouting.  If set to true, packets are randomly
+routed across equal-cost multipath routes.  If set to false (default), 
+only one route is consistently used.  The second is 
+Ipv4GlobalRouting::RespondToInterfaceEvents.  If set to true, dynamically 
+recompute the global routes upon Interface notification events (up/down, 
+or add/remove address).  If set to false (default), routing may break
+unless the user manually calls RecomputeRoutingTables() after such events.
+The default is set to false to preserve legacy ns-3 program behavior.
+
 @subsection Global Routing Implementation
 
 This section is for those readers who care about how this is implemented.

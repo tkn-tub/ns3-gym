@@ -100,6 +100,7 @@ NscTcpSocketImpl::NscTcpSocketImpl(const NscTcpSocketImpl& sock)
     m_connected (sock.m_connected),
     m_state (sock.m_state),
     m_closeOnEmpty (sock.m_closeOnEmpty),
+    m_txBufferSize (sock.m_txBufferSize),
     m_segmentSize (sock.m_segmentSize),
     m_rxWindowSize (sock.m_rxWindowSize),
     m_advertisedWindowSize (sock.m_advertisedWindowSize),

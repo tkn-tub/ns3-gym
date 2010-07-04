@@ -22,7 +22,7 @@
 #ifndef MESH_PEER_MAN_ELEMENT
 #define MESH_PEER_MAN_ELEMENT
 
-#include "ns3/wifi-information-element-vector.h"
+#include "ns3/mesh-information-element-vector.h"
 
 namespace ns3 {
 namespace dot11s {
@@ -74,10 +74,10 @@ public:
    * \name Inherited from WifiInformationElement
    * \{
    */
-  virtual WifiElementId ElementId () const;
-  virtual uint8_t  GetInformationSize (void) const;
-  virtual void SerializeInformation (Buffer::Iterator i) const;
-  virtual uint8_t DeserializeInformation (Buffer::Iterator i, uint8_t length);
+  virtual WifiInformationElementId ElementId () const;
+  virtual uint8_t GetInformationFieldSize (void) const;
+  virtual void SerializeInformationField (Buffer::Iterator i) const;
+  virtual uint8_t DeserializeInformationField (Buffer::Iterator i, uint8_t length);
   virtual void Print (std::ostream& os) const;
   ///\}
 private:

@@ -81,6 +81,7 @@ public:
   Ipv4GlobalRouting ();
   virtual ~Ipv4GlobalRouting ();
 
+  // These methods inherited from base class
   virtual Ptr<Ipv4Route> RouteOutput (Ptr<Packet> p, const Ipv4Header &header, Ptr<NetDevice> oif, Socket::SocketErrno &sockerr);
 
   virtual bool RouteInput  (Ptr<const Packet> p, const Ipv4Header &header, Ptr<const NetDevice> idev,
@@ -215,6 +216,8 @@ protected:
 private:
   /// Set to true if packets are randomly routed among ECMP; set to false for using only one route consistently
   bool m_randomEcmpRouting;
+  /// Set to true if this interface should respond to interface events by globallly recomputing routes 
+  bool m_respondToInterfaceEvents;
   /// A uniform random number generator for randomly routing packets among ECMP 
   UniformVariable m_rand;
 

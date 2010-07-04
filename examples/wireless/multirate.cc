@@ -20,7 +20,7 @@
  * Scenarios: 100 nodes, multiple simultaneous flows, multi-hop ad hoc, routing,
  * and mobility
  *
- * INSTRUCTIONS:
+ * QUICK INSTRUCTIONS:
  *
  * To optimize build: 
  * ./waf -d optimized configure
@@ -29,8 +29,8 @@
  * To compile:
  * ./waf --run multirate
  *
- * To compile with commandline(useful for varying parameters or configurations):
- * ./waf --run "multirate --packetSize=2000 --totalTime=50"
+ * To compile with command line(useful for varying parameters):
+ * ./waf --run "multirate --totalTime=0.3s --rateManager=ns3::MinstrelWifiManager"
  *
  * To turn on NS_LOG:
  * export NS_LOG=multirate=level_all
@@ -43,10 +43,9 @@
  * To view pcap files:
  * tcpdump -nn -tt -r filename.pcap
  *
- * To monitor the files
+ * To monitor the files:
  * tail -f filename.pcap
  *
- * Sidenote: Simulation might take sometime 
  */
 
 #include "ns3/core-module.h"
@@ -100,13 +99,13 @@ private:
   Gnuplot2dDataset m_output;
 
   double totalTime; 
+  double expMean;
 
   uint32_t bytesTotal;
   uint32_t packetSize;
   uint32_t gridSize; 
   uint32_t nodeDistance;
   uint32_t port;
-  uint32_t expMean;
   uint32_t scenario;
 
   bool enablePcap;
@@ -124,17 +123,17 @@ Experiment::Experiment ()
 
 Experiment::Experiment (std::string name) : 
   m_output (name),
-  totalTime (50), //use shorter time for faster simulation 
+  totalTime (0.3), 
+  expMean (0.1), //flows being exponentially distributed
   bytesTotal(0),
   packetSize (2000),
   gridSize (10), //10x10 grid  for a total of 100 nodes
   nodeDistance (30),
   port (5000),
-  expMean (4), //flows being exponentially distributed
   scenario (4), 
-  enablePcap (false), // will flood the directory with *.pcap files
+  enablePcap (false), 
   enableTracing (true),
-  enableFlowMon (true),
+  enableFlowMon (false),
   enableRouting (false),
   enableMobility (false),
   rtsThreshold ("2200"), //0 for enabling rts/cts
@@ -173,7 +172,8 @@ Experiment::CheckThroughput()
   bytesTotal = 0;
   m_output.Add ((Simulator::Now ()).GetSeconds (), mbs);
 
-  Simulator::Schedule (Seconds (1.0), &Experiment::CheckThroughput, this);
+  //check throughput every 1/10 of a second 
+  Simulator::Schedule (Seconds (0.1), &Experiment::CheckThroughput, this);
 }
 
 Vector
@@ -261,7 +261,7 @@ Experiment::SelectSrcDest (NodeContainer c)
 
   for (uint32_t i=0; i < totalNodes/3; i++)
     {
-      ApplicationSetup (c.Get(uvSrc.RandomVariable::GetInteger()), c.Get(uvDest.RandomVariable::GetInteger()) ,  1, totalTime);
+      ApplicationSetup (c.Get(uvSrc.RandomVariable::GetInteger()), c.Get(uvDest.RandomVariable::GetInteger()) ,  0, totalTime);
     }
 }
 
@@ -281,7 +281,7 @@ Experiment::SendMultiDestinations(Ptr<Node> sender, NodeContainer c)
   // ExponentialVariable params: (mean, upperbound)
   ExponentialVariable ev(expMean, totalTime);
 
-  double start=1, stop=totalTime;
+  double start=0.0, stop=totalTime;
   uint32_t destIndex; 
 
   for (uint32_t i=0; i < c.GetN (); i++)
@@ -342,18 +342,6 @@ Experiment::ApplicationSetup (Ptr<Node> client, Ptr<Node> server, double start, 
   apps.Start (Seconds (start));
   apps.Stop (Seconds (stop));
 
-/*
-  // Select either Sink Method 1 or 2 for setting up sink
-  // one using a helper vs one without
-  // Sink: Method 1
-  Address sinkAddr(InetSocketAddress (Ipv4Address::GetAny (), port));
-  PacketSinkHelper sinkHelper ("ns3::UdpSocketFactory", sinkAddr);
-  ApplicationContainer sinkApp = sinkHelper.Install (server);
-  sinkApp.Start (Seconds (start));
-  sinkApp.Stop (Seconds (stop));
-*/
-
-  // Sink: Method 2
   Ptr<Socket> sink = SetupPacketReceive (server);
 
 }
@@ -435,7 +423,7 @@ Experiment::Run (const WifiHelper &wifi, const YansWifiPhyHelper &wifiPhy,
       //All flows begin at the same time
       for (uint32_t i = 0; i < nodeSize - 1; i = i+2)
         {
-          ApplicationSetup (c.Get (i), c.Get (i+1),  1, totalTime);
+          ApplicationSetup (c.Get (i), c.Get (i+1),  0, totalTime);
         }
     }
   else if ( scenario == 3)
@@ -543,10 +531,8 @@ int main (int argc, char *argv[])
   experiment = Experiment ("multirate");
 
   //for commandline input
-  NS_ASSERT_MSG (experiment.CommandSetup(argc, argv),
-                 "Configuration failed...");
+  experiment.CommandSetup(argc, argv);
 
-  // disable fragmentation
   // set value to 0 for enabling fragmentation
   Config::SetDefault ("ns3::WifiRemoteStationManager::FragmentationThreshold", StringValue ("2200"));
   Config::SetDefault ("ns3::WifiRemoteStationManager::RtsCtsThreshold", StringValue (experiment.GetRtsThreshold()));
@@ -567,7 +553,6 @@ int main (int argc, char *argv[])
   wifi.SetStandard (WIFI_PHY_STANDARD_holland);
   wifi.SetRemoteStationManager (experiment.GetRateManager());
 
-  //printing out selection confirmation
   NS_LOG_INFO ("Scenario: " << experiment.GetScenario ());
   NS_LOG_INFO ("Rts Threshold: " << experiment.GetRtsThreshold());
   NS_LOG_INFO ("Name:  " << experiment.GetOutputFileName());

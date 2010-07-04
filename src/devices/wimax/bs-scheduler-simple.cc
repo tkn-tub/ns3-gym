@@ -21,7 +21,7 @@
 #include "bs-scheduler-simple.h"
 #include "ns3/simulator.h"
 #include "bs-net-device.h"
-#include "packet-burst.h"
+#include "ns3/packet-burst.h"
 #include "cid.h"
 #include "wimax-mac-header.h"
 #include "ss-record.h"
@@ -39,7 +39,7 @@ NS_LOG_COMPONENT_DEFINE ("BSSchedulerSimple");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED ( BSSchedulerSimple);
+NS_OBJECT_ENSURE_REGISTERED (BSSchedulerSimple);
 
 TypeId BSSchedulerSimple::GetTypeId (void)
 {
@@ -177,10 +177,14 @@ void BSSchedulerSimple::Schedule (void)
                   packet = connection->Dequeue (MacHeaderType::HEADER_TYPE_GENERIC, availableByte);
                   availableSymbols = 0;
                 }
-              else
+              else if (availableSymbols >= nrSymbolsRequired)
                 {
                   packet = connection->Dequeue ();
                   availableSymbols -= nrSymbolsRequired;
+                }
+              else
+                {
+                  break;
                 }
               burst->AddPacket (packet);
             }

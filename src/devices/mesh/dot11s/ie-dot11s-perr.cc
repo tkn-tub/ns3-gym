@@ -29,7 +29,7 @@ IePerr::IePerr ()
 IePerr::~IePerr ()
 {
 }
-WifiElementId
+WifiInformationElementId
 IePerr::ElementId () const
 {
   return IE11S_PERR;
@@ -52,7 +52,7 @@ IePerr::GetNumOfDest () const
   return m_addressUnits.size ();
 }
 void
-IePerr::SerializeInformation (Buffer::Iterator i) const
+IePerr::SerializeInformationField (Buffer::Iterator i) const
 {
   i.WriteU8 (0);
   i.WriteU8 (m_addressUnits.size ());
@@ -63,7 +63,7 @@ IePerr::SerializeInformation (Buffer::Iterator i) const
     }
 }
 uint8_t
-IePerr::DeserializeInformation (Buffer::Iterator start, uint8_t length)
+IePerr::DeserializeInformationField (Buffer::Iterator start, uint8_t length)
 {
   Buffer::Iterator i = start;
   i.Next (1); //Mode flags is not used now
@@ -81,7 +81,7 @@ IePerr::DeserializeInformation (Buffer::Iterator start, uint8_t length)
 }
 
 uint8_t
-IePerr::GetInformationSize () const
+IePerr::GetInformationFieldSize () const
 {
   uint8_t retval = 1 //ModeFlags
       + 1 //NumOfDests
@@ -108,7 +108,7 @@ IePerr::AddAddressUnit (HwmpProtocol::FailedDestination unit)
 bool
 IePerr::IsFull () const
 {
-  return (GetInformationSize () + 2 /* ID + LENGTH*/+ 10 /* Size of Mac48Address + uint32_t (one unit)*/> 255);
+  return (GetInformationFieldSize () + 2 /* ID + LENGTH*/+ 10 /* Size of Mac48Address + uint32_t (one unit)*/> 255);
 }
 std::vector<HwmpProtocol::FailedDestination>
 IePerr::GetAddressUnitVector () const

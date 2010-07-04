@@ -26,7 +26,7 @@
 #include "bs-uplink-scheduler.h"
 #include "bs-net-device.h"
 #include "wimax-phy.h"
-#include "packet-burst.h"
+#include "ns3/packet-burst.h"
 #include "ss-record.h"
 #include "bs-scheduler.h"
 #include "wimax-mac-queue.h"
@@ -48,7 +48,7 @@ NS_LOG_COMPONENT_DEFINE ("BaseStationNetDevice");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED ( BaseStationNetDevice);
+NS_OBJECT_ENSURE_REGISTERED (BaseStationNetDevice);
 
 TypeId BaseStationNetDevice::GetTypeId (void)
 {
@@ -522,6 +522,11 @@ BaseStationNetDevice::Stop (void)
 void
 BaseStationNetDevice::StartFrame (void)
 {
+  //setting DL/UL subframe allocation for this frame
+  uint32_t symbolsPerFrame = GetPhy ()->GetSymbolsPerFrame ();
+  SetNrDlSymbols ((symbolsPerFrame / 2) - static_cast<uint32_t> (ceil(GetTtg()*m_psDuration.GetSeconds ()/m_symbolDuration.GetSeconds ())));
+  SetNrUlSymbols ((symbolsPerFrame / 2) - static_cast<uint32_t> (ceil(GetRtg()*m_psDuration.GetSeconds ()/m_symbolDuration.GetSeconds ())));
+
   m_frameStartTime = Simulator::Now ();
 
   NS_LOG_INFO ("----------------------frame" << GetNrFrames () + 1 << "----------------------");
@@ -951,6 +956,7 @@ BaseStationNetDevice::SendBursts (void)
       burst = pair.second;
       dlMapIe = pair.first;
       cid = dlMapIe->GetCid ();
+      uint8_t diuc = dlMapIe->GetDiuc ();
 
       if (cid != GetInitialRangingConnection ()->GetCid () && cid != GetBroadcastConnection ()->GetCid ())
         {
@@ -958,12 +964,12 @@ BaseStationNetDevice::SendBursts (void)
             {
               if (m_serviceFlowManager->GetServiceFlow (cid)->GetIsMulticast () == true)
                 {
-                  modulationType = m_serviceFlowManager->GetServiceFlow (cid)->GetModulation ();
+                  modulationType = GetBurstProfileManager ()->GetModulationType (diuc, WimaxNetDevice::DIRECTION_DOWNLINK);
                 }
             }
           else
             {
-              modulationType = m_ssManager->GetSSRecord (cid)->GetModulationType ();
+              modulationType = GetBurstProfileManager ()->GetModulationType (diuc, WimaxNetDevice::DIRECTION_DOWNLINK);
             }
         }
       else

@@ -27,7 +27,7 @@
 #include "ns3/mesh-wifi-interface-mac.h"
 #include "ns3/simulator.h"
 #include "ns3/wifi-mac-header.h"
-#include "ns3/wifi-information-element-vector.h"
+#include "ns3/mesh-information-element-vector.h"
 #include "ns3/log.h"
 namespace ns3 {
 namespace dot11s {
@@ -69,7 +69,7 @@ PeerManagementProtocolMac::Receive (Ptr<Packet> const_packet, const WifiMacHeade
     {
       MgtBeaconHeader beacon_hdr;
       packet->RemoveHeader (beacon_hdr);
-      WifiInformationElementVector elements;
+      MeshInformationElementVector elements;
       packet->RemoveHeader(elements);
       Ptr<IeBeaconTiming> beaconTiming = DynamicCast<IeBeaconTiming> (elements.FindFirst (IE11S_BEACON_TIMING));
       Ptr<IeMeshId> meshId = DynamicCast<IeMeshId> (elements.FindFirst (IE11S_MESH_ID));
@@ -121,8 +121,8 @@ PeerManagementProtocolMac::Receive (Ptr<Packet> const_packet, const WifiMacHeade
           return false;
         }
       Ptr<IePeerManagement> peerElement;
-      //Peer Management element is the last element in this frame - so, we can use WifiInformationElementVector
-      WifiInformationElementVector elements;
+      //Peer Management element is the last element in this frame - so, we can use MeshInformationElementVector
+      MeshInformationElementVector elements;
       packet->RemoveHeader (elements);
       peerElement = DynamicCast<IePeerManagement>(elements.FindFirst(IE11S_PEERING_MANAGEMENT));
       NS_ASSERT (peerElement != 0);
@@ -200,7 +200,7 @@ PeerManagementProtocolMac::SendPeerLinkManagementFrame (Mac48Address peerAddress
   //Create a packet:
   meshConfig.SetNeighborCount (m_protocol->GetNumberOfLinks ());
   Ptr<Packet> packet = Create<Packet> ();
-  WifiInformationElementVector elements;
+  MeshInformationElementVector elements;
   elements.AddInformationElement(Ptr<IePeerManagement> (&peerElement));
   packet->AddHeader (elements);
   PeerLinkFrameStart::PlinkFrameStartFields fields;

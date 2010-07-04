@@ -39,7 +39,51 @@
 
 namespace ns3 {
 
-class MinstrelWifiRemoteStation;
+struct MinstrelWifiRemoteStation;
+
+/**
+ * A struct to contain all information related to a data rate
+ */
+struct RateInfo
+{
+  /**
+   * Perfect transmission time calculation, or frame calculation
+   * Given a bit rate and a packet length n bytes
+   */
+  Time perfectTxTime;
+
+
+  uint32_t retryCount;  ///< retry limit
+  uint32_t adjustedRetryCount;  ///< adjust the retry limit for this rate
+  uint32_t numRateAttempt;  ///< how many number of attempts so far
+    uint32_t numRateSuccess;  ///< number of successful pkts
+  uint32_t prob;  ///< (# pkts success )/(# total pkts)
+
+  /**
+   * EWMA calculation
+   * ewma_prob =[prob *(100 - ewma_level) + (ewma_prob_old * ewma_level)]/100
+   */
+  uint32_t ewmaProb;
+
+  uint32_t prevNumRateAttempt;  ///< from last rate
+  uint32_t prevNumRateSuccess;  ///< from last rate
+  uint64_t successHist;  ///< aggregate of all successes
+  uint64_t attemptHist;  ///< aggregate of all attempts
+  uint32_t throughput;  ///< throughput of a rate
+};
+
+/**
+ * Data structure for a Minstrel Rate table
+ * A vector of a struct RateInfo
+ */
+typedef std::vector<struct RateInfo> MinstrelRate;
+
+/**
+ * Data structure for a Sample Rate table
+ * A vector of a vector uint32_t
+ */
+typedef std::vector<std::vector<uint32_t> > SampleRate;
+
 
 
 class MinstrelWifiManager : public WifiRemoteStationManager
@@ -54,7 +98,7 @@ public:
 
 private:
   // overriden from base class
-  virtual class WifiRemoteStation *DoCreateStation (void) const;
+  virtual WifiRemoteStation *DoCreateStation (void) const;
   virtual void DoReportRxOk (WifiRemoteStation *station, 
                              double rxSnr, WifiMode txMode);
   virtual void DoReportRtsFailed (WifiRemoteStation *station);
@@ -101,6 +145,9 @@ private:
 
 
   typedef std::vector<std::pair<Time,WifiMode> > TxTime;
+  MinstrelRate m_minstrelTable;  ///< minstrel table
+  SampleRate m_sampleTable;  ///< sample table
+
 
   TxTime m_calcTxTime;  ///< to hold all the calculated TxTime for all modes
   Time m_updateStats;  ///< how frequent do we calculate the stats(1/10 seconds)
@@ -109,6 +156,7 @@ private:
   uint32_t m_segmentSize;  ///< largest allowable segment size
   uint32_t m_sampleCol;  ///< number of sample columns
   uint32_t m_pktLen;  ///< packet length used  for calculate mode TxTime  
+  uint32_t m_nsupported;  ///< modes supported
 };
 
 }// namespace ns3

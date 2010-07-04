@@ -30,6 +30,51 @@
 namespace ns3 {
 
 /**
+ * This enumeration defines the modulation classes per IEEE
+ * 802.11-2007, Section 9.6.1, Table 9-2.
+ */
+enum WifiModulationClass {
+  /** Modulation class unknown or unspecified. A WifiMode with this
+  WifiModulationClass has not been properly initialised. */
+  WIFI_MOD_CLASS_UNKNOWN = 0,
+  /** Infrared (IR) (Clause 16) */
+  WIFI_MOD_CLASS_IR,
+  /** Frequency-hopping spread spectrum (FHSS) PHY (Clause 14) */
+  WIFI_MOD_CLASS_FHSS,
+  /** DSSS PHY (Clause 15) and HR/DSSS PHY (Clause 18) */
+  WIFI_MOD_CLASS_DSSS,
+  /** ERP-PBCC PHY (19.6) */
+  WIFI_MOD_CLASS_ERP_PBCC,
+  /** DSSS-OFDM PHY (19.7) */
+  WIFI_MOD_CLASS_DSSS_OFDM,
+  /** ERP-OFDM PHY (19.5) */
+  WIFI_MOD_CLASS_ERP_OFDM,
+  /** OFDM PHY (Clause 17) */
+  WIFI_MOD_CLASS_OFDM,
+  /** HT PHY (Clause 20) */
+  WIFI_MOD_CLASS_HT
+};
+
+
+/**
+ * This enumeration defines the various convolutional coding rates
+ * used for the OFDM transmission modes in the IEEE 802.11
+ * standard. DSSS (for example) rates which do not have an explicit
+ * coding stage in their generation should have this parameter set to
+ * WIFI_CODE_RATE_UNDEFINED.
+ */
+enum WifiCodeRate {
+  /** No explicit coding (e.g., DSSS rates) */
+  WIFI_CODE_RATE_UNDEFINED,
+  /** Rate 3/4 */
+  WIFI_CODE_RATE_3_4,
+  /** Rate 2/3 */
+  WIFI_CODE_RATE_2_3,
+  /** Rate 1/2 */
+  WIFI_CODE_RATE_1_2
+};
+
+/**
  * \brief represent a single transmission mode
  *
  * A WifiMode is implemented by a single integer which is used
@@ -40,15 +85,6 @@ namespace ns3 {
 class WifiMode
 {
  public:
-  enum ModulationType {
-    BPSK,
-    QPSK,
-    DBPSK,
-    DQPSK,
-    QAM,
-    UNKNOWN
-  };
-  
   /**
    * \returns the number of Hz used by this signal
    */
@@ -65,19 +101,9 @@ class WifiMode
    */
   uint32_t GetDataRate (void) const;
   /**
-   * \returns true if this mode uses a bpsk modulation, false
-   *          otherwise.
+   * \returns the coding rate of this transmission mode
    */
-  bool IsModulationBpsk (void) const;
-  /**
-   * \returns true if this mode uses a qam modulation, false
-   *          otherwise.
-   */
-  bool IsModulationQam (void) const;
-  /**
-   * \returns the type of modulation used by this mode.
-   */
-  enum ModulationType GetModulationType (void) const;
+  enum WifiCodeRate GetCodeRate (void) const;
   /**
    * \returns the size of the modulation constellation.
    */
@@ -104,11 +130,12 @@ class WifiMode
    */
   uint32_t GetUid (void) const;
 
-  /** 
-   * 
-   * @return the WifiPhyStandard to which the WifiMode belongs
+  /**
+   *
+   * \returns the Modulation Class (see IEEE 802.11-2007 Section
+   * 9.6.1) to which this WifiMode belongs.
    */
-  enum WifiPhyStandard GetStandard () const;
+  enum WifiModulationClass GetModulationClass () const;
 
   /**
    * Create an invalid WifiMode. Calling any method on the
@@ -136,6 +163,15 @@ std::istream & operator >> (std::istream &is, WifiMode &mode);
 ATTRIBUTE_HELPER_HEADER (WifiMode);
 
 /**
+ * In various parts of the code, folk are interested in maintaining a
+ * list of transmission modes. The vector class provides a good basis
+ * for this, but we here add some syntactic sugar by defining a
+ * WifiModeList type, and a corresponding iterator.
+ */
+typedef std::vector<WifiMode> WifiModeList;
+typedef WifiModeList::const_iterator WifiModeListIterator;
+
+/**
  * \brief create WifiMode class instances and keep track of them.
  *
  * This factory ensures that each WifiMode created has a unique name
@@ -146,102 +182,29 @@ class WifiModeFactory
 public:
   /**
    * \param uniqueName the name of the associated WifiMode. This name
-   *        must be unique across _all_ instances.
+   *        must be unique accross _all_ instances.
+   * \param modClass the class of modulation
    * \param isMandatory true if this WifiMode is mandatory, false otherwise.
    * \param bandwidth the bandwidth (Hz) of the signal generated when the
    *        associated WifiMode is used.
    * \param dataRate the rate (bits/second) at which the user data is transmitted
-   * \param phyRate the rate (bits/second) at which the encoded user data is transmitted
-   * \param standard the Wifi Phy standard to apply
-   *        The phyRate includes FEC so, is typically higher than the dataRate.
+   * \param codingRate if convolutional coding is used for this rate
+   * then this parameter specifies the convolutional coding rate
+   * used. If there is no explicit convolutional coding step (e.g.,
+   * for DSSS rates) then the caller should set this parameter to
+   * WIFI_CODE_RATE_UNCODED.
+   * \param constellationSize the order of the constellation used.
    *
-   * Create a BPSK WifiMode.
+   * Create a WifiMode.
    */
-  static WifiMode CreateBpsk (std::string uniqueName,
-			      bool isMandatory,
-			      uint32_t bandwidth,
-			      uint32_t dataRate,
-			      uint32_t phyRate,
-                              enum WifiPhyStandard standard);
-  /**
-   * \param uniqueName the name of the associated WifiMode. This name
-   *        must be unique across _all_ instances.
-   * \param isMandatory true if this WifiMode is mandatory, false otherwise.
-   * \param bandwidth the bandwidth (Hz) of the signal generated when the
-   *        associated WifiMode is used.
-   * \param dataRate the rate (bits/second) at which the user data is transmitted
-   * \param phyRate the rate (bits/second) at which the encoded user data is transmitted
-   * \param standard the Wifi Phy standard to apply
-   *        The phyRate includes FEC so, is typically higher than the dataRate.
-   *
-   * Create a QPSK WifiMode.
-   */
-  static WifiMode CreateQpsk (std::string uniqueName,
-			      bool isMandatory,
-			      uint32_t bandwidth,
-			      uint32_t dataRate,
-			      uint32_t phyRate,
-                              enum WifiPhyStandard standard);
-  /**
-   * \param uniqueName the name of the associated WifiMode. This name
-   *        must be unique across _all_ instances.
-   * \param isMandatory true if this WifiMode is mandatory, false otherwise.
-   * \param bandwidth the bandwidth (Hz) of the signal generated when the
-   *        associated WifiMode is used.
-   * \param dataRate the rate (bits/second) at which the user data is transmitted
-   * \param phyRate the rate (bits/second) at which the encoded user data is transmitted
-   *        The phyRate includes FEC so, is typically higher than the dataRate.
-   * \param constellationSize the number of elements included in the QAM constellation. 
-   * \param standard the Wifi Phy standard to apply
-   *
-   * Create a QAM WifiMode.
-   */
-  static WifiMode CreateQam (std::string uniqueName,
-                             bool isMandatory,
-			     uint32_t bandwidth,
-			     uint32_t dataRate,
-			     uint32_t phyRate,
-			     uint8_t constellationSize,
-                             enum WifiPhyStandard standard);
+  static WifiMode CreateWifiMode (std::string uniqueName,
+                                  enum WifiModulationClass modClass,
+                                  bool isMandatory,
+                                  uint32_t bandwidth,
+                                  uint32_t dataRate,
+                                  enum WifiCodeRate codingRate,
+                                  uint8_t constellationSize);
 
-  /**
-   * \param uniqueName the name of the associated WifiMode. This name
-   *        must be unique across _all_ instances.
-   * \param isMandatory true if this WifiMode is mandatory, false otherwise.
-   * \param bandwidth the bandwidth (Hz) of the signal generated when the
-   *        associated WifiMode is used.
-   * \param dataRate the rate (bits/second) at which the user data is transmitted
-   * \param phyRate the rate (bits/second) at which the encoded user data is transmitted
-   * \param standard the Wifi Phy standard to apply
-   *        The phyRate includes FEC so, is typically higher than the dataRate.
-   *
-   * Create a DBPSK WifiMode.
-   */
-  static WifiMode CreateDbpsk (std::string uniqueName,
-			      bool isMandatory,
-			      uint32_t bandwidth,
-			      uint32_t dataRate,
-			      uint32_t phyRate,
-                              enum WifiPhyStandard standard);
-  /**
-   * \param uniqueName the name of the associated WifiMode. This name
-   *        must be unique across _all_ instances.
-   * \param isMandatory true if this WifiMode is mandatory, false otherwise.
-   * \param bandwidth the bandwidth (Hz) of the signal generated when the
-   *        associated WifiMode is used.
-   * \param dataRate the rate (bits/second) at which the user data is transmitted
-   * \param phyRate the rate (bits/second) at which the encoded user data is transmitted
-   * \param standard the Wifi Phy standard to apply
-   *        The phyRate includes FEC so, is typically higher than the dataRate.
-   *
-   * Create a DQPSK WifiMode.
-   */
-  static WifiMode CreateDqpsk (std::string uniqueName,
-			      bool isMandatory,
-			      uint32_t bandwidth,
-			      uint32_t dataRate,
-                              uint32_t phyRate,
-                              enum WifiPhyStandard standard);
 private:
   friend class WifiMode;  
   friend std::istream & operator >> (std::istream &is, WifiMode &mode);
@@ -258,13 +221,13 @@ private:
     uint32_t bandwidth;
     uint32_t dataRate;
     uint32_t phyRate;
-    enum WifiMode::ModulationType modulation;
+    enum WifiModulationClass modClass;
     uint8_t constellationSize;
+    enum WifiCodeRate codingRate;
     bool isMandatory;
-    enum WifiPhyStandard standard;
   };
 
-  bool Search (std::string name, WifiMode *mode);
+  WifiMode Search (std::string name);
   uint32_t AllocateUid (std::string uniqueName);
   WifiModeItem *Get (uint32_t uid);
 

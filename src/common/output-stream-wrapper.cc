@@ -16,29 +16,30 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "ns3/log.h"
 #include "output-stream-wrapper.h"
+#include "ns3/log.h"
+#include "ns3/fatal-impl.h"
+#include "ns3/abort.h"
+#include <fstream>
 
 NS_LOG_COMPONENT_DEFINE ("OutputStreamWrapper");
 
 namespace ns3 {
 
-OutputStreamWrapper::OutputStreamWrapper ()
-  : m_ostream (0)
+OutputStreamWrapper::OutputStreamWrapper (std::string filename, std::ios::openmode filemode)
+  : m_ostream (new std::ofstream ())
 {
+  FatalImpl::RegisterStream (m_ostream);
+  m_ostream->open (filename.c_str (), filemode);
+  NS_ABORT_MSG_UNLESS (m_ostream->is_open (), "AsciiTraceHelper::CreateFileStream():  " <<
+                       "Unable to Open " << filename << " for mode " << filemode);
 }
 
 OutputStreamWrapper::~OutputStreamWrapper ()
 {
+  FatalImpl::UnregisterStream (m_ostream);
   delete m_ostream;
   m_ostream = 0;
-}
-
-void
-OutputStreamWrapper::SetStream (std::ostream *ostream)
-{
-  delete m_ostream;
-  m_ostream = ostream;
 }
 
 std::ostream *

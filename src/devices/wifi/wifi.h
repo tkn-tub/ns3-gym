@@ -44,7 +44,7 @@
  *     belonging to AC_BE access class. 
  *     How TIDs are mapped to access classes are shown in the table below. 
  *   
- *     TID-AccessClass mapping:
+ *     TID-AcIndex mapping:
  *     
  *      <table border=1>
  *      <tr>

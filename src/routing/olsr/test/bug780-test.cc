@@ -96,7 +96,7 @@ Bug780Test::CreateNodes (void)
 {
   int nWifis = 3;
   double SimTime = 200.0;
-  std::string phyMode ("wifib-1mbs");
+  std::string phyMode ("DsssRate1Mbps");
 
   //sending one packets per sec
   // Fix non-unicast data rate to be the same as that of unicast
@@ -115,6 +115,7 @@ Bug780Test::CreateNodes (void)
 
   // Add a non-QoS upper mac, and disable rate control
   NqosWifiMacHelper wifiMac = NqosWifiMacHelper::Default ();
+  wifi.SetStandard (WIFI_PHY_STANDARD_80211b);
   wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager",
       "DataMode",StringValue(phyMode),
       "ControlMode",StringValue(phyMode));

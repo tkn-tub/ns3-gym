@@ -24,7 +24,7 @@
 #include <vector>
 
 #include "ns3/mac48-address.h"
-#include "ns3/wifi-information-element-vector.h"
+#include "ns3/mesh-information-element-vector.h"
 
 namespace ns3 {
 namespace dot11s {
@@ -122,10 +122,10 @@ public:
    * \name Inherited from WifiInformationElement
    * \{
    */
-  virtual WifiElementId ElementId () const;
-  virtual void SerializeInformation (Buffer::Iterator i) const;
-  virtual uint8_t DeserializeInformation (Buffer::Iterator i, uint8_t length);
-  virtual uint8_t GetInformationSize () const;
+  virtual WifiInformationElementId ElementId () const;
+  virtual void SerializeInformationField (Buffer::Iterator i) const;
+  virtual uint8_t DeserializeInformationField (Buffer::Iterator i, uint8_t length);
+  virtual uint8_t GetInformationFieldSize () const;
   virtual void Print (std::ostream& os) const;
   ///\}
 private:

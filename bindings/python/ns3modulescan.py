@@ -253,7 +253,7 @@ class MyPygenClassifier(PygenClassifier):
 
 def ns3_module_scan(top_builddir, pygen_file_name, everything_h, cflags):
 
-    ns3_modules = eval(sys.stdin.read())
+    ns3_modules = eval(sys.stdin.readline())
 
     ## do a topological sort on the modules graph
     from topsort import topsort

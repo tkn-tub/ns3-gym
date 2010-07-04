@@ -57,15 +57,16 @@ ByteTagListDataFreeList::~ByteTagListDataFreeList ()
 #endif /* USE_FREE_LIST */
 
 ByteTagList::Iterator::Item::Item (TagBuffer buf_)
-    : buf (buf_)
-{}
+  : buf (buf_)
+{
+}
 
-bool 
+bool
 ByteTagList::Iterator::HasNext (void) const
 {
   return m_current < m_end;
 }
-struct ByteTagList::Iterator::Item 
+struct ByteTagList::Iterator::Item
 ByteTagList::Iterator::Next (void)
 {
   NS_ASSERT (HasNext ());
@@ -90,13 +91,13 @@ ByteTagList::Iterator::PrepareForNext (void)
       m_nextStart = buf.ReadU32 ();
       m_nextEnd = buf.ReadU32 ();
       if (m_nextStart >= m_offsetEnd || m_nextEnd <= m_offsetStart)
-	{
-	  m_current += 4 + 4 + 4 + 4 + m_nextSize;
-	}
+        {
+          m_current += 4 + 4 + 4 + 4 + m_nextSize;
+        }
       else
-	{
-	  break;
-	}
+        {
+          break;
+        }
     }
 }
 ByteTagList::Iterator::Iterator (uint8_t *start, uint8_t *end, int32_t offsetStart, int32_t offsetEnd)
@@ -169,7 +170,7 @@ ByteTagList::Add (TypeId tid, uint32_t bufferSize, int32_t start, int32_t end)
       m_used = 0;
     } 
   else if (m_data->size < spaceNeeded ||
-	   (m_data->count != 1 && m_data->dirty != m_used))
+           (m_data->count != 1 && m_data->dirty != m_used))
     {
       struct ByteTagListData *newData = Allocate (spaceNeeded);
       memcpy (&newData->data, &m_data->data, m_used);
@@ -177,7 +178,7 @@ ByteTagList::Add (TypeId tid, uint32_t bufferSize, int32_t start, int32_t end)
       m_data = newData;
     }
   TagBuffer tag = TagBuffer (&m_data->data[m_used], 
-			     &m_data->data[spaceNeeded]);
+                             &m_data->data[spaceNeeded]);
   tag.WriteU32 (tid.GetUid ());
   tag.WriteU32 (bufferSize);
   tag.WriteU32 (start);
@@ -241,9 +242,9 @@ ByteTagList::IsDirtyAtEnd (int32_t appendOffset)
     {
       ByteTagList::Iterator::Item item = i.Next ();
       if (item.end > appendOffset)
-	{
-	  return true;
-	}
+        {
+          return true;
+        }
     }
   return false;
 }
@@ -257,9 +258,9 @@ ByteTagList::IsDirtyAtStart (int32_t prependOffset)
     {
       ByteTagList::Iterator::Item item = i.Next ();
       if (item.start < prependOffset)
-	{
-	  return true;
-	}
+        {
+          return true;
+        }
     }
   return false;
 }
@@ -281,21 +282,21 @@ ByteTagList::AddAtEnd (int32_t adjustment, int32_t appendOffset)
       item.end += adjustment;
 
       if (item.start >= appendOffset)
-	{
-	  continue;
-	}
+        {
+          continue;
+        }
       else if (item.start < appendOffset && item.end > appendOffset)
-	{
-	  item.end = appendOffset;
-	}
+        {
+          item.end = appendOffset;
+        }
       else
-	{
-	  // nothing to do.
-	}
+        {
+          // nothing to do.
+        }
       TagBuffer buf = list.Add (item.tid, item.size, item.start, item.end);
       buf.CopyFrom (item.buf);
     }
-  *this = list;  
+  *this = list;
 }
 
 void 
@@ -315,17 +316,17 @@ ByteTagList::AddAtStart (int32_t adjustment, int32_t prependOffset)
       item.end += adjustment;
 
       if (item.end <= prependOffset)
-	{
-	  continue;
-	}
+        {
+          continue;
+        }
       else if (item.end > prependOffset && item.start < prependOffset)
-	{
-	  item.start = prependOffset;
-	}
+        {
+          item.start = prependOffset;
+        }
       else
-	{
-	  // nothing to do.
-	}
+        {
+          // nothing to do.
+        }
       TagBuffer buf = list.Add (item.tid, item.size, item.start, item.end);
       buf.CopyFrom (item.buf);
     }
@@ -344,11 +345,11 @@ ByteTagList::Allocate (uint32_t size)
       g_freeList.pop_back ();
       NS_ASSERT (data != 0);
       if (data->size >= size)
-	{
-	  data->count = 1;
-	  data->dirty = 0;
-	  return data;
-	}
+        {
+          data->count = 1;
+          data->dirty = 0;
+          return data;
+        }
       uint8_t *buffer = (uint8_t *)data;
       delete [] buffer;
     }
@@ -373,15 +374,15 @@ ByteTagList::Deallocate (struct ByteTagListData *data)
   if (data->count == 0)
     {
       if (g_freeList.size () > FREE_LIST_SIZE ||
-	  data->size < g_maxSize)
-	{
-	  uint8_t *buffer = (uint8_t *)data;
-	  delete [] buffer;
-	}
+          data->size < g_maxSize)
+        {
+          uint8_t *buffer = (uint8_t *)data;
+          delete [] buffer;
+        }
       else
-	{
-	  g_freeList.push_back (data);
-	}
+        {
+          g_freeList.push_back (data);
+        }
     }
 }
 

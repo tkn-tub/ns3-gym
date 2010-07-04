@@ -24,7 +24,7 @@
 #include "wimax-net-device.h"
 #include "wimax-phy.h"
 #include "wimax-channel.h"
-#include "packet-burst.h"
+#include "ns3/packet-burst.h"
 #include "ns3/trace-source-accessor.h"
 #include "ns3/pointer.h"
 #include "ns3/uinteger.h"
@@ -34,7 +34,7 @@ NS_LOG_COMPONENT_DEFINE ("WimaxPhy");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED ( WimaxPhy);
+NS_OBJECT_ENSURE_REGISTERED (WimaxPhy);
 
 TypeId WimaxPhy::GetTypeId (void)
 {

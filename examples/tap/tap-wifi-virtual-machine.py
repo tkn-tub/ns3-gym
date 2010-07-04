@@ -41,7 +41,7 @@ def main(argv):
     #
     wifi = ns3.WifiHelper.Default()
     wifi.SetStandard (ns3.WIFI_PHY_STANDARD_80211a);
-    wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager", "DataMode", ns3.StringValue ("wifia-54mbs"));
+    wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager", "DataMode", ns3.StringValue ("OfdmRate54Mbps"));
 
     #
     # No reason for pesky access points, so we'll use an ad-hoc network.

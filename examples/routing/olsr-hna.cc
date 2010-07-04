@@ -14,6 +14,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
+ * Authors: Lalith Suresh <suresh.lalith@gmail.com>
+ *
  */
 
 // 
@@ -90,7 +92,7 @@ static void GenerateTraffic (Ptr<Socket> socket, uint32_t pktSize,
 
 int main (int argc, char *argv[])
 {
-  std::string phyMode ("wifib-1mbs");
+  std::string phyMode ("DsssRate1Mbps");
   double rss = -80;  // -dBm
   uint32_t packetSize = 1000; // bytes
   uint32_t numPackets = 1;
@@ -228,12 +230,12 @@ int main (int argc, char *argv[])
         }
     }
 
-  // Create a special Ipv4StaticRouting instance for RoutingTableAssociation
-  // Even the Ipv4StaticRouting instance added to list may be used
-  Ptr<Ipv4StaticRouting> hnaEntries = Create<Ipv4StaticRouting> ();
-
   if (assocMethod1)
     {
+      // Create a special Ipv4StaticRouting instance for RoutingTableAssociation
+      // Even the Ipv4StaticRouting instance added to list may be used
+      Ptr<Ipv4StaticRouting> hnaEntries = Create<Ipv4StaticRouting> ();
+
       // Add the required routes into the Ipv4StaticRouting Protocol instance
       // and have the node generate HNA messages for all these routes
       // which are associated with non-OLSR interfaces specified above.

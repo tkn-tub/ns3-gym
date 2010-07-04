@@ -66,8 +66,8 @@ TempDir (void)
   // But we also randomize the name in case there are multiple users doing
   // this at the same time
   //
-  srandom (time (0));
-  long int n = random ();
+  srand (time (0));
+  long int n = rand ();
 
   //
   // The final path to the directory is going to look something like
@@ -83,7 +83,11 @@ TempDir (void)
   char dirname[1024];
   snprintf (dirname, sizeof(dirname),  "%s/ns-3.%d.%d.%d.%ld", path, tm_now->tm_hour, tm_now->tm_min, tm_now->tm_sec, n);
 
+#if (defined(_WIN32) || defined(_WIN64)) && !defined(__CYGWIN__)
+  if(mkdir(dirname) == 0)
+#else
   if (mkdir (dirname, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH) == 0)
+#endif
     {
       return dirname;
     } 

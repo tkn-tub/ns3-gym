@@ -31,8 +31,8 @@
 
 namespace ns3 {
 
-class WifiRemoteStation;
-class WifiRemoteStationState;
+struct WifiRemoteStation;
+struct WifiRemoteStationState;
 class WifiPhy;
 class WifiMacHeader;
 
@@ -79,11 +79,7 @@ private:
  */
 class WifiRemoteStationManager : public Object
 {
-private:
-  typedef std::vector<WifiMode> BasicModes;
 public:
-  typedef BasicModes::const_iterator BasicModesIterator;
-
   static TypeId GetTypeId (void);
 
   WifiRemoteStationManager ();
@@ -113,8 +109,6 @@ public:
   WifiMode GetDefaultMode (void) const;
   uint32_t GetNBasicModes (void) const;
   WifiMode GetBasicMode (uint32_t i) const;
-  BasicModesIterator BeginBasicModes (void) const;
-  BasicModesIterator EndBasicModes (void) const;
 
   WifiMode GetNonUnicastMode (void) const;
 
@@ -363,7 +357,7 @@ private:
   /**
    * \return a new station data structure
    */
-  virtual class WifiRemoteStation *DoCreateStation (void) const = 0;
+  virtual WifiRemoteStation *DoCreateStation (void) const = 0;
   /**
    * \param station the station with which we need to communicate
    * \param size size of the packet or fragment we want to send
@@ -405,8 +399,27 @@ private:
 
   StationStates m_states;
   Stations m_stations;
+  /**
+   * This is a pointer to the WifiPhy associated with this
+   * WifiRemoteStationManager that is set on call to
+   * WifiRemoteStationManager::SetupPhy(). Through this pointer the
+   * station manager can determine PHY characteristics, such as the
+   * set of all transmission rates that may be supported (the
+   * "DeviceRateSet").
+   */
+  Ptr<WifiPhy> m_wifiPhy;
   WifiMode m_defaultTxMode;
-  BasicModes m_basicModes;
+
+  /**
+   * This member is the list of WifiMode objects that comprise the
+   * BSSBasicRateSet parameter. This list is constructed through calls
+   * to WifiRemoteStationManager::AddBasicMode(), and an API that
+   * allows external access to it is available through
+   * WifiRemoteStationManager::GetNBasicModes() and
+   * WifiRemoteStationManager::GetBasicMode().
+   */
+  WifiModeList m_bssBasicRateSet;
+
   bool m_isLowLatency;
   uint32_t m_maxSsrc;
   uint32_t m_maxSlrc;
@@ -437,7 +450,6 @@ private:
 
 struct WifiRemoteStationState
 {
-  typedef std::vector<WifiMode> SupportedModes;
   enum 
     {
       BRAND_NEW,
@@ -445,7 +457,18 @@ struct WifiRemoteStationState
       WAIT_ASSOC_TX_OK,
       GOT_ASSOC_TX_OK
     } m_state;
-  SupportedModes m_modes;
+
+  /**
+   * This member is the list of WifiMode objects that comprise the
+   * OperationalRateSet parameter for this remote station. This list
+   * is constructed through calls to
+   * WifiRemoteStationManager::AddSupportedMode(), and an API that
+   * allows external access to it is available through
+   * WifiRemoteStationManager::GetNSupported() and
+   * WifiRemoteStationManager::GetSupported().
+   */
+  WifiModeList m_operationalRateSet;
+
   Mac48Address m_address;
   WifiRemoteStationInfo m_info;
 };
@@ -460,7 +483,7 @@ struct WifiRemoteStationState
  */
 struct WifiRemoteStation
 {
-  struct WifiRemoteStationState *m_state;
+  WifiRemoteStationState *m_state;
   uint32_t m_ssrc;
   uint32_t m_slrc;
   uint8_t m_tid;

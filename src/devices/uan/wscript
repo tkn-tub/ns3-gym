@@ -1,0 +1,51 @@
+
+
+## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
+
+def build(bld):
+    module = bld.create_ns3_module('uan', ['node'])
+    module.source = [
+        'uan-channel.cc',
+        'uan-phy-gen.cc',
+        'uan-transducer-hd.cc',
+        'uan-address.cc',
+	'uan-net-device.cc',
+        'uan-tx-mode.cc',
+        'uan-prop-model.cc',
+        'uan-prop-model-ideal.cc',
+        'uan-mac-aloha.cc',
+        'uan-header-common.cc',
+        'uan-noise-model-default.cc',
+        'uan-mac-cw.cc',
+        'uan-prop-model-thorp.cc',
+        'uan-phy-dual.cc',
+        'uan-header-rc.cc',
+        'uan-mac-rc.cc',
+        'uan-mac-rc-gw.cc',
+#        'uan-test.cc'
+        ]
+    headers = bld.new_task_gen('ns3header')
+    headers.module = 'uan'
+    headers.source = [
+        'uan-channel.h',
+        'uan-phy.h',
+        'uan-mac.h',
+	'uan-net-device.h',
+	'uan-prop-model.h',
+	'uan-tx-mode.h',
+	'uan-transducer.h',
+        'uan-phy-gen.h',
+	'uan-transducer-hd.h',
+        'uan-address.h',
+        'uan-prop-model-ideal.h',
+        'uan-mac-aloha.h',
+        'uan-header-common.h',
+        'uan-noise-model.h',
+        'uan-noise-model-default.h',
+        'uan-mac-cw.h',
+        'uan-prop-model-thorp.h',
+        'uan-phy-dual.h',
+        'uan-header-rc.h',
+        'uan-mac-rc.h',
+        'uan-mac-rc-gw.h'
+        ]

@@ -34,7 +34,7 @@ IeRann::IeRann () :
       m_destSeqNumber (0), m_metric (0)
 {
 }
-WifiElementId
+WifiInformationElementId
 IeRann::ElementId () const
 {
   return IE11S_RANN;
@@ -115,7 +115,7 @@ IeRann::GetOriginatorAddress ()
   return m_originatorAddress;
 }
 void
-IeRann::SerializeInformation (Buffer::Iterator i) const
+IeRann::SerializeInformationField (Buffer::Iterator i) const
 {
   i.WriteU8 (m_flags);
   i.WriteU8 (m_hopcount);
@@ -125,7 +125,7 @@ IeRann::SerializeInformation (Buffer::Iterator i) const
   i.WriteHtolsbU32 (m_metric);
 }
 uint8_t
-IeRann::DeserializeInformation (Buffer::Iterator start, uint8_t length)
+IeRann::DeserializeInformationField (Buffer::Iterator start, uint8_t length)
 {
   Buffer::Iterator i = start;
   m_flags = i.ReadU8 ();
@@ -137,7 +137,7 @@ IeRann::DeserializeInformation (Buffer::Iterator start, uint8_t length)
   return i.GetDistanceFrom (start);
 }
 uint8_t
-IeRann::GetInformationSize () const
+IeRann::GetInformationFieldSize () const
 {
   uint8_t retval = 1 //Flags
       + 1 //Hopcount

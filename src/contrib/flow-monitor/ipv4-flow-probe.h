@@ -48,12 +48,19 @@ public:
     {
       /// Packet dropped due to missing route to the destination
       DROP_NO_ROUTE = 0,
+
       /// Packet dropped due to TTL decremented to zero during IPv4 forwarding
       DROP_TTL_EXPIRE,      
+
       /// Packet dropped due to invalid checksum in the IPv4 header
       DROP_BAD_CHECKSUM,
 
-      // DROP_QUEUE, // TODO: this is not easy to do
+      /// Packet dropped due to queue overflow.  Note: only works for
+      /// NetDevices that provide a TxQueue attribute of type Queue
+      /// with a Drop trace source.  It currently works with Csma and
+      /// PointToPoint devices, but not with WiFi or WiMax.
+      DROP_QUEUE,
+      
       DROP_INVALID_REASON,
     };
 
@@ -64,6 +71,7 @@ private:
   void ForwardUpLogger (const Ipv4Header &ipHeader, Ptr<const Packet> ipPayload, uint32_t interface);
   void DropLogger (const Ipv4Header &ipHeader, Ptr<const Packet> ipPayload,
                    Ipv4L3Protocol::DropReason reason, Ptr<Ipv4> ipv4, uint32_t ifIndex);
+  void QueueDropLogger (Ptr<const Packet> ipPayload);
 
   Ptr<Ipv4FlowClassifier> m_classifier;
 };

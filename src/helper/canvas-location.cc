@@ -22,6 +22,8 @@
 
 namespace ns3 {
 
+NS_OBJECT_ENSURE_REGISTERED (CanvasLocation);
+
 TypeId 
 CanvasLocation::GetTypeId (void)
 {

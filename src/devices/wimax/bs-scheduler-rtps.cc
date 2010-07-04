@@ -22,7 +22,7 @@
 #include "bs-scheduler-rtps.h"
 #include "ns3/simulator.h"
 #include "bs-net-device.h"
-#include "packet-burst.h"
+#include "ns3/packet-burst.h"
 #include "cid.h"
 #include "wimax-mac-header.h"
 #include "ss-record.h"
@@ -41,7 +41,7 @@ NS_LOG_COMPONENT_DEFINE ("BSSchedulerRtps");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED ( BSSchedulerRtps);
+NS_OBJECT_ENSURE_REGISTERED (BSSchedulerRtps);
 
 TypeId
 BSSchedulerRtps::GetTypeId (void)

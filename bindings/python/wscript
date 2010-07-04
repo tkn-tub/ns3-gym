@@ -437,7 +437,7 @@ class python_scan_task(Task.TaskBase):
             self.cflags,
             ]
         scan = subprocess.Popen(argv, stdin=subprocess.PIPE)
-        scan.stdin.write(repr(get_modules_and_headers(self.bld)))
+        print >> scan.stdin, repr(get_modules_and_headers(self.bld))
         scan.stdin.close()
         retval = scan.wait()
         return retval

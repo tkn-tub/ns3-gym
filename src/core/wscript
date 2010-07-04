@@ -80,6 +80,7 @@ def build(bld):
         'type-traits-test-suite.cc',
         'traced-callback-test-suite.cc',
         'ptr-test-suite.cc',
+        'fatal-impl.cc',
         ]
 
     headers = bld.new_task_gen('ns3header')
@@ -128,6 +129,7 @@ def build(bld):
         'names.h',
         'vector.h',
         'default-deleter.h',
+        'fatal-impl.h',
         ]
 
     if sys.platform == 'win32':

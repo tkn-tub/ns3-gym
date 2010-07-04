@@ -33,6 +33,8 @@ NS_LOG_COMPONENT_DEFINE ("PacketSocket");
 
 namespace ns3 {
 
+NS_OBJECT_ENSURE_REGISTERED (PacketSocket);
+
 TypeId
 PacketSocket::GetTypeId (void)
 {
@@ -184,6 +186,10 @@ PacketSocket::Close(void)
     {
       m_errno = ERROR_BADF;
       return -1;
+    }
+  else if (m_state == STATE_BOUND || m_state == STATE_CONNECTED)
+    {
+      m_node->UnregisterProtocolHandler (MakeCallback (&PacketSocket::ForwardUp, this));
     }
   m_state = STATE_CLOSED;
   m_shutdownSend = true;

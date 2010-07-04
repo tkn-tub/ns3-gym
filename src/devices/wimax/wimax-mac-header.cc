@@ -25,7 +25,7 @@
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED ( MacHeaderType);
+NS_OBJECT_ENSURE_REGISTERED (MacHeaderType);
 
 MacHeaderType::MacHeaderType (void)
   : m_type (0)
@@ -92,7 +92,7 @@ uint32_t MacHeaderType::Deserialize (Buffer::Iterator start)
 
 // ----------------------------------------------------------------------------------------------------------
 
-NS_OBJECT_ENSURE_REGISTERED ( GenericMacHeader);
+NS_OBJECT_ENSURE_REGISTERED (GenericMacHeader);
 
 GenericMacHeader::GenericMacHeader (void)
   : m_ht (0),
@@ -296,7 +296,7 @@ bool GenericMacHeader::check_hcs (void) const
 
 // ----------------------------------------------------------------------------------------------------------
 
-NS_OBJECT_ENSURE_REGISTERED ( BandwidthRequestHeader);
+NS_OBJECT_ENSURE_REGISTERED (BandwidthRequestHeader);
 
 BandwidthRequestHeader::BandwidthRequestHeader (void)
   : m_ht (1),
@@ -478,7 +478,7 @@ bool BandwidthRequestHeader::check_hcs (void) const
 
 // ----------------------------------------------------------------------------------------------------------
 
-NS_OBJECT_ENSURE_REGISTERED ( GrantManagementSubheader);
+NS_OBJECT_ENSURE_REGISTERED (GrantManagementSubheader);
 
 GrantManagementSubheader::GrantManagementSubheader (void)
   : m_si (0),
@@ -569,7 +569,7 @@ uint32_t GrantManagementSubheader::Deserialize (Buffer::Iterator start)
 
 // ----------------------------------------------------------------------------------------------------------
 
-NS_OBJECT_ENSURE_REGISTERED ( FragmentationSubheader);
+NS_OBJECT_ENSURE_REGISTERED (FragmentationSubheader);
 
 FragmentationSubheader::FragmentationSubheader (void)
   : m_fc (0),

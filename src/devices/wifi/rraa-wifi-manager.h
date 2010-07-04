@@ -25,7 +25,7 @@
 
 namespace ns3 {
 
-class RraaWifiRemoteStation;
+struct RraaWifiRemoteStation;
 
 /**
  * \brief Robust Rate Adaptation Algorithm
@@ -54,7 +54,7 @@ private:
   };
 
   // overriden from base class
-  virtual class WifiRemoteStation *DoCreateStation (void) const;
+  virtual WifiRemoteStation *DoCreateStation (void) const;
   virtual void DoReportRxOk (WifiRemoteStation *station, 
                              double rxSnr, WifiMode txMode);
   virtual void DoReportRtsFailed (WifiRemoteStation *station);

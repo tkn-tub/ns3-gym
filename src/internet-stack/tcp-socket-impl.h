@@ -202,6 +202,9 @@ private:
   //sequence info, receiver side
   SequenceNumber m_nextRxSequence; //next expected sequence
 
+  //sequence number where fin was sent or received
+  SequenceNumber m_finSequence;
+
   //Rx buffer
   UnAckData_t m_bufferedData; //buffer which sorts out of sequence data
   //Rx buffer state

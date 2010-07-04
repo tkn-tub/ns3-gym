@@ -159,7 +159,7 @@ public:
   void ResetStats ();
   /// Enable/disable beacons
   void SetBeaconGeneration (bool enable);
-  void SetQueue (AccessClass ac);
+  void SetQueue (AcIndex ac);
   WifiPhyStandard GetPhyStandard () const;
   virtual void FinishConfigureStandard (enum WifiPhyStandard standard);
 private:
@@ -184,7 +184,7 @@ private:
   void DoStart ();
 
 private:
-  typedef std::map<AccessClass, Ptr<DcaTxop> > Queues;
+  typedef std::map<AcIndex, Ptr<DcaTxop> > Queues;
   typedef std::vector<Ptr<MeshWifiInterfaceMacPlugin> > PluginList;
   ///\name Wifi MAC internals
   //\{

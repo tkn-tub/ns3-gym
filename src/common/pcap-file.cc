@@ -23,6 +23,7 @@
 #include "ns3/assert.h"
 #include "ns3/packet.h"
 #include "ns3/fatal-error.h"
+#include "ns3/fatal-impl.h"
 #include "ns3/header.h"
 #include "ns3/buffer.h"
 #include "pcap-file.h"
@@ -45,10 +46,13 @@ const int32_t  SIGFIGS_DEFAULT = 0;           /**< Significant figures for times
 PcapFile::PcapFile ()
   : m_file (),
     m_swapMode (false)
-{}
+{
+  FatalImpl::RegisterStream (&m_file);
+}
 
 PcapFile::~PcapFile ()
 {
+  FatalImpl::UnregisterStream (&m_file);
   Close ();
 }
 

@@ -3,6 +3,8 @@
 def build(bld):
     obj = bld.create_ns3_module('wifi', ['node'])
     obj.source = [
+        'wifi-information-element.cc',
+        'wifi-information-element-vector.cc',
         'wifi-channel.cc',
         'wifi-mode.cc',
         'ssid.cc',
@@ -10,6 +12,8 @@ def build(bld):
         'wifi-phy-state-helper.cc',
         'error-rate-model.cc',
         'yans-error-rate-model.cc',
+        'nist-error-rate-model.cc',
+        'dsss-error-rate-model.cc',
         'interference-helper.cc',
         'interference-helper-tx-duration-test.cc',
         'yans-wifi-phy.cc',
@@ -65,6 +69,8 @@ def build(bld):
     headers = bld.new_task_gen('ns3header')
     headers.module = 'wifi'
     headers.source = [
+        'wifi-information-element.h',
+        'wifi-information-element-vector.h',
         'wifi-net-device.h',
         'wifi-channel.h',
         'wifi-mode.h',
@@ -94,6 +100,8 @@ def build(bld):
         'supported-rates.h',
         'error-rate-model.h',
         'yans-error-rate-model.h',
+        'nist-error-rate-model.h',
+        'dsss-error-rate-model.h',
         'dca-txop.h',
         'wifi-mac-header.h',
         'qadhoc-wifi-mac.h',

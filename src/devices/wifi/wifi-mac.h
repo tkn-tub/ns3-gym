@@ -218,8 +218,8 @@ public:
   void ConfigureStandard (enum WifiPhyStandard standard);
 
 protected:
-  void ConfigureDcf (Ptr<Dcf> dcf, uint32_t cwmin, uint32_t cwmax, enum AccessClass ac);
-  void ConfigureCCHDcf (Ptr<Dcf> dcf, uint32_t cwmin, uint32_t cwmax, enum AccessClass ac);
+  void ConfigureDcf (Ptr<Dcf> dcf, uint32_t cwmin, uint32_t cwmax, enum AcIndex ac);
+  void ConfigureCCHDcf (Ptr<Dcf> dcf, uint32_t cwmin, uint32_t cwmax, enum AcIndex ac);
 private:
   static Time GetDefaultMaxPropagationDelay (void);
   static Time GetDefaultSlot (void);

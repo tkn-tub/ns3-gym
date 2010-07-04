@@ -17,6 +17,7 @@
 //
 
 #include "ns3/log.h"
+#include "ns3/simulator.h"
 #include "ns3/object.h"
 #include "ns3/packet.h"
 #include "ns3/net-device.h"
@@ -24,6 +25,7 @@
 #include "ns3/ipv4-routing-table-entry.h"
 #include "ns3/boolean.h"
 #include "ipv4-global-routing.h"
+#include "global-route-manager.h"
 #include <vector>
 
 NS_LOG_COMPONENT_DEFINE ("Ipv4GlobalRouting");
@@ -42,12 +44,18 @@ Ipv4GlobalRouting::GetTypeId (void)
                    BooleanValue(false),
                    MakeBooleanAccessor (&Ipv4GlobalRouting::m_randomEcmpRouting),
                    MakeBooleanChecker ())
+    .AddAttribute ("RespondToInterfaceEvents",
+                   "Set to true if you want to dynamically recompute the global routes upon Interface notification events (up/down, or add/remove address)",
+                   BooleanValue(false),
+                   MakeBooleanAccessor (&Ipv4GlobalRouting::m_respondToInterfaceEvents),
+                   MakeBooleanChecker ())
     ;
   return tid;
 }
 
 Ipv4GlobalRouting::Ipv4GlobalRouting () 
-: m_randomEcmpRouting (false) 
+: m_randomEcmpRouting (false),
+  m_respondToInterfaceEvents (false) 
 {
   NS_LOG_FUNCTION_NOARGS ();
 }
@@ -485,16 +493,52 @@ Ipv4GlobalRouting::RouteInput  (Ptr<const Packet> p, const Ipv4Header &header, P
 }
 void 
 Ipv4GlobalRouting::NotifyInterfaceUp (uint32_t i)
-{}
+{
+  NS_LOG_FUNCTION (this << i);
+  if (m_respondToInterfaceEvents && Simulator::Now ().GetSeconds () > 0)  // avoid startup events
+    {
+      GlobalRouteManager::DeleteGlobalRoutes ();
+      GlobalRouteManager::BuildGlobalRoutingDatabase ();
+      GlobalRouteManager::InitializeRoutes ();
+    }
+}
+
 void 
 Ipv4GlobalRouting::NotifyInterfaceDown (uint32_t i)
-{}
+{
+  NS_LOG_FUNCTION (this << i);
+  if (m_respondToInterfaceEvents && Simulator::Now ().GetSeconds () > 0)  // avoid startup events
+    {
+      GlobalRouteManager::DeleteGlobalRoutes ();
+      GlobalRouteManager::BuildGlobalRoutingDatabase ();
+      GlobalRouteManager::InitializeRoutes ();
+    }
+}
+
 void 
 Ipv4GlobalRouting::NotifyAddAddress (uint32_t interface, Ipv4InterfaceAddress address)
-{}
+{
+  NS_LOG_FUNCTION (this << interface << address);
+  if (m_respondToInterfaceEvents && Simulator::Now ().GetSeconds () > 0)  // avoid startup events
+    {
+      GlobalRouteManager::DeleteGlobalRoutes ();
+      GlobalRouteManager::BuildGlobalRoutingDatabase ();
+      GlobalRouteManager::InitializeRoutes ();
+    }
+}
+
 void 
 Ipv4GlobalRouting::NotifyRemoveAddress (uint32_t interface, Ipv4InterfaceAddress address)
-{}
+{
+  NS_LOG_FUNCTION (this << interface << address);
+  if (m_respondToInterfaceEvents && Simulator::Now ().GetSeconds () > 0)  // avoid startup events
+    {
+      GlobalRouteManager::DeleteGlobalRoutes ();
+      GlobalRouteManager::BuildGlobalRoutingDatabase ();
+      GlobalRouteManager::InitializeRoutes ();
+    }
+}
+
 void 
 Ipv4GlobalRouting::SetIpv4 (Ptr<Ipv4> ipv4)
 {

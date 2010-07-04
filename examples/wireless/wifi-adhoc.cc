@@ -185,56 +185,56 @@ int main (int argc, char *argv[])
   NS_LOG_DEBUG ("54");
   experiment = Experiment ("54mb");
   wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager",
-                                "DataMode", StringValue ("wifia-54mbs"));
+                                "DataMode", StringValue ("OfdmRate54Mbps"));
   dataset = experiment.Run (wifi, wifiPhy, wifiMac, wifiChannel);
   gnuplot.AddDataset (dataset);
 
   NS_LOG_DEBUG ("48");
   experiment = Experiment ("48mb");
   wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager",
-                                "DataMode", StringValue ("wifia-48mbs"));
+                                "DataMode", StringValue ("OfdmRate48Mbps"));
   dataset = experiment.Run (wifi, wifiPhy, wifiMac, wifiChannel);
   gnuplot.AddDataset (dataset);
 
   NS_LOG_DEBUG ("36");
   experiment = Experiment ("36mb");
   wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager",
-                                "DataMode", StringValue ("wifia-36mbs"));
+                                "DataMode", StringValue ("OfdmRate36Mbps"));
   dataset = experiment.Run (wifi, wifiPhy, wifiMac, wifiChannel);
   gnuplot.AddDataset (dataset);
 
   NS_LOG_DEBUG ("24");
   experiment = Experiment ("24mb");
   wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager",
-                                "DataMode", StringValue ("wifia-24mbs"));
+                                "DataMode", StringValue ("OfdmRate24Mbps"));
   dataset = experiment.Run (wifi, wifiPhy, wifiMac, wifiChannel);
   gnuplot.AddDataset (dataset);
 
   NS_LOG_DEBUG ("18");
   experiment = Experiment ("18mb");
   wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager",
-                                "DataMode", StringValue ("wifia-18mbs"));
+                                "DataMode", StringValue ("OfdmRate18Mbps"));
   dataset = experiment.Run (wifi, wifiPhy, wifiMac, wifiChannel);
   gnuplot.AddDataset (dataset);
 
   NS_LOG_DEBUG ("12");
   experiment = Experiment ("12mb");
   wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager",
-                                "DataMode", StringValue ("wifia-12mbs"));
+                                "DataMode", StringValue ("OfdmRate12Mbps"));
   dataset = experiment.Run (wifi, wifiPhy, wifiMac, wifiChannel);
   gnuplot.AddDataset (dataset);
 
   NS_LOG_DEBUG ("9");
   experiment = Experiment ("9mb");
   wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager",
-                                "DataMode", StringValue ("wifia-9mbs"));
+                                "DataMode", StringValue ("OfdmRate9Mbps"));
   dataset = experiment.Run (wifi, wifiPhy, wifiMac, wifiChannel);
   gnuplot.AddDataset (dataset);
 
   NS_LOG_DEBUG ("6");
   experiment = Experiment ("6mb");
   wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager",
-                                "DataMode", StringValue ("wifia-6mbs"));
+                                "DataMode", StringValue ("OfdmRate6Mbps"));
   dataset = experiment.Run (wifi, wifiPhy, wifiMac, wifiChannel);
   gnuplot.AddDataset (dataset);
 
