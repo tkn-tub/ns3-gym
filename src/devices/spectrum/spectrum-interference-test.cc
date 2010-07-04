@@ -119,6 +119,7 @@ SpectrumInterferenceTestCase::DoRun (void)
   Simulator::Run ();
   // the above will return and after RetrieveTestResults have
   // been called and after all signals have expired
+  Simulator::Destroy ();
 
   return m_error;
 }
@@ -214,21 +215,6 @@ SpectrumInterferenceTestSuite::SpectrumInterferenceTestSuite ()
 
 }
 
-
-
-
-
+SpectrumInterferenceTestSuite spectrumInterferenceTestSuite;
 
 } // namespace ns3
-
-
-using namespace ns3;
-
-int
-main (int argc, char** argv)
-{
-
-  SpectrumInterferenceTestSuite SpectrumInterferenceTestSuite;
-
-  return SpectrumInterferenceTestSuite.Run ();
-}
