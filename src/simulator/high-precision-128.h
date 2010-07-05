@@ -64,22 +64,6 @@ HighPrecision::HighPrecision (int64_t value, bool dummy)
 }
 
 
-double 
-HighPrecision::GetDouble (void) const
-{
-#define HP128_MAX_64 18446744073709551615.0
-  bool is_negative = m_value < 0;
-  uint128_t value = is_negative ? -m_value:m_value;
-  uint64_t hi = value >> 64;
-  uint64_t lo = value;
-  double flo = lo;
-  flo /= HP128_MAX_64;
-  double retval = hi;
-  retval += flo;
-  retval = is_negative ? -retval : retval;
-  return retval;
-#undef HP128_MAX_64
-}
 
 int64_t HighPrecision::GetInteger (void) const
 {
@@ -109,6 +93,34 @@ HighPrecision::Zero (void)
 {
   return HighPrecision ();
 }
+
+#define HP128_MAX_64 18446744073709551615.0
+double 
+HighPrecision::GetDouble (void) const
+{
+  bool is_negative = m_value < 0;
+  uint128_t value = is_negative ? -m_value:m_value;
+  uint64_t hi = value >> 64;
+  uint64_t lo = value;
+  double flo = lo;
+  flo /= HP128_MAX_64;
+  double retval = hi;
+  retval += flo;
+  retval = is_negative ? -retval : retval;
+  return retval;
+}
+HighPrecision::HighPrecision (double value)
+{
+  bool is_negative = value < 0;
+  value = is_negative?-value:value;
+  double hi = floor (value);
+  double lo = (value - hi) * HP128_MAX_64;
+  m_value = hi;
+  m_value <<= 64;
+  m_value += lo;
+  m_value = is_negative?-m_value:m_value;
+}
+#undef HP128_MAX_64
 
 } // namespace ns3
 

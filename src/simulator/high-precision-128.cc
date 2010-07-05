@@ -4,19 +4,6 @@
 
 namespace ns3 {
 
-#define HP128_MAX_64 18446744073709551615.0
-
-HighPrecision::HighPrecision (double value)
-{
-  bool is_negative = value < 0;
-  value = is_negative?-value:value;
-  double hi = floor (value);
-  double lo = (value - hi) * HP128_MAX_64;
-  m_value = hi;
-  m_value <<= 64;
-  m_value += lo;
-  m_value = is_negative?-m_value:m_value;
-}
 #define MASK_LO ((((uint128_t)1)<<64)-1)
 #define MASK_HI (~MASK_LO)
 void

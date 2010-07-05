@@ -98,12 +98,7 @@ def build(bld):
 
     env = bld.env_of_name('default')
     if env['USE_HIGH_PRECISION_DOUBLE']:
-        sim.source.extend([
-            'high-precision-double.cc',
-            ])
-        headers.source.extend([
-            'high-precision-double.h',
-            ])
+        headers.source.extend(['high-precision-double.h'])
     elif env['USE_HIGH_PRECISION_128']:
         headers.source.extend(['high-precision-128.h'])
         sim.source.extend(['high-precision-128.cc'])

@@ -21,6 +21,7 @@
 #define HIGH_PRECISION_CAIRO_H
 
 #include <stdint.h>
+#include <math.h>
 #include "cairo-wideint-private.h"
 
 /**
@@ -76,10 +77,10 @@ class HighPrecision
 public:
   inline HighPrecision ();
   inline HighPrecision (int64_t value, bool dummy);
-  HighPrecision (double value);
+  inline HighPrecision (double value);
 
   inline int64_t GetInteger (void) const;
-  double GetDouble (void) const;
+  inline double GetDouble (void) const;
   inline void Add (HighPrecision const &o);
   inline void Sub (HighPrecision const &o);
   void Mul (HighPrecision const &o);
@@ -92,7 +93,6 @@ private:
   cairo_int128_t Div128 (cairo_int128_t sa, cairo_int128_t sb) const;
   inline bool IsNegative (void) const;
 
-  static const double MAX_64;
   cairo_int128_t m_value;
 };
 
@@ -147,32 +147,41 @@ HighPrecision::Sub (HighPrecision const &o)
 int
 HighPrecision::Compare (HighPrecision const &o) const
 {
-  if (IsNegative () && !o.IsNegative ())
-    {
-      return -1;
-    }
-  else if (!IsNegative () && o.IsNegative ())
-    {
-      return 1;
-    }
-  else if (m_value.hi < o.m_value.hi)
-    {
-      return -1;
-    }
-  else if (m_value.hi > o.m_value.hi)
-    {
-      return 1;
-    }
-  else
-    {
-      return m_value.lo < o.m_value.lo;
-    }
+  HighPrecision tmp = *this;
+  tmp.Sub (o);
+  return tmp.IsNegative ()?-1:(tmp.m_value.hi == 0 && tmp.m_value.lo == 0)?0:1;
 }
 HighPrecision
 HighPrecision::Zero (void)
 {
   return HighPrecision ();
 }
+
+
+#define HPCAIRO_MAX_64 18446744073709551615.0
+double HighPrecision::GetDouble (void) const
+{
+  bool is_negative = IsNegative ();
+  cairo_int128_t value = is_negative ? _cairo_int128_negate (m_value) : m_value;
+  double flo = value.lo;
+  flo /= HPCAIRO_MAX_64;
+  double retval = value.hi;
+  retval += flo;
+  retval = is_negative ? -retval: retval;
+  return retval;
+}
+#undef HPCAIRO_MAX_64
+
+#define HPCAIRO_MAX_64 18446744073709551615.0
+HighPrecision::HighPrecision (double value)
+{
+  double fhi = floor (value);
+  int64_t hi = fhi;
+  uint64_t lo = (uint64_t) ((value - fhi) * HPCAIRO_MAX_64);
+  m_value.hi = hi;
+  m_value.lo = lo;
+}
+#undef HPCAIRO_MAX_64
 
 } // namespace ns3
 
