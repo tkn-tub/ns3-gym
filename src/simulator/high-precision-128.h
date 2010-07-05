@@ -116,9 +116,9 @@ HighPrecision::HighPrecision (double value)
   value = is_negative?-value:value;
   double hi = floor (value);
   double lo = (value - hi) * HP128_MAX_64;
-  m_value = hi;
+  m_value = (int128_t)hi;
   m_value <<= 64;
-  m_value += lo;
+  m_value += (int128_t)lo;
   m_value = is_negative?-m_value:m_value;
 }
 #undef HP128_MAX_64
