@@ -243,6 +243,45 @@ Hp128Bug863TestCase::DoRun (void)
   return false;
 }
 
+class Hp128CompareTestCase : public TestCase
+{
+public:
+  Hp128CompareTestCase ();
+  virtual bool DoRun (void);
+};
+
+Hp128CompareTestCase::Hp128CompareTestCase ()
+  : TestCase ("Check basic compare operations")
+{
+}
+bool
+Hp128CompareTestCase::DoRun (void)
+{
+  HighPrecision a, b;
+
+  a = V (-1);
+  b = V (1);
+  NS_TEST_ASSERT_MSG_EQ (a.Compare (b), -1, "a is smaller than b");
+  a = V (-1);
+  b = V (-2);
+  NS_TEST_ASSERT_MSG_EQ (a.Compare (b), 1, "a is bigger than b");
+  a = V (-1);
+  b = V (-1);
+  NS_TEST_ASSERT_MSG_EQ (a.Compare (b), 0, "a is equal to b");
+
+  a = V (1);
+  b = V (-1);
+  NS_TEST_ASSERT_MSG_EQ (a.Compare (b), 1, "a is bigger than b");
+  a = V (1);
+  b = V (2);
+  NS_TEST_ASSERT_MSG_EQ (a.Compare (b), -1, "a is smaller than b");
+  a = V (1);
+  b = V (1);
+  NS_TEST_ASSERT_MSG_EQ (a.Compare (b), 0, "a is equal to b");
+
+  return false;
+}
+
 static class HighPrecision128TestSuite : public TestSuite
 {
 public:
@@ -252,6 +291,7 @@ public:
     AddTestCase (new Hp128ArithmeticTestCase ());
     AddTestCase (new Hp128Bug455TestCase ());
     AddTestCase (new Hp128Bug863TestCase ());
+    AddTestCase (new Hp128CompareTestCase ());
   }
 } g_highPrecision128TestSuite;
 
