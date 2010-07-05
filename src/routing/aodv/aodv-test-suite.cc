@@ -450,8 +450,8 @@ struct AodvRtableEntryTest : public TestCase
     rt.Invalidate (Seconds (13));
     NS_TEST_EXPECT_MSG_EQ (rt.GetFlag (), INVALID, "trivial");
     NS_TEST_EXPECT_MSG_EQ (rt.GetLifeTime (), Seconds (13), "trivial");
-    rt.SetLifeTime (Seconds (0.1));
-    NS_TEST_EXPECT_MSG_EQ (rt.GetLifeTime (), Seconds (0.1), "trivial");
+    rt.SetLifeTime (MilliSeconds (100));
+    NS_TEST_EXPECT_MSG_EQ (rt.GetLifeTime (), MilliSeconds (100), "trivial");
     Ptr<Ipv4Route> route = rt.GetRoute ();
     NS_TEST_EXPECT_MSG_EQ (route->GetDestination (), Ipv4Address ("1.2.3.4"), "trivial");
 
