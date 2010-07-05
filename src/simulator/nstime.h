@@ -274,9 +274,6 @@ TimeUnit<N1 + N2> operator * (TimeUnit<N1> const &lhs, TimeUnit<N2> const &rhs)
 {
   HighPrecision retval = lhs.GetHighPrecision ();
   retval.Mul (rhs.GetHighPrecision ());
-  //    std::cout << lhs.GetHighPrecision().GetInteger() << " * "
-  //              << rhs.GetHighPrecision().GetInteger()
-  //              << " = " << retval.GetInteger() << std::endl;
   return TimeUnit<N1 + N2> (retval);
 }
 template <int N1, int N2>
