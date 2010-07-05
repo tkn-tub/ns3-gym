@@ -39,10 +39,10 @@ public:
 
   inline int64_t GetInteger (void) const;
   inline double GetDouble (void) const;
-  inline bool Add (HighPrecision const &o);
-  inline bool Sub (HighPrecision const &o);
-  bool Mul (HighPrecision const &o);
-  bool Div (HighPrecision const &o);
+  inline void Add (HighPrecision const &o);
+  inline void Sub (HighPrecision const &o);
+  void Mul (HighPrecision const &o);
+  void Div (HighPrecision const &o);
 
   inline int Compare (HighPrecision const &o) const;
   inline static HighPrecision Zero (void);
@@ -87,17 +87,15 @@ int64_t HighPrecision::GetInteger (void) const
   return v;
 }
 
-bool 
+void
 HighPrecision::Add (HighPrecision const &o)
 {
   m_value += o.m_value;
-  return true;
 }
-bool 
+void
 HighPrecision::Sub (HighPrecision const &o)
 {
   m_value -= o.m_value;
-  return true;
 }
 
 int 

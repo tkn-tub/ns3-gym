@@ -40,10 +40,10 @@ public:
 
   int64_t GetInteger (void) const;
   double GetDouble (void) const;
-  bool Add (HighPrecision const &o);
-  bool Sub (HighPrecision const &o);
-  bool Mul (HighPrecision const &o);
-  bool Div (HighPrecision const &o);
+  void Add (HighPrecision const &o);
+  void Sub (HighPrecision const &o);
+  void Mul (HighPrecision const &o);
+  void Div (HighPrecision const &o);
 
   int Compare (HighPrecision const &o) const;
   static HighPrecision Zero (void);
@@ -52,6 +52,6 @@ private:
   double m_value;
 };
 
-}; // namespace ns3
+} // namespace ns3
 
 #endif /* HIGH_PRECISION_DOUBLE_H  */

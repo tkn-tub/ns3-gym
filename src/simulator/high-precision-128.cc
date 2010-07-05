@@ -19,7 +19,7 @@ HighPrecision::HighPrecision (double value)
 }
 #define MASK_LO ((((uint128_t)1)<<64)-1)
 #define MASK_HI (~MASK_LO)
-bool 
+void
 HighPrecision::Mul (HighPrecision const &o)
 {
   bool negResult, negA, negB;
@@ -62,9 +62,8 @@ HighPrecision::Mul (HighPrecision const &o)
   // add the sign to the result
   result = negResult ? -result:result;
   m_value = result;
-  return true;
 }
-bool 
+void
 HighPrecision::Div (HighPrecision const &o)
 {
   bool negResult, negA, negB;
@@ -98,7 +97,6 @@ HighPrecision::Div (HighPrecision const &o)
   result = result + quo;
   result = negResult ? -result:result;
   m_value = result;
-  return true;
 }
 
 } // namespace ns3

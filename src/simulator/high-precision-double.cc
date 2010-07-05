@@ -51,29 +51,25 @@ HighPrecision::GetDouble (void) const
 {
   return m_value;
 }
-bool
+void
 HighPrecision::Add (HighPrecision const &o)
 {
   m_value += o.m_value;
-  return false;
 }
-bool
+void
 HighPrecision::Sub (HighPrecision const &o)
 {
   m_value -= o.m_value;
-  return false;
 }
-bool
+void
 HighPrecision::Mul (HighPrecision const &o)
 {
   m_value *= o.m_value;
-  return false;
 }
-bool
+void
 HighPrecision::Div (HighPrecision const &o)
 {
   m_value /= o.m_value;
-  return false;
 }
 int
 HighPrecision::Compare (HighPrecision const &o) const
@@ -86,4 +82,4 @@ HighPrecision::Zero (void)
   return HighPrecision (0,0);
 }
 
-}; // namespace ns3
+} // namespace ns3
