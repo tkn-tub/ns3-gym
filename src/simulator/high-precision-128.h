@@ -21,6 +21,7 @@
 #define HIGH_PRECISION_128_H
 
 #include "ns3/simulator-config.h"
+#include <math.h>
 #include <stdint.h>
 
 #if defined(HAVE___UINT128_T) and !defined(HAVE_UINT128_T)
@@ -35,7 +36,7 @@ class HighPrecision
 public:
   inline HighPrecision ();
   inline HighPrecision (int64_t value, bool dummy);
-  HighPrecision (double value);
+  inline HighPrecision (double value);
 
   inline int64_t GetInteger (void) const;
   inline double GetDouble (void) const;

@@ -20,7 +20,7 @@
 #ifndef HIGH_PRECISION_DOUBLE_H
 #define HIGH_PRECISION_DOUBLE_H
 
-#include <stdint.h>
+#include <math.h>
 
 namespace ns3 {
 
@@ -48,7 +48,6 @@ public:
   inline int Compare (HighPrecision const &o) const;
   inline static HighPrecision Zero (void);
 private:
-  static const double MAX_64;
   double m_value;
 };
 
