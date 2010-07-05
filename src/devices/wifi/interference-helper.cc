@@ -206,6 +206,9 @@ InterferenceHelper::GetPlcpHeaderMode (WifiMode payloadMode, WifiPreamble preamb
          }
        }
 
+     case WIFI_MOD_CLASS_ERP_OFDM:
+       return WifiPhy::GetErpOfdmRate6Mbps ();
+
      case WIFI_MOD_CLASS_DSSS:
        if (preamble == WIFI_PREAMBLE_LONG)
          {
@@ -250,6 +253,9 @@ InterferenceHelper::GetPlcpHeaderDurationMicroSeconds (WifiMode payloadMode, Wif
         }
       }
 
+    case WIFI_MOD_CLASS_ERP_OFDM:
+      return 16;
+
     case WIFI_MOD_CLASS_DSSS:
       if (preamble == WIFI_PREAMBLE_SHORT)
         {
@@ -292,6 +298,9 @@ InterferenceHelper::GetPlcpPreambleDurationMicroSeconds (WifiMode payloadMode, W
         }
       }
 
+    case WIFI_MOD_CLASS_ERP_OFDM:
+      return 4;
+
     case WIFI_MOD_CLASS_DSSS:
       if (preamble == WIFI_PREAMBLE_SHORT)
         {
@@ -318,6 +327,7 @@ InterferenceHelper::GetPayloadDurationMicroSeconds (uint32_t size, WifiMode payl
   switch (payloadMode.GetModulationClass ())
     {
     case WIFI_MOD_CLASS_OFDM:
+    case WIFI_MOD_CLASS_ERP_OFDM:
       {
         // IEEE Std 802.11-2007, section 17.3.2.3, table 17-4
         // corresponds to T_{SYM} in the table
@@ -343,6 +353,10 @@ InterferenceHelper::GetPayloadDurationMicroSeconds (uint32_t size, WifiMode payl
         // IEEE Std 802.11-2007, section 17.3.5.3, equation (17-11)
         uint32_t numSymbols = lrint (ceil ((16 + size * 8.0 + 6.0)/numDataBitsPerSymbol));
 
+        // Add signal extension for ERP PHY
+        if (payloadMode.GetModulationClass () == WIFI_MOD_CLASS_ERP_OFDM)
+          return numSymbols*symbolDurationUs + 6;
+        else
         return numSymbols*symbolDurationUs;
       }
 

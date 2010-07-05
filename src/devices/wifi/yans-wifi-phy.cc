@@ -162,6 +162,9 @@ YansWifiPhy::ConfigureStandard (enum WifiPhyStandard standard)
   case WIFI_PHY_STANDARD_80211b:
     Configure80211b ();
     break;
+  case WIFI_PHY_STANDARD_80211g:
+    Configure80211g ();
+    break;
   case WIFI_PHY_STANDARD_80211_10Mhz: 
     Configure80211_10Mhz ();
     break;
@@ -558,6 +561,26 @@ YansWifiPhy::Configure80211b (void)
   m_deviceRateSet.push_back (WifiPhy::GetDsssRate2Mbps ());
   m_deviceRateSet.push_back (WifiPhy::GetDsssRate5_5Mbps ());
   m_deviceRateSet.push_back (WifiPhy::GetDsssRate11Mbps ());
+}
+
+void
+YansWifiPhy::Configure80211g (void)
+{
+  NS_LOG_FUNCTION (this);
+  m_channelStartingFrequency = 2412; // 2.412 GHz
+
+  m_deviceRateSet.push_back (WifiPhy::GetDsssRate1Mbps ());
+  m_deviceRateSet.push_back (WifiPhy::GetDsssRate2Mbps ());
+  m_deviceRateSet.push_back (WifiPhy::GetDsssRate5_5Mbps ());
+  m_deviceRateSet.push_back (WifiPhy::GetErpOfdmRate6Mbps ());
+  m_deviceRateSet.push_back (WifiPhy::GetErpOfdmRate9Mbps ());
+  m_deviceRateSet.push_back (WifiPhy::GetDsssRate11Mbps ());
+  m_deviceRateSet.push_back (WifiPhy::GetErpOfdmRate12Mbps ());
+  m_deviceRateSet.push_back (WifiPhy::GetErpOfdmRate18Mbps ());
+  m_deviceRateSet.push_back (WifiPhy::GetErpOfdmRate24Mbps ());
+  m_deviceRateSet.push_back (WifiPhy::GetErpOfdmRate36Mbps ());
+  m_deviceRateSet.push_back (WifiPhy::GetErpOfdmRate48Mbps ());
+  m_deviceRateSet.push_back (WifiPhy::GetErpOfdmRate54Mbps ());
 }
 
 void

@@ -245,6 +245,7 @@ private:
 
   void Configure80211a (void);
   void Configure80211b (void);
+  void Configure80211g (void);
   void Configure80211_10Mhz (void);
   void Configure80211_5Mhz ();
   void Configure80211p_CCH (void);

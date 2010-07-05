@@ -273,6 +273,8 @@ AdhocWifiMac::FinishConfigureStandard (enum WifiPhyStandard standard)
     case WIFI_PHY_STANDARD_80211_5Mhz:
       // fall through
     case WIFI_PHY_STANDARD_80211a:
+      // fall through
+    case WIFI_PHY_STANDARD_80211g:
       ConfigureDcf (m_dca, 15, 1023, AC_BE_NQOS);
       break;
     case WIFI_PHY_STANDARD_80211b:

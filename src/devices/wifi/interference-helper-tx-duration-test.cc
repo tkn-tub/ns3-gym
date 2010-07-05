@@ -173,6 +173,12 @@ InterferenceHelperTxDurationTest::DoRun (void)
     && CheckTxDuration (76, WifiPhy::GetOfdmRate54Mbps (), WIFI_PREAMBLE_LONG, 32)
     && CheckTxDuration (14, WifiPhy::GetOfdmRate54Mbps (), WIFI_PREAMBLE_LONG, 24);
 
+  // 802.11g durations are same as 802.11a durations but with 6 us signal extension
+  retval = retval
+    && CheckTxDuration (1536, WifiPhy::GetErpOfdmRate54Mbps (), WIFI_PREAMBLE_LONG, 254)
+    && CheckTxDuration (76, WifiPhy::GetErpOfdmRate54Mbps (), WIFI_PREAMBLE_LONG, 38)
+    && CheckTxDuration (14, WifiPhy::GetErpOfdmRate54Mbps (), WIFI_PREAMBLE_LONG, 30);
+
   return (!retval);
 }
 

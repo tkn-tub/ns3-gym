@@ -204,6 +204,114 @@ WifiPhy::GetDsssRate11Mbps ()
 
 
 /**
+ * Clause 19.5 rates (ERP-OFDM)
+ */
+WifiMode
+WifiPhy::GetErpOfdmRate6Mbps ()
+{
+  static WifiMode mode =
+    WifiModeFactory::CreateWifiMode ("ErpOfdmRate6Mbps",
+                                     WIFI_MOD_CLASS_ERP_OFDM,
+                                     true,
+                                     20000000, 6000000,
+                                     WIFI_CODE_RATE_1_2,
+                                     2);
+  return mode;
+}
+
+WifiMode
+WifiPhy::GetErpOfdmRate9Mbps ()
+{
+  static WifiMode mode =
+    WifiModeFactory::CreateWifiMode ("ErpOfdmRate9Mbps",
+                                     WIFI_MOD_CLASS_ERP_OFDM,
+                                     false,
+                                     20000000, 9000000,
+                                     WIFI_CODE_RATE_3_4,
+                                     2);
+  return mode;
+}
+
+WifiMode
+WifiPhy::GetErpOfdmRate12Mbps ()
+{
+  static WifiMode mode =
+    WifiModeFactory::CreateWifiMode ("ErpOfdmRate12Mbps",
+                                     WIFI_MOD_CLASS_ERP_OFDM,
+                                     true,
+                                     20000000, 12000000,
+                                     WIFI_CODE_RATE_1_2,
+                                     4);
+  return mode;
+}
+
+WifiMode
+WifiPhy::GetErpOfdmRate18Mbps ()
+{
+  static WifiMode mode =
+    WifiModeFactory::CreateWifiMode ("ErpOfdmRate18Mbps",
+                                     WIFI_MOD_CLASS_ERP_OFDM,
+                                     false,
+                                     20000000, 18000000,
+                                     WIFI_CODE_RATE_3_4,
+                                     4);
+  return mode;
+}
+
+WifiMode
+WifiPhy::GetErpOfdmRate24Mbps ()
+{
+  static WifiMode mode =
+    WifiModeFactory::CreateWifiMode ("ErpOfdmRate24Mbps",
+                                     WIFI_MOD_CLASS_ERP_OFDM,
+                                     true,
+                                     20000000, 24000000,
+                                     WIFI_CODE_RATE_1_2,
+                                     16);
+  return mode;
+}
+
+WifiMode
+WifiPhy::GetErpOfdmRate36Mbps ()
+{
+  static WifiMode mode =
+    WifiModeFactory::CreateWifiMode ("ErpOfdmRate36Mbps",
+                                     WIFI_MOD_CLASS_ERP_OFDM,
+                                     false,
+                                     20000000, 36000000,
+                                     WIFI_CODE_RATE_3_4,
+                                     16);
+  return mode;
+}
+
+WifiMode
+WifiPhy::GetErpOfdmRate48Mbps ()
+{
+  static WifiMode mode =
+    WifiModeFactory::CreateWifiMode ("ErpOfdmRate48Mbps",
+                                     WIFI_MOD_CLASS_ERP_OFDM,
+                                     false,
+                                     20000000, 48000000,
+                                     WIFI_CODE_RATE_2_3,
+                                     64);
+  return mode;
+}
+
+WifiMode
+WifiPhy::GetErpOfdmRate54Mbps ()
+{
+  static WifiMode mode =
+    WifiModeFactory::CreateWifiMode ("ErpOfdmRate54Mbps",
+                                     WIFI_MOD_CLASS_ERP_OFDM,
+                                     false,
+                                     20000000, 54000000,
+                                     WIFI_CODE_RATE_3_4,
+                                     64);
+  return mode;
+}
+
+
+/**
  * Clause 17 rates (OFDM)
  */
 WifiMode
@@ -551,6 +659,14 @@ public:
     ns3::WifiPhy::GetDsssRate2Mbps ();
     ns3::WifiPhy::GetDsssRate5_5Mbps ();
     ns3::WifiPhy::GetDsssRate11Mbps ();
+    ns3::WifiPhy::GetErpOfdmRate6Mbps ();
+    ns3::WifiPhy::GetErpOfdmRate9Mbps ();
+    ns3::WifiPhy::GetErpOfdmRate12Mbps ();
+    ns3::WifiPhy::GetErpOfdmRate18Mbps ();
+    ns3::WifiPhy::GetErpOfdmRate24Mbps ();
+    ns3::WifiPhy::GetErpOfdmRate36Mbps ();
+    ns3::WifiPhy::GetErpOfdmRate48Mbps ();
+    ns3::WifiPhy::GetErpOfdmRate54Mbps ();
     ns3::WifiPhy::GetOfdmRate6Mbps ();
     ns3::WifiPhy::GetOfdmRate9Mbps ();
     ns3::WifiPhy::GetOfdmRate12Mbps ();

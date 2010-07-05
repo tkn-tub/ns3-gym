@@ -267,6 +267,9 @@ WifiMac::ConfigureStandard (enum WifiPhyStandard standard)
   case WIFI_PHY_STANDARD_80211b:
     Configure80211b ();
     break;
+  case WIFI_PHY_STANDARD_80211g:
+    Configure80211g ();
+    break;
   case WIFI_PHY_STANDARD_80211_10Mhz: 
     Configure80211_10Mhz ();
     break;
@@ -309,6 +312,18 @@ WifiMac::Configure80211b (void)
   SetPifs(MicroSeconds(10+20));
   SetCtsTimeout(MicroSeconds(10+304+20+GetDefaultMaxPropagationDelay().GetMicroSeconds ()*2));
   SetAckTimeout(MicroSeconds(10+304+20+GetDefaultMaxPropagationDelay().GetMicroSeconds ()*2)); 
+}
+
+void
+WifiMac::Configure80211g (void)
+{
+  SetSifs(MicroSeconds(10));
+  // Note no support for Short Slot Time as yet
+  SetSlot(MicroSeconds(20));
+  SetEifsNoDifs(MicroSeconds(10+304));
+  SetPifs(MicroSeconds(10+20));
+  SetCtsTimeout(MicroSeconds(10+304+20+GetDefaultMaxPropagationDelay().GetMicroSeconds ()*2));
+  SetAckTimeout(MicroSeconds(10+304+20+GetDefaultMaxPropagationDelay().GetMicroSeconds ()*2));
 }
 
 void

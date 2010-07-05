@@ -494,6 +494,8 @@ QadhocWifiMac::FinishConfigureStandard (enum WifiPhyStandard standard)
       // fall through
     case WIFI_PHY_STANDARD_80211a:
       // fall through
+    case WIFI_PHY_STANDARD_80211g:
+      // fall through
     case WIFI_PHY_STANDARD_80211_10Mhz:
       // fall through
     case WIFI_PHY_STANDARD_80211_5Mhz:

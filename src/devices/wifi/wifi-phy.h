@@ -306,6 +306,14 @@ public:
   static WifiMode GetDsssRate2Mbps ();
   static WifiMode GetDsssRate5_5Mbps ();
   static WifiMode GetDsssRate11Mbps ();
+  static WifiMode GetErpOfdmRate6Mbps ();
+  static WifiMode GetErpOfdmRate9Mbps ();
+  static WifiMode GetErpOfdmRate12Mbps ();
+  static WifiMode GetErpOfdmRate18Mbps ();
+  static WifiMode GetErpOfdmRate24Mbps ();
+  static WifiMode GetErpOfdmRate36Mbps ();
+  static WifiMode GetErpOfdmRate48Mbps ();
+  static WifiMode GetErpOfdmRate54Mbps ();
   static WifiMode GetOfdmRate6Mbps ();
   static WifiMode GetOfdmRate9Mbps ();
   static WifiMode GetOfdmRate12Mbps ();
