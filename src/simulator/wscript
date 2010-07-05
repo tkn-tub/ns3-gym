@@ -109,11 +109,11 @@ def build(bld):
         sim.source.extend(['high-precision-128.cc'])
     elif env['USE_HIGH_PRECISION_CAIRO']:
         sim.source.extend([
-            'high-precision-128.cc',
+            'high-precision-cairo.cc',
             'cairo-wideint.c',
             ])
         headers.source.extend([
-            'high-precision-128.h',
+            'high-precision-cairo.h',
             'cairo-wideint-private.h',
             ])
 
