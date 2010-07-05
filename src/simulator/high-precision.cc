@@ -230,6 +230,7 @@ Hp128Bug863TestCase::DoRun (void)
   a.Div (HighPrecision (0.5));
   NS_TEST_ASSERT_MSG_EQ (a.GetDouble (), 1.0, "Simple test for division");
   a = HighPrecision (-0.5);
+  NS_TEST_ASSERT_MSG_EQ (a.GetDouble (), -0.5, "Check that we actually convert doubles correctly");
   a.Div (HighPrecision (0.5));
   NS_TEST_ASSERT_MSG_EQ (a.GetDouble (), -1.0, "first argument negative");
   a = HighPrecision (0.5);
