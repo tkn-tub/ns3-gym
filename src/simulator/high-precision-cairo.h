@@ -69,15 +69,6 @@
  *
  */
 
-
-#define noGATHER_STATISTICS 1
-
-#ifdef GATHER_STATISTICS
-#define HP128INC(x) x++
-#else
-#define HP128INC(x)
-#endif
-
 namespace ns3 {
 
 class HighPrecision
@@ -87,167 +78,95 @@ public:
   inline HighPrecision (int64_t value, bool dummy);
   HighPrecision (double value);
 
-  static void PrintStats (void);
-
   inline int64_t GetInteger (void) const;
-  inline double GetDouble (void) const;
-  inline bool Add (HighPrecision const &o);
-  inline bool Sub (HighPrecision const &o);
-  inline bool Mul (HighPrecision const &o);
-  bool Div (HighPrecision const &o);
+  double GetDouble (void) const;
+  inline void Add (HighPrecision const &o);
+  inline void Sub (HighPrecision const &o);
+  void Mul (HighPrecision const &o);
+  void Div (HighPrecision const &o);
 
   inline int Compare (HighPrecision const &o) const;
   inline static HighPrecision Zero (void);
 private:
-  int64_t SlowGetInteger (void) const;
-  double SlowGetDouble (void) const;
-  bool SlowAdd (HighPrecision const &o);
-  bool SlowSub (HighPrecision const &o);
-  bool SlowMul (HighPrecision const &o);
-  int SlowCompare (HighPrecision const &o) const;
-  cairo_uint128_t  Mul128 (cairo_uint128_t, cairo_uint128_t );
-  cairo_int128_t Div128 (cairo_int128_t sa, cairo_int128_t sb);
-  inline void EnsureSlow (void);
+  cairo_uint128_t  Mul128 (cairo_uint128_t, cairo_uint128_t ) const;
+  cairo_int128_t Div128 (cairo_int128_t sa, cairo_int128_t sb) const;
+  inline bool IsNegative (void) const;
 
   static const double MAX_64;
-  bool m_isFast;
-  int64_t m_fastValue;
-  cairo_int128_t m_slowValue;
-
-#ifdef GATHER_STATISTICS
-  static int m_nfastadds;
-  static int m_nfastsubs;
-  static int m_nfastmuls;
-  static int m_nfastcmps;
-  static int m_nfastgets;
-  static int m_nslowadds;
-  static int m_nslowsubs;
-  static int m_nslowmuls;
-  static int m_nslowcmps;
-  static int m_nslowgets;
-  static int m_ndivs;
-  static int m_nconversions;
-#endif /* GATHER_STATISTICS */
+  cairo_int128_t m_value;
 };
 
-}; // namespace ns3
+} // namespace ns3
 
 namespace ns3 {
 
 HighPrecision::HighPrecision ()
-  : m_isFast (true),
-    m_fastValue (0)
 {
+  m_value.hi = 0;
+  m_value.lo = 0;
 }
 
 HighPrecision::HighPrecision (int64_t value, bool dummy)
-  : m_isFast (true),
-    m_fastValue (value)
 {
+  m_value.hi = value;
+  m_value.lo = 0;
 }
 
+bool 
+HighPrecision::IsNegative (void) const
+{
+  int64_t hi = m_value.hi;
+  return hi < 0;
+}
 
 int64_t
 HighPrecision::GetInteger (void) const
 {
-  if (m_isFast)
-    {
-      HP128INC (m_nfastgets);
-      return m_fastValue;
-    }
-  else
-    {
-      HP128INC (m_nslowgets);
-      return SlowGetInteger ();
-    }
+  return m_value.hi;
 }
-double HighPrecision::GetDouble (void) const
-{
-  if (m_isFast)
-    {
-      HP128INC (m_nfastgets);
-      double retval = m_fastValue;
-      return retval;
-    }
-  else
-    {
-      HP128INC (m_nslowgets);
-      return SlowGetDouble ();
-    }
-}
-bool
+void
 HighPrecision::Add (HighPrecision const &o)
 {
-  if (m_isFast && o.m_isFast)
+  m_value.hi += o.m_value.hi;
+  m_value.lo += o.m_value.lo;
+  if (m_value.lo < o.m_value.lo)
     {
-      HP128INC (m_nfastadds);
-      m_fastValue += o.m_fastValue;
-      return false;
-    }
-  else
-    {
-      HP128INC (m_nslowadds);
-      return SlowAdd (o);
+      m_value.hi++;
     }
 }
-bool
+void
 HighPrecision::Sub (HighPrecision const &o)
 {
-  if (m_isFast && o.m_isFast)
+  m_value.hi -= o.m_value.hi;
+  m_value.lo -= o.m_value.lo;
+  if (m_value.lo > o.m_value.lo)
     {
-      HP128INC (m_nfastsubs);
-      m_fastValue -= o.m_fastValue;
-      return false;
-    }
-  else
-    {
-      HP128INC (m_nslowsubs);
-      return SlowSub (o);
+      m_value.hi--;
     }
 }
-bool
-HighPrecision::Mul (HighPrecision const &o)
-{
-  if (m_isFast && o.m_isFast)
-    {
-      HP128INC (m_nfastmuls);
-      m_fastValue *= o.m_fastValue;
-      return false;
-    }
-  else
-    {
-      HP128INC (m_nslowmuls);
-      return SlowMul (o);
-    }
-}
-
 int
 HighPrecision::Compare (HighPrecision const &o) const
 {
-  if (m_isFast && o.m_isFast)
+  if (IsNegative () && !o.IsNegative ())
     {
-      HP128INC (m_nfastcmps);
-      if (m_fastValue < o.m_fastValue)
-        {
-          return -1;
-        }
-      else if (m_fastValue == o.m_fastValue)
-        {
-          return 0;
-        }
-      else
-        {
-          return +1;
-        }
+      return -1;
+    }
+  else if (!IsNegative () && o.IsNegative ())
+    {
+      return 1;
+    }
+  else if (m_value.hi < o.m_value.hi)
+    {
+      return -1;
+    }
+  else if (m_value.hi > o.m_value.hi)
+    {
+      return 1;
     }
   else
     {
-      HP128INC (m_nslowcmps);
-      return SlowCompare (o);
+      return m_value.lo < o.m_value.lo;
     }
-  // The below statement is unreachable but necessary for optimized
-  // builds with gcc-4.0.x due to a compiler bug.
-  return 0;
 }
 HighPrecision
 HighPrecision::Zero (void)
@@ -255,7 +174,6 @@ HighPrecision::Zero (void)
   return HighPrecision ();
 }
 
-
-}; // namespace ns3
+} // namespace ns3
 
 #endif /* HIGH_PRECISION_CAIRO_H */
