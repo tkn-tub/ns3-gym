@@ -5,7 +5,7 @@ def register_types(module):
     
     ## event-id.h: ns3::EventId [class]
     module.add_class('EventId')
-    ## high-precision-128.h: ns3::HighPrecision [class]
+    ## high-precision-double.h: ns3::HighPrecision [class]
     module.add_class('HighPrecision')
     ## simulator.h: ns3::Simulator [class]
     module.add_class('Simulator', is_singleton=True)
@@ -243,51 +243,46 @@ def register_Ns3EventId_methods(root_module, cls):
     return
 
 def register_Ns3HighPrecision_methods(root_module, cls):
-    ## high-precision-128.h: ns3::HighPrecision::HighPrecision(ns3::HighPrecision const & arg0) [copy constructor]
+    ## high-precision-double.h: ns3::HighPrecision::HighPrecision(ns3::HighPrecision const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::HighPrecision const &', 'arg0')])
-    ## high-precision-128.h: ns3::HighPrecision::HighPrecision(double value) [constructor]
-    cls.add_constructor([param('double', 'value')])
-    ## high-precision-128.h: ns3::HighPrecision::HighPrecision() [constructor]
+    ## high-precision-double.h: ns3::HighPrecision::HighPrecision() [constructor]
     cls.add_constructor([])
-    ## high-precision-128.h: ns3::HighPrecision::HighPrecision(int64_t value, bool dummy) [constructor]
+    ## high-precision-double.h: ns3::HighPrecision::HighPrecision(int64_t value, bool dummy) [constructor]
     cls.add_constructor([param('int64_t', 'value'), param('bool', 'dummy')])
-    ## high-precision-128.h: bool ns3::HighPrecision::Add(ns3::HighPrecision const & o) [member function]
+    ## high-precision-double.h: ns3::HighPrecision::HighPrecision(double value) [constructor]
+    cls.add_constructor([param('double', 'value')])
+    ## high-precision-double.h: void ns3::HighPrecision::Add(ns3::HighPrecision const & o) [member function]
     cls.add_method('Add', 
-                   'bool', 
+                   'void', 
                    [param('ns3::HighPrecision const &', 'o')])
-    ## high-precision-128.h: int ns3::HighPrecision::Compare(ns3::HighPrecision const & o) const [member function]
+    ## high-precision-double.h: int ns3::HighPrecision::Compare(ns3::HighPrecision const & o) const [member function]
     cls.add_method('Compare', 
                    'int', 
                    [param('ns3::HighPrecision const &', 'o')], 
                    is_const=True)
-    ## high-precision-128.h: bool ns3::HighPrecision::Div(ns3::HighPrecision const & o) [member function]
+    ## high-precision-double.h: void ns3::HighPrecision::Div(ns3::HighPrecision const & o) [member function]
     cls.add_method('Div', 
-                   'bool', 
+                   'void', 
                    [param('ns3::HighPrecision const &', 'o')])
-    ## high-precision-128.h: double ns3::HighPrecision::GetDouble() const [member function]
+    ## high-precision-double.h: double ns3::HighPrecision::GetDouble() const [member function]
     cls.add_method('GetDouble', 
                    'double', 
                    [], 
                    is_const=True)
-    ## high-precision-128.h: int64_t ns3::HighPrecision::GetInteger() const [member function]
+    ## high-precision-double.h: int64_t ns3::HighPrecision::GetInteger() const [member function]
     cls.add_method('GetInteger', 
                    'int64_t', 
                    [], 
                    is_const=True)
-    ## high-precision-128.h: bool ns3::HighPrecision::Mul(ns3::HighPrecision const & o) [member function]
+    ## high-precision-double.h: void ns3::HighPrecision::Mul(ns3::HighPrecision const & o) [member function]
     cls.add_method('Mul', 
-                   'bool', 
-                   [param('ns3::HighPrecision const &', 'o')])
-    ## high-precision-128.h: static void ns3::HighPrecision::PrintStats() [member function]
-    cls.add_method('PrintStats', 
                    'void', 
-                   [], 
-                   is_static=True)
-    ## high-precision-128.h: bool ns3::HighPrecision::Sub(ns3::HighPrecision const & o) [member function]
-    cls.add_method('Sub', 
-                   'bool', 
                    [param('ns3::HighPrecision const &', 'o')])
-    ## high-precision-128.h: static ns3::HighPrecision ns3::HighPrecision::Zero() [member function]
+    ## high-precision-double.h: void ns3::HighPrecision::Sub(ns3::HighPrecision const & o) [member function]
+    cls.add_method('Sub', 
+                   'void', 
+                   [param('ns3::HighPrecision const &', 'o')])
+    ## high-precision-double.h: static ns3::HighPrecision ns3::HighPrecision::Zero() [member function]
     cls.add_method('Zero', 
                    'ns3::HighPrecision', 
                    [], 
