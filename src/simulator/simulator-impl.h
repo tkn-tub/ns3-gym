@@ -35,6 +35,8 @@ class Scheduler;
 class SimulatorImpl : public Object
 {
 public:
+  static TypeId GetTypeId (void);
+
   virtual void Destroy () = 0;
   virtual bool IsFinished (void) const = 0;
   virtual Time Next (void) const = 0;

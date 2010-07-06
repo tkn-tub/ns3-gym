@@ -65,6 +65,7 @@ def build(bld):
         'ns2-calendar-scheduler.cc',
         'event-impl.cc',
         'simulator.cc',
+        'simulator-impl.cc',
         'default-simulator-impl.cc',
         'timer.cc',
         'watchdog.cc',
