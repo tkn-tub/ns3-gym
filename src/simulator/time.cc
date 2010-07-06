@@ -120,17 +120,14 @@ TimeUnit<1>::TimeUnit (const std::string& s)
   iss.str (s);
   double v;
   iss >> v;
-  m_data = HighPrecision (v);
-  m_data.Mul (HighPrecision (TimeStepPrecision::g_tsPrecFactor, false));
+  m_data = HighPrecision (v * TimeStepPrecision::g_tsPrecFactor);
 }
 
 double
 TimeUnit<1>::GetSeconds (void) const
 {
-  HighPrecision tmp = GetHighPrecision ();
-  HighPrecision factor = HighPrecision (TimeStepPrecision::g_tsPrecFactor, false);
-  tmp.Div (factor);
-  return tmp.GetDouble ();
+  double timeValue = GetHighPrecision ().GetDouble ();
+  return timeValue / TimeStepPrecision::g_tsPrecFactor;
 }
 
 int64_t
@@ -288,10 +285,9 @@ std::istream& operator>> (std::istream& is, Time & time)
 
 Time Seconds (double seconds)
 {
-  HighPrecision tmp = HighPrecision (seconds);
-  HighPrecision factor = HighPrecision (TimeStepPrecision::g_tsPrecFactor, false);
-  tmp.Mul (factor);
-  return Time (tmp);
+  double d_sec = seconds * TimeStepPrecision::g_tsPrecFactor;
+  return Time (HighPrecision (d_sec));
+  //  return Time (HighPrecision ((int64_t)d_sec, false));
 }
 
 uint64_t
