@@ -293,6 +293,10 @@ Hp128InvertTestCase::Hp128InvertTestCase ()
   : TestCase ("Test case for invertion")
 {
 }
+
+bool
+Hp128InvertTestCase::DoRun (void)
+{
 #define TEST(factor)                                                    \
   do {                                                                  \
     HighPrecision a;                                                    \
@@ -315,9 +319,6 @@ Hp128InvertTestCase::Hp128InvertTestCase ()
                            "-x * 1/x should be -1 for x=" << factor);   \
   } while(false)
 
-bool
-Hp128InvertTestCase::DoRun (void)
-{
   TEST(2);
   TEST(3);
   TEST(4);
@@ -340,6 +341,7 @@ Hp128InvertTestCase::DoRun (void)
   TEST(10000000000000LL);
   TEST(100000000000000LL);
   TEST(1000000000000000LL);
+#undef TEST
   return false;
 }
 
