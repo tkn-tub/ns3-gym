@@ -56,15 +56,10 @@ public:
   void Div (HighPrecision const &o);
   void MulByInvert (const HighPrecision &o);
   static HighPrecision Invert (uint64_t v);
-  
-  void MulFactor (uint64_t factor);
-
 
   inline int Compare (HighPrecision const &o) const;
   inline static HighPrecision Zero (void);
 private:
-  static inline cairo_uint128_t  Add (cairo_uint128_t a, cairo_uint128_t b);
-  static inline cairo_uint128_t  Sub (cairo_uint128_t a, cairo_uint128_t b);
   static cairo_uint128_t  Umul (cairo_uint128_t a, cairo_uint128_t b);
   static cairo_uint128_t Udiv (cairo_uint128_t a, cairo_uint128_t b);
   static cairo_uint128_t UmulByInvert (cairo_uint128_t a, cairo_uint128_t b);
@@ -101,31 +96,6 @@ HighPrecision::GetInteger (void) const
 {
   return m_value.hi;
 }
-cairo_uint128_t  
-HighPrecision::Add (cairo_uint128_t a, cairo_uint128_t b)
-{
-  cairo_uint128_t result;
-  result.hi = a.hi + b.hi;
-  result.lo = a.lo + b.lo;
-  if (result.lo < a.lo)
-    {
-      result.hi++;
-    }
-  return result;
-}
-cairo_uint128_t  
-HighPrecision::Sub (cairo_uint128_t a, cairo_uint128_t b)
-{
-  cairo_uint128_t result;
-  result.hi = a.hi - b.hi;
-  result.lo = a.lo - b.lo;
-  if (result.lo > a.lo)
-    {
-      result.hi--;
-    }
-  return result;
-}
-
 void
 HighPrecision::Add (HighPrecision const &o)
 {

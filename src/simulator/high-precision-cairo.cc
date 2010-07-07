@@ -122,45 +122,6 @@ HighPrecision::Udiv (cairo_uint128_t a, cairo_uint128_t b)
   return result;
 }
 
-void
-HighPrecision::MulFactor (uint64_t factor)
-{
-  if (m_value.hi == 0 && m_value.lo == 0)
-    {
-      return;
-    }
-  // 1000 = 2^10 - 2^4 - 2^3
-#if 0
-  // 1000000 = 2^20 - 2^16 + 2^14 + 2^9 + 2^6
-  uint8_t powers [] = {20, 16, 14, 9, 6};
-  int8_t signs [] = {1, -1, 1, 1, 1};
-#else
-  // 1000000000 = 2^30 - 2^26 - 2^23 + 2^21 - 2^18 - 2^16 - 2^14 + 2^11 + 2^9
-  uint8_t powers [] = {9, 11, 14, 16, 18, 21, 23, 26, 30};
-  int8_t signs [] = {1, 1, -1, -1, -1, 1, -1, -1, 1};
-#endif
-  cairo_uint128_t result;
-  result.hi = 0;
-  result.lo = 0;
-  for (uint8_t i = 0; i < sizeof (powers); i++)
-    {
-      uint8_t shift = powers[i];
-      cairo_uint128_t tmp;
-      tmp.hi = (m_value.hi << shift) + (m_value.lo >> (64-shift));
-      tmp.lo = m_value.lo << shift;
-      if (signs[i] < 0)
-        {
-          result = Sub (result, tmp);
-        }
-      else
-        {
-          result = Add (result, tmp);
-        }
-    }
-  m_value = result;
-}
-  
-
 void 
 HighPrecision::MulByInvert (const HighPrecision &o)
 {
