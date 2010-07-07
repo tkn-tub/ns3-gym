@@ -27,36 +27,9 @@
 #include <math.h>
 #include <ostream>
 #include "high-precision.h"
+#include "time-base.h"
 
 namespace ns3 {
-
-namespace TimeStepPrecision {
-
-enum precision_t
-{
-  S  = 0,
-  MS = 3,
-  US = 6,
-  NS = 9,
-  PS = 12,
-  FS = 15
-};
-/**
- * \param precision the new precision to use
- *
- * This should be invoked before any Time object
- * is created. i.e., it should be invoked at the very start
- * of every simulation. The unit specified by this method
- * is used as the unit of the internal simulation time
- * which is stored as a 64 bit integer.
- */
-void Set (precision_t precision);
-/**
- * \returns the currently-used time precision.
- */
-precision_t Get (void);
-
-} // namespace TimeStepPrecision
 
 
 /**
@@ -110,114 +83,13 @@ precision_t Get (void);
  *  - \ref ns3-Time-Min ns3::Min
  */
 template <int N>
-class TimeUnit
+class TimeUnit : public TimeBase
 {
 public:
-  TimeUnit ();
-  TimeUnit (TimeUnit const &o);
-  TimeUnit operator = (TimeUnit const &o);
-  TimeUnit (HighPrecision data);
-
-  /**
-   * \return true if the time is zero, false otherwise.
-   */
-  bool IsZero (void) const;
-  /**
-   * \return true if the time is negative or zero, false otherwise.
-   */
-  bool IsNegative (void) const;
-  /**
-   * \return true if the time is positive or zero, false otherwise.
-   */
-  bool IsPositive (void) const;
-  /**
-   * \return true if the time is strictly negative, false otherwise.
-   */
-  bool IsStrictlyNegative (void) const;
-  /**
-   * \return true if the time is strictly positive, false otherwise.
-   */
-  bool IsStrictlyPositive (void) const;
-
-  /**
-   * This is really an internal method exported for the needs of
-   * the implementation. Please, Do not try to use this method, ever.
-   *
-   * \return the ns3::HighPrecision object which holds the value
-   *         stored in this Time<N> type.
-   */
-  HighPrecision const &GetHighPrecision (void) const;
-  HighPrecision * PeekHighPrecision (void);
-
-private:
-  HighPrecision m_data;
+  explicit inline TimeUnit (const HighPrecision &data)
+    : TimeBase (data)
+  {}
 };
-
-template <int N>
-TimeUnit<N>::TimeUnit ()
-  : m_data ()
-{
-}
-template <int N>
-TimeUnit<N>::TimeUnit (TimeUnit const &o)
-  : m_data (o.m_data)
-{
-}
-template <int N>
-TimeUnit<N>
-TimeUnit<N>::operator = (TimeUnit const &o)
-{
-  m_data = o.m_data;
-  return *this;
-}
-template <int N>
-TimeUnit<N>::TimeUnit (HighPrecision data)
-  : m_data (data)
-{
-}
-
-template <int N>
-HighPrecision const &
-TimeUnit<N>::GetHighPrecision (void) const
-{
-  return m_data;
-}
-template <int N>
-HighPrecision *
-TimeUnit<N>::PeekHighPrecision (void)
-{
-  return &m_data;
-}
-template <int N>
-bool
-TimeUnit<N>::IsZero (void) const
-{
-  return m_data.Compare (HighPrecision::Zero ()) == 0;
-}
-template <int N>
-bool
-TimeUnit<N>::IsNegative (void) const
-{
-  return m_data.Compare (HighPrecision::Zero ()) <= 0;
-}
-template <int N>
-bool
-TimeUnit<N>::IsPositive (void) const
-{
-  return m_data.Compare (HighPrecision::Zero ()) >= 0;
-}
-template <int N>
-bool
-TimeUnit<N>::IsStrictlyNegative (void) const
-{
-  return m_data.Compare (HighPrecision::Zero ()) < 0;
-}
-template <int N>
-bool
-TimeUnit<N>::IsStrictlyPositive (void) const
-{
-  return m_data.Compare (HighPrecision::Zero ()) > 0;
-}
 
 template <int N>
 bool
@@ -347,7 +219,7 @@ TimeUnit<N> Min (TimeUnit<N> const &ta, TimeUnit<N> const &tb)
 class TimeValue;
 
 template <>
-class TimeUnit<1>
+class TimeUnit<1> : public TimeBase
 {
   // -*- New methods -*-
 public:
@@ -368,103 +240,71 @@ public:
    * \param s The string to parse into a TimeUnit<1>
    */
   TimeUnit<1> (const std::string & s);
+
   /**
    * \returns an approximation in seconds of the time stored in this
    *          instance.
    */
-  double GetSeconds (void) const;
+  inline double GetSeconds (void) const
+  {
+    return TimeBase::ToDouble (*this, TimeBase::S);
+  }
 
   /**
    * \returns an approximation in milliseconds of the time stored in this
    *          instance.
    */
-  int64_t GetMilliSeconds (void) const;
+  inline int64_t GetMilliSeconds (void) const
+  {
+    return TimeBase::ToInteger (*this, TimeBase::MS);
+  }
   /**
    * \returns an approximation in microseconds of the time stored in this
    *          instance.
    */
-  int64_t GetMicroSeconds (void) const;
+  inline int64_t GetMicroSeconds (void) const
+  {
+    return TimeBase::ToInteger (*this, TimeBase::US);
+  }
   /**
    * \returns an approximation in nanoseconds of the time stored in this
    *          instance.
    */
-  int64_t GetNanoSeconds (void) const;
+  inline int64_t GetNanoSeconds (void) const
+  {
+    return TimeBase::ToInteger (*this, TimeBase::NS);
+  }
   /**
    * \returns an approximation in picoseconds of the time stored in this
    *          instance.
    */
-  int64_t GetPicoSeconds (void) const;
+  inline int64_t GetPicoSeconds (void) const
+  {
+    return TimeBase::ToInteger (*this, TimeBase::PS);
+  }
   /**
    * \returns an approximation in femtoseconds of the time stored in this
    *          instance.
    */
-  int64_t GetFemtoSeconds (void) const;
+  inline int64_t GetFemtoSeconds (void) const
+  {
+    return TimeBase::ToInteger (*this, TimeBase::FS);
+  }
   /**
    * \returns an approximation of the time stored in this
    *          instance in the units specified in m_tsPrecision.
    */
-  int64_t GetTimeStep (void) const;
-
-  // -*- The rest is the the same as in the generic template class -*-
-public:
-  TimeUnit ()
-    : m_data ()
+  inline int64_t GetTimeStep (void) const
   {
+    int64_t timeValue = GetHighPrecision ().GetInteger ();
+    return timeValue;
   }
-  TimeUnit (TimeUnit const &o)
-    : m_data (o.m_data)
-  {
-  }
-  TimeUnit operator = (TimeUnit const &o)
-  {
-    m_data = o.m_data;
-    return *this;
-  }
-  TimeUnit (HighPrecision data)
-    : m_data (data)
-  {
-  }
-  bool IsZero (void) const
-  {
-    return m_data.Compare (HighPrecision::Zero ()) == 0;
-  }
-  bool IsNegative (void) const
-  {
-    return m_data.Compare (HighPrecision::Zero ()) <= 0;
-  }
-  bool IsPositive (void) const
-  {
-    return m_data.Compare (HighPrecision::Zero ()) >= 0;
-  }
-  bool IsStrictlyNegative (void) const
-  {
-    return m_data.Compare (HighPrecision::Zero ()) < 0;
-  }
-  bool IsStrictlyPositive (void) const
-  {
-    return m_data.Compare (HighPrecision::Zero ()) > 0;
-  }
-  HighPrecision const &GetHighPrecision (void) const
-  {
-    return m_data;
-  }
-  HighPrecision * PeekHighPrecision (void)
-  {
-    return &m_data;
-  }
-
-  static uint64_t UnitsToTimestep (uint64_t unitValue,
-                                   uint64_t unitFactor);
-
-private:
-  HighPrecision m_data;
-
-  /*
-   * \Returns the value of time_value in units of unitPrec. time_value
-   * must be specified in timestep units (which are the same as the
-   * m_tsPrecision units
-   */
-  int64_t ConvertToUnits (int64_t timeValue, uint64_t unitFactor) const;
+  inline TimeUnit ()
+    : TimeBase () {}
+  inline TimeUnit (const TimeBase &o)
+    : TimeBase (o) {}
+  explicit inline TimeUnit<1> (const HighPrecision &o)
+    : TimeBase (o) {}
 };
 
 /**
@@ -551,7 +391,10 @@ std::istream& operator>> (std::istream& is, Time & time);
  * \endcode
  * \param seconds seconds value
  */
-Time Seconds (double seconds);
+inline Time Seconds (double seconds)
+{
+  return TimeBase::FromDouble (seconds, TimeBase::S);
+}
 
 /**
  * \brief create ns3::Time instances in units of milliseconds.
@@ -563,7 +406,10 @@ Time Seconds (double seconds);
  * \endcode
  * \param ms milliseconds value
  */
-Time MilliSeconds (uint64_t ms);
+inline Time MilliSeconds (uint64_t ms)
+{
+  return TimeBase::FromInteger (ms, TimeBase::MS);
+}
 /**
  * \brief create ns3::Time instances in units of microseconds.
  *
@@ -574,7 +420,10 @@ Time MilliSeconds (uint64_t ms);
  * \endcode
  * \param us microseconds value
  */
-Time MicroSeconds (uint64_t us);
+inline Time MicroSeconds (uint64_t us)
+{
+  return TimeBase::FromInteger (us, TimeBase::US);
+}
 /**
  * \brief create ns3::Time instances in units of nanoseconds.
  *
@@ -585,7 +434,10 @@ Time MicroSeconds (uint64_t us);
  * \endcode
  * \param ns nanoseconds value
  */
-Time NanoSeconds (uint64_t ns);
+inline Time NanoSeconds (uint64_t ns)
+{
+  return TimeBase::FromInteger (ns, TimeBase::NS);
+}
 /**
  * \brief create ns3::Time instances in units of picoseconds.
  *
@@ -596,7 +448,10 @@ Time NanoSeconds (uint64_t ns);
  * \endcode
  * \param ps picoseconds value
  */
-Time PicoSeconds (uint64_t ps);
+inline Time PicoSeconds (uint64_t ps)
+{
+  return TimeBase::FromInteger (ps, TimeBase::PS);
+}
 /**
  * \brief create ns3::Time instances in units of femtoseconds.
  *
@@ -607,71 +462,29 @@ Time PicoSeconds (uint64_t ps);
  * \endcode
  * \param fs femtoseconds value
  */
-Time FemtoSeconds (uint64_t fs);
+inline Time FemtoSeconds (uint64_t fs)
+{
+  return TimeBase::FromInteger (fs, TimeBase::FS);
+}
 
 // internal function not publicly documented
-Time TimeStep (uint64_t ts);
+inline Time TimeStep (uint64_t ts)
+{
+  return Time (HighPrecision (ts, false));
+}
 
 // Explicit instantiation of the TimeUnit template for N=0, with a few
 // additional methods that should not be available for N != 0
 template <>
-class TimeUnit<0>
+class TimeUnit<0> : public TimeBase
 {
   // -*- New methods -*-
 public:
   double GetDouble (void) const;
   TimeUnit<0> (double scalar);
-
-  // -*- The rest is the the same as in the generic template class -*-
-public:
-  TimeUnit ()
-    : m_data ()
-  {
-  }
-  TimeUnit (TimeUnit const &o)
-    : m_data (o.m_data)
-  {
-  }
-  TimeUnit operator = (TimeUnit const &o)
-  {
-    m_data = o.m_data;
-    return *this;
-  }
-  TimeUnit (HighPrecision data)
-    : m_data (data)
-  {
-  }
-  bool IsZero (void) const
-  {
-    return m_data.Compare (HighPrecision::Zero ()) == 0;
-  }
-  bool IsNegative (void) const
-  {
-    return m_data.Compare (HighPrecision::Zero ()) <= 0;
-  }
-  bool IsPositive (void) const
-  {
-    return m_data.Compare (HighPrecision::Zero ()) >= 0;
-  }
-  bool IsStrictlyNegative (void) const
-  {
-    return m_data.Compare (HighPrecision::Zero ()) < 0;
-  }
-  bool IsStrictlyPositive (void) const
-  {
-    return m_data.Compare (HighPrecision::Zero ()) > 0;
-  }
-  HighPrecision const &GetHighPrecision (void) const
-  {
-    return m_data;
-  }
-  HighPrecision * PeekHighPrecision (void)
-  {
-    return &m_data;
-  }
-
-private:
-  HighPrecision m_data;
+  TimeUnit<0> ();
+  TimeUnit<0> (const TimeUnit &o);
+  explicit TimeUnit<0> (const HighPrecision &o);
 };
 
 /**

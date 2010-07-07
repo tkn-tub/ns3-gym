@@ -55,6 +55,7 @@ def build(bld):
     sim = bld.create_ns3_module('simulator', ['core'])
     sim.source = [
         'high-precision.cc',
+        'time-base.cc',
         'time.cc',
         'event-id.cc',
         'scheduler.cc',
@@ -77,6 +78,7 @@ def build(bld):
     headers.module = 'simulator'
     headers.source = [
         'high-precision.h',
+        'time-base.h',
         'nstime.h',
         'event-id.h',
         'event-impl.h',
@@ -106,7 +108,7 @@ def build(bld):
     elif env['USE_HIGH_PRECISION_CAIRO']:
         sim.source.extend([
             'high-precision-cairo.cc',
-            'cairo-wideint.c',
+#            'cairo-wideint.c',
             ])
         headers.source.extend([
             'high-precision-cairo.h',

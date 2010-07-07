@@ -282,6 +282,68 @@ Hp128CompareTestCase::DoRun (void)
   return false;
 }
 
+class Hp128InvertTestCase : public TestCase
+{
+public:
+  Hp128InvertTestCase ();
+  virtual bool DoRun (void);
+};
+
+Hp128InvertTestCase::Hp128InvertTestCase ()
+  : TestCase ("Test case for invertion")
+{
+}
+#define TEST(factor)                                                    \
+  do {                                                                  \
+    HighPrecision a;                                                    \
+    a = HighPrecision::Invert (factor);                                 \
+    HighPrecision b = V (factor);                                       \
+    b.MulByInvert (a);                                                  \
+    NS_TEST_ASSERT_MSG_EQ (b.GetInteger (), 1,                          \
+                           "x * 1/x should be 1 for x=" << factor);     \
+    HighPrecision c = V (1);                                            \
+    c.MulByInvert (a);                                                  \
+    NS_TEST_ASSERT_MSG_EQ (c.GetInteger (), 0,                          \
+                           "1 * 1/x should be 0 for x=" << factor);     \
+    HighPrecision d = V (1);                                            \
+    d.Div (V(factor));                                                  \
+    NS_TEST_ASSERT_MSG_EQ (d.GetDouble (), c.GetDouble (),              \
+                           "1 * 1/x should be equal to 1/x for x=" << factor); \
+    HighPrecision e = V (-factor);                                      \
+    e.MulByInvert (a);                                                  \
+    NS_TEST_ASSERT_MSG_EQ (e.GetInteger (), -1,                         \
+                           "-x * 1/x should be -1 for x=" << factor);   \
+  } while(false)
+
+bool
+Hp128InvertTestCase::DoRun (void)
+{
+  TEST(2);
+  TEST(3);
+  TEST(4);
+  TEST(5);
+  TEST(6);
+  TEST(10);
+  TEST(99);
+  TEST(100);
+  TEST(1000);
+  TEST(10000);
+  TEST(100000);
+  TEST(100000);
+  TEST(1000000);
+  TEST(10000000);
+  TEST(100000000);
+  TEST(1000000000);
+  TEST(10000000000LL);
+  TEST(100000000000LL);
+  TEST(1000000000000LL);
+  TEST(10000000000000LL);
+  TEST(100000000000000LL);
+  TEST(1000000000000000LL);
+  return false;
+}
+
+
 static class HighPrecision128TestSuite : public TestSuite
 {
 public:
@@ -292,6 +354,7 @@ public:
     AddTestCase (new Hp128Bug455TestCase ());
     AddTestCase (new Hp128Bug863TestCase ());
     AddTestCase (new Hp128CompareTestCase ());
+    AddTestCase (new Hp128InvertTestCase ());
   }
 } g_highPrecision128TestSuite;
 
