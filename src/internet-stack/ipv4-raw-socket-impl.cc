@@ -185,6 +185,7 @@ Ipv4RawSocketImpl::SendTo (Ptr<Packet> p, uint32_t flags,
   InetSocketAddress ad = InetSocketAddress::ConvertFrom (toAddress);
   Ptr<Ipv4L3Protocol> ipv4 = m_node->GetObject<Ipv4L3Protocol> ();
   Ipv4Address dst = ad.GetIpv4 ();
+  Ipv4Address src = m_src;
   if (ipv4->GetRoutingProtocol ())
     {
       Ipv4Header header;
@@ -197,16 +198,17 @@ Ipv4RawSocketImpl::SendTo (Ptr<Packet> p, uint32_t flags,
         {
           p->RemoveHeader (header);
           dst = header.GetDestination ();
+          src = header.GetSource ();
         }
       SocketErrno errno_ = ERROR_NOTERROR;//do not use errno as it is the standard C last error number 
       Ptr<Ipv4Route> route;
       Ptr<NetDevice> oif = m_boundnetdevice; //specify non-zero if bound to a source address
-      if (!oif && m_src != Ipv4Address::GetAny ())
+      if (!oif && src != Ipv4Address::GetAny ())
         {
-          int32_t index = ipv4->GetInterfaceForAddress (m_src);
+          int32_t index = ipv4->GetInterfaceForAddress (src);
           NS_ASSERT (index >= 0);
           oif = ipv4->GetNetDevice (index);
-          NS_LOG_LOGIC ("Set index " << oif << "from source " << m_src);
+          NS_LOG_LOGIC ("Set index " << oif << "from source " << src);
         }
 
       // TBD-- we could cache the route and just check its validity
