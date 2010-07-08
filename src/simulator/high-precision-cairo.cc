@@ -30,30 +30,23 @@ namespace ns3 {
 NS_LOG_COMPONENT_DEFINE ("HighPrecisionCairo");
 
 
-#define ABS_ARGS(sa,sb,ua,ub)                                           \
-  bool negResult, negA, negB;                                           \
-  /* take the sign of the operands */                                   \
+#define OUTPUT_SIGN(sa,sb,ua,ub)                                        \
+  ({bool negA, negB;                                                    \
   negA = _cairo_int128_negative (sa);                                   \
   negB = _cairo_int128_negative (sb);                                   \
-  /* the result is negative only if one of the operand is negative */   \
-  negResult = (negA && !negB) || (!negA && negB);                       \
-  /* now take the absolute part to make sure that the resulting operands are positive */ \
   ua = _cairo_int128_to_uint128 (sa);                                   \
   ub = _cairo_int128_to_uint128 (sb);                                   \
   ua = negA ? _cairo_uint128_negate (ua) : ua;                          \
-  ub = negB ? _cairo_uint128_negate (ub) : ub
-
-#define SIGN_RESULT(result)                                     \
-  negResult ? _cairo_uint128_negate (result) : result
-
+  ub = negB ? _cairo_uint128_negate (ub) : ub;                          \
+  negResult = (negA && !negB) || (!negA && negB);})
 
 void
 HighPrecision::Mul (HighPrecision const &o)
 {
   cairo_uint128_t a, b, result;
-  ABS_ARGS (m_value, o.m_value, a, b);
+  bool sign = OUTPUT_SIGN (m_value, o.m_value, a, b);
   result = Umul (a, b);
-  m_value = SIGN_RESULT (result);
+  m_value = sign ? _cairo_uint128_negate (result) : result;
 }
 
 
@@ -93,9 +86,9 @@ void
 HighPrecision::Div (HighPrecision const &o)
 {
   cairo_uint128_t a, b, result;
-  ABS_ARGS(m_value, o.m_value, a, b);
+  bool sign = OUTPUT_SIGN (m_value, o.m_value, a, b);
   result = Udiv (a, b);
-  m_value = SIGN_RESULT (result);
+  m_value = sign ? _cairo_uint128_negate (result) : result;
 }
 
 cairo_uint128_t
