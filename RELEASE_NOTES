@@ -45,6 +45,10 @@ New user-visible features
    - A brand new NS-2 mobility trace reader supports BonnMotion, SUMO, TraNS, 
      etc. traces.
 
+   - An energy model for nodes and devices, including an energy source
+     model and device energy models allowing energy-aware devices
+     to notify the energy source about energy consumption.  
+
 Bugs fixed
 ----------
 The following lists many of the bugs that were fixed since ns-3.7, in

@@ -60,6 +60,7 @@ all_modules = (
     'devices/wimax',
     'mpi',
     'contrib/topology-read',
+    'contrib/energy',
     )
 
 def set_options(opt):

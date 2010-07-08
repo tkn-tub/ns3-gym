@@ -30,13 +30,44 @@
 namespace ns3 {
 namespace FatalImpl {
 
+/**
+ * Note on implementation: the singleton pattern we use here is tricky because
+ * it has to deal with:
+ *   - make sure that whoever calls Register (potentially before main enters and 
+ *     before any constructor run in this file) succeeds
+ *   - make sure that whoever calls Unregister (potentially before FlushStream runs
+ *     but also after it runs) succeeds
+ *   - make sure that the memory allocated with new is deallocated with delete before
+ *     the program exits so that valgrind reports no leaks
+ *
+ * This is why we go through all the painful hoops below.
+ */
+
 /* File-scope */
 namespace {
+  std::list<std::ostream*> **PeekStreamList (void)
+  {
+    static std::list<std::ostream*> *streams = 0;
+    return &streams;
+  }
   std::list<std::ostream*> *GetStreamList (void)
+  {
+    std::list<std::ostream*> **pstreams = PeekStreamList ();
+    if (*pstreams == 0)
+      {
+        *pstreams = new std::list<std::ostream*> ();
+      }
+    return *pstreams;
+  }
+  struct destructor
+  {
+    ~destructor ()
     {
-      static std::list<std::ostream*> streams;
-      return &streams;
+      std::list<std::ostream*> **pstreams = PeekStreamList ();
+      delete *pstreams;
+      *pstreams = 0;
     }
+  };
 }
 
 void
@@ -48,7 +79,17 @@ RegisterStream (std::ostream* stream)
 void
 UnregisterStream (std::ostream* stream)
 {
-  GetStreamList ()->remove (stream);
+  std::list<std::ostream*> **pl = PeekStreamList ();
+  if (*pl == 0)
+    {
+      return;
+    }
+  (*pl)->remove (stream);
+  if ((*pl)->empty ())
+    {
+      delete *pl;
+      *pl = 0;
+    }
 }
 
 
@@ -65,16 +106,22 @@ namespace {
 void 
 FlushStreams (void)
 {
-  struct sigaction hdl;
+  std::list<std::ostream*> **pl = PeekStreamList ();
+  if (pl == 0)
+    {
+      return;
+    }
+
 
   /* Override default SIGSEGV handler - will flush subsequent
    * streams even if one of the stream pointers is bad.
    * The SIGSEGV override should only be active for the
    * duration of this function. */
+  struct sigaction hdl;
   hdl.sa_handler=sigHandler;
   sigaction (SIGSEGV, &hdl, 0);
 
-  std::list<std::ostream*> *l = GetStreamList ();
+  std::list<std::ostream*> *l = *pl;
 
   /* Need to do it this way in case any of the ostream* causes SIGSEGV */
   while (!l->empty ())
@@ -95,6 +142,9 @@ FlushStreams (void)
   std::cout.flush ();
   std::cerr.flush ();
   std::clog.flush ();
+
+  delete l;
+  *pl = 0;
 }
 
 } //FatalImpl

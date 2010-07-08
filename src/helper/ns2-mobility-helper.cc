@@ -483,20 +483,22 @@ GetNodeIdFromToken (string str)
 int
 GetNodeIdInt (ParseResult pr)
 {
+  int result = -1;
   switch (pr.tokens.size ())
     {
     case 4:   // line like $node_(0) set X_ 11
-      return pr.ivals[0];
+      result = pr.ivals[0];
       break;
     case 7:   // line like $ns_ at 4 "$node_(0) set X_ 28"
-      return pr.ivals[3];
+      result = pr.ivals[3];
       break;
     case 8:   // line like $ns_ at 1 "$node_(0) setdest 2 3 4"
-      return pr.ivals[3];
+      result = pr.ivals[3];
       break;
     default:
-      return -1;
+      result = -1;
     }
+  return result;
 }
 
 // Get node id number in string format
