@@ -132,7 +132,7 @@ BasicEnergyUpdateTest::StateSwitchTest (
   Ptr<BasicRadioEnergyModel> devModel =
     DynamicCast<BasicRadioEnergyModel> (modelList[0]);
   // check pointer
-  NS_TEST_ASSERT_MSG_NE (NULL, devModel, "NULL pointer to device model!");
+  NS_TEST_ASSERT_MSG_NE (0, devModel, "NULL pointer to device model!");
 
   // schedule change of state
   Simulator::Schedule (Seconds (m_timeS),
@@ -315,7 +315,7 @@ BasicEnergyDepletionTest::DepletionTestCase (double simTimeS,
    * the floor here because initial update is at time = 0.
    */
   double tmp = ceil (simTimeS / updateIntervalS);
-  int numOfUpdates = (tmp == 0) ? 1 : tmp;
+  int numOfUpdates = (tmp == 0) ? 1 : static_cast<int> (tmp);
   /*
    * Every update will trigger *all* DeviceEnergyModels to react, therefore the
    * total count should be numOfUpdates * m_numOfModels ^ 2
