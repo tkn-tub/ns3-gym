@@ -2182,6 +2182,12 @@ def register_Ns3SimpleOfdmSendParam_methods(root_module, cls):
     cls.add_constructor([])
     ## simple-ofdm-send-param.h: ns3::simpleOfdmSendParam::simpleOfdmSendParam(ns3::bvec const & fecBlock, uint32_t burstSize, bool isFirstBlock, uint64_t Frequency, ns3::WimaxPhy::ModulationType modulationType, uint8_t direction, double rxPowerDbm) [constructor]
     cls.add_constructor([param('ns3::bvec const &', 'fecBlock'), param('uint32_t', 'burstSize'), param('bool', 'isFirstBlock'), param('uint64_t', 'Frequency'), param('ns3::WimaxPhy::ModulationType', 'modulationType'), param('uint8_t', 'direction'), param('double', 'rxPowerDbm')])
+    ## simple-ofdm-send-param.h: ns3::simpleOfdmSendParam::simpleOfdmSendParam(uint32_t burstSize, bool isFirstBlock, uint64_t Frequency, ns3::WimaxPhy::ModulationType modulationType, uint8_t direction, double rxPowerDbm, ns3::Ptr<ns3::PacketBurst> burst) [constructor]
+    cls.add_constructor([param('uint32_t', 'burstSize'), param('bool', 'isFirstBlock'), param('uint64_t', 'Frequency'), param('ns3::WimaxPhy::ModulationType', 'modulationType'), param('uint8_t', 'direction'), param('double', 'rxPowerDbm'), param('ns3::Ptr< ns3::PacketBurst >', 'burst')])
+    ## simple-ofdm-send-param.h: ns3::Ptr<ns3::PacketBurst> ns3::simpleOfdmSendParam::GetBurst() [member function]
+    cls.add_method('GetBurst', 
+                   'ns3::Ptr< ns3::PacketBurst >', 
+                   [])
     ## simple-ofdm-send-param.h: uint32_t ns3::simpleOfdmSendParam::GetBurstSize() [member function]
     cls.add_method('GetBurstSize', 
                    'uint32_t', 
@@ -4079,6 +4085,11 @@ def register_Ns3WimaxMacToMacHeader_methods(root_module, cls):
                    'uint32_t', 
                    [param('ns3::Buffer::Iterator', 'start')], 
                    is_virtual=True)
+    ## wimax-mac-to-mac-header.h: ns3::TypeId ns3::WimaxMacToMacHeader::GetInstanceTypeId() const [member function]
+    cls.add_method('GetInstanceTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_const=True, is_virtual=True)
     ## wimax-mac-to-mac-header.h: uint32_t ns3::WimaxMacToMacHeader::GetSerializedSize() const [member function]
     cls.add_method('GetSerializedSize', 
                    'uint32_t', 
@@ -4089,6 +4100,11 @@ def register_Ns3WimaxMacToMacHeader_methods(root_module, cls):
                    'uint8_t', 
                    [], 
                    is_const=True)
+    ## wimax-mac-to-mac-header.h: static ns3::TypeId ns3::WimaxMacToMacHeader::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
     ## wimax-mac-to-mac-header.h: void ns3::WimaxMacToMacHeader::Print(std::ostream & os) const [member function]
     cls.add_method('Print', 
                    'void', 
@@ -4099,11 +4115,6 @@ def register_Ns3WimaxMacToMacHeader_methods(root_module, cls):
                    'void', 
                    [param('ns3::Buffer::Iterator', 'start')], 
                    is_const=True, is_virtual=True)
-    ## wimax-mac-to-mac-header.h: ns3::TypeId ns3::WimaxMacToMacHeader::GetInstanceTypeId() const [member function]
-    cls.add_method('GetInstanceTypeId', 
-                   'ns3::TypeId', 
-                   [], 
-                   is_const=True, visibility='private', is_virtual=True)
     return
 
 def register_Ns3WimaxPhy_methods(root_module, cls):
@@ -5515,30 +5526,30 @@ def register_Ns3SimpleOfdmWimaxPhy_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
-    ## simple-ofdm-wimax-phy.h: void ns3::SimpleOfdmWimaxPhy::NotifyRxBegin(ns3::bvec packet) [member function]
+    ## simple-ofdm-wimax-phy.h: void ns3::SimpleOfdmWimaxPhy::NotifyRxBegin(ns3::Ptr<ns3::PacketBurst> burst) [member function]
     cls.add_method('NotifyRxBegin', 
                    'void', 
-                   [param('ns3::bvec', 'packet')])
-    ## simple-ofdm-wimax-phy.h: void ns3::SimpleOfdmWimaxPhy::NotifyRxDrop(ns3::bvec packet) [member function]
+                   [param('ns3::Ptr< ns3::PacketBurst >', 'burst')])
+    ## simple-ofdm-wimax-phy.h: void ns3::SimpleOfdmWimaxPhy::NotifyRxDrop(ns3::Ptr<ns3::PacketBurst> burst) [member function]
     cls.add_method('NotifyRxDrop', 
                    'void', 
-                   [param('ns3::bvec', 'packet')])
-    ## simple-ofdm-wimax-phy.h: void ns3::SimpleOfdmWimaxPhy::NotifyRxEnd(ns3::bvec packet) [member function]
+                   [param('ns3::Ptr< ns3::PacketBurst >', 'burst')])
+    ## simple-ofdm-wimax-phy.h: void ns3::SimpleOfdmWimaxPhy::NotifyRxEnd(ns3::Ptr<ns3::PacketBurst> burst) [member function]
     cls.add_method('NotifyRxEnd', 
                    'void', 
-                   [param('ns3::bvec', 'packet')])
-    ## simple-ofdm-wimax-phy.h: void ns3::SimpleOfdmWimaxPhy::NotifyTxBegin(ns3::bvec packet) [member function]
+                   [param('ns3::Ptr< ns3::PacketBurst >', 'burst')])
+    ## simple-ofdm-wimax-phy.h: void ns3::SimpleOfdmWimaxPhy::NotifyTxBegin(ns3::Ptr<ns3::PacketBurst> burst) [member function]
     cls.add_method('NotifyTxBegin', 
                    'void', 
-                   [param('ns3::bvec', 'packet')])
-    ## simple-ofdm-wimax-phy.h: void ns3::SimpleOfdmWimaxPhy::NotifyTxDrop(ns3::bvec packet) [member function]
+                   [param('ns3::Ptr< ns3::PacketBurst >', 'burst')])
+    ## simple-ofdm-wimax-phy.h: void ns3::SimpleOfdmWimaxPhy::NotifyTxDrop(ns3::Ptr<ns3::PacketBurst> burst) [member function]
     cls.add_method('NotifyTxDrop', 
                    'void', 
-                   [param('ns3::bvec', 'packet')])
-    ## simple-ofdm-wimax-phy.h: void ns3::SimpleOfdmWimaxPhy::NotifyTxEnd(ns3::bvec packet) [member function]
+                   [param('ns3::Ptr< ns3::PacketBurst >', 'burst')])
+    ## simple-ofdm-wimax-phy.h: void ns3::SimpleOfdmWimaxPhy::NotifyTxEnd(ns3::Ptr<ns3::PacketBurst> burst) [member function]
     cls.add_method('NotifyTxEnd', 
                    'void', 
-                   [param('ns3::bvec', 'packet')])
+                   [param('ns3::Ptr< ns3::PacketBurst >', 'burst')])
     ## simple-ofdm-wimax-phy.h: void ns3::SimpleOfdmWimaxPhy::Send(ns3::Ptr<ns3::PacketBurst> burst, ns3::WimaxPhy::ModulationType modulationType, uint8_t direction) [member function]
     cls.add_method('Send', 
                    'void', 
@@ -5568,10 +5579,10 @@ def register_Ns3SimpleOfdmWimaxPhy_methods(root_module, cls):
     cls.add_method('SetTxPower', 
                    'void', 
                    [param('double', 'txPower')])
-    ## simple-ofdm-wimax-phy.h: void ns3::SimpleOfdmWimaxPhy::StartReceive(ns3::bvec const & fecBlock, uint32_t burstSize, bool isFirstBlock, uint64_t frequency, ns3::WimaxPhy::ModulationType modulationType, uint8_t direction, double rxPower) [member function]
+    ## simple-ofdm-wimax-phy.h: void ns3::SimpleOfdmWimaxPhy::StartReceive(uint32_t burstSize, bool isFirstBlock, uint64_t frequency, ns3::WimaxPhy::ModulationType modulationType, uint8_t direction, double rxPower, ns3::Ptr<ns3::PacketBurst> burst) [member function]
     cls.add_method('StartReceive', 
                    'void', 
-                   [param('ns3::bvec const &', 'fecBlock'), param('uint32_t', 'burstSize'), param('bool', 'isFirstBlock'), param('uint64_t', 'frequency'), param('ns3::WimaxPhy::ModulationType', 'modulationType'), param('uint8_t', 'direction'), param('double', 'rxPower')])
+                   [param('uint32_t', 'burstSize'), param('bool', 'isFirstBlock'), param('uint64_t', 'frequency'), param('ns3::WimaxPhy::ModulationType', 'modulationType'), param('uint8_t', 'direction'), param('double', 'rxPower'), param('ns3::Ptr< ns3::PacketBurst >', 'burst')])
     ## simple-ofdm-wimax-phy.h: void ns3::SimpleOfdmWimaxPhy::DoDispose() [member function]
     cls.add_method('DoDispose', 
                    'void', 
@@ -6285,10 +6296,10 @@ def register_Ns3SimpleOfdmWimaxChannel_methods(root_module, cls):
     cls.add_constructor([])
     ## simple-ofdm-wimax-channel.h: ns3::SimpleOfdmWimaxChannel::SimpleOfdmWimaxChannel(ns3::SimpleOfdmWimaxChannel::PropModel propModel) [constructor]
     cls.add_constructor([param('ns3::SimpleOfdmWimaxChannel::PropModel', 'propModel')])
-    ## simple-ofdm-wimax-channel.h: void ns3::SimpleOfdmWimaxChannel::Send(ns3::Time BlockTime, ns3::bvec const & fecBlock, uint32_t burstSize, ns3::Ptr<ns3::WimaxPhy> phy, bool isFirstBlock, uint64_t frequency, ns3::WimaxPhy::ModulationType modulationType, uint8_t direction, double txPowerDbm) [member function]
+    ## simple-ofdm-wimax-channel.h: void ns3::SimpleOfdmWimaxChannel::Send(ns3::Time BlockTime, uint32_t burstSize, ns3::Ptr<ns3::WimaxPhy> phy, bool isFirstBlock, bool isLastBlock, uint64_t frequency, ns3::WimaxPhy::ModulationType modulationType, uint8_t direction, double txPowerDbm, ns3::Ptr<ns3::PacketBurst> burts) [member function]
     cls.add_method('Send', 
                    'void', 
-                   [param('ns3::Time', 'BlockTime'), param('ns3::bvec const &', 'fecBlock'), param('uint32_t', 'burstSize'), param('ns3::Ptr< ns3::WimaxPhy >', 'phy'), param('bool', 'isFirstBlock'), param('uint64_t', 'frequency'), param('ns3::WimaxPhy::ModulationType', 'modulationType'), param('uint8_t', 'direction'), param('double', 'txPowerDbm')])
+                   [param('ns3::Time', 'BlockTime'), param('uint32_t', 'burstSize'), param('ns3::Ptr< ns3::WimaxPhy >', 'phy'), param('bool', 'isFirstBlock'), param('bool', 'isLastBlock'), param('uint64_t', 'frequency'), param('ns3::WimaxPhy::ModulationType', 'modulationType'), param('uint8_t', 'direction'), param('double', 'txPowerDbm'), param('ns3::Ptr< ns3::PacketBurst >', 'burts')])
     ## simple-ofdm-wimax-channel.h: void ns3::SimpleOfdmWimaxChannel::SetPropagationModel(ns3::SimpleOfdmWimaxChannel::PropModel propModel) [member function]
     cls.add_method('SetPropagationModel', 
                    'void', 
