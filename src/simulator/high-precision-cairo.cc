@@ -38,7 +38,7 @@ NS_LOG_COMPONENT_DEFINE ("HighPrecisionCairo");
   ub = _cairo_int128_to_uint128 (sb);                                   \
   ua = negA ? _cairo_uint128_negate (ua) : ua;                          \
   ub = negB ? _cairo_uint128_negate (ub) : ub;                          \
-  negResult = (negA && !negB) || (!negA && negB);})
+  (negA && !negB) || (!negA && negB);})
 
 void
 HighPrecision::Mul (HighPrecision const &o)
