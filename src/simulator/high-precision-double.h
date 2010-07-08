@@ -35,8 +35,8 @@ class HighPrecision
 {
 public:
   inline HighPrecision ();
-  inline HighPrecision (int64_t value, bool dummy);
-  inline HighPrecision (double value);
+  explicit inline HighPrecision (int64_t value, bool dummy);
+  explicit inline HighPrecision (double value);
 
   inline int64_t GetInteger (void) const;
   inline double GetDouble (void) const;
