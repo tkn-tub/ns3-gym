@@ -27,6 +27,7 @@
 #include "ns3/object.h"
 #include "ns3/config.h"
 #include <math.h>
+#include <sstream>
 
 namespace ns3 {
 
