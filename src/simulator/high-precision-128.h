@@ -44,10 +44,16 @@ public:
   inline void Sub (HighPrecision const &o);
   void Mul (HighPrecision const &o);
   void Div (HighPrecision const &o);
+  void MulByInvert (const HighPrecision &o);
+  static HighPrecision Invert (uint64_t v);
 
   inline int Compare (HighPrecision const &o) const;
   inline static HighPrecision Zero (void);
 private:
+  static uint128_t UmulByInvert (uint128_t a, uint128_t b);
+  static uint128_t Umul (uint128_t a, uint128_t b);
+  static uint128_t Divu (uint128_t a, uint128_t b);
+
   int128_t m_value;
 };
 
