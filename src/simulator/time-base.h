@@ -27,6 +27,43 @@ namespace ns3 {
 /**
  * \ingroup time
  * \brief keep track of global simulation resolution
+ *
+ * This class is the base class for all time-related classes. It controls
+ * the resolution of the underlying time value . The default resolution
+ * is nanoseconds. That is, TimeStep (1).GetNanoSeconds () will return
+ * 1. It is possible to either increase or decrease the resolution and the
+ * code tries really hard to make this easy.
+ *
+ * If your resolution is X (say, nanoseconds) and if you create Time objects 
+ * with a lower resolution (say, picoseconds), don't expect that this 
+ * code will return 1: PicoSeconds (1).GetPicoSeconds (). It will most 
+ * likely return 0 because the Time object has only 64 bits of fractional 
+ * precision which means that PicoSeconds (1) is stored as a 64-bit aproximation
+ * of 1/1000 in the Time object. If you later multiply it again by the exact 
+ * value 1000, the result is unlikely to be 1 exactly. It will be close to
+ * 1 but not exactly 1.
+ * 
+ * In general, it is thus a really bad idea to try to use time objects of a
+ * resolution higher than the global resolution controlled through 
+ * TimeBase::SetResolution. If you do need to use picoseconds, it's thus best
+ * to switch the global resolution to picoseconds to avoid nasty surprises.
+ *
+ * Another important issue to keep in mind is that if you increase the
+ * global resolution, you also implicitely decrease the range of your simulation.
+ * i.e., the global simulation time is stored in a 64 bit integer whose interpretation
+ * will depend on the global resolution so, 2^64 picoseconds which is the maximum
+ * duration of your simulation if the global resolution is picoseconds 
+ * is smaller than 2^64 nanoseconds which is the maximum duration of your simulation
+ * if the global resolution is nanoseconds.
+ *
+ * Finally, don't even think about ever changing the global resolution after
+ * creating Time objects: all Time objects created before the call to SetResolution
+ * will contain values which are not updated to the new resolution. In practice,
+ * the default value for the attributes of many models is indeed calculated
+ * before the main function of the main program enters. Because of this, if you
+ * use one of these models (and it's likely), it's going to be hard to change
+ * the global simulation resolution in a way which gives reasonable results. This
+ * issue has been filed as bug 954 in the ns-3 bugzilla installation.
  */
 class TimeBase
 {
@@ -44,11 +81,52 @@ public:
       FS = 5,
       LAST = 6
     };
+  /**
+   * \param resolution the new resolution to use
+   *
+   * Change the global resolution used to convert all 
+   * user-provided time values in Time objects and Time objects
+   * in user-expected time units.
+   */
   static void SetResolution (enum Unit resolution);
+  /**
+   * \returns the current global resolution.
+   */
   static enum Unit GetResolution (void);
+  /**
+   * \param value to convert into a Time object
+   * \param timeUnit the unit of the value to convert
+   * \return a new Time object
+   *
+   * This method interprets the input value according to the input
+   * unit and constructs a matching Time object.
+   *
+   * \sa FromDouble, ToDouble, ToInteger
+   */
   inline static TimeBase FromInteger (uint64_t value, enum Unit timeUnit);
+  /**
+   * \param value to convert into a Time object
+   * \param timeUnit the unit of the value to convert
+   * \return a new Time object
+   *
+   * \sa FromInteger, ToInteger, ToDouble
+   */
   inline static TimeBase FromDouble (double value, enum Unit timeUnit);
+  /**
+   * \param time a Time object
+   * \param timeUnit the unit of the value to return
+   *
+   * Convert the input time into an integer value according to the requested
+   * time unit.
+   */
   inline static uint64_t ToInteger (const TimeBase &time, enum Unit timeUnit);
+  /**
+   * \param time a Time object
+   * \param timeUnit the unit of the value to return
+   *
+   * Convert the input time into a floating point value according to the requested
+   * time unit.
+   */
   inline static double ToDouble (const TimeBase &time, enum Unit timeUnit);
 
   inline TimeBase ();
