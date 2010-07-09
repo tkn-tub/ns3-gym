@@ -117,7 +117,7 @@ HighPrecision::Invert (uint64_t v)
 int
 HighPrecision::Compare (HighPrecision const &o) const
 {
-  return m_value < o.m_value;
+  return (m_value < o.m_value)?-1:(m_value == o.m_value)?0:1;
 }
 HighPrecision
 HighPrecision::Zero (void)
