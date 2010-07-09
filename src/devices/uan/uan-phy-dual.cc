@@ -132,10 +132,23 @@ UanPhyDual::~UanPhyDual ()
 }
 
 void
+UanPhyDual::Clear ()
+{
+  if (m_phy1)
+    {
+      m_phy1->Clear ();
+      m_phy1 = 0;
+    }
+  if (m_phy2)
+    {
+      m_phy2->Clear ();
+      m_phy2 = 0;
+    }
+}
+void
 UanPhyDual::DoDispose ()
 {
-  m_phy1 = 0;
-  m_phy2 = 0;
+  Clear ();
   UanPhy::DoDispose ();
 }
 

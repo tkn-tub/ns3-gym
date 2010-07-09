@@ -18,30 +18,32 @@
  * Author: Leonard Tracy <lentracy@gmail.com>
  */
 
-#ifndef UANNOISEMODEL_H
-#define UANNOISEMODEL_H
-
-#include "ns3/object.h"
+#include "uan-phy.h"
 
 namespace ns3 {
 
-class UanNoiseModel : public Object
+void
+UanPhyCalcSinr::Clear ()
 {
-public:
-  /**
-   * \param fKhz Frequency in kHz
-   * \returns Noise power in dB re 1uPa/Hz
-   */
-  virtual double GetNoiseDbHz (double fKhz) const = 0;
+}
 
-  /**
-   * Clears all pointer references
-   */
-  virtual void Clear (void);
+void
+UanPhyCalcSinr::DoDispose ()
+{
+  Clear ();
+  Object::DoDispose ();
+}
 
-  virtual void DoDispose (void);
-};
+void
+UanPhyPer::Clear ()
+{
+}
 
-} // namespace ns3
+void
+UanPhyPer::DoDispose ()
+{
+  Clear ();
+  Object::DoDispose ();
+}
 
-#endif // UANNOISEMODEL_H
+} //namespace ns3

@@ -72,6 +72,7 @@ public:
   virtual void SetForwardUpCb (Callback<void, Ptr<Packet>, const UanAddress&> cb);
   virtual void AttachPhy (Ptr<UanPhy> phy);
   virtual Address GetBroadcast (void) const;
+  virtual void Clear (void);
 
   // PHY listeners
   /// Function called by UanPhy object to notify of packet reception
@@ -110,6 +111,8 @@ private:
   EventId m_sendEvent;
   EventId m_txEndEvent;
   State m_state;
+
+  bool m_cleared;
 
   void PhyRxPacketGood (Ptr<Packet> packet, double sinr, UanTxMode mode);
   void PhyRxPacketError (Ptr<Packet> packet, double sinr);

@@ -151,6 +151,7 @@ public:
   virtual void SetForwardUpCb (Callback<void, Ptr<Packet>, const UanAddress&> cb);
   virtual void AttachPhy (Ptr<UanPhy> phy);
   virtual Address GetBroadcast (void) const;
+  virtual void Clear (void);
 
 private:
   enum State {
@@ -179,6 +180,8 @@ private:
 
   uint32_t m_ctsSizeN;
   uint32_t m_ctsSizeG;
+
+  bool m_cleared;
 
   std::list<std::pair <Ptr<Packet>, UanAddress > > m_pktQueue;
   std::list<Reservation> m_resList;

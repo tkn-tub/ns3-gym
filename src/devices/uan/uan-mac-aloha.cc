@@ -35,7 +35,8 @@ namespace ns3
 NS_OBJECT_ENSURE_REGISTERED (UanMacAloha);
 
 UanMacAloha::UanMacAloha ()
-  : UanMac ()
+  : UanMac (),
+    m_cleared (false)
 {
 }
 
@@ -44,9 +45,24 @@ UanMacAloha::~UanMacAloha ()
 }
 
 void
+UanMacAloha::Clear ()
+{
+  if (m_cleared)
+    {
+      return;
+    }
+  m_cleared = true;
+  if (m_phy)
+    {
+      m_phy->Clear ();
+      m_phy = 0;
+    }
+}
+
+void
 UanMacAloha::DoDispose ()
 {
-  m_phy = 0;
+  Clear ();
   UanMac::DoDispose ();
 }
 

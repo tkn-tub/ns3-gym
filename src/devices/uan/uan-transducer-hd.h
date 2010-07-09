@@ -50,6 +50,7 @@ public:
   virtual Ptr<UanChannel> GetChannel (void) const;
   virtual void AddPhy (Ptr<UanPhy>);
   virtual const UanPhyList &GetPhyList (void) const;
+  virtual void Clear (void);
 
 private:
   State m_state;
@@ -58,6 +59,7 @@ private:
   Ptr<UanChannel> m_channel;
   EventId m_endTxEvent;
   Time m_endTxTime;
+  bool m_cleared;
 
   void RemoveArrival (UanPacketArrival arrival);
   void EndTx (void);

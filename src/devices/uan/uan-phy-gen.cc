@@ -352,7 +352,8 @@ UanPhyGen::UanPhyGen ()
     m_txPwrDb (0),
     m_rxThreshDb (0),
     m_ccaThreshDb (0),
-    m_pktRx (0)
+    m_pktRx (0),
+    m_cleared (false)
 {
 
 }
@@ -363,16 +364,51 @@ UanPhyGen::~UanPhyGen ()
 }
 
 void
+UanPhyGen::Clear ()
+{
+  if (m_cleared)
+    {
+      return;
+    }
+  m_cleared = true;
+  m_listeners.clear ();
+  if (m_channel)
+    {
+      m_channel->Clear ();
+      m_channel = 0;
+    }
+  if (m_transducer)
+    {
+      m_transducer->Clear ();
+      m_transducer = 0;
+    }
+  if (m_device)
+    {
+      m_device->Clear ();
+      m_device = 0;
+    }
+  if (m_mac)
+    {
+      m_mac->Clear ();
+      m_mac = 0;
+    }
+  if (m_per)
+    {
+      m_per->Clear ();
+      m_per = 0;
+    }
+  if (m_sinr)
+    {
+      m_sinr->Clear ();
+      m_sinr = 0;
+    }
+  m_pktRx = 0;
+}
+
+void
 UanPhyGen::DoDispose ()
 {
-  m_listeners.clear ();
-  m_channel = 0;
-  m_transducer = 0;
-  m_device = 0;
-  m_mac = 0;
-  m_per = 0;
-  m_sinr = 0;
-  m_pktRx = 0;
+  Clear ();
   UanPhy::DoDispose ();
 }
 

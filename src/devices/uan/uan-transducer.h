@@ -186,6 +186,11 @@ public:
    * \returns List of all Phy's this transducer sends packets to.
    */
   virtual const UanPhyList &GetPhyList (void) const = 0;
+  /**
+   * Clears all pointer references
+   */
+  virtual void Clear (void) = 0;
+
 };
 
 } // namespace ns3

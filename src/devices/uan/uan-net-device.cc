@@ -38,7 +38,8 @@ NS_OBJECT_ENSURE_REGISTERED (UanNetDevice);
 
 UanNetDevice::UanNetDevice ()
   : NetDevice (),
-    m_mtu (64000)
+    m_mtu (64000),
+    m_cleared (false)
 {
 }
 
@@ -47,13 +48,40 @@ UanNetDevice::~UanNetDevice ()
 }
 
 void
+UanNetDevice::Clear ()
+{
+  if (m_cleared)
+    {
+      return;
+    }
+  m_cleared = true;
+  m_node = 0;
+  if (m_channel)
+    {
+      m_channel->Clear ();
+      m_channel = 0;
+    }
+  if (m_mac)
+    {
+      m_mac->Clear ();
+      m_mac = 0;
+    }
+  if (m_phy)
+    {
+      m_phy->Clear ();
+      m_phy = 0;
+    }
+  if (m_trans)
+    {
+      m_trans->Clear ();
+      m_trans = 0;
+    }
+}
+
+void
 UanNetDevice::DoDispose ()
 {
-  m_node = 0;
-  m_channel = 0;
-  m_mac = 0;
-  m_phy = 0;
-  m_trans = 0;
+  Clear ();
   NetDevice::DoDispose ();
 }
 

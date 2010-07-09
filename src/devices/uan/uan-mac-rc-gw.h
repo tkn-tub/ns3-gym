@@ -72,6 +72,7 @@ public:
   virtual void SetForwardUpCb (Callback<void, Ptr<Packet>, const UanAddress&> cb);
   virtual void AttachPhy (Ptr<UanPhy> phy);
   virtual Address GetBroadcast (void) const;
+  virtual void Clear (void);
 
 private:
   enum State {
@@ -124,6 +125,8 @@ private:
 
   std::map<UanAddress, Request> m_requests;
   std::set<std::pair<Time, UanAddress> > m_sortedRes;
+
+  bool m_cleared;
 
   TracedCallback<Ptr<const Packet>, UanTxMode > m_rxLogger;
 

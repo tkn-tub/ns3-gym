@@ -35,7 +35,8 @@ NS_OBJECT_ENSURE_REGISTERED (UanTransducerHd);
 UanTransducerHd::UanTransducerHd ()
   : UanTransducer (),
     m_state (RX),
-    m_endTxTime (Seconds (0))
+    m_endTxTime (Seconds (0)),
+    m_cleared (false)
 {
 }
 
@@ -44,13 +45,27 @@ UanTransducerHd::~UanTransducerHd ()
 }
 
 void
-UanTransducerHd::DoDispose ()
+UanTransducerHd::Clear ()
 {
-  m_channel = 0;
+  if (m_cleared)
+    {
+      return;
+    }
+  m_cleared = true;
+  if (m_channel)
+    {
+      m_channel->Clear ();
+      m_channel = 0;
+    }
+
   UanPhyList::iterator it = m_phyList.begin ();
   for (; it != m_phyList.end (); it++)
     {
-      *it = 0;
+      if (*it)
+        {
+          (*it)->Clear ();
+          *it = 0;
+        }
     }
   ArrivalList::iterator ait = m_arrivalList.begin ();
   for (; ait != m_arrivalList.end (); ait++)
@@ -60,7 +75,12 @@ UanTransducerHd::DoDispose ()
   m_phyList.clear ();
   m_arrivalList.clear ();
   m_endTxEvent.Cancel ();
+}
 
+void
+UanTransducerHd::DoDispose ()
+{
+  Clear ();
   UanTransducer::DoDispose ();
 }
 TypeId

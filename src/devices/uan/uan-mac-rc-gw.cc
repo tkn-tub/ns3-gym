@@ -54,7 +54,8 @@ operator < (UanAddress &a, UanAddress &b)
 UanMacRcGw::UanMacRcGw ()
   : UanMac (),
     m_state (IDLE),
-    m_currentRateNum (0)
+    m_currentRateNum (0),
+    m_cleared (false)
 {
   UanHeaderCommon ch;
   UanHeaderRcRts rts;
@@ -75,8 +76,18 @@ UanMacRcGw::~UanMacRcGw ()
 }
 
 void
-UanMacRcGw::DoDispose ()
+UanMacRcGw::Clear ()
 {
+  if (m_cleared)
+    {
+      return;
+    }
+  m_cleared = true;
+  if (m_phy)
+    {
+      m_phy->Clear ();
+      m_phy = 0;
+    }
   m_propDelay.clear ();
   std::map<UanAddress, AckData>::iterator it = m_ackData.begin ();
   for (; it != m_ackData.end (); it++)
@@ -86,6 +97,12 @@ UanMacRcGw::DoDispose ()
   m_ackData.clear ();
   m_requests.clear ();
   m_sortedRes.clear ();
+}
+
+void
+UanMacRcGw::DoDispose ()
+{
+  Clear ();
   UanMac::DoDispose ();
 }
 TypeId

@@ -147,9 +147,11 @@ Experiment::CreateDualModes (uint32_t fc)
 }
 
 uint32_t
-Experiment::Run (UanHelper &uan, uint32_t param)
+Experiment::Run (uint32_t param)
 {
 
+  UanHelper uan;
+  
   m_bytesTotal=0;
 
   uint32_t nNodes;
@@ -165,6 +167,10 @@ Experiment::Run (UanHelper &uan, uint32_t param)
       a = param;
     }
   Time pDelay = Seconds((double) m_maxRange / 1500.0);
+
+  uan.SetPhy ("ns3::UanPhyDual",
+              "SupportedModesPhy1", UanModesListValue (m_dataModes),
+              "SupportedModesPhy2", UanModesListValue (m_controlModes));
 
   uan.SetMac ("ns3::UanMacRcGw",
               "NumberOfRates", UintegerValue (m_numRates),
@@ -241,12 +247,6 @@ Experiment::Run (UanHelper &uan, uint32_t param)
   sinkSocket->SetRecvCallback (MakeCallback (&Experiment::ReceivePacket, this));
 
   Simulator::Stop (m_simTime + Seconds(0.6));
-
-  chan = 0;
-  sinkNode = 0;
-  sinkSocket = 0;
-  pos = 0;
-
   Simulator::Run ();
   Simulator::Destroy ();
 
@@ -279,15 +279,12 @@ main(int argc, char *argv[])
 
   exp.CreateDualModes (12000);
 
-  UanHelper uan;
-  uan.SetPhy ("ns3::UanPhyDual",
-              "SupportedModesPhy1", UanModesListValue (exp.m_dataModes),
-              "SupportedModesPhy2", UanModesListValue (exp.m_controlModes));
+;
 
   Gnuplot2dDataset ds;
   for (uint32_t param=exp.m_simMin; param<=exp.m_simMax; param += exp.m_simStep)
     {
-      uint32_t bytesRx = exp.Run (uan, param);
+      uint32_t bytesRx = exp.Run (param);
       NS_LOG_DEBUG ("param=" << param << ":  Received " << bytesRx << " bytes at sink");
 
       double util = bytesRx*8.0/(exp.m_simTime.GetSeconds ()*exp.m_totalRate);

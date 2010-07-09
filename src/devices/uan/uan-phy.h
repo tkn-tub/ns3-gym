@@ -60,6 +60,13 @@ public:
                              const UanTransducer::ArrivalList &arrivalList
                              ) const = 0;
   /**
+   * Clears all pointer references
+   */
+  virtual void Clear (void);
+
+  virtual void DoDispose (void);
+
+  /**
    * \param db dB value
    * \returns kilopascals 
    * \brief Converts dB re 1 uPa to kilopascals
@@ -77,6 +84,7 @@ public:
   {
     return 10 * log10 (kp);
   }
+  
 };
 
 /**
@@ -96,6 +104,12 @@ public:
    * \returns Probability of packet error
    */
   virtual double CalcPer (Ptr<Packet> pkt, double sinrDb, UanTxMode mode) = 0;
+  /**
+   * Clears all pointer references
+   */
+  virtual void Clear (void);
+
+  virtual void DoDispose (void);
 };
 
 
@@ -334,6 +348,11 @@ public:
    * \returns Packet currently being received in PHY
    */
   virtual Ptr<Packet> GetPacketRx (void) const = 0;
+
+  /**
+   * Clears all pointer references
+   */
+  virtual void Clear (void) = 0;
 };
 
 }

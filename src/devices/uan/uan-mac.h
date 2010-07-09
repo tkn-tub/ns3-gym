@@ -84,6 +84,11 @@ public:
    */
   virtual Address GetBroadcast (void) const = 0;
 
+  /**
+   * Clears all pointer references
+   */
+  virtual void Clear (void) = 0;
+
 };
 
 }

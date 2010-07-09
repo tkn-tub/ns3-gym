@@ -114,6 +114,7 @@ public:
   virtual Ptr<UanTransducer> GetTransducer (void);
   virtual uint32_t GetNModes (void);
   virtual UanTxMode GetMode (uint32_t n);
+  virtual void Clear (void);
 
   /**
    * /returns True if Phy1 is Idle

@@ -94,10 +94,16 @@ public:
    */
   double GetNoiseDbHz (double fKhz);
 
+  /**
+   * Clears all pointer references
+   */
+  void Clear (void);
+
 private:
   UanDeviceList m_devList;
   Ptr<UanPropModel> m_prop;
   Ptr<UanNoiseModel> m_noise;
+  bool m_cleared;
 
   void SendUp (uint32_t i, Ptr<Packet> packet, double rxPowerDb, UanTxMode txMode, UanPdp pdp);
 protected:

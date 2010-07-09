@@ -336,4 +336,16 @@ UanPdp::CreateImpulsePdp (void)
   return pdp;
 }
 
+void
+UanPropModel::Clear (void)
+{
+}
+
+void
+UanPropModel::DoDispose (void)
+{
+  Clear ();
+  Object::DoDispose ();
+}
+
 }

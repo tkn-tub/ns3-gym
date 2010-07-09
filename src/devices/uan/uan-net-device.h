@@ -90,6 +90,11 @@ public:
    */
   void SetTransducer (Ptr<UanTransducer> trans);
 
+  /**
+   * Clears all pointer references
+   */
+  void Clear (void);
+
   // Purely virtual functions from base class
   virtual void SetIfIndex (const uint32_t index);
   virtual uint32_t GetIfIndex (void) const;
@@ -134,6 +139,9 @@ private:
 
   TracedCallback<Ptr<const Packet>, UanAddress> m_rxLogger;
   TracedCallback<Ptr<const Packet>, UanAddress> m_txLogger;
+
+  bool m_cleared;
+
 protected:
   virtual void DoDispose ();
 };

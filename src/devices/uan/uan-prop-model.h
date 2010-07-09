@@ -241,6 +241,12 @@ public:
    */
   virtual Time GetDelay (Ptr<MobilityModel> a, Ptr<MobilityModel> b, UanTxMode mode) = 0;
 
+  /**
+   * Clears all pointer references
+   */
+  virtual void Clear (void);
+  
+  virtual void DoDispose (void);
 };
 
 }

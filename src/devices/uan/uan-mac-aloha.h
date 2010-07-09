@@ -54,11 +54,13 @@ public:
   virtual void SetForwardUpCb (Callback<void, Ptr<Packet>, const UanAddress& > cb);
   virtual void AttachPhy (Ptr<UanPhy> phy);
   virtual Address GetBroadcast (void) const;
+  virtual void Clear (void);
 
 private:
   UanAddress m_address;
   Ptr<UanPhy> m_phy;
   Callback<void, Ptr<Packet>, const UanAddress& > m_forUpCb;
+  bool m_cleared;
 
   /**
    * \brief Receive packet from lower layer (passed to PHY as callback)

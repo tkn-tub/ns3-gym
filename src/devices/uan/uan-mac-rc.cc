@@ -156,7 +156,8 @@ UanMacRc::UanMacRc ()
     m_state (UNASSOCIATED),
     m_rtsBlocked (false),
     m_currentRate (10),
-    m_frameNo (0)
+    m_frameNo (0),
+    m_cleared (false)
 {
   UanHeaderCommon ch;
   UanHeaderRcCts ctsh;
@@ -171,9 +172,18 @@ UanMacRc::~UanMacRc ()
 }
 
 void
-UanMacRc::DoDispose ()
+UanMacRc::Clear ()
 {
-  m_phy = 0;
+  if (m_cleared)
+    {
+      return;
+    }
+  m_cleared = true;
+  if (m_phy)
+    {
+      m_phy->Clear ();
+      m_phy = 0;
+    }
   std::list<std::pair <Ptr<Packet>, UanAddress > >::iterator it;
   for (it = m_pktQueue.begin (); it != m_pktQueue.end (); it++)
     {
@@ -183,7 +193,12 @@ UanMacRc::DoDispose ()
   m_resList.clear ();
   m_startAgain.Cancel ();
   m_rtsEvent.Cancel ();
-  
+}
+
+void
+UanMacRc::DoDispose ()
+{
+  Clear ();
   UanMac::DoDispose ();
 }
 

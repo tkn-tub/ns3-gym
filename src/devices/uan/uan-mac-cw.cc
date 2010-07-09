@@ -38,7 +38,8 @@ UanMacCw::UanMacCw ()
   : UanMac (),
     m_phy (0),
     m_pktTx (0),
-    m_state (IDLE)
+    m_state (IDLE),
+    m_cleared (false)
 
 {
 }
@@ -48,12 +49,27 @@ UanMacCw::~UanMacCw ()
 }
 
 void
-UanMacCw::DoDispose ()
+UanMacCw::Clear ()
 {
+  if (m_cleared)
+    {
+      return;
+    }
+  m_cleared = true;
   m_pktTx = 0;
-  m_phy = 0;
+  if (m_phy)
+    {
+      m_phy->Clear ();
+      m_phy = 0;
+    }
   m_sendEvent.Cancel ();
   m_txEndEvent.Cancel ();
+}  
+
+void
+UanMacCw::DoDispose ()
+{
+  Clear ();
   UanMac::DoDispose ();
 }
 

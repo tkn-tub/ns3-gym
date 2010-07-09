@@ -57,7 +57,7 @@ public:
                         bool upperblock,
                         std::string name);
   void CreateDualModes (uint32_t fc);
-  uint32_t Run (UanHelper &uan, uint32_t param);
+  uint32_t Run (uint32_t param);
 
   Experiment();
 

@@ -195,6 +195,7 @@ public:
   virtual uint32_t GetNModes (void);
   virtual UanTxMode GetMode (uint32_t n);
   virtual Ptr<Packet> GetPacketRx (void) const;
+  virtual void Clear (void);
 
 private:
   typedef std::list<UanPhyListener *> ListenerList;
@@ -224,6 +225,8 @@ private:
   Time m_pktRxArrTime;
   UanPdp m_pktRxPdp;
   UanTxMode m_pktRxMode;
+
+  bool m_cleared;
 
   TracedCallback<Ptr<const Packet>, double, UanTxMode > m_rxOkLogger;
   TracedCallback<Ptr<const Packet>, double, UanTxMode > m_rxErrLogger;

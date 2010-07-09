@@ -65,25 +65,55 @@ UanChannel::GetTypeId ()
 
 UanChannel::UanChannel ()
   : Channel (),
-    m_prop (0)
+    m_prop (0),
+    m_cleared (false)
 {
 }
 
 UanChannel::~UanChannel ()
 {
 }
+
 void
-UanChannel::DoDispose ()
+UanChannel::Clear ()
 {
+  if (m_cleared)
+    {
+      return;
+    }
+  m_cleared = true;
   UanDeviceList::iterator it = m_devList.begin ();
   for (; it != m_devList.end (); it++)
     {
-      it->first = 0;
-      it->second = 0;
+      if (it->first)
+        {
+          it->first->Clear ();
+          it->first = 0;
+        }
+      if (it->second)
+        {
+          it->second->Clear ();
+          it->second = 0;
+        }
     }
   m_devList.clear ();
-  m_prop = 0;
-  m_noise = 0;
+  if (m_prop)
+    {
+      m_prop->Clear ();
+      m_prop = 0;
+    }
+  if (m_noise)
+    {
+      m_noise->Clear ();
+      m_noise = 0;
+    }
+      
+}
+
+void
+UanChannel::DoDispose ()
+{
+  Clear ();
   Channel::DoDispose ();
 }
 void
