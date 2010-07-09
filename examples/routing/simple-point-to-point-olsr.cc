@@ -29,8 +29,7 @@
 //   n1
 //
 // - all links are point-to-point links with indicated one-way BW/delay
-// - CBR/UDP flows from n0 to n3, and from n3 to n1
-// - FTP/TCP flow from n0 to n3, starting at time 1.2 to time 1.35 sec.
+// - CBR/UDP flows from n0 to n4, and from n3 to n1
 // - UDP packet size of 210 bytes, with per-packet interval 0.00375 sec.
 //   (i.e., DataRate of 448,000 bps)
 // - DropTail queues 
@@ -48,7 +47,7 @@
 
 using namespace ns3;
 
-NS_LOG_COMPONENT_DEFINE ("SimpleGlobalRoutingExample");
+NS_LOG_COMPONENT_DEFINE ("SimplePointToPointOlsrExample");
 
 int 
 main (int argc, char *argv[])
@@ -123,7 +122,7 @@ main (int argc, char *argv[])
   Ipv4InterfaceContainer i34 = ipv4.Assign (nd34);
 
   // Create the OnOff application to send UDP datagrams of size
-  // 210 bytes at a rate of 448 Kb/s
+  // 210 bytes at a rate of 448 Kb/s from n0 to n4
   NS_LOG_INFO ("Create Applications.");
   uint16_t port = 9;   // Discard port (RFC 863)
 
