@@ -27,7 +27,6 @@
 #include <math.h>
 #include <ostream>
 #include "high-precision.h"
-#include "time-base.h"
 
 namespace ns3 {
 
@@ -82,150 +81,135 @@ namespace ns3 {
  *  - \ref ns3-Time-Max ns3::Max
  *  - \ref ns3-Time-Min ns3::Min
  */
-template <int N>
-class TimeUnit : public TimeBase
-{
-public:
-  explicit inline TimeUnit (const HighPrecision &data)
-    : TimeBase (data)
-  {}
-};
-
-template <int N>
-bool
-operator == (TimeUnit<N> const &lhs, TimeUnit<N> const &rhs)
-{
-  return lhs.GetHighPrecision ().Compare (rhs.GetHighPrecision ()) == 0;
-}
-template <int N>
-bool
-operator != (TimeUnit<N> const &lhs, TimeUnit<N> const &rhs)
-{
-  return lhs.GetHighPrecision ().Compare (rhs.GetHighPrecision ()) != 0;
-}
-template <int N>
-bool
-operator <= (TimeUnit<N> const &lhs, TimeUnit<N> const &rhs)
-{
-  return lhs.GetHighPrecision ().Compare (rhs.GetHighPrecision ()) <= 0;
-}
-template <int N>
-bool
-operator >= (TimeUnit<N> const &lhs, TimeUnit<N> const &rhs)
-{
-  return lhs.GetHighPrecision ().Compare (rhs.GetHighPrecision ()) >= 0;
-}
-template <int N>
-bool
-operator < (TimeUnit<N> const &lhs, TimeUnit<N> const &rhs)
-{
-  return lhs.GetHighPrecision ().Compare (rhs.GetHighPrecision ()) < 0;
-}
-template <int N>
-bool
-operator > (TimeUnit<N> const &lhs, TimeUnit<N> const &rhs)
-{
-  return lhs.GetHighPrecision ().Compare (rhs.GetHighPrecision ()) > 0;
-}
-template <int N>
-TimeUnit<N> operator + (TimeUnit<N> const &lhs, TimeUnit<N> const &rhs)
-{
-  HighPrecision retval = lhs.GetHighPrecision ();
-  retval.Add (rhs.GetHighPrecision ());
-  return TimeUnit<N> (retval);
-}
-template <int N>
-TimeUnit<N> operator - (TimeUnit<N> const &lhs, TimeUnit<N> const &rhs)
-{
-  HighPrecision retval = lhs.GetHighPrecision ();
-  retval.Sub (rhs.GetHighPrecision ());
-  return TimeUnit<N> (retval);
-}
-template <int N1, int N2>
-TimeUnit<N1 + N2> operator * (TimeUnit<N1> const &lhs, TimeUnit<N2> const &rhs)
-{
-  HighPrecision retval = lhs.GetHighPrecision ();
-  retval.Mul (rhs.GetHighPrecision ());
-  return TimeUnit<N1 + N2> (retval);
-}
-template <int N1, int N2>
-TimeUnit<N1 - N2> operator / (TimeUnit<N1> const &lhs, TimeUnit<N2> const &rhs)
-{
-  NS_ASSERT (rhs.GetHighPrecision ().GetDouble () != 0);
-  HighPrecision retval = lhs.GetHighPrecision ();
-  retval.Div (rhs.GetHighPrecision ());
-  return TimeUnit<N1 - N2> (retval);
-}
-template <int N>
-TimeUnit<N> &operator += (TimeUnit<N> &lhs, TimeUnit<N> const &rhs)
-{
-  HighPrecision *lhsv = lhs.PeekHighPrecision ();
-  lhsv->Add (rhs.GetHighPrecision ());
-  return lhs;
-}
-template <int N>
-TimeUnit<N> &operator -= (TimeUnit<N> &lhs, TimeUnit<N> const &rhs)
-{
-  HighPrecision *lhsv = lhs.PeekHighPrecision ();
-  lhsv->Sub (rhs.GetHighPrecision ());
-  return lhs;
-}
-
-
 /**
- * \anchor ns3-Time-Abs
- * \relates ns3::TimeUnit
- * \param time the input value
- * \returns the absolute value of the input value.
+ * \ingroup time
+ * \brief keep track of time values and allow control of global simulation resolution
+ *
+ * This class defines all the classic C++ arithmetic
+ * operators +, -, *, /, and all the classic comparison operators:
+ * ==, !=, <, >, <=, >=. It is thus easy to add, substract, or
+ * multiply multiple Time objects.
+ *
+ * The ns3::Scalar, ns3::TimeSquare, and ns3::TimeInvert classes
+ * are backward-compatibility aliases for ns3::Time.
+ *
+ * For example:
+ * \code
+ * Time t1 = Seconds (10.0);
+ * Time t2 = Seconds (10.0);
+ * Time t3 = t1 * t2;
+ * Time t4 = t1 / t2;
+ * Time t5 = t3 * t1;
+ * Time t6 = t1 / t5;
+ * Time t7 = t3;
+ * \endcode
+ *
+ * You can also use the following non-member functions to manipulate
+ * any of these ns3::Time object:
+ *  - \ref ns3-Time-Abs ns3::Abs
+ *  - \ref ns3-Time-Max ns3::Max
+ *  - \ref ns3-Time-Min ns3::Min
+ *
+ * This class also controls
+ * the resolution of the underlying time value . The default resolution
+ * is nanoseconds. That is, TimeStep (1).GetNanoSeconds () will return
+ * 1. It is possible to either increase or decrease the resolution and the
+ * code tries really hard to make this easy.
+ *
+ * If your resolution is X (say, nanoseconds) and if you create Time objects 
+ * with a lower resolution (say, picoseconds), don't expect that this 
+ * code will return 1: PicoSeconds (1).GetPicoSeconds (). It will most 
+ * likely return 0 because the Time object has only 64 bits of fractional 
+ * precision which means that PicoSeconds (1) is stored as a 64-bit aproximation
+ * of 1/1000 in the Time object. If you later multiply it again by the exact 
+ * value 1000, the result is unlikely to be 1 exactly. It will be close to
+ * 1 but not exactly 1.
+ * 
+ * In general, it is thus a really bad idea to try to use time objects of a
+ * resolution higher than the global resolution controlled through 
+ * TimeBase::SetResolution. If you do need to use picoseconds, it's thus best
+ * to switch the global resolution to picoseconds to avoid nasty surprises.
+ *
+ * Another important issue to keep in mind is that if you increase the
+ * global resolution, you also implicitely decrease the range of your simulation.
+ * i.e., the global simulation time is stored in a 64 bit integer whose interpretation
+ * will depend on the global resolution so, 2^64 picoseconds which is the maximum
+ * duration of your simulation if the global resolution is picoseconds 
+ * is smaller than 2^64 nanoseconds which is the maximum duration of your simulation
+ * if the global resolution is nanoseconds.
+ *
+ * Finally, don't even think about ever changing the global resolution after
+ * creating Time objects: all Time objects created before the call to SetResolution
+ * will contain values which are not updated to the new resolution. In practice,
+ * the default value for the attributes of many models is indeed calculated
+ * before the main function of the main program enters. Because of this, if you
+ * use one of these models (and it's likely), it's going to be hard to change
+ * the global simulation resolution in a way which gives reasonable results. This
+ * issue has been filed as bug 954 in the ns-3 bugzilla installation.
  */
-template <int N>
-TimeUnit<N> Abs (TimeUnit<N> const &time)
+class Time
 {
-  return TimeUnit<N> (Abs (time.GetHighPrecision ()));
-}
-/**
- * \anchor ns3-Time-Max
- * \relates ns3::TimeUnit
- * \param ta the first value
- * \param tb the seconds value
- * \returns the max of the two input values.
- */
-template <int N>
-TimeUnit<N> Max (TimeUnit<N> const &ta, TimeUnit<N> const &tb)
-{
-  HighPrecision a = ta.GetHighPrecision ();
-  HighPrecision b = tb.GetHighPrecision ();
-  return TimeUnit<N> (Max (a, b));
-}
-/**
- * \anchor ns3-Time-Min
- * \relates ns3::TimeUnit
- * \param ta the first value
- * \param tb the seconds value
- * \returns the min of the two input values.
- */
-template <int N>
-TimeUnit<N> Min (TimeUnit<N> const &ta, TimeUnit<N> const &tb)
-{
-  HighPrecision a = ta.GetHighPrecision ();
-  HighPrecision b = tb.GetHighPrecision ();
-  return TimeUnit<N> (Min (a, b));
-}
-
-// Explicit instantiation of the TimeUnit template for N=1, with a few
-// additional methods that should not be available for N!=1
-// \class TimeUnit<1>
-
-class TimeValue;
-
-template <>
-class TimeUnit<1> : public TimeBase
-{
-  // -*- New methods -*-
 public:
   /**
+   * The unit to use to interpret a number representing time
+   */
+  enum Unit
+    {
+      S  = 0,
+      MS = 1,
+      US = 2,
+      NS = 3,
+      PS = 4,
+      FS = 5,
+      LAST = 6
+    };
+
+  inline Time &operator = (const Time &o)
+  {
+    m_data = o.m_data;
+    return *this;
+  }
+  inline Time ()
+    : m_data ()
+  {}
+  inline Time(const Time &o)
+    : m_data (o.m_data)
+  {}
+  explicit inline Time (const HighPrecision &data)
+    : m_data (data)
+  {}
+  inline Time (double v)
+    : m_data (HighPrecision (v))
+  {}
+  inline Time (int64_t v)
+    : m_data (HighPrecision (v, false))
+  {}
+  inline Time (uint64_t v)
+    : m_data (HighPrecision (v, false))
+  {}
+  inline Time (int32_t v)
+    : m_data (HighPrecision (v, false))
+  {}
+  inline Time (uint32_t v)
+    : m_data (HighPrecision (v, false))
+  {}
+  inline Time (int16_t v)
+    : m_data (HighPrecision (v, false))
+  {}
+  inline Time (uint16_t v)
+    : m_data (HighPrecision (v, false))
+  {}
+  inline Time (int8_t v)
+    : m_data (HighPrecision (v, false))
+  {}
+  inline Time (uint8_t v)
+    : m_data (HighPrecision (v, false))
+  {}
+
+
+  /**
    * \brief String constructor
-   * Construct TimeUnit<1> object from common time expressions like "
+   * Construct Time object from common time expressions like "
    * 1ms" or "10s".  Supported units include:
    * - s  (seconds)
    * - ms (milliseconds)
@@ -237,9 +221,66 @@ public:
    * There can be no white space between the numerical portion
    * and the units.  Any otherwise malformed string causes a fatal error to
    * occur.
-   * \param s The string to parse into a TimeUnit<1>
+   * \param s The string to parse into a Time
    */
-  TimeUnit<1> (const std::string & s);
+  Time (const std::string & s);
+
+  /**
+   * \return true if the time is zero, false otherwise.
+   */
+  inline bool IsZero (void) const
+  {
+    return m_data.Compare (HighPrecision::Zero ()) == 0;
+  }
+  /**
+   * \return true if the time is negative or zero, false otherwise.
+   */
+  inline bool IsNegative (void) const
+  {
+    return m_data.Compare (HighPrecision::Zero ()) <= 0;
+  }
+  /**
+   * \return true if the time is positive or zero, false otherwise.
+   */
+  inline bool IsPositive (void) const
+  {
+    return m_data.Compare (HighPrecision::Zero ()) >= 0;
+  }
+  /**
+   * \return true if the time is strictly negative, false otherwise.
+   */
+  inline bool IsStrictlyNegative (void) const
+  {
+    return m_data.Compare (HighPrecision::Zero ()) < 0;
+  }
+  /**
+   * \return true if the time is strictly positive, false otherwise.
+   */
+  inline bool IsStrictlyPositive (void) const
+  {
+    return m_data.Compare (HighPrecision::Zero ()) > 0;
+  }
+
+  inline int Compare (const Time &o) const
+  {
+    return m_data.Compare (o.m_data);
+  }
+
+  /**
+   * This is really an internal method exported for the needs of
+   * the implementation. Please, Do not try to use this method, ever.
+   *
+   * \return the ns3::HighPrecision object which holds the value
+   *         stored in this instance of Time type.
+   */
+  inline HighPrecision const &GetHighPrecision (void) const
+  {
+    return m_data;
+  }
+  inline HighPrecision *PeekHighPrecision (void)
+  {
+    return &m_data;
+  }
 
   /**
    * \returns an approximation in seconds of the time stored in this
@@ -247,7 +288,7 @@ public:
    */
   inline double GetSeconds (void) const
   {
-    return TimeBase::ToDouble (*this, TimeBase::S);
+    return ToDouble (*this, Time::S);
   }
 
   /**
@@ -256,7 +297,7 @@ public:
    */
   inline int64_t GetMilliSeconds (void) const
   {
-    return TimeBase::ToInteger (*this, TimeBase::MS);
+    return ToInteger (*this, Time::MS);
   }
   /**
    * \returns an approximation in microseconds of the time stored in this
@@ -264,7 +305,7 @@ public:
    */
   inline int64_t GetMicroSeconds (void) const
   {
-    return TimeBase::ToInteger (*this, TimeBase::US);
+    return ToInteger (*this, Time::US);
   }
   /**
    * \returns an approximation in nanoseconds of the time stored in this
@@ -272,7 +313,7 @@ public:
    */
   inline int64_t GetNanoSeconds (void) const
   {
-    return TimeBase::ToInteger (*this, TimeBase::NS);
+    return ToInteger (*this, Time::NS);
   }
   /**
    * \returns an approximation in picoseconds of the time stored in this
@@ -280,7 +321,7 @@ public:
    */
   inline int64_t GetPicoSeconds (void) const
   {
-    return TimeBase::ToInteger (*this, TimeBase::PS);
+    return ToInteger (*this, Time::PS);
   }
   /**
    * \returns an approximation in femtoseconds of the time stored in this
@@ -288,7 +329,7 @@ public:
    */
   inline int64_t GetFemtoSeconds (void) const
   {
-    return TimeBase::ToInteger (*this, TimeBase::FS);
+    return ToInteger (*this, Time::FS);
   }
   /**
    * \returns an approximation of the time stored in this
@@ -296,86 +337,270 @@ public:
    */
   inline int64_t GetTimeStep (void) const
   {
-    int64_t timeValue = GetHighPrecision ().GetInteger ();
+    int64_t timeValue = m_data.GetInteger ();
     return timeValue;
   }
-  inline TimeUnit ()
-    : TimeBase () {}
-  inline TimeUnit (const TimeBase &o)
-    : TimeBase (o) {}
-  explicit inline TimeUnit<1> (const HighPrecision &o)
-    : TimeBase (o) {}
+  inline double GetDouble (void) const
+  {
+    return m_data.GetDouble ();
+  }
+  inline int64_t GetInteger (void) const
+  {
+    return GetTimeStep ();
+  }
+
+
+  /**
+   * \param resolution the new resolution to use
+   *
+   * Change the global resolution used to convert all 
+   * user-provided time values in Time objects and Time objects
+   * in user-expected time units.
+   */
+  static void SetResolution (enum Unit resolution);
+  /**
+   * \returns the current global resolution.
+   */
+  static enum Unit GetResolution (void);
+  /**
+   * \param value to convert into a Time object
+   * \param timeUnit the unit of the value to convert
+   * \return a new Time object
+   *
+   * This method interprets the input value according to the input
+   * unit and constructs a matching Time object.
+   *
+   * \sa FromDouble, ToDouble, ToInteger
+   */
+  inline static Time FromInteger (uint64_t value, enum Unit timeUnit)
+  {
+    struct Information *info = PeekInformation (timeUnit);
+    if (info->fromMul)
+      {
+        value *= info->factor;
+        return Time (HighPrecision (value, false));
+      }
+    return From (HighPrecision (value, false), timeUnit);
+  }
+  /**
+   * \param value to convert into a Time object
+   * \param timeUnit the unit of the value to convert
+   * \return a new Time object
+   *
+   * \sa FromInteger, ToInteger, ToDouble
+   */
+  inline static Time FromDouble (double value, enum Unit timeUnit)
+  {
+    return From (HighPrecision (value), timeUnit);
+  }
+  /**
+   * \param time a Time object
+   * \param timeUnit the unit of the value to return
+   *
+   * Convert the input time into an integer value according to the requested
+   * time unit.
+   */
+  inline static uint64_t ToInteger (const Time &time, enum Unit timeUnit)
+  {
+    struct Information *info = PeekInformation (timeUnit);
+    uint64_t v = time.m_data.GetInteger ();
+    if (info->toMul)
+      {
+        v *= info->factor;
+      }
+    else
+      {
+        v /= info->factor; 
+      }
+    return v;
+  }
+  /**
+   * \param time a Time object
+   * \param timeUnit the unit of the value to return
+   *
+   * Convert the input time into a floating point value according to the requested
+   * time unit.
+   */
+  inline static double ToDouble (const Time &time, enum Unit timeUnit)
+  {
+    return To (time, timeUnit).GetDouble ();
+  }
+
+private:
+  struct Information
+  {
+    bool toMul;
+    bool fromMul;
+    uint64_t factor;
+    HighPrecision timeTo;
+    HighPrecision timeFrom;
+  };
+  struct Resolution
+  {
+    struct Information info[LAST];
+    enum Time::Unit unit;
+  };
+
+  static inline struct Resolution *PeekResolution (void)
+  {
+    static struct Time::Resolution resolution = GetNsResolution ();
+    return &resolution;
+  }
+  static inline struct Information *PeekInformation (enum Unit timeUnit)
+  {
+    return &(PeekResolution ()->info[timeUnit]);
+  }
+  static inline Time From (HighPrecision tmp, enum Unit timeUnit)
+  {
+    struct Information *info = PeekInformation (timeUnit);
+    if (info->fromMul)
+      {
+        tmp.Mul (info->timeFrom);
+      }
+    else
+      {
+        tmp.MulByInvert (info->timeFrom);
+      }
+    return Time (tmp);
+  }
+  static inline HighPrecision To (const Time &time, enum Unit timeUnit)
+  {
+    struct Information *info = PeekInformation (timeUnit);
+    HighPrecision tmp = time.GetHighPrecision ();
+    if (info->toMul)
+      {
+        tmp.Mul (info->timeTo);
+      }
+    else
+      {
+        tmp.MulByInvert (info->timeTo);
+      }
+    return tmp;
+  }
+
+  static struct Resolution GetNsResolution (void);
+  static void SetResolution (enum Unit unit, struct Resolution *resolution);
+
+  HighPrecision m_data;
 };
 
+inline bool
+operator == (Time const &lhs, Time const &rhs)
+{
+  return lhs.Compare (rhs) == 0;
+}
+inline bool
+operator != (Time const &lhs, Time const &rhs)
+{
+  return lhs.Compare (rhs) != 0;
+}
+inline bool
+operator <= (Time const &lhs, Time const &rhs)
+{
+  return lhs.Compare (rhs) <= 0;
+}
+inline bool
+operator >= (Time const &lhs, Time const &rhs)
+{
+  return lhs.Compare (rhs) >= 0;
+}
+inline bool
+operator < (Time const &lhs, Time const &rhs)
+{
+  return lhs.Compare (rhs) < 0;
+}
+inline bool
+operator > (Time const &lhs, Time const &rhs)
+{
+  return lhs.Compare (rhs) > 0;
+}
+inline Time operator + (Time const &lhs, Time const &rhs)
+{
+  HighPrecision retval = lhs.GetHighPrecision ();
+  retval.Add (rhs.GetHighPrecision ());
+  return Time (retval);
+}
+inline Time operator - (Time const &lhs, Time const &rhs)
+{
+  HighPrecision retval = lhs.GetHighPrecision ();
+  retval.Sub (rhs.GetHighPrecision ());
+  return Time (retval);
+}
+inline Time operator * (Time const &lhs, Time const &rhs)
+{
+  HighPrecision retval = lhs.GetHighPrecision ();
+  retval.Mul (rhs.GetHighPrecision ());
+  return Time (retval);
+}
+inline Time operator / (Time const &lhs, Time const &rhs)
+{
+  NS_ASSERT (rhs.GetHighPrecision ().GetDouble () != 0);
+  HighPrecision retval = lhs.GetHighPrecision ();
+  retval.Div (rhs.GetHighPrecision ());
+  return Time (retval);
+}
+inline Time &operator += (Time &lhs, Time const &rhs)
+{
+  HighPrecision *lhsv = lhs.PeekHighPrecision ();
+  lhsv->Add (rhs.GetHighPrecision ());
+  return lhs;
+}
+inline Time &operator -= (Time &lhs, Time const &rhs)
+{
+  HighPrecision *lhsv = lhs.PeekHighPrecision ();
+  lhsv->Sub (rhs.GetHighPrecision ());
+  return lhs;
+}
+inline Time &operator *= (Time &lhs, Time const &rhs)
+{
+  HighPrecision *lhsv = lhs.PeekHighPrecision ();
+  lhsv->Mul (rhs.GetHighPrecision ());
+  return lhs;
+}
+inline Time &operator /= (Time &lhs, Time const &rhs)
+{
+  HighPrecision *lhsv = lhs.PeekHighPrecision ();
+  lhsv->Div (rhs.GetHighPrecision ());
+  return lhs;
+}
+
+
 /**
- * \brief keep track of seconds.
- *
- * This is an instance of type ns3::TimeUnit<1>: it is
- * the return value of the ns3::Simulator::Now method
- * and is needed for the Simulator::Schedule methods.
- * The precision of the underlying Time unit can be
- * changed with calls to TimeStepPrecision::Set.
- *
- * Time instances can be created through any of the following functions:
- *  - ns3::Seconds
- *  - ns3::MilliSeconds
- *  - ns3::MicroSeconds
- *  - ns3::NanoSeconds
- *  - ns3::PicoSeconds
- *  - ns3::FemtoSeconds
- *  - ns3::Now
- *
- * Time instances can be added, substracted, multipled and divided using
- * the standard C++ operators (if you make sure to obey the rules
- * of the ns3::TimeUnit class template)
- * To scale a Time instance, you can multiply it with an instance of
- * the ns3::Scalar class.
- * Time instances can also be manipulated through the following non-member
- * functions:
- *  - \ref ns3-Time-Abs ns3::Abs
- *  - \ref ns3-Time-Max ns3::Max
- *  - \ref ns3-Time-Min ns3::Min
- *
- * The Time class has the following additional methods not available in
- * the generic TimeUnit template:
- *
- * \code
- * double GetSeconds (void) const;
- * \endcode
- * returns an approximation in seconds of the time stored in this
- *          instance.
- *
- * \code
- * int64_t GetMilliSeconds (void) const;
- * \endcode
- * returns an approximation in milliseconds of the time stored in this
- *          instance.
- *
- * \code
- * int64_t GetMicroSeconds (void) const;
- * \endcode
- * returns an approximation in microseconds of the time stored in this
- *          instance.
- *
- * \code
- * int64_t GetNanoSeconds (void) const;
- * \endcode
- * returns an approximation in nanoseconds of the time stored in this
- *          instance.
- *
- * \code
- * int64_t GetPicoSeconds (void) const;
- * \endcode
- * returns an approximation in picoseconds of the time stored in this
- *          instance.
- *
- * \code
- * int64_t GetFemtoSeconds (void) const;
- * \endcode
- * returns an approximation in femtoseconds of the time stored in this
- *          instance.
+ * \anchor ns3-Time-Abs
+ * \relates ns3::TimeUnit
+ * \param time the input value
+ * \returns the absolute value of the input value.
  */
-typedef TimeUnit<1> Time;
+inline Time Abs (Time const &time)
+{
+  return Time (Abs (time.GetHighPrecision ()));
+}
+/**
+ * \anchor ns3-Time-Max
+ * \relates ns3::TimeUnit
+ * \param ta the first value
+ * \param tb the seconds value
+ * \returns the max of the two input values.
+ */
+inline Time Max (Time const &ta, Time const &tb)
+{
+  HighPrecision a = ta.GetHighPrecision ();
+  HighPrecision b = tb.GetHighPrecision ();
+  return Time (Max (a, b));
+}
+/**
+ * \anchor ns3-Time-Min
+ * \relates ns3::TimeUnit
+ * \param ta the first value
+ * \param tb the seconds value
+ * \returns the min of the two input values.
+ */
+inline Time Min (Time const &ta, Time const &tb)
+{
+  HighPrecision a = ta.GetHighPrecision ();
+  HighPrecision b = tb.GetHighPrecision ();
+  return Time (Min (a, b));
+}
 
 
 std::ostream& operator<< (std::ostream& os, const Time & time);
@@ -393,7 +618,7 @@ std::istream& operator>> (std::istream& is, Time & time);
  */
 inline Time Seconds (double seconds)
 {
-  return TimeBase::FromDouble (seconds, TimeBase::S);
+  return Time::FromDouble (seconds, Time::S);
 }
 
 /**
@@ -408,7 +633,7 @@ inline Time Seconds (double seconds)
  */
 inline Time MilliSeconds (uint64_t ms)
 {
-  return TimeBase::FromInteger (ms, TimeBase::MS);
+  return Time::FromInteger (ms, Time::MS);
 }
 /**
  * \brief create ns3::Time instances in units of microseconds.
@@ -422,7 +647,7 @@ inline Time MilliSeconds (uint64_t ms)
  */
 inline Time MicroSeconds (uint64_t us)
 {
-  return TimeBase::FromInteger (us, TimeBase::US);
+  return Time::FromInteger (us, Time::US);
 }
 /**
  * \brief create ns3::Time instances in units of nanoseconds.
@@ -436,7 +661,7 @@ inline Time MicroSeconds (uint64_t us)
  */
 inline Time NanoSeconds (uint64_t ns)
 {
-  return TimeBase::FromInteger (ns, TimeBase::NS);
+  return Time::FromInteger (ns, Time::NS);
 }
 /**
  * \brief create ns3::Time instances in units of picoseconds.
@@ -450,7 +675,7 @@ inline Time NanoSeconds (uint64_t ns)
  */
 inline Time PicoSeconds (uint64_t ps)
 {
-  return TimeBase::FromInteger (ps, TimeBase::PS);
+  return Time::FromInteger (ps, Time::PS);
 }
 /**
  * \brief create ns3::Time instances in units of femtoseconds.
@@ -464,7 +689,7 @@ inline Time PicoSeconds (uint64_t ps)
  */
 inline Time FemtoSeconds (uint64_t fs)
 {
-  return TimeBase::FromInteger (fs, TimeBase::FS);
+  return Time::FromInteger (fs, Time::FS);
 }
 
 // internal function not publicly documented
@@ -473,51 +698,9 @@ inline Time TimeStep (uint64_t ts)
   return Time (HighPrecision (ts, false));
 }
 
-// Explicit instantiation of the TimeUnit template for N=0, with a few
-// additional methods that should not be available for N != 0
-template <>
-class TimeUnit<0> : public TimeBase
-{
-  // -*- New methods -*-
-public:
-  double GetDouble (void) const;
-  TimeUnit<0> (double scalar);
-  TimeUnit<0> ();
-  TimeUnit<0> (const TimeUnit &o);
-  explicit TimeUnit<0> (const HighPrecision &o);
-};
-
-/**
- * \brief hold scalar values
- *
- * This class is used both to construct scalar values to multiply
- * ns3::Time instances and to hold the return value of
- * an expression which returns a scalar. For example, the
- * following code will output on your terminal 1.5:
- * \code
- * Scalar s0 = Scalar (1.5);
- * Time t1 = Seconds (10.0) * s0;
- * Time t2 = Seconds (10.0) * Scalar (2.5);
- * Scalar s1 = Seconds (15.0) / Seconds (10.0);
- * std::cout << s1.GetDouble () << std::endl;
- * \endcode
- *
- * The Scalar class has the following additional methods not available in
- * the generic TimeUnit template:
- * \code
- * double GetDouble (void) const;
- * \endcode
- * returns the C double contained in the Scalar instance
- *
- * \code
- * Scalar(double scalar);
- * \endcode
- * Constructs a Scalar instance from a C double.
- */
-typedef TimeUnit<0> Scalar;
-
-typedef TimeUnit<-1> TimeInvert;
-typedef TimeUnit<2> TimeSquare;
+typedef Time Scalar;
+typedef Time TimeInvert;
+typedef Time TimeSquare;
 
 /**
  * \class ns3::TimeValue
@@ -525,8 +708,8 @@ typedef TimeUnit<2> TimeSquare;
  */
 
 
-ATTRIBUTE_ACCESSOR_DEFINE (Time);
 ATTRIBUTE_VALUE_DEFINE (Time);
+ATTRIBUTE_ACCESSOR_DEFINE (Time);
 ATTRIBUTE_CHECKER_DEFINE (Time);
 
 } // namespace ns3

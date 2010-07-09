@@ -31,7 +31,7 @@
 
 namespace ns3 {
 
-TimeUnit<1>::TimeUnit (const std::string& s)
+Time::Time (const std::string& s)
 {
   std::string::size_type n = s.find_first_not_of ("0123456789.");
   if (n != std::string::npos)
@@ -82,31 +82,85 @@ TimeUnit<1>::TimeUnit (const std::string& s)
   *this = Time::FromDouble (v, Time::S);
 }
 
+struct Time::Resolution
+Time::GetNsResolution (void)
+{  
+  struct Resolution resolution;
+  SetResolution (Time::NS, &resolution);
+  return resolution;
+}
+void 
+Time::SetResolution (enum Unit resolution)
+{
+  SetResolution (resolution, PeekResolution ());
+}
+void 
+Time::SetResolution (enum Unit unit, struct Resolution *resolution)
+{
+  int8_t power [LAST] = {15, 12, 9, 6, 3, 0};
+  for (int i = 0; i < Time::LAST; i++)
+    {
+      int shift = power[i] - power[(int)unit];
+      uint64_t factor = (uint64_t) pow (10, fabs (shift));
+      struct Information *info = &resolution->info[i];
+      info->factor = factor;
+      if (shift == 0)
+	{
+	  info->timeFrom = HighPrecision (1, false);
+	  info->timeTo = HighPrecision (1, false);
+	  info->toMul = true;
+	  info->fromMul = true;
+	}
+      else if (shift > 0)
+	{
+	  info->timeFrom = HighPrecision (factor, false);
+	  info->timeTo = HighPrecision::Invert (factor);
+	  info->toMul = false;
+	  info->fromMul = true;
+	}
+      else
+	{
+	  NS_ASSERT (shift < 0);
+	  info->timeFrom = HighPrecision::Invert (factor);
+	  info->timeTo = HighPrecision (factor, false);
+	  info->toMul = true;
+	  info->fromMul = false;
+	}
+    }
+  resolution->unit = unit;
+}
+enum Time::Unit
+Time::GetResolution (void)
+{
+  return PeekResolution ()->unit;
+}
+
+
 std::ostream&
 operator<< (std::ostream& os, const Time & time)
 {
   std::string unit;
-  switch (TimeBase::GetResolution ())
+  switch (Time::GetResolution ())
     {
-    case TimeBase::S:
+    case Time::S:
       unit = "s";
       break;
-    case TimeBase::MS:
+    case Time::MS:
       unit = "ms";
       break;
-    case TimeBase::US:
+    case Time::US:
       unit = "us";
       break;
-    case TimeBase::NS:
+    case Time::NS:
       unit = "ns";
       break;
-    case TimeBase::PS:
+    case Time::PS:
       unit = "ps";
       break;
-    case TimeBase::FS:
+    case Time::FS:
       unit = "fs";
       break;
-    case TimeBase::LAST:
+    case Time::LAST:
       NS_ABORT_MSG ("can't be reached");
       unit = "unreachable";
       break;
@@ -125,28 +179,6 @@ std::istream& operator>> (std::istream& is, Time & time)
 
 ATTRIBUTE_VALUE_IMPLEMENT (Time);
 ATTRIBUTE_CHECKER_IMPLEMENT (Time);
-
-TimeUnit<0>::TimeUnit ()
-  : TimeBase (HighPrecision ())
-{}
-
-TimeUnit<0>::TimeUnit (const TimeUnit &o)
-  : TimeBase (o)
-{}
-
-TimeUnit<0>::TimeUnit (double scalar)
-  : TimeBase (HighPrecision (scalar))
-{}
-
-TimeUnit<0>::TimeUnit (const HighPrecision &o)
-  : TimeBase (o) {}
-
-
-double
-TimeUnit<0>::GetDouble (void) const
-{
-  return GetHighPrecision ().GetDouble ();
-}
 
 } // namespace ns3
 
@@ -176,15 +208,15 @@ bool Bug863TestCase::DoRun (void)
 class TimeSimpleTestCase : public TestCase
 {
 public:
-  TimeSimpleTestCase (enum TimeBase::Unit resolution);
+  TimeSimpleTestCase (enum Time::Unit resolution);
 private:
   virtual bool DoRun (void);
   virtual void DoTearDown (void);
-  enum TimeBase::Unit m_originalResolution;
-  enum TimeBase::Unit m_resolution;
+  enum Time::Unit m_originalResolution;
+  enum Time::Unit m_resolution;
 };
 
-TimeSimpleTestCase::TimeSimpleTestCase (enum TimeBase::Unit resolution)
+TimeSimpleTestCase::TimeSimpleTestCase (enum Time::Unit resolution)
   : TestCase ("Sanity check of common time operations"),
     m_resolution (resolution)
 {}
@@ -227,7 +259,7 @@ public:
     : TestSuite ("time", UNIT)
   {
     AddTestCase (new Bug863TestCase ());
-    AddTestCase (new TimeSimpleTestCase (TimeBase::US));
+    AddTestCase (new TimeSimpleTestCase (Time::US));
   }
 } g_timeTestSuite;
 
