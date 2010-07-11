@@ -21,7 +21,7 @@
 
 #include <vector>
 #include <map>
-#include "sequence-number.h"
+#include "ns3/sequence-number.h"
 
 #ifndef TCP_TYPEDEFS_H
 #define TCP_TYPEDEFS_H
@@ -95,7 +95,7 @@ typedef std::vector<StateActionVec_t> StateActions_t;  // One per current state
 typedef std::vector<Events_t> EventVec_t;      // For flag events lookup
 
 //type for managing buffered out of sequence data
-typedef std::map<SequenceNumber, Ptr<Packet> > UnAckData_t;
+typedef std::map<SequenceNumber32, Ptr<Packet> > UnAckData_t;
 
 class TcpStateMachine {
   public:

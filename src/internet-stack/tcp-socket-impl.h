@@ -30,7 +30,7 @@
 #include "ns3/event-id.h"
 #include "tcp-typedefs.h"
 #include "pending-data.h"
-#include "sequence-number.h"
+#include "ns3/sequence-number.h"
 #include "rtt-estimator.h"
 
 
@@ -133,16 +133,16 @@ private:
 
   // Manage data tx/rx
   void NewRx (Ptr<Packet>, const TcpHeader&, const Address& fromAddress, const Address& toAddress);
-  void RxBufFinishInsert (SequenceNumber);
+  void RxBufFinishInsert (SequenceNumber32);
   Ptr<TcpSocketImpl> Copy ();
-  virtual void NewAck (SequenceNumber seq); 
+  virtual void NewAck (SequenceNumber32 seq); 
   virtual void DupAck (const TcpHeader& t, uint32_t count); 
   virtual void ReTxTimeout ();
   void DelAckTimeout ();
   void LastAckTimeout ();
   void PersistTimeout ();
   void Retransmit ();
-  void CommonNewAck (SequenceNumber seq, bool skipTimer = false);
+  void CommonNewAck (SequenceNumber32 seq, bool skipTimer = false);
   // All timers are cancelled when the endpoint is deleted, to insure
   // we don't have additional activity
   void CancelAllTimers();
@@ -194,16 +194,16 @@ private:
 
   
   //sequence info, sender side
-  SequenceNumber m_nextTxSequence;
-  SequenceNumber m_highTxMark;
-  SequenceNumber m_highestRxAck;
-  SequenceNumber m_lastRxAck;
+  SequenceNumber32 m_nextTxSequence;
+  SequenceNumber32 m_highTxMark;
+  SequenceNumber32 m_highestRxAck;
+  SequenceNumber32 m_lastRxAck;
   
   //sequence info, receiver side
-  SequenceNumber m_nextRxSequence; //next expected sequence
+  SequenceNumber32 m_nextRxSequence; //next expected sequence
 
   //sequence number where fin was sent or received
-  SequenceNumber m_finSequence;
+  SequenceNumber32 m_finSequence;
 
   //Rx buffer
   UnAckData_t m_bufferedData; //buffer which sorts out of sequence data
@@ -216,7 +216,7 @@ private:
 
   //this is kind of the tx buffer
   PendingData* m_pendingData;
-  SequenceNumber m_firstPendingSequence;
+  SequenceNumber32 m_firstPendingSequence;
 
   // Window management
   uint32_t                       m_segmentSize;          //SegmentSize

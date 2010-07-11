@@ -347,7 +347,7 @@ TcpSocketImpl::Close (void)
                    " deferring close, state " << m_state);
       return 0;
     }
-  m_finSequence = m_nextTxSequence + SequenceNumber (1);
+  m_finSequence = m_nextTxSequence + SequenceNumber32 (1);
   Actions_t action  = ProcessEvent (APP_CLOSE);
   ProcessAction (action);
   return 0;
@@ -548,7 +548,7 @@ TcpSocketImpl::Recv (uint32_t maxSize, uint32_t flags)
         << m_bufferedData.size () 
         << " time " << Simulator::Now ());
       i = m_bufferedData.begin ();
-      SequenceNumber s1 = 0;
+      SequenceNumber32 s1 (0);
       if (i->first > m_nextRxSequence) 
         {
           break;  // we're done, no more in-sequence data exits
@@ -588,7 +588,7 @@ TcpSocketImpl::Recv (uint32_t maxSize, uint32_t flags)
       uint32_t avail = maxSize - outPacket->GetSize();
       outPacket->AddAtEnd(i->second->CreateFragment(0,avail));
       //put the rest back into the buffer
-      m_bufferedData[i->first+SequenceNumber(avail)] 
+      m_bufferedData[i->first+SequenceNumber32(avail)] 
           = i->second->CreateFragment(avail,i->second->GetSize()-avail);
       m_rxAvailable += i->second->GetSize()-avail;
       m_rxBufSize += i->second->GetSize()-avail;
@@ -971,7 +971,7 @@ bool TcpSocketImpl::ProcessPacketAction (Actions_t a, Ptr<Packet> p,
           // This is the cloned endpoint
           // TCP SYN consumes one byte
           m_nextRxSequence = tcpHeader.GetSequenceNumber () 
-                             + SequenceNumber (1);
+                             + SequenceNumber32 (1);
           SendEmptyPacket (TcpHeader::SYN | TcpHeader::ACK);
         }
 
@@ -979,7 +979,7 @@ bool TcpSocketImpl::ProcessPacketAction (Actions_t a, Ptr<Packet> p,
     case ACK_TX_1:
       NS_LOG_LOGIC ("TcpSocketImpl " << this <<" Action ACK_TX_1");
       // TCP SYN consumes one byte
-      m_nextRxSequence = tcpHeader.GetSequenceNumber() + SequenceNumber(1);
+      m_nextRxSequence = tcpHeader.GetSequenceNumber() + SequenceNumber32(1);
       m_nextTxSequence = tcpHeader.GetAckNumber ();
       m_firstPendingSequence = m_nextTxSequence;  //bug 166
       NS_LOG_DEBUG ("TcpSocketImpl " << this << " ACK_TX_1" <<
@@ -1045,7 +1045,7 @@ bool TcpSocketImpl::ProcessPacketAction (Actions_t a, Ptr<Packet> p,
           if (m_finSequence != m_nextRxSequence)
             {
               // process close later
-              m_finSequence = tcpHeader.GetSequenceNumber () + SequenceNumber (p->GetSize ());
+              m_finSequence = tcpHeader.GetSequenceNumber () + SequenceNumber32 (p->GetSize ());
               m_pendingClose = true;
               NS_LOG_LOGIC ("TcpSocketImpl " << this << " setting pendingClose" 
                 << " rxseq " << tcpHeader.GetSequenceNumber () 
@@ -1168,10 +1168,10 @@ bool TcpSocketImpl::SendPendingData (bool withAck)
       uint32_t sz = p->GetSize (); // Size of packet
       uint32_t remainingData = m_pendingData->SizeFromSeq(
           m_firstPendingSequence,
-          m_nextTxSequence + SequenceNumber (sz));
+          m_nextTxSequence + SequenceNumber32 (sz));
       if (m_closeOnEmpty && (remainingData == 0))
         {
-          m_finSequence = m_nextTxSequence + SequenceNumber (1 + sz);
+          m_finSequence = m_nextTxSequence + SequenceNumber32 (1 + sz);
           flags = TcpHeader::FIN;
           m_state = FIN_WAIT_1;
         }
@@ -1303,8 +1303,8 @@ void TcpSocketImpl::NewRx (Ptr<Packet> p,
       UnAckData_t::iterator next = m_bufferedData.upper_bound (m_nextRxSequence);
       if (next != m_bufferedData.end ())
       {
-        SequenceNumber nextBufferedSeq = next->first;
-        if (m_nextRxSequence + SequenceNumber(s) > nextBufferedSeq)
+        SequenceNumber32 nextBufferedSeq = next->first;
+        if (m_nextRxSequence + SequenceNumber32(s) > nextBufferedSeq)
         {//tail end isn't all new, trim enough off the end
           s = nextBufferedSeq - m_nextRxSequence;
         }
@@ -1344,14 +1344,14 @@ void TcpSocketImpl::NewRx (Ptr<Packet> p,
       NS_LOG_LOGIC ("Case 2, buffering " << tcpHeader.GetSequenceNumber () );
       UnAckData_t::iterator previous =
           m_bufferedData.lower_bound (tcpHeader.GetSequenceNumber ());
-      SequenceNumber startSeq = tcpHeader.GetSequenceNumber();
+      SequenceNumber32 startSeq = tcpHeader.GetSequenceNumber();
       if (previous != m_bufferedData.begin ())
         {
           --previous;
-          startSeq = previous->first + SequenceNumber(previous->second->GetSize());
+          startSeq = previous->first + SequenceNumber32(previous->second->GetSize());
           if (startSeq > tcpHeader.GetSequenceNumber ())
             {
-              s = tcpHeader.GetSequenceNumber () + SequenceNumber(s) - startSeq;
+              s = tcpHeader.GetSequenceNumber () + SequenceNumber32(s) - startSeq;
             }
           else
             {
@@ -1362,8 +1362,8 @@ void TcpSocketImpl::NewRx (Ptr<Packet> p,
       UnAckData_t::iterator next = m_bufferedData.upper_bound (tcpHeader.GetSequenceNumber());
       if (next != m_bufferedData.end ())
       {
-        SequenceNumber nextBufferedSeq = next->first;
-        if (startSeq + SequenceNumber(s) > nextBufferedSeq)
+        SequenceNumber32 nextBufferedSeq = next->first;
+        if (startSeq + SequenceNumber32(s) > nextBufferedSeq)
         {//tail end isn't all new either, trim enough off the end
           s = nextBufferedSeq - startSeq;
         }
@@ -1390,25 +1390,25 @@ void TcpSocketImpl::NewRx (Ptr<Packet> p,
       ++next;
       if(next != m_bufferedData.end())
         {
-          NS_ASSERT(next->first >= i->first + SequenceNumber(i->second->GetSize ()));
+          NS_ASSERT(next->first >= i->first + SequenceNumber32(i->second->GetSize ()));
         }
     }
-  else if (tcpHeader.GetSequenceNumber () + SequenceNumber(s) > m_nextRxSequence)
+  else if (tcpHeader.GetSequenceNumber () + SequenceNumber32(s) > m_nextRxSequence)
     {//parial new data case, only part of the packet is new data
       //trim the beginning
-      s = tcpHeader.GetSequenceNumber () + SequenceNumber(s) - m_nextRxSequence; //how much new
+      s = tcpHeader.GetSequenceNumber () + SequenceNumber32(s) - m_nextRxSequence; //how much new
       //possibly trim off the end
       UnAckData_t::iterator next = m_bufferedData.upper_bound (m_nextRxSequence);
       if (next != m_bufferedData.end ())
       {
-        SequenceNumber nextBufferedSeq = next->first;
-        if (m_nextRxSequence + SequenceNumber(s) > nextBufferedSeq)
+        SequenceNumber32 nextBufferedSeq = next->first;
+        if (m_nextRxSequence + SequenceNumber32(s) > nextBufferedSeq)
         {//tail end isn't all new either, trim enough off the end
           s = nextBufferedSeq - m_nextRxSequence;
         }
       }
       p = p->CreateFragment (m_nextRxSequence - tcpHeader.GetSequenceNumber (),s);
-      SequenceNumber start = m_nextRxSequence;
+      SequenceNumber32 start = m_nextRxSequence;
       m_nextRxSequence += s;           // Advance next expected sequence
       //buffer the new fragment, it'll be read by call to Recv
       UnAckData_t::iterator i = m_bufferedData.find (start);
@@ -1449,7 +1449,7 @@ void TcpSocketImpl::NewRx (Ptr<Packet> p,
   }
 }
 
-void TcpSocketImpl::RxBufFinishInsert (SequenceNumber seq)
+void TcpSocketImpl::RxBufFinishInsert (SequenceNumber32 seq)
 {
   //putting data into the buffer might have filled in a sequence gap so we have
   //to iterate through the list to find the largest contiguous sequenced chunk,
@@ -1460,11 +1460,11 @@ void TcpSocketImpl::RxBufFinishInsert (SequenceNumber seq)
   //make sure the buffer is logically sequenced
   if(next != m_bufferedData.end())
   {
-    NS_ASSERT(next->first >= i->first + SequenceNumber(i->second->GetSize ()));
+    NS_ASSERT(next->first >= i->first + SequenceNumber32(i->second->GetSize ()));
   }
   while(next != m_bufferedData.end())
   {
-    if(i->first + SequenceNumber(i->second->GetSize ()) == next->first)
+    if(i->first + SequenceNumber32(i->second->GetSize ()) == next->first)
     {
       //next packet is in sequence, count it
       m_rxAvailable += next->second->GetSize();
@@ -1485,7 +1485,7 @@ void TcpSocketImpl::DelAckTimeout ()
   SendEmptyPacket (TcpHeader::ACK);
 }
 
-void TcpSocketImpl::CommonNewAck (SequenceNumber ack, bool skipTimer)
+void TcpSocketImpl::CommonNewAck (SequenceNumber32 ack, bool skipTimer)
 { // CommonNewAck is called only for "New" (non-duplicate) acks
   // and MUST be called by any subclass, from the NewAck function
   // Always cancel any pending re-tx timer on new acknowledgement
@@ -1566,7 +1566,7 @@ Ptr<TcpSocketImpl> TcpSocketImpl::Copy ()
   return CopyObject<TcpSocketImpl> (this);
 }
 
-void TcpSocketImpl::NewAck (SequenceNumber seq)
+void TcpSocketImpl::NewAck (SequenceNumber32 seq)
 { // New acknowledgement up to sequence number "seq"
   // Adjust congestion window in response to new ack's received
   NS_LOG_FUNCTION (this << seq);
@@ -1704,7 +1704,7 @@ void TcpSocketImpl::Retransmit ()
   // Calculate remaining data for COE check
   uint32_t remainingData = m_pendingData->SizeFromSeq (
       m_firstPendingSequence,
-      m_nextTxSequence + SequenceNumber(p->GetSize ()));
+      m_nextTxSequence + SequenceNumber32(p->GetSize ()));
   if (m_closeOnEmpty && remainingData == 0)
     { // Add the FIN flag
       flags = flags | TcpHeader::FIN;

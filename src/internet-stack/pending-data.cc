@@ -119,7 +119,7 @@ void PendingData::Add (Ptr<Packet> p)
   size += p->GetSize();
 }
 
-uint32_t PendingData::SizeFromSeq (const SequenceNumber& seqFront, const SequenceNumber& seqOffset)
+uint32_t PendingData::SizeFromSeq (const SequenceNumber32& seqFront, const SequenceNumber32& seqOffset)
 {
   NS_LOG_FUNCTION (this << seqFront << seqOffset);
   uint32_t o1 = OffsetFromSeq (seqFront, seqOffset); // Offset to start of unused data
@@ -134,7 +134,7 @@ uint32_t PendingData::SizeFromOffset (uint32_t offset)
   return size - offset;            // Available data after offset
 }
 
-uint32_t PendingData::OffsetFromSeq (const SequenceNumber& seqFront, const SequenceNumber& seqOffset)
+uint32_t PendingData::OffsetFromSeq (const SequenceNumber32& seqFront, const SequenceNumber32& seqOffset)
 { // f is the first sequence number in this data, o is offset sequence
   NS_LOG_FUNCTION (this << seqFront << seqOffset);
   if (seqOffset < seqFront) 
@@ -215,14 +215,14 @@ Ptr<Packet> PendingData::CopyFromOffset (uint32_t s, uint32_t o)
     }
 }
 
-Ptr<Packet> PendingData::CopyFromSeq (uint32_t s, const SequenceNumber& f, const SequenceNumber& o)
+Ptr<Packet> PendingData::CopyFromSeq (uint32_t s, const SequenceNumber32& f, const SequenceNumber32& o)
 {
   NS_LOG_FUNCTION (this << s << f << o);
   return CopyFromOffset (s, OffsetFromSeq(f,o));
 }
 
 uint32_t
-PendingData::RemoveToSeq (const SequenceNumber& seqFront, const SequenceNumber& seqOffset)
+PendingData::RemoveToSeq (const SequenceNumber32& seqFront, const SequenceNumber32& seqOffset)
 {
   NS_LOG_FUNCTION (this << seqFront << seqOffset);
   uint32_t count = OffsetFromSeq (seqFront, seqOffset);

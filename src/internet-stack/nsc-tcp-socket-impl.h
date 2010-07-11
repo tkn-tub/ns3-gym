@@ -29,7 +29,7 @@
 #include "ns3/event-id.h"
 #include "tcp-typedefs.h"
 #include "pending-data.h"
-#include "sequence-number.h"
+#include "ns3/sequence-number.h"
 
 struct INetStreamSocket;
 

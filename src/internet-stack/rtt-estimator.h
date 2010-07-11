@@ -26,7 +26,7 @@
 #define __rtt_estimator_h__
 
 #include <deque>
-#include "sequence-number.h"
+#include "ns3/sequence-number.h"
 #include "ns3/nstime.h"
 #include "ns3/object.h"
 
@@ -39,10 +39,10 @@ namespace ns3 {
  */
 class RttHistory {
 public:
-  RttHistory (SequenceNumber s, uint32_t c, Time t);
+  RttHistory (SequenceNumber32 s, uint32_t c, Time t);
   RttHistory (const RttHistory& h); // Copy constructor
 public:
-  SequenceNumber  seq;    // First sequence number in packet sent
+  SequenceNumber32  seq;    // First sequence number in packet sent
   uint32_t        count;  // Number of bytes sent
   Time            time;   // Time this one was sent
   bool            retx;   // True if this has been retransmitted
@@ -58,20 +58,20 @@ public:
   RttEstimator(const RttEstimator&); // Copy constructor
   virtual ~RttEstimator();
 
-  virtual void SentSeq(SequenceNumber, uint32_t);
-  virtual Time AckSeq(SequenceNumber);
+  virtual void SentSeq(SequenceNumber32, uint32_t);
+  virtual Time AckSeq(SequenceNumber32);
   virtual void ClearSent();
   virtual void   Measurement(Time t) = 0;
   virtual Time Estimate() = 0;
   virtual Time RetransmitTimeout() = 0;
-  void Init(SequenceNumber s) { next = s;}
+  void Init(SequenceNumber32 s) { next = s;}
   virtual Ptr<RttEstimator> Copy() const = 0;
   virtual void IncreaseMultiplier();
   virtual void ResetMultiplier();
   virtual void Reset();
 
 private:
-  SequenceNumber        next;    // Next expected sequence to be sent
+  SequenceNumber32        next;    // Next expected sequence to be sent
   RttHistory_t history; // List of sent packet
   double m_maxMultiplier;
 public:

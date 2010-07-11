@@ -93,7 +93,6 @@ def build(bld):
         'udp-socket-factory-impl.cc',
         'tcp-socket-factory-impl.cc',
         'pending-data.cc',
-        'sequence-number.cc',
         'rtt-estimator.cc',
         'ipv4-raw-socket-factory-impl.cc',
         'ipv4-raw-socket-impl.cc',
@@ -126,7 +125,6 @@ def build(bld):
     headers.source = [
         'udp-header.h',
         'tcp-header.h',
-        'sequence-number.h',
         'icmpv4.h',
         'icmpv6-header.h',
         # used by routing

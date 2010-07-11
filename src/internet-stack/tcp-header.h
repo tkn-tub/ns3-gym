@@ -61,11 +61,11 @@ public:
   /**
    * \param sequenceNumber the sequence number for this TcpHeader
    */
-  void SetSequenceNumber (SequenceNumber sequenceNumber);
+  void SetSequenceNumber (SequenceNumber32 sequenceNumber);
   /**
    * \param ackNumber the ACK number for this TcpHeader
    */
-  void SetAckNumber (SequenceNumber ackNumber);
+  void SetAckNumber (SequenceNumber32 ackNumber);
   /**
    * \param length the length of this TcpHeader
    */
@@ -96,11 +96,11 @@ public:
   /**
    * \return the sequence number for this TcpHeader
    */
-  SequenceNumber GetSequenceNumber () const;
+  SequenceNumber32 GetSequenceNumber () const;
   /**
    * \return the ACK number for this TcpHeader
    */
-  SequenceNumber GetAckNumber () const;
+  SequenceNumber32 GetAckNumber () const;
   /**
    * \return the length of this TcpHeader
    */
@@ -153,8 +153,8 @@ private:
   uint16_t CalculateHeaderChecksum (uint16_t size) const;
   uint16_t m_sourcePort;
   uint16_t m_destinationPort;
-  uint32_t m_sequenceNumber;
-  uint32_t m_ackNumber;
+  SequenceNumber32 m_sequenceNumber;
+  SequenceNumber32 m_ackNumber;
   uint8_t m_length; // really a uint4_t
   uint8_t m_flags;      // really a uint6_t
   uint16_t m_windowSize;

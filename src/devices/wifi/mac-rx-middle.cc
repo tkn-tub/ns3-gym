@@ -25,6 +25,7 @@
 #include "ns3/log.h"
 #include "ns3/packet.h"
 #include "ns3/simulator.h"
+#include "ns3/sequence-number.h"
 #include <list>
 
 NS_LOG_COMPONENT_DEFINE ("MacRxMiddle");
@@ -269,8 +270,7 @@ MacRxMiddle::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
    * So, this check cannot be used to discard old duplicate frames. It is
    * thus here only for documentation purposes.
    */
-  if (!SequenceControlSmaller (originator->GetLastSequenceControl (), 
-                               hdr->GetSequenceControl ()))
+  if (!(SequenceNumber16 (originator->GetLastSequenceControl ()) < SequenceNumber16 (hdr->GetSequenceControl ())))
     {
       NS_LOG_DEBUG ("Sequence numbers have looped back. last recorded="<<originator->GetLastSequenceControl ()<<
                     " currently seen="<< hdr->GetSequenceControl ());

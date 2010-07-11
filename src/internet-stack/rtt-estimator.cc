@@ -61,7 +61,7 @@ RttEstimator::GetTypeId (void)
 }
 
 //RttHistory methods
-RttHistory::RttHistory (SequenceNumber s, uint32_t c, Time t)
+RttHistory::RttHistory (SequenceNumber32 s, uint32_t c, Time t)
   : seq (s), count (c), time (t), retx (false)
   {
   }
@@ -89,25 +89,25 @@ RttEstimator::~RttEstimator ()
 {
 }
 
-void RttEstimator::SentSeq (SequenceNumber s, uint32_t c)
+void RttEstimator::SentSeq (SequenceNumber32 s, uint32_t c)
 { // Note that a particular sequence has been sent
   if (s == next)
     { // This is the next expected one, just log at end
       history.push_back (RttHistory (s, c, Simulator::Now () ));
-      next = s + SequenceNumber (c); // Update next expected
+      next = s + SequenceNumber32 (c); // Update next expected
     }
   else
     { // This is a retransmit, find in list and mark as re-tx
       for (RttHistory_t::iterator i = history.begin (); i != history.end (); ++i)
         {
-          if ((s >= i->seq) && (s < (i->seq + SequenceNumber (i->count))))
+          if ((s >= i->seq) && (s < (i->seq + SequenceNumber32 (i->count))))
             { // Found it
               i->retx = true;
               // One final test..be sure this re-tx does not extend "next"
-              if ((s + SequenceNumber (c)) > next)
+              if ((s + SequenceNumber32 (c)) > next)
                 {
-                  next = s + SequenceNumber (c);
-                  i->count = ((s + SequenceNumber (c)) - i->seq); // And update count in hist
+                  next = s + SequenceNumber32 (c);
+                  i->count = ((s + SequenceNumber32 (c)) - i->seq); // And update count in hist
                 }
               break;
             }
@@ -115,14 +115,14 @@ void RttEstimator::SentSeq (SequenceNumber s, uint32_t c)
     }
 }
 
-Time RttEstimator::AckSeq (SequenceNumber a)
+Time RttEstimator::AckSeq (SequenceNumber32 a)
 { // An ack has been received, calculate rtt and log this measurement
   // Note we use a linear search (O(n)) for this since for the common
   // case the ack'ed packet will be at the head of the list
   Time m = Seconds (0.0);
   if (history.size () == 0) return (m);    // No pending history, just exit
   RttHistory& h = history.front ();
-  if (!h.retx && a >= (h.seq + SequenceNumber (h.count)))
+  if (!h.retx && a >= (h.seq + SequenceNumber32 (h.count)))
     { // Ok to use this sample
       m = Simulator::Now () - h.time; // Elapsed time
       Measurement(m);                // Log the measurement
@@ -132,7 +132,7 @@ Time RttEstimator::AckSeq (SequenceNumber a)
   while(history.size() > 0)
     {
       RttHistory& h = history.front ();
-      if ((h.seq + SequenceNumber(h.count)) > a) break;                // Done removing
+      if ((h.seq + SequenceNumber32(h.count)) > a) break;                // Done removing
       history.pop_front (); // Remove
     }
   return m;

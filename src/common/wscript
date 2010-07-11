@@ -34,6 +34,7 @@ def build(bld):
         'spectrum-type.cc',
         'spectrum-propagation-loss-model.cc',
         'friis-spectrum-propagation-loss.cc',
+        'sequence-number.cc',
         ]
 
     headers = bld.new_task_gen('ns3header')
@@ -67,4 +68,5 @@ def build(bld):
         'spectrum-type.h',
         'spectrum-propagation-loss-model.h',
         'friis-spectrum-propagation-loss.h',
+        'sequence-number.h',
         ]

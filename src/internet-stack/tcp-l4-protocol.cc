@@ -534,8 +534,8 @@ TcpL4Protocol::Receive (Ptr<Packet> packet,
         else
           {
             header.SetFlags (TcpHeader::RST | TcpHeader::ACK);
-            header.SetSequenceNumber (SequenceNumber (0));
-            header.SetAckNumber (header.GetSequenceNumber () + SequenceNumber (1));
+            header.SetSequenceNumber (SequenceNumber32 (0));
+            header.SetAckNumber (header.GetSequenceNumber () + SequenceNumber32 (1));
           }
         header.SetSourcePort (tcpHeader.GetDestinationPort ());
         header.SetDestinationPort (tcpHeader.GetSourcePort ());
@@ -571,7 +571,7 @@ TcpL4Protocol::Send (Ptr<Packet> packet,
                                daddr,
                                PROT_NUMBER);
   tcpHeader.SetFlags (TcpHeader::ACK);
-  tcpHeader.SetAckNumber (0);
+  tcpHeader.SetAckNumber (SequenceNumber32 (0));
 
   packet->AddHeader (tcpHeader);
 

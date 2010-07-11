@@ -59,11 +59,11 @@ void TcpHeader::SetDestinationPort (uint16_t port)
 {
   m_destinationPort = port;
 }
-void TcpHeader::SetSequenceNumber (SequenceNumber sequenceNumber)
+void TcpHeader::SetSequenceNumber (SequenceNumber32 sequenceNumber)
 {
   m_sequenceNumber = sequenceNumber;
 }
-void TcpHeader::SetAckNumber (SequenceNumber ackNumber)
+void TcpHeader::SetAckNumber (SequenceNumber32 ackNumber)
 {
   m_ackNumber = ackNumber;
 }
@@ -92,11 +92,11 @@ uint16_t TcpHeader::GetDestinationPort () const
 {
   return m_destinationPort;
 }
-SequenceNumber TcpHeader::GetSequenceNumber () const
+SequenceNumber32 TcpHeader::GetSequenceNumber () const
 {
   return m_sequenceNumber;
 }
-SequenceNumber TcpHeader::GetAckNumber () const
+SequenceNumber32 TcpHeader::GetAckNumber () const
 {
   return m_ackNumber;
 }
@@ -209,8 +209,8 @@ void TcpHeader::Serialize (Buffer::Iterator start)  const
   Buffer::Iterator i = start;
   i.WriteHtonU16 (m_sourcePort);
   i.WriteHtonU16 (m_destinationPort);
-  i.WriteHtonU32 (m_sequenceNumber);
-  i.WriteHtonU32 (m_ackNumber);
+  i.WriteHtonU32 (m_sequenceNumber.GetValue ());
+  i.WriteHtonU32 (m_ackNumber.GetValue ());
   i.WriteHtonU16 (m_length << 12 | m_flags); //reserved bits are all zero
   i.WriteHtonU16 (m_windowSize);
   i.WriteHtonU16 (0);
