@@ -1031,6 +1031,11 @@ def register_Ns3UanMac_methods(root_module, cls):
                    'void', 
                    [param('ns3::Ptr< ns3::UanPhy >', 'phy')], 
                    is_pure_virtual=True, is_virtual=True)
+    ## uan-mac.h: void ns3::UanMac::Clear() [member function]
+    cls.add_method('Clear', 
+                   'void', 
+                   [], 
+                   is_pure_virtual=True, is_virtual=True)
     ## uan-mac.h: bool ns3::UanMac::Enqueue(ns3::Ptr<ns3::Packet> pkt, ns3::Address const & dest, uint16_t protocolNumber) [member function]
     cls.add_method('Enqueue', 
                    'bool', 
@@ -1067,6 +1072,11 @@ def register_Ns3UanMacAloha_methods(root_module, cls):
     cls.add_method('AttachPhy', 
                    'void', 
                    [param('ns3::Ptr< ns3::UanPhy >', 'phy')], 
+                   is_virtual=True)
+    ## uan-mac-aloha.h: void ns3::UanMacAloha::Clear() [member function]
+    cls.add_method('Clear', 
+                   'void', 
+                   [], 
                    is_virtual=True)
     ## uan-mac-aloha.h: bool ns3::UanMacAloha::Enqueue(ns3::Ptr<ns3::Packet> pkt, ns3::Address const & dest, uint16_t protocolNumber) [member function]
     cls.add_method('Enqueue', 
@@ -1114,6 +1124,11 @@ def register_Ns3UanMacCw_methods(root_module, cls):
     cls.add_method('AttachPhy', 
                    'void', 
                    [param('ns3::Ptr< ns3::UanPhy >', 'phy')], 
+                   is_virtual=True)
+    ## uan-mac-cw.h: void ns3::UanMacCw::Clear() [member function]
+    cls.add_method('Clear', 
+                   'void', 
+                   [], 
                    is_virtual=True)
     ## uan-mac-cw.h: bool ns3::UanMacCw::Enqueue(ns3::Ptr<ns3::Packet> pkt, ns3::Address const & dest, uint16_t protocolNumber) [member function]
     cls.add_method('Enqueue', 
@@ -1212,6 +1227,11 @@ def register_Ns3UanMacRc_methods(root_module, cls):
                    'void', 
                    [param('ns3::Ptr< ns3::UanPhy >', 'phy')], 
                    is_virtual=True)
+    ## uan-mac-rc.h: void ns3::UanMacRc::Clear() [member function]
+    cls.add_method('Clear', 
+                   'void', 
+                   [], 
+                   is_virtual=True)
     ## uan-mac-rc.h: bool ns3::UanMacRc::Enqueue(ns3::Ptr<ns3::Packet> pkt, ns3::Address const & dest, uint16_t protocolNumber) [member function]
     cls.add_method('Enqueue', 
                    'bool', 
@@ -1259,6 +1279,11 @@ def register_Ns3UanMacRcGw_methods(root_module, cls):
                    'void', 
                    [param('ns3::Ptr< ns3::UanPhy >', 'phy')], 
                    is_virtual=True)
+    ## uan-mac-rc-gw.h: void ns3::UanMacRcGw::Clear() [member function]
+    cls.add_method('Clear', 
+                   'void', 
+                   [], 
+                   is_virtual=True)
     ## uan-mac-rc-gw.h: bool ns3::UanMacRcGw::Enqueue(ns3::Ptr<ns3::Packet> pkt, ns3::Address const & dest, uint16_t protocolNumber) [member function]
     cls.add_method('Enqueue', 
                    'bool', 
@@ -1301,6 +1326,16 @@ def register_Ns3UanNoiseModel_methods(root_module, cls):
     cls.add_constructor([])
     ## uan-noise-model.h: ns3::UanNoiseModel::UanNoiseModel(ns3::UanNoiseModel const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::UanNoiseModel const &', 'arg0')])
+    ## uan-noise-model.h: void ns3::UanNoiseModel::Clear() [member function]
+    cls.add_method('Clear', 
+                   'void', 
+                   [], 
+                   is_virtual=True)
+    ## uan-noise-model.h: void ns3::UanNoiseModel::DoDispose() [member function]
+    cls.add_method('DoDispose', 
+                   'void', 
+                   [], 
+                   is_virtual=True)
     ## uan-noise-model.h: double ns3::UanNoiseModel::GetNoiseDbHz(double fKhz) const [member function]
     cls.add_method('GetNoiseDbHz', 
                    'double', 
@@ -1330,6 +1365,11 @@ def register_Ns3UanPhy_methods(root_module, cls):
     cls.add_constructor([])
     ## uan-phy.h: ns3::UanPhy::UanPhy(ns3::UanPhy const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::UanPhy const &', 'arg0')])
+    ## uan-phy.h: void ns3::UanPhy::Clear() [member function]
+    cls.add_method('Clear', 
+                   'void', 
+                   [], 
+                   is_pure_virtual=True, is_virtual=True)
     ## uan-phy.h: double ns3::UanPhy::GetCcaThresholdDb() [member function]
     cls.add_method('GetCcaThresholdDb', 
                    'double', 
@@ -1492,11 +1532,21 @@ def register_Ns3UanPhyCalcSinr_methods(root_module, cls):
                    'double', 
                    [param('ns3::Ptr< ns3::Packet >', 'pkt'), param('ns3::Time', 'arrTime'), param('double', 'rxPowerDb'), param('double', 'ambNoiseDb'), param('ns3::UanTxMode', 'mode'), param('ns3::UanPdp', 'pdp'), param('std::list< ns3::UanPacketArrival > const &', 'arrivalList')], 
                    is_pure_virtual=True, is_const=True, is_virtual=True)
+    ## uan-phy.h: void ns3::UanPhyCalcSinr::Clear() [member function]
+    cls.add_method('Clear', 
+                   'void', 
+                   [], 
+                   is_virtual=True)
     ## uan-phy.h: double ns3::UanPhyCalcSinr::DbToKp(double db) const [member function]
     cls.add_method('DbToKp', 
                    'double', 
                    [param('double', 'db')], 
                    is_const=True)
+    ## uan-phy.h: void ns3::UanPhyCalcSinr::DoDispose() [member function]
+    cls.add_method('DoDispose', 
+                   'void', 
+                   [], 
+                   is_virtual=True)
     ## uan-phy.h: double ns3::UanPhyCalcSinr::KpToDb(double kp) const [member function]
     cls.add_method('KpToDb', 
                    'double', 
@@ -1560,6 +1610,11 @@ def register_Ns3UanPhyDual_methods(root_module, cls):
     cls.add_constructor([param('ns3::UanPhyDual const &', 'arg0')])
     ## uan-phy-dual.h: ns3::UanPhyDual::UanPhyDual() [constructor]
     cls.add_constructor([])
+    ## uan-phy-dual.h: void ns3::UanPhyDual::Clear() [member function]
+    cls.add_method('Clear', 
+                   'void', 
+                   [], 
+                   is_virtual=True)
     ## uan-phy-dual.h: double ns3::UanPhyDual::GetCcaThresholdDb() [member function]
     cls.add_method('GetCcaThresholdDb', 
                    'double', 
@@ -1869,6 +1924,11 @@ def register_Ns3UanPhyGen_methods(root_module, cls):
     cls.add_constructor([param('ns3::UanPhyGen const &', 'arg0')])
     ## uan-phy-gen.h: ns3::UanPhyGen::UanPhyGen() [constructor]
     cls.add_constructor([])
+    ## uan-phy-gen.h: void ns3::UanPhyGen::Clear() [member function]
+    cls.add_method('Clear', 
+                   'void', 
+                   [], 
+                   is_virtual=True)
     ## uan-phy-gen.h: double ns3::UanPhyGen::GetCcaThresholdDb() [member function]
     cls.add_method('GetCcaThresholdDb', 
                    'double', 
@@ -2046,6 +2106,16 @@ def register_Ns3UanPhyPer_methods(root_module, cls):
                    'double', 
                    [param('ns3::Ptr< ns3::Packet >', 'pkt'), param('double', 'sinrDb'), param('ns3::UanTxMode', 'mode')], 
                    is_pure_virtual=True, is_virtual=True)
+    ## uan-phy.h: void ns3::UanPhyPer::Clear() [member function]
+    cls.add_method('Clear', 
+                   'void', 
+                   [], 
+                   is_virtual=True)
+    ## uan-phy.h: void ns3::UanPhyPer::DoDispose() [member function]
+    cls.add_method('DoDispose', 
+                   'void', 
+                   [], 
+                   is_virtual=True)
     return
 
 def register_Ns3UanPhyPerGenDefault_methods(root_module, cls):
@@ -2087,6 +2157,16 @@ def register_Ns3UanPropModel_methods(root_module, cls):
     cls.add_constructor([])
     ## uan-prop-model.h: ns3::UanPropModel::UanPropModel(ns3::UanPropModel const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::UanPropModel const &', 'arg0')])
+    ## uan-prop-model.h: void ns3::UanPropModel::Clear() [member function]
+    cls.add_method('Clear', 
+                   'void', 
+                   [], 
+                   is_virtual=True)
+    ## uan-prop-model.h: void ns3::UanPropModel::DoDispose() [member function]
+    cls.add_method('DoDispose', 
+                   'void', 
+                   [], 
+                   is_virtual=True)
     ## uan-prop-model.h: ns3::Time ns3::UanPropModel::GetDelay(ns3::Ptr<ns3::MobilityModel> a, ns3::Ptr<ns3::MobilityModel> b, ns3::UanTxMode mode) [member function]
     cls.add_method('GetDelay', 
                    'ns3::Time', 
@@ -2168,6 +2248,11 @@ def register_Ns3UanTransducer_methods(root_module, cls):
                    'void', 
                    [param('ns3::Ptr< ns3::UanPhy >', 'phy')], 
                    is_pure_virtual=True, is_virtual=True)
+    ## uan-transducer.h: void ns3::UanTransducer::Clear() [member function]
+    cls.add_method('Clear', 
+                   'void', 
+                   [], 
+                   is_pure_virtual=True, is_virtual=True)
     ## uan-transducer.h: std::list<ns3::UanPacketArrival, std::allocator<ns3::UanPacketArrival> > const & ns3::UanTransducer::GetArrivalList() const [member function]
     cls.add_method('GetArrivalList', 
                    'std::list< ns3::UanPacketArrival > const &', 
@@ -2224,6 +2309,11 @@ def register_Ns3UanTransducerHd_methods(root_module, cls):
     cls.add_method('AddPhy', 
                    'void', 
                    [param('ns3::Ptr< ns3::UanPhy >', 'arg0')], 
+                   is_virtual=True)
+    ## uan-transducer-hd.h: void ns3::UanTransducerHd::Clear() [member function]
+    cls.add_method('Clear', 
+                   'void', 
+                   [], 
                    is_virtual=True)
     ## uan-transducer-hd.h: std::list<ns3::UanPacketArrival, std::allocator<ns3::UanPacketArrival> > const & ns3::UanTransducerHd::GetArrivalList() const [member function]
     cls.add_method('GetArrivalList', 
@@ -2291,6 +2381,10 @@ def register_Ns3UanChannel_methods(root_module, cls):
     cls.add_method('AddDevice', 
                    'void', 
                    [param('ns3::Ptr< ns3::UanNetDevice >', 'dev'), param('ns3::Ptr< ns3::UanTransducer >', 'trans')])
+    ## uan-channel.h: void ns3::UanChannel::Clear() [member function]
+    cls.add_method('Clear', 
+                   'void', 
+                   [])
     ## uan-channel.h: ns3::Ptr<ns3::NetDevice> ns3::UanChannel::GetDevice(uint32_t i) const [member function]
     cls.add_method('GetDevice', 
                    'ns3::Ptr< ns3::NetDevice >', 
@@ -2379,6 +2473,10 @@ def register_Ns3UanNetDevice_methods(root_module, cls):
                    'void', 
                    [param('ns3::Callback< void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'callback')], 
                    is_virtual=True)
+    ## uan-net-device.h: void ns3::UanNetDevice::Clear() [member function]
+    cls.add_method('Clear', 
+                   'void', 
+                   [])
     ## uan-net-device.h: ns3::Address ns3::UanNetDevice::GetAddress() const [member function]
     cls.add_method('GetAddress', 
                    'ns3::Address', 

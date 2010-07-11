@@ -1853,9 +1853,9 @@ def register_Ns3TcpHeader_methods(root_module, cls):
     cls.add_method('EnableChecksums', 
                    'void', 
                    [])
-    ## tcp-header.h: SequenceNumber ns3::TcpHeader::GetAckNumber() const [member function]
+    ## tcp-header.h: ns3::SequenceNumber32 ns3::TcpHeader::GetAckNumber() const [member function]
     cls.add_method('GetAckNumber', 
-                   'SequenceNumber', 
+                   'ns3::SequenceNumber32', 
                    [], 
                    is_const=True)
     ## tcp-header.h: uint16_t ns3::TcpHeader::GetDestinationPort() const [member function]
@@ -1878,9 +1878,9 @@ def register_Ns3TcpHeader_methods(root_module, cls):
                    'uint8_t', 
                    [], 
                    is_const=True)
-    ## tcp-header.h: SequenceNumber ns3::TcpHeader::GetSequenceNumber() const [member function]
+    ## tcp-header.h: ns3::SequenceNumber32 ns3::TcpHeader::GetSequenceNumber() const [member function]
     cls.add_method('GetSequenceNumber', 
-                   'SequenceNumber', 
+                   'ns3::SequenceNumber32', 
                    [], 
                    is_const=True)
     ## tcp-header.h: uint32_t ns3::TcpHeader::GetSerializedSize() const [member function]
@@ -1927,10 +1927,10 @@ def register_Ns3TcpHeader_methods(root_module, cls):
                    'void', 
                    [param('ns3::Buffer::Iterator', 'start')], 
                    is_const=True, is_virtual=True)
-    ## tcp-header.h: void ns3::TcpHeader::SetAckNumber(SequenceNumber ackNumber) [member function]
+    ## tcp-header.h: void ns3::TcpHeader::SetAckNumber(ns3::SequenceNumber32 ackNumber) [member function]
     cls.add_method('SetAckNumber', 
                    'void', 
-                   [param('SequenceNumber', 'ackNumber')])
+                   [param('ns3::SequenceNumber32', 'ackNumber')])
     ## tcp-header.h: void ns3::TcpHeader::SetDestinationPort(uint16_t port) [member function]
     cls.add_method('SetDestinationPort', 
                    'void', 
@@ -1943,10 +1943,10 @@ def register_Ns3TcpHeader_methods(root_module, cls):
     cls.add_method('SetLength', 
                    'void', 
                    [param('uint8_t', 'length')])
-    ## tcp-header.h: void ns3::TcpHeader::SetSequenceNumber(SequenceNumber sequenceNumber) [member function]
+    ## tcp-header.h: void ns3::TcpHeader::SetSequenceNumber(ns3::SequenceNumber32 sequenceNumber) [member function]
     cls.add_method('SetSequenceNumber', 
                    'void', 
-                   [param('SequenceNumber', 'sequenceNumber')])
+                   [param('ns3::SequenceNumber32', 'sequenceNumber')])
     ## tcp-header.h: void ns3::TcpHeader::SetSourcePort(uint16_t port) [member function]
     cls.add_method('SetSourcePort', 
                    'void', 

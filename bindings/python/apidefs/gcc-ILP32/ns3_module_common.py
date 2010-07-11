@@ -41,6 +41,8 @@ def register_types(module):
     module.add_class('TagData', outer_class=root_module['ns3::PacketTagList'])
     ## pcap-file.h: ns3::PcapFile [class]
     module.add_class('PcapFile')
+    ## sequence-number.h: ns3::SequenceNumber<unsigned int, int> [class]
+    module.add_class('SequenceNumber32')
     ## spectrum-type.h: ns3::SpectrumType [class]
     module.add_class('SpectrumType')
     ## spectrum-type.h: ns3::SpectrumTypeFactory [class]
@@ -129,6 +131,12 @@ def register_types(module):
     module.add_class('ReceiveListErrorModel', parent=root_module['ns3::ErrorModel'])
     module.add_container('ns3::SpectrumConverterMap_t', ('unsigned int', 'ns3::SpectrumConverter'), container_type='map')
     module.add_container('ns3::Bands', 'ns3::BandInfo', container_type='vector')
+    typehandlers.add_type_alias('ns3::SequenceNumber< short unsigned int, short int >', 'ns3::SequenceNumber16')
+    typehandlers.add_type_alias('ns3::SequenceNumber< short unsigned int, short int >*', 'ns3::SequenceNumber16*')
+    typehandlers.add_type_alias('ns3::SequenceNumber< short unsigned int, short int >&', 'ns3::SequenceNumber16&')
+    typehandlers.add_type_alias('ns3::SequenceNumber< unsigned int, int >', 'ns3::SequenceNumber32')
+    typehandlers.add_type_alias('ns3::SequenceNumber< unsigned int, int >*', 'ns3::SequenceNumber32*')
+    typehandlers.add_type_alias('ns3::SequenceNumber< unsigned int, int >&', 'ns3::SequenceNumber32&')
     typehandlers.add_type_alias('std::vector< double, std::allocator< double > >', 'ns3::Values')
     typehandlers.add_type_alias('std::vector< double, std::allocator< double > >*', 'ns3::Values*')
     typehandlers.add_type_alias('std::vector< double, std::allocator< double > >&', 'ns3::Values&')
@@ -247,6 +255,7 @@ def register_methods(root_module):
     register_Ns3PacketTagList_methods(root_module, root_module['ns3::PacketTagList'])
     register_Ns3PacketTagListTagData_methods(root_module, root_module['ns3::PacketTagList::TagData'])
     register_Ns3PcapFile_methods(root_module, root_module['ns3::PcapFile'])
+    register_Ns3SequenceNumber32_methods(root_module, root_module['ns3::SequenceNumber32'])
     register_Ns3SpectrumType_methods(root_module, root_module['ns3::SpectrumType'])
     register_Ns3SpectrumTypeFactory_methods(root_module, root_module['ns3::SpectrumTypeFactory'])
     register_Ns3Tag_methods(root_module, root_module['ns3::Tag'])
@@ -949,6 +958,31 @@ def register_Ns3PcapFile_methods(root_module, cls):
     cls.add_static_attribute('SNAPLEN_DEFAULT', 'uint32_t const', is_const=True)
     ## pcap-file.h: ns3::PcapFile::ZONE_DEFAULT [variable]
     cls.add_static_attribute('ZONE_DEFAULT', 'int32_t const', is_const=True)
+    return
+
+def register_Ns3SequenceNumber32_methods(root_module, cls):
+    cls.add_binary_comparison_operator('!=')
+    cls.add_binary_numeric_operator('+', root_module['ns3::SequenceNumber32'], root_module['ns3::SequenceNumber32'], param('ns3::SequenceNumber< unsigned int, int > const &', 'right'))
+    cls.add_binary_numeric_operator('+', root_module['ns3::SequenceNumber32'], root_module['ns3::SequenceNumber32'], param('int', 'right'))
+    cls.add_inplace_numeric_operator('+=', param('int', 'right'))
+    cls.add_binary_numeric_operator('-', root_module['ns3::SequenceNumber32'], root_module['ns3::SequenceNumber32'], param('int', 'right'))
+    cls.add_inplace_numeric_operator('-=', param('int', 'right'))
+    cls.add_binary_comparison_operator('<')
+    cls.add_binary_comparison_operator('<=')
+    cls.add_binary_comparison_operator('==')
+    cls.add_binary_comparison_operator('>')
+    cls.add_binary_comparison_operator('>=')
+    ## sequence-number.h: ns3::SequenceNumber<unsigned int, int>::SequenceNumber() [constructor]
+    cls.add_constructor([])
+    ## sequence-number.h: ns3::SequenceNumber<unsigned int, int>::SequenceNumber(unsigned int value) [constructor]
+    cls.add_constructor([param('unsigned int', 'value')])
+    ## sequence-number.h: ns3::SequenceNumber<unsigned int, int>::SequenceNumber(ns3::SequenceNumber<unsigned int, int> const & value) [copy constructor]
+    cls.add_constructor([param('ns3::SequenceNumber< unsigned int, int > const &', 'value')])
+    ## sequence-number.h: unsigned int ns3::SequenceNumber<unsigned int, int>::GetValue() const [member function]
+    cls.add_method('GetValue', 
+                   'unsigned int', 
+                   [], 
+                   is_const=True)
     return
 
 def register_Ns3SpectrumType_methods(root_module, cls):
