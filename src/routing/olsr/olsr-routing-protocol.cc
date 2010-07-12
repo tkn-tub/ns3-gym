@@ -293,7 +293,7 @@ void RoutingProtocol::DoStart ()
       Ptr<Socket> socket = Socket::CreateSocket (GetObject<Node> (), 
                                                  UdpSocketFactory::GetTypeId());
       socket->SetAllowBroadcast (true);
-      InetSocketAddress inetAddr (addr.GetSubnetDirectedBroadcast (m_ipv4->GetAddress (i, 0).GetMask ()), OLSR_PORT_NUMBER);
+      InetSocketAddress inetAddr (m_ipv4->GetAddress (i, 0).GetLocal (), OLSR_PORT_NUMBER);
       socket->SetRecvCallback (MakeCallback (&RoutingProtocol::RecvOlsr,  this));
       if (socket->Bind (inetAddr))
         {

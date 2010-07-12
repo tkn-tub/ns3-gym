@@ -260,6 +260,7 @@ UdpSocketImplTest::DoRun (void)
 
   Ptr<SocketFactory> txSocketFactory = txNode->GetObject<UdpSocketFactory> ();
   Ptr<Socket> txSocket = txSocketFactory->CreateSocket ();
+  txSocket->SetAllowBroadcast (true);
 
   // ------ Now the tests ------------
 
