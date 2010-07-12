@@ -36,7 +36,7 @@ namespace aodv
 
 NS_OBJECT_ENSURE_REGISTERED (TypeHeader);
 
-TypeHeader::TypeHeader (MessageType t) :
+TypeHeader::TypeHeader (MessageType t = AODVTYPE_RREQ) :
   m_type (t), m_valid (true)
 {
 }
@@ -46,6 +46,7 @@ TypeHeader::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::aodv::TypeHeader")
       .SetParent<Header> ()
+      .AddConstructor<TypeHeader> ()
       ;
   return tid;
 }
