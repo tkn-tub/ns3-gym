@@ -5,6 +5,7 @@
 #include "ns3/socket.h"
 #include "ns3/ipv4-header.h"
 #include "ns3/ipv4-route.h"
+#include "ns3/ipv4-interface.h"
 #include <list>
 
 namespace ns3 {
@@ -41,7 +42,7 @@ public:
 				Address &fromAddress);
 
   void SetProtocol (uint16_t protocol);
-  bool ForwardUp (Ptr<const Packet> p, Ipv4Header ipHeader, Ptr<NetDevice> device);
+  bool ForwardUp (Ptr<const Packet> p, Ipv4Header ipHeader, Ptr<Ipv4Interface> incomingInterface);
   virtual void SetAllowBroadcast (bool allowBroadcast);
   virtual bool GetAllowBroadcast () const;
 

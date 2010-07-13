@@ -51,6 +51,8 @@ def build(bld):
         'radiotap-header.cc',
         'spectrum-phy.cc',
         'spectrum-channel.cc',        
+        'ipv4-packet-info-tag.cc',
+        'ipv6-packet-info-tag.cc',
         ]
 
     headers = bld.new_task_gen('ns3header')
@@ -103,4 +105,6 @@ def build(bld):
         'spectrum-phy.h',
         'spectrum-channel.h',
         'phy-mac.h',
+        'ipv4-packet-info-tag.h',
+        'ipv6-packet-info-tag.h',
         ]

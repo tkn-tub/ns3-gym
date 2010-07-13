@@ -34,6 +34,7 @@ namespace ns3 {
 Socket::Socket (void)
 {
   m_boundnetdevice = 0;
+  m_recvpktinfo = false;
   NS_LOG_FUNCTION_NOARGS ();
 }
 
@@ -322,6 +323,13 @@ Ptr<NetDevice>
 Socket::GetBoundNetDevice ()
 {
   return m_boundnetdevice;
+}
+
+void 
+Socket::SetRecvPktInfo (bool flag)
+{
+  NS_LOG_FUNCTION_NOARGS ();
+  m_recvpktinfo = flag;
 }
 
 /***************************************************************

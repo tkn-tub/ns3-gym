@@ -28,6 +28,7 @@
 #include "ns3/ptr.h"
 #include "ns3/ipv4-address.h"
 #include "ns3/udp-socket.h"
+#include "ns3/ipv4-interface.h"
 #include "icmpv4.h"
 
 namespace ns3 {
@@ -100,7 +101,8 @@ private:
   friend class UdpSocketFactory;
   // invoked by Udp class
   int FinishBind (void);
-  void ForwardUp (Ptr<Packet> p, Ipv4Address saddr, Ipv4Address daddr, uint16_t port);
+  void ForwardUp (Ptr<Packet> p, Ipv4Header header, uint16_t port, 
+                  Ptr<Ipv4Interface> incomingInterface);
   void Destroy (void);
   int DoSend (Ptr<Packet> p);
   int DoSendTo (Ptr<Packet> p, const Address &daddr);

@@ -480,7 +480,7 @@ Ipv4L3Protocol::Receive( Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t pr
     {
       NS_LOG_LOGIC ("Forwarding to raw socket"); 
       Ptr<Ipv4RawSocketImpl> socket = *i;
-      socket->ForwardUp (packet, ipHeader, device);
+      socket->ForwardUp (packet, ipHeader, ipv4Interface);
     }
 
   NS_ASSERT_MSG (m_routingProtocol != 0, "Need a routing protocol object to process packets");
@@ -818,7 +818,7 @@ Ipv4L3Protocol::LocalDeliver (Ptr<const Packet> packet, Ipv4Header const&ip, uin
       // RX_ENDPOINT_UNREACH codepath
       Ptr<Packet> copy = p->Copy ();
       enum Ipv4L4Protocol::RxStatus status = 
-        protocol->Receive (p, ip.GetSource (), ip.GetDestination (), GetInterface (iif));
+        protocol->Receive (p, ip, GetInterface (iif));
       switch (status) {
       case Ipv4L4Protocol::RX_OK:
         // fall through

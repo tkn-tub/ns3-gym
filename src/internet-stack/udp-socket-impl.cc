@@ -27,6 +27,7 @@
 #include "ns3/ipv4-routing-protocol.h"
 #include "ns3/udp-socket-factory.h"
 #include "ns3/trace-source-accessor.h"
+#include "ns3/ipv4-packet-info-tag.h"
 #include "udp-socket-impl.h"
 #include "udp-l4-protocol.h"
 #include "ipv4-end-point.h"
@@ -609,17 +610,28 @@ UdpSocketImpl::BindToNetDevice (Ptr<NetDevice> netdevice)
 }
 
 void 
-UdpSocketImpl::ForwardUp (Ptr<Packet> packet, Ipv4Address saddr, Ipv4Address daddr, uint16_t port)
+UdpSocketImpl::ForwardUp (Ptr<Packet> packet, Ipv4Header header, uint16_t port,
+                          Ptr<Ipv4Interface> incomingInterface)
 {
-  NS_LOG_FUNCTION (this << packet << saddr << daddr << port);
+  NS_LOG_FUNCTION (this << packet << header << port);
 
   if (m_shutdownRecv)
     {
       return;
     }
+
+  // Should check via getsockopt ()..
+  if (this->m_recvpktinfo)
+    {
+      Ipv4PacketInfoTag tag;
+      packet->RemovePacketTag (tag);
+      tag.SetRecvIf (incomingInterface->GetDevice ()->GetIfIndex ());
+      packet->AddPacketTag (tag);
+    }
+
   if ((m_rxAvailable + packet->GetSize ()) <= m_rcvBufSize)
     {
-      Address address = InetSocketAddress (saddr, port);
+      Address address = InetSocketAddress (header.GetSource (), port);
       SocketAddressTag tag;
       tag.SetAddress (address);
       packet->AddPacketTag (tag);

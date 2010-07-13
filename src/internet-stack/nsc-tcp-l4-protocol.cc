@@ -302,11 +302,10 @@ NscTcpL4Protocol::DeAllocate (Ipv4EndPoint *endPoint)
 
 Ipv4L4Protocol::RxStatus
 NscTcpL4Protocol::Receive (Ptr<Packet> packet,
-             Ipv4Address const &source,
-             Ipv4Address const &destination,
+             Ipv4Header const &header,
              Ptr<Ipv4Interface> incomingInterface)
 {
-  NS_LOG_FUNCTION (this << packet << source << destination << incomingInterface);
+  NS_LOG_FUNCTION (this << packet << header << incomingInterface);
   Ipv4Header ipHeader;
   uint32_t packetSize = packet->GetSize();
 
@@ -315,8 +314,8 @@ NscTcpL4Protocol::Receive (Ptr<Packet> packet,
   // a complete IP packet, so we add the IP header back.
   // Since the original header is already gone, we create a new one
   // based on the information we have.
-  ipHeader.SetSource (source);
-  ipHeader.SetDestination (destination);
+  ipHeader.SetSource (header.GetSource ());
+  ipHeader.SetDestination (header.GetDestination ());
   ipHeader.SetProtocol (PROT_NUMBER);
   ipHeader.SetPayloadSize (packetSize);
   ipHeader.SetTtl (1);
@@ -382,7 +381,7 @@ void NscTcpL4Protocol::wakeup()
   for (Ipv4EndPointDemux::EndPointsI endPoint = endPoints.begin ();
        endPoint != endPoints.end (); endPoint++) {
           // NSC HACK: (ab)use TcpSocket::ForwardUp for signalling
-          (*endPoint)->ForwardUp (NULL, Ipv4Address(), Ipv4Address(), 0);
+          (*endPoint)->ForwardUp (NULL, Ipv4Header(), 0, 0);
   }
 }
 

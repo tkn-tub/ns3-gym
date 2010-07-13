@@ -25,8 +25,7 @@ public:
   static uint16_t GetStaticProtocolNumber (void);
   virtual int GetProtocolNumber (void) const;
   virtual enum Ipv4L4Protocol::RxStatus Receive(Ptr<Packet> p, 
-						const Ipv4Address &source,
-						const Ipv4Address &destination,
+                                                Ipv4Header const &header,
 						Ptr<Ipv4Interface> incomingInterface);
 
   void SendDestUnreachFragNeeded (Ipv4Header header, Ptr<const Packet> orgData, uint16_t nextHopMtu);

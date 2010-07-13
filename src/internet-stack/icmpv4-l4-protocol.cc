@@ -219,23 +219,22 @@ Icmpv4L4Protocol::HandleTimeExceeded (Ptr<Packet> p,
 
 enum Ipv4L4Protocol::RxStatus
 Icmpv4L4Protocol::Receive(Ptr<Packet> p, 
-			  Ipv4Address const &source,
-			  Ipv4Address const &destination,
+                          Ipv4Header const &header,
 			  Ptr<Ipv4Interface> incomingInterface)
 {
-  NS_LOG_FUNCTION (this << p << source << destination << incomingInterface);
+  NS_LOG_FUNCTION (this << p << header << incomingInterface);
 
   Icmpv4Header icmp;
   p->RemoveHeader (icmp);
   switch (icmp.GetType ()) {
   case Icmpv4Header::ECHO:
-    HandleEcho (p, icmp, source, destination);
+    HandleEcho (p, icmp, header.GetSource (), header.GetDestination ());
     break;
   case Icmpv4Header::DEST_UNREACH:
-    HandleDestUnreach (p, icmp, source, destination);
+    HandleDestUnreach (p, icmp, header.GetSource (), header.GetDestination ());
     break;
   case Icmpv4Header::TIME_EXCEEDED:
-    HandleTimeExceeded (p, icmp, source, destination);
+    HandleTimeExceeded (p, icmp, header.GetSource (), header.GetDestination ());
     break;
   default:
     NS_LOG_DEBUG (icmp << " " << *p);

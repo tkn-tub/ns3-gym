@@ -3,6 +3,7 @@
 #include "ipv4-raw-socket-impl.h"
 #include "ipv4-l3-protocol.h"
 #include "icmpv4.h"
+#include "ns3/ipv4-packet-info-tag.h"
 #include "ns3/inet-socket-address.h"
 #include "ns3/node.h"
 #include "ns3/packet.h"
@@ -289,9 +290,9 @@ Ipv4RawSocketImpl::SetProtocol (uint16_t protocol)
 }
 
 bool 
-Ipv4RawSocketImpl::ForwardUp (Ptr<const Packet> p, Ipv4Header ipHeader, Ptr<NetDevice> device)
+Ipv4RawSocketImpl::ForwardUp (Ptr<const Packet> p, Ipv4Header ipHeader, Ptr<Ipv4Interface> incomingInterface)
 {
-  NS_LOG_FUNCTION (this << *p << ipHeader << device);
+  NS_LOG_FUNCTION (this << *p << ipHeader << incomingInterface);
   if (m_shutdownRecv)
     {
       return false;
@@ -302,6 +303,14 @@ Ipv4RawSocketImpl::ForwardUp (Ptr<const Packet> p, Ipv4Header ipHeader, Ptr<NetD
       ipHeader.GetProtocol () == m_protocol)
     {
       Ptr<Packet> copy = p->Copy ();
+      // Should check via getsockopt ()..
+      if (this->m_recvpktinfo)
+        {
+          Ipv4PacketInfoTag tag;
+          copy->RemovePacketTag (tag);
+          tag.SetRecvIf (incomingInterface->GetDevice ()->GetIfIndex ());
+          copy->AddPacketTag (tag);
+        }
       if (m_protocol == 1)
 	{
 	  Icmpv4Header icmpHeader;

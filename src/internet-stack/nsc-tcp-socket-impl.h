@@ -90,7 +90,8 @@ private:
   friend class Tcp;
   // invoked by Tcp class
   int FinishBind (void);
-  void ForwardUp (Ptr<Packet> p, Ipv4Address saddr, Ipv4Address daddr, uint16_t port);
+  void ForwardUp (Ptr<Packet> p, Ipv4Header header, uint16_t port, 
+                  Ptr<Ipv4Interface> incomingInterface);
   void Destroy (void);
   //methods for state
   bool SendPendingData(void);

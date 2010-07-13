@@ -664,7 +664,8 @@ TcpSocketImpl::BindToNetDevice (Ptr<NetDevice> netdevice)
 }
 
 void
-TcpSocketImpl::ForwardUp (Ptr<Packet> packet, Ipv4Address saddr, Ipv4Address daddr, uint16_t port)
+TcpSocketImpl::ForwardUp (Ptr<Packet> packet, Ipv4Header header, uint16_t port,
+                          Ptr<Ipv4Interface> incomingInterface)
 {
   NS_LOG_DEBUG("Socket " << this << " got forward up" <<
                " dport " << m_endPoint->GetLocalPort() <<
@@ -672,10 +673,10 @@ TcpSocketImpl::ForwardUp (Ptr<Packet> packet, Ipv4Address saddr, Ipv4Address dad
                " sport " << m_endPoint->GetPeerPort() <<
                " saddr " << m_endPoint->GetPeerAddress());
 
-  NS_LOG_FUNCTION (this << packet << saddr << daddr << port);
+  NS_LOG_FUNCTION (this << packet << header << port);
 
-  Address fromAddress = InetSocketAddress (saddr, port);
-  Address toAddress = InetSocketAddress (daddr, m_endPoint->GetLocalPort());
+  Address fromAddress = InetSocketAddress (header.GetSource (), port);
+  Address toAddress = InetSocketAddress (header.GetDestination (), m_endPoint->GetLocalPort());
 
   TcpHeader tcpHeader;
   packet->RemoveHeader (tcpHeader);

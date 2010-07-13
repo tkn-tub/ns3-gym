@@ -25,6 +25,8 @@
 #include "ns3/ipv4-address.h"
 #include "ns3/callback.h"
 #include "ns3/net-device.h"
+#include "ns3/ipv4-header.h"
+#include "ns3/ipv4-interface.h"
 
 namespace ns3 {
 
@@ -59,13 +61,14 @@ public:
   Ptr<NetDevice> GetBoundNetDevice (void);
 
   // Called from socket implementations to get notified about important events.
-  void SetRxCallback (Callback<void,Ptr<Packet>, Ipv4Address, Ipv4Address, uint16_t> callback);
+  void SetRxCallback (Callback<void,Ptr<Packet>, Ipv4Header, uint16_t, Ptr<Ipv4Interface> > callback);
   void SetIcmpCallback (Callback<void,Ipv4Address,uint8_t,uint8_t,uint8_t,uint32_t> callback);
   void SetDestroyCallback (Callback<void> callback);
 
   // Called from an L4Protocol implementation to notify an endpoint of a
   // packet reception.
-  void ForwardUp (Ptr<Packet> p, Ipv4Address saddr, Ipv4Address daddr, uint16_t sport);
+  void ForwardUp (Ptr<Packet> p, const Ipv4Header& header, uint16_t sport, 
+                  Ptr<Ipv4Interface> incomingInterface);
   // Called from an L4Protocol implementation to notify an endpoint of
   // an icmp message reception.
   void ForwardIcmp (Ipv4Address icmpSource, uint8_t icmpTtl, 
@@ -73,7 +76,8 @@ public:
                     uint32_t icmpInfo);
 
 private:
-  void DoForwardUp (Ptr<Packet> p, Ipv4Address saddr, Ipv4Address daddr, uint16_t sport);
+  void DoForwardUp (Ptr<Packet> p, const Ipv4Header& header, uint16_t sport,
+                    Ptr<Ipv4Interface> incomingInterface);
   void DoForwardIcmp (Ipv4Address icmpSource, uint8_t icmpTtl, 
                       uint8_t icmpType, uint8_t icmpCode,
                       uint32_t icmpInfo);
@@ -82,7 +86,7 @@ private:
   Ipv4Address m_peerAddr;
   uint16_t m_peerPort;
   Ptr<NetDevice> m_boundnetdevice;
-  Callback<void,Ptr<Packet>, Ipv4Address, Ipv4Address, uint16_t> m_rxCallback;
+  Callback<void,Ptr<Packet>, Ipv4Header, uint16_t, Ptr<Ipv4Interface> > m_rxCallback;
   Callback<void,Ipv4Address,uint8_t,uint8_t,uint8_t,uint32_t> m_icmpCallback;
   Callback<void> m_destroyCallback;
 };

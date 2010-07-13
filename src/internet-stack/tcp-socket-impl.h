@@ -28,6 +28,8 @@
 #include "ns3/ptr.h"
 #include "ns3/ipv4-address.h"
 #include "ns3/event-id.h"
+#include "ns3/ipv4-header.h"
+#include "ipv4-interface.h"
 #include "tcp-typedefs.h"
 #include "pending-data.h"
 #include "ns3/sequence-number.h"
@@ -103,7 +105,8 @@ private:
   friend class Tcp;
   // invoked by Tcp class
   int FinishBind (void);
-  void ForwardUp (Ptr<Packet> p, Ipv4Address saddr, Ipv4Address daddr, uint16_t port);
+  void ForwardUp (Ptr<Packet> p, Ipv4Header header, uint16_t port,
+                  Ptr<Ipv4Interface> incomingInterface);
   void Destroy (void);
   int DoSendTo (Ptr<Packet> p, const Address &daddr);
   int DoSendTo (Ptr<Packet> p, Ipv4Address daddr, uint16_t dport);

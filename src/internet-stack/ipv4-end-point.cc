@@ -89,7 +89,7 @@ Ipv4EndPoint::GetBoundNetDevice (void)
 }
 
 void 
-Ipv4EndPoint::SetRxCallback (Callback<void,Ptr<Packet>, Ipv4Address, Ipv4Address, uint16_t> callback)
+Ipv4EndPoint::SetRxCallback (Callback<void,Ptr<Packet>, Ipv4Header, uint16_t, Ptr<Ipv4Interface> > callback)
 {
   m_rxCallback = callback;
 }
@@ -106,17 +106,20 @@ Ipv4EndPoint::SetDestroyCallback (Callback<void> callback)
 }
 
 void 
-Ipv4EndPoint::ForwardUp (Ptr<Packet> p, Ipv4Address saddr, Ipv4Address daddr, uint16_t sport)
+Ipv4EndPoint::ForwardUp (Ptr<Packet> p, const Ipv4Header& header, uint16_t sport,
+                         Ptr<Ipv4Interface> incomingInterface)
 {
   if (!m_rxCallback.IsNull ())
     {
-      Simulator::ScheduleNow (&Ipv4EndPoint::DoForwardUp, this, p, saddr, daddr, sport);
+      Simulator::ScheduleNow (&Ipv4EndPoint::DoForwardUp, this, p, header, sport, 
+                              incomingInterface);
     }
 }
 void 
-Ipv4EndPoint::DoForwardUp (Ptr<Packet> p, Ipv4Address saddr, Ipv4Address daddr, uint16_t sport)
+Ipv4EndPoint::DoForwardUp (Ptr<Packet> p, const Ipv4Header& header, uint16_t sport,
+                           Ptr<Ipv4Interface> incomingInterface)
 {
-  m_rxCallback (p, saddr, daddr, sport);
+  m_rxCallback (p, header, sport, incomingInterface);
 }
 
 void 

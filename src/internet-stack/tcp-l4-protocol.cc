@@ -478,17 +478,16 @@ TcpL4Protocol::DeAllocate (Ipv4EndPoint *endPoint)
 
 enum Ipv4L4Protocol::RxStatus
 TcpL4Protocol::Receive (Ptr<Packet> packet,
-             Ipv4Address const &source,
-             Ipv4Address const &destination,
+             Ipv4Header const &ipHeader,
              Ptr<Ipv4Interface> incomingInterface)
 {
-  NS_LOG_FUNCTION (this << packet << source << destination << incomingInterface);
+  NS_LOG_FUNCTION (this << packet << ipHeader << incomingInterface);
 
   TcpHeader tcpHeader;
   if(Node::ChecksumEnabled ())
   {
     tcpHeader.EnableChecksums();
-    tcpHeader.InitializeChecksum (source, destination, PROT_NUMBER);
+    tcpHeader.InitializeChecksum (ipHeader.GetSource (), ipHeader.GetDestination (), PROT_NUMBER);
   }
 
   packet->PeekHeader (tcpHeader);
@@ -507,16 +506,16 @@ TcpL4Protocol::Receive (Ptr<Packet> packet,
 
   NS_LOG_LOGIC ("TcpL4Protocol "<<this<<" received a packet");
   Ipv4EndPointDemux::EndPoints endPoints =
-    m_endPoints->Lookup (destination, tcpHeader.GetDestinationPort (),
-                         source, tcpHeader.GetSourcePort (),incomingInterface);
+    m_endPoints->Lookup (ipHeader.GetDestination (), tcpHeader.GetDestinationPort (),
+                         ipHeader.GetSource (), tcpHeader.GetSourcePort (),incomingInterface);
   if (endPoints.empty ())
   {
     NS_LOG_LOGIC ("  No endpoints matched on TcpL4Protocol "<<this);
     std::ostringstream oss;
     oss<<"  destination IP: ";
-    destination.Print (oss);
+    ipHeader.GetDestination ().Print (oss);
     oss<<" destination port: "<< tcpHeader.GetDestinationPort ()<<" source IP: ";
-    source.Print (oss);
+    ipHeader.GetSource ().Print (oss);
     oss<<" source port: "<<tcpHeader.GetSourcePort ();
     NS_LOG_LOGIC (oss.str ());
 
@@ -539,7 +538,7 @@ TcpL4Protocol::Receive (Ptr<Packet> packet,
           }
         header.SetSourcePort (tcpHeader.GetDestinationPort ());
         header.SetDestinationPort (tcpHeader.GetSourcePort ());
-        SendPacket (rstPacket, header, destination, source);
+        SendPacket (rstPacket, header, ipHeader.GetDestination (), ipHeader.GetSource ());
         return Ipv4L4Protocol::RX_ENDPOINT_CLOSED;
       }
     else
@@ -549,7 +548,8 @@ TcpL4Protocol::Receive (Ptr<Packet> packet,
   }
   NS_ASSERT_MSG (endPoints.size() == 1 , "Demux returned more than one endpoint");
   NS_LOG_LOGIC ("TcpL4Protocol "<<this<<" forwarding up to endpoint/socket");
-  (*endPoints.begin ())->ForwardUp (packet, source, destination, tcpHeader.GetSourcePort ());
+  (*endPoints.begin ())->ForwardUp (packet, ipHeader, tcpHeader.GetSourcePort (), 
+                                    incomingInterface);
   return Ipv4L4Protocol::RX_OK;
 }
 

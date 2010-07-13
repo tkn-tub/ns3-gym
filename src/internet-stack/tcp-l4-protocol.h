@@ -100,11 +100,11 @@ public:
    * \param p The Packet to dump the contents into
    * \param source The source's Ipv4Address
    * \param destination The destinations Ipv4Address
+   * \param header IPv4 Header information
    * \param incomingInterface The Ipv4Interface it was received on
    */
   virtual enum Ipv4L4Protocol::RxStatus Receive (Ptr<Packet> p,
-                                                 Ipv4Address const &source,
-                                                 Ipv4Address const &destination,
+                                                 Ipv4Header const &header,
                                                  Ptr<Ipv4Interface> incomingInterface);
 
 protected:

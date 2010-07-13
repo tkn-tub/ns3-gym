@@ -82,8 +82,7 @@ public:
    * \param incomingInterface The Ipv4Interface it was received on
    */
   virtual Ipv4L4Protocol::RxStatus Receive (Ptr<Packet> p,
-                                            Ipv4Address const &source,
-                                            Ipv4Address const &destination,
+                                            Ipv4Header const &header,
                                             Ptr<Ipv4Interface> incomingInterface);
 
 protected:

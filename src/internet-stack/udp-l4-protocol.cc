@@ -198,18 +198,17 @@ UdpL4Protocol::ReceiveIcmp (Ipv4Address icmpSource, uint8_t icmpTtl,
 
 enum Ipv4L4Protocol::RxStatus
 UdpL4Protocol::Receive(Ptr<Packet> packet, 
-                       Ipv4Address const &source,
-                       Ipv4Address const &destination,
+                       Ipv4Header const &header,
                        Ptr<Ipv4Interface> interface)
 {
-  NS_LOG_FUNCTION (this << packet << source << destination);
+  NS_LOG_FUNCTION (this << packet << header);
   UdpHeader udpHeader;
   if(Node::ChecksumEnabled ())
   {
     udpHeader.EnableChecksums();
   }
 
-  udpHeader.InitializeChecksum (source, destination, PROT_NUMBER);
+  udpHeader.InitializeChecksum (header.GetSource (), header.GetDestination (), PROT_NUMBER);
 
   packet->RemoveHeader (udpHeader);
 
@@ -220,8 +219,8 @@ UdpL4Protocol::Receive(Ptr<Packet> packet,
   }
 
   Ipv4EndPointDemux::EndPoints endPoints =
-    m_endPoints->Lookup (destination, udpHeader.GetDestinationPort (),
-                         source, udpHeader.GetSourcePort (), interface);
+    m_endPoints->Lookup (header.GetDestination (), udpHeader.GetDestinationPort (),
+                         header.GetSource (), udpHeader.GetSourcePort (), interface);
   if (endPoints.empty ())
     {
       NS_LOG_LOGIC ("RX_ENDPOINT_UNREACH");
@@ -230,7 +229,8 @@ UdpL4Protocol::Receive(Ptr<Packet> packet,
   for (Ipv4EndPointDemux::EndPointsI endPoint = endPoints.begin ();
        endPoint != endPoints.end (); endPoint++)
     {
-      (*endPoint)->ForwardUp (packet->Copy (), source, destination, udpHeader.GetSourcePort ());
+      (*endPoint)->ForwardUp (packet->Copy (), header, udpHeader.GetSourcePort (), 
+                              interface);
     }
   return Ipv4L4Protocol::RX_OK;
 }

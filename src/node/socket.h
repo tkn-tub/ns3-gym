@@ -570,6 +570,16 @@ public:
    */
   virtual bool GetAllowBroadcast () const = 0;
 
+  /**
+   * \brief Enable/Disable receive packet information to socket.
+   *
+   * For IP_PKTINFO/IP6_PKTINFO. This method is only usable for 
+   * Raw socket and Datagram Socket. Not supported for Stream socket.
+   *
+   * \param Enable/Disable receive information
+   * \returns nothing
+   */
+  void SetRecvPktInfo (bool flag);
  
 protected:
   void NotifyConnectionSucceeded (void);
@@ -583,6 +593,7 @@ protected:
   void NotifyDataRecv (void);
   virtual void DoDispose (void);
   Ptr<NetDevice> m_boundnetdevice;
+  bool m_recvpktinfo;
 private:
   Callback<void, Ptr<Socket> >                   m_connectionSucceeded;
   Callback<void, Ptr<Socket> >                   m_connectionFailed;

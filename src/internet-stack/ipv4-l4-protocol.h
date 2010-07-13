@@ -62,14 +62,14 @@ public:
    * \param p packet to forward up
    * \param source source address of packet received
    * \param destination address of packet received
+   * \param header IPv4 Header information
    * \param incomingInterface the Ipv4Interface on which the packet arrived
    * 
    * Called from lower-level layers to send the packet up
    * in the stack. 
    */
   virtual enum RxStatus Receive(Ptr<Packet> p, 
-                                Ipv4Address const &source,
-                                Ipv4Address const &destination,
+                                Ipv4Header const &header,
                                 Ptr<Ipv4Interface> incomingInterface) = 0;
 
   /**
