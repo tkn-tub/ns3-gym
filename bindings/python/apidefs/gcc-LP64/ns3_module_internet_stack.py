@@ -2627,10 +2627,10 @@ def register_Ns3Ipv4L4Protocol_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
-    ## ipv4-l4-protocol.h: ns3::Ipv4L4Protocol::RxStatus ns3::Ipv4L4Protocol::Receive(ns3::Ptr<ns3::Packet> p, ns3::Ipv4Address const & source, ns3::Ipv4Address const & destination, ns3::Ptr<ns3::Ipv4Interface> incomingInterface) [member function]
+    ## ipv4-l4-protocol.h: ns3::Ipv4L4Protocol::RxStatus ns3::Ipv4L4Protocol::Receive(ns3::Ptr<ns3::Packet> p, ns3::Ipv4Header const & header, ns3::Ptr<ns3::Ipv4Interface> incomingInterface) [member function]
     cls.add_method('Receive', 
                    'ns3::Ipv4L4Protocol::RxStatus', 
-                   [param('ns3::Ptr< ns3::Packet >', 'p'), param('ns3::Ipv4Address const &', 'source'), param('ns3::Ipv4Address const &', 'destination'), param('ns3::Ptr< ns3::Ipv4Interface >', 'incomingInterface')], 
+                   [param('ns3::Ptr< ns3::Packet >', 'p'), param('ns3::Ipv4Header const &', 'header'), param('ns3::Ptr< ns3::Ipv4Interface >', 'incomingInterface')], 
                    is_pure_virtual=True, is_virtual=True)
     ## ipv4-l4-protocol.h: void ns3::Ipv4L4Protocol::ReceiveIcmp(ns3::Ipv4Address icmpSource, uint8_t icmpTtl, uint8_t icmpType, uint8_t icmpCode, uint32_t icmpInfo, ns3::Ipv4Address payloadSource, ns3::Ipv4Address payloadDestination, uint8_t const * payload) [member function]
     cls.add_method('ReceiveIcmp', 
@@ -3504,10 +3504,10 @@ def register_Ns3TcpL4Protocol_methods(root_module, cls):
     cls.add_method('Send', 
                    'void', 
                    [param('ns3::Ptr< ns3::Packet >', 'packet'), param('ns3::Ipv4Address', 'saddr'), param('ns3::Ipv4Address', 'daddr'), param('uint16_t', 'sport'), param('uint16_t', 'dport'), param('ns3::Ptr< ns3::NetDevice >', 'oif', default_value='0')])
-    ## tcp-l4-protocol.h: ns3::Ipv4L4Protocol::RxStatus ns3::TcpL4Protocol::Receive(ns3::Ptr<ns3::Packet> p, ns3::Ipv4Address const & source, ns3::Ipv4Address const & destination, ns3::Ptr<ns3::Ipv4Interface> incomingInterface) [member function]
+    ## tcp-l4-protocol.h: ns3::Ipv4L4Protocol::RxStatus ns3::TcpL4Protocol::Receive(ns3::Ptr<ns3::Packet> p, ns3::Ipv4Header const & header, ns3::Ptr<ns3::Ipv4Interface> incomingInterface) [member function]
     cls.add_method('Receive', 
                    'ns3::Ipv4L4Protocol::RxStatus', 
-                   [param('ns3::Ptr< ns3::Packet >', 'p'), param('ns3::Ipv4Address const &', 'source'), param('ns3::Ipv4Address const &', 'destination'), param('ns3::Ptr< ns3::Ipv4Interface >', 'incomingInterface')], 
+                   [param('ns3::Ptr< ns3::Packet >', 'p'), param('ns3::Ipv4Header const &', 'header'), param('ns3::Ptr< ns3::Ipv4Interface >', 'incomingInterface')], 
                    is_virtual=True)
     ## tcp-l4-protocol.h: void ns3::TcpL4Protocol::DoDispose() [member function]
     cls.add_method('DoDispose', 
@@ -3564,10 +3564,10 @@ def register_Ns3UdpL4Protocol_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
-    ## udp-l4-protocol.h: ns3::Ipv4L4Protocol::RxStatus ns3::UdpL4Protocol::Receive(ns3::Ptr<ns3::Packet> p, ns3::Ipv4Address const & source, ns3::Ipv4Address const & destination, ns3::Ptr<ns3::Ipv4Interface> interface) [member function]
+    ## udp-l4-protocol.h: ns3::Ipv4L4Protocol::RxStatus ns3::UdpL4Protocol::Receive(ns3::Ptr<ns3::Packet> p, ns3::Ipv4Header const & header, ns3::Ptr<ns3::Ipv4Interface> interface) [member function]
     cls.add_method('Receive', 
                    'ns3::Ipv4L4Protocol::RxStatus', 
-                   [param('ns3::Ptr< ns3::Packet >', 'p'), param('ns3::Ipv4Address const &', 'source'), param('ns3::Ipv4Address const &', 'destination'), param('ns3::Ptr< ns3::Ipv4Interface >', 'interface')], 
+                   [param('ns3::Ptr< ns3::Packet >', 'p'), param('ns3::Ipv4Header const &', 'header'), param('ns3::Ptr< ns3::Ipv4Interface >', 'interface')], 
                    is_virtual=True)
     ## udp-l4-protocol.h: void ns3::UdpL4Protocol::ReceiveIcmp(ns3::Ipv4Address icmpSource, uint8_t icmpTtl, uint8_t icmpType, uint8_t icmpCode, uint32_t icmpInfo, ns3::Ipv4Address payloadSource, ns3::Ipv4Address payloadDestination, uint8_t const * payload) [member function]
     cls.add_method('ReceiveIcmp', 
@@ -3620,10 +3620,10 @@ def register_Ns3Icmpv4L4Protocol_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
-    ## icmpv4-l4-protocol.h: ns3::Ipv4L4Protocol::RxStatus ns3::Icmpv4L4Protocol::Receive(ns3::Ptr<ns3::Packet> p, ns3::Ipv4Address const & source, ns3::Ipv4Address const & destination, ns3::Ptr<ns3::Ipv4Interface> incomingInterface) [member function]
+    ## icmpv4-l4-protocol.h: ns3::Ipv4L4Protocol::RxStatus ns3::Icmpv4L4Protocol::Receive(ns3::Ptr<ns3::Packet> p, ns3::Ipv4Header const & header, ns3::Ptr<ns3::Ipv4Interface> incomingInterface) [member function]
     cls.add_method('Receive', 
                    'ns3::Ipv4L4Protocol::RxStatus', 
-                   [param('ns3::Ptr< ns3::Packet >', 'p'), param('ns3::Ipv4Address const &', 'source'), param('ns3::Ipv4Address const &', 'destination'), param('ns3::Ptr< ns3::Ipv4Interface >', 'incomingInterface')], 
+                   [param('ns3::Ptr< ns3::Packet >', 'p'), param('ns3::Ipv4Header const &', 'header'), param('ns3::Ptr< ns3::Ipv4Interface >', 'incomingInterface')], 
                    is_virtual=True)
     ## icmpv4-l4-protocol.h: void ns3::Icmpv4L4Protocol::SendDestUnreachFragNeeded(ns3::Ipv4Header header, ns3::Ptr<ns3::Packet const> orgData, uint16_t nextHopMtu) [member function]
     cls.add_method('SendDestUnreachFragNeeded', 
