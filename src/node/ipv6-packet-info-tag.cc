@@ -272,6 +272,7 @@ Ipv6PacketInfoTagTest::DoRun (void)
 
 #endif  // UDP6_SUPPORTED
 
+  Simulator::Destroy ();
   // IPv6 test
   return 0;
 }

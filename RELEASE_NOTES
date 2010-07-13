@@ -71,6 +71,7 @@ many cases referencing the Bugzilla bug number
    - bug 871 - naming for WifiPhyStandard
    - bug 946 - Rocketfuel topology dataset support for topology reader
    - bug 881 - Reorganise to allow wider use of WifiInformationElement
+   - bug 671 - add packet-info-tag.cc for IP_PKTINFO/IPV6_PKTINFO
 
 Known issues
 ------------

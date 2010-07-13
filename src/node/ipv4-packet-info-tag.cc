@@ -263,6 +263,7 @@ Ipv4PacketInfoTagTest::DoRun (void)
   Simulator::ScheduleWithContext (socket2->GetNode ()->GetId (), Seconds (0),
                                   &Ipv4PacketInfoTagTest::DoSendData, this, socket, "10.1.1.1");
   Simulator::Run ();
+  Simulator::Destroy ();
 
   return 0;
 }
