@@ -252,6 +252,44 @@ TimeSimpleTestCase::DoTearDown (void)
   Time::SetResolution (m_originalResolution);
 }
 
+class ArithTestCase : public TestCase
+{
+public:
+  ArithTestCase ();
+private:
+  virtual bool DoRun (void);
+};
+
+ArithTestCase::ArithTestCase ()
+  : TestCase ("check arithmetic operators")
+{
+}
+bool 
+ArithTestCase::DoRun (void)
+{
+  Time a, b, c;
+  c = a + b;
+  c = a * b;
+  c = a / Seconds (1.0);
+  c = a - b;
+  c += a;
+  c -= a;
+  c /= Seconds (1.0);
+  c *= a;
+  bool x;
+  x = a < b;
+  x = a > b;
+  x = a <= b;
+  x = a >= b;
+  x = a == b;
+  x = a != b;
+  //a = 1.0;
+  //a = 1;
+  return false;
+}
+
+
+
 static class TimeTestSuite : public TestSuite
 {
 public:
@@ -260,6 +298,7 @@ public:
   {
     AddTestCase (new Bug863TestCase ());
     AddTestCase (new TimeSimpleTestCase (Time::US));
+    AddTestCase (new ArithTestCase ());
   }
 } g_timeTestSuite;
 

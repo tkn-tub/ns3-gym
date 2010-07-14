@@ -178,34 +178,6 @@ public:
   explicit inline Time (const HighPrecision &data)
     : m_data (data)
   {}
-  inline Time (double v)
-    : m_data (HighPrecision (v))
-  {}
-  inline Time (int64_t v)
-    : m_data (HighPrecision (v, false))
-  {}
-  inline Time (uint64_t v)
-    : m_data (HighPrecision (v, false))
-  {}
-  inline Time (int32_t v)
-    : m_data (HighPrecision (v, false))
-  {}
-  inline Time (uint32_t v)
-    : m_data (HighPrecision (v, false))
-  {}
-  inline Time (int16_t v)
-    : m_data (HighPrecision (v, false))
-  {}
-  inline Time (uint16_t v)
-    : m_data (HighPrecision (v, false))
-  {}
-  inline Time (int8_t v)
-    : m_data (HighPrecision (v, false))
-  {}
-  inline Time (uint8_t v)
-    : m_data (HighPrecision (v, false))
-  {}
-
 
   /**
    * \brief String constructor
@@ -339,14 +311,6 @@ public:
   {
     int64_t timeValue = m_data.GetInteger ();
     return timeValue;
-  }
-  inline double GetDouble (void) const
-  {
-    return m_data.GetDouble ();
-  }
-  inline int64_t GetInteger (void) const
-  {
-    return GetTimeStep ();
   }
 
 
@@ -698,7 +662,42 @@ inline Time TimeStep (uint64_t ts)
   return Time (HighPrecision (ts, false));
 }
 
-typedef Time Scalar;
+class Scalar
+{
+public:
+  inline Scalar ()
+    : m_v (0.0)
+  {}
+  explicit inline Scalar (double v)
+    : m_v (v)
+  {}
+  explicit inline Scalar (uint32_t v)
+    : m_v (v)
+  {}
+  explicit inline Scalar (int32_t v)
+    : m_v (v)
+  {}
+  explicit inline Scalar (uint64_t v)
+    : m_v (v)
+  {}
+  explicit inline Scalar (int64_t v)
+    : m_v (v)
+  {}
+  inline Scalar (Time t)
+    : m_v (t.GetHighPrecision ().GetDouble ())
+  {}
+  inline operator Time ()
+  {
+    return Time (HighPrecision (m_v));
+  }
+  inline double GetDouble (void) const
+  {
+    return m_v;
+  }
+private:
+  double m_v;
+};
+
 typedef Time TimeInvert;
 typedef Time TimeSquare;
 
