@@ -20,14 +20,11 @@
 #include "high-precision-cairo.h"
 #include "ns3/test.h"
 #include "ns3/abort.h"
-#include "ns3/log.h"
 #include "ns3/assert.h"
 #include <math.h>
 #include <iostream>
 
 namespace ns3 {
-
-NS_LOG_COMPONENT_DEFINE ("HighPrecisionCairo");
 
 
 #define OUTPUT_SIGN(sa,sb,ua,ub)                                        \
