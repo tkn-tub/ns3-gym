@@ -67,7 +67,7 @@ Backoff::GetBackoffTime (void)
 
   uint32_t backoffSlots = (uint32_t)m_rng.GetValue(minSlot, maxSlot);
 
-  backoff = backoffSlots * m_slotTime;
+  backoff = Scalar (backoffSlots) * m_slotTime;
   return (backoff);
 }
 
