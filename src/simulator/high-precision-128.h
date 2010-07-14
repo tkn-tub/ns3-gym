@@ -24,9 +24,27 @@
 #include <math.h>
 #include <stdint.h>
 
+#define noCOUNT_OPS 1
+
 #if defined(HAVE___UINT128_T) and !defined(HAVE_UINT128_T)
 typedef __uint128_t uint128_t;
 typedef __int128_t int128_t;
+#endif
+
+#ifdef COUNT_OPS
+#define INC_ADD HighPrecision::g_nAdd++
+#define INC_SUB HighPrecision::g_nAdd++
+#define INC_MUL HighPrecision::g_nMul++
+#define INC_DIV HighPrecision::g_nDiv++
+#define INC_MULI HighPrecision::g_nMuli++
+#define INC_CMP HighPrecision::g_nCmp++
+#else
+#define INC_ADD
+#define INC_SUB
+#define INC_MUL
+#define INC_DIV
+#define INC_MULI
+#define INC_CMP
 #endif
 
 namespace ns3 {
@@ -55,6 +73,17 @@ private:
   static uint128_t Divu (uint128_t a, uint128_t b);
 
   int128_t m_value;
+
+#ifdef COUNT_OPS
+  static uint128_t g_nAdd;
+  static uint128_t g_nMuli;
+  static uint128_t g_nMul;
+  static uint128_t g_nDiv;
+  static uint128_t g_nCmp;
+  static struct Printer {
+    ~Printer ();
+  } g_printer;
+#endif
 };
 
 } // namespace ns3
@@ -81,17 +110,20 @@ int64_t HighPrecision::GetInteger (void) const
 void
 HighPrecision::Add (HighPrecision const &o)
 {
+  INC_ADD;
   m_value += o.m_value;
 }
 void
 HighPrecision::Sub (HighPrecision const &o)
 {
+  INC_SUB;
   m_value -= o.m_value;
 }
 
 int 
 HighPrecision::Compare (HighPrecision const &o) const
 {
+  INC_CMP;
   return (m_value < o.m_value)?-1:(m_value == o.m_value)?0:1;
 }
 

@@ -2,8 +2,25 @@
 #include "ns3/abort.h"
 #include "ns3/assert.h"
 #include <math.h>
+#ifdef COUNT_OPS
+#include <iostream>
+#endif
 
 namespace ns3 {
+
+#ifdef COUNT_OPS
+uint128_t HighPrecision::g_nAdd = 0;
+uint128_t HighPrecision::g_nMuli = 0;
+uint128_t HighPrecision::g_nMul = 0;
+uint128_t HighPrecision::g_nDiv = 0;
+uint128_t HighPrecision::g_nCmp = 0;
+HighPrecision::Printer  HighPrecision::g_printer;
+HighPrecision::Printer::~Printer ()
+{
+  std::cout << "add=" << (double)g_nAdd << " mul=" << (double)g_nMul << " div=" << (double)g_nDiv
+	    << " muli=" << (double)g_nMuli << " cmp=" << (double)g_nCmp;
+}
+#endif
 
 #define OUTPUT_SIGN(sa,sb,ua,ub)					\
   ({bool negA, negB;							\
@@ -31,6 +48,7 @@ HighPrecision::Mul (HighPrecision const &o)
 uint128_t
 HighPrecision::Umul (uint128_t a, uint128_t b)
 {
+  INC_MUL;
   uint128_t aL = a & MASK_LO;
   uint128_t bL = b & MASK_LO;
   uint128_t aH = (a >> 64) & MASK_LO;
@@ -71,6 +89,7 @@ HighPrecision::Div (HighPrecision const &o)
 uint128_t
 HighPrecision::Divu (uint128_t a, uint128_t b)
 {
+  INC_DIV;
   uint128_t quo = a / b;
   uint128_t rem = (a % b);
   uint128_t result = quo << 64;
@@ -104,6 +123,7 @@ HighPrecision::MulByInvert (const HighPrecision &o)
 uint128_t
 HighPrecision::UmulByInvert (uint128_t a, uint128_t b)
 {
+  INC_MULI;
   uint128_t result, ah, bh, al, bl;
   uint128_t hi, mid;
   ah = a >> 64;
