@@ -99,6 +99,7 @@ public:
    * @param p the PacketBurst associated with the incoming waveform
    * @param rxPsd the Power Spectral Density of the incoming
    * waveform. The units of the PSD are the same specified for SpectrumChannel::StartTx().
+   * @param st spectrum type
    * @param duration the duration of the incoming waveform
    */
   virtual void StartRx (Ptr<PacketBurst> p, Ptr <const SpectrumValue> rxPsd, SpectrumType st, Time duration) = 0;

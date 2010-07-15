@@ -57,7 +57,7 @@ public:
   /**
    * set the SpectrumChannel that will be used by SpectrumPhy instances created by this helper
    *
-   * @param channel
+   * @param channelName
    */
   void SetChannel (std::string channelName);
 

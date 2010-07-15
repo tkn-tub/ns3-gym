@@ -576,7 +576,7 @@ public:
    * For IP_PKTINFO/IP6_PKTINFO. This method is only usable for 
    * Raw socket and Datagram Socket. Not supported for Stream socket.
    *
-   * \param Enable/Disable receive information
+   * \param flag Enable/Disable receive information
    * \returns nothing
    */
   void SetRecvPktInfo (bool flag);

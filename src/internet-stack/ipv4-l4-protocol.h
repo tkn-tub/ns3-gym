@@ -60,8 +60,6 @@ public:
 
   /**
    * \param p packet to forward up
-   * \param source source address of packet received
-   * \param destination address of packet received
    * \param header IPv4 Header information
    * \param incomingInterface the Ipv4Interface on which the packet arrived
    * 

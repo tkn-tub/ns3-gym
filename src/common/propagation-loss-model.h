@@ -487,7 +487,7 @@ public:
    * \param symmetric   If true (default), both a->b and b->a paths will be affected
    */ 
   void SetLoss (Ptr<Node> a, Ptr<Node> b, double loss, bool symmetric = true);
-  /// Set default loss (in dB, positive) to be used, \infty if not set
+  /// Set default loss (in dB, positive) to be used, infinity if not set
   void SetDefaultLoss (double);
   
 private:

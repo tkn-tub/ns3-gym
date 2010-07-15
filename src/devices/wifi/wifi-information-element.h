@@ -64,7 +64,7 @@ namespace ns3 {
  *
  * Until such time as a better way of implementing this is dreamt up
  * and applied, developers will need to be careful to avoid
- * duplication of IE IDs in the #definitions below (and in files which
+ * duplication of IE IDs in the defines below (and in files which
  * declare "subclasses" of WifiInformationElement). Sorry.
  */
 typedef uint8_t WifiInformationElementId;

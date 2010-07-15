@@ -44,7 +44,7 @@ TypeId SimpleOfdmWimaxPhy::GetTypeId (void)
 {
   static TypeId
   tid =
-    TypeId ("ns3::simpleOfdmWimaxPhy").SetParent<WimaxPhy> ()
+    TypeId ("ns3::SimpleOfdmWimaxPhy").SetParent<WimaxPhy> ()
 
     .AddAttribute ("NoiseFigure",
                    "Loss (dB) in the Signal-to-Noise-Ratio due to non-idealities in the receiver.",

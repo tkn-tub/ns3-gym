@@ -208,7 +208,7 @@ public:
    *
    * @return the value of lhs - rhs
    */
-  friend SpectrumValue operator- (double, const SpectrumValue& rhs);
+  friend SpectrumValue operator- (double lhs, const SpectrumValue& rhs);
 
   /**
    *  multiplication component-by-component (Schur product)

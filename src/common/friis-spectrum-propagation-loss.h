@@ -40,7 +40,7 @@ public:
   static TypeId GetTypeId ();
 
 
-  virtual Ptr<SpectrumValue> DoCalcRxPowerSpectralDensity (Ptr<const SpectrumValue> txPower,
+  virtual Ptr<SpectrumValue> DoCalcRxPowerSpectralDensity (Ptr<const SpectrumValue> txPsd,
                                                            Ptr<const MobilityModel> a,
                                                            Ptr<const MobilityModel> b) const;
 

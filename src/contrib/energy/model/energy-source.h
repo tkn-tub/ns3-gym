@@ -63,7 +63,7 @@ public:
   double GetRemainingEnergy (void) const;
 
   /**
-   * \param energy Amount of energy to decrease (in Joules)
+   * \param energyJ Amount of energy to decrease (in Joules)
    *
    * This function decreases the remaining energy in the energy source by the
    * specified amount.
@@ -71,7 +71,7 @@ public:
   void DecreaseRemainingEnergy (double energyJ);
 
   /**
-   * \param energy Amount of energy to increase (in Joules)
+   * \param energyJ Amount of energy to increase (in Joules)
    *
    * This function increases the remaining energy in the energy source by the
    * specified amount. Provided for supporting re-charging or scavenging.
@@ -87,7 +87,6 @@ public:
 
   /**
    * \param deviceEnergyModelPtr Pointer to device energy model.
-   * \param tid TypeId of the specific device energy model.
    *
    * This function appends a device energy model to the end of a list of
    * DeviceEnergyModelInfo structs.

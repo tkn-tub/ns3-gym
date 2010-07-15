@@ -84,8 +84,6 @@ public:
   /**
    * \brief Receive a packet up the protocol stack
    * \param p The Packet to dump the contents into
-   * \param source The source's Ipv4Address
-   * \param destination The destinations Ipv4Address
    * \param header IPv4 Header information
    * \param interface the interface from which the packet is coming.
    */

@@ -77,18 +77,11 @@ public:
 
   static TypeId GetTypeId (void);
 
-  /**
-   *
-   *
-   * @param phy
-   */
-
-
   // inherited from SpectrumChannel
   virtual void AddSpectrumPropagationLossModel (Ptr<SpectrumPropagationLossModel> loss);
   virtual void SetPropagationDelayModel (Ptr<PropagationDelayModel> delay);
   virtual void AddRx (Ptr<SpectrumPhy> phy);
-  virtual void StartTx (Ptr<PacketBurst> p, Ptr <SpectrumValue> rxPsd, SpectrumType st, Time duration, Ptr<SpectrumPhy> sender);
+  virtual void StartTx (Ptr<PacketBurst> p, Ptr <SpectrumValue> txPsd, SpectrumType st, Time duration, Ptr<SpectrumPhy> sender);
 
 
   // inherited from Channel

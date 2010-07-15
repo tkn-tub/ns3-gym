@@ -81,9 +81,8 @@ private:
   /**
    *
    *
-   * @param txPower set of values vs frequency representing the
+   * @param txPsd set of values vs frequency representing the
    * transmission power. See SpectrumChannel for details.
-   *
    * @param a sender mobility
    * @param b receiver mobility
    *

@@ -59,7 +59,7 @@ public:
   Ptr<Object> GetMobility ();
   Ptr<Object> GetDevice ();
   Ptr<const SpectrumModel> GetRxSpectrumModel () const;
-  void StartRx (Ptr<PacketBurst> p, Ptr <const SpectrumValue> rxPowerSpectrum, SpectrumType st, Time duration); 
+  void StartRx (Ptr<PacketBurst> p, Ptr <const SpectrumValue> rxPsd, SpectrumType st, Time duration); 
 
 
   /**

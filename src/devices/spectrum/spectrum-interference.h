@@ -85,7 +85,7 @@ public:
    * @param spd the power spectral density of the new signal
    * @param duration the duration of the new signal
    */
-  void AddSignal (Ptr<const SpectrumValue>, const Time duration);
+  void AddSignal (Ptr<const SpectrumValue> spd, const Time duration);
 
 
   /**

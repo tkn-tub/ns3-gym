@@ -221,7 +221,7 @@ public:
    * \returns Pathloss in dB re 1 uPa
    * \param a Ptr to mobility model of node a
    * \param b Ptr to mobility model of node b
-   * \param mode TX mode of transmission between a and b
+   * \param txMode TX mode of transmission between a and b
    */
   virtual double GetPathLossDb (Ptr<MobilityModel> a, Ptr<MobilityModel> b, UanTxMode txMode) = 0;
 

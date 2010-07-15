@@ -151,13 +151,13 @@ public:
    */
   double GetCcaThresholdPhy2 (void) const;
   /**
-   * \param double Signal power threshold in dB to set Phy1 to
+   * \param thresh Signal power threshold in dB to set Phy1 to
    */
-  void SetCcaThresholdPhy1 (double);
+  void SetCcaThresholdPhy1 (double thresh);
   /**
-   * \param double Signal power threshold in dB to set Phy2 to
+   * \param thresh Signal power threshold in dB to set Phy2 to
    */
-  void SetCcaThresholdPhy2 (double);
+  void SetCcaThresholdPhy2 (double thresh);
 
   /**
    * \returns Current TX power setting of Phy 1 in dB
@@ -185,13 +185,13 @@ public:
    */
   double GetRxGainDbPhy2 (void) const;
   /**
-   * \param double value in dB to apply to RX gain of Phy1
+   * \param gain value in dB to apply to RX gain of Phy1
    */
-  void SetRxGainDbPhy1 (double);
+  void SetRxGainDbPhy1 (double gain);
   /**
-   * \param double value in dB to apply to RX gain of Phy2
+   * \param gain value in dB to apply to RX gain of Phy2
    */
-  void SetRxGainDbPhy2 (double);
+  void SetRxGainDbPhy2 (double gain);
 
   /**
    * \returns List of available modes on Phy1

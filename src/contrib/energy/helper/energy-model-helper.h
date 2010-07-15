@@ -151,33 +151,32 @@ public:
   EnergyModelHelper ();
 
   /**
-   * \param source The EnergySourceHelper to create EnergySource.
-   * \param model The DeviceEnergyModelHelper to create DeviceEnergyModel.
+   * \param sourceHelper The EnergySourceHelper to create EnergySource.
+   * \param modelHelper The DeviceEnergyModelHelper to create DeviceEnergyModel.
    * \param node The node on which the energy model will be installed on.
    */
   void Install (const EnergySourceHelper &sourceHelper,
                 const DeviceEnergyModelHelper &modelHelper, Ptr<Node> node) const;
 
   /**
-   * \param source The EnergySourceHelper to create EnergySource.
-   * \param model The DeviceEnergyModelHelper to create DeviceEnergyModel.
-   * \param node List of node on which the energy model will be installed on.
+   * \param sourceHelper The EnergySourceHelper to create EnergySource.
+   * \param modelHelper The DeviceEnergyModelHelper to create DeviceEnergyModel.
+   * \param c List of node on which the energy model will be installed on.
    */
   void Install (const EnergySourceHelper &sourceHelper,
                 const DeviceEnergyModelHelper &modelHelper, NodeContainer c) const;
 
   /**
-   * \param source The EnergySourceHelper to create EnergySource.
-   * \param model The DeviceEnergyModelHelper to create DeviceEnergyModel.
-   * \param node name of node on which the energy model will be installed on.
+   * \param sourceHelper The EnergySourceHelper to create EnergySource.
+   * \param modelHelper The DeviceEnergyModelHelper to create DeviceEnergyModel.
+   * \param nodeName name of node on which the energy model will be installed on.
    */
   void Install (const EnergySourceHelper &sourceHelper,
                 const DeviceEnergyModelHelper &modelHelper, std::string nodeName) const;
 
   /**
-   * \param source The EnergySourceHelper to create EnergySource.
-   * \param model The DeviceEnergyModelHelper to create DeviceEnergyModel.
-   * \param node name of node on which the energy model will be installed on.
+   * \param sourceHelper The EnergySourceHelper to create EnergySource.
+   * \param modelHelper The DeviceEnergyModelHelper to create DeviceEnergyModel.
    */
   void InstallAll (const EnergySourceHelper &sourceHelper,
                    const DeviceEnergyModelHelper &modelHelper) const;

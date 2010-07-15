@@ -59,7 +59,7 @@ class Derived : public Object
 {
 public:
   static TypeId GetTypeId (void) {
-    static TypeId tid = TypeId ("Derived")
+    static TypeId tid = TypeId ("ns3::Derived")
       .SetParent<Object> ()
       ;
     return tid;

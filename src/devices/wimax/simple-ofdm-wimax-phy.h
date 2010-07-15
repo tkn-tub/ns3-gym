@@ -91,7 +91,6 @@ public:
   WimaxPhy::PhyType GetPhyType (void) const;
   /**
    * \brief start the reception of a fec block
-   * \param fecBlock the fec block being received
    * \param burstSize the burst size
    * \param isFirstBlock true if this block is the first one, false otherwise
    * \param frequency the frequency in wich the fec block is being received

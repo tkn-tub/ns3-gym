@@ -49,7 +49,7 @@
  * enable the macro HP128INC below and call the HighPrecision::PrintStats
  * method at the end of the simulation.
  *
- *  Explanation of Slow and Fast values:
+ * Explanation of Slow and Fast values:
  *
  * HighPrecision class create a fastValue and a slowValue depending on the
  * input number. If the input is an integer with 0 fractional part, it will

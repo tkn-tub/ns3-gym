@@ -31,7 +31,7 @@ NS_OBJECT_ENSURE_REGISTERED (AlohaNoackMacHeader);
 TypeId
 AlohaNoackMacHeader::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("AlohaNoackMacHeader")
+  static TypeId tid = TypeId ("ns3::AlohaNoackMacHeader")
     .SetParent<Header> ()
     .AddConstructor<AlohaNoackMacHeader> ()
   ;

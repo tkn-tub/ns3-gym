@@ -57,7 +57,6 @@ public:
   /**
    * \brief Sends a dummy fec block to all connected physical devices
    * \param BlockTime the time needed to send the block
-   * \param fecBlock the fec block being sent
    * \param burstSize the size of the burst
    * \param phy the sender device
    * \param isFirstBlock true if this block is the first one, false otherwise
@@ -72,7 +71,7 @@ public:
              uint32_t burstSize, Ptr<WimaxPhy> phy, bool isFirstBlock,
              bool isLastBlock,
              uint64_t frequency, WimaxPhy::ModulationType modulationType,
-             uint8_t direction, double txPowerDbm, Ptr<PacketBurst> burts);
+             uint8_t direction, double txPowerDbm, Ptr<PacketBurst> burst);
   /**
    * \brief sets the propagation model
    * \param propModel the propagation model to used

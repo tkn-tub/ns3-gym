@@ -35,7 +35,7 @@ public:
 
 
   /**
-   * \param initialEnergy Initial energy, in Joules
+   * \param initialEnergyJ Initial energy, in Joules
    *
    * Implements SetInitialEnergy. Note that initial energy is assumed to be set
    * before simulation starts and is set only once per simulation.

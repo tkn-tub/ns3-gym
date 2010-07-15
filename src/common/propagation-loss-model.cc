@@ -720,7 +720,7 @@ NS_OBJECT_ENSURE_REGISTERED (MatrixPropagationLossModel);
 TypeId 
 MatrixPropagationLossModel::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::TopologicalPropagationLossModel")
+  static TypeId tid = TypeId ("ns3::MatrixPropagationLossModel")
     .SetParent<PropagationLossModel> ()
     .AddConstructor<MatrixPropagationLossModel> ()
     .AddAttribute ("DefaultLoss", "The default value for propagation loss, dB.",

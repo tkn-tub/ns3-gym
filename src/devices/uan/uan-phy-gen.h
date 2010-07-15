@@ -101,6 +101,7 @@ public:
    * \param pkt Packet which is under consideration
    * \param arrTime Arrival time of packet pkt
    * \param rxPowerDb Received signal power at receiver
+   * \param ambNoiseDb Ambient channel noise in dB re 1 uPa
    * \param mode TX mode used to transmit packet
    * \param pdp Power delay profile of arriving packet pkt
    * \param arrivalList List of other, simultaneously arriving packets

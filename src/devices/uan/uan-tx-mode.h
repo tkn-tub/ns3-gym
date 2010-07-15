@@ -104,6 +104,7 @@ public:
 
   /**
    *
+   * \param type modulation type
    * \param dataRateBps Data rate in BPS
    * \param phyRateSps  Symbol rate in symbols per second
    * \param cfHz Center frequency in Hz
