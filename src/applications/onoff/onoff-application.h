@@ -80,6 +80,9 @@ class Socket;
  * until the originally scheduled transmission, and this time remaining
  * information is cached and used to schedule the next transmission
  * upon restarting.
+ *
+ * If the underlying socket type supports broadcast, this application
+ * will automatically enable the SetAllowBroadcast(true) socket option.  
  */
 class OnOffApplication : public Application 
 {
