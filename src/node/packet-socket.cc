@@ -472,7 +472,7 @@ PacketSocket::SetAllowBroadcast (bool allowBroadcast)
 bool
 PacketSocket::GetAllowBroadcast () const
 {
-  return true;
+  return false;
 }
 
 }//namespace ns3
