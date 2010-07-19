@@ -21,7 +21,7 @@
 #ifndef __NIX_VECTOR_H__
 #define __NIX_VECTOR_H__
 
-#include "ns3/object.h"
+#include "ns3/simple-ref-count.h"
 #include "ns3/buffer.h"
 
 namespace ns3 {
@@ -59,15 +59,13 @@ namespace ns3 {
  * routed.
  */
 
-class NixVector : public Object
+class NixVector : public SimpleRefCount<NixVector>
 {
   public:
     NixVector ();
-    NixVector (const NixVector &o);
     ~NixVector ();
-    Ptr<NixVector> Copy (void) const;
+    NixVector (const NixVector &o);
     NixVector &operator = (const NixVector &o);
-    static TypeId GetTypeId (void);
     /**
      * \param newBits the neighbor-index to be added to the vector
      * \param numberOfBits the number of bits that newBits contains

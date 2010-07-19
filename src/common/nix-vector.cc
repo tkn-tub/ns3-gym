@@ -26,8 +26,6 @@ NS_LOG_COMPONENT_DEFINE ("NixVector");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (NixVector);
-
 typedef std::vector<uint32_t> NixBits_t;
 
 NixVector::NixVector ()
@@ -44,15 +42,6 @@ NixVector::NixVector ()
 NixVector::~NixVector ()
 {
   NS_LOG_FUNCTION_NOARGS ();
-}
-
-Ptr<NixVector>
-NixVector::Copy (void) const
-{
-  // we need to invoke the copy constructor directly
-  // rather than calling Create because the copy constructor
-  // is private.
-  return Ptr<NixVector> (new NixVector (*this), false);
 }
 
 NixVector::NixVector (const NixVector &o)
@@ -74,17 +63,6 @@ NixVector::operator = (const NixVector &o)
   m_currentVectorBitSize = o.m_currentVectorBitSize;
   m_totalBitSize = o.m_totalBitSize;
   return *this;
-}
-
-TypeId
-NixVector::GetTypeId(void)
-{
-  static TypeId tid = TypeId ("ns3::NixVector")
-   .SetParent<Object> ()
-   .AddConstructor<NixVector> ()
-    ;
-
-  return tid;
 }
 
 std::ostream & operator << (std::ostream &os, const NixVector &nix)

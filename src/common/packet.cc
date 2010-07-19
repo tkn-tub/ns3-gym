@@ -148,7 +148,7 @@ Packet::Packet (const Packet &o)
     m_packetTagList (o.m_packetTagList),
     m_metadata (o.m_metadata)
 {
-  o.m_nixVector ? m_nixVector = o.m_nixVector->Copy () 
+  o.m_nixVector ? m_nixVector = o.m_nixVector 
     : m_nixVector = 0;
 }
 
@@ -163,7 +163,7 @@ Packet::operator = (const Packet &o)
   m_byteTagList = o.m_byteTagList;
   m_packetTagList = o.m_packetTagList;
   m_metadata = o.m_metadata;
-  o.m_nixVector ? m_nixVector = o.m_nixVector->Copy () 
+  o.m_nixVector ? m_nixVector = o.m_nixVector 
     : m_nixVector = 0;
   return *this;
 }
@@ -739,7 +739,7 @@ Packet::Deserialize (const uint8_t* buffer, uint32_t size)
 
   if (nixSize > 4)
     {
-      Ptr<NixVector> nix = CreateObject<NixVector> ();
+      Ptr<NixVector> nix = Create<NixVector> ();
       uint32_t nixDeserialized = nix->Deserialize (p, nixSize);
       if (!nixDeserialized)
         {

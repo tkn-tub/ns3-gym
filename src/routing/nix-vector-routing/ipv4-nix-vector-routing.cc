@@ -121,7 +121,7 @@ Ipv4NixVectorRouting::GetNixVector (Ptr<Node> source, Ipv4Address dest, Ptr<NetD
 {
   NS_LOG_FUNCTION_NOARGS ();
 
-  Ptr<NixVector> nixVector = CreateObject<NixVector> ();
+  Ptr<NixVector> nixVector = Create<NixVector> ();
 
   // not in cache, must build the nix vector
   // First, we have to figure out the nodes 
@@ -509,8 +509,8 @@ Ipv4NixVectorRouting::RouteOutput (Ptr<Packet> p, const Ipv4Header &header, Ptr<
 
       // create a new nix vector to be used, 
       // we want to keep the cached version clean
-      nixVectorForPacket = CreateObject<NixVector> ();
-      nixVectorForPacket = nixVectorInCache->Copy(); 
+      nixVectorForPacket = Create<NixVector> ();
+      nixVectorForPacket = nixVectorInCache; 
 
       // Get the interface number that we go out of, by extracting
       // from the nix-vector
