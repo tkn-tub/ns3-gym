@@ -510,7 +510,7 @@ Ipv4NixVectorRouting::RouteOutput (Ptr<Packet> p, const Ipv4Header &header, Ptr<
       // create a new nix vector to be used, 
       // we want to keep the cached version clean
       nixVectorForPacket = Create<NixVector> ();
-      nixVectorForPacket = nixVectorInCache; 
+      nixVectorForPacket = nixVectorInCache->Copy (); 
 
       // Get the interface number that we go out of, by extracting
       // from the nix-vector

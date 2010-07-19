@@ -21,6 +21,7 @@
 #ifndef __NIX_VECTOR_H__
 #define __NIX_VECTOR_H__
 
+#include "ns3/ptr.h"
 #include "ns3/simple-ref-count.h"
 #include "ns3/buffer.h"
 
@@ -64,6 +65,7 @@ class NixVector : public SimpleRefCount<NixVector>
   public:
     NixVector ();
     ~NixVector ();
+    Ptr<NixVector> Copy (void) const;
     NixVector (const NixVector &o);
     NixVector &operator = (const NixVector &o);
     /**

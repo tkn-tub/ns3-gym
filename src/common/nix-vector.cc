@@ -65,6 +65,15 @@ NixVector::operator = (const NixVector &o)
   return *this;
 }
 
+Ptr<NixVector>
+NixVector::Copy (void) const
+{
+  // we need to invoke the copy constructor directly
+  // rather than calling Create because the copy constructor
+  // is private.
+  return Ptr<NixVector> (new NixVector (*this), false);
+}
+
 std::ostream & operator << (std::ostream &os, const NixVector &nix)
 {
   nix.DumpNixVector (os); 
