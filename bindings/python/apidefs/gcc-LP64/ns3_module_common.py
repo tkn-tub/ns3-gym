@@ -1874,10 +1874,10 @@ def register_Ns3FriisSpectrumPropagationLossModel_methods(root_module, cls):
                    'double', 
                    [param('double', 'f'), param('double', 'd')], 
                    is_const=True)
-    ## friis-spectrum-propagation-loss.h: ns3::Ptr<ns3::SpectrumValue> ns3::FriisSpectrumPropagationLossModel::DoCalcRxPowerSpectralDensity(ns3::Ptr<ns3::SpectrumValue const> txPower, ns3::Ptr<const ns3::MobilityModel> a, ns3::Ptr<const ns3::MobilityModel> b) const [member function]
+    ## friis-spectrum-propagation-loss.h: ns3::Ptr<ns3::SpectrumValue> ns3::FriisSpectrumPropagationLossModel::DoCalcRxPowerSpectralDensity(ns3::Ptr<ns3::SpectrumValue const> txPsd, ns3::Ptr<const ns3::MobilityModel> a, ns3::Ptr<const ns3::MobilityModel> b) const [member function]
     cls.add_method('DoCalcRxPowerSpectralDensity', 
                    'ns3::Ptr< ns3::SpectrumValue >', 
-                   [param('ns3::Ptr< ns3::SpectrumValue const >', 'txPower'), param('ns3::Ptr< ns3::MobilityModel const >', 'a'), param('ns3::Ptr< ns3::MobilityModel const >', 'b')], 
+                   [param('ns3::Ptr< ns3::SpectrumValue const >', 'txPsd'), param('ns3::Ptr< ns3::MobilityModel const >', 'a'), param('ns3::Ptr< ns3::MobilityModel const >', 'b')], 
                    is_const=True, is_virtual=True)
     ## friis-spectrum-propagation-loss.h: static ns3::TypeId ns3::FriisSpectrumPropagationLossModel::GetTypeId() [member function]
     cls.add_method('GetTypeId', 

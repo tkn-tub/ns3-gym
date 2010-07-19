@@ -1814,14 +1814,14 @@ def register_Ns3UanPhyDual_methods(root_module, cls):
                    'void', 
                    [param('double', 'thresh')], 
                    is_virtual=True)
-    ## uan-phy-dual.h: void ns3::UanPhyDual::SetCcaThresholdPhy1(double arg0) [member function]
+    ## uan-phy-dual.h: void ns3::UanPhyDual::SetCcaThresholdPhy1(double thresh) [member function]
     cls.add_method('SetCcaThresholdPhy1', 
                    'void', 
-                   [param('double', 'arg0')])
-    ## uan-phy-dual.h: void ns3::UanPhyDual::SetCcaThresholdPhy2(double arg0) [member function]
+                   [param('double', 'thresh')])
+    ## uan-phy-dual.h: void ns3::UanPhyDual::SetCcaThresholdPhy2(double thresh) [member function]
     cls.add_method('SetCcaThresholdPhy2', 
                    'void', 
-                   [param('double', 'arg0')])
+                   [param('double', 'thresh')])
     ## uan-phy-dual.h: void ns3::UanPhyDual::SetChannel(ns3::Ptr<ns3::UanChannel> channel) [member function]
     cls.add_method('SetChannel', 
                    'void', 
@@ -1868,14 +1868,14 @@ def register_Ns3UanPhyDual_methods(root_module, cls):
                    'void', 
                    [param('double', 'gain')], 
                    is_virtual=True)
-    ## uan-phy-dual.h: void ns3::UanPhyDual::SetRxGainDbPhy1(double arg0) [member function]
+    ## uan-phy-dual.h: void ns3::UanPhyDual::SetRxGainDbPhy1(double gain) [member function]
     cls.add_method('SetRxGainDbPhy1', 
                    'void', 
-                   [param('double', 'arg0')])
-    ## uan-phy-dual.h: void ns3::UanPhyDual::SetRxGainDbPhy2(double arg0) [member function]
+                   [param('double', 'gain')])
+    ## uan-phy-dual.h: void ns3::UanPhyDual::SetRxGainDbPhy2(double gain) [member function]
     cls.add_method('SetRxGainDbPhy2', 
                    'void', 
-                   [param('double', 'arg0')])
+                   [param('double', 'gain')])
     ## uan-phy-dual.h: void ns3::UanPhyDual::SetRxThresholdDb(double thresh) [member function]
     cls.add_method('SetRxThresholdDb', 
                    'void', 

@@ -268,10 +268,10 @@ def register_Ns3SpectrumInterference_methods(root_module, cls):
     cls.add_constructor([param('ns3::SpectrumInterference const &', 'arg0')])
     ## spectrum-interference.h: ns3::SpectrumInterference::SpectrumInterference() [constructor]
     cls.add_constructor([])
-    ## spectrum-interference.h: void ns3::SpectrumInterference::AddSignal(ns3::Ptr<ns3::SpectrumValue const> arg0, ns3::Time const duration) [member function]
+    ## spectrum-interference.h: void ns3::SpectrumInterference::AddSignal(ns3::Ptr<ns3::SpectrumValue const> spd, ns3::Time const duration) [member function]
     cls.add_method('AddSignal', 
                    'void', 
-                   [param('ns3::Ptr< ns3::SpectrumValue const >', 'arg0'), param('ns3::Time const', 'duration')])
+                   [param('ns3::Ptr< ns3::SpectrumValue const >', 'spd'), param('ns3::Time const', 'duration')])
     ## spectrum-interference.h: bool ns3::SpectrumInterference::EndRx() [member function]
     cls.add_method('EndRx', 
                    'bool', 
@@ -366,10 +366,10 @@ def register_Ns3WaveformGenerator_methods(root_module, cls):
                    'void', 
                    [], 
                    is_virtual=True)
-    ## waveform-generator.h: void ns3::WaveformGenerator::StartRx(ns3::Ptr<ns3::PacketBurst> p, ns3::Ptr<ns3::SpectrumValue const> rxPowerSpectrum, ns3::SpectrumType st, ns3::Time duration) [member function]
+    ## waveform-generator.h: void ns3::WaveformGenerator::StartRx(ns3::Ptr<ns3::PacketBurst> p, ns3::Ptr<ns3::SpectrumValue const> rxPsd, ns3::SpectrumType st, ns3::Time duration) [member function]
     cls.add_method('StartRx', 
                    'void', 
-                   [param('ns3::Ptr< ns3::PacketBurst >', 'p'), param('ns3::Ptr< ns3::SpectrumValue const >', 'rxPowerSpectrum'), param('ns3::SpectrumType', 'st'), param('ns3::Time', 'duration')], 
+                   [param('ns3::Ptr< ns3::PacketBurst >', 'p'), param('ns3::Ptr< ns3::SpectrumValue const >', 'rxPsd'), param('ns3::SpectrumType', 'st'), param('ns3::Time', 'duration')], 
                    is_virtual=True)
     ## waveform-generator.h: void ns3::WaveformGenerator::Stop() [member function]
     cls.add_method('Stop', 
@@ -994,10 +994,10 @@ def register_Ns3MultiModelSpectrumChannel_methods(root_module, cls):
                    'void', 
                    [param('ns3::Ptr< ns3::PropagationDelayModel >', 'delay')], 
                    is_virtual=True)
-    ## multi-model-spectrum-channel.h: void ns3::MultiModelSpectrumChannel::StartTx(ns3::Ptr<ns3::PacketBurst> p, ns3::Ptr<ns3::SpectrumValue> rxPsd, ns3::SpectrumType st, ns3::Time duration, ns3::Ptr<ns3::SpectrumPhy> sender) [member function]
+    ## multi-model-spectrum-channel.h: void ns3::MultiModelSpectrumChannel::StartTx(ns3::Ptr<ns3::PacketBurst> p, ns3::Ptr<ns3::SpectrumValue> txPsd, ns3::SpectrumType st, ns3::Time duration, ns3::Ptr<ns3::SpectrumPhy> sender) [member function]
     cls.add_method('StartTx', 
                    'void', 
-                   [param('ns3::Ptr< ns3::PacketBurst >', 'p'), param('ns3::Ptr< ns3::SpectrumValue >', 'rxPsd'), param('ns3::SpectrumType', 'st'), param('ns3::Time', 'duration'), param('ns3::Ptr< ns3::SpectrumPhy >', 'sender')], 
+                   [param('ns3::Ptr< ns3::PacketBurst >', 'p'), param('ns3::Ptr< ns3::SpectrumValue >', 'txPsd'), param('ns3::SpectrumType', 'st'), param('ns3::Time', 'duration'), param('ns3::Ptr< ns3::SpectrumPhy >', 'sender')], 
                    is_virtual=True)
     ## multi-model-spectrum-channel.h: void ns3::MultiModelSpectrumChannel::DoDispose() [member function]
     cls.add_method('DoDispose', 

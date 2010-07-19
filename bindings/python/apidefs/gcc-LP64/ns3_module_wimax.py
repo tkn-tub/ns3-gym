@@ -6296,10 +6296,10 @@ def register_Ns3SimpleOfdmWimaxChannel_methods(root_module, cls):
     cls.add_constructor([])
     ## simple-ofdm-wimax-channel.h: ns3::SimpleOfdmWimaxChannel::SimpleOfdmWimaxChannel(ns3::SimpleOfdmWimaxChannel::PropModel propModel) [constructor]
     cls.add_constructor([param('ns3::SimpleOfdmWimaxChannel::PropModel', 'propModel')])
-    ## simple-ofdm-wimax-channel.h: void ns3::SimpleOfdmWimaxChannel::Send(ns3::Time BlockTime, uint32_t burstSize, ns3::Ptr<ns3::WimaxPhy> phy, bool isFirstBlock, bool isLastBlock, uint64_t frequency, ns3::WimaxPhy::ModulationType modulationType, uint8_t direction, double txPowerDbm, ns3::Ptr<ns3::PacketBurst> burts) [member function]
+    ## simple-ofdm-wimax-channel.h: void ns3::SimpleOfdmWimaxChannel::Send(ns3::Time BlockTime, uint32_t burstSize, ns3::Ptr<ns3::WimaxPhy> phy, bool isFirstBlock, bool isLastBlock, uint64_t frequency, ns3::WimaxPhy::ModulationType modulationType, uint8_t direction, double txPowerDbm, ns3::Ptr<ns3::PacketBurst> burst) [member function]
     cls.add_method('Send', 
                    'void', 
-                   [param('ns3::Time', 'BlockTime'), param('uint32_t', 'burstSize'), param('ns3::Ptr< ns3::WimaxPhy >', 'phy'), param('bool', 'isFirstBlock'), param('bool', 'isLastBlock'), param('uint64_t', 'frequency'), param('ns3::WimaxPhy::ModulationType', 'modulationType'), param('uint8_t', 'direction'), param('double', 'txPowerDbm'), param('ns3::Ptr< ns3::PacketBurst >', 'burts')])
+                   [param('ns3::Time', 'BlockTime'), param('uint32_t', 'burstSize'), param('ns3::Ptr< ns3::WimaxPhy >', 'phy'), param('bool', 'isFirstBlock'), param('bool', 'isLastBlock'), param('uint64_t', 'frequency'), param('ns3::WimaxPhy::ModulationType', 'modulationType'), param('uint8_t', 'direction'), param('double', 'txPowerDbm'), param('ns3::Ptr< ns3::PacketBurst >', 'burst')])
     ## simple-ofdm-wimax-channel.h: void ns3::SimpleOfdmWimaxChannel::SetPropagationModel(ns3::SimpleOfdmWimaxChannel::PropModel propModel) [member function]
     cls.add_method('SetPropagationModel', 
                    'void', 

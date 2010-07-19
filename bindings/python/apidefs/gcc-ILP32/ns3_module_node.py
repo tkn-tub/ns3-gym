@@ -2289,9 +2289,9 @@ def register_Ns3Socket_methods(root_module, cls):
     cls.add_method('SetAcceptCallback', 
                    'void', 
                    [param('ns3::Callback< bool, ns3::Ptr< ns3::Socket >, ns3::Address const &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'connectionRequest'), param('ns3::Callback< void, ns3::Ptr< ns3::Socket >, ns3::Address const &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'newConnectionCreated')])
-    ## socket.h: void ns3::Socket::SetAllowBroadcast(bool allowBroadcast) [member function]
+    ## socket.h: bool ns3::Socket::SetAllowBroadcast(bool allowBroadcast) [member function]
     cls.add_method('SetAllowBroadcast', 
-                   'void', 
+                   'bool', 
                    [param('bool', 'allowBroadcast')], 
                    is_pure_virtual=True, is_virtual=True)
     ## socket.h: void ns3::Socket::SetCloseCallbacks(ns3::Callback<void, ns3::Ptr<ns3::Socket>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> normalClose, ns3::Callback<void, ns3::Ptr<ns3::Socket>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> errorClose) [member function]
