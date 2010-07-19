@@ -179,6 +179,7 @@ int main (int argc, char *argv[])
 
   Ptr<Socket> source = Socket::CreateSocket (c.Get (1), tid);
   InetSocketAddress remote = InetSocketAddress (Ipv4Address ("255.255.255.255"), 80);
+  source->SetAllowBroadcast (true);
   source->Connect (remote);
 
   // Tracing

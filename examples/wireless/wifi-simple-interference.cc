@@ -231,12 +231,14 @@ int main (int argc, char *argv[])
 
   Ptr<Socket> source = Socket::CreateSocket (c.Get (1), tid);
   InetSocketAddress remote = InetSocketAddress (Ipv4Address ("255.255.255.255"), 80);
+  source->SetAllowBroadcast (true);
   source->Connect (remote);
 
   // Interferer will send to a different port; we will not see a
   // "Received packet" message
   Ptr<Socket> interferer = Socket::CreateSocket (c.Get (2), tid);
   InetSocketAddress interferingAddr = InetSocketAddress (Ipv4Address ("255.255.255.255"), 49000);
+  interferer->SetAllowBroadcast (true);
   interferer->Connect (interferingAddr);
 
   // Tracing
