@@ -347,13 +347,14 @@ bool Ipv6RawSocketImpl::ForwardUp (Ptr<const Packet> p, Ipv6Header hdr, Ptr<NetD
   return false;
 }
 
-void
+bool
 Ipv6RawSocketImpl::SetAllowBroadcast (bool allowBroadcast)
 {
-  if (!allowBroadcast) 
+  if (!allowBroadcast)
     {
-      NS_FATAL_ERROR ("not implemented");
+      return false;
     }
+  return true;
 }
 
 bool

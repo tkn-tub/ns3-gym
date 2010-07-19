@@ -186,7 +186,7 @@ public:
    */
   bool ForwardUp (Ptr<const Packet> p, Ipv6Header hdr, Ptr<NetDevice> device);
 
-  virtual void SetAllowBroadcast (bool allowBroadcast);
+  virtual bool SetAllowBroadcast (bool allowBroadcast);
   virtual bool GetAllowBroadcast () const;
 
 private:

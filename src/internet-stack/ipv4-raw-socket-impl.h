@@ -43,7 +43,7 @@ public:
 
   void SetProtocol (uint16_t protocol);
   bool ForwardUp (Ptr<const Packet> p, Ipv4Header ipHeader, Ptr<Ipv4Interface> incomingInterface);
-  virtual void SetAllowBroadcast (bool allowBroadcast);
+  virtual bool SetAllowBroadcast (bool allowBroadcast);
   virtual bool GetAllowBroadcast () const;
 
 private:

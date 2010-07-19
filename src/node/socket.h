@@ -557,8 +557,9 @@ public:
    * destination addresses.
    *
    * \param allowBroadcast Whether broadcast is allowed
+   * \return true if operation succeeds
    */
-  virtual void SetAllowBroadcast (bool allowBroadcast) = 0;
+  virtual bool SetAllowBroadcast (bool allowBroadcast) = 0;
 
   /**
    * \brief Query whether broadcast datagram transmissions are allowed

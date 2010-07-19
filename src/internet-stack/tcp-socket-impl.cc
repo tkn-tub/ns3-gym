@@ -1856,10 +1856,14 @@ TcpSocketImpl::GetDelAckMaxCount (void) const
   return m_delAckMaxCount;
 }
 
-void
+bool
 TcpSocketImpl::SetAllowBroadcast (bool allowBroadcast)
 {
-  NS_FATAL_ERROR ("not implemented");
+  if (allowBroadcast)
+    {
+      return false;
+    }
+  return true;
 }
 
 bool

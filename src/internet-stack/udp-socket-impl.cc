@@ -736,16 +736,17 @@ UdpSocketImpl::GetMtuDiscover (void) const
   return m_mtuDiscover;
 }
 
-void
+bool
 UdpSocketImpl::SetAllowBroadcast (bool allowBroadcast)
 {
   m_allowBroadcast = allowBroadcast;
+  return true;
 }
 
 bool
 UdpSocketImpl::GetAllowBroadcast () const
 {
-  return true;
+  return m_allowBroadcast;
 }
 
 

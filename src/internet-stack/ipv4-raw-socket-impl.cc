@@ -335,13 +335,14 @@ Ipv4RawSocketImpl::ForwardUp (Ptr<const Packet> p, Ipv4Header ipHeader, Ptr<Ipv4
   return false;
 }
 
-void
+bool
 Ipv4RawSocketImpl::SetAllowBroadcast (bool allowBroadcast)
 {
   if (!allowBroadcast)
     {
-      NS_FATAL_ERROR ("not implemented");
+      return false;
     }
+  return true;
 }
 
 bool

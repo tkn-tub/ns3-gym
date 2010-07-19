@@ -133,10 +133,7 @@ void OnOffApplication::StartApplication() // Called at time specified by Start
       m_socket = Socket::CreateSocket (GetNode(), m_tid);
       m_socket->Bind ();
       m_socket->Connect (m_peer);
-      if (m_socket->GetAllowBroadcast ())
-        {
-          m_socket->SetAllowBroadcast (true);
-        }
+      m_socket->SetAllowBroadcast (true);
       m_socket->ShutdownRecv ();
     }
   // Insure no pending event

@@ -79,7 +79,7 @@ public:
   virtual int MulticastJoinGroup (uint32_t interfaceIndex, const Address &groupAddress);
   virtual int MulticastLeaveGroup (uint32_t interfaceIndex, const Address &groupAddress);
   virtual void BindToNetDevice (Ptr<NetDevice> netdevice);
-  virtual void SetAllowBroadcast (bool allowBroadcast);
+  virtual bool SetAllowBroadcast (bool allowBroadcast);
   virtual bool GetAllowBroadcast () const;
 
 private:

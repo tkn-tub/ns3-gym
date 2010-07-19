@@ -463,10 +463,14 @@ PacketSocket::GetSockName (Address &address) const
   return 0;
 }
 
-void
+bool
 PacketSocket::SetAllowBroadcast (bool allowBroadcast)
 {
-  NS_FATAL_ERROR ("not implemented");
+  if (allowBroadcast)
+    {
+      return false;
+    }
+  return true;
 }
 
 bool

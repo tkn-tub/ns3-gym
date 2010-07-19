@@ -819,13 +819,14 @@ NscTcpSocketImpl::GetNativeNs3Errno(int error) const
   return ERROR_INVAL;
 }
 
-void
+bool
 NscTcpSocketImpl::SetAllowBroadcast (bool allowBroadcast)
 {
   if (allowBroadcast)
     {
-      NS_FATAL_ERROR ("not implemented");
+      return false;
     }
+  return true;
 }
 
 bool
