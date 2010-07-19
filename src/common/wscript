@@ -4,6 +4,7 @@ def build(bld):
     common = bld.create_ns3_module('common', ['core', 'simulator'])
     common.source = [
         'buffer.cc',
+        'buffer-test.cc',
         'packet-metadata.cc',
         'packet-metadata-test.cc',
         'packet.cc',
