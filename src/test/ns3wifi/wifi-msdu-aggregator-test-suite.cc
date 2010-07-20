@@ -48,10 +48,14 @@ class WifiMsduAggregatorThroughputTest : public TestCase
 public:
   WifiMsduAggregatorThroughputTest ();
   virtual bool DoRun (void);
+
+private:
+  bool m_writeResults;
 };
 
 WifiMsduAggregatorThroughputTest::WifiMsduAggregatorThroughputTest ()
-  : TestCase ("MsduAggregator throughput test")
+  : TestCase ("MsduAggregator throughput test"),
+    m_writeResults (false)
 {
 }
 
@@ -154,7 +158,10 @@ WifiMsduAggregatorThroughputTest::DoRun (void)
   sourceApp.Stop (Seconds (9.0));
 
   // Enable tracing at the AP
-  wifiPhy.EnablePcap ("wifi-amsdu-throughput", sta.Get (0)->GetId (), 0);
+  if (m_writeResults)
+    {
+      wifiPhy.EnablePcap ("wifi-amsdu-throughput", sta.Get (0)->GetId (), 0);
+    }
 
   Simulator::Stop (Seconds (10.0));
   Simulator::Run ();
