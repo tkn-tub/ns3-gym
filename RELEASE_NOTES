@@ -40,7 +40,8 @@ New user-visible features
    - A new OFDM error rate model for WiFi (NistErrorRateModel); this model
      has been validated in clear-channel testbed tests.  For 802.11b, it
      uses the same underlying model as the YansErrorRateModel, but it differs
-     from YansErrorRateModel for OFDM modes (802.11a/g).
+     from YansErrorRateModel for OFDM modes (802.11a/g).  The default
+     YansWifiPhyHelper has been changed to use this model.
 
    - A brand new NS-2 mobility trace reader supports BonnMotion, SUMO, TraNS, 
      etc. traces.

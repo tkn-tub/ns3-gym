@@ -112,6 +112,12 @@ Enqueue'd successfully or Drop'ped.
 
 <li><b>Drop trace logged for Ipv4/6 forwarding failure:</b> Fixed bug 861; this 
 will add ascii traces (drops) in Ipv4 and Ipv6 traces for forwarding failures
+
+<li><b>Changed default WiFi error rate model for OFDM modulation types:</b> 
+Adopted more conservative ErrorRateModel for OFDM modulation types (a/g).
+This will require 4 to 5 more dB of received power to get similar results
+as before, so users may observe a reduced WiFi range when using the defaults.
+See tracker issie 944 for more details.
 </ul>
 
 <hr>

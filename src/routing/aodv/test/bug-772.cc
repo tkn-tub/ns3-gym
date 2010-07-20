@@ -112,6 +112,8 @@ Bug772ChainTest::CreateDevices ()
   NqosWifiMacHelper wifiMac = NqosWifiMacHelper::Default ();
   wifiMac.SetType ("ns3::AdhocWifiMac");
   YansWifiPhyHelper wifiPhy = YansWifiPhyHelper::Default ();
+  // This test suite output was originally based on YansErrorRateModel     
+  wifiPhy.SetErrorRateModel ("ns3::YansErrorRateModel");   
   YansWifiChannelHelper wifiChannel = YansWifiChannelHelper::Default ();
   wifiPhy.SetChannel (wifiChannel.Create ());
   WifiHelper wifi = WifiHelper::Default ();

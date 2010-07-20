@@ -100,6 +100,8 @@ TcRegressionTest::CreateNodes ()
   YansWifiPhyHelper wifiPhy = YansWifiPhyHelper::Default ();
   YansWifiChannelHelper wifiChannel = YansWifiChannelHelper::Default ();
   wifiPhy.SetChannel (wifiChannel.Create ());
+  // This test suite output was originally based on YansErrorRateModel 
+  wifiPhy.SetErrorRateModel ("ns3::YansErrorRateModel");
   WifiHelper wifi = WifiHelper::Default ();
   wifi.SetStandard (WIFI_PHY_STANDARD_80211a);
   wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager", "DataMode", StringValue ("OfdmRate6Mbps"), "RtsCtsThreshold", StringValue ("2200"));

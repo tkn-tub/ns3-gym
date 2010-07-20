@@ -183,7 +183,7 @@ YansWifiPhyHelper
 YansWifiPhyHelper::Default (void)
 {
   YansWifiPhyHelper helper;
-  helper.SetErrorRateModel ("ns3::YansErrorRateModel");
+  helper.SetErrorRateModel ("ns3::NistErrorRateModel");
   return helper;
 }
 
