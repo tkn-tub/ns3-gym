@@ -503,6 +503,29 @@ private:
   std::map<MobilityPair, double> m_loss;
 };
 
+/**
+ * \brief The propagation loss depends only on the distance (range) between transmitter and receiver.
+ *
+ * The single MaxRange attribute (units of meters) determines path loss.
+ * Receivers at or within MaxRange meters receive the transmission at the
+ * transmit power level. Receivers beyond MaxRange receive at power
+ * -1000 dBm (effectively zero).
+*/
+class RangePropagationLossModel : public PropagationLossModel
+{
+public:
+  static TypeId GetTypeId (void);
+  RangePropagationLossModel ();
+private:
+  RangePropagationLossModel (const RangePropagationLossModel& o);
+  RangePropagationLossModel& operator= (const RangePropagationLossModel& o);
+  virtual double DoCalcRxPower (double txPowerDbm,
+                                Ptr<MobilityModel> a,
+                                Ptr<MobilityModel> b) const;
+private:
+  double m_range;
+};
+
 } // namespace ns3
 
 #endif /* PROPAGATION_LOSS_MODEL_H */

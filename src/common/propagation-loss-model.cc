@@ -790,4 +790,43 @@ MatrixPropagationLossModel::DoCalcRxPower (double txPowerDbm,
 
 // ------------------------------------------------------------------------- //
 
+NS_OBJECT_ENSURE_REGISTERED (RangePropagationLossModel);
+
+TypeId
+RangePropagationLossModel::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::RangePropagationLossModel")
+    .SetParent<PropagationLossModel> ()
+    .AddConstructor<RangePropagationLossModel> ()
+    .AddAttribute ("MaxRange",
+                   "Maximum Transmission Range (meters)",
+                   DoubleValue (250),
+                   MakeDoubleAccessor (&RangePropagationLossModel::m_range),
+                   MakeDoubleChecker<double> ())
+  ;
+  return tid;
+}
+
+RangePropagationLossModel::RangePropagationLossModel ()
+{
+}
+
+double
+RangePropagationLossModel::DoCalcRxPower (double txPowerDbm,
+                                          Ptr<MobilityModel> a,
+                                          Ptr<MobilityModel> b) const
+{
+  double distance = a->GetDistanceFrom (b);
+  if (distance <= m_range)
+    {
+      return txPowerDbm;
+    }
+  else
+    {
+      return -1000;
+    }
+}
+
+// ------------------------------------------------------------------------- //
+
 } // namespace ns3

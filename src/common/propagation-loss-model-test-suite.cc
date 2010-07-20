@@ -420,6 +420,48 @@ MatrixPropagationLossModelTestCase::DoRun (void)
   return GetErrorStatus ();
 }
 
+class RangePropagationLossModelTestCase : public TestCase
+{
+public:
+  RangePropagationLossModelTestCase ();
+  virtual ~RangePropagationLossModelTestCase ();
+
+private:
+  virtual bool DoRun (void);
+};
+
+RangePropagationLossModelTestCase::RangePropagationLossModelTestCase ()
+  : TestCase ("Test RangePropagationLossModel")
+{
+}
+
+RangePropagationLossModelTestCase::~RangePropagationLossModelTestCase ()
+{
+}
+
+bool
+RangePropagationLossModelTestCase::DoRun (void)
+{
+  Config::SetDefault ("ns3::RangePropagationLossModel::MaxRange", DoubleValue (127.2));
+  Ptr<MobilityModel> a = CreateObject<ConstantPositionMobilityModel> (); 
+  a->SetPosition (Vector (0,0,0));
+  Ptr<MobilityModel> b = CreateObject<ConstantPositionMobilityModel> (); 
+  b->SetPosition (Vector (127.1,0,0));  // within range
+
+  Ptr<RangePropagationLossModel> lossModel = CreateObject<RangePropagationLossModel> (); 
+
+  double txPwrdBm = -80.0;
+  double tolerance = 1e-6;
+  double resultdBm = lossModel->CalcRxPower (txPwrdBm, a, b);
+  NS_TEST_EXPECT_MSG_EQ_TOL (resultdBm, txPwrdBm, tolerance, "Got unexpected rcv power");
+  b->SetPosition (Vector (127.25,0,0));  // beyond range
+  resultdBm = lossModel->CalcRxPower (txPwrdBm, a, b);
+  NS_TEST_EXPECT_MSG_EQ_TOL (resultdBm, -1000.0, tolerance, "Got unexpected rcv power");
+  Simulator::Destroy ();
+  
+  return GetErrorStatus ();
+}
+
 class PropagationLossModelsTestSuite : public TestSuite
 {
 public:
@@ -433,6 +475,7 @@ PropagationLossModelsTestSuite::PropagationLossModelsTestSuite ()
   AddTestCase (new TwoRayGroundPropagationLossModelTestCase);
   AddTestCase (new LogDistancePropagationLossModelTestCase);
   AddTestCase (new MatrixPropagationLossModelTestCase);
+  AddTestCase (new RangePropagationLossModelTestCase);
 }
 
 PropagationLossModelsTestSuite WifiPropagationLossModelsTestSuite;
