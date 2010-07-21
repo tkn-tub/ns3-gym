@@ -221,36 +221,6 @@ Mac48Address Mac48Address::GetMulticast(Ipv6Address addr)
   return etherAddr;
 }
 
-bool operator == (const Mac48Address &a, const Mac48Address &b)
-{
-  return memcmp (a.m_address, b.m_address, 6) == 0;
-}
-bool operator != (const Mac48Address &a, const Mac48Address &b)
-{
-  return ! (a == b);
-}
-
-bool operator < (const Mac48Address &a, const Mac48Address &b)
-{
-  uint8_t aP[6];
-  uint8_t bP[6];
-  a.CopyTo (aP);
-  b.CopyTo (bP);
-  for (uint8_t i = 0; i < 6; i++) 
-    {
-       if (a.m_address[i] < b.m_address[i]) 
-        {
-          return true;
-        } 
-       else if (a.m_address[i] > b.m_address[i]) 
-        {
-          return false;
-        }
-    }
-  return false;
-}
-
-
 std::ostream& operator<< (std::ostream& os, const Mac48Address & address)
 {
   uint8_t ad[6];

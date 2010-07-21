@@ -135,6 +135,7 @@ private:
   static uint8_t GetType (void);
   friend bool operator < (const Mac48Address &a, const Mac48Address &b);
   friend bool operator == (const Mac48Address &a, const Mac48Address &b);
+  friend bool operator != (const Mac48Address &a, const Mac48Address &b);
   friend std::istream& operator>> (std::istream& is, Mac48Address & address);
 
   uint8_t m_address[6];
@@ -147,9 +148,19 @@ private:
 
 ATTRIBUTE_HELPER_HEADER (Mac48Address);
 
-bool operator == (const Mac48Address &a, const Mac48Address &b);
-bool operator != (const Mac48Address &a, const Mac48Address &b);
-bool operator < (const Mac48Address &a, const Mac48Address &b);
+inline bool operator == (const Mac48Address &a, const Mac48Address &b)
+{
+  return memcmp (a.m_address, b.m_address, 6) == 0;
+}
+inline bool operator != (const Mac48Address &a, const Mac48Address &b)
+{
+  return memcmp (a.m_address, b.m_address, 6) != 0;
+}
+inline bool operator < (const Mac48Address &a, const Mac48Address &b)
+{
+  return memcmp (a.m_address, b.m_address, 6) < 0;
+}
+
 std::ostream& operator<< (std::ostream& os, const Mac48Address & address);
 std::istream& operator>> (std::istream& is, Mac48Address & address);
 
