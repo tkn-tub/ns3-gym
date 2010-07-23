@@ -618,10 +618,10 @@ Ipv4L3Protocol::Send (Ptr<Packet> packet,
       // returned to the transport protocol with a source address but
       // there was no next hop available yet (since a route may need
       // to be queried).  
-      NS_FATAL_ERROR ("This case not yet implemented");
+      NS_FATAL_ERROR ("Ipv4L3Protocol::Send case 4: This case not yet implemented");
     }
   // 5) packet is not broadcast, and route is NULL (e.g., a raw socket call)
-  NS_LOG_LOGIC ("Ipv4L3Protocol::Send case 4:  passed in with no route " << destination);
+  NS_LOG_LOGIC ("Ipv4L3Protocol::Send case 5:  passed in with no route " << destination);
   Socket::SocketErrno errno_; 
   Ptr<NetDevice> oif (0); // unused for now
   ipHeader = BuildHeader (source, destination, protocol, packet->GetSize (), ttl, mayFragment);

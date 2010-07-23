@@ -218,6 +218,7 @@ UdpL4Protocol::Receive(Ptr<Packet> packet,
     return Ipv4L4Protocol::RX_CSUM_FAILED;
   }
 
+  NS_LOG_DEBUG ("Looking up dst " << header.GetDestination () << " port " << udpHeader.GetDestinationPort ()); 
   Ipv4EndPointDemux::EndPoints endPoints =
     m_endPoints->Lookup (header.GetDestination (), udpHeader.GetDestinationPort (),
                          header.GetSource (), udpHeader.GetSourcePort (), interface);
