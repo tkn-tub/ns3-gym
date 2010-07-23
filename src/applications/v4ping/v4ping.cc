@@ -195,6 +195,10 @@ V4Ping::Send ()
   Icmpv4Header header;
   header.SetType (Icmpv4Header::ECHO);
   header.SetCode (0);
+  if (Node::ChecksumEnabled ())
+    {
+      header.EnableChecksum ();
+    }
   p->AddHeader (header);
   m_sent.insert (std::make_pair (m_seq - 1, Simulator::Now()));
   m_socket->Send (p, 0);
