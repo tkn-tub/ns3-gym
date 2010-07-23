@@ -25,6 +25,9 @@
  * Authors: Elena Buchatskaia <borovkovaes@iitp.ru>
  *          Pavel Boyko <boyko@iitp.ru>
  */
+#define NS_LOG_APPEND_CONTEXT                                   \
+  if (m_ipv4) { std::clog << "[node " << m_ipv4->GetObject<Node> ()->GetId () << "] "; } 
+
 #include "aodv-routing-protocol.h"
 #include "ns3/log.h"
 #include "ns3/boolean.h"
