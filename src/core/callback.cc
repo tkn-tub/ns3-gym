@@ -35,11 +35,15 @@ CallbackValue::DeserializeFromString (std::string value, Ptr<const AttributeChec
 
 ATTRIBUTE_CHECKER_IMPLEMENT (Callback);
 
+} // namespace ns3
+
 #if (__GNUC__ >= 3)
 
 #include <stdlib.h>
 #include <cxxabi.h>
 #include "log.h"
+
+namespace ns3 {
 
 std::string
 CallbackBase::Demangle(const std::string& mangled)
@@ -76,14 +80,15 @@ CallbackBase::Demangle(const std::string& mangled)
     return ret;
 }
 
+} // namespace ns3
+
 #else
 
 std::string
-CallbackBase::Demangle(const std::string& mangled)
+ns3::CallbackBase::Demangle(const std::string& mangled)
 {
     return mangled;
 }
 
 #endif
 
-} // namespace ns3
