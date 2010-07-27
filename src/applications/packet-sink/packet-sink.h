@@ -73,8 +73,10 @@ public:
 
   virtual ~PacketSink ();
 
-  // Return the total bytes received in this sink app
-  uint32_t GetTotalRx() const;
+  /**
+   * \return the total bytes received in this sink app
+   */
+  uint32_t GetTotalRx () const;
   
 protected:
   virtual void DoDispose (void);

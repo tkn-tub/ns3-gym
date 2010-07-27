@@ -144,10 +144,10 @@ def register_Ns3MpiInterface_methods(root_module, cls):
                    'void', 
                    [], 
                    is_static=True)
-    ## mpi-interface.h: static void ns3::MpiInterface::Enable(int * arg0, char * * * arg1) [member function]
+    ## mpi-interface.h: static void ns3::MpiInterface::Enable(int * pargc, char * * * pargv) [member function]
     cls.add_method('Enable', 
                    'void', 
-                   [param('int *', 'arg0'), param('char * * *', 'arg1')], 
+                   [param('int *', 'pargc'), param('char * * *', 'pargv')], 
                    is_static=True)
     ## mpi-interface.h: static uint32_t ns3::MpiInterface::GetRxCount() [member function]
     cls.add_method('GetRxCount', 
@@ -204,10 +204,10 @@ def register_Ns3SentBuffer_methods(root_module, cls):
     cls.add_method('GetRequest', 
                    'MPI_Request *', 
                    [])
-    ## mpi-interface.h: void ns3::SentBuffer::SetBuffer(uint8_t * arg0) [member function]
+    ## mpi-interface.h: void ns3::SentBuffer::SetBuffer(uint8_t * buffer) [member function]
     cls.add_method('SetBuffer', 
                    'void', 
-                   [param('uint8_t *', 'arg0')])
+                   [param('uint8_t *', 'buffer')])
     return
 
 def register_Ns3DistributedSimulatorImpl_methods(root_module, cls):

@@ -45,6 +45,10 @@ public:
 
   virtual ~UdpEchoClient ();
 
+  /**
+   * \param ip destination ipv4 address
+   * \param port destination port
+   */
   void SetRemote (Ipv4Address ip, uint16_t port);
 
   /**

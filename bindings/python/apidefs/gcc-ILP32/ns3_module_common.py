@@ -67,6 +67,8 @@ def register_types(module):
     module.add_class('RandomPropagationDelayModel', parent=root_module['ns3::PropagationDelayModel'])
     ## propagation-loss-model.h: ns3::RandomPropagationLossModel [class]
     module.add_class('RandomPropagationLossModel', parent=root_module['ns3::PropagationLossModel'])
+    ## propagation-loss-model.h: ns3::RangePropagationLossModel [class]
+    module.add_class('RangePropagationLossModel', parent=root_module['ns3::PropagationLossModel'])
     ## simple-ref-count.h: ns3::SimpleRefCount<ns3::NixVector, ns3::empty, ns3::DefaultDeleter<ns3::NixVector> > [class]
     module.add_class('SimpleRefCount', automatic_type_narrowing=True, template_parameters=['ns3::NixVector', 'ns3::empty', 'ns3::DefaultDeleter<ns3::NixVector>'], parent=root_module['ns3::empty'], memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'))
     ## simple-ref-count.h: ns3::SimpleRefCount<ns3::OutputStreamWrapper, ns3::empty, ns3::DefaultDeleter<ns3::OutputStreamWrapper> > [class]
@@ -270,6 +272,7 @@ def register_methods(root_module):
     register_Ns3PropagationLossModel_methods(root_module, root_module['ns3::PropagationLossModel'])
     register_Ns3RandomPropagationDelayModel_methods(root_module, root_module['ns3::RandomPropagationDelayModel'])
     register_Ns3RandomPropagationLossModel_methods(root_module, root_module['ns3::RandomPropagationLossModel'])
+    register_Ns3RangePropagationLossModel_methods(root_module, root_module['ns3::RangePropagationLossModel'])
     register_Ns3SpectrumConverter_methods(root_module, root_module['ns3::SpectrumConverter'])
     register_Ns3SpectrumModel_methods(root_module, root_module['ns3::SpectrumModel'])
     register_Ns3SpectrumPropagationLossModel_methods(root_module, root_module['ns3::SpectrumPropagationLossModel'])
@@ -311,14 +314,14 @@ def register_Ns3BandInfo_methods(root_module, cls):
     return
 
 def register_Ns3Buffer_methods(root_module, cls):
-    ## buffer.h: ns3::Buffer::Buffer(ns3::Buffer const & o) [copy constructor]
-    cls.add_constructor([param('ns3::Buffer const &', 'o')])
     ## buffer.h: ns3::Buffer::Buffer() [constructor]
     cls.add_constructor([])
     ## buffer.h: ns3::Buffer::Buffer(uint32_t dataSize) [constructor]
     cls.add_constructor([param('uint32_t', 'dataSize')])
     ## buffer.h: ns3::Buffer::Buffer(uint32_t dataSize, bool initialize) [constructor]
     cls.add_constructor([param('uint32_t', 'dataSize'), param('bool', 'initialize')])
+    ## buffer.h: ns3::Buffer::Buffer(ns3::Buffer const & o) [copy constructor]
+    cls.add_constructor([param('ns3::Buffer const &', 'o')])
     ## buffer.h: bool ns3::Buffer::AddAtEnd(uint32_t end) [member function]
     cls.add_method('AddAtEnd', 
                    'bool', 
@@ -1372,6 +1375,21 @@ def register_Ns3RandomPropagationLossModel_methods(root_module, cls):
                    is_const=True, visibility='private', is_virtual=True)
     return
 
+def register_Ns3RangePropagationLossModel_methods(root_module, cls):
+    ## propagation-loss-model.h: static ns3::TypeId ns3::RangePropagationLossModel::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## propagation-loss-model.h: ns3::RangePropagationLossModel::RangePropagationLossModel() [constructor]
+    cls.add_constructor([])
+    ## propagation-loss-model.h: double ns3::RangePropagationLossModel::DoCalcRxPower(double txPowerDbm, ns3::Ptr<ns3::MobilityModel> a, ns3::Ptr<ns3::MobilityModel> b) const [member function]
+    cls.add_method('DoCalcRxPower', 
+                   'double', 
+                   [param('double', 'txPowerDbm'), param('ns3::Ptr< ns3::MobilityModel >', 'a'), param('ns3::Ptr< ns3::MobilityModel >', 'b')], 
+                   is_const=True, visibility='private', is_virtual=True)
+    return
+
 def register_Ns3SpectrumConverter_methods(root_module, cls):
     ## spectrum-converter.h: ns3::SpectrumConverter::SpectrumConverter(ns3::SpectrumConverter const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::SpectrumConverter const &', 'arg0')])
@@ -2042,11 +2060,6 @@ def register_Ns3NixVector_methods(root_module, cls):
     cls.add_method('Deserialize', 
                    'uint32_t', 
                    [param('uint32_t const *', 'buffer'), param('uint32_t', 'size')])
-    ## nix-vector.h: void ns3::NixVector::DumpNixVector(std::ostream & os) const [member function]
-    cls.add_method('DumpNixVector', 
-                   'void', 
-                   [param('std::ostream &', 'os')], 
-                   is_const=True)
     ## nix-vector.h: uint32_t ns3::NixVector::ExtractNeighborIndex(uint32_t numberOfBits) [member function]
     cls.add_method('ExtractNeighborIndex', 
                    'uint32_t', 

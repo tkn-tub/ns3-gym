@@ -33,16 +33,32 @@ typedef struct ompi_request_t* MPI_Request;
 
 namespace ns3 {
 
+/**
+ * maximum MPI message size for easy
+ * buffer creation
+ */
 const uint32_t MAX_MPI_MSG_SIZE = 2000;
-// Define a class for tracking the non-block sends
+
+/**
+ * Define a class for tracking the non-block sends
+ */
 class SentBuffer
 {
 public:
   SentBuffer ();
   ~SentBuffer ();
 
+  /**
+   * \return pointer to sent buffer
+   */
   uint8_t* GetBuffer ();
-  void SetBuffer (uint8_t*);
+  /**
+   * \param buffer pointer to sent buffer
+   */
+  void SetBuffer (uint8_t* buffer);
+  /**
+   * \return MPI request
+   */
   MPI_Request* GetRequest ();
 
 private:
@@ -52,32 +68,82 @@ private:
 
 class Packet;
 
+/**
+ * Interface between ns-3 and MPI
+ */
 class MpiInterface
 {
 public:
-  static void     Destroy ();
-  static uint32_t GetSystemId ();        // Get the MPI Rank (system id)
-  static uint32_t GetSize ();        // Get the MPI Size (number of systems)
-  static bool     IsEnabled ();   // True if using MPI
-  static void     Enable (int*, char***); // Called by ns3 main program
+  /**
+   * Delete all buffers
+   */
+  static void Destroy ();
+  /**
+   * \return MPI rank
+   */
+  static uint32_t GetSystemId ();
+  /**
+   * \return MPI size (number of systems)
+   */
+  static uint32_t GetSize ();
+  /**
+   * \return true if using MPI
+   */
+  static bool IsEnabled ();
+  /**
+   * \param pargc number of command line arguments
+   * \param pargv command line arguments
+   *
+   * Sets up MPI interface
+   */
+  static void Enable (int* pargc, char*** pargv);
 
-  // Serialize and send a packet to the specified node and net device
-  static void     SendPacket (Ptr<Packet>, const Time &, uint32_t, uint32_t);
-  static void     ReceiveMessages ();  // Check for received messages complete
-  static void     TestSendComplete (); // Check for completed sends
+  /**
+   * \param p packet to send
+   * \param rxTime received time at destination node
+   * \param node destination node
+   * \param dev destination device
+   *
+   * Serialize and send a packet to the specified node and net device
+   */
+  static void SendPacket (Ptr<Packet> p, const Time &rxTime, uint32_t node, uint32_t dev);
+  /**
+   * Check for received messages complete
+   */
+  static void ReceiveMessages ();
+  /**
+   * Check for completed sends
+   */
+  static void TestSendComplete ();
+  /**
+   * \return received count in packets
+   */
   static uint32_t GetRxCount ();
+  /**
+   * \return transmitted count in packets
+   */
   static uint32_t GetTxCount ();
 
 private:
   static uint32_t m_sid;
   static uint32_t m_size;
-  static uint32_t m_rxCount;   // Total packets received
-  static uint32_t m_txCount;   // Total packets sent
+
+  // Total packets received
+  static uint32_t m_rxCount;
+
+  // Total packets sent
+  static uint32_t m_txCount;
   static bool     m_initialized;
   static bool     m_enabled;
-  static MPI_Request* m_requests; // Pending non-blocking receives
-  static char**   m_pRxBuffers;   // Data buffers for non-blocking reads
-  static std::list<SentBuffer> m_pendingTx;  // List of pending non-blocking sends
+
+  // Pending non-blocking receives
+  static MPI_Request* m_requests;
+
+  // Data buffers for non-blocking reads
+  static char**   m_pRxBuffers;
+
+  // List of pending non-blocking sends
+  static std::list<SentBuffer> m_pendingTx;
 };
 
 } // namespace ns3

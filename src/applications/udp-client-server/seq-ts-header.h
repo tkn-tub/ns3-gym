@@ -41,7 +41,13 @@ public:
    * \param seq the sequence number
    */
   void SetSeq (uint32_t seq);
+  /**
+   * \return the sequence number
+   */
   uint32_t GetSeq (void) const;
+  /**
+   * \return the time stamp
+   */
   Time GetTs (void) const;
 
   static TypeId GetTypeId (void);

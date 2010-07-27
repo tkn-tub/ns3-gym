@@ -65,8 +65,19 @@ class NixVector : public SimpleRefCount<NixVector>
   public:
     NixVector ();
     ~NixVector ();
+    /**
+     * \return a copy of this nix-vector
+     */
     Ptr<NixVector> Copy (void) const;
+    /**
+     * \param o the NixVector to copy to a new NixVector
+     *          using a constructor
+     */
     NixVector (const NixVector &o);
+    /**
+     * \param o the NixVector to copy to a new NixVector using the
+     *          equals operator
+     */
     NixVector &operator = (const NixVector &o);
     /**
      * \param newBits the neighbor-index to be added to the vector
@@ -136,14 +147,15 @@ class NixVector : public SimpleRefCount<NixVector>
      * AddNeighborIndex or ExtractNeighborIndex.
      */
     uint32_t BitCount (uint32_t numberOfNeighbors) const;  
-    /* for printing of nix-vector */
-    void DumpNixVector (std::ostream &os) const;
-    /* for printing of nix-vector */
-    friend std::ostream & operator <<( std::ostream &outs, const NixVector &nix); 
 
 
   private:
     typedef std::vector<uint32_t> NixBits_t;
+
+    /* for printing of nix-vector */
+    void DumpNixVector (std::ostream &os) const;
+    /* for printing of nix-vector */
+    friend std::ostream & operator <<( std::ostream &outs, const NixVector &nix); 
 
     /* the actual nix-vector */
     NixBits_t m_nixVector;

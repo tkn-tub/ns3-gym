@@ -33,9 +33,18 @@
 
 namespace ns3 {
 
+/**
+ * Map of Ipv4Address to NixVector
+ */
 typedef std::map<Ipv4Address, Ptr<NixVector> > NixMap_t;
+/**
+ * Map of Ipv4Address to Ipv4Route
+ */
 typedef std::map<Ipv4Address, Ptr<Ipv4Route> > Ipv4RouteMap_t;
 
+/**
+ * Nix-vector routing protocol
+ */
 class Ipv4NixVectorRouting : public Ipv4RoutingProtocol
 {
   public:

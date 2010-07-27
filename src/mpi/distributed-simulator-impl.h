@@ -28,7 +28,9 @@
 
 namespace ns3 {
 
-// Structure used for all-reduce LBTS computation
+/**
+ * \brief Structure used for all-reduce LBTS computation
+ */
 class LbtsMessage
 {
 public:
@@ -39,6 +41,12 @@ public:
   {
   }
 
+  /**
+   * \param rxc received count
+   * \param txc transmitted count
+   * \param id mpi rank
+   * \param t smallest time
+   */
   LbtsMessage (uint32_t rxc, uint32_t txc, uint32_t id, const Time& t)
     : m_txCount (txc),
       m_rxCount (rxc),
@@ -49,9 +57,21 @@ public:
 
   ~LbtsMessage ();
 
+  /**
+   * \return smallest time
+   */
   Time GetSmallestTime ();
+  /**
+   * \return transmitted count
+   */
   uint32_t GetTxCount ();
+  /**
+   * \return receieved count
+   */
   uint32_t GetRxCount ();
+  /**
+   * \return id which corresponds to mpi rank
+   */
   uint32_t GetMyId ();
 
 private:
@@ -61,6 +81,9 @@ private:
   Time     m_smallestTime;
 };
 
+/**
+ * \brief distributed simulator implementation using lookahead
+ */
 class DistributedSimulatorImpl : public SimulatorImpl
 {
 public:
@@ -69,6 +92,7 @@ public:
   DistributedSimulatorImpl ();
   ~DistributedSimulatorImpl ();
 
+  // virtual from SimulatorImpl
   virtual void Destroy ();
   virtual bool IsFinished (void) const;
   virtual Time Next (void) const;
