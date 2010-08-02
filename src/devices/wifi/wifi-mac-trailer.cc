@@ -51,18 +51,18 @@ WifiMacTrailer::Print (std::ostream &os) const
 uint32_t 
 WifiMacTrailer::GetSerializedSize (void) const
 {
-  return 4;
+  return WIFI_MAC_FCS_LENGTH;
 }
 void 
 WifiMacTrailer::Serialize (Buffer::Iterator start) const
 {
-  start.Prev (4);
+  start.Prev (WIFI_MAC_FCS_LENGTH);
   start.WriteU32 (0);
 }
 uint32_t
 WifiMacTrailer::Deserialize (Buffer::Iterator start)
 {
-  return 4;
+  return WIFI_MAC_FCS_LENGTH;
 }
 
 } // namespace ns3

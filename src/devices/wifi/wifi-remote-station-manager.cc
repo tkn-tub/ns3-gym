@@ -29,6 +29,7 @@
 #include "ns3/wifi-phy.h"
 #include "ns3/trace-source-accessor.h"
 #include "wifi-mac-header.h"
+#include "wifi-mac-trailer.h"
 
 NS_LOG_COMPONENT_DEFINE ("WifiRemoteStationManager");
 
@@ -151,15 +152,17 @@ WifiRemoteStationManager::GetTypeId (void)
                    UintegerValue (7),
                    MakeUintegerAccessor (&WifiRemoteStationManager::m_maxSlrc),
                    MakeUintegerChecker<uint32_t> ())
-    .AddAttribute ("RtsCtsThreshold", "If a data packet is bigger than this value, we use an RTS/CTS handshake"
-                   " before sending the data. This value will not have any effect on some rate control algorithms.",
-                   UintegerValue (1500),
+    .AddAttribute ("RtsCtsThreshold", "If  the size of the data packet + LLC header + MAC header + FCS trailer is bigger than "
+                   "this value, we use an RTS/CTS handshake before sending the data, as per IEEE Std. 802.11-2007, Section 9.2.6. "
+                   "This value will not have any effect on some rate control algorithms.",
+                   UintegerValue (2346),
                    MakeUintegerAccessor (&WifiRemoteStationManager::m_rtsCtsThreshold),
                    MakeUintegerChecker<uint32_t> ())
-    .AddAttribute ("FragmentationThreshold", "If a data packet is bigger than this value, we fragment it such that"
-                   " the size of the fragments are equal or smaller than this value. This value will not have any effect"
-                   " on some rate control algorithms.",
-                   UintegerValue (1500),
+    .AddAttribute ("FragmentationThreshold", "If the size of the data packet + LLC header + MAC header + FCS trailer is bigger"
+                   "than this value, we fragment it such that the size of the fragments are equal or smaller "
+                   "than this value, as per IEEE Std. 802.11-2007, Section 9.4. "
+                   "This value will not have any effect on some rate control algorithms.",
+                   UintegerValue (2346),
                    MakeUintegerAccessor (&WifiRemoteStationManager::m_fragmentationThreshold),
                    MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("NonUnicastMode", "Wifi mode used for non-unicast transmissions.",
@@ -458,7 +461,7 @@ WifiRemoteStationManager::NeedRts (Mac48Address address, const WifiMacHeader *he
     {
       return false;
     }
-  bool normally = packet->GetSize () > GetRtsCtsThreshold ();
+  bool normally = (packet->GetSize () + header->GetSize () + WIFI_MAC_FCS_LENGTH) > GetRtsCtsThreshold ();
   return DoNeedRts (Lookup (address, header), packet, normally);
 }
 bool
@@ -488,7 +491,7 @@ WifiRemoteStationManager::NeedFragmentation (Mac48Address address, const WifiMac
       return false;
     }
   WifiRemoteStation *station = Lookup (address, header);
-  bool normally = packet->GetSize () > GetFragmentationThreshold ();
+  bool normally = (packet->GetSize () + header->GetSize () + WIFI_MAC_FCS_LENGTH) > GetFragmentationThreshold ();
   return DoNeedFragmentation (station, packet, normally);
 }
 uint32_t

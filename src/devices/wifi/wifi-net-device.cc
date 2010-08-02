@@ -43,10 +43,10 @@ WifiNetDevice::GetTypeId (void)
     .SetParent<NetDevice> ()
     .AddConstructor<WifiNetDevice> ()
     .AddAttribute ("Mtu", "The MAC-level Maximum Transmission Unit",
-                   UintegerValue (MAX_MSDU_SIZE),
+                   UintegerValue (MAX_MSDU_SIZE - LLC_SNAP_HEADER_LENGTH),
                    MakeUintegerAccessor (&WifiNetDevice::SetMtu,
                                          &WifiNetDevice::GetMtu),
-                   MakeUintegerChecker<uint16_t> (1,MAX_MSDU_SIZE))
+                   MakeUintegerChecker<uint16_t> (1,MAX_MSDU_SIZE - LLC_SNAP_HEADER_LENGTH))
     .AddAttribute ("Channel", "The channel attached to this device",
                    PointerValue (),
                    MakePointerAccessor (&WifiNetDevice::DoGetChannel),
@@ -191,7 +191,7 @@ WifiNetDevice::GetAddress (void) const
 bool 
 WifiNetDevice::SetMtu (const uint16_t mtu)
 {
-  if (mtu > MAX_MSDU_SIZE)
+  if (mtu > MAX_MSDU_SIZE - LLC_SNAP_HEADER_LENGTH)
     {
       return false;
     }

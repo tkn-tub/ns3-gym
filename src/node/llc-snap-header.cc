@@ -43,7 +43,7 @@ LlcSnapHeader::GetType (void)
 uint32_t 
 LlcSnapHeader::GetSerializedSize (void) const
 {
-  return 1 + 1 + 1 + 3 + 2;
+  return LLC_SNAP_HEADER_LENGTH;
 }
 
 TypeId 
