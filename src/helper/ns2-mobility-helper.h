@@ -33,20 +33,22 @@ namespace ns3 {
 class ConstantVelocityMobilityModel;
 
 /**
- * \brief A helper which can read ns-2 movement files and configure nodes mobility.
+ * \ingroup mobility
+ * \brief Helper class which can read ns-2 movement files and configure nodes mobility.
  * 
  * This implementation is based on the ns2 movement documentation of ns2
  * as described in http://www.isi.edu/nsnam/ns/doc/node174.html
  *
  * Valid trace files use the following ns2 statements:
- *
- * $node set X_ x1
- * $node set Y_ y1
- * $node set Z_ z1
- * $ns at $time $node setdest x2 y2 speed
- * $ns at $time $node set X_ x1
- * $ns at $time $node set Y_ Y1
- * $ns at $time $node set Z_ Z1
+ \verbatim
+   $node set X_ x1
+   $node set Y_ y1
+   $node set Z_ z1
+   $ns at $time $node setdest x2 y2 speed
+   $ns at $time $node set X_ x1
+   $ns at $time $node set Y_ Y1
+   $ns at $time $node set Z_ Z1
+ \endverbatim
  *
  * Following tools are known to support this format:
  *  - BonnMotion http://net.cs.uni-bonn.de/wg/cs/applications/bonnmotion/

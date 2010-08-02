@@ -33,7 +33,8 @@ class PositionAllocator;
 class MobilityModel;
 
 /**
- * \brief assign positions and mobility models to nodes.
+ * \ingroup mobility
+ * \brief Helper class used to assign positions and mobility models to nodes.
  *
  * MobilityHelper::Install is the most important method here.
  */
@@ -172,14 +173,13 @@ public:
   void PopReferenceMobilityModel (void);
 
   /**
-   * \returns a string which contains the TypeId of the currently-selected
+   * \return a string which contains the TypeId of the currently-selected
    *          mobility model.
    */
   std::string GetMobilityModelType (void) const;
 
   /**
-   * \brief "Layout" a single node according to the current position allocator
-   * type.
+   * \brief "Layout" a single node according to the current position allocator type.
    *
    * This method creates an instance of a ns3::MobilityModel subclass (the 
    * type of which was set with MobilityHelper::SetMobilityModel), aggregates
@@ -190,8 +190,7 @@ public:
    */
   void Install (Ptr<Node> node) const;
   /**
-   * \brief "Layout" a single node according to the current position allocator
-   * type.
+   * \brief "Layout" a single node according to the current position allocator type.
    *
    * This method creates an instance of a ns3::MobilityModel subclass (the 
    * type of which was set with MobilityHelper::SetMobilityModel), aggregates
@@ -203,8 +202,7 @@ public:
   void Install (std::string nodeName) const;
 
   /**
-   * \brief Layout a collection of nodes according to the current position allocator
-   * type.
+   * \brief Layout a collection of nodes according to the current position allocator type.
    *
    * For each node in the provided NodeContainer, this method creates an instance 
    * of a ns3::MobilityModel subclass (the type of which was set with 
