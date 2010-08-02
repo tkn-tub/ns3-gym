@@ -27,6 +27,7 @@
 namespace ns3 {
 
 /**
+ * \ingroup mobility
  * \brief a 2d rectangle
  */
 class Rectangle
@@ -54,8 +55,7 @@ public:
   Rectangle ();
   /**
    * \param position the position to test.
-   * \returns true if the input position is located within the rectangle, 
-   *          false otherwise.
+   * \return true if the input position is located within the rectangle, false otherwise.
    *
    * This method compares only the x and y coordinates of the input position.
    * It ignores the z coordinate.
@@ -63,7 +63,7 @@ public:
   bool IsInside (const Vector &position) const;
   /**
    * \param position the position to test.
-   * \returns the side of the rectangle the input position is closest to.
+   * \return the side of the rectangle the input position is closest to.
    *
    * This method compares only the x and y coordinates of the input position.
    * It ignores the z coordinate.
@@ -72,7 +72,7 @@ public:
   /**
    * \param current the current position
    * \param speed the current speed
-   * \returns the intersection point between the rectangle and the current+speed vector.
+   * \return the intersection point between the rectangle and the current+speed vector.
    *
    * This method assumes that the current position is located _inside_
    * the rectangle and checks for this with an assert.
@@ -95,6 +95,7 @@ std::ostream &operator << (std::ostream &os, const Rectangle &rectangle);
 std::istream &operator >> (std::istream &is, Rectangle &rectangle);
 
 /**
+ * \ingroup mobility
  * \class ns3::RectangleValue
  * \brief hold objects of type ns3::Rectangle
  */

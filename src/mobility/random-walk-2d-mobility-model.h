@@ -32,7 +32,8 @@ namespace ns3 {
 
 
 /**
- * \brief a 2D random walk position model
+ * \ingroup mobility
+ * \brief 2D random walk mobility model.
  *
  * Each instance moves with a speed and direction choosen at random
  * with the user-provided random variables until

@@ -25,7 +25,8 @@
 namespace ns3 {
 
 /**
- * \brief a hierarchical mobility model.
+ * \ingroup mobility
+ * \brief Hierarchical mobility model.
  * 
  * This model allows you to specify the position of a child object
  * relative to a parent object.
@@ -43,13 +44,13 @@ namespace ns3 {
  * position, never the parent.  The child mobility model always uses a
  * coordinate system relative to the parent model position.
  *
- * @note: as a special case, the parent model may be NULL, which is
+ * \note: as a special case, the parent model may be NULL, which is
  * semantically equivalent to having a ConstantPositionMobilityModel
  * as parent positioned at origin (0,0,0).  In other words, setting
  * the parent model to NULL makes the child model and the hierarchical
  * model start using world absolute coordinates.
  *
- * @warning: changing the parent/child mobility models in the middle
+ * \warning: changing the parent/child mobility models in the middle
  * of a simulation will probably not play very well with the
  * ConfigStore APIs, so do this only if you know what you are doing.
  */
@@ -61,14 +62,14 @@ public:
   HierarchicalMobilityModel ();
 
   /**
-   * \returns the child mobility model.
+   * \return the child mobility model.
    *
    * This allows you to get access to the position of the child
    * relative to its parent.
    */
   Ptr<MobilityModel> GetChild (void) const;
   /**
-   * \returns the parent mobility model.
+   * \return the parent mobility model.
    *
    * This allows you to get access to the position of the 
    * parent mobility model which is used as the reference 

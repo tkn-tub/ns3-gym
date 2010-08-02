@@ -25,9 +25,9 @@
 namespace ns3 {
 
 /**
- * \brief a position model for which the current position does not
- *        change once it has been set and until it is set again 
- *        explicitely to a new value.
+ * \ingroup mobility
+ *
+ * \brief Mobility model for which the current position does not change once it has been set and until it is set again explicitely to a new value.
  */
 class ConstantPositionMobilityModel : public MobilityModel 
 {

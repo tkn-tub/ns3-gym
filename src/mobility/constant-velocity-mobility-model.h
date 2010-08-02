@@ -28,9 +28,9 @@
 namespace ns3 {
 
 /**
- * \brief a position model for which the current speed does not
- *        change once it has been set and until it is set again 
- *        explicitely to a new value.
+ * \ingroup mobility
+ *
+ * \brief Mobility model for which the current speed does not change once it has been set and until it is set again explicitely to a new value.
  */
 class ConstantVelocityMobilityModel : public MobilityModel 
 {

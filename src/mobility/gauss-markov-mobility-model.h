@@ -35,7 +35,8 @@
 namespace ns3 {
 
 /**
- * \brief description of gauss markov mobility model
+ * \ingroup mobility
+ * \brief Gauss-Markov mobility model
  *
  * This is a 3D version of the Gauss-Markov mobility model described in [1]. 
  * Unlike the other mobility models in ns-3, which are memoryless, the Gauss
@@ -51,32 +52,31 @@ namespace ns3 {
  * version of the "rectangle" field that is used in 2-dimensional ns-3 mobility models.
  * 
  * Here is an example of how to implement the model and set the initial node positions:
- * 
- *   MobilityHelper mobility;
- * 
- *   mobility.SetMobilityModel ("ns3::GaussMarkovMobilityModel",
- *     "Bounds", BoxValue (Box (0, 150000, 0, 150000, 0, 10000)),
- *     "TimeStep", TimeValue (Seconds (0.5)),
- *     "Alpha", DoubleValue (0.85),
- *     "MeanVelocity", RandomVariableValue (UniformVariable (800, 1200)),
- *     "MeanDirection", RandomVariableValue (UniformVariable (0, 6.283185307)),
- *     "MeanPitch", RandomVariableValue (UniformVariable (0.05, 0.05)),
- *     "NormalVelocity", RandomVariableValue (NormalVariable (0.0, 0.0, 0.0)),
- *     "NormalDirection", RandomVariableValue (NormalVariable (0.0, 0.2, 0.4)),
- *     "NormalPitch", RandomVariableValue (NormalVariable (0.0, 0.02, 0.04)));
- * 
- *   mobility.SetPositionAllocator ("ns3::RandomBoxPositionAllocator",
- *     "X", RandomVariableValue (UniformVariable (0, 150000)),
- *     "Y", RandomVariableValue (UniformVariable (0, 150000)),
- *     "Z", RandomVariableValue (UniformVariable (0, 10000)));
- *
- *   mobility.Install (wifiStaNodes);
- *
+ * \code
+    MobilityHelper mobility;
+  
+    mobility.SetMobilityModel ("ns3::GaussMarkovMobilityModel",
+      "Bounds", BoxValue (Box (0, 150000, 0, 150000, 0, 10000)),
+      "TimeStep", TimeValue (Seconds (0.5)),
+      "Alpha", DoubleValue (0.85),
+      "MeanVelocity", RandomVariableValue (UniformVariable (800, 1200)),
+      "MeanDirection", RandomVariableValue (UniformVariable (0, 6.283185307)),
+      "MeanPitch", RandomVariableValue (UniformVariable (0.05, 0.05)),
+      "NormalVelocity", RandomVariableValue (NormalVariable (0.0, 0.0, 0.0)),
+      "NormalDirection", RandomVariableValue (NormalVariable (0.0, 0.2, 0.4)),
+      "NormalPitch", RandomVariableValue (NormalVariable (0.0, 0.02, 0.04)));
+  
+    mobility.SetPositionAllocator ("ns3::RandomBoxPositionAllocator",
+      "X", RandomVariableValue (UniformVariable (0, 150000)),
+      "Y", RandomVariableValue (UniformVariable (0, 150000)),
+      "Z", RandomVariableValue (UniformVariable (0, 10000)));
+ 
+    mobility.Install (wifiStaNodes);
+ * \endcode
  * [1] Tracy Camp, Jeff Boleng, Vanessa Davies, "A Survey of Mobility Models
  * for Ad Hoc Network Research", Wireless Communications and Mobile Computing,
  * Wiley, vol.2 iss.5, September 2002, pp.483-502
  */
-
 class GaussMarkovMobilityModel : public MobilityModel
 {
 public:

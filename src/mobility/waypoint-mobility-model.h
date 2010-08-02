@@ -29,7 +29,8 @@
 namespace ns3 {
 
 /**
- * \brief a waypoint-based mobility model
+ * \ingroup mobility
+ * \brief Waypoint-based mobility model.
  *
  * Each object determines its velocity and position at a given time
  * from a set of ns3::Waypoint objects. The position of each object

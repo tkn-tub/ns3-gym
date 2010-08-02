@@ -28,8 +28,8 @@
 namespace ns3 {
 
 /**
+ * \ingroup mobility
  * \brief a (time, location) pair.
- *
  */
 class Waypoint
 {
@@ -53,6 +53,7 @@ public:
 };
 
 /**
+ * \ingroup mobility
  * \class ns3::WaypointValue
  * \brief hold objects of type ns3::Waypoint
  */

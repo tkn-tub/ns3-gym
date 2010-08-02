@@ -27,8 +27,8 @@
 namespace ns3 {
 
 /**
- * \brief allocate a set of positions. The allocation strategy is implemented
- *        in subclasses.
+ * \ingroup mobility
+ * \brief Allocate a set of positions. The allocation strategy is implemented in subclasses.
  *
  * This is a pure abstract base class.
  */
@@ -39,7 +39,7 @@ public:
   PositionAllocator ();
   virtual ~PositionAllocator ();
   /**
-   * \returns the next chosen position.
+   * \return the next chosen position.
    *
    * This method _must_ be implement in subclasses.
    */
@@ -47,6 +47,7 @@ public:
 };
 
 /**
+ * \ingroup mobility
  * \brief Allocate positions from a deterministic list specified by the user.
  *
  * The first call to ListPositionAllocator::GetNext  will return the
@@ -59,8 +60,7 @@ public:
   ListPositionAllocator ();
 
   /**
-   * \param v the position to append at the end of the list of 
-   *        positions to return from GetNext.
+   * \param v the position to append at the end of the list of positions to return from GetNext.
    */
   void Add (Vector v);
   virtual Vector GetNext (void) const;
@@ -70,6 +70,7 @@ private:
 };
 
 /**
+ * \ingroup mobility
  * \brief Allocate positions on a rectangular 2d grid.
  */
 class GridPositionAllocator : public PositionAllocator
@@ -124,27 +125,27 @@ public:
   void SetLayoutType (enum LayoutType layoutType);
 
   /**
-   * \returns the x coordinate of the first allocated position.
+   * \return the x coordinate of the first allocated position.
    */
   double GetMinX (void) const;
   /**
-   * \returns the y coordinate of the first allocated position.
+   * \return the y coordinate of the first allocated position.
    */
   double GetMinY (void) const;
   /**
-   * \returns the x interval between two x-consecutive positions.
+   * \return the x interval between two x-consecutive positions.
    */
   double GetDeltaX (void) const;
   /**
-   * \returns the y interval between two y-consecutive positions.
+   * \return the y interval between two y-consecutive positions.
    */
   double GetDeltaY (void) const;
   /**
-   * \returns the number of positions to allocate on each row or each column.
+   * \return the number of positions to allocate on each row or each column.
    */
   uint32_t GetN (void) const;
   /**
-   * \returns the currently-selected layout type.
+   * \return the currently-selected layout type.
    */
   enum LayoutType GetLayoutType (void) const;
   
@@ -161,8 +162,8 @@ private:
 };
 
 /**
- * \brief allocate random positions within a rectangle
- * according to a pair of random variables.
+ * \infroup mobility
+ * \brief Allocate random positions within a rectangle according to a pair of random variables.
  */
 class RandomRectanglePositionAllocator : public PositionAllocator
 {
@@ -181,8 +182,8 @@ private:
 };
 
 /**
- * \brief allocate random positions within a 3D box
- * according to a set of three random variables.
+ * \ingroup mobility
+ * \brief Allocate random positions within a 3D box according to a set of three random variables.
  */
 class RandomBoxPositionAllocator : public PositionAllocator
 {
@@ -203,9 +204,9 @@ private:
 };
 
 /**
- * \brief allocate random positions within a disc
- * according to a given distribution for the polar coordinates of each
- * node with respect to the provided center of the disc 
+ * \ingroup mobility
+ * \brief Allocate random positions within a disc according to a given distribution for the polar coordinates of each node 
+          with respect to the provided center of the disc 
  */
 class RandomDiscPositionAllocator : public PositionAllocator
 {
@@ -229,6 +230,9 @@ private:
 
 
 /**
+ * \ingroup mobility
+ * \brief Allocate the positions uniformely (with constant density) randomly within a disc.
+ *
  * UniformDiscPositionAllocator allocates the positions randomly within a disc \f$ D \f$ lying on the
  * plane \f$ z=0 \f$ and having center at coordinates \f$ (x,y,0) \f$
  * and radius \f$ \rho \f$. The random positions are chosen such that,
@@ -250,21 +254,17 @@ public:
   virtual ~UniformDiscPositionAllocator ();
 
   /** 
-   * 
-   * @param rho the value of the radius of the disc
+   * \param rho the value of the radius of the disc
    */
   void SetRho (double rho);
 
   /** 
-   * 
-   * 
-   * @param x  the X coordinate of the center of the disc
+   * \param x  the X coordinate of the center of the disc
    */
   void SetX (double x);
 
   /** 
-   * 
-   * @param y   the Y coordinate of the center of the disc 
+   * \param y   the Y coordinate of the center of the disc 
    */
   void SetY (double y);
 

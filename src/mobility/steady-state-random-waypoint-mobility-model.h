@@ -29,7 +29,8 @@
 namespace ns3 {
 
 /**
- * \brief a steady-state random waypoint mobility model
+ * \ingroup mobility
+ * \brief Steady-state random waypoint mobility model.
  *
  * This model based on random waypoint mobility (RWM) model for case when 
  * speed, pause and position are uniformly distributed random variables. 

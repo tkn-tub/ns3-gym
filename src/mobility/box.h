@@ -27,6 +27,7 @@
 namespace ns3 {
 
 /**
+ * \ingroup mobility
  * \brief a 3d box
  */
 class Box

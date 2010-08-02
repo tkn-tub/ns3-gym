@@ -32,7 +32,8 @@
 namespace ns3 {
 
 /**
- * \brief a RandomDirection mobility model
+ * \ingroup mobility
+ * \brief Random direction mobility model.
  *
  * The movement of objects is based on random directions: each object
  * pauses for a specific delay, chooses a random direction and speed and 

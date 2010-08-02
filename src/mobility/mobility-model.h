@@ -27,11 +27,14 @@
 namespace ns3 {
 
 /**
- * \brief keep track of the current position of an object
+ * \ingroup mobility
+ * \brief Keep track of the current position and velocity of an object.
  *
  * All space coordinates in this class and its subclasses are
  * understood to be meters or meters/s. i.e., they are all
  * metric international units.
+ *
+ * This is a base class for all specific mobility models.
  */
 class MobilityModel : public Object
 {
@@ -41,7 +44,7 @@ public:
   virtual ~MobilityModel () = 0;
 
   /**
-   * \returns the current position
+   * \return the current position
    */
   Vector GetPosition (void) const;
   /**
@@ -49,12 +52,12 @@ public:
    */
   void SetPosition (const Vector &position);
   /**
-   * \returns the current velocity.
+   * \return the current velocity.
    */
   Vector GetVelocity (void) const;
   /**
    * \param position a reference to another mobility model
-   * \returns the distance between the two objects. Unit is meters.
+   * \return the distance between the two objects. Unit is meters.
    */
   double GetDistanceFrom (Ptr<const MobilityModel> position) const;
 protected:
@@ -65,7 +68,7 @@ protected:
   void NotifyCourseChange (void) const;
 private:
   /**
-   * \returns the current position.
+   * \return the current position.
    *
    * Concrete subclasses of this base class must 
    * implement this method.
@@ -79,7 +82,7 @@ private:
    */
   virtual void DoSetPosition (const Vector &position) = 0;
   /**
-   * \returns the current velocity.
+   * \return the current velocity.
    *
    * Concrete subclasses of this base class must 
    * implement this method.

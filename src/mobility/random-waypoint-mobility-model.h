@@ -29,7 +29,8 @@
 namespace ns3 {
 
 /**
- * \brief a random waypoint mobility model
+ * \ingroup mobility
+ * \brief Random waypoint mobility model.
  *
  * Each object chooses a random destination "waypoint", a random speed,
  * and a random pause time: it then pauses for the specified pause time,
