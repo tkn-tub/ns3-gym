@@ -60,19 +60,6 @@ InterferenceHelper::Event::GetEndTime (void) const
 {
   return m_endTime;
 }
-bool 
-InterferenceHelper::Event::Overlaps (Time time) const
-{
-  if (m_startTime <= time &&
-      m_endTime >= time) 
-    {
-      return true;
-    } 
-  else 
-    {
-      return false;
-    }
-}
 double 
 InterferenceHelper::Event::GetRxPowerW (void) const
 {
@@ -123,8 +110,9 @@ InterferenceHelper::NiChange::operator < (const InterferenceHelper::NiChange& o)
  ****************************************************************/
 
 InterferenceHelper::InterferenceHelper ()
-  : m_maxPacketDuration (Seconds(0)),
-    m_errorRateModel (0)  
+  : m_errorRateModel (0),
+    m_firstPower (0.0),
+    m_rxing (false)
 {}
 InterferenceHelper::~InterferenceHelper ()
 {
@@ -145,17 +133,10 @@ InterferenceHelper::Add (uint32_t size, WifiMode payloadMode,
      preamble,
      duration,
      rxPowerW);
-
-  m_maxPacketDuration = std::max(duration, m_maxPacketDuration);
   AppendEvent (event);
   return event;
 }
 
-Time 
-InterferenceHelper::GetMaxPacketDuration (void) const
-{
-  return m_maxPacketDuration;
-}
 
 void 
 InterferenceHelper::SetNoiseFigure (double value)
@@ -185,45 +166,23 @@ Time
 InterferenceHelper::GetEnergyDuration (double energyW)
 {
   Time now = Simulator::Now ();
-
-  // first, we iterate over all events and, each event
-  // which contributes energy to the channel now is 
-  // appended to the noise interference array.
-  Events::const_iterator i = m_events.begin ();
   double noiseInterferenceW = 0.0;
-  NiChanges ni;
-  while (i != m_events.end ()) 
-    {
-      Ptr<Event> ev = *i;
-      NS_ASSERT (ev->GetStartTime () <= now);
-      if (ev->GetEndTime () > now)
-	{
-          ni.push_back (NiChange (ev->GetEndTime (), -ev->GetRxPowerW ()));
-          noiseInterferenceW += ev->GetRxPowerW ();
-	}
-      i++;
-    }
-  if (noiseInterferenceW < energyW)
-    {
-      return MicroSeconds (0);
-    }
-
-  /* quicksort vector of NI changes by time. 
-   */
-  std::sort (ni.begin (), ni.end (), std::less<NiChange> ());
-
-  // Now, we iterate the piecewise linear noise function
   Time end = now;
-  for (NiChanges::const_iterator i = ni.begin (); i != ni.end (); i++) 
+  noiseInterferenceW = m_firstPower;
+  for (NiChanges::const_iterator i = m_niChanges.begin (); i != m_niChanges.end (); i++)
     {
       noiseInterferenceW += i->GetDelta ();
       end = i->GetTime ();
-      if (noiseInterferenceW < energyW) 
-	{
-	  break;
-	}
+      if (end < now)
+        {
+          continue;
+        }
+      if (noiseInterferenceW < energyW)
+	      {
+	        break;
+	      }
     }
-  return end - now;
+  return end > now ? end - now : MicroSeconds (0);
 }
 
 WifiMode 
@@ -412,24 +371,23 @@ InterferenceHelper::CalculateTxDuration (uint32_t size, WifiMode payloadMode, Wi
 void 
 InterferenceHelper::AppendEvent (Ptr<InterferenceHelper::Event> event)
 {
-  /* attempt to remove the events which are 
-   * not useful anymore. 
-   * i.e.: all events which end _before_
-   *       now - m_maxPacketDuration
-   */
-  
-  if (Simulator::Now () > GetMaxPacketDuration ())
+  Time now = Simulator::Now ();
+  if (!m_rxing)
     {
-      Time end = Simulator::Now () - GetMaxPacketDuration ();
-      Events::iterator i = m_events.begin ();
-      while (i != m_events.end () &&
-             (*i)->GetEndTime () <= end) 
+      NiChanges::iterator nowIterator = GetPosition (now);
+      for (NiChanges::iterator i = m_niChanges.begin (); i != nowIterator; i++)
         {
-          i++;
+          m_firstPower += i->GetDelta ();
         }
-      EraseEvents (m_events.begin (), i);
-    } 
-  m_events.push_back (event);
+      m_niChanges.erase (m_niChanges.begin (), nowIterator);
+      m_niChanges.insert (m_niChanges.begin (), NiChange (event->GetStartTime (), event->GetRxPowerW ())); 
+    }
+  else
+    {
+      AddNiChangeEvent (NiChange (event->GetStartTime (), event->GetRxPowerW ()));
+    }
+  AddNiChangeEvent(NiChange (event->GetEndTime (), -event->GetRxPowerW ()));
+
 }
 
 
@@ -450,35 +408,18 @@ InterferenceHelper::CalculateSnr (double signal, double noiseInterference, WifiM
 double
 InterferenceHelper::CalculateNoiseInterferenceW (Ptr<InterferenceHelper::Event> event, NiChanges *ni) const
 {
-  Events::const_iterator i = m_events.begin ();
-  double noiseInterference = 0.0;
-  while (i != m_events.end ()) 
+  double noiseInterference = m_firstPower;
+  NS_ASSERT (m_rxing);
+  for (NiChanges::const_iterator i = m_niChanges.begin () + 1; i != m_niChanges.end (); i++)
     {
-      if (event == (*i)) 
+      if ((event->GetEndTime () == i->GetTime ()) && event->GetRxPowerW () == -i->GetDelta ())
         {
-          i++;
-          continue;
+          break;
         }
-      if ((*i)->Overlaps (event->GetStartTime ())) 
-        {
-          noiseInterference += (*i)->GetRxPowerW ();
-        }
-      else if (event->Overlaps ((*i)->GetStartTime ())) 
-        {
-          ni->push_back (NiChange ((*i)->GetStartTime (), (*i)->GetRxPowerW ()));
-        }
-      if (event->Overlaps ((*i)->GetEndTime ())) 
-        {
-          ni->push_back (NiChange ((*i)->GetEndTime (), -(*i)->GetRxPowerW ()));
-        }
-      i++;
+      ni->push_back (*i);
     }
-  ni->push_back (NiChange (event->GetStartTime (), noiseInterference));
+  ni->insert (ni->begin (), NiChange (event->GetStartTime (), noiseInterference));
   ni->push_back (NiChange (event->GetEndTime (), 0));
-
-  /* quicksort vector of NI changes by time. */
-  std::sort (ni->begin (), ni->end (), std::less<NiChange> ());
-
   return noiseInterference;
 }
 
@@ -605,21 +546,28 @@ InterferenceHelper::CalculateSnrPer (Ptr<InterferenceHelper::Event> event)
 void
 InterferenceHelper::EraseEvents (void) 
 {  
-  for (Events::iterator i = m_events.begin (); i != m_events.end (); ++i)
-    {
-      *i = 0;
-    }
-  m_events.clear ();
+  m_niChanges.clear ();
+  m_firstPower = 0.0;
 }
+InterferenceHelper::NiChanges::iterator
+InterferenceHelper::GetPosition (Time moment)
+{
+  return std::upper_bound (m_niChanges.begin (), m_niChanges.end (), NiChange (moment, 0));
 
+}
 void
-InterferenceHelper::EraseEvents (Events::iterator start, Events::iterator end) 
-{  
-  for (Events::iterator i = start; i != end; ++i)
-    {
-      *i = 0;
-    }
-  m_events.erase (start, end);
+InterferenceHelper::AddNiChangeEvent (NiChange change)
+{
+  m_niChanges.insert (GetPosition (change.GetTime ()), change);
 }
-
+void
+InterferenceHelper::NotifyRxStart ()
+{
+  m_rxing = true;
+}
+void
+InterferenceHelper::NotifyRxEnd ()
+{
+  m_rxing = false;
+}
 } // namespace ns3

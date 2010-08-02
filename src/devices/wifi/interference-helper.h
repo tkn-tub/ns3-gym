@@ -47,7 +47,6 @@ public:
     Time GetDuration (void) const;
     Time GetStartTime (void) const;
     Time GetEndTime (void) const;
-    bool Overlaps (Time time) const;
     double GetRxPowerW (void) const;
     uint32_t GetSize (void) const;
     WifiMode GetPayloadMode (void) const;
@@ -95,6 +94,8 @@ public:
 				      Time duration, double rxPower);
 
   struct InterferenceHelper::SnrPer CalculateSnrPer (Ptr<InterferenceHelper::Event> event);
+  void NotifyRxStart ();
+  void NotifyRxEnd ();
   void EraseEvents (void); 
 private:
   class NiChange {
@@ -110,8 +111,6 @@ private:
   typedef std::vector <NiChange> NiChanges;
   typedef std::list<Ptr<Event> > Events;
 
-  void EraseEvents (Events::iterator start, Events::iterator end); 
-
   InterferenceHelper (const InterferenceHelper &o);
   InterferenceHelper &operator = (const InterferenceHelper &o);
   void AppendEvent (Ptr<Event> event);
@@ -119,12 +118,16 @@ private:
   double CalculateSnr (double signal, double noiseInterference, WifiMode mode) const;
   double CalculateChunkSuccessRate (double snir, Time delay, WifiMode mode) const;
   double CalculatePer (Ptr<const Event> event, NiChanges *ni) const;
-  Time GetMaxPacketDuration (void) const;
 
-  Time m_maxPacketDuration;
   double m_noiseFigure; /**< noise figure (linear) */
-  Events m_events;
   Ptr<ErrorRateModel> m_errorRateModel;
+  ///Experimental: needed for energy duration calculation
+  NiChanges m_niChanges;
+  double m_firstPower;
+  bool m_rxing;
+  /// Returns an iterator to the first nichange, which is later than moment
+  NiChanges::iterator GetPosition (Time moment);
+  void AddNiChangeEvent (NiChange change);
 };
 
 } // namespace ns3

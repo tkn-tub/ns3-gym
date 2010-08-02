@@ -459,6 +459,7 @@ YansWifiPhy::StartReceivePacket (Ptr<Packet> packet,
         m_state->SwitchToRx (rxDuration);
         NS_ASSERT (m_endRxEvent.IsExpired ());
         NotifyRxBegin (packet);
+        m_interference.NotifyRxStart();
         m_endRxEvent = Simulator::Schedule (rxDuration, &YansWifiPhy::EndReceive, this, 
                                             packet,
                                             event);
@@ -504,6 +505,7 @@ YansWifiPhy::SendPacket (Ptr<const Packet> packet, WifiMode txMode, WifiPreamble
   if (m_state->IsStateRx ())
     {
       m_endRxEvent.Cancel ();
+      m_interference.NotifyRxEnd ();
     }
   NotifyTxBegin (packet);
   uint32_t dataRate500KbpsUnits = txMode.GetDataRate () / 500000;   
@@ -754,6 +756,7 @@ YansWifiPhy::EndReceive (Ptr<Packet> packet, Ptr<InterferenceHelper::Event> even
 
   struct InterferenceHelper::SnrPer snrPer;
   snrPer = m_interference.CalculateSnrPer (event);
+  m_interference.NotifyRxEnd();
 
   NS_LOG_DEBUG ("mode="<<(event->GetPayloadMode ().GetDataRate ())<<
                 ", snr="<<snrPer.snr<<", per="<<snrPer.per<<", size="<<packet->GetSize ());
