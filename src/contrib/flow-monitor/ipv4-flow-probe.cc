@@ -301,6 +301,15 @@ Ipv4FlowProbe::DropLogger (const Ipv4Header &ipHeader, Ptr<const Packet> ipPaylo
           myReason = DROP_BAD_CHECKSUM;
           NS_LOG_DEBUG ("DROP_BAD_CHECKSUM");
           break;
+        case Ipv4L3Protocol::DROP_INTERFACE_DOWN:
+          myReason = DROP_INTERFACE_DOWN;
+          NS_LOG_DEBUG ("DROP_INTERFACE_DOWN");
+          break;
+        case Ipv4L3Protocol::DROP_ROUTE_ERROR:
+          myReason = DROP_ROUTE_ERROR;
+          NS_LOG_DEBUG ("DROP_ROUTE_ERROR");
+          break;
+
         default:
           myReason = DROP_INVALID_REASON;
           NS_FATAL_ERROR ("Unexpected drop reason code " << reason);

@@ -60,6 +60,9 @@ public:
       /// with a Drop trace source.  It currently works with Csma and
       /// PointToPoint devices, but not with WiFi or WiMax.
       DROP_QUEUE,
+
+      DROP_INTERFACE_DOWN, /**< Interface is down so can not send packet */
+      DROP_ROUTE_ERROR, /**< Route error */
       
       DROP_INVALID_REASON,
     };
