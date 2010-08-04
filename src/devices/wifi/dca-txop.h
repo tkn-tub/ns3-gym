@@ -26,10 +26,10 @@
 #include "ns3/packet.h"
 #include "ns3/nstime.h"
 #include "ns3/object.h"
-#include "wifi-mac-header.h"
-#include "wifi-mode.h"
-#include "wifi-remote-station-manager.h"
-#include "dcf.h"
+#include "ns3/wifi-mac-header.h"
+#include "ns3/wifi-mode.h"
+#include "ns3/wifi-remote-station-manager.h"
+#include "ns3/dcf.h"
 
 namespace ns3 {
 

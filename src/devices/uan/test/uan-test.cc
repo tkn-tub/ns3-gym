@@ -18,12 +18,12 @@
  * Author: Leonard Tracy <lentracy@gmail.com>
  */
 
-#include "uan-net-device.h"
-#include "uan-channel.h"
-#include "uan-mac-aloha.h"
-#include "uan-phy-gen.h"
-#include "uan-transducer-hd.h"
-#include "uan-prop-model-ideal.h"
+#include "ns3/uan-net-device.h"
+#include "ns3/uan-channel.h"
+#include "ns3/uan-mac-aloha.h"
+#include "ns3/uan-phy-gen.h"
+#include "ns3/uan-transducer-hd.h"
+#include "ns3/uan-prop-model-ideal.h"
 #include "ns3/constant-position-mobility-model.h"
 #include "ns3/simulator.h"
 #include "ns3/test.h"

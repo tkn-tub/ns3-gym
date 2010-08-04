@@ -39,7 +39,6 @@
 #include "uan-cw-example.h"
 #include "ns3/core-module.h"
 #include "ns3/common-module.h"
-#include "ns3/uan-module.h"
 #include "ns3/node-module.h"
 #include "ns3/mobility-module.h"
 #include "ns3/contrib-module.h"

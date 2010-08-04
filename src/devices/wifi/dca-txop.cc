@@ -60,7 +60,6 @@ private:
   virtual void DoNotifyChannelSwitching (void) { 
     m_txop->NotifyChannelSwitching ();
   }
-
   DcaTxop *m_txop;
 };
 
@@ -101,7 +100,7 @@ TypeId
 DcaTxop::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::DcaTxop")
-    .SetParent<Object> ()
+    .SetParent (ns3::Dcf::GetTypeId ())
     .AddConstructor<DcaTxop> ()
     ;
   return tid;
