@@ -318,7 +318,13 @@ RoutingProtocol::DeferredRouteOutput (Ptr<const Packet> p, const Ipv4Header & he
   if (result)
     {
       NS_LOG_LOGIC ("Add packet " << p->GetUid() << " to queue. Protocol " << (uint16_t) header.GetProtocol ());
-      SendRequest (header.GetDestination ());
+      RoutingTableEntry rt;
+      bool result = m_routingTable.LookupRoute(header.GetDestination (), rt);
+      if(!result || ((rt.GetFlag() != IN_SEARCH) && result))
+        {
+          NS_LOG_LOGIC ("Send RREQ to" <<header.GetDestination ());
+          SendRequest (header.GetDestination ());
+        }
     }
 }
 
