@@ -262,7 +262,7 @@ Ptr<Ipv4Route>
 RoutingProtocol::RouteOutput (Ptr<Packet> p, const Ipv4Header &header,
     Ptr<NetDevice> oif, Socket::SocketErrno &sockerr)
 {
-  NS_LOG_FUNCTION (this << header.GetDestination ());
+  NS_LOG_FUNCTION (this << header << (oif? oif->GetIfIndex () : 0));
   if (! p)
     {
       return LoopbackRoute (header); // later
@@ -369,12 +369,8 @@ RoutingProtocol::RouteInput (Ptr<const Packet> p, const Ipv4Header &header,
     {
       Ipv4InterfaceAddress iface = j->second;
       if (m_ipv4->GetInterfaceForAddress (iface.GetLocal ()) == iif)
-        if (dst == iface.GetBroadcast ())
+        if (dst == iface.GetBroadcast () || dst.IsBroadcast ())
           {
-            if (!EnableBroadcast)
-              {
-                return true;
-              }
             if (m_dpd.IsDuplicate (p, header))
               {
                 NS_LOG_DEBUG ("Duplicated packet " << p->GetUid () << " from " << origin << ". Drop.");
@@ -384,6 +380,10 @@ RoutingProtocol::RouteInput (Ptr<const Packet> p, const Ipv4Header &header,
             NS_LOG_LOGIC ("Broadcast local delivery to " << iface.GetLocal ());
             Ptr<Packet> packet = p->Copy ();
             lcb (p, header, iif);
+            if (!EnableBroadcast)
+              {
+                return true;
+              }
             if (header.GetTtl () > 1)
               {
                 NS_LOG_LOGIC ("Forward broadcast. TTL " << (uint16_t) header.GetTtl ());
@@ -527,8 +527,9 @@ RoutingProtocol::NotifyInterfaceUp (uint32_t i)
       UdpSocketFactory::GetTypeId ());
   NS_ASSERT (socket != 0);
   socket->SetRecvCallback (MakeCallback (&RoutingProtocol::RecvAodv, this));
-  socket->Bind (InetSocketAddress (iface.GetLocal (), AODV_PORT));
-  socket->Connect (InetSocketAddress (iface.GetBroadcast (), AODV_PORT));
+  socket->BindToNetDevice (l3->GetNetDevice (i));
+  socket->Bind (InetSocketAddress (Ipv4Address::GetAny (), AODV_PORT));
+  socket->SetAllowBroadcast (true);
   socket->SetAttribute ("IpTtl", UintegerValue (1));
   m_socketAddresses.insert (std::make_pair (socket, iface));
 
@@ -606,8 +607,10 @@ RoutingProtocol::NotifyAddAddress (uint32_t i, Ipv4InterfaceAddress address)
               UdpSocketFactory::GetTypeId ());
           NS_ASSERT (socket != 0);
           socket->SetRecvCallback (MakeCallback (&RoutingProtocol::RecvAodv,this));
-          socket->Bind (InetSocketAddress (iface.GetLocal (), AODV_PORT));
-          socket->Connect (InetSocketAddress (iface.GetBroadcast (), AODV_PORT));
+          socket->BindToNetDevice (l3->GetNetDevice (i));
+          // Bind to any IP address so that broadcasts can be received
+          socket->Bind (InetSocketAddress (Ipv4Address::GetAny(), AODV_PORT));
+          socket->SetAllowBroadcast (true);
           m_socketAddresses.insert (std::make_pair (socket, iface));
 
           // Add local broadcast record to the routing table
@@ -643,8 +646,9 @@ RoutingProtocol::NotifyRemoveAddress (uint32_t i, Ipv4InterfaceAddress address)
               UdpSocketFactory::GetTypeId ());
           NS_ASSERT (socket != 0);
           socket->SetRecvCallback (MakeCallback (&RoutingProtocol::RecvAodv, this));
-          socket->Bind (InetSocketAddress (iface.GetLocal (), AODV_PORT));
-          socket->Connect (InetSocketAddress (iface.GetBroadcast (), AODV_PORT));
+          // Bind to any IP address so that broadcasts can be received
+          socket->Bind (InetSocketAddress (Ipv4Address::GetAny(), AODV_PORT));
+          socket->SetAllowBroadcast (true);
           m_socketAddresses.insert (std::make_pair (socket, iface));
 
           // Add local broadcast record to the routing table
@@ -691,7 +695,7 @@ RoutingProtocol::LoopbackRoute (const Ipv4Header & hdr) const
   NS_ASSERT (m_lo != 0);
   Ptr<Ipv4Route> rt = Create<Ipv4Route> ();
   rt->SetDestination (hdr.GetDestination ());
-  rt->SetSource (hdr.GetSource ());
+  rt->SetSource (Ipv4Address ("127.0.0.1"));
   rt->SetGateway (Ipv4Address ("127.0.0.1"));
   rt->SetOutputDevice (m_lo);
   return rt;
@@ -761,7 +765,17 @@ RoutingProtocol::SendRequest (Ipv4Address dst)
       packet->AddHeader (rreqHeader);
       TypeHeader tHeader (AODVTYPE_RREQ);
       packet->AddHeader (tHeader);
-      socket->Send (packet);
+      // Send to all-hosts broadcast if on /32 addr, subnet-directed otherwise
+      Ipv4Address destination;
+      if (iface.GetMask () == Ipv4Mask::GetOnes ())
+        {
+          destination = Ipv4Address ("255.255.255.255");
+        }
+      else
+        { 
+          destination = iface.GetBroadcast ();
+        }
+      socket->SendTo (packet, 0, InetSocketAddress (destination, AODV_PORT));
     }
   ScheduleRreqRetry (dst);
   if (EnableHello)
@@ -988,7 +1002,17 @@ RoutingProtocol::RecvRequest (Ptr<Packet> p, Ipv4Address receiver, Ipv4Address s
       packet->AddHeader (rreqHeader);
       TypeHeader tHeader (AODVTYPE_RREQ);
       packet->AddHeader (tHeader);
-      socket->Send (packet);
+      // Send to all-hosts broadcast if on /32 addr, subnet-directed otherwise
+      Ipv4Address destination;
+      if (iface.GetMask () == Ipv4Mask::GetOnes ())
+        {
+          destination = Ipv4Address ("255.255.255.255");
+        }
+      else
+        { 
+          destination = iface.GetBroadcast ();
+        }
+      socket->SendTo (packet, 0, InetSocketAddress (destination, AODV_PORT));
     }
 
   if (EnableHello)
@@ -1400,7 +1424,17 @@ RoutingProtocol::SendHello ()
       packet->AddHeader (helloHeader);
       TypeHeader tHeader (AODVTYPE_RREP);
       packet->AddHeader (tHeader);
-      socket->Send (packet);
+      // Send to all-hosts broadcast if on /32 addr, subnet-directed otherwise
+      Ipv4Address destination;
+      if (iface.GetMask () == Ipv4Mask::GetOnes ())
+        {
+          destination = Ipv4Address ("255.255.255.255");
+        }
+      else
+        { 
+          destination = iface.GetBroadcast ();
+        }
+      socket->SendTo (packet, 0, InetSocketAddress (destination, AODV_PORT));
     }
 }
 
@@ -1503,7 +1537,17 @@ RoutingProtocol::SendRerrWhenNoRouteToForward (Ipv4Address dst,
           Ipv4InterfaceAddress iface = i->second;
           NS_ASSERT (socket);
           NS_LOG_LOGIC ("Broadcast RERR message from interface " << iface.GetLocal());
-          socket->Send (packet);
+          // Send to all-hosts broadcast if on /32 addr, subnet-directed otherwise
+          Ipv4Address destination;
+          if (iface.GetMask () == Ipv4Mask::GetOnes ())
+            {
+              destination = Ipv4Address ("255.255.255.255");
+            }
+          else
+            { 
+              destination = iface.GetBroadcast ();
+            }
+          socket->SendTo (packet, 0, InetSocketAddress (destination, AODV_PORT));
         }
     }
 }
@@ -1549,7 +1593,17 @@ RoutingProtocol::SendRerrMessage (Ptr<Packet> packet, std::vector<Ipv4Address> p
       Ptr<Socket> socket = FindSocketWithInterfaceAddress (*i);
       NS_ASSERT (socket);
       NS_LOG_LOGIC ("Broadcast RERR message from interface " << i->GetLocal());
-      socket->Send (packet);
+      // Send to all-hosts broadcast if on /32 addr, subnet-directed otherwise
+      Ipv4Address destination;
+      if (i->GetMask () == Ipv4Mask::GetOnes ())
+        {
+          destination = Ipv4Address ("255.255.255.255");
+        }
+      else
+        { 
+          destination = i->GetBroadcast ();
+        }
+      socket->SendTo (packet, 0, InetSocketAddress (destination, AODV_PORT));
     }
 }
 
