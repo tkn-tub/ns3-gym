@@ -100,22 +100,22 @@ TypeHeader::Print (std::ostream &os) const
     {
     case AODVTYPE_RREQ:
       {
-        os << "RREQ" << "\n";
+        os << "RREQ";
         break;
       }
     case AODVTYPE_RREP:
       {
-        os << "RREP" << "\n";
+        os << "RREP";
         break;
       }
     case AODVTYPE_RERR:
       {
-        os << "RERR" << "\n";
+        os << "RERR";
         break;
       }
     case AODVTYPE_RREP_ACK:
       {
-        os << "RREP_ACK" << "\n";
+        os << "RREP_ACK";
         break;
       }
     default:
@@ -204,12 +204,12 @@ RreqHeader::Deserialize (Buffer::Iterator start)
 void
 RreqHeader::Print (std::ostream &os) const
 {
-  os << "RREQ ID " << m_requestID << "\n" << "destination: ipv4 " << m_dst
-      << " " << "sequence number " << m_dstSeqNo << "\n" << "source: ipv4 "
-      << m_origin << " " << "sequence number " << m_originSeqNo << "\n"
-      << "flags:\n" << "Gratuitous RREP " << (*this).GetGratiousRrep () << "\n"
-      << "Destination only " << (*this).GetDestinationOnly () << "\n"
-      << "Unknown sequence number " << (*this).GetUnknownSeqno () << "\n";
+  os << "RREQ ID " << m_requestID << " destination: ipv4 " << m_dst
+      << " sequence number " << m_dstSeqNo << " source: ipv4 "
+      << m_origin << " sequence number " << m_originSeqNo
+      << " flags:" << " Gratuitous RREP " << (*this).GetGratiousRrep ()
+      << " Destination only " << (*this).GetDestinationOnly ()
+      << " Unknown sequence number " << (*this).GetUnknownSeqno ();
 }
 
 std::ostream &
@@ -342,14 +342,13 @@ RrepHeader::Deserialize (Buffer::Iterator start)
 void
 RrepHeader::Print (std::ostream &os) const
 {
-  os << "destination: ipv4 " << m_dst << "sequence number " << m_dstSeqNo;
+  os << "destination: ipv4 " << m_dst << " sequence number " << m_dstSeqNo;
   if (m_prefixSize != 0)
-    os << "prefix size " << m_prefixSize << "\n";
-  else
-    os << "\n";
-  os << "source ipv4 " << m_origin << "\n" << "life time " << m_lifeTime
-      << "\n" << "acknowledgment required flag " << (*this).GetAckRequired ()
-      << "\n";
+    {
+      os << " prefix size " << m_prefixSize;
+    }
+  os << " source ipv4 " << m_origin << " lifetime " << m_lifeTime
+      << " acknowledgment required flag " << (*this).GetAckRequired ();
 }
 
 void
@@ -556,13 +555,13 @@ RerrHeader::Deserialize (Buffer::Iterator start )
 void
 RerrHeader::Print (std::ostream &os ) const
 {
-  os << "Unreachable destination (ipv4 address, seq. number):\n";
+  os << "Unreachable destination (ipv4 address, seq. number):";
   std::map<Ipv4Address, uint32_t>::const_iterator j;
   for (j = m_unreachableDstSeqNo.begin (); j != m_unreachableDstSeqNo.end (); ++j)
     {
-      os << (*j).first << ", " << (*j).second << "\n";
+      os << (*j).first << ", " << (*j).second;
     }
-  os << "No delete flag " << (*this).GetNoDelete () << "\n";
+  os << "No delete flag " << (*this).GetNoDelete ();
 }
 
 void
