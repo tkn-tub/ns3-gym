@@ -32,6 +32,7 @@
 #include "qos-utils.h"
 #include "dcf.h"
 #include "ctrl-headers.h"
+#include "block-ack-manager.h"
 
 #include <map>
 #include <list>
@@ -221,6 +222,7 @@ private:
   enum BlockAckType m_blockAckType;
   Time m_currentPacketTimestamp;
   uint16_t m_blockAckInactivityTimeout;
+  struct Bar m_currentBar;
 };
 
 }  //namespace ns3
