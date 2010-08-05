@@ -85,6 +85,10 @@ def register_types(module):
     module.add_class('ArpCache', parent=root_module['ns3::Object'])
     ## arp-cache.h: ns3::ArpCache::Entry [class]
     module.add_class('Entry', outer_class=root_module['ns3::ArpCache'])
+    ## arp-header.h: ns3::ArpHeader [class]
+    module.add_class('ArpHeader', parent=root_module['ns3::Header'])
+    ## arp-header.h: ns3::ArpHeader::ArpType_e [enumeration]
+    module.add_enum('ArpType_e', ['ARP_TYPE_REQUEST', 'ARP_TYPE_REPLY'], outer_class=root_module['ns3::ArpHeader'])
     ## arp-l3-protocol.h: ns3::ArpL3Protocol [class]
     module.add_class('ArpL3Protocol', parent=root_module['ns3::Object'])
     ## icmpv6-header.h: ns3::Icmpv6DestinationUnreachable [class]
@@ -259,6 +263,7 @@ def register_methods(root_module):
     register_Ns3UdpHeader_methods(root_module, root_module['ns3::UdpHeader'])
     register_Ns3ArpCache_methods(root_module, root_module['ns3::ArpCache'])
     register_Ns3ArpCacheEntry_methods(root_module, root_module['ns3::ArpCache::Entry'])
+    register_Ns3ArpHeader_methods(root_module, root_module['ns3::ArpHeader'])
     register_Ns3ArpL3Protocol_methods(root_module, root_module['ns3::ArpL3Protocol'])
     register_Ns3Icmpv6DestinationUnreachable_methods(root_module, root_module['ns3::Icmpv6DestinationUnreachable'])
     register_Ns3Icmpv6Echo_methods(root_module, root_module['ns3::Icmpv6Echo'])
@@ -2176,6 +2181,87 @@ def register_Ns3ArpCacheEntry_methods(root_module, cls):
                    [param('ns3::Ptr< ns3::Packet >', 'waiting')])
     return
 
+def register_Ns3ArpHeader_methods(root_module, cls):
+    ## arp-header.h: ns3::ArpHeader::ArpHeader() [constructor]
+    cls.add_constructor([])
+    ## arp-header.h: ns3::ArpHeader::ArpHeader(ns3::ArpHeader const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::ArpHeader const &', 'arg0')])
+    ## arp-header.h: uint32_t ns3::ArpHeader::Deserialize(ns3::Buffer::Iterator start) [member function]
+    cls.add_method('Deserialize', 
+                   'uint32_t', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_virtual=True)
+    ## arp-header.h: ns3::Address ns3::ArpHeader::GetDestinationHardwareAddress() [member function]
+    cls.add_method('GetDestinationHardwareAddress', 
+                   'ns3::Address', 
+                   [])
+    ## arp-header.h: ns3::Ipv4Address ns3::ArpHeader::GetDestinationIpv4Address() [member function]
+    cls.add_method('GetDestinationIpv4Address', 
+                   'ns3::Ipv4Address', 
+                   [])
+    ## arp-header.h: ns3::TypeId ns3::ArpHeader::GetInstanceTypeId() const [member function]
+    cls.add_method('GetInstanceTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## arp-header.h: uint32_t ns3::ArpHeader::GetSerializedSize() const [member function]
+    cls.add_method('GetSerializedSize', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## arp-header.h: ns3::Address ns3::ArpHeader::GetSourceHardwareAddress() [member function]
+    cls.add_method('GetSourceHardwareAddress', 
+                   'ns3::Address', 
+                   [])
+    ## arp-header.h: ns3::Ipv4Address ns3::ArpHeader::GetSourceIpv4Address() [member function]
+    cls.add_method('GetSourceIpv4Address', 
+                   'ns3::Ipv4Address', 
+                   [])
+    ## arp-header.h: static ns3::TypeId ns3::ArpHeader::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## arp-header.h: bool ns3::ArpHeader::IsReply() const [member function]
+    cls.add_method('IsReply', 
+                   'bool', 
+                   [], 
+                   is_const=True)
+    ## arp-header.h: bool ns3::ArpHeader::IsRequest() const [member function]
+    cls.add_method('IsRequest', 
+                   'bool', 
+                   [], 
+                   is_const=True)
+    ## arp-header.h: void ns3::ArpHeader::Print(std::ostream & os) const [member function]
+    cls.add_method('Print', 
+                   'void', 
+                   [param('std::ostream &', 'os')], 
+                   is_const=True, is_virtual=True)
+    ## arp-header.h: void ns3::ArpHeader::Serialize(ns3::Buffer::Iterator start) const [member function]
+    cls.add_method('Serialize', 
+                   'void', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_const=True, is_virtual=True)
+    ## arp-header.h: void ns3::ArpHeader::SetReply(ns3::Address sourceHardwareAddress, ns3::Ipv4Address sourceProtocolAddress, ns3::Address destinationHardwareAddress, ns3::Ipv4Address destinationProtocolAddress) [member function]
+    cls.add_method('SetReply', 
+                   'void', 
+                   [param('ns3::Address', 'sourceHardwareAddress'), param('ns3::Ipv4Address', 'sourceProtocolAddress'), param('ns3::Address', 'destinationHardwareAddress'), param('ns3::Ipv4Address', 'destinationProtocolAddress')])
+    ## arp-header.h: void ns3::ArpHeader::SetRequest(ns3::Address sourceHardwareAddress, ns3::Ipv4Address sourceProtocolAddress, ns3::Address destinationHardwareAddress, ns3::Ipv4Address destinationProtocolAddress) [member function]
+    cls.add_method('SetRequest', 
+                   'void', 
+                   [param('ns3::Address', 'sourceHardwareAddress'), param('ns3::Ipv4Address', 'sourceProtocolAddress'), param('ns3::Address', 'destinationHardwareAddress'), param('ns3::Ipv4Address', 'destinationProtocolAddress')])
+    ## arp-header.h: ns3::ArpHeader::m_ipv4Dest [variable]
+    cls.add_instance_attribute('m_ipv4Dest', 'ns3::Ipv4Address', is_const=False)
+    ## arp-header.h: ns3::ArpHeader::m_ipv4Source [variable]
+    cls.add_instance_attribute('m_ipv4Source', 'ns3::Ipv4Address', is_const=False)
+    ## arp-header.h: ns3::ArpHeader::m_macDest [variable]
+    cls.add_instance_attribute('m_macDest', 'ns3::Address', is_const=False)
+    ## arp-header.h: ns3::ArpHeader::m_macSource [variable]
+    cls.add_instance_attribute('m_macSource', 'ns3::Address', is_const=False)
+    ## arp-header.h: ns3::ArpHeader::m_type [variable]
+    cls.add_instance_attribute('m_type', 'uint16_t', is_const=False)
+    return
+
 def register_Ns3ArpL3Protocol_methods(root_module, cls):
     ## arp-l3-protocol.h: ns3::ArpL3Protocol::PROT_NUMBER [variable]
     cls.add_static_attribute('PROT_NUMBER', 'uint16_t const', is_const=True)
@@ -3522,10 +3608,28 @@ def register_Ns3TcpL4Protocol_methods(root_module, cls):
     return
 
 def register_Ns3UdpL4Protocol_methods(root_module, cls):
-    ## udp-l4-protocol.h: ns3::UdpL4Protocol::UdpL4Protocol(ns3::UdpL4Protocol const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::UdpL4Protocol const &', 'arg0')])
+    ## udp-l4-protocol.h: ns3::UdpL4Protocol::PROT_NUMBER [variable]
+    cls.add_static_attribute('PROT_NUMBER', 'uint8_t const', is_const=True)
+    ## udp-l4-protocol.h: static ns3::TypeId ns3::UdpL4Protocol::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
     ## udp-l4-protocol.h: ns3::UdpL4Protocol::UdpL4Protocol() [constructor]
     cls.add_constructor([])
+    ## udp-l4-protocol.h: void ns3::UdpL4Protocol::SetNode(ns3::Ptr<ns3::Node> node) [member function]
+    cls.add_method('SetNode', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Node >', 'node')])
+    ## udp-l4-protocol.h: int ns3::UdpL4Protocol::GetProtocolNumber() const [member function]
+    cls.add_method('GetProtocolNumber', 
+                   'int', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## udp-l4-protocol.h: ns3::Ptr<ns3::Socket> ns3::UdpL4Protocol::CreateSocket() [member function]
+    cls.add_method('CreateSocket', 
+                   'ns3::Ptr< ns3::Socket >', 
+                   [])
     ## udp-l4-protocol.h: ns3::Ipv4EndPoint * ns3::UdpL4Protocol::Allocate() [member function]
     cls.add_method('Allocate', 
                    'ns3::Ipv4EndPoint *', 
@@ -3546,24 +3650,18 @@ def register_Ns3UdpL4Protocol_methods(root_module, cls):
     cls.add_method('Allocate', 
                    'ns3::Ipv4EndPoint *', 
                    [param('ns3::Ipv4Address', 'localAddress'), param('uint16_t', 'localPort'), param('ns3::Ipv4Address', 'peerAddress'), param('uint16_t', 'peerPort')])
-    ## udp-l4-protocol.h: ns3::Ptr<ns3::Socket> ns3::UdpL4Protocol::CreateSocket() [member function]
-    cls.add_method('CreateSocket', 
-                   'ns3::Ptr< ns3::Socket >', 
-                   [])
     ## udp-l4-protocol.h: void ns3::UdpL4Protocol::DeAllocate(ns3::Ipv4EndPoint * endPoint) [member function]
     cls.add_method('DeAllocate', 
                    'void', 
                    [param('ns3::Ipv4EndPoint *', 'endPoint')])
-    ## udp-l4-protocol.h: int ns3::UdpL4Protocol::GetProtocolNumber() const [member function]
-    cls.add_method('GetProtocolNumber', 
-                   'int', 
-                   [], 
-                   is_const=True, is_virtual=True)
-    ## udp-l4-protocol.h: static ns3::TypeId ns3::UdpL4Protocol::GetTypeId() [member function]
-    cls.add_method('GetTypeId', 
-                   'ns3::TypeId', 
-                   [], 
-                   is_static=True)
+    ## udp-l4-protocol.h: void ns3::UdpL4Protocol::Send(ns3::Ptr<ns3::Packet> packet, ns3::Ipv4Address saddr, ns3::Ipv4Address daddr, uint16_t sport, uint16_t dport) [member function]
+    cls.add_method('Send', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Packet >', 'packet'), param('ns3::Ipv4Address', 'saddr'), param('ns3::Ipv4Address', 'daddr'), param('uint16_t', 'sport'), param('uint16_t', 'dport')])
+    ## udp-l4-protocol.h: void ns3::UdpL4Protocol::Send(ns3::Ptr<ns3::Packet> packet, ns3::Ipv4Address saddr, ns3::Ipv4Address daddr, uint16_t sport, uint16_t dport, ns3::Ptr<ns3::Ipv4Route> route) [member function]
+    cls.add_method('Send', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Packet >', 'packet'), param('ns3::Ipv4Address', 'saddr'), param('ns3::Ipv4Address', 'daddr'), param('uint16_t', 'sport'), param('uint16_t', 'dport'), param('ns3::Ptr< ns3::Ipv4Route >', 'route')])
     ## udp-l4-protocol.h: ns3::Ipv4L4Protocol::RxStatus ns3::UdpL4Protocol::Receive(ns3::Ptr<ns3::Packet> p, ns3::Ipv4Header const & header, ns3::Ptr<ns3::Ipv4Interface> interface) [member function]
     cls.add_method('Receive', 
                    'ns3::Ipv4L4Protocol::RxStatus', 
@@ -3574,20 +3672,6 @@ def register_Ns3UdpL4Protocol_methods(root_module, cls):
                    'void', 
                    [param('ns3::Ipv4Address', 'icmpSource'), param('uint8_t', 'icmpTtl'), param('uint8_t', 'icmpType'), param('uint8_t', 'icmpCode'), param('uint32_t', 'icmpInfo'), param('ns3::Ipv4Address', 'payloadSource'), param('ns3::Ipv4Address', 'payloadDestination'), param('uint8_t const *', 'payload')], 
                    is_virtual=True)
-    ## udp-l4-protocol.h: void ns3::UdpL4Protocol::Send(ns3::Ptr<ns3::Packet> packet, ns3::Ipv4Address saddr, ns3::Ipv4Address daddr, uint16_t sport, uint16_t dport) [member function]
-    cls.add_method('Send', 
-                   'void', 
-                   [param('ns3::Ptr< ns3::Packet >', 'packet'), param('ns3::Ipv4Address', 'saddr'), param('ns3::Ipv4Address', 'daddr'), param('uint16_t', 'sport'), param('uint16_t', 'dport')])
-    ## udp-l4-protocol.h: void ns3::UdpL4Protocol::Send(ns3::Ptr<ns3::Packet> packet, ns3::Ipv4Address saddr, ns3::Ipv4Address daddr, uint16_t sport, uint16_t dport, ns3::Ptr<ns3::Ipv4Route> route) [member function]
-    cls.add_method('Send', 
-                   'void', 
-                   [param('ns3::Ptr< ns3::Packet >', 'packet'), param('ns3::Ipv4Address', 'saddr'), param('ns3::Ipv4Address', 'daddr'), param('uint16_t', 'sport'), param('uint16_t', 'dport'), param('ns3::Ptr< ns3::Ipv4Route >', 'route')])
-    ## udp-l4-protocol.h: void ns3::UdpL4Protocol::SetNode(ns3::Ptr<ns3::Node> node) [member function]
-    cls.add_method('SetNode', 
-                   'void', 
-                   [param('ns3::Ptr< ns3::Node >', 'node')])
-    ## udp-l4-protocol.h: ns3::UdpL4Protocol::PROT_NUMBER [variable]
-    cls.add_static_attribute('PROT_NUMBER', 'uint8_t const', is_const=True)
     ## udp-l4-protocol.h: void ns3::UdpL4Protocol::DoDispose() [member function]
     cls.add_method('DoDispose', 
                    'void', 

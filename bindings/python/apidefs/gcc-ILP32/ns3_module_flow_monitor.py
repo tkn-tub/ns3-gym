@@ -26,7 +26,7 @@ def register_types(module):
     ## ipv4-flow-probe.h: ns3::Ipv4FlowProbe [class]
     module.add_class('Ipv4FlowProbe', parent=root_module['ns3::FlowProbe'])
     ## ipv4-flow-probe.h: ns3::Ipv4FlowProbe::DropReason [enumeration]
-    module.add_enum('DropReason', ['DROP_NO_ROUTE', 'DROP_TTL_EXPIRE', 'DROP_BAD_CHECKSUM', 'DROP_QUEUE', 'DROP_INVALID_REASON'], outer_class=root_module['ns3::Ipv4FlowProbe'])
+    module.add_enum('DropReason', ['DROP_NO_ROUTE', 'DROP_TTL_EXPIRE', 'DROP_BAD_CHECKSUM', 'DROP_QUEUE', 'DROP_INTERFACE_DOWN', 'DROP_ROUTE_ERROR', 'DROP_INVALID_REASON'], outer_class=root_module['ns3::Ipv4FlowProbe'])
     module.add_container('std::map< unsigned int, ns3::FlowMonitor::FlowStats >', ('unsigned int', 'ns3::FlowMonitor::FlowStats'), container_type='map')
     module.add_container('std::map< unsigned int, ns3::FlowProbe::FlowStats >', ('unsigned int', 'ns3::FlowProbe::FlowStats'), container_type='map')
     typehandlers.add_type_alias('uint32_t', 'ns3::FlowPacketId')

@@ -179,10 +179,10 @@ def register_Ns3MpiInterface_methods(root_module, cls):
                    'void', 
                    [], 
                    is_static=True)
-    ## mpi-interface.h: static void ns3::MpiInterface::SendPacket(ns3::Ptr<ns3::Packet> arg0, ns3::Time const & arg1, uint32_t arg2, uint32_t arg3) [member function]
+    ## mpi-interface.h: static void ns3::MpiInterface::SendPacket(ns3::Ptr<ns3::Packet> p, ns3::Time const & rxTime, uint32_t node, uint32_t dev) [member function]
     cls.add_method('SendPacket', 
                    'void', 
-                   [param('ns3::Ptr< ns3::Packet >', 'arg0'), param('ns3::Time const &', 'arg1'), param('uint32_t', 'arg2'), param('uint32_t', 'arg3')], 
+                   [param('ns3::Ptr< ns3::Packet >', 'p'), param('ns3::Time const &', 'rxTime'), param('uint32_t', 'node'), param('uint32_t', 'dev')], 
                    is_static=True)
     ## mpi-interface.h: static void ns3::MpiInterface::TestSendComplete() [member function]
     cls.add_method('TestSendComplete', 

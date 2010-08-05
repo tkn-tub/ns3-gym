@@ -889,6 +889,14 @@ def register_Ns3InterferenceHelper_methods(root_module, cls):
                    'uint32_t', 
                    [param('ns3::WifiMode', 'mode'), param('ns3::WifiPreamble', 'preamble')], 
                    is_static=True)
+    ## interference-helper.h: void ns3::InterferenceHelper::NotifyRxEnd() [member function]
+    cls.add_method('NotifyRxEnd', 
+                   'void', 
+                   [])
+    ## interference-helper.h: void ns3::InterferenceHelper::NotifyRxStart() [member function]
+    cls.add_method('NotifyRxStart', 
+                   'void', 
+                   [])
     ## interference-helper.h: void ns3::InterferenceHelper::SetErrorRateModel(ns3::Ptr<ns3::ErrorRateModel> rate) [member function]
     cls.add_method('SetErrorRateModel', 
                    'void', 
