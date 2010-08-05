@@ -1731,7 +1731,7 @@ MacLow::SendBlockAckAfterBlockAckRequest (const CtrlBAckRequestHeader reqHdr, Ma
           /* All packets with smaller sequence than starting sequence control must be passed up to Wifimac 
            * See 9.10.3 in IEEE8022.11e standard.
            */
-          RxCompleteBufferedPacketsWithSmallerSequence ((startingSeqCtrl>>4)&0xfff0, originator, tid);
+          RxCompleteBufferedPacketsWithSmallerSequence ((startingSeqCtrl>>4)&0x0fff, originator, tid);
 
           std::list<BufferedPacket>::iterator i = (*it).second.second.begin ();
 
