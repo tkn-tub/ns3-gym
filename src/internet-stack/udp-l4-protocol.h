@@ -35,6 +35,8 @@ class Socket;
 class Ipv4Route;
 class Ipv4EndPointDemux;
 class Ipv4EndPoint;
+class UdpSocketImpl;
+
 /**
  * \ingroup udp
  * \brief Implementation of the UDP protocol
@@ -117,6 +119,9 @@ protected:
 private:
   Ptr<Node> m_node;
   Ipv4EndPointDemux *m_endPoints;
+  UdpL4Protocol (const UdpL4Protocol &o);
+  UdpL4Protocol &operator = (const UdpL4Protocol &o);
+  std::vector<Ptr<UdpSocketImpl> > m_sockets;
 };
 
 }; // namespace ns3

@@ -23,6 +23,7 @@
 #include "ns3/packet.h"
 #include "ns3/node.h"
 #include "ns3/boolean.h"
+#include "ns3/object-vector.h"
 #include "ns3/ipv4-route.h"
 
 #include "udp-l4-protocol.h"
@@ -48,6 +49,10 @@ UdpL4Protocol::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::UdpL4Protocol")
     .SetParent<Ipv4L4Protocol> ()
     .AddConstructor<UdpL4Protocol> ()
+    .AddAttribute ("SocketList", "The list of sockets associated to this protocol.",
+                   ObjectVectorValue (),
+                   MakeObjectVectorAccessor (&UdpL4Protocol::m_sockets),
+                   MakeObjectVectorChecker<UdpSocketImpl> ())
     ;
   return tid;
 }
@@ -107,6 +112,12 @@ void
 UdpL4Protocol::DoDispose (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
+  for (std::vector<Ptr<UdpSocketImpl> >::iterator i = m_sockets.begin (); i != m_sockets.end (); i++)
+    {
+      *i = 0;
+    }
+  m_sockets.clear ();
+
   if (m_endPoints != 0)
     {
       delete m_endPoints;
@@ -123,6 +134,7 @@ UdpL4Protocol::CreateSocket (void)
   Ptr<UdpSocketImpl> socket = CreateObject<UdpSocketImpl> ();
   socket->SetNode (m_node);
   socket->SetUdp (this);
+  m_sockets.push_back (socket);
   return socket;
 }
 
