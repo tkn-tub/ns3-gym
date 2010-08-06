@@ -230,7 +230,9 @@ continue with something like,
 @end verbatim
 
 This was the download script getting the Python bindings generator for you.
-Next you should see (modulo platform variations) something along the lines of,
+Note that you will need bazaar (bzr), a version control system, to download 
+PyBindGen. Next you should see (modulo platform variations) something along 
+the lines of,
 
 @verbatim
       #
@@ -249,7 +251,8 @@ Next you should see (modulo platform variations) something along the lines of,
 @end verbatim
 
 This part of the process is the script downloading the Network Simulation
-Cradle for you.
+Cradle for you. Note that NSC is not supported on OSX or Cygwin and works 
+best with gcc-3.4 or gcc-4.2 or greater series.
 
 After the clone command completes, you should have several new directories
 under @code{~/repos/ns-3-allinone}:
