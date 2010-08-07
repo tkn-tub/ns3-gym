@@ -136,6 +136,22 @@ public:
 		     MakeIntegerAccessor (&AttributeObjectTest::DoSetIntSrc,
 					  &AttributeObjectTest::DoGetIntSrc),
 		     MakeIntegerChecker<int8_t> ())
+      .AddAttribute ("UIntegerTraceSource", "help text",
+		     UintegerValue (2),
+		     MakeUintegerAccessor (&AttributeObjectTest::m_uintSrc),
+		     MakeIntegerChecker<uint8_t> ())
+      .AddAttribute ("DoubleTraceSource", "help text",
+		     DoubleValue (2),
+		     MakeDoubleAccessor (&AttributeObjectTest::m_doubleSrc),
+		     MakeDoubleChecker<double> ())
+      .AddAttribute ("BoolTraceSource", "help text",
+                     BooleanValue (false),
+		     MakeBooleanAccessor (&AttributeObjectTest::m_boolSrc),
+		     MakeBooleanChecker ())
+      .AddAttribute ("EnumTraceSource", "help text",
+                     EnumValue (false),
+		     MakeEnumAccessor (&AttributeObjectTest::m_enumSrc),
+		     MakeEnumChecker (TEST_A, "TestA"))
       .AddAttribute ("ValueClassSource", "help text",
 		     ValueClassTestValue (ValueClassTest ()),
 		     MakeValueClassTestAccessor (&AttributeObjectTest::m_valueSrc),
@@ -197,6 +213,10 @@ private:
   TracedCallback<double, int, float> m_cb;
   TracedValue<ValueClassTest> m_valueSrc;
   Ptr<Derived> m_ptr;
+  TracedValue<uint8_t> m_uintSrc;
+  TracedValue<enum Test_e> m_enumSrc;
+  TracedValue<double> m_doubleSrc;
+  TracedValue<bool> m_boolSrc;
 };
 
 NS_OBJECT_ENSURE_REGISTERED (AttributeObjectTest);
@@ -1170,6 +1190,6 @@ AttributesTestSuite::AttributesTestSuite ()
   AddTestCase (new CallbackValueTestCase ("Check Attributes of type CallbackValue"));
 }
 
-AttributesTestSuite attributesTestSuite;
+static AttributesTestSuite attributesTestSuite;
 
 } // namespace ns3
