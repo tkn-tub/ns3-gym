@@ -165,7 +165,7 @@ operator<< (std::ostream& os, const Time & time)
       unit = "unreachable";
       break;
     }
-  double v = Time::ToDouble (time, Time::GetResolution ());
+  uint64_t v = Time::ToInteger (time, Time::GetResolution ());
   os << v << unit;
   return os;
 }
