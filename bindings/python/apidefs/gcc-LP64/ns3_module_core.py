@@ -75,6 +75,8 @@ def register_types(module):
     module.add_class('TestSuite', allow_subclassing=True)
     ## test.h: ns3::TestSuite::TestType [enumeration]
     module.add_enum('TestType', ['BVT', 'UNIT', 'SYSTEM', 'EXAMPLE', 'PERFORMANCE'], outer_class=root_module['ns3::TestSuite'])
+    ## traced-value.h: ns3::TracedValue<double> [class]
+    module.add_class('TracedValue', template_parameters=['double'])
     ## random-variable.h: ns3::TriangularVariable [class]
     module.add_class('TriangularVariable', parent=root_module['ns3::RandomVariable'])
     ## type-id.h: ns3::TypeId [class]
@@ -205,16 +207,6 @@ def register_types(module):
     module.add_class('Vector3DChecker', parent=root_module['ns3::AttributeChecker'])
     ## vector.h: ns3::Vector3DValue [class]
     module.add_class('Vector3DValue', parent=root_module['ns3::AttributeValue'])
-    ## traced-value.h: ns3::TracedValue<double> [class]
-    module.add_class('TracedValue', template_parameters=['double'])
-    ## traced-value.h: ns3::TracedValue<double> [class]
-    root_module['ns3::TracedValue< double >'].implicitly_converts_to(root_module['ns3::IntegerValue'])
-    ## traced-value.h: ns3::TracedValue<double> [class]
-    root_module['ns3::TracedValue< double >'].implicitly_converts_to(root_module['ns3::UintegerValue'])
-    ## traced-value.h: ns3::TracedValue<double> [class]
-    root_module['ns3::TracedValue< double >'].implicitly_converts_to(root_module['ns3::BooleanValue'])
-    ## traced-value.h: ns3::TracedValue<double> [class]
-    root_module['ns3::TracedValue< double >'].implicitly_converts_to(root_module['ns3::EnumValue'])
     module.add_container('std::list< ns3::Ptr< ns3::SpectrumPhy > >', 'ns3::Ptr< ns3::SpectrumPhy >', container_type='list')
     module.add_container('std::list< ns3::Ptr< ns3::Packet > >', 'ns3::Ptr< ns3::Packet >', container_type='list')
     module.add_container('std::list< ns3::Ptr< ns3::UanPhy > >', 'ns3::Ptr< ns3::UanPhy >', container_type='list')
@@ -363,6 +355,7 @@ def register_methods(root_module):
     register_Ns3TestCase_methods(root_module, root_module['ns3::TestCase'])
     register_Ns3TestRunner_methods(root_module, root_module['ns3::TestRunner'])
     register_Ns3TestSuite_methods(root_module, root_module['ns3::TestSuite'])
+    register_Ns3TracedValue__Double_methods(root_module, root_module['ns3::TracedValue< double >'])
     register_Ns3TriangularVariable_methods(root_module, root_module['ns3::TriangularVariable'])
     register_Ns3TypeId_methods(root_module, root_module['ns3::TypeId'])
     register_Ns3TypeIdAttributeInfo_methods(root_module, root_module['ns3::TypeId::AttributeInfo'])
@@ -450,7 +443,6 @@ def register_methods(root_module):
     register_Ns3Vector2DValue_methods(root_module, root_module['ns3::Vector2DValue'])
     register_Ns3Vector3DChecker_methods(root_module, root_module['ns3::Vector3DChecker'])
     register_Ns3Vector3DValue_methods(root_module, root_module['ns3::Vector3DValue'])
-    register_Ns3TracedValue__Double_methods(root_module, root_module['ns3::TracedValue< double >'])
     register_Ns3ConfigMatchContainer_methods(root_module, root_module['ns3::Config::MatchContainer'])
     return
 
@@ -1317,6 +1309,40 @@ def register_Ns3TestSuite_methods(root_module, cls):
                    'void', 
                    [], 
                    visibility='protected', is_virtual=True)
+    return
+
+def register_Ns3TracedValue__Double_methods(root_module, cls):
+    ## traced-value.h: ns3::TracedValue<double>::TracedValue() [constructor]
+    cls.add_constructor([])
+    ## traced-value.h: ns3::TracedValue<double>::TracedValue(ns3::TracedValue<double> const & o) [copy constructor]
+    cls.add_constructor([param('ns3::TracedValue< double > const &', 'o')])
+    ## traced-value.h: ns3::TracedValue<double>::TracedValue(double const & v) [constructor]
+    cls.add_constructor([param('double const &', 'v')])
+    ## traced-value.h: void ns3::TracedValue<double>::Connect(ns3::CallbackBase const & cb, std::basic_string<char,std::char_traits<char>,std::allocator<char> > path) [member function]
+    cls.add_method('Connect', 
+                   'void', 
+                   [param('ns3::CallbackBase const &', 'cb'), param('std::string', 'path')])
+    ## traced-value.h: void ns3::TracedValue<double>::ConnectWithoutContext(ns3::CallbackBase const & cb) [member function]
+    cls.add_method('ConnectWithoutContext', 
+                   'void', 
+                   [param('ns3::CallbackBase const &', 'cb')])
+    ## traced-value.h: void ns3::TracedValue<double>::Disconnect(ns3::CallbackBase const & cb, std::basic_string<char,std::char_traits<char>,std::allocator<char> > path) [member function]
+    cls.add_method('Disconnect', 
+                   'void', 
+                   [param('ns3::CallbackBase const &', 'cb'), param('std::string', 'path')])
+    ## traced-value.h: void ns3::TracedValue<double>::DisconnectWithoutContext(ns3::CallbackBase const & cb) [member function]
+    cls.add_method('DisconnectWithoutContext', 
+                   'void', 
+                   [param('ns3::CallbackBase const &', 'cb')])
+    ## traced-value.h: double ns3::TracedValue<double>::Get() const [member function]
+    cls.add_method('Get', 
+                   'double', 
+                   [], 
+                   is_const=True)
+    ## traced-value.h: void ns3::TracedValue<double>::Set(double const & v) [member function]
+    cls.add_method('Set', 
+                   'void', 
+                   [param('double const &', 'v')])
     return
 
 def register_Ns3TriangularVariable_methods(root_module, cls):
@@ -2982,48 +3008,6 @@ def register_Ns3Vector3DValue_methods(root_module, cls):
     cls.add_method('Set', 
                    'void', 
                    [param('ns3::Vector3D const &', 'value')])
-    return
-
-def register_Ns3TracedValue__Double_methods(root_module, cls):
-    ## traced-value.h: ns3::TracedValue<double>::TracedValue() [constructor]
-    cls.add_constructor([])
-    ## traced-value.h: ns3::TracedValue<double>::TracedValue(ns3::TracedValue<double> const & o) [copy constructor]
-    cls.add_constructor([param('ns3::TracedValue< double > const &', 'o')])
-    ## traced-value.h: ns3::TracedValue<double>::TracedValue(double const & v) [constructor]
-    cls.add_constructor([param('double const &', 'v')])
-    ## traced-value.h: ns3::TracedValue<double>::TracedValue(ns3::IntegerValue const & value) [constructor]
-    cls.add_constructor([param('ns3::IntegerValue const &', 'value')])
-    ## traced-value.h: ns3::TracedValue<double>::TracedValue(ns3::UintegerValue const & value) [constructor]
-    cls.add_constructor([param('ns3::UintegerValue const &', 'value')])
-    ## traced-value.h: ns3::TracedValue<double>::TracedValue(ns3::BooleanValue const & value) [constructor]
-    cls.add_constructor([param('ns3::BooleanValue const &', 'value')])
-    ## traced-value.h: ns3::TracedValue<double>::TracedValue(ns3::EnumValue const & value) [constructor]
-    cls.add_constructor([param('ns3::EnumValue const &', 'value')])
-    ## traced-value.h: void ns3::TracedValue<double>::Connect(ns3::CallbackBase const & cb, std::basic_string<char,std::char_traits<char>,std::allocator<char> > path) [member function]
-    cls.add_method('Connect', 
-                   'void', 
-                   [param('ns3::CallbackBase const &', 'cb'), param('std::string', 'path')])
-    ## traced-value.h: void ns3::TracedValue<double>::ConnectWithoutContext(ns3::CallbackBase const & cb) [member function]
-    cls.add_method('ConnectWithoutContext', 
-                   'void', 
-                   [param('ns3::CallbackBase const &', 'cb')])
-    ## traced-value.h: void ns3::TracedValue<double>::Disconnect(ns3::CallbackBase const & cb, std::basic_string<char,std::char_traits<char>,std::allocator<char> > path) [member function]
-    cls.add_method('Disconnect', 
-                   'void', 
-                   [param('ns3::CallbackBase const &', 'cb'), param('std::string', 'path')])
-    ## traced-value.h: void ns3::TracedValue<double>::DisconnectWithoutContext(ns3::CallbackBase const & cb) [member function]
-    cls.add_method('DisconnectWithoutContext', 
-                   'void', 
-                   [param('ns3::CallbackBase const &', 'cb')])
-    ## traced-value.h: double ns3::TracedValue<double>::Get() const [member function]
-    cls.add_method('Get', 
-                   'double', 
-                   [], 
-                   is_const=True)
-    ## traced-value.h: void ns3::TracedValue<double>::Set(double const & v) [member function]
-    cls.add_method('Set', 
-                   'void', 
-                   [param('double const &', 'v')])
     return
 
 def register_Ns3ConfigMatchContainer_methods(root_module, cls):
