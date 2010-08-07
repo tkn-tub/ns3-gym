@@ -35,8 +35,8 @@ class HighPrecision
 {
 public:
   inline HighPrecision ();
-  inline HighPrecision (int64_t value, bool dummy);
-  inline HighPrecision (double value);
+  explicit inline HighPrecision (int64_t value, bool dummy);
+  explicit inline HighPrecision (double value);
 
   inline int64_t GetInteger (void) const;
   inline double GetDouble (void) const;
@@ -44,6 +44,8 @@ public:
   inline void Sub (HighPrecision const &o);
   inline void Mul (HighPrecision const &o);
   inline void Div (HighPrecision const &o);
+  inline void MulByInvert (const HighPrecision &o);
+  inline static HighPrecision Invert (uint64_t v);
 
   inline int Compare (HighPrecision const &o) const;
   inline static HighPrecision Zero (void);
@@ -101,10 +103,21 @@ HighPrecision::Div (HighPrecision const &o)
 {
   m_value /= o.m_value;
 }
+void 
+HighPrecision::MulByInvert (const HighPrecision &o)
+{
+  m_value *= o.m_value;
+}
+HighPrecision 
+HighPrecision::Invert (uint64_t v)
+{
+  return HighPrecision (1.0 / v);
+}
+
 int
 HighPrecision::Compare (HighPrecision const &o) const
 {
-  return m_value < o.m_value;
+  return (m_value < o.m_value)?-1:(m_value == o.m_value)?0:1;
 }
 HighPrecision
 HighPrecision::Zero (void)

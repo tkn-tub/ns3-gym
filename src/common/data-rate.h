@@ -125,8 +125,8 @@ ATTRIBUTE_HELPER_HEADER (DataRate);
  * \param rhs
  * \return Bits transmitted in rhs seconds at lhs b/s
  */
-double operator*(const DataRate& lhs, const TimeUnit<1>& rhs);
-double operator*(const TimeUnit<1>& lhs, const DataRate& rhs);
+double operator*(const DataRate& lhs, const Time& rhs);
+double operator*(const Time& lhs, const DataRate& rhs);
 
 } //namespace ns3
 

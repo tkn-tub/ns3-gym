@@ -45,7 +45,7 @@ TypeId
 RealtimeSimulatorImpl::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::RealtimeSimulatorImpl")
-    .SetParent<Object> ()
+    .SetParent<SimulatorImpl> ()
     .AddConstructor<RealtimeSimulatorImpl> ()
     .AddAttribute ("SynchronizationMode", 
                    "What to do if the simulation cannot keep up with real time.",

@@ -37,37 +37,6 @@
  * Division operations (there are really really super costly)
  * and Comparison operations (because there are typically a lot of
  * these in any complex timekeeping code).
- *
- * So, the code tries really hard to perform any of these 128 bit
- * operations by doing all arithmetic on 64 bit integers when possible
- * (i.e., when there is no fractional part. This is a very common case).
- * Hence, the following code has a m_fastValue (64 bits) and a
- * m_slowValue (128 bits). m_fastValue is used by default and the code
- * converts it to a m_slowValue when needed.
- *
- * If you want to monitor the efficiency of this strategy, you can
- * enable the macro HP128INC below and call the HighPrecision::PrintStats
- * method at the end of the simulation.
- *
- * Explanation of Slow and Fast values:
- *
- * HighPrecision class create a fastValue and a slowValue depending on the
- * input number. If the input is an integer with 0 fractional part, it will
- * use the fastValue which will contain the integer in a 64 bits format. If
- * it has a fractional part, the slowValue will be used. It is represented
- * simply as a high part slowValue.hi which will contain the integer part
- * and the fractional part slowValue.lo which will contain the factional
- * part as an integer (obtained by multiplying the fractional part by 2^64).
- *
- * Explanation of Slow and Fast operations:
- *
- * If both operands are fastValues, we will perform fast operations, i-e
- * simply using integer operations. If we have though one of the value is
- * slowValue we need to convert the fastValue into a slow one. It is simply
- * obtained by putting the slowValue.lo = 0 and slowValue.hi = fastValue.
- * After that we apply the slow operation which will be a 128 bits operation
- * with two 128 bits operands.
- *
  */
 
 namespace ns3 {
@@ -76,8 +45,8 @@ class HighPrecision
 {
 public:
   inline HighPrecision ();
-  inline HighPrecision (int64_t value, bool dummy);
-  inline HighPrecision (double value);
+  explicit inline HighPrecision (int64_t value, bool dummy);
+  explicit inline HighPrecision (double value);
 
   inline int64_t GetInteger (void) const;
   inline double GetDouble (void) const;
@@ -85,12 +54,15 @@ public:
   inline void Sub (HighPrecision const &o);
   void Mul (HighPrecision const &o);
   void Div (HighPrecision const &o);
+  void MulByInvert (const HighPrecision &o);
+  static HighPrecision Invert (uint64_t v);
 
   inline int Compare (HighPrecision const &o) const;
   inline static HighPrecision Zero (void);
 private:
-  cairo_uint128_t  Mul128 (cairo_uint128_t, cairo_uint128_t ) const;
-  cairo_int128_t Div128 (cairo_int128_t sa, cairo_int128_t sb) const;
+  static cairo_uint128_t  Umul (cairo_uint128_t a, cairo_uint128_t b);
+  static cairo_uint128_t Udiv (cairo_uint128_t a, cairo_uint128_t b);
+  static cairo_uint128_t UmulByInvert (cairo_uint128_t a, cairo_uint128_t b);
   inline bool IsNegative (void) const;
 
   cairo_int128_t m_value;
