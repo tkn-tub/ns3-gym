@@ -962,10 +962,7 @@ BaseStationNetDevice::SendBursts (void)
         {
           if (m_serviceFlowManager->GetServiceFlow (cid) != 0)
             {
-              if (m_serviceFlowManager->GetServiceFlow (cid)->GetIsMulticast () == true)
-                {
-                  modulationType = GetBurstProfileManager ()->GetModulationType (diuc, WimaxNetDevice::DIRECTION_DOWNLINK);
-                }
+              modulationType = GetBurstProfileManager ()->GetModulationType (diuc, WimaxNetDevice::DIRECTION_DOWNLINK);
             }
           else
             {
