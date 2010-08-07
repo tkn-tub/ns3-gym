@@ -9,14 +9,14 @@ def register_types(module):
     module.add_class('HighPrecision')
     ## simulator.h: ns3::Simulator [class]
     module.add_class('Simulator', is_singleton=True)
-    ## nstime.h: ns3::TimeUnit<-1> [class]
-    module.add_class('TimeInvert')
-    ## nstime.h: ns3::TimeUnit<0> [class]
-    module.add_class('Scalar')
-    ## nstime.h: ns3::TimeUnit<1> [class]
+    ## nstime.h: ns3::Time [class]
     module.add_class('Time')
-    ## nstime.h: ns3::TimeUnit<2> [class]
-    module.add_class('TimeSquare')
+    ## nstime.h: ns3::Time::Unit [enumeration]
+    module.add_enum('Unit', ['S', 'MS', 'US', 'NS', 'PS', 'FS', 'LAST'], outer_class=root_module['ns3::Time'])
+    ## time-base.h: ns3::TimeBase [class]
+    module.add_class('TimeBase')
+    ## time-base.h: ns3::TimeBase::Unit [enumeration]
+    module.add_enum('Unit', ['S', 'MS', 'US', 'NS', 'PS', 'FS', 'LAST'], outer_class=root_module['ns3::TimeBase'])
     ## timer.h: ns3::Timer [class]
     module.add_class('Timer')
     ## timer.h: ns3::Timer::DestroyPolicy [enumeration]
@@ -27,6 +27,10 @@ def register_types(module):
     module.add_class('TimerImpl', allow_subclassing=True)
     ## watchdog.h: ns3::Watchdog [class]
     module.add_class('Watchdog')
+    ## nstime.h: ns3::Scalar [class]
+    module.add_class('Scalar')
+    ## nstime.h: ns3::Scalar [class]
+    root_module['ns3::Scalar'].implicitly_converts_to(root_module['ns3::Time'])
     ## scheduler.h: ns3::Scheduler [class]
     module.add_class('Scheduler', parent=root_module['ns3::Object'])
     ## scheduler.h: ns3::Scheduler::Event [struct]
@@ -63,18 +67,14 @@ def register_types(module):
     module.add_class('TimeChecker', parent=root_module['ns3::AttributeChecker'])
     ## nstime.h: ns3::TimeValue [class]
     module.add_class('TimeValue', parent=root_module['ns3::AttributeValue'])
-    typehandlers.add_type_alias('ns3::TimeUnit< 2 >', 'ns3::TimeSquare')
-    typehandlers.add_type_alias('ns3::TimeUnit< 2 >*', 'ns3::TimeSquare*')
-    typehandlers.add_type_alias('ns3::TimeUnit< 2 >&', 'ns3::TimeSquare&')
-    typehandlers.add_type_alias('ns3::TimeUnit< - 1 >', 'ns3::TimeInvert')
-    typehandlers.add_type_alias('ns3::TimeUnit< - 1 >*', 'ns3::TimeInvert*')
-    typehandlers.add_type_alias('ns3::TimeUnit< - 1 >&', 'ns3::TimeInvert&')
-    typehandlers.add_type_alias('ns3::TimeUnit< 0 >', 'ns3::Scalar')
-    typehandlers.add_type_alias('ns3::TimeUnit< 0 >*', 'ns3::Scalar*')
-    typehandlers.add_type_alias('ns3::TimeUnit< 0 >&', 'ns3::Scalar&')
-    typehandlers.add_type_alias('ns3::TimeUnit< 1 >', 'ns3::Time')
-    typehandlers.add_type_alias('ns3::TimeUnit< 1 >*', 'ns3::Time*')
-    typehandlers.add_type_alias('ns3::TimeUnit< 1 >&', 'ns3::Time&')
+    typehandlers.add_type_alias('ns3::Time', 'ns3::TimeSquare')
+    typehandlers.add_type_alias('ns3::Time*', 'ns3::TimeSquare*')
+    typehandlers.add_type_alias('ns3::Time&', 'ns3::TimeSquare&')
+    module.add_typedef(root_module['ns3::Time'], 'TimeSquare')
+    typehandlers.add_type_alias('ns3::Time', 'ns3::TimeInvert')
+    typehandlers.add_type_alias('ns3::Time*', 'ns3::TimeInvert*')
+    typehandlers.add_type_alias('ns3::Time&', 'ns3::TimeInvert&')
+    module.add_typedef(root_module['ns3::Time'], 'TimeInvert')
     
     ## Register a nested module for the namespace Config
     
@@ -86,12 +86,6 @@ def register_types(module):
     
     nested_module = module.add_cpp_namespace('FatalImpl')
     register_types_ns3_FatalImpl(nested_module)
-    
-    
-    ## Register a nested module for the namespace TimeStepPrecision
-    
-    nested_module = module.add_cpp_namespace('TimeStepPrecision')
-    register_types_ns3_TimeStepPrecision(nested_module)
     
     
     ## Register a nested module for the namespace addressUtils
@@ -138,12 +132,6 @@ def register_types_ns3_FatalImpl(module):
     root_module = module.get_root()
     
 
-def register_types_ns3_TimeStepPrecision(module):
-    root_module = module.get_root()
-    
-    ## nstime.h: ns3::TimeStepPrecision::precision_t [enumeration]
-    module.add_enum('precision_t', ['S', 'MS', 'US', 'NS', 'PS', 'FS'])
-
 def register_types_ns3_addressUtils(module):
     root_module = module.get_root()
     
@@ -172,13 +160,12 @@ def register_methods(root_module):
     register_Ns3EventId_methods(root_module, root_module['ns3::EventId'])
     register_Ns3HighPrecision_methods(root_module, root_module['ns3::HighPrecision'])
     register_Ns3Simulator_methods(root_module, root_module['ns3::Simulator'])
-    register_Ns3TimeInvert_methods(root_module, root_module['ns3::TimeInvert'])
-    register_Ns3Scalar_methods(root_module, root_module['ns3::Scalar'])
     register_Ns3Time_methods(root_module, root_module['ns3::Time'])
-    register_Ns3TimeSquare_methods(root_module, root_module['ns3::TimeSquare'])
+    register_Ns3TimeBase_methods(root_module, root_module['ns3::TimeBase'])
     register_Ns3Timer_methods(root_module, root_module['ns3::Timer'])
     register_Ns3TimerImpl_methods(root_module, root_module['ns3::TimerImpl'])
     register_Ns3Watchdog_methods(root_module, root_module['ns3::Watchdog'])
+    register_Ns3Scalar_methods(root_module, root_module['ns3::Scalar'])
     register_Ns3Scheduler_methods(root_module, root_module['ns3::Scheduler'])
     register_Ns3SchedulerEvent_methods(root_module, root_module['ns3::Scheduler::Event'])
     register_Ns3SchedulerEventKey_methods(root_module, root_module['ns3::Scheduler::EventKey'])
@@ -274,8 +261,17 @@ def register_Ns3HighPrecision_methods(root_module, cls):
                    'int64_t', 
                    [], 
                    is_const=True)
+    ## high-precision-double.h: static ns3::HighPrecision ns3::HighPrecision::Invert(uint64_t v) [member function]
+    cls.add_method('Invert', 
+                   'ns3::HighPrecision', 
+                   [param('uint64_t', 'v')], 
+                   is_static=True)
     ## high-precision-double.h: void ns3::HighPrecision::Mul(ns3::HighPrecision const & o) [member function]
     cls.add_method('Mul', 
+                   'void', 
+                   [param('ns3::HighPrecision const &', 'o')])
+    ## high-precision-double.h: void ns3::HighPrecision::MulByInvert(ns3::HighPrecision const & o) [member function]
+    cls.add_method('MulByInvert', 
                    'void', 
                    [param('ns3::HighPrecision const &', 'o')])
     ## high-precision-double.h: void ns3::HighPrecision::Sub(ns3::HighPrecision const & o) [member function]
@@ -379,240 +375,207 @@ def register_Ns3Simulator_methods(root_module, cls):
                    is_static=True)
     return
 
-def register_Ns3TimeInvert_methods(root_module, cls):
-    ## nstime.h: ns3::TimeUnit<-1>::TimeUnit() [constructor]
-    cls.add_constructor([])
-    ## nstime.h: ns3::TimeUnit<-1>::TimeUnit(ns3::TimeUnit<-1> const & o) [copy constructor]
-    cls.add_constructor([param('ns3::TimeUnit< - 1 > const &', 'o')])
-    ## nstime.h: ns3::TimeUnit<-1>::TimeUnit(ns3::HighPrecision data) [constructor]
-    cls.add_constructor([param('ns3::HighPrecision', 'data')])
-    ## nstime.h: ns3::HighPrecision const & ns3::TimeUnit<-1>::GetHighPrecision() const [member function]
-    cls.add_method('GetHighPrecision', 
-                   'ns3::HighPrecision const &', 
-                   [], 
-                   is_const=True)
-    ## nstime.h: bool ns3::TimeUnit<-1>::IsNegative() const [member function]
-    cls.add_method('IsNegative', 
-                   'bool', 
-                   [], 
-                   is_const=True)
-    ## nstime.h: bool ns3::TimeUnit<-1>::IsPositive() const [member function]
-    cls.add_method('IsPositive', 
-                   'bool', 
-                   [], 
-                   is_const=True)
-    ## nstime.h: bool ns3::TimeUnit<-1>::IsStrictlyNegative() const [member function]
-    cls.add_method('IsStrictlyNegative', 
-                   'bool', 
-                   [], 
-                   is_const=True)
-    ## nstime.h: bool ns3::TimeUnit<-1>::IsStrictlyPositive() const [member function]
-    cls.add_method('IsStrictlyPositive', 
-                   'bool', 
-                   [], 
-                   is_const=True)
-    ## nstime.h: bool ns3::TimeUnit<-1>::IsZero() const [member function]
-    cls.add_method('IsZero', 
-                   'bool', 
-                   [], 
-                   is_const=True)
-    ## nstime.h: ns3::HighPrecision * ns3::TimeUnit<-1>::PeekHighPrecision() [member function]
-    cls.add_method('PeekHighPrecision', 
-                   'ns3::HighPrecision *', 
-                   [])
-    return
-
-def register_Ns3Scalar_methods(root_module, cls):
-    cls.add_binary_numeric_operator('*', root_module['ns3::Time'], root_module['ns3::Scalar'], param('ns3::TimeUnit< 1 > const &', 'right'))
-    cls.add_binary_numeric_operator('/', root_module['ns3::TimeInvert'], root_module['ns3::Scalar'], param('ns3::TimeUnit< 1 > const &', 'right'))
-    ## nstime.h: ns3::TimeUnit<0>::TimeUnit(double scalar) [constructor]
-    cls.add_constructor([param('double', 'scalar')])
-    ## nstime.h: ns3::TimeUnit<0>::TimeUnit() [constructor]
-    cls.add_constructor([])
-    ## nstime.h: ns3::TimeUnit<0>::TimeUnit(ns3::TimeUnit<0> const & o) [copy constructor]
-    cls.add_constructor([param('ns3::TimeUnit< 0 > const &', 'o')])
-    ## nstime.h: ns3::TimeUnit<0>::TimeUnit(ns3::HighPrecision data) [constructor]
-    cls.add_constructor([param('ns3::HighPrecision', 'data')])
-    ## nstime.h: double ns3::TimeUnit<0>::GetDouble() const [member function]
-    cls.add_method('GetDouble', 
-                   'double', 
-                   [], 
-                   is_const=True)
-    ## nstime.h: ns3::HighPrecision const & ns3::TimeUnit<0>::GetHighPrecision() const [member function]
-    cls.add_method('GetHighPrecision', 
-                   'ns3::HighPrecision const &', 
-                   [], 
-                   is_const=True)
-    ## nstime.h: bool ns3::TimeUnit<0>::IsNegative() const [member function]
-    cls.add_method('IsNegative', 
-                   'bool', 
-                   [], 
-                   is_const=True)
-    ## nstime.h: bool ns3::TimeUnit<0>::IsPositive() const [member function]
-    cls.add_method('IsPositive', 
-                   'bool', 
-                   [], 
-                   is_const=True)
-    ## nstime.h: bool ns3::TimeUnit<0>::IsStrictlyNegative() const [member function]
-    cls.add_method('IsStrictlyNegative', 
-                   'bool', 
-                   [], 
-                   is_const=True)
-    ## nstime.h: bool ns3::TimeUnit<0>::IsStrictlyPositive() const [member function]
-    cls.add_method('IsStrictlyPositive', 
-                   'bool', 
-                   [], 
-                   is_const=True)
-    ## nstime.h: bool ns3::TimeUnit<0>::IsZero() const [member function]
-    cls.add_method('IsZero', 
-                   'bool', 
-                   [], 
-                   is_const=True)
-    ## nstime.h: ns3::HighPrecision * ns3::TimeUnit<0>::PeekHighPrecision() [member function]
-    cls.add_method('PeekHighPrecision', 
-                   'ns3::HighPrecision *', 
-                   [])
-    return
-
 def register_Ns3Time_methods(root_module, cls):
     cls.add_binary_comparison_operator('!=')
-    cls.add_binary_numeric_operator('*', root_module['ns3::TimeSquare'], root_module['ns3::Time'], param('ns3::TimeUnit< 1 > const &', 'right'))
-    cls.add_binary_numeric_operator('+', root_module['ns3::Time'], root_module['ns3::Time'], param('ns3::TimeUnit< 1 > const &', 'right'))
-    cls.add_binary_numeric_operator('-', root_module['ns3::Time'], root_module['ns3::Time'], param('ns3::TimeUnit< 1 > const &', 'right'))
-    cls.add_binary_numeric_operator('/', root_module['ns3::Time'], root_module['ns3::Time'], param('ns3::TimeUnit< 0 > const &', 'right'))
-    cls.add_binary_numeric_operator('/', root_module['ns3::Scalar'], root_module['ns3::Time'], param('ns3::TimeUnit< 1 > const &', 'right'))
+    cls.add_inplace_numeric_operator('+=', param('ns3::Time const &', 'right'))
+    cls.add_binary_numeric_operator('*', root_module['ns3::Time'], root_module['ns3::Time'], param('ns3::Time const &', 'right'))
+    cls.add_binary_numeric_operator('+', root_module['ns3::Time'], root_module['ns3::Time'], param('ns3::Time const &', 'right'))
+    cls.add_binary_numeric_operator('-', root_module['ns3::Time'], root_module['ns3::Time'], param('ns3::Time const &', 'right'))
+    cls.add_binary_numeric_operator('/', root_module['ns3::Time'], root_module['ns3::Time'], param('ns3::Time const &', 'right'))
     cls.add_binary_comparison_operator('<')
     cls.add_binary_comparison_operator('>')
+    cls.add_inplace_numeric_operator('*=', param('ns3::Time const &', 'right'))
+    cls.add_inplace_numeric_operator('-=', param('ns3::Time const &', 'right'))
+    cls.add_inplace_numeric_operator('/=', param('ns3::Time const &', 'right'))
     cls.add_output_stream_operator()
     cls.add_binary_comparison_operator('<=')
     cls.add_binary_comparison_operator('==')
     cls.add_binary_comparison_operator('>=')
-    ## nstime.h: ns3::TimeUnit<1>::TimeUnit(std::string const & s) [constructor]
-    cls.add_constructor([param('std::string const &', 's')])
-    ## nstime.h: ns3::TimeUnit<1>::TimeUnit() [constructor]
+    ## nstime.h: ns3::Time::Time() [constructor]
     cls.add_constructor([])
-    ## nstime.h: ns3::TimeUnit<1>::TimeUnit(ns3::TimeUnit<1> const & o) [copy constructor]
-    cls.add_constructor([param('ns3::TimeUnit< 1 > const &', 'o')])
-    ## nstime.h: ns3::TimeUnit<1>::TimeUnit(ns3::HighPrecision data) [constructor]
-    cls.add_constructor([param('ns3::HighPrecision', 'data')])
-    ## nstime.h: int64_t ns3::TimeUnit<1>::GetFemtoSeconds() const [member function]
+    ## nstime.h: ns3::Time::Time(ns3::Time const & o) [copy constructor]
+    cls.add_constructor([param('ns3::Time const &', 'o')])
+    ## nstime.h: ns3::Time::Time(ns3::HighPrecision const & data) [constructor]
+    cls.add_constructor([param('ns3::HighPrecision const &', 'data')])
+    ## nstime.h: ns3::Time::Time(std::string const & s) [constructor]
+    cls.add_constructor([param('std::string const &', 's')])
+    ## nstime.h: int ns3::Time::Compare(ns3::Time const & o) const [member function]
+    cls.add_method('Compare', 
+                   'int', 
+                   [param('ns3::Time const &', 'o')], 
+                   is_const=True)
+    ## nstime.h: static ns3::Time ns3::Time::FromDouble(double value, ns3::Time::Unit timeUnit) [member function]
+    cls.add_method('FromDouble', 
+                   'ns3::Time', 
+                   [param('double', 'value'), param('ns3::Time::Unit', 'timeUnit')], 
+                   is_static=True)
+    ## nstime.h: static ns3::Time ns3::Time::FromInteger(uint64_t value, ns3::Time::Unit timeUnit) [member function]
+    cls.add_method('FromInteger', 
+                   'ns3::Time', 
+                   [param('uint64_t', 'value'), param('ns3::Time::Unit', 'timeUnit')], 
+                   is_static=True)
+    ## nstime.h: int64_t ns3::Time::GetFemtoSeconds() const [member function]
     cls.add_method('GetFemtoSeconds', 
                    'int64_t', 
                    [], 
                    is_const=True)
-    ## nstime.h: ns3::HighPrecision const & ns3::TimeUnit<1>::GetHighPrecision() const [member function]
+    ## nstime.h: ns3::HighPrecision const & ns3::Time::GetHighPrecision() const [member function]
     cls.add_method('GetHighPrecision', 
                    'ns3::HighPrecision const &', 
                    [], 
                    is_const=True)
-    ## nstime.h: int64_t ns3::TimeUnit<1>::GetMicroSeconds() const [member function]
+    ## nstime.h: int64_t ns3::Time::GetMicroSeconds() const [member function]
     cls.add_method('GetMicroSeconds', 
                    'int64_t', 
                    [], 
                    is_const=True)
-    ## nstime.h: int64_t ns3::TimeUnit<1>::GetMilliSeconds() const [member function]
+    ## nstime.h: int64_t ns3::Time::GetMilliSeconds() const [member function]
     cls.add_method('GetMilliSeconds', 
                    'int64_t', 
                    [], 
                    is_const=True)
-    ## nstime.h: int64_t ns3::TimeUnit<1>::GetNanoSeconds() const [member function]
+    ## nstime.h: int64_t ns3::Time::GetNanoSeconds() const [member function]
     cls.add_method('GetNanoSeconds', 
                    'int64_t', 
                    [], 
                    is_const=True)
-    ## nstime.h: int64_t ns3::TimeUnit<1>::GetPicoSeconds() const [member function]
+    ## nstime.h: int64_t ns3::Time::GetPicoSeconds() const [member function]
     cls.add_method('GetPicoSeconds', 
                    'int64_t', 
                    [], 
                    is_const=True)
-    ## nstime.h: double ns3::TimeUnit<1>::GetSeconds() const [member function]
+    ## nstime.h: static ns3::Time::Unit ns3::Time::GetResolution() [member function]
+    cls.add_method('GetResolution', 
+                   'ns3::Time::Unit', 
+                   [], 
+                   is_static=True)
+    ## nstime.h: double ns3::Time::GetSeconds() const [member function]
     cls.add_method('GetSeconds', 
                    'double', 
                    [], 
                    is_const=True)
-    ## nstime.h: int64_t ns3::TimeUnit<1>::GetTimeStep() const [member function]
+    ## nstime.h: int64_t ns3::Time::GetTimeStep() const [member function]
     cls.add_method('GetTimeStep', 
                    'int64_t', 
                    [], 
                    is_const=True)
-    ## nstime.h: bool ns3::TimeUnit<1>::IsNegative() const [member function]
+    ## nstime.h: bool ns3::Time::IsNegative() const [member function]
     cls.add_method('IsNegative', 
                    'bool', 
                    [], 
                    is_const=True)
-    ## nstime.h: bool ns3::TimeUnit<1>::IsPositive() const [member function]
+    ## nstime.h: bool ns3::Time::IsPositive() const [member function]
     cls.add_method('IsPositive', 
                    'bool', 
                    [], 
                    is_const=True)
-    ## nstime.h: bool ns3::TimeUnit<1>::IsStrictlyNegative() const [member function]
+    ## nstime.h: bool ns3::Time::IsStrictlyNegative() const [member function]
     cls.add_method('IsStrictlyNegative', 
                    'bool', 
                    [], 
                    is_const=True)
-    ## nstime.h: bool ns3::TimeUnit<1>::IsStrictlyPositive() const [member function]
+    ## nstime.h: bool ns3::Time::IsStrictlyPositive() const [member function]
     cls.add_method('IsStrictlyPositive', 
                    'bool', 
                    [], 
                    is_const=True)
-    ## nstime.h: bool ns3::TimeUnit<1>::IsZero() const [member function]
+    ## nstime.h: bool ns3::Time::IsZero() const [member function]
     cls.add_method('IsZero', 
                    'bool', 
                    [], 
                    is_const=True)
-    ## nstime.h: ns3::HighPrecision * ns3::TimeUnit<1>::PeekHighPrecision() [member function]
+    ## nstime.h: ns3::HighPrecision * ns3::Time::PeekHighPrecision() [member function]
     cls.add_method('PeekHighPrecision', 
                    'ns3::HighPrecision *', 
                    [])
-    ## nstime.h: static uint64_t ns3::TimeUnit<1>::UnitsToTimestep(uint64_t unitValue, uint64_t unitFactor) [member function]
-    cls.add_method('UnitsToTimestep', 
+    ## nstime.h: static void ns3::Time::SetResolution(ns3::Time::Unit resolution) [member function]
+    cls.add_method('SetResolution', 
+                   'void', 
+                   [param('ns3::Time::Unit', 'resolution')], 
+                   is_static=True)
+    ## nstime.h: static double ns3::Time::ToDouble(ns3::Time const & time, ns3::Time::Unit timeUnit) [member function]
+    cls.add_method('ToDouble', 
+                   'double', 
+                   [param('ns3::Time const &', 'time'), param('ns3::Time::Unit', 'timeUnit')], 
+                   is_static=True)
+    ## nstime.h: static uint64_t ns3::Time::ToInteger(ns3::Time const & time, ns3::Time::Unit timeUnit) [member function]
+    cls.add_method('ToInteger', 
                    'uint64_t', 
-                   [param('uint64_t', 'unitValue'), param('uint64_t', 'unitFactor')], 
+                   [param('ns3::Time const &', 'time'), param('ns3::Time::Unit', 'timeUnit')], 
                    is_static=True)
     return
 
-def register_Ns3TimeSquare_methods(root_module, cls):
-    cls.add_binary_numeric_operator('/', root_module['ns3::Time'], root_module['ns3::TimeSquare'], param('ns3::TimeUnit< 1 > const &', 'right'))
-    ## nstime.h: ns3::TimeUnit<2>::TimeUnit() [constructor]
+def register_Ns3TimeBase_methods(root_module, cls):
+    ## time-base.h: ns3::TimeBase::TimeBase() [constructor]
     cls.add_constructor([])
-    ## nstime.h: ns3::TimeUnit<2>::TimeUnit(ns3::TimeUnit<2> const & o) [copy constructor]
-    cls.add_constructor([param('ns3::TimeUnit< 2 > const &', 'o')])
-    ## nstime.h: ns3::TimeUnit<2>::TimeUnit(ns3::HighPrecision data) [constructor]
-    cls.add_constructor([param('ns3::HighPrecision', 'data')])
-    ## nstime.h: ns3::HighPrecision const & ns3::TimeUnit<2>::GetHighPrecision() const [member function]
+    ## time-base.h: ns3::TimeBase::TimeBase(ns3::TimeBase const & o) [copy constructor]
+    cls.add_constructor([param('ns3::TimeBase const &', 'o')])
+    ## time-base.h: ns3::TimeBase::TimeBase(ns3::HighPrecision const & data) [constructor]
+    cls.add_constructor([param('ns3::HighPrecision const &', 'data')])
+    ## time-base.h: static ns3::TimeBase ns3::TimeBase::FromDouble(double value, ns3::TimeBase::Unit timeUnit) [member function]
+    cls.add_method('FromDouble', 
+                   'ns3::TimeBase', 
+                   [param('double', 'value'), param('ns3::TimeBase::Unit', 'timeUnit')], 
+                   is_static=True)
+    ## time-base.h: static ns3::TimeBase ns3::TimeBase::FromInteger(uint64_t value, ns3::TimeBase::Unit timeUnit) [member function]
+    cls.add_method('FromInteger', 
+                   'ns3::TimeBase', 
+                   [param('uint64_t', 'value'), param('ns3::TimeBase::Unit', 'timeUnit')], 
+                   is_static=True)
+    ## time-base.h: ns3::HighPrecision const & ns3::TimeBase::GetHighPrecision() const [member function]
     cls.add_method('GetHighPrecision', 
                    'ns3::HighPrecision const &', 
                    [], 
                    is_const=True)
-    ## nstime.h: bool ns3::TimeUnit<2>::IsNegative() const [member function]
+    ## time-base.h: static ns3::TimeBase::Unit ns3::TimeBase::GetResolution() [member function]
+    cls.add_method('GetResolution', 
+                   'ns3::TimeBase::Unit', 
+                   [], 
+                   is_static=True)
+    ## time-base.h: bool ns3::TimeBase::IsNegative() const [member function]
     cls.add_method('IsNegative', 
                    'bool', 
                    [], 
                    is_const=True)
-    ## nstime.h: bool ns3::TimeUnit<2>::IsPositive() const [member function]
+    ## time-base.h: bool ns3::TimeBase::IsPositive() const [member function]
     cls.add_method('IsPositive', 
                    'bool', 
                    [], 
                    is_const=True)
-    ## nstime.h: bool ns3::TimeUnit<2>::IsStrictlyNegative() const [member function]
+    ## time-base.h: bool ns3::TimeBase::IsStrictlyNegative() const [member function]
     cls.add_method('IsStrictlyNegative', 
                    'bool', 
                    [], 
                    is_const=True)
-    ## nstime.h: bool ns3::TimeUnit<2>::IsStrictlyPositive() const [member function]
+    ## time-base.h: bool ns3::TimeBase::IsStrictlyPositive() const [member function]
     cls.add_method('IsStrictlyPositive', 
                    'bool', 
                    [], 
                    is_const=True)
-    ## nstime.h: bool ns3::TimeUnit<2>::IsZero() const [member function]
+    ## time-base.h: bool ns3::TimeBase::IsZero() const [member function]
     cls.add_method('IsZero', 
                    'bool', 
                    [], 
                    is_const=True)
-    ## nstime.h: ns3::HighPrecision * ns3::TimeUnit<2>::PeekHighPrecision() [member function]
+    ## time-base.h: ns3::HighPrecision * ns3::TimeBase::PeekHighPrecision() [member function]
     cls.add_method('PeekHighPrecision', 
                    'ns3::HighPrecision *', 
                    [])
+    ## time-base.h: static void ns3::TimeBase::SetResolution(ns3::TimeBase::Unit resolution) [member function]
+    cls.add_method('SetResolution', 
+                   'void', 
+                   [param('ns3::TimeBase::Unit', 'resolution')], 
+                   is_static=True)
+    ## time-base.h: static double ns3::TimeBase::ToDouble(ns3::TimeBase const & time, ns3::TimeBase::Unit timeUnit) [member function]
+    cls.add_method('ToDouble', 
+                   'double', 
+                   [param('ns3::TimeBase const &', 'time'), param('ns3::TimeBase::Unit', 'timeUnit')], 
+                   is_static=True)
+    ## time-base.h: static uint64_t ns3::TimeBase::ToInteger(ns3::TimeBase const & time, ns3::TimeBase::Unit timeUnit) [member function]
+    cls.add_method('ToInteger', 
+                   'uint64_t', 
+                   [param('ns3::TimeBase const &', 'time'), param('ns3::TimeBase::Unit', 'timeUnit')], 
+                   is_static=True)
     return
 
 def register_Ns3Timer_methods(root_module, cls):
@@ -708,6 +671,30 @@ def register_Ns3Watchdog_methods(root_module, cls):
     cls.add_method('Ping', 
                    'void', 
                    [param('ns3::Time', 'delay')])
+    return
+
+def register_Ns3Scalar_methods(root_module, cls):
+    ## nstime.h: ns3::Scalar::Scalar(ns3::Scalar const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::Scalar const &', 'arg0')])
+    ## nstime.h: ns3::Scalar::Scalar() [constructor]
+    cls.add_constructor([])
+    ## nstime.h: ns3::Scalar::Scalar(double v) [constructor]
+    cls.add_constructor([param('double', 'v')])
+    ## nstime.h: ns3::Scalar::Scalar(uint32_t v) [constructor]
+    cls.add_constructor([param('uint32_t', 'v')])
+    ## nstime.h: ns3::Scalar::Scalar(int32_t v) [constructor]
+    cls.add_constructor([param('int32_t', 'v')])
+    ## nstime.h: ns3::Scalar::Scalar(uint64_t v) [constructor]
+    cls.add_constructor([param('uint64_t', 'v')])
+    ## nstime.h: ns3::Scalar::Scalar(int64_t v) [constructor]
+    cls.add_constructor([param('int64_t', 'v')])
+    ## nstime.h: ns3::Scalar::Scalar(ns3::Time t) [constructor]
+    cls.add_constructor([param('ns3::Time', 't')])
+    ## nstime.h: double ns3::Scalar::GetDouble() const [member function]
+    cls.add_method('GetDouble', 
+                   'double', 
+                   [], 
+                   is_const=True)
     return
 
 def register_Ns3Scheduler_methods(root_module, cls):
@@ -810,6 +797,11 @@ def register_Ns3SimulatorImpl_methods(root_module, cls):
                    'uint32_t', 
                    [], 
                    is_pure_virtual=True, is_const=True, is_virtual=True)
+    ## simulator-impl.h: static ns3::TypeId ns3::SimulatorImpl::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
     ## simulator-impl.h: bool ns3::SimulatorImpl::IsExpired(ns3::EventId const & ev) const [member function]
     cls.add_method('IsExpired', 
                    'bool', 
@@ -1605,7 +1597,11 @@ def register_functions(root_module):
     module.add_function('Abs', 
                         'ns3::HighPrecision', 
                         [param('ns3::HighPrecision const &', 'value')])
-    ## nstime.h: extern ns3::Time ns3::FemtoSeconds(uint64_t fs) [free function]
+    ## nstime.h: ns3::Time ns3::Abs(ns3::Time const & time) [free function]
+    module.add_function('Abs', 
+                        'ns3::Time', 
+                        [param('ns3::Time const &', 'time')])
+    ## nstime.h: ns3::Time ns3::FemtoSeconds(uint64_t fs) [free function]
     module.add_function('FemtoSeconds', 
                         'ns3::Time', 
                         [param('uint64_t', 'fs')])
@@ -1621,11 +1617,15 @@ def register_functions(root_module):
     module.add_function('Max', 
                         'ns3::HighPrecision', 
                         [param('ns3::HighPrecision const &', 'a'), param('ns3::HighPrecision const &', 'b')])
-    ## nstime.h: extern ns3::Time ns3::MicroSeconds(uint64_t us) [free function]
+    ## nstime.h: ns3::Time ns3::Max(ns3::Time const & ta, ns3::Time const & tb) [free function]
+    module.add_function('Max', 
+                        'ns3::Time', 
+                        [param('ns3::Time const &', 'ta'), param('ns3::Time const &', 'tb')])
+    ## nstime.h: ns3::Time ns3::MicroSeconds(uint64_t us) [free function]
     module.add_function('MicroSeconds', 
                         'ns3::Time', 
                         [param('uint64_t', 'us')])
-    ## nstime.h: extern ns3::Time ns3::MilliSeconds(uint64_t ms) [free function]
+    ## nstime.h: ns3::Time ns3::MilliSeconds(uint64_t ms) [free function]
     module.add_function('MilliSeconds', 
                         'ns3::Time', 
                         [param('uint64_t', 'ms')])
@@ -1633,7 +1633,11 @@ def register_functions(root_module):
     module.add_function('Min', 
                         'ns3::HighPrecision', 
                         [param('ns3::HighPrecision const &', 'a'), param('ns3::HighPrecision const &', 'b')])
-    ## nstime.h: extern ns3::Time ns3::NanoSeconds(uint64_t ns) [free function]
+    ## nstime.h: ns3::Time ns3::Min(ns3::Time const & ta, ns3::Time const & tb) [free function]
+    module.add_function('Min', 
+                        'ns3::Time', 
+                        [param('ns3::Time const &', 'ta'), param('ns3::Time const &', 'tb')])
+    ## nstime.h: ns3::Time ns3::NanoSeconds(uint64_t ns) [free function]
     module.add_function('NanoSeconds', 
                         'ns3::Time', 
                         [param('uint64_t', 'ns')])
@@ -1641,21 +1645,20 @@ def register_functions(root_module):
     module.add_function('Now', 
                         'ns3::Time', 
                         [])
-    ## nstime.h: extern ns3::Time ns3::PicoSeconds(uint64_t ps) [free function]
+    ## nstime.h: ns3::Time ns3::PicoSeconds(uint64_t ps) [free function]
     module.add_function('PicoSeconds', 
                         'ns3::Time', 
                         [param('uint64_t', 'ps')])
-    ## nstime.h: extern ns3::Time ns3::Seconds(double seconds) [free function]
+    ## nstime.h: ns3::Time ns3::Seconds(double seconds) [free function]
     module.add_function('Seconds', 
                         'ns3::Time', 
                         [param('double', 'seconds')])
-    ## nstime.h: extern ns3::Time ns3::TimeStep(uint64_t ts) [free function]
+    ## nstime.h: ns3::Time ns3::TimeStep(uint64_t ts) [free function]
     module.add_function('TimeStep', 
                         'ns3::Time', 
                         [param('uint64_t', 'ts')])
     register_functions_ns3_Config(module.get_submodule('Config'), root_module)
     register_functions_ns3_FatalImpl(module.get_submodule('FatalImpl'), root_module)
-    register_functions_ns3_TimeStepPrecision(module.get_submodule('TimeStepPrecision'), root_module)
     register_functions_ns3_addressUtils(module.get_submodule('addressUtils'), root_module)
     register_functions_ns3_aodv(module.get_submodule('aodv'), root_module)
     register_functions_ns3_dot11s(module.get_submodule('dot11s'), root_module)
@@ -1668,17 +1671,6 @@ def register_functions_ns3_Config(module, root_module):
     return
 
 def register_functions_ns3_FatalImpl(module, root_module):
-    return
-
-def register_functions_ns3_TimeStepPrecision(module, root_module):
-    ## nstime.h: extern ns3::TimeStepPrecision::precision_t ns3::TimeStepPrecision::Get() [free function]
-    module.add_function('Get', 
-                        'ns3::TimeStepPrecision::precision_t', 
-                        [])
-    ## nstime.h: extern void ns3::TimeStepPrecision::Set(ns3::TimeStepPrecision::precision_t precision) [free function]
-    module.add_function('Set', 
-                        'void', 
-                        [param('ns3::TimeStepPrecision::precision_t', 'precision')])
     return
 
 def register_functions_ns3_addressUtils(module, root_module):
