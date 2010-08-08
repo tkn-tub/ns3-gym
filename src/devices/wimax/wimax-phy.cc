@@ -60,7 +60,7 @@ TypeId WimaxPhy::GetTypeId (void)
 
     .AddAttribute ("Bandwidth",
                    "The channel bandwidth in Hz.",
-                   UintegerValue (20000000),
+                   UintegerValue (10000000),
                    MakeUintegerAccessor (&WimaxPhy::SetChannelBandwidth, &WimaxPhy::GetChannelBandwidth),
                    MakeUintegerChecker<uint32_t> (5000000, 30000000))
 
@@ -73,7 +73,7 @@ WimaxPhy::WimaxPhy (void)
     m_nrCarriers (0),
     m_frameDuration (Seconds (0.01)),
     m_frequency (5000000),
-    m_channelBandwidth (20000000),
+    m_channelBandwidth (10000000),
     m_psDuration (Seconds (0)),
     m_symbolDuration (Seconds (0)),
     m_psPerSymbol (0),

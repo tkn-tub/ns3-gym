@@ -61,7 +61,7 @@ int main (int argc, char *argv[])
 {
   bool verbose = false;
 
-  int duration = 2, schedType = 0;
+  int duration = 7, schedType = 0;
   WimaxHelper::SchedulerType scheduler = WimaxHelper::SCHED_TYPE_SIMPLE;
 
   CommandLine cmd;
@@ -140,7 +140,7 @@ int main (int argc, char *argv[])
   udpServer = UdpServerHelper (100);
 
   serverApps = udpServer.Install (ssNodes.Get (0));
-  serverApps.Start (Seconds (1));
+  serverApps.Start (Seconds (6));
   serverApps.Stop (Seconds (duration));
 
   udpClient = UdpClientHelper (SSinterfaces.GetAddress (0), 100);
@@ -149,7 +149,7 @@ int main (int argc, char *argv[])
   udpClient.SetAttribute ("PacketSize", UintegerValue (1024));
 
   clientApps = udpClient.Install (ssNodes.Get (1));
-  clientApps.Start (Seconds (1));
+  clientApps.Start (Seconds (6));
   clientApps.Stop (Seconds (duration));
 
   Simulator::Stop (Seconds (duration + 0.1));

@@ -138,6 +138,12 @@ SSLinkManager::StartScanning (
       m_dlChnlNr++;
     }
 
+  // using max number of channel according to according to Section 8.5.1 of IEEE 802.16-2004 standard.
+  if (m_dlChnlNr >= 200)
+    {
+      m_dlChnlNr = 0;
+    }
+
   uint64_t dlChannel = m_ss->GetChannel (m_dlChnlNr);
 
   m_ss->SetState (SubscriberStationNetDevice::SS_STATE_SCANNING);

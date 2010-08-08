@@ -67,7 +67,7 @@ using namespace ns3;
 int main (int argc, char *argv[])
 {
   // default values
-  int nbSS = 4, duration = 2, schedType = 0;
+  int nbSS = 4, duration = 7, schedType = 0;
   bool verbose = false;
   WimaxHelper::SchedulerType scheduler = WimaxHelper::SCHED_TYPE_SIMPLE;
   LogComponentEnable ("UdpClient", LOG_LEVEL_INFO);
@@ -151,7 +151,7 @@ int main (int argc, char *argv[])
       // set server port to 100+(i*10)
       udpServer[i] = UdpServerHelper (100 + (i * 10));
       serverApps[i] = udpServer[i].Install (ssNodes.Get (i));
-      serverApps[i].Start (Seconds (1));
+      serverApps[i].Start (Seconds (6));
       serverApps[i].Stop (Seconds (duration));
 
       udpClient[i] = UdpClientHelper (SSinterfaces.GetAddress (i), 100 + (i * 10));
@@ -160,7 +160,7 @@ int main (int argc, char *argv[])
       udpClient[i].SetAttribute ("PacketSize", UintegerValue (800));
 
       clientApps[i] = udpClient[i].Install (ssNodes.Get (i + (nbSS / 2)));
-      clientApps[i].Start (Seconds (1));
+      clientApps[i].Start (Seconds (6));
       clientApps[i].Stop (Seconds (duration));
     }
 

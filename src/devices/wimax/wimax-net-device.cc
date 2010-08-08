@@ -581,13 +581,19 @@ WimaxNetDevice::ForwardDown (Ptr<PacketBurst> burst, WimaxPhy::ModulationType mo
 void
 WimaxNetDevice::InitializeChannels (void)
 {
-  // initializing arbitrary vector of channels (or frequencies)
-  uint64_t frequency = 2000;
 
-  for (uint8_t i = 0; i < 20; i++)
+  // initializing vector of channels (or frequencies)
+  // Values according to WirelessMAN-OFDM RF profile for 10 MHz channelization
+  // Section 12.3.3.1 from IEEE 802.16-2004 standard
+  // profR10_3 :
+  // channels: 5000 + n ⋅ 5 MHz, ∀n ∈ { 147, 149, 151, 153, 155, 157, 159, 161, 163, 165, 167 }
+  // from a range 5GHz to 6GHz, according to Section 8.5.1.
+  uint64_t frequency = 5000;
+
+  for (uint8_t i = 0; i < 200; i++)
     {
       m_dlChannels.push_back (frequency);
-      frequency += 40;
+      frequency += 5;
     }
 }
 

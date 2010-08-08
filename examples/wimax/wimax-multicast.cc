@@ -98,7 +98,7 @@ int main (int argc, char *argv[])
   Ptr<RandomRectanglePositionAllocator> SSPosAllocator[MAXSS];
 
   // default values
-  int nbSS = 10, duration = 2, schedType = 0;
+  int nbSS = 10, duration = 7, schedType = 0;
   WimaxHelper::SchedulerType scheduler = WimaxHelper::SCHED_TYPE_SIMPLE;
 
   CommandLine cmd;
@@ -266,14 +266,14 @@ int main (int argc, char *argv[])
     {
       udpServer[i] = UdpServerHelper (multicast_port);
       serverApps[i] = udpServer[i].Install (ssNodes.Get (i));
-      serverApps[i].Start (Seconds (1));
+      serverApps[i].Start (Seconds (6));
       serverApps[i].Stop (Seconds (duration));
     }
 
   udpClient = UdpTraceClientHelper (multicastGroup, multicast_port, "");
 
   clientApps = udpClient.Install (Streamer_Node.Get (0));
-  clientApps.Start (Seconds (1));
+  clientApps.Start (Seconds (6));
   clientApps.Stop (Seconds (duration));
 
   IpcsClassifierRecord MulticastClassifier (Ipv4Address ("0.0.0.0"),
