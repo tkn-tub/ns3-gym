@@ -552,7 +552,6 @@ PointToPointNetDevice::SetReceiveCallback (NetDevice::ReceiveCallback cb)
 void
 PointToPointNetDevice::SetPromiscReceiveCallback (NetDevice::PromiscReceiveCallback cb)
 {
-  NS_FATAL_ERROR ("PointToPointNetDevice::SetPromiscReceiveCallback(): Not implemented");
   m_promiscCallback = cb;
 }
 
