@@ -139,11 +139,13 @@ public:
    * \param sender the address of the sender
    * \param receiver the address of the receiver; Note: this value is
    *                 only valid for promiscuous mode protocol
-   *                 handlers.
+   *                 handlers.  Note:  If the L2 protocol does not use L2
+   *                 addresses, the address reported here is the value of 
+   *                 device->GetAddress().
    * \param packetType type of packet received
    *                   (broadcast/multicast/unicast/otherhost); Note:
    *                   this value is only valid for promiscuous mode
-   *                   protocol handlers.
+   *                   protocol handlers.  
    */
   typedef Callback<void,Ptr<NetDevice>, Ptr<const Packet>,uint16_t,const Address &,
                    const Address &, NetDevice::PacketType> ProtocolHandler;
@@ -195,7 +197,6 @@ private:
    * This method is invoked whenever a user calls Node::AddDevice.
    */
   virtual void NotifyDeviceAdded (Ptr<NetDevice> device);
-
   bool NonPromiscReceiveFromDevice (Ptr<NetDevice> device, Ptr<const Packet>, uint16_t protocol, const Address &from);
   bool PromiscReceiveFromDevice (Ptr<NetDevice> device, Ptr<const Packet>, uint16_t protocol,
                                  const Address &from, const Address &to, NetDevice::PacketType packetType);

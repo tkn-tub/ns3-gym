@@ -263,7 +263,7 @@ Node::NonPromiscReceiveFromDevice (Ptr<NetDevice> device, Ptr<const Packet> pack
                                    const Address &from)
 {
   NS_LOG_FUNCTION(this);
-  return ReceiveFromDevice (device, packet, protocol, from, from, NetDevice::PacketType (0), false);
+  return ReceiveFromDevice (device, packet, protocol, from, device->GetAddress(), NetDevice::PacketType (0), false);
 }
 
 bool
