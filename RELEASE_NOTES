@@ -57,22 +57,85 @@ many cases referencing the Bugzilla bug number
 
    - IPv4 global routing code; stub networks were assumed to be /24
      and added as /24 networks even if the mask is actually different
-   - bug 842 - ns-3-dev crashes using block acks
    - OLSR was generating messages on non-OLSR interfaces
+   - ICMPv4 objects not properly registered; affected serialization code
+   - bug 231 - SocketAddressTag needs to be removed from a packet before 
+               forwarding the packet to the user
+   - bug 385 - Add a generic "sequence number" class
+   - bug 473 - [PATCH] Alternative ns-2 trace reader
+   - bug 665 - Need Tutorial Sectino on Config Path and Tracing Use
+   - bug 671 - add packet-info-tag.cc for IP_PKTINFO/IPV6_PKTINFO
+   - bug 702 - Global routing doesn't respond to interface events
+   - bug 799 - Interference helper is too slow
+   - bug 800 - Erroneous packet sender while using aloha or cw mac in uan module
+   - bug 802 - Minstrel algorithm causes segmentation fault
+   - bug 826 - Using uint64_t instead of Time in DcfManager
+   - bug 828 - PacketSocket::Close does not unregister protocol handler
+   - bug 842 - ns-3-dev crashes using block acks
+   - bug 843 - Most wifi examples change BeaconInterval to unrealistic values
+   - bug 844 - YansWifiPhy::GetPowerDbm off-by-one problem when calculating Tx 
+               power
+   - bug 853 - Rates for Wi-Fi control responses are incorrectly selected
+   - bug 854 - Support DROP_QUEUE reason-code in Ipv4FlowProbe
+   - bug 858 - support MSG_PEEK in IPv4/IPv6 raw socket
    - bug 861 - Forwarding drops (due to no route found) were not being logged 
                in IPv4 or IPv6 ascii traces
-   - ICMPv4 objects not properly registered; affected serialization code
-   - bug 875 - Set FCS included flag in Radiotap header
-   - bug 702 - Global routing doesn't respond to interface events
-   - bug 906 - NSC TCP socket fork did not copy txbuffersize over
-   - bug 828: PacketSocket::Close does not unregister protocol handler
-   - bug 900:  RawTextConfigLoad::Default does not load configurations
-   - bug 858 - support MSG_PEEK in IPv4/IPv6 raw socket
-   - bug 932 - Support IP_HDRINCL option for Ipv4RawSocket
+   - bug 869 - suggested test framework enhancements
    - bug 871 - naming for WifiPhyStandard
-   - bug 946 - Rocketfuel topology dataset support for topology reader
+   - bug 873 - Queue occupancy counter not decremented in WifiMacQueue::Remove()
+   - bug 874 - wrong modulation type is selected in the forwardBurst method
+   - bug 875 - "frame includes FCS" flag should be set in Radiotap frame header
+   - bug 875 - Set FCS included flag in Radiotap header
    - bug 881 - Reorganise to allow wider use of WifiInformationElement
-   - bug 671 - add packet-info-tag.cc for IP_PKTINFO/IPV6_PKTINFO
+   - bug 890 - several rate adaptation algorithms not tested by test.py
+   - bug 900:  RawTextConfigLoad::Default does not load configurations
+   - bug 901 - Optimize Mac48Address < != and ==
+   - bug 902 - TCP: handle out-of-order packets during connection shutdown
+   - bug 905 - WimaxNetDevice loses packet uid, tags, and memory optimization
+   - bug 906 - NSC TCP socket fork did not copy txbuffersize over
+   - bug 908 - test.py should exit if waf dies
+   - bug 910 - Change Wi-Fi "AccessClass" to something closer to the standard
+   - bug 913 - Queue Enqueue/Drop trace sources behavior unintuitive
+   - bug 916 - EnableAsciiAll ("prefix") does not work for YansWifiPhyHelper
+   - bug 918 - samples/main-packet-header.cc is broken
+   - bug 919 - minstrel does not pass valgrind tests
+   - bug 921 - Inconsistent declaration of class/struct Object in object.h
+   - bug 922 - Inconsistent declaration of class/struct in 
+               wifi-remote-station-manager.h
+   - bug 923 - Inconsistent declaration of class/struct in mac-low.h
+   - bug 924 - Inconsistent declaration of class/struct in <xxx>-wifi-managers 
+   - bug 926 - olsr handling of multicast packets 
+   - bug 927 - SimpleOfdmWimaxChannel RxPower computation
+   - bug 931 - Abnormal exit reports SIGSEGV on failure
+   - bug 932 - Support IP_HDRINCL option for Ipv4RawSocket
+   - bug 933 - Flushing ostream and files on abnormal program exit 
+               (ASSERT, ABORT and FATAL_ERROR)
+   - bug 936 - Waf build error for python bindings on "AccessClass"
+   - bug 937 - bugs in ns-3 wimax
+   - bug 940 - AODV fails to set up a correct path
+   - bug 941 - Wifi Dcf attributes not reachable through configuration namespace
+   - bug 943 - Add a SO_BROADCAST socket option
+   - bug 944 - change default ErrorRateModel from YansErrorRateModel to 
+               NistErrorRateModel
+   - bug 946 - Rocketfuel topology dataset support for topology reader
+   - bug 949 - Node::NonPromiscReceiveFromDevice reports a meaningless 
+               destination address to user callbacks 
+   - bug 950 - PointToPointNetDevice says promisc support is not implemented 
+               but it is
+   - bug 953 - WiMAX channel scanning overflow
+   - bug 956 - Bindings failure in core (traced-value) with older gcc
+   - bug 958 - WiFi uses wrong default values for MTU, FragmentationThreshold 
+               and RtsCtsThreshold
+   - bug 960 - V4Ping does not generate checksum
+   - bug 961 - Problem with MPI activation 
+   - bug 964 - AODV does not work with host addressed interfaces
+   - bug 965 - Problem building /src/core/callback.cc
+   - bug 966 - AODV originates new RREQ on each packet, when doesn't have 
+               valid route
+   - bug 969 - No SocketList is present in UdpL4Protocol class
+   - bug 970 - move UAN over to new directory structure
+   - bug 971 - fix AODV header Print functions 
+   - bug 972 - [flow monitor] assertion fails in pv4-flow-probe.cc
 
 Known issues
 ------------
