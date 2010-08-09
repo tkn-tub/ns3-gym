@@ -427,14 +427,10 @@ PointToPointNetDevice::GetBroadcast (void) const
   return Mac48Address ("ff:ff:ff:ff:ff:ff");
 }
 
-//
-// We don't deal with multicast here.  It doesn't make sense to include some
-// of the one destinations on the network but exclude some of the others.
-//
   bool 
 PointToPointNetDevice::IsMulticast (void) const
 {
-  return false;
+  return true;
 }
 
   Address 
