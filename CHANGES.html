@@ -66,6 +66,14 @@ packets as observed by the error model.   See src/common/error-model.h
 "RespondToInterfaceEvents", which when enabled, will cause global routes
 to be recomputed upon any interface or address notification event from IPv4.
 </ul>
+<ul><b>Generic sequence number:"</b> New generic sequence number class to 
+easily handle comparison, subtraction, etc. for sequence numbers.  
+To use it you need to supply two fundamental types as template parameters: 
+NUMERIC_TYPE and SIGNED_TYPE.  For instance, SequenceNumber<uint32_t, int32_t> 
+gives you a 32-bit sequence number, while SequenceNumber<uint16_t, int16_t> 
+is a 16-bit one.  For your convenience, these are typedef'ed as 
+SequenceNumber32 and SequenceNumber16, respectively.
+</ul>
 
 <h2>Changes to existing API:</h2>
 

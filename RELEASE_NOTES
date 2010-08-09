@@ -50,9 +50,17 @@ New user-visible features
      model and device energy models allowing energy-aware devices
      to notify the energy source about energy consumption.  
 
+   - Rocketfuel topology dataset support for existing topology reader
+     Rocketfuel project: 
+     http://www.cs.washington.edu/research/networking/rocketfuel/
+
+   - Underwater Acoustic Network (UAN) model, split in to three parts, the 
+     channel, PHY, and MAC models to enable researchers to model a variety 
+     of underwater network scenarios.
+
 Bugs fixed
 ----------
-The following lists many of the bugs that were fixed since ns-3.7, in
+The following lists many of the bugs that were fixed since ns-3.8, in
 many cases referencing the Bugzilla bug number
 
    - IPv4 global routing code; stub networks were assumed to be /24
