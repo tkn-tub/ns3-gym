@@ -61,11 +61,13 @@ int main (int argc, char *argv[])
   uint32_t nWifis = 2;
   uint32_t nStas = 2;
   bool sendIp = true;
+  bool writeMobility = false;
 
   CommandLine cmd;
   cmd.AddValue ("nWifis", "Number of wifi networks", nWifis);
   cmd.AddValue ("nStas", "Number of stations per wifi network", nStas);
   cmd.AddValue ("SendIp", "Send Ipv4 or raw packets", sendIp);
+  cmd.AddValue ("writeMobility", "Write mobility trace", writeMobility);
   cmd.Parse (argc, argv);
 
   NodeContainer backboneNodes;
@@ -185,9 +187,12 @@ int main (int argc, char *argv[])
   wifiPhy.EnablePcap ("wifi-wired-bridging", apDevices[0]);
   wifiPhy.EnablePcap ("wifi-wired-bridging", apDevices[1]);
 
-  std::ofstream os;
-  os.open ("wifi-wired-bridging.mob");
-  MobilityHelper::EnableAsciiAll (os);
+  if (writeMobility)
+    {
+      std::ofstream os;
+      os.open ("wifi-wired-bridging.mob");
+      MobilityHelper::EnableAsciiAll (os);
+    }
 
   Simulator::Stop (Seconds (5.0));
   Simulator::Run ();
