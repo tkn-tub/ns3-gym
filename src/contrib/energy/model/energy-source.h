@@ -24,11 +24,10 @@
 #include "ns3/object.h"
 #include "ns3/ptr.h"
 #include "ns3/type-id.h"
-#include "device-energy-model.h"
+#include "ns3/node.h"
+#include "device-energy-model-container.h"  // #include "device-energy-model.h"
 
 namespace ns3 {
-
-class DeviceEnergyModel;
 
 /**
  * \brief Energy source base class.
@@ -40,6 +39,23 @@ class DeviceEnergyModel;
  * the same node. When the remaining energy level reaches 0, the energy source
  * will notify all device energy models stored in the list.
  *
+ * EnergySource provides 2 types of interfaces for DeviceEnergyModels to update
+ * the remaining energy stored in EnergySource:
+ *  -Direct energy update interface (Joules):
+ *    DecreaseRemainingEnergy
+ *    IncreaseRemainingEnergy
+ *  -Indirect energy update interface (Current):
+ *    UpdateEnergySource
+ * Direct energy update interface will decrease/increase energy from the source
+ * directly (in Joules). Direct energy update interface is typically used by
+ * simple DeviceEnergyModel which knows only average power consumption for each
+ * of its state.
+ * Indirect energy update interface uses the total current cumulated from all
+ * DeviceEnergyModel to calculate energy to decrease from the source. Indirect
+ * energy update interface is typically used by DeviceEnergyModel who knows its
+ * current draw for each of its states. Nonlinear EnergySource also uses this
+ * interface.
+ *
  * Unit of energy is chosen as Joules since energy models typically calculate
  * energy as (time in seconds * power in Watts). If the energy source stores
  * energy in different units (eg. kWh), a simple converter function should
@@ -48,45 +64,79 @@ class DeviceEnergyModel;
 class EnergySource : public Object
 {
 public:
-  /// List of pointers to DeviceEnergyModel objects.
-  typedef std::vector< Ptr<DeviceEnergyModel> > DeviceEnergyModelList;
-
-public:
   static TypeId GetTypeId (void);
   EnergySource ();
   virtual ~EnergySource ();
 
-  /// This function returns initial energy stored in energy source.
-  double GetInitialEnergy (void) const;
-
-  /// This function returns the remaining energy stored in the energy source.
-  double GetRemainingEnergy (void) const;
+  /**
+   * \returns Supply voltage of the energy source.
+   *
+   * Set method is to be defined in child class only if necessary. For sources
+   * with a fixed supply voltage, set method is not needed.
+   */
+  virtual double GetSupplyVoltage (void) const = 0;
 
   /**
-   * \param energyJ Amount of energy to decrease (in Joules)
+   * \returns Initial energy (capacity) of the energy source.
    *
-   * This function decreases the remaining energy in the energy source by the
-   * specified amount.
+   * Set method is to be defined in child class only if necessary. For sources
+   * with a fixed initial energy (energy capacity), set method is not needed.
    */
-  void DecreaseRemainingEnergy (double energyJ);
+  virtual double GetInitialEnergy (void) const = 0;
 
   /**
-   * \param energyJ Amount of energy to increase (in Joules)
-   *
-   * This function increases the remaining energy in the energy source by the
-   * specified amount. Provided for supporting re-charging or scavenging.
+   * \returns Remaining energy at the energy source.
    */
-  void IncreaseRemainingEnergy (double energyJ);
+  virtual double GetRemainingEnergy (void) = 0;
 
   /**
    * \return Energy fraction = remaining energy / initial energy [0, 1]
    *
    * This function returns the percentage of energy left in the energy source.
    */
-  double GetEnergyFraction (void) const;
+  virtual double GetEnergyFraction (void) = 0;
+
+  /**
+   * \param energy Amount of energy to decrease (in Joules)
+   *
+   * This function decreases the remaining energy in the energy source by the
+   * specified amount. Provides linear interface for direct energy deduction.
+   */
+  virtual void DecreaseRemainingEnergy (double energyJ) = 0;
+
+  /**
+   * \param energy Amount of energy to increase (in Joules)
+   *
+   * This function increases the remaining energy in the energy source by the
+   * specified amount. Provides linear interface for direct energy increase.
+   */
+  virtual void IncreaseRemainingEnergy (double energyJ) = 0;
+
+  /**
+   * This function goes through the list of DeviceEnergyModels to obtain total
+   * current draw at the energy source and updates remaining energy. Called by
+   * DeviceEnergyModels to inform EnergySource of a state change.
+   */
+  virtual void UpdateEnergySource (void) = 0;
+
+  /**
+   * \brief Sets pointer to node containing this EnergySource.
+   *
+   * \param node Pointer to node containing this EnergySource.
+   */
+  void SetNode (Ptr<Node> node);
+
+  /**
+   * \returns Pointer to node containing this EnergySource.
+   *
+   * When a subclass needs to get access to the underlying node base class to
+   * print the nodeId for example, it can invoke this method.
+   */
+  Ptr<Node> GetNode (void) const;
 
   /**
    * \param deviceEnergyModelPtr Pointer to device energy model.
+   * \param tid TypeId of the specific device energy model.
    *
    * This function appends a device energy model to the end of a list of
    * DeviceEnergyModelInfo structs.
@@ -97,12 +147,13 @@ public:
    * \param tid TypeId of the DeviceEnergyModel we are searching for.
    * \returns List of pointers to DeviceEnergyModel objects installed on node.
    */
-  DeviceEnergyModelList FindDeviceEnergyModels (TypeId tid);
+  DeviceEnergyModelContainer FindDeviceEnergyModels (TypeId tid);
+
   /**
    * \param name name of the DeviceEnergyModel we are searching for.
    * \returns List of pointers to DeviceEnergyModel objects installed on node.
    */
-  DeviceEnergyModelList FindDeviceEnergyModels (std::string name);
+  DeviceEnergyModelContainer FindDeviceEnergyModels (std::string name);
 
 
 private:
@@ -110,29 +161,26 @@ private:
    * All child's implementation must call BreakDeviceEnergyModelRefCycle to
    * ensure reference cycles to DeviceEnergyModel objects are broken.
    */
-  void DoDispose (void);
-
-  /// Implements GetInitialEnergy.
-  virtual double DoGetInitialEnergy (void) const = 0;
-
-  /// Implements GetRemainingEnergy.
-  virtual double DoGetRemainingEnergy (void) const = 0;
-
-  /// Implements DecreaseRemainingEnergy.
-  virtual void DoDecreaseRemainingEnergy (double energyJ) = 0;
-
-  /// Implements IncreaseRemainingEnergy.
-  virtual void DoIncreaseRemainingEnergy (double energyJ) = 0;
-
-  /// Implements GetEnergyFraction.
-  virtual double DoGetEnergyFraction (void) const = 0;
+  virtual void DoDispose (void);
 
 private:
-  /// List of device energy models installed on the same node.
-  DeviceEnergyModelList m_deviceEnergyModelList;
+  /**
+   * List of device energy models installed on the same node.
+   */
+  DeviceEnergyModelContainer m_models;
+
+  /**
+   * Pointer to node containing this EnergySource.
+   */
+  Ptr<Node> m_node;
 
 
 protected:
+  /**
+   * \returns Total current draw from all DeviceEnergyModels.
+   */
+  double CalculateTotalCurrent (void);
+
   /**
    * This function notifies all DeviceEnergyModel of energy depletion event. It
    * is called by the child EnergySource class when energy depletion happens.

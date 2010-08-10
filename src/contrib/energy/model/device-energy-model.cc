@@ -19,9 +19,6 @@
  */
 
 #include "device-energy-model.h"
-#include "ns3/log.h"
-
-NS_LOG_COMPONENT_DEFINE ("DeviceEnergyModel");
 
 namespace ns3 {
 
@@ -44,56 +41,20 @@ DeviceEnergyModel::~DeviceEnergyModel ()
 {
 }
 
-void
-DeviceEnergyModel::HandleEnergyDepletion (void)
+double
+DeviceEnergyModel::GetCurrentA (void) const
 {
-  DoHandleEnergyDepletion ();
-}
-
-void
-DeviceEnergyModel::SetEnergySource (Ptr<EnergySource> source)
-{
-  NS_LOG_FUNCTION (this << source);
-  NS_ASSERT (source != NULL);  // energy source must exist
-  m_energySourcePtr = source;
+  return DoGetCurrentA ();
 }
 
 /*
  * Private function starts here.
  */
 
-void
-DeviceEnergyModel::DoDispose (void)
+double
+DeviceEnergyModel::DoGetCurrentA (void) const
 {
-  NS_LOG_FUNCTION (this);
-  m_energySourcePtr = NULL;
-}
-
-/*
- * Protected functions start here.
- */
-
-void
-DeviceEnergyModel::DecreaseRemainingEnergy (double energyJ)
-{
-  NS_LOG_FUNCTION (this << energyJ);
-  NS_ASSERT (m_energySourcePtr != NULL);  // energy source must exist
-  m_energySourcePtr->DecreaseRemainingEnergy (energyJ);
-}
-
-void
-DeviceEnergyModel::IncreaseRemainingEnergy (double energyJ)
-{
-  NS_LOG_FUNCTION (this << energyJ);
-  NS_ASSERT (m_energySourcePtr != NULL);  // energy source must exist
-  m_energySourcePtr->IncreaseRemainingEnergy (energyJ);
-}
-
-void
-DeviceEnergyModel::BreakSourceRefCycle (void)
-{
-  NS_LOG_FUNCTION (this);
-  m_energySourcePtr = NULL;
+  return 0.0;
 }
 
 } // namespace ns3

@@ -18,32 +18,31 @@
 * Author: Sidharth Nabar <snabar@uw.edu>, He Wu <mdzz@u.washington.edu>
 */
 
-#ifndef BASIC_RADIO_ENERGY_MODEL_HELPER_H
-#define BASIC_RADIO_ENERGY_MODEL_HELPER_H
+#ifndef WIFI_RADIO_ENERGY_MODEL_HELPER_H
+#define WIFI_RADIO_ENERGY_MODEL_HELPER_H
 
 #include "energy-model-helper.h"
-#include "ns3/device-energy-model.h"
-#include "ns3/basic-radio-energy-model.h"
+#include "ns3/wifi-radio-energy-model.h"
 
 namespace ns3 {
 
 /**
- * \brief Assign energy model to nodes.
+ * \brief Assign WifiRadioEnergyModel to wifi devices.
  *
- * This installer is used for BasicRadioEnergyModel.
+ * This installer installs WifiRadioEnergyModel for only WifiNetDevice objects.
  */
-class BasicRadioEnergyModelHelper : public DeviceEnergyModelHelper
+class WifiRadioEnergyModelHelper : public DeviceEnergyModelHelper
 {
 public:
   /**
    * Construct a helper which is used to add a radio energy model to a node
    */
-  BasicRadioEnergyModelHelper ();
+  WifiRadioEnergyModelHelper ();
 
   /**
    * Destroy a RadioEnergy Helper
    */
-  ~BasicRadioEnergyModelHelper ();
+  ~WifiRadioEnergyModelHelper ();
 
   /**
    * \param name the name of the attribute to set
@@ -54,37 +53,29 @@ public:
   void Set (std::string name, const AttributeValue &v);
 
   /**
-   * \returns A newly created RadioEnergySource object.
-   */
-  Ptr<DeviceEnergyModel> Create (void) const;
-
-  /**
    * \param callback Callback function for energy depletion handling.
    *
    * Sets the callback to be invoked when energy is depleted.
    */
   void SetDepletionCallback (
-    BasicRadioEnergyModel::BasicEnergyDepletionCallback callback);
+    WifiRadioEnergyModel::WifiRadioEnergyDepletionCallback callback);
 
 
 private:
   /**
-   * \brief Add an energy model to the specified node.
+   * \param device Pointer to the NetDevice to install DeviceEnergyModel.
    *
-   * \param node The node on which the energy model is to be installed.
-   *
-   * This method creates an instance of a ns3::BasicRadioEnergyModel and
-   * aggregates it to the given node.
+   * Implements DeviceEnergyModel::Install.
    */
-  void DoInstall (Ptr<Node> node) const;
+  virtual Ptr<DeviceEnergyModel> DoInstall (Ptr<NetDevice> device,
+                                            Ptr<EnergySource> source) const;
 
 private:
   ObjectFactory m_radioEnergy;
-  /// Callback function for energy depletion.
-  BasicRadioEnergyModel::BasicEnergyDepletionCallback m_depletionCallback;
+  WifiRadioEnergyModel::WifiRadioEnergyDepletionCallback m_depletionCallback;
 
 };
 
 } // namespace ns3
 
-#endif /* BASIC_RADIO_ENERGY_MODEL_HELPER_H */
+#endif /* WIFI_RADIO_ENERGY_MODEL_HELPER_H */

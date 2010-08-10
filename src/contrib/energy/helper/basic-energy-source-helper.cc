@@ -39,15 +39,7 @@ BasicEnergySourceHelper::Set (std::string name, const AttributeValue &v)
 }
 
 Ptr<EnergySource>
-BasicEnergySourceHelper::Create (void) const
-{
-  Ptr<EnergySource> source = m_basicEnergySource.Create<EnergySource> ();
-  NS_ASSERT (source != 0);
-  return source;
-}
-
-void
-BasicEnergySourceHelper::Install (Ptr<Node> node) const
+BasicEnergySourceHelper::DoInstall (Ptr<Node> node) const
 {
   NS_ASSERT (node != NULL);
   // check if energy source already exists
@@ -55,13 +47,11 @@ BasicEnergySourceHelper::Install (Ptr<Node> node) const
   if (source != NULL)
     {
       NS_FATAL_ERROR ("Energy source already installed!");
-      return;
     }
-  // create energy source
-  source = Create ();
+  source = m_basicEnergySource.Create<EnergySource> ();
   NS_ASSERT (source != NULL);
-  // aggregate source to node
-  node->AggregateObject (source);
+  source->SetNode (node);
+  return source;
 }
 
 } // namespace ns3

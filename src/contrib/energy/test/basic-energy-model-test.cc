@@ -19,23 +19,29 @@
  */
 
 #include "ns3/basic-energy-source.h"
-#include "ns3/basic-radio-energy-model.h"
+#include "ns3/wifi-radio-energy-model.h"
 #include "ns3/basic-energy-source-helper.h"
-#include "ns3/basic-radio-energy-model-helper.h"
+#include "ns3/wifi-radio-energy-model-helper.h"
+#include "ns3/energy-source-container.h"
+#include "ns3/device-energy-model-container.h"
 #include "ns3/log.h"
 #include "ns3/test.h"
 #include "ns3/node.h"
 #include "ns3/simulator.h"
 #include "ns3/double.h"
+#include "ns3/config.h"
+#include "ns3/string.h"
+#include "ns3/yans-wifi-helper.h"
+#include "ns3/nqos-wifi-mac-helper.h"
 #include <math.h>
 
-using namespace ns3;
+namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("BasicEnergyModelTestSuite");
 
 /**
  * Test case of update remaining energy for BasicEnergySource and
- * BasicRadioEnergyModel.
+ * WifiRadioEnergyModel.
  */
 class BasicEnergyUpdateTest : public TestCase
 {
@@ -53,7 +59,7 @@ private:
    * Runs simulation for a while, check if final state & remaining energy is
    * correctly updated.
    */
-  bool StateSwitchTest (RadioEnergyModel::RadioState state);
+  bool StateSwitchTest (WifiRadioEnergyModel::WifiRadioState state);
 
 private:
   double m_timeS;     // in seconds
@@ -79,22 +85,22 @@ BasicEnergyUpdateTest::DoRun (void)
 {
   // set types
   m_energySource.SetTypeId ("ns3::BasicEnergySource");
-  m_deviceEnergyModel.SetTypeId ("ns3::BasicRadioEnergyModel");
+  m_deviceEnergyModel.SetTypeId ("ns3::WifiRadioEnergyModel");
 
   // run state switch tests
-  if (StateSwitchTest (RadioEnergyModel::TX))
+  if (StateSwitchTest (WifiRadioEnergyModel::TX))
     {
       return true;
     }
-  if (StateSwitchTest (RadioEnergyModel::RX))
+  if (StateSwitchTest (WifiRadioEnergyModel::RX))
     {
       return true;
     }
-  if (StateSwitchTest (RadioEnergyModel::IDLE))
+  if (StateSwitchTest (WifiRadioEnergyModel::IDLE))
     {
       return true;
     }
-  if (StateSwitchTest (RadioEnergyModel::SLEEP))
+  if (StateSwitchTest (WifiRadioEnergyModel::SLEEP))
     {
       return true;
     }
@@ -105,84 +111,100 @@ BasicEnergyUpdateTest::DoRun (void)
 
 bool
 BasicEnergyUpdateTest::StateSwitchTest (
-  RadioEnergyModel::RadioState state)
+    WifiRadioEnergyModel::WifiRadioState state)
 {
   // create node
   Ptr<Node> node = CreateObject<Node> ();
 
   // create energy source
-  Ptr<EnergySource> source = m_energySource.Create<EnergySource> ();
+  Ptr<BasicEnergySource> source = m_energySource.Create<BasicEnergySource> ();
   // aggregate energy source to node
   node->AggregateObject (source);
+  // set update interval in source
+  source->SetEnergyUpdateInterval (Seconds (1.0));
 
   // create device energy model
-  Ptr<BasicRadioEnergyModel> model =
-    m_deviceEnergyModel.Create<BasicRadioEnergyModel> ();
+  Ptr<WifiRadioEnergyModel> model =
+    m_deviceEnergyModel.Create<WifiRadioEnergyModel> ();
   // set energy source pointer
   model->SetEnergySource (source);
   // add device energy model to model list in energy source
   source->AppendDeviceEnergyModel (model);
 
   // retrieve device energy model from energy source
-  EnergySource::DeviceEnergyModelList modelList =
-    source->FindDeviceEnergyModels ("ns3::BasicRadioEnergyModel");
+  DeviceEnergyModelContainer models =
+    source->FindDeviceEnergyModels ("ns3::WifiRadioEnergyModel");
   // check list
-  NS_TEST_ASSERT_MSG_EQ (false, modelList.empty (), "Model list is empty!");
+  NS_TEST_ASSERT_MSG_EQ (false, (models.GetN () == 0), "Model list is empty!");
   // get pointer
-  Ptr<BasicRadioEnergyModel> devModel =
-    DynamicCast<BasicRadioEnergyModel> (modelList[0]);
+  Ptr<WifiRadioEnergyModel> devModel =
+      DynamicCast<WifiRadioEnergyModel> (models.Get (0));
   // check pointer
-  NS_TEST_ASSERT_MSG_NE (0, devModel, "NULL pointer to device model!");
+  NS_TEST_ASSERT_MSG_NE (NULL, devModel, "NULL pointer to device model!");
+
+  /*
+   * The radio will stay IDLE for m_timeS seconds. Then it will switch into a
+   * different state.
+   */
 
   // schedule change of state
   Simulator::Schedule (Seconds (m_timeS),
-                       &BasicRadioEnergyModel::UpdateRemainingEnergy, devModel, state);
+                       &WifiRadioEnergyModel::ChangeState, devModel, state);
 
   // run simulation
-  Simulator::Stop (Seconds (m_timeS * 2));  // run twice as long
+  Simulator::Stop (Seconds (m_timeS * 2));
   Simulator::Run ();
   Simulator::Destroy ();
 
-  // calculate estimated remaining energy
+  // energy = current * voltage * time
+
+  // calculate idle power consumption
   double estRemainingEnergy = source->GetInitialEnergy ();
-  estRemainingEnergy -= devModel->GetIdlePowerW () * m_timeS;
+  double voltage = source->GetSupplyVoltage ();
+  estRemainingEnergy -= devModel->GetIdleCurrentA () * voltage * m_timeS;
+
   /*
-   * Energy is updated periodically, hence we have to take into account of the
-   * update interval.
+   * Manually calculate the number of periodic updates performed by the source.
+   * This is to check if the periodic updates are performed correctly.
    */
   double actualTime = m_timeS;
-  actualTime /= devModel->GetEnergyUpdateInterval ().GetSeconds ();
+  actualTime /= source->GetEnergyUpdateInterval ().GetSeconds ();
   actualTime = floor (actualTime); // rounding for update interval
-  actualTime *= devModel->GetEnergyUpdateInterval ().GetSeconds ();
+  actualTime *= source->GetEnergyUpdateInterval ().GetSeconds ();
+
+  // calculate new state power consumption
+  double current = 0.0;
   switch (state)
     {
-    case RadioEnergyModel::TX:
-      estRemainingEnergy -= devModel->GetTxPowerW () * actualTime;
+    case WifiRadioEnergyModel::TX:
+      current = devModel->GetTxCurrentA ();
       break;
-    case RadioEnergyModel::RX:
-      estRemainingEnergy -= devModel->GetRxPowerW () * actualTime;
+    case WifiRadioEnergyModel::RX:
+      current = devModel->GetRxCurrentA ();
       break;
-    case RadioEnergyModel::IDLE:
-      estRemainingEnergy -= devModel->GetIdlePowerW () * actualTime;
+    case WifiRadioEnergyModel::IDLE:
+      current = devModel->GetIdleCurrentA ();
       break;
-    case RadioEnergyModel::SLEEP:
-      estRemainingEnergy -= devModel->GetSleepPowerW () * actualTime;
+    case WifiRadioEnergyModel::SLEEP:
+      current = devModel->GetSleepCurrentA ();
       break;
     default:
+      NS_FATAL_ERROR ("Undefined radio state: " << state);
       break;
     }
-  // obtain remaining energy
+  estRemainingEnergy -= current * voltage * m_timeS;
+
+  // obtain remaining energy from source
   double remainingEnergy = source->GetRemainingEnergy ();
-  NS_LOG_UNCOND ("Remaining energy is " << remainingEnergy << "\n"
-                                        << "Estimated remaining energy is " << estRemainingEnergy << "\n"
-                                        << "Difference is " << estRemainingEnergy - remainingEnergy);
+  NS_LOG_UNCOND ("Remaining energy is " << remainingEnergy);
+  NS_LOG_UNCOND ("Estimated remaining energy is " << estRemainingEnergy);
+  NS_LOG_UNCOND ("Difference is " << estRemainingEnergy - remainingEnergy);
   // check remaining energy
   NS_TEST_ASSERT_MSG_EQ_TOL (remainingEnergy, estRemainingEnergy, m_tolerance,
                              "Incorrect remaining energy!");
 
-
   // obtain radio state
-  RadioEnergyModel::RadioState endState = devModel->GetCurrentState ();
+  WifiRadioEnergyModel::WifiRadioState endState = devModel->GetCurrentState ();
   NS_LOG_UNCOND ("Radio state is " << endState);
   // check end state
   NS_TEST_ASSERT_MSG_EQ (endState, state,  "Incorrect end state!");
@@ -190,11 +212,11 @@ BasicEnergyUpdateTest::StateSwitchTest (
   return false; // no error
 }
 
-// ----------------------------------------------------------------------------//
+// -------------------------------------------------------------------------- //
 
 /**
  * Test case of energy depletion handling for BasicEnergySource and
- * BasicRadioEnergyModel.
+ * WifiRadioEnergyModel.
  */
 class BasicEnergyDepletionTest : public TestCase
 {
@@ -205,7 +227,9 @@ public:
 private:
   bool DoRun (void);
 
-  // / Callback invoked when energy is drained from source.
+  /**
+   * Callback invoked when energy is drained from source.
+   */
   void DepletionHandler (void);
 
   /**
@@ -218,7 +242,7 @@ private:
   bool DepletionTestCase (double simTimeS, double updateIntervalS);
 
 private:
-  int m_numOfModels;        // number of BasicRadioEnergyModel to install
+  int m_numOfNodes;         // number of nodes in simulation
   int m_callbackCount;      // counter for # of callbacks invoked
   double m_simTimeS;        // maximum simulation time, in seconds
   double m_timeStepS;       // simulation time step size, in seconds
@@ -229,7 +253,7 @@ private:
 BasicEnergyDepletionTest::BasicEnergyDepletionTest ()
   : TestCase ("Basic energy model energy depletion test case")
 {
-  m_numOfModels = 10;
+  m_numOfNodes = 10;
   m_callbackCount = 0;
   m_simTimeS = 4.5;
   m_timeStepS = 0.5;
@@ -274,7 +298,46 @@ BasicEnergyDepletionTest::DepletionTestCase (double simTimeS,
                                              double updateIntervalS)
 {
   // create node
-  Ptr<Node> node = CreateObject<Node> ();
+  NodeContainer c;
+  c.Create (m_numOfNodes);
+
+  std::string phyMode ("DsssRate1Mbps");
+
+  // disable fragmentation for frames below 2200 bytes
+  Config::SetDefault ("ns3::WifiRemoteStationManager::FragmentationThreshold",
+                      StringValue ("2200"));
+  // turn off RTS/CTS for frames below 2200 bytes
+  Config::SetDefault ("ns3::WifiRemoteStationManager::RtsCtsThreshold",
+                      StringValue ("2200"));
+  // Fix non-unicast data rate to be the same as that of unicast
+  Config::SetDefault ("ns3::WifiRemoteStationManager::NonUnicastMode",
+                      StringValue (phyMode));
+
+  // install YansWifiPhy
+  WifiHelper wifi;
+  wifi.SetStandard (WIFI_PHY_STANDARD_80211b);
+
+  YansWifiPhyHelper wifiPhy =  YansWifiPhyHelper::Default ();
+  /*
+   * This is one parameter that matters when using FixedRssLossModel, set it to
+   * zero; otherwise, gain will be added.
+   */
+  wifiPhy.Set ("RxGain", DoubleValue (0));
+  // ns-3 supports RadioTap and Prism tracing extensions for 802.11b
+  wifiPhy.SetPcapDataLinkType (YansWifiPhyHelper::DLT_IEEE802_11_RADIO);
+
+  YansWifiChannelHelper wifiChannel ;
+  wifiChannel.SetPropagationDelay ("ns3::ConstantSpeedPropagationDelayModel");
+  wifiPhy.SetChannel (wifiChannel.Create ());
+
+  // Add a non-QoS upper MAC, and disable rate control
+  NqosWifiMacHelper wifiMac = NqosWifiMacHelper::Default ();
+  wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager",
+                                "DataMode", StringValue(phyMode),
+                                "ControlMode", StringValue(phyMode));
+  // Set it to ad-hoc mode
+  wifiMac.SetType ("ns3::AdhocWifiMac");
+  NetDeviceContainer devices = wifi.Install (wifiPhy, wifiMac, c);
 
   /*
    * Create and install energy source and a single basic radio energy model on
@@ -284,57 +347,41 @@ BasicEnergyDepletionTest::DepletionTestCase (double simTimeS,
   BasicEnergySourceHelper basicSourceHelper;
   // set energy to 0 so that we deplete energy at the beginning of simulation
   basicSourceHelper.Set ("BasicEnergySourceInitialEnergyJ", DoubleValue (0.0));
-  // device energy model helper
-  BasicRadioEnergyModelHelper radioEnergyHelper;
   // set update interval
   Time updateInterval = Seconds (1.0);
-  radioEnergyHelper.Set ("PeriodicEnergyUpdateInterval",
+  basicSourceHelper.Set ("PeriodicEnergyUpdateInterval",
                          TimeValue (Seconds (updateIntervalS)));
+  // install source
+  EnergySourceContainer sources = basicSourceHelper.Install (c);
+
+  // device energy model helper
+  WifiRadioEnergyModelHelper radioEnergyHelper;
   // set energy depletion callback
-  BasicRadioEnergyModel::BasicEnergyDepletionCallback callback =
+  WifiRadioEnergyModel::WifiRadioEnergyDepletionCallback callback =
     MakeCallback (&BasicEnergyDepletionTest::DepletionHandler, this);
   radioEnergyHelper.SetDepletionCallback (callback);
-  // energy model helper
-  EnergyModelHelper energyHelper;
   // install on node
-  energyHelper.Install (basicSourceHelper, radioEnergyHelper, node);
-
-  // Install more basic radio energy models onto the same node, using helper
-  for (int i = 1; i < m_numOfModels; i++)
-    {
-      radioEnergyHelper.Install (node);
-    }
+  DeviceEnergyModelContainer deviceModels = radioEnergyHelper.Install (devices,
+                                                                       sources);
 
   // run simulation
   Simulator::Stop (Seconds (simTimeS));
   Simulator::Run ();
   Simulator::Destroy ();
 
-  /*
-   * Calculate total number of callbacks invoked. Taking the ceiling instead of
-   * the floor here because initial update is at time = 0.
-   */
-  double tmp = ceil (simTimeS / updateIntervalS);
-  int numOfUpdates = (tmp == 0) ? 1 : static_cast<int> (tmp);
-  /*
-   * Every update will trigger *all* DeviceEnergyModels to react, therefore the
-   * total count should be numOfUpdates * m_numOfModels ^ 2
-   */
-  int totalCallbackCount = numOfUpdates * m_numOfModels * m_numOfModels;
+  NS_LOG_UNCOND ("Simulation time = " << simTimeS << "s");
+  NS_LOG_UNCOND ("Update interval = " << updateIntervalS << "s");
+  NS_LOG_UNCOND ("Expected callback count is " << m_numOfNodes);
+  NS_LOG_UNCOND ("Actual callback count is " << m_callbackCount);
 
-  NS_LOG_UNCOND ("Simulation time = " << simTimeS << "s\n"
-                                      << "Update interval = " << updateIntervalS << "s\n"
-                                      << "Calculated callback count is " << totalCallbackCount << "\n"
-                                      << "Actual callback count is " << m_callbackCount);
-
-  // check result
-  NS_TEST_ASSERT_MSG_EQ (totalCallbackCount, m_callbackCount,
+  // check result, call back should only be invoked once
+  NS_TEST_ASSERT_MSG_EQ (m_numOfNodes, m_callbackCount,
                          "Not all callbacks are invoked!");
 
   return false;
 }
 
-// ----------------------------------------------------------------------------//
+// -------------------------------------------------------------------------- //
 
 /**
  * Unit test suite for energy model. Although the test suite involves 2 modules
@@ -348,11 +395,13 @@ public:
 };
 
 BasicEnergyModelTestSuite::BasicEnergyModelTestSuite ()
-  : TestSuite ("devices-basic-energy-model", UNIT)
+  : TestSuite ("basic-energy-model", UNIT)
 {
   AddTestCase (new BasicEnergyUpdateTest);
-  AddTestCase (new BasicEnergyDepletionTest);
+  //AddTestCase (new BasicEnergyDepletionTest);
 }
 
 // create an instance of the test suite
 BasicEnergyModelTestSuite g_energyModelTestSuite;
+
+} // namespace ns3

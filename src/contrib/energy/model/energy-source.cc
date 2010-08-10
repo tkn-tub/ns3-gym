@@ -44,77 +44,59 @@ EnergySource::~EnergySource ()
 {
 }
 
-double
-EnergySource::GetInitialEnergy (void) const
+void
+EnergySource::SetNode (Ptr<Node> node)
 {
-  return DoGetInitialEnergy ();
+  NS_LOG_FUNCTION (this << node);
+  NS_ASSERT (node != NULL);
+  m_node = node;
 }
 
-double
-EnergySource::GetRemainingEnergy (void) const
+Ptr<Node>
+EnergySource::GetNode (void) const
 {
-  return DoGetRemainingEnergy ();
+  NS_LOG_FUNCTION (this);
+  return m_node;
 }
 
 void
-EnergySource::DecreaseRemainingEnergy (double energyJ)
-{
-  DoDecreaseRemainingEnergy (energyJ);
-}
-
-void
-EnergySource::IncreaseRemainingEnergy (double energyJ)
-{
-  DoIncreaseRemainingEnergy (energyJ);
-}
-
-double
-EnergySource::GetEnergyFraction (void) const
-{
-  return DoGetEnergyFraction ();
-}
-
-void
-EnergySource::AppendDeviceEnergyModel (
-  Ptr<DeviceEnergyModel> deviceEnergyModelPtr)
+EnergySource::AppendDeviceEnergyModel (Ptr<DeviceEnergyModel> deviceEnergyModelPtr)
 {
   NS_LOG_FUNCTION (this << deviceEnergyModelPtr);
   NS_ASSERT (deviceEnergyModelPtr != NULL); // model must exist
-  m_deviceEnergyModelList.push_back (deviceEnergyModelPtr);
+  m_models.Add (deviceEnergyModelPtr);
 }
 
-EnergySource::DeviceEnergyModelList
+DeviceEnergyModelContainer
 EnergySource::FindDeviceEnergyModels (TypeId tid)
 {
   NS_LOG_FUNCTION (this << tid);
-  DeviceEnergyModelList list;
-  DeviceEnergyModelList::iterator listItr;
-  for (listItr = m_deviceEnergyModelList.begin ();
-       listItr != m_deviceEnergyModelList.end (); listItr++)
+  DeviceEnergyModelContainer container;
+  DeviceEnergyModelContainer::Iterator i;
+  for (i = m_models.Begin (); i != m_models.End (); i++)
     {
-      if ((*listItr)->GetInstanceTypeId () == tid)
+      if ((*i)->GetInstanceTypeId () == tid)
         {
-          list.push_back (*listItr);
+          container.Add (*i);
         }
     }
-  return list;
+  return container;
 }
 
-EnergySource::DeviceEnergyModelList
+DeviceEnergyModelContainer
 EnergySource::FindDeviceEnergyModels (std::string name)
 {
   NS_LOG_FUNCTION (this << name);
-  DeviceEnergyModelList list;
-  DeviceEnergyModelList::iterator listItr;
-  for (listItr = m_deviceEnergyModelList.begin ();
-       listItr != m_deviceEnergyModelList.end (); listItr++)
+  DeviceEnergyModelContainer container;
+  DeviceEnergyModelContainer::Iterator i;
+  for (i = m_models.Begin (); i != m_models.End (); i++)
     {
-      if ((*listItr)->GetInstanceTypeId ().GetName ().compare (name) == 0)
+      if ((*i)->GetInstanceTypeId ().GetName ().compare (name) == 0)
         {
-          list.push_back (*listItr);
+          container.Add (*i);
         }
     }
-  return list;
+  return container;
 }
 
 /*
@@ -125,25 +107,35 @@ void
 EnergySource::DoDispose (void)
 {
   NS_LOG_FUNCTION (this);
-  m_deviceEnergyModelList.clear (); // break reference cycle
+  m_models.Clear ();
 }
 
 /*
  * Protected functions start here.
  */
 
+double
+EnergySource::CalculateTotalCurrent (void)
+{
+  NS_LOG_FUNCTION (this);
+  double totalCurrentA = 0.0;
+  DeviceEnergyModelContainer::Iterator i;
+  for (i = m_models.Begin (); i != m_models.End (); i++)
+    {
+      totalCurrentA += (*i)->GetCurrentA ();
+    }
+  return totalCurrentA;
+}
+
 void
 EnergySource::NotifyEnergyDrained (void)
 {
   NS_LOG_FUNCTION (this);
   // notify all device energy models installed on node
-  DeviceEnergyModelList::iterator listItr;
-  for (listItr = m_deviceEnergyModelList.begin ();
-       listItr != m_deviceEnergyModelList.end (); listItr++)
+  DeviceEnergyModelContainer::Iterator i;
+  for (i = m_models.Begin (); i != m_models.End (); i++)
     {
-      NS_LOG_DEBUG ("BasicEnergySource:Notifying device energy model: "
-                    << (*listItr)->GetInstanceTypeId ());
-      (*listItr)->HandleEnergyDepletion ();
+      (*i)->HandleEnergyDepletion ();
     }
 }
 
@@ -151,7 +143,8 @@ void
 EnergySource::BreakDeviceEnergyModelRefCycle (void)
 {
   NS_LOG_FUNCTION (this);
-  m_deviceEnergyModelList.clear (); // break reference cycle
+  m_models.Clear ();
+  m_node = NULL;
 }
 
 } // namespace ns3

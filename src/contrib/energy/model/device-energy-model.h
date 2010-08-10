@@ -18,11 +18,13 @@
  * Authors: Sidharth Nabar <snabar@uw.edu>, He Wu <mdzz@u.washington.edu>
  */
 
-#ifndef DEVICE_ENERGY_MODEL
-#define DEVICE_ENERGY_MODEL
+#ifndef DEVICE_ENERGY_MODEL_H
+#define DEVICE_ENERGY_MODEL_H
 
 #include "ns3/object.h"
-#include "energy-source.h"
+#include "ns3/ptr.h"
+#include "ns3/type-id.h"
+#include "ns3/node.h"
 
 namespace ns3 {
 
@@ -39,58 +41,84 @@ class EnergySource;
 class DeviceEnergyModel : public Object
 {
 public:
+  /**
+   * Callback type for ChangeState function. Devices uses this state to notify
+   * DeviceEnergyModel of a state change.
+   */
+  typedef Callback<void, int> ChangeStateCallback;
+
+public:
   static TypeId GetTypeId (void);
   DeviceEnergyModel ();
   virtual ~DeviceEnergyModel ();
 
   /**
+   * \brief Sets pointer to node containing this EnergySource.
+   *
+   * \param node Pointer to node containing this EnergySource.
+   */
+  virtual void SetNode (Ptr<Node> node) = 0;
+
+  /**
+   * \brief Gets pointer to node containing this EnergySource.
+   *
+   * \returns Pointer to node containing this EnergySource.
+   */
+  virtual Ptr<Node> GetNode (void) const = 0;
+
+  /**
+   * \param source Pointer to energy source installed on node.
+   *
+   * This function sets the pointer to energy source installed on node. Should
+   * be called only by DeviceEnergyModel helper classes.
+   */
+  virtual void SetEnergySource (Ptr<EnergySource> source) = 0;
+
+  /**
+   * \returns Total energy consumption of the device.
+   *
+   * DeviceEnergyModel records its own energy consumption during simulation.
+   */
+  virtual double GetTotalEnergyConsumption (void) const = 0;
+
+  /**
+   * \param newState New state the device is in.
+   *
+   * DeviceEnergyModel is a state based model. This function is implemented by
+   * all child of DeviceEnergyModel to change the model's state. States are to
+   * be defined by each child using an enum (int).
+   */
+  virtual void ChangeState (int newState) = 0;
+
+  /**
+   * \returns Current draw of the device, in Ampere.
+   *
+   * This function returns the current draw at the device in its current state.
+   * This function is called from the EnergySource to obtain the total current
+   * draw at any given time during simulation.
+   */
+  double GetCurrentA (void) const;
+
+  /**
    * This function is called by the EnergySource object when energy stored in
    * the energy source is depleted. Should be implemented by child classes.
    */
-  void HandleEnergyDepletion (void);
+  virtual void HandleEnergyDepletion (void) = 0;
 
-  /// Sets the pointer to node energy source.
-  void SetEnergySource (Ptr<EnergySource> source);
 
 private:
-  /*
-   * Do not include DoStart in any child of this base class. DeviceEnergyModel
-   * is *not* aggregated to the node hence DoStart will *not* be called.
-   */
-
   /**
-   * All child's implementation must call BreakSourceRefCycle to ensure
-   * reference cycle to EnergySource object is broken.
-   */
-  void DoDispose (void);
-
-  /// Implements HandleEnergyDepletion.
-  virtual void DoHandleEnergyDepletion (void) = 0;
-
-private:
-  /// Pointer to EnergySource object
-  Ptr<EnergySource> m_energySourcePtr;
-
-protected:
-  /// This function is used to access the private energy source pointer.
-  void DecreaseRemainingEnergy (double energyJ);
-
-  /// This function is used to access the private energy source pointer.
-  void IncreaseRemainingEnergy (double energyJ);
-
-  /**
-   * This function is called to break reference cycle between DeviceEnergyModel
-   * and EnergySource. Child of the DeviceEnergyModel base class must call this
-   * function in their implementation of DoDispose to make sure the reference
-   * cycle is broken.
+   * \returns 0.0 as the current value, in Ampere.
    *
-   * Normally this work will be completed by the DoDispose function. However it
-   * will be overridden in the child class. Hence we introduced this function.
+   * Child class does not have to implement this method if current draw for its
+   * states are not know. This default method will always return 0.0A. For the
+   * devices who does know the current draw of its states, this method must be
+   * overwritten.
    */
-  void BreakSourceRefCycle (void);
+  virtual double DoGetCurrentA (void) const;
 
 };
 
 }
 
-#endif /* DEVICE_ENERGY_MODEL */
+#endif /* DEVICE_ENERGY_MODEL_H */

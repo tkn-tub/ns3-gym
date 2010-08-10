@@ -18,14 +18,13 @@
  * Authors: Sidharth Nabar <snabar@uw.edu>, He Wu <mdzz@u.washington.edu>
  */
 
-#ifndef BASIC_ENERGY_SOURCE_HELPER
-#define BASIC_ENERGY_SOURCE_HELPER
+#ifndef BASIC_ENERGY_SOURCE_HELPER_H
+#define BASIC_ENERGY_SOURCE_HELPER_H
 
 #include "energy-model-helper.h"
+#include "ns3/node.h"
 
 namespace ns3 {
-
-class Node;
 
 /**
  * \brief Creates a BasicEnergySource object.
@@ -38,9 +37,8 @@ public:
 
   void Set (std::string name, const AttributeValue &v);
 
-  Ptr<EnergySource> Create (void) const;
-
-  void Install (Ptr<Node> node) const;
+private:
+  virtual Ptr<EnergySource> DoInstall (Ptr<Node> node) const;
 
 private:
   ObjectFactory m_basicEnergySource;
@@ -49,4 +47,4 @@ private:
 
 } // namespace ns3
 
-#endif  /* BASIC_ENERGY_SOURCE_HELPER */
+#endif  /* BASIC_ENERGY_SOURCE_HELPER_H */
