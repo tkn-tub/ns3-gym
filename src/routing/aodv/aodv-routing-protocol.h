@@ -180,7 +180,7 @@ private:
   /// Process hello message
   void ProcessHello (RrepHeader const & rrepHeader, Ipv4Address receiverIfaceAddr);
   /// Create loopback route for given header
-  Ptr<Ipv4Route> LoopbackRoute (const Ipv4Header & header) const;
+  Ptr<Ipv4Route> LoopbackRoute (const Ipv4Header & header, Ptr<NetDevice> oif) const;
   
   ///\name Receive control packets
   //\{
