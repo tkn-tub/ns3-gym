@@ -107,6 +107,7 @@ Simulator version:
 * Wifi NetDevice::
 * Mesh NetDevice::
 * Bridge NetDevice::
+* Wimax NetDevice::
 * Emulation::
 * Emu NetDevice::
 * Tap NetDevice::
@@ -156,6 +157,7 @@ Simulator version:
 @include wifi.texi
 @include mesh.texi
 @include bridge.texi
+@include wimax.texi
 
 @unnumbered Part 3:  Emulation
 @setchapternewpage off

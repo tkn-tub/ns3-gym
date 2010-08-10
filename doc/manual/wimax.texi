@@ -1,5 +1,5 @@
-@node WimaxNetDevice
-@chapter WimaxNetDevice
+@node Wimax NetDevice
+@chapter Wimax NetDevice
 @anchor{chap:wimax}
 
 This chapter describes the ns-3 WimaxNetDevice and related models.  By
