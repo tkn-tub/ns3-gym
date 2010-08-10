@@ -50,29 +50,40 @@ us a note on ns-developers mailing list.  </p>
 
 <h2>New API:</h2>
 <ul>
-<li><b>Wifi set block ack threshold:"</b> Two methods for setting block ack
+<li><b>Wifi set block ack threshold:</b> Two methods for setting block ack
 parameters for a specific access class: 
 <pre>
 void QosWifiMacHelper::SetBlockAckThresholdForAc (enum AccessClass accessClass, uint8_t threshold);
 void QosWifiMacHelper::SetBlockAckInactivityTimeoutForAc (enum AccessClass accessClass, uint16_t timeout);
 </pre>
-</ul>
-<ul><b>Receive List Error Model:"</b>  Another basic error model that allows
+</li>
+<li><b>Receive List Error Model:</b>  Another basic error model that allows
 the user to specify a list of received packets that should be errored.  The
 list corresponds not to the packet UID but to the sequence of received
 packets as observed by the error model.   See src/common/error-model.h
-</ul>
-<ul><b>Respond to interface events:"</b> New attribute for Ipv4GlobalRouting,
+</li>
+<li><b>Respond to interface events:</b> New attribute for Ipv4GlobalRouting,
 "RespondToInterfaceEvents", which when enabled, will cause global routes
 to be recomputed upon any interface or address notification event from IPv4.
-</ul>
-<ul><b>Generic sequence number:"</b> New generic sequence number class to 
+</li>
+<li><b>Generic sequence number:</b> New generic sequence number class to 
 easily handle comparison, subtraction, etc. for sequence numbers.  
 To use it you need to supply two fundamental types as template parameters: 
-NUMERIC_TYPE and SIGNED_TYPE.  For instance, SequenceNumber<uint32_t, int32_t> 
-gives you a 32-bit sequence number, while SequenceNumber<uint16_t, int16_t> 
+NUMERIC_TYPE and SIGNED_TYPE.  For instance, <tt>SequenceNumber&lt;uint32_t, int32_t&gt;</tt> 
+gives you a 32-bit sequence number, while <tt>SequenceNumber&lt;uint16_t, int16_t&gt;</tt> 
 is a 16-bit one.  For your convenience, these are typedef'ed as 
-SequenceNumber32 and SequenceNumber16, respectively.
+<tt>SequenceNumber32</tt> and <tt>SequenceNumber16</tt>, respectively.
+</li>
+
+<li><b>Broadcast socket option:</b> New Socket
+methods <tt>SetAllowBroadcast</tt> and <tt>GetAllowBroadcast</tt> add
+to NS-3 <tt>Socket</tt>'s the equivalent to the POSIX SO_BROADCAST
+socket option (setsockopt/getsockopt).  Starting from this NS-3
+version, IPv4 sockets do not allow us to send packets to broadcast
+destinations by default; SetAllowBroadcast must be called beforehand
+if we wish to send broadcast packets.
+</li>
+
 </ul>
 
 <h2>Changes to existing API:</h2>
@@ -96,7 +107,7 @@ Std. 802.11-2007. Currently-supported options for <em>Cccc</em>
 are <em>Ofdm</em> and <em>Dsss</em>. For modulation classes where
 optional reduced-bandwidth transmission is possible, this is captured
 in the final part of the form above, with <em>b</em> specifying the
-nominal signal bandwidth in megahertz.
+nominal signal bandwidth in megahertz. </li>
 
 <li><b>Consolidation of classes support Wi-Fi Information Elements:</b>
 When the <em>mesh</em> module was introduced it added a class
@@ -105,7 +116,7 @@ required. In this release, this class hierarchy has extended by moving
 the base classes (WifiInformationElement and
 WifiInformationElementVector) into the <em>wifi</em> module. This
 change is intended to ease the addition of support for modelling of
-further Wi-Fi functionality.
+further Wi-Fi functionality. </li>
 </ul>
 
 <h2>Changed behavior:</h2>
@@ -125,7 +136,7 @@ will add ascii traces (drops) in Ipv4 and Ipv6 traces for forwarding failures
 Adopted more conservative ErrorRateModel for OFDM modulation types (a/g).
 This will require 4 to 5 more dB of received power to get similar results
 as before, so users may observe a reduced WiFi range when using the defaults.
-See tracker issie 944 for more details.
+See tracker issue 944 for more details.
 </ul>
 
 <hr>
