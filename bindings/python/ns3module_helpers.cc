@@ -285,7 +285,15 @@ _wrap_Simulator_Run(PyNs3Simulator *PYBINDGEN_UNUSED(dummy), PyObject *args, PyO
                     PyObject **return_exception)
 {
     const char *keywords[] = {"signal_check_frequency", NULL};
-    int signal_check_frequency = 100;
+    int signal_check_frequency;
+
+    ns3::Ptr<ns3::DefaultSimulatorImpl> defaultSim =
+        ns3::DynamicCast<ns3::DefaultSimulatorImpl> (ns3::Simulator::GetImplementation ());
+    if (defaultSim) {
+        signal_check_frequency = 100;
+    } else {
+        signal_check_frequency = -1;
+    }
     
     if (!PyArg_ParseTupleAndKeywords(args, kwargs, (char *) "|i", (char **) keywords, &signal_check_frequency)) {
         PyObject *exc_type, *traceback;
