@@ -933,7 +933,7 @@ void Ipv6L3Protocol::IpMulticastForward (Ptr<Ipv6MulticastRoute> mrtentry, Ptr<c
           rtentry->SetGateway (Ipv6Address::GetAny ());
           rtentry->SetOutputDevice (GetNetDevice (i));
           SendRealOut (rtentry, packet, h);
-          return;
+          continue;
         }
     }
 }

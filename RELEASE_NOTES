@@ -103,6 +103,7 @@ many cases referencing the Bugzilla bug number
    - bug 906 - NSC TCP socket fork did not copy txbuffersize over
    - bug 908 - test.py should exit if waf dies
    - bug 910 - Change Wi-Fi "AccessClass" to something closer to the standard
+   - bug 911 - IPv4/v6 multicast forwarding not going to all output interfaces
    - bug 913 - Queue Enqueue/Drop trace sources behavior unintuitive
    - bug 916 - EnableAsciiAll ("prefix") does not work for YansWifiPhyHelper
    - bug 918 - samples/main-packet-header.cc is broken

@@ -769,7 +769,7 @@ Ipv4L3Protocol::IpMulticastForward (Ptr<Ipv4MulticastRoute> mrtentry, Ptr<const 
           rtentry->SetGateway (Ipv4Address::GetAny ());
           rtentry->SetOutputDevice (GetNetDevice (i));
           SendRealOut (rtentry, packet, h);
-          return; 
+          continue; 
         }
     }
 }
