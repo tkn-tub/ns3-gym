@@ -23,7 +23,8 @@ IMAGES_EPS = \
 	$(FIGURES)/testbed.eps \
 	$(FIGURES)/emulated-channel.eps \
 	$(FIGURES)/snir.eps \
-	$(DOC_FIGURES)/WifiArchitecture.eps
+	$(DOC_FIGURES)/WifiArchitecture.eps \
+	$(DOC_FIGURES)/WimaxArchitecture.eps
 
 IMAGES_PNG = ${IMAGES_EPS:.eps=.png}
 IMAGES_PDF = ${IMAGES_EPS:.eps=.pdf}
