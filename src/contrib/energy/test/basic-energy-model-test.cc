@@ -140,7 +140,7 @@ BasicEnergyUpdateTest::StateSwitchTest (
   Ptr<WifiRadioEnergyModel> devModel =
       DynamicCast<WifiRadioEnergyModel> (models.Get (0));
   // check pointer
-  NS_TEST_ASSERT_MSG_NE (NULL, devModel, "NULL pointer to device model!");
+  NS_TEST_ASSERT_MSG_NE (0, devModel, "NULL pointer to device model!");
 
   /*
    * The radio will stay IDLE for m_timeS seconds. Then it will switch into a
