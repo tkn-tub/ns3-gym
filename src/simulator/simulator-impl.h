@@ -35,6 +35,8 @@ class Scheduler;
 class SimulatorImpl : public Object
 {
 public:
+  static TypeId GetTypeId (void);
+
   /**
    * Every event scheduled by the Simulator::insertAtDestroy method is
    * invoked. Then, we ensure that any memory allocated by the 

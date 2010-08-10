@@ -112,49 +112,15 @@ Synchronizer::EventEnd (void)
   uint64_t
 Synchronizer::TimeStepToNanosecond (uint64_t ts)
 {
-  switch (TimeStepPrecision::Get ()) {
-  case TimeStepPrecision::S:
-    return ts * 1000000000;
-  case TimeStepPrecision::MS:
-    return ts * 1000000;
-  case TimeStepPrecision::US:
-    return ts * 1000;
-  case TimeStepPrecision::NS:
-    return ts;
-  case TimeStepPrecision::PS:
-    return ts / 1000;
-  case TimeStepPrecision::FS:
-    return ts / 1000000;
-  default:
-    NS_ASSERT_MSG (false, "Synchronizer::TimeStepToNanosecond: "
-        "Unexpected precision not implemented");
-    return 0;
-  }
+  return TimeStep (ts).GetNanoSeconds ();
 }
 
   uint64_t
 Synchronizer::NanosecondToTimeStep (uint64_t ns)
 {
-  switch (TimeStepPrecision::Get ()) {
-  case TimeStepPrecision::S:
-    return ns / 1000000000;
-  case TimeStepPrecision::MS:
-    return ns / 1000000;
-  case TimeStepPrecision::US:
-    return ns / 1000;
-  case TimeStepPrecision::NS:
-    return ns;
-  case TimeStepPrecision::PS:
-    return ns * 1000;
-  case TimeStepPrecision::FS:
-    return ns * 1000000;
-  default:
-    NS_ASSERT_MSG (false, "Synchronizer::NanosecondToTimeStep: "
-        "Unexpected precision not implemented");
-    return 0;
-  }
+  return NanoSeconds (ns).GetTimeStep ();
 }
 
-}; // namespace ns3
+} // namespace ns3
 
 

@@ -19,17 +19,31 @@
  */
 #include "high-precision-cairo.h"
 #include "ns3/test.h"
-#include "ns3/fatal-error.h"
+#include "ns3/abort.h"
+#include "ns3/assert.h"
 #include <math.h>
 #include <iostream>
 
 namespace ns3 {
 
+
+#define OUTPUT_SIGN(sa,sb,ua,ub)                                        \
+  ({bool negA, negB;                                                    \
+  negA = _cairo_int128_negative (sa);                                   \
+  negB = _cairo_int128_negative (sb);                                   \
+  ua = _cairo_int128_to_uint128 (sa);                                   \
+  ub = _cairo_int128_to_uint128 (sb);                                   \
+  ua = negA ? _cairo_uint128_negate (ua) : ua;                          \
+  ub = negB ? _cairo_uint128_negate (ub) : ub;                          \
+  (negA && !negB) || (!negA && negB);})
+
 void
 HighPrecision::Mul (HighPrecision const &o)
 {
-  // use the 128 bits multiplication
-  m_value = Mul128 (m_value,o.m_value);
+  cairo_uint128_t a, b, result;
+  bool sign = OUTPUT_SIGN (m_value, o.m_value, a, b);
+  result = Umul (a, b);
+  m_value = sign ? _cairo_uint128_negate (result) : result;
 }
 
 
@@ -39,22 +53,9 @@ HighPrecision::Mul (HighPrecision const &o)
  * as the fractional part. It takes into account the sign
  * of the operands to produce a signed 128 bits result.
  */
-cairo_int128_t
-HighPrecision::Mul128 (cairo_int128_t sa, cairo_int128_t sb ) const
+cairo_uint128_t
+HighPrecision::Umul (cairo_uint128_t a, cairo_uint128_t b)
 {
-  bool negResult, negA, negB;
-
-  negA = _cairo_int128_negative (sa);
-  negB = _cairo_int128_negative (sb);
-  // the result is negative only if one of the operand is negative
-  negResult = (negA && !negB) || (!negA && negB);
-  // now take the absolute part to make sure that the resulting operands are positive
-  cairo_uint128_t a, b;
-  a = _cairo_int128_to_uint128 (sa);
-  b = _cairo_int128_to_uint128 (sb);
-  a = negA ? _cairo_uint128_negate (a) : a;
-  b = negB ? _cairo_uint128_negate (b) : b;
-
   cairo_uint128_t result;
   cairo_uint128_t hiPart,loPart,midPart;
 
@@ -73,38 +74,23 @@ HighPrecision::Mul128 (cairo_int128_t sa, cairo_int128_t sb ) const
   // truncate the high part and only use the low part
   result.hi = _cairo_uint64_add (hiPart.lo,midPart.hi);
   // if the high part is not zero, put a warning
-  if (hiPart.hi != 0)
-    {
-      NS_FATAL_ERROR ("High precision 128 bits multiplication error: multiplication overflow.");
-    }
-  // add the sign to the result
-  result = negResult ? _cairo_uint128_negate (result) : result;
-  return _cairo_uint128_to_int128 (result);
+  NS_ABORT_MSG_IF (hiPart.hi != 0,
+                   "High precision 128 bits multiplication error: multiplication overflow.");
+  return result;
 }
 
 void
 HighPrecision::Div (HighPrecision const &o)
 {
-  cairo_int128_t result = Div128 (m_value, o.m_value);
-  m_value = result;
+  cairo_uint128_t a, b, result;
+  bool sign = OUTPUT_SIGN (m_value, o.m_value, a, b);
+  result = Udiv (a, b);
+  m_value = sign ? _cairo_uint128_negate (result) : result;
 }
 
-cairo_int128_t
-HighPrecision::Div128 (cairo_int128_t sa, cairo_int128_t sb) const
+cairo_uint128_t
+HighPrecision::Udiv (cairo_uint128_t a, cairo_uint128_t b)
 {
-  bool negResult, negA, negB;
-  // take the sign of the operands
-  negA = _cairo_int128_negative (sa);
-  negB = _cairo_int128_negative (sb);
-  // the result is negative only if one of the operand is negative
-  negResult = (negA && !negB) || (!negA && negB);
-  // now take the absolute part to make sure that the resulting operands are positive
-  cairo_uint128_t a, b;
-  a = _cairo_int128_to_uint128 (sa);
-  b = _cairo_int128_to_uint128 (sb);
-  a = negA ? _cairo_uint128_negate (a) : a;
-  b = negB ? _cairo_uint128_negate (b) : b;
-
   cairo_uquorem128_t qr = _cairo_uint128_divrem (a, b);
   cairo_uint128_t result = _cairo_uint128_lsl (qr.quo, 64);
   // Now, manage the remainder
@@ -123,9 +109,56 @@ HighPrecision::Div128 (cairo_int128_t sa, cairo_int128_t sb) const
     }
   qr = _cairo_uint128_divrem (rem, div);
   result = _cairo_uint128_add (result, qr.quo);
-  result = negResult ? _cairo_uint128_negate (result) : result;
-  return _cairo_uint128_to_int128 (result);
+  return result;
 }
+
+void 
+HighPrecision::MulByInvert (const HighPrecision &o)
+{
+  bool negResult = _cairo_int128_negative (m_value);
+  cairo_uint128_t a = negResult?_cairo_int128_negate(m_value):m_value;
+  cairo_uint128_t result = UmulByInvert (a, o.m_value);
+
+  m_value = negResult?_cairo_int128_negate(result):result;
+}
+cairo_uint128_t
+HighPrecision::UmulByInvert (cairo_uint128_t a, cairo_uint128_t b)
+{
+  cairo_uint128_t result;
+  cairo_uint128_t hi, mid;
+  hi = _cairo_uint64x64_128_mul (a.hi, b.hi);
+  mid = _cairo_uint128_add (_cairo_uint64x64_128_mul (a.hi, b.lo),
+                           _cairo_uint64x64_128_mul (a.lo, b.hi));
+  mid.lo = mid.hi;
+  mid.hi = 0;
+  result = _cairo_uint128_add (hi,mid);
+  return result;
+}
+HighPrecision 
+HighPrecision::Invert (uint64_t v)
+{
+  NS_ASSERT (v > 1);
+  cairo_uint128_t a, factor;
+  a.hi = 1;
+  a.lo = 0;
+  factor.hi = 0;
+  factor.lo = v;
+  HighPrecision result;
+  result.m_value = Udiv (a, factor);
+  HighPrecision tmp = HighPrecision (v, false);
+  tmp.MulByInvert (result);
+  if (tmp.GetInteger () != 1)
+    {
+      cairo_uint128_t one = {1, 0};
+      result.m_value = _cairo_uint128_add (result.m_value, one);
+    }
+  return result;
+}
+
 
 } // namespace ns3
 
+// include directly to allow optimizations within the compilation unit.
+extern "C" {
+#include "cairo-wideint.c"
+}

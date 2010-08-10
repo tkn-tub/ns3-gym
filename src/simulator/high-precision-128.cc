@@ -1,29 +1,58 @@
 #include "high-precision-128.h"
-#include "ns3/fatal-error.h"
+#include "ns3/abort.h"
+#include "ns3/assert.h"
 #include <math.h>
+#ifdef COUNT_OPS
+#include <iostream>
+#endif
 
 namespace ns3 {
+
+#ifdef COUNT_OPS
+uint128_t HighPrecision::g_nAdd = 0;
+uint128_t HighPrecision::g_nMuli = 0;
+uint128_t HighPrecision::g_nMul = 0;
+uint128_t HighPrecision::g_nDiv = 0;
+uint128_t HighPrecision::g_nCmp = 0;
+HighPrecision::Printer  HighPrecision::g_printer;
+HighPrecision::Printer::~Printer ()
+{
+  std::cout << "add=" << (double)g_nAdd << " mul=" << (double)g_nMul << " div=" << (double)g_nDiv
+	    << " muli=" << (double)g_nMuli << " cmp=" << (double)g_nCmp;
+}
+#endif
+
+#define OUTPUT_SIGN(sa,sb,ua,ub)					\
+  ({bool negA, negB;							\
+    negA = sa < 0;							\
+    negB = sb < 0;							\
+    ua = negA?-sa:sa;							\
+    ub = negB?-sb:sb;							\
+    (negA && !negB) || (!negA && negB);})
+
 
 #define MASK_LO ((((uint128_t)1)<<64)-1)
 #define MASK_HI (~MASK_LO)
 void
 HighPrecision::Mul (HighPrecision const &o)
 {
-  bool negResult, negA, negB;
-    // take the sign of the operands
-  negA = m_value < 0;
-  negB = o.m_value < 0;
-  // the result is negative only if one of the operand is negative
-  negResult = (negA && !negB) || (!negA && negB);
-  // now take the absolute part to make sure that the resulting operands are positive
+  bool negResult;
   uint128_t a, b;
-  a = negA?-m_value:m_value;
-  b = negB?-o.m_value:o.m_value;
+  negResult = OUTPUT_SIGN (m_value, o.m_value, a, b);
+  int128_t result = Umul (a, b);
+  // add the sign to the result
+  result = negResult ? -result : result;
+  m_value = result;
+}
+
+uint128_t
+HighPrecision::Umul (uint128_t a, uint128_t b)
+{
+  INC_MUL;
   uint128_t aL = a & MASK_LO;
   uint128_t bL = b & MASK_LO;
   uint128_t aH = (a >> 64) & MASK_LO;
   uint128_t bH = (b >> 64) & MASK_LO;
-
 
   uint128_t result;
   uint128_t hiPart,loPart,midPart;
@@ -42,28 +71,25 @@ HighPrecision::Mul (HighPrecision const &o)
   // truncate the high part and only use the low part
   result |= ((hiPart & MASK_LO) << 64) + (midPart & MASK_HI);
   // if the high part is not zero, put a warning
-  if ((hiPart & MASK_HI) != 0)
-    {
-      NS_FATAL_ERROR ("High precision 128 bits multiplication error: multiplication overflow.");
-    }
-  // add the sign to the result
-  result = negResult ? -result:result;
-  m_value = result;
+  NS_ABORT_MSG_IF ((hiPart & MASK_HI) != 0,
+		   "High precision 128 bits multiplication error: multiplication overflow.");
+  return result;
 }
 void
 HighPrecision::Div (HighPrecision const &o)
 {
-  bool negResult, negA, negB;
-    // take the sign of the operands
-  negA = m_value < 0;
-  negB = o.m_value < 0;
-  // the result is negative only if one of the operand is negative
-  negResult = (negA && !negB) || (!negA && negB);
-  // now take the absolute part to make sure that the resulting operands are positive
+  bool negResult;
   uint128_t a, b;
-  a = negA?-m_value:m_value;
-  b = negB?-o.m_value:o.m_value;
+  negResult = OUTPUT_SIGN (m_value, o.m_value, a, b);  
+  int128_t result = Divu (a, b);
+  result = negResult ? -result:result;
+  m_value = result;
+}
 
+uint128_t
+HighPrecision::Divu (uint128_t a, uint128_t b)
+{
+  INC_DIV;
   uint128_t quo = a / b;
   uint128_t rem = (a % b);
   uint128_t result = quo << 64;
@@ -82,8 +108,50 @@ HighPrecision::Div (HighPrecision const &o)
     }
   quo = rem / div;
   result = result + quo;
-  result = negResult ? -result:result;
-  m_value = result;
+  return result;
+}
+
+void 
+HighPrecision::MulByInvert (const HighPrecision &o)
+{
+  bool negResult = m_value < 0;
+  uint128_t a = negResult?-m_value:m_value;
+  uint128_t result = UmulByInvert (a, o.m_value);
+
+  m_value = negResult?-result:result;
+}
+uint128_t
+HighPrecision::UmulByInvert (uint128_t a, uint128_t b)
+{
+  INC_MULI;
+  uint128_t result, ah, bh, al, bl;
+  uint128_t hi, mid;
+  ah = a >> 64;
+  bh = b >> 64;
+  al = a & MASK_LO;
+  bl = b & MASK_LO;
+  hi = ah * bh;
+  mid = ah * bl + al * bh;
+  mid >>= 64;
+  result = ah * bh + mid;
+  return result;
+}
+HighPrecision 
+HighPrecision::Invert (uint64_t v)
+{
+  NS_ASSERT (v > 1);
+  uint128_t a;
+  a = 1;
+  a <<= 64;
+  HighPrecision result;
+  result.m_value = Divu (a, v);
+  HighPrecision tmp = HighPrecision (v, false);
+  tmp.MulByInvert (result);
+  if (tmp.GetInteger () != 1)
+    {
+      result.m_value += 1;
+    }
+  return result;
 }
 
 } // namespace ns3

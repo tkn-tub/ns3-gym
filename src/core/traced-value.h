@@ -67,26 +67,14 @@ public:
     Set (o.m_v);
     return *this;
   }
-  TracedValue (const IntegerValue &value) 
-    : m_v (value.Get ()) {}
-  operator IntegerValue () const {
-    return IntegerValue (m_v);
-  }
-  TracedValue (const UintegerValue &value)
-    : m_v (value.Get ()) {}
-  operator UintegerValue () const {
-    return UintegerValue (m_v);
-  }
-  TracedValue (const BooleanValue &value)
-    : m_v (value.Get ()) {}
-  operator BooleanValue () const {
-    return BooleanValue (m_v);
-  }
-  TracedValue (const EnumValue &value)
-    : m_v (value.Get ()) {}
-  operator EnumValue () const {
-    return EnumValue (m_v);
-  }
+  template <typename U>
+  TracedValue (const TracedValue<U> &other)
+    : m_v (other.m_v)
+  {}
+  template <typename U>
+  TracedValue (const U &other)
+    : m_v ((T)other)
+  {}
   void ConnectWithoutContext (const CallbackBase &cb) {
     m_cb.ConnectWithoutContext (cb);
   }
