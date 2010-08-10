@@ -35,7 +35,7 @@
 #include "ns3/nqos-wifi-mac-helper.h"
 #include <math.h>
 
-namespace ns3 {
+using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("BasicEnergyModelTestSuite");
 
@@ -404,4 +404,3 @@ BasicEnergyModelTestSuite::BasicEnergyModelTestSuite ()
 // create an instance of the test suite
 BasicEnergyModelTestSuite g_energyModelTestSuite;
 
-} // namespace ns3
