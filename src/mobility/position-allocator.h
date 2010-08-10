@@ -162,7 +162,7 @@ private:
 };
 
 /**
- * \infroup mobility
+ * \ingroup mobility
  * \brief Allocate random positions within a rectangle according to a pair of random variables.
  */
 class RandomRectanglePositionAllocator : public PositionAllocator
