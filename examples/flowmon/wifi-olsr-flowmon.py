@@ -19,7 +19,7 @@
 import sys
 import ns3
 
-DISTANCE = 150 # (m)
+DISTANCE = 100 # (m)
 NUM_NODES_SIDE = 3
 
 def main(argv):
