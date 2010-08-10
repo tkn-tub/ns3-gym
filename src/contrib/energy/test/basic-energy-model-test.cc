@@ -208,6 +208,7 @@ BasicEnergyUpdateTest::StateSwitchTest (
   NS_LOG_UNCOND ("Radio state is " << endState);
   // check end state
   NS_TEST_ASSERT_MSG_EQ (endState, state,  "Incorrect end state!");
+  Simulator::Destroy ();
 
   return false; // no error
 }
