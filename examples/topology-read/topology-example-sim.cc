@@ -119,7 +119,7 @@ int main (int argc, char *argv[])
   int totlinks = inFile->LinksSize ();
 
   NS_LOG_INFO ("creating node containers");
-  NodeContainer nc[totlinks];
+  NodeContainer* nc = new NodeContainer[totlinks];
   TopologyReader::ConstLinksIterator iter;
   int i = 0;
   for ( iter = inFile->LinksBegin (); iter != inFile->LinksEnd (); iter++, i++ )
@@ -128,7 +128,7 @@ int main (int argc, char *argv[])
     }
 
   NS_LOG_INFO ("creating net device containers");
-  NetDeviceContainer ndc[totlinks];
+  NetDeviceContainer* ndc = new NetDeviceContainer[totlinks];
   PointToPointHelper p2p;
   for (int i = 0; i < totlinks; i++)
     {
@@ -140,7 +140,7 @@ int main (int argc, char *argv[])
 
   // it crates little subnets, one for each couple of nodes.
   NS_LOG_INFO ("creating ipv4 interfaces");
-  Ipv4InterfaceContainer ipic[totlinks];
+  Ipv4InterfaceContainer* ipic = new Ipv4InterfaceContainer[totlinks];
   for (int i = 0; i < totlinks; i++)
     {
       ipic[i] = address.Assign (ndc[i]);
@@ -199,6 +199,10 @@ int main (int argc, char *argv[])
   NS_LOG_INFO ("Run Simulation.");
   Simulator::Run ();
   Simulator::Destroy ();
+
+  delete[] ipic;
+  delete[] ndc;
+  delete[] nc;
 
   NS_LOG_INFO ("Done.");
 
