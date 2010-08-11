@@ -411,8 +411,8 @@ void Ipv6ExtensionFragment::GetFragments (Ptr<Packet> packet, uint32_t maxFragme
           nextHeader = hopbyhopHeader->GetNextHeader ();
           extensionHeaderLength = hopbyhopHeader->GetLength ();
 
-	  uint8_t type;
-	  p->CopyData (&type, sizeof(type));
+          uint8_t type;
+          p->CopyData (&type, sizeof(type));
 
           if (!(nextHeader == Ipv6Header::IPV6_EXT_HOP_BY_HOP || nextHeader == Ipv6Header::IPV6_EXT_ROUTING
                 || (nextHeader == Ipv6Header::IPV6_EXT_DESTINATION && type == Ipv6Header::IPV6_EXT_ROUTING)))
@@ -426,8 +426,8 @@ void Ipv6ExtensionFragment::GetFragments (Ptr<Packet> packet, uint32_t maxFragme
         }
       else if (nextHeader == Ipv6Header::IPV6_EXT_ROUTING) 
         {
-	  uint8_t buf[2];  
-	  p->CopyData (buf, sizeof(buf));
+          uint8_t buf[2];
+          p->CopyData (buf, sizeof(buf));
           uint8_t numberAddress = buf[1] / 2;
           Ipv6ExtensionLooseRoutingHeader *routingHeader = new Ipv6ExtensionLooseRoutingHeader ();
           routingHeader->SetNumberAddress (numberAddress);
@@ -436,8 +436,8 @@ void Ipv6ExtensionFragment::GetFragments (Ptr<Packet> packet, uint32_t maxFragme
           nextHeader = routingHeader->GetNextHeader ();
           extensionHeaderLength = routingHeader->GetLength ();
 
-	  uint8_t type;
-	  p->CopyData (&type, sizeof(type));
+          uint8_t type;
+          p->CopyData (&type, sizeof(type));
           if (!(nextHeader == Ipv6Header::IPV6_EXT_HOP_BY_HOP || nextHeader == Ipv6Header::IPV6_EXT_ROUTING
                 || (nextHeader == Ipv6Header::IPV6_EXT_DESTINATION && type == Ipv6Header::IPV6_EXT_ROUTING)))
             {
@@ -456,8 +456,8 @@ void Ipv6ExtensionFragment::GetFragments (Ptr<Packet> packet, uint32_t maxFragme
           nextHeader = destinationHeader->GetNextHeader ();
           extensionHeaderLength = destinationHeader->GetLength ();
 
-	  uint8_t type;
-	  p->CopyData (&type, sizeof(type));
+          uint8_t type;
+          p->CopyData (&type, sizeof(type));
           if (!(nextHeader == Ipv6Header::IPV6_EXT_HOP_BY_HOP || nextHeader == Ipv6Header::IPV6_EXT_ROUTING 
                 || (nextHeader == Ipv6Header::IPV6_EXT_DESTINATION && type == Ipv6Header::IPV6_EXT_ROUTING)))
             {
@@ -589,7 +589,7 @@ bool Ipv6ExtensionFragment::Fragments::IsEntire () const
               break;
             }
 
-          lastEndOffset += it->first->GetSize ();				
+          lastEndOffset += it->first->GetSize ();
         }
     }
 
