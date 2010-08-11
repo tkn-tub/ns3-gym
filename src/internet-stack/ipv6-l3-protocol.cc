@@ -954,10 +954,10 @@ void Ipv6L3Protocol::LocalDeliver (Ptr<const Packet> packet, Ipv6Header const& i
   /* process hop-by-hop extension first if exists */
   if (nextHeader == Ipv6Header::IPV6_EXT_HOP_BY_HOP)
     {
-      const uint8_t *buff = p->PeekData ();
-
-      nextHeader = *buff;
-      nextHeaderPosition = *(buff + 1);
+      uint8_t buf[2];
+      p->CopyData(buf, sizeof(buf));
+      nextHeader = buf[0];
+      nextHeaderPosition = buf[1];
     }
 
   /* process all the extensions found and the layer 4 protocol */
