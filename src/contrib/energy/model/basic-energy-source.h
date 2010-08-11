@@ -68,14 +68,14 @@ public:
   virtual double GetEnergyFraction (void);
 
   /**
-   * \param energy Amount of energy (in Joules) to decrease from energy source.
+   * \param energyJ Amount of energy (in Joules) to decrease from energy source.
    *
    * Implements DecreaseRemainingEnergy.
    */
   virtual void DecreaseRemainingEnergy (double energyJ);
 
   /**
-   * \param energy Amount of energy (in Joules) to increase from energy source.
+   * \param energyJ Amount of energy (in Joules) to increase from energy source.
    *
    * Implements IncreaseRemainingEnergy.
    */
@@ -87,7 +87,7 @@ public:
   virtual void UpdateEnergySource (void);
 
   /**
-   * \param initialEnergy Initial energy, in Joules
+   * \param initialEnergyJ Initial energy, in Joules
    *
    * Sets initial energy stored in the energy source. Note that initial energy
    * is assumed to be set before simulation starts and is set only once per
@@ -96,7 +96,7 @@ public:
   void SetInitialEnergy (double initialEnergyJ);
 
   /**
-   * \param supplyVoltage Supply voltage at the energy source, in Volts.
+   * \param supplyVoltageV Supply voltage at the energy source, in Volts.
    *
    * Sets supply voltage of the energy source.
    */

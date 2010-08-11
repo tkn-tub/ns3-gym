@@ -83,6 +83,7 @@ many cases referencing the Bugzilla bug number
    - bug 843 - Most wifi examples change BeaconInterval to unrealistic values
    - bug 844 - YansWifiPhy::GetPowerDbm off-by-one problem when calculating Tx 
                power
+   - bug 846 - packet.cc triggers deprecated warning
    - bug 853 - Rates for Wi-Fi control responses are incorrectly selected
    - bug 854 - Support DROP_QUEUE reason-code in Ipv4FlowProbe
    - bug 858 - support MSG_PEEK in IPv4/IPv6 raw socket
@@ -93,7 +94,7 @@ many cases referencing the Bugzilla bug number
    - bug 873 - Queue occupancy counter not decremented in WifiMacQueue::Remove()
    - bug 874 - wrong modulation type is selected in the forwardBurst method
    - bug 875 - "frame includes FCS" flag should be set in Radiotap frame header
-   - bug 875 - Set FCS included flag in Radiotap header
+   - bug 879 - source address selection for AODV using DeferredRouteRequest
    - bug 881 - Reorganise to allow wider use of WifiInformationElement
    - bug 890 - several rate adaptation algorithms not tested by test.py
    - bug 900:  RawTextConfigLoad::Default does not load configurations
@@ -113,8 +114,11 @@ many cases referencing the Bugzilla bug number
                wifi-remote-station-manager.h
    - bug 923 - Inconsistent declaration of class/struct in mac-low.h
    - bug 924 - Inconsistent declaration of class/struct in <xxx>-wifi-managers 
+   - bug 925 - Various IPv6 cc files trigger deprecated warning
    - bug 926 - olsr handling of multicast packets 
    - bug 927 - SimpleOfdmWimaxChannel RxPower computation
+   - bug 930 - examples/topology-read/topology-example-sim.cc uses variable 
+               length array
    - bug 931 - Abnormal exit reports SIGSEGV on failure
    - bug 932 - Support IP_HDRINCL option for Ipv4RawSocket
    - bug 933 - Flushing ostream and files on abnormal program exit 
@@ -131,7 +135,7 @@ many cases referencing the Bugzilla bug number
                destination address to user callbacks 
    - bug 950 - PointToPointNetDevice says promisc support is not implemented 
                but it is
-   - bug 953 - WiMAX channel scanning overflow
+   - bug 955 - Install NSC for NS3 in a Itanium Architecture (ia64) with Linux 2.6.16.6
    - bug 956 - Bindings failure in core (traced-value) with older gcc
    - bug 958 - WiFi uses wrong default values for MTU, FragmentationThreshold 
                and RtsCtsThreshold
