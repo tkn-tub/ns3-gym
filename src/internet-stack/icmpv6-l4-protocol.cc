@@ -180,7 +180,11 @@ enum Ipv6L4Protocol::RxStatus_e Icmpv6L4Protocol::Receive (Ptr<Packet> packet, I
   Ptr<Packet> p = packet->Copy ();
   Ptr<Ipv6> ipv6 = m_node->GetObject<Ipv6> ();
 
-  switch (*p->PeekData ()) /* very ugly! try to find something better in the future */
+  /* very ugly! try to find something better in the future */
+  uint8_t type;
+  p->CopyData (&type, sizeof(type));
+
+  switch (type) 
     {
     case Icmpv6Header::ICMPV6_ND_ROUTER_SOLICITATION:
       if (ipv6->IsForwarding (ipv6->GetInterfaceForDevice (interface->GetDevice ())))
@@ -217,7 +221,7 @@ enum Ipv6L4Protocol::RxStatus_e Icmpv6L4Protocol::Receive (Ptr<Packet> packet, I
     case Icmpv6Header::ICMPV6_ERROR_PARAMETER_ERROR:
       break;
     default:
-      NS_LOG_LOGIC ("Unknown ICMPv6 message type=" << (uint8_t)*p->PeekData ());
+      NS_LOG_LOGIC ("Unknown ICMPv6 message type=" << type);
       break;
     }
 
@@ -372,7 +376,10 @@ void Icmpv6L4Protocol::HandleRS (Ptr<Packet> packet, Ipv6Address const &src, Ipv
     {
       /* XXX search all options following the RS header */
       /* test if the next option is SourceLinkLayerAddress */
-      if (*packet->PeekData () != Icmpv6Header::ICMPV6_OPT_LINK_LAYER_SOURCE)
+      uint8_t type;
+      packet->CopyData (&type, sizeof(type));
+
+      if (type != Icmpv6Header::ICMPV6_OPT_LINK_LAYER_SOURCE)
         {
           return;
         }
@@ -440,7 +447,10 @@ void Icmpv6L4Protocol::HandleNS (Ptr<Packet> packet, Ipv6Address const &src, Ipv
 
   if (src != Ipv6Address::GetAny ())
     {
-      if (*packet->PeekData () != Icmpv6Header::ICMPV6_OPT_LINK_LAYER_SOURCE)
+      uint8_t type;
+      packet->CopyData (&type, sizeof(type));
+
+      if (type != Icmpv6Header::ICMPV6_OPT_LINK_LAYER_SOURCE)
         {
           return;
         }
@@ -570,7 +580,10 @@ void Icmpv6L4Protocol::HandleNA (Ptr<Packet> packet, Ipv6Address const &src, Ipv
 
   /* XXX search all options following the NA header */
   /* Get LLA */
-  if (*packet->PeekData () != Icmpv6Header::ICMPV6_OPT_LINK_LAYER_TARGET)
+  uint8_t type;
+  packet->CopyData (&type, sizeof(type));
+
+  if (type != Icmpv6Header::ICMPV6_OPT_LINK_LAYER_TARGET)
     {
       return;
     }
@@ -667,7 +680,9 @@ void Icmpv6L4Protocol::HandleRedirection (Ptr<Packet> packet, Ipv6Address const 
   p->RemoveHeader (redirectionHeader);
 
   /* little ugly try to find a better way */
-  if (*p->PeekData () == Icmpv6Header::ICMPV6_OPT_LINK_LAYER_TARGET)
+  uint8_t type;
+  p->CopyData (&type, sizeof(type));
+  if (type == Icmpv6Header::ICMPV6_OPT_LINK_LAYER_TARGET)
     {
       hasLla = true;
       p->RemoveHeader (llOptionHeader);

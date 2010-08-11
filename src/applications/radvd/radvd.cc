@@ -247,7 +247,10 @@ void Radvd::HandleRead (Ptr<Socket> socket)
           Time t;
 
           packet->RemoveHeader (hdr);
-          switch (*packet->PeekData ())
+          uint8_t type;
+          packet->CopyData (&type, sizeof(type));
+
+          switch (type)
             {
             case Icmpv6Header::ICMPV6_ND_ROUTER_SOLICITATION:
               packet->RemoveHeader (rsHdr);

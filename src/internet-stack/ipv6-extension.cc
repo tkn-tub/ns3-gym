@@ -97,7 +97,10 @@ uint8_t Ipv6Extension::ProcessOptions (Ptr<Packet>& packet, uint8_t offset, uint
   Ptr<Ipv6Option> ipv6Option;
 
   uint8_t processedSize = 0;
-  const uint8_t *data = p->PeekData ();
+  uint32_t size = p->GetSize();
+  uint8_t *data = new uint8_t[size];
+  p->CopyData (data, size);
+
   uint8_t optionType = 0;
   uint8_t optionLength = 0;
 
@@ -160,6 +163,8 @@ uint8_t Ipv6Extension::ProcessOptions (Ptr<Packet>& packet, uint8_t offset, uint
       processedSize += optionLength;
       p->RemoveAtStart (optionLength);
     }
+
+  delete [] data;
 
   return processedSize;
 }
@@ -378,9 +383,12 @@ void Ipv6ExtensionFragment::GetFragments (Ptr<Packet> packet, uint32_t maxFragme
   uint8_t nextHeader = ipv6Header.GetNextHeader ();
   uint8_t ipv6HeaderSize = ipv6Header.GetSerializedSize ();
 
+  uint8_t type;
+  p->CopyData (&type, sizeof(type));
+
   bool moreHeader = true;
   if (!(nextHeader == Ipv6Header::IPV6_EXT_HOP_BY_HOP || nextHeader == Ipv6Header::IPV6_EXT_ROUTING
-        || (nextHeader == Ipv6Header::IPV6_EXT_DESTINATION && *p->PeekData () == Ipv6Header::IPV6_EXT_ROUTING)))
+        || (nextHeader == Ipv6Header::IPV6_EXT_DESTINATION && type == Ipv6Header::IPV6_EXT_ROUTING)))
     {
       moreHeader = false;
       ipv6Header.SetNextHeader (Ipv6Header::IPV6_EXT_FRAGMENTATION);
@@ -403,8 +411,11 @@ void Ipv6ExtensionFragment::GetFragments (Ptr<Packet> packet, uint32_t maxFragme
           nextHeader = hopbyhopHeader->GetNextHeader ();
           extensionHeaderLength = hopbyhopHeader->GetLength ();
 
+	  uint8_t type;
+	  p->CopyData (&type, sizeof(type));
+
           if (!(nextHeader == Ipv6Header::IPV6_EXT_HOP_BY_HOP || nextHeader == Ipv6Header::IPV6_EXT_ROUTING
-                || (nextHeader == Ipv6Header::IPV6_EXT_DESTINATION && *p->PeekData () == Ipv6Header::IPV6_EXT_ROUTING)))
+                || (nextHeader == Ipv6Header::IPV6_EXT_DESTINATION && type == Ipv6Header::IPV6_EXT_ROUTING)))
             {
               moreHeader = false;
               hopbyhopHeader->SetNextHeader (Ipv6Header::IPV6_EXT_FRAGMENTATION);
@@ -415,7 +426,9 @@ void Ipv6ExtensionFragment::GetFragments (Ptr<Packet> packet, uint32_t maxFragme
         }
       else if (nextHeader == Ipv6Header::IPV6_EXT_ROUTING) 
         {
-          uint8_t numberAddress = (*(p->PeekData () + 1)) / 2;
+	  uint8_t buf[2];  
+	  p->CopyData (buf, sizeof(buf));
+          uint8_t numberAddress = buf[1] / 2;
           Ipv6ExtensionLooseRoutingHeader *routingHeader = new Ipv6ExtensionLooseRoutingHeader ();
           routingHeader->SetNumberAddress (numberAddress);
           p->RemoveHeader (*routingHeader);
@@ -423,8 +436,10 @@ void Ipv6ExtensionFragment::GetFragments (Ptr<Packet> packet, uint32_t maxFragme
           nextHeader = routingHeader->GetNextHeader ();
           extensionHeaderLength = routingHeader->GetLength ();
 
+	  uint8_t type;
+	  p->CopyData (&type, sizeof(type));
           if (!(nextHeader == Ipv6Header::IPV6_EXT_HOP_BY_HOP || nextHeader == Ipv6Header::IPV6_EXT_ROUTING
-                || (nextHeader == Ipv6Header::IPV6_EXT_DESTINATION && *p->PeekData () == Ipv6Header::IPV6_EXT_ROUTING)))
+                || (nextHeader == Ipv6Header::IPV6_EXT_DESTINATION && type == Ipv6Header::IPV6_EXT_ROUTING)))
             {
               moreHeader = false;
               routingHeader->SetNextHeader (Ipv6Header::IPV6_EXT_FRAGMENTATION);
@@ -441,8 +456,10 @@ void Ipv6ExtensionFragment::GetFragments (Ptr<Packet> packet, uint32_t maxFragme
           nextHeader = destinationHeader->GetNextHeader ();
           extensionHeaderLength = destinationHeader->GetLength ();
 
+	  uint8_t type;
+	  p->CopyData (&type, sizeof(type));
           if (!(nextHeader == Ipv6Header::IPV6_EXT_HOP_BY_HOP || nextHeader == Ipv6Header::IPV6_EXT_ROUTING 
-                || (nextHeader == Ipv6Header::IPV6_EXT_DESTINATION && *p->PeekData () == Ipv6Header::IPV6_EXT_ROUTING)))
+                || (nextHeader == Ipv6Header::IPV6_EXT_DESTINATION && type == Ipv6Header::IPV6_EXT_ROUTING)))
             {
               moreHeader = false;
               destinationHeader->SetNextHeader (Ipv6Header::IPV6_EXT_FRAGMENTATION);
@@ -637,12 +654,13 @@ uint8_t Ipv6ExtensionRouting::Process (Ptr<Packet>& packet, uint8_t offset, Ipv6
   Ptr<Packet> p = packet->Copy ();
   p->RemoveAtStart (offset);
 
-  const uint8_t *buff = packet->PeekData ();
+  uint8_t buf[4];
+  packet->CopyData(buf, sizeof(buf));
 
-  uint8_t routingNextHeader = *buff;
-  uint8_t routingLength = *(buff + 1);
-  uint8_t routingTypeRouting = *(buff + 2);
-  uint8_t routingSegmentsLeft = *(buff + 3);
+  uint8_t routingNextHeader = buf[0];
+  uint8_t routingLength = buf[1];
+  uint8_t routingTypeRouting = buf[2];
+  uint8_t routingSegmentsLeft = buf[3];
 
   if (nextHeader)
     {
@@ -786,7 +804,9 @@ uint8_t Ipv6ExtensionLooseRouting::Process (Ptr<Packet>& packet, uint8_t offset,
   ipv6header.Deserialize (it);
 
   // Get the number of routers' address field
-  uint8_t numberAddress = (*(p->PeekData () + 1)) / 2;
+  uint8_t buf[2];
+  p->CopyData (buf, sizeof(buf));
+  uint8_t numberAddress = buf[1] / 2;
   Ipv6ExtensionLooseRoutingHeader routingHeader;
   routingHeader.SetNumberAddress (numberAddress);
   p->RemoveHeader (routingHeader);

@@ -239,7 +239,10 @@ void Ping6::HandleRead (Ptr<Socket> socket)
 
           packet->RemoveHeader (hdr);
 
-          switch (*packet->PeekData ())
+          uint8_t type;
+          packet->CopyData (&type, sizeof(type));
+
+          switch (type)
             {
             case Icmpv6Header::ICMPV6_ECHO_REPLY:
               packet->RemoveHeader (reply);

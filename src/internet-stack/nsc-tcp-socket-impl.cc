@@ -622,7 +622,12 @@ bool NscTcpSocketImpl::SendPendingData (void)
     NS_ASSERT (size > 0);
 
     m_errno = ERROR_NOTERROR;
-    ret = m_nscTcpSocket->send_data((const char *)p->PeekData (), size);
+
+    uint8_t *buf = new uint8_t[size];
+    p->CopyData (buf, size);
+    ret = m_nscTcpSocket->send_data((const char *)buf, size);
+    delete[] buf;
+
     if (ret <= 0)
       {
         break;

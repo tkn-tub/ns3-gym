@@ -325,10 +325,14 @@ NscTcpL4Protocol::Receive (Ptr<Packet> packet,
   packet->AddHeader(ipHeader);
   packetSize = packet->GetSize();
 
-  const uint8_t *data = const_cast<uint8_t *>(packet->PeekData());
+  uint8_t *buf = new uint8_t[packetSize];
+  packet->CopyData (buf, packetSize);
+  const uint8_t *data = const_cast<uint8_t *>(buf);
 
   // deliver complete packet to the NSC network stack
   m_nscStack->if_receive_packet(0, data, packetSize);
+  delete[] buf;
+
   wakeup ();
   return Ipv4L4Protocol::RX_OK;
 }

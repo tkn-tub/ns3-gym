@@ -1134,8 +1134,13 @@ PacketTest::DoRun (void)
 
   NS_TEST_EXPECT_MSG_EQ (packet->GetSize (), 11, "trivial");
 
-  std::string msg = std::string (reinterpret_cast<const char *>(packet->PeekData ()),
+  uint8_t *buf = new uint8_t[packet->GetSize ()];
+  packet->CopyData (buf, packet->GetSize ());
+
+  std::string msg = std::string (reinterpret_cast<const char *>(buf),
                                  packet->GetSize ());
+  delete [] buf;
+
   NS_TEST_EXPECT_MSG_EQ (msg, "hello world", "trivial");
 
 
@@ -1294,8 +1299,10 @@ PacketTest::DoRun (void)
     CHECK (tmp, 1, E (20, 2, 1002));
     tmp->RemoveAtStart (1);
     CHECK (tmp, 1, E (20, 1, 1001));
+#if 0
     tmp->PeekData ();
     CHECK (tmp, 1, E (20, 1, 1001));
+#endif
   }
 
   return GetErrorStatus ();

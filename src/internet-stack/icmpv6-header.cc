@@ -983,7 +983,6 @@ uint32_t Icmpv6DestinationUnreachable::GetSerializedSize () const
 
 void Icmpv6DestinationUnreachable::Serialize (Buffer::Iterator start) const
 {
-  const uint8_t *packet = m_packet->PeekData ();
   uint16_t checksum = 0;
   Buffer::Iterator i = start;
 
@@ -992,7 +991,11 @@ void Icmpv6DestinationUnreachable::Serialize (Buffer::Iterator start) const
   i.WriteHtonU16 (0);
   i.WriteHtonU32 (0);
 
-  i.Write (packet, m_packet->GetSize ());
+  uint32_t size = m_packet->GetSize ();
+  uint8_t *buf = new uint8_t[size];
+  m_packet->CopyData (buf, size);
+  i.Write (buf, size);
+  delete[] buf;
 
   i = start;
   checksum = i.CalculateIpChecksum (i.GetSize (), GetChecksum ());
@@ -1078,7 +1081,6 @@ uint32_t Icmpv6TooBig::GetSerializedSize () const
 
 void Icmpv6TooBig::Serialize (Buffer::Iterator start) const
 {
-  const uint8_t *packet = m_packet->PeekData ();
   uint16_t checksum = 0;
   Buffer::Iterator i = start;
 
@@ -1087,7 +1089,11 @@ void Icmpv6TooBig::Serialize (Buffer::Iterator start) const
   i.WriteHtonU16 (0);
   i.WriteHtonU32 (GetMtu ());
 
-  i.Write (packet, m_packet->GetSize ());
+  uint32_t size = m_packet->GetSize ();
+  uint8_t *buf = new uint8_t[size];
+  m_packet->CopyData (buf, size);
+  i.Write (buf, size);
+  delete[] buf;
 
   i = start;
   checksum = i.CalculateIpChecksum (i.GetSize (), GetChecksum ());
@@ -1162,7 +1168,6 @@ uint32_t Icmpv6TimeExceeded::GetSerializedSize () const
 
 void Icmpv6TimeExceeded::Serialize (Buffer::Iterator start) const
 {
-  const uint8_t *packet = m_packet->PeekData ();
   uint16_t checksum = 0;
   Buffer::Iterator i = start;
 
@@ -1171,7 +1176,11 @@ void Icmpv6TimeExceeded::Serialize (Buffer::Iterator start) const
   i.WriteHtonU16 (0);
   i.WriteHtonU32 (0);
 
-  i.Write (packet, m_packet->GetSize ());
+  uint32_t size = m_packet->GetSize ();
+  uint8_t *buf = new uint8_t[size];
+  m_packet->CopyData (buf, size);
+  i.Write (buf, size);
+  delete[] buf;
 
   i = start;
   checksum = i.CalculateIpChecksum (i.GetSize (), GetChecksum ());
@@ -1257,7 +1266,6 @@ uint32_t Icmpv6ParameterError::GetSerializedSize () const
 
 void Icmpv6ParameterError::Serialize (Buffer::Iterator start) const 
 {
-  const uint8_t *packet = m_packet->PeekData ();
   uint16_t checksum = 0;
   Buffer::Iterator i = start;
 
@@ -1266,7 +1274,11 @@ void Icmpv6ParameterError::Serialize (Buffer::Iterator start) const
   i.WriteHtonU16 (0);
   i.WriteHtonU32 (GetPtr ());
 
-  i.Write (packet, m_packet->GetSize ());
+  uint32_t size = m_packet->GetSize ();
+  uint8_t *buf = new uint8_t[size];
+  m_packet->CopyData (buf, size);
+  i.Write (buf, size);
+  delete[] buf;
 
   i = start;
   checksum = i.CalculateIpChecksum (i.GetSize (), GetChecksum ());
@@ -1749,7 +1761,11 @@ void Icmpv6OptionRedirected::Serialize (Buffer::Iterator start) const
   i.WriteU16 (0);
   i.WriteU32 (0);
 
-  i.Write (m_packet->PeekData (), m_packet->GetSize ());
+  uint32_t size = m_packet->GetSize ();
+  uint8_t *buf = new uint8_t[size];
+  m_packet->CopyData (buf, size);
+  i.Write (buf, size);
+  delete[] buf;
 }
 
 uint32_t Icmpv6OptionRedirected::Deserialize (Buffer::Iterator start)

@@ -224,7 +224,9 @@ int Ipv6RawSocketImpl::SendTo (Ptr<Packet> p, uint32_t flags, const Address& toA
               /* calculate checksum here for ICMPv6 echo request (sent by ping6) 
                * as we cannot determine source IPv6 address at application level 
                */
-              if (*p->PeekData () == Icmpv6Header::ICMPV6_ECHO_REQUEST)
+              uint8_t type;
+              p->CopyData (&type, sizeof(type));
+              if (type == Icmpv6Header::ICMPV6_ECHO_REQUEST)
                 {
                   Icmpv6Echo hdr (1);
                   p->RemoveHeader (hdr);
