@@ -133,7 +133,7 @@ run with mpirun.  Here are a few examples (from the root ns-3 directory):
 
 @verbatim
 mpirun -np 2 ./waf --run simple-distributed
-mpirun -np 4 -machinefile mpihosts ./waf --run 'nms-udp-nix --LAN=2 --CN=4 --nix=1 --tracing=0'
+mpirun -np 4 -machinefile mpihosts ./waf --run 'nms-udp-nix --LAN=2 --CN=4 --nix=1'
 @end verbatim
             
 The np switch is the number of logical processors to use. The 
