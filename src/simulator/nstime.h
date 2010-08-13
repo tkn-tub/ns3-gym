@@ -414,9 +414,12 @@ private:
   {
     return &(PeekResolution ()->info[timeUnit]);
   }
-  static inline Time From (HighPrecision tmp, enum Unit timeUnit)
+  static inline Time From (HighPrecision from, enum Unit timeUnit)
   {
     struct Information *info = PeekInformation (timeUnit);
+    // DO NOT REMOVE this temporary variable. It's here
+    // to work around a compiler bug in gcc 3.4
+    HighPrecision tmp = from; 
     if (info->fromMul)
       {
         tmp.Mul (info->timeFrom);
