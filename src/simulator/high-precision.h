@@ -61,6 +61,6 @@ inline HighPrecision Min (HighPrecision const &a, HighPrecision const &b)
     }
 }
 
-}; /* namespace ns3 */
+} /* namespace ns3 */
 
 #endif /* HIGH_PRECISION_H */
