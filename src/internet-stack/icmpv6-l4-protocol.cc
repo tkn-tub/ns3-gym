@@ -252,7 +252,6 @@ void Icmpv6L4Protocol::HandleRA (Ptr<Packet> packet, Ipv6Address const &src, Ipv
   Icmpv6OptionPrefixInformation prefixHdr;
   Icmpv6OptionMtu mtuHdr;
   Icmpv6OptionLinkLayerAddress llaHdr;
-  uint8_t type = 0;
   bool next = true;
   bool hasLla = false;
   bool hasMtu = false;
@@ -261,7 +260,8 @@ void Icmpv6L4Protocol::HandleRA (Ptr<Packet> packet, Ipv6Address const &src, Ipv
 
   while (next == true)
     {
-      type = *p->PeekData ();
+      uint8_t type = 0;
+      p->CopyData (&type, sizeof(type));
 
       switch (type)
         {
