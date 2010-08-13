@@ -22,6 +22,7 @@
 
 #include <stdint.h>
 #include <math.h>
+#include <iostream>
 #include "cairo-wideint-private.h"
 
 /**
