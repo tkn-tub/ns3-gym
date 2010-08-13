@@ -167,9 +167,10 @@ ArpCache::StartWaitReplyTimer (void)
   NS_LOG_FUNCTION (this);
   if (!m_waitReplyTimer.IsRunning ())
     {
-      NS_LOG_LOGIC ("Starting WaitReplyTimer at " << Simulator::Now ().GetSeconds ());
+      NS_LOG_LOGIC ("Starting WaitReplyTimer at " << Simulator::Now () << " for " <<
+                    m_waitReplyTimeout);
       m_waitReplyTimer = Simulator::Schedule (m_waitReplyTimeout, 
-        &ArpCache::HandleWaitReplyTimeout, this);
+                                              &ArpCache::HandleWaitReplyTimeout, this);
     }
 }
 
