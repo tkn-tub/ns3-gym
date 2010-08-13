@@ -51,19 +51,19 @@ HighPrecision Abs (HighPrecision const &value)
 
 namespace ns3 {
 
-class Hp128ArithmeticTestCase : public TestCase
+class HpArithmeticTestCase : public TestCase
 {
 public:
-  Hp128ArithmeticTestCase ();
+  HpArithmeticTestCase ();
   virtual bool DoRun (void);
 };
 
-Hp128ArithmeticTestCase::Hp128ArithmeticTestCase ()
+HpArithmeticTestCase::HpArithmeticTestCase ()
   : TestCase ("Check basic arithmetic operations")
 {
 }
 bool
-Hp128ArithmeticTestCase::DoRun (void)
+HpArithmeticTestCase::DoRun (void)
 {
   HighPrecision a, b;
   a = HighPrecision (1, false);
@@ -175,19 +175,19 @@ Hp128ArithmeticTestCase::DoRun (void)
   return false;
 }
 
-class Hp128Bug455TestCase : public TestCase
+class HpBug455TestCase : public TestCase
 {
 public:
-  Hp128Bug455TestCase ();
+  HpBug455TestCase ();
   virtual bool DoRun (void);
 };
 
-Hp128Bug455TestCase::Hp128Bug455TestCase ()
+HpBug455TestCase::HpBug455TestCase ()
   : TestCase ("Test case for bug 455")
 {
 }
 bool
-Hp128Bug455TestCase::DoRun (void)
+HpBug455TestCase::DoRun (void)
 {
   HighPrecision a = HighPrecision (0.1);
   a.Div (HighPrecision (1.25));
@@ -209,19 +209,19 @@ Hp128Bug455TestCase::DoRun (void)
 }
 
 
-class Hp128Bug863TestCase : public TestCase
+class HpBug863TestCase : public TestCase
 {
 public:
-  Hp128Bug863TestCase ();
+  HpBug863TestCase ();
   virtual bool DoRun (void);
 };
 
-Hp128Bug863TestCase::Hp128Bug863TestCase ()
+HpBug863TestCase::HpBug863TestCase ()
   : TestCase ("Test case for bug 863")
 {
 }
 bool
-Hp128Bug863TestCase::DoRun (void)
+HpBug863TestCase::DoRun (void)
 {
   HighPrecision a = HighPrecision (0.9);
   a.Div (HighPrecision (1));
@@ -243,19 +243,19 @@ Hp128Bug863TestCase::DoRun (void)
   return false;
 }
 
-class Hp128CompareTestCase : public TestCase
+class HpCompareTestCase : public TestCase
 {
 public:
-  Hp128CompareTestCase ();
+  HpCompareTestCase ();
   virtual bool DoRun (void);
 };
 
-Hp128CompareTestCase::Hp128CompareTestCase ()
+HpCompareTestCase::HpCompareTestCase ()
   : TestCase ("Check basic compare operations")
 {
 }
 bool
-Hp128CompareTestCase::DoRun (void)
+HpCompareTestCase::DoRun (void)
 {
   HighPrecision a, b;
 
@@ -282,20 +282,20 @@ Hp128CompareTestCase::DoRun (void)
   return false;
 }
 
-class Hp128InvertTestCase : public TestCase
+class HpInvertTestCase : public TestCase
 {
 public:
-  Hp128InvertTestCase ();
+  HpInvertTestCase ();
   virtual bool DoRun (void);
 };
 
-Hp128InvertTestCase::Hp128InvertTestCase ()
+HpInvertTestCase::HpInvertTestCase ()
   : TestCase ("Test case for invertion")
 {
 }
 
 bool
-Hp128InvertTestCase::DoRun (void)
+HpInvertTestCase::DoRun (void)
 {
 #define TEST(factor)                                                    \
   do {                                                                  \
@@ -346,18 +346,18 @@ Hp128InvertTestCase::DoRun (void)
 }
 
 
-static class HighPrecision128TestSuite : public TestSuite
+static class HighPrecisionTestSuite : public TestSuite
 {
 public:
-  HighPrecision128TestSuite ()
-    : TestSuite ("high-precision-128", UNIT)
+  HighPrecisionTestSuite ()
+    : TestSuite ("high-precision", UNIT)
   {
-    AddTestCase (new Hp128ArithmeticTestCase ());
-    AddTestCase (new Hp128Bug455TestCase ());
-    AddTestCase (new Hp128Bug863TestCase ());
-    AddTestCase (new Hp128CompareTestCase ());
-    AddTestCase (new Hp128InvertTestCase ());
+    AddTestCase (new HpArithmeticTestCase ());
+    AddTestCase (new HpBug455TestCase ());
+    AddTestCase (new HpBug863TestCase ());
+    AddTestCase (new HpCompareTestCase ());
+    AddTestCase (new HpInvertTestCase ());
   }
-} g_highPrecision128TestSuite;
+} g_highPrecisionTestSuite;
 
 } // namespace ns3
