@@ -84,6 +84,9 @@ destinations by default; SetAllowBroadcast must be called beforehand
 if we wish to send broadcast packets.
 </li>
 
+<li><b>Deliver of packet ancillary information to sockets:</b> A method to deliver ancillary information 
+to the socket interface (fixed in bug 671):  <pre>void Socket::SetRecvPktInfo (bool flag);</pre>
+
 </ul>
 
 <h2>Changes to existing API:</h2>
@@ -117,6 +120,49 @@ the base classes (WifiInformationElement and
 WifiInformationElementVector) into the <em>wifi</em> module. This
 change is intended to ease the addition of support for modelling of
 further Wi-Fi functionality. </li>
+
+<li><b>Changed for {Ipv4,Ipv6}PacketInfoTag delivery:</b> In order to
+deliver ancillary information to the socket interface (fixed in bug 671),
+<em>Ipv4PacketInfoTag</em> and <em>Ipv6PacketInfoTag</em> are implemented. 
+For the delivery of this information, the following changes are made into 
+existing class.
+
+In Ipv4EndPoint class,
+<pre>
+-  void SetRxCallback (Callback&lt;void,Ptr&lt;Packet&gt;, Ipv4Address, Ipv4Address, uint16_t&gt; callback);
++  void SetRxCallback (Callback&lt;void,Ptr&lt;Packet&gt;, Ipv4Header, uint16_t, Ptr&lt;Ipv4Interface&gt; &gt; callback);
+
+-  void ForwardUp (Ptr&lt;Packet&gt; p, Ipv4Address saddr, Ipv4Address daddr, uint16_t sport);
++  void ForwardUp (Ptr&lt;Packet&gt; p, const Ipv4Header& header, uint16_t sport, 
++                  Ptr&lt;Ipv4Interface&gt; incomingInterface);
+</pre>
+In Ipv4L4Protocol class,
+<pre>
+   virtual enum RxStatus Receive(Ptr&lt;Packet&gt; p, 
+-                                Ipv4Address const &source,
+-                                Ipv4Address const &destination,
++                                Ipv4Header const &header,
+                                 Ptr&lt;Ipv4Interface&gt; incomingInterface) = 0;
+</pre>
+<pre>
+-Ipv4RawSocketImpl::ForwardUp (Ptr&lt;const Packet&gt; p, Ipv4Header ipHeader, Ptr&lt;NetDevice&gt; device)
++Ipv4RawSocketImpl::ForwardUp (Ptr&lt;const Packet&gt; p, Ipv4Header ipHeader, Ptr&lt;Ipv4Interface&gt; incomingInterface)
+
+-NscTcpSocketImpl::ForwardUp (Ptr&lt;Packet&gt; packet, Ipv4Address saddr, Ipv4Address daddr, uint16_t port)
++NscTcpSocketImpl::ForwardUp (Ptr&lt;Packet&gt; packet, Ipv4Header header, uint16_t port,
++                             Ptr&lt;Ipv4Interface&gt; incomingInterface)
+
+-TcpSocketImpl::ForwardUp (Ptr&lt;Packet&gt; packet, Ipv4Address saddr, Ipv4Address daddr, uint16_t port)
++TcpSocketImpl::ForwardUp (Ptr&lt;Packet&gt; packet, Ipv4Header header, uint16_t port,
++                          Ptr&lt;Ipv4Interface&gt; incomingInterface)
+
+-UdpSocketImpl::ForwardUp (Ptr&lt;Packet&gt; packet, Ipv4Address saddr, Ipv4Address daddr, uint16_t port)
++UdpSocketImpl::ForwardUp (Ptr&lt;Packet&gt; packet, Ipv4Header header, uint16_t port,
++                          Ptr&lt;Ipv4Interface&gt; incomingInterface)
+
+</pre>
+  
+</li>
 </ul>
 
 <h2>Changed behavior:</h2>
