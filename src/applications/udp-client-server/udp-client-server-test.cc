@@ -63,50 +63,47 @@ UdpClientServerTestCase::~UdpClientServerTestCase ()
 
 bool UdpClientServerTestCase::DoRun (void)
 {
-    NodeContainer n;
-    n.Create (2);
+  NodeContainer n;
+  n.Create (2);
 
-    InternetStackHelper internet;
-    internet.Install (n);
+  InternetStackHelper internet;
+  internet.Install (n);
 
-    CsmaHelper csma;
-    csma.SetChannelAttribute ("DataRate", DataRateValue (DataRate(5000000)));
-    csma.SetChannelAttribute ("Delay", TimeValue (MilliSeconds (2)));
-    csma.SetDeviceAttribute ("Mtu", UintegerValue (1400));
-    NetDeviceContainer d = csma.Install (n);
+  CsmaHelper csma;
+  csma.SetChannelAttribute ("DataRate", DataRateValue (DataRate(5000000)));
+  csma.SetChannelAttribute ("Delay", TimeValue (MilliSeconds (2)));
+  csma.SetDeviceAttribute ("Mtu", UintegerValue (1400));
+  NetDeviceContainer d = csma.Install (n);
 
-    Ipv4AddressHelper ipv4;
+  Ipv4AddressHelper ipv4;
 
-    ipv4.SetBase ("10.1.1.0", "255.255.255.0");
-    Ipv4InterfaceContainer i = ipv4.Assign (d);
+  ipv4.SetBase ("10.1.1.0", "255.255.255.0");
+  Ipv4InterfaceContainer i = ipv4.Assign (d);
 
-    uint16_t port = 4000;
-    UdpServerHelper server (port);
-    ApplicationContainer apps = server.Install (n.Get(1));
-    apps.Start (Seconds (1.0));
-    apps.Stop (Seconds (10.0));
+  uint16_t port = 4000;
+  UdpServerHelper server (port);
+  ApplicationContainer apps = server.Install (n.Get(1));
+  apps.Start (Seconds (1.0));
+  apps.Stop (Seconds (10.0));
 
-    uint32_t MaxPacketSize = 1024;
-    Time interPacketInterval = Seconds (1.);
-    uint32_t maxPacketCount = 10;
-    UdpClientHelper client (i.GetAddress (1), port);
-    client.SetAttribute ("MaxPackets", UintegerValue (maxPacketCount));
-    client.SetAttribute ("Interval", TimeValue (interPacketInterval));
-    client.SetAttribute ("PacketSize", UintegerValue (MaxPacketSize));
-    apps = client.Install (n.Get (0));
-    apps.Start (Seconds (2.0));
-    apps.Stop (Seconds (10.0));
+  uint32_t MaxPacketSize = 1024;
+  Time interPacketInterval = Seconds (1.);
+  uint32_t maxPacketCount = 10;
+  UdpClientHelper client (i.GetAddress (1), port);
+  client.SetAttribute ("MaxPackets", UintegerValue (maxPacketCount));
+  client.SetAttribute ("Interval", TimeValue (interPacketInterval));
+  client.SetAttribute ("PacketSize", UintegerValue (MaxPacketSize));
+  apps = client.Install (n.Get (0));
+  apps.Start (Seconds (2.0));
+  apps.Stop (Seconds (10.0));
 
-    Simulator::Run ();
-    Simulator::Destroy ();
+  Simulator::Run ();
+  Simulator::Destroy ();
 
-    if ((server.GetServer ()->GetLost () != 0)
-        || (server.GetServer ()->GetReceived () != 8))
-      {
-        return true; // there was an error
-      }
-    return false;
+  NS_TEST_ASSERT_MSG_EQ (server.GetServer ()->GetLost (), 0, "Packets were lost !");
+  NS_TEST_ASSERT_MSG_EQ (server.GetServer ()->GetReceived (), 8, "Did not receive expected number of packets !");
 
+  return GetErrorStatus ();
 }
 
 /**
@@ -136,14 +133,11 @@ UdpTraceClientServerTestCase::~UdpTraceClientServerTestCase ()
 
 bool UdpTraceClientServerTestCase::DoRun (void)
 {
-
-
   NodeContainer n;
   n.Create (2);
 
   InternetStackHelper internet;
   internet.Install (n);
-
 
   CsmaHelper csma;
   csma.SetChannelAttribute ("DataRate", DataRateValue (DataRate(5000000)));
@@ -171,13 +165,10 @@ bool UdpTraceClientServerTestCase::DoRun (void)
   Simulator::Run ();
   Simulator::Destroy ();
 
-  if ((server.GetServer ()->GetLost () != 0)||
-      (server.GetServer ()->GetReceived () != 247))
-    {
-      return true; // there was an error
-    }
+  NS_TEST_ASSERT_MSG_EQ (server.GetServer ()->GetLost (), 0, "Packets were lost !");
+  NS_TEST_ASSERT_MSG_EQ (server.GetServer ()->GetReceived (), 247, "Did not receive expected number of packets !");
 
-  return false;
+  return GetErrorStatus ();
 }
 
 
@@ -214,26 +205,20 @@ bool PacketLossCounterTestCase::DoRun (void)
       lossCounter.NotifyReceived(i);
     }
 
-  if (lossCounter.GetLost()!=0) // Check that 0 packets are lost
-    {
-      return true;
-    }
+  NS_TEST_ASSERT_MSG_EQ (lossCounter.GetLost(), 0, "Check that 0 packets are lost");
+
   for (uint32_t i=65;i<128;i++) // drop (1) seqNum 64
     {
       lossCounter.NotifyReceived(i);
     }
-  if (lossCounter.GetLost()!=1) //chek that 1 packet is lost
-    {
-      return true;
-    }
+  NS_TEST_ASSERT_MSG_EQ (lossCounter.GetLost(), 1, "Check that 1 packet is lost");
+
   for (uint32_t i=134;i<200;i++) // drop seqNum 128,129,130,131,132,133
     {
       lossCounter.NotifyReceived(i);
     }
-  if (lossCounter.GetLost()!=7) //chek that 7 (6+1) packet are lost
-    {
-      return true;
-    }
+  NS_TEST_ASSERT_MSG_EQ (lossCounter.GetLost(), 7, "Check that 7 (6+1) packets are lost");
+
   // reordering without loss
   lossCounter.NotifyReceived(205);
   lossCounter.NotifyReceived(206);
@@ -247,10 +232,7 @@ bool PacketLossCounterTestCase::DoRun (void)
     {
       lossCounter.NotifyReceived(i);
     }
-  if (lossCounter.GetLost()!=7)
-    {
-      return true;
-    }
+  NS_TEST_ASSERT_MSG_EQ (lossCounter.GetLost(), 7, "Check that 7 (6+1) packets are lost even when reordering happens");
 
   // reordering with loss
   lossCounter.NotifyReceived(255);
@@ -262,14 +244,10 @@ bool PacketLossCounterTestCase::DoRun (void)
     {
       lossCounter.NotifyReceived(i);
     }
-  if (lossCounter.GetLost()!=9) //chek that 7 (6+1+2) packet are lost
-    {
-      return true;
-    }
+  NS_TEST_ASSERT_MSG_EQ (lossCounter.GetLost(), 9, "Check that 9 (6+1+2) packet are lost");
 
 
-  return false;
-
+  return GetErrorStatus ();
 }
 class UdpClientServerTestSuite: public TestSuite
 {
