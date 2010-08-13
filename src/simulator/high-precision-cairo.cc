@@ -155,6 +155,15 @@ HighPrecision::Invert (uint64_t v)
   return result;
 }
 
+std::ostream &operator << (std::ostream &os, const HighPrecision &hp)
+{
+  return os;
+}
+std::istream &operator >> (std::istream &is, HighPrecision &hp)
+{
+  return is;
+}
+
 
 } // namespace ns3
 

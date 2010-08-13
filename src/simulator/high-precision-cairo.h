@@ -68,6 +68,10 @@ private:
   cairo_int128_t m_value;
 };
 
+std::ostream &operator << (std::ostream &os, const HighPrecision &hp);
+std::istream &operator >> (std::istream &is, HighPrecision &hp);
+
+
 } // namespace ns3
 
 namespace ns3 {

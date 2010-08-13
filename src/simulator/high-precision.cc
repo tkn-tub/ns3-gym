@@ -172,7 +172,7 @@ HpArithmeticTestCase::DoRun (void)
   a.Mul (V (3));
   CHECK_EXPECTED (a, 1999999999);
 
-  return false;
+  return GetErrorStatus ();
 }
 
 class HpBug455TestCase : public TestCase
@@ -205,7 +205,7 @@ HpBug455TestCase::DoRun (void)
   a.Mul (HighPrecision (-5));
   NS_TEST_ASSERT_MSG_EQ (a.GetDouble (), -2.5, "only second operand negative");
 
-  return false;
+  return GetErrorStatus ();
 }
 
 
@@ -240,7 +240,7 @@ HpBug863TestCase::DoRun (void)
   a.Div (HighPrecision (-0.5));
   NS_TEST_ASSERT_MSG_EQ (a.GetDouble (), 1.0, "both arguments negative");
 
-  return false;
+  return GetErrorStatus ();
 }
 
 class HpCompareTestCase : public TestCase
@@ -279,7 +279,7 @@ HpCompareTestCase::DoRun (void)
   b = V (1);
   NS_TEST_ASSERT_MSG_EQ (a.Compare (b), 0, "a is equal to b");
 
-  return false;
+  return GetErrorStatus ();
 }
 
 class HpInvertTestCase : public TestCase
@@ -342,7 +342,7 @@ HpInvertTestCase::DoRun (void)
   TEST(100000000000000LL);
   TEST(1000000000000000LL);
 #undef TEST
-  return false;
+  return GetErrorStatus ();
 }
 
 

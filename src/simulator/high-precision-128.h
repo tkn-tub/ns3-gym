@@ -23,6 +23,7 @@
 #include "ns3/simulator-config.h"
 #include <math.h>
 #include <stdint.h>
+#include <iostream>
 
 #define noCOUNT_OPS 1
 
@@ -53,6 +54,7 @@ class HighPrecision
 {
 public:
   inline HighPrecision ();
+  explicit HighPrecision (int64_t high, uint64_t low);
   explicit inline HighPrecision (int64_t value, bool dummy);
   explicit inline HighPrecision (double value);
 
@@ -67,6 +69,9 @@ public:
 
   inline int Compare (HighPrecision const &o) const;
   inline static HighPrecision Zero (void);
+
+  int64_t GetHigh (void) const;
+  uint64_t GetLow (void) const;
 private:
   static uint128_t UmulByInvert (uint128_t a, uint128_t b);
   static uint128_t Umul (uint128_t a, uint128_t b);
@@ -86,6 +91,9 @@ private:
 #endif
 };
 
+std::ostream &operator << (std::ostream &os, const HighPrecision &hp);
+std::istream &operator >> (std::istream &is, HighPrecision &hp);
+
 } // namespace ns3
 
 namespace ns3 {
@@ -103,8 +111,11 @@ HighPrecision::HighPrecision (int64_t value, bool dummy)
 
 int64_t HighPrecision::GetInteger (void) const
 {
-  int128_t v = m_value >> 64;
-  return v;
+  bool negative = m_value < 0;
+  int128_t v = negative?-m_value:m_value;
+  v >>= 64;
+  int64_t retval = v;
+  return negative?-retval:retval;
 }
 
 void
