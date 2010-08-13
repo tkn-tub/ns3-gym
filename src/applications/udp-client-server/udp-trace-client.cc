@@ -85,7 +85,7 @@ UdpTraceClient::GetTypeId (void)
 
 UdpTraceClient::UdpTraceClient ()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   m_sent = 0;
   m_socket = 0;
   m_sendEvent = EventId ();
@@ -95,7 +95,7 @@ UdpTraceClient::UdpTraceClient ()
 UdpTraceClient::UdpTraceClient (Ipv4Address ip, uint16_t port,
                                         char *traceFile)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   m_sent = 0;
   m_socket = 0;
   m_sendEvent = EventId ();
@@ -111,8 +111,8 @@ UdpTraceClient::UdpTraceClient (Ipv4Address ip, uint16_t port,
 
 UdpTraceClient::~UdpTraceClient ()
 {
+  NS_LOG_FUNCTION (this);
   m_entries.clear ();
-  NS_LOG_FUNCTION_NOARGS ();
 }
 
 void
@@ -137,12 +137,14 @@ UdpTraceClient::SetTraceFile (std::string traceFile)
 }
 
 void
-UdpTraceClient::SetMaxPacketSize (uint16_t maxPacketSize){
+UdpTraceClient::SetMaxPacketSize (uint16_t maxPacketSize)
+{
   m_maxPacketSize = maxPacketSize;
 }
 
 
-uint16_t UdpTraceClient::GetMaxPacketSize (void){
+uint16_t UdpTraceClient::GetMaxPacketSize (void)
+{
   return m_maxPacketSize;
 }
 
@@ -157,6 +159,7 @@ UdpTraceClient::DoDispose (void)
 void
 UdpTraceClient::LoadTrace (std::string filename)
 {
+  NS_LOG_FUNCTION (this << filename);
   uint32_t time, index, prevTime = 0;
   uint16_t size;
   char frameType;
@@ -191,6 +194,7 @@ UdpTraceClient::LoadTrace (std::string filename)
 void
 UdpTraceClient::LoadDefaultTrace (void)
 {
+  NS_LOG_FUNCTION (this);
   uint32_t prevTime = 0;
   for (uint32_t i = 0; i < (sizeof (g_defaultEntries) / sizeof (struct TraceEntry)); i++)
     {
@@ -236,6 +240,7 @@ UdpTraceClient::StopApplication ()
 void
 UdpTraceClient::SendPacket (uint32_t size)
 {
+  NS_LOG_FUNCTION (this << size);
   Ptr<Packet> p;
   uint32_t packetSize;
   if (size>12)
@@ -266,7 +271,7 @@ UdpTraceClient::SendPacket (uint32_t size)
 void
 UdpTraceClient::Send (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
 
   NS_ASSERT (m_sendEvent.IsExpired ());
   Ptr<Packet> p;

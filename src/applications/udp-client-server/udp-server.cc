@@ -63,13 +63,13 @@ UdpServer::GetTypeId (void)
 UdpServer::UdpServer ()
  : m_lossCounter (0)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   m_received=0;
 }
 
 UdpServer::~UdpServer ()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
 }
 
 uint16_t
@@ -101,14 +101,14 @@ UdpServer::GetReceived (void) const
 void
 UdpServer::DoDispose (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   Application::DoDispose ();
 }
 
 void
 UdpServer::StartApplication (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
 
   if (m_socket == 0)
     {
@@ -126,7 +126,7 @@ UdpServer::StartApplication (void)
 void
 UdpServer::StopApplication ()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
 
   if (m_socket != 0)
     {
@@ -137,6 +137,7 @@ UdpServer::StopApplication ()
 void
 UdpServer::HandleRead (Ptr<Socket> socket)
 {
+  NS_LOG_FUNCTION (this << socket);
   Ptr<Packet> packet;
   Address from;
   while (packet = socket->RecvFrom (from))
