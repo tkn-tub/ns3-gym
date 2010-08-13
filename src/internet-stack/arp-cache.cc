@@ -101,7 +101,7 @@ ArpCache::DoDispose (void)
 void
 ArpCache::SetDevice (Ptr<NetDevice> device, Ptr<Ipv4Interface> interface)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this << device << interface);
   m_device = device;
   m_interface = interface;
 }
@@ -109,67 +109,62 @@ ArpCache::SetDevice (Ptr<NetDevice> device, Ptr<Ipv4Interface> interface)
 Ptr<NetDevice>
 ArpCache::GetDevice (void) const
 {
-  NS_LOG_FUNCTION_NOARGS ();
   return m_device;
 }
 
 Ptr<Ipv4Interface>
 ArpCache::GetInterface (void) const
 {
-  NS_LOG_FUNCTION_NOARGS ();
   return m_interface;
 }
 
 void 
 ArpCache::SetAliveTimeout (Time aliveTimeout)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this << aliveTimeout);
   m_aliveTimeout = aliveTimeout;
 }
 void 
 ArpCache::SetDeadTimeout (Time deadTimeout)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this << deadTimeout);
   m_deadTimeout = deadTimeout;
 }
 void 
 ArpCache::SetWaitReplyTimeout (Time waitReplyTimeout)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this << waitReplyTimeout);
   m_waitReplyTimeout = waitReplyTimeout;
 }
 
 Time
 ArpCache::GetAliveTimeout (void) const
 {
-  NS_LOG_FUNCTION_NOARGS ();
   return m_aliveTimeout;
 }
 Time
 ArpCache::GetDeadTimeout (void) const
 {
-  NS_LOG_FUNCTION_NOARGS ();
   return m_deadTimeout;
 }
 Time
 ArpCache::GetWaitReplyTimeout (void) const
 {
-  NS_LOG_FUNCTION_NOARGS ();
   return m_waitReplyTimeout;
 }
 
 void 
 ArpCache::SetArpRequestCallback (Callback<void, Ptr<const ArpCache>,
-                             Ipv4Address> arpRequestCallback)
+                                 Ipv4Address> arpRequestCallback)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   m_arpRequestCallback = arpRequestCallback;
 }
 
 void 
 ArpCache::StartWaitReplyTimer (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   if (!m_waitReplyTimer.IsRunning ())
     {
       NS_LOG_LOGIC ("Starting WaitReplyTimer at " << Simulator::Now ().GetSeconds ());
@@ -181,7 +176,7 @@ ArpCache::StartWaitReplyTimer (void)
 void
 ArpCache::HandleWaitReplyTimeout (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   ArpCache::Entry* entry;
   bool restartWaitReplyTimer = false;
   for (CacheI i = m_arpCache.begin (); i != m_arpCache.end (); i++) 
@@ -228,7 +223,7 @@ ArpCache::HandleWaitReplyTimeout (void)
 void 
 ArpCache::Flush (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   for (CacheI i = m_arpCache.begin (); i != m_arpCache.end (); i++) 
     {
       delete (*i).second;
@@ -244,7 +239,6 @@ ArpCache::Flush (void)
 ArpCache::Entry *
 ArpCache::Lookup (Ipv4Address to)
 {
-  NS_LOG_FUNCTION_NOARGS ();
   if (m_arpCache.find (to) != m_arpCache.end ()) 
     {
       ArpCache::Entry *entry = m_arpCache[to];
@@ -256,7 +250,7 @@ ArpCache::Lookup (Ipv4Address to)
 ArpCache::Entry *
 ArpCache::Add (Ipv4Address to)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this << to);
   NS_ASSERT (m_arpCache.find (to) == m_arpCache.end ());
 
   ArpCache::Entry *entry = new ArpCache::Entry (this);
@@ -270,26 +264,23 @@ ArpCache::Entry::Entry (ArpCache *arp)
     m_state (ALIVE),
     m_retries (0)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this << arp);
 }
 
 
 bool 
 ArpCache::Entry::IsDead (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
   return (m_state == DEAD)?true:false;
 }
 bool 
 ArpCache::Entry::IsAlive (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
   return (m_state == ALIVE)?true:false;
 }
 bool
 ArpCache::Entry::IsWaitReply (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
   return (m_state == WAIT_REPLY)?true:false;
 }
 
@@ -297,7 +288,7 @@ ArpCache::Entry::IsWaitReply (void)
 void 
 ArpCache::Entry::MarkDead (void) 
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   m_state = DEAD;
   ClearRetries ();
   UpdateSeen ();
@@ -305,7 +296,7 @@ ArpCache::Entry::MarkDead (void)
 void
 ArpCache::Entry::MarkAlive (Address macAddress) 
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this << macAddress);
   NS_ASSERT (m_state == WAIT_REPLY);
   m_macAddress = macAddress;
   m_state = ALIVE;
@@ -316,7 +307,7 @@ ArpCache::Entry::MarkAlive (Address macAddress)
 bool
 ArpCache::Entry::UpdateWaitReply (Ptr<Packet> waiting)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this << waiting);
   NS_ASSERT (m_state == WAIT_REPLY);
   /* We are already waiting for an answer so
    * we dump the previously waiting packet and
@@ -332,7 +323,7 @@ ArpCache::Entry::UpdateWaitReply (Ptr<Packet> waiting)
 void 
 ArpCache::Entry::MarkWaitReply (Ptr<Packet> waiting)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this << waiting);
   NS_ASSERT (m_state == ALIVE || m_state == DEAD);
   NS_ASSERT (m_pending.empty ());
   m_state = WAIT_REPLY;
@@ -344,14 +335,12 @@ ArpCache::Entry::MarkWaitReply (Ptr<Packet> waiting)
 Address
 ArpCache::Entry::GetMacAddress (void) const
 {
-  NS_LOG_FUNCTION_NOARGS ();
   NS_ASSERT (m_state == ALIVE);
   return m_macAddress;
 }
 Ipv4Address 
 ArpCache::Entry::GetIpv4Address (void) const
 {
-  NS_LOG_FUNCTION_NOARGS ();
   return m_ipv4Address;
 }
 void 
@@ -379,7 +368,6 @@ ArpCache::Entry::GetTimeout (void) const
 bool 
 ArpCache::Entry::IsExpired (void) const
 {
-  NS_LOG_FUNCTION_NOARGS ();
   Time timeout = GetTimeout ();
   Time delta = Simulator::Now () - m_lastSeen;
   NS_LOG_DEBUG ("delta=" << delta.GetSeconds () << "s");
@@ -392,7 +380,7 @@ ArpCache::Entry::IsExpired (void) const
 Ptr<Packet> 
 ArpCache::Entry::DequeuePending (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   if (m_pending.empty ())
     {
       return 0;
@@ -407,26 +395,25 @@ ArpCache::Entry::DequeuePending (void)
 void 
 ArpCache::Entry::UpdateSeen (void)
 {
-  NS_LOG_FUNCTION (m_macAddress << m_ipv4Address);
+  NS_LOG_FUNCTION (this << m_macAddress << m_ipv4Address);
   m_lastSeen = Simulator::Now ();
 }
 uint32_t
 ArpCache::Entry::GetRetries (void) const
 {
-  NS_LOG_FUNCTION (m_macAddress << m_ipv4Address);
   return m_retries;
 }
 void
 ArpCache::Entry::IncrementRetries (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   m_retries++;
   UpdateSeen ();
 }
 void
 ArpCache::Entry::ClearRetries (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   m_retries = 0;
 }
 
