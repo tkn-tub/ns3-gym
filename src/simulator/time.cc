@@ -26,10 +26,13 @@
 #include "ns3/string.h"
 #include "ns3/object.h"
 #include "ns3/config.h"
+#include "ns3/log.h"
 #include <math.h>
 #include <sstream>
 
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE("Time");
 
 Time::Time (const std::string& s)
 {
@@ -97,6 +100,7 @@ Time::SetResolution (enum Unit resolution)
 void 
 Time::SetResolution (enum Unit unit, struct Resolution *resolution)
 {
+  NS_LOG_FUNCTION (unit << resolution);
   int8_t power [LAST] = {15, 12, 9, 6, 3, 0};
   for (int i = 0; i < Time::LAST; i++)
     {
@@ -126,6 +130,10 @@ Time::SetResolution (enum Unit unit, struct Resolution *resolution)
 	  info->toMul = true;
 	  info->fromMul = false;
 	}
+      NS_LOG_DEBUG ("i=" << i << 
+                    " shift=" << shift << 
+                    " from=" << info->timeFrom <<
+                    " to=" << info->timeTo);
     }
   resolution->unit = unit;
 }
