@@ -8,7 +8,7 @@ import Utils
 import Task
 
 # Required NSC version
-NSC_RELEASE_NAME = "nsc-0.5.1"
+NSC_RELEASE_NAME = "nsc-0.5.2"
 
 
 def set_options(opt):
