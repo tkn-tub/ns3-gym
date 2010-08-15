@@ -153,7 +153,7 @@ double HighPrecision::GetDouble (void) const
 HighPrecision::HighPrecision (double value)
 {
   double fhi = floor (value);
-  int64_t hi = fhi;
+  int64_t hi = static_cast<int64_t> (fhi);
   uint64_t lo = (uint64_t) ((value - fhi) * HPCAIRO_MAX_64);
   m_value.hi = hi;
   m_value.lo = lo;
