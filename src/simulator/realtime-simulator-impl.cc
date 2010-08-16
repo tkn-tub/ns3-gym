@@ -518,7 +518,7 @@ RealtimeSimulatorImpl::RunOneEvent (void)
     NS_LOG_LOGIC ("handle " << next.key.m_ts);
     m_currentTs = next.key.m_ts;
     m_currentContext = next.key.m_context;
-    m_currentUid = next.key.m_ts;
+    m_currentUid = next.key.m_uid;
     event = next.impl;
   }
   event->Invoke ();
