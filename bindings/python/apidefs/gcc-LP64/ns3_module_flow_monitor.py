@@ -385,8 +385,8 @@ def register_Ns3Ipv4FlowClassifier_methods(root_module, cls):
     return
 
 def register_Ns3Ipv4FlowClassifierFiveTuple_methods(root_module, cls):
-    cls.add_binary_comparison_operator('==')
     cls.add_binary_comparison_operator('<')
+    cls.add_binary_comparison_operator('==')
     ## ipv4-flow-classifier.h: ns3::Ipv4FlowClassifier::FiveTuple::FiveTuple() [constructor]
     cls.add_constructor([])
     ## ipv4-flow-classifier.h: ns3::Ipv4FlowClassifier::FiveTuple::FiveTuple(ns3::Ipv4FlowClassifier::FiveTuple const & arg0) [copy constructor]
