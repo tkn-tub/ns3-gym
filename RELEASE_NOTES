@@ -19,6 +19,13 @@ This release is not yet available.
 Supported platforms
 -------------------
 ns-3.9 has been tested on the following platforms:
+- Ubuntu 10.04 LTS 32/64-bit gcc-4.4.3
+- Fedora Core 12 64-bit gcc-4.4.3
+- Ubuntu 9.10 32-bit gcc-4.4.1
+- Ubuntu 8.04 LTS 64-bit gcc-4.2.4
+- Fedora Core 5 32-bit gcc-4.1.1
+- Mac OS X Leopard powerpc gcc-4.0.1
+- Windows Cygwin 1.7.5
 
 Not all ns-3 options are available on all platforms; consult the
 wiki for more information:
@@ -125,6 +132,7 @@ many cases referencing the Bugzilla bug number
                (ASSERT, ABORT and FATAL_ERROR)
    - bug 936 - Waf build error for python bindings on "AccessClass"
    - bug 937 - bugs in ns-3 wimax
+   - bug 939 - EmuNetDevice uses too much memory when reading packet bursts
    - bug 940 - AODV fails to set up a correct path
    - bug 941 - Wifi Dcf attributes not reachable through configuration namespace
    - bug 943 - Add a SO_BROADCAST socket option
@@ -139,6 +147,7 @@ many cases referencing the Bugzilla bug number
    - bug 956 - Bindings failure in core (traced-value) with older gcc
    - bug 958 - WiFi uses wrong default values for MTU, FragmentationThreshold 
                and RtsCtsThreshold
+   - bug 959 - Simulation never finishes when using RealtimeSimulatorImpl
    - bug 960 - V4Ping does not generate checksum
    - bug 961 - Problem with MPI activation 
    - bug 964 - AODV does not work with host addressed interfaces
