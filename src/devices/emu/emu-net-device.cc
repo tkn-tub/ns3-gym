@@ -48,6 +48,7 @@
 #include <errno.h>
 #include <limits>
 #include <stdlib.h>
+#include <time.h>
 
 NS_LOG_COMPONENT_DEFINE ("EmuNetDevice");
 
@@ -105,6 +106,14 @@ EmuNetDevice::GetTypeId (void)
                    PointerValue (),
                    MakePointerAccessor (&EmuNetDevice::m_queue),
                    MakePointerChecker<Queue> ())
+
+    .AddAttribute ("RxQueueSize", "Maximum size of the read queue.  "
+                   "This value limits number of packets that have been read "
+                   "from the network into a memory buffer but have not yet "
+                   "been processed by the simulator.",
+                   UintegerValue (1000),
+                   MakeUintegerAccessor (&EmuNetDevice::m_maxPendingReads),
+                   MakeUintegerChecker<uint32_t> ())
 
     //
     // Trace sources at the "top" of the net device, where packets transition
@@ -184,7 +193,8 @@ EmuNetDevice::EmuNetDevice ()
   m_ifIndex (std::numeric_limits<uint32_t>::max ()),  // absurdly large value
   m_sll_ifindex (-1),
   m_isBroadcast (true),
-  m_isMulticast (false)
+  m_isMulticast (false),
+  m_pendingReadCount (0)
 {
   NS_LOG_FUNCTION (this);
   m_packetBuffer = new uint8_t[65536];
@@ -626,6 +636,12 @@ EmuNetDevice::ForwardUp (uint8_t *buf, uint32_t len)
   free (buf);
   buf = 0;
 
+  {
+    CriticalSection cs (m_pendingReadMutex);
+    //std::cerr << std::endl << "EmuNetDevice main thread: m_pendingReadCount is " << m_pendingReadCount << std::endl;
+    --m_pendingReadCount;
+  }
+
   //
   // Trace sinks will expect complete packets, not packets without some of the
   // headers.
@@ -754,6 +770,31 @@ EmuNetDevice::ReadThread (void)
 
   for (;;) 
     {
+      //
+      // Too many pending reads at the same time leads to excessive memory allocations.  This counter prevents it.
+      // 
+      bool skip = false;
+      
+      {
+        CriticalSection cs (m_pendingReadMutex);            
+        //std::cerr << std::endl << "EmuNetDevice read thread: m_pendingReadCount is " << m_pendingReadCount << std::endl;
+        if (m_pendingReadCount >= m_maxPendingReads)
+          {
+            skip = true;
+          }
+        else
+          {
+            ++m_pendingReadCount;
+          }
+      }
+
+      if (skip)  
+        {           
+          struct timespec time = { 0, 100000000L }; // 100 ms
+          nanosleep (&time, NULL);
+          continue;
+        }
+
       //
       // to avoid any issues with a shared reference counted packet, we allocate a buffer on the heap and pass that
       // buffer into the ns-3 context thread where it will create the packet, copy the buffer and then free it.

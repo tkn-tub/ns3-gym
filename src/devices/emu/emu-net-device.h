@@ -32,6 +32,7 @@
 #include "ns3/ptr.h"
 #include "ns3/mac48-address.h"
 #include "ns3/system-thread.h"
+#include "ns3/system-mutex.h"
 #include "ns3/realtime-simulator-impl.h"
 
 namespace ns3 {
@@ -520,6 +521,10 @@ private:
    * multithreaded apps is not a good thing.
    */
   uint32_t m_nodeId;
+
+  uint32_t m_maxPendingReads;
+  uint32_t m_pendingReadCount;
+  SystemMutex m_pendingReadMutex;
 };
 
 } // namespace ns3
