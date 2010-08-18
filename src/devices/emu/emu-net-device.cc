@@ -211,6 +211,10 @@ void
 EmuNetDevice::DoDispose()
 {
   NS_LOG_FUNCTION_NOARGS ();
+  if (m_readThread != 0)
+    {
+      StopDevice ();
+    }
   m_node = 0;
   NetDevice::DoDispose ();
 }
