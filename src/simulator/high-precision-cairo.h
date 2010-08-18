@@ -162,17 +162,6 @@ HighPrecision::HighPrecision (double value)
 }
 #undef HPCAIRO_MAX_64
 
-std::ostream &operator << (std::ostream &os, const HighPrecision &hp)
-{
-  // XXX stubbed out
-  return os;
-}
-std::istream &operator >> (std::istream &is, HighPrecision &hp)
-{
-  // XXX stubbed out
-  return is;
-}
-
 } // namespace ns3
 
 #endif /* HIGH_PRECISION_CAIRO_H */
