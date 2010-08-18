@@ -21,6 +21,7 @@
 #define HIGH_PRECISION_DOUBLE_H
 
 #include <math.h>
+#include "ns3/fatal-error.h"
 
 namespace ns3 {
 
@@ -55,6 +56,9 @@ public:
 private:
   double m_value;
 };
+
+inline std::ostream &operator << (std::ostream &os, const HighPrecision &hp);
+inline std::istream &operator >> (std::istream &is, HighPrecision &hp);
 
 } // namespace ns3
 
@@ -131,8 +135,7 @@ HighPrecision::Zero (void)
 int64_t 
 HighPrecision::GetHigh (void) const
 {
-  NS_FATAL_ERROR ("XXX this function unavailable for high-precision-as-double; patch requested");
-  return 0;
+  return GetInteger ();
 }
 
 uint64_t 
@@ -141,6 +144,19 @@ HighPrecision::GetLow (void) const
   NS_FATAL_ERROR ("XXX this function unavailable for high-precision-as-double; patch requested");
   return 0;
 }
+
+std::ostream &operator << (std::ostream &os, const HighPrecision &hp)
+{
+  // XXX stubbed out
+  return os;
+}
+
+std::istream &operator >> (std::istream &is, HighPrecision &hp)
+{
+  // XXX stubbed out
+  return is;
+}
+
 
 } // namespace ns3
 
