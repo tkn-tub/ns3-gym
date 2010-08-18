@@ -1406,9 +1406,9 @@ def register_Ns3Tap_methods(root_module, cls):
 
 def register_Ns3UanAddress_methods(root_module, cls):
     cls.add_binary_comparison_operator('!=')
-    cls.add_binary_comparison_operator('<')
     cls.add_output_stream_operator()
     cls.add_binary_comparison_operator('==')
+    cls.add_binary_comparison_operator('<')
     ## uan-address.h: ns3::UanAddress::UanAddress(ns3::UanAddress const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::UanAddress const &', 'arg0')])
     ## uan-address.h: ns3::UanAddress::UanAddress() [constructor]

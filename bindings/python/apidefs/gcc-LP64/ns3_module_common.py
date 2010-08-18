@@ -1456,6 +1456,7 @@ def register_Ns3SpectrumPropagationLossModel_methods(root_module, cls):
     return
 
 def register_Ns3SpectrumValue_methods(root_module, cls):
+    cls.add_output_stream_operator()
     cls.add_binary_numeric_operator('*', root_module['ns3::SpectrumValue'], root_module['ns3::SpectrumValue'], param('double', 'right'))
     cls.add_binary_numeric_operator('*', root_module['ns3::SpectrumValue'], root_module['ns3::SpectrumValue'], param('ns3::SpectrumValue const &', 'right'))
     cls.add_binary_numeric_operator('+', root_module['ns3::SpectrumValue'], root_module['ns3::SpectrumValue'], param('double', 'right'))
@@ -1465,7 +1466,6 @@ def register_Ns3SpectrumValue_methods(root_module, cls):
     cls.add_binary_numeric_operator('-', root_module['ns3::SpectrumValue'], root_module['ns3::SpectrumValue'], param('ns3::SpectrumValue const &', 'right'))
     cls.add_binary_numeric_operator('/', root_module['ns3::SpectrumValue'], root_module['ns3::SpectrumValue'], param('double', 'right'))
     cls.add_binary_numeric_operator('/', root_module['ns3::SpectrumValue'], root_module['ns3::SpectrumValue'], param('ns3::SpectrumValue const &', 'right'))
-    cls.add_output_stream_operator()
     cls.add_inplace_numeric_operator('*=', param('ns3::SpectrumValue const &', 'right'))
     cls.add_inplace_numeric_operator('*=', param('double', 'right'))
     cls.add_inplace_numeric_operator('+=', param('ns3::SpectrumValue const &', 'right'))
