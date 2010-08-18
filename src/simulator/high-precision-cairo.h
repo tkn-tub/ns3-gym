@@ -60,6 +60,8 @@ public:
 
   inline int Compare (HighPrecision const &o) const;
   inline static HighPrecision Zero (void);
+  int64_t GetHigh (void) const;
+  uint64_t GetLow (void) const;
 private:
   static cairo_uint128_t  Umul (cairo_uint128_t a, cairo_uint128_t b);
   static cairo_uint128_t Udiv (cairo_uint128_t a, cairo_uint128_t b);

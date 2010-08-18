@@ -155,6 +155,20 @@ HighPrecision::Invert (uint64_t v)
   return result;
 }
 
+int64_t
+HighPrecision::GetHigh (void) const
+{
+  NS_FATAL_ERROR ("XXX this function unavailable for high-precision-as-cairo; patch requested");
+  return 0;
+}
+
+uint64_t
+HighPrecision::GetLow (void) const
+{
+  NS_FATAL_ERROR ("XXX this function unavailable for high-precision-as-cairo; patch requested");
+  return 0;
+}
+
 std::ostream &operator << (std::ostream &os, const HighPrecision &hp)
 {
   return os;

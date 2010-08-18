@@ -49,6 +49,9 @@ public:
 
   inline int Compare (HighPrecision const &o) const;
   inline static HighPrecision Zero (void);
+  inline int64_t GetHigh (void) const;
+  inline uint64_t GetLow (void) const;
+
 private:
   double m_value;
 };
@@ -123,6 +126,20 @@ HighPrecision
 HighPrecision::Zero (void)
 {
   return HighPrecision (0,0);
+}
+
+int64_t 
+HighPrecision::GetHigh (void) const
+{
+  NS_FATAL_ERROR ("XXX this function unavailable for high-precision-as-double; patch requested");
+  return 0;
+}
+
+uint64_t 
+HighPrecision::GetLow (void) const
+{
+  NS_FATAL_ERROR ("XXX this function unavailable for high-precision-as-double; patch requested");
+  return 0;
 }
 
 } // namespace ns3
