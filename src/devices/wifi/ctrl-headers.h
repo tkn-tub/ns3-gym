@@ -114,6 +114,8 @@ public:
 
   uint16_t GetStartingSequenceControl (void) const;
   void SetStartingSequenceControl (uint16_t seqControl);
+  const uint16_t* GetBitmap (void) const;
+  uint64_t GetCompressedBitmap (void) const;
   
 private:
   
@@ -135,6 +137,10 @@ private:
    * for more details see 7.2.1.8 in IEEE 802.11n/D4.00
    */
   uint8_t IndexInBitmap (uint16_t seq) const;
+  /**
+   * Checks if sequence number <i>seq</i> can be acknowledged in the bitmap.
+   */
+  bool IsInBitmap (uint16_t seq) const;
 
   /**
    * The lsb bit of the BA control field is used only for the

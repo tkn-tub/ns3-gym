@@ -547,6 +547,8 @@ CtrlBAckResponseHeader::DeserializeBitmap (Buffer::Iterator start)
 void
 CtrlBAckResponseHeader::SetReceivedPacket (uint16_t seq)
 {
+  if (!IsInBitmap (seq))
+    return;
   if (!m_multiTid)
     {
       if (!m_compressed)
@@ -557,7 +559,7 @@ CtrlBAckResponseHeader::SetReceivedPacket (uint16_t seq)
         }
       else
         {
-          bitmap.m_compressedBitmap |= (0x0000000000000001 << IndexInBitmap (seq));
+          bitmap.m_compressedBitmap |= (uint64_t(0x0000000000000001) << IndexInBitmap (seq));
         }
     }
   else
@@ -577,6 +579,8 @@ void
 CtrlBAckResponseHeader::SetReceivedFragment (uint16_t seq, uint8_t frag)
 {
   NS_ASSERT (frag < 16);
+  if (!IsInBitmap (seq))
+    return;
   if (!m_multiTid)
     {
       if (!m_compressed)
@@ -605,6 +609,8 @@ CtrlBAckResponseHeader::SetReceivedFragment (uint16_t seq, uint8_t frag)
 bool
 CtrlBAckResponseHeader::IsPacketReceived (uint16_t seq) const
 {
+  if (!IsInBitmap (seq))
+    return false;
   if (!m_multiTid)
     {
       if (!m_compressed)
@@ -614,7 +620,7 @@ CtrlBAckResponseHeader::IsPacketReceived (uint16_t seq) const
         }
       else
         {
-          uint64_t mask = 0x0000000000000001;
+          uint64_t mask = uint64_t(0x0000000000000001);
           return (((bitmap.m_compressedBitmap >> IndexInBitmap (seq)) & mask) == 1)?true:false;
         }
     }
@@ -636,6 +642,8 @@ bool
 CtrlBAckResponseHeader::IsFragmentReceived (uint16_t seq, uint8_t frag) const
 {
   NS_ASSERT (frag < 16);
+  if (!IsInBitmap (seq))
+    return false;
   if (!m_multiTid)
     {
       if (!m_compressed)
@@ -647,7 +655,7 @@ CtrlBAckResponseHeader::IsFragmentReceived (uint16_t seq, uint8_t frag) const
           /* Although this could make no sense, if packet with sequence number
              equal to <i>seq</i> was correctly received, also all of its fragments 
              were correctly received. */
-          uint64_t mask = 0x0000000000000001;
+          uint64_t mask = uint64_t(0x0000000000000001);
           return (((bitmap.m_compressedBitmap >> IndexInBitmap (seq)) & mask) == 1)?true:false;
         }
     }
@@ -668,14 +676,35 @@ CtrlBAckResponseHeader::IsFragmentReceived (uint16_t seq, uint8_t frag) const
 uint8_t
 CtrlBAckResponseHeader::IndexInBitmap (uint16_t seq) const
 {
+  uint8_t index;
   if (seq >= m_startingSeq)
     {
-      return (seq - m_startingSeq);
+      index = seq - m_startingSeq;
     }
   else
     {
-      return (4096 - m_startingSeq + seq);
+      index = 4096 - m_startingSeq + seq;
     }
+  NS_ASSERT (index <= 63);
+  return index;
+}
+
+bool
+CtrlBAckResponseHeader::IsInBitmap (uint16_t seq) const
+{
+  return (seq - m_startingSeq + 4096) % 4096 < 64;
+}
+
+const uint16_t*
+CtrlBAckResponseHeader::GetBitmap (void) const
+{
+  return bitmap.m_bitmap;
+}
+
+uint64_t
+CtrlBAckResponseHeader::GetCompressedBitmap (void) const
+{
+  return bitmap.m_compressedBitmap;
 }
 
 }  //namespace ns3
