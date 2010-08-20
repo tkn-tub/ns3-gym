@@ -10,10 +10,11 @@ Steps in doing an ns-3 release
    - ensure no regressions (./waf --regression)
 2. prepare the source files
    - revise and check in AUTHORS, if needed
-   - revise and check in RELEASE_NOTES
+   - revise and check in RELEASE_NOTES.  Make sure to add the Availability 
+     section.
    - DO NOT change VERSION at this time
-   - confirm that Doxygen builds cleanly and without warnings
-     (./waf doxygen), and check in any necessary changes 
+   - confirm that Doxygen builds cleanly (./waf doxygen), 
+     and check in any necessary changes 
 3. build an ns-3-allinone distribution
    - change back into the allinone directory
    - ./dist.py

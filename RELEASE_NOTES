@@ -14,7 +14,8 @@ Release 3.9
 
 Availability
 ------------
-This release is not yet available.
+This release is immediately available from:
+http://www.nsnam.org/releases/ns-allinone-3.9.tar.bz2
 
 Supported platforms
 -------------------
@@ -50,7 +51,7 @@ New user-visible features
      from YansErrorRateModel for OFDM modes (802.11a/g).  The default
      YansWifiPhyHelper has been changed to use this model.
 
-   - A brand new NS-2 mobility trace reader supports BonnMotion, SUMO, TraNS, 
+   - A new NS-2 mobility trace reader supports BonnMotion, SUMO, TraNS, 
      etc. traces.
 
    - An energy model for nodes and devices, including an energy source
@@ -67,8 +68,8 @@ New user-visible features
 
 Bugs fixed
 ----------
-The following lists many of the bugs that were fixed since ns-3.8, in
-many cases referencing the Bugzilla bug number
+The following lists many of the bugs fixed or small feature additions 
+since ns-3.8, in many cases referencing the Bugzilla bug number
 
    - IPv4 global routing code; stub networks were assumed to be /24
      and added as /24 networks even if the mask is actually different
@@ -155,7 +156,6 @@ many cases referencing the Bugzilla bug number
    - bug 966 - AODV originates new RREQ on each packet, when doesn't have 
                valid route
    - bug 969 - No SocketList is present in UdpL4Protocol class
-   - bug 970 - move UAN over to new directory structure
    - bug 971 - fix AODV header Print functions 
    - bug 972 - [flow monitor] assertion fails in pv4-flow-probe.cc
 
