@@ -1,6 +1,6 @@
 /* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
 /*
- * Copyright (c) 2009 MIRKO BANCHI
+ * Copyright (c) 2009, 2010 MIRKO BANCHI
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as 
@@ -20,6 +20,7 @@
 #include "ns3/test.h"
 #include "ns3/log.h"
 #include "qos-utils.h"
+#include "ctrl-headers.h"
 #include <list>
 
 using namespace ns3;
@@ -198,6 +199,68 @@ PacketBufferingCaseB::DoRun (void)
   return GetErrorStatus ();
 }
 
+//Test for block ack header
+class CtrlBAckResponseHeaderTest : public TestCase
+{
+public:
+  CtrlBAckResponseHeaderTest ();
+private:
+  virtual bool DoRun ();
+  CtrlBAckResponseHeader m_blockAckHdr;
+};
+
+CtrlBAckResponseHeaderTest::CtrlBAckResponseHeaderTest ()
+  : TestCase ("Check the correctness of block ack compressed bitmap")
+{}
+
+bool
+CtrlBAckResponseHeaderTest::DoRun (void)
+{
+  m_blockAckHdr.SetType (COMPRESSED_BLOCK_ACK);
+  
+  //Case 1: startSeq < endSeq
+  //          179        242
+  m_blockAckHdr.SetStartingSequence (179);
+  for (uint32_t i = 179; i < 220; i++)
+    {
+      m_blockAckHdr.SetReceivedPacket (i);
+    }
+  for (uint32_t i = 225; i <= 242; i++)
+    {
+      m_blockAckHdr.SetReceivedPacket (i);
+    }
+  NS_TEST_EXPECT_MSG_EQ (m_blockAckHdr.GetCompressedBitmap (), 0xffffc1ffffffffffLL, "error in compressed bitmap");
+  m_blockAckHdr.SetReceivedPacket (1500);
+  NS_TEST_EXPECT_MSG_EQ (m_blockAckHdr.GetCompressedBitmap (), 0xffffc1ffffffffffLL, "error in compressed bitmap");
+  NS_TEST_EXPECT_MSG_EQ (m_blockAckHdr.IsPacketReceived (220), false, "error in compressed bitmap");
+  NS_TEST_EXPECT_MSG_EQ (m_blockAckHdr.IsPacketReceived (225), true, "error in compressed bitmap");
+  NS_TEST_EXPECT_MSG_EQ (m_blockAckHdr.IsPacketReceived (1500), false, "error in compressed bitmap");
+
+  m_blockAckHdr.ResetBitmap ();
+  
+  //Case 2: startSeq > endSeq
+  //          4090       58
+  m_blockAckHdr.SetStartingSequence (4090);
+  for (uint32_t i = 4090; i != 10; i = (i + 1) % 4096)
+    {
+      m_blockAckHdr.SetReceivedPacket (i);
+    }
+  for (uint32_t i = 22; i < 25; i++)
+    {
+      m_blockAckHdr.SetReceivedPacket (i);
+    }
+  NS_TEST_EXPECT_MSG_EQ (m_blockAckHdr.GetCompressedBitmap (), 0x00000000007000ffffLL, "error in compressed bitmap");
+  m_blockAckHdr.SetReceivedPacket (80);
+  NS_TEST_EXPECT_MSG_EQ (m_blockAckHdr.GetCompressedBitmap (), 0x00000000007000ffffLL, "error in compressed bitmap");
+  NS_TEST_EXPECT_MSG_EQ (m_blockAckHdr.IsPacketReceived (4090), true, "error in compressed bitmap");
+  NS_TEST_EXPECT_MSG_EQ (m_blockAckHdr.IsPacketReceived (4095), true, "error in compressed bitmap");
+  NS_TEST_EXPECT_MSG_EQ (m_blockAckHdr.IsPacketReceived (10), false, "error in compressed bitmap");
+  NS_TEST_EXPECT_MSG_EQ (m_blockAckHdr.IsPacketReceived (35), false, "error in compressed bitmap");
+  NS_TEST_EXPECT_MSG_EQ (m_blockAckHdr.IsPacketReceived (80), false, "error in compressed bitmap");
+
+  return GetErrorStatus ();
+}
+
 class BlockAckTestSuite : public TestSuite
 {
 public:
@@ -209,6 +272,7 @@ BlockAckTestSuite::BlockAckTestSuite ()
 {
   AddTestCase (new PacketBufferingCaseA);
   AddTestCase (new PacketBufferingCaseB);
+  AddTestCase (new CtrlBAckResponseHeaderTest);
 }
 
 BlockAckTestSuite g_blockAckTestSuite;
