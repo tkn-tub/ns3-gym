@@ -116,6 +116,8 @@ public:
   void SetStartingSequenceControl (uint16_t seqControl);
   const uint16_t* GetBitmap (void) const;
   uint64_t GetCompressedBitmap (void) const;
+
+  void ResetBitmap (void);
   
 private:
   

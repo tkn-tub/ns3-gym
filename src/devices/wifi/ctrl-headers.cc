@@ -707,4 +707,10 @@ CtrlBAckResponseHeader::GetCompressedBitmap (void) const
   return bitmap.m_compressedBitmap;
 }
 
+void
+CtrlBAckResponseHeader::ResetBitmap (void)
+{
+  memset (&bitmap, 0, sizeof (bitmap));
+}
+
 }  //namespace ns3
