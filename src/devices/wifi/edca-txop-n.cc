@@ -893,7 +893,9 @@ EdcaTxopN::CompleteTx (void)
         {
           m_baManager->StorePacket (m_currentPacket, m_currentHdr, m_currentPacketTimestamp);
         }
-      m_baManager->NotifyMpduTransmission (m_currentHdr.GetAddr1 (), m_currentHdr.GetQosTid ());
+      m_baManager->NotifyMpduTransmission (m_currentHdr.GetAddr1 (), m_currentHdr.GetQosTid (),
+                                           m_txMiddle->GetNextSeqNumberByTidAndAddress (m_currentHdr.GetQosTid (),
+                                                                                        m_currentHdr.GetAddr1 ()));
       //we are not waiting for an ack: transmission is completed
       m_currentPacket = 0;
       m_dcf->ResetCw ();

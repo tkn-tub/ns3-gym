@@ -1,6 +1,6 @@
 /* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
 /*
- * Copyright (c) 2009 MIRKO BANCHI
+ * Copyright (c) 2009, 2010 MIRKO BANCHI
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as 
@@ -16,6 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Mirko Banchi <mk.banchi@gmail.com>
+ * Author: Tommaso Pecorella <tommaso.pecorella@unifi.it>
  */
 #ifndef ORIGINATOR_BLOCK_ACK_AGREEMENT_H
 #define ORIGINATOR_BLOCK_ACK_AGREEMENT_H
@@ -97,17 +98,18 @@ public:
   /**
    * Notifies a packet's transmission with ack policy Block Ack.
    */
-  void NotifyMpduTransmission (void);
+  void NotifyMpduTransmission (uint16_t nextSeqNumber);
   /**
    * Returns true if all packets for which a block ack was negotiated have been transmitted so
    * a block ack request is needed in order to acknowledge them.
    */
-  bool NeedBlockAckRequest (void) const;
+  bool IsBlockAckRequestNeeded (void) const;
   void CompleteExchange (void);
 
 private:
   enum State m_state;
-  uint8_t m_sentMpdus;
+  uint16_t m_sentMpdus;
+  bool m_needBlockAckReq;
 };
 
 } //namespace ns3

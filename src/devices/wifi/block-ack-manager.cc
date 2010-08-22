@@ -1,6 +1,6 @@
 /* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
 /*
- * Copyright (c) 2009 MIRKO BANCHI
+ * Copyright (c) 2009, 2010 MIRKO BANCHI
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as 
@@ -414,7 +414,7 @@ BlockAckManager::ScheduleBlockAckReqIfNeeded (Mac48Address recipient, uint8_t ti
   AgreementsI it = m_agreements.find (std::make_pair (recipient, tid));
   NS_ASSERT (it != m_agreements.end ());
 
-  if ((*it).second.first.NeedBlockAckRequest () ||
+  if ((*it).second.first.IsBlockAckRequestNeeded () ||
       (GetNRetryNeededPackets (recipient, tid) == 0 &&
        m_queue->GetNPacketsByTidAndAddress (tid, WifiMacHeader::ADDR1, recipient) == 0))
     {
@@ -473,13 +473,23 @@ BlockAckManager::NotifyAgreementUnsuccessful (Mac48Address recipient, uint8_t ti
 }
 
 void
-BlockAckManager::NotifyMpduTransmission (Mac48Address recipient, uint8_t tid)
+BlockAckManager::NotifyMpduTransmission (Mac48Address recipient, uint8_t tid, uint16_t nextSeqNumber)
 {
   NS_LOG_FUNCTION (this);
   Ptr<Packet> bar = 0;
   AgreementsI it = m_agreements.find (std::make_pair (recipient, tid));
   NS_ASSERT (it != m_agreements.end ());
-  it->second.first.NotifyMpduTransmission ();
+
+  uint16_t nextSeq;
+  if (GetNRetryNeededPackets (recipient, tid) > 0)
+    {
+      nextSeq = GetSeqNumOfNextRetryPacket (recipient, tid);
+    }
+  else
+    {
+      nextSeq = nextSeqNumber;
+    }
+  it->second.first.NotifyMpduTransmission (nextSeq);
   bar = ScheduleBlockAckReqIfNeeded (recipient, tid);
   if (bar != 0)
     {
@@ -612,6 +622,20 @@ void
 BlockAckManager::SetTxMiddle (MacTxMiddle* txMiddle)
 {
   m_txMiddle = txMiddle;
+}
+
+uint16_t
+BlockAckManager::GetSeqNumOfNextRetryPacket (Mac48Address recipient, uint8_t tid) const
+{
+  std::list<PacketQueueI>::const_iterator it = m_retryPackets.begin ();
+  while (it != m_retryPackets.end ())
+    {
+      if ((*it)->hdr.GetAddr1 () == recipient && (*it)->hdr.GetQosTid () == tid)
+        {
+          return (*it)->hdr.GetSequenceNumber ();
+        }
+    }
+  return 4096;
 }
 
 } //namespace ns3

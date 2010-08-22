@@ -45,6 +45,7 @@ void
 BlockAckAgreement::SetBufferSize (uint16_t bufferSize)
 {
   NS_ASSERT (bufferSize <= 1024);
+  NS_ASSERT (bufferSize % 16 == 0);
   m_bufferSize = bufferSize;
 }
 void

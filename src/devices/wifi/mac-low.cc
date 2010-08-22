@@ -1524,7 +1524,7 @@ MacLow::CreateBlockAckAgreement (const MgtAddBaResponseHeader *respHdr, Mac48Add
       agreement.SetDelayedBlockAck ();
     }
   agreement.SetAmsduSupport (respHdr->IsAmsduSupported ());
-  agreement.SetBufferSize (respHdr->GetBufferSize ());
+  agreement.SetBufferSize (respHdr->GetBufferSize () + 1);
   agreement.SetTimeout (respHdr->GetTimeout ());
   agreement.SetStartingSequence (startingSeq);
   

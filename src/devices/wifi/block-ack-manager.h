@@ -1,6 +1,6 @@
 /* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
 /*
- * Copyright (c) 2009 MIRKO BANCHI
+ * Copyright (c) 2009, 2010 MIRKO BANCHI
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as 
@@ -151,7 +151,7 @@ public:
    * \param tid Traffic ID.
    *
    * Returns number of packets for a specific agreement that need retransmission.
-   * This methods doesn't return number of MPDUs that need retransmission but number MSDUs.
+   * This method doesn't return number of MPDUs that need retransmission but number of MSDUs.
    */
   uint32_t GetNRetryNeededPackets (Mac48Address recipient, uint8_t tid) const;
   /**
@@ -175,11 +175,13 @@ public:
   /**
    * \param recipient Address of peer station involved in block ack mechanism.
    * \param tid Traffic ID of transmitted packet.
+   * \param nextSeqNumber Sequence number of the next packet that would be trasmitted by EdcaTxopN.
    *
-   * This methods is typically invoked by ns3::EdcaTxopN object every time that a MPDU
+   * This method is typically invoked by ns3::EdcaTxopN object every time that a MPDU
    * with ack policy subfield in Qos Control field set to Block Ack is transmitted.
+   * The <i>nextSeqNumber</i> parameter is used to block transmission of packets that are out of bitmap.
    */
-  void NotifyMpduTransmission (Mac48Address recipient, uint8_t tid);
+  void NotifyMpduTransmission (Mac48Address recipient, uint8_t tid, uint16_t nextSeqNumber);
   /**
    * \param nPackets Minimum number of packets for use of block ack.
    *
@@ -237,6 +239,12 @@ public:
    * the value of BufferSize in the corresponding OriginatorBlockAckAgreement object.
    */
   bool SwitchToBlockAckIfNeeded (Mac48Address recipient, uint8_t tid, uint16_t startingSeq);
+  /**
+   * Returns the sequence number of the next retry packet for a specific agreement.
+   * If there are no packets that need retransmission for the specified agreement or
+   * the agreement doesn't exist the function returns 4096;
+   */
+  uint16_t GetSeqNumOfNextRetryPacket (Mac48Address recipient, uint8_t tid) const;
 private:
   /**
    * Checks if all packets, for which a block ack agreement was established or refreshed,
