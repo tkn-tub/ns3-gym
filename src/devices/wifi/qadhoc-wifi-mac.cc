@@ -388,7 +388,7 @@ QadhocWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
               SendAddBaResponse (&reqHdr, hdr->GetAddr2 ());
             }
           else if (actionHdr.GetCategory () == WifiActionHeader::BLOCK_ACK &&
-                   actionHdr.GetAction().blockAck == WifiActionHeader::BLOCK_ACK_ADDBA_REQUEST)
+                   actionHdr.GetAction().blockAck == WifiActionHeader::BLOCK_ACK_ADDBA_RESPONSE)
             {
               MgtAddBaResponseHeader respHdr;
               packet->RemoveHeader (respHdr);
