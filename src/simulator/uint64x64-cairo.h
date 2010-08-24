@@ -121,46 +121,17 @@ private:
 	++_v.hi;
       }
   }
-
+  inline int Compare (const uint64x64_t &o) const
+  {
+    int status;
+    uint64x64_t tmp = *this;
+    tmp -= o;
+    status = (((int64_t)(tmp)._v.hi) < 0)?-1:
+      (((tmp)._v.hi == 0 && (tmp)._v.lo == 0))?0:1;
+    return status;
+  }
   cairo_int128_t _v;
 };
-
-#if defined(UINT64x64_CAIRO_ASM)
-#define xCMP_ls "jl"
-#define xCMP_le "jle"
-#define COMPARE(a,b,op)				\
-  ({						\
-    int status;					\
-    asm ("mov 0(%1),%%eax\n\t"			\
-	 "add 0(%2),%%eax\n\t"			\
-	 "mov 4(%1),%%eax\n\t"			\
-	 "adc 4(%2),%%eax\n\t"			\
-	 "mov 8(%1),%%eax\n\t"			\
-	 "adc 8(%2),%%eax\n\t"			\
-	 "mov 12(%1),%%eax\n\t"			\
-	 "adc 12(%2),%%eax\n\t"			\
-	 x##op " 1f\n\t"			\
-	 "mov $0,%0\n\t"				\
-	 "ja 2f\n"				\
-	 "1:\tmov $1,%0\n\t"			\
-	 "2:"					\
-	 : "=r" (status)			\
-	 : "r" (&a._v), "r" (&b._v)		\
-	 : "%eax", "cc");			\
-    bool retval = status == 1;			\
-    retval;					\
-  })
-#else
-#define xCMP_ls(a) (((int64_t)(a)._v.hi) < 0)
-#define xCMP_le(a) ((((int64_t)(a)._v.hi) < 0) || ((a)._v.hi == 0 && (a)._v.lo == 0))
-#define COMPARE(a,b,op)							\
-  ({									\
-    uint64x64_t tmp = a;						\
-    tmp -= b;								\
-    bool result = x##op(tmp);						\
-    result;								\
-  }) 
-#endif
 
 inline bool operator == (const uint64x64_t &lhs, const uint64x64_t &rhs)
 {
@@ -174,36 +145,32 @@ inline bool operator != (const uint64x64_t &lhs, const uint64x64_t &rhs)
 
 inline bool operator < (const uint64x64_t &lhs, const uint64x64_t &rhs)
 {
-  return COMPARE(lhs,rhs,CMP_ls);
+  return lhs.Compare (rhs) < 0;
 }
 inline bool operator <= (const uint64x64_t &lhs, const uint64x64_t &rhs)
 {
-  return COMPARE(lhs,rhs,CMP_le);
+  return lhs.Compare (rhs) <= 0;
 }
 
 inline bool operator >= (const uint64x64_t &lhs, const uint64x64_t &rhs)
 {
-  return !(lhs < rhs);
+  return lhs.Compare (rhs) >= 0;
 }
 inline bool operator > (const uint64x64_t &lhs, const uint64x64_t &rhs)
 {
-  return !(lhs <= rhs);
+  return lhs.Compare (rhs) > 0;
 }
 inline uint64x64_t &operator += (uint64x64_t &lhs, const uint64x64_t &rhs)
 {
 #if UINT64x64_CAIRO_ASM
-  asm ("mov 0(%0),%%eax\n\t"
-       "add 0(%1),%%eax\n\t"
-       "mov %%eax,0(%0)\n\t"
-       "mov 4(%0),%%eax\n\t"
-       "adc 4(%1),%%eax\n\t"
-       "mov %%eax,4(%0)\n\t"
-       "mov 8(%0),%%eax\n\t"
-       "adc 8(%1),%%eax\n\t"
-       "mov %%eax,8(%0)\n\t"
-       "mov 12(%0),%%eax\n\t"
-       "adc 12(%1),%%eax\n\t"
-       "mov %%eax,12(%0)\n\t"
+  asm ("mov 0(%1),%%eax\n\t"
+       "add %%eax,0(%0)\n\t"
+       "mov 4(%1),%%eax\n\t"
+       "adc %%eax,4(%0)\n\t"
+       "mov 8(%1),%%eax\n\t"
+       "adc %%eax,8(%0)\n\t"
+       "mov 12(%1),%%eax\n\t"
+       "adc %%eax,12(%0)\n\t"
        : 
        : "r" (&lhs._v), "r" (&rhs._v) 
        : "%eax", "cc");
@@ -220,18 +187,14 @@ inline uint64x64_t &operator += (uint64x64_t &lhs, const uint64x64_t &rhs)
 inline uint64x64_t &operator -= (uint64x64_t &lhs, const uint64x64_t &rhs)
 {
 #if UINT64x64_CAIRO_ASM
-  asm ("mov 0(%0),%%eax\n\t"
-       "sub 0(%1),%%eax\n\t"
-       "mov %%eax,0(%0)\n\t"
-       "mov 4(%0),%%eax\n\t"
-       "sbb 4(%1),%%eax\n\t"
-       "mov %%eax,4(%0)\n\t"
-       "mov 8(%0),%%eax\n\t"
-       "sbb 8(%1),%%eax\n\t"
-       "mov %%eax,8(%0)\n\t"
-       "mov 12(%0),%%eax\n\t"
-       "sbb 12(%1),%%eax\n\t"
-       "mov %%eax,12(%0)\n\t"
+  asm ("mov 0(%1),%%eax\n\t"
+       "sub %%eax,0(%0)\n\t"
+       "mov 4(%1),%%eax\n\t"
+       "sbb %%eax,4(%0)\n\t"
+       "mov 8(%1),%%eax\n\t"
+       "sbb %%eax,8(%0)\n\t"
+       "mov 12(%1),%%eax\n\t"
+       "sbb %%eax,12(%0)\n\t"
        : 
        : "r" (&lhs._v), "r" (&rhs._v) 
        : "%eax", "cc");
