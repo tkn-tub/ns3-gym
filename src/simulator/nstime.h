@@ -193,6 +193,9 @@ public:
   explicit inline Time (unsigned long int v)
     : m_data (uint64x64_t (v, 0))
   {}
+  explicit inline Time (unsigned long long int v)
+    : m_data (uint64x64_t (v, 0))
+  {}
 
   /**
    * \brief String constructor
