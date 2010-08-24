@@ -510,6 +510,11 @@ def register_Ns3BlockAckManager_methods(root_module, cls):
                    'uint32_t', 
                    [], 
                    is_const=True)
+    ## block-ack-manager.h: uint16_t ns3::BlockAckManager::GetSeqNumOfNextRetryPacket(ns3::Mac48Address recipient, uint8_t tid) const [member function]
+    cls.add_method('GetSeqNumOfNextRetryPacket', 
+                   'uint16_t', 
+                   [param('ns3::Mac48Address', 'recipient'), param('uint8_t', 'tid')], 
+                   is_const=True)
     ## block-ack-manager.h: bool ns3::BlockAckManager::HasBar(ns3::Bar & bar) [member function]
     cls.add_method('HasBar', 
                    'bool', 
@@ -536,10 +541,10 @@ def register_Ns3BlockAckManager_methods(root_module, cls):
     cls.add_method('NotifyGotBlockAck', 
                    'void', 
                    [param('ns3::CtrlBAckResponseHeader const *', 'blockAck'), param('ns3::Mac48Address', 'recipient')])
-    ## block-ack-manager.h: void ns3::BlockAckManager::NotifyMpduTransmission(ns3::Mac48Address recipient, uint8_t tid) [member function]
+    ## block-ack-manager.h: void ns3::BlockAckManager::NotifyMpduTransmission(ns3::Mac48Address recipient, uint8_t tid, uint16_t nextSeqNumber) [member function]
     cls.add_method('NotifyMpduTransmission', 
                    'void', 
-                   [param('ns3::Mac48Address', 'recipient'), param('uint8_t', 'tid')])
+                   [param('ns3::Mac48Address', 'recipient'), param('uint8_t', 'tid'), param('uint16_t', 'nextSeqNumber')])
     ## block-ack-manager.h: void ns3::BlockAckManager::SetBlockAckInactivityCallback(ns3::Callback<void, ns3::Mac48Address, unsigned char, bool, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> callback) [member function]
     cls.add_method('SetBlockAckInactivityCallback', 
                    'void', 
@@ -1150,6 +1155,11 @@ def register_Ns3OriginatorBlockAckAgreement_methods(root_module, cls):
     cls.add_method('CompleteExchange', 
                    'void', 
                    [])
+    ## originator-block-ack-agreement.h: bool ns3::OriginatorBlockAckAgreement::IsBlockAckRequestNeeded() const [member function]
+    cls.add_method('IsBlockAckRequestNeeded', 
+                   'bool', 
+                   [], 
+                   is_const=True)
     ## originator-block-ack-agreement.h: bool ns3::OriginatorBlockAckAgreement::IsEstablished() const [member function]
     cls.add_method('IsEstablished', 
                    'bool', 
@@ -1170,15 +1180,10 @@ def register_Ns3OriginatorBlockAckAgreement_methods(root_module, cls):
                    'bool', 
                    [], 
                    is_const=True)
-    ## originator-block-ack-agreement.h: bool ns3::OriginatorBlockAckAgreement::NeedBlockAckRequest() const [member function]
-    cls.add_method('NeedBlockAckRequest', 
-                   'bool', 
-                   [], 
-                   is_const=True)
-    ## originator-block-ack-agreement.h: void ns3::OriginatorBlockAckAgreement::NotifyMpduTransmission() [member function]
+    ## originator-block-ack-agreement.h: void ns3::OriginatorBlockAckAgreement::NotifyMpduTransmission(uint16_t nextSeqNumber) [member function]
     cls.add_method('NotifyMpduTransmission', 
                    'void', 
-                   [])
+                   [param('uint16_t', 'nextSeqNumber')])
     ## originator-block-ack-agreement.h: void ns3::OriginatorBlockAckAgreement::SetState(ns3::OriginatorBlockAckAgreement::State state) [member function]
     cls.add_method('SetState', 
                    'void', 
@@ -4310,6 +4315,16 @@ def register_Ns3CtrlBAckResponseHeader_methods(root_module, cls):
                    'uint32_t', 
                    [param('ns3::Buffer::Iterator', 'start')], 
                    is_virtual=True)
+    ## ctrl-headers.h: uint16_t const * ns3::CtrlBAckResponseHeader::GetBitmap() const [member function]
+    cls.add_method('GetBitmap', 
+                   'uint16_t const *', 
+                   [], 
+                   is_const=True)
+    ## ctrl-headers.h: uint64_t ns3::CtrlBAckResponseHeader::GetCompressedBitmap() const [member function]
+    cls.add_method('GetCompressedBitmap', 
+                   'uint64_t', 
+                   [], 
+                   is_const=True)
     ## ctrl-headers.h: ns3::TypeId ns3::CtrlBAckResponseHeader::GetInstanceTypeId() const [member function]
     cls.add_method('GetInstanceTypeId', 
                    'ns3::TypeId', 
@@ -4375,6 +4390,10 @@ def register_Ns3CtrlBAckResponseHeader_methods(root_module, cls):
                    'void', 
                    [param('std::ostream &', 'os')], 
                    is_const=True, is_virtual=True)
+    ## ctrl-headers.h: void ns3::CtrlBAckResponseHeader::ResetBitmap() [member function]
+    cls.add_method('ResetBitmap', 
+                   'void', 
+                   [])
     ## ctrl-headers.h: void ns3::CtrlBAckResponseHeader::Serialize(ns3::Buffer::Iterator start) const [member function]
     cls.add_method('Serialize', 
                    'void', 

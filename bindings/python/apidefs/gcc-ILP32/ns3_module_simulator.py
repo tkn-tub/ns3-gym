@@ -230,6 +230,7 @@ def register_Ns3EventId_methods(root_module, cls):
     return
 
 def register_Ns3HighPrecision_methods(root_module, cls):
+    cls.add_output_stream_operator()
     ## high-precision-double.h: ns3::HighPrecision::HighPrecision(ns3::HighPrecision const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::HighPrecision const &', 'arg0')])
     ## high-precision-double.h: ns3::HighPrecision::HighPrecision() [constructor]
