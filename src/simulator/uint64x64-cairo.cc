@@ -17,7 +17,7 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#include "high-precision-cairo.h"
+#include "uint64x64-cairo.h"
 #include "ns3/test.h"
 #include "ns3/abort.h"
 #include "ns3/assert.h"
@@ -25,7 +25,6 @@
 #include <iostream>
 
 namespace ns3 {
-
 
 #define OUTPUT_SIGN(sa,sb,ua,ub)                                        \
   ({bool negA, negB;                                                    \
@@ -38,14 +37,13 @@ namespace ns3 {
   (negA && !negB) || (!negA && negB);})
 
 void
-HighPrecision::Mul (HighPrecision const &o)
+uint64x64_t::Mul (uint64x64_t const &o)
 {
   cairo_uint128_t a, b, result;
-  bool sign = OUTPUT_SIGN (m_value, o.m_value, a, b);
+  bool sign = OUTPUT_SIGN (_v, o._v, a, b);
   result = Umul (a, b);
-  m_value = sign ? _cairo_uint128_negate (result) : result;
+  _v = sign ? _cairo_uint128_negate (result) : result;
 }
-
 
 /**
  * this function multiplies two 128 bits fractions considering
@@ -54,7 +52,7 @@ HighPrecision::Mul (HighPrecision const &o)
  * of the operands to produce a signed 128 bits result.
  */
 cairo_uint128_t
-HighPrecision::Umul (cairo_uint128_t a, cairo_uint128_t b)
+uint64x64_t::Umul (cairo_uint128_t a, cairo_uint128_t b)
 {
   cairo_uint128_t result;
   cairo_uint128_t hiPart,loPart,midPart;
@@ -80,16 +78,16 @@ HighPrecision::Umul (cairo_uint128_t a, cairo_uint128_t b)
 }
 
 void
-HighPrecision::Div (HighPrecision const &o)
+uint64x64_t::Div (uint64x64_t const &o)
 {
   cairo_uint128_t a, b, result;
-  bool sign = OUTPUT_SIGN (m_value, o.m_value, a, b);
+  bool sign = OUTPUT_SIGN (_v, o._v, a, b);
   result = Udiv (a, b);
-  m_value = sign ? _cairo_uint128_negate (result) : result;
+  _v = sign ? _cairo_uint128_negate (result) : result;
 }
 
 cairo_uint128_t
-HighPrecision::Udiv (cairo_uint128_t a, cairo_uint128_t b)
+uint64x64_t::Udiv (cairo_uint128_t a, cairo_uint128_t b)
 {
   cairo_uquorem128_t qr = _cairo_uint128_divrem (a, b);
   cairo_uint128_t result = _cairo_uint128_lsl (qr.quo, 64);
@@ -113,16 +111,16 @@ HighPrecision::Udiv (cairo_uint128_t a, cairo_uint128_t b)
 }
 
 void 
-HighPrecision::MulByInvert (const HighPrecision &o)
+uint64x64_t::MulByInvert (const uint64x64_t &o)
 {
-  bool negResult = _cairo_int128_negative (m_value);
-  cairo_uint128_t a = negResult?_cairo_int128_negate(m_value):m_value;
-  cairo_uint128_t result = UmulByInvert (a, o.m_value);
+  bool negResult = _cairo_int128_negative (_v);
+  cairo_uint128_t a = negResult?_cairo_int128_negate(_v):_v;
+  cairo_uint128_t result = UmulByInvert (a, o._v);
 
-  m_value = negResult?_cairo_int128_negate(result):result;
+  _v = negResult?_cairo_int128_negate(result):result;
 }
 cairo_uint128_t
-HighPrecision::UmulByInvert (cairo_uint128_t a, cairo_uint128_t b)
+uint64x64_t::UmulByInvert (cairo_uint128_t a, cairo_uint128_t b)
 {
   cairo_uint128_t result;
   cairo_uint128_t hi, mid;
@@ -134,8 +132,8 @@ HighPrecision::UmulByInvert (cairo_uint128_t a, cairo_uint128_t b)
   result = _cairo_uint128_add (hi,mid);
   return result;
 }
-HighPrecision 
-HighPrecision::Invert (uint64_t v)
+uint64x64_t 
+uint64x64_t::Invert (uint64_t v)
 {
   NS_ASSERT (v > 1);
   cairo_uint128_t a, factor;
@@ -143,39 +141,16 @@ HighPrecision::Invert (uint64_t v)
   a.lo = 0;
   factor.hi = 0;
   factor.lo = v;
-  HighPrecision result;
-  result.m_value = Udiv (a, factor);
-  HighPrecision tmp = HighPrecision (v, false);
+  uint64x64_t result;
+  result._v = Udiv (a, factor);
+  uint64x64_t tmp = uint64x64_t (v, 0);
   tmp.MulByInvert (result);
-  if (tmp.GetInteger () != 1)
+  if (tmp.GetHigh () != 1)
     {
       cairo_uint128_t one = {1, 0};
-      result.m_value = _cairo_uint128_add (result.m_value, one);
+      result._v = _cairo_uint128_add (result._v, one);
     }
   return result;
-}
-
-int64_t
-HighPrecision::GetHigh (void) const
-{
-  NS_FATAL_ERROR ("XXX this function unavailable for high-precision-as-cairo; patch requested");
-  return 0;
-}
-
-uint64_t
-HighPrecision::GetLow (void) const
-{
-  NS_FATAL_ERROR ("XXX this function unavailable for high-precision-as-cairo; patch requested");
-  return 0;
-}
-
-std::ostream &operator << (std::ostream &os, const HighPrecision &hp)
-{
-  return os;
-}
-std::istream &operator >> (std::istream &is, HighPrecision &hp)
-{
-  return is;
 }
 
 

@@ -26,13 +26,10 @@
 #include "ns3/string.h"
 #include "ns3/object.h"
 #include "ns3/config.h"
-#include "ns3/log.h"
 #include <math.h>
 #include <sstream>
 
 namespace ns3 {
-
-NS_LOG_COMPONENT_DEFINE("Time");
 
 Time::Time (const std::string& s)
 {
@@ -100,7 +97,6 @@ Time::SetResolution (enum Unit resolution)
 void 
 Time::SetResolution (enum Unit unit, struct Resolution *resolution)
 {
-  NS_LOG_FUNCTION (unit << resolution);
   int8_t power [LAST] = {15, 12, 9, 6, 3, 0};
   for (int i = 0; i < Time::LAST; i++)
     {
@@ -110,30 +106,26 @@ Time::SetResolution (enum Unit unit, struct Resolution *resolution)
       info->factor = factor;
       if (shift == 0)
 	{
-	  info->timeFrom = HighPrecision (1, false);
-	  info->timeTo = HighPrecision (1, false);
+	  info->timeFrom = uint64x64_t (1, 0);
+	  info->timeTo = uint64x64_t (1, 0);
 	  info->toMul = true;
 	  info->fromMul = true;
 	}
       else if (shift > 0)
 	{
-	  info->timeFrom = HighPrecision (factor, false);
-	  info->timeTo = HighPrecision::Invert (factor);
+	  info->timeFrom = uint64x64_t (factor, 0);
+	  info->timeTo = uint64x64_t::Invert (factor);
 	  info->toMul = false;
 	  info->fromMul = true;
 	}
       else
 	{
 	  NS_ASSERT (shift < 0);
-	  info->timeFrom = HighPrecision::Invert (factor);
-	  info->timeTo = HighPrecision (factor, false);
+	  info->timeFrom = uint64x64_t::Invert (factor);
+	  info->timeTo = uint64x64_t (factor, 0);
 	  info->toMul = true;
 	  info->fromMul = false;
 	}
-      NS_LOG_DEBUG ("i=" << i << 
-                    " shift=" << shift << 
-                    " from=" << info->timeFrom <<
-                    " to=" << info->timeTo);
     }
   resolution->unit = unit;
 }
@@ -173,7 +165,7 @@ operator<< (std::ostream& os, const Time & time)
       unit = "unreachable";
       break;
     }
-  uint64_t v = Time::ToInteger (time, Time::GetResolution ());
+  double v = Time::ToDouble (time, Time::GetResolution ());
   os << v << unit;
   return os;
 }
@@ -208,7 +200,9 @@ Bug863TestCase::Bug863TestCase ()
 
 bool Bug863TestCase::DoRun (void)
 {
-  Scalar result = Scalar (0.9) / Scalar (1.0);
+  Scalar a = Scalar (0.9);
+  Scalar b = Scalar (1.0);
+  Scalar result = a / b;
   NS_TEST_ASSERT_MSG_EQ ((result == Scalar (0.9)), true, "Invalid arithmetic result");
   return false;
 }
@@ -260,44 +254,6 @@ TimeSimpleTestCase::DoTearDown (void)
   Time::SetResolution (m_originalResolution);
 }
 
-class ArithTestCase : public TestCase
-{
-public:
-  ArithTestCase ();
-private:
-  virtual bool DoRun (void);
-};
-
-ArithTestCase::ArithTestCase ()
-  : TestCase ("check arithmetic operators")
-{
-}
-bool 
-ArithTestCase::DoRun (void)
-{
-  Time a, b, c;
-  c = a + b;
-  c = a * b;
-  c = a / Seconds (1.0);
-  c = a - b;
-  c += a;
-  c -= a;
-  c /= Seconds (1.0);
-  c *= a;
-  bool x;
-  x = a < b;
-  x = a > b;
-  x = a <= b;
-  x = a >= b;
-  x = a == b;
-  x = a != b;
-  //a = 1.0;
-  //a = 1;
-  return false;
-}
-
-
-
 static class TimeTestSuite : public TestSuite
 {
 public:
@@ -306,7 +262,6 @@ public:
   {
     AddTestCase (new Bug863TestCase ());
     AddTestCase (new TimeSimpleTestCase (Time::US));
-    AddTestCase (new ArithTestCase ());
   }
 } g_timeTestSuite;
 
