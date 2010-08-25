@@ -275,6 +275,10 @@ Int64x64ArithmeticTestCase::DoRun (void)
   // Below, the division loses precision because 2/3 is not
   // representable exactly in 64.64 integers. So, we got
   // something super close but the final rounding kills us.
+  a = V(2);
+  b = V(3);
+  a /= b;
+  a *= b;
   CHECK_EXPECTED (V(2) / V(3) * V(3), 1);
 
   // The example below shows that we really do not lose

@@ -987,7 +987,7 @@ MacLow::CalculateOverallTxTime (Ptr<const Packet> packet,
     {
       txTime += m_phy->CalculateTxDuration (GetRtsSize (), rtsMode, WIFI_PREAMBLE_LONG);
       txTime += GetCtsDuration (hdr->GetAddr1 (), rtsMode);
-      txTime += GetSifs () * Scalar (2);
+      txTime += GetSifs ().To () * 2;
     }
   uint32_t dataSize = GetSize (packet, hdr);
   txTime += m_phy->CalculateTxDuration (dataSize, dataMode, WIFI_PREAMBLE_LONG);
@@ -1047,7 +1047,7 @@ MacLow::NotifyNav (const WifiMacHeader &hdr, WifiMode txMode, WifiPreamble pream
           cts.SetType (WIFI_MAC_CTL_CTS);
           Time navCounterResetCtsMissedDelay = 
             m_phy->CalculateTxDuration (cts.GetSerializedSize (), txMode, preamble) +
-            Scalar (2) * GetSifs () + Scalar (2) * GetSlotTime ();
+            2 * GetSifs ().To () + 2 * GetSlotTime ().To ();
           m_navCounterResetCtsMissed = Simulator::Schedule (navCounterResetCtsMissedDelay,
                                                             &MacLow::NavCounterResetCtsMissed, this,
                                                             Simulator::Now ());

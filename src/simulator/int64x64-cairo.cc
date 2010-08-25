@@ -61,14 +61,14 @@ int64x64_t::Umul (cairo_uint128_t a, cairo_uint128_t b)
   //			2^128 a.h b.h + 2^64*(a.h b.l+b.h a.l) + a.l b.l
   // get the low part a.l b.l
   // multiply the fractional part
-  loPart = _cairo_int64x64_128_mul (a.lo, b.lo);
+  loPart = _cairo_uint64x64_128_mul (a.lo, b.lo);
   // compute the middle part 2^64*(a.h b.l+b.h a.l)
-  midPart = _cairo_uint128_add (_cairo_int64x64_128_mul (a.lo, b.hi),
-                                _cairo_int64x64_128_mul (a.hi, b.lo));
+  midPart = _cairo_uint128_add (_cairo_uint64x64_128_mul (a.lo, b.hi),
+                                _cairo_uint64x64_128_mul (a.hi, b.lo));
   // truncate the low part
   result.lo = _cairo_uint64_add (loPart.hi,midPart.lo);
   // compute the high part 2^128 a.h b.h
-  hiPart = _cairo_int64x64_128_mul (a.hi, b.hi);
+  hiPart = _cairo_uint64x64_128_mul (a.hi, b.hi);
   // truncate the high part and only use the low part
   result.hi = _cairo_uint64_add (hiPart.lo,midPart.hi);
   // if the high part is not zero, put a warning
@@ -124,9 +124,9 @@ int64x64_t::UmulByInvert (cairo_uint128_t a, cairo_uint128_t b)
 {
   cairo_uint128_t result;
   cairo_uint128_t hi, mid;
-  hi = _cairo_int64x64_128_mul (a.hi, b.hi);
-  mid = _cairo_uint128_add (_cairo_int64x64_128_mul (a.hi, b.lo),
-                           _cairo_int64x64_128_mul (a.lo, b.hi));
+  hi = _cairo_uint64x64_128_mul (a.hi, b.hi);
+  mid = _cairo_uint128_add (_cairo_uint64x64_128_mul (a.hi, b.lo),
+                           _cairo_uint64x64_128_mul (a.lo, b.hi));
   mid.lo = mid.hi;
   mid.hi = 0;
   result = _cairo_uint128_add (hi,mid);

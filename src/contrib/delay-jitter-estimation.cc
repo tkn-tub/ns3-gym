@@ -76,7 +76,7 @@ DelayJitterEstimationTimestampTag::GetTxTime (void) const
 DelayJitterEstimation::DelayJitterEstimation ()
   : m_previousRx (Simulator::Now ()),
     m_previousRxTx (Simulator::Now ()),
-    m_jitter (Seconds (0.0)),
+    m_jitter (0),
     m_delay (Seconds (0.0))
 {}
 void 
@@ -98,7 +98,7 @@ DelayJitterEstimation::RecordRx (Ptr<const Packet> packet)
   tag.GetTxTime ();
 
   Time delta = (Simulator::Now () - m_previousRx) - (tag.GetTxTime () - m_previousRxTx);
-  m_jitter += (Abs (delta) - m_jitter ) / Scalar (16.0);
+  m_jitter += (Abs (delta).To () - m_jitter) / 16;
   m_previousRx = Simulator::Now ();
   m_previousRxTx = tag.GetTxTime ();
   m_delay = Simulator::Now () - tag.GetTxTime ();
@@ -109,10 +109,10 @@ DelayJitterEstimation::GetLastDelay (void) const
 {
   return m_delay;
 }
-Time
+uint64_t
 DelayJitterEstimation::GetLastJitter (void) const
 {
-  return m_jitter;
+  return m_jitter.GetHigh ();
 }
 
 } // namespace ns3

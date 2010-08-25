@@ -1651,7 +1651,7 @@ void TcpSocketImpl::LastAckTimeout ()
 void TcpSocketImpl::PersistTimeout ()
 {
   NS_LOG_LOGIC ("PersistTimeout expired at "<<Simulator::Now ().GetSeconds ());
-  m_persistTime = Scalar(2)*m_persistTime;
+  m_persistTime = 2 * m_persistTime.To ();
   m_persistTime = std::min(Seconds(60),m_persistTime); //maxes out at 60
   //the persist timeout sends exactly one byte probes
   //this is explicit in stevens, and kind of in rfc793 p42, rfc1122 sec4.2.2.17

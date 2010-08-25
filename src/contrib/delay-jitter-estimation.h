@@ -45,12 +45,12 @@ public:
    *
    * \returns the updated jitter.
    */
-  Time GetLastJitter (void) const;
+  uint64_t GetLastJitter (void) const;
 
 private:
   Time m_previousRx;
   Time m_previousRxTx;
-  Time m_jitter;
+  int64x64_t m_jitter;
   Time m_delay;
 };
 

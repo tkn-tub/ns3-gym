@@ -23,13 +23,12 @@
 #include "ns3/assert.h"
 #include "ns3/attribute.h"
 #include "ns3/attribute-helper.h"
+#include "int64x64.h"
 #include <stdint.h>
 #include <math.h>
 #include <ostream>
 
 namespace ns3 {
-
-typedef uint64_t Scalar;
 
 /**
  * \ingroup simulator
@@ -52,7 +51,7 @@ typedef uint64_t Scalar;
  * multiply multiple TimeUnit objects. The return type of any such
  * arithmetic expression is always a TimeUnit object.
  *
- * The ns3::Scalar, ns3::Time, ns3::TimeSquare, and ns3::TimeInvert classes
+ * The ns3::uint64_t, ns3::Time, ns3::TimeSquare, and ns3::TimeInvert classes
  * are aliases for the TimeUnit<0>, TimeUnit<1>, TimeUnit<2> and TimeUnit<-1>
  * types respectively.
  *
@@ -65,7 +64,7 @@ typedef uint64_t Scalar;
  * Time<3> t5 = t3 * t1;
  * Time<-2> t6 = t1 / t5;
  * TimeSquare t7 = t3;
- * Scalar s = t4;
+ * uint64_t s = t4;
  * \endcode
  *
  * If you try to assign the result of an expression which does not
@@ -90,7 +89,7 @@ typedef uint64_t Scalar;
  * ==, !=, <, >, <=, >=. It is thus easy to add, substract, or
  * multiply multiple Time objects.
  *
- * The ns3::Scalar, ns3::TimeSquare, and ns3::TimeInvert classes
+ * The ns3::uint64_t, ns3::TimeSquare, and ns3::TimeInvert classes
  * are backward-compatibility aliases for ns3::Time.
  *
  * For example:
@@ -262,7 +261,7 @@ public:
    */
   inline double GetSeconds (void) const
   {
-    return ToDouble (*this, Time::S);
+    return ToDouble (Time::S);
   }
 
   /**
@@ -271,7 +270,7 @@ public:
    */
   inline int64_t GetMilliSeconds (void) const
   {
-    return ToInteger (*this, Time::MS);
+    return ToInteger (Time::MS);
   }
   /**
    * \returns an approximation in microseconds of the time stored in this
@@ -279,7 +278,7 @@ public:
    */
   inline int64_t GetMicroSeconds (void) const
   {
-    return ToInteger (*this, Time::US);
+    return ToInteger (Time::US);
   }
   /**
    * \returns an approximation in nanoseconds of the time stored in this
@@ -287,7 +286,7 @@ public:
    */
   inline int64_t GetNanoSeconds (void) const
   {
-    return ToInteger (*this, Time::NS);
+    return ToInteger (Time::NS);
   }
   /**
    * \returns an approximation in picoseconds of the time stored in this
@@ -295,7 +294,7 @@ public:
    */
   inline int64_t GetPicoSeconds (void) const
   {
-    return ToInteger (*this, Time::PS);
+    return ToInteger (Time::PS);
   }
   /**
    * \returns an approximation in femtoseconds of the time stored in this
@@ -303,7 +302,7 @@ public:
    */
   inline int64_t GetFemtoSeconds (void) const
   {
-    return ToInteger (*this, Time::FS);
+    return ToInteger (Time::FS);
   }
   /**
    * \returns an approximation of the time stored in this
@@ -359,32 +358,16 @@ public:
     return Time (value);
   }
   /**
-   * \param value to convert into a Time object
-   * \param timeUnit the unit of the value to convert
-   * \return a new Time object
-   *
-   * \sa FromInteger, ToInteger, ToDouble
-   */
-  inline static Time FromDouble (double value, enum Unit timeUnit)
-  {
-    struct Information *info = PeekInformation (timeUnit);
-    // DO NOT REMOVE this temporary variable. It's here
-    // to work around a compiler bug in gcc 3.4
-    double retval = value;
-    retval *= info->timeFrom;
-    return Time (retval);
-  }
-  /**
    * \param time a Time object
    * \param timeUnit the unit of the value to return
    *
    * Convert the input time into an integer value according to the requested
    * time unit.
    */
-  inline static int64_t ToInteger (const Time &time, enum Unit timeUnit)
+  inline int64_t ToInteger (enum Unit timeUnit) const
   {
     struct Information *info = PeekInformation (timeUnit);
-    int64_t v = time.m_data;
+    int64_t v = m_data;
     if (info->toMul)
       {
         v *= info->factor;
@@ -396,18 +379,67 @@ public:
     return v;
   }
   /**
+   * \param value to convert into a Time object
+   * \param timeUnit the unit of the value to convert
+   * \return a new Time object
+   *
+   * \sa FromInteger, ToInteger, ToDouble
+   */
+  inline static Time FromDouble (double value, enum Unit timeUnit)
+  {
+    return From (int64x64_t (value), timeUnit);
+  }
+  /**
    * \param time a Time object
    * \param timeUnit the unit of the value to return
    *
    * Convert the input time into a floating point value according to the requested
    * time unit.
    */
-  inline static double ToDouble (const Time &time, enum Unit timeUnit)
+  inline double ToDouble (enum Unit timeUnit) const
+  {
+    return To (timeUnit).GetDouble ();
+  }
+  static inline Time From (const int64x64_t &from, enum Unit timeUnit)
   {
     struct Information *info = PeekInformation (timeUnit);
-    double retval = time.m_data;
-    retval *= info->timeTo;
+    // DO NOT REMOVE this temporary variable. It's here
+    // to work around a compiler bug in gcc 3.4
+    int64x64_t retval = from; 
+    if (info->fromMul)
+      {
+        retval *= info->timeFrom;
+      }
+    else
+      {
+        retval.MulByInvert (info->timeFrom);
+      }
+    return Time (retval);
+  }
+  inline int64x64_t To (enum Unit timeUnit) const
+  {
+    struct Information *info = PeekInformation (timeUnit);
+    int64x64_t retval = int64x64_t (m_data);
+    if (info->toMul)
+      {
+        retval *= info->timeTo;
+      }
+    else
+      {
+        retval.MulByInvert (info->timeTo);
+      }
     return retval;
+  }
+  inline Time (const int64x64_t &value)
+    : m_data (value.GetHigh ())
+  {}
+  inline static Time From (const int64x64_t &value)
+  {
+    return Time (value);
+  }
+  inline int64x64_t To (void) const
+  {
+    return int64x64_t (m_data);
   }
 
 private:
@@ -416,8 +448,8 @@ private:
     bool toMul;
     bool fromMul;
     uint64_t factor;
-    double timeTo;
-    double timeFrom;
+    int64x64_t timeTo;
+    int64x64_t timeFrom;
   };
   struct Resolution
   {
@@ -446,14 +478,8 @@ private:
   friend bool operator > (const Time &lhs, const Time &rhs);
   friend Time operator + (const Time &lhs, const Time &rhs);
   friend Time operator - (const Time &lhs, const Time &rhs);
-  friend Time operator * (const Time &lhs, Scalar rhs);
-  friend Time operator * (Scalar lhs, const Time &rhs);
-  friend Time operator / (const Time &lhs, Scalar rhs);
-  friend Scalar operator / (const Time &lhs, const Time &rhs);
   friend Time &operator += (Time &lhs, const Time &rhs);
   friend Time &operator -= (Time &lhs, const Time &rhs);
-  friend Time &operator *= (Time &lhs, Scalar rhs);
-  friend Time &operator /= (Time &lhs, Scalar rhs);
   friend Time Abs (const Time &time);
   friend Time Max (const Time &ta, const Time &tb);
   friend Time Min (const Time &ta, const Time &tb);
@@ -499,27 +525,6 @@ inline Time operator - (const Time &lhs, const Time &rhs)
 {
   return Time (lhs.m_data - rhs.m_data);
 }
-inline Time operator * (const Time &lhs, Scalar rhs)
-{
-  Time retval = lhs;
-  retval *= rhs;
-  return retval;
-}
-inline Time operator * (Scalar lhs, const Time &rhs)
-{
-  return rhs * lhs;
-}
-inline Time operator / (const Time &lhs, Scalar rhs)
-{
-  Time retval = lhs;
-  retval /= rhs;
-  return retval;
-}
-inline Scalar operator / (const Time &lhs, const Time &rhs)
-{
-  int64_t retval = lhs.GetTimeStep () / rhs.GetTimeStep ();
-  return retval;
-}
 inline Time &operator += (Time &lhs, const Time &rhs)
 {
   lhs.m_data += rhs.m_data;
@@ -528,16 +533,6 @@ inline Time &operator += (Time &lhs, const Time &rhs)
 inline Time &operator -= (Time &lhs, const Time &rhs)
 {
   lhs.m_data -= rhs.m_data;
-  return lhs;
-}
-inline Time &operator *= (Time &lhs, Scalar rhs)
-{
-  lhs.m_data *= rhs;
-  return lhs;
-}
-inline Time &operator /= (Time &lhs, Scalar rhs)
-{
-  lhs.m_data /= rhs;
   return lhs;
 }
 
@@ -584,7 +579,7 @@ std::istream& operator>> (std::istream& is, Time & time);
  * For example:
  * \code
  * Time t = Seconds (2.0);
- * Simulator::Schedule (NanoSeconds (5.0), ...);
+ * Simulator::Schedule (Seconds (5.0), ...);
  * \endcode
  * \param seconds seconds value
  */
@@ -664,14 +659,37 @@ inline Time FemtoSeconds (uint64_t fs)
   return Time::FromInteger (fs, Time::FS);
 }
 
+
+inline Time Seconds (int64x64_t seconds)
+{
+  return Time::From (seconds, Time::S);
+}
+inline Time MilliSeconds (int64x64_t ms)
+{
+  return Time::From (ms, Time::MS);
+}
+inline Time MicroSeconds (int64x64_t us)
+{
+  return Time::From (us, Time::US);
+}
+inline Time NanoSeconds (int64x64_t ns)
+{
+  return Time::From (ns, Time::NS);
+}
+inline Time PicoSeconds (int64x64_t ps)
+{
+  return Time::From (ps, Time::PS);
+}
+inline Time FemtoSeconds (int64x64_t fs)
+{
+  return Time::From (fs, Time::FS);
+}
+
 // internal function not publicly documented
 inline Time TimeStep (uint64_t ts)
 {
   return Time (ts);
 }
-
-typedef Time TimeInvert;
-typedef Time TimeSquare;
 
 /**
  * \class ns3::TimeValue

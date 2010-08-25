@@ -136,7 +136,7 @@ private:
 
   Ptr<SpectrumValue> m_txPowerSpectralDensity;
   Time   m_period;
-  Scalar m_dutyCycle;
+  double m_dutyCycle;
   Time m_startTime;
   bool m_active;
 

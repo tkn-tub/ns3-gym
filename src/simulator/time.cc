@@ -106,23 +106,23 @@ Time::SetResolution (enum Unit unit, struct Resolution *resolution)
       info->factor = factor;
       if (shift == 0)
 	{
-	  info->timeFrom = 1.0;
-	  info->timeTo = 1.0;
+	  info->timeFrom = int64x64_t (1);
+	  info->timeTo = int64x64_t (1);
 	  info->toMul = true;
 	  info->fromMul = true;
 	}
       else if (shift > 0)
 	{
-	  info->timeFrom = factor;
-	  info->timeTo = 1.0 / factor;
+	  info->timeFrom = int64x64_t (factor);
+	  info->timeTo = int64x64_t::Invert (factor);
 	  info->toMul = false;
 	  info->fromMul = true;
 	}
       else
 	{
 	  NS_ASSERT (shift < 0);
-	  info->timeFrom = 1.0 / factor;
-	  info->timeTo = factor;
+	  info->timeFrom = int64x64_t::Invert (factor);
+	  info->timeTo = int64x64_t (factor);
 	  info->toMul = true;
 	  info->fromMul = false;
 	}
@@ -165,7 +165,7 @@ operator<< (std::ostream& os, const Time & time)
       unit = "unreachable";
       break;
     }
-  double v = Time::ToDouble (time, Time::GetResolution ());
+  int64x64_t v = time.To ();
   os << v << unit;
   return os;
 }

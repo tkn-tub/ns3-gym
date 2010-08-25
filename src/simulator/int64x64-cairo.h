@@ -20,7 +20,7 @@ public:
     _v.hi = 0;
     _v.lo = 0;
   }
-  explicit inline int64x64_t (double value)
+  inline int64x64_t (double value)
   {
 #define HPCAIRO_MAX_64 18446744073709551615.0
     double fhi = floor (value);
@@ -30,22 +30,37 @@ public:
     _v.lo = lo;
 #undef HPCAIRO_MAX_64
   }
-  explicit inline int64x64_t (int v)
+  inline int64x64_t (int v)
   {
     _v.hi = v;
     _v.lo = 0;
   }
-  explicit inline int64x64_t (long int v)
+  inline int64x64_t (long int v)
   {
     _v.hi = v;
     _v.lo = 0;
   }
-  explicit inline int64x64_t (long long int v)
+  inline int64x64_t (long long int v)
   {
     _v.hi = v;
     _v.lo = 0;
   }
-  explicit inline int64x64_t (int64_t hi, uint64_t lo)
+  inline int64x64_t (unsigned int v)
+  {
+    _v.hi = v;
+    _v.lo = 0;
+  }
+  inline int64x64_t (unsigned long int v)
+  {
+    _v.hi = v;
+    _v.lo = 0;
+  }
+  inline int64x64_t (unsigned long long int v)
+  {
+    _v.hi = v;
+    _v.lo = 0;
+  }
+  inline int64x64_t (int64_t hi, uint64_t lo)
   {
     _v.hi = hi;
     _v.lo = lo;
@@ -96,10 +111,6 @@ private:
   friend int64x64_t &operator -= (int64x64_t &lhs, const int64x64_t &rhs);
   friend int64x64_t &operator *= (int64x64_t &lhs, const int64x64_t &rhs);
   friend int64x64_t &operator /= (int64x64_t &lhs, const int64x64_t &rhs);
-  friend int64x64_t operator + (const int64x64_t &lhs, const int64x64_t &rhs);
-  friend int64x64_t operator - (const int64x64_t &lhs, const int64x64_t &rhs);
-  friend int64x64_t operator * (const int64x64_t &lhs, const int64x64_t &rhs);
-  friend int64x64_t operator / (const int64x64_t &lhs, const int64x64_t &rhs);
   friend int64x64_t operator + (const int64x64_t &lhs);
   friend int64x64_t operator - (const int64x64_t &lhs);
   friend int64x64_t operator ! (const int64x64_t &lhs);

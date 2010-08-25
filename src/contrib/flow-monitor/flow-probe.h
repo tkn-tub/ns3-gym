@@ -57,7 +57,7 @@ public:
     std::vector<uint32_t> packetsDropped;
     /// bytesDropped[reasonCode] => number of dropped bytes
     std::vector<uint64_t> bytesDropped;
-    /// divide by 'Scalar (packets)' to get the average delay from the
+    /// divide by 'packets' to get the average delay from the
     /// first (entry) probe up to this one (partial delay)
     Time delayFromFirstProbeSum;
     /// Number of bytes seen of this flow

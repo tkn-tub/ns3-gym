@@ -73,15 +73,15 @@
 /********** Holding times **********/
 
 /// Neighbor holding time.
-#define OLSR_NEIGHB_HOLD_TIME	(Scalar (3) * OLSR_REFRESH_INTERVAL)
+#define OLSR_NEIGHB_HOLD_TIME	(3 * OLSR_REFRESH_INTERVAL.To ())
 /// Top holding time.
-#define OLSR_TOP_HOLD_TIME	(Scalar (3) * m_tcInterval)
+#define OLSR_TOP_HOLD_TIME	(3 * m_tcInterval.To ())
 /// Dup holding time.
 #define OLSR_DUP_HOLD_TIME	Seconds (30)
 /// MID holding time.
-#define OLSR_MID_HOLD_TIME	(Scalar (3) * m_midInterval)
+#define OLSR_MID_HOLD_TIME	(3 * m_midInterval.To ())
 /// HNA holding time.
-#define OLSR_HNA_HOLD_TIME  (Scalar (3) * m_hnaInterval)
+#define OLSR_HNA_HOLD_TIME  (3 * m_hnaInterval.To ())
 
 /********** Link types **********/
 
