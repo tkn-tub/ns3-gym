@@ -27,13 +27,13 @@ NS_LOG_COMPONENT_DEFINE ("SupportedRates");
 namespace ns3 {
 
 SupportedRates::SupportedRates ()
-  : m_nRates (0)
+  : extended (this), m_nRates (0)
 {}
 
 void 
 SupportedRates::AddSupportedRate (uint32_t bs)
 {
-  NS_ASSERT (m_nRates < 8);
+  NS_ASSERT (m_nRates < MAX_SUPPORTED_RATES);
   if (IsSupportedRate (bs))
     {
       return;
@@ -108,12 +108,18 @@ SupportedRates::ElementId () const
 uint8_t
 SupportedRates::GetInformationFieldSize () const
 {
-  return m_nRates;
+  // The Supported Rates Information Element contains only the first 8
+  // supported rates - the remainder appear in the Extended Supported
+  // Rates Information Element.
+  return m_nRates > 8 ? 8 : m_nRates;
 }
 void
 SupportedRates::SerializeInformationField (Buffer::Iterator start) const
 {
-  start.Write (m_rates, m_nRates);
+  // The Supported Rates Information Element contains only the first 8
+  // supported rates - the remainder appear in the Extended Supported
+  // Rates Information Element.
+  start.Write (m_rates, m_nRates > 8 ? 8 : m_nRates);
 }
 uint8_t
 SupportedRates::DeserializeInformationField (Buffer::Iterator start,
@@ -123,6 +129,89 @@ SupportedRates::DeserializeInformationField (Buffer::Iterator start,
   m_nRates = length;
   start.Read (m_rates, m_nRates);
   return m_nRates;
+}
+
+ExtendedSupportedRatesIE::ExtendedSupportedRatesIE ()
+{}
+
+ExtendedSupportedRatesIE::ExtendedSupportedRatesIE (SupportedRates *sr)
+{
+  m_supportedRates = sr;
+}
+
+WifiInformationElementId
+ExtendedSupportedRatesIE::ElementId () const
+{
+  return IE_EXTENDED_SUPPORTED_RATES;
+}
+
+uint8_t
+ExtendedSupportedRatesIE::GetInformationFieldSize () const
+{
+  // If there are 8 or fewer rates then we don't need an Extended
+  // Supported Rates IE and so could return zero here, but we're
+  // overriding the GetSerializedSize() method, so if this function is
+  // invoked in that case then it indicates a programming error. Hence
+  // we have an assertion on that condition.
+  NS_ASSERT(m_supportedRates->m_nRates > 8);
+
+  // The number of rates we have beyond the initial 8 is the size of
+  // the information field.
+  return (m_supportedRates->m_nRates - 8);
+}
+
+void
+ExtendedSupportedRatesIE::SerializeInformationField (Buffer::Iterator start) const
+{
+  // If there are 8 or fewer rates then there should be no Extended
+  // Supported Rates Information Element at all so being here would
+  // seemingly indicate a programming error.
+  //
+  // Our overridden version of the Serialize() method should ensure
+  // that this routine is never invoked in that case (by ensuring that
+  // WifiInformationElement::Serialize() is not invoked).
+  NS_ASSERT(m_supportedRates->m_nRates > 8);
+  start.Write (m_supportedRates->m_rates + 8, m_supportedRates->m_nRates - 8);
+}
+
+Buffer::Iterator
+ExtendedSupportedRatesIE::Serialize (Buffer::Iterator start) const
+{
+  // If there are 8 or fewer rates then we don't need an Extended
+  // Supported Rates IE, so we don't serialise anything.
+  if (m_supportedRates->m_nRates <= 8)
+    {
+      return start;
+    }
+
+  // If there are more than 8 rates then we serialise as per normal.
+  return WifiInformationElement::Serialize (start);
+}
+
+uint16_t
+ExtendedSupportedRatesIE::GetSerializedSize () const
+{
+  // If there are 8 or fewer rates then we don't need an Extended
+  // Supported Rates IE, so it's serialised length will be zero.
+  if (m_supportedRates->m_nRates <= 8)
+    {
+      return 0;
+    }
+
+  // Otherwise, the size of it will be the number of supported rates
+  // beyond 8, plus 2 for the Element ID and Length.
+  return WifiInformationElement::GetSerializedSize ();
+}
+
+uint8_t
+ExtendedSupportedRatesIE::DeserializeInformationField (Buffer::Iterator start,
+                                                       uint8_t length)
+{
+  NS_ASSERT (length > 0);
+  NS_ASSERT (m_supportedRates->m_nRates + length <= MAX_SUPPORTED_RATES);
+  start.Read (m_supportedRates->m_rates + m_supportedRates->m_nRates, length);
+  m_supportedRates->m_nRates += length;
+  return length;
 }
 
 std::ostream &operator << (std::ostream &os, const SupportedRates &rates)

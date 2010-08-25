@@ -27,6 +27,65 @@
 
 namespace ns3 {
 
+/**
+ * This defines the maximum number of supported rates that a STA is
+ * allowed to have. Currently this number is set for IEEE 802.11b/g
+ * stations which need 2 rates each from Clauses 15 and 18, and then 8
+ * from Clause 19.
+ */
+#define MAX_SUPPORTED_RATES (12)
+
+class SupportedRates;
+
+/**
+ * \brief The Extended Supported Rates Information Element
+ *
+ * This class knows how to serialise and deserialise the Extended
+ * Supported Rates Element that holds (non-HT) rates beyond the 8 that
+ * the original Supported Rates element can carry.
+ *
+ * The \c SupportedRates class still records all the rates, and an
+ * instance of \c ExtendedSupportedRatesIE lies within \c
+ * SupportedRates.
+ */
+class ExtendedSupportedRatesIE : public WifiInformationElement {
+public:
+  ExtendedSupportedRatesIE ();
+  ExtendedSupportedRatesIE (SupportedRates *rates);
+
+  WifiInformationElementId ElementId () const;
+  uint8_t GetInformationFieldSize () const;
+  void SerializeInformationField (Buffer::Iterator start) const;
+  uint8_t DeserializeInformationField (Buffer::Iterator start,
+                                       uint8_t length);
+
+  /*
+   * This information element is a bit special in that it is only
+   * included if there are more than 8 rates. To support this we
+   * override the Serialize and GetSerializedSize methods of
+   * WifiInformationElement.
+   */
+  Buffer::Iterator Serialize (Buffer::Iterator start) const;
+  uint16_t GetSerializedSize () const;
+private:
+  /**
+   * This member points to the SupportedRates object that contains the
+   * actual rate details. This class is a friend of that, so we have
+   * access to all the private data we need.
+   */
+  SupportedRates *m_supportedRates;
+};
+
+
+/**
+ * \brief The Supported Rates Information Element
+ *
+ * This class knows how to serialise and deserialise the Supported
+ * Rates Element that holds the first 8 (non-HT) supported rates.
+ *
+ * The \c ExtendedSupportedRatesIE class (of which an instance exists
+ * in objects of this class) deals with rates beyond the first 8.
+ */
 class SupportedRates : public WifiInformationElement {
 public:
   SupportedRates ();
@@ -45,9 +104,19 @@ public:
   void SerializeInformationField (Buffer::Iterator start) const;
   uint8_t DeserializeInformationField (Buffer::Iterator start,
                                   uint8_t length);
+
+  /*
+   * We support the Extended Supported Rates Information Element
+   * through the ExtendedSupportedRatesIE object which is declared
+   * above. We allow this class to be a friend so that it can access
+   * our private data detailing the rates, and create an instance as
+   * extended.
+   */
+  friend class ExtendedSupportedRatesIE;
+  ExtendedSupportedRatesIE extended;
 private:
   uint8_t m_nRates;
-  uint8_t m_rates[8];
+  uint8_t m_rates[MAX_SUPPORTED_RATES];
 };
 
 std::ostream &operator << (std::ostream &os, const SupportedRates &rates);
