@@ -1,4 +1,4 @@
-#include "uint64x64.h"
+#include "int64x64.h"
 #include <stdint.h>
 #include <iostream>
 #include <sstream>
@@ -28,7 +28,7 @@ static uint64_t PowerOfTen (uint8_t n)
   return retval;
 }
 
-std::ostream &operator << (std::ostream &os, const uint64x64_t &value)
+std::ostream &operator << (std::ostream &os, const int64x64_t &value)
 {
   int64_t hi = value.GetHigh ();
   os << ((hi<0)?"-":"+") << ((hi<0)?-hi:hi) << ".";
@@ -59,7 +59,7 @@ static uint64_t ReadDigits (std::string str)
   return retval;
 }
 
-std::istream &operator >> (std::istream &is, uint64x64_t &value)
+std::istream &operator >> (std::istream &is, int64x64_t &value)
 {
   std::string str;
 
@@ -104,7 +104,7 @@ std::istream &operator >> (std::istream &is, uint64x64_t &value)
       lo = 0;
     }
   hi = negative?-hi:hi;
-  value = uint64x64_t (hi, lo);
+  value = int64x64_t (hi, lo);
   return is;
 }
 
@@ -115,30 +115,30 @@ std::istream &operator >> (std::istream &is, uint64x64_t &value)
 namespace ns3
 {
 
-class Uint64x64FracTestCase : public TestCase
+class Int64x64FracTestCase : public TestCase
 {
 public:
-  Uint64x64FracTestCase ();
+  Int64x64FracTestCase ();
   virtual bool DoRun (void);
   void CheckFrac (int64_t hi, uint64_t lo);
 };
 
 void 
-Uint64x64FracTestCase::CheckFrac (int64_t hi, uint64_t lo)
+Int64x64FracTestCase::CheckFrac (int64_t hi, uint64_t lo)
 {
-  uint64x64_t tmp = uint64x64_t (hi,lo);
+  int64x64_t tmp = int64x64_t (hi,lo);
   NS_TEST_EXPECT_MSG_EQ (tmp.GetHigh (), hi,
 			 "High part does not match");
   NS_TEST_EXPECT_MSG_EQ (tmp.GetLow (), lo,
 			 "Low part does not match");
 }
 
-Uint64x64FracTestCase::Uint64x64FracTestCase ()
+Int64x64FracTestCase::Int64x64FracTestCase ()
   : TestCase ("Check that we can manipulate the high and low part of every number")
 {
 }
 bool
-Uint64x64FracTestCase::DoRun (void)
+Int64x64FracTestCase::DoRun (void)
 {
   CheckFrac (1, 0);
   CheckFrac (1, 1);
@@ -148,29 +148,29 @@ Uint64x64FracTestCase::DoRun (void)
 }
 
 
-class Uint64x64InputTestCase : public TestCase
+class Int64x64InputTestCase : public TestCase
 {
 public:
-  Uint64x64InputTestCase ();
+  Int64x64InputTestCase ();
   virtual bool DoRun (void);
   void CheckString (std::string str, int64_t hi, uint64_t lo);
 };
-Uint64x64InputTestCase::Uint64x64InputTestCase ()
-  : TestCase ("Check that we parse Uint64x64 numbers as strings")
+Int64x64InputTestCase::Int64x64InputTestCase ()
+  : TestCase ("Check that we parse Int64x64 numbers as strings")
 {
 }
 void 
-Uint64x64InputTestCase::CheckString (std::string str, int64_t hi, uint64_t lo)
+Int64x64InputTestCase::CheckString (std::string str, int64_t hi, uint64_t lo)
 {
   std::istringstream iss;
   iss.str (str);
-  uint64x64_t hp;
+  int64x64_t hp;
   iss >> hp;
   NS_TEST_EXPECT_MSG_EQ (hp.GetHigh (), hi, "High parts do not match for input string " << str);
   NS_TEST_EXPECT_MSG_EQ (hp.GetLow (), lo, "Low parts do not match for input string " << str);
 }
 bool
-Uint64x64InputTestCase::DoRun (void)
+Int64x64InputTestCase::DoRun (void)
 {
   CheckString ("1", 1, 0);
   CheckString ("+1", 1, 0);
@@ -190,30 +190,30 @@ Uint64x64InputTestCase::DoRun (void)
   return GetErrorStatus ();
 }
 
-class Uint64x64InputOutputTestCase : public TestCase
+class Int64x64InputOutputTestCase : public TestCase
 {
 public:
-  Uint64x64InputOutputTestCase ();
+  Int64x64InputOutputTestCase ();
   virtual bool DoRun (void);
   void CheckString (std::string str);
 };
-Uint64x64InputOutputTestCase::Uint64x64InputOutputTestCase ()
-  : TestCase ("Check that we can roundtrip Uint64x64 numbers as strings")
+Int64x64InputOutputTestCase::Int64x64InputOutputTestCase ()
+  : TestCase ("Check that we can roundtrip Int64x64 numbers as strings")
 {
 }
 void 
-Uint64x64InputOutputTestCase::CheckString (std::string str)
+Int64x64InputOutputTestCase::CheckString (std::string str)
 {
   std::istringstream iss;
   iss.str (str);
-  uint64x64_t value;
+  int64x64_t value;
   iss >> value;
   std::ostringstream oss;
   oss << value;
   NS_TEST_EXPECT_MSG_EQ (oss.str (), str, "Converted string does not match expected string");
 }
 bool
-Uint64x64InputOutputTestCase::DoRun (void)
+Int64x64InputOutputTestCase::DoRun (void)
 {
   CheckString ("+1.0");
   CheckString ("-1.0");
@@ -230,23 +230,23 @@ Uint64x64InputOutputTestCase::DoRun (void)
   NS_TEST_ASSERT_MSG_EQ ((a).GetHigh (),b,"Arithmetic failure: " << ((a).GetHigh ()) << "!=" << (b))
 
 #define V(v) \
-  uint64x64_t (v)
+  int64x64_t (v)
 
-class Uint64x64ArithmeticTestCase : public TestCase
+class Int64x64ArithmeticTestCase : public TestCase
 {
 public:
-  Uint64x64ArithmeticTestCase ();
+  Int64x64ArithmeticTestCase ();
   virtual bool DoRun (void);
 };
 
-Uint64x64ArithmeticTestCase::Uint64x64ArithmeticTestCase ()
+Int64x64ArithmeticTestCase::Int64x64ArithmeticTestCase ()
   : TestCase ("Check basic arithmetic operations")
 {
 }
 bool
-Uint64x64ArithmeticTestCase::DoRun (void)
+Int64x64ArithmeticTestCase::DoRun (void)
 {
-  uint64x64_t a, b;
+  int64x64_t a, b;
 
   CHECK_EXPECTED (V(1) - V(1), 0);
   CHECK_EXPECTED (V(1) - V(2), -1);
@@ -285,85 +285,85 @@ Uint64x64ArithmeticTestCase::DoRun (void)
   return GetErrorStatus ();
 }
 
-class Uint64x64Bug455TestCase : public TestCase
+class Int64x64Bug455TestCase : public TestCase
 {
 public:
-  Uint64x64Bug455TestCase ();
+  Int64x64Bug455TestCase ();
   virtual bool DoRun (void);
 };
 
-Uint64x64Bug455TestCase::Uint64x64Bug455TestCase ()
+Int64x64Bug455TestCase::Int64x64Bug455TestCase ()
   : TestCase ("Test case for bug 455")
 {
 }
 bool
-Uint64x64Bug455TestCase::DoRun (void)
+Int64x64Bug455TestCase::DoRun (void)
 {
-  uint64x64_t a = uint64x64_t (0.1);
-  a /= uint64x64_t (1.25);
+  int64x64_t a = int64x64_t (0.1);
+  a /= int64x64_t (1.25);
   NS_TEST_ASSERT_MSG_EQ (a.GetDouble (), 0.08, "The original testcase");
-  a = uint64x64_t (0.5);
-  a *= uint64x64_t (5);
+  a = int64x64_t (0.5);
+  a *= int64x64_t (5);
   NS_TEST_ASSERT_MSG_EQ (a.GetDouble (), 2.5, "Simple test for multiplication");
-  a = uint64x64_t (-0.5);
-  a *= uint64x64_t (5);
+  a = int64x64_t (-0.5);
+  a *= int64x64_t (5);
   NS_TEST_ASSERT_MSG_EQ (a.GetDouble (), -2.5, "Test sign, first operation negative");
-  a = uint64x64_t (-0.5);
-  a *=uint64x64_t (-5);
+  a = int64x64_t (-0.5);
+  a *=int64x64_t (-5);
   NS_TEST_ASSERT_MSG_EQ (a.GetDouble (), 2.5, "both operands negative");
-  a = uint64x64_t (0.5);
-  a *= uint64x64_t (-5);
+  a = int64x64_t (0.5);
+  a *= int64x64_t (-5);
   NS_TEST_ASSERT_MSG_EQ (a.GetDouble (), -2.5, "only second operand negative");
 
   return GetErrorStatus ();
 }
 
-class Uint64x64Bug863TestCase : public TestCase
+class Int64x64Bug863TestCase : public TestCase
 {
 public:
-  Uint64x64Bug863TestCase ();
+  Int64x64Bug863TestCase ();
   virtual bool DoRun (void);
 };
 
-Uint64x64Bug863TestCase::Uint64x64Bug863TestCase ()
+Int64x64Bug863TestCase::Int64x64Bug863TestCase ()
   : TestCase ("Test case for bug 863")
 {
 }
 bool
-Uint64x64Bug863TestCase::DoRun (void)
+Int64x64Bug863TestCase::DoRun (void)
 {
-  uint64x64_t a = uint64x64_t (0.9);
-  a /= uint64x64_t (1);
+  int64x64_t a = int64x64_t (0.9);
+  a /= int64x64_t (1);
   NS_TEST_ASSERT_MSG_EQ (a.GetDouble (), 0.9, "The original testcase");
-  a = uint64x64_t (0.5);
-  a /= uint64x64_t (0.5);
+  a = int64x64_t (0.5);
+  a /= int64x64_t (0.5);
   NS_TEST_ASSERT_MSG_EQ (a.GetDouble (), 1.0, "Simple test for division");
-  a = uint64x64_t (-0.5);
+  a = int64x64_t (-0.5);
   NS_TEST_ASSERT_MSG_EQ (a.GetDouble (), -0.5, "Check that we actually convert doubles correctly");
-  a /= uint64x64_t (0.5);
+  a /= int64x64_t (0.5);
   NS_TEST_ASSERT_MSG_EQ (a.GetDouble (), -1.0, "first argument negative");
-  a = uint64x64_t (0.5);
-  a /= uint64x64_t (-0.5);
+  a = int64x64_t (0.5);
+  a /= int64x64_t (-0.5);
   NS_TEST_ASSERT_MSG_EQ (a.GetDouble (), -1.0, "second argument negative");
-  a = uint64x64_t (-0.5);
-  a /= uint64x64_t (-0.5);
+  a = int64x64_t (-0.5);
+  a /= int64x64_t (-0.5);
   NS_TEST_ASSERT_MSG_EQ (a.GetDouble (), 1.0, "both arguments negative");
 
   return GetErrorStatus ();
 }
 
-class Uint64x64CompareTestCase : public TestCase
+class Int64x64CompareTestCase : public TestCase
 {
 public:
-  Uint64x64CompareTestCase ();
+  Int64x64CompareTestCase ();
   virtual bool DoRun (void);
 };
-Uint64x64CompareTestCase::Uint64x64CompareTestCase ()
+Int64x64CompareTestCase::Int64x64CompareTestCase ()
   : TestCase ("Check basic compare operations")
 {
 }
 bool
-Uint64x64CompareTestCase::DoRun (void)
+Int64x64CompareTestCase::DoRun (void)
 {
 
   NS_TEST_ASSERT_MSG_EQ ((V(-1) < V(1)), true, "a is smaller than b");
@@ -376,38 +376,38 @@ Uint64x64CompareTestCase::DoRun (void)
   return GetErrorStatus ();
 }
 
-class Uint64x64InvertTestCase : public TestCase
+class Int64x64InvertTestCase : public TestCase
 {
 public:
-  Uint64x64InvertTestCase ();
+  Int64x64InvertTestCase ();
   virtual bool DoRun (void);
 };
 
-Uint64x64InvertTestCase::Uint64x64InvertTestCase ()
+Int64x64InvertTestCase::Int64x64InvertTestCase ()
   : TestCase ("Test case for invertion")
 {
 }
 
 bool
-Uint64x64InvertTestCase::DoRun (void)
+Int64x64InvertTestCase::DoRun (void)
 {
 #define TEST(factor)                                                    \
   do {                                                                  \
-    uint64x64_t a;							\
-    a = uint64x64_t::Invert (factor);					\
-    uint64x64_t b = V (factor);						\
+    int64x64_t a;							\
+    a = int64x64_t::Invert (factor);					\
+    int64x64_t b = V (factor);						\
     b.MulByInvert (a);                                                  \
     NS_TEST_ASSERT_MSG_EQ (b.GetHigh (), 1,				\
 			   "x * 1/x should be 1 for x=" << factor);     \
-    uint64x64_t c = V (1);						\
+    int64x64_t c = V (1);						\
     c.MulByInvert (a);                                                  \
     NS_TEST_ASSERT_MSG_EQ (c.GetHigh (), 0,				\
 			   "1 * 1/x should be 0 for x=" << factor);     \
-    uint64x64_t d = V (1);						\
+    int64x64_t d = V (1);						\
     d /= (V(factor));                                                  \
     NS_TEST_ASSERT_MSG_EQ (d.GetDouble (), c.GetDouble (),              \
 			   "1 * 1/x should be equal to 1/x for x=" << factor); \
-    uint64x64_t e = V (-factor);					\
+    int64x64_t e = V (-factor);					\
     e.MulByInvert (a);                                                  \
     NS_TEST_ASSERT_MSG_EQ (e.GetHigh (), -1,				\
 			   "-x * 1/x should be -1 for x=" << factor);   \
@@ -440,21 +440,21 @@ Uint64x64InvertTestCase::DoRun (void)
 
 
 
-static class Uint64x64128TestSuite : public TestSuite
+static class Int64x64128TestSuite : public TestSuite
 {
 public:
-  Uint64x64128TestSuite ()
-    : TestSuite ("uint64x64", UNIT)
+  Int64x64128TestSuite ()
+    : TestSuite ("int64x64", UNIT)
   {
-    AddTestCase (new Uint64x64FracTestCase ());
-    AddTestCase (new Uint64x64InputTestCase ());
-    AddTestCase (new Uint64x64InputOutputTestCase ());
-    AddTestCase (new Uint64x64ArithmeticTestCase ());
-    AddTestCase (new Uint64x64Bug455TestCase ());
-    AddTestCase (new Uint64x64Bug863TestCase ());
-    AddTestCase (new Uint64x64CompareTestCase ());
-    AddTestCase (new Uint64x64InvertTestCase ());
+    AddTestCase (new Int64x64FracTestCase ());
+    AddTestCase (new Int64x64InputTestCase ());
+    AddTestCase (new Int64x64InputOutputTestCase ());
+    AddTestCase (new Int64x64ArithmeticTestCase ());
+    AddTestCase (new Int64x64Bug455TestCase ());
+    AddTestCase (new Int64x64Bug863TestCase ());
+    AddTestCase (new Int64x64CompareTestCase ());
+    AddTestCase (new Int64x64InvertTestCase ());
   }
-} g_uint64x64TestSuite;
+} g_int64x64TestSuite;
 
 } // namespace ns3

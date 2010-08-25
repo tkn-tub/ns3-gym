@@ -1,4 +1,4 @@
-#include "uint64x64-128.h"
+#include "int64x64-128.h"
 #include "ns3/abort.h"
 #include "ns3/assert.h"
 
@@ -17,7 +17,7 @@ namespace ns3 {
 #define MASK_HI (~MASK_LO)
 
 void
-uint64x64_t::Mul (uint64x64_t const &o)
+int64x64_t::Mul (int64x64_t const &o)
 {
   bool negResult;
   uint128_t a, b;
@@ -29,7 +29,7 @@ uint64x64_t::Mul (uint64x64_t const &o)
 }
 
 uint128_t
-uint64x64_t::Umul (uint128_t a, uint128_t b)
+int64x64_t::Umul (uint128_t a, uint128_t b)
 {
   uint128_t aL = a & MASK_LO;
   uint128_t bL = b & MASK_LO;
@@ -58,7 +58,7 @@ uint64x64_t::Umul (uint128_t a, uint128_t b)
   return result;
 }
 void
-uint64x64_t::Div (uint64x64_t const &o)
+int64x64_t::Div (int64x64_t const &o)
 {
   bool negResult;
   uint128_t a, b;
@@ -69,7 +69,7 @@ uint64x64_t::Div (uint64x64_t const &o)
 }
 
 uint128_t
-uint64x64_t::Divu (uint128_t a, uint128_t b)
+int64x64_t::Divu (uint128_t a, uint128_t b)
 {
   uint128_t quo = a / b;
   uint128_t rem = (a % b);
@@ -93,7 +93,7 @@ uint64x64_t::Divu (uint128_t a, uint128_t b)
 }
 
 void 
-uint64x64_t::MulByInvert (const uint64x64_t &o)
+int64x64_t::MulByInvert (const int64x64_t &o)
 {
   bool negResult = _v < 0;
   uint128_t a = negResult?-_v:_v;
@@ -102,7 +102,7 @@ uint64x64_t::MulByInvert (const uint64x64_t &o)
   _v = negResult?-result:result;
 }
 uint128_t
-uint64x64_t::UmulByInvert (uint128_t a, uint128_t b)
+int64x64_t::UmulByInvert (uint128_t a, uint128_t b)
 {
   uint128_t result, ah, bh, al, bl;
   uint128_t hi, mid;
@@ -116,16 +116,16 @@ uint64x64_t::UmulByInvert (uint128_t a, uint128_t b)
   result = ah * bh + mid;
   return result;
 }
-uint64x64_t 
-uint64x64_t::Invert (uint64_t v)
+int64x64_t 
+int64x64_t::Invert (uint64_t v)
 {
   NS_ASSERT (v > 1);
   uint128_t a;
   a = 1;
   a <<= 64;
-  uint64x64_t result;
+  int64x64_t result;
   result._v = Divu (a, v);
-  uint64x64_t tmp = uint64x64_t (v, false);
+  int64x64_t tmp = int64x64_t (v, false);
   tmp.MulByInvert (result);
   if (tmp.GetHigh () != 1)
     {

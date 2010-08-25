@@ -1,5 +1,5 @@
-#ifndef UINT64X64_CAIRO_H
-#define UINT64X64_CAIRO_H
+#ifndef INT64X64_CAIRO_H
+#define INT64X64_CAIRO_H
 
 #include <stdint.h>
 #include <math.h>
@@ -7,20 +7,20 @@
 
 #ifdef __i386__
 // this assembly code does not appear to work right yet.
-#define noUINT64x64_CAIRO_ASM 1
+#define noInt64x64_CAIRO_ASM 1
 #endif
 
 namespace ns3 {
 
-class uint64x64_t
+class int64x64_t
 {
 public:
-  inline uint64x64_t ()
+  inline int64x64_t ()
   {
     _v.hi = 0;
     _v.lo = 0;
   }
-  explicit inline uint64x64_t (double value)
+  explicit inline int64x64_t (double value)
   {
 #define HPCAIRO_MAX_64 18446744073709551615.0
     double fhi = floor (value);
@@ -30,30 +30,30 @@ public:
     _v.lo = lo;
 #undef HPCAIRO_MAX_64
   }
-  explicit inline uint64x64_t (int v)
+  explicit inline int64x64_t (int v)
   {
     _v.hi = v;
     _v.lo = 0;
   }
-  explicit inline uint64x64_t (long int v)
+  explicit inline int64x64_t (long int v)
   {
     _v.hi = v;
     _v.lo = 0;
   }
-  explicit inline uint64x64_t (long long int v)
+  explicit inline int64x64_t (long long int v)
   {
     _v.hi = v;
     _v.lo = 0;
   }
-  explicit inline uint64x64_t (int64_t hi, uint64_t lo)
+  explicit inline int64x64_t (int64_t hi, uint64_t lo)
   {
     _v.hi = hi;
     _v.lo = lo;
   }
 
-  inline uint64x64_t (const uint64x64_t &o)
+  inline int64x64_t (const int64x64_t &o)
     : _v (o._v) {}
-  inline uint64x64_t &operator = (const uint64x64_t &o)
+  inline int64x64_t &operator = (const int64x64_t &o)
     {
       _v = o._v;
       return *this;
@@ -81,30 +81,30 @@ public:
     return _v.lo;
   }
 
-  void MulByInvert (const uint64x64_t &o);
+  void MulByInvert (const int64x64_t &o);
 
-  static uint64x64_t Invert (uint64_t v);
+  static int64x64_t Invert (uint64_t v);
 
 private:
-  friend bool operator == (const uint64x64_t &lhs, const uint64x64_t &rhs);
-  friend bool operator != (const uint64x64_t &lhs, const uint64x64_t &rhs);
-  friend bool operator <= (const uint64x64_t &lhs, const uint64x64_t &rhs);
-  friend bool operator >= (const uint64x64_t &lhs, const uint64x64_t &rhs);
-  friend bool operator < (const uint64x64_t &lhs, const uint64x64_t &rhs);
-  friend bool operator > (const uint64x64_t &lhs, const uint64x64_t &rhs);
-  friend uint64x64_t &operator += (uint64x64_t &lhs, const uint64x64_t &rhs);
-  friend uint64x64_t &operator -= (uint64x64_t &lhs, const uint64x64_t &rhs);
-  friend uint64x64_t &operator *= (uint64x64_t &lhs, const uint64x64_t &rhs);
-  friend uint64x64_t &operator /= (uint64x64_t &lhs, const uint64x64_t &rhs);
-  friend uint64x64_t operator + (const uint64x64_t &lhs, const uint64x64_t &rhs);
-  friend uint64x64_t operator - (const uint64x64_t &lhs, const uint64x64_t &rhs);
-  friend uint64x64_t operator * (const uint64x64_t &lhs, const uint64x64_t &rhs);
-  friend uint64x64_t operator / (const uint64x64_t &lhs, const uint64x64_t &rhs);
-  friend uint64x64_t operator + (const uint64x64_t &lhs);
-  friend uint64x64_t operator - (const uint64x64_t &lhs);
-  friend uint64x64_t operator ! (const uint64x64_t &lhs);
-  void Mul (const uint64x64_t &o);
-  void Div (const uint64x64_t &o);
+  friend bool operator == (const int64x64_t &lhs, const int64x64_t &rhs);
+  friend bool operator != (const int64x64_t &lhs, const int64x64_t &rhs);
+  friend bool operator <= (const int64x64_t &lhs, const int64x64_t &rhs);
+  friend bool operator >= (const int64x64_t &lhs, const int64x64_t &rhs);
+  friend bool operator < (const int64x64_t &lhs, const int64x64_t &rhs);
+  friend bool operator > (const int64x64_t &lhs, const int64x64_t &rhs);
+  friend int64x64_t &operator += (int64x64_t &lhs, const int64x64_t &rhs);
+  friend int64x64_t &operator -= (int64x64_t &lhs, const int64x64_t &rhs);
+  friend int64x64_t &operator *= (int64x64_t &lhs, const int64x64_t &rhs);
+  friend int64x64_t &operator /= (int64x64_t &lhs, const int64x64_t &rhs);
+  friend int64x64_t operator + (const int64x64_t &lhs, const int64x64_t &rhs);
+  friend int64x64_t operator - (const int64x64_t &lhs, const int64x64_t &rhs);
+  friend int64x64_t operator * (const int64x64_t &lhs, const int64x64_t &rhs);
+  friend int64x64_t operator / (const int64x64_t &lhs, const int64x64_t &rhs);
+  friend int64x64_t operator + (const int64x64_t &lhs);
+  friend int64x64_t operator - (const int64x64_t &lhs);
+  friend int64x64_t operator ! (const int64x64_t &lhs);
+  void Mul (const int64x64_t &o);
+  void Div (const int64x64_t &o);
   static cairo_uint128_t  Umul (cairo_uint128_t a, cairo_uint128_t b);
   static cairo_uint128_t Udiv (cairo_uint128_t a, cairo_uint128_t b);
   static cairo_uint128_t UmulByInvert (cairo_uint128_t a, cairo_uint128_t b);
@@ -122,10 +122,10 @@ private:
 	++_v.hi;
       }
   }
-  inline int Compare (const uint64x64_t &o) const
+  inline int Compare (const int64x64_t &o) const
   {
     int status;
-    uint64x64_t tmp = *this;
+    int64x64_t tmp = *this;
     tmp -= o;
     status = (((int64_t)(tmp)._v.hi) < 0)?-1:
       (((tmp)._v.hi == 0 && (tmp)._v.lo == 0))?0:1;
@@ -134,36 +134,36 @@ private:
   cairo_int128_t _v;
 };
 
-inline bool operator == (const uint64x64_t &lhs, const uint64x64_t &rhs)
+inline bool operator == (const int64x64_t &lhs, const int64x64_t &rhs)
 {
   return lhs._v.hi == rhs._v.hi && lhs._v.lo == lhs._v.lo;
 }
 
-inline bool operator != (const uint64x64_t &lhs, const uint64x64_t &rhs)
+inline bool operator != (const int64x64_t &lhs, const int64x64_t &rhs)
 {
   return ! (lhs == rhs);
 }
 
-inline bool operator < (const uint64x64_t &lhs, const uint64x64_t &rhs)
+inline bool operator < (const int64x64_t &lhs, const int64x64_t &rhs)
 {
   return lhs.Compare (rhs) < 0;
 }
-inline bool operator <= (const uint64x64_t &lhs, const uint64x64_t &rhs)
+inline bool operator <= (const int64x64_t &lhs, const int64x64_t &rhs)
 {
   return lhs.Compare (rhs) <= 0;
 }
 
-inline bool operator >= (const uint64x64_t &lhs, const uint64x64_t &rhs)
+inline bool operator >= (const int64x64_t &lhs, const int64x64_t &rhs)
 {
   return lhs.Compare (rhs) >= 0;
 }
-inline bool operator > (const uint64x64_t &lhs, const uint64x64_t &rhs)
+inline bool operator > (const int64x64_t &lhs, const int64x64_t &rhs)
 {
   return lhs.Compare (rhs) > 0;
 }
-inline uint64x64_t &operator += (uint64x64_t &lhs, const uint64x64_t &rhs)
+inline int64x64_t &operator += (int64x64_t &lhs, const int64x64_t &rhs)
 {
-#if UINT64x64_CAIRO_ASM
+#if Int64x64_CAIRO_ASM
   asm ("mov 0(%1),%%eax\n\t"
        "add %%eax,0(%0)\n\t"
        "mov 4(%1),%%eax\n\t"
@@ -185,9 +185,9 @@ inline uint64x64_t &operator += (uint64x64_t &lhs, const uint64x64_t &rhs)
 #endif
   return lhs;
 }
-inline uint64x64_t &operator -= (uint64x64_t &lhs, const uint64x64_t &rhs)
+inline int64x64_t &operator -= (int64x64_t &lhs, const int64x64_t &rhs)
 {
-#if UINT64x64_CAIRO_ASM
+#if Int64x64_CAIRO_ASM
   asm ("mov 0(%1),%%eax\n\t"
        "sub %%eax,0(%0)\n\t"
        "mov 4(%1),%%eax\n\t"
@@ -209,34 +209,34 @@ inline uint64x64_t &operator -= (uint64x64_t &lhs, const uint64x64_t &rhs)
 #endif
   return lhs;
 }
-inline uint64x64_t &operator *= (uint64x64_t &lhs, const uint64x64_t &rhs)
+inline int64x64_t &operator *= (int64x64_t &lhs, const int64x64_t &rhs)
 {
   lhs.Mul (rhs);
   return lhs;
 }
-inline uint64x64_t &operator /= (uint64x64_t &lhs, const uint64x64_t &rhs)
+inline int64x64_t &operator /= (int64x64_t &lhs, const int64x64_t &rhs)
 {
   lhs.Div (rhs);
   return lhs;
 }
 
-inline uint64x64_t operator + (const uint64x64_t &lhs)
+inline int64x64_t operator + (const int64x64_t &lhs)
 {
   return lhs;
 }
 
-inline uint64x64_t operator - (const uint64x64_t &lhs)
+inline int64x64_t operator - (const int64x64_t &lhs)
 {
-  uint64x64_t tmp = lhs;
+  int64x64_t tmp = lhs;
   tmp.Negate ();
   return tmp;
 }
 
-inline uint64x64_t operator ! (const uint64x64_t &lhs)
+inline int64x64_t operator ! (const int64x64_t &lhs)
 {
-  return (lhs._v.hi == 0 && lhs._v.lo == 0)?uint64x64_t (1, 0):uint64x64_t ();
+  return (lhs._v.hi == 0 && lhs._v.lo == 0)?int64x64_t (1, 0):int64x64_t ();
 }
 
 } // namespace ns3
 
-#endif /* UINT64X64_CAIRO_H */
+#endif /* INT64X64_CAIRO_H */

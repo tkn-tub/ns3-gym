@@ -20,15 +20,15 @@ def configure(conf):
 
 
     if Options.options.high_precision_as_double:
-        conf.define('UINT64x64_USE_DOUBLE', 1)
+        conf.define('INT64X64_USE_DOUBLE', 1)
         conf.env['USE_HIGH_PRECISION_DOUBLE'] = 1
         highprec = 'long double'
     elif a or b:
-        conf.define('UINT64x64_USE_128', 1)
+        conf.define('INT64X64_USE_128', 1)
         conf.env['USE_HIGH_PRECISION_128'] = 1
         highprec = '128-bit integer'
     else:
-        conf.define('UINT64x64_USE_CAIRO', 1)
+        conf.define('INT64X64_USE_CAIRO', 1)
         conf.env['USE_HIGH_PRECISION_CAIRO'] = 1
         highprec = 'cairo 128-bit integer'
 
@@ -54,7 +54,7 @@ def configure(conf):
 def build(bld):
     sim = bld.create_ns3_module('simulator', ['core'])
     sim.source = [
-        'uint64x64.cc',
+        'int64x64.cc',
         'time.cc',
         'event-id.cc',
         'scheduler.cc',
@@ -76,7 +76,7 @@ def build(bld):
     headers = bld.new_task_gen('ns3header')
     headers.module = 'simulator'
     headers.source = [
-        'uint64x64.h',
+        'int64x64.h',
         'nstime.h',
         'event-id.h',
         'event-impl.h',
@@ -99,16 +99,16 @@ def build(bld):
 
     env = bld.env_of_name('default')
     if env['USE_HIGH_PRECISION_DOUBLE']:
-        headers.source.extend(['uint64x64-double.h'])
+        headers.source.extend(['int64x64-double.h'])
     elif env['USE_HIGH_PRECISION_128']:
-        headers.source.extend(['uint64x64-128.h'])
-        sim.source.extend(['uint64x64-128.cc'])
+        headers.source.extend(['int64x64-128.h'])
+        sim.source.extend(['int64x64-128.cc'])
     elif env['USE_HIGH_PRECISION_CAIRO']:
         sim.source.extend([
-            'uint64x64-cairo.cc',
+            'int64x64-cairo.cc',
             ])
         headers.source.extend([
-            'uint64x64-cairo.h',
+            'int64x64-cairo.h',
             'cairo-wideint-private.h',
             ])
 
