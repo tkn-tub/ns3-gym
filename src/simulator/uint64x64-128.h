@@ -47,6 +47,21 @@ public:
   {
     _v <<= 64;
   }
+  explicit inline uint64x64_t (unsigned int v)
+    : _v (v)
+  {
+    _v <<= 64;
+  }
+  explicit inline uint64x64_t (unsigned long int v)
+    : _v (v) 
+  {
+    _v <<= 64;
+  }
+  explicit inline uint64x64_t (unsigned long long int v)
+    : _v (v) 
+  {
+    _v <<= 64;
+  }
   explicit inline uint64x64_t (int64_t hi, uint64_t lo)
   {
     bool is_negative = hi<0;
