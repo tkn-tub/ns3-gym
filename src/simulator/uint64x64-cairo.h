@@ -6,7 +6,8 @@
 #include "cairo-wideint-private.h"
 
 #ifdef __i386__
-#define UINT64x64_CAIRO_ASM 1
+// this assembly code does not appear to work right yet.
+#define noUINT64x64_CAIRO_ASM 1
 #endif
 
 namespace ns3 {
