@@ -1,7 +1,7 @@
 #ifndef INT64X64_128_H
 #define INT64X64_128_H
 
-#include "ns3/simulator-config.h"
+#include "ns3/core-config.h"
 #include <stdint.h>
 #include <math.h>
 
@@ -21,7 +21,7 @@ public:
   inline int64x64_t ()
     : _v (0)
   {}
-  explicit inline int64x64_t (double value)
+  inline int64x64_t (double value)
   {
     bool is_negative = value < 0;
     value = is_negative?-value:value;
@@ -32,32 +32,32 @@ public:
     _v += (int128_t)lo;
     _v = is_negative?-_v:_v;
   }
-  explicit inline int64x64_t (int v)
+  inline int64x64_t (int v)
     : _v (v)
   {
     _v <<= 64;
   }
-  explicit inline int64x64_t (long int v)
+  inline int64x64_t (long int v)
     : _v (v) 
   {
     _v <<= 64;
   }
-  explicit inline int64x64_t (long long int v)
+  inline int64x64_t (long long int v)
     : _v (v) 
   {
     _v <<= 64;
   }
-  explicit inline int64x64_t (unsigned int v)
+  inline int64x64_t (unsigned int v)
     : _v (v)
   {
     _v <<= 64;
   }
-  explicit inline int64x64_t (unsigned long int v)
+  inline int64x64_t (unsigned long int v)
     : _v (v) 
   {
     _v <<= 64;
   }
-  explicit inline int64x64_t (unsigned long long int v)
+  inline int64x64_t (unsigned long long int v)
     : _v (v) 
   {
     _v <<= 64;
