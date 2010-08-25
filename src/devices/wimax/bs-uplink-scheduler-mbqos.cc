@@ -316,7 +316,7 @@ UplinkSchedulerMBQoS::Schedule (void)
 
                       Scalar frame = ((timestamp - Simulator::Now ()) / frame_duration);
 
-                      if (frame.GetDouble () <= 1)
+                      if (frame <= 1)
                         {
                           // UGS Grants
                           // It is not necessary to enqueue UGS grants once it is periodically served
@@ -676,7 +676,7 @@ UplinkSchedulerMBQoS::CheckDeadline (uint32_t &availableSymbols)
                                 <<" frame duration: "<< frame_duration );
 
               // should be schedule in this frame to max latency
-              if (frame.GetDouble () >= 3)
+              if (frame >= 3)
                 {
 
                   if (availableSymbols)

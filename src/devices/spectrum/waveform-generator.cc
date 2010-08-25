@@ -178,7 +178,7 @@ WaveformGenerator::SetDutyCycle (double dutyCycle)
 
 double WaveformGenerator::GetDutyCycle () const
 {
-  return m_dutyCycle.GetDouble ();
+  return m_dutyCycle;
 }
 
 

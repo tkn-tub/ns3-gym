@@ -106,23 +106,23 @@ Time::SetResolution (enum Unit unit, struct Resolution *resolution)
       info->factor = factor;
       if (shift == 0)
 	{
-	  info->timeFrom = uint64x64_t (1, 0);
-	  info->timeTo = uint64x64_t (1, 0);
+	  info->timeFrom = 1.0;
+	  info->timeTo = 1.0;
 	  info->toMul = true;
 	  info->fromMul = true;
 	}
       else if (shift > 0)
 	{
-	  info->timeFrom = uint64x64_t (factor, 0);
-	  info->timeTo = uint64x64_t::Invert (factor);
+	  info->timeFrom = factor;
+	  info->timeTo = 1.0 / factor;
 	  info->toMul = false;
 	  info->fromMul = true;
 	}
       else
 	{
 	  NS_ASSERT (shift < 0);
-	  info->timeFrom = uint64x64_t::Invert (factor);
-	  info->timeTo = uint64x64_t (factor, 0);
+	  info->timeFrom = 1.0 / factor;
+	  info->timeTo = factor;
 	  info->toMul = true;
 	  info->fromMul = false;
 	}
@@ -186,27 +186,6 @@ ATTRIBUTE_CHECKER_IMPLEMENT (Time);
 
 namespace ns3 {
 
-class Bug863TestCase : public TestCase
-{
-public:
-  Bug863TestCase ();
-  virtual bool DoRun (void);
-};
-
-Bug863TestCase::Bug863TestCase ()
-  : TestCase ("Bug 863")
-{
-}
-
-bool Bug863TestCase::DoRun (void)
-{
-  Scalar a = Scalar (0.9);
-  Scalar b = Scalar (1.0);
-  Scalar result = a / b;
-  NS_TEST_ASSERT_MSG_EQ ((result == Scalar (0.9)), true, "Invalid arithmetic result");
-  return false;
-}
-
 class TimeSimpleTestCase : public TestCase
 {
 public:
@@ -260,7 +239,6 @@ public:
   TimeTestSuite ()
     : TestSuite ("time", UNIT)
   {
-    AddTestCase (new Bug863TestCase ());
     AddTestCase (new TimeSimpleTestCase (Time::US));
   }
 } g_timeTestSuite;

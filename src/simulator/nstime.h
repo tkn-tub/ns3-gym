@@ -26,10 +26,10 @@
 #include <stdint.h>
 #include <math.h>
 #include <ostream>
-#include "uint64x64.h"
 
 namespace ns3 {
 
+typedef uint64_t Scalar;
 
 /**
  * \ingroup simulator
@@ -175,26 +175,23 @@ public:
   inline Time(const Time &o)
     : m_data (o.m_data)
   {}
-  explicit inline Time (const uint64x64_t &data)
-    : m_data (data)
-  {}
   explicit inline Time (double v)
-    : m_data (uint64x64_t (v))
+    : m_data (v)
   {}
   explicit inline Time (int v)
-    : m_data (uint64x64_t (v, 0))
+    : m_data (v)
   {}
   explicit inline Time (unsigned int v)
-    : m_data (uint64x64_t (v, 0))
+    : m_data (v)
   {}
   explicit inline Time (long int v)
-    : m_data (uint64x64_t (v, 0))
+    : m_data (v)
   {}
   explicit inline Time (unsigned long int v)
-    : m_data (uint64x64_t (v, 0))
+    : m_data (v)
   {}
   explicit inline Time (unsigned long long int v)
-    : m_data (uint64x64_t (v, 0))
+    : m_data (v)
   {}
 
   /**
@@ -220,35 +217,35 @@ public:
    */
   inline bool IsZero (void) const
   {
-    return m_data == uint64x64_t ();
+    return m_data == 0;
   }
   /**
    * \return true if the time is negative or zero, false otherwise.
    */
   inline bool IsNegative (void) const
   {
-    return m_data <= uint64x64_t ();
+    return m_data <= 0;
   }
   /**
    * \return true if the time is positive or zero, false otherwise.
    */
   inline bool IsPositive (void) const
   {
-    return m_data >= uint64x64_t ();
+    return m_data >= 0;
   }
   /**
    * \return true if the time is strictly negative, false otherwise.
    */
   inline bool IsStrictlyNegative (void) const
   {
-    return m_data < uint64x64_t ();
+    return m_data < 0;
   }
   /**
    * \return true if the time is strictly positive, false otherwise.
    */
   inline bool IsStrictlyPositive (void) const
   {
-    return m_data > uint64x64_t ();
+    return m_data > 0;
   }
 
   inline int Compare (const Time &o) const
@@ -311,12 +308,11 @@ public:
    */
   inline int64_t GetTimeStep (void) const
   {
-    int64_t timeValue = m_data.GetHigh ();
-    return timeValue;
+    return m_data;
   }
   inline double GetDouble (void) const
   {
-    return m_data.GetDouble ();
+    return m_data;
   }
   inline int64_t GetInteger (void) const
   {
@@ -352,9 +348,12 @@ public:
     if (info->fromMul)
       {
         value *= info->factor;
-        return Time (uint64x64_t (value, 0));
       }
-    return From (uint64x64_t (value, 0), timeUnit);
+    else
+      {
+        value /= info->factor;
+      }
+    return Time (value);
   }
   /**
    * \param value to convert into a Time object
@@ -365,7 +364,12 @@ public:
    */
   inline static Time FromDouble (double value, enum Unit timeUnit)
   {
-    return From (uint64x64_t (value), timeUnit);
+    struct Information *info = PeekInformation (timeUnit);
+    // DO NOT REMOVE this temporary variable. It's here
+    // to work around a compiler bug in gcc 3.4
+    double retval = value;
+    retval *= info->timeFrom;
+    return Time (retval);
   }
   /**
    * \param time a Time object
@@ -374,10 +378,10 @@ public:
    * Convert the input time into an integer value according to the requested
    * time unit.
    */
-  inline static uint64_t ToInteger (const Time &time, enum Unit timeUnit)
+  inline static int64_t ToInteger (const Time &time, enum Unit timeUnit)
   {
     struct Information *info = PeekInformation (timeUnit);
-    uint64_t v = time.m_data.GetHigh ();
+    int64_t v = time.m_data;
     if (info->toMul)
       {
         v *= info->factor;
@@ -397,7 +401,10 @@ public:
    */
   inline static double ToDouble (const Time &time, enum Unit timeUnit)
   {
-    return To (time, timeUnit).GetDouble ();
+    struct Information *info = PeekInformation (timeUnit);
+    double retval = time.m_data;
+    retval *= info->timeTo;
+    return retval;
   }
 
 private:
@@ -406,8 +413,8 @@ private:
     bool toMul;
     bool fromMul;
     uint64_t factor;
-    uint64x64_t timeTo;
-    uint64x64_t timeFrom;
+    double timeTo;
+    double timeFrom;
   };
   struct Resolution
   {
@@ -424,36 +431,6 @@ private:
   {
     return &(PeekResolution ()->info[timeUnit]);
   }
-  static inline Time From (uint64x64_t from, enum Unit timeUnit)
-  {
-    struct Information *info = PeekInformation (timeUnit);
-    // DO NOT REMOVE this temporary variable. It's here
-    // to work around a compiler bug in gcc 3.4
-    uint64x64_t tmp = from; 
-    if (info->fromMul)
-      {
-        tmp *= info->timeFrom;
-      }
-    else
-      {
-        tmp.MulByInvert (info->timeFrom);
-      }
-    return Time (tmp);
-  }
-  static inline uint64x64_t To (const Time &time, enum Unit timeUnit)
-  {
-    struct Information *info = PeekInformation (timeUnit);
-    uint64x64_t tmp = time.m_data;
-    if (info->toMul)
-      {
-        tmp *= info->timeTo;
-      }
-    else
-      {
-        tmp.MulByInvert (info->timeTo);
-      }
-    return tmp;
-  }
 
   static struct Resolution GetNsResolution (void);
   static void SetResolution (enum Unit unit, struct Resolution *resolution);
@@ -466,17 +443,19 @@ private:
   friend bool operator > (const Time &lhs, const Time &rhs);
   friend Time operator + (const Time &lhs, const Time &rhs);
   friend Time operator - (const Time &lhs, const Time &rhs);
-  friend Time operator * (const Time &lhs, const Time &rhs);
-  friend Time operator / (const Time &lhs, const Time &rhs);
+  friend Time operator * (const Time &lhs, Scalar rhs);
+  friend Time operator * (Scalar lhs, const Time &rhs);
+  friend Time operator / (const Time &lhs, Scalar rhs);
+  friend Scalar operator / (const Time &lhs, const Time &rhs);
   friend Time &operator += (Time &lhs, const Time &rhs);
   friend Time &operator -= (Time &lhs, const Time &rhs);
-  friend Time &operator *= (Time &lhs, const Time &rhs);
-  friend Time &operator /= (Time &lhs, const Time &rhs);
+  friend Time &operator *= (Time &lhs, Scalar rhs);
+  friend Time &operator /= (Time &lhs, Scalar rhs);
   friend Time Abs (const Time &time);
   friend Time Max (const Time &ta, const Time &tb);
   friend Time Min (const Time &ta, const Time &tb);
 
-  uint64x64_t m_data;
+  int64_t m_data;
 };
 
 inline bool
@@ -517,13 +496,26 @@ inline Time operator - (const Time &lhs, const Time &rhs)
 {
   return Time (lhs.m_data - rhs.m_data);
 }
-inline Time operator * (const Time &lhs, const Time &rhs)
+inline Time operator * (const Time &lhs, Scalar rhs)
 {
-  return Time (lhs.m_data * rhs.m_data);
+  Time retval = lhs;
+  retval *= rhs;
+  return retval;
 }
-inline Time operator / (const Time &lhs, const Time &rhs)
+inline Time operator * (Scalar lhs, const Time &rhs)
 {
-  return Time (lhs.m_data / rhs.m_data);
+  return rhs * lhs;
+}
+inline Time operator / (const Time &lhs, Scalar rhs)
+{
+  Time retval = lhs;
+  retval /= rhs;
+  return retval;
+}
+inline Scalar operator / (const Time &lhs, const Time &rhs)
+{
+  int64_t retval = lhs.GetTimeStep () / rhs.GetTimeStep ();
+  return retval;
 }
 inline Time &operator += (Time &lhs, const Time &rhs)
 {
@@ -535,17 +527,16 @@ inline Time &operator -= (Time &lhs, const Time &rhs)
   lhs.m_data -= rhs.m_data;
   return lhs;
 }
-inline Time &operator *= (Time &lhs, const Time &rhs)
+inline Time &operator *= (Time &lhs, Scalar rhs)
 {
-  lhs.m_data *= rhs.m_data;
+  lhs.m_data *= rhs;
   return lhs;
 }
-inline Time &operator /= (Time &lhs, const Time &rhs)
+inline Time &operator /= (Time &lhs, Scalar rhs)
 {
-  lhs.m_data /= rhs.m_data;
+  lhs.m_data /= rhs;
   return lhs;
 }
-
 
 /**
  * \anchor ns3-Time-Abs
@@ -555,7 +546,7 @@ inline Time &operator /= (Time &lhs, const Time &rhs)
  */
 inline Time Abs (const Time &time)
 {
-  return Time ((time.m_data < uint64x64_t (0))?-time.m_data:time.m_data);
+  return Time ((time.m_data < 0)?-time.m_data:time.m_data);
 }
 /**
  * \anchor ns3-Time-Max
@@ -673,10 +664,9 @@ inline Time FemtoSeconds (uint64_t fs)
 // internal function not publicly documented
 inline Time TimeStep (uint64_t ts)
 {
-  return Time (uint64x64_t (ts, 0));
+  return Time (ts);
 }
 
-typedef Time Scalar;
 typedef Time TimeInvert;
 typedef Time TimeSquare;
 

@@ -168,7 +168,7 @@ void OnOffApplication::CancelEvents ()
       // Calculate residual bits since last packet sent
       Time delta(Simulator::Now() - m_lastStartTime);
       Scalar bits = delta * Scalar (m_cbrRate.GetBitRate ()) / Seconds (1.0);
-      m_residualBits += (uint32_t)bits.GetDouble ();
+      m_residualBits += bits;
     }
   Simulator::Cancel(m_sendEvent);
   Simulator::Cancel(m_startStopEvent);
