@@ -11,13 +11,19 @@ class int64x64_t
 public:
   inline int64x64_t ()
     : _v (0) {}
-  explicit inline int64x64_t (double v)
+  inline int64x64_t (double v)
     : _v (v) {}
-  explicit inline int64x64_t (int v)
+  inline int64x64_t (int v)
     : _v (v) {}
-  explicit inline int64x64_t (long int v)
+  inline int64x64_t (long int v)
     : _v (v) {}
-  explicit inline int64x64_t (long long int v)
+  inline int64x64_t (long long int v)
+    : _v (v) {}
+  inline int64x64_t (unsigned int v)
+    : _v (v) {}
+  inline int64x64_t (unsigned long int v)
+    : _v (v) {}
+  inline int64x64_t (unsigned long long int v)
     : _v (v) {}
   inline int64x64_t (int64_t hi, uint64_t lo)
     : _v (hi) {/* XXX */}

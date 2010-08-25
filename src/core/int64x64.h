@@ -3,7 +3,7 @@
 
 #include "ns3/core-config.h"
 
-#if defined (INT64X64_USE_DOUBLE)
+#if defined (INT64X64_USE_DOUBLE) || defined (PYTHON_SCAN)
 #include "int64x64-double.h"
 #elif defined (INT64X64_USE_CAIRO)
 #include "int64x64-cairo.h"
