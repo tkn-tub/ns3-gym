@@ -64,7 +64,7 @@ all_modules = (
     )
 
 def set_options(opt):
-    opt.sub_options('simulator')
+    opt.sub_options('core')
 
     opt.add_option('--enable-rpath',
                    help=("Link programs with rpath"

@@ -2,7 +2,41 @@
 import sys
 import Options
 
+def set_options(opt):
+    opt.add_option('--int64x64-as-double',
+                   help=('Whether to use a double floating point'
+                         ' type for int64x64 values'
+                         ' WARNING: this option only has effect '
+                         'with the configure command.'),
+                   action="store_true", default=False,
+                   dest='int64x64_as_double')
+
+
 def configure(conf):
+    a = conf.check(type_name='uint128_t', define_name='HAVE_UINT128_T')
+    b = conf.check(type_name='__uint128_t', define_name='HAVE___UINT128_T')
+
+
+    if Options.options.int64x64_as_double:
+        conf.define('INT64X64_USE_DOUBLE', 1)
+        conf.env['INT64X64_USE_DOUBLE'] = 1
+        highprec = 'long double'
+    elif a or b:
+        conf.define('INT64X64_USE_128', 1)
+        conf.env['INT64X64_USE_128'] = 1
+        highprec = '128-bit integer'
+    else:
+        conf.define('INT64X64_USE_CAIRO', 1)
+        conf.env['INT64X64_USE_CAIRO'] = 1
+        highprec = 'cairo 128-bit integer'
+
+    conf.check_message_custom('high precision time', 'implementation', highprec)
+
+    conf.check(header_name='stdint.h', define_name='HAVE_STDINT_H')
+    conf.check(header_name='inttypes.h', define_name='HAVE_INTTYPES_H')
+
+    conf.check(header_name='sys/inttypes.h', define_name='HAVE_SYS_INT_TYPES_H')
+
     if conf.check(header_name='stdlib.h'):
         conf.define('HAVE_STDLIB_H', 1)
         conf.define('HAVE_GETENV', 1)
@@ -81,6 +115,7 @@ def build(bld):
         'traced-callback-test-suite.cc',
         'ptr-test-suite.cc',
         'fatal-impl.cc',
+        'int64x64.cc',
         ]
 
     headers = bld.new_task_gen('ns3header')
@@ -130,6 +165,7 @@ def build(bld):
         'vector.h',
         'default-deleter.h',
         'fatal-impl.h',
+        'int64x64.h',
         ]
 
     if sys.platform == 'win32':
@@ -153,6 +189,21 @@ def build(bld):
                 'system-thread.h',
                 'system-condition.h',
                 ])
+
+    env = bld.env_of_name('default')
+    if env['INT64X64_USE_DOUBLE']:
+        headers.source.extend(['int64x64-double.h'])
+    elif env['INT64X64_USE_128']:
+        headers.source.extend(['int64x64-128.h'])
+        core.source.extend(['int64x64-128.cc'])
+    elif env['INT64X64_USE_CAIRO']:
+        core.source.extend([
+            'int64x64-cairo.cc',
+            ])
+        headers.source.extend([
+            'int64x64-cairo.h',
+            'cairo-wideint-private.h',
+            ])
 
     if bld.env['ENABLE_GSL']:
         core.uselib = 'GSL GSLCBLAS M'
