@@ -181,10 +181,13 @@ public:
   explicit inline Time (int v)
     : m_data (v)
   {}
-  explicit inline Time (unsigned int v)
+  explicit inline Time (long int v)
     : m_data (v)
   {}
-  explicit inline Time (long int v)
+  explicit inline Time (long long int v)
+    : m_data (v)
+  {}
+  explicit inline Time (unsigned int v)
     : m_data (v)
   {}
   explicit inline Time (unsigned long int v)
