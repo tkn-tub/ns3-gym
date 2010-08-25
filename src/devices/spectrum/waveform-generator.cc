@@ -189,7 +189,7 @@ WaveformGenerator::GenerateWaveform ()
   NS_LOG_FUNCTION (this);
 
   Ptr<PacketBurst> pb = Create<PacketBurst> ();
-  Time duration = m_period.To () * m_dutyCycle;
+  Time duration = Time (m_period * m_dutyCycle);
   
   NS_LOG_LOGIC ("generating waveform : " << *m_txPowerSpectralDensity);
   m_phyTxStartTrace (0);

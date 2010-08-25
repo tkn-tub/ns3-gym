@@ -65,22 +65,22 @@ RttEstimator::GetTypeId (void)
 void 
 RttEstimator::SetMinRto (Time minRto)
 {
-  minrto = minRto.To ();
+  minrto = minRto;
 }
 Time 
 RttEstimator::GetMinRto (void) const
 {
-  return minrto;
+  return Time (minrto);
 }
 void 
 RttEstimator::SetEstimate (Time estimate)
 {
-  est = estimate.To ();
+  est = estimate;
 }
 Time 
 RttEstimator::GetEstimate (void) const
 {
-  return est;
+  return Time (est);
 }
 
 
@@ -226,18 +226,17 @@ RttMeanDeviation::RttMeanDeviation (const RttMeanDeviation& c)
 
 void RttMeanDeviation::Measurement (Time m)
 {
-  int64x64_t sample = m.To ();
   if (nSamples)
     { // Not first
-      int64x64_t err = sample - est;
+      int64x64_t err = m - est;
       est = est + gain * err;         // estimated rtt
       variance = variance + gain * (Abs (err) - variance); // variance of rtt
     }
   else
     { // First sample
-      est = sample;                        // Set estimate to current
+      est = m;                        // Set estimate to current
       //variance = sample / 2;               // And variance to current / 2
-      variance = sample; // try this
+      variance = m; // try this
     }
   nSamples++;
 }
@@ -256,7 +255,7 @@ Time RttMeanDeviation::RetransmitTimeout ()
       retval = (est + 4 * variance) * multiplier; // As suggested by Jacobson
     }
   retval = Max (retval, minrto);
-  return retval;
+  return Time (retval);
 }
 
 Ptr<RttEstimator> RttMeanDeviation::Copy () const

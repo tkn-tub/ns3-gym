@@ -73,7 +73,7 @@ TimeMinMaxAvgTotalCalculator::Output(DataOutputCallback &callback) const
   callback.OutputSingleton(m_context, m_key + "-count", m_count);
   if (m_count > 0) {
     callback.OutputSingleton(m_context, m_key + "-total", m_total);
-    callback.OutputSingleton(m_context, m_key + "-average", m_total.To () / m_count);
+    callback.OutputSingleton(m_context, m_key + "-average", Time (m_total / m_count));
     callback.OutputSingleton(m_context, m_key + "-max", m_max);
     callback.OutputSingleton(m_context, m_key + "-min", m_min);
   }

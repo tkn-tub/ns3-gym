@@ -313,8 +313,8 @@ UplinkSchedulerMBQoS::Schedule (void)
                       Time
                       uInterval =
                         MilliSeconds ((*(ssRecord->GetServiceFlows (ServiceFlow::SF_TYPE_UGS).begin ()))->GetUnsolicitedGrantInterval ());
-
-                      int64x64_t frame = ((timestamp - Simulator::Now ()).To () / frame_duration.To ());
+                      
+                      Time frame = Time ((timestamp - Simulator::Now ()) / frame_duration);
 
                       if (frame <= 1)
                         {
@@ -668,8 +668,8 @@ UplinkSchedulerMBQoS::CheckDeadline (uint32_t &availableSymbols)
               Time deadline = job->GetDeadline ();
               Time frame_duration = GetBs ()->GetPhy ()->GetFrameDuration ();
 
-              int64x64_t frame = ((deadline - Simulator::Now ()).To () / frame_duration.To ());
-
+              Time frame = Time ((deadline - Simulator::Now ()) / frame_duration);
+              
               NS_LOG_DEBUG ("At " << Simulator::Now ().GetSeconds () << " reserved traffic rate: "
                                 << job->GetServiceFlow ()->GetMinReservedTrafficRate ()
                                 <<" deadline: "<<job->GetDeadline ().GetSeconds () << " frame start: "<<GetBs ()->m_frameStartTime.GetSeconds ()

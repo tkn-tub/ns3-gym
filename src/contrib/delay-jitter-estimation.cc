@@ -98,7 +98,7 @@ DelayJitterEstimation::RecordRx (Ptr<const Packet> packet)
   tag.GetTxTime ();
 
   Time delta = (Simulator::Now () - m_previousRx) - (tag.GetTxTime () - m_previousRxTx);
-  m_jitter += (Abs (delta).To () - m_jitter) / 16;
+  m_jitter += (Abs (delta) - m_jitter) / 16;
   m_previousRx = Simulator::Now ();
   m_previousRxTx = tag.GetTxTime ();
   m_delay = Simulator::Now () - tag.GetTxTime ();

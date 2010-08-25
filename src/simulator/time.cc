@@ -165,7 +165,7 @@ operator<< (std::ostream& os, const Time & time)
       unit = "unreachable";
       break;
     }
-  int64x64_t v = time.To ();
+  int64x64_t v = time;
   os << v << unit;
   return os;
 }

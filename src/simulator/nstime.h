@@ -430,16 +430,16 @@ public:
       }
     return retval;
   }
-  inline Time (const int64x64_t &value)
+  inline operator int64x64_t () const
+  {
+    return int64x64_t (m_data);
+  }
+  explicit inline Time (const int64x64_t &value)
     : m_data (value.GetHigh ())
   {}
   inline static Time From (const int64x64_t &value)
   {
     return Time (value);
-  }
-  inline int64x64_t To (void) const
-  {
-    return int64x64_t (m_data);
   }
 
 private:

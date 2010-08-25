@@ -963,7 +963,7 @@ HwmpProtocol::ShouldSendPreq (Mac48Address dst)
   if (i == m_preqTimeouts.end ())
     {
       m_preqTimeouts[dst].preqTimeout = Simulator::Schedule (
-          Time (m_dot11MeshHWMPnetDiameterTraversalTime.To () * 2),
+          Time (m_dot11MeshHWMPnetDiameterTraversalTime * 2),
           &HwmpProtocol::RetryPathDiscovery, this, dst, 1);
       m_preqTimeouts[dst].whenScheduled = Simulator::Now ();
       return true;
@@ -1009,7 +1009,7 @@ HwmpProtocol::RetryPathDiscovery (Mac48Address dst, uint8_t numOfRetry)
       i->second->RequestDestination (dst, originator_seqno, dst_seqno);
     }
   m_preqTimeouts[dst].preqTimeout = Simulator::Schedule (
-      Time ((2 * (numOfRetry + 1)) *  m_dot11MeshHWMPnetDiameterTraversalTime.To ()),
+      Time ((2 * (numOfRetry + 1)) *  m_dot11MeshHWMPnetDiameterTraversalTime),
       &HwmpProtocol::RetryPathDiscovery, this, dst, numOfRetry);
 }
 //Proactive PREQ routines:

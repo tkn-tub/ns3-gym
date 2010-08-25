@@ -101,7 +101,7 @@ ChainRegressionTest::DoRun ()
   // At m_time / 3 move central node away and see what will happen
   Ptr<Node> node = m_nodes->Get (m_size / 2);
   Ptr<MobilityModel> mob = node->GetObject<MobilityModel> ();
-  Simulator::Schedule (m_time.To () / 3, &MobilityModel::SetPosition, mob, Vector (1e5, 1e5, 1e5));
+  Simulator::Schedule (Time (m_time / 3), &MobilityModel::SetPosition, mob, Vector (1e5, 1e5, 1e5));
 
   Simulator::Stop (m_time);
   Simulator::Run ();
