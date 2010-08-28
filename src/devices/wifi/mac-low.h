@@ -178,7 +178,7 @@ public:
 class MacLowTransmissionParameters {
 public:
   MacLowTransmissionParameters ();
-    
+
   /**
    * Wait ACKTimeout for an ACK. If we get an ACK
    * on time, call MacLowTransmissionListener::GotAck.
@@ -235,7 +235,7 @@ public:
    * the current transmission + SIFS.
    */
   void EnableNextData (uint32_t size);
-  
+
   /**
    * \param durationId the value to set in the duration/Id field of
    *        the outgoing packet.
@@ -244,7 +244,7 @@ public:
    * packet's durationId field to this value.
    */
   void EnableOverrideDurationId (Time durationId);
-  
+
   /**
    * Do not wait for Ack after data transmission. Typically
    * used for Broadcast and multicast frames.
@@ -510,7 +510,7 @@ private:
   void NotifyCtsTimeoutStartNow (Time duration);
   void NotifyCtsTimeoutResetNow ();
   void MaybeCancelPrevious (void);
-  
+
   void NavCounterResetCtsMissed (Time rtsEndRxTime);
   void NormalAckTimeout (void);
   void FastAckTimeout (void);
@@ -630,7 +630,7 @@ private:
   typedef std::map<AgreementKey, AgreementValue>::iterator AgreementsI;
 
   Agreements m_bAckAgreements;
-  
+
   typedef std::map<AcIndex, MacLowBlockAckEventListener*> QueueListeners;
   QueueListeners m_edcaListeners;
 };
