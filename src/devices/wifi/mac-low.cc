@@ -811,7 +811,7 @@ MacLow::ReceiveOk (Ptr<Packet> packet, double rxSnr, WifiMode txMode, WifiPreamb
               AgreementsI it = m_bAckAgreements.find (std::make_pair (hdr.GetAddr2 (), hdr.GetQosTid ()));
               RxCompleteBufferedPacketsWithSmallerSequence (it->second.first.GetStartingSequence (),
                                                             hdr.GetAddr2 (), hdr.GetQosTid ());
-              RxCompleteBufferedPackets (hdr.GetAddr2 (), hdr.GetQosTid ());
+              RxCompleteBufferedPacketsUntilFirstLost (hdr.GetAddr2 (), hdr.GetQosTid ());
               NS_ASSERT (m_sendAckEvent.IsExpired ());
               m_sendAckEvent = Simulator::Schedule (GetSifs (),
                                                     &MacLow::SendAckAfterData, this,
@@ -1563,7 +1563,7 @@ MacLow::DestroyBlockAckAgreement (Mac48Address originator, uint8_t tid)
   if (it != m_bAckAgreements.end ())
     {
       RxCompleteBufferedPacketsWithSmallerSequence (it->second.first.GetStartingSequence (), originator, tid);
-      RxCompleteBufferedPackets (originator, tid);
+      RxCompleteBufferedPacketsUntilFirstLost (originator, tid);
       m_bAckAgreements.erase (it);
     }
 }
@@ -1629,7 +1629,7 @@ MacLow::RxCompleteBufferedPacketsWithSmallerSequence (uint16_t seq, Mac48Address
 }
 
 void
-MacLow::RxCompleteBufferedPackets (Mac48Address originator, uint8_t tid)
+MacLow::RxCompleteBufferedPacketsUntilFirstLost (Mac48Address originator, uint8_t tid)
 {
   AgreementsI it = m_bAckAgreements.find (std::make_pair (originator, tid));
   if (it != m_bAckAgreements.end ())

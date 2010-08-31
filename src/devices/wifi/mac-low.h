@@ -549,7 +549,7 @@ private:
    * agreement are forward up to WifiMac until there is an incomplete MSDU.
    * See section 9.10.4 in IEEE802.11 standard for more details.
    */
-  void RxCompleteBufferedPackets (Mac48Address originator, uint8_t tid);
+  void RxCompleteBufferedPacketsUntilFirstLost (Mac48Address originator, uint8_t tid);
   /* 
    * This method checks if exists a valid established block ack agreement. 
    * If there is, store the packet without pass it up to WifiMac. The packet is buffered
