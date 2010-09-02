@@ -81,5 +81,13 @@ QosUtilsMapSeqControlToUniqueInteger (uint16_t seqControl, uint16_t endSequence)
   return integer; 
 }
 
+bool
+QosUtilsIsOldPacket (uint16_t startingSeq, uint16_t seqNumber)
+{
+  NS_ASSERT (startingSeq < 4096);
+  NS_ASSERT (seqNumber < 4096);
+  uint16_t distance = ((seqNumber - startingSeq) + 4096) % 4096;
+  return (distance >= 2048);
+}
 
 } //namespace ns3

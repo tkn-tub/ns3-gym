@@ -62,6 +62,41 @@ uint8_t QosUtilsGetTidForPacket (Ptr<const Packet> packet);
  */
 uint32_t QosUtilsMapSeqControlToUniqueInteger (uint16_t seqControl, uint16_t endSequence);
 
+/*
+ * This function checks if packet with sequence number <i>seqNumber</i> is an "old" packet.
+ * The sequence number space is considered divided into two parts, one of which is "old" and
+ * one of which is "new" by means of a boundary created by adding half the sequence number
+ * range to the starting sequence number <i>startingSeq</i>. So this function works fine also
+ * when <i>seqNumber</i> is smaller than <i>startingSeq</i> and <i>startingSeq</i> + 2048 is greater
+ * than 4096 because all comparison are circular modulo 2^12. The following are possible scenarios:
+ *
+ * ----- = old packets
+ * +++++ = new packets
+ *  
+ *  CASE A:
+ *
+ *    0                             4095
+ *    |++++++|----------------|++++++|
+ *           ^                ^
+ *           | endSeq         | startingSeq
+ *
+ *
+ *  CASE B:
+ * 
+ *    0                            4095
+ *    |------|++++++++++++++++|-----|
+ *           ^                ^
+ *           | startingSeq    | endSeq
+ *
+ * Here in the examples endSeq is the sequenceNumber of the "last" new packet.
+ * So this function, when specified a starting sequence and a sequence number, returns true
+ * if that packet (with sequence number <i>numberSeq</i>)) belongs to the section of the
+ * sequence number space marked with '-' characters. The function returns false otherwise.
+ *
+ *
+ */
+bool QosUtilsIsOldPacket (uint16_t startingSeq, uint16_t seqNumber);
+
 } //namespace ns3
 
 #endif /* QOS_UTILS_H */

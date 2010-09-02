@@ -49,7 +49,6 @@ private:
   bool IsDuplicate (const WifiMacHeader* hdr, OriginatorRxStatus *originator) const;
   Ptr<Packet> HandleFragments (Ptr<Packet> packet, const WifiMacHeader* hdr,
                                OriginatorRxStatus *originator);
-  bool SequenceControlSmaller (uint16_t seqa, uint16_t seqb);
 
   typedef std::map <Mac48Address, OriginatorRxStatus *, std::less<Mac48Address> > Originators;
   typedef std::map <std::pair<Mac48Address, uint8_t>, OriginatorRxStatus *, std::less<std::pair<Mac48Address,uint8_t> > > QosOriginators;

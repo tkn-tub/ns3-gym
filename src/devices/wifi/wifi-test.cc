@@ -148,41 +148,28 @@ WifiTest::DoRun (void)
 }
 
 //-----------------------------------------------------------------------------
-class MacRxMiddleTest : public TestCase
+class QosUtilsIsOldPacketTest : public TestCase
 {
 public:
-  MacRxMiddleTest () : TestCase ("MacRxMiddle") {}
-  virtual bool DoRun (void) 
+  QosUtilsIsOldPacketTest () : TestCase ("QosUtilsIsOldPacket") {}
+  virtual bool DoRun (void)
   {
-    MacRxMiddle middle;
-    // 0 < 1
-    NS_TEST_EXPECT_MSG_EQ (middle.SequenceControlSmaller (0 << 4, 1 << 4), true, "0 < 1");
-    // 0 < 2047
-    NS_TEST_EXPECT_MSG_EQ (middle.SequenceControlSmaller (0 << 4, 2047 << 4), true, "0 < 2047");
-    // 0 > 2048
-    NS_TEST_EXPECT_MSG_EQ (!middle.SequenceControlSmaller (0 << 4, 2048 << 4), true, "0 > 2048");
-    // 0 > 2049
-    NS_TEST_EXPECT_MSG_EQ (!middle.SequenceControlSmaller (0 << 4, 2049 << 4), true, "0 > 2049");
-    // 0 > 4095
-    NS_TEST_EXPECT_MSG_EQ (!middle.SequenceControlSmaller (0 << 4, 4095 << 4), true, "0 > 4095");
-
-    // 1 > 0
-    NS_TEST_EXPECT_MSG_EQ (!middle.SequenceControlSmaller (1 << 4, 0 << 4), true, "1 > 0");
-    // 2047 > 0
-    NS_TEST_EXPECT_MSG_EQ (!middle.SequenceControlSmaller (2047 << 4, 0 << 4), true, "2047 > 0");
-    // 2048 < 0
-    NS_TEST_EXPECT_MSG_EQ (middle.SequenceControlSmaller (2048 << 4, 0 << 4), true, "2048 < 0");
-    // 2049 < 0
-    NS_TEST_EXPECT_MSG_EQ (middle.SequenceControlSmaller (2049 << 4, 0 << 4), true, "2049 < 0");
-    // 4095 < 0 
-    NS_TEST_EXPECT_MSG_EQ (middle.SequenceControlSmaller (4095 << 4, 0 << 4), true, "4095 < 0");
-
-    // 2048 < 2049
-    NS_TEST_EXPECT_MSG_EQ (middle.SequenceControlSmaller (2048 << 4, 2049 << 4), true, "2048 < 2049");
-    // 2048 < 4095
-    NS_TEST_EXPECT_MSG_EQ (middle.SequenceControlSmaller (2048 << 4, 4095 << 4), true, "2048 < 4095");
-    // 2047 > 4095
-    NS_TEST_EXPECT_MSG_EQ (!middle.SequenceControlSmaller (2047 << 4, 4095 << 4), true, "2047 > 4095");
+    // startingSeq=0, seqNum=2047
+    NS_TEST_EXPECT_MSG_EQ (QosUtilsIsOldPacket (0, 2047), false, "2047 is new in comparison to 0");
+    // startingSeq=0, seqNum=2048
+    NS_TEST_EXPECT_MSG_EQ (QosUtilsIsOldPacket (0, 2048), true, "2048 is old in comparison to 0");
+    // startingSeq=2048, seqNum=0
+    NS_TEST_EXPECT_MSG_EQ (QosUtilsIsOldPacket (2048, 0), true, "0 is old in comparison to 2048");
+    // startingSeq=4095, seqNum=0
+    NS_TEST_EXPECT_MSG_EQ (QosUtilsIsOldPacket (4095, 0), false, "0 is new in comparison to 4095");
+    // startingSeq=0, seqNum=4095
+    NS_TEST_EXPECT_MSG_EQ (QosUtilsIsOldPacket (0, 4095), true, "4095 is old in comparison to 0");
+    // startingSeq=4095 seqNum=2047
+    NS_TEST_EXPECT_MSG_EQ (QosUtilsIsOldPacket (4095, 2047), true, "2047 is old in comparison to 4095");
+    // startingSeq=2048 seqNum=4095
+    NS_TEST_EXPECT_MSG_EQ (QosUtilsIsOldPacket (2048, 4095), false, "4095 is new in comparison to 2048");
+    // startingSeq=2049 seqNum=0
+    NS_TEST_EXPECT_MSG_EQ (QosUtilsIsOldPacket (2049, 0), false, "0 is new in comparison to 2049");
 
     return GetErrorStatus ();
   }
@@ -200,7 +187,7 @@ WifiTestSuite::WifiTestSuite ()
   : TestSuite ("devices-wifi", UNIT)
 {
   AddTestCase (new WifiTest);
-  AddTestCase (new MacRxMiddleTest);
+  AddTestCase (new QosUtilsIsOldPacketTest);
 }
 
 WifiTestSuite g_wifiTestSuite;

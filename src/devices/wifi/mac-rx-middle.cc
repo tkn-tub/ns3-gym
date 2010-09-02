@@ -128,27 +128,6 @@ MacRxMiddle::SetForwardCallback (ForwardUpCallback callback)
   m_callback = callback;
 }
 
-bool
-MacRxMiddle::SequenceControlSmaller (uint16_t seqca, uint16_t seqcb)
-{
-  NS_LOG_FUNCTION (seqca << seqcb);
-  int16_t seqa = seqca >> 4;
-  int16_t seqb = seqcb >> 4;
-  int16_t delta = seqb - seqa;
-  bool sign = seqa <= seqb;
-  uint16_t absDelta = (delta < 0)?-delta:delta;
-  NS_LOG_DEBUG ("seqb="<<seqb<<", seqa="<<seqa<<", delta="<<delta);
-  if (absDelta < 2048)
-    {
-      return sign;
-    }
-  else
-    {
-      return !sign;
-    }
-}
-
-
 OriginatorRxStatus *
 MacRxMiddle::Lookup (const WifiMacHeader *hdr)
 {
