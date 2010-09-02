@@ -23,8 +23,20 @@ ns-3.10 has been tested on the following platforms: (TBD)
 New user-visible features
 -------------------------
 
+   - Support for IEEE 802.11g (specifically, rates with Modulation
+     Class ERP-OFDM) has been added to the wifi module. The new
+     WifiModes have names of the form ErpOfdmRatexxMbps, where xx is
+     the rate in Mbps (one of 6, 9, 12, 18, 24, 36, 48, 54), and a
+     WifiPhyStandard enumeration WIFI_PHY_STANDARD_80211g has been
+     added to allow configuration of a Wi-Fi STA supporting ERP-OFDM,
+     HR/DSSS, and DSSS rates (which some call an "802.11b/g" station).
+
 Bugs fixed
 ----------
+The following lists many of the bugs fixed or small feature additions
+since ns-3.9, in many cases referencing the Bugzilla bug number
+
+   - bug 852 - Add support for 802.11g devices
 
 Known issues
 ------------
