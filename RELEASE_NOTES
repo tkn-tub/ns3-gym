@@ -37,6 +37,7 @@ The following lists many of the bugs fixed or small feature additions
 since ns-3.9, in many cases referencing the Bugzilla bug number
 
    - bug 852 - Add support for 802.11g devices
+   - bug 979 - Multi-octet fields in Wi-Fi headers have wrong endianness
 
 Known issues
 ------------
