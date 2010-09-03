@@ -58,7 +58,7 @@ AmsduSubframeHeader::Serialize (Buffer::Iterator i) const
 {
   WriteTo (i, m_da);
   WriteTo (i, m_sa);
-  i.WriteHtonU16 (m_length);
+  i.WriteHtolsbU16 (m_length);
 }
 
 uint32_t
@@ -67,7 +67,7 @@ AmsduSubframeHeader::Deserialize (Buffer::Iterator start)
   Buffer::Iterator i = start;
   ReadFrom (i, m_da);
   ReadFrom (i, m_sa);
-  m_length = i.ReadNtohU16 ();
+  m_length = i.ReadLsbtohU16 ();
   return i.GetDistanceFrom (start);
 }
 

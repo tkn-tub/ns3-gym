@@ -197,8 +197,8 @@ MgtProbeResponseHeader::Serialize (Buffer::Iterator start) const
   // ibss parameter set
   //XXX
   Buffer::Iterator i = start;
-  i.WriteHtonU64 (Simulator::Now ().GetMicroSeconds ());
-  i.WriteHtonU16 (m_beaconInterval / 1024);
+  i.WriteHtolsbU64 (Simulator::Now ().GetMicroSeconds ());
+  i.WriteHtolsbU16 (m_beaconInterval / 1024);
   i = m_capability.Serialize (i);
   i = m_ssid.Serialize (i);
   i = m_rates.Serialize (i);
@@ -209,8 +209,8 @@ uint32_t
 MgtProbeResponseHeader::Deserialize (Buffer::Iterator start)
 {
   Buffer::Iterator i = start;
-  m_timestamp = i.ReadNtohU64();
-  m_beaconInterval = i.ReadNtohU16 ();
+  m_timestamp = i.ReadLsbtohU64();
+  m_beaconInterval = i.ReadLsbtohU16 ();
   m_beaconInterval *= 1024;
   i = m_capability.Deserialize (i);
   i = m_ssid.Deserialize (i);
@@ -299,7 +299,7 @@ MgtAssocRequestHeader::Serialize (Buffer::Iterator start) const
 {
   Buffer::Iterator i = start;
   i = m_capability.Serialize (i);
-  i.WriteHtonU16 (m_listenInterval);
+  i.WriteHtolsbU16 (m_listenInterval);
   i = m_ssid.Serialize (i);
   i = m_rates.Serialize (i);
   i = m_rates.extended.Serialize (i);
@@ -309,7 +309,7 @@ MgtAssocRequestHeader::Deserialize (Buffer::Iterator start)
 {
   Buffer::Iterator i = start;
   i = m_capability.Deserialize (i);
-  m_listenInterval = i.ReadNtohU16 ();
+  m_listenInterval = i.ReadLsbtohU16 ();
   i = m_ssid.Deserialize (i);
   i = m_rates.Deserialize (i);
   i = m_rates.extended.DeserializeIfPresent (i);
@@ -387,7 +387,7 @@ MgtAssocResponseHeader::Serialize (Buffer::Iterator start) const
   Buffer::Iterator i = start;
   i = m_capability.Serialize (i);
   i = m_code.Serialize (i);
-  i.WriteHtonU16 (m_aid);
+  i.WriteHtolsbU16 (m_aid);
   i = m_rates.Serialize (i);
   i = m_rates.extended.Serialize (i);
 }
@@ -397,7 +397,7 @@ MgtAssocResponseHeader::Deserialize (Buffer::Iterator start)
   Buffer::Iterator i = start;
   i = m_capability.Deserialize (i);
   i = m_code.Deserialize (i);
-  m_aid = i.ReadNtohU16 ();
+  m_aid = i.ReadLsbtohU16 ();
   i = m_rates.Deserialize (i);
   i = m_rates.extended.DeserializeIfPresent (i);
   return i.GetDistanceFrom (start);
