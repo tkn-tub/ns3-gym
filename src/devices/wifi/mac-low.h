@@ -40,6 +40,7 @@
 #include "ns3/packet.h"
 #include "ns3/nstime.h"
 #include "qos-utils.h"
+#include "block-ack-cache.h"
 
 namespace ns3 {
 
@@ -546,7 +547,7 @@ private:
    * for that packet exists.
    * This happens when the originator of block ack has only few MPDUs to send.
    * All completed MSDUs starting with starting sequence number of block ack
-   * agreement are forward up to WifiMac until there is an incomplete MSDU.
+   * agreement are forward up to WifiMac until there is an incomplete or missing MSDU.
    * See section 9.10.4 in IEEE802.11 standard for more details.
    */
   void RxCompleteBufferedPacketsUntilFirstLost (Mac48Address originator, uint8_t tid);
@@ -629,7 +630,11 @@ private:
   typedef std::map<AgreementKey, AgreementValue> Agreements;
   typedef std::map<AgreementKey, AgreementValue>::iterator AgreementsI;
 
+  typedef std::map<AgreementKey, BlockAckCache> BlockAckCaches;
+  typedef std::map<AgreementKey, BlockAckCache>::iterator BlockAckCachesI;
+  
   Agreements m_bAckAgreements;
+  BlockAckCaches m_bAckCaches;
 
   typedef std::map<AcIndex, MacLowBlockAckEventListener*> QueueListeners;
   QueueListeners m_edcaListeners;

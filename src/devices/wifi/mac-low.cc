@@ -759,9 +759,15 @@ MacLow::ReceiveOk (Ptr<Packet> packet, double rxSnr, WifiMode txMode, WifiPreamb
       packet->RemoveHeader (blockAckReq);
       if (!blockAckReq.IsMultiTid ())
         {
-          AgreementsI it = m_bAckAgreements.find (std::make_pair (hdr.GetAddr2 (), blockAckReq.GetTidInfo ()));
+          uint8_t tid = blockAckReq.GetTidInfo ();
+          AgreementsI it = m_bAckAgreements.find (std::make_pair (hdr.GetAddr2 (), tid));
           if (it != m_bAckAgreements.end ())
             {
+              //Update block ack cache
+              BlockAckCachesI i = m_bAckCaches.find (std::make_pair (hdr.GetAddr2 (), tid));
+              NS_ASSERT (i != m_bAckCaches.end ());
+              (*i).second.UpdateWithBlockAckReq (blockAckReq.GetStartingSequence ());
+
               NS_ASSERT (m_sendAckEvent.IsExpired ());
               /* See section 11.5.3 in IEEE802.11 for mean of this timer */
               ResetBlockAckInactivityTimerIfNeeded (it->second.first);
@@ -1513,6 +1519,12 @@ MacLow::StoreMpduIfNeeded (Ptr<Packet> packet, WifiMacHeader hdr)
       for (; i != (*it).second.second.end () &&
            QosUtilsMapSeqControlToUniqueInteger ((*i).second.GetSequenceControl (), endSequence) < mappedSeqControl; i++) ;
       (*it).second.second.insert (i, bufferedPacket);
+
+      //Update block ack cache
+      BlockAckCachesI j = m_bAckCaches.find (std::make_pair (hdr.GetAddr2 (), hdr.GetQosTid ()));
+      NS_ASSERT (j != m_bAckCaches.end ());
+      (*j).second.UpdateWithMpdu (&hdr);
+      
       return true;
     }
   return false;
@@ -1542,6 +1554,10 @@ MacLow::CreateBlockAckAgreement (const MgtAddBaResponseHeader *respHdr, Mac48Add
   AgreementValue value (agreement, buffer);
   m_bAckAgreements.insert (std::make_pair (key, value));
 
+  BlockAckCache cache;
+  cache.Init (startingSeq, respHdr->GetBufferSize () + 1);
+  m_bAckCaches.insert (std::make_pair (key, cache));
+
   if (respHdr->GetTimeout () != 0)
     {
       AgreementsI it = m_bAckAgreements.find (std::make_pair (originator, respHdr->GetTid ()));
@@ -1565,6 +1581,10 @@ MacLow::DestroyBlockAckAgreement (Mac48Address originator, uint8_t tid)
       RxCompleteBufferedPacketsWithSmallerSequence (it->second.first.GetStartingSequence (), originator, tid);
       RxCompleteBufferedPacketsUntilFirstLost (originator, tid);
       m_bAckAgreements.erase (it);
+
+      BlockAckCachesI i = m_bAckCaches.find (std::make_pair (originator, tid));
+      NS_ASSERT (i != m_bAckCaches.end ());
+      m_bAckCaches.erase (i);
     }
 }
 
@@ -1726,112 +1746,30 @@ MacLow::SendBlockAckAfterBlockAckRequest (const CtrlBAckRequestHeader reqHdr, Ma
   bool immediate = false;
   if (!reqHdr.IsMultiTid ())
     {
-      blockAck.SetStartingSequence (reqHdr.GetStartingSequence ());
-      blockAck.SetTidInfo (reqHdr.GetTidInfo ());
-
       tid = reqHdr.GetTidInfo ();
-      AgreementsI it;
-      it = m_bAckAgreements.find (std::make_pair (originator, tid));
+      AgreementsI it = m_bAckAgreements.find (std::make_pair (originator, tid));
       if (it != m_bAckAgreements.end ())
         {
+          blockAck.SetStartingSequence (reqHdr.GetStartingSequence ());
+          blockAck.SetTidInfo (tid);
           immediate = (*it).second.first.IsImmediateBlockAck ();
-          uint16_t startingSeqCtrl = reqHdr.GetStartingSequenceControl ();
-
-          /* All packets with smaller sequence than starting sequence control must be passed up to Wifimac 
-           * See 9.10.3 in IEEE8022.11e standard.
-           */
-          RxCompleteBufferedPacketsWithSmallerSequence ((startingSeqCtrl>>4)&0x0fff, originator, tid);
-
-          std::list<BufferedPacket>::iterator i = (*it).second.second.begin ();
-
-          /* For more details about next operations see section 9.10.4 of IEEE802.11e standard */
           if (reqHdr.IsBasic ())
             {
               blockAck.SetType (BASIC_BLOCK_ACK);
-              uint16_t guard = startingSeqCtrl;
-              std::list<BufferedPacket>::iterator lastComplete = (*it).second.second.begin ();
-              for (; i != (*it).second.second.end () && guard == (*i).second.GetSequenceControl (); i++)
-                {
-                  blockAck.SetReceivedFragment ((*i).second.GetSequenceNumber (),
-                                                (*i).second.GetFragmentNumber ());
-                  /* Section 9.10.4 in IEEE802.11n: the recipient shall pass up to WifiMac the 
-                   * MSDUs and A-MSDUs starting with the starting sequence number 
-                   * sequentially until there is an incomplete MSDU or A-MSDU in the buffer */
-                  if (!(*i).second.IsMoreFragments ())
-                    {
-                      while (lastComplete != i)
-                        {
-                          m_rxCallback ((*lastComplete).first, &(*lastComplete).second);
-                          lastComplete++;
-                        }
-                      m_rxCallback ((*lastComplete).first, &(*lastComplete).second);
-                      lastComplete++;
-                    }
-                  guard = (*i).second.IsMoreFragments () ? (guard + 1) : (guard + 16) & 0xfff0;
-                }
-              (*it).second.first.SetStartingSequence ((guard>>4)&0x0fff);
-              /* All packets already forwarded to WifiMac must be removed from buffer:
-                 [begin (), lastComplete) */
-              (*it).second.second.erase ((*it).second.second.begin (), lastComplete);
-              for (i = lastComplete; i != (*it).second.second.end (); i++)
-                { 
-                  blockAck.SetReceivedFragment ((*i).second.GetSequenceNumber (),
-                                                (*i).second.GetFragmentNumber ());
-                }
             }
           else if (reqHdr.IsCompressed ())
             {
               blockAck.SetType (COMPRESSED_BLOCK_ACK);
-              uint16_t guard = startingSeqCtrl;
-              std::list<BufferedPacket>::iterator lastComplete = (*it).second.second.begin ();
-              for (; i != (*it).second.second.end () && guard == (*i).second.GetSequenceControl (); i++)
-                {
-                  if (!(*i).second.IsMoreFragments ())
-                    {
-                      blockAck.SetReceivedPacket ((*i).second.GetSequenceNumber ());
-                      while (lastComplete != i)
-                        {
-                          m_rxCallback ((*lastComplete).first, &(*lastComplete).second);
-                          lastComplete++;
-                        }
-                      m_rxCallback ((*lastComplete).first, &(*lastComplete).second);
-                      lastComplete++;
-                    }
-                  guard = (*i).second.IsMoreFragments () ? (guard + 1) : (guard + 16) & 0xfff0;
-                }
-              (*it).second.first.SetStartingSequence ((guard>>4)&0x0fff);
-              /* All packets already forwarded to WifiMac must be removed from buffer:
-                 [begin (), lastcomplete) */
-              (*it).second.second.erase ((*it).second.second.begin (), lastComplete);
-              i = lastComplete;
-              if (i != (*it).second.second.end ())
-                {
-                  guard = (*i).second.GetSequenceControl () & 0xfff0;
-                }
-              for (; i != (*it).second.second.end ();)
-                {
-                  for (; i != (*it).second.second.end () && guard == (*i).second.GetSequenceControl (); i++)
-                    {
-                      if (!(*i).second.IsMoreFragments ())
-                        {
-                          guard = (guard + 16) & 0xfff0;
-                          blockAck.SetReceivedPacket ((*i).second.GetSequenceNumber ());
-                        }
-                      else
-                        {
-                          guard += 1;
-                        }
-                    }
-                  while (i != (*it).second.second.end () && ((guard >> 4) & 0x0fff) == (*i).second.GetSequenceNumber ())
-                    {
-                      i++;
-                    }
-                  if (i != (*it).second.second.end ())
-                    {
-                      guard = (*i).second.GetSequenceControl () & 0xfff0;
-                    }
-                }
             }
+          BlockAckCachesI i = m_bAckCaches.find (std::make_pair (originator, tid));
+          NS_ASSERT (i != m_bAckCaches.end ());
+          (*i).second.FillBlockAckBitmap (&blockAck);
+
+          /* All packets with smaller sequence than starting sequence control must be passed up to Wifimac 
+           * See 9.10.3 in IEEE8022.11e standard.
+           */
+          RxCompleteBufferedPacketsWithSmallerSequence (reqHdr.GetStartingSequence (), originator, tid);
+          RxCompleteBufferedPacketsUntilFirstLost (originator, tid);
         }
       else
         {
