@@ -178,8 +178,7 @@ PointToPointGridHelper::BoundingBox (double ulx, double uly,
 Ptr<Node> 
 PointToPointGridHelper::GetNode (uint32_t row, uint32_t col)
 {
-  if (row < 0 || col < 0 || 
-      row > m_nodes.size () - 1 || 
+  if (row > m_nodes.size () - 1 || 
       col > m_nodes.at (row).GetN () - 1) 
     {
        NS_FATAL_ERROR ("Index out of bounds in PointToPointGridHelper::GetNode.");
@@ -191,8 +190,7 @@ PointToPointGridHelper::GetNode (uint32_t row, uint32_t col)
 Ipv4Address
 PointToPointGridHelper::GetIpv4Address (uint32_t row, uint32_t col)
 {
-  if (row < 0 || col < 0 || 
-      row > m_nodes.size () - 1 || 
+  if (row > m_nodes.size () - 1 || 
       col > m_nodes.at (row).GetN () - 1) 
     {
        NS_FATAL_ERROR ("Index out of bounds in PointToPointGridHelper::GetIpv4Address.");
