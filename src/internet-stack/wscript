@@ -46,6 +46,7 @@ def configure(conf):
             conf.env['WITH_NSC'] = os.path.abspath(nsc_release_dir)
         del nsc_dir
         del nsc_release_dir
+
     if not conf.env['WITH_NSC']:
         conf.check_message("NSC location", '', False)
         conf.report_optional_feature("nsc", "Network Simulation Cradle", False,
@@ -57,14 +58,24 @@ def configure(conf):
     else:
         arch = None
     ok = False
-    if arch == 'x86_64' or arch == 'i686' or arch == 'i586' or arch == 'i486' or arch == 'i386':
+    if arch in ('x86_64', 'i686', 'i586', 'i486', 'i386'):
         conf.env['NSC_ENABLED'] = 'yes'
         conf.env.append_value('CXXDEFINES', 'NETWORK_SIMULATION_CRADLE')
         conf.check(mandatory=True, lib='dl', define_name='HAVE_DL', uselib='DL')
         ok = True
     conf.check_message('NSC supported architecture', arch, ok)
-    conf.report_optional_feature("nsc", "Network Simulation Cradle", ok,
-                                 "architecture %r not supported" % arch)
+    
+    if not ok:
+        conf.report_optional_feature("nsc", "Network Simulation Cradle", False,
+                                     "architecture %r not supported" % arch)
+        return
+
+    lib_to_check = 'liblinux2.6.26.so'
+
+    if not os.path.exists(os.path.join(conf.env['WITH_NSC'], lib_to_check)):
+        conf.report_optional_feature("nsc", "Network Simulation Cradle", False,
+            "NSC library %s is missing: NSC has not been built?" % lib_to_check)
+        return
 
     # append the NSC kernel dirs to the module path so that these dirs
     # will end up in the LD_LIBRARY_PATH, thus allowing the NSC NS-3
@@ -72,6 +83,8 @@ def configure(conf):
     for nsc_module in ['linux-2.6.18', 'linux-2.6.26']:
         conf.env.append_value('NS3_MODULE_PATH',
                               os.path.abspath(os.path.join(conf.env['WITH_NSC'], nsc_module)))
+
+    conf.report_optional_feature("nsc", "Network Simulation Cradle", True, "")
 
 
 
