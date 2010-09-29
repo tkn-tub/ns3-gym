@@ -97,7 +97,17 @@ Ptr<const AttributeChecker> MakeEnumChecker (int v1, std::string n1,
 					     int v9 = 0, std::string n9 = "",
 					     int v10 = 0, std::string n10 = "",
 					     int v11 = 0, std::string n11 = "",
-					     int v12 = 0, std::string n12 = "");
+					     int v12 = 0, std::string n12 = "",
+                                             int v13 = 0, std::string n13 = "",
+                                             int v14 = 0, std::string n14 = "",
+                                             int v15 = 0, std::string n15 = "",
+                                             int v16 = 0, std::string n16 = "",
+                                             int v17 = 0, std::string n17 = "",
+                                             int v18 = 0, std::string n18 = "",
+                                             int v19 = 0, std::string n19 = "",
+                                             int v20 = 0, std::string n20 = "",
+                                             int v21 = 0, std::string n21 = "",
+                                             int v22 = 0, std::string n22 = "");
 
 
 } // namespace ns3

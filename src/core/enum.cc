@@ -154,17 +154,27 @@ EnumChecker::Copy (const AttributeValue &source, AttributeValue &destination) co
 
 Ptr<const AttributeChecker> 
 MakeEnumChecker (int v1, std::string n1,
-		 int v2, std::string n2,
-		 int v3, std::string n3,
-		 int v4, std::string n4,
-		 int v5, std::string n5,
-		 int v6, std::string n6,
-		 int v7, std::string n7,
-		 int v8, std::string n8,
-		 int v9, std::string n9,
-		 int v10, std::string n10,
-		 int v11, std::string n11,
-		 int v12, std::string n12)
+                 int v2, std::string n2,
+                 int v3, std::string n3,
+                 int v4, std::string n4,
+                 int v5, std::string n5,
+                 int v6, std::string n6,
+                 int v7, std::string n7,
+                 int v8, std::string n8,
+                 int v9, std::string n9,
+                 int v10, std::string n10,
+                 int v11, std::string n11,
+                 int v12, std::string n12,
+                 int v13, std::string n13,
+                 int v14, std::string n14,
+                 int v15, std::string n15,
+                 int v16, std::string n16,
+                 int v17, std::string n17,
+                 int v18, std::string n18,
+                 int v19, std::string n19,
+                 int v20, std::string n20,
+                 int v21, std::string n21,
+                 int v22, std::string n22)
 {
   Ptr<EnumChecker> checker = Create<EnumChecker> ();
   checker->AddDefault (v1, n1);
@@ -223,6 +233,56 @@ MakeEnumChecker (int v1, std::string n1,
       return checker;
     }
   checker->Add (v12, n12);
+  if (n13 == "")
+    {
+          return checker;
+    }
+  checker->Add (v13, n13);
+  if (n14 == "")
+        {
+          return checker;
+        }
+  checker->Add (v14, n14);
+  if (n15 == "")
+    {
+          return checker;
+    }
+  checker->Add (v15, n15);
+  if (n16 == "")
+    {
+          return checker;
+    }
+  checker->Add (v16, n16);
+  if (n17 == "")
+    {
+          return checker;
+    }
+  checker->Add (v17, n17);
+  if (n18 == "")
+    {
+          return checker;
+    }
+  checker->Add (v18, n18);
+  if (n19 == "")
+    {
+          return checker;
+    }
+  checker->Add (v19, n19);
+  if (n20 == "")
+    {
+          return checker;
+    }
+  checker->Add (v20, n20);
+  if (n21 == "")
+    {
+          return checker;
+    }
+  checker->Add (v21, n21);
+  if (n22 == "")
+    {
+          return checker;
+    }
+  checker->Add (v22, n22);
   return checker;
 }
 
