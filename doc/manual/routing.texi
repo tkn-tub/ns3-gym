@@ -190,19 +190,29 @@ straightforward now that the underlying OSPF SPF framework is in place.
 Presently, we can handle IPv4 point-to-point, numbered links, as well
 as shared broadcast (CSMA) links, and we do not do equal-cost multipath.  
 
-The GlobalRouteManager first walks the list of nodes and aggregates
-a GlobalRouter interface to each one as follows:
+Typically, an Ipv4GlobalRoutingHelper class is used to create global
+routes.  The InternetStackHelper, by default, will cause the below
+helper code to be called to aggregate a GlobalRouter
+object to each node.
 @verbatim
-  typedef std::vector < Ptr<Node> >::iterator Iterator;
-  for (Iterator i = NodeList::Begin (); i != NodeList::End (); i++)
-    {
-      Ptr<Node> node = *i;
-      Ptr<GlobalRouter> globalRouter = CreateObject<GlobalRouter> (node);
-      node->AggregateObject (globalRouter);
-    }
+Ptr<Ipv4RoutingProtocol>
+Ipv4GlobalRoutingHelper::Create (Ptr<Node> node) const
+{
+  NS_LOG_LOGIC ("Adding GlobalRouter interface to node " <<
+                node->GetId ());
+
+  Ptr<GlobalRouter> globalRouter = CreateObject<GlobalRouter> ();
+  node->AggregateObject (globalRouter);
+
+  NS_LOG_LOGIC ("Adding GlobalRouting Protocol to node " << node->GetId ());
+  Ptr<Ipv4GlobalRouting> globalRouting = CreateObject<Ipv4GlobalRouting> ();
+  globalRouter->SetRoutingProtocol (globalRouting);
+
+  return globalRouting;
+}
 @end verbatim
 
-This interface is later queried and used to generate a Link State
+This object interface is later queried and used to generate a Link State
 Advertisement for each router, and this link state database is
 fed into the OSPF shortest path computation logic.  The Ipv4 API
 is finally used to populate the routes themselves. 

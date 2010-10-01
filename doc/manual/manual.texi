@@ -128,7 +128,7 @@ Simulator version:
 @setchapternewpage odd
 @headings off
 @everyheading @thischapter @| @| ns-3 manual
-@everyfooting  ns-3.6 @| @thispage @| @today
+@everyfooting  ns-3 @| @thispage @| @today
 @include organization.texi
 
 @unnumbered Part 1:  ns-3 core 
