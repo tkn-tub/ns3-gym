@@ -59,13 +59,14 @@ def configure(conf):
         arch = None
     ok = False
     if arch in ('x86_64', 'i686', 'i586', 'i486', 'i386'):
-        conf.env['NSC_ENABLED'] = 'yes'
+        conf.env['NSC_ENABLED'] = True
         conf.env.append_value('CXXDEFINES', 'NETWORK_SIMULATION_CRADLE')
         conf.check(mandatory=True, lib='dl', define_name='HAVE_DL', uselib='DL')
         ok = True
     conf.check_message('NSC supported architecture', arch, ok)
     
     if not ok:
+        conf.env['NSC_ENABLED'] = False
         conf.report_optional_feature("nsc", "Network Simulation Cradle", False,
                                      "architecture %r not supported" % arch)
         return
@@ -73,6 +74,7 @@ def configure(conf):
     lib_to_check = 'liblinux2.6.26.so'
 
     if not os.path.exists(os.path.join(conf.env['WITH_NSC'], lib_to_check)):
+        conf.env['NSC_ENABLED'] = False
         conf.report_optional_feature("nsc", "Network Simulation Cradle", False,
             "NSC library %s is missing: NSC has not been built?" % lib_to_check)
         return

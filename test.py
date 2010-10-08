@@ -42,13 +42,13 @@ import re
 interesting_config_items = [
     "NS3_BUILDDIR",
     "NS3_MODULE_PATH",
-    "ENABLE_NSC",
+    "NSC_ENABLED",
     "ENABLE_REAL_TIME",
     "ENABLE_EXAMPLES",
     "ENABLE_PYTHON_BINDINGS",
 ]
 
-ENABLE_NSC = False
+NSC_ENABLED = False
 ENABLE_REAL_TIME = False
 ENABLE_EXAMPLES = True
 
@@ -63,6 +63,16 @@ core_kinds = ["bvt", "core", "system", "unit"]
 # because NSC causes illegal instruction crashes when run under valgrind.
 #
 core_valgrind_skip_tests = [
+    "ns3-tcp-cwnd",
+    "nsc-tcp-loss",
+    "ns3-tcp-interoperability",
+]
+
+# 
+# There are some special cases for test suites that fail when NSC is
+# missing.
+#
+core_nsc_missing_skip_tests = [
     "ns3-tcp-cwnd",
     "nsc-tcp-loss",
     "ns3-tcp-interoperability",
@@ -128,8 +138,8 @@ example_tests = [
 
     ("tcp/star", "True", "True"),
     ("tcp/tcp-large-transfer", "True", "True"),
-    ("tcp/tcp-nsc-lfn", "ENABLE_NSC == True", "True"),
-    ("tcp/tcp-nsc-zoo", "ENABLE_NSC == True", "True"),
+    ("tcp/tcp-nsc-lfn", "NSC_ENABLED == True", "False"),
+    ("tcp/tcp-nsc-zoo", "NSC_ENABLED == True", "False"),
     ("tcp/tcp-star-server", "True", "True"),
 
     ("topology-read/topology-read --input=../../examples/topology-read/Inet_small_toposample.txt", "True", "True"),
@@ -1210,6 +1220,10 @@ def run_tests():
             if options.valgrind and test in core_valgrind_skip_tests:
                 job.set_is_skip(True)
 
+            # Skip tests that will fail if NSC is missing.
+            if not NSC_ENABLED and test in core_nsc_missing_skip_tests:
+                job.set_is_skip(True)
+
             if options.verbose:
                 print "Queue %s" % test
 
@@ -1227,10 +1241,10 @@ def run_tests():
     # on NSC being configured by waf, that example should have a condition
     # that evaluates to true if NSC is enabled.  For example,
     #
-    #      ("tcp-nsc-zoo", "ENABLE_NSC == True"),
+    #      ("tcp-nsc-zoo", "NSC_ENABLED == True"),
     #
     # In this case, the example "tcp-nsc-zoo" will only be run if we find the
-    # waf configuration variable "ENABLE_NSC" to be True.
+    # waf configuration variable "NSC_ENABLED" to be True.
     #
     # We don't care at all how the trace files come out, so we just write them 
     # to a single temporary directory.
@@ -1650,7 +1664,7 @@ def main(argv):
     global options
     options = parser.parse_args()[0]
     signal.signal(signal.SIGINT, sigint_hook)
-    
+
     return run_tests()
 
 if __name__ == '__main__':
