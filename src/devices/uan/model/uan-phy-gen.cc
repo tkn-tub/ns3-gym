@@ -506,7 +506,7 @@ UanPhyGen::SendPacket (Ptr<Packet> pkt, uint32_t modeNum)
 void
 UanPhyGen::TxEndEvent ()
 {
-  NS_ASSERT (m_state = TX);
+  NS_ASSERT (m_state == TX);
   if (GetInterferenceDb ( (Ptr<Packet>) 0) > m_ccaThreshDb)
     {
       m_state = CCABUSY;

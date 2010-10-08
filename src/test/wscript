@@ -8,6 +8,7 @@ def build(bld):
     test.source = [
         'sample-test-suite.cc',
         'error-model-test-suite.cc',
+        'mobility-test-suite.cc',
         ]
 
     headers = bld.new_task_gen('ns3header')

@@ -105,7 +105,7 @@ for @code{class TcpSocket}.
 @subsection Current limitations
 @itemize @bullet
 @item Only Tahoe congestion control is presently supported.
-@item Only IPv4 is supported (IPv6 support will start to be added after ns-3.6).
+@item Only IPv4 is supported 
 @end itemize
 
 @section Network Simulation Cradle

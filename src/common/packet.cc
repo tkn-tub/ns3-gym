@@ -731,11 +731,12 @@ Packet::Deserialize (const uint8_t* buffer, uint32_t size)
   // read nix-vector
   NS_ASSERT (!m_nixVector);
   uint32_t nixSize = *p++;
-  size -= nixSize;
 
-  // if size less than zero, the buffer 
+  // if size less than nixSize, the buffer 
   // will be overrun, assert
-  NS_ASSERT (size >= 0);
+  NS_ASSERT (size >= nixSize);
+
+  size -= nixSize;
 
   if (nixSize > 4)
     {
@@ -760,11 +761,12 @@ Packet::Deserialize (const uint8_t* buffer, uint32_t size)
 
   // read metadata
   uint32_t metaSize = *p++;
-  size -= metaSize;
 
-  // if size less than zero, the buffer 
+  // if size less than metaSize, the buffer 
   // will be overrun, assert
-  NS_ASSERT (size >= 0);
+  NS_ASSERT (size >= metaSize);
+
+  size -= metaSize;
 
   uint32_t metadataDeserialized = 
     m_metadata.Deserialize (reinterpret_cast<const uint8_t *> (p), metaSize);
@@ -780,11 +782,12 @@ Packet::Deserialize (const uint8_t* buffer, uint32_t size)
 
   // read buffer contents
   uint32_t bufSize = *p++;
-  size -= bufSize;
 
-  // if size less than zero, the buffer 
+  // if size less than bufSize, the buffer 
   // will be overrun, assert
-  NS_ASSERT (size >= 0);
+  NS_ASSERT (size >= bufSize);
+
+  size -= bufSize;
 
   uint32_t bufferDeserialized =
     m_buffer.Deserialize (reinterpret_cast<const uint8_t *> (p), bufSize);

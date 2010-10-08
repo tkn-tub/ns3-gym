@@ -31,12 +31,21 @@ New user-visible features
      added to allow configuration of a Wi-Fi STA supporting ERP-OFDM,
      HR/DSSS, and DSSS rates (which some call an "802.11b/g" station).
 
+   - Two attributes were added to WaypointMobilityModel.  The first
+     "LazyNotify" (default false), if enabled to true, will suppress
+     course change notifications if there are no position updates.
+     The second, "InitialPositionIsWaypoint" (default false), if enabled,
+     will allow an initial call to SetPosition () (before any waypoints
+     have been added) to be treated as the first waypoint.
+
 Bugs fixed
 ----------
 The following lists many of the bugs fixed or small feature additions
 since ns-3.9, in many cases referencing the Bugzilla bug number
 
    - bug 852 - Add support for 802.11g devices
+   - bug 892 - WaypointMobilityModel incompatible with MobilityHelper::Install
+   - bug 893 - Lazy CourseChange notification for WaypointMobilityModel
    - bug 979 - Multi-octet fields in Wi-Fi headers have wrong endianness
 
 Known issues

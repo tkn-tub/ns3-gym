@@ -33,16 +33,15 @@ namespace ns3 {
  * \brief Waypoint-based mobility model.
  *
  * Each object determines its velocity and position at a given time
- * from a set of ns3::Waypoint objects. The position of each object
- * is not updated unless queried, and past waypoints are discarded
+ * from a set of ns3::Waypoint objects.  Past waypoints are discarded
  * after the current simulation time greater than their time value.
- * 
- * The initial position of each object corresponds to the position of
- * the first waypoint, and the initial velocity of each object is zero.
- * Upon reaching the last waypoint, object positions becomes static and
- * velocity is zero.
  *
- * When a node is in between waypoints (in time), it moves with a constant
+ * By default, the initial position of each object corresponds to the 
+ * position of the first waypoint, and the initial velocity of each 
+ * object is zero.  Upon reaching the last waypoint, object position 
+ * becomes static and velocity is zero.
+ *
+ * When a node is in between waypoint times, it moves with a constant
  * velocity between the position at the previous waypoint and the position
  * at the current waypoint. To make a node hold a certain position for a
  * time interval, two waypoints with the same position (but different times)
@@ -54,10 +53,37 @@ namespace ns3 {
  * no more waypoints in which case it will not change without user
  * intervention.
  *
+ * The model has two attributes with methods that allow clients to get 
+ * the next waypoint value (NextWaypoint) and the number of waypoints left 
+ * (WaypointsLeft) beyond (but not including) the next waypoint.  
+ *
+ * In addition, there are two attributes that govern model behavior.  The
+ * first, LazyNotify, governs how the model calls the CourseChange trace.
+ * By default, LazyNotify is false, which means that each time that a
+ * waypoint time is hit, an Update() is forced and the CourseChange 
+ * callback will be called.  When LazyNotify is true, Update() is suppressed
+ * at waypoint times, and CourseChange callbacks will only occur when
+ * there later are actual calls to Update () (typically when calling
+ * GetPosition ()).  This option may be enabled for execution run-time
+ * performance improvements, but when enabled, users should note that
+ * course change listeners will in general not be notified at waypoint
+ * times but instead at the next Update() following a waypoint time,
+ * and some waypoints may not be notified to course change listeners.
+ *
+ * The second, InitialPositionIsWaypoint, is false by default.  Recall
+ * that the first waypoint will set the initial position and set velocity
+ * equal to 0 until the first waypoint time.  In such a case, the
+ * call to SetPosition(), such as from a PositionAllocator, will be
+ * ignored.  However, if InitialPositionIsWaypoint is set to true
+ * and SetPosition() is called before any waypoints have been added,
+ * the SetPosition() call is treated as an initial waypoint at time zero.
+ * In such a case, when SetPosition() is treated as an initial waypoint,
+ * it should be noted that attempts to add a waypoint at the same time
+ * will cause the program to fail.
  */
 class WaypointMobilityModel : public MobilityModel
 {
- public:
+public:
   static TypeId GetTypeId (void);
 
   /**
@@ -73,7 +99,7 @@ class WaypointMobilityModel : public MobilityModel
    * be greater than the previous waypoint added, otherwise
    * a fatal error occurs. The first waypoint is set as the
    * current position with a velocity of zero.
-   * 
+   *
    */
   void AddWaypoint (const Waypoint &waypoint);
 
@@ -96,7 +122,9 @@ class WaypointMobilityModel : public MobilityModel
    */
   void EndMobility (void);
 
- private:
+private:
+  friend class WaypointMobilityModelNotifyTest; // To allow Update() calls and access to m_current
+
   void Update (void) const;
   virtual void DoDispose (void);
   virtual Vector DoGetPosition (void) const;
@@ -104,6 +132,8 @@ class WaypointMobilityModel : public MobilityModel
   virtual Vector DoGetVelocity (void) const;
 
   bool m_first;
+  bool m_lazyNotify;
+  bool m_initialPositionIsWaypoint;
   mutable std::deque<Waypoint> m_waypoints;
   mutable Waypoint m_current;
   mutable Waypoint m_next;
