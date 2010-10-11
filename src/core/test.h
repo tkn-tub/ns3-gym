@@ -632,7 +632,8 @@ public:
 
   /**
    * \brief Set the verbosity of this test case.
-   * \param verbose Whether or not to print "stuff."
+   * \param verbose Whether or not to turn on any output the
+   *                test case may provide.
    */
   void SetVerbose (bool verbose);
 
@@ -821,7 +822,6 @@ protected:
 
   /**
    * \internal
-   * \param verbose Turn on any output the test case may provide
    * \brief Implementation to do any local setup required for this test case.
    */
   virtual void DoSetup (void);
@@ -829,14 +829,12 @@ protected:
   /**
    * \internal
    * \brief Implementation to actually run this test case.
-   * \param verbose Turn on any output the test case may provide
    * \returns Boolean sense of "an error has occurred."
    */
   virtual bool DoRun (void) = 0;
 
   /**
    * \internal
-   * \param verbose Turn on any output the test case may provide
    * \brief Implementation to do any local setup required for this test case.
    */
   virtual void DoTeardown (void);
@@ -923,7 +921,8 @@ public:
 
   /**
    * \brief Set the verbosity of this test suite.
-   * \param verbose Whether or not to print "stuff."
+   * \param verbose Whether or not to turn on any output the
+   *                test case may provide.
    */
   void SetVerbose (bool verbose);
 
@@ -1067,7 +1066,6 @@ protected:
 
   /**
    * \internal
-   * \param verbose Turn on any output the test case may provide
    * \brief Implementation to do any local setup required for this test suite.
    */
   virtual void DoSetup (void);
@@ -1075,14 +1073,12 @@ protected:
   /**
    * \internal
    * \brief Implementation to actually run this test suite.
-   * \param verbose Turn on any output the test case may provide
    * \returns Boolean sense of "an error has occurred."
    */
   virtual bool DoRun (void);
 
   /**
    * \internal
-   * \param verbose Turn on any output the test case may provide
    * \brief Implementation to do any local setup required for this test suite.
    */
   virtual void DoTeardown (void);
