@@ -77,7 +77,17 @@ public:
    * \return the total bytes received in this sink app
    */
   uint32_t GetTotalRx () const;
-  
+
+  /**
+   * \return pointer to listening socket
+   */
+  Ptr<Socket> GetListeningSocket (void) const;
+
+  /**
+   * \return list of pointers to accepted sockets
+   */
+  std::list<Ptr<Socket> > GetAcceptedSockets (void) const;
+ 
 protected:
   virtual void DoDispose (void);
 private:

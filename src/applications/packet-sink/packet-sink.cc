@@ -75,6 +75,20 @@ uint32_t PacketSink::GetTotalRx() const
   return m_totalRx;
 }
   
+Ptr<Socket>
+PacketSink::GetListeningSocket (void) const
+{
+  NS_LOG_FUNCTION (this);
+  return m_socket;
+}
+
+std::list<Ptr<Socket> >
+PacketSink::GetAcceptedSockets (void) const
+{
+  NS_LOG_FUNCTION (this);
+  return m_socketList;
+}
+
 void PacketSink::DoDispose (void)
 {
   NS_LOG_FUNCTION (this);

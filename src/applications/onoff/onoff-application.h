@@ -102,6 +102,11 @@ public:
    */
   void SetMaxBytes (uint32_t maxBytes);
 
+  /**
+   * \return pointer to associated socket
+   */
+  Ptr<Socket> GetSocket (void) const;
+
 protected:
   virtual void DoDispose (void);
 private:
