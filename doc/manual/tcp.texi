@@ -148,10 +148,10 @@ Building ns-3 with nsc support is the same as building it without; no
 additional arguments are needed for waf.  Building nsc may take some time
 compared to ns-3; it is interleaved in the ns-3 building process.
 
-Try running the regression tests: @code{./waf --regression}.  If NSC has
-been successfully built, the following test should show up in the results:
+Try running the following ns-3 test suite: @code{./test.py -s ns3-tcp-interoperability}.  If NSC has
+been successfully built, the following should show up in the results:
 @verbatim
-PASS test-tcp-nsc-lfn
+PASS: TestSuite ns3-tcp-interoperability
 @end verbatim
 
 This confirms that NSC is ready to use.

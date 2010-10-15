@@ -126,20 +126,8 @@ numbered as @code{ns-3.<release>.<hotfix>}.  For example, a second hotfix to a
 still hypothetical release nine of @command{ns-3} would be numbered as
 @code{ns-3.9.2}.
 
-We have had a regression testing framework in place since the first release.
-For each release, a set of output files that define ``good behavior'' are saved.
-These known good output files are called reference traces and are associated 
-with a given release by name.  For example, in @uref{http://code.nsnam.org/}
-you will find a repository named @code{ns-3.1} which is the first stable release
-of @command{ns-3}.  You will also find a separate repository named 
-@code{ns-3.1-ref-traces} that holds the reference traces for the @code{ns-3.1}
-release.  It is crucial to keep these files consistent if you want to do any
-regression testing of your repository.  This is a good idea to do at least once
-to verify everything has built correctly.
-
 The current development snapshot (unreleased) of @command{ns-3} may be found 
-at @uref{http://code.nsnam.org/ns-3-dev/} and the associated reference traces
-may be found at @uref{http://code.nsnam.org/ns-3-dev-ref-traces/}.  The 
+at @uref{http://code.nsnam.org/ns-3-dev/}.  The 
 developers attempt to keep these repository in consistent, working states but
 they are in a development area with unreleased code present, so you may want 
 to consider staying with an official release if you do not need newly-
@@ -147,8 +135,8 @@ introduced features.
 
 Since the release numbers are going to be changing, I will stick with 
 the more constant ns-3-dev here in the tutorial, but you can replace the 
-string ``ns-3-dev'' with your choice of release (e.g., ns-3.6 and 
-ns-3.6-ref-traces) in the text below.  You can find the latest version  of the
+string ``ns-3-dev'' with your choice of release (e.g., ns-3.6) in the 
+text below.  You can find the latest version  of the
 code either by inspection of the repository list or by going to the 
 @uref{http://www.nsnam.org/getting_started.html,,``Getting Started''} 
 web page and looking for the latest release identifier.
@@ -159,15 +147,14 @@ script to pull down the various pieces of @command{ns-3} you will be using.
 
 Go ahead and type the following into your shell (remember you can substitute
 the name of your chosen release number instead of @code{ns-3-dev} -- like
-@code{"ns-3.6"} and @code{"ns-3.6-ref-traces"} if you want to work with a 
+@code{"ns-3.6"} if you want to work with a 
 stable release).
 
 @verbatim
-  ./download.py -n ns-3-dev -r ns-3-dev-ref-traces
+  ./download.py -n ns-3-dev
 @end verbatim
 
-Note that the default for the @code{-n} option is @code{ns-3-dev} and the 
-default for the @code{-r} option is @code{ns-3-dev-ref-traces} and so the
+Note that the default for the @code{-n} option is @code{ns-3-dev} and so the
 above is actually redundant.  We provide this example to illustrate how to
 specify alternate repositories.  In order to download @code{ns-3-dev} you 
 can actually use the defaults and simply type,
@@ -195,24 +182,8 @@ following,
 @end verbatim
 
 This is output by the download script as it fetches the actual @code{ns-3}
-code from the repository.  Next, you should see something like,
+code from the repository.
 
-@verbatim
-      #
-      # Get the regression traces
-      #
-  
-  Synchronizing reference traces using Mercurial.
-   =>  hg clone http://code.nsnam.org/ns-3-dev-ref-traces ns-3-dev-ref-traces
-  requesting all changes
-  adding changesets
-  adding manifests
-  adding file changes
-  added 86 changesets with 1178 changes to 259 files
-  208 files updated, 0 files merged, 0 files removed, 0 files unresolved
-@end verbatim
-
-This is the download script fetching the reference trace files for you.
 The download script is smart enough to know that on some platforms various
 pieces of ns-3 are not supported.  On your platform you may not see some
 of these pieces come down.  However, on most platforms, the process should
@@ -254,22 +225,22 @@ This part of the process is the script downloading the Network Simulation
 Cradle for you. Note that NSC is not supported on OSX or Cygwin and works 
 best with gcc-3.4 or gcc-4.2 or greater series.
 
-After the clone command completes, you should have several new directories
+After the download.py script completes, you should have several new directories
 under @code{~/repos/ns-3-allinone}:
 
 @verbatim
-  build.py*     constants.pyc  download.py*  ns-3-dev-ref-traces/  pybindgen/  util.py
-  constants.py  dist.py*       ns-3-dev/     nsc/                  README      util.pyc
+  build.py*     constants.pyc  download.py*  nsc/        README      util.pyc
+  constants.py  dist.py*       ns-3-dev/     pybindgen/  util.py
 @end verbatim
 
 Go ahead and change into @code{ns-3-dev} under your @code{~/repos/ns-3-allinone} 
 directory.  You should see something like the following there:
 
 @verbatim
-  AUTHORS       examples/  regression/    scratch/  waf*
-  bindings/     LICENSE    regression.py  src/      waf.bat*
-  CHANGES.html  ns3/       RELEASE_NOTES  utils/    wscript
-  doc/          README     samples/       VERSION   wutils.py
+  AUTHORS       examples/  RELEASE_NOTES  utils/   wscript
+  bindings/     LICENSE    samples/       VERSION  wutils.py
+  CHANGES.html  ns3/       scratch/       waf*
+  doc/          README     src/           waf.bat*
 @end verbatim
 
 You are now ready to build the @command{ns-3} distribution.
@@ -299,8 +270,8 @@ If you change into the directory @code{ns-allinone-3.6} you should see a
 number of files:
 
 @verbatim
-build.py*     ns-3.6/             nsc-0.5.1/             README
-constants.py  ns-3.6-ref-traces/  pybindgen-0.12.0.700/  util.py
+build.py*     ns-3.6/     pybindgen-0.12.0.700/  util.py
+constants.py  nsc-0.5.1/  README
 @end verbatim 
 
 You are now ready to build the @command{ns-3} distribution.
@@ -355,7 +326,6 @@ downloaded.
 @cindex building debug version with Waf
 @cindex compiling with Waf
 @cindex unit tests with Waf
-@cindex regression tests with Waf
 We use Waf to configure and build the @command{ns-3} project.  It's not 
 strictly required at this point, but it will be valuable to take a slight
 detour and look at how to make changes to the configuration of the project.
@@ -380,7 +350,6 @@ output that looks similar to the following,
   Checking for program ranlib              : ok /usr/bin/ranlib
   Checking for g++                         : ok
   Checking for program pkg-config          : ok /usr/bin/pkg-config
-  Checking for regression reference traces  : ok ../ns-3-dev-ref-traces (guessed)
   Checking for -Wno-error=deprecated-declarations support : yes
   Checking for -Wl,--soname=foo support                   : yes
   Checking for header stdlib.h                            : ok
@@ -529,74 +498,6 @@ You will also see output from the test runner and the output will actually look 
 
 This command is typically run by @code{users} to quickly verify that an 
 @command{ns-3} distribution has built correctly.  
-
-@cindex regression tests
-You can also run our regression test suite to ensure that your distribution and
-toolchain have produced binaries that generate output that is identical to
-known-good reference output files.  You downloaded these reference traces to 
-your machine during the @code{./download.py} process above.  (Warning:  The 
-@code{ns-3.2} and @code{ns-3.3} releases do not use the @code{ns-3-allinone} 
-environment and require you to be online when you run regression tests because 
-they dynamically synchronize the reference traces directory with an online
-repository immediately prior to the run).
-
-During regression testing Waf will run a number of tests that generate what we
-call trace files.  The content of these trace files are compared with the 
-reference traces.  If they are identical, the regression tests report a PASS 
-status.  If a regression test fails you will see a FAIL indication along with a
-pointer to the offending trace file and its associated reference trace file
-along with a suggestion on diff parameters and options in order to see what 
-has gone awry.  If the error was discovered in a pcap file, it will be useful
-to convert the pcap files to text using tcpdump prior to comparison.
-
-Some regression tests may be SKIPped if the required support
-is not present.
-
-Note that the regression tests are also run in parallel and so the messages
-may be interleaved.
-
-To run the regression tests, you provide Waf with the regression flag.
-
-@verbatim
-  ./waf --regression
-@end verbatim
-
-You should see messages indicating that many tests are being run and are
-passing.
-
-@verbatim
-  Entering directory `/home/craigdo/repos/ns-3-allinone/ns-3-dev/build'
-  [647/669] regression-test (test-csma-bridge)
-  [648/669] regression-test (test-csma-broadcast)
-  [649/669] regression-test (test-csma-multicast)
-  [650/669] regression-test (test-csma-one-subnet)
-  PASS test-csma-multicast
-  [651/669] regression-test (test-csma-packet-socket)
-  PASS test-csma-bridge
-  ...
-  Regression testing summary:
-  PASS: 22 of 22 tests passed
-  Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone/ns-3-dev/build'
-  'build' finished successfully (25.826s)
-@end verbatim
-
-If you want to take a look at an example of what might be checked during
-a regression test, you can do the following:
-
-@verbatim
-  cd build/debug/regression/traces/second.ref
-  tcpdump -nn -tt -r second-2-0.pcap
-@end verbatim
-
-The output should be clear to anyone who is familiar with tcpdump or net
-sniffers.  We'll have much more to say on pcap files later in this tutorial.
-
-Remember to cd back into the top-level @command{ns-3} directory
-after you are done:
-
-@verbatim
-  cd ../../../../..
-@end verbatim
 
 @c ========================================================================
 @c Running a Script

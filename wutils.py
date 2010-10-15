@@ -19,13 +19,6 @@ APPNAME=None
 VERSION=None
 bld=None
 
-#
-# The last part of the path name to use to find the regression traces tarball.
-# path will be APPNAME + '-' + VERSION + REGRESSION_SUFFIX + TRACEBALL_SUFFIX,
-# e.g., ns-3-dev-ref-traces.tar.bz2
-#
-TRACEBALL_SUFFIX = ".tar.bz2"
-
 
 
 def get_command_template(env, arguments=()):

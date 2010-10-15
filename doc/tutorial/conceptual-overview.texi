@@ -174,10 +174,10 @@ directory.  Change into that release directory, and you should find a
 directory structure something like the following:
 
 @verbatim
-  AUTHORS       doc/       README          RELEASE_NOTES  utils/    wscript
-  bindings/     examples/  regression/     samples/       VERSION   wutils.py
-  build/        LICENSE    regression.py   scratch/       waf*      wutils.pyc
-  CHANGES.html  ns3/       regression.pyc  src/           waf.bat*
+  AUTHORS       doc/       README         src/     waf.bat*
+  bindings/     examples/  RELEASE_NOTES  utils/   wscript
+  build/        LICENSE    samples/       VERSION  wutils.py
+  CHANGES.html  ns3/       scratch/       waf*     wutils.pyc
 @end verbatim
 
 @cindex first.cc
@@ -811,7 +811,6 @@ drwxr-xr-x                               bindings python  files
 drwxr-xr-x                               doc              files
 drwxr-xr-x                               examples         files
 drwxr-xr-x                               ns3              files
-drwxr-xr-x                               regression       files
 drwxr-xr-x                               samples          files
 drwxr-xr-x                               scratch          files
 drwxr-xr-x                               src              files
@@ -824,7 +823,6 @@ drwxr-xr-x                               utils            files
 -rw-r--r-- 2009-07-01 12:47 +0200 3742   README           file | revisions | annotate
 -rw-r--r-- 2009-07-01 12:47 +0200 16171  RELEASE_NOTES    file | revisions | annotate
 -rw-r--r-- 2009-07-01 12:47 +0200 6      VERSION          file | revisions | annotate
--rw-r--r-- 2009-07-01 12:47 +0200 10946  regression.py    file | revisions | annotate
 -rwxr-xr-x 2009-07-01 12:47 +0200 88110  waf              file | revisions | annotate
 -rwxr-xr-x 2009-07-01 12:47 +0200 28     waf.bat          file | revisions | annotate
 -rw-r--r-- 2009-07-01 12:47 +0200 35395  wscript          file | revisions | annotate
