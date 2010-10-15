@@ -19,25 +19,10 @@
 #include "ns3/log.h"
 #include "ns3/abort.h"
 #include "ns3/test.h"
-#include "ns3/pcap-file.h"
 #include "ns3/config.h"
-#include "ns3/string.h"
-#include "ns3/uinteger.h"
 #include "ns3/double.h"
-#include "ns3/data-rate.h"
-#include "ns3/inet-socket-address.h"
-#include "ns3/internet-stack-helper.h"
-#include "ns3/ipv4-address-helper.h"
-#include "ns3/tcp-socket-factory.h"
-#include "ns3/yans-wifi-helper.h"
 #include "ns3/propagation-loss-model.h"
-#include "ns3/propagation-delay-model.h"
-#include "ns3/yans-wifi-channel.h"
-#include "ns3/yans-wifi-phy.h"
-#include "ns3/wifi-net-device.h"
-#include "ns3/mobility-helper.h"
 #include "ns3/constant-position-mobility-model.h"
-#include "ns3/nqos-wifi-mac-helper.h"
 #include "ns3/simulator.h"
 
 using namespace ns3;
@@ -478,4 +463,4 @@ PropagationLossModelsTestSuite::PropagationLossModelsTestSuite ()
   AddTestCase (new RangePropagationLossModelTestCase);
 }
 
-PropagationLossModelsTestSuite WifiPropagationLossModelsTestSuite;
+static PropagationLossModelsTestSuite propagationLossModelsTestSuite;
