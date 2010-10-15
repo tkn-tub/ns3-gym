@@ -48,6 +48,14 @@ public:
   PropagationLossModel ();
   virtual ~PropagationLossModel ();
 
+  /**
+   * \brief Enables a chain of loss models to act on the signal
+   * \param The next PropagationLossModel to add to the chain
+   *
+   * This method of chaining propagation loss models only works commutatively
+   * if the propagation loss of all models in the chain are independent
+   * of transmit power.
+   */
   void SetNext (Ptr<PropagationLossModel> next);
 
   /**
@@ -440,7 +448,15 @@ private:
 };
 
 /**
- * \brief The propagation loss is fixed. The user can set received power level.
+ * \brief Return a constant received power level independent of the transmit 
+ *  power
+ *
+ * The received power is constant independent of the transmit power.  The user
+ * must set received power level through the Rss attribute or public 
+ * SetRss() method.  Note that if this loss model is chained to other loss
+ * models via SetNext() method, it can only be the first loss model in such
+ * a chain, or else it will disregard the losses computed by loss models
+ * that precede it in the chain. 
  */ 
 class FixedRssLossModel : public PropagationLossModel
 {
@@ -452,7 +468,7 @@ public:
   /**
    * \param rss (dBm) the received signal strength
    *
-   * Set the RSS.
+   * Set the received signal strength (RSS) in dBm.
    */
   void SetRss (double rss);
 
