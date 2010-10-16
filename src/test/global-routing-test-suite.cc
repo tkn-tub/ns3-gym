@@ -14,6 +14,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include <vector>
 #include "ns3/boolean.h"
 #include "ns3/config.h"
 #include "ns3/csma-helper.h"
@@ -56,14 +57,16 @@ private:
   void HandleRead (Ptr<Socket>);
   virtual bool DoRun (void);
   int m_count;
-  uint8_t m_firstInterface[16];
-  uint8_t m_secondInterface[16];
+  std::vector<uint8_t> m_firstInterface;
+  std::vector<uint8_t> m_secondInterface;
 };
 
 // Add some help text to this case to describe what it is intended to test
 DynamicGlobalRoutingTestCase::DynamicGlobalRoutingTestCase ()
   : TestCase ("Dynamic global routing example"), m_count (0)
 {
+  m_firstInterface.resize (16);
+  m_secondInterface.resize (16);
 }
 
 DynamicGlobalRoutingTestCase::~DynamicGlobalRoutingTestCase ()
