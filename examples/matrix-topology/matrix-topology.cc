@@ -16,12 +16,20 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Egemen K. Cetinkaya <ekc@ittc.ku.edu>
- * Author: Justin P. Rohrer    <rohrer@ittc.ku.edu>
+ * Author: Justin P. Rohrer    <rohrej@ittc.ku.edu>
  * Author: Amit Dandekar       <dandekar@ittc.ku.edu>
  *
- * Thanks to the students and our advisor Dr. James P.G. Sterbenz
- * in the ResiliNets group at The University of Kansas,
- * https://wiki.ittc.ku.edu/resilinets/Main_Page
+ * James P.G. Sterbenz <jpgs@ittc.ku.edu>, director
+ * ResiliNets Research Group  http://wiki.ittc.ku.edu/resilinets
+ * Information and Telecommunication Technology Center 
+ * and
+ * Department of Electrical Engineering and Computer Science
+ * The University of Kansas
+ * Lawrence, KS  USA
+ *
+ * Work supported in part by NSF FIND (Future Internet Design) Program
+ * under grant CNS-0626918 (Postmodern Internet Architecture) and 
+ * by NSF grant CNS-1050226 (Multilayer Network Resilience Analysis and Experimentation on GENI)
  *
  * This program reads an upper triangular adjacency matrix (e.g. adjacency_matrix.txt) and
  * node coordinates file (e.g. node_coordinates.txt). The program also set-ups a
