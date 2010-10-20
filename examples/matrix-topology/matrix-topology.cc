@@ -169,8 +169,7 @@ int main (int argc, char *argv[])
         }
     }
   NS_LOG_INFO ("Number of links in the adjacency matrix is: " << linkCount);
-  uint32_t nNodes = nodes.GetN ();
-  NS_LOG_INFO ("Number of all nodes is: " << nNodes);
+  NS_LOG_INFO ("Number of all nodes is: " << nodes.GetN ());
 
   NS_LOG_INFO ("Initialize Global Routing.");
   Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
