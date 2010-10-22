@@ -2,22 +2,24 @@
 
 def build(bld):
     obj = bld.create_ns3_module('flow-monitor', ['internet-stack'])
-    obj.source = [
+    obj.source = ["model/%s" % s for s in [
        'flow-monitor.cc',
        'flow-classifier.cc',
        'flow-probe.cc',
        'ipv4-flow-classifier.cc',
        'ipv4-flow-probe.cc',
        'histogram.cc',	
-        ]
+        ]]
+    obj.source.append("helper/flow-monitor-helper.cc")
+
     headers = bld.new_task_gen('ns3header')
     headers.module = 'flow-monitor'
-    headers.source = [
+    headers.source = ["model/%s" % s for s in [
        'flow-monitor.h',
        'flow-probe.h',
        'flow-classifier.h',
        'ipv4-flow-classifier.h',
        'ipv4-flow-probe.h',
        'histogram.h',
-        ]
-
+        ]]
+    headers.source.append("helper/flow-monitor-helper.h")

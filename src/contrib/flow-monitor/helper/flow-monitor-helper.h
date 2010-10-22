@@ -20,7 +20,7 @@
 #ifndef FLOW_MONITOR_HELPER_H
 #define FLOW_MONITOR_HELPER_H
 
-#include "node-container.h"
+#include "ns3/node-container.h"
 #include "ns3/object-factory.h"
 #include "ns3/flow-monitor.h"
 #include "ns3/flow-classifier.h"
