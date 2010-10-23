@@ -56,6 +56,7 @@
 #include "ns3/contrib-module.h"
 #include "ns3/random-variable.h"
 #include "ns3/wifi-module.h"
+#include "ns3/flow-monitor-helper.h"
 
 #include <iostream>
 #include <fstream>
