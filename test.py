@@ -189,7 +189,7 @@ example_tests = [
 # hardcoded.
 #
 python_tests = [
-    ("examples/csma/csma-bridge.py", "True"),
+    ("src/devices/bridge/examples/csma-bridge.py", "True"),
 
     ("src/contrib/flowmon/examples/wifi-olsr-flowmon.py", "True"),
 

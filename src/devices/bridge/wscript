@@ -3,12 +3,17 @@
 def build(bld):
     obj = bld.create_ns3_module('bridge', ['node'])
     obj.source = [
-        'bridge-net-device.cc',
-        'bridge-channel.cc',
+        'model/bridge-net-device.cc',
+        'model/bridge-channel.cc',
+        'helper/bridge-helper.cc',
         ]
     headers = bld.new_task_gen('ns3header')
     headers.module = 'bridge'
     headers.source = [
-        'bridge-net-device.h',
-        'bridge-channel.h',
+        'model/bridge-net-device.h',
+        'model/bridge-channel.h',
+        'helper/bridge-helper.h',
         ]
+
+    if bld.env['ENABLE_EXAMPLES']:
+        bld.add_subdirs('examples')
