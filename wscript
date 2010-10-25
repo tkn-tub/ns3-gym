@@ -529,11 +529,14 @@ def build(bld):
 
     if env['NS3_ENABLED_MODULES']:
         modules = env['NS3_ENABLED_MODULES']
+
+        # Find out about additional modules that need to be enabled
+        # due to dependency constraints.
         changed = True
         while changed:
             changed = False
             for module in modules:
-                module_obj = Object.name_to_obj(module)
+                module_obj = bld.name_to_obj(module, env)
                 if module_obj is None:
                     raise ValueError("module %s not found" % module)
                 for dep in module_obj.add_objects:
@@ -543,14 +546,26 @@ def build(bld):
                         modules.append(dep)
                         changed = True
 
-        ## remove objects that depend on modules not listed
+        env['NS3_ENABLED_MODULES'] = modules
+        print "Modules to build:", modules
+
+        # Exclude the programs other misc task gens that depend on disabled modules
         for obj in list(bld.all_task_gen):
+
+            # check for ns3moduleheader_taskgen
+            if type(obj).__name__ == 'ns3moduleheader_taskgen':
+                if ("ns3-%s" % obj.module) not in modules:
+                    bld.all_task_gen.remove(obj)
+
+            # check for programs
             if hasattr(obj, 'ns3_module_dependencies'):
+                # this is an NS-3 program (bld.create_ns3_program)
                 for dep in obj.ns3_module_dependencies:
-                    if dep not in modules:
+                    if dep not in modules: # prog. depends on a module that isn't enabled?
                         bld.all_task_gen.remove(obj)
                         break
-            if obj.name in env['NS3_MODULES'] and obj.name not in modules:
+
+            if hasattr(obj, "is_ns3_module") and obj.name not in modules:
                 bld.all_task_gen.remove(obj)
 
     ## Create a single ns3 library containing all enabled modules
