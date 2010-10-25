@@ -76,6 +76,7 @@
 #include "ns3/mobility-module.h"
 #include "ns3/contrib-module.h"
 #include "ns3/wifi-module.h"
+#include "ns3/olsr-helper.h"
 
 #include <iostream>
 #include <fstream>
