@@ -98,6 +98,7 @@ def configure(conf):
 
 def create_ns3_module(bld, name, dependencies=()):
     module = bld.new_task_gen('cxx', 'cc')
+    module.is_ns3_module = True
     module.name = 'ns3-' + name
     module.target = module.name
     module.add_objects = ['ns3-' + dep for dep in dependencies]
@@ -258,7 +259,7 @@ class ns3moduleheader_taskgen(TaskGen.task_gen):
         if not all_headers_inputs:
             return
         module_obj = self.bld.name_to_obj("ns3-" + self.module, self.env)
-        assert module_obj is not None
+        assert module_obj is not None, self.module
         all_headers_outputs = [ns3_dir_node.find_or_declare("%s-module.h" % self.module)]
         task = self.create_task('gen_ns3_module_header', env=self.env)
         task.set_inputs(all_headers_inputs)
