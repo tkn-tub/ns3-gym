@@ -4,9 +4,10 @@ def build(bld):
     module = bld.create_ns3_module('olsr', ['internet-stack', 'contrib'])
     module.includes = '.'
     module.source = [
-        'olsr-header.cc',
-        'olsr-state.cc',
-        'olsr-routing-protocol.cc',
+        'model/olsr-header.cc',
+        'model/olsr-state.cc',
+        'model/olsr-routing-protocol.cc',
+        'helper/olsr-helper.cc',
         'test/regression-test-suite.cc',
         'test/hello-regression-test.cc',
         'test/tc-regression-test.cc',
@@ -16,9 +17,13 @@ def build(bld):
     headers = bld.new_task_gen('ns3header')
     headers.module = 'olsr'
     headers.source = [
-        'olsr-routing-protocol.h',
-        'olsr-header.h',
-        'olsr-state.h',
-        'olsr-repositories.h',
+        'model/olsr-routing-protocol.h',
+        'model/olsr-header.h',
+        'model/olsr-state.h',
+        'model/olsr-repositories.h',
+        'helper/olsr-helper.h',
         ]
 
+
+    if bld.env['ENABLE_EXAMPLES']:
+        bld.add_subdirs('examples')
