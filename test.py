@@ -189,19 +189,19 @@ example_tests = [
 # hardcoded.
 #
 python_tests = [
-    ("csma/csma-bridge.py", "True"),
+    ("examples/csma/csma-bridge.py", "True"),
 
-    ("flowmon/wifi-olsr-flowmon.py", "True"),
+    ("src/contrib/flowmon/examples/wifi-olsr-flowmon.py", "True"),
 
-    ("routing/simple-routing-ping6.py", "True"),
+    ("examples/routing/simple-routing-ping6.py", "True"),
 
-    ("tap/tap-csma-virtual-machine.py", "False"), # requires enable-sudo
-    ("tap/tap-wifi-virtual-machine.py", "False"), # requires enable-sudo
+    ("examples/tap/tap-csma-virtual-machine.py", "False"), # requires enable-sudo
+    ("examples/tap/tap-wifi-virtual-machine.py", "False"), # requires enable-sudo
 
-    ("tutorial/first.py", "True"),
+    ("examples/tutorial/first.py", "True"),
 
-    ("wireless/wifi-ap.py", "True"),
-    ("wireless/mixed-wireless.py", "True"),
+    ("examples/wireless/wifi-ap.py", "True"),
+    ("examples/wireless/mixed-wireless.py", "True"),
 ]
 
 #
@@ -1352,7 +1352,7 @@ def run_tests():
                         job.set_cwd(testpy_output_dir)
                         job.set_basedir(os.getcwd())
                         job.set_tempdir(testpy_output_dir)
-                        job.set_shell_command("examples/%s" % test)
+                        job.set_shell_command(test)
 
                         #
                         # Python programs and valgrind do not work and play
