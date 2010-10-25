@@ -564,8 +564,6 @@ def build(bld):
         lib.target = 'ns3'
         if lib.env['CXX_NAME'] in ['gcc', 'icc'] and env['WL_SONAME_SUPPORTED']:
             lib.env.append_value('LINKFLAGS', '-Wl,--soname=%s' % ccroot.get_target_name(lib))
-        if sys.platform == 'cygwin':
-            lib.features.append('implib') # workaround for WAF bug #472
 
     if env['NS3_ENABLED_MODULES']:
         lib.add_objects = list(modules)
