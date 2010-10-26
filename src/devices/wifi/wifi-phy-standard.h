@@ -23,15 +23,26 @@
 namespace ns3 {
 
 enum WifiPhyStandard {
+  /** OFDM PHY for the 5 GHz band (Clause 17) */
   WIFI_PHY_STANDARD_80211a,
+  /** DSSS PHY (Clause 15) and HR/DSSS PHY (Clause 18) */
   WIFI_PHY_STANDARD_80211b,
+  /** ERP-OFDM PHY (Clause 19, Section 19.5) */
   WIFI_PHY_STANDARD_80211g,
+  /** OFDM PHY for the 5 GHz band (Clause 17 with 10 MHz channel bandwidth) */
   WIFI_PHY_STANDARD_80211_10Mhz,
+  /** OFDM PHY for the 5 GHz band (Clause 17 with 5 MHz channel bandwidth) */
   WIFI_PHY_STANDARD_80211_5Mhz,
+  /** This is intended to be the configuration used in this paper:
+   *  Gavin Holland, Nitin Vaidya and Paramvir Bahl, "A Rate-Adaptive
+   *  MAC Protocol for Multi-Hop Wireless Networks", in Proc. of
+   *  ACM MOBICOM, 2001.
+   */
   WIFI_PHY_STANDARD_holland,
+  /** deprecated, see <A HREF="http://www.nsnam.org/bugzilla/show_bug.cgi?id=945">bug 945</A> */
   WIFI_PHY_STANDARD_80211p_CCH,
-  WIFI_PHY_STANDARD_80211p_SCH,
-  WIFI_PHY_UNKNOWN
+  /** deprecated, see <A HREF="http://www.nsnam.org/bugzilla/show_bug.cgi?id=945">bug 945</A> */
+  WIFI_PHY_STANDARD_80211p_SCH
 };
 
 } // namespace ns3
