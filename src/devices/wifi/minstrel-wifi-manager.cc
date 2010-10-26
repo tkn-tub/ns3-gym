@@ -525,7 +525,7 @@ MinstrelWifiManager::FindRate (MinstrelWifiRemoteStation *station)
             }
 
           /// error check
-          if (idx >= m_nsupported || idx < 0)
+          if (idx >= m_nsupported)
             {
               NS_LOG_DEBUG ("ALERT!!! ERROR");
             }
