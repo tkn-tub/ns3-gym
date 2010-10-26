@@ -17,51 +17,50 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#ifndef IPV6_LIST_ROUTING_HELPER_H
-#define IPV6_LIST_ROUTING_HELPER_H
+#ifndef IPV4_LIST_ROUTING_HELPER_H
+#define IPV4_LIST_ROUTING_HELPER_H
 
+#include "ns3/ipv4-routing-helper.h"
 #include <stdint.h>
-
 #include <list>
-
-#include "ipv6-routing-helper.h"
 
 namespace ns3 {
 
 /**
- * \brief Helper class that adds ns3::Ipv6ListRouting objects
+ * \brief Helper class that adds ns3::Ipv4ListRouting objects
  *
  * This class is expected to be used in conjunction with 
  * ns3::InternetStackHelper::SetRoutingHelper
  */
-class Ipv6ListRoutingHelper : public Ipv6RoutingHelper
+class Ipv4ListRoutingHelper : public Ipv4RoutingHelper
 {
 public:
-  /**
-   * Construct an Ipv6 Ipv6ListRoutingHelper which is used to make life easier
-   * for people wanting to configure routing using Ipv6.
+  /*
+   * Construct an Ipv4ListRoutingHelper used to make installing routing
+   * protocols easier.
    */
-  Ipv6ListRoutingHelper ();
+  Ipv4ListRoutingHelper ();
+
+  /*
+   * \internal
+   * Destroy an Ipv4ListRoutingHelper.
+   */
+  virtual ~Ipv4ListRoutingHelper ();
+
+  /**
+   * \brief Construct an Ipv4ListRoutingHelper from another previously 
+   * initialized instance (Copy Constructor).
+   */
+  Ipv4ListRoutingHelper (const Ipv4ListRoutingHelper &);
 
   /**
    * \internal
-   * \brief Destroy an Ipv6 Ipv6ListRoutingHelper.
-   */
-  virtual ~Ipv6ListRoutingHelper ();
-
-  /**
-   * \brief Construct an Ipv6ListRoutingHelper from another previously 
-   * initialized instance (Copy Constructor).
-   */
-  Ipv6ListRoutingHelper (const Ipv6ListRoutingHelper &);
-
-  /**
-   * \returns pointer to clone of this Ipv6ListRoutingHelper 
+   * \returns pointer to clone of this Ipv4ListRoutingHelper 
    * 
    * This method is mainly for internal use by the other helpers;
    * clients are expected to free the dynamic memory allocated by this method
    */
-  Ipv6ListRoutingHelper* Copy (void) const;
+  Ipv4ListRoutingHelper* Copy (void) const;
 
   /**
    * \param routing a routing helper
@@ -69,30 +68,29 @@ public:
    *
    * Store in the internal list a reference to the input routing helper
    * and associated priority. These helpers will be used later by
-   * the ns3::Ipv6ListRoutingHelper::Create method to create
-   * an ns3::Ipv6ListRouting object and add in it routing protocols
+   * the ns3::Ipv4ListRoutingHelper::Create method to create
+   * an ns3::Ipv4ListRouting object and add in it routing protocols
    * created with the helpers.
    */
-  void Add (const Ipv6RoutingHelper &routing, int16_t priority);
+  void Add (const Ipv4RoutingHelper &routing, int16_t priority);
   /**
    * \param node the node on which the routing protocol will run
    * \returns a newly-created routing protocol
    *
    * This method will be called by ns3::InternetStackHelper::Install
    */
-  virtual Ptr<Ipv6RoutingProtocol> Create (Ptr<Node> node) const;
+  virtual Ptr<Ipv4RoutingProtocol> Create (Ptr<Node> node) const;
 private:
   /**
    * \internal
    * \brief Assignment operator declared private and not implemented to disallow
    * assignment and prevent the compiler from happily inserting its own.
    */
-  Ipv6ListRoutingHelper &operator = (const Ipv6ListRoutingHelper &o);
+  Ipv4ListRoutingHelper &operator = (const Ipv4ListRoutingHelper &o);
 
-  std::list<std::pair<const Ipv6RoutingHelper *,int16_t> > m_list;
+  std::list<std::pair<const Ipv4RoutingHelper *,int16_t> > m_list;
 };
 
 } // namespace ns3
 
-#endif /* IPV6_LIST_ROUTING_HELPER_H */
-
+#endif /* IPV4_LIST_ROUTING_HELPER_H */

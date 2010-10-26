@@ -61,6 +61,8 @@
 #include "ns3/global-route-manager.h"
 #include "ns3/constant-position-mobility-model.h"
 #include "ns3/random-waypoint-mobility-model.h"
+#include "ns3/ipv4-static-routing-helper.h"
+#include "ns3/ipv4-list-routing-helper.h"
 
 #include "ns3/vector.h"
 

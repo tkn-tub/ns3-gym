@@ -1,7 +1,7 @@
 ## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
 
 def build(bld):
-    helper = bld.create_ns3_module('helper', ['internet-stack', 'wifi', 'point-to-point', 'csma', 'global-routing', 'onoff', 'packet-sink', 'udp-echo', 'spectrum'])
+    helper = bld.create_ns3_module('helper', ['internet-stack', 'wifi', 'point-to-point', 'csma', 'onoff', 'packet-sink', 'udp-echo', 'spectrum'])
     helper.source = [
         'node-container.cc',
         'net-device-container.cc',
@@ -11,7 +11,6 @@ def build(bld):
         'mobility-helper.cc',
         'ns2-mobility-helper.cc',
         'ipv4-address-helper.cc',
-        'ipv4-static-routing-helper.cc',
         'internet-stack-helper.cc',
         'application-container.cc',
         'on-off-helper.cc',
@@ -26,8 +25,6 @@ def build(bld):
         'nqos-wifi-mac-helper.cc',
         'qos-wifi-mac-helper.cc',
         'ipv4-nix-vector-helper.cc',
-        'ipv4-global-routing-helper.cc',
-        'ipv4-list-routing-helper.cc',
         'ipv4-routing-helper.cc',
         'aodv-helper.cc',
         'mesh-helper.cc',
@@ -36,8 +33,6 @@ def build(bld):
         'athstats-helper.cc',
         'ipv6-address-helper.cc',
         'ipv6-interface-container.cc',
-        'ipv6-static-routing-helper.cc',
-        'ipv6-list-routing-helper.cc',
         'ipv6-routing-helper.cc',
         'ping6-helper.cc',
         'animation-interface.cc',
@@ -65,7 +60,6 @@ def build(bld):
         'mobility-helper.h',
         'ns2-mobility-helper.h',
         'ipv4-address-helper.h',
-        'ipv4-static-routing-helper.h',
         'internet-stack-helper.h',
         'application-container.h',
         'on-off-helper.h',
@@ -80,8 +74,6 @@ def build(bld):
         'nqos-wifi-mac-helper.h',
         'qos-wifi-mac-helper.h',
         'ipv4-nix-vector-helper.h',
-	'ipv4-global-routing-helper.h',
-        'ipv4-list-routing-helper.h',
         'ipv4-routing-helper.h',
         'aodv-helper.h',
         'mesh-helper.h',
@@ -91,8 +83,6 @@ def build(bld):
         'athstats-helper.h',
         'ipv6-address-helper.h',
         'ipv6-interface-container.h',
-        'ipv6-static-routing-helper.h',
-        'ipv6-list-routing-helper.h',
         'ipv6-routing-helper.h',
         'ping6-helper.h',
         'animation-interface.h',

@@ -58,6 +58,8 @@
 #include "ns3/emu-module.h"
 #include "ns3/v4ping-module.h"
 #include "ns3/helper-module.h"
+#include "ns3/ipv4-static-routing-helper.h"
+#include "ns3/ipv4-list-routing-helper.h"
 
 using namespace ns3;
 

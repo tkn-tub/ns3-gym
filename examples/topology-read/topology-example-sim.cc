@@ -31,6 +31,8 @@
 #include "ns3/node-module.h"
 #include "ns3/helper-module.h"
 #include "ns3/simulator-module.h"
+#include "ns3/ipv4-static-routing-helper.h"
+#include "ns3/ipv4-list-routing-helper.h"
 
 #include "ns3/topology-read-module.h"
 #include <list>

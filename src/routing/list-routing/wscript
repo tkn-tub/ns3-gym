@@ -3,13 +3,17 @@
 def build(bld):
     module = bld.create_ns3_module('list-routing', ['node'])
     module.source = [
-        'ipv4-list-routing.cc',
-        'ipv6-list-routing.cc',
+        'model/ipv4-list-routing.cc',
+        'model/ipv6-list-routing.cc',
+        'helper/ipv4-list-routing-helper.cc',
+        'helper/ipv6-list-routing-helper.cc',
         ]
     headers = bld.new_task_gen('ns3header')
     headers.module = 'list-routing'
     headers.source = [
-        'ipv4-list-routing.h',
-        'ipv6-list-routing.h',
+        'model/ipv4-list-routing.h',
+        'model/ipv6-list-routing.h',
+        'helper/ipv4-list-routing-helper.h',
+        'helper/ipv6-list-routing-helper.h',
         ]
 

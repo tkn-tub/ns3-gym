@@ -3,17 +3,19 @@
 def build(bld):
     module = bld.create_ns3_module('global-routing', ['node'])
     module.source = [
-        'global-router-interface.cc',
-        'global-route-manager.cc',
-        'global-route-manager-impl.cc',
-        'candidate-queue.cc',
-        'ipv4-global-routing.cc',
+        'model/global-router-interface.cc',
+        'model/global-route-manager.cc',
+        'model/global-route-manager-impl.cc',
+        'model/candidate-queue.cc',
+        'model/ipv4-global-routing.cc',
+        'helper/ipv4-global-routing-helper.cc',
         ]
     headers = bld.new_task_gen('ns3header')
     headers.module = 'global-routing'
     headers.source = [
-        'global-router-interface.h',
-        'global-route-manager.h',
-        'ipv4-global-routing.h',
+        'model/global-router-interface.h',
+        'model/global-route-manager.h',
+        'model/ipv4-global-routing.h',
+	'helper/ipv4-global-routing-helper.h',
         ]
 

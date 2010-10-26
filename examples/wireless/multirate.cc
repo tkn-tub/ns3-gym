@@ -58,6 +58,8 @@
 #include "ns3/wifi-module.h"
 #include "ns3/flow-monitor-helper.h"
 #include "ns3/olsr-helper.h"
+#include "ns3/ipv4-static-routing-helper.h"
+#include "ns3/ipv4-list-routing-helper.h"
 
 #include <iostream>
 #include <fstream>

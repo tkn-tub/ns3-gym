@@ -25,9 +25,9 @@
 #include "ns3/ipv4-address.h"
 #include "ns3/node.h"
 #include "ns3/net-device.h"
-#include "ipv4-routing-helper.h"
-#include "node-container.h"
-#include "net-device-container.h"
+#include "ns3/ipv4-routing-helper.h"
+#include "ns3/node-container.h"
+#include "ns3/net-device-container.h"
 
 namespace ns3 {
 

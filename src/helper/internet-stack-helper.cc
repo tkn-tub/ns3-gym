@@ -164,11 +164,11 @@
 #include "ns3/core-config.h"
 #include "ns3/arp-l3-protocol.h"
 #include "internet-stack-helper.h"
-#include "ipv4-list-routing-helper.h"
-#include "ipv4-static-routing-helper.h"
-#include "ipv4-global-routing-helper.h"
-#include "ipv6-list-routing-helper.h"
-#include "ipv6-static-routing-helper.h"
+#include "ns3/ipv4-list-routing-helper.h"
+#include "ns3/ipv4-static-routing-helper.h"
+#include "ns3/ipv4-global-routing-helper.h"
+#include "ns3/ipv6-list-routing-helper.h"
+#include "ns3/ipv6-static-routing-helper.h"
 #include "trace-helper.h"
 #include <limits>
 #include <map>

@@ -41,6 +41,7 @@
 #include "ns3/radvd.h"
 #include "ns3/radvd-interface.h"
 #include "ns3/radvd-prefix.h"
+#include "ns3/ipv6-static-routing-helper.h"
 
 using namespace ns3;
 
