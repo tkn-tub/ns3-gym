@@ -380,7 +380,7 @@ YansWifiPhy::GetChannelNumber() const
 double
 YansWifiPhy::GetChannelFrequencyMhz() const
 {
-  return m_channelStartingFrequency + 5 * (GetChannelNumber() - 1);
+  return m_channelStartingFrequency + 5 * GetChannelNumber();
 }
 
 void 
@@ -555,7 +555,7 @@ void
 YansWifiPhy::Configure80211b (void)
 {
   NS_LOG_FUNCTION (this);
-  m_channelStartingFrequency = 2412; // 2.412 GHz 
+  m_channelStartingFrequency = 2407; // 2.407 GHz 
 
   m_deviceRateSet.push_back (WifiPhy::GetDsssRate1Mbps ());
   m_deviceRateSet.push_back (WifiPhy::GetDsssRate2Mbps ());
@@ -567,7 +567,7 @@ void
 YansWifiPhy::Configure80211g (void)
 {
   NS_LOG_FUNCTION (this);
-  m_channelStartingFrequency = 2412; // 2.412 GHz
+  m_channelStartingFrequency = 2407; // 2.407 GHz
 
   m_deviceRateSet.push_back (WifiPhy::GetDsssRate1Mbps ());
   m_deviceRateSet.push_back (WifiPhy::GetDsssRate2Mbps ());
