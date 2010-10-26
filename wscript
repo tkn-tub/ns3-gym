@@ -549,15 +549,15 @@ def build(bld):
         env['NS3_ENABLED_MODULES'] = modules
         print "Modules to build:", modules
 
-        def exclude_task(bld, task):
+        def exclude_taskgen(bld, taskgen):
             # ok, so WAF does not provide an API to prevent an
-            # arbitrary task from running; we have to muck around with
+            # arbitrary taskgen from running; we have to muck around with
             # WAF internal state, something that might stop working if
             # WAF is upgraded...
-            bld.all_task_gen.remove(task)
+            bld.all_task_gen.remove(taskgen)
             for group in bld.task_manager.groups:
                 try:
-                    group.tasks_gen.remove(task)
+                    group.tasks_gen.remove(taskgen)
                 except ValueError:
                     pass
                 else:
@@ -569,24 +569,24 @@ def build(bld):
             # check for ns3moduleheader_taskgen
             if type(obj).__name__ == 'ns3moduleheader_taskgen':
                 if ("ns3-%s" % obj.module) not in modules:
-                    exclude_task(bld, obj)
+                    obj.mode = 'remove' # tell it to remove headers instead of installing
 
             # check for programs
             if hasattr(obj, 'ns3_module_dependencies'):
                 # this is an NS-3 program (bld.create_ns3_program)
                 for dep in obj.ns3_module_dependencies:
                     if dep not in modules: # prog. depends on a module that isn't enabled?
-                        exclude_task(bld, obj)
+                        exclude_taskgen(bld, obj)
                         break
 
             # disable the modules themselves
             if hasattr(obj, "is_ns3_module") and obj.name not in modules:
-                exclude_task(bld, obj)
+                exclude_taskgen(bld, obj) # kill the module
 
             # disable the ns3header_taskgen
             if type(obj).__name__ == 'ns3header_taskgen':
                 if ("ns3-%s" % obj.module) not in modules:
-                    exclude_task(bld, obj)
+                    obj.mode = 'remove' # tell it to remove headers instead of installing 
 
     ## Create a single ns3 library containing all enabled modules
     if env['ENABLE_STATIC_NS3']:
