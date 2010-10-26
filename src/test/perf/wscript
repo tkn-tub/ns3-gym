@@ -8,7 +8,7 @@ def build(bld):
     headers = bld.new_task_gen('ns3header')
     headers.module = 'perf'
 
-    obj = bld.create_ns3_program('perf-io', ['core'])
+    obj = bld.create_ns3_program('perf-io', ['core', 'helper', 'node'])
     obj.source = 'perf-io.cc'
 
 
