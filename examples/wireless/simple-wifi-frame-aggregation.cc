@@ -23,6 +23,7 @@
 #include "ns3/helper-module.h"
 #include "ns3/wifi-module.h"
 #include "ns3/mobility-module.h"
+#include "ns3/ipv4-global-routing-helper.h"
 
 //This is a simple example in order to show how 802.11n frame aggregation feature (A-MSDU) works.
 //

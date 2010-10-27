@@ -62,6 +62,7 @@
 #include "ns3/core-module.h"
 #include "ns3/wifi-module.h"
 #include "ns3/helper-module.h"
+#include "ns3/ipv4-global-routing-helper.h"
 
 using namespace ns3;
 

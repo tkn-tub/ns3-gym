@@ -56,6 +56,7 @@
 #include "ns3/node-module.h"
 #include "ns3/helper-module.h"
 #include "ns3/virtual-net-device.h"
+#include "ns3/ipv4-global-routing-helper.h"
 
 using namespace ns3;
 

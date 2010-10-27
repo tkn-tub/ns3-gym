@@ -36,6 +36,7 @@
 #include "ns3/global-router-interface.h"
 #include "ns3/ipv4-static-routing-helper.h"
 #include "ns3/ipv4-list-routing-helper.h"
+#include "ns3/ipv4-global-routing-helper.h"
 
 using namespace ns3;
 using std::cout;
