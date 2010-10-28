@@ -95,6 +95,16 @@ def register_Ns3PacketSink_methods(root_module, cls):
     cls.add_constructor([param('ns3::PacketSink const &', 'arg0')])
     ## packet-sink.h: ns3::PacketSink::PacketSink() [constructor]
     cls.add_constructor([])
+    ## packet-sink.h: std::list<ns3::Ptr<ns3::Socket>, std::allocator<ns3::Ptr<ns3::Socket> > > ns3::PacketSink::GetAcceptedSockets() const [member function]
+    cls.add_method('GetAcceptedSockets', 
+                   'std::list< ns3::Ptr< ns3::Socket > >', 
+                   [], 
+                   is_const=True)
+    ## packet-sink.h: ns3::Ptr<ns3::Socket> ns3::PacketSink::GetListeningSocket() const [member function]
+    cls.add_method('GetListeningSocket', 
+                   'ns3::Ptr< ns3::Socket >', 
+                   [], 
+                   is_const=True)
     ## packet-sink.h: uint32_t ns3::PacketSink::GetTotalRx() const [member function]
     cls.add_method('GetTotalRx', 
                    'uint32_t', 

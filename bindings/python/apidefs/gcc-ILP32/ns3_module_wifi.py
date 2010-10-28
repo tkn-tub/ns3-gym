@@ -10,7 +10,7 @@ def register_types(module):
     ## wifi-mode.h: ns3::WifiModulationClass [enumeration]
     module.add_enum('WifiModulationClass', ['WIFI_MOD_CLASS_UNKNOWN', 'WIFI_MOD_CLASS_IR', 'WIFI_MOD_CLASS_FHSS', 'WIFI_MOD_CLASS_DSSS', 'WIFI_MOD_CLASS_ERP_PBCC', 'WIFI_MOD_CLASS_DSSS_OFDM', 'WIFI_MOD_CLASS_ERP_OFDM', 'WIFI_MOD_CLASS_OFDM', 'WIFI_MOD_CLASS_HT'])
     ## wifi-phy-standard.h: ns3::WifiPhyStandard [enumeration]
-    module.add_enum('WifiPhyStandard', ['WIFI_PHY_STANDARD_80211a', 'WIFI_PHY_STANDARD_80211b', 'WIFI_PHY_STANDARD_80211_10Mhz', 'WIFI_PHY_STANDARD_80211_5Mhz', 'WIFI_PHY_STANDARD_holland', 'WIFI_PHY_STANDARD_80211p_CCH', 'WIFI_PHY_STANDARD_80211p_SCH', 'WIFI_PHY_UNKNOWN'])
+    module.add_enum('WifiPhyStandard', ['WIFI_PHY_STANDARD_80211a', 'WIFI_PHY_STANDARD_80211b', 'WIFI_PHY_STANDARD_80211g', 'WIFI_PHY_STANDARD_80211_10Mhz', 'WIFI_PHY_STANDARD_80211_5Mhz', 'WIFI_PHY_STANDARD_holland', 'WIFI_PHY_STANDARD_80211p_CCH', 'WIFI_PHY_STANDARD_80211p_SCH'])
     ## qos-utils.h: ns3::AcIndex [enumeration]
     module.add_enum('AcIndex', ['AC_BE', 'AC_BK', 'AC_VI', 'AC_VO', 'AC_BE_NQOS', 'AC_UNDEF'])
     ## ctrl-headers.h: ns3::BlockAckType [enumeration]
@@ -25,6 +25,8 @@ def register_types(module):
     module.add_class('Bar')
     ## block-ack-agreement.h: ns3::BlockAckAgreement [class]
     module.add_class('BlockAckAgreement')
+    ## block-ack-cache.h: ns3::BlockAckCache [class]
+    module.add_class('BlockAckCache')
     ## block-ack-manager.h: ns3::BlockAckManager [class]
     module.add_class('BlockAckManager')
     ## capability-information.h: ns3::CapabilityInformation [class]
@@ -155,6 +157,8 @@ def register_types(module):
     module.add_class('EdcaTxopN', parent=root_module['ns3::Dcf'])
     ## error-rate-model.h: ns3::ErrorRateModel [class]
     module.add_class('ErrorRateModel', parent=root_module['ns3::Object'])
+    ## supported-rates.h: ns3::ExtendedSupportedRatesIE [class]
+    module.add_class('ExtendedSupportedRatesIE', parent=root_module['ns3::WifiInformationElement'])
     ## ideal-wifi-manager.h: ns3::IdealWifiManager [class]
     module.add_class('IdealWifiManager', parent=root_module['ns3::WifiRemoteStationManager'])
     ## mac-low.h: ns3::MacLow [class]
@@ -303,6 +307,7 @@ def register_types_ns3_olsr(module):
 def register_methods(root_module):
     register_Ns3Bar_methods(root_module, root_module['ns3::Bar'])
     register_Ns3BlockAckAgreement_methods(root_module, root_module['ns3::BlockAckAgreement'])
+    register_Ns3BlockAckCache_methods(root_module, root_module['ns3::BlockAckCache'])
     register_Ns3BlockAckManager_methods(root_module, root_module['ns3::BlockAckManager'])
     register_Ns3CapabilityInformation_methods(root_module, root_module['ns3::CapabilityInformation'])
     register_Ns3DcfManager_methods(root_module, root_module['ns3::DcfManager'])
@@ -354,6 +359,7 @@ def register_methods(root_module):
     register_Ns3Dcf_methods(root_module, root_module['ns3::Dcf'])
     register_Ns3EdcaTxopN_methods(root_module, root_module['ns3::EdcaTxopN'])
     register_Ns3ErrorRateModel_methods(root_module, root_module['ns3::ErrorRateModel'])
+    register_Ns3ExtendedSupportedRatesIE_methods(root_module, root_module['ns3::ExtendedSupportedRatesIE'])
     register_Ns3IdealWifiManager_methods(root_module, root_module['ns3::IdealWifiManager'])
     register_Ns3MacLow_methods(root_module, root_module['ns3::MacLow'])
     register_Ns3MgtBeaconHeader_methods(root_module, root_module['ns3::MgtBeaconHeader'])
@@ -468,6 +474,29 @@ def register_Ns3BlockAckAgreement_methods(root_module, cls):
     cls.add_method('SetTimeout', 
                    'void', 
                    [param('uint16_t', 'timeout')])
+    return
+
+def register_Ns3BlockAckCache_methods(root_module, cls):
+    ## block-ack-cache.h: ns3::BlockAckCache::BlockAckCache() [constructor]
+    cls.add_constructor([])
+    ## block-ack-cache.h: ns3::BlockAckCache::BlockAckCache(ns3::BlockAckCache const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::BlockAckCache const &', 'arg0')])
+    ## block-ack-cache.h: void ns3::BlockAckCache::FillBlockAckBitmap(ns3::CtrlBAckResponseHeader * blockAckHeader) [member function]
+    cls.add_method('FillBlockAckBitmap', 
+                   'void', 
+                   [param('ns3::CtrlBAckResponseHeader *', 'blockAckHeader')])
+    ## block-ack-cache.h: void ns3::BlockAckCache::Init(uint16_t winStart, uint16_t winSize) [member function]
+    cls.add_method('Init', 
+                   'void', 
+                   [param('uint16_t', 'winStart'), param('uint16_t', 'winSize')])
+    ## block-ack-cache.h: void ns3::BlockAckCache::UpdateWithBlockAckReq(uint16_t startingSeq) [member function]
+    cls.add_method('UpdateWithBlockAckReq', 
+                   'void', 
+                   [param('uint16_t', 'startingSeq')])
+    ## block-ack-cache.h: void ns3::BlockAckCache::UpdateWithMpdu(ns3::WifiMacHeader const * hdr) [member function]
+    cls.add_method('UpdateWithMpdu', 
+                   'void', 
+                   [param('ns3::WifiMacHeader const *', 'hdr')])
     return
 
 def register_Ns3BlockAckManager_methods(root_module, cls):
@@ -2821,6 +2850,46 @@ def register_Ns3WifiPhy_methods(root_module, cls):
                    'ns3::WifiMode', 
                    [], 
                    is_static=True)
+    ## wifi-phy.h: static ns3::WifiMode ns3::WifiPhy::GetErpOfdmRate12Mbps() [member function]
+    cls.add_method('GetErpOfdmRate12Mbps', 
+                   'ns3::WifiMode', 
+                   [], 
+                   is_static=True)
+    ## wifi-phy.h: static ns3::WifiMode ns3::WifiPhy::GetErpOfdmRate18Mbps() [member function]
+    cls.add_method('GetErpOfdmRate18Mbps', 
+                   'ns3::WifiMode', 
+                   [], 
+                   is_static=True)
+    ## wifi-phy.h: static ns3::WifiMode ns3::WifiPhy::GetErpOfdmRate24Mbps() [member function]
+    cls.add_method('GetErpOfdmRate24Mbps', 
+                   'ns3::WifiMode', 
+                   [], 
+                   is_static=True)
+    ## wifi-phy.h: static ns3::WifiMode ns3::WifiPhy::GetErpOfdmRate36Mbps() [member function]
+    cls.add_method('GetErpOfdmRate36Mbps', 
+                   'ns3::WifiMode', 
+                   [], 
+                   is_static=True)
+    ## wifi-phy.h: static ns3::WifiMode ns3::WifiPhy::GetErpOfdmRate48Mbps() [member function]
+    cls.add_method('GetErpOfdmRate48Mbps', 
+                   'ns3::WifiMode', 
+                   [], 
+                   is_static=True)
+    ## wifi-phy.h: static ns3::WifiMode ns3::WifiPhy::GetErpOfdmRate54Mbps() [member function]
+    cls.add_method('GetErpOfdmRate54Mbps', 
+                   'ns3::WifiMode', 
+                   [], 
+                   is_static=True)
+    ## wifi-phy.h: static ns3::WifiMode ns3::WifiPhy::GetErpOfdmRate6Mbps() [member function]
+    cls.add_method('GetErpOfdmRate6Mbps', 
+                   'ns3::WifiMode', 
+                   [], 
+                   is_static=True)
+    ## wifi-phy.h: static ns3::WifiMode ns3::WifiPhy::GetErpOfdmRate9Mbps() [member function]
+    cls.add_method('GetErpOfdmRate9Mbps', 
+                   'ns3::WifiMode', 
+                   [], 
+                   is_static=True)
     ## wifi-phy.h: ns3::Time ns3::WifiPhy::GetLastRxStartTime() const [member function]
     cls.add_method('GetLastRxStartTime', 
                    'ns3::Time', 
@@ -4741,6 +4810,45 @@ def register_Ns3ErrorRateModel_methods(root_module, cls):
                    is_static=True)
     return
 
+def register_Ns3ExtendedSupportedRatesIE_methods(root_module, cls):
+    ## supported-rates.h: ns3::ExtendedSupportedRatesIE::ExtendedSupportedRatesIE(ns3::ExtendedSupportedRatesIE const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::ExtendedSupportedRatesIE const &', 'arg0')])
+    ## supported-rates.h: ns3::ExtendedSupportedRatesIE::ExtendedSupportedRatesIE() [constructor]
+    cls.add_constructor([])
+    ## supported-rates.h: ns3::ExtendedSupportedRatesIE::ExtendedSupportedRatesIE(ns3::SupportedRates * rates) [constructor]
+    cls.add_constructor([param('ns3::SupportedRates *', 'rates')])
+    ## supported-rates.h: uint8_t ns3::ExtendedSupportedRatesIE::DeserializeInformationField(ns3::Buffer::Iterator start, uint8_t length) [member function]
+    cls.add_method('DeserializeInformationField', 
+                   'uint8_t', 
+                   [param('ns3::Buffer::Iterator', 'start'), param('uint8_t', 'length')], 
+                   is_virtual=True)
+    ## supported-rates.h: ns3::WifiInformationElementId ns3::ExtendedSupportedRatesIE::ElementId() const [member function]
+    cls.add_method('ElementId', 
+                   'ns3::WifiInformationElementId', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## supported-rates.h: uint8_t ns3::ExtendedSupportedRatesIE::GetInformationFieldSize() const [member function]
+    cls.add_method('GetInformationFieldSize', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## supported-rates.h: uint16_t ns3::ExtendedSupportedRatesIE::GetSerializedSize() const [member function]
+    cls.add_method('GetSerializedSize', 
+                   'uint16_t', 
+                   [], 
+                   is_const=True)
+    ## supported-rates.h: ns3::Buffer::Iterator ns3::ExtendedSupportedRatesIE::Serialize(ns3::Buffer::Iterator start) const [member function]
+    cls.add_method('Serialize', 
+                   'ns3::Buffer::Iterator', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_const=True)
+    ## supported-rates.h: void ns3::ExtendedSupportedRatesIE::SerializeInformationField(ns3::Buffer::Iterator start) const [member function]
+    cls.add_method('SerializeInformationField', 
+                   'void', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_const=True, is_virtual=True)
+    return
+
 def register_Ns3IdealWifiManager_methods(root_module, cls):
     ## ideal-wifi-manager.h: ns3::IdealWifiManager::IdealWifiManager(ns3::IdealWifiManager const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::IdealWifiManager const &', 'arg0')])
@@ -6221,6 +6329,8 @@ def register_Ns3SupportedRates_methods(root_module, cls):
     cls.add_method('SetBasicRate', 
                    'void', 
                    [param('uint32_t', 'bs')])
+    ## supported-rates.h: ns3::SupportedRates::extended [variable]
+    cls.add_instance_attribute('extended', 'ns3::ExtendedSupportedRatesIE', is_const=False)
     return
 
 def register_Ns3WifiChannel_methods(root_module, cls):
@@ -6596,6 +6706,10 @@ def register_functions(root_module):
     module.add_function('QosUtilsGetTidForPacket', 
                         'uint8_t', 
                         [param('ns3::Ptr< ns3::Packet const >', 'packet')])
+    ## qos-utils.h: extern bool ns3::QosUtilsIsOldPacket(uint16_t startingSeq, uint16_t seqNumber) [free function]
+    module.add_function('QosUtilsIsOldPacket', 
+                        'bool', 
+                        [param('uint16_t', 'startingSeq'), param('uint16_t', 'seqNumber')])
     ## qos-utils.h: extern uint32_t ns3::QosUtilsMapSeqControlToUniqueInteger(uint16_t seqControl, uint16_t endSequence) [free function]
     module.add_function('QosUtilsMapSeqControlToUniqueInteger', 
                         'uint32_t', 

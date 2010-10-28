@@ -95,6 +95,11 @@ def register_Ns3OnOffApplication_methods(root_module, cls):
     cls.add_constructor([param('ns3::OnOffApplication const &', 'arg0')])
     ## onoff-application.h: ns3::OnOffApplication::OnOffApplication() [constructor]
     cls.add_constructor([])
+    ## onoff-application.h: ns3::Ptr<ns3::Socket> ns3::OnOffApplication::GetSocket() const [member function]
+    cls.add_method('GetSocket', 
+                   'ns3::Ptr< ns3::Socket >', 
+                   [], 
+                   is_const=True)
     ## onoff-application.h: static ns3::TypeId ns3::OnOffApplication::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
