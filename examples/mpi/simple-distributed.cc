@@ -47,6 +47,8 @@
 #include "ns3/helper-module.h"
 #include "ns3/mpi-interface.h"
 #include "ns3/ipv4-global-routing-helper.h"
+#include "ns3/ipv4-static-routing-helper.h"
+#include "ns3/ipv4-list-routing-helper.h"
 
 #ifdef NS3_MPI
 #include <mpi.h>

@@ -47,6 +47,8 @@
 #include "ns3/packet-sink.h"
 #include "ns3/point-to-point-net-device.h"
 #include "ns3/mpi-interface.h"
+#include "ns3/ipv4-static-routing-helper.h"
+#include "ns3/ipv4-list-routing-helper.h"
 
 #ifdef NS3_MPI
 #include <mpi.h>
