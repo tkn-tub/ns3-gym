@@ -71,3 +71,5 @@ def build(bld):
         'friis-spectrum-propagation-loss.h',
         'sequence-number.h',
         ]
+
+    bld.ns3_python_bindings()

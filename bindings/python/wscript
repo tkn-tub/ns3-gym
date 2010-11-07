@@ -1,5 +1,5 @@
 ## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
-
+import types
 import re
 import os
 import pproc as subprocess
@@ -15,7 +15,7 @@ import Build
 import Utils
 
 ## https://launchpad.net/pybindgen/
-REQUIRED_PYBINDGEN_VERSION = (0, 15, 0)
+REQUIRED_PYBINDGEN_VERSION = (0, 15, 0, 770)
 REQUIRED_PYGCCXML_VERSION = (0, 9, 5)
 
 
@@ -52,6 +52,11 @@ def set_pybindgen_pythonpath(env):
 
 def set_options(opt):
     opt.tool_options('python')
+    opt.add_option('--bindings-type', type="choice",
+                   choices=("monolithic", "modular", "both"),
+                   help=("Type of Python bindings to build"),
+                   default="monolithic",
+                   dest='bindings_type')
     opt.add_option('--disable-python',
                    help=("Don't build Python bindings."),
                    action="store_true", default=False,
@@ -60,6 +65,9 @@ def set_options(opt):
                    help=("Rescan Python bindings.  Needs working GCCXML / pygccxml environment."),
                    action="store_true", default=False,
                    dest='python_scan')
+    opt.add_option('--apiscan',
+                   help=("EXPERIMENTAL: Rescan module API, for Python bindings.  Needs working GCCXML / pygccxml environment."),
+                   default=None, dest='apiscan', metavar="MODULE[,MODULE...]")
     opt.add_option('--with-pybindgen',
                    help=('Path to an existing pybindgen source tree to use.'),
                    default=None,
@@ -198,7 +206,12 @@ int main ()
     conf.env['ENABLE_PYTHON_BINDINGS'] = True
     conf.report_optional_feature("python", "Python Bindings", True, None)
 
-    
+    conf.env['BINDINGS_TYPE'] = Options.options.bindings_type
+    if conf.env['BINDINGS_TYPE'] == 'both':
+        msg = "monolithic and modular"
+    else:
+        msg = conf.env['BINDINGS_TYPE']
+    conf.check_message_custom('type of bindings to build', '', msg)
 
     ## Check for pygccxml
     try:
@@ -244,12 +257,73 @@ int main ()
         conf.report_optional_feature("pygccxml", "Python API Scanning Support", False,
                                      "gccxml too old")
         return
-    
+
     ## If we reached
     conf.env['ENABLE_PYTHON_SCANNING'] = True
     conf.report_optional_feature("pygccxml", "Python API Scanning Support", True, None)
 
+    
 
+
+# ---------------------
+
+def get_headers_map(bld):
+    headers_map = {} # header => module
+    for ns3headers in bld.all_task_gen:
+        if type(ns3headers).__name__ == 'ns3header_taskgen': # XXX: find less hackish way to compare
+            for h in ns3headers.to_list(ns3headers.source):
+                headers_map[os.path.basename(h)] = ns3headers.module
+    return headers_map
+
+def get_module_path(bld, module):
+    for ns3headers in bld.all_task_gen:
+        if type(ns3headers).__name__ == 'ns3header_taskgen': # XXX: find less hackish way to compare
+            if ns3headers.module == module:
+                break
+
+    else:
+        raise ValueError("Module %r not found" % module)
+    return ns3headers.path.abspath()
+
+class apiscan_task(Task.TaskBase):
+    """Uses gccxml to scan the file 'everything.h' and extract API definitions.
+    """
+    after = 'gen_everything_h_task'
+    before = 'cc cxx gchx'
+    color = "BLUE"
+    def __init__(self, curdirnode, env, bld, target, cflags, module):
+        self.bld = bld
+        super(apiscan_task, self).__init__(generator=self)
+        self.curdirnode = curdirnode
+        self.env = env
+        self.target = target
+        self.cflags = cflags
+        self.module = module
+
+    def display(self):
+        return 'api-scan-%s\n' % (self.target,)
+
+    def run(self):
+        top_builddir = self.curdirnode.find_dir('../..').abspath(self.env)
+        module_path = get_module_path(self.bld, self.module)
+        print module_path
+        headers_map = get_headers_map(self.bld)
+        argv = [
+            self.env['PYTHON'],
+            os.path.join(self.curdirnode.abspath(), 'ns3modulescan-modular.py'), # scanning script
+            top_builddir,
+            self.module,
+            repr(get_headers_map(self.bld)),
+            os.path.join(module_path, "bindings", 'modulegen__%s.py' % (self.target)), # output file
+            self.cflags,
+            ]
+        scan = subprocess.Popen(argv, stdin=subprocess.PIPE)
+        retval = scan.wait()
+        return retval
+
+
+
+# --------------
 prio_headers = {
     -2: (
         "string.h", # work around http://www.gccxml.org/Bug/view.php?id=6682
@@ -452,7 +526,7 @@ class python_scan_task(Task.TaskBase):
 class python_scan_task_collector(Task.TaskBase):
     """Tasks that waits for the python-scan-* tasks to complete and then signals WAF to exit
     """
-    after = 'python_scan_task'
+    after = 'python_scan_task apiscan_task'
     before = 'cc cxx'
     color = "BLUE"
     def __init__(self, curdirnode, env, bld):
@@ -481,7 +555,28 @@ def build(bld):
 
     set_pybindgen_pythonpath(env)
 
-    if env['ENABLE_PYTHON_BINDINGS']:
+
+
+    # copy the __init__.py file to the build dir. waf can't handle
+    # this, it's against waf's principles to have build dir files
+    # with the same name as source dir files, apparently.
+    dirnode = bld.path.find_dir('ns')
+    src = os.path.join(dirnode.abspath(), '__init__.py')
+    dst = os.path.join(dirnode.abspath(env), '__init__.py')
+    try:
+        need_copy = os.stat(src).st_mtime > os.stat(dst).st_mtime
+    except OSError:
+        need_copy = True
+    if need_copy:
+        try:
+            os.mkdir(os.path.dirname(dst))
+        except OSError:
+            pass
+        print "%r -> %r" % (src, dst)
+        shutil.copy2(src, dst)
+
+
+    if env['ENABLE_PYTHON_BINDINGS'] and env['BINDINGS_TYPE'] in ('monolithic', 'both'):
         obj = bld.new_task_gen('all_ns3_headers')
 
     if Options.options.python_scan:
@@ -503,7 +598,28 @@ def build(bld):
         python_scan_task_collector(bld.path, env, bld)
         return
 
-    if env['ENABLE_PYTHON_BINDINGS']:
+    if Options.options.apiscan:
+        if not env['ENABLE_PYTHON_SCANNING']:
+            raise Utils.WafError("Cannot re-scan python bindings: (py)gccxml not available")
+        scan_targets = []
+        if sys.platform == 'cygwin':
+            scan_targets.append(('gcc_cygwin', ''))
+        else:
+            import struct
+            if struct.calcsize('I') == 4 and struct.calcsize('L') == 8 and struct.calcsize('P') == 8:
+                scan_targets.extend([('gcc_ILP32', '-m32'), ('gcc_LP64', '-m64')])
+            elif struct.calcsize('I') == 4 and struct.calcsize('L') == 4 and struct.calcsize('P') == 4:
+                scan_targets.append(('gcc_ILP32', ''))
+            else:
+                raise Utils.WafError("Cannot scan python bindings for unsupported data model")
+        for target, cflags in scan_targets:
+            for module in Options.options.apiscan.split(','):
+                apiscan_task(bld.path, env, bld, target, cflags, module)
+        python_scan_task_collector(bld.path, env, bld)
+        return
+
+
+    if env['ENABLE_PYTHON_BINDINGS'] and env['BINDINGS_TYPE'] in ('monolithic', 'both'):
         apidefs = env['PYTHON_BINDINGS_APIDEFS']
 
         ## Get a list of scanned modules; the set of scanned modules
@@ -518,7 +634,7 @@ def build(bld):
             if name.endswith("__local"):
                 continue
             scanned_modules.append(name)
-
+        print "scanned_modules:", scanned_modules
         debug = ('PYBINDGEN_DEBUG' in os.environ)
         source = [
             'ns3modulegen.py',
@@ -610,3 +726,5 @@ def build(bld):
                 pass
             print "%r -> %r" % (src, dst)
             shutil.copy2(src, dst)
+
+

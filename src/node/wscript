@@ -108,3 +108,5 @@ def build(bld):
         'ipv4-packet-info-tag.h',
         'ipv6-packet-info-tag.h',
         ]
+
+    bld.ns3_python_bindings()

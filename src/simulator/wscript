@@ -127,3 +127,4 @@ def build(bld):
         sim.uselib = 'RT'
 
 
+    bld.ns3_python_bindings()
