@@ -38,6 +38,15 @@ New user-visible features
      will allow an initial call to SetPosition () (before any waypoints
      have been added) to be treated as the first waypoint.
 
+   - Regression testing is now completely performed within test.py
+     rather than a separate "./waf --regression" that consults
+     reference traces in the ns-3.x-ref-traces directory.  In most
+     cases, the example programs whose traces were included in 
+     ns-3.x-ref-traces have a corresponding test called from the
+     test.py program.  It is still possible to write trace-based
+     regression tests but they are now called from the test.py
+     program.
+
 Bugs fixed
 ----------
 The following lists many of the bugs fixed or small feature additions
