@@ -35,10 +35,9 @@ class WifiMacParameters;
 class QosBlockedDestinations;
 
 /**
- * \brief a 802.11e-specific queue.
  *
- * This queue implements what is needed for the 802.11e standard
- * Specifically, it refers to 802.11e/D9, section 9.9.1.6, paragraph 6.
+ * This queue implements the timeout procedure described in IEEE
+ * Std. 802.11-2007, section 9.9.1.6, paragraph 6.
  *
  * When a packet is received by the MAC, to be sent to the PHY, 
  * it is queued in the internal queue after being tagged by the 
