@@ -117,6 +117,13 @@ New user-visible features
      channel, PHY, and MAC models to enable researchers to model a variety 
      of underwater network scenarios.
 
+   - the Spectrum framework, which provides support for spectrum-aware
+     Channel and PHY layer modeling. It features a set of classes that
+     allows the mathematical representation of frequency dependent
+     phenomena. Some example channel, propagation and device
+     implementations that make use of this framework are also
+     included.  
+
 Bugs fixed
 ----------
 The following lists many of the bugs fixed or small feature additions 
