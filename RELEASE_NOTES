@@ -56,6 +56,9 @@ since ns-3.9, in many cases referencing the Bugzilla bug number
    - bug 892 - WaypointMobilityModel incompatible with MobilityHelper::Install
    - bug 893 - Lazy CourseChange notification for WaypointMobilityModel
    - bug 979 - Multi-octet fields in Wi-Fi headers have wrong endianness
+   - bug 988 - MacRxMiddle::SequenceControlSmaller method
+   - bug 993 - MinstrelWifiManager::UpdateStats useless if clause
+   - bug 1015 - GetChannelFrequencyMhz() does not match with standard
 
 Known issues
 ------------
