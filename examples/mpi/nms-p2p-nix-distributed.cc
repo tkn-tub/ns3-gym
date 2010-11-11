@@ -62,7 +62,7 @@ typedef struct timeval TIMER_TYPE;
 #define TIMER_SECONDS(_t) ((double)(_t).tv_sec + (_t).tv_usec * 1e-6)
 #define TIMER_DIFF(_t1, _t2) (TIMER_SECONDS (_t1) - TIMER_SECONDS (_t2))
 
-NS_LOG_COMPONENT_DEFINE ("CampusNetworkModel");
+NS_LOG_COMPONENT_DEFINE ("CampusNetworkModelDistributed");
 
 int
 main (int argc, char *argv[])
@@ -468,7 +468,7 @@ main (int argc, char *argv[])
                       ApplicationContainer sinkApp =
                         sinkHelper.Install (nodes_net2LAN[z][i][j].Get (0));
 
-                      sinkApp.Start (Seconds (100.0));
+                      sinkApp.Start (Seconds (0.0));
                     }
                   else if (systemId == z % systemCount)
                     {
@@ -479,13 +479,13 @@ main (int argc, char *argv[])
                       ApplicationContainer sinkApp =
                         sinkHelper.Install (nodes_net2LAN[z][i][j].Get (0));
 
-                      sinkApp.Start (Seconds (100.0));
+                      sinkApp.Start (Seconds (0.0));
                     }
                   // Sources
                   if (systemCount == 1)
                     {
                       r1 = 2 + (int)(4 * urng.GetValue ());
-                      r2 = 100 + (10 * urng.GetValue ());
+                      r2 = 10 * urng.GetValue ();
                       OnOffHelper client ("ns3::UdpSocketFactory", Address ());
 
                       AddressValue remoteAddress
@@ -499,7 +499,7 @@ main (int argc, char *argv[])
                   else if (systemId == x % systemCount)
                     {
                       r1 = 2 + (int)(4 * urng.GetValue ());
-                      r2 = 100 + (10 * urng.GetValue ());
+                      r2 = 10 * urng.GetValue ();
                       OnOffHelper client ("ns3::UdpSocketFactory", Address ());
 
                       AddressValue remoteAddress
@@ -528,7 +528,7 @@ main (int argc, char *argv[])
                       ApplicationContainer sinkApp =
                         sinkHelper.Install (nodes_net3LAN[z][i][j].Get (0));
 
-                      sinkApp.Start (Seconds (100.0));
+                      sinkApp.Start (Seconds (0.0));
                     }
                   else if (systemId == z % systemCount)
                     {
@@ -539,17 +539,17 @@ main (int argc, char *argv[])
                       ApplicationContainer sinkApp =
                         sinkHelper.Install (nodes_net3LAN[z][i][j].Get (0));
 
-                      sinkApp.Start (Seconds (100.0));
+                      sinkApp.Start (Seconds (0.0));
                     }
                   // Sources
                   if (systemCount == 1)
                     {
                       r1 = 2 + (int)(4 * urng.GetValue ());
-                      r2 = 100 + (10 * urng.GetValue ());
+                      r2 = 10 * urng.GetValue ();
                       OnOffHelper client ("ns3::UdpSocketFactory", Address ());
 
                       AddressValue remoteAddress
-                              (InetSocketAddress (ifs2LAN[z][i][j].GetAddress (0), 9999));
+                              (InetSocketAddress (ifs3LAN[z][i][j].GetAddress (0), 9999));
 
                       client.SetAttribute ("Remote", remoteAddress);
                       ApplicationContainer clientApp;
@@ -559,11 +559,11 @@ main (int argc, char *argv[])
                   else if (systemId == x % systemCount)
                     {
                       r1 = 2 + (int)(4 * urng.GetValue ());
-                      r2 = 100 + (10 * urng.GetValue ());
+                      r2 = 10 * urng.GetValue ();
                       OnOffHelper client ("ns3::UdpSocketFactory", Address ());
 
                       AddressValue remoteAddress
-                              (InetSocketAddress (ifs2LAN[z][i][j].GetAddress (0), 9999));
+                              (InetSocketAddress (ifs3LAN[z][i][j].GetAddress (0), 9999));
 
                       client.SetAttribute ("Remote", remoteAddress);
                       ApplicationContainer clientApp;
@@ -597,7 +597,7 @@ main (int argc, char *argv[])
 
   cout << "Running simulator..." << endl;
   TIMER_NOW (t1);
-  Simulator::Stop (Seconds (200.0));
+  Simulator::Stop (Seconds (100.0));
   Simulator::Run ();
   TIMER_NOW (t2);
   cout << "Simulator finished." << endl;

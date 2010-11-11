@@ -1,13 +1,35 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
-// DARPA NMS Campus Network Model
-//
-// - This topology replicates the original NMS Campus Network model
-// with the exception of chord links (which were never utilized in the
-// original model)
-// - Link Bandwidths and Delays may not be the same as the original
-// specifications 
-//
-// (c)2009, GTech Systems, Inc. - Alfred Park <park@gtech-systems.com>
+/*
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation;
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * (c) 2009, GTech Systems, Inc. - Alfred Park <park@gtech-systems.com>
+ *
+ * DARPA NMS Campus Network Model
+ *
+ * This topology replicates the original NMS Campus Network model
+ * with the exception of chord links (which were never utilized in the
+ * original model)
+ * Link Bandwidths and Delays may not be the same as the original
+ * specifications
+ *
+ * The fundamental unit of the NMS model consists of a campus network. The
+ * campus network topology can been seen here:
+ * http://www.nsnam.org/~jpelkey3/nms.png
+ * The number of hosts (default 42) is variable.  Finally, an arbitrary
+ * number of these campus networks can be connected together (default 2)
+ * to make very large simulations.
+ */
 
 // for timing functions
 #include <cstdlib>
@@ -45,13 +67,10 @@ void Progress ()
 int
 main (int argc, char *argv[])
 {
-  //Config::SetDefault ("ns3::Simulator::SchedulerType", StringValue ("ns3::CalendarScheduler"));
   TIMER_TYPE t0, t1, t2;
   TIMER_NOW(t0);
   cout << " ==== DARPA NMS CAMPUS NETWORK SIMULATION ====" << endl;
   LogComponentEnable ("OnOffApplication", LOG_LEVEL_INFO);
-
-  //RandomVariable::UseGlobalSeed (1, 1, 2, 3, 5, 8);
 
   int nCN = 2, nLANClients = 42;
   bool nix = true;
@@ -371,10 +390,10 @@ main (int argc, char *argv[])
                   InetSocketAddress (Ipv4Address::GetAny (), 9999));
               ApplicationContainer sinkApp = sinkHelper.Install (
                   nodes_net2LAN[z][i][j].Get (0));
-              sinkApp.Start (Seconds (100.0));
+              sinkApp.Start (Seconds (0.0));
               // Sources
               r1 = 2 + (int)(4 * urng.GetValue ());
-              r2 = 100 + (10 * urng.GetValue ());;
+              r2 = 10 * urng.GetValue ();
               OnOffHelper client ("ns3::TcpSocketFactory", Address ());
               AddressValue remoteAddress(InetSocketAddress (
                   ifs2LAN[z][i][j].GetAddress (0), 9999));
@@ -395,13 +414,13 @@ main (int argc, char *argv[])
                   InetSocketAddress (Ipv4Address::GetAny (), 9999));
               ApplicationContainer sinkApp = sinkHelper.Install (
                   nodes_net3LAN[z][i][j].Get (0));
-              sinkApp.Start (Seconds (100.0));
+              sinkApp.Start (Seconds (0.0));
               // Sources
               r1 = 2 + (int)(4 * urng.GetValue ());
-              r2 = 100 + (10 * urng.GetValue ());;
+              r2 = 10 * urng.GetValue ();
               OnOffHelper client ("ns3::TcpSocketFactory", Address ());
               AddressValue remoteAddress (InetSocketAddress (
-                  ifs2LAN[z][i][j].GetAddress (0), 9999));
+                  ifs3LAN[z][i][j].GetAddress (0), 9999));
               client.SetAttribute ("Remote", remoteAddress);
               ApplicationContainer clientApp;
               clientApp.Add (client.Install (nodes_net1[x][r1].Get (0)));
@@ -434,7 +453,7 @@ main (int argc, char *argv[])
   Simulator::ScheduleNow (Progress);
   cout << "Running simulator..." << endl;
   TIMER_NOW (t1);
-  Simulator::Stop (Seconds (200.0));
+  Simulator::Stop (Seconds (100.0));
   Simulator::Run ();
   TIMER_NOW (t2);
   cout << "Simulator finished." << endl;
