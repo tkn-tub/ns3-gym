@@ -59,6 +59,7 @@ since ns-3.9, in many cases referencing the Bugzilla bug number
    - bug 988 - MacRxMiddle::SequenceControlSmaller method
    - bug 993 - MinstrelWifiManager::UpdateStats useless if clause
    - bug 1015 - GetChannelFrequencyMhz() does not match with standard
+   - bug 1027 - RocketfuelTopologyReader is not working at all
 
 Known issues
 ------------

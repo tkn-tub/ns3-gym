@@ -293,6 +293,7 @@ RocketfuelTopologyReader::Read (void)
   std::istringstream lineBuffer;
   std::string line;
   int lineNumber = 0;
+  enum RF_FileType ftype = RF_UNKNOWN;
   char errbuf[512];
 
   if (!topgen.is_open ())
@@ -307,7 +308,6 @@ RocketfuelTopologyReader::Read (void)
       int argc;
       char *argv[REGMATCH_MAX];
       char *buf;
-      enum RF_FileType ftype = RF_UNKNOWN;
 
       lineNumber++;
       line.clear ();
@@ -409,3 +409,82 @@ RocketfuelTopologyReader::Read (void)
 
 } /* namespace ns3 */
 
+
+//-----------------------------------------------------------------------------
+// Unit tests
+//-----------------------------------------------------------------------------
+
+#include "ns3/log.h"
+#include "ns3/abort.h"
+#include "ns3/attribute.h"
+#include "ns3/object-factory.h"
+#include "ns3/object-factory.h"
+#include "ns3/simulator.h"
+#include "ns3/test.h"
+
+namespace ns3 {
+
+class RocketfuelTopologyReaderTest: public TestCase 
+{
+public:
+  RocketfuelTopologyReaderTest ();
+private:
+  virtual bool DoRun (void);
+};
+
+RocketfuelTopologyReaderTest::RocketfuelTopologyReaderTest ()
+  : TestCase ("RocketfuelTopologyReaderTest") 
+{}
+
+
+bool
+RocketfuelTopologyReaderTest::DoRun (void)
+{
+  Ptr<RocketfuelTopologyReader> inFile;
+  NodeContainer nodes;
+  
+  std::string input ("./examples/topology-read/RocketFuel_toposample_1239_weights.txt");
+
+  inFile = CreateObject<RocketfuelTopologyReader> ();
+  inFile->SetFileName(input);
+
+  if (inFile != 0)
+    {
+      nodes = inFile->Read ();
+    }
+
+  if (nodes.GetN () == 0)
+    {
+      NS_LOG_ERROR ("Problems reading node information the topology file. Failing.");
+      return true;
+    }
+  if (inFile->LinksSize () == 0)
+    {
+      NS_LOG_ERROR ("Problems reading the topology file. Failing.");
+      return true;
+    }
+  NS_LOG_INFO ("Rocketfuel topology created with " << nodes.GetN () << " nodes and " << 
+               inFile->LinksSize () << " links (from " << input << ")");
+
+  NS_TEST_EXPECT_MSG_EQ (nodes.GetN (),315, "noes");
+  NS_TEST_EXPECT_MSG_EQ (inFile->LinksSize (),972, "links");
+  Simulator::Destroy ();
+
+  return false;
+}
+
+static class RocketfuelTopologyReaderTestSuite : public TestSuite
+{
+public:
+  RocketfuelTopologyReaderTestSuite ();
+private:
+} g_rocketfueltopologyreaderTests;
+
+RocketfuelTopologyReaderTestSuite::RocketfuelTopologyReaderTestSuite ()
+  : TestSuite ("rocketfuel-topology-reader", UNIT)
+{
+  AddTestCase (new RocketfuelTopologyReaderTest ());
+}
+
+
+}
