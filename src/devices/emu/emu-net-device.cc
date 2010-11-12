@@ -90,7 +90,7 @@ EmuNetDevice::GetTypeId (void)
                    MakeTimeChecker ())
     .AddAttribute ("EncapsulationMode", 
                    "The link-layer encapsulation type to use.",
-                   EnumValue (LLC),
+                   EnumValue (DIX),
                    MakeEnumAccessor (&EmuNetDevice::SetEncapsulationMode),
                    MakeEnumChecker (DIX, "Dix",
                                     LLC, "Llc"))
