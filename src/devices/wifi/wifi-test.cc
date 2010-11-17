@@ -1,6 +1,7 @@
 /* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2005,2006 INRIA
+ *               2010      NICTA
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as 
@@ -16,6 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
+ *         Quincy Tse <quincy.tse@nicta.com.au> (Case for Bug 991)
  */
 
 #include "wifi-net-device.h"
@@ -176,6 +178,114 @@ public:
 };
 
 //-----------------------------------------------------------------------------
+class InterferenceHelperSequenceTest : public TestCase
+{
+public:
+  InterferenceHelperSequenceTest ();
+
+  virtual bool DoRun (void);
+private:
+  Ptr<Node> CreateOne (Vector pos, Ptr<YansWifiChannel> channel);
+  void SendOnePacket (Ptr<WifiNetDevice> dev);
+  void SwitchCh (Ptr<WifiNetDevice> dev);
+
+  ObjectFactory m_manager;
+  ObjectFactory m_mac;
+  ObjectFactory m_propDelay;
+};
+
+InterferenceHelperSequenceTest::InterferenceHelperSequenceTest ()
+  : TestCase ("InterferenceHelperSequence")
+{}
+
+void 
+InterferenceHelperSequenceTest::SendOnePacket (Ptr<WifiNetDevice> dev)
+{
+  Ptr<Packet> p = Create<Packet> (9999);
+  dev->Send (p, dev->GetBroadcast (), 1);
+}
+
+void
+InterferenceHelperSequenceTest::SwitchCh (Ptr<WifiNetDevice> dev)
+{
+  Time now = Simulator::Now();
+  Ptr<WifiPhy> p = dev->GetPhy ();
+  p->SetChannelNumber (1);
+}
+
+Ptr<Node>
+InterferenceHelperSequenceTest::CreateOne (Vector pos, Ptr<YansWifiChannel> channel)
+{
+  Ptr<Node> node = CreateObject<Node> ();
+  Ptr<WifiNetDevice> dev = CreateObject<WifiNetDevice> ();
+
+  Ptr<WifiMac> mac = m_mac.Create<WifiMac> ();
+  mac->ConfigureStandard (WIFI_PHY_STANDARD_80211a);
+  Ptr<ConstantPositionMobilityModel> mobility = CreateObject<ConstantPositionMobilityModel> ();
+  Ptr<YansWifiPhy> phy = CreateObject<YansWifiPhy> ();
+  Ptr<ErrorRateModel> error = CreateObject<YansErrorRateModel> ();
+  phy->SetErrorRateModel (error);
+  phy->SetChannel (channel);
+  phy->SetDevice (dev);
+  phy->SetMobility (node);
+  phy->ConfigureStandard (WIFI_PHY_STANDARD_80211a);
+  Ptr<WifiRemoteStationManager> manager = m_manager.Create<WifiRemoteStationManager> ();
+
+  mobility->SetPosition (pos);
+  node->AggregateObject (mobility);
+  mac->SetAddress (Mac48Address::Allocate ());
+  dev->SetMac (mac);
+  dev->SetPhy (phy);
+  dev->SetRemoteStationManager (manager);
+  node->AddDevice (dev);
+
+  return node;
+}
+
+bool
+InterferenceHelperSequenceTest::DoRun (void)
+{
+  m_mac.SetTypeId ("ns3::AdhocWifiMac");
+  m_propDelay.SetTypeId ("ns3::ConstantSpeedPropagationDelayModel");
+  m_manager.SetTypeId ("ns3::ConstantRateWifiManager");
+
+  Ptr<YansWifiChannel> channel = CreateObject<YansWifiChannel> ();
+  Ptr<PropagationDelayModel> propDelay = m_propDelay.Create<PropagationDelayModel> ();
+  Ptr<MatrixPropagationLossModel> propLoss = CreateObject<MatrixPropagationLossModel> ();
+  channel->SetPropagationDelayModel (propDelay);
+  channel->SetPropagationLossModel (propLoss);
+
+  Ptr<Node> rxOnly = CreateOne (Vector (0.0, 0.0, 0.0), channel);
+  Ptr<Node> senderA = CreateOne (Vector (5.0, 0.0, 0.0), channel);
+  Ptr<Node> senderB = CreateOne (Vector (-5.0, 0.0, 0.0), channel);
+
+  propLoss->SetLoss (senderB, rxOnly, 0, true);
+  propLoss->SetDefaultLoss (999);
+
+  Simulator::Schedule (Seconds (1.0),
+      &InterferenceHelperSequenceTest::SendOnePacket, this,
+      DynamicCast<WifiNetDevice> (senderB->GetDevice (0)));
+
+  Simulator::Schedule (Seconds (1.0000001),
+      &InterferenceHelperSequenceTest::SwitchCh, this,
+      DynamicCast<WifiNetDevice> (rxOnly->GetDevice (0)));
+
+  Simulator::Schedule (Seconds (5.0),
+      &InterferenceHelperSequenceTest::SendOnePacket, this,
+      DynamicCast<WifiNetDevice> (senderA->GetDevice (0)));
+
+  Simulator::Schedule (Seconds (7.0),
+      &InterferenceHelperSequenceTest::SendOnePacket, this,
+      DynamicCast<WifiNetDevice> (senderB->GetDevice (0)));
+
+  Simulator::Stop (Seconds (100.0));
+  Simulator::Run ();
+
+  Simulator::Destroy ();
+  return false;
+}
+
+//-----------------------------------------------------------------------------
 
 class WifiTestSuite : public TestSuite
 {
@@ -188,6 +298,7 @@ WifiTestSuite::WifiTestSuite ()
 {
   AddTestCase (new WifiTest);
   AddTestCase (new QosUtilsIsOldPacketTest);
+  AddTestCase (new InterferenceHelperSequenceTest); // Bug 991
 }
 
 WifiTestSuite g_wifiTestSuite;
