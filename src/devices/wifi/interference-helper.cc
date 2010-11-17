@@ -561,6 +561,7 @@ void
 InterferenceHelper::EraseEvents (void) 
 {  
   m_niChanges.clear ();
+  m_rxing = false;
   m_firstPower = 0.0;
 }
 InterferenceHelper::NiChanges::iterator
