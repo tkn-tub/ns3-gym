@@ -347,7 +347,6 @@ TcpSocketImpl::Close (void)
                    " deferring close, state " << m_state);
       return 0;
     }
-  m_finSequence = m_nextTxSequence + SequenceNumber32 (1);
   Actions_t action  = ProcessEvent (APP_CLOSE);
   ProcessAction (action);
   return 0;
@@ -947,7 +946,6 @@ bool TcpSocketImpl::ProcessPacketAction (Actions_t a, Ptr<Packet> p,
       if(tcpHeader.GetFlags() & TcpHeader::FIN)
       {
         ++m_nextRxSequence; //bump this to account for the FIN
-        m_nextTxSequence = m_finSequence;
       }
       SendEmptyPacket (TcpHeader::ACK);
       break;
@@ -1172,7 +1170,6 @@ bool TcpSocketImpl::SendPendingData (bool withAck)
           m_nextTxSequence + SequenceNumber32 (sz));
       if (m_closeOnEmpty && (remainingData == 0))
         {
-          m_finSequence = m_nextTxSequence + SequenceNumber32 (1 + sz);
           flags = TcpHeader::FIN;
           m_state = FIN_WAIT_1;
         }
