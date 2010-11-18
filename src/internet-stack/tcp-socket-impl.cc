@@ -1314,9 +1314,6 @@ void TcpSocketImpl::NewRx (Ptr<Packet> p,
       m_nextRxSequence += s;           // Advance next expected sequence
       NS_LOG_LOGIC("Case 1, advanced nrxs to " << m_nextRxSequence );
       //buffer this, it'll be read by call to Recv
-      UnAckData_t::iterator i = 
-          m_bufferedData.find (tcpHeader.GetSequenceNumber () );
-      NS_ASSERT(i == m_bufferedData.end ()); //no way it should have been found
       // Save for later delivery if there is room
       m_bufferedData[tcpHeader.GetSequenceNumber () ] = p;
       m_rxAvailable += p->GetSize ();
