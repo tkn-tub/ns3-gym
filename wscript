@@ -377,6 +377,7 @@ def configure(conf):
     add_gcc_flag('-fstrict-aliasing')
     add_gcc_flag('-Wstrict-aliasing')
 
+    conf.find_program('doxygen', var='DOXYGEN')
 
     # append user defined flags after all our ones
     for (confvar, envvar) in [['CCFLAGS', 'CCFLAGS_EXTRA'],
@@ -749,6 +750,11 @@ def _doxygen(bld):
     env = wutils.bld.env
     proc_env = wutils.get_proc_env()
 
+    if not env['DOXYGEN']:
+        Logs.error("waf configure did not detect doxygen in the system -> cannot build api docs.")
+        raise SystemExit(1)
+        return
+
     try:
         program_obj = wutils.find_program('print-introspected-doxygen', env)
     except ValueError: 
@@ -771,7 +777,7 @@ def _doxygen(bld):
     out.close()
 
     doxygen_config = os.path.join('doc', 'doxygen.conf')
-    if subprocess.Popen(['doxygen', doxygen_config]).wait():
+    if subprocess.Popen([env['DOXYGEN'], doxygen_config]).wait():
         raise SystemExit(1)
 
 def doxygen(bld):
