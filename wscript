@@ -7,6 +7,7 @@ import types
 import optparse
 import os.path
 import re
+import shlex
 
 # WAF modules
 import pproc as subprocess
@@ -385,7 +386,8 @@ def configure(conf):
                               ['LINKFLAGS', 'LINKFLAGS_EXTRA'],
                               ['LINKFLAGS', 'LDFLAGS_EXTRA']]:
         if envvar in os.environ:
-            conf.env.append_value(confvar, os.environ[envvar])
+            value = shlex.split(os.environ[envvar])
+            conf.env.append_value(confvar, value)
 
     # Write a summary of optional features status
     print "---- Summary of optional NS-3 features:"
