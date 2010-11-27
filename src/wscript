@@ -285,9 +285,8 @@ class gen_ns3_module_header_task(Task.Task):
         return 0
 
     def sig_explicit_deps(self):
-        m = Utils.md5()
-        m.update('\n'.join([node.abspath(self.env) for node in self.inputs]))
-        return m.digest()
+        self.m.update('\n'.join([node.abspath(self.env) for node in self.inputs]))
+        return self.m.digest()
 
     def unique_id(self):
         try:
