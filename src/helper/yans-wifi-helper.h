@@ -73,6 +73,11 @@ public:
    * Add a propagation loss model to the set of currently-configured loss models.
    * This method is additive to allow you to construct complex propagation loss models
    * such as a log distance + jakes model, etc.
+   *
+   * The order in which PropagationLossModels are added may be significant. Some
+   * propagation models are dependent of the "txPower" (eg. Nakagami model), and
+   * are therefore not commutative. The final receive power (excluding receiver
+   * gains) are calculated in the order the models are added.
    */
   void AddPropagationLoss (std::string name,
 			   std::string n0 = "", const AttributeValue &v0 = EmptyAttributeValue (),
