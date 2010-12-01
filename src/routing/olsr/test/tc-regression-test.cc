@@ -61,11 +61,11 @@ TcRegressionTest::DoRun ()
 {
   SeedManager::SetSeed(12345);
   CreateNodes ();
-  
+
   Simulator::Stop (m_time);
   Simulator::Run ();
   Simulator::Destroy ();
-  
+
   if (!WRITE_VECTORS) CheckResults ();
   return GetErrorStatus ();
 }
@@ -76,25 +76,25 @@ TcRegressionTest::CreateNodes ()
   // create 3 nodes
   NodeContainer c;
   c.Create (3);
-  
+
   // place nodes in the chain
   MobilityHelper mobility;
   mobility.SetPositionAllocator ("ns3::GridPositionAllocator",
-                                "MinX", DoubleValue (0.0),
-                                "MinY", DoubleValue (0.0),
-                                "DeltaX", DoubleValue (m_step),
-                                "DeltaY", DoubleValue (0),
-                                "GridWidth", UintegerValue (3),
-                                "LayoutType", StringValue ("RowFirst"));
+                                 "MinX", DoubleValue (0.0),
+                                 "MinY", DoubleValue (0.0),
+                                 "DeltaX", DoubleValue (m_step),
+                                 "DeltaY", DoubleValue (0),
+                                 "GridWidth", UintegerValue (3),
+                                 "LayoutType", StringValue ("RowFirst"));
   mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
   mobility.Install (c);
-  
+
   // install TCP/IP & OLSR
   OlsrHelper olsr;
   InternetStackHelper internet;
   internet.SetRoutingHelper (olsr);
   internet.Install (c);
-  
+
   // create wifi channel & devices
   NqosWifiMacHelper wifiMac = NqosWifiMacHelper::Default ();
   wifiMac.SetType ("ns3::AdhocWifiMac");
@@ -127,11 +127,11 @@ TcRegressionTest::CheckResults ()
       // File naming conventions are hard-coded here.
       os1 << NS_TEST_SOURCEDIR << PREFIX << "-" << i << "-1.pcap";
       os2 << GetTempDir () << PREFIX << "-" << i << "-1.pcap";
-      
+
       uint32_t sec(0), usec(0);
       bool diff = PcapFile::Diff (os1.str(), os2.str(), sec, usec);
       NS_TEST_EXPECT_MSG_EQ (diff, false, "PCAP traces " << os1.str() << " and " << os2.str() 
-                                       << " differ starting from " << sec << " s " << usec << " us");
+                                                         << " differ starting from " << sec << " s " << usec << " us");
     }
 }
 

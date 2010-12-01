@@ -99,15 +99,15 @@ private:
   virtual void TxOk (const WifiMacHeader &hdr);
   virtual void TxFailed (const WifiMacHeader &hdr);
 
- /**
-  * This method is called to de-aggregate an A-MSDU and forward the
-  * constituent packets up the stack. We override the WifiMac version
-  * here because, as an AP, we also need to think about redistributing
-  * to other associated STAs.
-  *
-  * \param aggregatedPacket the Packet containing the A-MSDU.
-  * \param hdr a pointer to the MAC header for \c aggregatedPacket.
-  */
+  /**
+   * This method is called to de-aggregate an A-MSDU and forward the
+   * constituent packets up the stack. We override the WifiMac version
+   * here because, as an AP, we also need to think about redistributing
+   * to other associated STAs.
+   *
+   * \param aggregatedPacket the Packet containing the A-MSDU.
+   * \param hdr a pointer to the MAC header for \c aggregatedPacket.
+   */
   virtual void DeaggregateAmsduAndForward (Ptr<Packet> aggregatedPacket,
                                            const WifiMacHeader *hdr);
 

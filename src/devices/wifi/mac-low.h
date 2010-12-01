@@ -638,7 +638,7 @@ private:
 
   typedef std::map<AgreementKey, BlockAckCache> BlockAckCaches;
   typedef std::map<AgreementKey, BlockAckCache>::iterator BlockAckCachesI;
-  
+
   Agreements m_bAckAgreements;
   BlockAckCaches m_bAckCaches;
 

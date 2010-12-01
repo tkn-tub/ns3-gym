@@ -28,10 +28,12 @@
 namespace ns3 {
 
 QosWifiMacHelper::QosWifiMacHelper ()
-{}
+{
+}
 
 QosWifiMacHelper::~QosWifiMacHelper ()
-{}
+{
+}
 
 QosWifiMacHelper
 QosWifiMacHelper::Default (void)
@@ -117,7 +119,7 @@ QosWifiMacHelper::Setup (Ptr<WifiMac> mac, enum AcIndex ac, std::string dcaAttrN
   PointerValue ptr;
   mac->GetAttribute (dcaAttrName, ptr);
   Ptr<EdcaTxopN> edca = ptr.Get<EdcaTxopN> ();
-  
+
   if (it != m_aggregators.end ())
     {
       ObjectFactory factory = it->second;
@@ -139,7 +141,7 @@ Ptr<WifiMac>
 QosWifiMacHelper::Create (void) const
 {
   Ptr<WifiMac> mac = m_mac.Create<WifiMac> ();
-  
+
   Setup (mac, AC_VO, "VO_EdcaTxopN");
   Setup (mac, AC_VI, "VI_EdcaTxopN");
   Setup (mac, AC_BE, "BE_EdcaTxopN");

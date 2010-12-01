@@ -50,11 +50,11 @@ NS_LOG_COMPONENT_DEFINE ("StaWifiMac");
      \    -----------------     -----------------------------
       \-> | Beacon Missed | --> | Wait Association Response |
           -----------------     -----------------------------
-	        \                       ^
-		 \                      |
-		  \    -----------------------
-	           \-> | Wait Probe Response |
-		       -----------------------
+                \                       ^
+                 \                      |
+                  \    -----------------------
+                   \-> | Wait Probe Response |
+                       -----------------------
  */
 
 namespace ns3 {
@@ -89,7 +89,7 @@ StaWifiMac::GetTypeId (void)
                      MakeTraceSourceAccessor (&StaWifiMac::m_assocLogger))
     .AddTraceSource ("DeAssoc", "Association with an access point lost.",
                      MakeTraceSourceAccessor (&StaWifiMac::m_deAssocLogger))
-    ;
+  ;
   return tid;
 }
 
@@ -212,39 +212,39 @@ StaWifiMac::TryToEnsureAssociated (void)
 {
   NS_LOG_FUNCTION (this);
   switch (m_state) {
-  case ASSOCIATED:
-    return;
-    break;
-  case WAIT_PROBE_RESP:
-    /* we have sent a probe request earlier so we
-       do not need to re-send a probe request immediately.
-       We just need to wait until probe-request-timeout
-       or until we get a probe response
-     */
-    break;
-  case BEACON_MISSED:
-    /* we were associated but we missed a bunch of beacons
-     * so we should assume we are not associated anymore.
-     * We try to initiate a probe request now.
-     */
-    m_linkDown ();
-    SetState (WAIT_PROBE_RESP);
-    SendProbeRequest ();
-    break;
-  case WAIT_ASSOC_RESP:
-    /* we have sent an assoc request so we do not need to
-       re-send an assoc request right now. We just need to
-       wait until either assoc-request-timeout or until
-       we get an assoc response.
-     */
-    break;
-  case REFUSED:
-    /* we have sent an assoc request and received a negative
-       assoc resp. We wait until someone restarts an
-       association with a given ssid.
-     */
-    break;
-  }
+    case ASSOCIATED:
+      return;
+      break;
+    case WAIT_PROBE_RESP:
+      /* we have sent a probe request earlier so we
+         do not need to re-send a probe request immediately.
+         We just need to wait until probe-request-timeout
+         or until we get a probe response
+       */
+      break;
+    case BEACON_MISSED:
+      /* we were associated but we missed a bunch of beacons
+       * so we should assume we are not associated anymore.
+       * We try to initiate a probe request now.
+       */
+      m_linkDown ();
+      SetState (WAIT_PROBE_RESP);
+      SendProbeRequest ();
+      break;
+    case WAIT_ASSOC_RESP:
+      /* we have sent an assoc request so we do not need to
+         re-send an assoc request right now. We just need to
+         wait until either assoc-request-timeout or until
+         we get an assoc response.
+       */
+      break;
+    case REFUSED:
+      /* we have sent an assoc request and received a negative
+         assoc resp. We wait until someone restarts an
+         association with a given ssid.
+       */
+      break;
+    }
 }
 
 void
@@ -284,7 +284,7 @@ StaWifiMac::RestartBeaconWatchdog (Time delay)
   NS_LOG_FUNCTION (this << delay);
   m_beaconWatchdogEnd = std::max (Simulator::Now () + delay, m_beaconWatchdogEnd);
   if (Simulator::GetDelayLeft (m_beaconWatchdog) < delay &&
-                               m_beaconWatchdog.IsExpired ())
+      m_beaconWatchdog.IsExpired ())
     {
       NS_LOG_DEBUG ("really restart watchdog.");
       m_beaconWatchdog = Simulator::Schedule (delay, &StaWifiMac::MissedBeacons, this);

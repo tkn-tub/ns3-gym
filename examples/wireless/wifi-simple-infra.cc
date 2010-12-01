@@ -107,7 +107,7 @@ int main (int argc, char *argv[])
   cmd.AddValue ("numPackets", "number of packets generated", numPackets);
   cmd.AddValue ("interval", "interval (seconds) between packets", interval);
   cmd.AddValue ("verbose", "turn on all WifiNetDevice log components", verbose);
-  
+
   cmd.Parse (argc, argv);
   // Convert to time object
   Time interPacketInterval = Seconds (interval);
@@ -149,7 +149,7 @@ int main (int argc, char *argv[])
   NqosWifiMacHelper wifiMac = NqosWifiMacHelper::Default ();
   wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager",
                                 "DataMode",StringValue(phyMode),
-                                   "ControlMode",StringValue(phyMode));
+                                "ControlMode",StringValue(phyMode));
 
   // Setup the rest of the upper mac
   Ssid ssid = Ssid ("wifi-default");
@@ -196,7 +196,7 @@ int main (int argc, char *argv[])
 
   // Tracing
   wifiPhy.EnablePcap ("wifi-simple-infra", devices);
-  
+
   // Output what we are doing
   NS_LOG_UNCOND ("Testing " << numPackets  << " packets sent with receiver rss " << rss );
 

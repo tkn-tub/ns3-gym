@@ -39,14 +39,17 @@ NS_LOG_COMPONENT_DEFINE ("WifiHelper");
 namespace ns3 {
 
 WifiPhyHelper::~WifiPhyHelper ()
-{}
+{
+}
 
 WifiMacHelper::~WifiMacHelper ()
-{}
+{
+}
 
 WifiHelper::WifiHelper ()
   : m_standard (WIFI_PHY_STANDARD_80211a)
-{}
+{
+}
 
 WifiHelper
 WifiHelper::Default (void)

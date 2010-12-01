@@ -48,7 +48,7 @@ AdhocWifiMac::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::AdhocWifiMac")
     .SetParent<RegularWifiMac> ()
     .AddConstructor<AdhocWifiMac> ()
-    ;
+  ;
   return tid;
 }
 

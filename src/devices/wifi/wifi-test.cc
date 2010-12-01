@@ -58,16 +58,17 @@ private:
 
 WifiTest::WifiTest ()
   : TestCase ("Wifi")
-{}
+{
+}
 
-void 
+void
 WifiTest::SendOnePacket (Ptr<WifiNetDevice> dev)
 {
   Ptr<Packet> p = Create<Packet> ();
   dev->Send (p, dev->GetBroadcast (), 1);
 }
 
-void 
+void
 WifiTest::CreateOne (Vector pos, Ptr<YansWifiChannel> channel)
 {
   Ptr<Node> node = CreateObject<Node> ();
@@ -120,7 +121,7 @@ WifiTest::DoRun (void)
 {
   m_mac.SetTypeId ("ns3::AdhocWifiMac");
   m_propDelay.SetTypeId ("ns3::ConstantSpeedPropagationDelayModel");
-  
+
   m_manager.SetTypeId ("ns3::ArfWifiManager");
   RunOne ();
   m_manager.SetTypeId ("ns3::AarfWifiManager");
@@ -196,9 +197,10 @@ private:
 
 InterferenceHelperSequenceTest::InterferenceHelperSequenceTest ()
   : TestCase ("InterferenceHelperSequence")
-{}
+{
+}
 
-void 
+void
 InterferenceHelperSequenceTest::SendOnePacket (Ptr<WifiNetDevice> dev)
 {
   Ptr<Packet> p = Create<Packet> (9999);
@@ -263,20 +265,20 @@ InterferenceHelperSequenceTest::DoRun (void)
   propLoss->SetDefaultLoss (999);
 
   Simulator::Schedule (Seconds (1.0),
-      &InterferenceHelperSequenceTest::SendOnePacket, this,
-      DynamicCast<WifiNetDevice> (senderB->GetDevice (0)));
+                       &InterferenceHelperSequenceTest::SendOnePacket, this,
+                       DynamicCast<WifiNetDevice> (senderB->GetDevice (0)));
 
   Simulator::Schedule (Seconds (1.0000001),
-      &InterferenceHelperSequenceTest::SwitchCh, this,
-      DynamicCast<WifiNetDevice> (rxOnly->GetDevice (0)));
+                       &InterferenceHelperSequenceTest::SwitchCh, this,
+                       DynamicCast<WifiNetDevice> (rxOnly->GetDevice (0)));
 
   Simulator::Schedule (Seconds (5.0),
-      &InterferenceHelperSequenceTest::SendOnePacket, this,
-      DynamicCast<WifiNetDevice> (senderA->GetDevice (0)));
+                       &InterferenceHelperSequenceTest::SendOnePacket, this,
+                       DynamicCast<WifiNetDevice> (senderA->GetDevice (0)));
 
   Simulator::Schedule (Seconds (7.0),
-      &InterferenceHelperSequenceTest::SendOnePacket, this,
-      DynamicCast<WifiNetDevice> (senderB->GetDevice (0)));
+                       &InterferenceHelperSequenceTest::SendOnePacket, this,
+                       DynamicCast<WifiNetDevice> (senderB->GetDevice (0)));
 
   Simulator::Stop (Seconds (100.0));
   Simulator::Run ();

@@ -45,31 +45,31 @@ TypeId
 MeshWifiInterfaceMac::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::MeshWifiInterfaceMac")
-  .SetParent<RegularWifiMac> ()
-  .AddConstructor<MeshWifiInterfaceMac> ()
-  .AddAttribute ( "BeaconInterval",
-                  "Beacon Interval",
-                  TimeValue (Seconds (0.5)),
+    .SetParent<RegularWifiMac> ()
+    .AddConstructor<MeshWifiInterfaceMac> ()
+    .AddAttribute ( "BeaconInterval",
+                    "Beacon Interval",
+                    TimeValue (Seconds (0.5)),
 
-                  MakeTimeAccessor (
+                    MakeTimeAccessor (
                       &MeshWifiInterfaceMac::m_beaconInterval),
-                  MakeTimeChecker ()
-                  )
-  .AddAttribute ( "RandomStart",
-                  "Window when beacon generating starts (uniform random) in seconds",
-                  TimeValue (Seconds (0.5)),
-                  MakeTimeAccessor (
+                    MakeTimeChecker ()
+                    )
+    .AddAttribute ( "RandomStart",
+                    "Window when beacon generating starts (uniform random) in seconds",
+                    TimeValue (Seconds (0.5)),
+                    MakeTimeAccessor (
                       &MeshWifiInterfaceMac::m_randomStart),
-                  MakeTimeChecker ()
-                  )
-  .AddAttribute ( "BeaconGeneration",
-                  "Enable/Disable Beaconing.",
-                  BooleanValue (true),
-                  MakeBooleanAccessor (
+                    MakeTimeChecker ()
+                    )
+    .AddAttribute ( "BeaconGeneration",
+                    "Enable/Disable Beaconing.",
+                    BooleanValue (true),
+                    MakeBooleanAccessor (
                       &MeshWifiInterfaceMac::SetBeaconGeneration, &MeshWifiInterfaceMac::GetBeaconGeneration),
-                  MakeBooleanChecker ()
-                  )
-                  ;
+                    MakeBooleanChecker ()
+                    )
+  ;
   return tid;
 }
 MeshWifiInterfaceMac::MeshWifiInterfaceMac () :
@@ -364,7 +364,7 @@ MeshWifiInterfaceMac::ShiftTbtt (Time shift)
   // Shift scheduled event
   Simulator::Cancel (m_beaconSendEvent);
   m_beaconSendEvent = Simulator::Schedule (GetTbtt () - Simulator::Now (), &MeshWifiInterfaceMac::SendBeacon,
-      this);
+                                           this);
 }
 void
 MeshWifiInterfaceMac::ScheduleNextBeacon ()
@@ -410,7 +410,7 @@ MeshWifiInterfaceMac::Receive (Ptr<Packet> packet, WifiMacHeader const *hdr)
       packet->PeekHeader (beacon_hdr);
 
       NS_LOG_DEBUG ("Beacon received from " << hdr->GetAddr2 () << " I am " << GetAddress () << " at "
-          << Simulator::Now ().GetMicroSeconds () << " microseconds");
+                                            << Simulator::Now ().GetMicroSeconds () << " microseconds");
 
       // update supported rates
       if (beacon_hdr.GetSsid ().IsEqual (GetSsid ()))
@@ -495,19 +495,19 @@ MeshWifiInterfaceMac::Statistics::Print (std::ostream & os) const
 {
   os << "<Statistics "
   // TODO txBeacons
-        "rxBeacons=\"" << recvBeacons << "\" "
-    "txFrames=\"" << sentFrames << "\" "
-    "txBytes=\"" << sentBytes << "\" "
-    "rxFrames=\"" << recvFrames << "\" "
-    "rxBytes=\"" << recvBytes << "\"/>" << std::endl;
+  "rxBeacons=\"" << recvBeacons << "\" "
+  "txFrames=\"" << sentFrames << "\" "
+  "txBytes=\"" << sentBytes << "\" "
+  "rxFrames=\"" << recvFrames << "\" "
+  "rxBytes=\"" << recvBytes << "\"/>" << std::endl;
 }
 void
 MeshWifiInterfaceMac::Report (std::ostream & os) const
 {
   os << "<Interface "
-    "BeaconInterval=\"" << GetBeaconInterval ().GetSeconds () << "\" "
-    "Channel=\"" << GetFrequencyChannel () << "\" "
-    "Address = \"" << GetAddress () << "\">" << std::endl;
+  "BeaconInterval=\"" << GetBeaconInterval ().GetSeconds () << "\" "
+  "Channel=\"" << GetFrequencyChannel () << "\" "
+  "Address = \"" << GetAddress () << "\">" << std::endl;
   m_stats.Print (os);
   os << "</Interface>" << std::endl;
 }

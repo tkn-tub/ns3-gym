@@ -274,13 +274,13 @@ protected:
 
   void ForwardUp (Ptr<Packet> packet, Mac48Address from, Mac48Address to);
 
- /**
-  * This method can be called to de-aggregate an A-MSDU and forward
-  * the constituent packets up the stack.
-  *
-  * \param aggregatedPacket the Packet containing the A-MSDU.
-  * \param hdr a pointer to the MAC header for \c aggregatedPacket.
-  */
+  /**
+   * This method can be called to de-aggregate an A-MSDU and forward
+   * the constituent packets up the stack.
+   *
+   * \param aggregatedPacket the Packet containing the A-MSDU.
+   * \param hdr a pointer to the MAC header for \c aggregatedPacket.
+   */
   virtual void DeaggregateAmsduAndForward (Ptr<Packet> aggregatedPacket,
                                            const WifiMacHeader *hdr);
 

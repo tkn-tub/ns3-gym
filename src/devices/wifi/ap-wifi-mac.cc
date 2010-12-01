@@ -60,7 +60,7 @@ ApWifiMac::GetTypeId (void)
                    MakeBooleanAccessor (&ApWifiMac::SetBeaconGeneration,
                                         &ApWifiMac::GetBeaconGeneration),
                    MakeBooleanChecker ())
-    ;
+  ;
   return tid;
 }
 

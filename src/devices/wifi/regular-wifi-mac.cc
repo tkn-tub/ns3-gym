@@ -392,14 +392,14 @@ RegularWifiMac::GetBssid (void) const
 
 void
 RegularWifiMac::Enqueue (Ptr<const Packet> packet,
-                  Mac48Address to, Mac48Address from)
+                         Mac48Address to, Mac48Address from)
 {
   // We expect RegularWifiMac subclasses which do support forwarding (e.g.,
   // AP) to override this method. Therefore, we throw a fatal error if
   // someone tries to invoke this method on a class which has not done
   // this.
   NS_FATAL_ERROR ("This MAC entity (" << this << ", " << GetAddress ()
-                  << ") does not support Enqueue() with from address");
+                                      << ") does not support Enqueue() with from address");
 }
 
 bool
@@ -619,7 +619,7 @@ RegularWifiMac::GetTypeId (void)
     .AddTraceSource ("TxErrHeader",
                      "The header of unsuccessfully transmitted packet",
                      MakeTraceSourceAccessor (&RegularWifiMac::m_txErrCallback))
-    ;
+  ;
 
   return tid;
 }

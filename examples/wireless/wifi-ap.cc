@@ -121,7 +121,7 @@ int main (int argc, char *argv[])
   cmd.AddValue ("verbose", "Print trace information if true", g_verbose);
 
   cmd.Parse (argc, argv);
-   
+
   Packet::EnablePrinting ();
 
   // enable rts cts all the time.
@@ -186,7 +186,7 @@ int main (int argc, char *argv[])
   Config::Connect ("/NodeList/*/DeviceList/*/Phy/State/RxError", MakeCallback (&PhyRxErrorTrace));
   Config::Connect ("/NodeList/*/DeviceList/*/Phy/State/Tx", MakeCallback (&PhyTxTrace));
   Config::Connect ("/NodeList/*/DeviceList/*/Phy/State/State", MakeCallback (&PhyStateTrace));
-  
+
   AthstatsHelper athstats;
   athstats.EnableAthstats("athstats-sta", stas);
   athstats.EnableAthstats("athstats-ap", ap);

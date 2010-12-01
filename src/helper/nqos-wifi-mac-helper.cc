@@ -26,10 +26,12 @@
 namespace ns3 {
 
 NqosWifiMacHelper::NqosWifiMacHelper ()
-{}
+{
+}
 
 NqosWifiMacHelper::~NqosWifiMacHelper ()
-{}
+{
+}
 
 NqosWifiMacHelper
 NqosWifiMacHelper::Default (void)
