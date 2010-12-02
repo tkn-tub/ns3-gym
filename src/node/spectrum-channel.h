@@ -54,8 +54,6 @@ public:
    */
   virtual void AddSpectrumPropagationLossModel (Ptr<SpectrumPropagationLossModel> loss) = 0;
 
-  virtual Ptr<SpectrumPropagationLossModel> GetSpectrumPropagationLossModel (void) = 0;
-
   /**
    * set the  propagation delay model to be used
    * \param delay Ptr to the propagation delay model to be used.
@@ -67,10 +65,11 @@ public:
    * Used by attached PHY instances to transmit waveforms on the channel
    *
    * @param p the PacketBurst associated with the waveform being transmitted
-   * @param txPowerSpectrum the Power Spectral Density of the
+   * @param txPsd the Power Spectral Density of the
    * waveform, in linear units. The exact unit will depend on the
    * type of transmission medium involved: W for radio communications, Pa for
    * underwater acoustic communications. Other transmission media to be defined.
+   * @param st spectrum type
    * @param duration duration of the packet transmission. It is
    * assumed that the Power Spectral Density remains constant for the
    * whole duration of the transmission. In other words, all waveform
