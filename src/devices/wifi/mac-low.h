@@ -453,16 +453,22 @@ public:
    */
   void NotifySwitchingStartNow (Time duration); 
   /**
-   * \param respHdr Add block ack response from originator (action frame).
-   * \param originator Address of peer station involved in block ack mechanism.
-   * \param startingSeq Sequence number of the first MPDU of all packets for which block ack was negotiated.
-   * 
-   * This function is typically invoked only by ns3::QapWifiMac and ns3::QstaWifiMac.
-   * If we are transmitting an Add block ack response, MacLow must allocate buffers to collect
-   * all correctly received packets belonging to category for which block ack was negotiated.
-   * It's needed in order to send a Block ack after corresponding originator's Block ack request.
+   * \param respHdr Add block ack response from originator (action
+   * frame).
+   * \param originator Address of peer station involved in block ack
+   * mechanism.
+   * \param startingSeq Sequence number of the first MPDU of all
+   * packets for which block ack was negotiated.
+   *
+   * This function is typically invoked only by ns3::RegularWifiMac
+   * when the STA (which may be non-AP in ESS, or in an IBSS) has
+   * received an ADDBA Request frame and is transmitting an ADDBA
+   * Response frame. At this point MacLow must allocate buffers to
+   * collect all correctly received packets belonging to the category
+   * for which Block Ack was negotiated.
    */
-  void CreateBlockAckAgreement (const MgtAddBaResponseHeader *respHdr, Mac48Address originator,
+  void CreateBlockAckAgreement (const MgtAddBaResponseHeader *respHdr,
+                                Mac48Address originator,
                                 uint16_t startingSeq);
   /**
    * \param originator Address of peer participating in Block Ack mechanism.

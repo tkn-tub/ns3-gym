@@ -16,82 +16,86 @@
  *     beacon generation, probing, and association state machines.
  *   - a set of Rate control algorithms used by the MAC low models.
  *
- * We have today 6 MAC high models, 3 for non QoS MACs and 3 for QoS MACs.
- *   
- *  a)non QoS MACs:
+ * There are presently three MAC high models, corresponding to the
+ * three primary Wi-Fi topological elements - Access Point (AP)
+ * (implemented in ns3::ApWifiMac), non-AP Station (STA) (implemented
+ * in ns3::StaWifiMac), and STA in an Independent Basic Service Set
+ * (IBSS - also commonly referred to as an ad hoc network. Implemented
+ * in ns3::AdhocWifiMac).
  *
- *   - a simple adhoc state machine which does not perform any
- *     kind of beacon generation, probing, or association. This
- *     state machine is implemented by the ns3::AdhocWifiMac class.
- *   - an active probing and association state machine which handles
- *     automatic re-association whenever too many beacons are missed
- *     is implemented by the ns3::NqstaWifiMac class.
- *   - an access point which generates periodic beacons, and which
- *     accepts every attempt to associate. This AP state machine
- *     is implemented by the ns3::NqapWifiMac class.
  *
- *  b)QoS MACs:
+ * The simplest of these is ns3::AdhocWifiMac, which implements a
+ * Wi-Fi MAC that does not perform any kind of beacon generation,
+ * probing, or association. The ns3::StaWifiMac class implements an
+ * active probing and association state machine that handles automatic
+ * re-association whenever too many beacons are missed. Finally,
+ * ns3::ApWifiMac implements an AP that generates periodic beacons,
+ * and that accepts every attempt to associate.
  *
- *   - like above but these MAC models are also able to manage QoS traffic.
- *     These MAC layers are implemented respectively by ns3::QadhocWifiMac,
- *     ns3::QstaWifiMac and ns3::QapWifiMac classes.
- *     With these MAC models is possible to work with traffic belonging to 
- *     four different access classes: AC_VO for voice traffic, AC_VI for video
- *     traffic, AC_BE for best-effort traffic and AC_BK for background traffic.
- *     In order to determine MSDU's access class, every packet forwarded down
- *     to these MAC layers should be marked using ns3::QosTag in order to set
- *     a TID (traffic id) for that packet otherwise it will be considered
- *     belonging to AC_BE access class. 
- *     How TIDs are mapped to access classes are shown in the table below. 
- *   
- *     TID-AcIndex mapping:
- *     
- *      <table border=1>
- *      <tr>
- *        <td><b> TID </b></td>
- *        <td><b> Access class </b></td>
- *      </tr>
- *      <tr>
- *        <td> 7 </td>
- *        <td> AC_VO </td>
- *      </tr> 
- *      <tr>  
- *        <td> 6 </td>
- *        <td> AC_VO </td>
- *      </tr> 
- *      <tr>  
- *        <td> 5 </td>
- *        <td> AC_VI </td>
- *      </tr> 
- *      <tr>  
- *        <td> 4 </td>
- *        <td> AC_VI </td>
- *      </tr> 
- *      <tr>  
- *        <td> 3 </td>
- *        <td> AC_BE </td>
- *      </tr> 
- *      <tr>  
- *        <td> 0 </td>
- *        <td> AC_BE </td>
- *      </tr> 
- *      <tr>  
- *        <td> 2 </td>
- *        <td> AC_BK </td>
- *      </tr> 
- *      <tr>  
- *        <td> 1 </td>
- *        <td> AC_BK </td>
- *      </tr>
- *      </table>
- *  
+ * These three MAC high models share a common parent in
+ * ns3::RegularWifiMac, which exposes, among other MAC configuration,
+ * an attribute (QosSupported) that allows configuration of
+ * 802.11e/WMM-style QoS support. With QoS-enabled MAC models it is
+ * possible to work with traffic belonging to four different Access
+ * Categories (ACs): AC_VO for voice traffic, AC_VI for video traffic,
+ * AC_BE for best-effort traffic and AC_BK for background traffic.  In
+ * order for the MAC to determine the appropriate AC for an MSDU,
+ * packets forwarded down to these MAC layers should be marked using
+ * ns3::QosTag in order to set a TID (traffic id) for that packet
+ * otherwise it will be considered belonging to AC_BE.
+ *
+ * How TIDs are mapped to access classes are shown in the table below.
+ *
+ * <table border=1>
+ * <tr>
+ *   <td><b> TID </b></td>
+ *   <td><b> Access Category </b></td>
+ * </tr>
+ * <tr>
+ *   <td> 7 </td>
+ *   <td> AC_VO </td>
+ * </tr>
+ * <tr>
+ *   <td> 6 </td>
+ *   <td> AC_VO </td>
+ * </tr>
+ * <tr>
+ *   <td> 5 </td>
+ *   <td> AC_VI </td>
+ * </tr>
+ * <tr>
+ *   <td> 4 </td>
+ *   <td> AC_VI </td>
+ * </tr>
+ * <tr>
+ *   <td> 3 </td>
+ *   <td> AC_BE </td>
+ * </tr>
+ * <tr>
+ *   <td> 0 </td>
+ *   <td> AC_BE </td>
+ * </tr>
+ * <tr>
+ *   <td> 2 </td>
+ *   <td> AC_BK </td>
+ * </tr>
+ * <tr>
+ *   <td> 1 </td>
+ *   <td> AC_BK </td>
+ * </tr>
+ * </table>
+ *
  * The MAC low layer is split in 3 components:
  *   - ns3::MacLow which takes care of RTS/CTS/DATA/ACK transactions.
  *   - ns3::DcfManager and ns3::DcfState which implements the DCF function.
- *   - ns3::DcaTxop or ns3::EdcaTxopN which handle the packet queue, packet 
- *     fragmentation, and packet retransmissions if they are needed.
- *     ns3::DcaTxop object is used by non QoS high MACs. ns3::EdcaTxopN is
- *     used by Qos high MACs and performs also QoS operations like 802.11n MSDU
+ *
+ *   - ns3::DcaTxop and ns3::EdcaTxopN which handle the packet queue,
+ *     packet fragmentation, and packet retransmissions if they are
+ *     needed.  The ns3::DcaTxop object is used by high MACs that are
+ *     not QoS-enabled, and for transmission of frames (e.g., of type
+ *     Management) that the standard says should access the medium
+ *     using the DCF. ns3::EdcaTxopN is used by QoS-enabled high MACs
+ *     and also performs QoS operations like 802.11n-style MSDU
  *     aggregation.
  *
  * The PHY layer implements a single 802.11a model in the ns3::WifiPhy class: the

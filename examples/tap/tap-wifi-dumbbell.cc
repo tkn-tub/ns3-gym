@@ -140,13 +140,13 @@ main (int argc, char *argv[])
   NqosWifiMacHelper wifiMac = NqosWifiMacHelper::Default ();
   wifi.SetRemoteStationManager ("ns3::ArfWifiManager");
 
-  wifiMac.SetType ("ns3::NqapWifiMac", 
+  wifiMac.SetType ("ns3::ApWifiMac",
                    "Ssid", SsidValue (ssid));
   NetDeviceContainer devicesLeft = wifi.Install (wifiPhy, wifiMac, nodesLeft.Get (0));
 
 
-  wifiMac.SetType ("ns3::NqstaWifiMac", 
-                   "Ssid", SsidValue (ssid), 
+  wifiMac.SetType ("ns3::StaWifiMac",
+                   "Ssid", SsidValue (ssid),
                    "ActiveProbing", BooleanValue (false));
   devicesLeft.Add (wifi.Install (wifiPhy, wifiMac, NodeContainer (nodesLeft.Get (1), nodesLeft.Get (2), nodesLeft.Get (3))));
 

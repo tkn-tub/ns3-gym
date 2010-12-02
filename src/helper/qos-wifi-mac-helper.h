@@ -28,8 +28,10 @@
 namespace ns3 {
 
 /**
- * \brief create qos MAC layers for a ns3::WifiNetDevice. 
- * This class can create MACs of type ns3::QapWifiMac, ns3::QstaWifiMac, and, ns3::QadhocWifiMac
+ * \brief create QoS-enabled MAC layers for a ns3::WifiNetDevice.
+ *
+ * This class can create MACs of type ns3::ApWifiMac, ns3::StaWifiMac,
+ * and, ns3::AdhocWifiMac, with QosSupported attribute set to True.
  */
 class QosWifiMacHelper : public WifiMacHelper
 {

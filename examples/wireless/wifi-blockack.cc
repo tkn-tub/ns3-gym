@@ -70,14 +70,17 @@ int main (int argc, char const* argv[])
 
   Ssid ssid ("My-network");
   
-  mac.SetType ("ns3::QstaWifiMac", "Ssid" , SsidValue (ssid), "ActiveProbing", BooleanValue (false));
+  mac.SetType ("ns3::StaWifiMac",
+               "Ssid" , SsidValue (ssid),
+               "ActiveProbing", BooleanValue (false));
   /* setting blockack threshold for sta's BE queue */
   mac.SetBlockAckThresholdForAc (AC_BE, 2);
   /* setting block inactivity timeout to 3*1024 = 3072 microseconds */ 
   //mac.SetBlockAckInactivityTimeoutForAc (AC_BE, 3);
   NetDeviceContainer staDevice = wifi.Install (phy, mac, sta);
 
-  mac.SetType ("ns3::QapWifiMac", "Ssid", SsidValue (ssid));
+  mac.SetType ("ns3::ApWifiMac",
+               "Ssid", SsidValue (ssid));
   mac.SetBlockAckThresholdForAc (AC_BE, 0);
   NetDeviceContainer apDevice = wifi.Install (phy, mac, ap);
   

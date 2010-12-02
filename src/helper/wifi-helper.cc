@@ -131,6 +131,7 @@ WifiHelper::EnableLogComponents (void)
   LogComponentEnable ("Aarfcd", LOG_LEVEL_ALL);
   LogComponentEnable ("AdhocWifiMac", LOG_LEVEL_ALL);
   LogComponentEnable ("AmrrWifiRemoteStation", LOG_LEVEL_ALL);
+  LogComponentEnable ("ApWifiMac", LOG_LEVEL_ALL);
   LogComponentEnable ("ns3::ArfWifiManager", LOG_LEVEL_ALL);
   LogComponentEnable ("Cara", LOG_LEVEL_ALL);
   LogComponentEnable ("DcaTxop", LOG_LEVEL_ALL);
@@ -144,14 +145,11 @@ WifiHelper::EnableLogComponents (void)
   LogComponentEnable ("MsduAggregator", LOG_LEVEL_ALL);
   LogComponentEnable ("MsduStandardAggregator", LOG_LEVEL_ALL);
   LogComponentEnable ("NistErrorRateModel", LOG_LEVEL_ALL);
-  LogComponentEnable ("NqapWifiMac", LOG_LEVEL_ALL);
-  LogComponentEnable ("NqstaWifiMac", LOG_LEVEL_ALL);
   LogComponentEnable ("OnoeWifiRemoteStation", LOG_LEVEL_ALL);
   LogComponentEnable ("PropagationLossModel", LOG_LEVEL_ALL);
-  LogComponentEnable ("QadhocWifiMac", LOG_LEVEL_ALL);
-  LogComponentEnable ("QapWifiMac", LOG_LEVEL_ALL);
-  LogComponentEnable ("QstaWifiMac", LOG_LEVEL_ALL);
+  LogComponentEnable ("RegularWifiMac", LOG_LEVEL_ALL);
   LogComponentEnable ("RraaWifiManager", LOG_LEVEL_ALL);
+  LogComponentEnable ("StaWifiMac", LOG_LEVEL_ALL);
   LogComponentEnable ("SupportedRates", LOG_LEVEL_ALL);
   LogComponentEnable ("WifiChannel", LOG_LEVEL_ALL);
   LogComponentEnable ("WifiPhyStateHelper", LOG_LEVEL_ALL);

@@ -27,8 +27,8 @@
 #include "ns3/packet.h"
 
 #include "wifi-mode.h"
-#include "wifi-mac.h"
 #include "wifi-mac-header.h"
+#include "wifi-remote-station-manager.h"
 #include "qos-utils.h"
 #include "dcf.h"
 #include "ctrl-headers.h"
@@ -43,6 +43,7 @@ class DcfState;
 class DcfManager;
 class MacLow;
 class MacTxMiddle;
+class WifiMac;
 class WifiMacParameters;
 class WifiMacQueue;
 class RandomStream;
@@ -67,7 +68,8 @@ enum TypeOfStation
 {
   STA,
   AP,
-  ADHOC_STA
+  ADHOC_STA,
+  MESH
 };
 
 class EdcaTxopN : public Dcf

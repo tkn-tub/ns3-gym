@@ -69,17 +69,17 @@ int main (int argc, char *argv[])
   wifi.SetRemoteStationManager ("ns3::AarfWifiManager", "FragmentationThreshold", UintegerValue (2500));
 
   Ssid ssid = Ssid ("ns-3-802.11n");
-  mac.SetType ("ns3::QstaWifiMac", 
-    "Ssid", SsidValue (ssid),
-    "ActiveProbing", BooleanValue (false));
+  mac.SetType ("ns3::StaWifiMac",
+               "Ssid", SsidValue (ssid),
+               "ActiveProbing", BooleanValue (false));
   mac.SetMsduAggregatorForAc (AC_BE, "ns3::MsduStandardAggregator", 
                                      "MaxAmsduSize", UintegerValue (3839));
   
   NetDeviceContainer staDevices;
   staDevices = wifi.Install (phy, mac, wifiNodes);
   
-  mac.SetType ("ns3::QapWifiMac", 
-    "Ssid", SsidValue (ssid));
+  mac.SetType ("ns3::ApWifiMac",
+               "Ssid", SsidValue (ssid));
   mac.SetMsduAggregatorForAc (AC_BE, "ns3::MsduStandardAggregator", 
                                      "MaxAmsduSize", UintegerValue (7935));
 

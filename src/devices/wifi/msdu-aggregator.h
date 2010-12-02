@@ -38,6 +38,7 @@ class MsduAggregator : public Object
 {
 public:
   typedef std::list<std::pair<Ptr<Packet>, AmsduSubframeHeader> > DeaggregatedMsdus;
+  typedef std::list<std::pair<Ptr<Packet>, AmsduSubframeHeader> >::const_iterator DeaggregatedMsdusCI;
 
   static TypeId GetTypeId (void);
   /* Adds <i>packet</i> to <i>aggregatedPacket</i>. In concrete aggregator's implementation is 

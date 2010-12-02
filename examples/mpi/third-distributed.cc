@@ -132,15 +132,15 @@ main (int argc, char *argv[])
   NqosWifiMacHelper mac = NqosWifiMacHelper::Default ();
   
   Ssid ssid = Ssid ("ns-3-ssid");
-  mac.SetType ("ns3::NqstaWifiMac", 
-    "Ssid", SsidValue (ssid),
-    "ActiveProbing", BooleanValue (false));
+  mac.SetType ("ns3::StaWifiMac",
+               "Ssid", SsidValue (ssid),
+               "ActiveProbing", BooleanValue (false));
 
   NetDeviceContainer staDevices;
   staDevices = wifi.Install (phy, mac, wifiStaNodes);
 
-  mac.SetType ("ns3::NqapWifiMac", 
-    "Ssid", SsidValue (ssid));
+  mac.SetType ("ns3::ApWifiMac",
+               "Ssid", SsidValue (ssid));
 
   NetDeviceContainer apDevices;
   apDevices = wifi.Install (phy, mac, wifiApNode);

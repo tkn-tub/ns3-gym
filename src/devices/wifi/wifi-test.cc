@@ -136,9 +136,9 @@ WifiTest::DoRun (void)
 
   m_mac.SetTypeId ("ns3::AdhocWifiMac");
   RunOne ();
-  m_mac.SetTypeId ("ns3::NqapWifiMac");
+  m_mac.SetTypeId ("ns3::ApWifiMac");
   RunOne ();
-  m_mac.SetTypeId ("ns3::NqstaWifiMac");
+  m_mac.SetTypeId ("ns3::StaWifiMac");
   RunOne ();
 
 

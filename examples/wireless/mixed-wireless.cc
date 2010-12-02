@@ -280,12 +280,13 @@ main (int argc, char *argv[])
       Ssid ssid = Ssid (ssidString);
       wifiInfra.SetRemoteStationManager ("ns3::ArfWifiManager");
       // setup stas
-      macInfra.SetType ("ns3::NqstaWifiMac",
-               "Ssid", SsidValue (ssid),
-               "ActiveProbing", BooleanValue (false));
+      macInfra.SetType ("ns3::StaWifiMac",
+                        "Ssid", SsidValue (ssid),
+                        "ActiveProbing", BooleanValue (false));
       NetDeviceContainer staDevices = wifiInfra.Install (wifiPhy, macInfra, stas);
       // setup ap.
-      macInfra.SetType ("ns3::NqapWifiMac", "Ssid", SsidValue (ssid));
+      macInfra.SetType ("ns3::ApWifiMac",
+                        "Ssid", SsidValue (ssid));
       NetDeviceContainer apDevices = wifiInfra.Install (wifiPhy, macInfra, backbone.Get (i));
       // Collect all of these new devices
       NetDeviceContainer infraDevices (apDevices, staDevices);

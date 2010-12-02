@@ -1,9 +1,10 @@
 /* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
 /*
- * Copyright (c) 2005,2006 INRIA
+ * Copyright (c) 2006, 2009 INRIA
+ * Copyright (c) 2009 MIRKO BANCHI
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as 
+ * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
  *
  * This program is distributed in the hope that it will be useful,
@@ -16,36 +17,32 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
+ * Author: Mirko Banchi <mk.banchi@gmail.com>
  */
+#include "sta-wifi-mac.h"
 
-#include "ns3/packet.h"
-#include "ns3/simulator.h"
-#include "ns3/assert.h"
 #include "ns3/log.h"
-#include "ns3/node.h"
-#include "ns3/uinteger.h"
+#include "ns3/simulator.h"
+#include "ns3/string.h"
+#include "ns3/pointer.h"
 #include "ns3/boolean.h"
 #include "ns3/trace-source-accessor.h"
 
-#include "nqsta-wifi-mac.h"
-#include "wifi-mac-header.h"
-#include "mgt-headers.h"
-#include "wifi-phy.h"
-#include "dca-txop.h"
+#include "qos-tag.h"
 #include "mac-low.h"
 #include "dcf-manager.h"
 #include "mac-rx-middle.h"
-#include "wifi-mac-trailer.h"
-#include "ns3/trace-source-accessor.h"
-#include "ns3/pointer.h"
+#include "mac-tx-middle.h"
+#include "wifi-mac-header.h"
+#include "msdu-aggregator.h"
+#include "amsdu-subframe-header.h"
+#include "mgt-headers.h"
 
-NS_LOG_COMPONENT_DEFINE ("NqstaWifiMac");
+NS_LOG_COMPONENT_DEFINE ("StaWifiMac");
 
-#undef NS_LOG_APPEND_CONTEXT
-#define NS_LOG_APPEND_CONTEXT if (m_low != 0) {std::clog << "[mac=" << m_low->GetAddress () << "] ";}
 
 /*
- * The state machine for this NQSTA is:
+ * The state machine for this STA is:
  --------------                                          -----------
  | Associated |   <--------------------      ------->    | Refused |
  --------------                        \    /            -----------
@@ -62,252 +59,88 @@ NS_LOG_COMPONENT_DEFINE ("NqstaWifiMac");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (NqstaWifiMac);
+NS_OBJECT_ENSURE_REGISTERED (StaWifiMac);
 
-TypeId 
-NqstaWifiMac::GetTypeId (void)
+TypeId
+StaWifiMac::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::NqstaWifiMac")
-    .SetParent<WifiMac> ()
-    .AddConstructor<NqstaWifiMac> ()
+  static TypeId tid = TypeId ("ns3::StaWifiMac")
+    .SetParent<RegularWifiMac> ()
+    .AddConstructor<StaWifiMac> ()
     .AddAttribute ("ProbeRequestTimeout", "The interval between two consecutive probe request attempts.",
                    TimeValue (Seconds (0.05)),
-                   MakeTimeAccessor (&NqstaWifiMac::m_probeRequestTimeout),
+                   MakeTimeAccessor (&StaWifiMac::m_probeRequestTimeout),
                    MakeTimeChecker ())
     .AddAttribute ("AssocRequestTimeout", "The interval between two consecutive assoc request attempts.",
                    TimeValue (Seconds (0.5)),
-                   MakeTimeAccessor (&NqstaWifiMac::m_assocRequestTimeout),
+                   MakeTimeAccessor (&StaWifiMac::m_assocRequestTimeout),
                    MakeTimeChecker ())
-    .AddAttribute ("MaxMissedBeacons", 
+    .AddAttribute ("MaxMissedBeacons",
                    "Number of beacons which much be consecutively missed before "
                    "we attempt to restart association.",
                    UintegerValue (10),
-                   MakeUintegerAccessor (&NqstaWifiMac::m_maxMissedBeacons),
+                   MakeUintegerAccessor (&StaWifiMac::m_maxMissedBeacons),
                    MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("ActiveProbing", "If true, we send probe requests. If false, we don't.",
                    BooleanValue (false),
-                   MakeBooleanAccessor (&NqstaWifiMac::SetActiveProbing),
+                   MakeBooleanAccessor (&StaWifiMac::SetActiveProbing),
                    MakeBooleanChecker ())
-    .AddAttribute ("DcaTxop", "The DcaTxop object",
-                   PointerValue (),
-                   MakePointerAccessor (&NqstaWifiMac::GetDcaTxop),
-                   MakePointerChecker<DcaTxop> ()) 
     .AddTraceSource ("Assoc", "Associated with an access point.",
-                     MakeTraceSourceAccessor (&NqstaWifiMac::m_assocLogger))
+                     MakeTraceSourceAccessor (&StaWifiMac::m_assocLogger))
     .AddTraceSource ("DeAssoc", "Association with an access point lost.",
-                     MakeTraceSourceAccessor (&NqstaWifiMac::m_deAssocLogger))
+                     MakeTraceSourceAccessor (&StaWifiMac::m_deAssocLogger))
     ;
   return tid;
 }
 
-NqstaWifiMac::NqstaWifiMac ()
+StaWifiMac::StaWifiMac ()
   : m_state (BEACON_MISSED),
     m_probeRequestEvent (),
     m_assocRequestEvent (),
     m_beaconWatchdogEnd (Seconds (0.0))
 {
   NS_LOG_FUNCTION (this);
-  m_rxMiddle = new MacRxMiddle ();
-  m_rxMiddle->SetForwardCallback (MakeCallback (&NqstaWifiMac::Receive, this));
 
-  m_low = CreateObject<MacLow> ();
-  m_low->SetRxCallback (MakeCallback (&MacRxMiddle::Receive, m_rxMiddle));
-
-  m_dcfManager = new DcfManager ();
-  m_dcfManager->SetupLowListener (m_low);
-
-  m_dca = CreateObject<DcaTxop> ();
-  m_dca->SetLow (m_low);
-  m_dca->SetManager (m_dcfManager);
+  // Let the lower layers know that we are acting as a non-AP STA in
+  // an infrastructure BSS.
+  SetTypeOfStation (STA);
 }
 
-NqstaWifiMac::~NqstaWifiMac ()
+StaWifiMac::~StaWifiMac ()
 {
   NS_LOG_FUNCTION (this);
 }
 
 void
-NqstaWifiMac::DoDispose (void)
-{
-  NS_LOG_FUNCTION (this);
-  delete m_rxMiddle;
-  delete m_dcfManager;
-  m_low->Dispose ();
-  m_rxMiddle = 0;
-  m_low = 0;
-  m_dcfManager = 0;
-  m_phy = 0;
-  m_dca = 0;
-  m_stationManager = 0;
-  WifiMac::DoDispose ();
-}
-
-void 
-NqstaWifiMac::SetSlot (Time slotTime)
-{
-  NS_LOG_FUNCTION (this << slotTime);
-  m_dcfManager->SetSlot (slotTime);
-  m_low->SetSlotTime (slotTime);
-}
-void 
-NqstaWifiMac::SetSifs (Time sifs)
-{
-  NS_LOG_FUNCTION (this << sifs);
-  m_dcfManager->SetSifs (sifs);
-  m_low->SetSifs (sifs);
-}
-void 
-NqstaWifiMac::SetEifsNoDifs (Time eifsNoDifs)
-{
-  NS_LOG_FUNCTION (this << eifsNoDifs);
-  m_dcfManager->SetEifsNoDifs (eifsNoDifs);
-}
-void 
-NqstaWifiMac::SetAckTimeout (Time ackTimeout)
-{
-  m_low->SetAckTimeout (ackTimeout);
-}
-void 
-NqstaWifiMac::SetCtsTimeout (Time ctsTimeout)
-{
-  m_low->SetCtsTimeout (ctsTimeout);
-}
-void 
-NqstaWifiMac::SetPifs (Time pifs)
-{
-  m_low->SetPifs (pifs);
-}
-Time 
-NqstaWifiMac::GetSlot (void) const
-{
-  return m_low->GetSlotTime ();
-}
-Time 
-NqstaWifiMac::GetSifs (void) const
-{
-  return m_low->GetSifs ();
-}
-Time 
-NqstaWifiMac::GetEifsNoDifs (void) const
-{
-  return m_dcfManager->GetEifsNoDifs ();
-}
-Time 
-NqstaWifiMac::GetAckTimeout (void) const
-{
-  return m_low->GetAckTimeout ();
-}
-Time 
-NqstaWifiMac::GetCtsTimeout (void) const
-{
-  return m_low->GetCtsTimeout ();
-}
-Time 
-NqstaWifiMac::GetPifs (void) const
-{
-  return m_low->GetPifs ();
-}
-Ptr<DcaTxop>
-NqstaWifiMac::GetDcaTxop(void) const
-{
-  return m_dca;
-}
-void 
-NqstaWifiMac::SetWifiPhy (Ptr<WifiPhy> phy)
-{
-  m_phy = phy;
-  m_dcfManager->SetupPhyListener (phy);
-  m_low->SetPhy (phy);
-}
-void 
-NqstaWifiMac::SetWifiRemoteStationManager (Ptr<WifiRemoteStationManager> stationManager)
-{
-  m_stationManager = stationManager;
-  m_dca->SetWifiRemoteStationManager (stationManager);
-  m_low->SetWifiRemoteStationManager (stationManager);
-}
-void 
-NqstaWifiMac::SetForwardUpCallback (Callback<void,Ptr<Packet>, Mac48Address, Mac48Address> upCallback)
-{
-  m_forwardUp = upCallback;
-}
-void 
-NqstaWifiMac::SetLinkUpCallback (Callback<void> linkUp)
-{
-  m_linkUp = linkUp;
-}
-void 
-NqstaWifiMac::SetLinkDownCallback (Callback<void> linkDown)
-{
-  m_linkDown = linkDown;
-}
-Mac48Address 
-NqstaWifiMac::GetAddress (void) const
-{
-  return m_low->GetAddress ();
-}
-Ssid 
-NqstaWifiMac::GetSsid (void) const
-{
-  return m_ssid;
-}
-Mac48Address 
-NqstaWifiMac::GetBssid (void) const
-{
-  return m_low->GetBssid ();
-}
-void 
-NqstaWifiMac::SetAddress (Mac48Address address)
-{
-  NS_LOG_FUNCTION (this << address);
-  m_low->SetAddress (address);
-}
-void 
-NqstaWifiMac::SetSsid (Ssid ssid)
-{
-  NS_LOG_FUNCTION (this << ssid);
-  m_ssid = ssid;
-}
-void 
-NqstaWifiMac::SetMaxMissedBeacons (uint32_t missed)
+StaWifiMac::SetMaxMissedBeacons (uint32_t missed)
 {
   NS_LOG_FUNCTION (this << missed);
   m_maxMissedBeacons = missed;
 }
-void 
-NqstaWifiMac::SetProbeRequestTimeout (Time timeout)
+
+void
+StaWifiMac::SetProbeRequestTimeout (Time timeout)
 {
   NS_LOG_FUNCTION (this << timeout);
   m_probeRequestTimeout = timeout;
 }
-void 
-NqstaWifiMac::SetAssocRequestTimeout (Time timeout)
+
+void
+StaWifiMac::SetAssocRequestTimeout (Time timeout)
 {
   NS_LOG_FUNCTION (this << timeout);
   m_assocRequestTimeout = timeout;
 }
 
-void 
-NqstaWifiMac::StartActiveAssociation (void)
+void
+StaWifiMac::StartActiveAssociation (void)
 {
   NS_LOG_FUNCTION (this);
   TryToEnsureAssociated ();
 }
 
-Mac48Address
-NqstaWifiMac::GetBroadcastBssid (void)
-{
-  return Mac48Address::GetBroadcast ();
-}
-
-void 
-NqstaWifiMac::SetBssid (Mac48Address bssid)
-{
-  NS_LOG_FUNCTION (this << bssid);
-  m_low->SetBssid (bssid);
-}
-void 
-NqstaWifiMac::SetActiveProbing (bool enable)
+void
+StaWifiMac::SetActiveProbing (bool enable)
 {
   NS_LOG_FUNCTION (this << enable);
   if (enable)
@@ -319,21 +152,16 @@ NqstaWifiMac::SetActiveProbing (bool enable)
       m_probeRequestEvent.Cancel ();
     }
 }
-void 
-NqstaWifiMac::ForwardUp (Ptr<Packet> packet, Mac48Address from, Mac48Address to)
-{
-  NS_LOG_FUNCTION (this << packet << from << to);
-  m_forwardUp (packet, from, to);
-}
+
 void
-NqstaWifiMac::SendProbeRequest (void)
+StaWifiMac::SendProbeRequest (void)
 {
   NS_LOG_FUNCTION (this);
   WifiMacHeader hdr;
   hdr.SetProbeReq ();
-  hdr.SetAddr1 (GetBroadcastBssid ());
+  hdr.SetAddr1 (Mac48Address::GetBroadcast ());
   hdr.SetAddr2 (GetAddress ());
-  hdr.SetAddr3 (GetBroadcastBssid ());
+  hdr.SetAddr3 (Mac48Address::GetBroadcast ());
   hdr.SetDsNotFrom ();
   hdr.SetDsNotTo ();
   Ptr<Packet> packet = Create<Packet> ();
@@ -341,15 +169,19 @@ NqstaWifiMac::SendProbeRequest (void)
   probe.SetSsid (GetSsid ());
   probe.SetSupportedRates (GetSupportedRates ());
   packet->AddHeader (probe);
-  
+
+  // The standard is not clear on the correct queue for management
+  // frames if we are a QoS AP. The approach taken here is to always
+  // use the DCF for these regardless of whether we have a QoS
+  // association or not.
   m_dca->Queue (packet, hdr);
 
   m_probeRequestEvent = Simulator::Schedule (m_probeRequestTimeout,
-                                             &NqstaWifiMac::ProbeRequestTimeout, this);
+                                             &StaWifiMac::ProbeRequestTimeout, this);
 }
 
 void
-NqstaWifiMac::SendAssociationRequest (void)
+StaWifiMac::SendAssociationRequest (void)
 {
   NS_LOG_FUNCTION (this << GetBssid ());
   WifiMacHeader hdr;
@@ -364,14 +196,19 @@ NqstaWifiMac::SendAssociationRequest (void)
   assoc.SetSsid (GetSsid ());
   assoc.SetSupportedRates (GetSupportedRates ());
   packet->AddHeader (assoc);
-  
+
+  // The standard is not clear on the correct queue for management
+  // frames if we are a QoS AP. The approach taken here is to always
+  // use the DCF for these regardless of whether we have a QoS
+  // association or not.
   m_dca->Queue (packet, hdr);
 
   m_assocRequestEvent = Simulator::Schedule (m_assocRequestTimeout,
-                                             &NqstaWifiMac::AssocRequestTimeout, this);
+                                             &StaWifiMac::AssocRequestTimeout, this);
 }
+
 void
-NqstaWifiMac::TryToEnsureAssociated (void)
+StaWifiMac::TryToEnsureAssociated (void)
 {
   NS_LOG_FUNCTION (this);
   switch (m_state) {
@@ -403,7 +240,7 @@ NqstaWifiMac::TryToEnsureAssociated (void)
     break;
   case REFUSED:
     /* we have sent an assoc request and received a negative
-       assoc resp. We wait until someone restarts an 
+       assoc resp. We wait until someone restarts an
        association with a given ssid.
      */
     break;
@@ -411,112 +248,145 @@ NqstaWifiMac::TryToEnsureAssociated (void)
 }
 
 void
-NqstaWifiMac::AssocRequestTimeout (void)
+StaWifiMac::AssocRequestTimeout (void)
 {
   NS_LOG_FUNCTION (this);
   SetState (WAIT_ASSOC_RESP);
   SendAssociationRequest ();
 }
+
 void
-NqstaWifiMac::ProbeRequestTimeout (void)
+StaWifiMac::ProbeRequestTimeout (void)
 {
   NS_LOG_FUNCTION (this);
   SetState (WAIT_PROBE_RESP);
   SendProbeRequest ();
 }
-void 
-NqstaWifiMac::MissedBeacons (void)
+
+void
+StaWifiMac::MissedBeacons (void)
 {
   NS_LOG_FUNCTION (this);
   if (m_beaconWatchdogEnd > Simulator::Now ())
     {
       m_beaconWatchdog = Simulator::Schedule (m_beaconWatchdogEnd - Simulator::Now (),
-                                              &NqstaWifiMac::MissedBeacons, this);
+                                              &StaWifiMac::MissedBeacons, this);
       return;
     }
   NS_LOG_DEBUG ("beacon missed");
   SetState (BEACON_MISSED);
   TryToEnsureAssociated ();
 }
-void 
-NqstaWifiMac::RestartBeaconWatchdog (Time delay)
+
+void
+StaWifiMac::RestartBeaconWatchdog (Time delay)
 {
   NS_LOG_FUNCTION (this << delay);
   m_beaconWatchdogEnd = std::max (Simulator::Now () + delay, m_beaconWatchdogEnd);
   if (Simulator::GetDelayLeft (m_beaconWatchdog) < delay &&
-      m_beaconWatchdog.IsExpired ())
+                               m_beaconWatchdog.IsExpired ())
     {
       NS_LOG_DEBUG ("really restart watchdog.");
-      m_beaconWatchdog = Simulator::Schedule (delay, &NqstaWifiMac::MissedBeacons, this);
+      m_beaconWatchdog = Simulator::Schedule (delay, &StaWifiMac::MissedBeacons, this);
     }
 }
+
 bool
-NqstaWifiMac::IsAssociated (void) const
+StaWifiMac::IsAssociated (void) const
 {
   return m_state == ASSOCIATED;
 }
 
-bool 
-NqstaWifiMac::IsWaitAssocResp (void) const
+bool
+StaWifiMac::IsWaitAssocResp (void) const
 {
   return m_state == WAIT_ASSOC_RESP;
 }
 
-void 
-NqstaWifiMac::Enqueue (Ptr<const Packet> packet, Mac48Address to, Mac48Address from)
-{
-  NS_FATAL_ERROR ("Qsta does not support SendTo");
-}
-
-void 
-NqstaWifiMac::Enqueue (Ptr<const Packet> packet, Mac48Address to)
+void
+StaWifiMac::Enqueue (Ptr<const Packet> packet, Mac48Address to)
 {
   NS_LOG_FUNCTION (this << packet << to);
-  if (!IsAssociated ()) 
+  if (!IsAssociated ())
     {
       NotifyTxDrop (packet);
       TryToEnsureAssociated ();
       return;
     }
-  //NS_LOG_DEBUG ("enqueue size="<<packet->GetSize ()<<", to="<<to);
   WifiMacHeader hdr;
-  hdr.SetTypeData ();
+
+  // If we are not a QoS AP then we definitely want to use AC_BE to
+  // transmit the packet. A TID of zero will map to AC_BE (through \c
+  // QosUtilsMapTidToAc()), so we use that as our default here.
+  uint8_t tid = 0;
+
+  // For now, an AP that supports QoS does not support non-QoS
+  // associations, and vice versa. In future the AP model should
+  // support simultaneously associated QoS and non-QoS STAs, at which
+  // point there will need to be per-association QoS state maintained
+  // by the association state machine, and consulted here.
+  if (m_qosSupported)
+    {
+      hdr.SetType (WIFI_MAC_QOSDATA);
+      hdr.SetQosAckPolicy (WifiMacHeader::NORMAL_ACK);
+      hdr.SetQosNoEosp ();
+      hdr.SetQosNoAmsdu ();
+      // Transmission of multiple frames in the same TXOP is not
+      // supported for now
+      hdr.SetQosTxopLimit (0);
+
+      // Fill in the QoS control field in the MAC header
+      tid = QosUtilsGetTidForPacket (packet);
+      // Any value greater than 7 is invalid and likely indicates that
+      // the packet had no QoS tag, so we revert to zero, which'll
+      // mean that AC_BE is used.
+      if (tid >= 7)
+        {
+          tid = 0;
+        }
+      hdr.SetQosTid (tid);
+    }
+  else
+    {
+      hdr.SetTypeData ();
+    }
+
   hdr.SetAddr1 (GetBssid ());
   hdr.SetAddr2 (m_low->GetAddress ());
   hdr.SetAddr3 (to);
   hdr.SetDsNotFrom ();
   hdr.SetDsTo ();
 
-  m_dca->Queue (packet, hdr);
+  if (m_qosSupported)
+    {
+      // Sanity check that the TID is valid
+      NS_ASSERT (tid < 8);
+      m_edca[QosUtilsMapTidToAc (tid)]->Queue (packet, hdr);
+    }
+  else
+    {
+      m_dca->Queue (packet, hdr);
+    }
 }
 
-bool 
-NqstaWifiMac::SupportsSendFrom (void) const
-{
-  //
-  // The 802.11 MAC protocol has no way to support bridging outside of
-  // infrastructure mode
-  //
-  return false;
-}  
-
-
-void 
-NqstaWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
+void
+StaWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
 {
   NS_LOG_FUNCTION (this << packet << hdr);
   NS_ASSERT (!hdr->IsCtl ());
   if (hdr->GetAddr3 () == GetAddress ())
     {
       NS_LOG_LOGIC ("packet sent by us.");
+      return;
     }
   else if (hdr->GetAddr1 () != GetAddress () &&
-           !hdr->GetAddr1 ().IsGroup ()) 
+           !hdr->GetAddr1 ().IsGroup ())
     {
       NS_LOG_LOGIC ("packet is not for us");
       NotifyRxDrop (packet);
-    } 
-  else if (hdr->IsData ()) 
+      return;
+    }
+  else if (hdr->IsData ())
     {
       if (!IsAssociated ())
         {
@@ -532,22 +402,38 @@ NqstaWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
         }
       if (hdr->GetAddr2 () != GetBssid ())
         {
-          NS_LOG_LOGIC ("Received data frame not from the the BSS we are associated with: ignore");
+          NS_LOG_LOGIC ("Received data frame not from the BSS we are associated with: ignore");
           NotifyRxDrop (packet);
           return;
         }
 
-      ForwardUp (packet, hdr->GetAddr3 (), hdr->GetAddr1 ());
-    } 
+      if (hdr->IsQosData ())
+        {
+          if (hdr->IsQosAmsdu ())
+            {
+              NS_ASSERT (hdr->GetAddr3 () == GetBssid ());
+              DeaggregateAmsduAndForward (packet, hdr);
+              packet = 0;
+            }
+          else
+            {
+              ForwardUp (packet, hdr->GetAddr3 (), hdr->GetAddr1 ());
+            }
+        }
+      else
+        {
+          ForwardUp (packet, hdr->GetAddr3 (), hdr->GetAddr1 ());
+        }
+      return;
+    }
   else if (hdr->IsProbeReq () ||
-           hdr->IsAssocReq ()) 
+           hdr->IsAssocReq ())
     {
-      /* this is a frame aimed at an AP.
-       * so we can safely ignore it.
-       */
+      // This is a frame aimed at an AP, so we can safely ignore it.
       NotifyRxDrop (packet);
-    } 
-  else if (hdr->IsBeacon ()) 
+      return;
+    }
+  else if (hdr->IsBeacon ())
     {
       MgtBeaconHeader beacon;
       packet->RemoveHeader (beacon);
@@ -567,15 +453,16 @@ NqstaWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
           RestartBeaconWatchdog (delay);
           SetBssid (hdr->GetAddr3 ());
         }
-      if (goodBeacon && m_state == BEACON_MISSED) 
+      if (goodBeacon && m_state == BEACON_MISSED)
         {
           SetState (WAIT_ASSOC_RESP);
           SendAssociationRequest ();
         }
-    } 
-  else if (hdr->IsProbeResp ()) 
+      return;
+    }
+  else if (hdr->IsProbeResp ())
     {
-      if (m_state == WAIT_PROBE_RESP) 
+      if (m_state == WAIT_PROBE_RESP)
         {
           MgtProbeResponseHeader probeResp;
           packet->RemoveHeader (probeResp);
@@ -587,28 +474,29 @@ NqstaWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
           SetBssid (hdr->GetAddr3 ());
           Time delay = MicroSeconds (probeResp.GetBeaconIntervalUs () * m_maxMissedBeacons);
           RestartBeaconWatchdog (delay);
-          if (m_probeRequestEvent.IsRunning ()) 
+          if (m_probeRequestEvent.IsRunning ())
             {
               m_probeRequestEvent.Cancel ();
             }
           SetState (WAIT_ASSOC_RESP);
           SendAssociationRequest ();
         }
-    } 
-  else if (hdr->IsAssocResp ()) 
+      return;
+    }
+  else if (hdr->IsAssocResp ())
     {
-      if (m_state == WAIT_ASSOC_RESP) 
+      if (m_state == WAIT_ASSOC_RESP)
         {
           MgtAssocResponseHeader assocResp;
           packet->RemoveHeader (assocResp);
-          if (m_assocRequestEvent.IsRunning ()) 
+          if (m_assocRequestEvent.IsRunning ())
             {
               m_assocRequestEvent.Cancel ();
             }
-          if (assocResp.GetStatusCode ().IsSuccess ()) 
+          if (assocResp.GetStatusCode ().IsSuccess ())
             {
               SetState (ASSOCIATED);
-              NS_LOG_DEBUG ("assoc completed"); 
+              NS_LOG_DEBUG ("assoc completed");
               SupportedRates rates = assocResp.GetSupportedRates ();
               for (uint32_t i = 0; i < m_phy->GetNModes (); i++)
                 {
@@ -626,18 +514,24 @@ NqstaWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
                 {
                   m_linkUp ();
                 }
-            } 
-          else 
+            }
+          else
             {
               NS_LOG_DEBUG ("assoc refused");
               SetState (REFUSED);
             }
         }
+      return;
     }
+
+  // Invoke the receive handler of our parent class to deal with any
+  // other frames. Specifically, this will handle Block Ack-related
+  // Management Action frames.
+  RegularWifiMac::Receive (packet, hdr);
 }
 
 SupportedRates
-NqstaWifiMac::GetSupportedRates (void) const
+StaWifiMac::GetSupportedRates (void) const
 {
   SupportedRates rates;
   for (uint32_t i = 0; i < m_phy->GetNModes (); i++)
@@ -649,49 +543,19 @@ NqstaWifiMac::GetSupportedRates (void) const
 }
 
 void
-NqstaWifiMac::SetState (MacState value)
+StaWifiMac::SetState (MacState value)
 {
-  if (value == ASSOCIATED && 
-      m_state != ASSOCIATED) 
+  if (value == ASSOCIATED &&
+      m_state != ASSOCIATED)
     {
       m_assocLogger (GetBssid ());
     }
-  else if (value != ASSOCIATED && 
-           m_state == ASSOCIATED) 
+  else if (value != ASSOCIATED &&
+           m_state == ASSOCIATED)
     {
       m_deAssocLogger (GetBssid ());
     }
   m_state = value;
 }
 
-void 
-NqstaWifiMac::FinishConfigureStandard (enum WifiPhyStandard standard)
-{
-  switch (standard)
-    {
-    case WIFI_PHY_STANDARD_holland:
-      // fall through
-    case WIFI_PHY_STANDARD_80211_10Mhz: 
-      // fall through
-    case WIFI_PHY_STANDARD_80211_5Mhz:
-      // fall through
-    case WIFI_PHY_STANDARD_80211a:
-      // fall through
-    case WIFI_PHY_STANDARD_80211g:
-      ConfigureDcf (m_dca, 15, 1023, AC_BE_NQOS);
-      break;
-    case WIFI_PHY_STANDARD_80211b:
-      ConfigureDcf (m_dca, 31, 1023, AC_BE_NQOS);
-      break;
-    default:
-      NS_ASSERT (false);
-      break;
-    }
-}
-void
-NqstaWifiMac::DoStart ()
-{
-  m_dca->Start ();
-  WifiMac::DoStart ();
-}
 } // namespace ns3

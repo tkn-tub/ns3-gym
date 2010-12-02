@@ -154,13 +154,14 @@ int main (int argc, char *argv[])
   // Setup the rest of the upper mac
   Ssid ssid = Ssid ("wifi-default");
   // setup sta.
-  wifiMac.SetType ("ns3::NqstaWifiMac",
+  wifiMac.SetType ("ns3::StaWifiMac",
                    "Ssid", SsidValue (ssid),
                    "ActiveProbing", BooleanValue (false));
   NetDeviceContainer staDevice = wifi.Install (wifiPhy, wifiMac, c.Get(0));
   NetDeviceContainer devices = staDevice;
   // setup ap.
-  wifiMac.SetType ("ns3::NqapWifiMac", "Ssid", SsidValue (ssid));
+  wifiMac.SetType ("ns3::ApWifiMac",
+                   "Ssid", SsidValue (ssid));
   NetDeviceContainer apDevice = wifi.Install (wifiPhy, wifiMac, c.Get(1));
   devices.Add (apDevice);
 

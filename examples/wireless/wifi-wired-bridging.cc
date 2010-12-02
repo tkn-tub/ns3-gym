@@ -127,8 +127,8 @@ int main (int argc, char *argv[])
       // setup the AP.
       mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
       mobility.Install (backboneNodes.Get (i));
-      wifiMac.SetType ("ns3::NqapWifiMac",
-		   "Ssid", SsidValue (ssid));
+      wifiMac.SetType ("ns3::ApWifiMac",
+                       "Ssid", SsidValue (ssid));
       apDev = wifi.Install (wifiPhy, wifiMac, backboneNodes.Get (i));
 
       NetDeviceContainer bridgeDev;
@@ -145,9 +145,9 @@ int main (int argc, char *argv[])
 				 "Speed", StringValue ("Constant:1.0"),
 				 "Bounds", RectangleValue (Rectangle (wifiX, wifiX+5.0,0.0, (nStas+1)*5.0)));
       mobility.Install (sta);
-      wifiMac.SetType ("ns3::NqstaWifiMac",
-		   "Ssid", SsidValue (ssid),
-		   "ActiveProbing", BooleanValue (false));
+      wifiMac.SetType ("ns3::StaWifiMac",
+                       "Ssid", SsidValue (ssid),
+                       "ActiveProbing", BooleanValue (false));
       staDev = wifi.Install (wifiPhy, wifiMac, sta);
       staInterface = ip.Assign (staDev);
 

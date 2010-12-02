@@ -60,6 +60,19 @@ removed.
 <h2>New API:</h2>
 
 <h2>Changes to existing API:</h2>
+<ul>
+<li><b>Consolidation of Wi-Fi MAC high functionality</b>
+<p>Wi-Fi MAC high classes have been reorganised in attempt to
+consolidate shared functionality into a single class. This new class
+is RegularWifiMac, and it derives from the abstract WifiMac, and is
+parent of AdhocWifiMac, StaWifiMac, ApWifiMac, and
+MeshWifiInterfaceMac. The QoS and non-QoS class variants are no
+longer, with a RegularWifiMac attribute "QosSupported" allowing
+selection between these two modes of operation. QosWifiMacHelper and
+NqosWifiMacHelper continue to work as previously, with a
+behind-the-scenes manipulation of the 'afore-mentioned attribute.
+</p>
+</ul>
 
 <h2>Changed behavior:</h2>
 <ul>

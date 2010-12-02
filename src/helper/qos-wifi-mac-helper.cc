@@ -22,6 +22,7 @@
 #include "ns3/wifi-mac.h"
 #include "ns3/edca-txop-n.h"
 #include "ns3/pointer.h"
+#include "ns3/boolean.h"
 #include "ns3/uinteger.h"
 
 namespace ns3 {
@@ -36,8 +37,14 @@ QosWifiMacHelper
 QosWifiMacHelper::Default (void)
 {
   QosWifiMacHelper helper;
-  helper.SetType ("ns3::QstaWifiMac");
-  
+
+  // We're making QoS-enabled Wi-Fi MACs here, so we set the necessary
+  // attribute. I've carefully positioned this here so that someone
+  // who knows what they're doing can override with explicit
+  // attributes.
+  helper.SetType ("ns3::StaWifiMac",
+                  "QosSupported", BooleanValue (true));
+
   return helper;
 }
 
