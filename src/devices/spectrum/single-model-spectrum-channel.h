@@ -62,6 +62,7 @@ public:
 
   typedef std::vector<Ptr<SpectrumPhy> > PhyList;
 
+  virtual Ptr<SpectrumPropagationLossModel> GetSpectrumPropagationLossModel (void);
 
 private:
 
@@ -69,7 +70,6 @@ private:
 
   /**
    * used internally to reschedule transmission after the propagation delay
-   *
    *
    * @param p
    * @param rxPowerSpectrum

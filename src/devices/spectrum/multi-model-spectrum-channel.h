@@ -88,6 +88,8 @@ public:
   virtual uint32_t GetNDevices (void) const;
   virtual Ptr<NetDevice> GetDevice (uint32_t i) const;
 
+  virtual Ptr<SpectrumPropagationLossModel> GetSpectrumPropagationLossModel (void);
+
 
 protected:
   void DoDispose ();

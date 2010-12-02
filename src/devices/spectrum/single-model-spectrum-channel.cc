@@ -204,12 +204,12 @@ SingleModelSpectrumChannel::SetPropagationDelayModel (Ptr<PropagationDelayModel>
 }
 
 
-
-
-
-
-
-
+Ptr<SpectrumPropagationLossModel> 
+SingleModelSpectrumChannel::GetSpectrumPropagationLossModel (void)
+{
+  NS_LOG_FUNCTION (this); 
+  return m_PropagationLoss;
+}
 
 
 } // namespace ns3

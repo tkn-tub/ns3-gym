@@ -59,6 +59,7 @@ all_modules = (
     'contrib/flow-monitor',
     'applications/udp-client-server',
     'devices/wimax',
+    'devices/lte',
     'mpi',
     'contrib/topology-read',
     'contrib/energy',
