@@ -1,0 +1,324 @@
+@node LTE Module
+@chapter LTE Module
+@anchor{chap:lte}
+
+This chapter describes the ns-3 LteNetDevice and related models. 
+By adding LteNetDevice objects to ns-3 nodes, one can create models of 3GPP E-UTRAN infrastructure 
+and Long Term Evolution (LTE) networks.                
+
+Below, we list some more details about what
+ns-3 LTE models cover but, in summary, the most important features
+of the ns-3 model are:
+@itemize @bullet
+@item a standard compliant physical layer and channel model 
+@item a Radio Resouce Control (RRC) entity for the LTE net device
+@item a MAC layer for both User Equipment (UE) and evolved Node B (eNB) devices
+@item an efficient Adaptive Modulation and Coding (AMC) scheme for the downlink  
+@item an implementation of radio bearer, bearer qos parameters, MAC queue, and Radio Link Control Entity   
+@item an outdoor E-UTRAN propagation loss model
+@item Channel Quality Indicator (CQI) management and ideal control messages
+@end itemize
+
+
+@menu
+* lte-Model Description::
+* lte-Usage::
+* lte-Validation::
+@end menu
+
+@node lte-Model Description
+@section Model Description
+
+The source code for the LTE models lives in the directory
+@code{src/devices/lte}.
+
+@menu
+* lte-Design::
+* lte-Scope and Limitations::
+* lte-Future Work::
+* lte-References::
+@end menu
+
+@node lte-Design
+@subsection Design
+
+The LTE model has been developed in order to simulate a downlink transmission over the E-UTRAN network interfacei (composed by two type of nodes: the User Equipment (UE) and evolved Node B (eNB)). To this aim, the definition of standard compliant PHY and MAC models were a crucial rule the module design.
+
+
+The PHY layer, has been developed extending the Spectrum Frameworki [1]. The MAC model, instead, as been developed extending and adding some features to the base class @code{ns3::NetDevice}.
+
+
+@subsubsection Physical layer
+
+A @code{ns3::LtePhy} class models the LTE PHY layer. 
+
+Basic functionalities of the PHY layer are: (i) transmit packets coming from the device to the channel; (ii) receive packets from the channel; (ii) evaluate the quality of the channel from the Signal To Noise ratio of the received signal; and (iii) forward received packets to the device.
+
+Both the PHY and channel have been developed exending @code{ns3::SpectrumPhy} and @code{ns3::SpectrumChannel} classes, respectively.
+ 
+The module implements an FDD channel access. In FDD channel access, downlink and uplink transmissions work together in the time but using a different set of frequencies.  
+Since DL and UL are indipendent between them, the PHY is composed by couple of LteSpectrumPhy object (i.e., implemented into the @code{ns3::LteSpectrumPhy} class); one for the downlink and one for the uplink.
+The LtePhy stores and manages both downlink and uplink LteSpectrumPhy elements. 
+
+In order to customize all physical functionalities for both UE and eNB devices, dedicated classes have been inherited from ones described before. In particular, UePhy and EnbPhy classes, inherited from the LtePhy class, implement the PHY layer for the UE and the eNB, respectively. In the same way, UeLteSpectrumPhy and EnbLteSpectrumPhy classes, inherited from the LteSpectrumPhy, implement the downlink/uplink spectrum channel for the UE and the eNB, respectively.
+
+Fig, @ref{fig:lte-transmission} shows how UE and eNB can exchange packets througth the considered PHY layer.
+
+@float Figure,fig:lte-transmission
+@caption{DL and UL transmision on the LTE network}
+@image{figures/lte-transmission,,3in}
+@end float
+
+For the downlink, when the eNB whants to send packets, it calls StartTx function to send them into the downlink channel. Then, the downlink channel delivers the burst of packets to all the UeLteSpectrumPhy attached to it, handling the StartRx function. When the UE receives packets, it executes the follos tasks:
+@itemize @bullet
+@item compute the SINR for all the sub channel used in the downlink
+@item create and send CQI feedbacks
+@item forward all the received packets to the device
+@end itemize
+
+The uplink works similary to the previous one.
+
+
+@subsubsection Propagation Loss Models
+
+A proper propagation loss model has been developed for the LTE E-UTRAN interface [2][3].
+It is used by the PHY layer to compute the loss due to the propagation. 
+
+
+The LTE propagation loss model is composed by 4 different models (shadowing, multipath, penetration loss and path loss) [2]:
+@itemize @bullet
+@item Pathloss: PL = 128.1 + (37.6 * log10 (R)), where R is the distance between the UE and the eNB in Km.
+@item Multipath: Jakes model
+@item PenetrationLoss: 10 dB
+@item Shadowing: log-normal distribution (mean=0dB, standard deviation=8dB)
+@end itemize
+
+Every time that the LteSpectrumPHY::StartRx () function is called, the SpectrumInterferenceModel is used to computed the SINR, as proposed in [3]. Then, the network device uses the AMC module to map the SINR to a proper CQI and to send it to the eNB using the ideal control channel.
+
+
+@subsubsection LTE Devices 
+
+All the common functionalities of the LTE network devices have been defined into the @code{ns3::LteNetDevice} class. Moreover, the LTE device has been conceived as a container of several entities such as MAC, RRC, RLC etc .. For each of these entity a dedicated class has been developed.
+
+For each device are defined the following entity/element
+@itemize @bullet
+@item the LTE PHY layer (described in the previous sub section)
+@item rrc entity
+@item mac entity
+@item rlc entity
+@end itemize
+
+The module is perfectly integrated into the whole ns-3 project: it is already possible to attach to each device a TCP/IP protocol stack and all the implemented applications (i.e., udp client/server, trace based, etc..).
+
+
+@subsubsection The RRC Entity
+
+The RRC entity manages all active downlink and uplink radio bearer for a given device.
+For each radio bearer, a MAC queue has been developed to store packets coming 
+from the upper layer and that whait for the transmission. 
+In general, to each flow should be created a dedicated radio bearer. Furthermore, actually only one radio bearer has been created for each device. All packet that arrive from the upper layer, will be enqueued into this default bearer, independently form the aplication whose generated it. 
+
+
+@subsubsection The MAC Entity
+Class @code{ns3::MacEntity} provides a basic implementation of the MAC entity for the LTE device. Moreover, @code{ns3::EnbMacEntity} and @code{ns3::UeMacEntity} classes, inherited from the previous one, provides an implementation for the eNB and the UE MAC entity, respectively. 
+In all MAC entities is defined the AMC module [4]. Furthermore, into the @code{ns3::EnbMacEntity} class are defined also both uplink and downlink schedulers.    
+
+Every time the PHY layer of the UE receives a packet form the channel, it calls the AMC module, define into the MAC entity, in order to convert the SINR of the received signal to CQI feedbacks. 
+Every sub frame, the eNB performs both uplink and downlink radio resource allocation. Actually only a simple packet scheduler has been implemented that is able to send, every sub frame, only one packet in the downlink.   
+
+
+@subsubsection The RLC Entity
+The RLC entity performs an interface between the MAC layer and the MAC queue for a given bearer. Actually, only the RLC Transport Mode has been implemented. 
+
+
+@subsubsection Control Channel
+
+Control channel keeps a very important role in LTE networks. In fact, it is responsible of the transmission of several information (i.e., CQI feedback, allocation map, etc...). For this reason, also in a framework oriented to data transmision, it is necesary to find a tecnique for exchange these information. To this aim, an ideal control channel will be developed. 
+Using ideal control messages, both UE and eNB can exchange control information without simulating a realistic transmission over the LTE channel.
+
+Two types of control messages have been implemented: the Pdcch Map Ideal Control Message and the Cqi Ideal Control Message. The first one is used by the eNB to send the uplink and downlink resource mapping to all registered UE. In particular, this message carries information about UEs that have been scheduled in the ul/dl, a list of assigned sub channels and the selected MCS for the transmission. 
+The second one, instead, is used by the UE to send CQI feedbacks to the eNB.
+ 
+
+
+@node lte-Scope and Limitations
+@subsection Scope and Limitations
+
+The framework has been designed in order to support data transmission for both uplink and downlink. It is important to note that downlin and uplink transmissions are managed by the packet scheduler that works at the eNB. It decides, in fact, what UEs should be scheduled every TTI and what radio resource should be allocated to them.
+
+In the current implementation, the downlink transmission is administrated by the downlink packet scheduler. Furthermore, no packet scheduler for uplink transmission has been developed.
+As a consequence, for the downlink packet are sent only after scheduling decisions; for the uplink, instead, packet are sent directly, without any scheduling decisions.
+
+
+Finally, the transmission of control messages (such as CQI feedbacks, PDCCH, etc..) is done by an ideal control channel.
+
+
+@node lte-Future Work
+@subsection Future Work
+In the future, several LTE features will be developed in order to improve the proposed module.
+
+In particular, for the near future have been scheduled the following implementations:
+
+- a complete packet scheduler (i.e., a simple round robin scheme) for both downlink and uplink, in order to support a standard compliant packet transmission 
+
+- ideal PDCCH control messages
+
+- a standard compliant RLC entity
+
+- PHY error model  
+
+
+
+@node lte-References
+@subsection References
+
+@enumerate
+@item N. Baldo and M. Miozzo, Spectrum-aware Channel and PHY layer modeling for ns3, Proceedings of ICST NSTools 2009, Pisa, Italy. 
+The framework is designed to simulate only data transmissions. For the transmission of control messages (such as CQI feedback, PDCCH, etc..) will be used an ideal control channel). 
+@item 3GPP TS 25.814 ( http://www.3gpp.org/ftp/specs/html-INFO/25814.htm ) 
+@item Giuseppe Piro, Luigi Alfredo Grieco, Gennaro Boggia, and Pietro Camarda", A Two-level Scheduling Algorithm for QoS Support in the Downlink of LTE Cellular Networks", Proc. of European Wireless, EW2010, Lucca, Italy, Apr., 2010 ( draft version is available on http://telematics.poliba.it/index.php?option=com_jombib&task=showbib&id=330)
+@item 3GPP R1-081483 (available on @*
+http://www.3gpp.org/ftp/tsg_ran/WG1_RL1/TSGR1_52b/Docs/R1-081483.zip)
+@end enumerate
+
+@node lte-Usage
+@section Usage
+
+The main way that users who write simulation scripts will typically
+interact with the LTE models is through the helper API and through
+the publicly visible attributes of the model.
+
+The helper API is defined in @code{src/helper/lte-helper{cc,h}}. 
+
+The example @code{examples/lte/} contain some basic
+code that shows how to set up the model in order to simualte an E-UTRAN downlink transmission.
+
+@menu
+* lte-Examples::
+* lte-Helpers::
+* lte-Attributes::
+* lte-Tracing::
+* lte-Logging::
+* lte-Caveats::
+@end menu
+
+@node lte-Examples
+@subsection Examples
+
+@code{examples/lte/lte.device.cc} shows how it is possible to set up the LTE module:
+
+@smallformat
+@example
+
+  NodeContainer ueNodes;
+  NodeContainer enbNodes;
+  
+  ueNodes.Create (1);
+  enbNodes.Create (1);
+
+  LteHelper lte;
+
+  NetDeviceContainer ueDevs, enbDevs;
+  ueDevs = lte.Install (ueNodes, LteHelper::DEVICE_TYPE_USER_EQUIPMENT);
+  enbDevs = lte.Install (enbNodes, LteHelper::DEVICE_TYPE_ENODEB);
+
+@end example
+@end smallformat
+
+The helper method @code{Install} creates LTE device, the DL, UL physical layer and attach the to  proper LTE channels.
+ 
+
+Moreover, to simulate a complete LTE system, it is necessary to define other information, as expressed in what follows:
+
+(i) install IP protocol stack
+@smallformat
+@example
+  InternetStackHelper stack;
+  stack.Install (ueNodes);
+  stack.Install (enbNodes);
+  Ipv4AddressHelper address;
+  address.SetBase ("10.1.1.0", "255.255.255.0");
+  Ipv4InterfaceContainer UEinterfaces = address.Assign (ueDevs);
+  Ipv4InterfaceContainer ENBinterface = address.Assign (enbDevs);
+@end example
+@end smallformat
+
+
+(ii) register UE to a given eNB
+@smallformat
+@example
+  Ptr<EnbNetDevice> enb = enbDevs.Get (0)->GetObject<EnbNetDevice> ();
+  Ptr<UeNetDevice> ue = ueDevs.Get (i)->GetObject<UeNetDevice> ();
+  lte.RegisterUeToTheEnb (ue, enb);
+@end example
+@end smallformat
+
+
+(ii) create the mobility model for each device
+@smallformat
+@example
+  Ptr<ConstantPositionMobilityModel> enbMobility = new ConstantPositionMobilityModel ();
+  enbMobility->SetPosition (Vector (0.0, 0.0, 0.0));
+  lte.AddMobility (enb->GetPhy (), enbMobility);
+
+  Ptr<ConstantVelocityMobilityModel> ueMobility = new ConstantVelocityMobilityModel ();
+  ueMobility->SetPosition (Vector (30.0, 0.0, 0.0));
+  ueMobility->SetVelocity (Vector (30.0, 0.0, 0.0));
+  lte.AddMobility (ue->GetPhy (), ueMobility);
+@end example
+@end smallformat
+
+
+(iii) define a set of sub channels to use for dl and ul transmission
+@smallformat
+@example
+  std::vector<int> dlSubChannels;
+  for (int i = 0; i < 25; i++)
+    {
+      dlSubChannels.push_back (i);
+    }
+  std::vector<int> ulSubChannels;
+  for (int i = 50; i < 100; i++)
+    {
+      ulSubChannels.push_back (i);
+    }
+
+  enb->GetPhy ()->SetDownlinkSubChannels (dlSubChannels);
+  enb->GetPhy ()->SetUplinkSubChannels (ulSubChannels);
+  ue->GetPhy ()->SetDownlinkSubChannels (dlSubChannels);
+  ue>GetPhy ()->SetUplinkSubChannels (ulSubChannels);
+@end example
+@end smallformat
+
+
+(iv) define a channel realization for the PHY model
+@smallformat
+@example
+lte.AddDownlinkChannelRealization (enbMobility, ueMobility, ue->GetPhy ());
+@end example
+@end smallformat
+
+
+@node Helpers
+@subsection Helpers
+
+@node lte-Attributes
+@subsection Attributes
+
+@node lte-Tracing
+@subsection Tracing
+
+@node lte-Logging
+@subsection Logging
+
+@node lte-Caveats
+@subsection Caveats
+
+@node lte-Validation
+@section Validation
+
+This model has been tested as follows...
+
+Large scale tests [have|have not] been performed with lots of nodes and
+devices.
+
