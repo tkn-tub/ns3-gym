@@ -146,7 +146,7 @@ int main (int argc, char** argv)
 
   lte.AddMobility (ue->GetPhy (), ueMobility);
 
-  lte.AddDownlinkChannelRealization (enbMobility, ueMobility, ue->GetPhy ());
+  lte.CreateDownlinkChannelRealization (enbMobility, ueMobility, ue->GetPhy ());
 
 
   // ****** simulate a packet transmission in the downlink ******

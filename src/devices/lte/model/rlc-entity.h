@@ -69,7 +69,7 @@ public:
   
   /** 
    * \brief Set the bearer where the rlc entity is attached 
-   * \paramm b the radio bearer
+   * \param b the radio bearer
    */
   void SetRadioBearer (Ptr<RadioBearerInstance> b);
   /** 

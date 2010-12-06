@@ -112,7 +112,7 @@ int main (int argc, char *argv[])
 
       lte.AddMobility (ue[i]->GetPhy (), ueMobility);
 
-      lte.AddDownlinkChannelRealization (enbMobility, ueMobility, ue[i]->GetPhy ());
+      lte.CreateDownlinkChannelRealization (enbMobility, ueMobility, ue[i]->GetPhy ());
     }
 
 

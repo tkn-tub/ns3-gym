@@ -41,7 +41,7 @@ NS_OBJECT_ENSURE_REGISTERED (UeMacEntity);
 TypeId UeMacEntity::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::UeMacEntity")
-    .SetParent<Object> ();
+    .SetParent<MacEntity> ();
   return tid;
 }
 

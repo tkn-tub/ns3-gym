@@ -45,7 +45,7 @@
 using namespace ns3;
 
 /*
- * Test the LTE physical layer.
+ * Test the LTE Device: Test that the LTE device can send a packet
  */
 class Ns3LteDeviceTestCase : public TestCase
 {
@@ -59,7 +59,7 @@ private:
 };
 
 Ns3LteDeviceTestCase::Ns3LteDeviceTestCase ()
-  : TestCase ("Test the LTE Device.")
+  : TestCase ("Test that the LTE device can send a packet.")
 {
 }
 
@@ -141,7 +141,7 @@ Ns3LteDeviceTestCase::DoRun (void)
 
   lte.AddMobility (ue->GetPhy (), ueMobility);
 
-  lte.AddDownlinkChannelRealization (enbMobility, ueMobility, ue->GetPhy ());
+  lte.CreateDownlinkChannelRealization (enbMobility, ueMobility, ue->GetPhy ());
 
 
 

@@ -139,7 +139,7 @@ public:
 
   /**
    * \brief Set the ip classifier record
-   * \return p the pointer to the ip classifier record
+   * \param c the pointer to the ip classifier record
    */
   void SetIpcsClassifierRecord (IpcsClassifierRecord* c);
 

@@ -68,7 +68,7 @@ TypeId
 EnbLtePhy::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::EnbLtePhy")
-    .SetParent<Object> ()
+    .SetParent<LtePhy> ()
     .AddConstructor<EnbLtePhy> ()
   ;
   return tid;

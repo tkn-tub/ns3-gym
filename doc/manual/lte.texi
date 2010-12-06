@@ -6,19 +6,18 @@ This chapter describes the ns-3 LteNetDevice and related models.
 By adding LteNetDevice objects to ns-3 nodes, one can create models of 3GPP E-UTRAN infrastructure 
 and Long Term Evolution (LTE) networks.                
 
-Below, we list some more details about what
-ns-3 LTE models cover but, in summary, the most important features
+Below, we list some more details about what ns-3 LTE models cover but, in summary, the most important features
 of the ns-3 model are:
 @itemize @bullet
-@item a standard compliant physical layer and channel model 
-@item a Radio Resouce Control (RRC) entity for the LTE net device
-@item a MAC layer for both User Equipment (UE) and evolved Node B (eNB) devices
-@item an efficient Adaptive Modulation and Coding (AMC) scheme for the downlink  
-@item an implementation of radio bearer, bearer qos parameters, MAC queue, and Radio Link Control Entity   
-@item an outdoor E-UTRAN propagation loss model
-@item Channel Quality Indicator (CQI) management and ideal control messages
+@item a basic implementation of both the User Equipment (UE) and the enhanced NodeB (eNB) devices,
+@item RRC entities for both the UE and the eNB,
+@item a state-of-the-art Adaptive Modulation and Coding (AMC) scheme for the downlink
+@item the management of the data radio bearers (with their QoS parameters), the MAC queues and the RLC instances,
+@item Channel Quality Indicator (CQI) management,
+@item support for both uplink and downlik packet scheduling,
+@item a PHY layer model with Resource Block level granularity
+@item a channel model with the outdoor E-UTRAN propagation loss model.
 @end itemize
-
 
 @menu
 * lte-Model Description::
@@ -42,10 +41,9 @@ The source code for the LTE models lives in the directory
 @node lte-Design
 @subsection Design
 
-The LTE model has been developed in order to simulate a downlink transmission over the E-UTRAN network interfacei (composed by two type of nodes: the User Equipment (UE) and evolved Node B (eNB)). To this aim, the definition of standard compliant PHY and MAC models were a crucial rule the module design.
+The LTE model provides a basic implementation of LTE devices, including propagation models and PHY and MAC layers. It allow to simulate an E-UTRAN interface where one eNB and several UEs can communicate among them using a shared downlink (uplink) channel. 
 
-
-The PHY layer, has been developed extending the Spectrum Frameworki [1]. The MAC model, instead, as been developed extending and adding some features to the base class @code{ns3::NetDevice}.
+The PHY layer has been developed extending the Spectrum Framework [1]. The MAC model, instead, as been developed extending and adding some features to the base class @code{ns3::NetDevice}.
 
 
 @subsubsection Physical layer
@@ -84,7 +82,6 @@ The uplink works similary to the previous one.
 A proper propagation loss model has been developed for the LTE E-UTRAN interface [2][3].
 It is used by the PHY layer to compute the loss due to the propagation. 
 
-
 The LTE propagation loss model is composed by 4 different models (shadowing, multipath, penetration loss and path loss) [2]:
 @itemize @bullet
 @item Pathloss: PL = 128.1 + (37.6 * log10 (R)), where R is the distance between the UE and the eNB in Km.
@@ -113,10 +110,12 @@ The module is perfectly integrated into the whole ns-3 project: it is already po
 
 @subsubsection The RRC Entity
 
-The RRC entity manages all active downlink and uplink radio bearer for a given device.
-For each radio bearer, a MAC queue has been developed to store packets coming 
-from the upper layer and that whait for the transmission. 
-In general, to each flow should be created a dedicated radio bearer. Furthermore, actually only one radio bearer has been created for each device. All packet that arrive from the upper layer, will be enqueued into this default bearer, independently form the aplication whose generated it. 
+RRC entity is implemented by the @code{ns3::RrcEntity} class, and provides only the Radio Bearer management functionality. 
+A dedicated bearer is created for each downlink flow. The RRC 
+
+The RRC entity performs the classification of the packets coming from the upper layer into the corresponding Radio Bearer. This classification is
+based on the information provided by the class @code{ns3::IpcsClassifierRecord}.
+
 
 
 @subsubsection The MAC Entity
@@ -149,7 +148,6 @@ The framework has been designed in order to support data transmission for both u
 In the current implementation, the downlink transmission is administrated by the downlink packet scheduler. Furthermore, no packet scheduler for uplink transmission has been developed.
 As a consequence, for the downlink packet are sent only after scheduling decisions; for the uplink, instead, packet are sent directly, without any scheduling decisions.
 
-
 Finally, the transmission of control messages (such as CQI feedbacks, PDCCH, etc..) is done by an ideal control channel.
 
 
@@ -159,7 +157,9 @@ In the future, several LTE features will be developed in order to improve the pr
 
 In particular, for the near future have been scheduled the following implementations:
 
-- a complete packet scheduler (i.e., a simple round robin scheme) for both downlink and uplink, in order to support a standard compliant packet transmission 
+- a more efficient design for the RRM (Radio resource management)
+ 
+- a complete packet scheduler (i.e., a simple round robin scheme, maximum througput and proportional fair allocation schemes) for both downlink and uplink, in order to support a standard compliant packet transmission 
 
 - ideal PDCCH control messages
 
@@ -317,8 +317,11 @@ lte.AddDownlinkChannelRealization (enbMobility, ueMobility, ue->GetPhy ());
 @node lte-Validation
 @section Validation
 
-This model has been tested as follows...
+In the  @code{src/example/lte-amc.cc} has been developed an important example that shows the proper functioning of both AMC module and Channel model. 
+The analyzed scenario is composed by two nodes: a eNB and a single UE (registered to the eNB). The UE moves into the cell using the @code{ConstantVelocityMobilityModel}, along a radial direction. 
+The proposed example describes how the channel quality decreases as the distance between UE and eNB increases. 
+As a conseguence,  the total bit rate (in bits per TTI) available to the UE decreases as the distance between nodes increases, as
+expected.
 
-Large scale tests [have|have not] been performed with lots of nodes and
-devices.
+
 

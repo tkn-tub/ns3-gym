@@ -68,7 +68,7 @@ TypeId
 UeLtePhy::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::UeLtePhy")
-    .SetParent<Object> ()
+    .SetParent<LtePhy> ()
     .AddConstructor<UeLtePhy> ()
   ;
   return tid;

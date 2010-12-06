@@ -42,7 +42,7 @@ NS_OBJECT_ENSURE_REGISTERED (EnbMacEntity);
 TypeId EnbMacEntity::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::EnbMacEntity")
-    .SetParent<Object> ();
+    .SetParent<MacEntity> ();
   return tid;
 }
 

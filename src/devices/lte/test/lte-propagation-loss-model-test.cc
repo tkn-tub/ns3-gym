@@ -148,22 +148,10 @@ Ns3LtePropagationLossModelTestCase::DoRun (void)
 
 
 
-  /*
-   * ******************
-   * analyze the propagation loss model
-   * ******************
-   */
-
-
+  //analyze the propagation loss model
   Ptr<SpectrumValue> txPsd = phyEnb->CreateTxPowerSpectralDensity ();
-
   Ptr<SpectrumValue> rxPsd = mobility->CalcRxPowerSpectralDensity (txPsd,enbMobility, ueMobility);
-
-
-  // test:
-
   std::vector<double> tx, rx;
-
   for (Values::const_iterator it = txPsd->ConstValuesBegin ();
        it != txPsd->ConstValuesEnd (); it++ )
     {

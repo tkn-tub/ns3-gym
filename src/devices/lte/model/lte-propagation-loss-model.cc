@@ -45,7 +45,7 @@ TypeId
 LtePropagationLossModel::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::LtePropagationLossModel")
-    .SetParent<Object> ()
+    .SetParent<SpectrumPropagationLossModel> ()
   ;
   return tid;
 }

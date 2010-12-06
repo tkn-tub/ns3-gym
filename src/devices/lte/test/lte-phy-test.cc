@@ -40,7 +40,7 @@
 using namespace ns3;
 
 /*
- * Test the LTE physical layer.
+ * Test the LTE physical layer: Test that ENB and UE Phys can transmit a packet
  */
 class Ns3LtePhyTestCase : public TestCase
 {
@@ -54,7 +54,7 @@ private:
 };
 
 Ns3LtePhyTestCase::Ns3LtePhyTestCase ()
-  : TestCase ("Test the LTE physical layer.")
+  : TestCase ("Test that ENB and UE Phys can transmit a packet.")
 {
 }
 
@@ -83,27 +83,12 @@ Ns3LtePhyTestCase::DoRun (void)
   ueDevs = lte.Install (ueNodes, LteHelper::DEVICE_TYPE_USER_EQUIPMENT);
   enbDevs = lte.Install (enbNodes, LteHelper::DEVICE_TYPE_ENODEB);
 
-
-/*
-  //INSTALL INTERNET STACKS
-  InternetStackHelper stack;
-  stack.Install (ueNodes);
-  stack.Install (enbNodes);
-  Ipv4AddressHelper address;
-  address.SetBase ("10.1.1.0", "255.255.255.0");
-  Ipv4InterfaceContainer UEinterfaces = address.Assign (ueDevs);
-  Ipv4InterfaceContainer ENBinterface = address.Assign (enbDevs);
-*/
-
-
   // MANAGE LTE NET DEVICES
   Ptr<EnbNetDevice> enb;
   enb = enbDevs.Get (0)->GetObject<EnbNetDevice> ();
 
   Ptr<UeNetDevice> ue = ueDevs.Get (0)->GetObject<UeNetDevice> ();
   lte.RegisterUeToTheEnb (ue, enb);
-
-
 
 
   // CONFIGURE DL and UL SUB CHANNELS
@@ -139,10 +124,7 @@ Ns3LtePhyTestCase::DoRun (void)
 
   lte.AddMobility (ue->GetPhy (), ueMobility);
 
-  lte.AddDownlinkChannelRealization (enbMobility, ueMobility, ue->GetPhy ());
-
-
-
+  lte.CreateDownlinkChannelRealization (enbMobility, ueMobility, ue->GetPhy ());
 
 
 

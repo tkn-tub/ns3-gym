@@ -47,7 +47,7 @@
 using namespace ns3;
 
 /*
- * Test for LTE Bearers.
+ * Test for LTE Bearers: Test that LTE Bearer can enqueue and dequeue one packet
  */
 class Ns3LteBearerTestCase : public TestCase
 {
@@ -61,7 +61,7 @@ private:
 };
 
 Ns3LteBearerTestCase::Ns3LteBearerTestCase ()
-  : TestCase ("Test the LTE Bearer.")
+  : TestCase ("Test that LTE Bearer can enqueue and dequeue one packet")
 {
 }
 

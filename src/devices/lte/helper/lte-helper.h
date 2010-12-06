@@ -84,8 +84,8 @@ public:
 
   /**
    * \brief register UEs to the target eNB
-   * \param ue
-   * \param enb
+   * \param ue the UE that will registered to the eNB
+   * \param enb the eNB where the UE will registered
    */
   void RegisterUeToTheEnb (Ptr<UeNetDevice> ue, Ptr<EnbNetDevice> enb);
 
@@ -95,14 +95,14 @@ public:
   void EnableLogComponents (void);
 
    /**
-   * \brief Add a downlink channel realization 
-   * \param enbMobility, the enb mobility model
+   * \brief Create a downlink channel realization between eNB and UE
+   * \param enbMobility the enb mobility model
    * \param ueMobility the ue mobility model
    * \param phy the physical layer of the UE 
    */
-  void AddDownlinkChannelRealization (Ptr<MobilityModel> enbMobility, 
-                                      Ptr<MobilityModel> ueMobility,
-                                      Ptr<LtePhy> phy);
+  void CreateDownlinkChannelRealization (Ptr<MobilityModel> enbMobility, 
+                                         Ptr<MobilityModel> ueMobility,
+                                         Ptr<LtePhy> phy);
    
 
 private:
