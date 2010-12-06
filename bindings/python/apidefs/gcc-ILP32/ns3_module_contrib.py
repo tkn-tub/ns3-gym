@@ -17,8 +17,6 @@ def register_types(module):
     module.add_class('GnuplotCollection')
     ## gnuplot.h: ns3::GnuplotDataset [class]
     module.add_class('GnuplotDataset')
-    ## gtk-config-store.h: ns3::GtkConfigStore [class]
-    module.add_class('GtkConfigStore')
     ## file-config.h: ns3::NoneFileConfig [class]
     module.add_class('NoneFileConfig', parent=root_module['ns3::FileConfig'])
     ## config-store.h: ns3::ConfigStore [class]
@@ -130,7 +128,6 @@ def register_methods(root_module):
     register_Ns3Gnuplot_methods(root_module, root_module['ns3::Gnuplot'])
     register_Ns3GnuplotCollection_methods(root_module, root_module['ns3::GnuplotCollection'])
     register_Ns3GnuplotDataset_methods(root_module, root_module['ns3::GnuplotDataset'])
-    register_Ns3GtkConfigStore_methods(root_module, root_module['ns3::GtkConfigStore'])
     register_Ns3NoneFileConfig_methods(root_module, root_module['ns3::NoneFileConfig'])
     register_Ns3ConfigStore_methods(root_module, root_module['ns3::ConfigStore'])
     register_Ns3FlowIdTag_methods(root_module, root_module['ns3::FlowIdTag'])
@@ -353,21 +350,6 @@ def register_Ns3GnuplotDataset_methods(root_module, cls):
     ## gnuplot.h: ns3::GnuplotDataset::GnuplotDataset(ns3::GnuplotDataset::Data * data) [constructor]
     cls.add_constructor([param('ns3::GnuplotDataset::Data *', 'data')], 
                         visibility='protected')
-    return
-
-def register_Ns3GtkConfigStore_methods(root_module, cls):
-    ## gtk-config-store.h: ns3::GtkConfigStore::GtkConfigStore(ns3::GtkConfigStore const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::GtkConfigStore const &', 'arg0')])
-    ## gtk-config-store.h: ns3::GtkConfigStore::GtkConfigStore() [constructor]
-    cls.add_constructor([])
-    ## gtk-config-store.h: void ns3::GtkConfigStore::ConfigureAttributes() [member function]
-    cls.add_method('ConfigureAttributes', 
-                   'void', 
-                   [])
-    ## gtk-config-store.h: void ns3::GtkConfigStore::ConfigureDefaults() [member function]
-    cls.add_method('ConfigureDefaults', 
-                   'void', 
-                   [])
     return
 
 def register_Ns3NoneFileConfig_methods(root_module, cls):

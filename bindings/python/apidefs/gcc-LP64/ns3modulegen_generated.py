@@ -15,6 +15,7 @@ import sys
 import ns3_module_core
 import ns3_module_simulator
 import ns3_module_test
+import ns3_module_visualizer
 import ns3_module_mobility
 import ns3_module_mpi
 import ns3_module_common
@@ -93,6 +94,17 @@ def register_types(module):
         ns3_module_test__local.register_types(module)
     
     root_module.end_section('ns3_module_test')
+    root_module.begin_section('ns3_module_visualizer')
+    ns3_module_visualizer.register_types(module)
+    
+    try:
+        import ns3_module_visualizer__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_visualizer__local.register_types(module)
+    
+    root_module.end_section('ns3_module_visualizer')
     root_module.begin_section('ns3_module_mobility')
     ns3_module_mobility.register_types(module)
     
@@ -540,6 +552,28 @@ def register_types(module):
     module.add_class('OlsrHelper', parent=root_module['ns3::Ipv4RoutingHelper'])
     ## olsr-state.h: ns3::OlsrState [class]
     module.add_class('OlsrState')
+    ## pyviz.h: ns3::PyViz [class]
+    module.add_class('PyViz')
+    ## pyviz.h: ns3::PyViz::PacketCaptureMode [enumeration]
+    module.add_enum('PacketCaptureMode', ['PACKET_CAPTURE_DISABLED', 'PACKET_CAPTURE_FILTER_HEADERS_OR', 'PACKET_CAPTURE_FILTER_HEADERS_AND'], outer_class=root_module['ns3::PyViz'])
+    ## pyviz.h: ns3::PyViz::LastPacketsSample [struct]
+    module.add_class('LastPacketsSample', outer_class=root_module['ns3::PyViz'])
+    ## pyviz.h: ns3::PyViz::NetDeviceStatistics [struct]
+    module.add_class('NetDeviceStatistics', outer_class=root_module['ns3::PyViz'])
+    ## pyviz.h: ns3::PyViz::NodeStatistics [struct]
+    module.add_class('NodeStatistics', outer_class=root_module['ns3::PyViz'])
+    ## pyviz.h: ns3::PyViz::PacketCaptureOptions [struct]
+    module.add_class('PacketCaptureOptions', outer_class=root_module['ns3::PyViz'])
+    ## pyviz.h: ns3::PyViz::PacketDropSample [struct]
+    module.add_class('PacketDropSample', outer_class=root_module['ns3::PyViz'])
+    ## pyviz.h: ns3::PyViz::PacketSample [struct]
+    module.add_class('PacketSample', outer_class=root_module['ns3::PyViz'])
+    ## pyviz.h: ns3::PyViz::RxPacketSample [struct]
+    module.add_class('RxPacketSample', parent=root_module['ns3::PyViz::PacketSample'], outer_class=root_module['ns3::PyViz'])
+    ## pyviz.h: ns3::PyViz::TransmissionSample [struct]
+    module.add_class('TransmissionSample', outer_class=root_module['ns3::PyViz'])
+    ## pyviz.h: ns3::PyViz::TxPacketSample [struct]
+    module.add_class('TxPacketSample', parent=root_module['ns3::PyViz::PacketSample'], outer_class=root_module['ns3::PyViz'])
     ## uan-mac-rc.h: ns3::Reservation [class]
     module.add_class('Reservation')
     ## uan-prop-model.h: ns3::Tap [class]
@@ -702,6 +736,15 @@ def register_types(module):
     module.add_container('std::vector< ns3::olsr::IfaceAssocTuple >', 'ns3::olsr::IfaceAssocTuple', container_type='vector')
     module.add_container('std::vector< ns3::olsr::AssociationTuple >', 'ns3::olsr::AssociationTuple', container_type='vector')
     module.add_container('std::vector< ns3::olsr::Association >', 'ns3::olsr::Association', container_type='vector')
+    module.add_container('std::vector< ns3::PyViz::RxPacketSample >', 'ns3::PyViz::RxPacketSample', container_type='vector')
+    module.add_container('std::vector< ns3::PyViz::TxPacketSample >', 'ns3::PyViz::TxPacketSample', container_type='vector')
+    module.add_container('std::vector< ns3::PyViz::PacketSample >', 'ns3::PyViz::PacketSample', container_type='vector')
+    module.add_container('std::vector< ns3::PyViz::TransmissionSample >', 'ns3::PyViz::TransmissionSample', container_type='vector')
+    module.add_container('std::vector< ns3::PyViz::PacketDropSample >', 'ns3::PyViz::PacketDropSample', container_type='vector')
+    module.add_container('std::vector< ns3::PyViz::NetDeviceStatistics >', 'ns3::PyViz::NetDeviceStatistics', container_type='vector')
+    module.add_container('std::vector< std::string >', 'std::string', container_type='vector')
+    module.add_container('std::set< unsigned int >', 'unsigned int', container_type='set')
+    module.add_container('std::vector< ns3::PyViz::NodeStatistics >', 'ns3::PyViz::NodeStatistics', container_type='vector')
     module.add_container('std::list< std::pair< ns3::Ptr< ns3::Packet >, ns3::UanAddress > >', 'std::pair< ns3::Ptr< ns3::Packet >, ns3::UanAddress >', container_type='list')
     module.add_container('std::vector< ns3::ServiceFlow * >', 'ns3::ServiceFlow *', container_type='vector')
     module.add_container('std::vector< ns3::Tap >', 'ns3::Tap', container_type='vector')
@@ -777,7 +820,6 @@ def register_types(module):
 def register_types_ns3_Config(module):
     root_module = module.get_root()
     
-    module.add_container('std::vector< std::string >', 'std::string', container_type='vector')
 
 def register_types_ns3_FatalImpl(module):
     root_module = module.get_root()
@@ -854,7 +896,6 @@ def register_types_ns3_olsr(module):
     module.add_container('std::vector< ns3::olsr::MessageHeader::Hello::LinkMessage >', 'ns3::olsr::MessageHeader::Hello::LinkMessage', container_type='vector')
     module.add_container('std::vector< ns3::olsr::MessageHeader::Hna::Association >', 'ns3::olsr::MessageHeader::Hna::Association', container_type='vector')
     module.add_container('std::vector< ns3::olsr::RoutingTableEntry >', 'ns3::olsr::RoutingTableEntry', container_type='vector')
-    module.add_container('std::set< unsigned int >', 'unsigned int', container_type='set')
     typehandlers.add_type_alias('std::vector< ns3::olsr::DuplicateTuple, std::allocator< ns3::olsr::DuplicateTuple > >', 'ns3::olsr::DuplicateSet')
     typehandlers.add_type_alias('std::vector< ns3::olsr::DuplicateTuple, std::allocator< ns3::olsr::DuplicateTuple > >*', 'ns3::olsr::DuplicateSet*')
     typehandlers.add_type_alias('std::vector< ns3::olsr::DuplicateTuple, std::allocator< ns3::olsr::DuplicateTuple > >&', 'ns3::olsr::DuplicateSet&')
@@ -907,6 +948,16 @@ def register_methods(root_module):
     register_Ns3Ipv6StaticRoutingHelper_methods(root_module, root_module['ns3::Ipv6StaticRoutingHelper'])
     register_Ns3OlsrHelper_methods(root_module, root_module['ns3::OlsrHelper'])
     register_Ns3OlsrState_methods(root_module, root_module['ns3::OlsrState'])
+    register_Ns3PyViz_methods(root_module, root_module['ns3::PyViz'])
+    register_Ns3PyVizLastPacketsSample_methods(root_module, root_module['ns3::PyViz::LastPacketsSample'])
+    register_Ns3PyVizNetDeviceStatistics_methods(root_module, root_module['ns3::PyViz::NetDeviceStatistics'])
+    register_Ns3PyVizNodeStatistics_methods(root_module, root_module['ns3::PyViz::NodeStatistics'])
+    register_Ns3PyVizPacketCaptureOptions_methods(root_module, root_module['ns3::PyViz::PacketCaptureOptions'])
+    register_Ns3PyVizPacketDropSample_methods(root_module, root_module['ns3::PyViz::PacketDropSample'])
+    register_Ns3PyVizPacketSample_methods(root_module, root_module['ns3::PyViz::PacketSample'])
+    register_Ns3PyVizRxPacketSample_methods(root_module, root_module['ns3::PyViz::RxPacketSample'])
+    register_Ns3PyVizTransmissionSample_methods(root_module, root_module['ns3::PyViz::TransmissionSample'])
+    register_Ns3PyVizTxPacketSample_methods(root_module, root_module['ns3::PyViz::TxPacketSample'])
     register_Ns3Reservation_methods(root_module, root_module['ns3::Reservation'])
     register_Ns3Tap_methods(root_module, root_module['ns3::Tap'])
     register_Ns3UanAddress_methods(root_module, root_module['ns3::UanAddress'])
@@ -1029,6 +1080,17 @@ def register_methods(root_module):
         ns3_module_test__local.register_methods(root_module)
     
     root_module.end_section('ns3_module_test')
+    root_module.begin_section('ns3_module_visualizer')
+    ns3_module_visualizer.register_methods(root_module)
+    
+    try:
+        import ns3_module_visualizer__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_visualizer__local.register_methods(root_module)
+    
+    root_module.end_section('ns3_module_visualizer')
     root_module.begin_section('ns3_module_mobility')
     ns3_module_mobility.register_methods(root_module)
     
@@ -2430,6 +2492,185 @@ def register_Ns3OlsrState_methods(root_module, cls):
     cls.add_method('SetMprSet', 
                    'void', 
                    [param('ns3::olsr::MprSet', 'mprSet')])
+    return
+
+def register_Ns3PyViz_methods(root_module, cls):
+    ## pyviz.h: ns3::PyViz::PyViz(ns3::PyViz const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::PyViz const &', 'arg0')])
+    ## pyviz.h: ns3::PyViz::PyViz() [constructor]
+    cls.add_constructor([])
+    ## pyviz.h: ns3::PyViz::LastPacketsSample ns3::PyViz::GetLastPackets(uint32_t nodeId) const [member function]
+    cls.add_method('GetLastPackets', 
+                   'ns3::PyViz::LastPacketsSample', 
+                   [param('uint32_t', 'nodeId')], 
+                   is_const=True)
+    ## pyviz.h: std::vector<ns3::PyViz::NodeStatistics,std::allocator<ns3::PyViz::NodeStatistics> > ns3::PyViz::GetNodesStatistics() const [member function]
+    cls.add_method('GetNodesStatistics', 
+                   'std::vector< ns3::PyViz::NodeStatistics >', 
+                   [], 
+                   is_const=True)
+    ## pyviz.h: std::vector<ns3::PyViz::PacketDropSample,std::allocator<ns3::PyViz::PacketDropSample> > ns3::PyViz::GetPacketDropSamples() const [member function]
+    cls.add_method('GetPacketDropSamples', 
+                   'std::vector< ns3::PyViz::PacketDropSample >', 
+                   [], 
+                   is_const=True)
+    ## pyviz.h: std::vector<std::string, std::allocator<std::string> > ns3::PyViz::GetPauseMessages() const [member function]
+    cls.add_method('GetPauseMessages', 
+                   'std::vector< std::string >', 
+                   [], 
+                   is_const=True)
+    ## pyviz.h: std::vector<ns3::PyViz::TransmissionSample,std::allocator<ns3::PyViz::TransmissionSample> > ns3::PyViz::GetTransmissionSamples() const [member function]
+    cls.add_method('GetTransmissionSamples', 
+                   'std::vector< ns3::PyViz::TransmissionSample >', 
+                   [], 
+                   is_const=True)
+    ## pyviz.h: static void ns3::PyViz::LineClipping(double boundsX1, double boundsY1, double boundsX2, double boundsY2, double & lineX1, double & lineY1, double & lineX2, double & lineY2) [member function]
+    cls.add_method('LineClipping', 
+                   'void', 
+                   [param('double', 'boundsX1'), param('double', 'boundsY1'), param('double', 'boundsX2'), param('double', 'boundsY2'), param('double &', 'lineX1', direction=3), param('double &', 'lineY1', direction=3), param('double &', 'lineX2', direction=3), param('double &', 'lineY2', direction=3)], 
+                   is_static=True)
+    ## pyviz.h: static void ns3::PyViz::Pause(std::string const & message) [member function]
+    cls.add_method('Pause', 
+                   'void', 
+                   [param('std::string const &', 'message')], 
+                   is_static=True)
+    ## pyviz.h: void ns3::PyViz::RegisterCsmaLikeDevice(std::string const & deviceTypeName) [member function]
+    cls.add_method('RegisterCsmaLikeDevice', 
+                   'void', 
+                   [param('std::string const &', 'deviceTypeName')])
+    ## pyviz.h: void ns3::PyViz::RegisterDropTracePath(std::string const & tracePath) [member function]
+    cls.add_method('RegisterDropTracePath', 
+                   'void', 
+                   [param('std::string const &', 'tracePath')])
+    ## pyviz.h: void ns3::PyViz::RegisterPointToPointLikeDevice(std::string const & deviceTypeName) [member function]
+    cls.add_method('RegisterPointToPointLikeDevice', 
+                   'void', 
+                   [param('std::string const &', 'deviceTypeName')])
+    ## pyviz.h: void ns3::PyViz::RegisterWifiLikeDevice(std::string const & deviceTypeName) [member function]
+    cls.add_method('RegisterWifiLikeDevice', 
+                   'void', 
+                   [param('std::string const &', 'deviceTypeName')])
+    ## pyviz.h: void ns3::PyViz::SetNodesOfInterest(std::set<unsigned int, std::less<unsigned int>, std::allocator<unsigned int> > nodes) [member function]
+    cls.add_method('SetNodesOfInterest', 
+                   'void', 
+                   [param('std::set< unsigned int >', 'nodes')])
+    ## pyviz.h: void ns3::PyViz::SetPacketCaptureOptions(uint32_t nodeId, ns3::PyViz::PacketCaptureOptions options) [member function]
+    cls.add_method('SetPacketCaptureOptions', 
+                   'void', 
+                   [param('uint32_t', 'nodeId'), param('ns3::PyViz::PacketCaptureOptions', 'options')])
+    ## pyviz.h: void ns3::PyViz::SimulatorRunUntil(ns3::Time time) [member function]
+    cls.add_method('SimulatorRunUntil', 
+                   'void', 
+                   [param('ns3::Time', 'time')])
+    return
+
+def register_Ns3PyVizLastPacketsSample_methods(root_module, cls):
+    ## pyviz.h: ns3::PyViz::LastPacketsSample::LastPacketsSample() [constructor]
+    cls.add_constructor([])
+    ## pyviz.h: ns3::PyViz::LastPacketsSample::LastPacketsSample(ns3::PyViz::LastPacketsSample const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::PyViz::LastPacketsSample const &', 'arg0')])
+    ## pyviz.h: ns3::PyViz::LastPacketsSample::lastDroppedPackets [variable]
+    cls.add_instance_attribute('lastDroppedPackets', 'std::vector< ns3::PyViz::PacketSample >', is_const=False)
+    ## pyviz.h: ns3::PyViz::LastPacketsSample::lastReceivedPackets [variable]
+    cls.add_instance_attribute('lastReceivedPackets', 'std::vector< ns3::PyViz::RxPacketSample >', is_const=False)
+    ## pyviz.h: ns3::PyViz::LastPacketsSample::lastTransmittedPackets [variable]
+    cls.add_instance_attribute('lastTransmittedPackets', 'std::vector< ns3::PyViz::TxPacketSample >', is_const=False)
+    return
+
+def register_Ns3PyVizNetDeviceStatistics_methods(root_module, cls):
+    ## pyviz.h: ns3::PyViz::NetDeviceStatistics::NetDeviceStatistics(ns3::PyViz::NetDeviceStatistics const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::PyViz::NetDeviceStatistics const &', 'arg0')])
+    ## pyviz.h: ns3::PyViz::NetDeviceStatistics::NetDeviceStatistics() [constructor]
+    cls.add_constructor([])
+    ## pyviz.h: ns3::PyViz::NetDeviceStatistics::receivedBytes [variable]
+    cls.add_instance_attribute('receivedBytes', 'uint64_t', is_const=False)
+    ## pyviz.h: ns3::PyViz::NetDeviceStatistics::receivedPackets [variable]
+    cls.add_instance_attribute('receivedPackets', 'uint32_t', is_const=False)
+    ## pyviz.h: ns3::PyViz::NetDeviceStatistics::transmittedBytes [variable]
+    cls.add_instance_attribute('transmittedBytes', 'uint64_t', is_const=False)
+    ## pyviz.h: ns3::PyViz::NetDeviceStatistics::transmittedPackets [variable]
+    cls.add_instance_attribute('transmittedPackets', 'uint32_t', is_const=False)
+    return
+
+def register_Ns3PyVizNodeStatistics_methods(root_module, cls):
+    ## pyviz.h: ns3::PyViz::NodeStatistics::NodeStatistics() [constructor]
+    cls.add_constructor([])
+    ## pyviz.h: ns3::PyViz::NodeStatistics::NodeStatistics(ns3::PyViz::NodeStatistics const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::PyViz::NodeStatistics const &', 'arg0')])
+    ## pyviz.h: ns3::PyViz::NodeStatistics::nodeId [variable]
+    cls.add_instance_attribute('nodeId', 'uint32_t', is_const=False)
+    ## pyviz.h: ns3::PyViz::NodeStatistics::statistics [variable]
+    cls.add_instance_attribute('statistics', 'std::vector< ns3::PyViz::NetDeviceStatistics >', is_const=False)
+    return
+
+def register_Ns3PyVizPacketCaptureOptions_methods(root_module, cls):
+    ## pyviz.h: ns3::PyViz::PacketCaptureOptions::PacketCaptureOptions() [constructor]
+    cls.add_constructor([])
+    ## pyviz.h: ns3::PyViz::PacketCaptureOptions::PacketCaptureOptions(ns3::PyViz::PacketCaptureOptions const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::PyViz::PacketCaptureOptions const &', 'arg0')])
+    ## pyviz.h: ns3::PyViz::PacketCaptureOptions::headers [variable]
+    cls.add_instance_attribute('headers', 'std::set< ns3::TypeId >', is_const=False)
+    ## pyviz.h: ns3::PyViz::PacketCaptureOptions::mode [variable]
+    cls.add_instance_attribute('mode', 'ns3::PyViz::PacketCaptureMode', is_const=False)
+    ## pyviz.h: ns3::PyViz::PacketCaptureOptions::numLastPackets [variable]
+    cls.add_instance_attribute('numLastPackets', 'uint32_t', is_const=False)
+    return
+
+def register_Ns3PyVizPacketDropSample_methods(root_module, cls):
+    ## pyviz.h: ns3::PyViz::PacketDropSample::PacketDropSample() [constructor]
+    cls.add_constructor([])
+    ## pyviz.h: ns3::PyViz::PacketDropSample::PacketDropSample(ns3::PyViz::PacketDropSample const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::PyViz::PacketDropSample const &', 'arg0')])
+    ## pyviz.h: ns3::PyViz::PacketDropSample::bytes [variable]
+    cls.add_instance_attribute('bytes', 'uint32_t', is_const=False)
+    ## pyviz.h: ns3::PyViz::PacketDropSample::transmitter [variable]
+    cls.add_instance_attribute('transmitter', 'ns3::Ptr< ns3::Node >', is_const=False)
+    return
+
+def register_Ns3PyVizPacketSample_methods(root_module, cls):
+    ## pyviz.h: ns3::PyViz::PacketSample::PacketSample() [constructor]
+    cls.add_constructor([])
+    ## pyviz.h: ns3::PyViz::PacketSample::PacketSample(ns3::PyViz::PacketSample const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::PyViz::PacketSample const &', 'arg0')])
+    ## pyviz.h: ns3::PyViz::PacketSample::device [variable]
+    cls.add_instance_attribute('device', 'ns3::Ptr< ns3::NetDevice >', is_const=False)
+    ## pyviz.h: ns3::PyViz::PacketSample::packet [variable]
+    cls.add_instance_attribute('packet', 'ns3::Ptr< ns3::Packet >', is_const=False)
+    ## pyviz.h: ns3::PyViz::PacketSample::time [variable]
+    cls.add_instance_attribute('time', 'ns3::Time', is_const=False)
+    return
+
+def register_Ns3PyVizRxPacketSample_methods(root_module, cls):
+    ## pyviz.h: ns3::PyViz::RxPacketSample::RxPacketSample() [constructor]
+    cls.add_constructor([])
+    ## pyviz.h: ns3::PyViz::RxPacketSample::RxPacketSample(ns3::PyViz::RxPacketSample const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::PyViz::RxPacketSample const &', 'arg0')])
+    ## pyviz.h: ns3::PyViz::RxPacketSample::from [variable]
+    cls.add_instance_attribute('from', 'ns3::Mac48Address', is_const=False)
+    return
+
+def register_Ns3PyVizTransmissionSample_methods(root_module, cls):
+    ## pyviz.h: ns3::PyViz::TransmissionSample::TransmissionSample() [constructor]
+    cls.add_constructor([])
+    ## pyviz.h: ns3::PyViz::TransmissionSample::TransmissionSample(ns3::PyViz::TransmissionSample const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::PyViz::TransmissionSample const &', 'arg0')])
+    ## pyviz.h: ns3::PyViz::TransmissionSample::bytes [variable]
+    cls.add_instance_attribute('bytes', 'uint32_t', is_const=False)
+    ## pyviz.h: ns3::PyViz::TransmissionSample::channel [variable]
+    cls.add_instance_attribute('channel', 'ns3::Ptr< ns3::Channel >', is_const=False)
+    ## pyviz.h: ns3::PyViz::TransmissionSample::receiver [variable]
+    cls.add_instance_attribute('receiver', 'ns3::Ptr< ns3::Node >', is_const=False)
+    ## pyviz.h: ns3::PyViz::TransmissionSample::transmitter [variable]
+    cls.add_instance_attribute('transmitter', 'ns3::Ptr< ns3::Node >', is_const=False)
+    return
+
+def register_Ns3PyVizTxPacketSample_methods(root_module, cls):
+    ## pyviz.h: ns3::PyViz::TxPacketSample::TxPacketSample() [constructor]
+    cls.add_constructor([])
+    ## pyviz.h: ns3::PyViz::TxPacketSample::TxPacketSample(ns3::PyViz::TxPacketSample const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::PyViz::TxPacketSample const &', 'arg0')])
+    ## pyviz.h: ns3::PyViz::TxPacketSample::to [variable]
+    cls.add_instance_attribute('to', 'ns3::Mac48Address', is_const=False)
     return
 
 def register_Ns3Reservation_methods(root_module, cls):
@@ -7136,6 +7377,17 @@ def register_functions(root_module):
         ns3_module_test__local.register_functions(root_module)
     
     root_module.end_section('ns3_module_test')
+    root_module.begin_section('ns3_module_visualizer')
+    ns3_module_visualizer.register_functions(root_module)
+    
+    try:
+        import ns3_module_visualizer__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_visualizer__local.register_functions(root_module)
+    
+    root_module.end_section('ns3_module_visualizer')
     root_module.begin_section('ns3_module_mobility')
     ns3_module_mobility.register_functions(root_module)
     
