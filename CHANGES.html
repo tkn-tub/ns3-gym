@@ -58,6 +58,25 @@ removed.
 </ul>
 
 <h2>New API:</h2>
+<ul>
+<li><b>Pyviz visualizer</b>  
+<p>A Python-based visualizer called pyviz is now integrated with ns-3.  
+For Python simulations, you have to import the visualizer module, 
+and call visualizer.start() instead of ns3.Simulator.Run(). 
+For C++ simulations, #include "ns3/visualizer.h", and replace the call 
+to Simulator::Run (); with Visualizer::Run ();. 
+</p></li>
+
+<li><b>WaypointMobility attributes</b>
+<p>Two attributes were added to WaypointMobility model:  LazyNotify and
+InitialPositionIs Waypoint.  See RELEASE_NOTES for details.  </p> </li>
+
+<li><b>802.11g rates for ERP-OFDM added</b>
+<p>New WifiModes of the form ErpOfdmRatexxMbps, where xx is the rate
+in Mbps (6, 9, 12, 18, 24, 36, 48, 54), are available for 802.11g.  
+More details are in the RELEASE_NOTES for details.  </p> </li>
+
+</ul>
 
 <h2>Changes to existing API:</h2>
 <ul>
@@ -202,6 +221,8 @@ In Ipv4L4Protocol class,
 </pre>
   
 </li>
+<li>The method OutputStreamWrapper::SetStream (std::ostream *ostream) was removed.</li>
+)
 </ul>
 
 <h2>Changed behavior:</h2>

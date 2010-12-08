@@ -23,6 +23,15 @@ ns-3.10 has been tested on the following platforms: (TBD)
 New user-visible features
 -------------------------
 
+   - NS-3 PyViz, a live simulation visualizer, has been added.  The 
+     visualizer interacts with a running simulation, such that it uses no
+     trace files. It can be most useful for debugging purposes, i.e. to
+     figure out if mobility models are what you expect, where packets are
+     being dropped, etc. There is also a builtin interactive python console
+     that can be used to debug the state of the running objects. Although
+     it is mostly written in Python, it works both with Python and pure C++
+     simulations.
+
    - Wi-Fi MAC high classes have been reorganised in attempt to
      consolidate shared functionality into a single class. This new
      class is RegularWifiMac, and it derives from the abstract
