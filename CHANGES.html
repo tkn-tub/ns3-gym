@@ -60,11 +60,17 @@ removed.
 <h2>New API:</h2>
 <ul>
 <li><b>Pyviz visualizer</b>  
-<p>A Python-based visualizer called pyviz is now integrated with ns-3.  
-For Python simulations, you have to import the visualizer module, 
-and call visualizer.start() instead of ns3.Simulator.Run(). 
-For C++ simulations, #include "ns3/visualizer.h", and replace the call 
-to Simulator::Run (); with Visualizer::Run ();. 
+<p>A Python-based visualizer called pyviz is now integrated with ns-3.
+For Python simulations, there is an API to start the visualizer.  You
+have to import the visualizer module, and call visualizer.start()
+instead of ns3.Simulator.Run().  For C++ simulations, there is no API.
+For C++ simulations (but also works for Python ones) you need to set
+the GlobalValue SimulatorImplementationType to
+"ns3::VisualSimulatorImpl".  This can be set from the command-line,
+for example (add the
+<tt>--SimulatorImplementationType=ns3::VisualSimulatorImpl</tt>
+option), or via the waf option <tt>--visualizer</tt>, in addition to
+the usual <tt>--run</tt> option to run programs.
 </p></li>
 
 <li><b>WaypointMobility attributes</b>
