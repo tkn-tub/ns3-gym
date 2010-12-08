@@ -100,7 +100,7 @@ public:
    * \param ueMobility the ue mobility model
    * \param phy the physical layer of the UE 
    */
-  void CreateDownlinkChannelRealization (Ptr<MobilityModel> enbMobility, 
+  void AddDownlinkChannelRealization (Ptr<MobilityModel> enbMobility, 
                                          Ptr<MobilityModel> ueMobility,
                                          Ptr<LtePhy> phy);
    

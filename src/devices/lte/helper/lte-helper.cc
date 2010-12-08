@@ -267,7 +267,7 @@ LteHelper::RegisterUeToTheEnb (Ptr<UeNetDevice> ue, Ptr<EnbNetDevice> enb)
 
 
 void 
-LteHelper::CreateDownlinkChannelRealization (Ptr<MobilityModel> enbMobility, Ptr<MobilityModel> ueMobility, Ptr<LtePhy> phy)
+LteHelper::AddDownlinkChannelRealization (Ptr<MobilityModel> enbMobility, Ptr<MobilityModel> ueMobility, Ptr<LtePhy> phy)
 {
   Ptr<LtePropagationLossModel> model = m_downlinkChannel->GetSpectrumPropagationLossModel ()->GetObject<LtePropagationLossModel> ();
 

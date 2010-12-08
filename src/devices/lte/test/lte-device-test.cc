@@ -141,7 +141,7 @@ Ns3LteDeviceTestCase::DoRun (void)
 
   lte.AddMobility (ue->GetPhy (), ueMobility);
 
-  lte.CreateDownlinkChannelRealization (enbMobility, ueMobility, ue->GetPhy ());
+  lte.AddDownlinkChannelRealization (enbMobility, ueMobility, ue->GetPhy ());
 
 
 
