@@ -6,6 +6,7 @@
 * Scaffolding::
 * Initial Implementation::
 * Adding-a-sample-script::
+* Add subclass::
 * Build-core-functions-and-unit-tests::
 @end menu
 
@@ -533,6 +534,7 @@ prints out the string "Corrupt!" for each packet received at
 node n3.  Next, we return to the error model to add in a subclass
 that performs more interesting error modeling.
 
+@node Add subclass
 @section Add subclass
 
 The trivial base class ErrorModel does not do anything interesting,

@@ -6,6 +6,7 @@ PointToPoint model doxygen.
 
 @menu
 * Overview of the PointToPoint model::
+* Point-to-Point Channel Model::
 * Using the PointToPointNetDevice::
 * PointToPoint Tracing::
 @end menu
@@ -58,6 +59,7 @@ The PointToPointNetDevice supports the assignment of a "receive error
 model."  This is an ErrorModel object that is used to simulate data
 corruption on the link.
 
+@node Point-to-Point Channel Model
 @section  Point-to-Point Channel Model
 
 The point to point net devices are connected via an 

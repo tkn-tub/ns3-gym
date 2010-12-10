@@ -34,6 +34,8 @@ Simulator," SIMUTools 2009 Conference, March 2009.
 * Wimax Tracing::
 * Wimax MAC model::
 * WimaxChannel and WimaxPhy models::
+* Channel model::
+* Physical model::
 @end menu
 
 @node Scope of the model
@@ -460,6 +462,7 @@ The proposed model uses a 256 FFT processor, with 192 data subcarriers.
 It supports all the seven modulation and coding schemes specified by Wireless
 MAN-OFDM. It is composed of two parts: the channel model and the physical model.
 
+@node Channel model
 @section Channel model
 
 The channel model we propose is implemented by the @code{class SimpleOFDMWimaxChannel} which
@@ -472,6 +475,7 @@ The channel class uses the method @code{GetDistanceFrom()} to calculate the dist
 entities according to their 3D coordinates. The delay is computed as @code{delay = distance/C}, where C
 is the speed of the light. 
 
+@node Physical model
 @section Physical model
 
 The physical layer performs two main operations: (i) It receives a burst from a channel and forwards it to the

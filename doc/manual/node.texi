@@ -1,6 +1,10 @@
-@node Node and NetDevices
-@chapter Node and NetDevices
+@node Node and NetDevices Overview
+@chapter Node and NetDevices Overview
 @anchor{chap:Node}
+
+@menu
+* NodeList::
+@end menu
 
 This chapter describes how ns-3 nodes are put together, and provides
 a walk-through of how packets traverse an internet-based Node.
@@ -102,6 +106,7 @@ function can be registered with the protocol handler by calling:
 @end verbatim
 and likewise for Ipv6, ARP, etc.
 
+@node NodeList
 @section NodeList
 
 Every Node created is automatically added to the ns-3 @code{NodeList}.

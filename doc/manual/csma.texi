@@ -6,6 +6,8 @@ Csma model doxygen.
 
 @menu
 * Overview of the CSMA model::
+* CSMA Channel Model::
+* CSMA Net Device Model::
 * Using the CsmaNetDevice::
 * CSMA Tracing::
 @end menu
@@ -88,6 +90,7 @@ CsmaNetDevice::SetReceiveCallback and is invoked upon "proper"
  reception of a packet by the net device in order to forward the packet up
 the protocol stack.
 
+@node CSMA Channel Model
 @section CSMA Channel Model
 
 The class CsmaChannel models the actual transmission medium.
@@ -157,6 +160,7 @@ The CsmaChannel provides following Attributes:
 @item Delay: The speed of light transmission delay for the channel.
 @end itemize
 
+@node CSMA Net Device Model
 @section CSMA Net Device Model
 
  The CSMA network device appears somewhat like an Ethernet device.  The

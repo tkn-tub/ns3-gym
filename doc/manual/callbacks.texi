@@ -11,8 +11,8 @@ it, and details on its implementation.
 * Callbacks Background::
 * Using the Callback API::
 * Bound Callbacks::
-* Callback locations in ns-3::
 * Traced Callbacks::
+* Callback locations in ns-3::
 * Implementation details::
 @end menu
 
@@ -597,7 +597,7 @@ function call:
 @cartouche
 Placeholder subsection
 @end cartouche
-@section Callback locations in @command{ns-3}
+
 @node Callback locations in ns-3
 @section Callback locations in @command{ns-3}
 
