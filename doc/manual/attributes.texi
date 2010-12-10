@@ -117,7 +117,7 @@ a static GetTypeId function call:
 
 @verbatim
 class Node : public Object
-{
+@{
 public:
   static TypeId GetTypeId (void);
   ...
@@ -129,7 +129,7 @@ This is defined in the node.cc file as follows:
 @example
 TypeId 
 Node::GetTypeId (void)
-{
+@{
   static TypeId tid = TypeId ("ns3::Node")
     .SetParent<Object> ()
     .AddConstructor<Node> ()
@@ -148,7 +148,7 @@ Node::GetTypeId (void)
                    MakeUintegerChecker<uint32_t> ())
     ;
   return tid;
-}
+@}
 @end example
 @end smallformat
 
@@ -266,7 +266,7 @@ functions are moved into the TypeId class; e.g.:
 NS_OBJECT_ENSURE_REGISTERED (DropTailQueue);
 
 TypeId DropTailQueue::GetTypeId (void) 
-{
+@{
   static TypeId tid = TypeId ("ns3::DropTailQueue")
     .SetParent<Queue> ()
     .AddConstructor<DropTailQueue> ()
@@ -278,7 +278,7 @@ TypeId DropTailQueue::GetTypeId (void)
     ;
   
   return tid;
-}
+@}
 @end example
 @end smallformat
 
@@ -325,7 +325,7 @@ with some details stripped out.
 
 int 
 main (int argc, char *argv[])
-{
+@{
 
   // By default, the MaxPackets attribute has a value of 100 packets
   // (this default can be observed in the function DropTailQueue::GetTypeId)
@@ -542,10 +542,10 @@ as follows:
 
 @verbatim
 ConfigStore::ConfigStore ()
-{
+@{
   ObjectBase::ConstructSelf (AttributeList ());
   // continue on with constructor.
-}
+@}
 @end verbatim
 
 @node Extending attributes
@@ -591,7 +591,7 @@ We've already introduced what a TypeId definition looks like:
 @example
 TypeId
 RandomWalk2dMobilityModel::GetTypeId (void)
-{
+@{
   static TypeId tid = TypeId ("ns3::RandomWalk2dMobilityModel")
     .SetParent<MobilityModel> ()
     .SetGroupName ("Mobility")
@@ -609,7 +609,7 @@ RandomWalk2dMobilityModel::GetTypeId (void)
     // etc (more parameters).
     ;
   return tid;
-}
+@}
 @end example
 @end smallformat
 
@@ -649,14 +649,14 @@ declaration for Rectangle in the @code{src/mobility/} directory:
  * \brief a 2d rectangle
  */
 class Rectangle
-{
+@{
   ...
 
   double xMin;
   double xMax;
   double yMin;
   double yMax;
-};
+@};
 @end example
 @end smallformat
  
@@ -682,25 +682,25 @@ ATTRIBUTE_HELPER_CPP (Rectangle);
 
 std::ostream &
 operator << (std::ostream &os, const Rectangle &rectangle)
-{
+@{
   os << rectangle.xMin << "|" << rectangle.xMax << "|" << rectangle.yMin << "|"
      << rectangle.yMax;
   return os;
-}
+@}
 std::istream &
 operator >> (std::istream &is, Rectangle &rectangle)
- {
+@{
   char c1, c2, c3;
   is >> rectangle.xMin >> c1 >> rectangle.xMax >> c2 >> rectangle.yMin >> c3 
      >> rectangle.yMax;
   if (c1 != '|' ||
       c2 != '|' ||
       c3 != '|')
-    {
+    @{
       is.setstate (std::ios_base::failbit);
-    }
+    @}
   return is;
-}
+@}
 @end example
 @end smallformat
 
@@ -737,7 +737,7 @@ to include the contrib module, and then add these lines:
 #include "contrib-module.h"
 ...
 int main (...)
-{
+@{
   // setup topology
 
   // Invoke just before entering Simulator::Run ()
@@ -746,7 +746,7 @@ int main (...)
   config.ConfigureAttributes ();
 
   Simulator::Run ();
-}
+@}
 @end example
 @end smallformat
 
@@ -815,7 +815,7 @@ file and re-input it for the next simulation run).
 #include "contrib-module.h"
 ...
 int main (...)
-{
+@{
 
   Config::SetDefault ("ns3::ConfigStore::Filename", StringValue ("input-defaults.xml"));
   Config::SetDefault ("ns3::ConfigStore::Mode", StringValue ("Load"));
@@ -839,7 +839,7 @@ int main (...)
   ConfigStore outputConfig;
   outputConfig.ConfigureAttributes ();
   Simulator::Run ();
-}
+@}
 @end example
 @end smallformat
 

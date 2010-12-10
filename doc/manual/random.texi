@@ -259,7 +259,7 @@ An example is in the propagation models for WifiNetDevice:
 @example
 TypeId
 RandomPropagationDelayModel::GetTypeId (void)
-{ 
+@{ 
   static TypeId tid = TypeId ("ns3::RandomPropagationDelayModel")
     .SetParent<PropagationDelayModel> ()
     .AddConstructor<RandomPropagationDelayModel> ()
@@ -270,7 +270,7 @@ RandomPropagationDelayModel::GetTypeId (void)
                    MakeRandomVariableChecker ())
     ;
   return tid;
-}
+@}
 @end example
 @end smallformat
 Here, the ns-3 user can change the default random variable for this

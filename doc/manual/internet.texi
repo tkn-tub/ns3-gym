@@ -19,13 +19,13 @@ following to all nodes passed in as arguments:
 @example
 void
 InternetStackHelper::Install (Ptr<Node> node) const
-{
+@{
   if (node->GetObject<Ipv4> () != 0)
-    {
+    @{
       NS_FATAL_ERROR ("InternetStackHelper::Install(): Aggregating "
                       "an InternetStack to a node with an existing Ipv4 object");
       return;
-    }
+    @}
 
   CreateAndAggregateObjectFromTypeId (node, "ns3::ArpL3Protocol");
   CreateAndAggregateObjectFromTypeId (node, "ns3::Ipv4L3Protocol");
@@ -38,7 +38,7 @@ InternetStackHelper::Install (Ptr<Node> node) const
   Ptr<Ipv4> ipv4 = node->GetObject<Ipv4> ();
   Ptr<Ipv4RoutingProtocol> ipv4Routing = m_routing->Create (node);
   ipv4->SetRoutingProtocol (ipv4Routing);
-}
+@}
 @end example
 @end smallformat
 

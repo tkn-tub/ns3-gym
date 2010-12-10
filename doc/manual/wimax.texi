@@ -87,7 +87,7 @@ The main way that users who write simulation scripts will typically
 interact with the Wimax models is through the helper API and through
 the publicly visible attributes of the model.
 
-The helper API is defined in @code{src/helper/wimax-helper.{cc,h}}.  
+The helper API is defined in @code{src/helper/wimax-helper.@{cc,h@}}.  
 
 The example @code{examples/wimax/wimax-simple.cc} contains some basic
 code that shows how to set up the model:
@@ -95,7 +95,7 @@ code that shows how to set up the model:
 @smallformat
 @example
   switch (schedType)
-    {
+    @{
     case 0:
       scheduler = WimaxHelper::SCHED_TYPE_SIMPLE;
       break;
@@ -107,7 +107,7 @@ code that shows how to set up the model:
       break;
     default:
       scheduler = WimaxHelper::SCHED_TYPE_SIMPLE;
-    }
+    @}
 
   NodeContainer ssNodes;
   NodeContainer bsNodes;
