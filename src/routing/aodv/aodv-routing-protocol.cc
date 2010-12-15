@@ -1256,7 +1256,8 @@ RoutingProtocol::RecvReply (Ptr<Packet> p, Ipv4Address receiver, Ipv4Address sen
           m_addressReqTimer[dst].Remove ();
           m_addressReqTimer.erase (dst);
         }
-      SendPacketFromQueue (rrepHeader.GetDst (), newEntry.GetRoute ());
+      m_routingTable.LookupRoute (dst, toDst);
+      SendPacketFromQueue (dst, toDst.GetRoute ());
       return;
     }
 
