@@ -194,11 +194,13 @@ RoutingProtocol::GetTypeId (void)
                      MakeTimeChecker ())
       .AddAttribute ("MaxQueueLen", "Maximum number of packets that we allow a routing protocol to buffer.",
                      UintegerValue (64),
-                     MakeUintegerAccessor (&RoutingProtocol::MaxQueueLen),
+                     MakeUintegerAccessor (&RoutingProtocol::SetMaxQueueLen,
+                                           &RoutingProtocol::GetMaxQueueLen),
                      MakeUintegerChecker<uint32_t> ())
       .AddAttribute ("MaxQueueTime", "Maximum time packets can be queued (in seconds)",
                      TimeValue (Seconds (30)),
-                     MakeTimeAccessor (&RoutingProtocol::MaxQueueTime),
+                     MakeTimeAccessor (&RoutingProtocol::SetMaxQueueTime,
+                                       &RoutingProtocol::GetMaxQueueTime),
                      MakeTimeChecker ())
       .AddAttribute ("AllowedHelloLoss", "Number of hello messages which may be loss for valid link.",
                      UintegerValue (2),
@@ -226,6 +228,19 @@ RoutingProtocol::GetTypeId (void)
                      MakeBooleanChecker ())
   ;
   return tid;
+}
+
+void
+RoutingProtocol::SetMaxQueueLen (uint32_t len)
+{
+    MaxQueueLen = len;
+    m_queue.SetMaxQueueLen (len);
+}
+void
+RoutingProtocol::SetMaxQueueTime (Time t)
+{
+  MaxQueueTime = t;
+  m_queue.SetQueueTimeout (t);
 }
 
 RoutingProtocol::~RoutingProtocol ()

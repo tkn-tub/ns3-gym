@@ -74,6 +74,10 @@ public:
   
   ///\name Handle protocol parameters
   //\{
+  Time GetMaxQueueTime () const { return MaxQueueTime; }
+  void SetMaxQueueTime (Time t);
+  uint32_t GetMaxQueueLen () const { return MaxQueueLen; }
+  void SetMaxQueueLen (uint32_t len);
   bool GetDesinationOnlyFlag () const { return DestinationOnly; }
   void SetDesinationOnlyFlag (bool f) { DestinationOnly = f; }
   bool GetGratuitousReplyFlag () const { return GratuitousReply; }
