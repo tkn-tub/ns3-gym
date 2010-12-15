@@ -1036,8 +1036,8 @@ RoutingProtocol::RecvRequest (Ptr<Packet> p, Ipv4Address receiver, Ipv4Address s
        * However, the forwarding node MUST NOT modify its maintained value for the destination sequence number, even if the value
        * received in the incoming RREQ is larger than the value currently maintained by the forwarding node.
        */
-      if (rreqHeader.GetUnknownSeqno () || ( (int32_t (toDst.GetSeqNo ()) - int32_t (rreqHeader.GetDstSeqno ()) > 0)
-          && toDst.GetValidSeqNo () ))
+      if ((rreqHeader.GetUnknownSeqno () || (int32_t (toDst.GetSeqNo ()) - int32_t (rreqHeader.GetDstSeqno ()) >= 0))
+          && toDst.GetValidSeqNo () )
         {
           if (!rreqHeader.GetDestinationOnly () && toDst.GetFlag() == VALID)
             {
