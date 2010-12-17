@@ -65,6 +65,12 @@ New user-visible features
      regression tests but they are now called from the test.py
      program.
 
+   - New BulkSendApplication sends data as fast as possible up to 
+     MaxBytes or unlimited if MaxBytes is zero.  Think OnOff, but 
+     without the "off" and without the variable data rate. This 
+     application only works with SOCK_STREAM and SOCK_SEQPACKET 
+     sockets, for example TCP sockets and not UDP sockets.
+
 Bugs fixed
 ----------
 The following lists many of the bugs fixed or small feature additions

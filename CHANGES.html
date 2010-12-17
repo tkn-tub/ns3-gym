@@ -87,6 +87,14 @@ More details are in the RELEASE_NOTES for details.  </p> </li>
   and packet-socket return SOCK_RAW. tcp-socket and nsc-tcp-socket return
   SOCK_STREAM. udp-socket returns SOCK_DGRAM.</p></li>
 
+<li><b>BulkSendApplication</b>
+<p>Sends data as fast as possible up to MaxBytes or unlimited if MaxBytes is 
+zero.  Think OnOff, but without the "off" and without the variable data rate. 
+This application only works with SOCK_STREAM and SOCK_SEQPACKET sockets, 
+for example TCP sockets and not UDP sockets. A helper class exists to 
+facilitate creating BulkSendApplications. The API for the helper class 
+is similar to existing application helper classes, for example, OnOff.
+
 </ul>
 
 <h2>Changes to existing API:</h2>
