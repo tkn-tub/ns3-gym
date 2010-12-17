@@ -69,7 +69,7 @@ public:
   virtual enum Socket::SocketErrno GetErrno () const;
 
   /**
-   * \brief Get socket type (SOCK_RAW)
+   * \brief Get socket type (NS3_SOCK_RAW)
    * \return socket type
    */
   virtual enum Socket::SocketType GetSocketType () const;

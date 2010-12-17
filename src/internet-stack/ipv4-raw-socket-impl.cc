@@ -84,7 +84,7 @@ Ipv4RawSocketImpl::GetErrno (void) const
 enum Socket::SocketType
 Ipv4RawSocketImpl::GetSocketType (void) const
 {
-  return SOCK_RAW;
+  return NS3_SOCK_RAW;
 }
 
 Ptr<Node> 

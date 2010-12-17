@@ -117,9 +117,9 @@ void BulkSendApplication::StartApplication (void) // Called at time specified by
     {
       m_socket = Socket::CreateSocket (GetNode (), m_tid);
 
-      // Fatal error if socket type is not SOCK_STREAM or SOCK_SEQPACKET
-      if (m_socket->GetSocketType () != Socket::SOCK_STREAM &&
-          m_socket->GetSocketType () != Socket::SOCK_SEQPACKET)
+      // Fatal error if socket type is not NS3_SOCK_STREAM or NS3_SOCK_SEQPACKET
+      if (m_socket->GetSocketType () != Socket::NS3_SOCK_STREAM &&
+          m_socket->GetSocketType () != Socket::NS3_SOCK_SEQPACKET)
         {
           NS_FATAL_ERROR ("Using BulkSend with an incompatible socket type. "
                           "BulkSend requires SOCK_STREAM or SOCK_SEQPACKET. "

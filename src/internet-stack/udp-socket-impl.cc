@@ -119,7 +119,7 @@ UdpSocketImpl::GetErrno (void) const
 enum Socket::SocketType
 UdpSocketImpl::GetSocketType (void) const
 {
-  return SOCK_DGRAM;
+  return NS3_SOCK_DGRAM;
 }
 
 Ptr<Node>

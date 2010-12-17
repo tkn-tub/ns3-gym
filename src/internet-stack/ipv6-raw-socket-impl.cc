@@ -99,7 +99,7 @@ enum Socket::SocketErrno Ipv6RawSocketImpl::GetErrno () const
 
 enum Socket::SocketType Ipv6RawSocketImpl::GetSocketType () const
 {
-  return SOCK_RAW;
+  return NS3_SOCK_RAW;
 }
 
 int Ipv6RawSocketImpl::Bind (const Address& address)

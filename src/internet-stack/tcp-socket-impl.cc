@@ -233,7 +233,7 @@ TcpSocketImpl::GetErrno (void) const
 enum Socket::SocketType
 TcpSocketImpl::GetSocketType (void) const
 {
-  return SOCK_STREAM;
+  return NS3_SOCK_STREAM;
 }
 
 Ptr<Node>

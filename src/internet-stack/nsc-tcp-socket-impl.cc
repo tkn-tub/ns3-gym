@@ -174,7 +174,7 @@ NscTcpSocketImpl::GetErrno (void) const
 enum Socket::SocketType
 NscTcpSocketImpl::GetSocketType (void) const
 {
-  return SOCK_STREAM;
+  return NS3_SOCK_STREAM;
 }
 
 Ptr<Node>

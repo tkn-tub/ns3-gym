@@ -86,10 +86,10 @@ public:
   };
 
   enum SocketType {
-    SOCK_STREAM,
-    SOCK_SEQPACKET,
-    SOCK_DGRAM,
-    SOCK_RAW
+    NS3_SOCK_STREAM,
+    NS3_SOCK_SEQPACKET,
+    NS3_SOCK_DGRAM,
+    NS3_SOCK_RAW
   };
 
   /**
