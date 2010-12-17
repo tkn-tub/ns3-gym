@@ -442,6 +442,16 @@ def register_Ns3AodvRoutingProtocol_methods(root_module, cls):
                    'bool', 
                    [], 
                    is_const=True)
+    ## aodv-routing-protocol.h: uint32_t ns3::aodv::RoutingProtocol::GetMaxQueueLen() const [member function]
+    cls.add_method('GetMaxQueueLen', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## aodv-routing-protocol.h: ns3::Time ns3::aodv::RoutingProtocol::GetMaxQueueTime() const [member function]
+    cls.add_method('GetMaxQueueTime', 
+                   'ns3::Time', 
+                   [], 
+                   is_const=True)
     ## aodv-routing-protocol.h: static ns3::TypeId ns3::aodv::RoutingProtocol::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
@@ -498,6 +508,14 @@ def register_Ns3AodvRoutingProtocol_methods(root_module, cls):
                    'void', 
                    [param('ns3::Ptr< ns3::Ipv4 >', 'ipv4')], 
                    is_virtual=True)
+    ## aodv-routing-protocol.h: void ns3::aodv::RoutingProtocol::SetMaxQueueLen(uint32_t len) [member function]
+    cls.add_method('SetMaxQueueLen', 
+                   'void', 
+                   [param('uint32_t', 'len')])
+    ## aodv-routing-protocol.h: void ns3::aodv::RoutingProtocol::SetMaxQueueTime(ns3::Time t) [member function]
+    cls.add_method('SetMaxQueueTime', 
+                   'void', 
+                   [param('ns3::Time', 't')])
     ## aodv-routing-protocol.h: ns3::aodv::RoutingProtocol::AODV_PORT [variable]
     cls.add_static_attribute('AODV_PORT', 'uint32_t const', is_const=True)
     return

@@ -67,14 +67,14 @@ def register_types(module):
     module.add_class('TimeChecker', parent=root_module['ns3::AttributeChecker'])
     ## nstime.h: ns3::TimeValue [class]
     module.add_class('TimeValue', parent=root_module['ns3::AttributeValue'])
-    typehandlers.add_type_alias('ns3::Time', 'ns3::TimeSquare')
-    typehandlers.add_type_alias('ns3::Time*', 'ns3::TimeSquare*')
-    typehandlers.add_type_alias('ns3::Time&', 'ns3::TimeSquare&')
-    module.add_typedef(root_module['ns3::Time'], 'TimeSquare')
     typehandlers.add_type_alias('ns3::Time', 'ns3::TimeInvert')
     typehandlers.add_type_alias('ns3::Time*', 'ns3::TimeInvert*')
     typehandlers.add_type_alias('ns3::Time&', 'ns3::TimeInvert&')
     module.add_typedef(root_module['ns3::Time'], 'TimeInvert')
+    typehandlers.add_type_alias('ns3::Time', 'ns3::TimeSquare')
+    typehandlers.add_type_alias('ns3::Time*', 'ns3::TimeSquare*')
+    typehandlers.add_type_alias('ns3::Time&', 'ns3::TimeSquare&')
+    module.add_typedef(root_module['ns3::Time'], 'TimeSquare')
     
     ## Register a nested module for the namespace Config
     
@@ -390,20 +390,20 @@ def register_Ns3Simulator_methods(root_module, cls):
 
 def register_Ns3Time_methods(root_module, cls):
     cls.add_binary_comparison_operator('!=')
-    cls.add_inplace_numeric_operator('+=', param('ns3::Time const &', 'right'))
-    cls.add_binary_numeric_operator('*', root_module['ns3::Time'], root_module['ns3::Time'], param('ns3::Time const &', 'right'))
-    cls.add_binary_numeric_operator('+', root_module['ns3::Time'], root_module['ns3::Time'], param('ns3::Time const &', 'right'))
-    cls.add_binary_numeric_operator('-', root_module['ns3::Time'], root_module['ns3::Time'], param('ns3::Time const &', 'right'))
-    cls.add_binary_numeric_operator('/', root_module['ns3::Time'], root_module['ns3::Time'], param('ns3::Time const &', 'right'))
-    cls.add_binary_comparison_operator('<')
-    cls.add_binary_comparison_operator('>')
     cls.add_inplace_numeric_operator('*=', param('ns3::Time const &', 'right'))
+    cls.add_inplace_numeric_operator('+=', param('ns3::Time const &', 'right'))
     cls.add_inplace_numeric_operator('-=', param('ns3::Time const &', 'right'))
     cls.add_inplace_numeric_operator('/=', param('ns3::Time const &', 'right'))
     cls.add_output_stream_operator()
     cls.add_binary_comparison_operator('<=')
     cls.add_binary_comparison_operator('==')
     cls.add_binary_comparison_operator('>=')
+    cls.add_binary_numeric_operator('*', root_module['ns3::Time'], root_module['ns3::Time'], param('ns3::Time const &', 'right'))
+    cls.add_binary_numeric_operator('+', root_module['ns3::Time'], root_module['ns3::Time'], param('ns3::Time const &', 'right'))
+    cls.add_binary_numeric_operator('-', root_module['ns3::Time'], root_module['ns3::Time'], param('ns3::Time const &', 'right'))
+    cls.add_binary_numeric_operator('/', root_module['ns3::Time'], root_module['ns3::Time'], param('ns3::Time const &', 'right'))
+    cls.add_binary_comparison_operator('<')
+    cls.add_binary_comparison_operator('>')
     ## nstime.h: ns3::Time::Time() [constructor]
     cls.add_constructor([])
     ## nstime.h: ns3::Time::Time(ns3::Time const & o) [copy constructor]

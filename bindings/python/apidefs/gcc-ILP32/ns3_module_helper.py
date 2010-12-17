@@ -19,6 +19,8 @@ def register_types(module):
     module.add_class('AsciiTraceHelperForIpv6', allow_subclassing=True)
     ## athstats-helper.h: ns3::AthstatsHelper [class]
     module.add_class('AthstatsHelper')
+    ## bulk-send-helper.h: ns3::BulkSendHelper [class]
+    module.add_class('BulkSendHelper')
     ## csma-star-helper.h: ns3::CsmaStarHelper [class]
     module.add_class('CsmaStarHelper')
     ## ipv4-address-helper.h: ns3::Ipv4AddressHelper [class]
@@ -229,6 +231,7 @@ def register_methods(root_module):
     register_Ns3AsciiTraceHelperForIpv4_methods(root_module, root_module['ns3::AsciiTraceHelperForIpv4'])
     register_Ns3AsciiTraceHelperForIpv6_methods(root_module, root_module['ns3::AsciiTraceHelperForIpv6'])
     register_Ns3AthstatsHelper_methods(root_module, root_module['ns3::AthstatsHelper'])
+    register_Ns3BulkSendHelper_methods(root_module, root_module['ns3::BulkSendHelper'])
     register_Ns3CsmaStarHelper_methods(root_module, root_module['ns3::CsmaStarHelper'])
     register_Ns3Ipv4AddressHelper_methods(root_module, root_module['ns3::Ipv4AddressHelper'])
     register_Ns3Ipv4InterfaceContainer_methods(root_module, root_module['ns3::Ipv4InterfaceContainer'])
@@ -665,6 +668,32 @@ def register_Ns3AthstatsHelper_methods(root_module, cls):
     cls.add_method('EnableAthstats', 
                    'void', 
                    [param('std::string', 'filename'), param('ns3::NodeContainer', 'n')])
+    return
+
+def register_Ns3BulkSendHelper_methods(root_module, cls):
+    ## bulk-send-helper.h: ns3::BulkSendHelper::BulkSendHelper(ns3::BulkSendHelper const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::BulkSendHelper const &', 'arg0')])
+    ## bulk-send-helper.h: ns3::BulkSendHelper::BulkSendHelper(std::string protocol, ns3::Address address) [constructor]
+    cls.add_constructor([param('std::string', 'protocol'), param('ns3::Address', 'address')])
+    ## bulk-send-helper.h: ns3::ApplicationContainer ns3::BulkSendHelper::Install(ns3::NodeContainer c) const [member function]
+    cls.add_method('Install', 
+                   'ns3::ApplicationContainer', 
+                   [param('ns3::NodeContainer', 'c')], 
+                   is_const=True)
+    ## bulk-send-helper.h: ns3::ApplicationContainer ns3::BulkSendHelper::Install(ns3::Ptr<ns3::Node> node) const [member function]
+    cls.add_method('Install', 
+                   'ns3::ApplicationContainer', 
+                   [param('ns3::Ptr< ns3::Node >', 'node')], 
+                   is_const=True)
+    ## bulk-send-helper.h: ns3::ApplicationContainer ns3::BulkSendHelper::Install(std::string nodeName) const [member function]
+    cls.add_method('Install', 
+                   'ns3::ApplicationContainer', 
+                   [param('std::string', 'nodeName')], 
+                   is_const=True)
+    ## bulk-send-helper.h: void ns3::BulkSendHelper::SetAttribute(std::string name, ns3::AttributeValue const & value) [member function]
+    cls.add_method('SetAttribute', 
+                   'void', 
+                   [param('std::string', 'name'), param('ns3::AttributeValue const &', 'value')])
     return
 
 def register_Ns3CsmaStarHelper_methods(root_module, cls):
