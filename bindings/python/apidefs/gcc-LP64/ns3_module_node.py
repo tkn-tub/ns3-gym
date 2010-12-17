@@ -104,7 +104,7 @@ def register_types(module):
     ## socket.h: ns3::Socket::SocketErrno [enumeration]
     module.add_enum('SocketErrno', ['ERROR_NOTERROR', 'ERROR_ISCONN', 'ERROR_NOTCONN', 'ERROR_MSGSIZE', 'ERROR_AGAIN', 'ERROR_SHUTDOWN', 'ERROR_OPNOTSUPP', 'ERROR_AFNOSUPPORT', 'ERROR_INVAL', 'ERROR_BADF', 'ERROR_NOROUTETOHOST', 'ERROR_NODEV', 'ERROR_ADDRNOTAVAIL', 'SOCKET_ERRNO_LAST'], outer_class=root_module['ns3::Socket'])
     ## socket.h: ns3::Socket::SocketType [enumeration]
-    module.add_enum('SocketType', ['SOCK_STREAM', 'SOCK_SEQPACKET', 'SOCK_DGRAM', 'SOCK_RAW'], outer_class=root_module['ns3::Socket'])
+    module.add_enum('SocketType', ['NS3_SOCK_STREAM', 'NS3_SOCK_SEQPACKET', 'NS3_SOCK_DGRAM', 'NS3_SOCK_RAW'], outer_class=root_module['ns3::Socket'])
     ## socket.h: ns3::SocketAddressTag [class]
     module.add_class('SocketAddressTag', parent=root_module['ns3::Tag'])
     ## socket-factory.h: ns3::SocketFactory [class]
