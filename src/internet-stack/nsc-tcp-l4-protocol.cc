@@ -37,8 +37,6 @@
 #include "nsc-tcp-socket-factory-impl.h"
 #include "sim_interface.h"
 
-#include "tcp-typedefs.h"
-
 #include <vector>
 #include <sstream>
 #include <dlfcn.h>

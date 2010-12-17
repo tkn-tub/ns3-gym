@@ -32,6 +32,8 @@ namespace ns3 {
 
 NS_OBJECT_ENSURE_REGISTERED (TcpSocket);
 
+const char* const TcpSocket::TcpStateName[LAST_STATE] = {"CLOSED", "LISTEN", "SYN_SENT", "SYN_RCVD", "ESTABLISHED", "CLOSE_WAIT", "LAST_ACK", "FIN_WAIT_1", "FIN_WAIT_2", "CLOSING", "TIME_WAIT" };
+
 TypeId
 TcpSocket::GetTypeId (void)
 {
@@ -83,7 +85,7 @@ TcpSocket::GetTypeId (void)
                    "Timeout value for TCP delayed acks, in seconds",
                    TimeValue (Seconds (0.2)),
                    MakeTimeAccessor (&TcpSocket::GetDelAckTimeout,
-                                       &TcpSocket::SetDelAckTimeout),
+                                     &TcpSocket::SetDelAckTimeout),
                    MakeTimeChecker ())
     .AddAttribute ("DelAckCount",
                    "Number of packets to wait before sending a TCP ack",
@@ -91,6 +93,12 @@ TcpSocket::GetTypeId (void)
                    MakeUintegerAccessor (&TcpSocket::GetDelAckMaxCount,
                                          &TcpSocket::SetDelAckMaxCount),
                    MakeUintegerChecker<uint32_t> ())
+    .AddAttribute ("PersistTimeout",
+                   "Persist timeout to probe for rx window",
+                   TimeValue (Seconds (6)),
+                   MakeTimeAccessor (&TcpSocket::GetPersistTimeout,
+                                     &TcpSocket::SetPersistTimeout),
+                   MakeTimeChecker ())
     ;
   return tid;
 }

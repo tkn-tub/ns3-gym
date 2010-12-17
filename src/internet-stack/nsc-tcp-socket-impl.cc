@@ -28,7 +28,6 @@
 #include "nsc-tcp-l4-protocol.h"
 #include "nsc-tcp-socket-impl.h"
 #include "ns3/simulation-singleton.h"
-#include "tcp-typedefs.h"
 #include "ns3/simulator.h"
 #include "ns3/packet.h"
 #include "ns3/uinteger.h"
@@ -39,8 +38,8 @@
 // for ntohs().
 #include <arpa/inet.h>
 #include <netinet/in.h>
-
 #include "sim_interface.h"
+
 #include "sim_errno.h"
 
 NS_LOG_COMPONENT_DEFINE ("NscTcpSocketImpl");
@@ -63,7 +62,7 @@ NscTcpSocketImpl::GetTypeId ()
   return tid;
 }
 
-  NscTcpSocketImpl::NscTcpSocketImpl ()
+NscTcpSocketImpl::NscTcpSocketImpl ()
   : m_endPoint (0),
     m_node (0),
     m_tcp (0),
@@ -793,6 +792,18 @@ uint32_t
 NscTcpSocketImpl::GetDelAckMaxCount (void) const
 {
   return m_delAckMaxCount;
+}
+
+void 
+NscTcpSocketImpl::SetPersistTimeout (Time timeout)
+{
+  m_persistTimeout = timeout;
+}
+
+Time
+NscTcpSocketImpl::GetPersistTimeout (void) const
+{
+  return m_persistTimeout;
 }
 
 enum Socket::SocketErrno
