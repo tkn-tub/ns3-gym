@@ -5,6 +5,8 @@ def register_types(module):
     
     ## packetbb.h: ns3::PbbAddressLength [enumeration]
     module.add_enum('PbbAddressLength', ['IPV4', 'IPV6'])
+    ## tcp-socket.h: ns3::TcpStates_t [enumeration]
+    module.add_enum('TcpStates_t', ['CLOSED', 'LISTEN', 'SYN_SENT', 'SYN_RCVD', 'ESTABLISHED', 'CLOSE_WAIT', 'LAST_ACK', 'FIN_WAIT_1', 'FIN_WAIT_2', 'CLOSING', 'TIME_WAIT', 'LAST_STATE'])
     ## ethernet-header.h: ns3::ethernet_header_t [enumeration]
     module.add_enum('ethernet_header_t', ['LENGTH', 'VLAN', 'QINQ'])
     ## address.h: ns3::Address [class]
@@ -2593,6 +2595,8 @@ def register_Ns3TcpSocket_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
+    ## tcp-socket.h: ns3::TcpSocket::TcpStateName [variable]
+    cls.add_static_attribute('TcpStateName', 'char const * [ 11 ] const', is_const=True)
     ## tcp-socket.h: uint32_t ns3::TcpSocket::GetConnCount() const [member function]
     cls.add_method('GetConnCount', 
                    'uint32_t', 
@@ -2616,6 +2620,11 @@ def register_Ns3TcpSocket_methods(root_module, cls):
     ## tcp-socket.h: uint32_t ns3::TcpSocket::GetInitialCwnd() const [member function]
     cls.add_method('GetInitialCwnd', 
                    'uint32_t', 
+                   [], 
+                   is_pure_virtual=True, is_const=True, visibility='private', is_virtual=True)
+    ## tcp-socket.h: ns3::Time ns3::TcpSocket::GetPersistTimeout() const [member function]
+    cls.add_method('GetPersistTimeout', 
+                   'ns3::Time', 
                    [], 
                    is_pure_virtual=True, is_const=True, visibility='private', is_virtual=True)
     ## tcp-socket.h: uint32_t ns3::TcpSocket::GetRcvBufSize() const [member function]
@@ -2662,6 +2671,11 @@ def register_Ns3TcpSocket_methods(root_module, cls):
     cls.add_method('SetInitialCwnd', 
                    'void', 
                    [param('uint32_t', 'count')], 
+                   is_pure_virtual=True, visibility='private', is_virtual=True)
+    ## tcp-socket.h: void ns3::TcpSocket::SetPersistTimeout(ns3::Time timeout) [member function]
+    cls.add_method('SetPersistTimeout', 
+                   'void', 
+                   [param('ns3::Time', 'timeout')], 
                    is_pure_virtual=True, visibility='private', is_virtual=True)
     ## tcp-socket.h: void ns3::TcpSocket::SetRcvBufSize(uint32_t size) [member function]
     cls.add_method('SetRcvBufSize', 
