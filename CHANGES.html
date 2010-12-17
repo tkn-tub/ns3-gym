@@ -82,6 +82,11 @@ InitialPositionIs Waypoint.  See RELEASE_NOTES for details.  </p> </li>
 in Mbps (6, 9, 12, 18, 24, 36, 48, 54), are available for 802.11g.  
 More details are in the RELEASE_NOTES for details.  </p> </li>
 
+<li><b>Socket::GetSocketType ()</b>
+<p>This is analogous to getsockopt(SO_TYPE). ipv4-raw-socket, ipv6-raw-socket,
+  and packet-socket return SOCK_RAW. tcp-socket and nsc-tcp-socket return
+  SOCK_STREAM. udp-socket returns SOCK_DGRAM.</p></li>
+
 </ul>
 
 <h2>Changes to existing API:</h2>

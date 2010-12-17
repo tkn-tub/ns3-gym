@@ -97,6 +97,11 @@ enum Socket::SocketErrno Ipv6RawSocketImpl::GetErrno () const
   return m_err;
 }
 
+enum Socket::SocketType Ipv6RawSocketImpl::GetSocketType () const
+{
+  return SOCK_RAW;
+}
+
 int Ipv6RawSocketImpl::Bind (const Address& address)
 {
   NS_LOG_FUNCTION (this << address);

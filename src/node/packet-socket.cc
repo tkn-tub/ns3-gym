@@ -89,6 +89,12 @@ PacketSocket::GetErrno (void) const
   return m_errno;
 }
 
+enum Socket::SocketType
+PacketSocket::GetSocketType (void) const
+{
+  return SOCK_RAW;
+}
+
 Ptr<Node>
 PacketSocket::GetNode (void) const
 {

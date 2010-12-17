@@ -230,6 +230,12 @@ TcpSocketImpl::GetErrno (void) const
   return m_errno;
 }
 
+enum Socket::SocketType
+TcpSocketImpl::GetSocketType (void) const
+{
+  return SOCK_STREAM;
+}
+
 Ptr<Node>
 TcpSocketImpl::GetNode (void) const
 {

@@ -171,6 +171,12 @@ NscTcpSocketImpl::GetErrno (void) const
   return m_errno;
 }
 
+enum Socket::SocketType
+NscTcpSocketImpl::GetSocketType (void) const
+{
+  return SOCK_STREAM;
+}
+
 Ptr<Node>
 NscTcpSocketImpl::GetNode (void) const
 {

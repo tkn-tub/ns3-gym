@@ -81,6 +81,7 @@ public:
   void SetRtt (Ptr<RttEstimator> rtt);
 
   virtual enum SocketErrno GetErrno (void) const;
+  virtual enum SocketType GetSocketType (void) const;
   virtual Ptr<Node> GetNode (void) const;
   virtual int Bind (void);
   virtual int Bind (const Address &address);

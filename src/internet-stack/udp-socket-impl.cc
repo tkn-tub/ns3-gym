@@ -116,6 +116,12 @@ UdpSocketImpl::GetErrno (void) const
   return m_errno;
 }
 
+enum Socket::SocketType
+UdpSocketImpl::GetSocketType (void) const
+{
+  return SOCK_DGRAM;
+}
+
 Ptr<Node>
 UdpSocketImpl::GetNode (void) const
 {
