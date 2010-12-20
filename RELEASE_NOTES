@@ -71,6 +71,12 @@ New user-visible features
      application only works with SOCK_STREAM and SOCK_SEQPACKET 
      sockets, for example TCP sockets and not UDP sockets.
 
+   - Extensions to the energy models:  1) a new Rakhmatov Vrudhula 
+     non-linear battery model, 2) additional support for modeling 
+     energy consumption in WiFi devices, 3) an example for how to add 
+     energy models to a WiFi-based simulation (in examples/energy/ 
+     directory).
+
 Bugs fixed
 ----------
 The following lists many of the bugs fixed or small feature additions

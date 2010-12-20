@@ -6,13 +6,16 @@ def build(bld):
         'model/wifi-radio-energy-model.cc',
         'model/energy-source.cc',
         'model/basic-energy-source.cc',
+        'model/rv-battery-model.cc',
         'model/device-energy-model.cc',
         'model/device-energy-model-container.cc',
         'helper/energy-source-container.cc',
         'helper/energy-model-helper.cc',
         'helper/basic-energy-source-helper.cc',
         'helper/wifi-radio-energy-model-helper.cc',
+        'helper/rv-battery-model-helper.cc',
         'test/basic-energy-model-test.cc',
+        'test/rv-battery-model-test.cc',
         ]
     headers = bld.new_task_gen('ns3header')
     headers.module = 'energy'
@@ -20,10 +23,12 @@ def build(bld):
         'model/wifi-radio-energy-model.h',
         'model/energy-source.h',
         'model/basic-energy-source.h',
+        'model/rv-battery-model.h',
         'model/device-energy-model.h',
         'model/device-energy-model-container.h',
         'helper/energy-source-container.h',
         'helper/energy-model-helper.h',
         'helper/basic-energy-source-helper.h',
         'helper/wifi-radio-energy-model-helper.h',
+        'helper/rv-battery-model-helper.h',
         ]

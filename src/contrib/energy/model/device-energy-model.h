@@ -53,20 +53,6 @@ public:
   virtual ~DeviceEnergyModel ();
 
   /**
-   * \brief Sets pointer to node containing this EnergySource.
-   *
-   * \param node Pointer to node containing this EnergySource.
-   */
-  virtual void SetNode (Ptr<Node> node) = 0;
-
-  /**
-   * \brief Gets pointer to node containing this EnergySource.
-   *
-   * \returns Pointer to node containing this EnergySource.
-   */
-  virtual Ptr<Node> GetNode (void) const = 0;
-
-  /**
    * \param source Pointer to energy source installed on node.
    *
    * This function sets the pointer to energy source installed on node. Should

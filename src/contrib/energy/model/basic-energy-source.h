@@ -68,20 +68,6 @@ public:
   virtual double GetEnergyFraction (void);
 
   /**
-   * \param energyJ Amount of energy (in Joules) to decrease from energy source.
-   *
-   * Implements DecreaseRemainingEnergy.
-   */
-  virtual void DecreaseRemainingEnergy (double energyJ);
-
-  /**
-   * \param energyJ Amount of energy (in Joules) to increase from energy source.
-   *
-   * Implements IncreaseRemainingEnergy.
-   */
-  virtual void IncreaseRemainingEnergy (double energyJ);
-
-  /**
    * Implements UpdateEnergySource.
    */
   virtual void UpdateEnergySource (void);
@@ -116,7 +102,10 @@ public:
 
 
 private:
+  /// Defined in ns3::Object
   void DoStart (void);
+
+  /// Defined in ns3::Object
   void DoDispose (void);
 
   /**
