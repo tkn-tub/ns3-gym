@@ -60,6 +60,7 @@ EnbMacEntity::~EnbMacEntity ()
 {
   m_downlinkScheduler = 0;
   m_uplinkScheduler = 0;
+  MacEntity::DoDispose ();
 }
 
 

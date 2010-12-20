@@ -58,6 +58,9 @@ RadioBearerInstance::RadioBearerInstance ()
 
 RadioBearerInstance::~RadioBearerInstance ()
 {
+  m_rlcEntity = 0;
+  m_queue = 0;
+  m_ipcsClassifierRecord = 0;
 }
 
 void

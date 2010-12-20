@@ -89,6 +89,7 @@ UeNetDevice::~UeNetDevice (void)
 {
   NS_LOG_FUNCTION (this);
   m_macEntity = 0;
+  LteNetDevice::DoDispose ();
 }
 
 void

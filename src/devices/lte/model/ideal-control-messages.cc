@@ -109,7 +109,7 @@ PdcchMapIdealControlMessage::PdcchMapIdealControlMessage (void)
 
 PdcchMapIdealControlMessage::~PdcchMapIdealControlMessage (void)
 {
-  m_idealPdcchMessage = 0;
+ delete  m_idealPdcchMessage;
 }
 
 
@@ -152,7 +152,7 @@ CqiIdealControlMessage::CqiIdealControlMessage (void)
 
 CqiIdealControlMessage::~CqiIdealControlMessage (void)
 {
-  m_cqiFeedbacks = 0;
+  delete m_cqiFeedbacks;
 }
 
 

@@ -155,6 +155,7 @@ UeLtePhy::CreateCqiFeedbacks (std::vector<double> sinr)
   Ptr<UeMacEntity> mac = thisDevice->GetMacEntity ()->GetObject<UeMacEntity> ();
   CqiIdealControlMessage* msg = mac->CreateCqiFeedbacks (sinr);
   SendIdealControlMessage (msg);
+  delete msg;
 }
 
 void

@@ -42,6 +42,8 @@ public:
   MacEntity (void);
   virtual ~MacEntity (void);
 
+  virtual void DoDispose (void);
+
   /** 
    * \brief Set the device where the mac entity is attached
    * \param d the device

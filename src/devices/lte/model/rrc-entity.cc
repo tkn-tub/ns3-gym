@@ -64,6 +64,7 @@ RrcEntity::~RrcEntity ()
   delete m_downlinkNgbrBearersContainer;
   delete m_uplinkGbrBearersContainer;
   delete m_uplinkNgbrBearersContainer;
+  m_defaultBearer = 0;
 }
 
 void

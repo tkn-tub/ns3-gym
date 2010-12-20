@@ -141,6 +141,8 @@ SimplePacketScheduler::DoRunPacketScheduler (void)
 
    GetMacEntity ()->GetObject<EnbMacEntity> ()->SendPdcchMapIdealControlMessage (msg);
 
+   delete msg;
+
    enb->StartTransmission ();
 }
 

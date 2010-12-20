@@ -84,6 +84,7 @@ EnbNetDevice::~EnbNetDevice (void)
   NS_LOG_FUNCTION (this);
   m_ueManager = 0;
   m_macEntity = 0;
+  LteNetDevice::DoDispose ();
 }
 
 void

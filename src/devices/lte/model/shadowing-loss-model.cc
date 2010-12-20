@@ -60,6 +60,7 @@ ShadowingLossModel::GetTypeId (void)
 
 ShadowingLossModel::~ShadowingLossModel ()
 {
+  delete m_randVariable;
 }
 
 

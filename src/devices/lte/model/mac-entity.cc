@@ -54,6 +54,12 @@ MacEntity::~MacEntity ()
   m_device = 0;
 }
 
+void 
+MacEntity::DoDispose (void)
+{
+  m_amcModule = 0;
+  m_device = 0;
+}
 
 void
 MacEntity::SetDevice (Ptr<LteNetDevice> d)

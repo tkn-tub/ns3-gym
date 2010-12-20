@@ -79,9 +79,9 @@ JakesFadingLossModel::GetTypeId (void)
 
 JakesFadingLossModel::~JakesFadingLossModel ()
 {
-  m_multipath = 0;
-  m_nbOfPaths = 0;
-  m_startJakes = 0;
+ delete  m_multipath;
+ delete  m_nbOfPaths;
+ delete  m_startJakes;
 }
 
 
