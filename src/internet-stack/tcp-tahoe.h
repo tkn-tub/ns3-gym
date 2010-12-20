@@ -50,8 +50,9 @@ public:
   TcpTahoe (const TcpTahoe& sock);
   virtual ~TcpTahoe (void);
 
-  // Set associated Node, TcpL4Protocol, RttEstimator to this socket
-  virtual void SetNode (Ptr<Node> node);
+  // From TcpSocketBase
+  virtual int Connect (const Address &address);      
+  virtual int Listen (void);  
 
 protected:
   virtual uint32_t Window (void); // Return the max possible number of unacked bytes
@@ -66,6 +67,8 @@ protected:
   virtual uint32_t GetSSThresh (void) const;
   virtual void     SetInitialCwnd (uint32_t cwnd);
   virtual uint32_t GetInitialCwnd (void) const;
+private:
+  void InitializeCwnd (void);            // set m_cWnd when connection starts
 
 protected:
   TracedValue<uint32_t>  m_cWnd;         //< Congestion window

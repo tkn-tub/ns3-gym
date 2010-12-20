@@ -66,16 +66,22 @@ TcpTahoe::~TcpTahoe (void)
 {
 }
 
-void
-TcpTahoe::SetNode (Ptr<Node> node)
+/** We initialize m_cWnd from this function, after attributes initialized */
+int
+TcpTahoe::Listen (void)
 {
-  TcpSocketBase::SetNode (node);
-  /*
-   * Initialize congestion window, default to 1 MSS (RFC2001, sec.1) and must
-   * not be larger than 2 MSS (RFC2581, sec.3.1). Both m_initiaCWnd and
-   * m_segmentSize are set by the attribute system in ns3::TcpSocket.
-   */
-  m_cWnd = m_initialCWnd * m_segmentSize;
+  NS_LOG_FUNCTION (this);
+  InitializeCwnd ();
+  return TcpSocketBase::Listen ();
+}
+
+/** We initialize m_cWnd from this function, after attributes initialized */
+int
+TcpTahoe::Connect (const Address & address)
+{
+  NS_LOG_FUNCTION (this << address);
+  InitializeCwnd ();
+  return TcpSocketBase::Connect (address);
 }
 
 /** Limit the size of in-flight data by cwnd and receiver's rxwin */
@@ -158,7 +164,6 @@ TcpTahoe::SetSegSize (uint32_t size)
 {
   NS_ABORT_MSG_UNLESS (m_state == CLOSED, "TcpTahoe::SetSegSize() cannot change segment size after connection started.");
   m_segmentSize = size;
-  m_cWnd = m_initialCWnd * m_segmentSize;
 }
 
 void
@@ -178,13 +183,23 @@ TcpTahoe::SetInitialCwnd (uint32_t cwnd)
 {
   NS_ABORT_MSG_UNLESS (m_state == CLOSED, "TcpTahoe::SetInitialCwnd() cannot change initial cwnd after connection started.");
   m_initialCWnd = cwnd;
-  m_cWnd = m_initialCWnd * m_segmentSize;
 }
 
 uint32_t
 TcpTahoe::GetInitialCwnd (void) const
 {
   return m_initialCWnd;
+}
+
+void 
+TcpTahoe::InitializeCwnd (void)
+{
+  /*
+   * Initialize congestion window, default to 1 MSS (RFC2001, sec.1) and must
+   * not be larger than 2 MSS (RFC2581, sec.3.1). Both m_initiaCWnd and
+   * m_segmentSize are set by the attribute system in ns3::TcpSocket.
+   */
+  m_cWnd = m_initialCWnd * m_segmentSize;
 }
 
 } // namespace ns3

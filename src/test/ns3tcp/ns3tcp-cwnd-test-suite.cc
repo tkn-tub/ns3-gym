@@ -345,14 +345,15 @@ Ns3TcpCwndTestCase1::DoRun (void)
   // reflecting the change from LARGEST_CWND back to MSS
   //
   const uint32_t MSS = 536;
-  const uint32_t N_EVENTS = 20;
+  const uint32_t N_EVENTS = 21;
 
   CwndEvent event;
 
   NS_TEST_ASSERT_MSG_EQ (m_responses.GetN (), N_EVENTS, "Unexpectedly low number of cwnd change events");
 
 
-  for (uint32_t i = 0, from = MSS, to = MSS * 2; i < N_EVENTS; ++i, from += MSS, to += MSS)
+  // Ignore the first event logged (i=0) when m_cWnd goes from 0 to MSS bytes
+  for (uint32_t i = 1, from = MSS, to = MSS * 2; i < N_EVENTS; ++i, from += MSS, to += MSS)
     {
       event = m_responses.Get (i);
       NS_TEST_ASSERT_MSG_EQ (event.m_oldCwnd, from, "Wrong old cwnd value in cwnd change event " << i);
@@ -507,8 +508,8 @@ Ns3TcpCwndTestCase2::DoRun (void)
   // the congestion window as it opens up when the ns-3 TCP under test 
   // transmits its bits
   //
-  // From inspecting the results, we know that we should see 43 congestion
-  // window change events. On the ninth change event, the window should 
+  // From inspecting the results, we know that we should see N_EVENTS congestion
+  // window change events. On the tenth change event, the window should 
   // be cut from 5360 to 4288 due to 3 dup acks (NewReno behavior is to
   // cut in half, and then add 3 segments (5360/2 + 3*536 = 4288)
   // It should then increment cwnd by one segment per ack throughout
@@ -516,16 +517,18 @@ Ns3TcpCwndTestCase2::DoRun (void)
   // within the fast recovery window (with sequence numbers starting at
   // 9113, 10721, and 12329).  This last segment (12329) is not recovered
   // by a fast retransmit and consequently, a coarse timeout is taken and
-  // cwnd is reset to MSS at event index 31.  It slow starts again, and takes
-  // another fast retransmit at index 41.
+  // cwnd is reset to MSS at event index 32.  It slow starts again, and takes
+  // another fast retransmit at index 42.
   //
   const uint32_t MSS = 536;
+  const uint32_t N_EVENTS = 44;
 
   CwndEvent event;
 
-  NS_TEST_ASSERT_MSG_EQ (m_responses.GetN (), 43, "Unexpected number of cwnd change events");
+  NS_TEST_ASSERT_MSG_EQ (m_responses.GetN (), N_EVENTS, "Unexpected number of cwnd change events");
 
-  for (uint32_t i = 0, from = MSS, to = MSS * 2; i < 9; ++i, from += MSS, to += MSS)
+  // Ignore the first event logged (i=0) when m_cWnd goes from 0 to MSS bytes
+  for (uint32_t i = 1, from = MSS, to = MSS * 2; i < 10; ++i, from += MSS, to += MSS)
     {
       event = m_responses.Get (i);
       NS_TEST_ASSERT_MSG_EQ (event.m_oldCwnd, from, "Wrong old cwnd value in cwnd change event " << i);
@@ -533,11 +536,11 @@ Ns3TcpCwndTestCase2::DoRun (void)
     }
 
   // Cwnd should be back to (10/2 + 3) = 8*MSS
-  event = m_responses.Get (9);
-  NS_TEST_ASSERT_MSG_EQ (event.m_newCwnd, 8*MSS, "Wrong new cwnd value in cwnd change event " << 9);
+  event = m_responses.Get (10);
+  NS_TEST_ASSERT_MSG_EQ (event.m_newCwnd, 8*MSS, "Wrong new cwnd value in cwnd change event " << 10);
 
   // Fast recovery
-  for (uint32_t i = 10, from = 8*MSS, to = 9 * MSS; i < 31; ++i, from += MSS, to += MSS)
+  for (uint32_t i = 11, from = 8*MSS, to = 9 * MSS; i < 32; ++i, from += MSS, to += MSS)
     {
       event = m_responses.Get (i);
       NS_TEST_ASSERT_MSG_EQ (event.m_oldCwnd, from, "Wrong old cwnd value in cwnd change event " << i);
@@ -545,7 +548,7 @@ Ns3TcpCwndTestCase2::DoRun (void)
     }
 
   // Slow start again after coarse timeout
-  for (uint32_t i = 32, from = MSS, to = MSS * 2; i < 41; ++i, from += MSS, to += MSS)
+  for (uint32_t i = 33, from = MSS, to = MSS * 2; i < 42; ++i, from += MSS, to += MSS)
     {
       event = m_responses.Get (i);
       NS_TEST_ASSERT_MSG_EQ (event.m_oldCwnd, from, "Wrong old cwnd value in cwnd change event " << i);
@@ -553,8 +556,8 @@ Ns3TcpCwndTestCase2::DoRun (void)
     }
 
   // Fast retransmit again; cwnd should be back to 8*MSS
-  event = m_responses.Get (41);
-  NS_TEST_ASSERT_MSG_EQ (event.m_newCwnd, 8*MSS, "Wrong new cwnd value in cwnd change event " << 41);
+  event = m_responses.Get (42);
+  NS_TEST_ASSERT_MSG_EQ (event.m_newCwnd, 8*MSS, "Wrong new cwnd value in cwnd change event " << 42);
 
   return GetErrorStatus ();
 }

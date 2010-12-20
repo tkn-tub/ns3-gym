@@ -67,16 +67,22 @@ TcpNewReno::~TcpNewReno (void)
 {
 }
 
-void
-TcpNewReno::SetNode (Ptr<Node> node)
+/** We initialize m_cWnd from this function, after attributes initialized */
+int
+TcpNewReno::Listen (void)
 {
-  TcpSocketBase::SetNode (node);
-  /*
-   * Initialize congestion window, default to 1 MSS (RFC2001, sec.1) and must
-   * not be larger than 2 MSS (RFC2581, sec.3.1). Both m_initiaCWnd and
-   * m_segmentSize are set by the attribute system in ns3::TcpSocket.
-   */
-  m_cWnd = m_initialCWnd * m_segmentSize;
+  NS_LOG_FUNCTION (this);
+  InitializeCwnd ();
+  return TcpSocketBase::Listen ();
+}
+
+/** We initialize m_cWnd from this function, after attributes initialized */
+int
+TcpNewReno::Connect (const Address & address)
+{
+  NS_LOG_FUNCTION (this << address);
+  InitializeCwnd ();
+  return TcpSocketBase::Connect (address);
 }
 
 /** Limit the size of in-flight data by cwnd and receiver's rxwin */
@@ -189,7 +195,6 @@ TcpNewReno::SetSegSize (uint32_t size)
 {
   NS_ABORT_MSG_UNLESS (m_state == CLOSED, "TcpNewReno::SetSegSize() cannot change segment size after connection started.");
   m_segmentSize = size;
-  m_cWnd = m_initialCWnd * m_segmentSize;
 }
 
 void
@@ -209,13 +214,23 @@ TcpNewReno::SetInitialCwnd (uint32_t cwnd)
 {
   NS_ABORT_MSG_UNLESS (m_state == CLOSED, "TcpNewReno::SetInitialCwnd() cannot change initial cwnd after connection started.");
   m_initialCWnd = cwnd;
-  m_cWnd = m_initialCWnd * m_segmentSize;
 }
 
 uint32_t
 TcpNewReno::GetInitialCwnd (void) const
 {
   return m_initialCWnd;
+}
+
+void 
+TcpNewReno::InitializeCwnd (void)
+{
+  /*
+   * Initialize congestion window, default to 1 MSS (RFC2001, sec.1) and must
+   * not be larger than 2 MSS (RFC2581, sec.3.1). Both m_initiaCWnd and
+   * m_segmentSize are set by the attribute system in ns3::TcpSocket.
+   */
+  m_cWnd = m_initialCWnd * m_segmentSize;
 }
 
 } // namespace ns3
