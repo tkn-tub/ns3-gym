@@ -166,8 +166,8 @@ int main (int argc, char *argv[])
 
   // Connect the nodes
   PointToPointHelper p2p;
-  p2p.SetDeviceAttribute ("DataRate", DataRateValue (DataRate (1e6)));
-  p2p.SetChannelAttribute ("Delay", TimeValue (MilliSeconds (0.1)));
+  p2p.SetDeviceAttribute ("DataRate", DataRateValue (DataRate (1000000)));
+  p2p.SetChannelAttribute ("Delay", TimeValue (Seconds (0.0001)));
   NetDeviceContainer dev0 = p2p.Install (n0n1);
   NetDeviceContainer dev1 = p2p.Install (n1n2);
 
@@ -214,7 +214,7 @@ int main (int argc, char *argv[])
       totalTxBytes = 1000;
       break;
     case 1: // Verify a bigger (100 pkts) transfer: Sliding window operation, etc.
-      totalTxBytes = 1e5;
+      totalTxBytes = 100*1000;
       break;
     case 2: // Survive a SYN lost
       totalTxBytes = 1000;

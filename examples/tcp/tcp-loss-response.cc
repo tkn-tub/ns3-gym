@@ -140,10 +140,10 @@ int main (int argc, char *argv[])
   // Connect the nodes
   PointToPointHelper p2p;
   p2p.SetDeviceAttribute ("DataRate", DataRateValue (DataRate (8000000)));
-  p2p.SetChannelAttribute ("Delay", TimeValue (MilliSeconds (0.1)));
+  p2p.SetChannelAttribute ("Delay", TimeValue (Seconds (0.0001)));
   NetDeviceContainer dev0 = p2p.Install (s1r1);
   p2p.SetDeviceAttribute ("DataRate", DataRateValue (DataRate (800000)));
-  p2p.SetChannelAttribute ("Delay", TimeValue (MilliSeconds (100)));
+  p2p.SetChannelAttribute ("Delay", TimeValue (Seconds (0.1)));
   NetDeviceContainer dev1 = p2p.Install (r1k1);
 
   // Add IP addresses to each network interfaces
