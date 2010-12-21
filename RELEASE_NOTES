@@ -77,6 +77,8 @@ New user-visible features
      energy models to a WiFi-based simulation (in examples/energy/ 
      directory).
 
+   - New methods to print IPv4 routing tables to an output stream.
+
 Bugs fixed
 ----------
 The following lists many of the bugs fixed or small feature additions
