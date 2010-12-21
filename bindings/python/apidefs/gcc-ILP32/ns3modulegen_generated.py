@@ -588,6 +588,8 @@ def register_types(module):
     module.add_class('TxPacketSample', parent=root_module['ns3::PyViz::PacketSample'], outer_class=root_module['ns3::PyViz'])
     ## uan-mac-rc.h: ns3::Reservation [class]
     module.add_class('Reservation')
+    ## rv-battery-model-helper.h: ns3::RvBatteryModelHelper [class]
+    module.add_class('RvBatteryModelHelper', parent=root_module['ns3::EnergySourceHelper'])
     ## uan-prop-model.h: ns3::Tap [class]
     module.add_class('Tap')
     ## uan-address.h: ns3::UanAddress [class]
@@ -612,6 +614,8 @@ def register_types(module):
     module.add_class('UanTxModeFactory')
     ## wifi-radio-energy-model-helper.h: ns3::WifiRadioEnergyModelHelper [class]
     module.add_class('WifiRadioEnergyModelHelper', parent=root_module['ns3::DeviceEnergyModelHelper'])
+    ## wifi-radio-energy-model.h: ns3::WifiRadioEnergyModelPhyListener [class]
+    module.add_class('WifiRadioEnergyModelPhyListener', parent=root_module['ns3::WifiPhyListener'])
     ## basic-energy-source-helper.h: ns3::BasicEnergySourceHelper [class]
     module.add_class('BasicEnergySourceHelper', parent=root_module['ns3::EnergySourceHelper'])
     ## ipv4-global-routing-helper.h: ns3::Ipv4GlobalRoutingHelper [class]
@@ -712,6 +716,8 @@ def register_types(module):
     module.add_class('Ipv4StaticRouting', parent=root_module['ns3::Ipv4RoutingProtocol'])
     ## ipv6-static-routing.h: ns3::Ipv6StaticRouting [class]
     module.add_class('Ipv6StaticRouting', parent=root_module['ns3::Ipv6RoutingProtocol'])
+    ## rv-battery-model.h: ns3::RvBatteryModel [class]
+    module.add_class('RvBatteryModel', parent=root_module['ns3::EnergySource'])
     ## uan-channel.h: ns3::UanChannel [class]
     module.add_class('UanChannel', parent=root_module['ns3::Channel'])
     ## uan-tx-mode.h: ns3::UanModesListChecker [class]
@@ -724,8 +730,6 @@ def register_types(module):
     module.add_class('VirtualNetDevice', parent=root_module['ns3::NetDevice'])
     ## wifi-radio-energy-model.h: ns3::WifiRadioEnergyModel [class]
     module.add_class('WifiRadioEnergyModel', parent=root_module['ns3::DeviceEnergyModel'])
-    ## wifi-radio-energy-model.h: ns3::WifiRadioEnergyModel::WifiRadioState [enumeration]
-    module.add_enum('WifiRadioState', ['TX', 'RX', 'IDLE', 'SLEEP'], outer_class=root_module['ns3::WifiRadioEnergyModel'])
     ## basic-energy-source.h: ns3::BasicEnergySource [class]
     module.add_class('BasicEnergySource', parent=root_module['ns3::EnergySource'])
     ## bridge-channel.h: ns3::BridgeChannel [class]
@@ -971,6 +975,7 @@ def register_methods(root_module):
     register_Ns3PyVizTransmissionSample_methods(root_module, root_module['ns3::PyViz::TransmissionSample'])
     register_Ns3PyVizTxPacketSample_methods(root_module, root_module['ns3::PyViz::TxPacketSample'])
     register_Ns3Reservation_methods(root_module, root_module['ns3::Reservation'])
+    register_Ns3RvBatteryModelHelper_methods(root_module, root_module['ns3::RvBatteryModelHelper'])
     register_Ns3Tap_methods(root_module, root_module['ns3::Tap'])
     register_Ns3UanAddress_methods(root_module, root_module['ns3::UanAddress'])
     register_Ns3UanHelper_methods(root_module, root_module['ns3::UanHelper'])
@@ -981,6 +986,7 @@ def register_methods(root_module):
     register_Ns3UanTxMode_methods(root_module, root_module['ns3::UanTxMode'])
     register_Ns3UanTxModeFactory_methods(root_module, root_module['ns3::UanTxModeFactory'])
     register_Ns3WifiRadioEnergyModelHelper_methods(root_module, root_module['ns3::WifiRadioEnergyModelHelper'])
+    register_Ns3WifiRadioEnergyModelPhyListener_methods(root_module, root_module['ns3::WifiRadioEnergyModelPhyListener'])
     register_Ns3BasicEnergySourceHelper_methods(root_module, root_module['ns3::BasicEnergySourceHelper'])
     register_Ns3Ipv4GlobalRoutingHelper_methods(root_module, root_module['ns3::Ipv4GlobalRoutingHelper'])
     register_Ns3Ipv4ListRoutingHelper_methods(root_module, root_module['ns3::Ipv4ListRoutingHelper'])
@@ -1027,6 +1033,7 @@ def register_methods(root_module):
     register_Ns3Ipv4FlowProbe_methods(root_module, root_module['ns3::Ipv4FlowProbe'])
     register_Ns3Ipv4StaticRouting_methods(root_module, root_module['ns3::Ipv4StaticRouting'])
     register_Ns3Ipv6StaticRouting_methods(root_module, root_module['ns3::Ipv6StaticRouting'])
+    register_Ns3RvBatteryModel_methods(root_module, root_module['ns3::RvBatteryModel'])
     register_Ns3UanChannel_methods(root_module, root_module['ns3::UanChannel'])
     register_Ns3UanModesListChecker_methods(root_module, root_module['ns3::UanModesListChecker'])
     register_Ns3UanModesListValue_methods(root_module, root_module['ns3::UanModesListValue'])
@@ -2756,6 +2763,23 @@ def register_Ns3Reservation_methods(root_module, cls):
                    [param('bool', 't', default_value='true')])
     return
 
+def register_Ns3RvBatteryModelHelper_methods(root_module, cls):
+    ## rv-battery-model-helper.h: ns3::RvBatteryModelHelper::RvBatteryModelHelper(ns3::RvBatteryModelHelper const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::RvBatteryModelHelper const &', 'arg0')])
+    ## rv-battery-model-helper.h: ns3::RvBatteryModelHelper::RvBatteryModelHelper() [constructor]
+    cls.add_constructor([])
+    ## rv-battery-model-helper.h: void ns3::RvBatteryModelHelper::Set(std::string name, ns3::AttributeValue const & v) [member function]
+    cls.add_method('Set', 
+                   'void', 
+                   [param('std::string', 'name'), param('ns3::AttributeValue const &', 'v')], 
+                   is_virtual=True)
+    ## rv-battery-model-helper.h: ns3::Ptr<ns3::EnergySource> ns3::RvBatteryModelHelper::DoInstall(ns3::Ptr<ns3::Node> node) const [member function]
+    cls.add_method('DoInstall', 
+                   'ns3::Ptr< ns3::EnergySource >', 
+                   [param('ns3::Ptr< ns3::Node >', 'node')], 
+                   is_const=True, visibility='private', is_virtual=True)
+    return
+
 def register_Ns3Tap_methods(root_module, cls):
     ## uan-prop-model.h: ns3::Tap::Tap(ns3::Tap const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::Tap const &', 'arg0')])
@@ -3127,6 +3151,47 @@ def register_Ns3WifiRadioEnergyModelHelper_methods(root_module, cls):
                    'ns3::Ptr< ns3::DeviceEnergyModel >', 
                    [param('ns3::Ptr< ns3::NetDevice >', 'device'), param('ns3::Ptr< ns3::EnergySource >', 'source')], 
                    is_const=True, visibility='private', is_virtual=True)
+    return
+
+def register_Ns3WifiRadioEnergyModelPhyListener_methods(root_module, cls):
+    ## wifi-radio-energy-model.h: ns3::WifiRadioEnergyModelPhyListener::WifiRadioEnergyModelPhyListener(ns3::WifiRadioEnergyModelPhyListener const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::WifiRadioEnergyModelPhyListener const &', 'arg0')])
+    ## wifi-radio-energy-model.h: ns3::WifiRadioEnergyModelPhyListener::WifiRadioEnergyModelPhyListener() [constructor]
+    cls.add_constructor([])
+    ## wifi-radio-energy-model.h: void ns3::WifiRadioEnergyModelPhyListener::NotifyMaybeCcaBusyStart(ns3::Time duration) [member function]
+    cls.add_method('NotifyMaybeCcaBusyStart', 
+                   'void', 
+                   [param('ns3::Time', 'duration')], 
+                   is_virtual=True)
+    ## wifi-radio-energy-model.h: void ns3::WifiRadioEnergyModelPhyListener::NotifyRxEndError() [member function]
+    cls.add_method('NotifyRxEndError', 
+                   'void', 
+                   [], 
+                   is_virtual=True)
+    ## wifi-radio-energy-model.h: void ns3::WifiRadioEnergyModelPhyListener::NotifyRxEndOk() [member function]
+    cls.add_method('NotifyRxEndOk', 
+                   'void', 
+                   [], 
+                   is_virtual=True)
+    ## wifi-radio-energy-model.h: void ns3::WifiRadioEnergyModelPhyListener::NotifyRxStart(ns3::Time duration) [member function]
+    cls.add_method('NotifyRxStart', 
+                   'void', 
+                   [param('ns3::Time', 'duration')], 
+                   is_virtual=True)
+    ## wifi-radio-energy-model.h: void ns3::WifiRadioEnergyModelPhyListener::NotifySwitchingStart(ns3::Time duration) [member function]
+    cls.add_method('NotifySwitchingStart', 
+                   'void', 
+                   [param('ns3::Time', 'duration')], 
+                   is_virtual=True)
+    ## wifi-radio-energy-model.h: void ns3::WifiRadioEnergyModelPhyListener::NotifyTxStart(ns3::Time duration) [member function]
+    cls.add_method('NotifyTxStart', 
+                   'void', 
+                   [param('ns3::Time', 'duration')], 
+                   is_virtual=True)
+    ## wifi-radio-energy-model.h: void ns3::WifiRadioEnergyModelPhyListener::SetChangeStateCallback(ns3::Callback<void, int, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> callback) [member function]
+    cls.add_method('SetChangeStateCallback', 
+                   'void', 
+                   [param('ns3::Callback< void, int, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'callback')])
     return
 
 def register_Ns3BasicEnergySourceHelper_methods(root_module, cls):
@@ -5007,11 +5072,6 @@ def register_Ns3DeviceEnergyModel_methods(root_module, cls):
                    'double', 
                    [], 
                    is_const=True)
-    ## device-energy-model.h: ns3::Ptr<ns3::Node> ns3::DeviceEnergyModel::GetNode() const [member function]
-    cls.add_method('GetNode', 
-                   'ns3::Ptr< ns3::Node >', 
-                   [], 
-                   is_pure_virtual=True, is_const=True, is_virtual=True)
     ## device-energy-model.h: double ns3::DeviceEnergyModel::GetTotalEnergyConsumption() const [member function]
     cls.add_method('GetTotalEnergyConsumption', 
                    'double', 
@@ -5032,11 +5092,6 @@ def register_Ns3DeviceEnergyModel_methods(root_module, cls):
                    'void', 
                    [param('ns3::Ptr< ns3::EnergySource >', 'source')], 
                    is_pure_virtual=True, is_virtual=True)
-    ## device-energy-model.h: void ns3::DeviceEnergyModel::SetNode(ns3::Ptr<ns3::Node> node) [member function]
-    cls.add_method('SetNode', 
-                   'void', 
-                   [param('ns3::Ptr< ns3::Node >', 'node')], 
-                   is_pure_virtual=True, is_virtual=True)
     ## device-energy-model.h: double ns3::DeviceEnergyModel::DoGetCurrentA() const [member function]
     cls.add_method('DoGetCurrentA', 
                    'double', 
@@ -5053,11 +5108,10 @@ def register_Ns3EnergySource_methods(root_module, cls):
     cls.add_method('AppendDeviceEnergyModel', 
                    'void', 
                    [param('ns3::Ptr< ns3::DeviceEnergyModel >', 'deviceEnergyModelPtr')])
-    ## energy-source.h: void ns3::EnergySource::DecreaseRemainingEnergy(double energyJ) [member function]
-    cls.add_method('DecreaseRemainingEnergy', 
+    ## energy-source.h: void ns3::EnergySource::DisposeDeviceModels() [member function]
+    cls.add_method('DisposeDeviceModels', 
                    'void', 
-                   [param('double', 'energyJ')], 
-                   is_pure_virtual=True, is_virtual=True)
+                   [])
     ## energy-source.h: ns3::DeviceEnergyModelContainer ns3::EnergySource::FindDeviceEnergyModels(ns3::TypeId tid) [member function]
     cls.add_method('FindDeviceEnergyModels', 
                    'ns3::DeviceEnergyModelContainer', 
@@ -5096,15 +5150,14 @@ def register_Ns3EnergySource_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
-    ## energy-source.h: void ns3::EnergySource::IncreaseRemainingEnergy(double energyJ) [member function]
-    cls.add_method('IncreaseRemainingEnergy', 
-                   'void', 
-                   [param('double', 'energyJ')], 
-                   is_pure_virtual=True, is_virtual=True)
     ## energy-source.h: void ns3::EnergySource::SetNode(ns3::Ptr<ns3::Node> node) [member function]
     cls.add_method('SetNode', 
                    'void', 
                    [param('ns3::Ptr< ns3::Node >', 'node')])
+    ## energy-source.h: void ns3::EnergySource::StartDeviceModels() [member function]
+    cls.add_method('StartDeviceModels', 
+                   'void', 
+                   [])
     ## energy-source.h: void ns3::EnergySource::UpdateEnergySource() [member function]
     cls.add_method('UpdateEnergySource', 
                    'void', 
@@ -5748,6 +5801,116 @@ def register_Ns3Ipv6StaticRouting_methods(root_module, cls):
                    visibility='protected', is_virtual=True)
     return
 
+def register_Ns3RvBatteryModel_methods(root_module, cls):
+    ## rv-battery-model.h: ns3::RvBatteryModel::RvBatteryModel(ns3::RvBatteryModel const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::RvBatteryModel const &', 'arg0')])
+    ## rv-battery-model.h: ns3::RvBatteryModel::RvBatteryModel() [constructor]
+    cls.add_constructor([])
+    ## rv-battery-model.h: double ns3::RvBatteryModel::GetAlpha() const [member function]
+    cls.add_method('GetAlpha', 
+                   'double', 
+                   [], 
+                   is_const=True)
+    ## rv-battery-model.h: double ns3::RvBatteryModel::GetBatteryLevel() [member function]
+    cls.add_method('GetBatteryLevel', 
+                   'double', 
+                   [])
+    ## rv-battery-model.h: double ns3::RvBatteryModel::GetBeta() const [member function]
+    cls.add_method('GetBeta', 
+                   'double', 
+                   [], 
+                   is_const=True)
+    ## rv-battery-model.h: double ns3::RvBatteryModel::GetCutoffVoltage() const [member function]
+    cls.add_method('GetCutoffVoltage', 
+                   'double', 
+                   [], 
+                   is_const=True)
+    ## rv-battery-model.h: double ns3::RvBatteryModel::GetEnergyFraction() [member function]
+    cls.add_method('GetEnergyFraction', 
+                   'double', 
+                   [], 
+                   is_virtual=True)
+    ## rv-battery-model.h: double ns3::RvBatteryModel::GetInitialEnergy() const [member function]
+    cls.add_method('GetInitialEnergy', 
+                   'double', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## rv-battery-model.h: ns3::Time ns3::RvBatteryModel::GetLifetime() const [member function]
+    cls.add_method('GetLifetime', 
+                   'ns3::Time', 
+                   [], 
+                   is_const=True)
+    ## rv-battery-model.h: int ns3::RvBatteryModel::GetNumOfTerms() const [member function]
+    cls.add_method('GetNumOfTerms', 
+                   'int', 
+                   [], 
+                   is_const=True)
+    ## rv-battery-model.h: double ns3::RvBatteryModel::GetOpenCircuitVoltage() const [member function]
+    cls.add_method('GetOpenCircuitVoltage', 
+                   'double', 
+                   [], 
+                   is_const=True)
+    ## rv-battery-model.h: double ns3::RvBatteryModel::GetRemainingEnergy() [member function]
+    cls.add_method('GetRemainingEnergy', 
+                   'double', 
+                   [], 
+                   is_virtual=True)
+    ## rv-battery-model.h: ns3::Time ns3::RvBatteryModel::GetSamplingInterval() const [member function]
+    cls.add_method('GetSamplingInterval', 
+                   'ns3::Time', 
+                   [], 
+                   is_const=True)
+    ## rv-battery-model.h: double ns3::RvBatteryModel::GetSupplyVoltage() const [member function]
+    cls.add_method('GetSupplyVoltage', 
+                   'double', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## rv-battery-model.h: static ns3::TypeId ns3::RvBatteryModel::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## rv-battery-model.h: void ns3::RvBatteryModel::SetAlpha(double alpha) [member function]
+    cls.add_method('SetAlpha', 
+                   'void', 
+                   [param('double', 'alpha')])
+    ## rv-battery-model.h: void ns3::RvBatteryModel::SetBeta(double beta) [member function]
+    cls.add_method('SetBeta', 
+                   'void', 
+                   [param('double', 'beta')])
+    ## rv-battery-model.h: void ns3::RvBatteryModel::SetCutoffVoltage(double voltage) [member function]
+    cls.add_method('SetCutoffVoltage', 
+                   'void', 
+                   [param('double', 'voltage')])
+    ## rv-battery-model.h: void ns3::RvBatteryModel::SetNumOfTerms(int num) [member function]
+    cls.add_method('SetNumOfTerms', 
+                   'void', 
+                   [param('int', 'num')])
+    ## rv-battery-model.h: void ns3::RvBatteryModel::SetOpenCircuitVoltage(double voltage) [member function]
+    cls.add_method('SetOpenCircuitVoltage', 
+                   'void', 
+                   [param('double', 'voltage')])
+    ## rv-battery-model.h: void ns3::RvBatteryModel::SetSamplingInterval(ns3::Time interval) [member function]
+    cls.add_method('SetSamplingInterval', 
+                   'void', 
+                   [param('ns3::Time', 'interval')])
+    ## rv-battery-model.h: void ns3::RvBatteryModel::UpdateEnergySource() [member function]
+    cls.add_method('UpdateEnergySource', 
+                   'void', 
+                   [], 
+                   is_virtual=True)
+    ## rv-battery-model.h: void ns3::RvBatteryModel::DoDispose() [member function]
+    cls.add_method('DoDispose', 
+                   'void', 
+                   [], 
+                   visibility='private', is_virtual=True)
+    ## rv-battery-model.h: void ns3::RvBatteryModel::DoStart() [member function]
+    cls.add_method('DoStart', 
+                   'void', 
+                   [], 
+                   visibility='private', is_virtual=True)
+    return
+
 def register_Ns3UanChannel_methods(root_module, cls):
     ## uan-channel.h: ns3::UanChannel::UanChannel(ns3::UanChannel const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::UanChannel const &', 'arg0')])
@@ -6183,9 +6346,14 @@ def register_Ns3WifiRadioEnergyModel_methods(root_module, cls):
                    'void', 
                    [param('int', 'newState')], 
                    is_virtual=True)
-    ## wifi-radio-energy-model.h: ns3::WifiRadioEnergyModel::WifiRadioState ns3::WifiRadioEnergyModel::GetCurrentState() const [member function]
+    ## wifi-radio-energy-model.h: double ns3::WifiRadioEnergyModel::GetCcaBusyCurrentA() const [member function]
+    cls.add_method('GetCcaBusyCurrentA', 
+                   'double', 
+                   [], 
+                   is_const=True)
+    ## wifi-radio-energy-model.h: ns3::WifiPhy::State ns3::WifiRadioEnergyModel::GetCurrentState() const [member function]
     cls.add_method('GetCurrentState', 
-                   'ns3::WifiRadioEnergyModel::WifiRadioState', 
+                   'ns3::WifiPhy::State', 
                    [], 
                    is_const=True)
     ## wifi-radio-energy-model.h: double ns3::WifiRadioEnergyModel::GetIdleCurrentA() const [member function]
@@ -6193,18 +6361,17 @@ def register_Ns3WifiRadioEnergyModel_methods(root_module, cls):
                    'double', 
                    [], 
                    is_const=True)
-    ## wifi-radio-energy-model.h: ns3::Ptr<ns3::Node> ns3::WifiRadioEnergyModel::GetNode() const [member function]
-    cls.add_method('GetNode', 
-                   'ns3::Ptr< ns3::Node >', 
-                   [], 
-                   is_const=True, is_virtual=True)
+    ## wifi-radio-energy-model.h: ns3::WifiRadioEnergyModelPhyListener * ns3::WifiRadioEnergyModel::GetPhyListener() [member function]
+    cls.add_method('GetPhyListener', 
+                   'ns3::WifiRadioEnergyModelPhyListener *', 
+                   [])
     ## wifi-radio-energy-model.h: double ns3::WifiRadioEnergyModel::GetRxCurrentA() const [member function]
     cls.add_method('GetRxCurrentA', 
                    'double', 
                    [], 
                    is_const=True)
-    ## wifi-radio-energy-model.h: double ns3::WifiRadioEnergyModel::GetSleepCurrentA() const [member function]
-    cls.add_method('GetSleepCurrentA', 
+    ## wifi-radio-energy-model.h: double ns3::WifiRadioEnergyModel::GetSwitchingCurrentA() const [member function]
+    cls.add_method('GetSwitchingCurrentA', 
                    'double', 
                    [], 
                    is_const=True)
@@ -6228,6 +6395,10 @@ def register_Ns3WifiRadioEnergyModel_methods(root_module, cls):
                    'void', 
                    [], 
                    is_virtual=True)
+    ## wifi-radio-energy-model.h: void ns3::WifiRadioEnergyModel::SetCcaBusyCurrentA(double ccaBusyCurrentA) [member function]
+    cls.add_method('SetCcaBusyCurrentA', 
+                   'void', 
+                   [param('double', 'ccaBusyCurrentA')])
     ## wifi-radio-energy-model.h: void ns3::WifiRadioEnergyModel::SetEnergyDepletionCallback(ns3::Callback<void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> callback) [member function]
     cls.add_method('SetEnergyDepletionCallback', 
                    'void', 
@@ -6241,19 +6412,14 @@ def register_Ns3WifiRadioEnergyModel_methods(root_module, cls):
     cls.add_method('SetIdleCurrentA', 
                    'void', 
                    [param('double', 'idleCurrentA')])
-    ## wifi-radio-energy-model.h: void ns3::WifiRadioEnergyModel::SetNode(ns3::Ptr<ns3::Node> node) [member function]
-    cls.add_method('SetNode', 
-                   'void', 
-                   [param('ns3::Ptr< ns3::Node >', 'node')], 
-                   is_virtual=True)
     ## wifi-radio-energy-model.h: void ns3::WifiRadioEnergyModel::SetRxCurrentA(double rxCurrentA) [member function]
     cls.add_method('SetRxCurrentA', 
                    'void', 
                    [param('double', 'rxCurrentA')])
-    ## wifi-radio-energy-model.h: void ns3::WifiRadioEnergyModel::SetSleepCurrentA(double sleepCurrentA) [member function]
-    cls.add_method('SetSleepCurrentA', 
+    ## wifi-radio-energy-model.h: void ns3::WifiRadioEnergyModel::SetSwitchingCurrentA(double switchingCurrentA) [member function]
+    cls.add_method('SetSwitchingCurrentA', 
                    'void', 
-                   [param('double', 'sleepCurrentA')])
+                   [param('double', 'switchingCurrentA')])
     ## wifi-radio-energy-model.h: void ns3::WifiRadioEnergyModel::SetTxCurrentA(double txCurrentA) [member function]
     cls.add_method('SetTxCurrentA', 
                    'void', 
@@ -6275,11 +6441,6 @@ def register_Ns3BasicEnergySource_methods(root_module, cls):
     cls.add_constructor([param('ns3::BasicEnergySource const &', 'arg0')])
     ## basic-energy-source.h: ns3::BasicEnergySource::BasicEnergySource() [constructor]
     cls.add_constructor([])
-    ## basic-energy-source.h: void ns3::BasicEnergySource::DecreaseRemainingEnergy(double energyJ) [member function]
-    cls.add_method('DecreaseRemainingEnergy', 
-                   'void', 
-                   [param('double', 'energyJ')], 
-                   is_virtual=True)
     ## basic-energy-source.h: double ns3::BasicEnergySource::GetEnergyFraction() [member function]
     cls.add_method('GetEnergyFraction', 
                    'double', 
@@ -6310,11 +6471,6 @@ def register_Ns3BasicEnergySource_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
-    ## basic-energy-source.h: void ns3::BasicEnergySource::IncreaseRemainingEnergy(double energyJ) [member function]
-    cls.add_method('IncreaseRemainingEnergy', 
-                   'void', 
-                   [param('double', 'energyJ')], 
-                   is_virtual=True)
     ## basic-energy-source.h: void ns3::BasicEnergySource::SetEnergyUpdateInterval(ns3::Time interval) [member function]
     cls.add_method('SetEnergyUpdateInterval', 
                    'void', 

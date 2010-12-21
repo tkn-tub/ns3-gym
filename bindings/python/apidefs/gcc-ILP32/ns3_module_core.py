@@ -351,6 +351,7 @@ def register_methods(root_module):
     register_Ns3TestRunner_methods(root_module, root_module['ns3::TestRunner'])
     register_Ns3TestSuite_methods(root_module, root_module['ns3::TestSuite'])
     register_Ns3TracedValue__Double_methods(root_module, root_module['ns3::TracedValue< double >'])
+    register_Ns3TracedValue__Ns3Time_methods(root_module, root_module['ns3::TracedValue< ns3::Time >'])
     register_Ns3TriangularVariable_methods(root_module, root_module['ns3::TriangularVariable'])
     register_Ns3TypeId_methods(root_module, root_module['ns3::TypeId'])
     register_Ns3TypeIdAttributeInfo_methods(root_module, root_module['ns3::TypeId::AttributeInfo'])
@@ -1338,6 +1339,40 @@ def register_Ns3TracedValue__Double_methods(root_module, cls):
     cls.add_method('Set', 
                    'void', 
                    [param('double const &', 'v')])
+    return
+
+def register_Ns3TracedValue__Ns3Time_methods(root_module, cls):
+    ## traced-value.h: ns3::TracedValue<ns3::Time>::TracedValue() [constructor]
+    cls.add_constructor([])
+    ## traced-value.h: ns3::TracedValue<ns3::Time>::TracedValue(ns3::TracedValue<ns3::Time> const & o) [copy constructor]
+    cls.add_constructor([param('ns3::TracedValue< ns3::Time > const &', 'o')])
+    ## traced-value.h: ns3::TracedValue<ns3::Time>::TracedValue(ns3::Time const & v) [constructor]
+    cls.add_constructor([param('ns3::Time const &', 'v')])
+    ## traced-value.h: void ns3::TracedValue<ns3::Time>::Connect(ns3::CallbackBase const & cb, std::basic_string<char,std::char_traits<char>,std::allocator<char> > path) [member function]
+    cls.add_method('Connect', 
+                   'void', 
+                   [param('ns3::CallbackBase const &', 'cb'), param('std::string', 'path')])
+    ## traced-value.h: void ns3::TracedValue<ns3::Time>::ConnectWithoutContext(ns3::CallbackBase const & cb) [member function]
+    cls.add_method('ConnectWithoutContext', 
+                   'void', 
+                   [param('ns3::CallbackBase const &', 'cb')])
+    ## traced-value.h: void ns3::TracedValue<ns3::Time>::Disconnect(ns3::CallbackBase const & cb, std::basic_string<char,std::char_traits<char>,std::allocator<char> > path) [member function]
+    cls.add_method('Disconnect', 
+                   'void', 
+                   [param('ns3::CallbackBase const &', 'cb'), param('std::string', 'path')])
+    ## traced-value.h: void ns3::TracedValue<ns3::Time>::DisconnectWithoutContext(ns3::CallbackBase const & cb) [member function]
+    cls.add_method('DisconnectWithoutContext', 
+                   'void', 
+                   [param('ns3::CallbackBase const &', 'cb')])
+    ## traced-value.h: ns3::Time ns3::TracedValue<ns3::Time>::Get() const [member function]
+    cls.add_method('Get', 
+                   'ns3::Time', 
+                   [], 
+                   is_const=True)
+    ## traced-value.h: void ns3::TracedValue<ns3::Time>::Set(ns3::Time const & v) [member function]
+    cls.add_method('Set', 
+                   'void', 
+                   [param('ns3::Time const &', 'v')])
     return
 
 def register_Ns3TriangularVariable_methods(root_module, cls):
