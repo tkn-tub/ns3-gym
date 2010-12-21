@@ -21,6 +21,7 @@
 
 #include <list>
 #include "ns3/ipv4-routing-protocol.h"
+#include "ns3/simulator.h"
 
 namespace ns3 {
 
@@ -85,6 +86,7 @@ public:
   virtual void NotifyAddAddress (uint32_t interface, Ipv4InterfaceAddress address);
   virtual void NotifyRemoveAddress (uint32_t interface, Ipv4InterfaceAddress address);
   virtual void SetIpv4 (Ptr<Ipv4> ipv4);
+  virtual void PrintRoutingTable (Ptr<OutputStreamWrapper> stream) const;
 
 protected:
   void DoDispose (void);

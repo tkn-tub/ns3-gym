@@ -25,6 +25,7 @@
 #include "ipv4-header.h"
 #include "ipv4-interface-address.h"
 #include "ipv4.h"
+#include "ns3/output-stream-wrapper.h"
 
 namespace ns3 {
 
@@ -140,6 +141,8 @@ public:
    * Typically, invoked directly or indirectly from ns3::Ipv4::SetRoutingProtocol
    */
   virtual void SetIpv4 (Ptr<Ipv4> ipv4) = 0;
+
+  virtual void PrintRoutingTable (Ptr<OutputStreamWrapper> stream) const = 0;
 };
 
 } //namespace ns3

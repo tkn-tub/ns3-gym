@@ -17,11 +17,67 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
+#include "ns3/node.h"
+#include "ns3/node-list.h"
+#include "ns3/simulator.h"
+#include "ns3/ipv4-routing-protocol.h"
 #include "ipv4-routing-helper.h"
 
 namespace ns3 {
 
 Ipv4RoutingHelper::~Ipv4RoutingHelper ()
-{}
+{
+}
+
+void
+Ipv4RoutingHelper::PrintRoutingTableAllAt (Time printTime, Ptr<OutputStreamWrapper> stream) const
+{
+  for (uint32_t i = 0; i < NodeList::GetNNodes (); i++)
+    {
+      Ptr<Node> node = NodeList::GetNode (i);
+      Simulator::Schedule (printTime, &Ipv4RoutingHelper::Print, this, node, stream);
+    }
+}
+
+void
+Ipv4RoutingHelper::PrintRoutingTableAllEvery (Time printInterval, Ptr<OutputStreamWrapper> stream) const
+{
+  for (uint32_t i = 0; i < NodeList::GetNNodes (); i++)
+    {
+      Ptr<Node> node = NodeList::GetNode (i);
+      Simulator::Schedule (printInterval, &Ipv4RoutingHelper::PrintEvery, this, printInterval, node, stream);
+    }
+}
+
+void
+Ipv4RoutingHelper::PrintRoutingTableAt (Time printTime, Ptr<Node> node, Ptr<OutputStreamWrapper> stream) const
+{
+  Simulator::Schedule (printTime, &Ipv4RoutingHelper::Print, this, node, stream);
+}
+
+void
+Ipv4RoutingHelper::PrintRoutingTableEvery (Time printInterval,Ptr<Node> node, Ptr<OutputStreamWrapper> stream) const
+{
+  Simulator::Schedule (printInterval, &Ipv4RoutingHelper::PrintEvery, this, printInterval, node, stream);
+}
+
+void
+Ipv4RoutingHelper::Print (Ptr<Node> node, Ptr<OutputStreamWrapper> stream) const
+{
+  Ptr<Ipv4> ipv4 = node->GetObject<Ipv4> ();
+  Ptr<Ipv4RoutingProtocol> rp = ipv4->GetRoutingProtocol ();
+  NS_ASSERT (rp);
+  rp->PrintRoutingTable (stream);
+}
+
+void
+Ipv4RoutingHelper::PrintEvery (Time printInterval, Ptr<Node> node, Ptr<OutputStreamWrapper> stream) const
+{
+  Ptr<Ipv4> ipv4 = node->GetObject<Ipv4> ();
+  Ptr<Ipv4RoutingProtocol> rp = ipv4->GetRoutingProtocol ();
+  NS_ASSERT (rp);
+  rp->PrintRoutingTable (stream);
+  Simulator::Schedule (printInterval, &Ipv4RoutingHelper::PrintEvery, this, printInterval, node, stream);
+}
 
 } // namespace ns3

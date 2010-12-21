@@ -261,6 +261,13 @@ RoutingProtocol::DoDispose ()
 }
 
 void
+RoutingProtocol::PrintRoutingTable (Ptr<OutputStreamWrapper> stream) const
+{
+  *stream->GetStream () << "Node: " << m_ipv4->GetObject<Node> ()->GetId () << " Time: " << Simulator::Now().GetSeconds () << "s ";
+  m_routingTable.Print (stream);
+}
+
+void
 RoutingProtocol::Start ()
 {
   NS_LOG_FUNCTION (this);

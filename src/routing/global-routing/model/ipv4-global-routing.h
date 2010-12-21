@@ -92,6 +92,7 @@ public:
   virtual void NotifyAddAddress (uint32_t interface, Ipv4InterfaceAddress address);
   virtual void NotifyRemoveAddress (uint32_t interface, Ipv4InterfaceAddress address);
   virtual void SetIpv4 (Ptr<Ipv4> ipv4);
+  virtual void PrintRoutingTable (Ptr<OutputStreamWrapper> stream) const;
 
 /**
  * \brief Add a host route to the global routing table.
@@ -168,7 +169,7 @@ public:
  *
  * \warning The default route counts as one of the routes.
  */
-  uint32_t GetNRoutes (void);
+  uint32_t GetNRoutes (void) const;
 
 /**
  * \brief Get a route from the global unicast routing table.
@@ -190,7 +191,7 @@ public:
  * \see Ipv4RoutingTableEntry
  * \see Ipv4GlobalRouting::RemoveRoute
  */
-  Ipv4RoutingTableEntry *GetRoute (uint32_t i);
+  Ipv4RoutingTableEntry *GetRoute (uint32_t i) const;
 
 /**
  * \brief Remove a route from the global unicast routing table.

@@ -38,6 +38,7 @@
 #include "ns3/udp-socket-factory.h"
 #include "ns3/simulator.h"
 #include "ns3/log.h"
+#include "ns3/names.h"
 #include "ns3/random-variable.h"
 #include "ns3/inet-socket-address.h"
 #include "ns3/ipv4-routing-protocol.h"
@@ -242,6 +243,31 @@ void RoutingProtocol::DoDispose ()
   m_socketAddresses.clear ();
 
   Ipv4RoutingProtocol::DoDispose ();
+}
+
+void
+RoutingProtocol::PrintRoutingTable (Ptr<OutputStreamWrapper> stream) const
+{
+  std::ostream* os = stream->GetStream();
+  *os << "Destination\tNextHop\t\tInterface\tDistance\n";
+
+  for (std::map<Ipv4Address, RoutingTableEntry>::const_iterator iter = m_table.begin ();
+    iter != m_table.end (); iter++)
+    {
+      *os << iter->first << "\t";
+      *os << iter->second.nextAddr << "\t";
+      if (Names::FindName (m_ipv4->GetNetDevice (iter->second.interface)) != "")
+            {
+              *os << Names::FindName (m_ipv4->GetNetDevice (iter->second.interface)) << "\t\t";
+            }
+          else
+            {
+              *os << iter->second.interface << "\t\t";
+            }
+
+      *os << iter->second.distance << "\t";
+      *os << "\n";
+    }
 }
 
 void RoutingProtocol::DoStart ()

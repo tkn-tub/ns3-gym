@@ -13,6 +13,7 @@
 .*\.py[co]$
 \.pcap$
 \.mob$
+\.routes$
 ^doc/manual/manual/
 doc/manual/manual.aux
 doc/manual/manual.cp

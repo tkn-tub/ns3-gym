@@ -23,11 +23,14 @@
       std::clog << Simulator::Now ().GetSeconds () \
       << " [node " << m_ipv4->GetObject<Node> ()->GetId () << "] "; }
 
+#include <iomanip>
 #include "ns3/log.h"
+#include "ns3/names.h"
 #include "ns3/packet.h"
 #include "ns3/node.h"
 #include "ns3/simulator.h"
 #include "ns3/ipv4-route.h"
+#include "ns3/output-stream-wrapper.h"
 #include "ipv4-static-routing.h"
 #include "ipv4-routing-table-entry.h"
 
@@ -346,7 +349,7 @@ Ipv4StaticRouting::LookupStatic (
 }
 
 uint32_t 
-Ipv4StaticRouting::GetNRoutes (void)
+Ipv4StaticRouting::GetNRoutes (void) const
 {
   NS_LOG_FUNCTION (this);
   return m_networkRoutes.size ();;
@@ -391,11 +394,11 @@ Ipv4StaticRouting::GetDefaultRoute ()
 }
 
 Ipv4RoutingTableEntry 
-Ipv4StaticRouting::GetRoute (uint32_t index)
+Ipv4StaticRouting::GetRoute (uint32_t index) const
 {
   NS_LOG_FUNCTION (this << index);
   uint32_t tmp = 0;
-  for (NetworkRoutesI j = m_networkRoutes.begin (); 
+  for (NetworkRoutesCI j = m_networkRoutes.begin (); 
        j != m_networkRoutes.end (); 
        j++) 
         {
@@ -695,6 +698,53 @@ Ipv4StaticRouting::SetIpv4 (Ptr<Ipv4> ipv4)
       else
         {
           NotifyInterfaceDown (i);
+        }
+    }
+}
+
+// Formatted like output of "route -n" command
+void
+Ipv4StaticRouting::PrintRoutingTable (Ptr<OutputStreamWrapper> stream) const
+{
+  std::ostream* os = stream->GetStream();
+  if (GetNRoutes () > 0)
+    {
+      *os  << "Destination     Gateway         Genmask         Flags Metric Ref    Use Iface" << std::endl;
+      for (uint32_t j = 0; j < GetNRoutes (); j++)
+        {
+          std::ostringstream dest, gw, mask, flags;
+          Ipv4RoutingTableEntry route = GetRoute (j);
+          dest << route.GetDest (); 
+          *os << std::setiosflags (std::ios::left) << std::setw (16) << dest.str();
+          gw << route.GetGateway (); 
+          *os << std::setiosflags (std::ios::left) << std::setw (16) << gw.str();
+          mask << route.GetDestNetworkMask (); 
+          *os << std::setiosflags (std::ios::left) << std::setw (16) << mask.str();
+          flags << "U";
+          if (route.IsHost ())
+            {
+              flags << "HS";
+            }
+          else if (route.IsGateway ())
+            {
+              flags << "GS";
+            }
+          *os << std::setiosflags (std::ios::left) << std::setw (6) << flags.str();
+          // Metric not implemented
+          *os << "-" << "      ";
+          // Ref ct not implemented
+          *os << "-" << "      ";
+          // Use not implemented
+          *os << "-" << "   ";
+          if (Names::FindName (m_ipv4->GetNetDevice (route.GetInterface ())) != "")
+            {
+              *os << Names::FindName (m_ipv4->GetNetDevice (route.GetInterface ()));
+            }
+          else
+            {
+              *os << route.GetInterface();
+            }
+          *os << std::endl;
         }
     }
 }

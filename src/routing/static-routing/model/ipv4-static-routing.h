@@ -85,6 +85,7 @@ public:
   virtual void NotifyAddAddress (uint32_t interface, Ipv4InterfaceAddress address);
   virtual void NotifyRemoveAddress (uint32_t interface, Ipv4InterfaceAddress address);
   virtual void SetIpv4 (Ptr<Ipv4> ipv4);
+  virtual void PrintRoutingTable (Ptr<OutputStreamWrapper> stream) const;
 
 /**
  * \brief Add a network route to the static routing table.
@@ -177,7 +178,7 @@ public:
  *
  * \warning The default route counts as one of the routes.
  */
-  uint32_t GetNRoutes (void);
+  uint32_t GetNRoutes (void) const;
 
 /**
  * \brief Get the default route with lowest metric from the static routing table.
@@ -203,7 +204,7 @@ public:
  * \see Ipv4RoutingTableEntry
  * \see Ipv4StaticRouting::RemoveRoute
  */
-  Ipv4RoutingTableEntry GetRoute (uint32_t i);
+  Ipv4RoutingTableEntry GetRoute (uint32_t i) const;
 
 /**
  * \brief Get a metric for route from the static unicast routing table.

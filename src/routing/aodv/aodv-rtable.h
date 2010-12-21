@@ -36,6 +36,7 @@
 #include "ns3/ipv4-route.h"
 #include "ns3/timer.h"
 #include "ns3/net-device.h"
+#include "ns3/output-stream-wrapper.h"
 
 namespace ns3 {
 namespace aodv {
@@ -140,7 +141,7 @@ public:
   {
     return (m_ipv4Route->GetDestination () == dst);
   }
-  void Print(std::ostream & os) const;
+  void Print(Ptr<OutputStreamWrapper> stream) const;
 
 private:
   /// Valid Destination Sequence Number flag
@@ -242,12 +243,14 @@ public:
    */
   bool MarkLinkAsUnidirectional(Ipv4Address neighbor, Time blacklistTimeout);
   /// Print routing table
-  void Print(std::ostream &os);
+  void Print(Ptr<OutputStreamWrapper> stream) const;
 
 private:
   std::map<Ipv4Address, RoutingTableEntry> m_ipv4AddressEntry;
   /// Deletion time for invalid routes
   Time m_badLinkLifetime;
+  /// const version of Purge, for use by Print() method
+  void Purge (std::map<Ipv4Address, RoutingTableEntry> &table) const;
 };
 
 }}

@@ -109,6 +109,9 @@ main (int argc, char *argv[])
   clientApps.Start (Seconds (2.0));
   clientApps.Stop (Seconds (10.0));
 
+  // Trace routing tables
+  Ptr<OutputStreamWrapper> routingStream = Create<OutputStreamWrapper> ("nix-simple.routes", std::ios::out);
+  nixRouting.PrintRoutingTableAllAt (Seconds (8), routingStream);
 
   Simulator::Run ();
   Simulator::Destroy ();

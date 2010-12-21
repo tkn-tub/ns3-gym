@@ -69,6 +69,21 @@ Ipv4ListRouting::DoDispose (void)
 }
 
 void
+Ipv4ListRouting::PrintRoutingTable (Ptr<OutputStreamWrapper> stream) const
+{
+  *stream->GetStream () << "Node: " << m_ipv4->GetObject<Node> ()->GetId () 
+    << " Time: " << Simulator::Now().GetSeconds () << "s " 
+    << "Ipv4ListRouting table" << std::endl;
+  for (Ipv4RoutingProtocolList::const_iterator i = m_routingProtocols.begin ();
+      i != m_routingProtocols.end (); i++)
+      {
+        *stream->GetStream () << "  Priority: " << (*i).first << " Protocol: " << (*i).second->GetInstanceTypeId () << std::endl;
+        (*i).second->PrintRoutingTable (stream);
+      }
+  *stream->GetStream () << std::endl;
+}
+
+void
 Ipv4ListRouting::DoStart (void)
 {
   for (Ipv4RoutingProtocolList::iterator rprotoIter = m_routingProtocols.begin ();
@@ -297,6 +312,7 @@ public:
   void NotifyAddAddress (uint32_t interface, Ipv4InterfaceAddress address) {}
   void NotifyRemoveAddress (uint32_t interface, Ipv4InterfaceAddress address) {}
   void SetIpv4 (Ptr<Ipv4> ipv4) {}
+  void PrintRoutingTable (Ptr<OutputStreamWrapper> stream) const {}
 };
 
 class Ipv4BRouting : public Ipv4RoutingProtocol {
@@ -310,6 +326,7 @@ public:
   void NotifyAddAddress (uint32_t interface, Ipv4InterfaceAddress address) {}
   void NotifyRemoveAddress (uint32_t interface, Ipv4InterfaceAddress address) {}
   void SetIpv4 (Ptr<Ipv4> ipv4) {}
+  void PrintRoutingTable (Ptr<OutputStreamWrapper> stream) const {}
 };
 
 class Ipv4ListRoutingNegativeTestCase : public TestCase
