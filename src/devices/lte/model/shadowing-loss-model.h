@@ -22,7 +22,7 @@
 #define SHADOWING_LOSS_MODEL_H
 
 
-#include "loss-model.h"
+#include "discrete-time-loss-model.h"
 #include <ns3/random-variable.h>
 
 namespace ns3 {

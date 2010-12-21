@@ -22,7 +22,7 @@
 #define PENETRATION_LOSS_MODEL_H
 
 
-#include "loss-model.h"
+#include "discrete-time-loss-model.h"
 
 
 namespace ns3 {

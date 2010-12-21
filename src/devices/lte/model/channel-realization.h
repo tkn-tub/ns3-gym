@@ -24,7 +24,7 @@
 
 #include <ns3/nstime.h>
 #include "ns3/object.h"
-#include "multipath-loss-model.h"
+#include "jakes-fading-loss-model.h"
 #include "path-loss-model.h"
 #include "shadowing-loss-model.h"
 #include "penetration-loss-model.h"
