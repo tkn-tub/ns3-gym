@@ -22,22 +22,31 @@
 #include "ns3/wifi-mac.h"
 #include "ns3/edca-txop-n.h"
 #include "ns3/pointer.h"
+#include "ns3/boolean.h"
 #include "ns3/uinteger.h"
 
 namespace ns3 {
 
 QosWifiMacHelper::QosWifiMacHelper ()
-{}
+{
+}
 
 QosWifiMacHelper::~QosWifiMacHelper ()
-{}
+{
+}
 
 QosWifiMacHelper
 QosWifiMacHelper::Default (void)
 {
   QosWifiMacHelper helper;
-  helper.SetType ("ns3::QstaWifiMac");
-  
+
+  // We're making QoS-enabled Wi-Fi MACs here, so we set the necessary
+  // attribute. I've carefully positioned this here so that someone
+  // who knows what they're doing can override with explicit
+  // attributes.
+  helper.SetType ("ns3::StaWifiMac",
+                  "QosSupported", BooleanValue (true));
+
   return helper;
 }
 
@@ -110,7 +119,7 @@ QosWifiMacHelper::Setup (Ptr<WifiMac> mac, enum AcIndex ac, std::string dcaAttrN
   PointerValue ptr;
   mac->GetAttribute (dcaAttrName, ptr);
   Ptr<EdcaTxopN> edca = ptr.Get<EdcaTxopN> ();
-  
+
   if (it != m_aggregators.end ())
     {
       ObjectFactory factory = it->second;
@@ -132,7 +141,7 @@ Ptr<WifiMac>
 QosWifiMacHelper::Create (void) const
 {
   Ptr<WifiMac> mac = m_mac.Create<WifiMac> ();
-  
+
   Setup (mac, AC_VO, "VO_EdcaTxopN");
   Setup (mac, AC_VI, "VI_EdcaTxopN");
   Setup (mac, AC_BE, "BE_EdcaTxopN");

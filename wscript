@@ -124,6 +124,9 @@ def set_options(opt):
                    help=('Run a locally built program; argument can be a program name,'
                          ' or a command starting with the program name.'),
                    type="string", default='', dest='run')
+    opt.add_option('--visualize',
+                   help=('Modify --run arguments to enable the visualizer'),
+                   action="store_true", default=False, dest='visualize')
     opt.add_option('--command-template',
                    help=('Template of the command used to run the program given by --run;'
                          ' It should be a shell command string containing %s inside,'
@@ -639,11 +642,13 @@ def shutdown(ctx):
         lcov_report()
 
     if Options.options.run:
-        wutils.run_program(Options.options.run, env, wutils.get_command_template(env))
+        wutils.run_program(Options.options.run, env, wutils.get_command_template(env),
+                           visualize=Options.options.visualize)
         raise SystemExit(0)
 
     if Options.options.pyrun:
-        wutils.run_python_program(Options.options.pyrun, env)
+        wutils.run_python_program(Options.options.pyrun, env,
+                                  visualize=Options.options.visualize)
         raise SystemExit(0)
 
     if Options.options.shell:

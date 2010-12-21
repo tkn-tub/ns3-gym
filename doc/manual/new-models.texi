@@ -6,6 +6,7 @@
 * Scaffolding::
 * Initial Implementation::
 * Adding-a-sample-script::
+* Add subclass::
 * Build-core-functions-and-unit-tests::
 @end menu
 
@@ -453,10 +454,10 @@ point-to-point-net-device.h
 @example
   void
 PointToPointNetDevice::SetReceiveErrorModel (Ptr<ErrorModel> em)
-{
+@{
   NS_LOG_FUNCTION (this << em);
   m_receiveErrorModel = em;
-} 
+@} 
 
    .AddAttribute ("ReceiveErrorModel",
                    "The receiver error model used to simulate packet loss",
@@ -471,20 +472,20 @@ PointToPointNetDevice::SetReceiveErrorModel (Ptr<ErrorModel> em)
 @smallformat
 @example
 void PointToPointNetDevice::Receive (Ptr<Packet> packet)
-{
+@{
   NS_LOG_FUNCTION (this << packet);
   uint16_t protocol = 0;
   
   if (m_receiveErrorModel && m_receiveErrorModel->IsCorrupt (packet) )
-    {
+    @{
 //  
 // If we have an error model and it indicates that it is time to lose a
 // corrupted packet, don't forward this packet up, let it go. 
 // 
       m_dropTrace (packet);
-    } 
+    @} 
   else
-    {
+    @{
 //  
 // Hit the receive trace hook, strip off the point-to-point protocol header
 // and forward this packet up the protocol stack.
@@ -493,11 +494,11 @@ void PointToPointNetDevice::Receive (Ptr<Packet> packet)
       ProcessHeader(packet, protocol);
       m_rxCallback (this, packet, protocol, GetRemote ());
       if (!m_promiscCallback.IsNull ())
-        {           m_promiscCallback (this, packet, protocol, GetRemote (), 
+        @{           m_promiscCallback (this, packet, protocol, GetRemote (), 
                       GetAddress (), NetDevice::PACKET_HOST);
-        }
-    }
-}
+        @}
+    @}
+@}
 @end example
 @end smallformat
 
@@ -519,11 +520,11 @@ simple-error-model.cc
 
 bool
 ErrorModel::DoCorrupt (Packet& p)
-{
+@{
   NS_LOG_FUNCTION;
   NS_LOG_UNCOND("Corrupt!");
   return false;
-}
+@}
 @end example
 @end smallformat
 
@@ -533,6 +534,7 @@ prints out the string "Corrupt!" for each packet received at
 node n3.  Next, we return to the error model to add in a subclass
 that performs more interesting error modeling.
 
+@node Add subclass
 @section Add subclass
 
 The trivial base class ErrorModel does not do anything interesting,
@@ -564,7 +566,7 @@ We declare BasicErrorModel to be a subclass of ErrorModel as follows,
 @smallformat
 @example
 class BasicErrorModel : public ErrorModel
-{
+@{
 public:
   static TypeId GetTypeId (void);
   ...
@@ -573,7 +575,7 @@ private:
   virtual bool DoCorrupt (Ptr<Packet> p);
   virtual bool DoReset (void);
   ...
-}
+@}
 @end example
 @end smallformat
 
@@ -582,7 +584,7 @@ TypeId string and setting the Parent to ErrorModel:
 
 @verbatim
 TypeId RateErrorModel::GetTypeId (void)
-{
+@{
   static TypeId tid = TypeId ("ns3::RateErrorModel")
     .SetParent<ErrorModel> ()
     .AddConstructor<RateErrorModel> ()

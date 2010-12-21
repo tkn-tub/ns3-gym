@@ -16,6 +16,9 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
 
+#include <vector>
+#include <iomanip>
+#include "ns3/names.h"
 #include "ns3/log.h"
 #include "ns3/simulator.h"
 #include "ns3/object.h"
@@ -26,7 +29,6 @@
 #include "ns3/boolean.h"
 #include "ipv4-global-routing.h"
 #include "global-route-manager.h"
-#include <vector>
 
 NS_LOG_COMPONENT_DEFINE ("Ipv4GlobalRouting");
 
@@ -240,7 +242,7 @@ Ipv4GlobalRouting::LookupGlobal (Ipv4Address dest, Ptr<NetDevice> oif)
 }
 
 uint32_t 
-Ipv4GlobalRouting::GetNRoutes (void)
+Ipv4GlobalRouting::GetNRoutes (void) const
 {
   NS_LOG_FUNCTION_NOARGS ();
   uint32_t n = 0;
@@ -251,7 +253,7 @@ Ipv4GlobalRouting::GetNRoutes (void)
 }
 
 Ipv4RoutingTableEntry *
-Ipv4GlobalRouting::GetRoute (uint32_t index)
+Ipv4GlobalRouting::GetRoute (uint32_t index) const
 {
   NS_LOG_FUNCTION (index);
   if (index < m_hostRoutes.size ())
@@ -272,7 +274,7 @@ Ipv4GlobalRouting::GetRoute (uint32_t index)
   uint32_t tmp = 0;
   if (index < m_networkRoutes.size())
     {
-      for (NetworkRoutesI j = m_networkRoutes.begin (); 
+      for (NetworkRoutesCI j = m_networkRoutes.begin (); 
           j != m_networkRoutes.end (); 
           j++) 
         {
@@ -285,7 +287,7 @@ Ipv4GlobalRouting::GetRoute (uint32_t index)
     }
   index -= m_networkRoutes.size();
   tmp = 0;
-  for (ASExternalRoutesI k = m_ASexternalRoutes.begin (); 
+  for (ASExternalRoutesCI k = m_ASexternalRoutes.begin (); 
        k != m_ASexternalRoutes.end (); 
        k++) 
   {
@@ -380,6 +382,53 @@ Ipv4GlobalRouting::DoDispose (void)
     }
 
   Ipv4RoutingProtocol::DoDispose ();
+}
+
+// Formatted like output of "route -n" command
+void
+Ipv4GlobalRouting::PrintRoutingTable(Ptr<OutputStreamWrapper> stream) const
+{
+  std::ostream* os = stream->GetStream();
+  if (GetNRoutes () > 0)
+    {
+      *os << "Destination     Gateway         Genmask         Flags Metric Ref    Use Iface" << std::endl;
+      for (uint32_t j = 0; j < GetNRoutes (); j++)
+        {
+          std::ostringstream dest, gw, mask, flags;
+          Ipv4RoutingTableEntry route = GetRoute (j);
+          dest << route.GetDest ();
+          *os << std::setiosflags (std::ios::left) << std::setw (16) << dest.str();
+          gw << route.GetGateway ();
+          *os << std::setiosflags (std::ios::left) << std::setw (16) << gw.str();
+          mask << route.GetDestNetworkMask ();
+          *os << std::setiosflags (std::ios::left) << std::setw (16) << mask.str();
+          flags << "U";
+          if (route.IsHost ())
+            {
+              flags << "H";
+            }
+          else if (route.IsGateway ())
+            {
+              flags << "G";
+            }
+          *os << std::setiosflags (std::ios::left) << std::setw (6) << flags.str();
+          // Metric not implemented
+          *os << "-" << "      ";
+          // Ref ct not implemented
+          *os << "-" << "      ";
+          // Use not implemented
+          *os << "-" << "   ";
+          if (Names::FindName (m_ipv4->GetNetDevice (route.GetInterface ())) != "")
+            {
+              *os << Names::FindName (m_ipv4->GetNetDevice (route.GetInterface ()));
+            }
+          else
+            {
+              *os << route.GetInterface();
+            }
+          *os << std::endl;
+        }
+    }
 }
 
 Ptr<Ipv4Route>

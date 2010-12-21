@@ -27,8 +27,8 @@
 #include "ns3/packet.h"
 
 #include "wifi-mode.h"
-#include "wifi-mac.h"
 #include "wifi-mac-header.h"
+#include "wifi-remote-station-manager.h"
 #include "qos-utils.h"
 #include "dcf.h"
 #include "ctrl-headers.h"
@@ -43,6 +43,7 @@ class DcfState;
 class DcfManager;
 class MacLow;
 class MacTxMiddle;
+class WifiMac;
 class WifiMacParameters;
 class WifiMacQueue;
 class RandomStream;
@@ -55,10 +56,10 @@ class MgtDelBaHeader;
 
 /* This queue contains packets for a particular access class.
  * possibles access classes are:
- *   
+ *
  *   -AC_VO : voice, tid = 6,7         ^
  *   -AC_VI : video, tid = 4,5         |
- *   -AC_BE : best-effort, tid = 0,3   |  priority  
+ *   -AC_BE : best-effort, tid = 0,3   |  priority
  *   -AC_BK : background, tid = 1,2    |
  * 
  * For more details see section 9.1.3.1 in 802.11 standard.
@@ -67,7 +68,8 @@ enum TypeOfStation
 {
   STA,
   AP,
-  ADHOC_STA
+  ADHOC_STA,
+  MESH
 };
 
 class EdcaTxopN : public Dcf
@@ -76,12 +78,12 @@ public:
 
   typedef Callback <void, const WifiMacHeader&> TxOk;
   typedef Callback <void, const WifiMacHeader&> TxFailed;
-  
+
   static TypeId GetTypeId (void);
   EdcaTxopN ();
   virtual ~EdcaTxopN ();
   void DoDispose ();
-  
+
   void SetLow (Ptr<MacLow> low);
   void SetTxMiddle (MacTxMiddle *txMiddle);
   void SetManager (DcfManager *manager);
@@ -137,7 +139,7 @@ public:
   bool IsLastFragment (void) const;
   void NextFragment (void);
   Ptr<Packet> GetFragmentPacket (WifiMacHeader *hdr);
-  
+
   void SetAccessCategory (enum AcIndex ac);
   void Queue (Ptr<const Packet> packet, const WifiMacHeader &hdr);
   void SetMsduAggregator (Ptr<MsduAggregator> aggr);
@@ -185,7 +187,7 @@ private:
    * if an established block ack agreement exists with the receiver.
    */
   void VerifyBlockAck (void);
-  
+
   AcIndex m_ac;
   class Dcf;
   class TransmissionListener;
@@ -204,12 +206,12 @@ private:
   RandomStream *m_rng;
   Ptr<WifiRemoteStationManager> m_stationManager;
   uint8_t m_fragmentNumber;
-  
+
   /* current packet could be a simple MSDU or, if an aggregator for this queue is
      present, could be an A-MSDU.
    */
   Ptr<const Packet> m_currentPacket;
-  
+
   WifiMacHeader m_currentHdr;
   Ptr<MsduAggregator> m_aggregator;
   TypeOfStation m_typeOfStation;

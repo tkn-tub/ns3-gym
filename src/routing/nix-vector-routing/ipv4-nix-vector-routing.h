@@ -29,6 +29,7 @@
 #include "ns3/net-device-container.h"
 #include "ns3/ipv4-routing-protocol.h"
 #include "ns3/ipv4-route.h"
+#include "ns3/nix-vector.h"
 #include "ns3/bridge-net-device.h"
 
 namespace ns3 {
@@ -149,6 +150,7 @@ class Ipv4NixVectorRouting : public Ipv4RoutingProtocol
     virtual void NotifyAddAddress (uint32_t interface, Ipv4InterfaceAddress address); 
     virtual void NotifyRemoveAddress (uint32_t interface, Ipv4InterfaceAddress address); 
     virtual void SetIpv4 (Ptr<Ipv4> ipv4); 
+    virtual void PrintRoutingTable (Ptr<OutputStreamWrapper> stream) const;
 
 
     /* cache stores nix-vectors based on destination ip */

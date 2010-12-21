@@ -62,9 +62,9 @@ Program received signal SIGSEGV, Segmentation fault.
     at ../examples/tcp-point-to-point.cc:136
 136       Ptr<Socket> localSocket = socketFactory->CreateSocket ();
 (gdb) p localSocket
-$1 = {m_ptr = 0x3c5d65}
+$1 = @{m_ptr = 0x3c5d65@}
 (gdb) p socketFactory
-$2 = {m_ptr = 0x0}
+$2 = @{m_ptr = 0x0@}
 (gdb) quit
 The program is running.  Exit anyway? (y or n) y
 @end example

@@ -223,6 +223,9 @@ int main (int argc, char *argv[])
       AsciiTraceHelper ascii;
       wifiPhy.EnableAsciiAll (ascii.CreateFileStream ("wifi-simple-adhoc-grid.tr"));
       wifiPhy.EnablePcap ("wifi-simple-adhoc-grid", devices);
+      // Trace routing tables
+      Ptr<OutputStreamWrapper> routingStream = Create<OutputStreamWrapper> ("wifi-simple-adhoc-grid.routes", std::ios::out);
+      olsr.PrintRoutingTableAllEvery (Seconds (2), routingStream);
 
       // To do-- enable an IP-level trace that shows forwarding events only
     }

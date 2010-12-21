@@ -44,7 +44,8 @@ def main(argv):
     wifiPhy.SetChannel(wifiChannel.Create())
     ssid = ns3.Ssid("wifi-default")
     wifi.SetRemoteStationManager("ns3::ArfWifiManager")
-    wifiMac.SetType ("ns3::AdhocWifiMac", "Ssid", ns3.SsidValue(ssid))
+    wifiMac.SetType ("ns3::AdhocWifiMac",
+                     "Ssid", ns3.SsidValue(ssid))
 
     internet = ns3.InternetStackHelper()
     list_routing = ns3.Ipv4ListRoutingHelper()

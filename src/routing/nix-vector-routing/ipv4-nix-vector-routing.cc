@@ -19,9 +19,11 @@
  */
 
 #include <queue>
+#include <iomanip>
 
 #include "ns3/log.h"
 #include "ns3/abort.h"
+#include "ns3/names.h"
 #include "ns3/ipv4-list-routing.h"
 
 #include "ipv4-nix-vector-routing.h"
@@ -655,6 +657,50 @@ Ipv4NixVectorRouting::RouteInput (Ptr<const Packet> p, const Ipv4Header &header,
   ucb (rtentry, p, header);
 
   return true;
+}
+
+void
+Ipv4NixVectorRouting::PrintRoutingTable(Ptr<OutputStreamWrapper> stream) const
+{
+
+  std::ostream* os = stream->GetStream();
+  *os << "NixCache:" << std::endl;
+  if (m_nixCache.size () > 0)
+    {
+      *os << "Destination     NixVector" << std::endl;
+      for (NixMap_t::const_iterator it = m_nixCache.begin (); it != m_nixCache.end (); it++)
+        {
+          std::ostringstream dest;
+          dest << it->first;
+          *os << std::setiosflags (std::ios::left) << std::setw (16) << dest.str();
+          *os << *(it->second) << std::endl;
+        }
+    }
+  *os << "Ipv4RouteCache:" << std::endl;
+  if (m_ipv4RouteCache.size () > 0)
+    {
+      *os  << "Destination     Gateway         Source            OutputDevice" << std::endl;
+      for (Ipv4RouteMap_t::const_iterator it = m_ipv4RouteCache.begin (); it != m_ipv4RouteCache.end (); it++)
+        {
+          std::ostringstream dest, gw, src;
+          dest << it->second->GetDestination ();
+          *os << std::setiosflags (std::ios::left) << std::setw (16) << dest.str();
+          gw << it->second->GetGateway ();
+          *os << std::setiosflags (std::ios::left) << std::setw (16) << gw.str();
+          src << it->second->GetSource ();
+          *os << std::setiosflags (std::ios::left) << std::setw (16) << src.str();
+          *os << "  ";
+          if (Names::FindName (it->second->GetOutputDevice ()) != "")
+            {
+              *os << Names::FindName (it->second->GetOutputDevice ());
+            }
+          else
+            {
+              *os << it->second->GetOutputDevice ()->GetIfIndex ();
+            }
+          *os << std::endl;
+        }
+    }
 }
 
 // virtual functions from Ipv4RoutingProtocol 

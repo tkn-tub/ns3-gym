@@ -6,7 +6,6 @@
 @chapter Object model
 
 @menu
-* Object model::
 * Object-oriented behavior::
 * Object base classes::
 * Memory management and class Ptr::

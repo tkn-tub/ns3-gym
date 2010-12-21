@@ -65,6 +65,8 @@ private:
   double totalTime;
   /// Write per-device PCAP traces if true
   bool pcap;
+  /// Print routes if true
+  bool printRoutes;
   //\}
   
   ///\name network
@@ -97,7 +99,8 @@ AodvExample::AodvExample () :
   size (10),
   step (100),
   totalTime (10),
-  pcap (true)
+  pcap (true),
+  printRoutes (true)
 {
 }
 
@@ -111,6 +114,7 @@ AodvExample::Configure (int argc, char **argv)
   CommandLine cmd;
   
   cmd.AddValue ("pcap", "Write PCAP traces.", pcap);
+  cmd.AddValue ("printRoutes", "Print routing table dumps.", printRoutes);
   cmd.AddValue ("size", "Number of nodes.", size);
   cmd.AddValue ("time", "Simulation time, s.", totalTime);
   cmd.AddValue ("step", "Grid step, m", step);
@@ -194,6 +198,12 @@ AodvExample::InstallInternetStack ()
   Ipv4AddressHelper address;
   address.SetBase ("10.0.0.0", "255.0.0.0");
   interfaces = address.Assign (devices);
+
+  if (printRoutes)
+    {
+      Ptr<OutputStreamWrapper> routingStream = Create<OutputStreamWrapper> ("aodv.routes", std::ios::out);
+      aodv.PrintRoutingTableAllAt (Seconds (8), routingStream);
+    }
 }
 
 void

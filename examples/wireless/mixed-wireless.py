@@ -230,16 +230,17 @@ def main(argv):
         wifiPhy.SetChannel(wifiChannel.Create())
         wifiInfra.SetRemoteStationManager('ns3::ArfWifiManager')
         macInfra = ns3.NqosWifiMacHelper.Default();
-        macInfra.SetType("ns3::NqstaWifiMac",
-                          "Ssid", ns3.SsidValue(ssid),
-                          "ActiveProbing", ns3.BooleanValue(False))
+        macInfra.SetType("ns3::StaWifiMac",
+                         "Ssid", ns3.SsidValue(ssid),
+                         "ActiveProbing", ns3.BooleanValue(False))
 
         # setup stas
         staDevices = wifiInfra.Install(wifiPhy, macInfra, stas)
         # setup ap.
-        macInfra.SetType("ns3::NqapWifiMac", "Ssid", ns3.SsidValue(ssid),
-                          "BeaconGeneration", ns3.BooleanValue(True),
-                          "BeaconInterval", ns3.TimeValue(ns3.Seconds(2.5)))
+        macInfra.SetType("ns3::ApWifiMac",
+                         "Ssid", ns3.SsidValue(ssid),
+                         "BeaconGeneration", ns3.BooleanValue(True),
+                         "BeaconInterval", ns3.TimeValue(ns3.Seconds(2.5)))
         apDevices = wifiInfra.Install(wifiPhy, macInfra, backbone.Get(i))
         # Collect all of these new devices
         infraDevices = ns3.NetDeviceContainer(apDevices, staDevices)

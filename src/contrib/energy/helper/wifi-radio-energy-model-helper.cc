@@ -67,23 +67,18 @@ WifiRadioEnergyModelHelper::DoInstall (Ptr<NetDevice> device,
       NS_FATAL_ERROR ("NetDevice type is not WifiNetDevice!");
     }
   Ptr<Node> node = device->GetNode ();
-  Ptr<WifiRadioEnergyModel> model = m_radioEnergy.Create ()->
-    GetObject<WifiRadioEnergyModel> ();
+  Ptr<WifiRadioEnergyModel> model = m_radioEnergy.Create ()->GetObject<WifiRadioEnergyModel> ();
   NS_ASSERT (model != NULL);
-  // set node pointer
-  model->SetNode (node);
   // set energy source pointer
   model->SetEnergySource (source);
   // set energy depletion callback
   model->SetEnergyDepletionCallback (m_depletionCallback);
   // add model to device model list in energy source
   source->AppendDeviceEnergyModel (model);
-  // create and install energy model callback
+  // create and register energy model phy listener
   Ptr<WifiNetDevice> wifiDevice = DynamicCast<WifiNetDevice> (device);
   Ptr<WifiPhy> wifiPhy = wifiDevice->GetPhy ();
-  DeviceEnergyModel::ChangeStateCallback callback;
-  callback = MakeCallback (&DeviceEnergyModel::ChangeState, model);
-  //wifiPhy->SetEnergyModelCallback (callback);
+  wifiPhy->RegisterListener (model->GetPhyListener ());
   return model;
 }
 

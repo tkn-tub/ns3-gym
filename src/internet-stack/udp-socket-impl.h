@@ -60,6 +60,7 @@ public:
   void SetUdp (Ptr<UdpL4Protocol> udp);
 
   virtual enum SocketErrno GetErrno (void) const;
+  virtual enum SocketType GetSocketType (void) const;
   virtual Ptr<Node> GetNode (void) const;
   virtual int Bind (void);
   virtual int Bind (const Address &address);

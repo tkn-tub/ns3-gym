@@ -2075,6 +2075,8 @@ def register_Ns3OutputStreamWrapper_methods(root_module, cls):
     cls.add_constructor([param('ns3::OutputStreamWrapper const &', 'arg0')])
     ## output-stream-wrapper.h: ns3::OutputStreamWrapper::OutputStreamWrapper(std::string filename, std::_Ios_Openmode filemode) [constructor]
     cls.add_constructor([param('std::string', 'filename'), param('std::_Ios_Openmode', 'filemode')])
+    ## output-stream-wrapper.h: ns3::OutputStreamWrapper::OutputStreamWrapper(std::ostream * os) [constructor]
+    cls.add_constructor([param('std::ostream *', 'os')])
     ## output-stream-wrapper.h: std::ostream * ns3::OutputStreamWrapper::GetStream() [member function]
     cls.add_method('GetStream', 
                    'std::ostream *', 

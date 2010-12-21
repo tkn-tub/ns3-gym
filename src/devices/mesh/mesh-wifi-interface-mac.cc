@@ -45,41 +45,31 @@ TypeId
 MeshWifiInterfaceMac::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::MeshWifiInterfaceMac")
-  .SetParent<WifiMac> ()
-  .AddConstructor<MeshWifiInterfaceMac> ()
-  .AddAttribute ( "BeaconInterval",
-                  "Beacon Interval",
-                  TimeValue (Seconds (0.5)),
+    .SetParent<RegularWifiMac> ()
+    .AddConstructor<MeshWifiInterfaceMac> ()
+    .AddAttribute ( "BeaconInterval",
+                    "Beacon Interval",
+                    TimeValue (Seconds (0.5)),
 
-                  MakeTimeAccessor (
+                    MakeTimeAccessor (
                       &MeshWifiInterfaceMac::m_beaconInterval),
-                  MakeTimeChecker ()
-                  )
-  .AddAttribute ( "RandomStart",
-                  "Window when beacon generating starts (uniform random) in seconds",
-                  TimeValue (Seconds (0.5)),
-                  MakeTimeAccessor (
+                    MakeTimeChecker ()
+                    )
+    .AddAttribute ( "RandomStart",
+                    "Window when beacon generating starts (uniform random) in seconds",
+                    TimeValue (Seconds (0.5)),
+                    MakeTimeAccessor (
                       &MeshWifiInterfaceMac::m_randomStart),
-                  MakeTimeChecker ()
-                  )
-  .AddAttribute ( "BeaconGeneration",
-                  "Enable/Disable Beaconing.",
-                  BooleanValue (true),
-                  MakeBooleanAccessor (
+                    MakeTimeChecker ()
+                    )
+    .AddAttribute ( "BeaconGeneration",
+                    "Enable/Disable Beaconing.",
+                    BooleanValue (true),
+                    MakeBooleanAccessor (
                       &MeshWifiInterfaceMac::SetBeaconGeneration, &MeshWifiInterfaceMac::GetBeaconGeneration),
-                  MakeBooleanChecker ()
-                  )
-  .AddTraceSource ( "TxOkHeader",
-                    "The header of successfully transmitted packet",
-                    MakeTraceSourceAccessor (
-                      &MeshWifiInterfaceMac::m_txOkCallback)
-                  )
-  .AddTraceSource ( "TxErrHeader",
-                    "The header of unsuccessfully transmitted packet",
-                    MakeTraceSourceAccessor (
-                      &MeshWifiInterfaceMac::m_txErrCallback)
-                  )
-                  ;
+                    MakeBooleanChecker ()
+                    )
+  ;
   return tid;
 }
 MeshWifiInterfaceMac::MeshWifiInterfaceMac () :
@@ -87,135 +77,16 @@ MeshWifiInterfaceMac::MeshWifiInterfaceMac () :
 {
   NS_LOG_FUNCTION (this);
 
-  m_rxMiddle = new MacRxMiddle ();
-  m_rxMiddle->SetForwardCallback (MakeCallback (&MeshWifiInterfaceMac::Receive, this));
-
-  m_low = CreateObject<MacLow> ();
-  m_low->SetRxCallback (MakeCallback (&MacRxMiddle::Receive, m_rxMiddle));
-
-  m_dcfManager = new DcfManager ();
-  m_dcfManager->SetupLowListener (m_low);
-
-  m_beaconDca = CreateObject<DcaTxop> ();
-  m_beaconDca->SetLow (m_low);
-  m_beaconDca->SetMinCw (0);
-  m_beaconDca->SetMaxCw (0);
-  m_beaconDca->SetAifsn (1);
-  m_beaconDca->SetManager (m_dcfManager);
-
-  // Construct the EDCAFs. The ordering is important - highest
-  // priority (see Table 9-1 in IEEE 802.11-2007) must be created
-  // first.
-  SetQueue (AC_VO);
-  SetQueue (AC_VI);
-  SetQueue (AC_BE);
-  SetQueue (AC_BK);
+  // Let the lower layers know that we are acting as a mesh node
+  SetTypeOfStation (MESH);
 }
 MeshWifiInterfaceMac::~MeshWifiInterfaceMac ()
 {
   NS_LOG_FUNCTION (this);
-  m_beaconDca = 0;
-  m_stationManager = 0;
-  m_phy = 0;
-  m_low = 0;
 }
 //-----------------------------------------------------------------------------
 // WifiMac inherited
 //-----------------------------------------------------------------------------
-void
-MeshWifiInterfaceMac::SetSlot (Time slotTime)
-{
-  NS_LOG_FUNCTION (this << slotTime);
-  m_dcfManager->SetSlot (slotTime);
-  m_low->SetSlotTime (slotTime);
-  m_slot = slotTime;
-}
-void
-MeshWifiInterfaceMac::SetSifs (Time sifs)
-{
-  NS_LOG_FUNCTION (this << sifs);
-  m_dcfManager->SetSifs (sifs);
-  m_low->SetSifs (sifs);
-  m_sifs = sifs;
-}
-void
-MeshWifiInterfaceMac::SetAckTimeout (Time ackTimeout)
-{
-  m_low->SetAckTimeout (ackTimeout);
-}
-void
-MeshWifiInterfaceMac::SetCtsTimeout (Time ctsTimeout)
-{
-  m_low->SetCtsTimeout (ctsTimeout);
-}
-void
-MeshWifiInterfaceMac::SetPifs (Time pifs)
-{
-  NS_LOG_FUNCTION (this << pifs);
-  m_pifs = pifs;
-}
-void
-MeshWifiInterfaceMac::SetEifsNoDifs (Time eifsNoDifs)
-{
-  NS_LOG_FUNCTION (this << eifsNoDifs);
-  m_dcfManager->SetEifsNoDifs (eifsNoDifs);
-  m_eifsNoDifs = eifsNoDifs;
-}
-Time
-MeshWifiInterfaceMac::GetSlot () const
-{
-  return m_slot;
-}
-Time
-MeshWifiInterfaceMac::GetSifs () const
-{
-  return m_sifs;
-}
-Time
-MeshWifiInterfaceMac::GetEifsNoDifs () const
-{
-  return m_eifsNoDifs;
-}
-Time
-MeshWifiInterfaceMac::GetAckTimeout () const
-{
-  return m_low->GetAckTimeout ();
-}
-Time
-MeshWifiInterfaceMac::GetCtsTimeout () const
-{
-  return m_low->GetCtsTimeout ();
-}
-Time
-MeshWifiInterfaceMac::GetPifs () const
-{
-  return m_low->GetPifs ();
-}
-void
-MeshWifiInterfaceMac::SetWifiPhy (Ptr<WifiPhy> phy)
-{
-  NS_LOG_FUNCTION (this << phy);
-  m_phy = phy;
-  m_dcfManager->SetupPhyListener (phy);
-  m_low->SetPhy (phy);
-}
-Ptr<WifiPhy>
-MeshWifiInterfaceMac::GetWifiPhy () const
-{
-  return m_phy;
-}
-void
-MeshWifiInterfaceMac::SetWifiRemoteStationManager (Ptr<WifiRemoteStationManager> stationManager)
-{
-  NS_LOG_FUNCTION (this << stationManager);
-  m_stationManager = stationManager;
-  for (Queues::const_iterator i = m_queues.begin (); i != m_queues.end (); i++)
-    {
-      i->second->SetWifiRemoteStationManager (stationManager);
-    }
-  m_beaconDca->SetWifiRemoteStationManager (stationManager);
-  m_low->SetWifiRemoteStationManager (stationManager);
-}
 void
 MeshWifiInterfaceMac::Enqueue (Ptr<const Packet> packet, Mac48Address to, Mac48Address from)
 {
@@ -234,72 +105,24 @@ MeshWifiInterfaceMac::SupportsSendFrom () const
   return true;
 }
 void
-MeshWifiInterfaceMac::SetForwardUpCallback (
-    Callback<void, Ptr<Packet> , Mac48Address, Mac48Address> upCallback)
-{
-  NS_LOG_FUNCTION (this);
-  m_upCallback = upCallback;
-}
-void
 MeshWifiInterfaceMac::SetLinkUpCallback (Callback<void> linkUp)
 {
   NS_LOG_FUNCTION (this);
-  if (!linkUp.IsNull ())
-    {
-      linkUp ();
-    }
-}
-void
-MeshWifiInterfaceMac::SetLinkDownCallback (Callback<void> linkDown)
-{
-  NS_LOG_FUNCTION (this);
-}
-Mac48Address
-MeshWifiInterfaceMac::GetAddress () const
-{
-  return m_address;
-}
-Mac48Address
-MeshWifiInterfaceMac::GetBssid () const
-{
-  return m_address;
-}
-Ssid
-MeshWifiInterfaceMac::GetSsid () const
-{
-  return m_meshId;
-}
-void
-MeshWifiInterfaceMac::SetAddress (Mac48Address address)
-{
-  NS_LOG_FUNCTION (address);
-  m_low->SetAddress (address);
-  m_address = address;
-}
-void
-MeshWifiInterfaceMac::SetSsid (Ssid ssid)
-{
-  NS_LOG_FUNCTION (ssid);
-  m_meshId = ssid;
+  RegularWifiMac::SetLinkUpCallback (linkUp);
+
+  // The approach taken here is that, from the point of view of a mesh
+  // node, the link is always up, so we immediately invoke the
+  // callback if one is set
+  linkUp ();
 }
 void
 MeshWifiInterfaceMac::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
-  delete m_rxMiddle;
-  delete m_dcfManager;
-  //Delete smart pointers:
-  m_rxMiddle = 0;
-  m_low = 0;
-  m_dcfManager = 0;
-  m_stationManager = 0;
-  m_phy = 0;
-  m_queues.clear ();
   m_plugins.clear ();
   m_beaconSendEvent.Cancel ();
-  m_beaconDca = 0;
 
-  WifiMac::DoDispose ();
+  RegularWifiMac::DoDispose ();
 }
 //-----------------------------------------------------------------------------
 // Plugins
@@ -353,15 +176,8 @@ MeshWifiInterfaceMac::SwitchFrequencyChannel (uint16_t new_id)
   m_dcfManager->NotifyNavResetNow (Seconds (0));
 }
 //-----------------------------------------------------------------------------
-// Forward frame up/down
+// Forward frame down
 //-----------------------------------------------------------------------------
-void
-MeshWifiInterfaceMac::ForwardUp (Ptr<Packet> packet, Mac48Address src, Mac48Address dst)
-{
-  NS_LOG_FUNCTION (this << packet << src);
-  m_upCallback (packet, src, dst);
-}
-
 void
 MeshWifiInterfaceMac::ForwardDown (Ptr<const Packet> const_packet, Mac48Address from, Mac48Address to)
 {
@@ -418,8 +234,8 @@ MeshWifiInterfaceMac::ForwardDown (Ptr<const Packet> const_packet, Mac48Address 
     }
   m_stats.sentFrames++;
   m_stats.sentBytes += packet->GetSize ();
-  NS_ASSERT (m_queues.find (ac) != m_queues.end ());
-  m_queues[ac]->Queue (packet, hdr);
+  NS_ASSERT (m_edca.find (ac) != m_edca.end ());
+  m_edca[ac]->Queue (packet, hdr);
 }
 void
 MeshWifiInterfaceMac::SendManagementFrame (Ptr<Packet> packet, const WifiMacHeader& hdr)
@@ -436,7 +252,7 @@ MeshWifiInterfaceMac::SendManagementFrame (Ptr<Packet> packet, const WifiMacHead
     }
   m_stats.sentFrames++;
   m_stats.sentBytes += packet->GetSize ();
-  if ((m_queues.find (AC_VO) == m_queues.end ()) || (m_queues.find (AC_BK) == m_queues.end ()))
+  if ((m_edca.find (AC_VO) == m_edca.end ()) || (m_edca.find (AC_BK) == m_edca.end ()))
     {
       NS_FATAL_ERROR ("Voice or Background queue is not set up!");
     }
@@ -450,11 +266,11 @@ MeshWifiInterfaceMac::SendManagementFrame (Ptr<Packet> packet, const WifiMacHead
    */
   if (hdr.GetAddr1 () != Mac48Address::GetBroadcast ())
     {
-      m_queues[AC_VO]->Queue (packet, header);
+      m_edca[AC_VO]->Queue (packet, header);
     }
   else
     {
-      m_queues[AC_BK]->Queue (packet, header);
+      m_edca[AC_BK]->Queue (packet, header);
     }
 }
 SupportedRates
@@ -548,7 +364,7 @@ MeshWifiInterfaceMac::ShiftTbtt (Time shift)
   // Shift scheduled event
   Simulator::Cancel (m_beaconSendEvent);
   m_beaconSendEvent = Simulator::Schedule (GetTbtt () - Simulator::Now (), &MeshWifiInterfaceMac::SendBeacon,
-      this);
+                                           this);
 }
 void
 MeshWifiInterfaceMac::ScheduleNextBeacon ()
@@ -573,7 +389,7 @@ MeshWifiInterfaceMac::SendBeacon ()
     {
       (*i)->UpdateBeacon (beacon);
     }
-  m_beaconDca->Queue (beacon.CreatePacket (), beacon.CreateHeader (GetAddress (), GetMeshPointAddress ()));
+  m_dca->Queue (beacon.CreatePacket (), beacon.CreateHeader (GetAddress (), GetMeshPointAddress ()));
 
   ScheduleNextBeacon ();
 }
@@ -594,7 +410,7 @@ MeshWifiInterfaceMac::Receive (Ptr<Packet> packet, WifiMacHeader const *hdr)
       packet->PeekHeader (beacon_hdr);
 
       NS_LOG_DEBUG ("Beacon received from " << hdr->GetAddr2 () << " I am " << GetAddress () << " at "
-          << Simulator::Now ().GetMicroSeconds () << " microseconds");
+                                            << Simulator::Now ().GetMicroSeconds () << " microseconds");
 
       // update supported rates
       if (beacon_hdr.GetSsid ().IsEqual (GetSsid ()))
@@ -639,6 +455,10 @@ MeshWifiInterfaceMac::Receive (Ptr<Packet> packet, WifiMacHeader const *hdr)
     {
       ForwardUp (packet, hdr->GetAddr4 (), hdr->GetAddr3 ());
     }
+
+  // We don't bother invoking RegularWifiMac::Receive() here, because
+  // we've explicitly handled all the frames we care about. This is in
+  // contrast to most classes which derive from RegularWifiMac.
 }
 uint32_t
 MeshWifiInterfaceMac::GetLinkMetric (Mac48Address peerAddress)
@@ -654,11 +474,6 @@ void
 MeshWifiInterfaceMac::SetLinkMetricCallback (Callback<uint32_t, Mac48Address, Ptr<MeshWifiInterfaceMac> > cb)
 {
   m_linkMetricCallback = cb;
-}
-Ptr<WifiRemoteStationManager>
-MeshWifiInterfaceMac::GetStationManager ()
-{
-  return m_stationManager;
 }
 void
 MeshWifiInterfaceMac::SetMeshPointAddress (Mac48Address a)
@@ -680,19 +495,19 @@ MeshWifiInterfaceMac::Statistics::Print (std::ostream & os) const
 {
   os << "<Statistics "
   // TODO txBeacons
-        "rxBeacons=\"" << recvBeacons << "\" "
-    "txFrames=\"" << sentFrames << "\" "
-    "txBytes=\"" << sentBytes << "\" "
-    "rxFrames=\"" << recvFrames << "\" "
-    "rxBytes=\"" << recvBytes << "\"/>" << std::endl;
+  "rxBeacons=\"" << recvBeacons << "\" "
+  "txFrames=\"" << sentFrames << "\" "
+  "txBytes=\"" << sentBytes << "\" "
+  "rxFrames=\"" << recvFrames << "\" "
+  "rxBytes=\"" << recvBytes << "\"/>" << std::endl;
 }
 void
 MeshWifiInterfaceMac::Report (std::ostream & os) const
 {
   os << "<Interface "
-    "BeaconInterval=\"" << GetBeaconInterval ().GetSeconds () << "\" "
-    "Channel=\"" << GetFrequencyChannel () << "\" "
-    "Address = \"" << GetAddress () << "\">" << std::endl;
+  "BeaconInterval=\"" << GetBeaconInterval ().GetSeconds () << "\" "
+  "Channel=\"" << GetFrequencyChannel () << "\" "
+  "Address = \"" << GetAddress () << "\">" << std::endl;
   m_stats.Print (os);
   os << "</Interface>" << std::endl;
 }
@@ -701,71 +516,19 @@ MeshWifiInterfaceMac::ResetStats ()
 {
   m_stats = Statistics ();
 }
-void
-MeshWifiInterfaceMac::SetQueue (AcIndex ac)
-{
-  if (m_queues.find (ac) != m_queues.end ())
-    {
-      NS_LOG_WARN ("Queue is already set!");
-      return;
-    }
-  Ptr<DcaTxop> queue = Create<DcaTxop> ();
-  queue->SetLow (m_low);
-  queue->SetManager (m_dcfManager);
-  queue->SetTxOkCallback (MakeCallback (&MeshWifiInterfaceMac::TxOk, this));
-  queue->SetTxFailedCallback (MakeCallback (&MeshWifiInterfaceMac::TxFailed, this));
 
-  m_queues.insert (std::make_pair (ac, queue));
-}
-void 
-MeshWifiInterfaceMac::TxOk (WifiMacHeader const &hdr)
-{
-  m_txOkCallback (hdr);
-}
-void 
-MeshWifiInterfaceMac::TxFailed (WifiMacHeader const &hdr)
-{
-  m_txErrCallback (hdr);
-}
 void
-MeshWifiInterfaceMac::DoStart ()
-{
-  m_beaconDca->Start ();
-  for (Queues::iterator i = m_queues.begin (); i != m_queues.end (); i ++)
-  {
-    i->second->Start ();
-  }
-  WifiMac::DoStart ();
-}
-
-void 
 MeshWifiInterfaceMac::FinishConfigureStandard (enum WifiPhyStandard standard)
 {
-  switch (standard)
-    {
-    case WIFI_PHY_STANDARD_holland:
-      // fall through
-    case WIFI_PHY_STANDARD_80211a:
-      // fall through
-    case WIFI_PHY_STANDARD_80211_10Mhz:
-      // fall through
-    case WIFI_PHY_STANDARD_80211_5Mhz:
-      ConfigureDcf (m_queues[AC_BK], 15, 1023, AC_BK);
-      ConfigureDcf (m_queues[AC_BE], 15, 1023, AC_BE);
-      ConfigureDcf (m_queues[AC_VI], 15, 1023, AC_VI);
-      ConfigureDcf (m_queues[AC_VO], 15, 1023, AC_VO);
-      break;
-    case WIFI_PHY_STANDARD_80211b:
-      ConfigureDcf (m_queues[AC_BK], 31, 1023, AC_BK);
-      ConfigureDcf (m_queues[AC_BE], 31, 1023, AC_BE);
-      ConfigureDcf (m_queues[AC_VI], 31, 1023, AC_VI);
-      ConfigureDcf (m_queues[AC_VO], 31, 1023, AC_VO);
-      break;
-    default:
-      NS_ASSERT (false);
-      break;
-    }
+  RegularWifiMac::FinishConfigureStandard (standard);
   m_standard = standard;
+
+  // We use the single DCF provided by WifiMac for the purpose of
+  // Beacon transmission. For this we need to reconfigure the channel
+  // access parameters slightly, and do so here.
+  m_dca->SetMinCw (0);
+  m_dca->SetMaxCw (0);
+  m_dca->SetAifsn (1);
 }
 WifiPhyStandard
 MeshWifiInterfaceMac::GetPhyStandard () const

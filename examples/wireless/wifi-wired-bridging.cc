@@ -29,7 +29,7 @@
 //      WIFI STA     WIFI STA           WIFI STA     WIFI STA
 //      --------     --------           --------     --------
 //        ((*))       ((*))       |      ((*))        ((*))
-//                                |   
+//                                |
 //              ((*))             |             ((*))
 //             -------                         -------
 //             WIFI AP   CSMA ========= CSMA   WIFI AP 
@@ -38,9 +38,9 @@
 //                 BRIDGE                   BRIDGE
 //             ##############           ############## 
 //               192.168.0.1              192.168.0.2
-//               +---------+              +---------+  
+//               +---------+              +---------+
 //               | AP Node |              | AP Node |
-//               +---------+              +---------+  
+//               +---------+              +---------+
 //
 
 #include "ns3/core-module.h"
@@ -116,19 +116,19 @@ int main (int argc, char *argv[])
 
       sta.Create (nStas);
       mobility.SetPositionAllocator ("ns3::GridPositionAllocator",
-				     "MinX", DoubleValue (wifiX),
-				     "MinY", DoubleValue (0.0),
-				     "DeltaX", DoubleValue (5.0),
-				     "DeltaY", DoubleValue (5.0),
-				     "GridWidth", UintegerValue (1),
-				     "LayoutType", StringValue ("RowFirst"));
+                                     "MinX", DoubleValue (wifiX),
+                                     "MinY", DoubleValue (0.0),
+                                     "DeltaX", DoubleValue (5.0),
+                                     "DeltaY", DoubleValue (5.0),
+                                     "GridWidth", UintegerValue (1),
+                                     "LayoutType", StringValue ("RowFirst"));
 
 
       // setup the AP.
       mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
       mobility.Install (backboneNodes.Get (i));
-      wifiMac.SetType ("ns3::NqapWifiMac",
-		   "Ssid", SsidValue (ssid));
+      wifiMac.SetType ("ns3::ApWifiMac",
+                       "Ssid", SsidValue (ssid));
       apDev = wifi.Install (wifiPhy, wifiMac, backboneNodes.Get (i));
 
       NetDeviceContainer bridgeDev;
@@ -140,14 +140,14 @@ int main (int argc, char *argv[])
       // setup the STAs
       stack.Install (sta);
       mobility.SetMobilityModel ("ns3::RandomWalk2dMobilityModel",
-				 "Mode", StringValue ("Time"),
-				 "Time", StringValue ("2s"),
-				 "Speed", StringValue ("Constant:1.0"),
-				 "Bounds", RectangleValue (Rectangle (wifiX, wifiX+5.0,0.0, (nStas+1)*5.0)));
+                                 "Mode", StringValue ("Time"),
+                                 "Time", StringValue ("2s"),
+                                 "Speed", StringValue ("Constant:1.0"),
+                                 "Bounds", RectangleValue (Rectangle (wifiX, wifiX+5.0,0.0, (nStas+1)*5.0)));
       mobility.Install (sta);
-      wifiMac.SetType ("ns3::NqstaWifiMac",
-		   "Ssid", SsidValue (ssid),
-		   "ActiveProbing", BooleanValue (false));
+      wifiMac.SetType ("ns3::StaWifiMac",
+                       "Ssid", SsidValue (ssid),
+                       "ActiveProbing", BooleanValue (false));
       staDev = wifi.Install (wifiPhy, wifiMac, sta);
       staInterface = ip.Assign (staDev);
 
@@ -184,7 +184,7 @@ int main (int argc, char *argv[])
   ApplicationContainer apps = onoff.Install (staNodes[0].Get (0));
   apps.Start (Seconds (0.5));
   apps.Stop (Seconds (3.0));
-  
+
   wifiPhy.EnablePcap ("wifi-wired-bridging", apDevices[0]);
   wifiPhy.EnablePcap ("wifi-wired-bridging", apDevices[1]);
 

@@ -20,21 +20,29 @@
 #include "nqos-wifi-mac-helper.h"
 #include "ns3/wifi-mac.h"
 #include "ns3/pointer.h"
+#include "ns3/boolean.h"
 #include "ns3/dca-txop.h"
 
 namespace ns3 {
 
 NqosWifiMacHelper::NqosWifiMacHelper ()
-{}
+{
+}
 
 NqosWifiMacHelper::~NqosWifiMacHelper ()
-{}
+{
+}
 
 NqosWifiMacHelper
 NqosWifiMacHelper::Default (void)
 {
   NqosWifiMacHelper helper;
-  helper.SetType ("ns3::AdhocWifiMac");
+  // We're making non QoS-enabled Wi-Fi MACs here, so we set the
+  // necessary attribute. I've carefully positioned this here so that
+  // someone who knows what they're doing can override with explicit
+  // attributes.
+  helper.SetType ("ns3::AdhocWifiMac",
+                  "QosSupported", BooleanValue (false));
   return helper;
 }
 

@@ -16,13 +16,13 @@
 
 // Network topology
 //
-//  +----------+                                                                  
-//  | external |                                                                  
-//  |  Linux   |                                                                  
-//  |   Host   |                                                                  
+//  +----------+
+//  | external |
+//  |  Linux   |
+//  |   Host   |
 //  |          |
-//  | "mytap"  |                                                                  
-//  +----------+                                                                  
+//  | "mytap"  |
+//  +----------+
 //       |           n0                n3                n4
 //       |       +--------+     +------------+     +------------+
 //       +-------|  tap   |     |            |     |            |
@@ -31,8 +31,8 @@
 //               |  Wifi  |     | Wifi | P2P |-----| P2P | CSMA |
 //               +--------+     +------+-----+     +-----+------+
 //                   |              |           ^           |
-//                 ((*))          ((*))         |           |         
-//                                          P2P 10.1.2      |         
+//                 ((*))          ((*))         |           |
+//                                          P2P 10.1.2      |
 //                 ((*))          ((*))                     |    n5  n6   n7
 //                   |              |                       |     |   |    |
 //                  n1             n2                       ================
@@ -140,13 +140,13 @@ main (int argc, char *argv[])
   NqosWifiMacHelper wifiMac = NqosWifiMacHelper::Default ();
   wifi.SetRemoteStationManager ("ns3::ArfWifiManager");
 
-  wifiMac.SetType ("ns3::NqapWifiMac", 
+  wifiMac.SetType ("ns3::ApWifiMac",
                    "Ssid", SsidValue (ssid));
   NetDeviceContainer devicesLeft = wifi.Install (wifiPhy, wifiMac, nodesLeft.Get (0));
 
 
-  wifiMac.SetType ("ns3::NqstaWifiMac", 
-                   "Ssid", SsidValue (ssid), 
+  wifiMac.SetType ("ns3::StaWifiMac",
+                   "Ssid", SsidValue (ssid),
                    "ActiveProbing", BooleanValue (false));
   devicesLeft.Add (wifi.Install (wifiPhy, wifiMac, NodeContainer (nodesLeft.Get (1), nodesLeft.Get (2), nodesLeft.Get (3))));
 

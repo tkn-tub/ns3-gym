@@ -90,28 +90,25 @@ BasicEnergySource::SetSupplyVoltage (double supplyVoltageV)
 void
 BasicEnergySource::SetEnergyUpdateInterval (Time interval)
 {
-  NS_LOG_FUNCTION (this);
+  NS_LOG_FUNCTION (this << interval);
   m_energyUpdateInterval = interval;
 }
 
 Time
 BasicEnergySource::GetEnergyUpdateInterval (void) const
 {
-  NS_LOG_FUNCTION (this);
   return m_energyUpdateInterval;
 }
 
 double
 BasicEnergySource::GetSupplyVoltage (void) const
 {
-  NS_LOG_FUNCTION (this);
   return m_supplyVoltageV;
 }
 
 double
 BasicEnergySource::GetInitialEnergy (void) const
 {
-  NS_LOG_FUNCTION (this);
   return m_initialEnergyJ;
 }
 
@@ -134,32 +131,10 @@ BasicEnergySource::GetEnergyFraction (void)
 }
 
 void
-BasicEnergySource::DecreaseRemainingEnergy (double energyJ)
-{
-  NS_LOG_FUNCTION (this << energyJ);
-  NS_ASSERT (energyJ >= 0);
-  m_remainingEnergyJ -= energyJ;
-  // check if remaining energy is 0
-  if (m_remainingEnergyJ <= 0)
-    {
-      HandleEnergyDrainedEvent ();
-    }
-}
-
-void
-BasicEnergySource::IncreaseRemainingEnergy (double energyJ)
-{
-  NS_LOG_FUNCTION (this << energyJ);
-  NS_ASSERT (energyJ >= 0);
-  m_remainingEnergyJ += energyJ;
-}
-
-void
 BasicEnergySource::UpdateEnergySource (void)
 {
   NS_LOG_FUNCTION (this);
-  NS_LOG_DEBUG ("BasicEnergySource:Updating remaining energy at node #" <<
-                GetNode ()->GetId ());
+  NS_LOG_DEBUG ("BasicEnergySource:Updating remaining energy.");
 
   // do not update if simulation has finished
   if (Simulator::IsFinished ())
@@ -208,8 +183,7 @@ void
 BasicEnergySource::HandleEnergyDrainedEvent (void)
 {
   NS_LOG_FUNCTION (this);
-  NS_LOG_DEBUG ("BasicEnergySource:Energy depleted at node #" <<
-                GetNode ()->GetId ());
+  NS_LOG_DEBUG ("BasicEnergySource:Energy depleted!");
   NotifyEnergyDrained (); // notify DeviceEnergyModel objects
   m_remainingEnergyJ = 0; // energy never goes below 0
 }

@@ -102,6 +102,8 @@ example_tests = [
     ("examples/emulation/emu-ping", "False", "True"),
     ("examples/emulation/emu-udp-echo", "False", "True"),
 
+    ("examples/energy/energy-model-example", "True", "True"),
+
     ("examples/error-model/simple-error-model", "True", "True"),
 
     ("examples/ipv6/icmpv6-redirect", "True", "True"),

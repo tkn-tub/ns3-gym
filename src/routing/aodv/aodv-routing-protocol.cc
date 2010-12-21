@@ -194,11 +194,13 @@ RoutingProtocol::GetTypeId (void)
                      MakeTimeChecker ())
       .AddAttribute ("MaxQueueLen", "Maximum number of packets that we allow a routing protocol to buffer.",
                      UintegerValue (64),
-                     MakeUintegerAccessor (&RoutingProtocol::MaxQueueLen),
+                     MakeUintegerAccessor (&RoutingProtocol::SetMaxQueueLen,
+                                           &RoutingProtocol::GetMaxQueueLen),
                      MakeUintegerChecker<uint32_t> ())
       .AddAttribute ("MaxQueueTime", "Maximum time packets can be queued (in seconds)",
                      TimeValue (Seconds (30)),
-                     MakeTimeAccessor (&RoutingProtocol::MaxQueueTime),
+                     MakeTimeAccessor (&RoutingProtocol::SetMaxQueueTime,
+                                       &RoutingProtocol::GetMaxQueueTime),
                      MakeTimeChecker ())
       .AddAttribute ("AllowedHelloLoss", "Number of hello messages which may be loss for valid link.",
                      UintegerValue (2),
@@ -228,6 +230,19 @@ RoutingProtocol::GetTypeId (void)
   return tid;
 }
 
+void
+RoutingProtocol::SetMaxQueueLen (uint32_t len)
+{
+    MaxQueueLen = len;
+    m_queue.SetMaxQueueLen (len);
+}
+void
+RoutingProtocol::SetMaxQueueTime (Time t)
+{
+  MaxQueueTime = t;
+  m_queue.SetQueueTimeout (t);
+}
+
 RoutingProtocol::~RoutingProtocol ()
 {
 }
@@ -243,6 +258,13 @@ RoutingProtocol::DoDispose ()
     }
   m_socketAddresses.clear ();
   Ipv4RoutingProtocol::DoDispose ();
+}
+
+void
+RoutingProtocol::PrintRoutingTable (Ptr<OutputStreamWrapper> stream) const
+{
+  *stream->GetStream () << "Node: " << m_ipv4->GetObject<Node> ()->GetId () << " Time: " << Simulator::Now().GetSeconds () << "s ";
+  m_routingTable.Print (stream);
 }
 
 void
@@ -915,10 +937,17 @@ RoutingProtocol::UpdateRouteToNeighbor (Ipv4Address sender, Ipv4Address receiver
   else
     {
       Ptr<NetDevice> dev = m_ipv4->GetNetDevice (m_ipv4->GetInterfaceForAddress (receiver));
-      RoutingTableEntry newEntry (/*device=*/dev, /*dst=*/sender, /*know seqno=*/false, /*seqno=*/0,
-                                  /*iface=*/m_ipv4->GetAddress (m_ipv4->GetInterfaceForAddress (receiver), 0),
-                                  /*hops=*/1, /*next hop=*/sender, /*lifetime=*/std::max (ActiveRouteTimeout, toNeighbor.GetLifeTime ()));
-      m_routingTable.Update (newEntry);
+      if (toNeighbor.GetValidSeqNo () && (toNeighbor.GetHop () == 1) && (toNeighbor.GetOutputDevice () == dev))
+        {
+          toNeighbor.SetLifeTime (std::max (ActiveRouteTimeout, toNeighbor.GetLifeTime ()));
+        }
+      else
+        {
+          RoutingTableEntry newEntry (/*device=*/dev, /*dst=*/sender, /*know seqno=*/false, /*seqno=*/0,
+                                      /*iface=*/m_ipv4->GetAddress (m_ipv4->GetInterfaceForAddress (receiver), 0),
+                                      /*hops=*/1, /*next hop=*/sender, /*lifetime=*/std::max (ActiveRouteTimeout, toNeighbor.GetLifeTime ()));
+          m_routingTable.Update (newEntry);
+        }
     }
 
 }
@@ -1009,13 +1038,21 @@ RoutingProtocol::RecvRequest (Ptr<Packet> p, Ipv4Address receiver, Ipv4Address s
   if (m_routingTable.LookupRoute (dst, toDst))
     {
       /*
+       * Drop RREQ, This node RREP wil make a loop.
+       */
+      if (toDst.GetNextHop () == src)
+        {
+          NS_LOG_DEBUG ("Drop RREQ from " << src << ", dest next hop " << toDst.GetNextHop ());
+          return;
+        }
+      /*
        * The Destination Sequence number for the requested destination is set to the maximum of the corresponding value
        * received in the RREQ message, and the destination sequence value currently maintained by the node for the requested destination.
        * However, the forwarding node MUST NOT modify its maintained value for the destination sequence number, even if the value
        * received in the incoming RREQ is larger than the value currently maintained by the forwarding node.
        */
-      if (rreqHeader.GetUnknownSeqno () || ( (int32_t (toDst.GetSeqNo ()) - int32_t (rreqHeader.GetDstSeqno ()) > 0)
-          && toDst.GetValidSeqNo () ))
+      if ((rreqHeader.GetUnknownSeqno () || (int32_t (toDst.GetSeqNo ()) - int32_t (rreqHeader.GetDstSeqno ()) >= 0))
+          && toDst.GetValidSeqNo () )
         {
           if (!rreqHeader.GetDestinationOnly () && toDst.GetFlag() == VALID)
             {
@@ -1226,7 +1263,8 @@ RoutingProtocol::RecvReply (Ptr<Packet> p, Ipv4Address receiver, Ipv4Address sen
           m_addressReqTimer[dst].Remove ();
           m_addressReqTimer.erase (dst);
         }
-      SendPacketFromQueue (rrepHeader.GetDst (), newEntry.GetRoute ());
+      m_routingTable.LookupRoute (dst, toDst);
+      SendPacketFromQueue (dst, toDst.GetRoute ());
       return;
     }
 

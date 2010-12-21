@@ -47,7 +47,6 @@ EnergySource::~EnergySource ()
 void
 EnergySource::SetNode (Ptr<Node> node)
 {
-  NS_LOG_FUNCTION (this << node);
   NS_ASSERT (node != NULL);
   m_node = node;
 }
@@ -55,7 +54,6 @@ EnergySource::SetNode (Ptr<Node> node)
 Ptr<Node>
 EnergySource::GetNode (void) const
 {
-  NS_LOG_FUNCTION (this);
   return m_node;
 }
 
@@ -99,6 +97,34 @@ EnergySource::FindDeviceEnergyModels (std::string name)
   return container;
 }
 
+void
+EnergySource::StartDeviceModels (void)
+{
+  /*
+   * Device models are not aggregated to the node, hence we have to manually
+   * call dispose method here.
+   */
+  DeviceEnergyModelContainer::Iterator i;
+  for (i = m_models.Begin (); i != m_models.End (); i++)
+    {
+      (*i)->Start ();
+    }
+}
+
+void
+EnergySource::DisposeDeviceModels (void)
+{
+  /*
+   * Device models are not aggregated to the node, hence we have to manually
+   * call dispose method here.
+   */
+  DeviceEnergyModelContainer::Iterator i;
+  for (i = m_models.Begin (); i != m_models.End (); i++)
+    {
+      (*i)->Dispose ();
+    }
+}
+
 /*
  * Private function starts here.
  */
@@ -107,7 +133,7 @@ void
 EnergySource::DoDispose (void)
 {
   NS_LOG_FUNCTION (this);
-  m_models.Clear ();
+  BreakDeviceEnergyModelRefCycle ();
 }
 
 /*

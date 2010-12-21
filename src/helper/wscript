@@ -47,6 +47,7 @@ def build(bld):
         'topology-reader-helper.cc',
         'waveform-generator-helper.cc',
         'spectrum-analyzer-helper.cc',
+        'bulk-send-helper.cc',
         ]
 
     headers = bld.new_task_gen('ns3header')
@@ -97,6 +98,7 @@ def build(bld):
         'topology-reader-helper.h',
         'waveform-generator-helper.h',
         'spectrum-analyzer-helper.h',
+        'bulk-send-helper.h',
         ]
 
     env = bld.env_of_name('default')

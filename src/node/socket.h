@@ -85,6 +85,13 @@ public:
     SOCKET_ERRNO_LAST
   };
 
+  enum SocketType {
+    NS3_SOCK_STREAM,
+    NS3_SOCK_SEQPACKET,
+    NS3_SOCK_DGRAM,
+    NS3_SOCK_RAW
+  };
+
   /**
    * This method wraps the creation of sockets that is performed
    * by a socket factory on a given node based on a TypeId.
@@ -101,6 +108,10 @@ public:
    *         when the socket is created.
    */
   virtual enum Socket::SocketErrno GetErrno (void) const = 0;
+  /**
+    * \return the socket type, analogous to getsockopt (SO_TYPE)
+    */
+  virtual enum Socket::SocketType GetSocketType (void) const = 0;
   /**
    * \returns the node this socket is associated with.
    */

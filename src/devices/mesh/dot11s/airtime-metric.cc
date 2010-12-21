@@ -32,26 +32,26 @@ AirtimeLinkMetricCalculator::GetTypeId ()
     .AddConstructor<AirtimeLinkMetricCalculator> ()
     .AddAttribute ( "TestLength",
                     "Rate should be estimated using test length.",
-                     UintegerValue (1024),
-                     MakeUintegerAccessor (
-                         &AirtimeLinkMetricCalculator::SetTestLength),
-                     MakeUintegerChecker<uint16_t> (1)
-                  )
+                    UintegerValue (1024),
+                    MakeUintegerAccessor (
+                      &AirtimeLinkMetricCalculator::SetTestLength),
+                    MakeUintegerChecker<uint16_t> (1)
+                    )
     .AddAttribute ( "Dot11MetricTid",
                     "TID used to calculate metric (data rate)",
                     UintegerValue (0),
                     MakeUintegerAccessor (
-                        &AirtimeLinkMetricCalculator::SetHeaderTid),
+                      &AirtimeLinkMetricCalculator::SetHeaderTid),
                     MakeUintegerChecker<uint8_t> (0)
-                  )
+                    )
     .AddAttribute ( "Dot11sMeshHeaderLength",
                     "Length of the mesh header",
                     UintegerValue (6),
                     MakeUintegerAccessor (
-                        &AirtimeLinkMetricCalculator::m_meshHeaderLength),
+                      &AirtimeLinkMetricCalculator::m_meshHeaderLength),
                     MakeUintegerChecker<uint16_t> (0)
-                  )
-                  ;
+                    )
+  ;
   return tid;
 }
 AirtimeLinkMetricCalculator::AirtimeLinkMetricCalculator () :
@@ -69,7 +69,7 @@ AirtimeLinkMetricCalculator::SetHeaderTid (uint8_t tid)
 void
 AirtimeLinkMetricCalculator::SetTestLength (uint16_t testLength)
 {
-  m_testFrame = Create<Packet> (testLength + 6 /*Mesh header*/ + 36/*802.11 header*/);
+  m_testFrame = Create<Packet> (testLength + 6 /*Mesh header*/ + 36 /*802.11 header*/);
 }
 uint32_t
 AirtimeLinkMetricCalculator::CalculateMetric (Mac48Address peerAddress, Ptr<MeshWifiInterfaceMac> mac)
@@ -86,15 +86,15 @@ AirtimeLinkMetricCalculator::CalculateMetric (Mac48Address peerAddress, Ptr<Mesh
    */
   NS_ASSERT (!peerAddress.IsGroup ());
   //obtain current rate:
-  WifiMode mode = mac->GetStationManager ()->GetDataMode (peerAddress, &m_testHeader, m_testFrame, m_testFrame->GetSize ());
+  WifiMode mode = mac->GetWifiRemoteStationManager ()->GetDataMode (peerAddress, &m_testHeader, m_testFrame, m_testFrame->GetSize ());
   //obtain frame error rate:
-  double failAvg = mac->GetStationManager ()->GetInfo (peerAddress).GetFrameErrorRate ();
+  double failAvg = mac->GetWifiRemoteStationManager ()->GetInfo (peerAddress).GetFrameErrorRate ();
   NS_ASSERT (failAvg < 1.0);
   //calculate metric
-  uint32_t metric = (uint32_t)((double)(/*Overhead + payload*/
-      mac->GetPifs () + mac->GetSlot () + mac->GetEifsNoDifs () + //DIFS + SIFS + AckTxTime = PIFS + SLOT + EifsNoDifs
-      mac->GetWifiPhy () ->CalculateTxDuration (m_testFrame->GetSize (), mode, WIFI_PREAMBLE_LONG)
-      ).GetMicroSeconds () / (10.24 * (1.0 - failAvg)));
+  uint32_t metric = (uint32_t)((double)( /*Overhead + payload*/
+                                 mac->GetPifs () + mac->GetSlot () + mac->GetEifsNoDifs () + //DIFS + SIFS + AckTxTime = PIFS + SLOT + EifsNoDifs
+                                 mac->GetWifiPhy ()->CalculateTxDuration (m_testFrame->GetSize (), mode, WIFI_PREAMBLE_LONG)
+                                 ).GetMicroSeconds () / (10.24 * (1.0 - failAvg)));
   return metric;
 }
 } //namespace dot11s

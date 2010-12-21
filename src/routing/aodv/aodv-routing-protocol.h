@@ -34,6 +34,7 @@
 #include "aodv-neighbor.h"
 #include "aodv-dpd.h"
 #include "ns3/node.h"
+#include "ns3/output-stream-wrapper.h"
 #include "ns3/ipv4-routing-protocol.h"
 #include "ns3/ipv4-interface.h"
 #include "ns3/ipv4-l3-protocol.h"
@@ -58,7 +59,7 @@ public:
   RoutingProtocol ();
   virtual ~RoutingProtocol();
   virtual void DoDispose ();
-  
+
   ///\name From Ipv4RoutingProtocol
   //\{
   Ptr<Ipv4Route> RouteOutput (Ptr<Packet> p, const Ipv4Header &header, Ptr<NetDevice> oif, Socket::SocketErrno &sockerr);
@@ -70,10 +71,15 @@ public:
   virtual void NotifyAddAddress (uint32_t interface, Ipv4InterfaceAddress address);
   virtual void NotifyRemoveAddress (uint32_t interface, Ipv4InterfaceAddress address);
   virtual void SetIpv4 (Ptr<Ipv4> ipv4);
+  virtual void PrintRoutingTable (Ptr<OutputStreamWrapper> stream) const;
   //\}
   
   ///\name Handle protocol parameters
   //\{
+  Time GetMaxQueueTime () const { return MaxQueueTime; }
+  void SetMaxQueueTime (Time t);
+  uint32_t GetMaxQueueLen () const { return MaxQueueLen; }
+  void SetMaxQueueLen (uint32_t len);
   bool GetDesinationOnlyFlag () const { return DestinationOnly; }
   void SetDesinationOnlyFlag (bool f) { DestinationOnly = f; }
   bool GetGratuitousReplyFlag () const { return GratuitousReply; }

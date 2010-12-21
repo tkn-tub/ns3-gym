@@ -20,7 +20,6 @@
 
 #include <stdint.h>
 #include <iostream>
-#include "tcp-socket-impl.h"
 #include "tcp-header.h"
 #include "ns3/buffer.h"
 #include "ns3/address-utils.h"

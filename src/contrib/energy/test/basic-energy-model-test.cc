@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * Authors: He Wu <mdzz@u.washington.edu>
+ * Author: He Wu <mdzz@u.washington.edu>
  */
 
 #include "ns3/basic-energy-source.h"
@@ -59,7 +59,7 @@ private:
    * Runs simulation for a while, check if final state & remaining energy is
    * correctly updated.
    */
-  bool StateSwitchTest (WifiRadioEnergyModel::WifiRadioState state);
+  bool StateSwitchTest (WifiPhy::State state);
 
 private:
   double m_timeS;     // in seconds
@@ -88,19 +88,23 @@ BasicEnergyUpdateTest::DoRun (void)
   m_deviceEnergyModel.SetTypeId ("ns3::WifiRadioEnergyModel");
 
   // run state switch tests
-  if (StateSwitchTest (WifiRadioEnergyModel::TX))
+  if (StateSwitchTest (WifiPhy::IDLE))
     {
       return true;
     }
-  if (StateSwitchTest (WifiRadioEnergyModel::RX))
+  if (StateSwitchTest (WifiPhy::CCA_BUSY))
     {
       return true;
     }
-  if (StateSwitchTest (WifiRadioEnergyModel::IDLE))
+  if (StateSwitchTest (WifiPhy::TX))
     {
       return true;
     }
-  if (StateSwitchTest (WifiRadioEnergyModel::SLEEP))
+  if (StateSwitchTest (WifiPhy::RX))
+    {
+      return true;
+    }
+  if (StateSwitchTest (WifiPhy::SWITCHING))
     {
       return true;
     }
@@ -110,8 +114,7 @@ BasicEnergyUpdateTest::DoRun (void)
 }
 
 bool
-BasicEnergyUpdateTest::StateSwitchTest (
-    WifiRadioEnergyModel::WifiRadioState state)
+BasicEnergyUpdateTest::StateSwitchTest (WifiPhy::State state)
 {
   // create node
   Ptr<Node> node = CreateObject<Node> ();
@@ -120,8 +123,6 @@ BasicEnergyUpdateTest::StateSwitchTest (
   Ptr<BasicEnergySource> source = m_energySource.Create<BasicEnergySource> ();
   // aggregate energy source to node
   node->AggregateObject (source);
-  // set update interval in source
-  source->SetEnergyUpdateInterval (Seconds (1.0));
 
   // create device energy model
   Ptr<WifiRadioEnergyModel> model =
@@ -176,17 +177,20 @@ BasicEnergyUpdateTest::StateSwitchTest (
   double current = 0.0;
   switch (state)
     {
-    case WifiRadioEnergyModel::TX:
-      current = devModel->GetTxCurrentA ();
-      break;
-    case WifiRadioEnergyModel::RX:
-      current = devModel->GetRxCurrentA ();
-      break;
-    case WifiRadioEnergyModel::IDLE:
+    case WifiPhy::IDLE:
       current = devModel->GetIdleCurrentA ();
       break;
-    case WifiRadioEnergyModel::SLEEP:
-      current = devModel->GetSleepCurrentA ();
+    case WifiPhy::CCA_BUSY:
+      current = devModel->GetCcaBusyCurrentA ();
+      break;
+    case WifiPhy::TX:
+      current = devModel->GetTxCurrentA ();
+      break;
+    case WifiPhy::RX:
+      current = devModel->GetRxCurrentA ();
+      break;
+    case WifiPhy::SWITCHING:
+      current = devModel->GetSwitchingCurrentA ();
       break;
     default:
       NS_FATAL_ERROR ("Undefined radio state: " << state);
@@ -204,7 +208,7 @@ BasicEnergyUpdateTest::StateSwitchTest (
                              "Incorrect remaining energy!");
 
   // obtain radio state
-  WifiRadioEnergyModel::WifiRadioState endState = devModel->GetCurrentState ();
+  WifiPhy::State endState = devModel->GetCurrentState ();
   NS_LOG_UNCOND ("Radio state is " << endState);
   // check end state
   NS_TEST_ASSERT_MSG_EQ (endState, state,  "Incorrect end state!");
@@ -362,8 +366,7 @@ BasicEnergyDepletionTest::DepletionTestCase (double simTimeS,
     MakeCallback (&BasicEnergyDepletionTest::DepletionHandler, this);
   radioEnergyHelper.SetDepletionCallback (callback);
   // install on node
-  DeviceEnergyModelContainer deviceModels = radioEnergyHelper.Install (devices,
-                                                                       sources);
+  DeviceEnergyModelContainer deviceModels = radioEnergyHelper.Install (devices, sources);
 
   // run simulation
   Simulator::Stop (Seconds (simTimeS));
@@ -376,8 +379,7 @@ BasicEnergyDepletionTest::DepletionTestCase (double simTimeS,
   NS_LOG_UNCOND ("Actual callback count is " << m_callbackCount);
 
   // check result, call back should only be invoked once
-  NS_TEST_ASSERT_MSG_EQ (m_numOfNodes, m_callbackCount,
-                         "Not all callbacks are invoked!");
+  NS_TEST_ASSERT_MSG_EQ (m_numOfNodes, m_callbackCount, "Not all callbacks are invoked!");
 
   return false;
 }
@@ -399,7 +401,7 @@ BasicEnergyModelTestSuite::BasicEnergyModelTestSuite ()
   : TestSuite ("basic-energy-model", UNIT)
 {
   AddTestCase (new BasicEnergyUpdateTest);
-  //AddTestCase (new BasicEnergyDepletionTest);
+  AddTestCase (new BasicEnergyDepletionTest);
 }
 
 // create an instance of the test suite

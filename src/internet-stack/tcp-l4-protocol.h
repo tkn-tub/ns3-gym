@@ -37,7 +37,7 @@ class Socket;
 class TcpHeader;
 class Ipv4EndPointDemux;
 class Ipv4Interface;
-class TcpSocketImpl;
+class TcpSocketBase;
 class Ipv4EndPoint;
 
 /**
@@ -69,6 +69,7 @@ public:
    * of the TCP protocol
    */
   Ptr<Socket> CreateSocket (void);
+  Ptr<Socket> CreateSocket (TypeId socketTypeId);
 
   Ipv4EndPoint *Allocate (void);
   Ipv4EndPoint *Allocate (Ipv4Address address);
@@ -115,16 +116,16 @@ protected:
 private:
   Ptr<Node> m_node;
   Ipv4EndPointDemux *m_endPoints;
-  ObjectFactory m_rttFactory;
+  TypeId m_rttTypeId;
+  TypeId m_socketTypeId;
 private:
-  friend class TcpSocketImpl;
+  friend class TcpSocketBase;
   void SendPacket (Ptr<Packet>, const TcpHeader &,
                   Ipv4Address, Ipv4Address, Ptr<NetDevice> oif = 0);
-  static ObjectFactory GetDefaultRttEstimatorFactory (void);
   TcpL4Protocol (const TcpL4Protocol &o);
   TcpL4Protocol &operator = (const TcpL4Protocol &o);
 
-  std::vector<Ptr<TcpSocketImpl> > m_sockets;
+  std::vector<Ptr<TcpSocketBase> > m_sockets;
 };
 
 }; // namespace ns3

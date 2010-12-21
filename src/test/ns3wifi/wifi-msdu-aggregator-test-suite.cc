@@ -84,7 +84,7 @@ WifiMsduAggregatorThroughputTest::DoRun (void)
   // and thus has an aggregator on AC_BE.
   NodeContainer ap;
   ap.Create (1);
-  wifiMac.SetType ("ns3::QapWifiMac",
+  wifiMac.SetType ("ns3::ApWifiMac",
                    "Ssid", SsidValue (ssid),
                    "BeaconGeneration", BooleanValue (true),
                    "BeaconInterval", TimeValue (MicroSeconds (102400)));
@@ -95,7 +95,7 @@ WifiMsduAggregatorThroughputTest::DoRun (void)
   // Setup one STA, which will be the sink for traffic in this test.
   NodeContainer sta;
   sta.Create (1);
-  wifiMac.SetType ("ns3::QstaWifiMac",
+  wifiMac.SetType ("ns3::StaWifiMac",
                    "Ssid", SsidValue (ssid),
                    "ActiveProbing", BooleanValue (false));
   NetDeviceContainer staDev = wifi.Install (wifiPhy, wifiMac, sta);

@@ -25,8 +25,97 @@
 #include "ns3/nstime.h"
 #include "ns3/event-id.h"
 #include "ns3/traced-value.h"
+#include "ns3/wifi-phy.h"
 
 namespace ns3 {
+
+/**
+ * A WifiPhy listener class for notifying the WifiRadioEnergyModel of Wifi radio
+ * state change.
+ */
+class WifiRadioEnergyModelPhyListener : public WifiPhyListener
+{
+public:
+  WifiRadioEnergyModelPhyListener ();
+  virtual ~WifiRadioEnergyModelPhyListener ();
+
+  /**
+   * \brief Sets the change state callback. Used by helper class.
+   *
+   * \param callback Change state callback.
+   */
+  void SetChangeStateCallback (DeviceEnergyModel::ChangeStateCallback callback);
+
+  /**
+   * \brief Switches the WifiRadioEnergyModel to RX state.
+   *
+   * \param duration the expected duration of the packet reception.
+   *
+   * Defined in ns3::WifiPhyListener
+   */
+  virtual void NotifyRxStart (Time duration);
+
+  /**
+   * \brief Switches the WifiRadioEnergyModel back to IDLE state.
+   *
+   * Defined in ns3::WifiPhyListener
+   *
+   * Note that for the WifiRadioEnergyModel, the behavior of the function is the
+   * same as NotifyRxEndError.
+   */
+  virtual void NotifyRxEndOk (void);
+
+  /**
+   * \brief Switches the WifiRadioEnergyModel back to IDLE state.
+   *
+   * Defined in ns3::WifiPhyListener
+   *
+   * Note that for the WifiRadioEnergyModel, the behavior of the function is the
+   * same as NotifyRxEndOk.
+   */
+  virtual void NotifyRxEndError (void);
+
+  /**
+   * \brief Switches the WifiRadioEnergyModel to TX state and switches back to
+   * IDLE after TX duration.
+   *
+   * \param duration the expected transmission duration.
+   *
+   * Defined in ns3::WifiPhyListener
+   */
+  virtual void NotifyTxStart (Time duration);
+
+  /**
+   * \param duration the expected busy duration.
+   *
+   * Defined in ns3::WifiPhyListener
+   */
+  virtual void NotifyMaybeCcaBusyStart (Time duration);
+
+  /**
+   * \param duration the expected channel switching duration.
+   *
+   * Defined in ns3::WifiPhyListener
+   */
+  virtual void NotifySwitchingStart (Time duration);
+
+private:
+  /**
+   * A helper function that makes scheduling m_changeStateCallback possible.
+   */
+  void SwitchToIdle (void);
+
+private:
+  /**
+   * Change state callback used to notify the WifiRadioEnergyModel of a state
+   * change.
+   */
+  DeviceEnergyModel::ChangeStateCallback m_changeStateCallback;
+
+  EventId m_switchToIdleEvent;
+};
+
+// -------------------------------------------------------------------------- //
 
 /**
  * \brief A WiFi radio energy model.
@@ -54,29 +143,6 @@ class WifiRadioEnergyModel : public DeviceEnergyModel
 {
 public:
   /**
-   * Wifi radio states.
-   */
-  enum WifiRadioState
-  {
-    /**
-     * Radio is transmitting.
-     */
-    TX = 0,
-    /**
-     * Radio is receiving.
-     */
-    RX,
-    /**
-     * Radio is idling.
-     */
-    IDLE,
-    /**
-     * Radio is asleep.
-     */
-    SLEEP
-  };
-
-  /**
    * Callback type for energy depletion handling.
    */
   typedef Callback<void> WifiRadioEnergyDepletionCallback;
@@ -85,24 +151,6 @@ public:
   static TypeId GetTypeId (void);
   WifiRadioEnergyModel ();
   virtual ~WifiRadioEnergyModel ();
-
-  /**
-   * \brief Sets pointer to node.
-   *
-   * \param node Pointer to node.
-   *
-   * Implements DeviceEnergyModel::SetNode.
-   */
-  virtual void SetNode (Ptr<Node> node);
-
-  /**
-   * \brief Gets pointer to node.
-   *
-   * \returns Pointer to node.
-   *
-   * Implements DeviceEnergyModel::GetNode.
-   */
-  virtual Ptr<Node> GetNode (void) const;
 
   /**
    * \brief Sets pointer to EnergySouce installed on node.
@@ -121,19 +169,21 @@ public:
   virtual double GetTotalEnergyConsumption (void) const;
 
   // Setter & getters for state power consumption.
+  double GetIdleCurrentA (void) const;
+  void SetIdleCurrentA (double idleCurrentA);
+  double GetCcaBusyCurrentA (void) const;
+  void SetCcaBusyCurrentA (double ccaBusyCurrentA);
   double GetTxCurrentA (void) const;
   void SetTxCurrentA (double txCurrentA);
   double GetRxCurrentA (void) const;
   void SetRxCurrentA (double rxCurrentA);
-  double GetIdleCurrentA (void) const;
-  void SetIdleCurrentA (double idleCurrentA);
-  double GetSleepCurrentA (void) const;
-  void SetSleepCurrentA (double sleepCurrentA);
+  double GetSwitchingCurrentA (void) const;
+  void SetSwitchingCurrentA (double switchingCurrentA);
 
   /**
    * \returns Current state.
    */
-  WifiRadioState GetCurrentState (void) const;
+  WifiPhy::State GetCurrentState (void) const;
 
   /**
    * \param callback Callback function.
@@ -158,6 +208,11 @@ public:
    */
   virtual void HandleEnergyDepletion (void);
 
+  /**
+   * \returns Pointer to the PHY listener.
+   */
+  WifiRadioEnergyModelPhyListener * GetPhyListener (void);
+
 
 private:
   void DoDispose (void);
@@ -170,40 +225,35 @@ private:
   virtual double DoGetCurrentA (void) const;
 
   /**
-   * \param destState Radio state to switch to.
-   * \return True if the transition is allowed.
-   *
-   * This function checks if a given radio state transition is allowed.
-   */
-  bool IsStateTransitionValid (const WifiRadioState destState);
-
-  /**
    * \param currentState New state the radio device is currently in.
    *
    * Sets current state. This function is private so that only the energy model
    * can change its own state.
    */
-  void SetWifiRadioState (const WifiRadioState state);
+  void SetWifiRadioState (const WifiPhy::State state);
 
 private:
-  Ptr<Node> m_node;
   Ptr<EnergySource> m_source;
 
   // Member variables for current draw in different radio modes.
   double m_txCurrentA;
   double m_rxCurrentA;
   double m_idleCurrentA;
-  double m_sleepCurrentA;
+  double m_ccaBusyCurrentA;
+  double m_switchingCurrentA;
 
   // This variable keeps track of the total energy consumed by this model.
   TracedValue<double> m_totalEnergyConsumption;
 
   // State variables.
-  WifiRadioState m_currentState;  // current state the radio is in
+  WifiPhy::State m_currentState;  // current state the radio is in
   Time m_lastUpdateTime;          // time stamp of previous energy update
 
-  // energy depletion callback
+  // Energy depletion callback
   WifiRadioEnergyDepletionCallback m_energyDepletionCallback;
+
+  // WifiPhy listener
+  WifiRadioEnergyModelPhyListener *m_listener;
 };
 
 } // namespace ns3

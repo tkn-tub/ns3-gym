@@ -26,6 +26,18 @@ IMAGES_EPS = \
 	$(DOC_FIGURES)/WifiArchitecture.eps \
 	$(DOC_FIGURES)/WimaxArchitecture.eps
 
+$(FIGURES)/node.pdf_width = 5in
+$(FIGURES)/testbed.pdf_width = 5in
+$(FIGURES)/emulated-channel.pdf_width = 6in
+$(FIGURES)/internet-node-send.pdf_width = 5in
+$(FIGURES)/internet-node-recv.pdf_width = 5in
+$(FIGURES)/software-organization.pdf_width = 5in
+$(FIGURES)/packet.pdf_width = 4in
+$(FIGURES)/buffer.pdf_width = 15cm
+$(FIGURES)/routing.pdf_width = 6in
+$(FIGURES)/routing-specialization.pdf_width = 5in
+$(FIGURES)/sockets-overview.pdf_width = 10cm
+$(FIGURES)/snir.pdf_width = 3in
 IMAGES_PNG = ${IMAGES_EPS:.eps=.png}
 IMAGES_PDF = ${IMAGES_EPS:.eps=.pdf}
 
@@ -72,7 +84,7 @@ CHAPTERS = \
 
 %.eps : %.dia; $(DIA) -t eps $< -e $@
 %.png : %.dia; $(DIA) -t png $< -e $@
-%.pdf : %.eps; $(EPSTOPDF) $< -o=$@
+%.pdf : %.eps; $(EPSTOPDF) $< -o=$@; if test x$($@_width) != x; then TMPFILE=`mktemp`; ./rescale-pdf.sh $($@_width) $@ $${TMPFILE} && mv $${TMPFILE} $@; fi
 
 all:  $(IMAGES) version manual.pdf manual.html manual/manual.html
 

@@ -58,7 +58,7 @@ int main (int argc, char const* argv[])
  
   Ptr<Node> sta = CreateObject<Node> ();
   Ptr<Node> ap = CreateObject<Node> ();
-  
+
   YansWifiChannelHelper channel = YansWifiChannelHelper::Default ();
   YansWifiPhyHelper phy = YansWifiPhyHelper::Default ();
   phy.SetChannel (channel.Create ());
@@ -69,31 +69,34 @@ int main (int argc, char const* argv[])
   wifi.SetRemoteStationManager ("ns3::AarfWifiManager", "FragmentationThreshold", UintegerValue (2500));
 
   Ssid ssid ("My-network");
-  
-  mac.SetType ("ns3::QstaWifiMac", "Ssid" , SsidValue (ssid), "ActiveProbing", BooleanValue (false));
+
+  mac.SetType ("ns3::StaWifiMac",
+               "Ssid", SsidValue (ssid),
+               "ActiveProbing", BooleanValue (false));
   /* setting blockack threshold for sta's BE queue */
   mac.SetBlockAckThresholdForAc (AC_BE, 2);
   /* setting block inactivity timeout to 3*1024 = 3072 microseconds */ 
   //mac.SetBlockAckInactivityTimeoutForAc (AC_BE, 3);
   NetDeviceContainer staDevice = wifi.Install (phy, mac, sta);
 
-  mac.SetType ("ns3::QapWifiMac", "Ssid", SsidValue (ssid));
+  mac.SetType ("ns3::ApWifiMac",
+               "Ssid", SsidValue (ssid));
   mac.SetBlockAckThresholdForAc (AC_BE, 0);
   NetDeviceContainer apDevice = wifi.Install (phy, mac, ap);
-  
+
   /* Setting mobility model */
   MobilityHelper mobility;
 
   mobility.SetPositionAllocator ("ns3::GridPositionAllocator",
-    "MinX", DoubleValue (0.0),
-    "MinY", DoubleValue (0.0),
-    "DeltaX", DoubleValue (5.0),
-    "DeltaY", DoubleValue (10.0),
-    "GridWidth", UintegerValue (3),
-    "LayoutType", StringValue ("RowFirst"));
+                                 "MinX", DoubleValue (0.0),
+                                 "MinY", DoubleValue (0.0),
+                                 "DeltaX", DoubleValue (5.0),
+                                 "DeltaY", DoubleValue (10.0),
+                                 "GridWidth", UintegerValue (3),
+                                 "LayoutType", StringValue ("RowFirst"));
 
   mobility.SetMobilityModel ("ns3::RandomWalk2dMobilityModel",
-    "Bounds", RectangleValue (Rectangle (-50, 50, -50, 50)));
+                             "Bounds", RectangleValue (Rectangle (-50, 50, -50, 50)));
   mobility.Install (sta);
 
   mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
@@ -103,7 +106,7 @@ int main (int argc, char const* argv[])
   InternetStackHelper stack;
   stack.Install (sta);
   stack.Install (ap);
-  
+
   Ipv4AddressHelper address;
 
   address.SetBase ("192.168.1.0", "255.255.255.0");
@@ -113,7 +116,7 @@ int main (int argc, char const* argv[])
   apIf = address.Assign (apDevice);
 
   /* Setting applications */
-  
+
   uint16_t port = 9;
 
   DataRate dataRate ("1Mb/s");

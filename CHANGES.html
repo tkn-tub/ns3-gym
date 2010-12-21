@@ -58,8 +58,67 @@ removed.
 </ul>
 
 <h2>New API:</h2>
+<ul>
+<li><b>Pyviz visualizer</b>  
+<p>A Python-based visualizer called pyviz is now integrated with ns-3.
+For Python simulations, there is an API to start the visualizer.  You
+have to import the visualizer module, and call visualizer.start()
+instead of ns3.Simulator.Run().  For C++ simulations, there is no API.
+For C++ simulations (but also works for Python ones) you need to set
+the GlobalValue SimulatorImplementationType to
+"ns3::VisualSimulatorImpl".  This can be set from the command-line,
+for example (add the
+<tt>--SimulatorImplementationType=ns3::VisualSimulatorImpl</tt>
+option), or via the waf option <tt>--visualizer</tt>, in addition to
+the usual <tt>--run</tt> option to run programs.
+</p></li>
+
+<li><b>WaypointMobility attributes</b>
+<p>Two attributes were added to WaypointMobility model:  LazyNotify and
+InitialPositionIs Waypoint.  See RELEASE_NOTES for details.  </p> </li>
+
+<li><b>802.11g rates for ERP-OFDM added</b>
+<p>New WifiModes of the form ErpOfdmRatexxMbps, where xx is the rate
+in Mbps (6, 9, 12, 18, 24, 36, 48, 54), are available for 802.11g.  
+More details are in the RELEASE_NOTES for details.  </p> </li>
+
+<li><b>Socket::GetSocketType ()</b>
+<p>This is analogous to getsockopt(SO_TYPE). ipv4-raw-socket, ipv6-raw-socket,
+  and packet-socket return NS3_SOCK_RAW. tcp-socket and nsc-tcp-socket return
+  NS3_SOCK_STREAM. udp-socket returns NS3_SOCK_DGRAM.</p></li>
+
+<li><b>BulkSendApplication</b>
+<p>Sends data as fast as possible up to MaxBytes or unlimited if MaxBytes is 
+zero.  Think OnOff, but without the "off" and without the variable data rate. 
+This application only works with NS3_SOCK_STREAM and NS3_SOCK_SEQPACKET sockets, 
+for example TCP sockets and not UDP sockets. A helper class exists to 
+facilitate creating BulkSendApplications. The API for the helper class 
+is similar to existing application helper classes, for example, OnOff.
+</p></li>
+
+<li><b>Rakhmatov Vrudhula non-linear battery model</b>
+<p>New class and helper for this battery model. </p></li>
+
+<li><b>Print IPv4 routing tables</b>
+<p>New class methods and helpers for printing IPv4 routing tables
+to an output stream. </p></li>
+
+</ul>
 
 <h2>Changes to existing API:</h2>
+<ul>
+<li><b>Consolidation of Wi-Fi MAC high functionality</b>
+<p>Wi-Fi MAC high classes have been reorganised in attempt to
+consolidate shared functionality into a single class. This new class
+is RegularWifiMac, and it derives from the abstract WifiMac, and is
+parent of AdhocWifiMac, StaWifiMac, ApWifiMac, and
+MeshWifiInterfaceMac. The QoS and non-QoS class variants are no
+longer, with a RegularWifiMac attribute "QosSupported" allowing
+selection between these two modes of operation. QosWifiMacHelper and
+NqosWifiMacHelper continue to work as previously, with a
+behind-the-scenes manipulation of the 'afore-mentioned attribute.
+</p>
+</ul>
 
 <h2>Changed behavior:</h2>
 <ul>
@@ -189,6 +248,8 @@ In Ipv4L4Protocol class,
 </pre>
   
 </li>
+<li>The method OutputStreamWrapper::SetStream (std::ostream *ostream) was removed.</li>
+)
 </ul>
 
 <h2>Changed behavior:</h2>

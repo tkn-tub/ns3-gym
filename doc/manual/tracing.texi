@@ -146,10 +146,10 @@ made using those operators.
 @smallformat
 @example
   class MyObject : public Object
-  {
+  @{
   public:
     static TypeId GetTypeId (void)
-    {
+    @{
       static TypeId tid = TypeId ("MyObject")
         .SetParent (Object::GetTypeId ())
         .AddConstructor<MyObject> ()
@@ -158,11 +158,11 @@ made using those operators.
                          MakeTraceSourceAccessor (&MyObject::m_myInt))
         ;
       return tid;
-    }
+    @}
   
-    MyObject () {}
+    MyObject () @{@}
     TracedValue<uint32_t> m_myInt;
-  };
+  @};
 @end example
 @end smallformat
 
@@ -180,9 +180,9 @@ process.
 @example
   void
   IntTrace (Int oldValue, Int newValue)
-  {
+  @{
     std::cout << ``Traced `` << oldValue << `` to `` << newValue << std::endl;
-  }
+  @}
 @end example
 @end smallformat
 
@@ -194,13 +194,13 @@ function.  This function will be called whenever one of the operators of the
 @example
   int
   main (int argc, char *argv[])
-  {
+  @{
     Ptr<MyObject> myObject = CreateObject<MyObject> ();
   
     myObject->TraceConnectWithoutContext ("MyInteger", MakeCallback(&IntTrace));
 
     myObject->m_myInt = 1234;
-  }
+  @}
 @end example
 @end smallformat
 
@@ -250,7 +250,7 @@ For example, one might find something that looks like the following in the syste
 
 @smallformat
 @example
-  void CwndTracer (uint32_t oldval, uint32_t newval) {}
+  void CwndTracer (uint32_t oldval, uint32_t newval) @{@}
 
   ...
 
@@ -272,7 +272,7 @@ the @code{Object} that has the ``CongestionWindow'' @code{Attribute} handy (call
 
 @smallformat
 @example
-  void CwndTracer (uint32_t oldval, uint32_t newval) {}
+  void CwndTracer (uint32_t oldval, uint32_t newval) @{@}
 
   ...
 
@@ -476,7 +476,7 @@ For example,
 You can enable pcap tracing on a particular node/net-device pair by providing a
 @code{std::string} representing an object name service string to an 
 @code{EnablePcap} method.  The @code{Ptr<NetDevice>} is looked up from the name
-string.  Again, the @code<Node> is implicit since the named net device must 
+string.  Again, the @code{Node} is implicit since the named net device must 
 belong to exactly one @code{Node}.  For example, 
 
 @verbatim
@@ -489,7 +489,7 @@ belong to exactly one @code{Node}.  For example,
 You can enable pcap tracing on a collection of node/net-device pairs by 
 providing a @code{NetDeviceContainer}.  For each @code{NetDevice} in the container
 the type is checked.  For each device of the proper type (the same type as is 
-managed by the device helper), tracing is enabled.    Again, the @code<Node> is 
+managed by the device helper), tracing is enabled.    Again, the @code{Node} is 
 implicit since the found net device must belong to exactly one @code{Node}.
 For example, 
 
@@ -676,7 +676,7 @@ for consistency.
 You can enable ascii tracing on a particular node/net-device pair by providing a
 @code{std::string} representing an object name service string to an 
 @code{EnablePcap} method.  The @code{Ptr<NetDevice>} is looked up from the name
-string.  Again, the @code<Node> is implicit since the named net device must 
+string.  Again, the @code{Node} is implicit since the named net device must 
 belong to exactly one @code{Node}.  For example, 
 
 @verbatim
@@ -713,7 +713,7 @@ disambiguated by trace context strings.
 You can enable ascii tracing on a collection of node/net-device pairs by 
 providing a @code{NetDeviceContainer}.  For each @code{NetDevice} in the container
 the type is checked.  For each device of the proper type (the same type as is 
-managed by the device helper), tracing is enabled.    Again, the @code<Node> is 
+managed by the device helper), tracing is enabled.    Again, the @code{Node} is 
 implicit since the found net device must belong to exactly one @code{Node}.
 For example, 
 
@@ -1062,7 +1062,7 @@ the user is completely specifying the file name, the string should include the
 You can enable ascii tracing on a particular protocol by providing a 
 @code{std::string} representing an object name service string to an 
 @code{EnablePcap} method.  The @code{Ptr<Ipv4>} is looked up from the name
-string.  The @code<Node> in the resulting filenames is implicit since there
+string.  The @code{Node} in the resulting filenames is implicit since there
 is a one-to-one correspondence between protocol instances and nodes,
 For example, 
 
@@ -1096,7 +1096,7 @@ disambiguated by trace context strings.
 You can enable ascii tracing on a collection of protocol/interface pairs by 
 providing an @code{Ipv4InterfaceContainer}.  For each protocol of the proper 
 type (the same type as is managed by the device helper), tracing is enabled
-for the corresponding interface.  Again, the @code<Node> is implicit since 
+for the corresponding interface.  Again, the @code{Node} is implicit since 
 there is a one-to-one correspondence between each protocol and its node.
 For example, 
 

@@ -93,6 +93,7 @@ DeviceEnergyModelHelper::Install (Ptr<NetDevice> device,
 {
   NS_ASSERT (device != NULL);
   NS_ASSERT (source != NULL);
+  // check to make sure source and net device are on the same node
   NS_ASSERT (device->GetNode () == source->GetNode ());
   DeviceEnergyModelContainer container (DoInstall (device, source));
   return container;
@@ -108,6 +109,7 @@ DeviceEnergyModelHelper::Install (NetDeviceContainer deviceContainer,
   EnergySourceContainer::Iterator src = sourceContainer.Begin ();
   while (dev != deviceContainer.End ())
     {
+      // check to make sure source and net device are on the same node
       NS_ASSERT ((*dev)->GetNode () == (*src)->GetNode ());
       Ptr<DeviceEnergyModel> model = DoInstall (*dev, *src);
       container.Add (model);

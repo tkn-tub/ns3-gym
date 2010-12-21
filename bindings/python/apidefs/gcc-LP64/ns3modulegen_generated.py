@@ -15,12 +15,14 @@ import sys
 import ns3_module_core
 import ns3_module_simulator
 import ns3_module_test
+import ns3_module_visualizer
 import ns3_module_mobility
 import ns3_module_mpi
 import ns3_module_common
 import ns3_module_contrib
 import ns3_module_node
 import ns3_module_bridge
+import ns3_module_bulk_send
 import ns3_module_csma
 import ns3_module_emu
 import ns3_module_energy
@@ -93,6 +95,17 @@ def register_types(module):
         ns3_module_test__local.register_types(module)
     
     root_module.end_section('ns3_module_test')
+    root_module.begin_section('ns3_module_visualizer')
+    ns3_module_visualizer.register_types(module)
+    
+    try:
+        import ns3_module_visualizer__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_visualizer__local.register_types(module)
+    
+    root_module.end_section('ns3_module_visualizer')
     root_module.begin_section('ns3_module_mobility')
     ns3_module_mobility.register_types(module)
     
@@ -159,6 +172,17 @@ def register_types(module):
         ns3_module_bridge__local.register_types(module)
     
     root_module.end_section('ns3_module_bridge')
+    root_module.begin_section('ns3_module_bulk_send')
+    ns3_module_bulk_send.register_types(module)
+    
+    try:
+        import ns3_module_bulk_send__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_bulk_send__local.register_types(module)
+    
+    root_module.end_section('ns3_module_bulk_send')
     root_module.begin_section('ns3_module_csma')
     ns3_module_csma.register_types(module)
     
@@ -540,8 +564,32 @@ def register_types(module):
     module.add_class('OlsrHelper', parent=root_module['ns3::Ipv4RoutingHelper'])
     ## olsr-state.h: ns3::OlsrState [class]
     module.add_class('OlsrState')
+    ## pyviz.h: ns3::PyViz [class]
+    module.add_class('PyViz')
+    ## pyviz.h: ns3::PyViz::PacketCaptureMode [enumeration]
+    module.add_enum('PacketCaptureMode', ['PACKET_CAPTURE_DISABLED', 'PACKET_CAPTURE_FILTER_HEADERS_OR', 'PACKET_CAPTURE_FILTER_HEADERS_AND'], outer_class=root_module['ns3::PyViz'])
+    ## pyviz.h: ns3::PyViz::LastPacketsSample [struct]
+    module.add_class('LastPacketsSample', outer_class=root_module['ns3::PyViz'])
+    ## pyviz.h: ns3::PyViz::NetDeviceStatistics [struct]
+    module.add_class('NetDeviceStatistics', outer_class=root_module['ns3::PyViz'])
+    ## pyviz.h: ns3::PyViz::NodeStatistics [struct]
+    module.add_class('NodeStatistics', outer_class=root_module['ns3::PyViz'])
+    ## pyviz.h: ns3::PyViz::PacketCaptureOptions [struct]
+    module.add_class('PacketCaptureOptions', outer_class=root_module['ns3::PyViz'])
+    ## pyviz.h: ns3::PyViz::PacketDropSample [struct]
+    module.add_class('PacketDropSample', outer_class=root_module['ns3::PyViz'])
+    ## pyviz.h: ns3::PyViz::PacketSample [struct]
+    module.add_class('PacketSample', outer_class=root_module['ns3::PyViz'])
+    ## pyviz.h: ns3::PyViz::RxPacketSample [struct]
+    module.add_class('RxPacketSample', parent=root_module['ns3::PyViz::PacketSample'], outer_class=root_module['ns3::PyViz'])
+    ## pyviz.h: ns3::PyViz::TransmissionSample [struct]
+    module.add_class('TransmissionSample', outer_class=root_module['ns3::PyViz'])
+    ## pyviz.h: ns3::PyViz::TxPacketSample [struct]
+    module.add_class('TxPacketSample', parent=root_module['ns3::PyViz::PacketSample'], outer_class=root_module['ns3::PyViz'])
     ## uan-mac-rc.h: ns3::Reservation [class]
     module.add_class('Reservation')
+    ## rv-battery-model-helper.h: ns3::RvBatteryModelHelper [class]
+    module.add_class('RvBatteryModelHelper', parent=root_module['ns3::EnergySourceHelper'])
     ## uan-prop-model.h: ns3::Tap [class]
     module.add_class('Tap')
     ## uan-address.h: ns3::UanAddress [class]
@@ -566,6 +614,8 @@ def register_types(module):
     module.add_class('UanTxModeFactory')
     ## wifi-radio-energy-model-helper.h: ns3::WifiRadioEnergyModelHelper [class]
     module.add_class('WifiRadioEnergyModelHelper', parent=root_module['ns3::DeviceEnergyModelHelper'])
+    ## wifi-radio-energy-model.h: ns3::WifiRadioEnergyModelPhyListener [class]
+    module.add_class('WifiRadioEnergyModelPhyListener', parent=root_module['ns3::WifiPhyListener'])
     ## basic-energy-source-helper.h: ns3::BasicEnergySourceHelper [class]
     module.add_class('BasicEnergySourceHelper', parent=root_module['ns3::EnergySourceHelper'])
     ## ipv4-global-routing-helper.h: ns3::Ipv4GlobalRoutingHelper [class]
@@ -666,6 +716,8 @@ def register_types(module):
     module.add_class('Ipv4StaticRouting', parent=root_module['ns3::Ipv4RoutingProtocol'])
     ## ipv6-static-routing.h: ns3::Ipv6StaticRouting [class]
     module.add_class('Ipv6StaticRouting', parent=root_module['ns3::Ipv6RoutingProtocol'])
+    ## rv-battery-model.h: ns3::RvBatteryModel [class]
+    module.add_class('RvBatteryModel', parent=root_module['ns3::EnergySource'])
     ## uan-channel.h: ns3::UanChannel [class]
     module.add_class('UanChannel', parent=root_module['ns3::Channel'])
     ## uan-tx-mode.h: ns3::UanModesListChecker [class]
@@ -678,8 +730,6 @@ def register_types(module):
     module.add_class('VirtualNetDevice', parent=root_module['ns3::NetDevice'])
     ## wifi-radio-energy-model.h: ns3::WifiRadioEnergyModel [class]
     module.add_class('WifiRadioEnergyModel', parent=root_module['ns3::DeviceEnergyModel'])
-    ## wifi-radio-energy-model.h: ns3::WifiRadioEnergyModel::WifiRadioState [enumeration]
-    module.add_enum('WifiRadioState', ['TX', 'RX', 'IDLE', 'SLEEP'], outer_class=root_module['ns3::WifiRadioEnergyModel'])
     ## basic-energy-source.h: ns3::BasicEnergySource [class]
     module.add_class('BasicEnergySource', parent=root_module['ns3::EnergySource'])
     ## bridge-channel.h: ns3::BridgeChannel [class]
@@ -702,6 +752,15 @@ def register_types(module):
     module.add_container('std::vector< ns3::olsr::IfaceAssocTuple >', 'ns3::olsr::IfaceAssocTuple', container_type='vector')
     module.add_container('std::vector< ns3::olsr::AssociationTuple >', 'ns3::olsr::AssociationTuple', container_type='vector')
     module.add_container('std::vector< ns3::olsr::Association >', 'ns3::olsr::Association', container_type='vector')
+    module.add_container('std::vector< ns3::PyViz::RxPacketSample >', 'ns3::PyViz::RxPacketSample', container_type='vector')
+    module.add_container('std::vector< ns3::PyViz::TxPacketSample >', 'ns3::PyViz::TxPacketSample', container_type='vector')
+    module.add_container('std::vector< ns3::PyViz::PacketSample >', 'ns3::PyViz::PacketSample', container_type='vector')
+    module.add_container('std::vector< ns3::PyViz::TransmissionSample >', 'ns3::PyViz::TransmissionSample', container_type='vector')
+    module.add_container('std::vector< ns3::PyViz::PacketDropSample >', 'ns3::PyViz::PacketDropSample', container_type='vector')
+    module.add_container('std::vector< ns3::PyViz::NetDeviceStatistics >', 'ns3::PyViz::NetDeviceStatistics', container_type='vector')
+    module.add_container('std::vector< std::string >', 'std::string', container_type='vector')
+    module.add_container('std::set< unsigned int >', 'unsigned int', container_type='set')
+    module.add_container('std::vector< ns3::PyViz::NodeStatistics >', 'ns3::PyViz::NodeStatistics', container_type='vector')
     module.add_container('std::list< std::pair< ns3::Ptr< ns3::Packet >, ns3::UanAddress > >', 'std::pair< ns3::Ptr< ns3::Packet >, ns3::UanAddress >', container_type='list')
     module.add_container('std::vector< ns3::ServiceFlow * >', 'ns3::ServiceFlow *', container_type='vector')
     module.add_container('std::vector< ns3::Tap >', 'ns3::Tap', container_type='vector')
@@ -777,7 +836,6 @@ def register_types(module):
 def register_types_ns3_Config(module):
     root_module = module.get_root()
     
-    module.add_container('std::vector< std::string >', 'std::string', container_type='vector')
 
 def register_types_ns3_FatalImpl(module):
     root_module = module.get_root()
@@ -854,7 +912,6 @@ def register_types_ns3_olsr(module):
     module.add_container('std::vector< ns3::olsr::MessageHeader::Hello::LinkMessage >', 'ns3::olsr::MessageHeader::Hello::LinkMessage', container_type='vector')
     module.add_container('std::vector< ns3::olsr::MessageHeader::Hna::Association >', 'ns3::olsr::MessageHeader::Hna::Association', container_type='vector')
     module.add_container('std::vector< ns3::olsr::RoutingTableEntry >', 'ns3::olsr::RoutingTableEntry', container_type='vector')
-    module.add_container('std::set< unsigned int >', 'unsigned int', container_type='set')
     typehandlers.add_type_alias('std::vector< ns3::olsr::TopologyTuple, std::allocator< ns3::olsr::TopologyTuple > >', 'ns3::olsr::TopologySet')
     typehandlers.add_type_alias('std::vector< ns3::olsr::TopologyTuple, std::allocator< ns3::olsr::TopologyTuple > >*', 'ns3::olsr::TopologySet*')
     typehandlers.add_type_alias('std::vector< ns3::olsr::TopologyTuple, std::allocator< ns3::olsr::TopologyTuple > >&', 'ns3::olsr::TopologySet&')
@@ -907,7 +964,18 @@ def register_methods(root_module):
     register_Ns3Ipv6StaticRoutingHelper_methods(root_module, root_module['ns3::Ipv6StaticRoutingHelper'])
     register_Ns3OlsrHelper_methods(root_module, root_module['ns3::OlsrHelper'])
     register_Ns3OlsrState_methods(root_module, root_module['ns3::OlsrState'])
+    register_Ns3PyViz_methods(root_module, root_module['ns3::PyViz'])
+    register_Ns3PyVizLastPacketsSample_methods(root_module, root_module['ns3::PyViz::LastPacketsSample'])
+    register_Ns3PyVizNetDeviceStatistics_methods(root_module, root_module['ns3::PyViz::NetDeviceStatistics'])
+    register_Ns3PyVizNodeStatistics_methods(root_module, root_module['ns3::PyViz::NodeStatistics'])
+    register_Ns3PyVizPacketCaptureOptions_methods(root_module, root_module['ns3::PyViz::PacketCaptureOptions'])
+    register_Ns3PyVizPacketDropSample_methods(root_module, root_module['ns3::PyViz::PacketDropSample'])
+    register_Ns3PyVizPacketSample_methods(root_module, root_module['ns3::PyViz::PacketSample'])
+    register_Ns3PyVizRxPacketSample_methods(root_module, root_module['ns3::PyViz::RxPacketSample'])
+    register_Ns3PyVizTransmissionSample_methods(root_module, root_module['ns3::PyViz::TransmissionSample'])
+    register_Ns3PyVizTxPacketSample_methods(root_module, root_module['ns3::PyViz::TxPacketSample'])
     register_Ns3Reservation_methods(root_module, root_module['ns3::Reservation'])
+    register_Ns3RvBatteryModelHelper_methods(root_module, root_module['ns3::RvBatteryModelHelper'])
     register_Ns3Tap_methods(root_module, root_module['ns3::Tap'])
     register_Ns3UanAddress_methods(root_module, root_module['ns3::UanAddress'])
     register_Ns3UanHelper_methods(root_module, root_module['ns3::UanHelper'])
@@ -918,6 +986,7 @@ def register_methods(root_module):
     register_Ns3UanTxMode_methods(root_module, root_module['ns3::UanTxMode'])
     register_Ns3UanTxModeFactory_methods(root_module, root_module['ns3::UanTxModeFactory'])
     register_Ns3WifiRadioEnergyModelHelper_methods(root_module, root_module['ns3::WifiRadioEnergyModelHelper'])
+    register_Ns3WifiRadioEnergyModelPhyListener_methods(root_module, root_module['ns3::WifiRadioEnergyModelPhyListener'])
     register_Ns3BasicEnergySourceHelper_methods(root_module, root_module['ns3::BasicEnergySourceHelper'])
     register_Ns3Ipv4GlobalRoutingHelper_methods(root_module, root_module['ns3::Ipv4GlobalRoutingHelper'])
     register_Ns3Ipv4ListRoutingHelper_methods(root_module, root_module['ns3::Ipv4ListRoutingHelper'])
@@ -964,6 +1033,7 @@ def register_methods(root_module):
     register_Ns3Ipv4FlowProbe_methods(root_module, root_module['ns3::Ipv4FlowProbe'])
     register_Ns3Ipv4StaticRouting_methods(root_module, root_module['ns3::Ipv4StaticRouting'])
     register_Ns3Ipv6StaticRouting_methods(root_module, root_module['ns3::Ipv6StaticRouting'])
+    register_Ns3RvBatteryModel_methods(root_module, root_module['ns3::RvBatteryModel'])
     register_Ns3UanChannel_methods(root_module, root_module['ns3::UanChannel'])
     register_Ns3UanModesListChecker_methods(root_module, root_module['ns3::UanModesListChecker'])
     register_Ns3UanModesListValue_methods(root_module, root_module['ns3::UanModesListValue'])
@@ -1029,6 +1099,17 @@ def register_methods(root_module):
         ns3_module_test__local.register_methods(root_module)
     
     root_module.end_section('ns3_module_test')
+    root_module.begin_section('ns3_module_visualizer')
+    ns3_module_visualizer.register_methods(root_module)
+    
+    try:
+        import ns3_module_visualizer__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_visualizer__local.register_methods(root_module)
+    
+    root_module.end_section('ns3_module_visualizer')
     root_module.begin_section('ns3_module_mobility')
     ns3_module_mobility.register_methods(root_module)
     
@@ -1095,6 +1176,17 @@ def register_methods(root_module):
         ns3_module_bridge__local.register_methods(root_module)
     
     root_module.end_section('ns3_module_bridge')
+    root_module.begin_section('ns3_module_bulk_send')
+    ns3_module_bulk_send.register_methods(root_module)
+    
+    try:
+        import ns3_module_bulk_send__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_bulk_send__local.register_methods(root_module)
+    
+    root_module.end_section('ns3_module_bulk_send')
     root_module.begin_section('ns3_module_csma')
     ns3_module_csma.register_methods(root_module)
     
@@ -2432,6 +2524,185 @@ def register_Ns3OlsrState_methods(root_module, cls):
                    [param('ns3::olsr::MprSet', 'mprSet')])
     return
 
+def register_Ns3PyViz_methods(root_module, cls):
+    ## pyviz.h: ns3::PyViz::PyViz(ns3::PyViz const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::PyViz const &', 'arg0')])
+    ## pyviz.h: ns3::PyViz::PyViz() [constructor]
+    cls.add_constructor([])
+    ## pyviz.h: ns3::PyViz::LastPacketsSample ns3::PyViz::GetLastPackets(uint32_t nodeId) const [member function]
+    cls.add_method('GetLastPackets', 
+                   'ns3::PyViz::LastPacketsSample', 
+                   [param('uint32_t', 'nodeId')], 
+                   is_const=True)
+    ## pyviz.h: std::vector<ns3::PyViz::NodeStatistics,std::allocator<ns3::PyViz::NodeStatistics> > ns3::PyViz::GetNodesStatistics() const [member function]
+    cls.add_method('GetNodesStatistics', 
+                   'std::vector< ns3::PyViz::NodeStatistics >', 
+                   [], 
+                   is_const=True)
+    ## pyviz.h: std::vector<ns3::PyViz::PacketDropSample,std::allocator<ns3::PyViz::PacketDropSample> > ns3::PyViz::GetPacketDropSamples() const [member function]
+    cls.add_method('GetPacketDropSamples', 
+                   'std::vector< ns3::PyViz::PacketDropSample >', 
+                   [], 
+                   is_const=True)
+    ## pyviz.h: std::vector<std::string, std::allocator<std::string> > ns3::PyViz::GetPauseMessages() const [member function]
+    cls.add_method('GetPauseMessages', 
+                   'std::vector< std::string >', 
+                   [], 
+                   is_const=True)
+    ## pyviz.h: std::vector<ns3::PyViz::TransmissionSample,std::allocator<ns3::PyViz::TransmissionSample> > ns3::PyViz::GetTransmissionSamples() const [member function]
+    cls.add_method('GetTransmissionSamples', 
+                   'std::vector< ns3::PyViz::TransmissionSample >', 
+                   [], 
+                   is_const=True)
+    ## pyviz.h: static void ns3::PyViz::LineClipping(double boundsX1, double boundsY1, double boundsX2, double boundsY2, double & lineX1, double & lineY1, double & lineX2, double & lineY2) [member function]
+    cls.add_method('LineClipping', 
+                   'void', 
+                   [param('double', 'boundsX1'), param('double', 'boundsY1'), param('double', 'boundsX2'), param('double', 'boundsY2'), param('double &', 'lineX1', direction=3), param('double &', 'lineY1', direction=3), param('double &', 'lineX2', direction=3), param('double &', 'lineY2', direction=3)], 
+                   is_static=True)
+    ## pyviz.h: static void ns3::PyViz::Pause(std::string const & message) [member function]
+    cls.add_method('Pause', 
+                   'void', 
+                   [param('std::string const &', 'message')], 
+                   is_static=True)
+    ## pyviz.h: void ns3::PyViz::RegisterCsmaLikeDevice(std::string const & deviceTypeName) [member function]
+    cls.add_method('RegisterCsmaLikeDevice', 
+                   'void', 
+                   [param('std::string const &', 'deviceTypeName')])
+    ## pyviz.h: void ns3::PyViz::RegisterDropTracePath(std::string const & tracePath) [member function]
+    cls.add_method('RegisterDropTracePath', 
+                   'void', 
+                   [param('std::string const &', 'tracePath')])
+    ## pyviz.h: void ns3::PyViz::RegisterPointToPointLikeDevice(std::string const & deviceTypeName) [member function]
+    cls.add_method('RegisterPointToPointLikeDevice', 
+                   'void', 
+                   [param('std::string const &', 'deviceTypeName')])
+    ## pyviz.h: void ns3::PyViz::RegisterWifiLikeDevice(std::string const & deviceTypeName) [member function]
+    cls.add_method('RegisterWifiLikeDevice', 
+                   'void', 
+                   [param('std::string const &', 'deviceTypeName')])
+    ## pyviz.h: void ns3::PyViz::SetNodesOfInterest(std::set<unsigned int, std::less<unsigned int>, std::allocator<unsigned int> > nodes) [member function]
+    cls.add_method('SetNodesOfInterest', 
+                   'void', 
+                   [param('std::set< unsigned int >', 'nodes')])
+    ## pyviz.h: void ns3::PyViz::SetPacketCaptureOptions(uint32_t nodeId, ns3::PyViz::PacketCaptureOptions options) [member function]
+    cls.add_method('SetPacketCaptureOptions', 
+                   'void', 
+                   [param('uint32_t', 'nodeId'), param('ns3::PyViz::PacketCaptureOptions', 'options')])
+    ## pyviz.h: void ns3::PyViz::SimulatorRunUntil(ns3::Time time) [member function]
+    cls.add_method('SimulatorRunUntil', 
+                   'void', 
+                   [param('ns3::Time', 'time')])
+    return
+
+def register_Ns3PyVizLastPacketsSample_methods(root_module, cls):
+    ## pyviz.h: ns3::PyViz::LastPacketsSample::LastPacketsSample() [constructor]
+    cls.add_constructor([])
+    ## pyviz.h: ns3::PyViz::LastPacketsSample::LastPacketsSample(ns3::PyViz::LastPacketsSample const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::PyViz::LastPacketsSample const &', 'arg0')])
+    ## pyviz.h: ns3::PyViz::LastPacketsSample::lastDroppedPackets [variable]
+    cls.add_instance_attribute('lastDroppedPackets', 'std::vector< ns3::PyViz::PacketSample >', is_const=False)
+    ## pyviz.h: ns3::PyViz::LastPacketsSample::lastReceivedPackets [variable]
+    cls.add_instance_attribute('lastReceivedPackets', 'std::vector< ns3::PyViz::RxPacketSample >', is_const=False)
+    ## pyviz.h: ns3::PyViz::LastPacketsSample::lastTransmittedPackets [variable]
+    cls.add_instance_attribute('lastTransmittedPackets', 'std::vector< ns3::PyViz::TxPacketSample >', is_const=False)
+    return
+
+def register_Ns3PyVizNetDeviceStatistics_methods(root_module, cls):
+    ## pyviz.h: ns3::PyViz::NetDeviceStatistics::NetDeviceStatistics(ns3::PyViz::NetDeviceStatistics const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::PyViz::NetDeviceStatistics const &', 'arg0')])
+    ## pyviz.h: ns3::PyViz::NetDeviceStatistics::NetDeviceStatistics() [constructor]
+    cls.add_constructor([])
+    ## pyviz.h: ns3::PyViz::NetDeviceStatistics::receivedBytes [variable]
+    cls.add_instance_attribute('receivedBytes', 'uint64_t', is_const=False)
+    ## pyviz.h: ns3::PyViz::NetDeviceStatistics::receivedPackets [variable]
+    cls.add_instance_attribute('receivedPackets', 'uint32_t', is_const=False)
+    ## pyviz.h: ns3::PyViz::NetDeviceStatistics::transmittedBytes [variable]
+    cls.add_instance_attribute('transmittedBytes', 'uint64_t', is_const=False)
+    ## pyviz.h: ns3::PyViz::NetDeviceStatistics::transmittedPackets [variable]
+    cls.add_instance_attribute('transmittedPackets', 'uint32_t', is_const=False)
+    return
+
+def register_Ns3PyVizNodeStatistics_methods(root_module, cls):
+    ## pyviz.h: ns3::PyViz::NodeStatistics::NodeStatistics() [constructor]
+    cls.add_constructor([])
+    ## pyviz.h: ns3::PyViz::NodeStatistics::NodeStatistics(ns3::PyViz::NodeStatistics const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::PyViz::NodeStatistics const &', 'arg0')])
+    ## pyviz.h: ns3::PyViz::NodeStatistics::nodeId [variable]
+    cls.add_instance_attribute('nodeId', 'uint32_t', is_const=False)
+    ## pyviz.h: ns3::PyViz::NodeStatistics::statistics [variable]
+    cls.add_instance_attribute('statistics', 'std::vector< ns3::PyViz::NetDeviceStatistics >', is_const=False)
+    return
+
+def register_Ns3PyVizPacketCaptureOptions_methods(root_module, cls):
+    ## pyviz.h: ns3::PyViz::PacketCaptureOptions::PacketCaptureOptions() [constructor]
+    cls.add_constructor([])
+    ## pyviz.h: ns3::PyViz::PacketCaptureOptions::PacketCaptureOptions(ns3::PyViz::PacketCaptureOptions const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::PyViz::PacketCaptureOptions const &', 'arg0')])
+    ## pyviz.h: ns3::PyViz::PacketCaptureOptions::headers [variable]
+    cls.add_instance_attribute('headers', 'std::set< ns3::TypeId >', is_const=False)
+    ## pyviz.h: ns3::PyViz::PacketCaptureOptions::mode [variable]
+    cls.add_instance_attribute('mode', 'ns3::PyViz::PacketCaptureMode', is_const=False)
+    ## pyviz.h: ns3::PyViz::PacketCaptureOptions::numLastPackets [variable]
+    cls.add_instance_attribute('numLastPackets', 'uint32_t', is_const=False)
+    return
+
+def register_Ns3PyVizPacketDropSample_methods(root_module, cls):
+    ## pyviz.h: ns3::PyViz::PacketDropSample::PacketDropSample() [constructor]
+    cls.add_constructor([])
+    ## pyviz.h: ns3::PyViz::PacketDropSample::PacketDropSample(ns3::PyViz::PacketDropSample const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::PyViz::PacketDropSample const &', 'arg0')])
+    ## pyviz.h: ns3::PyViz::PacketDropSample::bytes [variable]
+    cls.add_instance_attribute('bytes', 'uint32_t', is_const=False)
+    ## pyviz.h: ns3::PyViz::PacketDropSample::transmitter [variable]
+    cls.add_instance_attribute('transmitter', 'ns3::Ptr< ns3::Node >', is_const=False)
+    return
+
+def register_Ns3PyVizPacketSample_methods(root_module, cls):
+    ## pyviz.h: ns3::PyViz::PacketSample::PacketSample() [constructor]
+    cls.add_constructor([])
+    ## pyviz.h: ns3::PyViz::PacketSample::PacketSample(ns3::PyViz::PacketSample const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::PyViz::PacketSample const &', 'arg0')])
+    ## pyviz.h: ns3::PyViz::PacketSample::device [variable]
+    cls.add_instance_attribute('device', 'ns3::Ptr< ns3::NetDevice >', is_const=False)
+    ## pyviz.h: ns3::PyViz::PacketSample::packet [variable]
+    cls.add_instance_attribute('packet', 'ns3::Ptr< ns3::Packet >', is_const=False)
+    ## pyviz.h: ns3::PyViz::PacketSample::time [variable]
+    cls.add_instance_attribute('time', 'ns3::Time', is_const=False)
+    return
+
+def register_Ns3PyVizRxPacketSample_methods(root_module, cls):
+    ## pyviz.h: ns3::PyViz::RxPacketSample::RxPacketSample() [constructor]
+    cls.add_constructor([])
+    ## pyviz.h: ns3::PyViz::RxPacketSample::RxPacketSample(ns3::PyViz::RxPacketSample const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::PyViz::RxPacketSample const &', 'arg0')])
+    ## pyviz.h: ns3::PyViz::RxPacketSample::from [variable]
+    cls.add_instance_attribute('from', 'ns3::Mac48Address', is_const=False)
+    return
+
+def register_Ns3PyVizTransmissionSample_methods(root_module, cls):
+    ## pyviz.h: ns3::PyViz::TransmissionSample::TransmissionSample() [constructor]
+    cls.add_constructor([])
+    ## pyviz.h: ns3::PyViz::TransmissionSample::TransmissionSample(ns3::PyViz::TransmissionSample const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::PyViz::TransmissionSample const &', 'arg0')])
+    ## pyviz.h: ns3::PyViz::TransmissionSample::bytes [variable]
+    cls.add_instance_attribute('bytes', 'uint32_t', is_const=False)
+    ## pyviz.h: ns3::PyViz::TransmissionSample::channel [variable]
+    cls.add_instance_attribute('channel', 'ns3::Ptr< ns3::Channel >', is_const=False)
+    ## pyviz.h: ns3::PyViz::TransmissionSample::receiver [variable]
+    cls.add_instance_attribute('receiver', 'ns3::Ptr< ns3::Node >', is_const=False)
+    ## pyviz.h: ns3::PyViz::TransmissionSample::transmitter [variable]
+    cls.add_instance_attribute('transmitter', 'ns3::Ptr< ns3::Node >', is_const=False)
+    return
+
+def register_Ns3PyVizTxPacketSample_methods(root_module, cls):
+    ## pyviz.h: ns3::PyViz::TxPacketSample::TxPacketSample() [constructor]
+    cls.add_constructor([])
+    ## pyviz.h: ns3::PyViz::TxPacketSample::TxPacketSample(ns3::PyViz::TxPacketSample const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::PyViz::TxPacketSample const &', 'arg0')])
+    ## pyviz.h: ns3::PyViz::TxPacketSample::to [variable]
+    cls.add_instance_attribute('to', 'ns3::Mac48Address', is_const=False)
+    return
+
 def register_Ns3Reservation_methods(root_module, cls):
     ## uan-mac-rc.h: ns3::Reservation::Reservation(ns3::Reservation const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::Reservation const &', 'arg0')])
@@ -2490,6 +2761,23 @@ def register_Ns3Reservation_methods(root_module, cls):
     cls.add_method('SetTransmitted', 
                    'void', 
                    [param('bool', 't', default_value='true')])
+    return
+
+def register_Ns3RvBatteryModelHelper_methods(root_module, cls):
+    ## rv-battery-model-helper.h: ns3::RvBatteryModelHelper::RvBatteryModelHelper(ns3::RvBatteryModelHelper const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::RvBatteryModelHelper const &', 'arg0')])
+    ## rv-battery-model-helper.h: ns3::RvBatteryModelHelper::RvBatteryModelHelper() [constructor]
+    cls.add_constructor([])
+    ## rv-battery-model-helper.h: void ns3::RvBatteryModelHelper::Set(std::string name, ns3::AttributeValue const & v) [member function]
+    cls.add_method('Set', 
+                   'void', 
+                   [param('std::string', 'name'), param('ns3::AttributeValue const &', 'v')], 
+                   is_virtual=True)
+    ## rv-battery-model-helper.h: ns3::Ptr<ns3::EnergySource> ns3::RvBatteryModelHelper::DoInstall(ns3::Ptr<ns3::Node> node) const [member function]
+    cls.add_method('DoInstall', 
+                   'ns3::Ptr< ns3::EnergySource >', 
+                   [param('ns3::Ptr< ns3::Node >', 'node')], 
+                   is_const=True, visibility='private', is_virtual=True)
     return
 
 def register_Ns3Tap_methods(root_module, cls):
@@ -2863,6 +3151,47 @@ def register_Ns3WifiRadioEnergyModelHelper_methods(root_module, cls):
                    'ns3::Ptr< ns3::DeviceEnergyModel >', 
                    [param('ns3::Ptr< ns3::NetDevice >', 'device'), param('ns3::Ptr< ns3::EnergySource >', 'source')], 
                    is_const=True, visibility='private', is_virtual=True)
+    return
+
+def register_Ns3WifiRadioEnergyModelPhyListener_methods(root_module, cls):
+    ## wifi-radio-energy-model.h: ns3::WifiRadioEnergyModelPhyListener::WifiRadioEnergyModelPhyListener(ns3::WifiRadioEnergyModelPhyListener const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::WifiRadioEnergyModelPhyListener const &', 'arg0')])
+    ## wifi-radio-energy-model.h: ns3::WifiRadioEnergyModelPhyListener::WifiRadioEnergyModelPhyListener() [constructor]
+    cls.add_constructor([])
+    ## wifi-radio-energy-model.h: void ns3::WifiRadioEnergyModelPhyListener::NotifyMaybeCcaBusyStart(ns3::Time duration) [member function]
+    cls.add_method('NotifyMaybeCcaBusyStart', 
+                   'void', 
+                   [param('ns3::Time', 'duration')], 
+                   is_virtual=True)
+    ## wifi-radio-energy-model.h: void ns3::WifiRadioEnergyModelPhyListener::NotifyRxEndError() [member function]
+    cls.add_method('NotifyRxEndError', 
+                   'void', 
+                   [], 
+                   is_virtual=True)
+    ## wifi-radio-energy-model.h: void ns3::WifiRadioEnergyModelPhyListener::NotifyRxEndOk() [member function]
+    cls.add_method('NotifyRxEndOk', 
+                   'void', 
+                   [], 
+                   is_virtual=True)
+    ## wifi-radio-energy-model.h: void ns3::WifiRadioEnergyModelPhyListener::NotifyRxStart(ns3::Time duration) [member function]
+    cls.add_method('NotifyRxStart', 
+                   'void', 
+                   [param('ns3::Time', 'duration')], 
+                   is_virtual=True)
+    ## wifi-radio-energy-model.h: void ns3::WifiRadioEnergyModelPhyListener::NotifySwitchingStart(ns3::Time duration) [member function]
+    cls.add_method('NotifySwitchingStart', 
+                   'void', 
+                   [param('ns3::Time', 'duration')], 
+                   is_virtual=True)
+    ## wifi-radio-energy-model.h: void ns3::WifiRadioEnergyModelPhyListener::NotifyTxStart(ns3::Time duration) [member function]
+    cls.add_method('NotifyTxStart', 
+                   'void', 
+                   [param('ns3::Time', 'duration')], 
+                   is_virtual=True)
+    ## wifi-radio-energy-model.h: void ns3::WifiRadioEnergyModelPhyListener::SetChangeStateCallback(ns3::Callback<void, int, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> callback) [member function]
+    cls.add_method('SetChangeStateCallback', 
+                   'void', 
+                   [param('ns3::Callback< void, int, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'callback')])
     return
 
 def register_Ns3BasicEnergySourceHelper_methods(root_module, cls):
@@ -4743,11 +5072,6 @@ def register_Ns3DeviceEnergyModel_methods(root_module, cls):
                    'double', 
                    [], 
                    is_const=True)
-    ## device-energy-model.h: ns3::Ptr<ns3::Node> ns3::DeviceEnergyModel::GetNode() const [member function]
-    cls.add_method('GetNode', 
-                   'ns3::Ptr< ns3::Node >', 
-                   [], 
-                   is_pure_virtual=True, is_const=True, is_virtual=True)
     ## device-energy-model.h: double ns3::DeviceEnergyModel::GetTotalEnergyConsumption() const [member function]
     cls.add_method('GetTotalEnergyConsumption', 
                    'double', 
@@ -4768,11 +5092,6 @@ def register_Ns3DeviceEnergyModel_methods(root_module, cls):
                    'void', 
                    [param('ns3::Ptr< ns3::EnergySource >', 'source')], 
                    is_pure_virtual=True, is_virtual=True)
-    ## device-energy-model.h: void ns3::DeviceEnergyModel::SetNode(ns3::Ptr<ns3::Node> node) [member function]
-    cls.add_method('SetNode', 
-                   'void', 
-                   [param('ns3::Ptr< ns3::Node >', 'node')], 
-                   is_pure_virtual=True, is_virtual=True)
     ## device-energy-model.h: double ns3::DeviceEnergyModel::DoGetCurrentA() const [member function]
     cls.add_method('DoGetCurrentA', 
                    'double', 
@@ -4789,11 +5108,10 @@ def register_Ns3EnergySource_methods(root_module, cls):
     cls.add_method('AppendDeviceEnergyModel', 
                    'void', 
                    [param('ns3::Ptr< ns3::DeviceEnergyModel >', 'deviceEnergyModelPtr')])
-    ## energy-source.h: void ns3::EnergySource::DecreaseRemainingEnergy(double energyJ) [member function]
-    cls.add_method('DecreaseRemainingEnergy', 
+    ## energy-source.h: void ns3::EnergySource::DisposeDeviceModels() [member function]
+    cls.add_method('DisposeDeviceModels', 
                    'void', 
-                   [param('double', 'energyJ')], 
-                   is_pure_virtual=True, is_virtual=True)
+                   [])
     ## energy-source.h: ns3::DeviceEnergyModelContainer ns3::EnergySource::FindDeviceEnergyModels(ns3::TypeId tid) [member function]
     cls.add_method('FindDeviceEnergyModels', 
                    'ns3::DeviceEnergyModelContainer', 
@@ -4832,15 +5150,14 @@ def register_Ns3EnergySource_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
-    ## energy-source.h: void ns3::EnergySource::IncreaseRemainingEnergy(double energyJ) [member function]
-    cls.add_method('IncreaseRemainingEnergy', 
-                   'void', 
-                   [param('double', 'energyJ')], 
-                   is_pure_virtual=True, is_virtual=True)
     ## energy-source.h: void ns3::EnergySource::SetNode(ns3::Ptr<ns3::Node> node) [member function]
     cls.add_method('SetNode', 
                    'void', 
                    [param('ns3::Ptr< ns3::Node >', 'node')])
+    ## energy-source.h: void ns3::EnergySource::StartDeviceModels() [member function]
+    cls.add_method('StartDeviceModels', 
+                   'void', 
+                   [])
     ## energy-source.h: void ns3::EnergySource::UpdateEnergySource() [member function]
     cls.add_method('UpdateEnergySource', 
                    'void', 
@@ -5269,14 +5586,16 @@ def register_Ns3Ipv4StaticRouting_methods(root_module, cls):
                    'uint32_t', 
                    [], 
                    is_const=True)
-    ## ipv4-static-routing.h: uint32_t ns3::Ipv4StaticRouting::GetNRoutes() [member function]
+    ## ipv4-static-routing.h: uint32_t ns3::Ipv4StaticRouting::GetNRoutes() const [member function]
     cls.add_method('GetNRoutes', 
                    'uint32_t', 
-                   [])
-    ## ipv4-static-routing.h: ns3::Ipv4RoutingTableEntry ns3::Ipv4StaticRouting::GetRoute(uint32_t i) [member function]
+                   [], 
+                   is_const=True)
+    ## ipv4-static-routing.h: ns3::Ipv4RoutingTableEntry ns3::Ipv4StaticRouting::GetRoute(uint32_t i) const [member function]
     cls.add_method('GetRoute', 
                    'ns3::Ipv4RoutingTableEntry', 
-                   [param('uint32_t', 'i')])
+                   [param('uint32_t', 'i')], 
+                   is_const=True)
     ## ipv4-static-routing.h: static ns3::TypeId ns3::Ipv4StaticRouting::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
@@ -5302,6 +5621,11 @@ def register_Ns3Ipv4StaticRouting_methods(root_module, cls):
                    'void', 
                    [param('uint32_t', 'interface'), param('ns3::Ipv4InterfaceAddress', 'address')], 
                    is_virtual=True)
+    ## ipv4-static-routing.h: void ns3::Ipv4StaticRouting::PrintRoutingTable(ns3::Ptr<ns3::OutputStreamWrapper> stream) const [member function]
+    cls.add_method('PrintRoutingTable', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::OutputStreamWrapper >', 'stream')], 
+                   is_const=True, is_virtual=True)
     ## ipv4-static-routing.h: bool ns3::Ipv4StaticRouting::RemoveMulticastRoute(ns3::Ipv4Address origin, ns3::Ipv4Address group, uint32_t inputInterface) [member function]
     cls.add_method('RemoveMulticastRoute', 
                    'bool', 
@@ -5482,6 +5806,116 @@ def register_Ns3Ipv6StaticRouting_methods(root_module, cls):
                    'void', 
                    [], 
                    visibility='protected', is_virtual=True)
+    return
+
+def register_Ns3RvBatteryModel_methods(root_module, cls):
+    ## rv-battery-model.h: ns3::RvBatteryModel::RvBatteryModel(ns3::RvBatteryModel const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::RvBatteryModel const &', 'arg0')])
+    ## rv-battery-model.h: ns3::RvBatteryModel::RvBatteryModel() [constructor]
+    cls.add_constructor([])
+    ## rv-battery-model.h: double ns3::RvBatteryModel::GetAlpha() const [member function]
+    cls.add_method('GetAlpha', 
+                   'double', 
+                   [], 
+                   is_const=True)
+    ## rv-battery-model.h: double ns3::RvBatteryModel::GetBatteryLevel() [member function]
+    cls.add_method('GetBatteryLevel', 
+                   'double', 
+                   [])
+    ## rv-battery-model.h: double ns3::RvBatteryModel::GetBeta() const [member function]
+    cls.add_method('GetBeta', 
+                   'double', 
+                   [], 
+                   is_const=True)
+    ## rv-battery-model.h: double ns3::RvBatteryModel::GetCutoffVoltage() const [member function]
+    cls.add_method('GetCutoffVoltage', 
+                   'double', 
+                   [], 
+                   is_const=True)
+    ## rv-battery-model.h: double ns3::RvBatteryModel::GetEnergyFraction() [member function]
+    cls.add_method('GetEnergyFraction', 
+                   'double', 
+                   [], 
+                   is_virtual=True)
+    ## rv-battery-model.h: double ns3::RvBatteryModel::GetInitialEnergy() const [member function]
+    cls.add_method('GetInitialEnergy', 
+                   'double', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## rv-battery-model.h: ns3::Time ns3::RvBatteryModel::GetLifetime() const [member function]
+    cls.add_method('GetLifetime', 
+                   'ns3::Time', 
+                   [], 
+                   is_const=True)
+    ## rv-battery-model.h: int ns3::RvBatteryModel::GetNumOfTerms() const [member function]
+    cls.add_method('GetNumOfTerms', 
+                   'int', 
+                   [], 
+                   is_const=True)
+    ## rv-battery-model.h: double ns3::RvBatteryModel::GetOpenCircuitVoltage() const [member function]
+    cls.add_method('GetOpenCircuitVoltage', 
+                   'double', 
+                   [], 
+                   is_const=True)
+    ## rv-battery-model.h: double ns3::RvBatteryModel::GetRemainingEnergy() [member function]
+    cls.add_method('GetRemainingEnergy', 
+                   'double', 
+                   [], 
+                   is_virtual=True)
+    ## rv-battery-model.h: ns3::Time ns3::RvBatteryModel::GetSamplingInterval() const [member function]
+    cls.add_method('GetSamplingInterval', 
+                   'ns3::Time', 
+                   [], 
+                   is_const=True)
+    ## rv-battery-model.h: double ns3::RvBatteryModel::GetSupplyVoltage() const [member function]
+    cls.add_method('GetSupplyVoltage', 
+                   'double', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## rv-battery-model.h: static ns3::TypeId ns3::RvBatteryModel::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## rv-battery-model.h: void ns3::RvBatteryModel::SetAlpha(double alpha) [member function]
+    cls.add_method('SetAlpha', 
+                   'void', 
+                   [param('double', 'alpha')])
+    ## rv-battery-model.h: void ns3::RvBatteryModel::SetBeta(double beta) [member function]
+    cls.add_method('SetBeta', 
+                   'void', 
+                   [param('double', 'beta')])
+    ## rv-battery-model.h: void ns3::RvBatteryModel::SetCutoffVoltage(double voltage) [member function]
+    cls.add_method('SetCutoffVoltage', 
+                   'void', 
+                   [param('double', 'voltage')])
+    ## rv-battery-model.h: void ns3::RvBatteryModel::SetNumOfTerms(int num) [member function]
+    cls.add_method('SetNumOfTerms', 
+                   'void', 
+                   [param('int', 'num')])
+    ## rv-battery-model.h: void ns3::RvBatteryModel::SetOpenCircuitVoltage(double voltage) [member function]
+    cls.add_method('SetOpenCircuitVoltage', 
+                   'void', 
+                   [param('double', 'voltage')])
+    ## rv-battery-model.h: void ns3::RvBatteryModel::SetSamplingInterval(ns3::Time interval) [member function]
+    cls.add_method('SetSamplingInterval', 
+                   'void', 
+                   [param('ns3::Time', 'interval')])
+    ## rv-battery-model.h: void ns3::RvBatteryModel::UpdateEnergySource() [member function]
+    cls.add_method('UpdateEnergySource', 
+                   'void', 
+                   [], 
+                   is_virtual=True)
+    ## rv-battery-model.h: void ns3::RvBatteryModel::DoDispose() [member function]
+    cls.add_method('DoDispose', 
+                   'void', 
+                   [], 
+                   visibility='private', is_virtual=True)
+    ## rv-battery-model.h: void ns3::RvBatteryModel::DoStart() [member function]
+    cls.add_method('DoStart', 
+                   'void', 
+                   [], 
+                   visibility='private', is_virtual=True)
     return
 
 def register_Ns3UanChannel_methods(root_module, cls):
@@ -5919,9 +6353,14 @@ def register_Ns3WifiRadioEnergyModel_methods(root_module, cls):
                    'void', 
                    [param('int', 'newState')], 
                    is_virtual=True)
-    ## wifi-radio-energy-model.h: ns3::WifiRadioEnergyModel::WifiRadioState ns3::WifiRadioEnergyModel::GetCurrentState() const [member function]
+    ## wifi-radio-energy-model.h: double ns3::WifiRadioEnergyModel::GetCcaBusyCurrentA() const [member function]
+    cls.add_method('GetCcaBusyCurrentA', 
+                   'double', 
+                   [], 
+                   is_const=True)
+    ## wifi-radio-energy-model.h: ns3::WifiPhy::State ns3::WifiRadioEnergyModel::GetCurrentState() const [member function]
     cls.add_method('GetCurrentState', 
-                   'ns3::WifiRadioEnergyModel::WifiRadioState', 
+                   'ns3::WifiPhy::State', 
                    [], 
                    is_const=True)
     ## wifi-radio-energy-model.h: double ns3::WifiRadioEnergyModel::GetIdleCurrentA() const [member function]
@@ -5929,18 +6368,17 @@ def register_Ns3WifiRadioEnergyModel_methods(root_module, cls):
                    'double', 
                    [], 
                    is_const=True)
-    ## wifi-radio-energy-model.h: ns3::Ptr<ns3::Node> ns3::WifiRadioEnergyModel::GetNode() const [member function]
-    cls.add_method('GetNode', 
-                   'ns3::Ptr< ns3::Node >', 
-                   [], 
-                   is_const=True, is_virtual=True)
+    ## wifi-radio-energy-model.h: ns3::WifiRadioEnergyModelPhyListener * ns3::WifiRadioEnergyModel::GetPhyListener() [member function]
+    cls.add_method('GetPhyListener', 
+                   'ns3::WifiRadioEnergyModelPhyListener *', 
+                   [])
     ## wifi-radio-energy-model.h: double ns3::WifiRadioEnergyModel::GetRxCurrentA() const [member function]
     cls.add_method('GetRxCurrentA', 
                    'double', 
                    [], 
                    is_const=True)
-    ## wifi-radio-energy-model.h: double ns3::WifiRadioEnergyModel::GetSleepCurrentA() const [member function]
-    cls.add_method('GetSleepCurrentA', 
+    ## wifi-radio-energy-model.h: double ns3::WifiRadioEnergyModel::GetSwitchingCurrentA() const [member function]
+    cls.add_method('GetSwitchingCurrentA', 
                    'double', 
                    [], 
                    is_const=True)
@@ -5964,6 +6402,10 @@ def register_Ns3WifiRadioEnergyModel_methods(root_module, cls):
                    'void', 
                    [], 
                    is_virtual=True)
+    ## wifi-radio-energy-model.h: void ns3::WifiRadioEnergyModel::SetCcaBusyCurrentA(double ccaBusyCurrentA) [member function]
+    cls.add_method('SetCcaBusyCurrentA', 
+                   'void', 
+                   [param('double', 'ccaBusyCurrentA')])
     ## wifi-radio-energy-model.h: void ns3::WifiRadioEnergyModel::SetEnergyDepletionCallback(ns3::Callback<void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> callback) [member function]
     cls.add_method('SetEnergyDepletionCallback', 
                    'void', 
@@ -5977,19 +6419,14 @@ def register_Ns3WifiRadioEnergyModel_methods(root_module, cls):
     cls.add_method('SetIdleCurrentA', 
                    'void', 
                    [param('double', 'idleCurrentA')])
-    ## wifi-radio-energy-model.h: void ns3::WifiRadioEnergyModel::SetNode(ns3::Ptr<ns3::Node> node) [member function]
-    cls.add_method('SetNode', 
-                   'void', 
-                   [param('ns3::Ptr< ns3::Node >', 'node')], 
-                   is_virtual=True)
     ## wifi-radio-energy-model.h: void ns3::WifiRadioEnergyModel::SetRxCurrentA(double rxCurrentA) [member function]
     cls.add_method('SetRxCurrentA', 
                    'void', 
                    [param('double', 'rxCurrentA')])
-    ## wifi-radio-energy-model.h: void ns3::WifiRadioEnergyModel::SetSleepCurrentA(double sleepCurrentA) [member function]
-    cls.add_method('SetSleepCurrentA', 
+    ## wifi-radio-energy-model.h: void ns3::WifiRadioEnergyModel::SetSwitchingCurrentA(double switchingCurrentA) [member function]
+    cls.add_method('SetSwitchingCurrentA', 
                    'void', 
-                   [param('double', 'sleepCurrentA')])
+                   [param('double', 'switchingCurrentA')])
     ## wifi-radio-energy-model.h: void ns3::WifiRadioEnergyModel::SetTxCurrentA(double txCurrentA) [member function]
     cls.add_method('SetTxCurrentA', 
                    'void', 
@@ -6011,11 +6448,6 @@ def register_Ns3BasicEnergySource_methods(root_module, cls):
     cls.add_constructor([param('ns3::BasicEnergySource const &', 'arg0')])
     ## basic-energy-source.h: ns3::BasicEnergySource::BasicEnergySource() [constructor]
     cls.add_constructor([])
-    ## basic-energy-source.h: void ns3::BasicEnergySource::DecreaseRemainingEnergy(double energyJ) [member function]
-    cls.add_method('DecreaseRemainingEnergy', 
-                   'void', 
-                   [param('double', 'energyJ')], 
-                   is_virtual=True)
     ## basic-energy-source.h: double ns3::BasicEnergySource::GetEnergyFraction() [member function]
     cls.add_method('GetEnergyFraction', 
                    'double', 
@@ -6046,11 +6478,6 @@ def register_Ns3BasicEnergySource_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
-    ## basic-energy-source.h: void ns3::BasicEnergySource::IncreaseRemainingEnergy(double energyJ) [member function]
-    cls.add_method('IncreaseRemainingEnergy', 
-                   'void', 
-                   [param('double', 'energyJ')], 
-                   is_virtual=True)
     ## basic-energy-source.h: void ns3::BasicEnergySource::SetEnergyUpdateInterval(ns3::Time interval) [member function]
     cls.add_method('SetEnergyUpdateInterval', 
                    'void', 
@@ -6307,14 +6734,16 @@ def register_Ns3Ipv4GlobalRouting_methods(root_module, cls):
     cls.add_method('AddNetworkRouteTo', 
                    'void', 
                    [param('ns3::Ipv4Address', 'network'), param('ns3::Ipv4Mask', 'networkMask'), param('uint32_t', 'interface')])
-    ## ipv4-global-routing.h: uint32_t ns3::Ipv4GlobalRouting::GetNRoutes() [member function]
+    ## ipv4-global-routing.h: uint32_t ns3::Ipv4GlobalRouting::GetNRoutes() const [member function]
     cls.add_method('GetNRoutes', 
                    'uint32_t', 
-                   [])
-    ## ipv4-global-routing.h: ns3::Ipv4RoutingTableEntry * ns3::Ipv4GlobalRouting::GetRoute(uint32_t i) [member function]
+                   [], 
+                   is_const=True)
+    ## ipv4-global-routing.h: ns3::Ipv4RoutingTableEntry * ns3::Ipv4GlobalRouting::GetRoute(uint32_t i) const [member function]
     cls.add_method('GetRoute', 
-                   retval('ns3::Ipv4RoutingTableEntry *', caller_owns_return=False), 
-                   [param('uint32_t', 'i')])
+                   'ns3::Ipv4RoutingTableEntry *', 
+                   [param('uint32_t', 'i')], 
+                   is_const=True)
     ## ipv4-global-routing.h: static ns3::TypeId ns3::Ipv4GlobalRouting::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
@@ -6340,6 +6769,11 @@ def register_Ns3Ipv4GlobalRouting_methods(root_module, cls):
                    'void', 
                    [param('uint32_t', 'interface'), param('ns3::Ipv4InterfaceAddress', 'address')], 
                    is_virtual=True)
+    ## ipv4-global-routing.h: void ns3::Ipv4GlobalRouting::PrintRoutingTable(ns3::Ptr<ns3::OutputStreamWrapper> stream) const [member function]
+    cls.add_method('PrintRoutingTable', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::OutputStreamWrapper >', 'stream')], 
+                   is_const=True, is_virtual=True)
     ## ipv4-global-routing.h: void ns3::Ipv4GlobalRouting::RemoveRoute(uint32_t i) [member function]
     cls.add_method('RemoveRoute', 
                    'void', 
@@ -6411,6 +6845,11 @@ def register_Ns3Ipv4ListRouting_methods(root_module, cls):
                    'void', 
                    [param('uint32_t', 'interface'), param('ns3::Ipv4InterfaceAddress', 'address')], 
                    is_virtual=True)
+    ## ipv4-list-routing.h: void ns3::Ipv4ListRouting::PrintRoutingTable(ns3::Ptr<ns3::OutputStreamWrapper> stream) const [member function]
+    cls.add_method('PrintRoutingTable', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::OutputStreamWrapper >', 'stream')], 
+                   is_const=True, is_virtual=True)
     ## ipv4-list-routing.h: bool ns3::Ipv4ListRouting::RouteInput(ns3::Ptr<ns3::Packet const> p, ns3::Ipv4Header const & header, ns3::Ptr<const ns3::NetDevice> idev, ns3::Callback<void, ns3::Ptr<ns3::Ipv4Route>, ns3::Ptr<ns3::Packet const>, ns3::Ipv4Header const&, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> ucb, ns3::Callback<void,ns3::Ptr<ns3::Ipv4MulticastRoute>,ns3::Ptr<const ns3::Packet>,const ns3::Ipv4Header&,ns3::empty,ns3::empty,ns3::empty,ns3::empty,ns3::empty,ns3::empty> mcb, ns3::Callback<void,ns3::Ptr<const ns3::Packet>,const ns3::Ipv4Header&,unsigned int,ns3::empty,ns3::empty,ns3::empty,ns3::empty,ns3::empty,ns3::empty> lcb, ns3::Callback<void, ns3::Ptr<ns3::Packet const>, ns3::Ipv4Header const&, ns3::Socket::SocketErrno, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> ecb) [member function]
     cls.add_method('RouteInput', 
                    'bool', 
@@ -7037,6 +7476,11 @@ def register_Ns3OlsrRoutingProtocol_methods(root_module, cls):
                    'void', 
                    [param('uint32_t', 'interface'), param('ns3::Ipv4InterfaceAddress', 'address')], 
                    visibility='private', is_virtual=True)
+    ## olsr-routing-protocol.h: void ns3::olsr::RoutingProtocol::PrintRoutingTable(ns3::Ptr<ns3::OutputStreamWrapper> stream) const [member function]
+    cls.add_method('PrintRoutingTable', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::OutputStreamWrapper >', 'stream')], 
+                   is_const=True, visibility='private', is_virtual=True)
     ## olsr-routing-protocol.h: bool ns3::olsr::RoutingProtocol::RouteInput(ns3::Ptr<ns3::Packet const> p, ns3::Ipv4Header const & header, ns3::Ptr<const ns3::NetDevice> idev, ns3::Callback<void, ns3::Ptr<ns3::Ipv4Route>, ns3::Ptr<ns3::Packet const>, ns3::Ipv4Header const&, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> ucb, ns3::Callback<void,ns3::Ptr<ns3::Ipv4MulticastRoute>,ns3::Ptr<const ns3::Packet>,const ns3::Ipv4Header&,ns3::empty,ns3::empty,ns3::empty,ns3::empty,ns3::empty,ns3::empty> mcb, ns3::Callback<void,ns3::Ptr<const ns3::Packet>,const ns3::Ipv4Header&,unsigned int,ns3::empty,ns3::empty,ns3::empty,ns3::empty,ns3::empty,ns3::empty> lcb, ns3::Callback<void, ns3::Ptr<ns3::Packet const>, ns3::Ipv4Header const&, ns3::Socket::SocketErrno, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> ecb) [member function]
     cls.add_method('RouteInput', 
                    'bool', 
@@ -7136,6 +7580,17 @@ def register_functions(root_module):
         ns3_module_test__local.register_functions(root_module)
     
     root_module.end_section('ns3_module_test')
+    root_module.begin_section('ns3_module_visualizer')
+    ns3_module_visualizer.register_functions(root_module)
+    
+    try:
+        import ns3_module_visualizer__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_visualizer__local.register_functions(root_module)
+    
+    root_module.end_section('ns3_module_visualizer')
     root_module.begin_section('ns3_module_mobility')
     ns3_module_mobility.register_functions(root_module)
     
@@ -7202,6 +7657,17 @@ def register_functions(root_module):
         ns3_module_bridge__local.register_functions(root_module)
     
     root_module.end_section('ns3_module_bridge')
+    root_module.begin_section('ns3_module_bulk_send')
+    ns3_module_bulk_send.register_functions(root_module)
+    
+    try:
+        import ns3_module_bulk_send__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_bulk_send__local.register_functions(root_module)
+    
+    root_module.end_section('ns3_module_bulk_send')
     root_module.begin_section('ns3_module_csma')
     ns3_module_csma.register_functions(root_module)
     

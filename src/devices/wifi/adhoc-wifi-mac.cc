@@ -1,9 +1,10 @@
 /* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
 /*
- * Copyright (c) 2005 INRIA
+ * Copyright (c) 2006, 2009 INRIA
+ * Copyright (c) 2009 MIRKO BANCHI
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as 
+ * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
  *
  * This program is distributed in the hope that it will be useful,
@@ -16,19 +17,24 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
+ * Author: Mirko Banchi <mk.banchi@gmail.com>
  */
-
 #include "adhoc-wifi-mac.h"
-#include "dca-txop.h"
-#include "mac-low.h"
-#include "mac-rx-middle.h"
-#include "wifi-phy.h"
-#include "dcf-manager.h"
-#include "wifi-mac-trailer.h"
+
 #include "ns3/pointer.h"
-#include "ns3/packet.h"
 #include "ns3/log.h"
+#include "ns3/string.h"
+#include "ns3/boolean.h"
 #include "ns3/trace-source-accessor.h"
+
+#include "qos-tag.h"
+#include "mac-low.h"
+#include "dcf-manager.h"
+#include "mac-rx-middle.h"
+#include "mac-tx-middle.h"
+#include "msdu-aggregator.h"
+#include "amsdu-subframe-header.h"
+#include "mgt-headers.h"
 
 NS_LOG_COMPONENT_DEFINE ("AdhocWifiMac");
 
@@ -36,204 +42,50 @@ namespace ns3 {
 
 NS_OBJECT_ENSURE_REGISTERED (AdhocWifiMac);
 
-#undef NS_LOG_APPEND_CONTEXT
-#define NS_LOG_APPEND_CONTEXT if (m_low != 0) {std::clog << "[mac=" << m_low->GetAddress () << "] ";}
-
-TypeId 
+TypeId
 AdhocWifiMac::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::AdhocWifiMac")
-    .SetParent<WifiMac> ()
+    .SetParent<RegularWifiMac> ()
     .AddConstructor<AdhocWifiMac> ()
-    .AddAttribute ("DcaTxop", "The DcaTxop object",
-                   PointerValue (),
-                   MakePointerAccessor (&AdhocWifiMac::GetDcaTxop),
-                   MakePointerChecker<DcaTxop> ()) 
-    .AddTraceSource ( "TxOkHeader",
-                      "The header of successfully transmitted packet",
-                      MakeTraceSourceAccessor (&AdhocWifiMac::m_txOkCallback))
-    .AddTraceSource ("TxErrHeader",
-                     "The header of unsuccessfully transmitted packet",
-                     MakeTraceSourceAccessor (&AdhocWifiMac::m_txErrCallback))
-    ;
+  ;
   return tid;
 }
 
 AdhocWifiMac::AdhocWifiMac ()
 {
-  m_rxMiddle = new MacRxMiddle ();
-  m_rxMiddle->SetForwardCallback (MakeCallback (&AdhocWifiMac::ForwardUp, this));
+  NS_LOG_FUNCTION (this);
 
-  m_low = CreateObject<MacLow> ();
-  m_low->SetRxCallback (MakeCallback (&MacRxMiddle::Receive, m_rxMiddle));
-  m_low->SetBssid (GetBssid ());
-
-  m_dcfManager = new DcfManager ();
-  m_dcfManager->SetupLowListener (m_low);
-
-  m_dca = CreateObject<DcaTxop> ();
-  m_dca->SetLow (m_low);
-  m_dca->SetManager (m_dcfManager);
-  m_dca->SetTxFailedCallback (MakeCallback (&AdhocWifiMac::TxFailed, this));
+  // Let the lower layers know that we are acting in an IBSS
+  SetTypeOfStation (ADHOC_STA);
 }
+
 AdhocWifiMac::~AdhocWifiMac ()
-{}
+{
+  NS_LOG_FUNCTION (this);
+}
 
 void
-AdhocWifiMac::DoDispose (void)
-{
-  delete m_rxMiddle;
-  delete m_dcfManager;
-  m_rxMiddle = 0;
-  m_dcfManager = 0;
-  m_low = 0;
-  m_phy = 0;
-  m_dca = 0;
-  m_stationManager = 0;
-  WifiMac::DoDispose ();
-}
-
-void 
-AdhocWifiMac::SetSlot (Time slotTime)
-{
-  m_dcfManager->SetSlot (slotTime);
-  m_low->SetSlotTime (slotTime);
-}
-void 
-AdhocWifiMac::SetSifs (Time sifs)
-{
-  m_dcfManager->SetSifs (sifs);
-  m_low->SetSifs (sifs);
-}
-void 
-AdhocWifiMac::SetEifsNoDifs (Time eifsNoDifs)
-{
-  m_dcfManager->SetEifsNoDifs (eifsNoDifs);
-}
-void 
-AdhocWifiMac::SetAckTimeout (Time ackTimeout)
-{
-  m_low->SetAckTimeout (ackTimeout);
-}
-void 
-AdhocWifiMac::SetCtsTimeout (Time ctsTimeout)
-{
-  m_low->SetCtsTimeout (ctsTimeout);
-}
-void 
-AdhocWifiMac::SetPifs (Time pifs)
-{
-  m_low->SetPifs (pifs);
-}
-Time 
-AdhocWifiMac::GetSlot (void) const
-{
-  return m_low->GetSlotTime ();
-}
-Time 
-AdhocWifiMac::GetSifs (void) const
-{
-  return m_low->GetSifs ();
-}
-Time 
-AdhocWifiMac::GetEifsNoDifs (void) const
-{
-  return m_dcfManager->GetEifsNoDifs ();
-}
-Time 
-AdhocWifiMac::GetAckTimeout (void) const
-{
-  return m_low->GetAckTimeout ();
-}
-Time 
-AdhocWifiMac::GetCtsTimeout (void) const
-{
-  return m_low->GetCtsTimeout ();
-}
-Time 
-AdhocWifiMac::GetPifs (void) const
-{
-  return m_low->GetPifs ();
-}
-void 
-AdhocWifiMac::SetWifiPhy (Ptr<WifiPhy> phy)
-{
-  m_phy = phy;
-  m_dcfManager->SetupPhyListener (phy);
-  m_low->SetPhy (phy);
-}
-void 
-AdhocWifiMac::SetWifiRemoteStationManager (Ptr<WifiRemoteStationManager> stationManager)
-{
-  m_stationManager = stationManager;
-  m_dca->SetWifiRemoteStationManager (stationManager);
-  m_low->SetWifiRemoteStationManager (stationManager);
-}
-void 
-AdhocWifiMac::SetForwardUpCallback (Callback<void,Ptr<Packet>, Mac48Address, Mac48Address> upCallback)
-{
-  m_upCallback = upCallback;
-}
-void 
-AdhocWifiMac::SetLinkUpCallback (Callback<void> linkUp)
-{
-  // an Adhoc network is always UP.
-  linkUp ();
-}
-void 
-AdhocWifiMac::SetLinkDownCallback (Callback<void> linkDown)
-{}
-Mac48Address 
-AdhocWifiMac::GetAddress (void) const
-{
-  return m_low->GetAddress ();
-}
-Ssid 
-AdhocWifiMac::GetSsid (void) const
-{
-  return m_ssid;
-}
-Mac48Address 
-AdhocWifiMac::GetBssid (void) const
-{
-  return m_low->GetBssid ();
-}
-void 
 AdhocWifiMac::SetAddress (Mac48Address address)
 {
-  m_low->SetAddress (address);
-  m_low->SetBssid (address);
-  // XXX the bssid should be generated by the procedure
-  // described in ieee802.11 section 11.1.3
-}
-void 
-AdhocWifiMac::SetSsid (Ssid ssid)
-{
-  // XXX: here, we should start a special adhoc network
-  m_ssid = ssid;
+  // In an IBSS, the BSSID is supposed to be generated per Section
+  // 11.1.3 of IEEE 802.11. We don't currently do this - instead we
+  // make an IBSS STA a bit like an AP, with the BSSID for frames
+  // transmitted by each STA set to that STA's address.
+  //
+  // This is why we're overriding this method.
+  RegularWifiMac::SetAddress (address);
+  RegularWifiMac::SetBssid (address);
 }
 
-void 
-AdhocWifiMac::Enqueue (Ptr<const Packet> packet, Mac48Address to, Mac48Address from)
-{
-  NS_FATAL_ERROR ("Adhoc does not support a from != m_low->GetAddress ()");
-}
-void 
+void
 AdhocWifiMac::Enqueue (Ptr<const Packet> packet, Mac48Address to)
 {
-  NS_LOG_FUNCTION (packet->GetSize () << to);
-  WifiMacHeader hdr;
-  hdr.SetType (WIFI_MAC_DATA);
-  hdr.SetAddr1 (to);
-  hdr.SetAddr2 (m_low->GetAddress ());
-  hdr.SetAddr3 (GetBssid ());
-  hdr.SetDsNotFrom ();
-  hdr.SetDsNotTo ();
-
+  NS_LOG_FUNCTION (this << packet << to);
   if (m_stationManager->IsBrandNew (to))
     {
-      // in adhoc mode, we assume that every destination
-      // supports all the rates we support.
+      // In ad hoc mode, we assume that every destination supports all
+      // the rates we support.
       for (uint32_t i = 0; i < m_phy->GetNModes (); i++)
         {
           m_stationManager->AddSupportedMode (to, m_phy->GetMode (i));
@@ -241,65 +93,99 @@ AdhocWifiMac::Enqueue (Ptr<const Packet> packet, Mac48Address to)
       m_stationManager->RecordDisassociated (to);
     }
 
-  m_dca->Queue (packet, hdr);
-}
-bool 
-AdhocWifiMac::SupportsSendFrom (void) const
-{
-  return false;
-}
+  WifiMacHeader hdr;
 
-void 
-AdhocWifiMac::ForwardUp (Ptr<Packet> packet, const WifiMacHeader *hdr)
-{
-  NS_LOG_DEBUG ("received size="<<packet->GetSize ()<<", from="<<hdr->GetAddr2 ());
-  m_upCallback (packet, hdr->GetAddr2 (), hdr->GetAddr1 ());
-}
-Ptr<DcaTxop>
-AdhocWifiMac::GetDcaTxop(void) const
-{
-  return m_dca;
-}
+  // If we are not a QoS STA then we definitely want to use AC_BE to
+  // transmit the packet. A TID of zero will map to AC_BE (through \c
+  // QosUtilsMapTidToAc()), so we use that as our default here.
+  uint8_t tid = 0;
 
-void 
-AdhocWifiMac::FinishConfigureStandard (enum WifiPhyStandard standard)
-{
-  switch (standard)
+  // For now, a STA that supports QoS does not support non-QoS
+  // associations, and vice versa. In future the STA model should fall
+  // back to non-QoS if talking to a peer that is also non-QoS. At
+  // that point there will need to be per-station QoS state maintained
+  // by the association state machine, and consulted here.
+  if (m_qosSupported)
     {
-    case WIFI_PHY_STANDARD_holland:
-      // fall through
-    case WIFI_PHY_STANDARD_80211_10Mhz: 
-      // fall through
-    case WIFI_PHY_STANDARD_80211_5Mhz:
-      // fall through
-    case WIFI_PHY_STANDARD_80211a:
-      // fall through
-    case WIFI_PHY_STANDARD_80211g:
-      ConfigureDcf (m_dca, 15, 1023, AC_BE_NQOS);
-      break;
-    case WIFI_PHY_STANDARD_80211b:
-      ConfigureDcf (m_dca, 31, 1023, AC_BE_NQOS);
-      break;
-    default:
-      NS_ASSERT (false);
-      break;
+      hdr.SetType (WIFI_MAC_QOSDATA);
+      hdr.SetQosAckPolicy (WifiMacHeader::NORMAL_ACK);
+      hdr.SetQosNoEosp ();
+      hdr.SetQosNoAmsdu ();
+      // Transmission of multiple frames in the same TXOP is not
+      // supported for now
+      hdr.SetQosTxopLimit (0);
+
+      // Fill in the QoS control field in the MAC header
+      tid = QosUtilsGetTidForPacket (packet);
+      // Any value greater than 7 is invalid and likely indicates that
+      // the packet had no QoS tag, so we revert to zero, which'll
+      // mean that AC_BE is used.
+      if (tid >= 7)
+        {
+          tid = 0;
+        }
+      hdr.SetQosTid (tid);
+    }
+  else
+    {
+      hdr.SetTypeData ();
+    }
+
+  hdr.SetAddr1 (to);
+  hdr.SetAddr2 (m_low->GetAddress ());
+  hdr.SetAddr3 (GetBssid ());
+  hdr.SetDsNotFrom ();
+  hdr.SetDsNotTo ();
+
+  if (m_qosSupported)
+    {
+      // Sanity check that the TID is valid
+      NS_ASSERT (tid < 8);
+      m_edca[QosUtilsMapTidToAc (tid)]->Queue (packet, hdr);
+    }
+  else
+    {
+      m_dca->Queue (packet, hdr);
     }
 }
+
 void
-AdhocWifiMac::TxOk (const WifiMacHeader &hdr)
+AdhocWifiMac::SetLinkUpCallback (Callback<void> linkUp)
 {
-  m_txOkCallback (hdr);
+  NS_LOG_FUNCTION (this);
+  RegularWifiMac::SetLinkUpCallback (linkUp);
+
+  // The approach taken here is that, from the point of view of a STA
+  // in IBSS mode, the link is always up, so we immediately invoke the
+  // callback if one is set
+  linkUp ();
 }
+
 void
-AdhocWifiMac::TxFailed (const WifiMacHeader &hdr)
+AdhocWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
 {
-  m_txErrCallback (hdr);
-}
-void
-AdhocWifiMac::DoStart ()
-{
-  m_dca->Start ();
-  WifiMac::DoStart ();
+  NS_LOG_FUNCTION (this << packet << hdr);
+  NS_ASSERT (!hdr->IsCtl ());
+  Mac48Address from = hdr->GetAddr2 ();
+  Mac48Address to = hdr->GetAddr1 ();
+  if (hdr->IsData ())
+    {
+      if (hdr->IsQosData () && hdr->IsQosAmsdu ())
+        {
+          NS_LOG_DEBUG ("Received A-MSDU from"<<from);
+          DeaggregateAmsduAndForward (packet, hdr);
+        }
+      else
+        {
+          ForwardUp (packet, from, to);
+        }
+      return;
+    }
+
+  // Invoke the receive handler of our parent class to deal with any
+  // other frames. Specifically, this will handle Block Ack-related
+  // Management Action frames.
+  RegularWifiMac::Receive (packet, hdr);
 }
 
 } // namespace ns3

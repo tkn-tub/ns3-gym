@@ -28,6 +28,7 @@
 
 #include "aodv-rtable.h"
 #include <algorithm>
+#include <iomanip>
 #include "ns3/simulator.h"
 #include "ns3/log.h"
 
@@ -155,30 +156,34 @@ RoutingTableEntry::Invalidate (Time badLinkLifetime)
 }
 
 void
-RoutingTableEntry::Print (std::ostream & os) const
+RoutingTableEntry::Print (Ptr<OutputStreamWrapper> stream) const
 {
-  os << m_ipv4Route->GetDestination () << "\t" << m_ipv4Route->GetGateway ()
+  std::ostream* os = stream->GetStream();
+  *os << m_ipv4Route->GetDestination () << "\t" << m_ipv4Route->GetGateway ()
       << "\t" << m_iface.GetLocal () << "\t";
   switch (m_flag)
     {
     case VALID:
       {
-        os << "UP";
+        *os << "UP";
         break;
       }
     case INVALID:
       {
-        os << "DOWN";
+        *os << "DOWN";
         break;
       }
     case IN_SEARCH:
       {
-        os << "IN_SEARCH";
+        *os << "IN_SEARCH";
         break;
       }
     }
-  os << "\t" << (m_lifeTime - Simulator::Now ()).GetSeconds () << "\t"
-      << m_hops << "\n";
+  *os << "\t";
+  *os << std::setiosflags (std::ios::fixed) << 
+    std::setiosflags (std::ios::left) << std::setprecision (2) << 
+    std::setw (14) << (m_lifeTime - Simulator::Now ()).GetSeconds (); 
+  *os << "\t" << m_hops << "\n";
 }
 
 /*
@@ -378,6 +383,39 @@ RoutingTable::Purge ()
     }
 }
 
+void
+RoutingTable::Purge (std::map<Ipv4Address, RoutingTableEntry> &table) const
+{
+  NS_LOG_FUNCTION (this);
+  if (table.empty ())
+    return;
+  for (std::map<Ipv4Address, RoutingTableEntry>::iterator i =
+      table.begin (); i != table.end ();)
+    {
+      if (i->second.GetLifeTime () < Seconds (0))
+        {
+          if (i->second.GetFlag () == INVALID)
+            {
+              std::map<Ipv4Address, RoutingTableEntry>::iterator tmp = i;
+              ++i;
+              table.erase (tmp);
+            }
+          else if (i->second.GetFlag () == VALID)
+            {
+              NS_LOG_LOGIC ("Invalidate route with destination address " << i->first);
+              i->second.Invalidate (m_badLinkLifetime);
+              ++i;
+            }
+          else
+            ++i;
+        }
+      else 
+        {
+          ++i;
+        }
+    }
+}
+
 bool
 RoutingTable::MarkLinkAsUnidirectional (Ipv4Address neighbor, Time blacklistTimeout)
 {
@@ -397,17 +435,18 @@ RoutingTable::MarkLinkAsUnidirectional (Ipv4Address neighbor, Time blacklistTime
 }
 
 void
-RoutingTable::Print (std::ostream &os)
+RoutingTable::Print (Ptr<OutputStreamWrapper> stream) const
 {
-  Purge ();
-  os << "\nAODV Routing table\n"
-      << "Destination\tGateway\t\tInterface\tFlag\tExpire\tHops\n";
+  std::map<Ipv4Address, RoutingTableEntry> table = m_ipv4AddressEntry;
+  Purge (table);
+  *stream->GetStream () << "\nAODV Routing table\n"
+      << "Destination\tGateway\t\tInterface\tFlag\tExpire\t\tHops\n";
   for (std::map<Ipv4Address, RoutingTableEntry>::const_iterator i =
-      m_ipv4AddressEntry.begin (); i != m_ipv4AddressEntry.end (); ++i)
+      table.begin (); i != table.end (); ++i)
     {
-      i->second.Print (os);
+      i->second.Print (stream);
     }
-  os << "\n";
+  *stream->GetStream () << "\n";
 }
 
 }

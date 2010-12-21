@@ -27,7 +27,6 @@
 #include "ns3/ipv4-address.h"
 #include "ns3/inet-socket-address.h"
 #include "ns3/event-id.h"
-#include "tcp-typedefs.h"
 #include "pending-data.h"
 #include "ns3/sequence-number.h"
 
@@ -66,6 +65,7 @@ public:
   void SetTcp (Ptr<NscTcpL4Protocol> tcp);
 
   virtual enum SocketErrno GetErrno (void) const;
+  virtual enum SocketType GetSocketType (void) const;
   virtual Ptr<Node> GetNode (void) const;
   virtual int Bind (void);
   virtual int Bind (const Address &address);
@@ -125,6 +125,8 @@ private:
   virtual Time GetDelAckTimeout (void) const;
   virtual void SetDelAckMaxCount (uint32_t count);
   virtual uint32_t GetDelAckMaxCount (void) const;
+  virtual void SetPersistTimeout (Time timeout);
+  virtual Time GetPersistTimeout (void) const;
 
   enum Socket::SocketErrno GetNativeNs3Errno(int err) const;
   uint32_t m_delAckMaxCount;
@@ -145,7 +147,7 @@ private:
   bool m_connected;
   
   //manage the state information
-  States_t m_state;
+  TracedValue<TcpStates_t> m_state;
   bool m_closeOnEmpty;
 
   //needed to queue data when in SYN_SENT state
@@ -166,6 +168,7 @@ private:
   // Timer-related members
   Time              m_cnTimeout; 
   uint32_t          m_cnCount;
+  Time              m_persistTimeout; 
 
   // Temporary queue for delivering data to application
   std::queue<Ptr<Packet> > m_deliveryQueue;

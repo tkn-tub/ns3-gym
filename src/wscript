@@ -33,6 +33,7 @@ all_modules = (
     'applications/onoff',
     'applications/packet-sink',
     'applications/udp-echo',
+    'applications/bulk-send',
     'routing/nix-vector-routing',
     'routing/olsr',
     'routing/global-routing',
@@ -63,6 +64,7 @@ all_modules = (
     'mpi',
     'contrib/topology-read',
     'contrib/energy',
+    'tools/visualizer',
     )
 
 def set_options(opt):

@@ -1,5 +1,5 @@
-@node Emulation
-@chapter Emulation
+@node Emulation Overview
+@chapter Emulation Overview
 
 ns-3 has been designed for integration into testbed and virtual machine
 environments.  We have addressed this need by providing two kinds of 

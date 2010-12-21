@@ -27,18 +27,27 @@ NS_LOG_COMPONENT_DEFINE ("OutputStreamWrapper");
 namespace ns3 {
 
 OutputStreamWrapper::OutputStreamWrapper (std::string filename, std::ios::openmode filemode)
-  : m_ostream (new std::ofstream ())
+  : m_destroyable (true)
+{
+  std::ofstream* os = new std::ofstream ();
+  os->open (filename.c_str (), filemode);
+  m_ostream = os;
+  FatalImpl::RegisterStream (m_ostream);
+  NS_ABORT_MSG_UNLESS (os->is_open (), "AsciiTraceHelper::CreateFileStream():  " <<
+                       "Unable to Open " << filename << " for mode " << filemode);
+}
+
+OutputStreamWrapper::OutputStreamWrapper (std::ostream* os)
+  : m_ostream (os), m_destroyable (false)
 {
   FatalImpl::RegisterStream (m_ostream);
-  m_ostream->open (filename.c_str (), filemode);
-  NS_ABORT_MSG_UNLESS (m_ostream->is_open (), "AsciiTraceHelper::CreateFileStream():  " <<
-                       "Unable to Open " << filename << " for mode " << filemode);
+  NS_ABORT_MSG_UNLESS (m_ostream->good (), "Output stream is not vaild for writing.");
 }
 
 OutputStreamWrapper::~OutputStreamWrapper ()
 {
   FatalImpl::UnregisterStream (m_ostream);
-  delete m_ostream;
+  if (m_destroyable) delete m_ostream;
   m_ostream = 0;
 }
 

@@ -996,18 +996,23 @@ want to setup and make sure that our stations don't perform active probing:
 
 @verbatim
   Ssid ssid = Ssid ("ns-3-ssid");
-  mac.SetType ("ns3::NqstaWifiMac",
+  mac.SetType ("ns3::StaWifiMac",
     "Ssid", SsidValue (ssid),
     "ActiveProbing", BooleanValue (false));
 @end verbatim
 
-This code first creates an 802.11 service set identifier (SSID) object that 
-will be used to set the value of the ``Ssid'' @code{Attribute} of the MAC
-layer implementation.  The particular kind of MAC layer is specified by
-@code{Attribute} as being of the "ns3::NqstaWifiMac" type.  This means that 
-the MAC will use a ``non-QoS station'' (nqsta) state machine.  Finally, the 
-``ActiveProbing'' @code{Attribute} is set to false.  This means that probe
-requests will not be sent by MACs created by this helper.
+This code first creates an 802.11 service set identifier (SSID) object
+that will be used to set the value of the ``Ssid'' @code{Attribute} of
+the MAC layer implementation.  The particular kind of MAC layer that
+will be created by the helper is specified by @code{Attribute} as
+being of the "ns3::StaWifiMac" type.  The use of
+@code{NqosWifiMacHelper} will ensure that the ''QosSupported''
+@code{Attribute} for created MAC objects is set false. The combination
+of these two configurations means that the MAC instance next created
+will be a non-QoS non-AP station (STA) in an infrastructure BSS (i.e.,
+a BSS with an AP).  Finally, the ``ActiveProbing'' @code{Attribute} is
+set to false.  This means that probe requests will not be sent by MACs
+created by this helper.
 
 Once all the station-specific parameters are fully configured, both at the
 MAC and PHY layers, we can invoke our now-familiar @code{Install} method to 
@@ -1024,16 +1029,19 @@ the default @code{Attributes} of the @code{NqosWifiMacHelper} to reflect the
 requirements of the AP.
 
 @verbatim
-  mac.SetType ("ns3::NqapWifiMac", 
+  mac.SetType ("ns3::ApWifiMac",
     "Ssid", SsidValue (ssid),
     "BeaconGeneration", BooleanValue (true),
     "BeaconInterval", TimeValue (Seconds (2.5)));
 @end verbatim
 
-In this case, the @code{NqosWifiMacHelper} is going to create MAC layers of the 
-``ns3::NqapWifiMac'' (Non-Qos Access Point) type.  We set the 
-``BeaconGeneration'' @code{Attribute} to true and also set an interval between 
-beacons of 2.5 seconds.
+In this case, the @code{NqosWifiMacHelper} is going to create MAC
+layers of the ``ns3::ApWifiMac'', the latter specifying that a MAC
+instance configured as an AP should be created, with the helper type
+implying that the ''QosSupported'' @code{Attribute} should be set to
+false - disabling 802.11e/WMM-style QoS support at created APs.  We
+set the ``BeaconGeneration'' @code{Attribute} to true and also set an
+interval between beacons of 2.5 seconds.
 
 The next lines create the single AP which shares the same set of PHY-level
 @code{Attributes} (and channel) as the stations:

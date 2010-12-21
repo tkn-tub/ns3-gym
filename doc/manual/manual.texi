@@ -88,6 +88,25 @@ Simulator version:
 
 @menu
 * Organization::
+* Core::
+* Node and NetDevices::
+* Emulation::
+* Internet Models::
+* Applications::
+* Support::
+@end menu
+
+@setchapternewpage odd
+@headings off
+@everyheading @thischapter @| @| ns-3 manual
+@everyfooting  ns-3 @| @thispage @| @today
+@include organization.texi
+
+@node Core 
+@chapter Core
+
+@lowersections
+@menu
 * Random variables::
 * Callbacks::
 * Object model::
@@ -100,39 +119,9 @@ Simulator version:
 * Packets::
 * Helpers::
 * Python::
-* Node and NetDevices::
-* Simple NetDevice::
-* PointToPoint NetDevice::
-* CSMA NetDevice::
-* Wifi NetDevice::
-* Mesh NetDevice::
-* Bridge NetDevice::
 * LTE Module::
-* Wimax NetDevice::
-* Emulation::
-* Emu NetDevice::
-* Tap NetDevice::
-* Sockets APIs::
-* Internet Stack::
-* IPv4::
-* IPv6::
-* Routing overview::
-* TCP::
-* Applications::
-* Flow Monitor::
-* Animation::
-* Statistics::
-* Creating a new ns-3 model::
-* Troubleshooting::
 @end menu
 
-@setchapternewpage odd
-@headings off
-@everyheading @thischapter @| @| ns-3 manual
-@everyfooting  ns-3 @| @thispage @| @today
-@include organization.texi
-
-@unnumbered Part 1:  ns-3 core 
 @setchapternewpage off
 @include random.texi
 @setchapternewpage odd
@@ -147,8 +136,23 @@ Simulator version:
 @include packets.texi
 @include helpers.texi
 @include python.texi
+@raisesections
 
-@unnumbered Part 2:  Nodes and NetDevices
+@node Node and NetDevices
+@chapter Node and NetDevices
+
+@lowersections
+@menu
+* Node and NetDevices Overview::
+* Simple NetDevice::
+* PointToPoint NetDevice::
+* CSMA NetDevice::
+* Wifi NetDevice::
+* Mesh NetDevice::
+* Bridge NetDevice::
+* Wimax NetDevice::
+@end menu
+
 @setchapternewpage off
 @include node.texi
 @setchapternewpage odd
@@ -160,15 +164,38 @@ Simulator version:
 @include bridge.texi
 @include lte.texi
 @include wimax.texi
+@raisesections
 
-@unnumbered Part 3:  Emulation
+@node Emulation
+@chapter Emulation
+
+@menu
+* Emulation Overview::
+* Emu NetDevice::
+* Tap NetDevice::
+@end menu
+
+@lowersections
 @setchapternewpage off
 @include emulation.texi
 @setchapternewpage odd
 @include emu.texi
 @include tap.texi
+@raisesections
 
-@unnumbered Part 4:  Internet Models
+@node Internet Models
+@chapter Internet Models
+
+@menu
+* Sockets APIs::
+* Internet Stack::
+* IPv4::
+* IPv6::
+* Routing overview::
+* TCP::
+@end menu
+
+@lowersections
 @setchapternewpage off
 @include sockets.texi
 @setchapternewpage odd
@@ -177,13 +204,33 @@ Simulator version:
 @include ipv6.texi
 @include routing.texi
 @include tcp.texi
+@raisesections
 
-@unnumbered Part 5:  Applications
+@node Applications
+@chapter Applications
+
+@menu
+* Applications Overview::
+@end menu
+
+@lowersections
 @setchapternewpage off
 @include applications.texi
 @setchapternewpage odd
+@raisesections
 
-@unnumbered Part 6:  Support
+@node Support
+@chapter Support
+
+@menu
+* Flow Monitor::
+* Animation::
+* Statistics::
+* Creating a new ns-3 model::
+* Troubleshooting::
+@end menu
+
+@lowersections
 @setchapternewpage off
 @include flow-monitor.texi
 @setchapternewpage odd
@@ -191,6 +238,7 @@ Simulator version:
 @include statistics.texi
 @include new-models.texi
 @include troubleshoot.texi
+@raisesections
 
 @printindex cp
 

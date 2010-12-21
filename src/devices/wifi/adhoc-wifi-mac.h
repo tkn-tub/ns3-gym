@@ -1,9 +1,10 @@
 /* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
 /*
- * Copyright (c) 2005 INRIA
+ * Copyright (c) 2006, 2009 INRIA
+ * Copyright (c) 2009 MIRKO BANCHI
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as 
+ * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
  *
  * This program is distributed in the hope that it will be useful,
@@ -16,91 +17,47 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
+ * Author: Mirko Banchi <mk.banchi@gmail.com>
  */
 #ifndef ADHOC_WIFI_MAC_H
 #define ADHOC_WIFI_MAC_H
 
-#include "ns3/mac48-address.h"
-#include "ns3/callback.h"
-#include "ns3/packet.h"
-#include "wifi-mac.h"
+#include "regular-wifi-mac.h"
+
+#include "amsdu-subframe-header.h"
 
 namespace ns3 {
 
-class DcaTxop;
-class Packet;
-class WifiMacHeader;
-class WifiPhy;
-class DcfManager;
-class MacLow;
-class MacRxMiddle;
-
-/**
- * \brief the Adhoc state machine
- *
- * For now, this class is really empty but it should contain
- * the code for the distributed generation of beacons in an adhoc 
- * network.
- */
-class AdhocWifiMac : public WifiMac 
+class AdhocWifiMac : public RegularWifiMac
 {
 public:
-  typedef Callback<void, Ptr<Packet>, const Mac48Address &> ForwardCallback;
-
   static TypeId GetTypeId (void);
 
   AdhocWifiMac ();
-  ~AdhocWifiMac ();
+  virtual ~AdhocWifiMac ();
 
-  // all inherited from WifiMac base class.
-  virtual void SetSlot (Time slotTime);
-  virtual void SetSifs (Time sifs);
-  virtual void SetEifsNoDifs (Time eifsNoDifs);
-  virtual void SetAckTimeout (Time ackTimeout);
-  virtual void SetCtsTimeout (Time ctsTimeout);
-  virtual void SetPifs (Time pifs);
-  virtual Time GetSlot (void) const;
-  virtual Time GetSifs (void) const;
-  virtual Time GetEifsNoDifs (void) const;
-  virtual Time GetAckTimeout (void) const;
-  virtual Time GetCtsTimeout (void) const;
-  virtual Time GetPifs (void) const;
-  virtual void SetWifiPhy (Ptr<WifiPhy> phy);
-  virtual void SetWifiRemoteStationManager (Ptr<WifiRemoteStationManager> stationManager);
-  virtual void Enqueue (Ptr<const Packet> packet, Mac48Address to, Mac48Address from);
-  virtual void Enqueue (Ptr<const Packet> packet, Mac48Address to);
-  virtual bool SupportsSendFrom (void) const;
-  virtual void SetForwardUpCallback (Callback<void,Ptr<Packet>, Mac48Address, Mac48Address> upCallback);
-  virtual void SetLinkUpCallback (Callback<void> linkUp);
-  virtual void SetLinkDownCallback (Callback<void> linkDown);
-  virtual Mac48Address GetAddress (void) const;
-  virtual Ssid GetSsid (void) const;
+  /**
+   * \param address the current address of this MAC layer.
+   */
   virtual void SetAddress (Mac48Address address);
-  virtual void SetSsid (Ssid ssid);
-  virtual Mac48Address GetBssid (void) const;
+
+  /**
+   * \param linkUp the callback to invoke when the link becomes up.
+   */
+  virtual void SetLinkUpCallback (Callback<void> linkUp);
+
+  /**
+   * \param packet the packet to send.
+   * \param to the address to which the packet should be sent.
+   *
+   * The packet should be enqueued in a tx queue, and should be
+   * dequeued as soon as the channel access function determines that
+   * access is granted to this MAC.
+   */
+  virtual void Enqueue (Ptr<const Packet> packet, Mac48Address to);
 
 private:
-  // inherited from Object base class.
-  virtual void DoDispose (void);
-  void DoStart ();
-  /* invoked by the MacLows. */
-  void ForwardUp (Ptr<Packet> packet, const WifiMacHeader *hdr);
-  AdhocWifiMac (const AdhocWifiMac & ctor_arg);
-  AdhocWifiMac &operator = (const AdhocWifiMac &o);
-  Ptr<DcaTxop> GetDcaTxop(void) const;
-  void TxOk (const WifiMacHeader &hdr);
-  void TxFailed (const WifiMacHeader &hdr);
-  virtual void FinishConfigureStandard (enum WifiPhyStandard standard);
-  Ptr<DcaTxop> m_dca;
-  Callback<void,Ptr<Packet>, Mac48Address, Mac48Address> m_upCallback;
-  Ptr<WifiRemoteStationManager> m_stationManager;
-  Ptr<WifiPhy> m_phy;
-  DcfManager *m_dcfManager;
-  MacRxMiddle *m_rxMiddle;
-  Ptr<MacLow> m_low;
-  Ssid m_ssid;
-  TracedCallback<const WifiMacHeader &> m_txOkCallback;
-  TracedCallback<const WifiMacHeader &> m_txErrCallback;
+  virtual void Receive (Ptr<Packet> packet, const WifiMacHeader *hdr);
 };
 
 } // namespace ns3

@@ -35,6 +35,21 @@ namespace ns3 {
 class Node;
 class Packet;
 
+/* Names of the 11 TCP states */
+typedef enum {
+  CLOSED,       // 0
+  LISTEN,       // 1
+  SYN_SENT,     // 2
+  SYN_RCVD,     // 3
+  ESTABLISHED,  // 4
+  CLOSE_WAIT,   // 5
+  LAST_ACK,     // 6
+  FIN_WAIT_1,   // 7
+  FIN_WAIT_2,   // 8
+  CLOSING,      // 9
+  TIME_WAIT,   // 10
+  LAST_STATE } TcpStates_t;
+
 /**
  * \ingroup socket
  *
@@ -50,6 +65,9 @@ public:
  
   TcpSocket (void);
   virtual ~TcpSocket (void);
+
+  // Literal names of TCP states for use in log messages */
+  static const char* const TcpStateName[LAST_STATE];
 
 private:
   // Indirect the attribute setting and getting through private virtual methods
@@ -71,6 +89,8 @@ private:
   virtual Time GetDelAckTimeout (void) const = 0;
   virtual void SetDelAckMaxCount (uint32_t count) = 0;
   virtual uint32_t GetDelAckMaxCount (void) const = 0;
+  virtual void SetPersistTimeout (Time timeout) = 0;
+  virtual Time GetPersistTimeout (void) const = 0;
   
 };
 

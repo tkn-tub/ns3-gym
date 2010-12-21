@@ -176,7 +176,7 @@ SimpleNetDevice::GetMulticast (Ipv4Address multicastGroup) const
 
 Address SimpleNetDevice::GetMulticast (Ipv6Address addr) const
 {
-	return Mac48Address::GetMulticast (addr);
+  return Mac48Address::GetMulticast (addr);
 }
 
 bool 

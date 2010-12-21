@@ -23,6 +23,24 @@ ns-3.10 has been tested on the following platforms: (TBD)
 New user-visible features
 -------------------------
 
+   - NS-3 PyViz, a live simulation visualizer, has been added.  The 
+     visualizer interacts with a running simulation, such that it uses no
+     trace files. It can be most useful for debugging purposes, i.e. to
+     figure out if mobility models are what you expect, where packets are
+     being dropped, etc. There is also a builtin interactive python console
+     that can be used to debug the state of the running objects. Although
+     it is mostly written in Python, it works both with Python and pure C++
+     simulations.
+
+   - Wi-Fi MAC high classes have been reorganised in attempt to
+     consolidate shared functionality into a single class. This new
+     class is RegularWifiMac, and it derives from the abstract
+     WifiMac, and is parent of AdhocWifiMac, StaWifiMac, ApWifiMac,
+     and MeshWifiInterfaceMac. The QoS and non-QoS class variants are
+     no longer, with a RegularWifiMac attribute "QosSupported"
+     allowing selection between these two modes of
+     operation.
+
    - Support for IEEE 802.11g (specifically, rates with Modulation
      Class ERP-OFDM) has been added to the wifi module. The new
      WifiModes have names of the form ErpOfdmRatexxMbps, where xx is
@@ -47,11 +65,26 @@ New user-visible features
      regression tests but they are now called from the test.py
      program.
 
+   - New BulkSendApplication sends data as fast as possible up to 
+     MaxBytes or unlimited if MaxBytes is zero.  Think OnOff, but 
+     without the "off" and without the variable data rate. This 
+     application only works with SOCK_STREAM and SOCK_SEQPACKET 
+     sockets, for example TCP sockets and not UDP sockets.
+
+   - Extensions to the energy models:  1) a new Rakhmatov Vrudhula 
+     non-linear battery model, 2) additional support for modeling 
+     energy consumption in WiFi devices, 3) an example for how to add 
+     energy models to a WiFi-based simulation (in examples/energy/ 
+     directory).
+
+   - New methods to print IPv4 routing tables to an output stream.
+
 Bugs fixed
 ----------
 The following lists many of the bugs fixed or small feature additions
 since ns-3.9, in many cases referencing the Bugzilla bug number
 
+   - bug 978 - Consolidate Wi-Fi MAC high functionality
    - bug 852 - Add support for 802.11g devices
    - bug 892 - WaypointMobilityModel incompatible with MobilityHelper::Install
    - bug 893 - Lazy CourseChange notification for WaypointMobilityModel

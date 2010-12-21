@@ -71,6 +71,7 @@ class OutputStreamWrapper : public SimpleRefCount<OutputStreamWrapper>
 {
 public:
   OutputStreamWrapper (std::string filename, std::ios::openmode filemode);
+  OutputStreamWrapper (std::ostream* os);
   ~OutputStreamWrapper ();
 
   /**
@@ -83,7 +84,8 @@ public:
   std::ostream *GetStream (void);
   
 private:
-  std::ofstream *m_ostream;
+  std::ostream *m_ostream;
+  bool m_destroyable;
 };
 
 } //namespace ns3

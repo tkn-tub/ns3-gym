@@ -97,22 +97,6 @@ public:
   virtual double GetEnergyFraction (void) = 0;
 
   /**
-   * \param energyJ Amount of energy to decrease (in Joules)
-   *
-   * This function decreases the remaining energy in the energy source by the
-   * specified amount. Provides linear interface for direct energy deduction.
-   */
-  virtual void DecreaseRemainingEnergy (double energyJ) = 0;
-
-  /**
-   * \param energyJ Amount of energy to increase (in Joules)
-   *
-   * This function increases the remaining energy in the energy source by the
-   * specified amount. Provides linear interface for direct energy increase.
-   */
-  virtual void IncreaseRemainingEnergy (double energyJ) = 0;
-
-  /**
    * This function goes through the list of DeviceEnergyModels to obtain total
    * current draw at the energy source and updates remaining energy. Called by
    * DeviceEnergyModels to inform EnergySource of a state change.
@@ -154,11 +138,27 @@ public:
    */
   DeviceEnergyModelContainer FindDeviceEnergyModels (std::string name);
 
+  /**
+   * Calls Start () method of the device energy models. Device energy models are
+   * not aggregated to the node, therefore we need to manually start them here.
+   * Called by EnergySourceContainer, which is aggregated to the node.
+   */
+  void StartDeviceModels (void);
+
+  /**
+   * Calls Dispose () method of the device energy models. Device energy models
+   * are not aggregated to the node, therefore we need to manually start them
+   * here. Called by EnergySourceContainer, which is aggregated to the node.
+   */
+  void DisposeDeviceModels (void);
+
 
 private:
   /**
    * All child's implementation must call BreakDeviceEnergyModelRefCycle to
    * ensure reference cycles to DeviceEnergyModel objects are broken.
+   *
+   * Defined in ns3::Object
    */
   virtual void DoDispose (void);
 
@@ -169,7 +169,8 @@ private:
   DeviceEnergyModelContainer m_models;
 
   /**
-   * Pointer to node containing this EnergySource.
+   * Pointer to node containing this EnergySource. Used by helper class to make
+   * sure device models are installed onto the corresponding node.
    */
   Ptr<Node> m_node;
 

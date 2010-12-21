@@ -80,6 +80,13 @@ Ipv4RawSocketImpl::GetErrno (void) const
   NS_LOG_FUNCTION (this);
   return m_err;
 }
+
+enum Socket::SocketType
+Ipv4RawSocketImpl::GetSocketType (void) const
+{
+  return NS3_SOCK_RAW;
+}
+
 Ptr<Node> 
 Ipv4RawSocketImpl::GetNode (void) const
 {

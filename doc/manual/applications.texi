@@ -1,5 +1,5 @@
-@node Applications
-@chapter Applications
+@node Applications Overview
+@chapter Applications Overview
 
 @cartouche
 Placeholder chapter

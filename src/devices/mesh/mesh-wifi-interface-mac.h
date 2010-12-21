@@ -30,7 +30,7 @@
 #include "ns3/packet.h"
 #include "ns3/nstime.h"
 #include "ns3/wifi-remote-station-manager.h"
-#include "ns3/wifi-mac.h"
+#include "ns3/regular-wifi-mac.h"
 #include "ns3/mesh-wifi-interface-mac-plugin.h"
 #include "ns3/event-id.h"
 #include "qos-utils.h"
@@ -38,10 +38,6 @@ namespace ns3 {
 
 class WifiMacHeader;
 class DcaTxop;
-class WifiPhy;
-class DcfManager;
-class MacRxMiddle;
-class MacLow;
 /**
  * \ingroup mesh
  *
@@ -53,7 +49,7 @@ class MacLow;
  *  - management and priority traffic.
  *
  */
-class MeshWifiInterfaceMac : public WifiMac
+class MeshWifiInterfaceMac : public RegularWifiMac
 {
 public:
   /// Never forget to support typeid
@@ -65,34 +61,11 @@ public:
 
   ///\name Inherited from WifiMac
   //\{
-  virtual void  SetSlot (Time slotTime);
-  virtual void  SetSifs (Time sifs);
-  virtual void  SetPifs (Time pifs);
-  virtual void  SetCtsTimeout (Time ctsTimeout);
-  virtual void  SetAckTimeout (Time ackTimeout);
-  virtual void  SetEifsNoDifs (Time eifsNoDifs);
-  virtual Time  GetSlot () const;
-  virtual Time  GetSifs () const;
-  virtual Time  GetPifs () const;
-  virtual Time  GetCtsTimeout () const;
-  virtual Time  GetAckTimeout () const;
-  virtual Time  GetEifsNoDifs () const;
-  virtual void  SetWifiPhy (Ptr<WifiPhy> phy);
-  virtual void  SetWifiRemoteStationManager (Ptr<WifiRemoteStationManager> stationManager);
   virtual void  Enqueue (Ptr<const Packet> packet, Mac48Address to, Mac48Address from);
   virtual void  Enqueue (Ptr<const Packet> packet, Mac48Address to);
   virtual bool  SupportsSendFrom () const;
-  virtual void  SetForwardUpCallback (Callback<void,Ptr<Packet>, Mac48Address, Mac48Address> upCallback);
   virtual void  SetLinkUpCallback (Callback<void> linkUp);
-  virtual void  SetLinkDownCallback (Callback<void> linkDown);
-  virtual Mac48Address GetAddress () const;
-  virtual Mac48Address GetBssid () const;
-  virtual Ssid  GetSsid () const;
-  virtual void  SetAddress (Mac48Address address);
-  virtual void  SetSsid (Ssid ssid);
   //\}
-  ///Needed to obtain phy to calculate TX-duration
-  Ptr<WifiPhy> GetWifiPhy () const;
   ///\name Each mesh point interfaces must know the mesh point address
   //\{
   void SetMeshPointAddress (Mac48Address);
@@ -152,26 +125,19 @@ public:
   ///\{
   void SetLinkMetricCallback (Callback<uint32_t, Mac48Address, Ptr<MeshWifiInterfaceMac> > cb);
   uint32_t GetLinkMetric (Mac48Address peerAddress);
-  Ptr<WifiRemoteStationManager> GetStationManager ();
   ///\}
   ///\brief Statistics:
   void Report (std::ostream &) const;
   void ResetStats ();
   /// Enable/disable beacons
   void SetBeaconGeneration (bool enable);
-  void SetQueue (AcIndex ac);
   WifiPhyStandard GetPhyStandard () const;
   virtual void FinishConfigureStandard (enum WifiPhyStandard standard);
 private:
   /// Frame receive handler
   void  Receive (Ptr<Packet> packet, WifiMacHeader const *hdr);
-  /// Forward frame to mesh point
-  virtual void ForwardUp (Ptr<Packet> packet, Mac48Address src, Mac48Address dst);
   /// Send frame. Frame is supposed to be tagged by routing information. TODO: clarify this point
   void  ForwardDown (Ptr<const Packet> packet, Mac48Address from, Mac48Address to);
-  // Notify about tx OK/Error frames:
-  void TxOk (WifiMacHeader const &hdr);
-  void TxFailed (WifiMacHeader const &hdr);
   /// Send beacon
   void SendBeacon ();
   /// Schedule next beacon
@@ -180,30 +146,9 @@ private:
   bool GetBeaconGeneration () const;
   /// Real d-tor
   virtual void DoDispose ();
-  ///Initiator at t=0
-  void DoStart ();
 
 private:
-  typedef std::map<AcIndex, Ptr<DcaTxop> > Queues;
   typedef std::vector<Ptr<MeshWifiInterfaceMacPlugin> > PluginList;
-  ///\name Wifi MAC internals
-  //\{
-  Queues m_queues;
-  Ptr<DcaTxop> m_beaconDca;
-  Ptr<WifiRemoteStationManager> m_stationManager;
-  Ptr<WifiPhy> m_phy;
-  Callback<void, Ptr<Packet> , Mac48Address, Mac48Address> m_upCallback;
-  //\}
-
-  ///\name Wifi timing intervals
-  //\{
-  Time m_slot;
-  Time m_sifs;
-  Time m_pifs;
-  Time m_ackTimeout;
-  Time m_ctsTimeout;
-  Time m_eifsNoDifs;
-  //\}
 
   ///\name Mesh timing intervals
   //\{
@@ -215,18 +160,8 @@ private:
   Time m_tbtt;
   //\}
 
-  /// DCF implementation
-  DcfManager* m_dcfManager;
-  /// Middle MAC sublayer
-  MacRxMiddle* m_rxMiddle;
-  /// Low MAC sublayer
-  Ptr<MacLow> m_low;
-  /// My address
-  Mac48Address m_address;
   /// Mesh point address
   Mac48Address m_mpAddress;
-  /// SSID
-  Ssid m_meshId;
 
   /// "Timer" for the next beacon
   EventId m_beaconSendEvent;
@@ -248,8 +183,6 @@ private:
   };
   Statistics m_stats;
   ///\}
-  TracedCallback<WifiMacHeader const &> m_txOkCallback;
-  TracedCallback<WifiMacHeader const &> m_txErrCallback;
   /// Current PHY standard: needed to configure metric
   WifiPhyStandard m_standard;
 };

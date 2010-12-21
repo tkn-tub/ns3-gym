@@ -118,6 +118,13 @@ EnergySourceContainer::Add (std::string sourceName)
 void
 EnergySourceContainer::DoDispose (void)
 {
+  // call Object::Dispose for all EnergySource objects
+  for (std::vector< Ptr<EnergySource> >::iterator i = m_sources.begin ();
+       i != m_sources.end (); i++)
+    {
+      (*i)->DisposeDeviceModels ();
+      (*i)->Dispose ();
+    }
   m_sources.clear ();
 }
 
@@ -126,9 +133,10 @@ EnergySourceContainer::DoStart (void)
 {
   // call Object::Start for all EnergySource objects
   for (std::vector< Ptr<EnergySource> >::iterator i = m_sources.begin ();
-      i != m_sources.end (); i++)
+       i != m_sources.end (); i++)
     {
       (*i)->Start ();
+      (*i)->StartDeviceModels ();
     }
 }
 

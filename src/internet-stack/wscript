@@ -109,7 +109,6 @@ def build(bld):
         'arp-cache.cc',
         'arp-l3-protocol.cc',
         'udp-socket-impl.cc',
-        'tcp-socket-impl.cc',
         'ipv4-end-point-demux.cc',
         'udp-socket-factory-impl.cc',
         'tcp-socket-factory-impl.cc',
@@ -139,6 +138,13 @@ def build(bld):
         'icmpv6-l4-protocol.cc',
         'ipv6-test.cc',
         'ipv6-extension-header-test-suite.cc',
+        'tcp-socket-base.cc',
+        'tcp-rfc793.cc',
+        'tcp-tahoe.cc',
+        'tcp-reno.cc',
+        'tcp-newreno.cc',
+        'tcp-rx-buffer.cc',
+        'tcp-tx-buffer.cc',
         ]
 
     headers = bld.new_task_gen('ns3header')
