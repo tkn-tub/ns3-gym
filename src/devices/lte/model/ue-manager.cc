@@ -38,7 +38,7 @@ UeManager::UeManager (void)
 
 UeManager::~UeManager (void)
 {
- delete m_ueRecords;
+  delete m_ueRecords;
 }
 
 

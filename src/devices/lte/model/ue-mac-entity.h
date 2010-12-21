@@ -47,7 +47,7 @@ public:
    * computed at the physical layer when is received a signal from the eNB
    * \param sinr list of SINR values
    */
-  CqiIdealControlMessage* CreateCqiFeedbacks (std::vector<double> sinr);
+  Ptr<CqiIdealControlMessage> CreateCqiFeedbacks (std::vector<double> sinr);
 
 private:
 };

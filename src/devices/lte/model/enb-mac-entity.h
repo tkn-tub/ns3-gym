@@ -41,6 +41,7 @@ public:
 
   EnbMacEntity (void);
   virtual ~EnbMacEntity (void);
+  virtual void DoDispose (void);
 
   /**
    * \brief Set the uplink packet scheduler
@@ -67,13 +68,13 @@ public:
    * \brief Receive a CQI ideal control message
    * \param msg the message
    */
-  void ReceiveCqiIdealControlMessage  (CqiIdealControlMessage* msg);
+  void ReceiveCqiIdealControlMessage  (Ptr<CqiIdealControlMessage> msg);
 
   /**
    * \brief Send the PDCCH control message
    * \param msg the message
    */
-  void SendPdcchMapIdealControlMessage  (PdcchMapIdealControlMessage* msg);
+  void SendPdcchMapIdealControlMessage  (Ptr<PdcchMapIdealControlMessage> msg);
 
 private:
   Ptr<PacketScheduler> m_uplinkScheduler;

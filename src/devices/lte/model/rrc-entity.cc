@@ -52,33 +52,55 @@ TypeId RrcEntity::GetTypeId (void)
 
 RrcEntity::RrcEntity ()
 {
- NS_LOG_FUNCTION (this); 
- CreateBearersContainer ();
+  NS_LOG_FUNCTION (this); 
+  m_downlinkGbrBearersContainer = new BearersContainer ();
+  m_downlinkNgbrBearersContainer = new BearersContainer ();
+  m_uplinkGbrBearersContainer = new BearersContainer ();
+  m_uplinkNgbrBearersContainer = new BearersContainer ();
+  
+  m_defaultBearer = CreateObject<RadioBearerInstance> ();
 }
 
 
 RrcEntity::~RrcEntity ()
 {
   NS_LOG_FUNCTION (this);
-  delete  m_downlinkGbrBearersContainer;
-  delete m_downlinkNgbrBearersContainer;
-  delete m_uplinkGbrBearersContainer;
-  delete m_uplinkNgbrBearersContainer;
-  m_defaultBearer = 0;
 }
 
 void
-RrcEntity::CreateBearersContainer ()
+RrcEntity::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
-  m_downlinkGbrBearersContainer = new BearersContainer ();
-  m_downlinkNgbrBearersContainer = new BearersContainer ();
-  m_uplinkGbrBearersContainer = new BearersContainer ();
-  m_uplinkNgbrBearersContainer = new BearersContainer ();
 
-  m_defaultBearer = CreateObject<RadioBearerInstance> ();
+  // RadioBearerInstance has a ref to RlcEntity 
+  // which has a ref to RrcEntity 
+  // which has a ref to RadioBearerInstance
+  // so we have to break this ref cycle by manually Disposing all RadioBearerInstances
+
+  DisposeAllElements (m_downlinkGbrBearersContainer);
+  DisposeAllElements (m_downlinkNgbrBearersContainer);
+  DisposeAllElements (m_uplinkGbrBearersContainer);
+  DisposeAllElements (m_uplinkNgbrBearersContainer);
+
+  delete m_downlinkGbrBearersContainer;
+  delete m_downlinkNgbrBearersContainer;
+  delete m_uplinkGbrBearersContainer;
+  delete m_uplinkNgbrBearersContainer;
+  
+  m_defaultBearer->Dispose ();
+  m_defaultBearer = 0;
+  Object::DoDispose ();
 }
 
+void 
+RrcEntity::DisposeAllElements (BearersContainer *c)
+{
+  for (BearersContainer::iterator it = c->begin (); it != c->end (); ++it)
+    {
+      (*it)->Dispose ();
+    }
+}
+    
 
 RrcEntity::BearersContainer*
 RrcEntity::GetDownlinkGbrBearers (void) const

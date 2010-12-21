@@ -64,6 +64,7 @@ public:
    */
   UeNetDevice (Ptr<Node> node, Ptr<LtePhy> phy, Ptr<EnbNetDevice> targetEnb);
   virtual ~UeNetDevice (void);
+  virtual void DoDispose ();
 
   /**
    * \brief Set the MAC entity
@@ -76,8 +77,6 @@ public:
    */
   Ptr<UeMacEntity> GetMacEntity (void);
 
-
-  void DoDispose (void);
 
   /**
    * \brief Initialize the UE

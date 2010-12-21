@@ -63,6 +63,13 @@ RlcEntity::~RlcEntity ()
   NS_LOG_FUNCTION (this);
 }
 
+void
+RlcEntity::DoDispose ()
+{
+  NS_LOG_FUNCTION (this);
+  m_device = 0;
+  m_bearer = 0;
+}
 
 void
 RlcEntity::SetDevice (Ptr<LteNetDevice> d)

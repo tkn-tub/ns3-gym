@@ -66,11 +66,11 @@ int main (int argc, char *argv[])
   Ptr<EnbNetDevice> enb;
   enb = enbDevs.Get (0)->GetObject<EnbNetDevice> ();
 
-  Ptr<UeNetDevice> ue[nbUE];
+  std::vector<Ptr<UeNetDevice> > ue (nbUE);
   for (int i = 0; i < nbUE; i++)
     {
-      ue[i] = ueDevs.Get (i)->GetObject<UeNetDevice> ();
-      lte.RegisterUeToTheEnb (ue[i], enb);
+      ue.at (i) = ueDevs.Get (i)->GetObject<UeNetDevice> ();
+      lte.RegisterUeToTheEnb (ue. at (i), enb);
     }
 
 
@@ -94,8 +94,8 @@ int main (int argc, char *argv[])
 
   for (int i = 0; i < nbUE; i++)
     {
-      ue[i]->GetPhy ()->SetDownlinkSubChannels (dlSubChannels);
-      ue[i]->GetPhy ()->SetUplinkSubChannels (ulSubChannels);
+      ue.at (i)->GetPhy ()->SetDownlinkSubChannels (dlSubChannels);
+      ue.at (i)->GetPhy ()->SetUplinkSubChannels (ulSubChannels);
     }
 
 
@@ -110,9 +110,9 @@ int main (int argc, char *argv[])
       ueMobility->SetPosition (Vector (30.0, 0.0, 0.0));
       ueMobility->SetVelocity (Vector (30.0, 0.0, 0.0));
 
-      lte.AddMobility (ue[i]->GetPhy (), ueMobility);
+      lte.AddMobility (ue.at (i)->GetPhy (), ueMobility);
 
-      lte.AddDownlinkChannelRealization (enbMobility, ueMobility, ue[i]->GetPhy ());
+      lte.AddDownlinkChannelRealization (enbMobility, ueMobility, ue.at (i)->GetPhy ());
     }
 
 
@@ -156,6 +156,7 @@ int main (int argc, char *argv[])
 
   enb->GetRrcEntity ()->AddDownlinkNgbrBearer (bearer);
 
+  bearer = 0;
 
   
 
@@ -172,6 +173,8 @@ int main (int argc, char *argv[])
   Simulator::Run ();
 
   Simulator::Destroy ();
+
+  delete ipcs;
 
   std::cout << "Done." << std::endl;
 

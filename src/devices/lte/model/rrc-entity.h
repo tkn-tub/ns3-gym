@@ -42,16 +42,12 @@ public:
 
   RrcEntity (void);
   virtual ~RrcEntity (void);
+  virtual void DoDispose (void);
 
   /**
    * \brief A cointainer of bearer with the same QoS requirements
    */
   typedef std::vector< Ptr<RadioBearerInstance> > BearersContainer;
-
-  /**
-   * \brief Creates all bearer containers for this node
-   */
-  void CreateBearersContainer (void);
 
   /**
    * \brief Get all GBR downlink bearers of this node
@@ -117,6 +113,9 @@ public:
   Ptr<RadioBearerInstance> GetDefaultBearer (void);
 
 private:
+
+  void DisposeAllElements (BearersContainer *c);
+
   BearersContainer* m_downlinkGbrBearersContainer;
   BearersContainer* m_downlinkNgbrBearersContainer;
 

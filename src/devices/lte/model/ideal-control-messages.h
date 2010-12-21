@@ -21,7 +21,7 @@
 #ifndef IDEAL_CONTROL_MESSAGES_H
 #define IDEAL_CONTROL_MESSAGES_H
 
-#include "ns3/object.h"
+#include "ns3/ptr.h"
 #include "ns3/simple-ref-count.h"
 #include <list>
 
@@ -38,8 +38,7 @@ class LteNetDevice;
 class IdealControlMessage : public SimpleRefCount<IdealControlMessage>
 {
 public:
-  static TypeId GetTypeId (void);
- 
+
   /**
    * The type of the message
    */
@@ -125,7 +124,6 @@ class LteNetDevice;
 class PdcchMapIdealControlMessage : public IdealControlMessage
 {
 public:
-  static TypeId GetTypeId (void);
 
   PdcchMapIdealControlMessage (void);
   virtual ~PdcchMapIdealControlMessage (void);
@@ -205,7 +203,6 @@ class LteNetDevice;
 class CqiIdealControlMessage : public IdealControlMessage
 {
 public:
-  static TypeId GetTypeId (void);
 
   CqiIdealControlMessage (void);
   virtual ~CqiIdealControlMessage (void);

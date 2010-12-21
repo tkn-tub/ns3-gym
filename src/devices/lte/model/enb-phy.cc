@@ -115,19 +115,19 @@ EnbLtePhy::CalcChannelQualityForUe (std::vector <double> sinr, Ptr<LteSpectrumPh
 }
 
 void
-EnbLtePhy::SendIdealControlMessage (IdealControlMessage* msg)
+EnbLtePhy::SendIdealControlMessage (Ptr<IdealControlMessage> msg)
 {
   NS_LOG_FUNCTION (this << msg);
 }
 
 
 void
-EnbLtePhy::ReceiveIdealControlMessage (IdealControlMessage* msg)
+EnbLtePhy::ReceiveIdealControlMessage (Ptr<IdealControlMessage> msg)
 {
   NS_LOG_FUNCTION (this << msg);
   if (msg->GetMessageType () == IdealControlMessage::CQI_FEEDBACKS)
     {
-      CqiIdealControlMessage* msg2 = dynamic_cast<CqiIdealControlMessage*> (msg);
+      Ptr<CqiIdealControlMessage> msg2 = DynamicCast<CqiIdealControlMessage> (msg);
       Ptr<EnbMacEntity> macEntity = GetDevice ()->GetObject<EnbNetDevice> ()->GetMacEntity ();
       macEntity->ReceiveCqiIdealControlMessage (msg2);
     }

@@ -87,10 +87,11 @@ public:
   typedef std::vector<MultipathForTimeDomain> MultipathForFrequencyDomain;
 
 private:
-  MultipathForFrequencyDomain *m_multipath;
 
-  UniformVariable *m_nbOfPaths;
-  UniformVariable *m_startJakes;
+  MultipathForFrequencyDomain m_multipath;
+
+  UniformVariable m_nbOfPaths;
+  UniformVariable m_startJakes;
 
   Ptr<LtePhy> m_phy;
 };

@@ -95,8 +95,8 @@ public:
    */
   void CreateCqiFeedbacks (std::vector<double> sinr);
 
-  virtual void SendIdealControlMessage (IdealControlMessage* msg);
-  virtual void ReceiveIdealControlMessage (IdealControlMessage* msg);
+  virtual void SendIdealControlMessage (Ptr<IdealControlMessage> msg);
+  virtual void ReceiveIdealControlMessage (Ptr<IdealControlMessage> msg);
 
 private:
   std::vector <int> m_subChannelsForTransmission;

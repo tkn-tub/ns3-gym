@@ -51,7 +51,6 @@ LtePhy::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::LtePhy")
     .SetParent<Object> ()
-    // .AddConstructor<LtePhy> ()
   ;
   return tid;
 }
@@ -59,6 +58,15 @@ LtePhy::GetTypeId (void)
 
 LtePhy::~LtePhy ()
 {
+}
+
+void
+LtePhy::DoDispose ()
+{
+  NS_LOG_FUNCTION (this);
+  m_downlinkSpectrumPhy = 0;
+  m_uplinkSpectrumPhy = 0;
+  m_netDevice = 0;
 }
 
 void
@@ -203,16 +211,6 @@ LtePhy::GetTxPower (void)
   NS_LOG_FUNCTION (this);
   return m_txPower;
 }
-
-
-void
-LtePhy::DoDispose ()
-{
-  NS_LOG_FUNCTION (this);
-  m_downlinkSpectrumPhy = 0;
-  m_uplinkSpectrumPhy = 0;
-}
-
 
 void
 LtePhy::SetTti (double tti)

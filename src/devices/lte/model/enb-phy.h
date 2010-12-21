@@ -70,12 +70,12 @@ public:
    * \brief Send the control message
    * \param msg the message to send
    */
-  virtual void SendIdealControlMessage (IdealControlMessage* msg);
+  virtual void SendIdealControlMessage (Ptr<IdealControlMessage> msg);
   /**
    * \brief Receive the control message
    * \param msg the received message
    */
-  virtual void ReceiveIdealControlMessage (IdealControlMessage* msg);
+  virtual void ReceiveIdealControlMessage (Ptr<IdealControlMessage> msg);
 
 
   /**

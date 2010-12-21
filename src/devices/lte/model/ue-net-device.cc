@@ -88,6 +88,14 @@ UeNetDevice::UeNetDevice (Ptr<Node> node, Ptr<LtePhy> phy, Ptr<EnbNetDevice> tar
 UeNetDevice::~UeNetDevice (void)
 {
   NS_LOG_FUNCTION (this);
+}
+
+void
+UeNetDevice::DoDispose (void)
+{
+  NS_LOG_FUNCTION (this);
+  m_targetEnb = 0;
+  m_macEntity->Dispose ();
   m_macEntity = 0;
   LteNetDevice::DoDispose ();
 }
@@ -119,14 +127,6 @@ UeNetDevice::GetMacEntity (void)
   NS_LOG_FUNCTION (this);
   return m_macEntity;
 }
-
-void
-UeNetDevice::DoDispose (void)
-{
-  NS_LOG_FUNCTION (this);
-  LteNetDevice::DoDispose ();
-}
-
 
 void
 UeNetDevice::Start (void)

@@ -62,7 +62,7 @@ public:
   double GetValue (void);
 
 private:
-  LogNormalVariable* m_randVariable;
+  LogNormalVariable m_randVariable;
   double m_shadowingValue;
 };
 

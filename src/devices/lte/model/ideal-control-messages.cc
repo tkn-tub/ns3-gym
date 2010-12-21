@@ -30,8 +30,6 @@ NS_LOG_COMPONENT_DEFINE ("IdealControlMessage");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED ( IdealControlMessage);
-
 IdealControlMessage::IdealControlMessage (void)
   : m_source (0),
     m_destination (0)
@@ -41,15 +39,8 @@ IdealControlMessage::IdealControlMessage (void)
 
 IdealControlMessage::~IdealControlMessage (void)
 {
-}
-
-TypeId
-IdealControlMessage::GetTypeId (void)
-{
-  static TypeId tid = TypeId ("ns3::IdealControlMessage")
-    .SetParent<Object> ()
-  ;
-  return tid;
+  m_source = 0;
+  m_destination = 0;
 }
 
 
@@ -98,8 +89,6 @@ IdealControlMessage::GetMessageType (void)
 
 // ----------------------------------------------------------------------------------------------------------
 
-NS_OBJECT_ENSURE_REGISTERED ( PdcchMapIdealControlMessage);
-
 PdcchMapIdealControlMessage::PdcchMapIdealControlMessage (void)
 {
   m_idealPdcchMessage =  new IdealPdcchMessage ();
@@ -109,19 +98,8 @@ PdcchMapIdealControlMessage::PdcchMapIdealControlMessage (void)
 
 PdcchMapIdealControlMessage::~PdcchMapIdealControlMessage (void)
 {
- delete  m_idealPdcchMessage;
+  delete m_idealPdcchMessage;
 }
-
-
-TypeId
-PdcchMapIdealControlMessage::GetTypeId (void)
-{
-  static TypeId tid = TypeId ("ns3::PdcchMapIdealControlMessage")
-    .SetParent<IdealControlMessage> ()
-  ;
-  return tid;
-}
-
 
 void
 PdcchMapIdealControlMessage::AddNewRecord (Direction direction,
@@ -141,7 +119,6 @@ PdcchMapIdealControlMessage::GetMessage (void)
 
 // ----------------------------------------------------------------------------------------------------------
 
-NS_OBJECT_ENSURE_REGISTERED ( CqiIdealControlMessage);
 
 CqiIdealControlMessage::CqiIdealControlMessage (void)
 {
@@ -154,17 +131,6 @@ CqiIdealControlMessage::~CqiIdealControlMessage (void)
 {
   delete m_cqiFeedbacks;
 }
-
-
-TypeId
-CqiIdealControlMessage::GetTypeId (void)
-{
-  static TypeId tid = TypeId ("ns3::CqiIdealControlMessage")
-    .SetParent<IdealControlMessage> ()
-  ;
-  return tid;
-}
-
 
 void
 CqiIdealControlMessage::AddNewRecord (int subChannel, double cqi)

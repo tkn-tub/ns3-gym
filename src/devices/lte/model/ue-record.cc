@@ -31,10 +31,6 @@ UeRecord::UeRecord (void)
   NS_LOG_FUNCTION (this);
 }
 
-UeRecord::~UeRecord (void)
-{
-}
-
 UeRecord::UeRecord (Ptr<NetDevice> ue, Ptr<NetDevice> enb)
   :  m_ue (ue),
     m_enb (enb)
@@ -42,6 +38,12 @@ UeRecord::UeRecord (Ptr<NetDevice> ue, Ptr<NetDevice> enb)
   NS_LOG_FUNCTION (this << ue << enb);
 }
 
+UeRecord::~UeRecord (void)
+{
+  NS_LOG_FUNCTION (this);
+  m_ue = 0;
+  m_enb = 0;
+}
 
 void
 UeRecord::SetUe (Ptr<NetDevice> ue)

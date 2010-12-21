@@ -58,8 +58,7 @@ public:
   EnbNetDevice (Ptr<Node> node, Ptr<LtePhy> phy);
 
   virtual ~EnbNetDevice (void);
-
-  void DoDispose (void);
+  virtual void DoDispose (void);
 
   /**
    * \brief Initialize all parameters of this device

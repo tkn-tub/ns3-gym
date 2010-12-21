@@ -56,7 +56,7 @@ UeMacEntity::~UeMacEntity ()
 {
 }
 
-CqiIdealControlMessage* 
+Ptr<CqiIdealControlMessage> 
 UeMacEntity::CreateCqiFeedbacks (std::vector<double> sinr)
 {
   NS_LOG_FUNCTION (this);
@@ -70,7 +70,7 @@ UeMacEntity::CreateCqiFeedbacks (std::vector<double> sinr)
 
 
   // CREATE CqiIdealControlMessage
-  CqiIdealControlMessage* msg = new CqiIdealControlMessage ();
+  Ptr<CqiIdealControlMessage> msg = Create<CqiIdealControlMessage> ();
 
   msg->SetSourceDevice (thisDevice);
   msg->SetDestinationDevice (remoteDevice);

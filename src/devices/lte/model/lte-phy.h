@@ -178,12 +178,12 @@ public:
    * \brief Send SendIdealControlMessage (PDCCH map, CQI feedbacks) using the ideal control channel
    * \param msg the Ideal Control Message to send
    */
-  virtual void SendIdealControlMessage (IdealControlMessage* msg) = 0;
+  virtual void SendIdealControlMessage (Ptr<IdealControlMessage> msg) = 0;
   /**
    * \brief Receive SendIdealControlMessage (PDCCH map, CQI feedbacks) using the ideal control channel
    * \param msg the Ideal Control Message to receive
    */
-  virtual void ReceiveIdealControlMessage (IdealControlMessage* msg) = 0;
+  virtual void ReceiveIdealControlMessage (Ptr<IdealControlMessage> msg) = 0;
 
 
   /**

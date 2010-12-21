@@ -52,16 +52,30 @@ RadioBearerInstance::RadioBearerInstance ()
     m_rlcEntity (CreateObject<RlcEntity> ()),
     m_ipcsClassifierRecord (0)
 {
+  NS_LOG_FUNCTION (this);
   m_rlcEntity->SetRadioBearer (this);
 }
 
 
 RadioBearerInstance::~RadioBearerInstance ()
 {
+  NS_LOG_FUNCTION (this);
   m_rlcEntity = 0;
   m_queue = 0;
   m_ipcsClassifierRecord = 0;
 }
+
+
+void
+RadioBearerInstance::DoDispose (void)
+{
+  NS_LOG_FUNCTION (this);
+  m_queue = 0;
+  m_qosParameters = 0;
+  m_rlcEntity->Dispose ();
+  m_rlcEntity = 0;
+}
+
 
 void
 RadioBearerInstance::SetBearerDirection (BearerDirection direction)
@@ -104,13 +118,6 @@ RadioBearerInstance::GetQosParameters (void)
   return m_qosParameters;
 }
 
-
-void
-RadioBearerInstance::DoDispose (void)
-{
-  NS_LOG_FUNCTION (this);
-  m_queue = 0;
-}
 
 
 Ptr<LteMacQueue>
@@ -178,6 +185,7 @@ void
 RadioBearerInstance::SetIpcsClassifierRecord (IpcsClassifierRecord* c)
 {
   NS_LOG_FUNCTION (this << c);
+  NS_ASSERT (m_ipcsClassifierRecord == 0);
   m_ipcsClassifierRecord = c;
 }  
   

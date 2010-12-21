@@ -153,13 +153,12 @@ UeLtePhy::CreateCqiFeedbacks (std::vector<double> sinr)
   NS_LOG_FUNCTION (this);
   Ptr<UeNetDevice> thisDevice = GetDevice ()->GetObject<UeNetDevice> ();
   Ptr<UeMacEntity> mac = thisDevice->GetMacEntity ()->GetObject<UeMacEntity> ();
-  CqiIdealControlMessage* msg = mac->CreateCqiFeedbacks (sinr);
+  Ptr<CqiIdealControlMessage> msg = mac->CreateCqiFeedbacks (sinr);
   SendIdealControlMessage (msg);
-  delete msg;
 }
 
 void
-UeLtePhy::SendIdealControlMessage (IdealControlMessage* msg)
+UeLtePhy::SendIdealControlMessage (Ptr<IdealControlMessage> msg)
 {
   NS_LOG_FUNCTION (this << msg);
   Ptr<LtePhy> phy = msg->GetDestinationDevice ()->GetPhy ();
@@ -168,13 +167,13 @@ UeLtePhy::SendIdealControlMessage (IdealControlMessage* msg)
 
 
 void
-UeLtePhy::ReceiveIdealControlMessage (IdealControlMessage* msg)
+UeLtePhy::ReceiveIdealControlMessage (Ptr<IdealControlMessage> msg)
 {
   NS_LOG_FUNCTION (this << msg);
 
   if (msg->GetMessageType () == IdealControlMessage::ALLOCATION_MAP)
     {
-      PdcchMapIdealControlMessage* msg2 = dynamic_cast<PdcchMapIdealControlMessage*> (msg);
+      Ptr<PdcchMapIdealControlMessage> msg2 = DynamicCast<PdcchMapIdealControlMessage> (msg);
 
       std::vector <int> ulSubChennels;
       std::vector <int> dlSubChennels;

@@ -58,6 +58,11 @@ EnbMacEntity::EnbMacEntity ()
 
 EnbMacEntity::~EnbMacEntity ()
 {
+}
+
+void
+EnbMacEntity::DoDispose ()
+{
   m_downlinkScheduler = 0;
   m_uplinkScheduler = 0;
   MacEntity::DoDispose ();
@@ -97,7 +102,7 @@ EnbMacEntity::GetDownlinkPacketScheduler (void)
 
 
 void
-EnbMacEntity::ReceiveCqiIdealControlMessage  (CqiIdealControlMessage* msg)
+EnbMacEntity::ReceiveCqiIdealControlMessage  (Ptr<CqiIdealControlMessage> msg)
 {
   NS_LOG_FUNCTION (this << msg);
   NS_LOG_FUNCTION (this << msg->GetSourceDevice () << msg->GetDestinationDevice ());
@@ -124,7 +129,7 @@ EnbMacEntity::ReceiveCqiIdealControlMessage  (CqiIdealControlMessage* msg)
 
 
 void
-EnbMacEntity::SendPdcchMapIdealControlMessage  (PdcchMapIdealControlMessage* msg)
+EnbMacEntity::SendPdcchMapIdealControlMessage  (Ptr<PdcchMapIdealControlMessage> msg)
 {
   NS_LOG_FUNCTION (this << msg);
 

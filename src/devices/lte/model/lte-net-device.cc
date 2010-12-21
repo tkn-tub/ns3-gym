@@ -69,14 +69,12 @@ TypeId LteNetDevice::GetTypeId (void)
 LteNetDevice::LteNetDevice (void)
 {
   NS_LOG_FUNCTION (this);
-  m_rrcEntity = CreateObject<RrcEntity> ();
 }
 
 
 LteNetDevice::~LteNetDevice (void)
 {
   NS_LOG_FUNCTION (this);
-  m_rrcEntity = 0;
 }
 
 
@@ -85,9 +83,10 @@ LteNetDevice::DoDispose (void)
 {
   NS_LOG_FUNCTION (this);
 
-  m_phy->DoDispose ();
+  m_phy->Dispose ();
   m_phy = 0;
   m_node = 0;
+  m_rrcEntity->Dispose ();
   m_rrcEntity = 0;
   m_phyMacTxStartCallback = MakeNullCallback< bool, Ptr<Packet> > ();
   NetDevice::DoDispose ();

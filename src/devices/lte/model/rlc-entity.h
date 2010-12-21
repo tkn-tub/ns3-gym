@@ -47,6 +47,7 @@ public:
    */
   RlcEntity (Ptr<LteNetDevice> d);
   virtual ~RlcEntity (void);
+  virtual void DoDispose (void);
 
 
   /** 

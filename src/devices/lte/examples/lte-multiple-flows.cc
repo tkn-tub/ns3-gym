@@ -231,6 +231,10 @@ int main (int argc, char *argv[])
 
   Simulator::Destroy ();
 
+  delete ipcs_1;
+  delete ipcs_2;
+  delete ipcs_3;
+
   std::cout << "Done." << std::endl;
 
   return 0;

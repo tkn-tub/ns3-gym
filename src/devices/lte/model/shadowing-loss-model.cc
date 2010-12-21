@@ -30,18 +30,18 @@ namespace ns3 {
 NS_OBJECT_ENSURE_REGISTERED (ShadowingLossModel);
 
 ShadowingLossModel::ShadowingLossModel ()
+  : m_randVariable (.0, 8.)
 {
-  m_randVariable = new LogNormalVariable (.0, 8.);
-  SetValue (m_randVariable->GetValue ());
+  SetValue (m_randVariable.GetValue ());
   SetLastUpdate ();
   SetSamplingPeriod (0.5); // defauld value
 }
 
 
 ShadowingLossModel::ShadowingLossModel (double mu, double sigma, double samplingPeriod)
+  : m_randVariable (mu, sigma)
 {
-  m_randVariable = new LogNormalVariable (mu, sigma);
-  SetValue (m_randVariable->GetValue ());
+  SetValue (m_randVariable.GetValue ());
   SetLastUpdate ();
   SetSamplingPeriod (samplingPeriod); // defauld value
 }
@@ -60,7 +60,6 @@ ShadowingLossModel::GetTypeId (void)
 
 ShadowingLossModel::~ShadowingLossModel ()
 {
-  delete m_randVariable;
 }
 
 
@@ -78,7 +77,7 @@ ShadowingLossModel::GetValue (void)
   NS_LOG_FUNCTION (this);
   if (NeedForUpdate ())
     {
-      double sh = m_randVariable->GetValue ();
+      double sh = m_randVariable.GetValue ();
       SetValue (sh);
       SetLastUpdate ();
     }

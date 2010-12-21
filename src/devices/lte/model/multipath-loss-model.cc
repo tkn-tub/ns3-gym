@@ -56,13 +56,12 @@ namespace ns3 {
 NS_OBJECT_ENSURE_REGISTERED (JakesFadingLossModel);
 
 JakesFadingLossModel::JakesFadingLossModel ()
+  : m_nbOfPaths (1, 4),
+    m_startJakes (1, 2000),
+    m_phy (0)
 {
   NS_LOG_FUNCTION (this);
   SetSamplingPeriod (0.5); // default value
-  m_multipath = new MultipathForFrequencyDomain ();
-  m_nbOfPaths = new UniformVariable (1, 4);
-  m_startJakes = new UniformVariable (1, 2000);
-  m_phy = 0;
 }
 
 
@@ -79,9 +78,7 @@ JakesFadingLossModel::GetTypeId (void)
 
 JakesFadingLossModel::~JakesFadingLossModel ()
 {
- delete  m_multipath;
- delete  m_nbOfPaths;
- delete  m_startJakes;
+  m_phy  = 0;
 }
 
 
@@ -108,7 +105,7 @@ JakesFadingLossModel::SetValue (void)
 {
   NS_LOG_FUNCTION (this);
 
-  m_multipath->clear ();
+  m_multipath.clear ();
 
   int downlinkSubChannels = GetPhy ()->GetDownlinkSubChannels ().size ();
 
@@ -156,12 +153,12 @@ JakesFadingLossModel::SetValue (void)
 
   // number of path = M
   // x = 1 -> M=6, x = 2 -> M=8, x = 3 -> M=10, x = 4 -> M=12
-  int x = m_nbOfPaths->GetValue ();
+  int x = m_nbOfPaths.GetValue ();
 
   for (int i = 0; i < downlinkSubChannels; i++)
     {
       // StartJakes allow us to select a window of 0.5ms into the Jakes realization lasting 3s.
-      int startJakes = m_startJakes->GetValue ();
+      int startJakes = m_startJakes.GetValue ();
 
       MultipathForTimeDomain multipathForTimeDomain;
 
@@ -302,7 +299,7 @@ JakesFadingLossModel::SetValue (void)
         }
 
 
-      m_multipath->push_back (multipathForTimeDomain);
+      m_multipath.push_back (multipathForTimeDomain);
     }
 
   SetLastUpdate ();
@@ -323,9 +320,9 @@ JakesFadingLossModel::GetValue (int subChannel)
   int index = now_ms - lastUpdate_ms;
 
   NS_LOG_FUNCTION (this << subChannel << now_ms
-                        << lastUpdate_ms << index << m_multipath->at (subChannel).at (index));
+                        << lastUpdate_ms << index << m_multipath.at (subChannel).at (index));
 
-  return m_multipath->at (subChannel).at (index);
+  return m_multipath.at (subChannel).at (index);
 }
 
 

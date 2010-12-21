@@ -53,15 +53,7 @@ TypeId EnbNetDevice::GetTypeId (void)
   static TypeId
   tid =
     TypeId ("ns3::EnbNetDevice")
-    .SetParent<LteNetDevice> ()
-
-/*
-    .AddAttribute ("UeManager",
-                   "The UE manager attached to this device.",
-                   PointerValue (),
-                   MakePointerAccessor (&EnbNetDevice::GetUeManager,
-                                        &EnbNetDevice::SetUeManager),
-                   MakePointerChecker<UeManager> ())*/;
+    .SetParent<LteNetDevice> ();
   return tid;
 }
 
@@ -82,10 +74,21 @@ EnbNetDevice::EnbNetDevice (Ptr<Node> node, Ptr<LtePhy> phy)
 EnbNetDevice::~EnbNetDevice (void)
 {
   NS_LOG_FUNCTION (this);
+}
+
+void
+EnbNetDevice::DoDispose ()
+{
+  NS_LOG_FUNCTION (this);
+  m_ueManager->Dispose ();
   m_ueManager = 0;
+
+  m_macEntity->Dispose ();
   m_macEntity = 0;
+
   LteNetDevice::DoDispose ();
 }
+
 
 void
 EnbNetDevice::InitEnbNetDevice (void)
@@ -98,17 +101,6 @@ EnbNetDevice::InitEnbNetDevice (void)
   SetNode (0);
   SetPhy (0);
 }
-
-
-void
-EnbNetDevice::DoDispose (void)
-{
-  NS_LOG_FUNCTION (this);
-  LteNetDevice::DoDispose ();
-  m_ueManager = 0;
-  m_macEntity = 0;
-}
-
 
 void
 EnbNetDevice::Start (void)

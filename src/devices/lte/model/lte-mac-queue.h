@@ -101,8 +101,8 @@ public:
    */
   uint32_t GetNBytes (void) const;
   /**
-   * \brief Get the length of the queue with MAC + RLC + CRC overheads
-   * \return the length of the queue with MAC + RLC + CRC overheads
+   * \brief Get the length of the queue with MAC + RLC + CRC overhead
+   * \return the length of the queue with MAC + RLC + CRC overhead
    */
   uint32_t GetQueueLengthWithMACOverhead (void);
 

@@ -49,17 +49,15 @@ PacketScheduler::PacketScheduler (Ptr<EnbNetDevice> enb)
 }
 
 
-/*
+
 TypeId
 PacketScheduler::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::PacketScheduler")
     .SetParent<Object> ()
-    .AddConstructor<PacketScheduler> ()
   ;
   return tid;
 }
-*/
 
 
 PacketScheduler::~PacketScheduler ()
@@ -67,6 +65,14 @@ PacketScheduler::~PacketScheduler ()
   NS_LOG_FUNCTION (this);
 }
 
+void
+PacketScheduler::DoDispose ()
+{
+  NS_LOG_FUNCTION (this);
+  m_enb = 0;
+  m_macEntity = 0;
+  Object::DoDispose ();
+}
 
 void
 PacketScheduler::SetDevice (Ptr<EnbNetDevice> enb)

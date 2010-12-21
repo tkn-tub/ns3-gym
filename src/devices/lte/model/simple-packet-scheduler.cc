@@ -44,14 +44,13 @@ NS_OBJECT_ENSURE_REGISTERED (SimplePacketScheduler);
 SimplePacketScheduler::SimplePacketScheduler ()
 {
   NS_LOG_FUNCTION (this);
-  SetDevice (0);
 }
 
 
 SimplePacketScheduler::SimplePacketScheduler (Ptr<EnbNetDevice> enb)
+  : PacketScheduler (enb)
 {
   NS_LOG_FUNCTION (this << enb);
-  SetDevice (enb);
 }
 
 
@@ -80,7 +79,7 @@ SimplePacketScheduler::DoRunPacketScheduler (void)
 
 
   Ptr<PacketBurst> pb = CreateObject<PacketBurst> ();
-  PdcchMapIdealControlMessage* msg = new PdcchMapIdealControlMessage ();
+  Ptr<PdcchMapIdealControlMessage> msg = Create<PdcchMapIdealControlMessage> ();
 
   
   //This scheduler takes one packet from each bearer
@@ -140,8 +139,6 @@ SimplePacketScheduler::DoRunPacketScheduler (void)
    enb->SetPacketToSend (pb);
 
    GetMacEntity ()->GetObject<EnbMacEntity> ()->SendPdcchMapIdealControlMessage (msg);
-
-   delete msg;
 
    enb->StartTransmission ();
 }

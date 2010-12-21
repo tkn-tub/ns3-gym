@@ -151,7 +151,7 @@ int main (int argc, char** argv)
 
   // ****** simulate a packet transmission in the downlink ******
 
-  Ptr<PacketBurst> pb = Create<PacketBurst> ();
+  Ptr<PacketBurst> pb = CreateObject<PacketBurst> ();
   Ptr<Packet> p1 = Create<Packet> (500);
   Ptr<Packet> p2 = Create<Packet> (500);
   pb->AddPacket (p1);

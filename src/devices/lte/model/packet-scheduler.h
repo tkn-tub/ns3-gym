@@ -49,8 +49,9 @@ public:
    */
   PacketScheduler (Ptr<EnbNetDevice> enb);
   virtual ~PacketScheduler ();
+  virtual void DoDispose (void);
 
-  // static TypeId GetTypeId (void);
+  static TypeId GetTypeId (void);
 
   /**
    * \brief Set the device where the scheduler works
