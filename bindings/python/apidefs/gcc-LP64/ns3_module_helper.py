@@ -838,6 +838,26 @@ def register_Ns3Ipv4RoutingHelper_methods(root_module, cls):
                    'ns3::Ptr< ns3::Ipv4RoutingProtocol >', 
                    [param('ns3::Ptr< ns3::Node >', 'node')], 
                    is_pure_virtual=True, is_const=True, is_virtual=True)
+    ## ipv4-routing-helper.h: void ns3::Ipv4RoutingHelper::PrintRoutingTableAllAt(ns3::Time printTime, ns3::Ptr<ns3::OutputStreamWrapper> stream) const [member function]
+    cls.add_method('PrintRoutingTableAllAt', 
+                   'void', 
+                   [param('ns3::Time', 'printTime'), param('ns3::Ptr< ns3::OutputStreamWrapper >', 'stream')], 
+                   is_const=True)
+    ## ipv4-routing-helper.h: void ns3::Ipv4RoutingHelper::PrintRoutingTableAllEvery(ns3::Time printInterval, ns3::Ptr<ns3::OutputStreamWrapper> stream) const [member function]
+    cls.add_method('PrintRoutingTableAllEvery', 
+                   'void', 
+                   [param('ns3::Time', 'printInterval'), param('ns3::Ptr< ns3::OutputStreamWrapper >', 'stream')], 
+                   is_const=True)
+    ## ipv4-routing-helper.h: void ns3::Ipv4RoutingHelper::PrintRoutingTableAt(ns3::Time printTime, ns3::Ptr<ns3::Node> node, ns3::Ptr<ns3::OutputStreamWrapper> stream) const [member function]
+    cls.add_method('PrintRoutingTableAt', 
+                   'void', 
+                   [param('ns3::Time', 'printTime'), param('ns3::Ptr< ns3::Node >', 'node'), param('ns3::Ptr< ns3::OutputStreamWrapper >', 'stream')], 
+                   is_const=True)
+    ## ipv4-routing-helper.h: void ns3::Ipv4RoutingHelper::PrintRoutingTableEvery(ns3::Time printInterval, ns3::Ptr<ns3::Node> node, ns3::Ptr<ns3::OutputStreamWrapper> stream) const [member function]
+    cls.add_method('PrintRoutingTableEvery', 
+                   'void', 
+                   [param('ns3::Time', 'printInterval'), param('ns3::Ptr< ns3::Node >', 'node'), param('ns3::Ptr< ns3::OutputStreamWrapper >', 'stream')], 
+                   is_const=True)
     return
 
 def register_Ns3Ipv6AddressHelper_methods(root_module, cls):

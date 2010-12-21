@@ -477,6 +477,11 @@ def register_Ns3AodvRoutingProtocol_methods(root_module, cls):
                    'void', 
                    [param('uint32_t', 'interface'), param('ns3::Ipv4InterfaceAddress', 'address')], 
                    is_virtual=True)
+    ## aodv-routing-protocol.h: void ns3::aodv::RoutingProtocol::PrintRoutingTable(ns3::Ptr<ns3::OutputStreamWrapper> stream) const [member function]
+    cls.add_method('PrintRoutingTable', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::OutputStreamWrapper >', 'stream')], 
+                   is_const=True, is_virtual=True)
     ## aodv-routing-protocol.h: bool ns3::aodv::RoutingProtocol::RouteInput(ns3::Ptr<ns3::Packet const> p, ns3::Ipv4Header const & header, ns3::Ptr<const ns3::NetDevice> idev, ns3::Callback<void, ns3::Ptr<ns3::Ipv4Route>, ns3::Ptr<ns3::Packet const>, ns3::Ipv4Header const&, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> ucb, ns3::Callback<void,ns3::Ptr<ns3::Ipv4MulticastRoute>,ns3::Ptr<const ns3::Packet>,const ns3::Ipv4Header&,ns3::empty,ns3::empty,ns3::empty,ns3::empty,ns3::empty,ns3::empty> mcb, ns3::Callback<void,ns3::Ptr<const ns3::Packet>,const ns3::Ipv4Header&,unsigned int,ns3::empty,ns3::empty,ns3::empty,ns3::empty,ns3::empty,ns3::empty> lcb, ns3::Callback<void, ns3::Ptr<ns3::Packet const>, ns3::Ipv4Header const&, ns3::Socket::SocketErrno, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> ecb) [member function]
     cls.add_method('RouteInput', 
                    'bool', 
@@ -566,10 +571,11 @@ def register_Ns3AodvRoutingTable_methods(root_module, cls):
     cls.add_method('MarkLinkAsUnidirectional', 
                    'bool', 
                    [param('ns3::Ipv4Address', 'neighbor'), param('ns3::Time', 'blacklistTimeout')])
-    ## aodv-rtable.h: void ns3::aodv::RoutingTable::Print(std::ostream & os) [member function]
+    ## aodv-rtable.h: void ns3::aodv::RoutingTable::Print(ns3::Ptr<ns3::OutputStreamWrapper> stream) const [member function]
     cls.add_method('Print', 
                    'void', 
-                   [param('std::ostream &', 'os')])
+                   [param('ns3::Ptr< ns3::OutputStreamWrapper >', 'stream')], 
+                   is_const=True)
     ## aodv-rtable.h: void ns3::aodv::RoutingTable::Purge() [member function]
     cls.add_method('Purge', 
                    'void', 
@@ -692,10 +698,10 @@ def register_Ns3AodvRoutingTableEntry_methods(root_module, cls):
     cls.add_method('LookupPrecursor', 
                    'bool', 
                    [param('ns3::Ipv4Address', 'id')])
-    ## aodv-rtable.h: void ns3::aodv::RoutingTableEntry::Print(std::ostream & os) const [member function]
+    ## aodv-rtable.h: void ns3::aodv::RoutingTableEntry::Print(ns3::Ptr<ns3::OutputStreamWrapper> stream) const [member function]
     cls.add_method('Print', 
                    'void', 
-                   [param('std::ostream &', 'os')], 
+                   [param('ns3::Ptr< ns3::OutputStreamWrapper >', 'stream')], 
                    is_const=True)
     ## aodv-rtable.h: void ns3::aodv::RoutingTableEntry::SetBalcklistTimeout(ns3::Time t) [member function]
     cls.add_method('SetBalcklistTimeout', 
