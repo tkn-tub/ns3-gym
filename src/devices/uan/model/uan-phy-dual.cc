@@ -16,6 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Leonard Tracy <lentracy@gmail.com>
+ *         Andrea Sacco <andrea.sacco85@gmail.com>
  */
 
 #include "uan-phy.h"
@@ -234,6 +235,18 @@ UanPhyDual::GetTypeId (void)
 }
 
 void
+UanPhyDual::SetEnergyModelCallback (DeviceEnergyModel::ChangeStateCallback callback)
+{
+  NS_LOG_DEBUG ("Not Implemented");
+}
+
+void
+UanPhyDual::EnergyDepletionHandler ()
+{
+  NS_LOG_DEBUG ("Not Implemented");
+}
+
+void
 UanPhyDual::SendPacket (Ptr<Packet> pkt, uint32_t modeNum)
 {
   if (modeNum <= m_phy1->GetNModes () - 1)
@@ -443,7 +456,11 @@ UanPhyDual::IsPhy2Tx (void)
 {
   return m_phy2->IsStateTx ();
 }
-
+bool
+UanPhyDual::IsStateSleep (void)
+{
+  return m_phy1->IsStateSleep () && m_phy2->IsStateSleep ();
+}
 bool
 UanPhyDual::IsStateIdle (void)
 {
@@ -452,7 +469,7 @@ UanPhyDual::IsStateIdle (void)
 bool
 UanPhyDual::IsStateBusy (void)
 {
-  return !IsStateIdle ();
+  return !IsStateIdle () || !IsStateSleep ();
 }
 bool
 UanPhyDual::IsStateRx (void)

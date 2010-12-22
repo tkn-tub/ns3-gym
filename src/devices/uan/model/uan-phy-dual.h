@@ -16,6 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Leonard Tracy <lentracy@gmail.com>
+ *         Andrea Sacco <andrea.sacco85@gmail.com>
  */
 
 #ifndef UANPHYDUAL_H
@@ -76,6 +77,8 @@ public:
 
   static TypeId GetTypeId ();
 
+  virtual void SetEnergyModelCallback (DeviceEnergyModel::ChangeStateCallback callback);
+  virtual void EnergyDepletionHandler (void);
   virtual void SendPacket (Ptr<Packet> pkt, uint32_t modeNum);
 
   /**
@@ -98,6 +101,7 @@ public:
   virtual double GetTxPowerDb (void);
   virtual double GetRxThresholdDb (void);
   virtual double GetCcaThresholdDb (void);
+  virtual bool IsStateSleep (void);
   virtual bool IsStateIdle (void);
   virtual bool IsStateBusy (void);
   virtual bool IsStateRx (void);

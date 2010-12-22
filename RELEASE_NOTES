@@ -79,6 +79,13 @@ New user-visible features
 
    - New methods to print IPv4 routing tables to an output stream.
 
+   - Energy support for UAN module and Li-Ion energy model.
+     Now each network node can have an associated energy source
+     from which it consumes energy. The user can specify a custom
+     energy model for the underwater transducer, with default values
+     set for WHOI acoustic transducer. Li-Ion battery model added
+     into energy models folder.
+
 Bugs fixed
 ----------
 The following lists many of the bugs fixed or small feature additions

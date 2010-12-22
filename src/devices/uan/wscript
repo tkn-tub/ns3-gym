@@ -1,13 +1,13 @@
 ## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
 
 def build(bld):
-    module = bld.create_ns3_module('uan', ['node'])
+    module = bld.create_ns3_module('uan', ['node', 'energy'])
     module.source = [
         'model/uan-channel.cc',
         'model/uan-phy-gen.cc',
         'model/uan-transducer-hd.cc',
         'model/uan-address.cc',
-	      'model/uan-net-device.cc',
+	    'model/uan-net-device.cc',
         'model/uan-tx-mode.cc',
         'model/uan-prop-model.cc',
         'model/uan-prop-model-ideal.cc',
@@ -22,7 +22,9 @@ def build(bld):
         'model/uan-mac-rc-gw.cc',
         'model/uan-phy.cc',
         'model/uan-noise-model.cc',
+        'model/acoustic-modem-energy-model.cc',
         'helper/uan-helper.cc',
+        'helper/acoustic-modem-energy-model-helper.cc',
         'test/uan-test.cc',
         ]
     headers = bld.new_task_gen('ns3header')
@@ -48,7 +50,9 @@ def build(bld):
         'model/uan-phy-dual.h',
         'model/uan-header-rc.h',
         'model/uan-mac-rc.h',
+        'model/acoustic-modem-energy-model.h',
         'helper/uan-helper.h',
+        'helper/acoustic-modem-energy-model-helper.h',
         'model/uan-mac-rc-gw.h',
         ]
 

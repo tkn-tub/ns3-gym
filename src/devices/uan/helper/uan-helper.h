@@ -27,17 +27,17 @@
 #include "ns3/object-factory.h"
 #include "ns3/node-container.h"
 #include "ns3/net-device-container.h"
+#include "ns3/uan-net-device.h"
 
-namespace ns3
-{
+namespace ns3 {
 
 class UanChannel;
 
 class UanHelper
 {
 public:
-  UanHelper();
-  virtual ~UanHelper();
+  UanHelper ();
+  virtual ~UanHelper ();
 
   /**
    * \param type the type of ns3::UanMac to create.
@@ -128,14 +128,14 @@ public:
    * in the requested transducer.
    */
   void SetTransducer (std::string type,
-               std::string n0 = "", const AttributeValue &v0 = EmptyAttributeValue (),
-               std::string n1 = "", const AttributeValue &v1 = EmptyAttributeValue (),
-               std::string n2 = "", const AttributeValue &v2 = EmptyAttributeValue (),
-               std::string n3 = "", const AttributeValue &v3 = EmptyAttributeValue (),
-               std::string n4 = "", const AttributeValue &v4 = EmptyAttributeValue (),
-               std::string n5 = "", const AttributeValue &v5 = EmptyAttributeValue (),
-               std::string n6 = "", const AttributeValue &v6 = EmptyAttributeValue (),
-               std::string n7 = "", const AttributeValue &v7 = EmptyAttributeValue ());
+                      std::string n0 = "", const AttributeValue &v0 = EmptyAttributeValue (),
+                      std::string n1 = "", const AttributeValue &v1 = EmptyAttributeValue (),
+                      std::string n2 = "", const AttributeValue &v2 = EmptyAttributeValue (),
+                      std::string n3 = "", const AttributeValue &v3 = EmptyAttributeValue (),
+                      std::string n4 = "", const AttributeValue &v4 = EmptyAttributeValue (),
+                      std::string n5 = "", const AttributeValue &v5 = EmptyAttributeValue (),
+                      std::string n6 = "", const AttributeValue &v6 = EmptyAttributeValue (),
+                      std::string n7 = "", const AttributeValue &v7 = EmptyAttributeValue ());
   /**
    * \param os output stream
    * \param nodeid the id of the node to generate ascii output for.
@@ -205,7 +205,21 @@ public:
    */
   NetDeviceContainer Install (NodeContainer c, Ptr<UanChannel> channel) const;
 
+  /**
+   * \param node a node where to install the uan components
+   *
+   * Create a default uan stack with:
+   * - default channel, ideal propagation and default noise model
+   * - default physical layer, with UanPhyGen
+   * - default transducer, half duplex acoustic modem with UanTransducerHd
+   * - default MAC layer, with UanMacAloha
+   *
+   * Channel, physical layer, transducer and mac layer are added to the
+   * UanNetDevice and then added to the node.
+   */
+  Ptr<UanNetDevice> Install (Ptr<Node> node, Ptr<UanChannel> channel) const;
 private:
+  ObjectFactory m_device;
   ObjectFactory m_mac;
   ObjectFactory m_phy;
   ObjectFactory m_transducer;
@@ -213,6 +227,6 @@ private:
 };
 
 
-} //end namespace ns3
+} // end namespace ns3
 
 #endif /* UANHELPER_H_ */

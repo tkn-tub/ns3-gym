@@ -16,6 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Leonard Tracy <lentracy@gmail.com>
+ *         Andrea Sacco <andrea.sacco85@gmail.com>
  */
 
 
@@ -27,6 +28,7 @@
 #include "ns3/uan-tx-mode.h"
 #include "ns3/uan-prop-model.h"
 #include "ns3/uan-transducer.h"
+#include "ns3/device-energy-model.h"
 
 namespace ns3 {
 
@@ -68,7 +70,7 @@ public:
 
   /**
    * \param db dB value
-   * \returns kilopascals 
+   * \returns kilopascals
    * \brief Converts dB re 1 uPa to kilopascals
    */
   inline double DbToKp (double db) const
@@ -84,7 +86,7 @@ public:
   {
     return 10 * log10 (kp);
   }
-  
+
 };
 
 /**
@@ -123,7 +125,9 @@ public:
 class UanPhyListener
 {
 public:
-  virtual ~UanPhyListener () {}
+  virtual ~UanPhyListener ()
+  {
+  }
   /**
    * \brief Function called when Phy object begins receiving packet
    */
@@ -159,9 +163,10 @@ public:
 class UanPhy : public Object
 {
 public:
-  /// Enum defining possible Phy states
-  enum State {
-    IDLE, CCABUSY, RX, TX
+  // / Enum defining possible Phy states
+  enum State
+  {
+    IDLE, CCABUSY, RX, TX, SLEEP
   };
 
   /**
@@ -177,6 +182,18 @@ public:
    */
   typedef Callback<void, Ptr<Packet>, double > RxErrCallback;
 
+  /**
+   * \param callback DeviceEnergyModel change state callback.
+   *
+   * This function sets the DeviceEnergyModel callback for UanPhy device. Must
+   * be implemented by UanPhy child classes.
+   */
+  virtual void SetEnergyModelCallback (DeviceEnergyModel::ChangeStateCallback callback) = 0;
+  /**
+   * This function handles the energy depletion event. Must
+   * be implemented by UanPhy child classes.
+   */
+  virtual void EnergyDepletionHandler (void) = 0;
   /**
    * \param pkt  Packet to transmit
    * \param modeNum  Index of mode in SupportedModes list to use for transmission
@@ -250,7 +267,11 @@ public:
    * \returns Threshold signal strength in dB to enter CCA busy mode
    */
   virtual double GetCcaThresholdDb (void) = 0;
-
+  /**
+   *
+   * \returns True if Phy is SLEEP
+   */
+  virtual bool IsStateSleep (void) = 0;
   /**
    *
    * \returns True if Phy is IDLE

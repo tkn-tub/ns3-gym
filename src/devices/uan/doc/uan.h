@@ -22,11 +22,12 @@
  * \ingroup devices
  * \defgroup UAN UAN Models
  *
- * \section UanOverview UAN Module Overview
+ * \section UanOverview UAN Framework Overview
  *
- * The main goal of the UAN Model is to enable researchers to
+ * The main goal of the UAN Framework is to enable researchers to
  * model a variety of underwater network scenarios.  The UAN model
- * is broken into three main parts:  The channel, PHY,  and MAC models.
+ * is broken into four main parts:  The channel, PHY, MAC and
+ * Autonomous Underwater Vehicle (AUV) models.
  *
  *
  * \section UanPropOverview UAN Propagation Models
@@ -178,5 +179,26 @@
  *
  * c) Simple ALOHA (ns3::UanMacAloha)  Nodes transmit at will.
  *
+ * \section UanAUV  UAN AUV Model Overview
+ *
+ * Since AUVs are one of the main components of an underwater networking application, we have included
+ * two models of the most used AUVs, the Seaglider and the REMUS.
+ *
+ * An AUV model includes a mobility model that reproduces the navigation capabilities of the AUV, two energy model
+ * that reproduce the energy consumption of the AUV and the communication device.
+ *
+ * a) mobility models are ns3::RemusMobilityModel and ns3::GliderMobilityModel
+ *
+ * b) auv energy models are ns3::RemusEnergyModel and ns3::GliderEnergyModel. Those models, interacting
+ * with the associated mobility models, keep track of an AUV navigation energy consumption. The energy
+ * consumption varies accordingly to the navigation parameter such as speed (in case of REMUS) and
+ * buoyancy and vertical speed (in case of Seaglider)
+ *
+ * c) transducer energy model is ns3::AcousticModemEnergyModel, it keeps track of the energy consumed
+ * by the acoustic transducer accordingly to its state. The specific energy consumption values are the ones of
+ * the WHOI Micro Modem.
+ *
+ * For a complete description of AUV mobility models, energy models, energy sources and examples please refer to
+ * the <a href="http://www.nsnam.org/wiki/index.php/GSOC2010UANFramework">wiki page</a>
  *
  */

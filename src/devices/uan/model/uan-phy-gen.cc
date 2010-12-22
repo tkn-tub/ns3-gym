@@ -16,6 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Leonard Tracy <lentracy@gmail.com>
+ *         Andrea Sacco <andrea.sacco85@gmail.com>
  */
 
 #include "uan-phy-gen.h"
@@ -32,6 +33,8 @@
 #include "ns3/node.h"
 #include "ns3/uinteger.h"
 #include "ns3/random-variable.h"
+#include "ns3/energy-source-container.h"
+#include "ns3/acoustic-modem-energy-model.h"
 
 
 NS_LOG_COMPONENT_DEFINE ("UanPhyGen");
@@ -353,9 +356,10 @@ UanPhyGen::UanPhyGen ()
     m_rxThreshDb (0),
     m_ccaThreshDb (0),
     m_pktRx (0),
-    m_cleared (false)
+    m_cleared (false),
+    m_disabled (false)
 {
-
+  m_energyCallback.Nullify ();
 }
 
 UanPhyGen::~UanPhyGen ()
@@ -409,6 +413,7 @@ void
 UanPhyGen::DoDispose ()
 {
   Clear ();
+  m_energyCallback.Nullify ();
   UanPhy::DoDispose ();
 }
 
@@ -477,9 +482,43 @@ UanPhyGen::GetTypeId (void)
 }
 
 void
+UanPhyGen::SetEnergyModelCallback (DeviceEnergyModel::ChangeStateCallback cb)
+{
+  NS_LOG_FUNCTION (this);
+  m_energyCallback = cb;
+}
+
+void
+UanPhyGen::UpdatePowerConsumption (const State state)
+{
+  NS_LOG_FUNCTION (this);
+
+  if (!m_energyCallback.IsNull ())
+    {
+      m_energyCallback (state);
+    }
+}
+
+void
+UanPhyGen::EnergyDepletionHandler ()
+{
+  NS_LOG_FUNCTION (this);
+  NS_LOG_DEBUG ("Energy depleted at node " << m_device->GetNode ()->GetId () <<
+                ", stopping rx/tx activities");
+
+  m_disabled = true;
+}
+
+void
 UanPhyGen::SendPacket (Ptr<Packet> pkt, uint32_t modeNum)
 {
   NS_LOG_DEBUG ("PHY " << m_mac->GetAddress () << ": Transmitting packet");
+  if (m_disabled)
+    {
+      NS_LOG_DEBUG ("Energy depleted, node cannot transmit any packet. Dropping.");
+      return;
+    }
+
   if (m_state == TX)
     {
       NS_LOG_DEBUG ("PHY requested to TX while already Transmitting.  Dropping packet.");
@@ -496,6 +535,7 @@ UanPhyGen::SendPacket (Ptr<Packet> pkt, uint32_t modeNum)
 
   m_transducer->Transmit (Ptr<UanPhy> (this), pkt, m_txPwrDb, txMode);
   m_state = TX;
+  UpdatePowerConsumption (TX);
   double txdelay = pkt->GetSize () * 8.0 / txMode.GetDataRateBps ();
   Simulator::Schedule (Seconds (txdelay), &UanPhyGen::TxEndEvent, this);
   NS_LOG_DEBUG ("PHY " << m_mac->GetAddress () << " notifying listeners");
@@ -516,6 +556,7 @@ UanPhyGen::TxEndEvent ()
     {
       m_state = IDLE;
     }
+  UpdatePowerConsumption (IDLE);
 }
 
 void
@@ -528,6 +569,12 @@ UanPhyGen::RegisterListener (UanPhyListener *listener)
 void
 UanPhyGen::StartRxPacket (Ptr<Packet> pkt, double rxPowerDb, UanTxMode txMode, UanPdp pdp)
 {
+  if (m_disabled)
+    {
+      NS_LOG_DEBUG ("Energy depleted, node cannot receive any packet. Dropping.");
+      return;
+    }
+
   switch (m_state)
     {
     case TX:
@@ -566,6 +613,7 @@ UanPhyGen::StartRxPacket (Ptr<Packet> pkt, double rxPowerDb, UanTxMode txMode, U
         if (newsinr > m_rxThreshDb)
           {
             m_state = RX;
+            UpdatePowerConsumption (RX);
             m_rxRecvPwrDb = rxPowerDb;
             m_minRxSinrDb = newsinr;
             m_pktRx = pkt;
@@ -578,6 +626,9 @@ UanPhyGen::StartRxPacket (Ptr<Packet> pkt, double rxPowerDb, UanTxMode txMode, U
           }
 
       }
+      break;
+    case SLEEP:
+      NS_FATAL_ERROR ("SLEEP state handling not yet implemented!");
       break;
     }
 
@@ -605,6 +656,7 @@ UanPhyGen::RxEndEvent (Ptr<Packet> pkt, double rxPowerDb, UanTxMode txMode)
   else
     {
       m_state = IDLE;
+      UpdatePowerConsumption (IDLE);
     }
 
   UniformVariable pg;
@@ -643,8 +695,11 @@ UanPhyGen::SetReceiveErrorCallback (RxErrCallback cb)
 {
   m_recErrCb = cb;
 }
-
-
+bool
+UanPhyGen::IsStateSleep (void)
+{
+  return m_state == SLEEP;
+}
 bool
 UanPhyGen::IsStateIdle (void)
 {
@@ -653,7 +708,7 @@ UanPhyGen::IsStateIdle (void)
 bool
 UanPhyGen::IsStateBusy (void)
 {
-  return m_state != IDLE;
+  return !IsStateIdle () || !IsStateSleep ();
 }
 bool
 UanPhyGen::IsStateRx (void)

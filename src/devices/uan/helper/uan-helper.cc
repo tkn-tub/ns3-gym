@@ -40,18 +40,17 @@
 #include <sstream>
 #include <string>
 
-NS_LOG_COMPONENT_DEFINE("UanHelper");
-namespace ns3
-{
+NS_LOG_COMPONENT_DEFINE ("UanHelper");
+namespace ns3 {
 
 static void AsciiPhyTxEvent (std::ostream *os, std::string context,
-    Ptr<const Packet> packet, double txPowerDb, UanTxMode mode)
+                             Ptr<const Packet> packet, double txPowerDb, UanTxMode mode)
 {
   *os << "+ " << Simulator::Now ().GetSeconds () << " " << context << " " << *packet << std::endl;
 }
 
 static void AsciiPhyRxOkEvent (std::ostream *os, std::string context,
-    Ptr<const Packet> packet, double snr, UanTxMode mode)
+                               Ptr<const Packet> packet, double snr, UanTxMode mode)
 {
   *os << "r " << Simulator::Now ().GetSeconds () << " " << context << " " << *packet << std::endl;
 }
@@ -190,9 +189,8 @@ UanHelper::EnableAsciiAll (std::ostream &os)
 NetDeviceContainer
 UanHelper::Install (NodeContainer c) const
 {
-
   Ptr<UanChannel> channel = CreateObject<UanChannel> ();
-  Ptr<UanNoiseModelDefault> noise =CreateObject<UanNoiseModelDefault> ();
+  Ptr<UanNoiseModelDefault> noise = CreateObject<UanNoiseModelDefault> ();
   channel->SetPropagationModel (CreateObject<UanPropModelIdeal> ());
   channel->SetNoiseModel (noise);
 
@@ -206,23 +204,33 @@ UanHelper::Install (NodeContainer c, Ptr<UanChannel> channel) const
   for (NodeContainer::Iterator i = c.Begin (); i != c.End (); i++)
     {
       Ptr<Node> node = *i;
-      Ptr<UanNetDevice> device = CreateObject<UanNetDevice> ();
 
-      Ptr<UanMac> mac = m_mac.Create<UanMac> ();
-      Ptr<UanPhy> phy = m_phy.Create<UanPhy> ();
-      Ptr<UanTransducer> trans = m_transducer.Create<UanTransducer> ();
+      Ptr<UanNetDevice> device = Install (node, channel);
 
-      mac->SetAddress (UanAddress::Allocate ());
-      device->SetMac (mac);
-      device->SetPhy (phy);
-      device->SetTransducer(trans);
-      device->SetChannel (channel);
-
-      node->AddDevice (device);
       devices.Add (device);
-      NS_LOG_DEBUG ("node="<<node<<", mob="<<node->GetObject<MobilityModel> ());
+      NS_LOG_DEBUG ("node=" << node << ", mob=" << node->GetObject<MobilityModel> ());
     }
   return devices;
 }
 
-} //end namespace ns3
+Ptr<UanNetDevice>
+UanHelper::Install (Ptr<Node> node, Ptr<UanChannel> channel) const
+{
+  Ptr<UanNetDevice> device = CreateObject<UanNetDevice> ();
+
+  Ptr<UanMac> mac = m_mac.Create<UanMac> ();
+  Ptr<UanPhy> phy = m_phy.Create<UanPhy> ();
+  Ptr<UanTransducer> trans = m_transducer.Create<UanTransducer> ();
+
+  mac->SetAddress (UanAddress::Allocate ());
+  device->SetMac (mac);
+  device->SetPhy (phy);
+  device->SetTransducer (trans);
+  device->SetChannel (channel);
+
+  node->AddDevice (device);
+
+  return device;
+}
+
+} // end namespace ns3

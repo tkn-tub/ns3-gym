@@ -16,6 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Leonard Tracy <lentracy@gmail.com>
+ *         Andrea Sacco <andrea.sacco85@gmail.com>
  */
 
 #ifndef UANPHYGEN_H
@@ -25,6 +26,7 @@
 #include "uan-phy.h"
 #include "ns3/traced-callback.h"
 #include "ns3/nstime.h"
+#include "ns3/device-energy-model.h"
 #include <list>
 
 namespace ns3 {
@@ -63,13 +65,13 @@ public:
   static TypeId GetTypeId (void);
 
   /**
-   * 
-   * This implementation uses calculations 
-   * for binary FSK modulation coded by a rate 1/2 convolutional code 
-   * with constraint length = 9 and a viterbi decoder and finally a CRC capable 
+   *
+   * This implementation uses calculations
+   * for binary FSK modulation coded by a rate 1/2 convolutional code
+   * with constraint length = 9 and a viterbi decoder and finally a CRC capable
    * of correcting one bit error.  These equations can be found in
    * the book, Digital Communications, by Proakis (Any version I think)
-   * 
+   *
    * \param pkt Packet which is under consideration
    * \param sinrDb SINR at receiver
    * \param mode TX mode used to transmit packet
@@ -94,10 +96,10 @@ public:
   UanPhyCalcSinrDefault ();
   virtual ~UanPhyCalcSinrDefault ();
   static TypeId GetTypeId (void);
-  /** 
+  /**
    * This implementation simply adds all arriving signal power
    * and assumes it acts identically to additional noise.
-   * 
+   *
    * \param pkt Packet which is under consideration
    * \param arrTime Arrival time of packet pkt
    * \param rxPowerDb Received signal power at receiver
@@ -166,11 +168,14 @@ public:
   static UanModesList GetDefaultModes (void);
 
   static TypeId GetTypeId (void);
+  virtual void SetEnergyModelCallback (DeviceEnergyModel::ChangeStateCallback cb);
+  virtual void EnergyDepletionHandler (void);
   virtual void SendPacket (Ptr<Packet> pkt, uint32_t modeNum);
   virtual void RegisterListener (UanPhyListener *listener);
   virtual void StartRxPacket (Ptr<Packet> pkt, double rxPowerDb, UanTxMode txMode, UanPdp pdp);
   virtual void SetReceiveOkCallback (RxOkCallback cb);
   virtual void SetReceiveErrorCallback (RxErrCallback cb);
+  virtual bool IsStateSleep (void);
   virtual bool IsStateIdle (void);
   virtual bool IsStateBusy (void);
   virtual bool IsStateRx (void);
@@ -219,7 +224,6 @@ private:
   double m_rxThreshDb;
   double m_ccaThreshDb;
 
-
   Ptr<Packet> m_pktRx;
   double m_minRxSinrDb;
   double m_rxRecvPwrDb;
@@ -228,7 +232,9 @@ private:
   UanTxMode m_pktRxMode;
 
   bool m_cleared;
+  bool m_disabled;
 
+  DeviceEnergyModel::ChangeStateCallback m_energyCallback;
   TracedCallback<Ptr<const Packet>, double, UanTxMode > m_rxOkLogger;
   TracedCallback<Ptr<const Packet>, double, UanTxMode > m_rxErrLogger;
   TracedCallback<Ptr<const Packet>, double, UanTxMode > m_txLogger;
@@ -240,6 +246,7 @@ private:
   double KpToDb (double kp);
   void RxEndEvent (Ptr<Packet> pkt, double rxPowerDb, UanTxMode txMode);
   void TxEndEvent ();
+  void UpdatePowerConsumption (const State state);
 
   void NotifyListenersRxStart (void);
   void NotifyListenersRxGood (void);
