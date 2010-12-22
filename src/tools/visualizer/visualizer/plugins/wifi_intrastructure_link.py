@@ -83,10 +83,10 @@ class WifiLinkMonitor(object):
                 if not isinstance(dev, ns3.WifiNetDevice):
                     continue
                 wifi_mac = dev.GetMac()
-                if isinstance(wifi_mac, ns3.NqstaWifiMac):
+                if isinstance(wifi_mac, ns3.StaWifiMac):
                     wifi_link = WifiLink(viz.links_group, node, dev)
                     self.stations.append((dev, node, wifi_link))
-                elif isinstance(wifi_mac, ns3.NqapWifiMac):
+                elif isinstance(wifi_mac, ns3.ApWifiMac):
                     bssid = ns3.Mac48Address.ConvertFrom(dev.GetAddress())
                     self.access_points[str(bssid)] = node
         #print "APs: ", self.access_points
