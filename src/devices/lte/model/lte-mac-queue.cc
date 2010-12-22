@@ -99,6 +99,7 @@ LteMacQueue::LteMacQueue (uint32_t maxSize)
 
 LteMacQueue::~LteMacQueue (void)
 {
+  m_queue.clear ();
 }
 
 

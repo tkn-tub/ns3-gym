@@ -102,7 +102,10 @@ Ns3LteBearerTestCase::DoRun (void)
       return true; // the queue should be empty
     }
 
-
+  // Free memory; handle reference cycle that bearer has with RlcEntity 
+  bearer->Dispose ();
+  bearer = 0;
+  Simulator::Destroy ();
 
   return (testResult);
 }
