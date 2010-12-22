@@ -86,6 +86,12 @@ New user-visible features
      set for WHOI acoustic transducer. Li-Ion battery model added
      into energy models folder.
 
+   - Destination-Sequenced Distance Vector (DSDV) routing protocol 
+     is a proactive, table-driven routing protocol for MANETs 
+     developed by Charles E. Perkins and Pravin Bhagwat in 1994. 
+     This implementation is for IPv4 routing and was contributed 
+     by ResilNets Research Group.
+
 Bugs fixed
 ----------
 The following lists many of the bugs fixed or small feature additions
