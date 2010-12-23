@@ -120,6 +120,7 @@ TcpL4Protocol::NotifyNewAggregate ()
               Ptr<TcpSocketFactoryImpl> tcpFactory = CreateObject<TcpSocketFactoryImpl> ();
               tcpFactory->SetTcp (this);
               node->AggregateObject (tcpFactory);
+              this->SetDownTarget (MakeCallback(&Ipv4L3Protocol::Send, ipv4));
             }
         }
     }
@@ -149,6 +150,7 @@ TcpL4Protocol::DoDispose (void)
     }
 
   m_node = 0;
+  m_downTarget.Nullify ();
   Ipv4L4Protocol::DoDispose ();
 }
 
@@ -386,10 +388,22 @@ TcpL4Protocol::SendPacket (Ptr<Packet> packet, const TcpHeader &outgoing,
           NS_LOG_ERROR ("No IPV4 Routing Protocol");
           route = 0;
         }
-      ipv4->Send (packet, saddr, daddr, PROT_NUMBER, route);
+      m_downTarget (packet, saddr, daddr, PROT_NUMBER, route);
     }
   else
     NS_FATAL_ERROR("Trying to use Tcp on a node without an Ipv4 interface");
+}
+
+void
+TcpL4Protocol::SetDownTarget (Ipv4L4Protocol::DownTargetCallback callback)
+{
+  m_downTarget = callback;
+}
+
+Ipv4L4Protocol::DownTargetCallback
+TcpL4Protocol::GetDownTarget (void) const
+{
+  return m_downTarget;
 }
 
 }; // namespace ns3

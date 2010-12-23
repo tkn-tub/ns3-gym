@@ -95,6 +95,7 @@ UdpL4Protocol::NotifyNewAggregate ()
               Ptr<UdpSocketFactoryImpl> udpFactory = CreateObject<UdpSocketFactoryImpl> ();
               udpFactory->SetUdp (this);
               node->AggregateObject (udpFactory);
+              this->SetDownTarget (MakeCallback(&Ipv4L3Protocol::Send, ipv4));
             }
         }
     }
@@ -124,6 +125,10 @@ UdpL4Protocol::DoDispose (void)
       m_endPoints = 0;
     }
   m_node = 0;
+  m_downTarget.Nullify ();
+/*
+ = MakeNullCallback<void,Ptr<Packet>, Ipv4Address, Ipv4Address, uint8_t, Ptr<Ipv4Route> > ();
+*/
   Ipv4L4Protocol::DoDispose ();
 }
 
@@ -268,13 +273,7 @@ UdpL4Protocol::Send (Ptr<Packet> packet,
 
   packet->AddHeader (udpHeader);
 
-  Ptr<Ipv4L3Protocol> ipv4 = m_node->GetObject<Ipv4L3Protocol> ();
-  if (ipv4 != 0)
-    {
-      NS_LOG_LOGIC ("Sending to IP");
-      // Send with null route
-      ipv4->Send (packet, saddr, daddr, PROT_NUMBER, 0);
-    }
+  m_downTarget (packet, saddr, daddr, PROT_NUMBER, 0);
 }
 
 void
@@ -297,14 +296,20 @@ UdpL4Protocol::Send (Ptr<Packet> packet,
 
   packet->AddHeader (udpHeader);
 
-  Ptr<Ipv4L3Protocol> ipv4 = m_node->GetObject<Ipv4L3Protocol> ();
-  if (ipv4 != 0)
-    {
-      NS_LOG_LOGIC ("Sending to IP");
-      ipv4->Send (packet, saddr, daddr, PROT_NUMBER, route);
-    }
+  m_downTarget (packet, saddr, daddr, PROT_NUMBER, 0);
 }
 
+void
+UdpL4Protocol::SetDownTarget (Ipv4L4Protocol::DownTargetCallback callback)
+{
+  m_downTarget = callback;
+}
+
+Ipv4L4Protocol::DownTargetCallback
+UdpL4Protocol::GetDownTarget (void) const
+{
+  return m_downTarget;
+}
 
 }; // namespace ns3
 

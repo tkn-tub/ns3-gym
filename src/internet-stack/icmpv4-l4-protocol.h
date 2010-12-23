@@ -31,6 +31,11 @@ public:
   void SendDestUnreachFragNeeded (Ipv4Header header, Ptr<const Packet> orgData, uint16_t nextHopMtu);
   void SendTimeExceededTtl (Ipv4Header header, Ptr<const Packet> orgData);
   void SendDestUnreachPort (Ipv4Header header, Ptr<const Packet> orgData);
+
+  // From Ipv4L4Protocol
+  virtual void SetDownTarget (Ipv4L4Protocol::DownTargetCallback cb);
+  // From Ipv4L4Protocol
+  virtual Ipv4L4Protocol::DownTargetCallback GetDownTarget (void) const;
 protected:
   /*
    * This function will notify other components connected to the node that a new stack member is now connected
@@ -61,6 +66,7 @@ private:
   virtual void DoDispose (void);
 
   Ptr<Node> m_node;
+  Ipv4L4Protocol::DownTargetCallback m_downTarget;
 };
 
 } // namespace ns3

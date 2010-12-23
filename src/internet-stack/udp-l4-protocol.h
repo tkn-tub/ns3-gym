@@ -32,7 +32,6 @@ namespace ns3 {
 
 class Node;
 class Socket;
-class Ipv4Route;
 class Ipv4EndPointDemux;
 class Ipv4EndPoint;
 class UdpSocketImpl;
@@ -109,6 +108,12 @@ public:
                             uint8_t icmpType, uint8_t icmpCode, uint32_t icmpInfo,
                             Ipv4Address payloadSource,Ipv4Address payloadDestination,
                             const uint8_t payload[8]);
+
+  // From Ipv4L4Protocol
+  virtual void SetDownTarget (Ipv4L4Protocol::DownTargetCallback cb);
+  // From Ipv4L4Protocol
+  virtual Ipv4L4Protocol::DownTargetCallback GetDownTarget (void) const;
+
 protected:
   virtual void DoDispose (void);
   /*
@@ -122,6 +127,7 @@ private:
   UdpL4Protocol (const UdpL4Protocol &o);
   UdpL4Protocol &operator = (const UdpL4Protocol &o);
   std::vector<Ptr<UdpSocketImpl> > m_sockets;
+  Ipv4L4Protocol::DownTargetCallback m_downTarget;
 };
 
 }; // namespace ns3

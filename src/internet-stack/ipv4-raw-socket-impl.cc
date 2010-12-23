@@ -231,7 +231,7 @@ Ipv4RawSocketImpl::SendTo (Ptr<Packet> p, uint32_t flags,
             }
           else
             {
-              ipv4->Send (p, header, route);
+              ipv4->SendWithHeader (p, header, route);
             }
           NotifyDataSent (p->GetSize ());
           NotifySend (GetTxAvailable ());

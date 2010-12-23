@@ -106,6 +106,11 @@ public:
                                                  Ipv4Header const &header,
                                                  Ptr<Ipv4Interface> incomingInterface);
 
+  // From Ipv4L4Protocol
+  virtual void SetDownTarget (Ipv4L4Protocol::DownTargetCallback cb);
+  // From Ipv4L4Protocol
+  virtual Ipv4L4Protocol::DownTargetCallback GetDownTarget (void) const;
+
 protected:
   virtual void DoDispose (void);
   /* 
@@ -126,6 +131,7 @@ private:
   TcpL4Protocol &operator = (const TcpL4Protocol &o);
 
   std::vector<Ptr<TcpSocketBase> > m_sockets;
+  Ipv4L4Protocol::DownTargetCallback m_downTarget;
 };
 
 }; // namespace ns3

@@ -84,6 +84,10 @@ public:
                                             Ipv4Header const &header,
                                             Ptr<Ipv4Interface> incomingInterface);
 
+  // From Ipv4L4Protocol
+  virtual void SetDownTarget (Ipv4L4Protocol::DownTargetCallback cb);
+  // From Ipv4L4Protocol
+  virtual Ipv4L4Protocol::DownTargetCallback GetDownTarget (void) const;
 protected:
   virtual void DoDispose (void);
   virtual void NotifyNewAggregate ();
@@ -119,6 +123,7 @@ private:
   std::string m_nscLibrary;
   Timer m_softTimer;
   std::vector<Ptr<NscTcpSocketImpl> > m_sockets;
+  Ipv4L4Protocol::DownTargetCallback m_downTarget;
 };
 
 }; // namespace ns3

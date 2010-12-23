@@ -25,6 +25,7 @@
 #define IPV4_L4_PROTOCOL_H
 
 #include "ns3/object.h"
+#include "ns3/callback.h"
 #include "ns3/ipv4-header.h"
 
 namespace ns3 {
@@ -32,6 +33,7 @@ namespace ns3 {
 class Packet;
 class Ipv4Address;
 class Ipv4Interface;
+class Ipv4Route;
 
 /**
  * \brief L4 Protocol abstract base class 
@@ -88,6 +90,22 @@ public:
                             uint8_t icmpType, uint8_t icmpCode, uint32_t icmpInfo,
                             Ipv4Address payloadSource, Ipv4Address payloadDestination,
                             const uint8_t payload[8]);
+
+  typedef Callback<void,Ptr<Packet>, Ipv4Address, Ipv4Address, uint8_t, Ptr<Ipv4Route> > DownTargetCallback;
+ /**
+  * This method allows a caller to set the current down target callback 
+  * set for this L4 protocol  
+  * 
+  * \param cb current Callback for the L4 protocol
+  */  
+  virtual void SetDownTarget (DownTargetCallback cb) = 0;
+ /**
+  * This method allows a caller to get the current down target callback 
+  * set for this L4 protocol, for  
+  * 
+  * \return current Callback for the L4 protocol
+  */  
+  virtual DownTargetCallback GetDownTarget (void) const = 0;
 };
 
 } // Namespace ns3

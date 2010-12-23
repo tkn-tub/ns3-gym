@@ -62,6 +62,7 @@ Icmpv4L4Protocol::NotifyNewAggregate ()
 	      ipv4->Insert (this);
 	      Ptr<Ipv4RawSocketFactoryImpl> rawFactory = CreateObject<Ipv4RawSocketFactoryImpl> ();
 	      ipv4->AggregateObject (rawFactory);
+              this->SetDownTarget (MakeCallback(&Ipv4L3Protocol::Send, ipv4));
 	    }
 	}
     }
@@ -106,7 +107,6 @@ Icmpv4L4Protocol::SendMessage (Ptr<Packet> packet, Ipv4Address dest, uint8_t typ
 void
 Icmpv4L4Protocol::SendMessage (Ptr<Packet> packet, Ipv4Address source, Ipv4Address dest, uint8_t type, uint8_t code, Ptr<Ipv4Route> route)
 {
-  Ptr<Ipv4L3Protocol> ipv4 = m_node->GetObject<Ipv4L3Protocol> ();
   Icmpv4Header icmp;
   icmp.SetType (type);
   icmp.SetCode (code);
@@ -115,7 +115,8 @@ Icmpv4L4Protocol::SendMessage (Ptr<Packet> packet, Ipv4Address source, Ipv4Addre
       icmp.EnableChecksum ();
     }
   packet->AddHeader (icmp);
-  ipv4->Send (packet, source, dest, PROT_NUMBER, route);
+
+  m_downTarget (packet, source, dest, PROT_NUMBER, route);
 }
 void 
 Icmpv4L4Protocol::SendDestUnreachFragNeeded (Ipv4Header header, 
@@ -247,7 +248,20 @@ Icmpv4L4Protocol::DoDispose (void)
 {
   NS_LOG_FUNCTION (this);
   m_node = 0;
+  m_downTarget.Nullify ();
   Ipv4L4Protocol::DoDispose ();
+}
+
+void
+Icmpv4L4Protocol::SetDownTarget (Ipv4L4Protocol::DownTargetCallback callback)
+{
+  m_downTarget = callback;
+}
+
+Ipv4L4Protocol::DownTargetCallback
+Icmpv4L4Protocol::GetDownTarget (void) const
+{
+  return m_downTarget;
 }
 
 } // namespace ns3

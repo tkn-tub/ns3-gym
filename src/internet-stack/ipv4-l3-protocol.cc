@@ -508,7 +508,7 @@ Ipv4L3Protocol::IsUnicast (Ipv4Address ad, Ipv4Mask interfaceMask) const
 }
 
 void 
-Ipv4L3Protocol::Send (Ptr<Packet> packet, 
+Ipv4L3Protocol::SendWithHeader (Ptr<Packet> packet, 
                       Ipv4Header ipHeader,
                       Ptr<Ipv4Route> route)
 {
