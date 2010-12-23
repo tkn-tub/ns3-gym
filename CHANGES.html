@@ -120,7 +120,18 @@ longer, with a RegularWifiMac attribute "QosSupported" allowing
 selection between these two modes of operation. QosWifiMacHelper and
 NqosWifiMacHelper continue to work as previously, with a
 behind-the-scenes manipulation of the 'afore-mentioned attribute.
-</p>
+</p></li>
+
+<li><b>New TCP architecture</b>
+<p>TcpSocketImpl was replaced by a new base class TcpSocketBase and
+several subclasses implementing different congestion control.  From 
+a user-level API perspective, the main change is that a new attribute
+"SocketType" is available in TcpL4Protocol, to which a TypeIdValue
+of a specific Tcp variant can be passed.  In the same class, the attribute 
+"RttEstimatorFactory" was also renamed "RttEstimatorType" since it now
+takes a TypeIdValue instead of an ObjectFactoryValue.  In most cases, 
+however, no change to existing user programs should be needed.
+</p></li>
 </ul>
 
 <h2>Changed behavior:</h2>
@@ -128,7 +139,13 @@ behind-the-scenes manipulation of the 'afore-mentioned attribute.
 <li><b>EmuNetDevice uses DIX instead of LLC encapsulation by default</b>
 <p>bug 984 in ns-3 tracker:  real devices don't usually understand LLC/SNAP
 so the default of DIX makes more sense.
-</p>
+</p></li>
+<li><b>TCP defaults to NewReno congestion control</b>
+<p>As part of the TCP socket refactoring, a new TCP implementation provides
+slightly different behavior than the previous TcpSocketImpl that provided
+only fast retransmit.  The default behavior now is NewReno which provides
+fast retransmit and fast recovery with window inflation during recovery.
+</p></li>
 </ul>
 
 <hr>

@@ -79,6 +79,11 @@ New user-visible features
 
    - New methods to print IPv4 routing tables to an output stream.
 
+   - A replacement implementation for TCP for IPv4.  TcpSocketBase
+     now replaces TcpSocketImpl.  There are subclasses defined for
+     TCP Tahoe, Reno, NewReno, and the original RFC793 without
+     congestion control.
+
    - Energy support for UAN module and Li-Ion energy model.
      Now each network node can have an associated energy source
      from which it consumes energy. The user can specify a custom
@@ -97,14 +102,17 @@ Bugs fixed
 The following lists many of the bugs fixed or small feature additions
 since ns-3.9, in many cases referencing the Bugzilla bug number
 
-   - bug 978 - Consolidate Wi-Fi MAC high functionality
+   - bug 824 - TCP should implement FastRecovery by default
    - bug 852 - Add support for 802.11g devices
    - bug 892 - WaypointMobilityModel incompatible with MobilityHelper::Install
    - bug 893 - Lazy CourseChange notification for WaypointMobilityModel
+   - bug 967 - Need to decouple Ipv4L4Protocols from Ipv4L3Protocol
+   - bug 978 - Consolidate Wi-Fi MAC high functionality
    - bug 979 - Multi-octet fields in Wi-Fi headers have wrong endianness
    - bug 984 - EmuNetDevice should use DIX encapsulation by default
    - bug 988 - MacRxMiddle::SequenceControlSmaller method
    - bug 993 - MinstrelWifiManager::UpdateStats useless if clause
+   - bug 1012 - UAN Throp propagation model bug
    - bug 1015 - GetChannelFrequencyMhz() does not match with standard
    - bug 1022 - inappropriate ASSERT in tcp-socket-impl.cc
    - bug 1027 - RocketfuelTopologyReader is not working at all
