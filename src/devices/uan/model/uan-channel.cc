@@ -170,12 +170,12 @@ UanChannel::TxPacket (Ptr<UanTransducer> src, Ptr<Packet> packet,
           Ptr<MobilityModel> rcvrMobility = i->first->GetNode ()->GetObject<MobilityModel> ();
           Time delay = m_prop->GetDelay (senderMobility, rcvrMobility, txMode);
           UanPdp pdp = m_prop->GetPdp (senderMobility, rcvrMobility, txMode);
-          double rxPowerDb = txPowerDb + m_prop->GetPathLossDb (senderMobility,
+          double rxPowerDb = txPowerDb - m_prop->GetPathLossDb (senderMobility,
                                                                 rcvrMobility,
                                                                 txMode);
 
           NS_LOG_DEBUG ("txPowerDb=" << txPowerDb << "dB, rxPowerDb="
-                                     << rxPowerDb << "distance="
+                                     << rxPowerDb << "dB, distance="
                                      << senderMobility->GetDistanceFrom (rcvrMobility)
                                      << "m, delay=" << delay);
 
