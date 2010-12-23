@@ -11,8 +11,8 @@ def build(bld):
     obj = bld.create_ns3_program('main-callback', ['core'])
     obj.source = 'main-callback.cc'
 
-    obj = bld.create_ns3_program('main-simulator', ['core'])
-    obj.source = 'main-simulator.cc'
+    obj = bld.create_ns3_program('sample-simulator', ['core'])
+    obj.source = 'sample-simulator.cc'
 
     obj = bld.create_ns3_program('main-ptr', ['core'] )
     obj.source = 'main-ptr.cc'

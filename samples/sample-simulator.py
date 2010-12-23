@@ -1,26 +1,60 @@
 # -*- Mode:Python; -*-
+# /*
+#  * Copyright (c) 2010 INRIA
+#  *
+#  * This program is free software; you can redistribute it and/or modify
+#  * it under the terms of the GNU General Public License version 2 as
+#  * published by the Free Software Foundation;
+#  *
+#  * This program is distributed in the hope that it will be useful,
+#  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  * GNU General Public License for more details.
+#  *
+#  * You should have received a copy of the GNU General Public License
+#  * along with this program; if not, write to the Free Software
+#  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#  *
+#  * Authors: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
+#  */
+# 
+# Python version of sample-simulator.cc
 
 import ns3 as ns
-
 
 class MyModel(object):
 
     def Start(self):
-        ns.Simulator.Schedule(ns.Seconds(10.0), self.DealWithEvent, ns.Simulator.Now().GetSeconds())
+        ns.Simulator.Schedule(ns.Seconds(10.0), self.HandleEvent, ns.Simulator.Now().GetSeconds())
 
-    def DealWithEvent(self, value):
-        print "Member method received event at ", ns.Simulator.Now().GetSeconds(), \
-            "s started at ", value, "s"
+    def HandleEvent(self, value):
+        print "Member method received event at", ns.Simulator.Now().GetSeconds(), \
+            "s started at", value, "s"
 
-def random_function(model):
-    print "random function received event at ", ns.Simulator.Now().GetSeconds(), "s"
+def ExampleFunction(model):
+    print "ExampleFunction received event at", ns.Simulator.Now().GetSeconds(), "s"
     model.Start()
 
+def RandomFunction(model):
+    print "RandomFunction received event at", ns.Simulator.Now().GetSeconds(), "s"
+
+def CancelledEvent():
+    print "I should never be called... "
 
 def main(dummy_argv):
+
     model = MyModel()
-    ns.Simulator.Schedule(ns.Seconds(10.0), random_function, model)
+    v = ns.UniformVariable(10,20)
+
+    ns.Simulator.Schedule(ns.Seconds(10.0), ExampleFunction, model)
+
+    ns.Simulator.Schedule(ns.Seconds(v.GetValue()), RandomFunction, model)
+
+    id = ns.Simulator.Schedule(ns.Seconds(30.0), CancelledEvent)
+    ns.Simulator.Cancel(id)
+
     ns.Simulator.Run()
+
     ns.Simulator.Destroy()
 
 if __name__ == '__main__':
