@@ -153,12 +153,12 @@ JakesFadingLossModel::SetValue (void)
 
   // number of path = M
   // x = 1 -> M=6, x = 2 -> M=8, x = 3 -> M=10, x = 4 -> M=12
-  int x = m_nbOfPaths.GetValue ();
+  int x = static_cast<int> (m_nbOfPaths.GetValue ());
 
   for (int i = 0; i < downlinkSubChannels; i++)
     {
       // StartJakes allow us to select a window of 0.5ms into the Jakes realization lasting 3s.
-      int startJakes = m_startJakes.GetValue ();
+      int startJakes = static_cast<int> (m_startJakes.GetValue ());
 
       MultipathForTimeDomain multipathForTimeDomain;
 
@@ -315,8 +315,8 @@ JakesFadingLossModel::GetValue (int subChannel)
       SetLastUpdate ();
     }
 
-  int now_ms = Simulator::Now ().GetSeconds () * 1000;
-  int lastUpdate_ms = GetLastUpdate ().GetSeconds () * 1000;
+  int now_ms = static_cast<int> (Simulator::Now ().GetSeconds () * 1000);
+  int lastUpdate_ms = static_cast<int> (GetLastUpdate ().GetSeconds () * 1000);
   int index = now_ms - lastUpdate_ms;
 
   NS_LOG_FUNCTION (this << subChannel << now_ms

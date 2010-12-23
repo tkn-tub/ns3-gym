@@ -119,7 +119,7 @@ EnbMacEntity::ReceiveCqiIdealControlMessage  (Ptr<CqiIdealControlMessage> msg)
       NS_LOG_FUNCTION (this << "cqi " << (*it).m_idSubChannel << (*it).m_cqi);
       UeRecord::CqiFeedback cqi;
       cqi.m_subChannelId = (*it).m_idSubChannel;
-      cqi.m_cqi = (*it).m_cqi;
+      cqi.m_cqi = static_cast<int> ((*it).m_cqi);
       cqiFeedbacks.push_back (cqi);
     }
 
