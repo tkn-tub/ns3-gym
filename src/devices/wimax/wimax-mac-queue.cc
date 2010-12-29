@@ -171,16 +171,16 @@ WimaxMacQueue::Dequeue (MacHeaderType::HeaderType packetType)
       if (element.m_hdrType.GetType () == MacHeaderType::HEADER_TYPE_GENERIC)
         {
           NS_LOG_INFO ("Enqueued Packet IS A data packet");
-          m_nrDataPackets--;
-          NS_ASSERT_MSG (m_nrDataPackets >= 0,
+          NS_ASSERT_MSG (m_nrDataPackets >= 1,
                          "Can not enqueue more packets: no space left in the queue");
+          m_nrDataPackets--;
         }
       else
         {
           NS_LOG_INFO ("Enqueued Packet IS A Request BW packet");
-          m_nrRequestPackets--;
-          NS_ASSERT_MSG (m_nrRequestPackets >= 0,
+          NS_ASSERT_MSG (m_nrRequestPackets >= 1,
                          "Can not enqueue more packets: no space left in the queue");
+          m_nrRequestPackets--;
         }
 
       Ptr<Packet> packet = element.m_packet;

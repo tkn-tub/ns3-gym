@@ -797,7 +797,7 @@ SimpleOfdmWimaxPhy::SetBlockParameters (uint32_t burstSize, WimaxPhy::Modulation
   m_nrBlocks = GetNrBlocks (burstSize, modulationType);
   m_paddingBits = (m_nrBlocks * m_blockSize) - (burstSize * 8);
   m_nrRemainingBlocksToSend = m_nrBlocks;
-  NS_ASSERT_MSG (m_paddingBits >= 0, "Size of padding bytes < 0");
+  NS_ASSERT_MSG ((m_nrBlocks * m_blockSize) >= (burstSize * 8), "Size of padding bytes < 0");
 }
 
 uint16_t

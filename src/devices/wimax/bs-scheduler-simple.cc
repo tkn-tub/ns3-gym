@@ -159,13 +159,18 @@ void BSSchedulerSimple::Schedule (void)
             {
               uint32_t BurstSizeSymbols =  GetBs ()->GetPhy ()->GetNrSymbols (burst->GetSize (), modulationType);
               AddDownlinkBurst (connection, diuc, modulationType, burst);
-              availableSymbols -= BurstSizeSymbols;
+
+              if (availableSymbols <= BurstSizeSymbols)
+                {
+                  availableSymbols -= BurstSizeSymbols; // XXX: Overflows but don't know how to fix
+                  break;
+                }
             }
         }
       else
         {
           burst = Create<PacketBurst> ();
-          while (availableSymbols >= 0 && connection->HasPackets () == true)
+          while (connection->HasPackets () == true)
             {
               uint32_t FirstPacketSize = connection->GetQueue ()->GetFirstPacketRequiredByte (MacHeaderType::HEADER_TYPE_GENERIC);
               nrSymbolsRequired = GetBs ()->GetPhy ()->GetNrSymbols (FirstPacketSize, modulationType);
@@ -190,7 +195,7 @@ void BSSchedulerSimple::Schedule (void)
             }
           AddDownlinkBurst (connection, diuc, modulationType, burst);
         }
-      if (availableSymbols <= 0)
+      if (availableSymbols == 0)
         {
           break;
         }
