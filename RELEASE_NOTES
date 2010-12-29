@@ -18,7 +18,8 @@ This release is not yet available.
 
 Supported platforms
 -------------------
-ns-3.10 has been tested on the following platforms: (TBD)
+ns-3.10 has been tested on the following platforms.  Not all features are
+available on all platforms; check the Installation page on the project wiki.
 
 New user-visible features
 -------------------------
@@ -97,6 +98,20 @@ New user-visible features
      This implementation is for IPv4 routing and was contributed 
      by ResilNets Research Group.
 
+   - A novel model to simulate LTE networks has been added.  It focuses 
+     mainly on modeling the E-UTRA part of the system, with a particular 
+     attention on the aspects related to the channel, PHY and MAC layers. 
+     The most important features available at this moment are (i) a basic 
+     implementation of both the UE and the eNB devices, (ii) RRC and 
+     entities for both the UE and the eNB, (iii) an Adaptive Modulation 
+     and Coding (AMC) scheme for the downlink, (iv) the management of the 
+     data radio bearers (with their QoS parameters), the MAC queues and 
+     the RLC instances, (v) Channel Quality Indicator (CQI) management, 
+     (vi) support for both uplink and downlik packet scheduling, 
+     (vii) a PHY layer model with Resource Block level granularity, and 
+     (viii) a channel model with the outdoor E-UTRAN propagation loss 
+     model.
+
 Bugs fixed
 ----------
 The following lists many of the bugs fixed or small feature additions
@@ -106,19 +121,37 @@ since ns-3.9, in many cases referencing the Bugzilla bug number
    - bug 852 - Add support for 802.11g devices
    - bug 892 - WaypointMobilityModel incompatible with MobilityHelper::Install
    - bug 893 - Lazy CourseChange notification for WaypointMobilityModel
+   - bug 953 - WiMAX channel scanning overflow
    - bug 967 - Need to decouple Ipv4L4Protocols from Ipv4L3Protocol
    - bug 978 - Consolidate Wi-Fi MAC high functionality
    - bug 979 - Multi-octet fields in Wi-Fi headers have wrong endianness
+   - bug 981 - use a cache to keep track of received MPDUs under block ack
+   - bug 983 - handle correctly ADDBA response action frames in QadhocWifiMac
    - bug 984 - EmuNetDevice should use DIX encapsulation by default
+   - bug 985 - WiMAX Invalid management message type on wimax-simple
    - bug 988 - MacRxMiddle::SequenceControlSmaller method
+   - bug 990 - Error with an NS_ASSERT at uan-phy-gen.cc
+   - bug 991 - InterferenceHelper assertion failure
+   - bug 992 - Unusual (possibly incorrect assertion) in Packet::Deserialize
    - bug 993 - MinstrelWifiManager::UpdateStats useless if clause
+   - bug 994 - PointToPointGridHelper useless if clauses
+   - bug 995 - Useless (possibly incorrect) comparison of unsigned int
+   - bug 1004 - module header not rebuilt
+   - bug 1005 - GetSocket() methods for OnOffApplication and PacketSink
+   - bug 1009 - decouple m_finSequence (TcpSocketImpl) from tx sequence numbers
    - bug 1012 - UAN Throp propagation model bug
    - bug 1015 - GetChannelFrequencyMhz() does not match with standard
    - bug 1022 - inappropriate ASSERT in tcp-socket-impl.cc
+   - bug 1025 - wimax-ipv4 script exists with signal SIGSEGV when nbSS>20
    - bug 1027 - RocketfuelTopologyReader is not working at all
+   - bug 1030 - routing/aodv example fixed
+   - bug 1031 - Wifi hidden terminal example does not work
+   - bug 1032 - Unable to specify multiple Compiler/Linker flags
 
 Known issues
 ------------
+In general, known issues are tracked on the project tracker available
+at http://www.nsnam.org/bugzilla/
 
 Release 3.9
 ===========
