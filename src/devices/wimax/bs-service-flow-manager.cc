@@ -226,7 +226,11 @@ void
 BsServiceFlowManager::AllocateServiceFlows (const DsaReq &dsaReq, Cid cid)
 {
   ServiceFlow *serviceFlow = ProcessDsaReq (dsaReq, cid);
+  if (serviceFlow) {
   ScheduleDsaRsp (serviceFlow, cid);
+  } else {
+	  NS_LOG_INFO ("No service Flow. Could not connect.");
+  }
 }
 
 void
