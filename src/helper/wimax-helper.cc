@@ -545,26 +545,16 @@ WimaxHelper::EnableAsciiInternal (Ptr<OutputStreamWrapper> stream,
 
 }
 
-static void PcapSniffTxEvent (Ptr<PcapFileWrapper> file,
+static void PcapSniffTxRxEvent (Ptr<PcapFileWrapper> file,
                               Ptr<const PacketBurst> burst)
 {
   std::list<Ptr<Packet> > packets = burst->GetPackets ();
   for (std::list<Ptr<Packet> >::iterator iter = packets.begin (); iter != packets.end (); ++iter)
     {
-      WimaxMacToMacHeader m2m ((*iter)->GetSize ());
-      (*iter)->AddHeader (m2m);
-      file->Write (Simulator::Now (), (*iter));
-    }
-}
-
-static void PcapSniffRxEvent (Ptr<PcapFileWrapper> file, Ptr<const PacketBurst> burst)
-{
-  std::list<Ptr<Packet> > packets = burst->GetPackets ();
-  for (std::list<Ptr<Packet> >::iterator iter = packets.begin (); iter != packets.end (); ++iter)
-    {
-      WimaxMacToMacHeader m2m ((*iter)->GetSize ());
-      (*iter)->AddHeader (m2m);
-      file->Write (Simulator::Now (), (*iter));
+	  Ptr<Packet> p = (*iter)->Copy ();
+	  WimaxMacToMacHeader m2m (p->GetSize ());
+	  p->AddHeader (m2m);
+	  file->Write (Simulator::Now (), p);
     }
 }
 
@@ -597,8 +587,8 @@ WimaxHelper::EnablePcapInternal (std::string prefix, Ptr<NetDevice> nd, bool exp
 
   Ptr<PcapFileWrapper> file = pcapHelper.CreateFile (filename, std::ios::out, PcapHelper::DLT_EN10MB);
 
-  phy->TraceConnectWithoutContext ("Tx", MakeBoundCallback (&PcapSniffTxEvent, file));
-  phy->TraceConnectWithoutContext ("Rx", MakeBoundCallback (&PcapSniffRxEvent, file));
+  phy->TraceConnectWithoutContext ("Tx", MakeBoundCallback (&PcapSniffTxRxEvent, file));
+  phy->TraceConnectWithoutContext ("Rx", MakeBoundCallback (&PcapSniffTxRxEvent, file));
 }
 
 } // namespace ns3
