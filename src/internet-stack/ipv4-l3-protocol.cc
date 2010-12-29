@@ -695,7 +695,10 @@ Ipv4L3Protocol::SendRealOut (Ptr<Ipv4Route> route,
   Ptr<Ipv4Interface> outInterface = GetInterface (interface);
   NS_LOG_LOGIC ("Send via NetDevice ifIndex " << outDev->GetIfIndex () << " ipv4InterfaceIndex " << interface);
 
-  NS_ASSERT (packet->GetSize () <= outInterface->GetDevice ()->GetMtu ());
+  NS_ASSERT_MSG (packet->GetSize () <= outInterface->GetDevice ()->GetMtu (), 
+      "Packet size " << packet->GetSize () << " exceeds device MTU " 
+      << outInterface->GetDevice ()->GetMtu () 
+      << " for IPv4; fragmentation not supported");
   if (!route->GetGateway ().IsEqual (Ipv4Address ("0.0.0.0"))) 
     {
       if (outInterface->IsUp ())
