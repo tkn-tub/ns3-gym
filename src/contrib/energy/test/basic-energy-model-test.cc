@@ -152,10 +152,14 @@ BasicEnergyUpdateTest::StateSwitchTest (WifiPhy::State state)
   Simulator::Schedule (Seconds (m_timeS),
                        &WifiRadioEnergyModel::ChangeState, devModel, state);
 
-  // run simulation
-  Simulator::Stop (Seconds (m_timeS * 2));
+  // Calculate remaining energy at simulation stop time
+  Simulator::Schedule (Seconds (m_timeS * 2), 
+                       &BasicEnergySource::UpdateEnergySource, source);
+
+  double timeDelta = 0.000000001; // 1 nanosecond
+  // run simulation; stop just after last scheduled event
+  Simulator::Stop (Seconds (m_timeS * 2 + timeDelta));
   Simulator::Run ();
-  Simulator::Destroy ();
 
   // energy = current * voltage * time
 
