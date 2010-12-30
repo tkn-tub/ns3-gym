@@ -124,12 +124,16 @@ V4Ping::Receive (Ptr<Socket> socket)
 	    {
               uint32_t buf[m_size / 4];
 	      uint32_t dataSize = echo.GetDataSize ();
+              uint32_t nodeId;
+              uint32_t appId;
 	      if (dataSize == sizeof(buf))
 		{
                   echo.GetData ((uint8_t *)buf);
+                  Read32 ((const uint8_t *) &buf[0], nodeId);
+                  Read32 ((const uint8_t *) &buf[1], appId);
 
-		  if (buf[0] == GetNode ()->GetId () &&
-		      buf[1] == GetApplicationId ())
+		  if (nodeId == GetNode ()->GetId () &&
+		      appId == GetApplicationId ())
 		    {
 		      Time sendTime = i->second;
 		      NS_ASSERT (Simulator::Now () >= sendTime);
@@ -154,13 +158,22 @@ V4Ping::Receive (Ptr<Socket> socket)
     }
 }
 
+// Writes data to buffer in little-endian format; least significant byte
+// of data is at lowest buffer address
 void
-V4Ping::Write32 (uint8_t *buffer, uint32_t data)
+V4Ping::Write32 (uint8_t *buffer, const uint32_t data)
 {
   buffer[0] = (data >> 0) & 0xff;
   buffer[1] = (data >> 8) & 0xff;
   buffer[2] = (data >> 16) & 0xff;
   buffer[3] = (data >> 24) & 0xff;
+}
+
+// Writes data from a little-endian formatted buffer to data
+void
+V4Ping::Read32 (const uint8_t *buffer, uint32_t &data)
+{
+  data = (buffer[3] << 24) + (buffer[2] << 16) + (buffer[1] << 8) + buffer[0];
 }
 
 void 
