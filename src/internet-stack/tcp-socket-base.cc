@@ -412,7 +412,11 @@ TcpSocketBase::RecvFrom (uint32_t maxSize, uint32_t flags, Address &fromAddress)
   // Null packet means no data to read, and an empty packet indicates EOF
   if (packet != 0 && packet->GetSize () != 0)
     {
-      GetSockName (fromAddress);
+      SocketAddressTag tag;
+      bool found;
+      found = packet->PeekPacketTag (tag);
+      NS_ASSERT (found);
+      fromAddress = tag.GetAddress ();
     }
   return packet;
 }
