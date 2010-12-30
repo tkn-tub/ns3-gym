@@ -24,7 +24,11 @@ IMAGES_EPS = \
 	$(FIGURES)/emulated-channel.eps \
 	$(FIGURES)/snir.eps \
 	$(DOC_FIGURES)/WifiArchitecture.eps \
-	$(DOC_FIGURES)/WimaxArchitecture.eps
+	$(DOC_FIGURES)/WimaxArchitecture.eps \
+        $(FIGURES)/auvmobility-classes.eps \
+
+# missing figure 
+#        $(FIGURES)/lte-transmission.eps
 
 $(FIGURES)/node.pdf_width = 5in
 $(FIGURES)/testbed.pdf_width = 5in
@@ -38,6 +42,8 @@ $(FIGURES)/routing.pdf_width = 6in
 $(FIGURES)/routing-specialization.pdf_width = 5in
 $(FIGURES)/sockets-overview.pdf_width = 10cm
 $(FIGURES)/snir.pdf_width = 3in
+$(FIGURES)/lte-transmission.pdf_width = 3in
+$(FIGURES)/auvmobility-classes.pdf_width = 10cm
 IMAGES_PNG = ${IMAGES_EPS:.eps=.png}
 IMAGES_PDF = ${IMAGES_EPS:.eps=.pdf}
 
