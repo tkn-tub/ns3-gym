@@ -1,6 +1,0 @@
-@node Object names
-@chapter Object names
-
-@cartouche
-Placeholder chapter
-@end cartouche
