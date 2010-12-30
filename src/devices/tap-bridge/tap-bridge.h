@@ -31,10 +31,16 @@
 #include "ns3/data-rate.h"
 #include "ns3/ptr.h"
 #include "ns3/mac48-address.h"
-#include "ns3/system-thread.h"
+#include "ns3/unix-fd-reader.h"
 #include "ns3/realtime-simulator-impl.h"
 
 namespace ns3 {
+
+class TapBridgeFdReader : public FdReader
+{
+private:
+  FdReader::Data DoRead (void);
+};
 
 class Node;
 
@@ -248,9 +254,9 @@ private:
   /**
    * \internal
    *
-   * Loop to read and process packets
+   * Callback to process packets that are read
    */
-  void ReadThread (void);
+  void ReadCallback (uint8_t *buf, ssize_t len);
 
   /*
    * \internal
@@ -262,7 +268,7 @@ private:
    *            received from the host.
    * \param buf The length of the buffer.
    */
-  void ForwardToBridgedDevice (uint8_t *buf, uint32_t len);
+  void ForwardToBridgedDevice (uint8_t *buf, ssize_t len);
 
   /**
    * \internal
@@ -336,7 +342,7 @@ private:
    * The socket (actually interpreted as fd) to use to talk to the Tap device on
    * the real internet host.
    */
-  int32_t m_sock;
+  int m_sock;
 
   /**
    * \internal
@@ -357,10 +363,10 @@ private:
   /**
    * \internal
    *
-   * Used to identify the ns-3 read thread used to do blocking reads on the 
-   * socket (fd) corresponding to the host device.
+   * Includes the ns-3 read thread used to do blocking reads on the fd
+   * corresponding to the host device.
    */
-  Ptr<SystemThread> m_readThread;
+  Ptr<TapBridgeFdReader> m_fdReader;
 
   /**
    * \internal

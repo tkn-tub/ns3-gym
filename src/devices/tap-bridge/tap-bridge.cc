@@ -32,7 +32,7 @@
 #include "ns3/ipv4.h"
 #include "ns3/simulator.h"
 #include "ns3/realtime-simulator-impl.h"
-#include "ns3/system-thread.h"
+#include "ns3/unix-fd-reader.h"
 #include "ns3/uinteger.h"
 
 #include <sys/wait.h>
@@ -64,6 +64,27 @@
 NS_LOG_COMPONENT_DEFINE ("TapBridge");
 
 namespace ns3 {
+
+FdReader::Data TapBridgeFdReader::DoRead (void)
+{
+  NS_LOG_FUNCTION_NOARGS ();
+
+  uint32_t bufferSize = 65536;
+  uint8_t *buf = (uint8_t *)malloc (bufferSize);
+  NS_ABORT_MSG_IF (buf == 0, "malloc() failed");
+
+  NS_LOG_LOGIC ("Calling read on tap device fd " << m_fd);
+  ssize_t len = read (m_fd, buf, bufferSize);
+  if (len <= 0)
+    {
+      NS_LOG_INFO ("TapBridgeFdReader::DoRead(): done");
+      free (buf);
+      buf = 0;
+      len = 0;
+    }
+
+  return FdReader::Data (buf, len);
+}
 
 #define TAP_MAGIC 95549
 
@@ -135,7 +156,7 @@ TapBridge::TapBridge ()
   m_sock (-1),
   m_startEvent (),
   m_stopEvent (),
-  m_readThread (0),
+  m_fdReader (0),
   m_ns3AddressRewritten (false)
 {
   NS_LOG_FUNCTION_NOARGS ();
@@ -146,6 +167,8 @@ TapBridge::TapBridge ()
 TapBridge::~TapBridge()
 {
   NS_LOG_FUNCTION_NOARGS ();
+
+  StopTapDevice ();
 
   delete [] m_packetBuffer;
   m_packetBuffer = 0;
@@ -235,11 +258,11 @@ TapBridge::StartTapDevice (void)
   //
   // Now spin up a read thread to read packets from the tap device.
   //
-  NS_ABORT_MSG_IF (m_readThread != 0,"TapBridge::StartTapDevice(): Receive thread is already running");
+  NS_ABORT_MSG_IF (m_fdReader != 0,"TapBridge::StartTapDevice(): Receive thread is already running");
   NS_LOG_LOGIC ("Spinning up read thread");
 
-  m_readThread = Create<SystemThread> (MakeCallback (&TapBridge::ReadThread, this));
-  m_readThread->Start ();
+  m_fdReader = Create<TapBridgeFdReader> ();
+  m_fdReader->Start (m_sock, MakeCallback (&TapBridge::ReadCallback, this));
 }
 
 void
@@ -247,14 +270,17 @@ TapBridge::StopTapDevice (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
 
-  close (m_sock);
-  m_sock = -1;
+  if (m_fdReader != 0)
+    {
+      m_fdReader->Stop ();
+      m_fdReader = 0;
+    }
 
-  NS_ASSERT_MSG (m_readThread != 0, "TapBridge::StopTapDevice(): Receive thread is not running");
-
-  NS_LOG_LOGIC ("Joining read thread");
-  m_readThread->Join ();
-  m_readThread = 0;
+  if (m_sock != -1)
+    {
+      close (m_sock);
+      m_sock = -1;
+    }
 }
 
 void
@@ -636,49 +662,33 @@ TapBridge::CreateTap (void)
 }
 
 void
-TapBridge::ReadThread (void)
+TapBridge::ReadCallback (uint8_t *buf, ssize_t len)
 {
   NS_LOG_FUNCTION_NOARGS ();
 
+  NS_ASSERT_MSG (buf != 0, "invalid buf argument");
+  NS_ASSERT_MSG (len > 0, "invalid len argument");
+
   //
-  // It's important to remember that we're in a completely different thread 
-  // than the simulator is running in.  We need to synchronize with that 
-  // other thread to get the packet up into ns-3.  What we will need to do 
+  // It's important to remember that we're in a completely different thread
+  // than the simulator is running in.  We need to synchronize with that
+  // other thread to get the packet up into ns-3.  What we will need to do
   // is to schedule a method to deal with the packet using the multithreaded
   // simulator we are most certainly running.  However, I just said it -- we
   // are talking about two threads here, so it is very, very dangerous to do
   // any kind of reference counting on a shared object.  Just don't do it.
-  // So what we're going to do is to allocate a buffer on the heap and pass
-  // that buffer into the ns-3 context thread where it will create the packet.
+  // So what we're going to do is pass the buffer allocated on the heap
+  // into the ns-3 context thread where it will create the packet.
   //
-  int32_t len = -1;
 
-  for (;;) 
-    {
-      uint32_t bufferSize = 65536;
-      uint8_t *buf = (uint8_t *)malloc (bufferSize);
-      NS_ABORT_MSG_IF (buf == 0, "TapBridge::ReadThread(): malloc packet buffer failed");
-      NS_LOG_LOGIC ("Calling read on tap device socket fd " << m_sock);
-      len = read (m_sock, buf, bufferSize);
-
-      if (len == -1)
-        {
-          NS_LOG_INFO ("TapBridge::ReadThread(): Returning");
-          free (buf);
-          buf = 0;
-          return;
-        }
-
-      NS_LOG_INFO ("TapBridge::ReadThread(): Received packet on node " << m_nodeId);
-      NS_LOG_INFO ("TapBridge::ReadThread(): Scheduling handler");
-      NS_ASSERT_MSG (m_rtImpl, "EmuNetDevice::ReadThread(): Realtime simulator implementation pointer not set");
-      m_rtImpl->ScheduleRealtimeNowWithContext (m_nodeId, MakeEvent (&TapBridge::ForwardToBridgedDevice, this, buf, len));
-      buf = 0;
-    }
+  NS_LOG_INFO ("TapBridge::ReadCallback(): Received packet on node " << m_nodeId);
+  NS_LOG_INFO ("TapBridge::ReadCallback(): Scheduling handler");
+  NS_ASSERT_MSG (m_rtImpl, "TapBridge::ReadCallback(): Realtime simulator implementation pointer not set");
+  m_rtImpl->ScheduleRealtimeNowWithContext (m_nodeId, MakeEvent (&TapBridge::ForwardToBridgedDevice, this, buf, len));
 }
 
 void
-TapBridge::ForwardToBridgedDevice (uint8_t *buf, uint32_t len)
+TapBridge::ForwardToBridgedDevice (uint8_t *buf, ssize_t len)
 {
   NS_LOG_FUNCTION (buf << len);
 
