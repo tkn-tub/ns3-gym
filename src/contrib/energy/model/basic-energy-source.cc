@@ -174,8 +174,6 @@ void
 BasicEnergySource::DoDispose (void)
 {
   NS_LOG_FUNCTION (this);
-  // calculate remaining energy at the end of simulation
-  CalculateRemainingEnergy ();
   BreakDeviceEnergyModelRefCycle ();  // break reference cycle
 }
 
