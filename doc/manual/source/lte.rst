@@ -65,7 +65,7 @@ The figure below shows how UE and eNB can exchange packets through the considere
 
 .. _lte-transmission:
 
-.. figure:: figures/lte-transmission.*
+.. figure:: figures/lte-transmission.png
 
     DL and UL transmision on the LTE network
 
