@@ -21,6 +21,21 @@ Supported platforms
 ns-3.10 has been tested on the following platforms.  Not all features are
 available on all platforms; check the Installation page on the project wiki.
 
+- Linux i686 Ubuntu 10.10
+  - g++-4.4.5
+- Linux x86_64 Ubuntu 8.04.4
+  - g++-3.4.6, g++-4.2.4
+- Linux x86_64 Fedora Core 12
+  - g++-4.4.4
+- Linux x86_64 Fedora Core 10
+  - g++-3.4.6, 4.0.4, 4.1.2, 4.2.4, 4.3.4, 4.4.0
+- OS X Snow Leopard
+  - g++-4.2.1 
+- OS X powerpc Leopard 
+  - g++-4.0, g++-4.2
+- Windows XP 32 bit Cygwin 1.7.7
+  - g++-4.3.4 
+
 New user-visible features
 -------------------------
 
@@ -121,6 +136,7 @@ since ns-3.9, in many cases referencing the Bugzilla bug number
    - bug 852 - Add support for 802.11g devices
    - bug 892 - WaypointMobilityModel incompatible with MobilityHelper::Install
    - bug 893 - Lazy CourseChange notification for WaypointMobilityModel
+   - bug 903 - TapBridge does not shut down properly
    - bug 953 - WiMAX channel scanning overflow
    - bug 967 - Need to decouple Ipv4L4Protocols from Ipv4L3Protocol
    - bug 978 - Consolidate Wi-Fi MAC high functionality
@@ -144,6 +160,7 @@ since ns-3.9, in many cases referencing the Bugzilla bug number
    - bug 1022 - inappropriate ASSERT in tcp-socket-impl.cc
    - bug 1025 - wimax-ipv4 script exists with signal SIGSEGV when nbSS>20
    - bug 1027 - RocketfuelTopologyReader is not working at all
+   - bug 1029 - v4Ping application endian issues
    - bug 1030 - routing/aodv example fixed
    - bug 1031 - Wifi hidden terminal example does not work
    - bug 1032 - Unable to specify multiple Compiler/Linker flags
