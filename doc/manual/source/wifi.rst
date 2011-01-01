@@ -38,47 +38,47 @@ The implementation is modular and provides roughly four levels of models:
   generation, probing, and association state machines, and
 * a set of **Rate control algorithms** used by the MAC low models
 
-There are presently six **MAC high models**, three for non-QoS MACs and three
-for QoS MACs.
+There are presently three **MAC high models** that provide for the three
+(non-mesh; the mesh equivalent, which is a sibling of these with common
+parent ``ns3::RegularWifiMac``, is not discussed here) Wi-Fi topological
+elements - Access Point (AP) (implemented in class ``ns3::ApWifiMac``, 
+non-AP Station (STA) (``ns3::StaWifiMac``), and STA in an Independent
+Basic Service Set (IBSS - also commonly referred to as an ad hoc
+network (``ns3::AdhocWifiMac``).
 
-* **non-QoS MACs:**
+The simplest of these is ``ns3::AdhocWifiMac`, which implements a
+Wi-Fi MAC that does not perform any kind of beacon generation,
+probing, or association. The ``ns3::StaWifiMac`` class implements
+an active probing and association state machine that handles automatic
+re-association whenever too many beacons are missed. Finally,
+``ns3::ApWifiMac`` implements an AP that generates periodic
+beacons, and that accepts every attempt to associate.
 
-    #. a simple adhoc state machine that does not perform any kind of beacon
-       generation, probing, or association. This state machine is implemented by the
-       ``ns3::AdhocWifiMac`` class.
-    #. an active probing and association state machine that handles automatic
-       re-association whenever too many beacons are missed is implemented by the
-       ``ns3::NqstaWifiMac`` class.
-    #. an access point that generates periodic beacons, and that accepts every
-       attempt to associate. This AP state machine is implemented by the
-       ``ns3::NqapWifiMac`` class.
-
-* **QoS MACs:**
-
-    #. a simple adhoc state machine like above but also able to manage QoS traffic.
-       This state machine is implemented by :cpp:class:`ns3::QadhocWifiMac` class.
-    #. a station state machine like above but also able to manage QoS traffic.
-       Implemented by ``ns3::QstaWifiMac``.
-    #. a QoS access point state machine like above implemented by ``ns3::QapWifiMac``.
-
-With QoS MAC models is possible to work with traffic belonging to four different
-access classes: **AC_VO** for voice traffic, **AC_VI** for video traffic,
-**AC_BE** for best-effort traffic and **AC_BK** for background traffic. In
-order to determine MSDU's access class, every packet forwarded down to these MAC
-layers should be marked using ``ns3::QosTag`` in order to set a TID (traffic id)
-for that packet otherwise it will be considered belonging to **AC_BE** access
-class.
+These three MAC high models share a common parent in
+``ns3::RegularWifiMac``, which exposes, among other MAC
+configuration, an attribute ``QosSupported`` that allows
+configuration of 802.11e/WMM-style QoS support. With QoS-enabled MAC
+models it is possible to work with traffic belonging to four different
+Access Categories (ACs): **AC_VO** for voice traffic,
+**AC_VI** for video traffic, **AC_BE** for best-effort
+traffic and **AC_BK** for background traffic.  In order for the
+MAC to determine the appropriate AC for an MSDU, packets forwarded
+down to these MAC layers should be marked using **ns3::QosTag** in
+order to set a TID (traffic id) for that packet otherwise it will be
+considered belonging to **AC_BE**.
 
 The **MAC low layer** is split into three components:
 
 #. ``ns3::MacLow`` which takes care of RTS/CTS/DATA/ACK transactions.
 #. ``ns3::DcfManager`` and ``ns3::DcfState`` which implements the DCF and EDCAF
    functions.
-#. ``ns3::DcaTxop`` or ``ns3::EdcaTxopN`` which handle the packet queue,
+#. ``ns3::DcaTxop`` and ``ns3::EdcaTxopN`` which handle the packet queue,
    packet fragmentation, and packet retransmissions if they are needed.
-   ``ns3::DcaTxop`` object is used by non-QoS high MACs. ``ns3::EdcaTxopN`` is
-   used by QoS high MACs and performs also QoS operations like 802.11n MSDU
-   aggregation.
+   The ``ns3::DcaTxop`` object is used high MACs that are not QoS-enabled,
+   and for transmission of frames (e.g., of type Management)
+   that the standard says should access the medium using the DCF. 
+   ``ns3::EdcaTxopN`` is is used by QoS-enabled high MACs and also
+   performs QoS operations like 802.11n-style MSDU aggregation.
 
 There are also several **rate control algorithms** that can be used by the Mac low layer:
 
@@ -184,32 +184,40 @@ NqosWifiMacHelper and QosWifiMacHelper
 
 The ``ns3::NqosWifiMacHelper`` and ``ns3::QosWifiMacHelper`` configure an
 object factory to create instances of a ``ns3::WifiMac``. They are used to
-configure MAC parameters like type of MAC.  Setting up a non-QoS MAC layers the
-object we use is ``ns3::NqosWifiMacHelper``.  For example the following user
-code configures a non-QoS MAC sta:::
+configure MAC parameters like type of MAC.  
+
+The former, ``ns3::NqosWifiMacHelper``, supports creation of MAC
+instances that do not have 802.11e/WMM-style QoS support enabled. 
+
+For example the following user code configures a non-QoS MAC that
+will be a non-AP STA in an infrastructure network where the AP has
+SSID ``ns-3-ssid``:::
 
     NqosWifiMacHelper wifiMacHelper = NqosWifiMacHelper::Default ();
     Ssid ssid = Ssid ("ns-3-ssid");
-    wifiMacHelper.SetType ("ns3::NqstaWifiMac", "Ssid", SsidValue (ssid), 
-        "ActiveProbing", BooleanValue (false));
+    wifiMacHelper.SetType ("ns3::StaWifiMac",
+                          "Ssid", SsidValue (ssid),
+                          "ActiveProbing", BooleanValue (false));
 
-Setting up a QoS MACs we use a ``ns3::QosWifiMacHelper`` instead.
-This object could be also used to set:
+To create MAC instances with QoS support enabled,
+``ns3::QosWifiMacHelper`` is used in place of
+``ns3::NqosWifiMacHelper``.  This object can be also used to set:
 
-* a MSDU aggregator for a particular access class in order to use 802.11n MSDU
-  aggregation feature;
+* a MSDU aggregator for a particular Access Category (AC) in order to use 
+  802.11n MSDU aggregation feature;
 * block ack parameters like threshold (number of packets for which block ack
   mechanism should be used) and inactivity timeout.
 
-A possible user code:::
+The following code shows an example use of ``ns3::QosWifiMacHelper`` to 
+create an AP with QoS enabled, aggregation on AC_VO, and Block Ack on AC_BE:::
 
   QosWifiMacHelper wifiMacHelper = QosWifiMacHelper::Default ();
-  wifiMacHelper.SetType ("ns3::QapWifiMac", 
-    "Ssid", SsidValue (ssid), 
-    "BeaconGeneration", BooleanValue (true), 
-    "BeaconInterval", TimeValue (Seconds (2.5)));
-  wifiMacHelper.SetMsduAggregatorForAc (AC_VO, "ns3::MsduStandardAggregator", 
-    "MaxAmsduSize", UintegerValue (3839));
+  wifiMacHelper.SetType ("ns3::ApWifiMac",
+                         "Ssid", SsidValue (ssid),
+                         "BeaconGeneration", BooleanValue (true),
+                         "BeaconInterval", TimeValue (Seconds (2.5)));
+  wifiMacHelper.SetMsduAggregatorForAc (AC_VO, "ns3::MsduStandardAggregator",
+                                        "MaxAmsduSize", UintegerValue (3839));
   wifiMacHelper.SetBlockAckThresholdForAc (AC_BE, 10);
   wifiMacHelper.SetBlockAckInactivityTimeoutForAc (AC_BE, 5);
 

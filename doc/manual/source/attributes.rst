@@ -699,10 +699,10 @@ and ::
      <default name="ns3::EdcaTxopN::MinCw" value="31"/>
      <default name="ns3::EdcaTxopN::MaxCw" value="1023"/>
      <default name="ns3::EdcaTxopN::Aifsn" value="3"/>
-     <default name="ns3::QstaWifiMac::ProbeRequestTimeout" value="50000000ns"/>
-     <default name="ns3::QstaWifiMac::AssocRequestTimeout" value="500000000ns"/>
-     <default name="ns3::QstaWifiMac::MaxMissedBeacons" value="10"/>
-     <default name="ns3::QstaWifiMac::ActiveProbing" value="false"/>
+     <default name="ns3::StaWifiMac::ProbeRequestTimeout" value="50000000ns"/>
+     <default name="ns3::StaWifiMac::AssocRequestTimeout" value="500000000ns"/>
+     <default name="ns3::StaWifiMac::MaxMissedBeacons" value="10"/>
+     <default name="ns3::StaWifiMac::ActiveProbing" value="false"/>
     ...
 
 This file can be archived with your simulation script and output data.

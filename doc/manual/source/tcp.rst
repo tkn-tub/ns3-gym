@@ -105,7 +105,7 @@ Current limitations
 +++++++++++++++++++
 
 * Only Tahoe congestion control is presently supported.
-* Only IPv4 is supported (IPv6 support will start to be added after ns-3.6).
+* Only IPv4 is supported
 
 Network Simulation Cradle
 *************************
@@ -149,10 +149,14 @@ Building |ns3| with nsc support is the same as building it without; no
 additional arguments are needed for waf. Building nsc may take some time
 compared to |ns3|; it is interleaved in the |ns3| building process.
 
-Try running the regression tests: ``./waf --regression``.  If NSC has
-been successfully built, the following test should show up in the results:::
+Try running the following ns-3 test suite:::  
 
-    PASS test-tcp-nsc-lfn
+    ./test.py -s ns3-tcp-interoperability
+
+If NSC has been successfully built, the following test should show up 
+in the results:::
+
+    PASS TestSuite ns3-tcp-interoperability
 
 This confirms that NSC is ready to use.
 
@@ -190,7 +194,7 @@ Linux 2.6.18 and Linux 2.6.26 stacks for |ns3|. To see which stacks
 were built, one can execute the following find command at the |ns3| top level
 directory:::
 
-    ~/ns-3.2> find nsc -name "*.so" -type f 
+    ~/ns-3.10> find nsc -name "*.so" -type f 
     nsc/linux-2.6.18/liblinux2.6.18.so
     nsc/linux-2.6.26/liblinux2.6.26.so
 
