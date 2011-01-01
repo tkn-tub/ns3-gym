@@ -42,7 +42,7 @@ class FdReader : public SimpleRefCount<FdReader>
 {
 public:
   FdReader();
-  ~FdReader();
+  virtual ~FdReader();
 
   /**
    * Start a new read thread.
