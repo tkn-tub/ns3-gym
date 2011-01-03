@@ -159,7 +159,6 @@ int main (int argc, char *argv[])
     }
 
   YansWifiPhyHelper wifiPhy =  YansWifiPhyHelper::Default ();
-  // This is one parameter that matters when using FixedRssLossModel
   // set it to zero; otherwise, gain will be added
   wifiPhy.Set ("RxGain", DoubleValue (-10) ); 
   // ns-3 supports RadioTap and Prism tracing extensions for 802.11b
