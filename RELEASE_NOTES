@@ -33,8 +33,6 @@ available on all platforms; check the Installation page on the project wiki.
   - g++-4.2.1 
 - OS X powerpc Leopard 
   - g++-4.0, g++-4.2
-- Windows XP 32 bit Cygwin 1.7.7
-  - g++-4.3.4 
 
 New user-visible features
 -------------------------
@@ -171,6 +169,9 @@ Known issues
 ------------
 In general, known issues are tracked on the project tracker available
 at http://www.nsnam.org/bugzilla/
+
+Windows XP 32 bit Cygwin 1.7.7 does not seem to work because of a
+problem (reported elsewhere) in linking large libraries.
 
 Release 3.9
 ===========
