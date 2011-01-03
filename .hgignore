@@ -15,6 +15,7 @@
 \.mob$
 \.routes$
 ^doc/manual/build
+^doc/tutorial/build
 ^doc/manual/figures/.*eps
 ^doc/manual/figures/.*pdf
 ^doc/manual/figures/.*png
