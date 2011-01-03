@@ -179,7 +179,7 @@ htmlhelp_basename = 'ns-3doc'
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
   ('index', 'ns-3.tex', u'ns-3 Documentation',
-   u'ns-3 project', 'testing'),
+   u'ns-3 project', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
