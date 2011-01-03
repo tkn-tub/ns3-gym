@@ -38,23 +38,23 @@ under ``src/test`` for more complicated examples.
 *The rest of this chapter remains to be written*
 
 How to add an example program to the test suite
------------------------------------------------
+***********************************************
 
 Testing for boolean outcomes
-----------------------------
+****************************
 
 Testing outcomes when randomness is involved
---------------------------------------------
+********************************************
 
 Testing output data against a known distribution
-------------------------------------------------
+************************************************
 
 Providing non-trivial input vectors of data
--------------------------------------------
+*******************************************
 
 Storing and referencing non-trivial output data
------------------------------------------------
+***********************************************
 
 Presenting your output test data
---------------------------------
+********************************
 
