@@ -239,7 +239,8 @@ appropriate WiMAX connection. Class :cpp:class:`IpcsClassifier` and class
 :cpp:class:`IpcsClassifierRecord` implement the classifier module for both SS
 and BS
  
-@subsection MAC Common Part Sublayer
+MAC Common Part Sublayer
+++++++++++++++++++++++++
  
 The MAC Common Part Sublayer (CPS) is the main sublayer of the IEEE 802.16 MAC
 and performs the fundamental functions of the MAC. The module implements the

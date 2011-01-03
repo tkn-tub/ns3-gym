@@ -134,7 +134,7 @@ virtual methods listed below:
 
 Basically, the first three functions are used to serialize and deserialize
 protocol control information to/from a Buffer. For example, one may define
-@code{class TCPHeader : public Header}. The TCPHeader object will typically
+``class TCPHeader : public Header``. The TCPHeader object will typically
 consist of some private data (like a sequence number) and public interface
 access functions (such as checking the bounds of an input). But the underlying
 representation of the TCPHeader in a Packet Buffer is 20 serialized bytes (plus

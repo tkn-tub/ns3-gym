@@ -312,14 +312,14 @@ successfully received or not: a random number is drawn from a uniform
 distribution and is compared against the probability of error.
 
 To evaluate the probability of error, we start from the piecewise linear 
-functions shown in Figure @ref{fig:snir} and calculate the 
+functions shown in Figure :ref:`snir` and calculate the 
 SNIR function. 
 
 .. _snir:
 
 .. figure:: figures/snir.*
    
-   SNIR function over time.
+   *SNIR function over time.*
 
 From the SNIR function we can derive bit error rates for BPSK and QAM
 modulations.  Then, for each interval l where BER is constant, we define the

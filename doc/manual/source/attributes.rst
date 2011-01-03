@@ -686,12 +686,10 @@ and ::
 
     ./waf --command-template="%s --ns3::ConfigStore::Filename=csma-bridge-config.xml
     --ns3::ConfigStore::Mode=Save --ns3::ConfigStore::FileFormat=Xml" --run scratch/csma-bridge
-    @end example
-    @end smallformat
-    After running, you can open the csma-bridge-config.xml file and it will
-    display the configuration that was applied to your simulation; e.g.
-    @smallformat
-    @example
+
+After running, you can open the csma-bridge-config.xml file and it will
+display the configuration that was applied to your simulation; e.g.::
+
     <?xml version="1.0" encoding="UTF-8"?>
     <ns3>
      <default name="ns3::V4Ping::Remote" value="102.102.102.102"/>

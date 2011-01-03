@@ -15,7 +15,7 @@ user code can swap out implementations with minimal changes to the scripts.
 There are two important abstract base classes:
 
 * class :cpp:class:`TcpSocket`:  This is defined in
-  ``src/node/tcp-socket.@{cc,h@}``. This class exists for hosting TcpSocket
+  ``src/node/tcp-socket.{cc,h}``. This class exists for hosting TcpSocket
   attributes that can be reused across different implementations. For instance,
   ``TcpSocket::SetInitialCwnd()`` can be used for any of the implementations
   that derive from class :cpp:class:`TcpSocket`.

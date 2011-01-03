@@ -96,7 +96,7 @@ PHY characteristics.
 The CsmaChannel has three states, ``IDLE``, ``TRANSMITTING`` and
 ``PROPAGATING``. These three states are "seen" instantaneously by all devices on
 the channel. By this we mean that if one device begins or ends a simulated
-transmission, all devices on the channel are @emph{immediately} aware of the
+transmission, all devices on the channel are *immediately* aware of the
 change in state. There is no time during which one device may see an ``IDLE``
 channel while another device physically further away in the collision domain may
 have begun transmitting with the associated signals not propagated down the

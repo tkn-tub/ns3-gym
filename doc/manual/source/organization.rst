@@ -4,8 +4,7 @@
 Organization
 ------------
 
-This manual is organized into several parts with several chapters per part.
-This chapter describes the overall software organization and the
+This chapter describes the overall |ns3| software organization and the
 corresponding organization of this manual.
 
 |ns3| is a discrete-event network simulator in which the simulation core
@@ -13,7 +12,7 @@ and models are implemented in C++. |ns3| is built as a library which may be
 statically or dynamically linked to a C++ main program that defines the
 simulation topology and starts the simulator. |ns3| also exports nearly all
 of its API to Python, allowing Python programs to import an "ns3" module in
-much the same way as in C++.  
+much the same way as the |ns3| library is linked by executables in C++.  
 
 .. _software-organization:
 
@@ -26,31 +25,36 @@ can be described by the diagram in :ref:`software-organization`. We will
 work our way from the bottom up; in general, modules only have dependencies
 on modules beneath them in the figure.
 
-We first describe Part 1 of the manual. The simulation core is implemented
+We first describe the core of the simulator; those components that are 
+common across all protocol, hardware, and environmental models. 
+The simulation core is implemented
 in ``src/core``, and the core is used to build the simulation engine
 ``src/simulator``. Packets are fundamental objects in a network simulator
-and are implemented in ``src/packet``. These three simulation modules by
+and are implemented in ``src/common``. These three simulation modules by
 themselves are intended to comprise a generic simulation core that can be
 used by different kinds of networks, not just Internet-based networks.  The
 above modules of |ns3| are independent of specific network and device
-models, which are covered in later parts of this manual.
+models, which are covered in subsequent parts of this manual.
 
-In addition to the above |ns3| core, we describe also in Part 1 two other
-modules that supplement the core C++-based API. |ns3| programs may access
+In addition to the above |ns3| core, we introduce, also in the initial 
+portion of the manual, two other modules that supplement the core C++-based 
+API.  |ns3| programs may access
 all of the API directly or may make use of a so-called *helper API* that
 provides convenient wrappers or encapsulation of low-level API calls. The
 fact that |ns3| programs can be written to two APIs (or a combination
-thereof) is a fundamental aspect of the simulator and is also covered in
-Part 1.  We also describe how Python is supported in |ns3| as the last
-chapter of Part 1. 
+thereof) is a fundamental aspect of the simulator.
+We also describe how Python is supported in |ns3| before moving onto
+specific models of relevance to network simulation.
 
 The remainder of the manual is focused on documenting the models and
-supporting capabilities.  Part 2 focuses on two fundamental objects in
+supporting capabilities.  The next part focuses on two fundamental objects in
 |ns3|:  the ``Node`` and ``NetDevice``. Two special NetDevice types are
 designed to support network emulation use cases, and emulation is described
-in Part 3. Part 4 is devoted to Internet-related models, including the
-sockets API used by Internet applications. Part 5 covers applications, and
-Part 6 describes additional support for simulation, such as animators.
+next.  The following chapter is devoted to Internet-related models, 
+including the
+sockets API used by Internet applications. The next chapter covers 
+applications, and the following chapter describes additional support for 
+simulation, such as animators and statistics.
 
 The project maintains a separate manual devoted to testing and validation
 of |ns3| code (see the `ns-3 Testing and Validation manual

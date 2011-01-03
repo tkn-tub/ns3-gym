@@ -514,7 +514,7 @@ The trivial base class ErrorModel does not do anything interesting, but it
 provides a useful base class interface (Corrupt () and Reset ()), forwarded to
 virtual functions that can be subclassed. Let's next consider what we call a
 BasicErrorModel which is based on the |ns2| ErrorModel class (in
-ns-2/queue/errmodel.@{cc,h@}).
+``ns-2/queue/errmodel.{cc,h}``).
 
 What properties do we want this to have, from a user interface perspective? We
 would like for the user to be able to trivially swap out the type of ErrorModel
