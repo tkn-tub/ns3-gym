@@ -17,51 +17,54 @@ There are two important abstract base classes:
 * class :cpp:class:`TcpSocket`:  This is defined in
   ``src/node/tcp-socket.{cc,h}``. This class exists for hosting TcpSocket
   attributes that can be reused across different implementations. For instance,
-  ``TcpSocket::SetInitialCwnd()`` can be used for any of the implementations
+  the attribute ``InitialCwnd`` can be used for any of the implementations
   that derive from class :cpp:class:`TcpSocket`.
-* class :cpp:class:`TcpSocketFactory`:  This is used by applications to create
-  TCP sockets.  A typical usage can be seen in this snippet:::
+* class :cpp:class:`TcpSocketFactory`:  This is used by the layer-4 protocol
+  instance to create TCP sockets of the right type.
 
-      // Create the socket if not already created
-      if (!m_socket)
-        {
-          m_socket = Socket::CreateSocket (GetNode(), m_tid);
-          m_socket->Bind (m_local);
-          ...
-        }
+There are presently two implementations of TCP available for |ns3|.
 
-The parameter ``m_tid`` controls the TypeId of the actual TCP Socket
-implementation that is instantiated. This way, the application can be written
-generically and different socket implementations can be swapped out by
-specifying the TypeId.
+* a natively implemented TCP for ns-3
+* support for the `Network Simulation Cradle (NSC) <http://www.wand.net.nz/~stj2/nsc/>`_
+
+It should also be mentioned that various ways of combining virtual machines
+with |ns3| makes available also some additional TCP implementations, but
+those are out of scope for this chapter.
 
 ns-3 TCP
 ********
 
-|ns3| contains a port of the TCP model from `GTNetS
-<http://www.ece.gatech.edu/research/labs/MANIACS/GTNetS/index.html>`_.  This
-model is a full TCP, in that it is bidirectional and attempts to model the
-connection setup and close logic. In fact, it is a more complete implementation
-of the TCP state machine than ns-2's "FullTcp" model. This TCP model was
-originally written by George Riley as part of GTNetS and ported to |ns3| by Raj
-Bhattacharjea.
+Until ns-3.10 release, |ns3| contained a port of the TCP model from `GTNetS
+<http://www.ece.gatech.edu/research/labs/MANIACS/GTNetS/index.html>`_. 
+This implementation was substantially rewritten by Adriam Tam for ns-3.10.
+The model is a full TCP, in that it is bidirectional and attempts to model the
+connection setup and close logic. 
 
 The implementation of TCP is contained in the following files:::
 
     src/internet-stack/tcp-header.{cc,h}
     src/internet-stack/tcp-l4-protocol.{cc,h}
     src/internet-stack/tcp-socket-factory-impl.{cc,h}
-    src/internet-stack/tcp-socket-impl.{cc,h}
-    src/internet-stack/tcp-typedefs.h
+    src/internet-stack/tcp-socket-base.{cc,h}
+    src/internet-stack/tcp-tx-buffer.{cc,h}
+    src/internet-stack/tcp-rx-buffer.{cc,h}
+    src/internet-stack/tcp-rfc793.{cc,h}
+    src/internet-stack/tcp-tahoe.{cc,h}
+    src/internet-stack/tcp-reno.{cc,h}
+    src/internet-stack/tcp-newreno.{cc,h}
     src/internet-stack/rtt-estimator.{cc,h}
-    src/internet-stack/sequence-number.{cc,h}
+    src/common/sequence-number.{cc,h}
+
+Different variants of TCP congestion control are supported by subclassing
+the common base class :cpp:class:`TcpSocketBase`.  Several variants
+are supported, including RFC 793 (no congestion control), Tahoe, Reno,
+and NewReno.  NewReno is used by default.
 
 Usage
 +++++
 
-The file ``examples/tcp-star-server.cc`` contains an example that
-makes use of ``ns3::OnOffApplication`` and ``ns3::PacketSink`` 
-applications.
+In many cases, usage of TCP is set at the application layer by telling
+the |ns3| application which kind of socket factory to use.
 
 Using the helper functions defined in ``src/helper``, here is how
 one would create a TCP receiver:::
@@ -74,13 +77,11 @@ one would create a TCP receiver:::
   sinkApp.Start (Seconds (1.0));
   sinkApp.Stop (Seconds (10.0));
 
-
 Similarly, the below snippet configures OnOffApplication traffic source to use
 TCP:::
 
   // Create the OnOff applications to send TCP to the server
   OnOffHelper clientHelper ("ns3::TcpSocketFactory", Address ());
-
 
 The careful reader will note above that we have specified the TypeId of an
 abstract base class :cpp:class:`TcpSocketFactory`. How does the script tell
@@ -91,21 +92,44 @@ below when using Network Simulation Cradle. So, by default, when using the |ns3|
 helper API, the TCP that is aggregated to nodes with an Internet stack is the
 native |ns3| TCP.
 
-Once a TCP socket is created, you will want to follow conventional socket logic
+To configure behavior of TCP, a number of parameters are exported through the
+:ref:`Attributes <ns-3 attribute system>`. These are documented in the `Doxygen
+<http://www.nsnam.org/doxygen/classns3_1_1_tcp_socket.html>` for class
+:cpp:class:`TcpSocket`.  For example, the maximum segment size is a
+settable attribute.
+
+For users who wish to have a pointer to the actual socket (so that
+socket operations like Bind(), setting socket options, etc. can be
+done on a per-socket basis), Tcp sockets can be created by using the 
+``Socket::CreateSocket()`` method and passing in the TypeId 
+corresponding to the type of socket desired; e.g.::: 
+
+      // Create the socket if not already created
+      TypeId tid = TypeId::LookupByName ("ns3::TcpTahoe");
+      Ptr<Socket> localSocket = Socket::CreateSocket (node, tid);
+
+The parameter ``tid`` controls the TypeId of the actual TCP Socket
+implementation that is instantiated. This way, the application can be written
+generically and different socket implementations can be swapped out by
+specifying the TypeId.
+
+Once a TCP socket is created, one will want to follow conventional socket logic
 and either connect() and send() (for a TCP client) or bind(), listen(), and
 accept() (for a TCP server). :ref:`Sockets API <Sockets APIs>` for a review of
 how sockets are used in |ns3|.
 
-To configure behavior of TCP, a number of parameters are exported through the
-:ref:`Attributes <ns-3 attribute system>`. These are documented in the `Doxygen
-<http://www.nsnam.org/doxygen/classns3_1_1_tcp_socket.html>` for class
-:cpp:class:`TcpSocket`.
+Validation
+++++++++++
+
+Several TCP validation test results can be found in the
+`wiki page <http://www.nsnam.org/wiki/index.php/New_TCP_Socket_Architecture>`_ 
+describing this implementation.
 
 Current limitations
 +++++++++++++++++++
 
-* Only Tahoe congestion control is presently supported.
 * Only IPv4 is supported
+* Neither the Nagle algorithm nor SACK are supported
 
 Network Simulation Cradle
 *************************
@@ -285,7 +309,6 @@ This class calls ``ns3::NscTcpSocketImpl`` both from the nsc wakeup() callback
 and from the Receive path (to ensure that possibly queued data is scheduled for
 sending).
 
-
 ``src/internet-stack/nsc-tcp-socket-impl`` implements the nsc socket interface.
 Each instance has its own nscTcpSocket. Data that is Send() will be handed to
 the nsc stack via m_nscTcpSocket->send_data(). (and not to nsc-tcp-l4, this is
@@ -305,10 +328,8 @@ when its wakeup callback is invoked by nsc.
 Limitations
 +++++++++++
 
-
 * NSC only works on single-interface nodes; attempting to run it on a
-  multi-interface node will cause a program error.  This limitation should be
-  fixed by ns-3.7.
+  multi-interface node will cause a program error.  
 * Cygwin and OS X PPC are not supported
 * The non-Linux stacks of NSC are not supported in |ns3|
 * Not all socket API callbacks are supported
