@@ -127,6 +127,8 @@ New user-visible features
      (viii) a channel model with the outdoor E-UTRAN propagation loss 
      model.
 
+   - Project documentation has been converted from GNU Texinfo to Sphinx. 
+
 Bugs fixed
 ----------
 The following lists many of the bugs fixed or small feature additions

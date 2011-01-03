@@ -53,8 +53,12 @@ us a note on ns-developers mailing list.  </p>
 separate reference trace repository is no longer needed to perform 
 regression tests.  Tests that require comparison against known good traces
 can still be run from test.py.  The --regression option for waf has been
-removed.
+removed.  However, the "-r" option to download.py has been kept to 
+allow users to fetch older revisions of ns-3 that contain these traces.
 </p>
+<li><b>Documentation converted to Sphinx</b>
+<p> Project documentation (manual, tutorial, and testing) have been
+converted to Sphinx from the GNU Texinfo markup format.</p>
 </ul>
 
 <h2>New API:</h2>
