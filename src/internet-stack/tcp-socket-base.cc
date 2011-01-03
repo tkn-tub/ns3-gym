@@ -1270,7 +1270,7 @@ TcpSocketBase::SendPendingData (bool withAck)
   if (m_txBuffer.Size () == 0) return false; // Nothing to send
   if (m_endPoint == 0)
     {
-      NS_LOG_INFO ("TcpSocketImpl::SendPendingData: No endpoint; m_shutdownSend=" << m_shutdownSend);
+      NS_LOG_INFO ("TcpSocketBase::SendPendingData: No endpoint; m_shutdownSend=" << m_shutdownSend);
       return false; // Is this the right way to handle this condition?
     }
   uint32_t nPacketsSent = 0;

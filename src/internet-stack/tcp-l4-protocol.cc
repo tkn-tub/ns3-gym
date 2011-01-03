@@ -324,8 +324,6 @@ TcpL4Protocol::Send (Ptr<Packet> packet,
     m_node->GetObject<Ipv4L3Protocol> ();
   if (ipv4 != 0)
     {
-      // XXX We've already performed the route lookup in TcpSocketImpl
-      // should be cached.
       Ipv4Header header;
       header.SetDestination (daddr);
       header.SetProtocol (PROT_NUMBER);
@@ -372,8 +370,6 @@ TcpL4Protocol::SendPacket (Ptr<Packet> packet, const TcpHeader &outgoing,
     m_node->GetObject<Ipv4L3Protocol> ();
   if (ipv4 != 0)
     {
-      // XXX We've already performed the route lookup in TcpSocketImpl
-      // should be cached.
       Ipv4Header header;
       header.SetDestination (daddr);
       header.SetProtocol (PROT_NUMBER);

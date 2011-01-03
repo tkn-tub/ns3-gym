@@ -65,7 +65,7 @@ public:
   virtual int GetProtocolNumber (void) const;
 
   /**
-   * \return A smart Socket pointer to a TcpSocketImpl, allocated by this instance
+   * \return A smart Socket pointer to a TcpSocket allocated by this instance
    * of the TCP protocol
    */
   Ptr<Socket> CreateSocket (void);
@@ -79,10 +79,6 @@ public:
                           Ipv4Address peerAddress, uint16_t peerPort);
 
   void DeAllocate (Ipv4EndPoint *endPoint);
-
-//   // called by TcpSocketImpl.
-//   bool Connect (const Ipv4Address& saddr, const Ipv4Address& daddr,
-//                 uint16_t sport, uint16_t dport);
 
   /**
    * \brief Send a packet via TCP

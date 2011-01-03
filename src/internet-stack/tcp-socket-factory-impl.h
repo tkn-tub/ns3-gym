@@ -31,13 +31,7 @@ class TcpL4Protocol;
  * \ingroup internetStack
  * \defgroup tcp Tcp
  *
- * The TCP code in ns3's internet stack is ported from the  
- * <a href="http://www.ece.gatech.edu/research/labs/MANIACS/GTNetS/">
- * Georgia Tech Network Simulator (GTNetS)</a>.
- *
- * Most of the logic is in class ns3::TcpSocketImpl.
- * This class serves to create sockets of the TcpSocketImpl
- * type.  That is, it creates sockets which use the GTNetS Tahoe code.
+ * This class serves to create sockets of the TcpSocketBase type.  
  */
 
 /**
