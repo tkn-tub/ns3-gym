@@ -16,6 +16,7 @@
 \.routes$
 ^doc/manual/build
 ^doc/tutorial/build
+^doc/testing/build
 ^doc/manual/figures/.*eps
 ^doc/manual/figures/.*pdf
 ^doc/manual/figures/.*png
