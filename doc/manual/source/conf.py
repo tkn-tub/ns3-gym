@@ -178,7 +178,7 @@ htmlhelp_basename = 'ns-3doc'
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-  ('index', 'ns-3.tex', u'ns-3 Documentation',
+  ('index', 'ns-3.tex', u'ns-3 Manual',
    u'ns-3 project', 'manual'),
 ]
 
