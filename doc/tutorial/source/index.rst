@@ -1,7 +1,7 @@
 .. only:: html or latex
 
 Welcome to ns-3's tutorial!
-=========================
+===========================
 
 This is the *ns-3 tutorial*. Primary documentation for the ns-3 project is
 available in four forms:
