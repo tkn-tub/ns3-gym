@@ -314,7 +314,7 @@ behavior of packet tags and byte tags.
   from the packet. Removing one of possibly multiple byte tags is not supported
   by the current API.  
 
-As of *ns-3.5*, Tags are not serialized and deserialized to a buffer when
+As of *ns-3.5* and later, Tags are not serialized and deserialized to a buffer when
 ``Packet::Serialize ()`` and ``Packet::Deserialize ()`` are called; this is an
 open bug.
 

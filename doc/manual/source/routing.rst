@@ -196,12 +196,15 @@ is finally used to populate the routes themselves.
 Unicast routing
 ***************
 
-There are presently five unicast routing protocols defined for IPv4 and two for
+There are presently seven unicast routing protocols defined for IPv4 and two for
 IPv6:
 
 * class Ipv4StaticRouting (covering both unicast and multicast)
-* IPv4 Optimized Link State Routing (a MANET protocol defined in `RFC 3626
-  <http://www.ietf.org/rfc/rfc3626.txt>`_)
+* IPv4 Optimized Link State Routing (OLSR) (a MANET protocol defined in 
+  `RFC 3626 <http://www.ietf.org/rfc/rfc3626.txt>`_)
+* IPv4 Ad Hoc On Demand Distance Vector (AODV) (a MANET protocol defined in
+  `RFC 3561 <http://www.ietf.org/rfc/rfc3561.txt>`_)
+* IPv4 Destination Sequenced Distance Vector (DSDV) (a MANET protocol)
 * class Ipv4ListRouting (used to store a prioritized list of routing protocols)
 * class Ipv4GlobalRouting (used to store routes computed by the global route
   manager, if that is used)
