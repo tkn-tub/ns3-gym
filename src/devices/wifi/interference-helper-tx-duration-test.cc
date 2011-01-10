@@ -194,6 +194,6 @@ TxDurationTestSuite::TxDurationTestSuite ()
   AddTestCase (new InterferenceHelperTxDurationTest);
 }
 
-TxDurationTestSuite g_txDurationTestSuite;
+static TxDurationTestSuite g_txDurationTestSuite;
 } //namespace ns3 
 

@@ -168,4 +168,4 @@ Ns3LtePhyTestTestSuite::Ns3LtePhyTestTestSuite ()
   AddTestCase (new Ns3LtePhyTestCase);
 }
 
-Ns3LtePhyTestTestSuite ns3LtePhyTestTestSuite;
+static Ns3LtePhyTestTestSuite ns3LtePhyTestTestSuite;

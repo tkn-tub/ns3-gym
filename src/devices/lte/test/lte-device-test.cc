@@ -196,4 +196,4 @@ Ns3LteDeviceTestTestSuite::Ns3LteDeviceTestTestSuite ()
   AddTestCase (new Ns3LteDeviceTestCase);
 }
 
-Ns3LteDeviceTestTestSuite ns3LteDeviceTestTestSuite;
+static Ns3LteDeviceTestTestSuite ns3LteDeviceTestTestSuite;

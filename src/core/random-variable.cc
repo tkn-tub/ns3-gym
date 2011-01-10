@@ -2162,6 +2162,6 @@ BasicRandomNumberTestSuite::BasicRandomNumberTestSuite ()
   AddTestCase (new RandomNumberSerializationTestCase);
 }
 
-BasicRandomNumberTestSuite BasicRandomNumberTestSuite;
+static BasicRandomNumberTestSuite BasicRandomNumberTestSuite;
 
 } // namespace ns3

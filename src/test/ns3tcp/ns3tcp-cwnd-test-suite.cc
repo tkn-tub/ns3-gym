@@ -575,4 +575,4 @@ Ns3TcpCwndTestSuite::Ns3TcpCwndTestSuite ()
   AddTestCase (new Ns3TcpCwndTestCase2);
 }
 
-Ns3TcpCwndTestSuite ns3TcpCwndTestSuite;
+static Ns3TcpCwndTestSuite ns3TcpCwndTestSuite;

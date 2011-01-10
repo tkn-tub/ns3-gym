@@ -432,4 +432,4 @@ Ns3TcpLossTestSuite::Ns3TcpLossTestSuite ()
   AddTestCase (new Ns3TcpLossTestCase2);
 }
 
-Ns3TcpLossTestSuite ns3TcpLossTestSuite;
+static Ns3TcpLossTestSuite ns3TcpLossTestSuite;

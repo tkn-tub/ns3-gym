@@ -186,4 +186,4 @@ Ns3WimaxPhyTestSuite::Ns3WimaxPhyTestSuite ()
 
 }
 
-Ns3WimaxPhyTestSuite ns3WimaxPhyTestSuite;
+static Ns3WimaxPhyTestSuite ns3WimaxPhyTestSuite;

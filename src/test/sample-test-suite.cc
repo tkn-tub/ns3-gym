@@ -63,4 +63,4 @@ SampleTestSuite::SampleTestSuite ()
 }
 
 // Do not forget to allocate an instance of this TestSuite
-SampleTestSuite sampleTestSuite;
+static SampleTestSuite sampleTestSuite;

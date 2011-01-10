@@ -1323,7 +1323,7 @@ PacketTestSuite::PacketTestSuite ()
   AddTestCase (new PacketTest);
 }
 
-PacketTestSuite g_packetTestSuite;
+static PacketTestSuite g_packetTestSuite;
 
 
 } // namespace ns3

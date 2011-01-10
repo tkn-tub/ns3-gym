@@ -206,4 +206,4 @@ Ns3LtePropagationLossModelTestTestSuite::Ns3LtePropagationLossModelTestTestSuite
   AddTestCase (new Ns3LtePropagationLossModelTestCase);
 }
 
-Ns3LtePropagationLossModelTestTestSuite ns3LtePropagationLossModelTestTestSuite;
+static Ns3LtePropagationLossModelTestTestSuite ns3LtePropagationLossModelTestTestSuite;

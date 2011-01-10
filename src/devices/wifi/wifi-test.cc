@@ -303,6 +303,6 @@ WifiTestSuite::WifiTestSuite ()
   AddTestCase (new InterferenceHelperSequenceTest); // Bug 991
 }
 
-WifiTestSuite g_wifiTestSuite;
+static WifiTestSuite g_wifiTestSuite;
 
 } // namespace ns3

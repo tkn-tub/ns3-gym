@@ -679,6 +679,6 @@ DcfTestSuite::DcfTestSuite ()
   AddTestCase (new DcfManagerTest);
 }
 
-DcfTestSuite g_dcfTestSuite;
+static DcfTestSuite g_dcfTestSuite;
 
 } // namespace ns3

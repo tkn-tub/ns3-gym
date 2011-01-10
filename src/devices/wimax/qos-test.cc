@@ -293,4 +293,4 @@ Ns3WimaxQoSTestSuite::Ns3WimaxQoSTestSuite ()
   AddTestCase (new Ns3WimaxSchedulingTestCase);
 }
 
-Ns3WimaxQoSTestSuite ns3WimaxQoSTestSuite;
+static Ns3WimaxQoSTestSuite ns3WimaxQoSTestSuite;

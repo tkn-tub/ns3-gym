@@ -362,8 +362,8 @@ SpectrumConverterTestSuite::SpectrumConverterTestSuite ()
 
 
 // static instance of test suites
-SpectrumValueTestSuite g_SpectrumValueTestSuite;
-SpectrumConverterTestSuite g_SpectrumConverterTestSuite;
+static SpectrumValueTestSuite g_SpectrumValueTestSuite;
+static SpectrumConverterTestSuite g_SpectrumConverterTestSuite;
 
 
 

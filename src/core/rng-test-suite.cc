@@ -431,4 +431,4 @@ RngTestSuite::RngTestSuite ()
   AddTestCase (new RngParetoTestCase);
 }
 
-RngTestSuite rngTestSuite;
+static RngTestSuite rngTestSuite;

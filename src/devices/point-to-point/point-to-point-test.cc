@@ -69,6 +69,6 @@ PointToPointTestSuite::PointToPointTestSuite ()
   AddTestCase (new PointToPointTest);
 }
 
-PointToPointTestSuite g_pointToPointTestSuite;
+static PointToPointTestSuite g_pointToPointTestSuite;
 
 } // namespace ns3

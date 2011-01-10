@@ -122,4 +122,4 @@ TracedCallbackTestSuite::TracedCallbackTestSuite ()
   AddTestCase (new BasicTracedCallbackTestCase);
 }
 
-TracedCallbackTestSuite tracedCallbackTestSuite;
+static TracedCallbackTestSuite tracedCallbackTestSuite;

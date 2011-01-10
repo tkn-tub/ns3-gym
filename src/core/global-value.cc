@@ -275,7 +275,7 @@ GlobalValueTestSuite::GlobalValueTestSuite ()
   AddTestCase (new GlobalValueTestCase);
 }
 
-GlobalValueTestSuite globalValueTestSuite;
+static GlobalValueTestSuite globalValueTestSuite;
 
 } // namespace ns3
 

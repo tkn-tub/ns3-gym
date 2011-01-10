@@ -585,6 +585,6 @@ CallbackTestSuite::CallbackTestSuite ()
   AddTestCase (new MakeCallbackTemplatesTestCase);
 }
 
-CallbackTestSuite CallbackTestSuite;
+static CallbackTestSuite CallbackTestSuite;
 
 } // namespace

@@ -972,4 +972,4 @@ NamesTestSuite::NamesTestSuite ()
   AddTestCase (new AlternateFindTestCase);
 }
 
-NamesTestSuite namesTestSuite;
+static NamesTestSuite namesTestSuite;

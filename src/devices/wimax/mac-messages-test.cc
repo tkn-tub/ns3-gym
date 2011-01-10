@@ -148,4 +148,4 @@ Ns3WimaxMacMessagesTestSuite::Ns3WimaxMacMessagesTestSuite ()
   AddTestCase (new DsaRequestTestCase);
 }
 
-Ns3WimaxMacMessagesTestSuite ns3WimaxMacMessagesTestSuite;
+static Ns3WimaxMacMessagesTestSuite ns3WimaxMacMessagesTestSuite;

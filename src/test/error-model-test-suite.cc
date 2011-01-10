@@ -132,4 +132,4 @@ ErrorModelTestSuite::ErrorModelTestSuite ()
 }
 
 // Do not forget to allocate an instance of this TestSuite
-ErrorModelTestSuite errorModelTestSuite;
+static ErrorModelTestSuite errorModelTestSuite;

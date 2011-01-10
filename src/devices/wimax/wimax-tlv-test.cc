@@ -231,4 +231,4 @@ Ns3WimaxTlvTestSuite::Ns3WimaxTlvTestSuite ()
   AddTestCase (new Ns3WimaxSfTlvTestCase);
 }
 
-Ns3WimaxTlvTestSuite ns3WimaxTlvTestSuite;
+static Ns3WimaxTlvTestSuite ns3WimaxTlvTestSuite;

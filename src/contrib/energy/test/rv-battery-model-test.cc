@@ -903,4 +903,4 @@ RvBatteryModelTestSuite::RvBatteryModelTestSuite ()
 }
 
 // create an instance of the test suite
-RvBatteryModelTestSuite g_rvBatteryModelTestSuite;
+static RvBatteryModelTestSuite g_rvBatteryModelTestSuite;

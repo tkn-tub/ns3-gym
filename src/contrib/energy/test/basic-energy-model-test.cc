@@ -409,5 +409,5 @@ BasicEnergyModelTestSuite::BasicEnergyModelTestSuite ()
 }
 
 // create an instance of the test suite
-BasicEnergyModelTestSuite g_energyModelTestSuite;
+static BasicEnergyModelTestSuite g_energyModelTestSuite;
 

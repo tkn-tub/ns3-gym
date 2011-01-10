@@ -61,6 +61,6 @@ TypeTraitsTestSuite::TypeTraitsTestSuite ()
   AddTestCase (new TypeTraitsTestCase);
 }
 
-TypeTraitsTestSuite typeTraitsTestSuite;
+static TypeTraitsTestSuite typeTraitsTestSuite;
 
 } // namespace ns3

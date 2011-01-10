@@ -123,4 +123,4 @@ Ns3LteBearerTestTestSuite::Ns3LteBearerTestTestSuite ()
   AddTestCase (new Ns3LteBearerTestCase);
 }
 
-Ns3LteBearerTestTestSuite ns3LteBearerTestTestSuite;
+static Ns3LteBearerTestTestSuite ns3LteBearerTestTestSuite;

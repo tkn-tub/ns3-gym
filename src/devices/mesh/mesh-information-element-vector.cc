@@ -215,6 +215,6 @@ MeshTestSuite::MeshTestSuite ()
   AddTestCase (new MeshInformationElementVectorBist);
 }
 
-MeshTestSuite g_meshTestSuite;
+static MeshTestSuite g_meshTestSuite;
 
 } //namespace ns3

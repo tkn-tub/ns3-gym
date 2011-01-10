@@ -279,4 +279,4 @@ NscTcpLossTestSuite::NscTcpLossTestSuite ()
   AddTestCase (new NscTcpLossTestCase2);
 }
 
-NscTcpLossTestSuite nscTcpLossTestSuite;
+static NscTcpLossTestSuite nscTcpLossTestSuite;

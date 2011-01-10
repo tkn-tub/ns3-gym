@@ -279,4 +279,4 @@ Ns3TcpSocketTestSuite::Ns3TcpSocketTestSuite ()
   AddTestCase (new Ns3TcpSocketTestCase2);
 }
 
-Ns3TcpSocketTestSuite ns3TcpSocketTestSuite;
+static Ns3TcpSocketTestSuite ns3TcpSocketTestSuite;

@@ -263,4 +263,4 @@ UdpClientServerTestSuite::UdpClientServerTestSuite () :
   AddTestCase (new PacketLossCounterTestCase);
 }
 
-UdpClientServerTestSuite udpClientServerTestSuite;
+static UdpClientServerTestSuite udpClientServerTestSuite;

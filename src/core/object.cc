@@ -797,6 +797,6 @@ ObjectTestSuite::ObjectTestSuite ()
   AddTestCase (new ObjectFactoryTestCase);
 }
 
-ObjectTestSuite objectTestSuite;
+static ObjectTestSuite objectTestSuite;
 
 } // namespace ns3

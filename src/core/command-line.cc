@@ -510,6 +510,6 @@ CommandLineTestSuite::CommandLineTestSuite ()
   AddTestCase (new CommandLineStringTestCase);
 }
 
-CommandLineTestSuite CommandLineTestSuite;
+static CommandLineTestSuite CommandLineTestSuite;
 
 } // namespace ns3

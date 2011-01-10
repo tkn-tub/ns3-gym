@@ -194,4 +194,4 @@ Ns3WimaxFragmentationTestSuite::Ns3WimaxFragmentationTestSuite ()
   AddTestCase (new Ns3WimaxFragmentationTestCase);
 }
 
-Ns3WimaxFragmentationTestSuite ns3WimaxFragmentationTestSuite;
+static Ns3WimaxFragmentationTestSuite ns3WimaxFragmentationTestSuite;

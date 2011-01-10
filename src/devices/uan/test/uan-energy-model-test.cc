@@ -311,6 +311,6 @@ UanEnergyModelTestSuite::UanEnergyModelTestSuite ()
 }
 
 // create an instance of the test suite
-UanEnergyModelTestSuite g_uanEnergyModelTestSuite;
+static UanEnergyModelTestSuite g_uanEnergyModelTestSuite;
 
 } // namespace ns3

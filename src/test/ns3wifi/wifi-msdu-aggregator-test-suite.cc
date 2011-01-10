@@ -208,4 +208,4 @@ WifiMsduAggregatorTestSuite::WifiMsduAggregatorTestSuite ()
   AddTestCase (new WifiMsduAggregatorThroughputTest);
 }
 
-WifiMsduAggregatorTestSuite wifiMsduAggregatorTestSuite;
+static WifiMsduAggregatorTestSuite wifiMsduAggregatorTestSuite;

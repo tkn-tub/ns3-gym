@@ -231,4 +231,4 @@ public:
   }
 };
 
-Ipv6ExtensionHeaderTestSuite ipv6ExtensionHeaderTestSuite;
+static Ipv6ExtensionHeaderTestSuite ipv6ExtensionHeaderTestSuite;

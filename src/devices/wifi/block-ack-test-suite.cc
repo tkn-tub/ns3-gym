@@ -275,4 +275,4 @@ BlockAckTestSuite::BlockAckTestSuite ()
   AddTestCase (new CtrlBAckResponseHeaderTest);
 }
 
-BlockAckTestSuite g_blockAckTestSuite;
+static BlockAckTestSuite g_blockAckTestSuite;

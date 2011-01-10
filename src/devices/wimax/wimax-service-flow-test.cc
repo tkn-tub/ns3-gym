@@ -169,4 +169,4 @@ Ns3WimaxServiceFlowTestSuite::Ns3WimaxServiceFlowTestSuite ()
   AddTestCase (new Ns3WimaxSfCreationTestCase);
 }
 
-Ns3WimaxServiceFlowTestSuite ns3WimaxServiceFlowTestSuite;
+static Ns3WimaxServiceFlowTestSuite ns3WimaxServiceFlowTestSuite;

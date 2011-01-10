@@ -277,5 +277,5 @@ WifiInterferenceTestSuite::WifiInterferenceTestSuite ()
   AddTestCase (new WifiInterferenceTestCase);
 }
 
-WifiInterferenceTestSuite wifiInterferenceTestSuite;
+static WifiInterferenceTestSuite wifiInterferenceTestSuite;
 

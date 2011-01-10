@@ -333,6 +333,6 @@ BufferTestSuite::BufferTestSuite ()
   AddTestCase (new BufferTest);
 }
 
-BufferTestSuite g_bufferTestSuite;
+static BufferTestSuite g_bufferTestSuite;
 
 } // namespace ns3

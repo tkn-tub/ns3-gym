@@ -313,4 +313,4 @@ Ns3TcpInteroperabilityTestSuite::Ns3TcpInteroperabilityTestSuite ()
   AddTestCase (new Ns3TcpInteroperabilityTestCase);
 }
 
-Ns3TcpInteroperabilityTestSuite ns3TcpInteroperabilityTestSuite;
+static Ns3TcpInteroperabilityTestSuite ns3TcpInteroperabilityTestSuite;

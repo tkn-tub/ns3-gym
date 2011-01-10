@@ -93,6 +93,6 @@ LiIonEnergySourceTestSuite::LiIonEnergySourceTestSuite ()
 }
 
 // create an instance of the test suite
-LiIonEnergySourceTestSuite g_liIonEnergySourceTestSuite;
+static LiIonEnergySourceTestSuite g_liIonEnergySourceTestSuite;
 
 } // namespace ns3

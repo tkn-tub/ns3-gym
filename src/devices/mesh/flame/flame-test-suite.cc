@@ -152,7 +152,7 @@ FlameTestSuite::FlameTestSuite ()
   AddTestCase (new FlameRtableTest);
 }
 
-FlameTestSuite g_flameTestSuite;
+static FlameTestSuite g_flameTestSuite;
 
 }
 }

@@ -3827,4 +3827,4 @@ PbbTestSuite::PbbTestSuite ()
   }
 }
 
-PbbTestSuite pbbTestSuite;
+static PbbTestSuite pbbTestSuite;

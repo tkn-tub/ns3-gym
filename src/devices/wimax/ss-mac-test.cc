@@ -173,4 +173,4 @@ Ns3WimaxSSMacTestSuite::Ns3WimaxSSMacTestSuite ()
   AddTestCase (new Ns3WimaxManagementConnectionsTestCase);
 }
 
-Ns3WimaxSSMacTestSuite ns3WimaxSSMacTestSuite;
+static Ns3WimaxSSMacTestSuite ns3WimaxSSMacTestSuite;

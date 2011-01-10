@@ -1133,4 +1133,4 @@ PcapFileTestSuite::PcapFileTestSuite ()
   AddTestCase (new DiffTestCase);
 }
 
-PcapFileTestSuite pcapFileTestSuite;
+static PcapFileTestSuite pcapFileTestSuite;

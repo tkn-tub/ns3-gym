@@ -262,7 +262,7 @@ UanTestSuite::UanTestSuite ()
   AddTestCase (new UanTest);
 }
 
-UanTestSuite g_uanTestSuite;
+static UanTestSuite g_uanTestSuite;
 
 
 

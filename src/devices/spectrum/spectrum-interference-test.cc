@@ -215,6 +215,6 @@ SpectrumInterferenceTestSuite::SpectrumInterferenceTestSuite ()
 
 }
 
-SpectrumInterferenceTestSuite spectrumInterferenceTestSuite;
+static SpectrumInterferenceTestSuite spectrumInterferenceTestSuite;
 
 } // namespace ns3

@@ -288,6 +288,6 @@ Dot11sTestSuite::Dot11sTestSuite ()
   AddTestCase (new PeerLinkFrameStartTest);
 }
 
-Dot11sTestSuite g_dot11sTestSuite;
+static Dot11sTestSuite g_dot11sTestSuite;
 }
 }

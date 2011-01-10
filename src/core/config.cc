@@ -1238,6 +1238,6 @@ ConfigTestSuite::ConfigTestSuite ()
   AddTestCase (new ObjectVectorConfigTestCase);
 }
 
-ConfigTestSuite configTestSuite;
+static ConfigTestSuite configTestSuite;
 
 } // namespace ns3
