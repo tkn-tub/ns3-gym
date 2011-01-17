@@ -52,7 +52,7 @@ public:
   virtual ~Ns3TcpSocketTestCase1 () {}
 
 private:
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
   bool m_writeResults;
 
   void SinkRx (std::string path, Ptr<const Packet> p, const Address &address);
@@ -73,7 +73,7 @@ Ns3TcpSocketTestCase1::SinkRx (std::string path, Ptr<const Packet> p, const Addr
   m_responses.Add (p->GetSize ());
 }
 
-bool
+void
 Ns3TcpSocketTestCase1::DoRun (void)
 {
   uint16_t sinkPort = 50000;
@@ -148,8 +148,6 @@ Ns3TcpSocketTestCase1::DoRun (void)
       uint32_t out = m_responses.Get (i);
       NS_TEST_ASSERT_MSG_EQ (in, out, "Mismatch:  expected " << in << " bytes, got " << out << " bytes");
     }
-
-  return GetErrorStatus ();
 }
 
 class Ns3TcpSocketTestCase2 : public TestCase
@@ -159,7 +157,7 @@ public:
   virtual ~Ns3TcpSocketTestCase2 () {}
 
 private:
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
   bool m_writeResults;
 
   void SinkRx (std::string path, Ptr<const Packet> p, const Address &address);
@@ -180,7 +178,7 @@ Ns3TcpSocketTestCase2::SinkRx (std::string path, Ptr<const Packet> p, const Addr
   m_responses.Add (p->GetSize ());
 }
 
-bool
+void
 Ns3TcpSocketTestCase2::DoRun (void)
 {
   uint16_t sinkPort = 50000;
@@ -262,8 +260,6 @@ Ns3TcpSocketTestCase2::DoRun (void)
       uint32_t out = m_responses.Get (i);
       NS_TEST_ASSERT_MSG_EQ (in, out, "Mismatch:  expected " << in << " bytes, got " << out << " bytes");
     }
-
-  return GetErrorStatus ();
 }
 
 class Ns3TcpSocketTestSuite : public TestSuite

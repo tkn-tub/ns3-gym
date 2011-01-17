@@ -77,7 +77,7 @@ class UdpSocketLoopbackTest: public TestCase
 {
 public:
   UdpSocketLoopbackTest ();
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
 
   void ReceivePkt (Ptr<Socket> socket);
   Ptr<Packet> m_receivedPacket;
@@ -96,7 +96,7 @@ void UdpSocketLoopbackTest::ReceivePkt (Ptr<Socket> socket)
   NS_ASSERT (availableData == m_receivedPacket->GetSize ());
 }
 
-bool
+void
 UdpSocketLoopbackTest::DoRun ()
 {
   Ptr<Node> rxNode = CreateObject<Node> ();
@@ -112,7 +112,6 @@ UdpSocketLoopbackTest::DoRun ()
   Simulator::Run ();
   Simulator::Destroy ();
   NS_TEST_EXPECT_MSG_EQ (m_receivedPacket->GetSize (), 246, "first socket should not receive it (it is bound specifically to the second interface's address");
-  return GetErrorStatus ();
 }
 
 class UdpSocketImplTest: public TestCase
@@ -123,7 +122,7 @@ class UdpSocketImplTest: public TestCase
   void SendData (Ptr<Socket> socket, std::string to);
 
 public:
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
   UdpSocketImplTest ();
 
   void ReceivePacket (Ptr<Socket> socket, Ptr<Packet> packet, const Address &from);
@@ -181,7 +180,7 @@ UdpSocketImplTest::SendData (Ptr<Socket> socket, std::string to)
   Simulator::Run ();
 }
 
-bool
+void
 UdpSocketImplTest::DoRun (void)
 {
   // Create topology
@@ -310,7 +309,6 @@ UdpSocketImplTest::DoRun (void)
 
   Simulator::Destroy ();
 
-  return GetErrorStatus ();
 }
 
 //-----------------------------------------------------------------------------

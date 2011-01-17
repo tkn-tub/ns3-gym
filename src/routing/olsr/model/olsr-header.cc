@@ -509,13 +509,13 @@ namespace ns3 {
 class OlsrEmfTestCase : public TestCase {
 public:
   OlsrEmfTestCase ();
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
 };
 
 OlsrEmfTestCase::OlsrEmfTestCase ()
   : TestCase ("Check Emf olsr time conversion")
 {}
-bool 
+void
 OlsrEmfTestCase::DoRun (void)
 {
   for (int time = 1; time <= 30; time++)
@@ -525,20 +525,19 @@ OlsrEmfTestCase::DoRun (void)
       NS_TEST_ASSERT_MSG_EQ((seconds < 0 || fabs (seconds - time) > 0.1), false,
                             "XXX");
     }
-  return false;
 }
 
 
 class OlsrMidTestCase : public TestCase {
 public:
   OlsrMidTestCase ();
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
 };
 
 OlsrMidTestCase::OlsrMidTestCase ()
   : TestCase ("Check Mid olsr messages")
 {}
-bool 
+void
 OlsrMidTestCase::DoRun (void)
 {
   Packet packet;
@@ -631,20 +630,19 @@ OlsrMidTestCase::DoRun (void)
       NS_TEST_ASSERT_MSG_EQ (sizeLeft, 0, "XXX");
     }
   }
-  return false;
 }
 
 
 class OlsrHelloTestCase : public TestCase {
 public:
   OlsrHelloTestCase ();
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
 };
 
 OlsrHelloTestCase::OlsrHelloTestCase ()
   : TestCase ("Check Hello olsr messages")
 {}
-bool 
+void
 OlsrHelloTestCase::DoRun (void)
 {
   Packet packet;
@@ -692,19 +690,18 @@ OlsrHelloTestCase::DoRun (void)
 
   NS_TEST_ASSERT_MSG_EQ (packet.GetSize (), 0, "All bytes in packet were not read");
 
-  return false;
 }
 
 class OlsrTcTestCase : public TestCase {
 public:
   OlsrTcTestCase ();
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
 };
 
 OlsrTcTestCase::OlsrTcTestCase ()
   : TestCase ("Check Tc olsr messages")
 {}
-bool 
+void
 OlsrTcTestCase::DoRun (void)
 {
   Packet packet;
@@ -730,20 +727,19 @@ OlsrTcTestCase::DoRun (void)
 
   NS_TEST_ASSERT_MSG_EQ (packet.GetSize (), 0, "XXX");
 
-  return false;
 }
 
 class OlsrHnaTestCase : public TestCase {
 public:
   OlsrHnaTestCase ();
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
 };
 
 OlsrHnaTestCase::OlsrHnaTestCase ()
   : TestCase ("Check Hna olsr messages")
 {}
 
-bool
+void
 OlsrHnaTestCase::DoRun (void)
 {
   Packet packet;
@@ -774,7 +770,6 @@ OlsrHnaTestCase::DoRun (void)
   
   NS_TEST_ASSERT_MSG_EQ (packet.GetSize (), 0, "All bytes in packet were not read");
 
-  return false;
 }
 
 

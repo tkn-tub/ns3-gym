@@ -74,7 +74,7 @@ Bug780Test::~Bug780Test()
 {
 }
 
-bool
+void
 Bug780Test::DoRun ()
 {
   SeedManager::SetSeed(123);
@@ -88,7 +88,6 @@ Bug780Test::DoRun ()
     {
       CheckResults ();  
     }
-  return GetErrorStatus ();
 }
 
 void

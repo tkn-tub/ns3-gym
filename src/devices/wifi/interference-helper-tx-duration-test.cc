@@ -34,7 +34,7 @@ class InterferenceHelperTxDurationTest : public TestCase
 public:
   InterferenceHelperTxDurationTest ();
   virtual ~InterferenceHelperTxDurationTest ();
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
 
 private:
 
@@ -109,7 +109,7 @@ InterferenceHelperTxDurationTest::CheckTxDuration(uint32_t size, WifiMode payloa
   return true;
 }
 
-bool 
+void
 InterferenceHelperTxDurationTest::DoRun (void)
 {
   bool retval = true;
@@ -178,8 +178,6 @@ InterferenceHelperTxDurationTest::DoRun (void)
     && CheckTxDuration (1536, WifiPhy::GetErpOfdmRate54Mbps (), WIFI_PREAMBLE_LONG, 254)
     && CheckTxDuration (76, WifiPhy::GetErpOfdmRate54Mbps (), WIFI_PREAMBLE_LONG, 38)
     && CheckTxDuration (14, WifiPhy::GetErpOfdmRate54Mbps (), WIFI_PREAMBLE_LONG, 30);
-
-  return (!retval);
 }
 
 class TxDurationTestSuite : public TestSuite

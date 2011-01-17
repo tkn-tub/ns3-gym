@@ -156,7 +156,7 @@ class HistogramTestCase : public ns3::TestCase {
 private:
 public:
   HistogramTestCase ();
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
 
 
 };
@@ -166,7 +166,7 @@ HistogramTestCase::HistogramTestCase ()
 {}
 
 
-bool 
+void
 HistogramTestCase::DoRun (void)
 {
   Histogram h0(3.5);
@@ -195,8 +195,6 @@ HistogramTestCase::DoRun (void)
     NS_TEST_EXPECT_MSG_EQ (h0.GetNBins (), 22, "");
     NS_TEST_EXPECT_MSG_EQ (h0.GetBinCount (21), 1, "");
   }
- 
-  return false;
 }
 
 static class HistogramTestSuite : public TestSuite

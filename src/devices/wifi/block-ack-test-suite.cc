@@ -64,7 +64,7 @@ public:
   PacketBufferingCaseA ();
   virtual ~PacketBufferingCaseA ();
 private:
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
   std::list<uint16_t> m_expectedBuffer;
 };
 
@@ -81,7 +81,7 @@ PacketBufferingCaseA::PacketBufferingCaseA ()
 PacketBufferingCaseA::~PacketBufferingCaseA ()
 {}
 
-bool
+void
 PacketBufferingCaseA::DoRun (void)
 {
   std::list<uint16_t> m_buffer;
@@ -110,7 +110,6 @@ PacketBufferingCaseA::DoRun (void)
     {
       NS_TEST_EXPECT_MSG_EQ (*i, *j, "error in buffer order");
     }
-  return GetErrorStatus ();
 }
 
 /* ----- = old packets
@@ -142,7 +141,7 @@ public:
   PacketBufferingCaseB ();
   virtual ~PacketBufferingCaseB ();
 private:
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
   std::list<uint16_t> m_expectedBuffer;
 };
 
@@ -160,7 +159,7 @@ PacketBufferingCaseB::PacketBufferingCaseB ()
 PacketBufferingCaseB::~PacketBufferingCaseB ()
 {}
 
-bool
+void
 PacketBufferingCaseB::DoRun (void)
 {
   std::list<uint16_t> m_buffer;
@@ -196,7 +195,6 @@ PacketBufferingCaseB::DoRun (void)
     {
       NS_TEST_EXPECT_MSG_EQ (*i, *j, "error in buffer order");
     }
-  return GetErrorStatus ();
 }
 
 //Test for block ack header
@@ -205,7 +203,7 @@ class CtrlBAckResponseHeaderTest : public TestCase
 public:
   CtrlBAckResponseHeaderTest ();
 private:
-  virtual bool DoRun ();
+  virtual void DoRun ();
   CtrlBAckResponseHeader m_blockAckHdr;
 };
 
@@ -213,7 +211,7 @@ CtrlBAckResponseHeaderTest::CtrlBAckResponseHeaderTest ()
   : TestCase ("Check the correctness of block ack compressed bitmap")
 {}
 
-bool
+void
 CtrlBAckResponseHeaderTest::DoRun (void)
 {
   m_blockAckHdr.SetType (COMPRESSED_BLOCK_ACK);
@@ -257,8 +255,6 @@ CtrlBAckResponseHeaderTest::DoRun (void)
   NS_TEST_EXPECT_MSG_EQ (m_blockAckHdr.IsPacketReceived (10), false, "error in compressed bitmap");
   NS_TEST_EXPECT_MSG_EQ (m_blockAckHdr.IsPacketReceived (35), false, "error in compressed bitmap");
   NS_TEST_EXPECT_MSG_EQ (m_blockAckHdr.IsPacketReceived (80), false, "error in compressed bitmap");
-
-  return GetErrorStatus ();
 }
 
 class BlockAckTestSuite : public TestSuite

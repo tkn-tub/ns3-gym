@@ -654,7 +654,7 @@ case a name and override the ``DoRun`` method to run the test.
   class MyTestCase : public TestCase
   {
     MyTestCase ();
-    virtual bool DoRun (void);
+    virtual void DoRun (void);
   };
   
   MyTestCase::MyTestCase ()
@@ -662,11 +662,10 @@ case a name and override the ``DoRun`` method to run the test.
   {
   }
   
-  bool
+  void
   MyTestCase::DoRun (void)
   {
     NS_TEST_ASSERT_MSG_EQ (true, true, "Some failure message");
-    return GetErrorStatus ();
   }
 
 Utilities

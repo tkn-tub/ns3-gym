@@ -55,14 +55,14 @@ class HpArithmeticTestCase : public TestCase
 {
 public:
   HpArithmeticTestCase ();
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
 };
 
 HpArithmeticTestCase::HpArithmeticTestCase ()
   : TestCase ("Check basic arithmetic operations")
 {
 }
-bool
+void
 HpArithmeticTestCase::DoRun (void)
 {
   HighPrecision a, b;
@@ -171,22 +171,20 @@ HpArithmeticTestCase::DoRun (void)
   a.Div (V (3));
   a.Mul (V (3));
   CHECK_EXPECTED (a, 1999999999);
-
-  return GetErrorStatus ();
 }
 
 class HpBug455TestCase : public TestCase
 {
 public:
   HpBug455TestCase ();
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
 };
 
 HpBug455TestCase::HpBug455TestCase ()
   : TestCase ("Test case for bug 455")
 {
 }
-bool
+void
 HpBug455TestCase::DoRun (void)
 {
   HighPrecision a = HighPrecision (0.1);
@@ -204,8 +202,6 @@ HpBug455TestCase::DoRun (void)
   a = HighPrecision (0.5);
   a.Mul (HighPrecision (-5));
   NS_TEST_ASSERT_MSG_EQ (a.GetDouble (), -2.5, "only second operand negative");
-
-  return GetErrorStatus ();
 }
 
 
@@ -213,14 +209,14 @@ class HpBug863TestCase : public TestCase
 {
 public:
   HpBug863TestCase ();
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
 };
 
 HpBug863TestCase::HpBug863TestCase ()
   : TestCase ("Test case for bug 863")
 {
 }
-bool
+void
 HpBug863TestCase::DoRun (void)
 {
   HighPrecision a = HighPrecision (0.9);
@@ -239,22 +235,20 @@ HpBug863TestCase::DoRun (void)
   a = HighPrecision (-0.5);
   a.Div (HighPrecision (-0.5));
   NS_TEST_ASSERT_MSG_EQ (a.GetDouble (), 1.0, "both arguments negative");
-
-  return GetErrorStatus ();
 }
 
 class HpCompareTestCase : public TestCase
 {
 public:
   HpCompareTestCase ();
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
 };
 
 HpCompareTestCase::HpCompareTestCase ()
   : TestCase ("Check basic compare operations")
 {
 }
-bool
+void
 HpCompareTestCase::DoRun (void)
 {
   HighPrecision a, b;
@@ -278,15 +272,13 @@ HpCompareTestCase::DoRun (void)
   a = V (1);
   b = V (1);
   NS_TEST_ASSERT_MSG_EQ (a.Compare (b), 0, "a is equal to b");
-
-  return GetErrorStatus ();
 }
 
 class HpInvertTestCase : public TestCase
 {
 public:
   HpInvertTestCase ();
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
 };
 
 HpInvertTestCase::HpInvertTestCase ()
@@ -294,7 +286,7 @@ HpInvertTestCase::HpInvertTestCase ()
 {
 }
 
-bool
+void
 HpInvertTestCase::DoRun (void)
 {
 #define TEST(factor)                                                    \
@@ -342,7 +334,6 @@ HpInvertTestCase::DoRun (void)
   TEST(100000000000000LL);
   TEST(1000000000000000LL);
 #undef TEST
-  return GetErrorStatus ();
 }
 
 

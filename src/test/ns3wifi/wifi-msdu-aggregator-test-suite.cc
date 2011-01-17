@@ -47,7 +47,7 @@ class WifiMsduAggregatorThroughputTest : public TestCase
 {
 public:
   WifiMsduAggregatorThroughputTest ();
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
 
 private:
   bool m_writeResults;
@@ -59,7 +59,7 @@ WifiMsduAggregatorThroughputTest::WifiMsduAggregatorThroughputTest ()
 {
 }
 
-bool
+void
 WifiMsduAggregatorThroughputTest::DoRun (void)
 {
   WifiHelper wifi = WifiHelper::Default ();
@@ -188,8 +188,6 @@ WifiMsduAggregatorThroughputTest::DoRun (void)
   NS_TEST_ASSERT_MSG_GT(totalOctetsThrough, 600000,
                         "A-MSDU test fails for low throughput of "
                         << totalOctetsThrough << " octets");
-
-  return false;
 }
 
 

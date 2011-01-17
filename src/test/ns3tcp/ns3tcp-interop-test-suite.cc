@@ -84,7 +84,7 @@ public:
 
 private:
   virtual void DoSetup (void);
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
   virtual void DoTeardown (void);
 
   void Ipv4L3Tx (std::string context, Ptr<const Packet> packet, Ptr<Ipv4> ipv4, uint32_t interface);
@@ -191,7 +191,7 @@ Ns3TcpInteroperabilityTestCase::Ipv4L3Tx (std::string context, Ptr<const Packet>
     }
 }
 
-bool
+void
 Ns3TcpInteroperabilityTestCase::DoRun (void)
 {
   //
@@ -297,8 +297,6 @@ Ns3TcpInteroperabilityTestCase::DoRun (void)
   Simulator::Stop (Seconds(20));
   Simulator::Run ();
   Simulator::Destroy ();
-
-  return GetErrorStatus ();
 }
 
 class Ns3TcpInteroperabilityTestSuite : public TestSuite

@@ -429,7 +429,7 @@ class RocketfuelTopologyReaderTest: public TestCase
 public:
   RocketfuelTopologyReaderTest ();
 private:
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
 };
 
 RocketfuelTopologyReaderTest::RocketfuelTopologyReaderTest ()
@@ -437,7 +437,7 @@ RocketfuelTopologyReaderTest::RocketfuelTopologyReaderTest ()
 {}
 
 
-bool
+void
 RocketfuelTopologyReaderTest::DoRun (void)
 {
   Ptr<RocketfuelTopologyReader> inFile;
@@ -453,24 +453,16 @@ RocketfuelTopologyReaderTest::DoRun (void)
       nodes = inFile->Read ();
     }
 
-  if (nodes.GetN () == 0)
-    {
-      NS_LOG_ERROR ("Problems reading node information the topology file. Failing.");
-      return true;
-    }
-  if (inFile->LinksSize () == 0)
-    {
-      NS_LOG_ERROR ("Problems reading the topology file. Failing.");
-      return true;
-    }
+  NS_TEST_ASSERT_MSG_NE (nodes.GetN (), 0, "Problems reading node information the topology file..");
+
+  NS_TEST_ASSERT_MSG_NE (inFile->LinksSize (), 0, "Problems reading the topology file.");
+
   NS_LOG_INFO ("Rocketfuel topology created with " << nodes.GetN () << " nodes and " << 
                inFile->LinksSize () << " links (from " << input << ")");
 
   NS_TEST_EXPECT_MSG_EQ (nodes.GetN (),315, "noes");
   NS_TEST_EXPECT_MSG_EQ (inFile->LinksSize (),972, "links");
   Simulator::Destroy ();
-
-  return false;
 }
 
 static class RocketfuelTopologyReaderTestSuite : public TestSuite

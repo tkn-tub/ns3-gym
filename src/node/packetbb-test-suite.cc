@@ -37,7 +37,7 @@ public:
   virtual ~PbbTestCase (void);
 
 protected:
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
 
 private:
   bool TestSerialize (void);
@@ -62,14 +62,13 @@ PbbTestCase::~PbbTestCase (void)
   return;
 }
 
-bool
+void
 PbbTestCase::DoRun (void)
 {
   NS_TEST_ASSERT_MSG_EQ (TestSerialize (), false,
       "serialization failed");
   NS_TEST_ASSERT_MSG_EQ (TestDeserialize (), false,
       "deserialization failed");
-  return GetErrorStatus ();
 }
 
 bool
@@ -79,13 +78,13 @@ PbbTestCase::TestSerialize (void)
   newBuffer.AddAtStart (m_refPacket->GetSerializedSize ());
   m_refPacket->Serialize (newBuffer.Begin ());
 
-  NS_TEST_ASSERT_MSG_EQ (newBuffer.GetSize (), m_refBuffer.GetSize (),
+  NS_TEST_ASSERT_MSG_EQ_RETURNS_BOOL (newBuffer.GetSize (), m_refBuffer.GetSize (),
       "serialization failed, buffers have different sizes");
 
   int memrv = memcmp (newBuffer.PeekData (), m_refBuffer.PeekData (),
       newBuffer.GetSize ());
 
-  NS_TEST_ASSERT_MSG_EQ (memrv, 0,
+  NS_TEST_ASSERT_MSG_EQ_RETURNS_BOOL (memrv, 0,
       "serialization faled, buffers differ");
 
   return GetErrorStatus ();
@@ -97,10 +96,10 @@ PbbTestCase::TestDeserialize (void)
   Ptr<PbbPacket> newPacket = Create<PbbPacket> ();
   uint32_t numbytes = newPacket->Deserialize (m_refBuffer.Begin ());
 
-  NS_TEST_ASSERT_MSG_EQ (numbytes, m_refBuffer.GetSize (),
+  NS_TEST_ASSERT_MSG_EQ_RETURNS_BOOL (numbytes, m_refBuffer.GetSize (),
       "deserialization failed, did not use all bytes");
 
-  NS_TEST_ASSERT_MSG_EQ (*newPacket, *m_refPacket,
+  NS_TEST_ASSERT_MSG_EQ_RETURNS_BOOL (*newPacket, *m_refPacket,
       "deserialization failed, objects do not match");
 
   return GetErrorStatus ();

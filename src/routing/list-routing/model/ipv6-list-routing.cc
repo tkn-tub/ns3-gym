@@ -376,13 +376,13 @@ namespace ns3 {
     {
   public:
     Ipv6ListRoutingNegativeTestCase();
-    virtual bool DoRun (void);
+    virtual void DoRun (void);
     };
 
     Ipv6ListRoutingNegativeTestCase::Ipv6ListRoutingNegativeTestCase()
       : TestCase("Check negative priorities")
       {}
-    bool 
+    void
       Ipv6ListRoutingNegativeTestCase::DoRun (void)
         {
           Ptr<Ipv6ListRouting> lr = CreateObject<Ipv6ListRouting> ();
@@ -397,22 +397,19 @@ namespace ns3 {
           Ptr<Ipv6RoutingProtocol> firstRp = lr->GetRoutingProtocol (0, first);
           NS_TEST_ASSERT_MSG_EQ (-5, first, "XXX");
           NS_TEST_ASSERT_MSG_EQ (firstRp, bRouting, "XXX");
-
-          // XXX
-          return false;
         }
 
     class Ipv6ListRoutingPositiveTestCase : public TestCase
     {
   public:
     Ipv6ListRoutingPositiveTestCase();
-    virtual bool DoRun (void);
+    virtual void DoRun (void);
     };
 
     Ipv6ListRoutingPositiveTestCase::Ipv6ListRoutingPositiveTestCase()
       : TestCase("Check positive priorities")
       {}
-    bool 
+    void
       Ipv6ListRoutingPositiveTestCase::DoRun (void)
         {
           Ptr<Ipv6ListRouting> lr = CreateObject<Ipv6ListRouting> ();
@@ -432,9 +429,6 @@ namespace ns3 {
           Ptr<Ipv6RoutingProtocol> secondRp = lr->GetRoutingProtocol (1, second);
           NS_TEST_ASSERT_MSG_EQ (5, second, "XXX");
           NS_TEST_ASSERT_MSG_EQ (secondRp, bRouting, "XXX");
-
-          // XXX
-          return false;
         }
 
     static class Ipv6ListRoutingTestSuite : public TestSuite

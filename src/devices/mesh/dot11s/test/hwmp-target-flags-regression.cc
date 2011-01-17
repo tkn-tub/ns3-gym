@@ -52,7 +52,7 @@ HwmpDoRfRegressionTest::~HwmpDoRfRegressionTest ()
 {
   delete m_nodes;
 }
-bool
+void
 HwmpDoRfRegressionTest::DoRun ()
 {
   SeedManager::SetSeed(12345);
@@ -67,7 +67,6 @@ HwmpDoRfRegressionTest::DoRun ()
   if (!WRITE_VECTORS) CheckResults ();
 
   delete m_nodes, m_nodes = 0;
-  return false;
 }
 void
 HwmpDoRfRegressionTest::CreateNodes ()

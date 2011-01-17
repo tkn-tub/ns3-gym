@@ -70,7 +70,7 @@ Bug772ChainTest::~Bug772ChainTest ()
   delete m_nodes;
 }
 
-bool
+void
 Bug772ChainTest::DoRun ()
 {
   SeedManager::SetSeed(12345);
@@ -85,7 +85,6 @@ Bug772ChainTest::DoRun ()
   if (!WRITE_VECTORS) CheckResults ();
   
   delete m_nodes, m_nodes = 0;
-  return GetErrorStatus ();
 }
 
 void

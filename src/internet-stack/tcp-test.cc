@@ -57,7 +57,7 @@ public:
                uint32_t serverWriteSize,
                uint32_t serverReadSize);
 private:
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
   virtual void DoTeardown (void);
   void SetupDefaultSim (void);
 
@@ -123,7 +123,7 @@ TcpTestCase::TcpTestCase (uint32_t totalStreamSize,
     m_serverReadSize (serverReadSize)
 {}
 
-bool
+void
 TcpTestCase::DoRun (void)
 {
   m_currentSourceTxBytes = 0;
@@ -152,8 +152,6 @@ TcpTestCase::DoRun (void)
                          "Server received expected data buffers");
   NS_TEST_EXPECT_MSG_EQ (memcmp (m_sourceTxPayload, m_sourceRxPayload, m_totalBytes), 0, 
                          "Source received back expected data buffers");
-
-  return false;
 }
 void
 TcpTestCase::DoTeardown (void)

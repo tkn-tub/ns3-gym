@@ -52,7 +52,7 @@ public:
   virtual ~Ns3WimaxSfCreationTestCase ();
 
 private:
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
 
 };
 
@@ -65,7 +65,7 @@ Ns3WimaxSfCreationTestCase::~Ns3WimaxSfCreationTestCase ()
 {
 }
 
-bool
+void
 Ns3WimaxSfCreationTestCase::DoRun (void)
 {
 
@@ -153,7 +153,6 @@ Ns3WimaxSfCreationTestCase::DoRun (void)
   Simulator::Stop (Seconds (duration));
   Simulator::Run ();
   Simulator::Destroy ();
-  return false; // Test is passed
 }
 
 // ==============================================================================

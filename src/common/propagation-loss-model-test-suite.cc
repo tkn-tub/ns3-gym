@@ -41,7 +41,7 @@ public:
   virtual ~FriisPropagationLossModelTestCase ();
 
 private:
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
 
   typedef struct {
     Vector m_position;
@@ -62,7 +62,7 @@ FriisPropagationLossModelTestCase::~FriisPropagationLossModelTestCase ()
 {
 }
 
-bool
+void
 FriisPropagationLossModelTestCase::DoRun (void)
 {
   // The ns-3 testing manual gives more background on the values selected
@@ -127,8 +127,6 @@ FriisPropagationLossModelTestCase::DoRun (void)
       double resultW =   pow (10.0, resultdBm/10.0)/1000;
       NS_TEST_EXPECT_MSG_EQ_TOL (resultW, testVector.m_pr, testVector.m_tolerance, "Got unexpected rcv power");
     }
-	
-  return GetErrorStatus ();
 }
 
 // Added for Two-Ray Ground Model - tomhewer@mac.com
@@ -140,7 +138,7 @@ public:
   virtual ~TwoRayGroundPropagationLossModelTestCase ();
   
 private:
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
   
   typedef struct
   {
@@ -163,7 +161,7 @@ TwoRayGroundPropagationLossModelTestCase::~TwoRayGroundPropagationLossModelTestC
 {
 }
 
-bool
+void
 TwoRayGroundPropagationLossModelTestCase::DoRun (void)
 {
   // wavelength at 2.4 GHz is 0.125m
@@ -258,8 +256,6 @@ TwoRayGroundPropagationLossModelTestCase::DoRun (void)
     double resultW =   pow (10.0, resultdBm / 10.0) / 1000;
     NS_TEST_EXPECT_MSG_EQ_TOL (resultW, testVector.m_pr, testVector.m_tolerance, "Got unexpected rcv power");
   }
-  
-  return GetErrorStatus ();
 }
 
 
@@ -270,7 +266,7 @@ public:
   virtual ~LogDistancePropagationLossModelTestCase ();
 
 private:
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
 
   typedef struct {
     Vector m_position;
@@ -291,7 +287,7 @@ LogDistancePropagationLossModelTestCase::~LogDistancePropagationLossModelTestCas
 {
 }
 
-bool
+void
 LogDistancePropagationLossModelTestCase::DoRun (void)
 {
   // reference loss at 2.4 GHz is 40.045997
@@ -348,8 +344,6 @@ LogDistancePropagationLossModelTestCase::DoRun (void)
       double resultW =   pow (10.0, resultdBm/10.0)/1000;
       NS_TEST_EXPECT_MSG_EQ_TOL (resultW, testVector.m_pr, testVector.m_tolerance, "Got unexpected rcv power");
     }
-	
-  return GetErrorStatus ();
 }
 
 class MatrixPropagationLossModelTestCase : public TestCase
@@ -359,7 +353,7 @@ public:
   virtual ~MatrixPropagationLossModelTestCase ();
 
 private:
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
 };
 
 MatrixPropagationLossModelTestCase::MatrixPropagationLossModelTestCase ()
@@ -371,7 +365,7 @@ MatrixPropagationLossModelTestCase::~MatrixPropagationLossModelTestCase ()
 {
 }
 
-bool
+void
 MatrixPropagationLossModelTestCase::DoRun (void)
 {
   Ptr<Node> n[3];
@@ -401,8 +395,6 @@ MatrixPropagationLossModelTestCase::DoRun (void)
   NS_TEST_ASSERT_MSG_EQ (loss.CalcRxPower (0, m[2], m[1]), 0, "Loss 2 -> 1 incorrect");
 
   Simulator::Destroy ();
-  
-  return GetErrorStatus ();
 }
 
 class RangePropagationLossModelTestCase : public TestCase
@@ -412,7 +404,7 @@ public:
   virtual ~RangePropagationLossModelTestCase ();
 
 private:
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
 };
 
 RangePropagationLossModelTestCase::RangePropagationLossModelTestCase ()
@@ -424,7 +416,7 @@ RangePropagationLossModelTestCase::~RangePropagationLossModelTestCase ()
 {
 }
 
-bool
+void
 RangePropagationLossModelTestCase::DoRun (void)
 {
   Config::SetDefault ("ns3::RangePropagationLossModel::MaxRange", DoubleValue (127.2));
@@ -443,8 +435,6 @@ RangePropagationLossModelTestCase::DoRun (void)
   resultdBm = lossModel->CalcRxPower (txPwrdBm, a, b);
   NS_TEST_EXPECT_MSG_EQ_TOL (resultdBm, -1000.0, tolerance, "Got unexpected rcv power");
   Simulator::Destroy ();
-  
-  return GetErrorStatus ();
 }
 
 class PropagationLossModelsTestSuite : public TestSuite

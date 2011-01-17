@@ -180,7 +180,7 @@ public:
   virtual ~Ns3TcpCwndTestCase1 ();
 
 private:
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
   bool m_writeResults;
 
   class  CwndEvent {
@@ -215,7 +215,7 @@ Ns3TcpCwndTestCase1::CwndChange (uint32_t oldCwnd, uint32_t newCwnd)
   m_responses.Add (event);
 }
 
-bool
+void
 Ns3TcpCwndTestCase1::DoRun (void)
 {
   //
@@ -359,8 +359,6 @@ Ns3TcpCwndTestCase1::DoRun (void)
       NS_TEST_ASSERT_MSG_EQ (event.m_oldCwnd, from, "Wrong old cwnd value in cwnd change event " << i);
       NS_TEST_ASSERT_MSG_EQ (event.m_newCwnd, to, "Wrong new cwnd value in cwnd change event " << i);
     }
-
-  return GetErrorStatus ();
 }
 
 
@@ -385,7 +383,7 @@ public:
   virtual ~Ns3TcpCwndTestCase2 ();
 
 private:
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
   bool m_writeResults;
 
   class  CwndEvent {
@@ -420,7 +418,7 @@ Ns3TcpCwndTestCase2::CwndChange (uint32_t oldCwnd, uint32_t newCwnd)
   m_responses.Add (event);
 }
 
-bool
+void
 Ns3TcpCwndTestCase2::DoRun (void)
 {
   // Set up some default values for the simulation.
@@ -558,8 +556,6 @@ Ns3TcpCwndTestCase2::DoRun (void)
   // Fast retransmit again; cwnd should be back to 8*MSS
   event = m_responses.Get (42);
   NS_TEST_ASSERT_MSG_EQ (event.m_newCwnd, 8*MSS, "Wrong new cwnd value in cwnd change event " << 42);
-
-  return GetErrorStatus ();
 }
 
 class Ns3TcpCwndTestSuite : public TestSuite
@@ -575,4 +571,4 @@ Ns3TcpCwndTestSuite::Ns3TcpCwndTestSuite ()
   AddTestCase (new Ns3TcpCwndTestCase2);
 }
 
-static Ns3TcpCwndTestSuite ns3TcpCwndTestSuite;
+Ns3TcpCwndTestSuite ns3TcpCwndTestSuite;

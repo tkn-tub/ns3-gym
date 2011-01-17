@@ -70,7 +70,7 @@ public:
   virtual ~BasicAddTestCase ();
 
 private:
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
   virtual void DoTeardown (void);
 };
 
@@ -89,7 +89,7 @@ BasicAddTestCase::DoTeardown (void)
   Names::Clear ();
 }
 
-bool
+void
 BasicAddTestCase::DoRun (void)
 {
   std::string found;
@@ -117,8 +117,6 @@ BasicAddTestCase::DoRun (void)
 
   found = Names::FindName (childOfObjectTwo);
   NS_TEST_ASSERT_MSG_EQ (found, "Child", "Could not Names::Add and Names::FindName a child Object");
-
-  return false;
 }
 
 // ===========================================================================
@@ -137,7 +135,7 @@ public:
   virtual ~StringContextAddTestCase ();
 
 private:
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
   virtual void DoTeardown (void);
 };
 
@@ -157,7 +155,7 @@ StringContextAddTestCase::DoTeardown (void)
   Names::Clear ();
 }
 
-bool
+void
 StringContextAddTestCase::DoRun (void)
 {
   std::string found;
@@ -185,8 +183,6 @@ StringContextAddTestCase::DoRun (void)
 
   found = Names::FindName (childOfObjectTwo);
   NS_TEST_ASSERT_MSG_EQ (found, "Child", "Could not Names::Add and Names::FindName a child Object");
-
-  return false;
 }
 
 // ===========================================================================
@@ -202,7 +198,7 @@ public:
   virtual ~FullyQualifiedAddTestCase ();
 
 private:
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
   virtual void DoTeardown (void);
 };
 
@@ -222,7 +218,7 @@ FullyQualifiedAddTestCase::DoTeardown (void)
   Names::Clear ();
 }
 
-bool
+void
 FullyQualifiedAddTestCase::DoRun (void)
 {
   std::string found;
@@ -250,8 +246,6 @@ FullyQualifiedAddTestCase::DoRun (void)
 
   found = Names::FindName (childOfObjectTwo);
   NS_TEST_ASSERT_MSG_EQ (found, "Child", "Could not Names::Add and Names::FindName a child Object");
-
-  return false;
 }
 
 // ===========================================================================
@@ -270,7 +264,7 @@ public:
   virtual ~RelativeAddTestCase ();
 
 private:
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
   virtual void DoTeardown (void);
 };
 
@@ -290,7 +284,7 @@ RelativeAddTestCase::DoTeardown (void)
   Names::Clear ();
 }
 
-bool
+void
 RelativeAddTestCase::DoRun (void)
 {
   std::string found;
@@ -318,8 +312,6 @@ RelativeAddTestCase::DoRun (void)
 
   found = Names::FindName (childOfObjectTwo);
   NS_TEST_ASSERT_MSG_EQ (found, "Child", "Could not Names::Add and Names::FindName a child Object");
-
-  return false;
 }
 
 // ===========================================================================
@@ -338,7 +330,7 @@ public:
   virtual ~BasicRenameTestCase ();
 
 private:
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
   virtual void DoTeardown (void);
 };
 
@@ -357,7 +349,7 @@ BasicRenameTestCase::DoTeardown (void)
   Names::Clear ();
 }
 
-bool
+void
 BasicRenameTestCase::DoRun (void)
 {
   std::string found;
@@ -383,8 +375,6 @@ BasicRenameTestCase::DoRun (void)
 
   found = Names::FindName (childOfObjectOne);
   NS_TEST_ASSERT_MSG_EQ (found, "New Child", "Could not Names::Rename a child Object");
-
-  return false;
 }
 
 // ===========================================================================
@@ -400,7 +390,7 @@ public:
   virtual ~StringContextRenameTestCase ();
 
 private:
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
   virtual void DoTeardown (void);
 };
 
@@ -419,7 +409,7 @@ StringContextRenameTestCase::DoTeardown (void)
   Names::Clear ();
 }
 
-bool
+void
 StringContextRenameTestCase::DoRun (void)
 {
   std::string found;
@@ -445,8 +435,6 @@ StringContextRenameTestCase::DoRun (void)
 
   found = Names::FindName (childOfObjectOne);
   NS_TEST_ASSERT_MSG_EQ (found, "New Child", "Could not Names::Rename a child Object");
-
-  return false;
 }
 
 // ===========================================================================
@@ -462,7 +450,7 @@ public:
   virtual ~FullyQualifiedRenameTestCase ();
 
 private:
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
   virtual void DoTeardown (void);
 };
 
@@ -481,7 +469,7 @@ FullyQualifiedRenameTestCase::DoTeardown (void)
   Names::Clear ();
 }
 
-bool
+void
 FullyQualifiedRenameTestCase::DoRun (void)
 {
   std::string found;
@@ -507,8 +495,6 @@ FullyQualifiedRenameTestCase::DoRun (void)
 
   found = Names::FindName (childOfObjectOne);
   NS_TEST_ASSERT_MSG_EQ (found, "New Child", "Could not Names::Rename a child Object");
-
-  return false;
 }
 
 // ===========================================================================
@@ -524,7 +510,7 @@ public:
   virtual ~RelativeRenameTestCase ();
 
 private:
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
   virtual void DoTeardown (void);
 };
 
@@ -543,7 +529,7 @@ RelativeRenameTestCase::DoTeardown (void)
   Names::Clear ();
 }
 
-bool
+void
 RelativeRenameTestCase::DoRun (void)
 {
   std::string found;
@@ -569,8 +555,6 @@ RelativeRenameTestCase::DoRun (void)
 
   found = Names::FindName (childOfObjectOne);
   NS_TEST_ASSERT_MSG_EQ (found, "New Child", "Could not Names::Rename a child Object");
-
-  return false;
 }
 
 // ===========================================================================
@@ -586,7 +570,7 @@ public:
   virtual ~FindPathTestCase ();
 
 private:
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
   virtual void DoTeardown (void);
 };
 
@@ -605,7 +589,7 @@ FindPathTestCase::DoTeardown (void)
   Names::Clear ();
 }
 
-bool
+void
 FindPathTestCase::DoRun (void)
 {
   std::string found;
@@ -625,8 +609,6 @@ FindPathTestCase::DoRun (void)
   Ptr<TestObject> objectNotThere = CreateObject<TestObject> ();
   found = Names::FindPath (objectNotThere);
   NS_TEST_ASSERT_MSG_EQ (found, "", "Unexpectedly found a non-existent Object");
-
-  return false;
 }
 
 // ===========================================================================
@@ -642,7 +624,7 @@ public:
   virtual ~BasicFindTestCase ();
 
 private:
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
   virtual void DoTeardown (void);
 };
 
@@ -661,7 +643,7 @@ BasicFindTestCase::DoTeardown (void)
   Names::Clear ();
 }
 
-bool
+void
 BasicFindTestCase::DoRun (void)
 {
   Ptr<TestObject> found;
@@ -689,8 +671,6 @@ BasicFindTestCase::DoRun (void)
 
   found = Names::Find<TestObject> (objectTwo, "Child");
   NS_TEST_ASSERT_MSG_EQ (found, childOfObjectTwo, "Could not find a previously named child Object via object context");
-
-  return false;
 }
 
 // ===========================================================================
@@ -706,7 +686,7 @@ public:
   virtual ~StringContextFindTestCase ();
 
 private:
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
   virtual void DoTeardown (void);
 };
 
@@ -725,7 +705,7 @@ StringContextFindTestCase::DoTeardown (void)
   Names::Clear ();
 }
 
-bool
+void
 StringContextFindTestCase::DoRun (void)
 {
   Ptr<TestObject> found;
@@ -753,8 +733,6 @@ StringContextFindTestCase::DoRun (void)
 
   found = Names::Find<TestObject> ("/Names/Name Two", "Child");
   NS_TEST_ASSERT_MSG_EQ (found, childOfObjectTwo, "Could not find a previously named child Object via string context");
-
-  return false;
 }
 
 // ===========================================================================
@@ -770,7 +748,7 @@ public:
   virtual ~FullyQualifiedFindTestCase ();
 
 private:
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
   virtual void DoTeardown (void);
 };
 
@@ -789,7 +767,7 @@ FullyQualifiedFindTestCase::DoTeardown (void)
   Names::Clear ();
 }
 
-bool
+void
 FullyQualifiedFindTestCase::DoRun (void)
 {
   Ptr<TestObject> found;
@@ -817,8 +795,6 @@ FullyQualifiedFindTestCase::DoRun (void)
 
   found = Names::Find<TestObject> ("/Names/Name Two/Child");
   NS_TEST_ASSERT_MSG_EQ (found, childOfObjectTwo, "Could not find a previously named child Object via string context");
-
-  return false;
 }
 
 // ===========================================================================
@@ -834,7 +810,7 @@ public:
   virtual ~RelativeFindTestCase ();
 
 private:
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
   virtual void DoTeardown (void);
 };
 
@@ -853,7 +829,7 @@ RelativeFindTestCase::DoTeardown (void)
   Names::Clear ();
 }
 
-bool
+void
 RelativeFindTestCase::DoRun (void)
 {
   Ptr<TestObject> found;
@@ -881,8 +857,6 @@ RelativeFindTestCase::DoRun (void)
 
   found = Names::Find<TestObject> ("Name Two/Child");
   NS_TEST_ASSERT_MSG_EQ (found, childOfObjectTwo, "Could not find a previously named child Object via string context");
-
-  return false;
 }
 
 // ===========================================================================
@@ -896,7 +870,7 @@ public:
   virtual ~AlternateFindTestCase ();
 
 private:
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
   virtual void DoTeardown (void);
 };
 
@@ -915,7 +889,7 @@ AlternateFindTestCase::DoTeardown (void)
   Names::Clear ();
 }
 
-bool
+void
 AlternateFindTestCase::DoRun (void)
 {
   Ptr<TestObject> testObject = CreateObject<TestObject> ();
@@ -943,8 +917,6 @@ AlternateFindTestCase::DoRun (void)
   foundTestObject = Names::Find<TestObject> ("Alternate Test Object");
   NS_TEST_ASSERT_MSG_EQ (foundTestObject, 0, 
                "Unexpectedly able to GetObject<TestObject> on an AlternateTestObject");
-
-  return false;
 }
 
 class NamesTestSuite : public TestSuite

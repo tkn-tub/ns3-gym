@@ -55,7 +55,7 @@ public:
   virtual ~Ns3LtePropagationLossModelTestCase ();
 
 private:
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
 
 };
 
@@ -68,11 +68,9 @@ Ns3LtePropagationLossModelTestCase::~Ns3LtePropagationLossModelTestCase ()
 {
 }
 
-bool
+void
 Ns3LtePropagationLossModelTestCase::DoRun (void)
 {
-  bool testResult = false;
-
   // CREATE PHY LAYER FOR BOTH UE AND ENB
   Ptr<EnbLtePhy> phyEnb = CreateObject<EnbLtePhy> ();
   Ptr<EnbLteSpectrumPhy> dlEnb = CreateObject<EnbLteSpectrumPhy> ();
@@ -167,30 +165,17 @@ Ns3LtePropagationLossModelTestCase::DoRun (void)
     }
 
 
-  if (tx.size () != rx.size ())
-    {
-      return true;
-    }
-
+  NS_TEST_ASSERT_MSG_EQ (tx.size (), rx.size (), "Sizes of tx and rx don't agree.");
 
   int nbOfValues = tx.size ();
   for (int i = 0; i < nbOfValues; i++)
     {
-      if (tx.at (i) == 0 && rx.at (i) != 0 )
-        {
-          return true;
-        }
-      if (tx.at (i) != 0 && (tx.at (i) <= rx.at (i)))
-        {
-          return true;
-        }
+      NS_TEST_ASSERT_MSG_EQ (tx.at (i) == 0 && rx.at (i) != 0, false, "Problem with elements of tx and rx.");
+      NS_TEST_ASSERT_MSG_EQ (tx.at (i) != 0 && (tx.at (i) <= rx.at (i)), false, "Problem with elements of tx and rx.");
     }
 
 
   Simulator::Destroy ();
-
-
-  return (testResult);
 }
 // ==============================================================================
 

@@ -50,7 +50,7 @@ PeerManagementProtocolRegressionTest::~PeerManagementProtocolRegressionTest ()
   delete m_nodes;
 }
 
-bool
+void
 PeerManagementProtocolRegressionTest::DoRun ()
 {
   SeedManager::SetSeed(12345);
@@ -64,7 +64,6 @@ PeerManagementProtocolRegressionTest::DoRun ()
   if (!WRITE_VECTORS) CheckResults ();
   
   delete m_nodes, m_nodes = 0;
-  return GetErrorStatus ();
 }
 
 void

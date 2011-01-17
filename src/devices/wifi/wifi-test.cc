@@ -45,7 +45,7 @@ class WifiTest : public TestCase
 public:
   WifiTest ();
 
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
 private:
   void RunOne (void);
   void CreateOne (Vector pos, Ptr<YansWifiChannel> channel);
@@ -116,7 +116,7 @@ WifiTest::RunOne (void)
   Simulator::Stop (Seconds (10.0));
 }
 
-bool
+void
 WifiTest::DoRun (void)
 {
   m_mac.SetTypeId ("ns3::AdhocWifiMac");
@@ -147,7 +147,6 @@ WifiTest::DoRun (void)
   m_mac.SetTypeId ("ns3::AdhocWifiMac");
   RunOne ();
   Simulator::Destroy ();
-  return false;
 }
 
 //-----------------------------------------------------------------------------
@@ -155,7 +154,7 @@ class QosUtilsIsOldPacketTest : public TestCase
 {
 public:
   QosUtilsIsOldPacketTest () : TestCase ("QosUtilsIsOldPacket") {}
-  virtual bool DoRun (void)
+  virtual void DoRun (void)
   {
     // startingSeq=0, seqNum=2047
     NS_TEST_EXPECT_MSG_EQ (QosUtilsIsOldPacket (0, 2047), false, "2047 is new in comparison to 0");
@@ -173,8 +172,6 @@ public:
     NS_TEST_EXPECT_MSG_EQ (QosUtilsIsOldPacket (2048, 4095), false, "4095 is new in comparison to 2048");
     // startingSeq=2049 seqNum=0
     NS_TEST_EXPECT_MSG_EQ (QosUtilsIsOldPacket (2049, 0), false, "0 is new in comparison to 2049");
-
-    return GetErrorStatus ();
   }
 };
 
@@ -184,7 +181,7 @@ class InterferenceHelperSequenceTest : public TestCase
 public:
   InterferenceHelperSequenceTest ();
 
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
 private:
   Ptr<Node> CreateOne (Vector pos, Ptr<YansWifiChannel> channel);
   void SendOnePacket (Ptr<WifiNetDevice> dev);
@@ -244,7 +241,7 @@ InterferenceHelperSequenceTest::CreateOne (Vector pos, Ptr<YansWifiChannel> chan
   return node;
 }
 
-bool
+void
 InterferenceHelperSequenceTest::DoRun (void)
 {
   m_mac.SetTypeId ("ns3::AdhocWifiMac");
@@ -284,7 +281,6 @@ InterferenceHelperSequenceTest::DoRun (void)
   Simulator::Run ();
 
   Simulator::Destroy ();
-  return false;
 }
 
 //-----------------------------------------------------------------------------

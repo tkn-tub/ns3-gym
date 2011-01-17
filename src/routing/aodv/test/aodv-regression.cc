@@ -89,7 +89,7 @@ ChainRegressionTest::~ChainRegressionTest ()
   delete m_nodes;
 }
 
-bool
+void
 ChainRegressionTest::DoRun ()
 {
   SeedManager::SetSeed(12345);
@@ -110,7 +110,6 @@ ChainRegressionTest::DoRun ()
   if (!WRITE_VECTORS) CheckResults ();
   
   delete m_nodes, m_nodes = 0;
-  return GetErrorStatus ();
 }
 
 void

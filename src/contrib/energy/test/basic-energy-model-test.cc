@@ -50,7 +50,7 @@ public:
   virtual ~BasicEnergyUpdateTest ();
 
 private:
-  bool DoRun (void);
+  void DoRun (void);
 
   /**
    * \param state Radio state to switch to.
@@ -80,7 +80,7 @@ BasicEnergyUpdateTest::~BasicEnergyUpdateTest ()
 {
 }
 
-bool
+void
 BasicEnergyUpdateTest::DoRun (void)
 {
   // set types
@@ -88,29 +88,11 @@ BasicEnergyUpdateTest::DoRun (void)
   m_deviceEnergyModel.SetTypeId ("ns3::WifiRadioEnergyModel");
 
   // run state switch tests
-  if (StateSwitchTest (WifiPhy::IDLE))
-    {
-      return true;
-    }
-  if (StateSwitchTest (WifiPhy::CCA_BUSY))
-    {
-      return true;
-    }
-  if (StateSwitchTest (WifiPhy::TX))
-    {
-      return true;
-    }
-  if (StateSwitchTest (WifiPhy::RX))
-    {
-      return true;
-    }
-  if (StateSwitchTest (WifiPhy::SWITCHING))
-    {
-      return true;
-    }
-
-  // error free
-  return false;
+  NS_TEST_ASSERT_MSG_EQ (StateSwitchTest (WifiPhy::IDLE), false, "Problem with state switch test (WifiPhy idle).");
+  NS_TEST_ASSERT_MSG_EQ (StateSwitchTest (WifiPhy::CCA_BUSY), false, "Problem with state switch test (WifiPhy cca busy).");
+  NS_TEST_ASSERT_MSG_EQ (StateSwitchTest (WifiPhy::TX), false, "Problem with state switch test (WifiPhy tx).");
+  NS_TEST_ASSERT_MSG_EQ (StateSwitchTest (WifiPhy::RX), false, "Problem with state switch test (WifiPhy rx).");
+  NS_TEST_ASSERT_MSG_EQ (StateSwitchTest (WifiPhy::SWITCHING), false, "Problem with state switch test (WifiPhy switching).");
 }
 
 bool
@@ -136,12 +118,12 @@ BasicEnergyUpdateTest::StateSwitchTest (WifiPhy::State state)
   DeviceEnergyModelContainer models =
     source->FindDeviceEnergyModels ("ns3::WifiRadioEnergyModel");
   // check list
-  NS_TEST_ASSERT_MSG_EQ (false, (models.GetN () == 0), "Model list is empty!");
+  NS_TEST_ASSERT_MSG_EQ_RETURNS_BOOL (false, (models.GetN () == 0), "Model list is empty!");
   // get pointer
   Ptr<WifiRadioEnergyModel> devModel =
       DynamicCast<WifiRadioEnergyModel> (models.Get (0));
   // check pointer
-  NS_TEST_ASSERT_MSG_NE (0, devModel, "NULL pointer to device model!");
+  NS_TEST_ASSERT_MSG_NE_RETURNS_BOOL (0, devModel, "NULL pointer to device model!");
 
   /*
    * The radio will stay IDLE for m_timeS seconds. Then it will switch into a
@@ -208,14 +190,14 @@ BasicEnergyUpdateTest::StateSwitchTest (WifiPhy::State state)
   NS_LOG_UNCOND ("Estimated remaining energy is " << estRemainingEnergy);
   NS_LOG_UNCOND ("Difference is " << estRemainingEnergy - remainingEnergy);
   // check remaining energy
-  NS_TEST_ASSERT_MSG_EQ_TOL (remainingEnergy, estRemainingEnergy, m_tolerance,
+  NS_TEST_ASSERT_MSG_EQ_TOL_RETURNS_BOOL (remainingEnergy, estRemainingEnergy, m_tolerance,
                              "Incorrect remaining energy!");
 
   // obtain radio state
   WifiPhy::State endState = devModel->GetCurrentState ();
   NS_LOG_UNCOND ("Radio state is " << endState);
   // check end state
-  NS_TEST_ASSERT_MSG_EQ (endState, state,  "Incorrect end state!");
+  NS_TEST_ASSERT_MSG_EQ_RETURNS_BOOL (endState, state,  "Incorrect end state!");
   Simulator::Destroy ();
 
   return false; // no error
@@ -234,7 +216,7 @@ public:
   virtual ~BasicEnergyDepletionTest ();
 
 private:
-  bool DoRun (void);
+  void DoRun (void);
 
   /**
    * Callback invoked when energy is drained from source.
@@ -273,7 +255,7 @@ BasicEnergyDepletionTest::~BasicEnergyDepletionTest ()
 {
 }
 
-bool
+void
 BasicEnergyDepletionTest::DoRun (void)
 {
   /*
@@ -284,16 +266,11 @@ BasicEnergyDepletionTest::DoRun (void)
       for (double updateIntervalS = 0.5; updateIntervalS <= m_updateIntervalS;
            updateIntervalS += m_timeStepS)
         {
-          if (DepletionTestCase (simTimeS, updateIntervalS))
-            {
-              return true;
-            }
+          NS_TEST_ASSERT_MSG_EQ (DepletionTestCase (simTimeS, updateIntervalS), false, "Depletion test case problem.");
           // reset callback count
           m_callbackCount = 0;
         }
     }
-  // error free
-  return false;
 }
 
 void
@@ -383,7 +360,7 @@ BasicEnergyDepletionTest::DepletionTestCase (double simTimeS,
   NS_LOG_UNCOND ("Actual callback count is " << m_callbackCount);
 
   // check result, call back should only be invoked once
-  NS_TEST_ASSERT_MSG_EQ (m_numOfNodes, m_callbackCount, "Not all callbacks are invoked!");
+  NS_TEST_ASSERT_MSG_EQ_RETURNS_BOOL (m_numOfNodes, m_callbackCount, "Not all callbacks are invoked!");
 
   return false;
 }

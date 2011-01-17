@@ -53,7 +53,7 @@ FlameRegressionTest::~FlameRegressionTest ()
   delete m_nodes;
 }
 
-bool
+void
 FlameRegressionTest::DoRun ()
 {
   SeedManager::SetSeed(12345);
@@ -68,7 +68,6 @@ FlameRegressionTest::DoRun ()
   if (!WRITE_VECTORS) CheckResults ();
 
   delete m_nodes, m_nodes = 0;
-  return false;
 }
 
 void

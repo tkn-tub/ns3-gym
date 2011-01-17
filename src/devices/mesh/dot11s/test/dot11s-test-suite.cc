@@ -36,10 +36,10 @@ struct MeshHeaderTest : public TestCase
     TestCase ("Dot11sMeshHeader roundtrip serialization")
   {
   }
-  bool DoRun ();
+  void DoRun ();
 };
 
-bool
+void
 MeshHeaderTest::DoRun ()
 {
   {
@@ -81,7 +81,6 @@ MeshHeaderTest::DoRun ()
     packet->RemoveHeader (b);
     NS_TEST_ASSERT_MSG_EQ (a, b, "Mesh header roundtrip serialization works, 1 address");
   }
-  return false;
 }
 //-----------------------------------------------------------------------------
 /// Unit test for HwmpRtable
@@ -89,7 +88,7 @@ class HwmpRtableTest : public TestCase
 {
 public:
   HwmpRtableTest ();
-  virtual bool DoRun ();
+  virtual void DoRun ();
 
 private:
   /// Test Add apth and lookup path;
@@ -193,7 +192,7 @@ HwmpRtableTest::TestPrecursorFind ()
     }
 }
 
-bool
+void
 HwmpRtableTest::DoRun ()
 {
   table = CreateObject<HwmpRtable> ();
@@ -206,8 +205,6 @@ HwmpRtableTest::DoRun ()
 
   Simulator::Run ();
   Simulator::Destroy ();
-
-  return GetErrorStatus ();
 }
 //-----------------------------------------------------------------------------
 /// Built-in self test for PeerLinkFrameStart
@@ -217,10 +214,10 @@ struct PeerLinkFrameStartTest : public TestCase
     TestCase ("PeerLinkFrames (open, confirm, close) unit tests")
   {
   }
-  virtual bool DoRun ();
+  virtual void DoRun ();
 };
 
-bool
+void
 PeerLinkFrameStartTest::DoRun ()
 {
   {
@@ -271,7 +268,6 @@ PeerLinkFrameStartTest::DoRun ()
     packet->RemoveHeader (b);
     NS_TEST_EXPECT_MSG_EQ (a, b, "PEER_LINK_CLOSE works");
   }
-  return GetErrorStatus ();
 }
 //-----------------------------------------------------------------------------
 class Dot11sTestSuite : public TestSuite

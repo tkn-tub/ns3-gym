@@ -393,7 +393,7 @@ class SimulatorEventsTestCase : public TestCase
 {
 public:
   SimulatorEventsTestCase (ObjectFactory schedulerFactory);
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
   void A (int a);
   void B (int b);
   void C (int c);
@@ -475,7 +475,7 @@ SimulatorEventsTestCase::destroy (void)
       m_destroy = true; 
     }
 }
-bool 
+void 
 SimulatorEventsTestCase::DoRun (void)
 {
   m_a = true;
@@ -528,8 +528,6 @@ SimulatorEventsTestCase::DoRun (void)
   Simulator::Destroy ();
   NS_TEST_EXPECT_MSG_EQ (m_destroyId.IsExpired (), true, "Event should have expired now");
   NS_TEST_EXPECT_MSG_EQ (m_destroy, true, "Event should have run");
-
-  return false;
 }
 
 class SimulatorTemplateTestCase : public TestCase
@@ -540,7 +538,7 @@ public:
   void Ref (void) const {}
   void Unref (void) const {}
 private:
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
 
   void bar0 (void) {}
   void bar1 (int) {}
@@ -614,7 +612,7 @@ static void cber5 (const int &, const int &, const int &, const int &, const int
 SimulatorTemplateTestCase::SimulatorTemplateTestCase ()
   : TestCase ("Check that all templates are instanciated correctly. This is a compilation test, it cannot fail at runtime.")
 {}
-bool 
+void
 SimulatorTemplateTestCase::DoRun (void)
 {
   // Test schedule of const methods
@@ -820,8 +818,6 @@ SimulatorTemplateTestCase::DoRun (void)
 
   Simulator::Run ();
   Simulator::Destroy ();
-
-  return false;
 }
 
 class SimulatorTestSuite : public TestSuite

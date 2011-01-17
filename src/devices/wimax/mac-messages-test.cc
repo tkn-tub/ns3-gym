@@ -50,7 +50,7 @@ public:
   virtual ~DsaRequestTestCase ();
 
 private:
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
 
 };
 
@@ -63,7 +63,7 @@ DsaRequestTestCase::~DsaRequestTestCase ()
 {
 }
 
-bool
+void
 DsaRequestTestCase::DoRun (void)
 {
   IpcsClassifierRecord classifier = IpcsClassifierRecord ();
@@ -90,49 +90,16 @@ DsaRequestTestCase::DoRun (void)
 
   ServiceFlow sfRecv = dsaReqRecv.GetServiceFlow ();
 
-  if (sfRecv.GetDirection () != ServiceFlow::SF_DIRECTION_DOWN)
-    {
-
-      return true;
-    }
-  if (sfRecv.GetSfid () != 100)
-    {
-      return true;
-    }
-  if (sfRecv.GetCsSpecification () != ServiceFlow::IPV4)
-    {
-      return true;
-    }
-  if (sfRecv.GetServiceSchedulingType () != ServiceFlow::SF_TYPE_UGS)
-    {
-      return true;
-    }
-  if (sfRecv.GetMaxSustainedTrafficRate () != 1000000)
-    {
-      return true;
-    }
-  if (sfRecv.GetMinReservedTrafficRate () != 1000000)
-    {
-      return true;
-    }
-  if (sfRecv.GetMinTolerableTrafficRate () != 1000000)
-    {
-      return true;
-    }
-  if (sfRecv.GetMaximumLatency () != 10)
-    {
-      return true;
-    }
-  if (sfRecv.GetMaxTrafficBurst () != 1000)
-    {
-      return true;
-    }
-  if (sfRecv.GetTrafficPriority () != 1)
-    {
-      return true;
-    }
-
-  return false; // Test is passed
+  NS_TEST_ASSERT_MSG_EQ (sfRecv.GetDirection (), ServiceFlow::SF_DIRECTION_DOWN, "The sfRecv had the wrong direction.");
+  NS_TEST_ASSERT_MSG_EQ (sfRecv.GetSfid (), 100, "The sfRecv had the wrong sfid.");
+  NS_TEST_ASSERT_MSG_EQ (sfRecv.GetCsSpecification (), ServiceFlow::IPV4, "The sfRecv had the wrong cs specification.");
+  NS_TEST_ASSERT_MSG_EQ (sfRecv.GetServiceSchedulingType (), ServiceFlow::SF_TYPE_UGS, "The sfRecv had the wrong service scheduling type.");
+  NS_TEST_ASSERT_MSG_EQ (sfRecv.GetMaxSustainedTrafficRate (), 1000000, "The sfRecv had the wrong maximum sustained traffic rate.");
+  NS_TEST_ASSERT_MSG_EQ (sfRecv.GetMinReservedTrafficRate (), 1000000, "The sfRecv had the wrong minimum reserved traffic rate.");
+  NS_TEST_ASSERT_MSG_EQ (sfRecv.GetMinTolerableTrafficRate (), 1000000, "The sfRecv had the wrong minimum tolerable traffic rate.");
+  NS_TEST_ASSERT_MSG_EQ (sfRecv.GetMaximumLatency (), 10, "The sfRecv had the wrong maximum latency.");
+  NS_TEST_ASSERT_MSG_EQ (sfRecv.GetMaxTrafficBurst (), 1000, "The sfRecv had the wrong maximum traffic burst.");
+  NS_TEST_ASSERT_MSG_EQ (sfRecv.GetTrafficPriority (), 1, "The sfRecv had the wrong traffic priority.");
 }
 
 // ==============================================================================

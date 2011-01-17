@@ -51,12 +51,6 @@ extern bool gBreakOnFailure;
 #define NS_TEST_SOURCEDIR \
   TestCase::GetSourceDir (__FILE__)
 
-#define NS_TEST_RETURN_IF_ERROR \
-  if (GetErrorStatus ()) \
-    {                    \
-      return true;       \
-    } 
-
 // ===========================================================================
 // Test for equality (generic version)
 // ===========================================================================
@@ -79,7 +73,7 @@ extern bool gBreakOnFailure;
                        actualStream.str (), limitStream.str (), msgStream.str (), file, line);          \
         if (!ContinueOnFailure ())                                                                      \
           {                                                                                             \
-            return true;                                                                                \
+            return;                                                                                \
           }                                                                                             \
       }                                                                                                 \
   } while (false)
@@ -112,6 +106,61 @@ extern bool gBreakOnFailure;
  */
 #define NS_TEST_ASSERT_MSG_EQ(actual, limit, msg) \
   NS_TEST_ASSERT_MSG_EQ_INTERNAL (actual, limit, msg, __FILE__, __LINE__)
+
+/**
+ * \internal
+ */
+#define NS_TEST_ASSERT_MSG_EQ_RETURNS_BOOL_INTERNAL(actual, limit, msg, file, line)                                  \
+  do {                                                                                                  \
+    if (!((actual) == (limit)))                                                                         \
+      {                                                                                                 \
+        if (gBreakOnFailure) {*(int *)0 = 0;}                                                           \
+        std::ostringstream msgStream;                                                                   \
+        msgStream << msg;                                                                               \
+        std::ostringstream actualStream;                                                                \
+        actualStream << actual;                                                                         \
+        std::ostringstream limitStream;                                                                 \
+        limitStream << limit;                                                                           \
+        ReportTestFailure (std::string (#actual) + " (actual) == " + std::string (#limit) + " (limit)", \
+                       actualStream.str (), limitStream.str (), msgStream.str (), file, line);          \
+        if (!ContinueOnFailure ())                                                                      \
+          {                                                                                             \
+            return true;                                                                                \
+          }                                                                                             \
+      }                                                                                                 \
+  } while (false)
+
+/**
+ * \brief Test that an actual and expected (limit) value are equal and report
+ * and abort if not.
+ *
+ * Check to see if the expected (limit) value is equal to the actual value found
+ * in a test case.  If the two values are equal nothing happens, but if the 
+ * comparison fails, an error is reported in a consistent way and the execution
+ * of the current test case is aborted.
+ *
+ * The message is interpreted as a stream, for example:
+ *
+ * \code
+ * NS_TEST_ASSERT_MSG_EQ_RETURNS_BOOL (result, true, 
+ *      "cannot open file " << filename << " in test");
+ * \endcode
+ *
+ * is legal.
+ * 
+ * \param actual Expression for the actual value found during the test.
+ * \param limit Expression for the expected value of the test.
+ * \param msg Message that is output if the test does not pass.
+ *
+ * \warning Do not use this macro if you are comparing floating point numbers
+ * (float or double) as it is unlikely to do what you expect.  Use 
+ * NS_TEST_ASSERT_MSG_EQ_RETURNS_BOOL_TOL instead.
+ *
+ * This function returns a boolean value.
+ *
+ */
+#define NS_TEST_ASSERT_MSG_EQ_RETURNS_BOOL(actual, limit, msg) \
+  NS_TEST_ASSERT_MSG_EQ_RETURNS_BOOL_INTERNAL (actual, limit, msg, __FILE__, __LINE__)
 
 /**
  * \internal
@@ -189,7 +238,7 @@ extern bool gBreakOnFailure;
         ReportTestFailure (condStream.str (), actualStream.str (), limitStream.str (), msgStream.str (), file, line); \
         if (!ContinueOnFailure ())                                                                                    \
           {                                                                                                           \
-            return true;                                                                                              \
+            return;                                                                                              \
           }                                                                                                           \
       }                                                                                                               \
   } while (false)
@@ -244,6 +293,85 @@ extern bool gBreakOnFailure;
  */
 #define NS_TEST_ASSERT_MSG_EQ_TOL(actual, limit, tol, msg)                 \
   NS_TEST_ASSERT_MSG_EQ_TOL_INTERNAL (actual, limit, tol, msg, __FILE__, __LINE__)
+
+/**
+ * \internal
+ */
+#define NS_TEST_ASSERT_MSG_EQ_TOL_RETURNS_BOOL_INTERNAL(actual, limit, tol, msg, file, line)                                       \
+  do {                                                                                                                \
+    if ((actual) > (limit) + (tol) || (actual) < (limit) - (tol))                                                     \
+      {                                                                                                               \
+        if (gBreakOnFailure) {*(int *)0 = 0;}                                                                         \
+        std::ostringstream msgStream;                                                                                 \
+        msgStream << msg;                                                                                             \
+        std::ostringstream actualStream;                                                                              \
+        actualStream << actual;                                                                                       \
+        std::ostringstream limitStream;                                                                               \
+        limitStream << limit << " +- " << tol;                                                                        \
+        std::ostringstream condStream;                                                                                \
+        condStream << #actual << " (actual) < " << #limit << " (limit) + " << #tol << " (tol) && " <<                 \
+                      #actual << " (actual) > " << #limit << " (limit) - " << #tol << " (tol)";                       \
+        ReportTestFailure (condStream.str (), actualStream.str (), limitStream.str (), msgStream.str (), file, line); \
+        if (!ContinueOnFailure ())                                                                                    \
+          {                                                                                                           \
+            return true;                                                                                              \
+          }                                                                                                           \
+      }                                                                                                               \
+  } while (false)
+
+/**
+ * \brief Test that actual and expected (limit) values are equal to plus or minus
+ * some tolerance and report and abort if not.
+ *
+ * Check to see if the expected (limit) value is equal to the actual value found
+ * in a test case to some tolerance.  This is not the same thing as asking if
+ * two floating point are equal to within some epsilon, but is useful for that
+ * case.  This assertion is geared toward more of a measurement problem.  Consider
+ * measuring a physical rod of some kind that you have ordered.  You need to 
+ * determine if it is "good."  You won't measure the rod to an arbitrary precision
+ * of sixteen significant figures, you will measure the rod to determine if its 
+ * length is within the tolerances you provided.  For example, 12.00 inches plus
+ * or minus .005 inch may be just fine.
+ * 
+ * In ns-3, you might want to measure a signal to noise ratio and check to see
+ * if the answer is what you expect.  If you naively measure (double)1128.93 and
+ * compare this number with a constant 1128.93 you are almost certainly going to
+ * have your test fail because of floating point rounding errors.  We provide a
+ * floating point comparison function ns3::TestDoubleIsEqual() but you will 
+ * probably quickly find that is not what you want either.  It may turn out to
+ * be the case that when you measured an snr that printed as 1128.93, what was 
+ * actually measured was something more like 1128.9287653857625442 for example.
+ * Given that the double epsilon is on the order of 0.0000000000000009, you would
+ * need to provide sixteen significant figures of expected value for this kind of
+ * test to pass even with a typical test for floating point "approximate equality."
+ * That is clearly not required or desired.  You really want to be able to provide 
+ * 1128.93 along with a tolerance just like you provided 12 inches +- 0.005 inch 
+ * above.
+ *
+ * This assertion is designed for real measurements by taking into account
+ * measurement tolerances.  By doing so it also automatically compensates for 
+ * floating point rounding errors.    If you really want to check floating point
+ * equality down to the numeric_limits<double>::epsilon () range, consider using 
+ * ns3::TestDoubleIsEqual().
+ *
+ * The message is interpreted as a stream, for example:
+ *
+ * \code
+ * NS_TEST_ASSERT_MSG_EQ_TOL_RETURNS_BOOL (snr, 1128.93, 0.005, "wrong snr (" << snr << ") in test");
+ * \endcode
+ *
+ * is legal.
+ * 
+ * \param actual Expression for the actual value found during the test.
+ * \param limit Expression for the expected value of the test.
+ * \param tol Tolerance of the test.
+ * \param msg Message that is output if the test does not pass.
+ *
+ * This function returns a boolean value.
+ *
+ */
+#define NS_TEST_ASSERT_MSG_EQ_TOL_RETURNS_BOOL(actual, limit, tol, msg)                 \
+  NS_TEST_ASSERT_MSG_EQ_TOL_RETURNS_BOOL_INTERNAL (actual, limit, tol, msg, __FILE__, __LINE__)
 
 /**
  * \internal
@@ -342,7 +470,7 @@ extern bool gBreakOnFailure;
                        actualStream.str (), limitStream.str (), msgStream.str (), file, line);          \
         if (!ContinueOnFailure ())                                                                      \
           {                                                                                             \
-            return true;                                                                                \
+            return;                                                                                \
           }                                                                                             \
       }                                                                                                 \
   } while (false)
@@ -374,6 +502,60 @@ extern bool gBreakOnFailure;
  */
 #define NS_TEST_ASSERT_MSG_NE(actual, limit, msg) \
   NS_TEST_ASSERT_MSG_NE_INTERNAL (actual, limit, msg, __FILE__, __LINE__)
+
+/**
+ * \internal
+ */
+#define NS_TEST_ASSERT_MSG_NE_RETURNS_BOOL_INTERNAL(actual, limit, msg, file, line)                                  \
+  do {                                                                                                  \
+    if (!((actual) != (limit)))                                                                         \
+      {                                                                                                 \
+        if (gBreakOnFailure) {*(int *)0 = 0;}                                                           \
+        std::ostringstream msgStream;                                                                   \
+        msgStream << msg;                                                                               \
+        std::ostringstream actualStream;                                                                \
+        actualStream << actual;                                                                         \
+        std::ostringstream limitStream;                                                                 \
+        limitStream << limit;                                                                           \
+        ReportTestFailure (std::string (#actual) + " (actual) != " + std::string (#limit) + " (limit)", \
+                       actualStream.str (), limitStream.str (), msgStream.str (), file, line);          \
+        if (!ContinueOnFailure ())                                                                      \
+          {                                                                                             \
+            return true;                                                                                \
+          }                                                                                             \
+      }                                                                                                 \
+  } while (false)
+
+/**
+ * \brief Test that an actual and expected (limit) value are equal and report
+ * and abort if not.
+ *
+ * Check to see if the expected (limit) value is not equal to the actual value
+ * found in a test case.  If the two values are equal nothing happens, but if 
+ * the comparison fails, an error is reported in a consistent way and the 
+ * execution of the current test case is aborted.
+ *
+ * The message is interpreted as a stream, for example:
+ *
+ * \code
+ * NS_TEST_ASSERT_MSG_NE_RETURNS_BOOL (result, false, 
+ *      "cannot open file " << filename << " in test");
+ * \endcode
+ *
+ * is legal.
+ * 
+ * \param actual Expression for the actual value found during the test.
+ * \param limit Expression for the expected value of the test.
+ * \param msg Message that is output if the test does not pass.
+ *
+ * \warning Do not use this macro if you are comparing floating point numbers
+ * (float or double).  Use NS_TEST_ASSERT_MSG_FLNE instead.
+ *
+ * This function returns a boolean value.
+ *
+ */
+#define NS_TEST_ASSERT_MSG_NE_RETURNS_BOOL(actual, limit, msg) \
+  NS_TEST_ASSERT_MSG_NE_RETURNS_BOOL_INTERNAL (actual, limit, msg, __FILE__, __LINE__)
 
 /**
  * \internal
@@ -447,7 +629,7 @@ extern bool gBreakOnFailure;
                        actualStream.str (), limitStream.str (), msgStream.str (), file, line);           \
         if (!ContinueOnFailure ())                                                                       \
           {                                                                                              \
-            return true;                                                                                 \
+            return;                                                                                 \
           }                                                                                              \
       }                                                                                                  \
   } while (false)
@@ -531,7 +713,7 @@ extern bool gBreakOnFailure;
                        actualStream.str (), limitStream.str (), msgStream.str (), file, line);           \
         if (!ContinueOnFailure ())                                                                       \
           {                                                                                              \
-            return true;                                                                                 \
+            return;                                                                                 \
           }                                                                                              \
       }                                                                                                  \
   } while (false)
@@ -626,9 +808,8 @@ public:
 
   /**
    * \brief Run this test case.
-   * \returns Boolean sense of "an error has occurred."
    */
-  bool Run (void);
+  void Run (void);
 
   /**
    * \brief Set the verbosity of this test case.
@@ -829,9 +1010,8 @@ protected:
   /**
    * \internal
    * \brief Implementation to actually run this test case.
-   * \returns Boolean sense of "an error has occurred."
    */
-  virtual bool DoRun (void) = 0;
+  virtual void DoRun (void) = 0;
 
   /**
    * \internal
@@ -1073,9 +1253,8 @@ protected:
   /**
    * \internal
    * \brief Implementation to actually run this test suite.
-   * \returns Boolean sense of "an error has occurred."
    */
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
 
   /**
    * \internal

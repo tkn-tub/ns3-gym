@@ -33,7 +33,7 @@ namespace aodv
 struct NeighborTest : public TestCase
 {
   NeighborTest () : TestCase ("Neighbor"), neighbor (0) { }
-  virtual bool DoRun ();
+  virtual void DoRun ();
   void Handler (Ipv4Address addr);
   void CheckTimeout1 ();
   void CheckTimeout2 ();
@@ -71,7 +71,7 @@ NeighborTest::CheckTimeout3 ()
   NS_TEST_EXPECT_MSG_EQ (neighbor->IsNeighbor (Ipv4Address ("3.3.3.3")), false, "Neighbor doesn't exist");
 }
 
-bool
+void
 NeighborTest::DoRun ()
 {
   Neighbors nb (Seconds (1));
@@ -93,16 +93,14 @@ NeighborTest::DoRun ()
   Simulator::Schedule (Seconds (30), &NeighborTest::CheckTimeout3, this);
   Simulator::Run ();
   Simulator::Destroy ();
-  
-  return GetErrorStatus ();
-}
+  }
 //-----------------------------------------------------------------------------
 struct TypeHeaderTest : public TestCase
 {
   TypeHeaderTest () : TestCase ("AODV TypeHeader") 
   {
   }
-  virtual bool DoRun ()
+  virtual void DoRun ()
   {
     TypeHeader h (AODVTYPE_RREQ);
     NS_TEST_EXPECT_MSG_EQ (h.IsValid (), true, "Default header is valid");
@@ -114,7 +112,6 @@ struct TypeHeaderTest : public TestCase
     uint32_t bytes = p->RemoveHeader (h2);
     NS_TEST_EXPECT_MSG_EQ (bytes, 1, "Type header is 1 byte long");
     NS_TEST_EXPECT_MSG_EQ (h, h2, "Round trip serialization works");
-    return GetErrorStatus ();
   }
 };
 //-----------------------------------------------------------------------------
@@ -124,7 +121,7 @@ struct RreqHeaderTest : public TestCase
   RreqHeaderTest () : TestCase ("AODV RREQ") 
   {
   }
-  virtual bool DoRun ()
+  virtual void DoRun ()
   {
     RreqHeader h (/*flags*/0, /*reserved*/0, /*hopCount*/6, /*requestID*/1, /*dst*/Ipv4Address ("1.2.3.4"),
                   /*dstSeqNo*/40, /*origin*/Ipv4Address ("4.3.2.1"), /*originSeqNo*/10);
@@ -163,7 +160,6 @@ struct RreqHeaderTest : public TestCase
     NS_TEST_EXPECT_MSG_EQ (bytes, 23, "RREP is 23 bytes long");
     NS_TEST_EXPECT_MSG_EQ (h, h2, "Round trip serialization works");
     
-    return GetErrorStatus ();
   }
 };
 //-----------------------------------------------------------------------------
@@ -171,7 +167,7 @@ struct RreqHeaderTest : public TestCase
 struct RrepHeaderTest : public TestCase
 {
   RrepHeaderTest () : TestCase ("AODV RREP") {}
-  virtual bool DoRun ()
+  virtual void DoRun ()
   {
     RrepHeader h (/*prefixSize*/0, /*hopCount*/12, /*dst*/Ipv4Address ("1.2.3.4"), /*dstSeqNo*/2,
                   /*origin*/Ipv4Address ("4.3.2.1"), /*lifetime*/Seconds (3));
@@ -209,7 +205,6 @@ struct RrepHeaderTest : public TestCase
     uint32_t bytes = p->RemoveHeader (h2);
     NS_TEST_EXPECT_MSG_EQ (bytes, 19, "RREP is 19 bytes long");
     NS_TEST_EXPECT_MSG_EQ (h, h2, "Round trip serialization works");
-    return GetErrorStatus ();
   }
 };
 //-----------------------------------------------------------------------------
@@ -219,7 +214,7 @@ struct RrepAckHeaderTest : public TestCase
   RrepAckHeaderTest () : TestCase ("AODV RREP-ACK")
   {
   }
-  virtual bool DoRun()
+  virtual void DoRun()
   {
     RrepAckHeader h;
     Ptr<Packet> p = Create<Packet> ();
@@ -228,7 +223,6 @@ struct RrepAckHeaderTest : public TestCase
     uint32_t bytes = p->RemoveHeader(h2);
     NS_TEST_EXPECT_MSG_EQ (bytes, 1, "ACK is 1 byte long");
     NS_TEST_EXPECT_MSG_EQ (h, h2, "Round trip serialization works");
-    return GetErrorStatus ();
   }
 };
 //-----------------------------------------------------------------------------
@@ -238,7 +232,7 @@ struct RerrHeaderTest : public TestCase
   RerrHeaderTest () : TestCase ("AODV RERR")
   {
   }
-  virtual bool DoRun()
+  virtual void DoRun()
   {
     RerrHeader h;
     h.SetNoDelete(true);
@@ -257,7 +251,6 @@ struct RerrHeaderTest : public TestCase
     uint32_t bytes = p->RemoveHeader(h2);
     NS_TEST_EXPECT_MSG_EQ (bytes, h.GetSerializedSize(), "(De)Serialized size match");
     NS_TEST_EXPECT_MSG_EQ (h, h2, "Round trip serialization works");
-    return GetErrorStatus ();
   }
 };
 //-----------------------------------------------------------------------------
@@ -269,7 +262,7 @@ struct QueueEntryTest : public TestCase
   void Error (Ptr<const Packet>, const Ipv4Header &, Socket::SocketErrno) {}
   void Unicast2 (Ptr<Ipv4Route> route, Ptr<const Packet> packet, const Ipv4Header & header) {}
   void Error2 (Ptr<const Packet>, const Ipv4Header &, Socket::SocketErrno) {}
-  virtual bool DoRun()
+  virtual void DoRun()
   {
     Ptr<const Packet> packet = Create<Packet> ();
     Ipv4Header h;
@@ -296,8 +289,6 @@ struct QueueEntryTest : public TestCase
     NS_TEST_EXPECT_MSG_EQ (ecb2.IsEqual (entry.GetErrorCallback ()), true, "trivial");
     entry.SetUnicastForwardCallback (ucb2);
     NS_TEST_EXPECT_MSG_EQ (ucb2.IsEqual (entry.GetUnicastForwardCallback ()), true, "trivial");
-
-    return GetErrorStatus();
   }
 };
 //-----------------------------------------------------------------------------
@@ -305,7 +296,7 @@ struct QueueEntryTest : public TestCase
 struct AodvRqueueTest : public TestCase
 {
   AodvRqueueTest () : TestCase ("Rqueue"), q (64, Seconds (30)) {}
-  virtual bool DoRun ();
+  virtual void DoRun ();
   void Unicast (Ptr<Ipv4Route> route, Ptr<const Packet> packet, const Ipv4Header & header) {}
   void Error (Ptr<const Packet>, const Ipv4Header &, Socket::SocketErrno) {}
   void CheckSizeLimit ();
@@ -314,7 +305,7 @@ struct AodvRqueueTest : public TestCase
   RequestQueue q;
 };
 
-bool
+void
 AodvRqueueTest::DoRun ()
 {
   NS_TEST_EXPECT_MSG_EQ (q.GetMaxQueueLen (), 64, "trivial");
@@ -371,8 +362,6 @@ AodvRqueueTest::DoRun ()
 
   Simulator::Run ();
   Simulator::Destroy ();
-
-  return GetErrorStatus ();
 }
 
 void
@@ -403,7 +392,7 @@ AodvRqueueTest::CheckTimeout ()
 struct AodvRtableEntryTest : public TestCase
 {
   AodvRtableEntryTest () : TestCase ("RtableEntry") {}
-  virtual bool DoRun()
+  virtual void DoRun()
   {
     Ptr<NetDevice> dev;
     Ipv4InterfaceAddress iface;
@@ -475,7 +464,6 @@ struct AodvRtableEntryTest : public TestCase
     rt.GetPrecursors (prec);
     NS_TEST_EXPECT_MSG_EQ (prec.size (), 2, "trivial");
     Simulator::Destroy ();
-    return GetErrorStatus ();
   }
 };
 //-----------------------------------------------------------------------------
@@ -483,7 +471,7 @@ struct AodvRtableEntryTest : public TestCase
 struct AodvRtableTest : public TestCase
 {
   AodvRtableTest () : TestCase ("Rtable") {}
-  virtual bool DoRun()
+  virtual void DoRun()
   {
     RoutingTable rtable (Seconds (2));
     NS_TEST_EXPECT_MSG_EQ (rtable.GetBadLinkLifetime (), Seconds (2), "trivial");
@@ -529,7 +517,6 @@ struct AodvRtableTest : public TestCase
     NS_TEST_EXPECT_MSG_EQ (rtable.DeleteRoute (Ipv4Address ("1.2.3.4")), true, "trivial");
     NS_TEST_EXPECT_MSG_EQ (rtable.DeleteRoute (Ipv4Address ("1.2.3.4")), false, "trivial");
     Simulator::Destroy ();
-    return GetErrorStatus ();
   }
 };
 //-----------------------------------------------------------------------------

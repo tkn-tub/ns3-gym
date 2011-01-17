@@ -49,7 +49,7 @@ public:
   bool RxPacket (Ptr<NetDevice> dev, Ptr<const Packet> pkt, uint16_t mode, const Address &sender);
   void SendOnePacket (Ptr<Node> node);
 
-  bool DoRun (void);
+  void DoRun (void);
 
   double m_simTime;
   uint32_t m_bytesRx;
@@ -100,7 +100,7 @@ AcousticModemEnergyTestCase::RxPacket (Ptr<NetDevice> dev, Ptr<const Packet> pkt
   return true;
 }
 
-bool
+void
 AcousticModemEnergyTestCase::DoRun ()
 {
   // create a generic node
@@ -187,7 +187,6 @@ AcousticModemEnergyTestCase::DoRun ()
                              "Incorrect node consumed energy!");
 
   Simulator::Destroy ();
-  return false;
 }
 
 class AcousticModemEnergyDepletionTestCase : public TestCase
@@ -199,7 +198,7 @@ public:
   void DepletionHandler (void);
   void SendOnePacket (Ptr<Node> node);
 
-  bool DoRun (void);
+  void DoRun (void);
 
   double m_simTime;
   uint32_t m_callbackCount;
@@ -242,7 +241,7 @@ AcousticModemEnergyDepletionTestCase::SendOnePacket (Ptr<Node> node)
                        node);
 }
 
-bool
+void
 AcousticModemEnergyDepletionTestCase::DoRun (void)
 {
   // create a generic node
@@ -287,8 +286,6 @@ AcousticModemEnergyDepletionTestCase::DoRun (void)
   Simulator::Destroy ();
 
   NS_TEST_ASSERT_MSG_EQ (m_callbackCount, 1, "Callback not invoked");
-
-  return false;
 }
 
 // -------------------------------------------------------------------------- //

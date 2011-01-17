@@ -352,7 +352,7 @@ public:
   virtual ~CommandLineBooleanTestCase () {}
 
 private:
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
 
 };
 
@@ -361,7 +361,7 @@ CommandLineBooleanTestCase::CommandLineBooleanTestCase ()
 {
 }
 
-bool
+void
 CommandLineBooleanTestCase::DoRun (void)
 {
   CommandLine cmd;
@@ -374,8 +374,6 @@ CommandLineBooleanTestCase::DoRun (void)
 
   Parse (cmd, 1, "--my-bool=1");
   NS_TEST_ASSERT_MSG_EQ (myBool, true, "Command parser did not correctly set a boolean value to true");
-
-  return GetErrorStatus ();
 }
 
 // ===========================================================================
@@ -388,7 +386,7 @@ public:
   virtual ~CommandLineIntTestCase () {}
 
 private:
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
 
 };
 
@@ -397,7 +395,7 @@ CommandLineIntTestCase::CommandLineIntTestCase ()
 {
 }
 
-bool
+void
 CommandLineIntTestCase::DoRun (void)
 {
   CommandLine cmd;
@@ -414,8 +412,6 @@ CommandLineIntTestCase::DoRun (void)
   Parse (cmd, 2, "--my-bool=1", "--my-int32=+2");
   NS_TEST_ASSERT_MSG_EQ (myBool, true, "Command parser did not correctly set a boolean value to true");
   NS_TEST_ASSERT_MSG_EQ (myInt32, +2, "Command parser did not correctly set an integer value to +2");
-
-  return GetErrorStatus ();
 }
 
 // ===========================================================================
@@ -428,7 +424,7 @@ public:
   virtual ~CommandLineUnsignedIntTestCase () {}
 
 private:
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
 
 };
 
@@ -437,7 +433,7 @@ CommandLineUnsignedIntTestCase::CommandLineUnsignedIntTestCase ()
 {
 }
 
-bool
+void
 CommandLineUnsignedIntTestCase::DoRun (void)
 {
   CommandLine cmd;
@@ -451,8 +447,6 @@ CommandLineUnsignedIntTestCase::DoRun (void)
 
   NS_TEST_ASSERT_MSG_EQ (myBool, false, "Command parser did not correctly set a boolean value to true");
   NS_TEST_ASSERT_MSG_EQ (myUint32, 9, "Command parser did not correctly set an unsigned integer value to 9");
-
-  return GetErrorStatus ();
 }
 
 // ===========================================================================
@@ -465,7 +459,7 @@ public:
   virtual ~CommandLineStringTestCase () {}
 
 private:
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
 
 };
 
@@ -474,7 +468,7 @@ CommandLineStringTestCase::CommandLineStringTestCase ()
 {
 }
 
-bool
+void
 CommandLineStringTestCase::DoRun (void)
 {
   CommandLine cmd;
@@ -488,8 +482,6 @@ CommandLineStringTestCase::DoRun (void)
 
   NS_TEST_ASSERT_MSG_EQ (myUint32, 9, "Command parser did not correctly set an unsigned integer value to 9");
   NS_TEST_ASSERT_MSG_EQ (myStr, "XX", "Command parser did not correctly set an string value to \"XX\"");
-
-  return GetErrorStatus ();
 }
 
 // ===========================================================================

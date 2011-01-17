@@ -235,11 +235,11 @@ private:
   std::deque<Waypoint> waypoints;
   bool lazyNotify;
 private:
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
   void ForceUpdates (void);
   void CourseChangeCallback (std::string path, Ptr<const MobilityModel> model);
 };
-bool
+void
 WaypointMobilityModelNotifyTest::DoRun (void)
 {
   nodeCount = 1;
@@ -282,8 +282,6 @@ WaypointMobilityModelNotifyTest::DoRun (void)
   Simulator::Stop (Seconds ((double)waypointCount + 2.0));
   Simulator::Run ();
   Simulator::Destroy ();
-
-  return GetErrorStatus ();
 }
 void
 WaypointMobilityModelNotifyTest::ForceUpdates (void)

@@ -54,7 +54,7 @@ public:
   virtual ~NscTcpLossTestCase1 () {}
 
 private:
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
   bool m_writeResults;
 
   void SinkRx (std::string path, Ptr<const Packet> p, const Address &address);
@@ -75,7 +75,7 @@ NscTcpLossTestCase1::SinkRx (std::string path, Ptr<const Packet> p, const Addres
   m_responses.Add (p->GetSize ());
 }
 
-bool
+void
 NscTcpLossTestCase1::DoRun (void)
 {
   uint16_t sinkPort = 50000;
@@ -153,8 +153,6 @@ NscTcpLossTestCase1::DoRun (void)
       uint32_t out = m_responses.Get (i);
       NS_TEST_ASSERT_MSG_EQ (in, out, "Mismatch:  expected " << in << " bytes, got " << out << " bytes");
     }
-
-  return GetErrorStatus ();
 }
 
 class NscTcpLossTestCase2 : public TestCase
@@ -164,7 +162,7 @@ public:
   virtual ~NscTcpLossTestCase2 () {}
 
 private:
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
   bool m_writeResults;
 
   void SinkRx (std::string path, Ptr<const Packet> p, const Address &address);
@@ -185,7 +183,7 @@ NscTcpLossTestCase2::SinkRx (std::string path, Ptr<const Packet> p, const Addres
   m_responses.Add (p->GetSize ());
 }
 
-bool
+void
 NscTcpLossTestCase2::DoRun (void)
 {
   uint16_t sinkPort = 50000;
@@ -262,8 +260,6 @@ NscTcpLossTestCase2::DoRun (void)
       uint32_t out = m_responses.Get (i);
       NS_TEST_ASSERT_MSG_EQ (in, out, "Mismatch:  expected " << in << " bytes, got " << out << " bytes");
     }
-
-  return GetErrorStatus ();
 }
 
 class NscTcpLossTestSuite : public TestSuite

@@ -198,7 +198,7 @@ class Bug863TestCase : public TestCase
 {
 public:
   Bug863TestCase ();
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
 };
 
 Bug863TestCase::Bug863TestCase ()
@@ -206,11 +206,10 @@ Bug863TestCase::Bug863TestCase ()
 {
 }
 
-bool Bug863TestCase::DoRun (void)
+void Bug863TestCase::DoRun (void)
 {
   Scalar result = Scalar (0.9) / Scalar (1.0);
   NS_TEST_ASSERT_MSG_EQ ((result == Scalar (0.9)), true, "Invalid arithmetic result");
-  return false;
 }
 
 class TimeSimpleTestCase : public TestCase
@@ -218,7 +217,7 @@ class TimeSimpleTestCase : public TestCase
 public:
   TimeSimpleTestCase (enum Time::Unit resolution);
 private:
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
   virtual void DoTearDown (void);
   enum Time::Unit m_originalResolution;
   enum Time::Unit m_resolution;
@@ -228,7 +227,7 @@ TimeSimpleTestCase::TimeSimpleTestCase (enum Time::Unit resolution)
   : TestCase ("Sanity check of common time operations"),
     m_resolution (resolution)
 {}
-bool
+void
 TimeSimpleTestCase::DoRun (void)
 {
   m_originalResolution = Time::GetResolution ();
@@ -251,7 +250,6 @@ TimeSimpleTestCase::DoRun (void)
   NS_TEST_ASSERT_MSG_EQ (FemtoSeconds (1).GetFemtoSeconds (), 1, 
                          "is 1fs really 1fs ?");
 #endif
-  return false;
 }
 
 void 
@@ -265,14 +263,14 @@ class ArithTestCase : public TestCase
 public:
   ArithTestCase ();
 private:
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
 };
 
 ArithTestCase::ArithTestCase ()
   : TestCase ("check arithmetic operators")
 {
 }
-bool 
+void
 ArithTestCase::DoRun (void)
 {
   Time a, b, c;
@@ -293,7 +291,6 @@ ArithTestCase::DoRun (void)
   x = a != b;
   //a = 1.0;
   //a = 1;
-  return false;
 }
 
 

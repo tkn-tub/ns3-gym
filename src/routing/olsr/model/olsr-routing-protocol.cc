@@ -3204,7 +3204,7 @@ OlsrMprTestCase::OlsrMprTestCase ()
 OlsrMprTestCase::~OlsrMprTestCase ()
 {
 }
-bool
+void
 OlsrMprTestCase::DoRun ()
 {
   Ptr<RoutingProtocol> protocol = CreateObject<RoutingProtocol> ();
@@ -3311,8 +3311,6 @@ OlsrMprTestCase::DoRun ()
   mpr = state.GetMprSet ();
   NS_TEST_EXPECT_MSG_EQ (mpr.size (), 3 , "An only address must be chosen.");
   NS_TEST_EXPECT_MSG_EQ ((mpr.find ("10.0.0.9") == mpr.end ()), true, "Node 1 must NOT select node 8 as MPR");
-
-  return false;
 }
 
 static class OlsrProtocolTestSuite : public TestSuite

@@ -40,7 +40,7 @@ class SpectrumInterferenceTestCase : public TestCase
 public:
   SpectrumInterferenceTestCase (Ptr<SpectrumValue> s, uint32_t txBytes, bool rxCorrect, std::string name);
   virtual ~SpectrumInterferenceTestCase ();
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
   void RetrieveTestResult (SpectrumInterference* si);
 
 private:
@@ -68,7 +68,7 @@ SpectrumInterferenceTestCase::~SpectrumInterferenceTestCase ()
 
 
 
-bool
+void
 SpectrumInterferenceTestCase::DoRun (void)
 {
   Ptr<SpectrumValue> n = Create<SpectrumValue> (m_mySpectrumModel);
@@ -120,8 +120,6 @@ SpectrumInterferenceTestCase::DoRun (void)
   // the above will return and after RetrieveTestResults have
   // been called and after all signals have expired
   Simulator::Destroy ();
-
-  return m_error;
 }
 
 

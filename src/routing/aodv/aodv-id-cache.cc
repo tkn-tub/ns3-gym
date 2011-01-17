@@ -68,7 +68,7 @@ struct IdCacheTest : public TestCase
 {
   IdCacheTest () : TestCase ("Id Cache"), cache (Seconds(10))
   {}
-  virtual bool DoRun();
+  virtual void DoRun();
   void CheckTimeout1 ();
   void CheckTimeout2 ();
   void CheckTimeout3 ();
@@ -76,7 +76,7 @@ struct IdCacheTest : public TestCase
   IdCache cache;
 };
 
-bool
+void
 IdCacheTest::DoRun ()
 {
   NS_TEST_EXPECT_MSG_EQ (cache.GetLifeTime(), Seconds(10), "Lifetime");
@@ -97,8 +97,6 @@ IdCacheTest::DoRun ()
   Simulator::Schedule (Seconds(30), &IdCacheTest::CheckTimeout3, this);
   Simulator::Run ();
   Simulator::Destroy ();
-  
-  return GetErrorStatus ();
 }
 
 void

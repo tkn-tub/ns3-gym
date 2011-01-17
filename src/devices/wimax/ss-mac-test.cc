@@ -53,7 +53,7 @@ public:
   virtual ~Ns3WimaxNetworkEntryTestCase ();
 
 private:
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
 
 };
 
@@ -66,7 +66,7 @@ Ns3WimaxNetworkEntryTestCase::~Ns3WimaxNetworkEntryTestCase ()
 {
 }
 
-bool
+void
 Ns3WimaxNetworkEntryTestCase::DoRun (void)
 {
   WimaxHelper::SchedulerType scheduler = WimaxHelper::SCHED_TYPE_SIMPLE;
@@ -96,8 +96,6 @@ Ns3WimaxNetworkEntryTestCase::DoRun (void)
                              "SS[" << i << "] IsNotRegistered");
     }
   Simulator::Destroy ();
-  return (false); // Test was ok, all the SS are registered
-
 }
 
 /*
@@ -114,7 +112,7 @@ public:
   virtual ~Ns3WimaxManagementConnectionsTestCase ();
 
 private:
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
 
 };
 
@@ -127,7 +125,7 @@ Ns3WimaxManagementConnectionsTestCase::~Ns3WimaxManagementConnectionsTestCase ()
 {
 }
 
-bool
+void
 Ns3WimaxManagementConnectionsTestCase::DoRun (void)
 {
   WimaxHelper::SchedulerType scheduler = WimaxHelper::SCHED_TYPE_SIMPLE;
@@ -157,8 +155,6 @@ Ns3WimaxManagementConnectionsTestCase::DoRun (void)
                              true, "Management connections for SS[" << i << "] are not allocated");
     }
   Simulator::Destroy ();
-  return (false);
-
 }
 class Ns3WimaxSSMacTestSuite : public TestSuite
 {

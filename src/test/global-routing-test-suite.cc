@@ -55,7 +55,7 @@ public:
 private:
   void SinkRx (std::string path, Ptr<const Packet> p, const Address &address);
   void HandleRead (Ptr<Socket>);
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
   int m_count;
   std::vector<uint8_t> m_firstInterface;
   std::vector<uint8_t> m_secondInterface;
@@ -137,7 +137,7 @@ DynamicGlobalRoutingTestCase::HandleRead (Ptr<Socket> socket)
 // times (1-2), (4-6), (8-10), (11-12), (14-16) and the interface
 // facing n1 receives packets at times (2-4), (6-8), (12-13)
 //
-bool
+void
 DynamicGlobalRoutingTestCase::DoRun (void)
 {
   // The below value configures the default behavior of global routing.
@@ -278,8 +278,6 @@ DynamicGlobalRoutingTestCase::DoRun (void)
   NS_TEST_ASSERT_MSG_EQ (m_firstInterface[14], 5, "Dynamic global routing did not deliver all packets");
   NS_TEST_ASSERT_MSG_EQ (m_firstInterface[15], 5, "Dynamic global routing did not deliver all packets");
   Simulator::Destroy ();
-
-  return GetErrorStatus ();
 }
 
 class GlobalRoutingSlash32TestCase : public TestCase
@@ -289,7 +287,7 @@ public:
   virtual ~GlobalRoutingSlash32TestCase ();
 
 private:
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
 };
 
 // Add some help text to this case to describe what it is intended to test
@@ -306,7 +304,7 @@ GlobalRoutingSlash32TestCase::~GlobalRoutingSlash32TestCase ()
 //
 // (a.a.a.a/32)A<--x.x.x.0/30-->B<--y.y.y.0/30-->C(c.c.c.c/32)
 //
-bool
+void
 GlobalRoutingSlash32TestCase::DoRun (void)
 {
   Ptr<Node> nA = CreateObject<Node> ();
@@ -390,8 +388,6 @@ GlobalRoutingSlash32TestCase::DoRun (void)
   Ptr<PacketSink> sinkPtr = DynamicCast <PacketSink> (apps.Get (0));
   NS_TEST_ASSERT_MSG_EQ (sinkPtr->GetTotalRx (), 6656, "Static routing with /32 did not deliver all packets");
   Simulator::Destroy ();
-
-  return GetErrorStatus ();
 }
 
 

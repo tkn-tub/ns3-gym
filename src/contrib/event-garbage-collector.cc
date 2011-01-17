@@ -102,7 +102,7 @@ public:
 
   EventGarbageCollectorTestCase ();
   virtual ~EventGarbageCollectorTestCase ();
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
 };
 
 EventGarbageCollectorTestCase::EventGarbageCollectorTestCase ()
@@ -124,7 +124,7 @@ EventGarbageCollectorTestCase::EventGarbageCollectorCallback ()
     }
 }
 
-bool EventGarbageCollectorTestCase::DoRun (void)
+void EventGarbageCollectorTestCase::DoRun (void)
 {
   m_events = new EventGarbageCollector ();
 
@@ -139,7 +139,6 @@ bool EventGarbageCollectorTestCase::DoRun (void)
   NS_TEST_EXPECT_MSG_EQ (m_events, 0, "");
   NS_TEST_EXPECT_MSG_EQ (m_counter, 50, "");
   Simulator::Destroy ();
-  return false;
 }
 
 static class EventGarbageCollectorTestSuite : public TestSuite

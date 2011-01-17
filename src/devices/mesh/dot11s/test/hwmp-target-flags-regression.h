@@ -70,7 +70,7 @@ public:
   HwmpDoRfRegressionTest ();
   virtual ~HwmpDoRfRegressionTest();
 
-  virtual bool DoRun ();
+  virtual void DoRun ();
   void CheckResults ();
 
 private:

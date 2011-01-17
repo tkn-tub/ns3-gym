@@ -49,7 +49,7 @@ public:
   virtual ~StaticRoutingSlash32TestCase ();
 
 private:
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
 };
 
 // Add some help text to this case to describe what it is intended to test
@@ -66,7 +66,7 @@ StaticRoutingSlash32TestCase::~StaticRoutingSlash32TestCase ()
 //
 // (a.a.a.a/32)A<--x.x.x.0/30-->B<--y.y.y.0/30-->C(c.c.c.c/32)
 //
-bool
+void
 StaticRoutingSlash32TestCase::DoRun (void)
 {
   Ptr<Node> nA = CreateObject<Node> ();
@@ -155,8 +155,6 @@ StaticRoutingSlash32TestCase::DoRun (void)
   Ptr<PacketSink> sinkPtr = DynamicCast <PacketSink> (apps.Get (0));
   NS_TEST_ASSERT_MSG_EQ (sinkPtr->GetTotalRx (), 6656, "Static routing with /32 did not deliver all packets");
   Simulator::Destroy ();
-
-  return GetErrorStatus ();
 }
 
 class StaticRoutingTestSuite : public TestSuite

@@ -55,7 +55,7 @@ public:
   double ChiSquaredTest (UniformVariable &u);
 
 private:
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
 };
 
 RngUniformTestCase::RngUniformTestCase ()
@@ -102,7 +102,7 @@ RngUniformTestCase::ChiSquaredTest (UniformVariable &u)
   return chiSquared;
 }
 
-bool
+void
 RngUniformTestCase::DoRun (void)
 {
   SeedManager::SetSeed (time (0));
@@ -120,7 +120,6 @@ RngUniformTestCase::DoRun (void)
   sum /= (double)N_RUNS;
 
   NS_TEST_ASSERT_MSG_LT (sum, maxStatistic, "Chi-squared statistic out of range");
-  return false;
 }
 
 // ===========================================================================
@@ -139,7 +138,7 @@ public:
   double ChiSquaredTest (NormalVariable &n);
 
 private:
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
 };
 
 RngNormalTestCase::RngNormalTestCase ()
@@ -200,7 +199,7 @@ RngNormalTestCase::ChiSquaredTest (NormalVariable &n)
   return chiSquared;
 }
 
-bool
+void
 RngNormalTestCase::DoRun (void)
 {
   SeedManager::SetSeed (time (0));
@@ -218,7 +217,6 @@ RngNormalTestCase::DoRun (void)
   sum /= (double)N_RUNS;
 
   NS_TEST_ASSERT_MSG_LT (sum, maxStatistic, "Chi-squared statistic out of range");
-  return false;
 }
 
 // ===========================================================================
@@ -237,7 +235,7 @@ public:
   double ChiSquaredTest (ExponentialVariable &n);
 
 private:
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
 };
 
 RngExponentialTestCase::RngExponentialTestCase ()
@@ -297,7 +295,7 @@ RngExponentialTestCase::ChiSquaredTest (ExponentialVariable &e)
   return chiSquared;
 }
 
-bool
+void
 RngExponentialTestCase::DoRun (void)
 {
   SeedManager::SetSeed (time (0));
@@ -315,7 +313,6 @@ RngExponentialTestCase::DoRun (void)
   sum /= (double)N_RUNS;
 
   NS_TEST_ASSERT_MSG_LT (sum, maxStatistic, "Chi-squared statistic out of range");
-  return false;
 }
 
 // ===========================================================================
@@ -334,7 +331,7 @@ public:
   double ChiSquaredTest (ParetoVariable &p);
 
 private:
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
 };
 
 RngParetoTestCase::RngParetoTestCase ()
@@ -395,7 +392,7 @@ RngParetoTestCase::ChiSquaredTest (ParetoVariable &p)
   return chiSquared;
 }
 
-bool
+void
 RngParetoTestCase::DoRun (void)
 {
   SeedManager::SetSeed (time (0));
@@ -413,7 +410,6 @@ RngParetoTestCase::DoRun (void)
   sum /= (double)N_RUNS;
 
   NS_TEST_ASSERT_MSG_LT (sum, maxStatistic, "Chi-squared statistic out of range");
-  return false;
 }
 
 class RngTestSuite : public TestSuite

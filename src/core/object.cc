@@ -475,7 +475,7 @@ public:
   virtual ~CreateObjectTestCase ();
 
 private:
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
 };
 
 CreateObjectTestCase::CreateObjectTestCase ()
@@ -487,7 +487,7 @@ CreateObjectTestCase::~CreateObjectTestCase ()
 {
 }
 
-bool
+void
 CreateObjectTestCase::DoRun (void)
 {
   Ptr<BaseA> baseA = CreateObject<BaseA> ();
@@ -529,8 +529,6 @@ CreateObjectTestCase::DoRun (void)
   // object.
   //
   NS_TEST_ASSERT_MSG_EQ (baseA->GetObject<BaseA> (DerivedA::GetTypeId ()), baseA, "GetObject returns different Ptr");
-
-  return GetErrorStatus ();
 }
 
 // ===========================================================================
@@ -543,7 +541,7 @@ public:
   virtual ~AggregateObjectTestCase ();
 
 private:
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
 };
 
 AggregateObjectTestCase::AggregateObjectTestCase ()
@@ -555,7 +553,7 @@ AggregateObjectTestCase::~AggregateObjectTestCase ()
 {
 }
 
-bool
+void
 AggregateObjectTestCase::DoRun (void)
 {
   Ptr<BaseA> baseA = CreateObject<BaseA> ();
@@ -702,8 +700,6 @@ AggregateObjectTestCase::DoRun (void)
 
   baseA = baseB->GetObject<BaseA> ();
   NS_TEST_ASSERT_MSG_NE (baseA, 0, "Unable to GetObject on released object");
-
-  return GetErrorStatus ();
 }
 
 // ===========================================================================
@@ -716,7 +712,7 @@ public:
   virtual ~ObjectFactoryTestCase ();
 
 private:
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
 };
 
 ObjectFactoryTestCase::ObjectFactoryTestCase ()
@@ -728,7 +724,7 @@ ObjectFactoryTestCase::~ObjectFactoryTestCase ()
 {
 }
 
-bool
+void
 ObjectFactoryTestCase::DoRun (void)
 {
   ObjectFactory factory;
@@ -776,8 +772,6 @@ ObjectFactoryTestCase::DoRun (void)
   // declaration.
   //
   NS_TEST_ASSERT_MSG_NE (a->GetObject<DerivedA> (), 0, "Unexpectedly able to work around C++ type system");
-
-  return GetErrorStatus ();
 }
 
 // ===========================================================================

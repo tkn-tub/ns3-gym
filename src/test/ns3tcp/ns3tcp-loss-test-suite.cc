@@ -58,7 +58,7 @@ public:
 
 private:
   virtual void DoSetup (void);
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
   virtual void DoTeardown (void);
 
   std::string m_pcapFilename;
@@ -165,7 +165,7 @@ Ns3TcpLossTestCase1::Ipv4L3Tx (std::string context, Ptr<const Packet> packet, Pt
     }
 }
 
-bool
+void
 Ns3TcpLossTestCase1::DoRun (void)
 {
   uint16_t sinkPort = 50000;
@@ -232,8 +232,6 @@ Ns3TcpLossTestCase1::DoRun (void)
   Simulator::Stop (simStopTimeObj);
   Simulator::Run ();
   Simulator::Destroy ();
-
-  return GetErrorStatus ();
 }
 
 class Ns3TcpLossTestCase2 : public TestCase
@@ -244,7 +242,7 @@ public:
 
 private:
   virtual void DoSetup (void);
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
   virtual void DoTeardown (void);
 
   std::string m_pcapFilename;
@@ -348,7 +346,7 @@ Ns3TcpLossTestCase2::Ipv4L3Tx (std::string context, Ptr<const Packet> packet, Pt
     }
 }
 
-bool
+void
 Ns3TcpLossTestCase2::DoRun (void)
 {
   uint16_t sinkPort = 50000;
@@ -414,8 +412,6 @@ Ns3TcpLossTestCase2::DoRun (void)
   Simulator::Stop (simStopTimeObj);
   Simulator::Run ();
   Simulator::Destroy ();
-
-  return GetErrorStatus ();
 }
 
 class Ns3TcpLossTestSuite : public TestSuite

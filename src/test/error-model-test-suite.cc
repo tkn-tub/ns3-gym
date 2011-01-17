@@ -45,7 +45,7 @@ public:
   virtual ~ErrorModelSimple ();
 
 private:
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
   bool Receive (Ptr<NetDevice> nd, Ptr<const Packet> p, uint16_t protocol, const Address& addr);
   void DropEvent (Ptr<const Packet> p);
   uint32_t m_count;
@@ -75,10 +75,9 @@ ErrorModelSimple::DropEvent (Ptr<const Packet> p)
   m_drops++;
 }
 
-bool
+void
 ErrorModelSimple::DoRun (void)
 {
-  bool retval = false;
   // Set some arbitrary deterministic values
   SeedManager::SetSeed (7);
   SeedManager::SetRun (5);
@@ -109,11 +108,8 @@ ErrorModelSimple::DoRun (void)
 
   // For this combination of values, we expect about 1 packet in 1000 to be
   // dropped.  For this specific RNG stream, we see 9992 receptions and 8 drops
-  if (m_count != 9992 || m_drops != 8)
-    {
-      retval = true;
-    }
-  return retval;
+  NS_TEST_ASSERT_MSG_EQ (m_count, 9992, "Wrong number of receptions.");
+  NS_TEST_ASSERT_MSG_EQ (m_drops, 8, "Wrong number of drops.");
 }
 
 // This is the start of an error model test suite.  For starters, this is

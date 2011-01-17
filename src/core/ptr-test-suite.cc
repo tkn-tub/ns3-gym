@@ -53,7 +53,7 @@ public:
   PtrTestCase ();
   void DestroyNotify (void);
 private:
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
   Ptr<NoCount> CallTest (Ptr<NoCount> p);
   Ptr<NoCount> const CallTestConst (Ptr<NoCount> const p);
   uint32_t m_nDestroyed;
@@ -114,7 +114,7 @@ PtrTestCase::CallTestConst (Ptr<NoCount> const p)
 }
 
 
-bool
+void
 PtrTestCase::DoRun (void)
 {
   m_nDestroyed = false;
@@ -257,8 +257,6 @@ PtrTestCase::DoRun (void)
     NS_TEST_EXPECT_MSG_EQ ((p0 == p1), false, "operator == failed");
     NS_TEST_EXPECT_MSG_EQ ((p0 != p1), true, "operator != failed");
   }
-
-  return false;
 }
 
 static class PtrTestSuite : public TestSuite

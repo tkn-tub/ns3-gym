@@ -37,7 +37,7 @@ public:
   int Target4 (double a, int b) {m_test4 = true; return 4;}
 
 private:
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
   virtual void DoSetup (void);
 
   bool m_test1;
@@ -86,7 +86,7 @@ BasicCallbackTestCase::DoSetup (void)
   gBasicCallbackTest7 = false;
 }
 
-bool
+void
 BasicCallbackTestCase::DoRun (void)
 {
   //
@@ -150,8 +150,6 @@ BasicCallbackTestCase::DoRun (void)
   Callback<int, int> target7 = Callback<int, int> (&BasicCallbackTarget7, true, true);
   target7 (1);
   NS_TEST_ASSERT_MSG_EQ (gBasicCallbackTest7, true, "Callback did not fire");
-
-  return GetErrorStatus ();
 }
 
 // ===========================================================================
@@ -169,7 +167,7 @@ public:
   int Target4 (double a, int b) {m_test4 = true; return 4;}
 
 private:
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
   virtual void DoSetup (void);
 
   bool m_test1;
@@ -218,7 +216,7 @@ MakeCallbackTestCase::DoSetup (void)
   gMakeCallbackTest7 = false;
 }
 
-bool
+void
 MakeCallbackTestCase::DoRun (void)
 {
   //
@@ -282,8 +280,6 @@ MakeCallbackTestCase::DoRun (void)
   Callback<int, int> target7 = MakeCallback (&MakeCallbackTarget7);
   target7 (1);
   NS_TEST_ASSERT_MSG_EQ (gMakeCallbackTest7, true, "Callback did not fire");
-
-  return GetErrorStatus ();
 }
 
 // ===========================================================================
@@ -296,7 +292,7 @@ public:
   virtual ~MakeBoundCallbackTestCase () {}
 
 private:
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
   virtual void DoSetup (void);
 };
 
@@ -339,7 +335,7 @@ MakeBoundCallbackTestCase::DoSetup (void)
   gMakeBoundCallbackTest3b = 0;
 }
 
-bool
+void
 MakeBoundCallbackTestCase::DoRun (void)
 {
   //
@@ -380,8 +376,6 @@ MakeBoundCallbackTestCase::DoRun (void)
   NS_TEST_ASSERT_MSG_EQ (result, 1234, "Return value of callback not correct");
   NS_TEST_ASSERT_MSG_EQ (gMakeBoundCallbackTest3a, &a, "Callback did not fire or binding not correct");
   NS_TEST_ASSERT_MSG_EQ (gMakeBoundCallbackTest3b, 2468, "Callback did not fire or argument not correct");
-
-  return GetErrorStatus ();
 }
 
 // ===========================================================================
@@ -396,7 +390,7 @@ public:
   void Target1 (void) {m_test1 = true;}
 
 private:
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
   virtual void DoSetup (void);
 
   bool m_test1;
@@ -413,7 +407,7 @@ NullifyCallbackTestCase::DoSetup (void)
   m_test1 = false;
 }
 
-bool
+void
 NullifyCallbackTestCase::DoRun (void)
 {
   //
@@ -429,8 +423,6 @@ NullifyCallbackTestCase::DoRun (void)
   target1.Nullify ();
 
   NS_TEST_ASSERT_MSG_EQ (target1.IsNull (), true, "Nullified Callback reports not IsNull()");
-
-  return GetErrorStatus ();
 }
 
 // ===========================================================================
@@ -446,7 +438,7 @@ public:
   void Target1 (void) {m_test1 = true;}
 
 private:
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
 
   bool m_test1;
 };
@@ -513,7 +505,7 @@ MakeCallbackTemplatesTestCase::MakeCallbackTemplatesTestCase ()
 {
 }
 
-bool
+void
 MakeCallbackTemplatesTestCase::DoRun (void)
 {
   CallbackTestClass that;
@@ -562,8 +554,6 @@ MakeCallbackTemplatesTestCase::DoRun (void)
   MakeBoundCallback (&TestFRFive, 1);
 
   that.CheckParentalRights ();
-
-  return GetErrorStatus ();
 }
 
 // ===========================================================================

@@ -67,7 +67,7 @@ class WatchdogTestCase : public TestCase
 {
 public:
   WatchdogTestCase ();
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
   void Expire (Time expected);
   bool m_expired;
   Time m_expiredTime;
@@ -86,7 +86,7 @@ WatchdogTestCase::Expire (Time expected)
   m_expiredArgument = expected;
 }
 
-bool
+void
 WatchdogTestCase::DoRun (void)
 {
   m_expired = false;
@@ -104,8 +104,6 @@ WatchdogTestCase::DoRun (void)
   NS_TEST_ASSERT_MSG_EQ (m_expired, true, "The timer did not expire ??");
   NS_TEST_ASSERT_MSG_EQ (m_expiredTime, MicroSeconds (40), "The timer did not expire at the expected time ?");
   NS_TEST_ASSERT_MSG_EQ (m_expiredArgument, MicroSeconds (40), "We did not get the right argument");
-
-  return false;
 }
 
 

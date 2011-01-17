@@ -48,7 +48,7 @@ public:
    * \brief Run unit tests for this class.
    * \return false if all tests have passed, false otherwise
    */
-  virtual bool
+  virtual void
   DoRun (void);
 
 };
@@ -61,7 +61,7 @@ Ipv4L3ProtocolTestCase::Ipv4L3ProtocolTestCase () :
 Ipv4L3ProtocolTestCase::~Ipv4L3ProtocolTestCase ()
 {
 }
-bool
+void
 Ipv4L3ProtocolTestCase::DoRun (void)
 {
   Ptr<Node> node = CreateObject<Node> ();
@@ -95,7 +95,6 @@ Ipv4L3ProtocolTestCase::DoRun (void)
   NS_TEST_ASSERT_MSG_EQ (ifaceAddr4, output,
       "The addresses should be identical");
   Simulator::Destroy ();
-  return false;
 }
 
 static class IPv4L3ProtocolTestSuite : public TestSuite

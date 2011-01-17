@@ -38,7 +38,7 @@ class SpectrumValueTestCase : public TestCase
 public:
   SpectrumValueTestCase (SpectrumValue a, SpectrumValue b, std::string name);
   virtual ~SpectrumValueTestCase ();
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
 
 private:
   bool MoreOrLessEqual (SpectrumValue x, SpectrumValue y);
@@ -67,7 +67,7 @@ SpectrumValueTestCase::MoreOrLessEqual (SpectrumValue x, SpectrumValue y)
   return (Norm (z) < TOLERANCE);
 }
 
-bool
+void
 SpectrumValueTestCase::DoRun (void)
 {
   bool error = !MoreOrLessEqual (m_a, m_b);
@@ -86,7 +86,6 @@ SpectrumValueTestCase::DoRun (void)
                          std::string ("no message"),
                          __FILE__, __LINE__);
     }
-  return error;
 }
 
 

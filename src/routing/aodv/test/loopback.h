@@ -36,7 +36,7 @@ struct LoopbackTestCase : public TestCase
 {
   LoopbackTestCase () : TestCase ("Ping 127.0.0.1 test") {}
   /// Run test
-  bool DoRun ();
+  void DoRun ();
 };
 
 }

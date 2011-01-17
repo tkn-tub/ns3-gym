@@ -56,7 +56,7 @@ public:
   virtual ~Ns3LteBearerTestCase ();
 
 private:
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
 
 };
 
@@ -69,11 +69,9 @@ Ns3LteBearerTestCase::~Ns3LteBearerTestCase ()
 {
 }
 
-bool
+void
 Ns3LteBearerTestCase::DoRun (void)
 {
-  bool testResult = false;
-
   // create downlink data radio bearer and its qos parameters
   Ptr<RadioBearerInstance> bearer = CreateObject<RadioBearerInstance> ();
   bearer->SetBearerDirection (RadioBearerInstance::DIRECTION_TYPE_DL);
@@ -90,24 +88,18 @@ Ns3LteBearerTestCase::DoRun (void)
 
   bearer->Enqueue (p);
 
-  if (!bearer->HasPackets ())
-    {
-      return true; // the queue should have 1 packet
-    }
+  // the queue should have 1 packet
+  NS_TEST_ASSERT_MSG_EQ (bearer->HasPackets (), true,  "The queue did not have any packets.");
 
   bearer->Dequeue ();
 
-  if (bearer->HasPackets ())
-    {
-      return true; // the queue should be empty
-    }
+  // the queue should be empty
+  NS_TEST_ASSERT_MSG_EQ (bearer->HasPackets (), false,  "The queue had packets.");
 
   // Free memory; handle reference cycle that bearer has with RlcEntity 
   bearer->Dispose ();
   bearer = 0;
   Simulator::Destroy ();
-
-  return (testResult);
 }
 // ==============================================================================
 

@@ -35,7 +35,7 @@ public:
   LiIonEnergyTestCase ();
   ~LiIonEnergyTestCase ();
 
-  bool DoRun (void);
+  void DoRun (void);
 
   double m_simTime;
   Ptr<Node> m_node;
@@ -51,7 +51,7 @@ LiIonEnergyTestCase::~LiIonEnergyTestCase ()
   m_node = 0;
 }
 
-bool
+void
 LiIonEnergyTestCase::DoRun ()
 {
   m_node = CreateObject<Node> ();
@@ -76,8 +76,6 @@ LiIonEnergyTestCase::DoRun ()
 
   NS_TEST_ASSERT_MSG_EQ_TOL (es->GetSupplyVoltage (), 3.6, 1.0e-3,
                              "Incorrect consumed energy!");
-
-  return false;
 }
 
 class LiIonEnergySourceTestSuite : public TestSuite

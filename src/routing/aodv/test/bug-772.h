@@ -71,7 +71,7 @@ private:
   /// Compare traces with reference ones
   void CheckResults ();
   /// Go
-  bool DoRun ();
+  void DoRun ();
 };
 
 }

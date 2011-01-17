@@ -53,7 +53,7 @@ public:
   virtual ~Ns3WimaxSimpleOFDMTestCase ();
 
 private:
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
   bool DoRunOnce (double);
 
 };
@@ -101,7 +101,7 @@ Ns3WimaxSimpleOFDMTestCase::DoRunOnce (double FrameDuration)
 
 }
 
-bool
+void
 Ns3WimaxSimpleOFDMTestCase::DoRun (void)
 {
 
@@ -112,10 +112,9 @@ Ns3WimaxSimpleOFDMTestCase::DoRun (void)
       std::cout << "Frame Duration = " << frameDuratioTab[i] << std::endl;
       if (DoRunOnce (frameDuratioTab[i]) != false)
         {
-          return true;
+          return;
         }
     }
-  return false;
 }
 
 /*
@@ -129,7 +128,7 @@ public:
   virtual ~Ns3WimaxSNRtoBLERTestCase ();
 
 private:
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
   bool DoRunOnce (uint8_t);
 
 };
@@ -159,15 +158,13 @@ bool Ns3WimaxSNRtoBLERTestCase::DoRunOnce (uint8_t modulationType)
   return false;
 }
 
-bool
+void
 Ns3WimaxSNRtoBLERTestCase::DoRun (void)
 {
   for (int i = 0; i < 7; i++)
     {
       DoRunOnce (i);
     }
-
-  return false;
 }
 
 /*

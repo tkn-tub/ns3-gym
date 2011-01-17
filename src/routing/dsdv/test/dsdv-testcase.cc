@@ -53,7 +53,7 @@ class DsdvHeaderTestCase : public TestCase
 public:
   DsdvHeaderTestCase ();
   ~DsdvHeaderTestCase ();
-  virtual bool
+  virtual void
   DoRun (void);
 };
 DsdvHeaderTestCase::DsdvHeaderTestCase ()
@@ -63,7 +63,7 @@ DsdvHeaderTestCase::DsdvHeaderTestCase ()
 DsdvHeaderTestCase::~DsdvHeaderTestCase ()
 {
 }
-bool
+void
 DsdvHeaderTestCase::DoRun ()
 {
   Ptr<Packet> packet = Create<Packet> ();
@@ -96,8 +96,6 @@ DsdvHeaderTestCase::DoRun ()
     NS_TEST_ASSERT_MSG_EQ (hdr1.GetDstSeqno (),2,"XXX");
     NS_TEST_ASSERT_MSG_EQ (hdr1.GetHopCount (),2,"XXX");
   }
-
-  return GetErrorStatus ();
 }
 
 class DsdvTableTestCase : public TestCase
@@ -105,7 +103,7 @@ class DsdvTableTestCase : public TestCase
 public:
   DsdvTableTestCase ();
   ~DsdvTableTestCase ();
-  virtual bool
+  virtual void
   DoRun (void);
 };
 
@@ -116,7 +114,7 @@ DsdvTableTestCase::DsdvTableTestCase ()
 DsdvTableTestCase::~DsdvTableTestCase ()
 {
 }
-bool
+void
 DsdvTableTestCase::DoRun ()
 {
   dsdv::RoutingTable rtable;
@@ -184,7 +182,6 @@ DsdvTableTestCase::DoRun ()
     NS_TEST_ASSERT_MSG_EQ (rtable.RoutingTableSize (),4,"Rtable size incorrect");
   }
   Simulator::Destroy ();
-  return GetErrorStatus ();
 }
 
 class DsdvTestSuite : public TestSuite

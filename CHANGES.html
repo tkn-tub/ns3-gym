@@ -44,6 +44,28 @@ to this file based on your experience, please contribute a patch or drop
 us a note on ns-developers mailing list.  </p>
 
 <hr>
+<h1>Changes from ns-3.10 to ns-3.11</h1>
+
+<h2>Changes to build system:</h2>
+<ul>
+</ul>
+
+<h2>New API:</h2>
+<ul>
+</ul>
+
+<h2>Changes to existing API:</h2>
+<ul>
+<li><b>Test cases no longer return a boolean value</b>
+<p>Unit test case DoRun() functions no longer return a bool value.  Now, they don't return a value at all.  The motivation for this change was to disallow users from merely returning "true" from a test case to force an error to be recorded.  Instead, test case macros should be used.
+</p></li>
+</ul>
+
+<h2>Changed behavior:</h2>
+<ul>
+</ul>
+
+<hr>
 <h1>Changes from ns-3.9 to ns-3.10</h1>
 
 <h2>Changes to build system:</h2>

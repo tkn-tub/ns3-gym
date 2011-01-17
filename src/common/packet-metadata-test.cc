@@ -253,7 +253,7 @@ public:
   PacketMetadataTest ();
   virtual ~PacketMetadataTest ();
   bool CheckHistory (Ptr<Packet> p, const char *file, int line, uint32_t n, ...);
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
 private:
   Ptr<Packet> DoAddHeader (Ptr<Packet> p);
 };
@@ -400,7 +400,7 @@ PacketMetadataTest::DoAddHeader (Ptr<Packet> p)
   return p;
 }
 
-bool
+void
 PacketMetadataTest::DoRun (void)
 {
   bool result = true;
@@ -774,8 +774,6 @@ PacketMetadataTest::DoRun (void)
   CHECK_HISTORY (p, 1, 500);
   p->RemoveAtStart (10);
   CHECK_HISTORY (p, 1, 490);
-  
-  return !result;
 }
 //-----------------------------------------------------------------------------
 class PacketMetadataTestSuite : public TestSuite

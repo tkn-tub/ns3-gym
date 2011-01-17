@@ -218,7 +218,7 @@ public:
   virtual ~GlobalValueTestCase () {}
 
 private:
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
 };
 
 GlobalValueTestCase::GlobalValueTestCase ()
@@ -226,7 +226,7 @@ GlobalValueTestCase::GlobalValueTestCase ()
 {
 }
 
-bool
+void
 GlobalValueTestCase::DoRun (void)
 {
   //
@@ -256,8 +256,6 @@ GlobalValueTestCase::DoRun (void)
           break;
         }
     }
-
-  return GetErrorStatus ();
 }
 
 // ===========================================================================

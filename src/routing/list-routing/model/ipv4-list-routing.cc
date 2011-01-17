@@ -333,13 +333,13 @@ class Ipv4ListRoutingNegativeTestCase : public TestCase
 {
 public:
   Ipv4ListRoutingNegativeTestCase();
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
 };
 
 Ipv4ListRoutingNegativeTestCase::Ipv4ListRoutingNegativeTestCase()
   : TestCase("Check negative priorities")
 {}
-bool 
+void
 Ipv4ListRoutingNegativeTestCase::DoRun (void)
 {
   Ptr<Ipv4ListRouting> lr = CreateObject<Ipv4ListRouting> ();
@@ -354,22 +354,19 @@ Ipv4ListRoutingNegativeTestCase::DoRun (void)
   Ptr<Ipv4RoutingProtocol> firstRp = lr->GetRoutingProtocol (0, first);
   NS_TEST_ASSERT_MSG_EQ (-5, first, "XXX");
   NS_TEST_ASSERT_MSG_EQ (firstRp, bRouting, "XXX");
-
-  // XXX
-  return false;
 }
 
 class Ipv4ListRoutingPositiveTestCase : public TestCase
 {
 public:
   Ipv4ListRoutingPositiveTestCase();
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
 };
 
 Ipv4ListRoutingPositiveTestCase::Ipv4ListRoutingPositiveTestCase()
   : TestCase("Check positive priorities")
 {}
-bool 
+void
 Ipv4ListRoutingPositiveTestCase::DoRun (void)
 {
   Ptr<Ipv4ListRouting> lr = CreateObject<Ipv4ListRouting> ();
@@ -389,9 +386,6 @@ Ipv4ListRoutingPositiveTestCase::DoRun (void)
   Ptr<Ipv4RoutingProtocol> secondRp = lr->GetRoutingProtocol (1, second);
   NS_TEST_ASSERT_MSG_EQ (5, second, "XXX");
   NS_TEST_ASSERT_MSG_EQ (secondRp, bRouting, "XXX");
-  
-  // XXX
-  return false;
 }
 
 static class Ipv4ListRoutingTestSuite : public TestSuite

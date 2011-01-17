@@ -60,7 +60,7 @@ public:
   HwmpProactiveRegressionTest ();
   virtual ~HwmpProactiveRegressionTest();
 
-  virtual bool DoRun ();
+  virtual void DoRun ();
   void CheckResults ();
 
 private:

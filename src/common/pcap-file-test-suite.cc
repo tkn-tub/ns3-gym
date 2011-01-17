@@ -86,7 +86,7 @@ public:
 
 private:
   virtual void DoSetup (void);
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
   virtual void DoTeardown (void);
 
   std::string m_testFilename;
@@ -116,7 +116,7 @@ WriteModeCreateTestCase::DoTeardown (void)
   remove (m_testFilename.c_str ());
 }
 
-bool
+void
 WriteModeCreateTestCase::DoRun (void)
 {
   PcapFile f;
@@ -184,8 +184,6 @@ WriteModeCreateTestCase::DoRun (void)
   f.Write (0, 0, buffer, 128);
   NS_TEST_ASSERT_MSG_EQ (f.Fail (), false, "Write (write-only-file " << m_testFilename << 
                          ") returns error");
-
-  return false;
 }
 
 // ===========================================================================
@@ -200,7 +198,7 @@ public:
 
 private:
   virtual void DoSetup (void);
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
   virtual void DoTeardown (void);
 
   std::string m_testFilename;
@@ -230,7 +228,7 @@ ReadModeCreateTestCase::DoTeardown (void)
   remove (m_testFilename.c_str ());
 }
 
-bool
+void
 ReadModeCreateTestCase::DoRun (void)
 {
   PcapFile f;
@@ -291,8 +289,6 @@ ReadModeCreateTestCase::DoRun (void)
                          ") does not return error");
   f.Close ();
   f.Clear ();
-
-  return false;
 }
 
 #if 0
@@ -308,7 +304,7 @@ public:
 
 private:
   virtual void DoSetup (void);
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
   virtual void DoTeardown (void);
 
   std::string m_testFilename;
@@ -338,7 +334,7 @@ AppendModeCreateTestCase::DoTeardown (void)
   remove (m_testFilename.c_str ());
 }
 
-bool
+void
 AppendModeCreateTestCase::DoRun (void)
 {
   PcapFile f;
@@ -399,8 +395,6 @@ AppendModeCreateTestCase::DoRun (void)
   NS_TEST_ASSERT_MSG_EQ (f.Fail (), false, "Write (append-mode-file " << m_testFilename << ") returns error");
 
   f.Close ();
-
-  return false;
 }
 #endif
 
@@ -416,7 +410,7 @@ public:
 
 private:
   virtual void DoSetup (void);
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
   virtual void DoTeardown (void);
 
   std::string m_testFilename;
@@ -446,7 +440,7 @@ FileHeaderTestCase::DoTeardown (void)
   remove (m_testFilename.c_str ());
 }
 
-bool
+void
 FileHeaderTestCase::DoRun (void)
 {
   PcapFile f;
@@ -639,8 +633,6 @@ FileHeaderTestCase::DoRun (void)
   NS_TEST_ASSERT_MSG_EQ (f.GetDataLinkType (), 1234, "Read back data link type incorrectly");
   
   f.Close ();
-
-  return false;
 }
 
 // ===========================================================================
@@ -655,7 +647,7 @@ public:
 
 private:
   virtual void DoSetup (void);
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
   virtual void DoTeardown (void);
 
   std::string m_testFilename;
@@ -685,7 +677,7 @@ RecordHeaderTestCase::DoTeardown (void)
   remove (m_testFilename.c_str ());
 }
 
-bool
+void
 RecordHeaderTestCase::DoRun (void)
 {
   PcapFile f;
@@ -943,8 +935,6 @@ RecordHeaderTestCase::DoRun (void)
     }
 
   f.Close ();
-
-  return false;
 }
 
 // ===========================================================================
@@ -959,7 +949,7 @@ public:
 
 private:
   virtual void DoSetup (void);
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
   virtual void DoTeardown (void);
 
   std::string m_testFilename;
@@ -1011,7 +1001,7 @@ PacketEntry knownPackets[] = {
 };
 
 
-bool
+void
 ReadFileTestCase::DoRun (void)
 {
   PcapFile f;
@@ -1055,8 +1045,6 @@ ReadFileTestCase::DoRun (void)
   NS_TEST_ASSERT_MSG_EQ (f.Eof (), true, "Read() of known good pcap file at EOF does not return error");
 
   f.Close ();
-
-  return false;
 }
 
 // ===========================================================================
@@ -1068,7 +1056,7 @@ public:
   DiffTestCase ();
 
 private:
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
 };
 
 DiffTestCase::DiffTestCase ()
@@ -1076,7 +1064,7 @@ DiffTestCase::DiffTestCase ()
 {
 }
 
-bool
+void
 DiffTestCase::DoRun (void)
 {
   //
@@ -1111,8 +1099,6 @@ DiffTestCase::DoRun (void)
   NS_TEST_EXPECT_MSG_EQ (diff, true, "PcapDiff(file, file2) must be true");
   NS_TEST_EXPECT_MSG_EQ (sec,  2, "Files are different from 2.3696 seconds");
   NS_TEST_EXPECT_MSG_EQ (usec, 3696, "Files are different from 2.3696 seconds");
-  
-  return GetErrorStatus();
 }
 
 class PcapFileTestSuite : public TestSuite

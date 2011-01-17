@@ -11,7 +11,7 @@ class PointToPointTest : public TestCase
 public:
   PointToPointTest ();
 
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
 
 private:
   void SendOnePacket (Ptr<PointToPointNetDevice> device);
@@ -29,7 +29,7 @@ PointToPointTest::SendOnePacket (Ptr<PointToPointNetDevice> device)
 }
 
 
-bool
+void
 PointToPointTest::DoRun (void)
 {
   Ptr<Node> a = CreateObject<Node> ();
@@ -53,8 +53,6 @@ PointToPointTest::DoRun (void)
   Simulator::Run ();
 
   Simulator::Destroy ();
-
-  return GetErrorStatus ();
 }
 //-----------------------------------------------------------------------------
 class PointToPointTestSuite : public TestSuite

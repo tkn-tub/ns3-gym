@@ -275,11 +275,11 @@ private:
   NodeContainer nodes;
   double NodeCount;
 private:
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
   void DistribCompare ();
 };
 
-bool
+void
 SteadyStateRandomWaypointTest::DoRun (void)
 {
   SeedManager::SetSeed(123);
@@ -307,8 +307,6 @@ SteadyStateRandomWaypointTest::DoRun (void)
   Simulator::Stop (Seconds (totalTime));
   Simulator::Run ();
   Simulator::Destroy ();
-
-  return GetErrorStatus (); 
 }
 
 void

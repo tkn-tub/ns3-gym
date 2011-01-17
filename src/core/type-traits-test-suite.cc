@@ -28,7 +28,7 @@ public:
   virtual ~TypeTraitsTestCase () {}
 
 private:
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
 };
 
 TypeTraitsTestCase::TypeTraitsTestCase (void)
@@ -36,7 +36,7 @@ TypeTraitsTestCase::TypeTraitsTestCase (void)
 {
 }
 
-bool
+void
 TypeTraitsTestCase::DoRun (void)
 {
   NS_TEST_ASSERT_MSG_EQ (TypeTraits<void (TypeTraitsTestCase::*) (void)>::IsPointerToMember, 1, "Check");
@@ -45,8 +45,6 @@ TypeTraitsTestCase::DoRun (void)
   NS_TEST_ASSERT_MSG_EQ (TypeTraits<void (TypeTraitsTestCase::*) (int) const>::IsPointerToMember, 1, "Check");
   NS_TEST_ASSERT_MSG_EQ (TypeTraits<void (TypeTraitsTestCase::*) (void) const>::PointerToMemberTraits::nArgs, 0, "Check");
   NS_TEST_ASSERT_MSG_EQ (TypeTraits<void (TypeTraitsTestCase::*) (int) const>::PointerToMemberTraits::nArgs, 1, "Check");
-
-  return GetErrorStatus ();
 }
 
 class TypeTraitsTestSuite : public TestSuite

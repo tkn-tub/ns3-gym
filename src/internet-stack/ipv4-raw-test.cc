@@ -79,7 +79,7 @@ class Ipv4RawSocketImplTest: public TestCase
   void SendData_IpHdr (Ptr<Socket> socket, std::string to);
 
 public:
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
   Ipv4RawSocketImplTest ();
 
   void ReceivePacket (Ptr<Socket> socket, Ptr<Packet> packet, const Address &from);
@@ -171,7 +171,7 @@ Ipv4RawSocketImplTest::SendData_IpHdr (Ptr<Socket> socket, std::string to)
   Simulator::Run ();
 }
 
-bool
+void
 Ipv4RawSocketImplTest::DoRun (void)
 {
   // Create topology
@@ -310,8 +310,6 @@ Ipv4RawSocketImplTest::DoRun (void)
   m_receivedPacket2 = 0;
 
   Simulator::Destroy ();
-
-  return GetErrorStatus ();
 }
 //-----------------------------------------------------------------------------
 class Ipv4RawTestSuite : public TestSuite

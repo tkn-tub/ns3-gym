@@ -61,7 +61,7 @@ private:
    *
    * Runs test.
    */
-  bool DoRun (void);
+  void DoRun (void);
 
   /**
    * \param load Load value, in Amperes (A).
@@ -637,35 +637,21 @@ BatteryLifetimeTest::CreateLoadProfiles (void)
   timeStamps.clear ();
 }
 
-bool
+void
 BatteryLifetimeTest::DoRun (void)
 {
   NS_LOG_UNCOND ("Constant load run.");
+
   // 640mA
-  if (ConstantLoadTest (0.640, Seconds (2844.0)))
-    {
-      return true;
-    }
+  NS_TEST_ASSERT_MSG_EQ (ConstantLoadTest (0.640, Seconds (2844.0)), false,  "Problems with constant load test (640mA).");
   // 320mA
-  if (ConstantLoadTest (0.320, Seconds (6146.0)))
-    {
-      return true;
-    }
+  NS_TEST_ASSERT_MSG_EQ (ConstantLoadTest (0.320, Seconds (6146.0)), false,  "Problems with constant load test (320mA).");
   // 128mA
-  if (ConstantLoadTest (0.128, Seconds (16052.0)))
-    {
-      return true;
-    }
+  NS_TEST_ASSERT_MSG_EQ (ConstantLoadTest (0.128, Seconds (16052.0)), false,  "Problems with constant load test (128mA).");
   // 64mA
-  if (ConstantLoadTest (0.064, Seconds (32561.0)))
-    {
-      return true;
-    }
+  NS_TEST_ASSERT_MSG_EQ (ConstantLoadTest (0.064, Seconds (32561.0)), false,  "Problems with constant load test (64mA).");
   // 32mA
-  if (ConstantLoadTest (0.032, Seconds (65580.0)))
-    {
-      return true;
-    }
+  NS_TEST_ASSERT_MSG_EQ (ConstantLoadTest (0.032, Seconds (65580.0)), false,  "Problems with constant load test (32).");
 
   // create load profiles for variable load test
   CreateLoadProfiles ();
@@ -682,7 +668,7 @@ BatteryLifetimeTest::DoRun (void)
                             m_loadProfiles[i].timeStamps,
                             m_loadProfiles[i].itsyLifetime))
         {
-          return false;
+          return;
         }
     }
 
@@ -698,11 +684,9 @@ BatteryLifetimeTest::DoRun (void)
                             m_loadProfiles[i].timeStamps,
                             m_loadProfiles[i].dualFoilLifeTime))
         {
-          return false;
+          return;
         }
     }
-
-  return false; // error free
 }
 
 bool
@@ -776,11 +760,11 @@ BatteryLifetimeTest::ConstantLoadTest (double load, Time expLifetime)
   NS_LOG_UNCOND ("Expected lifetime = " << expLifetime.GetSeconds () << "s");
   NS_LOG_UNCOND ("Actual lifetime = " << actualLifetime.GetSeconds () << "s");
 
-  NS_TEST_ASSERT_MSG_EQ (actualLifetime, expLifetime, "Incorrect lifetime!");
+  NS_TEST_ASSERT_MSG_EQ_RETURNS_BOOL (actualLifetime, expLifetime, "Incorrect lifetime!");
   /*
-  NS_TEST_ASSERT_MSG_EQ_TOL (actualLifetime.GetSeconds () / 60,
-                             expLifetime.GetSeconds () / 60, 0.1,
-                             "Incorrect lifetime!");
+  NS_TEST_ASSERT_MSG_EQ_TOL_RETURNS_BOOL (actualLifetime.GetSeconds () / 60,
+                                         expLifetime.GetSeconds () / 60, 0.1,
+                                         "Incorrect lifetime!");
    */
 
   Simulator::Destroy ();
@@ -873,8 +857,8 @@ BatteryLifetimeTest::VariableLoadTest (std::vector<double> loads,
     NS_LOG_UNCOND ("Actual lifetime = " << actualLifetime.GetSeconds () << "s");
     NS_LOG_UNCOND ("Difference = " << expLifetime.GetSeconds () - actualLifetime.GetSeconds () << "s");
 
-    //NS_TEST_ASSERT_MSG_EQ (actualLifetime, expLifetime, "Incorrect lifetime!");
-    NS_TEST_ASSERT_MSG_EQ_TOL (actualLifetime.GetSeconds (), expLifetime.GetSeconds (),
+    //NS_TEST_ASSERT_MSG_EQ_RETURNS_BOOL (actualLifetime, expLifetime, "Incorrect lifetime!");
+    NS_TEST_ASSERT_MSG_EQ_TOL_RETURNS_BOOL (actualLifetime.GetSeconds (), expLifetime.GetSeconds (),
                                120, // error tolerance = 120s
                                "Incorrect lifetime!");
 

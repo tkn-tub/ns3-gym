@@ -52,7 +52,7 @@ public:
   virtual ~Ns3WimaxFragmentationTestCase ();
 
 private:
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
 
 };
 
@@ -65,7 +65,7 @@ Ns3WimaxFragmentationTestCase::~Ns3WimaxFragmentationTestCase ()
 {
 }
 
-bool
+void
 Ns3WimaxFragmentationTestCase::DoRun (void)
 {
   GenericMacHeader gnrcMacHdr;
@@ -178,7 +178,6 @@ Ns3WimaxFragmentationTestCase::DoRun (void)
   delete connectionTx;
   delete connectionRx;
   Simulator::Destroy ();
-  return (testResult);
 }
 // ==============================================================================
 

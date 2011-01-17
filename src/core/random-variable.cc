@@ -2055,7 +2055,7 @@ public:
   }
 
 private:
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
 };
 
 BasicRandomNumberTestCase::BasicRandomNumberTestCase ()
@@ -2063,7 +2063,7 @@ BasicRandomNumberTestCase::BasicRandomNumberTestCase ()
 {
 }
 
-bool
+void
 BasicRandomNumberTestCase::DoRun (void)
 {
   const double desiredMean = 1.0;
@@ -2106,8 +2106,6 @@ BasicRandomNumberTestCase::DoRun (void)
     }
   double obtainedStdDev = sqrt (sum / (NSAMPLES - 1));
   NS_TEST_EXPECT_MSG_EQ_TOL (obtainedStdDev, desiredStdDev, 0.1, "Got unexpected standard deviation from LogNormalVariable");
-
-  return GetErrorStatus ();
 }
 
 class RandomNumberSerializationTestCase : public TestCase
@@ -2119,7 +2117,7 @@ public:
   }
 
 private:
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
 };
 
 RandomNumberSerializationTestCase::RandomNumberSerializationTestCase ()
@@ -2127,7 +2125,7 @@ RandomNumberSerializationTestCase::RandomNumberSerializationTestCase ()
 {
 }
 
-bool
+void
 RandomNumberSerializationTestCase::DoRun (void)
 {
   RandomVariableValue val;
@@ -2145,8 +2143,6 @@ RandomNumberSerializationTestCase::DoRun (void)
   rng = val.Get ();
   NS_TEST_ASSERT_MSG_EQ (val.SerializeToString (MakeRandomVariableChecker ()), "Normal:0.1:0.2:0.15",
                          "Deserialize and Serialize \"Normal:0.1:0.2:0.15\" mismatch");
-
-  return GetErrorStatus ();
 }
 
 class BasicRandomNumberTestSuite : public TestSuite

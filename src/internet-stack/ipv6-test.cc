@@ -49,7 +49,7 @@ public:
    * \brief Run unit tests for this class.
    * \return false if all tests have passed, false otherwise
    */
-  virtual bool
+  virtual void
   DoRun ();
 };
 Ipv6L3ProtocolTestCase::Ipv6L3ProtocolTestCase () :
@@ -59,7 +59,7 @@ Ipv6L3ProtocolTestCase::Ipv6L3ProtocolTestCase () :
 Ipv6L3ProtocolTestCase::~Ipv6L3ProtocolTestCase ()
 {
 }
-bool
+void
 Ipv6L3ProtocolTestCase::DoRun ()
 {
   Ptr<Node> node = CreateObject<Node> ();
@@ -136,7 +136,6 @@ Ipv6L3ProtocolTestCase::DoRun ()
   index = ipv6->GetInterfaceForAddress ("2001:ffff:5678:9000::1"); /* address we just remove */
   NS_TEST_ASSERT_MSG_EQ (index, (uint32_t) -1, "Address should not be found??");
   Simulator::Destroy ();
-  return false;
 }//end DoRun
 static class IPv6L3ProtocolTestSuite : public TestSuite
 {

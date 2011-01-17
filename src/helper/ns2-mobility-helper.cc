@@ -754,7 +754,7 @@ private:
   {
     m_traceFile = GetTempDir () + "Ns2MobilityHelperTest.tcl";
     std::ofstream of (m_traceFile.c_str ());
-    NS_TEST_ASSERT_MSG_EQ (of.is_open (), true, "Need to write tmp. file");
+    NS_TEST_ASSERT_MSG_EQ_RETURNS_BOOL (of.is_open (), true, "Need to write tmp. file");
     of << m_trace;
     of.close ();
     return false; // no errors
@@ -779,9 +779,9 @@ private:
       {
         ReferencePoint const & rp = m_reference[m_nextRefPoint];
         Ptr<Node> node = Names::Find<Node> (rp.node);
-        NS_TEST_ASSERT_MSG_NE (node, 0, "Can't find node with id " << rp.node);
+        NS_TEST_ASSERT_MSG_NE_RETURNS_BOOL (node, 0, "Can't find node with id " << rp.node);
         Ptr<MobilityModel> mob = node->GetObject<MobilityModel> ();
-        NS_TEST_ASSERT_MSG_NE (mob, 0, "Can't find mobility for node " << rp.node);
+        NS_TEST_ASSERT_MSG_NE_RETURNS_BOOL (mob, 0, "Can't find mobility for node " << rp.node);
 
         NS_TEST_EXPECT_MSG_EQ (rp.pos, mob->GetPosition (), "Initial position mismatch for node " << rp.node);
         NS_TEST_EXPECT_MSG_EQ (rp.vel, mob->GetVelocity (), "Initial velocity mismatch for node " << rp.node);
@@ -814,21 +814,21 @@ private:
     NS_TEST_EXPECT_MSG_EQ (vel, ref.vel, "Velocity mismatch at time " << time.GetSeconds () << " s for node " << id);
   }
   /// Go
-  bool DoRun ()
+  void DoRun ()
   {
     NS_TEST_ASSERT_MSG_EQ (m_trace.empty (), false, "Need trace");
     NS_TEST_ASSERT_MSG_EQ (m_reference.empty (), false, "Need reference");
 
     if (WriteTrace ())
       {
-        return GetErrorStatus ();
+        return;
       }
     CreateNodes ();
     Ns2MobilityHelper mobility (m_traceFile);
     mobility.Install ();
     if (CheckInitialPositions ())
       {
-        return GetErrorStatus ();
+        return;
       }
     Config::Connect ("/NodeList/*/$ns3::MobilityModel/CourseChange",
                      MakeCallback (&Ns2MobilityHelperTest::CourseChange, this));
@@ -837,7 +837,6 @@ private:
     Names::Clear ();
     std::remove (m_traceFile.c_str ());
     Simulator::Destroy ();
-    return GetErrorStatus ();
   }
 };
 

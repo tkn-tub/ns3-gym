@@ -38,7 +38,7 @@ class TestEmptyOptionField : public TestCase
 public:
   TestEmptyOptionField () : TestCase("TestEmptyOptionField") {}
 
-  virtual bool DoRun()
+  virtual void DoRun()
   {
     Ipv6ExtensionDestinationHeader header;
     NS_TEST_EXPECT_MSG_EQ(header.GetSerializedSize() % 8, 0, "length of extension header is not a multiple of 8");
@@ -49,8 +49,6 @@ public:
 
     const uint8_t* data = buf.PeekData();
     NS_TEST_EXPECT_MSG_EQ(*(data+2), 1, "padding is missing"); //expecting a padN header
-
-    return GetErrorStatus();
   }
 };
 
@@ -87,7 +85,7 @@ class TestOptionWithoutAlignment : public TestCase
 public:
   TestOptionWithoutAlignment () : TestCase("TestOptionWithoutAlignment") {}
 
-  virtual bool DoRun()
+  virtual void DoRun()
   {
     Ipv6ExtensionDestinationHeader header;
     OptionWithoutAlignmentHeader optionHeader;
@@ -102,8 +100,6 @@ public:
 
     const uint8_t* data = buf.PeekData();
     NS_TEST_EXPECT_MSG_EQ(*(data+2), OptionWithoutAlignmentHeader::TYPE, "option without alignment is not first in header field");
-
-    return GetErrorStatus();
   }
 };
 
@@ -150,7 +146,7 @@ class TestOptionWithAlignment : public TestCase
 public:
   TestOptionWithAlignment () : TestCase("TestOptionWithAlignment") {}
 
-  virtual bool DoRun()
+  virtual void DoRun()
   {
     Ipv6ExtensionDestinationHeader header;
     OptionWithAlignmentHeader optionHeader;
@@ -169,8 +165,6 @@ public:
     NS_TEST_EXPECT_MSG_EQ(*(data+4), OptionWithAlignmentHeader::TYPE, "option with alignment is not padded correctly");
     NS_TEST_EXPECT_MSG_EQ(*(data+8), 1, "padding is missing"); //expecting a padN header
     NS_TEST_EXPECT_MSG_EQ(*(data+10), jumboHeader.GetType(), "option with alignment is not padded correctly");
-
-    return GetErrorStatus();
   }
 };
 
@@ -195,7 +189,7 @@ class TestFulfilledAlignment : public TestCase
 public:
   TestFulfilledAlignment () : TestCase("TestCorrectAlignment") {}
 
-  virtual bool DoRun()
+  virtual void DoRun()
   {
     Ipv6ExtensionDestinationHeader header;
     Ipv6OptionJumbogramHeader jumboHeader; //has an alignment of 4n+2
@@ -212,8 +206,6 @@ public:
     const uint8_t* data = buf.PeekData();
     NS_TEST_EXPECT_MSG_EQ(*(data+2), jumboHeader.GetType(), "option with fulfilled alignment is padded anyway");
     NS_TEST_EXPECT_MSG_EQ(*(data+8), OptionWithAlignmentHeader::TYPE, "option with fulfilled alignment is padded anyway");
-
-    return GetErrorStatus();
   }
 };
 

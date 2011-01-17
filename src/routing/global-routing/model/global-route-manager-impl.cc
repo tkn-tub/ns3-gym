@@ -2201,13 +2201,13 @@ class GlobalRouteManagerImplTestCase : public TestCase
 {
 public:
   GlobalRouteManagerImplTestCase();
-  virtual bool DoRun(void);
+  virtual void DoRun(void);
 };
 
 GlobalRouteManagerImplTestCase::GlobalRouteManagerImplTestCase()
   : TestCase("GlobalRouteManagerImplTestCase")
 {}
-bool 
+void
 GlobalRouteManagerImplTestCase::DoRun(void)
 {
   CandidateQueue candidate;
@@ -2385,7 +2385,6 @@ GlobalRouteManagerImplTestCase::DoRun(void)
   // XXX
   // No testing has actually been done other than making sure that this code
   // does not crash
-  return GetErrorStatus ();
 }
 
 

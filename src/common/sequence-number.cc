@@ -74,7 +74,7 @@ public:
 
   SequenceNumberTestCase ();
   virtual ~SequenceNumberTestCase ();
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
 };
 
 SequenceNumberTestCase::SequenceNumberTestCase ()
@@ -94,7 +94,7 @@ SequenceNumberTestCase::SequenceNumberTracer (SequenceNumber32 oldval, SequenceN
   m_newval = newval;
 }
 
-bool SequenceNumberTestCase::DoRun (void)
+void SequenceNumberTestCase::DoRun (void)
 {
 #define NS_TEST_ASSERT_EQUAL(a,b) NS_TEST_ASSERT_MSG_EQ(a,b, "foo")
 #define NS_TEST_ASSERT(a) NS_TEST_ASSERT_MSG_EQ(bool(a), true, "foo")
@@ -177,8 +177,6 @@ bool SequenceNumberTestCase::DoRun (void)
     obj->Dispose ();
   }
   
-
-  return false;
 }
 
 static class SequenceNumberTestSuite : public TestSuite

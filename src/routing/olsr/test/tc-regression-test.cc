@@ -56,7 +56,7 @@ TcRegressionTest::~TcRegressionTest()
 {
 }
 
-bool
+void
 TcRegressionTest::DoRun ()
 {
   SeedManager::SetSeed(12345);
@@ -67,7 +67,6 @@ TcRegressionTest::DoRun ()
   Simulator::Destroy ();
 
   if (!WRITE_VECTORS) CheckResults ();
-  return GetErrorStatus ();
 }
 
 void

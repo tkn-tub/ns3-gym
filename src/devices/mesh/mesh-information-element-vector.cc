@@ -102,10 +102,10 @@ struct MeshInformationElementVectorBist : public TestCase
     TestCase ("Serializarion test for all mesh information elements")
   {
   };
-  bool DoRun ();
+  void DoRun ();
 };
 
-bool
+void
 MeshInformationElementVectorBist::DoRun ()
 {
   MeshInformationElementVector vector;
@@ -199,8 +199,6 @@ MeshInformationElementVectorBist::DoRun ()
   MeshInformationElementVector resultVector;
   packet->RemoveHeader (resultVector);
   NS_TEST_ASSERT_MSG_EQ (vector, resultVector, "Roundtrip serialization of all known information elements works");
-  
-  return false;
 }
 
 class MeshTestSuite : public TestSuite

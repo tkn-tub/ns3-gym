@@ -54,7 +54,7 @@ PingRtt (std::string context, Time rtt)
   g_count ++;
 }
 
-bool
+void
 LoopbackTestCase::DoRun ()
 {
   NodeContainer nodes;
@@ -97,7 +97,6 @@ LoopbackTestCase::DoRun ()
   
   // Check that 4 packets delivered
   NS_TEST_ASSERT_MSG_EQ (g_count, 4, "Exactly 4 ping replies must be delivered.");
-  return GetErrorStatus ();
 }
 
 }

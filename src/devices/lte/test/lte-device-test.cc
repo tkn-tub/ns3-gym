@@ -54,7 +54,7 @@ public:
   virtual ~Ns3LteDeviceTestCase ();
 
 private:
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
 
 };
 
@@ -67,11 +67,9 @@ Ns3LteDeviceTestCase::~Ns3LteDeviceTestCase ()
 {
 }
 
-bool
+void
 Ns3LteDeviceTestCase::DoRun (void)
 {
-  bool testResult = false;
-
   LteHelper lte;
 
   lte.EnableLogComponents ();
@@ -150,10 +148,7 @@ Ns3LteDeviceTestCase::DoRun (void)
 
   // ****** test if the ue is registered with the eNB ******
 
-  if (!enb->GetUeManager ()->IsRegistered (ue))
-    {
-      return true;
-    }
+  NS_TEST_ASSERT_MSG_EQ (enb->GetUeManager ()->IsRegistered (ue), true, "The ue was not registered with the eNB.");
 
   // ****** test packet transmission******
 
@@ -178,9 +173,6 @@ Ns3LteDeviceTestCase::DoRun (void)
   Simulator::Run ();
 
   Simulator::Destroy ();
-
-
-  return (testResult);
 }
 // ==============================================================================
 

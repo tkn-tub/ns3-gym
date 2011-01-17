@@ -21,6 +21,8 @@
 #include "abort.h"
 #include <math.h>
 
+// Set to true to enable a segmentation fault upon a test case macro test 
+// failing (for debugging purposes)
 bool gBreakOnFailure = false;
 
 namespace ns3 {
@@ -138,7 +140,7 @@ TestCase::ReportEnd  (void)
   DoReportStart ();
 }
 
-bool
+void
 TestCase::Run (void)
 {
   //
@@ -150,8 +152,7 @@ TestCase::Run (void)
   DoReportStart ();
   DoSetup ();
 
-  bool result = DoRun ();
-  UpdateErrorStatus (result);
+  DoRun ();
 
   DoTeardown ();
 
@@ -175,7 +176,7 @@ TestCase::Run (void)
 
   DoReportEnd ();
 
-  return GetErrorStatus ();
+  return;
 }
 
 void 
@@ -456,10 +457,7 @@ TestSuite::Run (void)
   DoReportStart ();
 
   DoSetup (); 
-
-  bool result = DoRun ();
-  UpdateErrorStatus (result);
-
+  DoRun ();
   DoTeardown ();
 
   if (GetErrorStatus () == false)
@@ -663,7 +661,7 @@ TestSuite::DoSetup (void)
 {
 }
 
-bool
+void
 TestSuite::DoRun (void)
 {
   SetErrorStatus (false);
@@ -682,19 +680,18 @@ TestSuite::DoRun (void)
       //
       // Run the test case
       //
-      bool result = (*i)->Run ();
-      UpdateErrorStatus (result);
+      (*i)->Run ();
+      UpdateErrorStatus ((*i)->GetErrorStatus ());
 
       //
-      // Exit if we have detected an error and we are not allowing multiple filures
+      // Exit if we have detected an error and we are not allowing multiple failures
       //
       if (GetErrorStatus () && m_continueOnFailure == false)
         {
-          return GetErrorStatus ();
+          return;
         }
     }
 
-  return GetErrorStatus ();
 }
 
 void 

@@ -69,7 +69,7 @@ public:
   OlsrMprTestCase ();
   ~OlsrMprTestCase ();
   /// \brief Run test case
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
   ;
 };
 

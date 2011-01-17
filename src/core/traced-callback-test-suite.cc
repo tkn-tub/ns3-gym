@@ -28,7 +28,7 @@ public:
   virtual ~BasicTracedCallbackTestCase () {}
 
 private:
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
 
   void CbOne (uint8_t a, double b);
   void CbTwo (uint8_t a, double b);
@@ -54,7 +54,7 @@ BasicTracedCallbackTestCase::CbTwo (uint8_t a, double b)
   m_two = true;
 }
 
-bool
+void
 BasicTracedCallbackTestCase::DoRun (void)
 {
   //
@@ -106,8 +106,6 @@ BasicTracedCallbackTestCase::DoRun (void)
   trace (1, 2);
   NS_TEST_ASSERT_MSG_EQ (m_one, true, "Callback CbOne not called");
   NS_TEST_ASSERT_MSG_EQ (m_two, true, "Callback CbTwo not called");
-
-  return GetErrorStatus ();
 }
 
 class TracedCallbackTestSuite : public TestSuite

@@ -233,7 +233,7 @@ public:
   virtual ~AttributeTestCase ();
 
 private:
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
 
   bool CheckGetCodePaths (Ptr<Object> p, std::string attributeName, std::string expectedString, T expectedValue);
 };
@@ -263,15 +263,15 @@ AttributeTestCase<T>::CheckGetCodePaths (
   // Get an Attribute value through its StringValue representation.
   //
   bool ok = p->GetAttributeFailSafe (attributeName.c_str (), stringValue);
-  NS_TEST_ASSERT_MSG_EQ (ok, true, "Could not GetAttributeFailSafe() " << attributeName << " from Object");
-  NS_TEST_ASSERT_MSG_EQ (stringValue.Get (), expectedString, "Got unexpected StringValue representation");
+  NS_TEST_ASSERT_MSG_EQ_RETURNS_BOOL (ok, true, "Could not GetAttributeFailSafe() " << attributeName << " from Object");
+  NS_TEST_ASSERT_MSG_EQ_RETURNS_BOOL (stringValue.Get (), expectedString, "Got unexpected StringValue representation");
 
   //
   // Get the existing boolean value through its particular type representation.
   //
   ok = p->GetAttributeFailSafe (attributeName.c_str (), actualValue);
-  NS_TEST_ASSERT_MSG_EQ (ok, true, "Could not GetAttributeFailSafe() " << attributeName << " from Object");
-  NS_TEST_ASSERT_MSG_EQ (actualValue.Get (), expectedValue.Get (), "Got unexpected Value from Object");
+  NS_TEST_ASSERT_MSG_EQ_RETURNS_BOOL (ok, true, "Could not GetAttributeFailSafe() " << attributeName << " from Object");
+  NS_TEST_ASSERT_MSG_EQ_RETURNS_BOOL (actualValue.Get (), expectedValue.Get (), "Got unexpected Value from Object");
 
   return GetErrorStatus ();
 }
@@ -279,7 +279,7 @@ AttributeTestCase<T>::CheckGetCodePaths (
 // ===========================================================================
 // The actual Attribute type test cases are specialized for each Attribute type
 // ===========================================================================
-template <> bool
+template <> void
 AttributeTestCase<BooleanValue>::DoRun (void)
 {
   AttributeList attrs;
@@ -381,11 +381,9 @@ AttributeTestCase<BooleanValue>::DoRun (void)
 
   ok = CheckGetCodePaths (p, "TestBoolA", "false", BooleanValue (false));
   NS_TEST_ASSERT_MSG_EQ (ok, false, "Attribute not set properly by SetAttributeFailSafe() (getter/setter) via StringValue");
-
-  return GetErrorStatus ();
 }
 
-template <> bool
+template <> void
 AttributeTestCase<IntegerValue>::DoRun (void)
 {
   Ptr<AttributeObjectTest> p;
@@ -493,11 +491,9 @@ AttributeTestCase<IntegerValue>::DoRun (void)
 
   ok = CheckGetCodePaths (p, "TestInt16WithBounds", "-5", IntegerValue (-5));
   NS_TEST_ASSERT_MSG_EQ (ok, false, "Error in SetAttributeFailSafe() but value changes");
-
-  return GetErrorStatus ();
 }
 
-template <> bool
+template <> void
 AttributeTestCase<UintegerValue>::DoRun (void)
 {
   Ptr<AttributeObjectTest> p;
@@ -566,11 +562,9 @@ AttributeTestCase<UintegerValue>::DoRun (void)
   //
   ok = p->SetAttributeFailSafe("TestUint8", StringValue ("-1"));
   NS_TEST_ASSERT_MSG_EQ (ok, false, "Unexpectedly could SetAttributeFailSafe() via StringValue to -1");
-
-  return GetErrorStatus ();
 }
 
-template <> bool
+template <> void
 AttributeTestCase<DoubleValue>::DoRun (void)
 {
   Ptr<AttributeObjectTest> p;
@@ -594,11 +588,9 @@ AttributeTestCase<DoubleValue>::DoRun (void)
 
   ok = CheckGetCodePaths (p, "TestFloat", "2.3", DoubleValue ((float)2.3));
   NS_TEST_ASSERT_MSG_EQ (ok, false, "Attribute not set properly by SetAttributeFailSafe() via DoubleValue");
-
-  return GetErrorStatus ();
 }
 
-template <> bool
+template <> void
 AttributeTestCase<EnumValue>::DoRun (void)
 {
   Ptr<AttributeObjectTest> p;
@@ -651,11 +643,9 @@ AttributeTestCase<EnumValue>::DoRun (void)
 
   ok = CheckGetCodePaths (p, "TestEnum", "TestB", EnumValue (AttributeObjectTest::TEST_B));
   NS_TEST_ASSERT_MSG_EQ (ok, false, "Error in SetAttributeFailSafe() but value changes");
-
-  return GetErrorStatus ();
 }
 
-template <> bool
+template <> void
 AttributeTestCase<RandomVariableValue>::DoRun (void)
 {
   Ptr<AttributeObjectTest> p;
@@ -675,8 +665,6 @@ AttributeTestCase<RandomVariableValue>::DoRun (void)
   //
   ok = p->SetAttributeFailSafe("TestRandom", RandomVariableValue (ConstantVariable (10.)));
   NS_TEST_ASSERT_MSG_EQ (ok, true, "Could not SetAttributeFailSafe() a UniformVariable");
-
-  return GetErrorStatus ();
 }
 
 // ===========================================================================
@@ -690,7 +678,7 @@ public:
   virtual ~ObjectVectorAttributeTestCase () {}
 
 private:
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
 };
 
 ObjectVectorAttributeTestCase::ObjectVectorAttributeTestCase (std::string description)
@@ -698,7 +686,7 @@ ObjectVectorAttributeTestCase::ObjectVectorAttributeTestCase (std::string descri
 {
 }
 
-bool
+void
 ObjectVectorAttributeTestCase::DoRun (void)
 {
   Ptr<AttributeObjectTest> p;
@@ -743,8 +731,6 @@ ObjectVectorAttributeTestCase::DoRun (void)
   //
   p->GetAttribute ("TestVector1", vector);
   NS_TEST_ASSERT_MSG_EQ (vector.GetN (), 2, "ObjectVectorValue \"TestVector1\" should be incremented");
-
-  return GetErrorStatus ();
 }
 
 // ===========================================================================
@@ -758,7 +744,7 @@ public:
   virtual ~IntegerTraceSourceAttributeTestCase () {}
 
 private:
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
 };
 
 IntegerTraceSourceAttributeTestCase::IntegerTraceSourceAttributeTestCase (std::string description)
@@ -766,7 +752,7 @@ IntegerTraceSourceAttributeTestCase::IntegerTraceSourceAttributeTestCase (std::s
 {
 }
 
-bool
+void
 IntegerTraceSourceAttributeTestCase::DoRun (void)
 {
   Ptr<AttributeObjectTest> p;
@@ -837,8 +823,6 @@ IntegerTraceSourceAttributeTestCase::DoRun (void)
 
   ok = p->SetAttributeFailSafe("IntegerTraceSource2", IntegerValue (-129));
   NS_TEST_ASSERT_MSG_EQ (ok, false, "Unexpectedly could SetAttributeFailSafe() via IntegerValue to -129");
-
-  return GetErrorStatus ();
 }
 
 // ===========================================================================
@@ -852,7 +836,7 @@ public:
   virtual ~IntegerTraceSourceTestCase () {}
 
 private:
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
 
   void NotifySource1 (int8_t old, int8_t n) {m_got1 = n;}
   int64_t m_got1;
@@ -863,7 +847,7 @@ IntegerTraceSourceTestCase::IntegerTraceSourceTestCase (std::string description)
 {
 }
 
-bool
+void
 IntegerTraceSourceTestCase::DoRun (void)
 {
   Ptr<AttributeObjectTest> p;
@@ -911,8 +895,6 @@ IntegerTraceSourceTestCase::DoRun (void)
   NS_TEST_ASSERT_MSG_EQ (ok, true, "Could not SetAttributeFailSafe() via IntegerValue to 1");
 
   NS_TEST_ASSERT_MSG_EQ (m_got1, 0, "Hitting a TracedValue after disconnect still causes callback");
-
-  return GetErrorStatus ();
 }
 
 // ===========================================================================
@@ -926,7 +908,7 @@ public:
   virtual ~TracedCallbackTestCase () {}
 
 private:
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
 
   void NotifySource2 (double a, int b, float c) {m_got2 = a;}
 
@@ -938,7 +920,7 @@ TracedCallbackTestCase::TracedCallbackTestCase (std::string description)
 {
 }
 
-bool
+void
 TracedCallbackTestCase::DoRun (void)
 {
   Ptr<AttributeObjectTest> p;
@@ -987,8 +969,6 @@ TracedCallbackTestCase::DoRun (void)
 
   p->InvokeCb (-1.0, -5, 0.0);
   NS_TEST_ASSERT_MSG_EQ (m_got2, 1.0, "Invoking disconnected TracedCallback unexpectedly results in trace callback");
-
-  return GetErrorStatus ();
 }
 
 // ===========================================================================
@@ -1002,7 +982,7 @@ public:
   virtual ~PointerAttributeTestCase () {}
 
 private:
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
 
   void NotifySource2 (double a, int b, float c) {m_got2 = a;}
 
@@ -1014,7 +994,7 @@ PointerAttributeTestCase::PointerAttributeTestCase (std::string description)
 {
 }
 
-bool
+void
 PointerAttributeTestCase::DoRun (void)
 {
   Ptr<AttributeObjectTest> p;
@@ -1077,8 +1057,6 @@ PointerAttributeTestCase::DoRun (void)
   p->GetAttribute ("Pointer", ptr);
   derived = ptr.Get<Derived> ();
   NS_TEST_ASSERT_MSG_NE (p, 0, "Retrieved zero PointerValue Attribute after initializing to non-zero Ptr");
-
-  return GetErrorStatus ();
 }
 
 // ===========================================================================
@@ -1098,7 +1076,7 @@ public:
   }
 
 private:
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
 
   Callback<void,int8_t> m_cbValue;
 
@@ -1112,7 +1090,7 @@ CallbackValueTestCase::CallbackValueTestCase (std::string description)
 {
 }
 
-bool
+void
 CallbackValueTestCase::DoRun (void)
 {
   Ptr<AttributeObjectTest> p;
@@ -1160,9 +1138,7 @@ CallbackValueTestCase::DoRun (void)
   //
   p->InvokeCbValue (3);
   NS_TEST_ASSERT_MSG_EQ (m_gotCbValue, 2, "Callback Attribute set to null callback unexpectedly fired");
-  
-  return GetErrorStatus ();
-}
+  }
 
 // ===========================================================================
 // The Test Suite that glues all of the Test Cases together.

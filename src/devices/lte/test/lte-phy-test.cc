@@ -49,7 +49,7 @@ public:
   virtual ~Ns3LtePhyTestCase ();
 
 private:
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
 
 };
 
@@ -62,11 +62,9 @@ Ns3LtePhyTestCase::~Ns3LtePhyTestCase ()
 {
 }
 
-bool
+void
 Ns3LtePhyTestCase::DoRun (void)
 {
-  bool testResult = false;
-
   LteHelper lte;
 
   lte.EnableLogComponents ();
@@ -138,21 +136,12 @@ Ns3LtePhyTestCase::DoRun (void)
   pb->AddPacket (p2);
 
 
-  if (enb->GetPhy ()->SendPacket (pb))
-    {
-      testResult = true;
-    }
+  NS_TEST_ASSERT_MSG_EQ (enb->GetPhy ()->SendPacket (pb), false, "SendPacket() should return false for eNB device.");
 
 
-  if (ue->GetPhy ()->SendPacket (pb))
-    {
-      testResult = true;
-    }
+  NS_TEST_ASSERT_MSG_EQ (ue->GetPhy ()->SendPacket (pb), false, "SendPacket() should return false for ue device.");
 
   Simulator::Destroy ();
-
-
-  return (testResult);
 }
 // ==============================================================================
 

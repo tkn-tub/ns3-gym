@@ -51,7 +51,7 @@ HelloRegressionTest::~HelloRegressionTest()
 {
 }
 
-bool
+void
 HelloRegressionTest::DoRun ()
 {
   SeedManager::SetSeed(12345);
@@ -62,7 +62,6 @@ HelloRegressionTest::DoRun ()
   Simulator::Destroy ();
   
   if (!WRITE_VECTORS) CheckResults ();  
-  return GetErrorStatus ();
 }
 
 void

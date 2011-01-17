@@ -59,7 +59,7 @@ public:
   FlameRegressionTest ();
   virtual ~FlameRegressionTest();
 
-  virtual bool DoRun ();
+  virtual void DoRun ();
   void CheckResults ();
 
 private:

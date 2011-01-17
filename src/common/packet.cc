@@ -1079,7 +1079,7 @@ class PacketTest : public TestCase
 {
 public:
   PacketTest ();
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
 private:
   void DoCheck (Ptr<const Packet> p, const char *file, int line, uint32_t n, ...);
 };
@@ -1126,7 +1126,7 @@ PacketTest::DoCheck (Ptr<const Packet> p, const char *file, int line, uint32_t n
   NS_TEST_EXPECT_MSG_EQ (j, expected.size (), "Size match");
 }
 
-bool
+void
 PacketTest::DoRun (void)
 {
   Ptr<Packet> pkt1 = Create<Packet> (reinterpret_cast<const uint8_t*> ("hello"), 5);
@@ -1307,8 +1307,6 @@ PacketTest::DoRun (void)
     CHECK (tmp, 1, E (20, 1, 1001));
 #endif
   }
-
-  return GetErrorStatus ();
 }
 //-----------------------------------------------------------------------------
 class PacketTestSuite : public TestSuite

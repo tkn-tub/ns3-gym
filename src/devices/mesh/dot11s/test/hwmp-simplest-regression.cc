@@ -52,7 +52,7 @@ HwmpSimplestRegressionTest::~HwmpSimplestRegressionTest ()
 {
   delete m_nodes;
 }
-bool
+void
 HwmpSimplestRegressionTest::DoRun ()
 {
   SeedManager::SetSeed(12345);
@@ -67,7 +67,6 @@ HwmpSimplestRegressionTest::DoRun ()
   if (!WRITE_VECTORS) CheckResults ();
 
   delete m_nodes, m_nodes = 0;
-  return false;
 }
 void
 HwmpSimplestRegressionTest::CreateNodes ()

@@ -290,7 +290,7 @@ class HpFracTestCase : public TestCase
 {
 public:
   HpFracTestCase ();
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
   void CheckFrac (int64_t hi, uint64_t lo);
 };
 
@@ -308,14 +308,13 @@ HpFracTestCase::HpFracTestCase ()
   : TestCase ("Check that we can manipulate the high and low part of every number")
 {
 }
-bool
+void
 HpFracTestCase::DoRun (void)
 {
   CheckFrac (1, 0);
   CheckFrac (1, 1);
   CheckFrac (-1, 0);
   CheckFrac (-1, 1);
-  return GetErrorStatus ();
 }
 
 
@@ -323,7 +322,7 @@ class HpInputTestCase : public TestCase
 {
 public:
   HpInputTestCase ();
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
   void CheckString (std::string str, int64_t hi, uint64_t lo);
 };
 HpInputTestCase::HpInputTestCase ()
@@ -340,7 +339,7 @@ HpInputTestCase::CheckString (std::string str, int64_t hi, uint64_t lo)
   NS_TEST_EXPECT_MSG_EQ (hp.GetHigh (), hi, "High parts do not match for input string " << str);
   NS_TEST_EXPECT_MSG_EQ (hp.GetLow (), lo, "Low parts do not match for input string " << str);
 }
-bool
+void
 HpInputTestCase::DoRun (void)
 {
   CheckString ("1", 1, 0);
@@ -357,15 +356,13 @@ HpInputTestCase::DoRun (void)
   CheckString ("1.0000000", 1, 0);
   CheckString ("1.08446744073709551615", 1, 8446744073709551615LL);
   CheckString ("-1.08446744073709551615", -1, 8446744073709551615LL);
-  
-  return GetErrorStatus ();
 }
 
 class HpInputOutputTestCase : public TestCase
 {
 public:
   HpInputOutputTestCase ();
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
   void CheckString (std::string str);
 };
 HpInputOutputTestCase::HpInputOutputTestCase ()
@@ -383,7 +380,7 @@ HpInputOutputTestCase::CheckString (std::string str)
   oss << hp;
   NS_TEST_EXPECT_MSG_EQ (oss.str (), str, "Converted string does not match expected string");
 }
-bool
+void
 HpInputOutputTestCase::DoRun (void)
 {
   CheckString ("+1.0");
@@ -393,8 +390,6 @@ HpInputOutputTestCase::DoRun (void)
   CheckString ("-1.08446744073709551615");
   CheckString ("+1.18446744073709551615");
   CheckString ("-1.18446744073709551615");
-  
-  return GetErrorStatus ();
 }
 
 

@@ -165,7 +165,7 @@ class Ipv6PacketInfoTagTest: public TestCase
 public:
   Ipv6PacketInfoTagTest ();
 private:
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
   void RxCb (Ptr<Socket> socket);
   void DoSendData (Ptr<Socket> socket, std::string to);
 };
@@ -208,7 +208,7 @@ Ipv6PacketInfoTagTest::DoSendData (Ptr<Socket> socket, std::string to)
     }
 }
 
-bool
+void
 Ipv6PacketInfoTagTest::DoRun (void)
 {
   NodeContainer n;
@@ -274,7 +274,6 @@ Ipv6PacketInfoTagTest::DoRun (void)
 
   Simulator::Destroy ();
   // IPv6 test
-  return 0;
 }
 
 static class Ipv6PacketInfoTagTestSuite : public TestSuite

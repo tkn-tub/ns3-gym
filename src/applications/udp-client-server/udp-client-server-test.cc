@@ -48,7 +48,7 @@ public:
   virtual ~UdpClientServerTestCase ();
 
 private:
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
 
 };
 
@@ -61,7 +61,7 @@ UdpClientServerTestCase::~UdpClientServerTestCase ()
 {
 }
 
-bool UdpClientServerTestCase::DoRun (void)
+void UdpClientServerTestCase::DoRun (void)
 {
   NodeContainer n;
   n.Create (2);
@@ -102,8 +102,6 @@ bool UdpClientServerTestCase::DoRun (void)
 
   NS_TEST_ASSERT_MSG_EQ (server.GetServer ()->GetLost (), 0, "Packets were lost !");
   NS_TEST_ASSERT_MSG_EQ (server.GetServer ()->GetReceived (), 8, "Did not receive expected number of packets !");
-
-  return GetErrorStatus ();
 }
 
 /**
@@ -118,7 +116,7 @@ public:
   virtual ~UdpTraceClientServerTestCase ();
 
 private:
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
 
 };
 
@@ -131,7 +129,7 @@ UdpTraceClientServerTestCase::~UdpTraceClientServerTestCase ()
 {
 }
 
-bool UdpTraceClientServerTestCase::DoRun (void)
+void UdpTraceClientServerTestCase::DoRun (void)
 {
   NodeContainer n;
   n.Create (2);
@@ -167,8 +165,6 @@ bool UdpTraceClientServerTestCase::DoRun (void)
 
   NS_TEST_ASSERT_MSG_EQ (server.GetServer ()->GetLost (), 0, "Packets were lost !");
   NS_TEST_ASSERT_MSG_EQ (server.GetServer ()->GetReceived (), 247, "Did not receive expected number of packets !");
-
-  return GetErrorStatus ();
 }
 
 
@@ -183,7 +179,7 @@ public:
   virtual ~PacketLossCounterTestCase ();
 
 private:
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
 
 };
 
@@ -196,7 +192,7 @@ PacketLossCounterTestCase::~PacketLossCounterTestCase ()
 {
 }
 
-bool PacketLossCounterTestCase::DoRun (void)
+void PacketLossCounterTestCase::DoRun (void)
 {
   PacketLossCounter lossCounter(32);
   lossCounter.NotifyReceived(32); //out of order
@@ -245,9 +241,6 @@ bool PacketLossCounterTestCase::DoRun (void)
       lossCounter.NotifyReceived(i);
     }
   NS_TEST_ASSERT_MSG_EQ (lossCounter.GetLost(), 9, "Check that 9 (6+1+2) packet are lost");
-
-
-  return GetErrorStatus ();
 }
 class UdpClientServerTestSuite: public TestSuite
 {

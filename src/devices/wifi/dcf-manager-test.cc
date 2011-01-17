@@ -58,7 +58,7 @@ class DcfManagerTest : public TestCase
 {
 public:
   DcfManagerTest ();
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
 
 
   void NotifyAccessGranted (uint32_t i);
@@ -340,7 +340,7 @@ DcfManagerTest::AddRxStartEvt (uint64_t at, uint64_t duration)
 
 
 
-bool 
+void
 DcfManagerTest::DoRun (void)
 {
   //  0      3       4    5      8       9  10   12
@@ -661,8 +661,6 @@ DcfManagerTest::DoRun (void)
   AddSwitchingEvt(80,20);
   AddAccessRequest (101, 2, 110, 0);
   EndTest ();
-  
-  return GetErrorStatus ();
 }
 
 //-----------------------------------------------------------------------------

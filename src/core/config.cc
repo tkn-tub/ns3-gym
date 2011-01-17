@@ -766,7 +766,7 @@ public:
   virtual ~RootNamespaceConfigTestCase () {}
 
 private:
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
 };
 
 RootNamespaceConfigTestCase::RootNamespaceConfigTestCase ()
@@ -774,7 +774,7 @@ RootNamespaceConfigTestCase::RootNamespaceConfigTestCase ()
 {
 }
 
-bool
+void
 RootNamespaceConfigTestCase::DoRun (void)
 {
   IntegerValue iv;
@@ -812,8 +812,6 @@ RootNamespaceConfigTestCase::DoRun (void)
   Config::Set ("/B", IntegerValue (-1));
   root->GetAttribute ("B", iv);
   NS_TEST_ASSERT_MSG_EQ (iv.Get (), -1, "Object Attribute \"B\" not set correctly");
-
-  return GetErrorStatus ();
 }
 
 // ===========================================================================
@@ -826,7 +824,7 @@ public:
   virtual ~UnderRootNamespaceConfigTestCase () {}
 
 private:
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
 };
 
 UnderRootNamespaceConfigTestCase::UnderRootNamespaceConfigTestCase ()
@@ -834,7 +832,7 @@ UnderRootNamespaceConfigTestCase::UnderRootNamespaceConfigTestCase ()
 {
 }
 
-bool
+void
 UnderRootNamespaceConfigTestCase::DoRun (void)
 {
   IntegerValue iv;
@@ -912,8 +910,6 @@ UnderRootNamespaceConfigTestCase::DoRun (void)
   NS_TEST_ASSERT_MSG_EQ (iv.Get (), 4, "Object Attribute \"A\" not set as expected");
   b->GetAttribute ("B", iv);
   NS_TEST_ASSERT_MSG_EQ (iv.Get (), -4, "Object Attribute \"B\" not set as expected");
-
-  return GetErrorStatus ();
 }
 
 // ===========================================================================
@@ -926,7 +922,7 @@ public:
   virtual ~ObjectVectorConfigTestCase () {}
 
 private:
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
 };
 
 ObjectVectorConfigTestCase::ObjectVectorConfigTestCase ()
@@ -934,7 +930,7 @@ ObjectVectorConfigTestCase::ObjectVectorConfigTestCase ()
 {
 }
 
-bool
+void
 ObjectVectorConfigTestCase::DoRun (void)
 {
   IntegerValue iv;
@@ -1068,8 +1064,6 @@ ObjectVectorConfigTestCase::DoRun (void)
 
   obj3->GetAttribute ("A", iv);
   NS_TEST_ASSERT_MSG_EQ (iv.Get (), -16, "Object Attribute \"A\" not set as expected");
-
-  return GetErrorStatus ();
 }
 
 // ===========================================================================
@@ -1085,7 +1079,7 @@ public:
   void TraceWithPath (std::string path, int16_t old, int16_t newValue) {m_newValue = newValue; m_path = path;}
 
 private:
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
 
   int16_t m_newValue;
   std::string m_path;
@@ -1096,7 +1090,7 @@ ObjectVectorTraceConfigTestCase::ObjectVectorTraceConfigTestCase ()
 {
 }
 
-bool
+void
 ObjectVectorTraceConfigTestCase::DoRun (void)
 {
   IntegerValue iv;
@@ -1217,8 +1211,6 @@ ObjectVectorTraceConfigTestCase::DoRun (void)
   obj3->SetAttribute ("Source", IntegerValue (-4));
   NS_TEST_ASSERT_MSG_EQ (m_newValue, -4, "Trace 3 did not fire as expected");
   NS_TEST_ASSERT_MSG_EQ (m_path, "/NodeA/NodeB/NodesB/1/Source", "Trace 1 did not provide expected context");
-
-  return GetErrorStatus ();
 }
 
 // ===========================================================================

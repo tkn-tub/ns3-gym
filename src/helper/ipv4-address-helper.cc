@@ -189,7 +189,7 @@ class NetworkAllocatorHelperTestCase : public TestCase
 public:
   NetworkAllocatorHelperTestCase ();
 private:
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
   virtual void DoTeardown (void);
 };
 
@@ -203,7 +203,7 @@ NetworkAllocatorHelperTestCase::DoTeardown (void)
   Ipv4AddressGenerator::Reset ();
   Simulator::Destroy ();
 }
-bool
+void
 NetworkAllocatorHelperTestCase::DoRun (void)
 {
   Ipv4Address address;
@@ -227,8 +227,6 @@ NetworkAllocatorHelperTestCase::DoRun (void)
   NS_TEST_EXPECT_MSG_EQ (network, Ipv4Address ("0.0.2.0"), "XXX");
   address = h.NewAddress();
   NS_TEST_EXPECT_MSG_EQ (address, Ipv4Address ("0.0.2.1"), "XXX");
-
-  return false;
 }
 
 class AddressAllocatorHelperTestCase : public TestCase
@@ -236,7 +234,7 @@ class AddressAllocatorHelperTestCase : public TestCase
 public:
   AddressAllocatorHelperTestCase ();
 private:
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
   virtual void DoTeardown (void);
 };
 
@@ -251,7 +249,7 @@ AddressAllocatorHelperTestCase::DoTeardown (void)
   Simulator::Destroy ();
 }
 
-bool
+void
 AddressAllocatorHelperTestCase::DoRun (void)
 {
   Ipv4Address network;
@@ -275,15 +273,13 @@ AddressAllocatorHelperTestCase::DoRun (void)
   NS_TEST_EXPECT_MSG_EQ (address, Ipv4Address ("0.0.1.3"), "XXX");
   address = h.NewAddress();
   NS_TEST_EXPECT_MSG_EQ (address, Ipv4Address ("0.0.1.4"), "XXX");
-
-  return false;
 }
 
 class ResetAllocatorHelperTestCase : public TestCase
 {
 public:
   ResetAllocatorHelperTestCase ();
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
   virtual void DoTeardown (void);
 };
 
@@ -291,7 +287,7 @@ ResetAllocatorHelperTestCase::ResetAllocatorHelperTestCase ()
   : TestCase ("Make sure the reset to base behavior is working")
 {}
 
-bool
+void
 ResetAllocatorHelperTestCase::DoRun (void)
 {
   Ipv4Address network;
@@ -332,8 +328,6 @@ ResetAllocatorHelperTestCase::DoRun (void)
   NS_TEST_EXPECT_MSG_EQ (network, Ipv4Address ("0.0.2.0"), "XXX");
   address = h.NewAddress();
   NS_TEST_EXPECT_MSG_EQ (address, Ipv4Address ("0.0.2.3"), "XXX");
-
-  return false;
 }
 
 void

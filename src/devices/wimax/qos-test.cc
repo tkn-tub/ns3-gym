@@ -46,7 +46,7 @@ public:
   virtual ~Ns3WimaxSchedulingTestCase ();
 
 private:
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
   bool DoRunOnce (WimaxHelper::SchedulerType scheduler);
 
 };
@@ -143,18 +143,17 @@ Ns3WimaxSchedulingTestCase::DoRunOnce (WimaxHelper::SchedulerType scheduler)
 
 }
 
-bool
+void
 Ns3WimaxSchedulingTestCase::DoRun ()
 {
   if (DoRunOnce (WimaxHelper::SCHED_TYPE_SIMPLE) == true)
     {
-      return true;
+      return;
     }
   if (DoRunOnce (WimaxHelper::SCHED_TYPE_RTPS) == true)
     {
-      return true;
+      return;
     }
-  return false;
 }
 
 
@@ -166,7 +165,7 @@ public:
   virtual ~Ns3WimaxSFTypeTestCase ();
 
 private:
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
   bool DoRunOnce (ServiceFlow::SchedulingType);
 
 };
@@ -262,22 +261,21 @@ Ns3WimaxSFTypeTestCase::DoRunOnce (ServiceFlow::SchedulingType schedulingType)
 
 }
 
-bool
+void
 Ns3WimaxSFTypeTestCase::DoRun ()
 {
   if (DoRunOnce (ServiceFlow::SF_TYPE_UGS) == true)
     {
-      return true;
+      return;
     }
   if (DoRunOnce (ServiceFlow::SF_TYPE_RTPS) == true)
     {
-      return true;
+      return;
     }
   if (DoRunOnce (ServiceFlow::SF_TYPE_BE) == true)
     {
-      return true;
+      return;
     }
-  return false;
 }
 
 class Ns3WimaxQoSTestSuite : public TestSuite

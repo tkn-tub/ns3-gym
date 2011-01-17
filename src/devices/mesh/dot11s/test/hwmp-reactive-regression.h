@@ -74,7 +74,7 @@ public:
   HwmpReactiveRegressionTest ();
   virtual ~HwmpReactiveRegressionTest();
 
-  virtual bool DoRun ();
+  virtual void DoRun ();
   void CheckResults ();
 private:
   /// XXX It is important to have pointers here

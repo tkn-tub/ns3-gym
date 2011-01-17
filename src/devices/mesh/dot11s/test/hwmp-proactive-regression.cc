@@ -53,7 +53,7 @@ HwmpProactiveRegressionTest::~HwmpProactiveRegressionTest ()
 {
   delete m_nodes;
 }
-bool
+void
 HwmpProactiveRegressionTest::DoRun ()
 {
   SeedManager::SetSeed(12345);
@@ -68,7 +68,6 @@ HwmpProactiveRegressionTest::DoRun ()
   if (!WRITE_VECTORS) CheckResults ();
 
   delete m_nodes, m_nodes = 0;
-  return false;
 }
 void
 HwmpProactiveRegressionTest::CreateNodes ()

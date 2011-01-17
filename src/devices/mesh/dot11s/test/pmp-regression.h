@@ -56,7 +56,7 @@ private:
   void CreateNodes ();
   void CreateDevices ();
   void CheckResults ();
-  bool DoRun ();
+  void DoRun ();
 };
 #endif // PMP_REGRESSION_H
 

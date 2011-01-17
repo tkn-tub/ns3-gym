@@ -45,7 +45,7 @@ public:
 private:
   void TestXPosition (double expectedXPos);
   void CourseChangeCallback (std::string path, Ptr<const MobilityModel> model);
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
   Ptr<Node> m_node;
   Ptr<WaypointMobilityModel> m_mob;
   int m_courseChanges;
@@ -76,7 +76,7 @@ WaypointLazyNotifyFalse::CourseChangeCallback (std::string path, Ptr<const Mobil
   m_courseChanges++;
 }
 
-bool
+void
 WaypointLazyNotifyFalse::DoRun (void)
 {
   m_node = CreateObject<Node> ();
@@ -93,7 +93,6 @@ WaypointLazyNotifyFalse::DoRun (void)
   Simulator::Schedule (Seconds (5.0), &WaypointLazyNotifyFalse::TestXPosition, this, 5);
   Simulator::Run ();
   Simulator::Destroy ();
-  return GetErrorStatus ();
 }
 
 class WaypointLazyNotifyTrue : public TestCase
@@ -105,7 +104,7 @@ public:
 private:
   void TestXPosition (double expectedXPos);
   void CourseChangeCallback (std::string path, Ptr<const MobilityModel> model);
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
   Ptr<Node> m_node;
   Ptr<WaypointMobilityModel> m_mob;
 };
@@ -134,7 +133,7 @@ WaypointLazyNotifyTrue::CourseChangeCallback (std::string path, Ptr<const Mobili
   NS_TEST_EXPECT_MSG_EQ_TOL_INTERNAL (15, Simulator::Now ().GetSeconds (), 0.001, "Course change not notified correctly", __FILE__, __LINE__);
 }
 
-bool
+void
 WaypointLazyNotifyTrue::DoRun (void)
 {
   m_node = CreateObject<Node> ();
@@ -151,7 +150,6 @@ WaypointLazyNotifyTrue::DoRun (void)
   Simulator::Schedule (Seconds (15.0), &WaypointLazyNotifyTrue::TestXPosition, this, 15);
   Simulator::Run ();
   Simulator::Destroy ();
-  return GetErrorStatus ();
 }
 
 class WaypointInitialPositionIsWaypoint : public TestCase
@@ -163,7 +161,7 @@ public:
 private:
   void TestXPosition (Ptr<const WaypointMobilityModel> model, double expectedXPos);
   void TestNumWaypoints (Ptr<const WaypointMobilityModel> model, uint32_t num);
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
   Ptr<WaypointMobilityModel> m_mob1;
   Ptr<WaypointMobilityModel> m_mob2;
   Ptr<WaypointMobilityModel> m_mob3;
@@ -193,7 +191,7 @@ WaypointInitialPositionIsWaypoint::TestNumWaypoints (Ptr<const WaypointMobilityM
   NS_TEST_EXPECT_MSG_EQ (model->WaypointsLeft (), num, "Unexpected number of waypoints left");
 }
 
-bool
+void
 WaypointInitialPositionIsWaypoint::DoRun (void)
 {
   // Case 1:  InitialPositionIsWaypoint == false, and we call SetPosition
@@ -276,7 +274,6 @@ WaypointInitialPositionIsWaypoint::DoRun (void)
 
   Simulator::Run ();
   Simulator::Destroy ();
-  return GetErrorStatus ();
 }
 
 class WaypointMobilityModelViaHelper : public TestCase
@@ -287,7 +284,7 @@ public:
 
 private:
   void TestXPosition (Ptr<const WaypointMobilityModel> mob, double expectedXPos);
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
 };
 
 WaypointMobilityModelViaHelper::WaypointMobilityModelViaHelper ()
@@ -307,7 +304,7 @@ WaypointMobilityModelViaHelper::TestXPosition (Ptr<const WaypointMobilityModel> 
 }
 
 // WaypointMobilityModel tests using the helper
-bool
+void
 WaypointMobilityModelViaHelper::DoRun (void)
 {
   NodeContainer c;
@@ -355,7 +352,6 @@ WaypointMobilityModelViaHelper::DoRun (void)
 
   Simulator::Run ();
   Simulator::Destroy ();
-  return GetErrorStatus ();
 }
 
 class MobilityTestSuite : public TestSuite

@@ -52,7 +52,7 @@ public:
   virtual ~Ns3WimaxCsParamTlvTestCase ();
 
 private:
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
 
 };
 
@@ -65,7 +65,7 @@ Ns3WimaxCsParamTlvTestCase::~Ns3WimaxCsParamTlvTestCase ()
 {
 }
 
-bool
+void
 Ns3WimaxCsParamTlvTestCase::DoRun (void)
 {
 
@@ -111,42 +111,29 @@ Ns3WimaxCsParamTlvTestCase::DoRun (void)
               IpcsClassifierRecord classifier =
                 csParamsRecv.GetPacketClassifierRule ();
 
-              if (!classifier.CheckMatch (Ipv4Address ("10.1.1.1"),
+              NS_TEST_ASSERT_MSG_EQ (!classifier.CheckMatch (Ipv4Address ("10.1.1.1"),
                                           Ipv4Address ("16.1.1.1"),
                                           1050,
                                           3050,
-                                          17))
-                {
-                  return true;
-                }
-              if (!classifier.CheckMatch (Ipv4Address ("10.1.5.1"),
+                                          17), false, "The classifier address did not match.");
+              NS_TEST_ASSERT_MSG_EQ (!classifier.CheckMatch (Ipv4Address ("10.1.5.1"),
                                           Ipv4Address ("11.1.1.23"),
                                           1070,
                                           3040,
-                                          6))
-                {
-                  return true;
-                }
-              if (classifier.CheckMatch (Ipv4Address ("11.1.1.1"),
+                                          6), false, "The classifier address did not match.");
+              NS_TEST_ASSERT_MSG_EQ (classifier.CheckMatch (Ipv4Address ("11.1.1.1"),
                                          Ipv4Address ("17.1.1.1"),
                                          1050,
                                          3050,
-                                         17))
-                {
-                  return true;
-                }
-              if (classifier.CheckMatch (Ipv4Address ("10.1.1.1"),
+                                         17), false, "The classifier addresses matched.");
+              NS_TEST_ASSERT_MSG_EQ (classifier.CheckMatch (Ipv4Address ("10.1.1.1"),
                                          Ipv4Address ("16.1.1.1"),
                                          1050,
                                          3050,
-                                         8))
-                {
-                  return true;
-                }
+                                         8), false, "The classifier addresses matched.");
             }
         }
     }
-  return (false); // Test is passed
 }
 // ==============================================================================
 
@@ -160,7 +147,7 @@ public:
   virtual ~Ns3WimaxSfTlvTestCase ();
 
 private:
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
 
 };
 
@@ -173,7 +160,7 @@ Ns3WimaxSfTlvTestCase::~Ns3WimaxSfTlvTestCase ()
 {
 }
 
-bool
+void
 Ns3WimaxSfTlvTestCase::DoRun (void)
 {
   IpcsClassifierRecord classifier = IpcsClassifierRecord ();
@@ -199,22 +186,16 @@ Ns3WimaxSfTlvTestCase::DoRun (void)
 
   ServiceFlow sfRecv = ServiceFlow (tlvReceived);
 
-
-  if (sfRecv.GetDirection () != ServiceFlow::SF_DIRECTION_DOWN
-      || sfRecv.GetSfid () != 100
-      || sfRecv.GetCsSpecification () != ServiceFlow::IPV4
-      || sfRecv.GetServiceSchedulingType () != ServiceFlow::SF_TYPE_UGS
-      || sfRecv.GetMaxSustainedTrafficRate () != 1000000
-      || sfRecv.GetMinReservedTrafficRate () != 1000000
-      || sfRecv.GetMinTolerableTrafficRate () != 1000000
-      || sfRecv.GetMaximumLatency () != 10
-      || sfRecv.GetMaxTrafficBurst () != 1000
-      || sfRecv.GetTrafficPriority () != 1)
-    {
-      return true;
-    }
-
-  return false; // Test is passed
+  NS_TEST_ASSERT_MSG_EQ (sfRecv.GetDirection (), ServiceFlow::SF_DIRECTION_DOWN, "The sfRecv had the wrong direction.");
+  NS_TEST_ASSERT_MSG_EQ (sfRecv.GetSfid (), 100, "The sfRecv had the wrong sfid.");
+  NS_TEST_ASSERT_MSG_EQ (sfRecv.GetCsSpecification (), ServiceFlow::IPV4, "The sfRecv had the wrong cs specification.");
+  NS_TEST_ASSERT_MSG_EQ (sfRecv.GetServiceSchedulingType (), ServiceFlow::SF_TYPE_UGS, "The sfRecv had the wrong service scheduling type.");
+  NS_TEST_ASSERT_MSG_EQ (sfRecv.GetMaxSustainedTrafficRate (), 1000000, "The sfRecv had the wrong maximum sustained traffic rate.");
+  NS_TEST_ASSERT_MSG_EQ (sfRecv.GetMinReservedTrafficRate (), 1000000, "The sfRecv had the wrong minimum reserved traffic rate.");
+  NS_TEST_ASSERT_MSG_EQ (sfRecv.GetMinTolerableTrafficRate (), 1000000, "The sfRecv had the wrong minimum tolerable traffic rate.");
+  NS_TEST_ASSERT_MSG_EQ (sfRecv.GetMaximumLatency (), 10, "The sfRecv had the wrong maximum latency.");
+  NS_TEST_ASSERT_MSG_EQ (sfRecv.GetMaxTrafficBurst (), 1000, "The sfRecv had the wrong maximum traffic burst.");
+  NS_TEST_ASSERT_MSG_EQ (sfRecv.GetTrafficPriority (), 1, "The sfRecv had the wrong traffic priority.");
 }
 
 // ==============================================================================

@@ -160,13 +160,13 @@ class DropTailQueueTestCase : public TestCase
 {
 public:
   DropTailQueueTestCase ();
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
 };
 
 DropTailQueueTestCase::DropTailQueueTestCase ()
   : TestCase ("Sanity check on the drop tail queue implementation")
 {}
-bool 
+void 
 DropTailQueueTestCase::DoRun (void)
 {
   Ptr<DropTailQueue> queue = CreateObject<DropTailQueue> ();
@@ -208,8 +208,6 @@ DropTailQueueTestCase::DoRun (void)
 
   p = queue->Dequeue ();
   NS_TEST_EXPECT_MSG_EQ ((p == 0), true, "There are really no packets in there");
-
-  return false;
 }
 
 static class DropTailQueueTestSuite : public TestSuite

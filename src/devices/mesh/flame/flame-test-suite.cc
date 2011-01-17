@@ -34,10 +34,10 @@ struct FlameHeaderTest : public TestCase
     TestCase ("FlameHeader roundtrip serialization")
   {
   }
-  bool DoRun ();
+  void DoRun ();
 };
 
-bool
+void
 FlameHeaderTest::DoRun ()
 {
   FlameHeader a;
@@ -51,7 +51,6 @@ FlameHeaderTest::DoRun ()
   FlameHeader b;
   packet->RemoveHeader (b);
   NS_TEST_ASSERT_MSG_EQ (b, a, "FlameHeader roundtrip serialization works");
-  return false;
 }
 
 //-----------------------------------------------------------------------------
@@ -61,7 +60,7 @@ class FlameRtableTest : public TestCase
 {
 public:
   FlameRtableTest ();
-  bool DoRun ();
+  void DoRun ();
 
 private:
   /// Test Add apth and lookup path;
@@ -121,7 +120,7 @@ FlameRtableTest::TestExpire ()
   NS_TEST_EXPECT_MSG_EQ (table->Lookup (dst).IsValid (), false, "Routing table records expirations works");
 }
 
-bool
+void
 FlameRtableTest::DoRun ()
 {
   table = CreateObject<FlameRtable> ();
@@ -132,8 +131,6 @@ FlameRtableTest::DoRun ()
 
   Simulator::Run ();
   Simulator::Destroy ();
-
-  return GetErrorStatus ();
 }
 
 

@@ -166,7 +166,7 @@ class Ipv4PacketInfoTagTest: public TestCase
 public:
   Ipv4PacketInfoTagTest ();
 private:
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
   void RxCb (Ptr<Socket> socket);
   void DoSendData (Ptr<Socket> socket, std::string to);
 };
@@ -208,7 +208,7 @@ Ipv4PacketInfoTagTest::DoSendData (Ptr<Socket> socket, std::string to)
     }
 }
 
-bool
+void
 Ipv4PacketInfoTagTest::DoRun (void)
 {
   NodeContainer n;
@@ -264,8 +264,6 @@ Ipv4PacketInfoTagTest::DoRun (void)
                                   &Ipv4PacketInfoTagTest::DoSendData, this, socket, "10.1.1.1");
   Simulator::Run ();
   Simulator::Destroy ();
-
-  return 0;
 }
 
 static class Ipv4PacketInfoTagTestSuite : public TestSuite

@@ -11,7 +11,7 @@ class BufferTest : public TestCase {
 private:
   bool EnsureWrittenBytes (Buffer b, uint32_t n, uint8_t array[]);
 public:
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
   BufferTest ();
 };
 
@@ -71,7 +71,7 @@ BufferTest::EnsureWrittenBytes (Buffer b, uint32_t n, uint8_t array[])
       }                                          \
   }
 
-bool
+void
 BufferTest::DoRun (void)
 {
   Buffer buffer;
@@ -317,8 +317,6 @@ BufferTest::DoRun (void)
   i = other.Begin ();
   i.Write (buffer.Begin (), buffer.End ());
   ENSURE_WRITTEN_BYTES (other, 9, 0x1, 0x2, 0x00, 0x00, 0x00, 0x00, 0x00, 0x3, 0x4);
-
-  return GetErrorStatus ();
 }
 //-----------------------------------------------------------------------------
 class BufferTestSuite : public TestSuite

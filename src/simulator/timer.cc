@@ -213,14 +213,14 @@ class TimerStateTestCase : public TestCase
 {
 public:
   TimerStateTestCase ();
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
 };
 
 TimerStateTestCase::TimerStateTestCase ()
   : TestCase ("Check correct state transitions")
 {
 }
-bool
+void
 TimerStateTestCase::DoRun (void)
 {
   Timer timer = Timer (Timer::CANCEL_ON_DESTROY);
@@ -252,14 +252,13 @@ TimerStateTestCase::DoRun (void)
   NS_TEST_ASSERT_MSG_EQ (timer.IsExpired (), true, "");
   NS_TEST_ASSERT_MSG_EQ (!timer.IsSuspended (), true, "");
   NS_TEST_ASSERT_MSG_EQ (timer.GetState (), Timer::EXPIRED, "");
-  return false;
 }
 
 class TimerTemplateTestCase : public TestCase
 {
 public:
   TimerTemplateTestCase ();
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
   virtual void DoTeardown (void);
   void bazi (int)
   {
@@ -298,7 +297,7 @@ TimerTemplateTestCase::TimerTemplateTestCase ()
 {
 }
 
-bool
+void
 TimerTemplateTestCase::DoRun (void)
 {
   Timer timer = Timer (Timer::CANCEL_ON_DESTROY);
@@ -361,8 +360,6 @@ TimerTemplateTestCase::DoRun (void)
 
   Simulator::Run ();
   Simulator::Destroy ();
-
-  return false;
 }
 
 void
