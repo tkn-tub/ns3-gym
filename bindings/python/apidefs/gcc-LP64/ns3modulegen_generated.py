@@ -10059,9 +10059,9 @@ def register_Ns3OlsrNeighborTuple_methods(root_module, cls):
 def register_Ns3OlsrOlsrMprTestCase_methods(root_module, cls):
     ## olsr-routing-protocol.h: ns3::olsr::OlsrMprTestCase::OlsrMprTestCase() [constructor]
     cls.add_constructor([])
-    ## olsr-routing-protocol.h: bool ns3::olsr::OlsrMprTestCase::DoRun() [member function]
+    ## olsr-routing-protocol.h: void ns3::olsr::OlsrMprTestCase::DoRun() [member function]
     cls.add_method('DoRun', 
-                   'bool', 
+                   'void', 
                    [], 
                    is_virtual=True)
     return

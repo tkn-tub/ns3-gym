@@ -7,6 +7,7 @@ callback_classes = [
     ['void', 'ns3::Ptr<ns3::Packet>', 'double', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'],
     ['void', 'ns3::Ptr<ns3::Packet>', 'double', 'ns3::UanTxMode', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'],
     ['void', 'ns3::Ptr<ns3::Packet>', 'ns3::UanAddress const&', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'],
+    ['void', 'unsigned char*', 'long', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'],
     ['void', 'ns3::Ptr<ns3::PacketBurst const>', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'],
     ['void', 'ns3::Mac48Address', 'ns3::Mac48Address', 'unsigned int', 'bool', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'],
     ['void', 'unsigned int', 'ns3::Mac48Address', 'ns3::Mac48Address', 'ns3::dot11s::PeerLink::PeerState', 'ns3::dot11s::PeerLink::PeerState', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'],

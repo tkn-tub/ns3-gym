@@ -7,6 +7,8 @@ def register_types(module):
     module.add_class('TapBridge', parent=root_module['ns3::NetDevice'])
     ## tap-bridge.h: ns3::TapBridge::Mode [enumeration]
     module.add_enum('Mode', ['ILLEGAL', 'CONFIGURE_LOCAL', 'USE_LOCAL', 'USE_BRIDGE'], outer_class=root_module['ns3::TapBridge'])
+    ## tap-bridge.h: ns3::TapBridgeFdReader [class]
+    module.add_class('TapBridgeFdReader', parent=root_module['ns3::FdReader'])
     
     ## Register a nested module for the namespace Config
     
@@ -100,6 +102,7 @@ def register_types_ns3_olsr(module):
 
 def register_methods(root_module):
     register_Ns3TapBridge_methods(root_module, root_module['ns3::TapBridge'])
+    register_Ns3TapBridgeFdReader_methods(root_module, root_module['ns3::TapBridgeFdReader'])
     return
 
 def register_Ns3TapBridge_methods(root_module, cls):
@@ -271,6 +274,18 @@ def register_Ns3TapBridge_methods(root_module, cls):
                    'bool', 
                    [param('ns3::Ptr< ns3::NetDevice >', 'device'), param('ns3::Ptr< ns3::Packet const >', 'packet'), param('uint16_t', 'protocol'), param('ns3::Address const &', 'src'), param('ns3::Address const &', 'dst'), param('ns3::NetDevice::PacketType', 'packetType')], 
                    visibility='protected')
+    return
+
+def register_Ns3TapBridgeFdReader_methods(root_module, cls):
+    ## tap-bridge.h: ns3::TapBridgeFdReader::TapBridgeFdReader() [constructor]
+    cls.add_constructor([])
+    ## tap-bridge.h: ns3::TapBridgeFdReader::TapBridgeFdReader(ns3::TapBridgeFdReader const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::TapBridgeFdReader const &', 'arg0')])
+    ## tap-bridge.h: ns3::FdReader::Data ns3::TapBridgeFdReader::DoRead() [member function]
+    cls.add_method('DoRead', 
+                   'ns3::FdReader::Data', 
+                   [], 
+                   visibility='private', is_virtual=True)
     return
 
 def register_functions(root_module):
