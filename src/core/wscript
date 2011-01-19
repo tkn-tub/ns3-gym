@@ -146,14 +146,12 @@ def build(bld):
             'unix-system-thread.cc',
             'unix-system-mutex.cc',
             'unix-system-condition.cc',
-            'unix-fd-reader.cc',
             ])
         core.uselib = 'PTHREAD'
         headers.source.extend([
                 'system-mutex.h',
                 'system-thread.h',
                 'system-condition.h',
-                'unix-fd-reader.h',
                 ])
 
     if bld.env['ENABLE_GSL']:

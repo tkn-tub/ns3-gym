@@ -133,8 +133,6 @@ def register_types(module):
     module.add_class('SimpleRefCount', automatic_type_narrowing=True, template_parameters=['ns3::AttributeValue', 'ns3::empty', 'ns3::DefaultDeleter<ns3::AttributeValue>'], parent=root_module['ns3::empty'], memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'))
     ## simple-ref-count.h: ns3::SimpleRefCount<ns3::CallbackImplBase, ns3::empty, ns3::DefaultDeleter<ns3::CallbackImplBase> > [class]
     module.add_class('SimpleRefCount', automatic_type_narrowing=True, template_parameters=['ns3::CallbackImplBase', 'ns3::empty', 'ns3::DefaultDeleter<ns3::CallbackImplBase>'], parent=root_module['ns3::empty'], memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'))
-    ## simple-ref-count.h: ns3::SimpleRefCount<ns3::FdReader, ns3::empty, ns3::DefaultDeleter<ns3::FdReader> > [class]
-    module.add_class('SimpleRefCount', automatic_type_narrowing=True, template_parameters=['ns3::FdReader', 'ns3::empty', 'ns3::DefaultDeleter<ns3::FdReader>'], parent=root_module['ns3::empty'], memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'))
     ## simple-ref-count.h: ns3::SimpleRefCount<ns3::FlowClassifier, ns3::empty, ns3::DefaultDeleter<ns3::FlowClassifier> > [class]
     module.add_class('SimpleRefCount', automatic_type_narrowing=True, template_parameters=['ns3::FlowClassifier', 'ns3::empty', 'ns3::DefaultDeleter<ns3::FlowClassifier>'], parent=root_module['ns3::empty'], memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'))
     ## simple-ref-count.h: ns3::SimpleRefCount<ns3::FlowProbe, ns3::empty, ns3::DefaultDeleter<ns3::FlowProbe> > [class]
@@ -175,8 +173,6 @@ def register_types(module):
     module.add_class('EnumChecker', parent=root_module['ns3::AttributeChecker'])
     ## enum.h: ns3::EnumValue [class]
     module.add_class('EnumValue', parent=root_module['ns3::AttributeValue'])
-    ## unix-fd-reader.h: ns3::FdReader [class]
-    module.add_class('FdReader', parent=root_module['ns3::SimpleRefCount< ns3::FdReader, ns3::empty, ns3::DefaultDeleter<ns3::FdReader> >'])
     ## integer.h: ns3::IntegerValue [class]
     module.add_class('IntegerValue', parent=root_module['ns3::AttributeValue'])
     ## object-factory.h: ns3::ObjectFactoryChecker [class]
@@ -439,7 +435,6 @@ def register_methods(root_module):
     register_Ns3EmptyAttributeValue_methods(root_module, root_module['ns3::EmptyAttributeValue'])
     register_Ns3EnumChecker_methods(root_module, root_module['ns3::EnumChecker'])
     register_Ns3EnumValue_methods(root_module, root_module['ns3::EnumValue'])
-    register_Ns3FdReader_methods(root_module, root_module['ns3::FdReader'])
     register_Ns3IntegerValue_methods(root_module, root_module['ns3::IntegerValue'])
     register_Ns3ObjectFactoryChecker_methods(root_module, root_module['ns3::ObjectFactoryChecker'])
     register_Ns3ObjectFactoryValue_methods(root_module, root_module['ns3::ObjectFactoryValue'])
@@ -2634,26 +2629,6 @@ def register_Ns3EnumValue_methods(root_module, cls):
     cls.add_method('Set', 
                    'void', 
                    [param('int', 'v')])
-    return
-
-def register_Ns3FdReader_methods(root_module, cls):
-    ## unix-fd-reader.h: ns3::FdReader::FdReader(ns3::FdReader const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::FdReader const &', 'arg0')])
-    ## unix-fd-reader.h: ns3::FdReader::FdReader() [constructor]
-    cls.add_constructor([])
-    ## unix-fd-reader.h: void ns3::FdReader::Start(int fd, ns3::Callback<void, unsigned char*, long, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> readCallback) [member function]
-    cls.add_method('Start', 
-                   'void', 
-                   [param('int', 'fd'), param('ns3::Callback< void, unsigned char *, long, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'readCallback')])
-    ## unix-fd-reader.h: void ns3::FdReader::Stop() [member function]
-    cls.add_method('Stop', 
-                   'void', 
-                   [])
-    ## unix-fd-reader.h: ns3::FdReader::Data ns3::FdReader::DoRead() [member function]
-    cls.add_method('DoRead', 
-                   'ns3::FdReader::Data', 
-                   [], 
-                   is_pure_virtual=True, visibility='protected', is_virtual=True)
     return
 
 def register_Ns3IntegerValue_methods(root_module, cls):

@@ -43,6 +43,8 @@ def register_types(module):
     module.add_class('EventKey', outer_class=root_module['ns3::Scheduler'])
     ## simple-ref-count.h: ns3::SimpleRefCount<ns3::EventImpl, ns3::empty, ns3::DefaultDeleter<ns3::EventImpl> > [class]
     module.add_class('SimpleRefCount', automatic_type_narrowing=True, template_parameters=['ns3::EventImpl', 'ns3::empty', 'ns3::DefaultDeleter<ns3::EventImpl>'], parent=root_module['ns3::empty'], memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'))
+    ## simple-ref-count.h: ns3::SimpleRefCount<ns3::FdReader, ns3::empty, ns3::DefaultDeleter<ns3::FdReader> > [class]
+    module.add_class('SimpleRefCount', automatic_type_narrowing=True, template_parameters=['ns3::FdReader', 'ns3::empty', 'ns3::DefaultDeleter<ns3::FdReader>'], parent=root_module['ns3::empty'], memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'))
     ## simulator-impl.h: ns3::SimulatorImpl [class]
     module.add_class('SimulatorImpl', parent=root_module['ns3::Object'])
     ## synchronizer.h: ns3::Synchronizer [class]
@@ -55,6 +57,8 @@ def register_types(module):
     module.add_class('DefaultSimulatorImpl', parent=root_module['ns3::SimulatorImpl'])
     ## event-impl.h: ns3::EventImpl [class]
     module.add_class('EventImpl', parent=root_module['ns3::SimpleRefCount< ns3::EventImpl, ns3::empty, ns3::DefaultDeleter<ns3::EventImpl> >'])
+    ## unix-fd-reader.h: ns3::FdReader [class]
+    module.add_class('FdReader', parent=root_module['ns3::SimpleRefCount< ns3::FdReader, ns3::empty, ns3::DefaultDeleter<ns3::FdReader> >'])
     ## heap-scheduler.h: ns3::HeapScheduler [class]
     module.add_class('HeapScheduler', parent=root_module['ns3::Scheduler'])
     ## list-scheduler.h: ns3::ListScheduler [class]
@@ -189,6 +193,7 @@ def register_methods(root_module):
     register_Ns3CalendarScheduler_methods(root_module, root_module['ns3::CalendarScheduler'])
     register_Ns3DefaultSimulatorImpl_methods(root_module, root_module['ns3::DefaultSimulatorImpl'])
     register_Ns3EventImpl_methods(root_module, root_module['ns3::EventImpl'])
+    register_Ns3FdReader_methods(root_module, root_module['ns3::FdReader'])
     register_Ns3HeapScheduler_methods(root_module, root_module['ns3::HeapScheduler'])
     register_Ns3ListScheduler_methods(root_module, root_module['ns3::ListScheduler'])
     register_Ns3MapScheduler_methods(root_module, root_module['ns3::MapScheduler'])
@@ -1270,6 +1275,26 @@ def register_Ns3EventImpl_methods(root_module, cls):
     ## event-impl.h: void ns3::EventImpl::Notify() [member function]
     cls.add_method('Notify', 
                    'void', 
+                   [], 
+                   is_pure_virtual=True, visibility='protected', is_virtual=True)
+    return
+
+def register_Ns3FdReader_methods(root_module, cls):
+    ## unix-fd-reader.h: ns3::FdReader::FdReader(ns3::FdReader const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::FdReader const &', 'arg0')])
+    ## unix-fd-reader.h: ns3::FdReader::FdReader() [constructor]
+    cls.add_constructor([])
+    ## unix-fd-reader.h: void ns3::FdReader::Start(int fd, ns3::Callback<void, unsigned char*, long, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> readCallback) [member function]
+    cls.add_method('Start', 
+                   'void', 
+                   [param('int', 'fd'), param('ns3::Callback< void, unsigned char *, long, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'readCallback')])
+    ## unix-fd-reader.h: void ns3::FdReader::Stop() [member function]
+    cls.add_method('Stop', 
+                   'void', 
+                   [])
+    ## unix-fd-reader.h: ns3::FdReader::Data ns3::FdReader::DoRead() [member function]
+    cls.add_method('DoRead', 
+                   'ns3::FdReader::Data', 
                    [], 
                    is_pure_virtual=True, visibility='protected', is_virtual=True)
     return

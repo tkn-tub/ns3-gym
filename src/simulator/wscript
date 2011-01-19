@@ -126,4 +126,12 @@ def build(bld):
                 ])
         sim.uselib = 'RT'
 
+    if env['ENABLE_THREADING']:
+        sim.source.extend([
+            'unix-fd-reader.cc',
+            ])
+        sim.uselib = sim.uselib + ' PTHREAD'
+        headers.source.extend([
+                'unix-fd-reader.h',
+                ])
 
