@@ -107,10 +107,10 @@ void
 Ns3TcpInteroperabilityTestCase::DoSetup (void)
 {
   //
-  // We expect there to be a file called tcp-interop-response-vectors.pcap" in
-  // the source directory of this file.
+  // We expect there to be a file called tcp-interop-response-vectors.pcap in
+  // response-vectors/ of this directory
   //
-  m_pcapFilename = NS_TEST_SOURCEDIR + "ns3tcp-interop-response-vectors.pcap";
+  m_pcapFilename = NS_TEST_SOURCEDIR + "/response-vectors/ns3tcp-interop-response-vectors.pcap";
 
   if (m_writeVectors)
     {

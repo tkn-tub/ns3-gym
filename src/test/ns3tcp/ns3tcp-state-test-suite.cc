@@ -105,11 +105,11 @@ void
 Ns3TcpStateTestCase::DoSetup (void)
 {
     //
-    // We expect there to be a file called ns3tcp-state-response-vectors.pcap" in
-    // the source directory of this file.
+    // We expect there to be a file called ns3tcp-state-response-vectors.pcap in
+    // response-vectors/ of this directory
     //
     std::ostringstream oss;
-    oss << "ns3tcp-state" << m_testCase << "-response-vectors.pcap";
+    oss << "/response-vectors/ns3tcp-state" << m_testCase << "-response-vectors.pcap";
     m_pcapFilename = NS_TEST_SOURCEDIR + oss.str ();
 
     if (m_writeVectors)
