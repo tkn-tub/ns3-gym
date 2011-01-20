@@ -368,11 +368,11 @@ MatrixPropagationLossModelTestCase::~MatrixPropagationLossModelTestCase ()
 void
 MatrixPropagationLossModelTestCase::DoRun (void)
 {
-  Ptr<Node> n[3];
+  Ptr<Object> n[3];
   Ptr<MobilityModel> m[3];
   for (int i = 0; i < 3; ++i)
     {
-      n[i] = CreateObject<Node> ();
+      n[i] = CreateObject<Object> ();
       m[i] = CreateObject<ConstantPositionMobilityModel> ();
       n[i]->AggregateObject (m[i]);
     }

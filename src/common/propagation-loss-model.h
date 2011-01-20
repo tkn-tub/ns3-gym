@@ -27,7 +27,6 @@
 
 #include "ns3/object.h"
 #include "ns3/random-variable.h"
-#include "ns3/node.h"
 #include <map>
 
 namespace ns3 {
@@ -495,14 +494,15 @@ public:
   virtual ~MatrixPropagationLossModel ();
   
   /**
-   * \brief Set loss (in dB, positive) between pair of nodes.
+   * \brief Set loss (in dB, positive) between pair of ns-3 objects
+   * (typically, nodes).
    * 
-   * \param a           Source node
-   * \param b           Destination node
+   * \param a           Source object
+   * \param b           Destination object
    * \param loss        a -> b path loss, positive in dB
    * \param symmetric   If true (default), both a->b and b->a paths will be affected
    */ 
-  void SetLoss (Ptr<Node> a, Ptr<Node> b, double loss, bool symmetric = true);
+  void SetLoss (Ptr<Object> a, Ptr<Object> b, double loss, bool symmetric = true);
   /// Set default loss (in dB, positive) to be used, infinity if not set
   void SetDefaultLoss (double);
   

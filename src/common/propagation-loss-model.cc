@@ -747,7 +747,7 @@ MatrixPropagationLossModel::SetDefaultLoss (double loss)
 }
 
 void
-MatrixPropagationLossModel::SetLoss (Ptr<Node> a, Ptr<Node> b, double loss, bool symmetric)
+MatrixPropagationLossModel::SetLoss (Ptr<Object> a, Ptr<Object> b, double loss, bool symmetric)
 {
   Ptr<MobilityModel> ma = a->GetObject<MobilityModel> ();
   Ptr<MobilityModel> mb = b->GetObject<MobilityModel> ();
