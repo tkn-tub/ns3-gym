@@ -125,6 +125,8 @@ def build(bld):
                 'wall-clock-synchronizer.cc',
                 ])
         sim.uselib = 'RT'
+    else:
+        sim.uselib = ''
 
     if env['ENABLE_THREADING']:
         sim.source.extend([
