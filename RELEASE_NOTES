@@ -164,6 +164,7 @@ since ns-3.9, in many cases referencing the Bugzilla bug number
    - bug 1030 - routing/aodv example fixed
    - bug 1031 - Wifi hidden terminal example does not work
    - bug 1032 - Unable to specify multiple Compiler/Linker flags
+   - Fixed the UanPhyGen::IsStateBusy method, error with logical OR
 
 Known issues
 ------------

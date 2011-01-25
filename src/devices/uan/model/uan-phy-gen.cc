@@ -708,7 +708,7 @@ UanPhyGen::IsStateIdle (void)
 bool
 UanPhyGen::IsStateBusy (void)
 {
-  return !IsStateIdle () || !IsStateSleep ();
+  return !IsStateIdle () && !IsStateSleep ();
 }
 bool
 UanPhyGen::IsStateRx (void)
