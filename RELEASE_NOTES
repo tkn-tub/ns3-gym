@@ -28,6 +28,7 @@ The following lists many of the bugs fixed or small feature additions
 since ns-3.10, in many cases referencing the Bugzilla bug number.
 
    - Fixed the UanPhyGen::IsStateBusy method, error with logical OR
+   - CsmaNetDevice ReceiveErrorModel was not dropping the packet
 
 Known issues
 ------------
