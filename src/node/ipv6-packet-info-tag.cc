@@ -144,21 +144,44 @@ Ipv6PacketInfoTag::Print (std::ostream &os) const
 #include "ns3/log.h"
 #include "ns3/abort.h"
 #include "ns3/attribute.h"
-#include "ns3/object-factory.h"
-#include "ns3/internet-stack-helper.h"
-#include "ns3/ipv6-address-helper.h"
-#include "ns3/csma-helper.h"
-#include "ns3/node-container.h"
+#include "ns3/csma-net-device.h"
 #include "ns3/object-factory.h"
 #include "ns3/socket-factory.h"
 #include "ns3/udp-socket-factory.h"
 #include "ns3/udp-socket.h"
+#include "ns3/ipv6-l3-protocol.h"
 #include "ns3/ipv6-raw-socket-factory.h"
+#include "ns3/ipv6-interface.h"
+#include "ns3/icmpv6-l4-protocol.h"
+#include "ns3/ipv6-static-routing.h"
+#include "ns3/ipv6-list-routing.h"
 #include "ns3/inet6-socket-address.h"
 #include "ns3/simulator.h"
 #include "ns3/uinteger.h"
+#include "ns3/boolean.h"
 
 namespace ns3 {
+
+static void
+AddInternetStack (Ptr<Node> node)
+{
+  Ptr<Ipv6L3Protocol> ipv6 = CreateObject<Ipv6L3Protocol> ();
+  Ptr<Icmpv6L4Protocol> icmpv6 = CreateObject<Icmpv6L4Protocol> ();
+  node->AggregateObject (ipv6);
+  node->AggregateObject (icmpv6);
+  ipv6->Insert (icmpv6);
+  icmpv6->SetAttribute ("DAD", BooleanValue (false));
+
+  //Routing for Ipv6
+  Ptr<Ipv6ListRouting> ipv6Routing = CreateObject<Ipv6ListRouting> ();
+  ipv6->SetRoutingProtocol (ipv6Routing);
+  Ptr<Ipv6StaticRouting> ipv6staticRouting = CreateObject<Ipv6StaticRouting> ();
+  ipv6Routing->AddRoutingProtocol (ipv6staticRouting, 0);
+
+  /* register IPv6 extensions and options */
+  ipv6->RegisterExtensions ();
+  ipv6->RegisterOptions ();
+}
 
 class Ipv6PacketInfoTagTest: public TestCase 
 {
@@ -211,22 +234,38 @@ Ipv6PacketInfoTagTest::DoSendData (Ptr<Socket> socket, std::string to)
 void
 Ipv6PacketInfoTagTest::DoRun (void)
 {
-  NodeContainer n;
-  n.Create (2);
+  Ptr<Node> node0 = CreateObject<Node> ();
+  Ptr<Node> node1 = CreateObject<Node> ();
 
-  InternetStackHelper internet;
-  internet.Install (n);
+  Ptr<CsmaNetDevice> device = CreateObject<CsmaNetDevice> ();
+  Ptr<CsmaNetDevice> device2 = CreateObject<CsmaNetDevice> ();
 
-  CsmaHelper csma;
-  NetDeviceContainer d = csma.Install (n);
+  // For Node 0
+  node0->AddDevice (device);
+  AddInternetStack (node0);
+  Ptr<Ipv6> ipv6 = node0->GetObject<Ipv6> ();
 
-  Ipv6AddressHelper ipv6;
-  ipv6.NewNetwork(Ipv6Address("2000:1000:0:2000::"), Ipv6Prefix(64));
-  Ipv6InterfaceContainer i = ipv6.Assign (d);
+  uint32_t index = ipv6->AddInterface (device);
+  Ipv6InterfaceAddress ifaceAddr1 = Ipv6InterfaceAddress (Ipv6Address("2000:1000:0:2000::1"), 
+                                                          Ipv6Prefix(64));
+  ipv6->AddAddress (index, ifaceAddr1);
+  ipv6->SetMetric (index, 1);
+  ipv6->SetUp (index);
 
+  // For Node 1
+  node1->AddDevice (device2);
+  AddInternetStack (node1);
+  ipv6 = node1->GetObject<Ipv6> ();
+
+  index = ipv6->AddInterface (device2);
+  Ipv6InterfaceAddress ifaceAddr2 = Ipv6InterfaceAddress (Ipv6Address("2000:1000:0:2000::2"), 
+                                                          Ipv6Prefix(64));
+  ipv6->AddAddress (index, ifaceAddr2);
+  ipv6->SetMetric (index, 1);
+  ipv6->SetUp (index);
 
   // ipv6 w rawsocket
-  Ptr<SocketFactory> factory = n.Get (0)->GetObject<SocketFactory> (Ipv6RawSocketFactory::GetTypeId ());
+  Ptr<SocketFactory> factory = node0->GetObject<SocketFactory> (Ipv6RawSocketFactory::GetTypeId ());
   Ptr<Socket> socket = factory->CreateSocket ();
   Inet6SocketAddress local =  Inet6SocketAddress (Ipv6Address::GetAny (), 0);
   socket->SetAttribute ("Protocol", UintegerValue (Ipv6Header::IPV6_ICMPV6));
@@ -240,10 +279,10 @@ Ipv6PacketInfoTagTest::DoRun (void)
   Simulator::Run ();
 
   // send from node1 and recved via csma
-  Ptr<SocketFactory> factory2 = n.Get (1)->GetObject<SocketFactory> (Ipv6RawSocketFactory::GetTypeId ());
+  Ptr<SocketFactory> factory2 = node1->GetObject<SocketFactory> (Ipv6RawSocketFactory::GetTypeId ());
   Ptr<Socket> socket2 = factory2->CreateSocket ();
   std::stringstream dst;
-  dst << i.GetAddress (0, 0);
+  dst << ifaceAddr1.GetAddress ();
   Simulator::ScheduleWithContext (socket2->GetNode ()->GetId (), Seconds (0),
                                   &Ipv6PacketInfoTagTest::DoSendData, this, socket, 
                                   dst.str ());
@@ -251,7 +290,7 @@ Ipv6PacketInfoTagTest::DoRun (void)
 
 #ifdef UDP6_SUPPORTED
   // IPv6 test
-  factory = n.Get (0)->GetObject<SocketFactory> (UdpSocketFactory::GetTypeId ());
+  factory = node0->GetObject<SocketFactory> (UdpSocketFactory::GetTypeId ());
   socket = factory->CreateSocket ();
   local =  Inet6SocketAddress (Ipv6Address::GetAny (), 200);
   socket->Bind (local);
@@ -264,7 +303,7 @@ Ipv6PacketInfoTagTest::DoRun (void)
   Simulator::Run ();
 
   // send from node1 and recved via csma
-  factory2 = n.Get (1)->GetObject<SocketFactory> (UdpSocketFactory::GetTypeId ());
+  factory2 = node1->GetObject<SocketFactory> (UdpSocketFactory::GetTypeId ());
   socket2 = factory2->CreateSocket ();
   Simulator::ScheduleWithContext (socket2->GetNode ()->GetId (), Seconds (0),
                                   &Ipv6PacketInfoTagTest::DoSendData, this, socket, "10.1.1.1");
