@@ -142,7 +142,7 @@ public:
    * \param deviceid the id of the device to generate ascii output for.
    *
    * Enable ascii output on the specified deviceid within the
-   * specified nodeid if it is of type ns3::WifiNetDevice and dump
+   * specified nodeid if it is of type ns3::UanNetDevice and dump
    * that to the specified stdc++ output stream.
    */
   static void EnableAscii (std::ostream &os, uint32_t nodeid, uint32_t deviceid);
@@ -151,7 +151,7 @@ public:
    * \param d device container
    *
    * Enable ascii output on each device which is of the
-   * ns3::WifiNetDevice type and which is located in the input
+   * ns3::UanNetDevice type and which is located in the input
    * device container and dump that to the specified
    * stdc++ output stream.
    */
@@ -161,7 +161,7 @@ public:
    * \param n node container
    *
    * Enable ascii output on each device which is of the
-   * ns3::WifiNetDevice type and which is located in one
+   * ns3::UanNetDevice type and which is located in one
    * of the input node and dump that to the specified
    * stdc++ output stream.
    */
@@ -170,7 +170,7 @@ public:
    * \param os output stream
    *
    * Enable ascii output on each device which is of the
-   * ns3::WifiNetDevice type and dump that to the specified
+   * ns3::UanNetDevice type and dump that to the specified
    * stdc++ output stream.
    */
   static void EnableAsciiAll (std::ostream &os);
@@ -178,14 +178,14 @@ public:
   /**
    * \param c a set of nodes
    *
-   * This method creates a simple ns3::WifiChannel (with a default
-   * ns3::PropagationLossModel and ns3::PropagationDelayModel) and
-   * creates, for each of the input nodes, a new ns3::WifiNetDevice
-   * attached to this shared channel. Each ns3::WifiNetDevice is also
-   * configured with an ns3::WifiRemoteStationManager, ns3::WifiMac, and,
-   * ns3::WifiPhy, all of which are created based on the user-specified
-   * attributes specified in WifiHelper::SetRemoteStationManager,
-   * WifiHelper::SetMac, and, WifiHelper::SetPhy.
+   * This method creates a simple ns3::UanChannel (with a default
+   * ns3::UanNoiseModelDefault and ns3::UanPropModelIdeal) and
+   * creates, for each of the input nodes, a new ns3::UanNetDevice
+   * attached to this shared channel. Each ns3::UanNetDevice is also
+   * configured with an ns3::UanTransducerHd, ns3::UanMac, and,
+   * ns3::UanPhy, all of which are created based on the user-specified
+   * attributes specified in UanHelper::SetTransducer,
+   * UanHelper::SetMac, and, UanHelper::SetPhy.
    */
 
   NetDeviceContainer Install (NodeContainer c) const;
@@ -193,15 +193,12 @@ public:
    * \param channel a channel to use
    * \param c a set of nodes
    *
-   * For each of the input nodes, a new ns3::WifiNetDevice is attached
-   * to the shared input channel. Each ns3::WifiNetDevice is also
-   * configured with an ns3::WifiRemoteStationManager, ns3::WifiMac, and,
-   * ns3::WifiPhy, all of which are created based on the user-specified
-   * attributes specified in WifiHelper::SetRemoteStationManager,
-   * WifiHelper::SetMac, and, WifiHelper::SetPhy.
-   *
-   * The user is expected to attach to the input channel a proper
-   * ns3::PropagationLossModel, and ns3::PropagationDelayModel.
+   * For each of the input nodes, a new ns3::UanNetDevice is attached
+   * to the shared input channel. Each ns3::UanNetDevice is also
+   * configured with an ns3::UanTransducerHd, a ns3::UanMac, and ns3::UanPhy,
+   * all of which are created based on the user-specified attributes
+   * specified in UanHelper::SetTransducer, UanHelper::SetMac, and
+   * UanHelper::SetPhy.
    */
   NetDeviceContainer Install (NodeContainer c, Ptr<UanChannel> channel) const;
 
