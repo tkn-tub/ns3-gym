@@ -22,8 +22,6 @@
 #include "ns3/double.h"
 #include "steady-state-random-waypoint-mobility-model.h"
 #include "ns3/test.h"
-#include "ns3/node-container.h"
-#include "ns3/mobility-helper.h"
 #include "ns3/simulator.h"
 
 namespace ns3 {
@@ -272,8 +270,8 @@ public:
   virtual ~SteadyStateRandomWaypointTest () {}
 
 private:
-  NodeContainer nodes;
-  double NodeCount;
+  std::vector<Ptr<MobilityModel> > mobilityStack;
+  double count;
 private:
   virtual void DoRun (void);
   void DistribCompare ();
@@ -286,21 +284,29 @@ SteadyStateRandomWaypointTest::DoRun (void)
 
   // Total simulation time, seconds
   double totalTime = 1000;
-  // Create nodes
-  NodeCount = 10000;
-  nodes.Create ((uint32_t) NodeCount);
-  // Installmobility
-  MobilityHelper mobility;
-  mobility.SetMobilityModel ("ns3::SteadyStateRandomWaypointMobilityModel",
-                             "MinSpeed", DoubleValue (0.01),
-                             "MaxSpeed", DoubleValue (20.0),
-                             "MinPause", DoubleValue (0.0),
-                             "MaxPause", DoubleValue (0.0),
-                             "MinX", DoubleValue (0),
-                             "MaxX", DoubleValue (1000),
-                             "MinY", DoubleValue (0),
-                             "MaxY", DoubleValue (600));
-  mobility.Install (nodes);
+
+  ObjectFactory mobilityFactory;
+  mobilityFactory.SetTypeId ("ns3::SteadyStateRandomWaypointMobilityModel");
+  mobilityFactory.Set ("MinSpeed", DoubleValue (0.01));
+  mobilityFactory.Set ("MaxSpeed", DoubleValue (20.0));
+  mobilityFactory.Set ("MinPause", DoubleValue (0.0));
+  mobilityFactory.Set ("MaxPause", DoubleValue (0.0));
+  mobilityFactory.Set ("MinX", DoubleValue (0));
+  mobilityFactory.Set ("MaxX", DoubleValue (1000));
+  mobilityFactory.Set ("MinY", DoubleValue (0));
+  mobilityFactory.Set ("MaxY", DoubleValue (600));
+
+  // Populate the vector of mobility models.
+  count = 10000;
+  for (uint32_t i = 0; i < count; i++)
+    {
+      // Create a new mobility model.
+      Ptr<MobilityModel> model = mobilityFactory.Create ()->GetObject<MobilityModel> ();
+
+      // Add this mobility model to the stack.
+      mobilityStack.push_back (model);
+      Simulator::Schedule (Seconds (0.0), &Object::Start, model);
+    } 
 
   Simulator::Schedule (Seconds (0.001), & SteadyStateRandomWaypointTest::DistribCompare, this);
   Simulator::Schedule (Seconds (totalTime), & SteadyStateRandomWaypointTest::DistribCompare, this);
@@ -312,35 +318,35 @@ SteadyStateRandomWaypointTest::DoRun (void)
 void
 SteadyStateRandomWaypointTest::DistribCompare ()
 {
-  Ptr<MobilityModel> model;
   double velocity;
   double sum_x = 0;
   double sum_y = 0;
   double sum_v = 0;
-  NodeContainer::Iterator i;
-  for (i = nodes.Begin (); i != nodes.End (); ++i)
+  std::vector<Ptr<MobilityModel> >::iterator i;
+  Ptr<MobilityModel> model;
+  for (i = mobilityStack.begin (); i != mobilityStack.end (); ++i)
     {
-      model = (*i)->GetObject<MobilityModel> ();
+      model = (*i);
       velocity = sqrt (pow (model->GetVelocity().x, 2) + pow (model->GetVelocity().y, 2));
       sum_x += model->GetPosition().x;
       sum_y += model->GetPosition().y;
       sum_v += velocity;
     }
-  double mean_x = sum_x / NodeCount;
-  double mean_y = sum_y / NodeCount;
-  double mean_v = sum_v / NodeCount;
+  double mean_x = sum_x / count;
+  double mean_y = sum_y / count;
+  double mean_v = sum_v / count;
 
-  NS_TEST_EXPECT_MSG_EQ_TOL (500, mean_x, 25.0, "Got unexpected x-position mean value");
-  NS_TEST_EXPECT_MSG_EQ_TOL (300, mean_y, 15.0, "Got unexpected y-position mean value");
-  NS_TEST_EXPECT_MSG_EQ_TOL (2.6, mean_v, 0.13, "Got unexpected velocity mean value");
+  NS_TEST_EXPECT_MSG_EQ_TOL (mean_x, 500, 25.0, "Got unexpected x-position mean value");
+  NS_TEST_EXPECT_MSG_EQ_TOL (mean_y, 300, 15.0, "Got unexpected y-position mean value");
+  NS_TEST_EXPECT_MSG_EQ_TOL (mean_v, 2.6, 0.13, "Got unexpected velocity mean value");
 
   sum_x = 0;
   sum_y = 0;
   sum_v = 0;
   double tmp;
-  for (i = nodes.Begin (); i != nodes.End (); ++i)
+  for (i = mobilityStack.begin (); i != mobilityStack.end (); ++i)
     {
-      model = (*i)->GetObject<MobilityModel> ();
+      model = (*i);
       velocity = sqrt (pow (model->GetVelocity().x, 2) + pow (model->GetVelocity().y, 2));
       tmp = model->GetPosition().x - mean_x;
       sum_x += tmp * tmp;
@@ -349,13 +355,13 @@ SteadyStateRandomWaypointTest::DistribCompare ()
       tmp = velocity - mean_v;
       sum_v += tmp * tmp;
     }
-  double dev_x = std::sqrt (sum_x / (NodeCount - 1));
-  double dev_y = std::sqrt (sum_y / (NodeCount - 1));
-  double dev_v = std::sqrt (sum_v / (NodeCount - 1));
+  double dev_x = std::sqrt (sum_x / (count - 1));
+  double dev_y = std::sqrt (sum_y / (count - 1));
+  double dev_v = std::sqrt (sum_v / (count - 1));
 
-  NS_TEST_EXPECT_MSG_EQ_TOL (230, dev_x, 10.0, "Got unexpected x-position standard deviation");
-  NS_TEST_EXPECT_MSG_EQ_TOL (140, dev_y, 7.0, "Got unexpected y-position standard deviation");
-  NS_TEST_EXPECT_MSG_EQ_TOL (4.4, dev_v, 0.22, "Got unexpected velocity standard deviation");
+  NS_TEST_EXPECT_MSG_EQ_TOL (dev_x, 230, 10.0, "Got unexpected x-position standard deviation");
+  NS_TEST_EXPECT_MSG_EQ_TOL (dev_y, 140, 7.0, "Got unexpected y-position standard deviation");
+  NS_TEST_EXPECT_MSG_EQ_TOL (dev_v, 4.4, 0.22, "Got unexpected velocity standard deviation");
 }
 
 struct SteadyStateRandomWaypointTestSuite : public TestSuite
