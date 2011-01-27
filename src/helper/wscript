@@ -1,7 +1,7 @@
 ## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
 
 def build(bld):
-    helper = bld.create_ns3_module('helper', ['internet-stack', 'wifi', 'point-to-point', 'csma', 'onoff', 'packet-sink', 'udp-echo', 'spectrum'])
+    helper = bld.create_ns3_module('helper', ['mobility', 'node', 'internet-stack', 'wifi', 'point-to-point', 'csma', 'onoff', 'packet-sink', 'udp-echo', 'spectrum'])
     helper.source = [
         'node-container.cc',
         'net-device-container.cc',
