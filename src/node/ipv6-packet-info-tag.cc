@@ -144,7 +144,7 @@ Ipv6PacketInfoTag::Print (std::ostream &os) const
 #include "ns3/log.h"
 #include "ns3/abort.h"
 #include "ns3/attribute.h"
-#include "ns3/csma-net-device.h"
+#include "ns3/simple-net-device.h"
 #include "ns3/object-factory.h"
 #include "ns3/socket-factory.h"
 #include "ns3/udp-socket-factory.h"
@@ -159,6 +159,7 @@ Ipv6PacketInfoTag::Print (std::ostream &os) const
 #include "ns3/simulator.h"
 #include "ns3/uinteger.h"
 #include "ns3/boolean.h"
+#include "ns3/node.h"
 
 namespace ns3 {
 
@@ -237,8 +238,8 @@ Ipv6PacketInfoTagTest::DoRun (void)
   Ptr<Node> node0 = CreateObject<Node> ();
   Ptr<Node> node1 = CreateObject<Node> ();
 
-  Ptr<CsmaNetDevice> device = CreateObject<CsmaNetDevice> ();
-  Ptr<CsmaNetDevice> device2 = CreateObject<CsmaNetDevice> ();
+  Ptr<SimpleNetDevice> device = CreateObject<SimpleNetDevice> ();
+  Ptr<SimpleNetDevice> device2 = CreateObject<SimpleNetDevice> ();
 
   // For Node 0
   node0->AddDevice (device);
@@ -278,7 +279,6 @@ Ipv6PacketInfoTagTest::DoRun (void)
                                   &Ipv6PacketInfoTagTest::DoSendData, this, socket, "::1");
   Simulator::Run ();
 
-  // send from node1 and recved via csma
   Ptr<SocketFactory> factory2 = node1->GetObject<SocketFactory> (Ipv6RawSocketFactory::GetTypeId ());
   Ptr<Socket> socket2 = factory2->CreateSocket ();
   std::stringstream dst;
@@ -302,7 +302,6 @@ Ipv6PacketInfoTagTest::DoRun (void)
                                   &Ipv6PacketInfoTagTest::DoSendData, this, socket, "::1");
   Simulator::Run ();
 
-  // send from node1 and recved via csma
   factory2 = node1->GetObject<SocketFactory> (UdpSocketFactory::GetTypeId ());
   socket2 = factory2->CreateSocket ();
   Simulator::ScheduleWithContext (socket2->GetNode ()->GetId (), Seconds (0),
