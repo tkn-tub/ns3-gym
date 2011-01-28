@@ -41,5 +41,5 @@ def build(bld):
     obj = bld.create_ns3_program('ofdm-validation', ['core', 'simulator', 'mobility', 'wifi'])
     obj.source = 'ofdm-validation.cc'
 
-    obj = bld.create_ns3_program('wifi-hidden-terminal', ['core', 'simulator', 'mobility', 'wifi', 'flow-monitor'])
+    obj = bld.create_ns3_program('wifi-hidden-terminal', ['core', 'simulator', 'mobility', 'wifi', 'propagation', 'flow-monitor'])
     obj.source = 'wifi-hidden-terminal.cc'
