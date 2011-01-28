@@ -1,0 +1,22 @@
+## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
+
+def build(bld):
+    module = bld.create_ns3_module('propagation', ['node', 'mobility'])
+    module.includes = '.'
+    module.source = [
+        'model/propagation-delay-model.cc',
+        'model/propagation-loss-model.cc',
+        'model/jakes-propagation-loss-model.cc',
+        'model/cost231-propagation-loss-model.cc',
+        'test/propagation-loss-model-test-suite.cc',
+        ]
+
+    headers = bld.new_task_gen('ns3header')
+    headers.module = 'propagation'
+    headers.source = [
+        'model/propagation-delay-model.h',
+        'model/propagation-loss-model.h',
+        'model/jakes-propagation-loss-model.h',
+        'model/cost231-propagation-loss-model.h',
+        ]
+
