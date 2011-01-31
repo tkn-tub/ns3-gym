@@ -57,6 +57,8 @@ def register_types(module):
     module.add_class('Icmpv6TimeExceeded', parent=root_module['ns3::Icmpv6Header'])
     ## icmpv6-header.h: ns3::Icmpv6TooBig [class]
     module.add_class('Icmpv6TooBig', parent=root_module['ns3::Icmpv6Header'])
+    ## ipv4-packet-info-tag.h: ns3::Ipv4PacketInfoTag [class]
+    module.add_class('Ipv4PacketInfoTag', parent=root_module['ns3::Tag'])
     ## ipv6-extension-header.h: ns3::Ipv6ExtensionHeader [class]
     module.add_class('Ipv6ExtensionHeader', parent=root_module['ns3::Header'])
     ## ipv6-extension-header.h: ns3::Ipv6ExtensionHopByHopHeader [class]
@@ -75,6 +77,8 @@ def register_types(module):
     module.add_class('Ipv6OptionPadnHeader', parent=root_module['ns3::Ipv6OptionHeader'])
     ## ipv6-option-header.h: ns3::Ipv6OptionRouterAlertHeader [class]
     module.add_class('Ipv6OptionRouterAlertHeader', parent=root_module['ns3::Ipv6OptionHeader'])
+    ## ipv6-packet-info-tag.h: ns3::Ipv6PacketInfoTag [class]
+    module.add_class('Ipv6PacketInfoTag', parent=root_module['ns3::Tag'])
     ## tcp-header.h: ns3::TcpHeader [class]
     module.add_class('TcpHeader', parent=root_module['ns3::Header'])
     ## tcp-header.h: ns3::TcpHeader::Flags_t [enumeration]
@@ -250,6 +254,7 @@ def register_methods(root_module):
     register_Ns3Icmpv6Redirection_methods(root_module, root_module['ns3::Icmpv6Redirection'])
     register_Ns3Icmpv6TimeExceeded_methods(root_module, root_module['ns3::Icmpv6TimeExceeded'])
     register_Ns3Icmpv6TooBig_methods(root_module, root_module['ns3::Icmpv6TooBig'])
+    register_Ns3Ipv4PacketInfoTag_methods(root_module, root_module['ns3::Ipv4PacketInfoTag'])
     register_Ns3Ipv6ExtensionHeader_methods(root_module, root_module['ns3::Ipv6ExtensionHeader'])
     register_Ns3Ipv6ExtensionHopByHopHeader_methods(root_module, root_module['ns3::Ipv6ExtensionHopByHopHeader'])
     register_Ns3Ipv6ExtensionRoutingHeader_methods(root_module, root_module['ns3::Ipv6ExtensionRoutingHeader'])
@@ -259,6 +264,7 @@ def register_methods(root_module):
     register_Ns3Ipv6OptionPad1Header_methods(root_module, root_module['ns3::Ipv6OptionPad1Header'])
     register_Ns3Ipv6OptionPadnHeader_methods(root_module, root_module['ns3::Ipv6OptionPadnHeader'])
     register_Ns3Ipv6OptionRouterAlertHeader_methods(root_module, root_module['ns3::Ipv6OptionRouterAlertHeader'])
+    register_Ns3Ipv6PacketInfoTag_methods(root_module, root_module['ns3::Ipv6PacketInfoTag'])
     register_Ns3TcpHeader_methods(root_module, root_module['ns3::TcpHeader'])
     register_Ns3UdpHeader_methods(root_module, root_module['ns3::UdpHeader'])
     register_Ns3ArpCache_methods(root_module, root_module['ns3::ArpCache'])
@@ -1450,6 +1456,79 @@ def register_Ns3Icmpv6TooBig_methods(root_module, cls):
                    [param('ns3::Ptr< ns3::Packet >', 'p')])
     return
 
+def register_Ns3Ipv4PacketInfoTag_methods(root_module, cls):
+    ## ipv4-packet-info-tag.h: ns3::Ipv4PacketInfoTag::Ipv4PacketInfoTag(ns3::Ipv4PacketInfoTag const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::Ipv4PacketInfoTag const &', 'arg0')])
+    ## ipv4-packet-info-tag.h: ns3::Ipv4PacketInfoTag::Ipv4PacketInfoTag() [constructor]
+    cls.add_constructor([])
+    ## ipv4-packet-info-tag.h: void ns3::Ipv4PacketInfoTag::Deserialize(ns3::TagBuffer i) [member function]
+    cls.add_method('Deserialize', 
+                   'void', 
+                   [param('ns3::TagBuffer', 'i')], 
+                   is_virtual=True)
+    ## ipv4-packet-info-tag.h: ns3::Ipv4Address ns3::Ipv4PacketInfoTag::GetAddress() const [member function]
+    cls.add_method('GetAddress', 
+                   'ns3::Ipv4Address', 
+                   [], 
+                   is_const=True)
+    ## ipv4-packet-info-tag.h: ns3::TypeId ns3::Ipv4PacketInfoTag::GetInstanceTypeId() const [member function]
+    cls.add_method('GetInstanceTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## ipv4-packet-info-tag.h: ns3::Ipv4Address ns3::Ipv4PacketInfoTag::GetLocalAddress() const [member function]
+    cls.add_method('GetLocalAddress', 
+                   'ns3::Ipv4Address', 
+                   [], 
+                   is_const=True)
+    ## ipv4-packet-info-tag.h: uint32_t ns3::Ipv4PacketInfoTag::GetRecvIf() const [member function]
+    cls.add_method('GetRecvIf', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## ipv4-packet-info-tag.h: uint32_t ns3::Ipv4PacketInfoTag::GetSerializedSize() const [member function]
+    cls.add_method('GetSerializedSize', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## ipv4-packet-info-tag.h: uint8_t ns3::Ipv4PacketInfoTag::GetTtl() const [member function]
+    cls.add_method('GetTtl', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True)
+    ## ipv4-packet-info-tag.h: static ns3::TypeId ns3::Ipv4PacketInfoTag::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## ipv4-packet-info-tag.h: void ns3::Ipv4PacketInfoTag::Print(std::ostream & os) const [member function]
+    cls.add_method('Print', 
+                   'void', 
+                   [param('std::ostream &', 'os')], 
+                   is_const=True, is_virtual=True)
+    ## ipv4-packet-info-tag.h: void ns3::Ipv4PacketInfoTag::Serialize(ns3::TagBuffer i) const [member function]
+    cls.add_method('Serialize', 
+                   'void', 
+                   [param('ns3::TagBuffer', 'i')], 
+                   is_const=True, is_virtual=True)
+    ## ipv4-packet-info-tag.h: void ns3::Ipv4PacketInfoTag::SetAddress(ns3::Ipv4Address addr) [member function]
+    cls.add_method('SetAddress', 
+                   'void', 
+                   [param('ns3::Ipv4Address', 'addr')])
+    ## ipv4-packet-info-tag.h: void ns3::Ipv4PacketInfoTag::SetLocalAddress(ns3::Ipv4Address addr) [member function]
+    cls.add_method('SetLocalAddress', 
+                   'void', 
+                   [param('ns3::Ipv4Address', 'addr')])
+    ## ipv4-packet-info-tag.h: void ns3::Ipv4PacketInfoTag::SetRecvIf(uint32_t ifindex) [member function]
+    cls.add_method('SetRecvIf', 
+                   'void', 
+                   [param('uint32_t', 'ifindex')])
+    ## ipv4-packet-info-tag.h: void ns3::Ipv4PacketInfoTag::SetTtl(uint8_t ttl) [member function]
+    cls.add_method('SetTtl', 
+                   'void', 
+                   [param('uint8_t', 'ttl')])
+    return
+
 def register_Ns3Ipv6ExtensionHeader_methods(root_module, cls):
     ## ipv6-extension-header.h: ns3::Ipv6ExtensionHeader::Ipv6ExtensionHeader(ns3::Ipv6ExtensionHeader const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::Ipv6ExtensionHeader const &', 'arg0')])
@@ -1842,6 +1921,79 @@ def register_Ns3Ipv6OptionRouterAlertHeader_methods(root_module, cls):
     cls.add_method('SetValue', 
                    'void', 
                    [param('uint16_t', 'value')])
+    return
+
+def register_Ns3Ipv6PacketInfoTag_methods(root_module, cls):
+    ## ipv6-packet-info-tag.h: ns3::Ipv6PacketInfoTag::Ipv6PacketInfoTag(ns3::Ipv6PacketInfoTag const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::Ipv6PacketInfoTag const &', 'arg0')])
+    ## ipv6-packet-info-tag.h: ns3::Ipv6PacketInfoTag::Ipv6PacketInfoTag() [constructor]
+    cls.add_constructor([])
+    ## ipv6-packet-info-tag.h: void ns3::Ipv6PacketInfoTag::Deserialize(ns3::TagBuffer i) [member function]
+    cls.add_method('Deserialize', 
+                   'void', 
+                   [param('ns3::TagBuffer', 'i')], 
+                   is_virtual=True)
+    ## ipv6-packet-info-tag.h: ns3::Ipv6Address ns3::Ipv6PacketInfoTag::GetAddress() const [member function]
+    cls.add_method('GetAddress', 
+                   'ns3::Ipv6Address', 
+                   [], 
+                   is_const=True)
+    ## ipv6-packet-info-tag.h: uint8_t ns3::Ipv6PacketInfoTag::GetHoplimit() const [member function]
+    cls.add_method('GetHoplimit', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True)
+    ## ipv6-packet-info-tag.h: ns3::TypeId ns3::Ipv6PacketInfoTag::GetInstanceTypeId() const [member function]
+    cls.add_method('GetInstanceTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## ipv6-packet-info-tag.h: uint32_t ns3::Ipv6PacketInfoTag::GetRecvIf() const [member function]
+    cls.add_method('GetRecvIf', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## ipv6-packet-info-tag.h: uint32_t ns3::Ipv6PacketInfoTag::GetSerializedSize() const [member function]
+    cls.add_method('GetSerializedSize', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## ipv6-packet-info-tag.h: uint8_t ns3::Ipv6PacketInfoTag::GetTrafficClass() const [member function]
+    cls.add_method('GetTrafficClass', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True)
+    ## ipv6-packet-info-tag.h: static ns3::TypeId ns3::Ipv6PacketInfoTag::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## ipv6-packet-info-tag.h: void ns3::Ipv6PacketInfoTag::Print(std::ostream & os) const [member function]
+    cls.add_method('Print', 
+                   'void', 
+                   [param('std::ostream &', 'os')], 
+                   is_const=True, is_virtual=True)
+    ## ipv6-packet-info-tag.h: void ns3::Ipv6PacketInfoTag::Serialize(ns3::TagBuffer i) const [member function]
+    cls.add_method('Serialize', 
+                   'void', 
+                   [param('ns3::TagBuffer', 'i')], 
+                   is_const=True, is_virtual=True)
+    ## ipv6-packet-info-tag.h: void ns3::Ipv6PacketInfoTag::SetAddress(ns3::Ipv6Address addr) [member function]
+    cls.add_method('SetAddress', 
+                   'void', 
+                   [param('ns3::Ipv6Address', 'addr')])
+    ## ipv6-packet-info-tag.h: void ns3::Ipv6PacketInfoTag::SetHoplimit(uint8_t ttl) [member function]
+    cls.add_method('SetHoplimit', 
+                   'void', 
+                   [param('uint8_t', 'ttl')])
+    ## ipv6-packet-info-tag.h: void ns3::Ipv6PacketInfoTag::SetRecvIf(uint32_t ifindex) [member function]
+    cls.add_method('SetRecvIf', 
+                   'void', 
+                   [param('uint32_t', 'ifindex')])
+    ## ipv6-packet-info-tag.h: void ns3::Ipv6PacketInfoTag::SetTrafficClass(uint8_t tclass) [member function]
+    cls.add_method('SetTrafficClass', 
+                   'void', 
+                   [param('uint8_t', 'tclass')])
     return
 
 def register_Ns3TcpHeader_methods(root_module, cls):
