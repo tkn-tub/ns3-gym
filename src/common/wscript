@@ -23,13 +23,6 @@ def build(bld):
         'pcap-file-test-suite.cc',
         'pcap-file-wrapper.cc',
         'output-stream-wrapper.cc',
-        'spectrum-model.cc',
-        'spectrum-value.cc',
-        'spectrum-value-test.cc',
-        'spectrum-converter.cc',
-        'spectrum-type.cc',
-        'spectrum-propagation-loss-model.cc',
-        'friis-spectrum-propagation-loss.cc',
         'sequence-number.cc',
         ]
 
@@ -54,11 +47,5 @@ def build(bld):
         'pcap-file.h',
         'pcap-file-wrapper.h',
         'output-stream-wrapper.h',
-        'spectrum-model.h',
-        'spectrum-value.h',
-        'spectrum-converter.h',
-        'spectrum-type.h',
-        'spectrum-propagation-loss-model.h',
-        'friis-spectrum-propagation-loss.h',
         'sequence-number.h',
         ]
