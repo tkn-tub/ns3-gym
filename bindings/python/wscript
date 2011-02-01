@@ -406,7 +406,7 @@ def get_modules_and_headers(bld):
             if ns3headers.module != module_name:
                 continue
             for source in ns3headers.to_list(ns3headers.source):
-                headers.append(source)
+                headers.append(os.path.basename(source))
         retval[module_name] = (list(module.module_deps), headers)
     return retval
 
