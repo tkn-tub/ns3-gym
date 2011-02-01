@@ -16,6 +16,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include <iomanip>
+
 #include "ns3/log.h"
 #include "ns3/abort.h"
 #include "ns3/test.h"
@@ -42,6 +44,7 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE ("Ns3TcpLossTest");
 
 const bool WRITE_VECTORS = false;           // set to true to write response vectors
+const bool WRITE_LOGGING = false;            // set to true to write logging
 const uint32_t PCAP_LINK_TYPE = 1187373557; // Some large random number -- we use to verify data was written by this program
 const uint32_t PCAP_SNAPLEN   = 64;         // Don't bother to save much data
 
@@ -62,6 +65,7 @@ private:
   virtual void DoRun (void);
   virtual void DoTeardown (void);
 
+  Ptr<OutputStreamWrapper> m_osw;
   std::string m_pcapFilename;
   PcapFile m_pcapFile;
   uint32_t m_testCase;
@@ -69,10 +73,12 @@ private:
   uint32_t m_currentTxBytes;
   bool m_writeVectors;
   bool m_writeResults;
+  bool m_writeLogging;
   bool m_needToClose;
   std::string m_tcpModel;
 
   void Ipv4L3Tx (std::string context, Ptr<const Packet> packet, Ptr<Ipv4> ipv4, uint32_t interface);
+  void CwndTracer (uint32_t oldval, uint32_t newval);
   void WriteUntilBufferFull (Ptr<Socket> localSocket, uint32_t txSpace);
   void StartFlow (Ptr<Socket> localSocket, 
                   Ipv4Address servAddress, 
@@ -87,6 +93,7 @@ Ns3TcpLossTestCase::Ns3TcpLossTestCase ()
     m_currentTxBytes (0),
     m_writeVectors (WRITE_VECTORS),
     m_writeResults (false),
+    m_writeLogging (WRITE_LOGGING),
     m_needToClose (true),
     m_tcpModel ("ns3::TcpTahoe")
 {
@@ -99,6 +106,7 @@ Ns3TcpLossTestCase::Ns3TcpLossTestCase (std::string tcpModel, uint32_t testCase)
     m_currentTxBytes (0),
     m_writeVectors (WRITE_VECTORS),
     m_writeResults (false),
+    m_writeLogging (WRITE_LOGGING),
     m_needToClose (true),
     m_tcpModel (tcpModel)
 {
@@ -194,6 +202,17 @@ Ns3TcpLossTestCase::Ipv4L3Tx (std::string context, Ptr<const Packet> packet, Ptr
     }
 }
 
+void
+Ns3TcpLossTestCase::CwndTracer (uint32_t oldval, uint32_t newval)
+{
+  if (m_writeLogging)
+    {
+      *(m_osw->GetStream ()) << "Moving cwnd from " << oldval << " to " << newval 
+        << " at time " << Simulator::Now ().GetSeconds () 
+        << " seconds" << std::endl;
+    }
+}
+
 ////////////////////////////////////////////////////////////////////
 // Implementing an "application" to send bytes over a TCP connection
 void 
@@ -211,14 +230,22 @@ Ns3TcpLossTestCase::WriteUntilBufferFull (Ptr<Socket> localSocket, uint32_t txSp
         {
           return;
         };
-      NS_LOG_LOGIC ("Submitting " << toWrite << " bytes to TCP socket");
+      if (m_writeLogging)
+        {
+          std::clog << "Submitting " << toWrite 
+            << " bytes to TCP socket" << std::endl;
+        }
       int amountSent = localSocket->Send (0, toWrite, 0);
       NS_ASSERT (amountSent > 0);  // Given GetTxAvailable() non-zero, amountSent should not be zero
       m_currentTxBytes += amountSent;
     }
   if (m_needToClose)
     {
-      NS_LOG_LOGIC ("Close socket at " <<  Simulator::Now ().GetSeconds ());
+      if (m_writeLogging)
+        {
+          std::clog << "Close socket at " 
+            <<  Simulator::Now ().GetSeconds () << std::endl;
+        }
       localSocket->Close ();
       m_needToClose = false;
     }
@@ -229,7 +256,11 @@ Ns3TcpLossTestCase::StartFlow (Ptr<Socket> localSocket,
                                 Ipv4Address servAddress,
                                 uint16_t servPort)
 {
-  NS_LOG_LOGIC ("Starting flow at time " <<  Simulator::Now ().GetSeconds ());
+  if (m_writeLogging)
+    {
+      std::clog << "Starting flow at time " 
+        <<  Simulator::Now ().GetSeconds () << std::endl;
+    }
   localSocket->Connect (InetSocketAddress (servAddress, servPort)); // connect
 
   // tell the tcp implementation to call WriteUntilBufferFull again
@@ -249,7 +280,7 @@ Ns3TcpLossTestCase::DoRun (void)
   //       s1-----------------r1-----------------k1
   //
   // Example corresponding to simulations in the paper "Simulation-based
-  // Comparisons of Tahoe, Reno, and SACK TCP"
+  // Comparisons of Tahoe, Reno, and SACK TCP 
 
   std::ostringstream tcpModel;
   tcpModel << "ns3::Tcp" << m_tcpModel;
@@ -257,6 +288,18 @@ Ns3TcpLossTestCase::DoRun (void)
                       StringValue (tcpModel.str ()));
   Config::SetDefault ("ns3::TcpSocket::SegmentSize", UintegerValue (1000));
   Config::SetDefault ("ns3::TcpSocket::DelAckCount", UintegerValue (1));
+
+  if (m_writeLogging)
+    {
+      LogComponentEnableAll (LOG_PREFIX_FUNC);
+      LogComponentEnable ("TcpLossResponse", LOG_LEVEL_ALL);
+      LogComponentEnable ("ErrorModel", LOG_LEVEL_DEBUG);
+      LogComponentEnable ("TcpLossResponse", LOG_LEVEL_ALL);
+      LogComponentEnable ("TcpNewReno", LOG_LEVEL_INFO);
+      LogComponentEnable ("TcpReno", LOG_LEVEL_INFO);
+      LogComponentEnable ("TcpTahoe", LOG_LEVEL_INFO);
+      LogComponentEnable ("TcpSocketBase", LOG_LEVEL_INFO);
+    }
 
   ////////////////////////////////////////////////////////
   // Topology construction
@@ -319,6 +362,10 @@ Ns3TcpLossTestCase::DoRun (void)
   Config::Connect ("/NodeList/0/$ns3::Ipv4L3Protocol/Tx",
                    MakeCallback (&Ns3TcpLossTestCase::Ipv4L3Tx, this));
 
+  Config::ConnectWithoutContext
+    ("/NodeList/0/$ns3::TcpL4Protocol/SocketList/0/CongestionWindow",
+     MakeCallback (&Ns3TcpLossTestCase::CwndTracer, this));
+
   ////////////////////////////////////////////////////////
   // Set up loss model at node k1
   //
@@ -367,6 +414,16 @@ Ns3TcpLossTestCase::DoRun (void)
     {
       p2p.EnablePcapAll (oss.str ());
       p2p.EnableAsciiAll (oss.str ());
+    }
+
+  std::ostringstream oss2;
+  oss2 << "src/test/ns3tcp/Tcp" << m_tcpModel << "." << m_testCase << ".log";
+  AsciiTraceHelper ascii;
+  if (m_writeLogging)
+    {
+      m_osw = ascii.CreateFileStream (oss2.str ());
+      *(m_osw->GetStream ()) << std::setprecision (9) << std::fixed;
+      p2p.EnableAsciiAll (m_osw);
     }
   
   // Finally, set up the simulator to run.  The 1000 second hard limit is a

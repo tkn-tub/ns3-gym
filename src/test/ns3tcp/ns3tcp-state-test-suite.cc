@@ -16,6 +16,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include <iomanip>
+
 #include "ns3/log.h"
 #include "ns3/abort.h"
 #include "ns3/test.h"
@@ -42,6 +44,7 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE ("Ns3TcpStateTest");
 
 const bool WRITE_VECTORS = false;           // set to true to write response vectors
+const bool WRITE_LOGGING = false;           // set to true to write logging
 const uint32_t PCAP_LINK_TYPE = 1187373554; // Some large random number -- we use to verify data was written by this program
 const uint32_t PCAP_SNAPLEN   = 64;         // Don't bother to save much data
 
@@ -69,6 +72,7 @@ private:
   uint32_t m_currentTxBytes;
   bool m_writeVectors;
   bool m_writeResults;
+  bool m_writeLogging;
   bool m_needToClose;
 
   void Ipv4L3Tx (std::string context, Ptr<const Packet> packet, Ptr<Ipv4> ipv4, uint32_t interface);
@@ -86,6 +90,7 @@ Ns3TcpStateTestCase::Ns3TcpStateTestCase ()
     m_currentTxBytes (0),
     m_writeVectors (WRITE_VECTORS),
     m_writeResults (false),
+    m_writeLogging (WRITE_LOGGING),
     m_needToClose (true)
 {
 }
@@ -97,6 +102,7 @@ Ns3TcpStateTestCase::Ns3TcpStateTestCase (uint32_t testCase)
     m_currentTxBytes (0),
     m_writeVectors (WRITE_VECTORS),
     m_writeResults (false),
+    m_writeLogging (WRITE_LOGGING),
     m_needToClose (true)
 {
 }
@@ -208,14 +214,23 @@ Ns3TcpStateTestCase::WriteUntilBufferFull (Ptr<Socket> localSocket, uint32_t txS
         {
           return;
         };
-      NS_LOG_LOGIC ("Submitting " << toWrite << " bytes to TCP socket");
+      if (m_writeLogging)
+        {
+          std::clog << "Submitting " 
+            << toWrite << " bytes to TCP socket" << std::endl;
+        }
       int amountSent = localSocket->Send (0, toWrite, 0);
       NS_ASSERT (amountSent > 0);  // Given GetTxAvailable() non-zero, amountSent should not be zero
       m_currentTxBytes += amountSent;
     }
   if (m_needToClose)
     {
-      NS_LOG_LOGIC ("Close socket at " <<  Simulator::Now ().GetSeconds ());
+      if (m_writeLogging)
+        {
+          std::clog << "Close socket at " 
+            <<  Simulator::Now ().GetSeconds () 
+            << std::endl;
+        }
       localSocket->Close ();
       m_needToClose = false;
     }
@@ -226,7 +241,13 @@ Ns3TcpStateTestCase::StartFlow (Ptr<Socket> localSocket,
                                 Ipv4Address servAddress,
                                 uint16_t servPort)
 {
-  NS_LOG_LOGIC ("Starting flow at time " <<  Simulator::Now ().GetSeconds ());
+  if (m_writeLogging)
+    {
+      std::clog << "Starting flow at time " 
+        <<  Simulator::Now ().GetSeconds () 
+        << std::endl;
+    }
+
   localSocket->Connect (InetSocketAddress (servAddress, servPort)); // connect
 
   // tell the tcp implementation to call WriteUntilBufferFull again
@@ -251,6 +272,18 @@ Ns3TcpStateTestCase::DoRun (void)
   Config::SetDefault ("ns3::TcpSocket::SegmentSize", UintegerValue (1000));
   Config::SetDefault ("ns3::TcpSocket::DelAckCount", UintegerValue (1));
   Config::SetDefault ("ns3::DropTailQueue::MaxPackets", UintegerValue (20));
+
+  if (m_writeLogging)
+    {
+      LogComponentEnableAll (LOG_PREFIX_FUNC);
+      LogComponentEnable ("TcpTestCases", LOG_LEVEL_ALL);
+      LogComponentEnable ("ErrorModel", LOG_LEVEL_DEBUG);
+      LogComponentEnable ("TcpTestCases", LOG_LEVEL_ALL);
+      LogComponentEnable ("TcpNewReno", LOG_LEVEL_INFO);
+      LogComponentEnable ("TcpReno", LOG_LEVEL_INFO);
+      LogComponentEnable ("TcpTahoe", LOG_LEVEL_INFO);
+      LogComponentEnable ("TcpSocketBase", LOG_LEVEL_INFO);
+    }
 
   ////////////////////////////////////////////////////////
   // Topology construction
@@ -314,44 +347,54 @@ Ns3TcpStateTestCase::DoRun (void)
 
   std::list<uint32_t> dropListN0;
   std::list<uint32_t> dropListN1;
+  std::string caseDescription;
   switch (m_testCase)
     {
-    case 0: // Verify connection establishment
+    case 0:
       m_totalTxBytes = 1000;
+      caseDescription = "Verify connection establishment";
       break;
-    case 1: // Verify a bigger (100 pkts) transfer: Sliding window operation, etc.
+    case 1:
       m_totalTxBytes = 100*1000;
+      caseDescription = "Verify a bigger (100 pkts) transfer: Sliding window operation, etc.";
       break;
-    case 2: // Survive a SYN lost
+    case 2:
       m_totalTxBytes = 1000;
+      caseDescription = "Survive a SYN lost";
       dropListN0.push_back (0);
       break;
-    case 3: // Survive a SYN+ACK lost
+    case 3:
       m_totalTxBytes = 2000;
+      caseDescription = "Survive a SYN+ACK lost";
       dropListN1.push_back (0);
       break;
-    case 4: // Survive a ACK (last packet in 3-way handshake) lost
+    case 4:
       m_totalTxBytes = 2000;
+      caseDescription = "Survive a ACK (last packet in 3-way handshake) lost";
       dropListN0.push_back (1);
       break;
-    case 5: // Immediate FIN upon SYN_RCVD
+    case 5:
       m_totalTxBytes = 0;
+      caseDescription = "Immediate FIN upon SYN_RCVD";
       m_needToClose = false;
       dropListN0.push_back (1); // Hide the ACK in 3WHS
       Simulator::Schedule (Seconds(0.002), &Socket::Close, localSocket);
       break;
-    case 6: // Simulated simultaneous close
+    case 6:
       m_totalTxBytes = 5000;
+      caseDescription = "Simulated simultaneous close";
       dropListN1.push_back (5); // Hide the ACK-to-FIN from n2
       break;
-    case 7: // FIN check 1: Lost of initiator's FIN. Shall wait until application close.
+    case 7:
       m_totalTxBytes = 5000;
+      caseDescription = "FIN check 1: Loss of initiator's FIN. Wait until app close";
       m_needToClose = false;
       dropListN0.push_back (7); // Hide the FIN from n0
       Simulator::Schedule (Seconds(0.04), &Socket::Close, localSocket);
       break;
-    case 8: // FIN check 2: Lost of responder's FIN. The FIN will resent after last ack timeout
+    case 8:
       m_totalTxBytes = 5000;
+      caseDescription = "FIN check 2: Loss responder's FIN. FIN will be resent after last ack timeout";
       dropListN1.push_back (6); // Hide the FIN from n2
       break;
     default:
@@ -374,6 +417,16 @@ Ns3TcpStateTestCase::DoRun (void)
     {
       p2p.EnablePcapAll (oss.str ());
       p2p.EnableAsciiAll (oss.str ());
+    }
+
+  if (m_writeLogging)
+    {
+      Ptr<OutputStreamWrapper> osw = Create<OutputStreamWrapper> (&std::clog);
+      *(osw->GetStream ()) << std::setprecision (9) << std::fixed;
+      p2p.EnableAsciiAll (osw);
+
+      std::clog << std::endl << "Running TCP test-case " << m_testCase << ": "
+        << caseDescription << std::endl;
     }
 
   // Finally, set up the simulator to run.  The 1000 second hard limit is a
