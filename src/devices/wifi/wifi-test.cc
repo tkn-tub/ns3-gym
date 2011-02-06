@@ -258,7 +258,7 @@ InterferenceHelperSequenceTest::DoRun (void)
   Ptr<Node> senderA = CreateOne (Vector (5.0, 0.0, 0.0), channel);
   Ptr<Node> senderB = CreateOne (Vector (-5.0, 0.0, 0.0), channel);
 
-  propLoss->SetLoss (senderB, rxOnly, 0, true);
+  propLoss->SetLoss (senderB->GetObject<MobilityModel>(), rxOnly->GetObject<MobilityModel>(), 0, true);
   propLoss->SetDefaultLoss (999);
 
   Simulator::Schedule (Seconds (1.0),

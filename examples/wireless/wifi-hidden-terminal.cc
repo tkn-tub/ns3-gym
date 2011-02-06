@@ -58,8 +58,8 @@ void experiment (bool enableCtsRts)
   // 3. Create propagation loss matrix
   Ptr<MatrixPropagationLossModel> lossModel = CreateObject<MatrixPropagationLossModel> ();
   lossModel->SetDefaultLoss (200); // set default loss to 200 dB (no link)
-  lossModel->SetLoss (nodes.Get (0), nodes.Get (1), 50); // set symmetric loss 0 <-> 1 to 50 dB
-  lossModel->SetLoss (nodes.Get (2), nodes.Get (1), 50); // set symmetric loss 2 <-> 1 to 50 dB
+  lossModel->SetLoss (nodes.Get (0)->GetObject<MobilityModel>(), nodes.Get (1)->GetObject<MobilityModel>(), 50); // set symmetric loss 0 <-> 1 to 50 dB
+  lossModel->SetLoss (nodes.Get (2)->GetObject<MobilityModel>(), nodes.Get (1)->GetObject<MobilityModel>(), 50); // set symmetric loss 2 <-> 1 to 50 dB
 
   // 4. Create & setup wifi channel
   Ptr<YansWifiChannel> wifiChannel = CreateObject <YansWifiChannel> ();

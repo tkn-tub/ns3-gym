@@ -747,10 +747,8 @@ MatrixPropagationLossModel::SetDefaultLoss (double loss)
 }
 
 void
-MatrixPropagationLossModel::SetLoss (Ptr<Object> a, Ptr<Object> b, double loss, bool symmetric)
+MatrixPropagationLossModel::SetLoss (Ptr<MobilityModel> ma, Ptr<MobilityModel> mb, double loss, bool symmetric)
 {
-  Ptr<MobilityModel> ma = a->GetObject<MobilityModel> ();
-  Ptr<MobilityModel> mb = b->GetObject<MobilityModel> ();
   NS_ASSERT (ma != 0 && mb != 0);
 
   MobilityPair p = std::make_pair(ma, mb);
@@ -767,7 +765,7 @@ MatrixPropagationLossModel::SetLoss (Ptr<Object> a, Ptr<Object> b, double loss, 
 
   if (symmetric)
     {
-      SetLoss (b, a, loss, false);
+      SetLoss (mb, ma, loss, false);
     }
 }
 
