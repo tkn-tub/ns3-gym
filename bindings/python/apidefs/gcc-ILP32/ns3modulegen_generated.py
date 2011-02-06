@@ -26,12 +26,10 @@ import ns3_module_bulk_send
 import ns3_module_csma
 import ns3_module_emu
 import ns3_module_internet_stack
-import ns3_module_lte
 import ns3_module_onoff
 import ns3_module_packet_sink
 import ns3_module_point_to_point
 import ns3_module_propagation
-import ns3_module_spectrum
 import ns3_module_stats
 import ns3_module_tap_bridge
 import ns3_module_topology_read
@@ -46,9 +44,11 @@ import ns3_module_ping6
 import ns3_module_radvd
 import ns3_module_udp_client_server
 import ns3_module_udp_echo
+import ns3_module_spectrum
 import ns3_module_energy
 import ns3_module_mesh
 import ns3_module_helper
+import ns3_module_lte
 import ns3_module_uan
 import ns3_module_dot11s
 import ns3_module_flame
@@ -219,17 +219,6 @@ def register_types(module):
         ns3_module_internet_stack__local.register_types(module)
     
     root_module.end_section('ns3_module_internet_stack')
-    root_module.begin_section('ns3_module_lte')
-    ns3_module_lte.register_types(module)
-    
-    try:
-        import ns3_module_lte__local
-    except ImportError:
-        pass
-    else:
-        ns3_module_lte__local.register_types(module)
-    
-    root_module.end_section('ns3_module_lte')
     root_module.begin_section('ns3_module_onoff')
     ns3_module_onoff.register_types(module)
     
@@ -274,17 +263,6 @@ def register_types(module):
         ns3_module_propagation__local.register_types(module)
     
     root_module.end_section('ns3_module_propagation')
-    root_module.begin_section('ns3_module_spectrum')
-    ns3_module_spectrum.register_types(module)
-    
-    try:
-        import ns3_module_spectrum__local
-    except ImportError:
-        pass
-    else:
-        ns3_module_spectrum__local.register_types(module)
-    
-    root_module.end_section('ns3_module_spectrum')
     root_module.begin_section('ns3_module_stats')
     ns3_module_stats.register_types(module)
     
@@ -439,6 +417,17 @@ def register_types(module):
         ns3_module_udp_echo__local.register_types(module)
     
     root_module.end_section('ns3_module_udp_echo')
+    root_module.begin_section('ns3_module_spectrum')
+    ns3_module_spectrum.register_types(module)
+    
+    try:
+        import ns3_module_spectrum__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_spectrum__local.register_types(module)
+    
+    root_module.end_section('ns3_module_spectrum')
     root_module.begin_section('ns3_module_energy')
     ns3_module_energy.register_types(module)
     
@@ -472,6 +461,17 @@ def register_types(module):
         ns3_module_helper__local.register_types(module)
     
     root_module.end_section('ns3_module_helper')
+    root_module.begin_section('ns3_module_lte')
+    ns3_module_lte.register_types(module)
+    
+    try:
+        import ns3_module_lte__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_lte__local.register_types(module)
+    
+    root_module.end_section('ns3_module_lte')
     root_module.begin_section('ns3_module_uan')
     ns3_module_uan.register_types(module)
     
@@ -826,17 +826,6 @@ def register_methods(root_module):
         ns3_module_internet_stack__local.register_methods(root_module)
     
     root_module.end_section('ns3_module_internet_stack')
-    root_module.begin_section('ns3_module_lte')
-    ns3_module_lte.register_methods(root_module)
-    
-    try:
-        import ns3_module_lte__local
-    except ImportError:
-        pass
-    else:
-        ns3_module_lte__local.register_methods(root_module)
-    
-    root_module.end_section('ns3_module_lte')
     root_module.begin_section('ns3_module_onoff')
     ns3_module_onoff.register_methods(root_module)
     
@@ -881,17 +870,6 @@ def register_methods(root_module):
         ns3_module_propagation__local.register_methods(root_module)
     
     root_module.end_section('ns3_module_propagation')
-    root_module.begin_section('ns3_module_spectrum')
-    ns3_module_spectrum.register_methods(root_module)
-    
-    try:
-        import ns3_module_spectrum__local
-    except ImportError:
-        pass
-    else:
-        ns3_module_spectrum__local.register_methods(root_module)
-    
-    root_module.end_section('ns3_module_spectrum')
     root_module.begin_section('ns3_module_stats')
     ns3_module_stats.register_methods(root_module)
     
@@ -1046,6 +1024,17 @@ def register_methods(root_module):
         ns3_module_udp_echo__local.register_methods(root_module)
     
     root_module.end_section('ns3_module_udp_echo')
+    root_module.begin_section('ns3_module_spectrum')
+    ns3_module_spectrum.register_methods(root_module)
+    
+    try:
+        import ns3_module_spectrum__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_spectrum__local.register_methods(root_module)
+    
+    root_module.end_section('ns3_module_spectrum')
     root_module.begin_section('ns3_module_energy')
     ns3_module_energy.register_methods(root_module)
     
@@ -1079,6 +1068,17 @@ def register_methods(root_module):
         ns3_module_helper__local.register_methods(root_module)
     
     root_module.end_section('ns3_module_helper')
+    root_module.begin_section('ns3_module_lte')
+    ns3_module_lte.register_methods(root_module)
+    
+    try:
+        import ns3_module_lte__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_lte__local.register_methods(root_module)
+    
+    root_module.end_section('ns3_module_lte')
     root_module.begin_section('ns3_module_uan')
     ns3_module_uan.register_methods(root_module)
     
@@ -1325,17 +1325,6 @@ def register_functions(root_module):
         ns3_module_internet_stack__local.register_functions(root_module)
     
     root_module.end_section('ns3_module_internet_stack')
-    root_module.begin_section('ns3_module_lte')
-    ns3_module_lte.register_functions(root_module)
-    
-    try:
-        import ns3_module_lte__local
-    except ImportError:
-        pass
-    else:
-        ns3_module_lte__local.register_functions(root_module)
-    
-    root_module.end_section('ns3_module_lte')
     root_module.begin_section('ns3_module_onoff')
     ns3_module_onoff.register_functions(root_module)
     
@@ -1380,17 +1369,6 @@ def register_functions(root_module):
         ns3_module_propagation__local.register_functions(root_module)
     
     root_module.end_section('ns3_module_propagation')
-    root_module.begin_section('ns3_module_spectrum')
-    ns3_module_spectrum.register_functions(root_module)
-    
-    try:
-        import ns3_module_spectrum__local
-    except ImportError:
-        pass
-    else:
-        ns3_module_spectrum__local.register_functions(root_module)
-    
-    root_module.end_section('ns3_module_spectrum')
     root_module.begin_section('ns3_module_stats')
     ns3_module_stats.register_functions(root_module)
     
@@ -1545,6 +1523,17 @@ def register_functions(root_module):
         ns3_module_udp_echo__local.register_functions(root_module)
     
     root_module.end_section('ns3_module_udp_echo')
+    root_module.begin_section('ns3_module_spectrum')
+    ns3_module_spectrum.register_functions(root_module)
+    
+    try:
+        import ns3_module_spectrum__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_spectrum__local.register_functions(root_module)
+    
+    root_module.end_section('ns3_module_spectrum')
     root_module.begin_section('ns3_module_energy')
     ns3_module_energy.register_functions(root_module)
     
@@ -1578,6 +1567,17 @@ def register_functions(root_module):
         ns3_module_helper__local.register_functions(root_module)
     
     root_module.end_section('ns3_module_helper')
+    root_module.begin_section('ns3_module_lte')
+    ns3_module_lte.register_functions(root_module)
+    
+    try:
+        import ns3_module_lte__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_lte__local.register_functions(root_module)
+    
+    root_module.end_section('ns3_module_lte')
     root_module.begin_section('ns3_module_uan')
     ns3_module_uan.register_functions(root_module)
     

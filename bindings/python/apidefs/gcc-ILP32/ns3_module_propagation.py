@@ -534,10 +534,10 @@ def register_Ns3MatrixPropagationLossModel_methods(root_module, cls):
                    is_static=True)
     ## propagation-loss-model.h: ns3::MatrixPropagationLossModel::MatrixPropagationLossModel() [constructor]
     cls.add_constructor([])
-    ## propagation-loss-model.h: void ns3::MatrixPropagationLossModel::SetLoss(ns3::Ptr<ns3::Object> a, ns3::Ptr<ns3::Object> b, double loss, bool symmetric=true) [member function]
+    ## propagation-loss-model.h: void ns3::MatrixPropagationLossModel::SetLoss(ns3::Ptr<ns3::MobilityModel> a, ns3::Ptr<ns3::MobilityModel> b, double loss, bool symmetric=true) [member function]
     cls.add_method('SetLoss', 
                    'void', 
-                   [param('ns3::Ptr< ns3::Object >', 'a'), param('ns3::Ptr< ns3::Object >', 'b'), param('double', 'loss'), param('bool', 'symmetric', default_value='true')])
+                   [param('ns3::Ptr< ns3::MobilityModel >', 'a'), param('ns3::Ptr< ns3::MobilityModel >', 'b'), param('double', 'loss'), param('bool', 'symmetric', default_value='true')])
     ## propagation-loss-model.h: void ns3::MatrixPropagationLossModel::SetDefaultLoss(double arg0) [member function]
     cls.add_method('SetDefaultLoss', 
                    'void', 
