@@ -131,8 +131,8 @@ example_tests = [
     ("examples/routing/static-routing-slash32", "True", "True"),
     ("examples/routing/aodv", "True", "True"),
 
-    ("examples/spectrum/adhoc-aloha-ideal-phy", "True", "True"),
-    ("examples/spectrum/adhoc-aloha-ideal-phy-with-microwave-oven", "True", "True"),
+    ("src/spectrum/examples/adhoc-aloha-ideal-phy", "True", "True"),
+    ("src/spectrum/examples/adhoc-aloha-ideal-phy-with-microwave-oven", "True", "True"),
 
     ("examples/stats/wifi-example-sim", "True", "True"),
 

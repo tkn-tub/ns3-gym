@@ -26,8 +26,6 @@
 #include "waypoint-mobility-model.h"
 #include "ns3/config.h"
 #include "ns3/test.h"
-#include "ns3/node-container.h"
-#include "ns3/mobility-helper.h"
 
 NS_LOG_COMPONENT_DEFINE ("WaypointMobilityModel");
 
@@ -229,8 +227,8 @@ public:
   }
 
 private:
-  NodeContainer nodes;
-  uint32_t nodeCount;
+  std::vector<Ptr<MobilityModel> > mobilityStack;
+  uint32_t mobilityCount;
   uint32_t waypointCount;
   std::deque<Waypoint> waypoints;
   bool lazyNotify;
@@ -242,13 +240,23 @@ private:
 void
 WaypointMobilityModelNotifyTest::DoRun (void)
 {
-  nodeCount = 1;
+  mobilityCount = 1;
   waypointCount = 100;
-  nodes.Create (nodeCount);
-  MobilityHelper mobility;
-  mobility.SetMobilityModel ("ns3::WaypointMobilityModel",
-                             "LazyNotify", BooleanValue (lazyNotify));
-  mobility.Install (nodes);
+
+  ObjectFactory mobilityFactory;
+  mobilityFactory.SetTypeId ("ns3::WaypointMobilityModel");
+  mobilityFactory.Set ("LazyNotify", BooleanValue (lazyNotify));
+
+  // Populate the vector of mobility models.
+  for (uint32_t i = 0; i < mobilityCount; i++)
+    {
+      // Create a new mobility model.
+      Ptr<MobilityModel> model = mobilityFactory.Create ()->GetObject<MobilityModel> ();
+
+      // Add this mobility model to the stack.
+      mobilityStack.push_back (model);
+      Simulator::Schedule (Seconds (0.0), &Object::Start, model);
+    } 
 
   Waypoint wpt (Seconds (0.0), Vector (0.0, 0.0, 0.0));
 
@@ -260,7 +268,8 @@ WaypointMobilityModelNotifyTest::DoRun (void)
     }
 
   // Add the same waypoints to each node
-  for ( NodeContainer::Iterator i = nodes.Begin (); i != nodes.End (); ++i )
+  std::vector<Ptr<MobilityModel> >::iterator i;
+  for (i = mobilityStack.begin (); i != mobilityStack.end (); ++i)
     {
       Ptr<WaypointMobilityModel> mob = (*i)->GetObject<WaypointMobilityModel> ();
 
@@ -286,7 +295,8 @@ WaypointMobilityModelNotifyTest::DoRun (void)
 void
 WaypointMobilityModelNotifyTest::ForceUpdates (void)
 {
-  for ( NodeContainer::Iterator i = nodes.Begin (); i != nodes.End (); ++i )
+  std::vector<Ptr<MobilityModel> >::iterator i;
+  for (i = mobilityStack.begin (); i != mobilityStack.end (); ++i)
     {
       Ptr<WaypointMobilityModel> mob = (*i)->GetObject<WaypointMobilityModel> ();
       mob->Update ();

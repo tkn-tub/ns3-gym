@@ -1,7 +1,7 @@
 ## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
 
 def build(bld):
-    helper = bld.create_ns3_module('helper', ['internet-stack', 'wifi', 'point-to-point', 'csma', 'onoff', 'packet-sink', 'udp-echo', 'spectrum'])
+    helper = bld.create_ns3_module('helper', ['mobility', 'node', 'internet-stack', 'wifi', 'point-to-point', 'csma', 'onoff', 'packet-sink', 'udp-echo', 'spectrum'])
     helper.source = [
         'node-container.cc',
         'net-device-container.cc',
@@ -19,8 +19,6 @@ def build(bld):
         'ipv4-interface-container.cc',
         'udp-echo-helper.cc',
         'yans-wifi-helper.cc',
-        'spectrum-helper.cc',
-        'adhoc-aloha-noack-ideal-phy-helper.cc',
         'v4ping-helper.cc',
         'nqos-wifi-mac-helper.cc',
         'qos-wifi-mac-helper.cc',
@@ -45,8 +43,6 @@ def build(bld):
         'trace-helper.cc',
         'wimax-helper.cc',
         'topology-reader-helper.cc',
-        'waveform-generator-helper.cc',
-        'spectrum-analyzer-helper.cc',
         'bulk-send-helper.cc',
         ]
 
@@ -69,8 +65,6 @@ def build(bld):
         'ipv4-interface-container.h',
         'udp-echo-helper.h',
         'yans-wifi-helper.h',
-        'spectrum-helper.h',
-        'adhoc-aloha-noack-ideal-phy-helper.h',
         'v4ping-helper.h',
         'nqos-wifi-mac-helper.h',
         'qos-wifi-mac-helper.h',
@@ -96,8 +90,6 @@ def build(bld):
         'trace-helper.h',
         'wimax-helper.h',
         'topology-reader-helper.h',
-        'waveform-generator-helper.h',
-        'spectrum-analyzer-helper.h',
         'bulk-send-helper.h',
         ]
 

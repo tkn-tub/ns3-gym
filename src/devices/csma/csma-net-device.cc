@@ -681,6 +681,7 @@ CsmaNetDevice::Receive (Ptr<Packet> packet, Ptr<CsmaNetDevice> senderDevice)
     {
       NS_LOG_LOGIC ("Dropping pkt due to error model ");
       m_phyRxDropTrace (packet);
+      return;
     }
 
   //

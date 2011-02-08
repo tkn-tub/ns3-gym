@@ -209,27 +209,47 @@ of the functor::
   class Functor
   {
   public:
-      virtual void operator() (T arg) = 0;
-   };
+    virtual int operator() (T arg) = 0;
+  };
 
 The caller defines a specific part of the functor that really is just there to 
 implement the specific ``operator()`` method::
 
   template <typename T, typename ARG>
-  class SpecificFunctor : public Functor
-   {
-   public:
-      SpecificFunctor(T* p, int (T::*_pmi)(ARG arg))
-      {
-        m_p = p;
-        m_pmi = pmi;
-      }
+  class SpecificFunctor : public Functor<ARG>
+  {
+  public:
+    SpecificFunctor(T* p, int (T::*_pmi)(ARG arg))
+    {
+      m_p = p;
+      m_pmi = _pmi;
+    }
 
-      virtual int operator() (ARG arg)
-      {
-        (*m_p.*m_pmi)(arg);
-      }
+    virtual int operator() (ARG arg)
+    {
+      (*m_p.*m_pmi)(arg);
+    }
   private:
-      void (T::*m_pmi)(ARG arg);
-      T* m_p;
-   };
+    int (T::*m_pmi)(ARG arg);
+    T* m_p;
+  };
+
+Here is an example of the usage::
+
+  class A
+  {
+  public:
+  A (int ao) : a (a0) {}
+  int Hello (int b0)
+  {
+    std::cout << "Hello from A, a = " << a << " b0 = " << b0 << std::endl;
+  }
+  int a;
+  };
+
+  int main()
+  {
+    A a(10);
+    SpecificFunctor<A, int> sf(&a, &A::Hello);
+    sf(5);
+  }

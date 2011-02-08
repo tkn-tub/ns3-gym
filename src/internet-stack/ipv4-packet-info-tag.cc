@@ -146,20 +146,47 @@ Ipv4PacketInfoTag::Print (std::ostream &os) const
 #include "ns3/log.h"
 #include "ns3/abort.h"
 #include "ns3/attribute.h"
-#include "ns3/object-factory.h"
-#include "ns3/internet-stack-helper.h"
-#include "ns3/ipv4-address-helper.h"
-#include "ns3/csma-helper.h"
-#include "ns3/node-container.h"
+#include "ns3/simple-net-device.h"
 #include "ns3/object-factory.h"
 #include "ns3/socket-factory.h"
 #include "ns3/udp-socket-factory.h"
 #include "ns3/udp-socket.h"
-#include "ns3/ipv4-raw-socket-factory.h"
 #include "ns3/inet-socket-address.h"
+#include "ns3/ipv4-l3-protocol.h"
+#include "ns3/ipv4-raw-socket-factory.h"
+#include "ns3/ipv4-interface.h"
+#include "ns3/arp-l3-protocol.h"
+#include "ns3/icmpv4-l4-protocol.h"
+#include "ns3/ipv4-static-routing.h"
+#include "ns3/ipv4-list-routing.h"
+#include "ns3/udp-l4-protocol.h"
+#include "ns3/tcp-l4-protocol.h"
 #include "ns3/simulator.h"
+#include "ns3/node.h"
 
 namespace ns3 {
+
+static void
+AddInternetStack (Ptr<Node> node)
+{
+  //ARP
+  Ptr<ArpL3Protocol> arp = CreateObject<ArpL3Protocol> ();
+  node->AggregateObject(arp);
+  //IPV4
+  Ptr<Ipv4L3Protocol> ipv4 = CreateObject<Ipv4L3Protocol> ();
+  //Routing for Ipv4
+  Ptr<Ipv4ListRouting> ipv4Routing = CreateObject<Ipv4ListRouting> ();
+  ipv4->SetRoutingProtocol (ipv4Routing);
+  Ptr<Ipv4StaticRouting> ipv4staticRouting = CreateObject<Ipv4StaticRouting> ();
+  ipv4Routing->AddRoutingProtocol (ipv4staticRouting, 0);
+  node->AggregateObject(ipv4);
+  //ICMP
+  Ptr<Icmpv4L4Protocol> icmp = CreateObject<Icmpv4L4Protocol> ();
+  node->AggregateObject(icmp);
+  //UDP
+  Ptr<UdpL4Protocol> udp = CreateObject<UdpL4Protocol> ();
+  node->AggregateObject(udp); 
+}
 
 class Ipv4PacketInfoTagTest: public TestCase 
 {
@@ -211,21 +238,38 @@ Ipv4PacketInfoTagTest::DoSendData (Ptr<Socket> socket, std::string to)
 void
 Ipv4PacketInfoTagTest::DoRun (void)
 {
-  NodeContainer n;
-  n.Create (2);
+  Ptr<Node> node0 = CreateObject<Node> ();
+  Ptr<Node> node1 = CreateObject<Node> ();
 
-  InternetStackHelper internet;
-  internet.Install (n);
+  Ptr<SimpleNetDevice> device = CreateObject<SimpleNetDevice> ();
+  Ptr<SimpleNetDevice> device2 = CreateObject<SimpleNetDevice> ();
 
-  CsmaHelper csma;
-  NetDeviceContainer d = csma.Install (n);
+  // For Node 0
+  node0->AddDevice (device);
+  AddInternetStack (node0);
+  Ptr<Ipv4> ipv4 = node0->GetObject<Ipv4> ();
 
-  Ipv4AddressHelper ipv4;
-  ipv4.SetBase ("10.1.1.0", "255.255.255.0");
-  Ipv4InterfaceContainer i = ipv4.Assign (d);
+  uint32_t index = ipv4->AddInterface (device);
+  Ipv4InterfaceAddress ifaceAddr1 = Ipv4InterfaceAddress ("10.1.1.1",
+                                                          "255.255.255.0");
+  ipv4->AddAddress (index, ifaceAddr1);
+  ipv4->SetMetric (index, 1);
+  ipv4->SetUp (index);
+
+  // For Node 1
+  node1->AddDevice (device2);
+  AddInternetStack (node1);
+  ipv4 = node1->GetObject<Ipv4> ();
+
+  index = ipv4->AddInterface (device2);
+  Ipv4InterfaceAddress ifaceAddr2 = Ipv4InterfaceAddress ("10.1.1.2",
+                                                          "255.255.255.0");
+  ipv4->AddAddress (index, ifaceAddr2);
+  ipv4->SetMetric (index, 1);
+  ipv4->SetUp (index);
 
   // IPv4 test
-  Ptr<SocketFactory> factory = n.Get (0)->GetObject<SocketFactory> (UdpSocketFactory::GetTypeId ());
+  Ptr<SocketFactory> factory = node0->GetObject<SocketFactory> (UdpSocketFactory::GetTypeId ());
   Ptr<Socket> socket = factory->CreateSocket ();
   InetSocketAddress local =  InetSocketAddress (Ipv4Address::GetAny (), 200);
   socket->Bind (local);
@@ -237,15 +281,14 @@ Ipv4PacketInfoTagTest::DoRun (void)
                                   &Ipv4PacketInfoTagTest::DoSendData, this, socket, "127.0.0.1");
   Simulator::Run ();
 
-  // send from node1 and recved via csma
-  Ptr<SocketFactory> factory2 = n.Get (1)->GetObject<SocketFactory> (UdpSocketFactory::GetTypeId ());
+  Ptr<SocketFactory> factory2 = node1->GetObject<SocketFactory> (UdpSocketFactory::GetTypeId ());
   Ptr<Socket> socket2 = factory2->CreateSocket ();
   Simulator::ScheduleWithContext (socket2->GetNode ()->GetId (), Seconds (0),
                                   &Ipv4PacketInfoTagTest::DoSendData, this, socket, "10.1.1.1");
   Simulator::Run ();
 
   // ipv4 w rawsocket
-  factory = n.Get (0)->GetObject<SocketFactory> (Ipv4RawSocketFactory::GetTypeId ());
+  factory = node0->GetObject<SocketFactory> (Ipv4RawSocketFactory::GetTypeId ());
   socket = factory->CreateSocket ();
   local =  InetSocketAddress (Ipv4Address::GetAny (), 0);
   socket->Bind (local);
@@ -257,8 +300,7 @@ Ipv4PacketInfoTagTest::DoRun (void)
                                   &Ipv4PacketInfoTagTest::DoSendData, this, socket, "127.0.0.1");
   Simulator::Run ();
 
-  // send from node1 and recved via csma
-  factory2 = n.Get (1)->GetObject<SocketFactory> (Ipv4RawSocketFactory::GetTypeId ());
+  factory2 = node1->GetObject<SocketFactory> (Ipv4RawSocketFactory::GetTypeId ());
   socket2 = factory2->CreateSocket ();
   Simulator::ScheduleWithContext (socket2->GetNode ()->GetId (), Seconds (0),
                                   &Ipv4PacketInfoTagTest::DoSendData, this, socket, "10.1.1.1");
