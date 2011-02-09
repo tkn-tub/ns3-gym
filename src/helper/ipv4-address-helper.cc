@@ -136,17 +136,20 @@ Ipv4AddressHelper::Assign (const NetDeviceContainer &c)
     Ptr<NetDevice> device = c.Get (i);
 
     Ptr<Node> node = device->GetNode ();
-    NS_ASSERT_MSG (node, "Ipv4AddressHelper::Allocate(): Bad node");
+    NS_ASSERT_MSG (node, "Ipv4AddressHelper::Assign(): NetDevice is not not associated "
+                   "with any node -> fail");
 
     Ptr<Ipv4> ipv4 = node->GetObject<Ipv4> ();
-    NS_ASSERT_MSG (ipv4, "Ipv4AddressHelper::Allocate(): Bad ipv4");
+    NS_ASSERT_MSG (ipv4, "Ipv4AddressHelper::Assign(): NetDevice is associated"
+                   " with a node without IPv4 stack installed -> fail "
+                   "(maybe need to use InternetStackHelper?)");
 
     int32_t interface = ipv4->GetInterfaceForDevice (device);
     if (interface == -1)
       {
         interface = ipv4->AddInterface (device);
       }
-    NS_ASSERT_MSG (interface >= 0, "Ipv4AddressHelper::Allocate(): "
+    NS_ASSERT_MSG (interface >= 0, "Ipv4AddressHelper::Assign(): "
       "Interface index not found");
 
     Ipv4InterfaceAddress ipv4Addr = Ipv4InterfaceAddress (NewAddress (), m_mask);
