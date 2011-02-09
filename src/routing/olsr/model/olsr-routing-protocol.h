@@ -131,9 +131,6 @@ private:
   Ptr<Ipv4StaticRouting> m_hnaRoutingTable;
 
   EventGarbageCollector m_events;
-
-  /// Address of the routing agent.
-  Ipv4Address m_routingAgentAddr;
 	
   /// Packets sequence number counter.
   uint16_t m_packetSequenceNumber;

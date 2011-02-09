@@ -2101,7 +2101,7 @@ RoutingProtocol::PopulateTwoHopNeighborSet (const olsr::MessageHeader &msg,
                   // If the main address of the 2-hop neighbor address == main address
                   // of the receiving node, silently discard the 2-hop
                   // neighbor address.
-                  if (nb2hop_addr == m_routingAgentAddr)
+                  if (nb2hop_addr == m_mainAddress)
                     {
                       NS_LOG_LOGIC ("Ignoring 2-hop neighbor (it is the node itself)");
                       continue;
