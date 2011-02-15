@@ -248,14 +248,14 @@ void RoutingProtocol::DoDispose ()
 void
 RoutingProtocol::PrintRoutingTable (Ptr<OutputStreamWrapper> stream) const
 {
-  std::ostream* os = stream->GetStream();
-  *os << "Destination\tNextHop\t\tInterface\tDistance\n";
+  std::ostream* os = stream->GetStream ();
+  *os << "Destination\t\tNextHop\t\tInterface\tDistance\n";
 
   for (std::map<Ipv4Address, RoutingTableEntry>::const_iterator iter = m_table.begin ();
     iter != m_table.end (); iter++)
     {
-      *os << iter->first << "\t";
-      *os << iter->second.nextAddr << "\t";
+      *os << iter->first << "\t\t";
+      *os << iter->second.nextAddr << "\t\t";
       if (Names::FindName (m_ipv4->GetNetDevice (iter->second.interface)) != "")
             {
               *os << Names::FindName (m_ipv4->GetNetDevice (iter->second.interface)) << "\t\t";
@@ -264,10 +264,12 @@ RoutingProtocol::PrintRoutingTable (Ptr<OutputStreamWrapper> stream) const
             {
               *os << iter->second.interface << "\t\t";
             }
-
       *os << iter->second.distance << "\t";
       *os << "\n";
     }
+	// Also print the HNA routing table
+	*os << " HNA Routing Table:\n";
+	m_hnaRoutingTable->PrintRoutingTable (stream);
 }
 
 void RoutingProtocol::DoStart ()
@@ -1105,12 +1107,36 @@ RoutingProtocol::RoutingTableComputation ()
   // 5. For each tuple in the association set,
   //    If there is no entry in the routing table with:
   //        R_dest_addr     == A_network_addr/A_netmask
+  //   and if the announced network is not announced by the node itself,
   //   then a new routing entry is created.
   const AssociationSet &associationSet = m_state.GetAssociationSet ();
   for (AssociationSet::const_iterator it = associationSet.begin ();
        it != associationSet.end (); it++)
     {
       AssociationTuple const &tuple = *it;
+
+	  // Test if HNA associations received from other gateways
+	  // are also announced by this node. In such a case, no route
+	  // is created for this association tuple (go to the next one).
+	  bool goToNextAssociationTuple = false;
+	  const Associations &localHnaAssociations = m_state.GetAssociations ();
+	  NS_LOG_DEBUG ("Nb local associations: " << localHnaAssociations.size ());
+	  for (Associations::const_iterator assocIterator = localHnaAssociations.begin ();
+		   assocIterator != localHnaAssociations.end (); assocIterator++)
+		{
+		  Association const &localHnaAssoc = *assocIterator;
+		  if (localHnaAssoc.networkAddr == tuple.networkAddr && localHnaAssoc.netmask == tuple.netmask)
+			{
+    		  NS_LOG_DEBUG ("HNA association received from another GW is part of local HNA associations: no route added for network "
+    				  << tuple.networkAddr << "/" << tuple.netmask);
+    		  goToNextAssociationTuple = true;
+			}
+		}
+	  if (goToNextAssociationTuple)
+            {
+              continue;
+            }
+          
       RoutingTableEntry gatewayEntry;
       
       bool gatewayEntryExists = Lookup (tuple.gatewayAddr, gatewayEntry);
@@ -1820,76 +1846,132 @@ RoutingProtocol::SendHna ()
   msg.SetMessageSequenceNumber (GetMessageSequenceNumber ());
   olsr::MessageHeader::Hna &hna = msg.GetHna ();
   
-  std::vector<olsr::MessageHeader::Hna::Association>
-    &associations = hna.associations;
-      
-  if (m_routingTableAssociation != 0)
-    {
-      // Add (NetworkAddr, Netmask) entries from Associated Routing Table to HNA message.
-      for (uint32_t i = 0; i < m_routingTableAssociation->GetNRoutes (); i++)
-        {
-          Ipv4RoutingTableEntry route = m_routingTableAssociation->GetRoute (i);
-          
-          std::set<uint32_t>::const_iterator ci = m_interfaceExclusions.find (route.GetInterface ());
+  std::vector<olsr::MessageHeader::Hna::Association> &associations = hna.associations;
                   
-          if (ci != m_interfaceExclusions.end ())
+  // Add all local HNA associations to the HNA message
+  const Associations &localHnaAssociations = m_state.GetAssociations ();
+  for (Associations::const_iterator it = localHnaAssociations.begin ();
+	   it != localHnaAssociations.end (); it++)
             {
-              olsr::MessageHeader::Hna::Association assoc = {route.GetDestNetwork (), route.GetDestNetworkMask ()};
-              associations.push_back(assoc);
-            }
-        }
+	  olsr::MessageHeader::Hna::Association assoc = {it->networkAddr, it->netmask};
+	  associations.push_back (assoc);
     }
-    
-  int size = associations.size ();
-
-  // Add (NetworkAddr, Netmask) entries specified using AddHostNetworkAssociation () to HNA message.
-  for (Associations::const_iterator it = m_state.GetAssociations ().begin ();
-        it != m_state.GetAssociations ().end (); it++)
+  // If there is no HNA associations to send, return without queuing the message
+  if (associations.size () == 0)
     {
-      // Check if the entry has already been added from the Associated Routing Table
-      std::vector<olsr::MessageHeader::Hna::Association>::const_iterator ci = associations.begin ();
-      bool found = false;
-      for (int i = 0; i < size; i++)
-        {
-          if (it->networkAddr == ci->address && it->netmask == ci->mask)
-            {
-              found = true;
-              break;
-            }
-          ci++;
-        }
-      
-      if(!found)
-        {
-          olsr::MessageHeader::Hna::Association assoc = {it->networkAddr,it->netmask};
-          associations.push_back(assoc);
-        }
+      return;
     }
-    
-  if(associations.size () == 0)
-    return;
   
+  // Else, queue the message to be sent later on
   QueueMessage (msg, JITTER);
 }
 
 ///
-/// \brief Injects a (networkAddr, netmask) tuple for which the node
-///        can generate an HNA message for
+/// \brief Injects the specified (networkAddr, netmask) tuple in the list of
+///        local HNA associations to be sent by the node via HNA messages.
+///        If this tuple already exists, nothing is done.
 ///
 void
 RoutingProtocol::AddHostNetworkAssociation (Ipv4Address networkAddr, Ipv4Mask netmask)
 {
-  m_state.InsertAssociation ((Association) {networkAddr, netmask});
+  // Check if the (networkAddr, netmask) tuple already exist
+  // in the list of local HNA associations
+  const Associations &localHnaAssociations = m_state.GetAssociations ();
+  for (Associations::const_iterator assocIterator = localHnaAssociations.begin ();
+       assocIterator != localHnaAssociations.end (); assocIterator++)
+    {
+      Association const &localHnaAssoc = *assocIterator;
+      if (localHnaAssoc.networkAddr == networkAddr && localHnaAssoc.netmask == netmask)
+        {
+          NS_LOG_INFO ("HNA association for network " << networkAddr << "/" << netmask << " already exists.");
+          return;
+        }
+    }
+  // If the tuple does not already exist, add it to the list of local HNA associations.
+  NS_LOG_INFO ("Adding HNA association for network " << networkAddr << "/" << netmask << ".");
+  m_state.InsertAssociation ( (Association) {networkAddr, netmask} );
 }
 
 ///
-/// \brief Adds an Ipv4StaticRouting protocol Association
-///        can generate an HNA message for
+/// \brief Removes the specified (networkAddr, netmask) tuple from the list of
+///        local HNA associations to be sent by the node via HNA messages.
+///        If this tuple does not exist, nothing is done (see "OlsrState::EraseAssociation()").
+///
+void
+RoutingProtocol::RemoveHostNetworkAssociation (Ipv4Address networkAddr, Ipv4Mask netmask)
+{
+  NS_LOG_INFO ("Removing HNA association for network " << networkAddr << "/" << netmask << ".");
+  m_state.EraseAssociation ( (Association) {networkAddr, netmask} );
+}
+
+///
+/// \brief Associates the specified Ipv4StaticRouting routing table
+///        to the OLSR routing protocol. Entries from this associated
+///        routing table that use non-olsr outgoing interfaces are added
+///        to the list of local HNA associations so that they are included
+///        in HNA messages sent by the node.
+///        If this method is called more than once, entries from the old
+///        association are deleted before entries from the new one are added.
+/// \param the Ipv4StaticRouting routing table to be associated.
 ///
 void
 RoutingProtocol::SetRoutingTableAssociation (Ptr<Ipv4StaticRouting> routingTable)
 {
+  // If a routing table has already been associated, remove
+  // corresponding entries from the list of local HNA associations
+  if (m_routingTableAssociation != 0)
+    {
+      NS_LOG_INFO ("Removing HNA entries coming from the old routing table association.");
+      for (uint32_t i = 0; i < m_routingTableAssociation->GetNRoutes (); i++)
+        {
+          Ipv4RoutingTableEntry route = m_routingTableAssociation->GetRoute (i);
+          // If the outgoing interface for this route is a non-olsr interface
+          if (UsesNonOlsrOutgoingInterface (route))
+            {
+              // remove the corresponding entry
+              RemoveHostNetworkAssociation (route.GetDestNetwork (), route.GetDestNetworkMask ());
+            }
+        }
+    }
+
+  // Sets the routingTableAssociation to its new value
   m_routingTableAssociation = routingTable;
+
+  // Iterate over entries of the associated routing table and
+  // add the routes using non-olsr outgoing interfaces to the list
+  // of local HNA associations
+  const Associations &localHnaAssociations = m_state.GetAssociations (); // Just for logging
+  NS_LOG_DEBUG ("Nb local associations before adding some entries from"
+                " the associated routing table: " << localHnaAssociations.size ());
+  for (uint32_t i = 0; i < m_routingTableAssociation->GetNRoutes (); i++)
+    {
+      Ipv4RoutingTableEntry route = m_routingTableAssociation->GetRoute (i);
+      Ipv4Address destNetworkAddress = route.GetDestNetwork ();
+      Ipv4Mask destNetmask = route.GetDestNetworkMask ();
+      
+      // If the outgoing interface for this route is a non-olsr interface,
+      if (UsesNonOlsrOutgoingInterface (route))
+        {
+          // Add this entry's network address and netmask to the list of local HNA entries
+          AddHostNetworkAssociation (destNetworkAddress, destNetmask);
+        }
+    }
+  NS_LOG_DEBUG ("Nb local associations after having added some entries from "
+                "the associated routing table: " << localHnaAssociations.size ());
+}
+
+///
+/// \brief Tests whether or not the specified route uses a non-OLSR outgoing interface.
+///        Returns true if the outgoing interface of the specified route is a non-OLSR interface.
+///        Returns false otherwise.
+///
+bool
+RoutingProtocol::UsesNonOlsrOutgoingInterface (const Ipv4RoutingTableEntry &route)
+{
+  std::set<uint32_t>::const_iterator ci = m_interfaceExclusions.find (route.GetInterface ());
+  // The outgoing interface is a non-OLSR interface if a match is found
+  // before reaching the end of the list of excluded interfaces
+  return ci != m_interfaceExclusions.end ();
 }
 
 ///
@@ -2652,12 +2734,11 @@ RoutingProtocol::MidTimerExpire ()
 
 ///
 /// \brief Sends an HNA message (if the node has associated hosts/networks) and reschedules the HNA timer.
-/// \param e The event which has expired.
 ///
 void
 RoutingProtocol::HnaTimerExpire ()
 {
-  if (m_state.GetAssociations ().size () > 0 || m_routingTableAssociation !=0)
+  if (m_state.GetAssociations ().size () > 0)
     {
       SendHna ();
     }

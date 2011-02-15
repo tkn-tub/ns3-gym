@@ -1,6 +1,6 @@
 /* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
 /*
- * Copyright (c) 2004 Francisco J. Ros 
+ * Copyright (c) 2004 Francisco J. Ros
  * Copyright (c) 2007 INESC Porto
  *
  * This program is free software; you can redistribute it and/or modify
@@ -89,16 +89,16 @@ public:
 
   ///
   /// \brief Set the OLSR main address to the first address on the indicated
-  ///        interface 
+  ///        interface
   /// \param interface IPv4 interface index
   ///
   void SetMainInterface (uint32_t interface);
 
-  /// 
+  ///
   /// Dump the neighbor table, two-hop neighbor table, and routing table
   /// to logging output (NS_LOG_DEBUG log level).  If logging is disabled,
   /// this function does nothing.
-  /// 
+  ///
   void Dump (void);
 
   /**
@@ -119,6 +119,8 @@ public:
 
   /// Inject Association to be sent in HNA message
   void AddHostNetworkAssociation (Ipv4Address networkAddr, Ipv4Mask netmask);
+  /// Removes Association sent in HNA message
+  void RemoveHostNetworkAssociation (Ipv4Address networkAddr, Ipv4Mask netmask);
 
   /// Inject Associations from an Ipv4StaticRouting instance
   void SetRoutingTableAssociation (Ptr<Ipv4StaticRouting> routingTable);
@@ -149,12 +151,12 @@ private:
   Time m_hnaInterval;
   /// Willingness for forwarding packets on behalf of other nodes.
   uint8_t m_willingness;
-	
+
   /// Internal state with all needed data structs.
   OlsrState m_state;
 
   Ptr<Ipv4> m_ipv4;
-	
+
   void Clear ();
   uint32_t GetSize () const { return m_table.size (); }
   void RemoveEntry (const Ipv4Address &dest);
@@ -172,10 +174,17 @@ private:
                       RoutingTableEntry &outEntry) const;
 
   // From Ipv4RoutingProtocol
-  virtual Ptr<Ipv4Route> RouteOutput (Ptr<Packet> p, const Ipv4Header &header, Ptr<NetDevice> oif, Socket::SocketErrno &sockerr);
-   virtual bool RouteInput  (Ptr<const Packet> p, const Ipv4Header &header, Ptr<const NetDevice> idev,
-                             UnicastForwardCallback ucb, MulticastForwardCallback mcb,
-                             LocalDeliverCallback lcb, ErrorCallback ecb);  
+  virtual Ptr<Ipv4Route> RouteOutput (Ptr<Packet> p,
+                                      const Ipv4Header &header,
+                                      Ptr<NetDevice> oif,
+                                      Socket::SocketErrno &sockerr);
+  virtual bool RouteInput (Ptr<const Packet> p,
+                           const Ipv4Header &header,
+                           Ptr<const NetDevice> idev,
+                           UnicastForwardCallback ucb,
+                           MulticastForwardCallback mcb,
+                           LocalDeliverCallback lcb,
+                           ErrorCallback ecb);
   virtual void NotifyInterfaceUp (uint32_t interface);
   virtual void NotifyInterfaceDown (uint32_t interface);
   virtual void NotifyAddAddress (uint32_t interface, Ipv4InterfaceAddress address);
@@ -183,26 +192,26 @@ private:
   virtual void SetIpv4 (Ptr<Ipv4> ipv4);
   virtual void PrintRoutingTable (Ptr<OutputStreamWrapper> stream) const;
 
-
   void DoDispose ();
 
   void SendPacket (Ptr<Packet> packet, const MessageList &containedMessages);
-	
+
   /// Increments packet sequence number and returns the new value.
   inline uint16_t GetPacketSequenceNumber ();
   /// Increments message sequence number and returns the new value.
   inline uint16_t GetMessageSequenceNumber ();
-	
+
   void RecvOlsr (Ptr<Socket> socket);
 
   void MprComputation ();
   void RoutingTableComputation ();
   Ipv4Address GetMainAddress (Ipv4Address iface_addr) const;
+  bool UsesNonOlsrOutgoingInterface (const Ipv4RoutingTableEntry &route);
 
   // Timer handlers
   Timer m_helloTimer;
   void HelloTimerExpire ();
-  
+
   Timer m_tcTimer;
   void TcTimerExpire ();
 
