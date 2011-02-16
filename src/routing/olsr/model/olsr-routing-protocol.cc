@@ -1940,9 +1940,8 @@ RoutingProtocol::SetRoutingTableAssociation (Ptr<Ipv4StaticRouting> routingTable
   // Iterate over entries of the associated routing table and
   // add the routes using non-olsr outgoing interfaces to the list
   // of local HNA associations
-  const Associations &localHnaAssociations = m_state.GetAssociations (); // Just for logging
   NS_LOG_DEBUG ("Nb local associations before adding some entries from"
-                " the associated routing table: " << localHnaAssociations.size ());
+                " the associated routing table: " << m_state.GetAssociations ().size ());
   for (uint32_t i = 0; i < m_routingTableAssociation->GetNRoutes (); i++)
     {
       Ipv4RoutingTableEntry route = m_routingTableAssociation->GetRoute (i);
@@ -1957,7 +1956,7 @@ RoutingProtocol::SetRoutingTableAssociation (Ptr<Ipv4StaticRouting> routingTable
         }
     }
   NS_LOG_DEBUG ("Nb local associations after having added some entries from "
-                "the associated routing table: " << localHnaAssociations.size ());
+                "the associated routing table: " << m_state.GetAssociations ().size ());
 }
 
 ///
