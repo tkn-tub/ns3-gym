@@ -94,7 +94,7 @@ type_annotations = {
     'ns3::Ipv4RoutingTableEntry * ns3::GlobalRouter::GetInjectedRoute(uint32_t i) [member function]': {
         'params': {'return': { 'caller_owns_return': 'false',}},
         },
-    'ns3::Ipv4RoutingTableEntry * ns3::Ipv4GlobalRouting::GetRoute(uint32_t i) [member function]': {
+    'ns3::Ipv4RoutingTableEntry * ns3::Ipv4GlobalRouting::GetRoute(uint32_t i) const [member function]': {
         'params': {'return': { 'caller_owns_return': 'false',}},
         },
     
