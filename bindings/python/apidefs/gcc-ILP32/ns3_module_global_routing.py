@@ -420,7 +420,7 @@ def register_Ns3Ipv4GlobalRouting_methods(root_module, cls):
                    is_const=True)
     ## ipv4-global-routing.h: ns3::Ipv4RoutingTableEntry * ns3::Ipv4GlobalRouting::GetRoute(uint32_t i) const [member function]
     cls.add_method('GetRoute', 
-                   'ns3::Ipv4RoutingTableEntry *', 
+                   retval('ns3::Ipv4RoutingTableEntry *', caller_owns_return=False), 
                    [param('uint32_t', 'i')], 
                    is_const=True)
     ## ipv4-global-routing.h: static ns3::TypeId ns3::Ipv4GlobalRouting::GetTypeId() [member function]

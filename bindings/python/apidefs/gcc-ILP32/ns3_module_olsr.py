@@ -944,6 +944,10 @@ def register_Ns3OlsrRoutingProtocol_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
+    ## olsr-routing-protocol.h: void ns3::olsr::RoutingProtocol::RemoveHostNetworkAssociation(ns3::Ipv4Address networkAddr, ns3::Ipv4Mask netmask) [member function]
+    cls.add_method('RemoveHostNetworkAssociation', 
+                   'void', 
+                   [param('ns3::Ipv4Address', 'networkAddr'), param('ns3::Ipv4Mask', 'netmask')])
     ## olsr-routing-protocol.h: void ns3::olsr::RoutingProtocol::SetInterfaceExclusions(std::set<unsigned int, std::less<unsigned int>, std::allocator<unsigned int> > exceptions) [member function]
     cls.add_method('SetInterfaceExclusions', 
                    'void', 
