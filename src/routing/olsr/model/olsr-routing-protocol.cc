@@ -2450,7 +2450,23 @@ RoutingProtocol::LinkTupleUpdated (const LinkTuple &tuple, uint8_t willingness)
 #ifdef NS3_LOG_ENABLE
       int statusBefore = nb_tuple->status;
 #endif // NS3_LOG_ENABLE
-      if (tuple.symTime >= Simulator::Now ())
+
+      bool hasSymmetricLink = false;
+
+      const LinkSet &linkSet = m_state.GetLinks ();
+      for (LinkSet::const_iterator it = linkSet.begin();
+           it != linkSet.end(); it++)
+        {
+          const LinkTuple &link_tuple = *it;
+          if (GetMainAddress (link_tuple.neighborIfaceAddr) == nb_tuple->neighborMainAddr
+              && link_tuple.symTime >= Simulator::Now ())
+            {
+              hasSymmetricLink = true;
+              break;
+            }
+        }
+
+      if (hasSymmetricLink)
         {
           nb_tuple->status = NeighborTuple::STATUS_SYM;
           NS_LOG_DEBUG (*nb_tuple << "->status = STATUS_SYM; changed:"
