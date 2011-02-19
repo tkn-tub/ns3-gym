@@ -9,7 +9,7 @@ def build(bld):
     test_runner.source = 'test-runner.cc'
     test_runner.uselib_local = 'ns3'
     
-    obj = bld.create_ns3_program('bench-simulator', ['simulator'])
+    obj = bld.create_ns3_program('bench-simulator', ['core'])
     obj.source = 'bench-simulator.cc'
 
     obj = bld.create_ns3_program('bench-packets', ['common'])

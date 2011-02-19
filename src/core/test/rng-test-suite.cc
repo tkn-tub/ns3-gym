@@ -21,8 +21,8 @@
 #include <time.h>
 #include <fstream>
 
-#include "test.h"
-#include "random-variable.h"
+#include "ns3/test.h"
+#include "ns3/random-variable.h"
 
 using namespace ns3;
 

@@ -27,7 +27,7 @@
 #include <ns3/core-module.h>
 #include <ns3/common-module.h>
 #include <ns3/node-module.h>
-#include <ns3/simulator-module.h>
+#include <ns3/core-module.h>
 #include <ns3/log.h>
 #include <string>
 #include <ns3/mobility-module.h>

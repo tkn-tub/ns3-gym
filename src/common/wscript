@@ -1,7 +1,7 @@
 ## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
 
 def build(bld):
-    common = bld.create_ns3_module('common', ['core', 'simulator', 'mobility'])
+    common = bld.create_ns3_module('common', ['core', 'mobility'])
     common.source = [
         'buffer.cc',
         'buffer-test.cc',

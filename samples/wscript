@@ -11,7 +11,7 @@ def build(bld):
     obj = bld.create_ns3_program('main-callback', ['core'])
     obj.source = 'main-callback.cc'
 
-    obj = bld.create_ns3_program('sample-simulator', ['core', 'simulator'])
+    obj = bld.create_ns3_program('sample-simulator', ['core'])
     obj.source = 'sample-simulator.cc'
 
     obj = bld.create_ns3_program('main-ptr', ['core'] )
@@ -20,10 +20,10 @@ def build(bld):
     obj = bld.create_ns3_program('main-random-variable', ['core', 'contrib'])
     obj.source = 'main-random-variable.cc'
 
-    obj = bld.create_ns3_program('main-packet-header', ['common', 'simulator'])
+    obj = bld.create_ns3_program('main-packet-header', ['common', 'core'])
     obj.source = 'main-packet-header.cc'
 
-    obj = bld.create_ns3_program('main-packet-tag', ['common', 'simulator'])
+    obj = bld.create_ns3_program('main-packet-tag', ['common', 'core'])
     obj.source = 'main-packet-tag.cc'
 
     if bld.env['ENABLE_THREADING'] and bld.env["ENABLE_REAL_TIME"]:
@@ -35,22 +35,22 @@ def build(bld):
     obj.source = 'main-simple.cc'
 
     obj = bld.create_ns3_program('main-grid-topology',
-                                 ['core', 'simulator', 'mobility', 'internet-stack'])
+                                 ['core', 'mobility', 'internet-stack'])
     obj.source = 'main-grid-topology.cc'
 
     obj = bld.create_ns3_program('main-random-topology',
-                                 ['core', 'simulator', 'helper', 'mobility'])
+                                 ['core', 'helper', 'mobility'])
     obj.source = 'main-random-topology.cc'
     
     obj = bld.create_ns3_program('main-random-walk',
-                                 ['core', 'simulator', 'helper', 'mobility'])
+                                 ['core', 'helper', 'mobility'])
     obj.source = 'main-random-walk.cc'
 
     obj = bld.create_ns3_program('main-propagation-loss',
-                                 ['core', 'simulator', 'mobility', 'wifi'])
+                                 ['core', 'mobility', 'wifi'])
     obj.source = 'main-propagation-loss.cc'
 
     obj = bld.create_ns3_program('sample-random-variable',
-                                 ['core', 'simulator'])
+                                 ['core'])
     obj.source = 'sample-random-variable.cc'
 

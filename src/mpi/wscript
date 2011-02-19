@@ -6,7 +6,7 @@ import Options
 
 def build(bld):
   env = bld.env_of_name('default')
-  sim = bld.create_ns3_module('mpi', ['core', 'simulator'])
+  sim = bld.create_ns3_module('mpi', ['core'])
   sim.source = [
       'distributed-simulator-impl.cc',
       'mpi-interface.cc',

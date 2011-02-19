@@ -18,8 +18,8 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 
-#include "test.h"
-#include "ptr.h"
+#include "ns3/test.h"
+#include "ns3/ptr.h"
 
 namespace ns3 {
 

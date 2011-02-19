@@ -21,7 +21,7 @@
 #define HIGH_PRECISION_H
 
 #include <stdint.h>
-#include "ns3/simulator-config.h"
+#include "ns3/core-config.h"
 
 #if defined (USE_HIGH_PRECISION_DOUBLE)
 #include "high-precision-double.h"

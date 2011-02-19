@@ -34,7 +34,7 @@
 
 #include <fstream>
 #include "ns3/core-module.h"
-#include "ns3/simulator-module.h"
+#include "ns3/core-module.h"
 #include "ns3/helper-module.h"
 
 #include "ns3/ipv6-routing-table-entry.h"

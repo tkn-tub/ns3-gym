@@ -16,20 +16,20 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "test.h"
-#include "object.h"
-#include "boolean.h"
-#include "integer.h"
-#include "uinteger.h"
-#include "enum.h"
-#include "string.h"
-#include "random-variable.h"
-#include "double.h"
-#include "object-vector.h"
-#include "traced-value.h"
-#include "callback.h"
-#include "trace-source-accessor.h"
-#include "pointer.h"
+#include "ns3/test.h"
+#include "ns3/object.h"
+#include "ns3/boolean.h"
+#include "ns3/integer.h"
+#include "ns3/uinteger.h"
+#include "ns3/enum.h"
+#include "ns3/string.h"
+#include "ns3/random-variable.h"
+#include "ns3/double.h"
+#include "ns3/object-vector.h"
+#include "ns3/traced-value.h"
+#include "ns3/callback.h"
+#include "ns3/trace-source-accessor.h"
+#include "ns3/pointer.h"
 
 namespace ns3 {
 

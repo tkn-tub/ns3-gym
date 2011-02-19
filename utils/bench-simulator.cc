@@ -18,7 +18,7 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 
-#include "ns3/simulator-module.h"
+#include "ns3/core-module.h"
 #include "ns3/core-module.h"
 #include <iostream>
 #include <fstream>

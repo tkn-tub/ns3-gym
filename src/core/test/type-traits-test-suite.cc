@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "type-traits.h"
-#include "test.h"
+#include "ns3/type-traits.h"
+#include "ns3/test.h"
 
 namespace ns3 {
 

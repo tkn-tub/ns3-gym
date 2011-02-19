@@ -450,7 +450,7 @@ def create_suid_program(bld, name):
 
     return program
 
-def create_ns3_program(bld, name, dependencies=('simulator',)):
+def create_ns3_program(bld, name, dependencies=('core',)):
     program = bld.new_task_gen('cxx', 'program')
     program.is_ns3_program = True
     program.name = name

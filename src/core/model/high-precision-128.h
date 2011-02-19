@@ -20,7 +20,7 @@
 #ifndef HIGH_PRECISION_128_H
 #define HIGH_PRECISION_128_H
 
-#include "ns3/simulator-config.h"
+#include "ns3/core-config.h"
 #include <math.h>
 #include <stdint.h>
 #include <iostream>

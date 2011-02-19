@@ -32,7 +32,7 @@
 #ifndef CAIRO_WIDEINT_H
 #define CAIRO_WIDEINT_H
 
-#include "ns3/simulator-config.h"
+#include "ns3/core-config.h"
 #define cairo_private 
 #define HAVE_UINT64_T 1
 

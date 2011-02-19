@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "test.h"
-#include "traced-callback.h"
+#include "ns3/test.h"
+#include "ns3/traced-callback.h"
 
 using namespace ns3;
 
