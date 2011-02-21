@@ -31,7 +31,7 @@
  */
 #include "ns3/core-module.h"
 #include "ns3/propagation-module.h"
-#include "ns3/node-module.h"
+#include "ns3/network-module.h"
 #include "ns3/helper-module.h"
 #include "ns3/mobility-module.h"
 #include "ns3/flow-monitor-module.h"

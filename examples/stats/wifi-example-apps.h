@@ -28,7 +28,7 @@
 // #define NS3_LOG_ENABLE // Now defined by Makefile
 
 #include "ns3/core-module.h"
-#include "ns3/common-module.h"
+#include "ns3/network-module.h"
 #include "ns3/application.h"
 
 #include "ns3/stats-module.h"

@@ -42,7 +42,7 @@
 
 #include "ns3/core-module.h"
 #include "ns3/core-module.h"
-#include "ns3/node-module.h"
+#include "ns3/network-module.h"
 #include "ns3/helper-module.h"
 #include "ns3/olsr-helper.h"
 #include "ns3/ipv4-static-routing-helper.h"

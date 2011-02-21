@@ -22,7 +22,7 @@
 
 #include "ns3/object-factory.h"
 #include "ns3/node.h"
-#include "node-container.h"
+#include "ns3/node-container.h"
 #include "ipv4-routing-helper.h"
 
 namespace ns3

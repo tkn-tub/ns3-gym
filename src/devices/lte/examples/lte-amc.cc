@@ -25,9 +25,7 @@
 #include <iostream>
 #include <vector>
 #include <ns3/core-module.h>
-#include <ns3/common-module.h>
-#include <ns3/node-module.h>
-#include <ns3/core-module.h>
+#include <ns3/network-module.h>
 #include <ns3/log.h>
 #include <string>
 #include <ns3/mobility-module.h>

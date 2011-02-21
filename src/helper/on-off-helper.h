@@ -26,8 +26,8 @@
 #include "ns3/address.h"
 #include "ns3/attribute.h"
 #include "ns3/net-device.h"
-#include "node-container.h"
-#include "application-container.h"
+#include "ns3/node-container.h"
+#include "ns3/application-container.h"
 
 namespace ns3 {
 

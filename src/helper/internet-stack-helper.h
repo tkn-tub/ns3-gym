@@ -21,8 +21,8 @@
 #ifndef INTERNET_STACK_HELPER_H
 #define INTERNET_STACK_HELPER_H
 
-#include "node-container.h"
-#include "net-device-container.h"
+#include "ns3/node-container.h"
+#include "ns3/net-device-container.h"
 #include "ns3/packet.h"
 #include "ns3/ptr.h"
 #include "ns3/object-factory.h"

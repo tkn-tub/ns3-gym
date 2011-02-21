@@ -21,8 +21,7 @@
 #ifndef UANCWEXAMPLE_H
 #define UANCWEXAMPLE_H
 
-#include "ns3/common-module.h"
-#include "ns3/node-module.h"
+#include "ns3/network-module.h"
 #include "ns3/contrib-module.h"
 #include "ns3/uan-module.h"
 #include "ns3/helper-module.h"

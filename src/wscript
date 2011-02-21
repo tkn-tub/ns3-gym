@@ -19,9 +19,8 @@ except NameError:
 
 all_modules = (
     'core',
-    'common',
+    'network',
     'contrib',
-    'node',
     'internet-stack',
     'propagation',
     'devices/point-to-point',

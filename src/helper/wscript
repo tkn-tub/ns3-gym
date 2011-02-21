@@ -1,10 +1,8 @@
 ## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
 
 def build(bld):
-    helper = bld.create_ns3_module('helper', ['mobility', 'node', 'internet-stack', 'wifi', 'point-to-point', 'csma', 'onoff', 'packet-sink', 'udp-echo', 'spectrum'])
+    helper = bld.create_ns3_module('helper', ['mobility', 'network', 'internet-stack', 'wifi', 'point-to-point', 'csma', 'onoff', 'packet-sink', 'udp-echo', 'spectrum'])
     helper.source = [
-        'node-container.cc',
-        'net-device-container.cc',
         'wifi-helper.cc',
         'point-to-point-helper.cc',
         'csma-helper.cc',
@@ -12,10 +10,8 @@ def build(bld):
         'ns2-mobility-helper.cc',
         'ipv4-address-helper.cc',
         'internet-stack-helper.cc',
-        'application-container.cc',
         'on-off-helper.cc',
         'packet-sink-helper.cc',
-        'packet-socket-helper.cc',
         'ipv4-interface-container.cc',
         'udp-echo-helper.cc',
         'yans-wifi-helper.cc',
@@ -49,8 +45,6 @@ def build(bld):
     headers = bld.new_task_gen('ns3header')
     headers.module = 'helper'
     headers.source = [
-        'node-container.h',
-        'net-device-container.h',
         'wifi-helper.h',
         'point-to-point-helper.h',
         'csma-helper.h',
@@ -58,10 +52,8 @@ def build(bld):
         'ns2-mobility-helper.h',
         'ipv4-address-helper.h',
         'internet-stack-helper.h',
-        'application-container.h',
         'on-off-helper.h',
         'packet-sink-helper.h',
-        'packet-socket-helper.h',
         'ipv4-interface-container.h',
         'udp-echo-helper.h',
         'yans-wifi-helper.h',

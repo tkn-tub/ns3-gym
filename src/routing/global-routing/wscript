@@ -1,7 +1,7 @@
 ## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
 
 def build(bld):
-    module = bld.create_ns3_module('global-routing', ['node', 'helper'])
+    module = bld.create_ns3_module('global-routing', ['network', 'helper'])
     module.source = [
         'model/global-router-interface.cc',
         'model/global-route-manager.cc',

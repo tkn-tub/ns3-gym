@@ -91,7 +91,7 @@ def configure(conf):
 
 
 def build(bld):
-    obj = bld.create_ns3_module('internet-stack', ['node'])
+    obj = bld.create_ns3_module('internet-stack', ['network'])
     obj.source = [
         'tcp-test.cc',
         'udp-test.cc',
@@ -147,6 +147,23 @@ def build(bld):
         'tcp-tx-buffer.cc',
         'ipv4-packet-info-tag.cc',
         'ipv6-packet-info-tag.cc',
+        'ipv4-interface-address.cc',
+        'ipv4-address-generator.cc',
+        'ipv4-header.cc',
+        'ipv4-route.cc',
+        'ipv4-routing-protocol.cc',
+        'udp-socket.cc',
+        'udp-socket-factory.cc',
+        'tcp-socket.cc',
+        'tcp-socket-factory.cc',
+        'ipv4.cc',
+        'ipv4-raw-socket-factory.cc',
+        'ipv6-header.cc',
+        'ipv6-interface-address.cc',
+        'ipv6-route.cc',
+        'ipv6.cc',
+        'ipv6-raw-socket-factory.cc',
+        'ipv6-routing-protocol.cc',
         ]
 
     headers = bld.new_task_gen('ns3header')
@@ -176,6 +193,23 @@ def build(bld):
         'loopback-net-device.h',
         'ipv4-packet-info-tag.h',
         'ipv6-packet-info-tag.h',
+        'ipv4-interface-address.h',
+        'ipv4-address-generator.h',
+        'ipv4-header.h',
+        'ipv4-route.h',
+        'ipv4-routing-protocol.h',
+        'udp-socket.h',
+        'udp-socket-factory.h',
+        'tcp-socket.h',
+        'tcp-socket-factory.h',
+        'ipv4.h',
+        'ipv4-raw-socket-factory.h',
+        'ipv6-header.h',
+        'ipv6-interface-address.h',
+        'ipv6-route.h',
+        'ipv6.h',
+        'ipv6-raw-socket-factory.h',
+        'ipv6-routing-protocol.h',
        ]
 
     if bld.env['NSC_ENABLED']:

@@ -23,9 +23,7 @@
 #include <iostream>
 
 #include <ns3/core-module.h>
-#include <ns3/common-module.h>
-#include <ns3/node-module.h>
-#include <ns3/core-module.h>
+#include <ns3/network-module.h>
 #include <ns3/spectrum-model-ism2400MHz-res1MHz.h>
 #include <ns3/spectrum-model-300kHz-300GHz-log.h>
 #include <ns3/wifi-spectrum-value-helper.h>

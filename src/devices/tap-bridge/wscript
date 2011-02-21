@@ -20,7 +20,7 @@ def configure(conf):
         conf.env.append_value('NS3_EXECUTABLE_PATH', tapcreatordir)
 
 def build(bld):
-    module = bld.create_ns3_module('tap-bridge', ['node'])
+    module = bld.create_ns3_module('tap-bridge', ['network'])
     module.source = [
         ]
     headers = bld.new_task_gen('ns3header')

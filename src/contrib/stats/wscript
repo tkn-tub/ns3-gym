@@ -8,7 +8,7 @@ def configure(conf):
 
 
 def build(bld):
-    obj = bld.create_ns3_module('stats', ['node'])
+    obj = bld.create_ns3_module('stats', ['network'])
     obj.source = [
         'data-calculator.cc',
         'packet-data-calculators.cc',

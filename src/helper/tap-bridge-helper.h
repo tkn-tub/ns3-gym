@@ -19,7 +19,7 @@
 #ifndef TAP_BRIDGE_HELPER_H
 #define TAP_BRIDGE_HELPER_H
 
-#include "net-device-container.h"
+#include "ns3/net-device-container.h"
 #include "ns3/object-factory.h"
 #include "ns3/tap-bridge.h"
 #include <string>

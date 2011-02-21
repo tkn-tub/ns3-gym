@@ -22,8 +22,8 @@
 
 #include "ns3/object-factory.h"
 #include "ns3/ipv4-address.h"
-#include "node-container.h"
-#include "application-container.h"
+#include "ns3/node-container.h"
+#include "ns3/application-container.h"
 
 namespace ns3 {
 

@@ -20,7 +20,7 @@
 #define IPV4_ADDRESS_HELPER_H
 
 #include "ns3/ipv4-address.h"
-#include "net-device-container.h"
+#include "ns3/net-device-container.h"
 #include "ipv4-interface-container.h"
 
 namespace ns3 {

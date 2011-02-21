@@ -1,7 +1,7 @@
 ## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
 
 def build(bld):
-    module = bld.create_ns3_module('propagation', ['node', 'mobility'])
+    module = bld.create_ns3_module('propagation', ['network', 'mobility'])
     module.includes = '.'
     module.source = [
         'model/propagation-delay-model.cc',
