@@ -15,13 +15,12 @@ import sys
 import ns3_module_core
 import ns3_module_mobility
 import ns3_module_mpi
+import ns3_module_network
 import ns3_module_test
 import ns3_module_visualizer
-import ns3_module_common
-import ns3_module_contrib
-import ns3_module_node
 import ns3_module_bridge
 import ns3_module_bulk_send
+import ns3_module_contrib
 import ns3_module_csma
 import ns3_module_emu
 import ns3_module_internet_stack
@@ -97,6 +96,17 @@ def register_types(module):
         ns3_module_mpi__local.register_types(module)
     
     root_module.end_section('ns3_module_mpi')
+    root_module.begin_section('ns3_module_network')
+    ns3_module_network.register_types(module)
+    
+    try:
+        import ns3_module_network__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_network__local.register_types(module)
+    
+    root_module.end_section('ns3_module_network')
     root_module.begin_section('ns3_module_test')
     ns3_module_test.register_types(module)
     
@@ -119,39 +129,6 @@ def register_types(module):
         ns3_module_visualizer__local.register_types(module)
     
     root_module.end_section('ns3_module_visualizer')
-    root_module.begin_section('ns3_module_common')
-    ns3_module_common.register_types(module)
-    
-    try:
-        import ns3_module_common__local
-    except ImportError:
-        pass
-    else:
-        ns3_module_common__local.register_types(module)
-    
-    root_module.end_section('ns3_module_common')
-    root_module.begin_section('ns3_module_contrib')
-    ns3_module_contrib.register_types(module)
-    
-    try:
-        import ns3_module_contrib__local
-    except ImportError:
-        pass
-    else:
-        ns3_module_contrib__local.register_types(module)
-    
-    root_module.end_section('ns3_module_contrib')
-    root_module.begin_section('ns3_module_node')
-    ns3_module_node.register_types(module)
-    
-    try:
-        import ns3_module_node__local
-    except ImportError:
-        pass
-    else:
-        ns3_module_node__local.register_types(module)
-    
-    root_module.end_section('ns3_module_node')
     root_module.begin_section('ns3_module_bridge')
     ns3_module_bridge.register_types(module)
     
@@ -174,6 +151,17 @@ def register_types(module):
         ns3_module_bulk_send__local.register_types(module)
     
     root_module.end_section('ns3_module_bulk_send')
+    root_module.begin_section('ns3_module_contrib')
+    ns3_module_contrib.register_types(module)
+    
+    try:
+        import ns3_module_contrib__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_contrib__local.register_types(module)
+    
+    root_module.end_section('ns3_module_contrib')
     root_module.begin_section('ns3_module_csma')
     ns3_module_csma.register_types(module)
     
@@ -693,6 +681,17 @@ def register_methods(root_module):
         ns3_module_mpi__local.register_methods(root_module)
     
     root_module.end_section('ns3_module_mpi')
+    root_module.begin_section('ns3_module_network')
+    ns3_module_network.register_methods(root_module)
+    
+    try:
+        import ns3_module_network__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_network__local.register_methods(root_module)
+    
+    root_module.end_section('ns3_module_network')
     root_module.begin_section('ns3_module_test')
     ns3_module_test.register_methods(root_module)
     
@@ -715,39 +714,6 @@ def register_methods(root_module):
         ns3_module_visualizer__local.register_methods(root_module)
     
     root_module.end_section('ns3_module_visualizer')
-    root_module.begin_section('ns3_module_common')
-    ns3_module_common.register_methods(root_module)
-    
-    try:
-        import ns3_module_common__local
-    except ImportError:
-        pass
-    else:
-        ns3_module_common__local.register_methods(root_module)
-    
-    root_module.end_section('ns3_module_common')
-    root_module.begin_section('ns3_module_contrib')
-    ns3_module_contrib.register_methods(root_module)
-    
-    try:
-        import ns3_module_contrib__local
-    except ImportError:
-        pass
-    else:
-        ns3_module_contrib__local.register_methods(root_module)
-    
-    root_module.end_section('ns3_module_contrib')
-    root_module.begin_section('ns3_module_node')
-    ns3_module_node.register_methods(root_module)
-    
-    try:
-        import ns3_module_node__local
-    except ImportError:
-        pass
-    else:
-        ns3_module_node__local.register_methods(root_module)
-    
-    root_module.end_section('ns3_module_node')
     root_module.begin_section('ns3_module_bridge')
     ns3_module_bridge.register_methods(root_module)
     
@@ -770,6 +736,17 @@ def register_methods(root_module):
         ns3_module_bulk_send__local.register_methods(root_module)
     
     root_module.end_section('ns3_module_bulk_send')
+    root_module.begin_section('ns3_module_contrib')
+    ns3_module_contrib.register_methods(root_module)
+    
+    try:
+        import ns3_module_contrib__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_contrib__local.register_methods(root_module)
+    
+    root_module.end_section('ns3_module_contrib')
     root_module.begin_section('ns3_module_csma')
     ns3_module_csma.register_methods(root_module)
     
@@ -1181,6 +1158,17 @@ def register_functions(root_module):
         ns3_module_mpi__local.register_functions(root_module)
     
     root_module.end_section('ns3_module_mpi')
+    root_module.begin_section('ns3_module_network')
+    ns3_module_network.register_functions(root_module)
+    
+    try:
+        import ns3_module_network__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_network__local.register_functions(root_module)
+    
+    root_module.end_section('ns3_module_network')
     root_module.begin_section('ns3_module_test')
     ns3_module_test.register_functions(root_module)
     
@@ -1203,39 +1191,6 @@ def register_functions(root_module):
         ns3_module_visualizer__local.register_functions(root_module)
     
     root_module.end_section('ns3_module_visualizer')
-    root_module.begin_section('ns3_module_common')
-    ns3_module_common.register_functions(root_module)
-    
-    try:
-        import ns3_module_common__local
-    except ImportError:
-        pass
-    else:
-        ns3_module_common__local.register_functions(root_module)
-    
-    root_module.end_section('ns3_module_common')
-    root_module.begin_section('ns3_module_contrib')
-    ns3_module_contrib.register_functions(root_module)
-    
-    try:
-        import ns3_module_contrib__local
-    except ImportError:
-        pass
-    else:
-        ns3_module_contrib__local.register_functions(root_module)
-    
-    root_module.end_section('ns3_module_contrib')
-    root_module.begin_section('ns3_module_node')
-    ns3_module_node.register_functions(root_module)
-    
-    try:
-        import ns3_module_node__local
-    except ImportError:
-        pass
-    else:
-        ns3_module_node__local.register_functions(root_module)
-    
-    root_module.end_section('ns3_module_node')
     root_module.begin_section('ns3_module_bridge')
     ns3_module_bridge.register_functions(root_module)
     
@@ -1258,6 +1213,17 @@ def register_functions(root_module):
         ns3_module_bulk_send__local.register_functions(root_module)
     
     root_module.end_section('ns3_module_bulk_send')
+    root_module.begin_section('ns3_module_contrib')
+    ns3_module_contrib.register_functions(root_module)
+    
+    try:
+        import ns3_module_contrib__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_contrib__local.register_functions(root_module)
+    
+    root_module.end_section('ns3_module_contrib')
     root_module.begin_section('ns3_module_csma')
     ns3_module_csma.register_functions(root_module)
     

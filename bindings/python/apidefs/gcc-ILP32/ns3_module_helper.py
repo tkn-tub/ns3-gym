@@ -5,8 +5,6 @@ def register_types(module):
     
     ## animation-interface.h: ns3::AnimationInterface [class]
     module.add_class('AnimationInterface')
-    ## application-container.h: ns3::ApplicationContainer [class]
-    module.add_class('ApplicationContainer')
     ## trace-helper.h: ns3::AsciiTraceHelper [class]
     module.add_class('AsciiTraceHelper')
     ## trace-helper.h: ns3::AsciiTraceHelperForDevice [class]
@@ -39,18 +37,12 @@ def register_types(module):
     module.add_enum('ChannelPolicy', ['SPREAD_CHANNELS', 'ZERO_CHANNEL'], outer_class=root_module['ns3::MeshHelper'])
     ## mobility-helper.h: ns3::MobilityHelper [class]
     module.add_class('MobilityHelper')
-    ## net-device-container.h: ns3::NetDeviceContainer [class]
-    module.add_class('NetDeviceContainer')
-    ## node-container.h: ns3::NodeContainer [class]
-    module.add_class('NodeContainer')
     ## ns2-mobility-helper.h: ns3::Ns2MobilityHelper [class]
     module.add_class('Ns2MobilityHelper')
     ## on-off-helper.h: ns3::OnOffHelper [class]
     module.add_class('OnOffHelper')
     ## packet-sink-helper.h: ns3::PacketSinkHelper [class]
     module.add_class('PacketSinkHelper')
-    ## packet-socket-helper.h: ns3::PacketSocketHelper [class]
-    module.add_class('PacketSocketHelper')
     ## trace-helper.h: ns3::PcapHelper [class]
     module.add_class('PcapHelper')
     ## trace-helper.h: ns3::PcapHelper [enumeration]
@@ -224,7 +216,6 @@ def register_types_ns3_olsr(module):
 
 def register_methods(root_module):
     register_Ns3AnimationInterface_methods(root_module, root_module['ns3::AnimationInterface'])
-    register_Ns3ApplicationContainer_methods(root_module, root_module['ns3::ApplicationContainer'])
     register_Ns3AsciiTraceHelper_methods(root_module, root_module['ns3::AsciiTraceHelper'])
     register_Ns3AsciiTraceHelperForDevice_methods(root_module, root_module['ns3::AsciiTraceHelperForDevice'])
     register_Ns3AsciiTraceHelperForIpv4_methods(root_module, root_module['ns3::AsciiTraceHelperForIpv4'])
@@ -240,12 +231,9 @@ def register_methods(root_module):
     register_Ns3Ipv6RoutingHelper_methods(root_module, root_module['ns3::Ipv6RoutingHelper'])
     register_Ns3MeshHelper_methods(root_module, root_module['ns3::MeshHelper'])
     register_Ns3MobilityHelper_methods(root_module, root_module['ns3::MobilityHelper'])
-    register_Ns3NetDeviceContainer_methods(root_module, root_module['ns3::NetDeviceContainer'])
-    register_Ns3NodeContainer_methods(root_module, root_module['ns3::NodeContainer'])
     register_Ns3Ns2MobilityHelper_methods(root_module, root_module['ns3::Ns2MobilityHelper'])
     register_Ns3OnOffHelper_methods(root_module, root_module['ns3::OnOffHelper'])
     register_Ns3PacketSinkHelper_methods(root_module, root_module['ns3::PacketSinkHelper'])
-    register_Ns3PacketSocketHelper_methods(root_module, root_module['ns3::PacketSocketHelper'])
     register_Ns3PcapHelper_methods(root_module, root_module['ns3::PcapHelper'])
     register_Ns3PcapHelperForDevice_methods(root_module, root_module['ns3::PcapHelperForDevice'])
     register_Ns3PcapHelperForIpv4_methods(root_module, root_module['ns3::PcapHelperForIpv4'])
@@ -304,57 +292,6 @@ def register_Ns3AnimationInterface_methods(root_module, cls):
     cls.add_method('StopAnimation', 
                    'void', 
                    [])
-    return
-
-def register_Ns3ApplicationContainer_methods(root_module, cls):
-    ## application-container.h: ns3::ApplicationContainer::ApplicationContainer(ns3::ApplicationContainer const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::ApplicationContainer const &', 'arg0')])
-    ## application-container.h: ns3::ApplicationContainer::ApplicationContainer() [constructor]
-    cls.add_constructor([])
-    ## application-container.h: ns3::ApplicationContainer::ApplicationContainer(ns3::Ptr<ns3::Application> application) [constructor]
-    cls.add_constructor([param('ns3::Ptr< ns3::Application >', 'application')])
-    ## application-container.h: ns3::ApplicationContainer::ApplicationContainer(std::string name) [constructor]
-    cls.add_constructor([param('std::string', 'name')])
-    ## application-container.h: void ns3::ApplicationContainer::Add(ns3::ApplicationContainer other) [member function]
-    cls.add_method('Add', 
-                   'void', 
-                   [param('ns3::ApplicationContainer', 'other')])
-    ## application-container.h: void ns3::ApplicationContainer::Add(ns3::Ptr<ns3::Application> application) [member function]
-    cls.add_method('Add', 
-                   'void', 
-                   [param('ns3::Ptr< ns3::Application >', 'application')])
-    ## application-container.h: void ns3::ApplicationContainer::Add(std::string name) [member function]
-    cls.add_method('Add', 
-                   'void', 
-                   [param('std::string', 'name')])
-    ## application-container.h: __gnu_cxx::__normal_iterator<const ns3::Ptr<ns3::Application>*,std::vector<ns3::Ptr<ns3::Application>, std::allocator<ns3::Ptr<ns3::Application> > > > ns3::ApplicationContainer::Begin() const [member function]
-    cls.add_method('Begin', 
-                   '__gnu_cxx::__normal_iterator< ns3::Ptr< ns3::Application > const, std::vector< ns3::Ptr< ns3::Application > > >', 
-                   [], 
-                   is_const=True)
-    ## application-container.h: __gnu_cxx::__normal_iterator<const ns3::Ptr<ns3::Application>*,std::vector<ns3::Ptr<ns3::Application>, std::allocator<ns3::Ptr<ns3::Application> > > > ns3::ApplicationContainer::End() const [member function]
-    cls.add_method('End', 
-                   '__gnu_cxx::__normal_iterator< ns3::Ptr< ns3::Application > const, std::vector< ns3::Ptr< ns3::Application > > >', 
-                   [], 
-                   is_const=True)
-    ## application-container.h: ns3::Ptr<ns3::Application> ns3::ApplicationContainer::Get(uint32_t i) const [member function]
-    cls.add_method('Get', 
-                   'ns3::Ptr< ns3::Application >', 
-                   [param('uint32_t', 'i')], 
-                   is_const=True)
-    ## application-container.h: uint32_t ns3::ApplicationContainer::GetN() const [member function]
-    cls.add_method('GetN', 
-                   'uint32_t', 
-                   [], 
-                   is_const=True)
-    ## application-container.h: void ns3::ApplicationContainer::Start(ns3::Time start) [member function]
-    cls.add_method('Start', 
-                   'void', 
-                   [param('ns3::Time', 'start')])
-    ## application-container.h: void ns3::ApplicationContainer::Stop(ns3::Time stop) [member function]
-    cls.add_method('Stop', 
-                   'void', 
-                   [param('ns3::Time', 'stop')])
     return
 
 def register_Ns3AsciiTraceHelper_methods(root_module, cls):
@@ -1024,115 +961,6 @@ def register_Ns3MobilityHelper_methods(root_module, cls):
                    [param('std::string', 'type'), param('std::string', 'n1', default_value='""'), param('ns3::AttributeValue const &', 'v1', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n2', default_value='""'), param('ns3::AttributeValue const &', 'v2', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n3', default_value='""'), param('ns3::AttributeValue const &', 'v3', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n4', default_value='""'), param('ns3::AttributeValue const &', 'v4', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n5', default_value='""'), param('ns3::AttributeValue const &', 'v5', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n6', default_value='""'), param('ns3::AttributeValue const &', 'v6', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n7', default_value='""'), param('ns3::AttributeValue const &', 'v7', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n8', default_value='""'), param('ns3::AttributeValue const &', 'v8', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n9', default_value='""'), param('ns3::AttributeValue const &', 'v9', default_value='ns3::EmptyAttributeValue()')])
     return
 
-def register_Ns3NetDeviceContainer_methods(root_module, cls):
-    ## net-device-container.h: ns3::NetDeviceContainer::NetDeviceContainer(ns3::NetDeviceContainer const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::NetDeviceContainer const &', 'arg0')])
-    ## net-device-container.h: ns3::NetDeviceContainer::NetDeviceContainer() [constructor]
-    cls.add_constructor([])
-    ## net-device-container.h: ns3::NetDeviceContainer::NetDeviceContainer(ns3::Ptr<ns3::NetDevice> dev) [constructor]
-    cls.add_constructor([param('ns3::Ptr< ns3::NetDevice >', 'dev')])
-    ## net-device-container.h: ns3::NetDeviceContainer::NetDeviceContainer(std::string devName) [constructor]
-    cls.add_constructor([param('std::string', 'devName')])
-    ## net-device-container.h: ns3::NetDeviceContainer::NetDeviceContainer(ns3::NetDeviceContainer const & a, ns3::NetDeviceContainer const & b) [constructor]
-    cls.add_constructor([param('ns3::NetDeviceContainer const &', 'a'), param('ns3::NetDeviceContainer const &', 'b')])
-    ## net-device-container.h: void ns3::NetDeviceContainer::Add(ns3::NetDeviceContainer other) [member function]
-    cls.add_method('Add', 
-                   'void', 
-                   [param('ns3::NetDeviceContainer', 'other')])
-    ## net-device-container.h: void ns3::NetDeviceContainer::Add(ns3::Ptr<ns3::NetDevice> device) [member function]
-    cls.add_method('Add', 
-                   'void', 
-                   [param('ns3::Ptr< ns3::NetDevice >', 'device')])
-    ## net-device-container.h: void ns3::NetDeviceContainer::Add(std::string deviceName) [member function]
-    cls.add_method('Add', 
-                   'void', 
-                   [param('std::string', 'deviceName')])
-    ## net-device-container.h: __gnu_cxx::__normal_iterator<const ns3::Ptr<ns3::NetDevice>*,std::vector<ns3::Ptr<ns3::NetDevice>, std::allocator<ns3::Ptr<ns3::NetDevice> > > > ns3::NetDeviceContainer::Begin() const [member function]
-    cls.add_method('Begin', 
-                   '__gnu_cxx::__normal_iterator< ns3::Ptr< ns3::NetDevice > const, std::vector< ns3::Ptr< ns3::NetDevice > > >', 
-                   [], 
-                   is_const=True)
-    ## net-device-container.h: __gnu_cxx::__normal_iterator<const ns3::Ptr<ns3::NetDevice>*,std::vector<ns3::Ptr<ns3::NetDevice>, std::allocator<ns3::Ptr<ns3::NetDevice> > > > ns3::NetDeviceContainer::End() const [member function]
-    cls.add_method('End', 
-                   '__gnu_cxx::__normal_iterator< ns3::Ptr< ns3::NetDevice > const, std::vector< ns3::Ptr< ns3::NetDevice > > >', 
-                   [], 
-                   is_const=True)
-    ## net-device-container.h: ns3::Ptr<ns3::NetDevice> ns3::NetDeviceContainer::Get(uint32_t i) const [member function]
-    cls.add_method('Get', 
-                   'ns3::Ptr< ns3::NetDevice >', 
-                   [param('uint32_t', 'i')], 
-                   is_const=True)
-    ## net-device-container.h: uint32_t ns3::NetDeviceContainer::GetN() const [member function]
-    cls.add_method('GetN', 
-                   'uint32_t', 
-                   [], 
-                   is_const=True)
-    return
-
-def register_Ns3NodeContainer_methods(root_module, cls):
-    ## node-container.h: ns3::NodeContainer::NodeContainer(ns3::NodeContainer const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::NodeContainer const &', 'arg0')])
-    ## node-container.h: ns3::NodeContainer::NodeContainer() [constructor]
-    cls.add_constructor([])
-    ## node-container.h: ns3::NodeContainer::NodeContainer(ns3::Ptr<ns3::Node> node) [constructor]
-    cls.add_constructor([param('ns3::Ptr< ns3::Node >', 'node')])
-    ## node-container.h: ns3::NodeContainer::NodeContainer(std::string nodeName) [constructor]
-    cls.add_constructor([param('std::string', 'nodeName')])
-    ## node-container.h: ns3::NodeContainer::NodeContainer(ns3::NodeContainer const & a, ns3::NodeContainer const & b) [constructor]
-    cls.add_constructor([param('ns3::NodeContainer const &', 'a'), param('ns3::NodeContainer const &', 'b')])
-    ## node-container.h: ns3::NodeContainer::NodeContainer(ns3::NodeContainer const & a, ns3::NodeContainer const & b, ns3::NodeContainer const & c) [constructor]
-    cls.add_constructor([param('ns3::NodeContainer const &', 'a'), param('ns3::NodeContainer const &', 'b'), param('ns3::NodeContainer const &', 'c')])
-    ## node-container.h: ns3::NodeContainer::NodeContainer(ns3::NodeContainer const & a, ns3::NodeContainer const & b, ns3::NodeContainer const & c, ns3::NodeContainer const & d) [constructor]
-    cls.add_constructor([param('ns3::NodeContainer const &', 'a'), param('ns3::NodeContainer const &', 'b'), param('ns3::NodeContainer const &', 'c'), param('ns3::NodeContainer const &', 'd')])
-    ## node-container.h: ns3::NodeContainer::NodeContainer(ns3::NodeContainer const & a, ns3::NodeContainer const & b, ns3::NodeContainer const & c, ns3::NodeContainer const & d, ns3::NodeContainer const & e) [constructor]
-    cls.add_constructor([param('ns3::NodeContainer const &', 'a'), param('ns3::NodeContainer const &', 'b'), param('ns3::NodeContainer const &', 'c'), param('ns3::NodeContainer const &', 'd'), param('ns3::NodeContainer const &', 'e')])
-    ## node-container.h: void ns3::NodeContainer::Add(ns3::NodeContainer other) [member function]
-    cls.add_method('Add', 
-                   'void', 
-                   [param('ns3::NodeContainer', 'other')])
-    ## node-container.h: void ns3::NodeContainer::Add(ns3::Ptr<ns3::Node> node) [member function]
-    cls.add_method('Add', 
-                   'void', 
-                   [param('ns3::Ptr< ns3::Node >', 'node')])
-    ## node-container.h: void ns3::NodeContainer::Add(std::string nodeName) [member function]
-    cls.add_method('Add', 
-                   'void', 
-                   [param('std::string', 'nodeName')])
-    ## node-container.h: __gnu_cxx::__normal_iterator<const ns3::Ptr<ns3::Node>*,std::vector<ns3::Ptr<ns3::Node>, std::allocator<ns3::Ptr<ns3::Node> > > > ns3::NodeContainer::Begin() const [member function]
-    cls.add_method('Begin', 
-                   '__gnu_cxx::__normal_iterator< ns3::Ptr< ns3::Node > const, std::vector< ns3::Ptr< ns3::Node > > >', 
-                   [], 
-                   is_const=True)
-    ## node-container.h: void ns3::NodeContainer::Create(uint32_t n) [member function]
-    cls.add_method('Create', 
-                   'void', 
-                   [param('uint32_t', 'n')])
-    ## node-container.h: void ns3::NodeContainer::Create(uint32_t n, uint32_t systemId) [member function]
-    cls.add_method('Create', 
-                   'void', 
-                   [param('uint32_t', 'n'), param('uint32_t', 'systemId')])
-    ## node-container.h: __gnu_cxx::__normal_iterator<const ns3::Ptr<ns3::Node>*,std::vector<ns3::Ptr<ns3::Node>, std::allocator<ns3::Ptr<ns3::Node> > > > ns3::NodeContainer::End() const [member function]
-    cls.add_method('End', 
-                   '__gnu_cxx::__normal_iterator< ns3::Ptr< ns3::Node > const, std::vector< ns3::Ptr< ns3::Node > > >', 
-                   [], 
-                   is_const=True)
-    ## node-container.h: ns3::Ptr<ns3::Node> ns3::NodeContainer::Get(uint32_t i) const [member function]
-    cls.add_method('Get', 
-                   'ns3::Ptr< ns3::Node >', 
-                   [param('uint32_t', 'i')], 
-                   is_const=True)
-    ## node-container.h: static ns3::NodeContainer ns3::NodeContainer::GetGlobal() [member function]
-    cls.add_method('GetGlobal', 
-                   'ns3::NodeContainer', 
-                   [], 
-                   is_static=True)
-    ## node-container.h: uint32_t ns3::NodeContainer::GetN() const [member function]
-    cls.add_method('GetN', 
-                   'uint32_t', 
-                   [], 
-                   is_const=True)
-    return
-
 def register_Ns3Ns2MobilityHelper_methods(root_module, cls):
     ## ns2-mobility-helper.h: ns3::Ns2MobilityHelper::Ns2MobilityHelper(ns3::Ns2MobilityHelper const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::Ns2MobilityHelper const &', 'arg0')])
@@ -1195,28 +1023,6 @@ def register_Ns3PacketSinkHelper_methods(root_module, cls):
     cls.add_method('SetAttribute', 
                    'void', 
                    [param('std::string', 'name'), param('ns3::AttributeValue const &', 'value')])
-    return
-
-def register_Ns3PacketSocketHelper_methods(root_module, cls):
-    ## packet-socket-helper.h: ns3::PacketSocketHelper::PacketSocketHelper() [constructor]
-    cls.add_constructor([])
-    ## packet-socket-helper.h: ns3::PacketSocketHelper::PacketSocketHelper(ns3::PacketSocketHelper const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::PacketSocketHelper const &', 'arg0')])
-    ## packet-socket-helper.h: void ns3::PacketSocketHelper::Install(ns3::Ptr<ns3::Node> node) const [member function]
-    cls.add_method('Install', 
-                   'void', 
-                   [param('ns3::Ptr< ns3::Node >', 'node')], 
-                   is_const=True)
-    ## packet-socket-helper.h: void ns3::PacketSocketHelper::Install(std::string nodeName) const [member function]
-    cls.add_method('Install', 
-                   'void', 
-                   [param('std::string', 'nodeName')], 
-                   is_const=True)
-    ## packet-socket-helper.h: void ns3::PacketSocketHelper::Install(ns3::NodeContainer c) const [member function]
-    cls.add_method('Install', 
-                   'void', 
-                   [param('ns3::NodeContainer', 'c')], 
-                   is_const=True)
     return
 
 def register_Ns3PcapHelper_methods(root_module, cls):
