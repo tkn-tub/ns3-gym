@@ -24,7 +24,9 @@
 #include "ns3/object.h"
 #include "ns3/socket.h"
 #include "ns3/callback.h"
+#include "ns3/ipv4-l4-protocol.h"
 #include "ns3/ipv4-address.h"
+#include "ipv4-route.h"
 #include "ipv4-interface-address.h"
 
 namespace ns3 {
@@ -127,6 +129,27 @@ public:
    * method will not match broadcast or multicast addresses.
    */
   virtual int32_t GetInterfaceForAddress (Ipv4Address address) const = 0;
+
+  /**
+   * \param packet packet to send
+   * \param source source address of packet
+   * \param destination address of packet
+   * \param protocol number of packet
+   * \param route route entry
+   *
+   * Higher-level layers call this method to send a packet
+   * down the stack to the MAC and PHY layers.
+   */
+  virtual void Send (Ptr<Packet> packet, Ipv4Address source,
+       Ipv4Address destination, uint8_t protocol, Ptr<Ipv4Route> route) = 0; 
+
+  /**
+   * \param protocol a pointer to the protocol to add to this L4 Demux.
+   *
+   * Adds a protocol to an internal list of L4 protocols.
+   *
+   */
+  virtual void Insert(Ptr<Ipv4L4Protocol> protocol) = 0;
 
   /**
    * \brief Determine whether address and interface corresponding to

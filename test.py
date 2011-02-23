@@ -46,11 +46,13 @@ interesting_config_items = [
     "ENABLE_REAL_TIME",
     "ENABLE_EXAMPLES",
     "ENABLE_PYTHON_BINDINGS",
+    "ENABLE_CLICK",
 ]
 
 NSC_ENABLED = False
 ENABLE_REAL_TIME = False
 ENABLE_EXAMPLES = True
+ENABLE_CLICK = False
 
 #
 # If the user has constrained us to run certain kinds of tests, we can tell waf
@@ -176,6 +178,8 @@ example_tests = [
     ("examples/wireless/wifi-simple-infra", "True", "True"),
     ("examples/wireless/wifi-simple-interference", "True", "True"),
     ("examples/wireless/wifi-wired-bridging", "True", "True"),
+
+    ("src/routing/click/examples/nsclick-simple-lan", "ENABLE_CLICK == True", "True"),
 
     ("examples/wimax/wimax-simple", "True", "True"),
     ("examples/wimax/wimax-ipv4", "True", "True"),

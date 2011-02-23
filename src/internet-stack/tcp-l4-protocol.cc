@@ -112,7 +112,7 @@ TcpL4Protocol::NotifyNewAggregate ()
       Ptr<Node> node = this->GetObject<Node> ();
       if (node != 0)
         {
-          Ptr<Ipv4L3Protocol> ipv4 = this->GetObject<Ipv4L3Protocol> ();
+          Ptr<Ipv4> ipv4 = this->GetObject<Ipv4> ();
           if (ipv4 != 0)
             {
               this->SetNode (node);
@@ -120,7 +120,7 @@ TcpL4Protocol::NotifyNewAggregate ()
               Ptr<TcpSocketFactoryImpl> tcpFactory = CreateObject<TcpSocketFactoryImpl> ();
               tcpFactory->SetTcp (this);
               node->AggregateObject (tcpFactory);
-              this->SetDownTarget (MakeCallback(&Ipv4L3Protocol::Send, ipv4));
+              this->SetDownTarget (MakeCallback(&Ipv4::Send, ipv4));
             }
         }
     }
@@ -320,8 +320,7 @@ TcpL4Protocol::Send (Ptr<Packet> packet,
 
   packet->AddHeader (tcpHeader);
 
-  Ptr<Ipv4L3Protocol> ipv4 = 
-    m_node->GetObject<Ipv4L3Protocol> ();
+  Ptr<Ipv4> ipv4 = m_node->GetObject<Ipv4> ();
   if (ipv4 != 0)
     {
       Ipv4Header header;
@@ -366,8 +365,8 @@ TcpL4Protocol::SendPacket (Ptr<Packet> packet, const TcpHeader &outgoing,
 
   packet->AddHeader (outgoingHeader);
 
-  Ptr<Ipv4L3Protocol> ipv4 = 
-    m_node->GetObject<Ipv4L3Protocol> ();
+  Ptr<Ipv4> ipv4 = 
+    m_node->GetObject<Ipv4> ();
   if (ipv4 != 0)
     {
       Ipv4Header header;

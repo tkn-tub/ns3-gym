@@ -184,6 +184,7 @@ def build(bld):
         'tcp-l4-protocol.h',
         'icmpv4-l4-protocol.h',
         'ipv4-l4-protocol.h',
+        'ipv4-raw-socket-impl.h',
         'arp-header.h',
         'arp-cache.h',
         'icmpv6-l4-protocol.h',

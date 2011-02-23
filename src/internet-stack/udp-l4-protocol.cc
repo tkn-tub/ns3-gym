@@ -87,7 +87,7 @@ UdpL4Protocol::NotifyNewAggregate ()
       Ptr<Node> node = this->GetObject<Node> ();
       if (node != 0)
         {
-          Ptr<Ipv4L3Protocol> ipv4 = this->GetObject<Ipv4L3Protocol> ();
+          Ptr<Ipv4> ipv4 = this->GetObject<Ipv4> ();
           if (ipv4 != 0)
             {
               this->SetNode (node);
@@ -95,7 +95,7 @@ UdpL4Protocol::NotifyNewAggregate ()
               Ptr<UdpSocketFactoryImpl> udpFactory = CreateObject<UdpSocketFactoryImpl> ();
               udpFactory->SetUdp (this);
               node->AggregateObject (udpFactory);
-              this->SetDownTarget (MakeCallback(&Ipv4L3Protocol::Send, ipv4));
+              this->SetDownTarget (MakeCallback(&Ipv4::Send, ipv4));
             }
         }
     }

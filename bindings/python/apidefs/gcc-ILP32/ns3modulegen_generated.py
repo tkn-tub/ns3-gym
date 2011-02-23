@@ -36,6 +36,7 @@ import ns3_module_virtual_net_device
 import ns3_module_wifi
 import ns3_module_wimax
 import ns3_module_aodv
+import ns3_module_click
 import ns3_module_flow_monitor
 import ns3_module_nix_vector_routing
 import ns3_module_ping6
@@ -327,6 +328,17 @@ def register_types(module):
         ns3_module_aodv__local.register_types(module)
     
     root_module.end_section('ns3_module_aodv')
+    root_module.begin_section('ns3_module_click')
+    ns3_module_click.register_types(module)
+    
+    try:
+        import ns3_module_click__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_click__local.register_types(module)
+    
+    root_module.end_section('ns3_module_click')
     root_module.begin_section('ns3_module_flow_monitor')
     ns3_module_flow_monitor.register_types(module)
     
@@ -912,6 +924,17 @@ def register_methods(root_module):
         ns3_module_aodv__local.register_methods(root_module)
     
     root_module.end_section('ns3_module_aodv')
+    root_module.begin_section('ns3_module_click')
+    ns3_module_click.register_methods(root_module)
+    
+    try:
+        import ns3_module_click__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_click__local.register_methods(root_module)
+    
+    root_module.end_section('ns3_module_click')
     root_module.begin_section('ns3_module_flow_monitor')
     ns3_module_flow_monitor.register_methods(root_module)
     
@@ -1389,6 +1412,17 @@ def register_functions(root_module):
         ns3_module_aodv__local.register_functions(root_module)
     
     root_module.end_section('ns3_module_aodv')
+    root_module.begin_section('ns3_module_click')
+    ns3_module_click.register_functions(root_module)
+    
+    try:
+        import ns3_module_click__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_click__local.register_functions(root_module)
+    
+    root_module.end_section('ns3_module_click')
     root_module.begin_section('ns3_module_flow_monitor')
     ns3_module_flow_monitor.register_functions(root_module)
     
