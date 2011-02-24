@@ -151,6 +151,8 @@ def register_types(module):
     module.add_class('Ipv4MulticastRoute', parent=root_module['ns3::SimpleRefCount< ns3::Ipv4MulticastRoute, ns3::empty, ns3::DefaultDeleter<ns3::Ipv4MulticastRoute> >'])
     ## ipv4-raw-socket-factory.h: ns3::Ipv4RawSocketFactory [class]
     module.add_class('Ipv4RawSocketFactory', parent=root_module['ns3::SocketFactory'])
+    ## ipv4-raw-socket-impl.h: ns3::Ipv4RawSocketImpl [class]
+    module.add_class('Ipv4RawSocketImpl', parent=root_module['ns3::Socket'])
     ## ipv4-route.h: ns3::Ipv4Route [class]
     module.add_class('Ipv4Route', parent=root_module['ns3::SimpleRefCount< ns3::Ipv4Route, ns3::empty, ns3::DefaultDeleter<ns3::Ipv4Route> >'])
     ## ipv4-routing-protocol.h: ns3::Ipv4RoutingProtocol [class]
@@ -344,6 +346,7 @@ def register_methods(root_module):
     register_Ns3Ipv4L4Protocol_methods(root_module, root_module['ns3::Ipv4L4Protocol'])
     register_Ns3Ipv4MulticastRoute_methods(root_module, root_module['ns3::Ipv4MulticastRoute'])
     register_Ns3Ipv4RawSocketFactory_methods(root_module, root_module['ns3::Ipv4RawSocketFactory'])
+    register_Ns3Ipv4RawSocketImpl_methods(root_module, root_module['ns3::Ipv4RawSocketImpl'])
     register_Ns3Ipv4Route_methods(root_module, root_module['ns3::Ipv4Route'])
     register_Ns3Ipv4RoutingProtocol_methods(root_module, root_module['ns3::Ipv4RoutingProtocol'])
     register_Ns3Ipv6_methods(root_module, root_module['ns3::Ipv6'])
@@ -3332,6 +3335,11 @@ def register_Ns3Ipv4_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
+    ## ipv4.h: void ns3::Ipv4::Insert(ns3::Ptr<ns3::Ipv4L4Protocol> protocol) [member function]
+    cls.add_method('Insert', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Ipv4L4Protocol >', 'protocol')], 
+                   is_pure_virtual=True, is_virtual=True)
     ## ipv4.h: bool ns3::Ipv4::IsDestinationAddress(ns3::Ipv4Address address, uint32_t iif) const [member function]
     cls.add_method('IsDestinationAddress', 
                    'bool', 
@@ -3356,6 +3364,11 @@ def register_Ns3Ipv4_methods(root_module, cls):
     cls.add_method('SelectSourceAddress', 
                    'ns3::Ipv4Address', 
                    [param('ns3::Ptr< ns3::NetDevice const >', 'device'), param('ns3::Ipv4Address', 'dst'), param('ns3::Ipv4InterfaceAddress::InterfaceAddressScope_e', 'scope')], 
+                   is_pure_virtual=True, is_virtual=True)
+    ## ipv4.h: void ns3::Ipv4::Send(ns3::Ptr<ns3::Packet> packet, ns3::Ipv4Address source, ns3::Ipv4Address destination, uint8_t protocol, ns3::Ptr<ns3::Ipv4Route> route) [member function]
+    cls.add_method('Send', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Packet >', 'packet'), param('ns3::Ipv4Address', 'source'), param('ns3::Ipv4Address', 'destination'), param('uint8_t', 'protocol'), param('ns3::Ptr< ns3::Ipv4Route >', 'route')], 
                    is_pure_virtual=True, is_virtual=True)
     ## ipv4.h: void ns3::Ipv4::SetDown(uint32_t interface) [member function]
     cls.add_method('SetDown', 
@@ -3538,7 +3551,8 @@ def register_Ns3Ipv4L3Protocol_methods(root_module, cls):
     ## ipv4-l3-protocol.h: void ns3::Ipv4L3Protocol::Insert(ns3::Ptr<ns3::Ipv4L4Protocol> protocol) [member function]
     cls.add_method('Insert', 
                    'void', 
-                   [param('ns3::Ptr< ns3::Ipv4L4Protocol >', 'protocol')])
+                   [param('ns3::Ptr< ns3::Ipv4L4Protocol >', 'protocol')], 
+                   is_virtual=True)
     ## ipv4-l3-protocol.h: ns3::Ptr<ns3::Ipv4L4Protocol> ns3::Ipv4L3Protocol::GetProtocol(int protocolNumber) const [member function]
     cls.add_method('GetProtocol', 
                    'ns3::Ptr< ns3::Ipv4L4Protocol >', 
@@ -3559,7 +3573,8 @@ def register_Ns3Ipv4L3Protocol_methods(root_module, cls):
     ## ipv4-l3-protocol.h: void ns3::Ipv4L3Protocol::Send(ns3::Ptr<ns3::Packet> packet, ns3::Ipv4Address source, ns3::Ipv4Address destination, uint8_t protocol, ns3::Ptr<ns3::Ipv4Route> route) [member function]
     cls.add_method('Send', 
                    'void', 
-                   [param('ns3::Ptr< ns3::Packet >', 'packet'), param('ns3::Ipv4Address', 'source'), param('ns3::Ipv4Address', 'destination'), param('uint8_t', 'protocol'), param('ns3::Ptr< ns3::Ipv4Route >', 'route')])
+                   [param('ns3::Ptr< ns3::Packet >', 'packet'), param('ns3::Ipv4Address', 'source'), param('ns3::Ipv4Address', 'destination'), param('uint8_t', 'protocol'), param('ns3::Ptr< ns3::Ipv4Route >', 'route')], 
+                   is_virtual=True)
     ## ipv4-l3-protocol.h: void ns3::Ipv4L3Protocol::SendWithHeader(ns3::Ptr<ns3::Packet> packet, ns3::Ipv4Header ipHeader, ns3::Ptr<ns3::Ipv4Route> route) [member function]
     cls.add_method('SendWithHeader', 
                    'void', 
@@ -3795,6 +3810,130 @@ def register_Ns3Ipv4RawSocketFactory_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
+    return
+
+def register_Ns3Ipv4RawSocketImpl_methods(root_module, cls):
+    ## ipv4-raw-socket-impl.h: ns3::Ipv4RawSocketImpl::Ipv4RawSocketImpl(ns3::Ipv4RawSocketImpl const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::Ipv4RawSocketImpl const &', 'arg0')])
+    ## ipv4-raw-socket-impl.h: ns3::Ipv4RawSocketImpl::Ipv4RawSocketImpl() [constructor]
+    cls.add_constructor([])
+    ## ipv4-raw-socket-impl.h: int ns3::Ipv4RawSocketImpl::Bind(ns3::Address const & address) [member function]
+    cls.add_method('Bind', 
+                   'int', 
+                   [param('ns3::Address const &', 'address')], 
+                   is_virtual=True)
+    ## ipv4-raw-socket-impl.h: int ns3::Ipv4RawSocketImpl::Bind() [member function]
+    cls.add_method('Bind', 
+                   'int', 
+                   [], 
+                   is_virtual=True)
+    ## ipv4-raw-socket-impl.h: int ns3::Ipv4RawSocketImpl::Close() [member function]
+    cls.add_method('Close', 
+                   'int', 
+                   [], 
+                   is_virtual=True)
+    ## ipv4-raw-socket-impl.h: int ns3::Ipv4RawSocketImpl::Connect(ns3::Address const & address) [member function]
+    cls.add_method('Connect', 
+                   'int', 
+                   [param('ns3::Address const &', 'address')], 
+                   is_virtual=True)
+    ## ipv4-raw-socket-impl.h: bool ns3::Ipv4RawSocketImpl::ForwardUp(ns3::Ptr<ns3::Packet const> p, ns3::Ipv4Header ipHeader, ns3::Ptr<ns3::Ipv4Interface> incomingInterface) [member function]
+    cls.add_method('ForwardUp', 
+                   'bool', 
+                   [param('ns3::Ptr< ns3::Packet const >', 'p'), param('ns3::Ipv4Header', 'ipHeader'), param('ns3::Ptr< ns3::Ipv4Interface >', 'incomingInterface')])
+    ## ipv4-raw-socket-impl.h: bool ns3::Ipv4RawSocketImpl::GetAllowBroadcast() const [member function]
+    cls.add_method('GetAllowBroadcast', 
+                   'bool', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## ipv4-raw-socket-impl.h: ns3::Socket::SocketErrno ns3::Ipv4RawSocketImpl::GetErrno() const [member function]
+    cls.add_method('GetErrno', 
+                   'ns3::Socket::SocketErrno', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## ipv4-raw-socket-impl.h: ns3::Ptr<ns3::Node> ns3::Ipv4RawSocketImpl::GetNode() const [member function]
+    cls.add_method('GetNode', 
+                   'ns3::Ptr< ns3::Node >', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## ipv4-raw-socket-impl.h: uint32_t ns3::Ipv4RawSocketImpl::GetRxAvailable() const [member function]
+    cls.add_method('GetRxAvailable', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## ipv4-raw-socket-impl.h: int ns3::Ipv4RawSocketImpl::GetSockName(ns3::Address & address) const [member function]
+    cls.add_method('GetSockName', 
+                   'int', 
+                   [param('ns3::Address &', 'address')], 
+                   is_const=True, is_virtual=True)
+    ## ipv4-raw-socket-impl.h: ns3::Socket::SocketType ns3::Ipv4RawSocketImpl::GetSocketType() const [member function]
+    cls.add_method('GetSocketType', 
+                   'ns3::Socket::SocketType', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## ipv4-raw-socket-impl.h: uint32_t ns3::Ipv4RawSocketImpl::GetTxAvailable() const [member function]
+    cls.add_method('GetTxAvailable', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## ipv4-raw-socket-impl.h: static ns3::TypeId ns3::Ipv4RawSocketImpl::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## ipv4-raw-socket-impl.h: int ns3::Ipv4RawSocketImpl::Listen() [member function]
+    cls.add_method('Listen', 
+                   'int', 
+                   [], 
+                   is_virtual=True)
+    ## ipv4-raw-socket-impl.h: ns3::Ptr<ns3::Packet> ns3::Ipv4RawSocketImpl::Recv(uint32_t maxSize, uint32_t flags) [member function]
+    cls.add_method('Recv', 
+                   'ns3::Ptr< ns3::Packet >', 
+                   [param('uint32_t', 'maxSize'), param('uint32_t', 'flags')], 
+                   is_virtual=True)
+    ## ipv4-raw-socket-impl.h: ns3::Ptr<ns3::Packet> ns3::Ipv4RawSocketImpl::RecvFrom(uint32_t maxSize, uint32_t flags, ns3::Address & fromAddress) [member function]
+    cls.add_method('RecvFrom', 
+                   'ns3::Ptr< ns3::Packet >', 
+                   [param('uint32_t', 'maxSize'), param('uint32_t', 'flags'), param('ns3::Address &', 'fromAddress')], 
+                   is_virtual=True)
+    ## ipv4-raw-socket-impl.h: int ns3::Ipv4RawSocketImpl::Send(ns3::Ptr<ns3::Packet> p, uint32_t flags) [member function]
+    cls.add_method('Send', 
+                   'int', 
+                   [param('ns3::Ptr< ns3::Packet >', 'p'), param('uint32_t', 'flags')], 
+                   is_virtual=True)
+    ## ipv4-raw-socket-impl.h: int ns3::Ipv4RawSocketImpl::SendTo(ns3::Ptr<ns3::Packet> p, uint32_t flags, ns3::Address const & toAddress) [member function]
+    cls.add_method('SendTo', 
+                   'int', 
+                   [param('ns3::Ptr< ns3::Packet >', 'p'), param('uint32_t', 'flags'), param('ns3::Address const &', 'toAddress')], 
+                   is_virtual=True)
+    ## ipv4-raw-socket-impl.h: bool ns3::Ipv4RawSocketImpl::SetAllowBroadcast(bool allowBroadcast) [member function]
+    cls.add_method('SetAllowBroadcast', 
+                   'bool', 
+                   [param('bool', 'allowBroadcast')], 
+                   is_virtual=True)
+    ## ipv4-raw-socket-impl.h: void ns3::Ipv4RawSocketImpl::SetNode(ns3::Ptr<ns3::Node> node) [member function]
+    cls.add_method('SetNode', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Node >', 'node')])
+    ## ipv4-raw-socket-impl.h: void ns3::Ipv4RawSocketImpl::SetProtocol(uint16_t protocol) [member function]
+    cls.add_method('SetProtocol', 
+                   'void', 
+                   [param('uint16_t', 'protocol')])
+    ## ipv4-raw-socket-impl.h: int ns3::Ipv4RawSocketImpl::ShutdownRecv() [member function]
+    cls.add_method('ShutdownRecv', 
+                   'int', 
+                   [], 
+                   is_virtual=True)
+    ## ipv4-raw-socket-impl.h: int ns3::Ipv4RawSocketImpl::ShutdownSend() [member function]
+    cls.add_method('ShutdownSend', 
+                   'int', 
+                   [], 
+                   is_virtual=True)
+    ## ipv4-raw-socket-impl.h: void ns3::Ipv4RawSocketImpl::DoDispose() [member function]
+    cls.add_method('DoDispose', 
+                   'void', 
+                   [], 
+                   visibility='private', is_virtual=True)
     return
 
 def register_Ns3Ipv4Route_methods(root_module, cls):

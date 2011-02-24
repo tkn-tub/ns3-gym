@@ -17,7 +17,7 @@ def register_types(module):
     module.add_class('EventId')
     ## global-value.h: ns3::GlobalValue [class]
     module.add_class('GlobalValue')
-    ## high-precision-cairo.h: ns3::HighPrecision [class]
+    ## high-precision-128.h: ns3::HighPrecision [class]
     module.add_class('HighPrecision')
     ## int-to-type.h: ns3::IntToType<0> [struct]
     module.add_class('IntToType', template_parameters=['0'])
@@ -294,14 +294,14 @@ def register_types(module):
     module.add_container('std::list< ns3::Ptr< ns3::UanTransducer > >', 'ns3::Ptr< ns3::UanTransducer >', container_type='list')
     module.add_container('std::vector< ns3::Ptr< ns3::NetDevice > >', 'ns3::Ptr< ns3::NetDevice >', container_type='vector')
     module.add_container('std::vector< ns3::Ptr< ns3::SpectrumPhy > >', 'ns3::Ptr< ns3::SpectrumPhy >', container_type='vector')
-    typehandlers.add_type_alias('ns3::Vector3DChecker', 'ns3::VectorChecker')
-    typehandlers.add_type_alias('ns3::Vector3DChecker*', 'ns3::VectorChecker*')
-    typehandlers.add_type_alias('ns3::Vector3DChecker&', 'ns3::VectorChecker&')
-    module.add_typedef(root_module['ns3::Vector3DChecker'], 'VectorChecker')
     typehandlers.add_type_alias('ns3::Time', 'ns3::TimeInvert')
     typehandlers.add_type_alias('ns3::Time*', 'ns3::TimeInvert*')
     typehandlers.add_type_alias('ns3::Time&', 'ns3::TimeInvert&')
     module.add_typedef(root_module['ns3::Time'], 'TimeInvert')
+    typehandlers.add_type_alias('ns3::Vector3DChecker', 'ns3::VectorChecker')
+    typehandlers.add_type_alias('ns3::Vector3DChecker*', 'ns3::VectorChecker*')
+    typehandlers.add_type_alias('ns3::Vector3DChecker&', 'ns3::VectorChecker&')
+    module.add_typedef(root_module['ns3::Vector3DChecker'], 'VectorChecker')
     typehandlers.add_type_alias('ns3::Time', 'ns3::TimeSquare')
     typehandlers.add_type_alias('ns3::Time*', 'ns3::TimeSquare*')
     typehandlers.add_type_alias('ns3::Time&', 'ns3::TimeSquare&')
@@ -741,65 +741,67 @@ def register_Ns3GlobalValue_methods(root_module, cls):
 
 def register_Ns3HighPrecision_methods(root_module, cls):
     cls.add_output_stream_operator()
-    ## high-precision-cairo.h: ns3::HighPrecision::HighPrecision(ns3::HighPrecision const & arg0) [copy constructor]
+    ## high-precision-128.h: ns3::HighPrecision::HighPrecision(ns3::HighPrecision const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::HighPrecision const &', 'arg0')])
-    ## high-precision-cairo.h: ns3::HighPrecision::HighPrecision() [constructor]
+    ## high-precision-128.h: ns3::HighPrecision::HighPrecision(int64_t high, uint64_t low) [constructor]
+    cls.add_constructor([param('int64_t', 'high'), param('uint64_t', 'low')])
+    ## high-precision-128.h: ns3::HighPrecision::HighPrecision() [constructor]
     cls.add_constructor([])
-    ## high-precision-cairo.h: ns3::HighPrecision::HighPrecision(int64_t value, bool dummy) [constructor]
+    ## high-precision-128.h: ns3::HighPrecision::HighPrecision(int64_t value, bool dummy) [constructor]
     cls.add_constructor([param('int64_t', 'value'), param('bool', 'dummy')])
-    ## high-precision-cairo.h: ns3::HighPrecision::HighPrecision(double value) [constructor]
+    ## high-precision-128.h: ns3::HighPrecision::HighPrecision(double value) [constructor]
     cls.add_constructor([param('double', 'value')])
-    ## high-precision-cairo.h: void ns3::HighPrecision::Add(ns3::HighPrecision const & o) [member function]
+    ## high-precision-128.h: void ns3::HighPrecision::Add(ns3::HighPrecision const & o) [member function]
     cls.add_method('Add', 
                    'void', 
                    [param('ns3::HighPrecision const &', 'o')])
-    ## high-precision-cairo.h: int ns3::HighPrecision::Compare(ns3::HighPrecision const & o) const [member function]
+    ## high-precision-128.h: int ns3::HighPrecision::Compare(ns3::HighPrecision const & o) const [member function]
     cls.add_method('Compare', 
                    'int', 
                    [param('ns3::HighPrecision const &', 'o')], 
                    is_const=True)
-    ## high-precision-cairo.h: void ns3::HighPrecision::Div(ns3::HighPrecision const & o) [member function]
+    ## high-precision-128.h: void ns3::HighPrecision::Div(ns3::HighPrecision const & o) [member function]
     cls.add_method('Div', 
                    'void', 
                    [param('ns3::HighPrecision const &', 'o')])
-    ## high-precision-cairo.h: double ns3::HighPrecision::GetDouble() const [member function]
+    ## high-precision-128.h: double ns3::HighPrecision::GetDouble() const [member function]
     cls.add_method('GetDouble', 
                    'double', 
                    [], 
                    is_const=True)
-    ## high-precision-cairo.h: int64_t ns3::HighPrecision::GetHigh() const [member function]
+    ## high-precision-128.h: int64_t ns3::HighPrecision::GetHigh() const [member function]
     cls.add_method('GetHigh', 
                    'int64_t', 
                    [], 
                    is_const=True)
-    ## high-precision-cairo.h: int64_t ns3::HighPrecision::GetInteger() const [member function]
+    ## high-precision-128.h: int64_t ns3::HighPrecision::GetInteger() const [member function]
     cls.add_method('GetInteger', 
                    'int64_t', 
                    [], 
                    is_const=True)
-    ## high-precision-cairo.h: uint64_t ns3::HighPrecision::GetLow() const [member function]
+    ## high-precision-128.h: uint64_t ns3::HighPrecision::GetLow() const [member function]
     cls.add_method('GetLow', 
                    'uint64_t', 
                    [], 
                    is_const=True)
-    ## high-precision-cairo.h: static ns3::HighPrecision ns3::HighPrecision::Invert(uint64_t v) [member function]
+    ## high-precision-128.h: static ns3::HighPrecision ns3::HighPrecision::Invert(uint64_t v) [member function]
     cls.add_method('Invert', 
                    'ns3::HighPrecision', 
                    [param('uint64_t', 'v')], 
                    is_static=True)
-    ## high-precision-cairo.h: void ns3::HighPrecision::Mul(ns3::HighPrecision const & o) [member function]
+    ## high-precision-128.h: void ns3::HighPrecision::Mul(ns3::HighPrecision const & o) [member function]
     cls.add_method('Mul', 
                    'void', 
                    [param('ns3::HighPrecision const &', 'o')])
-    ## high-precision-cairo.h: void ns3::HighPrecision::MulByInvert(ns3::HighPrecision const & o) [member function]
+    ## high-precision-128.h: void ns3::HighPrecision::MulByInvert(ns3::HighPrecision const & o) [member function]
     cls.add_method('MulByInvert', 
                    'void', 
                    [param('ns3::HighPrecision const &', 'o')])
-    ## high-precision-cairo.h: void ns3::HighPrecision::Sub(ns3::HighPrecision const & o) [member function]
+    ## high-precision-128.h: void ns3::HighPrecision::Sub(ns3::HighPrecision const & o) [member function]
     cls.add_method('Sub', 
                    'void', 
                    [param('ns3::HighPrecision const &', 'o')])
-    ## high-precision-cairo.h: static ns3::HighPrecision ns3::HighPrecision::Zero() [member function]
+    ## high-precision-128.h: static ns3::HighPrecision ns3::HighPrecision::Zero() [member function]
     cls.add_method('Zero', 
                    'ns3::HighPrecision', 
                    [], 
@@ -1628,13 +1630,13 @@ def register_Ns3TestSuite_methods(root_module, cls):
 def register_Ns3Time_methods(root_module, cls):
     cls.add_binary_comparison_operator('!=')
     cls.add_inplace_numeric_operator('*=', param('ns3::Time const &', 'right'))
+    cls.add_inplace_numeric_operator('+=', param('ns3::Time const &', 'right'))
     cls.add_inplace_numeric_operator('-=', param('ns3::Time const &', 'right'))
     cls.add_inplace_numeric_operator('/=', param('ns3::Time const &', 'right'))
     cls.add_output_stream_operator()
     cls.add_binary_comparison_operator('<=')
     cls.add_binary_comparison_operator('==')
     cls.add_binary_comparison_operator('>=')
-    cls.add_inplace_numeric_operator('+=', param('ns3::Time const &', 'right'))
     cls.add_binary_numeric_operator('*', root_module['ns3::Time'], root_module['ns3::Time'], param('ns3::Time const &', 'right'))
     cls.add_binary_numeric_operator('+', root_module['ns3::Time'], root_module['ns3::Time'], param('ns3::Time const &', 'right'))
     cls.add_binary_numeric_operator('-', root_module['ns3::Time'], root_module['ns3::Time'], param('ns3::Time const &', 'right'))
