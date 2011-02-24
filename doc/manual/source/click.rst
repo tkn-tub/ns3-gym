@@ -1,4 +1,4 @@
-NS-3 Click Integration
+Click Modular Router Integration
 ----------------------
 
 Click is a software architecture for building configurable routers.
@@ -14,7 +14,7 @@ Model Description
 The source code for the Click model lives in the directory ``src/routing/click``.
 
 Design
-===== 
+======
 
 ns-3's design is well suited for an integration with Click due to the following reasons:
 
@@ -41,10 +41,10 @@ There are four kinds of packet hand-offs that can occur between ns-3 and Click.
 * L3 to L2
 * L2 to L3
 
-To overcome this, we implement Ipv4L3ClickProtocol, a stripped down version of Ipv4L3Protocol. Ipv4L3ClickProtocol passes packets to and from Ipv4ClickRouting appropriately to perform routing. Minor changes are made at the CsmaNetDevice and Wifi MacLow code to facilitate the direct passing of packets from L2 to Click.
+To overcome this, we implement Ipv4L3ClickProtocol, a stripped down version of Ipv4L3Protocol. Ipv4L3ClickProtocol passes packets to and from Ipv4ClickRouting appropriately to perform routing.
 
 Scope and Limitations
-====================
+=====================
 
 * In its current state, the NS-3 Click Integration is limited to use only with L3, leaving NS-3 to handle L2. We are currently working on adding Click MAC support as well. See the usage section to make sure that you design your Click graphs accordingly.
 * Furthermore, ns-3-click will work only with userlevel elements. The complete list of elements are available at http://read.cs.ucla.edu/click/elements. Elements that have 'all', 'userlevel' or 'ns' mentioned beside them may be used.
@@ -60,7 +60,7 @@ Usage
 *****
 
 Building Click
-##############
+==============
 
 The first step is to build Click. At the top of your Click source directory::
 
@@ -71,22 +71,20 @@ The --enable-wifi flag may be skipped if you don't intend on using Click with Wi
 * Note: You don't need to do a 'make install'. 
 
 Once Click has been built successfully, change into the ns-3 directory and 
-configure ns-3 with Click Integration support:
+configure ns-3 with Click Integration support::
 
-::
   $: ./waf configure --with-nsclick=/path/to/click/source
 
 If it says 'enabled' beside 'NS-3 Click Integration Support', then you're good to go.
 
-Next, try running one of the examples:
+Next, try running one of the examples::
 
-::
   $: ./waf --run nsclick-simple-lan
 
 You may then view the resulting .pcap traces, which are named nsclick-simple-lan-0-0.pcap and nsclick-simple-lan-0-1.pcap.
 
 Click Graph Instructions
-########################
+========================
 
 The following should be kept in mind when making your Click graph:
 
@@ -95,12 +93,10 @@ The following should be kept in mind when making your Click graph:
 * Packets to the kernel are sent up using ToSimDevice(tap0,IP).
 * For any node, the device which sends/receives packets to/from the kernel, is named 'tap0'. The remaining interfaces should be named eth0, eth1 and so forth (even if you're using wifi). Please note that the device numbering should begin from 0. In future, this will be made flexible so that users can name devices in their Click file as they wish.
 * A routing table element is a mandatory. The OUTports of the routing table element should correspond to the interface number of the device through which the packet will ultimately be sent out. Violating this rule will lead to really weird packet traces. This routing table element's name should then be passed to the Ipv4ClickRouting protocol object as a simulation parameter. See the Click examples for details.
-* When using Wifi with ns-3-click, do not use wifi specific elements like WifiEncap, ExtraEncap, MadWifiRate etc. for outgoing packets. Incoming packets should have their Wifi headers removed using WifiDecap + ExtraDecap or Strip elements. See the nsclick-raw-wlan.click file for an idea of the same.
-* When using Point to Point devices with Click, you needn't strip off any bytes when a packet is received from a device. Normally, this will leave you with an IP encapsulated packet.
-* The current implementation leaves Click with mainly L3 functionality, with ns-3 handling L2. We will soon begin working to support the use of MAC protocols on Click as well. 
+* The current implementation leaves Click with mainly L3 functionality, with ns-3 handling L2. We will soon begin working to support the use of MAC protocols on Click as well. This means that as of now, Click's Wifi specific elements cannot be used with ns-3.
 
 Debugging Packet Flows from Click
-#################################
+=================================
 
 From any point within a Click graph, you may use the Print (http://read.cs.ucla.edu/click/elements/print) element and its variants for pretty printing of packet contents. Furthermore, you may generate pcap traces of packets flowing through a Click graph by using the ToDump (http://read.cs.ucla.edu/click/elements/todump) element as well. For instance::
 
@@ -112,7 +108,7 @@ From any point within a Click graph, you may use the Print (http://read.cs.ucla.
 ...will print the contents of packets that flow out of the ArpQuerier, then generate a pcap trace file which will have a suffix 'out_arpquery', for each node using the Click file, before pushing packets onto 'ethout'.
 
 Helper
-######
+======
 
 To have a node run Click, the easiest way would be to use the ClickInternetStackHelper
 class in your simulation script. For instance::
@@ -122,35 +118,27 @@ class in your simulation script. For instance::
   click.SetRoutingTableElement (myNodeContainer, "u/rt");
   click.Install (myNodeContainer);
 
-The example scripts inside ``examples/click/`` demonstrate the use of Click based nodes
-in different scenarios. The helper source can be found inside ``src/helper/click-internet-stack-helper.[h,cc]``
+The example scripts inside ``src/routing/click/examples/`` demonstrate the use of Click based nodes
+in different scenarios. The helper source can be found inside ``src/routing/click/helper/click-internet-stack-helper.[h,cc]``
 
 Examples
-########
+========
 
-The following examples have been written, which can be found in ``examples/click``:
+The following examples have been written, which can be found in ``src/routing/click/examples/``:
 
-* nsclick-simple-lan.cc and nsclick-raw-wlan.cc:
-A Click based node communicating with a normal ns-3 node without Click, using Csma and Wifi respectively. It also demonstrates the use of TCP on top of Click, something which the original nsclick implementation for NS-2 couldn't achieve.
+* nsclick-simple-lan.cc and nsclick-raw-wlan.cc: A Click based node communicating with a normal ns-3 node without Click, using Csma and Wifi respectively. It also demonstrates the use of TCP on top of Click, something which the original nsclick implementation for NS-2 couldn't achieve.
 
-* nsclick-udp-client-server-csma.cc and nsclick-udp-client-server-wifi.cc:
-A 3 node LAN (Csma and Wifi respectively) wherein 2 Click based nodes run a UDP client, that sends packets to a third Click based node running a UDP server.
+* nsclick-udp-client-server-csma.cc and nsclick-udp-client-server-wifi.cc: A 3 node LAN (Csma and Wifi respectively) wherein 2 Click based nodes run a UDP client, that sends packets to a third Click based node running a UDP server.
 
-* nsclick-routing.cc:
-One Click based node communicates to another via a third node that acts as an IP router (using the IP router Click configuration). This demonstrates routing using Click. 
+* nsclick-routing.cc: One Click based node communicates to another via a third node that acts as an IP router (using the IP router Click configuration). This demonstrates routing using Click. 
 
 Scripts are available within ``<click-dir>/conf/`` that allow you to generate Click files for some common scenarios. The IP Router used in ``nsclick-routing.cc`` was generated from the make-ip-conf.pl file and slightly adapted to work with ns-3-click.
 
 Validation
-##########
+==========
 
 This model has been tested as follows:
 
 * Unit tests have been written to verify the internals of Ipv4ClickRouting. This can be found in ``src/routing/click/ipv4-click-routing-test.cc``. These tests verify whether the methods inside Ipv4ClickRouting which deal with Device name to ID, IP Address from device name and Mac Address from device name bindings work as expected.
-* The examples have been used to test Click with actual simulation scenarios. These can be found in ``examples/click``. These tests cover the following:
-  ** The use of different kinds of transports on top of Click, TCP/UDP.
-  ** Whether Click nodes can communicate with non-Click based nodes.
-  ** Whether Click nodes can communicate with each other.
-  ** Using Click to route packets using static routing.
-  ** enumerate
+* The examples have been used to test Click with actual simulation scenarios. These can be found in ``src/routing/click/examples/``. These tests cover the following: the use of different kinds of transports on top of Click, TCP/UDP, whether Click nodes can communicate with non-Click based nodes, whether Click nodes can communicate with each other, using Click to route packets using static routing.
 * Click has been tested with Csma, Wifi and Point-to-Point devices. Usage instructions are available in the preceding section.

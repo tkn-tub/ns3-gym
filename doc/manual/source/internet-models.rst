@@ -8,4 +8,5 @@ Internet Models
    ipv4
    ipv6
    routing
+   click
    tcp
