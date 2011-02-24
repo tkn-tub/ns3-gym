@@ -135,7 +135,7 @@ The following examples have been written, which can be found in ``src/routing/cl
 Scripts are available within ``<click-dir>/conf/`` that allow you to generate Click files for some common scenarios. The IP Router used in ``nsclick-routing.cc`` was generated from the make-ip-conf.pl file and slightly adapted to work with ns-3-click.
 
 Validation
-==========
+**********
 
 This model has been tested as follows:
 
