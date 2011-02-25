@@ -5,10 +5,10 @@ def build(bld):
                                                     'internet'])
     obj.source = 'mixed-wireless.cc'
 
-    obj = bld.create_ns3_program('wifi-adhoc', ['core', 'mobility', 'wifi'])
+    obj = bld.create_ns3_program('wifi-adhoc', ['core', 'mobility', 'wifi', 'contrib'])
     obj.source = 'wifi-adhoc.cc'
 
-    obj = bld.create_ns3_program('wifi-clear-channel-cmu', ['core', 'mobility', 'wifi'])
+    obj = bld.create_ns3_program('wifi-clear-channel-cmu', ['core', 'mobility', 'wifi', 'contrib'])
     obj.source = 'wifi-clear-channel-cmu.cc'
 
     obj = bld.create_ns3_program('wifi-ap', ['core', 'mobility', 'wifi'])
@@ -20,7 +20,7 @@ def build(bld):
     obj = bld.create_ns3_program('simple-wifi-frame-aggregation', ['core', 'mobility', 'wifi'])
     obj.source = 'simple-wifi-frame-aggregation.cc'
 
-    obj = bld.create_ns3_program('multirate', ['core', 'mobility', 'wifi'])
+    obj = bld.create_ns3_program('multirate', ['core', 'mobility', 'wifi', 'contrib'])
     obj.source = 'multirate.cc'
 
     obj = bld.create_ns3_program('wifi-simple-adhoc', ['core', 'mobility', 'wifi'])
@@ -38,7 +38,7 @@ def build(bld):
     obj = bld.create_ns3_program('wifi-blockack', ['core', 'mobility', 'wifi'])
     obj.source = 'wifi-blockack.cc'
 
-    obj = bld.create_ns3_program('ofdm-validation', ['core', 'mobility', 'wifi'])
+    obj = bld.create_ns3_program('ofdm-validation', ['core', 'mobility', 'wifi', 'contrib'])
     obj.source = 'ofdm-validation.cc'
 
     obj = bld.create_ns3_program('wifi-hidden-terminal', ['core', 'mobility', 'wifi', 'propagation', 'flow-monitor'])
