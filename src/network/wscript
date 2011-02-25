@@ -57,6 +57,7 @@ def build(bld):
         'helper/net-device-container.cc',
         'helper/node-container.cc',
         'helper/packet-socket-helper.cc',
+        'helper/trace-helper.cc',
         ]
 
     headers = bld.new_task_gen('ns3header')
@@ -114,4 +115,5 @@ def build(bld):
         'helper/net-device-container.h',
         'helper/node-container.h',
         'helper/packet-socket-helper.h',
+        'helper/trace-helper.h',
         ]

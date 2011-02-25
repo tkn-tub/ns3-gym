@@ -169,7 +169,6 @@
 #include "ns3/ipv4-global-routing-helper.h"
 #include "ns3/ipv6-list-routing-helper.h"
 #include "ns3/ipv6-static-routing-helper.h"
-#include "trace-helper.h"
 #include <limits>
 #include <map>
 

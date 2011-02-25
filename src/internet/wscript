@@ -182,13 +182,13 @@ def build(bld):
         'model/ipv4-global-routing.cc',
         'helper/ipv4-global-routing-helper.cc',
         'helper/internet-stack-helper.cc',
+        'helper/internet-trace-helper.cc',
         'helper/ipv4-address-helper.cc',
         'helper/ipv4-interface-container.cc',
         'helper/ipv4-routing-helper.cc',
         'helper/ipv6-address-helper.cc',
         'helper/ipv6-interface-container.cc',
         'helper/ipv6-routing-helper.cc',
-        'helper/trace-helper.cc',
         ]
 
     headers = bld.new_task_gen('ns3header')
@@ -251,13 +251,13 @@ def build(bld):
         'model/ipv4-global-routing.h',
         'helper/ipv4-global-routing-helper.h',
         'helper/internet-stack-helper.h',
+        'helper/internet-trace-helper.h',
         'helper/ipv4-address-helper.h',
         'helper/ipv4-interface-container.h',
         'helper/ipv4-routing-helper.h',
         'helper/ipv6-address-helper.h',
         'helper/ipv6-interface-container.h',
         'helper/ipv6-routing-helper.h',
-        'helper/trace-helper.h',
        ]
 
     if bld.env['NSC_ENABLED']:
