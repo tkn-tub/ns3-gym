@@ -8,7 +8,7 @@ def register_types(module):
     ## point-to-point-channel.h: ns3::PointToPointChannel [class]
     module.add_class('PointToPointChannel', parent=root_module['ns3::Channel'])
     ## point-to-point-net-device.h: ns3::PointToPointNetDevice [class]
-    module.add_class('PointToPointNetDevice', parent=root_module['ns3::NetDevice'])
+    module.add_class('PointToPointNetDevice', parent=[root_module['ns3::NetDevice'], root_module['ns3::MpiNetDevice']])
     ## point-to-point-remote-channel.h: ns3::PointToPointRemoteChannel [class]
     module.add_class('PointToPointRemoteChannel', parent=root_module['ns3::PointToPointChannel'])
     
@@ -369,6 +369,11 @@ def register_Ns3PointToPointNetDevice_methods(root_module, cls):
                    'bool', 
                    [], 
                    is_const=True, is_virtual=True)
+    ## point-to-point-net-device.h: void ns3::PointToPointNetDevice::DoMpiReceive(ns3::Ptr<ns3::Packet> p) [member function]
+    cls.add_method('DoMpiReceive', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Packet >', 'p')], 
+                   visibility='protected', is_virtual=True)
     ## point-to-point-net-device.h: void ns3::PointToPointNetDevice::DoDispose() [member function]
     cls.add_method('DoDispose', 
                    'void', 
