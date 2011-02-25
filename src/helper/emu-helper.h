@@ -28,7 +28,7 @@
 #include "ns3/node-container.h"
 #include "ns3/emu-net-device.h"
 
-#include "trace-helper.h"
+#include "ns3/trace-helper.h"
 
 namespace ns3 {
 

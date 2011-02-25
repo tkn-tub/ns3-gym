@@ -33,7 +33,7 @@
 
 #include <fstream>
 #include "ns3/core-module.h"
-#include "ns3/core-module.h"
+#include "ns3/internet-module.h"
 #include "ns3/helper-module.h"
 
 #include "ns3/radvd.h"

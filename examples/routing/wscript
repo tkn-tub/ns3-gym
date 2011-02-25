@@ -2,45 +2,45 @@
 
 def build(bld):
     obj = bld.create_ns3_program('dynamic-global-routing',
-                                 ['point-to-point', 'csma', 'internet-stack', 'global-routing'])
+                                 ['point-to-point', 'csma', 'internet'])
     obj.source = 'dynamic-global-routing.cc'
 
     obj = bld.create_ns3_program('static-routing-slash32',
-                                 ['point-to-point', 'internet-stack', 'global-routing'])
+                                 ['point-to-point', 'internet'])
     obj.source = 'static-routing-slash32.cc'
 
     obj = bld.create_ns3_program('global-routing-slash32',
-                                 ['point-to-point', 'internet-stack', 'global-routing'])
+                                 ['point-to-point', 'internet'])
     obj.source = 'global-routing-slash32.cc'
 
     obj = bld.create_ns3_program('global-injection-slash32',
-                                 ['point-to-point', 'internet-stack', 'global-routing'])
+                                 ['point-to-point', 'internet'])
     obj.source = 'global-injection-slash32.cc'
 
     obj = bld.create_ns3_program('simple-global-routing',
-                                 ['point-to-point', 'internet-stack', 'global-routing'])
+                                 ['point-to-point', 'internet'])
     obj.source = 'simple-global-routing.cc'
 
     obj = bld.create_ns3_program('simple-alternate-routing',
-                                 ['point-to-point', 'internet-stack', 'global-routing'])
+                                 ['point-to-point', 'internet'])
     obj.source = 'simple-alternate-routing.cc'
 
     obj = bld.create_ns3_program( 'mixed-global-routing',
-                                  ['point-to-point', 'internet-stack', 'global-routing' , 'csma-cd'])
+                                  ['point-to-point', 'internet', 'csma'])
     obj.source = 'mixed-global-routing.cc'
 
     obj = bld.create_ns3_program('nix-simple',
-                                 ['point-to-point', 'internet-stack', 'nix-vector-routing'])
+                                 ['point-to-point', 'internet', 'nix-vector-routing'])
     obj.source = 'nix-simple.cc'
 
     obj = bld.create_ns3_program('nms-p2p-nix',
-                                 ['point-to-point', 'internet-stack', 'nix-vector-routing'])
+                                 ['point-to-point', 'internet', 'nix-vector-routing'])
     obj.source = 'nms-p2p-nix.cc'
 
     obj = bld.create_ns3_program('simple-routing-ping6',
-      ['csma', 'internet-stack'])
+      ['csma', 'internet'])
     obj.source = 'simple-routing-ping6.cc'
     
     obj = bld.create_ns3_program('aodv',
-                                 ['wifi', 'internet-stack', 'aodv'])
+                                 ['wifi', 'internet', 'aodv'])
     obj.source = 'aodv.cc'

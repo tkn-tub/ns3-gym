@@ -29,7 +29,7 @@
 #include "ns3/packet.h"
 #include "ns3/names.h"
 
-#include "trace-helper.h"
+#include "ns3/trace-helper.h"
 #include "csma-helper.h"
 
 #include <string>

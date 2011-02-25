@@ -35,12 +35,12 @@
 #include "ns3/uinteger.h"
 #include "ns3/log.h"
 
-#include "ipv4-end-point.h"
-#include "arp-l3-protocol.h"
-#include "ipv4-l3-protocol.h"
-#include "icmpv4-l4-protocol.h"
-#include "udp-l4-protocol.h"
-#include "tcp-l4-protocol.h"
+#include "ns3/ipv4-end-point.h"
+#include "ns3/arp-l3-protocol.h"
+#include "ns3/ipv4-l3-protocol.h"
+#include "ns3/icmpv4-l4-protocol.h"
+#include "ns3/udp-l4-protocol.h"
+#include "ns3/tcp-l4-protocol.h"
 
 #include <string>
 

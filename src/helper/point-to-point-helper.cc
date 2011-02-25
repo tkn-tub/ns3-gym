@@ -30,7 +30,7 @@
 #include "ns3/names.h"
 #include "ns3/mpi-interface.h"
 
-#include "trace-helper.h"
+#include "ns3/trace-helper.h"
 #include "point-to-point-helper.h"
 
 NS_LOG_COMPONENT_DEFINE ("PointToPointHelper");

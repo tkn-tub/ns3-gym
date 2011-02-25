@@ -28,7 +28,7 @@
 #include "ns3/node-container.h"
 #include "ns3/net-device-container.h"
 #include "ns3/wifi-phy-standard.h"
-#include "trace-helper.h"
+#include "ns3/trace-helper.h"
 
 namespace ns3 {
 

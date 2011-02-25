@@ -21,7 +21,7 @@
 #define YANS_WIFI_HELPER_H
 
 #include "wifi-helper.h"
-#include "trace-helper.h"
+#include "ns3/trace-helper.h"
 #include "ns3/yans-wifi-channel.h"
 #include "ns3/deprecated.h"
 

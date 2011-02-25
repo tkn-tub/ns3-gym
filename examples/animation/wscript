@@ -2,13 +2,13 @@
 
 def build(bld):
     obj = bld.create_ns3_program('dumbbell-animation',
-                                 ['point-to-point', 'internet-stack'])
+                                 ['point-to-point', 'internet'])
     obj.source = 'dumbbell-animation.cc'
 
     obj = bld.create_ns3_program('grid-animation',
-                                 ['point-to-point', 'internet-stack'])
+                                 ['point-to-point', 'internet'])
     obj.source = 'grid-animation.cc'
 
     obj = bld.create_ns3_program('star-animation',
-                                 ['point-to-point', 'internet-stack'])
+                                 ['point-to-point', 'internet'])
     obj.source = 'star-animation.cc'

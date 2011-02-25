@@ -21,7 +21,7 @@ all_modules = (
     'core',
     'network',
     'contrib',
-    'internet-stack',
+    'internet',
     'propagation',
     'devices/point-to-point',
     'devices/csma',
@@ -35,9 +35,6 @@ all_modules = (
     'applications/bulk-send',
     'routing/nix-vector-routing',
     'routing/olsr',
-    'routing/global-routing',
-    'routing/static-routing',
-    'routing/list-routing',
     'routing/aodv',
     'routing/dsdv',
     'routing/click',
@@ -88,7 +85,7 @@ def configure(conf):
     conf.sub_config('devices/emu')
     conf.sub_config('devices/tap-bridge')
     conf.sub_config('contrib')
-    conf.sub_config('internet-stack')
+    conf.sub_config('internet')
     conf.sub_config('helper')
     conf.sub_config('test')
     conf.sub_config('routing/click')

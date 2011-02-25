@@ -1,6 +1,6 @@
 /* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
 /*
- * Copyright (c) 2007 Georgia Tech Research Corporation
+ * Copyright (c) 2010 Hajime Tazaki
  * 
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -15,16 +15,15 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * Author: Raj Bhattacharjea <raj.b@gatech.edu>
+ * Author: Hajime Tazaki <tazaki@sfc.wide.ad.jp>
  */
 /**
- * This is the test code for udp-socket-impl.cc, it was moved out of udp-socket-impl.cc to 
- * be in an independent file for clarity purposes.
+ * This is the test code for ipv4-raw-socket-impl.cc.
  */
 
 #include "ns3/test.h"
 #include "ns3/socket-factory.h"
-#include "ns3/udp-socket-factory.h"
+#include "ns3/ipv4-raw-socket-factory.h"
 #include "ns3/simulator.h"
 #include "ns3/simple-channel.h"
 #include "ns3/simple-net-device.h"
@@ -34,17 +33,17 @@
 #include "ns3/log.h"
 #include "ns3/node.h"
 #include "ns3/inet-socket-address.h"
+#include "ns3/boolean.h"
 
-#include "arp-l3-protocol.h"
-#include "ipv4-l3-protocol.h"
-#include "icmpv4-l4-protocol.h"
-#include "udp-l4-protocol.h"
-#include "tcp-l4-protocol.h"
+#include "ns3/arp-l3-protocol.h"
+#include "ns3/ipv4-l3-protocol.h"
+#include "ns3/icmpv4-l4-protocol.h"
 #include "ns3/ipv4-list-routing.h"
 #include "ns3/ipv4-static-routing.h"
 
 #include <string>
 #include <limits>
+#include <netinet/in.h>
 namespace ns3 {
 
 static void
@@ -64,66 +63,24 @@ AddInternetStack (Ptr<Node> node)
   //ICMP
   Ptr<Icmpv4L4Protocol> icmp = CreateObject<Icmpv4L4Protocol> ();
   node->AggregateObject(icmp);
-  //UDP
-  Ptr<UdpL4Protocol> udp = CreateObject<UdpL4Protocol> ();
-  node->AggregateObject(udp); 
-  //TCP
-  Ptr<TcpL4Protocol> tcp = CreateObject<TcpL4Protocol> ();
-  node->AggregateObject(tcp);
+  // //Ipv4Raw
+  // Ptr<Ipv4UdpL4Protocol> udp = CreateObject<UdpL4Protocol> ();
+  // node->AggregateObject(udp); 
 }
 
 
-class UdpSocketLoopbackTest: public TestCase
-{
-public:
-  UdpSocketLoopbackTest ();
-  virtual void DoRun (void);
-
-  void ReceivePkt (Ptr<Socket> socket);
-  Ptr<Packet> m_receivedPacket;
-};
-
-UdpSocketLoopbackTest::UdpSocketLoopbackTest ()
-  : TestCase ("UDP loopback test") 
-{
-}
-
-void UdpSocketLoopbackTest::ReceivePkt (Ptr<Socket> socket)
-{
-  uint32_t availableData;
-  availableData = socket->GetRxAvailable ();
-  m_receivedPacket = socket->Recv (std::numeric_limits<uint32_t>::max(), 0);
-  NS_ASSERT (availableData == m_receivedPacket->GetSize ());
-}
-
-void
-UdpSocketLoopbackTest::DoRun ()
-{
-  Ptr<Node> rxNode = CreateObject<Node> ();
-  AddInternetStack (rxNode);
-
-  Ptr<SocketFactory> rxSocketFactory = rxNode->GetObject<UdpSocketFactory> ();
-  Ptr<Socket> rxSocket = rxSocketFactory->CreateSocket ();
-  rxSocket->Bind (InetSocketAddress (Ipv4Address::GetAny(), 80));
-  rxSocket->SetRecvCallback (MakeCallback (&UdpSocketLoopbackTest::ReceivePkt, this));
-
-  Ptr<Socket> txSocket = rxSocketFactory->CreateSocket ();
-  txSocket->SendTo (Create<Packet> (246), 0, InetSocketAddress ("127.0.0.1", 80));
-  Simulator::Run ();
-  Simulator::Destroy ();
-  NS_TEST_EXPECT_MSG_EQ (m_receivedPacket->GetSize (), 246, "first socket should not receive it (it is bound specifically to the second interface's address");
-}
-
-class UdpSocketImplTest: public TestCase
+class Ipv4RawSocketImplTest: public TestCase
 {
   Ptr<Packet> m_receivedPacket;
   Ptr<Packet> m_receivedPacket2;
   void DoSendData (Ptr<Socket> socket, std::string to);
   void SendData (Ptr<Socket> socket, std::string to);
+  void DoSendData_IpHdr (Ptr<Socket> socket, std::string to);
+  void SendData_IpHdr (Ptr<Socket> socket, std::string to);
 
 public:
   virtual void DoRun (void);
-  UdpSocketImplTest ();
+  Ipv4RawSocketImplTest ();
 
   void ReceivePacket (Ptr<Socket> socket, Ptr<Packet> packet, const Address &from);
   void ReceivePacket2 (Ptr<Socket> socket, Ptr<Packet> packet, const Address &from);
@@ -131,57 +88,91 @@ public:
   void ReceivePkt2 (Ptr<Socket> socket);
 };
 
-UdpSocketImplTest::UdpSocketImplTest ()
-  : TestCase ("UDP socket implementation") 
+
+Ipv4RawSocketImplTest::Ipv4RawSocketImplTest ()
+  : TestCase ("IPv4 Raw socket implementation") 
 {
 }
 
-void UdpSocketImplTest::ReceivePacket (Ptr<Socket> socket, Ptr<Packet> packet, const Address &from)
+void Ipv4RawSocketImplTest::ReceivePacket (Ptr<Socket> socket, Ptr<Packet> packet, const Address &from)
 {
   m_receivedPacket = packet;
 }
 
-void UdpSocketImplTest::ReceivePacket2 (Ptr<Socket> socket, Ptr<Packet> packet, const Address &from)
+void Ipv4RawSocketImplTest::ReceivePacket2 (Ptr<Socket> socket, Ptr<Packet> packet, const Address &from)
 {
   m_receivedPacket2 = packet;
 }
 
-void UdpSocketImplTest::ReceivePkt (Ptr<Socket> socket)
+void Ipv4RawSocketImplTest::ReceivePkt (Ptr<Socket> socket)
 {
   uint32_t availableData;
   availableData = socket->GetRxAvailable ();
+  m_receivedPacket = socket->Recv (2, MSG_PEEK);
+  NS_ASSERT (m_receivedPacket->GetSize () == 2);
   m_receivedPacket = socket->Recv (std::numeric_limits<uint32_t>::max(), 0);
   NS_ASSERT (availableData == m_receivedPacket->GetSize ());
 }
 
-void UdpSocketImplTest::ReceivePkt2 (Ptr<Socket> socket)
+void Ipv4RawSocketImplTest::ReceivePkt2 (Ptr<Socket> socket)
 {
   uint32_t availableData;
   availableData = socket->GetRxAvailable ();
+  m_receivedPacket2 = socket->Recv (2, MSG_PEEK);
+  NS_ASSERT (m_receivedPacket2->GetSize () == 2);
   m_receivedPacket2 = socket->Recv (std::numeric_limits<uint32_t>::max(), 0);
   NS_ASSERT (availableData == m_receivedPacket2->GetSize ());
 }
 
 void
-UdpSocketImplTest::DoSendData (Ptr<Socket> socket, std::string to)
+Ipv4RawSocketImplTest::DoSendData (Ptr<Socket> socket, std::string to)
 {
-  Address realTo = InetSocketAddress (Ipv4Address(to.c_str()), 1234);
+  Address realTo = InetSocketAddress (Ipv4Address(to.c_str()), 0);
   NS_TEST_EXPECT_MSG_EQ (socket->SendTo (Create<Packet> (123), 0, realTo),
-                         123, "XXX");
+                         123, to);
 }
 
 void
-UdpSocketImplTest::SendData (Ptr<Socket> socket, std::string to)
+Ipv4RawSocketImplTest::SendData (Ptr<Socket> socket, std::string to)
 {
   m_receivedPacket = Create<Packet> ();
   m_receivedPacket2 = Create<Packet> ();
   Simulator::ScheduleWithContext (socket->GetNode ()->GetId (), Seconds (0),
-                                  &UdpSocketImplTest::DoSendData, this, socket, to);
+                                  &Ipv4RawSocketImplTest::DoSendData, this, socket, to);
   Simulator::Run ();
 }
 
 void
-UdpSocketImplTest::DoRun (void)
+Ipv4RawSocketImplTest::DoSendData_IpHdr (Ptr<Socket> socket, std::string to)
+{
+  Address realTo = InetSocketAddress (Ipv4Address(to.c_str()), 0);
+  socket->SetAttribute ("IpHeaderInclude", BooleanValue (true));
+  Ptr<Packet> p = Create<Packet> (123);
+  Ipv4Header ipHeader;
+  ipHeader.SetSource (Ipv4Address ("10.0.0.2"));
+  ipHeader.SetDestination (Ipv4Address (to.c_str ()));
+  ipHeader.SetProtocol (0);
+  ipHeader.SetPayloadSize (p->GetSize ());
+  ipHeader.SetTtl (255);
+  p->AddHeader (ipHeader);
+
+  NS_TEST_EXPECT_MSG_EQ (socket->SendTo (p, 0, realTo),
+                         143, to);
+  socket->SetAttribute ("IpHeaderInclude", BooleanValue (false));
+}
+
+void
+Ipv4RawSocketImplTest::SendData_IpHdr (Ptr<Socket> socket, std::string to)
+{
+  m_receivedPacket = Create<Packet> ();
+  m_receivedPacket2 = Create<Packet> ();
+  Simulator::ScheduleWithContext (socket->GetNode ()->GetId (), Seconds (0),
+                                  &Ipv4RawSocketImplTest::DoSendData_IpHdr, this, socket, to);
+  Simulator::Run ();
+}
+
+void
+Ipv4RawSocketImplTest::DoRun (void)
 {
   // Create topology
   
@@ -247,39 +238,59 @@ UdpSocketImplTest::DoRun (void)
   txDev2->SetChannel (channel2);
 
 
-  // Create the UDP sockets
-  Ptr<SocketFactory> rxSocketFactory = rxNode->GetObject<UdpSocketFactory> ();
+  // Create the IPv4 Raw sockets
+  Ptr<SocketFactory> rxSocketFactory = rxNode->GetObject<Ipv4RawSocketFactory> ();
   Ptr<Socket> rxSocket = rxSocketFactory->CreateSocket ();
-  NS_TEST_EXPECT_MSG_EQ (rxSocket->Bind (InetSocketAddress (Ipv4Address ("10.0.0.1"), 1234)), 0, "trivial");
-  rxSocket->SetRecvCallback (MakeCallback (&UdpSocketImplTest::ReceivePkt, this));
+  NS_TEST_EXPECT_MSG_EQ (rxSocket->Bind (InetSocketAddress (Ipv4Address ("0.0.0.0"), 0)), 0, "trivial");
+  rxSocket->SetRecvCallback (MakeCallback (&Ipv4RawSocketImplTest::ReceivePkt, this));
 
   Ptr<Socket> rxSocket2 = rxSocketFactory->CreateSocket ();
-  rxSocket2->SetRecvCallback (MakeCallback (&UdpSocketImplTest::ReceivePkt2, this));
-  NS_TEST_EXPECT_MSG_EQ (rxSocket2->Bind (InetSocketAddress (Ipv4Address ("10.0.1.1"), 1234)), 0, "trivial");
+  rxSocket2->SetRecvCallback (MakeCallback (&Ipv4RawSocketImplTest::ReceivePkt2, this));
+  NS_TEST_EXPECT_MSG_EQ (rxSocket2->Bind (InetSocketAddress (Ipv4Address ("10.0.1.1"), 0)), 0, "trivial");
 
-  Ptr<SocketFactory> txSocketFactory = txNode->GetObject<UdpSocketFactory> ();
+  Ptr<SocketFactory> txSocketFactory = txNode->GetObject<Ipv4RawSocketFactory> ();
   Ptr<Socket> txSocket = txSocketFactory->CreateSocket ();
-  txSocket->SetAllowBroadcast (true);
 
   // ------ Now the tests ------------
 
   // Unicast test
   SendData (txSocket, "10.0.0.1");
-  NS_TEST_EXPECT_MSG_EQ (m_receivedPacket->GetSize (), 123, "trivial");
-  NS_TEST_EXPECT_MSG_EQ (m_receivedPacket2->GetSize (), 0, "second interface should receive it");
+  NS_TEST_EXPECT_MSG_EQ (m_receivedPacket->GetSize (), 143, "recv: 10.0.0.1");
+  NS_TEST_EXPECT_MSG_EQ (m_receivedPacket2->GetSize (), 0, "second interface should not receive it");
 
   m_receivedPacket->RemoveAllByteTags ();
   m_receivedPacket2->RemoveAllByteTags ();
 
+  // Unicast w/ header test
+  SendData_IpHdr (txSocket, "10.0.0.1");
+  NS_TEST_EXPECT_MSG_EQ (m_receivedPacket->GetSize (), 143, "recv(hdrincl): 10.0.0.1");
+  NS_TEST_EXPECT_MSG_EQ (m_receivedPacket2->GetSize (), 0, "second interface should not receive it");
+
+  m_receivedPacket->RemoveAllByteTags ();
+  m_receivedPacket2->RemoveAllByteTags ();
+
+#if 0
   // Simple broadcast test
 
   SendData (txSocket, "255.255.255.255");
-  NS_TEST_EXPECT_MSG_EQ (m_receivedPacket->GetSize (), 123, "trivial");
+  NS_TEST_EXPECT_MSG_EQ (m_receivedPacket->GetSize (), 143, "recv: 255.255.255.255");
+  NS_TEST_EXPECT_MSG_EQ (m_receivedPacket2->GetSize (), 0, "second socket should not receive it (it is bound specifically to the second interface's address");
+
+  m_receivedPacket->RemoveAllByteTags ();
+  m_receivedPacket2->RemoveAllByteTags ();
+#endif
+
+  // Simple Link-local multicast test
+
+  txSocket->Bind (InetSocketAddress (Ipv4Address ("10.0.0.2"), 0));
+  SendData (txSocket, "224.0.0.9");
+  NS_TEST_EXPECT_MSG_EQ (m_receivedPacket->GetSize (), 143, "recv: 224.0.0.9");
   NS_TEST_EXPECT_MSG_EQ (m_receivedPacket2->GetSize (), 0, "second socket should not receive it (it is bound specifically to the second interface's address");
 
   m_receivedPacket->RemoveAllByteTags ();
   m_receivedPacket2->RemoveAllByteTags ();
 
+#if 0
   // Broadcast test with multiple receiving sockets
 
   // When receiving broadcast packets, all sockets sockets bound to
@@ -287,39 +298,27 @@ UdpSocketImplTest::DoRun (void)
   // the socket address matches.
   rxSocket2->Dispose ();
   rxSocket2 = rxSocketFactory->CreateSocket ();
-  rxSocket2->SetRecvCallback (MakeCallback (&UdpSocketImplTest::ReceivePkt2, this));
-  NS_TEST_EXPECT_MSG_EQ (rxSocket2->Bind (InetSocketAddress (Ipv4Address ("0.0.0.0"), 1234)), 0, "trivial");
+  rxSocket2->SetRecvCallback (MakeCallback (&Ipv4RawSocketImplTest::ReceivePkt2, this));
+  NS_TEST_EXPECT_MSG_EQ (rxSocket2->Bind (InetSocketAddress (Ipv4Address ("0.0.0.0"), 0)), 0, "trivial");
 
   SendData (txSocket, "255.255.255.255");
-  NS_TEST_EXPECT_MSG_EQ (m_receivedPacket->GetSize (), 123, "trivial");
-  NS_TEST_EXPECT_MSG_EQ (m_receivedPacket2->GetSize (), 123, "trivial");
+  NS_TEST_EXPECT_MSG_EQ (m_receivedPacket->GetSize (), 143, "recv: 255.255.255.255");
+  NS_TEST_EXPECT_MSG_EQ (m_receivedPacket2->GetSize (), 143, "recv: 255.255.255.255");
+#endif
 
   m_receivedPacket = 0;
   m_receivedPacket2 = 0;
 
-  // Simple Link-local multicast test
-
-  txSocket->BindToNetDevice (txDev1);
-  SendData (txSocket, "224.0.0.9");
-  NS_TEST_EXPECT_MSG_EQ (m_receivedPacket->GetSize (), 0, "first socket should not receive it (it is bound specifically to the second interface's address");
-  NS_TEST_EXPECT_MSG_EQ (m_receivedPacket2->GetSize (), 123, "recv2: 224.0.0.9");
-
-  m_receivedPacket->RemoveAllByteTags ();
-  m_receivedPacket2->RemoveAllByteTags ();
-
   Simulator::Destroy ();
-
 }
-
 //-----------------------------------------------------------------------------
-class UdpTestSuite : public TestSuite
+class Ipv4RawTestSuite : public TestSuite
 {
 public:
-  UdpTestSuite () : TestSuite ("udp", UNIT)
+  Ipv4RawTestSuite () : TestSuite ("ipv4-raw", UNIT)
   {
-    AddTestCase (new UdpSocketImplTest);
-    AddTestCase (new UdpSocketLoopbackTest);
+    AddTestCase (new Ipv4RawSocketImplTest);
   }
-} g_udpTestSuite;
+} g_ipv4rawTestSuite;
 
 }; // namespace ns3

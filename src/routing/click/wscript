@@ -69,7 +69,7 @@ int main()
 
 def build(bld):
 
-    module = bld.create_ns3_module('click', ['internet-stack', 'contrib'])
+    module = bld.create_ns3_module('click', ['internet', 'contrib'])
     module.includes = '. CPPPATH_NSCLICK'
     module.source = [
         'model/ipv4-click-routing.cc',

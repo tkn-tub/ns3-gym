@@ -39,7 +39,7 @@
 #include "ns3/bs-scheduler.h"
 #include "ns3/bs-scheduler-simple.h"
 #include "ns3/bs-scheduler-rtps.h"
-#include "trace-helper.h"
+#include "ns3/trace-helper.h"
 
 namespace ns3 {
 

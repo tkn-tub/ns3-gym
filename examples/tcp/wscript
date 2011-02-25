@@ -2,25 +2,25 @@
 
 def build(bld):
     obj = bld.create_ns3_program('tcp-large-transfer',
-                                 ['point-to-point', 'internet-stack'])
+                                 ['point-to-point', 'internet'])
     obj.source = 'tcp-large-transfer.cc'
 
     obj = bld.create_ns3_program('tcp-nsc-lfn',
-                                 ['point-to-point', 'internet-stack'])
+                                 ['point-to-point', 'internet'])
     obj.source = 'tcp-nsc-lfn.cc'
 
     obj = bld.create_ns3_program('tcp-nsc-zoo',
-                                 ['csma', 'internet-stack'])
+                                 ['csma', 'internet'])
     obj.source = 'tcp-nsc-zoo.cc'
 
     obj = bld.create_ns3_program('tcp-star-server',
-                                 ['point-to-point', 'internet-stack'])
+                                 ['point-to-point', 'internet'])
     obj.source = 'tcp-star-server.cc'
 
     obj = bld.create_ns3_program('star',
-                                 ['point-to-point', 'internet-stack'])
+                                 ['point-to-point', 'internet'])
     obj.source = 'star.cc'
 
     obj = bld.create_ns3_program('tcp-bulk-send',
-                                 ['point-to-point', 'internet-stack'])
+                                 ['point-to-point', 'internet'])
     obj.source = 'tcp-bulk-send.cc'

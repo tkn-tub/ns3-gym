@@ -40,10 +40,9 @@
  *    - the recipient receives a block ack request or a MPDU with ack policy Block Ack. 
  */
 #include "ns3/core-module.h"
-#include "ns3/core-module.h"
+#include "ns3/internet-module.h"
 #include "ns3/network-module.h"
 #include "ns3/helper-module.h"
-#include "ns3/global-routing-module.h"
 #include "ns3/wifi-module.h"
 #include "ns3/mobility-module.h"
 

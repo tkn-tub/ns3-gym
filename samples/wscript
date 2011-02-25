@@ -31,11 +31,11 @@ def build(bld):
         obj.source = 'main-test-sync.cc'
 
     obj = bld.create_ns3_program('main-simple',
-                                 ['node', 'internet-stack', 'onoff'])
+                                 ['node', 'internet', 'onoff'])
     obj.source = 'main-simple.cc'
 
     obj = bld.create_ns3_program('main-grid-topology',
-                                 ['core', 'mobility', 'internet-stack'])
+                                 ['core', 'mobility', 'internet'])
     obj.source = 'main-grid-topology.cc'
 
     obj = bld.create_ns3_program('main-random-topology',

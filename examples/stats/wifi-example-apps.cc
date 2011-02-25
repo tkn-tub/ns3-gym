@@ -29,8 +29,7 @@
 
 #include "ns3/core-module.h"
 #include "ns3/network-module.h"
-#include "ns3/network-module.h"
-#include "ns3/internet-stack-module.h"
+#include "ns3/internet-module.h"
 
 #include "ns3/stats-module.h"
 

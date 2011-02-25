@@ -24,11 +24,11 @@
 #include "ns3/boolean.h"
 #include "ns3/inet6-socket-address.h"
 #include "ns3/node.h"
-#include "ns3/csma-net-device.h"
+#include "ns3/simple-net-device.h"
 
-#include "ipv6-interface.h"
-#include "ipv6-l3-protocol.h"
-#include "icmpv6-l4-protocol.h"
+#include "ns3/ipv6-interface.h"
+#include "ns3/ipv6-l3-protocol.h"
+#include "ns3/icmpv6-l4-protocol.h"
 
 namespace ns3 {
 class Ipv6L3ProtocolTestCase : public TestCase
@@ -67,8 +67,8 @@ Ipv6L3ProtocolTestCase::DoRun ()
   Ptr<Icmpv6L4Protocol> icmpv6 = CreateObject<Icmpv6L4Protocol> ();
   Ptr<Ipv6Interface> interface = CreateObject<Ipv6Interface> ();
   Ptr<Ipv6Interface> interface2 = CreateObject<Ipv6Interface> ();
-  Ptr<CsmaNetDevice> device = CreateObject<CsmaNetDevice> ();
-  Ptr<CsmaNetDevice> device2 = CreateObject<CsmaNetDevice> ();
+  Ptr<SimpleNetDevice> device = CreateObject<SimpleNetDevice> ();
+  Ptr<SimpleNetDevice> device2 = CreateObject<SimpleNetDevice> ();
   uint32_t index = 0;
 
   /* init */

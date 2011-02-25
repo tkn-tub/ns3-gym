@@ -176,7 +176,7 @@ def set_options(opt):
     # options provided in subdirectories
     opt.sub_options('src')
     opt.sub_options('bindings/python')
-    opt.sub_options('src/internet-stack')
+    opt.sub_options('src/internet')
 
 
 def _check_compilation_flag(conf, flag, mode='cxx'):

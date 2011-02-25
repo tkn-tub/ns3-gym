@@ -17,8 +17,8 @@
  */
 
 #include "ns3/test.h"
-#include "ipv6-extension-header.h"
-#include "ipv6-option-header.h"
+#include "ns3/ipv6-extension-header.h"
+#include "ns3/ipv6-option-header.h"
 
 using namespace ns3;
 

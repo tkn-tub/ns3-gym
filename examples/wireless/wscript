@@ -2,7 +2,7 @@
 
 def build(bld):
     obj = bld.create_ns3_program('mixed-wireless', ['core', 'mobility', 'wifi', 'point-to-point', 
-                                                    'internet-stack'])
+                                                    'internet'])
     obj.source = 'mixed-wireless.cc'
 
     obj = bld.create_ns3_program('wifi-adhoc', ['core', 'mobility', 'wifi'])
