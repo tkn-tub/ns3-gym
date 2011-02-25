@@ -30,6 +30,7 @@
 #include "ns3/data-rate.h"
 #include "ns3/ptr.h"
 #include "ns3/mac48-address.h"
+#include "ns3/mpi-net-device.h"
 
 namespace ns3 {
 
@@ -49,7 +50,7 @@ class ErrorModel;
  * include a queue, data rate, and interframe transmission gap (the 
  * propagation delay is set in the PointToPointChannel).
  */
-class PointToPointNetDevice : public NetDevice 
+class PointToPointNetDevice : public NetDevice, public MpiNetDevice 
 {
 public:
   static TypeId GetTypeId (void);
@@ -178,6 +179,9 @@ public:
 
   virtual void SetPromiscReceiveCallback (PromiscReceiveCallback cb);
   virtual bool SupportsSendFrom (void) const;
+
+protected:
+  void DoMpiReceive (Ptr<Packet> p);
 
 private:
 

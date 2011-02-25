@@ -24,10 +24,11 @@
 #include <list>
 
 #include "mpi-interface.h"
+#include "mpi-net-device.h"
 
 #include "ns3/node.h"
 #include "ns3/node-list.h"
-#include "ns3/point-to-point-net-device.h"
+#include "ns3/net-device.h"
 #include "ns3/simulator.h"
 #include "ns3/simulator-impl.h"
 #include "ns3/nstime.h"
@@ -235,13 +236,13 @@ MpiInterface::ReceiveMessages ()
       // Find the correct node/device to schedule receive event
       Ptr<Node> pNode = NodeList::GetNode (node);
       uint32_t nDevices = pNode->GetNDevices ();
-      Ptr<PointToPointNetDevice> pDev = 0;
+      Ptr<MpiNetDevice> pMpiDev;
       for (uint32_t i = 0; i < nDevices; ++i)
         {
           Ptr<NetDevice> pThisDev = pNode->GetDevice (i);
           if (pThisDev->GetIfIndex () == dev)
             {
-              pDev = DynamicCast<PointToPointNetDevice> (pThisDev);
+              pDev = DynamicCast<MpiNetDevice> (pThisDev);
               break;
             }
         }
@@ -250,8 +251,8 @@ MpiInterface::ReceiveMessages ()
 
       // Schedule the rx event
       Simulator::ScheduleWithContext (pNode->GetId (), rxTime - Simulator::Now (),
-                                      &PointToPointNetDevice::Receive,
-                                      pDev, p);
+                                      &MpiNetDevice::Receive,
+                                      pMpiDev, p);
 
       // Re-queue the next read
       MPI_Irecv (m_pRxBuffers[index], MAX_MPI_MSG_SIZE, MPI_CHAR, MPI_ANY_SOURCE, 0,
