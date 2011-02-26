@@ -20,6 +20,10 @@
 
 namespace ns3 {
 
+MpiNetDevice::~MpiNetDevice ()
+{
+}
+
 void
 MpiNetDevice::MpiReceive (Ptr<Packet> p)
 {

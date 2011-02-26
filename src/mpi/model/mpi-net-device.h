@@ -34,6 +34,7 @@ namespace ns3 {
 class MpiNetDevice
 {
 public:
+  virtual ~MpiNetDevice();
   /**
    * 
    * Receive a packet 
