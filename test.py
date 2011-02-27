@@ -124,14 +124,14 @@ example_tests = [
     ("examples/routing/global-injection-slash32", "True", "True"),
     ("examples/routing/global-routing-slash32", "True", "True"),
     ("examples/routing/mixed-global-routing", "True", "True"),
-    ("src/routing/nix-vector-routing/examples/routing/nix-simple", "True", "True"),
-    ("src/routing/nix-vector-routing/examples/routing/nms-p2p-nix", "False", "True"), # Takes too long to run
+    ("src/routing/nix-vector-routing/examples/nix-simple", "True", "True"),
+    ("src/routing/nix-vector-routing/examples/nms-p2p-nix", "False", "True"), # Takes too long to run
     ("examples/routing/simple-alternate-routing", "True", "True"),
     ("examples/routing/simple-global-routing", "True", "True"),
     ("src/routing/olsr/examples/simple-point-to-point-olsr", "True", "True"),
     ("examples/routing/simple-routing-ping6", "True", "True"),
     ("examples/routing/static-routing-slash32", "True", "True"),
-    ("src/routing/aodv/examples/routing/aodv", "True", "True"),
+    ("src/routing/aodv/examples/aodv", "True", "True"),
 
     ("src/spectrum/examples/adhoc-aloha-ideal-phy", "True", "True"),
     ("src/spectrum/examples/adhoc-aloha-ideal-phy-with-microwave-oven", "True", "True"),
