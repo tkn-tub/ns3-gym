@@ -18,10 +18,10 @@
  * Authors: Pavel Boyko <boyko@iitp.ru>
  */
 #include "ns3/test.h"
-#include "aodv-neighbor.h"
-#include "aodv-packet.h"
-#include "aodv-rqueue.h"
-#include "aodv-rtable.h"
+#include "ns3/aodv-neighbor.h"
+#include "ns3/aodv-packet.h"
+#include "ns3/aodv-rqueue.h"
+#include "ns3/aodv-rtable.h"
 #include "ns3/ipv4-route.h"
 
 namespace ns3

@@ -32,6 +32,7 @@
 #include "ns3/core-module.h"
 #include "ns3/ipv4-static-routing-helper.h"
 #include "ns3/ipv4-list-routing-helper.h"
+#include "ns3/ipv4-nix-vector-helper.h"
 
 #include "ns3/topology-read-module.h"
 #include <list>

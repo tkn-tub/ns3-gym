@@ -4,14 +4,15 @@ def build(bld):
     module = bld.create_ns3_module('aodv', ['internet', 'contrib'])
     module.includes = '.'
     module.source = [
-        'aodv-id-cache.cc',
-        'aodv-dpd.cc',
-        'aodv-rtable.cc',
-        'aodv-rqueue.cc',
-        'aodv-packet.cc',
-        'aodv-neighbor.cc',
-        'aodv-routing-protocol.cc',
-        'aodv-test-suite.cc',
+        'model/aodv-id-cache.cc',
+        'model/aodv-dpd.cc',
+        'model/aodv-rtable.cc',
+        'model/aodv-rqueue.cc',
+        'model/aodv-packet.cc',
+        'model/aodv-neighbor.cc',
+        'model/aodv-routing-protocol.cc',
+	'helper/aodv-helper.cc',
+        'test/aodv-test-suite.cc',
         'test/aodv-regression.cc',
         'test/bug-772.cc',
         'test/loopback.cc',
@@ -20,12 +21,15 @@ def build(bld):
     headers = bld.new_task_gen('ns3header')
     headers.module = 'aodv'
     headers.source = [
-        'aodv-id-cache.h',
-        'aodv-dpd.h',
-        'aodv-rtable.h',
-        'aodv-rqueue.h',
-        'aodv-packet.h',
-        'aodv-neighbor.h',
-        'aodv-routing-protocol.h',
+        'model/aodv-id-cache.h',
+        'model/aodv-dpd.h',
+        'model/aodv-rtable.h',
+        'model/aodv-rqueue.h',
+        'model/aodv-packet.h',
+        'model/aodv-neighbor.h',
+        'model/aodv-routing-protocol.h',
+        'helper/aodv-helper.h',
         ]
 
+    if bld.env['ENABLE_EXAMPLES']:
+        bld.add_subdirs('examples')

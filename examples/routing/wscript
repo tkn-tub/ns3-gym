@@ -29,18 +29,6 @@ def build(bld):
                                   ['point-to-point', 'internet', 'csma'])
     obj.source = 'mixed-global-routing.cc'
 
-    obj = bld.create_ns3_program('nix-simple',
-                                 ['point-to-point', 'internet', 'nix-vector-routing'])
-    obj.source = 'nix-simple.cc'
-
-    obj = bld.create_ns3_program('nms-p2p-nix',
-                                 ['point-to-point', 'internet', 'nix-vector-routing'])
-    obj.source = 'nms-p2p-nix.cc'
-
     obj = bld.create_ns3_program('simple-routing-ping6',
       ['csma', 'internet'])
     obj.source = 'simple-routing-ping6.cc'
-    
-    obj = bld.create_ns3_program('aodv',
-                                 ['wifi', 'internet', 'aodv'])
-    obj.source = 'aodv.cc'

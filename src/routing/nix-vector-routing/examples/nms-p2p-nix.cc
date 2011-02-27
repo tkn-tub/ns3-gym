@@ -46,6 +46,7 @@
 #include "ns3/simulator.h"
 #include "ns3/ipv4-static-routing-helper.h"
 #include "ns3/ipv4-list-routing-helper.h"
+#include "ns3/ipv4-nix-vector-helper.h"
 
 using namespace std;
 using namespace ns3;
