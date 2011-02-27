@@ -230,6 +230,7 @@ def build(bld):
         'model/tcp-socket-factory.h',
         'model/ipv4.h',
         'model/ipv4-raw-socket-factory.h',
+        'model/ipv4-raw-socket-impl.h',
         'model/ipv6-header.h',
         'model/ipv6-interface-address.h',
         'model/ipv6-route.h',

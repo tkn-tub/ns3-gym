@@ -30,6 +30,7 @@
 #include "ns3/helper-module.h"
 #include "ns3/click-internet-stack-helper.h"
 #include "ns3/log.h"
+#include "ns3/mobility-helper.h"
 
 using namespace ns3;
 
