@@ -86,7 +86,8 @@ FriisSpectrumPropagationLossModel::CalculateLoss (double f, double d) const
     }
 
   NS_ASSERT (f > 0);
-  double loss = ( d * f * f) / ((3e8 * 3e8) / (4 * M_PI)) ;
+  double loss_sqrt = (4 * M_PI * f * d) / 3e8;
+  double loss = loss_sqrt * loss_sqrt;
 
   if (loss < 1)
     {

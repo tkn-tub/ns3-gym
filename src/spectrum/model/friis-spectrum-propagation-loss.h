@@ -49,7 +49,7 @@ public:
    * Return the propagation loss L according to a simplified version of Friis'
    * formula in which antenna gains are unitary:
    *
-   *         4 * pi * d * f^2
+   *      (4 * pi * d * f) ^ 2
    * L = ----------------------
    *               C^2
    *

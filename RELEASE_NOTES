@@ -29,6 +29,7 @@ since ns-3.10, in many cases referencing the Bugzilla bug number.
 
    - Fixed the UanPhyGen::IsStateBusy method, error with logical OR
    - CsmaNetDevice ReceiveErrorModel was not dropping the packet
+   - bug 1064 - Correct Friis propagation loss equation in spectrum module
 
 Known issues
 ------------
