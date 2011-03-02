@@ -3,6 +3,8 @@ from pybindgen import Module, FileCodeSink, param, retval, cppclass, typehandler
 def register_types(module):
     root_module = module.get_root()
     
+    ## ipv4-nix-vector-helper.h: ns3::Ipv4NixVectorHelper [class]
+    module.add_class('Ipv4NixVectorHelper', parent=root_module['ns3::Ipv4RoutingHelper'])
     ## ipv4-nix-vector-routing.h: ns3::Ipv4NixVectorRouting [class]
     module.add_class('Ipv4NixVectorRouting', parent=root_module['ns3::Ipv4RoutingProtocol'])
     typehandlers.add_type_alias('std::map< ns3::Ipv4Address, ns3::Ptr< ns3::NixVector >, std::less< ns3::Ipv4Address >, std::allocator< std::pair< ns3::Ipv4Address const, ns3::Ptr< ns3::NixVector > > > >', 'ns3::NixMap_t')
@@ -103,7 +105,25 @@ def register_types_ns3_olsr(module):
     
 
 def register_methods(root_module):
+    register_Ns3Ipv4NixVectorHelper_methods(root_module, root_module['ns3::Ipv4NixVectorHelper'])
     register_Ns3Ipv4NixVectorRouting_methods(root_module, root_module['ns3::Ipv4NixVectorRouting'])
+    return
+
+def register_Ns3Ipv4NixVectorHelper_methods(root_module, cls):
+    ## ipv4-nix-vector-helper.h: ns3::Ipv4NixVectorHelper::Ipv4NixVectorHelper() [constructor]
+    cls.add_constructor([])
+    ## ipv4-nix-vector-helper.h: ns3::Ipv4NixVectorHelper::Ipv4NixVectorHelper(ns3::Ipv4NixVectorHelper const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::Ipv4NixVectorHelper const &', 'arg0')])
+    ## ipv4-nix-vector-helper.h: ns3::Ipv4NixVectorHelper * ns3::Ipv4NixVectorHelper::Copy() const [member function]
+    cls.add_method('Copy', 
+                   'ns3::Ipv4NixVectorHelper *', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## ipv4-nix-vector-helper.h: ns3::Ptr<ns3::Ipv4RoutingProtocol> ns3::Ipv4NixVectorHelper::Create(ns3::Ptr<ns3::Node> node) const [member function]
+    cls.add_method('Create', 
+                   'ns3::Ptr< ns3::Ipv4RoutingProtocol >', 
+                   [param('ns3::Ptr< ns3::Node >', 'node')], 
+                   is_const=True, is_virtual=True)
     return
 
 def register_Ns3Ipv4NixVectorRouting_methods(root_module, cls):

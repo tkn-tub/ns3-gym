@@ -37,6 +37,7 @@
 #include <ns3/mobility-module.h>
 #include <ns3/spectrum-helper.h>
 #include <ns3/helper-module.h>
+#include <ns3/applications-module.h>
 #include <ns3/adhoc-aloha-noack-ideal-phy-helper.h>
 #include <ns3/waveform-generator-helper.h>
 #include <ns3/spectrum-analyzer-helper.h>

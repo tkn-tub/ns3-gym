@@ -3,6 +3,8 @@ from pybindgen import Module, FileCodeSink, param, retval, cppclass, typehandler
 def register_types(module):
     root_module = module.get_root()
     
+    ## aodv-helper.h: ns3::AodvHelper [class]
+    module.add_class('AodvHelper', parent=root_module['ns3::Ipv4RoutingHelper'])
     
     ## Register a nested module for the namespace Config
     
@@ -127,6 +129,7 @@ def register_types_ns3_olsr(module):
     
 
 def register_methods(root_module):
+    register_Ns3AodvHelper_methods(root_module, root_module['ns3::AodvHelper'])
     register_Ns3AodvDuplicatePacketDetection_methods(root_module, root_module['ns3::aodv::DuplicatePacketDetection'])
     register_Ns3AodvIdCache_methods(root_module, root_module['ns3::aodv::IdCache'])
     register_Ns3AodvNeighbors_methods(root_module, root_module['ns3::aodv::Neighbors'])
@@ -141,6 +144,27 @@ def register_methods(root_module):
     register_Ns3AodvRrepHeader_methods(root_module, root_module['ns3::aodv::RrepHeader'])
     register_Ns3AodvRreqHeader_methods(root_module, root_module['ns3::aodv::RreqHeader'])
     register_Ns3AodvTypeHeader_methods(root_module, root_module['ns3::aodv::TypeHeader'])
+    return
+
+def register_Ns3AodvHelper_methods(root_module, cls):
+    ## aodv-helper.h: ns3::AodvHelper::AodvHelper(ns3::AodvHelper const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::AodvHelper const &', 'arg0')])
+    ## aodv-helper.h: ns3::AodvHelper::AodvHelper() [constructor]
+    cls.add_constructor([])
+    ## aodv-helper.h: ns3::AodvHelper * ns3::AodvHelper::Copy() const [member function]
+    cls.add_method('Copy', 
+                   'ns3::AodvHelper *', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## aodv-helper.h: ns3::Ptr<ns3::Ipv4RoutingProtocol> ns3::AodvHelper::Create(ns3::Ptr<ns3::Node> node) const [member function]
+    cls.add_method('Create', 
+                   'ns3::Ptr< ns3::Ipv4RoutingProtocol >', 
+                   [param('ns3::Ptr< ns3::Node >', 'node')], 
+                   is_const=True, is_virtual=True)
+    ## aodv-helper.h: void ns3::AodvHelper::Set(std::string name, ns3::AttributeValue const & value) [member function]
+    cls.add_method('Set', 
+                   'void', 
+                   [param('std::string', 'name'), param('ns3::AttributeValue const &', 'value')])
     return
 
 def register_Ns3AodvDuplicatePacketDetection_methods(root_module, cls):
