@@ -35,7 +35,9 @@
 #include "ns3/helper-module.h"
 #include "ns3/applications-module.h"
 #include "ns3/mobility-module.h"
+#include "ns3/internet-module.h"
 #include "ns3/flow-monitor-module.h"
+#include "ns3/wifi-module.h"
 
 using namespace ns3;
 

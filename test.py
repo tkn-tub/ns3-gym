@@ -93,16 +93,16 @@ core_nsc_missing_skip_tests = [
 example_tests = [
     ("src/devices/bridge/examples/csma-bridge", "True", "True"),
     ("src/devices/bridge/examples/csma-bridge-one-hop", "True", "True"),
-    ("examples/csma/csma-broadcast", "True", "True"),
-    ("examples/csma/csma-multicast", "True", "True"),
-    ("examples/csma/csma-one-subnet", "True", "True"),
-    ("examples/csma/csma-packet-socket", "True", "True"),
-    ("examples/csma/csma-ping", "True", "True"),
-    ("examples/csma/csma-raw-ip-socket", "True", "True"),
-    ("examples/csma/csma-star", "True", "True"),
+    ("src/devices/csma/examples/csma-broadcast", "True", "True"),
+    ("src/devices/csma/examples/csma-multicast", "True", "True"),
+    ("src/devices/csma/examples/csma-one-subnet", "True", "True"),
+    ("src/devices/csma/examples/csma-packet-socket", "True", "True"),
+    ("src/devices/csma/examples/csma-ping", "True", "True"),
+    ("src/devices/csma/examples/csma-raw-ip-socket", "True", "True"),
+    ("src/devices/csma/examples/csma-star", "True", "True"),
 
-    ("examples/emulation/emu-ping", "False", "True"),
-    ("examples/emulation/emu-udp-echo", "False", "True"),
+    ("src/devices/emu/examples/emu-ping", "False", "True"),
+    ("src/devices/emu/examples/emu-udp-echo", "False", "True"),
 
     ("examples/energy/energy-model-example", "True", "True"),
 
@@ -181,9 +181,9 @@ example_tests = [
 
     ("src/routing/click/examples/nsclick-simple-lan", "ENABLE_CLICK == True", "True"),
 
-    ("examples/wimax/wimax-simple", "True", "True"),
-    ("examples/wimax/wimax-ipv4", "True", "True"),
-    ("examples/wimax/wimax-multicast", "True", "True"),
+    ("src/devices/wimax/examples/wimax-simple", "True", "True"),
+    ("src/devices/wimax/examples/wimax-ipv4", "True", "True"),
+    ("src/devices/wimax/examples/wimax-multicast", "True", "True"),
 ]
 
 #

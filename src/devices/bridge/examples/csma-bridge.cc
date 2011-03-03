@@ -37,6 +37,7 @@
 #include "ns3/helper-module.h"
 #include "ns3/applications-module.h"
 #include "ns3/bridge-module.h"
+#include "ns3/csma-module.h"
 
 using namespace ns3;
 

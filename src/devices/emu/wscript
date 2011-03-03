@@ -26,23 +26,26 @@ def build(bld):
     headers = bld.new_task_gen('ns3header')
     headers.module = 'emu'
     headers.source = [
-        'emu.h',
+        'doc/emu.h',
         ]
 
     env = bld.env_of_name('default')
     if env['ENABLE_EMU']:
         module.source.extend([
-                'emu-net-device.cc',
-                'emu-encode-decode.cc',
+                'model/emu-net-device.cc',
+                'model/emu-encode-decode.cc',
+                'helper/emu-helper.cc',
                 ])
         headers.source.extend([
-                'emu-net-device.h',
+                'model/emu-net-device.h',
+                'helper/emu-helper.h',
                 ])
 
         obj = bld.create_suid_program('emu-sock-creator')
         obj.source = [
-            'emu-sock-creator.cc',
-            'emu-encode-decode.cc',
+            'model/emu-sock-creator.cc',
+            'model/emu-encode-decode.cc',
             ]
 
-
+    if bld.env['ENABLE_EXAMPLES']:
+        bld.add_subdirs('examples')

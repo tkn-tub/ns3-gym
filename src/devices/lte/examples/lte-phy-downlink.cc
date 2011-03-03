@@ -47,14 +47,13 @@
  *  |+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++|
  */
 
-#include <iostream>
 #include <ns3/core-module.h>
 #include <ns3/network-module.h>
 #include <ns3/single-model-spectrum-channel.h>
 #include <ns3/log.h>
-#include <string>
 #include <ns3/mobility-module.h>
 #include <ns3/spectrum-helper.h>
+#include <ns3/internet-module.h>
 #include <ns3/helper-module.h>
 #include <ns3/lte-helper.h>
 #include <ns3/enb-phy.h>
@@ -62,6 +61,9 @@
 #include <ns3/packet-burst.h>
 #include <ns3/constant-position-mobility-model.h>
 #include <ns3/constant-velocity-mobility-model.h>
+
+#include <iostream>
+#include <string>
 #include <vector>
 
 

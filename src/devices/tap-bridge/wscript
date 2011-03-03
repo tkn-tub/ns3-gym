@@ -26,25 +26,28 @@ def build(bld):
     headers = bld.new_task_gen('ns3header')
     headers.module = 'tap-bridge'
     headers.source = [
-        'tap.h',
+        'doc/tap.h',
         ]
 
     env = bld.env_of_name('default')
     if env['ENABLE_TAP']:
         module.source.extend([
-                'tap-bridge.cc',
-                'tap-encode-decode.cc',
+                'model/tap-bridge.cc',
+                'model/tap-encode-decode.cc',
+                'helper/tap-bridge-helper.cc',
                 ])
         headers.source.extend([
-                'tap-bridge.h',
+                'model/tap-bridge.h',
+                'helper/tap-bridge-helper.h',
                 ])
 
 
         if not env['PLATFORM'].startswith('freebsd'):
             obj = bld.create_suid_program('tap-creator')
             obj.source = [
-                'tap-creator.cc',
-                'tap-encode-decode.cc',
+                'model/tap-creator.cc',
+                'model/tap-encode-decode.cc',
                 ]
 
-
+    if bld.env['ENABLE_EXAMPLES']:
+        bld.add_subdirs('examples')

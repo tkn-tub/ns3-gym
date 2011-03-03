@@ -56,6 +56,7 @@
 #include "ns3/mobility-module.h"
 #include "ns3/contrib-module.h"
 #include "ns3/wifi-module.h"
+#include "ns3/csma-module.h"
 #include "ns3/ipv4-list-routing.h"
 #include "ns3/olsr-routing-protocol.h"
 #include "ns3/olsr-helper.h"
