@@ -43,7 +43,7 @@ all_modules = (
     'spectrum',
     'devices/mesh',   
     'devices/mesh/dot11s',
-    'devices/mesh/flame',
+    'flame',
     'test',
     'test/perf',
     'test/ns3tcp',

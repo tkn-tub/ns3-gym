@@ -21,8 +21,8 @@
 #include "ns3/test.h"
 #include "ns3/packet.h"
 #include "ns3/simulator.h"
-#include "flame-header.h"
-#include "flame-rtable.h"
+#include "ns3/flame-header.h"
+#include "ns3/flame-rtable.h"
 
 namespace ns3 {
 namespace flame {
