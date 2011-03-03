@@ -21,10 +21,10 @@
 #include "ns3/packet.h"
 #include "ns3/simulator.h"
 #include "ns3/mgt-headers.h"
-#include "../dot11s-mac-header.h"
-#include "../hwmp-rtable.h"
-#include "../peer-link-frame.h"
-#include "../ie-dot11s-peer-management.h"
+#include "ns3/dot11s-mac-header.h"
+#include "ns3/hwmp-rtable.h"
+#include "ns3/peer-link-frame.h"
+#include "ns3/ie-dot11s-peer-management.h"
 
 namespace ns3 {
 namespace dot11s {

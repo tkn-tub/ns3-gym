@@ -42,7 +42,7 @@ all_modules = (
     'devices/uan',
     'spectrum',
     'devices/mesh',   
-    'devices/mesh/dot11s',
+    'dot11s',
     'flame',
     'test',
     'test/perf',
