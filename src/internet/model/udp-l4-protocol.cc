@@ -281,7 +281,7 @@ UdpL4Protocol::Send (Ptr<Packet> packet,
                      Ipv4Address saddr, Ipv4Address daddr, 
                      uint16_t sport, uint16_t dport, Ptr<Ipv4Route> route)
 {
-  NS_LOG_FUNCTION (this << packet << saddr << daddr << sport << dport);
+  NS_LOG_FUNCTION (this << packet << saddr << daddr << sport << dport << route);
 
   UdpHeader udpHeader;
   if(Node::ChecksumEnabled ())
@@ -296,7 +296,7 @@ UdpL4Protocol::Send (Ptr<Packet> packet,
 
   packet->AddHeader (udpHeader);
 
-  m_downTarget (packet, saddr, daddr, PROT_NUMBER, 0);
+  m_downTarget (packet, saddr, daddr, PROT_NUMBER, route);
 }
 
 void
