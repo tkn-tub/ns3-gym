@@ -26,11 +26,11 @@
 #include "ns3/string.h"
 #include "ns3/uinteger.h"
 #include "ns3/inet-socket-address.h"
-#include "ns3/point-to-point-helper.h"
 #include "ns3/internet-stack-helper.h"
 #include "ns3/ipv4-address-helper.h"
 #include "ns3/udp-client-server-helper.h"
-#include "ns3/csma-helper.h"
+#include "ns3/simple-net-device.h"
+#include "ns3/simple-channel.h"
 #include "ns3/test.h"
 #include "ns3/simulator.h"
 
@@ -69,11 +69,17 @@ void UdpClientServerTestCase::DoRun (void)
   InternetStackHelper internet;
   internet.Install (n);
 
-  CsmaHelper csma;
-  csma.SetChannelAttribute ("DataRate", DataRateValue (DataRate(5000000)));
-  csma.SetChannelAttribute ("Delay", TimeValue (MilliSeconds (2)));
-  csma.SetDeviceAttribute ("Mtu", UintegerValue (1400));
-  NetDeviceContainer d = csma.Install (n);
+  // link the two nodes
+  Ptr<SimpleNetDevice> txDev = CreateObject<SimpleNetDevice> ();
+  Ptr<SimpleNetDevice> rxDev = CreateObject<SimpleNetDevice> ();
+  n.Get (0)->AddDevice (txDev);
+  n.Get (1)->AddDevice (rxDev);
+  Ptr<SimpleChannel> channel1 = CreateObject<SimpleChannel> ();
+  rxDev->SetChannel (channel1);
+  txDev->SetChannel (channel1);
+  NetDeviceContainer d;
+  d.Add (txDev);
+  d.Add (rxDev);
 
   Ipv4AddressHelper ipv4;
 
@@ -137,11 +143,17 @@ void UdpTraceClientServerTestCase::DoRun (void)
   InternetStackHelper internet;
   internet.Install (n);
 
-  CsmaHelper csma;
-  csma.SetChannelAttribute ("DataRate", DataRateValue (DataRate(5000000)));
-  csma.SetChannelAttribute ("Delay", TimeValue (MilliSeconds (2)));
-  csma.SetDeviceAttribute ("Mtu", UintegerValue (1400));
-  NetDeviceContainer d = csma.Install (n);
+  // link the two nodes
+  Ptr<SimpleNetDevice> txDev = CreateObject<SimpleNetDevice> ();
+  Ptr<SimpleNetDevice> rxDev = CreateObject<SimpleNetDevice> ();
+  n.Get (0)->AddDevice (txDev);
+  n.Get (1)->AddDevice (rxDev);
+  Ptr<SimpleChannel> channel1 = CreateObject<SimpleChannel> ();
+  rxDev->SetChannel (channel1);
+  txDev->SetChannel (channel1);
+  NetDeviceContainer d;
+  d.Add (txDev);
+  d.Add (rxDev);
 
   Ipv4AddressHelper ipv4;
   ipv4.SetBase ("10.1.1.0", "255.255.255.0");
