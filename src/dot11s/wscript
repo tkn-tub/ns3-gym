@@ -46,4 +46,9 @@ def build(bld):
         'model/peer-link-frame.h',
         'model/hwmp-rtable.h',
         'model/ie-dot11s-peering-protocol.h',
+        'model/ie-dot11s-metric-report.h',
+        'model/ie-dot11s-perr.h',
+        'model/ie-dot11s-prep.h',
+        'model/ie-dot11s-preq.h',
+        'model/ie-dot11s-rann.h',
         ]

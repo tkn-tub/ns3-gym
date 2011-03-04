@@ -1,0 +1,23 @@
+## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
+
+def build(bld):
+    obj = bld.create_ns3_module('mesh', ['wifi'])
+
+    obj.source = [
+        'model/mesh-information-element-vector.cc',
+        'model/mesh-point-device.cc',
+        'model/mesh-l2-routing-protocol.cc',
+        'model/mesh-wifi-beacon.cc',
+        'model/mesh-wifi-interface-mac.cc',
+        ]
+    headers = bld.new_task_gen('ns3header')
+    headers.module = 'mesh'
+    headers.source = [
+        'model/mesh-information-element.h',
+        'model/mesh-information-element-vector.h',
+        'model/mesh-point-device.h',
+        'model/mesh-l2-routing-protocol.h',
+        'model/mesh-wifi-beacon.h',
+        'model/mesh-wifi-interface-mac.h',
+        'model/mesh-wifi-interface-mac-plugin.h',
+        ]

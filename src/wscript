@@ -41,7 +41,7 @@ all_modules = (
     'contrib/stats',
     'devices/uan',
     'spectrum',
-    'devices/mesh',   
+    'mesh',   
     'dot11s',
     'flame',
     'test',
