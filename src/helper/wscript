@@ -3,9 +3,6 @@
 def build(bld):
     helper = bld.create_ns3_module('helper', ['mobility', 'network', 'internet', 'wifi', 'point-to-point', 'spectrum'])
     helper.source = [
-        'mesh-helper.cc',
-        'dot11s-installer.cc',
-        'flame-installer.cc',
         'athstats-helper.cc',
         'animation-interface.cc',
         'canvas-location.cc',
@@ -15,10 +12,6 @@ def build(bld):
     headers = bld.new_task_gen('ns3header')
     headers.module = 'helper'
     headers.source = [
-        'mesh-helper.h',
-        'mesh-stack-installer.h',
-        'dot11s-installer.h',
-        'flame-installer.h',
         'athstats-helper.h',
         'animation-interface.h',
         'canvas-location.h',

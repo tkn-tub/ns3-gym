@@ -114,7 +114,7 @@ example_tests = [
     ("examples/ipv6/radvd-two-prefix", "True", "True"),    
     ("examples/ipv6/test-ipv6", "True", "True"),
 
-    ("examples/mesh/mesh", "True", "True"),
+    ("src/mesh/examples/mesh", "True", "True"),
 
     ("examples/naming/object-names", "True", "True"),
 

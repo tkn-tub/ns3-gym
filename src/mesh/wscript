@@ -9,6 +9,7 @@ def build(bld):
         'model/mesh-l2-routing-protocol.cc',
         'model/mesh-wifi-beacon.cc',
         'model/mesh-wifi-interface-mac.cc',
+        'helper/mesh-helper.cc',
         ]
     headers = bld.new_task_gen('ns3header')
     headers.module = 'mesh'
@@ -20,4 +21,9 @@ def build(bld):
         'model/mesh-wifi-beacon.h',
         'model/mesh-wifi-interface-mac.h',
         'model/mesh-wifi-interface-mac-plugin.h',
+        'helper/mesh-helper.h',
+        'helper/mesh-stack-installer.h',
         ]
+
+    if bld.env['ENABLE_EXAMPLES']:
+        bld.add_subdirs('examples')

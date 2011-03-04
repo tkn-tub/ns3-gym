@@ -23,6 +23,7 @@ def build(bld):
         'model/hwmp-protocol-mac.cc',
         'model/hwmp-protocol.cc',
         'model/airtime-metric.cc',
+        'helper/dot11s-installer.cc',
         'test/dot11s-test-suite.cc',
         'test/pmp-regression.cc',
         'test/hwmp-reactive-regression.cc',
@@ -51,4 +52,5 @@ def build(bld):
         'model/ie-dot11s-prep.h',
         'model/ie-dot11s-preq.h',
         'model/ie-dot11s-rann.h',
+        'helper/dot11s-installer.h',
         ]
