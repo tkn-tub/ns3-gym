@@ -28,6 +28,14 @@ import Build
 import Configure
 import Scripting
 
+from util import read_config_file
+
+# By default, all modules will be enabled.
+modules_enabled = ['all_modules']
+
+# Get the list of enabled modules out of the NS-3 configuration file.
+modules_enabled = read_config_file()
+
 sys.path.insert(0, os.path.abspath('waf-tools'))
 try:
     import cflags # override the build profiles from waf
@@ -274,9 +282,21 @@ def configure(conf):
     conf.sub_config('src')
     conf.sub_config('bindings/python')
 
+    # Set the list of enabled modules.
     if Options.options.enable_modules:
+        # Use the modules explicitly enabled. 
         conf.env['NS3_ENABLED_MODULES'] = ['ns3-'+mod for mod in
                                            Options.options.enable_modules.split(',')]
+    else:
+        # Use the enabled modules list from the ns3 configuration file.
+        if modules_enabled[0] == 'all_modules':
+            # Enable all modules if requested.
+            conf.env['NS3_ENABLED_MODULES'] = conf.env['NS3_MODULES']
+        else:
+            # Enable the modules from the list.
+            conf.env['NS3_ENABLED_MODULES'] = ['ns3-'+mod for mod in
+                                               modules_enabled]
+
     # for MPI
     conf.find_program('mpic++', var='MPI')
     if Options.options.enable_mpi and conf.env['MPI']:
@@ -320,6 +340,13 @@ def configure(conf):
     else:
         env['ENABLE_EXAMPLES'] = False
         why_not_examples = "option --disable-examples selected"
+
+    env['EXAMPLE_DIRECTORIES'] = []
+    for dir in os.listdir('examples'):
+        if dir.startswith('.') or dir == 'CVS':
+            continue
+        if os.path.isdir(os.path.join('examples', dir)):
+            env['EXAMPLE_DIRECTORIES'].append(dir)
 
     conf.report_optional_feature("ENABLE_EXAMPLES", "Build examples and samples", env['ENABLE_EXAMPLES'], 
                                  why_not_examples)
