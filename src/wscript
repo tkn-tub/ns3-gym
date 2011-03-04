@@ -53,7 +53,7 @@ all_modules = (
     'wimax',
     'lte',
     'mpi',
-    'contrib/topology-read',
+    'topology-read',
     'contrib/energy',
     'tools/visualizer',
     )
