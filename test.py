@@ -91,18 +91,18 @@ core_nsc_missing_skip_tests = [
 # hardcoded.
 #
 example_tests = [
-    ("src/devices/bridge/examples/csma-bridge", "True", "True"),
-    ("src/devices/bridge/examples/csma-bridge-one-hop", "True", "True"),
-    ("src/devices/csma/examples/csma-broadcast", "True", "True"),
-    ("src/devices/csma/examples/csma-multicast", "True", "True"),
-    ("src/devices/csma/examples/csma-one-subnet", "True", "True"),
-    ("src/devices/csma/examples/csma-packet-socket", "True", "True"),
-    ("src/devices/csma/examples/csma-ping", "True", "True"),
-    ("src/devices/csma/examples/csma-raw-ip-socket", "True", "True"),
-    ("src/devices/csma/examples/csma-star", "True", "True"),
+    ("src/bridge/examples/csma-bridge", "True", "True"),
+    ("src/bridge/examples/csma-bridge-one-hop", "True", "True"),
+    ("src/csma/examples/csma-broadcast", "True", "True"),
+    ("src/csma/examples/csma-multicast", "True", "True"),
+    ("src/csma/examples/csma-one-subnet", "True", "True"),
+    ("src/csma/examples/csma-packet-socket", "True", "True"),
+    ("src/csma/examples/csma-ping", "True", "True"),
+    ("src/csma/examples/csma-raw-ip-socket", "True", "True"),
+    ("src/csma/examples/csma-star", "True", "True"),
 
-    ("src/devices/emu/examples/emu-ping", "False", "True"),
-    ("src/devices/emu/examples/emu-udp-echo", "False", "True"),
+    ("src/emu/examples/emu-ping", "False", "True"),
+    ("src/emu/examples/emu-udp-echo", "False", "True"),
 
     ("examples/energy/energy-model-example", "True", "True"),
 
@@ -124,14 +124,14 @@ example_tests = [
     ("examples/routing/global-injection-slash32", "True", "True"),
     ("examples/routing/global-routing-slash32", "True", "True"),
     ("examples/routing/mixed-global-routing", "True", "True"),
-    ("src/routing/nix-vector-routing/examples/nix-simple", "True", "True"),
-    ("src/routing/nix-vector-routing/examples/nms-p2p-nix", "False", "True"), # Takes too long to run
+    ("src/nix-vector-routing/examples/nix-simple", "True", "True"),
+    ("src/nix-vector-routing/examples/nms-p2p-nix", "False", "True"), # Takes too long to run
     ("examples/routing/simple-alternate-routing", "True", "True"),
     ("examples/routing/simple-global-routing", "True", "True"),
-    ("src/routing/olsr/examples/simple-point-to-point-olsr", "True", "True"),
+    ("src/olsr/examples/simple-point-to-point-olsr", "True", "True"),
     ("examples/routing/simple-routing-ping6", "True", "True"),
     ("examples/routing/static-routing-slash32", "True", "True"),
-    ("src/routing/aodv/examples/aodv", "True", "True"),
+    ("src/aodv/examples/aodv", "True", "True"),
 
     ("src/spectrum/examples/adhoc-aloha-ideal-phy", "True", "True"),
     ("src/spectrum/examples/adhoc-aloha-ideal-phy-with-microwave-oven", "True", "True"),
@@ -149,7 +149,7 @@ example_tests = [
     ("examples/topology-read/topology-read --input=../../examples/topology-read/Inet_small_toposample.txt", "True", "True"),
     ("examples/topology-read/topology-read --format=Rocketfuel --input=../../examples/topology-read/RocketFuel_toposample_1239_weights.txt", "True", "True"),
 
-    ("src/devices/virtual-net-device/examples/virtual-net-device", "True", "True"),
+    ("src/virtual-net-device/examples/virtual-net-device", "True", "True"),
 
     ("examples/tutorial/first", "True", "True"),
     ("examples/tutorial/hello-simulator", "True", "True"),
@@ -179,11 +179,11 @@ example_tests = [
     ("examples/wireless/wifi-simple-interference", "True", "True"),
     ("examples/wireless/wifi-wired-bridging", "True", "True"),
 
-    ("src/routing/click/examples/nsclick-simple-lan", "ENABLE_CLICK == True", "True"),
+    ("src/click/examples/nsclick-simple-lan", "ENABLE_CLICK == True", "True"),
 
-    ("src/devices/wimax/examples/wimax-simple", "True", "True"),
-    ("src/devices/wimax/examples/wimax-ipv4", "True", "True"),
-    ("src/devices/wimax/examples/wimax-multicast", "True", "True"),
+    ("src/wimax/examples/wimax-simple", "True", "True"),
+    ("src/wimax/examples/wimax-ipv4", "True", "True"),
+    ("src/wimax/examples/wimax-multicast", "True", "True"),
 ]
 
 #
@@ -195,7 +195,7 @@ example_tests = [
 # hardcoded.
 #
 python_tests = [
-    ("src/devices/bridge/examples/csma-bridge.py", "True"),
+    ("src/bridge/examples/csma-bridge.py", "True"),
 
     ("src/contrib/flow-monitor/examples/wifi-olsr-flowmon.py", "True"),
 

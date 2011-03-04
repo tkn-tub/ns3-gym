@@ -23,23 +23,23 @@ all_modules = (
     'contrib',
     'internet',
     'propagation',
-    'devices/point-to-point',
-    'devices/csma',
-    'devices/emu',
-    'devices/bridge',
-    'devices/tap-bridge',
-    'devices/virtual-net-device',
+    'point-to-point',
+    'csma',
+    'emu',
+    'bridge',
+    'tap-bridge',
+    'virtual-net-device',
     'applications',
-    'routing/nix-vector-routing',
-    'routing/olsr',
-    'routing/aodv',
-    'routing/dsdv',
-    'routing/click',
+    'nix-vector-routing',
+    'olsr',
+    'aodv',
+    'dsdv',
+    'click',
     'mobility',
-    'devices/wifi',
+    'wifi',
     'helper',
     'contrib/stats',
-    'devices/uan',
+    'uan',
     'spectrum',
     'mesh',   
     'dot11s',
@@ -50,8 +50,8 @@ all_modules = (
     'test/nsctcp',
     'test/ns3wifi',
     'contrib/flow-monitor',
-    'devices/wimax',
-    'devices/lte',
+    'wimax',
+    'lte',
     'mpi',
     'contrib/topology-read',
     'contrib/energy',
@@ -60,7 +60,7 @@ all_modules = (
 
 def set_options(opt):
     opt.sub_options('core')
-    opt.sub_options('routing/click')
+    opt.sub_options('click')
 
     opt.add_option('--enable-rpath',
                    help=("Link programs with rpath"
@@ -75,13 +75,13 @@ def set_options(opt):
 
 def configure(conf):
     conf.sub_config('core')
-    conf.sub_config('devices/emu')
-    conf.sub_config('devices/tap-bridge')
+    conf.sub_config('emu')
+    conf.sub_config('tap-bridge')
     conf.sub_config('contrib')
     conf.sub_config('internet')
     conf.sub_config('helper')
     conf.sub_config('test')
-    conf.sub_config('routing/click')
+    conf.sub_config('click')
 
     blddir = os.path.abspath(os.path.join(conf.blddir, conf.env.variant()))
     conf.env.append_value('NS3_MODULE_PATH', blddir)
