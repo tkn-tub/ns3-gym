@@ -16,8 +16,6 @@ def configure(conf):
                                  "library 'libxml-2.0 >= 2.7' not found")
     conf.write_config_header('ns3/contrib-config.h', top=True)
 
-    conf.sub_config('stats')
-
 
 def build(bld):
     module = bld.create_ns3_module('contrib', ['core', 'network'])

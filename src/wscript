@@ -38,7 +38,7 @@ all_modules = (
     'mobility',
     'wifi',
     'helper',
-    'contrib/stats',
+    'stats',
     'uan',
     'spectrum',
     'mesh',   
