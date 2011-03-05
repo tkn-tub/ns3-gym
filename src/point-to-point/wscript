@@ -10,9 +10,6 @@ def build(bld):
         'model/point-to-point-test.cc',
         'model/ppp-header.cc',
         'helper/point-to-point-helper.cc',
-        'helper/point-to-point-grid-helper.cc',
-        'helper/point-to-point-dumbbell-helper.cc',
-        'helper/point-to-point-star-helper.cc',
         ]
     headers = bld.new_task_gen('ns3header')
     headers.module = 'point-to-point'
@@ -22,8 +19,5 @@ def build(bld):
         'model/point-to-point-remote-channel.h',
         'model/ppp-header.h',
         'helper/point-to-point-helper.h',
-        'helper/point-to-point-grid-helper.h',
-        'helper/point-to-point-dumbbell-helper.h',
-        'helper/point-to-point-star-helper.h',
         ]
 
