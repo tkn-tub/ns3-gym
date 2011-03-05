@@ -6,7 +6,6 @@ def build(bld):
         'athstats-helper.cc',
         'animation-interface.cc',
         'canvas-location.cc',
-        'topology-reader-helper.cc',
         ]
 
     headers = bld.new_task_gen('ns3header')
@@ -15,7 +14,6 @@ def build(bld):
         'athstats-helper.h',
         'animation-interface.h',
         'canvas-location.h',
-        'topology-reader-helper.h',
         ]
 
     env = bld.env_of_name('default')

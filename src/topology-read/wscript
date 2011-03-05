@@ -7,6 +7,7 @@ def build(bld):
        'model/inet-topology-reader.cc',
        'model/orbis-topology-reader.cc',
        'model/rocketfuel-topology-reader.cc',
+       'helper/topology-reader-helper.cc',
         ]
     headers = bld.new_task_gen('ns3header')
     headers.module = 'topology-read'
@@ -16,5 +17,8 @@ def build(bld):
        'model/inet-topology-reader.h',
        'model/orbis-topology-reader.h',
        'model/rocketfuel-topology-reader.h',
+       'helper/topology-reader-helper.h',
         ]
 
+    if bld.env['ENABLE_EXAMPLES']:
+        bld.add_subdirs('examples')

@@ -62,7 +62,7 @@ int main (int argc, char *argv[])
 {
 
   string format ("Inet");
-  string input ("examples/topology-read/Inet_small_toposample.txt");
+  string input ("src/topology-read/examples/Inet_small_toposample.txt");
 
   // Set up command line parameters used to control the experiment.
   CommandLine cmd;
