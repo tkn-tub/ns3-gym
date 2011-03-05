@@ -17,7 +17,7 @@ def register_types(module):
     module.add_class('EventId')
     ## global-value.h: ns3::GlobalValue [class]
     module.add_class('GlobalValue')
-    ## high-precision-128.h: ns3::HighPrecision [class]
+    ## high-precision-double.h: ns3::HighPrecision [class]
     module.add_class('HighPrecision')
     ## int-to-type.h: ns3::IntToType<0> [struct]
     module.add_class('IntToType', template_parameters=['0'])
@@ -392,6 +392,7 @@ def register_types_ns3_dot11s(module):
     root_module = module.get_root()
     
     module.add_container('std::vector< ns3::Ptr< ns3::dot11s::IeBeaconTimingUnit > >', 'ns3::Ptr< ns3::dot11s::IeBeaconTimingUnit >', container_type='vector')
+    module.add_container('std::vector< ns3::Ptr< ns3::dot11s::DestinationAddressUnit > >', 'ns3::Ptr< ns3::dot11s::DestinationAddressUnit >', container_type='vector')
     module.add_container('std::vector< ns3::Ptr< ns3::dot11s::PeerLink > >', 'ns3::Ptr< ns3::dot11s::PeerLink >', container_type='vector')
 
 def register_types_ns3_dsdv(module):
@@ -506,6 +507,7 @@ def register_methods(root_module):
     register_Ns3SimpleRefCount__Ns3SystemThread_Ns3Empty_Ns3DefaultDeleter__lt__ns3SystemThread__gt___methods(root_module, root_module['ns3::SimpleRefCount< ns3::SystemThread, ns3::empty, ns3::DefaultDeleter<ns3::SystemThread> >'])
     register_Ns3SimpleRefCount__Ns3TraceSourceAccessor_Ns3Empty_Ns3DefaultDeleter__lt__ns3TraceSourceAccessor__gt___methods(root_module, root_module['ns3::SimpleRefCount< ns3::TraceSourceAccessor, ns3::empty, ns3::DefaultDeleter<ns3::TraceSourceAccessor> >'])
     register_Ns3SimpleRefCount__Ns3WifiInformationElement_Ns3Empty_Ns3DefaultDeleter__lt__ns3WifiInformationElement__gt___methods(root_module, root_module['ns3::SimpleRefCount< ns3::WifiInformationElement, ns3::empty, ns3::DefaultDeleter<ns3::WifiInformationElement> >'])
+    register_Ns3SimpleRefCount__Ns3Dot11sDestinationAddressUnit_Ns3Empty_Ns3DefaultDeleter__lt__ns3Dot11sDestinationAddressUnit__gt___methods(root_module, root_module['ns3::SimpleRefCount< ns3::dot11s::DestinationAddressUnit, ns3::empty, ns3::DefaultDeleter<ns3::dot11s::DestinationAddressUnit> >'])
     register_Ns3SimpleRefCount__Ns3Dot11sIeBeaconTimingUnit_Ns3Empty_Ns3DefaultDeleter__lt__ns3Dot11sIeBeaconTimingUnit__gt___methods(root_module, root_module['ns3::SimpleRefCount< ns3::dot11s::IeBeaconTimingUnit, ns3::empty, ns3::DefaultDeleter<ns3::dot11s::IeBeaconTimingUnit> >'])
     register_Ns3SimulatorImpl_methods(root_module, root_module['ns3::SimulatorImpl'])
     register_Ns3Synchronizer_methods(root_module, root_module['ns3::Synchronizer'])
@@ -741,67 +743,65 @@ def register_Ns3GlobalValue_methods(root_module, cls):
 
 def register_Ns3HighPrecision_methods(root_module, cls):
     cls.add_output_stream_operator()
-    ## high-precision-128.h: ns3::HighPrecision::HighPrecision(ns3::HighPrecision const & arg0) [copy constructor]
+    ## high-precision-double.h: ns3::HighPrecision::HighPrecision(ns3::HighPrecision const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::HighPrecision const &', 'arg0')])
-    ## high-precision-128.h: ns3::HighPrecision::HighPrecision(int64_t high, uint64_t low) [constructor]
-    cls.add_constructor([param('int64_t', 'high'), param('uint64_t', 'low')])
-    ## high-precision-128.h: ns3::HighPrecision::HighPrecision() [constructor]
+    ## high-precision-double.h: ns3::HighPrecision::HighPrecision() [constructor]
     cls.add_constructor([])
-    ## high-precision-128.h: ns3::HighPrecision::HighPrecision(int64_t value, bool dummy) [constructor]
+    ## high-precision-double.h: ns3::HighPrecision::HighPrecision(int64_t value, bool dummy) [constructor]
     cls.add_constructor([param('int64_t', 'value'), param('bool', 'dummy')])
-    ## high-precision-128.h: ns3::HighPrecision::HighPrecision(double value) [constructor]
+    ## high-precision-double.h: ns3::HighPrecision::HighPrecision(double value) [constructor]
     cls.add_constructor([param('double', 'value')])
-    ## high-precision-128.h: void ns3::HighPrecision::Add(ns3::HighPrecision const & o) [member function]
+    ## high-precision-double.h: void ns3::HighPrecision::Add(ns3::HighPrecision const & o) [member function]
     cls.add_method('Add', 
                    'void', 
                    [param('ns3::HighPrecision const &', 'o')])
-    ## high-precision-128.h: int ns3::HighPrecision::Compare(ns3::HighPrecision const & o) const [member function]
+    ## high-precision-double.h: int ns3::HighPrecision::Compare(ns3::HighPrecision const & o) const [member function]
     cls.add_method('Compare', 
                    'int', 
                    [param('ns3::HighPrecision const &', 'o')], 
                    is_const=True)
-    ## high-precision-128.h: void ns3::HighPrecision::Div(ns3::HighPrecision const & o) [member function]
+    ## high-precision-double.h: void ns3::HighPrecision::Div(ns3::HighPrecision const & o) [member function]
     cls.add_method('Div', 
                    'void', 
                    [param('ns3::HighPrecision const &', 'o')])
-    ## high-precision-128.h: double ns3::HighPrecision::GetDouble() const [member function]
+    ## high-precision-double.h: double ns3::HighPrecision::GetDouble() const [member function]
     cls.add_method('GetDouble', 
                    'double', 
                    [], 
                    is_const=True)
-    ## high-precision-128.h: int64_t ns3::HighPrecision::GetHigh() const [member function]
+    ## high-precision-double.h: int64_t ns3::HighPrecision::GetHigh() const [member function]
     cls.add_method('GetHigh', 
                    'int64_t', 
                    [], 
                    is_const=True)
-    ## high-precision-128.h: int64_t ns3::HighPrecision::GetInteger() const [member function]
+    ## high-precision-double.h: int64_t ns3::HighPrecision::GetInteger() const [member function]
     cls.add_method('GetInteger', 
                    'int64_t', 
                    [], 
                    is_const=True)
-    ## high-precision-128.h: uint64_t ns3::HighPrecision::GetLow() const [member function]
+    ## high-precision-double.h: uint64_t ns3::HighPrecision::GetLow() const [member function]
     cls.add_method('GetLow', 
                    'uint64_t', 
                    [], 
                    is_const=True)
-    ## high-precision-128.h: static ns3::HighPrecision ns3::HighPrecision::Invert(uint64_t v) [member function]
+    ## high-precision-double.h: static ns3::HighPrecision ns3::HighPrecision::Invert(uint64_t v) [member function]
     cls.add_method('Invert', 
                    'ns3::HighPrecision', 
                    [param('uint64_t', 'v')], 
                    is_static=True)
-    ## high-precision-128.h: void ns3::HighPrecision::Mul(ns3::HighPrecision const & o) [member function]
+    ## high-precision-double.h: void ns3::HighPrecision::Mul(ns3::HighPrecision const & o) [member function]
     cls.add_method('Mul', 
                    'void', 
                    [param('ns3::HighPrecision const &', 'o')])
-    ## high-precision-128.h: void ns3::HighPrecision::MulByInvert(ns3::HighPrecision const & o) [member function]
+    ## high-precision-double.h: void ns3::HighPrecision::MulByInvert(ns3::HighPrecision const & o) [member function]
     cls.add_method('MulByInvert', 
                    'void', 
                    [param('ns3::HighPrecision const &', 'o')])
-    ## high-precision-128.h: void ns3::HighPrecision::Sub(ns3::HighPrecision const & o) [member function]
+    ## high-precision-double.h: void ns3::HighPrecision::Sub(ns3::HighPrecision const & o) [member function]
     cls.add_method('Sub', 
                    'void', 
                    [param('ns3::HighPrecision const &', 'o')])
-    ## high-precision-128.h: static ns3::HighPrecision ns3::HighPrecision::Zero() [member function]
+    ## high-precision-double.h: static ns3::HighPrecision ns3::HighPrecision::Zero() [member function]
     cls.add_method('Zero', 
                    'ns3::HighPrecision', 
                    [], 
@@ -2947,6 +2947,18 @@ def register_Ns3SimpleRefCount__Ns3WifiInformationElement_Ns3Empty_Ns3DefaultDel
     ## simple-ref-count.h: ns3::SimpleRefCount<ns3::WifiInformationElement, ns3::empty, ns3::DefaultDeleter<ns3::WifiInformationElement> >::SimpleRefCount(ns3::SimpleRefCount<ns3::WifiInformationElement, ns3::empty, ns3::DefaultDeleter<ns3::WifiInformationElement> > const & o) [copy constructor]
     cls.add_constructor([param('ns3::SimpleRefCount< ns3::WifiInformationElement, ns3::empty, ns3::DefaultDeleter< ns3::WifiInformationElement > > const &', 'o')])
     ## simple-ref-count.h: static void ns3::SimpleRefCount<ns3::WifiInformationElement, ns3::empty, ns3::DefaultDeleter<ns3::WifiInformationElement> >::Cleanup() [member function]
+    cls.add_method('Cleanup', 
+                   'void', 
+                   [], 
+                   is_static=True)
+    return
+
+def register_Ns3SimpleRefCount__Ns3Dot11sDestinationAddressUnit_Ns3Empty_Ns3DefaultDeleter__lt__ns3Dot11sDestinationAddressUnit__gt___methods(root_module, cls):
+    ## simple-ref-count.h: ns3::SimpleRefCount<ns3::dot11s::DestinationAddressUnit, ns3::empty, ns3::DefaultDeleter<ns3::dot11s::DestinationAddressUnit> >::SimpleRefCount() [constructor]
+    cls.add_constructor([])
+    ## simple-ref-count.h: ns3::SimpleRefCount<ns3::dot11s::DestinationAddressUnit, ns3::empty, ns3::DefaultDeleter<ns3::dot11s::DestinationAddressUnit> >::SimpleRefCount(ns3::SimpleRefCount<ns3::dot11s::DestinationAddressUnit, ns3::empty, ns3::DefaultDeleter<ns3::dot11s::DestinationAddressUnit> > const & o) [copy constructor]
+    cls.add_constructor([param('ns3::SimpleRefCount< ns3::dot11s::DestinationAddressUnit, ns3::empty, ns3::DefaultDeleter< ns3::dot11s::DestinationAddressUnit > > const &', 'o')])
+    ## simple-ref-count.h: static void ns3::SimpleRefCount<ns3::dot11s::DestinationAddressUnit, ns3::empty, ns3::DefaultDeleter<ns3::dot11s::DestinationAddressUnit> >::Cleanup() [member function]
     cls.add_method('Cleanup', 
                    'void', 
                    [], 

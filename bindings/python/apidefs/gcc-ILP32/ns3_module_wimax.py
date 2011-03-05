@@ -71,6 +71,14 @@ def register_types(module):
     module.add_class('UcdChannelEncodings', allow_subclassing=True)
     ## wimax-tlv.h: ns3::VectorTlvValue [class]
     module.add_class('VectorTlvValue', parent=root_module['ns3::TlvValue'])
+    ## wimax-helper.h: ns3::WimaxHelper [class]
+    module.add_class('WimaxHelper', parent=[root_module['ns3::PcapHelperForDevice'], root_module['ns3::AsciiTraceHelperForDevice']])
+    ## wimax-helper.h: ns3::WimaxHelper::NetDeviceType [enumeration]
+    module.add_enum('NetDeviceType', ['DEVICE_TYPE_SUBSCRIBER_STATION', 'DEVICE_TYPE_BASE_STATION'], outer_class=root_module['ns3::WimaxHelper'])
+    ## wimax-helper.h: ns3::WimaxHelper::PhyType [enumeration]
+    module.add_enum('PhyType', ['SIMPLE_PHY_TYPE_OFDM'], outer_class=root_module['ns3::WimaxHelper'])
+    ## wimax-helper.h: ns3::WimaxHelper::SchedulerType [enumeration]
+    module.add_enum('SchedulerType', ['SCHED_TYPE_SIMPLE', 'SCHED_TYPE_RTPS', 'SCHED_TYPE_MBQOS'], outer_class=root_module['ns3::WimaxHelper'])
     ## simple-ofdm-send-param.h: ns3::simpleOfdmSendParam [class]
     module.add_class('simpleOfdmSendParam')
     ## wimax-tlv.h: ns3::ClassificationRuleVectorTlvValue [class]
@@ -346,6 +354,7 @@ def register_methods(root_module):
     register_Ns3U8TlvValue_methods(root_module, root_module['ns3::U8TlvValue'])
     register_Ns3UcdChannelEncodings_methods(root_module, root_module['ns3::UcdChannelEncodings'])
     register_Ns3VectorTlvValue_methods(root_module, root_module['ns3::VectorTlvValue'])
+    register_Ns3WimaxHelper_methods(root_module, root_module['ns3::WimaxHelper'])
     register_Ns3SimpleOfdmSendParam_methods(root_module, root_module['ns3::simpleOfdmSendParam'])
     register_Ns3ClassificationRuleVectorTlvValue_methods(root_module, root_module['ns3::ClassificationRuleVectorTlvValue'])
     register_Ns3CsParamVectorTlvValue_methods(root_module, root_module['ns3::CsParamVectorTlvValue'])
@@ -2173,6 +2182,81 @@ def register_Ns3VectorTlvValue_methods(root_module, cls):
                    'void', 
                    [param('ns3::Buffer::Iterator', 'start')], 
                    is_const=True, is_virtual=True)
+    return
+
+def register_Ns3WimaxHelper_methods(root_module, cls):
+    ## wimax-helper.h: ns3::WimaxHelper::WimaxHelper(ns3::WimaxHelper const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::WimaxHelper const &', 'arg0')])
+    ## wimax-helper.h: ns3::WimaxHelper::WimaxHelper() [constructor]
+    cls.add_constructor([])
+    ## wimax-helper.h: ns3::Ptr<ns3::BSScheduler> ns3::WimaxHelper::CreateBSScheduler(ns3::WimaxHelper::SchedulerType schedulerType) [member function]
+    cls.add_method('CreateBSScheduler', 
+                   'ns3::Ptr< ns3::BSScheduler >', 
+                   [param('ns3::WimaxHelper::SchedulerType', 'schedulerType')])
+    ## wimax-helper.h: ns3::Ptr<ns3::WimaxPhy> ns3::WimaxHelper::CreatePhy(ns3::WimaxHelper::PhyType phyType) [member function]
+    cls.add_method('CreatePhy', 
+                   'ns3::Ptr< ns3::WimaxPhy >', 
+                   [param('ns3::WimaxHelper::PhyType', 'phyType')])
+    ## wimax-helper.h: ns3::Ptr<ns3::WimaxPhy> ns3::WimaxHelper::CreatePhy(ns3::WimaxHelper::PhyType phyType, char * SNRTraceFilePath, bool activateLoss) [member function]
+    cls.add_method('CreatePhy', 
+                   'ns3::Ptr< ns3::WimaxPhy >', 
+                   [param('ns3::WimaxHelper::PhyType', 'phyType'), param('char *', 'SNRTraceFilePath'), param('bool', 'activateLoss')])
+    ## wimax-helper.h: ns3::Ptr<ns3::WimaxPhy> ns3::WimaxHelper::CreatePhyWithoutChannel(ns3::WimaxHelper::PhyType phyType) [member function]
+    cls.add_method('CreatePhyWithoutChannel', 
+                   'ns3::Ptr< ns3::WimaxPhy >', 
+                   [param('ns3::WimaxHelper::PhyType', 'phyType')])
+    ## wimax-helper.h: ns3::Ptr<ns3::WimaxPhy> ns3::WimaxHelper::CreatePhyWithoutChannel(ns3::WimaxHelper::PhyType phyType, char * SNRTraceFilePath, bool activateLoss) [member function]
+    cls.add_method('CreatePhyWithoutChannel', 
+                   'ns3::Ptr< ns3::WimaxPhy >', 
+                   [param('ns3::WimaxHelper::PhyType', 'phyType'), param('char *', 'SNRTraceFilePath'), param('bool', 'activateLoss')])
+    ## wimax-helper.h: ns3::ServiceFlow ns3::WimaxHelper::CreateServiceFlow(ns3::ServiceFlow::Direction direction, ns3::ServiceFlow::SchedulingType schedulinType, ns3::IpcsClassifierRecord classifier) [member function]
+    cls.add_method('CreateServiceFlow', 
+                   'ns3::ServiceFlow', 
+                   [param('ns3::ServiceFlow::Direction', 'direction'), param('ns3::ServiceFlow::SchedulingType', 'schedulinType'), param('ns3::IpcsClassifierRecord', 'classifier')])
+    ## wimax-helper.h: ns3::Ptr<ns3::UplinkScheduler> ns3::WimaxHelper::CreateUplinkScheduler(ns3::WimaxHelper::SchedulerType schedulerType) [member function]
+    cls.add_method('CreateUplinkScheduler', 
+                   'ns3::Ptr< ns3::UplinkScheduler >', 
+                   [param('ns3::WimaxHelper::SchedulerType', 'schedulerType')])
+    ## wimax-helper.h: static void ns3::WimaxHelper::EnableAsciiForConnection(ns3::Ptr<ns3::OutputStreamWrapper> oss, uint32_t nodeid, uint32_t deviceid, char * netdevice, char * connection) [member function]
+    cls.add_method('EnableAsciiForConnection', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::OutputStreamWrapper >', 'oss'), param('uint32_t', 'nodeid'), param('uint32_t', 'deviceid'), param('char *', 'netdevice'), param('char *', 'connection')], 
+                   is_static=True)
+    ## wimax-helper.h: static void ns3::WimaxHelper::EnableLogComponents() [member function]
+    cls.add_method('EnableLogComponents', 
+                   'void', 
+                   [], 
+                   is_static=True)
+    ## wimax-helper.h: ns3::NetDeviceContainer ns3::WimaxHelper::Install(ns3::NodeContainer c, ns3::WimaxHelper::NetDeviceType type, ns3::WimaxHelper::PhyType phyType, ns3::WimaxHelper::SchedulerType schedulerType) [member function]
+    cls.add_method('Install', 
+                   'ns3::NetDeviceContainer', 
+                   [param('ns3::NodeContainer', 'c'), param('ns3::WimaxHelper::NetDeviceType', 'type'), param('ns3::WimaxHelper::PhyType', 'phyType'), param('ns3::WimaxHelper::SchedulerType', 'schedulerType')])
+    ## wimax-helper.h: ns3::NetDeviceContainer ns3::WimaxHelper::Install(ns3::NodeContainer c, ns3::WimaxHelper::NetDeviceType deviceType, ns3::WimaxHelper::PhyType phyType, ns3::Ptr<ns3::WimaxChannel> channel, ns3::WimaxHelper::SchedulerType schedulerType) [member function]
+    cls.add_method('Install', 
+                   'ns3::NetDeviceContainer', 
+                   [param('ns3::NodeContainer', 'c'), param('ns3::WimaxHelper::NetDeviceType', 'deviceType'), param('ns3::WimaxHelper::PhyType', 'phyType'), param('ns3::Ptr< ns3::WimaxChannel >', 'channel'), param('ns3::WimaxHelper::SchedulerType', 'schedulerType')])
+    ## wimax-helper.h: ns3::NetDeviceContainer ns3::WimaxHelper::Install(ns3::NodeContainer c, ns3::WimaxHelper::NetDeviceType deviceType, ns3::WimaxHelper::PhyType phyType, ns3::WimaxHelper::SchedulerType schedulerType, double frameDuration) [member function]
+    cls.add_method('Install', 
+                   'ns3::NetDeviceContainer', 
+                   [param('ns3::NodeContainer', 'c'), param('ns3::WimaxHelper::NetDeviceType', 'deviceType'), param('ns3::WimaxHelper::PhyType', 'phyType'), param('ns3::WimaxHelper::SchedulerType', 'schedulerType'), param('double', 'frameDuration')])
+    ## wimax-helper.h: ns3::Ptr<ns3::WimaxNetDevice> ns3::WimaxHelper::Install(ns3::Ptr<ns3::Node> node, ns3::WimaxHelper::NetDeviceType deviceType, ns3::WimaxHelper::PhyType phyType, ns3::Ptr<ns3::WimaxChannel> channel, ns3::WimaxHelper::SchedulerType schedulerType) [member function]
+    cls.add_method('Install', 
+                   'ns3::Ptr< ns3::WimaxNetDevice >', 
+                   [param('ns3::Ptr< ns3::Node >', 'node'), param('ns3::WimaxHelper::NetDeviceType', 'deviceType'), param('ns3::WimaxHelper::PhyType', 'phyType'), param('ns3::Ptr< ns3::WimaxChannel >', 'channel'), param('ns3::WimaxHelper::SchedulerType', 'schedulerType')])
+    ## wimax-helper.h: void ns3::WimaxHelper::SetPropagationLossModel(ns3::SimpleOfdmWimaxChannel::PropModel propagationModel) [member function]
+    cls.add_method('SetPropagationLossModel', 
+                   'void', 
+                   [param('ns3::SimpleOfdmWimaxChannel::PropModel', 'propagationModel')])
+    ## wimax-helper.h: void ns3::WimaxHelper::EnableAsciiInternal(ns3::Ptr<ns3::OutputStreamWrapper> stream, std::string prefix, ns3::Ptr<ns3::NetDevice> nd, bool explicitFilename) [member function]
+    cls.add_method('EnableAsciiInternal', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::OutputStreamWrapper >', 'stream'), param('std::string', 'prefix'), param('ns3::Ptr< ns3::NetDevice >', 'nd'), param('bool', 'explicitFilename')], 
+                   visibility='private', is_virtual=True)
+    ## wimax-helper.h: void ns3::WimaxHelper::EnablePcapInternal(std::string prefix, ns3::Ptr<ns3::NetDevice> nd, bool explicitFilename, bool promiscuous) [member function]
+    cls.add_method('EnablePcapInternal', 
+                   'void', 
+                   [param('std::string', 'prefix'), param('ns3::Ptr< ns3::NetDevice >', 'nd'), param('bool', 'explicitFilename'), param('bool', 'promiscuous')], 
+                   visibility='private', is_virtual=True)
     return
 
 def register_Ns3SimpleOfdmSendParam_methods(root_module, cls):

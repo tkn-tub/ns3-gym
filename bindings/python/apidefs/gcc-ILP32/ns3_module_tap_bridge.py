@@ -3,6 +3,8 @@ from pybindgen import Module, FileCodeSink, param, retval, cppclass, typehandler
 def register_types(module):
     root_module = module.get_root()
     
+    ## tap-bridge-helper.h: ns3::TapBridgeHelper [class]
+    module.add_class('TapBridgeHelper')
     ## tap-bridge.h: ns3::TapBridge [class]
     module.add_class('TapBridge', parent=root_module['ns3::NetDevice'])
     ## tap-bridge.h: ns3::TapBridge::Mode [enumeration]
@@ -101,8 +103,42 @@ def register_types_ns3_olsr(module):
     
 
 def register_methods(root_module):
+    register_Ns3TapBridgeHelper_methods(root_module, root_module['ns3::TapBridgeHelper'])
     register_Ns3TapBridge_methods(root_module, root_module['ns3::TapBridge'])
     register_Ns3TapBridgeFdReader_methods(root_module, root_module['ns3::TapBridgeFdReader'])
+    return
+
+def register_Ns3TapBridgeHelper_methods(root_module, cls):
+    ## tap-bridge-helper.h: ns3::TapBridgeHelper::TapBridgeHelper(ns3::TapBridgeHelper const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::TapBridgeHelper const &', 'arg0')])
+    ## tap-bridge-helper.h: ns3::TapBridgeHelper::TapBridgeHelper() [constructor]
+    cls.add_constructor([])
+    ## tap-bridge-helper.h: ns3::TapBridgeHelper::TapBridgeHelper(ns3::Ipv4Address gateway) [constructor]
+    cls.add_constructor([param('ns3::Ipv4Address', 'gateway')])
+    ## tap-bridge-helper.h: ns3::Ptr<ns3::NetDevice> ns3::TapBridgeHelper::Install(ns3::Ptr<ns3::Node> node, ns3::Ptr<ns3::NetDevice> nd) [member function]
+    cls.add_method('Install', 
+                   'ns3::Ptr< ns3::NetDevice >', 
+                   [param('ns3::Ptr< ns3::Node >', 'node'), param('ns3::Ptr< ns3::NetDevice >', 'nd')])
+    ## tap-bridge-helper.h: ns3::Ptr<ns3::NetDevice> ns3::TapBridgeHelper::Install(std::string nodeName, ns3::Ptr<ns3::NetDevice> nd) [member function]
+    cls.add_method('Install', 
+                   'ns3::Ptr< ns3::NetDevice >', 
+                   [param('std::string', 'nodeName'), param('ns3::Ptr< ns3::NetDevice >', 'nd')])
+    ## tap-bridge-helper.h: ns3::Ptr<ns3::NetDevice> ns3::TapBridgeHelper::Install(ns3::Ptr<ns3::Node> node, std::string ndName) [member function]
+    cls.add_method('Install', 
+                   'ns3::Ptr< ns3::NetDevice >', 
+                   [param('ns3::Ptr< ns3::Node >', 'node'), param('std::string', 'ndName')])
+    ## tap-bridge-helper.h: ns3::Ptr<ns3::NetDevice> ns3::TapBridgeHelper::Install(std::string nodeName, std::string ndName) [member function]
+    cls.add_method('Install', 
+                   'ns3::Ptr< ns3::NetDevice >', 
+                   [param('std::string', 'nodeName'), param('std::string', 'ndName')])
+    ## tap-bridge-helper.h: ns3::Ptr<ns3::NetDevice> ns3::TapBridgeHelper::Install(ns3::Ptr<ns3::Node> node, ns3::Ptr<ns3::NetDevice> nd, ns3::AttributeValue const & bridgeType) [member function]
+    cls.add_method('Install', 
+                   'ns3::Ptr< ns3::NetDevice >', 
+                   [param('ns3::Ptr< ns3::Node >', 'node'), param('ns3::Ptr< ns3::NetDevice >', 'nd'), param('ns3::AttributeValue const &', 'bridgeType')])
+    ## tap-bridge-helper.h: void ns3::TapBridgeHelper::SetAttribute(std::string n1, ns3::AttributeValue const & v1) [member function]
+    cls.add_method('SetAttribute', 
+                   'void', 
+                   [param('std::string', 'n1'), param('ns3::AttributeValue const &', 'v1')])
     return
 
 def register_Ns3TapBridge_methods(root_module, cls):

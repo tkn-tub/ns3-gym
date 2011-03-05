@@ -3,8 +3,12 @@ from pybindgen import Module, FileCodeSink, param, retval, cppclass, typehandler
 def register_types(module):
     root_module = module.get_root()
     
+    ## simple-ref-count.h: ns3::SimpleRefCount<ns3::dot11s::DestinationAddressUnit, ns3::empty, ns3::DefaultDeleter<ns3::dot11s::DestinationAddressUnit> > [class]
+    module.add_class('SimpleRefCount', automatic_type_narrowing=True, template_parameters=['ns3::dot11s::DestinationAddressUnit', 'ns3::empty', 'ns3::DefaultDeleter<ns3::dot11s::DestinationAddressUnit>'], parent=root_module['ns3::empty'], memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'))
     ## simple-ref-count.h: ns3::SimpleRefCount<ns3::dot11s::IeBeaconTimingUnit, ns3::empty, ns3::DefaultDeleter<ns3::dot11s::IeBeaconTimingUnit> > [class]
     module.add_class('SimpleRefCount', automatic_type_narrowing=True, template_parameters=['ns3::dot11s::IeBeaconTimingUnit', 'ns3::empty', 'ns3::DefaultDeleter<ns3::dot11s::IeBeaconTimingUnit>'], parent=root_module['ns3::empty'], memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'))
+    ## dot11s-installer.h: ns3::Dot11sStack [class]
+    module.add_class('Dot11sStack', parent=root_module['ns3::MeshStack'])
     
     ## Register a nested module for the namespace Config
     
@@ -91,18 +95,26 @@ def register_types_ns3_dot11s(module):
     module.add_enum('dot11sSynchronizationProtocolIdentifier', ['SYNC_NEIGHBOUR_OFFSET', 'SYNC_NULL'])
     ## ie-dot11s-peer-management.h: ns3::dot11s::PmpReasonCode [enumeration]
     module.add_enum('PmpReasonCode', ['REASON11S_PEERING_CANCELLED', 'REASON11S_MESH_MAX_PEERS', 'REASON11S_MESH_CAPABILITY_POLICY_VIOLATION', 'REASON11S_MESH_CLOSE_RCVD', 'REASON11S_MESH_MAX_RETRIES', 'REASON11S_MESH_CONFIRM_TIMEOUT', 'REASON11S_MESH_INVALID_GTK', 'REASON11S_MESH_INCONSISTENT_PARAMETERS', 'REASON11S_MESH_INVALID_SECURITY_CAPABILITY', 'REASON11S_RESERVED'])
+    ## ie-dot11s-preq.h: ns3::dot11s::DestinationAddressUnit [class]
+    module.add_class('DestinationAddressUnit', parent=root_module['ns3::SimpleRefCount< ns3::dot11s::DestinationAddressUnit, ns3::empty, ns3::DefaultDeleter<ns3::dot11s::DestinationAddressUnit> >'])
     ## ie-dot11s-configuration.h: ns3::dot11s::Dot11sMeshCapability [class]
     module.add_class('Dot11sMeshCapability')
     ## hwmp-protocol.h: ns3::dot11s::HwmpProtocol [class]
     module.add_class('HwmpProtocol', parent=root_module['ns3::MeshL2RoutingProtocol'])
     ## hwmp-protocol.h: ns3::dot11s::HwmpProtocol::FailedDestination [struct]
     module.add_class('FailedDestination', outer_class=root_module['ns3::dot11s::HwmpProtocol'])
+    ## hwmp-rtable.h: ns3::dot11s::HwmpRtable [class]
+    module.add_class('HwmpRtable', parent=root_module['ns3::Object'])
+    ## hwmp-rtable.h: ns3::dot11s::HwmpRtable::LookupResult [struct]
+    module.add_class('LookupResult', outer_class=root_module['ns3::dot11s::HwmpRtable'])
     ## ie-dot11s-beacon-timing.h: ns3::dot11s::IeBeaconTiming [class]
     module.add_class('IeBeaconTiming', parent=root_module['ns3::WifiInformationElement'])
     ## ie-dot11s-beacon-timing.h: ns3::dot11s::IeBeaconTimingUnit [class]
     module.add_class('IeBeaconTimingUnit', parent=root_module['ns3::SimpleRefCount< ns3::dot11s::IeBeaconTimingUnit, ns3::empty, ns3::DefaultDeleter<ns3::dot11s::IeBeaconTimingUnit> >'])
     ## ie-dot11s-configuration.h: ns3::dot11s::IeConfiguration [class]
     module.add_class('IeConfiguration', parent=root_module['ns3::WifiInformationElement'])
+    ## ie-dot11s-metric-report.h: ns3::dot11s::IeLinkMetricReport [class]
+    module.add_class('IeLinkMetricReport', parent=root_module['ns3::WifiInformationElement'])
     ## ie-dot11s-id.h: ns3::dot11s::IeMeshId [class]
     module.add_class('IeMeshId', parent=root_module['ns3::WifiInformationElement'])
     ## ie-dot11s-id.h: ns3::dot11s::IeMeshIdChecker [class]
@@ -113,12 +125,29 @@ def register_types_ns3_dot11s(module):
     module.add_class('IePeerManagement', parent=root_module['ns3::WifiInformationElement'])
     ## ie-dot11s-peer-management.h: ns3::dot11s::IePeerManagement::Subtype [enumeration]
     module.add_enum('Subtype', ['PEER_OPEN', 'PEER_CONFIRM', 'PEER_CLOSE'], outer_class=root_module['ns3::dot11s::IePeerManagement'])
+    ## ie-dot11s-peering-protocol.h: ns3::dot11s::IePeeringProtocol [class]
+    module.add_class('IePeeringProtocol', parent=root_module['ns3::WifiInformationElement'])
+    ## ie-dot11s-perr.h: ns3::dot11s::IePerr [class]
+    module.add_class('IePerr', parent=root_module['ns3::WifiInformationElement'])
+    ## ie-dot11s-prep.h: ns3::dot11s::IePrep [class]
+    module.add_class('IePrep', parent=root_module['ns3::WifiInformationElement'])
+    ## ie-dot11s-preq.h: ns3::dot11s::IePreq [class]
+    module.add_class('IePreq', parent=root_module['ns3::WifiInformationElement'])
+    ## ie-dot11s-rann.h: ns3::dot11s::IeRann [class]
+    module.add_class('IeRann', parent=root_module['ns3::WifiInformationElement'])
+    ## dot11s-mac-header.h: ns3::dot11s::MeshHeader [class]
+    module.add_class('MeshHeader', parent=root_module['ns3::Header'])
     ## peer-link.h: ns3::dot11s::PeerLink [class]
     module.add_class('PeerLink', parent=root_module['ns3::Object'])
     ## peer-link.h: ns3::dot11s::PeerLink::PeerState [enumeration]
     module.add_enum('PeerState', ['IDLE', 'OPN_SNT', 'CNF_RCVD', 'OPN_RCVD', 'ESTAB', 'HOLDING'], outer_class=root_module['ns3::dot11s::PeerLink'])
+    ## peer-link-frame.h: ns3::dot11s::PeerLinkFrameStart [class]
+    module.add_class('PeerLinkFrameStart', parent=root_module['ns3::Header'])
+    ## peer-link-frame.h: ns3::dot11s::PeerLinkFrameStart::PlinkFrameStartFields [struct]
+    module.add_class('PlinkFrameStartFields', outer_class=root_module['ns3::dot11s::PeerLinkFrameStart'])
     ## peer-management-protocol.h: ns3::dot11s::PeerManagementProtocol [class]
     module.add_class('PeerManagementProtocol', parent=root_module['ns3::Object'])
+    module.add_container('std::vector< ns3::dot11s::HwmpProtocol::FailedDestination >', 'ns3::dot11s::HwmpProtocol::FailedDestination', container_type='vector')
 
 def register_types_ns3_dsdv(module):
     root_module = module.get_root()
@@ -137,18 +166,105 @@ def register_types_ns3_olsr(module):
     
 
 def register_methods(root_module):
+    register_Ns3Dot11sStack_methods(root_module, root_module['ns3::Dot11sStack'])
+    register_Ns3Dot11sDestinationAddressUnit_methods(root_module, root_module['ns3::dot11s::DestinationAddressUnit'])
     register_Ns3Dot11sDot11sMeshCapability_methods(root_module, root_module['ns3::dot11s::Dot11sMeshCapability'])
     register_Ns3Dot11sHwmpProtocol_methods(root_module, root_module['ns3::dot11s::HwmpProtocol'])
     register_Ns3Dot11sHwmpProtocolFailedDestination_methods(root_module, root_module['ns3::dot11s::HwmpProtocol::FailedDestination'])
+    register_Ns3Dot11sHwmpRtable_methods(root_module, root_module['ns3::dot11s::HwmpRtable'])
+    register_Ns3Dot11sHwmpRtableLookupResult_methods(root_module, root_module['ns3::dot11s::HwmpRtable::LookupResult'])
     register_Ns3Dot11sIeBeaconTiming_methods(root_module, root_module['ns3::dot11s::IeBeaconTiming'])
     register_Ns3Dot11sIeBeaconTimingUnit_methods(root_module, root_module['ns3::dot11s::IeBeaconTimingUnit'])
     register_Ns3Dot11sIeConfiguration_methods(root_module, root_module['ns3::dot11s::IeConfiguration'])
+    register_Ns3Dot11sIeLinkMetricReport_methods(root_module, root_module['ns3::dot11s::IeLinkMetricReport'])
     register_Ns3Dot11sIeMeshId_methods(root_module, root_module['ns3::dot11s::IeMeshId'])
     register_Ns3Dot11sIeMeshIdChecker_methods(root_module, root_module['ns3::dot11s::IeMeshIdChecker'])
     register_Ns3Dot11sIeMeshIdValue_methods(root_module, root_module['ns3::dot11s::IeMeshIdValue'])
     register_Ns3Dot11sIePeerManagement_methods(root_module, root_module['ns3::dot11s::IePeerManagement'])
+    register_Ns3Dot11sIePeeringProtocol_methods(root_module, root_module['ns3::dot11s::IePeeringProtocol'])
+    register_Ns3Dot11sIePerr_methods(root_module, root_module['ns3::dot11s::IePerr'])
+    register_Ns3Dot11sIePrep_methods(root_module, root_module['ns3::dot11s::IePrep'])
+    register_Ns3Dot11sIePreq_methods(root_module, root_module['ns3::dot11s::IePreq'])
+    register_Ns3Dot11sIeRann_methods(root_module, root_module['ns3::dot11s::IeRann'])
+    register_Ns3Dot11sMeshHeader_methods(root_module, root_module['ns3::dot11s::MeshHeader'])
     register_Ns3Dot11sPeerLink_methods(root_module, root_module['ns3::dot11s::PeerLink'])
+    register_Ns3Dot11sPeerLinkFrameStart_methods(root_module, root_module['ns3::dot11s::PeerLinkFrameStart'])
+    register_Ns3Dot11sPeerLinkFrameStartPlinkFrameStartFields_methods(root_module, root_module['ns3::dot11s::PeerLinkFrameStart::PlinkFrameStartFields'])
     register_Ns3Dot11sPeerManagementProtocol_methods(root_module, root_module['ns3::dot11s::PeerManagementProtocol'])
+    return
+
+def register_Ns3Dot11sStack_methods(root_module, cls):
+    ## dot11s-installer.h: ns3::Dot11sStack::Dot11sStack(ns3::Dot11sStack const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::Dot11sStack const &', 'arg0')])
+    ## dot11s-installer.h: ns3::Dot11sStack::Dot11sStack() [constructor]
+    cls.add_constructor([])
+    ## dot11s-installer.h: void ns3::Dot11sStack::DoDispose() [member function]
+    cls.add_method('DoDispose', 
+                   'void', 
+                   [], 
+                   is_virtual=True)
+    ## dot11s-installer.h: static ns3::TypeId ns3::Dot11sStack::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## dot11s-installer.h: bool ns3::Dot11sStack::InstallStack(ns3::Ptr<ns3::MeshPointDevice> mp) [member function]
+    cls.add_method('InstallStack', 
+                   'bool', 
+                   [param('ns3::Ptr< ns3::MeshPointDevice >', 'mp')], 
+                   is_virtual=True)
+    ## dot11s-installer.h: void ns3::Dot11sStack::Report(ns3::Ptr<ns3::MeshPointDevice> const mp, std::ostream & arg1) [member function]
+    cls.add_method('Report', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::MeshPointDevice > const', 'mp'), param('std::ostream &', 'arg1')], 
+                   is_virtual=True)
+    ## dot11s-installer.h: void ns3::Dot11sStack::ResetStats(ns3::Ptr<ns3::MeshPointDevice> const mp) [member function]
+    cls.add_method('ResetStats', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::MeshPointDevice > const', 'mp')], 
+                   is_virtual=True)
+    return
+
+def register_Ns3Dot11sDestinationAddressUnit_methods(root_module, cls):
+    cls.add_binary_comparison_operator('==')
+    ## ie-dot11s-preq.h: ns3::dot11s::DestinationAddressUnit::DestinationAddressUnit(ns3::dot11s::DestinationAddressUnit const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::dot11s::DestinationAddressUnit const &', 'arg0')])
+    ## ie-dot11s-preq.h: ns3::dot11s::DestinationAddressUnit::DestinationAddressUnit() [constructor]
+    cls.add_constructor([])
+    ## ie-dot11s-preq.h: uint32_t ns3::dot11s::DestinationAddressUnit::GetDestSeqNumber() const [member function]
+    cls.add_method('GetDestSeqNumber', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## ie-dot11s-preq.h: ns3::Mac48Address ns3::dot11s::DestinationAddressUnit::GetDestinationAddress() const [member function]
+    cls.add_method('GetDestinationAddress', 
+                   'ns3::Mac48Address', 
+                   [], 
+                   is_const=True)
+    ## ie-dot11s-preq.h: bool ns3::dot11s::DestinationAddressUnit::IsDo() [member function]
+    cls.add_method('IsDo', 
+                   'bool', 
+                   [])
+    ## ie-dot11s-preq.h: bool ns3::dot11s::DestinationAddressUnit::IsRf() [member function]
+    cls.add_method('IsRf', 
+                   'bool', 
+                   [])
+    ## ie-dot11s-preq.h: bool ns3::dot11s::DestinationAddressUnit::IsUsn() [member function]
+    cls.add_method('IsUsn', 
+                   'bool', 
+                   [])
+    ## ie-dot11s-preq.h: void ns3::dot11s::DestinationAddressUnit::SetDestSeqNumber(uint32_t dest_seq_number) [member function]
+    cls.add_method('SetDestSeqNumber', 
+                   'void', 
+                   [param('uint32_t', 'dest_seq_number')])
+    ## ie-dot11s-preq.h: void ns3::dot11s::DestinationAddressUnit::SetDestinationAddress(ns3::Mac48Address dest_address) [member function]
+    cls.add_method('SetDestinationAddress', 
+                   'void', 
+                   [param('ns3::Mac48Address', 'dest_address')])
+    ## ie-dot11s-preq.h: void ns3::dot11s::DestinationAddressUnit::SetFlags(bool doFlag, bool rfFlag, bool usnFlag) [member function]
+    cls.add_method('SetFlags', 
+                   'void', 
+                   [param('bool', 'doFlag'), param('bool', 'rfFlag'), param('bool', 'usnFlag')])
     return
 
 def register_Ns3Dot11sDot11sMeshCapability_methods(root_module, cls):
@@ -259,6 +375,98 @@ def register_Ns3Dot11sHwmpProtocolFailedDestination_methods(root_module, cls):
     ## hwmp-protocol.h: ns3::dot11s::HwmpProtocol::FailedDestination::destination [variable]
     cls.add_instance_attribute('destination', 'ns3::Mac48Address', is_const=False)
     ## hwmp-protocol.h: ns3::dot11s::HwmpProtocol::FailedDestination::seqnum [variable]
+    cls.add_instance_attribute('seqnum', 'uint32_t', is_const=False)
+    return
+
+def register_Ns3Dot11sHwmpRtable_methods(root_module, cls):
+    ## hwmp-rtable.h: ns3::dot11s::HwmpRtable::HwmpRtable(ns3::dot11s::HwmpRtable const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::dot11s::HwmpRtable const &', 'arg0')])
+    ## hwmp-rtable.h: ns3::dot11s::HwmpRtable::HwmpRtable() [constructor]
+    cls.add_constructor([])
+    ## hwmp-rtable.h: void ns3::dot11s::HwmpRtable::AddPrecursor(ns3::Mac48Address destination, uint32_t precursorInterface, ns3::Mac48Address precursorAddress, ns3::Time lifetime) [member function]
+    cls.add_method('AddPrecursor', 
+                   'void', 
+                   [param('ns3::Mac48Address', 'destination'), param('uint32_t', 'precursorInterface'), param('ns3::Mac48Address', 'precursorAddress'), param('ns3::Time', 'lifetime')])
+    ## hwmp-rtable.h: void ns3::dot11s::HwmpRtable::AddProactivePath(uint32_t metric, ns3::Mac48Address root, ns3::Mac48Address retransmitter, uint32_t interface, ns3::Time lifetime, uint32_t seqnum) [member function]
+    cls.add_method('AddProactivePath', 
+                   'void', 
+                   [param('uint32_t', 'metric'), param('ns3::Mac48Address', 'root'), param('ns3::Mac48Address', 'retransmitter'), param('uint32_t', 'interface'), param('ns3::Time', 'lifetime'), param('uint32_t', 'seqnum')])
+    ## hwmp-rtable.h: void ns3::dot11s::HwmpRtable::AddReactivePath(ns3::Mac48Address destination, ns3::Mac48Address retransmitter, uint32_t interface, uint32_t metric, ns3::Time lifetime, uint32_t seqnum) [member function]
+    cls.add_method('AddReactivePath', 
+                   'void', 
+                   [param('ns3::Mac48Address', 'destination'), param('ns3::Mac48Address', 'retransmitter'), param('uint32_t', 'interface'), param('uint32_t', 'metric'), param('ns3::Time', 'lifetime'), param('uint32_t', 'seqnum')])
+    ## hwmp-rtable.h: void ns3::dot11s::HwmpRtable::DeleteProactivePath() [member function]
+    cls.add_method('DeleteProactivePath', 
+                   'void', 
+                   [])
+    ## hwmp-rtable.h: void ns3::dot11s::HwmpRtable::DeleteProactivePath(ns3::Mac48Address root) [member function]
+    cls.add_method('DeleteProactivePath', 
+                   'void', 
+                   [param('ns3::Mac48Address', 'root')])
+    ## hwmp-rtable.h: void ns3::dot11s::HwmpRtable::DeleteReactivePath(ns3::Mac48Address destination) [member function]
+    cls.add_method('DeleteReactivePath', 
+                   'void', 
+                   [param('ns3::Mac48Address', 'destination')])
+    ## hwmp-rtable.h: void ns3::dot11s::HwmpRtable::DoDispose() [member function]
+    cls.add_method('DoDispose', 
+                   'void', 
+                   [], 
+                   is_virtual=True)
+    ## hwmp-rtable.h: std::vector<std::pair<unsigned int, ns3::Mac48Address>, std::allocator<std::pair<unsigned int, ns3::Mac48Address> > > ns3::dot11s::HwmpRtable::GetPrecursors(ns3::Mac48Address destination) [member function]
+    cls.add_method('GetPrecursors', 
+                   'std::vector< std::pair< unsigned int, ns3::Mac48Address > >', 
+                   [param('ns3::Mac48Address', 'destination')])
+    ## hwmp-rtable.h: static ns3::TypeId ns3::dot11s::HwmpRtable::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## hwmp-rtable.h: std::vector<ns3::dot11s::HwmpProtocol::FailedDestination, std::allocator<ns3::dot11s::HwmpProtocol::FailedDestination> > ns3::dot11s::HwmpRtable::GetUnreachableDestinations(ns3::Mac48Address peerAddress) [member function]
+    cls.add_method('GetUnreachableDestinations', 
+                   'std::vector< ns3::dot11s::HwmpProtocol::FailedDestination >', 
+                   [param('ns3::Mac48Address', 'peerAddress')])
+    ## hwmp-rtable.h: ns3::dot11s::HwmpRtable::LookupResult ns3::dot11s::HwmpRtable::LookupProactive() [member function]
+    cls.add_method('LookupProactive', 
+                   'ns3::dot11s::HwmpRtable::LookupResult', 
+                   [])
+    ## hwmp-rtable.h: ns3::dot11s::HwmpRtable::LookupResult ns3::dot11s::HwmpRtable::LookupProactiveExpired() [member function]
+    cls.add_method('LookupProactiveExpired', 
+                   'ns3::dot11s::HwmpRtable::LookupResult', 
+                   [])
+    ## hwmp-rtable.h: ns3::dot11s::HwmpRtable::LookupResult ns3::dot11s::HwmpRtable::LookupReactive(ns3::Mac48Address destination) [member function]
+    cls.add_method('LookupReactive', 
+                   'ns3::dot11s::HwmpRtable::LookupResult', 
+                   [param('ns3::Mac48Address', 'destination')])
+    ## hwmp-rtable.h: ns3::dot11s::HwmpRtable::LookupResult ns3::dot11s::HwmpRtable::LookupReactiveExpired(ns3::Mac48Address destination) [member function]
+    cls.add_method('LookupReactiveExpired', 
+                   'ns3::dot11s::HwmpRtable::LookupResult', 
+                   [param('ns3::Mac48Address', 'destination')])
+    ## hwmp-rtable.h: ns3::dot11s::HwmpRtable::INTERFACE_ANY [variable]
+    cls.add_static_attribute('INTERFACE_ANY', 'uint32_t const', is_const=True)
+    ## hwmp-rtable.h: ns3::dot11s::HwmpRtable::MAX_METRIC [variable]
+    cls.add_static_attribute('MAX_METRIC', 'uint32_t const', is_const=True)
+    return
+
+def register_Ns3Dot11sHwmpRtableLookupResult_methods(root_module, cls):
+    cls.add_binary_comparison_operator('==')
+    ## hwmp-rtable.h: ns3::dot11s::HwmpRtable::LookupResult::LookupResult(ns3::dot11s::HwmpRtable::LookupResult const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::dot11s::HwmpRtable::LookupResult const &', 'arg0')])
+    ## hwmp-rtable.h: ns3::dot11s::HwmpRtable::LookupResult::LookupResult(ns3::Mac48Address r=ns3::Mac48Address::GetBroadcast(), uint32_t i=ns3::dot11s::HwmpRtable::INTERFACE_ANY, uint32_t m=ns3::dot11s::HwmpRtable::MAX_METRIC, uint32_t s=0, ns3::Time l=ns3::Seconds( )) [constructor]
+    cls.add_constructor([param('ns3::Mac48Address', 'r', default_value='ns3::Mac48Address::GetBroadcast()'), param('uint32_t', 'i', default_value='ns3::dot11s::HwmpRtable::INTERFACE_ANY'), param('uint32_t', 'm', default_value='ns3::dot11s::HwmpRtable::MAX_METRIC'), param('uint32_t', 's', default_value='0'), param('ns3::Time', 'l', default_value='ns3::Seconds(0.0)')])
+    ## hwmp-rtable.h: bool ns3::dot11s::HwmpRtable::LookupResult::IsValid() const [member function]
+    cls.add_method('IsValid', 
+                   'bool', 
+                   [], 
+                   is_const=True)
+    ## hwmp-rtable.h: ns3::dot11s::HwmpRtable::LookupResult::ifIndex [variable]
+    cls.add_instance_attribute('ifIndex', 'uint32_t', is_const=False)
+    ## hwmp-rtable.h: ns3::dot11s::HwmpRtable::LookupResult::lifetime [variable]
+    cls.add_instance_attribute('lifetime', 'ns3::Time', is_const=False)
+    ## hwmp-rtable.h: ns3::dot11s::HwmpRtable::LookupResult::metric [variable]
+    cls.add_instance_attribute('metric', 'uint32_t', is_const=False)
+    ## hwmp-rtable.h: ns3::dot11s::HwmpRtable::LookupResult::retransmitter [variable]
+    cls.add_instance_attribute('retransmitter', 'ns3::Mac48Address', is_const=False)
+    ## hwmp-rtable.h: ns3::dot11s::HwmpRtable::LookupResult::seqnum [variable]
     cls.add_instance_attribute('seqnum', 'uint32_t', is_const=False)
     return
 
@@ -406,6 +614,52 @@ def register_Ns3Dot11sIeConfiguration_methods(root_module, cls):
     cls.add_method('SetRouting', 
                    'void', 
                    [param('ns3::dot11s::dot11sPathSelectionProtocol', 'routingId')])
+    return
+
+def register_Ns3Dot11sIeLinkMetricReport_methods(root_module, cls):
+    cls.add_output_stream_operator()
+    cls.add_binary_comparison_operator('==')
+    cls.add_binary_comparison_operator('<')
+    cls.add_binary_comparison_operator('>')
+    ## ie-dot11s-metric-report.h: ns3::dot11s::IeLinkMetricReport::IeLinkMetricReport(ns3::dot11s::IeLinkMetricReport const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::dot11s::IeLinkMetricReport const &', 'arg0')])
+    ## ie-dot11s-metric-report.h: ns3::dot11s::IeLinkMetricReport::IeLinkMetricReport() [constructor]
+    cls.add_constructor([])
+    ## ie-dot11s-metric-report.h: ns3::dot11s::IeLinkMetricReport::IeLinkMetricReport(uint32_t metric) [constructor]
+    cls.add_constructor([param('uint32_t', 'metric')])
+    ## ie-dot11s-metric-report.h: uint8_t ns3::dot11s::IeLinkMetricReport::DeserializeInformationField(ns3::Buffer::Iterator start, uint8_t length) [member function]
+    cls.add_method('DeserializeInformationField', 
+                   'uint8_t', 
+                   [param('ns3::Buffer::Iterator', 'start'), param('uint8_t', 'length')], 
+                   is_virtual=True)
+    ## ie-dot11s-metric-report.h: ns3::WifiInformationElementId ns3::dot11s::IeLinkMetricReport::ElementId() const [member function]
+    cls.add_method('ElementId', 
+                   'ns3::WifiInformationElementId', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## ie-dot11s-metric-report.h: uint8_t ns3::dot11s::IeLinkMetricReport::GetInformationFieldSize() const [member function]
+    cls.add_method('GetInformationFieldSize', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## ie-dot11s-metric-report.h: uint32_t ns3::dot11s::IeLinkMetricReport::GetMetric() [member function]
+    cls.add_method('GetMetric', 
+                   'uint32_t', 
+                   [])
+    ## ie-dot11s-metric-report.h: void ns3::dot11s::IeLinkMetricReport::Print(std::ostream & os) const [member function]
+    cls.add_method('Print', 
+                   'void', 
+                   [param('std::ostream &', 'os')], 
+                   is_const=True, is_virtual=True)
+    ## ie-dot11s-metric-report.h: void ns3::dot11s::IeLinkMetricReport::SerializeInformationField(ns3::Buffer::Iterator i) const [member function]
+    cls.add_method('SerializeInformationField', 
+                   'void', 
+                   [param('ns3::Buffer::Iterator', 'i')], 
+                   is_const=True, is_virtual=True)
+    ## ie-dot11s-metric-report.h: void ns3::dot11s::IeLinkMetricReport::SetMetric(uint32_t metric) [member function]
+    cls.add_method('SetMetric', 
+                   'void', 
+                   [param('uint32_t', 'metric')])
     return
 
 def register_Ns3Dot11sIeMeshId_methods(root_module, cls):
@@ -580,6 +834,561 @@ def register_Ns3Dot11sIePeerManagement_methods(root_module, cls):
                    is_const=True)
     return
 
+def register_Ns3Dot11sIePeeringProtocol_methods(root_module, cls):
+    ## ie-dot11s-peering-protocol.h: ns3::dot11s::IePeeringProtocol::IePeeringProtocol(ns3::dot11s::IePeeringProtocol const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::dot11s::IePeeringProtocol const &', 'arg0')])
+    ## ie-dot11s-peering-protocol.h: ns3::dot11s::IePeeringProtocol::IePeeringProtocol() [constructor]
+    cls.add_constructor([])
+    ## ie-dot11s-peering-protocol.h: uint8_t ns3::dot11s::IePeeringProtocol::DeserializeInformationField(ns3::Buffer::Iterator i, uint8_t length) [member function]
+    cls.add_method('DeserializeInformationField', 
+                   'uint8_t', 
+                   [param('ns3::Buffer::Iterator', 'i'), param('uint8_t', 'length')], 
+                   is_virtual=True)
+    ## ie-dot11s-peering-protocol.h: ns3::WifiInformationElementId ns3::dot11s::IePeeringProtocol::ElementId() const [member function]
+    cls.add_method('ElementId', 
+                   'ns3::WifiInformationElementId', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## ie-dot11s-peering-protocol.h: uint8_t ns3::dot11s::IePeeringProtocol::GetInformationFieldSize() const [member function]
+    cls.add_method('GetInformationFieldSize', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## ie-dot11s-peering-protocol.h: void ns3::dot11s::IePeeringProtocol::Print(std::ostream & os) const [member function]
+    cls.add_method('Print', 
+                   'void', 
+                   [param('std::ostream &', 'os')], 
+                   is_const=True, is_virtual=True)
+    ## ie-dot11s-peering-protocol.h: void ns3::dot11s::IePeeringProtocol::SerializeInformationField(ns3::Buffer::Iterator i) const [member function]
+    cls.add_method('SerializeInformationField', 
+                   'void', 
+                   [param('ns3::Buffer::Iterator', 'i')], 
+                   is_const=True, is_virtual=True)
+    return
+
+def register_Ns3Dot11sIePerr_methods(root_module, cls):
+    cls.add_output_stream_operator()
+    cls.add_binary_comparison_operator('==')
+    ## ie-dot11s-perr.h: ns3::dot11s::IePerr::IePerr(ns3::dot11s::IePerr const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::dot11s::IePerr const &', 'arg0')])
+    ## ie-dot11s-perr.h: ns3::dot11s::IePerr::IePerr() [constructor]
+    cls.add_constructor([])
+    ## ie-dot11s-perr.h: void ns3::dot11s::IePerr::AddAddressUnit(ns3::dot11s::HwmpProtocol::FailedDestination unit) [member function]
+    cls.add_method('AddAddressUnit', 
+                   'void', 
+                   [param('ns3::dot11s::HwmpProtocol::FailedDestination', 'unit')])
+    ## ie-dot11s-perr.h: void ns3::dot11s::IePerr::DeleteAddressUnit(ns3::Mac48Address address) [member function]
+    cls.add_method('DeleteAddressUnit', 
+                   'void', 
+                   [param('ns3::Mac48Address', 'address')])
+    ## ie-dot11s-perr.h: uint8_t ns3::dot11s::IePerr::DeserializeInformationField(ns3::Buffer::Iterator start, uint8_t length) [member function]
+    cls.add_method('DeserializeInformationField', 
+                   'uint8_t', 
+                   [param('ns3::Buffer::Iterator', 'start'), param('uint8_t', 'length')], 
+                   is_virtual=True)
+    ## ie-dot11s-perr.h: ns3::WifiInformationElementId ns3::dot11s::IePerr::ElementId() const [member function]
+    cls.add_method('ElementId', 
+                   'ns3::WifiInformationElementId', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## ie-dot11s-perr.h: std::vector<ns3::dot11s::HwmpProtocol::FailedDestination, std::allocator<ns3::dot11s::HwmpProtocol::FailedDestination> > ns3::dot11s::IePerr::GetAddressUnitVector() const [member function]
+    cls.add_method('GetAddressUnitVector', 
+                   'std::vector< ns3::dot11s::HwmpProtocol::FailedDestination >', 
+                   [], 
+                   is_const=True)
+    ## ie-dot11s-perr.h: uint8_t ns3::dot11s::IePerr::GetInformationFieldSize() const [member function]
+    cls.add_method('GetInformationFieldSize', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## ie-dot11s-perr.h: uint8_t ns3::dot11s::IePerr::GetNumOfDest() const [member function]
+    cls.add_method('GetNumOfDest', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True)
+    ## ie-dot11s-perr.h: bool ns3::dot11s::IePerr::IsFull() const [member function]
+    cls.add_method('IsFull', 
+                   'bool', 
+                   [], 
+                   is_const=True)
+    ## ie-dot11s-perr.h: void ns3::dot11s::IePerr::Print(std::ostream & os) const [member function]
+    cls.add_method('Print', 
+                   'void', 
+                   [param('std::ostream &', 'os')], 
+                   is_const=True, is_virtual=True)
+    ## ie-dot11s-perr.h: void ns3::dot11s::IePerr::ResetPerr() [member function]
+    cls.add_method('ResetPerr', 
+                   'void', 
+                   [])
+    ## ie-dot11s-perr.h: void ns3::dot11s::IePerr::SerializeInformationField(ns3::Buffer::Iterator i) const [member function]
+    cls.add_method('SerializeInformationField', 
+                   'void', 
+                   [param('ns3::Buffer::Iterator', 'i')], 
+                   is_const=True, is_virtual=True)
+    return
+
+def register_Ns3Dot11sIePrep_methods(root_module, cls):
+    cls.add_output_stream_operator()
+    cls.add_binary_comparison_operator('==')
+    ## ie-dot11s-prep.h: ns3::dot11s::IePrep::IePrep(ns3::dot11s::IePrep const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::dot11s::IePrep const &', 'arg0')])
+    ## ie-dot11s-prep.h: ns3::dot11s::IePrep::IePrep() [constructor]
+    cls.add_constructor([])
+    ## ie-dot11s-prep.h: void ns3::dot11s::IePrep::DecrementTtl() [member function]
+    cls.add_method('DecrementTtl', 
+                   'void', 
+                   [])
+    ## ie-dot11s-prep.h: uint8_t ns3::dot11s::IePrep::DeserializeInformationField(ns3::Buffer::Iterator start, uint8_t length) [member function]
+    cls.add_method('DeserializeInformationField', 
+                   'uint8_t', 
+                   [param('ns3::Buffer::Iterator', 'start'), param('uint8_t', 'length')], 
+                   is_virtual=True)
+    ## ie-dot11s-prep.h: ns3::WifiInformationElementId ns3::dot11s::IePrep::ElementId() const [member function]
+    cls.add_method('ElementId', 
+                   'ns3::WifiInformationElementId', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## ie-dot11s-prep.h: ns3::Mac48Address ns3::dot11s::IePrep::GetDestinationAddress() const [member function]
+    cls.add_method('GetDestinationAddress', 
+                   'ns3::Mac48Address', 
+                   [], 
+                   is_const=True)
+    ## ie-dot11s-prep.h: uint32_t ns3::dot11s::IePrep::GetDestinationSeqNumber() const [member function]
+    cls.add_method('GetDestinationSeqNumber', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## ie-dot11s-prep.h: uint8_t ns3::dot11s::IePrep::GetFlags() const [member function]
+    cls.add_method('GetFlags', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True)
+    ## ie-dot11s-prep.h: uint8_t ns3::dot11s::IePrep::GetHopcount() const [member function]
+    cls.add_method('GetHopcount', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True)
+    ## ie-dot11s-prep.h: uint8_t ns3::dot11s::IePrep::GetInformationFieldSize() const [member function]
+    cls.add_method('GetInformationFieldSize', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## ie-dot11s-prep.h: uint32_t ns3::dot11s::IePrep::GetLifetime() const [member function]
+    cls.add_method('GetLifetime', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## ie-dot11s-prep.h: uint32_t ns3::dot11s::IePrep::GetMetric() const [member function]
+    cls.add_method('GetMetric', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## ie-dot11s-prep.h: ns3::Mac48Address ns3::dot11s::IePrep::GetOriginatorAddress() const [member function]
+    cls.add_method('GetOriginatorAddress', 
+                   'ns3::Mac48Address', 
+                   [], 
+                   is_const=True)
+    ## ie-dot11s-prep.h: uint32_t ns3::dot11s::IePrep::GetOriginatorSeqNumber() const [member function]
+    cls.add_method('GetOriginatorSeqNumber', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## ie-dot11s-prep.h: uint32_t ns3::dot11s::IePrep::GetTtl() const [member function]
+    cls.add_method('GetTtl', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## ie-dot11s-prep.h: void ns3::dot11s::IePrep::IncrementMetric(uint32_t metric) [member function]
+    cls.add_method('IncrementMetric', 
+                   'void', 
+                   [param('uint32_t', 'metric')])
+    ## ie-dot11s-prep.h: void ns3::dot11s::IePrep::Print(std::ostream & os) const [member function]
+    cls.add_method('Print', 
+                   'void', 
+                   [param('std::ostream &', 'os')], 
+                   is_const=True, is_virtual=True)
+    ## ie-dot11s-prep.h: void ns3::dot11s::IePrep::SerializeInformationField(ns3::Buffer::Iterator i) const [member function]
+    cls.add_method('SerializeInformationField', 
+                   'void', 
+                   [param('ns3::Buffer::Iterator', 'i')], 
+                   is_const=True, is_virtual=True)
+    ## ie-dot11s-prep.h: void ns3::dot11s::IePrep::SetDestinationAddress(ns3::Mac48Address dest_address) [member function]
+    cls.add_method('SetDestinationAddress', 
+                   'void', 
+                   [param('ns3::Mac48Address', 'dest_address')])
+    ## ie-dot11s-prep.h: void ns3::dot11s::IePrep::SetDestinationSeqNumber(uint32_t dest_seq_number) [member function]
+    cls.add_method('SetDestinationSeqNumber', 
+                   'void', 
+                   [param('uint32_t', 'dest_seq_number')])
+    ## ie-dot11s-prep.h: void ns3::dot11s::IePrep::SetFlags(uint8_t flags) [member function]
+    cls.add_method('SetFlags', 
+                   'void', 
+                   [param('uint8_t', 'flags')])
+    ## ie-dot11s-prep.h: void ns3::dot11s::IePrep::SetHopcount(uint8_t hopcount) [member function]
+    cls.add_method('SetHopcount', 
+                   'void', 
+                   [param('uint8_t', 'hopcount')])
+    ## ie-dot11s-prep.h: void ns3::dot11s::IePrep::SetLifetime(uint32_t lifetime) [member function]
+    cls.add_method('SetLifetime', 
+                   'void', 
+                   [param('uint32_t', 'lifetime')])
+    ## ie-dot11s-prep.h: void ns3::dot11s::IePrep::SetMetric(uint32_t metric) [member function]
+    cls.add_method('SetMetric', 
+                   'void', 
+                   [param('uint32_t', 'metric')])
+    ## ie-dot11s-prep.h: void ns3::dot11s::IePrep::SetOriginatorAddress(ns3::Mac48Address originator_address) [member function]
+    cls.add_method('SetOriginatorAddress', 
+                   'void', 
+                   [param('ns3::Mac48Address', 'originator_address')])
+    ## ie-dot11s-prep.h: void ns3::dot11s::IePrep::SetOriginatorSeqNumber(uint32_t originator_seq_number) [member function]
+    cls.add_method('SetOriginatorSeqNumber', 
+                   'void', 
+                   [param('uint32_t', 'originator_seq_number')])
+    ## ie-dot11s-prep.h: void ns3::dot11s::IePrep::SetTtl(uint8_t ttl) [member function]
+    cls.add_method('SetTtl', 
+                   'void', 
+                   [param('uint8_t', 'ttl')])
+    return
+
+def register_Ns3Dot11sIePreq_methods(root_module, cls):
+    cls.add_output_stream_operator()
+    cls.add_binary_comparison_operator('==')
+    ## ie-dot11s-preq.h: ns3::dot11s::IePreq::IePreq(ns3::dot11s::IePreq const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::dot11s::IePreq const &', 'arg0')])
+    ## ie-dot11s-preq.h: ns3::dot11s::IePreq::IePreq() [constructor]
+    cls.add_constructor([])
+    ## ie-dot11s-preq.h: void ns3::dot11s::IePreq::AddDestinationAddressElement(bool doFlag, bool rfFlag, ns3::Mac48Address dest_address, uint32_t dest_seq_number) [member function]
+    cls.add_method('AddDestinationAddressElement', 
+                   'void', 
+                   [param('bool', 'doFlag'), param('bool', 'rfFlag'), param('ns3::Mac48Address', 'dest_address'), param('uint32_t', 'dest_seq_number')])
+    ## ie-dot11s-preq.h: void ns3::dot11s::IePreq::ClearDestinationAddressElements() [member function]
+    cls.add_method('ClearDestinationAddressElements', 
+                   'void', 
+                   [])
+    ## ie-dot11s-preq.h: void ns3::dot11s::IePreq::DecrementTtl() [member function]
+    cls.add_method('DecrementTtl', 
+                   'void', 
+                   [])
+    ## ie-dot11s-preq.h: void ns3::dot11s::IePreq::DelDestinationAddressElement(ns3::Mac48Address dest_address) [member function]
+    cls.add_method('DelDestinationAddressElement', 
+                   'void', 
+                   [param('ns3::Mac48Address', 'dest_address')])
+    ## ie-dot11s-preq.h: uint8_t ns3::dot11s::IePreq::DeserializeInformationField(ns3::Buffer::Iterator i, uint8_t length) [member function]
+    cls.add_method('DeserializeInformationField', 
+                   'uint8_t', 
+                   [param('ns3::Buffer::Iterator', 'i'), param('uint8_t', 'length')], 
+                   is_virtual=True)
+    ## ie-dot11s-preq.h: ns3::WifiInformationElementId ns3::dot11s::IePreq::ElementId() const [member function]
+    cls.add_method('ElementId', 
+                   'ns3::WifiInformationElementId', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## ie-dot11s-preq.h: uint8_t ns3::dot11s::IePreq::GetDestCount() const [member function]
+    cls.add_method('GetDestCount', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True)
+    ## ie-dot11s-preq.h: std::vector<ns3::Ptr<ns3::dot11s::DestinationAddressUnit>, std::allocator<ns3::Ptr<ns3::dot11s::DestinationAddressUnit> > > ns3::dot11s::IePreq::GetDestinationList() [member function]
+    cls.add_method('GetDestinationList', 
+                   'std::vector< ns3::Ptr< ns3::dot11s::DestinationAddressUnit > >', 
+                   [])
+    ## ie-dot11s-preq.h: uint8_t ns3::dot11s::IePreq::GetHopCount() const [member function]
+    cls.add_method('GetHopCount', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True)
+    ## ie-dot11s-preq.h: uint8_t ns3::dot11s::IePreq::GetInformationFieldSize() const [member function]
+    cls.add_method('GetInformationFieldSize', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## ie-dot11s-preq.h: uint32_t ns3::dot11s::IePreq::GetLifetime() const [member function]
+    cls.add_method('GetLifetime', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## ie-dot11s-preq.h: uint32_t ns3::dot11s::IePreq::GetMetric() const [member function]
+    cls.add_method('GetMetric', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## ie-dot11s-preq.h: ns3::Mac48Address ns3::dot11s::IePreq::GetOriginatorAddress() const [member function]
+    cls.add_method('GetOriginatorAddress', 
+                   'ns3::Mac48Address', 
+                   [], 
+                   is_const=True)
+    ## ie-dot11s-preq.h: uint32_t ns3::dot11s::IePreq::GetOriginatorSeqNumber() const [member function]
+    cls.add_method('GetOriginatorSeqNumber', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## ie-dot11s-preq.h: uint32_t ns3::dot11s::IePreq::GetPreqID() const [member function]
+    cls.add_method('GetPreqID', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## ie-dot11s-preq.h: uint8_t ns3::dot11s::IePreq::GetTtl() const [member function]
+    cls.add_method('GetTtl', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True)
+    ## ie-dot11s-preq.h: void ns3::dot11s::IePreq::IncrementMetric(uint32_t metric) [member function]
+    cls.add_method('IncrementMetric', 
+                   'void', 
+                   [param('uint32_t', 'metric')])
+    ## ie-dot11s-preq.h: bool ns3::dot11s::IePreq::IsFull() const [member function]
+    cls.add_method('IsFull', 
+                   'bool', 
+                   [], 
+                   is_const=True)
+    ## ie-dot11s-preq.h: bool ns3::dot11s::IePreq::IsNeedNotPrep() const [member function]
+    cls.add_method('IsNeedNotPrep', 
+                   'bool', 
+                   [], 
+                   is_const=True)
+    ## ie-dot11s-preq.h: bool ns3::dot11s::IePreq::IsUnicastPreq() const [member function]
+    cls.add_method('IsUnicastPreq', 
+                   'bool', 
+                   [], 
+                   is_const=True)
+    ## ie-dot11s-preq.h: bool ns3::dot11s::IePreq::MayAddAddress(ns3::Mac48Address originator) [member function]
+    cls.add_method('MayAddAddress', 
+                   'bool', 
+                   [param('ns3::Mac48Address', 'originator')])
+    ## ie-dot11s-preq.h: void ns3::dot11s::IePreq::Print(std::ostream & os) const [member function]
+    cls.add_method('Print', 
+                   'void', 
+                   [param('std::ostream &', 'os')], 
+                   is_const=True, is_virtual=True)
+    ## ie-dot11s-preq.h: void ns3::dot11s::IePreq::SerializeInformationField(ns3::Buffer::Iterator i) const [member function]
+    cls.add_method('SerializeInformationField', 
+                   'void', 
+                   [param('ns3::Buffer::Iterator', 'i')], 
+                   is_const=True, is_virtual=True)
+    ## ie-dot11s-preq.h: void ns3::dot11s::IePreq::SetDestCount(uint8_t dest_count) [member function]
+    cls.add_method('SetDestCount', 
+                   'void', 
+                   [param('uint8_t', 'dest_count')])
+    ## ie-dot11s-preq.h: void ns3::dot11s::IePreq::SetHopcount(uint8_t hopcount) [member function]
+    cls.add_method('SetHopcount', 
+                   'void', 
+                   [param('uint8_t', 'hopcount')])
+    ## ie-dot11s-preq.h: void ns3::dot11s::IePreq::SetLifetime(uint32_t lifetime) [member function]
+    cls.add_method('SetLifetime', 
+                   'void', 
+                   [param('uint32_t', 'lifetime')])
+    ## ie-dot11s-preq.h: void ns3::dot11s::IePreq::SetMetric(uint32_t metric) [member function]
+    cls.add_method('SetMetric', 
+                   'void', 
+                   [param('uint32_t', 'metric')])
+    ## ie-dot11s-preq.h: void ns3::dot11s::IePreq::SetNeedNotPrep() [member function]
+    cls.add_method('SetNeedNotPrep', 
+                   'void', 
+                   [])
+    ## ie-dot11s-preq.h: void ns3::dot11s::IePreq::SetOriginatorAddress(ns3::Mac48Address originator_address) [member function]
+    cls.add_method('SetOriginatorAddress', 
+                   'void', 
+                   [param('ns3::Mac48Address', 'originator_address')])
+    ## ie-dot11s-preq.h: void ns3::dot11s::IePreq::SetOriginatorSeqNumber(uint32_t originator_seq_number) [member function]
+    cls.add_method('SetOriginatorSeqNumber', 
+                   'void', 
+                   [param('uint32_t', 'originator_seq_number')])
+    ## ie-dot11s-preq.h: void ns3::dot11s::IePreq::SetPreqID(uint32_t id) [member function]
+    cls.add_method('SetPreqID', 
+                   'void', 
+                   [param('uint32_t', 'id')])
+    ## ie-dot11s-preq.h: void ns3::dot11s::IePreq::SetTTL(uint8_t ttl) [member function]
+    cls.add_method('SetTTL', 
+                   'void', 
+                   [param('uint8_t', 'ttl')])
+    ## ie-dot11s-preq.h: void ns3::dot11s::IePreq::SetUnicastPreq() [member function]
+    cls.add_method('SetUnicastPreq', 
+                   'void', 
+                   [])
+    return
+
+def register_Ns3Dot11sIeRann_methods(root_module, cls):
+    cls.add_output_stream_operator()
+    cls.add_binary_comparison_operator('==')
+    ## ie-dot11s-rann.h: ns3::dot11s::IeRann::IeRann(ns3::dot11s::IeRann const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::dot11s::IeRann const &', 'arg0')])
+    ## ie-dot11s-rann.h: ns3::dot11s::IeRann::IeRann() [constructor]
+    cls.add_constructor([])
+    ## ie-dot11s-rann.h: void ns3::dot11s::IeRann::DecrementTtl() [member function]
+    cls.add_method('DecrementTtl', 
+                   'void', 
+                   [])
+    ## ie-dot11s-rann.h: uint8_t ns3::dot11s::IeRann::DeserializeInformationField(ns3::Buffer::Iterator start, uint8_t length) [member function]
+    cls.add_method('DeserializeInformationField', 
+                   'uint8_t', 
+                   [param('ns3::Buffer::Iterator', 'start'), param('uint8_t', 'length')], 
+                   is_virtual=True)
+    ## ie-dot11s-rann.h: ns3::WifiInformationElementId ns3::dot11s::IeRann::ElementId() const [member function]
+    cls.add_method('ElementId', 
+                   'ns3::WifiInformationElementId', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## ie-dot11s-rann.h: uint32_t ns3::dot11s::IeRann::GetDestSeqNumber() [member function]
+    cls.add_method('GetDestSeqNumber', 
+                   'uint32_t', 
+                   [])
+    ## ie-dot11s-rann.h: uint8_t ns3::dot11s::IeRann::GetFlags() [member function]
+    cls.add_method('GetFlags', 
+                   'uint8_t', 
+                   [])
+    ## ie-dot11s-rann.h: uint8_t ns3::dot11s::IeRann::GetHopcount() [member function]
+    cls.add_method('GetHopcount', 
+                   'uint8_t', 
+                   [])
+    ## ie-dot11s-rann.h: uint8_t ns3::dot11s::IeRann::GetInformationFieldSize() const [member function]
+    cls.add_method('GetInformationFieldSize', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## ie-dot11s-rann.h: uint32_t ns3::dot11s::IeRann::GetMetric() [member function]
+    cls.add_method('GetMetric', 
+                   'uint32_t', 
+                   [])
+    ## ie-dot11s-rann.h: ns3::Mac48Address ns3::dot11s::IeRann::GetOriginatorAddress() [member function]
+    cls.add_method('GetOriginatorAddress', 
+                   'ns3::Mac48Address', 
+                   [])
+    ## ie-dot11s-rann.h: uint8_t ns3::dot11s::IeRann::GetTtl() [member function]
+    cls.add_method('GetTtl', 
+                   'uint8_t', 
+                   [])
+    ## ie-dot11s-rann.h: void ns3::dot11s::IeRann::IncrementMetric(uint32_t metric) [member function]
+    cls.add_method('IncrementMetric', 
+                   'void', 
+                   [param('uint32_t', 'metric')])
+    ## ie-dot11s-rann.h: void ns3::dot11s::IeRann::Print(std::ostream & os) const [member function]
+    cls.add_method('Print', 
+                   'void', 
+                   [param('std::ostream &', 'os')], 
+                   is_const=True, is_virtual=True)
+    ## ie-dot11s-rann.h: void ns3::dot11s::IeRann::SerializeInformationField(ns3::Buffer::Iterator i) const [member function]
+    cls.add_method('SerializeInformationField', 
+                   'void', 
+                   [param('ns3::Buffer::Iterator', 'i')], 
+                   is_const=True, is_virtual=True)
+    ## ie-dot11s-rann.h: void ns3::dot11s::IeRann::SetDestSeqNumber(uint32_t dest_seq_number) [member function]
+    cls.add_method('SetDestSeqNumber', 
+                   'void', 
+                   [param('uint32_t', 'dest_seq_number')])
+    ## ie-dot11s-rann.h: void ns3::dot11s::IeRann::SetFlags(uint8_t flags) [member function]
+    cls.add_method('SetFlags', 
+                   'void', 
+                   [param('uint8_t', 'flags')])
+    ## ie-dot11s-rann.h: void ns3::dot11s::IeRann::SetHopcount(uint8_t hopcount) [member function]
+    cls.add_method('SetHopcount', 
+                   'void', 
+                   [param('uint8_t', 'hopcount')])
+    ## ie-dot11s-rann.h: void ns3::dot11s::IeRann::SetMetric(uint32_t metric) [member function]
+    cls.add_method('SetMetric', 
+                   'void', 
+                   [param('uint32_t', 'metric')])
+    ## ie-dot11s-rann.h: void ns3::dot11s::IeRann::SetOriginatorAddress(ns3::Mac48Address originator_address) [member function]
+    cls.add_method('SetOriginatorAddress', 
+                   'void', 
+                   [param('ns3::Mac48Address', 'originator_address')])
+    ## ie-dot11s-rann.h: void ns3::dot11s::IeRann::SetTTL(uint8_t ttl) [member function]
+    cls.add_method('SetTTL', 
+                   'void', 
+                   [param('uint8_t', 'ttl')])
+    return
+
+def register_Ns3Dot11sMeshHeader_methods(root_module, cls):
+    cls.add_binary_comparison_operator('==')
+    ## dot11s-mac-header.h: ns3::dot11s::MeshHeader::MeshHeader(ns3::dot11s::MeshHeader const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::dot11s::MeshHeader const &', 'arg0')])
+    ## dot11s-mac-header.h: ns3::dot11s::MeshHeader::MeshHeader() [constructor]
+    cls.add_constructor([])
+    ## dot11s-mac-header.h: uint32_t ns3::dot11s::MeshHeader::Deserialize(ns3::Buffer::Iterator start) [member function]
+    cls.add_method('Deserialize', 
+                   'uint32_t', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_virtual=True)
+    ## dot11s-mac-header.h: ns3::Mac48Address ns3::dot11s::MeshHeader::GetAddr4() const [member function]
+    cls.add_method('GetAddr4', 
+                   'ns3::Mac48Address', 
+                   [], 
+                   is_const=True)
+    ## dot11s-mac-header.h: ns3::Mac48Address ns3::dot11s::MeshHeader::GetAddr5() const [member function]
+    cls.add_method('GetAddr5', 
+                   'ns3::Mac48Address', 
+                   [], 
+                   is_const=True)
+    ## dot11s-mac-header.h: ns3::Mac48Address ns3::dot11s::MeshHeader::GetAddr6() const [member function]
+    cls.add_method('GetAddr6', 
+                   'ns3::Mac48Address', 
+                   [], 
+                   is_const=True)
+    ## dot11s-mac-header.h: uint8_t ns3::dot11s::MeshHeader::GetAddressExt() const [member function]
+    cls.add_method('GetAddressExt', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True)
+    ## dot11s-mac-header.h: ns3::TypeId ns3::dot11s::MeshHeader::GetInstanceTypeId() const [member function]
+    cls.add_method('GetInstanceTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## dot11s-mac-header.h: uint32_t ns3::dot11s::MeshHeader::GetMeshSeqno() const [member function]
+    cls.add_method('GetMeshSeqno', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## dot11s-mac-header.h: uint8_t ns3::dot11s::MeshHeader::GetMeshTtl() const [member function]
+    cls.add_method('GetMeshTtl', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True)
+    ## dot11s-mac-header.h: uint32_t ns3::dot11s::MeshHeader::GetSerializedSize() const [member function]
+    cls.add_method('GetSerializedSize', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## dot11s-mac-header.h: static ns3::TypeId ns3::dot11s::MeshHeader::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## dot11s-mac-header.h: void ns3::dot11s::MeshHeader::Print(std::ostream & os) const [member function]
+    cls.add_method('Print', 
+                   'void', 
+                   [param('std::ostream &', 'os')], 
+                   is_const=True, is_virtual=True)
+    ## dot11s-mac-header.h: void ns3::dot11s::MeshHeader::Serialize(ns3::Buffer::Iterator start) const [member function]
+    cls.add_method('Serialize', 
+                   'void', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_const=True, is_virtual=True)
+    ## dot11s-mac-header.h: void ns3::dot11s::MeshHeader::SetAddr4(ns3::Mac48Address address) [member function]
+    cls.add_method('SetAddr4', 
+                   'void', 
+                   [param('ns3::Mac48Address', 'address')])
+    ## dot11s-mac-header.h: void ns3::dot11s::MeshHeader::SetAddr5(ns3::Mac48Address address) [member function]
+    cls.add_method('SetAddr5', 
+                   'void', 
+                   [param('ns3::Mac48Address', 'address')])
+    ## dot11s-mac-header.h: void ns3::dot11s::MeshHeader::SetAddr6(ns3::Mac48Address address) [member function]
+    cls.add_method('SetAddr6', 
+                   'void', 
+                   [param('ns3::Mac48Address', 'address')])
+    ## dot11s-mac-header.h: void ns3::dot11s::MeshHeader::SetAddressExt(uint8_t num_of_addresses) [member function]
+    cls.add_method('SetAddressExt', 
+                   'void', 
+                   [param('uint8_t', 'num_of_addresses')])
+    ## dot11s-mac-header.h: void ns3::dot11s::MeshHeader::SetMeshSeqno(uint32_t seqno) [member function]
+    cls.add_method('SetMeshSeqno', 
+                   'void', 
+                   [param('uint32_t', 'seqno')])
+    ## dot11s-mac-header.h: void ns3::dot11s::MeshHeader::SetMeshTtl(uint8_t TTL) [member function]
+    cls.add_method('SetMeshTtl', 
+                   'void', 
+                   [param('uint8_t', 'TTL')])
+    return
+
 def register_Ns3Dot11sPeerLink_methods(root_module, cls):
     ## peer-link.h: static ns3::TypeId ns3::dot11s::PeerLink::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
@@ -684,6 +1493,78 @@ def register_Ns3Dot11sPeerLink_methods(root_module, cls):
                    'void', 
                    [param('std::ostream &', 'os')], 
                    is_const=True)
+    return
+
+def register_Ns3Dot11sPeerLinkFrameStart_methods(root_module, cls):
+    cls.add_binary_comparison_operator('==')
+    ## peer-link-frame.h: ns3::dot11s::PeerLinkFrameStart::PeerLinkFrameStart() [constructor]
+    cls.add_constructor([])
+    ## peer-link-frame.h: uint32_t ns3::dot11s::PeerLinkFrameStart::Deserialize(ns3::Buffer::Iterator start) [member function]
+    cls.add_method('Deserialize', 
+                   'uint32_t', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_virtual=True)
+    ## peer-link-frame.h: ns3::dot11s::PeerLinkFrameStart::PlinkFrameStartFields ns3::dot11s::PeerLinkFrameStart::GetFields() const [member function]
+    cls.add_method('GetFields', 
+                   'ns3::dot11s::PeerLinkFrameStart::PlinkFrameStartFields', 
+                   [], 
+                   is_const=True)
+    ## peer-link-frame.h: ns3::TypeId ns3::dot11s::PeerLinkFrameStart::GetInstanceTypeId() const [member function]
+    cls.add_method('GetInstanceTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## peer-link-frame.h: uint32_t ns3::dot11s::PeerLinkFrameStart::GetSerializedSize() const [member function]
+    cls.add_method('GetSerializedSize', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## peer-link-frame.h: static ns3::TypeId ns3::dot11s::PeerLinkFrameStart::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## peer-link-frame.h: void ns3::dot11s::PeerLinkFrameStart::Print(std::ostream & os) const [member function]
+    cls.add_method('Print', 
+                   'void', 
+                   [param('std::ostream &', 'os')], 
+                   is_const=True, is_virtual=True)
+    ## peer-link-frame.h: void ns3::dot11s::PeerLinkFrameStart::Serialize(ns3::Buffer::Iterator start) const [member function]
+    cls.add_method('Serialize', 
+                   'void', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_const=True, is_virtual=True)
+    ## peer-link-frame.h: void ns3::dot11s::PeerLinkFrameStart::SetPlinkFrameStart(ns3::dot11s::PeerLinkFrameStart::PlinkFrameStartFields arg0) [member function]
+    cls.add_method('SetPlinkFrameStart', 
+                   'void', 
+                   [param('ns3::dot11s::PeerLinkFrameStart::PlinkFrameStartFields', 'arg0')])
+    ## peer-link-frame.h: void ns3::dot11s::PeerLinkFrameStart::SetPlinkFrameSubtype(uint8_t subtype) [member function]
+    cls.add_method('SetPlinkFrameSubtype', 
+                   'void', 
+                   [param('uint8_t', 'subtype')])
+    return
+
+def register_Ns3Dot11sPeerLinkFrameStartPlinkFrameStartFields_methods(root_module, cls):
+    ## peer-link-frame.h: ns3::dot11s::PeerLinkFrameStart::PlinkFrameStartFields::PlinkFrameStartFields() [constructor]
+    cls.add_constructor([])
+    ## peer-link-frame.h: ns3::dot11s::PeerLinkFrameStart::PlinkFrameStartFields::PlinkFrameStartFields(ns3::dot11s::PeerLinkFrameStart::PlinkFrameStartFields const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::dot11s::PeerLinkFrameStart::PlinkFrameStartFields const &', 'arg0')])
+    ## peer-link-frame.h: ns3::dot11s::PeerLinkFrameStart::PlinkFrameStartFields::aid [variable]
+    cls.add_instance_attribute('aid', 'uint16_t', is_const=False)
+    ## peer-link-frame.h: ns3::dot11s::PeerLinkFrameStart::PlinkFrameStartFields::capability [variable]
+    cls.add_instance_attribute('capability', 'uint16_t', is_const=False)
+    ## peer-link-frame.h: ns3::dot11s::PeerLinkFrameStart::PlinkFrameStartFields::config [variable]
+    cls.add_instance_attribute('config', 'ns3::dot11s::IeConfiguration', is_const=False)
+    ## peer-link-frame.h: ns3::dot11s::PeerLinkFrameStart::PlinkFrameStartFields::meshId [variable]
+    cls.add_instance_attribute('meshId', 'ns3::dot11s::IeMeshId', is_const=False)
+    ## peer-link-frame.h: ns3::dot11s::PeerLinkFrameStart::PlinkFrameStartFields::protocol [variable]
+    cls.add_instance_attribute('protocol', 'ns3::dot11s::IePeeringProtocol', is_const=False)
+    ## peer-link-frame.h: ns3::dot11s::PeerLinkFrameStart::PlinkFrameStartFields::rates [variable]
+    cls.add_instance_attribute('rates', 'ns3::SupportedRates', is_const=False)
+    ## peer-link-frame.h: ns3::dot11s::PeerLinkFrameStart::PlinkFrameStartFields::reasonCode [variable]
+    cls.add_instance_attribute('reasonCode', 'uint16_t', is_const=False)
+    ## peer-link-frame.h: ns3::dot11s::PeerLinkFrameStart::PlinkFrameStartFields::subtype [variable]
+    cls.add_instance_attribute('subtype', 'uint8_t', is_const=False)
     return
 
 def register_Ns3Dot11sPeerManagementProtocol_methods(root_module, cls):
