@@ -75,6 +75,16 @@ operator== (const IeLinkMetricReport & a, const IeLinkMetricReport & b)
 {
   return (a.m_metric == b.m_metric);
 }
+bool
+operator< (const IeLinkMetricReport & a, const IeLinkMetricReport & b)
+{
+  return (a.m_metric < b.m_metric);
+}
+bool
+operator> (const IeLinkMetricReport & a, const IeLinkMetricReport & b)
+{
+  return (a.m_metric > b.m_metric);
+}
 std::ostream &
 operator << (std::ostream &os, const IeLinkMetricReport &a)
 {
