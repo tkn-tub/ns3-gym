@@ -19,5 +19,5 @@ def build(bld):
     obj = bld.create_ns3_program('csma-raw-ip-socket', ['csma', 'internet'])
     obj.source = 'csma-raw-ip-socket.cc'
 
-    obj = bld.create_ns3_program('csma-ping', ['csma', 'internet', 'v4ping'])
+    obj = bld.create_ns3_program('csma-ping', ['csma', 'internet'])
     obj.source = 'csma-ping.cc'

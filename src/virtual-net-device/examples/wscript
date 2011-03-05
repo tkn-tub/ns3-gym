@@ -2,7 +2,6 @@
 
 def build(bld):
 
-    obj = bld.create_ns3_program('virtual-net-device', ['point-to-point', 'internet', 'global-routing', 
-                                                        'virtual-net-device'])
+    obj = bld.create_ns3_program('virtual-net-device', ['point-to-point', 'internet'])
     obj.source = 'virtual-net-device.cc'
     
