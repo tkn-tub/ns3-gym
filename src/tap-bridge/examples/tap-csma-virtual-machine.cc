@@ -63,7 +63,6 @@
 
 #include "ns3/core-module.h"
 #include "ns3/network-module.h"
-#include "ns3/helper-module.h"
 #include "ns3/csma-module.h"
 #include "ns3/tap-bridge-module.h"
 

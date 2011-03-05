@@ -23,7 +23,6 @@
 
 #include "ns3/network-module.h"
 #include "ns3/contrib-module.h"
-#include "ns3/helper-module.h"
 #include "ns3/uan-module.h"
 
 using namespace ns3;

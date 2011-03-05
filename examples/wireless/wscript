@@ -14,7 +14,7 @@ def build(bld):
     obj = bld.create_ns3_program('wifi-ap', ['core', 'mobility', 'wifi'])
     obj.source = 'wifi-ap.cc'
 
-    obj = bld.create_ns3_program('wifi-wired-bridging', ['core', 'mobility', 'wifi', 'csma', 'helper', 'bridge'])
+    obj = bld.create_ns3_program('wifi-wired-bridging', ['core', 'mobility', 'wifi', 'csma', 'bridge'])
     obj.source = 'wifi-wired-bridging.cc'
 
     obj = bld.create_ns3_program('simple-wifi-frame-aggregation', ['core', 'mobility', 'wifi'])

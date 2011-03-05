@@ -37,7 +37,6 @@ all_modules = (
     'click',
     'mobility',
     'wifi',
-    'helper',
     'netanim',
     'stats',
     'uan',

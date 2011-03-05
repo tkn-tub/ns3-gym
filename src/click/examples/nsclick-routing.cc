@@ -32,7 +32,6 @@
 
 #include "ns3/core-module.h"
 #include "ns3/network-module.h"
-#include "ns3/helper-module.h"
 #include "ns3/ipv4-click-routing.h"
 #include "ns3/ipv4-l3-click-protocol.h"
 #include "ns3/click-internet-stack-helper.h"

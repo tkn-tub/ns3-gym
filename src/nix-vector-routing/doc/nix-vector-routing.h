@@ -37,8 +37,6 @@
  *
  * \section api API and Usage
  *
- * Nix-vector routing has been rolled into a helper class.  In order to 
- * utilize these helper functions, users must include ns3/helper-module.h.  
  * The Nix-vector routing protocol must be added to a list of routing 
  * protocols.  It is important that list routing is utilized.
  *

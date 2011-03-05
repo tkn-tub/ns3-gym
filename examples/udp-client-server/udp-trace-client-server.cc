@@ -25,7 +25,6 @@
 
 #include <fstream>
 #include "ns3/core-module.h"
-#include "ns3/helper-module.h"
 #include "ns3/csma-module.h"
 #include "ns3/applications-module.h"
 

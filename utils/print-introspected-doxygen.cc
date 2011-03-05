@@ -7,7 +7,6 @@
 #include "ns3/log.h"
 #include "ns3/global-value.h"
 #include "ns3/string.h"
-#include "ns3/helper-module.h"
 
 using namespace ns3;
 

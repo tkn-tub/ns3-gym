@@ -35,7 +35,6 @@
 #include <fstream>
 #include "ns3/core-module.h"
 #include "ns3/network-module.h"
-#include "ns3/helper-module.h"
 #include "ns3/ipv4-click-routing.h"
 #include "ns3/click-internet-stack-helper.h"
 

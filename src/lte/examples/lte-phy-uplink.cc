@@ -56,7 +56,6 @@
 #include <string>
 #include <ns3/mobility-module.h>
 #include <ns3/spectrum-helper.h>
-#include <ns3/helper-module.h>
 #include <ns3/internet-module.h>
 #include <ns3/lte-helper.h>
 #include <ns3/enb-phy.h>
