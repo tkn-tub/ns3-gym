@@ -443,7 +443,7 @@ RocketfuelTopologyReaderTest::DoRun (void)
   Ptr<RocketfuelTopologyReader> inFile;
   NodeContainer nodes;
   
-  std::string input ("./examples/topology-read/RocketFuel_toposample_1239_weights.txt");
+  std::string input ("./src/topology-read/examples/RocketFuel_toposample_1239_weights.txt");
 
   inFile = CreateObject<RocketfuelTopologyReader> ();
   inFile->SetFileName(input);

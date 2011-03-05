@@ -146,8 +146,8 @@ example_tests = [
     ("examples/tcp/tcp-nsc-zoo", "NSC_ENABLED == True", "False"),
     ("examples/tcp/tcp-star-server", "True", "True"),
 
-    ("examples/topology-read/topology-read --input=../../examples/topology-read/Inet_small_toposample.txt", "True", "True"),
-    ("examples/topology-read/topology-read --format=Rocketfuel --input=../../examples/topology-read/RocketFuel_toposample_1239_weights.txt", "True", "True"),
+    ("src/topology-read/examples/topology-read --input=../../src/topology-read/examples/Inet_small_toposample.txt", "True", "True"),
+    ("src/topology-read/examples/topology-read --format=Rocketfuel --input=../../src/topology-read/examples/RocketFuel_toposample_1239_weights.txt", "True", "True"),
 
     ("src/virtual-net-device/examples/virtual-net-device", "True", "True"),
 
