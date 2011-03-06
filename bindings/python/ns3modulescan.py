@@ -157,6 +157,8 @@ def pre_scan_hook(dummy_module_parser,
                 continue
             if "ns3::MilliSeconds( )" == arg.default_value:
                 arg.default_value = "ns3::MilliSeconds(0)"
+            if "ns3::Seconds( )" == arg.default_value:
+                arg.default_value = "ns3::Seconds(0)"
 
     ## classes
     if isinstance(pygccxml_definition, class_t):
