@@ -35,6 +35,9 @@
 #include <fstream>
 #include "ns3/core-module.h"
 #include "ns3/network-module.h"
+#include "ns3/internet-module.h"
+#include "ns3/csma-module.h"
+#include "ns3/applications-module.h"
 #include "ns3/ipv4-click-routing.h"
 #include "ns3/click-internet-stack-helper.h"
 
@@ -72,7 +75,7 @@ main (int argc, char *argv[])
 // Install Click on the nodes
 //
   ClickInternetStackHelper clickinternet;
-  clickinternet.SetClickFile (n, "src/routing/click/examples/nsclick-lan-single-interface.click");
+  clickinternet.SetClickFile (n, "src/click/examples/nsclick-lan-single-interface.click");
   clickinternet.SetRoutingTableElement (n, "rt");
   clickinternet.Install (n);
 

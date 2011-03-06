@@ -27,6 +27,9 @@
 
 #include "ns3/core-module.h"
 #include "ns3/network-module.h"
+#include "ns3/internet-module.h"
+#include "ns3/applications-module.h"
+#include "ns3/wifi-module.h"
 #include "ns3/click-internet-stack-helper.h"
 #include "ns3/log.h"
 #include "ns3/mobility-helper.h"
@@ -101,7 +104,7 @@ int main (int argc, char *argv[])
 
   // Install Click on node A
   ClickInternetStackHelper clickinternet;
-  clickinternet.SetClickFile (wifiNodes.Get (0), "src/routing/click/examples/nsclick-wifi-single-interface.click");
+  clickinternet.SetClickFile (wifiNodes.Get (0), "src/click/examples/nsclick-wifi-single-interface.click");
   clickinternet.SetRoutingTableElement(wifiNodes.Get (0), "rt");
   clickinternet.Install (wifiNodes.Get (0));
 

@@ -32,6 +32,9 @@
 
 #include "ns3/core-module.h"
 #include "ns3/network-module.h"
+#include "ns3/internet-module.h"
+#include "ns3/applications-module.h"
+#include "ns3/csma-module.h"
 #include "ns3/ipv4-click-routing.h"
 #include "ns3/ipv4-l3-click-protocol.h"
 #include "ns3/click-internet-stack-helper.h"
@@ -61,9 +64,9 @@ main (int argc, char *argv[])
 // Install Click on the nodes
 //
   ClickInternetStackHelper clickinternet;
-  clickinternet.SetClickFile (n.Get (0), "src/routing/click/examples/nsclick-routing-node0.click");
-  clickinternet.SetClickFile (n.Get (1), "src/routing/click/examples/nsclick-ip-router.click");
-  clickinternet.SetClickFile (n.Get (2), "src/routing/click/examples/nsclick-routing-node2.click");
+  clickinternet.SetClickFile (n.Get (0), "src/click/examples/nsclick-routing-node0.click");
+  clickinternet.SetClickFile (n.Get (1), "src/click/examples/nsclick-ip-router.click");
+  clickinternet.SetClickFile (n.Get (2), "src/click/examples/nsclick-routing-node2.click");
   clickinternet.SetRoutingTableElement (n.Get (0), "kernel/rt");
   clickinternet.SetRoutingTableElement (n.Get (1), "u/rt");
   clickinternet.SetRoutingTableElement (n.Get (2), "kernel/rt");
