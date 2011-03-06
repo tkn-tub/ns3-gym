@@ -47,7 +47,7 @@ AddClickInternetStack (Ptr<Node> node)
   // Setup Click instance
   Ptr<Ipv4> ipv4 = node->GetObject<Ipv4> ();
   Ptr<Ipv4ClickRouting> click = CreateObject<Ipv4ClickRouting> ();
-  click->SetClickFile ("examples/click/nsclick-lan-single-interface.click");
+  click->SetClickFile ("src/click/examples/nsclick-lan-single-interface.click");
   ipv4->SetRoutingProtocol (click);
 }
 
@@ -200,7 +200,7 @@ ClickTrivialTest::DoRun ()
   NS_TEST_EXPECT_MSG_EQ (ret, 1, "eth0 is ready");
 
   ret = simclick_sim_command (click->m_simNode, SIMCLICK_IF_READY, 2);
-  NS_TEST_EXPECT_MSG_EQ (ret, -1, "eth1 does not exist, so return -1");
+  NS_TEST_EXPECT_MSG_EQ (ret, 0, "eth1 does not exist, so return 0");
 
   delete [] buf;
   ret = 1;

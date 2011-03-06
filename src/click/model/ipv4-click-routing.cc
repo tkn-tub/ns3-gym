@@ -189,6 +189,15 @@ Ipv4ClickRouting::GetInterfaceId (const char *ifname)
         }
     }
 
+  // This protects against a possible inconsistency of having
+  // more interfaces defined in the Click graph
+  // for a Click node than are defined for it in
+  // the simulation script
+  if (retval >= (int) m_ipv4->GetNInterfaces ())
+    {
+      return -1;
+    }
+
   return retval;
 }
 
