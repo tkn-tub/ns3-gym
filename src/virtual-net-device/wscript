@@ -2,7 +2,7 @@
 
 
 def build(bld):
-    module = bld.create_ns3_module('virtual-net-device', ['network'])
+    module = bld.create_ns3_module('virtual-net-device', ['network', 'internet'])
     module.source = [
         'model/virtual-net-device.cc',
         ]
