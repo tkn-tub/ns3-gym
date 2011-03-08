@@ -128,6 +128,12 @@ def ns3_python_bindings(bld):
     if env['BINDINGS_TYPE'] not in ('modular', 'both'):
         return
 
+    if not bld.path.find_dir("bindings"):
+        warnings.warn("(in %s) Requested to build modular python bindings, but apidefs dir not found "
+                      "=> skipped the bindings." % str(bld.path),
+                      Warning, stacklevel=2)
+        return
+
     # this method is called from a module wscript, so remember bld.path is not bindings/python!
     module_abs_src_path = bld.path.abspath()
     module = os.path.basename(module_abs_src_path)
