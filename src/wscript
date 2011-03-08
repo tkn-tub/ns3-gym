@@ -120,9 +120,79 @@ def create_obj(bld, *args):
                   DeprecationWarning, stacklevel=2)
     return bld.new_task_gen(*args)
 
+
+def ns3_python_bindings(bld):
+    env = bld.env
+    if not env['ENABLE_PYTHON_BINDINGS']:
+        return
+    if env['BINDINGS_TYPE'] not in ('modular', 'both'):
+        return
+
+    # this method is called from a module wscript, so remember bld.path is not bindings/python!
+    module_abs_src_path = bld.path.abspath()
+    module = os.path.basename(module_abs_src_path)
+    apidefs = env['PYTHON_BINDINGS_APIDEFS'].replace("-", "_")
+
+    #debug = ('PYBINDGEN_DEBUG' in os.environ)
+    debug = True # XXX
+    source = [bld.srcnode.find_resource('bindings/python/ns3modulegen-modular.py').relpath_gen(bld.path),
+              "bindings/modulegen__%s.py" % apidefs]
+
+    # the local customization file may or not exist
+    if bld.path.find_resource("bindings/modulegen_local.py"):
+        source.append("bindings/modulegen_local.py")
+
+    target = ['bindings/module.cc']
+    #if not debug:
+    #    target.append('ns3modulegen.log')
+
+    argv = ['NS3_ENABLED_FEATURES=${FEATURES}', '${PYTHON}']
+    #if debug:
+    #    argv.extend(["-m", "pdb"])
+    
+    argv.extend(['${SRC[0]}', module_abs_src_path, apidefs, '>', '${TGT[0]}'])
+    #if not debug:
+    #    argv.extend(['2>', '${TGT[2]}']) # 2> ns3modulegen.log
+
+    features = []
+    for (name, caption, was_enabled, reason_not_enabled) in env['NS3_OPTIONAL_FEATURES']:
+        if was_enabled:
+            features.append(name)
+
+    bindgen = bld.new_task_gen('command', source=source, target=target, command=argv)
+    bindgen.env['FEATURES'] = ','.join(features)
+    bindgen.dep_vars = ['FEATURES']
+    bindgen.before = 'cxx'
+    bindgen.after = 'gen_ns3_module_header_task'
+    bindgen.name = "pybindgen(ns3 module %s)" % module
+
+    pymod = bld.new_task_gen(features='cxx cshlib pyext')
+    pymod.source = ['bindings/module.cc']
+    pymod.target = '%s/%s' % (bld.srcnode.find_dir("bindings/python/ns").relpath_gen(bld.path), module)
+    pymod.name = 'ns3module_%s' % module
+    pymod.uselib_local = "ns3"
+    if pymod.env['ENABLE_STATIC_NS3']:
+        if sys.platform == 'darwin':
+            pymod.env.append_value('LINKFLAGS', '-Wl,-all_load')
+            pymod.env.append_value('LINKFLAGS', '-lns3')
+        else:
+            pymod.env.append_value('LINKFLAGS', '-Wl,--whole-archive,-Bstatic')
+            pymod.env.append_value('LINKFLAGS', '-lns3')
+            pymod.env.append_value('LINKFLAGS', '-Wl,-Bdynamic,--no-whole-archive')
+    defines = list(pymod.env['CXXDEFINES'])
+    defines.extend(['NS_DEPRECATED=', 'NS3_DEPRECATED_H'])
+    if Options.platform == 'win32':
+        try:
+            defines.remove('_DEBUG') # causes undefined symbols on win32
+        except ValueError:
+            pass
+    pymod.env['CXXDEFINES'] = defines
+
+
 def build(bld):
     bld.create_ns3_module = types.MethodType(create_ns3_module, bld)
     bld.create_obj = types.MethodType(create_obj, bld)
+    bld.ns3_python_bindings = types.MethodType(ns3_python_bindings, bld)
     
     bld.add_subdirs(list(all_modules))
 

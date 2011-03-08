@@ -271,3 +271,5 @@ def build(bld):
     if env['ENABLE_GSL']:
         core.uselib = core.uselib + ' GSL GSLCBLAS M'
         core.source.extend(['test/rng-test-suite.cc'])
+
+    bld.ns3_python_bindings()
