@@ -4,7 +4,7 @@ def configure(conf):
     pass
 
 def build(bld):
-    ns3wifi = bld.create_ns3_module('ns3wifi')
+    ns3wifi = bld.create_ns3_module('ns3wifi', ['internet', 'mobility', 'propagation', 'wifi', 'applications'])
     ns3wifi.source = [
         'wifi-interference-test-suite.cc',
         'wifi-msdu-aggregator-test-suite.cc',

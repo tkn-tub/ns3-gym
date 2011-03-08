@@ -2,7 +2,7 @@
 
 def build(bld):
 
-    module = bld.create_ns3_module('lte', ['core', 'network', 'spectrum'])
+    module = bld.create_ns3_module('lte', ['core', 'network', 'spectrum', 'wimax'])
     module.source = [
         'model/lte-spectrum-phy.cc',
         'model/enb-lte-spectrum-phy.cc',
