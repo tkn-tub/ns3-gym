@@ -26,80 +26,10 @@ pybindgen.settings.error_handler = ErrorHandler()
 import warnings
 warnings.filterwarnings(category=WrapperWarning, action='ignore')
 
-type_annotations = {
-    '::ns3::AttributeChecker': {
-        'automatic_type_narrowing': 'true',
-        'allow_subclassing': 'false',
-        },
-    '::ns3::AttributeValue': {
-        'automatic_type_narrowing': 'true',
-        'allow_subclassing': 'false',
-        },
 
-    '::ns3::CommandLine': {
-        'allow_subclassing': 'true', # needed so that AddValue is able to set attributes on the object
-        },
+import ns3modulescan
+type_annotations = ns3modulescan.type_annotations
 
-    '::ns3::NscTcpL4Protocol': {
-        'ignore': 'true', # this class is implementation detail
-        },
-
-
-    'ns3::RandomVariable::RandomVariable(ns3::RandomVariableBase const & variable) [constructor]': {
-        'ignore': None,
-        },
-    'ns3::RandomVariableBase * ns3::RandomVariable::Peek() const [member function]': {
-        'ignore': None,
-        },
-    'void ns3::RandomVariable::GetSeed(uint32_t * seed) const [member function]': {
-        'params': {'seed':{'direction':'out',
-                           'array_length':'6'}}
-        },
-    'bool ns3::TypeId::LookupAttributeByName(std::string name, ns3::TypeId::AttributeInfo * info) const [member function]': {
-        'params': {'info':{'transfer_ownership': 'false'}}
-        },
-    'static bool ns3::TypeId::LookupByNameFailSafe(std::string name, ns3::TypeId * tid) [member function]': {
-        'ignore': None, # manually wrapped in 
-        },
-    'bool ns3::TraceSourceAccessor::ConnectWithoutContext(ns3::ObjectBase * obj, ns3::CallbackBase const & cb) const [member function]': {
-        'params': {'obj': {'transfer_ownership':'false'}}
-        },
-    'bool ns3::TraceSourceAccessor::Connect(ns3::ObjectBase * obj, std::string context, ns3::CallbackBase const & cb) const [member function]': {
-        'params': {'obj': {'transfer_ownership':'false'}}
-        },
-    'bool ns3::TraceSourceAccessor::DisconnectWithoutContext(ns3::ObjectBase * obj, ns3::CallbackBase const & cb) const [member function]': {
-        'params': {'obj': {'transfer_ownership':'false'}}
-        },
-    'bool ns3::TraceSourceAccessor::Disconnect(ns3::ObjectBase * obj, std::string context, ns3::CallbackBase const & cb) const [member function]': {
-        'params': {'obj': {'transfer_ownership':'false'}}
-        },
-    'bool ns3::AttributeAccessor::Set(ns3::ObjectBase * object, ns3::AttributeValue const & value) const [member function]': {
-        'params': {'object': {'transfer_ownership':'false'}}
-        },
-    'ns3::EmpiricalVariable::EmpiricalVariable(ns3::RandomVariableBase const & variable) [constructor]': {
-        'ignore': None
-        },
-    'static ns3::AttributeList * ns3::AttributeList::GetGlobal() [member function]': {
-        'caller_owns_return': 'false'
-        },
-    'void ns3::CommandLine::Parse(int argc, char * * argv) const [member function]': {
-        'ignore': None # manually wrapped
-        },
-    'extern void ns3::PythonCompleteConstruct(ns3::Ptr<ns3::Object> object, ns3::TypeId typeId, ns3::AttributeList const & attributes) [free function]': {
-        'ignore': None # used transparently by, should not be wrapped
-        },
-
-    'ns3::Ptr<ns3::Ipv4RoutingProtocol> ns3::Ipv4ListRouting::GetRoutingProtocol(uint32_t index, int16_t & priority) const [member function]': {
-        'params': {'priority':{'direction':'out'}}
-        },
-    'ns3::Ipv4RoutingTableEntry * ns3::GlobalRouter::GetInjectedRoute(uint32_t i) [member function]': {
-        'params': {'return': { 'caller_owns_return': 'false',}},
-        },
-    'ns3::Ipv4RoutingTableEntry * ns3::Ipv4GlobalRouting::GetRoute(uint32_t i) [member function]': {
-        'params': {'return': { 'caller_owns_return': 'false',}},
-        },
-    
-    }
 
 def get_ns3_relative_path(path):
     l = []
