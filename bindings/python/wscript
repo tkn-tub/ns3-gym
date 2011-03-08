@@ -52,9 +52,11 @@ def set_pybindgen_pythonpath(env):
 
 def set_options(opt):
     opt.tool_options('python')
+    c = ("monolithic", "modular", "both")
     opt.add_option('--bindings-type', type="choice",
-                   choices=("monolithic", "modular", "both"),
-                   help=("Type of Python bindings to build"),
+                   choices=c,
+                   help=("Type of Python bindings to build %r.  "
+                         "Warning: the modular bindings are still experimental." % (c,)),
                    default="monolithic",
                    dest='bindings_type')
     opt.add_option('--disable-python',
