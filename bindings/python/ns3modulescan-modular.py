@@ -271,6 +271,10 @@ def ns3_module_scan(top_builddir, module_name, headers_map, output_file_name, cf
         os.unlink(output_file_name)
     except OSError:
         pass
+    try:
+        os.makedirs(os.path.dirname(output_file_name))
+    except OSError:
+        pass
     output_file = open(output_file_name, "wt")
     output_sink = FileCodeSink(output_file)
     module_parser.parse_init([os.path.join(top_builddir, "ns3", "%s-module.h" % module_name)],
