@@ -92,8 +92,10 @@ class PreScanHook:
             for arg in pygccxml_definition.arguments:
                 if arg.default_value is None:
                     continue
-                if "ns3::MilliSeconds( )" == arg.default_value:
+                elif arg.default_value == "ns3::MilliSeconds( )":
                     arg.default_value = "ns3::MilliSeconds(0)"
+                elif arg.default_value == "ns3::Seconds( )":
+                    arg.default_value = "ns3::Seconds(0)"
 
         ## classes
         if isinstance(pygccxml_definition, class_t):
