@@ -4,7 +4,7 @@ def build(bld):
     obj = bld.create_ns3_program('hello-simulator', ['core'])
     obj.source = 'hello-simulator.cc'
         
-    obj = bld.create_ns3_program('first', ['core', 'point-to-point', 'internet'])
+    obj = bld.create_ns3_program('first', ['core', 'point-to-point', 'internet', 'applications'])
     obj.source = 'first.cc'
         
     obj = bld.create_ns3_program('second', ['core', 'point-to-point', 'csma', 'internet'])
@@ -16,8 +16,8 @@ def build(bld):
     obj = bld.create_ns3_program('fourth', ['core'])
     obj.source = 'fourth.cc'
 
-    obj = bld.create_ns3_program('fifth', ['core', 'point-to-point', 'internet'])
+    obj = bld.create_ns3_program('fifth', ['core', 'point-to-point', 'internet', 'applications'])
     obj.source = 'fifth.cc'
 
-    obj = bld.create_ns3_program('sixth', ['core', 'point-to-point', 'internet'])
+    obj = bld.create_ns3_program('sixth', ['core', 'point-to-point', 'internet', 'applications'])
     obj.source = 'sixth.cc'

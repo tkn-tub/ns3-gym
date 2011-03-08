@@ -6,23 +6,23 @@ def build(bld):
     obj.source = 'dynamic-global-routing.cc'
 
     obj = bld.create_ns3_program('static-routing-slash32',
-                                 ['point-to-point', 'internet'])
+                                 ['point-to-point', 'csma', 'internet'])
     obj.source = 'static-routing-slash32.cc'
 
     obj = bld.create_ns3_program('global-routing-slash32',
-                                 ['point-to-point', 'internet'])
+                                 ['point-to-point', 'csma', 'internet'])
     obj.source = 'global-routing-slash32.cc'
 
     obj = bld.create_ns3_program('global-injection-slash32',
-                                 ['point-to-point', 'internet'])
+                                 ['point-to-point', 'csma', 'internet'])
     obj.source = 'global-injection-slash32.cc'
 
     obj = bld.create_ns3_program('simple-global-routing',
-                                 ['point-to-point', 'internet'])
+                                 ['point-to-point', 'internet', 'applications', 'flow-monitor'])
     obj.source = 'simple-global-routing.cc'
 
     obj = bld.create_ns3_program('simple-alternate-routing',
-                                 ['point-to-point', 'internet'])
+                                 ['point-to-point', 'internet', 'applications'])
     obj.source = 'simple-alternate-routing.cc'
 
     obj = bld.create_ns3_program( 'mixed-global-routing',
