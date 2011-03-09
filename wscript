@@ -28,7 +28,7 @@ import Build
 import Configure
 import Scripting
 
-from util import read_config_file
+from wutils import read_config_file
 
 # By default, all modules will be enabled.
 modules_enabled = ['all_modules']
