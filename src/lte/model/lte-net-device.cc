@@ -30,7 +30,7 @@
 #include "ns3/trace-source-accessor.h"
 #include "ns3/pointer.h"
 #include "ns3/enum.h"
-#include "amc-module.h"
+#include "lte-amc.h"
 #include "ns3/ipv4-header.h"
 #include <ns3/lte-mac-tag.h>
 

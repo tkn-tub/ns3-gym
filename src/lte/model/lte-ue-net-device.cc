@@ -31,46 +31,46 @@
 #include "ns3/trace-source-accessor.h"
 #include "ns3/pointer.h"
 #include "ns3/enum.h"
-#include "enb-net-device.h"
-#include "ue-net-device.h"
+#include "lte-enb-net-device.h"
+#include "lte-ue-net-device.h"
 #include "lte-ue-mac.h"
 #include "lte-ue-rrc.h"
 #include "ns3/ipv4-header.h"
 #include "ns3/ipv4.h"
-#include "amc-module.h"
+#include "lte-amc.h"
 // #include "ideal-control-messages.h"
-#include <ns3/ue-phy.h>
+#include <ns3/lte-ue-phy.h>
 
-NS_LOG_COMPONENT_DEFINE ("UeNetDevice");
+NS_LOG_COMPONENT_DEFINE ("LteUeNetDevice");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED ( UeNetDevice);
+NS_OBJECT_ENSURE_REGISTERED ( LteUeNetDevice);
 
 
-TypeId UeNetDevice::GetTypeId (void)
+TypeId LteUeNetDevice::GetTypeId (void)
 {
   static TypeId
   tid =
-    TypeId ("ns3::UeNetDevice")
+    TypeId ("ns3::LteUeNetDevice")
     .SetParent<LteNetDevice> ();
   return tid;
 }
 
 
-UeNetDevice::UeNetDevice (void)
+LteUeNetDevice::LteUeNetDevice (void)
 {
   NS_LOG_FUNCTION (this);
   NS_FATAL_ERROR ("This constructor should not be called");
-  InitUeNetDevice ();
+  InitLteUeNetDevice ();
 }
 
 
-UeNetDevice::UeNetDevice (Ptr<Node> node, Ptr<UeLtePhy> phy)
+LteUeNetDevice::LteUeNetDevice (Ptr<Node> node, Ptr<LteUePhy> phy)
   : m_phy (phy)
 {
   NS_LOG_FUNCTION (this);
-  InitUeNetDevice ();
+  InitLteUeNetDevice ();
   SetNode (node);
 
   /**
@@ -80,13 +80,13 @@ UeNetDevice::UeNetDevice (Ptr<Node> node, Ptr<UeLtePhy> phy)
   phy->DoSetBandwidth (25,25);
 }
 
-UeNetDevice::~UeNetDevice (void)
+LteUeNetDevice::~LteUeNetDevice (void)
 {
   NS_LOG_FUNCTION (this);
 }
 
 void
-UeNetDevice::DoDispose (void)
+LteUeNetDevice::DoDispose (void)
 {
   NS_LOG_FUNCTION (this);
   m_targetEnb = 0;
@@ -100,7 +100,7 @@ UeNetDevice::DoDispose (void)
 }
 
 void
-UeNetDevice::InitUeNetDevice (void)
+LteUeNetDevice::InitLteUeNetDevice (void)
 {
   NS_LOG_FUNCTION (this);
   m_targetEnb = 0;
@@ -117,7 +117,7 @@ UeNetDevice::InitUeNetDevice (void)
 
 
 Ptr<LteUeMac>
-UeNetDevice::GetMac (void)
+LteUeNetDevice::GetMac (void)
 {
   NS_LOG_FUNCTION (this);
   return m_mac;
@@ -125,30 +125,30 @@ UeNetDevice::GetMac (void)
 
 
 Ptr<LteUeRrc>
-UeNetDevice::GetRrc (void)
+LteUeNetDevice::GetRrc (void)
 {
   NS_LOG_FUNCTION (this);
   return m_rrc;
 }
 
 
-Ptr<UeLtePhy>
-UeNetDevice::GetPhy (void) const
+Ptr<LteUePhy>
+LteUeNetDevice::GetPhy (void) const
 {
   NS_LOG_FUNCTION (this);
   return m_phy;
 }
 
 void
-UeNetDevice::SetTargetEnb (Ptr<EnbNetDevice> enb)
+LteUeNetDevice::SetTargetEnb (Ptr<LteEnbNetDevice> enb)
 {
   NS_LOG_FUNCTION (this << enb);
   m_targetEnb = enb;
 }
 
 
-Ptr<EnbNetDevice>
-UeNetDevice::GetTargetEnb (void)
+Ptr<LteEnbNetDevice>
+LteUeNetDevice::GetTargetEnb (void)
 {
   NS_LOG_FUNCTION (this);
   return m_targetEnb;
@@ -156,7 +156,7 @@ UeNetDevice::GetTargetEnb (void)
 
 
 bool
-UeNetDevice::DoSend (Ptr<Packet> packet, const Mac48Address& source,
+LteUeNetDevice::DoSend (Ptr<Packet> packet, const Mac48Address& source,
                      const Mac48Address& dest, uint16_t protocolNumber)
 {
   NS_LOG_FUNCTION (this);
@@ -168,7 +168,7 @@ UeNetDevice::DoSend (Ptr<Packet> packet, const Mac48Address& source,
 
 
 void
-UeNetDevice::DoReceive (Ptr<Packet> p)
+LteUeNetDevice::DoReceive (Ptr<Packet> p)
 {
   NS_LOG_FUNCTION (this << p);
 

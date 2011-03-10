@@ -34,8 +34,8 @@
 namespace ns3 {
 
 
-class UeLtePhy;
-class EnbLtePhy;
+class LteUePhy;
+class LteEnbPhy;
 class SpectrumChannel;
 
 

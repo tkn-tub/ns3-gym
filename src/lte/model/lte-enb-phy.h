@@ -26,7 +26,7 @@
 #include "lte-phy.h"
 #include <ns3/lte-enb-phy-sap.h>
 #include <map>
-#include <ns3/ue-phy.h>
+#include <ns3/lte-ue-phy.h>
 
 namespace ns3 {
 
@@ -34,22 +34,22 @@ class PacketBurst;
 class LteNetDevice;
 
 /**
- * EnbLtePhy models the physical layer for the eNodeB
+ * LteEnbPhy models the physical layer for the eNodeB
  */
-class EnbLtePhy : public LtePhy
+class LteEnbPhy : public LtePhy
 {
 
   friend class EnbMemberLteEnbPhySapProvider;
 
 public:
-  EnbLtePhy ();
+  LteEnbPhy ();
 
   /**
    * \brief Create the eNB phy layer
    * \param d the device where the phy layer is attached
    */
-  EnbLtePhy (Ptr<LteNetDevice> d);
-  virtual ~EnbLtePhy ();
+  LteEnbPhy (Ptr<LteNetDevice> d);
+  virtual ~LteEnbPhy ();
 
   static TypeId GetTypeId (void);
 
@@ -102,7 +102,7 @@ public:
 
   void DoSendIdealControlMessage (Ptr<IdealControlMessage> msg);
 
-  bool AddUePhy (uint8_t rnti, Ptr<UeLtePhy> phy);
+  bool AddUePhy (uint8_t rnti, Ptr<LteUePhy> phy);
 
   bool DeleteUePhy (uint8_t rnti);
 
@@ -134,7 +134,7 @@ public:
   
 
 private:
-  std::map <uint8_t, Ptr<UeLtePhy> > m_ueAttached;
+  std::map <uint8_t, Ptr<LteUePhy> > m_ueAttached;
 
   LteEnbPhySapProvider* m_enbPhySapProvider;
   LteEnbPhySapUser* m_enbPhySapUser;
@@ -146,4 +146,4 @@ private:
 
 }
 
-#endif /* ENB_PHY_H */
+#endif /* LTE_ENB_PHY_H */

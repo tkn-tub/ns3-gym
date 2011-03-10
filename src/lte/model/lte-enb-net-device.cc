@@ -31,53 +31,53 @@
 #include "ns3/trace-source-accessor.h"
 #include "ns3/pointer.h"
 #include "ns3/enum.h"
-#include "amc-module.h"
+#include "lte-amc.h"
 #include "lte-enb-mac.h"
-#include "enb-net-device.h"
+#include "lte-enb-net-device.h"
 #include "lte-enb-rrc.h"
-#include "ue-net-device.h"
-#include "enb-phy.h"
+#include "lte-ue-net-device.h"
+#include "lte-enb-phy.h"
 #include "rr-ff-mac-scheduler.h"
 
-NS_LOG_COMPONENT_DEFINE ("EnbNetDevice");
+NS_LOG_COMPONENT_DEFINE ("LteEnbNetDevice");
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED ( EnbNetDevice);
+NS_OBJECT_ENSURE_REGISTERED ( LteEnbNetDevice);
 
-uint16_t EnbNetDevice::m_cellIdCounter = 0;
+uint16_t LteEnbNetDevice::m_cellIdCounter = 0;
 
-TypeId EnbNetDevice::GetTypeId (void)
+TypeId LteEnbNetDevice::GetTypeId (void)
 {
   static TypeId
   tid =
-    TypeId ("ns3::EnbNetDevice")
+    TypeId ("ns3::LteEnbNetDevice")
     .SetParent<LteNetDevice> ();
   return tid;
 }
 
-EnbNetDevice::EnbNetDevice (void)
+LteEnbNetDevice::LteEnbNetDevice (void)
 {
   NS_LOG_FUNCTION (this);
   NS_FATAL_ERROR ("This constructor should not be called");
-  InitEnbNetDevice ();
+  InitLteEnbNetDevice ();
 }
 
-EnbNetDevice::EnbNetDevice (Ptr<Node> node, Ptr<EnbLtePhy> phy)
+LteEnbNetDevice::LteEnbNetDevice (Ptr<Node> node, Ptr<LteEnbPhy> phy)
   : m_phy (phy)
 {
   NS_LOG_FUNCTION (this);
-  InitEnbNetDevice ();
+  InitLteEnbNetDevice ();
   SetNode (node);
 }
 
-EnbNetDevice::~EnbNetDevice (void)
+LteEnbNetDevice::~LteEnbNetDevice (void)
 {
   NS_LOG_FUNCTION (this);
 }
 
 void
-EnbNetDevice::DoDispose ()
+LteEnbNetDevice::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -95,7 +95,7 @@ EnbNetDevice::DoDispose ()
 
 
 void
-EnbNetDevice::InitEnbNetDevice (void)
+LteEnbNetDevice::InitLteEnbNetDevice (void)
 {
   NS_LOG_FUNCTION (this);
 
@@ -122,31 +122,31 @@ EnbNetDevice::InitEnbNetDevice (void)
   m_scheduler->SetFfMacSchedSapUser (m_mac->GetFfMacSchedSapUser ());
   m_scheduler->SetFfMacCschedSapUser (m_mac->GetFfMacCschedSapUser ());
 
-  GetPhy ()->GetObject<EnbLtePhy> ()->SetLteEnbPhySapUser (m_mac->GetLteEnbPhySapUser ());
-  m_mac->SetLteEnbPhySapProvider (GetPhy ()->GetObject<EnbLtePhy> ()->GetLteEnbPhySapProvider ());
+  GetPhy ()->GetObject<LteEnbPhy> ()->SetLteEnbPhySapUser (m_mac->GetLteEnbPhySapUser ());
+  m_mac->SetLteEnbPhySapProvider (GetPhy ()->GetObject<LteEnbPhy> ()->GetLteEnbPhySapProvider ());
 
   m_rrc->ConfigureCell (25, 25);
   NS_ASSERT_MSG (m_cellIdCounter < 65535, "max num eNBs exceeded");
   m_cellId = ++m_cellIdCounter;
 
   // WILD HACK -  should use the PHY SAP instead. Probably should handle this through the RRC
-  GetPhy ()->GetObject<EnbLtePhy> ()->DoSetBandwidth (25,25);
-  GetPhy ()->GetObject<EnbLtePhy> ()->DoSetCellId (m_cellId);
+  GetPhy ()->GetObject<LteEnbPhy> ()->DoSetBandwidth (25,25);
+  GetPhy ()->GetObject<LteEnbPhy> ()->DoSetCellId (m_cellId);
   
-  Simulator::ScheduleNow (&EnbLtePhy::StartFrame, GetPhy ()->GetObject<EnbLtePhy> ());
+  Simulator::ScheduleNow (&LteEnbPhy::StartFrame, GetPhy ()->GetObject<LteEnbPhy> ());
 }
 
 
 Ptr<LteEnbMac>
-EnbNetDevice::GetMac (void)
+LteEnbNetDevice::GetMac (void)
 {
   NS_LOG_FUNCTION (this);
   return m_mac;
 }
 
 
-Ptr<EnbLtePhy>
-EnbNetDevice::GetPhy (void) const
+Ptr<LteEnbPhy>
+LteEnbNetDevice::GetPhy (void) const
 {
   NS_LOG_FUNCTION (this);
   return m_phy;
@@ -154,7 +154,7 @@ EnbNetDevice::GetPhy (void) const
 
 
 bool
-EnbNetDevice::DoSend (Ptr<Packet> packet, const Mac48Address& source,
+LteEnbNetDevice::DoSend (Ptr<Packet> packet, const Mac48Address& source,
                       const Mac48Address& dest, uint16_t protocolNumber)
 {
   NS_LOG_FUNCTION (this << source << dest << protocolNumber);
@@ -184,7 +184,7 @@ EnbNetDevice::DoSend (Ptr<Packet> packet, const Mac48Address& source,
 
 
 void
-EnbNetDevice::DoReceive (Ptr<Packet> p)
+LteEnbNetDevice::DoReceive (Ptr<Packet> p)
 {
   NS_LOG_FUNCTION (this << p);
   ForwardUp (p->Copy ());
@@ -192,7 +192,7 @@ EnbNetDevice::DoReceive (Ptr<Packet> p)
 
 
 void
-EnbNetDevice::SendIdealPdcchMessage (void)
+LteEnbNetDevice::SendIdealPdcchMessage (void)
 {
   NS_LOG_FUNCTION (this);
   /*
@@ -203,13 +203,13 @@ EnbNetDevice::SendIdealPdcchMessage (void)
 }
 
 Ptr<LteEnbRrc>
-EnbNetDevice::GetRrc ()
+LteEnbNetDevice::GetRrc ()
 {
   return m_rrc;
 }
 
 uint16_t
-EnbNetDevice::GetCellId ()
+LteEnbNetDevice::GetCellId ()
 {
   return m_cellId;
 }

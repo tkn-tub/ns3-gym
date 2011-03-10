@@ -30,14 +30,14 @@ namespace ns3 {
 class SpectrumValue;
 
 /**
- * \brief The AmcModule class implements the Adaptive Modulation And Coding Scheme
+ * \brief The LteAmc class implements the Adaptive Modulation And Coding Scheme
  * as proposed in 3GPP TSG-RAN WG1 - R1-081483
  * http://www.3gpp.org/ftp/tsg_ran/WG1_RL1/TSGR1_52b/Docs/R1-081483.zip
  *
  * \note All the methods of this class are static, so you'll never
  * need to create and manage instances of this class.
  */
-class AmcModule
+class LteAmc
 {
 
 public:

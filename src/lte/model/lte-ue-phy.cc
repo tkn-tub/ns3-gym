@@ -25,19 +25,19 @@
 #include <math.h>
 #include <ns3/simulator.h>
 #include <ns3/spectrum-error-model.h>
-#include "ue-phy.h"
-#include "enb-phy.h"
+#include "lte-ue-phy.h"
+#include "lte-enb-phy.h"
 #include "lte-net-device.h"
-#include "ue-net-device.h"
-#include "enb-net-device.h"
+#include "lte-ue-net-device.h"
+#include "lte-enb-net-device.h"
 #include "lte-spectrum-value-helper.h"
-#include "amc-module.h"
+#include "lte-amc.h"
 #include "lte-ue-mac.h"
 #include "ff-mac-common.h"
 #include "lte-sinr-chunk-processor.h"
 
 
-NS_LOG_COMPONENT_DEFINE ("UeLtePhy");
+NS_LOG_COMPONENT_DEFINE ("LteUePhy");
 
 namespace ns3 {
 
@@ -46,10 +46,10 @@ namespace ns3 {
 ////////////////////////////////////////
 
 
-class UeMemberUeLtePhySapProvider : public LteUePhySapProvider
+class UeMemberLteUePhySapProvider : public LteUePhySapProvider
 {
 public:
-  UeMemberUeLtePhySapProvider (UeLtePhy* phy);
+  UeMemberLteUePhySapProvider (LteUePhy* phy);
 
   // inherited from LtePhySapProvider
   virtual void SendMacPdu (Ptr<Packet> p);
@@ -57,29 +57,29 @@ public:
   virtual void SendIdealControlMessage (Ptr<IdealControlMessage> msg);
 
 private:
-  UeLtePhy* m_phy;
+  LteUePhy* m_phy;
 };
 
-UeMemberUeLtePhySapProvider::UeMemberUeLtePhySapProvider (UeLtePhy* phy) : m_phy (phy)
+UeMemberLteUePhySapProvider::UeMemberLteUePhySapProvider (LteUePhy* phy) : m_phy (phy)
 {
 
 }
 
 
 void
-UeMemberUeLtePhySapProvider::SendMacPdu (Ptr<Packet> p)
+UeMemberLteUePhySapProvider::SendMacPdu (Ptr<Packet> p)
 {
   m_phy->DoSendMacPdu (p);
 }
 
 void
-UeMemberUeLtePhySapProvider::SetBandwidth (uint8_t ulBandwidth, uint8_t dlBandwidth)
+UeMemberLteUePhySapProvider::SetBandwidth (uint8_t ulBandwidth, uint8_t dlBandwidth)
 {
   m_phy->DoSetBandwidth (ulBandwidth, dlBandwidth);
 }
 
 void
-UeMemberUeLtePhySapProvider::SendIdealControlMessage (Ptr<IdealControlMessage> msg)
+UeMemberLteUePhySapProvider::SendIdealControlMessage (Ptr<IdealControlMessage> msg)
 {
   m_phy->DoSendIdealControlMessage (msg);
 }
@@ -87,58 +87,58 @@ UeMemberUeLtePhySapProvider::SendIdealControlMessage (Ptr<IdealControlMessage> m
 
 
 ////////////////////////////////////////
-// generic UeLtePhy methods
+// generic LteUePhy methods
 ////////////////////////////////////////
 
 
-NS_OBJECT_ENSURE_REGISTERED (UeLtePhy);
+NS_OBJECT_ENSURE_REGISTERED (LteUePhy);
 
 
-UeLtePhy::UeLtePhy ()
+LteUePhy::LteUePhy ()
   : m_p10CqiPeriocity (MilliSeconds (2)),    
     m_p10CqiLast (MilliSeconds (0))
 {
-  m_uePhySapProvider = new UeMemberUeLtePhySapProvider (this);
+  m_uePhySapProvider = new UeMemberLteUePhySapProvider (this);
 }
 
 
-UeLtePhy::~UeLtePhy ()
+LteUePhy::~LteUePhy ()
 {
 }
 
 void
-UeLtePhy::DoDispose ()
+LteUePhy::DoDispose ()
 {
 }
   
 
 
 TypeId
-UeLtePhy::GetTypeId (void)
+LteUePhy::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::UeLtePhy")
+  static TypeId tid = TypeId ("ns3::LteUePhy")
     .SetParent<LtePhy> ()
-    .AddConstructor<UeLtePhy> ()
+    .AddConstructor<LteUePhy> ()
   ;
   return tid;
 }
 
 
 void
-UeLtePhy::SetLteUePhySapUser (LteUePhySapUser* s)
+LteUePhy::SetLteUePhySapUser (LteUePhySapUser* s)
 {
   m_uePhySapUser = s;
 }
 
 LteUePhySapProvider*
-UeLtePhy::GetLteUePhySapProvider ()
+LteUePhy::GetLteUePhySapProvider ()
 {
   return (m_uePhySapProvider);
 }
 
 
 void
-UeLtePhy::DoSendMacPdu (Ptr<Packet> p)
+LteUePhy::DoSendMacPdu (Ptr<Packet> p)
 {
   NS_LOG_FUNCTION (this);
 
@@ -147,13 +147,13 @@ UeLtePhy::DoSendMacPdu (Ptr<Packet> p)
 
 
 void
-UeLtePhy::PhyPduReceived (Ptr<Packet> p)
+LteUePhy::PhyPduReceived (Ptr<Packet> p)
 {
   m_uePhySapUser->ReceivePhyPdu (p);
 }
 
 void
-UeLtePhy::DoSetUplinkSubChannels ()
+LteUePhy::DoSetUplinkSubChannels ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -166,7 +166,7 @@ UeLtePhy::DoSetUplinkSubChannels ()
 
 
 void
-UeLtePhy::SetSubChannelsForTransmission (std::vector <int> mask)
+LteUePhy::SetSubChannelsForTransmission (std::vector <int> mask)
 {
   NS_LOG_FUNCTION (this);
 
@@ -178,7 +178,7 @@ UeLtePhy::SetSubChannelsForTransmission (std::vector <int> mask)
 
 
 void
-UeLtePhy::SetSubChannelsForReception (std::vector <int> mask)
+LteUePhy::SetSubChannelsForReception (std::vector <int> mask)
 {
   NS_LOG_FUNCTION (this);
   m_subChannelsForReception = mask;
@@ -186,7 +186,7 @@ UeLtePhy::SetSubChannelsForReception (std::vector <int> mask)
 
 
 std::vector <int>
-UeLtePhy::GetSubChannelsForTransmission ()
+LteUePhy::GetSubChannelsForTransmission ()
 {
   NS_LOG_FUNCTION (this);
   return m_subChannelsForTransmission;
@@ -194,7 +194,7 @@ UeLtePhy::GetSubChannelsForTransmission ()
 
 
 std::vector <int>
-UeLtePhy::GetSubChannelsForReception ()
+LteUePhy::GetSubChannelsForReception ()
 {
   NS_LOG_FUNCTION (this);
   return m_subChannelsForReception;
@@ -202,7 +202,7 @@ UeLtePhy::GetSubChannelsForReception ()
 
 
 Ptr<SpectrumValue>
-UeLtePhy::CreateTxPowerSpectralDensity ()
+LteUePhy::CreateTxPowerSpectralDensity ()
 {
   NS_LOG_FUNCTION (this);
   LteSpectrumValueHelper psdHelper;
@@ -212,12 +212,12 @@ UeLtePhy::CreateTxPowerSpectralDensity ()
 }
 
 void
-UeLtePhy::GenerateCqiFeedback (const SpectrumValue& sinr)
+LteUePhy::GenerateCqiFeedback (const SpectrumValue& sinr)
 {
   NS_LOG_FUNCTION (this);
   if (Simulator::Now () > m_p10CqiLast + m_p10CqiPeriocity)
     {
-      Ptr<UeNetDevice> thisDevice = GetDevice ()->GetObject<UeNetDevice> ();
+      Ptr<LteUeNetDevice> thisDevice = GetDevice ()->GetObject<LteUeNetDevice> ();
       Ptr<DlCqiIdealControlMessage> msg = CreateDlCqiFeedbackMessage (sinr);
       DoSendIdealControlMessage (msg);
       m_p10CqiLast = Simulator::Now ();
@@ -227,11 +227,11 @@ UeLtePhy::GenerateCqiFeedback (const SpectrumValue& sinr)
 
 
 Ptr<DlCqiIdealControlMessage>
-UeLtePhy::CreateDlCqiFeedbackMessage (const SpectrumValue& sinr)
+LteUePhy::CreateDlCqiFeedbackMessage (const SpectrumValue& sinr)
 {
   NS_LOG_FUNCTION (this);
 
-  std::vector<int> cqi = AmcModule::CreateCqiFeedbacks (sinr);
+  std::vector<int> cqi = LteAmc::CreateCqiFeedbacks (sinr);
 
   // CREATE CqiIdealControlMessage
   Ptr<DlCqiIdealControlMessage> msg = Create<DlCqiIdealControlMessage> ();
@@ -257,11 +257,11 @@ UeLtePhy::CreateDlCqiFeedbackMessage (const SpectrumValue& sinr)
 
 
 void
-UeLtePhy::DoSendIdealControlMessage (Ptr<IdealControlMessage> msg)
+LteUePhy::DoSendIdealControlMessage (Ptr<IdealControlMessage> msg)
 {
   NS_LOG_FUNCTION (this << msg);
-  Ptr<UeNetDevice> thisDevice = GetDevice ()->GetObject<UeNetDevice> ();
-  Ptr<EnbNetDevice> remoteDevice = thisDevice->GetTargetEnb ();
+  Ptr<LteUeNetDevice> thisDevice = GetDevice ()->GetObject<LteUeNetDevice> ();
+  Ptr<LteEnbNetDevice> remoteDevice = thisDevice->GetTargetEnb ();
   msg->SetSourceDevice (thisDevice);
   msg->SetDestinationDevice (remoteDevice);
   SetControlMessages (msg);
@@ -271,7 +271,7 @@ UeLtePhy::DoSendIdealControlMessage (Ptr<IdealControlMessage> msg)
 
 
 void
-UeLtePhy::ReceiveIdealControlMessage (Ptr<IdealControlMessage> msg)
+LteUePhy::ReceiveIdealControlMessage (Ptr<IdealControlMessage> msg)
 {
   NS_LOG_FUNCTION (this << msg);
 
@@ -333,7 +333,7 @@ UeLtePhy::ReceiveIdealControlMessage (Ptr<IdealControlMessage> msg)
 
 
 void
-UeLtePhy::SubframeIndication (uint32_t frameNo, uint32_t subframeNo)
+LteUePhy::SubframeIndication (uint32_t frameNo, uint32_t subframeNo)
 {
   // trigger from eNB
   
@@ -341,7 +341,7 @@ UeLtePhy::SubframeIndication (uint32_t frameNo, uint32_t subframeNo)
   std::list<Ptr<IdealControlMessage> > ctrlMsg = GetControlMessages ();
   if (ctrlMsg.size () > 0)
     {
-      Ptr<LtePhy> phy = GetDevice ()->GetObject<UeNetDevice> ()->GetTargetEnb ()->GetPhy ();
+      Ptr<LtePhy> phy = GetDevice ()->GetObject<LteUeNetDevice> ()->GetTargetEnb ()->GetPhy ();
       std::list<Ptr<IdealControlMessage> >::iterator it;
       it = ctrlMsg.begin ();
       while (it != ctrlMsg.end ())
@@ -365,7 +365,7 @@ UeLtePhy::SubframeIndication (uint32_t frameNo, uint32_t subframeNo)
 
 
 void
-UeLtePhy::SetTargetEnb (Ptr<EnbLtePhy> enbPhy)
+LteUePhy::SetTargetEnb (Ptr<LteEnbPhy> enbPhy)
 {
   m_targetEnbPhy = enbPhy;
 }
@@ -373,7 +373,7 @@ UeLtePhy::SetTargetEnb (Ptr<EnbLtePhy> enbPhy)
 
 
 void
-UeLtePhy::SetRnti (uint16_t rnti)
+LteUePhy::SetRnti (uint16_t rnti)
 {
   NS_LOG_FUNCTION (this << rnti);
   m_rnti = rnti;

@@ -24,14 +24,14 @@
 #include <ns3/pointer.h>
 #include <ns3/packet.h>
 
-#include "amc-module.h"
+#include "lte-amc.h"
 #include "ideal-control-messages.h"
-#include "enb-net-device.h"
-#include "ue-net-device.h"
+#include "lte-enb-net-device.h"
+#include "lte-ue-net-device.h"
 
 #include <ns3/lte-enb-mac.h>
 #include <ns3/lte-mac-tag.h>
-#include <ns3/ue-phy.h>
+#include <ns3/lte-ue-phy.h>
 
 
 NS_LOG_COMPONENT_DEFINE ("LteEnbMac");
@@ -255,12 +255,12 @@ EnbMemberFfMacCschedSapUser::CschedCellConfigUpdateInd (const struct CschedCellC
 // ---------- PHY-SAP
 
 
-class EnbMemberEnbLtePhySapUser : public LteEnbPhySapUser
+class EnbMemberLteEnbPhySapUser : public LteEnbPhySapUser
 {
 public:
-  EnbMemberEnbLtePhySapUser (LteEnbMac* mac);
+  EnbMemberLteEnbPhySapUser (LteEnbMac* mac);
 
-  // inherited from EnbLtePhySapUser
+  // inherited from LteEnbPhySapUser
   virtual void ReceivePhyPdu (Ptr<Packet> p);
   virtual void SubframeIndication (uint32_t frameNo, uint32_t subframeNo);
   virtual void ReceiveIdealControlMessage (Ptr<IdealControlMessage> msg);
@@ -269,25 +269,25 @@ private:
   LteEnbMac* m_mac;
 };
 
-EnbMemberEnbLtePhySapUser::EnbMemberEnbLtePhySapUser (LteEnbMac* mac) : m_mac (mac)
+EnbMemberLteEnbPhySapUser::EnbMemberLteEnbPhySapUser (LteEnbMac* mac) : m_mac (mac)
 {
 }
 
 
 void
-EnbMemberEnbLtePhySapUser::ReceivePhyPdu (Ptr<Packet> p)
+EnbMemberLteEnbPhySapUser::ReceivePhyPdu (Ptr<Packet> p)
 {
   m_mac->DoReceivePhyPdu (p);
 }
 
 void
-EnbMemberEnbLtePhySapUser::SubframeIndication (uint32_t frameNo, uint32_t subframeNo)
+EnbMemberLteEnbPhySapUser::SubframeIndication (uint32_t frameNo, uint32_t subframeNo)
 {
   m_mac->DoSubframeIndication (frameNo, subframeNo);
 }
 
 void
-EnbMemberEnbLtePhySapUser::ReceiveIdealControlMessage (Ptr<IdealControlMessage> msg)
+EnbMemberLteEnbPhySapUser::ReceiveIdealControlMessage (Ptr<IdealControlMessage> msg)
 {
   m_mac->DoReceiveIdealControlMessage (msg);
 }
@@ -316,7 +316,7 @@ LteEnbMac::LteEnbMac ()
   m_schedSapUser = new EnbMemberFfMacSchedSapUser (this);
   m_cschedSapUser = new EnbMemberFfMacCschedSapUser (this);
 
-  m_enbPhySapUser = new EnbMemberEnbLtePhySapUser (this);
+  m_enbPhySapUser = new EnbMemberLteEnbPhySapUser (this);
 }
 
 

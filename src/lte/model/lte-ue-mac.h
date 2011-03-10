@@ -38,7 +38,7 @@ class LteUeMac :   public Object
 {
   friend class UeMemberLteUeCmacSapProvider;
   friend class UeMemberLteMacSapProvider;
-  friend class UeMemberUeLtePhySapUser;
+  friend class UeMemberLteUePhySapUser;
 
 public:
   static TypeId GetTypeId (void);

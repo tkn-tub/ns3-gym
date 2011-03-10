@@ -80,7 +80,7 @@ EnbLteSpectrumPhy::CalcSinrValues (Ptr <const SpectrumValue> rxPsd,Ptr <const Sp
    *
    * Downlink:
    * the UE receives the signal from the eNB. It computes the SINR and tranfers
-   * it to the UeNetDevice. The UeNetDevice, receiving SINR values, uses the AMC module to convert
+   * it to the LteUeNetDevice. The LteUeNetDevice, receiving SINR values, uses the AMC module to convert
    * SINR to CQI. Then, it will send CQI feedback to the eNB.
    *
    * Uplink:

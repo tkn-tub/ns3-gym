@@ -21,7 +21,7 @@
 #include <ns3/log.h>
 #include <ns3/pointer.h>
 
-#include "amc-module.h"
+#include "lte-amc.h"
 #include "rr-ff-mac-scheduler.h"
 
 NS_LOG_COMPONENT_DEFINE ("RrPacketScheduler");
@@ -430,10 +430,10 @@ RrFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sched
             }
           else
             {
-              newDci.m_mcs.push_back ( AmcModule::GetMcsFromCqi ((*it).second) );
+              newDci.m_mcs.push_back ( LteAmc::GetMcsFromCqi ((*it).second) );
             }
           int nPRB = rbgSize * rbgPerFlow;
-          newDci.m_tbsSize.push_back ( (AmcModule::GetTbSizeFromMcs (newDci.m_mcs.at (i), nPRB) / 8) ); // (size of TB in bytes according to table 7.1.7.2.1-1 of 36.213)
+          newDci.m_tbsSize.push_back ( (LteAmc::GetTbSizeFromMcs (newDci.m_mcs.at (i), nPRB) / 8) ); // (size of TB in bytes according to table 7.1.7.2.1-1 of 36.213)
           newDci.m_ndi.push_back (1); // TBD (new data indicator)
           newDci.m_rv.push_back (0); // TBD (redundancy version)
 
@@ -549,7 +549,7 @@ RrFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::Sched
       uldci.m_rbLen = rbPerFlow;
       rbAllocated += rbPerFlow;
       uldci.m_mcs = 0; // MCS 0 -> UL-AMC TBD
-      uldci.m_tbSize = (AmcModule::GetTbSizeFromMcs (uldci.m_mcs, rbPerFlow) / 8); // MCS 0 -> UL-AMC TBD
+      uldci.m_tbSize = (LteAmc::GetTbSizeFromMcs (uldci.m_mcs, rbPerFlow) / 8); // MCS 0 -> UL-AMC TBD
       uldci.m_ndi = 1;
       uldci.m_cceIndex = 0;
       uldci.m_aggrLevel = 1;

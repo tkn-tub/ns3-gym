@@ -16,11 +16,11 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Giuseppe Piro  <g.piro@poliba.it>
- *         Nicola Baldo <nbaldo@cttc.es>
+ * Author: Marco Miozzo <marco.miozzo@cttc.es> : Update to FF API Architecture
  */
 
-#ifndef UE_NET_DEVICE_H
-#define UE_NET_DEVICE_H
+#ifndef LTE_ENB_NET_DEVICE_H
+#define LTE_ENB_NET_DEVICE_H
 
 #include "lte-net-device.h"
 #include "ns3/event-id.h"
@@ -29,8 +29,7 @@
 #include "ns3/nstime.h"
 #include "ns3/log.h"
 #include "lte-phy.h"
-#include "lte-phy.h"
-
+#include <vector>
 
 namespace ns3 {
 
@@ -38,54 +37,62 @@ class Packet;
 class PacketBurst;
 class Node;
 class LtePhy;
-class UeLtePhy;
-class EnbNetDevice;
-class LteUeMac;
-class LteUeRrc;
+class LteEnbPhy;
+class LteEnbMac;
+class LteEnbRrc;
+class RrFfMacScheduler;
+
 
 /**
- * The UeNetDevice class implements the UE net device
+ * The eNodeB device implementation
  */
-class UeNetDevice : public LteNetDevice
+class LteEnbNetDevice : public LteNetDevice
 {
 public:
   static TypeId GetTypeId (void);
 
-  UeNetDevice (void);
+  LteEnbNetDevice (void);
   /**
-   * \brief Create an UE net device
-   * \param node
-   * \param phy
+   * \brief Create eNB net device
+   * \param node the network node
+   * \param phy the physical object attache dto it
    */
-  UeNetDevice (Ptr<Node> node, Ptr<UeLtePhy> phy);
+  LteEnbNetDevice (Ptr<Node> node, Ptr<LteEnbPhy> phy);
 
-  virtual ~UeNetDevice (void);
-  virtual void DoDispose ();
-
-
-  Ptr<LteUeMac> GetMac (void);
-
-  Ptr<LteUeRrc> GetRrc ();
-
-  Ptr<UeLtePhy> GetPhy (void) const;
+  virtual ~LteEnbNetDevice (void);
+  virtual void DoDispose (void);
 
   /**
-   * \brief Initialize the UE
+   * \brief Initialize all parameters of this device
    */
-
-  void InitUeNetDevice (void);
+  void InitLteEnbNetDevice (void);
 
   /**
-   * \brief Set the targer eNB where the UE is registered
-   * \param enb
+   * \return a pointer to the MAC 
    */
-  void SetTargetEnb (Ptr<EnbNetDevice> enb);
-  /**
-   * \brief Get the targer eNB where the UE is registered
-   * \return the pointer to the enb
-   */
-  Ptr<EnbNetDevice> GetTargetEnb (void);
+  Ptr<LteEnbMac> GetMac (void);
 
+  /**
+   * \return a pointer to the physical layer.
+   */
+  Ptr<LteEnbPhy> GetPhy (void) const;
+
+
+
+  Ptr<LteEnbRrc> GetRrc ();
+
+  /**
+   * \brief Send the PDCCH ideal mesages under an
+   * ideal control channel
+   */
+  void SendIdealPdcchMessage (void);
+
+
+  /** 
+   * 
+   * \return the Cell Identifier of this eNB
+   */
+  uint16_t GetCellId ();
 
 private:
   bool DoSend (Ptr<Packet> packet,
@@ -95,13 +102,21 @@ private:
 
   void DoReceive (Ptr<Packet> p);
 
-  Ptr<EnbNetDevice> m_targetEnb;
+  // Ptr<UeManager> m_ueManager;
 
-  Ptr<LteUeMac> m_mac;
-  Ptr<UeLtePhy> m_phy;
-  Ptr<LteUeRrc> m_rrc;
+  Ptr<LteEnbMac> m_mac;
+
+  Ptr<LteEnbPhy> m_phy;
+
+  Ptr<LteEnbRrc> m_rrc;
+
+  Ptr<RrFfMacScheduler> m_scheduler;
+
+  uint16_t m_cellId; /**< Cell Identifer. Part of the CGI, see TS 29.274, section 8.21.1  */ 
+
+  static uint16_t m_cellIdCounter; 
 };
 
 } // namespace ns3
 
-#endif /* UE_NET_DEVICE_H */
+#endif /* LTE_ENB_NET_DEVICE_H */

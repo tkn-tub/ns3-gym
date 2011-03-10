@@ -27,7 +27,7 @@
 namespace ns3 {
 
 class LteNetDevice;
-class EnbNetDevice;
+class LteEnbNetDevice;
 
 /**
  * The EnbLteSpectrumPhy models the UL/DL physical layer for the eNodeB device

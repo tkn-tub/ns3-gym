@@ -27,15 +27,15 @@
 #include <ns3/lte-ue-mac.h>
 #include <ns3/lte-enb-mac.h>
 
-#include <ns3/enb-phy.h>
-#include <ns3/ue-phy.h>
+#include <ns3/lte-enb-phy.h>
+#include <ns3/lte-ue-phy.h>
 #include <ns3/lte-spectrum-phy.h>
 #include <ns3/lte-sinr-chunk-processor.h>
 #include <ns3/single-model-spectrum-channel.h>
 #include <ns3/friis-spectrum-propagation-loss.h>
 
-#include <ns3/enb-net-device.h>
-#include <ns3/ue-net-device.h>
+#include <ns3/lte-enb-net-device.h>
+#include <ns3/lte-ue-net-device.h>
 
 #include <ns3/lte-spectrum-value-helper.h>
 
@@ -102,7 +102,7 @@ LenaHelper::SetUeDeviceAttribute (std::string name, const AttributeValue &value)
 Ptr<NetDevice>
 LenaHelper::InstallSingleEnbDevice (Ptr<Node> n)
 {
-  Ptr<EnbLtePhy> phy = CreateObject<EnbLtePhy> ();
+  Ptr<LteEnbPhy> phy = CreateObject<LteEnbPhy> ();
 
   Ptr<LteSpectrumPhy> dlPhy = CreateObject<LteSpectrumPhy> ();
   Ptr<LteSpectrumPhy> ulPhy = CreateObject<LteSpectrumPhy> ();
@@ -123,14 +123,14 @@ LenaHelper::InstallSingleEnbDevice (Ptr<Node> n)
 
   m_uplinkChannel->AddRx (ulPhy);
 
-  Ptr<EnbNetDevice> dev = CreateObject<EnbNetDevice> (n, phy);
+  Ptr<LteEnbNetDevice> dev = CreateObject<LteEnbNetDevice> (n, phy);
   phy->SetDevice (dev);
   dlPhy->SetDevice (dev);
   ulPhy->SetDevice (dev);
 
   n->AddDevice (dev);
   Ptr<LteEnbMac> mac = dev->GetMac ();
-  ulPhy->SetPhyMacRxEndOkCallback (MakeCallback (&EnbLtePhy::PhyPduReceived, phy));
+  ulPhy->SetPhyMacRxEndOkCallback (MakeCallback (&LteEnbPhy::PhyPduReceived, phy));
 
   dev->Start ();
   return dev;
@@ -139,7 +139,7 @@ LenaHelper::InstallSingleEnbDevice (Ptr<Node> n)
 Ptr<NetDevice>
 LenaHelper::InstallSingleUeDevice (Ptr<Node> n)
 {
-  Ptr<UeLtePhy> phy = CreateObject<UeLtePhy> ();
+  Ptr<LteUePhy> phy = CreateObject<LteUePhy> ();
 
   Ptr<LteSpectrumPhy> dlPhy = CreateObject<LteSpectrumPhy> ();
   Ptr<LteSpectrumPhy> ulPhy = CreateObject<LteSpectrumPhy> ();
@@ -163,14 +163,14 @@ LenaHelper::InstallSingleUeDevice (Ptr<Node> n)
 
   m_downlinkChannel->AddRx (dlPhy);
 
-  Ptr<UeNetDevice> dev = CreateObject<UeNetDevice> (n, phy);
+  Ptr<LteUeNetDevice> dev = CreateObject<LteUeNetDevice> (n, phy);
   phy->SetDevice (dev);
   dlPhy->SetDevice (dev);
   ulPhy->SetDevice (dev);
 
   n->AddDevice (dev);
   Ptr<LteUeMac> mac = dev->GetMac ();
-  dlPhy->SetPhyMacRxEndOkCallback (MakeCallback (&UeLtePhy::PhyPduReceived, phy));
+  dlPhy->SetPhyMacRxEndOkCallback (MakeCallback (&LteUePhy::PhyPduReceived, phy));
 
   dev->Start ();
   return dev;
@@ -190,19 +190,19 @@ void
 LenaHelper::Attach (Ptr<NetDevice> ueDevice, Ptr<NetDevice> enbDevice)
 {
   // setup RRC connection
-  Ptr<LteEnbRrc> enbRrc = enbDevice->GetObject<EnbNetDevice> ()->GetRrc ();
+  Ptr<LteEnbRrc> enbRrc = enbDevice->GetObject<LteEnbNetDevice> ()->GetRrc ();
   uint16_t rnti = enbRrc->AddUe ();
-  Ptr<LteUeRrc> ueRrc = ueDevice->GetObject<UeNetDevice> ()->GetRrc ();
+  Ptr<LteUeRrc> ueRrc = ueDevice->GetObject<LteUeNetDevice> ()->GetRrc ();
   ueRrc->ConfigureUe (rnti);
 
   // attach UE PHY to eNB
-  ueDevice->GetObject<UeNetDevice> ()->SetTargetEnb (enbDevice->GetObject<EnbNetDevice> ());
+  ueDevice->GetObject<LteUeNetDevice> ()->SetTargetEnb (enbDevice->GetObject<LteEnbNetDevice> ());
 
   // WILD HACK - should be done through PHY SAP, probably passing by RRC
-  Ptr<UeLtePhy> uePhy = ueDevice->GetObject<UeNetDevice> ()->GetPhy ();
+  Ptr<LteUePhy> uePhy = ueDevice->GetObject<LteUeNetDevice> ()->GetPhy ();
   uePhy->SetRnti (rnti);
 
-  Ptr<EnbLtePhy> enbPhy = enbDevice->GetObject<EnbNetDevice> ()->GetPhy ();
+  Ptr<LteEnbPhy> enbPhy = enbDevice->GetObject<LteEnbNetDevice> ()->GetPhy ();
   enbPhy->AddUePhy (rnti, uePhy);
 }
 
@@ -220,9 +220,9 @@ LenaHelper::ActivateEpsBearer (NetDeviceContainer ueDevices, EpsBearer bearer)
 void
 LenaHelper::ActivateEpsBearer (Ptr<NetDevice> ueDevice, EpsBearer bearer)
 {
-  Ptr<EnbNetDevice> enbDevice = ueDevice->GetObject<UeNetDevice> ()->GetTargetEnb ();
-  Ptr<LteEnbRrc> enbRrc = enbDevice->GetObject<EnbNetDevice> ()->GetRrc ();
-  Ptr<LteUeRrc> ueRrc = ueDevice->GetObject<UeNetDevice> ()->GetRrc ();
+  Ptr<LteEnbNetDevice> enbDevice = ueDevice->GetObject<LteUeNetDevice> ()->GetTargetEnb ();
+  Ptr<LteEnbRrc> enbRrc = enbDevice->GetObject<LteEnbNetDevice> ()->GetRrc ();
+  Ptr<LteUeRrc> ueRrc = ueDevice->GetObject<LteUeNetDevice> ()->GetRrc ();
   uint16_t rnti = ueRrc->GetRnti ();
   uint8_t lcid = enbRrc->SetupRadioBearer (rnti, bearer);
   ueRrc->SetupRadioBearer (rnti, bearer, lcid);
@@ -240,8 +240,8 @@ LenaHelper::EnableLogComponents (void)
   LogComponentEnable ("RrPacketScheduler", LOG_LEVEL_ALL);
 
   LogComponentEnable ("LtePhy", LOG_LEVEL_ALL);
-  LogComponentEnable ("EnbLtePhy", LOG_LEVEL_ALL);
-  LogComponentEnable ("UeLtePhy", LOG_LEVEL_ALL);
+  LogComponentEnable ("LteEnbPhy", LOG_LEVEL_ALL);
+  LogComponentEnable ("LteUePhy", LOG_LEVEL_ALL);
 
   LogComponentEnable ("LteSpectrumPhy", LOG_LEVEL_ALL);
   LogComponentEnable ("LteInterference", LOG_LEVEL_ALL);
@@ -255,8 +255,8 @@ LenaHelper::EnableLogComponents (void)
   LogComponentEnable ("PathLossModel", LOG_LEVEL_ALL);
 
   LogComponentEnable ("LteNetDevice", LOG_LEVEL_ALL);
-  LogComponentEnable ("UeNetDevice", LOG_LEVEL_ALL);
-  LogComponentEnable ("EnbNetDevice", LOG_LEVEL_ALL);
+  LogComponentEnable ("LteUeNetDevice", LOG_LEVEL_ALL);
+  LogComponentEnable ("LteEnbNetDevice", LOG_LEVEL_ALL);
 }
 
 

@@ -21,13 +21,13 @@
  */
 
 
-#include "amc-module.h"
+#include "lte-amc.h"
 #include <ns3/log.h>
 #include <ns3/assert.h>
 #include <math.h>
 #include <ns3/spectrum-value.h>
 
-NS_LOG_COMPONENT_DEFINE ("AmcModule");
+NS_LOG_COMPONENT_DEFINE ("LteAmc");
 
 namespace ns3 {
 
@@ -226,7 +226,7 @@ int TransportBlockSizeTable [110][27] = {
 
 
 int
-AmcModule::GetCqiFromSpectralEfficiency (double s)
+LteAmc::GetCqiFromSpectralEfficiency (double s)
 {
   NS_LOG_FUNCTION (s);
   int cqi = 1; // == CqiIndex[0]
@@ -240,7 +240,7 @@ AmcModule::GetCqiFromSpectralEfficiency (double s)
 
 
 int
-AmcModule::GetMcsFromCqi (int cqi)
+LteAmc::GetMcsFromCqi (int cqi)
 {
   NS_LOG_FUNCTION (cqi);
   double spectralEfficiency = SpectralEfficiencyForCqiIndex[cqi - 1];
@@ -255,7 +255,7 @@ AmcModule::GetMcsFromCqi (int cqi)
 
 
 int
-AmcModule::GetTbSizeFromMcs (int mcs)
+LteAmc::GetTbSizeFromMcs (int mcs)
 {
   NS_LOG_FUNCTION (mcs);
   NS_LOG_FUNCTION (mcs << TransportBlockSize[mcs]);
@@ -263,7 +263,7 @@ AmcModule::GetTbSizeFromMcs (int mcs)
 }
 
 int
-AmcModule::GetTbSizeFromMcs (int mcs, int nprb)
+LteAmc::GetTbSizeFromMcs (int mcs, int nprb)
 {
   NS_LOG_FUNCTION (mcs);
   NS_LOG_FUNCTION (mcs << TransportBlockSize[mcs]);
@@ -277,7 +277,7 @@ AmcModule::GetTbSizeFromMcs (int mcs, int nprb)
 
 
 double
-AmcModule::GetSpectralEfficiencyFromCqi (int cqi)
+LteAmc::GetSpectralEfficiencyFromCqi (int cqi)
 {
   NS_LOG_FUNCTION (cqi);
   NS_LOG_FUNCTION (cqi << SpectralEfficiencyForCqiIndex[cqi - 1]);
@@ -286,7 +286,7 @@ AmcModule::GetSpectralEfficiencyFromCqi (int cqi)
 
 
 std::vector<int>
-AmcModule::CreateCqiFeedbacks (const SpectrumValue& sinr)
+LteAmc::CreateCqiFeedbacks (const SpectrumValue& sinr)
 {
   NS_LOG_FUNCTION_NOARGS ();
 

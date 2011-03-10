@@ -27,7 +27,7 @@
 #include <ns3/packet-burst.h>
 
 #include "lte-ue-mac.h"
-#include "ue-net-device.h"
+#include "lte-ue-net-device.h"
 #include "lte-mac-tag.h"
 #include <ns3/ff-mac-common.h>
 #include <ns3/ideal-control-messages.h>
@@ -132,10 +132,10 @@ UeMemberLteMacSapProvider::ReportBufferStatus (ReportBufferStatusParameters para
 
 
 
-class UeMemberUeLtePhySapUser : public LteUePhySapUser
+class UeMemberLteUePhySapUser : public LteUePhySapUser
 {
 public:
-  UeMemberUeLtePhySapUser (LteUeMac* mac);
+  UeMemberLteUePhySapUser (LteUeMac* mac);
 
   // inherited from LtePhySapUser
   virtual void ReceivePhyPdu (Ptr<Packet> p);
@@ -146,26 +146,26 @@ private:
   LteUeMac* m_mac;
 };
 
-UeMemberUeLtePhySapUser::UeMemberUeLtePhySapUser (LteUeMac* mac) : m_mac (mac)
+UeMemberLteUePhySapUser::UeMemberLteUePhySapUser (LteUeMac* mac) : m_mac (mac)
 {
 
 }
 
 void
-UeMemberUeLtePhySapUser::ReceivePhyPdu (Ptr<Packet> p)
+UeMemberLteUePhySapUser::ReceivePhyPdu (Ptr<Packet> p)
 {
   m_mac->DoReceivePhyPdu (p);
 }
 
 
 void
-UeMemberUeLtePhySapUser::SubframeIndication (uint32_t frameNo, uint32_t subframeNo)
+UeMemberLteUePhySapUser::SubframeIndication (uint32_t frameNo, uint32_t subframeNo)
 {
   NS_LOG_LOGIC (this << " UE-MAC does not yet support this primitive");
 }
 
 void
-UeMemberUeLtePhySapUser::ReceiveIdealControlMessage (Ptr<IdealControlMessage> msg)
+UeMemberLteUePhySapUser::ReceiveIdealControlMessage (Ptr<IdealControlMessage> msg)
 {
   m_mac->DoReceiveIdealControlMessage (msg);
 }
@@ -192,7 +192,7 @@ LteUeMac::LteUeMac ()
 {
   m_macSapProvider = new UeMemberLteMacSapProvider (this);
   m_cmacSapProvider = new UeMemberLteUeCmacSapProvider (this);
-  m_uePhySapUser = new UeMemberUeLtePhySapUser (this);
+  m_uePhySapUser = new UeMemberLteUePhySapUser (this);
 }
 
 

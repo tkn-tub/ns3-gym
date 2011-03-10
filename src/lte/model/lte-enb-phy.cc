@@ -24,15 +24,15 @@
 #include <math.h>
 #include <ns3/simulator.h>
 #include "ns3/spectrum-error-model.h"
-#include "enb-phy.h"
+#include "lte-enb-phy.h"
 #include "lte-net-device.h"
 #include "lte-spectrum-value-helper.h"
 #include "ideal-control-messages.h"
-#include "enb-net-device.h"
+#include "lte-enb-net-device.h"
 #include "lte-enb-mac.h"
 
 
-NS_LOG_COMPONENT_DEFINE ("EnbLtePhy");
+NS_LOG_COMPONENT_DEFINE ("LteEnbPhy");
 
 namespace ns3 {
 
@@ -45,7 +45,7 @@ namespace ns3 {
 class EnbMemberLteEnbPhySapProvider : public LteEnbPhySapProvider
 {
 public:
-  EnbMemberLteEnbPhySapProvider (EnbLtePhy* phy);
+  EnbMemberLteEnbPhySapProvider (LteEnbPhy* phy);
 
   // inherited from LteEnbPhySapProvider
   virtual void SendMacPdu (Ptr<Packet> p);
@@ -54,10 +54,10 @@ public:
   virtual void SendIdealControlMessage (Ptr<IdealControlMessage> msg);
 
 private:
-  EnbLtePhy* m_phy;
+  LteEnbPhy* m_phy;
 };
 
-EnbMemberLteEnbPhySapProvider::EnbMemberLteEnbPhySapProvider (EnbLtePhy* phy) : m_phy (phy)
+EnbMemberLteEnbPhySapProvider::EnbMemberLteEnbPhySapProvider (LteEnbPhy* phy) : m_phy (phy)
 {
 
 }
@@ -89,15 +89,15 @@ EnbMemberLteEnbPhySapProvider::SendIdealControlMessage (Ptr<IdealControlMessage>
 
 
 ////////////////////////////////////////
-// generic EnbLtePhy methods
+// generic LteEnbPhy methods
 ////////////////////////////////////////
 
 
 
-NS_OBJECT_ENSURE_REGISTERED (EnbLtePhy);
+NS_OBJECT_ENSURE_REGISTERED (LteEnbPhy);
 
 
-EnbLtePhy::EnbLtePhy ()
+LteEnbPhy::LteEnbPhy ()
   : m_nrFrames (0),
     m_nrSubFrames (0)
 {
@@ -106,28 +106,28 @@ EnbLtePhy::EnbLtePhy ()
 
 
 TypeId
-EnbLtePhy::GetTypeId (void)
+LteEnbPhy::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::EnbLtePhy")
+  static TypeId tid = TypeId ("ns3::LteEnbPhy")
     .SetParent<LtePhy> ()
-    .AddConstructor<EnbLtePhy> ()
+    .AddConstructor<LteEnbPhy> ()
   ;
   return tid;
 }
 
 
-EnbLtePhy::~EnbLtePhy ()
+LteEnbPhy::~LteEnbPhy ()
 {
 }
 
 void
-EnbLtePhy::SetLteEnbPhySapUser (LteEnbPhySapUser* s)
+LteEnbPhy::SetLteEnbPhySapUser (LteEnbPhySapUser* s)
 {
   m_enbPhySapUser = s;
 }
 
 LteEnbPhySapProvider*
-EnbLtePhy::GetLteEnbPhySapProvider ()
+LteEnbPhy::GetLteEnbPhySapProvider ()
 {
   return (m_enbPhySapProvider);
 }
@@ -135,13 +135,13 @@ EnbLtePhy::GetLteEnbPhySapProvider ()
 
 
 bool
-EnbLtePhy::AddUePhy (uint8_t rnti, Ptr<UeLtePhy> phy)
+LteEnbPhy::AddUePhy (uint8_t rnti, Ptr<LteUePhy> phy)
 {
-  std::map <uint8_t, Ptr<UeLtePhy> >::iterator it;
+  std::map <uint8_t, Ptr<LteUePhy> >::iterator it;
   it = m_ueAttached.find (rnti);
   if (it == m_ueAttached.end ())
     {
-      m_ueAttached.insert (std::pair<uint8_t, Ptr<UeLtePhy> > (rnti, phy));
+      m_ueAttached.insert (std::pair<uint8_t, Ptr<LteUePhy> > (rnti, phy));
       return (true);
     }
   else
@@ -152,9 +152,9 @@ EnbLtePhy::AddUePhy (uint8_t rnti, Ptr<UeLtePhy> phy)
 }
 
 bool
-EnbLtePhy::DeleteUePhy (uint8_t rnti)
+LteEnbPhy::DeleteUePhy (uint8_t rnti)
 {
-  std::map <uint8_t, Ptr<UeLtePhy> >::iterator it;
+  std::map <uint8_t, Ptr<LteUePhy> >::iterator it;
   it = m_ueAttached.find (rnti);
   if (it == m_ueAttached.end ())
     {
@@ -171,7 +171,7 @@ EnbLtePhy::DeleteUePhy (uint8_t rnti)
 
 
 void
-EnbLtePhy::DoSendMacPdu (Ptr<Packet> p)
+LteEnbPhy::DoSendMacPdu (Ptr<Packet> p)
 {
 //   NS_LOG_FUNCTION (this << pb->GetNPackets () << pb->GetSize ());
 //   return GetDownlinkSpectrumPhy ()->StartTx (pb);
@@ -182,14 +182,14 @@ EnbLtePhy::DoSendMacPdu (Ptr<Packet> p)
 
 
 void
-EnbLtePhy::PhyPduReceived (Ptr<Packet> p)
+LteEnbPhy::PhyPduReceived (Ptr<Packet> p)
 {
   NS_LOG_FUNCTION (this);
   m_enbPhySapUser->ReceivePhyPdu (p);
 }
 
 void
-EnbLtePhy::DoSetDownlinkSubChannels ()
+LteEnbPhy::DoSetDownlinkSubChannels ()
 {
   NS_LOG_FUNCTION (this);
   Ptr<SpectrumValue> txPsd = CreateTxPowerSpectralDensity ();
@@ -198,7 +198,7 @@ EnbLtePhy::DoSetDownlinkSubChannels ()
 
 
 Ptr<SpectrumValue>
-EnbLtePhy::CreateTxPowerSpectralDensity ()
+LteEnbPhy::CreateTxPowerSpectralDensity ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -210,14 +210,14 @@ EnbLtePhy::CreateTxPowerSpectralDensity ()
 
 
 void
-EnbLtePhy::CalcChannelQualityForUe (std::vector <double> sinr, Ptr<LteSpectrumPhy> ue)
+LteEnbPhy::CalcChannelQualityForUe (std::vector <double> sinr, Ptr<LteSpectrumPhy> ue)
 {
   NS_LOG_FUNCTION (this);
 }
 
 
 void
-EnbLtePhy::DoSendIdealControlMessage (Ptr<IdealControlMessage> msg)
+LteEnbPhy::DoSendIdealControlMessage (Ptr<IdealControlMessage> msg)
 {
   NS_LOG_FUNCTION (this << msg);
   // queues the message (wait for MAC-PHY delay)
@@ -227,7 +227,7 @@ EnbLtePhy::DoSendIdealControlMessage (Ptr<IdealControlMessage> msg)
 
 
 void
-EnbLtePhy::ReceiveIdealControlMessage (Ptr<IdealControlMessage> msg)
+LteEnbPhy::ReceiveIdealControlMessage (Ptr<IdealControlMessage> msg)
 {
   NS_LOG_FUNCTION (this << msg);
   m_enbPhySapUser->ReceiveIdealControlMessage (msg);
@@ -236,7 +236,7 @@ EnbLtePhy::ReceiveIdealControlMessage (Ptr<IdealControlMessage> msg)
 
 
 void
-EnbLtePhy::StartFrame (void)
+LteEnbPhy::StartFrame (void)
 {
   NS_LOG_FUNCTION (this);
 
@@ -248,7 +248,7 @@ EnbLtePhy::StartFrame (void)
 
 
 void
-EnbLtePhy::StartSubFrame (void)
+LteEnbPhy::StartSubFrame (void)
 {
   NS_LOG_FUNCTION (this);
 
@@ -267,7 +267,7 @@ EnbLtePhy::StartSubFrame (void)
           Ptr<IdealControlMessage> msg = (*it);
           if (msg->GetMessageType () == IdealControlMessage::DL_DCI)
             {
-              std::map <uint8_t, Ptr<UeLtePhy> >::iterator it2;
+              std::map <uint8_t, Ptr<LteUePhy> >::iterator it2;
               Ptr<DlDciIdealControlMessage> dci = DynamicCast<DlDciIdealControlMessage> (msg);
               it2 = m_ueAttached.find (dci->GetDci ().m_rnti);
               
@@ -297,7 +297,7 @@ EnbLtePhy::StartSubFrame (void)
             }
           else if (msg->GetMessageType () == IdealControlMessage::UL_DCI)
             {
-              std::map <uint8_t, Ptr<UeLtePhy> >::iterator it2;
+              std::map <uint8_t, Ptr<LteUePhy> >::iterator it2;
               Ptr<UlDciIdealControlMessage> dci = DynamicCast<UlDciIdealControlMessage> (msg);
               it2 = m_ueAttached.find (dci->GetDci ().m_rnti);
              
@@ -324,50 +324,50 @@ EnbLtePhy::StartSubFrame (void)
     }
 
   // trigger the MAC
-  Ptr<LteEnbMac> macEntity = GetDevice ()->GetObject<EnbNetDevice> ()->GetMac ();
+  Ptr<LteEnbMac> macEntity = GetDevice ()->GetObject<LteEnbNetDevice> ()->GetMac ();
 
   m_enbPhySapUser->SubframeIndication (m_nrFrames, m_nrSubFrames);
   
   
   // trigger the UE(s)
-  std::map <uint8_t, Ptr<UeLtePhy> >::iterator it;
+  std::map <uint8_t, Ptr<LteUePhy> >::iterator it;
   for (it = m_ueAttached.begin (); it != m_ueAttached.end (); it++)
     {
       (*it).second->SubframeIndication (m_nrFrames, m_nrSubFrames);
     }
 
   Simulator::Schedule (Seconds (GetTti ()),
-                       &EnbLtePhy::EndSubFrame,
+                       &LteEnbPhy::EndSubFrame,
                        this);
 
 }
 
 
 void
-EnbLtePhy::EndSubFrame (void)
+LteEnbPhy::EndSubFrame (void)
 {
   NS_LOG_FUNCTION (this << Simulator::Now ().GetSeconds ());
   if (m_nrSubFrames == 10)
     {
-      Simulator::ScheduleNow (&EnbLtePhy::EndFrame, this);
+      Simulator::ScheduleNow (&LteEnbPhy::EndFrame, this);
     }
   else
     {
-      Simulator::ScheduleNow (&EnbLtePhy::StartSubFrame, this);
+      Simulator::ScheduleNow (&LteEnbPhy::StartSubFrame, this);
     }
 }
 
 
 void
-EnbLtePhy::EndFrame (void)
+LteEnbPhy::EndFrame (void)
 {
   NS_LOG_FUNCTION (this << Simulator::Now ().GetSeconds ());
-  Simulator::ScheduleNow (&EnbLtePhy::StartFrame, this);
+  Simulator::ScheduleNow (&LteEnbPhy::StartFrame, this);
 }
 
 
 void 
-EnbLtePhy::GenerateCqiFeedback (const SpectrumValue& sinr)
+LteEnbPhy::GenerateCqiFeedback (const SpectrumValue& sinr)
 {
   NS_LOG_FUNCTION (this << sinr);
 }

@@ -55,7 +55,7 @@ class LteEnbMac :   public Object
   friend class EnbMemberLteMacSapProvider;
   friend class EnbMemberFfMacSchedSapUser;
   friend class EnbMemberFfMacCschedSapUser;
-  friend class EnbMemberEnbLtePhySapUser;
+  friend class EnbMemberLteEnbPhySapUser;
 
 public:
   static TypeId GetTypeId (void);
@@ -165,7 +165,7 @@ private:
   void DoSchedUlConfigInd (FfMacSchedSapUser::SchedUlConfigIndParameters params);
 
   /**
-  * \brief Forwarded from EnbLtePhySapUser: trigger the start from a new frame
+  * \brief Forwarded from LteEnbPhySapUser: trigger the start from a new frame
   *
   * \param frameNo frame number
   * \param subframeNo subframe number

@@ -24,7 +24,7 @@
 #include "ns3/uinteger.h"
 #include "ns3/log.h"
 #include "lte-net-device.h"
-#include "ue-net-device.h"
+#include "lte-ue-net-device.h"
 
 NS_LOG_COMPONENT_DEFINE ("IdealControlMessage");
 
