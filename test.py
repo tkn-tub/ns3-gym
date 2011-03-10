@@ -29,6 +29,8 @@ import xml.dom.minidom
 import shutil
 import re
 
+from utils import get_list_from_file
+
 #
 # XXX This should really be part of a waf command to list the configuration
 # items relative to optional ns-3 pieces.
@@ -41,10 +43,12 @@ import re
 #
 interesting_config_items = [
     "NS3_BUILDDIR",
+    "NS3_ENABLED_MODULES",
     "NS3_MODULE_PATH",
     "NSC_ENABLED",
     "ENABLE_REAL_TIME",
     "ENABLE_EXAMPLES",
+    "EXAMPLE_DIRECTORIES",
     "ENABLE_PYTHON_BINDINGS",
     "ENABLE_CLICK",
 ]
@@ -53,6 +57,7 @@ NSC_ENABLED = False
 ENABLE_REAL_TIME = False
 ENABLE_EXAMPLES = True
 ENABLE_CLICK = False
+EXAMPLE_DIRECTORIES = []
 
 #
 # If the user has constrained us to run certain kinds of tests, we can tell waf
@@ -81,134 +86,63 @@ core_nsc_missing_skip_tests = [
 ]
 
 #
-# A list of examples to run as smoke tests just to ensure that they remain 
-# buildable and runnable over time.  Also a condition under which to run
-# the example (from the waf configuration), and a condition under which to
-# run the example under valgrind.  This is because NSC causes illegal 
-# instruction crashes when run under valgrind.
+# Parse the examples-to-run file if it exists.
 #
-# XXX Should this not be read from a configuration file somewhere and not
-# hardcoded.
+# This function adds any C++ examples or Python examples that are to be run
+# to the lists in example_tests and python_tests, respectively.
 #
-example_tests = [
-    ("src/bridge/examples/csma-bridge", "True", "True"),
-    ("src/bridge/examples/csma-bridge-one-hop", "True", "True"),
-    ("src/csma/examples/csma-broadcast", "True", "True"),
-    ("src/csma/examples/csma-multicast", "True", "True"),
-    ("src/csma/examples/csma-one-subnet", "True", "True"),
-    ("src/csma/examples/csma-packet-socket", "True", "True"),
-    ("src/csma/examples/csma-ping", "True", "True"),
-    ("src/csma/examples/csma-raw-ip-socket", "True", "True"),
-    ("src/csma/examples/csma-star", "True", "True"),
+def parse_examples_to_run_file(
+    examples_to_run_path,
+    cpp_executable_dir,
+    python_script_dir,
+    example_tests,
+    python_tests):
 
-    ("src/emu/examples/emu-ping", "False", "True"),
-    ("src/emu/examples/emu-udp-echo", "False", "True"),
+    # Look for the examples-to-run file exists.
+    if os.path.exists(examples_to_run_path):
 
-    ("examples/energy/energy-model-example", "True", "True"),
+        # Each tuple in the C++ list of examples to run contains
+        #
+        #     (example_name, do_run, do_valgrind_run)
+        #
+        # where example_name is the executable to be run, do_run is a
+        # condition under which to run the example, and do_valgrind_run is
+        # a condition under which to run the example under valgrind.  This
+        # is needed because NSC causes illegal instruction crashes with
+        # some tests when they are run under valgrind.
+        #
+        # Note that the two conditions are Python statements that
+        # can depend on waf configuration variables.  For example,
+        #
+        #     ("tcp-nsc-lfn", "NSC_ENABLED == True", "NSC_ENABLED == False"),
+        #
+        cpp_examples = get_list_from_file(examples_to_run_path, "cpp_examples")
+        for example_name, do_run, do_valgrind_run in cpp_examples:
+            example_path = os.path.join(cpp_executable_dir, example_name)
+            # Add all of the C++ examples that were built, i.e. found
+            # in the directory, to the list of C++ examples to run.
+            if os.path.exists(example_path):
+                example_tests.append((example_path, do_run, do_valgrind_run))
 
-    ("examples/error-model/simple-error-model", "True", "True"),
-
-    ("examples/ipv6/icmpv6-redirect", "True", "True"),
-    ("examples/ipv6/ping6", "True", "True"),
-    ("examples/ipv6/radvd", "True", "True"),
-    ("examples/ipv6/radvd-two-prefix", "True", "True"),    
-    ("examples/ipv6/test-ipv6", "True", "True"),
-
-    ("src/mesh/examples/mesh", "True", "True"),
-
-    ("examples/naming/object-names", "True", "True"),
-
-    ("examples/realtime/realtime-udp-echo", "ENABLE_REAL_TIME == True", "True"),
-
-    ("examples/routing/dynamic-global-routing", "True", "True"),
-    ("examples/routing/global-injection-slash32", "True", "True"),
-    ("examples/routing/global-routing-slash32", "True", "True"),
-    ("examples/routing/mixed-global-routing", "True", "True"),
-    ("src/nix-vector-routing/examples/nix-simple", "True", "True"),
-    ("src/nix-vector-routing/examples/nms-p2p-nix", "False", "True"), # Takes too long to run
-    ("examples/routing/simple-alternate-routing", "True", "True"),
-    ("examples/routing/simple-global-routing", "True", "True"),
-    ("src/olsr/examples/simple-point-to-point-olsr", "True", "True"),
-    ("examples/routing/simple-routing-ping6", "True", "True"),
-    ("examples/routing/static-routing-slash32", "True", "True"),
-    ("src/aodv/examples/aodv", "True", "True"),
-
-    ("src/spectrum/examples/adhoc-aloha-ideal-phy", "True", "True"),
-    ("src/spectrum/examples/adhoc-aloha-ideal-phy-with-microwave-oven", "True", "True"),
-
-    ("examples/stats/wifi-example-sim", "True", "True"),
-
-    ("examples/tap/tap-wifi-dumbbell", "False", "True"), # Requires manual configuration
-
-    ("examples/tcp/star", "True", "True"),
-    ("examples/tcp/tcp-large-transfer", "True", "True"),
-    ("examples/tcp/tcp-nsc-lfn", "NSC_ENABLED == True", "False"),
-    ("examples/tcp/tcp-nsc-zoo", "NSC_ENABLED == True", "False"),
-    ("examples/tcp/tcp-star-server", "True", "True"),
-
-    ("src/topology-read/examples/topology-read --input=../../src/topology-read/examples/Inet_small_toposample.txt", "True", "True"),
-    ("src/topology-read/examples/topology-read --format=Rocketfuel --input=../../src/topology-read/examples/RocketFuel_toposample_1239_weights.txt", "True", "True"),
-
-    ("src/virtual-net-device/examples/virtual-net-device", "True", "True"),
-
-    ("examples/tutorial/first", "True", "True"),
-    ("examples/tutorial/hello-simulator", "True", "True"),
-    ("examples/tutorial/second", "True", "True"),
-    ("examples/tutorial/third", "True", "True"),
-    ("examples/tutorial/fourth", "True", "True"),
-    ("examples/tutorial/fifth", "True", "True"),
-    ("examples/tutorial/sixth", "True", "True"),
-
-    ("examples/udp/udp-echo", "True", "True"),
-
-    ("examples/wireless/mixed-wireless", "True", "True"),
-    ("examples/wireless/multirate --totalTime=0.3s --rateManager=ns3::AarfcdWifiManager", "True", "True"), 
-    ("examples/wireless/multirate --totalTime=0.3s --rateManager=ns3::AmrrWifiManager", "True", "True"), 
-    ("examples/wireless/multirate --totalTime=0.3s --rateManager=ns3::CaraWifiManager", "True", "True"), 
-    ("examples/wireless/multirate --totalTime=0.3s --rateManager=ns3::IdealWifiManager", "True", "True"), 
-    ("examples/wireless/multirate --totalTime=0.3s --rateManager=ns3::MinstrelWifiManager", "True", "True"), 
-    ("examples/wireless/multirate --totalTime=0.3s --rateManager=ns3::OnoeWifiManager", "True", "True"), 
-    ("examples/wireless/multirate --totalTime=0.3s --rateManager=ns3::RraaWifiManager", "True", "True"), 
-    ("examples/wireless/simple-wifi-frame-aggregation", "True", "True"),
-    ("examples/wireless/wifi-adhoc", "False", "True"), # Takes too long to run
-    ("examples/wireless/wifi-ap --verbose=0", "True", "True"), # Don't let it spew to stdout
-    ("examples/wireless/wifi-clear-channel-cmu", "False", "True"), # Requires specific hardware
-    ("examples/wireless/wifi-simple-adhoc", "True", "True"),
-    ("examples/wireless/wifi-simple-adhoc-grid", "True", "True"),
-    ("examples/wireless/wifi-simple-infra", "True", "True"),
-    ("examples/wireless/wifi-simple-interference", "True", "True"),
-    ("examples/wireless/wifi-wired-bridging", "True", "True"),
-
-    ("src/click/examples/nsclick-simple-lan", "ENABLE_CLICK == True", "True"),
-
-    ("src/wimax/examples/wimax-simple", "True", "True"),
-    ("src/wimax/examples/wimax-ipv4", "True", "True"),
-    ("src/wimax/examples/wimax-multicast", "True", "True"),
-]
-
-#
-# A list of python examples to run as smoke tests just to ensure that they 
-# runnable over time.  Also a condition under which to run the example (from
-# the waf configuration)
-#
-# XXX Should this not be read from a configuration file somewhere and not
-# hardcoded.
-#
-python_tests = [
-    ("src/bridge/examples/csma-bridge.py", "True"),
-
-    ("src/contrib/flow-monitor/examples/wifi-olsr-flowmon.py", "True"),
-
-    ("examples/routing/simple-routing-ping6.py", "True"),
-
-    ("examples/tap/tap-csma-virtual-machine.py", "False"), # requires enable-sudo
-    ("examples/tap/tap-wifi-virtual-machine.py", "False"), # requires enable-sudo
-
-    ("examples/tutorial/first.py", "True"),
-
-    ("examples/wireless/wifi-ap.py", "True"),
-    ("examples/wireless/mixed-wireless.py", "True"),
-]
+        # Each tuple in the Python list of examples to run contains
+        #
+        #     (example_name, do_run)
+        #
+        # where example_name is the Python script to be run and
+        # do_run is a condition under which to run the example.
+        #
+        # Note that the condition is a Python statement that can
+        # depend on waf configuration variables.  For example,
+        #
+        #     ("realtime-udp-echo.py", "ENABLE_REAL_TIME == True"),
+        #
+        python_examples = get_list_from_file(examples_to_run_path, "python_examples")
+        for example_name, do_run in python_examples:
+            example_path = os.path.join(python_script_dir, example_name)
+            # Add all of the Python examples that were found to the
+            # list of Python examples to run.
+            if os.path.exists(example_path):
+                python_tests.append((example_path, do_run))
 
 #
 # The test suites are going to want to output status.  They are running
@@ -1042,6 +976,45 @@ def run_tests():
     read_waf_active_variant()
     read_waf_config()
     make_paths()
+
+    # Generate the lists of examples to run as smoke tests in order to
+    # ensure that they remain buildable and runnable over time.
+    #
+    example_tests = []
+    python_tests = []
+    for directory in EXAMPLE_DIRECTORIES:
+        # Set the directories and paths for this example. 
+        example_directory   = os.path.join("examples", directory)
+        examples_to_run_path = os.path.join(example_directory, "examples-to-run.py")
+        cpp_executable_dir   = os.path.join(NS3_BUILDDIR, NS3_ACTIVE_VARIANT, example_directory)
+        python_script_dir    = os.path.join(example_directory)
+
+        # Parse this example directory's file.
+        parse_examples_to_run_file(
+            examples_to_run_path,
+            cpp_executable_dir,
+            python_script_dir,
+            example_tests,
+            python_tests)
+
+    for module in NS3_ENABLED_MODULES:
+        # Remove the "ns3-" from the module name.
+        module = module[len("ns3-"):]
+
+        # Set the directories and paths for this example. 
+        module_directory     = os.path.join("src", module)
+        example_directory    = os.path.join(module_directory, "examples")
+        examples_to_run_path = os.path.join(module_directory, "test", "examples-to-run.py")
+        cpp_executable_dir   = os.path.join(NS3_BUILDDIR, NS3_ACTIVE_VARIANT, example_directory)
+        python_script_dir    = os.path.join(example_directory)
+
+        # Parse this module's file.
+        parse_examples_to_run_file(
+            examples_to_run_path,
+            cpp_executable_dir,
+            python_script_dir,
+            example_tests,
+            python_tests)
 
     #
     # If lots of logging is enabled, we can crash Python when it tries to 
