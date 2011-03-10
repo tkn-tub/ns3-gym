@@ -128,6 +128,9 @@ protected:
   Ptr<NetDevice> GetLearnedState (Mac48Address source);
 
 private:
+  BridgeNetDevice (const BridgeNetDevice &);
+  BridgeNetDevice &operator = (const BridgeNetDevice &);
+
   NetDevice::ReceiveCallback m_rxCallback;
   NetDevice::PromiscReceiveCallback m_promiscRxCallback;
 

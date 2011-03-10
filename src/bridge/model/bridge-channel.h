@@ -47,6 +47,10 @@ public:
   virtual Ptr<NetDevice> GetDevice (uint32_t i) const;
 
 private:
+
+  BridgeChannel (const BridgeChannel &);
+  BridgeChannel &operator = (const BridgeChannel &);
+
   std::vector< Ptr<Channel> > m_bridgedChannels;
 
 };
