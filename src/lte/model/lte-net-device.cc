@@ -16,6 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Giuseppe Piro  <g.piro@poliba.it>
+ *         Nicola Baldo <nbaldo@cttc.es>
  */
 
 #include "ns3/llc-snap-header.h"
@@ -29,12 +30,9 @@
 #include "ns3/trace-source-accessor.h"
 #include "ns3/pointer.h"
 #include "ns3/enum.h"
-#include "radio-bearer-instance.h"
 #include "amc-module.h"
-#include "rrc-entity.h"
-#include "rlc-entity.h"
-#include "lte-mac-header.h"
 #include "ns3/ipv4-header.h"
+#include <ns3/lte-mac-tag.h>
 
 NS_LOG_COMPONENT_DEFINE ("LteNetDevice");
 
@@ -56,12 +54,6 @@ TypeId LteNetDevice::GetTypeId (void)
                    MakeUintegerAccessor (&LteNetDevice::SetMtu,
                                          &LteNetDevice::GetMtu),
                    MakeUintegerChecker<uint16_t> (0,MAX_MSDU_SIZE))
-
-    .AddAttribute ("Phy",
-                   "The PHY layer attached to this device.",
-                   PointerValue (),
-                   MakePointerAccessor (&LteNetDevice::GetPhy, &LteNetDevice::SetPhy),
-                   MakePointerChecker<LtePhy> ())
   ;
   return tid;
 }
@@ -83,11 +75,7 @@ LteNetDevice::DoDispose (void)
 {
   NS_LOG_FUNCTION (this);
 
-  m_phy->Dispose ();
-  m_phy = 0;
   m_node = 0;
-  m_rrcEntity->Dispose ();
-  m_rrcEntity = 0;
   m_phyMacTxStartCallback = MakeNullCallback< bool, Ptr<Packet> > ();
   NetDevice::DoDispose ();
 }
@@ -97,39 +85,8 @@ Ptr<Channel>
 LteNetDevice::GetChannel (void) const
 {
   NS_LOG_FUNCTION (this);
-  return GetPhy ()->GetDownlinkSpectrumPhy ()->GetChannel ();
-}
-
-
-void
-LteNetDevice::SetPhy (Ptr<LtePhy> phy)
-{
-  NS_LOG_FUNCTION (this << phy);
-  m_phy = phy;
-}
-
-
-Ptr<LtePhy>
-LteNetDevice::GetPhy (void) const
-{
-  NS_LOG_FUNCTION (this);
-  return m_phy;
-}
-
-
-void
-LteNetDevice::SetRrcEntity (Ptr<RrcEntity> rrc)
-{
-  NS_LOG_FUNCTION (this << rrc);
-  m_rrcEntity = rrc;
-}
-
-
-Ptr<RrcEntity>
-LteNetDevice::GetRrcEntity (void)
-{
-  NS_LOG_FUNCTION (this);
-  return m_rrcEntity;
+  // we can't return a meaningful channel here, because LTE devices using FDD have actually two channels.
+  return 0;
 }
 
 
@@ -187,14 +144,10 @@ LteNetDevice::ForwardUp (Ptr<Packet> packet)
 
   m_macRxTrace (packet);
 
-  LteMacHeader header;
-  packet->RemoveHeader (header);
-  NS_LOG_LOGIC ("packet " << header.GetSource () << " --> " << header.GetDestination () << " (here: " << m_address << ")");
-
   LlcSnapHeader llc;
   packet->RemoveHeader (llc);
 
-  m_rxCallback (this, packet, llc.GetType (), header.GetSource ());
+  m_rxCallback (this, packet, llc.GetType (), Address ());
 }
 
 
@@ -212,21 +165,14 @@ LteNetDevice::SendFrom (Ptr<Packet> packet, const Address& source, const Address
 {
   NS_LOG_FUNCTION (packet << source << dest << protocolNumber);
 
+
   LlcSnapHeader llcHdr;
   llcHdr.SetType (protocolNumber);
   packet->AddHeader (llcHdr);
 
-  Mac48Address from = Mac48Address::ConvertFrom (source);
-  Mac48Address to = Mac48Address::ConvertFrom (dest);
+  NS_FATAL_ERROR ("IP connectivity not implemented yet");
 
-  LteMacHeader header;
-  header.SetSource (from);
-  header.SetDestination (to);
-  packet->AddHeader (header);
-
-  // m_macTxTrace (packet);
-
-  return DoSend (packet, from, to, protocolNumber);
+  return true;
 }
 
 
@@ -295,7 +241,7 @@ bool
 LteNetDevice::IsLinkUp (void) const
 {
   NS_LOG_FUNCTION (this);
-  return m_phy != 0 && m_linkUp;
+  return m_linkUp;
 }
 
 

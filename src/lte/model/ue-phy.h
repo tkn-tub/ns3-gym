@@ -16,18 +16,27 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Giuseppe Piro  <g.piro@poliba.it>
+ * Author: Marco Miozzo <mmiozzo@cttc.es>
  */
 
 #ifndef UE_PHY_H
 #define UE_PHY_H
 
 
-#include "lte-phy.h"
+#include <ns3/lte-phy.h>
+#include <ns3/ff-mac-common.h>
+
+#include <ns3/ideal-control-messages.h>
+#include <ns3/amc-module.h>
+#include <ns3/lte-ue-phy-sap.h>
+#include <ns3/ptr.h>
+
 
 namespace ns3 {
 
 class PacketBurst;
 class LteNetDevice;
+class EnbLtePhy;
 
 /**
  * The LteSpectrumPhy models the physical layer of LTE
@@ -35,24 +44,33 @@ class LteNetDevice;
 class UeLtePhy : public LtePhy
 {
 
+  friend class UeMemberUeLtePhySapProvider;
+
 public:
+
   UeLtePhy ();
-
-  /**
-   * \brief Create the physical layer
-   * \param d the device where the physical layer is attached
-   */
-  UeLtePhy (Ptr<LteNetDevice> d);
-
   virtual ~UeLtePhy ();
+  virtual void DoDispose ();
   static TypeId GetTypeId (void);
 
+
   /**
-   * \brief Send the packet to the channel
-   * \param pb the burst of packet to send
-   * \return true if 
+   * \brief Get the PHY SAP provider
+   * \return a pointer to the SAP Provider of the PHY
    */
-  virtual bool SendPacket (Ptr<PacketBurst> pb);
+  LteUePhySapProvider* GetLteUePhySapProvider ();
+
+  /**
+  * \brief Set the PHY SAP User
+  * \param s a pointer to the PHY SAP user
+  */
+  void SetLteUePhySapUser (LteUePhySapUser* s);
+
+  /**
+   * \brief Queue the MAC PDU to be sent
+   * \param p the MAC PDU to sent
+   */
+  virtual void DoSendMacPdu (Ptr<Packet> p);
 
   /**
    * \brief Create the PSD for the TX
@@ -89,18 +107,67 @@ public:
 
 
   /**
-   * \brief Create CQI feedbacks from SINR values. SINR values are
-   * computed at the physical layer when is received a signal from the eNB
-   * \param sinr list of SINR values
-   */
-  void CreateCqiFeedbacks (std::vector<double> sinr);
+  * \brief Create the DL CQI feedback from SINR values perceived at
+  * the physical layer with the signal received from eNB
+  * \param sinr SINR values vector
+  */
+  Ptr<DlCqiIdealControlMessage> CreateDlCqiFeedbackMessage (const SpectrumValue& sinr);
 
-  virtual void SendIdealControlMessage (Ptr<IdealControlMessage> msg);
+
+
+  // inherited from LtePhy
+  virtual void GenerateCqiFeedback (const SpectrumValue& sinr);
+
+  virtual void DoSendIdealControlMessage (Ptr<IdealControlMessage> msg);
   virtual void ReceiveIdealControlMessage (Ptr<IdealControlMessage> msg);
+
+
+
+  /**
+   * \brief PhySpectrum received a new PHY-PDU
+   */
+  void PhyPduReceived (Ptr<Packet> p);
+  
+  
+  /**
+  * \brief trigger from eNB the start from a new frame
+  *
+  * \param frameNo frame number
+  * \param subframeNo subframe number
+  */
+  void SubframeIndication (uint32_t frameNo, uint32_t subframeNo);
+
+
+  /**
+  * \param rnti the rnti assigned to the UE
+  */
+  void SetRnti (uint16_t rnti);
+
+
+  /** 
+   * set the eNB this PHY is synchronized with 
+   * 
+   * \param enbPhy a pointer to the PHY of the eNB, used for exchanging control messages
+   * \param cellId the cell identifier of the eNB
+   */
+  void SetTargetEnb (Ptr<EnbLtePhy> enbPhy);    
+
 
 private:
   std::vector <int> m_subChannelsForTransmission;
   std::vector <int> m_subChannelsForReception;
+
+  Time m_p10CqiPeriocity; /**< Wideband Periodic CQI: 2, 5, 10, 16, 20, 32, 40, 64, 80 or 160 ms */
+  Time m_p10CqiLast;
+
+  LteUePhySapProvider* m_uePhySapProvider;
+  LteUePhySapUser* m_uePhySapUser;
+
+  uint16_t  m_rnti;
+
+  Ptr<EnbLtePhy> m_targetEnbPhy;  
+  uint16_t m_cellId;
+  
 };
 
 

@@ -43,7 +43,7 @@ EnbLteSpectrumPhy::EnbLteSpectrumPhy ()
   SetDevice (0);
   SetChannel (0);
   SetState (LteSpectrumPhy::IDLE);
-  //GetSpectrumInterference ()->SetErrorModel (CreateObject<LteSpectrumErrorModel> ());
+  // GetSpectrumInterference ()->SetErrorModel (CreateObject<LteSpectrumErrorModel> ());
 
   LteSpectrumValueHelper psdHelper;
   Ptr<SpectrumValue> noisePsd = psdHelper.CreateUplinkNoisePowerSpectralDensity ();

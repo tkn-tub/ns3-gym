@@ -12,5 +12,6 @@ Node and NetDevices
     bridge
     wimax
     lte
+    ff-api
     uan
     energy

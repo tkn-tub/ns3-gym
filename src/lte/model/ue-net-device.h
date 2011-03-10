@@ -16,6 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Giuseppe Piro  <g.piro@poliba.it>
+ *         Nicola Baldo <nbaldo@cttc.es>
  */
 
 #ifndef UE_NET_DEVICE_H
@@ -37,8 +38,10 @@ class Packet;
 class PacketBurst;
 class Node;
 class LtePhy;
+class UeLtePhy;
 class EnbNetDevice;
-class UeMacEntity;
+class LteUeMac;
+class LteUeRrc;
 
 /**
  * The UeNetDevice class implements the UE net device
@@ -54,38 +57,23 @@ public:
    * \param node
    * \param phy
    */
-  UeNetDevice (Ptr<Node> node, Ptr<LtePhy> phy);
+  UeNetDevice (Ptr<Node> node, Ptr<UeLtePhy> phy);
 
-  /**
-   *  \brief Create an UE net device
-   * \param node
-   * \param phy
-   * \param targetEnb the enb where the UE is registered
-   */
-  UeNetDevice (Ptr<Node> node, Ptr<LtePhy> phy, Ptr<EnbNetDevice> targetEnb);
   virtual ~UeNetDevice (void);
   virtual void DoDispose ();
 
-  /**
-   * \brief Set the MAC entity
-   * \param m the MAC entity
-   */
-  void SetMacEntity (Ptr<UeMacEntity> m);
-  /**
-   * \brief Get the MAC entity
-   * \return the pointer to the MAC entity
-   */
-  Ptr<UeMacEntity> GetMacEntity (void);
 
+  Ptr<LteUeMac> GetMac (void);
+
+  Ptr<LteUeRrc> GetRrc ();
+
+  Ptr<UeLtePhy> GetPhy (void) const;
 
   /**
    * \brief Initialize the UE
    */
 
   void InitUeNetDevice (void);
-
-  void Start (void);
-  void Stop (void);
 
   /**
    * \brief Set the targer eNB where the UE is registered
@@ -98,16 +86,6 @@ public:
    */
   Ptr<EnbNetDevice> GetTargetEnb (void);
 
-  /**
-   * \brief Start packet transmission.
-   * This functipon will called when a PDCCH messages is received
-   * According to the allocated resources in the uplink
-   * the UE create a packet burst and send it to the phy layer
-   */
-  void StartTransmission (void);
-
-  bool SendPacket (Ptr<PacketBurst> p);
-
 
 private:
   bool DoSend (Ptr<Packet> packet,
@@ -119,7 +97,9 @@ private:
 
   Ptr<EnbNetDevice> m_targetEnb;
 
-  Ptr<UeMacEntity> m_macEntity;
+  Ptr<LteUeMac> m_mac;
+  Ptr<UeLtePhy> m_phy;
+  Ptr<LteUeRrc> m_rrc;
 };
 
 } // namespace ns3

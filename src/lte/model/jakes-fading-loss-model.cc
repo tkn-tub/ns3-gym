@@ -118,10 +118,10 @@ JakesFadingLossModel::SetValue (void)
 
 
   /*
-   * Several 3GPP standards propose a simulation scenario to use duirng the 
+   * Several 3GPP standards propose a simulation scenario to use duirng the
    * LTE performance evaluation. In particular they suggest to consider these
    * user speeds: 0, 3, 30, 120 km/h. To this aim, we should map user speed
-   * into one of the suggested values. 
+   * into one of the suggested values.
    */
   if (speed < 3.)
     {

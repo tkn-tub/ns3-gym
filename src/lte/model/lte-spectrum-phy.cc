@@ -1,6 +1,6 @@
 /* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
 /*
- * Copyright (c) 2009 CTTC
+ * Copyright (c) 2009, 2011 CTTC
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -20,15 +20,15 @@
  */
 
 
-#include <ns3/waveform-generator.h>
 #include <ns3/object-factory.h>
 #include <ns3/log.h>
 #include <math.h>
 #include <ns3/simulator.h>
 #include <ns3/trace-source-accessor.h>
-#include "ns3/spectrum-error-model.h"
 #include "lte-spectrum-phy.h"
 #include "lte-net-device.h"
+#include "lte-mac-tag.h"
+#include "lte-sinr-chunk-processor.h"
 
 NS_LOG_COMPONENT_DEFINE ("LteSpectrumPhy");
 
@@ -44,14 +44,11 @@ LteSpectrumPhy::LteSpectrumPhy ()
     m_txPsd (0),
     m_state (IDLE)
 {
-  //m_interference = CreateObject<SpectrumInterference> ();
-  //m_interference->SetErrorModel (CreateObject<LteSpectrumErrorModel> ());
 }
 
 
 LteSpectrumPhy::~LteSpectrumPhy ()
 {
-
 }
 
 std::ostream& operator<< (std::ostream& os, LteSpectrumPhy::State s)
@@ -173,7 +170,7 @@ LteSpectrumPhy::GetSpectrumType ()
   return st;
 }
 
-     
+
 void
 LteSpectrumPhy::SetTxPowerSpectralDensity (Ptr<SpectrumValue> txPsd)
 {
@@ -190,15 +187,9 @@ LteSpectrumPhy::SetNoisePowerSpectralDensity (Ptr<const SpectrumValue> noisePsd)
   NS_LOG_FUNCTION (this << noisePsd);
   NS_LOG_INFO ("\t computed noise_psd: " << *noisePsd );
   NS_ASSERT (noisePsd);
-  m_noise = noisePsd;
+  m_interference.SetNoisePowerSpectralDensity (noisePsd);
 }
 
-Ptr<const SpectrumValue> 
-LteSpectrumPhy::GetNoisePowerSpectralDensity (void)
-{ 
-  NS_LOG_FUNCTION (this);
-  return m_noise;
-}
 
 
 void
@@ -206,14 +197,6 @@ LteSpectrumPhy::SetPhyMacTxEndCallback (PhyMacTxEndCallback c)
 {
   NS_LOG_FUNCTION (this);
   m_phyMacTxEndCallback = c;
-}
-
-
-void
-LteSpectrumPhy::SetPhyMacRxStartCallback (PhyMacRxStartCallback c)
-{
-  NS_LOG_FUNCTION (this);
-  m_phyMacRxStartCallback = c;
 }
 
 
@@ -282,7 +265,7 @@ LteSpectrumPhy::StartTx (Ptr<PacketBurst> pb)
        */
       NS_ASSERT (m_txPsd);
 
-      m_txPacket = pb;
+      m_txPacketBurst = pb;
       ChangeState (TX);
       NS_ASSERT (m_channel);
       double tti = 0.001;
@@ -306,8 +289,8 @@ LteSpectrumPhy::EndTx ()
 
   NS_ASSERT (m_state == TX);
 
-  for (std::list<Ptr<Packet> >::const_iterator iter = m_txPacket->Begin (); iter
-       != m_txPacket->End (); ++iter)
+  for (std::list<Ptr<Packet> >::const_iterator iter = m_txPacketBurst->Begin (); iter
+       != m_txPacketBurst->End (); ++iter)
     {
       Ptr<Packet> packet = (*iter)->Copy ();
       m_phyTxEndTrace (packet);
@@ -315,15 +298,15 @@ LteSpectrumPhy::EndTx ()
 
   if (!m_phyMacTxEndCallback.IsNull ())
     {
-      for (std::list<Ptr<Packet> >::const_iterator iter = m_txPacket->Begin (); iter
-           != m_txPacket->End (); ++iter)
+      for (std::list<Ptr<Packet> >::const_iterator iter = m_txPacketBurst->Begin (); iter
+           != m_txPacketBurst->End (); ++iter)
         {
           Ptr<Packet> packet = (*iter)->Copy ();
           m_phyMacTxEndCallback (packet);
         }
     }
 
-  m_txPacket = 0;
+  m_txPacketBurst = 0;
   ChangeState (IDLE);
 }
 
@@ -334,12 +317,9 @@ LteSpectrumPhy::StartRx (Ptr<PacketBurst> pb, Ptr <const SpectrumValue> rxPsd, S
   NS_LOG_FUNCTION (this << pb << rxPsd << st << duration);
   NS_LOG_LOGIC (this << "state: " << m_state);
 
-
-  // interference will happen regardless of the state of the receiver
-  // m_interference->AddSignal (rxPsd, duration);
+  m_interference.AddSignal (rxPsd, duration);
 
   // the device might start RX only if the signal is of a type understood by this device
-  // this corresponds in real device to preamble detection
   if (st == GetSpectrumType ())
     {
       switch (m_state)
@@ -360,6 +340,9 @@ LteSpectrumPhy::StartRx (Ptr<PacketBurst> pb, Ptr <const SpectrumValue> rxPsd, S
           // preamble detection and synchronization is supposed to be always successful.
           NS_LOG_LOGIC (this << " receiving new packet");
 
+          m_interference.StartRx (rxPsd);
+  
+
           for (std::list<Ptr<Packet> >::const_iterator iter = pb->Begin (); iter
                != pb->End (); ++iter)
             {
@@ -368,31 +351,10 @@ LteSpectrumPhy::StartRx (Ptr<PacketBurst> pb, Ptr <const SpectrumValue> rxPsd, S
             }
 
 
-          m_rxPacket = pb;
+          m_rxPacketBurst = pb;
           m_rxPsd = rxPsd;
 
           ChangeState (RX);
-
-          if (!m_phyMacRxStartCallback.IsNull ())
-            {
-              NS_LOG_LOGIC (this << " calling m_phyMacRxStartCallback");
-              m_phyMacRxStartCallback ();
-            }
-          else
-            {
-              NS_LOG_LOGIC (this << " m_phyMacRxStartCallback is NULL");
-            }
-
-          // XXX: modify SpectrumInterference in order to compute
-          // the correct/erroneus reception of PacketBurst!!!
-          /* 
-          for (std::list<Ptr<Packet> >::const_iterator iter = pb->Begin (); iter
-               != pb->End (); ++iter)
-            {
-              Ptr<Packet> packet = (*iter)->Copy ();
-              m_interference->StartRx (packet, rxPsd);
-            }
-          */
 
 
           NS_LOG_LOGIC (this << " scheduling EndRx with delay " << duration);
@@ -415,15 +377,15 @@ LteSpectrumPhy::AbortRx ()
 
   NS_ASSERT (m_state == RX);
 
-  for (std::list<Ptr<Packet> >::const_iterator iter = m_rxPacket->Begin (); iter
-       != m_rxPacket->End (); ++iter)
+  for (std::list<Ptr<Packet> >::const_iterator iter = m_rxPacketBurst->Begin (); iter
+       != m_rxPacketBurst->End (); ++iter)
     {
       Ptr<Packet> packet = (*iter)->Copy ();
       m_phyRxAbortTrace (packet);
     }
 
   m_endRxEventId.Cancel ();
-  m_rxPacket = 0;
+  m_rxPacketBurst = 0;
   ChangeState (IDLE);
 }
 
@@ -436,67 +398,66 @@ LteSpectrumPhy::EndRx ()
 
   NS_ASSERT (m_state == RX);
 
-  CalcSinrValues (m_rxPsd, GetNoisePowerSpectralDensity ());
+  // this will trigger CQI calculation and Error Model evaluation
+  // as a side effect, the error model should update the error status of all PDUs
+  m_interference.EndRx ();
 
-  bool rxOk = true; //m_interference->EndRx ();
-
-  NS_LOG_FUNCTION (rxOk);
-  if (rxOk)
+  for (std::list<Ptr<Packet> >::const_iterator iter = m_rxPacketBurst->Begin (); iter
+         != m_rxPacketBurst->End (); ++iter)
     {
+      // here we should determine whether this particular PDU
+      // (identified by RNTI and LCID) has been received with errors
+      // or not 
+      // LteMacTag tag;
+      // (*iter)->PeekPacketTag (tag);
+      // uint16_t rnti = tag.GetRnti ();
+      // uint8_t lcid = tag.GetLcid ();
+      // bool pduError = IsPduInError (rnti, lcid);
+      bool pduError = false;
 
-      for (std::list<Ptr<Packet> >::const_iterator iter = m_rxPacket->Begin (); iter
-           != m_rxPacket->End (); ++iter)
+      if (pduError)
         {
-          Ptr<Packet> packet = (*iter)->Copy ();
-          m_phyRxEndOkTrace (packet);
-        }
-
-      if (!m_phyMacRxEndOkCallback.IsNull ())
-        {
-          NS_LOG_LOGIC (this << " calling m_phyMacRxEndOkCallback");
-
-          for (std::list<Ptr<Packet> >::const_iterator iter = m_rxPacket->Begin (); iter
-               != m_rxPacket->End (); ++iter)
+          m_phyRxEndErrorTrace ((*iter)->Copy ());
+          if (!m_phyMacRxEndErrorCallback.IsNull ())
             {
-              Ptr<Packet> packet = (*iter)->Copy ();
-              m_phyMacRxEndOkCallback (packet);
+              NS_LOG_LOGIC (this << " calling m_phyMacRxEndErrorCallback");
+              m_phyMacRxEndOkCallback ((*iter)->Copy ());
             }
-        }
-      else
-        {
-          NS_LOG_LOGIC (this << " m_phyMacRxEndOkCallback is NULL");
-        }
-    }
-  else
-    {
-      for (std::list<Ptr<Packet> >::const_iterator iter = m_rxPacket->Begin (); iter
-           != m_rxPacket->End (); ++iter)
-        {
-          Ptr<Packet> packet = (*iter)->Copy ();
-          m_phyRxEndErrorTrace (packet);
-        }
-
-      if (!m_phyMacRxEndErrorCallback.IsNull ())
-        {
-          NS_LOG_LOGIC (this << " calling m_phyMacRxEndErrorCallback");
-
-          for (std::list<Ptr<Packet> >::const_iterator iter = m_rxPacket->Begin (); iter
-               != m_rxPacket->End (); ++iter)
+          else
             {
-              Ptr<Packet> packet = (*iter)->Copy ();
-              m_phyMacRxEndOkCallback (packet);
+              NS_LOG_LOGIC (this << " m_phyMacRxEndErrorCallback is NULL");
             }
-
-        }
-      else
+        }        
+      else // pdu received successfully
         {
-          NS_LOG_LOGIC (this << " m_phyMacRxEndErrorCallback is NULL");
+          m_phyRxEndOkTrace ((*iter)->Copy ());          
+          if (!m_phyMacRxEndOkCallback.IsNull ())
+            {
+              NS_LOG_LOGIC (this << " calling m_phyMacRxEndOkCallback"); 
+              m_phyMacRxEndOkCallback (*iter);            
+            }
+          else
+            {
+              NS_LOG_LOGIC (this << " m_phyMacRxEndOkCallback is NULL");
+            }
         }
     }
 
   ChangeState (IDLE);
-  m_rxPacket = 0;
+  m_rxPacketBurst = 0;
   m_rxPsd = 0;
+}
+
+void 
+LteSpectrumPhy::SetCellId (uint16_t cellId)
+{
+  m_cellId = cellId;
+}
+
+void
+LteSpectrumPhy::AddSinrChunkProcessor (Ptr<LteSinrChunkProcessor> p)
+{
+  m_interference.AddSinrChunkProcessor (p);
 }
 
 

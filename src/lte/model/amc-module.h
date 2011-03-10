@@ -15,37 +15,36 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * Author: Giuseppe Piro  <g.piro@poliba.it>
+ * Original Author: Giuseppe Piro  <g.piro@poliba.it>
+ * Modified by:     Nicola Baldo   <nbaldo@cttc.es>
  */
 
 #ifndef AMCMODULE_H
 #define AMCMODULE_H
 
-#include "ns3/object.h"
 #include <vector>
+#include <ns3/ptr.h>
 
 namespace ns3 {
 
+class SpectrumValue;
 
 /**
- * \brief The AMC module attached to the LTE networ device
- * AmcModule class implements the Adaptive Modulation And Coding Scheme
+ * \brief The AmcModule class implements the Adaptive Modulation And Coding Scheme
  * as proposed in 3GPP TSG-RAN WG1 - R1-081483
  * http://www.3gpp.org/ftp/tsg_ran/WG1_RL1/TSGR1_52b/Docs/R1-081483.zip
+ *
+ * \note All the methods of this class are static, so you'll never
+ * need to create and manage instances of this class.
  */
-class AmcModule : public Object
+class AmcModule
 {
 
 public:
-  static TypeId GetTypeId (void);
-
-  AmcModule ();
-  virtual ~AmcModule ();
-
   /**
    * \brief Initialize CQI, MCS, SpectralEfficiency e TBs values
    */
-  void Initialize ();
+  static void Initialize ();
 
   /**
    * \brief Get the Modulation anc Coding Scheme for
@@ -53,14 +52,22 @@ public:
    * \param cqi the cqi value
    * \return the MCS  value
    */
-  int GetMcsFromCqi (int cqi);
+  static int GetMcsFromCqi (int cqi);
 
   /**
    * \brief Get the Transport Block Size for a selected MCS
    * \param mcs the mcs index
    * \return the TBs value
    */
-  int GetTbSizeFromMcs (int mcs);
+  static int GetTbSizeFromMcs (int mcs);
+
+  /**
+  * \brief Get the Transport Block Size for a selected MCS and number of PRB (table 7.1.7.2.1-1 of 36.213)
+  * \param mcs the mcs index
+  * \param nprb the no. of PRB
+  * \return the TBs value
+  */
+  static int GetTbSizeFromMcs (int mcs, int nprb);
 
   /**
    * \brief Get the spectral efficiency value associated
@@ -68,12 +75,13 @@ public:
    * \param cqi the cqi value
    * \return the spectral efficiency value
    */
-  double GetSpectralEfficiencyFromCqi (int cqi);
+  static double GetSpectralEfficiencyFromCqi (int cqi);
 
   /**
-   * \brief Create a message with CQI feedbaks
+   * \brief Create a message with CQI feedback
+   *
    */
-  std::vector<int> CreateCqiFeedbacks (std::vector<double> sinr);
+  static std::vector<int> CreateCqiFeedbacks (const SpectrumValue& sinr);
 
 private:
   /**
@@ -83,7 +91,7 @@ private:
    * \param s the spectral efficiency
    * \return the CQI value
    */
-  int GetCqiFromSpectralEfficiency (double s);
+  static int GetCqiFromSpectralEfficiency (double s);
 
 };
 

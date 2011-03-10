@@ -22,7 +22,7 @@
 #ifndef LTE_SPECTRUM_PHY_H
 #define LTE_SPECTRUM_PHY_H
 
-
+#include <ns3/event-id.h>
 #include <ns3/spectrum-value.h>
 #include <ns3/mobility-model.h>
 #include <ns3/packet.h>
@@ -35,6 +35,7 @@
 #include <ns3/data-rate.h>
 #include <ns3/phy-mac.h>
 #include <ns3/packet-burst.h>
+#include <ns3/lte-interference.h>
 
 namespace ns3 {
 
@@ -58,6 +59,7 @@ public:
     IDLE, TX, RX
   };
 
+  // inherited from Object
   static TypeId GetTypeId (void);
 
   // inherited from SpectrumPhy
@@ -67,6 +69,8 @@ public:
   Ptr<Object> GetMobility ();
   Ptr<Object> GetDevice ();
   Ptr<const SpectrumModel> GetRxSpectrumModel () const;
+  void StartRx (Ptr<PacketBurst> pb, Ptr <const SpectrumValue> rxPsd, SpectrumType st, Time duration);
+  
 
   /**
    * \brief Get the channel where the physical layer is attached
@@ -96,13 +100,7 @@ public:
    * (Watt, Pascal...) per Hz.
    */
   void SetNoisePowerSpectralDensity (Ptr<const SpectrumValue> noisePsd);
-
-  /**
-   * \brief get the noise power spectral density
-   * @return the Noise Power Spectral Density
-   */
-  Ptr<const SpectrumValue> GetNoisePowerSpectralDensity (void);
-
+ 
   /**
    * Start a transmission
    *
@@ -114,15 +112,6 @@ public:
    */
   bool StartTx (Ptr<PacketBurst> pb);
 
-  /**
-   * \brief Notify the SpectrumPhy instance of an incoming waveform
-   * \param pb the burst of packet associated with the incoming waveform
-   * \param rxPsd the Power Spectral Density of the incoming waveform. 
-   * The units of the SPD are the same specified for SpectrumChannel::StartTx().
-   * \param st the spectrum type
-   * \param duration the duration of the incoming waveform
-   */
-  void StartRx (Ptr<PacketBurst> pb, Ptr <const SpectrumValue> rxPsd, SpectrumType st, Time duration);
 
   /**
    * set the callback for the end of a TX, as part of the
@@ -131,14 +120,6 @@ public:
    * @param c the callback
    */
   void SetPhyMacTxEndCallback (PhyMacTxEndCallback c);
-
-  /**
-   * set the callback for the start of RX, as part of the
-   * interconnections betweenthe PHY and the MAC
-   *
-   * @param c the callback
-   */
-  void SetPhyMacRxStartCallback (PhyMacRxStartCallback c);
 
   /**
    * set the callback for the end of a RX in error, as part of the
@@ -157,25 +138,31 @@ public:
   void SetPhyMacRxEndOkCallback (PhyMacRxEndOkCallback c);
 
   /**
-   * \brief Calculate the SINR estimated during the reception of the
-   * packet.
-   * \param rxPsd the Power Spectral Density of the incoming waveform.
-   * \param noise the Power Spectral Density of the noise.
-   */
-  virtual void CalcSinrValues (Ptr <const SpectrumValue> rxPsd, Ptr <const SpectrumValue> noise) = 0;
-
-
-  /**
    * \brief Set the state of the phy layer
-   * \param newState the state 
+   * \param newState the state
    */
   void SetState (State newState);
 
+  /** 
+   * 
+   * 
+   * \param cellId the Cell Identifier
+   */
+  void SetCellId (uint16_t cellId);
+
+  
+  /** 
+   * 
+   * 
+   * \param p the new LteSinrChunkProcessor to be added to the processing chain
+   */
+  void AddSinrChunkProcessor (Ptr<LteSinrChunkProcessor> p);
+  
 private:
   void ChangeState (State newState);
   void EndTx ();
   void AbortRx ();
-  virtual void EndRx ();
+  void EndRx ();
 
   EventId m_endRxEventId;
 
@@ -187,8 +174,8 @@ private:
 
   Ptr<SpectrumValue> m_txPsd;
   Ptr<const SpectrumValue> m_rxPsd;
-  Ptr<PacketBurst> m_txPacket;
-  Ptr<PacketBurst> m_rxPacket;
+  Ptr<PacketBurst> m_txPacketBurst;
+  Ptr<PacketBurst> m_rxPacketBurst;
 
   State m_state;
 
@@ -200,12 +187,12 @@ private:
   TracedCallback<Ptr<const Packet> > m_phyRxEndErrorTrace;
 
   PhyMacTxEndCallback        m_phyMacTxEndCallback;
-  PhyMacRxStartCallback      m_phyMacRxStartCallback;
   PhyMacRxEndErrorCallback   m_phyMacRxEndErrorCallback;
   PhyMacRxEndOkCallback      m_phyMacRxEndOkCallback;
 
+  LteInterference m_interference;
 
-  Ptr<const SpectrumValue> m_noise;
+  uint16_t m_cellId; 
 };
 
 

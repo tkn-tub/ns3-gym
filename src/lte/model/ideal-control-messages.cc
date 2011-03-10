@@ -16,6 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Giuseppe Piro  <g.piro@poliba.it>
+ *         Marco Miozzo <marco.miozzo@cttc.es>
  */
 
 #include "ideal-control-messages.h"
@@ -151,4 +152,153 @@ CqiIdealControlMessage::GetMessage (void)
 }
 
 
+
+// ----------------------------------------------------------------------------------------------------------
+
+
+DlDciIdealControlMessage::DlDciIdealControlMessage (void)
+{
+  SetMessageType (IdealControlMessage::DL_DCI);
+}
+
+
+DlDciIdealControlMessage::~DlDciIdealControlMessage (void)
+{
+
+}
+
+void
+DlDciIdealControlMessage::SetDci (DlDciListElement_s dci)
+{
+  m_dci = dci;
+
+}
+
+
+DlDciListElement_s
+DlDciIdealControlMessage::GetDci (void)
+{
+  return m_dci;
+}
+
+
+// ----------------------------------------------------------------------------------------------------------
+
+
+UlDciIdealControlMessage::UlDciIdealControlMessage (void)
+{
+  SetMessageType (IdealControlMessage::UL_DCI);
+}
+
+
+UlDciIdealControlMessage::~UlDciIdealControlMessage (void)
+{
+  
+}
+
+void
+UlDciIdealControlMessage::SetDci (UlDciListElement_s dci)
+{
+  m_dci = dci;
+  
+}
+
+
+UlDciListElement_s
+UlDciIdealControlMessage::GetDci (void)
+{
+  return m_dci;
+}
+
+
+// ----------------------------------------------------------------------------------------------------------
+
+
+DlCqiIdealControlMessage::DlCqiIdealControlMessage (void)
+{
+  SetMessageType (IdealControlMessage::DL_CQI);
+}
+
+
+DlCqiIdealControlMessage::~DlCqiIdealControlMessage (void)
+{
+
+}
+
+void
+DlCqiIdealControlMessage::SetDlCqi (CqiListElement_s dlcqi)
+{
+  m_dlCqi = dlcqi;
+
+}
+
+
+CqiListElement_s
+DlCqiIdealControlMessage::GetDlCqi (void)
+{
+  return m_dlCqi;
+}
+
+
+
+// ----------------------------------------------------------------------------------------------------------
+
+
+UlCqiIdealControlMessage::UlCqiIdealControlMessage (void)
+{
+  SetMessageType (IdealControlMessage::UL_CQI);
+}
+
+
+UlCqiIdealControlMessage::~UlCqiIdealControlMessage (void)
+{
+
+}
+
+void
+UlCqiIdealControlMessage::SetUlCqi (UlCqi_s ulCqi)
+{
+  m_ulCqi = ulCqi;
+
+}
+
+
+UlCqi_s
+UlCqiIdealControlMessage::GetUlCqi (void)
+{
+  return m_ulCqi;
+}
+
+
+
+// ----------------------------------------------------------------------------------------------------------
+
+
+BsrIdealControlMessage::BsrIdealControlMessage (void)
+{
+  SetMessageType (IdealControlMessage::BSR);
+}
+
+
+BsrIdealControlMessage::~BsrIdealControlMessage (void)
+{
+
+}
+
+void
+BsrIdealControlMessage::SetBsr (MacCeListElement_s bsr)
+{
+  m_bsr = bsr;
+
+}
+
+
+MacCeListElement_s
+BsrIdealControlMessage::GetBsr (void)
+{
+  return m_bsr;
+}
+
+
 } // namespace ns3
+

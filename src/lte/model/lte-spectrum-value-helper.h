@@ -40,7 +40,7 @@ public:
    * \param channels the list of sub channels where the signal will be sent
    * \return a Ptr to a newly created SpectrumValue instance
    */
-  Ptr<SpectrumValue> CreateDownlinkTxPowerSpectralDensity (double powerTx, std::vector <int> channels);
+  static Ptr<SpectrumValue> CreateDownlinkTxPowerSpectralDensity (double powerTx, std::vector <int> channels);
 
   /**
    * \brief create spectrum value
@@ -48,20 +48,20 @@ public:
    * \param channels the list of sub channels where the signal will be sent
    * \return a Ptr to a newly created SpectrumValue instance
    */
-  Ptr<SpectrumValue> CreateUplinkTxPowerSpectralDensity (double powerTx, std::vector <int> channels);
+  static Ptr<SpectrumValue> CreateUplinkTxPowerSpectralDensity (double powerTx, std::vector <int> channels);
 
 
   /**
    * \brief create spectrum value for noise
    * \return a Ptr to a newly created SpectrumValue instance
    */
-  Ptr<SpectrumValue> CreateDownlinkNoisePowerSpectralDensity (void);
+  static Ptr<SpectrumValue> CreateDownlinkNoisePowerSpectralDensity (void);
 
   /**
    * \brief create spectrum value for noise
    * \return a Ptr to a newly created SpectrumValue instance
    */
-  Ptr<SpectrumValue> CreateUplinkNoisePowerSpectralDensity (void);
+  static Ptr<SpectrumValue> CreateUplinkNoisePowerSpectralDensity (void);
 
 
 };

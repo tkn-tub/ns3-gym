@@ -1,0 +1,142 @@
+/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/*
+ * Copyright (c) 2011 Centre Tecnologic de Telecomunicacions de Catalunya (CTTC)
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation;
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * Author: Nicola Baldo <nbaldo@cttc.es>
+ */
+
+#ifndef LTE_UE_RRC_H
+#define LTE_UE_RRC_H
+
+#include <ns3/object.h>
+#include <ns3/packet.h>
+#include <ns3/lte-ue-cmac-sap.h>
+
+#include <map>
+
+namespace ns3 {
+
+class LteRlc;
+class LteMacSapProvider;
+class LteUeCmacSapUser;
+class LteUeCmacSapProvider;
+class UeInfo;
+
+/**
+ *
+ *
+ */
+class LteUeRrc : public Object
+{
+
+  friend class UeMemberLteUeCmacSapUser;
+
+public:
+  /**
+   * create an RRC instance for use within an ue
+   *
+   */
+  LteUeRrc ();
+
+
+  /**
+   * Destructor
+   */
+  virtual ~LteUeRrc ();
+
+
+  // inherited from Object
+  virtual void DoDispose (void);
+  static TypeId GetTypeId (void);
+
+
+  /**
+   * set the CMAC SAP this RRC should interact with
+   *
+   * \param s the CMAC SAP Provider to be used by this RRC
+   */
+  void SetLteUeCmacSapProvider (LteUeCmacSapProvider * s);
+
+  /**
+   *
+   *
+   * \return s the CMAC SAP User interface offered to the MAC by this RRC
+   */
+  LteUeCmacSapUser* GetLteUeCmacSapUser ();
+
+
+  /**
+   * set the MAC SAP provider. The ue RRC does not use this
+   * directly, but it needs to provide it to newly created RLC instances.
+   *
+   * \param s the MAC SAP provider that will be used by all
+   * newly created RLC instances
+   */
+  void SetLteMacSapProvider (LteMacSapProvider* s);
+
+  /**
+   * Set UE RRC parameters
+   *
+   * \param rnti  C-RNTI of the UE
+   */
+  void ConfigureUe (uint16_t rnti);
+
+  /**
+   * Setup a new radio bearer for the given user
+   *
+   * \param rnti the RNTI of the user
+   * \param bearer the characteristics of the bearer to be activated
+   * \param lcid the logical channel id allocated for this bearer by the eNB
+   *
+   */
+  void SetupRadioBearer (uint16_t rnti, EpsBearer bearer, uint8_t lcid);
+
+
+  /**
+   *
+   * Release the given radio bearer
+   *
+   * \param rnti the C-RNTI  of the user owning the bearer
+   * \param lcId the logical channel id of the bearer to be released
+   */
+  void ReleaseRadioBearer (uint16_t rnti, uint8_t lcId);
+
+
+  /**
+   *
+   * \return the C-RNTI of the user
+   */
+  uint16_t GetRnti ();
+
+private:
+  // forwarded from CMAC SAP user
+  void DoLcConfigCompleted ();
+
+  LteUeCmacSapUser* m_cmacSapUser;
+  LteUeCmacSapProvider* m_cmacSapProvider;
+
+  LteMacSapProvider* m_macSapProvider;
+
+  uint16_t m_rnti;
+
+  std::map<uint8_t, Ptr<LteRlc> > m_rlcMap;
+
+};
+
+
+} // namespace ns3
+
+#endif // LTE_UE_RRC_H

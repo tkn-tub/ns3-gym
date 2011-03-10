@@ -55,12 +55,12 @@ public:
   double GetValue (int subChannel);
 
   /**
-   * \brief Set the physical layer 
+   * \brief Set the physical layer
    * \param phy the physical layer
    */
   void SetPhy (Ptr<LtePhy> phy);
   /**
-   * \brief Get the physical layer 
+   * \brief Get the physical layer
    * \return the pointer to the physical layer
    */
   Ptr<LtePhy> GetPhy (void);
@@ -78,16 +78,15 @@ public:
    */
 
   /**
-   * brief a list of multipath values for the time domain 
+   * brief a list of multipath values for the time domain
    */
   typedef std::vector<double> MultipathForTimeDomain;
   /**
-   * brief a list of multipath values for the frequency domain 
+   * brief a list of multipath values for the frequency domain
    */
   typedef std::vector<MultipathForTimeDomain> MultipathForFrequencyDomain;
 
 private:
-
   MultipathForFrequencyDomain m_multipath;
 
   UniformVariable m_nbOfPaths;

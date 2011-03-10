@@ -16,6 +16,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Giuseppe Piro  <g.piro@poliba.it>
+ *         Nicola Baldo <nbaldo@cttc.es>
+ *         Marco Miozzo <mmiozzo@cttc.es>
  */
 
 #include "ns3/llc-snap-header.h"
@@ -29,19 +31,15 @@
 #include "ns3/trace-source-accessor.h"
 #include "ns3/pointer.h"
 #include "ns3/enum.h"
-#include "radio-bearer-instance.h"
-#include "ue-record.h"
-#include "ue-manager.h"
 #include "enb-net-device.h"
 #include "ue-net-device.h"
-#include "ue-mac-entity.h"
-#include "rlc-entity.h"
-#include "rrc-entity.h"
-#include "lte-mac-header.h"
+#include "lte-ue-mac.h"
+#include "lte-ue-rrc.h"
 #include "ns3/ipv4-header.h"
 #include "ns3/ipv4.h"
 #include "amc-module.h"
 // #include "ideal-control-messages.h"
+#include <ns3/ue-phy.h>
 
 NS_LOG_COMPONENT_DEFINE ("UeNetDevice");
 
@@ -63,26 +61,23 @@ TypeId UeNetDevice::GetTypeId (void)
 UeNetDevice::UeNetDevice (void)
 {
   NS_LOG_FUNCTION (this);
+  NS_FATAL_ERROR ("This constructor should not be called");
   InitUeNetDevice ();
 }
 
 
-UeNetDevice::UeNetDevice (Ptr<Node> node, Ptr<LtePhy> phy)
+UeNetDevice::UeNetDevice (Ptr<Node> node, Ptr<UeLtePhy> phy)
+  : m_phy (phy)
 {
   NS_LOG_FUNCTION (this);
   InitUeNetDevice ();
   SetNode (node);
-  SetPhy (phy);
-}
 
-
-UeNetDevice::UeNetDevice (Ptr<Node> node, Ptr<LtePhy> phy, Ptr<EnbNetDevice> targetEnb)
-{
-  NS_LOG_FUNCTION (this << node << phy << targetEnb);
-  InitUeNetDevice ();
-  SetNode (node);
-  SetPhy (phy);
-  m_targetEnb = targetEnb;
+  /**
+  * WILD HACK
+  * to be translated to PHY-SAP primitive
+  */
+  phy->DoSetBandwidth (25,25);
 }
 
 UeNetDevice::~UeNetDevice (void)
@@ -95,8 +90,12 @@ UeNetDevice::DoDispose (void)
 {
   NS_LOG_FUNCTION (this);
   m_targetEnb = 0;
-  m_macEntity->Dispose ();
-  m_macEntity = 0;
+  m_mac->Dispose ();
+  m_mac = 0;
+  m_rrc->Dispose ();
+  m_rrc = 0;
+  m_phy->Dispose ();
+  m_phy = 0;
   LteNetDevice::DoDispose ();
 }
 
@@ -106,41 +105,39 @@ UeNetDevice::InitUeNetDevice (void)
   NS_LOG_FUNCTION (this);
   m_targetEnb = 0;
   SetNode (0);
-  SetPhy (0);
-  m_macEntity = CreateObject<UeMacEntity> ();
-  m_macEntity->SetDevice (this);
-  SetRrcEntity (CreateObject<RrcEntity> ());
+  m_mac = CreateObject<LteUeMac> ();
+  m_rrc = Create<LteUeRrc> ();
+  m_rrc->SetLteUeCmacSapProvider (m_mac->GetLteUeCmacSapProvider ());
+  m_mac->SetLteUeCmacSapUser (m_rrc->GetLteUeCmacSapUser ());
+  m_rrc->SetLteMacSapProvider (m_mac->GetLteMacSapProvider ());
+  m_phy->SetLteUePhySapUser (m_mac->GetLteUePhySapUser ());
+  m_mac->SetLteUePhySapProvider (m_phy->GetLteUePhySapProvider ());
 }
 
 
-void
-UeNetDevice::SetMacEntity (Ptr<UeMacEntity> m)
+
+Ptr<LteUeMac>
+UeNetDevice::GetMac (void)
 {
   NS_LOG_FUNCTION (this);
-  m_macEntity = m;
+  return m_mac;
 }
 
 
-Ptr<UeMacEntity>
-UeNetDevice::GetMacEntity (void)
+Ptr<LteUeRrc>
+UeNetDevice::GetRrc (void)
 {
   NS_LOG_FUNCTION (this);
-  return m_macEntity;
+  return m_rrc;
 }
 
-void
-UeNetDevice::Start (void)
+
+Ptr<UeLtePhy>
+UeNetDevice::GetPhy (void) const
 {
   NS_LOG_FUNCTION (this);
+  return m_phy;
 }
-
-
-void
-UeNetDevice::Stop (void)
-{
-  NS_LOG_FUNCTION (this);
-}
-
 
 void
 UeNetDevice::SetTargetEnb (Ptr<EnbNetDevice> enb)
@@ -163,20 +160,10 @@ UeNetDevice::DoSend (Ptr<Packet> packet, const Mac48Address& source,
                      const Mac48Address& dest, uint16_t protocolNumber)
 {
   NS_LOG_FUNCTION (this);
-  // Ptr<RadioBearerInstance> bearer = GetIpClassifier ()->Classify (packet);
-  // return Enqueue (packet, bearer);
 
-  /*
-   * XXX: the uplink is not implemented yet.
-   * For now the UE send the packet as soon as
-   * it arrives from the upper layer
-   *
-   * For any question, please contact me at g.piro@poliba.it
-   */
+  NS_FATAL_ERROR ("IP connectivity not implemented yet");
 
-  Ptr<PacketBurst> pb = CreateObject<PacketBurst> ();
-  pb->AddPacket (packet);
-  return SendPacket (pb);
+  return (true);
 }
 
 
@@ -185,40 +172,16 @@ UeNetDevice::DoReceive (Ptr<Packet> p)
 {
   NS_LOG_FUNCTION (this << p);
 
+  NS_FATAL_ERROR ("IP connectivity not implemented yet");
+
   Ptr<Packet> packet = p->Copy ();
 
-  LteMacHeader header;
-  packet->RemoveHeader (header);
-  NS_LOG_LOGIC ("packet " << header.GetSource () << " --> " << header.GetDestination () <<
-                " (here: " << Mac48Address::ConvertFrom (GetAddress ()) << ")");
+  LlcSnapHeader llcHdr;
+  packet->RemoveHeader (llcHdr);
+  NS_LOG_FUNCTION (this << llcHdr);
 
-  if (header.GetDestination () == GetAddress () || header.GetDestination () == GetBroadcast ())
-    {
-      LlcSnapHeader llcHdr;
-      packet->RemoveHeader (llcHdr);
-      NS_LOG_FUNCTION (this << llcHdr);
-
-      ForwardUp (p->Copy ());
-    }
-  else
-    {
-      // not for me
-    }
-
+  ForwardUp (packet);
 }
 
 
-void
-UeNetDevice::StartTransmission (void)
-{
-  NS_LOG_FUNCTION (this);
-  GetPhy ()->SendPacket (GetPacketToSend ());
-}
-
-
-bool
-UeNetDevice::SendPacket (Ptr<PacketBurst> p)
-{
-  return GetPhy ()->GetUplinkSpectrumPhy ()->StartTx (p);
-}
 } // namespace ns3

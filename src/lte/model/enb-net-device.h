@@ -16,6 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Giuseppe Piro  <g.piro@poliba.it>
+ * Author: Marco Miozzo <marco.miozzo@cttc.es> : Update to FF API Architecture
  */
 
 #ifndef ENB_NET_DEVICE_H
@@ -36,9 +37,10 @@ class Packet;
 class PacketBurst;
 class Node;
 class LtePhy;
-class UeManager;
-class UeNetDevice;
-class EnbMacEntity;
+class EnbLtePhy;
+class LteEnbMac;
+class LteEnbRrc;
+class RrFfMacScheduler;
 
 
 /**
@@ -55,7 +57,7 @@ public:
    * \param node the network node
    * \param phy the physical object attache dto it
    */
-  EnbNetDevice (Ptr<Node> node, Ptr<LtePhy> phy);
+  EnbNetDevice (Ptr<Node> node, Ptr<EnbLtePhy> phy);
 
   virtual ~EnbNetDevice (void);
   virtual void DoDispose (void);
@@ -66,51 +68,18 @@ public:
   void InitEnbNetDevice (void);
 
   /**
-   * \brief Starts the run of this device 
+   * \return a pointer to the MAC 
    */
-  void Start (void);
-  /**
-   * \brief Stops the run of this device 
-   */
-  void Stop (void);
+  Ptr<LteEnbMac> GetMac (void);
 
   /**
-   * \brief Set the UE manager
-   * \param m the UE manager
+   * \return a pointer to the physical layer.
    */
-  void SetUeManager (Ptr<UeManager> m);
-  /**
-   * \brief Get the UE manager
-   * \return the pointer to the UE manager
-   */
-  Ptr<UeManager> GetUeManager (void);
-
-  /**
-   * \brief Set the MAC entity
-   * \param m the MAC entity
-   */
-  void SetMacEntity (Ptr<EnbMacEntity> m);
-  /**
-   * \brief Get the MAC entity
-   * \return the pointer to the MAC entity
-   */
-  Ptr<EnbMacEntity> GetMacEntity (void);
+  Ptr<EnbLtePhy> GetPhy (void) const;
 
 
-  /**
-   * \brief Start packet transmission.
-   * This functipon will called at the end of downlink scheduling
-   * to start the transmission of the burst of packet created by the
-   * packet-scheduler.
-   */
-  void StartTransmission (void);
 
-  /**
-   * \brief Send a pachet burst to the physical layer
-   * \param p the packet burst
-   * \return
-   */
-  bool SendPacket (Ptr<PacketBurst> p);
+  Ptr<LteEnbRrc> GetRrc ();
 
   /**
    * \brief Send the PDCCH ideal mesages under an
@@ -119,6 +88,11 @@ public:
   void SendIdealPdcchMessage (void);
 
 
+  /** 
+   * 
+   * \return the Cell Identifier of this eNB
+   */
+  uint16_t GetCellId ();
 
 private:
   bool DoSend (Ptr<Packet> packet,
@@ -128,9 +102,19 @@ private:
 
   void DoReceive (Ptr<Packet> p);
 
-  Ptr<UeManager> m_ueManager;
+  // Ptr<UeManager> m_ueManager;
 
-  Ptr<EnbMacEntity> m_macEntity;
+  Ptr<LteEnbMac> m_mac;
+
+  Ptr<EnbLtePhy> m_phy;
+
+  Ptr<LteEnbRrc> m_rrc;
+
+  Ptr<RrFfMacScheduler> m_scheduler;
+
+  uint16_t m_cellId; /**< Cell Identifer. Part of the CGI, see TS 29.274, section 8.21.1  */ 
+
+  static uint16_t m_cellIdCounter; 
 };
 
 } // namespace ns3
