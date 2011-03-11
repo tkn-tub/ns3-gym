@@ -126,34 +126,30 @@ def register_Ns3BridgeHelper_methods(root_module, cls):
     return
 
 def register_Ns3BridgeChannel_methods(root_module, cls):
-    ## bridge-channel.h: ns3::BridgeChannel::BridgeChannel(ns3::BridgeChannel const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::BridgeChannel const &', 'arg0')])
+    ## bridge-channel.h: static ns3::TypeId ns3::BridgeChannel::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
     ## bridge-channel.h: ns3::BridgeChannel::BridgeChannel() [constructor]
     cls.add_constructor([])
     ## bridge-channel.h: void ns3::BridgeChannel::AddChannel(ns3::Ptr<ns3::Channel> bridgedChannel) [member function]
     cls.add_method('AddChannel', 
                    'void', 
                    [param('ns3::Ptr< ns3::Channel >', 'bridgedChannel')])
-    ## bridge-channel.h: ns3::Ptr<ns3::NetDevice> ns3::BridgeChannel::GetDevice(uint32_t i) const [member function]
-    cls.add_method('GetDevice', 
-                   'ns3::Ptr< ns3::NetDevice >', 
-                   [param('uint32_t', 'i')], 
-                   is_const=True, is_virtual=True)
     ## bridge-channel.h: uint32_t ns3::BridgeChannel::GetNDevices() const [member function]
     cls.add_method('GetNDevices', 
                    'uint32_t', 
                    [], 
                    is_const=True, is_virtual=True)
-    ## bridge-channel.h: static ns3::TypeId ns3::BridgeChannel::GetTypeId() [member function]
-    cls.add_method('GetTypeId', 
-                   'ns3::TypeId', 
-                   [], 
-                   is_static=True)
+    ## bridge-channel.h: ns3::Ptr<ns3::NetDevice> ns3::BridgeChannel::GetDevice(uint32_t i) const [member function]
+    cls.add_method('GetDevice', 
+                   'ns3::Ptr< ns3::NetDevice >', 
+                   [param('uint32_t', 'i')], 
+                   is_const=True, is_virtual=True)
     return
 
 def register_Ns3BridgeNetDevice_methods(root_module, cls):
-    ## bridge-net-device.h: ns3::BridgeNetDevice::BridgeNetDevice(ns3::BridgeNetDevice const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::BridgeNetDevice const &', 'arg0')])
     ## bridge-net-device.h: ns3::BridgeNetDevice::BridgeNetDevice() [constructor]
     cls.add_constructor([])
     ## bridge-net-device.h: void ns3::BridgeNetDevice::AddBridgePort(ns3::Ptr<ns3::NetDevice> bridgePort) [member function]
