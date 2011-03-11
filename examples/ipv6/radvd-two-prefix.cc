@@ -46,7 +46,7 @@
 
 using namespace ns3;
 
-NS_LOG_COMPONENT_DEFINE ("RadvdExample");
+NS_LOG_COMPONENT_DEFINE ("RadvdTwoPrefixExample");
 
 /**
  * \class StackHelper

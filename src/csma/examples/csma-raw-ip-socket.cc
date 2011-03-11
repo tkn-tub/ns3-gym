@@ -38,7 +38,7 @@
 
 using namespace ns3;
 
-NS_LOG_COMPONENT_DEFINE ("CsmaPacketSocketExample");
+NS_LOG_COMPONENT_DEFINE ("CsmaRawIpSocketExample");
 
 static void SinkRx (Ptr<const Packet> p, const Address &ad)
 {

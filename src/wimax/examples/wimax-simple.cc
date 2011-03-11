@@ -54,7 +54,7 @@
 #include "ns3/service-flow.h"
 #include <iostream>
 
-NS_LOG_COMPONENT_DEFINE ("wimaxIpV4Simulation");
+NS_LOG_COMPONENT_DEFINE ("WimaxSimpleExample");
 
 using namespace ns3;
 
