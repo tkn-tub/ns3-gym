@@ -31,19 +31,22 @@ import ns3_module_applications
 import ns3_module_click
 import ns3_module_flow_monitor
 import ns3_module_nix_vector_routing
+import ns3_module_openflow
 import ns3_module_tap_bridge
 import ns3_module_virtual_net_device
 import ns3_module_netanim
 import ns3_module_energy
 import ns3_module_mesh
+import ns3_module_ns3wifi
 import ns3_module_spectrum
 import ns3_module_csma
 import ns3_module_uan
 import ns3_module_aodv
 import ns3_module_dsdv
-import ns3_module_lte
 import ns3_module_wimax
+import ns3_module_ns3tcp
 import ns3_module_olsr
+import ns3_module_lte
 
 def module_init():
     root_module = Module('ns3', cpp_namespace='::ns3')
@@ -261,6 +264,17 @@ def register_types(module):
         ns3_module_nix_vector_routing__local.register_types(module)
     
     root_module.end_section('ns3_module_nix_vector_routing')
+    root_module.begin_section('ns3_module_openflow')
+    ns3_module_openflow.register_types(module)
+    
+    try:
+        import ns3_module_openflow__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_openflow__local.register_types(module)
+    
+    root_module.end_section('ns3_module_openflow')
     root_module.begin_section('ns3_module_tap_bridge')
     ns3_module_tap_bridge.register_types(module)
     
@@ -316,6 +330,17 @@ def register_types(module):
         ns3_module_mesh__local.register_types(module)
     
     root_module.end_section('ns3_module_mesh')
+    root_module.begin_section('ns3_module_ns3wifi')
+    ns3_module_ns3wifi.register_types(module)
+    
+    try:
+        import ns3_module_ns3wifi__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_ns3wifi__local.register_types(module)
+    
+    root_module.end_section('ns3_module_ns3wifi')
     root_module.begin_section('ns3_module_spectrum')
     ns3_module_spectrum.register_types(module)
     
@@ -371,17 +396,6 @@ def register_types(module):
         ns3_module_dsdv__local.register_types(module)
     
     root_module.end_section('ns3_module_dsdv')
-    root_module.begin_section('ns3_module_lte')
-    ns3_module_lte.register_types(module)
-    
-    try:
-        import ns3_module_lte__local
-    except ImportError:
-        pass
-    else:
-        ns3_module_lte__local.register_types(module)
-    
-    root_module.end_section('ns3_module_lte')
     root_module.begin_section('ns3_module_wimax')
     ns3_module_wimax.register_types(module)
     
@@ -393,6 +407,17 @@ def register_types(module):
         ns3_module_wimax__local.register_types(module)
     
     root_module.end_section('ns3_module_wimax')
+    root_module.begin_section('ns3_module_ns3tcp')
+    ns3_module_ns3tcp.register_types(module)
+    
+    try:
+        import ns3_module_ns3tcp__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_ns3tcp__local.register_types(module)
+    
+    root_module.end_section('ns3_module_ns3tcp')
     root_module.begin_section('ns3_module_olsr')
     ns3_module_olsr.register_types(module)
     
@@ -404,6 +429,17 @@ def register_types(module):
         ns3_module_olsr__local.register_types(module)
     
     root_module.end_section('ns3_module_olsr')
+    root_module.begin_section('ns3_module_lte')
+    ns3_module_lte.register_types(module)
+    
+    try:
+        import ns3_module_lte__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_lte__local.register_types(module)
+    
+    root_module.end_section('ns3_module_lte')
     module.add_container('std::vector< unsigned int >', 'unsigned int', container_type='vector')
     module.add_container('std::vector< bool >', 'bool', container_type='vector')
     module.add_container('std::vector< int >', 'int', container_type='vector')
@@ -726,6 +762,17 @@ def register_methods(root_module):
         ns3_module_nix_vector_routing__local.register_methods(root_module)
     
     root_module.end_section('ns3_module_nix_vector_routing')
+    root_module.begin_section('ns3_module_openflow')
+    ns3_module_openflow.register_methods(root_module)
+    
+    try:
+        import ns3_module_openflow__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_openflow__local.register_methods(root_module)
+    
+    root_module.end_section('ns3_module_openflow')
     root_module.begin_section('ns3_module_tap_bridge')
     ns3_module_tap_bridge.register_methods(root_module)
     
@@ -781,6 +828,17 @@ def register_methods(root_module):
         ns3_module_mesh__local.register_methods(root_module)
     
     root_module.end_section('ns3_module_mesh')
+    root_module.begin_section('ns3_module_ns3wifi')
+    ns3_module_ns3wifi.register_methods(root_module)
+    
+    try:
+        import ns3_module_ns3wifi__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_ns3wifi__local.register_methods(root_module)
+    
+    root_module.end_section('ns3_module_ns3wifi')
     root_module.begin_section('ns3_module_spectrum')
     ns3_module_spectrum.register_methods(root_module)
     
@@ -836,17 +894,6 @@ def register_methods(root_module):
         ns3_module_dsdv__local.register_methods(root_module)
     
     root_module.end_section('ns3_module_dsdv')
-    root_module.begin_section('ns3_module_lte')
-    ns3_module_lte.register_methods(root_module)
-    
-    try:
-        import ns3_module_lte__local
-    except ImportError:
-        pass
-    else:
-        ns3_module_lte__local.register_methods(root_module)
-    
-    root_module.end_section('ns3_module_lte')
     root_module.begin_section('ns3_module_wimax')
     ns3_module_wimax.register_methods(root_module)
     
@@ -858,6 +905,17 @@ def register_methods(root_module):
         ns3_module_wimax__local.register_methods(root_module)
     
     root_module.end_section('ns3_module_wimax')
+    root_module.begin_section('ns3_module_ns3tcp')
+    ns3_module_ns3tcp.register_methods(root_module)
+    
+    try:
+        import ns3_module_ns3tcp__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_ns3tcp__local.register_methods(root_module)
+    
+    root_module.end_section('ns3_module_ns3tcp')
     root_module.begin_section('ns3_module_olsr')
     ns3_module_olsr.register_methods(root_module)
     
@@ -869,6 +927,17 @@ def register_methods(root_module):
         ns3_module_olsr__local.register_methods(root_module)
     
     root_module.end_section('ns3_module_olsr')
+    root_module.begin_section('ns3_module_lte')
+    ns3_module_lte.register_methods(root_module)
+    
+    try:
+        import ns3_module_lte__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_lte__local.register_methods(root_module)
+    
+    root_module.end_section('ns3_module_lte')
     return
 
 def register_functions(root_module):
@@ -1082,6 +1151,17 @@ def register_functions(root_module):
         ns3_module_nix_vector_routing__local.register_functions(root_module)
     
     root_module.end_section('ns3_module_nix_vector_routing')
+    root_module.begin_section('ns3_module_openflow')
+    ns3_module_openflow.register_functions(root_module)
+    
+    try:
+        import ns3_module_openflow__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_openflow__local.register_functions(root_module)
+    
+    root_module.end_section('ns3_module_openflow')
     root_module.begin_section('ns3_module_tap_bridge')
     ns3_module_tap_bridge.register_functions(root_module)
     
@@ -1137,6 +1217,17 @@ def register_functions(root_module):
         ns3_module_mesh__local.register_functions(root_module)
     
     root_module.end_section('ns3_module_mesh')
+    root_module.begin_section('ns3_module_ns3wifi')
+    ns3_module_ns3wifi.register_functions(root_module)
+    
+    try:
+        import ns3_module_ns3wifi__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_ns3wifi__local.register_functions(root_module)
+    
+    root_module.end_section('ns3_module_ns3wifi')
     root_module.begin_section('ns3_module_spectrum')
     ns3_module_spectrum.register_functions(root_module)
     
@@ -1192,17 +1283,6 @@ def register_functions(root_module):
         ns3_module_dsdv__local.register_functions(root_module)
     
     root_module.end_section('ns3_module_dsdv')
-    root_module.begin_section('ns3_module_lte')
-    ns3_module_lte.register_functions(root_module)
-    
-    try:
-        import ns3_module_lte__local
-    except ImportError:
-        pass
-    else:
-        ns3_module_lte__local.register_functions(root_module)
-    
-    root_module.end_section('ns3_module_lte')
     root_module.begin_section('ns3_module_wimax')
     ns3_module_wimax.register_functions(root_module)
     
@@ -1214,6 +1294,17 @@ def register_functions(root_module):
         ns3_module_wimax__local.register_functions(root_module)
     
     root_module.end_section('ns3_module_wimax')
+    root_module.begin_section('ns3_module_ns3tcp')
+    ns3_module_ns3tcp.register_functions(root_module)
+    
+    try:
+        import ns3_module_ns3tcp__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_ns3tcp__local.register_functions(root_module)
+    
+    root_module.end_section('ns3_module_ns3tcp')
     root_module.begin_section('ns3_module_olsr')
     ns3_module_olsr.register_functions(root_module)
     
@@ -1225,6 +1316,17 @@ def register_functions(root_module):
         ns3_module_olsr__local.register_functions(root_module)
     
     root_module.end_section('ns3_module_olsr')
+    root_module.begin_section('ns3_module_lte')
+    ns3_module_lte.register_functions(root_module)
+    
+    try:
+        import ns3_module_lte__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_lte__local.register_functions(root_module)
+    
+    root_module.end_section('ns3_module_lte')
     register_functions_ns3_Config(module.get_submodule('Config'), root_module)
     register_functions_ns3_FatalImpl(module.get_submodule('FatalImpl'), root_module)
     register_functions_ns3_addressUtils(module.get_submodule('addressUtils'), root_module)
