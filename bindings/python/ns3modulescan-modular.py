@@ -4,7 +4,7 @@ import sys
 import os.path
 
 import pybindgen.settings
-from pybindgen.gccxmlparser import ModuleParser, PygenClassifier, PygenSection, WrapperWarning
+from pybindgen.gccxmlparser import ModuleParser, PygenClassifier, PygenSection, WrapperWarning, find_declaration_from_name
 from pybindgen.typehandlers.codesink import FileCodeSink
 from pygccxml.declarations import templates
 from pygccxml.declarations.enumeration import enumeration_t
@@ -47,7 +47,7 @@ class PreScanHook:
         self.headers_map = headers_map
         self.module = module
 
-    def __call__(self, dummy_module_parser,
+    def __call__(self, module_parser,
                  pygccxml_definition,
                  global_annotations,
                  parameter_annotations):
@@ -102,6 +102,26 @@ class PreScanHook:
             # no need for helper classes to allow subclassing in Python, I think...
             #if pygccxml_definition.name.endswith('Helper'):
             #    global_annotations['allow_subclassing'] = 'false'
+
+            #
+            # If a class is template instantiation, even if the
+            # template was defined in some other module, if a template
+            # argument belongs to this module then the template
+            # instantiation will belong to this module.
+            # 
+            if templates.is_instantiation(pygccxml_definition.decl_string):
+                cls_name, template_parameters = templates.split(pygccxml_definition.name)
+                template_parameters_decls = [find_declaration_from_name(module_parser.global_ns, templ_param)
+                                             for templ_param in template_parameters]
+                #print >> sys.stderr, "********************", cls_name, repr(template_parameters_decls)
+                template_parameters_modules = [self.headers_map[get_ns3_relative_path(templ.location.file_name)]
+                                               for templ in template_parameters_decls if hasattr(templ, 'location')]
+                for templ_mod in template_parameters_modules:
+                    if templ_mod == self.module:
+                        definition_module = templ_mod
+                        break
+                #print >> sys.stderr, "********************", cls_name, repr(template_parameters_modules)
+
 
             if definition_module != self.module:
                 global_annotations['import_from_module'] = 'ns.%s' % definition_module
@@ -231,7 +251,7 @@ def ns3_module_scan(top_builddir, module_name, headers_map, output_file_name, cf
 
 if __name__ == '__main__':
     if len(sys.argv) != 6:
-        print "ns3modulescan2.py top_builddir module_path module_headers output_file_name cflags"
+        print "ns3modulescan-modular.py top_builddir module_path module_headers output_file_name cflags"
         sys.exit(1)
     ns3_module_scan(sys.argv[1], sys.argv[2], eval(sys.argv[3]), sys.argv[4], sys.argv[5])
     sys.exit(0)
