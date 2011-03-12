@@ -31,6 +31,7 @@ import ns3_module_applications
 import ns3_module_click
 import ns3_module_flow_monitor
 import ns3_module_nix_vector_routing
+import ns3_module_openflow
 import ns3_module_tap_bridge
 import ns3_module_virtual_net_device
 import ns3_module_netanim
@@ -263,6 +264,17 @@ def register_types(module):
         ns3_module_nix_vector_routing__local.register_types(module)
     
     root_module.end_section('ns3_module_nix_vector_routing')
+    root_module.begin_section('ns3_module_openflow')
+    ns3_module_openflow.register_types(module)
+    
+    try:
+        import ns3_module_openflow__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_openflow__local.register_types(module)
+    
+    root_module.end_section('ns3_module_openflow')
     root_module.begin_section('ns3_module_tap_bridge')
     ns3_module_tap_bridge.register_types(module)
     
@@ -750,6 +762,17 @@ def register_methods(root_module):
         ns3_module_nix_vector_routing__local.register_methods(root_module)
     
     root_module.end_section('ns3_module_nix_vector_routing')
+    root_module.begin_section('ns3_module_openflow')
+    ns3_module_openflow.register_methods(root_module)
+    
+    try:
+        import ns3_module_openflow__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_openflow__local.register_methods(root_module)
+    
+    root_module.end_section('ns3_module_openflow')
     root_module.begin_section('ns3_module_tap_bridge')
     ns3_module_tap_bridge.register_methods(root_module)
     
@@ -1128,6 +1151,17 @@ def register_functions(root_module):
         ns3_module_nix_vector_routing__local.register_functions(root_module)
     
     root_module.end_section('ns3_module_nix_vector_routing')
+    root_module.begin_section('ns3_module_openflow')
+    ns3_module_openflow.register_functions(root_module)
+    
+    try:
+        import ns3_module_openflow__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_openflow__local.register_functions(root_module)
+    
+    root_module.end_section('ns3_module_openflow')
     root_module.begin_section('ns3_module_tap_bridge')
     ns3_module_tap_bridge.register_functions(root_module)
     
