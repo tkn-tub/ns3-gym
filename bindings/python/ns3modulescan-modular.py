@@ -229,7 +229,14 @@ def ns3_module_scan(top_builddir, module_name, headers_map, output_file_name, cf
         pass
     output_file = open(output_file_name, "wt")
     output_sink = FileCodeSink(output_file)
-    module_parser.parse_init([os.path.join(top_builddir, "ns3", "%s-module.h" % module_name)],
+
+    # if there exists a scan-header.h file in src/<module>/bindings,
+    # scan it, otherwise scan ns3/xxxx-module.h.
+    scan_header = os.path.join(os.path.dirname(output_file_name), "scan-header.h")
+    if not os.path.exists(scan_header):
+        scan_header = os.path.join(top_builddir, "ns3", "%s-module.h" % module_name)
+
+    module_parser.parse_init([scan_header],
                              None, whitelist_paths=[top_builddir],
                              #includes=['"ns3/everything.h"'],
                              pygen_sink=output_sink,

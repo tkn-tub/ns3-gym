@@ -268,3 +268,6 @@ def build(bld):
         obj.source.append ('model/nsc-sysctl.cc')
         headers.source.append('model/nsc-tcp-l4-protocol.h')
         obj.uselib = 'DL'
+
+    bld.ns3_python_bindings()
+

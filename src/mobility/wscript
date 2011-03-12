@@ -47,3 +47,5 @@ def build(bld):
         'helper/mobility-helper.h',
         'helper/ns2-mobility-helper.h',
         ]
+
+    bld.ns3_python_bindings()

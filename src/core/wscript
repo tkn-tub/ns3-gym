@@ -272,4 +272,6 @@ def build(bld):
         core.uselib = core.uselib + ' GSL GSLCBLAS M'
         core.source.extend(['test/rng-test-suite.cc'])
 
-    bld.ns3_python_bindings()
+    pymod = bld.ns3_python_bindings()
+    if pymod is not None:
+        pymod.source += ['bindings/module_helpers.cc']

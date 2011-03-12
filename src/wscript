@@ -146,7 +146,7 @@ def ns3_python_bindings(bld):
     if bld.path.find_resource("bindings/modulegen_local.py"):
         source.append("bindings/modulegen_local.py")
 
-    target = ['bindings/module.cc']
+    target = ['bindings/ns3module.cc', 'bindings/ns3module.h', 'bindings/ns3modulegen.log']
     #if not debug:
     #    target.append('ns3modulegen.log')
 
@@ -154,9 +154,9 @@ def ns3_python_bindings(bld):
     #if debug:
     #    argv.extend(["-m", "pdb"])
     
-    argv.extend(['${SRC[0]}', module_abs_src_path, apidefs, '>', '${TGT[0]}'])
-    #if not debug:
-    #    argv.extend(['2>', '${TGT[2]}']) # 2> ns3modulegen.log
+    argv.extend(['${SRC[0]}', module_abs_src_path, apidefs, '${TGT[0]}'])
+
+    argv.extend(['2>', '${TGT[2]}']) # 2> ns3modulegen.log
 
     features = []
     for (name, caption, was_enabled, reason_not_enabled) in env['NS3_OPTIONAL_FEATURES']:
@@ -171,7 +171,7 @@ def ns3_python_bindings(bld):
     bindgen.name = "pybindgen(ns3 module %s)" % module
 
     pymod = bld.new_task_gen(features='cxx cshlib pyext')
-    pymod.source = ['bindings/module.cc']
+    pymod.source = ['bindings/ns3module.cc']
     pymod.target = '%s/%s' % (bld.srcnode.find_dir("bindings/python/ns").relpath_gen(bld.path), module)
     pymod.name = 'ns3module_%s' % module
     pymod.uselib_local = "ns3"
@@ -191,6 +191,8 @@ def ns3_python_bindings(bld):
         except ValueError:
             pass
     pymod.env['CXXDEFINES'] = defines
+    pymod.includes = 'bindings'
+    return pymod
 
 
 def build(bld):
