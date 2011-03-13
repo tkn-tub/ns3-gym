@@ -185,6 +185,9 @@ protected:
 
 private:
 
+  PointToPointNetDevice& operator = (const PointToPointNetDevice &);
+  PointToPointNetDevice (const PointToPointNetDevice &);
+
   virtual void DoDispose (void);
 
 private:
