@@ -756,5 +756,5 @@ def build(bld):
 
 
 
-    if env['ENABLE_PYTHON_BINDINGS'] and env['BINDINGS_TYPE'] in ('modular', 'both'):
+    if env['ENABLE_PYTHON_BINDINGS'] and env['BINDINGS_TYPE'] in ('modular',):
         gen = gen_ns3_compat_pymod_task(bld, bld.path.find_or_declare("ns3.py").bldpath(bld.env))
