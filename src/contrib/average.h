@@ -24,6 +24,7 @@
 #include <cmath>
 #include <ostream>
 #include <limits>
+#include <stdint.h>
 
 namespace ns3 {
 
