@@ -290,7 +290,7 @@ def get_module_path(bld, module):
 class apiscan_task(Task.TaskBase):
     """Uses gccxml to scan the file 'everything.h' and extract API definitions.
     """
-    after = 'gen_everything_h_task'
+    after = 'gen_ns3_module_header_task ns3header_task'
     before = 'cc cxx gchx'
     color = "BLUE"
     def __init__(self, curdirnode, env, bld, target, cflags, module):
