@@ -21,3 +21,4 @@ def build(bld):
         'helper/point-to-point-helper.h',
         ]
 
+    bld.ns3_python_bindings()

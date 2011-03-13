@@ -58,3 +58,5 @@ def build(bld):
             module.uselib = module.uselib + ' LIBXML2'
         else:
             module.uselib = 'LIBXML2'
+
+    bld.ns3_python_bindings()

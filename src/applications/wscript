@@ -54,3 +54,4 @@ def build(bld):
         'helper/v4ping-helper.h',
         ]
 
+    bld.ns3_python_bindings()
