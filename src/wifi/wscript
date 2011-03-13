@@ -140,4 +140,5 @@ def build(bld):
         ['core', 'simulator', 'mobility', 'node', 'wifi'])
     obj.source = 'test/wifi-phy-test.cc'
 
+    bld.ns3_python_bindings()
 
