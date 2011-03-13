@@ -84,6 +84,10 @@ public:
              WifiMode wifiMode, WifiPreamble preamble) const;
 
 private:
+
+  YansWifiChannel& operator = (const YansWifiChannel &);
+  YansWifiChannel (const YansWifiChannel &);
+
   typedef std::vector<Ptr<YansWifiPhy> > PhyList;
   void Receive (uint32_t i, Ptr<Packet> packet, double rxPowerDbm,
                 WifiMode txMode, WifiPreamble preamble) const;
