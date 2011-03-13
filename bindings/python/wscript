@@ -566,7 +566,7 @@ class gen_ns3_compat_pymod_task(Task.TaskBase):
             'and should not be used in newly written code", DeprecationWarning, stacklevel=2)'
         print >> outfile
         for module in self.bld.env['PYTHON_MODULES_BUILT']:
-            print >> outfile, "from ns.%s import *" % (module,)
+            print >> outfile, "from ns.%s import *" % (module.replace('-', '_'))
         outfile.close()
         return 0
 

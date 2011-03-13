@@ -206,7 +206,7 @@ def scan_callback_classes(module_parser, callback_classes_file):
 
 
 def ns3_module_scan(top_builddir, module_name, headers_map, output_file_name, cflags):
-    module_parser = ModuleParser('ns.%s' % module_name, 'ns3')
+    module_parser = ModuleParser('ns.%s' % module_name.replace('-', '_'), 'ns3')
     module_parser.add_pre_scan_hook(PreScanHook(headers_map, module_name))
     #module_parser.add_post_scan_hook(post_scan_hook)
 

@@ -176,7 +176,7 @@ def ns3_python_bindings(bld):
 
     pymod = bld.new_task_gen(features='cxx cshlib pyext')
     pymod.source = ['bindings/ns3module.cc']
-    pymod.target = '%s/%s' % (bld.srcnode.find_dir("bindings/python/ns").relpath_gen(bld.path), module)
+    pymod.target = '%s/%s' % (bld.srcnode.find_dir("bindings/python/ns").relpath_gen(bld.path), module.replace('-', '_'))
     pymod.name = 'ns3module_%s' % module
     pymod.uselib_local = "ns3"
     if pymod.env['ENABLE_STATIC_NS3']:
