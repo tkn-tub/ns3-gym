@@ -243,9 +243,9 @@ def ns3_module_scan(top_builddir, module_name, headers_map, output_file_name, cf
                              gccxml_options=gccxml_options)
     module_parser.scan_types()
 
-    #callback_classes_file = open(os.path.join(os.path.dirname(pygen_file_name), "callbacks_list.py"), "wt")
-    #scan_callback_classes(module_parser, callback_classes_file)
-    #callback_classes_file.close()
+    callback_classes_file = open(os.path.join(os.path.dirname(output_file_name), "callbacks_list.py"), "wt")
+    scan_callback_classes(module_parser, callback_classes_file)
+    callback_classes_file.close()
 
 
     module_parser.scan_methods()

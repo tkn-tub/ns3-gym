@@ -57,6 +57,15 @@ def main(argv):
             del sys.modules["modulegen_customizations"]
         except ImportError:
             module_customization = object()
+
+        try:
+            from callbacks_list import callback_classes
+        except ImportError, ex:
+            print >> sys.stderr, "***************", repr(ex)
+            callback_classes = []
+        else:
+            print >> sys.stderr, ">>>>>>>>>>>>>>>>", repr(callback_classes)
+
     finally:
         sys.path.pop(0)
     
@@ -68,6 +77,10 @@ def main(argv):
 
     if hasattr(module_customization, 'post_register_types'):
         module_customization.post_register_types(root_module)
+
+    # register Callback<...> type handlers
+    ns3modulegen_core_customizations.generate_callback_classes(root_module.after_forward_declarations,
+                                                               callback_classes)
 
     # -----------
     module_apidefs.register_methods(root_module)

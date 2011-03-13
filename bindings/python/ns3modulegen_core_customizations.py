@@ -237,7 +237,7 @@ public:
         class PythonCallbackParameter(Parameter):
             "Class handlers"
             CTYPES = [cls_name]
-            #print >> sys.stderr, "***** registering callback handler: %r" % ctypeparser.normalize_type_string(cls_name)
+            print >> sys.stderr, "***** registering callback handler: %r" % ctypeparser.normalize_type_string(cls_name)
             DIRECTIONS = [Parameter.DIRECTION_IN]
             PYTHON_CALLBACK_IMPL_NAME = class_name
             TEMPLATE_ARGS = template_parameters
