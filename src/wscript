@@ -138,6 +138,7 @@ def ns3_python_bindings(bld):
     # this method is called from a module wscript, so remember bld.path is not bindings/python!
     module_abs_src_path = bld.path.abspath()
     module = os.path.basename(module_abs_src_path)
+    env.append_value('PYTHON_MODULES_BUILT', module)
     apidefs = env['PYTHON_BINDINGS_APIDEFS'].replace("-", "_")
 
     #debug = ('PYBINDGEN_DEBUG' in os.environ)

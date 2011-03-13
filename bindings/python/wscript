@@ -548,6 +548,30 @@ class python_scan_task_collector(Task.TaskBase):
         return 0
 
 
+
+class gen_ns3_compat_pymod_task(Task.TaskBase):
+    """Generates a 'ns3.py' compatibility module."""
+    before = 'cc cxx gchx'
+    color = 'BLUE'
+
+    def __init__(self, bld, output_file):
+        self.bld = bld
+        self.output_file = output_file
+        super(gen_ns3_compat_pymod_task, self).__init__(generator=self)
+    
+    def run(self):
+        outfile = file(self.output_file, "w")
+        print >> outfile, "import warnings"
+        print >> outfile, 'warnings.warn("the ns3 module is a compatibility layer '\
+            'and should not be used in newly written code", DeprecationWarning, stacklevel=2)'
+        print >> outfile
+        for module in self.bld.env['PYTHON_MODULES_BUILT']:
+            print >> outfile, "from ns.%s import *" % (module,)
+        outfile.close()
+        return 0
+
+
+
 def build(bld):
     if Options.options.python_disable:
         return
@@ -730,3 +754,7 @@ def build(bld):
             shutil.copy2(src, dst)
 
 
+
+
+    if env['ENABLE_PYTHON_BINDINGS'] and env['BINDINGS_TYPE'] in ('modular', 'both'):
+        gen = gen_ns3_compat_pymod_task(bld, bld.path.find_or_declare("ns3.py").bldpath(bld.env))
