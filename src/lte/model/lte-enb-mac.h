@@ -51,11 +51,11 @@ bool operator< (const flowId_t& lhs, const flowId_t& rhs);
  */
 class LteEnbMac :   public Object
 {
-  friend class EnbMemberLteEnbCmacSapProvider;
-  friend class EnbMemberLteMacSapProvider;
-  friend class EnbMemberFfMacSchedSapUser;
-  friend class EnbMemberFfMacCschedSapUser;
-  friend class EnbMemberLteEnbPhySapUser;
+  friend class EnbMacMemberLteEnbCmacSapProvider;
+  friend class EnbMacMemberLteMacSapProvider;
+  friend class EnbMacMemberFfMacSchedSapUser;
+  friend class EnbMacMemberFfMacCschedSapUser;
+  friend class EnbMacMemberLteEnbPhySapUser;
 
 public:
   static TypeId GetTypeId (void);

@@ -39,10 +39,10 @@ int Type0AllocationRbg[4] = {
 // NS_OBJECT_ENSURE_REGISTERED (RrPacketScheduler);
 
 
-class FfMacSpecificCschedSapProvider : public FfMacCschedSapProvider
+class RrSchedulerMemberCschedSapProvider : public FfMacCschedSapProvider
 {
 public:
-  FfMacSpecificCschedSapProvider (RrFfMacScheduler* scheduler);
+  RrSchedulerMemberCschedSapProvider (RrFfMacScheduler* scheduler);
 
   // inherited from FfMacCschedSapProvider
   virtual void CschedCellConfigReq (const struct CschedCellConfigReqParameters& params);
@@ -52,46 +52,46 @@ public:
   virtual void CschedUeReleaseReq (const struct CschedUeReleaseReqParameters& params);
 
 private:
-  FfMacSpecificCschedSapProvider ();
+  RrSchedulerMemberCschedSapProvider ();
   RrFfMacScheduler* m_scheduler;
 };
 
-FfMacSpecificCschedSapProvider::FfMacSpecificCschedSapProvider ()
+RrSchedulerMemberCschedSapProvider::RrSchedulerMemberCschedSapProvider ()
 {
 }
 
-FfMacSpecificCschedSapProvider::FfMacSpecificCschedSapProvider (RrFfMacScheduler* scheduler) : m_scheduler (scheduler)
+RrSchedulerMemberCschedSapProvider::RrSchedulerMemberCschedSapProvider (RrFfMacScheduler* scheduler) : m_scheduler (scheduler)
 {
 }
 
 
 void
-FfMacSpecificCschedSapProvider::CschedCellConfigReq (const struct CschedCellConfigReqParameters& params)
+RrSchedulerMemberCschedSapProvider::CschedCellConfigReq (const struct CschedCellConfigReqParameters& params)
 {
   m_scheduler->DoCschedCellConfigReq (params);
 }
 
 void
-FfMacSpecificCschedSapProvider::CschedUeConfigReq (const struct CschedUeConfigReqParameters& params)
+RrSchedulerMemberCschedSapProvider::CschedUeConfigReq (const struct CschedUeConfigReqParameters& params)
 {
   m_scheduler->DoCschedUeConfigReq (params);
 }
 
 
 void
-FfMacSpecificCschedSapProvider::CschedLcConfigReq (const struct CschedLcConfigReqParameters& params)
+RrSchedulerMemberCschedSapProvider::CschedLcConfigReq (const struct CschedLcConfigReqParameters& params)
 {
   m_scheduler->DoCschedLcConfigReq (params);
 }
 
 void
-FfMacSpecificCschedSapProvider::CschedLcReleaseReq (const struct CschedLcReleaseReqParameters& params)
+RrSchedulerMemberCschedSapProvider::CschedLcReleaseReq (const struct CschedLcReleaseReqParameters& params)
 {
   m_scheduler->DoCschedLcReleaseReq (params);
 }
 
 void
-FfMacSpecificCschedSapProvider::CschedUeReleaseReq (const struct CschedUeReleaseReqParameters& params)
+RrSchedulerMemberCschedSapProvider::CschedUeReleaseReq (const struct CschedUeReleaseReqParameters& params)
 {
   m_scheduler->DoCschedUeReleaseReq (params);
 }
@@ -99,10 +99,10 @@ FfMacSpecificCschedSapProvider::CschedUeReleaseReq (const struct CschedUeRelease
 
 
 
-class FfMacSpecificSchedSapProvider : public FfMacSchedSapProvider
+class RrSchedulerMemberSchedSapProvider : public FfMacSchedSapProvider
 {
 public:
-  FfMacSpecificSchedSapProvider (RrFfMacScheduler* scheduler);
+  RrSchedulerMemberSchedSapProvider (RrFfMacScheduler* scheduler);
 
   // inherited from FfMacSchedSapProvider
   virtual void SchedDlRlcBufferReq (const struct SchedDlRlcBufferReqParameters& params);
@@ -119,84 +119,84 @@ public:
 
 
 private:
-  FfMacSpecificSchedSapProvider ();
+  RrSchedulerMemberSchedSapProvider ();
   RrFfMacScheduler* m_scheduler;
 };
 
 
 
-FfMacSpecificSchedSapProvider::FfMacSpecificSchedSapProvider ()
+RrSchedulerMemberSchedSapProvider::RrSchedulerMemberSchedSapProvider ()
 {
 }
 
 
-FfMacSpecificSchedSapProvider::FfMacSpecificSchedSapProvider (RrFfMacScheduler* scheduler)
+RrSchedulerMemberSchedSapProvider::RrSchedulerMemberSchedSapProvider (RrFfMacScheduler* scheduler)
   : m_scheduler (scheduler)
 {
 }
 
 void
-FfMacSpecificSchedSapProvider::SchedDlRlcBufferReq (const struct SchedDlRlcBufferReqParameters& params)
+RrSchedulerMemberSchedSapProvider::SchedDlRlcBufferReq (const struct SchedDlRlcBufferReqParameters& params)
 {
   m_scheduler->DoSchedDlRlcBufferReq (params);
 }
 
 void
-FfMacSpecificSchedSapProvider::SchedDlPagingBufferReq (const struct SchedDlPagingBufferReqParameters& params)
+RrSchedulerMemberSchedSapProvider::SchedDlPagingBufferReq (const struct SchedDlPagingBufferReqParameters& params)
 {
   m_scheduler->DoSchedDlPagingBufferReq (params);
 }
 
 void
-FfMacSpecificSchedSapProvider::SchedDlMacBufferReq (const struct SchedDlMacBufferReqParameters& params)
+RrSchedulerMemberSchedSapProvider::SchedDlMacBufferReq (const struct SchedDlMacBufferReqParameters& params)
 {
   m_scheduler->DoSchedDlMacBufferReq (params);
 }
 
 void
-FfMacSpecificSchedSapProvider::SchedDlTriggerReq (const struct SchedDlTriggerReqParameters& params)
+RrSchedulerMemberSchedSapProvider::SchedDlTriggerReq (const struct SchedDlTriggerReqParameters& params)
 {
   m_scheduler->DoSchedDlTriggerReq (params);
 }
 
 void
-FfMacSpecificSchedSapProvider::SchedDlRachInfoReq (const struct SchedDlRachInfoReqParameters& params)
+RrSchedulerMemberSchedSapProvider::SchedDlRachInfoReq (const struct SchedDlRachInfoReqParameters& params)
 {
   m_scheduler->DoSchedDlRachInfoReq (params);
 }
 
 void
-FfMacSpecificSchedSapProvider::SchedDlCqiInfoReq (const struct SchedDlCqiInfoReqParameters& params)
+RrSchedulerMemberSchedSapProvider::SchedDlCqiInfoReq (const struct SchedDlCqiInfoReqParameters& params)
 {
   m_scheduler->DoSchedDlCqiInfoReq (params);
 }
 
 void
-FfMacSpecificSchedSapProvider::SchedUlTriggerReq (const struct SchedUlTriggerReqParameters& params)
+RrSchedulerMemberSchedSapProvider::SchedUlTriggerReq (const struct SchedUlTriggerReqParameters& params)
 {
   m_scheduler->DoSchedUlTriggerReq (params);
 }
 
 void
-FfMacSpecificSchedSapProvider::SchedUlNoiseInterferenceReq (const struct SchedUlNoiseInterferenceReqParameters& params)
+RrSchedulerMemberSchedSapProvider::SchedUlNoiseInterferenceReq (const struct SchedUlNoiseInterferenceReqParameters& params)
 {
   m_scheduler->DoSchedUlNoiseInterferenceReq (params);
 }
 
 void
-FfMacSpecificSchedSapProvider::SchedUlSrInfoReq (const struct SchedUlSrInfoReqParameters& params)
+RrSchedulerMemberSchedSapProvider::SchedUlSrInfoReq (const struct SchedUlSrInfoReqParameters& params)
 {
   m_scheduler->DoSchedUlSrInfoReq (params);
 }
 
 void
-FfMacSpecificSchedSapProvider::SchedUlMacCtrlInfoReq (const struct SchedUlMacCtrlInfoReqParameters& params)
+RrSchedulerMemberSchedSapProvider::SchedUlMacCtrlInfoReq (const struct SchedUlMacCtrlInfoReqParameters& params)
 {
   m_scheduler->DoSchedUlMacCtrlInfoReq (params);
 }
 
 void
-FfMacSpecificSchedSapProvider::SchedUlCqiInfoReq (const struct SchedUlCqiInfoReqParameters& params)
+RrSchedulerMemberSchedSapProvider::SchedUlCqiInfoReq (const struct SchedUlCqiInfoReqParameters& params)
 {
   m_scheduler->DoSchedUlCqiInfoReq (params);
 }
@@ -209,8 +209,8 @@ RrFfMacScheduler::RrFfMacScheduler ()
   :   m_cschedSapUser (0),
     m_schedSapUser (0)
 {
-  m_cschedSapProvider = new FfMacSpecificCschedSapProvider (this);
-  m_schedSapProvider = new FfMacSpecificSchedSapProvider (this);
+  m_cschedSapProvider = new RrSchedulerMemberCschedSapProvider (this);
+  m_schedSapProvider = new RrSchedulerMemberSchedSapProvider (this);
 }
 
 RrFfMacScheduler::~RrFfMacScheduler ()

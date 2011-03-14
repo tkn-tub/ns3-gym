@@ -35,10 +35,10 @@ namespace ns3 {
 // CMAC SAP forwarder
 // ///////////////////////////
 
-class EnbMemberLteEnbCmacSapUser : public LteEnbCmacSapUser
+class EnbRrcMemberLteEnbCmacSapUser : public LteEnbCmacSapUser
 {
 public:
-  EnbMemberLteEnbCmacSapUser (LteEnbRrc* rrc);
+  EnbRrcMemberLteEnbCmacSapUser (LteEnbRrc* rrc);
 
   virtual void NotifyLcConfigResult (uint16_t rnti, uint8_t lcid, bool success);
 
@@ -46,13 +46,13 @@ private:
   LteEnbRrc* m_rrc;
 };
 
-EnbMemberLteEnbCmacSapUser::EnbMemberLteEnbCmacSapUser (LteEnbRrc* rrc)
+EnbRrcMemberLteEnbCmacSapUser::EnbRrcMemberLteEnbCmacSapUser (LteEnbRrc* rrc)
   : m_rrc (rrc)
 {
 }
 
 void
-EnbMemberLteEnbCmacSapUser::NotifyLcConfigResult (uint16_t rnti, uint8_t lcid, bool success)
+EnbRrcMemberLteEnbCmacSapUser::NotifyLcConfigResult (uint16_t rnti, uint8_t lcid, bool success)
 {
   m_rrc->DoNotifyLcConfigResult (rnti, lcid, success);
 }
@@ -165,7 +165,7 @@ LteEnbRrc::LteEnbRrc ()
     m_lastAllocatedRnti (0)
 {
   NS_LOG_FUNCTION (this);
-  m_cmacSapUser = new EnbMemberLteEnbCmacSapUser (this);
+  m_cmacSapUser = new EnbRrcMemberLteEnbCmacSapUser (this);
 }
 
 

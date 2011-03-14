@@ -61,10 +61,10 @@ operator< (const flowId_t& lhs, const flowId_t& rhs)
 // //////////////////////////////////////
 
 
-class EnbMemberLteEnbCmacSapProvider : public LteEnbCmacSapProvider
+class EnbMacMemberLteEnbCmacSapProvider : public LteEnbCmacSapProvider
 {
 public:
-  EnbMemberLteEnbCmacSapProvider (LteEnbMac* mac);
+  EnbMacMemberLteEnbCmacSapProvider (LteEnbMac* mac);
 
   // inherited from LteEnbCmacSapProvider
   virtual void ConfigureMac (uint8_t ulBandwidth, uint8_t dlBandwidth);
@@ -78,47 +78,47 @@ private:
 };
 
 
-EnbMemberLteEnbCmacSapProvider::EnbMemberLteEnbCmacSapProvider (LteEnbMac* mac)
+EnbMacMemberLteEnbCmacSapProvider::EnbMacMemberLteEnbCmacSapProvider (LteEnbMac* mac)
   : m_mac (mac)
 {
 }
 
 void
-EnbMemberLteEnbCmacSapProvider::ConfigureMac (uint8_t ulBandwidth, uint8_t dlBandwidth)
+EnbMacMemberLteEnbCmacSapProvider::ConfigureMac (uint8_t ulBandwidth, uint8_t dlBandwidth)
 {
   m_mac->DoConfigureMac (ulBandwidth, dlBandwidth);
 }
 
 void
-EnbMemberLteEnbCmacSapProvider::AddUe (uint16_t rnti)
+EnbMacMemberLteEnbCmacSapProvider::AddUe (uint16_t rnti)
 {
   m_mac->DoAddUe (rnti);
 }
 
 void
-EnbMemberLteEnbCmacSapProvider::AddLc (LcInfo lcinfo, LteMacSapUser* msu)
+EnbMacMemberLteEnbCmacSapProvider::AddLc (LcInfo lcinfo, LteMacSapUser* msu)
 {
   m_mac->DoAddLc (lcinfo, msu);
 }
 
 void
-EnbMemberLteEnbCmacSapProvider::ReconfigureLc (LcInfo lcinfo)
+EnbMacMemberLteEnbCmacSapProvider::ReconfigureLc (LcInfo lcinfo)
 {
   m_mac->DoReconfigureLc (lcinfo);
 }
 
 void
-EnbMemberLteEnbCmacSapProvider::ReleaseLc (uint16_t rnti, uint8_t lcid)
+EnbMacMemberLteEnbCmacSapProvider::ReleaseLc (uint16_t rnti, uint8_t lcid)
 {
   m_mac->DoReleaseLc (rnti, lcid);
 }
 
 
 
-class EnbMemberLteMacSapProvider : public LteMacSapProvider
+class EnbMacMemberLteMacSapProvider : public LteMacSapProvider
 {
 public:
-  EnbMemberLteMacSapProvider (LteEnbMac* mac);
+  EnbMacMemberLteMacSapProvider (LteEnbMac* mac);
 
   // inherited from LteMacSapProvider
   virtual void TransmitPdu (TransmitPduParameters params);
@@ -129,20 +129,20 @@ private:
 };
 
 
-EnbMemberLteMacSapProvider::EnbMemberLteMacSapProvider (LteEnbMac* mac)
+EnbMacMemberLteMacSapProvider::EnbMacMemberLteMacSapProvider (LteEnbMac* mac)
   : m_mac (mac)
 {
 }
 
 void
-EnbMemberLteMacSapProvider::TransmitPdu (TransmitPduParameters params)
+EnbMacMemberLteMacSapProvider::TransmitPdu (TransmitPduParameters params)
 {
   m_mac->DoTransmitPdu (params);
 }
 
 
 void
-EnbMemberLteMacSapProvider::ReportBufferStatus (ReportBufferStatusParameters params)
+EnbMacMemberLteMacSapProvider::ReportBufferStatus (ReportBufferStatusParameters params)
 {
   m_mac->DoReportBufferStatus (params);
 }
@@ -150,10 +150,10 @@ EnbMemberLteMacSapProvider::ReportBufferStatus (ReportBufferStatusParameters par
 
 
 
-class EnbMemberFfMacSchedSapUser : public FfMacSchedSapUser
+class EnbMacMemberFfMacSchedSapUser : public FfMacSchedSapUser
 {
 public:
-  EnbMemberFfMacSchedSapUser (LteEnbMac* mac);
+  EnbMacMemberFfMacSchedSapUser (LteEnbMac* mac);
 
 
   virtual void SchedDlConfigInd (const struct SchedDlConfigIndParameters& params);
@@ -163,14 +163,14 @@ private:
 };
 
 
-EnbMemberFfMacSchedSapUser::EnbMemberFfMacSchedSapUser (LteEnbMac* mac)
+EnbMacMemberFfMacSchedSapUser::EnbMacMemberFfMacSchedSapUser (LteEnbMac* mac)
   : m_mac (mac)
 {
 }
 
 
 void
-EnbMemberFfMacSchedSapUser::SchedDlConfigInd (const struct SchedDlConfigIndParameters& params)
+EnbMacMemberFfMacSchedSapUser::SchedDlConfigInd (const struct SchedDlConfigIndParameters& params)
 {
   m_mac->DoSchedDlConfigInd (params);
 }
@@ -178,17 +178,17 @@ EnbMemberFfMacSchedSapUser::SchedDlConfigInd (const struct SchedDlConfigIndParam
 
 
 void
-EnbMemberFfMacSchedSapUser::SchedUlConfigInd (const struct SchedUlConfigIndParameters& params)
+EnbMacMemberFfMacSchedSapUser::SchedUlConfigInd (const struct SchedUlConfigIndParameters& params)
 {
   m_mac->DoSchedUlConfigInd (params);
 }
 
 
 
-class EnbMemberFfMacCschedSapUser : public FfMacCschedSapUser
+class EnbMacMemberFfMacCschedSapUser : public FfMacCschedSapUser
 {
 public:
-  EnbMemberFfMacCschedSapUser (LteEnbMac* mac);
+  EnbMacMemberFfMacCschedSapUser (LteEnbMac* mac);
 
   virtual void CschedCellConfigCnf (const struct CschedCellConfigCnfParameters& params);
   virtual void CschedUeConfigCnf (const struct CschedUeConfigCnfParameters& params);
@@ -203,49 +203,49 @@ private:
 };
 
 
-EnbMemberFfMacCschedSapUser::EnbMemberFfMacCschedSapUser (LteEnbMac* mac)
+EnbMacMemberFfMacCschedSapUser::EnbMacMemberFfMacCschedSapUser (LteEnbMac* mac)
   : m_mac (mac)
 {
 }
 
 void
-EnbMemberFfMacCschedSapUser::CschedCellConfigCnf (const struct CschedCellConfigCnfParameters& params)
+EnbMacMemberFfMacCschedSapUser::CschedCellConfigCnf (const struct CschedCellConfigCnfParameters& params)
 {
   m_mac->DoCschedCellConfigCnf (params);
 }
 
 void
-EnbMemberFfMacCschedSapUser::CschedUeConfigCnf (const struct CschedUeConfigCnfParameters& params)
+EnbMacMemberFfMacCschedSapUser::CschedUeConfigCnf (const struct CschedUeConfigCnfParameters& params)
 {
   m_mac->DoCschedUeConfigCnf (params);
 }
 
 void
-EnbMemberFfMacCschedSapUser::CschedLcConfigCnf (const struct CschedLcConfigCnfParameters& params)
+EnbMacMemberFfMacCschedSapUser::CschedLcConfigCnf (const struct CschedLcConfigCnfParameters& params)
 {
   m_mac->DoCschedLcConfigCnf (params);
 }
 
 void
-EnbMemberFfMacCschedSapUser::CschedLcReleaseCnf (const struct CschedLcReleaseCnfParameters& params)
+EnbMacMemberFfMacCschedSapUser::CschedLcReleaseCnf (const struct CschedLcReleaseCnfParameters& params)
 {
   m_mac->DoCschedLcReleaseCnf (params);
 }
 
 void
-EnbMemberFfMacCschedSapUser::CschedUeReleaseCnf (const struct CschedUeReleaseCnfParameters& params)
+EnbMacMemberFfMacCschedSapUser::CschedUeReleaseCnf (const struct CschedUeReleaseCnfParameters& params)
 {
   m_mac->DoCschedUeReleaseCnf (params);
 }
 
 void
-EnbMemberFfMacCschedSapUser::CschedUeConfigUpdateInd (const struct CschedUeConfigUpdateIndParameters& params)
+EnbMacMemberFfMacCschedSapUser::CschedUeConfigUpdateInd (const struct CschedUeConfigUpdateIndParameters& params)
 {
   m_mac->DoCschedUeConfigUpdateInd (params);
 }
 
 void
-EnbMemberFfMacCschedSapUser::CschedCellConfigUpdateInd (const struct CschedCellConfigUpdateIndParameters& params)
+EnbMacMemberFfMacCschedSapUser::CschedCellConfigUpdateInd (const struct CschedCellConfigUpdateIndParameters& params)
 {
   m_mac->DoCschedCellConfigUpdateInd (params);
 }
@@ -255,10 +255,10 @@ EnbMemberFfMacCschedSapUser::CschedCellConfigUpdateInd (const struct CschedCellC
 // ---------- PHY-SAP
 
 
-class EnbMemberLteEnbPhySapUser : public LteEnbPhySapUser
+class EnbMacMemberLteEnbPhySapUser : public LteEnbPhySapUser
 {
 public:
-  EnbMemberLteEnbPhySapUser (LteEnbMac* mac);
+  EnbMacMemberLteEnbPhySapUser (LteEnbMac* mac);
 
   // inherited from LteEnbPhySapUser
   virtual void ReceivePhyPdu (Ptr<Packet> p);
@@ -269,25 +269,25 @@ private:
   LteEnbMac* m_mac;
 };
 
-EnbMemberLteEnbPhySapUser::EnbMemberLteEnbPhySapUser (LteEnbMac* mac) : m_mac (mac)
+EnbMacMemberLteEnbPhySapUser::EnbMacMemberLteEnbPhySapUser (LteEnbMac* mac) : m_mac (mac)
 {
 }
 
 
 void
-EnbMemberLteEnbPhySapUser::ReceivePhyPdu (Ptr<Packet> p)
+EnbMacMemberLteEnbPhySapUser::ReceivePhyPdu (Ptr<Packet> p)
 {
   m_mac->DoReceivePhyPdu (p);
 }
 
 void
-EnbMemberLteEnbPhySapUser::SubframeIndication (uint32_t frameNo, uint32_t subframeNo)
+EnbMacMemberLteEnbPhySapUser::SubframeIndication (uint32_t frameNo, uint32_t subframeNo)
 {
   m_mac->DoSubframeIndication (frameNo, subframeNo);
 }
 
 void
-EnbMemberLteEnbPhySapUser::ReceiveIdealControlMessage (Ptr<IdealControlMessage> msg)
+EnbMacMemberLteEnbPhySapUser::ReceiveIdealControlMessage (Ptr<IdealControlMessage> msg)
 {
   m_mac->DoReceiveIdealControlMessage (msg);
 }
@@ -310,13 +310,13 @@ LteEnbMac::GetTypeId (void)
 
 LteEnbMac::LteEnbMac ()
 {
-  m_macSapProvider = new EnbMemberLteMacSapProvider (this);
-  m_cmacSapProvider = new EnbMemberLteEnbCmacSapProvider (this);
+  m_macSapProvider = new EnbMacMemberLteMacSapProvider (this);
+  m_cmacSapProvider = new EnbMacMemberLteEnbCmacSapProvider (this);
 
-  m_schedSapUser = new EnbMemberFfMacSchedSapUser (this);
-  m_cschedSapUser = new EnbMemberFfMacCschedSapUser (this);
+  m_schedSapUser = new EnbMacMemberFfMacSchedSapUser (this);
+  m_cschedSapUser = new EnbMacMemberFfMacCschedSapUser (this);
 
-  m_enbPhySapUser = new EnbMemberLteEnbPhySapUser (this);
+  m_enbPhySapUser = new EnbMacMemberLteEnbPhySapUser (this);
 }
 
 

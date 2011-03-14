@@ -69,6 +69,10 @@ public:
   virtual FfMacCschedSapProvider* GetFfMacCschedSapProvider ();
   virtual FfMacSchedSapProvider* GetFfMacSchedSapProvider ();
 
+  friend class RrSchedulerMemberCschedSapProvider;
+  friend class RrSchedulerMemberSchedSapProvider;
+
+private:
 
   //
   // Implementation of the CSCHED API primitives
@@ -112,7 +116,7 @@ public:
 
   void DoSchedUlCqiInfoReq (const struct FfMacSchedSapProvider::SchedUlCqiInfoReqParameters& params);
 
-private:
+
   int GetRbgSize (int dlbandwidth);
 
   /*

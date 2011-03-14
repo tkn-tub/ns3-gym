@@ -41,7 +41,7 @@ class UeInfo;
 class LteEnbRrc : public Object
 {
 
-  friend class EnbMemberLteEnbCmacSapUser;
+  friend class EnbRrcMemberLteEnbCmacSapUser;
 
 public:
   /**
