@@ -5,7 +5,7 @@
 FemtoForum MAC Scheduler Interface
 ----------------------------------
 
-This section describes the design of the FemtoForum LTE MAC Scheduler Interfaces Specification as it is defined in [1]_.
+This section describes the ns-3 specific version of the `FemtoForum LTE MAC Scheduler Interface Specification v1.11 <http://www.femtoforum.org/femto/technical.php>`_
 
 The goals of the definition of this MAC scheduler API in the |ns3| network simulator are:
 
@@ -47,12 +47,17 @@ This subsection details the criteria adopted during the development of the FF MA
 
 * In C++, members with constructors and destructors are not allow in ``unions``. These ``unions`` have been converted to ``structs``.
 
-References
-**********
 
-.. [1] FemtoForum LTE MAC Scheduler Interface Specification v1.11
 
-Examples
-********
+Usage in the ns-3 LTE module
+****************************
 
-The ``rr-ff-mac-scheduler.cc/.h`` and ``enb-ff-mac.cc/.h`` files implement a Round Robin MAC scheduler. This MAC scheduler provides the SCHED SAP and CSCHED SAP interface specified by the FemtoForum.
+The files ``rr-ff-mac-scheduler.{cc,h}`` implement a Round Robin MAC scheduler. To interact with the MAC of the eNB, the Round Robin scheduler implements the Provider side of the SCHED SAP and CSCHED SAP interface. If you plan to develop your own scheduler, we advise to create your own class taking inspiration from the Round Robin scheduler. 
+
+
+The User side of the SCHED SAP interface is implemented in the files ``lte-enb-mac.{cc,.h}``. The User side of the CSCHED SAP interface is implemented in the files ``lte-enb-rrc.{cc,.h}``. You are normally not expected to modify these files in order to implement your own scheduler. 
+
+
+.. figure:: figures/ff-example.png
+
+
