@@ -55,7 +55,7 @@ Usage in the ns-3 LTE module
 The files ``rr-ff-mac-scheduler.{cc,h}`` implement a Round Robin MAC scheduler. To interact with the MAC of the eNB, the Round Robin scheduler implements the Provider side of the SCHED SAP and CSCHED SAP interface. If you plan to develop your own scheduler, we advise to create your own class taking inspiration from the Round Robin scheduler. 
 
 
-The User side of the SCHED SAP interface is implemented in the files ``lte-enb-mac.{cc,.h}``. The User side of the CSCHED SAP interface is implemented in the files ``lte-enb-rrc.{cc,.h}``. You are normally not expected to modify these files in order to implement your own scheduler. 
+The User side of both the CSCHED SAP and the SCHED SAP are implemented in the file ``lte-enb-mac.cc``. You are normally not expected to modify these files in order to implement your own scheduler. 
 
 
 .. figure:: figures/ff-example.png
