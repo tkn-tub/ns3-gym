@@ -63,19 +63,20 @@ The OpenFlow switch device behaves somewhat according to the diagram setup as a 
 switch, with a few modifications made for a proper simulation environment.
 
 Normal OF-enabled Switch:::
-  -----------------------------------
+  
   | Secure Channel                  | <--OF Protocol--> | Controller is external |
   | Hardware or Software Flow Table |
-  -----------------------------------
+ 
 
 ns-3 OF-enabled Switch (module):::
-  -------------------------------------
+
   | m_controller->ReceiveFromSwitch() | <--OF Protocol--> | Controller is internal |
   | Software Flow Table, virtual TCAM |
-  -------------------------------------
 
-In essence, there are two differences:
-# No SSL, Embedded Controller: Instead of a secure channel and connecting to an
+
+In essence, there are two differences: 
+
+1) No SSL, Embedded Controller: Instead of a secure channel and connecting to an
 outside location for the Controller program/machine, we currently only allow a
 Controller extended from ofi::Controller, an extension of an ns3::Object. This
 means ns-3 programmers cannot model the SSL part of the interface or possibility
@@ -86,7 +87,7 @@ external Controller program/machine, and thus work with controllers designed
 outside of the ns-3 environment, that simply use the proper OF protocol when
 communicating messages to the switch through a tap device.>>
 
-# Virtual Flow Table, TCAM: Typical OF-enabled switches are implemented on a hardware
+2) Virtual Flow Table, TCAM: Typical OF-enabled switches are implemented on a hardware
 TCAM. The OFSID we turn into a library includes a modelled software TCAM, that produces
 the same results as a hardware TCAM. We include an attribute FlowTableLookupDelay, which
 allows a simple delay of using the TCAM to be modelled. We don't endeavor to make this
