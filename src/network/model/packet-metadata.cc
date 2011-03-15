@@ -109,6 +109,50 @@ PacketMetadata::Reserve (uint32_t size)
     }
 }
 
+bool
+PacketMetadata::IsSharedPointerOk (uint16_t pointer) const
+{
+  bool ok = pointer == 0xffff || pointer <= m_data->m_size;
+  return ok;
+}
+bool
+PacketMetadata::IsPointerOk (uint16_t pointer) const
+{
+  bool ok = pointer == 0xffff || pointer <= m_used;
+  return ok;
+}
+
+bool
+PacketMetadata::IsStateOk (void) const
+{
+  bool ok = m_used <= m_data->m_size;
+  ok &= IsPointerOk (m_head);
+  ok &= IsPointerOk (m_tail);
+  uint16_t current = m_head;
+  while (ok && current != 0xffff)
+    {
+      struct PacketMetadata::SmallItem item;
+      PacketMetadata::ExtraItem extraItem;
+      ReadItems (current, &item, &extraItem);
+      ok &= IsSharedPointerOk (item.next);
+      ok &= IsSharedPointerOk (item.prev);
+      if (current != m_head)
+        {
+          ok &= IsPointerOk (item.prev);
+        }
+      if (current != m_tail)
+        {
+          ok &= IsPointerOk (item.next);
+        }
+      if (current == m_tail)
+        {
+          break;
+        }
+      current = item.next;
+    }
+  return ok;
+}
+
 uint32_t 
 PacketMetadata::GetUleb128Size (uint32_t value) const
 {
@@ -443,7 +487,7 @@ PacketMetadata::ReplaceTail (PacketMetadata::SmallItem *item,
       AppendValue (extraItem->fragmentEnd, buffer);
       buffer += fragEndSize;
       Append32 (extraItem->packetUid, buffer);
-      m_used = buffer - &m_data->m_data[0];
+      m_used = std::max (m_used, (uint16_t)(buffer - &m_data->m_data[0]));
       m_data->m_dirtyEnd = m_used;
       return;
     }
@@ -484,6 +528,7 @@ PacketMetadata::ReadItems (uint16_t current,
                            struct PacketMetadata::ExtraItem *extraItem) const
 {
   NS_LOG_FUNCTION (this << current);
+  NS_ASSERT (current <= m_data->m_size);
   const uint8_t *buffer = &m_data->m_data[current];
   item->next = buffer[0];
   item->next |= (buffer[1]) << 8;
@@ -599,8 +644,10 @@ PacketMetadata::CreateFragment (uint32_t start, uint32_t end) const
 void 
 PacketMetadata::AddHeader (const Header &header, uint32_t size)
 {
+  NS_ASSERT (IsStateOk ());
   uint32_t uid = header.GetInstanceTypeId ().GetUid () << 1;
   DoAddHeader (uid, size);
+  NS_ASSERT (IsStateOk ());
 }
 void
 PacketMetadata::DoAddHeader (uint32_t uid, uint32_t size)
@@ -627,6 +674,7 @@ PacketMetadata::RemoveHeader (const Header &header, uint32_t size)
 {
   uint32_t uid = header.GetInstanceTypeId ().GetUid () << 1;
   NS_LOG_FUNCTION (this << uid << size);
+  NS_ASSERT (IsStateOk ());
   if (!m_enable) 
     {
       m_metadataSkipped = true;
@@ -667,12 +715,14 @@ PacketMetadata::RemoveHeader (const Header &header, uint32_t size)
     {
       m_head = item.next;
     }
+  NS_ASSERT (IsStateOk ());
 }
 void 
 PacketMetadata::AddTrailer (const Trailer &trailer, uint32_t size)
 {
   uint32_t uid = trailer.GetInstanceTypeId ().GetUid () << 1;
   NS_LOG_FUNCTION (this << uid << size);
+  NS_ASSERT (IsStateOk ());
   if (!m_enable)
     {
       m_metadataSkipped = true;
@@ -687,12 +737,14 @@ PacketMetadata::AddTrailer (const Trailer &trailer, uint32_t size)
   m_chunkUid++;
   uint16_t written = AddSmall (&item);
   UpdateTail (written);
+  NS_ASSERT (IsStateOk ());
 }
 void 
 PacketMetadata::RemoveTrailer (const Trailer &trailer, uint32_t size)
 {
   uint32_t uid = trailer.GetInstanceTypeId ().GetUid () << 1;
   NS_LOG_FUNCTION (this << uid << size);
+  NS_ASSERT (IsStateOk ());
   if (!m_enable) 
     {
       m_metadataSkipped = true;
@@ -733,11 +785,13 @@ PacketMetadata::RemoveTrailer (const Trailer &trailer, uint32_t size)
     {
       m_tail = item.prev;
     }
+  NS_ASSERT (IsStateOk ());
 }
 void
 PacketMetadata::AddAtEnd (PacketMetadata const&o)
 {
   NS_LOG_FUNCTION (this << &o);
+  NS_ASSERT (IsStateOk ());
   if (!m_enable) 
     {
       m_metadataSkipped = true;
@@ -748,6 +802,7 @@ PacketMetadata::AddAtEnd (PacketMetadata const&o)
       // We have no items so 'AddAtEnd' is 
       // equivalent to self-assignment.
       *this = o;
+      NS_ASSERT (IsStateOk ());
       return;
     }
   if (o.m_head == 0xffff)
@@ -803,6 +858,7 @@ PacketMetadata::AddAtEnd (PacketMetadata const&o)
         }
       current = item.next;
     }
+  NS_ASSERT (IsStateOk ());
 }
 void
 PacketMetadata::AddPaddingAtEnd (uint32_t end)
@@ -817,6 +873,7 @@ void
 PacketMetadata::RemoveAtStart (uint32_t start)
 {
   NS_LOG_FUNCTION (this << start);
+  NS_ASSERT (IsStateOk ());
   if (!m_enable) 
     {
       m_metadataSkipped = true;
@@ -873,11 +930,13 @@ PacketMetadata::RemoveAtStart (uint32_t start)
       current = item.next;
     }
   NS_ASSERT (leftToRemove == 0);
+  NS_ASSERT (IsStateOk ());
 }
 void 
 PacketMetadata::RemoveAtEnd (uint32_t end)
 {
   NS_LOG_FUNCTION (this << end);
+  NS_ASSERT (IsStateOk ());
   if (!m_enable) 
     {
       m_metadataSkipped = true;
@@ -936,6 +995,7 @@ PacketMetadata::RemoveAtEnd (uint32_t end)
       current = item.prev;
     }
   NS_ASSERT (leftToRemove == 0);
+  NS_ASSERT (IsStateOk ());
 }
 uint32_t
 PacketMetadata::GetTotalSize (void) const

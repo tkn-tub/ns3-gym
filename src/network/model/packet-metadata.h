@@ -317,6 +317,9 @@ public:
                       struct PacketMetadata::SmallItem *item,
                       struct PacketMetadata::ExtraItem *extraItem) const;
   void DoAddHeader (uint32_t uid, uint32_t size);
+  bool IsStateOk (void) const;
+  bool IsPointerOk (uint16_t pointer) const;
+  bool IsSharedPointerOk (uint16_t pointer) const;
 
 
   static struct PacketMetadata::Data *Create (uint32_t size);

@@ -774,6 +774,16 @@ PacketMetadataTest::DoRun (void)
   CHECK_HISTORY (p, 1, 500);
   p->RemoveAtStart (10);
   CHECK_HISTORY (p, 1, 490);
+
+  // bug 1072
+  p = Create<Packet> (500);
+  ADD_HEADER (p, 10);
+  ADD_HEADER (p, 20);
+  ADD_HEADER (p, 5);
+  CHECK_HISTORY (p, 4, 5, 20, 10, 500);
+  p1 = p->CreateFragment (0,6);
+  p2 = p->CreateFragment (6,535-6);
+  p1->AddAtEnd(p2);
 }
 //-----------------------------------------------------------------------------
 class PacketMetadataTestSuite : public TestSuite
