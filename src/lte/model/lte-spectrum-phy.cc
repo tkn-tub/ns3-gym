@@ -29,6 +29,7 @@
 #include "lte-net-device.h"
 #include "lte-mac-tag.h"
 #include "lte-sinr-chunk-processor.h"
+#include "lte-phy-tag.h"
 
 NS_LOG_COMPONENT_DEFINE ("LteSpectrumPhy");
 
@@ -166,7 +167,7 @@ SpectrumType
 LteSpectrumPhy::GetSpectrumType ()
 {
   NS_LOG_FUNCTION (this);
-  static SpectrumType st = SpectrumTypeFactory::Create ("IdealOfdm");
+  static SpectrumType st = SpectrumTypeFactory::Create ("Lte");
   return st;
 }
 
@@ -239,44 +240,54 @@ LteSpectrumPhy::StartTx (Ptr<PacketBurst> pb)
 
 
   for (std::list<Ptr<Packet> >::const_iterator iter = pb->Begin (); iter
-       != pb->End (); ++iter)
+         != pb->End (); ++iter)
     {
       Ptr<Packet> packet = (*iter)->Copy ();
       m_phyTxStartTrace (packet);
     }
 
-
-  if (m_state == LteSpectrumPhy::RX)
+  switch (m_state)
     {
-      /*
-       * NS FATAL ERROR: according to FDD channel acces,
-       * the physical layer for transmission cannot be used for reception.
-       */
-      NS_FATAL_ERROR ("FDD ERROR: R State while sending packet");
-    }
+    case RX:
+      NS_FATAL_ERROR ("cannot TX while RX: according to FDD channel acces, the physical layer for transmission cannot be used for reception");
+      break;
 
-  if (m_state == LteSpectrumPhy::IDLE)
-    {
-
-      /*
-       m_txPsd must be setted by the device, according to
-       (i) the available subchannel for transmission
-       (ii) the power transmission
-       */
-      NS_ASSERT (m_txPsd);
-
-      m_txPacketBurst = pb;
-      ChangeState (TX);
-      NS_ASSERT (m_channel);
-      double tti = 0.001;
-      m_channel->StartTx (pb, m_txPsd, GetSpectrumType (), Seconds (tti), GetObject<SpectrumPhy> ());
-      Simulator::Schedule (Seconds (tti), &LteSpectrumPhy::EndTx, this);
-      return false;
-    }
-  else
-    {
-      // The device have already started the transmission.
+    case TX:
+      NS_FATAL_ERROR ("cannot TX while already TX: the MAC should avoid this");
+      break;
+      
+    case IDLE:
+      {
+        /*
+          m_txPsd must be setted by the device, according to
+          (i) the available subchannel for transmission
+          (ii) the power transmission
+        */
+        NS_ASSERT (m_txPsd);
+        m_txPacketBurst = pb;
+        
+        // we need to convey some PHY meta information to the receiver
+        // to be used for simulation purposes (e.g., the CellId). This
+        // is done by adding an LtePhyTag to the first packet in the
+        // burst.
+        NS_ASSERT (pb->Begin () != pb->End ());
+        LtePhyTag tag (m_cellId);
+        Ptr<Packet> firstPacketInBurst = *(pb->Begin ());
+        firstPacketInBurst->AddPacketTag (tag);
+        
+        ChangeState (TX);
+        NS_ASSERT (m_channel);
+        double tti = 0.001;
+        m_channel->StartTx (pb, m_txPsd, GetSpectrumType (), Seconds (tti), GetObject<SpectrumPhy> ());
+        Simulator::Schedule (Seconds (tti), &LteSpectrumPhy::EndTx, this);
+      }
       return true;
+      break;
+      
+    default:
+      NS_FATAL_ERROR ("uknown state");
+      return true;
+      break;
     }
 }
 
@@ -319,7 +330,8 @@ LteSpectrumPhy::StartRx (Ptr<PacketBurst> pb, Ptr <const SpectrumValue> rxPsd, S
 
   m_interference.AddSignal (rxPsd, duration);
 
-  // the device might start RX only if the signal is of a type understood by this device
+  // the device might start RX only if the signal is of a type
+  // understood by this device - in this case, an LTE signal.
   if (st == GetSpectrumType ())
     {
       switch (m_state)
@@ -337,37 +349,41 @@ LteSpectrumPhy::StartRx (Ptr<PacketBurst> pb, Ptr <const SpectrumValue> rxPsd, S
           break;
 
         case IDLE:
-          // preamble detection and synchronization is supposed to be always successful.
-          NS_LOG_LOGIC (this << " receiving new packet");
 
-          m_interference.StartRx (rxPsd);
-  
-
-          for (std::list<Ptr<Packet> >::const_iterator iter = pb->Begin (); iter
-               != pb->End (); ++iter)
+          // To check if we're synchronized to this signal, we check
+          // for the CellId which is reported in the LtePhyTag
+          NS_ASSERT (pb->Begin () != pb->End ());          
+          LtePhyTag tag;
+          Ptr<Packet> firstPacketInBurst = *(pb->Begin ());
+          firstPacketInBurst->RemovePacketTag (tag);
+          if (tag.GetCellId () == m_cellId)
             {
-              Ptr<Packet> packet = (*iter)->Copy ();
-              m_phyRxStartTrace (packet);
+              // we're synchronized with this signal
+              ChangeState (RX);
+              
+              m_interference.StartRx (rxPsd);
+  
+              for (std::list<Ptr<Packet> >::const_iterator iter = pb->Begin (); iter
+                     != pb->End (); ++iter)
+                {
+                  Ptr<Packet> packet = (*iter)->Copy ();
+                  m_phyRxStartTrace (packet);
+                }
+              
+              m_rxPacketBurst = pb;
+              m_rxPsd = rxPsd;              
+              
+              NS_LOG_LOGIC (this << " scheduling EndRx with delay " << duration);
+              m_endRxEventId = Simulator::Schedule (duration, &LteSpectrumPhy::EndRx, this);
+
+              break;
+
             }
-
-
-          m_rxPacketBurst = pb;
-          m_rxPsd = rxPsd;
-
-          ChangeState (RX);
-
-
-          NS_LOG_LOGIC (this << " scheduling EndRx with delay " << duration);
-          m_endRxEventId = Simulator::Schedule (duration, &LteSpectrumPhy::EndRx, this);
-
-          break;
-
         }
+
+      NS_LOG_LOGIC (this << "state: " << m_state);
     }
-
-  NS_LOG_LOGIC (this << "state: " << m_state);
 }
-
 
 void
 LteSpectrumPhy::AbortRx ()

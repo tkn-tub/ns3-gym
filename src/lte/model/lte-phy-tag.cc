@@ -20,7 +20,7 @@
  */
 
 
-#include "lte-mac-tag.h"
+#include "lte-phy-tag.h"
 #include "ns3/tag.h"
 #include "ns3/uinteger.h"
 
@@ -44,55 +44,47 @@ LtePhyTag::GetInstanceTypeId (void) const
   return GetTypeId ();
 }
 
-LtePhyTag::LtePhyTag (Ptr<LtePhy> enbPhy)
-  : m_enbPhy (enbPhy.PeekPointer ())
+LtePhyTag::LtePhyTag ()
+{
+}
+
+LtePhyTag::LtePhyTag (uint16_t cellId)
+  : m_cellId (cellId)
+{
+}
+
+LtePhyTag::~LtePhyTag ()
 {
 }
 
 uint32_t
 LtePhyTag::GetSerializedSize (void) const
 {
-  return sizeof (void*);
+  return 2;
 }
 
 void
 LtePhyTag::Serialize (TagBuffer i) const
 {
-  switch (sizeof (void*))
-    {
-    case 4:
-      i.WriteU32 ((uint32_t) m_enbPhy);
-      break;      
-    case 8:
-      i.WriteU64 ((uint64_t) m_enbPhy);
-      break;
-    default:
-      NS_FATAL ("unknown pointer size");
-      break;
-    }
+  i.WriteU16 (m_cellId);
 }
 
 void
 LtePhyTag::Deserialize (TagBuffer i)
 {
- switch (sizeof (void*))
-    {
-    case 4:
-      m_enbPhy = (LtePhy*) i.ReadU32 ();
-      break;      
-    case 8:
-      m_enbPhy = (LtePhy*) i.ReadU64 ();
-      break;
-    default:
-      NS_FATAL ("unknown pointer size");
-      break;
-    }
+  m_cellId = i.ReadU16 ();
 }
 
 void
 LtePhyTag::Print (std::ostream &os) const
 {
-  os << "0x" << std::hex << m_enbPhy << std::dec;
+  os << m_cellId;
+}
+
+uint16_t
+LtePhyTag::GetCellId () const
+{
+  return m_cellId;
 }
 
 } // namespace ns3

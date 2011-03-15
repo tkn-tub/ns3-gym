@@ -42,18 +42,21 @@ public:
   /**
    * Create a LtePhyTag with the given RNTI and LC id
    */
-  LtePhyTag (Ptr<LtePhy> enbPhy);
+  LtePhyTag (uint16_t cellId);
+
+
+  virtual ~LtePhyTag ();
 
   virtual void Serialize (TagBuffer i) const;
   virtual void Deserialize (TagBuffer i);
   virtual uint32_t GetSerializedSize () const;
   virtual void Print (std::ostream &os) const;
 
-  bool IsEnbPhyEqual () const;
+  uint16_t GetCellId () const;
 
 private:
   
-  LtePhy* m_enbPhy;
+  uint16_t m_cellId;
 
 };
 
