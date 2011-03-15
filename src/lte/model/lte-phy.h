@@ -246,7 +246,8 @@ public:
 
 
   
-private:
+protected:
+
   Ptr<LteNetDevice> m_netDevice;
 
   Ptr<LteSpectrumPhy> m_downlinkSpectrumPhy;

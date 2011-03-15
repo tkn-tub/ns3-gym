@@ -236,7 +236,7 @@ bool
 LteSpectrumPhy::StartTx (Ptr<PacketBurst> pb)
 {
   NS_LOG_FUNCTION (this << pb);
-  NS_LOG_LOGIC (this << "state: " << m_state);
+  NS_LOG_LOGIC (this << " state: " << m_state);
 
 
   for (std::list<Ptr<Packet> >::const_iterator iter = pb->Begin (); iter
@@ -296,7 +296,7 @@ void
 LteSpectrumPhy::EndTx ()
 {
   NS_LOG_FUNCTION (this);
-  NS_LOG_LOGIC (this << "state: " << m_state);
+  NS_LOG_LOGIC (this << " state: " << m_state);
 
   NS_ASSERT (m_state == TX);
 
@@ -326,7 +326,7 @@ void
 LteSpectrumPhy::StartRx (Ptr<PacketBurst> pb, Ptr <const SpectrumValue> rxPsd, SpectrumType st, Time duration)
 {
   NS_LOG_FUNCTION (this << pb << rxPsd << st << duration);
-  NS_LOG_LOGIC (this << "state: " << m_state);
+  NS_LOG_LOGIC (this << " state: " << m_state);
 
   m_interference.AddSignal (rxPsd, duration);
 
@@ -337,51 +337,54 @@ LteSpectrumPhy::StartRx (Ptr<PacketBurst> pb, Ptr <const SpectrumValue> rxPsd, S
       switch (m_state)
         {
         case TX:
-          /*
-           * NS FATAL ERROR: according to FDD channel acces,
-           * the physical layer for reception cannot be used for transmission.
-           */
-          NS_FATAL_ERROR ("FDD ERROR: TX State while receiving packet");
-
+          NS_FATAL_ERROR ("cannot RX while TX: according to FDD channel acces, the physical layer for transmission cannot be used for reception");
           break;
 
         case RX:
           break;
 
         case IDLE:
-
-          // To check if we're synchronized to this signal, we check
-          // for the CellId which is reported in the LtePhyTag
-          NS_ASSERT (pb->Begin () != pb->End ());          
-          LtePhyTag tag;
-          Ptr<Packet> firstPacketInBurst = *(pb->Begin ());
-          firstPacketInBurst->RemovePacketTag (tag);
-          if (tag.GetCellId () == m_cellId)
-            {
-              // we're synchronized with this signal
-              ChangeState (RX);
+          {
+            // To check if we're synchronized to this signal, we check
+            // for the CellId which is reported in the LtePhyTag
+            NS_ASSERT (pb->Begin () != pb->End ());          
+            LtePhyTag tag;
+            Ptr<Packet> firstPacketInBurst = *(pb->Begin ());
+            firstPacketInBurst->RemovePacketTag (tag);
+            if (tag.GetCellId () == m_cellId)
+              {
+                NS_LOG_LOGIC (this << " synchronized with this signal (cellId=" << tag.GetCellId () << ")");
+                ChangeState (RX);
               
-              m_interference.StartRx (rxPsd);
+                m_interference.StartRx (rxPsd);
   
-              for (std::list<Ptr<Packet> >::const_iterator iter = pb->Begin (); iter
-                     != pb->End (); ++iter)
-                {
-                  Ptr<Packet> packet = (*iter)->Copy ();
-                  m_phyRxStartTrace (packet);
-                }
+                for (std::list<Ptr<Packet> >::const_iterator iter = pb->Begin (); iter
+                       != pb->End (); ++iter)
+                  {
+                    Ptr<Packet> packet = (*iter)->Copy ();
+                    m_phyRxStartTrace (packet);
+                  }
               
-              m_rxPacketBurst = pb;
-              m_rxPsd = rxPsd;              
+                m_rxPacketBurst = pb;
+                m_rxPsd = rxPsd;              
               
-              NS_LOG_LOGIC (this << " scheduling EndRx with delay " << duration);
-              m_endRxEventId = Simulator::Schedule (duration, &LteSpectrumPhy::EndRx, this);
-
-              break;
-
-            }
+                NS_LOG_LOGIC (this << " scheduling EndRx with delay " << duration);
+                m_endRxEventId = Simulator::Schedule (duration, &LteSpectrumPhy::EndRx, this);
+              }      
+            else
+              {
+                NS_LOG_LOGIC (this << " not in sync with this signal (cellId=" 
+                              << tag.GetCellId () << ", m_cellId=" << m_cellId << ")");
+              }
+          }
+          break;
+          
+        default:
+          NS_FATAL_ERROR ("unknown state");
+          break;
         }
 
-      NS_LOG_LOGIC (this << "state: " << m_state);
+      NS_LOG_LOGIC (this << " state: " << m_state);
     }
 }
 
@@ -389,7 +392,7 @@ void
 LteSpectrumPhy::AbortRx ()
 {
   NS_LOG_FUNCTION (this);
-  NS_LOG_LOGIC (this << "state: " << m_state);
+  NS_LOG_LOGIC (this << " state: " << m_state);
 
   NS_ASSERT (m_state == RX);
 
@@ -410,7 +413,7 @@ void
 LteSpectrumPhy::EndRx ()
 {
   NS_LOG_FUNCTION (this);
-  NS_LOG_LOGIC (this << "state: " << m_state);
+  NS_LOG_LOGIC (this << " state: " << m_state);
 
   NS_ASSERT (m_state == RX);
 

@@ -145,12 +145,11 @@ public:
 
 
   /** 
-   * set the eNB this PHY is synchronized with 
+   * set the cellId of the eNb this PHY is synchronized with 
    * 
-   * \param enbPhy a pointer to the PHY of the eNB, used for exchanging control messages
    * \param cellId the cell identifier of the eNB
    */
-  void SetTargetEnb (Ptr<LteEnbPhy> enbPhy);    
+  void SetEnbCellId (uint16_t cellId);    
 
 
 private:
@@ -165,8 +164,7 @@ private:
 
   uint16_t  m_rnti;
 
-  Ptr<LteEnbPhy> m_targetEnbPhy;  
-  uint16_t m_cellId;
+  uint16_t m_enbCellId;
   
 };
 

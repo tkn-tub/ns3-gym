@@ -365,9 +365,11 @@ LteUePhy::SubframeIndication (uint32_t frameNo, uint32_t subframeNo)
 
 
 void
-LteUePhy::SetTargetEnb (Ptr<LteEnbPhy> enbPhy)
+LteUePhy::SetEnbCellId (uint16_t cellId)
 {
-  m_targetEnbPhy = enbPhy;
+  m_enbCellId = cellId;
+  m_downlinkSpectrumPhy->SetCellId (cellId);
+  m_uplinkSpectrumPhy->SetCellId (cellId);
 }
 
 

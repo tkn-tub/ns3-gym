@@ -100,6 +100,8 @@ private:
   Ptr<LteUeMac> m_mac;
   Ptr<LteUePhy> m_phy;
   Ptr<LteUeRrc> m_rrc;
+
+
 };
 
 } // namespace ns3
