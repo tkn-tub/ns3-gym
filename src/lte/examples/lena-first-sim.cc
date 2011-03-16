@@ -60,7 +60,7 @@ int main (int argc, char *argv[])
   lena.ActivateEpsBearer (ueDevs, bearer);
 
 
-  Simulator::Stop (Seconds (0.004));
+  Simulator::Stop (Seconds (0.005));
 
   Simulator::Run ();
   Simulator::Destroy ();

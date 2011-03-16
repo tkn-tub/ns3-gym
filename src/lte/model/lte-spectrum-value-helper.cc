@@ -40,7 +40,10 @@ public:
      */
 
     std::vector<double> freqs;
-    for (int i = 0; i < 100; ++i)
+    /* WILD HACK
+    * banwidth 25
+    */
+    for (int i = 0; i < 25; ++i)
       {
 
         double centralFrequencyOfPRB = 1.920 + (i * 0.00018);
@@ -67,7 +70,10 @@ public:
      */
 
     std::vector<double> freqs;
-    for (int i = 0; i < 100; ++i)
+    /* WILD HACK
+    * banwidth 25
+    */
+    for (int i = 0; i < 25; ++i)
       {
 
         double centralFrequencyOfPRB = 2.110 + (i * 0.00018);

@@ -478,12 +478,12 @@ RrFfMacScheduler::DoSchedDlCqiInfoReq (const struct FfMacSchedSapProvider::Sched
   NS_LOG_FUNCTION (this);
 
   std::map <uint16_t,uint8_t>::iterator it;
-
   for (unsigned int i = 0; i < params.m_cqiList.size (); i++)
     {
       if ( params.m_cqiList.at (i).m_cqiType == CqiListElement_s::P10 )
         {
           // wideband CQI reporting
+          std::map <uint16_t,uint8_t>::iterator it;
           uint16_t rnti = params.m_cqiList.at (i).m_rnti;
           it = m_p10CqiRxed.find (rnti);
           if (it == m_p10CqiRxed.end ())
@@ -496,6 +496,15 @@ RrFfMacScheduler::DoSchedDlCqiInfoReq (const struct FfMacSchedSapProvider::Sched
               // update the CQI value
               (*it).second = params.m_cqiList.at (i).m_wbCqi.at (0);
             }
+        }
+      else if ( params.m_cqiList.at (i).m_cqiType == CqiListElement_s::A30 )
+        {
+          // subband CQI reporting high layer configured 
+          // Not used by RR Scheduler
+        }
+      else
+        {
+          NS_LOG_ERROR (this << " CQI type unknown");
         }
     }
 

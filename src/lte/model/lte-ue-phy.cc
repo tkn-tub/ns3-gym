@@ -95,8 +95,10 @@ NS_OBJECT_ENSURE_REGISTERED (LteUePhy);
 
 
 LteUePhy::LteUePhy ()
-  : m_p10CqiPeriocity (MilliSeconds (2)),    
-    m_p10CqiLast (MilliSeconds (0))
+  : m_p10CqiPeriocity (MilliSeconds (160)),    
+    m_p10CqiLast (MilliSeconds (0)),
+    m_a30CqiPeriocity (MilliSeconds (1)), // ideal behavior 
+    m_a30CqiLast (MilliSeconds (0))
 {
   m_uePhySapProvider = new UeMemberLteUePhySapProvider (this);
 }
@@ -215,12 +217,21 @@ void
 LteUePhy::GenerateCqiFeedback (const SpectrumValue& sinr)
 {
   NS_LOG_FUNCTION (this);
+  // check periodic wideband CQI
   if (Simulator::Now () > m_p10CqiLast + m_p10CqiPeriocity)
     {
       Ptr<LteUeNetDevice> thisDevice = GetDevice ()->GetObject<LteUeNetDevice> ();
       Ptr<DlCqiIdealControlMessage> msg = CreateDlCqiFeedbackMessage (sinr);
       DoSendIdealControlMessage (msg);
       m_p10CqiLast = Simulator::Now ();
+    }
+  // check aperiodic high-layer configured subband CQI
+  if  (Simulator::Now () > m_a30CqiLast + m_a30CqiPeriocity)
+    {
+      Ptr<LteUeNetDevice> thisDevice = GetDevice ()->GetObject<LteUeNetDevice> ();
+      Ptr<DlCqiIdealControlMessage> msg = CreateDlCqiFeedbackMessage (sinr);
+      DoSendIdealControlMessage (msg);
+      m_a30CqiLast = Simulator::Now ();
     }
 }
 
@@ -235,21 +246,57 @@ LteUePhy::CreateDlCqiFeedbackMessage (const SpectrumValue& sinr)
 
   // CREATE CqiIdealControlMessage
   Ptr<DlCqiIdealControlMessage> msg = Create<DlCqiIdealControlMessage> ();
-
-  int nbSubChannels = cqi.size ();
-  double cqiSum = 0.0;
-  for (int i = 0; i < nbSubChannels; i++)
-    {
-      cqiSum += cqi.at (i);
-    }
   CqiListElement_s dlcqi;
-  dlcqi.m_rnti = m_rnti;
-  dlcqi.m_ri = 1; // not yet used
-  dlcqi.m_cqiType = CqiListElement_s::P10; // Peridic CQI using PUCCH wideband
-  dlcqi.m_wbCqi.push_back ((uint16_t) cqiSum / nbSubChannels);
-  dlcqi.m_wbPmi = 0; // not yet used
-  // dl.cqi.m_sbMeasResult others CQI report modes: not yet implemented
+  
+  if (Simulator::Now () > m_p10CqiLast + m_p10CqiPeriocity)
+    {
 
+      int nbSubChannels = cqi.size ();
+      double cqiSum = 0.0;
+      // average the CQIs of the different RBs
+      for (int i = 0; i < nbSubChannels; i++)
+        {
+          cqiSum += cqi.at (i);
+        }
+      dlcqi.m_rnti = m_rnti;
+      dlcqi.m_ri = 1; // not yet used
+      dlcqi.m_cqiType = CqiListElement_s::P10; // Peridic CQI using PUCCH wideband
+      dlcqi.m_wbCqi.push_back ((uint16_t) cqiSum / nbSubChannels);
+      dlcqi.m_wbPmi = 0; // not yet used
+      // dl.cqi.m_sbMeasResult others CQI report modes: not yet implemented
+    }
+  else if(Simulator::Now () > m_a30CqiLast + m_a30CqiPeriocity)
+    {
+      int nbSubChannels = cqi.size ();
+      int rbgSize = GetRbgSize ();
+      double cqiSum = 0.0;
+      int cqiNum = 0;
+      SbMeasResult_s rbgMeas;
+      //NS_LOG_DEBUG (this << " Create A30 CQI feedback, RBG " << rbgSize << " cqiNum " << nbSubChannels << " band "  << (uint16_t)m_dlBandwidth);
+      for (int i = 0; i < nbSubChannels; i++)
+      {
+        cqiSum += cqi.at (i);
+        cqiNum++;
+        if (cqiNum == rbgSize)
+          {
+            // average the CQIs of the different RBGs
+            //NS_LOG_DEBUG (this << " RBG CQI "  << (uint16_t) cqiSum / rbgSize);
+            HigherLayerSelected_s hlCqi;
+            hlCqi.m_sbPmi = 0; // not yet used
+            hlCqi.m_sbCqi.push_back ((uint16_t) cqiSum / rbgSize);  // only CW0 (SISO mode)
+            rbgMeas.m_higherLayerSelected.push_back (hlCqi);
+            cqiSum = 0.0;
+            cqiNum = 0;
+          }
+      }
+      dlcqi.m_rnti = m_rnti;
+      dlcqi.m_ri = 1; // not yet used
+      dlcqi.m_cqiType = CqiListElement_s::A30; // Aperidic CQI using PUSCH
+      //dlcqi.m_wbCqi.push_back ((uint16_t) cqiSum / nbSubChannels);
+      dlcqi.m_wbPmi = 0; // not yet used
+      dlcqi.m_sbMeasResult = rbgMeas;
+    }
+    
   msg->SetDlCqi (dlcqi);
   return msg;
 }
@@ -265,8 +312,6 @@ LteUePhy::DoSendIdealControlMessage (Ptr<IdealControlMessage> msg)
   msg->SetSourceDevice (thisDevice);
   msg->SetDestinationDevice (remoteDevice);
   SetControlMessages (msg);
-  Ptr<LtePhy> phy = remoteDevice->GetPhy ();
-  phy->ReceiveIdealControlMessage (msg);
 }
 
 

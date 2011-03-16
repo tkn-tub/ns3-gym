@@ -490,7 +490,7 @@ LteEnbMac::ReceiveDlCqiIdealControlMessage  (Ptr<DlCqiIdealControlMessage> msg)
   // NS_LOG_FUNCTION (this << msg->GetSourceDevice () << msg->GetDestinationDevice ());
 
   CqiListElement_s dlcqi = msg->GetDlCqi ();
-  // NS_LOG_FUNCTION(this << "Enb Received DCI rnti" << dlcqi.m_rnti << " CQI " << (uint16_t)dlcqi.m_wbCqi[0]);
+  NS_LOG_FUNCTION(this << "Enb Received DCI rnti" << dlcqi.m_rnti);
   m_dlCqiReceived.push_back (dlcqi);
 
 }
@@ -533,7 +533,7 @@ LteEnbMac::DoReceivePhyPdu (Ptr<Packet> p)
     }
   else
     {
-      (*it).second.m_ulReception.at (tag.GetLcid ()) += p->GetSize ();
+      (*it).second.m_ulReception.at (tag.GetLcid () - 1) += p->GetSize ();
       (*it).second.m_receptionStatus = UlInfoListElement_s::Ok;
     }
       

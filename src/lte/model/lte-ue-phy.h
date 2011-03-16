@@ -158,6 +158,11 @@ private:
 
   Time m_p10CqiPeriocity; /**< Wideband Periodic CQI: 2, 5, 10, 16, 20, 32, 40, 64, 80 or 160 ms */
   Time m_p10CqiLast;
+  
+  /**< SubBand Aperiodic CQI: activated by  DCI format 0 or Random Access Response Grant */
+  // NOTE defines a periodicity for academic studies
+  Time m_a30CqiPeriocity;
+  Time m_a30CqiLast;
 
   LteUePhySapProvider* m_uePhySapProvider;
   LteUePhySapUser* m_uePhySapUser;
