@@ -4,3 +4,6 @@ def build(bld):
     obj = bld.create_ns3_program('lena-first-sim',
                                  ['lte'])
     obj.source = 'lena-first-sim.cc'
+    obj = bld.create_ns3_program('inter-cell-interference',
+                                 ['lte'])
+    obj.source = 'inter-cell-interference.cc'

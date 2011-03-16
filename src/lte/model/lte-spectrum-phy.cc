@@ -178,7 +178,6 @@ LteSpectrumPhy::SetTxPowerSpectralDensity (Ptr<SpectrumValue> txPsd)
   NS_LOG_FUNCTION (this << txPsd);
   NS_ASSERT (txPsd);
   m_txPsd = txPsd;
-  NS_LOG_INFO ("\t computed tx_psd: " << *txPsd << "\t stored tx_psd: " << *m_txPsd);
 }
 
 
@@ -186,7 +185,6 @@ void
 LteSpectrumPhy::SetNoisePowerSpectralDensity (Ptr<const SpectrumValue> noisePsd)
 {
   NS_LOG_FUNCTION (this << noisePsd);
-  NS_LOG_INFO ("\t computed noise_psd: " << *noisePsd );
   NS_ASSERT (noisePsd);
   m_interference.SetNoisePowerSpectralDensity (noisePsd);
 }
@@ -279,6 +277,7 @@ LteSpectrumPhy::StartTx (Ptr<PacketBurst> pb)
         NS_ASSERT (m_channel);
         double tti = 0.001;
         m_channel->StartTx (pb, m_txPsd, GetSpectrumType (), Seconds (tti), GetObject<SpectrumPhy> ());
+        NS_LOG_LOGIC (this << " scheduling EndTx ()");
         Simulator::Schedule (Seconds (tti), &LteSpectrumPhy::EndTx, this);
       }
       return true;

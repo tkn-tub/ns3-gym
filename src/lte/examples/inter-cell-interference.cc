@@ -29,37 +29,56 @@ using namespace ns3;
 
 int main (int argc, char *argv[])
 {
+  double enbDist = 5.0;
+  
+  CommandLine cmd;
+  cmd.AddValue ("enbDist", "distance between the two eNBs", enbDist);
+  
+
   LenaHelper lena;
 
-  lena.EnableLogComponents ();
+  //lena.EnableLogComponents ();
 
   // Create Nodes: eNodeB and UE
   NodeContainer enbNodes;
-  NodeContainer ueNodes;
-  enbNodes.Create (1);
-  ueNodes.Create (1);
+  NodeContainer ueNodes1, ueNodes2;
+  enbNodes.Create (2);
+  ueNodes1.Create (1);
+  ueNodes2.Create (1);
+
+  Ptr<ListPositionAllocator> positionAlloc = CreateObject<ListPositionAllocator> ();
+  positionAlloc->Add (Vector (0.0, 0.0, 0.0));
+  positionAlloc->Add (Vector (enbDist, 0.0, 0.0));
+  positionAlloc->Add (Vector (0.0, 0.0, 0.0));
+  positionAlloc->Add (Vector (enbDist, 0.0, 0.0));
+  
+
 
   // Install Mobility Model
   MobilityHelper mobility;
   mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
+  mobility.SetPositionAllocator (positionAlloc);
   mobility.Install (enbNodes);
-  mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
-  mobility.Install (ueNodes);
+  mobility.Install (ueNodes1);
+  mobility.Install (ueNodes2);
 
   // Create Devices and install them in the Nodes (eNB and UE)
   NetDeviceContainer enbDevs;
-  NetDeviceContainer ueDevs;
+  NetDeviceContainer ueDevs1;
+  NetDeviceContainer ueDevs2;
   enbDevs = lena.InstallEnbDevice (enbNodes);
-  ueDevs = lena.InstallUeDevice (ueNodes);
+  ueDevs1 = lena.InstallUeDevice (ueNodes1);
+  ueDevs2 = lena.InstallUeDevice (ueNodes2);
 
-  // Attach a UE to a eNB
-  lena.Attach (ueDevs, enbDevs.Get (0));
+  // Attach UEs to a eNB
+  lena.Attach (ueDevs1, enbDevs.Get (0));
+  lena.Attach (ueDevs2, enbDevs.Get (1));
 
-  // Activate an EPS bearer
+  // Activate an EPS bearer on all UEs
   enum EpsBearer::Qci q = EpsBearer::GBR_CONV_VOICE;
   EpsBearer bearer (q);
-  lena.ActivateEpsBearer (ueDevs, bearer);
-
+  lena.ActivateEpsBearer (ueDevs1, bearer);
+  lena.ActivateEpsBearer (ueDevs2, bearer);
 
   Simulator::Stop (Seconds (0.004));
 
