@@ -415,7 +415,6 @@ LteEnbMac::DoSubframeIndication (uint32_t frameNo, uint32_t subframeNo)
     {
       cqiNum = MAX_CQI_LIST;
     }
-
   cqiInfoReq.m_cqiList.insert (cqiInfoReq.m_cqiList.begin (), m_dlCqiReceived.begin (), m_dlCqiReceived.end ());
   m_dlCqiReceived.erase (m_dlCqiReceived.begin (), m_dlCqiReceived.end ());
   m_schedSapProvider->SchedDlCqiInfoReq (cqiInfoReq);

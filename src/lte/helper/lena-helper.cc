@@ -238,6 +238,7 @@ LenaHelper::EnableLogComponents (void)
   LogComponentEnable ("LteUeMac", LOG_LEVEL_ALL);
   LogComponentEnable ("LteRlc", LOG_LEVEL_ALL);
   LogComponentEnable ("RrPacketScheduler", LOG_LEVEL_ALL);
+  LogComponentEnable ("PfPacketScheduler", LOG_LEVEL_ALL);
 
   LogComponentEnable ("LtePhy", LOG_LEVEL_ALL);
   LogComponentEnable ("LteEnbPhy", LOG_LEVEL_ALL);

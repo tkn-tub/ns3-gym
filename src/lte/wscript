@@ -39,6 +39,7 @@ def build(bld):
         'model/lte-ue-phy-sap.cc',
         'model/lte-interference.cc',
         'model/lte-sinr-chunk-processor.cc',
+        'model/pf-ff-mac-scheduler.cc',
         ]
     
     headers = bld.new_task_gen('ns3header')
@@ -82,6 +83,7 @@ def build(bld):
         'model/lte-ue-phy-sap.h',
         'model/lte-interference.h',
         'model/lte-sinr-chunk-processor.h',
+        'model/pf-ff-mac-scheduler.h',
         ]
 
     if (bld.env['ENABLE_EXAMPLES']):

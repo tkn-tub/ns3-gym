@@ -20,24 +20,27 @@
  * Author: Nicola Baldo <nbaldo@cttc.es>  : Integrated with new RRC and MAC architecture
  */
 
-#include "ns3/llc-snap-header.h"
-#include "ns3/simulator.h"
-#include "ns3/callback.h"
-#include "ns3/node.h"
-#include "ns3/packet.h"
-#include "lte-net-device.h"
-#include "ns3/packet-burst.h"
-#include "ns3/uinteger.h"
-#include "ns3/trace-source-accessor.h"
-#include "ns3/pointer.h"
-#include "ns3/enum.h"
-#include "lte-amc.h"
-#include "lte-enb-mac.h"
-#include "lte-enb-net-device.h"
-#include "lte-enb-rrc.h"
-#include "lte-ue-net-device.h"
-#include "lte-enb-phy.h"
-#include "rr-ff-mac-scheduler.h"
+#include <ns3/llc-snap-header.h>
+#include <ns3/simulator.h>
+#include <ns3/callback.h>
+#include <ns3/node.h>
+#include <ns3/packet.h>
+#include <ns3/lte-net-device.h>
+#include <ns3/packet-burst.h>
+#include <ns3/uinteger.h>
+#include <ns3/trace-source-accessor.h>
+#include <ns3/pointer.h>
+#include <ns3/enum.h>
+#include <ns3/lte-amc.h>
+#include <ns3/lte-enb-mac.h>
+#include <ns3/lte-enb-net-device.h>
+#include <ns3/lte-enb-rrc.h>
+#include <ns3/lte-ue-net-device.h>
+#include <ns3/lte-enb-phy.h>
+#include <ns3/ff-mac-scheduler.h>
+//#include <ns3/rr-ff-mac-scheduler.h>
+#include <ns3/pf-ff-mac-scheduler.h>
+
 
 NS_LOG_COMPONENT_DEFINE ("LteEnbNetDevice");
 
@@ -115,7 +118,8 @@ LteEnbNetDevice::InitLteEnbNetDevice (void)
   m_mac->SetLteEnbCmacSapUser (m_rrc->GetLteEnbCmacSapUser ());
   m_rrc->SetLteMacSapProvider (m_mac->GetLteMacSapProvider ());
 
-  m_scheduler = Create<RrFfMacScheduler> ();
+  //m_scheduler = Create<RrFfMacScheduler> ();
+  m_scheduler = Create<PfFfMacScheduler> ();
   m_mac->SetFfMacSchedSapProvider (m_scheduler->GetFfMacSchedSapProvider ());
   m_mac->SetFfMacCschedSapProvider (m_scheduler->GetFfMacCschedSapProvider ());
 
