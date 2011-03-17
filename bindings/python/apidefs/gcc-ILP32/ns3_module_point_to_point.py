@@ -263,27 +263,50 @@ def register_Ns3PointToPointChannel_methods(root_module, cls):
     return
 
 def register_Ns3PointToPointNetDevice_methods(root_module, cls):
-    ## point-to-point-net-device.h: ns3::PointToPointNetDevice::PointToPointNetDevice(ns3::PointToPointNetDevice const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::PointToPointNetDevice const &', 'arg0')])
+    ## point-to-point-net-device.h: static ns3::TypeId ns3::PointToPointNetDevice::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
     ## point-to-point-net-device.h: ns3::PointToPointNetDevice::PointToPointNetDevice() [constructor]
     cls.add_constructor([])
-    ## point-to-point-net-device.h: void ns3::PointToPointNetDevice::AddLinkChangeCallback(ns3::Callback<void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> callback) [member function]
-    cls.add_method('AddLinkChangeCallback', 
+    ## point-to-point-net-device.h: void ns3::PointToPointNetDevice::SetDataRate(ns3::DataRate bps) [member function]
+    cls.add_method('SetDataRate', 
                    'void', 
-                   [param('ns3::Callback< void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'callback')], 
-                   is_virtual=True)
+                   [param('ns3::DataRate', 'bps')])
+    ## point-to-point-net-device.h: void ns3::PointToPointNetDevice::SetInterframeGap(ns3::Time t) [member function]
+    cls.add_method('SetInterframeGap', 
+                   'void', 
+                   [param('ns3::Time', 't')])
     ## point-to-point-net-device.h: bool ns3::PointToPointNetDevice::Attach(ns3::Ptr<ns3::PointToPointChannel> ch) [member function]
     cls.add_method('Attach', 
                    'bool', 
                    [param('ns3::Ptr< ns3::PointToPointChannel >', 'ch')])
-    ## point-to-point-net-device.h: ns3::Address ns3::PointToPointNetDevice::GetAddress() const [member function]
-    cls.add_method('GetAddress', 
-                   'ns3::Address', 
+    ## point-to-point-net-device.h: void ns3::PointToPointNetDevice::SetQueue(ns3::Ptr<ns3::Queue> queue) [member function]
+    cls.add_method('SetQueue', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Queue >', 'queue')])
+    ## point-to-point-net-device.h: ns3::Ptr<ns3::Queue> ns3::PointToPointNetDevice::GetQueue() const [member function]
+    cls.add_method('GetQueue', 
+                   'ns3::Ptr< ns3::Queue >', 
                    [], 
-                   is_const=True, is_virtual=True)
-    ## point-to-point-net-device.h: ns3::Address ns3::PointToPointNetDevice::GetBroadcast() const [member function]
-    cls.add_method('GetBroadcast', 
-                   'ns3::Address', 
+                   is_const=True)
+    ## point-to-point-net-device.h: void ns3::PointToPointNetDevice::SetReceiveErrorModel(ns3::Ptr<ns3::ErrorModel> em) [member function]
+    cls.add_method('SetReceiveErrorModel', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::ErrorModel >', 'em')])
+    ## point-to-point-net-device.h: void ns3::PointToPointNetDevice::Receive(ns3::Ptr<ns3::Packet> p) [member function]
+    cls.add_method('Receive', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Packet >', 'p')])
+    ## point-to-point-net-device.h: void ns3::PointToPointNetDevice::SetIfIndex(uint32_t const index) [member function]
+    cls.add_method('SetIfIndex', 
+                   'void', 
+                   [param('uint32_t const', 'index')], 
+                   is_virtual=True)
+    ## point-to-point-net-device.h: uint32_t ns3::PointToPointNetDevice::GetIfIndex() const [member function]
+    cls.add_method('GetIfIndex', 
+                   'uint32_t', 
                    [], 
                    is_const=True, is_virtual=True)
     ## point-to-point-net-device.h: ns3::Ptr<ns3::Channel> ns3::PointToPointNetDevice::GetChannel() const [member function]
@@ -291,49 +314,24 @@ def register_Ns3PointToPointNetDevice_methods(root_module, cls):
                    'ns3::Ptr< ns3::Channel >', 
                    [], 
                    is_const=True, is_virtual=True)
-    ## point-to-point-net-device.h: uint32_t ns3::PointToPointNetDevice::GetIfIndex() const [member function]
-    cls.add_method('GetIfIndex', 
-                   'uint32_t', 
+    ## point-to-point-net-device.h: void ns3::PointToPointNetDevice::SetAddress(ns3::Address address) [member function]
+    cls.add_method('SetAddress', 
+                   'void', 
+                   [param('ns3::Address', 'address')], 
+                   is_virtual=True)
+    ## point-to-point-net-device.h: ns3::Address ns3::PointToPointNetDevice::GetAddress() const [member function]
+    cls.add_method('GetAddress', 
+                   'ns3::Address', 
                    [], 
                    is_const=True, is_virtual=True)
+    ## point-to-point-net-device.h: bool ns3::PointToPointNetDevice::SetMtu(uint16_t const mtu) [member function]
+    cls.add_method('SetMtu', 
+                   'bool', 
+                   [param('uint16_t const', 'mtu')], 
+                   is_virtual=True)
     ## point-to-point-net-device.h: uint16_t ns3::PointToPointNetDevice::GetMtu() const [member function]
     cls.add_method('GetMtu', 
                    'uint16_t', 
-                   [], 
-                   is_const=True, is_virtual=True)
-    ## point-to-point-net-device.h: ns3::Address ns3::PointToPointNetDevice::GetMulticast(ns3::Ipv4Address multicastGroup) const [member function]
-    cls.add_method('GetMulticast', 
-                   'ns3::Address', 
-                   [param('ns3::Ipv4Address', 'multicastGroup')], 
-                   is_const=True, is_virtual=True)
-    ## point-to-point-net-device.h: ns3::Address ns3::PointToPointNetDevice::GetMulticast(ns3::Ipv6Address addr) const [member function]
-    cls.add_method('GetMulticast', 
-                   'ns3::Address', 
-                   [param('ns3::Ipv6Address', 'addr')], 
-                   is_const=True, is_virtual=True)
-    ## point-to-point-net-device.h: ns3::Ptr<ns3::Node> ns3::PointToPointNetDevice::GetNode() const [member function]
-    cls.add_method('GetNode', 
-                   'ns3::Ptr< ns3::Node >', 
-                   [], 
-                   is_const=True, is_virtual=True)
-    ## point-to-point-net-device.h: ns3::Ptr<ns3::Queue> ns3::PointToPointNetDevice::GetQueue() const [member function]
-    cls.add_method('GetQueue', 
-                   'ns3::Ptr< ns3::Queue >', 
-                   [], 
-                   is_const=True)
-    ## point-to-point-net-device.h: static ns3::TypeId ns3::PointToPointNetDevice::GetTypeId() [member function]
-    cls.add_method('GetTypeId', 
-                   'ns3::TypeId', 
-                   [], 
-                   is_static=True)
-    ## point-to-point-net-device.h: bool ns3::PointToPointNetDevice::IsBridge() const [member function]
-    cls.add_method('IsBridge', 
-                   'bool', 
-                   [], 
-                   is_const=True, is_virtual=True)
-    ## point-to-point-net-device.h: bool ns3::PointToPointNetDevice::IsBroadcast() const [member function]
-    cls.add_method('IsBroadcast', 
-                   'bool', 
                    [], 
                    is_const=True, is_virtual=True)
     ## point-to-point-net-device.h: bool ns3::PointToPointNetDevice::IsLinkUp() const [member function]
@@ -341,25 +339,41 @@ def register_Ns3PointToPointNetDevice_methods(root_module, cls):
                    'bool', 
                    [], 
                    is_const=True, is_virtual=True)
+    ## point-to-point-net-device.h: void ns3::PointToPointNetDevice::AddLinkChangeCallback(ns3::Callback<void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> callback) [member function]
+    cls.add_method('AddLinkChangeCallback', 
+                   'void', 
+                   [param('ns3::Callback< void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'callback')], 
+                   is_virtual=True)
+    ## point-to-point-net-device.h: bool ns3::PointToPointNetDevice::IsBroadcast() const [member function]
+    cls.add_method('IsBroadcast', 
+                   'bool', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## point-to-point-net-device.h: ns3::Address ns3::PointToPointNetDevice::GetBroadcast() const [member function]
+    cls.add_method('GetBroadcast', 
+                   'ns3::Address', 
+                   [], 
+                   is_const=True, is_virtual=True)
     ## point-to-point-net-device.h: bool ns3::PointToPointNetDevice::IsMulticast() const [member function]
     cls.add_method('IsMulticast', 
                    'bool', 
                    [], 
+                   is_const=True, is_virtual=True)
+    ## point-to-point-net-device.h: ns3::Address ns3::PointToPointNetDevice::GetMulticast(ns3::Ipv4Address multicastGroup) const [member function]
+    cls.add_method('GetMulticast', 
+                   'ns3::Address', 
+                   [param('ns3::Ipv4Address', 'multicastGroup')], 
                    is_const=True, is_virtual=True)
     ## point-to-point-net-device.h: bool ns3::PointToPointNetDevice::IsPointToPoint() const [member function]
     cls.add_method('IsPointToPoint', 
                    'bool', 
                    [], 
                    is_const=True, is_virtual=True)
-    ## point-to-point-net-device.h: bool ns3::PointToPointNetDevice::NeedsArp() const [member function]
-    cls.add_method('NeedsArp', 
+    ## point-to-point-net-device.h: bool ns3::PointToPointNetDevice::IsBridge() const [member function]
+    cls.add_method('IsBridge', 
                    'bool', 
                    [], 
                    is_const=True, is_virtual=True)
-    ## point-to-point-net-device.h: void ns3::PointToPointNetDevice::Receive(ns3::Ptr<ns3::Packet> p) [member function]
-    cls.add_method('Receive', 
-                   'void', 
-                   [param('ns3::Ptr< ns3::Packet >', 'p')])
     ## point-to-point-net-device.h: bool ns3::PointToPointNetDevice::Send(ns3::Ptr<ns3::Packet> packet, ns3::Address const & dest, uint16_t protocolNumber) [member function]
     cls.add_method('Send', 
                    'bool', 
@@ -370,52 +384,36 @@ def register_Ns3PointToPointNetDevice_methods(root_module, cls):
                    'bool', 
                    [param('ns3::Ptr< ns3::Packet >', 'packet'), param('ns3::Address const &', 'source'), param('ns3::Address const &', 'dest'), param('uint16_t', 'protocolNumber')], 
                    is_virtual=True)
-    ## point-to-point-net-device.h: void ns3::PointToPointNetDevice::SetAddress(ns3::Address address) [member function]
-    cls.add_method('SetAddress', 
-                   'void', 
-                   [param('ns3::Address', 'address')], 
-                   is_virtual=True)
-    ## point-to-point-net-device.h: void ns3::PointToPointNetDevice::SetDataRate(ns3::DataRate bps) [member function]
-    cls.add_method('SetDataRate', 
-                   'void', 
-                   [param('ns3::DataRate', 'bps')])
-    ## point-to-point-net-device.h: void ns3::PointToPointNetDevice::SetIfIndex(uint32_t const index) [member function]
-    cls.add_method('SetIfIndex', 
-                   'void', 
-                   [param('uint32_t const', 'index')], 
-                   is_virtual=True)
-    ## point-to-point-net-device.h: void ns3::PointToPointNetDevice::SetInterframeGap(ns3::Time t) [member function]
-    cls.add_method('SetInterframeGap', 
-                   'void', 
-                   [param('ns3::Time', 't')])
-    ## point-to-point-net-device.h: bool ns3::PointToPointNetDevice::SetMtu(uint16_t const mtu) [member function]
-    cls.add_method('SetMtu', 
-                   'bool', 
-                   [param('uint16_t const', 'mtu')], 
-                   is_virtual=True)
+    ## point-to-point-net-device.h: ns3::Ptr<ns3::Node> ns3::PointToPointNetDevice::GetNode() const [member function]
+    cls.add_method('GetNode', 
+                   'ns3::Ptr< ns3::Node >', 
+                   [], 
+                   is_const=True, is_virtual=True)
     ## point-to-point-net-device.h: void ns3::PointToPointNetDevice::SetNode(ns3::Ptr<ns3::Node> node) [member function]
     cls.add_method('SetNode', 
                    'void', 
                    [param('ns3::Ptr< ns3::Node >', 'node')], 
                    is_virtual=True)
-    ## point-to-point-net-device.h: void ns3::PointToPointNetDevice::SetPromiscReceiveCallback(ns3::Callback<bool, ns3::Ptr<ns3::NetDevice>, ns3::Ptr<ns3::Packet const>, unsigned short, ns3::Address const&, ns3::Address const&, ns3::NetDevice::PacketType, ns3::empty, ns3::empty, ns3::empty> cb) [member function]
-    cls.add_method('SetPromiscReceiveCallback', 
-                   'void', 
-                   [param('ns3::Callback< bool, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet const >, unsigned short, ns3::Address const &, ns3::Address const &, ns3::NetDevice::PacketType, ns3::empty, ns3::empty, ns3::empty >', 'cb')], 
-                   is_virtual=True)
-    ## point-to-point-net-device.h: void ns3::PointToPointNetDevice::SetQueue(ns3::Ptr<ns3::Queue> queue) [member function]
-    cls.add_method('SetQueue', 
-                   'void', 
-                   [param('ns3::Ptr< ns3::Queue >', 'queue')])
+    ## point-to-point-net-device.h: bool ns3::PointToPointNetDevice::NeedsArp() const [member function]
+    cls.add_method('NeedsArp', 
+                   'bool', 
+                   [], 
+                   is_const=True, is_virtual=True)
     ## point-to-point-net-device.h: void ns3::PointToPointNetDevice::SetReceiveCallback(ns3::Callback<bool, ns3::Ptr<ns3::NetDevice>, ns3::Ptr<ns3::Packet const>, unsigned short, ns3::Address const&, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> cb) [member function]
     cls.add_method('SetReceiveCallback', 
                    'void', 
                    [param('ns3::Callback< bool, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet const >, unsigned short, ns3::Address const &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'cb')], 
                    is_virtual=True)
-    ## point-to-point-net-device.h: void ns3::PointToPointNetDevice::SetReceiveErrorModel(ns3::Ptr<ns3::ErrorModel> em) [member function]
-    cls.add_method('SetReceiveErrorModel', 
+    ## point-to-point-net-device.h: ns3::Address ns3::PointToPointNetDevice::GetMulticast(ns3::Ipv6Address addr) const [member function]
+    cls.add_method('GetMulticast', 
+                   'ns3::Address', 
+                   [param('ns3::Ipv6Address', 'addr')], 
+                   is_const=True, is_virtual=True)
+    ## point-to-point-net-device.h: void ns3::PointToPointNetDevice::SetPromiscReceiveCallback(ns3::Callback<bool, ns3::Ptr<ns3::NetDevice>, ns3::Ptr<ns3::Packet const>, unsigned short, ns3::Address const&, ns3::Address const&, ns3::NetDevice::PacketType, ns3::empty, ns3::empty, ns3::empty> cb) [member function]
+    cls.add_method('SetPromiscReceiveCallback', 
                    'void', 
-                   [param('ns3::Ptr< ns3::ErrorModel >', 'em')])
+                   [param('ns3::Callback< bool, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet const >, unsigned short, ns3::Address const &, ns3::Address const &, ns3::NetDevice::PacketType, ns3::empty, ns3::empty, ns3::empty >', 'cb')], 
+                   is_virtual=True)
     ## point-to-point-net-device.h: bool ns3::PointToPointNetDevice::SupportsSendFrom() const [member function]
     cls.add_method('SupportsSendFrom', 
                    'bool', 
