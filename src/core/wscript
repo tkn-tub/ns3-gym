@@ -138,7 +138,6 @@ def build(bld):
         'model/names.cc',
         'model/vector.cc',
         'model/fatal-impl.cc',
-        'model/page-scheduler.cc',
         'test/attribute-test-suite.cc',
         'test/callback-test-suite.cc',
         'test/names-test-suite.cc',
