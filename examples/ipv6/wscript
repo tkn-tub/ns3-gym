@@ -10,7 +10,7 @@ def build(bld):
     obj = bld.create_ns3_program('radvd', ['csma', 'internet'])
     obj.source = 'radvd.cc'
 
-    obj = bld.create_ns3_program('radvd-two-prefix', ['csma', 'internet'])
+    obj = bld.create_ns3_program('radvd-two-prefix', ['csma', 'internet', 'applications'])
     obj.source = 'radvd-two-prefix.cc'
 
     obj = bld.create_ns3_program('test-ipv6', ['point-to-point', 'internet'])

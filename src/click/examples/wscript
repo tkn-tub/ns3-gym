@@ -18,5 +18,5 @@ def build(bld):
    obj.source = 'nsclick-udp-client-server-wifi.cc'
 
    obj = bld.create_ns3_program('nsclick-routing',
-                                ['click', 'csma', 'internet'])
+                                ['click', 'csma', 'internet', 'applications'])
    obj.source = 'nsclick-routing.cc'
