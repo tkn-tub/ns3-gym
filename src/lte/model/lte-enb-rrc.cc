@@ -20,9 +20,12 @@
 
 #include <ns3/fatal-error.h>
 #include <ns3/log.h>
+#include "ns3/pointer.h"
 
 #include "lte-enb-rrc.h"
 #include "lte-rlc.h"
+#include "ns3/object-map.h"
+#include "ns3/object-vector.h"
 
 
 NS_LOG_COMPONENT_DEFINE ("LteEnbRrc");
@@ -63,18 +66,60 @@ EnbRrcMemberLteEnbCmacSapUser::NotifyLcConfigResult (uint16_t rnti, uint8_t lcid
 // per-UE radio bearer info management
 // /////////////////////////////////////////
 
-
-struct EnbRadioBearerInfo
+class EnbRadioBearerInfo : public Object
 {
-  Ptr<LteRlc> rlc;
+
+public:
+
+  EnbRadioBearerInfo(void);
+  virtual ~EnbRadioBearerInfo (void);
+  static TypeId GetTypeId (void);
+
+  void SetRlc(Ptr<LteRlc> rlc);
+
+private:
+
+  Ptr<LteRlc> m_rlc;
+
 };
+
+EnbRadioBearerInfo::EnbRadioBearerInfo (void)
+{
+  // Nothing to do here
+}
+
+EnbRadioBearerInfo::~EnbRadioBearerInfo (void)
+{
+  // Nothing to do here
+}
+
+TypeId EnbRadioBearerInfo::GetTypeId (void)
+{
+  static TypeId
+  tid =
+    TypeId ("ns3::EnbRadioBearerInfo")
+    .SetParent<Object> ()
+    .AddConstructor<EnbRadioBearerInfo> ()
+    .AddAttribute ("RLC", "RLC.",
+                   PointerValue (),
+                   MakePointerAccessor (&EnbRadioBearerInfo::m_rlc),
+                   MakePointerChecker<LteRlc> ())
+    ;
+  return tid;
+}
+
+void EnbRadioBearerInfo::SetRlc(Ptr<LteRlc> rlc)
+{
+  m_rlc = rlc;
+}
+
 
 
 /**
  * Manages all the radio bearer information possessed by the ENB RRC for a single UE
  *
  */
-class UeInfo : public SimpleRefCount<UeInfo>
+class UeInfo : public Object //public SimpleRefCount<UeInfo>
 {
 public:
   /**
@@ -84,7 +129,7 @@ public:
    *
    * \return the allocated logical channel id; 0 is returned if it is not possible to allocate a channel id (e.g., id space exausted).
    */
-  uint8_t AddRadioBearer (EnbRadioBearerInfo);
+  uint8_t AddRadioBearer (Ptr<EnbRadioBearerInfo> enbRadioBearerInfo);
 
   /**
    *
@@ -93,7 +138,7 @@ public:
    *
    * \return the EnbRadioBearerInfo of the selected radio bearer
    */
-  EnbRadioBearerInfo GetRadioBerer (uint8_t lcid);
+  Ptr<EnbRadioBearerInfo> GetRadioBerer (uint8_t lcid);
 
 
   /**
@@ -103,15 +148,42 @@ public:
    */
   void RemoveRadioBearer (uint8_t lcid);
 
+  UeInfo(void);
+  virtual ~UeInfo (void);
+
+  static TypeId GetTypeId (void);
+
 private:
-  std::map <uint8_t, EnbRadioBearerInfo> m_rbMap;
+  std::map <uint8_t, Ptr<EnbRadioBearerInfo> > m_rbMap;
   uint8_t m_lastAllocatedId;
 };
 
+UeInfo::UeInfo (void) :
+    m_lastAllocatedId (0)
+{
+  // Nothing to do here
+}
 
+UeInfo::~UeInfo (void)
+{
+  // Nothing to do here
+}
+
+TypeId UeInfo::GetTypeId (void)
+{
+  static TypeId  tid = TypeId ("ns3::UeInfo")
+    .SetParent<Object> ()
+    .AddConstructor<UeInfo> ()
+    .AddAttribute ("RadioBearerMap", "List of UE RadioBearerInfo by LCID.",
+                   ObjectMapValue (),
+                   MakeObjectMapAccessor (&UeInfo::m_rbMap),
+                   MakeObjectMapChecker<EnbRadioBearerInfo> ())
+    ;
+  return tid;
+}
 
 uint8_t
-UeInfo::AddRadioBearer (EnbRadioBearerInfo rbi)
+UeInfo::AddRadioBearer (Ptr<EnbRadioBearerInfo> rbi)
 {
   NS_LOG_FUNCTION (this);
   for (uint8_t lcid = m_lastAllocatedId; lcid != m_lastAllocatedId - 1; ++lcid)
@@ -120,7 +192,7 @@ UeInfo::AddRadioBearer (EnbRadioBearerInfo rbi)
         {
           if (m_rbMap.find (lcid) == m_rbMap.end ())
             {
-              m_rbMap.insert (std::pair<uint8_t, EnbRadioBearerInfo> (lcid, rbi));
+              m_rbMap.insert (std::pair<uint8_t, Ptr<EnbRadioBearerInfo> >(lcid, rbi));
               m_lastAllocatedId = lcid;
               return lcid;
             }
@@ -130,7 +202,7 @@ UeInfo::AddRadioBearer (EnbRadioBearerInfo rbi)
   return 0;
 }
 
-EnbRadioBearerInfo
+Ptr<EnbRadioBearerInfo>
 UeInfo::GetRadioBerer (uint8_t lcid)
 {
   NS_LOG_FUNCTION (this << (uint32_t) lcid);
@@ -143,7 +215,7 @@ void
 UeInfo::RemoveRadioBearer (uint8_t lcid)
 {
   NS_LOG_FUNCTION (this << (uint32_t) lcid);
-  std::map <uint8_t, EnbRadioBearerInfo>::iterator it = m_rbMap.find (lcid);
+  std::map <uint8_t, Ptr<EnbRadioBearerInfo> >::iterator it = m_rbMap.find (lcid);
   NS_ASSERT_MSG (it != m_rbMap.end (), "request to remove radio bearer with unknown lcid " << lcid);
   m_rbMap.erase (it);
 }
@@ -185,10 +257,40 @@ LteEnbRrc::DoDispose ()
 TypeId
 LteEnbRrc::GetTypeId (void)
 {
+  NS_LOG_FUNCTION ("LteEnbRrc::GetTypeId");
   static TypeId tid = TypeId ("ns3::LteEnbRrc")
     .SetParent<Object> ()
-    .AddConstructor<LteEnbRrc> ();
+    .AddConstructor<LteEnbRrc> ()
+    .AddAttribute ("UeMap", "List of UE Info by C-RNTI.",
+                   ObjectMapValue (),
+                   MakeObjectMapAccessor (&LteEnbRrc::m_ueMap),
+                   MakeObjectMapChecker<UeInfo> ())
+     ;
   return tid;
+}
+
+uint16_t
+LteEnbRrc::GetLastAllocatedRnti() const
+{
+    NS_LOG_FUNCTION (this);
+    return m_lastAllocatedRnti;
+}
+std::map<uint16_t,Ptr<UeInfo> > LteEnbRrc::GetUeMap(void) const
+{
+    return m_ueMap;
+}
+
+void LteEnbRrc::SetUeMap(std::map<uint16_t,Ptr<UeInfo> > ueMap)
+{
+  this->m_ueMap = ueMap;
+}
+
+
+void
+LteEnbRrc::SetLastAllocatedRnti(uint16_t lastAllocatedRnti)
+{
+    NS_LOG_FUNCTION (this << lastAllocatedRnti);
+    m_lastAllocatedRnti = lastAllocatedRnti;
 }
 
 
@@ -260,12 +362,12 @@ LteEnbRrc::SetupRadioBearer (uint16_t rnti, EpsBearer bearer)
   // create RLC instance
   // for now we support RLC SM only
 
-  Ptr<LteRlc> rlc = Create<LteRlcSm> ();
+  Ptr<LteRlcSm> rlc = CreateObject<LteRlcSm> ();
   rlc->SetLteMacSapProvider (m_macSapProvider);
   rlc->SetRnti (rnti);
 
-  EnbRadioBearerInfo rbInfo;
-  rbInfo.rlc = rlc;
+  Ptr<EnbRadioBearerInfo> rbInfo = CreateObject<EnbRadioBearerInfo> ();
+  rbInfo->SetRlc (rlc);
   uint8_t lcid = ueInfo->AddRadioBearer (rbInfo);
   rlc->SetLcId (lcid);
 
@@ -317,7 +419,7 @@ LteEnbRrc::CreateUeInfo ()
           if (m_ueMap.find (rnti) == m_ueMap.end ())
             {
               m_lastAllocatedRnti = rnti;
-              m_ueMap.insert (std::pair<uint16_t, Ptr<UeInfo> > (rnti, Create<UeInfo> ()));
+              m_ueMap.insert (std::pair<uint16_t, Ptr<UeInfo> > (rnti, CreateObject<UeInfo> ()));
               return rnti;
             }
         }

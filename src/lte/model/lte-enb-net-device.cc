@@ -52,7 +52,14 @@ TypeId LteEnbNetDevice::GetTypeId (void)
   static TypeId
   tid =
     TypeId ("ns3::LteEnbNetDevice")
-    .SetParent<LteNetDevice> ();
+    .SetParent<LteNetDevice> ()
+    .AddConstructor<LteEnbNetDevice> ()
+    .AddAttribute ("LteEnbRrc",
+                   "The RRC associated to this EnbNetDevice.",
+                   PointerValue (),
+                   MakePointerAccessor (&LteEnbNetDevice::m_rrc),
+                   MakePointerChecker <LteEnbRrc> ())
+    ;
   return tid;
 }
 
@@ -110,7 +117,7 @@ LteEnbNetDevice::InitLteEnbNetDevice (void)
     {
       NS_LOG_DEBUG (this << "PHY ! NULL");
     }
-  m_rrc = Create<LteEnbRrc> ();
+  m_rrc = CreateObject<LteEnbRrc> ();
   m_rrc->SetLteEnbCmacSapProvider (m_mac->GetLteEnbCmacSapProvider ());
   m_mac->SetLteEnbCmacSapUser (m_rrc->GetLteEnbCmacSapUser ());
   m_rrc->SetLteMacSapProvider (m_mac->GetLteMacSapProvider ());

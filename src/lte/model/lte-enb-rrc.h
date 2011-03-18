@@ -68,9 +68,8 @@ public:
    */
   void SetLteEnbCmacSapProvider (LteEnbCmacSapProvider * s);
 
-  /**
-   *
-   *
+  /** 
+   * Get the CMAC SAP this RRC should interact with
    * \return s the CMAC SAP User interface offered to the MAC by this RRC
    */
   LteEnbCmacSapUser* GetLteEnbCmacSapUser ();
@@ -120,6 +119,10 @@ public:
    */
   void RemoveUe (uint16_t rnti);
 
+  uint16_t GetLastAllocatedRnti() const;
+  void SetLastAllocatedRnti(uint16_t lastAllocatedRnti);
+  void SetUeMap(std::map<uint16_t,Ptr<UeInfo> > ueMap);
+  std::map<uint16_t,Ptr<UeInfo> > GetUeMap(void) const;
 
   /**
    * Setup a new radio bearer for the given user

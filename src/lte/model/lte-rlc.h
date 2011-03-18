@@ -23,6 +23,13 @@
 
 #include <ns3/simple-ref-count.h>
 #include <ns3/packet.h>
+#include "ns3/uinteger.h"
+#include "ns3/traced-value.h"
+#include "ns3/trace-source-accessor.h"
+#include "ns3/nstime.h"
+
+#include "ns3/object.h"
+
 
 namespace ns3 {
 
@@ -35,12 +42,13 @@ class LteMacSapUser;
  * (LTE_RLC) in LTE, see 3GPP TS 36.322
  *
  */
-class LteRlc : public SimpleRefCount<LteRlc>
+class LteRlc : public Object // SimpleRefCount<LteRlc>
 {
   friend class LteRlcSpecificLteMacSapUser;
 public:
   LteRlc ();
   virtual ~LteRlc ();
+  static TypeId GetTypeId (void);
 
   /**
    *
@@ -85,6 +93,15 @@ protected:
   uint16_t m_rnti;
   uint8_t m_lcid;
 
+  /**
+   * Used to inform of a PDU delivery to the MAC SAP provider
+   */
+  TracedCallback<uint16_t, uint8_t, uint32_t> m_txPdu;
+  /**
+   * Used to inform of a PDU reception from the MAC SAP user
+   */
+  TracedCallback<uint16_t, uint8_t, uint32_t, uint64_t> m_rxPdu;
+
 };
 
 
@@ -102,6 +119,7 @@ class LteRlcSm : public LteRlc
 public:
   LteRlcSm ();
   virtual ~LteRlcSm ();
+  static TypeId GetTypeId (void);
 
   virtual void DoNotifyTxOpportunity (uint32_t bytes);
   virtual void DoNotifyHarqDeliveryFailure ();

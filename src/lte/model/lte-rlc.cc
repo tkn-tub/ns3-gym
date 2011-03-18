@@ -22,6 +22,7 @@
 #include "lte-rlc.h"
 #include "lte-mac-sap.h"
 #include "ff-mac-sched-sap.h"
+#include "lte-rlc-tag.h"
 
 #include <ns3/log.h>
 #include <ns3/simulator.h>
@@ -88,6 +89,20 @@ LteRlc::LteRlc ()
   m_macSapUser = new LteRlcSpecificLteMacSapUser (this);
 }
 
+TypeId LteRlc::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("LteRlc")
+    .SetParent<Object> ()
+    .AddTraceSource ("TxPDU",
+                     "PDU transmission notified to the MAC.",
+                     MakeTraceSourceAccessor (&LteRlc::m_txPdu))
+    .AddTraceSource ("RxPDU",
+                     "PDU received.",
+                     MakeTraceSourceAccessor (&LteRlc::m_rxPdu))
+    ;
+  return tid;
+}
+
 void
 LteRlc::SetRnti (uint8_t rnti)
 {
@@ -139,10 +154,29 @@ LteRlcSm::~LteRlcSm ()
   NS_LOG_FUNCTION (this);
 }
 
+TypeId LteRlcSm::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("LteRlcSm")
+    .SetParent<LteRlc> ()
+    .AddConstructor<LteRlcSm> ()
+    ;
+  return tid;
+}
+
 void
 LteRlcSm::DoReceivePdu (Ptr<Packet> p)
 {
   NS_LOG_FUNCTION (this << p);
+
+  // RLC Performance evaluation
+  RlcTag rlcTag;
+  Time t;
+  if (p->FindFirstMatchingByteTag(rlcTag))
+    {
+      t = Simulator::Now() - rlcTag.getSenderTimestamp ();
+    }
+
+  m_rxPdu(m_rnti, m_lcid, p->GetSize (), t.GetNanoSeconds () );
 }
 
 void
@@ -153,6 +187,12 @@ LteRlcSm::DoNotifyTxOpportunity (uint32_t bytes)
   params.pdu = Create<Packet> (bytes);
   params.rnti = m_rnti;
   params.lcid = m_lcid;
+
+  // RLC Performance evaluation
+  RlcTag tag (Simulator::Now());
+  params.pdu->AddByteTag (tag);
+  m_txPdu(m_rnti, m_lcid, bytes);
+
   m_macSapProvider->TransmitPdu (params);
 }
 
