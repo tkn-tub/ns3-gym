@@ -40,7 +40,7 @@ class LtePhy;
 class LteEnbPhy;
 class LteEnbMac;
 class LteEnbRrc;
-class RrFfMacScheduler;
+class FfMacScheduler;
 
 
 /**
@@ -110,7 +110,7 @@ private:
 
   Ptr<LteEnbRrc> m_rrc;
 
-  Ptr<RrFfMacScheduler> m_scheduler;
+  Ptr<FfMacScheduler> m_scheduler;
 
   uint16_t m_cellId; /**< Cell Identifer. Part of the CGI, see TS 29.274, section 8.21.1  */ 
 

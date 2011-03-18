@@ -440,7 +440,7 @@ RrFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sched
           rlcPduSize += newDci.m_tbsSize.at (i);
         }
       newEl.m_dci = newDci;
-      // ...more parameters -> ingored in this version
+      // ...more parameters -> ignored in this version
 
       RlcPduListElement_s newRlcEl;
       newRlcEl.m_logicalChannelIdentity = (*it).m_logicalChannelIdentity;
