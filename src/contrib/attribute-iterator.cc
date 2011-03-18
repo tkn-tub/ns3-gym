@@ -21,6 +21,7 @@
 #include "ns3/log.h"
 #include "ns3/pointer.h"
 #include "ns3/object-vector.h"
+#include "ns3/object-map.h"
 #include "ns3/string.h"
 #include <fstream>
 
@@ -125,6 +126,28 @@ AttributeIterator::DoEndVisitArrayItem (void)
 {
 }
 
+void
+AttributeIterator::DoStartVisitMapAttribute (Ptr<Object> object, std::string name, const ObjectMapValue &map)
+{
+
+}
+void
+AttributeIterator::DoEndVisitMapAttribute (void)
+{
+
+}
+
+void
+AttributeIterator::DoStartVisitMapItem (const ObjectMapValue &vector, uint32_t index, Ptr<Object> item)
+{
+
+}
+void
+AttributeIterator::DoEndVisitMapItem (void)
+{
+
+}
+
 void 
 AttributeIterator::VisitAttribute (Ptr<Object> object, std::string name)
 {
@@ -189,6 +212,37 @@ AttributeIterator::EndVisitArrayItem (void)
   DoEndVisitArrayItem ();
 }
 
+void
+AttributeIterator::StartVisitMapAttribute (Ptr<Object> object, std::string name, const ObjectMapValue &map)
+{
+  m_currentPath.push_back (name);
+  DoStartVisitMapAttribute (object, name, map);
+}
+
+void
+AttributeIterator::EndVisitMapAttribute (void)
+{
+  m_currentPath.pop_back ();
+  DoEndVisitArrayAttribute ();
+}
+
+void
+AttributeIterator::StartVisitMapItem (const ObjectMapValue &map, uint32_t index, Ptr<Object> item)
+{
+  std::ostringstream oss;
+  oss << index;
+  m_currentPath.push_back (oss.str ());
+  m_currentPath.push_back ("$" + item->GetInstanceTypeId ().GetName ());
+  DoStartVisitMapItem (map, index, item);
+}
+
+void
+AttributeIterator::EndVisitMapItem (void)
+{
+  m_currentPath.pop_back ();
+  m_currentPath.pop_back ();
+  DoEndVisitMapItem ();
+}
 
 void
 AttributeIterator::DoIterate (Ptr<Object> object)
@@ -241,6 +295,27 @@ AttributeIterator::DoIterate (Ptr<Object> object)
                   EndVisitArrayItem ();
                 }
               EndVisitArrayAttribute ();
+              continue;
+            }
+          // attempt to cast to an object map.
+          const ObjectMapChecker *mapChecker = dynamic_cast<const ObjectMapChecker *> (PeekPointer (checker));
+          if (mapChecker != 0)
+            {
+              NS_LOG_DEBUG ("map attribute " << tid.GetAttributeName (i));
+              ObjectMapValue map;
+              object->GetAttribute (tid.GetAttributeName (i), map);
+              // JNG Fix this
+              StartVisitMapAttribute (object, tid.GetAttributeName (i), map);
+              for (ObjectMapValue::Iterator it = map.Begin () ; it != map.End(); it++ )
+                {
+                  NS_LOG_DEBUG ("map attribute item " << (*it).first << (*it).second );
+                  StartVisitMapItem (map, (*it).first, (*it).second);
+                  m_examined.push_back (object);
+                  DoIterate ((*it).second);
+                  m_examined.pop_back ();
+                  EndVisitMapItem ();
+                }
+              EndVisitMapAttribute ();
               continue;
             }
           uint32_t flags = tid.GetAttributeFlags (i);

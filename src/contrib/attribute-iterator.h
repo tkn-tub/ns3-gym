@@ -26,6 +26,7 @@
 namespace ns3 {
 
 class ObjectVectorValue;
+class ObjectMapValue;
 
 // This class is used internally by ConfigStore and GtkConfigStore.
 class AttributeIterator
@@ -48,6 +49,11 @@ private:
   virtual void DoStartVisitArrayItem (const ObjectVectorValue &vector, uint32_t index, Ptr<Object> item);
   virtual void DoEndVisitArrayItem (void);
 
+  virtual void DoStartVisitMapAttribute (Ptr<Object> object, std::string name, const ObjectMapValue &map);
+  virtual void DoEndVisitMapAttribute (void);
+  virtual void DoStartVisitMapItem (const ObjectMapValue &vector, uint32_t index, Ptr<Object> item);
+  virtual void DoEndVisitMapItem (void);
+
   void DoIterate (Ptr<Object> object);
   bool IsExamined (Ptr<const Object> object);
   std::string GetCurrentPath (std::string attr) const;
@@ -62,6 +68,10 @@ private:
   void StartVisitArrayItem (const ObjectVectorValue &vector, uint32_t index, Ptr<Object> item);
   void EndVisitArrayItem (void);
 
+  void StartVisitMapAttribute (Ptr<Object> object, std::string name, const ObjectMapValue &map);
+  void EndVisitMapAttribute (void);
+  void StartVisitMapItem (const ObjectMapValue &vector, uint32_t index, Ptr<Object> item);
+  void EndVisitMapItem (void);
 
   std::vector<Ptr<Object> > m_examined;
   std::vector<std::string> m_currentPath;
