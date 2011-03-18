@@ -14,7 +14,7 @@ def build(bld):
     obj.source = 'lte-device.cc'
 
     obj = bld.create_ns3_program('lte-channel-model',
-                                 ['lte'])
+                                 ['lte', 'network'])
     obj.source = 'lte-channel-model.cc'
 
     obj = bld.create_ns3_program('lte-amc',

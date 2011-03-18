@@ -10,5 +10,5 @@ def build(bld):
     obj.source = 'third-distributed.cc'
 
     obj = bld.create_ns3_program('nms-p2p-nix-distributed',
-                                 ['point-to-point', 'network', 'applications'])
+                                 ['point-to-point', 'internet', 'applications'])
     obj.source = 'nms-p2p-nix-distributed.cc'

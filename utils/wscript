@@ -7,7 +7,10 @@ def build(bld):
     test_runner = bld.create_ns3_program('test-runner', ['core'])
     test_runner.install_path = None # do not install
     test_runner.source = 'test-runner.cc'
-    test_runner.uselib_local = 'ns3'
+
+    # Set the libraries the testrunner depends on equal to the list of
+    # enabled modules plus the list of enabled module test libraries.
+    test_runner.uselib_local = env['NS3_ENABLED_MODULES'] + env['NS3_ENABLED_MODULE_TEST_LIBRARIES']
     
     obj = bld.create_ns3_program('bench-simulator', ['core'])
     obj.source = 'bench-simulator.cc'

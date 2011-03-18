@@ -704,7 +704,10 @@ def build(bld):
         bindgen.after = 'gen_everything_h_task'
         bindgen.name = "pybindgen-command"
  
-        features = 'cxx cshlib pyext'
+        if bld.env['ENABLE_STATIC_NS3']:
+            features = 'cxx cstaticlib pyext'
+        else:
+            features = 'cxx cshlib pyext'
         if env['ENABLE_PYTHON_PCH']:
             features += ' pch'
         pymod = bld.new_task_gen(features=features)
@@ -716,14 +719,16 @@ def build(bld):
             pymod.source.append("ns3_module_%s.cc" % module)
         pymod.target = 'ns3/_ns3'
         pymod.name = 'ns3module'
-        pymod.uselib_local = "ns3"
+        pymod.uselib_local = bld.env['NS3_ENABLED_MODULES']
         if pymod.env['ENABLE_STATIC_NS3']:
             if sys.platform == 'darwin':
                 pymod.env.append_value('LINKFLAGS', '-Wl,-all_load')
-                pymod.env.append_value('LINKFLAGS', '-lns3')
+                for mod in pymod.uselib_local:
+                    pymod.env.append_value('LINKFLAGS', '-l' + mod)
             else:
                 pymod.env.append_value('LINKFLAGS', '-Wl,--whole-archive,-Bstatic')
-                pymod.env.append_value('LINKFLAGS', '-lns3')
+                for mod in pymod.uselib_local:
+                    pymod.env.append_value('LINKFLAGS', '-l' + mod)
                 pymod.env.append_value('LINKFLAGS', '-Wl,-Bdynamic,--no-whole-archive')
 
         defines = list(pymod.env['CXXDEFINES'])

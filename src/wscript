@@ -12,6 +12,9 @@ import Build
 import Utils
 import Constants
 
+import ccroot
+ccroot.USE_TOP_LEVEL = True
+
 try:
     set
 except NameError:
@@ -44,9 +47,7 @@ all_modules = (
     'spectrum',
     'mesh',   
     'test',
-    'test/perf',
     'test/ns3tcp',
-    'test/nsctcp',
     'test/ns3wifi',
     'contrib/flow-monitor',
     'wimax',
@@ -94,15 +95,29 @@ def configure(conf):
 
 
 def create_ns3_module(bld, name, dependencies=()):
-    module = bld.new_task_gen('cxx', 'cc')
+    # Create a separate library for this module.
+    if bld.env['ENABLE_STATIC_NS3']:
+        module = bld.new_task_gen('cxx', 'cstaticlib')
+    else:
+        module = bld.new_task_gen('cxx', 'cshlib')
     module.is_ns3_module = True
     module.name = 'ns3-' + name
-    module.target = module.name
-    module.add_objects = ['ns3-' + dep for dep in dependencies]
+    # Add the proper path to the module's name.
+    module.target = '%s/ns3-%s' % (bld.srcnode.relpath_gen(bld.path), name)
+    # Set the libraries this module depends on.  
+    module.uselib_local = ['ns3-' + dep for dep in dependencies]
     module.module_deps = list(dependencies)
     if not module.env['ENABLE_STATIC_NS3']:
         module.env.append_value('CXXFLAGS', module.env['shlib_CXXFLAGS'])
         module.env.append_value('CCFLAGS', module.env['shlib_CXXFLAGS'])
+        # Turn on the link flags for shared libraries if we have the
+        # proper compiler and platform.
+        if module.env['CXX_NAME'] in ['gcc', 'icc'] and module.env['WL_SONAME_SUPPORTED']:
+            # Get the module library name without any relative paths
+            # at its beginning because all of the libraries will end
+            # up in the same directory.
+            module_library_name = os.path.basename(ccroot.get_target_name(module))
+            module.env.append_value('LINKFLAGS', '-Wl,--soname=%s' % module_library_name)
     elif module.env['CXX_NAME'] in ['gcc', 'icc'] and \
             os.uname()[4] == 'x86_64' and \
             module.env['ENABLE_PYTHON_BINDINGS']:
@@ -115,6 +130,32 @@ def create_ns3_module(bld, name, dependencies=()):
     module.env.append_value('CXXDEFINES', "NS3_MODULE_COMPILATION")
     module.env.append_value('CCDEFINES', "NS3_MODULE_COMPILATION")
     return module
+
+def create_ns3_module_test_library(bld, name):
+    # Create an ns3 module for the test library that depends only on
+    # the module being tested.
+    library_name = name + "-test"
+    library = bld.create_ns3_module(library_name, [name])
+
+    # Modify attributes for the test library that are different from a
+    # normal module.
+    del library.is_ns3_module
+    library.is_ns3_module_test_library = True
+    library.module_name = 'ns3-' + name
+
+    # Add this test library and module to the lists if the module is
+    # enabled.
+    if library.module_name in bld.env['NS3_ENABLED_MODULES']:
+        bld.env.append_value('NS3_ENABLED_MODULES_WITH_TEST_LIBRARIES', library.module_name)
+        bld.env.append_value('NS3_ENABLED_MODULE_TEST_LIBRARIES', library.name)
+
+    # Set the include path from the build directory to modules. 
+    relative_path_from_build_to_here = bld.path.relpath_gen(bld.bldnode)
+    include_flag = '-I' + relative_path_from_build_to_here
+    library.env.append_value('CXXFLAGS', include_flag)
+    library.env.append_value('CCFLAGS',  include_flag)
+
+    return library
 
 def create_obj(bld, *args):
     warnings.warn("(in %s) Use bld.new_task_gen(...) now, instead of bld.create_obj(...)" % str(bld.path),
@@ -178,14 +219,16 @@ def ns3_python_bindings(bld):
     pymod.source = ['bindings/ns3module.cc']
     pymod.target = '%s/%s' % (bld.srcnode.find_dir("bindings/python/ns").relpath_gen(bld.path), module.replace('-', '_'))
     pymod.name = 'ns3module_%s' % module
-    pymod.uselib_local = "ns3"
+    pymod.uselib_local = bld.env['NS3_ENABLED_MODULES']
     if pymod.env['ENABLE_STATIC_NS3']:
         if sys.platform == 'darwin':
             pymod.env.append_value('LINKFLAGS', '-Wl,-all_load')
-            pymod.env.append_value('LINKFLAGS', '-lns3')
+            for mod in pymod.uselib_local:
+                pymod.env.append_value('LINKFLAGS', '-l' + mod)
         else:
             pymod.env.append_value('LINKFLAGS', '-Wl,--whole-archive,-Bstatic')
-            pymod.env.append_value('LINKFLAGS', '-lns3')
+            for mod in pymod.uselib_local:
+                pymod.env.append_value('LINKFLAGS', '-l' + mod)
             pymod.env.append_value('LINKFLAGS', '-Wl,-Bdynamic,--no-whole-archive')
     defines = list(pymod.env['CXXDEFINES'])
     defines.extend(['NS_DEPRECATED=', 'NS3_DEPRECATED_H'])
@@ -201,6 +244,7 @@ def ns3_python_bindings(bld):
 
 def build(bld):
     bld.create_ns3_module = types.MethodType(create_ns3_module, bld)
+    bld.create_ns3_module_test_library = types.MethodType(create_ns3_module_test_library, bld)
     bld.create_obj = types.MethodType(create_obj, bld)
     bld.ns3_python_bindings = types.MethodType(ns3_python_bindings, bld)
     

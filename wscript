@@ -382,6 +382,15 @@ def configure(conf):
     else:
         conf.report_optional_feature("static", "Static build", False,
                                      "option --enable-static not selected")
+
+    # These flags are used for the implicitly dependent modules.
+    if env['ENABLE_STATIC_NS3']:
+        if sys.platform == 'darwin':
+            env.STATICLIB_MARKER = '-Wl,-all_load'
+        else:
+            env.STATICLIB_MARKER = '-Wl,--whole-archive,-Bstatic'
+            env.SHLIB_MARKER = '-Wl,-Bdynamic,--no-whole-archive'
+
     have_gsl = conf.pkg_check_modules('GSL', 'gsl', mandatory=False)
     conf.env['ENABLE_GSL'] = have_gsl
 
@@ -482,15 +491,18 @@ def create_ns3_program(bld, name, dependencies=('core',)):
     program.is_ns3_program = True
     program.name = name
     program.target = program.name
-    program.uselib_local = 'ns3'
+    # Each of the modules this program depends on has its own library.
+    program.uselib_local = ['ns3-' + dep for dep in dependencies]
     program.ns3_module_dependencies = ['ns3-'+dep for dep in dependencies]
     if program.env['ENABLE_STATIC_NS3']:
         if sys.platform == 'darwin':
             program.env.append_value('LINKFLAGS', '-Wl,-all_load')
-            program.env.append_value('LINKFLAGS', '-lns3')
+            for dep in dependencies:
+                program.env.append_value('LINKFLAGS', '-lns3-' + dep)
         else:
             program.env.append_value('LINKFLAGS', '-Wl,--whole-archive,-Bstatic')
-            program.env.append_value('LINKFLAGS', '-lns3')
+            for dep in dependencies:
+                program.env.append_value('LINKFLAGS', '-lns3-' + dep)
             program.env.append_value('LINKFLAGS', '-Wl,-Bdynamic,--no-whole-archive')
     return program
 
@@ -525,6 +537,9 @@ def add_scratch_programs(bld):
 
 
 def build(bld):
+    bld.env['NS3_ENABLED_MODULES_WITH_TEST_LIBRARIES'] = []
+    bld.env['NS3_ENABLED_MODULE_TEST_LIBRARIES'] = []
+
     wutils.bld = bld
     if Options.options.no_task_lines:
         import Runner
@@ -572,7 +587,8 @@ def build(bld):
                 module_obj = bld.name_to_obj(module, env)
                 if module_obj is None:
                     raise ValueError("module %s not found" % module)
-                for dep in module_obj.add_objects:
+                # Each enabled module has its own library.
+                for dep in module_obj.uselib_local:
                     if not dep.startswith('ns3-'):
                         continue
                     if dep not in modules:
@@ -581,6 +597,8 @@ def build(bld):
 
         env['NS3_ENABLED_MODULES'] = modules
         print "Modules to build:", modules
+
+        print "Modules to test:", env['NS3_ENABLED_MODULES_WITH_TEST_LIBRARIES']
 
         def exclude_taskgen(bld, taskgen):
             # ok, so WAF does not provide an API to prevent an
@@ -616,30 +634,17 @@ def build(bld):
             if hasattr(obj, "is_ns3_module") and obj.name not in modules:
                 exclude_taskgen(bld, obj) # kill the module
 
+            # disable the module test libraries
+            if hasattr(obj, "is_ns3_module_test_library") and obj.module_name not in modules:
+                exclude_taskgen(bld, obj) # kill the module test library
+
             # disable the ns3header_taskgen
             if type(obj).__name__ == 'ns3header_taskgen':
                 if ("ns3-%s" % obj.module) not in modules:
                     obj.mode = 'remove' # tell it to remove headers instead of installing 
 
-    ## Create a single ns3 library containing all enabled modules
-    if env['ENABLE_STATIC_NS3']:
-        lib = bld.new_task_gen('cxx', 'staticlib')
-        lib.name = 'ns3'
-        lib.target = 'ns3'
-    else:
-        lib = bld.new_task_gen('cxx', 'shlib')
-        lib.name = 'ns3'
-        lib.target = 'ns3'
-        if lib.env['CXX_NAME'] in ['gcc', 'icc'] and env['WL_SONAME_SUPPORTED']:
-            lib.env.append_value('LINKFLAGS', '-Wl,--soname=%s' % ccroot.get_target_name(lib))
-
     if env['NS3_ENABLED_MODULES']:
-        lib.add_objects = list(modules)
         env['NS3_ENABLED_MODULES'] = list(modules)
-        lib.uselib_local = list(modules)
-    else:
-        lib.add_objects = list(env['NS3_MODULES'])
-        lib.uselib_local = list(env['NS3_MODULES'])
 
     bld.add_subdirs('bindings/python')
 

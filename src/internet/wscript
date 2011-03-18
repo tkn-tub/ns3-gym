@@ -92,7 +92,7 @@ def configure(conf):
 
 def build(bld):
     # bridge and mpi dependencies are due to global routing
-    obj = bld.create_ns3_module('internet', ['bridge', 'mpi', 'network'])
+    obj = bld.create_ns3_module('internet', ['bridge', 'mpi', 'network', 'core'])
     obj.source = [
         'test/tcp-test.cc',
         'test/udp-test.cc',

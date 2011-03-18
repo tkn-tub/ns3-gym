@@ -49,15 +49,19 @@ def build(bld):
         'utils/sequence-number.cc',
         'utils/simple-channel.cc',
         'utils/simple-net-device.cc',
-        'test/buffer-test.cc',
-        'test/packetbb-test-suite.cc',
-        'test/packet-metadata-test.cc',
-        'test/pcap-file-test-suite.cc',
         'helper/application-container.cc',
         'helper/net-device-container.cc',
         'helper/node-container.cc',
         'helper/packet-socket-helper.cc',
         'helper/trace-helper.cc',
+        ]
+
+    network_test = bld.create_ns3_module_test_library('network')
+    network_test.source = [
+        'test/buffer-test.cc',
+        'test/packetbb-test-suite.cc',
+        'test/packet-metadata-test.cc',
+        'test/pcap-file-test-suite.cc',
         ]
 
     headers = bld.new_task_gen('ns3header')
