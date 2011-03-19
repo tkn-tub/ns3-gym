@@ -2,19 +2,19 @@
 
 def build(bld):
    obj = bld.create_ns3_program('nsclick-simple-lan',
-                                ['click', 'csma', 'internet'])
+                                ['click', 'csma', 'internet', 'applications'])
    obj.source = 'nsclick-simple-lan.cc'
 
    obj = bld.create_ns3_program('nsclick-raw-wlan',
-                                ['click', 'wifi', 'internet'])
+                                ['click', 'wifi', 'internet', 'applications'])
    obj.source = 'nsclick-raw-wlan.cc'
 
    obj = bld.create_ns3_program('nsclick-udp-client-server-csma',
-                                ['click', 'csma', 'internet'])
+                                ['click', 'csma', 'internet', 'applications'])
    obj.source = 'nsclick-udp-client-server-csma.cc'
 
    obj = bld.create_ns3_program('nsclick-udp-client-server-wifi',
-                                ['click', 'wifi', 'internet'])
+                                ['click', 'wifi', 'internet', 'applications'])
    obj.source = 'nsclick-udp-client-server-wifi.cc'
 
    obj = bld.create_ns3_program('nsclick-routing',

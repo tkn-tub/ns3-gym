@@ -32,13 +32,13 @@
 
 #include <fstream>
 #include "ns3/core-module.h"
-#include "ns3/internet-module.h"
-#include "ns3/applications-module.h"
 #include "ns3/network-module.h"
+#include "ns3/internet-module.h"
 #include "ns3/wifi-module.h"
+#include "ns3/mobility-module.h"
+#include "ns3/applications-module.h"
 #include "ns3/ipv4-click-routing.h"
 #include "ns3/click-internet-stack-helper.h"
-#include "ns3/mobility-helper.h"
 
 using namespace ns3;
 
