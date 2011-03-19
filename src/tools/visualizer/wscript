@@ -7,6 +7,9 @@ def build(bld):
         ]
 
     module = bld.create_ns3_module('visualizer', ['core'])
+    if not bld.env['ENABLE_PYTHON_BINDINGS']:
+        return
+
     module.features.append('pyembed')
     module.env.append_value('CXXFLAGS', module.env['shlib_CXXFLAGS'])
     module.includes = '.'
