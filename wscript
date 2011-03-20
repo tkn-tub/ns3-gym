@@ -280,7 +280,6 @@ def configure(conf):
                 env['WL_SONAME_SUPPORTED'] = True
 
     conf.sub_config('src')
-    conf.sub_config('bindings/python')
 
     # Set the list of enabled modules.
     if Options.options.enable_modules:
@@ -296,6 +295,7 @@ def configure(conf):
             # Enable the modules from the list.
             conf.env['NS3_ENABLED_MODULES'] = ['ns3-'+mod for mod in
                                                modules_enabled]
+    conf.sub_config('bindings/python')
 
     # for MPI
     conf.find_program('mpic++', var='MPI')

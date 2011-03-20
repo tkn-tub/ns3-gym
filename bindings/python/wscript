@@ -88,6 +88,12 @@ def configure(conf):
                                      "disabled by user request")
         return
 
+    enabled_modules = list(conf.env['NS3_ENABLED_MODULES'])
+    enabled_modules.sort()
+    available_modules = list(conf.env['NS3_MODULES'])
+    available_modules.sort()
+    all_modules_enabled = (enabled_modules == available_modules)
+
     conf.check_tool('misc')
 
     if sys.platform == 'cygwin':
@@ -204,11 +210,20 @@ int main ()
                                      "No apidefs are available that can be used in this system")
         return
 
+
+    conf.env['BINDINGS_TYPE'] = Options.options.bindings_type
+
+    if not all_modules_enabled:
+        if conf.env['BINDINGS_TYPE'] == 'both':
+            conf.env['BINDINGS_TYPE'] = 'modular'
+        elif conf.env['BINDINGS_TYPE'] == 'monolithic':
+            conf.report_optional_feature("python", "Python Bindings", False, "Monolithic python bindings need all ns-3 modules to be enabled")
+            return
+            
     ## If all has gone well, we finally enable the Python bindings
     conf.env['ENABLE_PYTHON_BINDINGS'] = True
     conf.report_optional_feature("python", "Python Bindings", True, None)
 
-    conf.env['BINDINGS_TYPE'] = Options.options.bindings_type
     if conf.env['BINDINGS_TYPE'] == 'both':
         msg = "monolithic and modular"
     else:
