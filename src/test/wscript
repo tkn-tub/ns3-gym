@@ -4,7 +4,7 @@ def configure(conf):
     conf.sub_config('perf')
 
 def build(bld):
-    test = bld.create_ns3_module('test', ['core'])
+    test = bld.create_ns3_module('test', ['internet', 'mobility', 'applications', 'csma', 'bridge', 'contrib', 'point-to-point'])
     test.source = [
         'csma-system-test-suite.cc',
         'global-routing-test-suite.cc',
