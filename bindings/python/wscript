@@ -704,10 +704,7 @@ def build(bld):
         bindgen.after = 'gen_everything_h_task'
         bindgen.name = "pybindgen-command"
  
-        if bld.env['ENABLE_STATIC_NS3']:
-            features = 'cxx cstaticlib pyext'
-        else:
-            features = 'cxx cshlib pyext'
+        features = 'cxx cshlib pyext'
         if env['ENABLE_PYTHON_PCH']:
             features += ' pch'
         pymod = bld.new_task_gen(features=features)
