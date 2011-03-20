@@ -325,8 +325,13 @@ class apiscan_task(Task.TaskBase):
     def run(self):
         top_builddir = self.curdirnode.find_dir('../..').abspath(self.env)
         module_path = get_module_path(self.bld, self.module)
-        print module_path
         headers_map = get_headers_map(self.bld)
+        scan_header = os.path.join(top_builddir, "ns3", "%s-module.h" % self.module)
+
+        if not os.path.exists(scan_header):
+            Logs.error("Cannot apiscan module %r: %s does not exist" % (self.module, scan_header))
+            return 0
+
         argv = [
             self.env['PYTHON'],
             os.path.join(self.curdirnode.abspath(), 'ns3modulescan-modular.py'), # scanning script
