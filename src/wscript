@@ -179,6 +179,11 @@ def ns3_python_bindings(bld):
     # this method is called from a module wscript, so remember bld.path is not bindings/python!
     module_abs_src_path = bld.path.abspath()
     module = os.path.basename(module_abs_src_path)
+
+    if ("ns3-%s" % (module,)) not in env.NS3_ENABLED_MODULES:
+        #print "bindings for module %s which is not enabled, skip" % module
+        return
+
     env.append_value('PYTHON_MODULES_BUILT', module)
     apidefs = env['PYTHON_BINDINGS_APIDEFS'].replace("-", "_")
 
