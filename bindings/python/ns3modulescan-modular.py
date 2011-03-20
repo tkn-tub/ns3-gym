@@ -35,7 +35,10 @@ def get_ns3_relative_path(path):
     l = []
     head = path
     while head:
-        head, tail = os.path.split(head)
+        new_head, tail = os.path.split(head)
+        if new_head == head:
+            raise ValueError
+        head = new_head
         if tail == 'ns3':
             return os.path.join(*l)
         l.insert(0, tail)
@@ -51,7 +54,11 @@ class PreScanHook:
                  pygccxml_definition,
                  global_annotations,
                  parameter_annotations):
-        ns3_header = get_ns3_relative_path(pygccxml_definition.location.file_name)
+        try:
+            ns3_header = get_ns3_relative_path(pygccxml_definition.location.file_name)
+        except ValueError: # the header is not from ns3
+            return # ignore the definition, it's not ns-3 def.
+
         definition_module = self.headers_map[ns3_header]
 
         ## Note: we don't include line numbers in the comments because
@@ -99,6 +106,7 @@ class PreScanHook:
 
         ## classes
         if isinstance(pygccxml_definition, class_t):
+            print >> sys.stderr, pygccxml_definition
             # no need for helper classes to allow subclassing in Python, I think...
             #if pygccxml_definition.name.endswith('Helper'):
             #    global_annotations['allow_subclassing'] = 'false'
@@ -114,8 +122,17 @@ class PreScanHook:
                 template_parameters_decls = [find_declaration_from_name(module_parser.global_ns, templ_param)
                                              for templ_param in template_parameters]
                 #print >> sys.stderr, "********************", cls_name, repr(template_parameters_decls)
-                template_parameters_modules = [self.headers_map[get_ns3_relative_path(templ.location.file_name)]
-                                               for templ in template_parameters_decls if hasattr(templ, 'location')]
+                
+                template_parameters_modules = []
+                for templ in template_parameters_decls:
+                    if not hasattr(templ, 'location'):
+                        continue
+                    try:
+                        h = get_ns3_relative_path(templ.location.file_name)
+                    except ValueError:
+                        continue
+                    template_parameters_modules.append(self.headers_map[h])
+
                 for templ_mod in template_parameters_modules:
                     if templ_mod == self.module:
                         definition_module = templ_mod
