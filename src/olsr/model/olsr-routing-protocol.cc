@@ -327,6 +327,7 @@ void RoutingProtocol::DoStart ()
         {
           NS_FATAL_ERROR ("Failed to bind() OLSR socket");
         }
+      socket->BindToNetDevice (m_ipv4->GetNetDevice (i));
       m_socketAddresses[socket] = m_ipv4->GetAddress (i, 0);
 
       canRunOlsr = true;
