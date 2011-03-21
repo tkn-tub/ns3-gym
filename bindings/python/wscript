@@ -669,6 +669,8 @@ def build(bld):
                     continue
                 if mod.path.is_child_of(test_module_path):
                     continue
+                if mod.name.endswith('-test'):
+                    continue
                 scan_modules.append(mod.name.split('ns3-')[1])
         else:
             scan_modules = Options.options.apiscan.split(',')
