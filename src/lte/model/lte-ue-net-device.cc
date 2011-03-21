@@ -106,7 +106,7 @@ LteUeNetDevice::InitLteUeNetDevice (void)
   m_targetEnb = 0;
   SetNode (0);
   m_mac = CreateObject<LteUeMac> ();
-  m_rrc = Create<LteUeRrc> ();
+  m_rrc = CreateObject<LteUeRrc> ();
   m_rrc->SetLteUeCmacSapProvider (m_mac->GetLteUeCmacSapProvider ());
   m_mac->SetLteUeCmacSapUser (m_rrc->GetLteUeCmacSapUser ());
   m_rrc->SetLteMacSapProvider (m_mac->GetLteMacSapProvider ());

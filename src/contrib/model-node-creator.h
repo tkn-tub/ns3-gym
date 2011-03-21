@@ -64,6 +64,13 @@ private:
   virtual void DoStartVisitArrayItem (const ObjectVectorValue &vector,
                                       uint32_t index, Ptr<Object> item);
   virtual void DoEndVisitArrayItem (void);
+
+  virtual void DoStartVisitMapAttribute (Ptr<Object> object, std::string name, const ObjectMapValue &map);
+  virtual void DoEndVisitMapAttribute (void);
+  virtual void DoStartVisitMapItem (const ObjectMapValue &vector, uint32_t index, Ptr<Object> item);
+  virtual void DoEndVisitMapItem (void);
+
+
   void Add (ModelNode *node);
   void Remove (void);
 

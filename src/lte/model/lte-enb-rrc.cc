@@ -119,7 +119,7 @@ void EnbRadioBearerInfo::SetRlc(Ptr<LteRlc> rlc)
  * Manages all the radio bearer information possessed by the ENB RRC for a single UE
  *
  */
-class UeInfo : public Object //public SimpleRefCount<UeInfo>
+class UeInfo : public Object
 {
 public:
   /**

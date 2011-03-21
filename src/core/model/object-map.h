@@ -154,7 +154,7 @@ MakeObjectMapAccessor (U T::*memberMap)
 	{
 	  if (k == i)
 	    {
-	      return std::pair<uint32_t, Ptr<Object> > ( k, (*j).second);
+	      return std::pair<uint32_t, Ptr<Object> > ( (*j).first, (*j).second);
 	      break;
 	    }
 	}

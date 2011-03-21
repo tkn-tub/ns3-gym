@@ -223,7 +223,7 @@ void
 AttributeIterator::EndVisitMapAttribute (void)
 {
   m_currentPath.pop_back ();
-  DoEndVisitArrayAttribute ();
+  DoEndVisitMapAttribute ();
 }
 
 void
@@ -304,7 +304,6 @@ AttributeIterator::DoIterate (Ptr<Object> object)
               NS_LOG_DEBUG ("map attribute " << tid.GetAttributeName (i));
               ObjectMapValue map;
               object->GetAttribute (tid.GetAttributeName (i), map);
-              // JNG Fix this
               StartVisitMapAttribute (object, tid.GetAttributeName (i), map);
               for (ObjectMapValue::Iterator it = map.Begin () ; it != map.End(); it++ )
                 {

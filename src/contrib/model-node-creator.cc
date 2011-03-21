@@ -127,4 +127,42 @@ ModelCreator::DoEndVisitArrayItem (void)
   g_free (iter);
   m_iters.pop_back ();  
 }
+
+void
+ModelCreator::DoStartVisitMapAttribute (Ptr<Object> object, std::string name, const ObjectMapValue &map)
+{
+  ModelNode *node = new ModelNode ();
+  node->type = ModelNode::NODE_VECTOR;
+  node->object = object;
+  node->name = name;
+  Add (node);
+}
+void
+ModelCreator::DoEndVisitMapAttribute (void)
+{
+  Remove ();
+}
+void
+ModelCreator::DoStartVisitMapItem (const ObjectMapValue &map, uint32_t index, Ptr<Object> item)
+{
+  GtkTreeIter *parent = m_iters.back ();
+  GtkTreeIter *current = g_new (GtkTreeIter, 1);
+  ModelNode *node = new ModelNode ();
+  node->type = ModelNode::NODE_VECTOR_ITEM;
+  node->object = item;
+  node->index = index;
+  gtk_tree_store_append (m_treestore, current, parent);
+  gtk_tree_store_set (m_treestore, current,
+              COL_NODE, node,
+                     -1);
+  m_iters.push_back (current);
+}
+void
+ModelCreator::DoEndVisitMapItem (void)
+{
+  GtkTreeIter *iter = m_iters.back ();
+  g_free (iter);
+  m_iters.pop_back ();
+}
+
 }//end namespace ns3
