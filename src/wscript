@@ -143,11 +143,8 @@ def create_ns3_module_test_library(bld, name):
     library.is_ns3_module_test_library = True
     library.module_name = 'ns3-' + name
 
-    # Add this test library and module to the lists if the module is
-    # enabled.
-    if library.module_name in bld.env['NS3_ENABLED_MODULES']:
-        bld.env.append_value('NS3_ENABLED_MODULES_WITH_TEST_LIBRARIES', library.module_name)
-        bld.env.append_value('NS3_ENABLED_MODULE_TEST_LIBRARIES', library.name)
+    # Add this module and test library to the list.
+    bld.env.append_value('NS3_MODULES_WITH_TEST_LIBRARIES', (library.module_name, library.name))
 
     # Set the include path from the build directory to modules. 
     relative_path_from_build_to_here = bld.path.relpath_gen(bld.bldnode)

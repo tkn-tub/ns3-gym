@@ -537,7 +537,7 @@ def add_scratch_programs(bld):
 
 
 def build(bld):
-    bld.env['NS3_ENABLED_MODULES_WITH_TEST_LIBRARIES'] = []
+    bld.env['NS3_MODULES_WITH_TEST_LIBRARIES'] = []
     bld.env['NS3_ENABLED_MODULE_TEST_LIBRARIES'] = []
 
     wutils.bld = bld
@@ -559,22 +559,11 @@ def build(bld):
     # process subfolders from here
     bld.add_subdirs('src')
     bld.add_subdirs('samples')
-    bld.add_subdirs('utils')
 
-    add_examples_programs(bld)
-    add_scratch_programs(bld)
-
-    ## if --enabled-modules option was given, we disable building the
-    ## modules that were not enabled, and programs that depend on
-    ## disabled modules.
     env = bld.env
 
-    if Options.options.enable_modules:
-        Logs.warn("the option --enable-modules is being applied to this build only;"
-                       " to make it permanent it needs to be given to waf configure.")
-        env['NS3_ENABLED_MODULES'] = ['ns3-'+mod for mod in
-                                      Options.options.enable_modules.split(',')]
-
+    # If modules have been enabled, then set lists of enabled modules
+    # and enabled module test libraries.
     if env['NS3_ENABLED_MODULES']:
         modules = env['NS3_ENABLED_MODULES']
 
@@ -598,7 +587,30 @@ def build(bld):
         env['NS3_ENABLED_MODULES'] = modules
         print "Modules to build:", modules
 
-        print "Modules to test:", env['NS3_ENABLED_MODULES_WITH_TEST_LIBRARIES']
+        # Set the list of the enabled module test libraries.
+        for (mod, testlib) in bld.env['NS3_MODULES_WITH_TEST_LIBRARIES']:
+            if mod in bld.env['NS3_ENABLED_MODULES']:
+                bld.env.append_value('NS3_ENABLED_MODULE_TEST_LIBRARIES', testlib)
+
+    # Process this subfolder here after the lists of enabled modules
+    # and module test libraries have been set.
+    bld.add_subdirs('utils')
+
+    add_examples_programs(bld)
+    add_scratch_programs(bld)
+
+    ## if --enabled-modules option was given, we disable building the
+    ## modules that were not enabled, and programs that depend on
+    ## disabled modules.
+
+    if Options.options.enable_modules:
+        Logs.warn("the option --enable-modules is being applied to this build only;"
+                       " to make it permanent it needs to be given to waf configure.")
+        env['NS3_ENABLED_MODULES'] = ['ns3-'+mod for mod in
+                                      Options.options.enable_modules.split(',')]
+
+    if env['NS3_ENABLED_MODULES']:
+        modules = env['NS3_ENABLED_MODULES']
 
         def exclude_taskgen(bld, taskgen):
             # ok, so WAF does not provide an API to prevent an
