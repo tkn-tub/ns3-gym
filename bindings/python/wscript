@@ -660,8 +660,16 @@ def build(bld):
                 scan_targets.append(('gcc_ILP32', ''))
             else:
                 raise Utils.WafError("Cannot scan python bindings for unsupported data model")
+
+        test_module_path = bld.path.find_dir("../../src/test")
         if Options.options.apiscan == 'all':
-            scan_modules = [mod.split('ns3-')[1] for mod in env.NS3_ENABLED_MODULES]
+            scan_modules = []
+            for mod in bld.all_task_gen:
+                if not mod.name.startswith('ns3-'):
+                    continue
+                if mod.path.is_child_of(test_module_path):
+                    continue
+                scan_modules.append(mod.name.split('ns3-')[1])
         else:
             scan_modules = Options.options.apiscan.split(',')
         print "Modules to scan: ", scan_modules
