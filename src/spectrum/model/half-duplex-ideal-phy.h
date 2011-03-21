@@ -33,6 +33,7 @@
 #include <ns3/spectrum-interference.h>
 #include <ns3/data-rate.h>
 #include <ns3/phy-mac.h>
+#include <ns3/event-id.h>
 
 namespace ns3 {
 
