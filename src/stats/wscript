@@ -33,3 +33,5 @@ def build(bld):
         headers.source.append('model/sqlite-data-output.h')
         obj.source.append('model/sqlite-data-output.cc')
         obj.uselib = 'SQLITE3'
+
+    bld.ns3_python_bindings()

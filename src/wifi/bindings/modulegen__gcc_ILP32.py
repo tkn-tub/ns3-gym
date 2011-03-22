@@ -9556,55 +9556,43 @@ def register_Ns3RandomVariableValue_methods(root_module, cls):
     return
 
 def register_Ns3RegularWifiMac_methods(root_module, cls):
-    ## regular-wifi-mac.h (module 'wifi'): ns3::RegularWifiMac::RegularWifiMac(ns3::RegularWifiMac const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::RegularWifiMac const &', 'arg0')])
+    ## regular-wifi-mac.h (module 'wifi'): static ns3::TypeId ns3::RegularWifiMac::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
     ## regular-wifi-mac.h (module 'wifi'): ns3::RegularWifiMac::RegularWifiMac() [constructor]
     cls.add_constructor([])
-    ## regular-wifi-mac.h (module 'wifi'): void ns3::RegularWifiMac::Enqueue(ns3::Ptr<ns3::Packet const> packet, ns3::Mac48Address to, ns3::Mac48Address from) [member function]
-    cls.add_method('Enqueue', 
+    ## regular-wifi-mac.h (module 'wifi'): void ns3::RegularWifiMac::SetSlot(ns3::Time slotTime) [member function]
+    cls.add_method('SetSlot', 
                    'void', 
-                   [param('ns3::Ptr< ns3::Packet const >', 'packet'), param('ns3::Mac48Address', 'to'), param('ns3::Mac48Address', 'from')], 
+                   [param('ns3::Time', 'slotTime')], 
                    is_virtual=True)
-    ## regular-wifi-mac.h (module 'wifi'): void ns3::RegularWifiMac::Enqueue(ns3::Ptr<ns3::Packet const> packet, ns3::Mac48Address to) [member function]
-    cls.add_method('Enqueue', 
+    ## regular-wifi-mac.h (module 'wifi'): void ns3::RegularWifiMac::SetSifs(ns3::Time sifs) [member function]
+    cls.add_method('SetSifs', 
                    'void', 
-                   [param('ns3::Ptr< ns3::Packet const >', 'packet'), param('ns3::Mac48Address', 'to')], 
-                   is_pure_virtual=True, is_virtual=True)
-    ## regular-wifi-mac.h (module 'wifi'): ns3::Time ns3::RegularWifiMac::GetAckTimeout() const [member function]
-    cls.add_method('GetAckTimeout', 
-                   'ns3::Time', 
-                   [], 
-                   is_const=True, is_virtual=True)
-    ## regular-wifi-mac.h (module 'wifi'): ns3::Mac48Address ns3::RegularWifiMac::GetAddress() const [member function]
-    cls.add_method('GetAddress', 
-                   'ns3::Mac48Address', 
-                   [], 
-                   is_const=True, is_virtual=True)
-    ## regular-wifi-mac.h (module 'wifi'): ns3::Time ns3::RegularWifiMac::GetBasicBlockAckTimeout() const [member function]
-    cls.add_method('GetBasicBlockAckTimeout', 
-                   'ns3::Time', 
-                   [], 
-                   is_const=True, is_virtual=True)
-    ## regular-wifi-mac.h (module 'wifi'): ns3::Mac48Address ns3::RegularWifiMac::GetBssid() const [member function]
-    cls.add_method('GetBssid', 
-                   'ns3::Mac48Address', 
-                   [], 
-                   is_const=True, is_virtual=True)
-    ## regular-wifi-mac.h (module 'wifi'): ns3::Time ns3::RegularWifiMac::GetCompressedBlockAckTimeout() const [member function]
-    cls.add_method('GetCompressedBlockAckTimeout', 
-                   'ns3::Time', 
-                   [], 
-                   is_const=True, is_virtual=True)
-    ## regular-wifi-mac.h (module 'wifi'): ns3::Time ns3::RegularWifiMac::GetCtsTimeout() const [member function]
-    cls.add_method('GetCtsTimeout', 
-                   'ns3::Time', 
-                   [], 
-                   is_const=True, is_virtual=True)
-    ## regular-wifi-mac.h (module 'wifi'): ns3::Time ns3::RegularWifiMac::GetEifsNoDifs() const [member function]
-    cls.add_method('GetEifsNoDifs', 
-                   'ns3::Time', 
-                   [], 
-                   is_const=True, is_virtual=True)
+                   [param('ns3::Time', 'sifs')], 
+                   is_virtual=True)
+    ## regular-wifi-mac.h (module 'wifi'): void ns3::RegularWifiMac::SetEifsNoDifs(ns3::Time eifsNoDifs) [member function]
+    cls.add_method('SetEifsNoDifs', 
+                   'void', 
+                   [param('ns3::Time', 'eifsNoDifs')], 
+                   is_virtual=True)
+    ## regular-wifi-mac.h (module 'wifi'): void ns3::RegularWifiMac::SetPifs(ns3::Time pifs) [member function]
+    cls.add_method('SetPifs', 
+                   'void', 
+                   [param('ns3::Time', 'pifs')], 
+                   is_virtual=True)
+    ## regular-wifi-mac.h (module 'wifi'): void ns3::RegularWifiMac::SetCtsTimeout(ns3::Time ctsTimeout) [member function]
+    cls.add_method('SetCtsTimeout', 
+                   'void', 
+                   [param('ns3::Time', 'ctsTimeout')], 
+                   is_virtual=True)
+    ## regular-wifi-mac.h (module 'wifi'): void ns3::RegularWifiMac::SetAckTimeout(ns3::Time ackTimeout) [member function]
+    cls.add_method('SetAckTimeout', 
+                   'void', 
+                   [param('ns3::Time', 'ackTimeout')], 
+                   is_virtual=True)
     ## regular-wifi-mac.h (module 'wifi'): ns3::Time ns3::RegularWifiMac::GetPifs() const [member function]
     cls.add_method('GetPifs', 
                    'ns3::Time', 
@@ -9620,123 +9608,128 @@ def register_Ns3RegularWifiMac_methods(root_module, cls):
                    'ns3::Time', 
                    [], 
                    is_const=True, is_virtual=True)
+    ## regular-wifi-mac.h (module 'wifi'): ns3::Time ns3::RegularWifiMac::GetEifsNoDifs() const [member function]
+    cls.add_method('GetEifsNoDifs', 
+                   'ns3::Time', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## regular-wifi-mac.h (module 'wifi'): ns3::Time ns3::RegularWifiMac::GetCtsTimeout() const [member function]
+    cls.add_method('GetCtsTimeout', 
+                   'ns3::Time', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## regular-wifi-mac.h (module 'wifi'): ns3::Time ns3::RegularWifiMac::GetAckTimeout() const [member function]
+    cls.add_method('GetAckTimeout', 
+                   'ns3::Time', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## regular-wifi-mac.h (module 'wifi'): ns3::Mac48Address ns3::RegularWifiMac::GetAddress() const [member function]
+    cls.add_method('GetAddress', 
+                   'ns3::Mac48Address', 
+                   [], 
+                   is_const=True, is_virtual=True)
     ## regular-wifi-mac.h (module 'wifi'): ns3::Ssid ns3::RegularWifiMac::GetSsid() const [member function]
     cls.add_method('GetSsid', 
                    'ns3::Ssid', 
                    [], 
                    is_const=True, is_virtual=True)
-    ## regular-wifi-mac.h (module 'wifi'): static ns3::TypeId ns3::RegularWifiMac::GetTypeId() [member function]
-    cls.add_method('GetTypeId', 
-                   'ns3::TypeId', 
-                   [], 
-                   is_static=True)
-    ## regular-wifi-mac.h (module 'wifi'): ns3::Ptr<ns3::WifiPhy> ns3::RegularWifiMac::GetWifiPhy() const [member function]
-    cls.add_method('GetWifiPhy', 
-                   'ns3::Ptr< ns3::WifiPhy >', 
-                   [], 
-                   is_const=True, is_virtual=True)
-    ## regular-wifi-mac.h (module 'wifi'): ns3::Ptr<ns3::WifiRemoteStationManager> ns3::RegularWifiMac::GetWifiRemoteStationManager() const [member function]
-    cls.add_method('GetWifiRemoteStationManager', 
-                   'ns3::Ptr< ns3::WifiRemoteStationManager >', 
-                   [], 
-                   is_const=True, is_virtual=True)
-    ## regular-wifi-mac.h (module 'wifi'): void ns3::RegularWifiMac::SetAckTimeout(ns3::Time ackTimeout) [member function]
-    cls.add_method('SetAckTimeout', 
-                   'void', 
-                   [param('ns3::Time', 'ackTimeout')], 
-                   is_virtual=True)
     ## regular-wifi-mac.h (module 'wifi'): void ns3::RegularWifiMac::SetAddress(ns3::Mac48Address address) [member function]
     cls.add_method('SetAddress', 
                    'void', 
                    [param('ns3::Mac48Address', 'address')], 
-                   is_virtual=True)
-    ## regular-wifi-mac.h (module 'wifi'): void ns3::RegularWifiMac::SetBasicBlockAckTimeout(ns3::Time blockAckTimeout) [member function]
-    cls.add_method('SetBasicBlockAckTimeout', 
-                   'void', 
-                   [param('ns3::Time', 'blockAckTimeout')], 
-                   is_virtual=True)
-    ## regular-wifi-mac.h (module 'wifi'): void ns3::RegularWifiMac::SetBssid(ns3::Mac48Address bssid) [member function]
-    cls.add_method('SetBssid', 
-                   'void', 
-                   [param('ns3::Mac48Address', 'bssid')], 
-                   is_virtual=True)
-    ## regular-wifi-mac.h (module 'wifi'): void ns3::RegularWifiMac::SetCompressedBlockAckTimeout(ns3::Time blockAckTimeout) [member function]
-    cls.add_method('SetCompressedBlockAckTimeout', 
-                   'void', 
-                   [param('ns3::Time', 'blockAckTimeout')], 
-                   is_virtual=True)
-    ## regular-wifi-mac.h (module 'wifi'): void ns3::RegularWifiMac::SetCtsTimeout(ns3::Time ctsTimeout) [member function]
-    cls.add_method('SetCtsTimeout', 
-                   'void', 
-                   [param('ns3::Time', 'ctsTimeout')], 
-                   is_virtual=True)
-    ## regular-wifi-mac.h (module 'wifi'): void ns3::RegularWifiMac::SetEifsNoDifs(ns3::Time eifsNoDifs) [member function]
-    cls.add_method('SetEifsNoDifs', 
-                   'void', 
-                   [param('ns3::Time', 'eifsNoDifs')], 
-                   is_virtual=True)
-    ## regular-wifi-mac.h (module 'wifi'): void ns3::RegularWifiMac::SetForwardUpCallback(ns3::Callback<void, ns3::Ptr<ns3::Packet>, ns3::Mac48Address, ns3::Mac48Address, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> upCallback) [member function]
-    cls.add_method('SetForwardUpCallback', 
-                   'void', 
-                   [param('ns3::Callback< void, ns3::Ptr< ns3::Packet >, ns3::Mac48Address, ns3::Mac48Address, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'upCallback')], 
-                   is_virtual=True)
-    ## regular-wifi-mac.h (module 'wifi'): void ns3::RegularWifiMac::SetLinkDownCallback(ns3::Callback<void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> linkDown) [member function]
-    cls.add_method('SetLinkDownCallback', 
-                   'void', 
-                   [param('ns3::Callback< void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'linkDown')], 
-                   is_virtual=True)
-    ## regular-wifi-mac.h (module 'wifi'): void ns3::RegularWifiMac::SetLinkUpCallback(ns3::Callback<void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> linkUp) [member function]
-    cls.add_method('SetLinkUpCallback', 
-                   'void', 
-                   [param('ns3::Callback< void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'linkUp')], 
-                   is_virtual=True)
-    ## regular-wifi-mac.h (module 'wifi'): void ns3::RegularWifiMac::SetPifs(ns3::Time pifs) [member function]
-    cls.add_method('SetPifs', 
-                   'void', 
-                   [param('ns3::Time', 'pifs')], 
-                   is_virtual=True)
-    ## regular-wifi-mac.h (module 'wifi'): void ns3::RegularWifiMac::SetSifs(ns3::Time sifs) [member function]
-    cls.add_method('SetSifs', 
-                   'void', 
-                   [param('ns3::Time', 'sifs')], 
-                   is_virtual=True)
-    ## regular-wifi-mac.h (module 'wifi'): void ns3::RegularWifiMac::SetSlot(ns3::Time slotTime) [member function]
-    cls.add_method('SetSlot', 
-                   'void', 
-                   [param('ns3::Time', 'slotTime')], 
                    is_virtual=True)
     ## regular-wifi-mac.h (module 'wifi'): void ns3::RegularWifiMac::SetSsid(ns3::Ssid ssid) [member function]
     cls.add_method('SetSsid', 
                    'void', 
                    [param('ns3::Ssid', 'ssid')], 
                    is_virtual=True)
-    ## regular-wifi-mac.h (module 'wifi'): void ns3::RegularWifiMac::SetWifiPhy(ns3::Ptr<ns3::WifiPhy> phy) [member function]
-    cls.add_method('SetWifiPhy', 
+    ## regular-wifi-mac.h (module 'wifi'): void ns3::RegularWifiMac::SetBssid(ns3::Mac48Address bssid) [member function]
+    cls.add_method('SetBssid', 
                    'void', 
-                   [param('ns3::Ptr< ns3::WifiPhy >', 'phy')], 
+                   [param('ns3::Mac48Address', 'bssid')], 
                    is_virtual=True)
-    ## regular-wifi-mac.h (module 'wifi'): void ns3::RegularWifiMac::SetWifiRemoteStationManager(ns3::Ptr<ns3::WifiRemoteStationManager> stationManager) [member function]
-    cls.add_method('SetWifiRemoteStationManager', 
+    ## regular-wifi-mac.h (module 'wifi'): ns3::Mac48Address ns3::RegularWifiMac::GetBssid() const [member function]
+    cls.add_method('GetBssid', 
+                   'ns3::Mac48Address', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## regular-wifi-mac.h (module 'wifi'): void ns3::RegularWifiMac::Enqueue(ns3::Ptr<ns3::Packet const> packet, ns3::Mac48Address to, ns3::Mac48Address from) [member function]
+    cls.add_method('Enqueue', 
                    'void', 
-                   [param('ns3::Ptr< ns3::WifiRemoteStationManager >', 'stationManager')], 
+                   [param('ns3::Ptr< ns3::Packet const >', 'packet'), param('ns3::Mac48Address', 'to'), param('ns3::Mac48Address', 'from')], 
                    is_virtual=True)
     ## regular-wifi-mac.h (module 'wifi'): bool ns3::RegularWifiMac::SupportsSendFrom() const [member function]
     cls.add_method('SupportsSendFrom', 
                    'bool', 
                    [], 
                    is_const=True, is_virtual=True)
-    ## regular-wifi-mac.h (module 'wifi'): void ns3::RegularWifiMac::DeaggregateAmsduAndForward(ns3::Ptr<ns3::Packet> aggregatedPacket, ns3::WifiMacHeader const * hdr) [member function]
-    cls.add_method('DeaggregateAmsduAndForward', 
+    ## regular-wifi-mac.h (module 'wifi'): void ns3::RegularWifiMac::Enqueue(ns3::Ptr<ns3::Packet const> packet, ns3::Mac48Address to) [member function]
+    cls.add_method('Enqueue', 
                    'void', 
-                   [param('ns3::Ptr< ns3::Packet >', 'aggregatedPacket'), param('ns3::WifiMacHeader const *', 'hdr')], 
-                   visibility='protected', is_virtual=True)
-    ## regular-wifi-mac.h (module 'wifi'): void ns3::RegularWifiMac::DoDispose() [member function]
-    cls.add_method('DoDispose', 
+                   [param('ns3::Ptr< ns3::Packet const >', 'packet'), param('ns3::Mac48Address', 'to')], 
+                   is_pure_virtual=True, is_virtual=True)
+    ## regular-wifi-mac.h (module 'wifi'): void ns3::RegularWifiMac::SetWifiPhy(ns3::Ptr<ns3::WifiPhy> phy) [member function]
+    cls.add_method('SetWifiPhy', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::WifiPhy >', 'phy')], 
+                   is_virtual=True)
+    ## regular-wifi-mac.h (module 'wifi'): ns3::Ptr<ns3::WifiPhy> ns3::RegularWifiMac::GetWifiPhy() const [member function]
+    cls.add_method('GetWifiPhy', 
+                   'ns3::Ptr< ns3::WifiPhy >', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## regular-wifi-mac.h (module 'wifi'): void ns3::RegularWifiMac::SetWifiRemoteStationManager(ns3::Ptr<ns3::WifiRemoteStationManager> stationManager) [member function]
+    cls.add_method('SetWifiRemoteStationManager', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::WifiRemoteStationManager >', 'stationManager')], 
+                   is_virtual=True)
+    ## regular-wifi-mac.h (module 'wifi'): ns3::Ptr<ns3::WifiRemoteStationManager> ns3::RegularWifiMac::GetWifiRemoteStationManager() const [member function]
+    cls.add_method('GetWifiRemoteStationManager', 
+                   'ns3::Ptr< ns3::WifiRemoteStationManager >', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## regular-wifi-mac.h (module 'wifi'): void ns3::RegularWifiMac::SetForwardUpCallback(ns3::Callback<void, ns3::Ptr<ns3::Packet>, ns3::Mac48Address, ns3::Mac48Address, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> upCallback) [member function]
+    cls.add_method('SetForwardUpCallback', 
+                   'void', 
+                   [param('ns3::Callback< void, ns3::Ptr< ns3::Packet >, ns3::Mac48Address, ns3::Mac48Address, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'upCallback')], 
+                   is_virtual=True)
+    ## regular-wifi-mac.h (module 'wifi'): void ns3::RegularWifiMac::SetLinkUpCallback(ns3::Callback<void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> linkUp) [member function]
+    cls.add_method('SetLinkUpCallback', 
+                   'void', 
+                   [param('ns3::Callback< void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'linkUp')], 
+                   is_virtual=True)
+    ## regular-wifi-mac.h (module 'wifi'): void ns3::RegularWifiMac::SetLinkDownCallback(ns3::Callback<void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> linkDown) [member function]
+    cls.add_method('SetLinkDownCallback', 
+                   'void', 
+                   [param('ns3::Callback< void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'linkDown')], 
+                   is_virtual=True)
+    ## regular-wifi-mac.h (module 'wifi'): void ns3::RegularWifiMac::SetBasicBlockAckTimeout(ns3::Time blockAckTimeout) [member function]
+    cls.add_method('SetBasicBlockAckTimeout', 
+                   'void', 
+                   [param('ns3::Time', 'blockAckTimeout')], 
+                   is_virtual=True)
+    ## regular-wifi-mac.h (module 'wifi'): ns3::Time ns3::RegularWifiMac::GetBasicBlockAckTimeout() const [member function]
+    cls.add_method('GetBasicBlockAckTimeout', 
+                   'ns3::Time', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## regular-wifi-mac.h (module 'wifi'): void ns3::RegularWifiMac::SetCompressedBlockAckTimeout(ns3::Time blockAckTimeout) [member function]
+    cls.add_method('SetCompressedBlockAckTimeout', 
+                   'void', 
+                   [param('ns3::Time', 'blockAckTimeout')], 
+                   is_virtual=True)
+    ## regular-wifi-mac.h (module 'wifi'): ns3::Time ns3::RegularWifiMac::GetCompressedBlockAckTimeout() const [member function]
+    cls.add_method('GetCompressedBlockAckTimeout', 
+                   'ns3::Time', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## regular-wifi-mac.h (module 'wifi'): void ns3::RegularWifiMac::DoStart() [member function]
+    cls.add_method('DoStart', 
                    'void', 
                    [], 
                    visibility='protected', is_virtual=True)
-    ## regular-wifi-mac.h (module 'wifi'): void ns3::RegularWifiMac::DoStart() [member function]
-    cls.add_method('DoStart', 
+    ## regular-wifi-mac.h (module 'wifi'): void ns3::RegularWifiMac::DoDispose() [member function]
+    cls.add_method('DoDispose', 
                    'void', 
                    [], 
                    visibility='protected', is_virtual=True)
@@ -9745,20 +9738,35 @@ def register_Ns3RegularWifiMac_methods(root_module, cls):
                    'void', 
                    [param('ns3::WifiPhyStandard', 'standard')], 
                    visibility='protected', is_virtual=True)
+    ## regular-wifi-mac.h (module 'wifi'): void ns3::RegularWifiMac::SetTypeOfStation(ns3::TypeOfStation type) [member function]
+    cls.add_method('SetTypeOfStation', 
+                   'void', 
+                   [param('ns3::TypeOfStation', 'type')], 
+                   visibility='protected')
+    ## regular-wifi-mac.h (module 'wifi'): void ns3::RegularWifiMac::Receive(ns3::Ptr<ns3::Packet> packet, ns3::WifiMacHeader const * hdr) [member function]
+    cls.add_method('Receive', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Packet >', 'packet'), param('ns3::WifiMacHeader const *', 'hdr')], 
+                   visibility='protected', is_virtual=True)
+    ## regular-wifi-mac.h (module 'wifi'): void ns3::RegularWifiMac::TxOk(ns3::WifiMacHeader const & hdr) [member function]
+    cls.add_method('TxOk', 
+                   'void', 
+                   [param('ns3::WifiMacHeader const &', 'hdr')], 
+                   visibility='protected', is_virtual=True)
+    ## regular-wifi-mac.h (module 'wifi'): void ns3::RegularWifiMac::TxFailed(ns3::WifiMacHeader const & hdr) [member function]
+    cls.add_method('TxFailed', 
+                   'void', 
+                   [param('ns3::WifiMacHeader const &', 'hdr')], 
+                   visibility='protected', is_virtual=True)
     ## regular-wifi-mac.h (module 'wifi'): void ns3::RegularWifiMac::ForwardUp(ns3::Ptr<ns3::Packet> packet, ns3::Mac48Address from, ns3::Mac48Address to) [member function]
     cls.add_method('ForwardUp', 
                    'void', 
                    [param('ns3::Ptr< ns3::Packet >', 'packet'), param('ns3::Mac48Address', 'from'), param('ns3::Mac48Address', 'to')], 
                    visibility='protected')
-    ## regular-wifi-mac.h (module 'wifi'): bool ns3::RegularWifiMac::GetQosSupported() const [member function]
-    cls.add_method('GetQosSupported', 
-                   'bool', 
-                   [], 
-                   is_const=True, visibility='protected')
-    ## regular-wifi-mac.h (module 'wifi'): void ns3::RegularWifiMac::Receive(ns3::Ptr<ns3::Packet> packet, ns3::WifiMacHeader const * hdr) [member function]
-    cls.add_method('Receive', 
+    ## regular-wifi-mac.h (module 'wifi'): void ns3::RegularWifiMac::DeaggregateAmsduAndForward(ns3::Ptr<ns3::Packet> aggregatedPacket, ns3::WifiMacHeader const * hdr) [member function]
+    cls.add_method('DeaggregateAmsduAndForward', 
                    'void', 
-                   [param('ns3::Ptr< ns3::Packet >', 'packet'), param('ns3::WifiMacHeader const *', 'hdr')], 
+                   [param('ns3::Ptr< ns3::Packet >', 'aggregatedPacket'), param('ns3::WifiMacHeader const *', 'hdr')], 
                    visibility='protected', is_virtual=True)
     ## regular-wifi-mac.h (module 'wifi'): void ns3::RegularWifiMac::SendAddBaResponse(ns3::MgtAddBaRequestHeader const * reqHdr, ns3::Mac48Address originator) [member function]
     cls.add_method('SendAddBaResponse', 
@@ -9770,21 +9778,11 @@ def register_Ns3RegularWifiMac_methods(root_module, cls):
                    'void', 
                    [param('bool', 'enable')], 
                    visibility='protected')
-    ## regular-wifi-mac.h (module 'wifi'): void ns3::RegularWifiMac::SetTypeOfStation(ns3::TypeOfStation type) [member function]
-    cls.add_method('SetTypeOfStation', 
-                   'void', 
-                   [param('ns3::TypeOfStation', 'type')], 
-                   visibility='protected')
-    ## regular-wifi-mac.h (module 'wifi'): void ns3::RegularWifiMac::TxFailed(ns3::WifiMacHeader const & hdr) [member function]
-    cls.add_method('TxFailed', 
-                   'void', 
-                   [param('ns3::WifiMacHeader const &', 'hdr')], 
-                   visibility='protected', is_virtual=True)
-    ## regular-wifi-mac.h (module 'wifi'): void ns3::RegularWifiMac::TxOk(ns3::WifiMacHeader const & hdr) [member function]
-    cls.add_method('TxOk', 
-                   'void', 
-                   [param('ns3::WifiMacHeader const &', 'hdr')], 
-                   visibility='protected', is_virtual=True)
+    ## regular-wifi-mac.h (module 'wifi'): bool ns3::RegularWifiMac::GetQosSupported() const [member function]
+    cls.add_method('GetQosSupported', 
+                   'bool', 
+                   [], 
+                   is_const=True, visibility='protected')
     return
 
 def register_Ns3RraaWifiManager_methods(root_module, cls):
@@ -9947,8 +9945,11 @@ def register_Ns3SsidValue_methods(root_module, cls):
     return
 
 def register_Ns3StaWifiMac_methods(root_module, cls):
-    ## sta-wifi-mac.h (module 'wifi'): ns3::StaWifiMac::StaWifiMac(ns3::StaWifiMac const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::StaWifiMac const &', 'arg0')])
+    ## sta-wifi-mac.h (module 'wifi'): static ns3::TypeId ns3::StaWifiMac::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
     ## sta-wifi-mac.h (module 'wifi'): ns3::StaWifiMac::StaWifiMac() [constructor]
     cls.add_constructor([])
     ## sta-wifi-mac.h (module 'wifi'): void ns3::StaWifiMac::Enqueue(ns3::Ptr<ns3::Packet const> packet, ns3::Mac48Address to) [member function]
@@ -9956,21 +9957,16 @@ def register_Ns3StaWifiMac_methods(root_module, cls):
                    'void', 
                    [param('ns3::Ptr< ns3::Packet const >', 'packet'), param('ns3::Mac48Address', 'to')], 
                    is_virtual=True)
-    ## sta-wifi-mac.h (module 'wifi'): static ns3::TypeId ns3::StaWifiMac::GetTypeId() [member function]
-    cls.add_method('GetTypeId', 
-                   'ns3::TypeId', 
-                   [], 
-                   is_static=True)
-    ## sta-wifi-mac.h (module 'wifi'): void ns3::StaWifiMac::SetAssocRequestTimeout(ns3::Time timeout) [member function]
-    cls.add_method('SetAssocRequestTimeout', 
-                   'void', 
-                   [param('ns3::Time', 'timeout')])
     ## sta-wifi-mac.h (module 'wifi'): void ns3::StaWifiMac::SetMaxMissedBeacons(uint32_t missed) [member function]
     cls.add_method('SetMaxMissedBeacons', 
                    'void', 
                    [param('uint32_t', 'missed')])
     ## sta-wifi-mac.h (module 'wifi'): void ns3::StaWifiMac::SetProbeRequestTimeout(ns3::Time timeout) [member function]
     cls.add_method('SetProbeRequestTimeout', 
+                   'void', 
+                   [param('ns3::Time', 'timeout')])
+    ## sta-wifi-mac.h (module 'wifi'): void ns3::StaWifiMac::SetAssocRequestTimeout(ns3::Time timeout) [member function]
+    cls.add_method('SetAssocRequestTimeout', 
                    'void', 
                    [param('ns3::Time', 'timeout')])
     ## sta-wifi-mac.h (module 'wifi'): void ns3::StaWifiMac::StartActiveAssociation() [member function]
@@ -10471,20 +10467,13 @@ def register_Ns3AddressValue_methods(root_module, cls):
     return
 
 def register_Ns3AdhocWifiMac_methods(root_module, cls):
-    ## adhoc-wifi-mac.h (module 'wifi'): ns3::AdhocWifiMac::AdhocWifiMac(ns3::AdhocWifiMac const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::AdhocWifiMac const &', 'arg0')])
-    ## adhoc-wifi-mac.h (module 'wifi'): ns3::AdhocWifiMac::AdhocWifiMac() [constructor]
-    cls.add_constructor([])
-    ## adhoc-wifi-mac.h (module 'wifi'): void ns3::AdhocWifiMac::Enqueue(ns3::Ptr<ns3::Packet const> packet, ns3::Mac48Address to) [member function]
-    cls.add_method('Enqueue', 
-                   'void', 
-                   [param('ns3::Ptr< ns3::Packet const >', 'packet'), param('ns3::Mac48Address', 'to')], 
-                   is_virtual=True)
     ## adhoc-wifi-mac.h (module 'wifi'): static ns3::TypeId ns3::AdhocWifiMac::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
+    ## adhoc-wifi-mac.h (module 'wifi'): ns3::AdhocWifiMac::AdhocWifiMac() [constructor]
+    cls.add_constructor([])
     ## adhoc-wifi-mac.h (module 'wifi'): void ns3::AdhocWifiMac::SetAddress(ns3::Mac48Address address) [member function]
     cls.add_method('SetAddress', 
                    'void', 
@@ -10495,6 +10484,11 @@ def register_Ns3AdhocWifiMac_methods(root_module, cls):
                    'void', 
                    [param('ns3::Callback< void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'linkUp')], 
                    is_virtual=True)
+    ## adhoc-wifi-mac.h (module 'wifi'): void ns3::AdhocWifiMac::Enqueue(ns3::Ptr<ns3::Packet const> packet, ns3::Mac48Address to) [member function]
+    cls.add_method('Enqueue', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Packet const >', 'packet'), param('ns3::Mac48Address', 'to')], 
+                   is_virtual=True)
     ## adhoc-wifi-mac.h (module 'wifi'): void ns3::AdhocWifiMac::Receive(ns3::Ptr<ns3::Packet> packet, ns3::WifiMacHeader const * hdr) [member function]
     cls.add_method('Receive', 
                    'void', 
@@ -10503,10 +10497,23 @@ def register_Ns3AdhocWifiMac_methods(root_module, cls):
     return
 
 def register_Ns3ApWifiMac_methods(root_module, cls):
-    ## ap-wifi-mac.h (module 'wifi'): ns3::ApWifiMac::ApWifiMac(ns3::ApWifiMac const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::ApWifiMac const &', 'arg0')])
+    ## ap-wifi-mac.h (module 'wifi'): static ns3::TypeId ns3::ApWifiMac::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
     ## ap-wifi-mac.h (module 'wifi'): ns3::ApWifiMac::ApWifiMac() [constructor]
     cls.add_constructor([])
+    ## ap-wifi-mac.h (module 'wifi'): void ns3::ApWifiMac::SetWifiRemoteStationManager(ns3::Ptr<ns3::WifiRemoteStationManager> stationManager) [member function]
+    cls.add_method('SetWifiRemoteStationManager', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::WifiRemoteStationManager >', 'stationManager')], 
+                   is_virtual=True)
+    ## ap-wifi-mac.h (module 'wifi'): void ns3::ApWifiMac::SetLinkUpCallback(ns3::Callback<void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> linkUp) [member function]
+    cls.add_method('SetLinkUpCallback', 
+                   'void', 
+                   [param('ns3::Callback< void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'linkUp')], 
+                   is_virtual=True)
     ## ap-wifi-mac.h (module 'wifi'): void ns3::ApWifiMac::Enqueue(ns3::Ptr<ns3::Packet const> packet, ns3::Mac48Address to) [member function]
     cls.add_method('Enqueue', 
                    'void', 
@@ -10517,16 +10524,11 @@ def register_Ns3ApWifiMac_methods(root_module, cls):
                    'void', 
                    [param('ns3::Ptr< ns3::Packet const >', 'packet'), param('ns3::Mac48Address', 'to'), param('ns3::Mac48Address', 'from')], 
                    is_virtual=True)
-    ## ap-wifi-mac.h (module 'wifi'): ns3::Time ns3::ApWifiMac::GetBeaconInterval() const [member function]
-    cls.add_method('GetBeaconInterval', 
-                   'ns3::Time', 
+    ## ap-wifi-mac.h (module 'wifi'): bool ns3::ApWifiMac::SupportsSendFrom() const [member function]
+    cls.add_method('SupportsSendFrom', 
+                   'bool', 
                    [], 
-                   is_const=True)
-    ## ap-wifi-mac.h (module 'wifi'): static ns3::TypeId ns3::ApWifiMac::GetTypeId() [member function]
-    cls.add_method('GetTypeId', 
-                   'ns3::TypeId', 
-                   [], 
-                   is_static=True)
+                   is_const=True, is_virtual=True)
     ## ap-wifi-mac.h (module 'wifi'): void ns3::ApWifiMac::SetAddress(ns3::Mac48Address address) [member function]
     cls.add_method('SetAddress', 
                    'void', 
@@ -10536,25 +10538,30 @@ def register_Ns3ApWifiMac_methods(root_module, cls):
     cls.add_method('SetBeaconInterval', 
                    'void', 
                    [param('ns3::Time', 'interval')])
-    ## ap-wifi-mac.h (module 'wifi'): void ns3::ApWifiMac::SetLinkUpCallback(ns3::Callback<void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> linkUp) [member function]
-    cls.add_method('SetLinkUpCallback', 
-                   'void', 
-                   [param('ns3::Callback< void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'linkUp')], 
-                   is_virtual=True)
-    ## ap-wifi-mac.h (module 'wifi'): void ns3::ApWifiMac::SetWifiRemoteStationManager(ns3::Ptr<ns3::WifiRemoteStationManager> stationManager) [member function]
-    cls.add_method('SetWifiRemoteStationManager', 
-                   'void', 
-                   [param('ns3::Ptr< ns3::WifiRemoteStationManager >', 'stationManager')], 
-                   is_virtual=True)
+    ## ap-wifi-mac.h (module 'wifi'): ns3::Time ns3::ApWifiMac::GetBeaconInterval() const [member function]
+    cls.add_method('GetBeaconInterval', 
+                   'ns3::Time', 
+                   [], 
+                   is_const=True)
     ## ap-wifi-mac.h (module 'wifi'): void ns3::ApWifiMac::StartBeaconing() [member function]
     cls.add_method('StartBeaconing', 
                    'void', 
                    [])
-    ## ap-wifi-mac.h (module 'wifi'): bool ns3::ApWifiMac::SupportsSendFrom() const [member function]
-    cls.add_method('SupportsSendFrom', 
-                   'bool', 
-                   [], 
-                   is_const=True, is_virtual=True)
+    ## ap-wifi-mac.h (module 'wifi'): void ns3::ApWifiMac::Receive(ns3::Ptr<ns3::Packet> packet, ns3::WifiMacHeader const * hdr) [member function]
+    cls.add_method('Receive', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Packet >', 'packet'), param('ns3::WifiMacHeader const *', 'hdr')], 
+                   visibility='private', is_virtual=True)
+    ## ap-wifi-mac.h (module 'wifi'): void ns3::ApWifiMac::TxOk(ns3::WifiMacHeader const & hdr) [member function]
+    cls.add_method('TxOk', 
+                   'void', 
+                   [param('ns3::WifiMacHeader const &', 'hdr')], 
+                   visibility='private', is_virtual=True)
+    ## ap-wifi-mac.h (module 'wifi'): void ns3::ApWifiMac::TxFailed(ns3::WifiMacHeader const & hdr) [member function]
+    cls.add_method('TxFailed', 
+                   'void', 
+                   [param('ns3::WifiMacHeader const &', 'hdr')], 
+                   visibility='private', is_virtual=True)
     ## ap-wifi-mac.h (module 'wifi'): void ns3::ApWifiMac::DeaggregateAmsduAndForward(ns3::Ptr<ns3::Packet> aggregatedPacket, ns3::WifiMacHeader const * hdr) [member function]
     cls.add_method('DeaggregateAmsduAndForward', 
                    'void', 
@@ -10569,21 +10576,6 @@ def register_Ns3ApWifiMac_methods(root_module, cls):
     cls.add_method('DoStart', 
                    'void', 
                    [], 
-                   visibility='private', is_virtual=True)
-    ## ap-wifi-mac.h (module 'wifi'): void ns3::ApWifiMac::Receive(ns3::Ptr<ns3::Packet> packet, ns3::WifiMacHeader const * hdr) [member function]
-    cls.add_method('Receive', 
-                   'void', 
-                   [param('ns3::Ptr< ns3::Packet >', 'packet'), param('ns3::WifiMacHeader const *', 'hdr')], 
-                   visibility='private', is_virtual=True)
-    ## ap-wifi-mac.h (module 'wifi'): void ns3::ApWifiMac::TxFailed(ns3::WifiMacHeader const & hdr) [member function]
-    cls.add_method('TxFailed', 
-                   'void', 
-                   [param('ns3::WifiMacHeader const &', 'hdr')], 
-                   visibility='private', is_virtual=True)
-    ## ap-wifi-mac.h (module 'wifi'): void ns3::ApWifiMac::TxOk(ns3::WifiMacHeader const & hdr) [member function]
-    cls.add_method('TxOk', 
-                   'void', 
-                   [param('ns3::WifiMacHeader const &', 'hdr')], 
                    visibility='private', is_virtual=True)
     return
 
