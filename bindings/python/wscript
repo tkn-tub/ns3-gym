@@ -671,7 +671,10 @@ def build(bld):
                     continue
                 if mod.name.endswith('-test'):
                     continue
-                scan_modules.append(mod.name.split('ns3-')[1])
+                bindings_enabled = (mod.name in env.MODULAR_BINDINGS_MODULES)
+                #print mod.name, bindings_enabled
+                if bindings_enabled:
+                    scan_modules.append(mod.name.split('ns3-')[1])
         else:
             scan_modules = Options.options.apiscan.split(',')
         print "Modules to scan: ", scan_modules
