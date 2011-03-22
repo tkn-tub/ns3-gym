@@ -131,7 +131,7 @@ def register_types(module):
     ## point-to-point-grid-helper.h (module 'netanim'): ns3::PointToPointGridHelper [class]
     module.add_class('PointToPointGridHelper')
     ## point-to-point-helper.h (module 'point-to-point'): ns3::PointToPointHelper [class]
-    module.add_class('PointToPointHelper', import_from_module='ns.point-to-point', parent=[root_module['ns3::PcapHelperForDevice'], root_module['ns3::AsciiTraceHelperForDevice']])
+    module.add_class('PointToPointHelper', import_from_module='ns.point_to_point', parent=[root_module['ns3::PcapHelperForDevice'], root_module['ns3::AsciiTraceHelperForDevice']])
     ## point-to-point-star-helper.h (module 'netanim'): ns3::PointToPointStarHelper [class]
     module.add_class('PointToPointStarHelper')
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::Object, ns3::ObjectBase, ns3::ObjectDeleter> [class]

@@ -141,7 +141,7 @@ class PreScanHook:
 
 
             if definition_module != self.module:
-                global_annotations['import_from_module'] = 'ns.%s' % definition_module
+                global_annotations['import_from_module'] = 'ns.%s' % (definition_module.replace('-', '_'),)
 
             if pygccxml_definition.decl_string.startswith('::ns3::SimpleRefCount<'):
                 global_annotations['incref_method'] = 'Ref'
