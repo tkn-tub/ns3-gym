@@ -146,23 +146,42 @@ def register_Ns3EmuHelper_methods(root_module, cls):
     return
 
 def register_Ns3EmuNetDevice_methods(root_module, cls):
-    ## emu-net-device.h: ns3::EmuNetDevice::EmuNetDevice(ns3::EmuNetDevice const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::EmuNetDevice const &', 'arg0')])
+    ## emu-net-device.h: static ns3::TypeId ns3::EmuNetDevice::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
     ## emu-net-device.h: ns3::EmuNetDevice::EmuNetDevice() [constructor]
     cls.add_constructor([])
-    ## emu-net-device.h: void ns3::EmuNetDevice::AddLinkChangeCallback(ns3::Callback<void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> callback) [member function]
-    cls.add_method('AddLinkChangeCallback', 
+    ## emu-net-device.h: void ns3::EmuNetDevice::SetDataRate(ns3::DataRate bps) [member function]
+    cls.add_method('SetDataRate', 
                    'void', 
-                   [param('ns3::Callback< void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'callback')], 
-                   is_virtual=True)
-    ## emu-net-device.h: ns3::Address ns3::EmuNetDevice::GetAddress() const [member function]
-    cls.add_method('GetAddress', 
-                   'ns3::Address', 
+                   [param('ns3::DataRate', 'bps')])
+    ## emu-net-device.h: void ns3::EmuNetDevice::Start(ns3::Time tStart) [member function]
+    cls.add_method('Start', 
+                   'void', 
+                   [param('ns3::Time', 'tStart')])
+    ## emu-net-device.h: void ns3::EmuNetDevice::Stop(ns3::Time tStop) [member function]
+    cls.add_method('Stop', 
+                   'void', 
+                   [param('ns3::Time', 'tStop')])
+    ## emu-net-device.h: void ns3::EmuNetDevice::SetQueue(ns3::Ptr<ns3::Queue> queue) [member function]
+    cls.add_method('SetQueue', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Queue >', 'queue')])
+    ## emu-net-device.h: ns3::Ptr<ns3::Queue> ns3::EmuNetDevice::GetQueue() const [member function]
+    cls.add_method('GetQueue', 
+                   'ns3::Ptr< ns3::Queue >', 
                    [], 
-                   is_const=True, is_virtual=True)
-    ## emu-net-device.h: ns3::Address ns3::EmuNetDevice::GetBroadcast() const [member function]
-    cls.add_method('GetBroadcast', 
-                   'ns3::Address', 
+                   is_const=True)
+    ## emu-net-device.h: void ns3::EmuNetDevice::SetIfIndex(uint32_t const index) [member function]
+    cls.add_method('SetIfIndex', 
+                   'void', 
+                   [param('uint32_t const', 'index')], 
+                   is_virtual=True)
+    ## emu-net-device.h: uint32_t ns3::EmuNetDevice::GetIfIndex() const [member function]
+    cls.add_method('GetIfIndex', 
+                   'uint32_t', 
                    [], 
                    is_const=True, is_virtual=True)
     ## emu-net-device.h: ns3::Ptr<ns3::Channel> ns3::EmuNetDevice::GetChannel() const [member function]
@@ -170,19 +189,49 @@ def register_Ns3EmuNetDevice_methods(root_module, cls):
                    'ns3::Ptr< ns3::Channel >', 
                    [], 
                    is_const=True, is_virtual=True)
-    ## emu-net-device.h: ns3::EmuNetDevice::EncapsulationMode ns3::EmuNetDevice::GetEncapsulationMode() const [member function]
-    cls.add_method('GetEncapsulationMode', 
-                   'ns3::EmuNetDevice::EncapsulationMode', 
-                   [], 
-                   is_const=True)
-    ## emu-net-device.h: uint32_t ns3::EmuNetDevice::GetIfIndex() const [member function]
-    cls.add_method('GetIfIndex', 
-                   'uint32_t', 
+    ## emu-net-device.h: void ns3::EmuNetDevice::SetAddress(ns3::Address address) [member function]
+    cls.add_method('SetAddress', 
+                   'void', 
+                   [param('ns3::Address', 'address')], 
+                   is_virtual=True)
+    ## emu-net-device.h: ns3::Address ns3::EmuNetDevice::GetAddress() const [member function]
+    cls.add_method('GetAddress', 
+                   'ns3::Address', 
                    [], 
                    is_const=True, is_virtual=True)
+    ## emu-net-device.h: bool ns3::EmuNetDevice::SetMtu(uint16_t const mtu) [member function]
+    cls.add_method('SetMtu', 
+                   'bool', 
+                   [param('uint16_t const', 'mtu')], 
+                   is_virtual=True)
     ## emu-net-device.h: uint16_t ns3::EmuNetDevice::GetMtu() const [member function]
     cls.add_method('GetMtu', 
                    'uint16_t', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## emu-net-device.h: bool ns3::EmuNetDevice::IsLinkUp() const [member function]
+    cls.add_method('IsLinkUp', 
+                   'bool', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## emu-net-device.h: void ns3::EmuNetDevice::AddLinkChangeCallback(ns3::Callback<void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> callback) [member function]
+    cls.add_method('AddLinkChangeCallback', 
+                   'void', 
+                   [param('ns3::Callback< void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'callback')], 
+                   is_virtual=True)
+    ## emu-net-device.h: bool ns3::EmuNetDevice::IsBroadcast() const [member function]
+    cls.add_method('IsBroadcast', 
+                   'bool', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## emu-net-device.h: ns3::Address ns3::EmuNetDevice::GetBroadcast() const [member function]
+    cls.add_method('GetBroadcast', 
+                   'ns3::Address', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## emu-net-device.h: bool ns3::EmuNetDevice::IsMulticast() const [member function]
+    cls.add_method('IsMulticast', 
+                   'bool', 
                    [], 
                    is_const=True, is_virtual=True)
     ## emu-net-device.h: ns3::Address ns3::EmuNetDevice::GetMulticast(ns3::Ipv4Address multicastGroup) const [member function]
@@ -195,48 +244,13 @@ def register_Ns3EmuNetDevice_methods(root_module, cls):
                    'ns3::Address', 
                    [param('ns3::Ipv6Address', 'addr')], 
                    is_const=True, is_virtual=True)
-    ## emu-net-device.h: ns3::Ptr<ns3::Node> ns3::EmuNetDevice::GetNode() const [member function]
-    cls.add_method('GetNode', 
-                   'ns3::Ptr< ns3::Node >', 
-                   [], 
-                   is_const=True, is_virtual=True)
-    ## emu-net-device.h: ns3::Ptr<ns3::Queue> ns3::EmuNetDevice::GetQueue() const [member function]
-    cls.add_method('GetQueue', 
-                   'ns3::Ptr< ns3::Queue >', 
-                   [], 
-                   is_const=True)
-    ## emu-net-device.h: static ns3::TypeId ns3::EmuNetDevice::GetTypeId() [member function]
-    cls.add_method('GetTypeId', 
-                   'ns3::TypeId', 
-                   [], 
-                   is_static=True)
-    ## emu-net-device.h: bool ns3::EmuNetDevice::IsBridge() const [member function]
-    cls.add_method('IsBridge', 
-                   'bool', 
-                   [], 
-                   is_const=True, is_virtual=True)
-    ## emu-net-device.h: bool ns3::EmuNetDevice::IsBroadcast() const [member function]
-    cls.add_method('IsBroadcast', 
-                   'bool', 
-                   [], 
-                   is_const=True, is_virtual=True)
-    ## emu-net-device.h: bool ns3::EmuNetDevice::IsLinkUp() const [member function]
-    cls.add_method('IsLinkUp', 
-                   'bool', 
-                   [], 
-                   is_const=True, is_virtual=True)
-    ## emu-net-device.h: bool ns3::EmuNetDevice::IsMulticast() const [member function]
-    cls.add_method('IsMulticast', 
-                   'bool', 
-                   [], 
-                   is_const=True, is_virtual=True)
     ## emu-net-device.h: bool ns3::EmuNetDevice::IsPointToPoint() const [member function]
     cls.add_method('IsPointToPoint', 
                    'bool', 
                    [], 
                    is_const=True, is_virtual=True)
-    ## emu-net-device.h: bool ns3::EmuNetDevice::NeedsArp() const [member function]
-    cls.add_method('NeedsArp', 
+    ## emu-net-device.h: bool ns3::EmuNetDevice::IsBridge() const [member function]
+    cls.add_method('IsBridge', 
                    'bool', 
                    [], 
                    is_const=True, is_virtual=True)
@@ -250,61 +264,45 @@ def register_Ns3EmuNetDevice_methods(root_module, cls):
                    'bool', 
                    [param('ns3::Ptr< ns3::Packet >', 'packet'), param('ns3::Address const &', 'source'), param('ns3::Address const &', 'dest'), param('uint16_t', 'protocolNumber')], 
                    is_virtual=True)
-    ## emu-net-device.h: void ns3::EmuNetDevice::SetAddress(ns3::Address address) [member function]
-    cls.add_method('SetAddress', 
-                   'void', 
-                   [param('ns3::Address', 'address')], 
-                   is_virtual=True)
-    ## emu-net-device.h: void ns3::EmuNetDevice::SetDataRate(ns3::DataRate bps) [member function]
-    cls.add_method('SetDataRate', 
-                   'void', 
-                   [param('ns3::DataRate', 'bps')])
-    ## emu-net-device.h: void ns3::EmuNetDevice::SetEncapsulationMode(ns3::EmuNetDevice::EncapsulationMode mode) [member function]
-    cls.add_method('SetEncapsulationMode', 
-                   'void', 
-                   [param('ns3::EmuNetDevice::EncapsulationMode', 'mode')])
-    ## emu-net-device.h: void ns3::EmuNetDevice::SetIfIndex(uint32_t const index) [member function]
-    cls.add_method('SetIfIndex', 
-                   'void', 
-                   [param('uint32_t const', 'index')], 
-                   is_virtual=True)
-    ## emu-net-device.h: bool ns3::EmuNetDevice::SetMtu(uint16_t const mtu) [member function]
-    cls.add_method('SetMtu', 
-                   'bool', 
-                   [param('uint16_t const', 'mtu')], 
-                   is_virtual=True)
+    ## emu-net-device.h: ns3::Ptr<ns3::Node> ns3::EmuNetDevice::GetNode() const [member function]
+    cls.add_method('GetNode', 
+                   'ns3::Ptr< ns3::Node >', 
+                   [], 
+                   is_const=True, is_virtual=True)
     ## emu-net-device.h: void ns3::EmuNetDevice::SetNode(ns3::Ptr<ns3::Node> node) [member function]
     cls.add_method('SetNode', 
                    'void', 
                    [param('ns3::Ptr< ns3::Node >', 'node')], 
+                   is_virtual=True)
+    ## emu-net-device.h: bool ns3::EmuNetDevice::NeedsArp() const [member function]
+    cls.add_method('NeedsArp', 
+                   'bool', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## emu-net-device.h: void ns3::EmuNetDevice::SetReceiveCallback(ns3::Callback<bool, ns3::Ptr<ns3::NetDevice>, ns3::Ptr<ns3::Packet const>, unsigned short, ns3::Address const&, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> cb) [member function]
+    cls.add_method('SetReceiveCallback', 
+                   'void', 
+                   [param('ns3::Callback< bool, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet const >, unsigned short, ns3::Address const &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'cb')], 
                    is_virtual=True)
     ## emu-net-device.h: void ns3::EmuNetDevice::SetPromiscReceiveCallback(ns3::Callback<bool, ns3::Ptr<ns3::NetDevice>, ns3::Ptr<ns3::Packet const>, unsigned short, ns3::Address const&, ns3::Address const&, ns3::NetDevice::PacketType, ns3::empty, ns3::empty, ns3::empty> cb) [member function]
     cls.add_method('SetPromiscReceiveCallback', 
                    'void', 
                    [param('ns3::Callback< bool, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet const >, unsigned short, ns3::Address const &, ns3::Address const &, ns3::NetDevice::PacketType, ns3::empty, ns3::empty, ns3::empty >', 'cb')], 
                    is_virtual=True)
-    ## emu-net-device.h: void ns3::EmuNetDevice::SetQueue(ns3::Ptr<ns3::Queue> queue) [member function]
-    cls.add_method('SetQueue', 
-                   'void', 
-                   [param('ns3::Ptr< ns3::Queue >', 'queue')])
-    ## emu-net-device.h: void ns3::EmuNetDevice::SetReceiveCallback(ns3::Callback<bool, ns3::Ptr<ns3::NetDevice>, ns3::Ptr<ns3::Packet const>, unsigned short, ns3::Address const&, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> cb) [member function]
-    cls.add_method('SetReceiveCallback', 
-                   'void', 
-                   [param('ns3::Callback< bool, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet const >, unsigned short, ns3::Address const &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'cb')], 
-                   is_virtual=True)
-    ## emu-net-device.h: void ns3::EmuNetDevice::Start(ns3::Time tStart) [member function]
-    cls.add_method('Start', 
-                   'void', 
-                   [param('ns3::Time', 'tStart')])
-    ## emu-net-device.h: void ns3::EmuNetDevice::Stop(ns3::Time tStop) [member function]
-    cls.add_method('Stop', 
-                   'void', 
-                   [param('ns3::Time', 'tStop')])
     ## emu-net-device.h: bool ns3::EmuNetDevice::SupportsSendFrom() const [member function]
     cls.add_method('SupportsSendFrom', 
                    'bool', 
                    [], 
                    is_const=True, is_virtual=True)
+    ## emu-net-device.h: void ns3::EmuNetDevice::SetEncapsulationMode(ns3::EmuNetDevice::EncapsulationMode mode) [member function]
+    cls.add_method('SetEncapsulationMode', 
+                   'void', 
+                   [param('ns3::EmuNetDevice::EncapsulationMode', 'mode')])
+    ## emu-net-device.h: ns3::EmuNetDevice::EncapsulationMode ns3::EmuNetDevice::GetEncapsulationMode() const [member function]
+    cls.add_method('GetEncapsulationMode', 
+                   'ns3::EmuNetDevice::EncapsulationMode', 
+                   [], 
+                   is_const=True)
     ## emu-net-device.h: void ns3::EmuNetDevice::DoDispose() [member function]
     cls.add_method('DoDispose', 
                    'void', 

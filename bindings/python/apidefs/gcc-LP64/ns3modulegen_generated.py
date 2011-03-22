@@ -15,7 +15,6 @@ import sys
 import ns3_module_core
 import ns3_module_core_test
 import ns3_module_network
-import ns3_module_test
 import ns3_module_visualizer
 import ns3_module_bridge
 import ns3_module_contrib
@@ -49,6 +48,7 @@ import ns3_module_ns3wifi_test
 import ns3_module_wimax
 import ns3_module_ns3tcp
 import ns3_module_olsr
+import ns3_module_test
 import ns3_module_lte
 import ns3_module_ns3tcp_test
 
@@ -92,17 +92,6 @@ def register_types(module):
         ns3_module_network__local.register_types(module)
     
     root_module.end_section('ns3_module_network')
-    root_module.begin_section('ns3_module_test')
-    ns3_module_test.register_types(module)
-    
-    try:
-        import ns3_module_test__local
-    except ImportError:
-        pass
-    else:
-        ns3_module_test__local.register_types(module)
-    
-    root_module.end_section('ns3_module_test')
     root_module.begin_section('ns3_module_visualizer')
     ns3_module_visualizer.register_types(module)
     
@@ -466,6 +455,17 @@ def register_types(module):
         ns3_module_olsr__local.register_types(module)
     
     root_module.end_section('ns3_module_olsr')
+    root_module.begin_section('ns3_module_test')
+    ns3_module_test.register_types(module)
+    
+    try:
+        import ns3_module_test__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_test__local.register_types(module)
+    
+    root_module.end_section('ns3_module_test')
     root_module.begin_section('ns3_module_lte')
     ns3_module_lte.register_types(module)
     
@@ -634,17 +634,6 @@ def register_methods(root_module):
         ns3_module_network__local.register_methods(root_module)
     
     root_module.end_section('ns3_module_network')
-    root_module.begin_section('ns3_module_test')
-    ns3_module_test.register_methods(root_module)
-    
-    try:
-        import ns3_module_test__local
-    except ImportError:
-        pass
-    else:
-        ns3_module_test__local.register_methods(root_module)
-    
-    root_module.end_section('ns3_module_test')
     root_module.begin_section('ns3_module_visualizer')
     ns3_module_visualizer.register_methods(root_module)
     
@@ -1008,6 +997,17 @@ def register_methods(root_module):
         ns3_module_olsr__local.register_methods(root_module)
     
     root_module.end_section('ns3_module_olsr')
+    root_module.begin_section('ns3_module_test')
+    ns3_module_test.register_methods(root_module)
+    
+    try:
+        import ns3_module_test__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_test__local.register_methods(root_module)
+    
+    root_module.end_section('ns3_module_test')
     root_module.begin_section('ns3_module_lte')
     ns3_module_lte.register_methods(root_module)
     
@@ -1067,17 +1067,6 @@ def register_functions(root_module):
         ns3_module_network__local.register_functions(root_module)
     
     root_module.end_section('ns3_module_network')
-    root_module.begin_section('ns3_module_test')
-    ns3_module_test.register_functions(root_module)
-    
-    try:
-        import ns3_module_test__local
-    except ImportError:
-        pass
-    else:
-        ns3_module_test__local.register_functions(root_module)
-    
-    root_module.end_section('ns3_module_test')
     root_module.begin_section('ns3_module_visualizer')
     ns3_module_visualizer.register_functions(root_module)
     
@@ -1441,6 +1430,17 @@ def register_functions(root_module):
         ns3_module_olsr__local.register_functions(root_module)
     
     root_module.end_section('ns3_module_olsr')
+    root_module.begin_section('ns3_module_test')
+    ns3_module_test.register_functions(root_module)
+    
+    try:
+        import ns3_module_test__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_test__local.register_functions(root_module)
+    
+    root_module.end_section('ns3_module_test')
     root_module.begin_section('ns3_module_lte')
     ns3_module_lte.register_functions(root_module)
     

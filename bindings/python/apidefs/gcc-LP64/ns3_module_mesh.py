@@ -651,8 +651,6 @@ def register_Ns3MeshPointDevice_methods(root_module, cls):
     return
 
 def register_Ns3MeshWifiInterfaceMac_methods(root_module, cls):
-    ## mesh-wifi-interface-mac.h: ns3::MeshWifiInterfaceMac::MeshWifiInterfaceMac(ns3::MeshWifiInterfaceMac const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::MeshWifiInterfaceMac const &', 'arg0')])
     ## mesh-wifi-interface-mac.h: ns3::MeshWifiInterfaceMac::MeshWifiInterfaceMac() [constructor]
     cls.add_constructor([])
     ## mesh-wifi-interface-mac.h: bool ns3::MeshWifiInterfaceMac::CheckSupportedRates(ns3::SupportedRates rates) const [member function]
