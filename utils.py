@@ -1,5 +1,9 @@
 #! /usr/bin/env python
 
+# These methods are used by test.py and waf to look for and read the
+# .ns3rc configuration file, which is used to specify the modules that
+# should be enabled
+
 import os
 import sys
 
