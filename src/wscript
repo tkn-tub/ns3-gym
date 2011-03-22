@@ -54,7 +54,7 @@ all_modules = (
     'lte',
     'mpi',
     'topology-read',
-    'contrib/energy',
+    'energy',
     'tools/visualizer',
     )
 
