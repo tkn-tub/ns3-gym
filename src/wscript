@@ -49,7 +49,7 @@ all_modules = (
     'test',
     'test/ns3tcp',
     'test/ns3wifi',
-    'contrib/flow-monitor',
+    'flow-monitor',
     'wimax',
     'lte',
     'mpi',
