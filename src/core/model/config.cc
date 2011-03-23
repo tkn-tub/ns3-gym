@@ -22,6 +22,7 @@
 #include "object.h"
 #include "global-value.h"
 #include "object-vector.h"
+#include "object-map.h"
 #include "names.h"
 #include "pointer.h"
 #include "log.h"
@@ -230,6 +231,7 @@ private:
   void Canonicalize (void);
   void DoResolve (std::string path, Ptr<Object> root);
   void DoArrayResolve (std::string path, const ObjectVectorValue &vector);
+  void DoMapResolve (std::string path, const ObjectMapValue &vector);
   void DoResolveOne (Ptr<Object> object);
   std::string GetResolvedPath (void) const;
   virtual void DoOne (Ptr<Object> object, std::string path) = 0;
@@ -417,6 +419,17 @@ Resolver::DoResolve (std::string path, Ptr<Object> root)
 	  DoArrayResolve (pathLeft, vector);
 	  m_workStack.pop_back ();
 	}
+      // attempt to cast to an object map.
+      const ObjectMapChecker *mapChecker = dynamic_cast<const ObjectMapChecker *> (PeekPointer (info.checker));
+      if (mapChecker != 0)
+        {
+          NS_LOG_DEBUG ("GetAttribute(map)="<<item<<" on path="<<GetResolvedPath ());
+          ObjectMapValue map;
+          root->GetAttribute (item, map);
+          m_workStack.push_back (item);
+          DoMapResolve (pathLeft, map);
+          m_workStack.pop_back ();
+        }
       // this could be anything else and we don't know what to do with it.
       // So, we just ignore it.
     }
@@ -448,6 +461,35 @@ Resolver::DoArrayResolve (std::string path, const ObjectVectorValue &vector)
 	  DoResolve (pathLeft, vector.Get (i));
 	  m_workStack.pop_back ();
 	}
+    }
+}
+
+void
+Resolver::DoMapResolve (std::string path, const ObjectMapValue &map)
+{
+  NS_ASSERT (path != "");
+  std::string::size_type tmp;
+  tmp = path.find ("/");
+  NS_ASSERT (tmp == 0);
+  std::string::size_type next = path.find ("/", 1);
+  if (next == std::string::npos)
+    {
+      NS_FATAL_ERROR ("map path includes no index data on path=\""<<path<<"\"");
+    }
+  std::string item = path.substr (1, next-1);
+  std::string pathLeft = path.substr (next, path.size ()-next);
+
+  ArrayMatcher matcher = ArrayMatcher (item);
+  for (ObjectMapValue::Iterator it = map.Begin () ; it != map.End(); it++ )
+    {
+      if (matcher.Matches ((*it).first))
+        {
+          std::ostringstream oss;
+          oss << (*it).first;
+          m_workStack.push_back (oss.str ());
+          DoResolve (pathLeft, (*it).second);
+          m_workStack.pop_back ();
+        }
     }
 }
 

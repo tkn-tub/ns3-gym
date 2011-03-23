@@ -161,6 +161,7 @@ AttributeIterator::StartVisitObject (Ptr<Object> object)
 {
   m_currentPath.push_back ("$" + object->GetInstanceTypeId ().GetName ());
   DoStartVisitObject (object);
+  NS_LOG_INFO(this << GetCurrentPath() );
 }
 void 
 AttributeIterator::EndVisitObject (void)
@@ -174,6 +175,7 @@ AttributeIterator::StartVisitPointerAttribute (Ptr<Object> object, std::string n
   m_currentPath.push_back (name);
   m_currentPath.push_back ("$" + value->GetInstanceTypeId ().GetName ());
   DoStartVisitPointerAttribute (object, name, value);
+  NS_LOG_INFO(this << GetCurrentPath() );
 }
 void 
 AttributeIterator::EndVisitPointerAttribute (void)
@@ -187,6 +189,7 @@ AttributeIterator::StartVisitArrayAttribute (Ptr<Object> object, std::string nam
 {
   m_currentPath.push_back (name);
   DoStartVisitArrayAttribute (object, name, vector);
+  NS_LOG_INFO(this << GetCurrentPath() );
 }
 void 
 AttributeIterator::EndVisitArrayAttribute (void)
@@ -203,6 +206,7 @@ AttributeIterator::StartVisitArrayItem (const ObjectVectorValue &vector, uint32_
   m_currentPath.push_back (oss.str ());
   m_currentPath.push_back ("$" + item->GetInstanceTypeId ().GetName ());
   DoStartVisitArrayItem (vector, index, item);
+  NS_LOG_INFO(this << GetCurrentPath() );
 }
 void 
 AttributeIterator::EndVisitArrayItem (void)
@@ -217,6 +221,7 @@ AttributeIterator::StartVisitMapAttribute (Ptr<Object> object, std::string name,
 {
   m_currentPath.push_back (name);
   DoStartVisitMapAttribute (object, name, map);
+  NS_LOG_INFO(this << GetCurrentPath() );
 }
 
 void
@@ -234,6 +239,7 @@ AttributeIterator::StartVisitMapItem (const ObjectMapValue &map, uint32_t index,
   m_currentPath.push_back (oss.str ());
   m_currentPath.push_back ("$" + item->GetInstanceTypeId ().GetName ());
   DoStartVisitMapItem (map, index, item);
+  NS_LOG_INFO(this << GetCurrentPath() );
 }
 
 void
