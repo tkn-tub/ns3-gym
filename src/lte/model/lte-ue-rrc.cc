@@ -67,6 +67,7 @@ UeMemberLteUeCmacSapUser::LcConfigCompleted ()
 // ue RRC methods
 /////////////////////////////
 
+NS_OBJECT_ENSURE_REGISTERED (LteUeRrc);
 
 LteUeRrc::LteUeRrc ()
   : m_cmacSapProvider (0),

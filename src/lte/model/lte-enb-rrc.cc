@@ -34,6 +34,8 @@ namespace ns3 {
 
 
 
+
+
 // ///////////////////////////
 // CMAC SAP forwarder
 // ///////////////////////////
@@ -83,6 +85,8 @@ private:
 
 };
 
+NS_OBJECT_ENSURE_REGISTERED(EnbRadioBearerInfo);
+
 EnbRadioBearerInfo::EnbRadioBearerInfo (void)
 {
   // Nothing to do here
@@ -100,7 +104,7 @@ TypeId EnbRadioBearerInfo::GetTypeId (void)
     TypeId ("ns3::EnbRadioBearerInfo")
     .SetParent<Object> ()
     .AddConstructor<EnbRadioBearerInfo> ()
-    .AddAttribute ("RLC", "RLC.",
+    .AddAttribute ("LteRlc", "RLC instance of the radio bearer.",
                    PointerValue (),
                    MakePointerAccessor (&EnbRadioBearerInfo::m_rlc),
                    MakePointerChecker<LteRlc> ())
@@ -119,6 +123,7 @@ void EnbRadioBearerInfo::SetRlc(Ptr<LteRlc> rlc)
  * Manages all the radio bearer information possessed by the ENB RRC for a single UE
  *
  */
+
 class UeInfo : public Object
 {
 public:
@@ -157,6 +162,8 @@ private:
   std::map <uint8_t, Ptr<EnbRadioBearerInfo> > m_rbMap;
   uint8_t m_lastAllocatedId;
 };
+
+NS_OBJECT_ENSURE_REGISTERED(UeInfo);
 
 UeInfo::UeInfo (void) :
     m_lastAllocatedId (0)
@@ -228,6 +235,7 @@ UeInfo::RemoveRadioBearer (uint8_t lcid)
 // eNB RRC methods
 // ///////////////////////////
 
+NS_OBJECT_ENSURE_REGISTERED (LteEnbRrc);
 
 LteEnbRrc::LteEnbRrc ()
   : m_cmacSapProvider (0),
@@ -362,7 +370,7 @@ LteEnbRrc::SetupRadioBearer (uint16_t rnti, EpsBearer bearer)
   // create RLC instance
   // for now we support RLC SM only
 
-  Ptr<LteRlcSm> rlc = CreateObject<LteRlcSm> ();
+  Ptr<LteRlc> rlc = CreateObject<LteRlcSm> ();
   rlc->SetLteMacSapProvider (m_macSapProvider);
   rlc->SetRnti (rnti);
 

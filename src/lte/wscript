@@ -2,7 +2,7 @@
 
 def build(bld):
 
-    module = bld.create_ns3_module('lte', ['core', 'network', 'spectrum'])
+    module = bld.create_ns3_module('lte', ['core', 'network', 'spectrum', 'stats'])
     module.source = [
         'model/lte-spectrum-phy.cc',
         'model/lte-phy.cc',
@@ -27,6 +27,7 @@ def build(bld):
         'model/lte-ue-net-device.cc',
         'model/ideal-control-messages.cc',
         'helper/lena-helper.cc',
+        'helper/rlc-stats-calculator.cc',
         'model/ff-mac-csched-sap.cc',
         'model/ff-mac-sched-sap.cc',
         'model/lte-mac-sap.cc',
@@ -69,6 +70,7 @@ def build(bld):
         'model/lte-ue-net-device.h',
         'model/ideal-control-messages.h',
         'helper/lena-helper.h',
+        'helper/rlc-stats-calculator.h',
         'model/ff-mac-common.h',
         'model/ff-mac-csched-sap.h',
         'model/ff-mac-sched-sap.h',

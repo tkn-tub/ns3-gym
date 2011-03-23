@@ -258,6 +258,8 @@ LenaHelper::EnableLogComponents (void)
   LogComponentEnable ("LteNetDevice", LOG_LEVEL_ALL);
   LogComponentEnable ("LteUeNetDevice", LOG_LEVEL_ALL);
   LogComponentEnable ("LteEnbNetDevice", LOG_LEVEL_ALL);
+
+  LogComponentEnable ("RlcStatsCalculator", LOG_LEVEL_ALL);
 }
 
 

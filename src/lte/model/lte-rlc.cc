@@ -78,7 +78,7 @@ LteRlcSpecificLteMacSapUser::ReceivePdu (Ptr<Packet> p)
 
 
 ///////////////////////////////////////
-
+NS_OBJECT_ENSURE_REGISTERED (LteRlc);
 
 LteRlc::LteRlc ()
   : m_macSapProvider (0),
@@ -91,7 +91,7 @@ LteRlc::LteRlc ()
 
 TypeId LteRlc::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("LteRlc")
+  static TypeId tid = TypeId ("ns3::LteRlc")
     .SetParent<Object> ()
     .AddTraceSource ("TxPDU",
                      "PDU transmission notified to the MAC.",
@@ -143,8 +143,11 @@ LteRlc::GetLteMacSapUser ()
 
 // //////////////////////////////////////
 
+NS_OBJECT_ENSURE_REGISTERED (LteRlcSm);
+
 LteRlcSm::LteRlcSm ()
 {
+
   NS_LOG_FUNCTION (this);
   Simulator::ScheduleNow (&LteRlcSm::Start, this);
 }
@@ -154,9 +157,10 @@ LteRlcSm::~LteRlcSm ()
   NS_LOG_FUNCTION (this);
 }
 
-TypeId LteRlcSm::GetTypeId (void)
+TypeId
+LteRlcSm::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("LteRlcSm")
+  static TypeId tid = TypeId ("ns3::LteRlcSm")
     .SetParent<LteRlc> ()
     .AddConstructor<LteRlcSm> ()
     ;
@@ -166,23 +170,20 @@ TypeId LteRlcSm::GetTypeId (void)
 void
 LteRlcSm::DoReceivePdu (Ptr<Packet> p)
 {
-  NS_LOG_FUNCTION (this << p);
-
   // RLC Performance evaluation
   RlcTag rlcTag;
-  Time t;
+  Time delay;
   if (p->FindFirstMatchingByteTag(rlcTag))
     {
-      t = Simulator::Now() - rlcTag.getSenderTimestamp ();
+      delay = Simulator::Now() - rlcTag.getSenderTimestamp ();
     }
-
-  m_rxPdu(m_rnti, m_lcid, p->GetSize (), t.GetNanoSeconds () );
+  NS_LOG_FUNCTION (this << m_rnti << (uint32_t) m_lcid << p->GetSize () << delay.GetNanoSeconds ());
+  m_rxPdu(m_rnti, m_lcid, p->GetSize (), delay.GetNanoSeconds () );
 }
 
 void
 LteRlcSm::DoNotifyTxOpportunity (uint32_t bytes)
 {
-  NS_LOG_FUNCTION (this << bytes);
   LteMacSapProvider::TransmitPduParameters params;
   params.pdu = Create<Packet> (bytes);
   params.rnti = m_rnti;
@@ -191,6 +192,7 @@ LteRlcSm::DoNotifyTxOpportunity (uint32_t bytes)
   // RLC Performance evaluation
   RlcTag tag (Simulator::Now());
   params.pdu->AddByteTag (tag);
+  NS_LOG_FUNCTION (this << m_rnti << (uint32_t) m_lcid << bytes);
   m_txPdu(m_rnti, m_lcid, bytes);
 
   m_macSapProvider->TransmitPdu (params);

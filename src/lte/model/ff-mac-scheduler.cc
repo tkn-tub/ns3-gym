@@ -26,6 +26,8 @@ NS_LOG_COMPONENT_DEFINE ("FfMacScheduler");
 
 namespace ns3 {
 
+NS_OBJECT_ENSURE_REGISTERED (FfMacScheduler);
+
 
 FfMacScheduler::~FfMacScheduler ()
 {
@@ -41,7 +43,7 @@ FfMacScheduler::DoDispose ()
 TypeId
 FfMacScheduler::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("FfMacScheduler")
+  static TypeId tid = TypeId ("ns3::FfMacScheduler")
     .SetParent<Object> ();
   return tid;
 }
