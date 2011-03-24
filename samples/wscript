@@ -17,7 +17,7 @@ def build(bld):
     obj = bld.create_ns3_program('main-ptr', ['core'] )
     obj.source = 'main-ptr.cc'
 
-    obj = bld.create_ns3_program('main-random-variable', ['core', 'contrib'])
+    obj = bld.create_ns3_program('main-random-variable', ['core', 'config-store', 'tools'])
     obj.source = 'main-random-variable.cc'
 
     obj = bld.create_ns3_program('main-packet-header', ['common', 'core'])
@@ -47,7 +47,7 @@ def build(bld):
     obj.source = 'main-random-walk.cc'
 
     obj = bld.create_ns3_program('main-propagation-loss',
-                                 ['core', 'mobility', 'contrib', 'propagation'])
+                                 ['core', 'mobility', 'config-store', 'tools', 'propagation'])
     obj.source = 'main-propagation-loss.cc'
 
     obj = bld.create_ns3_program('sample-random-variable',

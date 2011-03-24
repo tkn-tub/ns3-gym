@@ -659,7 +659,7 @@ file to the scratch directory:::
 Let's edit it to add the ConfigStore feature. First, add an include statement to
 include the contrib module, and then add these lines:::
 
-    #include "contrib-module.h"
+    #include "ns3/config-store-module.h"
     ...
     int main (...)
     {
@@ -725,7 +725,7 @@ write out the resulting attributes to a separate file called
 is sometimes helpful to run the program to generate an output xml file first,
 then hand-edit that file and re-input it for the next simulation run).::
 
-    #include "contrib-module.h"
+    #include "ns3/config-store-module.h"
     ...
     int main (...)
     {

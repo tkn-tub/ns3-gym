@@ -17,20 +17,21 @@ import ns3_module_core_test
 import ns3_module_network
 import ns3_module_visualizer
 import ns3_module_bridge
-import ns3_module_contrib
+import ns3_module_config_store
 import ns3_module_emu
 import ns3_module_mobility
 import ns3_module_mpi
 import ns3_module_network_test
 import ns3_module_stats
+import ns3_module_tools
 import ns3_module_topology_read
 import ns3_module_propagation
 import ns3_module_internet
 import ns3_module_point_to_point
+import ns3_module_flow_monitor
 import ns3_module_wifi
 import ns3_module_applications
 import ns3_module_click
-import ns3_module_flow_monitor
 import ns3_module_nix_vector_routing
 import ns3_module_openflow
 import ns3_module_tap_bridge
@@ -114,17 +115,17 @@ def register_types(module):
         ns3_module_bridge__local.register_types(module)
     
     root_module.end_section('ns3_module_bridge')
-    root_module.begin_section('ns3_module_contrib')
-    ns3_module_contrib.register_types(module)
+    root_module.begin_section('ns3_module_config_store')
+    ns3_module_config_store.register_types(module)
     
     try:
-        import ns3_module_contrib__local
+        import ns3_module_config_store__local
     except ImportError:
         pass
     else:
-        ns3_module_contrib__local.register_types(module)
+        ns3_module_config_store__local.register_types(module)
     
-    root_module.end_section('ns3_module_contrib')
+    root_module.end_section('ns3_module_config_store')
     root_module.begin_section('ns3_module_emu')
     ns3_module_emu.register_types(module)
     
@@ -180,6 +181,17 @@ def register_types(module):
         ns3_module_stats__local.register_types(module)
     
     root_module.end_section('ns3_module_stats')
+    root_module.begin_section('ns3_module_tools')
+    ns3_module_tools.register_types(module)
+    
+    try:
+        import ns3_module_tools__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_tools__local.register_types(module)
+    
+    root_module.end_section('ns3_module_tools')
     root_module.begin_section('ns3_module_topology_read')
     ns3_module_topology_read.register_types(module)
     
@@ -224,6 +236,17 @@ def register_types(module):
         ns3_module_point_to_point__local.register_types(module)
     
     root_module.end_section('ns3_module_point_to_point')
+    root_module.begin_section('ns3_module_flow_monitor')
+    ns3_module_flow_monitor.register_types(module)
+    
+    try:
+        import ns3_module_flow_monitor__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_flow_monitor__local.register_types(module)
+    
+    root_module.end_section('ns3_module_flow_monitor')
     root_module.begin_section('ns3_module_wifi')
     ns3_module_wifi.register_types(module)
     
@@ -257,17 +280,6 @@ def register_types(module):
         ns3_module_click__local.register_types(module)
     
     root_module.end_section('ns3_module_click')
-    root_module.begin_section('ns3_module_flow_monitor')
-    ns3_module_flow_monitor.register_types(module)
-    
-    try:
-        import ns3_module_flow_monitor__local
-    except ImportError:
-        pass
-    else:
-        ns3_module_flow_monitor__local.register_types(module)
-    
-    root_module.end_section('ns3_module_flow_monitor')
     root_module.begin_section('ns3_module_nix_vector_routing')
     ns3_module_nix_vector_routing.register_types(module)
     
@@ -656,17 +668,17 @@ def register_methods(root_module):
         ns3_module_bridge__local.register_methods(root_module)
     
     root_module.end_section('ns3_module_bridge')
-    root_module.begin_section('ns3_module_contrib')
-    ns3_module_contrib.register_methods(root_module)
+    root_module.begin_section('ns3_module_config_store')
+    ns3_module_config_store.register_methods(root_module)
     
     try:
-        import ns3_module_contrib__local
+        import ns3_module_config_store__local
     except ImportError:
         pass
     else:
-        ns3_module_contrib__local.register_methods(root_module)
+        ns3_module_config_store__local.register_methods(root_module)
     
-    root_module.end_section('ns3_module_contrib')
+    root_module.end_section('ns3_module_config_store')
     root_module.begin_section('ns3_module_emu')
     ns3_module_emu.register_methods(root_module)
     
@@ -722,6 +734,17 @@ def register_methods(root_module):
         ns3_module_stats__local.register_methods(root_module)
     
     root_module.end_section('ns3_module_stats')
+    root_module.begin_section('ns3_module_tools')
+    ns3_module_tools.register_methods(root_module)
+    
+    try:
+        import ns3_module_tools__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_tools__local.register_methods(root_module)
+    
+    root_module.end_section('ns3_module_tools')
     root_module.begin_section('ns3_module_topology_read')
     ns3_module_topology_read.register_methods(root_module)
     
@@ -766,6 +789,17 @@ def register_methods(root_module):
         ns3_module_point_to_point__local.register_methods(root_module)
     
     root_module.end_section('ns3_module_point_to_point')
+    root_module.begin_section('ns3_module_flow_monitor')
+    ns3_module_flow_monitor.register_methods(root_module)
+    
+    try:
+        import ns3_module_flow_monitor__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_flow_monitor__local.register_methods(root_module)
+    
+    root_module.end_section('ns3_module_flow_monitor')
     root_module.begin_section('ns3_module_wifi')
     ns3_module_wifi.register_methods(root_module)
     
@@ -799,17 +833,6 @@ def register_methods(root_module):
         ns3_module_click__local.register_methods(root_module)
     
     root_module.end_section('ns3_module_click')
-    root_module.begin_section('ns3_module_flow_monitor')
-    ns3_module_flow_monitor.register_methods(root_module)
-    
-    try:
-        import ns3_module_flow_monitor__local
-    except ImportError:
-        pass
-    else:
-        ns3_module_flow_monitor__local.register_methods(root_module)
-    
-    root_module.end_section('ns3_module_flow_monitor')
     root_module.begin_section('ns3_module_nix_vector_routing')
     ns3_module_nix_vector_routing.register_methods(root_module)
     
@@ -1089,17 +1112,17 @@ def register_functions(root_module):
         ns3_module_bridge__local.register_functions(root_module)
     
     root_module.end_section('ns3_module_bridge')
-    root_module.begin_section('ns3_module_contrib')
-    ns3_module_contrib.register_functions(root_module)
+    root_module.begin_section('ns3_module_config_store')
+    ns3_module_config_store.register_functions(root_module)
     
     try:
-        import ns3_module_contrib__local
+        import ns3_module_config_store__local
     except ImportError:
         pass
     else:
-        ns3_module_contrib__local.register_functions(root_module)
+        ns3_module_config_store__local.register_functions(root_module)
     
-    root_module.end_section('ns3_module_contrib')
+    root_module.end_section('ns3_module_config_store')
     root_module.begin_section('ns3_module_emu')
     ns3_module_emu.register_functions(root_module)
     
@@ -1155,6 +1178,17 @@ def register_functions(root_module):
         ns3_module_stats__local.register_functions(root_module)
     
     root_module.end_section('ns3_module_stats')
+    root_module.begin_section('ns3_module_tools')
+    ns3_module_tools.register_functions(root_module)
+    
+    try:
+        import ns3_module_tools__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_tools__local.register_functions(root_module)
+    
+    root_module.end_section('ns3_module_tools')
     root_module.begin_section('ns3_module_topology_read')
     ns3_module_topology_read.register_functions(root_module)
     
@@ -1199,6 +1233,17 @@ def register_functions(root_module):
         ns3_module_point_to_point__local.register_functions(root_module)
     
     root_module.end_section('ns3_module_point_to_point')
+    root_module.begin_section('ns3_module_flow_monitor')
+    ns3_module_flow_monitor.register_functions(root_module)
+    
+    try:
+        import ns3_module_flow_monitor__local
+    except ImportError:
+        pass
+    else:
+        ns3_module_flow_monitor__local.register_functions(root_module)
+    
+    root_module.end_section('ns3_module_flow_monitor')
     root_module.begin_section('ns3_module_wifi')
     ns3_module_wifi.register_functions(root_module)
     
@@ -1232,17 +1277,6 @@ def register_functions(root_module):
         ns3_module_click__local.register_functions(root_module)
     
     root_module.end_section('ns3_module_click')
-    root_module.begin_section('ns3_module_flow_monitor')
-    ns3_module_flow_monitor.register_functions(root_module)
-    
-    try:
-        import ns3_module_flow_monitor__local
-    except ImportError:
-        pass
-    else:
-        ns3_module_flow_monitor__local.register_functions(root_module)
-    
-    root_module.end_section('ns3_module_flow_monitor')
     root_module.begin_section('ns3_module_nix_vector_routing')
     ns3_module_nix_vector_routing.register_functions(root_module)
     

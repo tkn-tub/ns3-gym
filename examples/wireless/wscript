@@ -5,13 +5,13 @@ def build(bld):
                                                     'internet', 'csma', 'olsr'])
     obj.source = 'mixed-wireless.cc'
 
-    obj = bld.create_ns3_program('wifi-adhoc', ['core', 'mobility', 'wifi', 'applications', 'contrib'])
+    obj = bld.create_ns3_program('wifi-adhoc', ['core', 'mobility', 'wifi', 'applications', 'tools'])
     obj.source = 'wifi-adhoc.cc'
 
-    obj = bld.create_ns3_program('wifi-clear-channel-cmu', ['internet', 'mobility', 'wifi', 'contrib'])
+    obj = bld.create_ns3_program('wifi-clear-channel-cmu', ['internet', 'mobility', 'wifi', 'tools'])
     obj.source = 'wifi-clear-channel-cmu.cc'
 
-    obj = bld.create_ns3_program('wifi-ap', ['core', 'mobility', 'wifi', 'applications', 'contrib'])
+    obj = bld.create_ns3_program('wifi-ap', ['core', 'mobility', 'wifi', 'applications', 'config-store', 'tools'])
     obj.source = 'wifi-ap.cc'
 
     obj = bld.create_ns3_program('wifi-wired-bridging', ['internet', 'mobility', 'wifi', 'csma', 'bridge', 'applications'])
@@ -20,25 +20,25 @@ def build(bld):
     obj = bld.create_ns3_program('simple-wifi-frame-aggregation', ['internet', 'mobility', 'wifi', 'applications'])
     obj.source = 'simple-wifi-frame-aggregation.cc'
 
-    obj = bld.create_ns3_program('multirate', ['internet', 'mobility', 'wifi', 'contrib', 'flow-monitor', 'olsr', 'applications', 'point-to-point'])
+    obj = bld.create_ns3_program('multirate', ['internet', 'mobility', 'wifi', 'tools', 'flow-monitor', 'olsr', 'applications', 'point-to-point'])
     obj.source = 'multirate.cc'
 
-    obj = bld.create_ns3_program('wifi-simple-adhoc', ['internet', 'mobility', 'wifi', 'contrib'])
+    obj = bld.create_ns3_program('wifi-simple-adhoc', ['internet', 'mobility', 'wifi', 'config-store', 'tools'])
     obj.source = 'wifi-simple-adhoc.cc'
 
-    obj = bld.create_ns3_program('wifi-simple-adhoc-grid', ['internet', 'mobility', 'wifi', 'olsr', 'contrib', 'point-to-point'])
+    obj = bld.create_ns3_program('wifi-simple-adhoc-grid', ['internet', 'mobility', 'wifi', 'olsr', 'config-store', 'tools', 'point-to-point'])
     obj.source = 'wifi-simple-adhoc-grid.cc'
 
     obj = bld.create_ns3_program('wifi-simple-infra', ['internet', 'mobility', 'wifi'])
     obj.source = 'wifi-simple-infra.cc'
 
-    obj = bld.create_ns3_program('wifi-simple-interference', ['internet', 'mobility', 'wifi', 'contrib'])
+    obj = bld.create_ns3_program('wifi-simple-interference', ['internet', 'mobility', 'wifi', 'config-store', 'tools'])
     obj.source = 'wifi-simple-interference.cc'
 
     obj = bld.create_ns3_program('wifi-blockack', ['internet', 'mobility', 'wifi', 'applications'])
     obj.source = 'wifi-blockack.cc'
 
-    obj = bld.create_ns3_program('ofdm-validation', ['core', 'mobility', 'wifi', 'contrib'])
+    obj = bld.create_ns3_program('ofdm-validation', ['core', 'mobility', 'wifi', 'config-store', 'tools'])
     obj.source = 'ofdm-validation.cc'
 
     obj = bld.create_ns3_program('wifi-hidden-terminal', ['internet', 'mobility', 'wifi', 'applications', 'propagation', 'flow-monitor'])

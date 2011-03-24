@@ -14,46 +14,37 @@ def configure(conf):
     conf.report_optional_feature("XmlIo", "XmlIo",
                                  conf.env['ENABLE_LIBXML2'],
                                  "library 'libxml-2.0 >= 2.7' not found")
-    conf.write_config_header('ns3/contrib-config.h', top=True)
+    conf.write_config_header('ns3/config-store-config.h', top=True)
 
 
 def build(bld):
-    module = bld.create_ns3_module('contrib', ['core', 'network'])
+    module = bld.create_ns3_module('config-store', ['core', 'network'])
     module.source = [
-        'event-garbage-collector.cc',
-        'gnuplot.cc',
-        'delay-jitter-estimation.cc',
-        'attribute-iterator.cc',
-        'config-store.cc',
-        'flow-id-tag.cc',
-        'attribute-default-iterator.cc',
-        'file-config.cc',
-        'raw-text-config.cc',
+        'model/attribute-iterator.cc',
+        'model/config-store.cc',
+        'model/attribute-default-iterator.cc',
+        'model/file-config.cc',
+        'model/raw-text-config.cc',
         ]
 
     headers = bld.new_task_gen('ns3header')
-    headers.module = 'contrib'
+    headers.module = 'config-store'
     headers.source = [
-        'event-garbage-collector.h',
-        'gnuplot.h',
-        'delay-jitter-estimation.h',
-        'file-config.h',
-        'config-store.h',
-        'flow-id-tag.h',
-        'average.h',
+        'model/file-config.h',
+        'model/config-store.h',
         ]
 
     if bld.env['ENABLE_GTK_CONFIG_STORE']:
-        headers.source.append ('gtk-config-store.h')
-        module.source.extend (['gtk-config-store.cc',
-                               'model-node-creator.cc',
-                               'model-typeid-creator.cc',
-                               'display-functions.cc',
+        headers.source.append ('model/gtk-config-store.h')
+        module.source.extend (['model/gtk-config-store.cc',
+                               'model/model-node-creator.cc',
+                               'model/model-typeid-creator.cc',
+                               'model/display-functions.cc',
                                ])
         module.uselib = 'GTK_CONFIG_STORE'
 
     if bld.env['ENABLE_LIBXML2']:
-        module.source.append ('xml-config.cc')
+        module.source.append ('model/xml-config.cc')
         if bld.env['ENABLE_GTK_CONFIG_STORE']:
             module.uselib = module.uselib + ' LIBXML2'
         else:

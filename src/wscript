@@ -23,7 +23,7 @@ except NameError:
 all_modules = (
     'core',
     'network',
-    'contrib',
+    'config-store',
     'internet',
     'propagation',
     'point-to-point',
@@ -55,6 +55,7 @@ all_modules = (
     'mpi',
     'topology-read',
     'energy',
+    'tools',
     'tools/visualizer',
     )
 
@@ -78,7 +79,7 @@ def configure(conf):
     conf.sub_config('core')
     conf.sub_config('emu')
     conf.sub_config('tap-bridge')
-    conf.sub_config('contrib')
+    conf.sub_config('config-store')
     conf.sub_config('internet')
     conf.sub_config('netanim')
     conf.sub_config('test')
