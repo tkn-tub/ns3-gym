@@ -36,11 +36,15 @@ def build(bld):
         'model/packet-scheduler.cc',
         'model/simple-packet-scheduler.cc',
         'model/ideal-control-messages.cc',
+        'helper/lte-helper.cc',
+        ]
+
+    module_test = bld.create_ns3_module_test_library('lte')
+    module_test.source = [
         'test/lte-phy-test.cc',
         'test/lte-device-test.cc',
         'test/lte-bearer-test.cc',
         'test/lte-propagation-loss-model-test.cc',
-        'helper/lte-helper.cc',
         ]
     
     headers = bld.new_task_gen('ns3header')

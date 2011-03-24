@@ -16,10 +16,15 @@ def build(bld):
         'helper/basic-energy-source-helper.cc',
         'helper/wifi-radio-energy-model-helper.cc',
         'helper/rv-battery-model-helper.cc',
+        ]
+
+    obj_test = bld.create_ns3_module_test_library('energy')
+    obj_test.source = [
         'test/basic-energy-model-test.cc',
         'test/rv-battery-model-test.cc',
         'test/li-ion-energy-source-test.cc',
         ]
+
     headers = bld.new_task_gen('ns3header')
     headers.module = 'energy'
     headers.source = [

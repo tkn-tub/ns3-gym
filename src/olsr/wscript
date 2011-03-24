@@ -8,6 +8,10 @@ def build(bld):
         'model/olsr-state.cc',
         'model/olsr-routing-protocol.cc',
         'helper/olsr-helper.cc',
+        ]
+
+    module_test = bld.create_ns3_module_test_library('olsr')
+    module_test.source = [
         'test/regression-test-suite.cc',
         'test/hello-regression-test.cc',
         'test/tc-regression-test.cc',

@@ -30,6 +30,10 @@ def build(bld):
         'helper/adhoc-aloha-noack-ideal-phy-helper.cc',
         'helper/waveform-generator-helper.cc',
         'helper/spectrum-analyzer-helper.cc',
+        ]
+
+    module_test = bld.create_ns3_module_test_library('spectrum')
+    module_test.source = [
         'test/spectrum-interference-test.cc',
         'test/spectrum-value-test.cc',
         ]

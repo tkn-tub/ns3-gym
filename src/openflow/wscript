@@ -110,8 +110,13 @@ def build(bld):
     obj.source = [
         ]
 
+    obj_test = bld.create_ns3_module_test_library('openflow')
+    obj_test.source = [
+        ]
+
     if bld.env['OPENFLOW'] and bld.env['DL'] and bld.env['XML2']:
-	obj.uselib = 'OPENFLOW DL XML2' 
+	obj.uselib      = 'OPENFLOW DL XML2' 
+	obj_test.uselib = 'OPENFLOW DL XML2' 
 
     headers = bld.new_task_gen('ns3header')
     headers.module = 'openflow'
@@ -122,7 +127,7 @@ def build(bld):
 	obj.source.append('model/openflow-interface.cc')
         obj.source.append('model/openflow-switch-net-device.cc')
 	obj.source.append('helper/openflow-switch-helper.cc')
-	obj.source.append('test/openflow-switch-test-suite.cc')
+	obj_test.source.append('test/openflow-switch-test-suite.cc')
 	headers.source.append('model/openflow-interface.h')
         headers.source.append('model/openflow-switch-net-device.h')
 	headers.source.append('helper/openflow-switch-helper.h')

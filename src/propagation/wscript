@@ -8,6 +8,10 @@ def build(bld):
         'model/propagation-loss-model.cc',
         'model/jakes-propagation-loss-model.cc',
         'model/cost231-propagation-loss-model.cc',
+        ]
+
+    module_test = bld.create_ns3_module_test_library('propagation')
+    module_test.source = [
         'test/propagation-loss-model-test-suite.cc',
         ]
 
