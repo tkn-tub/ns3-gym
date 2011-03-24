@@ -166,7 +166,7 @@ private:
   Ptr<SpectrumChannel> m_downlinkChannel;
   Ptr<SpectrumChannel> m_uplinkChannel;
   
-  //ObjectFactory m_scheduler;
+  ObjectFactory m_scheduler;
 };
 
 

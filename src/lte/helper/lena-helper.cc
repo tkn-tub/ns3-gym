@@ -55,7 +55,7 @@ LenaHelper::LenaHelper (void)
   Ptr<SpectrumPropagationLossModel> model = CreateObject<FriisSpectrumPropagationLossModel> ();
   m_downlinkChannel->AddSpectrumPropagationLossModel (model);
   
-  //SetScheduler ("PfFfMacScheduler"); // default scheduler
+  SetScheduler ("RrFfMacScheduler"); // default scheduler
 }
 
 LenaHelper::~LenaHelper (void)
@@ -66,7 +66,7 @@ LenaHelper::~LenaHelper (void)
 
 
 
-/*
+
 void 
 LenaHelper::SetScheduler (std::string type,
                           std::string n0, const AttributeValue &v0,
@@ -89,7 +89,7 @@ LenaHelper::SetScheduler (std::string type,
   m_scheduler.Set (n6, v6);
   m_scheduler.Set (n7, v7);
 }
-*/
+
 
 
 NetDeviceContainer
@@ -156,7 +156,8 @@ LenaHelper::InstallSingleEnbDevice (Ptr<Node> n)
 
   m_uplinkChannel->AddRx (ulPhy);
   Ptr<LteEnbMac> mac = CreateObject<LteEnbMac> ();
-  Ptr<FfMacScheduler> sched = Create<PfFfMacScheduler> ();
+  Ptr<FfMacScheduler> sched = m_scheduler.Create<FfMacScheduler> ();
+  //Ptr<FfMacScheduler> sched = Create<PfFfMacScheduler> ();
   Ptr<LteEnbRrc> rrc = Create<LteEnbRrc> ();
   Ptr<LteEnbNetDevice> dev = CreateObject<LteEnbNetDevice> (n, phy, mac, sched, rrc);
   phy->SetDevice (dev);

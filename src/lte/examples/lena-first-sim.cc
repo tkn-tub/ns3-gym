@@ -48,6 +48,8 @@ int main (int argc, char *argv[])
   // Create Devices and install them in the Nodes (eNB and UE)
   NetDeviceContainer enbDevs;
   NetDeviceContainer ueDevs;
+  //lena.SetScheduler ("RrFfMacScheduler");
+  lena.SetScheduler ("PfFfMacScheduler");
   enbDevs = lena.InstallEnbDevice (enbNodes);
   ueDevs = lena.InstallUeDevice (ueNodes);
 
