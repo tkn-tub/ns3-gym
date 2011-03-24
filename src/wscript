@@ -56,7 +56,7 @@ all_modules = (
     'topology-read',
     'energy',
     'tools',
-    'tools/visualizer',
+    'visualizer',
     )
 
 def set_options(opt):
