@@ -94,10 +94,6 @@ def build(bld):
     # bridge and mpi dependencies are due to global routing
     obj = bld.create_ns3_module('internet', ['bridge', 'mpi', 'network', 'core'])
     obj.source = [
-        'test/tcp-test.cc',
-        'test/udp-test.cc',
-        'test/ipv4-test.cc',
-        'test/ipv4-raw-test.cc',
         'model/ipv4-l4-protocol.cc',
         'model/udp-header.cc',
         'model/tcp-header.cc',
@@ -137,8 +133,6 @@ def build(bld):
         'model/ipv6-option-header.cc',
         'model/ipv6-option-demux.cc',
         'model/icmpv6-l4-protocol.cc',
-        'test/ipv6-test.cc',
-        'test/ipv6-extension-header-test-suite.cc',
         'model/tcp-socket-base.cc',
         'model/tcp-rfc793.cc',
         'model/tcp-tahoe.cc',
@@ -189,6 +183,16 @@ def build(bld):
         'helper/ipv6-address-helper.cc',
         'helper/ipv6-interface-container.cc',
         'helper/ipv6-routing-helper.cc',
+        ]
+
+    internet_test = bld.create_ns3_module_test_library('internet')
+    internet_test.source = [
+        'test/ipv4-raw-test.cc',
+        'test/ipv4-test.cc',
+        'test/ipv6-extension-header-test-suite.cc',
+        'test/ipv6-test.cc',
+        'test/tcp-test.cc',
+        'test/udp-test.cc',
         ]
 
     headers = bld.new_task_gen('ns3header')
@@ -267,7 +271,8 @@ def build(bld):
         obj.source.append ('model/nsc-tcp-socket-factory-impl.cc')
         obj.source.append ('model/nsc-sysctl.cc')
         headers.source.append('model/nsc-tcp-l4-protocol.h')
-        obj.uselib = 'DL'
+        obj.uselib           = 'DL'
+        internet_test.uselib = 'DL'
 
     bld.ns3_python_bindings()
 

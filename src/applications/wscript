@@ -25,8 +25,13 @@ def build(bld):
         'helper/udp-client-server-helper.cc',
         'helper/udp-echo-helper.cc',
         'helper/v4ping-helper.cc',
+        ]
+
+    applications_test = bld.create_ns3_module_test_library('applications')
+    applications_test.source = [
         'test/udp-client-server-test.cc',
         ]
+
     headers = bld.new_task_gen('ns3header')
     headers.module = 'applications'
     headers.source = [

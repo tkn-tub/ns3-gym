@@ -12,6 +12,10 @@ def build(bld):
         'model/aodv-neighbor.cc',
         'model/aodv-routing-protocol.cc',
 	'helper/aodv-helper.cc',
+        ]
+
+    aodv_test = bld.create_ns3_module_test_library('aodv')
+    aodv_test.source = [
         'test/aodv-test-suite.cc',
         'test/aodv-regression.cc',
         'test/bug-772.cc',

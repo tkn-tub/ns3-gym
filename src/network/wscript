@@ -1,8 +1,8 @@
 ## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
 
 def build(bld):
-    node = bld.create_ns3_module('network', ['core'])
-    node.source = [
+    network = bld.create_ns3_module('network', ['core'])
+    network.source = [
         'model/address.cc',
         'model/application.cc',
         'model/buffer.cc',

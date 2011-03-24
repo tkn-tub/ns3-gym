@@ -9,6 +9,10 @@ def build(bld):
         'model/dsdv-packet.cc',
         'model/dsdv-routing-protocol.cc',
         'helper/dsdv-helper.cc',
+        ]
+
+    module_test = bld.create_ns3_module_test_library('dsdv')
+    module_test.source = [
         'test/dsdv-testcase.cc',
         ]
 

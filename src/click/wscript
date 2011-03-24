@@ -74,12 +74,17 @@ def build(bld):
     module.source = [
         'model/ipv4-click-routing.cc',
         'model/ipv4-l3-click-protocol.cc',
-        'test/ipv4-click-routing-test.cc',
         'helper/click-internet-stack-helper.cc',
         ]
 
+    module_test = bld.create_ns3_module_test_library('click')
+    module_test.source = [
+        'test/ipv4-click-routing-test.cc',
+        ]
+
     if bld.env['NSCLICK'] and bld.env['DL']:
-        module.uselib = 'NSCLICK DL'
+        module.uselib      = 'NSCLICK DL'
+        module_test.uselib = 'NSCLICK DL'
 
     headers = bld.new_task_gen('ns3header')
     headers.module = 'click'
