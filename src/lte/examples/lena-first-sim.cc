@@ -30,7 +30,7 @@ int main (int argc, char *argv[])
 {
   LenaHelper lena;
 
-  //lena.EnableLogComponents ();
+  lena.EnableLogComponents ();
 
   // Create Nodes: eNodeB and UE
   NodeContainer enbNodes;

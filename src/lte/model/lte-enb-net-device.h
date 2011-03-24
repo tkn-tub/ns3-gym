@@ -55,9 +55,12 @@ public:
   /**
    * \brief Create eNB net device
    * \param node the network node
-   * \param phy the physical object attache dto it
+   * \param phy the physical object attached to it
+   * \param mac the mac layer object attached to it
+   * \param sched the scheduler object attached to it
+   * \param rrc the rrc entity object attached to it
    */
-  LteEnbNetDevice (Ptr<Node> node, Ptr<LteEnbPhy> phy);
+  LteEnbNetDevice (Ptr<Node> node, Ptr<LteEnbPhy> phy, Ptr<LteEnbMac> mac, Ptr<FfMacScheduler> sched, Ptr<LteEnbRrc> rrc);
 
   virtual ~LteEnbNetDevice (void);
   virtual void DoDispose (void);

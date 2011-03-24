@@ -66,13 +66,14 @@ LteUeNetDevice::LteUeNetDevice (void)
 }
 
 
-LteUeNetDevice::LteUeNetDevice (Ptr<Node> node, Ptr<LteUePhy> phy)
-  : m_phy (phy)
+LteUeNetDevice::LteUeNetDevice (Ptr<Node> node, Ptr<LteUePhy> phy, Ptr<LteUeMac> mac, Ptr<LteUeRrc> rrc)
 {
   NS_LOG_FUNCTION (this);
+  m_phy = phy;
+  m_mac = mac;
+  m_rrc = rrc;
   InitLteUeNetDevice ();
   SetNode (node);
-
   /**
   * WILD HACK
   * to be translated to PHY-SAP primitive
@@ -90,12 +91,12 @@ LteUeNetDevice::DoDispose (void)
 {
   NS_LOG_FUNCTION (this);
   m_targetEnb = 0;
-  m_mac->Dispose ();
-  m_mac = 0;
-  m_rrc->Dispose ();
-  m_rrc = 0;
-  m_phy->Dispose ();
-  m_phy = 0;
+//   m_mac->Dispose ();
+//   m_mac = 0;
+//   m_rrc->Dispose ();
+//   m_rrc = 0;
+//   m_phy->Dispose ();
+//   m_phy = 0;
   LteNetDevice::DoDispose ();
 }
 
@@ -105,8 +106,8 @@ LteUeNetDevice::InitLteUeNetDevice (void)
   NS_LOG_FUNCTION (this);
   m_targetEnb = 0;
   SetNode (0);
-  m_mac = CreateObject<LteUeMac> ();
-  m_rrc = CreateObject<LteUeRrc> ();
+  //m_mac = CreateObject<LteUeMac> ();
+  //m_rrc = Create<LteUeRrc> ();
   m_rrc->SetLteUeCmacSapProvider (m_mac->GetLteUeCmacSapProvider ());
   m_mac->SetLteUeCmacSapUser (m_rrc->GetLteUeCmacSapUser ());
   m_rrc->SetLteMacSapProvider (m_mac->GetLteMacSapProvider ());

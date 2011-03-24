@@ -73,10 +73,13 @@ LteEnbNetDevice::LteEnbNetDevice (void)
   InitLteEnbNetDevice ();
 }
 
-LteEnbNetDevice::LteEnbNetDevice (Ptr<Node> node, Ptr<LteEnbPhy> phy)
-  : m_phy (phy)
+LteEnbNetDevice::LteEnbNetDevice (Ptr<Node> node, Ptr<LteEnbPhy> phy, Ptr<LteEnbMac> mac, Ptr<FfMacScheduler> sched, Ptr<LteEnbRrc> rrc)
 {
   NS_LOG_FUNCTION (this);
+  m_phy = phy;
+  m_mac = mac;
+  m_scheduler = sched;
+  m_rrc = rrc;
   InitLteEnbNetDevice ();
   SetNode (node);
 }
@@ -91,14 +94,14 @@ LteEnbNetDevice::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
 
-  m_mac->Dispose ();
-  m_mac = 0;
-
-  m_rrc->Dispose ();
-  m_rrc = 0;
-
-  m_phy->Dispose ();
-  m_phy = 0;
+//   m_mac->Dispose ();
+//   m_mac = 0;
+// 
+//   m_rrc->Dispose ();
+//   m_rrc = 0;
+// 
+//   m_phy->Dispose ();
+//   m_phy = 0;
 
   LteNetDevice::DoDispose ();
 }
@@ -109,7 +112,7 @@ LteEnbNetDevice::InitLteEnbNetDevice (void)
 {
   NS_LOG_FUNCTION (this);
 
-  m_mac = CreateObject<LteEnbMac> ();
+  //m_mac = CreateObject<LteEnbMac> ();
   // m_mac->SetDevice (this->GetObject<LteNetDevice> ());
   SetNode (0);
   if (GetPhy () == 0)
@@ -120,13 +123,13 @@ LteEnbNetDevice::InitLteEnbNetDevice (void)
     {
       NS_LOG_DEBUG (this << "PHY ! NULL");
     }
-  m_rrc = CreateObject<LteEnbRrc> ();
+  //m_rrc = Create<LteEnbRrc> ();
   m_rrc->SetLteEnbCmacSapProvider (m_mac->GetLteEnbCmacSapProvider ());
   m_mac->SetLteEnbCmacSapUser (m_rrc->GetLteEnbCmacSapUser ());
   m_rrc->SetLteMacSapProvider (m_mac->GetLteMacSapProvider ());
 
   //m_scheduler = Create<RrFfMacScheduler> ();
-  m_scheduler = Create<PfFfMacScheduler> ();
+  //m_scheduler = Create<PfFfMacScheduler> ();
   m_mac->SetFfMacSchedSapProvider (m_scheduler->GetFfMacSchedSapProvider ());
   m_mac->SetFfMacCschedSapProvider (m_scheduler->GetFfMacCschedSapProvider ());
 

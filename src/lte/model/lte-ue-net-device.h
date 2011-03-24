@@ -57,7 +57,7 @@ public:
    * \param node
    * \param phy
    */
-  LteUeNetDevice (Ptr<Node> node, Ptr<LteUePhy> phy);
+  LteUeNetDevice (Ptr<Node> node, Ptr<LteUePhy> phy, Ptr<LteUeMac> mac, Ptr<LteUeRrc> rrc);
 
   virtual ~LteUeNetDevice (void);
   virtual void DoDispose ();

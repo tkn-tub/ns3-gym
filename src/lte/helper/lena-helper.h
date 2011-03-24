@@ -116,6 +116,42 @@ public:
    * \param bearer the characteristics of the bearer to be activated
    */
   void ActivateEpsBearer (Ptr<NetDevice> ueDevice, EpsBearer bearer);
+  
+  
+  /**
+  * \param type the type of ns3::WifiRemoteStationManager to create.
+  * \param n0 the name of the attribute to set
+  * \param v0 the value of the attribute to set
+  * \param n1 the name of the attribute to set
+  * \param v1 the value of the attribute to set
+  * \param n2 the name of the attribute to set
+  * \param v2 the value of the attribute to set
+  * \param n3 the name of the attribute to set
+  * \param v3 the value of the attribute to set
+  * \param n4 the name of the attribute to set
+  * \param v4 the value of the attribute to set
+  * \param n5 the name of the attribute to set
+  * \param v5 the value of the attribute to set
+  * \param n6 the name of the attribute to set
+  * \param v6 the value of the attribute to set
+  * \param n7 the name of the attribute to set
+  * \param v7 the value of the attribute to set
+  *
+  * All the attributes specified in this method should exist
+  * in the requested scheduler.
+  */
+  void SetScheduler (std::string type,
+                                std::string n0 = "", const AttributeValue &v0 = EmptyAttributeValue (),
+                                std::string n1 = "", const AttributeValue &v1 = EmptyAttributeValue (),
+                                std::string n2 = "", const AttributeValue &v2 = EmptyAttributeValue (),
+                                std::string n3 = "", const AttributeValue &v3 = EmptyAttributeValue (),
+                                std::string n4 = "", const AttributeValue &v4 = EmptyAttributeValue (),
+                                std::string n5 = "", const AttributeValue &v5 = EmptyAttributeValue (),
+                                std::string n6 = "", const AttributeValue &v6 = EmptyAttributeValue (),
+                                std::string n7 = "", const AttributeValue &v7 = EmptyAttributeValue ());
+  
+  
+  
 
   /**
    * Enables logging for all components of the LENA architecture
@@ -129,6 +165,8 @@ private:
 
   Ptr<SpectrumChannel> m_downlinkChannel;
   Ptr<SpectrumChannel> m_uplinkChannel;
+  
+  //ObjectFactory m_scheduler;
 };
 
 

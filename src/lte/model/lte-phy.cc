@@ -84,8 +84,8 @@ LtePhy::DoDispose ()
   m_netDevice = 0;
   for (int i = 0; i < m_macChTtiDelay; i++)
     {
-      m_packetBurstQueue.erase (m_packetBurstQueue.begin ());
-      m_controlMessagesQueue.erase (m_controlMessagesQueue.begin ());
+      m_packetBurstQueue.erase (m_packetBurstQueue.begin (), m_packetBurstQueue.end ());
+      m_controlMessagesQueue.erase (m_controlMessagesQueue.begin (), m_controlMessagesQueue.end ());
     }
 }
 
