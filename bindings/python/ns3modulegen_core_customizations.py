@@ -331,8 +331,10 @@ def Object_customizations(module):
     ## order to support kwargs only and to translate kwargs into ns3
     ## attributes, etc.
     ## ---------------------------------------------------------------------
-    Object = module['ns3::Object']
-
+    try:
+        Object = module['ns3::Object']
+    except KeyError:
+        return
 
     ## add a GetTypeId method to all generatd helper classes
     def helper_class_hook(helper_class):
