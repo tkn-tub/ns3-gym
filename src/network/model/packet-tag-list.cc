@@ -143,7 +143,7 @@ PacketTagList::Add (const Tag &tag) const
   head->next = 0;
   head->tid = tag.GetInstanceTypeId ();
   head->next = m_next;
-  NS_ASSERT (tag.GetSerializedSize () < PACKET_TAG_MAX_SIZE);
+  NS_ASSERT (tag.GetSerializedSize () <= PACKET_TAG_MAX_SIZE);
   tag.Serialize (TagBuffer (head->data, head->data+tag.GetSerializedSize ()));
 
   const_cast<PacketTagList *> (this)->m_next = head;
