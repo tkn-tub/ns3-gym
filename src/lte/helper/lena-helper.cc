@@ -156,7 +156,6 @@ LenaHelper::InstallSingleEnbDevice (Ptr<Node> n)
 
   m_uplinkChannel->AddRx (ulPhy);
   Ptr<LteEnbMac> mac = CreateObject<LteEnbMac> ();
-  //Ptr<FfMacScheduler> sched = m_scheduler.Create<FfMacScheduler> ();
   Ptr<FfMacScheduler> sched = Create<PfFfMacScheduler> ();
   Ptr<LteEnbRrc> rrc = Create<LteEnbRrc> ();
   Ptr<LteEnbNetDevice> dev = CreateObject<LteEnbNetDevice> (n, phy, mac, sched, rrc);
@@ -165,7 +164,6 @@ LenaHelper::InstallSingleEnbDevice (Ptr<Node> n)
   ulPhy->SetDevice (dev);
 
   n->AddDevice (dev);
-  //Ptr<LteEnbMac> mac = dev->GetMac ();
   ulPhy->SetPhyMacRxEndOkCallback (MakeCallback (&LteEnbPhy::PhyPduReceived, phy));
 
   dev->Start ();
@@ -207,7 +205,6 @@ LenaHelper::InstallSingleUeDevice (Ptr<Node> n)
   ulPhy->SetDevice (dev);
 
   n->AddDevice (dev);
-  //Ptr<LteUeMac> mac = dev->GetMac ();
   dlPhy->SetPhyMacRxEndOkCallback (MakeCallback (&LteUePhy::PhyPduReceived, phy));
 
   dev->Start ();

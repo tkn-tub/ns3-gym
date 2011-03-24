@@ -112,8 +112,6 @@ LteEnbNetDevice::InitLteEnbNetDevice (void)
 {
   NS_LOG_FUNCTION (this);
 
-  //m_mac = CreateObject<LteEnbMac> ();
-  // m_mac->SetDevice (this->GetObject<LteNetDevice> ());
   SetNode (0);
   if (GetPhy () == 0)
     {
@@ -123,13 +121,11 @@ LteEnbNetDevice::InitLteEnbNetDevice (void)
     {
       NS_LOG_DEBUG (this << "PHY ! NULL");
     }
-  //m_rrc = Create<LteEnbRrc> ();
+  
   m_rrc->SetLteEnbCmacSapProvider (m_mac->GetLteEnbCmacSapProvider ());
   m_mac->SetLteEnbCmacSapUser (m_rrc->GetLteEnbCmacSapUser ());
   m_rrc->SetLteMacSapProvider (m_mac->GetLteMacSapProvider ());
 
-  //m_scheduler = Create<RrFfMacScheduler> ();
-  //m_scheduler = Create<PfFfMacScheduler> ();
   m_mac->SetFfMacSchedSapProvider (m_scheduler->GetFfMacSchedSapProvider ());
   m_mac->SetFfMacCschedSapProvider (m_scheduler->GetFfMacCschedSapProvider ());
 
