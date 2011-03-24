@@ -6,7 +6,7 @@ def build(bld):
     headers.source = [
         ]
 
-    module = bld.create_ns3_module('visualizer', ['core'])
+    module = bld.create_ns3_module('visualizer', ['network', 'wifi'])
     if not bld.env['ENABLE_PYTHON_BINDINGS']:
         return
 
