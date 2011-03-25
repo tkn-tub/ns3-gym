@@ -16,6 +16,7 @@ def build(bld):
 
     aodv_test = bld.create_ns3_module_test_library('aodv')
     aodv_test.source = [
+        'test/aodv-id-cache-test-suite.cc',
         'test/aodv-test-suite.cc',
         'test/aodv-regression.cc',
         'test/bug-772.cc',

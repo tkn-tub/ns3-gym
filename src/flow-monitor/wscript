@@ -12,6 +12,11 @@ def build(bld):
         ]]
     obj.source.append("helper/flow-monitor-helper.cc")
 
+    module_test = bld.create_ns3_module_test_library('flow-monitor')
+    module_test.source = [
+        'test/histogram-test-suite.cc',
+        ]
+
     headers = bld.new_task_gen('ns3header')
     headers.module = 'flow-monitor'
     headers.source = ["model/%s" % s for s in [

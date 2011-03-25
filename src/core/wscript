@@ -144,10 +144,14 @@ def build(bld):
     core_test.source = [
         'test/attribute-test-suite.cc',
         'test/callback-test-suite.cc',
+        'test/high-precision-test-suite.cc',
         'test/names-test-suite.cc',
-        'test/type-traits-test-suite.cc',
-        'test/traced-callback-test-suite.cc',
         'test/ptr-test-suite.cc',
+        'test/time-test-suite.cc',
+        'test/timer-test-suite.cc',
+        'test/traced-callback-test-suite.cc',
+        'test/type-traits-test-suite.cc',
+        'test/watchdog-test-suite.cc',
         ]
 
     headers = bld.new_task_gen('ns3header')
@@ -232,8 +236,9 @@ def build(bld):
     if env['USE_HIGH_PRECISION_DOUBLE']:
         headers.source.extend(['model/high-precision-double.h'])
     elif env['USE_HIGH_PRECISION_128']:
-        headers.source.extend(['model/high-precision-128.h'])
-        core.source.extend(['model/high-precision-128.cc'])
+        headers  .source.extend(['model/high-precision-128.h'])
+        core     .source.extend(['model/high-precision-128.cc'])
+        core_test.source.extend(['test/high-precision-128-test-suite.cc'])
     elif env['USE_HIGH_PRECISION_CAIRO']:
         core.source.extend([
             'model/high-precision-cairo.cc',
