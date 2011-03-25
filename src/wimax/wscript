@@ -50,6 +50,10 @@ def build(bld):
             'model/cs-parameters.cc',
             'model/wimax-mac-to-mac-header.cc',
             'helper/wimax-helper.cc',
+		            ]
+
+    obj_test = bld.create_ns3_module_test_library('wimax')
+    obj_test.source = [
             'test/wimax-tlv-test.cc',
             'test/mac-messages-test.cc',
             'test/wimax-service-flow-test.cc',
@@ -57,7 +61,7 @@ def build(bld):
             'test/phy-test.cc',
             'test/qos-test.cc',
             'test/wimax-fragmentation-test.cc',
-		            ]
+            ]
 		            
     headers = bld.new_task_gen('ns3header')
     headers.module = 'wimax'

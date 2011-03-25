@@ -25,6 +25,10 @@ def build(bld):
         'model/acoustic-modem-energy-model.cc',
         'helper/uan-helper.cc',
         'helper/acoustic-modem-energy-model-helper.cc',
+        ]
+
+    module_test = bld.create_ns3_module_test_library('uan')
+    module_test.source = [
         'test/uan-test.cc',
         'test/uan-energy-model-test.cc',
         ]

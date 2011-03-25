@@ -22,8 +22,8 @@
 #include <ns3/log.h>
 #include <ns3/test.h>
 #include <iostream>
-#include "interference-helper.h"
-#include "wifi-phy.h"
+#include "ns3/interference-helper.h"
+#include "ns3/wifi-phy.h"
 
 NS_LOG_COMPONENT_DEFINE ("InterferenceHelperTxDurationTest");
 

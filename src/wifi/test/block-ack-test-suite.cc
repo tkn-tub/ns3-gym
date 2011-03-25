@@ -19,8 +19,8 @@
  */
 #include "ns3/test.h"
 #include "ns3/log.h"
-#include "qos-utils.h"
-#include "ctrl-headers.h"
+#include "ns3/qos-utils.h"
+#include "ns3/ctrl-headers.h"
 #include <list>
 
 using namespace ns3;
