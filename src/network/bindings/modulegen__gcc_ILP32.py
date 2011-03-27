@@ -190,6 +190,8 @@ def register_types(module):
     module.add_class('ErlangVariable', import_from_module='ns.core', parent=root_module['ns3::RandomVariable'])
     ## random-variable.h (module 'core'): ns3::ExponentialVariable [class]
     module.add_class('ExponentialVariable', import_from_module='ns.core', parent=root_module['ns3::RandomVariable'])
+    ## flow-id-tag.h (module 'network'): ns3::FlowIdTag [class]
+    module.add_class('FlowIdTag', parent=root_module['ns3::Tag'])
     ## random-variable.h (module 'core'): ns3::GammaVariable [class]
     module.add_class('GammaVariable', import_from_module='ns.core', parent=root_module['ns3::RandomVariable'])
     ## header.h (module 'network'): ns3::Header [class]
@@ -505,6 +507,7 @@ def register_methods(root_module):
     register_Ns3EmpiricalVariable_methods(root_module, root_module['ns3::EmpiricalVariable'])
     register_Ns3ErlangVariable_methods(root_module, root_module['ns3::ErlangVariable'])
     register_Ns3ExponentialVariable_methods(root_module, root_module['ns3::ExponentialVariable'])
+    register_Ns3FlowIdTag_methods(root_module, root_module['ns3::FlowIdTag'])
     register_Ns3GammaVariable_methods(root_module, root_module['ns3::GammaVariable'])
     register_Ns3Header_methods(root_module, root_module['ns3::Header'])
     register_Ns3IntEmpiricalVariable_methods(root_module, root_module['ns3::IntEmpiricalVariable'])
@@ -3649,6 +3652,59 @@ def register_Ns3ExponentialVariable_methods(root_module, cls):
     cls.add_constructor([param('double', 'm')])
     ## random-variable.h (module 'core'): ns3::ExponentialVariable::ExponentialVariable(double m, double b) [constructor]
     cls.add_constructor([param('double', 'm'), param('double', 'b')])
+    return
+
+def register_Ns3FlowIdTag_methods(root_module, cls):
+    ## flow-id-tag.h (module 'network'): ns3::FlowIdTag::FlowIdTag(ns3::FlowIdTag const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::FlowIdTag const &', 'arg0')])
+    ## flow-id-tag.h (module 'network'): ns3::FlowIdTag::FlowIdTag() [constructor]
+    cls.add_constructor([])
+    ## flow-id-tag.h (module 'network'): ns3::FlowIdTag::FlowIdTag(uint32_t flowId) [constructor]
+    cls.add_constructor([param('uint32_t', 'flowId')])
+    ## flow-id-tag.h (module 'network'): static uint32_t ns3::FlowIdTag::AllocateFlowId() [member function]
+    cls.add_method('AllocateFlowId', 
+                   'uint32_t', 
+                   [], 
+                   is_static=True)
+    ## flow-id-tag.h (module 'network'): void ns3::FlowIdTag::Deserialize(ns3::TagBuffer buf) [member function]
+    cls.add_method('Deserialize', 
+                   'void', 
+                   [param('ns3::TagBuffer', 'buf')], 
+                   is_virtual=True)
+    ## flow-id-tag.h (module 'network'): uint32_t ns3::FlowIdTag::GetFlowId() const [member function]
+    cls.add_method('GetFlowId', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## flow-id-tag.h (module 'network'): ns3::TypeId ns3::FlowIdTag::GetInstanceTypeId() const [member function]
+    cls.add_method('GetInstanceTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## flow-id-tag.h (module 'network'): uint32_t ns3::FlowIdTag::GetSerializedSize() const [member function]
+    cls.add_method('GetSerializedSize', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## flow-id-tag.h (module 'network'): static ns3::TypeId ns3::FlowIdTag::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## flow-id-tag.h (module 'network'): void ns3::FlowIdTag::Print(std::ostream & os) const [member function]
+    cls.add_method('Print', 
+                   'void', 
+                   [param('std::ostream &', 'os')], 
+                   is_const=True, is_virtual=True)
+    ## flow-id-tag.h (module 'network'): void ns3::FlowIdTag::Serialize(ns3::TagBuffer buf) const [member function]
+    cls.add_method('Serialize', 
+                   'void', 
+                   [param('ns3::TagBuffer', 'buf')], 
+                   is_const=True, is_virtual=True)
+    ## flow-id-tag.h (module 'network'): void ns3::FlowIdTag::SetFlowId(uint32_t flowId) [member function]
+    cls.add_method('SetFlowId', 
+                   'void', 
+                   [param('uint32_t', 'flowId')])
     return
 
 def register_Ns3GammaVariable_methods(root_module, cls):

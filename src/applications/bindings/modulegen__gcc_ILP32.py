@@ -28,8 +28,8 @@ def register_types(module):
     module.add_class('ApplicationContainer', import_from_module='ns.network')
     ## attribute-list.h (module 'core'): ns3::AttributeList [class]
     module.add_class('AttributeList', import_from_module='ns.core')
-    ## average.h (module 'contrib'): ns3::Average<double> [class]
-    module.add_class('Average', import_from_module='ns.contrib', template_parameters=['double'])
+    ## average.h (module 'tools'): ns3::Average<double> [class]
+    module.add_class('Average', import_from_module='ns.tools', template_parameters=['double'])
     ## buffer.h (module 'network'): ns3::Buffer [class]
     module.add_class('Buffer', import_from_module='ns.network')
     ## buffer.h (module 'network'): ns3::Buffer::Iterator [class]
@@ -573,64 +573,64 @@ def register_Ns3AttributeList_methods(root_module, cls):
     return
 
 def register_Ns3Average__Double_methods(root_module, cls):
-    ## average.h (module 'contrib'): ns3::Average<double>::Average(ns3::Average<double> const & arg0) [copy constructor]
+    ## average.h (module 'tools'): ns3::Average<double>::Average(ns3::Average<double> const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::Average< double > const &', 'arg0')])
-    ## average.h (module 'contrib'): ns3::Average<double>::Average() [constructor]
+    ## average.h (module 'tools'): ns3::Average<double>::Average() [constructor]
     cls.add_constructor([])
-    ## average.h (module 'contrib'): double ns3::Average<double>::Avg() const [member function]
+    ## average.h (module 'tools'): double ns3::Average<double>::Avg() const [member function]
     cls.add_method('Avg', 
                    'double', 
                    [], 
                    is_const=True)
-    ## average.h (module 'contrib'): uint32_t ns3::Average<double>::Count() const [member function]
+    ## average.h (module 'tools'): uint32_t ns3::Average<double>::Count() const [member function]
     cls.add_method('Count', 
                    'uint32_t', 
                    [], 
                    is_const=True)
-    ## average.h (module 'contrib'): double ns3::Average<double>::Error90() const [member function]
+    ## average.h (module 'tools'): double ns3::Average<double>::Error90() const [member function]
     cls.add_method('Error90', 
                    'double', 
                    [], 
                    is_const=True)
-    ## average.h (module 'contrib'): double ns3::Average<double>::Error95() const [member function]
+    ## average.h (module 'tools'): double ns3::Average<double>::Error95() const [member function]
     cls.add_method('Error95', 
                    'double', 
                    [], 
                    is_const=True)
-    ## average.h (module 'contrib'): double ns3::Average<double>::Error99() const [member function]
+    ## average.h (module 'tools'): double ns3::Average<double>::Error99() const [member function]
     cls.add_method('Error99', 
                    'double', 
                    [], 
                    is_const=True)
-    ## average.h (module 'contrib'): double ns3::Average<double>::Max() const [member function]
+    ## average.h (module 'tools'): double ns3::Average<double>::Max() const [member function]
     cls.add_method('Max', 
                    'double', 
                    [], 
                    is_const=True)
-    ## average.h (module 'contrib'): double ns3::Average<double>::Mean() const [member function]
+    ## average.h (module 'tools'): double ns3::Average<double>::Mean() const [member function]
     cls.add_method('Mean', 
                    'double', 
                    [], 
                    is_const=True)
-    ## average.h (module 'contrib'): double ns3::Average<double>::Min() const [member function]
+    ## average.h (module 'tools'): double ns3::Average<double>::Min() const [member function]
     cls.add_method('Min', 
                    'double', 
                    [], 
                    is_const=True)
-    ## average.h (module 'contrib'): void ns3::Average<double>::Reset() [member function]
+    ## average.h (module 'tools'): void ns3::Average<double>::Reset() [member function]
     cls.add_method('Reset', 
                    'void', 
                    [])
-    ## average.h (module 'contrib'): double ns3::Average<double>::Stddev() const [member function]
+    ## average.h (module 'tools'): double ns3::Average<double>::Stddev() const [member function]
     cls.add_method('Stddev', 
                    'double', 
                    [], 
                    is_const=True)
-    ## average.h (module 'contrib'): void ns3::Average<double>::Update(double const & x) [member function]
+    ## average.h (module 'tools'): void ns3::Average<double>::Update(double const & x) [member function]
     cls.add_method('Update', 
                    'void', 
                    [param('double const &', 'x')])
-    ## average.h (module 'contrib'): double ns3::Average<double>::Var() const [member function]
+    ## average.h (module 'tools'): double ns3::Average<double>::Var() const [member function]
     cls.add_method('Var', 
                    'double', 
                    [], 

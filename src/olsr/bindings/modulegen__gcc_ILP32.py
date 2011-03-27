@@ -42,8 +42,8 @@ def register_types(module):
     module.add_class('Item', import_from_module='ns.network', outer_class=root_module['ns3::ByteTagList::Iterator'])
     ## callback.h (module 'core'): ns3::CallbackBase [class]
     module.add_class('CallbackBase', import_from_module='ns.core')
-    ## event-garbage-collector.h (module 'contrib'): ns3::EventGarbageCollector [class]
-    module.add_class('EventGarbageCollector', import_from_module='ns.contrib')
+    ## event-garbage-collector.h (module 'tools'): ns3::EventGarbageCollector [class]
+    module.add_class('EventGarbageCollector', import_from_module='ns.tools')
     ## event-id.h (module 'core'): ns3::EventId [class]
     module.add_class('EventId', import_from_module='ns.core')
     ## high-precision-128.h (module 'core'): ns3::HighPrecision [class]
@@ -1015,11 +1015,11 @@ def register_Ns3CallbackBase_methods(root_module, cls):
     return
 
 def register_Ns3EventGarbageCollector_methods(root_module, cls):
-    ## event-garbage-collector.h (module 'contrib'): ns3::EventGarbageCollector::EventGarbageCollector(ns3::EventGarbageCollector const & arg0) [copy constructor]
+    ## event-garbage-collector.h (module 'tools'): ns3::EventGarbageCollector::EventGarbageCollector(ns3::EventGarbageCollector const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::EventGarbageCollector const &', 'arg0')])
-    ## event-garbage-collector.h (module 'contrib'): ns3::EventGarbageCollector::EventGarbageCollector() [constructor]
+    ## event-garbage-collector.h (module 'tools'): ns3::EventGarbageCollector::EventGarbageCollector() [constructor]
     cls.add_constructor([])
-    ## event-garbage-collector.h (module 'contrib'): void ns3::EventGarbageCollector::Track(ns3::EventId event) [member function]
+    ## event-garbage-collector.h (module 'tools'): void ns3::EventGarbageCollector::Track(ns3::EventId event) [member function]
     cls.add_method('Track', 
                    'void', 
                    [param('ns3::EventId', 'event')])
