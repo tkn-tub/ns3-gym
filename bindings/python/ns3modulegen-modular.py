@@ -44,7 +44,7 @@ class MyMultiSectionFactory(MultiSectionFactory):
 
 
 def main(argv):
-    module_abs_src_path, target, output_cc_file_name = argv[1:]
+    module_abs_src_path, target, extension_name, output_cc_file_name = argv[1:]
     module_name = os.path.basename(module_abs_src_path)
     out = MyMultiSectionFactory(output_cc_file_name)
 
@@ -70,6 +70,7 @@ def main(argv):
         sys.path.pop(0)
     
     root_module = module_apidefs.module_init()
+    root_module.set_name(extension_name)
     root_module.add_include('"ns3/%s-module.h"' % module_name)
 
     # -----------
