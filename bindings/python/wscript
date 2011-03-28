@@ -603,25 +603,9 @@ def build(bld):
 
     set_pybindgen_pythonpath(env)
 
-
-
-    # copy the __init__.py file to the build dir. waf can't handle
-    # this, it's against waf's principles to have build dir files
-    # with the same name as source dir files, apparently.
-    dirnode = bld.path.find_dir('ns')
-    src = os.path.join(dirnode.abspath(), '__init__.py')
-    dst = os.path.join(dirnode.abspath(env), '__init__.py')
-    try:
-        need_copy = os.stat(src).st_mtime > os.stat(dst).st_mtime
-    except OSError:
-        need_copy = True
-    if need_copy:
-        try:
-            os.mkdir(os.path.dirname(dst))
-        except OSError:
-            pass
-        print "%r -> %r" % (src, dst)
-        shutil.copy2(src, dst)
+    bld.new_task_gen(features='copy',
+                     source="ns__init__.py",
+                     target='ns/__init__.py')
 
 
     if env['ENABLE_PYTHON_BINDINGS'] and env['BINDINGS_TYPE'] in ('monolithic', 'both'):
@@ -777,26 +761,9 @@ def build(bld):
                 pass
         pymod.env['CXXDEFINES'] = defines
 
-        # copy the __init__.py file to the build dir. waf can't handle
-        # this, it's against waf's principles to have build dir files
-        # with the same name as source dir files, apparently.
-        dirnode = bld.path.find_dir('ns3')
-        src = os.path.join(dirnode.abspath(), '__init__.py')
-        dst = os.path.join(dirnode.abspath(env), '__init__.py')
-        try:
-            need_copy = os.stat(src).st_mtime > os.stat(dst).st_mtime
-        except OSError:
-            need_copy = True
-        if need_copy:
-            try:
-                os.mkdir(os.path.dirname(dst))
-            except OSError:
-                pass
-            print "%r -> %r" % (src, dst)
-            shutil.copy2(src, dst)
-
-
-
+        bld.new_task_gen(features='copy',
+                         source="ns3__init__.py",
+                         target='ns3/__init__.py')
 
     if env['ENABLE_PYTHON_BINDINGS'] and env['BINDINGS_TYPE'] in ('modular',):
         gen = gen_ns3_compat_pymod_task(bld, bld.path.find_or_declare("ns3.py").bldpath(bld.env))
