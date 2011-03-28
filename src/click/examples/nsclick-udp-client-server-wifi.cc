@@ -46,7 +46,7 @@ NS_LOG_COMPONENT_DEFINE ("NsclickUdpClientServerWifi");
 
 #ifdef NS3_CLICK
 void
-readArp (Ptr<Ipv4ClickRouting> clickRouter)
+ReadArp (Ptr<Ipv4ClickRouting> clickRouter)
 {
   // Access the handlers
   NS_LOG_INFO (clickRouter->ReadHandler ("wifi/arpquerier", "table"));
@@ -54,10 +54,20 @@ readArp (Ptr<Ipv4ClickRouting> clickRouter)
 }
 
 void
-writeArp (Ptr<Ipv4ClickRouting> clickRouter)
+WriteArp (Ptr<Ipv4ClickRouting> clickRouter)
 {
   // Access the handler
   NS_LOG_INFO (clickRouter->WriteHandler ("wifi/arpquerier", "insert", "172.16.1.2 00:00:00:00:00:02"));
+}
+
+void SetPromisc (Ptr<Ipv4ClickRouting> clickRouter)
+{
+  // 4th node can listen to traffic in promisc mode
+  // Note: Promiscuous mode support for Click has
+  // been added ahead of the official Wifi support
+  // for promiscuous mode. Thus, the below line will
+  // not work until then.
+  clickRouter->SetPromiscuous ("eth0");
 }
 #endif
 
@@ -135,13 +145,6 @@ main (int argc, char *argv[])
   clickinternet.SetClickFile (n, "src/click/examples/nsclick-wifi-single-interface.click");
   clickinternet.SetRoutingTableElement (n, "rt");
   clickinternet.Install (n);
-  // 4th node can listen to traffic in promisc mode
-  // Note: Promiscuous mode support for Click has
-  // been added ahead of the official Wifi support
-  // for promiscuous mode. Thus, the below line will
-  // not work until then.
-  n.Get (3)->GetObject<Ipv4ClickRouting> ()->SetPromiscuous ("eth0");
-
   Ipv4AddressHelper ipv4;
   //
   // We've got the "hardware" in place.  Now we need to add IP addresses.
@@ -177,6 +180,9 @@ main (int argc, char *argv[])
 
   wifiPhy.EnablePcap ("nsclick-udp-client-server-wifi", d);
 
+  // Call SetPromiscuous mode on Click Router for node 4
+  Simulator::Schedule (Seconds (0.1), &SetPromisc, n.Get (3)->GetObject<Ipv4ClickRouting> ());
+
   // Force the MAC address of the second node: The current ARP
   // implementation of Click sends only one ARP request per incoming
   // packet for an unknown destination and does not retransmit if no
@@ -184,9 +190,9 @@ main (int argc, char *argv[])
   // requests of node 3 are lost due to interference from node
   // 1. Hence, we fill in the ARP table of node 2 before at the
   // beginning of the simulation
-  Simulator::Schedule (Seconds (0.5), &readArp,n.Get (2)->GetObject<Ipv4ClickRouting> ());
-  Simulator::Schedule (Seconds (0.6), &writeArp,n.Get (2)->GetObject<Ipv4ClickRouting> ());
-  Simulator::Schedule (Seconds (0.7), &readArp,n.Get (2)->GetObject<Ipv4ClickRouting> ());
+  Simulator::Schedule (Seconds (0.5), &ReadArp, n.Get (2)->GetObject<Ipv4ClickRouting> ());
+  Simulator::Schedule (Seconds (0.6), &WriteArp, n.Get (2)->GetObject<Ipv4ClickRouting> ());
+  Simulator::Schedule (Seconds (0.7), &ReadArp, n.Get (2)->GetObject<Ipv4ClickRouting> ());
 
   //
   // Now, do the actual simulation.

@@ -26,8 +26,7 @@
 #include "ns3/ipv4-l3-protocol.h"
 #include "ns3/simple-net-device.h"
 #include "ns3/ipv4-click-routing.h"
-#include "ns3/icmpv4-l4-protocol.h"
-#include "ns3/arp-l3-protocol.h"
+#include "ns3/click-internet-stack-helper.h"
 
 #include <click/simclick.h>
 
@@ -36,19 +35,9 @@ namespace ns3 {
 static void
 AddClickInternetStack (Ptr<Node> node)
 {
-  // Setup ArpL3Protocol
-  Ptr<ArpL3Protocol> arp = CreateObject<ArpL3Protocol> ();
-  node->AggregateObject (arp);
-
-  // Setup Ipv4L3Protocol
-  Ptr<Ipv4L3Protocol> ipv4l3 = CreateObject<Ipv4L3Protocol> ();
-  node->AggregateObject (ipv4l3);
-
-  // Setup Click instance
-  Ptr<Ipv4> ipv4 = node->GetObject<Ipv4> ();
-  Ptr<Ipv4ClickRouting> click = CreateObject<Ipv4ClickRouting> ();
-  click->SetClickFile ("src/click/examples/nsclick-lan-single-interface.click");
-  ipv4->SetRoutingProtocol (click);
+  ClickInternetStackHelper internet;
+  internet.SetClickFile (node, "src/click/examples/nsclick-lan-single-interface.click");
+  internet.Install (node);
 }
 
 static void
@@ -108,7 +97,6 @@ ClickIfidFromNameTest::DoRun ()
 
   ret = simclick_sim_command (click->m_simNode, SIMCLICK_IFID_FROM_NAME, "eth1");
   NS_TEST_EXPECT_MSG_EQ (ret, -1, "No eth1 on node");
-
 }
 
 class ClickIpMacAddressFromNameTest : public TestCase
@@ -203,7 +191,6 @@ ClickTrivialTest::DoRun ()
   NS_TEST_EXPECT_MSG_EQ (ret, 0, "eth1 does not exist, so return 0");
 
   delete [] buf;
-  ret = 1;
 }
 
 class ClickIfidFromNameTestSuite : public TestSuite
