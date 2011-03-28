@@ -517,7 +517,7 @@ def add_examples_programs(bld):
 
 
 def add_scratch_programs(bld):
-    all_modules = [mod[len("ns3-"):] for mod in bld.env['NS3_MODULES']]
+    all_modules = [mod[len("ns3-"):] for mod in bld.env['NS3_ENABLED_MODULES']]
     for filename in os.listdir("scratch"):
         if filename.startswith('.') or filename == 'CVS':
 	    continue
