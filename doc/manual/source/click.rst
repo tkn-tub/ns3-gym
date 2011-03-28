@@ -11,7 +11,7 @@ Modular Router so as to enable rapid protocol development.
 Model Description
 *****************
 
-The source code for the Click model lives in the directory ``src/routing/click``.
+The source code for the Click model lives in the directory ``src/click``.
 
 Design
 ======
@@ -29,7 +29,7 @@ Developing a Simulator API which will allow ns-3 to talk with Click and vice ver
 
 Much of the API is already well defined, which allows Click to probe for information from the simulator (like a Node's ID, an Interface ID and so forth). By retaining most of the methods, it should be possible to write new implementations specific to ns-3 for the same functionality.
 
-Hence, for the Click integration with ns-3, a class named Ipv4ClickRouting will handle the interaction with Click. The code for the same can be found in ``src/routing/click/model/ipv4-click-routing.[cc,h]``.
+Hence, for the Click integration with ns-3, a class named Ipv4ClickRouting will handle the interaction with Click. The code for the same can be found in ``src/click/model/ipv4-click-routing.[cc,h]``.
 
 Packet hand off between ns-3 and Click
 ######################################
@@ -118,13 +118,13 @@ class in your simulation script. For instance::
   click.SetRoutingTableElement (myNodeContainer, "u/rt");
   click.Install (myNodeContainer);
 
-The example scripts inside ``src/routing/click/examples/`` demonstrate the use of Click based nodes
-in different scenarios. The helper source can be found inside ``src/routing/click/helper/click-internet-stack-helper.[h,cc]``
+The example scripts inside ``src/click/examples/`` demonstrate the use of Click based nodes
+in different scenarios. The helper source can be found inside ``src/click/helper/click-internet-stack-helper.[h,cc]``
 
 Examples
 ========
 
-The following examples have been written, which can be found in ``src/routing/click/examples/``:
+The following examples have been written, which can be found in ``src/click/examples/``:
 
 * nsclick-simple-lan.cc and nsclick-raw-wlan.cc: A Click based node communicating with a normal ns-3 node without Click, using Csma and Wifi respectively. It also demonstrates the use of TCP on top of Click, something which the original nsclick implementation for NS-2 couldn't achieve.
 
@@ -139,6 +139,6 @@ Validation
 
 This model has been tested as follows:
 
-* Unit tests have been written to verify the internals of Ipv4ClickRouting. This can be found in ``src/routing/click/ipv4-click-routing-test.cc``. These tests verify whether the methods inside Ipv4ClickRouting which deal with Device name to ID, IP Address from device name and Mac Address from device name bindings work as expected.
-* The examples have been used to test Click with actual simulation scenarios. These can be found in ``src/routing/click/examples/``. These tests cover the following: the use of different kinds of transports on top of Click, TCP/UDP, whether Click nodes can communicate with non-Click based nodes, whether Click nodes can communicate with each other, using Click to route packets using static routing.
+* Unit tests have been written to verify the internals of Ipv4ClickRouting. This can be found in ``src/click/ipv4-click-routing-test.cc``. These tests verify whether the methods inside Ipv4ClickRouting which deal with Device name to ID, IP Address from device name and Mac Address from device name bindings work as expected.
+* The examples have been used to test Click with actual simulation scenarios. These can be found in ``src/click/examples/``. These tests cover the following: the use of different kinds of transports on top of Click, TCP/UDP, whether Click nodes can communicate with non-Click based nodes, whether Click nodes can communicate with each other, using Click to route packets using static routing.
 * Click has been tested with Csma, Wifi and Point-to-Point devices. Usage instructions are available in the preceding section.
