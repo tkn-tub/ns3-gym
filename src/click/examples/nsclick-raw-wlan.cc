@@ -21,7 +21,7 @@
 //
 //  (Click)             (non-Click)
 //    A )))     WLAN      ((( B
-// (172.16.1.1)         (172.16.1.2)   
+// (172.16.1.1)         (172.16.1.2)
 //    (eth0)
 //
 
@@ -45,7 +45,7 @@ int main (int argc, char *argv[])
 {
 #ifdef NS3_CLICK
   double rss = -80;
-  Time interPacketInterval = Seconds(1.0);
+  Time interPacketInterval = Seconds (1.0);
 
   // Setup nodes
   NodeContainer wifiNodes;
@@ -77,14 +77,14 @@ int main (int argc, char *argv[])
   wifiChannel.SetPropagationDelay ("ns3::ConstantSpeedPropagationDelayModel");
   // The below FixedRssLossModel will cause the rss to be fixed regardless
   // of the distance between the two stations, and the transmit power
-  wifiChannel.AddPropagationLoss ("ns3::FixedRssLossModel","Rss",DoubleValue(rss));
+  wifiChannel.AddPropagationLoss ("ns3::FixedRssLossModel","Rss",DoubleValue (rss));
   wifiPhy.SetChannel (wifiChannel.Create ());
 
   // Add a non-QoS upper mac, and disable rate control
   NqosWifiMacHelper wifiMac = NqosWifiMacHelper::Default ();
   wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager",
-                                "DataMode",StringValue(phyMode),
-                                   "ControlMode",StringValue(phyMode));
+                                "DataMode",StringValue (phyMode),
+                                "ControlMode",StringValue (phyMode));
   // Set it to adhoc mode
   wifiMac.SetType ("ns3::AdhocWifiMac");
   NetDeviceContainer wifiDevices = wifi.Install (wifiPhy, wifiMac, wifiNodes);
@@ -96,7 +96,7 @@ int main (int argc, char *argv[])
   positionAlloc->Add (Vector (5.0, 0.0, 0.0));
   mobility.SetPositionAllocator (positionAlloc);
   mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
-  mobility.Install (wifiNodes); 
+  mobility.Install (wifiNodes);
 
   // Install normal internet stack on node B
   InternetStackHelper internet;
@@ -105,7 +105,7 @@ int main (int argc, char *argv[])
   // Install Click on node A
   ClickInternetStackHelper clickinternet;
   clickinternet.SetClickFile (wifiNodes.Get (0), "src/click/examples/nsclick-wifi-single-interface.click");
-  clickinternet.SetRoutingTableElement(wifiNodes.Get (0), "rt");
+  clickinternet.SetRoutingTableElement (wifiNodes.Get (0), "rt");
   clickinternet.Install (wifiNodes.Get (0));
 
   // Configure IP addresses
@@ -136,8 +136,8 @@ int main (int argc, char *argv[])
   // For tracing
   wifiPhy.EnablePcap ("nsclick-raw-wlan", wifiDevices);
 
-  Simulator::Stop (Seconds(20.0));
-  Simulator::Run();
+  Simulator::Stop (Seconds (20.0));
+  Simulator::Run ();
   return 0;
 #else
   NS_FATAL_ERROR ("Can't use ns-3-click without NSCLICK compiled in");

@@ -57,7 +57,7 @@ AddNetworkDevice (Ptr<Node> node, Mac48Address macaddr, Ipv4Address ipv4addr, Ip
   Ptr<SimpleNetDevice> rxDev1;
 
   rxDev1 = CreateObject<SimpleNetDevice> ();
-  rxDev1->SetAddress (Mac48Address(macaddr));
+  rxDev1->SetAddress (Mac48Address (macaddr));
   node->AddDevice (rxDev1);
 
   Ptr<Ipv4> ipv4 = node->GetObject<Ipv4> ();
@@ -84,7 +84,7 @@ ClickIfidFromNameTest::DoRun ()
 {
   Ptr<Node> node = CreateObject<Node> ();
   AddClickInternetStack (node);
-  AddNetworkDevice (node, Mac48Address("00:00:00:00:00:01"), Ipv4Address ("10.1.1.1"), Ipv4Mask ("255.255.255.0"));
+  AddNetworkDevice (node, Mac48Address ("00:00:00:00:00:01"), Ipv4Address ("10.1.1.1"), Ipv4Mask ("255.255.255.0"));
   Ptr<Ipv4> ipv4 = node->GetObject<Ipv4> ();
   Ptr<Ipv4ClickRouting> click = DynamicCast<Ipv4ClickRouting> (ipv4->GetRoutingProtocol ());
   click->DoStart ();
@@ -114,7 +114,7 @@ ClickIfidFromNameTest::DoRun ()
 class ClickIpMacAddressFromNameTest : public TestCase
 {
 public:
-  ClickIpMacAddressFromNameTest (); 
+  ClickIpMacAddressFromNameTest ();
   virtual void DoRun ();
 };
 
@@ -128,8 +128,8 @@ ClickIpMacAddressFromNameTest::DoRun ()
 {
   Ptr<Node> node = CreateObject<Node> ();
   AddClickInternetStack (node);
-  AddNetworkDevice (node, Mac48Address("00:00:00:00:00:01"), Ipv4Address ("10.1.1.1"), Ipv4Mask ("255.255.255.0"));
-  AddNetworkDevice (node, Mac48Address("00:00:00:00:00:02"), Ipv4Address ("10.1.1.2"), Ipv4Mask ("255.255.255.0"));
+  AddNetworkDevice (node, Mac48Address ("00:00:00:00:00:01"), Ipv4Address ("10.1.1.1"), Ipv4Mask ("255.255.255.0"));
+  AddNetworkDevice (node, Mac48Address ("00:00:00:00:00:02"), Ipv4Address ("10.1.1.2"), Ipv4Mask ("255.255.255.0"));
   Ptr<Ipv4> ipv4 = node->GetObject<Ipv4> ();
   Ptr<Ipv4ClickRouting> click = DynamicCast<Ipv4ClickRouting> (ipv4->GetRoutingProtocol ());
   click->DoStart ();
@@ -145,7 +145,7 @@ ClickIpMacAddressFromNameTest::DoRun ()
   NS_TEST_EXPECT_MSG_EQ (strcmp (buf, "00:00:00:00:00:01"), 0, "eth0 has Mac Address 00:00:00:00:00:01");
 
   ret = simclick_sim_command (click->m_simNode, SIMCLICK_IPADDR_FROM_NAME, "eth1", buf, 255);
-  NS_TEST_EXPECT_MSG_EQ (strcmp(buf, "10.1.1.2"), 0, "eth1 has IP 10.1.1.2");
+  NS_TEST_EXPECT_MSG_EQ (strcmp (buf, "10.1.1.2"), 0, "eth1 has IP 10.1.1.2");
 
   ret = simclick_sim_command (click->m_simNode, SIMCLICK_MACADDR_FROM_NAME, "eth1", buf, 255);
   NS_TEST_EXPECT_MSG_EQ (strcmp (buf, "00:00:00:00:00:02"), 0, "eth0 has Mac Address 00:00:00:00:00:02");
@@ -155,10 +155,10 @@ ClickIpMacAddressFromNameTest::DoRun ()
   // NS_TEST_EXPECT_MSG_EQ (buf, NULL, "No eth2");
 
   ret = simclick_sim_command (click->m_simNode, SIMCLICK_IPADDR_FROM_NAME, "tap0", buf, 255);
-  NS_TEST_EXPECT_MSG_EQ (strcmp(buf, "127.0.0.1"), 0, "tun0 has IP 127.0.0.1");
+  NS_TEST_EXPECT_MSG_EQ (strcmp (buf, "127.0.0.1"), 0, "tun0 has IP 127.0.0.1");
 
   ret = simclick_sim_command (click->m_simNode, SIMCLICK_MACADDR_FROM_NAME, "tap0", buf, 255);
-  NS_TEST_EXPECT_MSG_EQ (strcmp(buf, "00:00:00:00:00:00"), 0, "tun0 has IP 127.0.0.1");
+  NS_TEST_EXPECT_MSG_EQ (strcmp (buf, "00:00:00:00:00:00"), 0, "tun0 has IP 127.0.0.1");
 
   delete [] buf;
 }
@@ -180,7 +180,7 @@ ClickTrivialTest::DoRun ()
 {
   Ptr<Node> node = CreateObject<Node> ();
   AddClickInternetStack (node);
-  AddNetworkDevice (node, Mac48Address("00:00:00:00:00:01"), Ipv4Address ("10.1.1.1"), Ipv4Mask ("255.255.255.0"));
+  AddNetworkDevice (node, Mac48Address ("00:00:00:00:00:01"), Ipv4Address ("10.1.1.1"), Ipv4Mask ("255.255.255.0"));
   Ptr<Ipv4> ipv4 = node->GetObject<Ipv4> ();
   Ptr<Ipv4ClickRouting> click = DynamicCast<Ipv4ClickRouting> (ipv4->GetRoutingProtocol ());
   click->SetNodeName ("myNode");

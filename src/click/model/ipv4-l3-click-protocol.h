@@ -48,7 +48,7 @@ class Icmpv4L4Protocol;
 /**
  * \brief Implement the Ipv4 layer specifically for Click nodes
  * to allow a clean integration of Click.
- * 
+ *
  * This is code is mostly repeated from the Ipv4L3Protocol implementation.
  * Changes include:
  *   - A stripped down version of Send().
@@ -68,20 +68,20 @@ public:
    */
   static const uint16_t PROT_NUMBER;
 
-  Ipv4L3ClickProtocol();
-  virtual ~Ipv4L3ClickProtocol();
+  Ipv4L3ClickProtocol ();
+  virtual ~Ipv4L3ClickProtocol ();
 
   /**
    * \param protocol a template for the protocol to add to this L4 Demux.
    * \returns the L4Protocol effectively added.
    *
    * Invoke Copy on the input template to get a copy of the input
-   * protocol which can be used on the Node on which this L4 Demux 
+   * protocol which can be used on the Node on which this L4 Demux
    * is running. The new L4Protocol is registered internally as
    * a working L4 Protocol and returned from this method.
    * The caller does not get ownership of the returned pointer.
    */
-  void Insert(Ptr<Ipv4L4Protocol> protocol);
+  void Insert (Ptr<Ipv4L4Protocol> protocol);
 
   /**
    * \param protocolNumber number of protocol to lookup
@@ -92,7 +92,7 @@ public:
    * to forward packets up the stack to the right protocol.
    * It is also called from NodeImpl::GetUdp for example.
    */
-  Ptr<Ipv4L4Protocol> GetProtocol(int protocolNumber) const;
+  Ptr<Ipv4L4Protocol> GetProtocol (int protocolNumber) const;
 
   /**
    * \param ttl default ttl to use
@@ -133,8 +133,8 @@ public:
    * \param to address of the destination
    * \param packetType type of the packet
    */
-  void Receive( Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t protocol, const Address &from,
-                const Address &to, NetDevice::PacketType packetType);
+  void Receive ( Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t protocol, const Address &from,
+                 const Address &to, NetDevice::PacketType packetType);
 
   /**
    * Ipv4ClickRouting calls this to locally deliver a packet
@@ -216,9 +216,8 @@ public:
   void SetDown (uint32_t i);
   bool IsForwarding (uint32_t i) const;
   void SetForwarding (uint32_t i, bool val);
-  void SetPromisc(uint32_t i);
+  void SetPromisc (uint32_t i);
 protected:
-
   virtual void DoDispose (void);
   /**
    * This function will notify other components connected to the node that a new stack member is now connected
@@ -262,9 +261,9 @@ private:
 
   std::vector<bool> m_promiscDeviceList;
 
-#endif //NS3_CLICK
+#endif // NS3_CLICK
 };
 
-} //namespace ns3
+} // namespace ns3
 
 #endif // IPV4_L3_CLICK_ROUTING_H

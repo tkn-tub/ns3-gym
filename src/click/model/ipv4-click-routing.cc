@@ -42,7 +42,7 @@ namespace ns3 {
 // Values from nsclick ExtRouter implementation
 #define INTERFACE_ID_KERNELTAP 0
 #define INTERFACE_ID_FIRST 1
-#define INTERFACE_ID_FIRST_DROP 33 
+#define INTERFACE_ID_FIRST_DROP 33
 
 NS_OBJECT_ENSURE_REGISTERED (Ipv4ClickRouting);
 
@@ -161,31 +161,31 @@ Ipv4ClickRouting::GetInterfaceId (const char *ifname)
   // corresponds to the interface ID that Click will use.
 
   // Tap/tun devices refer to the kernel devices
-  if (strstr(ifname, "tap") || strstr(ifname, "tun"))
+  if (strstr (ifname, "tap") || strstr (ifname, "tun"))
     {
       retval = 0;
     }
-  else if (const char *devname = strstr(ifname, "eth"))
+  else if (const char *devname = strstr (ifname, "eth"))
     {
-      while (*devname && !isdigit((unsigned char) *devname))
+      while (*devname && !isdigit ((unsigned char) *devname))
         {
           devname++;
         }
 
       if (*devname)
         {
-          retval = atoi(devname) + INTERFACE_ID_FIRST;
+          retval = atoi (devname) + INTERFACE_ID_FIRST;
         }
     }
-  else if (const char *devname = strstr(ifname, "drop"))
+  else if (const char *devname = strstr (ifname, "drop"))
     {
-      while (*devname && !isdigit((unsigned char) *devname))
+      while (*devname && !isdigit ((unsigned char) *devname))
         {
           devname++;
         }
       if (*devname)
         {
-          retval = atoi(devname) + INTERFACE_ID_FIRST_DROP;
+          retval = atoi (devname) + INTERFACE_ID_FIRST_DROP;
         }
     }
 
@@ -230,7 +230,7 @@ Ipv4ClickRouting::GetMacAddressFromInterfaceId (int ifid)
 
   Ptr<NetDevice> device = m_ipv4->GetNetDevice (ifid);
   Address devAddr = device->GetAddress ();
-  addr << Mac48Address::ConvertFrom(devAddr);
+  addr << Mac48Address::ConvertFrom (devAddr);
 
   return addr.str ();
 }
@@ -261,7 +261,7 @@ Ipv4ClickRouting::HandleScheduleFromClick (const struct timeval *when)
   NS_LOG_DEBUG ("HandleScheduleFromClick at " << when->tv_sec << " " << when->tv_usec << " " << Simulator::Now ());
 
   double simtime = when->tv_sec + (when->tv_usec / 1.0e6);
-  double simdelay = simtime - Simulator::Now ().GetMicroSeconds () / 1.0e6; 
+  double simdelay = simtime - Simulator::Now ().GetMicroSeconds () / 1.0e6;
 
   Simulator::Schedule (Seconds (simdelay), &Ipv4ClickRouting::RunClickEvent, this);
 }
@@ -269,7 +269,7 @@ Ipv4ClickRouting::HandleScheduleFromClick (const struct timeval *when)
 void
 Ipv4ClickRouting::HandlePacketFromClick (int ifid, int ptype, const unsigned char* data, int len)
 {
-  NS_LOG_DEBUG ("HandlePacketFromClick"); 
+  NS_LOG_DEBUG ("HandlePacketFromClick");
 
   // Figure out packet's destination here:
   // If ifid == 0, then the packet's going up
@@ -288,7 +288,7 @@ Ipv4ClickRouting::HandlePacketFromClick (int ifid, int ptype, const unsigned cha
     }
   else if (ifid)
     {
-      NS_LOG_DEBUG ("Incoming packet from eth" << ifid - 1 << " of type " << ptype <<". Sending packet down the stack.");
+      NS_LOG_DEBUG ("Incoming packet from eth" << ifid - 1 << " of type " << ptype << ". Sending packet down the stack.");
 
       Ptr<Packet> p = Create<Packet> (data, len);
 
@@ -309,7 +309,7 @@ Ipv4ClickRouting::SendPacketToClick (int ifid, int ptype, const unsigned char* d
   pinfo.id = 0;
   pinfo.fid = 0;
 
-  simclick_click_send(m_simNode,ifid,ptype,data,len,&pinfo);
+  simclick_click_send (m_simNode,ifid,ptype,data,len,&pinfo);
 }
 
 void
@@ -360,7 +360,7 @@ Ipv4ClickRouting::Receive (Ptr<Packet> p, Mac48Address receiverAddr, Mac48Addres
   uint8_t *buf = new uint8_t [len];
   p->CopyData (buf, len);
 
-  //... and send the packet to the corresponding Click interface
+  // ... and send the packet to the corresponding Click interface
   SendPacketToClick (ifid, SIMCLICK_PTYPE_ETHER, buf, len);
 
   delete [] buf;
@@ -391,7 +391,7 @@ void
 Ipv4ClickRouting::SetPromiscuous (std::string ifName)
 {
   Ptr<Ipv4L3ClickProtocol> ipv4l3 = DynamicCast<Ipv4L3ClickProtocol> (m_ipv4);
-  NS_ASSERT(ipv4l3);
+  NS_ASSERT (ipv4l3);
   // Interface ethN gets index 1+N, but netdevice will start at 0
   // To ensure this, install a Click stack on a node only after
   // all NetDevices have been installed.
@@ -420,7 +420,7 @@ Ipv4ClickRouting::RouteOutput (Ptr<Packet> p, const Ipv4Header &header, Ptr<NetD
       rtentry = Create<Ipv4Route> ();
       rtentry->SetDestination (header.GetDestination ());
       // the source address is the interface address that matches
-      // the destination address (when multiple are present on the 
+      // the destination address (when multiple are present on the
       // outgoing interface, one is selected via scoping rules)
       NS_ASSERT (m_ipv4);
       uint32_t numOifAddresses = m_ipv4->GetNAddresses (interfaceId);
@@ -438,10 +438,10 @@ Ipv4ClickRouting::RouteOutput (Ptr<Packet> p, const Ipv4Header &header, Ptr<NetD
       rtentry->SetGateway (destination);
       rtentry->SetOutputDevice (m_ipv4->GetNetDevice (interfaceId));
       sockerr = Socket::ERROR_NOTERROR;
-      NS_LOG_DEBUG ("Found route to " << rtentry->GetDestination () 
+      NS_LOG_DEBUG ("Found route to " << rtentry->GetDestination ()
                                       << " via nh " << rtentry->GetGateway ()
                                       << " with source addr " << rtentry->GetSource ()
-                                      << " and output dev " << rtentry->GetOutputDevice());
+                                      << " and output dev " << rtentry->GetOutputDevice ());
     }
   else
     {
@@ -459,7 +459,7 @@ Ipv4ClickRouting::RouteOutput (Ptr<Packet> p, const Ipv4Header &header, Ptr<NetD
 bool
 Ipv4ClickRouting::RouteInput  (Ptr<const Packet> p, const Ipv4Header &header,
                                Ptr<const NetDevice> idev, UnicastForwardCallback ucb,
-                               MulticastForwardCallback mcb, LocalDeliverCallback lcb, 
+                               MulticastForwardCallback mcb, LocalDeliverCallback lcb,
                                ErrorCallback ecb)
 {
   NS_FATAL_ERROR ("Click router does not have a RouteInput() interface!");
@@ -473,35 +473,39 @@ Ipv4ClickRouting::PrintRoutingTable (Ptr<OutputStreamWrapper> stream) const
 
 void
 Ipv4ClickRouting::NotifyInterfaceUp (uint32_t i)
-{}
+{
+}
 
 void
 Ipv4ClickRouting::NotifyInterfaceDown (uint32_t i)
-{}
+{
+}
 
 void
 Ipv4ClickRouting::NotifyAddAddress (uint32_t interface, Ipv4InterfaceAddress address)
-{}
+{
+}
 
 void
 Ipv4ClickRouting::NotifyRemoveAddress (uint32_t interface, Ipv4InterfaceAddress address)
-{}
+{
+}
 
 
 } // namespace ns3
 
-static int simstrlcpy(char *buf, int len, const std::string &s)
+static int simstrlcpy (char *buf, int len, const std::string &s)
 {
   if (len)
     {
       len--;
 
-      if ((unsigned) len > s.length())
+      if ((unsigned) len > s.length ())
         {
-          len = s.length();
+          len = s.length ();
         }
 
-      s.copy(buf, len);
+      s.copy (buf, len);
       buf[len] = '\0';
     }
   return 0;
@@ -509,11 +513,11 @@ static int simstrlcpy(char *buf, int len, const std::string &s)
 
 // Sends a Packet from Click to the Simulator: Defined in simclick.h. Click
 // calls these methods.
-int simclick_sim_send(simclick_node_t *simnode,
-                      int ifid, int type, const unsigned char* data, int len,
-                      simclick_simpacketinfo *pinfo)
+int simclick_sim_send (simclick_node_t *simnode,
+                       int ifid, int type, const unsigned char* data, int len,
+                       simclick_simpacketinfo *pinfo)
 {
-  NS_LOG_DEBUG ("simclick_sim_send called at " << ns3::Simulator::Now().GetSeconds()<<": " << ifid << " " << type << " " << data << " "<< len);
+  NS_LOG_DEBUG ("simclick_sim_send called at " << ns3::Simulator::Now ().GetSeconds () << ": " << ifid << " " << type << " " << data << " " << len);
 
   if (simnode == NULL)
     {
@@ -528,7 +532,7 @@ int simclick_sim_send(simclick_node_t *simnode,
 }
 
 // Click Service Methods: Defined in simclick.h
-int simclick_sim_command(simclick_node_t *simnode, int cmd, ...)
+int simclick_sim_command (simclick_node_t *simnode, int cmd, ...)
 {
   va_list val;
   va_start (val, cmd);
@@ -536,7 +540,7 @@ int simclick_sim_command(simclick_node_t *simnode, int cmd, ...)
   int retval = 0;
 
   ns3::Ptr<ns3::Ipv4ClickRouting> clickInstance = ns3::Ipv4ClickRouting::GetClickInstanceFromSimNode (simnode);
-  switch (cmd) 
+  switch (cmd)
     {
     case SIMCLICK_VERSION:
       {
@@ -553,72 +557,72 @@ int simclick_sim_command(simclick_node_t *simnode, int cmd, ...)
 
     case SIMCLICK_IFID_FROM_NAME:
       {
-        const char *ifname = va_arg(val, const char *);
+        const char *ifname = va_arg (val, const char *);
 
         retval = clickInstance->GetInterfaceId (ifname);
- 
+
         NS_LOG_DEBUG (clickInstance->GetNodeName () << " SIMCLICK_IFID_FROM_NAME: " << ifname << " " << retval);
         break;
       }
 
     case SIMCLICK_IPADDR_FROM_NAME:
       {
-        const char *ifname = va_arg(val, const char *);
-        char *buf = va_arg(val, char *);
-        int len = va_arg(val, int);
+        const char *ifname = va_arg (val, const char *);
+        char *buf = va_arg (val, char *);
+        int len = va_arg (val, int);
 
         int ifid = clickInstance->GetInterfaceId (ifname);
 
         if (ifid >= 0)
           {
-            retval = simstrlcpy(buf, len, clickInstance->GetIpAddressFromInterfaceId (ifid));
+            retval = simstrlcpy (buf, len, clickInstance->GetIpAddressFromInterfaceId (ifid));
           }
         else
           {
             retval = -1;
           }
 
-        NS_LOG_DEBUG (clickInstance->GetNodeName () << " SIMCLICK_IPADDR_FROM_NAME: "<< ifname << " "<< buf << " " << len);
+        NS_LOG_DEBUG (clickInstance->GetNodeName () << " SIMCLICK_IPADDR_FROM_NAME: " << ifname << " " << buf << " " << len);
         break;
       }
 
     case SIMCLICK_MACADDR_FROM_NAME:
       {
-        const char *ifname = va_arg(val, const char *);
-        char *buf = va_arg(val, char *);
-        int len = va_arg(val, int);
+        const char *ifname = va_arg (val, const char *);
+        char *buf = va_arg (val, char *);
+        int len = va_arg (val, int);
         int ifid = clickInstance->GetInterfaceId (ifname);
 
         if (ifid >= 0)
           {
-            retval = simstrlcpy(buf, len, clickInstance->GetMacAddressFromInterfaceId (ifid));
+            retval = simstrlcpy (buf, len, clickInstance->GetMacAddressFromInterfaceId (ifid));
           }
         else
           {
             retval = -1;
           }
 
-        NS_LOG_DEBUG (clickInstance->GetNodeName () << " SIMCLICK_MACADDR_FROM_NAME: "<< ifname << " "<< buf << " "<< len);
+        NS_LOG_DEBUG (clickInstance->GetNodeName () << " SIMCLICK_MACADDR_FROM_NAME: " << ifname << " " << buf << " " << len);
         break;
       }
 
     case SIMCLICK_SCHEDULE:
       {
-        const struct timeval *when = va_arg(val, const struct timeval *);
+        const struct timeval *when = va_arg (val, const struct timeval *);
 
         clickInstance->HandleScheduleFromClick (when);
 
         retval = 0;
-        NS_LOG_DEBUG (clickInstance->GetNodeName () << " SIMCLICK_SCHEDULE: "<< when->tv_sec << "s and " << when->tv_usec << "usecs later.");
+        NS_LOG_DEBUG (clickInstance->GetNodeName () << " SIMCLICK_SCHEDULE: " << when->tv_sec << "s and " << when->tv_usec << "usecs later.");
 
         break;
       }
 
     case SIMCLICK_GET_NODE_NAME:
       {
-        char *buf = va_arg(val, char *);
-        int len = va_arg(val, int);
-        retval = simstrlcpy(buf, len, clickInstance->GetNodeName ());
+        char *buf = va_arg (val, char *);
+        int len = va_arg (val, int);
+        retval = simstrlcpy (buf, len, clickInstance->GetNodeName ());
 
         NS_LOG_DEBUG (clickInstance->GetNodeName () << " SIMCLICK_GET_NODE_NAME: " << buf << " " << len);
         break;
@@ -626,7 +630,7 @@ int simclick_sim_command(simclick_node_t *simnode, int cmd, ...)
 
     case SIMCLICK_IF_READY:
       {
-        int ifid = va_arg(val, int); // Commented out so that optimized build works
+        int ifid = va_arg (val, int); // Commented out so that optimized build works
 
         // We're not using a ClickQueue, so we're always ready (for the timebeing)
         retval = clickInstance->IsInterfaceReady (ifid);

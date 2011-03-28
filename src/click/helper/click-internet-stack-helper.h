@@ -46,18 +46,19 @@ class Ipv4RoutingHelper;
  * nodes will not be able to use Ipv6 functionalities.
  *
  */
-class ClickInternetStackHelper : public PcapHelperForIpv4, public AsciiTraceHelperForIpv4
+class ClickInternetStackHelper : public PcapHelperForIpv4,
+                                 public AsciiTraceHelperForIpv4
 {
 public:
   /**
    * Create a new ClickInternetStackHelper which uses Ipv4ClickRouting for routing
    */
-  ClickInternetStackHelper(void);
+  ClickInternetStackHelper (void);
 
   /**
    * Destroy the ClickInternetStackHelper
    */
-  virtual ~ClickInternetStackHelper(void);
+  virtual ~ClickInternetStackHelper (void);
   ClickInternetStackHelper (const ClickInternetStackHelper &);
   ClickInternetStackHelper &operator = (const ClickInternetStackHelper &o);
 
@@ -67,29 +68,29 @@ public:
   void Reset (void);
 
   /**
-   * Aggregate implementations of the ns3::Ipv4L3ClickProtocol, ns3::ArpL3Protocol, 
-   * ns3::Udp, and ns3::Tcp classes onto the provided node.  This method will 
+   * Aggregate implementations of the ns3::Ipv4L3ClickProtocol, ns3::ArpL3Protocol,
+   * ns3::Udp, and ns3::Tcp classes onto the provided node.  This method will
    * assert if called on a node that already has an Ipv4 object aggregated to it.
-   * 
+   *
    * \param nodeName The name of the node on which to install the stack.
    */
   void Install (std::string nodeName) const;
 
   /**
    * Aggregate implementations of the ns3::Ipv4L3ClickProtocol, ns3::ArpL3Protocol,
-   * ns3::Udp, and ns3::Tcp classes onto the provided node.  This method will 
+   * ns3::Udp, and ns3::Tcp classes onto the provided node.  This method will
    * assert if called on a node that already has an Ipv4 object aggregated to it.
-   * 
+   *
    * \param node The node on which to install the stack.
    */
   void Install (Ptr<Node> node) const;
 
   /**
-   * For each node in the input container, aggregate implementations of the 
-   * ns3::Ipv4L3ClickProtocol, ns3::ArpL3Protocol, ns3::Udp, and, ns3::Tcp classes.  
-   * The program will assert if this method is called on a container with a 
+   * For each node in the input container, aggregate implementations of the
+   * ns3::Ipv4L3ClickProtocol, ns3::ArpL3Protocol, ns3::Udp, and, ns3::Tcp classes.
+   * The program will assert if this method is called on a container with a
    * node that already has an Ipv4 object aggregated to it.
-   * 
+   *
    * \param c NodeContainer that holds the set of nodes on which to install the
    * new stacks.
    */
@@ -103,7 +104,7 @@ public:
   /**
    * \brief set the Tcp stack which will not need any other parameter.
    *
-   * This function sets up the tcp stack to the given TypeId. It should not be 
+   * This function sets up the tcp stack to the given TypeId. It should not be
    * used for NSC stack setup because the nsc stack needs the Library attribute
    * to be setup, please use instead the version that requires an attribute
    * and a value. If you choose to use this function anyways to set nsc stack
@@ -111,21 +112,21 @@ public:
    *
    * \param tid the type id, typically it is set to  "ns3::TcpL4Protocol"
    */
-  void SetTcp(std::string tid);
+  void SetTcp (std::string tid);
 
   /**
    * \brief This function is used to setup the Network Simulation Cradle stack with library value.
-   * 
-   * Give the NSC stack a shared library file name to use when creating the 
-   * stack implementation.  The attr string is actually the attribute name to 
-   * be setup and val is its value. The attribute is the stack implementation 
+   *
+   * Give the NSC stack a shared library file name to use when creating the
+   * stack implementation.  The attr string is actually the attribute name to
+   * be setup and val is its value. The attribute is the stack implementation
    * to be used and the value is the shared library name.
-   * 
-   * \param tid The type id, for the case of nsc it would be "ns3::NscTcpL4Protocol" 
+   *
+   * \param tid The type id, for the case of nsc it would be "ns3::NscTcpL4Protocol"
    * \param attr The attribute name that must be setup, for example "Library"
    * \param val The attribute value, which will be in fact the shared library name (example:"liblinux2.6.26.so")
    */
-  void SetTcp (std::string tid, std::string attr, const AttributeValue &val); 
+  void SetTcp (std::string tid, std::string attr, const AttributeValue &val);
 
   /**
    * \brief Set a Click file to be used for a group of nodes.
@@ -163,8 +164,8 @@ private:
    * @param ipv4 Ptr to the Ipv4 interface on which you want to enable tracing.
    * @param interface Interface ID on the Ipv4 on which you want to enable tracing.
    */
-  virtual void EnablePcapIpv4Internal (std::string prefix, 
-                                       Ptr<Ipv4> ipv4, 
+  virtual void EnablePcapIpv4Internal (std::string prefix,
+                                       Ptr<Ipv4> ipv4,
                                        uint32_t interface,
                                        bool explicitFilename);
 
@@ -178,9 +179,9 @@ private:
    * @param ipv4 Ptr to the Ipv4 interface on which you want to enable tracing.
    * @param interface Interface ID on the Ipv4 on which you want to enable tracing.
    */
-  virtual void EnableAsciiIpv4Internal (Ptr<OutputStreamWrapper> stream, 
-                                        std::string prefix, 
-                                        Ptr<Ipv4> ipv4, 
+  virtual void EnableAsciiIpv4Internal (Ptr<OutputStreamWrapper> stream,
+                                        std::string prefix,
+                                        Ptr<Ipv4> ipv4,
                                         uint32_t interface,
                                         bool explicitFilename);
 

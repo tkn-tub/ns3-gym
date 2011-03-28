@@ -77,7 +77,7 @@ void
 Ipv4L3ClickProtocol::DoDispose (void)
 {
   NS_LOG_FUNCTION (this);
-  for (L4List_t::iterator i = m_protocols.begin(); i != m_protocols.end(); ++i)
+  for (L4List_t::iterator i = m_protocols.begin (); i != m_protocols.end (); ++i)
     {
       *i = 0;
     }
@@ -99,7 +99,7 @@ Ipv4L3ClickProtocol::NotifyNewAggregate ()
 {
   if (m_node == 0)
     {
-      Ptr<Node>node = this->GetObject<Node>();
+      Ptr<Node>node = this->GetObject<Node> ();
       // verify that it's a valid node and that
       // the node has not been set before
       if (node != 0)
@@ -194,7 +194,7 @@ int32_t
 Ipv4L3ClickProtocol::GetInterfaceForDevice (
   Ptr<const NetDevice> device) const
 {
-  NS_LOG_FUNCTION (this << device->GetIfIndex());
+  NS_LOG_FUNCTION (this << device->GetIfIndex ());
 
   int32_t interface = 0;
   for (Ipv4InterfaceList::const_iterator i = m_interfaces.begin ();
@@ -253,7 +253,10 @@ Ipv4L3ClickProtocol::IsDestinationAddress (Ipv4Address address, uint32_t iif) co
     {
       for (uint32_t j = 0; j < GetNInterfaces (); j++)
         {
-          if (j == uint32_t (iif)) continue;
+          if (j == uint32_t (iif))
+            {
+              continue;
+            }
           for (uint32_t i = 0; i < GetNAddresses (j); i++)
             {
               Ipv4InterfaceAddress iaddr = GetAddress (j, i);
@@ -447,8 +450,14 @@ Ipv4L3ClickProtocol::SelectSourceAddress (Ptr<const NetDevice> device,
       for (uint32_t j = 0; j < GetNAddresses (i); j++)
         {
           iaddr = GetAddress (i, j);
-          if (iaddr.IsSecondary ()) continue;
-          if (iaddr.GetScope () > scope) continue;
+          if (iaddr.IsSecondary ())
+            {
+              continue;
+            }
+          if (iaddr.GetScope () > scope)
+            {
+              continue;
+            }
           if (dst.CombineMask (iaddr.GetMask ())  == iaddr.GetLocal ().CombineMask (iaddr.GetMask ()) )
             {
               return iaddr.GetLocal ();
@@ -471,7 +480,10 @@ Ipv4L3ClickProtocol::SelectSourceAddress (Ptr<const NetDevice> device,
       for (uint32_t j = 0; j < GetNAddresses (i); j++)
         {
           iaddr = GetAddress (i, j);
-          if (iaddr.IsSecondary ()) continue;
+          if (iaddr.IsSecondary ())
+            {
+              continue;
+            }
           if (iaddr.GetScope () != Ipv4InterfaceAddress::LINK
               && iaddr.GetScope () <= scope)
             {
@@ -562,12 +574,12 @@ Ipv4L3ClickProtocol::SetForwarding (uint32_t i, bool val)
 void
 Ipv4L3ClickProtocol::SetPromisc (uint32_t i)
 {
-  NS_ASSERT(i <= m_node->GetNDevices ());
+  NS_ASSERT (i <= m_node->GetNDevices ());
   if (i > m_promiscDeviceList.size ())
     {
       m_promiscDeviceList.resize (i);
     }
-  std::vector<bool>::iterator it = m_promiscDeviceList.begin();
+  std::vector<bool>::iterator it = m_promiscDeviceList.begin ();
   std::advance (it, i);
   m_promiscDeviceList.insert (it, true);
 }
@@ -578,10 +590,10 @@ Ipv4L3ClickProtocol::AddInterface (Ptr<NetDevice> device)
   NS_LOG_FUNCTION (this << &device);
 
   Ptr<Node> node = GetObject<Node> ();
-  NS_LOG_DEBUG("Size:" << m_promiscDeviceList.size () << " Interface index" << device->GetIfIndex ());
-  if (m_promiscDeviceList.size () > 0 &&
-      (m_promiscDeviceList.size () >= device->GetIfIndex ()) &&
-      (m_promiscDeviceList[device->GetIfIndex ()]))
+  NS_LOG_DEBUG ("Size:" << m_promiscDeviceList.size () << " Interface index" << device->GetIfIndex ());
+  if (m_promiscDeviceList.size () > 0
+      && (m_promiscDeviceList.size () >= device->GetIfIndex ())
+      && (m_promiscDeviceList[device->GetIfIndex ()]))
     {
       node->RegisterProtocolHandler (MakeCallback (&Ipv4L3ClickProtocol::Receive, this),
                                      0, device,true);
@@ -656,7 +668,7 @@ Ipv4L3ClickProtocol::Send (Ptr<Packet> packet,
                            uint8_t protocol,
                            Ptr<Ipv4Route> route)
 {
-  NS_LOG_FUNCTION (this << packet << source << destination << uint32_t(protocol) << route);
+  NS_LOG_FUNCTION (this << packet << source << destination << uint32_t (protocol) << route);
 
   Ipv4Header ipHeader;
   bool mayFragment = true;
@@ -709,16 +721,16 @@ Ipv4L3ClickProtocol::SendDown (Ptr<Packet> p, int ifid)
 
   // Use the destination address and protocol obtained
   // from above to send the packet.
-  netdev->Send (p, header.GetDestination (), protocol); 
+  netdev->Send (p, header.GetDestination (), protocol);
 }
 
 void
-Ipv4L3ClickProtocol::Receive( Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t protocol, const Address &from,
-                              const Address &to, NetDevice::PacketType packetType)
+Ipv4L3ClickProtocol::Receive ( Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t protocol, const Address &from,
+                               const Address &to, NetDevice::PacketType packetType)
 {
   NS_LOG_FUNCTION (this << device << p << from << to);
   Ptr<Packet> packet = p->Copy ();
-  
+
   // Add an ethernet frame. This allows
   // Click to work with csma and wifi
   EthernetHeader hdr;
@@ -726,7 +738,7 @@ Ipv4L3ClickProtocol::Receive( Ptr<NetDevice> device, Ptr<const Packet> p, uint16
   hdr.SetDestination (Mac48Address::ConvertFrom (to));
   hdr.SetLengthType (protocol);
   packet->AddHeader (hdr);
-  
+
   Ptr<Ipv4ClickRouting> click = DynamicCast<Ipv4ClickRouting> (GetRoutingProtocol ());
   click->Receive (packet->Copy (), Mac48Address::ConvertFrom (device->GetAddress ()), Mac48Address::ConvertFrom (to));
 }
@@ -747,7 +759,8 @@ Ipv4L3ClickProtocol::LocalDeliver (Ptr<const Packet> packet, Ipv4Header const&ip
       Ptr<Packet> copy = p->Copy ();
       enum Ipv4L4Protocol::RxStatus status =
         protocol->Receive (p, ip, GetInterface (iif));
-      switch (status) {
+      switch (status)
+        {
         case Ipv4L4Protocol::RX_OK:
         // fall through
         case Ipv4L4Protocol::RX_ENDPOINT_CLOSED:
@@ -755,8 +768,8 @@ Ipv4L3ClickProtocol::LocalDeliver (Ptr<const Packet> packet, Ipv4Header const&ip
         case Ipv4L4Protocol::RX_CSUM_FAILED:
           break;
         case Ipv4L4Protocol::RX_ENDPOINT_UNREACH:
-          if (ip.GetDestination ().IsBroadcast () == true ||
-              ip.GetDestination ().IsMulticast () == true)
+          if (ip.GetDestination ().IsBroadcast () == true
+              || ip.GetDestination ().IsMulticast () == true)
             {
               break; // Do not reply to broadcast or multicast
             }
@@ -765,8 +778,8 @@ Ipv4L3ClickProtocol::LocalDeliver (Ptr<const Packet> packet, Ipv4Header const&ip
           for (uint32_t i = 0; i < GetNAddresses (iif); i++)
             {
               Ipv4InterfaceAddress addr = GetAddress (iif, i);
-              if (addr.GetLocal ().CombineMask (addr.GetMask ()) == ip.GetDestination().CombineMask (addr.GetMask ()) &&
-                  ip.GetDestination ().IsSubnetDirectedBroadcast (addr.GetMask ()))
+              if (addr.GetLocal ().CombineMask (addr.GetMask ()) == ip.GetDestination ().CombineMask (addr.GetMask ())
+                  && ip.GetDestination ().IsSubnetDirectedBroadcast (addr.GetMask ()))
                 {
                   subnetDirected = true;
                 }
@@ -794,15 +807,15 @@ Ipv4L3ClickProtocol::GetIcmp (void) const
 }
 
 void
-Ipv4L3ClickProtocol::Insert(Ptr<Ipv4L4Protocol> protocol)
+Ipv4L3ClickProtocol::Insert (Ptr<Ipv4L4Protocol> protocol)
 {
   m_protocols.push_back (protocol);
 }
 
 Ptr<Ipv4L4Protocol>
-Ipv4L3ClickProtocol::GetProtocol(int protocolNumber) const
+Ipv4L3ClickProtocol::GetProtocol (int protocolNumber) const
 {
-  for (L4List_t::const_iterator i = m_protocols.begin(); i != m_protocols.end(); ++i)
+  for (L4List_t::const_iterator i = m_protocols.begin (); i != m_protocols.end (); ++i)
     {
       if ((*i)->GetProtocolNumber () == protocolNumber)
         {

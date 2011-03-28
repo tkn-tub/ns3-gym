@@ -46,18 +46,18 @@ NS_LOG_COMPONENT_DEFINE ("NsclickUdpClientServerWifi");
 
 #ifdef NS3_CLICK
 void
-readArp(Ptr<Ipv4ClickRouting> clickRouter)
+readArp (Ptr<Ipv4ClickRouting> clickRouter)
 {
   // Access the handlers
-  NS_LOG_INFO(clickRouter->ReadHandler ("wifi/arpquerier", "table"));
-  NS_LOG_INFO(clickRouter->ReadHandler ("wifi/arpquerier", "stats"));
+  NS_LOG_INFO (clickRouter->ReadHandler ("wifi/arpquerier", "table"));
+  NS_LOG_INFO (clickRouter->ReadHandler ("wifi/arpquerier", "stats"));
 }
 
 void
-writeArp(Ptr<Ipv4ClickRouting> clickRouter)
+writeArp (Ptr<Ipv4ClickRouting> clickRouter)
 {
   // Access the handler
-  NS_LOG_INFO(clickRouter->WriteHandler ("wifi/arpquerier", "insert", "172.16.1.2 00:00:00:00:00:02"));
+  NS_LOG_INFO (clickRouter->WriteHandler ("wifi/arpquerier", "insert", "172.16.1.2 00:00:00:00:00:02"));
 }
 #endif
 
@@ -106,17 +106,17 @@ main (int argc, char *argv[])
   wifiChannel.SetPropagationDelay ("ns3::ConstantSpeedPropagationDelayModel");
   // The below FixedRssLossModel will cause the rss to be fixed regardless
   // of the distance between the two stations, and the transmit power
-  wifiChannel.AddPropagationLoss ("ns3::FixedRssLossModel","Rss",DoubleValue(-80));
+  wifiChannel.AddPropagationLoss ("ns3::FixedRssLossModel","Rss",DoubleValue (-80));
   wifiPhy.SetChannel (wifiChannel.Create ());
 
   // Add a non-QoS upper mac, and disable rate control
   NqosWifiMacHelper wifiMac = NqosWifiMacHelper::Default ();
   wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager",
-                                "DataMode",StringValue(phyMode),
-                                   "ControlMode",StringValue(phyMode));
+                                "DataMode",StringValue (phyMode),
+                                "ControlMode",StringValue (phyMode));
   // Set it to adhoc mode
   wifiMac.SetType ("ns3::AdhocWifiMac");
-  NetDeviceContainer d = wifi.Install (wifiPhy, wifiMac, n); 
+  NetDeviceContainer d = wifi.Install (wifiPhy, wifiMac, n);
 
   MobilityHelper mobility;
   Ptr<ListPositionAllocator> positionAlloc = CreateObject<ListPositionAllocator> ();
@@ -140,7 +140,7 @@ main (int argc, char *argv[])
   // been added ahead of the official Wifi support
   // for promiscuous mode. Thus, the below line will
   // not work until then.
-  n.Get(3)->GetObject<Ipv4ClickRouting>()->SetPromiscuous ("eth0");
+  n.Get (3)->GetObject<Ipv4ClickRouting> ()->SetPromiscuous ("eth0");
 
   Ipv4AddressHelper ipv4;
   //
@@ -156,7 +156,7 @@ main (int argc, char *argv[])
   //
   uint16_t port = 4000;
   UdpServerHelper server (port);
-  ApplicationContainer apps = server.Install (n.Get(1));
+  ApplicationContainer apps = server.Install (n.Get (1));
   apps.Start (Seconds (1.0));
   apps.Stop (Seconds (10.0));
 
@@ -184,15 +184,15 @@ main (int argc, char *argv[])
   // requests of node 3 are lost due to interference from node
   // 1. Hence, we fill in the ARP table of node 2 before at the
   // beginning of the simulation
-  Simulator::Schedule (Seconds (0.5), &readArp,n.Get(2)->GetObject<Ipv4ClickRouting>());
-  Simulator::Schedule (Seconds (0.6), &writeArp,n.Get(2)->GetObject<Ipv4ClickRouting>());
-  Simulator::Schedule (Seconds (0.7), &readArp,n.Get(2)->GetObject<Ipv4ClickRouting>());
+  Simulator::Schedule (Seconds (0.5), &readArp,n.Get (2)->GetObject<Ipv4ClickRouting> ());
+  Simulator::Schedule (Seconds (0.6), &writeArp,n.Get (2)->GetObject<Ipv4ClickRouting> ());
+  Simulator::Schedule (Seconds (0.7), &readArp,n.Get (2)->GetObject<Ipv4ClickRouting> ());
 
   //
   // Now, do the actual simulation.
   //
   NS_LOG_INFO ("Run Simulation.");
-  Simulator::Stop (Seconds(20.0));
+  Simulator::Stop (Seconds (20.0));
   Simulator::Run ();
   Simulator::Destroy ();
   NS_LOG_INFO ("Done.");
