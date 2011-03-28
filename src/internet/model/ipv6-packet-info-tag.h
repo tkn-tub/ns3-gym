@@ -22,6 +22,7 @@
 #define __IPV6_PACKET_INFO_TAG_H__
 
 #include "ns3/tag.h"
+#include "ns3/ipv6-address.h"
 
 namespace ns3 {
 
