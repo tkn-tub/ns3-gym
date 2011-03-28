@@ -40,6 +40,7 @@ def build(bld):
 
     obj_test = bld.create_ns3_module_test_library('mesh')
     obj_test.source = [
+        'test/mesh-information-element-vector-test-suite.cc',
         'test/dot11s/dot11s-test-suite.cc',
         'test/dot11s/pmp-regression.cc',
         'test/dot11s/hwmp-reactive-regression.cc',

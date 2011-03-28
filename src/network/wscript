@@ -47,7 +47,6 @@ def build(bld):
         'utils/pcap-file-wrapper.cc',
         'utils/queue.cc',
         'utils/radiotap-header.cc',
-        'utils/sequence-number.cc',
         'utils/simple-channel.cc',
         'utils/simple-net-device.cc',
         'helper/application-container.cc',
@@ -60,9 +59,12 @@ def build(bld):
     network_test = bld.create_ns3_module_test_library('network')
     network_test.source = [
         'test/buffer-test.cc',
+        'test/drop-tail-queue-test-suite.cc',
         'test/packetbb-test-suite.cc',
+        'test/packet-test-suite.cc',
         'test/packet-metadata-test.cc',
         'test/pcap-file-test-suite.cc',
+        'test/sequence-number-test-suite.cc',
         ]
 
     headers = bld.new_task_gen('ns3header')

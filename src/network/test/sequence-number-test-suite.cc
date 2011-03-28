@@ -18,7 +18,7 @@
 // Author: Gustavo J. A. M. Carneiro  <gjc@inescporto.pt> <gjcarneiro@gmail.com>
 //
 
-#include "sequence-number.h"
+#include "ns3/sequence-number.h"
 #include "ns3/test.h"
 #include "ns3/object.h"
 #include "ns3/traced-value.h"
