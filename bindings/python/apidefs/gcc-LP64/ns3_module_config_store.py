@@ -5,8 +5,6 @@ def register_types(module):
     
     ## file-config.h: ns3::FileConfig [class]
     module.add_class('FileConfig', allow_subclassing=True)
-    ## gtk-config-store.h: ns3::GtkConfigStore [class]
-    module.add_class('GtkConfigStore')
     ## file-config.h: ns3::NoneFileConfig [class]
     module.add_class('NoneFileConfig', parent=root_module['ns3::FileConfig'])
     ## config-store.h: ns3::ConfigStore [class]
@@ -108,7 +106,6 @@ def register_types_ns3_olsr(module):
 
 def register_methods(root_module):
     register_Ns3FileConfig_methods(root_module, root_module['ns3::FileConfig'])
-    register_Ns3GtkConfigStore_methods(root_module, root_module['ns3::GtkConfigStore'])
     register_Ns3NoneFileConfig_methods(root_module, root_module['ns3::NoneFileConfig'])
     register_Ns3ConfigStore_methods(root_module, root_module['ns3::ConfigStore'])
     return
@@ -138,21 +135,6 @@ def register_Ns3FileConfig_methods(root_module, cls):
                    'void', 
                    [param('std::string', 'filename')], 
                    is_pure_virtual=True, is_virtual=True)
-    return
-
-def register_Ns3GtkConfigStore_methods(root_module, cls):
-    ## gtk-config-store.h: ns3::GtkConfigStore::GtkConfigStore(ns3::GtkConfigStore const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::GtkConfigStore const &', 'arg0')])
-    ## gtk-config-store.h: ns3::GtkConfigStore::GtkConfigStore() [constructor]
-    cls.add_constructor([])
-    ## gtk-config-store.h: void ns3::GtkConfigStore::ConfigureAttributes() [member function]
-    cls.add_method('ConfigureAttributes', 
-                   'void', 
-                   [])
-    ## gtk-config-store.h: void ns3::GtkConfigStore::ConfigureDefaults() [member function]
-    cls.add_method('ConfigureDefaults', 
-                   'void', 
-                   [])
     return
 
 def register_Ns3NoneFileConfig_methods(root_module, cls):

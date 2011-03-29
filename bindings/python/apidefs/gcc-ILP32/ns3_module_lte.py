@@ -1192,6 +1192,22 @@ def register_Ns3LteSpectrumPhy_methods(root_module, cls):
                    'void', 
                    [param('ns3::Ptr< ns3::Object >', 'd')], 
                    is_virtual=True)
+    ## lte-spectrum-phy.h: void ns3::LteSpectrumPhy::SetGenericPhyRxEndErrorCallback(ns3::GenericPhyRxEndErrorCallback c) [member function]
+    cls.add_method('SetGenericPhyRxEndErrorCallback', 
+                   'void', 
+                   [param('ns3::GenericPhyRxEndErrorCallback', 'c')])
+    ## lte-spectrum-phy.h: void ns3::LteSpectrumPhy::SetGenericPhyRxEndOkCallback(ns3::GenericPhyRxEndOkCallback c) [member function]
+    cls.add_method('SetGenericPhyRxEndOkCallback', 
+                   'void', 
+                   [param('ns3::GenericPhyRxEndOkCallback', 'c')])
+    ## lte-spectrum-phy.h: void ns3::LteSpectrumPhy::SetGenericPhyRxStartCallback(ns3::GenericPhyRxStartCallback c) [member function]
+    cls.add_method('SetGenericPhyRxStartCallback', 
+                   'void', 
+                   [param('ns3::GenericPhyRxStartCallback', 'c')])
+    ## lte-spectrum-phy.h: void ns3::LteSpectrumPhy::SetGenericPhyTxEndCallback(ns3::GenericPhyTxEndCallback c) [member function]
+    cls.add_method('SetGenericPhyTxEndCallback', 
+                   'void', 
+                   [param('ns3::GenericPhyTxEndCallback', 'c')])
     ## lte-spectrum-phy.h: void ns3::LteSpectrumPhy::SetMobility(ns3::Ptr<ns3::Object> m) [member function]
     cls.add_method('SetMobility', 
                    'void', 
@@ -1201,22 +1217,6 @@ def register_Ns3LteSpectrumPhy_methods(root_module, cls):
     cls.add_method('SetNoisePowerSpectralDensity', 
                    'void', 
                    [param('ns3::Ptr< ns3::SpectrumValue const >', 'noisePsd')])
-    ## lte-spectrum-phy.h: void ns3::LteSpectrumPhy::SetPhyMacRxEndErrorCallback(ns3::PhyMacRxEndErrorCallback c) [member function]
-    cls.add_method('SetPhyMacRxEndErrorCallback', 
-                   'void', 
-                   [param('ns3::PhyMacRxEndErrorCallback', 'c')])
-    ## lte-spectrum-phy.h: void ns3::LteSpectrumPhy::SetPhyMacRxEndOkCallback(ns3::PhyMacRxEndOkCallback c) [member function]
-    cls.add_method('SetPhyMacRxEndOkCallback', 
-                   'void', 
-                   [param('ns3::PhyMacRxEndOkCallback', 'c')])
-    ## lte-spectrum-phy.h: void ns3::LteSpectrumPhy::SetPhyMacRxStartCallback(ns3::PhyMacRxStartCallback c) [member function]
-    cls.add_method('SetPhyMacRxStartCallback', 
-                   'void', 
-                   [param('ns3::PhyMacRxStartCallback', 'c')])
-    ## lte-spectrum-phy.h: void ns3::LteSpectrumPhy::SetPhyMacTxEndCallback(ns3::PhyMacTxEndCallback c) [member function]
-    cls.add_method('SetPhyMacTxEndCallback', 
-                   'void', 
-                   [param('ns3::PhyMacTxEndCallback', 'c')])
     ## lte-spectrum-phy.h: void ns3::LteSpectrumPhy::SetState(ns3::LteSpectrumPhy::State newState) [member function]
     cls.add_method('SetState', 
                    'void', 
@@ -1615,10 +1615,10 @@ def register_Ns3LteNetDevice_methods(root_module, cls):
                    'void', 
                    [], 
                    is_virtual=True)
-    ## lte-net-device.h: void ns3::LteNetDevice::SetPhyMacTxStartCallback(ns3::PhyMacTxStartCallback c) [member function]
-    cls.add_method('SetPhyMacTxStartCallback', 
+    ## lte-net-device.h: void ns3::LteNetDevice::SetGenericPhyTxStartCallback(ns3::GenericPhyTxStartCallback c) [member function]
+    cls.add_method('SetGenericPhyTxStartCallback', 
                    'void', 
-                   [param('ns3::PhyMacTxStartCallback', 'c')])
+                   [param('ns3::GenericPhyTxStartCallback', 'c')])
     ## lte-net-device.h: void ns3::LteNetDevice::SetPhy(ns3::Ptr<ns3::LtePhy> phy) [member function]
     cls.add_method('SetPhy', 
                    'void', 
