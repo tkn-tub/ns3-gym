@@ -304,6 +304,9 @@ PfFfMacScheduler::DoCschedLcConfigReq (const struct FfMacCschedSapProvider::Csch
           flowStats.totalBytesTransmitted = 0;
           flowStats.lastTtiBytesTrasmitted = 0;
           flowStats.lastAveragedThroughput = 0.0;
+          flowStats.rlcBufferReq.m_rlcTransmissionQueueSize = 0;
+          flowStats.rlcBufferReq.m_rlcRetransmissionQueueSize = 0;
+          flowStats.rlcBufferReq.m_rlcStatusPduSize = 0;
           m_flowStats.insert (std::pair<pfsFlowId_t, pfsFlowPerf_t> (flow, flowStats));
         }
       else
