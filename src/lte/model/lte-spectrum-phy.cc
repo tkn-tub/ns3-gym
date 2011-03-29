@@ -202,7 +202,7 @@ LteSpectrumPhy::GetNoisePowerSpectralDensity (void)
 
 
 void
-LteSpectrumPhy::SetPhyMacTxEndCallback (PhyMacTxEndCallback c)
+LteSpectrumPhy::SetGenericPhyTxEndCallback (GenericPhyTxEndCallback c)
 {
   NS_LOG_FUNCTION (this);
   m_phyMacTxEndCallback = c;
@@ -210,7 +210,7 @@ LteSpectrumPhy::SetPhyMacTxEndCallback (PhyMacTxEndCallback c)
 
 
 void
-LteSpectrumPhy::SetPhyMacRxStartCallback (PhyMacRxStartCallback c)
+LteSpectrumPhy::SetGenericPhyRxStartCallback (GenericPhyRxStartCallback c)
 {
   NS_LOG_FUNCTION (this);
   m_phyMacRxStartCallback = c;
@@ -218,7 +218,7 @@ LteSpectrumPhy::SetPhyMacRxStartCallback (PhyMacRxStartCallback c)
 
 
 void
-LteSpectrumPhy::SetPhyMacRxEndErrorCallback (PhyMacRxEndErrorCallback c)
+LteSpectrumPhy::SetGenericPhyRxEndErrorCallback (GenericPhyRxEndErrorCallback c)
 {
   NS_LOG_FUNCTION (this);
   m_phyMacRxEndErrorCallback = c;
@@ -226,7 +226,7 @@ LteSpectrumPhy::SetPhyMacRxEndErrorCallback (PhyMacRxEndErrorCallback c)
 
 
 void
-LteSpectrumPhy::SetPhyMacRxEndOkCallback (PhyMacRxEndOkCallback c)
+LteSpectrumPhy::SetGenericPhyRxEndOkCallback (GenericPhyRxEndOkCallback c)
 {
   NS_LOG_FUNCTION (this);
   m_phyMacRxEndOkCallback = c;

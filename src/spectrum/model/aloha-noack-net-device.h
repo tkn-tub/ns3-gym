@@ -31,7 +31,7 @@
 #include <ns3/nstime.h>
 #include <ns3/ptr.h>
 #include <ns3/mac48-address.h>
-#include <ns3/phy-mac.h>
+#include <ns3/generic-phy.h>
 
 namespace ns3 {
 
@@ -51,7 +51,7 @@ class Queue;
  *    + packets transmitted as soon as possible
  *    + a new packet is queued if previous one is still being transmitted
  *    + no acknowledgements, hence no retransmissions
- *  - can support any PHY layer compatible with the API defined in phy-mac.h
+ *  - can support any PHY layer compatible with the API defined in generic-phy.h
  *
  */
 class AlohaNoackNetDevice : public NetDevice
@@ -119,7 +119,7 @@ public:
    *
    * @param c
    */
-  void SetPhyMacTxStartCallback (PhyMacTxStartCallback c);
+  void SetGenericPhyTxStartCallback (GenericPhyTxStartCallback c);
 
 
 
@@ -201,7 +201,7 @@ private:
   NetDevice::ReceiveCallback m_rxCallback;
   NetDevice::PromiscReceiveCallback m_promiscRxCallback;
 
-  PhyMacTxStartCallback m_phyMacTxStartCallback;
+  GenericPhyTxStartCallback m_phyMacTxStartCallback;
 
   /**
    * List of callbacks to fire if the link changes state (up or down).

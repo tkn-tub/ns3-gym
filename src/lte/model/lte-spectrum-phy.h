@@ -33,7 +33,7 @@
 #include <ns3/spectrum-type.h>
 #include <ns3/spectrum-interference.h>
 #include <ns3/data-rate.h>
-#include <ns3/phy-mac.h>
+#include <ns3/generic-phy.h>
 #include <ns3/packet-burst.h>
 #include <ns3/event-id.h>
 
@@ -131,7 +131,7 @@ public:
    *
    * @param c the callback
    */
-  void SetPhyMacTxEndCallback (PhyMacTxEndCallback c);
+  void SetGenericPhyTxEndCallback (GenericPhyTxEndCallback c);
 
   /**
    * set the callback for the start of RX, as part of the
@@ -139,7 +139,7 @@ public:
    *
    * @param c the callback
    */
-  void SetPhyMacRxStartCallback (PhyMacRxStartCallback c);
+  void SetGenericPhyRxStartCallback (GenericPhyRxStartCallback c);
 
   /**
    * set the callback for the end of a RX in error, as part of the
@@ -147,7 +147,7 @@ public:
    *
    * @param c the callback
    */
-  void SetPhyMacRxEndErrorCallback (PhyMacRxEndErrorCallback c);
+  void SetGenericPhyRxEndErrorCallback (GenericPhyRxEndErrorCallback c);
 
   /**
    * set the callback for the successful end of a RX, as part of the
@@ -155,7 +155,7 @@ public:
    *
    * @param c the callback
    */
-  void SetPhyMacRxEndOkCallback (PhyMacRxEndOkCallback c);
+  void SetGenericPhyRxEndOkCallback (GenericPhyRxEndOkCallback c);
 
   /**
    * \brief Calculate the SINR estimated during the reception of the
@@ -200,10 +200,10 @@ private:
   TracedCallback<Ptr<const Packet> > m_phyRxEndOkTrace;
   TracedCallback<Ptr<const Packet> > m_phyRxEndErrorTrace;
 
-  PhyMacTxEndCallback        m_phyMacTxEndCallback;
-  PhyMacRxStartCallback      m_phyMacRxStartCallback;
-  PhyMacRxEndErrorCallback   m_phyMacRxEndErrorCallback;
-  PhyMacRxEndOkCallback      m_phyMacRxEndOkCallback;
+  GenericPhyTxEndCallback        m_phyMacTxEndCallback;
+  GenericPhyRxStartCallback      m_phyMacRxStartCallback;
+  GenericPhyRxEndErrorCallback   m_phyMacRxEndErrorCallback;
+  GenericPhyRxEndOkCallback      m_phyMacRxEndOkCallback;
 
 
   Ptr<const SpectrumValue> m_noise;

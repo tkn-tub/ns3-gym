@@ -59,6 +59,11 @@ us a note on ns-developers mailing list.  </p>
 <li><b>Test cases no longer return a boolean value</b>
 <p>Unit test case DoRun() functions no longer return a bool value.  Now, they don't return a value at all.  The motivation for this change was to disallow users from merely returning "true" from a test case to force an error to be recorded.  Instead, test case macros should be used.
 </p></li>
+<li><b>PhyMac renamed to GenericPhy</b>
+<p>The PhyMac interface previously defined in phy-mac.h has been
+  renamed to GenericPhy interface and moved to a new file
+  generic-phy.h. The related variables and methods have been renamed accordingly. 
+</p></li>
 </ul>
 
 <h2>Changed behavior:</h2>

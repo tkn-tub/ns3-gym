@@ -388,7 +388,7 @@ AlohaNoackNetDevice::SendFrom (Ptr<Packet> packet, const Address& src, const Add
 }
 
 void
-AlohaNoackNetDevice::SetPhyMacTxStartCallback (PhyMacTxStartCallback c)
+AlohaNoackNetDevice::SetGenericPhyTxStartCallback (GenericPhyTxStartCallback c)
 {
   NS_LOG_FUNCTION (this);
   m_phyMacTxStartCallback = c;

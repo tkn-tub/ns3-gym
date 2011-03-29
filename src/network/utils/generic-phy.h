@@ -18,8 +18,8 @@
  * Author: Nicola Baldo <nbaldo@cttc.es>
  */
 
-#ifndef PHY_MAC_H
-#define PHY_MAC_H
+#ifndef GENERIC_PHY_H
+#define GENERIC_PHY_H
 
 #include <ns3/callback.h>
 
@@ -33,9 +33,9 @@ namespace ns3 {
  * @param packet the Packet to be transmitted
  * @return this method returns false if the PHY will start TX,
  * true if the PHY refuses to start the TX. If false, the MAC layer
- * will expect that PhyMacTxEndCallback is invoked at some point later.
+ * will expect that GenericPhyTxEndCallback is invoked at some point later.
  */
-typedef Callback< bool, Ptr<Packet> > PhyMacTxStartCallback;
+typedef Callback< bool, Ptr<Packet> > GenericPhyTxStartCallback;
 
 /**
  * this method is invoked by the PHY to notify the MAC that the
@@ -43,7 +43,7 @@ typedef Callback< bool, Ptr<Packet> > PhyMacTxStartCallback;
  *
  * @param packet the Packet whose TX has been completed.
  */
-typedef Callback< void, Ptr<const Packet> > PhyMacTxEndCallback;
+typedef Callback< void, Ptr<const Packet> > GenericPhyTxEndCallback;
 
 /**
  * This method is used by the PHY to notify the MAC that a RX
@@ -51,13 +51,13 @@ typedef Callback< void, Ptr<const Packet> > PhyMacTxEndCallback;
  * recognized by the PHY.
  *
  */
-typedef Callback< void > PhyMacRxStartCallback;
+typedef Callback< void > GenericPhyRxStartCallback;
 
 /**
  * This method is used by the PHY to notify the MAC that a
  * previously started TX attempt has terminated without success.
  */
-typedef Callback< void > PhyMacRxEndErrorCallback;
+typedef Callback< void > GenericPhyRxEndErrorCallback;
 
 /**
  * This method is used by the PHY to notify the MAC that a
@@ -65,9 +65,9 @@ typedef Callback< void > PhyMacRxEndErrorCallback;
  *
  * @param packet the received Packet
  */
-typedef Callback< void, Ptr<Packet> > PhyMacRxEndOkCallback;
+typedef Callback< void, Ptr<Packet> > GenericPhyRxEndOkCallback;
 
 } // namespace ns3
 
 
-#endif /* PHY_MAC_H */
+#endif /* GENERIC_PHY_H */

@@ -129,10 +129,10 @@ AdhocAlohaNoackIdealPhyHelper::Install (NodeContainer c) const
       dev->SetChannel (m_channel);
       m_channel->AddRx (phy);
 
-      phy->SetPhyMacTxEndCallback   (MakeCallback (&AlohaNoackNetDevice::NotifyTransmissionEnd, dev));
-      phy->SetPhyMacRxStartCallback (MakeCallback (&AlohaNoackNetDevice::NotifyReceptionStart, dev));
-      phy->SetPhyMacRxEndOkCallback (MakeCallback (&AlohaNoackNetDevice::NotifyReceptionEndOk, dev));
-      dev->SetPhyMacTxStartCallback (MakeCallback (&HalfDuplexIdealPhy::StartTx, phy));
+      phy->SetGenericPhyTxEndCallback   (MakeCallback (&AlohaNoackNetDevice::NotifyTransmissionEnd, dev));
+      phy->SetGenericPhyRxStartCallback (MakeCallback (&AlohaNoackNetDevice::NotifyReceptionStart, dev));
+      phy->SetGenericPhyRxEndOkCallback (MakeCallback (&AlohaNoackNetDevice::NotifyReceptionEndOk, dev));
+      dev->SetGenericPhyTxStartCallback (MakeCallback (&HalfDuplexIdealPhy::StartTx, phy));
 
       node->AddDevice (dev);
       devices.Add (dev);

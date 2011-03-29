@@ -221,7 +221,7 @@ LteHelper::Install (NodeContainer c, NetDeviceType type)
           Ptr<EnbLtePhy> p = CreateEnbPhy ();
           Ptr<EnbNetDevice> dev = CreateObject<EnbNetDevice> (node, p);
 
-          p->GetUplinkSpectrumPhy ()->SetPhyMacRxEndOkCallback (MakeCallback (&LteNetDevice::Receive, dev));
+          p->GetUplinkSpectrumPhy ()->SetGenericPhyRxEndOkCallback (MakeCallback (&LteNetDevice::Receive, dev));
 
           device = dev;
           phy = p;
@@ -231,7 +231,7 @@ LteHelper::Install (NodeContainer c, NetDeviceType type)
           Ptr<UeLtePhy> p = CreateUePhy ();
           Ptr<UeNetDevice> dev = CreateObject<UeNetDevice> (node, p);
 
-          p->GetDownlinkSpectrumPhy ()->SetPhyMacRxEndOkCallback (MakeCallback (&LteNetDevice::Receive, dev));
+          p->GetDownlinkSpectrumPhy ()->SetGenericPhyRxEndOkCallback (MakeCallback (&LteNetDevice::Receive, dev));
 
           device = dev;
           phy = p;

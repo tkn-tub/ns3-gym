@@ -239,7 +239,7 @@ LteNetDevice::SupportsSendFrom (void) const
 
 
 void
-LteNetDevice::SetPhyMacTxStartCallback (PhyMacTxStartCallback c)
+LteNetDevice::SetGenericPhyTxStartCallback (GenericPhyTxStartCallback c)
 {
   NS_LOG_FUNCTION (this);
   m_phyMacTxStartCallback = c;

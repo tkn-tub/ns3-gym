@@ -112,7 +112,7 @@ def build(bld):
         'utils/packet-socket-factory.h',
         'utils/pcap-file.h',
         'utils/pcap-file-wrapper.h',
-        'utils/phy-mac.h',
+        'utils/generic-phy.h',
         'utils/queue.h',
         'utils/radiotap-header.h',
         'utils/sequence-number.h',

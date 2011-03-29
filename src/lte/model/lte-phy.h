@@ -30,7 +30,7 @@
 #include <ns3/spectrum-channel.h>
 #include <ns3/spectrum-type.h>
 #include <ns3/spectrum-interference.h>
-#include <ns3/phy-mac.h>
+#include <ns3/generic-phy.h>
 #include "lte-spectrum-phy.h"
 
 namespace ns3 {

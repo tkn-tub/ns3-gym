@@ -220,14 +220,14 @@ HalfDuplexIdealPhy::GetRate () const
 
 
 void
-HalfDuplexIdealPhy::SetPhyMacTxEndCallback (PhyMacTxEndCallback c)
+HalfDuplexIdealPhy::SetGenericPhyTxEndCallback (GenericPhyTxEndCallback c)
 {
   NS_LOG_FUNCTION (this);
   m_phyMacTxEndCallback = c;
 }
 
 void
-HalfDuplexIdealPhy::SetPhyMacRxStartCallback (PhyMacRxStartCallback c)
+HalfDuplexIdealPhy::SetGenericPhyRxStartCallback (GenericPhyRxStartCallback c)
 {
   NS_LOG_FUNCTION (this);
   m_phyMacRxStartCallback = c;
@@ -235,7 +235,7 @@ HalfDuplexIdealPhy::SetPhyMacRxStartCallback (PhyMacRxStartCallback c)
 
 
 void
-HalfDuplexIdealPhy::SetPhyMacRxEndErrorCallback (PhyMacRxEndErrorCallback c)
+HalfDuplexIdealPhy::SetGenericPhyRxEndErrorCallback (GenericPhyRxEndErrorCallback c)
 {
   NS_LOG_FUNCTION (this);
   m_phyMacRxEndErrorCallback = c;
@@ -243,7 +243,7 @@ HalfDuplexIdealPhy::SetPhyMacRxEndErrorCallback (PhyMacRxEndErrorCallback c)
 
 
 void
-HalfDuplexIdealPhy::SetPhyMacRxEndOkCallback (PhyMacRxEndOkCallback c)
+HalfDuplexIdealPhy::SetGenericPhyRxEndOkCallback (GenericPhyRxEndOkCallback c)
 {
   NS_LOG_FUNCTION (this);
   m_phyMacRxEndOkCallback = c;
