@@ -52,6 +52,7 @@ public:
   virtual ~LteEnbPhy ();
 
   static TypeId GetTypeId (void);
+  virtual void DoDispose (void);
 
 
   /**

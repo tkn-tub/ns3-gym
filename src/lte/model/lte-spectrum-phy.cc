@@ -41,6 +41,7 @@ NS_OBJECT_ENSURE_REGISTERED (LteSpectrumPhy);
 LteSpectrumPhy::LteSpectrumPhy ()
   : m_state (IDLE)
 {
+  NS_LOG_FUNCTION (this);
 }
 
 
@@ -50,10 +51,11 @@ LteSpectrumPhy::~LteSpectrumPhy ()
 
 void LteSpectrumPhy::DoDispose ()
 {
-  m_channel->Dispose ();
+  NS_LOG_FUNCTION (this);
   m_channel = 0;
   m_mobility = 0;
   m_device = 0;
+  SpectrumPhy::DoDispose ();
 } 
 
 std::ostream& operator<< (std::ostream& os, LteSpectrumPhy::State s)

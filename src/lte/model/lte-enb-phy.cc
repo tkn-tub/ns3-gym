@@ -121,6 +121,13 @@ LteEnbPhy::~LteEnbPhy ()
 }
 
 void
+LteEnbPhy::DoDispose ()
+{
+  NS_LOG_FUNCTION (this);
+  LtePhy::DoDispose ();
+}
+
+void
 LteEnbPhy::SetLteEnbPhySapUser (LteEnbPhySapUser* s)
 {
   m_enbPhySapUser = s;

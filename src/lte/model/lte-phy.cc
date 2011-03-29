@@ -87,6 +87,7 @@ LtePhy::DoDispose ()
       m_packetBurstQueue.erase (m_packetBurstQueue.begin (), m_packetBurstQueue.end ());
       m_controlMessagesQueue.erase (m_controlMessagesQueue.begin (), m_controlMessagesQueue.end ());
     }
+  Object::DoDispose ();
 }
 
 void
