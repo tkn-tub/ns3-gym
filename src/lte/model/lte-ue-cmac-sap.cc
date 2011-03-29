@@ -15,21 +15,21 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * Author: Nicola Baldo  <nbaldo@cttc.es>
+ * Author: Marco Miozzo <mmiozzo@cttc.es>
  */
 
 
-#include "lte-mac-sap.h"
+#include "lte-ue-cmac-sap.h"
 
 
 namespace ns3 {
 
 
-LteMacSapProvider::~LteMacSapProvider ()
+LteUeCmacSapProvider::~LteUeCmacSapProvider ()
 {
 }
 
-LteMacSapUser::~LteMacSapUser ()
+LteUeCmacSapUser::~LteUeCmacSapUser ()
 {
 }
 

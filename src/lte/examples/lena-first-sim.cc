@@ -23,7 +23,7 @@
 #include "ns3/network-module.h"
 #include "ns3/mobility-module.h"
 #include "ns3/lte-module.h"
-#include "ns3/gtk-config-store.h"
+//#include "ns3/gtk-config-store.h"
 using namespace ns3;
 
 int main (int argc, char *argv[])
@@ -66,8 +66,8 @@ int main (int argc, char *argv[])
 
   Simulator::Run ();
 
-  GtkConfigStore config;
-  config.ConfigureAttributes ();
+  //GtkConfigStore config;
+  //config.ConfigureAttributes ();
 
   Simulator::Destroy ();
   return 0;

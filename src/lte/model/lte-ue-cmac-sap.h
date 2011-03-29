@@ -39,6 +39,7 @@ class LteMacSapUser;
 class LteUeCmacSapProvider
 {
 public:
+  virtual ~LteUeCmacSapProvider ();
   /**
    * called by the RRC after going to RRC connected
    *
@@ -62,6 +63,7 @@ public:
 class LteUeCmacSapUser
 {
 public:
+  virtual ~LteUeCmacSapUser ();
   virtual void LcConfigCompleted () = 0;
 };
 

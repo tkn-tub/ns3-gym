@@ -289,7 +289,7 @@ PfFfMacScheduler::DoCschedLcConfigReq (const struct FfMacCschedSapProvider::Csch
   NS_LOG_FUNCTION (this << " New LC, rnti: "  << params.m_rnti);
   
   std::map <pfsFlowId_t, pfsFlowPerf_t>::iterator it;
-  for (uint i = 0; i < params.m_logicalChannelConfigList.size (); i++)
+  for (uint16_t i = 0; i < params.m_logicalChannelConfigList.size (); i++)
     {
       pfsFlowId_t flow;
       flow.m_rnti = params.m_rnti;
