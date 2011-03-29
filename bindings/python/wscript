@@ -57,7 +57,7 @@ def set_options(opt):
                    choices=c,
                    help=("Type of Python bindings to build %r.  "
                          "Warning: the modular bindings are still experimental." % (c,)),
-                   default="monolithic",
+                   default="modular",
                    dest='bindings_type')
     opt.add_option('--disable-python',
                    help=("Don't build Python bindings."),
