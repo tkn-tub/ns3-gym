@@ -144,30 +144,12 @@ LtePhy::SetDownlinkChannel (Ptr<SpectrumChannel> c)
   m_downlinkSpectrumPhy->SetChannel (c);
 }
 
-
-Ptr<SpectrumChannel>
-LtePhy::GetDownlinkChannel ()
-{
-  NS_LOG_FUNCTION (this);
-  return m_downlinkSpectrumPhy->GetChannel ();
-}
-
-
 void
 LtePhy::SetUplinkChannel (Ptr<SpectrumChannel> c)
 {
   NS_LOG_FUNCTION (this << c);
   m_uplinkSpectrumPhy->SetChannel (c);
 }
-
-
-Ptr<SpectrumChannel>
-LtePhy::GetUplinkChannel ()
-{
-  NS_LOG_FUNCTION (this);
-  return m_uplinkSpectrumPhy->GetChannel ();
-}
-
 
 void
 LtePhy::SetDownlinkSubChannels (std::vector<int> mask )

@@ -39,11 +39,7 @@ namespace ns3 {
 NS_OBJECT_ENSURE_REGISTERED (LteSpectrumPhy);
 
 LteSpectrumPhy::LteSpectrumPhy ()
-  : m_mobility (0),
-    m_device (0),
-    m_channel (0),
-    m_txPsd (0),
-    m_state (IDLE)
+  : m_state (IDLE)
 {
 }
 
@@ -51,6 +47,14 @@ LteSpectrumPhy::LteSpectrumPhy ()
 LteSpectrumPhy::~LteSpectrumPhy ()
 {
 }
+
+void LteSpectrumPhy::DoDispose ()
+{
+  m_channel->Dispose ();
+  m_channel = 0;
+  m_mobility = 0;
+  m_device = 0;
+} 
 
 std::ostream& operator<< (std::ostream& os, LteSpectrumPhy::State s)
 {
@@ -140,14 +144,6 @@ LteSpectrumPhy::SetChannel (Ptr<SpectrumChannel> c)
   NS_LOG_FUNCTION (this << c);
   m_channel = c;
 }
-
-
-Ptr<SpectrumChannel>
-LteSpectrumPhy::GetChannel (void)
-{
-  return m_channel;
-}
-
 
 Ptr<const SpectrumModel>
 LteSpectrumPhy::GetRxSpectrumModel () const
