@@ -290,6 +290,8 @@ def get_headers_map(bld):
     headers_map = {} # header => module
     for ns3headers in bld.all_task_gen:
         if type(ns3headers).__name__ == 'ns3header_taskgen': # XXX: find less hackish way to compare
+            if ns3headers.module.endswith('-test'):
+                continue
             for h in ns3headers.to_list(ns3headers.source):
                 headers_map[os.path.basename(h)] = ns3headers.module
     return headers_map
@@ -464,6 +466,8 @@ class all_ns3_headers_taskgen(TaskGen.task_gen):
             for ns3headers in self.bld.all_task_gen:
                 if type(ns3headers).__name__ == 'ns3header_taskgen': # XXX: find less hackish way to compare
                     ## skip headers not part of enabled modules
+                    if ns3headers.module.endswith('-test'):
+                        continue
                     if self.env['NS3_ENABLED_MODULES']:
                         if ("ns3-%s" % ns3headers.module) not in self.env['NS3_ENABLED_MODULES']:
                             continue
@@ -494,6 +498,8 @@ def get_modules_and_headers(bld):
     retval = {}
     for module in bld.all_task_gen:
         if not module.name.startswith('ns3-'):
+            continue
+        if module.name.endswith('-test'):
             continue
         module_name = module.name[4:] # strip the ns3- prefix
         ## find the headers object for this module
