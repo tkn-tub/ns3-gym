@@ -12,10 +12,12 @@ def build(bld):
 
     module_test = bld.create_ns3_module_test_library('olsr')
     module_test.source = [
-        'test/regression-test-suite.cc',
-        'test/hello-regression-test.cc',
-        'test/tc-regression-test.cc',
         'test/bug780-test.cc',
+        'test/hello-regression-test.cc',
+        'test/olsr-header-test-suite.cc',
+        'test/regression-test-suite.cc',
+        'test/olsr-routing-protocol-test-suite.cc',
+        'test/tc-regression-test.cc',
         ]
 
     headers = bld.new_task_gen('ns3header')

@@ -7,10 +7,15 @@ def build(bld):
         'model/point-to-point-net-device.cc',
         'model/point-to-point-channel.cc',
         'model/point-to-point-remote-channel.cc',
-        'model/point-to-point-test.cc',
         'model/ppp-header.cc',
         'helper/point-to-point-helper.cc',
         ]
+
+    module_test = bld.create_ns3_module_test_library('point-to-point')
+    module_test.source = [
+        'test/point-to-point-test.cc',
+        ]
+
     headers = bld.new_task_gen('ns3header')
     headers.module = 'point-to-point'
     headers.source = [
