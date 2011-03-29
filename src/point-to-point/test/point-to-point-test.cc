@@ -1,8 +1,8 @@
 #include "ns3/test.h"
 #include "ns3/drop-tail-queue.h"
 #include "ns3/simulator.h"
-#include "point-to-point-net-device.h"
-#include "point-to-point-channel.h"
+#include "ns3/point-to-point-net-device.h"
+#include "ns3/point-to-point-channel.h"
 
 namespace ns3 {
 
