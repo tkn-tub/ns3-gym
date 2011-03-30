@@ -33,10 +33,6 @@
 
 namespace ns3 {
 
-NS_LOG_COMPONENT_DEFINE ("RocketfuelTopologyReader");
-
-NS_OBJECT_ENSURE_REGISTERED (RocketfuelTopologyReader);
-
 class RocketfuelTopologyReaderTest: public TestCase 
 {
 public:
@@ -70,20 +66,17 @@ RocketfuelTopologyReaderTest::DoRun (void)
 
   NS_TEST_ASSERT_MSG_NE (inFile->LinksSize (), 0, "Problems reading the topology file.");
 
-  NS_LOG_INFO ("Rocketfuel topology created with " << nodes.GetN () << " nodes and " << 
-               inFile->LinksSize () << " links (from " << input << ")");
-
   NS_TEST_EXPECT_MSG_EQ (nodes.GetN (),315, "noes");
   NS_TEST_EXPECT_MSG_EQ (inFile->LinksSize (),972, "links");
   Simulator::Destroy ();
 }
 
-static class RocketfuelTopologyReaderTestSuite : public TestSuite
+class RocketfuelTopologyReaderTestSuite : public TestSuite
 {
 public:
   RocketfuelTopologyReaderTestSuite ();
 private:
-} g_rocketfueltopologyreaderTests;
+}; 
 
 RocketfuelTopologyReaderTestSuite::RocketfuelTopologyReaderTestSuite ()
   : TestSuite ("rocketfuel-topology-reader", UNIT)
@@ -91,5 +84,5 @@ RocketfuelTopologyReaderTestSuite::RocketfuelTopologyReaderTestSuite ()
   AddTestCase (new RocketfuelTopologyReaderTest ());
 }
 
-
+static RocketfuelTopologyReaderTestSuite rocketfuelTopologyReaderTestSuite;
 }
