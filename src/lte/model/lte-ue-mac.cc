@@ -190,6 +190,7 @@ LteUeMac::GetTypeId (void)
 
 LteUeMac::LteUeMac ()
 {
+  NS_LOG_FUNCTION (this);
   m_macSapProvider = new UeMemberLteMacSapProvider (this);
   m_cmacSapProvider = new UeMemberLteUeCmacSapProvider (this);
   m_uePhySapUser = new UeMemberLteUePhySapUser (this);
@@ -198,11 +199,13 @@ LteUeMac::LteUeMac ()
 
 LteUeMac::~LteUeMac ()
 {
+  NS_LOG_FUNCTION (this);
 }
 
 void
 LteUeMac::DoDispose ()
 {
+  NS_LOG_FUNCTION (this);
   delete m_macSapProvider;
   delete m_cmacSapProvider;
   Object::DoDispose ();
