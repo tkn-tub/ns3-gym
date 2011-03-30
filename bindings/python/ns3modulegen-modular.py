@@ -73,6 +73,8 @@ def main(argv):
     root_module.set_name(extension_name)
     root_module.add_include('"ns3/%s-module.h"' % module_name)
 
+    ns3modulegen_core_customizations.add_std_ios_openmode(root_module)
+
     # -----------
     module_apidefs.register_types(root_module)
 
