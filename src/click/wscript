@@ -6,7 +6,7 @@ import Options
 
 def set_options(opt):
     opt.add_option('--with-nsclick',
-                   help=('Path to Click source for NS-3 Click Integration support'),
+                   help=('Path to Click source or installation prefix for NS-3 Click Integration support'),
                    dest='with_nsclick', default=None)
 
 def configure(conf):
@@ -55,10 +55,13 @@ int main()
 '''
     conf.env['DL'] = conf.check(mandatory=True, lib='dl', define_name='DL', uselib='DL')
 
-    conf.env.append_value('NS3_MODULE_PATH',os.path.abspath(os.path.join(conf.env['WITH_NSCLICK'],'ns')))
+    for tmp in ['lib', 'ns']:
+        libdir = os.path.abspath(os.path.join(conf.env['WITH_NSCLICK'],tmp))
+        if os.path.isdir(libdir):
+            conf.env.append_value('NS3_MODULE_PATH',libdir)
+            conf.env['LIBPATH_NSCLICK'] = [libdir]
 
     conf.env['CPPPATH_NSCLICK'] = [os.path.abspath(os.path.join(conf.env['WITH_NSCLICK'],'include'))]
-    conf.env['LIBPATH_NSCLICK'] = [os.path.abspath(os.path.join(conf.env['WITH_NSCLICK'],'ns'))]
     
     conf.env['NSCLICK'] = conf.check(fragment=test_code, lib='nsclick', uselib='NSCLICK DL')
     conf.report_optional_feature("nsclick", "NS-3 Click Integration",
