@@ -101,22 +101,10 @@ public:
   void SetDownlinkChannel (Ptr<SpectrumChannel> c);
 
   /**
-   * Get the downlink channel
-   * \return a Ptr to the downlink SpectrumChannel
-   */
-  Ptr<SpectrumChannel> GetDownlinkChannel ();
-
-  /**
    * Set the uplink channel
    * \param c the uplink channel
    */
   void SetUplinkChannel (Ptr<SpectrumChannel> c);
-
-  /**
-   * Get the uplink channel
-   * \return a Ptr to the uplink SpectrumChannel
-   */
-  Ptr<SpectrumChannel> GetUplinkChannel ();
 
   /**
    * \brief set a list of sub channel to use in the downlink.

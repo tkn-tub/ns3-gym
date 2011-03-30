@@ -38,6 +38,11 @@
 #include <ns3/lte-ue-net-device.h>
 
 #include <ns3/lte-spectrum-value-helper.h>
+#include <ns3/lte-enb-mac.h>
+#include <ns3/pf-ff-mac-scheduler.h>
+#include <ns3/lte-enb-rrc.h>
+#include <ns3/lte-ue-mac.h>
+#include <ns3/lte-ue-rrc.h>
 
 
 namespace ns3 {
@@ -49,12 +54,40 @@ LenaHelper::LenaHelper (void)
 {
   Ptr<SpectrumPropagationLossModel> model = CreateObject<FriisSpectrumPropagationLossModel> ();
   m_downlinkChannel->AddSpectrumPropagationLossModel (model);
+  
+  SetScheduler ("RrFfMacScheduler"); // default scheduler
 }
 
 LenaHelper::~LenaHelper (void)
 {
   m_downlinkChannel = 0;
   m_uplinkChannel = 0;
+}
+
+
+
+
+void 
+LenaHelper::SetScheduler (std::string type,
+                          std::string n0, const AttributeValue &v0,
+                          std::string n1, const AttributeValue &v1,
+                          std::string n2, const AttributeValue &v2,
+                          std::string n3, const AttributeValue &v3,
+                          std::string n4, const AttributeValue &v4,
+                          std::string n5, const AttributeValue &v5,
+                          std::string n6, const AttributeValue &v6,
+                          std::string n7, const AttributeValue &v7)
+{
+  m_scheduler = ObjectFactory ();
+  m_scheduler.SetTypeId (type);
+  m_scheduler.Set (n0, v0);
+  m_scheduler.Set (n1, v1);
+  m_scheduler.Set (n2, v2);
+  m_scheduler.Set (n3, v3);
+  m_scheduler.Set (n4, v4);
+  m_scheduler.Set (n5, v5);
+  m_scheduler.Set (n6, v6);
+  m_scheduler.Set (n7, v7);
 }
 
 
@@ -122,14 +155,16 @@ LenaHelper::InstallSingleEnbDevice (Ptr<Node> n)
   ulPhy->SetMobility (mm);
 
   m_uplinkChannel->AddRx (ulPhy);
-
-  Ptr<LteEnbNetDevice> dev = CreateObject<LteEnbNetDevice> (n, phy);
+  Ptr<LteEnbMac> mac = CreateObject<LteEnbMac> ();
+  Ptr<FfMacScheduler> sched = m_scheduler.Create<FfMacScheduler> ();
+  //Ptr<FfMacScheduler> sched = Create<PfFfMacScheduler> ();
+  Ptr<LteEnbRrc> rrc = Create<LteEnbRrc> ();
+  Ptr<LteEnbNetDevice> dev = CreateObject<LteEnbNetDevice> (n, phy, mac, sched, rrc);
   phy->SetDevice (dev);
   dlPhy->SetDevice (dev);
   ulPhy->SetDevice (dev);
 
   n->AddDevice (dev);
-  Ptr<LteEnbMac> mac = dev->GetMac ();
   ulPhy->SetPhyMacRxEndOkCallback (MakeCallback (&LteEnbPhy::PhyPduReceived, phy));
 
   dev->Start ();
@@ -162,14 +197,15 @@ LenaHelper::InstallSingleUeDevice (Ptr<Node> n)
   ulPhy->SetMobility (mm);
 
   m_downlinkChannel->AddRx (dlPhy);
-
-  Ptr<LteUeNetDevice> dev = CreateObject<LteUeNetDevice> (n, phy);
+  
+  Ptr<LteUeMac> mac = CreateObject<LteUeMac> ();
+  Ptr<LteUeRrc> rrc = Create<LteUeRrc> ();
+  Ptr<LteUeNetDevice> dev = CreateObject<LteUeNetDevice> (n, phy, mac, rrc);
   phy->SetDevice (dev);
   dlPhy->SetDevice (dev);
   ulPhy->SetDevice (dev);
 
   n->AddDevice (dev);
-  Ptr<LteUeMac> mac = dev->GetMac ();
   dlPhy->SetPhyMacRxEndOkCallback (MakeCallback (&LteUePhy::PhyPduReceived, phy));
 
   dev->Start ();
@@ -237,8 +273,8 @@ LenaHelper::EnableLogComponents (void)
   LogComponentEnable ("LteEnbMac", LOG_LEVEL_ALL);
   LogComponentEnable ("LteUeMac", LOG_LEVEL_ALL);
   LogComponentEnable ("LteRlc", LOG_LEVEL_ALL);
-  LogComponentEnable ("RrPacketScheduler", LOG_LEVEL_ALL);
-  LogComponentEnable ("PfPacketScheduler", LOG_LEVEL_ALL);
+  LogComponentEnable ("RrFfMacScheduler", LOG_LEVEL_ALL);
+  LogComponentEnable ("PfFfMacScheduler", LOG_LEVEL_ALL);
 
   LogComponentEnable ("LtePhy", LOG_LEVEL_ALL);
   LogComponentEnable ("LteEnbPhy", LOG_LEVEL_ALL);

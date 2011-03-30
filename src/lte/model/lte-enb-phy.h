@@ -52,6 +52,7 @@ public:
   virtual ~LteEnbPhy ();
 
   static TypeId GetTypeId (void);
+  virtual void DoDispose (void);
 
 
   /**
@@ -98,6 +99,13 @@ public:
    * \param msg the received message
    */
   virtual void ReceiveIdealControlMessage (Ptr<IdealControlMessage> msg);
+  
+  /**
+  * \brief Create the UL CQI feedback from SINR values perceived at
+  * the physical layer with the signal received from eNB
+  * \param sinr SINR values vector
+  */
+  Ptr<UlCqiIdealControlMessage> CreateUlCqiFeedbackMessage (const SpectrumValue& sinr);
 
 
   void DoSendIdealControlMessage (Ptr<IdealControlMessage> msg);

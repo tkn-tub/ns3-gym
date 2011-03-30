@@ -32,6 +32,8 @@ def build(bld):
         'model/ff-mac-sched-sap.cc',
         'model/lte-mac-sap.cc',
         'model/ff-mac-scheduler.cc',
+        'model/lte-enb-cmac-sap.cc',
+        'model/lte-ue-cmac-sap.cc',
         'model/rr-ff-mac-scheduler.cc',
         'model/lte-enb-mac.cc',
         'model/lte-ue-mac.cc',

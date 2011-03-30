@@ -34,6 +34,7 @@
 namespace ns3 {
 
 class DlCqiIdealControlMessage;
+class UlCqiIdealControlMessage;
 class PdcchMapIdealControlMessage;
 
 
@@ -128,6 +129,11 @@ public:
   * \param msg the DL CQI message
   */
   void ReceiveDlCqiIdealControlMessage  (Ptr<DlCqiIdealControlMessage> msg);
+  /**
+  * \brief Receive a UL CQI ideal control message
+  * \param msg the UL CQI message
+  */
+  void ReceiveUlCqiIdealControlMessage  (Ptr<UlCqiIdealControlMessage> msg);
   void DoReceiveIdealControlMessage (Ptr<IdealControlMessage> msg);
 
   /**

@@ -27,6 +27,11 @@ NS_LOG_COMPONENT_DEFINE ("LteSinrChunkProcessor");
 
 namespace ns3 {
 
+LteSinrChunkProcessor::~LteSinrChunkProcessor ()
+{
+  NS_LOG_FUNCTION (this);
+}
+
 
 LteCqiSinrChunkProcessor::LteCqiSinrChunkProcessor (Ptr<LtePhy> p)
   : m_phy (p)
@@ -34,6 +39,13 @@ LteCqiSinrChunkProcessor::LteCqiSinrChunkProcessor (Ptr<LtePhy> p)
   NS_LOG_FUNCTION (this << p);
   NS_ASSERT (m_phy);
 }
+
+
+LteCqiSinrChunkProcessor::~LteCqiSinrChunkProcessor ()
+{
+  NS_LOG_FUNCTION (this);
+}
+
 
 void 
 LteCqiSinrChunkProcessor::Start ()

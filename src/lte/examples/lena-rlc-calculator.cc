@@ -26,7 +26,7 @@
 #include "ns3/rlc-stats-calculator.h"
 
 
-#include "ns3/gtk-config-store.h"
+//#include "ns3/gtk-config-store.h"
 
 using namespace ns3;
 

@@ -42,6 +42,7 @@ namespace ns3 {
 class LteSinrChunkProcessor : public SimpleRefCount<LteSinrChunkProcessor> 
 {
 public:
+  virtual ~LteSinrChunkProcessor ();
   virtual void Start () = 0;
   virtual void EvaluateSinrChunk (const SpectrumValue& sinr, Time duration) = 0;
   virtual void End () = 0;
@@ -57,6 +58,7 @@ public:
 class LteCqiSinrChunkProcessor : public LteSinrChunkProcessor
 {
 public:
+  virtual ~LteCqiSinrChunkProcessor ();
   LteCqiSinrChunkProcessor (Ptr<LtePhy> p);
   virtual void Start ();
   virtual void EvaluateSinrChunk (const SpectrumValue& sinr, Time duration);

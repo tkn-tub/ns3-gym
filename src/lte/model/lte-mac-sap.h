@@ -92,6 +92,7 @@ public:
 class LteMacSapUser
 {
 public:
+  virtual ~LteMacSapUser ();
   /**
    * Called by the MAC to notify the RLC that the scheduler granted a
    * transmission opportunity to this RLC instance.

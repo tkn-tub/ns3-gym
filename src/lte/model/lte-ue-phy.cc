@@ -111,6 +111,8 @@ LteUePhy::~LteUePhy ()
 void
 LteUePhy::DoDispose ()
 {
+  NS_LOG_FUNCTION (this);
+  LtePhy::DoDispose ();
 }
   
 
@@ -129,12 +131,14 @@ LteUePhy::GetTypeId (void)
 void
 LteUePhy::SetLteUePhySapUser (LteUePhySapUser* s)
 {
+  NS_LOG_FUNCTION (this);
   m_uePhySapUser = s;
 }
 
 LteUePhySapProvider*
 LteUePhy::GetLteUePhySapProvider ()
 {
+  NS_LOG_FUNCTION (this);
   return (m_uePhySapProvider);
 }
 

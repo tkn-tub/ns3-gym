@@ -61,6 +61,7 @@ public:
 
   // inherited from Object
   static TypeId GetTypeId (void);
+  virtual void DoDispose ();
 
   // inherited from SpectrumPhy
   void SetChannel (Ptr<SpectrumChannel> c);
@@ -71,13 +72,6 @@ public:
   Ptr<const SpectrumModel> GetRxSpectrumModel () const;
   void StartRx (Ptr<PacketBurst> pb, Ptr <const SpectrumValue> rxPsd, SpectrumType st, Time duration);
   
-
-  /**
-   * \brief Get the channel where the physical layer is attached
-   * \return a pointer to the channel
-   */
-  Ptr<SpectrumChannel> GetChannel (void);
-
 
   /**
    * Get the SpectrumType used by this PHY

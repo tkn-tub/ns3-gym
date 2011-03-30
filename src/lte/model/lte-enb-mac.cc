@@ -471,6 +471,11 @@ LteEnbMac::DoReceiveIdealControlMessage  (Ptr<IdealControlMessage> msg)
       Ptr<DlCqiIdealControlMessage> dlcqi = DynamicCast<DlCqiIdealControlMessage> (msg);
       ReceiveDlCqiIdealControlMessage (dlcqi);
     }
+  else if (msg->GetMessageType () == IdealControlMessage::UL_CQI)
+    {
+      Ptr<UlCqiIdealControlMessage> ulcqi = DynamicCast<UlCqiIdealControlMessage> (msg);
+      ReceiveUlCqiIdealControlMessage (ulcqi);
+    }
   else if (msg->GetMessageType () == IdealControlMessage::BSR)
     {
       Ptr<BsrIdealControlMessage> bsr = DynamicCast<BsrIdealControlMessage> (msg);
@@ -494,6 +499,21 @@ LteEnbMac::ReceiveDlCqiIdealControlMessage  (Ptr<DlCqiIdealControlMessage> msg)
 
 }
 
+
+void
+LteEnbMac::ReceiveUlCqiIdealControlMessage  (Ptr<UlCqiIdealControlMessage> msg)
+{
+  NS_LOG_FUNCTION (this << msg);
+  
+  UlCqi_s ulcqi = msg->GetUlCqi ();
+  if (ulcqi.m_type == UlCqi_s::PUSCH)
+  {
+    NS_LOG_DEBUG(this << " eNB rxed an PUSCH UL-CQI");	
+  }
+  // TODO store UL-CQI to send them to scheduler
+  //m_dlCqiReceived.push_back (dlcqi);
+
+}
 
 void
 LteEnbMac::ReceiveBsrMessage  (MacCeListElement_s bsr)

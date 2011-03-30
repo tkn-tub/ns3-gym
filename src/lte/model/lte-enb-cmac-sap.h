@@ -39,6 +39,7 @@ class LteMacSapUser;
 class LteEnbCmacSapProvider
 {
 public:
+  virtual ~LteEnbCmacSapProvider ();
   /**
    *
    *
@@ -108,6 +109,7 @@ public:
 class LteEnbCmacSapUser
 {
 public:
+  virtual ~LteEnbCmacSapUser ();
   /**
    * notify the result of the last LC config operation
    *
