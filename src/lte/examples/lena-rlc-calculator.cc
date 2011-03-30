@@ -46,6 +46,10 @@ int main (int argc, char *argv[])
 {
   LenaHelper lena;
 
+  // Command line arguments
+  CommandLine cmd;
+  cmd.Parse (argc, argv);
+
   // Enable LTE log components
   lena.EnableLogComponents ();
 
