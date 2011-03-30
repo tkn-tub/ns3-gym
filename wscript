@@ -585,7 +585,7 @@ def build(bld):
                         changed = True
 
         env['NS3_ENABLED_MODULES'] = modules
-        print "Modules to build:", modules
+        #print "Modules to build:", modules
 
         # Set the list of the enabled module test libraries.
         for (mod, testlib) in bld.env['NS3_MODULES_WITH_TEST_LIBRARIES']:
