@@ -88,6 +88,7 @@ LteUeRrc::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
   delete m_cmacSapUser;
+  m_rlcMap.clear ();
 }
 
 TypeId

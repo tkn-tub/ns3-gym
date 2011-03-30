@@ -184,7 +184,7 @@ private:
   PhyMacRxEndErrorCallback   m_phyMacRxEndErrorCallback;
   PhyMacRxEndOkCallback      m_phyMacRxEndOkCallback;
 
-  LteInterference m_interference;
+  Ptr<LteInterference> m_interference;
 
   uint16_t m_cellId; 
 };

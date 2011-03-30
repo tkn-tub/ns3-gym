@@ -42,6 +42,27 @@ LteInterference::~LteInterference ()
   NS_LOG_FUNCTION (this);
 }
 
+void 
+LteInterference::DoDispose ()
+{
+  NS_LOG_FUNCTION (this);
+  m_sinrChunkProcessorList.clear ();
+  m_rxSignal = 0;
+  m_allSignals = 0;
+  m_noise = 0;
+  Object::DoDispose ();
+} 
+
+
+TypeId
+LteInterference::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::LteInterference")
+    .SetParent<Object> ()
+  ;
+  return tid;
+}
+
 
 void
 LteInterference::StartRx (Ptr<const SpectrumValue> rxPsd)

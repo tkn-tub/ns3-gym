@@ -42,19 +42,24 @@ LteSpectrumPhy::LteSpectrumPhy ()
   : m_state (IDLE)
 {
   NS_LOG_FUNCTION (this);
+  m_interference = CreateObject<LteInterference> ();
 }
 
 
 LteSpectrumPhy::~LteSpectrumPhy ()
 {
+  NS_LOG_FUNCTION (this);
 }
 
 void LteSpectrumPhy::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
+  m_endRxEventId.Cancel ();
   m_channel = 0;
   m_mobility = 0;
   m_device = 0;
+  m_interference->Dispose ();
+  m_interference = 0;
   SpectrumPhy::DoDispose ();
 } 
 
@@ -184,7 +189,7 @@ LteSpectrumPhy::SetNoisePowerSpectralDensity (Ptr<const SpectrumValue> noisePsd)
 {
   NS_LOG_FUNCTION (this << noisePsd);
   NS_ASSERT (noisePsd);
-  m_interference.SetNoisePowerSpectralDensity (noisePsd);
+  m_interference->SetNoisePowerSpectralDensity (noisePsd);
 }
 
 
@@ -325,7 +330,7 @@ LteSpectrumPhy::StartRx (Ptr<PacketBurst> pb, Ptr <const SpectrumValue> rxPsd, S
   NS_LOG_FUNCTION (this << pb << rxPsd << st << duration);
   NS_LOG_LOGIC (this << " state: " << m_state);
 
-  m_interference.AddSignal (rxPsd, duration);
+  m_interference->AddSignal (rxPsd, duration);
 
   // the device might start RX only if the signal is of a type
   // understood by this device - in this case, an LTE signal.
@@ -353,7 +358,7 @@ LteSpectrumPhy::StartRx (Ptr<PacketBurst> pb, Ptr <const SpectrumValue> rxPsd, S
                 NS_LOG_LOGIC (this << " synchronized with this signal (cellId=" << tag.GetCellId () << ")");
                 ChangeState (RX);
               
-                m_interference.StartRx (rxPsd);
+                m_interference->StartRx (rxPsd);
   
                 for (std::list<Ptr<Packet> >::const_iterator iter = pb->Begin (); iter
                        != pb->End (); ++iter)
@@ -416,7 +421,7 @@ LteSpectrumPhy::EndRx ()
 
   // this will trigger CQI calculation and Error Model evaluation
   // as a side effect, the error model should update the error status of all PDUs
-  m_interference.EndRx ();
+  m_interference->EndRx ();
 
   for (std::list<Ptr<Packet> >::const_iterator iter = m_rxPacketBurst->Begin (); iter
          != m_rxPacketBurst->End (); ++iter)
@@ -473,7 +478,7 @@ LteSpectrumPhy::SetCellId (uint16_t cellId)
 void
 LteSpectrumPhy::AddSinrChunkProcessor (Ptr<LteSinrChunkProcessor> p)
 {
-  m_interference.AddSinrChunkProcessor (p);
+  m_interference->AddSinrChunkProcessor (p);
 }
 
 

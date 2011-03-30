@@ -43,11 +43,15 @@ class LteSinrChunkProcessor;
  * incoming signals are added to the total interference.
  *
  */
-class LteInterference 
+class LteInterference : public Object
 {
 public:
   LteInterference ();
   ~LteInterference ();
+
+  // inherited from Object
+  static TypeId GetTypeId (void);
+  virtual void DoDispose ();
 
   /**
    * Add a LteSinrChunkProcessor that will use the time-vs-frequency SINR
