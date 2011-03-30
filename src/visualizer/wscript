@@ -23,3 +23,5 @@ def build(bld):
     else:
         module.source = [
             ]
+
+    bld.ns3_python_bindings()
