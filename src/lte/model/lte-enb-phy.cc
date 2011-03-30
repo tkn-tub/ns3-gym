@@ -124,6 +124,7 @@ void
 LteEnbPhy::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
+  m_ueAttached.clear ();
   LtePhy::DoDispose ();
 }
 

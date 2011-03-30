@@ -90,13 +90,14 @@ void
 LteUeNetDevice::DoDispose (void)
 {
   NS_LOG_FUNCTION (this);
+  m_targetEnb->Dispose ();
   m_targetEnb = 0;
-//   m_mac->Dispose ();
-//   m_mac = 0;
-//   m_rrc->Dispose ();
-//   m_rrc = 0;
-//   m_phy->Dispose ();
-//   m_phy = 0;
+  m_mac->Dispose ();
+  m_mac = 0;
+  m_rrc->Dispose ();
+  m_rrc = 0;
+  m_phy->Dispose ();
+  m_phy = 0;
   LteNetDevice::DoDispose ();
 }
 

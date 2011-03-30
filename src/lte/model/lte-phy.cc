@@ -79,14 +79,13 @@ void
 LtePhy::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
+  m_packetBurstQueue.clear ();
+  m_controlMessagesQueue.clear ();
+  m_downlinkSpectrumPhy->Dispose ();
   m_downlinkSpectrumPhy = 0;
+  m_uplinkSpectrumPhy->Dispose ();
   m_uplinkSpectrumPhy = 0;
   m_netDevice = 0;
-  for (int i = 0; i < m_macChTtiDelay; i++)
-    {
-      m_packetBurstQueue.erase (m_packetBurstQueue.begin (), m_packetBurstQueue.end ());
-      m_controlMessagesQueue.erase (m_controlMessagesQueue.begin (), m_controlMessagesQueue.end ());
-    }
   Object::DoDispose ();
 }
 

@@ -58,7 +58,7 @@ TypeId LteEnbNetDevice::GetTypeId (void)
     .SetParent<LteNetDevice> ()
     .AddConstructor<LteEnbNetDevice> ()
     .AddAttribute ("LteEnbRrc",
-                   "The RRC associated to this EnbNetDevice.",
+                   "The RRC associated to this EnbNetDevice",               
                    PointerValue (),
                    MakePointerAccessor (&LteEnbNetDevice::m_rrc),
                    MakePointerChecker <LteEnbRrc> ())
@@ -94,14 +94,17 @@ LteEnbNetDevice::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
 
-//   m_mac->Dispose ();
-//   m_mac = 0;
-// 
-//   m_rrc->Dispose ();
-//   m_rrc = 0;
-// 
-//   m_phy->Dispose ();
-//   m_phy = 0;
+  m_mac->Dispose ();
+  m_mac = 0;
+
+  m_scheduler->Dispose ();
+  m_scheduler = 0;
+
+  m_rrc->Dispose ();
+  m_rrc = 0;
+
+  m_phy->Dispose ();
+  m_phy = 0;
 
   LteNetDevice::DoDispose ();
 }
