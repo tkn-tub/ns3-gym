@@ -76,13 +76,12 @@ def configure(conf):
     found = False
     for path in ['.', 'lib', 'lib64']:
         if os.path.exists(os.path.join(conf.env['WITH_NSC'], path, lib_to_check)):
-            # append the NSC kernel dirs to the module path so that these dirs
+            # append the NSC kernel dir to the module path so that this dir
             # will end up in the LD_LIBRARY_PATH, thus allowing the NSC NS-3
             # module to find the necessary NSC shared libraries.
             found = True
-            for nsc_module in ['linux-2.6.18', 'linux-2.6.26']:
-                conf.env.append_value('NS3_MODULE_PATH',
-                                      os.path.abspath(os.path.join(conf.env['WITH_NSC'], path, nsc_module)))
+            conf.env.append_value('NS3_MODULE_PATH',
+                                  os.path.abspath(os.path.join(conf.env['WITH_NSC'], path)))
     if not found:
         conf.env['NSC_ENABLED'] = False
         conf.report_optional_feature("nsc", "Network Simulation Cradle", False,
