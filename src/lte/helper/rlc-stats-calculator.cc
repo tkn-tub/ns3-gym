@@ -60,7 +60,7 @@ RlcStatsCalculator::GetTypeId (void)
 void
 RlcStatsCalculator::SetOutputFilename (std::string outputFilename)
 {
-  m_outputFilename =   outputFilename;
+  m_outputFilename = outputFilename;
 }
 
 void
@@ -95,37 +95,51 @@ RlcStatsCalculator::ShowResults (void)
   uint32Map::iterator it;
   uint64Map::iterator itData;
   uint64StatsMap::iterator itDelay;
-  NS_LOG_INFO ( "#Parameter,RNTI,LCID,value");
+
+  NS_LOG_FUNCTION (this <<  m_outputFilename.c_str ());
+  NS_LOG_INFO ("Write Rlc Stats in: " << m_outputFilename.c_str ());
+  
+  std::ofstream m_outFile;
+  m_outFile.open (m_outputFilename.c_str ());
+  if (! m_outFile.is_open ())
+  {
+    NS_LOG_ERROR ("Can't open file " << m_outputFilename.c_str ());
+    return;
+  }
+
+  m_outFile << "# Parameter, RNTI, LCID, value" << std::endl;
   for ( it = m_txPackets.begin(); it != m_txPackets.end(); ++it)
     {
-      NS_LOG_INFO ("TxPackets, " << (*it).first.rnti << ", "
-                                << (uint32_t) (*it).first.lcid << ", "
-                                << (*it).second);
+      m_outFile << "TxPackets, " << (*it).first.rnti << ", "
+                                 << (uint32_t) (*it).first.lcid << ", "
+                                 << (*it).second << std::endl;
     }
   for ( it = m_rxPackets.begin(); it != m_rxPackets.end(); ++it)
     {
-      NS_LOG_INFO ("RxPackets, " << (*it).first.rnti << ", "
-                                << (uint32_t) (*it).first.lcid << ", "
-                                << (*it).second);
+      m_outFile << "RxPackets, " << (*it).first.rnti << ", "
+                                 << (uint32_t) (*it).first.lcid << ", "
+                                 << (*it).second << std::endl;
     }
   for ( itData = m_rxData.begin(); itData != m_rxData.end(); ++itData)
     {
-      NS_LOG_INFO ("RxData, " << (*itData).first.rnti << ", "
-                             << (uint32_t) (*itData).first.lcid << ", "
-                             << (*itData).second);
+      m_outFile << "RxData, " << (*itData).first.rnti << ", "
+                              << (uint32_t) (*itData).first.lcid << ", "
+                              << (*itData).second << std::endl;
     }
   for ( itData = m_rxData.begin(); itData != m_rxData.end(); ++itData)
     {
-      NS_LOG_INFO ("Throughput, " << (*itData).first.rnti << ", "
-                                 << (uint32_t) (*itData).first.lcid << ", "
-                                 << GetThroughput ((*itData).first) );
+      m_outFile << "Throughput, " << (*itData).first.rnti << ", "
+                                  << (uint32_t) (*itData).first.lcid << ", "
+                                  << GetThroughput ((*itData).first) << std::endl;
     }
   for ( itDelay = m_delay.begin (); itDelay != m_delay.end (); ++itDelay)
     {
-      NS_LOG_INFO ("Delay, " << (*itDelay).first.rnti << ", "
-                            << (uint32_t) (*itDelay).first.lcid << ", "
-                            << GetDelay ( (*itDelay).first));
+      m_outFile << "Delay, " << (*itDelay).first.rnti << ", "
+                             << (uint32_t) (*itDelay).first.lcid << ", "
+                             << GetDelay ((*itDelay).first) << std::endl;
     }
+
+  m_outFile.close ();
 }
 
 uint32_t

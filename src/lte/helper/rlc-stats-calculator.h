@@ -26,7 +26,7 @@
 #include "ns3/basic-data-calculators.h"
 #include <string>
 #include <map>
-
+#include <fstream>
 
 
 namespace ns3 {
@@ -86,6 +86,7 @@ public:
 private:
   void ShowResults (void);
   std::string m_outputFilename;
+  std::ofstream m_outFile;
   uint32Map m_txPackets;
   uint32Map m_rxPackets;
   uint64Map m_rxData;
