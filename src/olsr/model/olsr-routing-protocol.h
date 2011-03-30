@@ -64,14 +64,7 @@ struct RoutingTableEntry
 class RoutingProtocol;
 
 /// Testcase for MPR computation mechanism
-class OlsrMprTestCase : public TestCase {
-public:
-  OlsrMprTestCase ();
-  ~OlsrMprTestCase ();
-  /// \brief Run test case
-  virtual void DoRun (void);
-  ;
-};
+class OlsrMprTestCase;
 
 ///
 /// \ingroup olsr

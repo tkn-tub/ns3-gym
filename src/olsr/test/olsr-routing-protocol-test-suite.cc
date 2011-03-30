@@ -40,6 +40,17 @@
 namespace ns3 {
 namespace olsr {
 
+/// Testcase for MPR computation mechanism
+class OlsrMprTestCase : public TestCase {
+public:
+  OlsrMprTestCase ();
+  ~OlsrMprTestCase ();
+  /// \brief Run test case
+  virtual void DoRun (void);
+  ;
+};
+
+
 OlsrMprTestCase::OlsrMprTestCase ()
   : TestCase ("Check OLSR MPR computing mechanism")
 {

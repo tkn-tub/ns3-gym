@@ -355,8 +355,6 @@ def register_types_ns3_olsr(module):
     module.add_class('NeighborTuple')
     ## olsr-repositories.h (module 'olsr'): ns3::olsr::NeighborTuple::Status [enumeration]
     module.add_enum('Status', ['STATUS_NOT_SYM', 'STATUS_SYM'], outer_class=root_module['ns3::olsr::NeighborTuple'])
-    ## olsr-routing-protocol.h (module 'olsr'): ns3::olsr::OlsrMprTestCase [class]
-    module.add_class('OlsrMprTestCase', parent=root_module['ns3::TestCase'])
     ## olsr-header.h (module 'olsr'): ns3::olsr::PacketHeader [class]
     module.add_class('PacketHeader', parent=root_module['ns3::Header'])
     ## olsr-routing-protocol.h (module 'olsr'): ns3::olsr::RoutingProtocol [class]
@@ -530,7 +528,6 @@ def register_methods(root_module):
     register_Ns3OlsrMessageHeaderTc_methods(root_module, root_module['ns3::olsr::MessageHeader::Tc'])
     register_Ns3OlsrMprSelectorTuple_methods(root_module, root_module['ns3::olsr::MprSelectorTuple'])
     register_Ns3OlsrNeighborTuple_methods(root_module, root_module['ns3::olsr::NeighborTuple'])
-    register_Ns3OlsrOlsrMprTestCase_methods(root_module, root_module['ns3::olsr::OlsrMprTestCase'])
     register_Ns3OlsrPacketHeader_methods(root_module, root_module['ns3::olsr::PacketHeader'])
     register_Ns3OlsrRoutingProtocol_methods(root_module, root_module['ns3::olsr::RoutingProtocol'])
     register_Ns3OlsrRoutingTableEntry_methods(root_module, root_module['ns3::olsr::RoutingTableEntry'])
@@ -5816,16 +5813,6 @@ def register_Ns3OlsrNeighborTuple_methods(root_module, cls):
     cls.add_instance_attribute('status', 'ns3::olsr::NeighborTuple::Status', is_const=False)
     ## olsr-repositories.h (module 'olsr'): ns3::olsr::NeighborTuple::willingness [variable]
     cls.add_instance_attribute('willingness', 'uint8_t', is_const=False)
-    return
-
-def register_Ns3OlsrOlsrMprTestCase_methods(root_module, cls):
-    ## olsr-routing-protocol.h (module 'olsr'): ns3::olsr::OlsrMprTestCase::OlsrMprTestCase() [constructor]
-    cls.add_constructor([])
-    ## olsr-routing-protocol.h (module 'olsr'): void ns3::olsr::OlsrMprTestCase::DoRun() [member function]
-    cls.add_method('DoRun', 
-                   'void', 
-                   [], 
-                   is_virtual=True)
     return
 
 def register_Ns3OlsrPacketHeader_methods(root_module, cls):
