@@ -98,9 +98,6 @@ LteSpectrumPhy::GetTypeId (void)
     .AddTraceSource ("RxStart",
                      "Trace fired when the start of a signal is detected",
                      MakeTraceSourceAccessor (&LteSpectrumPhy::m_phyRxStartTrace))
-    .AddTraceSource ("RxAbort",
-                     "Trace fired when a previously started RX is aborted before time",
-                     MakeTraceSourceAccessor (&LteSpectrumPhy::m_phyRxAbortTrace))
     .AddTraceSource ("RxEndOk",
                      "Trace fired when a previosuly started RX terminates successfully",
                      MakeTraceSourceAccessor (&LteSpectrumPhy::m_phyRxEndOkTrace))
@@ -389,27 +386,6 @@ LteSpectrumPhy::StartRx (Ptr<PacketBurst> pb, Ptr <const SpectrumValue> rxPsd, S
       NS_LOG_LOGIC (this << " state: " << m_state);
     }
 }
-
-void
-LteSpectrumPhy::AbortRx ()
-{
-  NS_LOG_FUNCTION (this);
-  NS_LOG_LOGIC (this << " state: " << m_state);
-
-  NS_ASSERT (m_state == RX);
-
-  for (std::list<Ptr<Packet> >::const_iterator iter = m_rxPacketBurst->Begin (); iter
-       != m_rxPacketBurst->End (); ++iter)
-    {
-      Ptr<Packet> packet = (*iter)->Copy ();
-      m_phyRxAbortTrace (packet);
-    }
-
-  m_endRxEventId.Cancel ();
-  m_rxPacketBurst = 0;
-  ChangeState (IDLE);
-}
-
 
 void
 LteSpectrumPhy::EndRx ()

@@ -155,7 +155,6 @@ public:
 private:
   void ChangeState (State newState);
   void EndTx ();
-  void AbortRx ();
   void EndRx ();
 
   EventId m_endRxEventId;
@@ -176,7 +175,6 @@ private:
   TracedCallback<Ptr<const Packet> > m_phyTxStartTrace;
   TracedCallback<Ptr<const Packet> > m_phyTxEndTrace;
   TracedCallback<Ptr<const Packet> > m_phyRxStartTrace;
-  TracedCallback<Ptr<const Packet> > m_phyRxAbortTrace;
   TracedCallback<Ptr<const Packet> > m_phyRxEndOkTrace;
   TracedCallback<Ptr<const Packet> > m_phyRxEndErrorTrace;
 
