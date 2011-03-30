@@ -26,7 +26,7 @@
 #include "ns3/rlc-stats-calculator.h"
 
 
-//#include "ns3/gtk-config-store.h"
+#include "ns3/gtk-config-store.h"
 
 using namespace ns3;
 
@@ -46,7 +46,8 @@ int main (int argc, char *argv[])
 {
   LenaHelper lena;
 
-  //lena.EnableLogComponents ();
+  // Enable LTE log components
+  lena.EnableLogComponents ();
 
   // Create Nodes: eNodeB and UE
   NodeContainer enbNodes;
@@ -87,8 +88,8 @@ int main (int argc, char *argv[])
   Simulator::Run ();
 
   // Uncomment to show available paths
-  //GtkConfigStore config;
-  //config.ConfigureAttributes ();
+  GtkConfigStore config;
+  config.ConfigureAttributes ();
 
   Simulator::Destroy ();
 

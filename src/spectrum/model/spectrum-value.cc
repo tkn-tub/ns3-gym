@@ -405,7 +405,6 @@ operator << (std::ostream& os, const SpectrumValue& pvf)
       os << *it1 << " " ;
       ++it1;
     }
-  os << std::endl;
   return os;
 }
 
