@@ -36,7 +36,7 @@ int main (int argc, char *argv[])
   NodeContainer enbNodes;
   NodeContainer ueNodes;
   enbNodes.Create (1);
-  ueNodes.Create (0);
+  ueNodes.Create (4);
 
   // Install Mobility Model
   MobilityHelper mobility;
