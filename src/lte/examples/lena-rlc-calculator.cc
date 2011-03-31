@@ -51,7 +51,7 @@ int main (int argc, char *argv[])
   cmd.Parse (argc, argv);
 
   // Enable LTE log components
-  lena.EnableLogComponents ();
+  //lena.EnableLogComponents ();
 
   // Create Nodes: eNodeB and UE
   NodeContainer enbNodes;
@@ -92,8 +92,8 @@ int main (int argc, char *argv[])
   Simulator::Run ();
 
   // Uncomment to show available paths
-  GtkConfigStore config;
-  config.ConfigureAttributes ();
+  //GtkConfigStore config;
+  //config.ConfigureAttributes ();
 
   Simulator::Destroy ();
 

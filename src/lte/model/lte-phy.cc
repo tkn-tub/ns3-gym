@@ -48,6 +48,7 @@ LtePhy::LtePhy ()
     m_rbgSize (0),
     m_macChTtiDelay (1) // 1 TTI delay between MAC and CH
 {
+  NS_LOG_FUNCTION (this);
   for (int i = 0; i < m_macChTtiDelay; i++)
     {
       Ptr<PacketBurst> pb = CreateObject <PacketBurst> ();
@@ -73,6 +74,7 @@ LtePhy::GetTypeId (void)
 
 LtePhy::~LtePhy ()
 {
+  NS_LOG_FUNCTION (this);
 }
 
 void
@@ -119,23 +121,6 @@ LtePhy::SetUplinkSpectrumPhy (Ptr<LteSpectrumPhy> s)
   NS_LOG_FUNCTION (this << s);
   m_uplinkSpectrumPhy = s;
 }
-
-
-Ptr<LteSpectrumPhy>
-LtePhy::GetDownlinkSpectrumPhy ()
-{
-  NS_LOG_FUNCTION (this);
-  return m_downlinkSpectrumPhy;
-}
-
-
-Ptr<LteSpectrumPhy>
-LtePhy::GetUplinkSpectrumPhy ()
-{
-  NS_LOG_FUNCTION (this);
-  return m_uplinkSpectrumPhy;
-}
-
 
 void
 LtePhy::SetDownlinkChannel (Ptr<SpectrumChannel> c)

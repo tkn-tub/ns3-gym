@@ -68,12 +68,25 @@ void
 LteInterference::StartRx (Ptr<const SpectrumValue> rxPsd)
 { 
   NS_LOG_FUNCTION (this << *rxPsd);
-  m_rxSignal = rxPsd;
-  m_lastChangeTime = Now ();
-  m_receiving = true;
-  for (std::list<Ptr<LteSinrChunkProcessor> >::const_iterator it = m_sinrChunkProcessorList.begin (); it != m_sinrChunkProcessorList.end (); ++it)
+  if (m_receiving == false)
     {
-      (*it)->Start (); 
+      NS_LOG_LOGIC ("first signal");
+      m_rxSignal = rxPsd->Copy ();
+      m_lastChangeTime = Now ();
+      m_receiving = true;
+      for (std::list<Ptr<LteSinrChunkProcessor> >::const_iterator it = m_sinrChunkProcessorList.begin (); it != m_sinrChunkProcessorList.end (); ++it)
+        {
+          (*it)->Start (); 
+        }      
+    }
+  else
+    {
+      NS_LOG_LOGIC ("additional signal");
+      // receiving multiple simultaneous signals, make sure they are synchronized
+      NS_ASSERT (m_lastChangeTime == Now ());
+      // make sure they use orthogonal resource blocks
+      NS_ASSERT (Sum((*rxPsd)*(*m_rxSignal)) == 0.0);
+      (*m_rxSignal) += (*rxPsd);
     }
 }
 

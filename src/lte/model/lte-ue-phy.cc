@@ -112,6 +112,7 @@ void
 LteUePhy::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
+  delete m_uePhySapProvider;
   LtePhy::DoDispose ();
 }
   
@@ -179,7 +180,7 @@ LteUePhy::SetSubChannelsForTransmission (std::vector <int> mask)
   m_subChannelsForTransmission = mask;
 
   Ptr<SpectrumValue> txPsd = CreateTxPowerSpectralDensity ();
-  GetUplinkSpectrumPhy ()->SetTxPowerSpectralDensity (txPsd);
+  m_uplinkSpectrumPhy->SetTxPowerSpectralDensity (txPsd);
 }
 
 
@@ -407,7 +408,7 @@ LteUePhy::SubframeIndication (uint32_t frameNo, uint32_t subframeNo)
   Ptr<PacketBurst> pb = GetPacketBurst ();
   if (pb)
     {
-      GetUplinkSpectrumPhy ()->StartTx (pb);
+      m_uplinkSpectrumPhy->StartTx (pb);
     }
   
 }

@@ -83,18 +83,6 @@ public:
   void SetUplinkSpectrumPhy (Ptr<LteSpectrumPhy> s);
 
   /**
-   * Get the LTE SpectrumPhy for the downlink
-   * \return a Ptr to the LTE SpectrumPhy for the downlink
-   */
-  Ptr<LteSpectrumPhy> GetDownlinkSpectrumPhy ();
-
-  /**
-   * Get the LTE SpectrumPhy for the uplink
-   * \return a Ptr to the LTE SpectrumPhy for the
-   */
-  Ptr<LteSpectrumPhy> GetUplinkSpectrumPhy ();
-
-  /**
    * Set the downlink channel
    * \param c the downlink channel
    */

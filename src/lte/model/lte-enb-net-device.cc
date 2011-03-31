@@ -38,8 +38,6 @@
 #include <ns3/lte-ue-net-device.h>
 #include <ns3/lte-enb-phy.h>
 #include <ns3/ff-mac-scheduler.h>
-//#include <ns3/rr-ff-mac-scheduler.h>
-#include <ns3/pf-ff-mac-scheduler.h>
 
 
 NS_LOG_COMPONENT_DEFINE ("LteEnbNetDevice");

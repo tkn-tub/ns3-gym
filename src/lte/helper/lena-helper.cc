@@ -49,9 +49,9 @@ namespace ns3 {
 
 
 LenaHelper::LenaHelper (void)
-  : m_downlinkChannel (CreateObject<SingleModelSpectrumChannel> ()),
-    m_uplinkChannel (CreateObject<SingleModelSpectrumChannel> ())
 {
+  m_downlinkChannel = CreateObject<SingleModelSpectrumChannel> ();
+  m_uplinkChannel = CreateObject<SingleModelSpectrumChannel> ();
   Ptr<SpectrumPropagationLossModel> model = CreateObject<FriisSpectrumPropagationLossModel> ();
   m_downlinkChannel->AddSpectrumPropagationLossModel (model);
   
@@ -145,6 +145,9 @@ LenaHelper::InstallSingleEnbDevice (Ptr<Node> n)
 
   Ptr<SpectrumValue> noisePsd = LteSpectrumValueHelper::CreateUplinkNoisePowerSpectralDensity ();
   ulPhy->SetNoisePowerSpectralDensity (noisePsd);
+
+  Ptr<LteCqiSinrChunkProcessor> p = Create<LteCqiSinrChunkProcessor> (phy->GetObject<LtePhy> ());
+  ulPhy->AddSinrChunkProcessor (p);
 
   dlPhy->SetChannel (m_downlinkChannel);
   ulPhy->SetChannel (m_uplinkChannel);
