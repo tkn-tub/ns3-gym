@@ -418,7 +418,11 @@ def add_std_ofstream(module):
     ofstream.add_constructor([Parameter.new("const char *", 'filename'),
                               Parameter.new("::std::ofstream::openmode", 'mode', default_value="std::ios_base::out")])
     ofstream.add_method('close', None, [])
+    
+    add_std_ios_openmode(module)
 
+
+def add_std_ios_openmode(module):
     import pybindgen.typehandlers.base
     for alias in "std::_Ios_Openmode", "std::ios::openmode":
         pybindgen.typehandlers.base.param_type_matcher.add_type_alias(alias, "int")
