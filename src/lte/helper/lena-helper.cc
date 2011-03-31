@@ -49,9 +49,9 @@ namespace ns3 {
 
 
 LenaHelper::LenaHelper (void)
-  : m_downlinkChannel (CreateObject<SingleModelSpectrumChannel> ()),
-    m_uplinkChannel (CreateObject<SingleModelSpectrumChannel> ())
 {
+  m_downlinkChannel = CreateObject<SingleModelSpectrumChannel> ();
+  m_uplinkChannel = CreateObject<SingleModelSpectrumChannel> ();
   Ptr<SpectrumPropagationLossModel> model = CreateObject<FriisSpectrumPropagationLossModel> ();
   m_downlinkChannel->AddSpectrumPropagationLossModel (model);
   

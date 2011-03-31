@@ -47,7 +47,7 @@ class LteInterference : public Object
 {
 public:
   LteInterference ();
-  ~LteInterference ();
+  virtual ~LteInterference ();
 
   // inherited from Object
   static TypeId GetTypeId (void);
