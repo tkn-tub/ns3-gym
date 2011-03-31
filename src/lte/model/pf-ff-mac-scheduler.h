@@ -36,10 +36,9 @@ struct pfsFlowId_t
 {
   uint16_t  m_rnti;
   uint8_t   m_lcId;
-  
-  bool operator<(const pfsFlowId_t& A) const
-  { return m_rnti<A.m_rnti; }
 };
+
+bool operator< (const pfsFlowId_t& lhs, const pfsFlowId_t& rhs);
 
 struct pfsFlowPerf_t
 {
