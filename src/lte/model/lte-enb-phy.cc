@@ -201,7 +201,7 @@ LteEnbPhy::DoSetDownlinkSubChannels ()
 {
   NS_LOG_FUNCTION (this);
   Ptr<SpectrumValue> txPsd = CreateTxPowerSpectralDensity ();
-  GetDownlinkSpectrumPhy ()->SetTxPowerSpectralDensity (txPsd);
+  m_downlinkSpectrumPhy->SetTxPowerSpectralDensity (txPsd);
 }
 
 
@@ -328,7 +328,7 @@ LteEnbPhy::StartSubFrame (void)
   Ptr<PacketBurst> pb = GetPacketBurst ();
   if (pb)
     {
-      GetDownlinkSpectrumPhy ()->StartTx (pb);
+      m_downlinkSpectrumPhy->StartTx (pb);
     }
 
   // trigger the MAC

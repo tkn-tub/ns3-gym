@@ -59,6 +59,9 @@ void LteSpectrumPhy::DoDispose ()
   m_device = 0;
   m_interference->Dispose ();
   m_interference = 0;
+  m_phyMacTxEndCallback      = MakeNullCallback< void, Ptr<const Packet> > ();
+  m_phyMacRxEndErrorCallback = MakeNullCallback< void > ();
+  m_phyMacRxEndOkCallback    = MakeNullCallback< void, Ptr<Packet> >  ();
   SpectrumPhy::DoDispose ();
 } 
 

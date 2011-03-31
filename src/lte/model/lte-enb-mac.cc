@@ -310,6 +310,7 @@ LteEnbMac::GetTypeId (void)
 
 LteEnbMac::LteEnbMac ()
 {
+  NS_LOG_FUNCTION (this);
   m_macSapProvider = new EnbMacMemberLteMacSapProvider (this);
   m_cmacSapProvider = new EnbMacMemberLteEnbCmacSapProvider (this);
 
@@ -322,11 +323,13 @@ LteEnbMac::LteEnbMac ()
 
 LteEnbMac::~LteEnbMac ()
 {
+  NS_LOG_FUNCTION (this);
 }
 
 void
 LteEnbMac::DoDispose ()
 {
+  NS_LOG_FUNCTION (this);
   delete m_macSapProvider;
   delete m_cmacSapProvider;
   delete m_schedSapUser;

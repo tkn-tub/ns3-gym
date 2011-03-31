@@ -120,23 +120,6 @@ LtePhy::SetUplinkSpectrumPhy (Ptr<LteSpectrumPhy> s)
   m_uplinkSpectrumPhy = s;
 }
 
-
-Ptr<LteSpectrumPhy>
-LtePhy::GetDownlinkSpectrumPhy ()
-{
-  NS_LOG_FUNCTION (this);
-  return m_downlinkSpectrumPhy;
-}
-
-
-Ptr<LteSpectrumPhy>
-LtePhy::GetUplinkSpectrumPhy ()
-{
-  NS_LOG_FUNCTION (this);
-  return m_uplinkSpectrumPhy;
-}
-
-
 void
 LtePhy::SetDownlinkChannel (Ptr<SpectrumChannel> c)
 {

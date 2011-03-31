@@ -109,7 +109,9 @@ JakesFadingLossModel::SetValue (void)
 
   int downlinkSubChannels = GetPhy ()->GetDownlinkSubChannels ().size ();
 
-  Ptr<MobilityModel> mobility = GetPhy ()->GetDownlinkSpectrumPhy ()->GetMobility ()->GetObject<MobilityModel> ();
+  Ptr<MobilityModel> mobility = 0;
+  // this needs to be fixed, we cannot allow a propagation model to need pointers to all PHYs
+  // mobility = GetPhy ()->GetDownlinkSpectrumPhy ()->GetMobility ()->GetObject<MobilityModel> ();
   Vector speedVector = mobility->GetVelocity ();
 
   double speed = sqrt (pow (speedVector.x,2) +  pow (speedVector.y,2));
