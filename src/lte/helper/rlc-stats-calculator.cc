@@ -66,16 +66,16 @@ RlcStatsCalculator::SetOutputFilename (std::string outputFilename)
 void
 RlcStatsCalculator::TxPdu (uint16_t rnti, uint8_t lcid, uint32_t packetSize)
 {
-  NS_LOG_FUNCTION (this << " TxPDU " << rnti << (uint32_t) lcid << packetSize);
+  NS_LOG_FUNCTION (this << "TxPDU" << rnti << (uint32_t) lcid << packetSize);
   RntiLcidPair pair = RntiLcidPair(rnti, lcid);
-  uint32Map::iterator it = m_txPackets.find (pair);
+
   m_txPackets[pair]++;
 }
 
 void
 RlcStatsCalculator::RxPdu (uint16_t rnti, uint8_t lcid, uint32_t packetSize, uint64_t delay)
 {
-  NS_LOG_FUNCTION (this << " RxPDU " << rnti << (uint32_t) lcid << packetSize << delay);
+  NS_LOG_FUNCTION (this << "RxPDU" << rnti << (uint32_t) lcid << packetSize << delay);
   RntiLcidPair pair = RntiLcidPair(rnti, lcid);
 
   m_rxPackets [pair]++;
@@ -175,6 +175,7 @@ double
 RlcStatsCalculator::GetThroughput (RntiLcidPair p)
 {
   // TODO: Fix throughput calculation with the correct time
+  // NOTE: At this moment, Simulator::Now() is not available anymore
   //return (double) m_rxData[p] / Simulator::Now().GetSeconds();
   return 0;
 }

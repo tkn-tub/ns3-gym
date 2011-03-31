@@ -43,20 +43,21 @@ struct RntiLcidPair
 
     friend bool operator == (const RntiLcidPair &a, const RntiLcidPair &b)
         {
-          return (a.lcid == b.lcid) && (a.rnti == b.rnti);
+          return ( (a.rnti == b.rnti) && (a.lcid == b.lcid) );
         }
     friend bool operator < (const RntiLcidPair &a, const RntiLcidPair &b)
       {
-        return (a.lcid < b.lcid) || (a.rnti < b.rnti);
+        return ( (a.rnti < b.rnti) || ( (a.rnti == b.rnti) && (a.lcid < b.lcid) ) );
       }
   };
 
 typedef std::map<RntiLcidPair, uint32_t> uint32Map;
 typedef std::map<RntiLcidPair, uint64_t> uint64Map;
 typedef std::map<RntiLcidPair, Ptr<MinMaxAvgTotalCalculator<uint64_t> > > uint64StatsMap;
-typedef std::pair<RntiLcidPair, std::string> uint32Pair;
-typedef std::pair<RntiLcidPair, uint64_t> uint64Pair;
-typedef std::pair<RntiLcidPair, Ptr<MinMaxAvgTotalCalculator<uint64_t> > > uint64StatsPair;
+// TODO: Really useful? Maybe to remove
+// typedef std::pair<RntiLcidPair, std::string> uint32Pair;
+// typedef std::pair<RntiLcidPair, uint64_t> uint64Pair;
+// typedef std::pair<RntiLcidPair, Ptr<MinMaxAvgTotalCalculator<uint64_t> > > uint64StatsPair;
 
 class RlcStatsCalculator : public Object
 {
