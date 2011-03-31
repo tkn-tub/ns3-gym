@@ -313,10 +313,8 @@ LteEnbMac::LteEnbMac ()
   NS_LOG_FUNCTION (this);
   m_macSapProvider = new EnbMacMemberLteMacSapProvider (this);
   m_cmacSapProvider = new EnbMacMemberLteEnbCmacSapProvider (this);
-
   m_schedSapUser = new EnbMacMemberFfMacSchedSapUser (this);
   m_cschedSapUser = new EnbMacMemberFfMacCschedSapUser (this);
-
   m_enbPhySapUser = new EnbMacMemberLteEnbPhySapUser (this);
 }
 
@@ -334,6 +332,7 @@ LteEnbMac::DoDispose ()
   delete m_cmacSapProvider;
   delete m_schedSapUser;
   delete m_cschedSapUser;
+  delete m_enbPhySapUser;
 }
 
 

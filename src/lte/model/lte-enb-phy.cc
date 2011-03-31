@@ -125,6 +125,7 @@ LteEnbPhy::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
   m_ueAttached.clear ();
+  delete m_enbPhySapProvider;
   LtePhy::DoDispose ();
 }
 
