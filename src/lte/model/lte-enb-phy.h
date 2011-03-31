@@ -105,7 +105,7 @@ public:
   * the physical layer with the signal received from eNB
   * \param sinr SINR values vector
   */
-  Ptr<UlCqiIdealControlMessage> CreateUlCqiFeedbackMessage (const SpectrumValue& sinr);
+  UlCqi_s LteEnbPhy::CreateUlCqiReport (const SpectrumValue& sinr);
 
 
   void DoSendIdealControlMessage (Ptr<IdealControlMessage> msg);
