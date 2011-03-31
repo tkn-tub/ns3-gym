@@ -54,7 +54,6 @@ LteSpectrumPhy::~LteSpectrumPhy ()
 void LteSpectrumPhy::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
-  m_endRxEventId.Cancel ();
   m_channel = 0;
   m_mobility = 0;
   m_device = 0;
@@ -339,10 +338,11 @@ LteSpectrumPhy::StartRx (Ptr<PacketBurst> pb, Ptr <const SpectrumValue> rxPsd, S
           NS_FATAL_ERROR ("cannot RX while TX: according to FDD channel acces, the physical layer for transmission cannot be used for reception");
           break;
 
-        case RX:
-          break;
-
         case IDLE:
+        case RX:          
+          // the behavior is similar when
+          // we're IDLE or RX because we can receive more signals
+          // simultaneously (e.g., at the eNB).         
           {
             // To check if we're synchronized to this signal, we check
             // for the CellId which is reported in the LtePhyTag
@@ -351,10 +351,30 @@ LteSpectrumPhy::StartRx (Ptr<PacketBurst> pb, Ptr <const SpectrumValue> rxPsd, S
             Ptr<Packet> firstPacketInBurst = *(pb->Begin ());
             firstPacketInBurst->RemovePacketTag (tag);
             if (tag.GetCellId () == m_cellId)
-              {
-                NS_LOG_LOGIC (this << " synchronized with this signal (cellId=" << tag.GetCellId () << ")");
-                ChangeState (RX);
-              
+              {            
+                NS_LOG_LOGIC (this << " synchronized with this signal (cellId=" << tag.GetCellId () << ")");   
+                if (m_rxPacketBurstList.empty ())
+                  {
+                    NS_ASSERT (m_state == IDLE);
+                    // first transmission, i.e., we're IDLE and we
+                    // start RX
+                    m_firstRxStart = Simulator::Now ();
+                    m_firstRxDuration = duration;
+                    NS_LOG_LOGIC (this << " scheduling EndRx with delay " << duration);
+                    Simulator::Schedule (duration, &LteSpectrumPhy::EndRx, this);          
+                  }
+                else
+                  {
+                    NS_ASSERT (m_state == RX);
+                    // sanity check: if there are multiple RX events, they
+                    // should occur at the same time and have the same
+                    // duration, otherwise the interference calculation
+                    // won't be correct
+                    NS_ASSERT ((m_firstRxStart == Simulator::Now ()) 
+                               && (m_firstRxDuration == duration));
+                  }
+                
+                ChangeState (RX);                                
                 m_interference->StartRx (rxPsd);
   
                 for (std::list<Ptr<Packet> >::const_iterator iter = pb->Begin (); iter
@@ -363,12 +383,10 @@ LteSpectrumPhy::StartRx (Ptr<PacketBurst> pb, Ptr <const SpectrumValue> rxPsd, S
                     Ptr<Packet> packet = (*iter)->Copy ();
                     m_phyRxStartTrace (packet);
                   }
-              
-                m_rxPacketBurst = pb;
-                m_rxPsd = rxPsd;              
-              
-                NS_LOG_LOGIC (this << " scheduling EndRx with delay " << duration);
-                m_endRxEventId = Simulator::Schedule (duration, &LteSpectrumPhy::EndRx, this);
+                
+                m_rxPacketBurstList.push_back (pb);
+ 
+                NS_LOG_LOGIC (this << " numSimultaneousRxEvents = " << m_rxPacketBurstList.size ());  
               }      
             else
               {
@@ -399,50 +417,53 @@ LteSpectrumPhy::EndRx ()
   // as a side effect, the error model should update the error status of all PDUs
   m_interference->EndRx ();
 
-  for (std::list<Ptr<Packet> >::const_iterator iter = m_rxPacketBurst->Begin (); iter
-         != m_rxPacketBurst->End (); ++iter)
+  for (std::list<Ptr<PacketBurst> >::const_iterator i = m_rxPacketBurstList.begin (); 
+       i != m_rxPacketBurstList.end (); ++i)
     {
-      // here we should determine whether this particular PDU
-      // (identified by RNTI and LCID) has been received with errors
-      // or not 
-      // LteMacTag tag;
-      // (*iter)->PeekPacketTag (tag);
-      // uint16_t rnti = tag.GetRnti ();
-      // uint8_t lcid = tag.GetLcid ();
-      // bool pduError = IsPduInError (rnti, lcid);
-      bool pduError = false;
+      // iterate over all packets in the PacketBurst
+      for (std::list<Ptr<Packet> >::const_iterator j = (*i)->Begin (); 
+           j != (*i)->End (); ++j)
+        {
+          // here we should determine whether this particular PDU
+          // (identified by RNTI and LCID) has been received with errors
+          // or not 
+          // LteMacTag tag;
+          // (*iter)->PeekPacketTag (tag);
+          // uint16_t rnti = tag.GetRnti ();
+          // uint8_t lcid = tag.GetLcid ();
+          // bool pduError = IsPduInError (rnti, lcid);
+          bool pduError = false;
 
-      if (pduError)
-        {
-          m_phyRxEndErrorTrace ((*iter)->Copy ());
-          if (!m_phyMacRxEndErrorCallback.IsNull ())
+          if (pduError)
             {
-              NS_LOG_LOGIC (this << " calling m_phyMacRxEndErrorCallback");
-              m_phyMacRxEndOkCallback ((*iter)->Copy ());
-            }
-          else
+              m_phyRxEndErrorTrace ((*j)->Copy ());
+              if (!m_phyMacRxEndErrorCallback.IsNull ())
+                {
+                  NS_LOG_LOGIC (this << " calling m_phyMacRxEndErrorCallback");
+                  m_phyMacRxEndOkCallback ((*j)->Copy ());
+                }
+              else
+                {
+                  NS_LOG_LOGIC (this << " m_phyMacRxEndErrorCallback is NULL");
+                }
+            }        
+          else // pdu received successfully
             {
-              NS_LOG_LOGIC (this << " m_phyMacRxEndErrorCallback is NULL");
-            }
-        }        
-      else // pdu received successfully
-        {
-          m_phyRxEndOkTrace ((*iter)->Copy ());          
-          if (!m_phyMacRxEndOkCallback.IsNull ())
-            {
-              NS_LOG_LOGIC (this << " calling m_phyMacRxEndOkCallback"); 
-              m_phyMacRxEndOkCallback (*iter);            
-            }
-          else
-            {
-              NS_LOG_LOGIC (this << " m_phyMacRxEndOkCallback is NULL");
+              m_phyRxEndOkTrace ((*j)->Copy ());          
+              if (!m_phyMacRxEndOkCallback.IsNull ())
+                {
+                  NS_LOG_LOGIC (this << " calling m_phyMacRxEndOkCallback"); 
+                  m_phyMacRxEndOkCallback (*j);            
+                }
+              else
+                {
+                  NS_LOG_LOGIC (this << " m_phyMacRxEndOkCallback is NULL");
+                }
             }
         }
     }
-
   ChangeState (IDLE);
-  m_rxPacketBurst = 0;
-  m_rxPsd = 0;
+  m_rxPacketBurstList.clear ();
 }
 
 void 

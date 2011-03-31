@@ -157,8 +157,6 @@ private:
   void EndTx ();
   void EndRx ();
 
-  EventId m_endRxEventId;
-
   Ptr<Object> m_mobility;
 
   Ptr<Object> m_device;
@@ -166,11 +164,12 @@ private:
   Ptr<SpectrumChannel> m_channel;
 
   Ptr<SpectrumValue> m_txPsd;
-  Ptr<const SpectrumValue> m_rxPsd;
   Ptr<PacketBurst> m_txPacketBurst;
-  Ptr<PacketBurst> m_rxPacketBurst;
+  std::list<Ptr<PacketBurst> > m_rxPacketBurstList;
 
   State m_state;
+  Time m_firstRxStart;
+  Time m_firstRxDuration;
 
   TracedCallback<Ptr<const Packet> > m_phyTxStartTrace;
   TracedCallback<Ptr<const Packet> > m_phyTxEndTrace;

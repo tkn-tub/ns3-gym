@@ -105,7 +105,7 @@ private:
 
   bool m_receiving;
 
-  Ptr<const SpectrumValue> m_rxSignal; /**< stores the power spectral density of
+  Ptr<SpectrumValue> m_rxSignal; /**< stores the power spectral density of
                                   * the signal whose RX is being
                                   * attempted
                                   */
