@@ -120,8 +120,10 @@ public:
    * objects aggregated to it.
    * After calling this method, the object is expected to be
    * totally unusable except for the Ref and Unref methods.
-   * It is an error to call Dispose twice on the same object 
-   * instance.
+   *
+   * Note that you can call Dispose many times on the same object or
+   * different objects aggregated together, and DoDispose will be
+   * called only once for each aggregated object.  
    *
    * This method is typically used to break reference cycles.
    */
