@@ -52,10 +52,16 @@ def register_types(module):
     module.add_class('Item', import_from_module='ns.network', outer_class=root_module['ns3::ByteTagList::Iterator'])
     ## callback.h (module 'core'): ns3::CallbackBase [class]
     module.add_class('CallbackBase', import_from_module='ns.core')
+    ## candidate-queue.h (module 'internet'): ns3::CandidateQueue [class]
+    module.add_class('CandidateQueue')
     ## event-id.h (module 'core'): ns3::EventId [class]
     module.add_class('EventId', import_from_module='ns.core')
     ## global-route-manager.h (module 'internet'): ns3::GlobalRouteManager [class]
     module.add_class('GlobalRouteManager')
+    ## global-route-manager-impl.h (module 'internet'): ns3::GlobalRouteManagerImpl [class]
+    module.add_class('GlobalRouteManagerImpl', allow_subclassing=True)
+    ## global-route-manager-impl.h (module 'internet'): ns3::GlobalRouteManagerLSDB [class]
+    module.add_class('GlobalRouteManagerLSDB')
     ## global-router-interface.h (module 'internet'): ns3::GlobalRoutingLSA [class]
     module.add_class('GlobalRoutingLSA')
     ## global-router-interface.h (module 'internet'): ns3::GlobalRoutingLSA::LSType [enumeration]
@@ -192,6 +198,10 @@ def register_types(module):
     module.add_class('PcapHelperForIpv6', allow_subclassing=True)
     ## random-variable.h (module 'core'): ns3::RandomVariable [class]
     module.add_class('RandomVariable', import_from_module='ns.core')
+    ## global-route-manager-impl.h (module 'internet'): ns3::SPFVertex [class]
+    module.add_class('SPFVertex')
+    ## global-route-manager-impl.h (module 'internet'): ns3::SPFVertex::VertexType [enumeration]
+    module.add_enum('VertexType', ['VertexUnknown', 'VertexRouter', 'VertexNetwork'], outer_class=root_module['ns3::SPFVertex'])
     ## random-variable.h (module 'core'): ns3::SeedManager [class]
     module.add_class('SeedManager', import_from_module='ns.core')
     ## sequence-number.h (module 'network'): ns3::SequenceNumber<unsigned int, int> [class]
@@ -624,8 +634,11 @@ def register_methods(root_module):
     register_Ns3ByteTagListIterator_methods(root_module, root_module['ns3::ByteTagList::Iterator'])
     register_Ns3ByteTagListIteratorItem_methods(root_module, root_module['ns3::ByteTagList::Iterator::Item'])
     register_Ns3CallbackBase_methods(root_module, root_module['ns3::CallbackBase'])
+    register_Ns3CandidateQueue_methods(root_module, root_module['ns3::CandidateQueue'])
     register_Ns3EventId_methods(root_module, root_module['ns3::EventId'])
     register_Ns3GlobalRouteManager_methods(root_module, root_module['ns3::GlobalRouteManager'])
+    register_Ns3GlobalRouteManagerImpl_methods(root_module, root_module['ns3::GlobalRouteManagerImpl'])
+    register_Ns3GlobalRouteManagerLSDB_methods(root_module, root_module['ns3::GlobalRouteManagerLSDB'])
     register_Ns3GlobalRoutingLSA_methods(root_module, root_module['ns3::GlobalRoutingLSA'])
     register_Ns3GlobalRoutingLinkRecord_methods(root_module, root_module['ns3::GlobalRoutingLinkRecord'])
     register_Ns3HighPrecision_methods(root_module, root_module['ns3::HighPrecision'])
@@ -676,6 +689,7 @@ def register_methods(root_module):
     register_Ns3PcapHelperForIpv4_methods(root_module, root_module['ns3::PcapHelperForIpv4'])
     register_Ns3PcapHelperForIpv6_methods(root_module, root_module['ns3::PcapHelperForIpv6'])
     register_Ns3RandomVariable_methods(root_module, root_module['ns3::RandomVariable'])
+    register_Ns3SPFVertex_methods(root_module, root_module['ns3::SPFVertex'])
     register_Ns3SeedManager_methods(root_module, root_module['ns3::SeedManager'])
     register_Ns3SequenceNumber32_methods(root_module, root_module['ns3::SequenceNumber32'])
     register_Ns3SequentialVariable_methods(root_module, root_module['ns3::SequentialVariable'])
@@ -1564,6 +1578,48 @@ def register_Ns3CallbackBase_methods(root_module, cls):
                    is_static=True, visibility='protected')
     return
 
+def register_Ns3CandidateQueue_methods(root_module, cls):
+    cls.add_output_stream_operator()
+    ## candidate-queue.h (module 'internet'): ns3::CandidateQueue::CandidateQueue() [constructor]
+    cls.add_constructor([])
+    ## candidate-queue.h (module 'internet'): void ns3::CandidateQueue::Clear() [member function]
+    cls.add_method('Clear', 
+                   'void', 
+                   [])
+    ## candidate-queue.h (module 'internet'): bool ns3::CandidateQueue::Empty() const [member function]
+    cls.add_method('Empty', 
+                   'bool', 
+                   [], 
+                   is_const=True)
+    ## candidate-queue.h (module 'internet'): ns3::SPFVertex * ns3::CandidateQueue::Find(ns3::Ipv4Address const addr) const [member function]
+    cls.add_method('Find', 
+                   'ns3::SPFVertex *', 
+                   [param('ns3::Ipv4Address const', 'addr')], 
+                   is_const=True)
+    ## candidate-queue.h (module 'internet'): ns3::SPFVertex * ns3::CandidateQueue::Pop() [member function]
+    cls.add_method('Pop', 
+                   'ns3::SPFVertex *', 
+                   [])
+    ## candidate-queue.h (module 'internet'): void ns3::CandidateQueue::Push(ns3::SPFVertex * vNew) [member function]
+    cls.add_method('Push', 
+                   'void', 
+                   [param('ns3::SPFVertex *', 'vNew')])
+    ## candidate-queue.h (module 'internet'): void ns3::CandidateQueue::Reorder() [member function]
+    cls.add_method('Reorder', 
+                   'void', 
+                   [])
+    ## candidate-queue.h (module 'internet'): uint32_t ns3::CandidateQueue::Size() const [member function]
+    cls.add_method('Size', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## candidate-queue.h (module 'internet'): ns3::SPFVertex * ns3::CandidateQueue::Top() const [member function]
+    cls.add_method('Top', 
+                   'ns3::SPFVertex *', 
+                   [], 
+                   is_const=True)
+    return
+
 def register_Ns3EventId_methods(root_module, cls):
     cls.add_binary_comparison_operator('!=')
     cls.add_binary_comparison_operator('==')
@@ -1630,6 +1686,67 @@ def register_Ns3GlobalRouteManager_methods(root_module, cls):
                    'void', 
                    [], 
                    is_static=True)
+    return
+
+def register_Ns3GlobalRouteManagerImpl_methods(root_module, cls):
+    ## global-route-manager-impl.h (module 'internet'): ns3::GlobalRouteManagerImpl::GlobalRouteManagerImpl() [constructor]
+    cls.add_constructor([])
+    ## global-route-manager-impl.h (module 'internet'): void ns3::GlobalRouteManagerImpl::DeleteGlobalRoutes() [member function]
+    cls.add_method('DeleteGlobalRoutes', 
+                   'void', 
+                   [], 
+                   is_virtual=True)
+    ## global-route-manager-impl.h (module 'internet'): void ns3::GlobalRouteManagerImpl::BuildGlobalRoutingDatabase() [member function]
+    cls.add_method('BuildGlobalRoutingDatabase', 
+                   'void', 
+                   [], 
+                   is_virtual=True)
+    ## global-route-manager-impl.h (module 'internet'): void ns3::GlobalRouteManagerImpl::InitializeRoutes() [member function]
+    cls.add_method('InitializeRoutes', 
+                   'void', 
+                   [], 
+                   is_virtual=True)
+    ## global-route-manager-impl.h (module 'internet'): void ns3::GlobalRouteManagerImpl::DebugUseLsdb(ns3::GlobalRouteManagerLSDB * arg0) [member function]
+    cls.add_method('DebugUseLsdb', 
+                   'void', 
+                   [param('ns3::GlobalRouteManagerLSDB *', 'arg0')])
+    ## global-route-manager-impl.h (module 'internet'): void ns3::GlobalRouteManagerImpl::DebugSPFCalculate(ns3::Ipv4Address root) [member function]
+    cls.add_method('DebugSPFCalculate', 
+                   'void', 
+                   [param('ns3::Ipv4Address', 'root')])
+    return
+
+def register_Ns3GlobalRouteManagerLSDB_methods(root_module, cls):
+    ## global-route-manager-impl.h (module 'internet'): ns3::GlobalRouteManagerLSDB::GlobalRouteManagerLSDB() [constructor]
+    cls.add_constructor([])
+    ## global-route-manager-impl.h (module 'internet'): void ns3::GlobalRouteManagerLSDB::Insert(ns3::Ipv4Address addr, ns3::GlobalRoutingLSA * lsa) [member function]
+    cls.add_method('Insert', 
+                   'void', 
+                   [param('ns3::Ipv4Address', 'addr'), param('ns3::GlobalRoutingLSA *', 'lsa')])
+    ## global-route-manager-impl.h (module 'internet'): ns3::GlobalRoutingLSA * ns3::GlobalRouteManagerLSDB::GetLSA(ns3::Ipv4Address addr) const [member function]
+    cls.add_method('GetLSA', 
+                   'ns3::GlobalRoutingLSA *', 
+                   [param('ns3::Ipv4Address', 'addr')], 
+                   is_const=True)
+    ## global-route-manager-impl.h (module 'internet'): ns3::GlobalRoutingLSA * ns3::GlobalRouteManagerLSDB::GetLSAByLinkData(ns3::Ipv4Address addr) const [member function]
+    cls.add_method('GetLSAByLinkData', 
+                   'ns3::GlobalRoutingLSA *', 
+                   [param('ns3::Ipv4Address', 'addr')], 
+                   is_const=True)
+    ## global-route-manager-impl.h (module 'internet'): void ns3::GlobalRouteManagerLSDB::Initialize() [member function]
+    cls.add_method('Initialize', 
+                   'void', 
+                   [])
+    ## global-route-manager-impl.h (module 'internet'): ns3::GlobalRoutingLSA * ns3::GlobalRouteManagerLSDB::GetExtLSA(uint32_t index) const [member function]
+    cls.add_method('GetExtLSA', 
+                   'ns3::GlobalRoutingLSA *', 
+                   [param('uint32_t', 'index')], 
+                   is_const=True)
+    ## global-route-manager-impl.h (module 'internet'): uint32_t ns3::GlobalRouteManagerLSDB::GetNumExtLSAs() const [member function]
+    cls.add_method('GetNumExtLSAs', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
     return
 
 def register_Ns3GlobalRoutingLSA_methods(root_module, cls):
@@ -3824,6 +3941,120 @@ def register_Ns3RandomVariable_methods(root_module, cls):
                    'double', 
                    [], 
                    is_const=True)
+    return
+
+def register_Ns3SPFVertex_methods(root_module, cls):
+    ## global-route-manager-impl.h (module 'internet'): ns3::SPFVertex::SPFVertex() [constructor]
+    cls.add_constructor([])
+    ## global-route-manager-impl.h (module 'internet'): ns3::SPFVertex::SPFVertex(ns3::GlobalRoutingLSA * lsa) [constructor]
+    cls.add_constructor([param('ns3::GlobalRoutingLSA *', 'lsa')])
+    ## global-route-manager-impl.h (module 'internet'): ns3::SPFVertex::VertexType ns3::SPFVertex::GetVertexType() const [member function]
+    cls.add_method('GetVertexType', 
+                   'ns3::SPFVertex::VertexType', 
+                   [], 
+                   is_const=True)
+    ## global-route-manager-impl.h (module 'internet'): void ns3::SPFVertex::SetVertexType(ns3::SPFVertex::VertexType type) [member function]
+    cls.add_method('SetVertexType', 
+                   'void', 
+                   [param('ns3::SPFVertex::VertexType', 'type')])
+    ## global-route-manager-impl.h (module 'internet'): ns3::Ipv4Address ns3::SPFVertex::GetVertexId() const [member function]
+    cls.add_method('GetVertexId', 
+                   'ns3::Ipv4Address', 
+                   [], 
+                   is_const=True)
+    ## global-route-manager-impl.h (module 'internet'): void ns3::SPFVertex::SetVertexId(ns3::Ipv4Address id) [member function]
+    cls.add_method('SetVertexId', 
+                   'void', 
+                   [param('ns3::Ipv4Address', 'id')])
+    ## global-route-manager-impl.h (module 'internet'): ns3::GlobalRoutingLSA * ns3::SPFVertex::GetLSA() const [member function]
+    cls.add_method('GetLSA', 
+                   'ns3::GlobalRoutingLSA *', 
+                   [], 
+                   is_const=True)
+    ## global-route-manager-impl.h (module 'internet'): void ns3::SPFVertex::SetLSA(ns3::GlobalRoutingLSA * lsa) [member function]
+    cls.add_method('SetLSA', 
+                   'void', 
+                   [param('ns3::GlobalRoutingLSA *', 'lsa')])
+    ## global-route-manager-impl.h (module 'internet'): uint32_t ns3::SPFVertex::GetDistanceFromRoot() const [member function]
+    cls.add_method('GetDistanceFromRoot', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## global-route-manager-impl.h (module 'internet'): void ns3::SPFVertex::SetDistanceFromRoot(uint32_t distance) [member function]
+    cls.add_method('SetDistanceFromRoot', 
+                   'void', 
+                   [param('uint32_t', 'distance')])
+    ## global-route-manager-impl.h (module 'internet'): void ns3::SPFVertex::SetRootExitDirection(ns3::Ipv4Address nextHop, int32_t id=ns3::SPF_INFINITY) [member function]
+    cls.add_method('SetRootExitDirection', 
+                   'void', 
+                   [param('ns3::Ipv4Address', 'nextHop'), param('int32_t', 'id', default_value='ns3::SPF_INFINITY')])
+    ## global-route-manager-impl.h (module 'internet'): void ns3::SPFVertex::SetRootExitDirection(std::pair<ns3::Ipv4Address,int> exit) [member function]
+    cls.add_method('SetRootExitDirection', 
+                   'void', 
+                   [param('std::pair< ns3::Ipv4Address, int >', 'exit')])
+    ## global-route-manager-impl.h (module 'internet'): std::pair<ns3::Ipv4Address,int> ns3::SPFVertex::GetRootExitDirection(uint32_t i) const [member function]
+    cls.add_method('GetRootExitDirection', 
+                   'std::pair< ns3::Ipv4Address, int >', 
+                   [param('uint32_t', 'i')], 
+                   is_const=True)
+    ## global-route-manager-impl.h (module 'internet'): std::pair<ns3::Ipv4Address,int> ns3::SPFVertex::GetRootExitDirection() const [member function]
+    cls.add_method('GetRootExitDirection', 
+                   'std::pair< ns3::Ipv4Address, int >', 
+                   [], 
+                   is_const=True)
+    ## global-route-manager-impl.h (module 'internet'): void ns3::SPFVertex::MergeRootExitDirections(ns3::SPFVertex const * vertex) [member function]
+    cls.add_method('MergeRootExitDirections', 
+                   'void', 
+                   [param('ns3::SPFVertex const *', 'vertex')])
+    ## global-route-manager-impl.h (module 'internet'): void ns3::SPFVertex::InheritAllRootExitDirections(ns3::SPFVertex const * vertex) [member function]
+    cls.add_method('InheritAllRootExitDirections', 
+                   'void', 
+                   [param('ns3::SPFVertex const *', 'vertex')])
+    ## global-route-manager-impl.h (module 'internet'): uint32_t ns3::SPFVertex::GetNRootExitDirections() const [member function]
+    cls.add_method('GetNRootExitDirections', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## global-route-manager-impl.h (module 'internet'): ns3::SPFVertex * ns3::SPFVertex::GetParent(uint32_t i=0) const [member function]
+    cls.add_method('GetParent', 
+                   'ns3::SPFVertex *', 
+                   [param('uint32_t', 'i', default_value='0')], 
+                   is_const=True)
+    ## global-route-manager-impl.h (module 'internet'): void ns3::SPFVertex::SetParent(ns3::SPFVertex * parent) [member function]
+    cls.add_method('SetParent', 
+                   'void', 
+                   [param('ns3::SPFVertex *', 'parent')])
+    ## global-route-manager-impl.h (module 'internet'): void ns3::SPFVertex::MergeParent(ns3::SPFVertex const * v) [member function]
+    cls.add_method('MergeParent', 
+                   'void', 
+                   [param('ns3::SPFVertex const *', 'v')])
+    ## global-route-manager-impl.h (module 'internet'): uint32_t ns3::SPFVertex::GetNChildren() const [member function]
+    cls.add_method('GetNChildren', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## global-route-manager-impl.h (module 'internet'): ns3::SPFVertex * ns3::SPFVertex::GetChild(uint32_t n) const [member function]
+    cls.add_method('GetChild', 
+                   'ns3::SPFVertex *', 
+                   [param('uint32_t', 'n')], 
+                   is_const=True)
+    ## global-route-manager-impl.h (module 'internet'): uint32_t ns3::SPFVertex::AddChild(ns3::SPFVertex * child) [member function]
+    cls.add_method('AddChild', 
+                   'uint32_t', 
+                   [param('ns3::SPFVertex *', 'child')])
+    ## global-route-manager-impl.h (module 'internet'): void ns3::SPFVertex::SetVertexProcessed(bool value) [member function]
+    cls.add_method('SetVertexProcessed', 
+                   'void', 
+                   [param('bool', 'value')])
+    ## global-route-manager-impl.h (module 'internet'): bool ns3::SPFVertex::IsVertexProcessed() const [member function]
+    cls.add_method('IsVertexProcessed', 
+                   'bool', 
+                   [], 
+                   is_const=True)
+    ## global-route-manager-impl.h (module 'internet'): void ns3::SPFVertex::ClearVertexProcessed() [member function]
+    cls.add_method('ClearVertexProcessed', 
+                   'void', 
+                   [])
     return
 
 def register_Ns3SeedManager_methods(root_module, cls):
