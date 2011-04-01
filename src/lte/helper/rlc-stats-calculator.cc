@@ -67,7 +67,7 @@ void
 RlcStatsCalculator::TxPdu (uint16_t rnti, uint8_t lcid, uint32_t packetSize)
 {
   NS_LOG_FUNCTION (this << "TxPDU" << rnti << (uint32_t) lcid << packetSize);
-  lteFlowId_t pair = lteFlowId_t(rnti, lcid);
+  lteFlowId_t pair (rnti, lcid);
 
   m_txPackets[pair]++;
 }
@@ -76,7 +76,7 @@ void
 RlcStatsCalculator::RxPdu (uint16_t rnti, uint8_t lcid, uint32_t packetSize, uint64_t delay)
 {
   NS_LOG_FUNCTION (this << "RxPDU" << rnti << (uint32_t) lcid << packetSize << delay);
-  lteFlowId_t pair = lteFlowId_t(rnti, lcid);
+  lteFlowId_t pair (rnti, lcid);
 
   m_rxPackets [pair]++;
   m_rxData [pair] += packetSize;
@@ -183,36 +183,36 @@ RlcStatsCalculator::GetThroughput (lteFlowId_t p)
 uint32_t
 RlcStatsCalculator::GetTxPackets (uint16_t rnti, uint8_t lcid)
 {
-  lteFlowId_t p = lteFlowId_t (rnti, lcid);
-  return GetTxPackets(p);
+  lteFlowId_t p (rnti, lcid);
+  return GetTxPackets (p);
 }
 
 uint32_t
 RlcStatsCalculator::GetRxPackets (uint16_t rnti, uint8_t lcid)
 {
-  lteFlowId_t p = lteFlowId_t (rnti, lcid);
-  return GetRxPackets(p);
+  lteFlowId_t p (rnti, lcid);
+  return GetRxPackets (p);
 }
 
 uint64_t
 RlcStatsCalculator::GetRxData (uint16_t rnti, uint8_t lcid)
 {
-  lteFlowId_t p = lteFlowId_t (rnti, lcid);
-  return GetRxData(p);
+  lteFlowId_t p (rnti, lcid);
+  return GetRxData (p);
 }
 
 uint64_t
 RlcStatsCalculator::GetDelay (uint16_t rnti, uint8_t lcid)
 {
-  lteFlowId_t p = lteFlowId_t (rnti, lcid);
-  return GetDelay(p);
+  lteFlowId_t p (rnti, lcid);
+  return GetDelay (p);
 }
 
 double
 RlcStatsCalculator::GetThroughput (uint16_t rnti, uint8_t lcid)
 {
-  lteFlowId_t p = lteFlowId_t (rnti, lcid);
-  return GetThroughput(p);
+  lteFlowId_t p (rnti, lcid);
+  return GetThroughput (p);
 }
 
 } // namespace ns3

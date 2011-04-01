@@ -41,19 +41,6 @@ namespace ns3 {
 
 NS_OBJECT_ENSURE_REGISTERED (LteEnbMac);
 
-bool
-operator< (const flowId_t& lhs, const flowId_t& rhs)
-{
-  if (lhs.m_rnti == rhs.m_rnti)
-    {
-      return (lhs.m_lcId < rhs.m_lcId);
-    }
-  else
-    {
-      return (lhs.m_rnti < rhs.m_rnti);
-    }
-}
-
 
 
 // //////////////////////////////////////
@@ -571,10 +558,8 @@ LteEnbMac::DoReceivePhyPdu (Ptr<Packet> p)
   
 
   // forward the packet to the correspondent RLC
-  flowId_t flow;
-  flow.m_rnti = tag.GetRnti ();
-  flow.m_lcId = tag.GetLcid ();
-  std::map <flowId_t, LteMacSapUser* >::iterator it2;
+  lteFlowId_t flow ( tag.GetRnti (), tag.GetLcid () );
+  std::map <lteFlowId_t, LteMacSapUser* >::iterator it2;
   it2 = m_rlcAttached.find (flow);
   NS_ASSERT_MSG (it2 != m_rlcAttached.end (), "UE not attached rnti=" << flow.m_rnti << " lcid=" << (uint32_t) flow.m_lcId);
   (*it2).second->ReceivePdu (p);
@@ -615,16 +600,14 @@ void
 LteEnbMac::DoAddLc (LteEnbCmacSapProvider::LcInfo lcinfo, LteMacSapUser* msu)
 {
   NS_LOG_FUNCTION (this);
-  std::map <flowId_t, LteMacSapUser* >::iterator it;
+  std::map <lteFlowId_t, LteMacSapUser* >::iterator it;
 
-  flowId_t flow;
-  flow.m_rnti = lcinfo.rnti;
-  flow.m_lcId = lcinfo.lcId;
+  lteFlowId_t flow (lcinfo.rnti, lcinfo.lcId);
 
   it = m_rlcAttached.find (flow);
   if (it == m_rlcAttached.end ())
     {
-      m_rlcAttached.insert (std::pair<flowId_t, LteMacSapUser* > (flow, msu));
+      m_rlcAttached.insert (std::pair<lteFlowId_t, LteMacSapUser* > (flow, msu));
     }
   else
     {
@@ -711,15 +694,14 @@ LteEnbMac::DoSchedDlConfigInd (FfMacSchedSapUser::SchedDlConfigIndParameters ind
   NS_LOG_FUNCTION (this);
   // Create DL PHY PDU
   Ptr<PacketBurst> pb = CreateObject<PacketBurst> ();
-  std::map <flowId_t, LteMacSapUser* >::iterator it;
+  std::map <lteFlowId_t, LteMacSapUser* >::iterator it;
 
   for (unsigned int i = 0; i < ind.m_buildDataList.size (); i++)
     {
       for (unsigned int j = 0; j < ind.m_buildDataList.at (i).m_rlcPduList.size (); j++)
         {
-          flowId_t flow;
-          flow.m_rnti = ind.m_buildDataList.at (i).m_rnti;
-          flow.m_lcId = ind.m_buildDataList.at (i).m_rlcPduList.at (j).at (0).m_logicalChannelIdentity;
+          lteFlowId_t flow (ind.m_buildDataList.at (i).m_rnti,
+                            ind.m_buildDataList.at (i).m_rlcPduList.at (j).at (0).m_logicalChannelIdentity);
           it = m_rlcAttached.find (flow);
           NS_ASSERT_MSG (it != m_rlcAttached.end (), "rnti=" << flow.m_rnti << " lcid=" << (uint32_t) flow.m_lcId);
           (*it).second->NotifyTxOpportunity (ind.m_buildDataList.at (i).m_rlcPduList.at (j).at (0).m_size); // second [] is for TB

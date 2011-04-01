@@ -21,6 +21,7 @@
 #ifndef PF_FF_MAC_SCHEDULER_H
 #define PF_FF_MAC_SCHEDULER_H
 
+#include <ns3/lte-common.h>
 #include <ns3/ff-mac-csched-sap.h>
 #include <ns3/ff-mac-sched-sap.h>
 #include <ns3/ff-mac-scheduler.h>
@@ -30,15 +31,7 @@
 
 
 namespace ns3 {
-  
-  
-struct pfsFlowId_t
-{
-  uint16_t  m_rnti;
-  uint8_t   m_lcId;
-};
 
-bool operator< (const pfsFlowId_t& lhs, const pfsFlowId_t& rhs);
 
 struct pfsFlowPerf_t
 {
@@ -145,7 +138,7 @@ private:
   /*
   * Map of UE-LC statistics
   */
-  std::map <pfsFlowId_t, pfsFlowPerf_t> m_flowStats;
+  std::map <lteFlowId_t, pfsFlowPerf_t> m_flowStats;
   
 
   /*

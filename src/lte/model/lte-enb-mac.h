@@ -25,6 +25,7 @@
 
 #include <map>
 #include <vector>
+#include <ns3/lte-common.h>
 #include <ns3/lte-mac-sap.h>
 #include <ns3/lte-enb-cmac-sap.h>
 #include <ns3/ff-mac-csched-sap.h>
@@ -37,14 +38,6 @@ class DlCqiIdealControlMessage;
 class UlCqiIdealControlMessage;
 class PdcchMapIdealControlMessage;
 
-
-struct flowId_t
-{
-  uint16_t  m_rnti;
-  uint8_t   m_lcId;
-};
-
-bool operator< (const flowId_t& lhs, const flowId_t& rhs);
 
 
 /**
@@ -192,7 +185,7 @@ public:
 private:
 private:
   // std::map <uint16_t, std::map <uint8_t,Ptr<LteMacSapUser> > > m_rlcAttached;
-  std::map <flowId_t, LteMacSapUser*> m_rlcAttached;
+  std::map <lteFlowId_t, LteMacSapUser*> m_rlcAttached;
 
   std::vector <CqiListElement_s> m_dlCqiReceived; // CQI received
   std::vector <MacCeListElement_s> m_ulCeReceived; // CE received (BSR up to now)
