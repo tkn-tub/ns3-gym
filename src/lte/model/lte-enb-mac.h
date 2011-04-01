@@ -141,6 +141,8 @@ public:
   * \param msg the BSR message
   */
   void ReceiveBsrMessage  (MacCeListElement_s bsr);
+  
+  void DoUlCqiReport (UlCqi_s ulcqi);
 
 
 

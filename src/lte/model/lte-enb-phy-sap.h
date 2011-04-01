@@ -24,6 +24,7 @@
 #define LTE_ENB_PHY_SAP_H
 
 #include <ns3/packet.h>
+#include <ns3/ff-mac-common.h>
 
 namespace ns3 {
 
@@ -101,6 +102,12 @@ public:
    * \param msg the Ideal Control Message to receive
    */
   virtual void ReceiveIdealControlMessage (Ptr<IdealControlMessage> msg) = 0;
+  
+  /**
+   * \brief Returns to MAC level the UL-CQI evaluated
+   * \param ulcqi the UL-CQI (see FF MAC API 4.3.29)
+   */
+  virtual void UlCqiReport (UlCqi_s ulcqi) = 0;
 
 };
 

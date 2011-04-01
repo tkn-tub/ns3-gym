@@ -40,6 +40,20 @@ int PfType0AllocationRbg[4] = {
 NS_OBJECT_ENSURE_REGISTERED (PfFfMacScheduler);
 
 
+bool
+operator< (const pfsFlowId_t& lhs, const pfsFlowId_t& rhs)
+{
+  if (lhs.m_rnti == rhs.m_rnti)
+    {
+      return (lhs.m_lcId < rhs.m_lcId);
+    }
+  else
+    {
+      return (lhs.m_rnti < rhs.m_rnti);
+    }
+}
+
+
 class PfSchedulerMemberCschedSapProvider : public FfMacCschedSapProvider
 {
 public:

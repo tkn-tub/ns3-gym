@@ -264,6 +264,7 @@ public:
   virtual void ReceivePhyPdu (Ptr<Packet> p);
   virtual void SubframeIndication (uint32_t frameNo, uint32_t subframeNo);
   virtual void ReceiveIdealControlMessage (Ptr<IdealControlMessage> msg);
+  virtual void UlCqiReport (UlCqi_s ulcqi);
 
 private:
   LteEnbMac* m_mac;
@@ -290,6 +291,12 @@ void
 EnbMacMemberLteEnbPhySapUser::ReceiveIdealControlMessage (Ptr<IdealControlMessage> msg)
 {
   m_mac->DoReceiveIdealControlMessage (msg);
+}
+
+void
+EnbMacMemberLteEnbPhySapUser::UlCqiReport (UlCqi_s ulcqi)
+{
+  m_mac->DoUlCqiReport (ulcqi);
 }
 
 
@@ -473,11 +480,6 @@ LteEnbMac::DoReceiveIdealControlMessage  (Ptr<IdealControlMessage> msg)
       Ptr<DlCqiIdealControlMessage> dlcqi = DynamicCast<DlCqiIdealControlMessage> (msg);
       ReceiveDlCqiIdealControlMessage (dlcqi);
     }
-  else if (msg->GetMessageType () == IdealControlMessage::UL_CQI)
-    {
-      Ptr<UlCqiIdealControlMessage> ulcqi = DynamicCast<UlCqiIdealControlMessage> (msg);
-      ReceiveUlCqiIdealControlMessage (ulcqi);
-    }
   else if (msg->GetMessageType () == IdealControlMessage::BSR)
     {
       Ptr<BsrIdealControlMessage> bsr = DynamicCast<BsrIdealControlMessage> (msg);
@@ -488,6 +490,14 @@ LteEnbMac::DoReceiveIdealControlMessage  (Ptr<IdealControlMessage> msg)
       NS_LOG_FUNCTION (this << " IdealControlMessage not recognized");
     }
 }
+
+
+void
+LteEnbMac::DoUlCqiReport (UlCqi_s ulcqi)
+{
+  NS_LOG_FUNCTION (this << " eNB UL-CQI received");	
+}
+
 
 void
 LteEnbMac::ReceiveDlCqiIdealControlMessage  (Ptr<DlCqiIdealControlMessage> msg)

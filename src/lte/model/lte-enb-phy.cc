@@ -380,15 +380,15 @@ LteEnbPhy::GenerateCqiFeedback (const SpectrumValue& sinr)
 {
   NS_LOG_FUNCTION (this << sinr);
     Ptr<LteEnbNetDevice> thisDevice = GetDevice ()->GetObject<LteEnbNetDevice> ();
-    Ptr<UlCqiIdealControlMessage> msg = CreateUlCqiFeedbackMessage (sinr);
-    m_enbPhySapUser->ReceiveIdealControlMessage (msg);
+    
+    m_enbPhySapUser->UlCqiReport (CreateUlCqiReport (sinr));
   
   
 }
 
 
-Ptr<UlCqiIdealControlMessage> 
-LteEnbPhy::CreateUlCqiFeedbackMessage (const SpectrumValue& sinr)
+UlCqi_s
+LteEnbPhy::CreateUlCqiReport (const SpectrumValue& sinr)
 {
 	NS_LOG_FUNCTION (this << sinr);
   Values::const_iterator it;
@@ -401,9 +401,7 @@ LteEnbPhy::CreateUlCqiFeedbackMessage (const SpectrumValue& sinr)
     NS_LOG_DEBUG(this << " RB " << i << " SINR " << (*it));
     i++;
   }
-  Ptr<UlCqiIdealControlMessage> msg = Create<UlCqiIdealControlMessage> ();
-  msg->SetUlCqi (ulcqi);
-  return (msg);
+  return (ulcqi);
 	
 }
 
