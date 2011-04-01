@@ -67,7 +67,7 @@ void
 RlcStatsCalculator::TxPdu (uint16_t rnti, uint8_t lcid, uint32_t packetSize)
 {
   NS_LOG_FUNCTION (this << "TxPDU" << rnti << (uint32_t) lcid << packetSize);
-  RntiLcidPair pair = RntiLcidPair(rnti, lcid);
+  lteFlowId_t pair = lteFlowId_t(rnti, lcid);
 
   m_txPackets[pair]++;
 }
@@ -76,7 +76,7 @@ void
 RlcStatsCalculator::RxPdu (uint16_t rnti, uint8_t lcid, uint32_t packetSize, uint64_t delay)
 {
   NS_LOG_FUNCTION (this << "RxPDU" << rnti << (uint32_t) lcid << packetSize << delay);
-  RntiLcidPair pair = RntiLcidPair(rnti, lcid);
+  lteFlowId_t pair = lteFlowId_t(rnti, lcid);
 
   m_rxPackets [pair]++;
   m_rxData [pair] += packetSize;
@@ -110,32 +110,32 @@ RlcStatsCalculator::ShowResults (void)
   m_outFile << "# Parameter, RNTI, LCID, value" << std::endl;
   for ( it = m_txPackets.begin(); it != m_txPackets.end(); ++it)
     {
-      m_outFile << "TxPackets, " << (*it).first.rnti << ", "
-                                 << (uint32_t) (*it).first.lcid << ", "
+      m_outFile << "TxPackets, " << (*it).first.m_rnti << ", "
+                                 << (uint32_t) (*it).first.m_lcId << ", "
                                  << (*it).second << std::endl;
     }
   for ( it = m_rxPackets.begin(); it != m_rxPackets.end(); ++it)
     {
-      m_outFile << "RxPackets, " << (*it).first.rnti << ", "
-                                 << (uint32_t) (*it).first.lcid << ", "
+      m_outFile << "RxPackets, " << (*it).first.m_rnti << ", "
+                                 << (uint32_t) (*it).first.m_lcId << ", "
                                  << (*it).second << std::endl;
     }
   for ( itData = m_rxData.begin(); itData != m_rxData.end(); ++itData)
     {
-      m_outFile << "RxData, " << (*itData).first.rnti << ", "
-                              << (uint32_t) (*itData).first.lcid << ", "
+      m_outFile << "RxData, " << (*itData).first.m_rnti << ", "
+                              << (uint32_t) (*itData).first.m_lcId << ", "
                               << (*itData).second << std::endl;
     }
   for ( itData = m_rxData.begin(); itData != m_rxData.end(); ++itData)
     {
-      m_outFile << "Throughput, " << (*itData).first.rnti << ", "
-                                  << (uint32_t) (*itData).first.lcid << ", "
+      m_outFile << "Throughput, " << (*itData).first.m_rnti << ", "
+                                  << (uint32_t) (*itData).first.m_lcId << ", "
                                   << GetThroughput ((*itData).first) << std::endl;
     }
   for ( itDelay = m_delay.begin (); itDelay != m_delay.end (); ++itDelay)
     {
-      m_outFile << "Delay, " << (*itDelay).first.rnti << ", "
-                             << (uint32_t) (*itDelay).first.lcid << ", "
+      m_outFile << "Delay, " << (*itDelay).first.m_rnti << ", "
+                             << (uint32_t) (*itDelay).first.m_lcId << ", "
                              << GetDelay ((*itDelay).first) << std::endl;
     }
 
@@ -143,25 +143,25 @@ RlcStatsCalculator::ShowResults (void)
 }
 
 uint32_t
-RlcStatsCalculator::GetTxPackets (RntiLcidPair p)
+RlcStatsCalculator::GetTxPackets (lteFlowId_t p)
 {
   return m_txPackets[p];
 }
 
 uint32_t
-RlcStatsCalculator::GetRxPackets (RntiLcidPair p)
+RlcStatsCalculator::GetRxPackets (lteFlowId_t p)
 {
   return m_rxPackets[p];
 }
 
 uint64_t
-RlcStatsCalculator::GetRxData (RntiLcidPair p)
+RlcStatsCalculator::GetRxData (lteFlowId_t p)
 {
   return m_rxData[p];
 }
 
 uint64_t
-RlcStatsCalculator::GetDelay (RntiLcidPair p)
+RlcStatsCalculator::GetDelay (lteFlowId_t p)
 {
   uint64StatsMap::iterator it = m_delay.find (p);
   if ( it == m_delay.end () )
@@ -172,7 +172,7 @@ RlcStatsCalculator::GetDelay (RntiLcidPair p)
 }
 
 double
-RlcStatsCalculator::GetThroughput (RntiLcidPair p)
+RlcStatsCalculator::GetThroughput (lteFlowId_t p)
 {
   // TODO: Fix throughput calculation with the correct time
   // NOTE: At this moment, Simulator::Now() is not available anymore
@@ -183,35 +183,35 @@ RlcStatsCalculator::GetThroughput (RntiLcidPair p)
 uint32_t
 RlcStatsCalculator::GetTxPackets (uint16_t rnti, uint8_t lcid)
 {
-  RntiLcidPair p = RntiLcidPair (rnti, lcid);
+  lteFlowId_t p = lteFlowId_t (rnti, lcid);
   return GetTxPackets(p);
 }
 
 uint32_t
 RlcStatsCalculator::GetRxPackets (uint16_t rnti, uint8_t lcid)
 {
-  RntiLcidPair p = RntiLcidPair (rnti, lcid);
+  lteFlowId_t p = lteFlowId_t (rnti, lcid);
   return GetRxPackets(p);
 }
 
 uint64_t
 RlcStatsCalculator::GetRxData (uint16_t rnti, uint8_t lcid)
 {
-  RntiLcidPair p = RntiLcidPair (rnti, lcid);
+  lteFlowId_t p = lteFlowId_t (rnti, lcid);
   return GetRxData(p);
 }
 
 uint64_t
 RlcStatsCalculator::GetDelay (uint16_t rnti, uint8_t lcid)
 {
-  RntiLcidPair p = RntiLcidPair (rnti, lcid);
+  lteFlowId_t p = lteFlowId_t (rnti, lcid);
   return GetDelay(p);
 }
 
 double
 RlcStatsCalculator::GetThroughput (uint16_t rnti, uint8_t lcid)
 {
-  RntiLcidPair p = RntiLcidPair (rnti, lcid);
+  lteFlowId_t p = lteFlowId_t (rnti, lcid);
   return GetThroughput(p);
 }
 

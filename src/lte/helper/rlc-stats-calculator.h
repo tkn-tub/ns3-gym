@@ -24,40 +24,18 @@
 #include "ns3/uinteger.h"
 #include "ns3/object.h"
 #include "ns3/basic-data-calculators.h"
+#include "ns3/lte-common.h"
 #include <string>
 #include <map>
 #include <fstream>
 
-
 namespace ns3 {
+  
 
-struct RntiLcidPair
-  {
-    uint16_t rnti;
-    uint8_t lcid;
+typedef std::map<lteFlowId_t, uint32_t> uint32Map;
+typedef std::map<lteFlowId_t, uint64_t> uint64Map;
+typedef std::map<lteFlowId_t, Ptr<MinMaxAvgTotalCalculator<uint64_t> > > uint64StatsMap;
 
-    RntiLcidPair (const uint16_t a, const uint8_t b) :
-        rnti(a),
-        lcid(b)
-    {  }
-
-    friend bool operator == (const RntiLcidPair &a, const RntiLcidPair &b)
-        {
-          return ( (a.rnti == b.rnti) && (a.lcid == b.lcid) );
-        }
-    friend bool operator < (const RntiLcidPair &a, const RntiLcidPair &b)
-      {
-        return ( (a.rnti < b.rnti) || ( (a.rnti == b.rnti) && (a.lcid < b.lcid) ) );
-      }
-  };
-
-typedef std::map<RntiLcidPair, uint32_t> uint32Map;
-typedef std::map<RntiLcidPair, uint64_t> uint64Map;
-typedef std::map<RntiLcidPair, Ptr<MinMaxAvgTotalCalculator<uint64_t> > > uint64StatsMap;
-// TODO: Really useful? Maybe to remove
-// typedef std::pair<RntiLcidPair, std::string> uint32Pair;
-// typedef std::pair<RntiLcidPair, uint64_t> uint64Pair;
-// typedef std::pair<RntiLcidPair, Ptr<MinMaxAvgTotalCalculator<uint64_t> > > uint64StatsPair;
 
 class RlcStatsCalculator : public Object
 {
@@ -72,11 +50,11 @@ public:
   void TxPdu (uint16_t rnti, uint8_t lcid, uint32_t packetSize);
   void RxPdu (uint16_t rnti, uint8_t lcid, uint32_t packetSize, uint64_t delay);
 
-  uint32_t GetTxPackets (RntiLcidPair p);
-  uint32_t GetRxPackets (RntiLcidPair p);
-  uint64_t GetRxData (RntiLcidPair p);
-  uint64_t GetDelay (RntiLcidPair p);
-  double   GetThroughput (RntiLcidPair p);
+  uint32_t GetTxPackets (lteFlowId_t p);
+  uint32_t GetRxPackets (lteFlowId_t p);
+  uint64_t GetRxData (lteFlowId_t p);
+  uint64_t GetDelay (lteFlowId_t p);
+  double   GetThroughput (lteFlowId_t p);
 
   uint32_t GetTxPackets (uint16_t rnti, uint8_t lcid);
   uint32_t GetRxPackets (uint16_t rnti, uint8_t lcid);

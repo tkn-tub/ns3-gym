@@ -4,6 +4,7 @@ def build(bld):
 
     module = bld.create_ns3_module('lte', ['core', 'network', 'spectrum', 'stats'])
     module.source = [
+        'model/lte-common.cc',
         'model/lte-spectrum-phy.cc',
         'model/lte-phy.cc',
         'model/lte-enb-phy.cc',
@@ -49,6 +50,7 @@ def build(bld):
     headers = bld.new_task_gen('ns3header')
     headers.module = 'lte'
     headers.source = [
+        'model/lte-common.h',
         'model/lte-spectrum-phy.h',
         'model/lte-phy.h',
         'model/lte-enb-phy.h',

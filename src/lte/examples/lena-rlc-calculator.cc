@@ -51,7 +51,7 @@ int main (int argc, char *argv[])
   cmd.Parse (argc, argv);
 
   // Enable LTE log components
-  //lena.EnableLogComponents ();
+  lena.EnableLogComponents ();
 
   // Create Nodes: eNodeB and UE
   NodeContainer enbNodes;
