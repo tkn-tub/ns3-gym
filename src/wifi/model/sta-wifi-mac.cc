@@ -81,7 +81,7 @@ StaWifiMac::GetTypeId (void)
                    UintegerValue (10),
                    MakeUintegerAccessor (&StaWifiMac::m_maxMissedBeacons),
                    MakeUintegerChecker<uint32_t> ())
-    .AddAttribute ("ActiveProbing", "If true, we send probe requests. If false, we don't.",
+    .AddAttribute ("ActiveProbing", "If true, we send probe requests. If false, we don't. NOTE: if more than one STA in your simulation is using active probing, you should enable it at a different simulation time for each STA, otherwise all the STAs will start sending probes at the same time resulting in collisions. See bug 1060 for more info.",
                    BooleanValue (false),
                    MakeBooleanAccessor (&StaWifiMac::SetActiveProbing),
                    MakeBooleanChecker ())
@@ -145,7 +145,7 @@ StaWifiMac::SetActiveProbing (bool enable)
   NS_LOG_FUNCTION (this << enable);
   if (enable)
     {
-      TryToEnsureAssociated ();
+      Simulator::ScheduleNow (&StaWifiMac::TryToEnsureAssociated, this);
     }
   else
     {
