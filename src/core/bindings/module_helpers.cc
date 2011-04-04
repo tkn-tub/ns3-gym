@@ -98,6 +98,7 @@ _wrap_Simulator_Schedule(PyNs3Simulator *PYBINDGEN_UNUSED(dummy), PyObject *args
     py_EventId = PyObject_New(PyNs3EventId, &PyNs3EventId_Type);
     py_EventId->obj = new ns3::EventId(
        ns3::Simulator::Schedule(*((PyNs3Time *) py_time)->obj, py_event_impl));
+    py_EventId->flags = PYBINDGEN_WRAPPER_FLAG_NONE;
     return (PyObject *) py_EventId;
 
 error:
@@ -139,6 +140,7 @@ _wrap_Simulator_ScheduleNow(PyNs3Simulator *PYBINDGEN_UNUSED(dummy), PyObject *a
 
     py_EventId = PyObject_New(PyNs3EventId, &PyNs3EventId_Type);
     py_EventId->obj = new ns3::EventId(ns3::Simulator::ScheduleNow(py_event_impl));
+    py_EventId->flags = PYBINDGEN_WRAPPER_FLAG_NONE;
     return (PyObject *) py_EventId;
 
 error:
@@ -180,6 +182,7 @@ _wrap_Simulator_ScheduleDestroy(PyNs3Simulator *PYBINDGEN_UNUSED(dummy), PyObjec
 
     py_EventId = PyObject_New(PyNs3EventId, &PyNs3EventId_Type);
     py_EventId->obj = new ns3::EventId(ns3::Simulator::ScheduleDestroy(py_event_impl));
+    py_EventId->flags = PYBINDGEN_WRAPPER_FLAG_NONE;
     return (PyObject *) py_EventId;
 
 error:
