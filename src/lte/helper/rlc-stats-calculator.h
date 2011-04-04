@@ -35,6 +35,7 @@ namespace ns3 {
 typedef std::map<lteFlowId_t, uint32_t> uint32Map;
 typedef std::map<lteFlowId_t, uint64_t> uint64Map;
 typedef std::map<lteFlowId_t, Ptr<MinMaxAvgTotalCalculator<uint64_t> > > uint64StatsMap;
+typedef std::map<lteFlowId_t, double> doubleMap;
 
 
 class RlcStatsCalculator : public Object
@@ -55,21 +56,42 @@ public:
   uint64_t GetRxData (lteFlowId_t p);
   uint64_t GetDelay (lteFlowId_t p);
   double   GetThroughput (lteFlowId_t p);
+  double   GetPacketLossProbability (lteFlowId_t p);
 
   uint32_t GetTxPackets (uint16_t rnti, uint8_t lcid);
   uint32_t GetRxPackets (uint16_t rnti, uint8_t lcid);
   uint64_t GetRxData (uint16_t rnti, uint8_t lcid);
   uint64_t GetDelay (uint16_t rnti, uint8_t lcid);
   double   GetThroughput (uint16_t rnti, uint8_t lcid);
+  double   GetPacketLossProbability (uint16_t rnti, uint8_t lcid);
 
 private:
   void ShowResults (void);
+  void ResetResults (void);
+
+  void StartEpoch (void);
+  void CheckEpoch (void);
+
   std::string m_outputFilename;
   std::ofstream m_outFile;
   uint32Map m_txPackets;
   uint32Map m_rxPackets;
   uint64Map m_rxData;
+  doubleMap m_throughput;
   uint64StatsMap m_delay;
+
+  /**
+   * Start time of the on going epoch
+   */
+  Time m_startTime;
+
+  /**
+   * Epoch duration
+   */
+  Time m_epochDuration;
+
+  bool m_firstWrite;
+
 };
 
 } // namespace ns3
