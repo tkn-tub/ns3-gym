@@ -212,6 +212,10 @@ LteRlcSm::Start ()
   p.rnti = m_rnti;
   p.lcid = m_lcid;
   p.txQueueSize = 1000000000;
+  p.txQueueHolDelay = 10000;
+  p.retxQueueSize = 1000000000;
+  p.retxQueueHolDelay = 10000;
+  p.statusPduSize = 1000;
 
   m_macSapProvider->ReportBufferStatus (p);
 }
