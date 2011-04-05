@@ -388,15 +388,18 @@ template <typename T>
 Ptr<T> 
 Object::GetObject () const
 {
+  // This is an optimization: if the cast works (which is likely),
+  // things will be pretty fast.
   T *result = dynamic_cast<T *> (m_aggregates->buffer[0]);
   if (result != 0)
     {
       return Ptr<T> (result);
     }
+  // if the cast does not work, we try to do a full type check.
   Ptr<Object> found = DoGetObject (T::GetTypeId ());
   if (found != 0)
     {
-      return Ptr<T> (dynamic_cast<T *> (PeekPointer (found)));
+      return Ptr<T> (static_cast<T *> (PeekPointer (found)));
     }
   return 0;
 }
@@ -408,7 +411,7 @@ Object::GetObject (TypeId tid) const
   Ptr<Object> found = DoGetObject (tid);
   if (found != 0)
     {
-      return Ptr<T> (dynamic_cast<T *> (PeekPointer (found)));
+      return Ptr<T> (static_cast<T *> (PeekPointer (found)));
     }
   return 0;
 }
