@@ -402,18 +402,18 @@ LteEnbMac::DoSubframeIndication (uint32_t frameNo, uint32_t subframeNo)
 
 
   // --- DOWNLINK ---
-  // Send CQI info to the scheduler
-  FfMacSchedSapProvider::SchedDlCqiInfoReqParameters cqiInfoReq;
-  cqiInfoReq.m_sfnSf = ((0xFF & frameNo) << 4) | (0xF & subframeNo);
+  // Send Dl-CQI info to the scheduler
+  FfMacSchedSapProvider::SchedDlCqiInfoReqParameters dlcqiInfoReq;
+  dlcqiInfoReq.m_sfnSf = ((0xFF & frameNo) << 4) | (0xF & subframeNo);
 
   int cqiNum = m_dlCqiReceived.size ();
   if (cqiNum > MAX_CQI_LIST)
     {
       cqiNum = MAX_CQI_LIST;
     }
-  cqiInfoReq.m_cqiList.insert (cqiInfoReq.m_cqiList.begin (), m_dlCqiReceived.begin (), m_dlCqiReceived.end ());
+  dlcqiInfoReq.m_cqiList.insert (dlcqiInfoReq.m_cqiList.begin (), m_dlCqiReceived.begin (), m_dlCqiReceived.end ());
   m_dlCqiReceived.erase (m_dlCqiReceived.begin (), m_dlCqiReceived.end ());
-  m_schedSapProvider->SchedDlCqiInfoReq (cqiInfoReq);
+  m_schedSapProvider->SchedDlCqiInfoReq (dlcqiInfoReq);
 
 
   // Get downlink transmission opportunities
@@ -422,6 +422,23 @@ LteEnbMac::DoSubframeIndication (uint32_t frameNo, uint32_t subframeNo)
 
 
   // --- UPLINK ---
+  // Send UL-CQI info to the scheduler
+  FfMacSchedSapProvider::SchedUlCqiInfoReqParameters ulcqiInfoReq;
+  ulcqiInfoReq.m_sfnSf = ((0xFF & frameNo) << 4) | (0xF & subframeNo);
+  cqiNum = m_ulCqiReceived.size ();
+  if (cqiNum >= 1)
+    {
+      ulcqiInfoReq.m_ulCqi = m_ulCqiReceived.at (cqiNum -1);
+      if (cqiNum > 1)
+        {
+        	// empty old ul cqi
+        	while (m_ulCqiReceived.size () > 0)
+        	  {
+        	  	m_ulCqiReceived.pop_back ();
+        	  }
+        }
+      m_schedSapProvider->SchedUlCqiInfoReq (ulcqiInfoReq);
+    }
 
   // Send BSR reports to the scheduler
   FfMacSchedSapProvider::SchedUlMacCtrlInfoReqParameters ulMacReq;
@@ -481,8 +498,13 @@ LteEnbMac::DoReceiveIdealControlMessage  (Ptr<IdealControlMessage> msg)
 
 void
 LteEnbMac::DoUlCqiReport (UlCqi_s ulcqi)
-{
-  NS_LOG_FUNCTION (this << " eNB UL-CQI received");	
+{ 
+  if (ulcqi.m_type == UlCqi_s::PUSCH)
+  {
+    NS_LOG_DEBUG(this << " eNB rxed an PUSCH UL-CQI");	
+  }
+  // TODO store UL-CQI to send them to scheduler
+  m_ulCqiReceived.push_back (ulcqi);
 }
 
 
@@ -498,21 +520,6 @@ LteEnbMac::ReceiveDlCqiIdealControlMessage  (Ptr<DlCqiIdealControlMessage> msg)
 
 }
 
-
-void
-LteEnbMac::ReceiveUlCqiIdealControlMessage  (Ptr<UlCqiIdealControlMessage> msg)
-{
-  NS_LOG_FUNCTION (this << msg);
-  
-  UlCqi_s ulcqi = msg->GetUlCqi ();
-  if (ulcqi.m_type == UlCqi_s::PUSCH)
-  {
-    NS_LOG_DEBUG(this << " eNB rxed an PUSCH UL-CQI");	
-  }
-  // TODO store UL-CQI to send them to scheduler
-  //m_dlCqiReceived.push_back (dlcqi);
-
-}
 
 void
 LteEnbMac::ReceiveBsrMessage  (MacCeListElement_s bsr)

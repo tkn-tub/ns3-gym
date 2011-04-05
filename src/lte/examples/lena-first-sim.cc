@@ -64,7 +64,7 @@ int main (int argc, char *argv[])
 
   Simulator::Stop (Seconds (0.005));
 
-  //Simulator::Run ();
+  Simulator::Run ();
 
   //GtkConfigStore config;
   //config.ConfigureAttributes ();

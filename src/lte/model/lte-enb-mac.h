@@ -122,11 +122,7 @@ public:
   * \param msg the DL CQI message
   */
   void ReceiveDlCqiIdealControlMessage  (Ptr<DlCqiIdealControlMessage> msg);
-  /**
-  * \brief Receive a UL CQI ideal control message
-  * \param msg the UL CQI message
-  */
-  void ReceiveUlCqiIdealControlMessage  (Ptr<UlCqiIdealControlMessage> msg);
+
   void DoReceiveIdealControlMessage (Ptr<IdealControlMessage> msg);
 
   /**
@@ -187,7 +183,8 @@ private:
   // std::map <uint16_t, std::map <uint8_t,Ptr<LteMacSapUser> > > m_rlcAttached;
   std::map <lteFlowId_t, LteMacSapUser*> m_rlcAttached;
 
-  std::vector <CqiListElement_s> m_dlCqiReceived; // CQI received
+  std::vector <CqiListElement_s> m_dlCqiReceived; // DL-CQI received
+  std::vector <UlCqi_s> m_ulCqiReceived; // UL-CQI received
   std::vector <MacCeListElement_s> m_ulCeReceived; // CE received (BSR up to now)
   
   

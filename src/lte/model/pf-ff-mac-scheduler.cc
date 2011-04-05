@@ -210,7 +210,8 @@ PfSchedulerMemberSchedSapProvider::SchedUlCqiInfoReq (const struct SchedUlCqiInf
 PfFfMacScheduler::PfFfMacScheduler ()
   :   m_cschedSapUser (0),
     m_schedSapUser (0),
-    m_timeWindow (0.5)
+    m_timeWindow (0.5),
+    m_schedTtiDelay (2) // WILD ACK: based on a m_macChTtiDelay = 1 
 {
   m_cschedSapProvider = new PfSchedulerMemberCschedSapProvider (this);
   m_schedSapProvider = new PfSchedulerMemberSchedSapProvider (this);
@@ -679,13 +680,18 @@ PfFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::Sched
   int rbAllocated = 0;
   
   FfMacSchedSapUser::SchedUlConfigIndParameters ret;
-
+  std::vector <uint16_t> rbgAllocationMap;
   for (it = m_ceBsrRxed.begin (); it != m_ceBsrRxed.end (); it++)
     {
       if (rbAllocated + rbPerFlow > m_cschedCellConfig.m_ulBandwidth)
         {
           // limit to physical resources last resource assignment
           rbPerFlow = m_cschedCellConfig.m_ulBandwidth - rbAllocated;
+        }
+       // store info on allocation for managing ul-cqi interpretation
+      for (int i = 0; i < rbPerFlow; i++)
+        {
+        	rbgAllocationMap.push_back ((*it).first);
         }
       UlDciListElement_s uldci;
       uldci.m_rnti = (*it).first;
@@ -708,6 +714,7 @@ PfFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::Sched
       uldci.m_pdcchPowerOffset = 0; // not used
       ret.m_dciList.push_back (uldci);      
     }
+  m_allocationMaps.insert (std::pair <uint16_t, std::vector <uint16_t> > (params.m_sfnSf, rbgAllocationMap));
   m_schedSapUser->SchedUlConfigInd (ret);
   return;
 }
@@ -763,7 +770,57 @@ void
 PfFfMacScheduler::DoSchedUlCqiInfoReq (const struct FfMacSchedSapProvider::SchedUlCqiInfoReqParameters& params)
 {
   NS_LOG_FUNCTION (this);
-  // TODO: Implementation of the API
+  //NS_LOG_DEBUG (this << " RX UL CQI at " << params.m_sfnSf);
+  // correlate info on UL-CQIs with previous scheduling -> calculate m_sfnSf of transmission
+  uint32_t frameNo = (0xFF & params.m_sfnSf) >> 4;
+  uint32_t subframeNo = (0xF & params.m_sfnSf);
+  //NS_LOG_DEBUG (this << " sfn " << frameNo << " sbfn " << subframeNo);
+  if (subframeNo - m_schedTtiDelay < 0)
+  {
+  	frameNo--;
+  }
+  subframeNo = (subframeNo - m_schedTtiDelay) % 10;
+  //NS_LOG_DEBUG (this << " Actual sfn " << frameNo << " sbfn " << subframeNo);
+  uint16_t sfnSf = ((0xFF & frameNo) << 4) | (0xF & subframeNo);
+  // retrieve the allocation for this subframe
+  std::map <uint16_t, std::vector <uint16_t> >::iterator itMap;
+  std::map <uint16_t, std::vector <uint16_t> >::iterator itCqi;
+  itMap = m_allocationMaps.find (sfnSf);
+  if (itMap == m_allocationMaps.end())
+  {
+  	NS_LOG_DEBUG (this << " Does not find info on allocation");
+  	return;
+  }
+  for (uint32_t i = 0; i < (*itMap).second.size (); i++)
+    {
+  	  //NS_LOG_DEBUG (this << " UE " << (*itMap).second.at (i) << " SINR " << params.m_ulCqi.m_sinr.at (i));
+  	  // fixed point notation Sxxxxxxxxxxx.xxx
+  	  itCqi = m_ueCqi.find ((*itMap).second.at (i));
+  	  if (itCqi == m_ueCqi.end ())
+  	    {
+  	    	// create a new entry
+  	    	std::vector <uint16_t> newCqi;
+  	    	for (uint32_t j = 0; j < m_cschedCellConfig.m_ulBandwidth; j++)
+  	    	  {
+  	    	  	if (i==j)
+		 	    	  	{
+		 	    	  		newCqi.push_back (params.m_ulCqi.m_sinr.at (i));
+		 	    	  	}
+  	    	  	else
+  	    	  	  {
+  	    	  	  	newCqi.push_back (0);	// TBD : put the lower possible value
+  	    	  	  }
+  	    	  	
+  	    	  }
+  	    }
+  	  else
+  	    {
+  	      // update the value
+  	      (*itCqi).second.at (i) = params.m_ulCqi.m_sinr.at (i);
+  	    }
+  	  
+  	}
+   
   return;
 }
 

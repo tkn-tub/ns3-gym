@@ -398,7 +398,7 @@ LteEnbPhy::CreateUlCqiReport (const SpectrumValue& sinr)
   for (it = sinr.ConstValuesBegin (); it != sinr.ConstValuesEnd (); it++)
   {
     ulcqi.m_sinr.push_back ((*it));
-    NS_LOG_DEBUG(this << " RB " << i << " SINR " << (*it));
+    //NS_LOG_DEBUG(this << " RB " << i << " SINR " << (*it));
     i++;
   }
   return (ulcqi);

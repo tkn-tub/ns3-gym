@@ -151,6 +151,16 @@ private:
   */
   std::map <uint16_t,SbMeasResult_s> m_a30CqiRxed;
   
+  /*
+  * Map of previous allocated UE per RBG
+  * (used to retrieve info from UL-CQI)
+  */
+  std::map <uint16_t, std::vector <uint16_t> > m_allocationMaps;
+  
+  /*
+  * Map of UEs' UL-CQI per RBG
+  */
+  std::map <uint16_t, std::vector <uint16_t> > m_ueCqi;
   
   /*
   * Map of UE's buffer status reports received
@@ -169,6 +179,7 @@ private:
   
   
   double m_timeWindow;
+  uint8_t m_schedTtiDelay; // delay between scheduling and reception (based on m_macChTtiDelay)
 
 };
 
