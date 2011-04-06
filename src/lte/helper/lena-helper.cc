@@ -258,15 +258,19 @@ LenaHelper::Attach (Ptr<NetDevice> ueDevice, Ptr<NetDevice> enbDevice)
   Ptr<LteUeRrc> ueRrc = ueDevice->GetObject<LteUeNetDevice> ()->GetRrc ();
   ueRrc->ConfigureUe (rnti);
 
-  // attach UE PHY to eNB
+  // attach UE to eNB
   ueDevice->GetObject<LteUeNetDevice> ()->SetTargetEnb (enbDevice->GetObject<LteEnbNetDevice> ());
 
-  // WILD HACK - should be done through PHY SAP, probably passing by RRC
-  Ptr<LteUePhy> uePhy = ueDevice->GetObject<LteUeNetDevice> ()->GetPhy ();
-  uePhy->SetRnti (rnti);
 
+  // connect at the PHY layer
   Ptr<LteEnbPhy> enbPhy = enbDevice->GetObject<LteEnbNetDevice> ()->GetPhy ();
+  Ptr<LteUePhy> uePhy = ueDevice->GetObject<LteUeNetDevice> ()->GetPhy ();
   enbPhy->AddUePhy (rnti, uePhy);
+ 
+  // WILD HACK - should be done through PHY SAP, probably passing by RRC
+  uePhy->SetRnti (rnti);
+  uePhy->DoSetBandwidth (enbDevice->GetObject<LteEnbNetDevice> ()->GetUlBandwidth (), 
+                         enbDevice->GetObject<LteEnbNetDevice> ()->GetDlBandwidth ());
 }
 
 

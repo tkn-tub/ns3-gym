@@ -60,6 +60,34 @@ TypeId LteEnbNetDevice::GetTypeId (void)
                    PointerValue (),
                    MakePointerAccessor (&LteEnbNetDevice::m_rrc),
                    MakePointerChecker <LteEnbRrc> ())
+    .AddAttribute ("LteEnbMac",
+                   "The MAC associated to this EnbNetDevice",               
+                   PointerValue (),
+                   MakePointerAccessor (&LteEnbNetDevice::m_mac),
+                   MakePointerChecker <LteEnbMac> ())
+    .AddAttribute ("FfMacScheduler",
+                   "The scheduler associated to this EnbNetDevice",               
+                   PointerValue (),
+                   MakePointerAccessor (&LteEnbNetDevice::m_scheduler),
+                   MakePointerChecker <FfMacScheduler> ())
+    .AddAttribute ("LteEnbPhy",
+                   "The PHY associated to this EnbNetDevice",               
+                   PointerValue (),
+                   MakePointerAccessor (&LteEnbNetDevice::m_phy),
+                   MakePointerChecker <LteEnbPhy> ())
+    .AddAttribute ("UlBandwidth",
+                   "Uplink bandwidth in number of Resource Blocks",
+                   UintegerValue (25),
+                   MakeUintegerAccessor (&LteEnbNetDevice::SetUlBandwidth, 
+                                         &LteEnbNetDevice::GetUlBandwidth),
+                   MakeUintegerChecker<uint8_t> ())
+    .AddAttribute ("DlBandwidth",
+                   "Downlink bandwidth in number of Resource Blocks",
+                   UintegerValue (25),
+                   MakeUintegerAccessor (&LteEnbNetDevice::SetDlBandwidth, 
+                                         &LteEnbNetDevice::GetDlBandwidth),
+                   MakeUintegerChecker<uint8_t> ())
+
     ;
   return tid;
 }
@@ -109,22 +137,9 @@ LteEnbNetDevice::DoDispose ()
 }
 
 
-void
-LteEnbNetDevice::UpdateConfig (void)
-{
-  NS_LOG_FUNCTION (this);
-
-  m_rrc->ConfigureCell (25, 25);
-
-  // WILD HACK -  should use the PHY SAP instead. Probably should handle this through the RRC
-  m_phy->DoSetBandwidth (25,25);
-  m_phy->DoSetCellId (m_cellId);
-  
-}
-
 
 Ptr<LteEnbMac>
-LteEnbNetDevice::GetMac (void)
+LteEnbNetDevice::GetMac (void) const
 {
   NS_LOG_FUNCTION (this);
   return m_mac;
@@ -136,6 +151,71 @@ LteEnbNetDevice::GetPhy (void) const
 {
   NS_LOG_FUNCTION (this);
   return m_phy;
+}
+
+
+Ptr<LteEnbRrc>
+LteEnbNetDevice::GetRrc () const
+{
+  return m_rrc;
+}
+
+uint16_t
+LteEnbNetDevice::GetCellId () const
+{
+  return m_cellId;
+}
+  
+uint8_t 
+LteEnbNetDevice::GetUlBandwidth () const
+{
+  return m_ulBandwidth;
+}
+
+void 
+LteEnbNetDevice::SetUlBandwidth (uint8_t bw)
+{ 
+  switch (bw)
+    { 
+    case 6:
+    case 15:
+    case 25:
+    case 50:
+    case 75:
+    case 100:     
+      m_ulBandwidth = bw;
+      break;
+      
+    default:
+      NS_FATAL_ERROR ("invalid bandwidth value " << (uint16_t) bw);
+      break;
+    }
+}
+
+uint8_t 
+LteEnbNetDevice::GetDlBandwidth () const
+{
+  return m_dlBandwidth;
+}
+
+void 
+LteEnbNetDevice::SetDlBandwidth (uint8_t bw)
+{
+  switch (bw)
+    { 
+    case 6:
+    case 15:
+    case 25:
+    case 50:
+    case 75:
+    case 100:     
+      m_dlBandwidth = bw;
+      break;
+      
+    default:
+      NS_FATAL_ERROR ("invalid bandwidth value " << (uint16_t) bw);
+      break;
+    }
 }
 
 
@@ -178,26 +258,17 @@ LteEnbNetDevice::DoReceive (Ptr<Packet> p)
 
 
 void
-LteEnbNetDevice::SendIdealPdcchMessage (void)
+LteEnbNetDevice::UpdateConfig (void)
 {
   NS_LOG_FUNCTION (this);
-  /*
-   * Get both PDCCH ideal message for UL and DL and
-   * set assigned resources to UEs using
-   * SendAssignedDLResources and SendAssignedULResources
-   */
+
+  m_rrc->ConfigureCell (m_ulBandwidth, m_dlBandwidth);
+
+  // WILD HACK -  should use the PHY SAP instead. Probably should handle this through the RRC
+  m_phy->DoSetBandwidth (m_ulBandwidth, m_dlBandwidth);
+  m_phy->DoSetCellId (m_cellId);
+  
 }
 
-Ptr<LteEnbRrc>
-LteEnbNetDevice::GetRrc ()
-{
-  return m_rrc;
-}
-
-uint16_t
-LteEnbNetDevice::GetCellId ()
-{
-  return m_cellId;
-}
 
 } // namespace ns3
