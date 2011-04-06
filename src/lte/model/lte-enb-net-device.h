@@ -66,11 +66,6 @@ public:
   virtual void DoDispose (void);
 
   /**
-   * \brief Initialize all parameters of this device
-   */
-  void InitLteEnbNetDevice (void);
-
-  /**
    * \return a pointer to the MAC 
    */
   Ptr<LteEnbMac> GetMac (void);
@@ -105,7 +100,7 @@ private:
 
   void DoReceive (Ptr<Packet> p);
 
-  // Ptr<UeManager> m_ueManager;
+  void UpdateConfig (void);  
 
   Ptr<LteEnbMac> m_mac;
 

@@ -102,6 +102,7 @@ LteEnbPhy::LteEnbPhy ()
     m_nrSubFrames (0)
 {
   m_enbPhySapProvider = new EnbMemberLteEnbPhySapProvider (this);
+  Simulator::ScheduleNow (&LteEnbPhy::StartFrame, this);
 }
 
 

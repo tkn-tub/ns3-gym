@@ -158,9 +158,26 @@ LenaHelper::InstallSingleEnbDevice (Ptr<Node> n)
   ulPhy->SetMobility (mm);
 
   m_uplinkChannel->AddRx (ulPhy);
+
   Ptr<LteEnbMac> mac = CreateObject<LteEnbMac> ();
   Ptr<FfMacScheduler> sched = m_scheduler.Create<FfMacScheduler> ();  
   Ptr<LteEnbRrc> rrc = CreateObject<LteEnbRrc> ();
+
+
+  // connect SAPs
+  rrc->SetLteEnbCmacSapProvider (mac->GetLteEnbCmacSapProvider ());
+  mac->SetLteEnbCmacSapUser (rrc->GetLteEnbCmacSapUser ());
+  rrc->SetLteMacSapProvider (mac->GetLteMacSapProvider ());
+
+  mac->SetFfMacSchedSapProvider (sched->GetFfMacSchedSapProvider ());
+  mac->SetFfMacCschedSapProvider (sched->GetFfMacCschedSapProvider ());
+
+  sched->SetFfMacSchedSapUser (mac->GetFfMacSchedSapUser ());
+  sched->SetFfMacCschedSapUser (mac->GetFfMacCschedSapUser ());
+
+  phy->SetLteEnbPhySapUser (mac->GetLteEnbPhySapUser ());
+  mac->SetLteEnbPhySapProvider (phy->GetLteEnbPhySapProvider ());
+
   Ptr<LteEnbNetDevice> dev = CreateObject<LteEnbNetDevice> (n, phy, mac, sched, rrc);
   phy->SetDevice (dev);
   dlPhy->SetDevice (dev);

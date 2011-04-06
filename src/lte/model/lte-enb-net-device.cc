@@ -68,7 +68,6 @@ LteEnbNetDevice::LteEnbNetDevice (void)
 {
   NS_LOG_FUNCTION (this);
   NS_FATAL_ERROR ("This constructor should not be called");
-  InitLteEnbNetDevice ();
 }
 
 LteEnbNetDevice::LteEnbNetDevice (Ptr<Node> node, Ptr<LteEnbPhy> phy, Ptr<LteEnbMac> mac, Ptr<FfMacScheduler> sched, Ptr<LteEnbRrc> rrc)
@@ -78,8 +77,10 @@ LteEnbNetDevice::LteEnbNetDevice (Ptr<Node> node, Ptr<LteEnbPhy> phy, Ptr<LteEnb
   m_mac = mac;
   m_scheduler = sched;
   m_rrc = rrc;
-  InitLteEnbNetDevice ();
   SetNode (node);
+  NS_ASSERT_MSG (m_cellIdCounter < 65535, "max num eNBs exceeded");
+  m_cellId = ++m_cellIdCounter;
+  UpdateConfig ();
 }
 
 LteEnbNetDevice::~LteEnbNetDevice (void)
@@ -109,42 +110,16 @@ LteEnbNetDevice::DoDispose ()
 
 
 void
-LteEnbNetDevice::InitLteEnbNetDevice (void)
+LteEnbNetDevice::UpdateConfig (void)
 {
   NS_LOG_FUNCTION (this);
 
-  SetNode (0);
-  if (GetPhy () == 0)
-    {
-      NS_LOG_DEBUG (this << "PHY NULL");
-    }
-  else
-    {
-      NS_LOG_DEBUG (this << "PHY ! NULL");
-    }
-  
-  m_rrc->SetLteEnbCmacSapProvider (m_mac->GetLteEnbCmacSapProvider ());
-  m_mac->SetLteEnbCmacSapUser (m_rrc->GetLteEnbCmacSapUser ());
-  m_rrc->SetLteMacSapProvider (m_mac->GetLteMacSapProvider ());
-
-  m_mac->SetFfMacSchedSapProvider (m_scheduler->GetFfMacSchedSapProvider ());
-  m_mac->SetFfMacCschedSapProvider (m_scheduler->GetFfMacCschedSapProvider ());
-
-  m_scheduler->SetFfMacSchedSapUser (m_mac->GetFfMacSchedSapUser ());
-  m_scheduler->SetFfMacCschedSapUser (m_mac->GetFfMacCschedSapUser ());
-
-  GetPhy ()->GetObject<LteEnbPhy> ()->SetLteEnbPhySapUser (m_mac->GetLteEnbPhySapUser ());
-  m_mac->SetLteEnbPhySapProvider (GetPhy ()->GetObject<LteEnbPhy> ()->GetLteEnbPhySapProvider ());
-
   m_rrc->ConfigureCell (25, 25);
-  NS_ASSERT_MSG (m_cellIdCounter < 65535, "max num eNBs exceeded");
-  m_cellId = ++m_cellIdCounter;
 
   // WILD HACK -  should use the PHY SAP instead. Probably should handle this through the RRC
-  GetPhy ()->GetObject<LteEnbPhy> ()->DoSetBandwidth (25,25);
-  GetPhy ()->GetObject<LteEnbPhy> ()->DoSetCellId (m_cellId);
+  m_phy->DoSetBandwidth (25,25);
+  m_phy->DoSetCellId (m_cellId);
   
-  Simulator::ScheduleNow (&LteEnbPhy::StartFrame, GetPhy ()->GetObject<LteEnbPhy> ());
 }
 
 
