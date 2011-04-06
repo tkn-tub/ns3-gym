@@ -14,7 +14,13 @@ def configure(conf):
     conf.env['BOOST'] = conf.check_boost(lib = 'signals filesystem',
                                          kind = 'STATIC_BOTH',
                                          score_version = (-1000, 1000),
-                                         tag_minscore = 1000,)
+                                         tag_minscore = 1000)
+    if not conf.env['BOOST']:
+        conf.env['BOOST'] = conf.check_boost(lib = 'signals filesystem',
+                                            kind = 'STATIC_BOTH',
+                                            score_version = (-1000, 1000),
+                                            tag_minscore = 1000,
+                                            libpath="/usr/lib64")
 
     if not conf.env['BOOST']:
 	conf.report_optional_feature("openflow", "NS-3 OpenFlow Integration", False,
@@ -38,9 +44,9 @@ def configure(conf):
 	return 
 
     test_code = '''
-#include "openflow.h"
-#include "nicira-ext.h"
-#include "ericsson-ext.h"
+#include "openflow/openflow.h"
+#include "openflow/nicira-ext.h"
+#include "openflow/ericsson-ext.h"
 
 extern "C"
 {
@@ -48,20 +54,20 @@ extern "C"
 #define delete _delete
 #define list List
 
-#include "csum.h"
-#include "poll-loop.h"
-#include "rconn.h"
-#include "stp.h"
-#include "vconn.h"
-#include "xtoxll.h"
+#include "openflow/private/csum.h"
+#include "openflow/private/poll-loop.h"
+#include "openflow/private/rconn.h"
+#include "openflow/private/stp.h"
+#include "openflow/private/vconn.h"
+#include "openflow/private/xtoxll.h"
 
-#include "chain.h"
-#include "table.h"
-#include "datapath.h" // The functions below are defined in datapath.c
+#include "openflow/private/chain.h"
+#include "openflow/private/table.h"
+#include "openflow/private/datapath.h" // The functions below are defined in datapath.c
 uint32_t save_buffer (ofpbuf *);
 ofpbuf * retrieve_buffer (uint32_t id);
 void discard_buffer (uint32_t id);
-#include "dp_act.h" // The functions below are defined in dp_act.c
+#include "openflow/private/dp_act.h" // The functions below are defined in dp_act.c
 void set_vlan_vid (ofpbuf *buffer, sw_flow_key *key, const ofp_action_header *ah);
 void set_vlan_pcp (ofpbuf *buffer, sw_flow_key *key, const ofp_action_header *ah);
 void strip_vlan (ofpbuf *buffer, sw_flow_key *key, const ofp_action_header *ah);
@@ -70,7 +76,7 @@ void set_nw_addr (ofpbuf *buffer, sw_flow_key *key, const ofp_action_header *ah)
 void set_tp_port (ofpbuf *buffer, sw_flow_key *key, const ofp_action_header *ah);
 void set_mpls_label (ofpbuf *buffer, sw_flow_key *key, const ofp_action_header *ah);
 void set_mpls_exp (ofpbuf *buffer, sw_flow_key *key, const ofp_action_header *ah);
-#include "pt_act.h" // The function below is defined in pt_act.c
+#include "openflow/private/pt_act.h" // The function below is defined in pt_act.c
 void update_checksums (ofpbuf *buffer, const sw_flow_key *key, uint32_t old_word, uint32_t new_word);
 
 #undef list
@@ -90,20 +96,24 @@ int main()
     conf.env.append_value('NS3_MODULE_PATH',os.path.abspath(os.path.join(conf.env['WITH_OPENFLOW'],'build','default')))
     
     conf.env['CPPPATH_OPENFLOW'] = [
-				    os.path.abspath(os.path.join(conf.env['WITH_OPENFLOW'],'include')),
-				    os.path.abspath(os.path.join(conf.env['WITH_OPENFLOW'],'include','openflow')),
-				    os.path.abspath(os.path.join(conf.env['WITH_OPENFLOW'],'lib')),
-				    os.path.abspath(os.path.join(conf.env['WITH_OPENFLOW'],'switch'))
-				   ]
-    conf.env['LIBPATH_OPENFLOW'] = [os.path.abspath(os.path.join(conf.env['WITH_OPENFLOW'],'build','default'))]
+        os.path.abspath(os.path.join(conf.env['WITH_OPENFLOW'],'include'))]
+    conf.env['LIBPATH_OPENFLOW'] = [
+        os.path.abspath(os.path.join(conf.env['WITH_OPENFLOW'],'build','default')),
+        os.path.abspath(os.path.join(conf.env['WITH_OPENFLOW'],'lib'))]
     
-    conf.env['OPENFLOW'] = conf.check(fragment=test_code, lib='openflow', uselib='OPENFLOW DL XML2')
+    conf.env['OPENFLOW'] = conf.check(fragment=test_code, lib='openflow', 
+                                      libpath=conf.env['LIBPATH_OPENFLOW'],
+                                      uselib='OPENFLOW DL XML2')
+
     conf.report_optional_feature("openflow", "NS-3 OpenFlow Integration",
-    conf.env['OPENFLOW'], "openflow library not found")
+                                 conf.env['OPENFLOW'], "openflow library not found")
     if conf.env['OPENFLOW']:
         conf.env['ENABLE_OPENFLOW'] = True
-	conf.env.append_value('CXXDEFINES', 'NS3_OPENFLOW')
-	conf.env.append_value('CPPPATH', conf.env['CPPPATH_OPENFLOW']) 
+        conf.env.append_value('CXXDEFINES', 'NS3_OPENFLOW')
+        conf.env.append_value('CPPPATH', conf.env['CPPPATH_OPENFLOW']) 
+        conf.env.append_value('LIBPATH', conf.env['LIBPATH_OPENFLOW']) 
+
+
 
 def build(bld):
     # Build the Switch module
