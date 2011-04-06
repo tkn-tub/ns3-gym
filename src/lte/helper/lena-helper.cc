@@ -219,6 +219,14 @@ LenaHelper::InstallSingleUeDevice (Ptr<Node> n)
   
   Ptr<LteUeMac> mac = CreateObject<LteUeMac> ();
   Ptr<LteUeRrc> rrc = CreateObject<LteUeRrc> ();
+
+  // connect SAPs
+  rrc->SetLteUeCmacSapProvider (mac->GetLteUeCmacSapProvider ());
+  mac->SetLteUeCmacSapUser (rrc->GetLteUeCmacSapUser ());
+  rrc->SetLteMacSapProvider (mac->GetLteMacSapProvider ());
+  phy->SetLteUePhySapUser (mac->GetLteUePhySapUser ());
+  mac->SetLteUePhySapProvider (phy->GetLteUePhySapProvider ());
+
   Ptr<LteUeNetDevice> dev = CreateObject<LteUeNetDevice> (n, phy, mac, rrc);
   phy->SetDevice (dev);
   dlPhy->SetDevice (dev);

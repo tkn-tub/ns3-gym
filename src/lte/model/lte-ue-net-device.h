@@ -70,12 +70,6 @@ public:
   Ptr<LteUePhy> GetPhy (void) const;
 
   /**
-   * \brief Initialize the UE
-   */
-
-  void InitLteUeNetDevice (void);
-
-  /**
    * \brief Set the targer eNB where the UE is registered
    * \param enb
    */
@@ -94,6 +88,8 @@ private:
                uint16_t protocolNumber);
 
   void DoReceive (Ptr<Packet> p);
+
+  void UpdateConfig (void);
 
   Ptr<LteEnbNetDevice> m_targetEnb;
 

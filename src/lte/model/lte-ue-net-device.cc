@@ -62,7 +62,6 @@ LteUeNetDevice::LteUeNetDevice (void)
 {
   NS_LOG_FUNCTION (this);
   NS_FATAL_ERROR ("This constructor should not be called");
-  InitLteUeNetDevice ();
 }
 
 
@@ -72,13 +71,8 @@ LteUeNetDevice::LteUeNetDevice (Ptr<Node> node, Ptr<LteUePhy> phy, Ptr<LteUeMac>
   m_phy = phy;
   m_mac = mac;
   m_rrc = rrc;
-  InitLteUeNetDevice ();
   SetNode (node);
-  /**
-  * WILD HACK
-  * to be translated to PHY-SAP primitive
-  */
-  phy->DoSetBandwidth (25,25);
+  UpdateConfig ();
 }
 
 LteUeNetDevice::~LteUeNetDevice (void)
@@ -101,14 +95,14 @@ LteUeNetDevice::DoDispose (void)
 }
 
 void
-LteUeNetDevice::InitLteUeNetDevice (void)
+LteUeNetDevice::UpdateConfig (void)
 {
   NS_LOG_FUNCTION (this);
-  m_rrc->SetLteUeCmacSapProvider (m_mac->GetLteUeCmacSapProvider ());
-  m_mac->SetLteUeCmacSapUser (m_rrc->GetLteUeCmacSapUser ());
-  m_rrc->SetLteMacSapProvider (m_mac->GetLteMacSapProvider ());
-  m_phy->SetLteUePhySapUser (m_mac->GetLteUePhySapUser ());
-  m_mac->SetLteUePhySapProvider (m_phy->GetLteUePhySapProvider ());
+  /**
+  * WILD HACK
+  * to be translated to PHY-SAP primitive, or maybe to be set through RRC
+  */
+  m_phy->DoSetBandwidth (25,25);
 }
 
 
