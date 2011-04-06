@@ -48,7 +48,7 @@ Steps in doing an ns-3 release
    - cd ns-3.x
    - ./test.py
    - ./test.py -g
-   - ./waf -d optimized configure
+   - ./waf -d optimized --enable-tests configure
    - ./waf
    - ./test.py
    - ./test.py -g

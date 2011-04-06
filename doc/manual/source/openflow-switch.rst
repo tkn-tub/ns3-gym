@@ -143,7 +143,7 @@ the library. From the "openflow" directory, run:::
 link to an ns-3 build with this OpenFlow switch module, run from the ns-3-dev
 (or whatever you have named your distribution):::
 
-  $ ./waf configure --with-openflow=path/to/openflow
+  $ ./waf configure --enable-tests --with-openflow=path/to/openflow
 
 #3 Under ``---- Summary of optional NS-3 features:`` you should see:::
 

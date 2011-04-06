@@ -64,6 +64,13 @@ as well.
 ``test.py`` is very flexible in allowing the user to specify the number
 and kind of tests to run; and also the amount and kind of output to generate.
 
+Before running ``test.py``, make sure that ns3's tests have been built by doing the following
+
+::
+
+  ./waf configure --enable-tests
+  ./waf
+
 By default, ``test.py`` will run all available tests and report status
 back in a very concise form.  Running the command
 
@@ -88,7 +95,7 @@ indications followed by the kind of test that was run and its display name.
   PASS: Example csma-broadcast
   PASS: Example csma-multicast
 
-This mode is indented to be used by users who are interested in determining if
+This mode is intended to be used by users who are interested in determining if
 their distribution is working correctly, and by developers who are interested
 in determining if changes they have made have caused any regressions.
 

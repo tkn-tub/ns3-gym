@@ -249,10 +249,10 @@ already have done a
 
 ::
 
-  ./waf -d debug configure
+  ./waf -d debug --enable-tests configure
 
-in order to configure the project to perform debug builds.  You will also have
-done a
+in order to configure the project to perform debug builds that include 
+tests.  You will also have done a
 
 ::
 

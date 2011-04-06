@@ -3,7 +3,7 @@
 def build(bld):
     env = bld.env_of_name('default')
     if env['ENABLE_TAP']:
-        obj = bld.create_ns3_program('tap-csma', ['csma', 'tap-bridge', 'internet'])
+        obj = bld.create_ns3_program('tap-csma', ['csma', 'tap-bridge', 'internet', 'wifi'])
         obj.source = 'tap-csma.cc'
         obj = bld.create_ns3_program('tap-csma-virtual-machine', ['csma', 'tap-bridge', 'internet'])
         obj.source = 'tap-csma-virtual-machine.cc'

@@ -264,7 +264,12 @@ breath and type the following:
 
 ::
 
-  ./build.py
+  ./build.py --enable-tests
+
+Because we are working with tests in this tutorial, and because they
+are not built by default in |ns3|, the argument for build.py tells it
+to build them for us.  In the future you can build |ns3| without tests
+if you wish.
 
 You will see lots of typical compiler output messages displayed as the build
 script builds the various pieces you downloaded.  Eventually you should see the
@@ -293,13 +298,14 @@ strictly required at this point, but it will be valuable to take a slight
 detour and look at how to make changes to the configuration of the project.
 Probably the most useful configuration change you can make will be to 
 build the optimized version of the code.  By default you have configured
-your project to build the debug version.  Let's tell the project to do
+your project to build the debug version.  Let's tell the project to 
 make an optimized build.  To explain to Waf that it should do optimized
-builds you will need to execute the following command,
+builds that include the tests, you will need to execute the 
+following command,
 
 ::
 
-  ./waf -d optimized configure
+  ./waf -d optimized --enable-tests configure
 
 This runs Waf out of the local directory (which is provided as a convenience
 for you).  As the build system checks for various dependencies you should see
@@ -373,11 +379,11 @@ would not be enabled and a message would be displayed.  Note further that there 
 a feature to use the program ``sudo`` to set the suid bit of certain programs.
 This is not enabled by default and so this feature is reported as "not enabled."
 
-Now go ahead and switch back to the debug build.
+Now go ahead and switch back to the debug build that includes the tests.
 
 ::
 
-  ./waf -d debug configure
+  ./waf -d debug --enable-tests configure
 
 The build system is now configured and you can build the debug versions of 
 the |ns3| programs by simply typing,
@@ -388,13 +394,13 @@ the |ns3| programs by simply typing,
 
 Some waf commands are meaningful during the build phase and some commands are valid
 in the configuration phase.  For example, if you wanted to use the emulation 
-features of |ns3| you might want to enable setting the suid bit using
+features of |ns3|, you might want to enable setting the suid bit using
 sudo as described above.  This turns out to be a configuration-time command, and so 
-you could reconfigure using the following command
+you could reconfigure using the following command that also includes the tests
 
 ::
 
-  ./waf -d debug --enable-sudo configure
+  ./waf -d debug --enable-sudo --enable-tests configure
 
 If you do this, waf will have run sudo to change the socket creator programs of the
 emulation code to run as root.  There are many other configure- and build-time options
@@ -493,11 +499,11 @@ type the following,
 
 ::
 
-  ./waf -d debug configure
+  ./waf -d debug --enable-tests configure
 
 to tell ``waf`` to build the debug versions of the |ns3| 
-programs.  You must still build the actual debug version of the code by
-typing,
+programs that includes the tests.  You must still build 
+the actual debug version of the code by typing,
 
 ::
 

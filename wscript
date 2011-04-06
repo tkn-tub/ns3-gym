@@ -157,6 +157,13 @@ def set_options(opt):
                    help=('Use sudo to setup suid bits on ns3 executables.'),
                    dest='enable_sudo', action='store_true',
                    default=False)
+    opt.add_option('--enable-tests',
+                   help=('Build the ns-3 tests.'),
+                   dest='enable_tests', action='store_true',
+                   default=False)
+    opt.add_option('--disable-tests',
+                   help=('Do not build the ns-3 tests.'),
+                   dest='enable_tests', action='store_false')
     opt.add_option('--enable-examples',
                    help=('Build the ns-3 examples and samples.'),
                    dest='enable_examples', action='store_true',
@@ -333,6 +340,15 @@ def configure(conf):
             why_not_sudo = "option --enable-sudo not selected"
 
     conf.report_optional_feature("ENABLE_SUDO", "Use sudo to set suid bit", env['ENABLE_SUDO'], why_not_sudo)
+
+    if Options.options.enable_tests:
+        env['ENABLE_TESTS'] = True
+        why_not_tests = "option --enable-tests selected"
+    else:
+        env['ENABLE_TESTS'] = False
+        why_not_tests = "defaults to disabled"
+
+    conf.report_optional_feature("ENABLE_TESTS", "Build tests", env['ENABLE_TESTS'], why_not_tests)
 
     if Options.options.enable_examples:
         env['ENABLE_EXAMPLES'] = True
@@ -587,10 +603,12 @@ def build(bld):
         env['NS3_ENABLED_MODULES'] = modules
         #print "Modules to build:", modules
 
-        # Set the list of the enabled module test libraries.
-        for (mod, testlib) in bld.env['NS3_MODULES_WITH_TEST_LIBRARIES']:
-            if mod in bld.env['NS3_ENABLED_MODULES']:
-                bld.env.append_value('NS3_ENABLED_MODULE_TEST_LIBRARIES', testlib)
+        # If tests are being built, then set the list of the enabled
+        # module test libraries.
+        if env['ENABLE_TESTS']:
+            for (mod, testlib) in bld.env['NS3_MODULES_WITH_TEST_LIBRARIES']:
+                if mod in bld.env['NS3_ENABLED_MODULES']:
+                    bld.env.append_value('NS3_ENABLED_MODULE_TEST_LIBRARIES', testlib)
 
     # Process this subfolder here after the lists of enabled modules
     # and module test libraries have been set.
@@ -647,8 +665,9 @@ def build(bld):
                 exclude_taskgen(bld, obj) # kill the module
 
             # disable the module test libraries
-            if hasattr(obj, "is_ns3_module_test_library") and obj.module_name not in modules:
-                exclude_taskgen(bld, obj) # kill the module test library
+            if hasattr(obj, "is_ns3_module_test_library"):
+                if not env['ENABLE_TESTS'] or (obj.module_name not in modules):
+                    exclude_taskgen(bld, obj) # kill the module test library
 
             # disable the ns3header_taskgen
             if type(obj).__name__ == 'ns3header_taskgen':
