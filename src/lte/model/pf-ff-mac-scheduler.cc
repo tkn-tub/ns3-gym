@@ -851,6 +851,8 @@ PfFfMacScheduler::DoSchedUlCqiInfoReq (const struct FfMacSchedSapProvider::Sched
   	    }
   	  
   	}
+  // remove obsolete info on allocation
+  m_allocationMaps.erase (m_allocationMaps.begin (), ++itMap);
    
   return;
 }
