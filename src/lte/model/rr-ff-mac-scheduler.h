@@ -27,6 +27,7 @@
 #include <ns3/ff-mac-scheduler.h>
 #include <vector>
 #include <map>
+#include <ns3/lte-common.h>
 
 
 namespace ns3 {
@@ -127,7 +128,19 @@ private:
   /*
   * Map of UE's DL CQI P01 received
   */
-  std::map <uint16_t,uint8_t> m_p10CqiRxed; 
+  std::map <uint16_t,uint8_t> m_p10CqiRxed;
+  
+  /*
+  * Map of previous allocated UE per RBG
+  * (used to retrieve info from UL-CQI)
+  */
+  std::map <uint16_t, std::vector <uint16_t> > m_allocationMaps;
+  
+  /*
+  * Map of UEs' UL-CQI per RBG
+  */
+  std::map <uint16_t, std::vector <double> > m_ueCqi;
+
   
   
   /*
@@ -144,6 +157,8 @@ private:
 
   // Internal parameters
   FfMacCschedSapProvider::CschedCellConfigReqParameters m_cschedCellConfig;
+  
+  uint8_t m_schedTtiDelay; // delay between scheduling and reception (based on m_macChTtiDelay)
 
 };
 

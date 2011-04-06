@@ -83,7 +83,6 @@ public:
    */
   static std::vector<int> CreateCqiFeedbacks (const SpectrumValue& sinr);
 
-private:
   /**
    * \brief Get a proper CQI for the spectrale efficiency value.
    * In order to assure a fewer block error rate, the AMC chooses the lower CQI value
