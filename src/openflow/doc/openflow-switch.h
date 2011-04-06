@@ -119,7 +119,7 @@
  *    include libxml2, libdl, and the boost libraries. Use mercurial to 
  *    download this branch and waf to build the library:
  *
- * $ hg clone http://code.nsnam.org/bhurd/openflow
+ * $ hg clone http://code.nsnam.org/jpelkey3/openflow
  * $ cd openflow
  * $ ./waf configure
  * $ ./waf build
