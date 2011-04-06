@@ -188,6 +188,8 @@ def build(bld):
     internet_test = bld.create_ns3_module_test_library('internet')
     internet_test.source = [
         'test/global-route-manager-impl-test-suite.cc',
+        'test/ipv4-address-generator-test-suite.cc',
+        'test/ipv4-address-helper-test-suite.cc',
         'test/ipv4-list-routing-test-suite.cc',
         'test/ipv4-packet-info-tag-test-suite.cc',
         'test/ipv4-raw-test.cc',
