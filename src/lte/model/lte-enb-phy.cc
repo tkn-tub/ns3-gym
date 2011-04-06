@@ -30,6 +30,7 @@
 #include "ideal-control-messages.h"
 #include "lte-enb-net-device.h"
 #include "lte-enb-mac.h"
+#include <ns3/lte-common.h>
 
 
 NS_LOG_COMPONENT_DEFINE ("LteEnbPhy");
@@ -398,8 +399,11 @@ LteEnbPhy::CreateUlCqiReport (const SpectrumValue& sinr)
   int i = 0;
   for (it = sinr.ConstValuesBegin (); it != sinr.ConstValuesEnd (); it++)
   {
-    ulcqi.m_sinr.push_back ((*it));
-    //NS_LOG_DEBUG(this << " RB " << i << " SINR " << (*it));
+  	double sinrdb = 10*log10 ((*it));
+ 	  // convert from double to fixed point notation Sxxxxxxxxxxx.xxx
+ 	  int16_t sinrFp = LteFfConverter::double2fpS11dot3 (sinrdb);
+    ulcqi.m_sinr.push_back (sinrFp);
+    //NS_LOG_DEBUG(this << " RB " << i << " SINR FP " << sinrFp << " orig " << sinrdb);
     i++;
   }
   return (ulcqi);

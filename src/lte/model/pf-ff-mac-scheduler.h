@@ -160,7 +160,7 @@ private:
   /*
   * Map of UEs' UL-CQI per RBG
   */
-  std::map <uint16_t, std::vector <uint16_t> > m_ueCqi;
+  std::map <uint16_t, std::vector <double> > m_ueCqi;
   
   /*
   * Map of UE's buffer status reports received

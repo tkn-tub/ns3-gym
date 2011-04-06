@@ -698,8 +698,36 @@ PfFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::Sched
       uldci.m_rbStart = rbAllocated;
       uldci.m_rbLen = rbPerFlow;
       rbAllocated += rbPerFlow;
-      uldci.m_mcs = 0; // MCS 0 -> UL-AMC TBD
-      uldci.m_tbSize = (LteAmc::GetTbSizeFromMcs (uldci.m_mcs, rbPerFlow) / 8); // MCS 0 -> UL-AMC TBD
+      std::map <uint16_t, std::vector <double> >::iterator itCqi = m_ueCqi.find ((*it).first);
+      if (itCqi == m_ueCqi.end ())
+        {
+        	// no cqi info about this UE
+          uldci.m_mcs = 0; // MCS 0 -> UL-AMC TBD
+          //NS_LOG_DEBUG (this << " UE does not have ULCQI " << (*it).first );
+        }
+      else
+        {
+        	// take the lowest CQI value (worst RB)
+        	double minSinr = (*itCqi).second.at(uldci.m_rbStart);
+        	for (uint16_t i = uldci.m_rbStart; i < uldci.m_rbStart + uldci.m_rbLen; i++)
+        	  {
+        	  	//NS_LOG_DEBUG (this << " UE " << (*it).first << " has CQI " << (*itCqi).second.at(i));
+        	  	if ((*itCqi).second.at(i) < minSinr)
+        	  	  {
+        	  	  	minSinr = (*itCqi).second.at(i);
+        	  	  }
+        	  }
+        	 
+        	// translate SINR -> cqi: WILD ACK: same as DL
+        	double s = log2 ( 1 + (
+                          pow (10, minSinr / 10 )  /
+                          ( (-log (5.0 * 0.00005 )) / 1.5) ));
+          int cqi = LteAmc::GetCqiFromSpectralEfficiency (s);
+          uldci.m_mcs = LteAmc::GetMcsFromCqi (cqi);
+          //NS_LOG_DEBUG (this << " UE " <<  (*it).first << " minsinr " << minSinr << " -> mcs " << (uint16_t)uldci.m_mcs);
+        	
+        }
+      uldci.m_tbSize = (LteAmc::GetTbSizeFromMcs (uldci.m_mcs, rbPerFlow) / 8);
       uldci.m_ndi = 1;
       uldci.m_cceIndex = 0;
       uldci.m_aggrLevel = 1;
@@ -784,7 +812,7 @@ PfFfMacScheduler::DoSchedUlCqiInfoReq (const struct FfMacSchedSapProvider::Sched
   uint16_t sfnSf = ((0xFF & frameNo) << 4) | (0xF & subframeNo);
   // retrieve the allocation for this subframe
   std::map <uint16_t, std::vector <uint16_t> >::iterator itMap;
-  std::map <uint16_t, std::vector <uint16_t> >::iterator itCqi;
+  std::map <uint16_t, std::vector <double> >::iterator itCqi;
   itMap = m_allocationMaps.find (sfnSf);
   if (itMap == m_allocationMaps.end())
   {
@@ -793,30 +821,33 @@ PfFfMacScheduler::DoSchedUlCqiInfoReq (const struct FfMacSchedSapProvider::Sched
   }
   for (uint32_t i = 0; i < (*itMap).second.size (); i++)
     {
-  	  //NS_LOG_DEBUG (this << " UE " << (*itMap).second.at (i) << " SINR " << params.m_ulCqi.m_sinr.at (i));
-  	  // fixed point notation Sxxxxxxxxxxx.xxx
+  	  // convert from fixed point notation Sxxxxxxxxxxx.xxx to double    	
+    	double sinr = LteFfConverter::fpS11dot3toDouble (params.m_ulCqi.m_sinr.at (i));
+  	  //NS_LOG_DEBUG (this << " UE " << (*itMap).second.at (i) << " SINRfp " << params.m_ulCqi.m_sinr.at (i) << " sinrdb " << sinr);
   	  itCqi = m_ueCqi.find ((*itMap).second.at (i));
   	  if (itCqi == m_ueCqi.end ())
   	    {
   	    	// create a new entry
-  	    	std::vector <uint16_t> newCqi;
+  	    	std::vector <double> newCqi;
   	    	for (uint32_t j = 0; j < m_cschedCellConfig.m_ulBandwidth; j++)
   	    	  {
   	    	  	if (i==j)
 		 	    	  	{
-		 	    	  		newCqi.push_back (params.m_ulCqi.m_sinr.at (i));
+		 	    	  		newCqi.push_back (sinr);
 		 	    	  	}
   	    	  	else
   	    	  	  {
-  	    	  	  	newCqi.push_back (0);	// TBD : put the lower possible value
+  	    	  	  	// initialize with minumum values according to the fixed point notation
+  	    	  	  	newCqi.push_back (LteFfConverter::getMinFpS11dot3Value ());
   	    	  	  }
   	    	  	
   	    	  }
+  	    	m_ueCqi.insert (std::pair <uint16_t, std::vector <double> > ((*itMap).second.at (i), newCqi));
   	    }
   	  else
   	    {
   	      // update the value
-  	      (*itCqi).second.at (i) = params.m_ulCqi.m_sinr.at (i);
+  	      (*itCqi).second.at (i) = sinr;
   	    }
   	  
   	}

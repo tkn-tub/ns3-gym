@@ -16,11 +16,13 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Manuel Requena <manuel.requena@cttc.es>
+ * Author: Marco Miozzo <marco.miozzo@cttc.es>
  */
 #ifndef LTE_COMMON_H
 #define LTE_COMMON_H
 
 #include "ns3/uinteger.h"
+#include <math.h>
 
 namespace ns3 {
 
@@ -36,6 +38,19 @@ public:
 
   friend bool operator == (const lteFlowId_t &a, const lteFlowId_t &b);
   friend bool operator < (const lteFlowId_t &a, const lteFlowId_t &b);
+};
+
+class LteFfConverter
+{
+
+public:
+  static uint16_t double2fpS11dot3 (double val);
+  static double fpS11dot3toDouble (uint16_t val);
+  static double getMinFpS11dot3Value ();
+  
+  //static const double MIN_FP_S11DOT3_VALUE = -4096;
+
+
 };
 
 
