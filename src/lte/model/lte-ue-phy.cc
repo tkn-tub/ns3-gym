@@ -24,7 +24,7 @@
 #include <ns3/log.h>
 #include <math.h>
 #include <ns3/simulator.h>
-#include <ns3/spectrum-error-model.h>
+#include <ns3/double.h>
 #include "lte-ue-phy.h"
 #include "lte-enb-phy.h"
 #include "lte-net-device.h"
@@ -124,6 +124,12 @@ LteUePhy::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::LteUePhy")
     .SetParent<LtePhy> ()
     .AddConstructor<LteUePhy> ()
+    .AddAttribute ("TxPower",
+                   "Transmission power in dBm",
+                   DoubleValue (10.0),
+                   MakeDoubleAccessor (&LteUePhy::SetTxPower, 
+                                       &LteUePhy::GetTxPower),
+                   MakeDoubleChecker<double> ())
   ;
   return tid;
 }
@@ -143,6 +149,19 @@ LteUePhy::GetLteUePhySapProvider ()
   return (m_uePhySapProvider);
 }
 
+void
+LteUePhy::SetTxPower (double pow)
+{
+  NS_LOG_FUNCTION (this << pow);
+  m_txPower = pow;
+}
+
+double
+LteUePhy::GetTxPower () const
+{
+  NS_LOG_FUNCTION (this);
+  return m_txPower;
+}
 
 void
 LteUePhy::DoSendMacPdu (Ptr<Packet> p)

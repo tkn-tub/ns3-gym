@@ -183,22 +183,6 @@ LtePhy::GetUplinkSubChannels (void)
   return m_listOfUplinkSubchannel;
 }
 
-
-void
-LtePhy::SetTxPower (double pw)
-{
-  NS_LOG_FUNCTION (this << pw);
-  m_txPower = pw;
-}
-
-
-double
-LtePhy::GetTxPower (void)
-{
-  NS_LOG_FUNCTION (this);
-  return m_txPower;
-}
-
 void
 LtePhy::SetTti (double tti)
 {

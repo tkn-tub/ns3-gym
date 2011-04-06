@@ -136,17 +136,6 @@ public:
    */
   virtual Ptr<SpectrumValue> CreateTxPowerSpectralDensity () = 0;
 
-  /**
-   * \brief Set the power transmisison, expressed in dBm
-   * \param pw the power transmission
-   */
-  void SetTxPower (double pw);
-  /**
-   * \brief Get the power transmission, expressed in dBm
-   * \return the power transmission
-   */
-  double GetTxPower (void);
-
   void DoDispose ();
 
   /**

@@ -67,6 +67,15 @@ public:
   */
   void SetLteEnbPhySapUser (LteEnbPhySapUser* s);
 
+  /**     
+   * \param pw the transmission power in dBm
+   */
+   void SetTxPower (double pow);
+
+  /**
+   * \return the transmission power in dBm
+   */
+   double GetTxPower () const;
 
   /**
   * \brief Queue the MAC PDU to be sent
