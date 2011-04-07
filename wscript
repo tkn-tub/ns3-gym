@@ -304,27 +304,7 @@ def configure(conf):
                                                modules_enabled]
     conf.sub_config('bindings/python')
 
-    # for MPI
-    conf.find_program('mpic++', var='MPI')
-    if Options.options.enable_mpi and conf.env['MPI']:
-        p = subprocess.Popen([conf.env['MPI'], '-showme:compile'], stdout=subprocess.PIPE)
-        flags = p.stdout.read().rstrip().split()
-        p.wait()
-        env.append_value("CXXFLAGS_MPI", flags)
-
-        p = subprocess.Popen([conf.env['MPI'], '-showme:link'], stdout=subprocess.PIPE)
-        flags = p.stdout.read().rstrip().split()
-        p.wait()
-        env.append_value("LINKFLAGS_MPI", flags)
-
-        env.append_value('CXXDEFINES', 'NS3_MPI')
-        conf.report_optional_feature("mpi", "MPI Support", True, '')
-        conf.env['ENABLE_MPI'] = True
-    else:
-        if Options.options.enable_mpi:
-            conf.report_optional_feature("mpi", "MPI Support", False, 'mpic++ not found')
-        else:
-            conf.report_optional_feature("mpi", "MPI Support", False, 'option --enable-mpi not selected')
+    conf.sub_config('src/mpi')
 
     # for suid bits
     conf.find_program('sudo', var='SUDO')

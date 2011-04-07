@@ -1,27 +1,51 @@
 ## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
 import sys
-
+import subprocess
 import Options
 
 
+def configure(conf):
+    env = conf.env
+    conf.find_program('mpic++', var='MPI')
+    if Options.options.enable_mpi and conf.env['MPI']:
+        p = subprocess.Popen([conf.env['MPI'], '-showme:compile'], stdout=subprocess.PIPE)
+        flags = p.stdout.read().rstrip().split()
+        p.wait()
+        env.append_value("CXXFLAGS_MPI", flags)
+
+        p = subprocess.Popen([conf.env['MPI'], '-showme:link'], stdout=subprocess.PIPE)
+        flags = p.stdout.read().rstrip().split()
+        p.wait()
+        env.append_value("LINKFLAGS_MPI", flags)
+
+        env.append_value('CXXDEFINES', 'NS3_MPI')
+        conf.report_optional_feature("mpi", "MPI Support", True, '')
+        conf.env['ENABLE_MPI'] = True
+    else:
+        if Options.options.enable_mpi:
+            conf.report_optional_feature("mpi", "MPI Support", False, 'mpic++ not found')
+        else:
+            conf.report_optional_feature("mpi", "MPI Support", False, 'option --enable-mpi not selected')
+
+
 def build(bld):
-  env = bld.env_of_name('default')
-  sim = bld.create_ns3_module('mpi', ['core', 'network'])
-  sim.source = [
-      'model/distributed-simulator-impl.cc',
-      'model/mpi-interface.cc',
-      'model/mpi-net-device.cc',
-      ]
+    env = bld.env_of_name('default')
+    sim = bld.create_ns3_module('mpi', ['core', 'network'])
+    sim.source = [
+        'model/distributed-simulator-impl.cc',
+        'model/mpi-interface.cc',
+        'model/mpi-net-device.cc',
+        ]
 
-  headers = bld.new_task_gen('ns3header')
-  headers.module = 'mpi'
-  headers.source = [
-      'model/distributed-simulator-impl.h',
-      'model/mpi-interface.h',
-      'model/mpi-net-device.h',
-      ]
+    headers = bld.new_task_gen('ns3header')
+    headers.module = 'mpi'
+    headers.source = [
+        'model/distributed-simulator-impl.h',
+        'model/mpi-interface.h',
+        'model/mpi-net-device.h',
+        ]
 
-  if env['ENABLE_MPI']:
-      sim.uselib = 'MPI'
+    if env['ENABLE_MPI']:
+        sim.uselib = 'MPI'
       
-  bld.ns3_python_bindings()
+    bld.ns3_python_bindings()
