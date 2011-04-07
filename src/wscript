@@ -288,6 +288,9 @@ class ns3header_taskgen(TaskGen.task_gen):
         self.mode = 'install'
 
     def apply(self):
+        for filename in set(self.to_list(self.source)):
+            src_node = self.path.find_resource(filename)
+            self.bld.install_files('${PREFIX}/include/ns3', [src_node])
         if self.module is None:
             raise Utils.WafError("'module' missing on ns3headers object %s" % self)
         ns3_dir_node = self.bld.path.find_dir("ns3")
@@ -470,6 +473,8 @@ class ns3moduleheader_taskgen(TaskGen.task_gen):
             raise Utils.WscriptError("error finding headers for module %s" % self.module)
         if not all_headers_inputs:
             return
+        self.bld.install_files('${PREFIX}/include/ns3', 
+                               ns3_dir_node.find_or_declare("%s-module.h" % self.module))
         all_headers_outputs = [ns3_dir_node.find_or_declare("%s-module.h" % self.module)]
         task = self.create_task('gen_ns3_module_header', env=self.env)
         task.module = self.module
