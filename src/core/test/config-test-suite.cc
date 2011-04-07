@@ -605,7 +605,7 @@ public:
 };
 
 ConfigTestSuite::ConfigTestSuite ()
-  : TestSuite ("config", BVT)
+  : TestSuite ("config", UNIT)
 {
   AddTestCase (new RootNamespaceConfigTestCase);
   AddTestCase (new UnderRootNamespaceConfigTestCase);

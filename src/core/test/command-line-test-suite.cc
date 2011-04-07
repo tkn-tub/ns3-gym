@@ -217,7 +217,7 @@ public:
 };
 
 CommandLineTestSuite::CommandLineTestSuite ()
-  : TestSuite ("command-line", BVT)
+  : TestSuite ("command-line", UNIT)
 {
   AddTestCase (new CommandLineBooleanTestCase);
   AddTestCase (new CommandLineIntTestCase);

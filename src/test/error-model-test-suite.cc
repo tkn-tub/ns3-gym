@@ -122,7 +122,7 @@ public:
 };
 
 ErrorModelTestSuite::ErrorModelTestSuite ()
-  : TestSuite ("error-model", BVT)
+  : TestSuite ("error-model", UNIT)
 {
   AddTestCase (new ErrorModelSimple);
 }

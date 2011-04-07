@@ -417,7 +417,7 @@ public:
 };
 
 ObjectTestSuite::ObjectTestSuite ()
-  : TestSuite ("object", BVT)
+  : TestSuite ("object", UNIT)
 {
   AddTestCase (new CreateObjectTestCase);
   AddTestCase (new AggregateObjectTestCase);

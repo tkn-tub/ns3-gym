@@ -83,7 +83,7 @@ public:
 };
 
 GlobalValueTestSuite::GlobalValueTestSuite ()
-  : TestSuite ("global-value", BVT)
+  : TestSuite ("global-value", UNIT)
 {
   AddTestCase (new GlobalValueTestCase);
 }
