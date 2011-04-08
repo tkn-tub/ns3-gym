@@ -87,7 +87,6 @@ sp_after_semi_for=Add
 sp_arith=Add
 sp_assign=Add
 sp_compare=Add
-sp_cmt_cpp_start=Add
 sp_func_class_paren=Add
 sp_after_type=Add
 sp_type_func=Add
