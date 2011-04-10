@@ -431,7 +431,6 @@ RegularWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
   // hurt to have it here too as a backstop.
   if (to != GetAddress ())
     {
-      NotifyRxDrop (packet);
       return;
     }
 
