@@ -278,16 +278,31 @@ PcapSniffTxEvent (
         header.SetFrameFlags (frameFlags);
         header.SetRate (rate);
 
+        uint16_t channelFlags = 0;
+        switch (rate) 
+          {
+          case 2:  // 1Mbps
+          case 4:  // 2Mbps
+          case 10: // 5Mbps
+          case 22: // 11Mbps
+            channelFlags |= RadiotapHeader::CHANNEL_FLAG_CCK;
+            break;
+            
+          default:
+            channelFlags |= RadiotapHeader::CHANNEL_FLAG_OFDM;
+            break;              
+          }
+
         if (channelFreqMhz < 2500)
           {
-            header.SetChannelFrequencyAndFlags (channelFreqMhz, 
-              RadiotapHeader::CHANNEL_FLAG_SPECTRUM_2GHZ | RadiotapHeader::CHANNEL_FLAG_CCK);
+            channelFlags |= RadiotapHeader::CHANNEL_FLAG_SPECTRUM_2GHZ;
           }
         else
           {
-            header.SetChannelFrequencyAndFlags (channelFreqMhz, 
-              RadiotapHeader::CHANNEL_FLAG_SPECTRUM_5GHZ | RadiotapHeader::CHANNEL_FLAG_OFDM);
+            channelFlags |= RadiotapHeader::CHANNEL_FLAG_SPECTRUM_5GHZ;
           }
+        
+        header.SetChannelFrequencyAndFlags (channelFreqMhz, channelFlags);
 
         p->AddHeader (header);
         file->Write (Simulator::Now (), p);
@@ -339,16 +354,31 @@ PcapSniffRxEvent (
         header.SetFrameFlags (frameFlags);
         header.SetRate (rate);
 
+        uint16_t channelFlags = 0;
+        switch (rate) 
+          {
+          case 2:  // 1Mbps
+          case 4:  // 2Mbps
+          case 10: // 5Mbps
+          case 22: // 11Mbps
+            channelFlags |= RadiotapHeader::CHANNEL_FLAG_CCK;
+            break;
+            
+          default:
+            channelFlags |= RadiotapHeader::CHANNEL_FLAG_OFDM;
+            break;              
+          }
+
         if (channelFreqMhz < 2500)
           {
-            header.SetChannelFrequencyAndFlags (channelFreqMhz, 
-              RadiotapHeader::CHANNEL_FLAG_SPECTRUM_2GHZ | RadiotapHeader::CHANNEL_FLAG_CCK);
+            channelFlags |= RadiotapHeader::CHANNEL_FLAG_SPECTRUM_2GHZ;
           }
         else
           {
-            header.SetChannelFrequencyAndFlags (channelFreqMhz, 
-              RadiotapHeader::CHANNEL_FLAG_SPECTRUM_5GHZ | RadiotapHeader::CHANNEL_FLAG_OFDM);
+            channelFlags |= RadiotapHeader::CHANNEL_FLAG_SPECTRUM_5GHZ;
           }
+        
+        header.SetChannelFrequencyAndFlags (channelFreqMhz, channelFlags);
 
         header.SetAntennaSignalPower (signalDbm);
         header.SetAntennaNoisePower (noiseDbm);
