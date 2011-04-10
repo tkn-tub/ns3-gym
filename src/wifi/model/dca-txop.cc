@@ -24,6 +24,7 @@
 #include "ns3/simulator.h"
 #include "ns3/node.h"
 #include "ns3/uinteger.h"
+#include "ns3/pointer.h"
 
 #include "dca-txop.h"
 #include "dcf-manager.h"
@@ -102,6 +103,10 @@ DcaTxop::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::DcaTxop")
     .SetParent (ns3::Dcf::GetTypeId ())
     .AddConstructor<DcaTxop> ()
+    .AddAttribute ("Queue", "The WifiMacQueue object",
+                   PointerValue (),
+                   MakePointerAccessor (&DcaTxop::GetQueue),
+                   MakePointerChecker<WifiMacQueue> ())
     ;
   return tid;
 }
@@ -171,18 +176,13 @@ DcaTxop::SetTxFailedCallback (TxFailed callback)
   m_txFailedCallback = callback;
 }
 
-void 
-DcaTxop::SetMaxQueueSize (uint32_t size)
+Ptr<WifiMacQueue >
+DcaTxop::GetQueue () const
 {
-  NS_LOG_FUNCTION (this << size);
-  m_queue->SetMaxSize (size);
+  NS_LOG_FUNCTION (this);
+  return m_queue;
 }
-void 
-DcaTxop::SetMaxQueueDelay (Time delay)
-{
-  NS_LOG_FUNCTION (this << delay);
-  m_queue->SetMaxDelay (delay);
-}
+
 void 
 DcaTxop::SetMinCw (uint32_t minCw)
 {
