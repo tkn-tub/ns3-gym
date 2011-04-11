@@ -51,14 +51,6 @@ GlobalValue g_schedTypeImpl = GlobalValue ("SchedulerType",
   TypeIdValue (MapScheduler::GetTypeId ()),
   MakeTypeIdChecker ());
 
-
-#ifdef NS3_LOG_ENABLE
-
-//
-// Note:  Calls that take TimePrinter as a parameter are defined as nothing
-// in the logging module if NS3_LOG_ENABLE is not defined.
-// 
-
 static void
 TimePrinter (std::ostream &os)
 {
@@ -77,8 +69,6 @@ NodePrinter (std::ostream &os)
       os << Simulator::GetContext ();
     }
 }
-
-#endif /* NS3_LOG_ENABLE */
 
 static SimulatorImpl **PeekImpl (void)
 {
