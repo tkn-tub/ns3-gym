@@ -34,6 +34,7 @@ namespace ns3 {
 
 typedef std::map<lteFlowId_t, uint32_t> uint32Map;
 typedef std::map<lteFlowId_t, uint64_t> uint64Map;
+typedef std::map<lteFlowId_t, Ptr<MinMaxAvgTotalCalculator<uint32_t> > > uint32StatsMap;
 typedef std::map<lteFlowId_t, Ptr<MinMaxAvgTotalCalculator<uint64_t> > > uint64StatsMap;
 typedef std::map<lteFlowId_t, double> doubleMap;
 
@@ -46,39 +47,72 @@ public:
   ~RlcStatsCalculator();
   static TypeId GetTypeId (void);
 
-  void SetOutputFilename (std::string outputFilename);
+  void SetUlOutputFilename (std::string outputFilename);
+  void SetDlOutputFilename (std::string outputFilename);
 
-  void TxPdu (uint16_t rnti, uint8_t lcid, uint32_t packetSize);
-  void RxPdu (uint16_t rnti, uint8_t lcid, uint32_t packetSize, uint64_t delay);
+  void UlTxPdu (uint16_t rnti, uint8_t lcid, uint32_t packetSize);
+  void UlRxPdu (uint16_t rnti, uint8_t lcid, uint32_t packetSize, uint64_t delay);
 
-  uint32_t GetTxPackets (lteFlowId_t p);
-  uint32_t GetRxPackets (lteFlowId_t p);
-  uint64_t GetRxData (lteFlowId_t p);
-  uint64_t GetDelay (lteFlowId_t p);
-  double   GetThroughput (lteFlowId_t p);
-  double   GetPacketLossProbability (lteFlowId_t p);
+  void DlTxPdu (uint16_t rnti, uint8_t lcid, uint32_t packetSize);
+  void DlRxPdu (uint16_t rnti, uint8_t lcid, uint32_t packetSize, uint64_t delay);
 
-  uint32_t GetTxPackets (uint16_t rnti, uint8_t lcid);
-  uint32_t GetRxPackets (uint16_t rnti, uint8_t lcid);
-  uint64_t GetRxData (uint16_t rnti, uint8_t lcid);
-  uint64_t GetDelay (uint16_t rnti, uint8_t lcid);
-  double   GetThroughput (uint16_t rnti, uint8_t lcid);
-  double   GetPacketLossProbability (uint16_t rnti, uint8_t lcid);
+  uint32_t GetUlTxPackets (lteFlowId_t p);
+  uint32_t GetUlRxPackets (lteFlowId_t p);
+  uint64_t GetUlTxData (lteFlowId_t p);
+  uint64_t GetUlRxData (lteFlowId_t p);
+  double   GetUlDelay (lteFlowId_t p);
+  std::vector<double> GetUlDelayStats (lteFlowId_t p);
+  std::vector<double> GetUlPduSizeStats (lteFlowId_t p);
+
+  uint32_t GetUlTxPackets (uint16_t rnti, uint8_t lcid);
+  uint32_t GetUlRxPackets (uint16_t rnti, uint8_t lcid);
+  uint64_t GetUlTxData (uint16_t rnti, uint8_t lcid);
+  uint64_t GetUlRxData (uint16_t rnti, uint8_t lcid);
+  double   GetUlDelay (uint16_t rnti, uint8_t lcid);
+  std::vector<double> GetUlDelayStats (uint16_t rnti, uint8_t lcid);
+  std::vector<double> GetUlPduSizeStats (uint16_t rnti, uint8_t lcid);
+
+
+  uint32_t GetDlTxPackets (lteFlowId_t p);
+  uint32_t GetDlRxPackets (lteFlowId_t p);
+  uint64_t GetDlTxData (lteFlowId_t p);
+  uint64_t GetDlRxData (lteFlowId_t p);
+  double   GetDlDelay (lteFlowId_t p);
+  std::vector<double> GetDlDelayStats (lteFlowId_t p);
+  std::vector<double> GetDlPduSizeStats (lteFlowId_t p);
+
+  uint32_t GetDlTxPackets (uint16_t rnti, uint8_t lcid);
+  uint32_t GetDlRxPackets (uint16_t rnti, uint8_t lcid);
+  uint64_t GetDlTxData (uint16_t rnti, uint8_t lcid);
+  uint64_t GetDlRxData (uint16_t rnti, uint8_t lcid);
+  double   GetDlDelay (uint16_t rnti, uint8_t lcid);
+  std::vector<double> GetDlDelayStats (uint16_t rnti, uint8_t lcid);
+  std::vector<double> GetDlPduSizeStats (uint16_t rnti, uint8_t lcid);
 
 private:
   void ShowResults (void);
+  void WriteUlResults (std::ofstream& outFile);
+  void WriteDlResults (std::ofstream& outFile);
   void ResetResults (void);
 
   void StartEpoch (void);
   void CheckEpoch (void);
 
-  std::string m_outputFilename;
-  std::ofstream m_outFile;
-  uint32Map m_txPackets;
-  uint32Map m_rxPackets;
-  uint64Map m_rxData;
-  doubleMap m_throughput;
-  uint64StatsMap m_delay;
+  std::string m_dlOutputFilename;
+  uint32Map m_dlTxPackets;
+  uint32Map m_dlRxPackets;
+  uint64Map m_dlTxData;
+  uint64Map m_dlRxData;
+  uint64StatsMap m_dlDelay;
+  uint32StatsMap m_dlPduSize;
+
+  std::string m_ulOutputFilename;
+  uint32Map m_ulTxPackets;
+  uint32Map m_ulRxPackets;
+  uint64Map m_ulTxData;
+  uint64Map m_ulRxData;
+  uint64StatsMap m_ulDelay;
+  uint32StatsMap m_ulPduSize;
 
   /**
    * Start time of the on going epoch

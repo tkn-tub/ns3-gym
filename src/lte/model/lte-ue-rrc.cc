@@ -20,6 +20,7 @@
 
 #include <ns3/fatal-error.h>
 #include <ns3/log.h>
+#include "ns3/object-map.h"
 
 #include "lte-ue-rrc.h"
 #include "lte-rlc.h"
@@ -96,7 +97,12 @@ LteUeRrc::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::LteUeRrc")
     .SetParent<Object> ()
-    .AddConstructor<LteUeRrc> ();
+    .AddConstructor<LteUeRrc> ()
+    .AddAttribute ("RlcMap", "List of UE RadioBearerInfo by LCID.",
+                   ObjectMapValue (),
+                   MakeObjectMapAccessor (&LteUeRrc::m_rlcMap),
+                   MakeObjectMapChecker<LteRlc> ())
+    ;
   return tid;
 }
 
@@ -139,7 +145,7 @@ LteUeRrc::SetupRadioBearer (uint16_t rnti, EpsBearer bearer, uint8_t lcid)
   // create RLC instance
   // for now we support RLC SM only
 
-  Ptr<LteRlc> rlc = Create<LteRlcSm> ();
+  Ptr<LteRlc> rlc = CreateObject<LteRlcSm> ();
   rlc->SetLteMacSapProvider (m_macSapProvider);
   rlc->SetRnti (rnti);
   rlc->SetLcId (lcid);

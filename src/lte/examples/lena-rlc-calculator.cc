@@ -26,20 +26,32 @@
 #include "ns3/rlc-stats-calculator.h"
 
 
-//#include "ns3/gtk-config-store.h"
+#include "ns3/gtk-config-store.h"
 
 using namespace ns3;
 
-void TxPduCallback(Ptr<RlcStatsCalculator> rlcStats, std::string path,
+void UlTxPduCallback(Ptr<RlcStatsCalculator> rlcStats, std::string path,
                    uint16_t rnti, uint8_t lcid, uint32_t packetSize)
 {
-  rlcStats->TxPdu(rnti, lcid, packetSize);
+  rlcStats->UlTxPdu(rnti, lcid, packetSize);
 }
 
-void RxPduCallback(Ptr<RlcStatsCalculator> rlcStats, std::string path,
+void UlRxPduCallback(Ptr<RlcStatsCalculator> rlcStats, std::string path,
                    uint16_t rnti, uint8_t lcid, uint32_t packetSize, uint64_t delay)
 {
-  rlcStats->RxPdu(rnti, lcid, packetSize, delay);
+  rlcStats->UlRxPdu(rnti, lcid, packetSize, delay);
+}
+
+void DlTxPduCallback(Ptr<RlcStatsCalculator> rlcStats, std::string path,
+                   uint16_t rnti, uint8_t lcid, uint32_t packetSize)
+{
+  rlcStats->DlTxPdu(rnti, lcid, packetSize);
+}
+
+void DlRxPduCallback(Ptr<RlcStatsCalculator> rlcStats, std::string path,
+                   uint16_t rnti, uint8_t lcid, uint32_t packetSize, uint64_t delay)
+{
+  rlcStats->DlRxPdu(rnti, lcid, packetSize, delay);
 }
 
 int main (int argc, char *argv[])
@@ -51,7 +63,7 @@ int main (int argc, char *argv[])
   cmd.Parse (argc, argv);
 
   // Enable LTE log components
-  lena.EnableLogComponents ();
+  //lena.EnableLogComponents ();
 
   // Create Nodes: eNodeB and UE
   NodeContainer enbNodes;
@@ -80,20 +92,25 @@ int main (int argc, char *argv[])
   EpsBearer bearer (q);
   lena.ActivateEpsBearer (ueDevs, bearer);
 
-  Simulator::Stop (Seconds (0.1));
+  Simulator::Stop (Seconds (4));
 
   // Insert RLC Performance Calculator
   Ptr<RlcStatsCalculator> rlcStats = CreateObject<RlcStatsCalculator> ();
   Config::Connect("/NodeList/0/DeviceList/0/LteEnbRrc/UeMap/*/RadioBearerMap/*/LteRlc/TxPDU",
-                   MakeBoundCallback(&TxPduCallback, rlcStats));
+                   MakeBoundCallback(&DlTxPduCallback, rlcStats));
+  Config::Connect("/NodeList/*/DeviceList/0/LteUeRrc/RlcMap/*/RxPDU",
+                   MakeBoundCallback(&DlRxPduCallback, rlcStats));
+
+  Config::Connect("/NodeList/*/DeviceList/0/LteUeRrc/RlcMap/*/TxPDU",
+                   MakeBoundCallback(&UlTxPduCallback, rlcStats));
   Config::Connect ("/NodeList/0/DeviceList/0/LteEnbRrc/UeMap/*/RadioBearerMap/*/LteRlc/RxPDU",
-                   MakeBoundCallback(&RxPduCallback, rlcStats));
+                   MakeBoundCallback(&UlRxPduCallback, rlcStats));
 
   Simulator::Run ();
 
   // Uncomment to show available paths
-  //GtkConfigStore config;
-  //config.ConfigureAttributes ();
+  /*GtkConfigStore config;
+  config.ConfigureAttributes ();*/
 
   Simulator::Destroy ();
 

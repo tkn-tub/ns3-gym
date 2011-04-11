@@ -53,7 +53,14 @@ TypeId LteUeNetDevice::GetTypeId (void)
   static TypeId
   tid =
     TypeId ("ns3::LteUeNetDevice")
-    .SetParent<LteNetDevice> ();
+    .SetParent<LteNetDevice> ()
+    .AddAttribute ("LteUeRrc",
+                   "The RRC associated to this UeNetDevice",
+                   PointerValue (),
+                   MakePointerAccessor (&LteUeNetDevice::m_rrc),
+                   MakePointerChecker <LteUeRrc> ())
+    ;
+
   return tid;
 }
 
