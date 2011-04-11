@@ -490,6 +490,7 @@ PfFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sched
         // NS_LOG_DEBUG (this << "Allocate user " << newEl.m_rnti << " rbg " << rbgPerFlow);
         // create the DlDciListElement_s
         DlDciListElement_s newDci;
+        std::vector <struct RlcPduListElement_s> newRlcPduLe;
         newDci.m_rnti = (*flowIt).m_rnti;
         newDci.m_resAlloc = 0;
         newDci.m_rbBitmap = 0; // TBD (32 bit bitmap see 7.1.6 of 36.213)
@@ -525,17 +526,15 @@ PfFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sched
             //NS_LOG_DEBUG (this << " nPRB " << nPRB << " tbSize " << newDci.m_tbsSize.at (0));
             
             rlcPduSize += newDci.m_tbsSize.at (i);
+            RlcPduListElement_s newRlcEl;
+            newRlcEl.m_logicalChannelIdentity = (*flowIt).m_lcId;
+            // NS_LOG_DEBUG (this << "LCID " << (uint32_t) newRlcEl.m_logicalChannelIdentity);
+            newRlcEl.m_size = newDci.m_tbsSize.at (i);
+            
+            newRlcPduLe.push_back (newRlcEl);
           }
         newEl.m_dci = newDci;
         // ...more parameters -> ingored in this version
-        
-        RlcPduListElement_s newRlcEl;
-        newRlcEl.m_logicalChannelIdentity = (*flowIt).m_lcId;
-        // NS_LOG_DEBUG (this << "LCID " << (uint32_t) newRlcEl.m_logicalChannelIdentity);
-        newRlcEl.m_size = rlcPduSize; // TBD (max length of RLC-PDU in bytes)
-        
-        std::vector <struct RlcPduListElement_s> newRlcPduLe;
-        newRlcPduLe.push_back (newRlcEl);
         
         newEl.m_rlcPduList.push_back (newRlcPduLe);
         ret.m_buildDataList.push_back (newEl);
