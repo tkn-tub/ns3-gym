@@ -515,7 +515,7 @@ LteEnbMac::ReceiveDlCqiIdealControlMessage  (Ptr<DlCqiIdealControlMessage> msg)
   // NS_LOG_FUNCTION (this << msg->GetSourceDevice () << msg->GetDestinationDevice ());
 
   CqiListElement_s dlcqi = msg->GetDlCqi ();
-  NS_LOG_FUNCTION(this << "Enb Received DCI rnti" << dlcqi.m_rnti);
+  NS_LOG_FUNCTION(this << "Enb Received DL-CQI rnti" << dlcqi.m_rnti);
   m_dlCqiReceived.push_back (dlcqi);
 
 }

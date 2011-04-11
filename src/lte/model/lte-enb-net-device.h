@@ -68,29 +68,43 @@ public:
   /**
    * \return a pointer to the MAC 
    */
-  Ptr<LteEnbMac> GetMac (void);
+  Ptr<LteEnbMac> GetMac (void) const;
 
   /**
    * \return a pointer to the physical layer.
    */
   Ptr<LteEnbPhy> GetPhy (void) const;
-
-
-
-  Ptr<LteEnbRrc> GetRrc ();
-
-  /**
-   * \brief Send the PDCCH ideal mesages under an
-   * ideal control channel
+  
+  /** 
+   * \return a pointer to the Radio Resource Control instance of the eNB
    */
-  void SendIdealPdcchMessage (void);
-
+  Ptr<LteEnbRrc> GetRrc () const;
 
   /** 
-   * 
    * \return the Cell Identifier of this eNB
    */
-  uint16_t GetCellId ();
+  uint16_t GetCellId () const;
+
+  /** 
+   * \return the uplink bandwidth in RBs
+   */
+  uint8_t GetUlBandwidth () const;
+
+  /** 
+   * \param bw the uplink bandwidth in RBs
+   */
+  void SetUlBandwidth (uint8_t bw);
+
+  /** 
+   * \return the downlink bandwidth in RBs
+   */
+  uint8_t GetDlBandwidth () const;
+
+  /** 
+   * \param bw the downlink bandwidth in RBs
+   */
+  void SetDlBandwidth (uint8_t bw);
+
 
 private:
   bool DoSend (Ptr<Packet> packet,
@@ -100,6 +114,14 @@ private:
 
   void DoReceive (Ptr<Packet> p);
 
+  /** 
+   * Several attributes (e.g., the bandwidth) are exported as
+   * attributes of the LteEnbNetDevice from a user perspective,  but
+   * are actually used also in other modules as well (the RRC, the
+   * PHY, the scheduler...). This methods takes care of updating the
+   * configuration of all modules so that their copy of the attribute
+   * values is in sync with the one in the LteEnbNetDevice.
+   */
   void UpdateConfig (void);  
 
   Ptr<LteEnbMac> m_mac;
@@ -113,6 +135,10 @@ private:
   uint16_t m_cellId; /**< Cell Identifer. Part of the CGI, see TS 29.274, section 8.21.1  */ 
 
   static uint16_t m_cellIdCounter; 
+
+  uint8_t m_dlBandwidth; /**< downlink bandwidth in RBs */
+  uint8_t m_ulBandwidth; /**< uplink bandwidth in RBs */
+  
 };
 
 } // namespace ns3

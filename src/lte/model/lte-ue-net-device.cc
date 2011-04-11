@@ -105,11 +105,6 @@ void
 LteUeNetDevice::UpdateConfig (void)
 {
   NS_LOG_FUNCTION (this);
-  /**
-  * WILD HACK
-  * to be translated to PHY-SAP primitive, or maybe to be set through RRC
-  */
-  m_phy->DoSetBandwidth (25,25);
 }
 
 

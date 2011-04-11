@@ -408,6 +408,7 @@ RrFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sched
       // NS_LOG_DEBUG (this << "Allocate user " << newEl.m_rnti << " rbg " << rbgPerFlow);
       // create the DlDciListElement_s
       DlDciListElement_s newDci;
+      std::vector <struct RlcPduListElement_s> newRlcPduLe;
       newDci.m_rnti = (*it).m_rnti;
       newDci.m_resAlloc = 0;
       newDci.m_rbBitmap = 0; // TBD (32 bit bitmap see 7.1.6 of 36.213)
@@ -424,14 +425,14 @@ RrFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sched
       int rlcPduSize = 0;
       for (int i = 0; i < nbOfTbsInNewDci; i++)
         {
-          std::map <uint16_t,uint8_t>::iterator it = m_p10CqiRxed.find (newDci.m_rnti);
-          if (it == m_p10CqiRxed.end ())
+          std::map <uint16_t,uint8_t>::iterator itCqi = m_p10CqiRxed.find (newDci.m_rnti);
+          if (itCqi == m_p10CqiRxed.end ())
             {
               newDci.m_mcs.push_back (1); // no info on this user -> lowest MCS
             }
           else
             {
-              newDci.m_mcs.push_back ( LteAmc::GetMcsFromCqi ((*it).second) );
+              newDci.m_mcs.push_back ( LteAmc::GetMcsFromCqi ((*itCqi).second) );
             }
           int nPRB = rbgSize * rbgPerFlow;
           newDci.m_tbsSize.push_back ( (LteAmc::GetTbSizeFromMcs (newDci.m_mcs.at (i), nPRB) / 8) ); // (size of TB in bytes according to table 7.1.7.2.1-1 of 36.213)
@@ -439,17 +440,17 @@ RrFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sched
           newDci.m_rv.push_back (0); // TBD (redundancy version)
 
           rlcPduSize += newDci.m_tbsSize.at (i);
+          RlcPduListElement_s newRlcEl;
+          newRlcEl.m_logicalChannelIdentity = (*it).m_logicalChannelIdentity;
+          // NS_LOG_DEBUG (this << "LCID " << (uint32_t) newRlcEl.m_logicalChannelIdentity);
+          newRlcEl.m_size = newDci.m_tbsSize.at (i);
+          newRlcPduLe.push_back (newRlcEl);
         }
       newEl.m_dci = newDci;
       // ...more parameters -> ignored in this version
 
-      RlcPduListElement_s newRlcEl;
-      newRlcEl.m_logicalChannelIdentity = (*it).m_logicalChannelIdentity;
-      // NS_LOG_DEBUG (this << "LCID " << (uint32_t) newRlcEl.m_logicalChannelIdentity);
-      newRlcEl.m_size = rlcPduSize; // TBD (max length of RLC-PDU in bytes)
 
-      std::vector <struct RlcPduListElement_s> newRlcPduLe;
-      newRlcPduLe.push_back (newRlcEl);
+
 
       newEl.m_rlcPduList.push_back (newRlcPduLe);
       ret.m_buildDataList.push_back (newEl);

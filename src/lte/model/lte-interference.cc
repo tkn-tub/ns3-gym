@@ -141,6 +141,8 @@ void
 LteInterference::ConditionallyEvaluateChunk ()
 {
   NS_LOG_FUNCTION (this);
+  if (m_receiving) NS_LOG_DEBUG (this << " Receiving");
+  NS_LOG_DEBUG (this << " now "  << Now () << " last " << m_lastChangeTime);
   if (m_receiving && (Now () > m_lastChangeTime))
     {
       SpectrumValue sinr = (*m_rxSignal) / ((*m_allSignals) - (*m_rxSignal) + (*m_noise));
@@ -149,6 +151,10 @@ LteInterference::ConditionallyEvaluateChunk ()
         {
           (*it)->EvaluateSinrChunk (sinr, duration);
         }
+    }
+    else
+    {
+      NS_LOG_DEBUG (this << " NO EV");
     }
 }
 
