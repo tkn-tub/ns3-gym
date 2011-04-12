@@ -21,6 +21,7 @@
  */
 #include "ns3/log.h"
 #include "ns3/assert.h"
+#include "ns3/pointer.h"
 
 #include "edca-txop-n.h"
 #include "mac-low.h"
@@ -138,6 +139,10 @@ EdcaTxopN::GetTypeId (void)
                    UintegerValue(0),
                    MakeUintegerAccessor (&EdcaTxopN::SetBlockAckInactivityTimeout),
                    MakeUintegerChecker<uint16_t> ())
+    .AddAttribute ("Queue", "The WifiMacQueue object",
+                   PointerValue (),
+                   MakePointerAccessor (&EdcaTxopN::GetQueue),
+                   MakePointerChecker<WifiMacQueue> ())
     ;
   return tid;
 }
@@ -230,18 +235,11 @@ EdcaTxopN::GetTypeOfStation (void) const
   return m_typeOfStation;
 }
 
-void 
-EdcaTxopN::SetMaxQueueSize (uint32_t size)
+Ptr<WifiMacQueue >
+EdcaTxopN::GetQueue () const
 {
-  NS_LOG_FUNCTION (this << size);
-  m_queue->SetMaxSize (size);
-}
-
-void
-EdcaTxopN::SetMaxQueueDelay (Time delay)
-{
-  NS_LOG_FUNCTION (this << delay);
-  m_queue->SetMaxDelay (delay);
+  NS_LOG_FUNCTION (this);
+  return m_queue;
 }
 
 void 

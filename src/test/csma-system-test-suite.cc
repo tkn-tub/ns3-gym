@@ -1094,7 +1094,7 @@ public:
 };
 
 CsmaSystemTestSuite::CsmaSystemTestSuite ()
-  : TestSuite ("csma-system", BVT)
+  : TestSuite ("csma-system", UNIT)
 {
   AddTestCase (new CsmaBridgeTestCase);
   AddTestCase (new CsmaBroadcastTestCase);

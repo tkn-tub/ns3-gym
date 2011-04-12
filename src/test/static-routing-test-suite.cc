@@ -164,7 +164,7 @@ public:
 };
 
 StaticRoutingTestSuite::StaticRoutingTestSuite ()
-  : TestSuite ("static-routing", BVT)
+  : TestSuite ("static-routing", UNIT)
 {
   AddTestCase (new StaticRoutingSlash32TestCase);
 }

@@ -361,7 +361,7 @@ public:
 };
 
 MobilityTestSuite::MobilityTestSuite ()
-  : TestSuite ("mobility", BVT)
+  : TestSuite ("mobility", UNIT)
 {
   AddTestCase (new WaypointLazyNotifyFalse);
   AddTestCase (new WaypointLazyNotifyTrue);

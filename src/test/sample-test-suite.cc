@@ -54,7 +54,7 @@ public:
 };
 
 SampleTestSuite::SampleTestSuite ()
-  : TestSuite ("sample", BVT)
+  : TestSuite ("sample", UNIT)
 {
   AddTestCase (new SampleTestCase1);
 }

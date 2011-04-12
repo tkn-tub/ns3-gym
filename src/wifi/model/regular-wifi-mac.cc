@@ -423,7 +423,18 @@ RegularWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
   Mac48Address to = hdr->GetAddr1 ();
   Mac48Address from = hdr->GetAddr2 ();
 
-  if (hdr->IsMgt () && hdr->IsAction () && to == GetAddress ())
+  // We don't know how to deal with any frame that is not addressed to
+  // us (and odds are there is nothing sensible we could do anyway),
+  // so we ignore such frames.
+  //
+  // The derived class may also do some such filtering, but it doesn't
+  // hurt to have it here too as a backstop.
+  if (to != GetAddress ())
+    {
+      return;
+    }
+
+  if (hdr->IsMgt () && hdr->IsAction ())
     {
       // There is currently only any reason for Management Action
       // frames to be flying about if we are a QoS STA.

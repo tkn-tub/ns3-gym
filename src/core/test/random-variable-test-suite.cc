@@ -136,7 +136,7 @@ public:
 };
 
 BasicRandomNumberTestSuite::BasicRandomNumberTestSuite ()
-  : TestSuite ("basic-random-number", BVT)
+  : TestSuite ("basic-random-number", UNIT)
 {
   AddTestCase (new BasicRandomNumberTestCase);
   AddTestCase (new RandomNumberSerializationTestCase);
