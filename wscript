@@ -30,11 +30,15 @@ import Scripting
 
 from utils import read_config_file
 
-# By default, all modules will be enabled.
-modules_enabled = ['all_modules']
+# By default, all modules will be enabled, examples will be enabled,
+# and tests will be disabled.
+modules_enabled  = ['all_modules']
+examples_enabled = True
+tests_enabled    = False
 
-# Get the list of enabled modules out of the NS-3 configuration file.
-modules_enabled = read_config_file()
+# Get the information out of the NS-3 configuration file.
+config_file_exists = False
+(config_file_exists, modules_enabled, examples_enabled, tests_enabled) = read_config_file()
 
 sys.path.insert(0, os.path.abspath('waf-tools'))
 try:
@@ -163,14 +167,16 @@ def set_options(opt):
                    default=False)
     opt.add_option('--disable-tests',
                    help=('Do not build the ns-3 tests.'),
-                   dest='enable_tests', action='store_false')
+                   dest='disable_tests', action='store_true',
+                   default=False)
     opt.add_option('--enable-examples',
                    help=('Build the ns-3 examples and samples.'),
                    dest='enable_examples', action='store_true',
-                   default=True)
+                   default=False)
     opt.add_option('--disable-examples',
                    help=('Do not build the ns-3 examples and samples.'),
-                   dest='enable_examples', action='store_false')
+                   dest='disable_examples', action='store_true',
+                   default=False)
     opt.add_option('--check',
                    help=('DEPRECATED (run ./test.py)'),
                    default=False, dest='check', action="store_true")
@@ -321,21 +327,45 @@ def configure(conf):
 
     conf.report_optional_feature("ENABLE_SUDO", "Use sudo to set suid bit", env['ENABLE_SUDO'], why_not_sudo)
 
+    # Decide if tests will be built or not.
     if Options.options.enable_tests:
+        # Tests were explicitly enabled. 
         env['ENABLE_TESTS'] = True
         why_not_tests = "option --enable-tests selected"
-    else:
+    elif Options.options.disable_tests:
+        # Tests were explicitly disabled. 
         env['ENABLE_TESTS'] = False
-        why_not_tests = "defaults to disabled"
+        why_not_tests = "option --disable-tests selected"
+    else:
+        # Enable tests based on the ns3 configuration file.
+        env['ENABLE_TESTS'] = tests_enabled
+        if config_file_exists:
+            why_not_tests = "based on configuration file"
+        elif tests_enabled:
+            why_not_tests = "defaults to enabled"
+        else:
+            why_not_tests = "defaults to disabled"
 
     conf.report_optional_feature("ENABLE_TESTS", "Build tests", env['ENABLE_TESTS'], why_not_tests)
 
+    # Decide if examples will be built or not.
     if Options.options.enable_examples:
+        # Examples were explicitly enabled. 
         env['ENABLE_EXAMPLES'] = True
-        why_not_examples = "defaults to enabled"
-    else:
+        why_not_examples = "option --enable-examples selected"
+    elif Options.options.disable_examples:
+        # Examples were explicitly disabled. 
         env['ENABLE_EXAMPLES'] = False
         why_not_examples = "option --disable-examples selected"
+    else:
+        # Enable examples based on the ns3 configuration file.
+        env['ENABLE_EXAMPLES'] = examples_enabled
+        if config_file_exists:
+            why_not_examples = "based on configuration file"
+        elif examples_enabled:
+            why_not_examples = "defaults to enabled"
+        else:
+            why_not_examples = "defaults to disabled"
 
     env['EXAMPLE_DIRECTORIES'] = []
     for dir in os.listdir('examples'):

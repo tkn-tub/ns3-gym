@@ -105,6 +105,10 @@ def create_ns3_module(bld, name, dependencies=(), test=False):
         pcfile = bld.new_task_gen('ns3pcfile')
         pcfile.module = module
 
+    # Initially create an empty value for this because the pcfile
+    # writing task assumes every module has a uselib attribute.
+    module.uselib = ''
+
     module.is_ns3_module = True
     module.name = 'ns3-' + name
     # Add the proper path to the module's name.
