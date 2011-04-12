@@ -36,8 +36,8 @@ The resulting binaries are placed in build/<debuglevel>/srcpath.
 
 Other waf usages include:
 
- 1. ./waf configure --enable-tests
-    Turn on unit tests.
+ 1. ./waf configure --enable-examples --enable-tests
+    Turn on examples and tests.
 
  2. ./waf --doxygen
     Run doxygen to generate documentation

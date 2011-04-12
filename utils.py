@@ -85,10 +85,10 @@ def read_config_file():
 
     '''
 
-    # By default, all modules will be enabled, examples will be enabled,
+    # By default, all modules will be enabled, examples will be disabled,
     # and tests will be disabled.
     modules_enabled  = ['all_modules']
-    examples_enabled = True
+    examples_enabled = False
     tests_enabled    = False
 
     # See if the ns3 configuration file exists in the current working
@@ -111,7 +111,7 @@ def read_config_file():
         modules_enabled = ['all_modules']
 
     # Read in whether examples should be enabled or not.
-    value_if_missing = True
+    value_if_missing = False
     examples_enabled = get_bool_from_file(dot_ns3rc_path, 'examples_enabled', value_if_missing)
 
     # Read in whether tests should be enabled or not.

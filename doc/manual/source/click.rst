@@ -73,7 +73,7 @@ The --enable-wifi flag may be skipped if you don't intend on using Click with Wi
 Once Click has been built successfully, change into the ns-3 directory and 
 configure ns-3 with Click Integration support::
 
-  $: ./waf configure --enable-tests --with-nsclick=/path/to/click/source
+  $: ./waf configure --enable-examples --enable-tests --with-nsclick=/path/to/click/source
 
 If it says 'enabled' beside 'NS-3 Click Integration Support', then you're good to go.
 

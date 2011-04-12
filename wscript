@@ -30,10 +30,10 @@ import Scripting
 
 from utils import read_config_file
 
-# By default, all modules will be enabled, examples will be enabled,
+# By default, all modules will be enabled, examples will be disabled,
 # and tests will be disabled.
 modules_enabled  = ['all_modules']
-examples_enabled = True
+examples_enabled = False
 tests_enabled    = False
 
 # Get the information out of the NS-3 configuration file.

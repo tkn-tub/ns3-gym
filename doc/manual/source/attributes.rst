@@ -768,7 +768,7 @@ Ubuntu installation command is:::
     sudo apt-get install libgtk2.0-0 libgtk2.0-dev
 
 To check whether it is configured or not, check the output of the
-./waf configure --enable-tests step:::
+./waf configure --enable-examples --enable-tests step:::
 
     ---- Summary of optional NS-3 features:
     Threading Primitives          : enabled
@@ -776,7 +776,7 @@ To check whether it is configured or not, check the output of the
     GtkConfigStore                : not enabled (library 'gtk+-2.0 >= 2.12' not found)
 
 In the above example, it was not enabled, so it cannot be used until a suitable
-version is installed and ./waf configure --enable-tests; ./waf is rerun.
+version is installed and ./waf configure --enable-examples --enable-tests; ./waf is rerun.
 
 Usage is almost the same as the non-GTK-based version, but there
 are no ConfigStore attributes involved:::

@@ -249,10 +249,10 @@ already have done a
 
 ::
 
-  ./waf -d debug --enable-tests configure
+  ./waf -d debug --enable-examples --enable-tests configure
 
 in order to configure the project to perform debug builds that include 
-tests.  You will also have done a
+examples and tests.  You will also have done a
 
 ::
 

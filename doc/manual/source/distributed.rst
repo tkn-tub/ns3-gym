@@ -118,7 +118,7 @@ If you already built |ns3| without MPI enabled, you must re-build:::
 
 Configure |ns3| with the --enable-mpi option:::
 
-    ./waf -d debug configure --enable-tests --enable-mpi
+    ./waf -d debug configure --enable-examples --enable-tests --enable-mpi
 
 Ensure that MPI is enabled by checking the optional features shown from the
 output of configure.
