@@ -366,11 +366,12 @@ class ns3pcfile_taskgen(TaskGen.task_gen):
     def __init__(self, *args, **kwargs):
         super(ns3pcfile_taskgen, self).__init__(*args, **kwargs)
     def apply(self):
-        output_filename = os.path.join('pkgconfig', 'lib%s.pc' % self.module.name)
-        output_node = self.bld.path.find_or_declare(output_filename)
+        output_filename = 'lib%s.pc' % self.module.name
+        output_node = self.path.find_or_declare(output_filename)
+        assert output_node is not None, str(self)
         task = self.create_task('ns3pcfile', env=self.env)
         self.bld.install_files(os.path.join('${PREFIX}', 'lib', 'pkgconfig'),
-                               output_filename)
+                               output_node)
         task.set_outputs([output_node])
         task.module = self.module
 
