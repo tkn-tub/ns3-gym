@@ -151,7 +151,7 @@ def build(bld):
         'test/command-line-test-suite.cc',
         'test/config-test-suite.cc',
         'test/global-value-test-suite.cc',
-        'test/int64x64-precision-test-suite.cc',
+        'test/int64x64-test-suite.cc',
         'test/names-test-suite.cc',
         'test/object-test-suite.cc',
         'test/ptr-test-suite.cc',

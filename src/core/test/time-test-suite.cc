@@ -24,24 +24,6 @@
 
 namespace ns3 {
 
-class Bug863TestCase : public TestCase
-{
-public:
-  Bug863TestCase ();
-  virtual void DoRun (void);
-};
-
-Bug863TestCase::Bug863TestCase ()
-  : TestCase ("Bug 863")
-{
-}
-
-void Bug863TestCase::DoRun (void)
-{
-  Scalar result = Scalar (0.9) / Scalar (1.0);
-  NS_TEST_ASSERT_MSG_EQ ((result == Scalar (0.9)), true, "Invalid arithmetic result");
-}
-
 class TimeSimpleTestCase : public TestCase
 {
 public:
@@ -88,52 +70,13 @@ TimeSimpleTestCase::DoTearDown (void)
   Time::SetResolution (m_originalResolution);
 }
 
-class ArithTestCase : public TestCase
-{
-public:
-  ArithTestCase ();
-private:
-  virtual void DoRun (void);
-};
-
-ArithTestCase::ArithTestCase ()
-  : TestCase ("check arithmetic operators")
-{
-}
-void
-ArithTestCase::DoRun (void)
-{
-  Time a, b, c;
-  c = a + b;
-  c = a * b;
-  c = a / Seconds (1.0);
-  c = a - b;
-  c += a;
-  c -= a;
-  c /= Seconds (1.0);
-  c *= a;
-  bool x;
-  x = a < b;
-  x = a > b;
-  x = a <= b;
-  x = a >= b;
-  x = a == b;
-  x = a != b;
-  //a = 1.0;
-  //a = 1;
-}
-
-
-
 static class TimeTestSuite : public TestSuite
 {
 public:
   TimeTestSuite ()
     : TestSuite ("time", UNIT)
   {
-    AddTestCase (new Bug863TestCase ());
     AddTestCase (new TimeSimpleTestCase (Time::US));
-    AddTestCase (new ArithTestCase ());
   }
 } g_timeTestSuite;
 

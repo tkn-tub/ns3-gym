@@ -33,7 +33,6 @@ Int64x64FracTestCase::DoRun (void)
   CheckFrac (1, 1);
   CheckFrac (-1, 0);
   CheckFrac (-1, 1);
-  return GetErrorStatus ();
 }
 
 
@@ -75,8 +74,6 @@ Int64x64InputTestCase::DoRun (void)
   CheckString ("1.0000000", 1, 0);
   CheckString ("1.08446744073709551615", 1, 8446744073709551615LL);
   CheckString ("-1.08446744073709551615", -1, 8446744073709551615LL);
-  
-  return GetErrorStatus ();
 }
 
 class Int64x64InputOutputTestCase : public TestCase
@@ -111,8 +108,6 @@ Int64x64InputOutputTestCase::DoRun (void)
   CheckString ("-1.08446744073709551615");
   CheckString ("+1.18446744073709551615");
   CheckString ("-1.18446744073709551615");
-  
-  return GetErrorStatus ();
 }
 
 #define CHECK_EXPECTED(a,b) \
@@ -174,8 +169,6 @@ Int64x64ArithmeticTestCase::DoRun (void)
   // much precision internally: it is almost always the
   // final conversion which loses precision.
   CHECK_EXPECTED (V (2000000000) / V(3) * V(3), 1999999999);
-
-  return GetErrorStatus ();
 }
 
 class Int64x64Bug455TestCase : public TestCase
@@ -207,8 +200,6 @@ Int64x64Bug455TestCase::DoRun (void)
   a = int64x64_t (0.5);
   a *= int64x64_t (-5);
   NS_TEST_ASSERT_MSG_EQ (a.GetDouble (), -2.5, "only second operand negative");
-
-  return GetErrorStatus ();
 }
 
 class Int64x64Bug863TestCase : public TestCase
@@ -241,8 +232,6 @@ Int64x64Bug863TestCase::DoRun (void)
   a = int64x64_t (-0.5);
   a /= int64x64_t (-0.5);
   NS_TEST_ASSERT_MSG_EQ (a.GetDouble (), 1.0, "both arguments negative");
-
-  return GetErrorStatus ();
 }
 
 class Int64x64CompareTestCase : public TestCase
@@ -265,8 +254,6 @@ Int64x64CompareTestCase::DoRun (void)
 
   NS_TEST_ASSERT_MSG_EQ ((V(1) > V(-1)), true, "a is bigger than b");
   NS_TEST_ASSERT_MSG_EQ ((V(1) < V(2)), true, "a is smaller than b");
-
-  return GetErrorStatus ();
 }
 
 class Int64x64InvertTestCase : public TestCase
@@ -328,7 +315,6 @@ Int64x64InvertTestCase::DoRun (void)
   TEST(100000000000000LL);
   TEST(1000000000000000LL);
 #undef TEST
-  return GetErrorStatus ();
 }
 
 

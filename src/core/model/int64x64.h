@@ -80,7 +80,7 @@ INT64X64_OP_CMP(>)
 INT64X64_OP_CMP(>=)
 
 std::ostream &operator << (std::ostream &os, const int64x64_t &val);
-std::istream &operator << (std::istream &is, int64x64_t &val);
+std::istream &operator >> (std::istream &is, int64x64_t &val);
 
 inline int64x64_t Abs (const int64x64_t &value)
 {
