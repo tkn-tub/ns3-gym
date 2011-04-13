@@ -32,6 +32,7 @@ namespace ns3 {
 
 
 SpectrumValue::SpectrumValue ()
+  : m_values (0)
 { 
 }
 

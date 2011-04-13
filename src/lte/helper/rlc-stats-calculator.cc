@@ -95,6 +95,7 @@ RlcStatsCalculator::UlTxPdu (uint16_t rnti, uint8_t lcid, uint32_t packetSize)
     {
       lteFlowId_t pair (rnti, lcid);
       m_ulTxPackets[pair]++;
+      m_ulTxData[pair] += packetSize;
     }
   CheckEpoch ();
 }
@@ -107,6 +108,7 @@ RlcStatsCalculator::DlTxPdu (uint16_t rnti, uint8_t lcid, uint32_t packetSize)
     {
       lteFlowId_t pair (rnti, lcid);
       m_dlTxPackets[pair]++;
+      m_dlTxData[pair] += packetSize;
     }
   CheckEpoch ();
 }
@@ -182,13 +184,13 @@ RlcStatsCalculator::ShowResults (void)
         return;
       }
       m_firstWrite = false;
-      ulOutFile << "# startTime, endTime, RNTI, LCID, nTxPDUs, TxBytes, nRxPDUs, RxBytes, ";
-      ulOutFile << "delay mean, delay std dev, delay min, delay max, ";
-      ulOutFile << "PDU size mean, PDU size std dev, PDU size min, PDU size max, ";
+      ulOutFile << "# start\tend\tRNTI\tLCID\tnTxPDUs\tTxBytes\tnRxPDUs\tRxBytes\t";
+      ulOutFile << "delay\tstdDev\tmin\tmax\t";
+      ulOutFile << "PduSize\tstdDev\tmin\tmax";
       ulOutFile << std::endl;
-      dlOutFile << "# startTime, endTime, RNTI, LCID, nTxPDUs, TxBytes, nRxPDUs, RxBytes, ";
-      dlOutFile << "delay mean, delay std dev, delay min, delay max, ";
-      dlOutFile << "PDU size mean, PDU size std dev, PDU size min, PDU size max, ";
+      dlOutFile << "# start\tend\tRNTI\tLCID\tnTxPDUs\tTxBytes\tnRxPDUs\tRxBytes\t";
+      dlOutFile << "delay\tstdDev\tmin\tmax\t";
+      dlOutFile << "PduSize\tstdDev\tmin\tmax";
       dlOutFile << std::endl;
     }
   else
@@ -232,23 +234,23 @@ RlcStatsCalculator::WriteUlResults (std::ofstream& outFile)
   Time endTime = m_startTime + m_epochDuration;
   for ( itFlow = lteFlowIds.begin(); itFlow != lteFlowIds.end(); ++itFlow)
     {
-      outFile << m_startTime.GetNanoSeconds () / 1.0e9  << " ";
-      outFile << endTime.GetNanoSeconds() / 1.0e9       << " ";
-      outFile << (*itFlow).m_rnti                       << " ";
-      outFile << (uint32_t) (*itFlow).m_lcId            << " ";
-      outFile << GetUlTxPackets (*itFlow)               << " ";
-      outFile << GetUlTxData (*itFlow)                  << " ";
-      outFile << GetUlRxPackets (*itFlow)               << " ";
-      outFile << GetUlRxData (*itFlow)                  << " ";
+      outFile << m_startTime.GetNanoSeconds () / 1.0e9  << "\t";
+      outFile << endTime.GetNanoSeconds() / 1.0e9       << "\t";
+      outFile << (*itFlow).m_rnti                       << "\t";
+      outFile << (uint32_t) (*itFlow).m_lcId            << "\t";
+      outFile << GetUlTxPackets (*itFlow)               << "\t";
+      outFile << GetUlTxData (*itFlow)                  << "\t";
+      outFile << GetUlRxPackets (*itFlow)               << "\t";
+      outFile << GetUlRxData (*itFlow)                  << "\t";
       std::vector<double> stats = GetUlDelayStats (*itFlow);
       for( std::vector<double>::iterator it = stats.begin (); it != stats.end (); ++it )
         {
-          outFile << (*it) * 1e-9 << " ";
+          outFile << (*it) * 1e-9 << "\t";
         }
       stats = GetUlPduSizeStats (*itFlow);
       for( std::vector<double>::iterator it = stats.begin (); it != stats.end (); ++it )
         {
-          outFile << (*it) << " ";
+          outFile << (*it) << "\t";
         }
       outFile << std::endl;
     }
@@ -275,23 +277,23 @@ RlcStatsCalculator::WriteDlResults (std::ofstream& outFile)
   Time endTime = m_startTime + m_epochDuration;
   for ( itFlow = lteFlowIds.begin(); itFlow != lteFlowIds.end(); ++itFlow)
     {
-      outFile << m_startTime.GetNanoSeconds () / 1.0e9  << " ";
-      outFile << endTime.GetNanoSeconds() / 1.0e9       << " ";
-      outFile << (*itFlow).m_rnti                       << " ";
-      outFile << (uint32_t) (*itFlow).m_lcId            << " ";
-      outFile << GetDlTxPackets (*itFlow)               << " ";
-      outFile << GetDlTxData (*itFlow)                  << " ";
-      outFile << GetDlRxPackets (*itFlow)               << " ";
-      outFile << GetDlRxData (*itFlow)                  << " ";
+      outFile << m_startTime.GetNanoSeconds () / 1.0e9  << "\t";
+      outFile << endTime.GetNanoSeconds() / 1.0e9       << "\t";
+      outFile << (*itFlow).m_rnti                       << "\t";
+      outFile << (uint32_t) (*itFlow).m_lcId            << "\t";
+      outFile << GetDlTxPackets (*itFlow)               << "\t";
+      outFile << GetDlTxData (*itFlow)                  << "\t";
+      outFile << GetDlRxPackets (*itFlow)               << "\t";
+      outFile << GetDlRxData (*itFlow)                  << "\t";
       std::vector<double> stats = GetDlDelayStats (*itFlow);
       for( std::vector<double>::iterator it = stats.begin (); it != stats.end (); ++it )
         {
-          outFile << (*it) * 1e-9 << " ";
+          outFile << (*it) * 1e-9 << "\t";
         }
       stats = GetDlPduSizeStats (*itFlow);
       for( std::vector<double>::iterator it = stats.begin (); it != stats.end (); ++it )
         {
-          outFile << (*it) << " ";
+          outFile << (*it) << "\t";
         }
       outFile << std::endl;
     }
@@ -304,12 +306,16 @@ RlcStatsCalculator::ResetResults (void)
    m_ulTxPackets.erase (m_ulTxPackets.begin (), m_ulTxPackets.end () );
    m_ulRxPackets.erase (m_ulRxPackets.begin (), m_ulRxPackets.end () );
    m_ulRxData.erase (m_ulRxData.begin (), m_ulRxData.end () );
+   m_ulTxData.erase (m_ulTxData.begin (), m_ulTxData.end () );
    m_ulDelay.erase (m_ulDelay.begin (), m_ulDelay.end () );
+   m_ulPduSize.erase (m_ulPduSize.begin (), m_ulPduSize.end () );
 
    m_dlTxPackets.erase (m_dlTxPackets.begin (), m_dlTxPackets.end () );
    m_dlRxPackets.erase (m_dlRxPackets.begin (), m_dlRxPackets.end () );
    m_dlRxData.erase (m_dlRxData.begin (), m_dlRxData.end () );
+   m_dlTxData.erase (m_dlTxData.begin (), m_dlTxData.end () );
    m_dlDelay.erase (m_dlDelay.begin (), m_dlDelay.end () );
+   m_dlPduSize.erase (m_dlPduSize.begin (), m_dlPduSize.end () );
 }
 
 void
