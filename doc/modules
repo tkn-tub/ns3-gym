@@ -46,6 +46,7 @@
  * 
  * The "internet-stack" module contains:
  *    - an Ipv4 stack
+ *    - an Ipv6 stack
  *    - an ARP module
  *    - a UDP and a TCP implementation
  *    

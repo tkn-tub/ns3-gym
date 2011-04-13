@@ -1,0 +1,287 @@
+## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
+import os
+import sys
+
+import Options
+import Logs
+import Utils
+import Task
+
+# Required NSC version
+NSC_RELEASE_NAME = "nsc-0.5.2"
+
+
+def set_options(opt):
+    opt.add_option('--with-nsc',
+                   help=('Use Network Simulation Cradle, given by the indicated path,'
+                         ' to allow the use of real-world network stacks'),
+                   default='', dest='with_nsc')
+
+
+def configure(conf):
+    conf.env['ENABLE_NSC'] = False
+
+    # checks for flex and bison, which is needed to build NSCs globaliser
+    # TODO: how to move these checks into the allinone scripts?
+    #def check_nsc_buildutils():
+    #    import flex
+    #    import bison
+    #    conf.check_tool('flex bison')
+    #    conf.check(lib='fl', mandatory=True)
+
+    # Check for the location of NSC
+    if Options.options.with_nsc:
+        if os.path.isdir(Options.options.with_nsc):
+            conf.check_message("NSC location", '', True, ("%s (given)" % Options.options.with_nsc))
+            conf.env['WITH_NSC'] = os.path.abspath(Options.options.with_nsc)
+    else:
+        # ns-3-dev uses ../nsc, while ns-3 releases use ../NSC_RELEASE_NAME
+        nsc_dir = os.path.join('..', "nsc")
+        nsc_release_dir = os.path.join('..', NSC_RELEASE_NAME)
+        if os.path.isdir(nsc_dir):
+            conf.check_message("NSC location", '', True, ("%s (guessed)" % nsc_dir))
+            conf.env['WITH_NSC'] = os.path.abspath(nsc_dir)
+        elif os.path.isdir(nsc_release_dir):
+            conf.check_message("NSC location", '', True, ("%s (guessed)" % nsc_release_dir))
+            conf.env['WITH_NSC'] = os.path.abspath(nsc_release_dir)
+        del nsc_dir
+        del nsc_release_dir
+
+    if not conf.env['WITH_NSC']:
+        conf.check_message("NSC location", '', False)
+        conf.report_optional_feature("nsc", "Network Simulation Cradle", False,
+                                     "NSC not found (see option --with-nsc)")
+	return
+    
+    if sys.platform in ['linux2']:
+        arch = os.uname()[4]
+    else:
+        arch = None
+    ok = False
+    if arch in ('x86_64', 'i686', 'i586', 'i486', 'i386'):
+        conf.env['NSC_ENABLED'] = True
+        conf.env.append_value('CXXDEFINES', 'NETWORK_SIMULATION_CRADLE')
+        conf.check(mandatory=True, lib='dl', define_name='HAVE_DL', uselib='DL')
+        ok = True
+    conf.check_message('NSC supported architecture', arch, ok)
+    
+    if not ok:
+        conf.env['NSC_ENABLED'] = False
+        conf.report_optional_feature("nsc", "Network Simulation Cradle", False,
+                                     "architecture %r not supported" % arch)
+        return
+
+    lib_to_check = 'liblinux2.6.26.so'
+
+    found = False
+    for path in ['.', 'lib', 'lib64']:
+        if os.path.exists(os.path.join(conf.env['WITH_NSC'], path, lib_to_check)):
+            # append the NSC kernel dir to the module path so that this dir
+            # will end up in the LD_LIBRARY_PATH, thus allowing the NSC NS-3
+            # module to find the necessary NSC shared libraries.
+            found = True
+            conf.env.append_value('NS3_MODULE_PATH',
+                                  os.path.abspath(os.path.join(conf.env['WITH_NSC'], path)))
+    if not found:
+        conf.env['NSC_ENABLED'] = False
+        conf.report_optional_feature("nsc", "Network Simulation Cradle", False,
+                                     "NSC library %s is missing: NSC has not been built?" % lib_to_check)
+    else:
+        conf.report_optional_feature("nsc", "Network Simulation Cradle", True, "")
+
+
+def build(bld):
+    # bridge and mpi dependencies are due to global routing
+    obj = bld.create_ns3_module('internet', ['bridge', 'mpi', 'network', 'core'])
+    obj.source = [
+        'model/ipv4-l4-protocol.cc',
+        'model/udp-header.cc',
+        'model/tcp-header.cc',
+        'model/ipv4-interface.cc',
+        'model/ipv4-l3-protocol.cc',
+        'model/ipv4-end-point.cc',
+        'model/udp-l4-protocol.cc',
+        'model/tcp-l4-protocol.cc',
+        'model/arp-header.cc',
+        'model/arp-cache.cc',
+        'model/arp-l3-protocol.cc',
+        'model/udp-socket-impl.cc',
+        'model/ipv4-end-point-demux.cc',
+        'model/udp-socket-factory-impl.cc',
+        'model/tcp-socket-factory-impl.cc',
+        'model/pending-data.cc',
+        'model/rtt-estimator.cc',
+        'model/ipv4-raw-socket-factory-impl.cc',
+        'model/ipv4-raw-socket-impl.cc',
+        'model/icmpv4.cc',
+        'model/icmpv4-l4-protocol.cc',
+        'model/loopback-net-device.cc',
+        'model/ndisc-cache.cc',
+        'model/ipv6-interface.cc',
+        'model/icmpv6-header.cc',
+        'model/ipv6-l3-protocol.cc',
+        'model/ipv6-end-point.cc',
+        'model/ipv6-end-point-demux.cc',
+        'model/ipv6-l4-protocol.cc',
+        'model/ipv6-raw-socket-factory-impl.cc',
+        'model/ipv6-raw-socket-impl.cc',
+        'model/ipv6-autoconfigured-prefix.cc',
+        'model/ipv6-extension.cc',
+        'model/ipv6-extension-header.cc',
+        'model/ipv6-extension-demux.cc',
+        'model/ipv6-option.cc',
+        'model/ipv6-option-header.cc',
+        'model/ipv6-option-demux.cc',
+        'model/icmpv6-l4-protocol.cc',
+        'model/tcp-socket-base.cc',
+        'model/tcp-rfc793.cc',
+        'model/tcp-tahoe.cc',
+        'model/tcp-reno.cc',
+        'model/tcp-newreno.cc',
+        'model/tcp-rx-buffer.cc',
+        'model/tcp-tx-buffer.cc',
+        'model/ipv4-packet-info-tag.cc',
+        'model/ipv6-packet-info-tag.cc',
+        'model/ipv4-interface-address.cc',
+        'model/ipv4-address-generator.cc',
+        'model/ipv4-header.cc',
+        'model/ipv4-route.cc',
+        'model/ipv4-routing-protocol.cc',
+        'model/udp-socket.cc',
+        'model/udp-socket-factory.cc',
+        'model/tcp-socket.cc',
+        'model/tcp-socket-factory.cc',
+        'model/ipv4.cc',
+        'model/ipv4-raw-socket-factory.cc',
+        'model/ipv6-header.cc',
+        'model/ipv6-interface-address.cc',
+        'model/ipv6-route.cc',
+        'model/ipv6.cc',
+        'model/ipv6-raw-socket-factory.cc',
+        'model/ipv6-routing-protocol.cc',
+        'model/ipv4-list-routing.cc',
+        'model/ipv6-list-routing.cc',
+        'helper/ipv4-list-routing-helper.cc',
+        'helper/ipv6-list-routing-helper.cc',
+        'model/ipv4-static-routing.cc',
+        'model/ipv4-routing-table-entry.cc',
+        'model/ipv6-static-routing.cc',
+        'model/ipv6-routing-table-entry.cc',
+        'helper/ipv4-static-routing-helper.cc',
+        'helper/ipv6-static-routing-helper.cc',
+        'model/global-router-interface.cc',
+        'model/global-route-manager.cc',
+        'model/global-route-manager-impl.cc',
+        'model/candidate-queue.cc',
+        'model/ipv4-global-routing.cc',
+        'helper/ipv4-global-routing-helper.cc',
+        'helper/internet-stack-helper.cc',
+        'helper/internet-trace-helper.cc',
+        'helper/ipv4-address-helper.cc',
+        'helper/ipv4-interface-container.cc',
+        'helper/ipv4-routing-helper.cc',
+        'helper/ipv6-address-helper.cc',
+        'helper/ipv6-interface-container.cc',
+        'helper/ipv6-routing-helper.cc',
+        ]
+
+    internet_test = bld.create_ns3_module_test_library('internet')
+    internet_test.source = [
+        'test/global-route-manager-impl-test-suite.cc',
+        'test/ipv4-address-generator-test-suite.cc',
+        'test/ipv4-address-helper-test-suite.cc',
+        'test/ipv4-list-routing-test-suite.cc',
+        'test/ipv4-packet-info-tag-test-suite.cc',
+        'test/ipv4-raw-test.cc',
+        'test/ipv4-test.cc',
+        'test/ipv6-extension-header-test-suite.cc',
+        'test/ipv6-list-routing-test-suite.cc',
+        'test/ipv6-packet-info-tag-test-suite.cc',
+        'test/ipv6-test.cc',
+        'test/tcp-test.cc',
+        'test/udp-test.cc',
+        ]
+
+    headers = bld.new_task_gen('ns3header')
+    headers.module = 'internet'
+    headers.source = [
+        'model/udp-header.h',
+        'model/tcp-header.h',
+        'model/icmpv4.h',
+        'model/icmpv6-header.h',
+        # used by routing
+        'model/ipv4-interface.h',
+        'model/ipv4-l3-protocol.h',
+        'model/ipv6-l3-protocol.h',
+        'model/ipv4-end-point.h',
+        'model/ipv6-extension-header.h',
+        'model/ipv6-option-header.h',
+        'model/arp-l3-protocol.h',
+        'model/udp-l4-protocol.h',
+        'model/tcp-l4-protocol.h',
+        'model/icmpv4-l4-protocol.h',
+        'model/ipv4-l4-protocol.h',
+        'model/arp-header.h',
+        'model/arp-cache.h',
+        'model/icmpv6-l4-protocol.h',
+        'model/ipv6-l4-protocol.h',
+        'model/ipv6-interface.h',
+        'model/ndisc-cache.h',
+        'model/loopback-net-device.h',
+        'model/ipv4-packet-info-tag.h',
+        'model/ipv6-packet-info-tag.h',
+        'model/ipv4-interface-address.h',
+        'model/ipv4-address-generator.h',
+        'model/ipv4-header.h',
+        'model/ipv4-route.h',
+        'model/ipv4-routing-protocol.h',
+        'model/udp-socket.h',
+        'model/udp-socket-factory.h',
+        'model/tcp-socket.h',
+        'model/tcp-socket-factory.h',
+        'model/ipv4.h',
+        'model/ipv4-raw-socket-factory.h',
+        'model/ipv4-raw-socket-impl.h',
+        'model/ipv6-header.h',
+        'model/ipv6-interface-address.h',
+        'model/ipv6-route.h',
+        'model/ipv6.h',
+        'model/ipv6-raw-socket-factory.h',
+        'model/ipv6-routing-protocol.h',
+        'model/ipv4-list-routing.h',
+        'model/ipv6-list-routing.h',
+        'helper/ipv4-list-routing-helper.h',
+        'helper/ipv6-list-routing-helper.h',
+        'model/ipv4-static-routing.h',
+        'model/ipv4-routing-table-entry.h',
+        'model/ipv6-static-routing.h',
+        'model/ipv6-routing-table-entry.h',
+        'helper/ipv4-static-routing-helper.h',
+        'helper/ipv6-static-routing-helper.h',
+        'model/global-router-interface.h',
+        'model/global-route-manager.h',
+        'model/global-route-manager-impl.h',
+        'model/candidate-queue.h',
+        'model/ipv4-global-routing.h',
+        'helper/ipv4-global-routing-helper.h',
+        'helper/internet-stack-helper.h',
+        'helper/internet-trace-helper.h',
+        'helper/ipv4-address-helper.h',
+        'helper/ipv4-interface-container.h',
+        'helper/ipv4-routing-helper.h',
+        'helper/ipv6-address-helper.h',
+        'helper/ipv6-interface-container.h',
+        'helper/ipv6-routing-helper.h',
+       ]
+
+    if bld.env['NSC_ENABLED']:
+        obj.source.append ('model/nsc-tcp-socket-impl.cc')
+        obj.source.append ('model/nsc-tcp-l4-protocol.cc')
+        obj.source.append ('model/nsc-tcp-socket-factory-impl.cc')
+        obj.source.append ('model/nsc-sysctl.cc')
+        headers.source.append('model/nsc-tcp-l4-protocol.h')
+        obj.uselib           = 'DL'
+        internet_test.uselib = 'DL'
+
+    bld.ns3_python_bindings()
+

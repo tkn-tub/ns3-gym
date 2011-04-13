@@ -18,11 +18,12 @@
  * Author: Mirko Banchi <mk.banchi@gmail.com>
  */
 #include "ns3/core-module.h"
-#include "ns3/simulator-module.h"
-#include "ns3/node-module.h"
-#include "ns3/helper-module.h"
+#include "ns3/network-module.h"
+#include "ns3/applications-module.h"
 #include "ns3/wifi-module.h"
 #include "ns3/mobility-module.h"
+#include "ns3/ipv4-global-routing-helper.h"
+#include "ns3/internet-module.h"
 
 //This is a simple example in order to show how 802.11n frame aggregation feature (A-MSDU) works.
 //
@@ -48,7 +49,7 @@ int main (int argc, char *argv[])
   LogComponentEnable ("MsduAggregator", LOG_LEVEL_INFO);
   LogComponentEnable ("UdpEchoClientApplication", LOG_LEVEL_INFO);
   LogComponentEnable ("UdpEchoServerApplication", LOG_LEVEL_INFO);
-  
+
   uint32_t nWifi = 1;
   CommandLine cmd;
   cmd.AddValue ("nWifi", "Number of wifi STA devices", nWifi);
@@ -68,19 +69,19 @@ int main (int argc, char *argv[])
   wifi.SetRemoteStationManager ("ns3::AarfWifiManager", "FragmentationThreshold", UintegerValue (2500));
 
   Ssid ssid = Ssid ("ns-3-802.11n");
-  mac.SetType ("ns3::QstaWifiMac", 
-    "Ssid", SsidValue (ssid),
-    "ActiveProbing", BooleanValue (false));
+  mac.SetType ("ns3::StaWifiMac",
+               "Ssid", SsidValue (ssid),
+               "ActiveProbing", BooleanValue (false));
   mac.SetMsduAggregatorForAc (AC_BE, "ns3::MsduStandardAggregator", 
-                                     "MaxAmsduSize", UintegerValue (3839));
-  
+                              "MaxAmsduSize", UintegerValue (3839));
+
   NetDeviceContainer staDevices;
   staDevices = wifi.Install (phy, mac, wifiNodes);
-  
-  mac.SetType ("ns3::QapWifiMac", 
-    "Ssid", SsidValue (ssid));
+
+  mac.SetType ("ns3::ApWifiMac",
+               "Ssid", SsidValue (ssid));
   mac.SetMsduAggregatorForAc (AC_BE, "ns3::MsduStandardAggregator", 
-                                     "MaxAmsduSize", UintegerValue (7935));
+                              "MaxAmsduSize", UintegerValue (7935));
 
   NetDeviceContainer apDevice;
   apDevice = wifi.Install (phy, mac, wifiApNode);
@@ -89,20 +90,20 @@ int main (int argc, char *argv[])
   MobilityHelper mobility;
 
   mobility.SetPositionAllocator ("ns3::GridPositionAllocator",
-    "MinX", DoubleValue (0.0),
-    "MinY", DoubleValue (0.0),
-    "DeltaX", DoubleValue (5.0),
-    "DeltaY", DoubleValue (10.0),
-    "GridWidth", UintegerValue (3),
-    "LayoutType", StringValue ("RowFirst"));
+                                 "MinX", DoubleValue (0.0),
+                                 "MinY", DoubleValue (0.0),
+                                 "DeltaX", DoubleValue (5.0),
+                                 "DeltaY", DoubleValue (10.0),
+                                 "GridWidth", UintegerValue (3),
+                                 "LayoutType", StringValue ("RowFirst"));
 
   mobility.SetMobilityModel ("ns3::RandomWalk2dMobilityModel",
-    "Bounds", RectangleValue (Rectangle (-50, 50, -50, 50)));
+                             "Bounds", RectangleValue (Rectangle (-50, 50, -50, 50)));
   mobility.Install (wifiNodes);
 
   mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
   mobility.Install (wifiApNode);
-  
+
   /* Internet stack*/
   InternetStackHelper stack;
   stack.Install (wifiApNode);
@@ -113,10 +114,10 @@ int main (int argc, char *argv[])
   address.SetBase ("192.168.1.0", "255.255.255.0");
   Ipv4InterfaceContainer wifiNodesInterfaces;
   Ipv4InterfaceContainer apNodeInterface;
-  
+
   wifiNodesInterfaces = address.Assign (staDevices);
   apNodeInterface = address.Assign (apDevice);
-  
+
   /* Setting applications */
   UdpEchoServerHelper echoServer (9);
 
@@ -137,12 +138,12 @@ int main (int argc, char *argv[])
   Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
 
   Simulator::Stop (Seconds (10.0));
-  
+
   phy.EnablePcap ("test-802.11n", 
-    wifiNodes.Get (nWifi - 1)->GetId (), 0);
+                  wifiNodes.Get (nWifi - 1)->GetId (), 0);
 
   Simulator::Run ();
   Simulator::Destroy ();
-  
+
   return 0;
 }

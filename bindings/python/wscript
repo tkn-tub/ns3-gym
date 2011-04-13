@@ -1,5 +1,5 @@
 ## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
-
+import types
 import re
 import os
 import pproc as subprocess
@@ -15,7 +15,7 @@ import Build
 import Utils
 
 ## https://launchpad.net/pybindgen/
-REQUIRED_PYBINDGEN_VERSION = (0, 15, 0)
+REQUIRED_PYBINDGEN_VERSION = (0, 15, 0, 782)
 REQUIRED_PYGCCXML_VERSION = (0, 9, 5)
 
 
@@ -52,6 +52,13 @@ def set_pybindgen_pythonpath(env):
 
 def set_options(opt):
     opt.tool_options('python')
+    c = ("monolithic", "modular", "both")
+    opt.add_option('--bindings-type', type="choice",
+                   choices=c,
+                   help=("Type of Python bindings to build %r.  "
+                         "Warning: the modular bindings are still experimental." % (c,)),
+                   default="modular",
+                   dest='bindings_type')
     opt.add_option('--disable-python',
                    help=("Don't build Python bindings."),
                    action="store_true", default=False,
@@ -60,6 +67,11 @@ def set_options(opt):
                    help=("Rescan Python bindings.  Needs working GCCXML / pygccxml environment."),
                    action="store_true", default=False,
                    dest='python_scan')
+    opt.add_option('--apiscan',
+                   help=("EXPERIMENTAL: Rescan the API for the indicated module(s), for Python bindings.  "
+                         "Needs working GCCXML / pygccxml environment.  "
+                         "The metamodule 'all' expands to all available ns-3 modules."),
+                   default=None, dest='apiscan', metavar="MODULE[,MODULE...]")
     opt.add_option('--with-pybindgen',
                    help=('Path to an existing pybindgen source tree to use.'),
                    default=None,
@@ -77,6 +89,12 @@ def configure(conf):
         conf.report_optional_feature("python", "Python Bindings", False,
                                      "disabled by user request")
         return
+
+    enabled_modules = list(conf.env['NS3_ENABLED_MODULES'])
+    enabled_modules.sort()
+    available_modules = list(conf.env['NS3_MODULES'])
+    available_modules.sort()
+    all_modules_enabled = (enabled_modules == available_modules)
 
     conf.check_tool('misc')
 
@@ -194,11 +212,25 @@ int main ()
                                      "No apidefs are available that can be used in this system")
         return
 
+
+    conf.env['BINDINGS_TYPE'] = Options.options.bindings_type
+
+    if not all_modules_enabled:
+        if conf.env['BINDINGS_TYPE'] == 'both':
+            conf.env['BINDINGS_TYPE'] = 'modular'
+        elif conf.env['BINDINGS_TYPE'] == 'monolithic':
+            conf.report_optional_feature("python", "Python Bindings", False, "Monolithic python bindings need all ns-3 modules to be enabled")
+            return
+            
     ## If all has gone well, we finally enable the Python bindings
     conf.env['ENABLE_PYTHON_BINDINGS'] = True
     conf.report_optional_feature("python", "Python Bindings", True, None)
 
-    
+    if conf.env['BINDINGS_TYPE'] == 'both':
+        msg = "monolithic and modular"
+    else:
+        msg = conf.env['BINDINGS_TYPE']
+    conf.check_message_custom('type of bindings to build', '', msg)
 
     ## Check for pygccxml
     try:
@@ -244,12 +276,80 @@ int main ()
         conf.report_optional_feature("pygccxml", "Python API Scanning Support", False,
                                      "gccxml too old")
         return
-    
+
     ## If we reached
     conf.env['ENABLE_PYTHON_SCANNING'] = True
     conf.report_optional_feature("pygccxml", "Python API Scanning Support", True, None)
 
+    
 
+
+# ---------------------
+
+def get_headers_map(bld):
+    headers_map = {} # header => module
+    for ns3headers in bld.all_task_gen:
+        if type(ns3headers).__name__ == 'ns3header_taskgen': # XXX: find less hackish way to compare
+            if ns3headers.module.endswith('-test'):
+                continue
+            for h in ns3headers.to_list(ns3headers.source):
+                headers_map[os.path.basename(h)] = ns3headers.module
+    return headers_map
+
+def get_module_path(bld, module):
+    for ns3headers in bld.all_task_gen:
+        if type(ns3headers).__name__ == 'ns3header_taskgen': # XXX: find less hackish way to compare
+            if ns3headers.module == module:
+                break
+
+    else:
+        raise ValueError("Module %r not found" % module)
+    return ns3headers.path.abspath()
+
+class apiscan_task(Task.TaskBase):
+    """Uses gccxml to scan the file 'everything.h' and extract API definitions.
+    """
+    after = 'gen_ns3_module_header_task ns3header_task'
+    before = 'cc cxx gchx'
+    color = "BLUE"
+    def __init__(self, curdirnode, env, bld, target, cflags, module):
+        self.bld = bld
+        super(apiscan_task, self).__init__(generator=self)
+        self.curdirnode = curdirnode
+        self.env = env
+        self.target = target
+        self.cflags = cflags
+        self.module = module
+
+    def display(self):
+        return 'api-scan-%s\n' % (self.target,)
+
+    def run(self):
+        top_builddir = self.curdirnode.find_dir('../..').abspath(self.env)
+        module_path = get_module_path(self.bld, self.module)
+        headers_map = get_headers_map(self.bld)
+        scan_header = os.path.join(top_builddir, "ns3", "%s-module.h" % self.module)
+
+        if not os.path.exists(scan_header):
+            Logs.error("Cannot apiscan module %r: %s does not exist" % (self.module, scan_header))
+            return 0
+
+        argv = [
+            self.env['PYTHON'],
+            os.path.join(self.curdirnode.abspath(), 'ns3modulescan-modular.py'), # scanning script
+            top_builddir,
+            self.module,
+            repr(get_headers_map(self.bld)),
+            os.path.join(module_path, "bindings", 'modulegen__%s.py' % (self.target)), # output file
+            self.cflags,
+            ]
+        scan = subprocess.Popen(argv, stdin=subprocess.PIPE)
+        retval = scan.wait()
+        return retval
+
+
+
+# --------------
 prio_headers = {
     -2: (
         "string.h", # work around http://www.gccxml.org/Bug/view.php?id=6682
@@ -366,6 +466,8 @@ class all_ns3_headers_taskgen(TaskGen.task_gen):
             for ns3headers in self.bld.all_task_gen:
                 if type(ns3headers).__name__ == 'ns3header_taskgen': # XXX: find less hackish way to compare
                     ## skip headers not part of enabled modules
+                    if ns3headers.module.endswith('-test'):
+                        continue
                     if self.env['NS3_ENABLED_MODULES']:
                         if ("ns3-%s" % ns3headers.module) not in self.env['NS3_ENABLED_MODULES']:
                             continue
@@ -397,6 +499,8 @@ def get_modules_and_headers(bld):
     for module in bld.all_task_gen:
         if not module.name.startswith('ns3-'):
             continue
+        if module.name.endswith('-test'):
+            continue
         module_name = module.name[4:] # strip the ns3- prefix
         ## find the headers object for this module
         headers = []
@@ -406,7 +510,7 @@ def get_modules_and_headers(bld):
             if ns3headers.module != module_name:
                 continue
             for source in ns3headers.to_list(ns3headers.source):
-                headers.append(source)
+                headers.append(os.path.basename(source))
         retval[module_name] = (list(module.module_deps), headers)
     return retval
 
@@ -452,7 +556,7 @@ class python_scan_task(Task.TaskBase):
 class python_scan_task_collector(Task.TaskBase):
     """Tasks that waits for the python-scan-* tasks to complete and then signals WAF to exit
     """
-    after = 'python_scan_task'
+    after = 'python_scan_task apiscan_task'
     before = 'cc cxx'
     color = "BLUE"
     def __init__(self, curdirnode, env, bld):
@@ -472,6 +576,26 @@ class python_scan_task_collector(Task.TaskBase):
         return 0
 
 
+
+class gen_ns3_compat_pymod_task(Task.Task):
+    """Generates a 'ns3.py' compatibility module."""
+    before = 'cc cxx gchx'
+    color = 'BLUE'
+    
+    def run(self):
+        assert len(self.outputs) == 1
+        outfile = file(self.outputs[0].abspath(self.env), "w")
+        print >> outfile, "import warnings"
+        print >> outfile, 'warnings.warn("the ns3 module is a compatibility layer '\
+            'and should not be used in newly written code", DeprecationWarning, stacklevel=2)'
+        print >> outfile
+        for module in self.bld.env['PYTHON_MODULES_BUILT']:
+            print >> outfile, "from ns.%s import *" % (module.replace('-', '_'))
+        outfile.close()
+        return 0
+
+
+
 def build(bld):
     if Options.options.python_disable:
         return
@@ -481,7 +605,12 @@ def build(bld):
 
     set_pybindgen_pythonpath(env)
 
-    if env['ENABLE_PYTHON_BINDINGS']:
+    bld.new_task_gen(features='copy',
+                     source="ns__init__.py",
+                     target='ns/__init__.py')
+
+
+    if env['ENABLE_PYTHON_BINDINGS'] and env['BINDINGS_TYPE'] in ('monolithic', 'both'):
         obj = bld.new_task_gen('all_ns3_headers')
 
     if Options.options.python_scan:
@@ -503,7 +632,46 @@ def build(bld):
         python_scan_task_collector(bld.path, env, bld)
         return
 
-    if env['ENABLE_PYTHON_BINDINGS']:
+    if Options.options.apiscan:
+        if not env['ENABLE_PYTHON_SCANNING']:
+            raise Utils.WafError("Cannot re-scan python bindings: (py)gccxml not available")
+        scan_targets = []
+        if sys.platform == 'cygwin':
+            scan_targets.append(('gcc_cygwin', ''))
+        else:
+            import struct
+            if struct.calcsize('I') == 4 and struct.calcsize('L') == 8 and struct.calcsize('P') == 8:
+                scan_targets.extend([('gcc_ILP32', '-m32'), ('gcc_LP64', '-m64')])
+            elif struct.calcsize('I') == 4 and struct.calcsize('L') == 4 and struct.calcsize('P') == 4:
+                scan_targets.append(('gcc_ILP32', ''))
+            else:
+                raise Utils.WafError("Cannot scan python bindings for unsupported data model")
+
+        test_module_path = bld.path.find_dir("../../src/test")
+        if Options.options.apiscan == 'all':
+            scan_modules = []
+            for mod in bld.all_task_gen:
+                if not mod.name.startswith('ns3-'):
+                    continue
+                if mod.path.is_child_of(test_module_path):
+                    continue
+                if mod.name.endswith('-test'):
+                    continue
+                bindings_enabled = (mod.name in env.MODULAR_BINDINGS_MODULES)
+                #print mod.name, bindings_enabled
+                if bindings_enabled:
+                    scan_modules.append(mod.name.split('ns3-')[1])
+        else:
+            scan_modules = Options.options.apiscan.split(',')
+        print "Modules to scan: ", scan_modules
+        for target, cflags in scan_targets:
+            for module in scan_modules:
+                apiscan_task(bld.path, env, bld, target, cflags, module)
+        python_scan_task_collector(bld.path, env, bld)
+        return
+
+
+    if env['ENABLE_PYTHON_BINDINGS'] and env['BINDINGS_TYPE'] in ('monolithic', 'both'):
         apidefs = env['PYTHON_BINDINGS_APIDEFS']
 
         ## Get a list of scanned modules; the set of scanned modules
@@ -518,7 +686,7 @@ def build(bld):
             if name.endswith("__local"):
                 continue
             scanned_modules.append(name)
-
+        print "scanned_modules:", scanned_modules
         debug = ('PYBINDGEN_DEBUG' in os.environ)
         source = [
             'ns3modulegen.py',
@@ -574,14 +742,16 @@ def build(bld):
             pymod.source.append("ns3_module_%s.cc" % module)
         pymod.target = 'ns3/_ns3'
         pymod.name = 'ns3module'
-        pymod.uselib_local = "ns3"
+        pymod.uselib_local = bld.env['NS3_ENABLED_MODULES']
         if pymod.env['ENABLE_STATIC_NS3']:
             if sys.platform == 'darwin':
                 pymod.env.append_value('LINKFLAGS', '-Wl,-all_load')
-                pymod.env.append_value('LINKFLAGS', '-lns3')
+                for mod in pymod.uselib_local:
+                    pymod.env.append_value('LINKFLAGS', '-l' + mod)
             else:
                 pymod.env.append_value('LINKFLAGS', '-Wl,--whole-archive,-Bstatic')
-                pymod.env.append_value('LINKFLAGS', '-lns3')
+                for mod in pymod.uselib_local:
+                    pymod.env.append_value('LINKFLAGS', '-l' + mod)
                 pymod.env.append_value('LINKFLAGS', '-Wl,-Bdynamic,--no-whole-archive')
 
         defines = list(pymod.env['CXXDEFINES'])
@@ -593,20 +763,12 @@ def build(bld):
                 pass
         pymod.env['CXXDEFINES'] = defines
 
-        # copy the __init__.py file to the build dir. waf can't handle
-        # this, it's against waf's principles to have build dir files
-        # with the same name as source dir files, apparently.
-        dirnode = bld.path.find_dir('ns3')
-        src = os.path.join(dirnode.abspath(), '__init__.py')
-        dst = os.path.join(dirnode.abspath(env), '__init__.py')
-        try:
-            need_copy = os.stat(src).st_mtime > os.stat(dst).st_mtime
-        except OSError:
-            need_copy = True
-        if need_copy:
-            try:
-                os.mkdir(os.path.dirname(dst))
-            except OSError:
-                pass
-            print "%r -> %r" % (src, dst)
-            shutil.copy2(src, dst)
+        bld.new_task_gen(features='copy',
+                         source="ns3__init__.py",
+                         target='ns3/__init__.py')
+
+    if env['ENABLE_PYTHON_BINDINGS'] and env['BINDINGS_TYPE'] in ('modular',):
+        task = gen_ns3_compat_pymod_task(env)
+        task.set_outputs(bld.path.find_or_declare("ns3.py"))
+        task.dep_vars = ['PYTHON_MODULES_BUILT']
+

@@ -47,7 +47,7 @@ class WifiMsduAggregatorThroughputTest : public TestCase
 {
 public:
   WifiMsduAggregatorThroughputTest ();
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
 
 private:
   bool m_writeResults;
@@ -59,7 +59,7 @@ WifiMsduAggregatorThroughputTest::WifiMsduAggregatorThroughputTest ()
 {
 }
 
-bool
+void
 WifiMsduAggregatorThroughputTest::DoRun (void)
 {
   WifiHelper wifi = WifiHelper::Default ();
@@ -84,7 +84,7 @@ WifiMsduAggregatorThroughputTest::DoRun (void)
   // and thus has an aggregator on AC_BE.
   NodeContainer ap;
   ap.Create (1);
-  wifiMac.SetType ("ns3::QapWifiMac",
+  wifiMac.SetType ("ns3::ApWifiMac",
                    "Ssid", SsidValue (ssid),
                    "BeaconGeneration", BooleanValue (true),
                    "BeaconInterval", TimeValue (MicroSeconds (102400)));
@@ -95,7 +95,7 @@ WifiMsduAggregatorThroughputTest::DoRun (void)
   // Setup one STA, which will be the sink for traffic in this test.
   NodeContainer sta;
   sta.Create (1);
-  wifiMac.SetType ("ns3::QstaWifiMac",
+  wifiMac.SetType ("ns3::StaWifiMac",
                    "Ssid", SsidValue (ssid),
                    "ActiveProbing", BooleanValue (false));
   NetDeviceContainer staDev = wifi.Install (wifiPhy, wifiMac, sta);
@@ -188,8 +188,6 @@ WifiMsduAggregatorThroughputTest::DoRun (void)
   NS_TEST_ASSERT_MSG_GT(totalOctetsThrough, 600000,
                         "A-MSDU test fails for low throughput of "
                         << totalOctetsThrough << " octets");
-
-  return false;
 }
 
 
@@ -208,4 +206,4 @@ WifiMsduAggregatorTestSuite::WifiMsduAggregatorTestSuite ()
   AddTestCase (new WifiMsduAggregatorThroughputTest);
 }
 
-WifiMsduAggregatorTestSuite wifiMsduAggregatorTestSuite;
+static WifiMsduAggregatorTestSuite wifiMsduAggregatorTestSuite;

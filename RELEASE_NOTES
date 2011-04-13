@@ -9,6 +9,198 @@ http://www.nsnam.org including tutorials: http://www.nsnam.org/tutorials.html
 Consult the file CHANGES.html for more detailed information about changed
 API and behavior across ns-3 releases.
 
+Release 3.11
+===========
+
+Availability
+------------
+This release is not yet available.
+
+Supported platforms
+-------------------
+
+New user-visible features
+-------------------------
+
+Bugs fixed
+----------
+The following lists many of the bugs fixed or small feature additions
+since ns-3.10, in many cases referencing the Bugzilla bug number.
+
+   - Fixed the UanPhyGen::IsStateBusy method, error with logical OR
+   - CsmaNetDevice ReceiveErrorModel was not dropping the packet
+   - bug 1064 - Correct Friis propagation loss equation in spectrum module
+
+Known issues
+------------
+In general, known issues are tracked on the project tracker available
+at http://www.nsnam.org/bugzilla/
+
+Release 3.10
+===========
+
+Availability
+------------
+This release is available from: 
+http://www.nsnam.org/releases/ns-allinone-3.10.tar.bz2
+
+Supported platforms
+-------------------
+ns-3.10 has been tested on the following platforms.  Not all features are
+available on all platforms; check the Installation page on the project wiki.
+
+- Linux i686 Ubuntu 10.10
+  - g++-4.4.5
+- Linux x86_64 Ubuntu 8.04.4
+  - g++-3.4.6, g++-4.2.4
+- Linux x86_64 Fedora Core 12
+  - g++-4.4.4
+- Linux x86_64 Fedora Core 10
+  - g++-3.4.6, 4.0.4, 4.1.2, 4.2.4, 4.3.4, 4.4.0
+- OS X Snow Leopard
+  - g++-4.2.1 
+- OS X powerpc Leopard 
+  - g++-4.0, g++-4.2
+
+New user-visible features
+-------------------------
+
+   - NS-3 PyViz, a live simulation visualizer, has been added.  The 
+     visualizer interacts with a running simulation, such that it uses no
+     trace files. It can be most useful for debugging purposes, i.e. to
+     figure out if mobility models are what you expect, where packets are
+     being dropped, etc. There is also a builtin interactive python console
+     that can be used to debug the state of the running objects. Although
+     it is mostly written in Python, it works both with Python and pure C++
+     simulations.
+
+   - Wi-Fi MAC high classes have been reorganised in attempt to
+     consolidate shared functionality into a single class. This new
+     class is RegularWifiMac, and it derives from the abstract
+     WifiMac, and is parent of AdhocWifiMac, StaWifiMac, ApWifiMac,
+     and MeshWifiInterfaceMac. The QoS and non-QoS class variants are
+     no longer, with a RegularWifiMac attribute "QosSupported"
+     allowing selection between these two modes of
+     operation.
+
+   - Support for IEEE 802.11g (specifically, rates with Modulation
+     Class ERP-OFDM) has been added to the wifi module. The new
+     WifiModes have names of the form ErpOfdmRatexxMbps, where xx is
+     the rate in Mbps (one of 6, 9, 12, 18, 24, 36, 48, 54), and a
+     WifiPhyStandard enumeration WIFI_PHY_STANDARD_80211g has been
+     added to allow configuration of a Wi-Fi STA supporting ERP-OFDM,
+     HR/DSSS, and DSSS rates (which some call an "802.11b/g" station).
+
+   - Two attributes were added to WaypointMobilityModel.  The first
+     "LazyNotify" (default false), if enabled to true, will suppress
+     course change notifications if there are no position updates.
+     The second, "InitialPositionIsWaypoint" (default false), if enabled,
+     will allow an initial call to SetPosition () (before any waypoints
+     have been added) to be treated as the first waypoint.
+
+   - Regression testing is now completely performed within test.py
+     rather than a separate "./waf --regression" that consults
+     reference traces in the ns-3.x-ref-traces directory.  In most
+     cases, the example programs whose traces were included in 
+     ns-3.x-ref-traces have a corresponding test called from the
+     test.py program.  It is still possible to write trace-based
+     regression tests but they are now called from the test.py
+     program.
+
+   - New BulkSendApplication sends data as fast as possible up to 
+     MaxBytes or unlimited if MaxBytes is zero.  Think OnOff, but 
+     without the "off" and without the variable data rate. This 
+     application only works with SOCK_STREAM and SOCK_SEQPACKET 
+     sockets, for example TCP sockets and not UDP sockets.
+
+   - Extensions to the energy models:  1) a new Rakhmatov Vrudhula 
+     non-linear battery model, 2) additional support for modeling 
+     energy consumption in WiFi devices, 3) an example for how to add 
+     energy models to a WiFi-based simulation (in examples/energy/ 
+     directory).
+
+   - New methods to print IPv4 routing tables to an output stream.
+
+   - A replacement implementation for TCP for IPv4.  TcpSocketBase
+     now replaces TcpSocketImpl.  There are subclasses defined for
+     TCP Tahoe, Reno, NewReno, and the original RFC793 without
+     congestion control.
+
+   - Energy support for UAN module and Li-Ion energy model.
+     Now each network node can have an associated energy source
+     from which it consumes energy. The user can specify a custom
+     energy model for the underwater transducer, with default values
+     set for WHOI acoustic transducer. Li-Ion battery model added
+     into energy models folder.
+
+   - Destination-Sequenced Distance Vector (DSDV) routing protocol 
+     is a proactive, table-driven routing protocol for MANETs 
+     developed by Charles E. Perkins and Pravin Bhagwat in 1994. 
+     This implementation is for IPv4 routing and was contributed 
+     by ResilNets Research Group.
+
+   - A novel model to simulate LTE networks has been added.  It focuses 
+     mainly on modeling the E-UTRA part of the system, with a particular 
+     attention on the aspects related to the channel, PHY and MAC layers. 
+     The most important features available at this moment are (i) a basic 
+     implementation of both the UE and the eNB devices, (ii) RRC and 
+     entities for both the UE and the eNB, (iii) an Adaptive Modulation 
+     and Coding (AMC) scheme for the downlink, (iv) the management of the 
+     data radio bearers (with their QoS parameters), the MAC queues and 
+     the RLC instances, (v) Channel Quality Indicator (CQI) management, 
+     (vi) support for both uplink and downlik packet scheduling, 
+     (vii) a PHY layer model with Resource Block level granularity, and 
+     (viii) a channel model with the outdoor E-UTRAN propagation loss 
+     model.
+
+   - Project documentation has been converted from GNU Texinfo to Sphinx. 
+
+Bugs fixed
+----------
+The following lists many of the bugs fixed or small feature additions
+since ns-3.9, in many cases referencing the Bugzilla bug number
+
+   - bug 824 - TCP should implement FastRecovery by default
+   - bug 852 - Add support for 802.11g devices
+   - bug 892 - WaypointMobilityModel incompatible with MobilityHelper::Install
+   - bug 893 - Lazy CourseChange notification for WaypointMobilityModel
+   - bug 903 - TapBridge does not shut down properly
+   - bug 953 - WiMAX channel scanning overflow
+   - bug 967 - Need to decouple Ipv4L4Protocols from Ipv4L3Protocol
+   - bug 978 - Consolidate Wi-Fi MAC high functionality
+   - bug 979 - Multi-octet fields in Wi-Fi headers have wrong endianness
+   - bug 981 - use a cache to keep track of received MPDUs under block ack
+   - bug 983 - handle correctly ADDBA response action frames in QadhocWifiMac
+   - bug 984 - EmuNetDevice should use DIX encapsulation by default
+   - bug 985 - WiMAX Invalid management message type on wimax-simple
+   - bug 988 - MacRxMiddle::SequenceControlSmaller method
+   - bug 990 - Error with an NS_ASSERT at uan-phy-gen.cc
+   - bug 991 - InterferenceHelper assertion failure
+   - bug 992 - Unusual (possibly incorrect assertion) in Packet::Deserialize
+   - bug 993 - MinstrelWifiManager::UpdateStats useless if clause
+   - bug 994 - PointToPointGridHelper useless if clauses
+   - bug 995 - Useless (possibly incorrect) comparison of unsigned int
+   - bug 1004 - module header not rebuilt
+   - bug 1005 - GetSocket() methods for OnOffApplication and PacketSink
+   - bug 1009 - decouple m_finSequence (TcpSocketImpl) from tx sequence numbers
+   - bug 1012 - UAN Throp propagation model bug
+   - bug 1015 - GetChannelFrequencyMhz() does not match with standard
+   - bug 1022 - inappropriate ASSERT in tcp-socket-impl.cc
+   - bug 1025 - wimax-ipv4 script exists with signal SIGSEGV when nbSS>20
+   - bug 1027 - RocketfuelTopologyReader is not working at all
+   - bug 1029 - v4Ping application endian issues
+   - bug 1030 - routing/aodv example fixed
+   - bug 1031 - Wifi hidden terminal example does not work
+   - bug 1032 - Unable to specify multiple Compiler/Linker flags
+
+Known issues
+------------
+In general, known issues are tracked on the project tracker available
+at http://www.nsnam.org/bugzilla/
+
+Windows XP 32 bit Cygwin 1.7.7 does not seem to work because of a
+problem (reported elsewhere) in linking large libraries.
+
 Release 3.9
 ===========
 
@@ -65,6 +257,13 @@ New user-visible features
    - Underwater Acoustic Network (UAN) model, split in to three parts, the 
      channel, PHY, and MAC models to enable researchers to model a variety 
      of underwater network scenarios.
+
+   - the Spectrum framework, which provides support for spectrum-aware
+     Channel and PHY layer modeling. It features a set of classes that
+     allows the mathematical representation of frequency dependent
+     phenomena. Some example channel, propagation and device
+     implementations that make use of this framework are also
+     included.  
 
 Bugs fixed
 ----------

@@ -3,6 +3,8 @@ from pybindgen import Module, FileCodeSink, param, retval, cppclass, typehandler
 def register_types(module):
     root_module = module.get_root()
     
+    ## ipv4-nix-vector-helper.h: ns3::Ipv4NixVectorHelper [class]
+    module.add_class('Ipv4NixVectorHelper', parent=root_module['ns3::Ipv4RoutingHelper'])
     ## ipv4-nix-vector-routing.h: ns3::Ipv4NixVectorRouting [class]
     module.add_class('Ipv4NixVectorRouting', parent=root_module['ns3::Ipv4RoutingProtocol'])
     typehandlers.add_type_alias('std::map< ns3::Ipv4Address, ns3::Ptr< ns3::NixVector >, std::less< ns3::Ipv4Address >, std::allocator< std::pair< ns3::Ipv4Address const, ns3::Ptr< ns3::NixVector > > > >', 'ns3::NixMap_t')
@@ -40,6 +42,12 @@ def register_types(module):
     
     nested_module = module.add_cpp_namespace('dot11s')
     register_types_ns3_dot11s(nested_module)
+    
+    
+    ## Register a nested module for the namespace dsdv
+    
+    nested_module = module.add_cpp_namespace('dsdv')
+    register_types_ns3_dsdv(nested_module)
     
     
     ## Register a nested module for the namespace flame
@@ -80,6 +88,10 @@ def register_types_ns3_dot11s(module):
     root_module = module.get_root()
     
 
+def register_types_ns3_dsdv(module):
+    root_module = module.get_root()
+    
+
 def register_types_ns3_flame(module):
     root_module = module.get_root()
     
@@ -93,7 +105,25 @@ def register_types_ns3_olsr(module):
     
 
 def register_methods(root_module):
+    register_Ns3Ipv4NixVectorHelper_methods(root_module, root_module['ns3::Ipv4NixVectorHelper'])
     register_Ns3Ipv4NixVectorRouting_methods(root_module, root_module['ns3::Ipv4NixVectorRouting'])
+    return
+
+def register_Ns3Ipv4NixVectorHelper_methods(root_module, cls):
+    ## ipv4-nix-vector-helper.h: ns3::Ipv4NixVectorHelper::Ipv4NixVectorHelper() [constructor]
+    cls.add_constructor([])
+    ## ipv4-nix-vector-helper.h: ns3::Ipv4NixVectorHelper::Ipv4NixVectorHelper(ns3::Ipv4NixVectorHelper const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::Ipv4NixVectorHelper const &', 'arg0')])
+    ## ipv4-nix-vector-helper.h: ns3::Ipv4NixVectorHelper * ns3::Ipv4NixVectorHelper::Copy() const [member function]
+    cls.add_method('Copy', 
+                   'ns3::Ipv4NixVectorHelper *', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## ipv4-nix-vector-helper.h: ns3::Ptr<ns3::Ipv4RoutingProtocol> ns3::Ipv4NixVectorHelper::Create(ns3::Ptr<ns3::Node> node) const [member function]
+    cls.add_method('Create', 
+                   'ns3::Ptr< ns3::Ipv4RoutingProtocol >', 
+                   [param('ns3::Ptr< ns3::Node >', 'node')], 
+                   is_const=True, is_virtual=True)
     return
 
 def register_Ns3Ipv4NixVectorRouting_methods(root_module, cls):
@@ -139,6 +169,11 @@ def register_Ns3Ipv4NixVectorRouting_methods(root_module, cls):
                    'void', 
                    [param('uint32_t', 'interface'), param('ns3::Ipv4InterfaceAddress', 'address')], 
                    visibility='private', is_virtual=True)
+    ## ipv4-nix-vector-routing.h: void ns3::Ipv4NixVectorRouting::PrintRoutingTable(ns3::Ptr<ns3::OutputStreamWrapper> stream) const [member function]
+    cls.add_method('PrintRoutingTable', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::OutputStreamWrapper >', 'stream')], 
+                   is_const=True, visibility='private', is_virtual=True)
     ## ipv4-nix-vector-routing.h: bool ns3::Ipv4NixVectorRouting::RouteInput(ns3::Ptr<ns3::Packet const> p, ns3::Ipv4Header const & header, ns3::Ptr<const ns3::NetDevice> idev, ns3::Callback<void, ns3::Ptr<ns3::Ipv4Route>, ns3::Ptr<ns3::Packet const>, ns3::Ipv4Header const&, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> ucb, ns3::Callback<void,ns3::Ptr<ns3::Ipv4MulticastRoute>,ns3::Ptr<const ns3::Packet>,const ns3::Ipv4Header&,ns3::empty,ns3::empty,ns3::empty,ns3::empty,ns3::empty,ns3::empty> mcb, ns3::Callback<void,ns3::Ptr<const ns3::Packet>,const ns3::Ipv4Header&,unsigned int,ns3::empty,ns3::empty,ns3::empty,ns3::empty,ns3::empty,ns3::empty> lcb, ns3::Callback<void, ns3::Ptr<ns3::Packet const>, ns3::Ipv4Header const&, ns3::Socket::SocketErrno, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> ecb) [member function]
     cls.add_method('RouteInput', 
                    'bool', 
@@ -163,6 +198,7 @@ def register_functions(root_module):
     register_functions_ns3_addressUtils(module.get_submodule('addressUtils'), root_module)
     register_functions_ns3_aodv(module.get_submodule('aodv'), root_module)
     register_functions_ns3_dot11s(module.get_submodule('dot11s'), root_module)
+    register_functions_ns3_dsdv(module.get_submodule('dsdv'), root_module)
     register_functions_ns3_flame(module.get_submodule('flame'), root_module)
     register_functions_ns3_internal(module.get_submodule('internal'), root_module)
     register_functions_ns3_olsr(module.get_submodule('olsr'), root_module)
@@ -181,6 +217,9 @@ def register_functions_ns3_aodv(module, root_module):
     return
 
 def register_functions_ns3_dot11s(module, root_module):
+    return
+
+def register_functions_ns3_dsdv(module, root_module):
     return
 
 def register_functions_ns3_flame(module, root_module):

@@ -19,8 +19,6 @@ def register_types(module):
     module.add_class('OmnetDataOutput', parent=root_module['ns3::DataOutputInterface'])
     ## packet-data-calculators.h: ns3::PacketSizeMinMaxAvgTotalCalculator [class]
     module.add_class('PacketSizeMinMaxAvgTotalCalculator', parent=root_module['ns3::MinMaxAvgTotalCalculator< unsigned int >'])
-    ## sqlite-data-output.h: ns3::SqliteDataOutput [class]
-    module.add_class('SqliteDataOutput', parent=root_module['ns3::DataOutputInterface'])
     ## time-data-calculators.h: ns3::TimeMinMaxAvgTotalCalculator [class]
     module.add_class('TimeMinMaxAvgTotalCalculator', parent=root_module['ns3::DataCalculator'])
     ## basic-data-calculators.h: ns3::CounterCalculator<unsigned int> [class]
@@ -64,6 +62,12 @@ def register_types(module):
     register_types_ns3_dot11s(nested_module)
     
     
+    ## Register a nested module for the namespace dsdv
+    
+    nested_module = module.add_cpp_namespace('dsdv')
+    register_types_ns3_dsdv(nested_module)
+    
+    
     ## Register a nested module for the namespace flame
     
     nested_module = module.add_cpp_namespace('flame')
@@ -102,6 +106,10 @@ def register_types_ns3_dot11s(module):
     root_module = module.get_root()
     
 
+def register_types_ns3_dsdv(module):
+    root_module = module.get_root()
+    
+
 def register_types_ns3_flame(module):
     root_module = module.get_root()
     
@@ -123,7 +131,6 @@ def register_methods(root_module):
     register_Ns3MinMaxAvgTotalCalculator__Unsigned_int_methods(root_module, root_module['ns3::MinMaxAvgTotalCalculator< unsigned int >'])
     register_Ns3OmnetDataOutput_methods(root_module, root_module['ns3::OmnetDataOutput'])
     register_Ns3PacketSizeMinMaxAvgTotalCalculator_methods(root_module, root_module['ns3::PacketSizeMinMaxAvgTotalCalculator'])
-    register_Ns3SqliteDataOutput_methods(root_module, root_module['ns3::SqliteDataOutput'])
     register_Ns3TimeMinMaxAvgTotalCalculator_methods(root_module, root_module['ns3::TimeMinMaxAvgTotalCalculator'])
     register_Ns3CounterCalculator__Unsigned_int_methods(root_module, root_module['ns3::CounterCalculator< unsigned int >'])
     register_Ns3PacketCounterCalculator_methods(root_module, root_module['ns3::PacketCounterCalculator'])
@@ -468,23 +475,6 @@ def register_Ns3PacketSizeMinMaxAvgTotalCalculator_methods(root_module, cls):
                    visibility='protected', is_virtual=True)
     return
 
-def register_Ns3SqliteDataOutput_methods(root_module, cls):
-    ## sqlite-data-output.h: ns3::SqliteDataOutput::SqliteDataOutput(ns3::SqliteDataOutput const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::SqliteDataOutput const &', 'arg0')])
-    ## sqlite-data-output.h: ns3::SqliteDataOutput::SqliteDataOutput() [constructor]
-    cls.add_constructor([])
-    ## sqlite-data-output.h: void ns3::SqliteDataOutput::Output(ns3::DataCollector & dc) [member function]
-    cls.add_method('Output', 
-                   'void', 
-                   [param('ns3::DataCollector &', 'dc')], 
-                   is_virtual=True)
-    ## sqlite-data-output.h: void ns3::SqliteDataOutput::DoDispose() [member function]
-    cls.add_method('DoDispose', 
-                   'void', 
-                   [], 
-                   visibility='protected', is_virtual=True)
-    return
-
 def register_Ns3TimeMinMaxAvgTotalCalculator_methods(root_module, cls):
     ## time-data-calculators.h: ns3::TimeMinMaxAvgTotalCalculator::TimeMinMaxAvgTotalCalculator(ns3::TimeMinMaxAvgTotalCalculator const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::TimeMinMaxAvgTotalCalculator const &', 'arg0')])
@@ -567,6 +557,7 @@ def register_functions(root_module):
     register_functions_ns3_addressUtils(module.get_submodule('addressUtils'), root_module)
     register_functions_ns3_aodv(module.get_submodule('aodv'), root_module)
     register_functions_ns3_dot11s(module.get_submodule('dot11s'), root_module)
+    register_functions_ns3_dsdv(module.get_submodule('dsdv'), root_module)
     register_functions_ns3_flame(module.get_submodule('flame'), root_module)
     register_functions_ns3_internal(module.get_submodule('internal'), root_module)
     register_functions_ns3_olsr(module.get_submodule('olsr'), root_module)
@@ -585,6 +576,9 @@ def register_functions_ns3_aodv(module, root_module):
     return
 
 def register_functions_ns3_dot11s(module, root_module):
+    return
+
+def register_functions_ns3_dsdv(module, root_module):
     return
 
 def register_functions_ns3_flame(module, root_module):

@@ -3,6 +3,8 @@ from pybindgen import Module, FileCodeSink, param, retval, cppclass, typehandler
 def register_types(module):
     root_module = module.get_root()
     
+    ## flow-monitor-helper.h: ns3::FlowMonitorHelper [class]
+    module.add_class('FlowMonitorHelper')
     ## histogram.h: ns3::Histogram [class]
     module.add_class('Histogram')
     ## simple-ref-count.h: ns3::SimpleRefCount<ns3::FlowClassifier, ns3::empty, ns3::DefaultDeleter<ns3::FlowClassifier> > [class]
@@ -66,6 +68,12 @@ def register_types(module):
     register_types_ns3_dot11s(nested_module)
     
     
+    ## Register a nested module for the namespace dsdv
+    
+    nested_module = module.add_cpp_namespace('dsdv')
+    register_types_ns3_dsdv(nested_module)
+    
+    
     ## Register a nested module for the namespace flame
     
     nested_module = module.add_cpp_namespace('flame')
@@ -104,6 +112,10 @@ def register_types_ns3_dot11s(module):
     root_module = module.get_root()
     
 
+def register_types_ns3_dsdv(module):
+    root_module = module.get_root()
+    
+
 def register_types_ns3_flame(module):
     root_module = module.get_root()
     
@@ -117,6 +129,7 @@ def register_types_ns3_olsr(module):
     
 
 def register_methods(root_module):
+    register_Ns3FlowMonitorHelper_methods(root_module, root_module['ns3::FlowMonitorHelper'])
     register_Ns3Histogram_methods(root_module, root_module['ns3::Histogram'])
     register_Ns3FlowClassifier_methods(root_module, root_module['ns3::FlowClassifier'])
     register_Ns3FlowMonitor_methods(root_module, root_module['ns3::FlowMonitor'])
@@ -126,6 +139,37 @@ def register_methods(root_module):
     register_Ns3Ipv4FlowClassifier_methods(root_module, root_module['ns3::Ipv4FlowClassifier'])
     register_Ns3Ipv4FlowClassifierFiveTuple_methods(root_module, root_module['ns3::Ipv4FlowClassifier::FiveTuple'])
     register_Ns3Ipv4FlowProbe_methods(root_module, root_module['ns3::Ipv4FlowProbe'])
+    return
+
+def register_Ns3FlowMonitorHelper_methods(root_module, cls):
+    ## flow-monitor-helper.h: ns3::FlowMonitorHelper::FlowMonitorHelper(ns3::FlowMonitorHelper const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::FlowMonitorHelper const &', 'arg0')])
+    ## flow-monitor-helper.h: ns3::FlowMonitorHelper::FlowMonitorHelper() [constructor]
+    cls.add_constructor([])
+    ## flow-monitor-helper.h: ns3::Ptr<ns3::FlowClassifier> ns3::FlowMonitorHelper::GetClassifier() [member function]
+    cls.add_method('GetClassifier', 
+                   'ns3::Ptr< ns3::FlowClassifier >', 
+                   [])
+    ## flow-monitor-helper.h: ns3::Ptr<ns3::FlowMonitor> ns3::FlowMonitorHelper::GetMonitor() [member function]
+    cls.add_method('GetMonitor', 
+                   'ns3::Ptr< ns3::FlowMonitor >', 
+                   [])
+    ## flow-monitor-helper.h: ns3::Ptr<ns3::FlowMonitor> ns3::FlowMonitorHelper::Install(ns3::NodeContainer nodes) [member function]
+    cls.add_method('Install', 
+                   'ns3::Ptr< ns3::FlowMonitor >', 
+                   [param('ns3::NodeContainer', 'nodes')])
+    ## flow-monitor-helper.h: ns3::Ptr<ns3::FlowMonitor> ns3::FlowMonitorHelper::Install(ns3::Ptr<ns3::Node> node) [member function]
+    cls.add_method('Install', 
+                   'ns3::Ptr< ns3::FlowMonitor >', 
+                   [param('ns3::Ptr< ns3::Node >', 'node')])
+    ## flow-monitor-helper.h: ns3::Ptr<ns3::FlowMonitor> ns3::FlowMonitorHelper::InstallAll() [member function]
+    cls.add_method('InstallAll', 
+                   'ns3::Ptr< ns3::FlowMonitor >', 
+                   [])
+    ## flow-monitor-helper.h: void ns3::FlowMonitorHelper::SetMonitorAttribute(std::string n1, ns3::AttributeValue const & v1) [member function]
+    cls.add_method('SetMonitorAttribute', 
+                   'void', 
+                   [param('std::string', 'n1'), param('ns3::AttributeValue const &', 'v1')])
     return
 
 def register_Ns3Histogram_methods(root_module, cls):
@@ -415,6 +459,7 @@ def register_functions(root_module):
     register_functions_ns3_addressUtils(module.get_submodule('addressUtils'), root_module)
     register_functions_ns3_aodv(module.get_submodule('aodv'), root_module)
     register_functions_ns3_dot11s(module.get_submodule('dot11s'), root_module)
+    register_functions_ns3_dsdv(module.get_submodule('dsdv'), root_module)
     register_functions_ns3_flame(module.get_submodule('flame'), root_module)
     register_functions_ns3_internal(module.get_submodule('internal'), root_module)
     register_functions_ns3_olsr(module.get_submodule('olsr'), root_module)
@@ -433,6 +478,9 @@ def register_functions_ns3_aodv(module, root_module):
     return
 
 def register_functions_ns3_dot11s(module, root_module):
+    return
+
+def register_functions_ns3_dsdv(module, root_module):
     return
 
 def register_functions_ns3_flame(module, root_module):

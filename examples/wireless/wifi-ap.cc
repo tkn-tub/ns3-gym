@@ -20,11 +20,10 @@
 
 
 #include "ns3/core-module.h"
-#include "ns3/common-module.h"
-#include "ns3/node-module.h"
-#include "ns3/helper-module.h"
+#include "ns3/network-module.h"
+#include "ns3/applications-module.h"
 #include "ns3/mobility-module.h"
-#include "ns3/contrib-module.h"
+#include "ns3/config-store-module.h"
 #include "ns3/wifi-module.h"
 #include "ns3/athstats-helper.h"
 
@@ -121,7 +120,7 @@ int main (int argc, char *argv[])
   cmd.AddValue ("verbose", "Print trace information if true", g_verbose);
 
   cmd.Parse (argc, argv);
-   
+
   Packet::EnablePrinting ();
 
   // enable rts cts all the time.
@@ -150,12 +149,13 @@ int main (int argc, char *argv[])
   Ssid ssid = Ssid ("wifi-default");
   wifi.SetRemoteStationManager ("ns3::ArfWifiManager");
   // setup stas.
-  wifiMac.SetType ("ns3::NqstaWifiMac", 
-               "Ssid", SsidValue (ssid),
-               "ActiveProbing", BooleanValue (false));
+  wifiMac.SetType ("ns3::StaWifiMac",
+                   "Ssid", SsidValue (ssid),
+                   "ActiveProbing", BooleanValue (false));
   staDevs = wifi.Install (wifiPhy, wifiMac, stas);
   // setup ap.
-  wifiMac.SetType ("ns3::NqapWifiMac", "Ssid", SsidValue (ssid));
+  wifiMac.SetType ("ns3::ApWifiMac",
+                   "Ssid", SsidValue (ssid));
   wifi.Install (wifiPhy, wifiMac, ap);
 
   // mobility.
@@ -185,7 +185,7 @@ int main (int argc, char *argv[])
   Config::Connect ("/NodeList/*/DeviceList/*/Phy/State/RxError", MakeCallback (&PhyRxErrorTrace));
   Config::Connect ("/NodeList/*/DeviceList/*/Phy/State/Tx", MakeCallback (&PhyTxTrace));
   Config::Connect ("/NodeList/*/DeviceList/*/Phy/State/State", MakeCallback (&PhyStateTrace));
-  
+
   AthstatsHelper athstats;
   athstats.EnableAthstats("athstats-sta", stas);
   athstats.EnableAthstats("athstats-ap", ap);

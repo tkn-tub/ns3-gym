@@ -1,0 +1,31 @@
+## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
+
+def build(bld):
+    module = bld.create_ns3_module('dsdv', ['internet', 'wifi', 'mesh', 'applications'])
+    module.includes = '.'
+    module.source = [
+        'model/dsdv-rtable.cc',
+        'model/dsdv-packet-queue.cc',
+        'model/dsdv-packet.cc',
+        'model/dsdv-routing-protocol.cc',
+        'helper/dsdv-helper.cc',
+        ]
+
+    module_test = bld.create_ns3_module_test_library('dsdv')
+    module_test.source = [
+        'test/dsdv-testcase.cc',
+        ]
+
+    headers = bld.new_task_gen('ns3header')
+    headers.module = 'dsdv'
+    headers.source = [
+        'model/dsdv-rtable.h',
+        'model/dsdv-packet-queue.h',
+        'model/dsdv-packet.h',
+        'model/dsdv-routing-protocol.h',
+        'helper/dsdv-helper.h',
+        ]
+    if (bld.env['ENABLE_EXAMPLES']):
+      bld.add_subdirs('examples')
+
+    bld.ns3_python_bindings()

@@ -56,7 +56,7 @@ public:
   virtual ~WifiInterferenceTestCase ();
 
 private:
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
   void ReceivePacket (Ptr<Socket> socket);
   static void GenerateTraffic (Ptr<Socket> socket, uint32_t pktSize, uint32_t pktCount, Time pktInterval);
   void PrintEndSync (std::string context, uint32_t dataRate, double snr, double per);
@@ -226,7 +226,7 @@ WifiInterferenceTestCase::WifiSimpleInterference (std::string phyMode,double Prs
   return m_PER;
 }
 
-bool
+void
 WifiInterferenceTestCase::DoRun (void)
 {
 
@@ -261,8 +261,6 @@ WifiInterferenceTestCase::DoRun (void)
   
   NS_TEST_ASSERT_MSG_EQ (PERDiff1, PERDiff2, 
     "The PER difference due to 1 microsecond difference in arrival shouldn't depend on absolute arrival");
-  
-  return false;
 }
 
 class WifiInterferenceTestSuite : public TestSuite
@@ -277,5 +275,5 @@ WifiInterferenceTestSuite::WifiInterferenceTestSuite ()
   AddTestCase (new WifiInterferenceTestCase);
 }
 
-WifiInterferenceTestSuite wifiInterferenceTestSuite;
+static WifiInterferenceTestSuite wifiInterferenceTestSuite;
 

@@ -3,6 +3,8 @@ from pybindgen import Module, FileCodeSink, param, retval, cppclass, typehandler
 def register_types(module):
     root_module = module.get_root()
     
+    ## topology-reader-helper.h: ns3::TopologyReaderHelper [class]
+    module.add_class('TopologyReaderHelper')
     ## topology-reader.h: ns3::TopologyReader [class]
     module.add_class('TopologyReader', parent=root_module['ns3::Object'])
     ## topology-reader.h: ns3::TopologyReader::Link [class]
@@ -44,6 +46,12 @@ def register_types(module):
     register_types_ns3_dot11s(nested_module)
     
     
+    ## Register a nested module for the namespace dsdv
+    
+    nested_module = module.add_cpp_namespace('dsdv')
+    register_types_ns3_dsdv(nested_module)
+    
+    
     ## Register a nested module for the namespace flame
     
     nested_module = module.add_cpp_namespace('flame')
@@ -82,6 +90,10 @@ def register_types_ns3_dot11s(module):
     root_module = module.get_root()
     
 
+def register_types_ns3_dsdv(module):
+    root_module = module.get_root()
+    
+
 def register_types_ns3_flame(module):
     root_module = module.get_root()
     
@@ -95,11 +107,31 @@ def register_types_ns3_olsr(module):
     
 
 def register_methods(root_module):
+    register_Ns3TopologyReaderHelper_methods(root_module, root_module['ns3::TopologyReaderHelper'])
     register_Ns3TopologyReader_methods(root_module, root_module['ns3::TopologyReader'])
     register_Ns3TopologyReaderLink_methods(root_module, root_module['ns3::TopologyReader::Link'])
     register_Ns3InetTopologyReader_methods(root_module, root_module['ns3::InetTopologyReader'])
     register_Ns3OrbisTopologyReader_methods(root_module, root_module['ns3::OrbisTopologyReader'])
     register_Ns3RocketfuelTopologyReader_methods(root_module, root_module['ns3::RocketfuelTopologyReader'])
+    return
+
+def register_Ns3TopologyReaderHelper_methods(root_module, cls):
+    ## topology-reader-helper.h: ns3::TopologyReaderHelper::TopologyReaderHelper(ns3::TopologyReaderHelper const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::TopologyReaderHelper const &', 'arg0')])
+    ## topology-reader-helper.h: ns3::TopologyReaderHelper::TopologyReaderHelper() [constructor]
+    cls.add_constructor([])
+    ## topology-reader-helper.h: ns3::Ptr<ns3::TopologyReader> ns3::TopologyReaderHelper::GetTopologyReader() [member function]
+    cls.add_method('GetTopologyReader', 
+                   'ns3::Ptr< ns3::TopologyReader >', 
+                   [])
+    ## topology-reader-helper.h: void ns3::TopologyReaderHelper::SetFileName(std::string const fileName) [member function]
+    cls.add_method('SetFileName', 
+                   'void', 
+                   [param('std::string const', 'fileName')])
+    ## topology-reader-helper.h: void ns3::TopologyReaderHelper::SetFileType(std::string const fileType) [member function]
+    cls.add_method('SetFileType', 
+                   'void', 
+                   [param('std::string const', 'fileType')])
     return
 
 def register_Ns3TopologyReader_methods(root_module, cls):
@@ -249,6 +281,7 @@ def register_functions(root_module):
     register_functions_ns3_addressUtils(module.get_submodule('addressUtils'), root_module)
     register_functions_ns3_aodv(module.get_submodule('aodv'), root_module)
     register_functions_ns3_dot11s(module.get_submodule('dot11s'), root_module)
+    register_functions_ns3_dsdv(module.get_submodule('dsdv'), root_module)
     register_functions_ns3_flame(module.get_submodule('flame'), root_module)
     register_functions_ns3_internal(module.get_submodule('internal'), root_module)
     register_functions_ns3_olsr(module.get_submodule('olsr'), root_module)
@@ -267,6 +300,9 @@ def register_functions_ns3_aodv(module, root_module):
     return
 
 def register_functions_ns3_dot11s(module, root_module):
+    return
+
+def register_functions_ns3_dsdv(module, root_module):
     return
 
 def register_functions_ns3_flame(module, root_module):

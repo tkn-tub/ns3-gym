@@ -1,0 +1,56 @@
+## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
+
+import os.path
+
+def configure(conf):
+    if conf.env['ENABLE_THREADING']:
+        conf.env['ENABLE_TAP'] = conf.check(header_name='linux/if_tun.h',
+                                            define_name='HAVE_IF_TUN_H')
+        conf.report_optional_feature("TapBridge", "Tap Bridge",
+                                     conf.env['ENABLE_TAP'],
+                                     "<linux/if_tun.h> include not detected")
+    else:
+        conf.report_optional_feature("TapBridge", "Tap Bridge",
+                                     False,
+                                     "needs threading support which is not available")
+
+    if conf.env['ENABLE_TAP']:
+        blddir = os.path.abspath(os.path.join(conf.blddir, conf.env.variant()))
+        tapcreatordir = os.path.abspath(os.path.join(blddir, "src/devices/tap-bridge"))
+        conf.env.append_value('NS3_EXECUTABLE_PATH', tapcreatordir)
+
+def build(bld):
+    module = bld.create_ns3_module('tap-bridge', ['network', 'internet'])
+    module.source = [
+        ]
+    headers = bld.new_task_gen('ns3header')
+    headers.module = 'tap-bridge'
+    headers.source = [
+        'doc/tap.h',
+        ]
+
+    if not bld.env['ENABLE_TAP']:
+        return
+
+    module.source.extend([
+            'model/tap-bridge.cc',
+            'model/tap-encode-decode.cc',
+            'helper/tap-bridge-helper.cc',
+            ])
+    headers.source.extend([
+            'model/tap-bridge.h',
+            'helper/tap-bridge-helper.h',
+            ])
+
+
+    if not bld.env['PLATFORM'].startswith('freebsd'):
+        obj = bld.create_suid_program('tap-creator')
+        obj.source = [
+            'model/tap-creator.cc',
+            'model/tap-encode-decode.cc',
+            ]
+
+    if bld.env['ENABLE_EXAMPLES']:
+        bld.add_subdirs('examples')
+
+    bld.ns3_python_bindings()

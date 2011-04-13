@@ -7,6 +7,7 @@ import types
 import optparse
 import os.path
 import re
+import shlex
 
 # WAF modules
 import pproc as subprocess
@@ -27,6 +28,14 @@ import Build
 import Configure
 import Scripting
 
+from utils import read_config_file
+
+# By default, all modules will be enabled.
+modules_enabled = ['all_modules']
+
+# Get the list of enabled modules out of the NS-3 configuration file.
+modules_enabled = read_config_file()
+
 sys.path.insert(0, os.path.abspath('waf-tools'))
 try:
     import cflags # override the build profiles from waf
@@ -43,7 +52,6 @@ cflags.default_profile = 'debug'
 
 # local modules
 import wutils
-import regression
 
 Configure.autoconfig = 1
 
@@ -53,14 +61,6 @@ APPNAME = 'ns'
 
 wutils.VERSION = VERSION
 wutils.APPNAME = APPNAME
-
-#
-# The last part of the path name to use to find the regression traces.  The
-# path will be APPNAME + '-' + VERSION + REGRESSION_SUFFIX, e.g.,
-# ns-3-dev-ref-traces
-#
-REGRESSION_SUFFIX = "-ref-traces"
-
 
 # these variables are mandatory ('/' are converted automatically)
 srcdir = '.'
@@ -97,22 +97,6 @@ def dist_hook():
     shutil.rmtree("doc/latex", True)
     shutil.rmtree("nsc", True)
 
-    ## build the name of the traces subdirectory.  Will be something like
-    ## ns-3-dev-ref-traces
-    traces_name = APPNAME + '-' + VERSION + REGRESSION_SUFFIX
-    ## Create a tar.bz2 file with the traces
-    env = load_env()
-    regression_dir = env['REGRESSION_TRACES']
-    if not os.path.isdir(regression_dir):
-        Logs.warn("Not creating traces archive: the %s directory does not exist" % regression_dir)
-    else:
-        traceball = traces_name + wutils.TRACEBALL_SUFFIX
-        tar = tarfile.open(os.path.join("..", traceball), 'w:bz2')
-        files = get_files(regression_dir)
-        for fullfilename,relfilename in files:
-            tar.add(fullfilename,arcname=relfilename)
-        tar.close()
-
 def set_options(opt):
     # options provided by the modules
     opt.tool_options('compiler_cc')
@@ -148,6 +132,9 @@ def set_options(opt):
                    help=('Run a locally built program; argument can be a program name,'
                          ' or a command starting with the program name.'),
                    type="string", default='', dest='run')
+    opt.add_option('--visualize',
+                   help=('Modify --run arguments to enable the visualizer'),
+                   action="store_true", default=False, dest='visualize')
     opt.add_option('--command-template',
                    help=('Template of the command used to run the program given by --run;'
                          ' It should be a shell command string containing %s inside,'
@@ -170,6 +157,13 @@ def set_options(opt):
                    help=('Use sudo to setup suid bits on ns3 executables.'),
                    dest='enable_sudo', action='store_true',
                    default=False)
+    opt.add_option('--enable-tests',
+                   help=('Build the ns-3 tests.'),
+                   dest='enable_tests', action='store_true',
+                   default=False)
+    opt.add_option('--disable-tests',
+                   help=('Do not build the ns-3 tests.'),
+                   dest='enable_tests', action='store_false')
     opt.add_option('--enable-examples',
                    help=('Build the ns-3 examples and samples.'),
                    dest='enable_examples', action='store_true',
@@ -177,23 +171,9 @@ def set_options(opt):
     opt.add_option('--disable-examples',
                    help=('Do not build the ns-3 examples and samples.'),
                    dest='enable_examples', action='store_false')
-    opt.add_option('--regression',
-                   help=("Enable regression testing; only used for the 'check' target"),
-                   default=False, dest='regression', action="store_true")
     opt.add_option('--check',
                    help=('DEPRECATED (run ./test.py)'),
                    default=False, dest='check', action="store_true")
-    opt.add_option('--regression-generate',
-                   help=("Generate new regression test traces."),
-                   default=False, dest='regression_generate', action="store_true")
-    opt.add_option('--regression-tests',
-                   help=('For regression testing, only run/generate the indicated regression tests, '
-                         'specified as a comma separated list of test names'),
-                   dest='regression_tests', type="string")
-    opt.add_option('--with-regression-traces',
-                   help=('Path to the regression reference traces directory'),
-                   default=None,
-                   dest='regression_traces', type="string")
     opt.add_option('--enable-static',
                    help=('Compile NS-3 statically: works only on linux, without python'),
                    dest='enable_static', action='store_true',
@@ -211,7 +191,7 @@ def set_options(opt):
     # options provided in subdirectories
     opt.sub_options('src')
     opt.sub_options('bindings/python')
-    opt.sub_options('src/internet-stack')
+    opt.sub_options('src/internet')
 
 
 def _check_compilation_flag(conf, flag, mode='cxx'):
@@ -257,20 +237,6 @@ def configure(conf):
     except Configure.ConfigurationError:
         pass
     conf.check_tool('command', ['waf-tools'])
-
-    # Check for the location of regression reference traces
-    if Options.options.regression_traces is not None:
-        if os.path.isdir(Options.options.regression_traces):
-            conf.check_message("regression traces location", '', True, ("%s (given)" % Options.options.regression_traces))
-            conf.env['REGRESSION_TRACES'] = os.path.abspath(Options.options.regression_traces)
-    else:
-        traces = os.path.join('..', "%s-%s%s" % (APPNAME, VERSION, REGRESSION_SUFFIX))
-        if os.path.isdir(traces):
-            conf.check_message("regression reference traces", '', True, ("%s (guessed)" % traces))
-            conf.env['REGRESSION_TRACES'] = os.path.abspath(traces)
-        del traces
-    if not conf.env['REGRESSION_TRACES']:
-        conf.check_message("regression reference traces", '', False)
 
     # create the second environment, set the variant and set its name
     variant_env = conf.env.copy()
@@ -321,32 +287,24 @@ def configure(conf):
                 env['WL_SONAME_SUPPORTED'] = True
 
     conf.sub_config('src')
-    conf.sub_config('bindings/python')
 
+    # Set the list of enabled modules.
     if Options.options.enable_modules:
+        # Use the modules explicitly enabled. 
         conf.env['NS3_ENABLED_MODULES'] = ['ns3-'+mod for mod in
                                            Options.options.enable_modules.split(',')]
-    # for MPI
-    conf.find_program('mpic++', var='MPI')
-    if Options.options.enable_mpi and conf.env['MPI']:
-        p = subprocess.Popen([conf.env['MPI'], '-showme:compile'], stdout=subprocess.PIPE)
-        flags = p.stdout.read().rstrip().split()
-        p.wait()
-        env.append_value("CXXFLAGS_MPI", flags)
-
-        p = subprocess.Popen([conf.env['MPI'], '-showme:link'], stdout=subprocess.PIPE)
-        flags = p.stdout.read().rstrip().split()
-        p.wait()
-        env.append_value("LINKFLAGS_MPI", flags)
-
-        env.append_value('CXXDEFINES', 'NS3_MPI')
-        conf.report_optional_feature("mpi", "MPI Support", True, '')
-        conf.env['ENABLE_MPI'] = True
     else:
-        if Options.options.enable_mpi:
-            conf.report_optional_feature("mpi", "MPI Support", False, 'mpic++ not found')
+        # Use the enabled modules list from the ns3 configuration file.
+        if modules_enabled[0] == 'all_modules':
+            # Enable all modules if requested.
+            conf.env['NS3_ENABLED_MODULES'] = conf.env['NS3_MODULES']
         else:
-            conf.report_optional_feature("mpi", "MPI Support", False, 'option --enable-mpi not selected')
+            # Enable the modules from the list.
+            conf.env['NS3_ENABLED_MODULES'] = ['ns3-'+mod for mod in
+                                               modules_enabled]
+    conf.sub_config('bindings/python')
+
+    conf.sub_config('src/mpi')
 
     # for suid bits
     conf.find_program('sudo', var='SUDO')
@@ -363,6 +321,15 @@ def configure(conf):
 
     conf.report_optional_feature("ENABLE_SUDO", "Use sudo to set suid bit", env['ENABLE_SUDO'], why_not_sudo)
 
+    if Options.options.enable_tests:
+        env['ENABLE_TESTS'] = True
+        why_not_tests = "option --enable-tests selected"
+    else:
+        env['ENABLE_TESTS'] = False
+        why_not_tests = "defaults to disabled"
+
+    conf.report_optional_feature("ENABLE_TESTS", "Build tests", env['ENABLE_TESTS'], why_not_tests)
+
     if Options.options.enable_examples:
         env['ENABLE_EXAMPLES'] = True
         why_not_examples = "defaults to enabled"
@@ -370,11 +337,15 @@ def configure(conf):
         env['ENABLE_EXAMPLES'] = False
         why_not_examples = "option --disable-examples selected"
 
+    env['EXAMPLE_DIRECTORIES'] = []
+    for dir in os.listdir('examples'):
+        if dir.startswith('.') or dir == 'CVS':
+            continue
+        if os.path.isdir(os.path.join('examples', dir)):
+            env['EXAMPLE_DIRECTORIES'].append(dir)
+
     conf.report_optional_feature("ENABLE_EXAMPLES", "Build examples and samples", env['ENABLE_EXAMPLES'], 
                                  why_not_examples)
-
-    # we cannot pull regression traces without mercurial
-    conf.find_program('hg', var='MERCURIAL')
 
     conf.find_program('valgrind', var='VALGRIND')
 
@@ -407,6 +378,15 @@ def configure(conf):
     else:
         conf.report_optional_feature("static", "Static build", False,
                                      "option --enable-static not selected")
+
+    # These flags are used for the implicitly dependent modules.
+    if env['ENABLE_STATIC_NS3']:
+        if sys.platform == 'darwin':
+            env.STATICLIB_MARKER = '-Wl,-all_load'
+        else:
+            env.STATICLIB_MARKER = '-Wl,--whole-archive,-Bstatic'
+            env.SHLIB_MARKER = '-Wl,-Bdynamic,--no-whole-archive'
+
     have_gsl = conf.pkg_check_modules('GSL', 'gsl', mandatory=False)
     conf.env['ENABLE_GSL'] = have_gsl
 
@@ -433,6 +413,7 @@ def configure(conf):
     add_gcc_flag('-fstrict-aliasing')
     add_gcc_flag('-Wstrict-aliasing')
 
+    conf.find_program('doxygen', var='DOXYGEN')
 
     # append user defined flags after all our ones
     for (confvar, envvar) in [['CCFLAGS', 'CCFLAGS_EXTRA'],
@@ -440,7 +421,8 @@ def configure(conf):
                               ['LINKFLAGS', 'LINKFLAGS_EXTRA'],
                               ['LINKFLAGS', 'LDFLAGS_EXTRA']]:
         if envvar in os.environ:
-            conf.env.append_value(confvar, os.environ[envvar])
+            value = shlex.split(os.environ[envvar])
+            conf.env.append_value(confvar, value)
 
     # Write a summary of optional features status
     print "---- Summary of optional NS-3 features:"
@@ -500,20 +482,23 @@ def create_suid_program(bld, name):
 
     return program
 
-def create_ns3_program(bld, name, dependencies=('simulator',)):
+def create_ns3_program(bld, name, dependencies=('core',)):
     program = bld.new_task_gen('cxx', 'program')
     program.is_ns3_program = True
     program.name = name
     program.target = program.name
-    program.uselib_local = 'ns3'
+    # Each of the modules this program depends on has its own library.
+    program.uselib_local = ['ns3-' + dep for dep in dependencies]
     program.ns3_module_dependencies = ['ns3-'+dep for dep in dependencies]
     if program.env['ENABLE_STATIC_NS3']:
         if sys.platform == 'darwin':
             program.env.append_value('LINKFLAGS', '-Wl,-all_load')
-            program.env.append_value('LINKFLAGS', '-lns3')
+            for dep in dependencies:
+                program.env.append_value('LINKFLAGS', '-lns3-' + dep)
         else:
             program.env.append_value('LINKFLAGS', '-Wl,--whole-archive,-Bstatic')
-            program.env.append_value('LINKFLAGS', '-lns3')
+            for dep in dependencies:
+                program.env.append_value('LINKFLAGS', '-lns3-' + dep)
             program.env.append_value('LINKFLAGS', '-Wl,-Bdynamic,--no-whole-archive')
     return program
 
@@ -528,7 +513,7 @@ def add_examples_programs(bld):
 
 
 def add_scratch_programs(bld):
-    all_modules = [mod[len("ns3-"):] for mod in bld.env['NS3_MODULES']]
+    all_modules = [mod[len("ns3-"):] for mod in bld.env['NS3_ENABLED_MODULES']]
     for filename in os.listdir("scratch"):
         if filename.startswith('.') or filename == 'CVS':
 	    continue
@@ -548,6 +533,9 @@ def add_scratch_programs(bld):
 
 
 def build(bld):
+    bld.env['NS3_MODULES_WITH_TEST_LIBRARIES'] = []
+    bld.env['NS3_ENABLED_MODULE_TEST_LIBRARIES'] = []
+
     wutils.bld = bld
     if Options.options.no_task_lines:
         import Runner
@@ -567,6 +555,43 @@ def build(bld):
     # process subfolders from here
     bld.add_subdirs('src')
     bld.add_subdirs('samples')
+
+    env = bld.env
+
+    # If modules have been enabled, then set lists of enabled modules
+    # and enabled module test libraries.
+    if env['NS3_ENABLED_MODULES']:
+        modules = env['NS3_ENABLED_MODULES']
+
+        # Find out about additional modules that need to be enabled
+        # due to dependency constraints.
+        changed = True
+        while changed:
+            changed = False
+            for module in modules:
+                module_obj = bld.name_to_obj(module, env)
+                if module_obj is None:
+                    raise ValueError("module %s not found" % module)
+                # Each enabled module has its own library.
+                for dep in module_obj.uselib_local:
+                    if not dep.startswith('ns3-'):
+                        continue
+                    if dep not in modules:
+                        modules.append(dep)
+                        changed = True
+
+        env['NS3_ENABLED_MODULES'] = modules
+        #print "Modules to build:", modules
+
+        # If tests are being built, then set the list of the enabled
+        # module test libraries.
+        if env['ENABLE_TESTS']:
+            for (mod, testlib) in bld.env['NS3_MODULES_WITH_TEST_LIBRARIES']:
+                if mod in bld.env['NS3_ENABLED_MODULES']:
+                    bld.env.append_value('NS3_ENABLED_MODULE_TEST_LIBRARIES', testlib)
+
+    # Process this subfolder here after the lists of enabled modules
+    # and module test libraries have been set.
     bld.add_subdirs('utils')
 
     add_examples_programs(bld)
@@ -575,7 +600,6 @@ def build(bld):
     ## if --enabled-modules option was given, we disable building the
     ## modules that were not enabled, and programs that depend on
     ## disabled modules.
-    env = bld.env
 
     if Options.options.enable_modules:
         Logs.warn("the option --enable-modules is being applied to this build only;"
@@ -585,51 +609,53 @@ def build(bld):
 
     if env['NS3_ENABLED_MODULES']:
         modules = env['NS3_ENABLED_MODULES']
-        changed = True
-        while changed:
-            changed = False
-            for module in modules:
-                module_obj = Object.name_to_obj(module)
-                if module_obj is None:
-                    raise ValueError("module %s not found" % module)
-                for dep in module_obj.add_objects:
-                    if not dep.startswith('ns3-'):
-                        continue
-                    if dep not in modules:
-                        modules.append(dep)
-                        changed = True
 
-        ## remove objects that depend on modules not listed
+        def exclude_taskgen(bld, taskgen):
+            # ok, so WAF does not provide an API to prevent an
+            # arbitrary taskgen from running; we have to muck around with
+            # WAF internal state, something that might stop working if
+            # WAF is upgraded...
+            bld.all_task_gen.remove(taskgen)
+            for group in bld.task_manager.groups:
+                try:
+                    group.tasks_gen.remove(taskgen)
+                except ValueError:
+                    pass
+                else:
+                    break
+
+        # Exclude the programs other misc task gens that depend on disabled modules
         for obj in list(bld.all_task_gen):
-            if hasattr(obj, 'ns3_module_dependencies'):
-                for dep in obj.ns3_module_dependencies:
-                    if dep not in modules:
-                        bld.all_task_gen.remove(obj)
-                        break
-            if obj.name in env['NS3_MODULES'] and obj.name not in modules:
-                bld.all_task_gen.remove(obj)
 
-    ## Create a single ns3 library containing all enabled modules
-    if env['ENABLE_STATIC_NS3']:
-        lib = bld.new_task_gen('cxx', 'staticlib')
-        lib.name = 'ns3'
-        lib.target = 'ns3'
-    else:
-        lib = bld.new_task_gen('cxx', 'shlib')
-        lib.name = 'ns3'
-        lib.target = 'ns3'
-        if lib.env['CXX_NAME'] in ['gcc', 'icc'] and env['WL_SONAME_SUPPORTED']:
-            lib.env.append_value('LINKFLAGS', '-Wl,--soname=%s' % ccroot.get_target_name(lib))
-        if sys.platform == 'cygwin':
-            lib.features.append('implib') # workaround for WAF bug #472
+            # check for ns3moduleheader_taskgen
+            if type(obj).__name__ == 'ns3moduleheader_taskgen':
+                if ("ns3-%s" % obj.module) not in modules:
+                    obj.mode = 'remove' # tell it to remove headers instead of installing
+
+            # check for programs
+            if hasattr(obj, 'ns3_module_dependencies'):
+                # this is an NS-3 program (bld.create_ns3_program)
+                for dep in obj.ns3_module_dependencies:
+                    if dep not in modules: # prog. depends on a module that isn't enabled?
+                        exclude_taskgen(bld, obj)
+                        break
+
+            # disable the modules themselves
+            if hasattr(obj, "is_ns3_module") and obj.name not in modules:
+                exclude_taskgen(bld, obj) # kill the module
+
+            # disable the module test libraries
+            if hasattr(obj, "is_ns3_module_test_library"):
+                if not env['ENABLE_TESTS'] or (obj.module_name not in modules):
+                    exclude_taskgen(bld, obj) # kill the module test library
+
+            # disable the ns3header_taskgen
+            if type(obj).__name__ == 'ns3header_taskgen':
+                if ("ns3-%s" % obj.module) not in modules:
+                    obj.mode = 'remove' # tell it to remove headers instead of installing 
 
     if env['NS3_ENABLED_MODULES']:
-        lib.add_objects = list(modules)
         env['NS3_ENABLED_MODULES'] = list(modules)
-        lib.uselib_local = list(modules)
-    else:
-        lib.add_objects = list(env['NS3_MODULES'])
-        lib.uselib_local = list(env['NS3_MODULES'])
 
     bld.add_subdirs('bindings/python')
 
@@ -645,19 +671,6 @@ def build(bld):
             if type(gen).__name__ in ['ns3header_taskgen', 'ns3moduleheader_taskgen']:
                 gen.post()
 
-    if Options.options.regression or Options.options.regression_generate:
-        regression_traces = env['REGRESSION_TRACES']
-        if not regression_traces:
-            raise Utils.WafError("Cannot run regression tests: reference traces directory not given"
-                                 " (--with-regression-traces configure option)")
-
-        if env['ENABLE_EXAMPLES'] == True:
-            regression.run_regression(bld, regression_traces)
-        else:
-            raise Utils.WafError("Cannot run regression tests: building the ns-3 examples is not enabled"
-                                 " (regression tests are based on examples)")
-
-
     if Options.options.doxygen_no_build:
         _doxygen(bld)
         raise SystemExit(0)
@@ -672,11 +685,13 @@ def shutdown(ctx):
         lcov_report()
 
     if Options.options.run:
-        wutils.run_program(Options.options.run, env, wutils.get_command_template(env))
+        wutils.run_program(Options.options.run, env, wutils.get_command_template(env),
+                           visualize=Options.options.visualize)
         raise SystemExit(0)
 
     if Options.options.pyrun:
-        wutils.run_python_program(Options.options.pyrun, env)
+        wutils.run_python_program(Options.options.pyrun, env,
+                                  visualize=Options.options.visualize)
         raise SystemExit(0)
 
     if Options.options.shell:
@@ -785,6 +800,11 @@ def _doxygen(bld):
     env = wutils.bld.env
     proc_env = wutils.get_proc_env()
 
+    if not env['DOXYGEN']:
+        Logs.error("waf configure did not detect doxygen in the system -> cannot build api docs.")
+        raise SystemExit(1)
+        return
+
     try:
         program_obj = wutils.find_program('print-introspected-doxygen', env)
     except ValueError: 
@@ -807,7 +827,7 @@ def _doxygen(bld):
     out.close()
 
     doxygen_config = os.path.join('doc', 'doxygen.conf')
-    if subprocess.Popen(['doxygen', doxygen_config]).wait():
+    if subprocess.Popen([env['DOXYGEN'], doxygen_config]).wait():
         raise SystemExit(1)
 
 def doxygen(bld):

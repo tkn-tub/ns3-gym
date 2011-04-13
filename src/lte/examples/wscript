@@ -1,0 +1,27 @@
+## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
+
+def build(bld):
+    obj = bld.create_ns3_program('lte-phy-downlink',
+                                 ['lte'])
+    obj.source = 'lte-phy-downlink.cc'
+
+    obj = bld.create_ns3_program('lte-phy-uplink',
+                                 ['lte'])
+    obj.source = 'lte-phy-uplink.cc'
+
+    obj = bld.create_ns3_program('lte-device',
+                                 ['lte'])
+    obj.source = 'lte-device.cc'
+
+    obj = bld.create_ns3_program('lte-channel-model',
+                                 ['lte', 'network'])
+    obj.source = 'lte-channel-model.cc'
+
+    obj = bld.create_ns3_program('lte-amc',
+                                 ['lte'])
+    obj.source = 'lte-amc.cc'
+
+    obj = bld.create_ns3_program('lte-multiple-flows',
+                                 ['lte'])
+    obj.source = 'lte-multiple-flows.cc'
+

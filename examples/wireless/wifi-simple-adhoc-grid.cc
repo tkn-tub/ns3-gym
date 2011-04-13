@@ -70,12 +70,14 @@
 //
 
 #include "ns3/core-module.h"
-#include "ns3/common-module.h"
-#include "ns3/node-module.h"
-#include "ns3/helper-module.h"
+#include "ns3/network-module.h"
 #include "ns3/mobility-module.h"
-#include "ns3/contrib-module.h"
+#include "ns3/config-store-module.h"
 #include "ns3/wifi-module.h"
+#include "ns3/internet-module.h"
+#include "ns3/olsr-helper.h"
+#include "ns3/ipv4-static-routing-helper.h"
+#include "ns3/ipv4-list-routing-helper.h"
 
 #include <iostream>
 #include <fstream>
@@ -156,7 +158,6 @@ int main (int argc, char *argv[])
     }
 
   YansWifiPhyHelper wifiPhy =  YansWifiPhyHelper::Default ();
-  // This is one parameter that matters when using FixedRssLossModel
   // set it to zero; otherwise, gain will be added
   wifiPhy.Set ("RxGain", DoubleValue (-10) ); 
   // ns-3 supports RadioTap and Prism tracing extensions for 802.11b
@@ -220,6 +221,9 @@ int main (int argc, char *argv[])
       AsciiTraceHelper ascii;
       wifiPhy.EnableAsciiAll (ascii.CreateFileStream ("wifi-simple-adhoc-grid.tr"));
       wifiPhy.EnablePcap ("wifi-simple-adhoc-grid", devices);
+      // Trace routing tables
+      Ptr<OutputStreamWrapper> routingStream = Create<OutputStreamWrapper> ("wifi-simple-adhoc-grid.routes", std::ios::out);
+      olsr.PrintRoutingTableAllEvery (Seconds (2), routingStream);
 
       // To do-- enable an IP-level trace that shows forwarding events only
     }

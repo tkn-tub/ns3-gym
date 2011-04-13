@@ -15,12 +15,11 @@
  */
 
 #include "ns3/core-module.h"
-#include "ns3/simulator-module.h"
-#include "ns3/node-module.h"
-#include "ns3/helper-module.h"
+#include "ns3/network-module.h"
 #include "ns3/wifi-module.h"
 #include "ns3/mobility-module.h"
 #include "ns3/mpi-interface.h"
+#include "ns3/ipv4-global-routing-helper.h"
 
 #ifdef NS3_MPI
 #include <mpi.h>
@@ -31,7 +30,7 @@
 // Number of wifi or csma nodes can be increased up to 250
 //
 //   Wifi 10.1.3.0
-//                 AP   
+//                 AP
 //  *    *    *    *
 //  |    |    |    |    10.1.1.0
 // n5   n6   n7   n0 -------------- n1   n2   n3   n4
@@ -53,7 +52,7 @@ main (int argc, char *argv[])
   // Distributed simulation setup
   MpiInterface::Enable (&argc, &argv);
   GlobalValue::Bind ("SimulatorImplementationType",
-                      StringValue ("ns3::DistributedSimulatorImpl"));
+                     StringValue ("ns3::DistributedSimulatorImpl"));
 
   uint32_t systemId = MpiInterface::GetSystemId ();
   uint32_t systemCount = MpiInterface::GetSize ();
@@ -108,7 +107,7 @@ main (int argc, char *argv[])
 
   NodeContainer csmaNodes;
   csmaNodes.Add (p2pNodes.Get (1));
-  csmaNodes.Create (nCsma , 1); // Create csma nodes with rank 1
+  csmaNodes.Create (nCsma, 1);  // Create csma nodes with rank 1
 
   CsmaHelper csma;
   csma.SetChannelAttribute ("DataRate", StringValue ("100Mbps"));
@@ -129,17 +128,17 @@ main (int argc, char *argv[])
   wifi.SetRemoteStationManager ("ns3::AarfWifiManager");
 
   NqosWifiMacHelper mac = NqosWifiMacHelper::Default ();
-  
+
   Ssid ssid = Ssid ("ns-3-ssid");
-  mac.SetType ("ns3::NqstaWifiMac", 
-    "Ssid", SsidValue (ssid),
-    "ActiveProbing", BooleanValue (false));
+  mac.SetType ("ns3::StaWifiMac",
+               "Ssid", SsidValue (ssid),
+               "ActiveProbing", BooleanValue (false));
 
   NetDeviceContainer staDevices;
   staDevices = wifi.Install (phy, mac, wifiStaNodes);
 
-  mac.SetType ("ns3::NqapWifiMac", 
-    "Ssid", SsidValue (ssid));
+  mac.SetType ("ns3::ApWifiMac",
+               "Ssid", SsidValue (ssid));
 
   NetDeviceContainer apDevices;
   apDevices = wifi.Install (phy, mac, wifiApNode);
@@ -147,15 +146,15 @@ main (int argc, char *argv[])
   MobilityHelper mobility;
 
   mobility.SetPositionAllocator ("ns3::GridPositionAllocator",
-    "MinX", DoubleValue (0.0),
-    "MinY", DoubleValue (0.0),
-    "DeltaX", DoubleValue (5.0),
-    "DeltaY", DoubleValue (5.0),
-    "GridWidth", UintegerValue (10),
-    "LayoutType", StringValue ("RowFirst"));
+                                 "MinX", DoubleValue (0.0),
+                                 "MinY", DoubleValue (0.0),
+                                 "DeltaX", DoubleValue (5.0),
+                                 "DeltaY", DoubleValue (5.0),
+                                 "GridWidth", UintegerValue (10),
+                                 "LayoutType", StringValue ("RowFirst"));
 
   mobility.SetMobilityModel ("ns3::RandomWalk2dMobilityModel",
-    "Bounds", RectangleValue (Rectangle (-250, 250, -250, 250)));
+                             "Bounds", RectangleValue (Rectangle (-250, 250, -250, 250)));
   mobility.Install (wifiStaNodes);
 
   mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");

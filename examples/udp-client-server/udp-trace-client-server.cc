@@ -25,8 +25,8 @@
 
 #include <fstream>
 #include "ns3/core-module.h"
-#include "ns3/simulator-module.h"
-#include "ns3/helper-module.h"
+#include "ns3/csma-module.h"
+#include "ns3/applications-module.h"
 
 using namespace ns3;
 
@@ -58,7 +58,7 @@ main (int argc, char *argv[])
   CsmaHelper csma;
   csma.SetChannelAttribute ("DataRate", DataRateValue (DataRate(5000000)));
   csma.SetChannelAttribute ("Delay", TimeValue (MilliSeconds (2)));
-  csma.SetDeviceAttribute ("Mtu", UintegerValue (1400));
+  csma.SetDeviceAttribute ("Mtu", UintegerValue (1500));
   NetDeviceContainer d = csma.Install (n);
 
   Ipv4AddressHelper ipv4;
@@ -83,7 +83,7 @@ main (int argc, char *argv[])
 // Create one UdpTraceClient application to send UDP datagrams from node zero to
 // node one.
 //
-  uint32_t MaxPacketSize = 1400;
+  uint32_t MaxPacketSize = 1472;  // Back off 20 (IP) + 8 (UDP) bytes from MTU
   UdpTraceClientHelper client (i.GetAddress (1), port,"");
   client.SetAttribute ("MaxPacketSize", UintegerValue (MaxPacketSize));
   apps = client.Install (n.Get (0));

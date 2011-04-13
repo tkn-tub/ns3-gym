@@ -7,15 +7,17 @@ def build(bld):
     test_runner = bld.create_ns3_program('test-runner', ['core'])
     test_runner.install_path = None # do not install
     test_runner.source = 'test-runner.cc'
-    test_runner.uselib_local = 'ns3'
+
+    # Set the libraries the testrunner depends on equal to the list of
+    # enabled modules plus the list of enabled module test libraries.
+    test_runner.uselib_local = env['NS3_ENABLED_MODULES'] + env['NS3_ENABLED_MODULE_TEST_LIBRARIES']
     
-    obj = bld.create_ns3_program('bench-simulator', ['simulator'])
+    obj = bld.create_ns3_program('bench-simulator', ['core'])
     obj.source = 'bench-simulator.cc'
 
-    obj = bld.create_ns3_program('bench-packets', ['common'])
+    obj = bld.create_ns3_program('bench-packets', ['network'])
     obj.source = 'bench-packets.cc'
 
-    obj = bld.create_ns3_program('print-introspected-doxygen',
-                                 ['internet-stack', 'csma-cd', 'point-to-point'])
+    obj = bld.create_ns3_program('print-introspected-doxygen', ['core', 'network', 'internet', 'olsr', 'mobility'])
     obj.source = 'print-introspected-doxygen.cc'
 

@@ -26,14 +26,18 @@
 
 #include "ns3/csma-net-device.h"
 #include "ns3/core-module.h"
-#include "ns3/simulator-module.h"
-#include "ns3/node-module.h"
-#include "ns3/helper-module.h"
+#include "ns3/network-module.h"
+#include "ns3/internet-module.h"
+#include "ns3/point-to-point-module.h"
+#include "ns3/applications-module.h"
 #include "ns3/ipv4-static-routing.h"
 #include "ns3/ipv4-global-routing.h"
 #include "ns3/ipv4-list-routing.h"
 #include "ns3/ipv4-routing-table-entry.h"
 #include "ns3/global-router-interface.h"
+#include "ns3/ipv4-static-routing-helper.h"
+#include "ns3/ipv4-list-routing-helper.h"
+#include "ns3/ipv4-global-routing-helper.h"
 
 using namespace ns3;
 using std::cout;

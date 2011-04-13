@@ -1,0 +1,25 @@
+## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
+
+def build(bld):
+    obj = bld.create_ns3_module('csma', ['network', 'point-to-point', 'applications', 'netanim'])
+    obj.source = [
+        'model/backoff.cc',
+        'model/csma-net-device.cc',
+        'model/csma-channel.cc',
+        'helper/csma-helper.cc',
+        'helper/csma-star-helper.cc',
+        ]
+    headers = bld.new_task_gen('ns3header')
+    headers.module = 'csma'
+    headers.source = [
+        'model/backoff.h',
+        'model/csma-net-device.h',
+        'model/csma-channel.h',
+        'helper/csma-helper.h',
+        'helper/csma-star-helper.h',
+        ]
+
+    if bld.env['ENABLE_EXAMPLES']:
+        bld.add_subdirs('examples')
+
+    bld.ns3_python_bindings()

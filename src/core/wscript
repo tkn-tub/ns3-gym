@@ -1,5 +1,6 @@
 ## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
 import sys
+
 import Options
 
 def set_options(opt):
@@ -10,6 +11,7 @@ def set_options(opt):
                          'with the configure command.'),
                    action="store_true", default=False,
                    dest='int64x64_as_double')
+
 
 
 def configure(conf):
@@ -75,136 +77,223 @@ int main ()
                                  conf.env['ENABLE_THREADING'],
                                  "<pthread.h> include not detected")
 
+    conf.check(header_name='stdint.h', define_name='HAVE_STDINT_H')
+    conf.check(header_name='inttypes.h', define_name='HAVE_INTTYPES_H')
+
+    conf.check(header_name='sys/inttypes.h', define_name='HAVE_SYS_INT_TYPES_H')
+
+    if not conf.check(lib='rt', uselib='RT', define_name='HAVE_RT'):
+        conf.report_optional_feature("RealTime", "Real Time Simulator",
+                                     False, "librt is not available")
+    else:
+        conf.report_optional_feature("RealTime", "Real Time Simulator",
+                                     conf.env['ENABLE_THREADING'],
+                                     "threading not enabled")
+        conf.env["ENABLE_REAL_TIME"] = conf.env['ENABLE_THREADING']
+
     conf.write_config_header('ns3/core-config.h', top=True)
 
 def build(bld):
     core = bld.create_ns3_module('core')
     core.source = [
-        'log.cc',
-        'breakpoint.cc',
-        'type-id.cc',
-        'attribute-list.cc',
-        'object-base.cc',
-        'ref-count-base.cc',
-        'object.cc',
-        'test.cc',
-        'random-variable.cc',
-        'rng-stream.cc',
-        'command-line.cc',
-        'type-name.cc',
-        'attribute.cc',
-        'boolean.cc',
-        'integer.cc',
-        'uinteger.cc',
-        'enum.cc',
-        'double.cc',
-        'string.cc',
-        'pointer.cc',
-        'object-vector.cc',
-        'object-factory.cc',
-        'global-value.cc',
-        'trace-source-accessor.cc',
-        'config.cc',
-        'callback.cc',
-        'names.cc',
-        'vector.cc',
-        'attribute-test-suite.cc',
-        'callback-test-suite.cc',
-        'names-test-suite.cc',
-        'type-traits-test-suite.cc',
-        'traced-callback-test-suite.cc',
-        'ptr-test-suite.cc',
-        'fatal-impl.cc',
-        'int64x64.cc',
+        'model/time.cc',
+        'model/event-id.cc',
+        'model/scheduler.cc',
+        'model/list-scheduler.cc',
+        'model/map-scheduler.cc',
+        'model/heap-scheduler.cc',
+        'model/calendar-scheduler.cc',
+        'model/ns2-calendar-scheduler.cc',
+        'model/event-impl.cc',
+        'model/simulator.cc',
+        'model/simulator-impl.cc',
+        'model/default-simulator-impl.cc',
+        'model/timer.cc',
+        'model/watchdog.cc',
+        'model/synchronizer.cc',
+        'model/make-event.cc',
+        'model/log.cc',
+        'model/breakpoint.cc',
+        'model/type-id.cc',
+        'model/attribute-list.cc',
+        'model/object-base.cc',
+        'model/ref-count-base.cc',
+        'model/object.cc',
+        'model/test.cc',
+        'model/random-variable.cc',
+        'model/rng-stream.cc',
+        'model/command-line.cc',
+        'model/type-name.cc',
+        'model/attribute.cc',
+        'model/boolean.cc',
+        'model/integer.cc',
+        'model/uinteger.cc',
+        'model/enum.cc',
+        'model/double.cc',
+        'model/int64x64.cc',
+        'model/string.cc',
+        'model/pointer.cc',
+        'model/object-vector.cc',
+        'model/object-factory.cc',
+        'model/global-value.cc',
+        'model/trace-source-accessor.cc',
+        'model/config.cc',
+        'model/callback.cc',
+        'model/names.cc',
+        'model/vector.cc',
+        'model/fatal-impl.cc',
+        ]
+
+    core_test = bld.create_ns3_module_test_library('core')
+    core_test.source = [
+        'test/attribute-test-suite.cc',
+        'test/callback-test-suite.cc',
+        'test/command-line-test-suite.cc',
+        'test/config-test-suite.cc',
+        'test/global-value-test-suite.cc',
+        'test/int64x64-precision-test-suite.cc',
+        'test/names-test-suite.cc',
+        'test/object-test-suite.cc',
+        'test/ptr-test-suite.cc',
+        'test/random-variable-test-suite.cc',
+        'test/simulator-test-suite.cc',
+        'test/time-test-suite.cc',
+        'test/timer-test-suite.cc',
+        'test/traced-callback-test-suite.cc',
+        'test/type-traits-test-suite.cc',
+        'test/watchdog-test-suite.cc',
         ]
 
     headers = bld.new_task_gen('ns3header')
     headers.module = 'core'
     headers.source = [
-        'system-wall-clock-ms.h',
-        'empty.h',
-        'callback.h',
-        'object-base.h',
-        'ref-count-base.h',
-        'simple-ref-count.h',
-        'type-id.h',
-        'attribute-list.h',
-        'ptr.h',
-        'object.h',
-        'log.h',
-        'assert.h',
-        'breakpoint.h',
-        'fatal-error.h',
-        'test.h',
-        'random-variable.h',
-        'rng-stream.h',
-        'command-line.h',
-        'type-name.h',
-        'type-traits.h',
-        'int-to-type.h',
-        'attribute.h',
-        'attribute-accessor-helper.h',
-        'boolean.h',
-        'integer.h',
-        'uinteger.h',
-        'double.h',
-        'enum.h',
-        'string.h',
-        'pointer.h',
-        'object-factory.h',
-        'attribute-helper.h',
-        'global-value.h',
-        'traced-callback.h',
-        'traced-value.h',
-        'trace-source-accessor.h',
-        'config.h',
-        'object-vector.h',
-        'deprecated.h',
-        'abort.h',
-        'names.h',
-        'vector.h',
-        'default-deleter.h',
-        'fatal-impl.h',
-        'int64x64.h',
+        'model/nstime.h',
+        'model/event-id.h',
+        'model/event-impl.h',
+        'model/simulator.h',
+        'model/simulator-impl.h',
+        'model/default-simulator-impl.h',
+        'model/scheduler.h',
+        'model/list-scheduler.h',
+        'model/map-scheduler.h',
+        'model/heap-scheduler.h',
+        'model/calendar-scheduler.h',
+        'model/ns2-calendar-scheduler.h',
+        'model/simulation-singleton.h',
+        'model/singleton.h',
+        'model/timer.h',
+        'model/timer-impl.h',
+        'model/watchdog.h',
+        'model/synchronizer.h',
+        'model/make-event.h',
+        'model/system-wall-clock-ms.h',
+        'model/empty.h',
+        'model/callback.h',
+        'model/object-base.h',
+        'model/ref-count-base.h',
+        'model/simple-ref-count.h',
+        'model/type-id.h',
+        'model/attribute-list.h',
+        'model/ptr.h',
+        'model/object.h',
+        'model/log.h',
+        'model/assert.h',
+        'model/breakpoint.h',
+        'model/fatal-error.h',
+        'model/test.h',
+        'model/random-variable.h',
+        'model/rng-stream.h',
+        'model/command-line.h',
+        'model/type-name.h',
+        'model/type-traits.h',
+        'model/int-to-type.h',
+        'model/attribute.h',
+        'model/attribute-accessor-helper.h',
+        'model/boolean.h',
+        'model/int64x64.h',
+        'model/integer.h',
+        'model/uinteger.h',
+        'model/double.h',
+        'model/enum.h',
+        'model/string.h',
+        'model/pointer.h',
+        'model/object-factory.h',
+        'model/attribute-helper.h',
+        'model/global-value.h',
+        'model/traced-callback.h',
+        'model/traced-value.h',
+        'model/trace-source-accessor.h',
+        'model/config.h',
+        'model/object-vector.h',
+        'model/deprecated.h',
+        'model/abort.h',
+        'model/names.h',
+        'model/vector.h',
+        'model/default-deleter.h',
+        'model/fatal-impl.h',
         ]
 
     if sys.platform == 'win32':
         core.source.extend([
-            'win32-system-wall-clock-ms.cc',
+            'model/win32-system-wall-clock-ms.cc',
             ])
     else:
         core.source.extend([
-            'unix-system-wall-clock-ms.cc',
+            'model/unix-system-wall-clock-ms.cc',
             ])
 
-    if bld.env['ENABLE_THREADING']:
-        core.source.extend([
-            'unix-system-thread.cc',
-            'unix-system-mutex.cc',
-            'unix-system-condition.cc',
-            ])
-        core.uselib = 'PTHREAD'
-        headers.source.extend([
-                'system-mutex.h',
-                'system-thread.h',
-                'system-condition.h',
-                ])
 
     env = bld.env_of_name('default')
     if env['INT64X64_USE_DOUBLE']:
-        headers.source.extend(['int64x64-double.h'])
+        headers.source.extend(['model/int64x64-double.h'])
     elif env['INT64X64_USE_128']:
-        headers.source.extend(['int64x64-128.h'])
-        core.source.extend(['int64x64-128.cc'])
+        headers.source.extend(['model/int64x64-128.h'])
+        core.source.extend(['model/int64x64-128.cc'])
     elif env['INT64X64_USE_CAIRO']:
         core.source.extend([
-            'int64x64-cairo.cc',
+            'model/int64x64-cairo.cc',
             ])
         headers.source.extend([
-            'int64x64-cairo.h',
-            'cairo-wideint-private.h',
+            'model/int64x64-cairo.h',
+            'model/cairo-wideint-private.h',
             ])
 
-    if bld.env['ENABLE_GSL']:
-        core.uselib = 'GSL GSLCBLAS M'
-        core.source.extend(['rng-test-suite.cc'])
+    if env['ENABLE_REAL_TIME']:
+        headers.source.extend([
+                'model/realtime-simulator-impl.h',
+                'model/wall-clock-synchronizer.h',
+                ])
+        core.source.extend([
+                'model/realtime-simulator-impl.cc',
+                'model/wall-clock-synchronizer.cc',
+                ])
+        core.uselib      = 'RT'
+        core_test.uselib = 'RT'
+    else:
+        core.uselib      = ''
+        core_test.uselib = ''
+
+    if env['ENABLE_THREADING']:
+        core.source.extend([
+            'model/unix-fd-reader.cc',
+            'model/unix-system-thread.cc',
+            'model/unix-system-mutex.cc',
+            'model/unix-system-condition.cc',
+            ])
+        core.uselib      = core.uselib      + ' PTHREAD'
+        core_test.uselib = core_test.uselib + ' PTHREAD'
+        headers.source.extend([
+                'model/unix-fd-reader.h',
+                'model/system-mutex.h',
+                'model/system-thread.h',
+                'model/system-condition.h',
+                ])
+
+    if env['ENABLE_GSL']:
+        core.uselib      = core.uselib      + ' GSL GSLCBLAS M'
+        core_test.uselib = core_test.uselib + ' GSL GSLCBLAS M'
+        core_test.source.extend(['test/rng-test-suite.cc'])
+
+    pymod = bld.ns3_python_bindings()
+    if pymod is not None:
+        pymod.source += ['bindings/module_helpers.cc']

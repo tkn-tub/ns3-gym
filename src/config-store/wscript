@@ -1,0 +1,53 @@
+## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
+
+def configure(conf):
+    have_gtk = conf.pkg_check_modules('GTK_CONFIG_STORE', 'gtk+-2.0 >= 2.12', mandatory=False)
+    conf.env['ENABLE_GTK_CONFIG_STORE'] = have_gtk
+    conf.report_optional_feature("GtkConfigStore", "GtkConfigStore",
+                                 conf.env['ENABLE_GTK_CONFIG_STORE'],
+                                 "library 'gtk+-2.0 >= 2.12' not found")
+    have_libxml2 = conf.pkg_check_modules('LIBXML2', 'libxml-2.0 >= 2.6', mandatory=False)
+    if have_libxml2:
+        conf.define('HAVE_LIBXML2', 1)
+
+    conf.env['ENABLE_LIBXML2'] = have_libxml2
+    conf.report_optional_feature("XmlIo", "XmlIo",
+                                 conf.env['ENABLE_LIBXML2'],
+                                 "library 'libxml-2.0 >= 2.7' not found")
+    conf.write_config_header('ns3/config-store-config.h', top=True)
+
+
+def build(bld):
+    module = bld.create_ns3_module('config-store', ['core', 'network'])
+    module.source = [
+        'model/attribute-iterator.cc',
+        'model/config-store.cc',
+        'model/attribute-default-iterator.cc',
+        'model/file-config.cc',
+        'model/raw-text-config.cc',
+        ]
+
+    headers = bld.new_task_gen('ns3header')
+    headers.module = 'config-store'
+    headers.source = [
+        'model/file-config.h',
+        'model/config-store.h',
+        ]
+
+    if bld.env['ENABLE_GTK_CONFIG_STORE']:
+        headers.source.append ('model/gtk-config-store.h')
+        module.source.extend (['model/gtk-config-store.cc',
+                               'model/model-node-creator.cc',
+                               'model/model-typeid-creator.cc',
+                               'model/display-functions.cc',
+                               ])
+        module.uselib = 'GTK_CONFIG_STORE'
+
+    if bld.env['ENABLE_LIBXML2']:
+        module.source.append ('model/xml-config.cc')
+        if bld.env['ENABLE_GTK_CONFIG_STORE']:
+            module.uselib = module.uselib + ' LIBXML2'
+        else:
+            module.uselib = 'LIBXML2'
+
+    bld.ns3_python_bindings()

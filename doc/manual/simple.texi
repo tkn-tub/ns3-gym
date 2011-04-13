@@ -1,6 +1,0 @@
-@node Simple NetDevice
-@chapter Simple NetDevice
-
-@cartouche
-Placeholder chapter
-@end cartouche

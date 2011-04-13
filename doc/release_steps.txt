@@ -7,7 +7,6 @@ Steps in doing an ns-3 release
    - confirm that the release builds cleanly.
    - cd ns-3-dev
    - ensure that tests pass (./test.py)
-   - ensure no regressions (./waf --regression)
 2. prepare the source files
    - revise and check in AUTHORS, if needed
    - revise and check in RELEASE_NOTES.  Make sure to add the Availability 
@@ -21,13 +20,9 @@ Steps in doing an ns-3 release
    - this will create an ns-allinone-dev.tar.bz2 tarball
 4. test dev tarball on release platforms 
    - ./test.py 
-   - ./waf --regression
    - other scripts you can think of
-5. once you are happy with the tarball, tag ns-3-dev and ns-3-dev-ref-traces
+5. once you are happy with the tarball and tag ns-3-dev
    - cd into ns-3-dev
-   - hg tag "ns-3.x"
-   - hg push 
-   - cd into ns-3-dev-ref-traces
    - hg tag "ns-3.x"
    - hg push 
 6. clone the tagged ns-3-dev and place it on the repository
@@ -36,14 +31,11 @@ Steps in doing an ns-3 release
    - cd /home/code/repos/ns-3.x/.hg and edit the hgrc appropriately:
      "description = ns-3.x release
       name = ns-3.x"
-   - clone the ns-3-dev-ref-traces and place it on the repository as above
-     but use the name ns-3.x-ref-traces and edit the hgrc appropriately
 7. check out a clean version of the new release (ns-3.x) somewhere
    - hg clone http://code.nsnam.org/ns-3.x
 8. Update the VERSION for this new release
    - change the string 3-dev in the VERSION file to the real version 
-     (e.g. 3.7 or 3.7-RC1)  This must agree with the version name you chose in the clone
-     for the regression tests to work.
+     (e.g. 3.7 or 3.7-RC1)  This must agree with the version name you chose in the clone.
    - hg commit -m "update VERSION to ns-3.x"
    - hg push ssh://code@code.nsnam.org//home/code/repos/ns-3.x
 
@@ -51,25 +43,21 @@ Steps in doing an ns-3 release
    You need to use ns-3-allinone since you will use that to make the distro
    - hg clone http://code.nsnam.org/ns-3-allinone ns-3-allinone-3.x-test
    - cd !$
-   - ./download.py -n ns-3.x -r ns-3.x-ref-traces
+   - ./download.py -n ns-3.x
    - ./build.py
    - cd ns-3.x
    - ./test.py
    - ./test.py -g
-   - ./waf --regression
-   - ./waf --valgrind --regression (for valgrind version)
-   - ./waf -d optimized configure
+   - ./waf -d optimized --enable-tests configure
    - ./waf
    - ./test.py
    - ./test.py -g
-   - ./waf --regression
-   - ./waf --valgrind --regression (for valgrind version)
-   - There should be no regression errors at this time
+   - There should be no test errors at this time
 10. Create final tarballs
     You need to work with a clean ns-3-allinone-3.x directory
    - hg clone http://code.nsnam.org/ns-3-allinone ns-3-allinone-3.x
    - cd !$
-   - ./download.py -n ns-3.x -r ns-3.x-ref-traces
+   - ./download.py -n ns-3.x
    - ./dist.py
    - notice we did not build here
    - this will create an ns-allinone-3.x.tar.bz2 tarball
@@ -110,9 +98,9 @@ Steps in doing an ns-3 release
         necessary files
 16. Final checks
    - check manual, testing, and tutorial documentation links
-   - download tarball from web, build and run regression tests for as many
+   - download tarball from web, build and run tests for as many
      targets as you can
-   - download release from mercurial, build and run regression tests for as
+   - download release from mercurial, build and run tests for as
      many targets as you can
    - test and verify until you're confident the release is solid.
 17. announce to ns-developers, with summary of release notes

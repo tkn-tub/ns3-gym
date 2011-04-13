@@ -19,13 +19,6 @@ APPNAME=None
 VERSION=None
 bld=None
 
-#
-# The last part of the path name to use to find the regression traces tarball.
-# path will be APPNAME + '-' + VERSION + REGRESSION_SUFFIX + TRACEBALL_SUFFIX,
-# e.g., ns-3-dev-ref-traces.tar.bz2
-#
-TRACEBALL_SUFFIX = ".tar.bz2"
-
 
 
 def get_command_template(env, arguments=()):
@@ -107,10 +100,11 @@ def get_proc_env(os_env=None):
             proc_env[pathvar] = os.pathsep.join(list(env['NS3_MODULE_PATH']))
 
     pymoddir = bld.path.find_dir('bindings/python').abspath(env)
+    pyvizdir = bld.path.find_dir('src/visualizer').abspath()
     if 'PYTHONPATH' in proc_env:
-        proc_env['PYTHONPATH'] = os.pathsep.join([pymoddir] + [proc_env['PYTHONPATH']])
+        proc_env['PYTHONPATH'] = os.pathsep.join([pymoddir, pyvizdir] + [proc_env['PYTHONPATH']])
     else:
-        proc_env['PYTHONPATH'] = pymoddir
+        proc_env['PYTHONPATH'] = os.pathsep.join([pymoddir, pyvizdir])
 
     if 'PATH' in proc_env:
         proc_env['PATH'] = os.pathsep.join(list(env['NS3_EXECUTABLE_PATH']) + [proc_env['PATH']])
@@ -208,7 +202,7 @@ def get_run_program(program_string, command_template=None):
         #print "%r ==shlex.split==> %r" % (command_template % (program_node.abspath(env),), execvec)
     return program_name, execvec
 
-def run_program(program_string, env, command_template=None, cwd=None):
+def run_program(program_string, env, command_template=None, cwd=None, visualize=False):
     """
     if command_template is not None, then program_string == program
     name and argv is given by command_template with %s replaced by the
@@ -221,17 +215,20 @@ def run_program(program_string, env, command_template=None, cwd=None):
             cwd = Options.options.cwd_launch
         else:
             cwd = Options.cwd_launch
+    if visualize:
+        execvec.append("--SimulatorImplementationType=ns3::VisualSimulatorImpl")
     return run_argv(execvec, env, cwd=cwd)
 
 
 
-def run_python_program(program_string, env):
+def run_python_program(program_string, env, visualize=False):
     env = bld.env
     execvec = shlex.split(program_string)
     if (Options.options.cwd_launch):
         cwd = Options.options.cwd_launch
     else:
         cwd = Options.cwd_launch
+    if visualize:
+        execvec.append("--SimulatorImplementationType=ns3::VisualSimulatorImpl")
     return run_argv([env['PYTHON']] + execvec, env, cwd=cwd)
-
 

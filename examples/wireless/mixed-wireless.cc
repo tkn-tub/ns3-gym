@@ -17,7 +17,7 @@
 
 //
 // This ns-3 example demonstrates the use of helper functions to ease 
-// the construction of simulation scenarios.  
+// the construction of simulation scenarios.
 // 
 // The simulation topology consists of a mixed wired and wireless
 // scenario in which a hierarchical mobility model is used.
@@ -27,7 +27,7 @@
 // Each backbone router also has a local 802.11 network and is connected
 // to a local LAN.  An additional set of (K-1) nodes are connected to
 // this backbone.  Finally, a local LAN is connected to each router
-// on the backbone, with L-1 additional hosts.  
+// on the backbone, with L-1 additional hosts.
 //
 // The nodes are populated with TCP/IP stacks, and OLSR unicast routing
 // on the backbone.  An example UDP transfer is shown.  The simulator
@@ -61,12 +61,14 @@
 #include <fstream>
 #include <string>
 #include "ns3/core-module.h"
-#include "ns3/common-module.h"
-#include "ns3/node-module.h"
-#include "ns3/helper-module.h"
+#include "ns3/network-module.h"
+#include "ns3/applications-module.h"
 #include "ns3/mobility-module.h"
-#include "ns3/contrib-module.h"
+#include "ns3/config-store-module.h"
 #include "ns3/wifi-module.h"
+#include "ns3/csma-module.h"
+#include "ns3/olsr-helper.h"
+#include "ns3/ipv4-global-routing-helper.h"
 
 using namespace ns3;
 
@@ -176,7 +178,7 @@ main (int argc, char *argv[])
 
   //
   // The ad-hoc network nodes need a mobility model so we aggregate one to 
-  // each of the nodes we just finished building.  
+  // each of the nodes we just finished building.
   //
   MobilityHelper mobility;
   Ptr<ListPositionAllocator> positionAlloc = 
@@ -223,7 +225,7 @@ main (int argc, char *argv[])
       //
       CsmaHelper csma;
       csma.SetChannelAttribute ("DataRate", 
-        DataRateValue (DataRate (5000000)));
+                                DataRateValue (DataRate (5000000)));
       csma.SetChannelAttribute ("Delay", TimeValue (MilliSeconds (2)));
       NetDeviceContainer lanDevices = csma.Install (lan);
       //
@@ -278,12 +280,13 @@ main (int argc, char *argv[])
       Ssid ssid = Ssid (ssidString);
       wifiInfra.SetRemoteStationManager ("ns3::ArfWifiManager");
       // setup stas
-      macInfra.SetType ("ns3::NqstaWifiMac",
-               "Ssid", SsidValue (ssid),
-               "ActiveProbing", BooleanValue (false));
+      macInfra.SetType ("ns3::StaWifiMac",
+                        "Ssid", SsidValue (ssid),
+                        "ActiveProbing", BooleanValue (false));
       NetDeviceContainer staDevices = wifiInfra.Install (wifiPhy, macInfra, stas);
       // setup ap.
-      macInfra.SetType ("ns3::NqapWifiMac", "Ssid", SsidValue (ssid));
+      macInfra.SetType ("ns3::ApWifiMac",
+                        "Ssid", SsidValue (ssid));
       NetDeviceContainer apDevices = wifiInfra.Install (wifiPhy, macInfra, backbone.Get (i));
       // Collect all of these new devices
       NetDeviceContainer infraDevices (apDevices, staDevices);
@@ -327,7 +330,7 @@ main (int argc, char *argv[])
 
   // The below global routing does not take into account wireless effects.
   // However, it is useful for setting default routes for all of the nodes
-  // such as the LAN nodes.  
+  // such as the LAN nodes.
   NS_LOG_INFO ("Enabling global routing on all nodes");
   Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
 
@@ -351,10 +354,10 @@ main (int argc, char *argv[])
   NS_ASSERT (lanNodes > 1 && infraNodes > 1);
   // We want the source to be the first node created outside of the backbone
   // Conveniently, the variable "backboneNodes" holds this node index value
-  Ptr<Node> appSource = NodeList::GetNode (backboneNodes);  
-  // We want the sink to be the last node created in the topology.  
+  Ptr<Node> appSource = NodeList::GetNode (backboneNodes);
+  // We want the sink to be the last node created in the topology.
   uint32_t lastNodeIndex = backboneNodes + backboneNodes*(lanNodes - 1) + backboneNodes*(infraNodes - 1) - 1;
-  Ptr<Node> appSink = NodeList::GetNode (lastNodeIndex);  
+  Ptr<Node> appSink = NodeList::GetNode (lastNodeIndex);
   // Let's fetch the IP address of the last node, which is on Ipv4Interface 1
   Ipv4Address remoteAddr = appSink->GetObject<Ipv4> ()->GetAddress(1, 0).GetLocal ();
 
@@ -380,17 +383,17 @@ main (int argc, char *argv[])
 
   NS_LOG_INFO ("Configure Tracing.");
   if (enableTracing == true)
-   {
+    {
       CsmaHelper csma;
 
-     //
-     // Let's set up some ns-2-like ascii traces, using another helper class
-     //
-     AsciiTraceHelper ascii;
-     Ptr<OutputStreamWrapper> stream = ascii.CreateFileStream ("mixed-wireless.tr");
-     wifiPhy.EnableAsciiAll (stream);
-     csma.EnableAsciiAll (stream);
-     internet.EnableAsciiIpv4All (stream);
+      //
+      // Let's set up some ns-2-like ascii traces, using another helper class
+      //
+      AsciiTraceHelper ascii;
+      Ptr<OutputStreamWrapper> stream = ascii.CreateFileStream ("mixed-wireless.tr");
+      wifiPhy.EnableAsciiAll (stream);
+      csma.EnableAsciiAll (stream);
+      internet.EnableAsciiIpv4All (stream);
 
       // Let's do a pcap trace on the application source and sink, ifIndex 0
       // Csma captures in non-promiscuous mode
@@ -417,6 +420,6 @@ main (int argc, char *argv[])
 
   NS_LOG_INFO ("Run Simulation.");
   Simulator::Stop (Seconds (stopTime));
-  Simulator::Run ();    
+  Simulator::Run ();
   Simulator::Destroy ();
 }

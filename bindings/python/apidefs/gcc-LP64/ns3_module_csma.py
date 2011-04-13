@@ -9,6 +9,10 @@ def register_types(module):
     module.add_class('Backoff')
     ## csma-channel.h: ns3::CsmaDeviceRec [class]
     module.add_class('CsmaDeviceRec')
+    ## csma-star-helper.h: ns3::CsmaStarHelper [class]
+    module.add_class('CsmaStarHelper')
+    ## csma-helper.h: ns3::CsmaHelper [class]
+    module.add_class('CsmaHelper', parent=[root_module['ns3::PcapHelperForDevice'], root_module['ns3::AsciiTraceHelperForDevice']])
     ## csma-channel.h: ns3::CsmaChannel [class]
     module.add_class('CsmaChannel', parent=root_module['ns3::Channel'])
     ## csma-net-device.h: ns3::CsmaNetDevice [class]
@@ -44,6 +48,12 @@ def register_types(module):
     
     nested_module = module.add_cpp_namespace('dot11s')
     register_types_ns3_dot11s(nested_module)
+    
+    
+    ## Register a nested module for the namespace dsdv
+    
+    nested_module = module.add_cpp_namespace('dsdv')
+    register_types_ns3_dsdv(nested_module)
     
     
     ## Register a nested module for the namespace flame
@@ -84,6 +94,10 @@ def register_types_ns3_dot11s(module):
     root_module = module.get_root()
     
 
+def register_types_ns3_dsdv(module):
+    root_module = module.get_root()
+    
+
 def register_types_ns3_flame(module):
     root_module = module.get_root()
     
@@ -99,6 +113,8 @@ def register_types_ns3_olsr(module):
 def register_methods(root_module):
     register_Ns3Backoff_methods(root_module, root_module['ns3::Backoff'])
     register_Ns3CsmaDeviceRec_methods(root_module, root_module['ns3::CsmaDeviceRec'])
+    register_Ns3CsmaStarHelper_methods(root_module, root_module['ns3::CsmaStarHelper'])
+    register_Ns3CsmaHelper_methods(root_module, root_module['ns3::CsmaHelper'])
     register_Ns3CsmaChannel_methods(root_module, root_module['ns3::CsmaChannel'])
     register_Ns3CsmaNetDevice_methods(root_module, root_module['ns3::CsmaNetDevice'])
     return
@@ -153,6 +169,130 @@ def register_Ns3CsmaDeviceRec_methods(root_module, cls):
     cls.add_instance_attribute('active', 'bool', is_const=False)
     ## csma-channel.h: ns3::CsmaDeviceRec::devicePtr [variable]
     cls.add_instance_attribute('devicePtr', 'ns3::Ptr< ns3::CsmaNetDevice >', is_const=False)
+    return
+
+def register_Ns3CsmaStarHelper_methods(root_module, cls):
+    ## csma-star-helper.h: ns3::CsmaStarHelper::CsmaStarHelper(ns3::CsmaStarHelper const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::CsmaStarHelper const &', 'arg0')])
+    ## csma-star-helper.h: ns3::CsmaStarHelper::CsmaStarHelper(uint32_t numSpokes, ns3::CsmaHelper csmaHelper) [constructor]
+    cls.add_constructor([param('uint32_t', 'numSpokes'), param('ns3::CsmaHelper', 'csmaHelper')])
+    ## csma-star-helper.h: void ns3::CsmaStarHelper::AssignIpv4Addresses(ns3::Ipv4AddressHelper address) [member function]
+    cls.add_method('AssignIpv4Addresses', 
+                   'void', 
+                   [param('ns3::Ipv4AddressHelper', 'address')])
+    ## csma-star-helper.h: ns3::Ptr<ns3::Node> ns3::CsmaStarHelper::GetHub() const [member function]
+    cls.add_method('GetHub', 
+                   'ns3::Ptr< ns3::Node >', 
+                   [], 
+                   is_const=True)
+    ## csma-star-helper.h: ns3::NetDeviceContainer ns3::CsmaStarHelper::GetHubDevices() const [member function]
+    cls.add_method('GetHubDevices', 
+                   'ns3::NetDeviceContainer', 
+                   [], 
+                   is_const=True)
+    ## csma-star-helper.h: ns3::Ipv4Address ns3::CsmaStarHelper::GetHubIpv4Address(uint32_t i) const [member function]
+    cls.add_method('GetHubIpv4Address', 
+                   'ns3::Ipv4Address', 
+                   [param('uint32_t', 'i')], 
+                   is_const=True)
+    ## csma-star-helper.h: ns3::NetDeviceContainer ns3::CsmaStarHelper::GetSpokeDevices() const [member function]
+    cls.add_method('GetSpokeDevices', 
+                   'ns3::NetDeviceContainer', 
+                   [], 
+                   is_const=True)
+    ## csma-star-helper.h: ns3::Ipv4Address ns3::CsmaStarHelper::GetSpokeIpv4Address(uint32_t i) const [member function]
+    cls.add_method('GetSpokeIpv4Address', 
+                   'ns3::Ipv4Address', 
+                   [param('uint32_t', 'i')], 
+                   is_const=True)
+    ## csma-star-helper.h: ns3::Ptr<ns3::Node> ns3::CsmaStarHelper::GetSpokeNode(uint32_t i) const [member function]
+    cls.add_method('GetSpokeNode', 
+                   'ns3::Ptr< ns3::Node >', 
+                   [param('uint32_t', 'i')], 
+                   is_const=True)
+    ## csma-star-helper.h: void ns3::CsmaStarHelper::InstallStack(ns3::InternetStackHelper stack) [member function]
+    cls.add_method('InstallStack', 
+                   'void', 
+                   [param('ns3::InternetStackHelper', 'stack')])
+    ## csma-star-helper.h: uint32_t ns3::CsmaStarHelper::SpokeCount() const [member function]
+    cls.add_method('SpokeCount', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    return
+
+def register_Ns3CsmaHelper_methods(root_module, cls):
+    ## csma-helper.h: ns3::CsmaHelper::CsmaHelper(ns3::CsmaHelper const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::CsmaHelper const &', 'arg0')])
+    ## csma-helper.h: ns3::CsmaHelper::CsmaHelper() [constructor]
+    cls.add_constructor([])
+    ## csma-helper.h: ns3::NetDeviceContainer ns3::CsmaHelper::Install(ns3::Ptr<ns3::Node> node) const [member function]
+    cls.add_method('Install', 
+                   'ns3::NetDeviceContainer', 
+                   [param('ns3::Ptr< ns3::Node >', 'node')], 
+                   is_const=True)
+    ## csma-helper.h: ns3::NetDeviceContainer ns3::CsmaHelper::Install(std::string name) const [member function]
+    cls.add_method('Install', 
+                   'ns3::NetDeviceContainer', 
+                   [param('std::string', 'name')], 
+                   is_const=True)
+    ## csma-helper.h: ns3::NetDeviceContainer ns3::CsmaHelper::Install(ns3::Ptr<ns3::Node> node, ns3::Ptr<ns3::CsmaChannel> channel) const [member function]
+    cls.add_method('Install', 
+                   'ns3::NetDeviceContainer', 
+                   [param('ns3::Ptr< ns3::Node >', 'node'), param('ns3::Ptr< ns3::CsmaChannel >', 'channel')], 
+                   is_const=True)
+    ## csma-helper.h: ns3::NetDeviceContainer ns3::CsmaHelper::Install(ns3::Ptr<ns3::Node> node, std::string channelName) const [member function]
+    cls.add_method('Install', 
+                   'ns3::NetDeviceContainer', 
+                   [param('ns3::Ptr< ns3::Node >', 'node'), param('std::string', 'channelName')], 
+                   is_const=True)
+    ## csma-helper.h: ns3::NetDeviceContainer ns3::CsmaHelper::Install(std::string nodeName, ns3::Ptr<ns3::CsmaChannel> channel) const [member function]
+    cls.add_method('Install', 
+                   'ns3::NetDeviceContainer', 
+                   [param('std::string', 'nodeName'), param('ns3::Ptr< ns3::CsmaChannel >', 'channel')], 
+                   is_const=True)
+    ## csma-helper.h: ns3::NetDeviceContainer ns3::CsmaHelper::Install(std::string nodeName, std::string channelName) const [member function]
+    cls.add_method('Install', 
+                   'ns3::NetDeviceContainer', 
+                   [param('std::string', 'nodeName'), param('std::string', 'channelName')], 
+                   is_const=True)
+    ## csma-helper.h: ns3::NetDeviceContainer ns3::CsmaHelper::Install(ns3::NodeContainer const & c) const [member function]
+    cls.add_method('Install', 
+                   'ns3::NetDeviceContainer', 
+                   [param('ns3::NodeContainer const &', 'c')], 
+                   is_const=True)
+    ## csma-helper.h: ns3::NetDeviceContainer ns3::CsmaHelper::Install(ns3::NodeContainer const & c, ns3::Ptr<ns3::CsmaChannel> channel) const [member function]
+    cls.add_method('Install', 
+                   'ns3::NetDeviceContainer', 
+                   [param('ns3::NodeContainer const &', 'c'), param('ns3::Ptr< ns3::CsmaChannel >', 'channel')], 
+                   is_const=True)
+    ## csma-helper.h: ns3::NetDeviceContainer ns3::CsmaHelper::Install(ns3::NodeContainer const & c, std::string channelName) const [member function]
+    cls.add_method('Install', 
+                   'ns3::NetDeviceContainer', 
+                   [param('ns3::NodeContainer const &', 'c'), param('std::string', 'channelName')], 
+                   is_const=True)
+    ## csma-helper.h: void ns3::CsmaHelper::SetChannelAttribute(std::string n1, ns3::AttributeValue const & v1) [member function]
+    cls.add_method('SetChannelAttribute', 
+                   'void', 
+                   [param('std::string', 'n1'), param('ns3::AttributeValue const &', 'v1')])
+    ## csma-helper.h: void ns3::CsmaHelper::SetDeviceAttribute(std::string n1, ns3::AttributeValue const & v1) [member function]
+    cls.add_method('SetDeviceAttribute', 
+                   'void', 
+                   [param('std::string', 'n1'), param('ns3::AttributeValue const &', 'v1')])
+    ## csma-helper.h: void ns3::CsmaHelper::SetQueue(std::string type, std::string n1="", ns3::AttributeValue const & v1=ns3::EmptyAttributeValue(), std::string n2="", ns3::AttributeValue const & v2=ns3::EmptyAttributeValue(), std::string n3="", ns3::AttributeValue const & v3=ns3::EmptyAttributeValue(), std::string n4="", ns3::AttributeValue const & v4=ns3::EmptyAttributeValue()) [member function]
+    cls.add_method('SetQueue', 
+                   'void', 
+                   [param('std::string', 'type'), param('std::string', 'n1', default_value='""'), param('ns3::AttributeValue const &', 'v1', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n2', default_value='""'), param('ns3::AttributeValue const &', 'v2', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n3', default_value='""'), param('ns3::AttributeValue const &', 'v3', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n4', default_value='""'), param('ns3::AttributeValue const &', 'v4', default_value='ns3::EmptyAttributeValue()')])
+    ## csma-helper.h: void ns3::CsmaHelper::EnableAsciiInternal(ns3::Ptr<ns3::OutputStreamWrapper> stream, std::string prefix, ns3::Ptr<ns3::NetDevice> nd, bool explicitFilename) [member function]
+    cls.add_method('EnableAsciiInternal', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::OutputStreamWrapper >', 'stream'), param('std::string', 'prefix'), param('ns3::Ptr< ns3::NetDevice >', 'nd'), param('bool', 'explicitFilename')], 
+                   visibility='private', is_virtual=True)
+    ## csma-helper.h: void ns3::CsmaHelper::EnablePcapInternal(std::string prefix, ns3::Ptr<ns3::NetDevice> nd, bool promiscuous, bool explicitFilename) [member function]
+    cls.add_method('EnablePcapInternal', 
+                   'void', 
+                   [param('std::string', 'prefix'), param('ns3::Ptr< ns3::NetDevice >', 'nd'), param('bool', 'promiscuous'), param('bool', 'explicitFilename')], 
+                   visibility='private', is_virtual=True)
     return
 
 def register_Ns3CsmaChannel_methods(root_module, cls):
@@ -442,6 +582,7 @@ def register_functions(root_module):
     register_functions_ns3_addressUtils(module.get_submodule('addressUtils'), root_module)
     register_functions_ns3_aodv(module.get_submodule('aodv'), root_module)
     register_functions_ns3_dot11s(module.get_submodule('dot11s'), root_module)
+    register_functions_ns3_dsdv(module.get_submodule('dsdv'), root_module)
     register_functions_ns3_flame(module.get_submodule('flame'), root_module)
     register_functions_ns3_internal(module.get_submodule('internal'), root_module)
     register_functions_ns3_olsr(module.get_submodule('olsr'), root_module)
@@ -460,6 +601,9 @@ def register_functions_ns3_aodv(module, root_module):
     return
 
 def register_functions_ns3_dot11s(module, root_module):
+    return
+
+def register_functions_ns3_dsdv(module, root_module):
     return
 
 def register_functions_ns3_flame(module, root_module):

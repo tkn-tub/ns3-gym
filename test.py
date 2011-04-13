@@ -29,6 +29,8 @@ import xml.dom.minidom
 import shutil
 import re
 
+from utils import get_list_from_file
+
 #
 # XXX This should really be part of a waf command to list the configuration
 # items relative to optional ns-3 pieces.
@@ -41,16 +43,23 @@ import re
 #
 interesting_config_items = [
     "NS3_BUILDDIR",
+    "NS3_ENABLED_MODULES",
     "NS3_MODULE_PATH",
-    "ENABLE_NSC",
+    "NSC_ENABLED",
     "ENABLE_REAL_TIME",
     "ENABLE_EXAMPLES",
+    "EXAMPLE_DIRECTORIES",
     "ENABLE_PYTHON_BINDINGS",
+    "ENABLE_CLICK",
+    "ENABLE_OPENFLOW",
 ]
 
-ENABLE_NSC = False
+NSC_ENABLED = False
 ENABLE_REAL_TIME = False
 ENABLE_EXAMPLES = True
+ENABLE_CLICK = False
+ENABLE_OPENFLOW = False
+EXAMPLE_DIRECTORIES = []
 
 #
 # If the user has constrained us to run certain kinds of tests, we can tell waf
@@ -68,131 +77,74 @@ core_valgrind_skip_tests = [
     "ns3-tcp-interoperability",
 ]
 
+# 
+# There are some special cases for test suites that fail when NSC is
+# missing.
 #
-# A list of examples to run as smoke tests just to ensure that they remain 
-# buildable and runnable over time.  Also a condition under which to run
-# the example (from the waf configuration), and a condition under which to
-# run the example under valgrind.  This is because NSC causes illegal 
-# instruction crashes when run under valgrind.
-#
-# XXX Should this not be read from a configuration file somewhere and not
-# hardcoded.
-#
-example_tests = [
-    ("csma/csma-bridge", "True", "True"),
-    ("csma/csma-bridge-one-hop", "True", "True"),
-    ("csma/csma-broadcast", "True", "True"),
-    ("csma/csma-multicast", "True", "True"),
-    ("csma/csma-one-subnet", "True", "True"),
-    ("csma/csma-packet-socket", "True", "True"),
-    ("csma/csma-ping", "True", "True"),
-    ("csma/csma-raw-ip-socket", "True", "True"),
-    ("csma/csma-star", "True", "True"),
-
-    ("emulation/emu-ping", "False", "True"),
-    ("emulation/emu-udp-echo", "False", "True"),
-
-    ("error-model/simple-error-model", "True", "True"),
-
-    ("ipv6/icmpv6-redirect", "True", "True"),
-    ("ipv6/ping6", "True", "True"),
-    ("ipv6/radvd", "True", "True"),
-    ("ipv6/radvd-two-prefix", "True", "True"),    
-    ("ipv6/test-ipv6", "True", "True"),
-
-    ("mesh/mesh", "True", "True"),
-
-    ("naming/object-names", "True", "True"),
-
-    ("realtime/realtime-udp-echo", "ENABLE_REAL_TIME == True", "True"),
-
-    ("routing/dynamic-global-routing", "True", "True"),
-    ("routing/global-injection-slash32", "True", "True"),
-    ("routing/global-routing-slash32", "True", "True"),
-    ("routing/mixed-global-routing", "True", "True"),
-    ("routing/nix-simple", "True", "True"),
-    ("routing/nms-p2p-nix", "False", "True"), # Takes too long to run
-    ("routing/simple-alternate-routing", "True", "True"),
-    ("routing/simple-global-routing", "True", "True"),
-    ("routing/simple-point-to-point-olsr", "True", "True"),
-    ("routing/simple-routing-ping6", "True", "True"),
-    ("routing/static-routing-slash32", "True", "True"),
-    ("routing/aodv", "True", "True"),
-
-    ("spectrum/adhoc-aloha-ideal-phy", "True", "True"),
-    ("spectrum/adhoc-aloha-ideal-phy-with-microwave-oven", "True", "True"),
-
-    ("stats/wifi-example-sim", "True", "True"),
-
-    ("tap/tap-wifi-dumbbell", "False", "True"), # Requires manual configuration
-
-    ("tcp/star", "True", "True"),
-    ("tcp/tcp-large-transfer", "True", "True"),
-    ("tcp/tcp-nsc-lfn", "ENABLE_NSC == True", "True"),
-    ("tcp/tcp-nsc-zoo", "ENABLE_NSC == True", "True"),
-    ("tcp/tcp-star-server", "True", "True"),
-
-    ("topology-read/topology-read --input=../../examples/topology-read/Inet_small_toposample.txt", "True", "True"),
-    ("topology-read/topology-read --format=Rocketfuel --input=../../examples/topology-read/RocketFuel_toposample_1239_weights.txt", "True", "True"),
-
-    ("tunneling/virtual-net-device", "True", "True"),
-
-    ("tutorial/first", "True", "True"),
-    ("tutorial/hello-simulator", "True", "True"),
-    ("tutorial/second", "True", "True"),
-    ("tutorial/third", "True", "True"),
-    ("tutorial/fourth", "True", "True"),
-    ("tutorial/fifth", "True", "True"),
-    ("tutorial/sixth", "True", "True"),
-
-    ("udp/udp-echo", "True", "True"),
-
-    ("wireless/mixed-wireless", "True", "True"),
-    ("wireless/multirate --totalTime=0.3s --rateManager=ns3::AarfcdWifiManager", "True", "True"), 
-    ("wireless/multirate --totalTime=0.3s --rateManager=ns3::AmrrWifiManager", "True", "True"), 
-    ("wireless/multirate --totalTime=0.3s --rateManager=ns3::CaraWifiManager", "True", "True"), 
-    ("wireless/multirate --totalTime=0.3s --rateManager=ns3::IdealWifiManager", "True", "True"), 
-    ("wireless/multirate --totalTime=0.3s --rateManager=ns3::MinstrelWifiManager", "True", "True"), 
-    ("wireless/multirate --totalTime=0.3s --rateManager=ns3::OnoeWifiManager", "True", "True"), 
-    ("wireless/multirate --totalTime=0.3s --rateManager=ns3::RraaWifiManager", "True", "True"), 
-    ("wireless/simple-wifi-frame-aggregation", "True", "True"),
-    ("wireless/wifi-adhoc", "False", "True"), # Takes too long to run
-    ("wireless/wifi-ap --verbose=0", "True", "True"), # Don't let it spew to stdout
-    ("wireless/wifi-clear-channel-cmu", "False", "True"), # Requires specific hardware
-    ("wireless/wifi-simple-adhoc", "True", "True"),
-    ("wireless/wifi-simple-adhoc-grid", "True", "True"),
-    ("wireless/wifi-simple-infra", "True", "True"),
-    ("wireless/wifi-simple-interference", "True", "True"),
-    ("wireless/wifi-wired-bridging", "True", "True"),
-
-    ("wimax/wimax-simple", "True", "True"),
-    ("wimax/wimax-ipv4", "True", "True"),
-    ("wimax/wimax-multicast", "True", "True"),
+core_nsc_missing_skip_tests = [
+    "ns3-tcp-cwnd",
+    "nsc-tcp-loss",
+    "ns3-tcp-interoperability",
 ]
 
 #
-# A list of python examples to run as smoke tests just to ensure that they 
-# runnable over time.  Also a condition under which to run the example (from
-# the waf configuration)
+# Parse the examples-to-run file if it exists.
 #
-# XXX Should this not be read from a configuration file somewhere and not
-# hardcoded.
+# This function adds any C++ examples or Python examples that are to be run
+# to the lists in example_tests and python_tests, respectively.
 #
-python_tests = [
-    ("csma/csma-bridge.py", "True"),
+def parse_examples_to_run_file(
+    examples_to_run_path,
+    cpp_executable_dir,
+    python_script_dir,
+    example_tests,
+    python_tests):
 
-    ("flowmon/wifi-olsr-flowmon.py", "True"),
+    # Look for the examples-to-run file exists.
+    if os.path.exists(examples_to_run_path):
 
-    ("routing/simple-routing-ping6.py", "True"),
+        # Each tuple in the C++ list of examples to run contains
+        #
+        #     (example_name, do_run, do_valgrind_run)
+        #
+        # where example_name is the executable to be run, do_run is a
+        # condition under which to run the example, and do_valgrind_run is
+        # a condition under which to run the example under valgrind.  This
+        # is needed because NSC causes illegal instruction crashes with
+        # some tests when they are run under valgrind.
+        #
+        # Note that the two conditions are Python statements that
+        # can depend on waf configuration variables.  For example,
+        #
+        #     ("tcp-nsc-lfn", "NSC_ENABLED == True", "NSC_ENABLED == False"),
+        #
+        cpp_examples = get_list_from_file(examples_to_run_path, "cpp_examples")
+        for example_name, do_run, do_valgrind_run in cpp_examples:
+            example_path = os.path.join(cpp_executable_dir, example_name)
+            # Add all of the C++ examples that were built, i.e. found
+            # in the directory, to the list of C++ examples to run.
+            if os.path.exists(example_path):
+                example_tests.append((example_path, do_run, do_valgrind_run))
 
-    ("tap/tap-csma-virtual-machine.py", "False"), # requires enable-sudo
-    ("tap/tap-wifi-virtual-machine.py", "False"), # requires enable-sudo
-
-    ("tutorial/first.py", "True"),
-
-    ("wireless/wifi-ap.py", "True"),
-    ("wireless/mixed-wireless.py", "True"),
-]
+        # Each tuple in the Python list of examples to run contains
+        #
+        #     (example_name, do_run)
+        #
+        # where example_name is the Python script to be run and
+        # do_run is a condition under which to run the example.
+        #
+        # Note that the condition is a Python statement that can
+        # depend on waf configuration variables.  For example,
+        #
+        #     ("realtime-udp-echo.py", "ENABLE_REAL_TIME == True"),
+        #
+        python_examples = get_list_from_file(examples_to_run_path, "python_examples")
+        for example_name, do_run in python_examples:
+            example_path = os.path.join(python_script_dir, example_name)
+            # Add all of the Python examples that were found to the
+            # list of Python examples to run.
+            if os.path.exists(example_path):
+                python_tests.append((example_path, do_run))
 
 #
 # The test suites are going to want to output status.  They are running
@@ -1027,6 +979,45 @@ def run_tests():
     read_waf_config()
     make_paths()
 
+    # Generate the lists of examples to run as smoke tests in order to
+    # ensure that they remain buildable and runnable over time.
+    #
+    example_tests = []
+    python_tests = []
+    for directory in EXAMPLE_DIRECTORIES:
+        # Set the directories and paths for this example. 
+        example_directory   = os.path.join("examples", directory)
+        examples_to_run_path = os.path.join(example_directory, "examples-to-run.py")
+        cpp_executable_dir   = os.path.join(NS3_BUILDDIR, NS3_ACTIVE_VARIANT, example_directory)
+        python_script_dir    = os.path.join(example_directory)
+
+        # Parse this example directory's file.
+        parse_examples_to_run_file(
+            examples_to_run_path,
+            cpp_executable_dir,
+            python_script_dir,
+            example_tests,
+            python_tests)
+
+    for module in NS3_ENABLED_MODULES:
+        # Remove the "ns3-" from the module name.
+        module = module[len("ns3-"):]
+
+        # Set the directories and paths for this example. 
+        module_directory     = os.path.join("src", module)
+        example_directory    = os.path.join(module_directory, "examples")
+        examples_to_run_path = os.path.join(module_directory, "test", "examples-to-run.py")
+        cpp_executable_dir   = os.path.join(NS3_BUILDDIR, NS3_ACTIVE_VARIANT, example_directory)
+        python_script_dir    = os.path.join(example_directory)
+
+        # Parse this module's file.
+        parse_examples_to_run_file(
+            examples_to_run_path,
+            cpp_executable_dir,
+            python_script_dir,
+            example_tests,
+            python_tests)
+
     #
     # If lots of logging is enabled, we can crash Python when it tries to 
     # save all of the text.  We just don't allow logging to be turned on when
@@ -1210,6 +1201,10 @@ def run_tests():
             if options.valgrind and test in core_valgrind_skip_tests:
                 job.set_is_skip(True)
 
+            # Skip tests that will fail if NSC is missing.
+            if not NSC_ENABLED and test in core_nsc_missing_skip_tests:
+                job.set_is_skip(True)
+
             if options.verbose:
                 print "Queue %s" % test
 
@@ -1227,10 +1222,10 @@ def run_tests():
     # on NSC being configured by waf, that example should have a condition
     # that evaluates to true if NSC is enabled.  For example,
     #
-    #      ("tcp-nsc-zoo", "ENABLE_NSC == True"),
+    #      ("tcp-nsc-zoo", "NSC_ENABLED == True"),
     #
     # In this case, the example "tcp-nsc-zoo" will only be run if we find the
-    # waf configuration variable "ENABLE_NSC" to be True.
+    # waf configuration variable "NSC_ENABLED" to be True.
     #
     # We don't care at all how the trace files come out, so we just write them 
     # to a single temporary directory.
@@ -1271,7 +1266,7 @@ def run_tests():
                         job.set_cwd(testpy_output_dir)
                         job.set_basedir(os.getcwd())
                         job.set_tempdir(testpy_output_dir)
-                        job.set_shell_command("examples/%s" % test)
+                        job.set_shell_command(test)
 
                         if options.valgrind and not eval(do_valgrind_run):
                             job.set_is_skip (True)
@@ -1338,7 +1333,7 @@ def run_tests():
                         job.set_cwd(testpy_output_dir)
                         job.set_basedir(os.getcwd())
                         job.set_tempdir(testpy_output_dir)
-                        job.set_shell_command("examples/%s" % test)
+                        job.set_shell_command(test)
 
                         #
                         # Python programs and valgrind do not work and play
@@ -1650,7 +1645,7 @@ def main(argv):
     global options
     options = parser.parse_args()[0]
     signal.signal(signal.SIGINT, sigint_hook)
-    
+
     return run_tests()
 
 if __name__ == '__main__':

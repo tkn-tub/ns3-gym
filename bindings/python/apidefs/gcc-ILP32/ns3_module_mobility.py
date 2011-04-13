@@ -9,6 +9,10 @@ def register_types(module):
     module.add_enum('Side', ['RIGHT', 'LEFT', 'TOP', 'BOTTOM', 'UP', 'DOWN'], outer_class=root_module['ns3::Box'])
     ## constant-velocity-helper.h: ns3::ConstantVelocityHelper [class]
     module.add_class('ConstantVelocityHelper')
+    ## mobility-helper.h: ns3::MobilityHelper [class]
+    module.add_class('MobilityHelper')
+    ## ns2-mobility-helper.h: ns3::Ns2MobilityHelper [class]
+    module.add_class('Ns2MobilityHelper')
     ## rectangle.h: ns3::Rectangle [class]
     module.add_class('Rectangle')
     ## rectangle.h: ns3::Rectangle::Side [enumeration]
@@ -98,6 +102,12 @@ def register_types(module):
     register_types_ns3_dot11s(nested_module)
     
     
+    ## Register a nested module for the namespace dsdv
+    
+    nested_module = module.add_cpp_namespace('dsdv')
+    register_types_ns3_dsdv(nested_module)
+    
+    
     ## Register a nested module for the namespace flame
     
     nested_module = module.add_cpp_namespace('flame')
@@ -136,6 +146,10 @@ def register_types_ns3_dot11s(module):
     root_module = module.get_root()
     
 
+def register_types_ns3_dsdv(module):
+    root_module = module.get_root()
+    
+
 def register_types_ns3_flame(module):
     root_module = module.get_root()
     
@@ -151,6 +165,8 @@ def register_types_ns3_olsr(module):
 def register_methods(root_module):
     register_Ns3Box_methods(root_module, root_module['ns3::Box'])
     register_Ns3ConstantVelocityHelper_methods(root_module, root_module['ns3::ConstantVelocityHelper'])
+    register_Ns3MobilityHelper_methods(root_module, root_module['ns3::MobilityHelper'])
+    register_Ns3Ns2MobilityHelper_methods(root_module, root_module['ns3::Ns2MobilityHelper'])
     register_Ns3Rectangle_methods(root_module, root_module['ns3::Rectangle'])
     register_Ns3Waypoint_methods(root_module, root_module['ns3::Waypoint'])
     register_Ns3PositionAllocator_methods(root_module, root_module['ns3::PositionAllocator'])
@@ -265,6 +281,88 @@ def register_Ns3ConstantVelocityHelper_methods(root_module, cls):
     cls.add_method('UpdateWithBounds', 
                    'void', 
                    [param('ns3::Box const &', 'bounds')], 
+                   is_const=True)
+    return
+
+def register_Ns3MobilityHelper_methods(root_module, cls):
+    ## mobility-helper.h: ns3::MobilityHelper::MobilityHelper(ns3::MobilityHelper const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::MobilityHelper const &', 'arg0')])
+    ## mobility-helper.h: ns3::MobilityHelper::MobilityHelper() [constructor]
+    cls.add_constructor([])
+    ## mobility-helper.h: static void ns3::MobilityHelper::EnableAscii(std::ostream & os, uint32_t nodeid) [member function]
+    cls.add_method('EnableAscii', 
+                   'void', 
+                   [param('std::ostream &', 'os'), param('uint32_t', 'nodeid')], 
+                   is_static=True)
+    ## mobility-helper.h: static void ns3::MobilityHelper::EnableAscii(std::ostream & os, ns3::NodeContainer n) [member function]
+    cls.add_method('EnableAscii', 
+                   'void', 
+                   [param('std::ostream &', 'os'), param('ns3::NodeContainer', 'n')], 
+                   is_static=True)
+    ## mobility-helper.h: static void ns3::MobilityHelper::EnableAsciiAll(std::ostream & os) [member function]
+    cls.add_method('EnableAsciiAll', 
+                   'void', 
+                   [param('std::ostream &', 'os')], 
+                   is_static=True)
+    ## mobility-helper.h: std::string ns3::MobilityHelper::GetMobilityModelType() const [member function]
+    cls.add_method('GetMobilityModelType', 
+                   'std::string', 
+                   [], 
+                   is_const=True)
+    ## mobility-helper.h: void ns3::MobilityHelper::Install(ns3::Ptr<ns3::Node> node) const [member function]
+    cls.add_method('Install', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Node >', 'node')], 
+                   is_const=True)
+    ## mobility-helper.h: void ns3::MobilityHelper::Install(std::string nodeName) const [member function]
+    cls.add_method('Install', 
+                   'void', 
+                   [param('std::string', 'nodeName')], 
+                   is_const=True)
+    ## mobility-helper.h: void ns3::MobilityHelper::Install(ns3::NodeContainer container) const [member function]
+    cls.add_method('Install', 
+                   'void', 
+                   [param('ns3::NodeContainer', 'container')], 
+                   is_const=True)
+    ## mobility-helper.h: void ns3::MobilityHelper::InstallAll() [member function]
+    cls.add_method('InstallAll', 
+                   'void', 
+                   [])
+    ## mobility-helper.h: void ns3::MobilityHelper::PopReferenceMobilityModel() [member function]
+    cls.add_method('PopReferenceMobilityModel', 
+                   'void', 
+                   [])
+    ## mobility-helper.h: void ns3::MobilityHelper::PushReferenceMobilityModel(ns3::Ptr<ns3::Object> reference) [member function]
+    cls.add_method('PushReferenceMobilityModel', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Object >', 'reference')])
+    ## mobility-helper.h: void ns3::MobilityHelper::PushReferenceMobilityModel(std::string referenceName) [member function]
+    cls.add_method('PushReferenceMobilityModel', 
+                   'void', 
+                   [param('std::string', 'referenceName')])
+    ## mobility-helper.h: void ns3::MobilityHelper::SetMobilityModel(std::string type, std::string n1="", ns3::AttributeValue const & v1=ns3::EmptyAttributeValue(), std::string n2="", ns3::AttributeValue const & v2=ns3::EmptyAttributeValue(), std::string n3="", ns3::AttributeValue const & v3=ns3::EmptyAttributeValue(), std::string n4="", ns3::AttributeValue const & v4=ns3::EmptyAttributeValue(), std::string n5="", ns3::AttributeValue const & v5=ns3::EmptyAttributeValue(), std::string n6="", ns3::AttributeValue const & v6=ns3::EmptyAttributeValue(), std::string n7="", ns3::AttributeValue const & v7=ns3::EmptyAttributeValue(), std::string n8="", ns3::AttributeValue const & v8=ns3::EmptyAttributeValue(), std::string n9="", ns3::AttributeValue const & v9=ns3::EmptyAttributeValue()) [member function]
+    cls.add_method('SetMobilityModel', 
+                   'void', 
+                   [param('std::string', 'type'), param('std::string', 'n1', default_value='""'), param('ns3::AttributeValue const &', 'v1', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n2', default_value='""'), param('ns3::AttributeValue const &', 'v2', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n3', default_value='""'), param('ns3::AttributeValue const &', 'v3', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n4', default_value='""'), param('ns3::AttributeValue const &', 'v4', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n5', default_value='""'), param('ns3::AttributeValue const &', 'v5', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n6', default_value='""'), param('ns3::AttributeValue const &', 'v6', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n7', default_value='""'), param('ns3::AttributeValue const &', 'v7', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n8', default_value='""'), param('ns3::AttributeValue const &', 'v8', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n9', default_value='""'), param('ns3::AttributeValue const &', 'v9', default_value='ns3::EmptyAttributeValue()')])
+    ## mobility-helper.h: void ns3::MobilityHelper::SetPositionAllocator(ns3::Ptr<ns3::PositionAllocator> allocator) [member function]
+    cls.add_method('SetPositionAllocator', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::PositionAllocator >', 'allocator')])
+    ## mobility-helper.h: void ns3::MobilityHelper::SetPositionAllocator(std::string type, std::string n1="", ns3::AttributeValue const & v1=ns3::EmptyAttributeValue(), std::string n2="", ns3::AttributeValue const & v2=ns3::EmptyAttributeValue(), std::string n3="", ns3::AttributeValue const & v3=ns3::EmptyAttributeValue(), std::string n4="", ns3::AttributeValue const & v4=ns3::EmptyAttributeValue(), std::string n5="", ns3::AttributeValue const & v5=ns3::EmptyAttributeValue(), std::string n6="", ns3::AttributeValue const & v6=ns3::EmptyAttributeValue(), std::string n7="", ns3::AttributeValue const & v7=ns3::EmptyAttributeValue(), std::string n8="", ns3::AttributeValue const & v8=ns3::EmptyAttributeValue(), std::string n9="", ns3::AttributeValue const & v9=ns3::EmptyAttributeValue()) [member function]
+    cls.add_method('SetPositionAllocator', 
+                   'void', 
+                   [param('std::string', 'type'), param('std::string', 'n1', default_value='""'), param('ns3::AttributeValue const &', 'v1', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n2', default_value='""'), param('ns3::AttributeValue const &', 'v2', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n3', default_value='""'), param('ns3::AttributeValue const &', 'v3', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n4', default_value='""'), param('ns3::AttributeValue const &', 'v4', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n5', default_value='""'), param('ns3::AttributeValue const &', 'v5', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n6', default_value='""'), param('ns3::AttributeValue const &', 'v6', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n7', default_value='""'), param('ns3::AttributeValue const &', 'v7', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n8', default_value='""'), param('ns3::AttributeValue const &', 'v8', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n9', default_value='""'), param('ns3::AttributeValue const &', 'v9', default_value='ns3::EmptyAttributeValue()')])
+    return
+
+def register_Ns3Ns2MobilityHelper_methods(root_module, cls):
+    ## ns2-mobility-helper.h: ns3::Ns2MobilityHelper::Ns2MobilityHelper(ns3::Ns2MobilityHelper const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::Ns2MobilityHelper const &', 'arg0')])
+    ## ns2-mobility-helper.h: ns3::Ns2MobilityHelper::Ns2MobilityHelper(std::string filename) [constructor]
+    cls.add_constructor([param('std::string', 'filename')])
+    ## ns2-mobility-helper.h: void ns3::Ns2MobilityHelper::Install() const [member function]
+    cls.add_method('Install', 
+                   'void', 
+                   [], 
                    is_const=True)
     return
 
@@ -1084,6 +1182,7 @@ def register_functions(root_module):
     register_functions_ns3_addressUtils(module.get_submodule('addressUtils'), root_module)
     register_functions_ns3_aodv(module.get_submodule('aodv'), root_module)
     register_functions_ns3_dot11s(module.get_submodule('dot11s'), root_module)
+    register_functions_ns3_dsdv(module.get_submodule('dsdv'), root_module)
     register_functions_ns3_flame(module.get_submodule('flame'), root_module)
     register_functions_ns3_internal(module.get_submodule('internal'), root_module)
     register_functions_ns3_olsr(module.get_submodule('olsr'), root_module)
@@ -1102,6 +1201,9 @@ def register_functions_ns3_aodv(module, root_module):
     return
 
 def register_functions_ns3_dot11s(module, root_module):
+    return
+
+def register_functions_ns3_dsdv(module, root_module):
     return
 
 def register_functions_ns3_flame(module, root_module):

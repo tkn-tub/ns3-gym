@@ -1,0 +1,54 @@
+## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
+
+import os.path
+
+def configure(conf):
+    if conf.env['ENABLE_THREADING']:
+        conf.env['ENABLE_EMU'] = conf.check(header_name='netpacket/packet.h',
+                                            define_name='HAVE_PACKET_H')
+        conf.report_optional_feature("EmuNetDevice", "Emulated Net Device",
+                                     conf.env['ENABLE_EMU'],
+                                     "<netpacket/packet.h> include not detected")
+    else:
+        conf.report_optional_feature("EmuNetDevice", "Emulated Net Device",
+                                     False,
+                                     "needs threading support which is not available")
+
+    if conf.env['ENABLE_EMU']:
+        blddir = os.path.abspath(os.path.join(conf.blddir, conf.env.variant()))
+        emucreatordir = os.path.abspath(os.path.join(blddir, "src/devices/emu"))
+        conf.env.append_value('NS3_EXECUTABLE_PATH', emucreatordir)
+
+def build(bld):
+    module = bld.create_ns3_module('emu', ['network'])
+    module.source = [
+        ]
+    headers = bld.new_task_gen('ns3header')
+    headers.module = 'emu'
+    headers.source = [
+        'doc/emu.h',
+        ]
+
+    if not bld.env['ENABLE_EMU']:
+        return
+
+    module.source.extend([
+            'model/emu-net-device.cc',
+            'model/emu-encode-decode.cc',
+            'helper/emu-helper.cc',
+            ])
+    headers.source.extend([
+            'model/emu-net-device.h',
+            'helper/emu-helper.h',
+            ])
+
+    obj = bld.create_suid_program('emu-sock-creator')
+    obj.source = [
+        'model/emu-sock-creator.cc',
+        'model/emu-encode-decode.cc',
+        ]
+
+    if bld.env['ENABLE_EXAMPLES']:
+        bld.add_subdirs('examples')
+
+    bld.ns3_python_bindings()

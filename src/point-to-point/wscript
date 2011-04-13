@@ -1,0 +1,29 @@
+## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
+
+
+def build(bld):
+    module = bld.create_ns3_module('point-to-point', ['network', 'mpi'])
+    module.source = [
+        'model/point-to-point-net-device.cc',
+        'model/point-to-point-channel.cc',
+        'model/point-to-point-remote-channel.cc',
+        'model/ppp-header.cc',
+        'helper/point-to-point-helper.cc',
+        ]
+
+    module_test = bld.create_ns3_module_test_library('point-to-point')
+    module_test.source = [
+        'test/point-to-point-test.cc',
+        ]
+
+    headers = bld.new_task_gen('ns3header')
+    headers.module = 'point-to-point'
+    headers.source = [
+        'model/point-to-point-net-device.h',
+        'model/point-to-point-channel.h',
+        'model/point-to-point-remote-channel.h',
+        'model/ppp-header.h',
+        'helper/point-to-point-helper.h',
+        ]
+
+    bld.ns3_python_bindings()

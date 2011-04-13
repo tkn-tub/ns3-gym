@@ -1,0 +1,21 @@
+## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
+
+def build(bld):
+    obj = bld.create_ns3_module('bridge', ['network'])
+    obj.source = [
+        'model/bridge-net-device.cc',
+        'model/bridge-channel.cc',
+        'helper/bridge-helper.cc',
+        ]
+    headers = bld.new_task_gen('ns3header')
+    headers.module = 'bridge'
+    headers.source = [
+        'model/bridge-net-device.h',
+        'model/bridge-channel.h',
+        'helper/bridge-helper.h',
+        ]
+
+    if bld.env['ENABLE_EXAMPLES']:
+        bld.add_subdirs('examples')
+
+    bld.ns3_python_bindings()

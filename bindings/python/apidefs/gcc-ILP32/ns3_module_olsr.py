@@ -3,6 +3,8 @@ from pybindgen import Module, FileCodeSink, param, retval, cppclass, typehandler
 def register_types(module):
     root_module = module.get_root()
     
+    ## olsr-helper.h: ns3::OlsrHelper [class]
+    module.add_class('OlsrHelper', parent=root_module['ns3::Ipv4RoutingHelper'])
     ## olsr-state.h: ns3::OlsrState [class]
     module.add_class('OlsrState')
     module.add_container('std::vector< ns3::olsr::MprSelectorTuple >', 'ns3::olsr::MprSelectorTuple', container_type='vector')
@@ -44,6 +46,12 @@ def register_types(module):
     register_types_ns3_dot11s(nested_module)
     
     
+    ## Register a nested module for the namespace dsdv
+    
+    nested_module = module.add_cpp_namespace('dsdv')
+    register_types_ns3_dsdv(nested_module)
+    
+    
     ## Register a nested module for the namespace flame
     
     nested_module = module.add_cpp_namespace('flame')
@@ -79,6 +87,10 @@ def register_types_ns3_aodv(module):
     
 
 def register_types_ns3_dot11s(module):
+    root_module = module.get_root()
+    
+
+def register_types_ns3_dsdv(module):
     root_module = module.get_root()
     
 
@@ -125,8 +137,6 @@ def register_types_ns3_olsr(module):
     module.add_class('NeighborTuple')
     ## olsr-repositories.h: ns3::olsr::NeighborTuple::Status [enumeration]
     module.add_enum('Status', ['STATUS_NOT_SYM', 'STATUS_SYM'], outer_class=root_module['ns3::olsr::NeighborTuple'])
-    ## olsr-routing-protocol.h: ns3::olsr::OlsrMprTestCase [class]
-    module.add_class('OlsrMprTestCase', parent=root_module['ns3::TestCase'])
     ## olsr-header.h: ns3::olsr::PacketHeader [class]
     module.add_class('PacketHeader', parent=root_module['ns3::Header'])
     ## olsr-routing-protocol.h: ns3::olsr::RoutingProtocol [class]
@@ -175,6 +185,7 @@ def register_types_ns3_olsr(module):
     typehandlers.add_type_alias('std::vector< ns3::olsr::LinkTuple, std::allocator< ns3::olsr::LinkTuple > >&', 'ns3::olsr::LinkSet&')
 
 def register_methods(root_module):
+    register_Ns3OlsrHelper_methods(root_module, root_module['ns3::OlsrHelper'])
     register_Ns3OlsrState_methods(root_module, root_module['ns3::OlsrState'])
     register_Ns3OlsrAssociation_methods(root_module, root_module['ns3::olsr::Association'])
     register_Ns3OlsrAssociationTuple_methods(root_module, root_module['ns3::olsr::AssociationTuple'])
@@ -190,12 +201,36 @@ def register_methods(root_module):
     register_Ns3OlsrMessageHeaderTc_methods(root_module, root_module['ns3::olsr::MessageHeader::Tc'])
     register_Ns3OlsrMprSelectorTuple_methods(root_module, root_module['ns3::olsr::MprSelectorTuple'])
     register_Ns3OlsrNeighborTuple_methods(root_module, root_module['ns3::olsr::NeighborTuple'])
-    register_Ns3OlsrOlsrMprTestCase_methods(root_module, root_module['ns3::olsr::OlsrMprTestCase'])
     register_Ns3OlsrPacketHeader_methods(root_module, root_module['ns3::olsr::PacketHeader'])
     register_Ns3OlsrRoutingProtocol_methods(root_module, root_module['ns3::olsr::RoutingProtocol'])
     register_Ns3OlsrRoutingTableEntry_methods(root_module, root_module['ns3::olsr::RoutingTableEntry'])
     register_Ns3OlsrTopologyTuple_methods(root_module, root_module['ns3::olsr::TopologyTuple'])
     register_Ns3OlsrTwoHopNeighborTuple_methods(root_module, root_module['ns3::olsr::TwoHopNeighborTuple'])
+    return
+
+def register_Ns3OlsrHelper_methods(root_module, cls):
+    ## olsr-helper.h: ns3::OlsrHelper::OlsrHelper() [constructor]
+    cls.add_constructor([])
+    ## olsr-helper.h: ns3::OlsrHelper::OlsrHelper(ns3::OlsrHelper const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::OlsrHelper const &', 'arg0')])
+    ## olsr-helper.h: ns3::OlsrHelper * ns3::OlsrHelper::Copy() const [member function]
+    cls.add_method('Copy', 
+                   'ns3::OlsrHelper *', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## olsr-helper.h: void ns3::OlsrHelper::ExcludeInterface(ns3::Ptr<ns3::Node> node, uint32_t interface) [member function]
+    cls.add_method('ExcludeInterface', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Node >', 'node'), param('uint32_t', 'interface')])
+    ## olsr-helper.h: ns3::Ptr<ns3::Ipv4RoutingProtocol> ns3::OlsrHelper::Create(ns3::Ptr<ns3::Node> node) const [member function]
+    cls.add_method('Create', 
+                   'ns3::Ptr< ns3::Ipv4RoutingProtocol >', 
+                   [param('ns3::Ptr< ns3::Node >', 'node')], 
+                   is_const=True, is_virtual=True)
+    ## olsr-helper.h: void ns3::OlsrHelper::Set(std::string name, ns3::AttributeValue const & value) [member function]
+    cls.add_method('Set', 
+                   'void', 
+                   [param('std::string', 'name'), param('ns3::AttributeValue const &', 'value')])
     return
 
 def register_Ns3OlsrState_methods(root_module, cls):
@@ -812,16 +847,6 @@ def register_Ns3OlsrNeighborTuple_methods(root_module, cls):
     cls.add_instance_attribute('willingness', 'uint8_t', is_const=False)
     return
 
-def register_Ns3OlsrOlsrMprTestCase_methods(root_module, cls):
-    ## olsr-routing-protocol.h: ns3::olsr::OlsrMprTestCase::OlsrMprTestCase() [constructor]
-    cls.add_constructor([])
-    ## olsr-routing-protocol.h: bool ns3::olsr::OlsrMprTestCase::DoRun() [member function]
-    cls.add_method('DoRun', 
-                   'bool', 
-                   [], 
-                   is_virtual=True)
-    return
-
 def register_Ns3OlsrPacketHeader_methods(root_module, cls):
     cls.add_output_stream_operator()
     ## olsr-header.h: ns3::olsr::PacketHeader::PacketHeader(ns3::olsr::PacketHeader const & arg0) [copy constructor]
@@ -906,6 +931,10 @@ def register_Ns3OlsrRoutingProtocol_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
+    ## olsr-routing-protocol.h: void ns3::olsr::RoutingProtocol::RemoveHostNetworkAssociation(ns3::Ipv4Address networkAddr, ns3::Ipv4Mask netmask) [member function]
+    cls.add_method('RemoveHostNetworkAssociation', 
+                   'void', 
+                   [param('ns3::Ipv4Address', 'networkAddr'), param('ns3::Ipv4Mask', 'netmask')])
     ## olsr-routing-protocol.h: void ns3::olsr::RoutingProtocol::SetInterfaceExclusions(std::set<unsigned int, std::less<unsigned int>, std::allocator<unsigned int> > exceptions) [member function]
     cls.add_method('SetInterfaceExclusions', 
                    'void', 
@@ -948,6 +977,11 @@ def register_Ns3OlsrRoutingProtocol_methods(root_module, cls):
                    'void', 
                    [param('uint32_t', 'interface'), param('ns3::Ipv4InterfaceAddress', 'address')], 
                    visibility='private', is_virtual=True)
+    ## olsr-routing-protocol.h: void ns3::olsr::RoutingProtocol::PrintRoutingTable(ns3::Ptr<ns3::OutputStreamWrapper> stream) const [member function]
+    cls.add_method('PrintRoutingTable', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::OutputStreamWrapper >', 'stream')], 
+                   is_const=True, visibility='private', is_virtual=True)
     ## olsr-routing-protocol.h: bool ns3::olsr::RoutingProtocol::RouteInput(ns3::Ptr<ns3::Packet const> p, ns3::Ipv4Header const & header, ns3::Ptr<const ns3::NetDevice> idev, ns3::Callback<void, ns3::Ptr<ns3::Ipv4Route>, ns3::Ptr<ns3::Packet const>, ns3::Ipv4Header const&, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> ucb, ns3::Callback<void,ns3::Ptr<ns3::Ipv4MulticastRoute>,ns3::Ptr<const ns3::Packet>,const ns3::Ipv4Header&,ns3::empty,ns3::empty,ns3::empty,ns3::empty,ns3::empty,ns3::empty> mcb, ns3::Callback<void,ns3::Ptr<const ns3::Packet>,const ns3::Ipv4Header&,unsigned int,ns3::empty,ns3::empty,ns3::empty,ns3::empty,ns3::empty,ns3::empty> lcb, ns3::Callback<void, ns3::Ptr<ns3::Packet const>, ns3::Ipv4Header const&, ns3::Socket::SocketErrno, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> ecb) [member function]
     cls.add_method('RouteInput', 
                    'bool', 
@@ -1019,6 +1053,7 @@ def register_functions(root_module):
     register_functions_ns3_addressUtils(module.get_submodule('addressUtils'), root_module)
     register_functions_ns3_aodv(module.get_submodule('aodv'), root_module)
     register_functions_ns3_dot11s(module.get_submodule('dot11s'), root_module)
+    register_functions_ns3_dsdv(module.get_submodule('dsdv'), root_module)
     register_functions_ns3_flame(module.get_submodule('flame'), root_module)
     register_functions_ns3_internal(module.get_submodule('internal'), root_module)
     register_functions_ns3_olsr(module.get_submodule('olsr'), root_module)
@@ -1037,6 +1072,9 @@ def register_functions_ns3_aodv(module, root_module):
     return
 
 def register_functions_ns3_dot11s(module, root_module):
+    return
+
+def register_functions_ns3_dsdv(module, root_module):
     return
 
 def register_functions_ns3_flame(module, root_module):

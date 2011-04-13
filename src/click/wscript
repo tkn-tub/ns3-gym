@@ -1,0 +1,103 @@
+## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
+
+import os
+import Options
+
+
+def set_options(opt):
+    opt.add_option('--with-nsclick',
+                   help=('Path to Click source or installation prefix for NS-3 Click Integration support'),
+                   dest='with_nsclick', default=None)
+
+def configure(conf):
+    if Options.options.with_nsclick:
+        if os.path.isdir(Options.options.with_nsclick):
+            conf.check_message("libnsclick.so location", '', True, ("%s (given)" % Options.options.with_nsclick))
+            conf.env['WITH_NSCLICK'] = os.path.abspath(Options.options.with_nsclick)
+    else:
+        nsclick_dir = os.path.join('..','click')
+        if os.path.isdir(nsclick_dir):
+            conf.check_message("click location", '', True, ("%s (guessed)" % nsclick_dir))
+            conf.env['WITH_NSCLICK'] = os.path.abspath(nsclick_dir)
+        del nsclick_dir
+    if not conf.env['WITH_NSCLICK']:
+        conf.check_message("click location", '', False)
+        conf.report_optional_feature("nsclick", "NS-3 Click Integration", False,
+                                     "nsclick not enabled (see option --with-nsclick)")
+        return
+
+    test_code = '''
+#include<sys/types.h>
+#include<sys/time.h>
+#include<click/simclick.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+int simclick_sim_send(simclick_node_t *sim,int ifid,int type, const unsigned char* data,int len,simclick_simpacketinfo *pinfo)
+{
+  return 0;
+}
+
+int simclick_sim_command(simclick_node_t *sim, int cmd, ...)
+{
+  return 0;
+}
+#ifdef __cplusplus
+}
+#endif
+
+int main()
+{
+  return 0;
+}
+'''
+    conf.env['DL'] = conf.check(mandatory=True, lib='dl', define_name='DL', uselib='DL')
+
+    for tmp in ['lib', 'ns']:
+        libdir = os.path.abspath(os.path.join(conf.env['WITH_NSCLICK'],tmp))
+        if os.path.isdir(libdir):
+            conf.env.append_value('NS3_MODULE_PATH',libdir)
+            conf.env['LIBPATH_NSCLICK'] = [libdir]
+
+    conf.env['CPPPATH_NSCLICK'] = [os.path.abspath(os.path.join(conf.env['WITH_NSCLICK'],'include'))]
+    
+    conf.env['NSCLICK'] = conf.check(fragment=test_code, lib='nsclick', uselib='NSCLICK DL')
+    conf.report_optional_feature("nsclick", "NS-3 Click Integration",
+                                  conf.env['NSCLICK'], "nsclick library not found")
+    if conf.env['NSCLICK']:
+        conf.env.append_value('CXXDEFINES', 'NS3_CLICK')
+        conf.env.append_value('CPPPATH', conf.env['CPPPATH_NSCLICK'])
+
+def build(bld):
+
+    module = bld.create_ns3_module('click', ['internet'])
+    module.includes = '. CPPPATH_NSCLICK'
+    module.source = [
+        'model/ipv4-click-routing.cc',
+        'model/ipv4-l3-click-protocol.cc',
+        'helper/click-internet-stack-helper.cc',
+        ]
+
+    module_test = bld.create_ns3_module_test_library('click')
+    module_test.source = [
+        'test/ipv4-click-routing-test.cc',
+        ]
+
+    if bld.env['NSCLICK'] and bld.env['DL']:
+        module.uselib      = 'NSCLICK DL'
+        module_test.uselib = 'NSCLICK DL'
+
+    headers = bld.new_task_gen('ns3header')
+    headers.module = 'click'
+    headers.source = [
+        'model/ipv4-click-routing.h',
+        'model/ipv4-l3-click-protocol.h',
+        'helper/click-internet-stack-helper.h',
+        ]
+
+    if bld.env['ENABLE_EXAMPLES']:
+        bld.add_subdirs('examples')
+
+    bld.ns3_python_bindings()

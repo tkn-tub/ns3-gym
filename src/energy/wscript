@@ -1,0 +1,49 @@
+## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
+
+def build(bld):
+    obj = bld.create_ns3_module('energy', ['internet', 'wifi'])
+    obj.source = [
+        'model/wifi-radio-energy-model.cc',
+        'model/energy-source.cc',
+        'model/basic-energy-source.cc',
+        'model/li-ion-energy-source.cc',
+        'model/rv-battery-model.cc',
+        'model/device-energy-model.cc',
+        'model/device-energy-model-container.cc',
+        'model/simple-device-energy-model.cc',
+        'helper/energy-source-container.cc',
+        'helper/energy-model-helper.cc',
+        'helper/basic-energy-source-helper.cc',
+        'helper/wifi-radio-energy-model-helper.cc',
+        'helper/rv-battery-model-helper.cc',
+        ]
+
+    obj_test = bld.create_ns3_module_test_library('energy')
+    obj_test.source = [
+        'test/basic-energy-model-test.cc',
+        'test/rv-battery-model-test.cc',
+        'test/li-ion-energy-source-test.cc',
+        ]
+
+    headers = bld.new_task_gen('ns3header')
+    headers.module = 'energy'
+    headers.source = [
+        'model/wifi-radio-energy-model.h',
+        'model/energy-source.h',
+        'model/basic-energy-source.h',
+        'model/li-ion-energy-source.h',
+        'model/rv-battery-model.h',
+        'model/device-energy-model.h',
+        'model/device-energy-model-container.h',
+        'model/simple-device-energy-model.h',
+        'helper/energy-source-container.h',
+        'helper/energy-model-helper.h',
+        'helper/basic-energy-source-helper.h',
+        'helper/wifi-radio-energy-model-helper.h',
+        'helper/rv-battery-model-helper.h',
+        ]
+
+    if (bld.env['ENABLE_EXAMPLES']):
+      bld.add_subdirs('examples')
+
+    bld.ns3_python_bindings()

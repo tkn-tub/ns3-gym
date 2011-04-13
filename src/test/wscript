@@ -4,13 +4,17 @@ def configure(conf):
     conf.sub_config('perf')
 
 def build(bld):
-    test = bld.create_ns3_module('test', ['core'])
-    test.source = [
-        'sample-test-suite.cc',
-        'error-model-test-suite.cc',
-        ]
-
+    test = bld.create_ns3_module('test', ['internet', 'mobility', 'applications', 'csma', 'bridge', 'config-store', 'tools', 'point-to-point'])
     headers = bld.new_task_gen('ns3header')
     headers.module = 'test'
-    headers.source = [
+
+    test_test = bld.create_ns3_module_test_library('test')
+    test_test.source = [
+        'csma-system-test-suite.cc',
+        'global-routing-test-suite.cc',
+        'sample-test-suite.cc',
+        'static-routing-test-suite.cc',
+        'error-model-test-suite.cc',
+        'mobility-test-suite.cc',
         ]
+

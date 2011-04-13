@@ -94,8 +94,18 @@ type_annotations = {
     'ns3::Ipv4RoutingTableEntry * ns3::GlobalRouter::GetInjectedRoute(uint32_t i) [member function]': {
         'params': {'return': { 'caller_owns_return': 'false',}},
         },
-    'ns3::Ipv4RoutingTableEntry * ns3::Ipv4GlobalRouting::GetRoute(uint32_t i) [member function]': {
+    'ns3::Ipv4RoutingTableEntry * ns3::Ipv4GlobalRouting::GetRoute(uint32_t i) const [member function]': {
         'params': {'return': { 'caller_owns_return': 'false',}},
+        },
+
+    '::ns3::TestCase': {
+        'ignore': 'true', # we don't need to write test cases in Python
+        },
+    '::ns3::TestRunner': {
+        'ignore': 'true', # we don't need to write test cases in Python
+        },
+    '::ns3::TestSuite': {
+        'ignore': 'true', # we don't need to write test cases in Python
         },
     
     }
@@ -157,6 +167,8 @@ def pre_scan_hook(dummy_module_parser,
                 continue
             if "ns3::MilliSeconds( )" == arg.default_value:
                 arg.default_value = "ns3::MilliSeconds(0)"
+            if "ns3::Seconds( )" == arg.default_value:
+                arg.default_value = "ns3::Seconds(0)"
 
     ## classes
     if isinstance(pygccxml_definition, class_t):

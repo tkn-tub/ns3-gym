@@ -1,0 +1,32 @@
+## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
+
+def build(bld):
+    obj = bld.create_ns3_module('topology-read', ['network'])
+    obj.source = [
+       'model/topology-reader.cc',
+       'model/inet-topology-reader.cc',
+       'model/orbis-topology-reader.cc',
+       'model/rocketfuel-topology-reader.cc',
+       'helper/topology-reader-helper.cc',
+        ]
+
+    module_test = bld.create_ns3_module_test_library('topology-read')
+    module_test.source = [
+        'test/rocketfuel-topology-reader-test-suite.cc',
+        ]
+
+    headers = bld.new_task_gen('ns3header')
+    headers.module = 'topology-read'
+    headers.source = [
+       'model/topology.h',
+       'model/topology-reader.h',
+       'model/inet-topology-reader.h',
+       'model/orbis-topology-reader.h',
+       'model/rocketfuel-topology-reader.h',
+       'helper/topology-reader-helper.h',
+        ]
+
+    if bld.env['ENABLE_EXAMPLES']:
+        bld.add_subdirs('examples')
+
+    bld.ns3_python_bindings()

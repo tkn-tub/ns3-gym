@@ -1,0 +1,37 @@
+## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
+
+def build(bld):
+    module = bld.create_ns3_module('olsr', ['internet', 'config-store', 'tools', 'point-to-point', 'wifi', 'mobility', 'applications', 'csma'])
+    module.includes = '.'
+    module.source = [
+        'model/olsr-header.cc',
+        'model/olsr-state.cc',
+        'model/olsr-routing-protocol.cc',
+        'helper/olsr-helper.cc',
+        ]
+
+    module_test = bld.create_ns3_module_test_library('olsr')
+    module_test.source = [
+        'test/bug780-test.cc',
+        'test/hello-regression-test.cc',
+        'test/olsr-header-test-suite.cc',
+        'test/regression-test-suite.cc',
+        'test/olsr-routing-protocol-test-suite.cc',
+        'test/tc-regression-test.cc',
+        ]
+
+    headers = bld.new_task_gen('ns3header')
+    headers.module = 'olsr'
+    headers.source = [
+        'model/olsr-routing-protocol.h',
+        'model/olsr-header.h',
+        'model/olsr-state.h',
+        'model/olsr-repositories.h',
+        'helper/olsr-helper.h',
+        ]
+
+
+    if bld.env['ENABLE_EXAMPLES']:
+        bld.add_subdirs('examples')
+
+    bld.ns3_python_bindings()

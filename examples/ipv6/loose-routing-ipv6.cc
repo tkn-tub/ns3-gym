@@ -40,8 +40,9 @@
 
 #include <fstream>
 #include "ns3/core-module.h"
-#include "ns3/simulator-module.h"
-#include "ns3/helper-module.h"
+#include "ns3/internet-module.h"
+#include "ns3/csma-module.h"
+#include "ns3/applications-module.h"
 #include "ns3/ipv6-header.h"
 using namespace ns3;
 

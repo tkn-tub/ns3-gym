@@ -1,63 +1,7 @@
 Contributing to the ns-3 project
 --------------------------------
 
-ns-3 is an open source project backed by an NSF CISE CRI grant. 
-Although the NSF PIs have specific aims to fulfill, we want others to 
-contribute, and we'd like to have a broad community of users and 
-developers, with the goal of a self-sustaining project downstream. 
-The project is currently in a bootstrapping phase, but we welcome 
-ambitious developers who might want to help shape the early design.
-
-Despite the lack of a formal contribution process to the ns-3
-project, there are a number of steps which we expect every
-potential contributor to follow. These naturally stem from 
-the open-source roots of the project:
-
-  - first, you should subscribe to the ns-developers 
-    mailing-list (see http://www.nsnam.org/mailing_lists.html)
-
-  - then, you should send an email there stating your interest
-    in working on a specific part of the models and trying
-    to explain how you would like to implement it, what 
-    resources you have, etc.
-
-  - you should be prepared to work together with the other
-    potential contributors who want to work on the same models.
-
-  - you should be prepared to go through code reviews with the
-    ns-3 development team prior to integration. The goal of these
-    code reviews is to:
-      - ensure adherence to the coding style of the project
-        (see doc/codingstyle.html)
-      - ensure that the structure of your code has a certain 
-        coherence with regard to the rest of the ns-3 codebase
-      - improve the quality of the code: we strongly believe in
-        the old saying: "many eyes make all bugs shallow".
-      - increase code reuse by trying to generalize certain 
-        useful pieces of your code to make them available to
-        other models.
-
-  - you should be prepared to try to integrate as many tests
-    in the codebase as possible: we understand that writing
-    tests is not sexy and that not everyone is convinced that
-    they improve the code-writing poductivity which is why
-    we do not enforce strict rules about testing. However,
-    we expect model authors to answer basic questions about
-    how they plan to test and validate their models.
-
-  - you should be prepared to maintain your model once it is
-    integrated: while we consider every bug filed against the 
-    simulator as being a bug we must deal with and while we 
-    will try to fix as many bugs as humanly possible, we
-    also expect model authors to act as responsible maintainers
-    and be reactive to bug reports concerning their models.
-
-  - The project has decided upon GNU GPLv2 as the licensing structure. 
-    All simulation software in the ns-3 repositories will be GNU GPLv2 
-    or GNU GPLv2-compatible (with non-GPLv2 licensing reserved for
-    ports of pre-existing code under a different license, such as BSD).
-    You do not have to assign your copyright to the ns-3 project but
-    you must accept the terms of the GPLv2 and attest that your 
-    contributions can be licensed under those terms.  See the 
-    following link:
-    http://www.fsf.org/licensing/licenses/info/GPLv2.html
+ns-3 is a free, open source software project that welcomes contributions
+from users worldwide.  Please see the following web page for how to 
+contribute:  
+http://www.nsnam.org/contributing.html

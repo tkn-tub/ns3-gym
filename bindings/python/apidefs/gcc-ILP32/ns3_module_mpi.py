@@ -7,6 +7,8 @@ def register_types(module):
     module.add_class('LbtsMessage')
     ## mpi-interface.h: ns3::MpiInterface [class]
     module.add_class('MpiInterface')
+    ## mpi-net-device.h: ns3::MpiNetDevice [class]
+    module.add_class('MpiNetDevice', allow_subclassing=True)
     ## mpi-interface.h: ns3::SentBuffer [class]
     module.add_class('SentBuffer')
     ## distributed-simulator-impl.h: ns3::DistributedSimulatorImpl [class]
@@ -40,6 +42,12 @@ def register_types(module):
     
     nested_module = module.add_cpp_namespace('dot11s')
     register_types_ns3_dot11s(nested_module)
+    
+    
+    ## Register a nested module for the namespace dsdv
+    
+    nested_module = module.add_cpp_namespace('dsdv')
+    register_types_ns3_dsdv(nested_module)
     
     
     ## Register a nested module for the namespace flame
@@ -80,6 +88,10 @@ def register_types_ns3_dot11s(module):
     root_module = module.get_root()
     
 
+def register_types_ns3_dsdv(module):
+    root_module = module.get_root()
+    
+
 def register_types_ns3_flame(module):
     root_module = module.get_root()
     
@@ -95,6 +107,7 @@ def register_types_ns3_olsr(module):
 def register_methods(root_module):
     register_Ns3LbtsMessage_methods(root_module, root_module['ns3::LbtsMessage'])
     register_Ns3MpiInterface_methods(root_module, root_module['ns3::MpiInterface'])
+    register_Ns3MpiNetDevice_methods(root_module, root_module['ns3::MpiNetDevice'])
     register_Ns3SentBuffer_methods(root_module, root_module['ns3::SentBuffer'])
     register_Ns3DistributedSimulatorImpl_methods(root_module, root_module['ns3::DistributedSimulatorImpl'])
     return
@@ -179,6 +192,22 @@ def register_Ns3MpiInterface_methods(root_module, cls):
                    'void', 
                    [], 
                    is_static=True)
+    return
+
+def register_Ns3MpiNetDevice_methods(root_module, cls):
+    ## mpi-net-device.h: ns3::MpiNetDevice::MpiNetDevice() [constructor]
+    cls.add_constructor([])
+    ## mpi-net-device.h: ns3::MpiNetDevice::MpiNetDevice(ns3::MpiNetDevice const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::MpiNetDevice const &', 'arg0')])
+    ## mpi-net-device.h: void ns3::MpiNetDevice::MpiReceive(ns3::Ptr<ns3::Packet> p) [member function]
+    cls.add_method('MpiReceive', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Packet >', 'p')])
+    ## mpi-net-device.h: void ns3::MpiNetDevice::DoMpiReceive(ns3::Ptr<ns3::Packet> p) [member function]
+    cls.add_method('DoMpiReceive', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Packet >', 'p')], 
+                   is_pure_virtual=True, visibility='protected', is_virtual=True)
     return
 
 def register_Ns3SentBuffer_methods(root_module, cls):
@@ -324,6 +353,7 @@ def register_functions(root_module):
     register_functions_ns3_addressUtils(module.get_submodule('addressUtils'), root_module)
     register_functions_ns3_aodv(module.get_submodule('aodv'), root_module)
     register_functions_ns3_dot11s(module.get_submodule('dot11s'), root_module)
+    register_functions_ns3_dsdv(module.get_submodule('dsdv'), root_module)
     register_functions_ns3_flame(module.get_submodule('flame'), root_module)
     register_functions_ns3_internal(module.get_submodule('internal'), root_module)
     register_functions_ns3_olsr(module.get_submodule('olsr'), root_module)
@@ -342,6 +372,9 @@ def register_functions_ns3_aodv(module, root_module):
     return
 
 def register_functions_ns3_dot11s(module, root_module):
+    return
+
+def register_functions_ns3_dsdv(module, root_module):
     return
 
 def register_functions_ns3_flame(module, root_module):

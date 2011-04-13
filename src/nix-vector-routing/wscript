@@ -1,0 +1,21 @@
+## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
+
+def build(bld):
+    module = bld.create_ns3_module('nix-vector-routing', ['internet'])
+    module.includes = '.'
+    module.source = [
+        'model/ipv4-nix-vector-routing.cc',
+	'helper/ipv4-nix-vector-helper.cc',
+        ]
+
+    headers = bld.new_task_gen('ns3header')
+    headers.module = 'nix-vector-routing'
+    headers.source = [
+        'model/ipv4-nix-vector-routing.h',
+	'helper/ipv4-nix-vector-helper.h',
+        ]
+
+    if bld.env['ENABLE_EXAMPLES']:
+        bld.add_subdirs('examples')
+
+    bld.ns3_python_bindings()

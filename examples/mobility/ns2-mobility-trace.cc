@@ -56,8 +56,6 @@
 
 #include "ns3/core-module.h"
 #include "ns3/mobility-module.h"
-#include "ns3/simulator-module.h"
-#include "ns3/helper-module.h"
 #include "ns3/mobility-module.h"
 #include "ns3/ns2-mobility-helper.h"
 

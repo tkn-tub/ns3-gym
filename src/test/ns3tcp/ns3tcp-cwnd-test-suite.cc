@@ -180,7 +180,7 @@ public:
   virtual ~Ns3TcpCwndTestCase1 ();
 
 private:
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
   bool m_writeResults;
 
   class  CwndEvent {
@@ -215,7 +215,7 @@ Ns3TcpCwndTestCase1::CwndChange (uint32_t oldCwnd, uint32_t newCwnd)
   m_responses.Add (event);
 }
 
-bool
+void
 Ns3TcpCwndTestCase1::DoRun (void)
 {
   //
@@ -345,21 +345,20 @@ Ns3TcpCwndTestCase1::DoRun (void)
   // reflecting the change from LARGEST_CWND back to MSS
   //
   const uint32_t MSS = 536;
-  const uint32_t N_EVENTS = 20;
+  const uint32_t N_EVENTS = 21;
 
   CwndEvent event;
 
   NS_TEST_ASSERT_MSG_EQ (m_responses.GetN (), N_EVENTS, "Unexpectedly low number of cwnd change events");
 
 
-  for (uint32_t i = 0, from = MSS, to = MSS * 2; i < N_EVENTS; ++i, from += MSS, to += MSS)
+  // Ignore the first event logged (i=0) when m_cWnd goes from 0 to MSS bytes
+  for (uint32_t i = 1, from = MSS, to = MSS * 2; i < N_EVENTS; ++i, from += MSS, to += MSS)
     {
       event = m_responses.Get (i);
       NS_TEST_ASSERT_MSG_EQ (event.m_oldCwnd, from, "Wrong old cwnd value in cwnd change event " << i);
       NS_TEST_ASSERT_MSG_EQ (event.m_newCwnd, to, "Wrong new cwnd value in cwnd change event " << i);
     }
-
-  return GetErrorStatus ();
 }
 
 
@@ -384,7 +383,7 @@ public:
   virtual ~Ns3TcpCwndTestCase2 ();
 
 private:
-  virtual bool DoRun (void);
+  virtual void DoRun (void);
   bool m_writeResults;
 
   class  CwndEvent {
@@ -419,7 +418,7 @@ Ns3TcpCwndTestCase2::CwndChange (uint32_t oldCwnd, uint32_t newCwnd)
   m_responses.Add (event);
 }
 
-bool
+void
 Ns3TcpCwndTestCase2::DoRun (void)
 {
   // Set up some default values for the simulation.
@@ -507,56 +506,56 @@ Ns3TcpCwndTestCase2::DoRun (void)
   // the congestion window as it opens up when the ns-3 TCP under test 
   // transmits its bits
   //
-  // From inspecting the results, we know that we should see 31 congestion
-  // window change events. On the tenth change event, the window should go back 
-  // to one segment due to 3 dup acks.  It should then slow start again for 
-  // 4 events and then enter congestion avoidance.  On change event 30 
-  // (29 zero-based indexing), it should go back to one segment, because of triple dup ack.
+  // From inspecting the results, we know that we should see N_EVENTS congestion
+  // window change events. On the tenth change event, the window should 
+  // be cut from 5360 to 4288 due to 3 dup acks (NewReno behavior is to
+  // cut in half, and then add 3 segments (5360/2 + 3*536 = 4288)
+  // It should then increment cwnd by one segment per ack throughout
+  // the fast recovery phase.  The trace shows that three segments are lost
+  // within the fast recovery window (with sequence numbers starting at
+  // 9113, 10721, and 12329).  This last segment (12329) is not recovered
+  // by a fast retransmit and consequently, a coarse timeout is taken and
+  // cwnd is reset to MSS at event index 32.  It slow starts again, and takes
+  // another fast retransmit at index 42.
   //
   const uint32_t MSS = 536;
+  const uint32_t N_EVENTS = 44;
 
   CwndEvent event;
 
-  NS_TEST_ASSERT_MSG_EQ (m_responses.GetN (), 31, "Unexpected number of cwnd change events");
+  NS_TEST_ASSERT_MSG_EQ (m_responses.GetN (), N_EVENTS, "Unexpected number of cwnd change events");
 
-  for (uint32_t i = 0, from = MSS, to = MSS * 2; i < 9; ++i, from += MSS, to += MSS)
+  // Ignore the first event logged (i=0) when m_cWnd goes from 0 to MSS bytes
+  for (uint32_t i = 1, from = MSS, to = MSS * 2; i < 10; ++i, from += MSS, to += MSS)
     {
       event = m_responses.Get (i);
       NS_TEST_ASSERT_MSG_EQ (event.m_oldCwnd, from, "Wrong old cwnd value in cwnd change event " << i);
       NS_TEST_ASSERT_MSG_EQ (event.m_newCwnd, to, "Wrong new cwnd value in cwnd change event " << i);
     }
 
-  // Cwnd should be back to MSS
-  event = m_responses.Get (9);
-  NS_TEST_ASSERT_MSG_EQ (event.m_newCwnd, MSS, "Wrong new cwnd value in cwnd change event " << 9);
+  // Cwnd should be back to (10/2 + 3) = 8*MSS
+  event = m_responses.Get (10);
+  NS_TEST_ASSERT_MSG_EQ (event.m_newCwnd, 8*MSS, "Wrong new cwnd value in cwnd change event " << 10);
 
-  // Another round of slow start
-  for (uint32_t i = 10, from = MSS, to = MSS * 2; i < 14; ++i, from += MSS, to += MSS)
+  // Fast recovery
+  for (uint32_t i = 11, from = 8*MSS, to = 9 * MSS; i < 32; ++i, from += MSS, to += MSS)
     {
       event = m_responses.Get (i);
       NS_TEST_ASSERT_MSG_EQ (event.m_oldCwnd, from, "Wrong old cwnd value in cwnd change event " << i);
       NS_TEST_ASSERT_MSG_EQ (event.m_newCwnd, to, "Wrong new cwnd value in cwnd change event " << i);
     }
 
-  // Congestion Avoidance
-  double adder; 
-  uint32_t from = 2680;
-  for (uint32_t i = 14;  i < 29; ++i)
+  // Slow start again after coarse timeout
+  for (uint32_t i = 33, from = MSS, to = MSS * 2; i < 42; ++i, from += MSS, to += MSS)
     {
       event = m_responses.Get (i);
       NS_TEST_ASSERT_MSG_EQ (event.m_oldCwnd, from, "Wrong old cwnd value in cwnd change event " << i);
-      adder = ((double) MSS * MSS) / event.m_oldCwnd;
-      adder += event.m_oldCwnd;
-      from = static_cast<uint32_t> (adder);
-      NS_TEST_ASSERT_MSG_EQ (event.m_newCwnd, static_cast<uint32_t> (adder), "Wrong new cwnd value in cwnd change event " 
-                             << i);
+      NS_TEST_ASSERT_MSG_EQ (event.m_newCwnd, to, "Wrong new cwnd value in cwnd change event " << i);
     }
 
-  // Cwnd should be back to MSS
-  event = m_responses.Get (29);
-  NS_TEST_ASSERT_MSG_EQ (event.m_newCwnd, MSS, "Wrong new cwnd value in cwnd change event " << 29);
-
-  return GetErrorStatus ();
+  // Fast retransmit again; cwnd should be back to 8*MSS
+  event = m_responses.Get (42);
+  NS_TEST_ASSERT_MSG_EQ (event.m_newCwnd, 8*MSS, "Wrong new cwnd value in cwnd change event " << 42);
 }
 
 class Ns3TcpCwndTestSuite : public TestSuite

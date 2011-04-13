@@ -3,6 +3,8 @@ from pybindgen import Module, FileCodeSink, param, retval, cppclass, typehandler
 def register_types(module):
     root_module = module.get_root()
     
+    ## bridge-helper.h: ns3::BridgeHelper [class]
+    module.add_class('BridgeHelper')
     ## bridge-channel.h: ns3::BridgeChannel [class]
     module.add_class('BridgeChannel', parent=root_module['ns3::Channel'])
     ## bridge-net-device.h: ns3::BridgeNetDevice [class]
@@ -36,6 +38,12 @@ def register_types(module):
     
     nested_module = module.add_cpp_namespace('dot11s')
     register_types_ns3_dot11s(nested_module)
+    
+    
+    ## Register a nested module for the namespace dsdv
+    
+    nested_module = module.add_cpp_namespace('dsdv')
+    register_types_ns3_dsdv(nested_module)
     
     
     ## Register a nested module for the namespace flame
@@ -76,6 +84,10 @@ def register_types_ns3_dot11s(module):
     root_module = module.get_root()
     
 
+def register_types_ns3_dsdv(module):
+    root_module = module.get_root()
+    
+
 def register_types_ns3_flame(module):
     root_module = module.get_root()
     
@@ -89,39 +101,55 @@ def register_types_ns3_olsr(module):
     
 
 def register_methods(root_module):
+    register_Ns3BridgeHelper_methods(root_module, root_module['ns3::BridgeHelper'])
     register_Ns3BridgeChannel_methods(root_module, root_module['ns3::BridgeChannel'])
     register_Ns3BridgeNetDevice_methods(root_module, root_module['ns3::BridgeNetDevice'])
     return
 
+def register_Ns3BridgeHelper_methods(root_module, cls):
+    ## bridge-helper.h: ns3::BridgeHelper::BridgeHelper(ns3::BridgeHelper const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::BridgeHelper const &', 'arg0')])
+    ## bridge-helper.h: ns3::BridgeHelper::BridgeHelper() [constructor]
+    cls.add_constructor([])
+    ## bridge-helper.h: ns3::NetDeviceContainer ns3::BridgeHelper::Install(ns3::Ptr<ns3::Node> node, ns3::NetDeviceContainer c) [member function]
+    cls.add_method('Install', 
+                   'ns3::NetDeviceContainer', 
+                   [param('ns3::Ptr< ns3::Node >', 'node'), param('ns3::NetDeviceContainer', 'c')])
+    ## bridge-helper.h: ns3::NetDeviceContainer ns3::BridgeHelper::Install(std::string nodeName, ns3::NetDeviceContainer c) [member function]
+    cls.add_method('Install', 
+                   'ns3::NetDeviceContainer', 
+                   [param('std::string', 'nodeName'), param('ns3::NetDeviceContainer', 'c')])
+    ## bridge-helper.h: void ns3::BridgeHelper::SetDeviceAttribute(std::string n1, ns3::AttributeValue const & v1) [member function]
+    cls.add_method('SetDeviceAttribute', 
+                   'void', 
+                   [param('std::string', 'n1'), param('ns3::AttributeValue const &', 'v1')])
+    return
+
 def register_Ns3BridgeChannel_methods(root_module, cls):
-    ## bridge-channel.h: ns3::BridgeChannel::BridgeChannel(ns3::BridgeChannel const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::BridgeChannel const &', 'arg0')])
+    ## bridge-channel.h: static ns3::TypeId ns3::BridgeChannel::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
     ## bridge-channel.h: ns3::BridgeChannel::BridgeChannel() [constructor]
     cls.add_constructor([])
     ## bridge-channel.h: void ns3::BridgeChannel::AddChannel(ns3::Ptr<ns3::Channel> bridgedChannel) [member function]
     cls.add_method('AddChannel', 
                    'void', 
                    [param('ns3::Ptr< ns3::Channel >', 'bridgedChannel')])
-    ## bridge-channel.h: ns3::Ptr<ns3::NetDevice> ns3::BridgeChannel::GetDevice(uint32_t i) const [member function]
-    cls.add_method('GetDevice', 
-                   'ns3::Ptr< ns3::NetDevice >', 
-                   [param('uint32_t', 'i')], 
-                   is_const=True, is_virtual=True)
     ## bridge-channel.h: uint32_t ns3::BridgeChannel::GetNDevices() const [member function]
     cls.add_method('GetNDevices', 
                    'uint32_t', 
                    [], 
                    is_const=True, is_virtual=True)
-    ## bridge-channel.h: static ns3::TypeId ns3::BridgeChannel::GetTypeId() [member function]
-    cls.add_method('GetTypeId', 
-                   'ns3::TypeId', 
-                   [], 
-                   is_static=True)
+    ## bridge-channel.h: ns3::Ptr<ns3::NetDevice> ns3::BridgeChannel::GetDevice(uint32_t i) const [member function]
+    cls.add_method('GetDevice', 
+                   'ns3::Ptr< ns3::NetDevice >', 
+                   [param('uint32_t', 'i')], 
+                   is_const=True, is_virtual=True)
     return
 
 def register_Ns3BridgeNetDevice_methods(root_module, cls):
-    ## bridge-net-device.h: ns3::BridgeNetDevice::BridgeNetDevice(ns3::BridgeNetDevice const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::BridgeNetDevice const &', 'arg0')])
     ## bridge-net-device.h: ns3::BridgeNetDevice::BridgeNetDevice() [constructor]
     cls.add_constructor([])
     ## bridge-net-device.h: void ns3::BridgeNetDevice::AddBridgePort(ns3::Ptr<ns3::NetDevice> bridgePort) [member function]
@@ -302,6 +330,7 @@ def register_functions(root_module):
     register_functions_ns3_addressUtils(module.get_submodule('addressUtils'), root_module)
     register_functions_ns3_aodv(module.get_submodule('aodv'), root_module)
     register_functions_ns3_dot11s(module.get_submodule('dot11s'), root_module)
+    register_functions_ns3_dsdv(module.get_submodule('dsdv'), root_module)
     register_functions_ns3_flame(module.get_submodule('flame'), root_module)
     register_functions_ns3_internal(module.get_submodule('internal'), root_module)
     register_functions_ns3_olsr(module.get_submodule('olsr'), root_module)
@@ -320,6 +349,9 @@ def register_functions_ns3_aodv(module, root_module):
     return
 
 def register_functions_ns3_dot11s(module, root_module):
+    return
+
+def register_functions_ns3_dsdv(module, root_module):
     return
 
 def register_functions_ns3_flame(module, root_module):

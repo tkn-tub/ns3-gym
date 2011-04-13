@@ -44,6 +44,164 @@ to this file based on your experience, please contribute a patch or drop
 us a note on ns-developers mailing list.  </p>
 
 <hr>
+<h1>Changes from ns-3.10 to ns-3.11</h1>
+
+<h2>Changes to build system:</h2>
+<ul>
+<li><b>Tests are no longer built by default in ns-3</b>
+<p>
+You can now make tests be built in ns-3 in two ways.
+<ol>
+<li> Using build.py when ns-3 is built for the first time:
+<pre>
+    ./build.py --enable-tests
+</pre>
+<li> Using waf once ns-3 has been built:
+<pre>
+    ./waf configure --enable-tests
+</pre>
+</ol>
+</p></li>
+<li><b> Subsets of modules can be enabled using the ns-3 configuration file</b>
+<p>A new configuration file, .ns3rc, has been added to ns-3 that
+specifies the modules that should be enabled during the ns-3 build.
+See the documentation for details.
+</p></li>
+</ul>
+
+<h2>New API:</h2>
+<ul>
+</ul>
+
+<h2>Changes to existing API:</h2>
+<ul>
+<li><b>Test cases no longer return a boolean value</b>
+<p>Unit test case DoRun() functions no longer return a bool value.  Now, they don't return a value at all.  The motivation for this change was to disallow users from merely returning "true" from a test case to force an error to be recorded.  Instead, test case macros should be used.
+</p></li>
+<li><b>PhyMac renamed to GenericPhy</b>
+<p>The PhyMac interface previously defined in phy-mac.h has been
+  renamed to GenericPhy interface and moved to a new file
+  generic-phy.h. The related variables and methods have been renamed accordingly. 
+</p></li>
+</ul>
+
+<h2>Changed behavior:</h2>
+<ul>
+</ul>
+
+<hr>
+<h1>Changes from ns-3.9 to ns-3.10</h1>
+
+<h2>Changes to build system:</h2>
+<ul>
+<li><b>Regression tests are no longer run using waf</b>
+<p>All regression testing is now being done in test.py.  As a result, a 
+separate reference trace repository is no longer needed to perform 
+regression tests.  Tests that require comparison against known good traces
+can still be run from test.py.  The --regression option for waf has been
+removed.  However, the "-r" option to download.py has been kept to 
+allow users to fetch older revisions of ns-3 that contain these traces.
+</p>
+<li><b>Documentation converted to Sphinx</b>
+<p> Project documentation (manual, tutorial, and testing) have been
+converted to Sphinx from the GNU Texinfo markup format.</p>
+</ul>
+
+<h2>New API:</h2>
+<ul>
+<li><b>Pyviz visualizer</b>  
+<p>A Python-based visualizer called pyviz is now integrated with ns-3.
+For Python simulations, there is an API to start the visualizer.  You
+have to import the visualizer module, and call visualizer.start()
+instead of ns3.Simulator.Run().  For C++ simulations, there is no API.
+For C++ simulations (but also works for Python ones) you need to set
+the GlobalValue SimulatorImplementationType to
+"ns3::VisualSimulatorImpl".  This can be set from the command-line,
+for example (add the
+<tt>--SimulatorImplementationType=ns3::VisualSimulatorImpl</tt>
+option), or via the waf option <tt>--visualizer</tt>, in addition to
+the usual <tt>--run</tt> option to run programs.
+</p></li>
+
+<li><b>WaypointMobility attributes</b>
+<p>Two attributes were added to WaypointMobility model:  LazyNotify and
+InitialPositionIs Waypoint.  See RELEASE_NOTES for details.  </p> </li>
+
+<li><b>802.11g rates for ERP-OFDM added</b>
+<p>New WifiModes of the form ErpOfdmRatexxMbps, where xx is the rate
+in Mbps (6, 9, 12, 18, 24, 36, 48, 54), are available for 802.11g.  
+More details are in the RELEASE_NOTES.  </p> </li>
+
+<li><b>Socket::GetSocketType ()</b>
+<p>This is analogous to getsockopt(SO_TYPE). ipv4-raw-socket, ipv6-raw-socket,
+  and packet-socket return NS3_SOCK_RAW. tcp-socket and nsc-tcp-socket return
+  NS3_SOCK_STREAM. udp-socket returns NS3_SOCK_DGRAM.</p></li>
+
+<li><b>BulkSendApplication</b>
+<p>Sends data as fast as possible up to MaxBytes or unlimited if MaxBytes is 
+zero.  Think OnOff, but without the "off" and without the variable data rate. 
+This application only works with NS3_SOCK_STREAM and NS3_SOCK_SEQPACKET sockets, 
+for example TCP sockets and not UDP sockets. A helper class exists to 
+facilitate creating BulkSendApplications. The API for the helper class 
+is similar to existing application helper classes, for example, OnOff.
+</p></li>
+
+<li><b>Rakhmatov Vrudhula non-linear battery model</b>
+<p>New class and helper for this battery model. </p></li>
+
+<li><b>Print IPv4 routing tables</b>
+<p>New class methods and helpers for printing IPv4 routing tables
+to an output stream. </p></li>
+
+<li><b>Destination-Sequenced Distance Vector (DSDV) routing protocol</b>
+<p>Derives from Ipv4RoutingProtocol and contains a DsdvHelper class. </p></li>
+
+<li><b>3GPP Long Term Evolution (LTE) models</b>
+<p>More details are in the RELEASE_NOTES. </p></li>
+
+</ul>
+
+<h2>Changes to existing API:</h2>
+<ul>
+<li><b>Consolidation of Wi-Fi MAC high functionality</b>
+<p>Wi-Fi MAC high classes have been reorganised in attempt to
+consolidate shared functionality into a single class. This new class
+is RegularWifiMac, and it derives from the abstract WifiMac, and is
+parent of AdhocWifiMac, StaWifiMac, ApWifiMac, and
+MeshWifiInterfaceMac. The QoS and non-QoS class variants are no
+longer, with a RegularWifiMac attribute "QosSupported" allowing
+selection between these two modes of operation. QosWifiMacHelper and
+NqosWifiMacHelper continue to work as previously, with a
+behind-the-scenes manipulation of the 'afore-mentioned attribute.
+</p></li>
+
+<li><b>New TCP architecture</b>
+<p>TcpSocketImpl was replaced by a new base class TcpSocketBase and
+several subclasses implementing different congestion control.  From 
+a user-level API perspective, the main change is that a new attribute
+"SocketType" is available in TcpL4Protocol, to which a TypeIdValue
+of a specific Tcp variant can be passed.  In the same class, the attribute 
+"RttEstimatorFactory" was also renamed "RttEstimatorType" since it now
+takes a TypeIdValue instead of an ObjectFactoryValue.  In most cases, 
+however, no change to existing user programs should be needed.
+</p></li>
+</ul>
+
+<h2>Changed behavior:</h2>
+<ul>
+<li><b>EmuNetDevice uses DIX instead of LLC encapsulation by default</b>
+<p>bug 984 in ns-3 tracker:  real devices don't usually understand LLC/SNAP
+so the default of DIX makes more sense.
+</p></li>
+<li><b>TCP defaults to NewReno congestion control</b>
+<p>As part of the TCP socket refactoring, a new TCP implementation provides
+slightly different behavior than the previous TcpSocketImpl that provided
+only fast retransmit.  The default behavior now is NewReno which provides
+fast retransmit and fast recovery with window inflation during recovery.
+</p></li>
+</ul>
+
+<hr>
 <h1>Changes from ns-3.8 to ns-3.9</h1>
 
 <h2>Changes to build system:</h2>
@@ -163,6 +321,8 @@ In Ipv4L4Protocol class,
 </pre>
   
 </li>
+<li>The method OutputStreamWrapper::SetStream (std::ostream *ostream) was removed.</li>
+)
 </ul>
 
 <h2>Changed behavior:</h2>
