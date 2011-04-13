@@ -999,7 +999,7 @@ RoutingProtocol::RecvRequest (Ptr<Packet> p, Ipv4Address receiver, Ipv4Address s
       Ptr<NetDevice> dev = m_ipv4->GetNetDevice (m_ipv4->GetInterfaceForAddress (receiver));
       RoutingTableEntry newEntry (/*device=*/dev, /*dst=*/origin, /*validSeno=*/true, /*seqNo=*/rreqHeader.GetOriginSeqno (),
                                   /*iface=*/m_ipv4->GetAddress (m_ipv4->GetInterfaceForAddress (receiver), 0), /*hops=*/hop,
-                                  /*nextHop*/src, /*timeLife=*/Time ((2 * NetTraversalTime - 2 * hop) * NodeTraversalTime));
+                                  /*nextHop*/src, /*timeLife=*/Time ((2 * NetTraversalTime - 2 * hop * NodeTraversalTime)));
       m_routingTable.AddRoute (newEntry);
     }
   else
@@ -1016,7 +1016,8 @@ RoutingProtocol::RecvRequest (Ptr<Packet> p, Ipv4Address receiver, Ipv4Address s
       toOrigin.SetOutputDevice (m_ipv4->GetNetDevice (m_ipv4->GetInterfaceForAddress (receiver)));
       toOrigin.SetInterface (m_ipv4->GetAddress (m_ipv4->GetInterfaceForAddress (receiver), 0));
       toOrigin.SetHop (hop);
-      toOrigin.SetLifeTime (std::max (Time ((2 * NetTraversalTime - 2 * hop) * NodeTraversalTime), toOrigin.GetLifeTime ()));
+      toOrigin.SetLifeTime (std::max (Time(2 * NetTraversalTime - 2 * hop * NodeTraversalTime), 
+                                      toOrigin.GetLifeTime ()));
       m_routingTable.Update (toOrigin);
     }
   NS_LOG_LOGIC (receiver << " receive RREQ to destination " << rreqHeader.GetDst ());
