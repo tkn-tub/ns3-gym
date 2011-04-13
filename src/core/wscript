@@ -211,6 +211,7 @@ def build(bld):
         'model/attribute-accessor-helper.h',
         'model/boolean.h',
         'model/int64x64.h',
+        'model/int64x64-double.h',
         'model/integer.h',
         'model/uinteger.h',
         'model/double.h',

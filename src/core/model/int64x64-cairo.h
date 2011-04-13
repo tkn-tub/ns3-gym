@@ -1,4 +1,5 @@
-#ifndef INT64X64_CAIRO_H
+#include "ns3/core-config.h"
+#if !defined(INT64X64_CAIRO_H) && defined (INT64X64_USE_CAIRO) && !defined(PYTHON_SCAN)
 #define INT64X64_CAIRO_H
 
 #include <stdint.h>

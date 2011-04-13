@@ -1,4 +1,5 @@
-#ifndef INT64X64_DOUBLE_H
+#include "ns3/core-config.h"
+#if !defined(INT64X64_DOUBLE_H) && (defined (INT64X64_USE_DOUBLE) || defined(PYTHON_SCAN))
 #define INT64X64_DOUBLE_H
 
 #include <iostream>

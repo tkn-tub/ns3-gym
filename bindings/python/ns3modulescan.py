@@ -303,7 +303,7 @@ def ns3_module_scan(top_builddir, pygen_file_name, everything_h, cflags):
             #'NS3_ASSERT_ENABLE': None,
             #'NS3_LOG_ENABLE': None,
             },
-        cflags=('--gccxml-cxxflags %r' % (cflags,))
+        cflags=('--gccxml-cxxflags %r %s' % (cflags,'-DPYTHON_SCAN'))
         )
 
     module_parser.parse_init([everything_h],
