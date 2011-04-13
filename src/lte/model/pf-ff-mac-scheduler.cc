@@ -495,12 +495,14 @@ PfFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sched
         newDci.m_resAlloc = 0;
         newDci.m_rbBitmap = 0; // TBD (32 bit bitmap see 7.1.6 of 36.213)
         uint32_t rbgMask = 0;
+        uint32_t startRbg = rbgAllocated;
         for (int i = 0; i < lcRbgNum; i++)
           {
             rbgMask = rbgMask + (0x1 << rbgAllocated);
             // NS_LOG_DEBUG (this << " Allocated PRB " << rbgAllocated);
             rbgAllocated++;
           }
+        uint32_t finishRbg = rbgAllocated - 1; 
         newDci.m_rbBitmap = rbgMask; // (32 bit bitmap see 7.1.6 of 36.213)
         
         int nbOfTbsInNewDci = 1;  // SISO -> only one TB
@@ -516,7 +518,16 @@ PfFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sched
               }
             else
               {
-                newDci.m_mcs.push_back ( LteAmc::GetMcsFromCqi ((*itCqi).second.m_higherLayerSelected.at (i).m_sbCqi.at (0)) );
+                // find the worst CQI in the bandwidht allocated
+                uint8_t worstCqi = (*itCqi).second.m_higherLayerSelected.at (startRbg).m_sbCqi.at (0);
+                for (uint16_t k = startRbg + 1; k <= finishRbg; k++)
+                  {
+                    if (((*itCqi).second.m_higherLayerSelected.at (k).m_sbCqi.at (0)) < worstCqi)
+                      {
+                        worstCqi = ((*itCqi).second.m_higherLayerSelected.at (k).m_sbCqi.at (0));
+                      }
+                  }
+                newDci.m_mcs.push_back (LteAmc::GetMcsFromCqi (worstCqi));
                 //NS_LOG_DEBUG (this << " MCS " << (uint32_t)newDci.m_mcs.at(0));
               }
             int nPRB = rbgSize * lcRbgNum;
