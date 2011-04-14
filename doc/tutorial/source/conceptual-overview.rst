@@ -155,10 +155,10 @@ directory structure something like the following:
 
 ::
 
-  AUTHORS       doc/       README         src/     waf.bat*
-  bindings/     examples/  RELEASE_NOTES  utils/   wscript
-  build/        LICENSE    samples/       VERSION  wutils.py
-  CHANGES.html  ns3/       scratch/       waf*     wutils.pyc
+  AUTHORS       doc/       README         utils/   wscript   
+  bindings/     examples/  RELEASE_NOTES  VERSION  wutils.py  
+  build/        LICENSE    scratch/       waf*     wutils.pyc 
+  CHANGES.html  ns3/       src            waf.bat*  
 
 Change into the ``examples/tutorial`` directory.  You should see a file named 
 ``first.cc`` located there.  This is a script that will create a simple
@@ -805,7 +805,6 @@ most of our *repositories* will look:
   drwxr-xr-x                               doc              files
   drwxr-xr-x                               examples         files
   drwxr-xr-x                               ns3              files
-  drwxr-xr-x                               samples          files
   drwxr-xr-x                               scratch          files
   drwxr-xr-x                               src              files
   drwxr-xr-x                               utils            files

@@ -170,11 +170,11 @@ def set_options(opt):
                    dest='disable_tests', action='store_true',
                    default=False)
     opt.add_option('--enable-examples',
-                   help=('Build the ns-3 examples and samples.'),
+                   help=('Build the ns-3 examples.'),
                    dest='enable_examples', action='store_true',
                    default=False)
     opt.add_option('--disable-examples',
-                   help=('Do not build the ns-3 examples and samples.'),
+                   help=('Do not build the ns-3 examples.'),
                    dest='disable_examples', action='store_true',
                    default=False)
     opt.add_option('--check',
@@ -374,7 +374,7 @@ def configure(conf):
         if os.path.isdir(os.path.join('examples', dir)):
             env['EXAMPLE_DIRECTORIES'].append(dir)
 
-    conf.report_optional_feature("ENABLE_EXAMPLES", "Build examples and samples", env['ENABLE_EXAMPLES'], 
+    conf.report_optional_feature("ENABLE_EXAMPLES", "Build examples", env['ENABLE_EXAMPLES'], 
                                  why_not_examples)
 
     conf.find_program('valgrind', var='VALGRIND')
@@ -584,7 +584,6 @@ def build(bld):
 
     # process subfolders from here
     bld.add_subdirs('src')
-    bld.add_subdirs('samples')
 
     env = bld.env
 

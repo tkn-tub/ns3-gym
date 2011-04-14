@@ -207,10 +207,10 @@ directory.  You should see something like the following there:
 
 ::
 
-  AUTHORS       examples/  RELEASE_NOTES  utils/   wscript
-  bindings/     LICENSE    samples/       VERSION  wutils.py
-  CHANGES.html  ns3/       scratch/       waf*
-  doc/          README     src/           waf.bat*
+  AUTHORS       examples/  RELEASE_NOTES  VERSION   wutils.py
+  bindings/     LICENSE    scratch/       waf*	    
+  CHANGES.html  ns3/       src/           waf.bat*
+  doc/          README     utils/         wscript
 
 You are now ready to build the |ns3| distribution.
 
@@ -367,7 +367,7 @@ output that looks similar to the following,
   Python Bindings               : enabled
   Python API Scanning Support   : enabled
   Use sudo to set suid bit      : not enabled (option --enable-sudo not selected)
-  Build examples and samples    : enabled
+  Build examples                : enabled
   Static build                  : not enabled (option --enable-static not selected)
   'configure' finished successfully (2.870s)
 

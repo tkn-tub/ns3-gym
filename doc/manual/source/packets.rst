@@ -488,7 +488,7 @@ statements at the beginning of their programs:::
 Sample programs
 ***************
 
-See ``samples/main-packet.cc`` and ``samples/main-packet-tag.cc``.
+See ``src/network/examples/main-packet-header.cc`` and ``src/network/examples/main-packet-tag.cc``.
 
 Implementation details
 **********************
