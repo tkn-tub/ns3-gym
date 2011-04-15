@@ -408,42 +408,44 @@ PfFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sched
     {
       //NS_LOG_DEBUG (this << " ALLOCATION for RBG " << i << " of " << rbgNum);
       std::map <lteFlowId_t, pfsFlowPerf_t>::iterator it;
-      std::map <lteFlowId_t, pfsFlowPerf_t>::iterator itMax = m_flowStats.begin ();
+      std::map <lteFlowId_t, pfsFlowPerf_t>::iterator itMax = m_flowStats.end ();
       double rcqiMax = 0.0;
       for (it = m_flowStats.begin (); it != m_flowStats.end (); it++)
         {
-          if ( ((*it).second.rlcBufferReq.m_rlcTransmissionQueueSize > 0)
-            || ((*it).second.rlcBufferReq.m_rlcRetransmissionQueueSize > 0)
-            || ((*it).second.rlcBufferReq.m_rlcStatusPduSize > 0) )
+          std::map <uint16_t,SbMeasResult_s>::iterator itCqi;
+          itCqi = m_a30CqiRxed.find ((*it).first.m_rnti);
+          uint8_t cqi = 0;
+          if (itCqi == m_a30CqiRxed.end ())
             {
-              // this UE-LC has data to transmit
-              std::map <uint16_t,SbMeasResult_s>::iterator itCqi;
-              itCqi = m_a30CqiRxed.find ((*it).first.m_rnti);
-              //NS_LOG_DEBUG (this << " ue-lc " << (*it).first.m_rnti);
-              uint8_t cqi = 0;
-              if (itCqi == m_a30CqiRxed.end ())
-                {
-                  //NS_LOG_DEBUG (this << " No DL-CQI for this UE-LC " << (*it).first.m_rnti);
-                  cqi = 0;
-                }
-              else
-                {
-                  cqi = (*itCqi).second.m_higherLayerSelected.at (i).m_sbCqi.at (0);
-                }
-              uint8_t mcs = LteAmc::GetMcsFromCqi (cqi);
-              //NS_LOG_DEBUG (this << " MCS " << (uint32_t)mcs);
-              double achievableRate = ((LteAmc::GetTbSizeFromMcs (mcs, 1) / 8)/0.001); // = TB size / TTI
-              double rcqi = achievableRate / (*it).second.lastAveragedThroughput;
-              //NS_LOG_DEBUG (this << " achievaleRate " << achievableRate << " avg thr " << (*it).second.lastAveragedThroughput);
-              //NS_LOG_DEBUG (this << " RCQI " << rcqi);
-              
-              if (rcqi > rcqiMax)
-                {
-                  rcqiMax = rcqi;
-                  itMax = it;
-                }
-
+              //NS_LOG_DEBUG (this << " No DL-CQI for this UE-LC " << (*it).first.m_rnti);
+              cqi = 1;  // start with lowest value
             }
+          else
+            {
+              cqi = (*itCqi).second.m_higherLayerSelected.at (i).m_sbCqi.at (0);
+            }
+          if (cqi > 0)  // CQI == 0 means "out of range" (see table 7.2.3-1 of 36.213)
+            {
+              if ( ((*it).second.rlcBufferReq.m_rlcTransmissionQueueSize > 0)
+                || ((*it).second.rlcBufferReq.m_rlcRetransmissionQueueSize > 0)
+                || ((*it).second.rlcBufferReq.m_rlcStatusPduSize > 0) )
+                {
+                  // this UE-LC has data to transmit
+                  //NS_LOG_DEBUG (this << " ue-lc " << (*it).first.m_rnti);
+                  uint8_t mcs = LteAmc::GetMcsFromCqi (cqi);
+                  //NS_LOG_DEBUG (this << " MCS " << (uint32_t)mcs);
+                  double achievableRate = ((LteAmc::GetTbSizeFromMcs (mcs, 1) / 8)/0.001); // = TB size / TTI
+                  double rcqi = achievableRate / (*it).second.lastAveragedThroughput;
+                  //NS_LOG_DEBUG (this << " achievaleRate " << achievableRate << " avg thr " << (*it).second.lastAveragedThroughput);
+                  //NS_LOG_DEBUG (this << " RCQI " << rcqi);
+                  
+                  if (rcqi > rcqiMax)
+                    {
+                      rcqiMax = rcqi;
+                      itMax = it;
+                    }
+                }
+              } // end if cqi
         } // end for m_rlcBufferReq
       
       if (itMax == m_flowStats.end ())
@@ -733,6 +735,10 @@ PfFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::Sched
                           pow (10, minSinr / 10 )  /
                           ( (-log (5.0 * 0.00005 )) / 1.5) ));
           int cqi = LteAmc::GetCqiFromSpectralEfficiency (s);
+          if (cqi == 0)
+            {
+              continue; // CQI == 0 means "out of range" (see table 7.2.3-1 of 36.213)
+            }
           uldci.m_mcs = LteAmc::GetMcsFromCqi (cqi);
           //NS_LOG_DEBUG (this << " UE " <<  (*it).first << " minsinr " << minSinr << " -> mcs " << (uint16_t)uldci.m_mcs);
         	

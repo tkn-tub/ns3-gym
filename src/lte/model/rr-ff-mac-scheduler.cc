@@ -376,7 +376,15 @@ RrFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sched
            || ((*it).m_rlcRetransmissionQueueSize > 0)
            || ((*it).m_rlcStatusPduSize > 0) )
         {
-          nflows++;
+          std::map <uint16_t,uint8_t>::iterator itCqi = m_p10CqiRxed.find ((*it).m_rnti);
+          if (itCqi != m_p10CqiRxed.end ())
+            {
+              if ((*itCqi).second != 0)
+                {
+                  // CQI == 0 means "out of range" (see table 7.2.3-1 of 36.213)
+                  nflows++;
+                }
+            }
         }
     }
 
@@ -589,6 +597,10 @@ RrFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::Sched
                           pow (10, minSinr / 10 )  /
                           ( (-log (5.0 * 0.00005 )) / 1.5) ));
           int cqi = LteAmc::GetCqiFromSpectralEfficiency (s);
+          if (cqi == 0)
+            {
+              continue; // CQI == 0 means "out of range" (see table 7.2.3-1 of 36.213)
+            }
           uldci.m_mcs = LteAmc::GetMcsFromCqi (cqi);
           //NS_LOG_DEBUG (this << " UE " <<  (*it).first << " minsinr " << minSinr << " -> mcs " << (uint16_t)uldci.m_mcs);
         	
