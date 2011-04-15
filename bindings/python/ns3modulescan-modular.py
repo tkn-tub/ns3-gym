@@ -233,7 +233,7 @@ def ns3_module_scan(top_builddir, module_name, headers_map, output_file_name, cf
             #'NS3_ASSERT_ENABLE': None,
             #'NS3_LOG_ENABLE': None,
             },
-        cflags=('--gccxml-cxxflags %r' % (cflags,))
+        cflags=('--gccxml-cxxflags "%s -DPYTHON_SCAN"' % cflags)
         )
 
     try:
