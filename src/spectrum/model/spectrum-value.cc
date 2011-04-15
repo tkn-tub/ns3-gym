@@ -649,6 +649,94 @@ SpectrumValue:: operator= (double rhs)
 }
 
 
+bool
+SpectrumValue::operator== (const SpectrumValue& rhs) const
+{
+  Values::const_iterator it1 = this->m_values.begin ();
+  Values::const_iterator it2 = rhs.m_values.begin ();
+
+  while ( it1 != this->m_values.end () && it2 != rhs.m_values.end () )
+    {
+      if ( *it1 != *it2 )
+        {
+          return false;
+        }
+      else
+        {
+          ++it1;
+          ++it2;
+        }
+    }
+
+  if ( it1 == this->m_values.end () && it2 == rhs.m_values.end () )
+    {
+      return true;
+    }
+  else
+    {
+      return false;
+    }
+}
+
+bool
+SpectrumValue::operator< (const SpectrumValue &rhs) const
+{
+  Values::const_iterator it1 = this->m_values.begin ();
+  Values::const_iterator it2 = rhs.m_values.begin ();
+
+  while ( it1 != this->m_values.end () && it2 != rhs.m_values.end () )
+    {
+      if ( *it1 >= *it2 )
+        {
+          return false;
+        }
+      else
+        {
+          ++it1;
+          ++it2;
+        }
+    }
+
+  if ( it1 == this->m_values.end () && it2 == rhs.m_values.end () )
+    {
+      return true;
+    }
+  else
+    {
+      return false;
+    }
+}
+
+bool
+SpectrumValue::operator> (const SpectrumValue &rhs) const
+{
+  Values::const_iterator it1 = this->m_values.begin ();
+  Values::const_iterator it2 = rhs.m_values.begin ();
+
+  while ( it1 != this->m_values.end () && it2 != rhs.m_values.end () )
+    {
+      if ( *it1 <= *it2 )
+        {
+          return false;
+        }
+      else
+        {
+          ++it1;
+          ++it2;
+        }
+    }
+
+  if ( it1 == this->m_values.end () && it2 == rhs.m_values.end () )
+    {
+      return true;
+    }
+  else
+    {
+      return false;
+    }
+}
+
+
 
 SpectrumValue
 SpectrumValue:: operator<< (int n) const
