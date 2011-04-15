@@ -20,12 +20,6 @@ namespace
         Time t1, t2, t3;
         t1 = t2 + t3;
         t1 = t2 - t3;
-        TimeSquare tsq = t2*t3;
-        Time tsqdiv = tsq/Seconds(1);
-        Scalar scal = t2/t3;
-        TimeInvert inv = scal/t3;
-        t1 = scal*t1;
-        t1 = t1/scal;
         t1 < t2;
         t1 <= t2;
         t1 == t2;

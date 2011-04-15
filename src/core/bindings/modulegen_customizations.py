@@ -441,41 +441,11 @@ _ns3_Ipv4Address_tp_hash (PyObject *obj)
     module['Ipv4Address'].pytype.slots['tp_hash'] = "_ns3_Ipv4Address_tp_hash"
 
 
-def add_scalar_operators(root_module):
-    # Scalar implicitly converts to Time, but pybindgen gccxml parser
-    # cannot pick up operators supported through implicit conversions,
-    # so we add them manually here.
-    cls = root_module['ns3::Scalar']
-
-    cls.add_binary_numeric_operator('*', root_module['ns3::Scalar'], root_module['ns3::Scalar'], param('ns3::Scalar const &', 'right'))
-    cls.add_binary_numeric_operator('+', root_module['ns3::Scalar'], root_module['ns3::Scalar'], param('ns3::Scalar const &', 'right'))
-    cls.add_binary_numeric_operator('-', root_module['ns3::Scalar'], root_module['ns3::Scalar'], param('ns3::Scalar const &', 'right'))
-    cls.add_binary_numeric_operator('/', root_module['ns3::Scalar'], root_module['ns3::Scalar'], param('ns3::Scalar const &', 'right'))
-
-    cls.add_binary_numeric_operator('*', root_module['ns3::Time'], root_module['ns3::Scalar'], param('ns3::Time const &', 'right'))
-    cls.add_binary_numeric_operator('-', root_module['ns3::Time'], root_module['ns3::Scalar'], param('ns3::Time const &', 'right'))
-
-    root_module['ns3::Time'].add_binary_numeric_operator(
-        '*', root_module['ns3::Time'], root_module['ns3::Time'], param('ns3::Scalar const &', 'right'))
-
-    root_module['ns3::Time'].add_binary_numeric_operator(
-        '-', root_module['ns3::Time'], root_module['ns3::Time'], param('ns3::Scalar const &', 'right'))
-
-    cls.add_binary_comparison_operator('<')
-    cls.add_binary_comparison_operator('>')
-    cls.add_binary_comparison_operator('!=')
-    cls.add_output_stream_operator()
-    cls.add_binary_comparison_operator('<=')
-    cls.add_binary_comparison_operator('==')
-    cls.add_binary_comparison_operator('>=')
-
-
 def post_register_types(root_module):
     Simulator_customizations(root_module)
     CommandLine_customizations(root_module)
     TypeId_customizations(root_module)
     add_std_ofstream(root_module)
-    add_scalar_operators(root_module)
 
     enabled_features = os.environ['NS3_ENABLED_FEATURES'].split(',')    
 
