@@ -26,4 +26,7 @@ def build(bld):
         'helper/point-to-point-helper.h',
         ]
 
+    if (bld.env['ENABLE_EXAMPLES']):
+        bld.add_subdirs('examples')
+
     bld.ns3_python_bindings()
