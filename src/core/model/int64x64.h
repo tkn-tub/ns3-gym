@@ -16,13 +16,13 @@
 namespace ns3 {
 
 #define INT64X64_OP_ARITH_TYPE(op,type)					\
-  inline int64x64_t operator op (const int64x64_t &lhs, const type &rhs) \
+  inline int64x64_t operator op (const int64x64_t &lhs, const type rhs) \
   {									\
     int64x64_t tmp = lhs;						\
     tmp op##= int64x64_t (rhs);						\
     return tmp;								\
   }									\
-  inline int64x64_t operator op (const type &lhs, const int64x64_t &rhs) \
+  inline int64x64_t operator op (const type lhs, const int64x64_t &rhs) \
   {									\
     int64x64_t tmp = int64x64_t (lhs);					\
     tmp op##= rhs;							\
