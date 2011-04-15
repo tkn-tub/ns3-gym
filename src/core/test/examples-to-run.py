@@ -8,6 +8,12 @@
 #
 # See test.py for more information.
 cpp_examples = [
+    ("main-attribute-value", "True", "True"),
+    ("main-callback", "True", "True"),
+    ("sample-simulator", "True", "True"),
+    ("main-ptr", "True", "True"),
+    ("main-random-variable", "True", "True"),
+    ("sample-random-variable", "True", "True"),
 ]
 
 # A list of Python examples to run in order to ensure that they remain
@@ -16,4 +22,6 @@ cpp_examples = [
 #     (example_name, do_run).
 #
 # See test.py for more information.
-python_examples = []
+python_examples = [
+    ("sample-simulator.py", "True"),
+]
