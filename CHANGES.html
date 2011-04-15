@@ -48,17 +48,17 @@ us a note on ns-developers mailing list.  </p>
 
 <h2>Changes to build system:</h2>
 <ul>
-<li><b>Tests are no longer built by default in ns-3</b>
+<li><b>Examples and tests are no longer built by default in ns-3</b>
 <p>
-You can now make tests be built in ns-3 in two ways.
+You can now make examples and tests be built in ns-3 in two ways.
 <ol>
 <li> Using build.py when ns-3 is built for the first time:
 <pre>
-    ./build.py --enable-tests
+    ./build.py --enable-examples --enable-tests
 </pre>
 <li> Using waf once ns-3 has been built:
 <pre>
-    ./waf configure --enable-tests
+    ./waf configure --enable-examples --enable-tests
 </pre>
 </ol>
 </p></li>

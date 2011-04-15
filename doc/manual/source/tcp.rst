@@ -164,7 +164,7 @@ Using the ``build.py`` script in ns-3-allinone directory, NSC will be enabled by
 default unless the platform does not support it. To disable it when building
 |ns3|, type:::
 
-./waf configure --enable-tests --disable-nsc
+./waf configure --enable-examples --enable-tests --disable-nsc
 
 Building and validating
 +++++++++++++++++++++++

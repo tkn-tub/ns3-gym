@@ -324,37 +324,29 @@ RadiotapHeader::GetChannelFlags (void) const
 }
 
 void 
-RadiotapHeader::SetAntennaSignalPower (int8_t signal)
+RadiotapHeader::SetAntennaSignalPower (double signal)
 {
   NS_LOG_FUNCTION (this << signal);
-  m_antennaSignal = signal;
 
   if (!(m_present & RADIOTAP_DBM_ANTSIGNAL))
     {
       m_present |= RADIOTAP_DBM_ANTSIGNAL;
       m_length += 1;
     }
-
-  NS_LOG_LOGIC (this << " m_length=" << m_length << " m_present=0x" << std::hex << m_present << std::dec);
-}
-
-void 
-RadiotapHeader::SetAntennaSignalPower (double signal)
-{
-  NS_LOG_FUNCTION (this << signal);
-
-  if (signal < -128)
-    {
-      return SetAntennaSignalPower (static_cast<int8_t> (-128));
-    }
-
   if (signal > 127)
     {
-      return SetAntennaSignalPower (static_cast<int8_t> (127));
+      m_antennaSignal = 127;
     }
-  
-  SetAntennaSignalPower (static_cast<int8_t> (floor(signal + 0.5)));
-}
+  else if (signal < -128)
+    {
+      m_antennaSignal = -128;
+    }
+  else
+    {
+      m_antennaSignal = static_cast<int8_t> (floor(signal + 0.5));
+    }
+
+  NS_LOG_LOGIC (this << " m_length=" << m_length << " m_present=0x" << std::hex << m_present << std::dec);}
 
 uint8_t 
 RadiotapHeader::GetAntennaSignalPower (void) const
@@ -364,36 +356,29 @@ RadiotapHeader::GetAntennaSignalPower (void) const
 }
 
 void 
-RadiotapHeader::SetAntennaNoisePower (int8_t noise)
+RadiotapHeader::SetAntennaNoisePower (double noise)
 {
   NS_LOG_FUNCTION (this << noise);
-  m_antennaNoise = noise;
 
   if (!(m_present & RADIOTAP_DBM_ANTNOISE))
     {
       m_present |= RADIOTAP_DBM_ANTNOISE;
       m_length += 1;
     }
+  if (noise > 127.0)
+    {
+      m_antennaNoise = 127;
+    }
+  else if (noise < -128.0)
+    {
+      m_antennaNoise = -128;
+    }
+  else
+    {
+      m_antennaNoise = static_cast<int8_t> (floor (noise + 0.5));
+    }
 
   NS_LOG_LOGIC (this << " m_length=" << m_length << " m_present=0x" << std::hex << m_present << std::dec);
-}
-
-void 
-RadiotapHeader::SetAntennaNoisePower (double noise)
-{
-  NS_LOG_FUNCTION (this << noise);
-
-  if (noise < -128)
-    {
-      return SetAntennaNoisePower (static_cast<int8_t> (-128));
-    }
-
-  if (noise > 127)
-    {
-      return SetAntennaNoisePower (static_cast<int8_t> (127));
-    }
-  
-  SetAntennaNoisePower (static_cast<int8_t> (floor(noise + 0.5)));
 }
 
 uint8_t 

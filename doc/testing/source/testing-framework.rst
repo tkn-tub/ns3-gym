@@ -64,11 +64,12 @@ as well.
 ``test.py`` is very flexible in allowing the user to specify the number
 and kind of tests to run; and also the amount and kind of output to generate.
 
-Before running ``test.py``, make sure that ns3's tests have been built by doing the following
+Before running ``test.py``, make sure that ns3's examples and tests
+have been built by doing the following
 
 ::
 
-  ./waf configure --enable-tests
+  ./waf configure --enable-examples --enable-tests
   ./waf
 
 By default, ``test.py`` will run all available tests and report status
