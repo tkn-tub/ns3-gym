@@ -104,7 +104,7 @@ LteSpectrumPhy::GetTypeId (void)
                      "Trace fired when a previosuly started RX terminates successfully",
                      MakeTraceSourceAccessor (&LteSpectrumPhy::m_phyRxEndOkTrace))
     .AddTraceSource ("RxEndError",
-                     "Trace fired when a previosuly started RX terminates with an error (packet is corrupted)",
+                     "Trace fired when a previosuly started RX terminates with an error",
                      MakeTraceSourceAccessor (&LteSpectrumPhy::m_phyRxEndErrorTrace))
   ;
   return tid;
@@ -238,13 +238,7 @@ LteSpectrumPhy::StartTx (Ptr<PacketBurst> pb)
   NS_LOG_FUNCTION (this << pb);
   NS_LOG_LOGIC (this << " state: " << m_state);
 
-
-  for (std::list<Ptr<Packet> >::const_iterator iter = pb->Begin (); iter
-         != pb->End (); ++iter)
-    {
-      Ptr<Packet> packet = (*iter)->Copy ();
-      m_phyTxStartTrace (packet);
-    }
+  m_phyTxStartTrace (pb);
 
   switch (m_state)
     {
@@ -301,12 +295,7 @@ LteSpectrumPhy::EndTx ()
 
   NS_ASSERT (m_state == TX);
 
-  for (std::list<Ptr<Packet> >::const_iterator iter = m_txPacketBurst->Begin (); iter
-       != m_txPacketBurst->End (); ++iter)
-    {
-      Ptr<Packet> packet = (*iter)->Copy ();
-      m_phyTxEndTrace (packet);
-    }
+  m_phyTxEndTrace (m_txPacketBurst);
 
   if (!m_phyMacTxEndCallback.IsNull ())
     {
@@ -379,13 +368,8 @@ LteSpectrumPhy::StartRx (Ptr<PacketBurst> pb, Ptr <const SpectrumValue> rxPsd, S
                 
                 ChangeState (RX);                                
                 m_interference->StartRx (rxPsd);
-  
-                for (std::list<Ptr<Packet> >::const_iterator iter = pb->Begin (); iter
-                       != pb->End (); ++iter)
-                  {
-                    Ptr<Packet> packet = (*iter)->Copy ();
-                    m_phyRxStartTrace (packet);
-                  }
+
+                m_phyRxStartTrace (pb);  
                 
                 m_rxPacketBurstList.push_back (pb);
  
@@ -417,52 +401,36 @@ LteSpectrumPhy::EndRx ()
   NS_ASSERT (m_state == RX);
 
   // this will trigger CQI calculation and Error Model evaluation
-  // as a side effect, the error model should update the error status of all PDUs
+  // as a side effect, the error model should update the error status of all TBs
   m_interference->EndRx ();
 
   for (std::list<Ptr<PacketBurst> >::const_iterator i = m_rxPacketBurstList.begin (); 
        i != m_rxPacketBurstList.end (); ++i)
     {
-      // iterate over all packets in the PacketBurst
-      for (std::list<Ptr<Packet> >::const_iterator j = (*i)->Begin (); 
-           j != (*i)->End (); ++j)
-        {
-          // here we should determine whether this particular PDU
-          // (identified by RNTI and LCID) has been received with errors
-          // or not 
-          // LteMacTag tag;
-          // (*iter)->PeekPacketTag (tag);
-          // uint16_t rnti = tag.GetRnti ();
-          // uint8_t lcid = tag.GetLcid ();
-          // bool pduError = IsPduInError (rnti, lcid);
-          bool pduError = false;
+      // here we should determine whether this TB has been received
+      // correctly or not
+      bool tbRxOk = true;
 
-          if (pduError)
-            {
-              m_phyRxEndErrorTrace ((*j)->Copy ());
-              if (!m_phyMacRxEndErrorCallback.IsNull ())
-                {
-                  NS_LOG_LOGIC (this << " calling m_phyMacRxEndErrorCallback");
-                  m_phyMacRxEndOkCallback ((*j)->Copy ());
-                }
-              else
-                {
-                  NS_LOG_LOGIC (this << " m_phyMacRxEndErrorCallback is NULL");
-                }
-            }        
-          else // pdu received successfully
-            {
-              m_phyRxEndOkTrace ((*j)->Copy ());          
+      if (tbRxOk)
+        {       
+          m_phyRxEndOkTrace (*i);    
+
+          // forward each PDU in the PacketBurst separately to the MAC 
+          // WILD HACK: we currently don't model properly the aggregation
+          // of PDUs into TBs. In reality, the PHY is concerned only with
+          // TBs, and it should be left to the MAC to decompose the TB into PDUs
+          for (std::list<Ptr<Packet> >::const_iterator j = (*i)->Begin (); 
+               j != (*i)->End (); ++j)
+            {                              
               if (!m_phyMacRxEndOkCallback.IsNull ())
                 {
-                  NS_LOG_LOGIC (this << " calling m_phyMacRxEndOkCallback"); 
                   m_phyMacRxEndOkCallback (*j);            
                 }
-              else
-                {
-                  NS_LOG_LOGIC (this << " m_phyMacRxEndOkCallback is NULL");
-                }
             }
+        }
+      else
+        { // TB received with errors
+          m_phyRxEndErrorTrace (*i);
         }
     }
   ChangeState (IDLE);

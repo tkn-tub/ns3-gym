@@ -171,11 +171,11 @@ private:
   Time m_firstRxStart;
   Time m_firstRxDuration;
 
-  TracedCallback<Ptr<const Packet> > m_phyTxStartTrace;
-  TracedCallback<Ptr<const Packet> > m_phyTxEndTrace;
-  TracedCallback<Ptr<const Packet> > m_phyRxStartTrace;
-  TracedCallback<Ptr<const Packet> > m_phyRxEndOkTrace;
-  TracedCallback<Ptr<const Packet> > m_phyRxEndErrorTrace;
+  TracedCallback<Ptr<const PacketBurst> > m_phyTxStartTrace;
+  TracedCallback<Ptr<const PacketBurst> > m_phyTxEndTrace;
+  TracedCallback<Ptr<const PacketBurst> > m_phyRxStartTrace;
+  TracedCallback<Ptr<const PacketBurst> > m_phyRxEndOkTrace;
+  TracedCallback<Ptr<const PacketBurst> > m_phyRxEndErrorTrace;
 
   PhyMacTxEndCallback        m_phyMacTxEndCallback;
   PhyMacRxEndErrorCallback   m_phyMacRxEndErrorCallback;
