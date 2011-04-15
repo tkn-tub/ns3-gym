@@ -45,6 +45,9 @@ def build(bld):
         'model/lte-interference.cc',
         'model/lte-sinr-chunk-processor.cc',
         'model/pf-ff-mac-scheduler.cc',
+        'test/lena-test-suite.cc',
+        'test/lena-test-downlink-sinr.cc',
+        'test/lena-test-sinr-chunk-processor.cc',
         ]
     
     headers = bld.new_task_gen('ns3header')
@@ -92,6 +95,8 @@ def build(bld):
         'model/lte-interference.h',
         'model/lte-sinr-chunk-processor.h',
         'model/pf-ff-mac-scheduler.h',
+        'test/lena-test-downlink-sinr.h',
+        'test/lena-test-sinr-chunk-processor.h',
         ]
 
     if (bld.env['ENABLE_EXAMPLES']):
