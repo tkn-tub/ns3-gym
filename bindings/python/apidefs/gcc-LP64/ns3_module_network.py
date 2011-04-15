@@ -2998,18 +2998,10 @@ def register_Ns3RadiotapHeader_methods(root_module, cls):
                    'void', 
                    [param('ns3::Buffer::Iterator', 'start')], 
                    is_const=True, is_virtual=True)
-    ## radiotap-header.h: void ns3::RadiotapHeader::SetAntennaNoisePower(int8_t noise) [member function]
-    cls.add_method('SetAntennaNoisePower', 
-                   'void', 
-                   [param('int8_t', 'noise')])
     ## radiotap-header.h: void ns3::RadiotapHeader::SetAntennaNoisePower(double noise) [member function]
     cls.add_method('SetAntennaNoisePower', 
                    'void', 
                    [param('double', 'noise')])
-    ## radiotap-header.h: void ns3::RadiotapHeader::SetAntennaSignalPower(int8_t signal) [member function]
-    cls.add_method('SetAntennaSignalPower', 
-                   'void', 
-                   [param('int8_t', 'signal')])
     ## radiotap-header.h: void ns3::RadiotapHeader::SetAntennaSignalPower(double signal) [member function]
     cls.add_method('SetAntennaSignalPower', 
                    'void', 

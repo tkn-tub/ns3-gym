@@ -17,8 +17,6 @@ def register_types(module):
     module.add_class('EventId')
     ## global-value.h: ns3::GlobalValue [class]
     module.add_class('GlobalValue')
-    ## high-precision-128.h: ns3::HighPrecision [class]
-    module.add_class('HighPrecision')
     ## int-to-type.h: ns3::IntToType<0> [struct]
     module.add_class('IntToType', template_parameters=['0'])
     ## int-to-type.h: ns3::IntToType<0>::v_e [enumeration]
@@ -47,6 +45,8 @@ def register_types(module):
     module.add_class('IntToType', template_parameters=['6'])
     ## int-to-type.h: ns3::IntToType<6>::v_e [enumeration]
     module.add_enum('v_e', ['value'], outer_class=root_module['ns3::IntToType< 6 >'])
+    ## log.h: ns3::LogComponent [class]
+    module.add_class('LogComponent')
     ## names.h: ns3::Names [class]
     module.add_class('Names')
     ## object-base.h: ns3::ObjectBase [class]
@@ -73,14 +73,6 @@ def register_types(module):
     module.add_class('SystemMutex')
     ## system-wall-clock-ms.h: ns3::SystemWallClockMs [class]
     module.add_class('SystemWallClockMs')
-    ## nstime.h: ns3::Time [class]
-    module.add_class('Time')
-    ## nstime.h: ns3::Time::Unit [enumeration]
-    module.add_enum('Unit', ['S', 'MS', 'US', 'NS', 'PS', 'FS', 'LAST'], outer_class=root_module['ns3::Time'])
-    ## time-base.h: ns3::TimeBase [class]
-    module.add_class('TimeBase')
-    ## time-base.h: ns3::TimeBase::Unit [enumeration]
-    module.add_enum('Unit', ['S', 'MS', 'US', 'NS', 'PS', 'FS', 'LAST'], outer_class=root_module['ns3::TimeBase'])
     ## timer.h: ns3::Timer [class]
     module.add_class('Timer')
     ## timer.h: ns3::Timer::DestroyPolicy [enumeration]
@@ -91,10 +83,6 @@ def register_types(module):
     module.add_class('TimerImpl', allow_subclassing=True)
     ## traced-value.h: ns3::TracedValue<double> [class]
     module.add_class('TracedValue', template_parameters=['double'])
-    ## traced-value.h: ns3::TracedValue<ns3::Time> [class]
-    module.add_class('TracedValue', template_parameters=['ns3::Time'])
-    ## traced-value.h: ns3::TracedValue<ns3::Time> [class]
-    root_module['ns3::TracedValue< ns3::Time >'].implicitly_converts_to(root_module['ns3::Time'])
     ## random-variable.h: ns3::TriangularVariable [class]
     module.add_class('TriangularVariable', parent=root_module['ns3::RandomVariable'])
     ## type-id.h: ns3::TypeId [class]
@@ -121,6 +109,8 @@ def register_types(module):
     module.add_class('ZipfVariable', parent=root_module['ns3::RandomVariable'])
     ## empty.h: ns3::empty [class]
     module.add_class('empty')
+    ## int64x64-double.h: ns3::int64x64_t [class]
+    module.add_class('int64x64_t')
     ## random-variable.h: ns3::ConstantVariable [class]
     module.add_class('ConstantVariable', parent=root_module['ns3::RandomVariable'])
     ## random-variable.h: ns3::DeterministicVariable [class]
@@ -145,10 +135,6 @@ def register_types(module):
     module.add_class('AggregateIterator', outer_class=root_module['ns3::Object'])
     ## random-variable.h: ns3::ParetoVariable [class]
     module.add_class('ParetoVariable', parent=root_module['ns3::RandomVariable'])
-    ## nstime.h: ns3::Scalar [class]
-    module.add_class('Scalar')
-    ## nstime.h: ns3::Scalar [class]
-    root_module['ns3::Scalar'].implicitly_converts_to(root_module['ns3::Time'])
     ## scheduler.h: ns3::Scheduler [class]
     module.add_class('Scheduler', parent=root_module['ns3::Object'])
     ## scheduler.h: ns3::Scheduler::Event [struct]
@@ -179,8 +165,18 @@ def register_types(module):
     module.add_class('Synchronizer', parent=root_module['ns3::Object'])
     ## system-thread.h: ns3::SystemThread [class]
     module.add_class('SystemThread', parent=root_module['ns3::SimpleRefCount< ns3::SystemThread, ns3::empty, ns3::DefaultDeleter<ns3::SystemThread> >'])
+    ## nstime.h: ns3::Time [class]
+    module.add_class('Time')
+    ## nstime.h: ns3::Time::Unit [enumeration]
+    module.add_enum('Unit', ['S', 'MS', 'US', 'NS', 'PS', 'FS', 'LAST'], outer_class=root_module['ns3::Time'])
+    ## nstime.h: ns3::Time [class]
+    root_module['ns3::Time'].implicitly_converts_to(root_module['ns3::int64x64_t'])
     ## trace-source-accessor.h: ns3::TraceSourceAccessor [class]
     module.add_class('TraceSourceAccessor', parent=root_module['ns3::SimpleRefCount< ns3::TraceSourceAccessor, ns3::empty, ns3::DefaultDeleter<ns3::TraceSourceAccessor> >'])
+    ## traced-value.h: ns3::TracedValue<ns3::Time> [class]
+    module.add_class('TracedValue', template_parameters=['ns3::Time'])
+    ## traced-value.h: ns3::TracedValue<ns3::Time> [class]
+    root_module['ns3::TracedValue< ns3::Time >'].implicitly_converts_to(root_module['ns3::Time'])
     ## wall-clock-synchronizer.h: ns3::WallClockSynchronizer [class]
     module.add_class('WallClockSynchronizer', parent=root_module['ns3::Synchronizer'])
     ## attribute.h: ns3::AttributeAccessor [class]
@@ -286,22 +282,20 @@ def register_types(module):
     module.add_container('std::list< ns3::Ptr< ns3::UanTransducer > >', 'ns3::Ptr< ns3::UanTransducer >', container_type='list')
     module.add_container('std::vector< ns3::Ptr< ns3::NetDevice > >', 'ns3::Ptr< ns3::NetDevice >', container_type='vector')
     module.add_container('std::vector< ns3::Ptr< ns3::SpectrumPhy > >', 'ns3::Ptr< ns3::SpectrumPhy >', container_type='vector')
-    typehandlers.add_type_alias('ns3::Time', 'ns3::TimeInvert')
-    typehandlers.add_type_alias('ns3::Time*', 'ns3::TimeInvert*')
-    typehandlers.add_type_alias('ns3::Time&', 'ns3::TimeInvert&')
-    module.add_typedef(root_module['ns3::Time'], 'TimeInvert')
+    typehandlers.add_type_alias('void ( * ) ( std::ostream & ) *', 'ns3::LogNodePrinter')
+    typehandlers.add_type_alias('void ( * ) ( std::ostream & ) **', 'ns3::LogNodePrinter*')
+    typehandlers.add_type_alias('void ( * ) ( std::ostream & ) *&', 'ns3::LogNodePrinter&')
     typehandlers.add_type_alias('ns3::Vector3DChecker', 'ns3::VectorChecker')
     typehandlers.add_type_alias('ns3::Vector3DChecker*', 'ns3::VectorChecker*')
     typehandlers.add_type_alias('ns3::Vector3DChecker&', 'ns3::VectorChecker&')
     module.add_typedef(root_module['ns3::Vector3DChecker'], 'VectorChecker')
-    typehandlers.add_type_alias('ns3::Time', 'ns3::TimeSquare')
-    typehandlers.add_type_alias('ns3::Time*', 'ns3::TimeSquare*')
-    typehandlers.add_type_alias('ns3::Time&', 'ns3::TimeSquare&')
-    module.add_typedef(root_module['ns3::Time'], 'TimeSquare')
     typehandlers.add_type_alias('ns3::Vector3D', 'ns3::Vector')
     typehandlers.add_type_alias('ns3::Vector3D*', 'ns3::Vector*')
     typehandlers.add_type_alias('ns3::Vector3D&', 'ns3::Vector&')
     module.add_typedef(root_module['ns3::Vector3D'], 'Vector')
+    typehandlers.add_type_alias('void ( * ) ( std::ostream & ) *', 'ns3::LogTimePrinter')
+    typehandlers.add_type_alias('void ( * ) ( std::ostream & ) **', 'ns3::LogTimePrinter*')
+    typehandlers.add_type_alias('void ( * ) ( std::ostream & ) *&', 'ns3::LogTimePrinter&')
     typehandlers.add_type_alias('ns3::Vector3DValue', 'ns3::VectorValue')
     typehandlers.add_type_alias('ns3::Vector3DValue*', 'ns3::VectorValue*')
     typehandlers.add_type_alias('ns3::Vector3DValue&', 'ns3::VectorValue&')
@@ -410,7 +404,6 @@ def register_methods(root_module):
     register_Ns3CriticalSection_methods(root_module, root_module['ns3::CriticalSection'])
     register_Ns3EventId_methods(root_module, root_module['ns3::EventId'])
     register_Ns3GlobalValue_methods(root_module, root_module['ns3::GlobalValue'])
-    register_Ns3HighPrecision_methods(root_module, root_module['ns3::HighPrecision'])
     register_Ns3IntToType__0_methods(root_module, root_module['ns3::IntToType< 0 >'])
     register_Ns3IntToType__1_methods(root_module, root_module['ns3::IntToType< 1 >'])
     register_Ns3IntToType__2_methods(root_module, root_module['ns3::IntToType< 2 >'])
@@ -418,6 +411,7 @@ def register_methods(root_module):
     register_Ns3IntToType__4_methods(root_module, root_module['ns3::IntToType< 4 >'])
     register_Ns3IntToType__5_methods(root_module, root_module['ns3::IntToType< 5 >'])
     register_Ns3IntToType__6_methods(root_module, root_module['ns3::IntToType< 6 >'])
+    register_Ns3LogComponent_methods(root_module, root_module['ns3::LogComponent'])
     register_Ns3Names_methods(root_module, root_module['ns3::Names'])
     register_Ns3ObjectBase_methods(root_module, root_module['ns3::ObjectBase'])
     register_Ns3ObjectDeleter_methods(root_module, root_module['ns3::ObjectDeleter'])
@@ -431,12 +425,9 @@ def register_methods(root_module):
     register_Ns3SystemCondition_methods(root_module, root_module['ns3::SystemCondition'])
     register_Ns3SystemMutex_methods(root_module, root_module['ns3::SystemMutex'])
     register_Ns3SystemWallClockMs_methods(root_module, root_module['ns3::SystemWallClockMs'])
-    register_Ns3Time_methods(root_module, root_module['ns3::Time'])
-    register_Ns3TimeBase_methods(root_module, root_module['ns3::TimeBase'])
     register_Ns3Timer_methods(root_module, root_module['ns3::Timer'])
     register_Ns3TimerImpl_methods(root_module, root_module['ns3::TimerImpl'])
     register_Ns3TracedValue__Double_methods(root_module, root_module['ns3::TracedValue< double >'])
-    register_Ns3TracedValue__Ns3Time_methods(root_module, root_module['ns3::TracedValue< ns3::Time >'])
     register_Ns3TriangularVariable_methods(root_module, root_module['ns3::TriangularVariable'])
     register_Ns3TypeId_methods(root_module, root_module['ns3::TypeId'])
     register_Ns3TypeIdAttributeInfo_methods(root_module, root_module['ns3::TypeId::AttributeInfo'])
@@ -449,6 +440,7 @@ def register_methods(root_module):
     register_Ns3ZetaVariable_methods(root_module, root_module['ns3::ZetaVariable'])
     register_Ns3ZipfVariable_methods(root_module, root_module['ns3::ZipfVariable'])
     register_Ns3Empty_methods(root_module, root_module['ns3::empty'])
+    register_Ns3Int64x64_t_methods(root_module, root_module['ns3::int64x64_t'])
     register_Ns3ConstantVariable_methods(root_module, root_module['ns3::ConstantVariable'])
     register_Ns3DeterministicVariable_methods(root_module, root_module['ns3::DeterministicVariable'])
     register_Ns3EmpiricalVariable_methods(root_module, root_module['ns3::EmpiricalVariable'])
@@ -461,7 +453,6 @@ def register_methods(root_module):
     register_Ns3Object_methods(root_module, root_module['ns3::Object'])
     register_Ns3ObjectAggregateIterator_methods(root_module, root_module['ns3::Object::AggregateIterator'])
     register_Ns3ParetoVariable_methods(root_module, root_module['ns3::ParetoVariable'])
-    register_Ns3Scalar_methods(root_module, root_module['ns3::Scalar'])
     register_Ns3Scheduler_methods(root_module, root_module['ns3::Scheduler'])
     register_Ns3SchedulerEvent_methods(root_module, root_module['ns3::Scheduler::Event'])
     register_Ns3SchedulerEventKey_methods(root_module, root_module['ns3::Scheduler::EventKey'])
@@ -501,7 +492,9 @@ def register_methods(root_module):
     register_Ns3SimulatorImpl_methods(root_module, root_module['ns3::SimulatorImpl'])
     register_Ns3Synchronizer_methods(root_module, root_module['ns3::Synchronizer'])
     register_Ns3SystemThread_methods(root_module, root_module['ns3::SystemThread'])
+    register_Ns3Time_methods(root_module, root_module['ns3::Time'])
     register_Ns3TraceSourceAccessor_methods(root_module, root_module['ns3::TraceSourceAccessor'])
+    register_Ns3TracedValue__Ns3Time_methods(root_module, root_module['ns3::TracedValue< ns3::Time >'])
     register_Ns3WallClockSynchronizer_methods(root_module, root_module['ns3::WallClockSynchronizer'])
     register_Ns3AttributeAccessor_methods(root_module, root_module['ns3::AttributeAccessor'])
     register_Ns3AttributeChecker_methods(root_module, root_module['ns3::AttributeChecker'])
@@ -730,75 +723,6 @@ def register_Ns3GlobalValue_methods(root_module, cls):
                    [param('ns3::AttributeValue const &', 'value')])
     return
 
-def register_Ns3HighPrecision_methods(root_module, cls):
-    cls.add_output_stream_operator()
-    ## high-precision-128.h: ns3::HighPrecision::HighPrecision(ns3::HighPrecision const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::HighPrecision const &', 'arg0')])
-    ## high-precision-128.h: ns3::HighPrecision::HighPrecision(int64_t high, uint64_t low) [constructor]
-    cls.add_constructor([param('int64_t', 'high'), param('uint64_t', 'low')])
-    ## high-precision-128.h: ns3::HighPrecision::HighPrecision() [constructor]
-    cls.add_constructor([])
-    ## high-precision-128.h: ns3::HighPrecision::HighPrecision(int64_t value, bool dummy) [constructor]
-    cls.add_constructor([param('int64_t', 'value'), param('bool', 'dummy')])
-    ## high-precision-128.h: ns3::HighPrecision::HighPrecision(double value) [constructor]
-    cls.add_constructor([param('double', 'value')])
-    ## high-precision-128.h: void ns3::HighPrecision::Add(ns3::HighPrecision const & o) [member function]
-    cls.add_method('Add', 
-                   'void', 
-                   [param('ns3::HighPrecision const &', 'o')])
-    ## high-precision-128.h: int ns3::HighPrecision::Compare(ns3::HighPrecision const & o) const [member function]
-    cls.add_method('Compare', 
-                   'int', 
-                   [param('ns3::HighPrecision const &', 'o')], 
-                   is_const=True)
-    ## high-precision-128.h: void ns3::HighPrecision::Div(ns3::HighPrecision const & o) [member function]
-    cls.add_method('Div', 
-                   'void', 
-                   [param('ns3::HighPrecision const &', 'o')])
-    ## high-precision-128.h: double ns3::HighPrecision::GetDouble() const [member function]
-    cls.add_method('GetDouble', 
-                   'double', 
-                   [], 
-                   is_const=True)
-    ## high-precision-128.h: int64_t ns3::HighPrecision::GetHigh() const [member function]
-    cls.add_method('GetHigh', 
-                   'int64_t', 
-                   [], 
-                   is_const=True)
-    ## high-precision-128.h: int64_t ns3::HighPrecision::GetInteger() const [member function]
-    cls.add_method('GetInteger', 
-                   'int64_t', 
-                   [], 
-                   is_const=True)
-    ## high-precision-128.h: uint64_t ns3::HighPrecision::GetLow() const [member function]
-    cls.add_method('GetLow', 
-                   'uint64_t', 
-                   [], 
-                   is_const=True)
-    ## high-precision-128.h: static ns3::HighPrecision ns3::HighPrecision::Invert(uint64_t v) [member function]
-    cls.add_method('Invert', 
-                   'ns3::HighPrecision', 
-                   [param('uint64_t', 'v')], 
-                   is_static=True)
-    ## high-precision-128.h: void ns3::HighPrecision::Mul(ns3::HighPrecision const & o) [member function]
-    cls.add_method('Mul', 
-                   'void', 
-                   [param('ns3::HighPrecision const &', 'o')])
-    ## high-precision-128.h: void ns3::HighPrecision::MulByInvert(ns3::HighPrecision const & o) [member function]
-    cls.add_method('MulByInvert', 
-                   'void', 
-                   [param('ns3::HighPrecision const &', 'o')])
-    ## high-precision-128.h: void ns3::HighPrecision::Sub(ns3::HighPrecision const & o) [member function]
-    cls.add_method('Sub', 
-                   'void', 
-                   [param('ns3::HighPrecision const &', 'o')])
-    ## high-precision-128.h: static ns3::HighPrecision ns3::HighPrecision::Zero() [member function]
-    cls.add_method('Zero', 
-                   'ns3::HighPrecision', 
-                   [], 
-                   is_static=True)
-    return
-
 def register_Ns3IntToType__0_methods(root_module, cls):
     ## int-to-type.h: ns3::IntToType<0>::IntToType() [constructor]
     cls.add_constructor([])
@@ -846,6 +770,40 @@ def register_Ns3IntToType__6_methods(root_module, cls):
     cls.add_constructor([])
     ## int-to-type.h: ns3::IntToType<6>::IntToType(ns3::IntToType<6> const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::IntToType< 6 > const &', 'arg0')])
+    return
+
+def register_Ns3LogComponent_methods(root_module, cls):
+    ## log.h: ns3::LogComponent::LogComponent(ns3::LogComponent const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::LogComponent const &', 'arg0')])
+    ## log.h: ns3::LogComponent::LogComponent(char const * name) [constructor]
+    cls.add_constructor([param('char const *', 'name')])
+    ## log.h: void ns3::LogComponent::Disable(ns3::LogLevel level) [member function]
+    cls.add_method('Disable', 
+                   'void', 
+                   [param('ns3::LogLevel', 'level')])
+    ## log.h: void ns3::LogComponent::Enable(ns3::LogLevel level) [member function]
+    cls.add_method('Enable', 
+                   'void', 
+                   [param('ns3::LogLevel', 'level')])
+    ## log.h: void ns3::LogComponent::EnvVarCheck(char const * name) [member function]
+    cls.add_method('EnvVarCheck', 
+                   'void', 
+                   [param('char const *', 'name')])
+    ## log.h: bool ns3::LogComponent::IsEnabled(ns3::LogLevel level) const [member function]
+    cls.add_method('IsEnabled', 
+                   'bool', 
+                   [param('ns3::LogLevel', 'level')], 
+                   is_const=True)
+    ## log.h: bool ns3::LogComponent::IsNoneEnabled() const [member function]
+    cls.add_method('IsNoneEnabled', 
+                   'bool', 
+                   [], 
+                   is_const=True)
+    ## log.h: char const * ns3::LogComponent::Name() const [member function]
+    cls.add_method('Name', 
+                   'char const *', 
+                   [], 
+                   is_const=True)
     return
 
 def register_Ns3Names_methods(root_module, cls):
@@ -1339,209 +1297,6 @@ def register_Ns3SystemWallClockMs_methods(root_module, cls):
                    [])
     return
 
-def register_Ns3Time_methods(root_module, cls):
-    cls.add_binary_comparison_operator('!=')
-    cls.add_inplace_numeric_operator('*=', param('ns3::Time const &', 'right'))
-    cls.add_inplace_numeric_operator('+=', param('ns3::Time const &', 'right'))
-    cls.add_inplace_numeric_operator('-=', param('ns3::Time const &', 'right'))
-    cls.add_inplace_numeric_operator('/=', param('ns3::Time const &', 'right'))
-    cls.add_output_stream_operator()
-    cls.add_binary_comparison_operator('<=')
-    cls.add_binary_comparison_operator('==')
-    cls.add_binary_comparison_operator('>=')
-    cls.add_binary_numeric_operator('*', root_module['ns3::Time'], root_module['ns3::Time'], param('ns3::Time const &', 'right'))
-    cls.add_binary_numeric_operator('+', root_module['ns3::Time'], root_module['ns3::Time'], param('ns3::Time const &', 'right'))
-    cls.add_binary_numeric_operator('-', root_module['ns3::Time'], root_module['ns3::Time'], param('ns3::Time const &', 'right'))
-    cls.add_binary_numeric_operator('/', root_module['ns3::Time'], root_module['ns3::Time'], param('ns3::Time const &', 'right'))
-    cls.add_binary_comparison_operator('<')
-    cls.add_binary_comparison_operator('>')
-    ## nstime.h: ns3::Time::Time() [constructor]
-    cls.add_constructor([])
-    ## nstime.h: ns3::Time::Time(ns3::Time const & o) [copy constructor]
-    cls.add_constructor([param('ns3::Time const &', 'o')])
-    ## nstime.h: ns3::Time::Time(ns3::HighPrecision const & data) [constructor]
-    cls.add_constructor([param('ns3::HighPrecision const &', 'data')])
-    ## nstime.h: ns3::Time::Time(std::string const & s) [constructor]
-    cls.add_constructor([param('std::string const &', 's')])
-    ## nstime.h: int ns3::Time::Compare(ns3::Time const & o) const [member function]
-    cls.add_method('Compare', 
-                   'int', 
-                   [param('ns3::Time const &', 'o')], 
-                   is_const=True)
-    ## nstime.h: static ns3::Time ns3::Time::FromDouble(double value, ns3::Time::Unit timeUnit) [member function]
-    cls.add_method('FromDouble', 
-                   'ns3::Time', 
-                   [param('double', 'value'), param('ns3::Time::Unit', 'timeUnit')], 
-                   is_static=True)
-    ## nstime.h: static ns3::Time ns3::Time::FromInteger(uint64_t value, ns3::Time::Unit timeUnit) [member function]
-    cls.add_method('FromInteger', 
-                   'ns3::Time', 
-                   [param('uint64_t', 'value'), param('ns3::Time::Unit', 'timeUnit')], 
-                   is_static=True)
-    ## nstime.h: int64_t ns3::Time::GetFemtoSeconds() const [member function]
-    cls.add_method('GetFemtoSeconds', 
-                   'int64_t', 
-                   [], 
-                   is_const=True)
-    ## nstime.h: ns3::HighPrecision const & ns3::Time::GetHighPrecision() const [member function]
-    cls.add_method('GetHighPrecision', 
-                   'ns3::HighPrecision const &', 
-                   [], 
-                   is_const=True)
-    ## nstime.h: int64_t ns3::Time::GetMicroSeconds() const [member function]
-    cls.add_method('GetMicroSeconds', 
-                   'int64_t', 
-                   [], 
-                   is_const=True)
-    ## nstime.h: int64_t ns3::Time::GetMilliSeconds() const [member function]
-    cls.add_method('GetMilliSeconds', 
-                   'int64_t', 
-                   [], 
-                   is_const=True)
-    ## nstime.h: int64_t ns3::Time::GetNanoSeconds() const [member function]
-    cls.add_method('GetNanoSeconds', 
-                   'int64_t', 
-                   [], 
-                   is_const=True)
-    ## nstime.h: int64_t ns3::Time::GetPicoSeconds() const [member function]
-    cls.add_method('GetPicoSeconds', 
-                   'int64_t', 
-                   [], 
-                   is_const=True)
-    ## nstime.h: static ns3::Time::Unit ns3::Time::GetResolution() [member function]
-    cls.add_method('GetResolution', 
-                   'ns3::Time::Unit', 
-                   [], 
-                   is_static=True)
-    ## nstime.h: double ns3::Time::GetSeconds() const [member function]
-    cls.add_method('GetSeconds', 
-                   'double', 
-                   [], 
-                   is_const=True)
-    ## nstime.h: int64_t ns3::Time::GetTimeStep() const [member function]
-    cls.add_method('GetTimeStep', 
-                   'int64_t', 
-                   [], 
-                   is_const=True)
-    ## nstime.h: bool ns3::Time::IsNegative() const [member function]
-    cls.add_method('IsNegative', 
-                   'bool', 
-                   [], 
-                   is_const=True)
-    ## nstime.h: bool ns3::Time::IsPositive() const [member function]
-    cls.add_method('IsPositive', 
-                   'bool', 
-                   [], 
-                   is_const=True)
-    ## nstime.h: bool ns3::Time::IsStrictlyNegative() const [member function]
-    cls.add_method('IsStrictlyNegative', 
-                   'bool', 
-                   [], 
-                   is_const=True)
-    ## nstime.h: bool ns3::Time::IsStrictlyPositive() const [member function]
-    cls.add_method('IsStrictlyPositive', 
-                   'bool', 
-                   [], 
-                   is_const=True)
-    ## nstime.h: bool ns3::Time::IsZero() const [member function]
-    cls.add_method('IsZero', 
-                   'bool', 
-                   [], 
-                   is_const=True)
-    ## nstime.h: ns3::HighPrecision * ns3::Time::PeekHighPrecision() [member function]
-    cls.add_method('PeekHighPrecision', 
-                   'ns3::HighPrecision *', 
-                   [])
-    ## nstime.h: static void ns3::Time::SetResolution(ns3::Time::Unit resolution) [member function]
-    cls.add_method('SetResolution', 
-                   'void', 
-                   [param('ns3::Time::Unit', 'resolution')], 
-                   is_static=True)
-    ## nstime.h: static double ns3::Time::ToDouble(ns3::Time const & time, ns3::Time::Unit timeUnit) [member function]
-    cls.add_method('ToDouble', 
-                   'double', 
-                   [param('ns3::Time const &', 'time'), param('ns3::Time::Unit', 'timeUnit')], 
-                   is_static=True)
-    ## nstime.h: static uint64_t ns3::Time::ToInteger(ns3::Time const & time, ns3::Time::Unit timeUnit) [member function]
-    cls.add_method('ToInteger', 
-                   'uint64_t', 
-                   [param('ns3::Time const &', 'time'), param('ns3::Time::Unit', 'timeUnit')], 
-                   is_static=True)
-    return
-
-def register_Ns3TimeBase_methods(root_module, cls):
-    ## time-base.h: ns3::TimeBase::TimeBase() [constructor]
-    cls.add_constructor([])
-    ## time-base.h: ns3::TimeBase::TimeBase(ns3::TimeBase const & o) [copy constructor]
-    cls.add_constructor([param('ns3::TimeBase const &', 'o')])
-    ## time-base.h: ns3::TimeBase::TimeBase(ns3::HighPrecision const & data) [constructor]
-    cls.add_constructor([param('ns3::HighPrecision const &', 'data')])
-    ## time-base.h: static ns3::TimeBase ns3::TimeBase::FromDouble(double value, ns3::TimeBase::Unit timeUnit) [member function]
-    cls.add_method('FromDouble', 
-                   'ns3::TimeBase', 
-                   [param('double', 'value'), param('ns3::TimeBase::Unit', 'timeUnit')], 
-                   is_static=True)
-    ## time-base.h: static ns3::TimeBase ns3::TimeBase::FromInteger(uint64_t value, ns3::TimeBase::Unit timeUnit) [member function]
-    cls.add_method('FromInteger', 
-                   'ns3::TimeBase', 
-                   [param('uint64_t', 'value'), param('ns3::TimeBase::Unit', 'timeUnit')], 
-                   is_static=True)
-    ## time-base.h: ns3::HighPrecision const & ns3::TimeBase::GetHighPrecision() const [member function]
-    cls.add_method('GetHighPrecision', 
-                   'ns3::HighPrecision const &', 
-                   [], 
-                   is_const=True)
-    ## time-base.h: static ns3::TimeBase::Unit ns3::TimeBase::GetResolution() [member function]
-    cls.add_method('GetResolution', 
-                   'ns3::TimeBase::Unit', 
-                   [], 
-                   is_static=True)
-    ## time-base.h: bool ns3::TimeBase::IsNegative() const [member function]
-    cls.add_method('IsNegative', 
-                   'bool', 
-                   [], 
-                   is_const=True)
-    ## time-base.h: bool ns3::TimeBase::IsPositive() const [member function]
-    cls.add_method('IsPositive', 
-                   'bool', 
-                   [], 
-                   is_const=True)
-    ## time-base.h: bool ns3::TimeBase::IsStrictlyNegative() const [member function]
-    cls.add_method('IsStrictlyNegative', 
-                   'bool', 
-                   [], 
-                   is_const=True)
-    ## time-base.h: bool ns3::TimeBase::IsStrictlyPositive() const [member function]
-    cls.add_method('IsStrictlyPositive', 
-                   'bool', 
-                   [], 
-                   is_const=True)
-    ## time-base.h: bool ns3::TimeBase::IsZero() const [member function]
-    cls.add_method('IsZero', 
-                   'bool', 
-                   [], 
-                   is_const=True)
-    ## time-base.h: ns3::HighPrecision * ns3::TimeBase::PeekHighPrecision() [member function]
-    cls.add_method('PeekHighPrecision', 
-                   'ns3::HighPrecision *', 
-                   [])
-    ## time-base.h: static void ns3::TimeBase::SetResolution(ns3::TimeBase::Unit resolution) [member function]
-    cls.add_method('SetResolution', 
-                   'void', 
-                   [param('ns3::TimeBase::Unit', 'resolution')], 
-                   is_static=True)
-    ## time-base.h: static double ns3::TimeBase::ToDouble(ns3::TimeBase const & time, ns3::TimeBase::Unit timeUnit) [member function]
-    cls.add_method('ToDouble', 
-                   'double', 
-                   [param('ns3::TimeBase const &', 'time'), param('ns3::TimeBase::Unit', 'timeUnit')], 
-                   is_static=True)
-    ## time-base.h: static uint64_t ns3::TimeBase::ToInteger(ns3::TimeBase const & time, ns3::TimeBase::Unit timeUnit) [member function]
-    cls.add_method('ToInteger', 
-                   'uint64_t', 
-                   [param('ns3::TimeBase const &', 'time'), param('ns3::TimeBase::Unit', 'timeUnit')], 
-                   is_static=True)
-    return
-
 def register_Ns3Timer_methods(root_module, cls):
     ## timer.h: ns3::Timer::Timer(ns3::Timer const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::Timer const &', 'arg0')])
@@ -1658,40 +1413,6 @@ def register_Ns3TracedValue__Double_methods(root_module, cls):
     cls.add_method('Set', 
                    'void', 
                    [param('double const &', 'v')])
-    return
-
-def register_Ns3TracedValue__Ns3Time_methods(root_module, cls):
-    ## traced-value.h: ns3::TracedValue<ns3::Time>::TracedValue() [constructor]
-    cls.add_constructor([])
-    ## traced-value.h: ns3::TracedValue<ns3::Time>::TracedValue(ns3::TracedValue<ns3::Time> const & o) [copy constructor]
-    cls.add_constructor([param('ns3::TracedValue< ns3::Time > const &', 'o')])
-    ## traced-value.h: ns3::TracedValue<ns3::Time>::TracedValue(ns3::Time const & v) [constructor]
-    cls.add_constructor([param('ns3::Time const &', 'v')])
-    ## traced-value.h: void ns3::TracedValue<ns3::Time>::Connect(ns3::CallbackBase const & cb, std::basic_string<char,std::char_traits<char>,std::allocator<char> > path) [member function]
-    cls.add_method('Connect', 
-                   'void', 
-                   [param('ns3::CallbackBase const &', 'cb'), param('std::string', 'path')])
-    ## traced-value.h: void ns3::TracedValue<ns3::Time>::ConnectWithoutContext(ns3::CallbackBase const & cb) [member function]
-    cls.add_method('ConnectWithoutContext', 
-                   'void', 
-                   [param('ns3::CallbackBase const &', 'cb')])
-    ## traced-value.h: void ns3::TracedValue<ns3::Time>::Disconnect(ns3::CallbackBase const & cb, std::basic_string<char,std::char_traits<char>,std::allocator<char> > path) [member function]
-    cls.add_method('Disconnect', 
-                   'void', 
-                   [param('ns3::CallbackBase const &', 'cb'), param('std::string', 'path')])
-    ## traced-value.h: void ns3::TracedValue<ns3::Time>::DisconnectWithoutContext(ns3::CallbackBase const & cb) [member function]
-    cls.add_method('DisconnectWithoutContext', 
-                   'void', 
-                   [param('ns3::CallbackBase const &', 'cb')])
-    ## traced-value.h: ns3::Time ns3::TracedValue<ns3::Time>::Get() const [member function]
-    cls.add_method('Get', 
-                   'ns3::Time', 
-                   [], 
-                   is_const=True)
-    ## traced-value.h: void ns3::TracedValue<ns3::Time>::Set(ns3::Time const & v) [member function]
-    cls.add_method('Set', 
-                   'void', 
-                   [param('ns3::Time const &', 'v')])
     return
 
 def register_Ns3TriangularVariable_methods(root_module, cls):
@@ -2011,6 +1732,113 @@ def register_Ns3Empty_methods(root_module, cls):
     cls.add_constructor([param('ns3::empty const &', 'arg0')])
     return
 
+def register_Ns3Int64x64_t_methods(root_module, cls):
+    cls.add_binary_comparison_operator('!=')
+    cls.add_inplace_numeric_operator('*=', param('ns3::int64x64_t const &', 'right'))
+    cls.add_inplace_numeric_operator('+=', param('ns3::int64x64_t const &', 'right'))
+    cls.add_inplace_numeric_operator('-=', param('ns3::int64x64_t const &', 'right'))
+    cls.add_inplace_numeric_operator('/=', param('ns3::int64x64_t const &', 'right'))
+    cls.add_output_stream_operator()
+    cls.add_binary_comparison_operator('<=')
+    cls.add_binary_comparison_operator('==')
+    cls.add_binary_comparison_operator('>=')
+    cls.add_binary_numeric_operator('*', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('long long unsigned int const', 'right'))
+    cls.add_binary_numeric_operator('*', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('long unsigned int const', 'right'))
+    cls.add_binary_numeric_operator('*', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('unsigned int const', 'right'))
+    cls.add_binary_numeric_operator('*', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('short unsigned int const', 'right'))
+    cls.add_binary_numeric_operator('*', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('unsigned char const', 'right'))
+    cls.add_binary_numeric_operator('*', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('long long int const', 'right'))
+    cls.add_binary_numeric_operator('*', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('long int const', 'right'))
+    cls.add_binary_numeric_operator('*', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('int const', 'right'))
+    cls.add_binary_numeric_operator('*', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('short int const', 'right'))
+    cls.add_binary_numeric_operator('*', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('signed char const', 'right'))
+    cls.add_binary_numeric_operator('*', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('double const', 'right'))
+    cls.add_binary_numeric_operator('*', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('ns3::int64x64_t const &', 'right'))
+    cls.add_binary_numeric_operator('+', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('long long unsigned int const', 'right'))
+    cls.add_binary_numeric_operator('+', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('long unsigned int const', 'right'))
+    cls.add_binary_numeric_operator('+', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('unsigned int const', 'right'))
+    cls.add_binary_numeric_operator('+', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('short unsigned int const', 'right'))
+    cls.add_binary_numeric_operator('+', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('unsigned char const', 'right'))
+    cls.add_binary_numeric_operator('+', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('long long int const', 'right'))
+    cls.add_binary_numeric_operator('+', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('long int const', 'right'))
+    cls.add_binary_numeric_operator('+', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('int const', 'right'))
+    cls.add_binary_numeric_operator('+', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('short int const', 'right'))
+    cls.add_binary_numeric_operator('+', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('signed char const', 'right'))
+    cls.add_binary_numeric_operator('+', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('double const', 'right'))
+    cls.add_binary_numeric_operator('+', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('ns3::int64x64_t const &', 'right'))
+    cls.add_binary_numeric_operator('-', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('long long unsigned int const', 'right'))
+    cls.add_binary_numeric_operator('-', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('long unsigned int const', 'right'))
+    cls.add_binary_numeric_operator('-', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('unsigned int const', 'right'))
+    cls.add_binary_numeric_operator('-', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('short unsigned int const', 'right'))
+    cls.add_binary_numeric_operator('-', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('unsigned char const', 'right'))
+    cls.add_binary_numeric_operator('-', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('long long int const', 'right'))
+    cls.add_binary_numeric_operator('-', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('long int const', 'right'))
+    cls.add_binary_numeric_operator('-', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('int const', 'right'))
+    cls.add_binary_numeric_operator('-', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('short int const', 'right'))
+    cls.add_binary_numeric_operator('-', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('signed char const', 'right'))
+    cls.add_binary_numeric_operator('-', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('double const', 'right'))
+    cls.add_unary_numeric_operator('-')
+    cls.add_binary_numeric_operator('-', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('ns3::int64x64_t const &', 'right'))
+    cls.add_binary_numeric_operator('/', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('long long unsigned int const', 'right'))
+    cls.add_binary_numeric_operator('/', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('long unsigned int const', 'right'))
+    cls.add_binary_numeric_operator('/', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('unsigned int const', 'right'))
+    cls.add_binary_numeric_operator('/', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('short unsigned int const', 'right'))
+    cls.add_binary_numeric_operator('/', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('unsigned char const', 'right'))
+    cls.add_binary_numeric_operator('/', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('long long int const', 'right'))
+    cls.add_binary_numeric_operator('/', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('long int const', 'right'))
+    cls.add_binary_numeric_operator('/', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('int const', 'right'))
+    cls.add_binary_numeric_operator('/', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('short int const', 'right'))
+    cls.add_binary_numeric_operator('/', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('signed char const', 'right'))
+    cls.add_binary_numeric_operator('/', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('double const', 'right'))
+    cls.add_binary_numeric_operator('/', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('ns3::int64x64_t const &', 'right'))
+    cls.add_binary_comparison_operator('<')
+    cls.add_binary_comparison_operator('>')
+    ## int64x64-double.h: ns3::int64x64_t::int64x64_t() [constructor]
+    cls.add_constructor([])
+    ## int64x64-double.h: ns3::int64x64_t::int64x64_t(double v) [constructor]
+    cls.add_constructor([param('double', 'v')])
+    ## int64x64-double.h: ns3::int64x64_t::int64x64_t(int v) [constructor]
+    cls.add_constructor([param('int', 'v')])
+    ## int64x64-double.h: ns3::int64x64_t::int64x64_t(long int v) [constructor]
+    cls.add_constructor([param('long int', 'v')])
+    ## int64x64-double.h: ns3::int64x64_t::int64x64_t(long long int v) [constructor]
+    cls.add_constructor([param('long long int', 'v')])
+    ## int64x64-double.h: ns3::int64x64_t::int64x64_t(unsigned int v) [constructor]
+    cls.add_constructor([param('unsigned int', 'v')])
+    ## int64x64-double.h: ns3::int64x64_t::int64x64_t(long unsigned int v) [constructor]
+    cls.add_constructor([param('long unsigned int', 'v')])
+    ## int64x64-double.h: ns3::int64x64_t::int64x64_t(long long unsigned int v) [constructor]
+    cls.add_constructor([param('long long unsigned int', 'v')])
+    ## int64x64-double.h: ns3::int64x64_t::int64x64_t(int64_t hi, uint64_t lo) [constructor]
+    cls.add_constructor([param('int64_t', 'hi'), param('uint64_t', 'lo')])
+    ## int64x64-double.h: ns3::int64x64_t::int64x64_t(ns3::int64x64_t const & o) [copy constructor]
+    cls.add_constructor([param('ns3::int64x64_t const &', 'o')])
+    ## int64x64-double.h: double ns3::int64x64_t::GetDouble() const [member function]
+    cls.add_method('GetDouble', 
+                   'double', 
+                   [], 
+                   is_const=True)
+    ## int64x64-double.h: int64_t ns3::int64x64_t::GetHigh() const [member function]
+    cls.add_method('GetHigh', 
+                   'int64_t', 
+                   [], 
+                   is_const=True)
+    ## int64x64-double.h: uint64_t ns3::int64x64_t::GetLow() const [member function]
+    cls.add_method('GetLow', 
+                   'uint64_t', 
+                   [], 
+                   is_const=True)
+    ## int64x64-double.h: static ns3::int64x64_t ns3::int64x64_t::Invert(uint64_t v) [member function]
+    cls.add_method('Invert', 
+                   'ns3::int64x64_t', 
+                   [param('uint64_t', 'v')], 
+                   is_static=True)
+    ## int64x64-double.h: void ns3::int64x64_t::MulByInvert(ns3::int64x64_t const & o) [member function]
+    cls.add_method('MulByInvert', 
+                   'void', 
+                   [param('ns3::int64x64_t const &', 'o')])
+    return
+
 def register_Ns3ConstantVariable_methods(root_module, cls):
     ## random-variable.h: ns3::ConstantVariable::ConstantVariable(ns3::ConstantVariable const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::ConstantVariable const &', 'arg0')])
@@ -2202,30 +2030,6 @@ def register_Ns3ParetoVariable_methods(root_module, cls):
     cls.add_constructor([param('std::pair< double, double >', 'params')])
     ## random-variable.h: ns3::ParetoVariable::ParetoVariable(std::pair<double,double> params, double b) [constructor]
     cls.add_constructor([param('std::pair< double, double >', 'params'), param('double', 'b')])
-    return
-
-def register_Ns3Scalar_methods(root_module, cls):
-    ## nstime.h: ns3::Scalar::Scalar(ns3::Scalar const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::Scalar const &', 'arg0')])
-    ## nstime.h: ns3::Scalar::Scalar() [constructor]
-    cls.add_constructor([])
-    ## nstime.h: ns3::Scalar::Scalar(double v) [constructor]
-    cls.add_constructor([param('double', 'v')])
-    ## nstime.h: ns3::Scalar::Scalar(uint32_t v) [constructor]
-    cls.add_constructor([param('uint32_t', 'v')])
-    ## nstime.h: ns3::Scalar::Scalar(int32_t v) [constructor]
-    cls.add_constructor([param('int32_t', 'v')])
-    ## nstime.h: ns3::Scalar::Scalar(uint64_t v) [constructor]
-    cls.add_constructor([param('uint64_t', 'v')])
-    ## nstime.h: ns3::Scalar::Scalar(int64_t v) [constructor]
-    cls.add_constructor([param('int64_t', 'v')])
-    ## nstime.h: ns3::Scalar::Scalar(ns3::Time t) [constructor]
-    cls.add_constructor([param('ns3::Time', 't')])
-    ## nstime.h: double ns3::Scalar::GetDouble() const [member function]
-    cls.add_method('GetDouble', 
-                   'double', 
-                   [], 
-                   is_const=True)
     return
 
 def register_Ns3Scheduler_methods(root_module, cls):
@@ -2921,6 +2725,162 @@ def register_Ns3SystemThread_methods(root_module, cls):
                    [])
     return
 
+def register_Ns3Time_methods(root_module, cls):
+    cls.add_binary_comparison_operator('!=')
+    cls.add_inplace_numeric_operator('+=', param('ns3::Time const &', 'right'))
+    cls.add_inplace_numeric_operator('-=', param('ns3::Time const &', 'right'))
+    cls.add_output_stream_operator()
+    cls.add_binary_comparison_operator('<=')
+    cls.add_binary_comparison_operator('==')
+    cls.add_binary_comparison_operator('>=')
+    cls.add_binary_numeric_operator('+', root_module['ns3::Time'], root_module['ns3::Time'], param('ns3::Time const &', 'right'))
+    cls.add_binary_numeric_operator('-', root_module['ns3::Time'], root_module['ns3::Time'], param('ns3::Time const &', 'right'))
+    cls.add_binary_comparison_operator('<')
+    cls.add_binary_comparison_operator('>')
+    ## nstime.h: ns3::Time::Time() [constructor]
+    cls.add_constructor([])
+    ## nstime.h: ns3::Time::Time(ns3::Time const & o) [copy constructor]
+    cls.add_constructor([param('ns3::Time const &', 'o')])
+    ## nstime.h: ns3::Time::Time(double v) [constructor]
+    cls.add_constructor([param('double', 'v')])
+    ## nstime.h: ns3::Time::Time(int v) [constructor]
+    cls.add_constructor([param('int', 'v')])
+    ## nstime.h: ns3::Time::Time(long int v) [constructor]
+    cls.add_constructor([param('long int', 'v')])
+    ## nstime.h: ns3::Time::Time(long long int v) [constructor]
+    cls.add_constructor([param('long long int', 'v')])
+    ## nstime.h: ns3::Time::Time(unsigned int v) [constructor]
+    cls.add_constructor([param('unsigned int', 'v')])
+    ## nstime.h: ns3::Time::Time(long unsigned int v) [constructor]
+    cls.add_constructor([param('long unsigned int', 'v')])
+    ## nstime.h: ns3::Time::Time(long long unsigned int v) [constructor]
+    cls.add_constructor([param('long long unsigned int', 'v')])
+    ## nstime.h: ns3::Time::Time(std::string const & s) [constructor]
+    cls.add_constructor([param('std::string const &', 's')])
+    ## nstime.h: ns3::Time::Time(ns3::int64x64_t const & value) [constructor]
+    cls.add_constructor([param('ns3::int64x64_t const &', 'value')])
+    ## nstime.h: int ns3::Time::Compare(ns3::Time const & o) const [member function]
+    cls.add_method('Compare', 
+                   'int', 
+                   [param('ns3::Time const &', 'o')], 
+                   is_const=True)
+    ## nstime.h: static ns3::Time ns3::Time::From(ns3::int64x64_t const & from, ns3::Time::Unit timeUnit) [member function]
+    cls.add_method('From', 
+                   'ns3::Time', 
+                   [param('ns3::int64x64_t const &', 'from'), param('ns3::Time::Unit', 'timeUnit')], 
+                   is_static=True)
+    ## nstime.h: static ns3::Time ns3::Time::From(ns3::int64x64_t const & value) [member function]
+    cls.add_method('From', 
+                   'ns3::Time', 
+                   [param('ns3::int64x64_t const &', 'value')], 
+                   is_static=True)
+    ## nstime.h: static ns3::Time ns3::Time::FromDouble(double value, ns3::Time::Unit timeUnit) [member function]
+    cls.add_method('FromDouble', 
+                   'ns3::Time', 
+                   [param('double', 'value'), param('ns3::Time::Unit', 'timeUnit')], 
+                   is_static=True)
+    ## nstime.h: static ns3::Time ns3::Time::FromInteger(uint64_t value, ns3::Time::Unit timeUnit) [member function]
+    cls.add_method('FromInteger', 
+                   'ns3::Time', 
+                   [param('uint64_t', 'value'), param('ns3::Time::Unit', 'timeUnit')], 
+                   is_static=True)
+    ## nstime.h: double ns3::Time::GetDouble() const [member function]
+    cls.add_method('GetDouble', 
+                   'double', 
+                   [], 
+                   is_const=True)
+    ## nstime.h: int64_t ns3::Time::GetFemtoSeconds() const [member function]
+    cls.add_method('GetFemtoSeconds', 
+                   'int64_t', 
+                   [], 
+                   is_const=True)
+    ## nstime.h: int64_t ns3::Time::GetInteger() const [member function]
+    cls.add_method('GetInteger', 
+                   'int64_t', 
+                   [], 
+                   is_const=True)
+    ## nstime.h: int64_t ns3::Time::GetMicroSeconds() const [member function]
+    cls.add_method('GetMicroSeconds', 
+                   'int64_t', 
+                   [], 
+                   is_const=True)
+    ## nstime.h: int64_t ns3::Time::GetMilliSeconds() const [member function]
+    cls.add_method('GetMilliSeconds', 
+                   'int64_t', 
+                   [], 
+                   is_const=True)
+    ## nstime.h: int64_t ns3::Time::GetNanoSeconds() const [member function]
+    cls.add_method('GetNanoSeconds', 
+                   'int64_t', 
+                   [], 
+                   is_const=True)
+    ## nstime.h: int64_t ns3::Time::GetPicoSeconds() const [member function]
+    cls.add_method('GetPicoSeconds', 
+                   'int64_t', 
+                   [], 
+                   is_const=True)
+    ## nstime.h: static ns3::Time::Unit ns3::Time::GetResolution() [member function]
+    cls.add_method('GetResolution', 
+                   'ns3::Time::Unit', 
+                   [], 
+                   is_static=True)
+    ## nstime.h: double ns3::Time::GetSeconds() const [member function]
+    cls.add_method('GetSeconds', 
+                   'double', 
+                   [], 
+                   is_const=True)
+    ## nstime.h: int64_t ns3::Time::GetTimeStep() const [member function]
+    cls.add_method('GetTimeStep', 
+                   'int64_t', 
+                   [], 
+                   is_const=True)
+    ## nstime.h: bool ns3::Time::IsNegative() const [member function]
+    cls.add_method('IsNegative', 
+                   'bool', 
+                   [], 
+                   is_const=True)
+    ## nstime.h: bool ns3::Time::IsPositive() const [member function]
+    cls.add_method('IsPositive', 
+                   'bool', 
+                   [], 
+                   is_const=True)
+    ## nstime.h: bool ns3::Time::IsStrictlyNegative() const [member function]
+    cls.add_method('IsStrictlyNegative', 
+                   'bool', 
+                   [], 
+                   is_const=True)
+    ## nstime.h: bool ns3::Time::IsStrictlyPositive() const [member function]
+    cls.add_method('IsStrictlyPositive', 
+                   'bool', 
+                   [], 
+                   is_const=True)
+    ## nstime.h: bool ns3::Time::IsZero() const [member function]
+    cls.add_method('IsZero', 
+                   'bool', 
+                   [], 
+                   is_const=True)
+    ## nstime.h: static void ns3::Time::SetResolution(ns3::Time::Unit resolution) [member function]
+    cls.add_method('SetResolution', 
+                   'void', 
+                   [param('ns3::Time::Unit', 'resolution')], 
+                   is_static=True)
+    ## nstime.h: ns3::int64x64_t ns3::Time::To(ns3::Time::Unit timeUnit) const [member function]
+    cls.add_method('To', 
+                   'ns3::int64x64_t', 
+                   [param('ns3::Time::Unit', 'timeUnit')], 
+                   is_const=True)
+    ## nstime.h: double ns3::Time::ToDouble(ns3::Time::Unit timeUnit) const [member function]
+    cls.add_method('ToDouble', 
+                   'double', 
+                   [param('ns3::Time::Unit', 'timeUnit')], 
+                   is_const=True)
+    ## nstime.h: int64_t ns3::Time::ToInteger(ns3::Time::Unit timeUnit) const [member function]
+    cls.add_method('ToInteger', 
+                   'int64_t', 
+                   [param('ns3::Time::Unit', 'timeUnit')], 
+                   is_const=True)
+    return
+
 def register_Ns3TraceSourceAccessor_methods(root_module, cls):
     ## trace-source-accessor.h: ns3::TraceSourceAccessor::TraceSourceAccessor(ns3::TraceSourceAccessor const & arg0) [copy constructor]
     cls.add_constructor([param('ns3::TraceSourceAccessor const &', 'arg0')])
@@ -2946,6 +2906,40 @@ def register_Ns3TraceSourceAccessor_methods(root_module, cls):
                    'bool', 
                    [param('ns3::ObjectBase *', 'obj', transfer_ownership=False), param('ns3::CallbackBase const &', 'cb')], 
                    is_pure_virtual=True, is_const=True, is_virtual=True)
+    return
+
+def register_Ns3TracedValue__Ns3Time_methods(root_module, cls):
+    ## traced-value.h: ns3::TracedValue<ns3::Time>::TracedValue() [constructor]
+    cls.add_constructor([])
+    ## traced-value.h: ns3::TracedValue<ns3::Time>::TracedValue(ns3::TracedValue<ns3::Time> const & o) [copy constructor]
+    cls.add_constructor([param('ns3::TracedValue< ns3::Time > const &', 'o')])
+    ## traced-value.h: ns3::TracedValue<ns3::Time>::TracedValue(ns3::Time const & v) [constructor]
+    cls.add_constructor([param('ns3::Time const &', 'v')])
+    ## traced-value.h: void ns3::TracedValue<ns3::Time>::Connect(ns3::CallbackBase const & cb, std::basic_string<char,std::char_traits<char>,std::allocator<char> > path) [member function]
+    cls.add_method('Connect', 
+                   'void', 
+                   [param('ns3::CallbackBase const &', 'cb'), param('std::string', 'path')])
+    ## traced-value.h: void ns3::TracedValue<ns3::Time>::ConnectWithoutContext(ns3::CallbackBase const & cb) [member function]
+    cls.add_method('ConnectWithoutContext', 
+                   'void', 
+                   [param('ns3::CallbackBase const &', 'cb')])
+    ## traced-value.h: void ns3::TracedValue<ns3::Time>::Disconnect(ns3::CallbackBase const & cb, std::basic_string<char,std::char_traits<char>,std::allocator<char> > path) [member function]
+    cls.add_method('Disconnect', 
+                   'void', 
+                   [param('ns3::CallbackBase const &', 'cb'), param('std::string', 'path')])
+    ## traced-value.h: void ns3::TracedValue<ns3::Time>::DisconnectWithoutContext(ns3::CallbackBase const & cb) [member function]
+    cls.add_method('DisconnectWithoutContext', 
+                   'void', 
+                   [param('ns3::CallbackBase const &', 'cb')])
+    ## traced-value.h: ns3::Time ns3::TracedValue<ns3::Time>::Get() const [member function]
+    cls.add_method('Get', 
+                   'ns3::Time', 
+                   [], 
+                   is_const=True)
+    ## traced-value.h: void ns3::TracedValue<ns3::Time>::Set(ns3::Time const & v) [member function]
+    cls.add_method('Set', 
+                   'void', 
+                   [param('ns3::Time const &', 'v')])
     return
 
 def register_Ns3WallClockSynchronizer_methods(root_module, cls):
@@ -4405,14 +4399,14 @@ def register_Ns3ConfigMatchContainer_methods(root_module, cls):
 
 def register_functions(root_module):
     module = root_module
-    ## high-precision.h: extern ns3::HighPrecision ns3::Abs(ns3::HighPrecision const & value) [free function]
-    module.add_function('Abs', 
-                        'ns3::HighPrecision', 
-                        [param('ns3::HighPrecision const &', 'value')])
     ## nstime.h: ns3::Time ns3::Abs(ns3::Time const & time) [free function]
     module.add_function('Abs', 
                         'ns3::Time', 
                         [param('ns3::Time const &', 'time')])
+    ## int64x64.h: ns3::int64x64_t ns3::Abs(ns3::int64x64_t const & value) [free function]
+    module.add_function('Abs', 
+                        'ns3::int64x64_t', 
+                        [param('ns3::int64x64_t const &', 'value')])
     ## breakpoint.h: extern void ns3::BreakpointFallback() [free function]
     module.add_function('BreakpointFallback', 
                         'void', 
@@ -4435,6 +4429,10 @@ def register_functions(root_module):
                         'ns3::Ptr< ns3::PointerValue >', 
                         [], 
                         template_parameters=['ns3::PointerValue'])
+    ## nstime.h: ns3::Time ns3::FemtoSeconds(ns3::int64x64_t fs) [free function]
+    module.add_function('FemtoSeconds', 
+                        'ns3::Time', 
+                        [param('ns3::int64x64_t', 'fs')])
     ## nstime.h: ns3::Time ns3::FemtoSeconds(uint64_t fs) [free function]
     module.add_function('FemtoSeconds', 
                         'ns3::Time', 
@@ -4455,6 +4453,26 @@ def register_functions(root_module):
     module.add_function('LogComponentEnableAll', 
                         'void', 
                         [param('ns3::LogLevel', 'level')])
+    ## log.h: extern void ns3::LogComponentPrintList() [free function]
+    module.add_function('LogComponentPrintList', 
+                        'void', 
+                        [])
+    ## log.h: extern ns3::LogNodePrinter ns3::LogGetNodePrinter() [free function]
+    module.add_function('LogGetNodePrinter', 
+                        'ns3::LogNodePrinter', 
+                        [])
+    ## log.h: extern ns3::LogTimePrinter ns3::LogGetTimePrinter() [free function]
+    module.add_function('LogGetTimePrinter', 
+                        'ns3::LogTimePrinter', 
+                        [])
+    ## log.h: extern void ns3::LogSetNodePrinter(ns3::LogNodePrinter arg0) [free function]
+    module.add_function('LogSetNodePrinter', 
+                        'void', 
+                        [param('ns3::LogNodePrinter', 'arg0')])
+    ## log.h: extern void ns3::LogSetTimePrinter(ns3::LogTimePrinter arg0) [free function]
+    module.add_function('LogSetTimePrinter', 
+                        'void', 
+                        [param('ns3::LogTimePrinter', 'arg0')])
     ## boolean.h: extern ns3::Ptr<ns3::AttributeChecker const> ns3::MakeBooleanChecker() [free function]
     module.add_function('MakeBooleanChecker', 
                         'ns3::Ptr< ns3::AttributeChecker const >', 
@@ -4518,30 +4536,42 @@ def register_functions(root_module):
     module.add_function('MakeVectorChecker', 
                         'ns3::Ptr< ns3::AttributeChecker const >', 
                         [])
-    ## high-precision.h: ns3::HighPrecision ns3::Max(ns3::HighPrecision const & a, ns3::HighPrecision const & b) [free function]
-    module.add_function('Max', 
-                        'ns3::HighPrecision', 
-                        [param('ns3::HighPrecision const &', 'a'), param('ns3::HighPrecision const &', 'b')])
     ## nstime.h: ns3::Time ns3::Max(ns3::Time const & ta, ns3::Time const & tb) [free function]
     module.add_function('Max', 
                         'ns3::Time', 
                         [param('ns3::Time const &', 'ta'), param('ns3::Time const &', 'tb')])
+    ## int64x64.h: ns3::int64x64_t ns3::Max(ns3::int64x64_t const & a, ns3::int64x64_t const & b) [free function]
+    module.add_function('Max', 
+                        'ns3::int64x64_t', 
+                        [param('ns3::int64x64_t const &', 'a'), param('ns3::int64x64_t const &', 'b')])
+    ## nstime.h: ns3::Time ns3::MicroSeconds(ns3::int64x64_t us) [free function]
+    module.add_function('MicroSeconds', 
+                        'ns3::Time', 
+                        [param('ns3::int64x64_t', 'us')])
     ## nstime.h: ns3::Time ns3::MicroSeconds(uint64_t us) [free function]
     module.add_function('MicroSeconds', 
                         'ns3::Time', 
                         [param('uint64_t', 'us')])
+    ## nstime.h: ns3::Time ns3::MilliSeconds(ns3::int64x64_t ms) [free function]
+    module.add_function('MilliSeconds', 
+                        'ns3::Time', 
+                        [param('ns3::int64x64_t', 'ms')])
     ## nstime.h: ns3::Time ns3::MilliSeconds(uint64_t ms) [free function]
     module.add_function('MilliSeconds', 
                         'ns3::Time', 
                         [param('uint64_t', 'ms')])
-    ## high-precision.h: ns3::HighPrecision ns3::Min(ns3::HighPrecision const & a, ns3::HighPrecision const & b) [free function]
-    module.add_function('Min', 
-                        'ns3::HighPrecision', 
-                        [param('ns3::HighPrecision const &', 'a'), param('ns3::HighPrecision const &', 'b')])
     ## nstime.h: ns3::Time ns3::Min(ns3::Time const & ta, ns3::Time const & tb) [free function]
     module.add_function('Min', 
                         'ns3::Time', 
                         [param('ns3::Time const &', 'ta'), param('ns3::Time const &', 'tb')])
+    ## int64x64.h: ns3::int64x64_t ns3::Min(ns3::int64x64_t const & a, ns3::int64x64_t const & b) [free function]
+    module.add_function('Min', 
+                        'ns3::int64x64_t', 
+                        [param('ns3::int64x64_t const &', 'a'), param('ns3::int64x64_t const &', 'b')])
+    ## nstime.h: ns3::Time ns3::NanoSeconds(ns3::int64x64_t ns) [free function]
+    module.add_function('NanoSeconds', 
+                        'ns3::Time', 
+                        [param('ns3::int64x64_t', 'ns')])
     ## nstime.h: ns3::Time ns3::NanoSeconds(uint64_t ns) [free function]
     module.add_function('NanoSeconds', 
                         'ns3::Time', 
@@ -4550,10 +4580,18 @@ def register_functions(root_module):
     module.add_function('Now', 
                         'ns3::Time', 
                         [])
+    ## nstime.h: ns3::Time ns3::PicoSeconds(ns3::int64x64_t ps) [free function]
+    module.add_function('PicoSeconds', 
+                        'ns3::Time', 
+                        [param('ns3::int64x64_t', 'ps')])
     ## nstime.h: ns3::Time ns3::PicoSeconds(uint64_t ps) [free function]
     module.add_function('PicoSeconds', 
                         'ns3::Time', 
                         [param('uint64_t', 'ps')])
+    ## nstime.h: ns3::Time ns3::Seconds(ns3::int64x64_t seconds) [free function]
+    module.add_function('Seconds', 
+                        'ns3::Time', 
+                        [param('ns3::int64x64_t', 'seconds')])
     ## nstime.h: ns3::Time ns3::Seconds(double seconds) [free function]
     module.add_function('Seconds', 
                         'ns3::Time', 

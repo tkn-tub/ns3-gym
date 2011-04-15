@@ -206,9 +206,9 @@ def register_Ns3DelayJitterEstimation_methods(root_module, cls):
                    'ns3::Time', 
                    [], 
                    is_const=True)
-    ## delay-jitter-estimation.h: ns3::Time ns3::DelayJitterEstimation::GetLastJitter() const [member function]
+    ## delay-jitter-estimation.h: uint64_t ns3::DelayJitterEstimation::GetLastJitter() const [member function]
     cls.add_method('GetLastJitter', 
-                   'ns3::Time', 
+                   'uint64_t', 
                    [], 
                    is_const=True)
     ## delay-jitter-estimation.h: static void ns3::DelayJitterEstimation::PrepareTx(ns3::Ptr<ns3::Packet const> packet) [member function]

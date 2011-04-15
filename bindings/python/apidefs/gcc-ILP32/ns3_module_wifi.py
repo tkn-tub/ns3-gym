@@ -4738,14 +4738,11 @@ def register_Ns3EdcaTxopN_methods(root_module, cls):
                    'ns3::TypeOfStation', 
                    [], 
                    is_const=True)
-    ## edca-txop-n.h: void ns3::EdcaTxopN::SetMaxQueueSize(uint32_t size) [member function]
-    cls.add_method('SetMaxQueueSize', 
-                   'void', 
-                   [param('uint32_t', 'size')])
-    ## edca-txop-n.h: void ns3::EdcaTxopN::SetMaxQueueDelay(ns3::Time delay) [member function]
-    cls.add_method('SetMaxQueueDelay', 
-                   'void', 
-                   [param('ns3::Time', 'delay')])
+    ## edca-txop-n.h: ns3::Ptr<ns3::WifiMacQueue> ns3::EdcaTxopN::GetQueue() const [member function]
+    cls.add_method('GetQueue', 
+                   'ns3::Ptr< ns3::WifiMacQueue >', 
+                   [], 
+                   is_const=True)
     ## edca-txop-n.h: void ns3::EdcaTxopN::SetMinCw(uint32_t minCw) [member function]
     cls.add_method('SetMinCw', 
                    'void', 
@@ -6299,14 +6296,11 @@ def register_Ns3DcaTxop_methods(root_module, cls):
     cls.add_method('SetTxFailedCallback', 
                    'void', 
                    [param('ns3::Callback< void, ns3::WifiMacHeader const &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'callback')])
-    ## dca-txop.h: void ns3::DcaTxop::SetMaxQueueSize(uint32_t size) [member function]
-    cls.add_method('SetMaxQueueSize', 
-                   'void', 
-                   [param('uint32_t', 'size')])
-    ## dca-txop.h: void ns3::DcaTxop::SetMaxQueueDelay(ns3::Time delay) [member function]
-    cls.add_method('SetMaxQueueDelay', 
-                   'void', 
-                   [param('ns3::Time', 'delay')])
+    ## dca-txop.h: ns3::Ptr<ns3::WifiMacQueue> ns3::DcaTxop::GetQueue() const [member function]
+    cls.add_method('GetQueue', 
+                   'ns3::Ptr< ns3::WifiMacQueue >', 
+                   [], 
+                   is_const=True)
     ## dca-txop.h: void ns3::DcaTxop::SetMinCw(uint32_t minCw) [member function]
     cls.add_method('SetMinCw', 
                    'void', 
