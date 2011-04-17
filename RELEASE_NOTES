@@ -34,6 +34,9 @@ since ns-3.10, in many cases referencing the Bugzilla bug number.
    - CsmaNetDevice ReceiveErrorModel was not dropping the packet
    - bug 1064 - Correct Friis propagation loss equation in spectrum module
    - bug 1046 - Check Aodv LocalDeliver callback before using it
+   - bug 1038 - Time::Get*Seconds () return signed integer while actually returning unsigned
+   - bug 445 - Is the class name Scalar in nstime.h appropriate?
+   - bug 1044 - Seconds (1e-9) creates Time that is not IsPositive ()
 
 Known issues
 ------------
