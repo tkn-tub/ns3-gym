@@ -22,6 +22,9 @@ Supported platforms
 New user-visible features
 -------------------------
 
+  - int64x64_t is a new type which allows portable and easy to write arithmetic
+    calculations that require a high degree of fractional precision.
+
 Bugs fixed
 ----------
 The following lists many of the bugs fixed or small feature additions

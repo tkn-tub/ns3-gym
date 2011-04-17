@@ -71,6 +71,14 @@ See the documentation for details.
 
 <h2>New API:</h2>
 <ul>
+<li><b>int64x64_t</b>
+<p>The <b>int64x64_t</b> type implements all the C++ arithmetic operators to behave like one of the
+C++ native types. It is a 64.64 integer type which means that it is a 128bit integer type with
+64 bits of fractional precision. The existing <b>Time</b> type is now automatically convertible to
+<b>int64x64_t</b> to allow arbitrarily complex arithmetic operations on the content of <b>Time</b>
+objects. The implementation of <b>int64x64_t</b> is based on the previously-existing
+<b>HighPrecision</b> type and supercedes it.
+</p></li>
 </ul>
 
 <h2>Changes to existing API:</h2>
@@ -83,6 +91,19 @@ See the documentation for details.
   renamed to GenericPhy interface and moved to a new file
   generic-phy.h. The related variables and methods have been renamed accordingly. 
 </p></li>
+<li><b>Scalar</b>
+<p>The Scalar type has been removed. Typical code such as:
+<pre>
+Time tmp = ...;
+Time result = tmp * Scalar (5);
+</pre>
+Can now be rewritten as:
+<pre>
+Time tmp = ...;
+Time result = Time (tmp * 5);
+</pre>
+</p>
+</li>
 </ul>
 
 <h2>Changed behavior:</h2>
