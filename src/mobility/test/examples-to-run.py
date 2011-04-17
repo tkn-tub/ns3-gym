@@ -8,6 +8,9 @@
 #
 # See test.py for more information.
 cpp_examples = [
+    ("main-grid-topology", "True", "True"),
+    ("main-random-topology", "True", "True"),
+    ("main-random-walk", "True", "True"),
 ]
 
 # A list of Python examples to run in order to ensure that they remain

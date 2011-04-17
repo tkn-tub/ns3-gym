@@ -283,5 +283,8 @@ def build(bld):
         obj.uselib           = 'DL'
         internet_test.uselib = 'DL'
 
+    if (bld.env['ENABLE_EXAMPLES']):
+        bld.add_subdirs('examples')
+
     bld.ns3_python_bindings()
 

@@ -24,4 +24,7 @@ def build(bld):
         'model/cost231-propagation-loss-model.h',
         ]
 
+    if (bld.env['ENABLE_EXAMPLES']):
+        bld.add_subdirs('examples')
+
     bld.ns3_python_bindings()

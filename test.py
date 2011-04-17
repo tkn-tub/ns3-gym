@@ -47,6 +47,7 @@ interesting_config_items = [
     "NS3_MODULE_PATH",
     "NSC_ENABLED",
     "ENABLE_REAL_TIME",
+    "ENABLE_THREADING",
     "ENABLE_EXAMPLES",
     "EXAMPLE_DIRECTORIES",
     "ENABLE_PYTHON_BINDINGS",
@@ -56,6 +57,7 @@ interesting_config_items = [
 
 NSC_ENABLED = False
 ENABLE_REAL_TIME = False
+ENABLE_THREADING = False
 ENABLE_EXAMPLES = True
 ENABLE_CLICK = False
 ENABLE_OPENFLOW = False

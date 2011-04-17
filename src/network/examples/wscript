@@ -4,13 +4,9 @@ def build(bld):
     if not bld.env['ENABLE_EXAMPLES']:
         return;
 
-    obj = bld.create_ns3_program('main-packet-header', ['common', 'core'])
+    obj = bld.create_ns3_program('main-packet-header', ['network'])
     obj.source = 'main-packet-header.cc'
 
-    obj = bld.create_ns3_program('main-packet-tag', ['common', 'core'])
+    obj = bld.create_ns3_program('main-packet-tag', ['network'])
     obj.source = 'main-packet-tag.cc'
-
-    if bld.env['ENABLE_THREADING'] and bld.env["ENABLE_REAL_TIME"]:
-        obj = bld.create_ns3_program('main-test-sync')
-        obj.source = 'main-test-sync.cc'
 
