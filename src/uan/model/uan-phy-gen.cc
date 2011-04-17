@@ -139,8 +139,6 @@ UanPhyCalcSinrFhFsk::CalcSinrDb (Ptr<Packet> pkt,
   double clearingTime = (m_hops - 1.0) * ts;
   double csp = pdp.SumTapsFromMaxNc (Seconds (0), Seconds (ts));
 
-  UanPdp::Iterator tmpIt = pdp.GetBegin ();
-
   // Get maximum arrival offset
   double maxAmp = -1;
   double maxTapDelay = 0.0;

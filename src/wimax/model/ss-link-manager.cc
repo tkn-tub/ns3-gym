@@ -438,6 +438,7 @@ SSLinkManager::IsUlChannelUsable (void)
 void
 SSLinkManager::AdjustRangingParameters (const RngRsp &rngrsp)
 {
+#if 0 /* a template for future implementation following */
   bool successful = true;
   uint8_t temp = rngrsp.GetTimingAdjust ();
   temp = rngrsp.GetPowerLevelAdjust ();
@@ -449,6 +450,7 @@ SSLinkManager::AdjustRangingParameters (const RngRsp &rngrsp)
     {
       // code for setting ranging anomalies goes here
     }
+#endif
 }
 
 void

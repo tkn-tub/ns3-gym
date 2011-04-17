@@ -170,10 +170,6 @@ void RttEstimator::ClearSent ()
 
 void RttEstimator::IncreaseMultiplier ()
 {
-  double a;
-  a = multiplier * 2.0;
-  double b;
-  b = m_maxMultiplier * 2.0;
   multiplier = std::min (multiplier * 2.0, m_maxMultiplier);
 }
 

@@ -245,8 +245,7 @@ UanTest::DoRun (void)
 
 #endif // UAN_PROP_BH_INSTALLED
 
-  bool phyTestsError;
-  phyTestsError = DoPhyTests ();
+  DoPhyTests ();
 }
 
 

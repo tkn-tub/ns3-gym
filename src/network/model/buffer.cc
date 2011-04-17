@@ -843,7 +843,6 @@ Buffer::Iterator::Write (Iterator start, Iterator end)
   NS_ASSERT (start.m_zeroEnd == end.m_zeroEnd);
   NS_ASSERT (m_data != start.m_data);
   uint32_t size = end.m_current - start.m_current;
-  Iterator cur = start;
   NS_ASSERT_MSG (CheckNoZero (m_current, m_current + size),
                  GetWriteErrorMessage ());
   if (start.m_current <= start.m_zeroStart)

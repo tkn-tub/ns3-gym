@@ -118,7 +118,6 @@ SpectrumValueTestSuite::SpectrumValueTestSuite ()
   Ptr<SpectrumModel> f = Create<SpectrumModel> (freqs);
 
   SpectrumValue v1 (f), v2 (f), v3 (f), v4 (f), v5 (f), v6 (f), v7 (f), v8 (f), v9 (f), v10 (f);
-  double nv1, nv2;
 
   double doubleValue;
 
@@ -184,16 +183,6 @@ SpectrumValueTestSuite::SpectrumValueTestSuite ()
   v10[2] =  0.667858215604;
   v10[3] = -0.794244913190;
   v10[4] =  0.878579343459;
-
-  nv1 =  1.76957619675970;
-  nv2 =  1.68451062071783;
-
-
-
-
-  // std::cerr.precision(15);
-
-  // std::cerr<< nv1 << " "<<   v1.Norm() << std::endl;
 
   SpectrumValue tv3 (f), tv4 (f), tv5 (f), tv6 (f);
 

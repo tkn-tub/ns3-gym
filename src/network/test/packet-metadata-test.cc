@@ -784,6 +784,8 @@ PacketMetadataTest::DoRun (void)
   p1 = p->CreateFragment (0,6);
   p2 = p->CreateFragment (6,535-6);
   p1->AddAtEnd(p2);
+
+  NS_TEST_EXPECT_MSG_EQ(result, true, "PacketMetadataTest failed");
 }
 //-----------------------------------------------------------------------------
 class PacketMetadataTestSuite : public TestSuite

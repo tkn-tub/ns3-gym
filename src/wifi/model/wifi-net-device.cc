@@ -253,7 +253,6 @@ WifiNetDevice::Send (Ptr<Packet> packet, const Address& dest, uint16_t protocolN
   NS_ASSERT (Mac48Address::IsMatchingType (dest));
 
   Mac48Address realTo = Mac48Address::ConvertFrom (dest);
-  Mac48Address realFrom = Mac48Address::ConvertFrom (GetAddress ());
 
   LlcSnapHeader llc;
   llc.SetType (protocolNumber);

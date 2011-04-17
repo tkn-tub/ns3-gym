@@ -76,7 +76,6 @@ Ns3WimaxFragmentationTestCase::DoRun (void)
   Cid cid;
   WimaxConnection *connectionTx = new WimaxConnection (cid, Cid::TRANSPORT);
   WimaxConnection *connectionRx = new WimaxConnection (cid, Cid::TRANSPORT);
-  bool testResult = false;
 
   // A Packet of 1000 bytes has been created.
   // It will be fragmentated into 4 fragments and then defragmentated into fullPacket.
@@ -111,39 +110,16 @@ Ns3WimaxFragmentationTestCase::DoRun (void)
       if (type)
         {
           // Check if there is a fragmentation Subheader
-          uint8_t tmpType = type;
-          if (((tmpType >> 2) & 1) != 1)
-            {
-              // The packet is not a fragment
-              testResult = true;
-              break;
-            }
+          NS_TEST_EXPECT_MSG_EQ (((type >> 2) & 1), 1, "The packet is not a fragment");
         }
 
       // remove header from the received fragment
       fragment->RemoveHeader (fragSubhdr);
       uint32_t fc = fragSubhdr.GetFc ();
 
-
-      if (fc == 1 && i != 0)
-        {
-          // the fragment in not the first one
-          testResult = true;
-          break;
-        }
-      if (fc == 2 && i != 3)
-        {
-          // the fragment in not the latest one
-          testResult = true;
-          break;
-        }
-      if ((fc == 3 && i != 1) && (fc == 3 && i != 2))
-        {
-          // the fragment in not the middle one
-          testResult = true;
-          break;
-        }
-
+      NS_TEST_EXPECT_MSG_EQ ((fc == 1 && i != 0), false, "The fragment in not the first one");
+      NS_TEST_EXPECT_MSG_EQ ((fc == 2 && i != 3), false, "The fragment in not the latest one");
+      NS_TEST_EXPECT_MSG_EQ (((fc == 3 && i != 1) && (fc == 3 && i != 2)), false, "The fragment in not the middle one");
 
       if (fc != 2)
         {
@@ -167,12 +143,7 @@ Ns3WimaxFragmentationTestCase::DoRun (void)
             }
           connectionRx->ClearFragmentsQueue ();
 
-          if (fullPacket->GetSize () != 1000)
-            {
-              // The defragmentation is correct.
-              testResult = true; // Test is passed
-              break;
-            }
+          NS_TEST_EXPECT_MSG_EQ (fullPacket->GetSize (), 1000, "The defragmentation is incorrect");
         }
     }
   delete connectionTx;

@@ -334,7 +334,6 @@ BasicEnergyDepletionTest::DepletionTestCase (double simTimeS,
   // set energy to 0 so that we deplete energy at the beginning of simulation
   basicSourceHelper.Set ("BasicEnergySourceInitialEnergyJ", DoubleValue (0.0));
   // set update interval
-  Time updateInterval = Seconds (1.0);
   basicSourceHelper.Set ("PeriodicEnergyUpdateInterval",
                          TimeValue (Seconds (updateIntervalS)));
   // install source

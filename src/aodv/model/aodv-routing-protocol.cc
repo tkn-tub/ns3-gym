@@ -1397,7 +1397,6 @@ RoutingProtocol::RecvError (Ptr<Packet> p, Ipv4Address src )
             {
               if (i->first == un.first)
                 {
-                  Ipv4Address dst = un.first;
                   unreachable.insert (un);
                 }
             }

@@ -207,7 +207,6 @@ InterferenceHelperSequenceTest::SendOnePacket (Ptr<WifiNetDevice> dev)
 void
 InterferenceHelperSequenceTest::SwitchCh (Ptr<WifiNetDevice> dev)
 {
-  Time now = Simulator::Now();
   Ptr<WifiPhy> p = dev->GetPhy ();
   p->SetChannelNumber (1);
 }

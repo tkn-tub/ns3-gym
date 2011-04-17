@@ -60,7 +60,6 @@ NS_LOG_COMPONENT_DEFINE ("CampusNetworkModel");
 
 void Progress ()
 {
-  Time now = Simulator::Now ();
   Simulator::Schedule (Seconds (0.1), Progress);
 }
 
