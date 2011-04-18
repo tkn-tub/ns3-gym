@@ -2,5 +2,5 @@
 
 def build(bld):
     obj = bld.create_ns3_program('matrix-topology',
-                                 ['simulator', 'common', 'node', 'internet'])
+                                 ['network', 'internet', 'netanim', 'mobility', 'applications'])
     obj.source = 'matrix-topology.cc'

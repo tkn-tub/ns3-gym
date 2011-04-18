@@ -6,5 +6,5 @@ def build(bld):
     obj.source = 'simple-point-to-point-olsr.cc'
 
     obj = bld.create_ns3_program('olsr-hna',
-                                 ['core', 'simulator', 'mobility', 'wifi'])
+                                 ['core', 'mobility', 'wifi', 'csma', 'olsr'])
     obj.source = 'olsr-hna.cc'

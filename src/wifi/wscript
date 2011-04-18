@@ -143,7 +143,7 @@ def build(bld):
         obj_test.uselib = 'GSL GSLCBLAS M'
 
     obj = bld.create_ns3_program('wifi-phy-test',
-        ['core', 'simulator', 'mobility', 'node', 'wifi'])
+        ['core', 'mobility', 'network', 'wifi'])
     obj.source = 'test/wifi-phy-test.cc'
 
     bld.ns3_python_bindings()
