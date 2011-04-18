@@ -76,15 +76,11 @@ def get_bool_from_file(file_path, bool_name, value_if_missing):
         return value_if_missing
 
 
+# Reads the NS-3 configuration file and returns a list of enabled modules.
+#
+# This function first looks for the ns3 configuration file (.ns3rc) in
+# the current working directory and then looks in the ~ directory.
 def read_config_file():
-    '''Reads the NS-3 configuration file and returns a list of enabled modules.
-
-    This function first looks for the ns3 configuration file (.ns3rc)
-    in the current working directory and then looks in the ~
-    directory.
-
-    '''
-
     # By default, all modules will be enabled, examples will be disabled,
     # and tests will be disabled.
     modules_enabled  = ['all_modules']
