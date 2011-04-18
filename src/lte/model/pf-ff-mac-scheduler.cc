@@ -303,7 +303,14 @@ PfFfMacScheduler::DoCschedLcConfigReq (const struct FfMacCschedSapProvider::Csch
           flowStats.flowStart = Simulator::Now ();
           flowStats.totalBytesTransmitted = 0;
           flowStats.lastTtiBytesTrasmitted = 0;
-          flowStats.lastAveragedThroughput = 0.0;
+          if (params.m_logicalChannelConfigList.at (i).m_eRabGuaranteedBitrateDl != 0)
+            {
+              flowStats.lastAveragedThroughput = params.m_logicalChannelConfigList.at (i).m_eRabGuaranteedBitrateDl;
+            }
+          else
+            {
+              flowStats.lastAveragedThroughput = 1; // minimum bitrate -> high priority to new flows
+            }
           flowStats.rlcBufferReq.m_rlcTransmissionQueueSize = 0;
           flowStats.rlcBufferReq.m_rlcRetransmissionQueueSize = 0;
           flowStats.rlcBufferReq.m_rlcStatusPduSize = 0;
