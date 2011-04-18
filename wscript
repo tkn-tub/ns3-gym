@@ -610,13 +610,6 @@ def build(bld):
 
         env['NS3_ENABLED_MODULES'] = modules
 
-        # Print the enabled modules without the "ns3-" in their name.
-        modules_without_prefix =[mod[len('ns3-'):] for mod in modules]
-        print
-        print 'Modules to build:'
-        print ', '.join(modules_without_prefix)
-        print
-
         # If tests are being built, then set the list of the enabled
         # module test libraries.
         if env['ENABLE_TESTS']:
@@ -714,6 +707,13 @@ def shutdown(ctx):
     if wutils.bld is None:
         return
     env = bld.env
+
+    # Print the enabled modules without the "ns3-" in their name.
+    modules_without_prefix =[mod[len('ns3-'):] for mod in env['NS3_ENABLED_MODULES']]
+    print
+    print 'Modules built:'
+    print ', '.join(modules_without_prefix)
+    print
 
     if Options.options.lcov_report:
         lcov_report()
