@@ -181,7 +181,7 @@ public:
 private:
 private:
   // std::map <uint16_t, std::map <uint8_t,Ptr<LteMacSapUser> > > m_rlcAttached;
-  std::map <lteFlowId_t, LteMacSapUser*> m_rlcAttached;
+  std::map <LteFlowId_t, LteMacSapUser*> m_rlcAttached;
 
   std::vector <CqiListElement_s> m_dlCqiReceived; // DL-CQI received
   std::vector <UlCqi_s> m_ulCqiReceived; // UL-CQI received

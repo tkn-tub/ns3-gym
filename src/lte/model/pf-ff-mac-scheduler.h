@@ -138,7 +138,7 @@ private:
   /*
   * Map of UE-LC statistics
   */
-  std::map <lteFlowId_t, pfsFlowPerf_t> m_flowStats;
+  std::map <LteFlowId_t, pfsFlowPerf_t> m_flowStats;
   
 
   /*

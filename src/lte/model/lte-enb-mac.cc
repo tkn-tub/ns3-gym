@@ -565,8 +565,8 @@ LteEnbMac::DoReceivePhyPdu (Ptr<Packet> p)
   
 
   // forward the packet to the correspondent RLC
-  lteFlowId_t flow ( tag.GetRnti (), tag.GetLcid () );
-  std::map <lteFlowId_t, LteMacSapUser* >::iterator it2;
+  LteFlowId_t flow ( tag.GetRnti (), tag.GetLcid () );
+  std::map <LteFlowId_t, LteMacSapUser* >::iterator it2;
   it2 = m_rlcAttached.find (flow);
   NS_ASSERT_MSG (it2 != m_rlcAttached.end (), "UE not attached rnti=" << flow.m_rnti << " lcid=" << (uint32_t) flow.m_lcId);
   (*it2).second->ReceivePdu (p);
@@ -607,14 +607,14 @@ void
 LteEnbMac::DoAddLc (LteEnbCmacSapProvider::LcInfo lcinfo, LteMacSapUser* msu)
 {
   NS_LOG_FUNCTION (this);
-  std::map <lteFlowId_t, LteMacSapUser* >::iterator it;
+  std::map <LteFlowId_t, LteMacSapUser* >::iterator it;
 
-  lteFlowId_t flow (lcinfo.rnti, lcinfo.lcId);
+  LteFlowId_t flow (lcinfo.rnti, lcinfo.lcId);
 
   it = m_rlcAttached.find (flow);
   if (it == m_rlcAttached.end ())
     {
-      m_rlcAttached.insert (std::pair<lteFlowId_t, LteMacSapUser* > (flow, msu));
+      m_rlcAttached.insert (std::pair<LteFlowId_t, LteMacSapUser* > (flow, msu));
     }
   else
     {
@@ -701,13 +701,13 @@ LteEnbMac::DoSchedDlConfigInd (FfMacSchedSapUser::SchedDlConfigIndParameters ind
   NS_LOG_FUNCTION (this);
   // Create DL PHY PDU
   Ptr<PacketBurst> pb = CreateObject<PacketBurst> ();
-  std::map <lteFlowId_t, LteMacSapUser* >::iterator it;
+  std::map <LteFlowId_t, LteMacSapUser* >::iterator it;
 
   for (unsigned int i = 0; i < ind.m_buildDataList.size (); i++)
     {
       for (unsigned int j = 0; j < ind.m_buildDataList.at (i).m_rlcPduList.size (); j++)
         {
-          lteFlowId_t flow (ind.m_buildDataList.at (i).m_rnti,
+          LteFlowId_t flow (ind.m_buildDataList.at (i).m_rnti,
                             ind.m_buildDataList.at (i).m_rlcPduList.at (j).at (0).m_logicalChannelIdentity);
           it = m_rlcAttached.find (flow);
           NS_ASSERT_MSG (it != m_rlcAttached.end (), "rnti=" << flow.m_rnti << " lcid=" << (uint32_t) flow.m_lcId);

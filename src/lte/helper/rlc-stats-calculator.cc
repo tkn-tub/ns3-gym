@@ -93,7 +93,7 @@ RlcStatsCalculator::UlTxPdu (uint16_t rnti, uint8_t lcid, uint32_t packetSize)
   NS_LOG_FUNCTION (this << "UlTxPDU" << rnti << (uint32_t) lcid << packetSize);
   if (Simulator::Now () > m_startTime )
     {
-      lteFlowId_t pair (rnti, lcid);
+      LteFlowId_t pair (rnti, lcid);
       m_ulTxPackets[pair]++;
       m_ulTxData[pair] += packetSize;
     }
@@ -106,7 +106,7 @@ RlcStatsCalculator::DlTxPdu (uint16_t rnti, uint8_t lcid, uint32_t packetSize)
   NS_LOG_FUNCTION (this << "DlTxPDU" << rnti << (uint32_t) lcid << packetSize);
   if (Simulator::Now () > m_startTime )
     {
-      lteFlowId_t pair (rnti, lcid);
+      LteFlowId_t pair (rnti, lcid);
       m_dlTxPackets[pair]++;
       m_dlTxData[pair] += packetSize;
     }
@@ -119,7 +119,7 @@ RlcStatsCalculator::UlRxPdu (uint16_t rnti, uint8_t lcid, uint32_t packetSize, u
   NS_LOG_FUNCTION (this << "UlRxPDU" << rnti << (uint32_t) lcid << packetSize << delay);
   if (Simulator::Now () > m_startTime )
     {
-      lteFlowId_t pair(rnti, lcid);
+      LteFlowId_t pair(rnti, lcid);
       m_ulRxPackets[pair]++;
       m_ulRxData[pair] += packetSize;
 
@@ -141,7 +141,7 @@ RlcStatsCalculator::DlRxPdu (uint16_t rnti, uint8_t lcid, uint32_t packetSize, u
   NS_LOG_FUNCTION (this << "UlRxPDU" << rnti << (uint32_t) lcid << packetSize << delay);
   if (Simulator::Now () > m_startTime )
     {
-      lteFlowId_t pair(rnti, lcid);
+      LteFlowId_t pair(rnti, lcid);
       m_dlRxPackets[pair]++;
       m_dlRxData[pair] += packetSize;
 
@@ -221,7 +221,7 @@ RlcStatsCalculator::WriteUlResults (std::ofstream& outFile)
   uint32Map::iterator it;
 
   // Get all the unique lteFlowIds in the calculator
-  std::vector<lteFlowId_t> lteFlowIds;
+  std::vector<LteFlowId_t> lteFlowIds;
   for ( it = m_ulTxPackets.begin(); it != m_ulTxPackets.end(); ++it)
     {
       if (find (lteFlowIds.begin (), lteFlowIds.end (),  (*it).first ) == lteFlowIds.end () )
@@ -230,7 +230,7 @@ RlcStatsCalculator::WriteUlResults (std::ofstream& outFile)
         }
     }
 
-  std::vector<lteFlowId_t>::iterator itFlow;
+  std::vector<LteFlowId_t>::iterator itFlow;
   Time endTime = m_startTime + m_epochDuration;
   for ( itFlow = lteFlowIds.begin(); itFlow != lteFlowIds.end(); ++itFlow)
     {
@@ -264,7 +264,7 @@ RlcStatsCalculator::WriteDlResults (std::ofstream& outFile)
   uint32Map::iterator it;
 
   // Get all the unique lteFlowIds in the calculator
-  std::vector<lteFlowId_t> lteFlowIds;
+  std::vector<LteFlowId_t> lteFlowIds;
   for ( it = m_dlTxPackets.begin(); it != m_dlTxPackets.end(); ++it)
     {
       if (find (lteFlowIds.begin (), lteFlowIds.end (),  (*it).first ) == lteFlowIds.end () )
@@ -273,7 +273,7 @@ RlcStatsCalculator::WriteDlResults (std::ofstream& outFile)
         }
     }
 
-  std::vector<lteFlowId_t>::iterator itFlow;
+  std::vector<LteFlowId_t>::iterator itFlow;
   Time endTime = m_startTime + m_epochDuration;
   for ( itFlow = lteFlowIds.begin(); itFlow != lteFlowIds.end(); ++itFlow)
     {
@@ -337,31 +337,31 @@ RlcStatsCalculator::StartEpoch (void)
 }
 
 uint32_t
-RlcStatsCalculator::GetUlTxPackets (lteFlowId_t p)
+RlcStatsCalculator::GetUlTxPackets (LteFlowId_t p)
 {
   return m_ulTxPackets[p];
 }
 
 uint32_t
-RlcStatsCalculator::GetUlRxPackets (lteFlowId_t p)
+RlcStatsCalculator::GetUlRxPackets (LteFlowId_t p)
 {
   return m_ulRxPackets[p];
 }
 
 uint64_t
-RlcStatsCalculator::GetUlTxData (lteFlowId_t p)
+RlcStatsCalculator::GetUlTxData (LteFlowId_t p)
 {
   return m_ulTxData[p];
 }
 
 uint64_t
-RlcStatsCalculator::GetUlRxData (lteFlowId_t p)
+RlcStatsCalculator::GetUlRxData (LteFlowId_t p)
 {
   return m_ulRxData[p];
 }
 
 double
-RlcStatsCalculator::GetUlDelay (lteFlowId_t p)
+RlcStatsCalculator::GetUlDelay (LteFlowId_t p)
 {
   uint64StatsMap::iterator it = m_ulDelay.find (p);
   if ( it == m_ulDelay.end () )
@@ -375,7 +375,7 @@ RlcStatsCalculator::GetUlDelay (lteFlowId_t p)
 }
 
 std::vector<double>
-RlcStatsCalculator::GetUlDelayStats (lteFlowId_t p)
+RlcStatsCalculator::GetUlDelayStats (LteFlowId_t p)
 {
   std::vector<double> stats;
   uint64StatsMap::iterator it = m_ulDelay.find (p);
@@ -394,7 +394,7 @@ RlcStatsCalculator::GetUlDelayStats (lteFlowId_t p)
 }
 
 std::vector<double>
-RlcStatsCalculator::GetUlPduSizeStats (lteFlowId_t p)
+RlcStatsCalculator::GetUlPduSizeStats (LteFlowId_t p)
 {
   std::vector<double> stats;
   uint32StatsMap::iterator it = m_ulPduSize.find (p);
@@ -413,31 +413,31 @@ RlcStatsCalculator::GetUlPduSizeStats (lteFlowId_t p)
 }
 
 uint32_t
-RlcStatsCalculator::GetDlTxPackets (lteFlowId_t p)
+RlcStatsCalculator::GetDlTxPackets (LteFlowId_t p)
 {
   return m_dlTxPackets[p];
 }
 
 uint32_t
-RlcStatsCalculator::GetDlRxPackets (lteFlowId_t p)
+RlcStatsCalculator::GetDlRxPackets (LteFlowId_t p)
 {
   return m_dlRxPackets[p];
 }
 
 uint64_t
-RlcStatsCalculator::GetDlTxData (lteFlowId_t p)
+RlcStatsCalculator::GetDlTxData (LteFlowId_t p)
 {
   return m_dlTxData[p];
 }
 
 uint64_t
-RlcStatsCalculator::GetDlRxData (lteFlowId_t p)
+RlcStatsCalculator::GetDlRxData (LteFlowId_t p)
 {
   return m_dlRxData[p];
 }
 
 double
-RlcStatsCalculator::GetDlDelay (lteFlowId_t p)
+RlcStatsCalculator::GetDlDelay (LteFlowId_t p)
 {
   uint64StatsMap::iterator it = m_dlDelay.find (p);
   if ( it == m_dlDelay.end () )
@@ -450,7 +450,7 @@ RlcStatsCalculator::GetDlDelay (lteFlowId_t p)
 }
 
 std::vector<double>
-RlcStatsCalculator::GetDlDelayStats (lteFlowId_t p)
+RlcStatsCalculator::GetDlDelayStats (LteFlowId_t p)
 {
   std::vector<double> stats;
   uint64StatsMap::iterator it = m_dlDelay.find (p);
@@ -470,7 +470,7 @@ RlcStatsCalculator::GetDlDelayStats (lteFlowId_t p)
 }
 
 std::vector<double>
-RlcStatsCalculator::GetDlPduSizeStats (lteFlowId_t p)
+RlcStatsCalculator::GetDlPduSizeStats (LteFlowId_t p)
 {
   std::vector<double> stats;
   uint32StatsMap::iterator it = m_dlPduSize.find (p);
@@ -492,49 +492,49 @@ RlcStatsCalculator::GetDlPduSizeStats (lteFlowId_t p)
 uint32_t
 RlcStatsCalculator::GetUlTxPackets (uint16_t rnti, uint8_t lcid)
 {
-  lteFlowId_t p (rnti, lcid);
+  LteFlowId_t p (rnti, lcid);
   return GetUlTxPackets (p);
 }
 
 uint32_t
 RlcStatsCalculator::GetUlRxPackets (uint16_t rnti, uint8_t lcid)
 {
-  lteFlowId_t p (rnti, lcid);
+  LteFlowId_t p (rnti, lcid);
   return GetUlRxPackets (p);
 }
 
 uint64_t
 RlcStatsCalculator::GetUlTxData (uint16_t rnti, uint8_t lcid)
 {
-  lteFlowId_t p (rnti, lcid);
+  LteFlowId_t p (rnti, lcid);
   return GetUlTxData (p);
 }
 
 uint64_t
 RlcStatsCalculator::GetUlRxData (uint16_t rnti, uint8_t lcid)
 {
-  lteFlowId_t p (rnti, lcid);
+  LteFlowId_t p (rnti, lcid);
   return GetUlRxData (p);
 }
 
 double
 RlcStatsCalculator::GetUlDelay (uint16_t rnti, uint8_t lcid)
 {
-  lteFlowId_t p (rnti, lcid);
+  LteFlowId_t p (rnti, lcid);
   return GetUlDelay (p);
 }
 
 std::vector<double>
 RlcStatsCalculator::GetUlDelayStats (uint16_t rnti, uint8_t lcid)
 {
-  lteFlowId_t p (rnti, lcid);
+  LteFlowId_t p (rnti, lcid);
   return GetUlDelayStats (p);
 }
 
 std::vector<double>
 RlcStatsCalculator::GetUlPduSizeStats (uint16_t rnti, uint8_t lcid)
 {
-  lteFlowId_t p (rnti, lcid);
+  LteFlowId_t p (rnti, lcid);
   return GetUlPduSizeStats (p);
 }
 
@@ -542,49 +542,49 @@ RlcStatsCalculator::GetUlPduSizeStats (uint16_t rnti, uint8_t lcid)
 uint32_t
 RlcStatsCalculator::GetDlTxPackets (uint16_t rnti, uint8_t lcid)
 {
-  lteFlowId_t p (rnti, lcid);
+  LteFlowId_t p (rnti, lcid);
   return GetDlTxPackets (p);
 }
 
 uint32_t
 RlcStatsCalculator::GetDlRxPackets (uint16_t rnti, uint8_t lcid)
 {
-  lteFlowId_t p (rnti, lcid);
+  LteFlowId_t p (rnti, lcid);
   return GetDlRxPackets (p);
 }
 
 uint64_t
 RlcStatsCalculator::GetDlTxData (uint16_t rnti, uint8_t lcid)
 {
-  lteFlowId_t p (rnti, lcid);
+  LteFlowId_t p (rnti, lcid);
   return GetDlTxData (p);
 }
 
 uint64_t
 RlcStatsCalculator::GetDlRxData (uint16_t rnti, uint8_t lcid)
 {
-  lteFlowId_t p (rnti, lcid);
+  LteFlowId_t p (rnti, lcid);
   return GetDlRxData (p);
 }
 
 double
 RlcStatsCalculator::GetDlDelay (uint16_t rnti, uint8_t lcid)
 {
-  lteFlowId_t p (rnti, lcid);
+  LteFlowId_t p (rnti, lcid);
   return GetDlDelay (p);
 }
 
 std::vector<double>
 RlcStatsCalculator::GetDlDelayStats (uint16_t rnti, uint8_t lcid)
 {
-  lteFlowId_t p (rnti, lcid);
+  LteFlowId_t p (rnti, lcid);
   return GetDlDelayStats (p);
 }
 
 std::vector<double>
 RlcStatsCalculator::GetDlPduSizeStats (uint16_t rnti, uint8_t lcid)
 {
-  lteFlowId_t p (rnti, lcid);
+  LteFlowId_t p (rnti, lcid);
   return GetDlPduSizeStats (p);
 }
 

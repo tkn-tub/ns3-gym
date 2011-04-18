@@ -27,24 +27,24 @@ NS_LOG_COMPONENT_DEFINE ("LteFfConverter");
 namespace ns3 {
 
 
-lteFlowId_t::lteFlowId_t ()
+LteFlowId_t::LteFlowId_t ()
 {
 }
 
-lteFlowId_t::lteFlowId_t (const uint16_t a, const uint8_t b)
+LteFlowId_t::LteFlowId_t (const uint16_t a, const uint8_t b)
   : m_rnti(a),
     m_lcId(b)
 {
 }
 
 bool
-operator == (const lteFlowId_t &a, const lteFlowId_t &b)
+operator == (const LteFlowId_t &a, const LteFlowId_t &b)
 {
   return ( (a.m_rnti == b.m_rnti) && (a.m_lcId == b.m_lcId) );
 }
 
 bool
-operator < (const lteFlowId_t& a, const lteFlowId_t& b)
+operator < (const LteFlowId_t& a, const LteFlowId_t& b)
 {
   return ( (a.m_rnti < b.m_rnti) || ( (a.m_rnti == b.m_rnti) && (a.m_lcId < b.m_lcId) ) );
 }
