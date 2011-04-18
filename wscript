@@ -463,11 +463,6 @@ def configure(conf):
             status = 'not enabled (%s)' % reason_not_enabled
         print "%-30s: %s" % (caption, status)
 
-    # Print all of the enabled modules without the "ns3-" in their name.
-    print
-    print 'Enabled modules =', str([mod[len('ns3-'):] for mod in conf.env['NS3_ENABLED_MODULES']])
-    print
-
 class SuidBuildTask(Task.TaskBase):
     """task that makes a binary Suid
     """
@@ -614,6 +609,13 @@ def build(bld):
                         changed = True
 
         env['NS3_ENABLED_MODULES'] = modules
+
+        # Print the enabled modules without the "ns3-" in their name.
+        modules_without_prefix =[mod[len('ns3-'):] for mod in modules]
+        print
+        print 'Modules to build:'
+        print ', '.join(modules_without_prefix)
+        print
 
         # If tests are being built, then set the list of the enabled
         # module test libraries.
