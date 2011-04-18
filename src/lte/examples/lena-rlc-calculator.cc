@@ -24,9 +24,8 @@
 #include "ns3/mobility-module.h"
 #include "ns3/lte-module.h"
 #include "ns3/rlc-stats-calculator.h"
-
-
-#include "ns3/gtk-config-store.h"
+#include "ns3/config-store.h"
+//#include "ns3/gtk-config-store.h"
 
 using namespace ns3;
 
@@ -60,6 +59,12 @@ int main (int argc, char *argv[])
 
   // Command line arguments
   CommandLine cmd;
+  cmd.Parse (argc, argv);
+
+  ConfigStore inputConfig;
+  inputConfig.ConfigureDefaults ();
+  
+  // parse again so you can override default values from the command line
   cmd.Parse (argc, argv);
 
   // Enable LTE log components
