@@ -37,11 +37,13 @@ int main (int argc, char *argv[])
   //
   // to load a previously created default attribute file
   // ./waf --command-template="%s --ns3::ConfigStore::Filename=input-defaults.txt --ns3::ConfigStore::Mode=Load --ns3::ConfigStore::FileFormat=RawText" --run src/lte/examples/lena-first-sim
-  // note that the latter will override any of the defaults set via command-line arguments
-  //
+
   ConfigStore inputConfig;
   inputConfig.ConfigureDefaults ();
-
+  
+  // parse again so you can override default values from the command line
+  cmd.Parse (argc, argv);
+  
   LenaHelper lena;
 
   lena.EnableLogComponents ();
