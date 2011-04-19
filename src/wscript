@@ -301,9 +301,10 @@ class ns3pcfile_task(Task.Task):
             path_st = 'LIBPATH_ST'
             lib_st = 'LIB_ST'
             lib_marker = 'SHLIB_MARKER'
-        return [env[path_st] % libdir,
-                env[lib_marker],
-                env[lib_st] % name]
+        retval = [env[path_st] % libdir,
+                  env[lib_marker],
+                  env[lib_st] % name]
+        return retval
     def _lib(self, env, dep):
         libpath = env['LIBPATH_%s' % dep]
         linkflags = env['LINKFLAGS_%s' % dep]
@@ -337,7 +338,7 @@ class ns3pcfile_task(Task.Task):
         outfile = open(outfilename, 'w')
         includedir = os.path.join(prefix, 'include')
         libdir = os.path.join(prefix, 'lib')
-        libs = self._self_libs(self.env, name, '%{libdir}')
+        libs = self._self_libs(self.env, name, '${libdir}')
         for dep in use:
             libs = libs + self._lib(self.env, dep)
         for dep in uselib_local:
