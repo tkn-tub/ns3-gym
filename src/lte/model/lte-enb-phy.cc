@@ -418,14 +418,12 @@ LteEnbPhy::CreateUlCqiReport (const SpectrumValue& sinr)
   UlCqi_s ulcqi;
   ulcqi.m_type = UlCqi_s::PUSCH;
   int i = 0;
-  NS_LOG_DEBUG (this << "EVALUATING UL-CQI");
   for (it = sinr.ConstValuesBegin (); it != sinr.ConstValuesEnd (); it++)
   {
   	double sinrdb = 10*log10 ((*it));
  	  // convert from double to fixed point notation Sxxxxxxxxxxx.xxx
  	  int16_t sinrFp = LteFfConverter::double2fpS11dot3 (sinrdb);
     ulcqi.m_sinr.push_back (sinrFp);
-    NS_LOG_DEBUG(this << " RB " << i << " SINR FP " << sinrFp << " orig " << sinrdb);
     i++;
   }
   return (ulcqi);

@@ -375,7 +375,8 @@ RrFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sched
   // Get the actual active flows (queue!=0)
   std::vector<FfMacSchedSapProvider::SchedDlRlcBufferReqParameters>::iterator it;
   int nflows = 0;
-
+  std::map <uint16_t,uint8_t> lcActivesPerRnti;
+  std::map <uint16_t,uint8_t>::iterator itLcRnti;
   for (it = m_rlcBufferReq.begin (); it != m_rlcBufferReq.end (); it++)
     {
       // remove old entries of this UE-LC
@@ -390,6 +391,15 @@ RrFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sched
                 {
                   // CQI == 0 means "out of range" (see table 7.2.3-1 of 36.213)
                   nflows++;
+                  itLcRnti = lcActivesPerRnti.find ((*it).m_rnti);
+                  if (itLcRnti!=lcActivesPerRnti.end ())
+                    {
+                      (*itLcRnti).second++;
+                    }
+                  else
+                    {
+                      lcActivesPerRnti.insert (std::pair<uint16_t, uint8_t > ((*it).m_rnti, 1));
+                    }
                 }
             }
         }
@@ -411,54 +421,66 @@ RrFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sched
   int rbgAllocated = 0;
 
   FfMacSchedSapUser::SchedDlConfigIndParameters ret;
-
   // round robin assignment to all UE-LC registered
-  // std::vector<FfMacSchedSapProvider::SchedDlRlcBufferReqParameters>::iterator it;
-  for (it = m_rlcBufferReq.begin (); it != m_rlcBufferReq.end (); it++)
+  it = m_rlcBufferReq.begin ();
+  //for (it = m_rlcBufferReq.begin (); it != m_rlcBufferReq.end (); it++)
+  while (it != m_rlcBufferReq.end ())
     {
-      // create new BuildDataListElement_s for this LC
+      itLcRnti = lcActivesPerRnti.find ((*it).m_rnti);
+      if (itLcRnti==lcActivesPerRnti.end ())
+      {
+        // skip this entry
+        it++;
+        continue;
+      }
+      int lcNum = (*itLcRnti).second;
+      // create new BuildDataListElement_s for this RNTI
       BuildDataListElement_s newEl;
       newEl.m_rnti = (*it).m_rnti;
-      // NS_LOG_DEBUG (this << "Allocate user " << newEl.m_rnti << " rbg " << rbgPerFlow);
       // create the DlDciListElement_s
       DlDciListElement_s newDci;
-      std::vector <struct RlcPduListElement_s> newRlcPduLe;
       newDci.m_rnti = (*it).m_rnti;
       newDci.m_resAlloc = 0;
-      newDci.m_rbBitmap = 0; // TBD (32 bit bitmap see 7.1.6 of 36.213)
+      newDci.m_rbBitmap = 0;
+      std::map <uint16_t,uint8_t>::iterator itCqi = m_p10CqiRxed.find (newEl.m_rnti);
+      if (itCqi == m_p10CqiRxed.end ())
+        {
+          newDci.m_mcs.push_back (1); // no info on this user -> lowest MCS
+        }
+      else
+        {
+          newDci.m_mcs.push_back ( LteAmc::GetMcsFromCqi ((*itCqi).second) );
+        }
+      // group the LCs of this RNTI
+      std::vector <struct RlcPduListElement_s> newRlcPduLe;
+      int totRbg = lcNum * rbgPerFlow;
+      int tbSize = (LteAmc::GetTbSizeFromMcs (newDci.m_mcs.at (0), totRbg * rbgSize) / 8);
+      //NS_LOG_DEBUG (this << "Allocate user " << newEl.m_rnti << " LCs " << (uint16_t)(*itLcRnti).second << " bytes " << tbSize);
+      uint16_t rlcPduSize = tbSize / lcNum;
+      for (int i = 0; i < lcNum ; i++)
+        {
+          RlcPduListElement_s newRlcEl;
+          newRlcEl.m_logicalChannelIdentity = (*it).m_logicalChannelIdentity;
+          //NS_LOG_DEBUG (this << "LCID " << (uint32_t) newRlcEl.m_logicalChannelIdentity << " size " << rlcPduSize);
+          newRlcEl.m_size = rlcPduSize;
+          newRlcPduLe.push_back (newRlcEl);
+          it++;
+        }
       uint32_t rbgMask = 0;
-      for (int i = 0; i < rbgPerFlow; i++)
+      for (int i = 0; i < totRbg; i++)
         {
           rbgMask = rbgMask + (0x1 << rbgAllocated);
-          // NS_LOG_DEBUG (this << " Allocated PRB " << rbgAllocated);
+          //NS_LOG_DEBUG (this << " Allocated RBG " << rbgAllocated);
           rbgAllocated++;
         }
       newDci.m_rbBitmap = rbgMask; // (32 bit bitmap see 7.1.6 of 36.213)
 
       int nbOfTbsInNewDci = 1;  // SISO -> only one TB
-      int rlcPduSize = 0;
       for (int i = 0; i < nbOfTbsInNewDci; i++)
         {
-          std::map <uint16_t,uint8_t>::iterator itCqi = m_p10CqiRxed.find (newDci.m_rnti);
-          if (itCqi == m_p10CqiRxed.end ())
-            {
-              newDci.m_mcs.push_back (1); // no info on this user -> lowest MCS
-            }
-          else
-            {
-              newDci.m_mcs.push_back ( LteAmc::GetMcsFromCqi ((*itCqi).second) );
-            }
-          int nPRB = rbgSize * rbgPerFlow;
-          newDci.m_tbsSize.push_back ( (LteAmc::GetTbSizeFromMcs (newDci.m_mcs.at (i), nPRB) / 8) ); // (size of TB in bytes according to table 7.1.7.2.1-1 of 36.213)
+          newDci.m_tbsSize.push_back (tbSize);
           newDci.m_ndi.push_back (1); // TBD (new data indicator)
           newDci.m_rv.push_back (0); // TBD (redundancy version)
-
-          rlcPduSize += newDci.m_tbsSize.at (i);
-          RlcPduListElement_s newRlcEl;
-          newRlcEl.m_logicalChannelIdentity = (*it).m_logicalChannelIdentity;
-          // NS_LOG_DEBUG (this << "LCID " << (uint32_t) newRlcEl.m_logicalChannelIdentity);
-          newRlcEl.m_size = newDci.m_tbsSize.at (i);
-          newRlcPduLe.push_back (newRlcEl);
         }
       newEl.m_dci = newDci;
       // ...more parameters -> ignored in this version
@@ -472,7 +494,7 @@ RrFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sched
         {
           break;                       // no more RGB to be allocated
         }
-    }
+    } // end while
 
   ret.m_nrOfPdcchOfdmSymbols = 1;   // TODO: check correct value according the DCIs txed
 
