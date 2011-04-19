@@ -106,6 +106,12 @@ public:
   void SetDlBandwidth (uint8_t bw);
 
 
+protected:
+
+  // inherited from Object
+  virtual void DoStart (void);
+
+
 private:
   bool DoSend (Ptr<Packet> packet,
                const Mac48Address& source,

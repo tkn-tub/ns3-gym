@@ -79,7 +79,6 @@ LteUeNetDevice::LteUeNetDevice (Ptr<Node> node, Ptr<LteUePhy> phy, Ptr<LteUeMac>
   m_mac = mac;
   m_rrc = rrc;
   SetNode (node);
-  UpdateConfig ();
 }
 
 LteUeNetDevice::~LteUeNetDevice (void)
@@ -148,6 +147,13 @@ LteUeNetDevice::GetTargetEnb (void)
 {
   NS_LOG_FUNCTION (this);
   return m_targetEnb;
+}
+
+
+void 
+LteUeNetDevice::DoStart (void)
+{
+  UpdateConfig ();
 }
 
 
