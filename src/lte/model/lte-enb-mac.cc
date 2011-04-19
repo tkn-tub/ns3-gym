@@ -583,7 +583,7 @@ LteEnbMac::DoReceivePhyPdu (Ptr<Packet> p)
 void
 LteEnbMac::DoConfigureMac (uint8_t ulBandwidth, uint8_t dlBandwidth)
 {
-  NS_LOG_FUNCTION (this << " ulBandwidth=" << ulBandwidth << " dlBandwidth=" << dlBandwidth);
+  NS_LOG_FUNCTION (this << " ulBandwidth=" << (uint16_t) ulBandwidth << " dlBandwidth=" << (uint16_t) dlBandwidth);
   FfMacCschedSapProvider::CschedCellConfigReqParameters params;
   // Configure the subset of parameters used by FfMacScheduler
   params.m_ulBandwidth = ulBandwidth;
