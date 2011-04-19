@@ -94,6 +94,8 @@ int main ()
     conf.write_config_header('ns3/core-config.h', top=True)
 
 def build(bld):
+    bld.install_files('${PREFIX}/include', '../../ns3/core-config.h')
+
     core = bld.create_ns3_module('core')
     core.source = [
         'model/time.cc',
