@@ -41,16 +41,15 @@ public:
                     uint8_t nRays, 
                     uint8_t nOscillators);
   ~PathCoefficients ();
-  double GetLoss (void);
+  double GetLoss (Ptr<const JakesPropagationLossModel> jakes);
   Ptr<MobilityModel> GetReceiver (void);
 private:
-  void DoConstruct (void);
+  void DoConstruct (Ptr<const JakesPropagationLossModel> jakes);
   Ptr<MobilityModel> m_receiver;
   uint8_t m_nOscillators;
   uint8_t m_nRays;
   double **m_phases;
   Time m_lastUpdate;
-  Ptr<const JakesPropagationLossModel> m_jakes;
 };
 
 
@@ -60,10 +59,9 @@ JakesPropagationLossModel::PathCoefficients::PathCoefficients (Ptr<const JakesPr
 							   uint8_t nOscillators)
   : m_receiver (receiver),
     m_nOscillators (nOscillators),
-    m_nRays (nRays),
-    m_jakes(jakes)
+    m_nRays (nRays)
 {
-  DoConstruct ();
+  DoConstruct (jakes);
 }
 
 JakesPropagationLossModel::PathCoefficients::~PathCoefficients ()
@@ -76,7 +74,7 @@ JakesPropagationLossModel::PathCoefficients::~PathCoefficients ()
 }
 
 void
-JakesPropagationLossModel::PathCoefficients::DoConstruct ()
+JakesPropagationLossModel::PathCoefficients::DoConstruct (Ptr<const JakesPropagationLossModel> jakes)
 {
   m_phases = new double*[m_nRays];
   for (uint8_t i = 0; i < m_nRays; i++) 
@@ -84,7 +82,7 @@ JakesPropagationLossModel::PathCoefficients::DoConstruct ()
       m_phases[i] = new double[m_nOscillators + 1];
       for (uint8_t j = 0; j <= m_nOscillators; j++) 
         {
-          m_phases[i][j] = 2.0 * JakesPropagationLossModel::PI * m_jakes->m_variable.GetValue ();
+          m_phases[i][j] = 2.0 * JakesPropagationLossModel::PI * jakes->m_variable.GetValue ();
         }
     }
   m_lastUpdate = Simulator::Now ();
@@ -97,7 +95,7 @@ JakesPropagationLossModel::PathCoefficients::GetReceiver ()
 }
 
 double
-JakesPropagationLossModel::PathCoefficients::GetLoss (void)
+JakesPropagationLossModel::PathCoefficients::GetLoss (Ptr<const JakesPropagationLossModel> jakes)
 {
   uint16_t N = 4 * m_nOscillators + 2;
   Time interval = Simulator::Now () - m_lastUpdate;
@@ -111,12 +109,12 @@ JakesPropagationLossModel::PathCoefficients::GetLoss (void)
       for (uint8_t j = 0; j <= m_nOscillators; j++) 
         {
           m_phases[i][j] += 2.0 * JakesPropagationLossModel::PI * 
-            cos (2.0 * JakesPropagationLossModel::PI * j / N) * m_jakes->m_fd * interval.GetSeconds ();
+            cos (2.0 * JakesPropagationLossModel::PI * j / N) * jakes->m_fd * interval.GetSeconds ();
           m_phases[i][j] -= 2.0 * JakesPropagationLossModel::PI * 
             floor (m_phases[i][j] / 2.0 / JakesPropagationLossModel::PI);
-          fading.real += m_jakes->m_amp[j].real * cos (m_phases[i][j]);
-          fading.imag += m_jakes->m_amp[j].imag * cos (m_phases[i][j]);
-          norm += sqrt(pow (m_jakes->m_amp[j].real, 2) + pow(m_jakes->m_amp[j].imag, 2));
+          fading.real += jakes->m_amp[j].real * cos (m_phases[i][j]);
+          fading.imag += jakes->m_amp[j].imag * cos (m_phases[i][j]);
+          norm += sqrt(pow (jakes->m_amp[j].real, 2) + pow(jakes->m_amp[j].imag, 2));
         }
     coef.real += fading.real;
     coef.imag += fading.imag;
@@ -171,7 +169,7 @@ JakesPropagationLossModel::JakesPropagationLossModel ()
 JakesPropagationLossModel::~JakesPropagationLossModel ()
 {
   delete [] m_amp;
-  for (PathsList::iterator i = m_paths.end (); i != m_paths.begin (); i--) 
+  for (PathsList::reverse_iterator i = m_paths.rbegin (); i != m_paths.rend (); i++) 
     {
       PathsSet *ps = *i;
       for (DestinationList::iterator r = ps->receivers.begin (); r != ps->receivers.end (); r++) 
@@ -179,8 +177,11 @@ JakesPropagationLossModel::~JakesPropagationLossModel ()
           PathCoefficients *pc = *r;
           delete pc;
         }
+      ps->sender = 0;
+      ps->receivers.clear ();
       delete ps;
     }
+  m_paths.clear ();
 }
 
 void
@@ -239,12 +240,12 @@ JakesPropagationLossModel::DoCalcRxPower (double txPowerDbm,
                 {
                   ps->receivers.erase (r);
                   ps->receivers.push_back (pc);
-                  return txPowerDbm + pc->GetLoss ();
+                  return txPowerDbm + pc->GetLoss (this);
                 }
             }
           PathCoefficients *pc = new PathCoefficients (this, b, m_nRays, m_nOscillators);
           ps->receivers.push_back (pc);
-          return txPowerDbm + pc->GetLoss ();
+          return txPowerDbm + pc->GetLoss (this);
         }
     }
   PathsSet *ps = new PathsSet;
@@ -252,7 +253,7 @@ JakesPropagationLossModel::DoCalcRxPower (double txPowerDbm,
   PathCoefficients *pc = new PathCoefficients (this, b, m_nRays, m_nOscillators);
   ps->receivers.push_back (pc);
   m_paths.push_back (ps);
-  return txPowerDbm + pc->GetLoss ();
+  return txPowerDbm + pc->GetLoss (this);
 }
 
 } // namespace ns3
