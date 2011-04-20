@@ -39,7 +39,6 @@ struct pfsFlowPerf_t
   unsigned long totalBytesTransmitted; 
   unsigned int lastTtiBytesTrasmitted;
   double lastAveragedThroughput;
-  FfMacSchedSapProvider::SchedDlRlcBufferReqParameters rlcBufferReq;
 };
 
 
@@ -128,17 +127,19 @@ private:
 
 
   int GetRbgSize (int dlbandwidth);
+  
+  int LcActivePerFlow(uint16_t rnti);
 
   /*
-   * Vectors of UE's RLC info
+   * Vectors of UE's LC info
   */
-  //std::vector <FfMacSchedSapProvider::SchedDlRlcBufferReqParameters> m_rlcBufferReq;
+  std::map <LteFlowId_t, FfMacSchedSapProvider::SchedDlRlcBufferReqParameters> m_rlcBufferReq;
   
   
   /*
-  * Map of UE-LC statistics
+  * Map of UE statistics (per RNTI basis)
   */
-  std::map <LteFlowId_t, pfsFlowPerf_t> m_flowStats;
+  std::map <uint16_t, pfsFlowPerf_t> m_flowStats;
   
 
   /*
