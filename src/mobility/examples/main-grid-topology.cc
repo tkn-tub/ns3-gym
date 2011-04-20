@@ -50,5 +50,6 @@ int main (int argc, char *argv[])
       std::cout << "x=" << pos.x << ", y=" << pos.y << ", z=" << pos.z << std::endl;
     }
 
+  Simulator::Destroy ();
   return 0;
 }
