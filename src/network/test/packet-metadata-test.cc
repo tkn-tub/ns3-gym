@@ -785,6 +785,48 @@ PacketMetadataTest::DoRun (void)
   p2 = p->CreateFragment (6,535-6);
   p1->AddAtEnd(p2);
 
+  // bug 1072#2
+  p = Create<Packet> (reinterpret_cast<const uint8_t*> ("hello world"), 11);
+  ADD_HEADER (p, 2);
+  CHECK_HISTORY(p, 2, 2, 11);
+  p1 = p->CreateFragment (0, 5);
+  CHECK_HISTORY(p1, 2, 2, 3);
+  p2 = p->CreateFragment (5, 8);
+  CHECK_HISTORY(p2, 1, 8);
+
+  ADD_HEADER (p1, 8+2+2*6);
+  ADD_TRAILER (p1, 4);
+  CHECK_HISTORY(p1, 4, 22, 2, 3, 4);
+  ADD_HEADER (p2, 8+2+2*6);
+  ADD_TRAILER (p2, 4);
+  CHECK_HISTORY(p2, 3, 22, 8, 4);
+
+  REM_TRAILER (p1, 4);
+  REM_HEADER (p1, 8+2+2*6);
+  CHECK_HISTORY(p1, 2, 2, 3);
+  REM_TRAILER (p2, 4);
+  REM_HEADER (p2, 8+2+2*6);
+  CHECK_HISTORY(p2, 1, 8);
+
+  p3 = p1->Copy();
+  CHECK_HISTORY(p3, 2, 2, 3);
+  p3->AddAtEnd(p2);
+  CHECK_HISTORY(p3, 2, 2, 11);
+
+  CHECK_HISTORY(p, 2, 2, 11);
+  REM_HEADER (p, 2);
+  CHECK_HISTORY(p, 1, 11);
+  REM_HEADER (p3, 2);
+  CHECK_HISTORY(p3, 1, 11);
+
+  uint8_t *buf = new uint8_t[p3->GetSize ()];
+  p3->CopyData (buf, p3->GetSize ());
+  std::string msg = std::string (reinterpret_cast<const char *>(buf),
+                                 p3->GetSize ());
+  delete [] buf;
+  NS_TEST_EXPECT_MSG_EQ(msg, std::string("hello world"), "Could not find original data in received packet");
+
+
   NS_TEST_EXPECT_MSG_EQ(result, true, "PacketMetadataTest failed");
 }
 //-----------------------------------------------------------------------------
