@@ -47,6 +47,12 @@
 #include "ns3/ipv4-global-routing-helper.h"
 #include "ns3/ipv4-static-routing-helper.h"
 #include "ns3/ipv4-list-routing-helper.h"
+#include "ns3/point-to-point-helper.h"
+#include "ns3/internet-stack-helper.h"
+#include "ns3/ipv4-nix-vector-helper.h"
+#include "ns3/ipv4-address-helper.h"
+#include "ns3/on-off-helper.h"
+#include "ns3/packet-sink-helper.h"
 
 #ifdef NS3_MPI
 #include <mpi.h>
