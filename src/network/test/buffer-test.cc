@@ -9,7 +9,7 @@ namespace ns3 {
 //-----------------------------------------------------------------------------
 class BufferTest : public TestCase {
 private:
-  bool EnsureWrittenBytes (Buffer b, uint32_t n, uint8_t array[]);
+  void EnsureWrittenBytes (Buffer b, uint32_t n, uint8_t array[]);
 public:
   virtual void DoRun (void);
   BufferTest ();
@@ -20,7 +20,7 @@ BufferTest::BufferTest ()
   : TestCase ("Buffer") {
 }
 
-bool
+void
 BufferTest::EnsureWrittenBytes (Buffer b, uint32_t n, uint8_t array[])
 {
   bool success = true;
@@ -53,22 +53,18 @@ BufferTest::EnsureWrittenBytes (Buffer b, uint32_t n, uint8_t array[])
           failure << (uint16_t)got[j] << " ";
         }
       failure << std::endl;
-      ReportTestFailure ("", "", "", failure.str(), __FILE__, __LINE__);
+      NS_TEST_ASSERT_MSG_EQ(true, false, failure.str());
     }
-  return success;
 }
 
 /* Note: works only when variadic macros are
  * available which is the case for gcc.
  * XXX
  */
-#define ENSURE_WRITTEN_BYTES(buffer, n, ...)     \
-  {                                              \
-    uint8_t bytes[] = {__VA_ARGS__};             \
-    if (!EnsureWrittenBytes (buffer, n, bytes)) \
-      {                                          \
-        SetErrorStatus (false);                  \
-      }                                          \
+#define ENSURE_WRITTEN_BYTES(buffer, n, ...)			\
+  {								\
+    uint8_t bytes[] = {__VA_ARGS__};				\
+    EnsureWrittenBytes (buffer,	n, bytes);			\
   }
 
 void
@@ -118,10 +114,7 @@ BufferTest::DoRun (void)
   i.Prev (2);
   i.WriteHtonU16 (0xff00);
   i.Prev (2);
-  if (i.ReadNtohU16 () != 0xff00) 
-    {
-      SetErrorStatus (false);
-    }
+  NS_TEST_ASSERT_MSG_EQ (i.ReadNtohU16 (), 0xff00, "Could not read expected value");
   i.Prev (2);
   i.WriteU16 (saved);
   ENSURE_WRITTEN_BYTES (buffer, 5, 0xff, 0x69, 0xde, 0xad, 0xff);
@@ -145,26 +138,17 @@ BufferTest::DoRun (void)
   i.WriteU64 (0x0123456789ABCDEFllu);
   ENSURE_WRITTEN_BYTES (buff64, 8, 0xef, 0xcd, 0xab, 0x89, 0x67, 0x45, 0x23, 0x01);
   i = buff64.Begin();
-  if (i.ReadLsbtohU64() != 0x0123456789abcdefllu)
-    {
-      SetErrorStatus (false);
-    }
+  NS_TEST_ASSERT_MSG_EQ(i.ReadLsbtohU64(), 0x0123456789abcdefllu, "Could not read expected value");
   i = buff64.Begin();
   i.WriteHtolsbU64 (0x0123456789ABCDEFllu);
   ENSURE_WRITTEN_BYTES (buff64, 8, 0xef, 0xcd, 0xab, 0x89, 0x67, 0x45, 0x23, 0x01);
   i = buff64.Begin();
-  if (i.ReadLsbtohU64() != 0x0123456789abcdefllu)
-    {
-      SetErrorStatus (false);
-    }
+  NS_TEST_ASSERT_MSG_EQ (i.ReadLsbtohU64(), 0x0123456789abcdefllu, "Could not read expected value");
   i = buff64.Begin();
   i.WriteHtonU64 (0x0123456789ABCDEFllu);
   ENSURE_WRITTEN_BYTES (buff64, 8, 0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef);
   i = buff64.Begin();
-  if (i.ReadNtohU64() != 0x0123456789abcdefllu)
-    {
-      SetErrorStatus (false);
-    }
+  NS_TEST_ASSERT_MSG_EQ (i.ReadNtohU64(), 0x0123456789abcdefllu, "could not read expected value");
 
   // test self-assignment
   {
@@ -236,10 +220,7 @@ BufferTest::DoRun (void)
   buffer.Begin ().WriteU8 (0x21);
   ENSURE_WRITTEN_BYTES (buffer, 6, 0x21, 0, 0, 0, 0xab, 0xcd);
   buffer.RemoveAtEnd (8);
-  if (buffer.GetSize () != 0) 
-    {
-      SetErrorStatus (false);
-    }
+  NS_TEST_ASSERT_MSG_EQ (buffer.GetSize (), 0, "Buffer size not zero");
 
   buffer = Buffer (6);
   buffer.AddAtStart (9);
