@@ -114,7 +114,7 @@ main (int argc, char *argv[])
   Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
 
   // Set the bounding box for animation
-  star.BoundingBox (1, 1, 10, 10);
+  star.BoundingBox (1, 1, 100, 100);
   
   // Create the animation object and configure for specified output
   AnimationInterface anim;

@@ -36,7 +36,7 @@
 #include "ns3/channel.h"
 #include "ns3/config.h"
 #include "ns3/node.h"
-#include "ns3/canvas-location.h"
+#include "ns3/mobility-model.h"
 #include "ns3/packet.h"
 #include "ns3/simulator.h"
 
@@ -99,11 +99,11 @@ void AnimationInterface::StartAnimation ()
   for (NodeList::Iterator i = NodeList::Begin (); i != NodeList::End (); ++i)
     {
       Ptr<Node> n = *i;
-      Ptr<CanvasLocation> loc = n->GetObject<CanvasLocation> ();
+      Ptr<MobilityModel> loc = n->GetObject<MobilityModel> ();
       if (loc)
         {
           // Location exists, dump it
-          Vector v = loc->GetLocation ();
+          Vector v = loc->GetPosition ();
           ostringstream oss;
           oss << "0.0 N " << n->GetId () 
                << " " << v.x << " " << v.y << endl;

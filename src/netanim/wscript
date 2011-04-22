@@ -1,11 +1,10 @@
 ## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
 
 def build(bld):
-    module = bld.create_ns3_module('netanim', ['internet', 'point-to-point'])
+    module = bld.create_ns3_module('netanim', ['internet', 'point-to-point', 'mobility'])
     module.includes = '.'
     module.source = [
         'model/animation-interface.cc',
-        'model/canvas-location.cc',
         'helper/point-to-point-dumbbell-helper.cc',
         'helper/point-to-point-grid-helper.cc',
         'helper/point-to-point-star-helper.cc',
@@ -15,7 +14,6 @@ def build(bld):
     headers.module = 'netanim'
     headers.source = [
         'model/animation-interface.h',
-        'model/canvas-location.h',
         'helper/point-to-point-dumbbell-helper.h',
         'helper/point-to-point-grid-helper.h',
         'helper/point-to-point-star-helper.h',

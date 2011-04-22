@@ -20,7 +20,7 @@
 // ns3 includes
 #include "ns3/animation-interface.h"
 #include "ns3/point-to-point-star-helper.h"
-#include "ns3/canvas-location.h"
+#include "ns3/constant-position-mobility-model.h"
 
 #include "ns3/node-list.h"
 #include "ns3/point-to-point-net-device.h"
@@ -120,14 +120,14 @@ PointToPointStarHelper::BoundingBox (double ulx, double uly,
 
   // Place the hub
   Ptr<Node> hub = m_hub.Get (0);
-  Ptr<CanvasLocation> hubLoc =  hub->GetObject<CanvasLocation> ();
+  Ptr<ConstantPositionMobilityModel> hubLoc =  hub->GetObject<ConstantPositionMobilityModel> ();
   if (hubLoc == 0)
     {
-      hubLoc = CreateObject<CanvasLocation> ();
+      hubLoc = CreateObject<ConstantPositionMobilityModel> ();
       hub->AggregateObject (hubLoc);
     }
   Vector hubVec (ulx + xDist/2.0, uly + yDist/2.0, 0);
-  hubLoc->SetLocation (hubVec);
+  hubLoc->SetPosition (hubVec);
 
   double spokeDist;
   if (xDist > yDist)
@@ -143,16 +143,16 @@ PointToPointStarHelper::BoundingBox (double ulx, double uly,
   for (uint32_t i = 0; i < m_spokes.GetN (); ++i)
     {
       Ptr<Node> spokeNode = m_spokes.Get (i);
-      Ptr<CanvasLocation> spokeLoc = spokeNode->GetObject<CanvasLocation> ();
+      Ptr<ConstantPositionMobilityModel> spokeLoc = spokeNode->GetObject<ConstantPositionMobilityModel> ();
       if (spokeLoc == 0)
         {
-          spokeLoc = CreateObject<CanvasLocation> ();
+          spokeLoc = CreateObject<ConstantPositionMobilityModel> ();
           spokeNode->AggregateObject (spokeLoc);
         }
         Vector spokeVec (hubVec.x + cos (theta*i) * spokeDist, 
                          hubVec.y + sin (theta*i) * spokeDist,
                          0);
-        spokeLoc->SetLocation (spokeVec);
+        spokeLoc->SetPosition (spokeVec);
     }
 }
 
