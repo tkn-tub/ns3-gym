@@ -676,14 +676,17 @@ def make_paths():
 #
 VALGRIND_SUPPRESSIONS_FILE = "testpy.supp"
 
-def run_job_synchronously(shell_command, directory, valgrind, is_python):
+def run_job_synchronously(shell_command, directory, valgrind, is_python, build_path=""):
     (base, build) = os.path.split (NS3_BUILDDIR)
     suppressions_path = os.path.join (base, VALGRIND_SUPPRESSIONS_FILE)
 
     if is_python:
         path_cmd = "python " + os.path.join (base, shell_command)
     else:
-        path_cmd = os.path.join (NS3_BUILDDIR, NS3_ACTIVE_VARIANT, shell_command)
+        if len(build_path):
+            path_cmd = os.path.join (build_path, shell_command)
+        else:
+            path_cmd = os.path.join (NS3_BUILDDIR, NS3_ACTIVE_VARIANT, shell_command)
 
     if valgrind:
         cmd = "valgrind --suppressions=%s --leak-check=full --show-reachable=yes --error-exitcode=2 %s" % (suppressions_path, 
@@ -737,6 +740,7 @@ class Job:
         self.tmp_file_name = ""
         self.returncode = False
         self.elapsed_time = 0
+        self.build_path = ""
 
     #
     # A job is either a standard job or a special job indicating that a worker
@@ -778,6 +782,14 @@ class Job:
     #
     def set_shell_command(self, shell_command):
         self.shell_command = shell_command
+
+    #
+    # This is the build path where ns-3 was built.  For example,
+    #
+    #  "/home/craigdo/repos/ns-3-allinone-test/ns-3-dev/build/debug"
+    #
+    def set_build_path(self, build_path):
+        self.build_path = build_path
 
     #
     # This is the dispaly name of the job, typically the test suite or example 
@@ -892,7 +904,7 @@ class worker_thread(threading.Thread):
                     # "examples/mixed-wireless.py"
                     #
                     (job.returncode, standard_out, standard_err, et) = run_job_synchronously(job.shell_command, 
-                        job.cwd, options.valgrind, job.is_pyexample)
+                        job.cwd, options.valgrind, job.is_pyexample, job.build_path)
                 else:
                     #
                     # If we're a test suite, we need to provide a little more info
@@ -1269,6 +1281,7 @@ def run_tests():
                         job.set_basedir(os.getcwd())
                         job.set_tempdir(testpy_output_dir)
                         job.set_shell_command(test)
+                        job.set_build_path("")
 
                         if options.valgrind and not eval(do_valgrind_run):
                             job.set_is_skip (True)
@@ -1293,7 +1306,8 @@ def run_tests():
         job.set_cwd(testpy_output_dir)
         job.set_basedir(os.getcwd())
         job.set_tempdir(testpy_output_dir)
-        job.set_shell_command("examples/%s" % options.example)
+        job.set_shell_command(options.example)
+        job.set_build_path(options.buildpath)
         
         if options.verbose:
             print "Queue %s" % options.example
@@ -1336,6 +1350,7 @@ def run_tests():
                         job.set_basedir(os.getcwd())
                         job.set_tempdir(testpy_output_dir)
                         job.set_shell_command(test)
+                        job.set_build_path("")
 
                         #
                         # Python programs and valgrind do not work and play
@@ -1374,7 +1389,8 @@ def run_tests():
         job.set_cwd(testpy_output_dir)
         job.set_basedir(os.getcwd())
         job.set_tempdir(testpy_output_dir)
-        job.set_shell_command("examples/%s" % options.pyexample)
+        job.set_shell_command(options.pyexample)
+        job.set_build_path("")
         
         if options.verbose:
             print "Queue %s" % options.pyexample
@@ -1595,13 +1611,17 @@ def run_tests():
 
 def main(argv):
     parser = optparse.OptionParser()
+    parser.add_option("-b", "--buildpath", action="store", type="string", dest="buildpath", default="",
+                      metavar="BUILDPATH",
+                      help="specify the path where ns-3 was built (defaults to the build directory for the current variant)")
+
     parser.add_option("-c", "--constrain", action="store", type="string", dest="constrain", default="",
                       metavar="KIND",
                       help="constrain the test-runner by kind of test")
 
     parser.add_option("-e", "--example", action="store", type="string", dest="example", default="",
                       metavar="EXAMPLE",
-                      help="specify a single example to run")
+                      help="specify a single example to run (with relative path)")
 
     parser.add_option("-g", "--grind", action="store_true", dest="valgrind", default=False,
                       help="run the test suites and examples using valgrind")
@@ -1620,7 +1640,7 @@ def main(argv):
 
     parser.add_option("-p", "--pyexample", action="store", type="string", dest="pyexample", default="",
                       metavar="PYEXAMPLE",
-                      help="specify a single python example to run")
+                      help="specify a single python example to run (with relative path)")
 
     parser.add_option("-r", "--retain", action="store_true", dest="retain", default=False,
                       help="retain all temporary files (which are normally deleted)")

@@ -66,8 +66,6 @@ def register_types(module):
     module.add_class('Mac48Address', import_from_module='ns.network')
     ## mac48-address.h (module 'network'): ns3::Mac48Address [class]
     root_module['ns3::Mac48Address'].implicitly_converts_to(root_module['ns3::Address'])
-    ## mpi-net-device.h (module 'mpi'): ns3::MpiNetDevice [class]
-    module.add_class('MpiNetDevice', allow_subclassing=True, import_from_module='ns.mpi')
     ## net-device-container.h (module 'network'): ns3::NetDeviceContainer [class]
     module.add_class('NetDeviceContainer', import_from_module='ns.network')
     ## node-container.h (module 'network'): ns3::NodeContainer [class]
@@ -221,7 +219,7 @@ def register_types(module):
     ## point-to-point-channel.h (module 'point-to-point'): ns3::PointToPointChannel [class]
     module.add_class('PointToPointChannel', parent=root_module['ns3::Channel'])
     ## point-to-point-net-device.h (module 'point-to-point'): ns3::PointToPointNetDevice [class]
-    module.add_class('PointToPointNetDevice', parent=[root_module['ns3::NetDevice'], root_module['ns3::MpiNetDevice']])
+    module.add_class('PointToPointNetDevice', parent=root_module['ns3::NetDevice'])
     ## point-to-point-remote-channel.h (module 'point-to-point'): ns3::PointToPointRemoteChannel [class]
     module.add_class('PointToPointRemoteChannel', parent=root_module['ns3::PointToPointChannel'])
     ## nstime.h (module 'core'): ns3::TimeChecker [class]
@@ -267,7 +265,6 @@ def register_methods(root_module):
     register_Ns3Ipv6Address_methods(root_module, root_module['ns3::Ipv6Address'])
     register_Ns3Ipv6Prefix_methods(root_module, root_module['ns3::Ipv6Prefix'])
     register_Ns3Mac48Address_methods(root_module, root_module['ns3::Mac48Address'])
-    register_Ns3MpiNetDevice_methods(root_module, root_module['ns3::MpiNetDevice'])
     register_Ns3NetDeviceContainer_methods(root_module, root_module['ns3::NetDeviceContainer'])
     register_Ns3NodeContainer_methods(root_module, root_module['ns3::NodeContainer'])
     register_Ns3ObjectBase_methods(root_module, root_module['ns3::ObjectBase'])
@@ -1469,22 +1466,6 @@ def register_Ns3Mac48Address_methods(root_module, cls):
                    'bool', 
                    [param('ns3::Address const &', 'address')], 
                    is_static=True)
-    return
-
-def register_Ns3MpiNetDevice_methods(root_module, cls):
-    ## mpi-net-device.h (module 'mpi'): ns3::MpiNetDevice::MpiNetDevice() [constructor]
-    cls.add_constructor([])
-    ## mpi-net-device.h (module 'mpi'): ns3::MpiNetDevice::MpiNetDevice(ns3::MpiNetDevice const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::MpiNetDevice const &', 'arg0')])
-    ## mpi-net-device.h (module 'mpi'): void ns3::MpiNetDevice::MpiReceive(ns3::Ptr<ns3::Packet> p) [member function]
-    cls.add_method('MpiReceive', 
-                   'void', 
-                   [param('ns3::Ptr< ns3::Packet >', 'p')])
-    ## mpi-net-device.h (module 'mpi'): void ns3::MpiNetDevice::DoMpiReceive(ns3::Ptr<ns3::Packet> p) [member function]
-    cls.add_method('DoMpiReceive', 
-                   'void', 
-                   [param('ns3::Ptr< ns3::Packet >', 'p')], 
-                   is_pure_virtual=True, visibility='protected', is_virtual=True)
     return
 
 def register_Ns3NetDeviceContainer_methods(root_module, cls):
@@ -4284,7 +4265,7 @@ def register_Ns3PointToPointNetDevice_methods(root_module, cls):
     cls.add_method('DoMpiReceive', 
                    'void', 
                    [param('ns3::Ptr< ns3::Packet >', 'p')], 
-                   visibility='protected', is_virtual=True)
+                   visibility='protected')
     ## point-to-point-net-device.h (module 'point-to-point'): void ns3::PointToPointNetDevice::DoDispose() [member function]
     cls.add_method('DoDispose', 
                    'void', 
