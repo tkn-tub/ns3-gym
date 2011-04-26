@@ -47,5 +47,8 @@ def build(bld):
 
     if env['ENABLE_MPI']:
         sim.uselib = 'MPI'
+
+    if bld.env['ENABLE_EXAMPLES']:
+        bld.add_subdirs('examples')
       
     bld.ns3_python_bindings()
