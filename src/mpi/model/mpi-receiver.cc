@@ -16,36 +16,34 @@
  * Author: George Riley <riley@ece.gatech.edu>
  */
 
-// Provides a mixin interface to allow MPI-compatible NetDevices to inherit
-
-#ifndef NS3_MPI_NET_DEVICE_H
-#define NS3_MPI_NET_DEVICE_H
-
-#include "ns3/packet.h"
+#include "mpi-receiver.h"
 
 namespace ns3 {
 
-/**
- * Class to mixin to a NetDevice if it supports MPI capability
- * 
- * Subclass must implement DoMpiReceive to direct it to the device's
- * normal Receive() method.
- */
-class MpiNetDevice
+TypeId
+MpiReceiver::GetTypeId (void)
 {
-public:
-  virtual ~MpiNetDevice();
-  /**
-   * 
-   * Receive a packet 
-   *
-   * \param p Ptr to the received packet.
-   */
-  void MpiReceive (Ptr<Packet> p);
-protected:
-  virtual void DoMpiReceive (Ptr<Packet> p) = 0;
-};
+  static TypeId tid = TypeId ("ns3::MpiReceiver")
+    .SetParent<Object> ()
+    .AddConstructor <MpiReceiver> ();
+  return tid;
+}
+
+MpiReceiver::~MpiReceiver ()
+{
+}
+
+void 
+MpiReceiver::SetReceiveCallback (Callback<void, Ptr<Packet> > callback)
+{
+  m_rxCallback = callback;
+}
+
+void 
+MpiReceiver::Receive (Ptr<Packet> p)
+{
+  NS_ASSERT (! m_rxCallback.IsNull ());
+  m_rxCallback (p);
+}
 
 } // namespace ns3
-
-#endif /* NS3_MPI_NET_DEVICE_H */
