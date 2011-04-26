@@ -85,11 +85,11 @@ LenaDownlinkSinrTestCase::DoRun (void)
   /**
    * Instantiate a single receiving LteSpectrumPhy
    */
-  Ptr<LteUePhy> uePhy = CreateObject<LteUePhy> ();
   Ptr<LteSpectrumPhy> dlPhy = CreateObject<LteSpectrumPhy> ();
+  Ptr<LteSpectrumPhy> ulPhy = CreateObject<LteSpectrumPhy> ();
+  Ptr<LteUePhy> uePhy = CreateObject<LteUePhy> (dlPhy, ulPhy);
 
   dlPhy->SetCellId (100);
-  uePhy->SetDownlinkSpectrumPhy (dlPhy);
 
   Ptr<LenaTestSinrChunkProcessor> p = Create<LenaTestSinrChunkProcessor> (uePhy->GetObject<LtePhy> ());
   dlPhy->AddSinrChunkProcessor (p);

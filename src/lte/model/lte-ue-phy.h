@@ -48,8 +48,21 @@ class LteUePhy : public LtePhy
 
 public:
 
+
+  /** 
+   * @warning the default constructor should not be used
+   */
   LteUePhy ();
+  
+  /** 
+   * 
+   * \param dlPhy the downlink LteSpectrumPhy instance
+   * \param ulPhy the uplink LteSpectrumPhy instance
+   */
+  LteUePhy (Ptr<LteSpectrumPhy> dlPhy, Ptr<LteSpectrumPhy> ulPhy);
+  
   virtual ~LteUePhy ();
+
   virtual void DoDispose ();
   static TypeId GetTypeId (void);
 

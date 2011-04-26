@@ -35,12 +35,16 @@ namespace ns3 {
 
 NS_OBJECT_ENSURE_REGISTERED (LtePhy);
 
-
-
 LtePhy::LtePhy ()
+{
+  NS_LOG_FUNCTION (this);
+  NS_FATAL_ERROR ("This constructor should not be called");
+}
+
+LtePhy::LtePhy (Ptr<LteSpectrumPhy> dlPhy, Ptr<LteSpectrumPhy> ulPhy)
   : m_netDevice (0),
-    m_downlinkSpectrumPhy (0),
-    m_uplinkSpectrumPhy (0),
+    m_downlinkSpectrumPhy (dlPhy),
+    m_uplinkSpectrumPhy (ulPhy),
     m_txPower (43), // dBm
     m_tti (0.001),
     m_ulBandwidth (0),
@@ -106,21 +110,6 @@ LtePhy::GetDevice ()
   return m_netDevice;
 }
 
-
-void
-LtePhy::SetDownlinkSpectrumPhy (Ptr<LteSpectrumPhy> s)
-{
-  NS_LOG_FUNCTION (this << s);
-  m_downlinkSpectrumPhy = s;
-}
-
-
-void
-LtePhy::SetUplinkSpectrumPhy (Ptr<LteSpectrumPhy> s)
-{
-  NS_LOG_FUNCTION (this << s);
-  m_uplinkSpectrumPhy = s;
-}
 
 void
 LtePhy::SetDownlinkChannel (Ptr<SpectrumChannel> c)

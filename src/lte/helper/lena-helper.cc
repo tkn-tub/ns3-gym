@@ -135,13 +135,10 @@ LenaHelper::SetUeDeviceAttribute (std::string name, const AttributeValue &value)
 Ptr<NetDevice>
 LenaHelper::InstallSingleEnbDevice (Ptr<Node> n)
 {
-  Ptr<LteEnbPhy> phy = CreateObject<LteEnbPhy> ();
-
   Ptr<LteSpectrumPhy> dlPhy = CreateObject<LteSpectrumPhy> ();
   Ptr<LteSpectrumPhy> ulPhy = CreateObject<LteSpectrumPhy> ();
-
-  phy->SetDownlinkSpectrumPhy (dlPhy);
-  phy->SetUplinkSpectrumPhy (ulPhy);
+  
+  Ptr<LteEnbPhy> phy = CreateObject<LteEnbPhy> (dlPhy, ulPhy);
 
   Ptr<SpectrumValue> noisePsd = LteSpectrumValueHelper::CreateUplinkNoisePowerSpectralDensity ();
   ulPhy->SetNoisePowerSpectralDensity (noisePsd);
@@ -193,13 +190,10 @@ LenaHelper::InstallSingleEnbDevice (Ptr<Node> n)
 Ptr<NetDevice>
 LenaHelper::InstallSingleUeDevice (Ptr<Node> n)
 {
-  Ptr<LteUePhy> phy = CreateObject<LteUePhy> ();
-
   Ptr<LteSpectrumPhy> dlPhy = CreateObject<LteSpectrumPhy> ();
   Ptr<LteSpectrumPhy> ulPhy = CreateObject<LteSpectrumPhy> ();
 
-  phy->SetDownlinkSpectrumPhy (dlPhy);
-  phy->SetUplinkSpectrumPhy (ulPhy);
+  Ptr<LteUePhy> phy = CreateObject<LteUePhy> (dlPhy, ulPhy);
 
   Ptr<SpectrumValue> noisePsd = LteSpectrumValueHelper::CreateDownlinkNoisePowerSpectralDensity ();
   dlPhy->SetNoisePowerSpectralDensity (noisePsd);

@@ -48,7 +48,18 @@ class LtePhy : public Object
 {
 
 public:
+  /** 
+   * @warning the default constructor should not be used
+   */
   LtePhy ();
+
+  /** 
+   * 
+   * \param dlPhy the downlink LteSpectrumPhy instance
+   * \param ulPhy the uplink LteSpectrumPhy instance
+   */
+  LtePhy (Ptr<LteSpectrumPhy> dlPhy, Ptr<LteSpectrumPhy> ulPhy);
+
   virtual ~LtePhy ();
 
   static TypeId GetTypeId (void);
@@ -69,18 +80,6 @@ public:
   * \param p the MAC PDU to sent
   */
   virtual void DoSendMacPdu (Ptr<Packet> p) = 0;
-
-  /**
-   * Set the LTE SpectrumPhy for the downlink
-   * \param s the LTE SpectrumPhy
-   */
-  void SetDownlinkSpectrumPhy (Ptr<LteSpectrumPhy> s);
-
-  /**
-   * Set the LTE SpectrumPhy for the uplink
-   * \param s the LTE SpectrumPhy
-   */
-  void SetUplinkSpectrumPhy (Ptr<LteSpectrumPhy> s);
 
   /**
    * Set the downlink channel

@@ -42,13 +42,19 @@ class LteEnbPhy : public LtePhy
   friend class EnbMemberLteEnbPhySapProvider;
 
 public:
-  LteEnbPhy ();
 
-  /**
-   * \brief Create the eNB phy layer
-   * \param d the device where the phy layer is attached
+  /** 
+   * @warning the default constructor should not be used
    */
-  LteEnbPhy (Ptr<LteNetDevice> d);
+  LteEnbPhy ();
+  
+  /** 
+   * 
+   * \param dlPhy the downlink LteSpectrumPhy instance
+   * \param ulPhy the uplink LteSpectrumPhy instance
+   */
+  LteEnbPhy (Ptr<LteSpectrumPhy> dlPhy, Ptr<LteSpectrumPhy> ulPhy);
+  
   virtual ~LteEnbPhy ();
 
   static TypeId GetTypeId (void);

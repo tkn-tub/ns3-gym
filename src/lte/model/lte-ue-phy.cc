@@ -95,7 +95,14 @@ NS_OBJECT_ENSURE_REGISTERED (LteUePhy);
 
 
 LteUePhy::LteUePhy ()
-  : m_p10CqiPeriocity (MilliSeconds (160)),    
+{
+  NS_LOG_FUNCTION (this);
+  NS_FATAL_ERROR ("This constructor should not be called");
+}
+
+LteUePhy::LteUePhy (Ptr<LteSpectrumPhy> dlPhy, Ptr<LteSpectrumPhy> ulPhy)
+  : LtePhy (dlPhy, ulPhy),
+    m_p10CqiPeriocity (MilliSeconds (160)),    
     m_p10CqiLast (MilliSeconds (0)),
     m_a30CqiPeriocity (MilliSeconds (1)), // ideal behavior 
     m_a30CqiLast (MilliSeconds (0))

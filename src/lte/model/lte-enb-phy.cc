@@ -102,13 +102,19 @@ NS_OBJECT_ENSURE_REGISTERED (LteEnbPhy);
 
 
 LteEnbPhy::LteEnbPhy ()
-  : m_nrFrames (0),
+{
+  NS_LOG_FUNCTION (this);
+  NS_FATAL_ERROR ("This constructor should not be called");
+}
+
+LteEnbPhy::LteEnbPhy (Ptr<LteSpectrumPhy> dlPhy, Ptr<LteSpectrumPhy> ulPhy)
+  : LtePhy (dlPhy, ulPhy),
+    m_nrFrames (0),
     m_nrSubFrames (0)
 {
   m_enbPhySapProvider = new EnbMemberLteEnbPhySapProvider (this);
   Simulator::ScheduleNow (&LteEnbPhy::StartFrame, this);
 }
-
 
 TypeId
 LteEnbPhy::GetTypeId (void)
