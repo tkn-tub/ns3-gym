@@ -52,8 +52,10 @@ LenaHelper::LenaHelper (void)
 {
   m_downlinkChannel = CreateObject<SingleModelSpectrumChannel> ();
   m_uplinkChannel = CreateObject<SingleModelSpectrumChannel> ();
-  Ptr<SpectrumPropagationLossModel> model = CreateObject<FriisSpectrumPropagationLossModel> ();
-  m_downlinkChannel->AddSpectrumPropagationLossModel (model);
+  Ptr<SpectrumPropagationLossModel> dlPropagationModel = CreateObject<FriisSpectrumPropagationLossModel> ();
+  Ptr<SpectrumPropagationLossModel> ulPropagationModel = CreateObject<FriisSpectrumPropagationLossModel> ();
+  m_downlinkChannel->AddSpectrumPropagationLossModel (dlPropagationModel);
+  m_uplinkChannel->AddSpectrumPropagationLossModel (ulPropagationModel);
   
   SetScheduler ("RrFfMacScheduler"); // default scheduler
 }
