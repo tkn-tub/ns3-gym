@@ -1,22 +1,16 @@
 ## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
 
 def build(bld):
-    module = bld.create_ns3_module('netanim', ['internet', 'point-to-point', 'mobility'])
+    module = bld.create_ns3_module('netanim', ['internet', 'mobility'])
     module.includes = '.'
     module.source = [
         'model/animation-interface.cc',
-        'helper/point-to-point-dumbbell-helper.cc',
-        'helper/point-to-point-grid-helper.cc',
-        'helper/point-to-point-star-helper.cc',
         ]
 
     headers = bld.new_task_gen('ns3header')
     headers.module = 'netanim'
     headers.source = [
         'model/animation-interface.h',
-        'helper/point-to-point-dumbbell-helper.h',
-        'helper/point-to-point-grid-helper.h',
-        'helper/point-to-point-star-helper.h',
         ]
 
     if (bld.env['ENABLE_EXAMPLES']):
@@ -28,5 +22,4 @@ def build(bld):
 def configure(conf):
     conf.check(header_name='sys/socket.h', define_name='HAVE_SYS_SOCKET_H')
     conf.check(header_name='netinet/in.h', define_name='HAVE_NETINET_IN_H')
-    conf.write_config_header('ns3/netanim-config.h', top=True)
 

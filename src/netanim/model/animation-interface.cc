@@ -21,8 +21,6 @@
 #include <stdio.h>
 #include <sstream>
 
-#include "ns3/netanim-config.h"
-
 // Socket related includes
 #if defined(HAVE_SYS_SOCKET_H) && defined(HAVE_NETINET_IN_H)
 #include <sys/socket.h>

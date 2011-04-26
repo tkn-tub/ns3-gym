@@ -59,11 +59,8 @@
 #include "ns3/csma-module.h"
 #include <iostream>
 #include "ns3/global-route-manager.h"
-#include "ns3/constant-position-mobility-model.h"
-#include "ns3/random-waypoint-mobility-model.h"
-#include "ns3/ipv4-static-routing-helper.h"
-#include "ns3/ipv4-list-routing-helper.h"
-
+#include "ns3/mobility-module.h"
+#include "ns3/internet-module.h"
 #include "ns3/vector.h"
 
 NS_LOG_COMPONENT_DEFINE ("WimaxMulticastSimulation");

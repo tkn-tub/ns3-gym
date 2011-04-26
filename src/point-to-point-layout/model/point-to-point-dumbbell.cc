@@ -23,7 +23,7 @@
 
 // ns3 includes
 #include "ns3/animation-interface.h"
-#include "ns3/point-to-point-dumbbell-helper.h"
+#include "ns3/point-to-point-dumbbell.h"
 #include "ns3/constant-position-mobility-model.h"
 
 #include "ns3/node-list.h"
