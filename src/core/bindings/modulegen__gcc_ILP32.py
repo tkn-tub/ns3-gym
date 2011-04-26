@@ -4155,7 +4155,7 @@ def register_functions(root_module):
     module.add_function('TypeNameGet', 
                         'std::string', 
                         [], 
-                        template_parameters=['long long'])
+                        template_parameters=['long'])
     ## type-name.h (module 'core'): extern std::string ns3::TypeNameGet() [free function]
     module.add_function('TypeNameGet', 
                         'std::string', 
