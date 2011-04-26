@@ -221,6 +221,7 @@ protected:
   std::vector <int> m_listOfUplinkSubchannel;
 
   double m_txPower;
+  double m_noiseFigure;
 
   double m_tti;
   uint8_t m_ulBandwidth;

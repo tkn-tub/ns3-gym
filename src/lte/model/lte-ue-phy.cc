@@ -137,6 +137,18 @@ LteUePhy::GetTypeId (void)
                    MakeDoubleAccessor (&LteUePhy::SetTxPower, 
                                        &LteUePhy::GetTxPower),
                    MakeDoubleChecker<double> ())
+    .AddAttribute ("NoiseFigure",
+                   "Loss (dB) in the Signal-to-Noise-Ratio due to non-idealities in the receiver."
+                   " According to Wikipedia (http://en.wikipedia.org/wiki/Noise_figure), this is "
+                   "\"the difference in decibels (dB) between"
+                   " the noise output of the actual receiver to the noise output of an "
+                   " ideal receiver with the same overall gain and bandwidth when the receivers "
+                   " are connected to sources at the standard noise temperature T0.\" "
+                   "In this model, we consider T0 = 290K.",
+                   DoubleValue (9.0),
+                   MakeDoubleAccessor (&LteUePhy::SetNoiseFigure, 
+                                       &LteUePhy::GetNoiseFigure),
+                   MakeDoubleChecker<double> ())
   ;
   return tid;
 }
@@ -154,6 +166,22 @@ LteUePhy::GetLteUePhySapProvider ()
 {
   NS_LOG_FUNCTION (this);
   return (m_uePhySapProvider);
+}
+
+void
+LteUePhy::SetNoiseFigure (double nf)
+{
+  NS_LOG_FUNCTION (this << nf);
+  m_noiseFigure = nf;
+  Ptr<SpectrumValue> noisePsd = LteSpectrumValueHelper::CreateDownlinkNoisePowerSpectralDensity (m_noiseFigure);
+  m_downlinkSpectrumPhy->SetNoisePowerSpectralDensity (noisePsd);
+}
+
+double
+LteUePhy::GetNoiseFigure () const
+{
+  NS_LOG_FUNCTION (this);
+  return m_noiseFigure;
 }
 
 void

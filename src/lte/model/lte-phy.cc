@@ -42,10 +42,8 @@ LtePhy::LtePhy ()
 }
 
 LtePhy::LtePhy (Ptr<LteSpectrumPhy> dlPhy, Ptr<LteSpectrumPhy> ulPhy)
-  : m_netDevice (0),
-    m_downlinkSpectrumPhy (dlPhy),
+  : m_downlinkSpectrumPhy (dlPhy),
     m_uplinkSpectrumPhy (ulPhy),
-    m_txPower (43), // dBm
     m_tti (0.001),
     m_ulBandwidth (0),
     m_dlBandwidth (0),

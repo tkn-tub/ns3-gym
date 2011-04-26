@@ -129,30 +129,28 @@ LteSpectrumValueHelper::CreateUplinkTxPowerSpectralDensity (double powerTx, std:
 
 
 Ptr<SpectrumValue>
-LteSpectrumValueHelper::CreateDownlinkNoisePowerSpectralDensity (void)
+LteSpectrumValueHelper::CreateDownlinkNoisePowerSpectralDensity (double noiseFigure)
 {
-  Ptr<SpectrumValue> txPsd = Create <SpectrumValue> (LteDownlinkSpectrumModel);
-
-  double noise_db = 2.5 + (-174) + (10. * log10 (180000)) - 30;
-  double noisePowerDensity = (pow (10.,noise_db / 10)) / 180000;
-
-  (*txPsd) = noisePowerDensity;
-
-  return txPsd;
+  return  CreateNoisePowerSpectralDensity (noiseFigure, LteDownlinkSpectrumModel);
 }
 
+Ptr<SpectrumValue>
+LteSpectrumValueHelper::CreateUplinkNoisePowerSpectralDensity (double noiseFigure)
+{
+  return  CreateNoisePowerSpectralDensity (noiseFigure, LteUplinkSpectrumModel);
+}
 
 Ptr<SpectrumValue>
-LteSpectrumValueHelper::CreateUplinkNoisePowerSpectralDensity (void)
+LteSpectrumValueHelper::CreateNoisePowerSpectralDensity (double noiseFigureDb, Ptr<SpectrumModel> spectrumModel)
 {
-  Ptr<SpectrumValue> txPsd = Create <SpectrumValue> (LteUplinkSpectrumModel);
+  double noiseFigureLinear = pow (10.0, noiseFigureDb / 10.0);
+  static const double BOLTZMANN = 1.3803e-23;
+  static const double ROOM_TEMPERATURE = 290.0;
+  double noisePowerSpectralDensity = noiseFigureLinear * BOLTZMANN * ROOM_TEMPERATURE; //  W/Hz
 
-  double noise_db = 2.5 + (-174) + (10. * log10 (180000)) - 30;
-  double noisePowerDensity = (pow (10.,noise_db / 10)) / 180000;
-
-  (*txPsd) = noisePowerDensity;
-
-  return txPsd;
+  Ptr<SpectrumValue> noisePsd = Create <SpectrumValue> (spectrumModel);
+  (*noisePsd) = noisePowerSpectralDensity;
+  return noisePsd;
 }
 
 } // namespace ns3

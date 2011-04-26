@@ -52,17 +52,32 @@ public:
 
 
   /**
-   * \brief create spectrum value for noise
+   * create a SpectrumValue that models the power spectral density of AWGN
+   * 
+   * \param noiseFigure the noise figure in dB w.r.t. a reference temperature of 290K
+   * 
    * \return a Ptr to a newly created SpectrumValue instance
    */
-  static Ptr<SpectrumValue> CreateDownlinkNoisePowerSpectralDensity (void);
+  static Ptr<SpectrumValue> CreateDownlinkNoisePowerSpectralDensity (double noiseFigure);
 
   /**
-   * \brief create spectrum value for noise
+   *  create a SpectrumValue that models the power spectral density of AWGN
+   * 
+   * \param noiseFigure the noise figure in dB w.r.t. a reference temperature of 290K
+   * 
    * \return a Ptr to a newly created SpectrumValue instance
    */
-  static Ptr<SpectrumValue> CreateUplinkNoisePowerSpectralDensity (void);
+  static Ptr<SpectrumValue> CreateUplinkNoisePowerSpectralDensity (double noiseFigure);
 
+  /** 
+   *  create a SpectrumValue that models the power spectral density of AWGN
+   * 
+   * \param noiseFigure  the noise figure in dB  w.r.t. a reference temperature of 290K
+   * \param spectrumModel the SpectrumModel instance to be used
+   * 
+   * \return a Ptr to a newly created SpectrumValue instance
+   */
+  static Ptr<SpectrumValue> CreateNoisePowerSpectralDensity (double noiseFigure, Ptr<SpectrumModel> spectrumModel);
 
 };
 

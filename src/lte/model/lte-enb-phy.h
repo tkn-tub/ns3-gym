@@ -83,6 +83,16 @@ public:
    */
    double GetTxPower () const;
 
+  /**     
+   * \param pw the noise figure in dB
+   */
+   void SetNoiseFigure (double pow);
+
+  /**
+   * \return the noise figure in dB
+   */
+   double GetNoiseFigure () const;
+
   /**
   * \brief Queue the MAC PDU to be sent
   * \param p the MAC PDU to sent

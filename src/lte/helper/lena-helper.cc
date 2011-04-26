@@ -140,9 +140,6 @@ LenaHelper::InstallSingleEnbDevice (Ptr<Node> n)
   
   Ptr<LteEnbPhy> phy = CreateObject<LteEnbPhy> (dlPhy, ulPhy);
 
-  Ptr<SpectrumValue> noisePsd = LteSpectrumValueHelper::CreateUplinkNoisePowerSpectralDensity ();
-  ulPhy->SetNoisePowerSpectralDensity (noisePsd);
-
   Ptr<LteCqiSinrChunkProcessor> p = Create<LteCqiSinrChunkProcessor> (phy->GetObject<LtePhy> ());
   ulPhy->AddSinrChunkProcessor (p);
 
@@ -194,9 +191,6 @@ LenaHelper::InstallSingleUeDevice (Ptr<Node> n)
   Ptr<LteSpectrumPhy> ulPhy = CreateObject<LteSpectrumPhy> ();
 
   Ptr<LteUePhy> phy = CreateObject<LteUePhy> (dlPhy, ulPhy);
-
-  Ptr<SpectrumValue> noisePsd = LteSpectrumValueHelper::CreateDownlinkNoisePowerSpectralDensity ();
-  dlPhy->SetNoisePowerSpectralDensity (noisePsd);
 
   Ptr<LteCqiSinrChunkProcessor> p = Create<LteCqiSinrChunkProcessor> (phy->GetObject<LtePhy> ());
   dlPhy->AddSinrChunkProcessor (p);
