@@ -308,5 +308,7 @@ int main (int argc, char *argv[])
 
   gnuplots.GenerateOutput(std::cout);
 
+  // produce clean valgrind
+  Simulator::Destroy ();
   return 0;
 }

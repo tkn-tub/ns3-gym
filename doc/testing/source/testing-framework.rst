@@ -109,25 +109,31 @@ if you run ``test.py --help`` you should see a command summary like:
   
   Options:
     -h, --help            show this help message and exit
+    -b BUILDPATH, --buildpath=BUILDPATH
+                          specify the path where ns-3 was built (defaults to the
+                          build directory for the current variant)
     -c KIND, --constrain=KIND
                           constrain the test-runner by kind of test
     -e EXAMPLE, --example=EXAMPLE
-                          specify a single example to run
+                          specify a single example to run (with relative path)
     -g, --grind           run the test suites and examples using valgrind
     -k, --kinds           print the kinds of tests available
     -l, --list            print the list of known tests
     -m, --multiple        report multiple failures from test suites and test
                           cases
     -n, --nowaf           do not run waf before starting testing
+    -p PYEXAMPLE, --pyexample=PYEXAMPLE
+                          specify a single python example to run (with relative
+                          path)
+    -r, --retain          retain all temporary files (which are normally
+                          deleted)
     -s TEST-SUITE, --suite=TEST-SUITE
                           specify a single test suite to run
+    -t TEXT-FILE, --text=TEXT-FILE
+                          write detailed test results into TEXT-FILE.txt
     -v, --verbose         print progress and informational messages
     -w HTML-FILE, --web=HTML-FILE, --html=HTML-FILE
                           write detailed test results into HTML-FILE.html
-    -r, --retain          retain all temporary files (which are normally
-                          deleted)
-    -t TEXT-FILE, --text=TEXT-FILE
-                          write detailed test results into TEXT-FILE.txt
     -x XML-FILE, --xml=XML-FILE
                           write detailed test results into XML-FILE.xml
 
@@ -271,18 +277,44 @@ will result in a list of the test suite being displayed, similar to::
 Any of these listed suites can be selected to be run by itself using the 
 ``--suite`` option as shown above.
 
-Similarly to test suites, one can run a single example program using the ``--example``
-option.
+Similarly to test suites, one can run a single C++ example program
+using the ``--example`` option.  Note that the relative path for the
+example must be included and that the executables built for C++
+examples do not have extensions.  Entering
 
 ::
 
-  ./test.py --example=udp-echo
+  ./test.py --example=examples/udp/udp-echo
 
 results in that single example being run.
 
 ::
 
-  PASS: Example udp-echo
+  PASS: Example examples/udp/udp-echo
+
+You can specify the directory where ns-3 was built using the
+``--buildpath`` option as follows.
+
+::
+
+  ./test.py --buildpath=/home/craigdo/repos/ns-3-allinone-test/ns-3-dev/build/debug --example=examples/wireless/wifi-simple-adhoc
+
+One can run a single Python example program using the ``--pyexample``
+option.  Note that the relative path for the example must be included
+and that Python examples do need their extensions.  Entering
+
+::
+
+  ./test.py --pyexample=examples/tutorial/first.py
+
+results in that single example being run.
+
+::
+
+  PASS: Example examples/tutorial/first.py
+
+Because Python examples are not built, you do not need to specify the
+directory where ns-3 was built to run them.
 
 Normally when example programs are executed, they write a large amount of trace 
 file data.  This is normally saved to the base directory of the distribution 

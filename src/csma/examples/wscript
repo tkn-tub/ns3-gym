@@ -13,9 +13,6 @@ def build(bld):
     obj = bld.create_ns3_program('csma-multicast', ['csma', 'internet'])
     obj.source = 'csma-multicast.cc'
 
-    obj = bld.create_ns3_program('csma-star', ['csma', 'internet'])
-    obj.source = 'csma-star.cc'
-
     obj = bld.create_ns3_program('csma-raw-ip-socket', ['csma', 'internet'])
     obj.source = 'csma-raw-ip-socket.cc'
 

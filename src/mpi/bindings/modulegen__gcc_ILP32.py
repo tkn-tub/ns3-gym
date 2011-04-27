@@ -44,8 +44,6 @@ def register_types(module):
     module.add_class('LbtsMessage')
     ## mpi-interface.h (module 'mpi'): ns3::MpiInterface [class]
     module.add_class('MpiInterface')
-    ## mpi-net-device.h (module 'mpi'): ns3::MpiNetDevice [class]
-    module.add_class('MpiNetDevice', allow_subclassing=True)
     ## object-base.h (module 'core'): ns3::ObjectBase [class]
     module.add_class('ObjectBase', allow_subclassing=True, import_from_module='ns.core')
     ## object.h (module 'core'): ns3::ObjectDeleter [struct]
@@ -144,6 +142,8 @@ def register_types(module):
     module.add_class('EmptyAttributeValue', import_from_module='ns.core', parent=root_module['ns3::AttributeValue'])
     ## event-impl.h (module 'core'): ns3::EventImpl [class]
     module.add_class('EventImpl', import_from_module='ns.core', parent=root_module['ns3::SimpleRefCount< ns3::EventImpl, ns3::empty, ns3::DefaultDeleter<ns3::EventImpl> >'])
+    ## mpi-receiver.h (module 'mpi'): ns3::MpiReceiver [class]
+    module.add_class('MpiReceiver', parent=root_module['ns3::Object'])
     ## nix-vector.h (module 'network'): ns3::NixVector [class]
     module.add_class('NixVector', import_from_module='ns.network', parent=root_module['ns3::SimpleRefCount< ns3::NixVector, ns3::empty, ns3::DefaultDeleter<ns3::NixVector> >'])
     ## object-factory.h (module 'core'): ns3::ObjectFactoryChecker [class]
@@ -184,7 +184,6 @@ def register_methods(root_module):
     register_Ns3EventId_methods(root_module, root_module['ns3::EventId'])
     register_Ns3LbtsMessage_methods(root_module, root_module['ns3::LbtsMessage'])
     register_Ns3MpiInterface_methods(root_module, root_module['ns3::MpiInterface'])
-    register_Ns3MpiNetDevice_methods(root_module, root_module['ns3::MpiNetDevice'])
     register_Ns3ObjectBase_methods(root_module, root_module['ns3::ObjectBase'])
     register_Ns3ObjectDeleter_methods(root_module, root_module['ns3::ObjectDeleter'])
     register_Ns3ObjectFactory_methods(root_module, root_module['ns3::ObjectFactory'])
@@ -230,6 +229,7 @@ def register_methods(root_module):
     register_Ns3DistributedSimulatorImpl_methods(root_module, root_module['ns3::DistributedSimulatorImpl'])
     register_Ns3EmptyAttributeValue_methods(root_module, root_module['ns3::EmptyAttributeValue'])
     register_Ns3EventImpl_methods(root_module, root_module['ns3::EventImpl'])
+    register_Ns3MpiReceiver_methods(root_module, root_module['ns3::MpiReceiver'])
     register_Ns3NixVector_methods(root_module, root_module['ns3::NixVector'])
     register_Ns3ObjectFactoryChecker_methods(root_module, root_module['ns3::ObjectFactoryChecker'])
     register_Ns3ObjectFactoryValue_methods(root_module, root_module['ns3::ObjectFactoryValue'])
@@ -771,22 +771,6 @@ def register_Ns3MpiInterface_methods(root_module, cls):
                    'void', 
                    [], 
                    is_static=True)
-    return
-
-def register_Ns3MpiNetDevice_methods(root_module, cls):
-    ## mpi-net-device.h (module 'mpi'): ns3::MpiNetDevice::MpiNetDevice() [constructor]
-    cls.add_constructor([])
-    ## mpi-net-device.h (module 'mpi'): ns3::MpiNetDevice::MpiNetDevice(ns3::MpiNetDevice const & arg0) [copy constructor]
-    cls.add_constructor([param('ns3::MpiNetDevice const &', 'arg0')])
-    ## mpi-net-device.h (module 'mpi'): void ns3::MpiNetDevice::MpiReceive(ns3::Ptr<ns3::Packet> p) [member function]
-    cls.add_method('MpiReceive', 
-                   'void', 
-                   [param('ns3::Ptr< ns3::Packet >', 'p')])
-    ## mpi-net-device.h (module 'mpi'): void ns3::MpiNetDevice::DoMpiReceive(ns3::Ptr<ns3::Packet> p) [member function]
-    cls.add_method('DoMpiReceive', 
-                   'void', 
-                   [param('ns3::Ptr< ns3::Packet >', 'p')], 
-                   is_pure_virtual=True, visibility='protected', is_virtual=True)
     return
 
 def register_Ns3ObjectBase_methods(root_module, cls):
@@ -2399,6 +2383,26 @@ def register_Ns3EventImpl_methods(root_module, cls):
                    'void', 
                    [], 
                    is_pure_virtual=True, visibility='protected', is_virtual=True)
+    return
+
+def register_Ns3MpiReceiver_methods(root_module, cls):
+    ## mpi-receiver.h (module 'mpi'): ns3::MpiReceiver::MpiReceiver() [constructor]
+    cls.add_constructor([])
+    ## mpi-receiver.h (module 'mpi'): ns3::MpiReceiver::MpiReceiver(ns3::MpiReceiver const & arg0) [copy constructor]
+    cls.add_constructor([param('ns3::MpiReceiver const &', 'arg0')])
+    ## mpi-receiver.h (module 'mpi'): static ns3::TypeId ns3::MpiReceiver::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## mpi-receiver.h (module 'mpi'): void ns3::MpiReceiver::Receive(ns3::Ptr<ns3::Packet> p) [member function]
+    cls.add_method('Receive', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Packet >', 'p')])
+    ## mpi-receiver.h (module 'mpi'): void ns3::MpiReceiver::SetReceiveCallback(ns3::Callback<void, ns3::Ptr<ns3::Packet>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> callback) [member function]
+    cls.add_method('SetReceiveCallback', 
+                   'void', 
+                   [param('ns3::Callback< void, ns3::Ptr< ns3::Packet >, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'callback')])
     return
 
 def register_Ns3NixVector_methods(root_module, cls):

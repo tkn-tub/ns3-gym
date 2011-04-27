@@ -8,6 +8,7 @@ import optparse
 import os.path
 import re
 import shlex
+import textwrap
 
 # WAF modules
 import pproc as subprocess
@@ -708,11 +709,14 @@ def shutdown(ctx):
         return
     env = bld.env
 
-    # Print the enabled modules without the "ns3-" in their name.
+    # Get the sorted list of built modules without the "ns3-" in their name.
     modules_without_prefix =[mod[len('ns3-'):] for mod in env['NS3_ENABLED_MODULES']]
+    modules_without_prefix.sort()
+
+    # Print the list of built modules with lines wrapped at 70 characters.
     print
     print 'Modules built:'
-    print ', '.join(modules_without_prefix)
+    print textwrap.fill(', '.join(modules_without_prefix))
     print
 
     if Options.options.lcov_report:

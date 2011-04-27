@@ -16,11 +16,11 @@
  * Author: Josh Pelkey <jpelkey@gatech.edu>
  */
 
-#include "ns3/point-to-point-grid-helper.h"
+#include "ns3/point-to-point-grid.h"
 #include "ns3/animation-interface.h"
 #include "ns3/internet-stack-helper.h"
 #include "ns3/point-to-point-helper.h"
-#include "ns3/canvas-location.h"
+#include "ns3/constant-position-mobility-model.h"
 #include "ns3/string.h"
 #include "ns3/vector.h"
 #include "ns3/log.h"
@@ -160,14 +160,14 @@ PointToPointGridHelper::BoundingBox (double ulx, double uly,
     for (uint32_t j = 0; j < m_xSize; ++j)
     {
       Ptr<Node> node = GetNode (i, j);
-      Ptr<CanvasLocation> loc = node->GetObject<CanvasLocation> ();
+      Ptr<ConstantPositionMobilityModel> loc = node->GetObject<ConstantPositionMobilityModel> ();
       if (loc ==0)
       {
-        loc = CreateObject<CanvasLocation> ();
+        loc = CreateObject<ConstantPositionMobilityModel> ();
         node->AggregateObject (loc);
       }
       Vector locVec (xLoc, yLoc, 0);
-      loc->SetLocation (locVec);
+      loc->SetPosition (locVec);
 
       xLoc += xAdder;
     }

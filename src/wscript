@@ -57,6 +57,8 @@ all_modules = (
     'energy',
     'tools',
     'visualizer',
+    'point-to-point-layout',
+    'csma-layout',
     )
 
 def set_options(opt):

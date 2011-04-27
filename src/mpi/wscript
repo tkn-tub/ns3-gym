@@ -34,7 +34,7 @@ def build(bld):
     sim.source = [
         'model/distributed-simulator-impl.cc',
         'model/mpi-interface.cc',
-        'model/mpi-net-device.cc',
+        'model/mpi-receiver.cc',
         ]
 
     headers = bld.new_task_gen('ns3header')
@@ -42,10 +42,13 @@ def build(bld):
     headers.source = [
         'model/distributed-simulator-impl.h',
         'model/mpi-interface.h',
-        'model/mpi-net-device.h',
+        'model/mpi-receiver.h',
         ]
 
     if env['ENABLE_MPI']:
         sim.uselib = 'MPI'
+
+    if bld.env['ENABLE_EXAMPLES']:
+        bld.add_subdirs('examples')
       
     bld.ns3_python_bindings()

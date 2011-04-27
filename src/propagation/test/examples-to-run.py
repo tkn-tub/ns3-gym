@@ -8,7 +8,7 @@
 #
 # See test.py for more information.
 cpp_examples = [
-    ("main-propagation-loss", "True", "True"),
+    ("main-propagation-loss", "True", "False"),
 ]
 
 # A list of Python examples to run in order to ensure that they remain

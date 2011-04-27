@@ -20,6 +20,12 @@
 #include "ns3/mobility-module.h"
 #include "ns3/mpi-interface.h"
 #include "ns3/ipv4-global-routing-helper.h"
+#include "ns3/udp-echo-helper.h"
+#include "ns3/point-to-point-helper.h"
+#include "ns3/csma-helper.h"
+#include "ns3/internet-stack-helper.h"
+#include "ns3/ipv4-address-helper.h"
+#include "ns3/ipv4-interface-container.h"
 
 #ifdef NS3_MPI
 #include <mpi.h>

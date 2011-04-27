@@ -196,10 +196,10 @@ int main (int argc, char *argv[])
     {
       positionAlloc_n->Add (Vector (coord_array[m][0], coord_array[m][1], 0));
       Ptr<Node> n0 = nodes.Get (m);
-      Ptr<CanvasLocation> nLoc =  n0->GetObject<CanvasLocation> ();
+      Ptr<ConstantPositionMobilityModel> nLoc =  n0->GetObject<ConstantPositionMobilityModel> ();
       if (nLoc == 0)
         {
-          nLoc = CreateObject<CanvasLocation> ();
+          nLoc = CreateObject<ConstantPositionMobilityModel> ();
           n0->AggregateObject (nLoc);
         }
       // y-coordinates are negated for correct display in NetAnim
@@ -207,7 +207,7 @@ int main (int argc, char *argv[])
       // by negating the y coordinates, we declare the reference (0,0) coordinate
       // to the bottom left corner
       Vector nVec (coord_array[m][0], -coord_array[m][1], 0);
-      nLoc->SetLocation (nVec);
+      nLoc->SetPosition (nVec);
 
     }
   mobility_n.SetPositionAllocator (positionAlloc_n);

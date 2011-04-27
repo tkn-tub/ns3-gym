@@ -23,8 +23,8 @@
 
 // ns3 includes
 #include "ns3/animation-interface.h"
-#include "ns3/point-to-point-dumbbell-helper.h"
-#include "ns3/canvas-location.h"
+#include "ns3/point-to-point-dumbbell.h"
+#include "ns3/constant-position-mobility-model.h"
 
 #include "ns3/node-list.h"
 #include "ns3/point-to-point-net-device.h"
@@ -175,25 +175,25 @@ void PointToPointDumbbellHelper::BoundingBox (double ulx, double uly, // Upper l
 
   // Place the left router
   Ptr<Node> lr = GetLeft ();
-  Ptr<CanvasLocation> loc = lr->GetObject<CanvasLocation> ();
+  Ptr<ConstantPositionMobilityModel> loc = lr->GetObject<ConstantPositionMobilityModel> ();
   if (loc == 0)
     {
-      loc = CreateObject<CanvasLocation> ();
+      loc = CreateObject<ConstantPositionMobilityModel> ();
       lr->AggregateObject (loc);
     }
   Vector lrl (ulx + xAdder, uly + yDist/2.0, 0);
-  loc->SetLocation (lrl);
+  loc->SetPosition (lrl);
   
   // Place the right router
   Ptr<Node> rr = GetRight ();
-  loc = rr->GetObject<CanvasLocation> ();
+  loc = rr->GetObject<ConstantPositionMobilityModel> ();
   if (loc == 0)
     {
-      loc = CreateObject<CanvasLocation> ();
+      loc = CreateObject<ConstantPositionMobilityModel> ();
       rr->AggregateObject (loc);
     }
   Vector rrl (ulx + xAdder * 2, uly + yDist/2.0, 0); // Right router location
-  loc->SetLocation (rrl);
+  loc->SetPosition (rrl);
 
   // Place the left leaf nodes
   double theta = -M_PI_2 + thetaL;
@@ -209,10 +209,10 @@ void PointToPointDumbbellHelper::BoundingBox (double ulx, double uly, // Upper l
             }
         }
       Ptr<Node> ln = GetLeft (l);
-      loc = ln->GetObject<CanvasLocation> ();
+      loc = ln->GetObject<ConstantPositionMobilityModel> ();
       if (loc == 0)
         {
-          loc = CreateObject<CanvasLocation> ();
+          loc = CreateObject<ConstantPositionMobilityModel> ();
           ln->AggregateObject (loc);
         }
       Vector lnl (lrl.x - cos (theta) * xAdder,
@@ -226,7 +226,7 @@ void PointToPointDumbbellHelper::BoundingBox (double ulx, double uly, // Upper l
         {
           lnl.y = lry; // Set to lower right y
         }
-      loc->SetLocation (lnl);
+      loc->SetPosition (lnl);
       theta += thetaL;
     }
   // Place the right nodes
@@ -242,10 +242,10 @@ void PointToPointDumbbellHelper::BoundingBox (double ulx, double uly, // Upper l
             }
         }
       Ptr<Node> rn = GetRight (r);
-      loc = rn->GetObject<CanvasLocation> ();
+      loc = rn->GetObject<ConstantPositionMobilityModel> ();
       if (loc == 0)
         {
-          loc = CreateObject<CanvasLocation> ();
+          loc = CreateObject<ConstantPositionMobilityModel> ();
           rn->AggregateObject (loc);
         }
       Vector rnl (rrl.x + cos (theta) * xAdder, // Right node location
@@ -259,7 +259,7 @@ void PointToPointDumbbellHelper::BoundingBox (double ulx, double uly, // Upper l
         {
           rnl.y = lry; // Set to lower right y
         }
-      loc->SetLocation (rnl);
+      loc->SetPosition (rnl);
       theta += thetaR;
     }
 }

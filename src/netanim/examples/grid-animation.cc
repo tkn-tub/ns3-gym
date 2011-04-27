@@ -24,7 +24,7 @@
 #include "ns3/point-to-point-module.h"
 #include "ns3/netanim-module.h"
 #include "ns3/applications-module.h"
-#include "ns3/ipv4-global-routing-helper.h"
+#include "ns3/point-to-point-layout-module.h"
 
 using namespace ns3;
 
@@ -82,7 +82,7 @@ int main (int argc, char *argv[])
   clientApps.Stop (Seconds (1.5));
 
   // Set the bounding box for animation
-  grid.BoundingBox (1, 1, 10, 10);
+  grid.BoundingBox (1, 1, 100, 100);
 
   // Create the animation object and configure for specified output
   AnimationInterface anim;

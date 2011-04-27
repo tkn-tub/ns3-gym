@@ -496,7 +496,7 @@ PacketMetadata::ReplaceTail (PacketMetadata::SmallItem *item,
    * to append is bigger than the previous tail.
    */
 
-  // create a copy of the packet.
+  // create a copy of the packet without its tail.
   PacketMetadata h (m_packetUid, 0);
   uint16_t current = m_head;
   while (current != 0xffff && current != m_tail)
@@ -836,6 +836,11 @@ PacketMetadata::AddAtEnd (PacketMetadata const&o)
        */
       tailExtraItem.fragmentEnd = extraItem.fragmentEnd;
       ReplaceTail (&tailItem, &tailExtraItem, tailSize);
+      if (o.m_head == o.m_tail)
+        {
+          // there is only one item to append to self from other.
+          return;
+        }
       current = item.next;
     }
   else

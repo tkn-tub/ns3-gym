@@ -279,6 +279,13 @@ following magic words:
 
   Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone/ns-3-dev/build'
   'build' finished successfully (2m30.586s)
+  
+  Modules built: 
+  aodv, applications, bridge, click, config-store, core, csma, dsdv,
+  emu, energy, flow-monitor, internet, lte, mesh, mobility, mpi,
+  netanim, network, nix-vector-routing, ns3tcp, ns3wifi, olsr, openflow,
+  point-to-point, propagation, spectrum, stats, tap-bridge, test, tools,
+  topology-read, uan, virtual-net-device, visualizer, wifi, wimax
 
 Once the project has built you can say goodbye to your old friends, the 
 ``ns-3-allinone`` scripts.  You got what you needed from them and will now 
@@ -367,6 +374,7 @@ output that looks similar to the following,
   Python Bindings               : enabled
   Python API Scanning Support   : enabled
   Use sudo to set suid bit      : not enabled (option --enable-sudo not selected)
+  Build tests                   : enabled
   Build examples                : enabled
   Static build                  : not enabled (option --enable-static not selected)
   'configure' finished successfully (2.870s)
@@ -441,6 +449,14 @@ You will also see output from the test runner and the output will actually look 
   Waf: Entering directory `/home/craigdo/repos/ns-3-allinone/ns-3-dev/build'
   Waf: Leaving directory `/home/craigdo/repos/ns-3-allinone/ns-3-dev/build'
   'build' finished successfully (1.799s)
+  
+  Modules built: 
+  aodv, applications, bridge, click, config-store, core, csma, dsdv,
+  emu, energy, flow-monitor, internet, lte, mesh, mobility, mpi,
+  netanim, network, nix-vector-routing, ns3tcp, ns3wifi, olsr, openflow,
+  point-to-point, propagation, spectrum, stats, tap-bridge, test, tools,
+  topology-read, uan, virtual-net-device, visualizer, wifi, wimax
+
   PASS: TestSuite ns3-wifi-interference
   PASS: TestSuite histogram
   PASS: TestSuite sample

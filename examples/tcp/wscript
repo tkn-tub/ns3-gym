@@ -18,7 +18,7 @@ def build(bld):
     obj.source = 'tcp-star-server.cc'
 
     obj = bld.create_ns3_program('star',
-                                 ['netanim', 'point-to-point', 'applications', 'internet'])
+                                 ['netanim', 'point-to-point', 'point-to-point-layout', 'applications', 'internet'])
     obj.source = 'star.cc'
 
     obj = bld.create_ns3_program('tcp-bulk-send',
