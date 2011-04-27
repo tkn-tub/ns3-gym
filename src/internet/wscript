@@ -74,7 +74,7 @@ def configure(conf):
     lib_to_check = 'liblinux2.6.26.so'
 
     found = False
-    for path in ['.', 'lib', 'lib64']:
+    for path in ['.', 'lib', 'lib64', 'linux-2.6.26']:
         if os.path.exists(os.path.join(conf.env['WITH_NSC'], path, lib_to_check)):
             # append the NSC kernel dir to the module path so that this dir
             # will end up in the LD_LIBRARY_PATH, thus allowing the NSC NS-3
