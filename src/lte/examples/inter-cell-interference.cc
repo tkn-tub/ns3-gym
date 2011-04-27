@@ -90,9 +90,8 @@ int main (int argc, char *argv[])
        << "_numUes"  << std::setw(3) << std::setfill('0')  << numUes
        << "_rngRun"  << std::setw(3) << std::setfill('0')  << runValue.Get () ;
   
-
-  LenaHelper lena;
-
+  Ptr<LenaHelper> lena = CreateObject<LenaHelper> ();
+  
   // Create Nodes: eNodeB and UE
   NodeContainer enbNodes;
   NodeContainer ueNodes1, ueNodes2;
@@ -133,19 +132,19 @@ int main (int argc, char *argv[])
   NetDeviceContainer enbDevs;
   NetDeviceContainer ueDevs1;
   NetDeviceContainer ueDevs2;
-  enbDevs = lena.InstallEnbDevice (enbNodes);
-  ueDevs1 = lena.InstallUeDevice (ueNodes1);
-  ueDevs2 = lena.InstallUeDevice (ueNodes2);
+  enbDevs = lena->InstallEnbDevice (enbNodes);
+  ueDevs1 = lena->InstallUeDevice (ueNodes1);
+  ueDevs2 = lena->InstallUeDevice (ueNodes2);
 
   // Attach UEs to a eNB
-  lena.Attach (ueDevs1, enbDevs.Get (0));
-  lena.Attach (ueDevs2, enbDevs.Get (1));
+  lena->Attach (ueDevs1, enbDevs.Get (0));
+  lena->Attach (ueDevs2, enbDevs.Get (1));
 
   // Activate an EPS bearer on all UEs
   enum EpsBearer::Qci q = EpsBearer::GBR_CONV_VOICE;
   EpsBearer bearer (q);
-  lena.ActivateEpsBearer (ueDevs1, bearer);
-  lena.ActivateEpsBearer (ueDevs2, bearer);
+  lena->ActivateEpsBearer (ueDevs1, bearer);
+  lena->ActivateEpsBearer (ueDevs2, bearer);
 
   Simulator::Stop (Seconds (10));
 

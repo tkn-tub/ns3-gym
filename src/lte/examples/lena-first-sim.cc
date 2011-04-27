@@ -44,9 +44,9 @@ int main (int argc, char *argv[])
   // parse again so you can override default values from the command line
   cmd.Parse (argc, argv);
   
-  LenaHelper lena;
+  Ptr<LenaHelper> lena = CreateObject<LenaHelper> ();
 
-  lena.EnableLogComponents ();
+  //lena->EnableLogComponents ();
 
   // Create Nodes: eNodeB and UE
   NodeContainer enbNodes;
@@ -64,18 +64,18 @@ int main (int argc, char *argv[])
   // Create Devices and install them in the Nodes (eNB and UE)
   NetDeviceContainer enbDevs;
   NetDeviceContainer ueDevs;
-  //lena.SetScheduler ("RrFfMacScheduler");
-  lena.SetScheduler ("PfFfMacScheduler");
-  enbDevs = lena.InstallEnbDevice (enbNodes);
-  ueDevs = lena.InstallUeDevice (ueNodes);
+  //lena->SetSchedulerType ("ns3::RrFfMacScheduler");
+  lena->SetSchedulerType ("ns3::PfFfMacScheduler");
+  enbDevs = lena->InstallEnbDevice (enbNodes);
+  ueDevs = lena->InstallUeDevice (ueNodes);
 
   // Attach a UE to a eNB
-  lena.Attach (ueDevs, enbDevs.Get (0));
+  lena->Attach (ueDevs, enbDevs.Get (0));
 
   // Activate an EPS bearer
   enum EpsBearer::Qci q = EpsBearer::GBR_CONV_VOICE;
   EpsBearer bearer (q);
-  lena.ActivateEpsBearer (ueDevs, bearer);
+  lena->ActivateEpsBearer (ueDevs, bearer);
 
 
   Simulator::Stop (Seconds (0.005));

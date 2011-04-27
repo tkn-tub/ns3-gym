@@ -233,7 +233,7 @@ PfFfMacScheduler::DoDispose ()
 TypeId
 PfFfMacScheduler::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("PfFfMacScheduler")
+  static TypeId tid = TypeId ("ns3::PfFfMacScheduler")
     .SetParent<FfMacScheduler> ()
     .AddConstructor<PfFfMacScheduler> ();
   return tid;

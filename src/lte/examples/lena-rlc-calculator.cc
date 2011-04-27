@@ -55,8 +55,6 @@ void DlRxPduCallback(Ptr<RlcStatsCalculator> rlcStats, std::string path,
 
 int main (int argc, char *argv[])
 {
-  LenaHelper lena;
-
   // Command line arguments
   CommandLine cmd;
   cmd.Parse (argc, argv);
@@ -67,8 +65,10 @@ int main (int argc, char *argv[])
   // parse again so you can override default values from the command line
   cmd.Parse (argc, argv);
 
+  Ptr<LenaHelper> lena = CreateObject<LenaHelper> ();
+
   // Enable LTE log components
-  //lena.EnableLogComponents ();
+  //lena->EnableLogComponents ();
 
   // Create Nodes: eNodeB and UE
   NodeContainer enbNodes;
@@ -86,16 +86,16 @@ int main (int argc, char *argv[])
   // Create Devices and install them in the Nodes (eNB and UE)
   NetDeviceContainer enbDevs;
   NetDeviceContainer ueDevs;
-  enbDevs = lena.InstallEnbDevice (enbNodes);
-  ueDevs = lena.InstallUeDevice (ueNodes);
+  enbDevs = lena->InstallEnbDevice (enbNodes);
+  ueDevs = lena->InstallUeDevice (ueNodes);
 
   // Attach a UE to a eNB
-  lena.Attach (ueDevs, enbDevs.Get (0));
+  lena->Attach (ueDevs, enbDevs.Get (0));
 
   // Activate an EPS bearer
   enum EpsBearer::Qci q = EpsBearer::GBR_CONV_VOICE;
   EpsBearer bearer (q);
-  lena.ActivateEpsBearer (ueDevs, bearer);
+  lena->ActivateEpsBearer (ueDevs, bearer);
 
   Simulator::Stop (Seconds (4));
 

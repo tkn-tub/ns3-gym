@@ -22,6 +22,9 @@
 
 #include "lena-helper.h"
 
+#include <ns3/string.h>
+#include <ns3/log.h>
+
 #include <ns3/lte-enb-rrc.h>
 #include <ns3/lte-ue-rrc.h>
 #include <ns3/lte-ue-mac.h>
@@ -37,66 +40,105 @@
 #include <ns3/lte-enb-net-device.h>
 #include <ns3/lte-ue-net-device.h>
 
-#include <ns3/lte-spectrum-value-helper.h>
-#include <ns3/lte-enb-mac.h>
-#include <ns3/pf-ff-mac-scheduler.h>
-#include <ns3/lte-enb-rrc.h>
-#include <ns3/lte-ue-mac.h>
-#include <ns3/lte-ue-rrc.h>
+#include <ns3/ff-mac-scheduler.h>
 
+NS_LOG_COMPONENT_DEFINE ("LenaHelper");
 
 namespace ns3 {
 
+NS_OBJECT_ENSURE_REGISTERED (LenaHelper);
 
 LenaHelper::LenaHelper (void)
 {
+  NS_LOG_FUNCTION (this);  
+}
+
+void 
+LenaHelper::DoStart (void)
+{
+  NS_LOG_FUNCTION (this);
   m_downlinkChannel = CreateObject<SingleModelSpectrumChannel> ();
   m_uplinkChannel = CreateObject<SingleModelSpectrumChannel> ();
-  Ptr<SpectrumPropagationLossModel> dlPropagationModel = CreateObject<FriisSpectrumPropagationLossModel> ();
-  Ptr<SpectrumPropagationLossModel> ulPropagationModel = CreateObject<FriisSpectrumPropagationLossModel> ();
+  Ptr<SpectrumPropagationLossModel> dlPropagationModel = m_propagationModelFactory.Create<SpectrumPropagationLossModel> ();
+  Ptr<SpectrumPropagationLossModel> ulPropagationModel = m_propagationModelFactory.Create<SpectrumPropagationLossModel> ();
   m_downlinkChannel->AddSpectrumPropagationLossModel (dlPropagationModel);
-  m_uplinkChannel->AddSpectrumPropagationLossModel (ulPropagationModel);
-  
-  SetScheduler ("RrFfMacScheduler"); // default scheduler
+  m_uplinkChannel->AddSpectrumPropagationLossModel (ulPropagationModel);  
+  Object::DoStart ();
 }
 
 LenaHelper::~LenaHelper (void)
 {
-  m_downlinkChannel = 0;
-  m_uplinkChannel = 0;
+  NS_LOG_FUNCTION (this);
 }
 
 
+void
+LenaHelper::DoDispose ()
+{
+  NS_LOG_FUNCTION (this);
+  m_downlinkChannel = 0;
+  m_uplinkChannel = 0;
+  Object::DoDispose ();
+}
+
+TypeId LenaHelper::GetTypeId (void)
+{
+  static TypeId
+  tid =
+    TypeId ("ns3::LenaHelper")
+    .SetParent<Object> ()
+    .AddConstructor<LenaHelper> ()
+    .AddAttribute ("Scheduler",
+                   "The type of scheduler to be used for eNBs",               
+                   StringValue ("ns3::RrFfMacScheduler"),
+                   MakeStringAccessor (&LenaHelper::SetSchedulerType),                   
+                   MakeStringChecker ())
+    .AddAttribute ("PropagationModel",
+                   "The type of propagation model to be used",               
+                   StringValue ("ns3::FriisSpectrumPropagationLossModel"),
+                   MakeStringAccessor (&LenaHelper::SetPropagationModelType),                   
+                   MakeStringChecker ())
+    ;
+  return tid;
+}
+
+void 
+LenaHelper::SetSchedulerType (std::string type) 
+{
+  NS_LOG_FUNCTION (this << type);
+  m_schedulerFactory = ObjectFactory ();
+  m_schedulerFactory.SetTypeId (type);
+}
+
+void 
+LenaHelper::SetSchedulerAttribute (std::string n, const AttributeValue &v)
+{
+  NS_LOG_FUNCTION (this << n);
+  m_schedulerFactory.Set (n, v);
+}
 
 
 void 
-LenaHelper::SetScheduler (std::string type,
-                          std::string n0, const AttributeValue &v0,
-                          std::string n1, const AttributeValue &v1,
-                          std::string n2, const AttributeValue &v2,
-                          std::string n3, const AttributeValue &v3,
-                          std::string n4, const AttributeValue &v4,
-                          std::string n5, const AttributeValue &v5,
-                          std::string n6, const AttributeValue &v6,
-                          std::string n7, const AttributeValue &v7)
+LenaHelper::SetPropagationModelType (std::string type) 
 {
-  m_scheduler = ObjectFactory ();
-  m_scheduler.SetTypeId (type);
-  m_scheduler.Set (n0, v0);
-  m_scheduler.Set (n1, v1);
-  m_scheduler.Set (n2, v2);
-  m_scheduler.Set (n3, v3);
-  m_scheduler.Set (n4, v4);
-  m_scheduler.Set (n5, v5);
-  m_scheduler.Set (n6, v6);
-  m_scheduler.Set (n7, v7);
+  NS_LOG_FUNCTION (this << type);
+  m_propagationModelFactory = ObjectFactory ();
+  m_propagationModelFactory.SetTypeId (type);
 }
 
+void 
+LenaHelper::SetPropagationModelAttribute (std::string n, const AttributeValue &v)
+{
+  NS_LOG_FUNCTION (this << n);
+  m_propagationModelFactory.Set (n, v);
+}
 
 
 NetDeviceContainer
 LenaHelper::InstallEnbDevice (NodeContainer c)
 {
+  NS_LOG_FUNCTION (this);
+  Start ();  // will run DoStart () if necessary
   NetDeviceContainer devices;
   for (NodeContainer::Iterator i = c.Begin (); i != c.End (); ++i)
     {
@@ -110,6 +152,7 @@ LenaHelper::InstallEnbDevice (NodeContainer c)
 NetDeviceContainer
 LenaHelper::InstallUeDevice (NodeContainer c)
 {
+  NS_LOG_FUNCTION (this);
   NetDeviceContainer devices;
   for (NodeContainer::Iterator i = c.Begin (); i != c.End (); ++i)
     {
@@ -124,13 +167,15 @@ LenaHelper::InstallUeDevice (NodeContainer c)
 void
 LenaHelper::SetEnbDeviceAttribute (std::string name, const AttributeValue &value)
 {
-
+  NS_LOG_FUNCTION (this);
+  NS_FATAL_ERROR ("not implemented yet");
 }
 
 void
 LenaHelper::SetUeDeviceAttribute (std::string name, const AttributeValue &value)
 {
-
+  NS_LOG_FUNCTION (this);
+  NS_FATAL_ERROR ("not implemented yet");
 }
 
 
@@ -156,7 +201,7 @@ LenaHelper::InstallSingleEnbDevice (Ptr<Node> n)
   m_uplinkChannel->AddRx (ulPhy);
 
   Ptr<LteEnbMac> mac = CreateObject<LteEnbMac> ();
-  Ptr<FfMacScheduler> sched = m_scheduler.Create<FfMacScheduler> ();  
+  Ptr<FfMacScheduler> sched = m_schedulerFactory.Create<FfMacScheduler> ();  
   Ptr<LteEnbRrc> rrc = CreateObject<LteEnbRrc> ();
 
 
