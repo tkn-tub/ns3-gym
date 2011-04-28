@@ -21,7 +21,6 @@
 #ifndef LENA_TEST_DOWNLINK_SINR_H
 #define LENA_TEST_DOWNLINK_SINR_H
 
-#include "ns3/simulator.h"
 #include "ns3/test.h"
 
 
@@ -31,6 +30,13 @@ using namespace ns3;
 /**
  * Test 1.1 SINR calculation in downlink
  */
+class LenaDownlinkSinrTestSuite : public TestSuite
+{
+public:
+  LenaDownlinkSinrTestSuite ();
+};
+
+
 class LenaDownlinkSinrTestCase : public TestCase
 {
   public:
