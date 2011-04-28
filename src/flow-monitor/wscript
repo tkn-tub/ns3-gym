@@ -29,4 +29,7 @@ def build(bld):
         ]]
     headers.source.append("helper/flow-monitor-helper.h")
 
+    if bld.env['ENABLE_EXAMPLES']:
+        bld.add_subdirs('examples')
+
     bld.ns3_python_bindings()
