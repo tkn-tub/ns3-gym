@@ -428,9 +428,9 @@ DlRxPduCallback(Ptr<RlcStatsCalculator> rlcStats, std::string path,
 void
 LenaHelper::EnableDlRlcTraces (void)
 {
-  Config::Connect("/NodeList/0/DeviceList/0/LteEnbRrc/UeMap/*/RadioBearerMap/*/LteRlc/TxPDU",
+  Config::Connect("/NodeList/*/DeviceList/*/LteEnbRrc/UeMap/*/RadioBearerMap/*/LteRlc/TxPDU",
                    MakeBoundCallback(&DlTxPduCallback, rlcStats));
-  Config::Connect("/NodeList/*/DeviceList/0/LteUeRrc/RlcMap/*/RxPDU",
+  Config::Connect("/NodeList/*/DeviceList/*/LteUeRrc/RlcMap/*/RxPDU",
                    MakeBoundCallback(&DlRxPduCallback, rlcStats));
 }
 
@@ -452,9 +452,9 @@ UlRxPduCallback(Ptr<RlcStatsCalculator> rlcStats, std::string path,
 void
 LenaHelper::EnableUlRlcTraces (void)
 {
-  Config::Connect("/NodeList/*/DeviceList/0/LteUeRrc/RlcMap/*/TxPDU",
+  Config::Connect("/NodeList/*/DeviceList/*/LteUeRrc/RlcMap/*/TxPDU",
                    MakeBoundCallback(&UlTxPduCallback, rlcStats));
-  Config::Connect ("/NodeList/0/DeviceList/0/LteEnbRrc/UeMap/*/RadioBearerMap/*/LteRlc/RxPDU",
+  Config::Connect ("/NodeList/0/DeviceList/*/LteEnbRrc/UeMap/*/RadioBearerMap/*/LteRlc/RxPDU",
                    MakeBoundCallback(&UlRxPduCallback, rlcStats));
 }
 
