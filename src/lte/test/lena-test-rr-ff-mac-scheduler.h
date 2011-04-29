@@ -15,12 +15,13 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * Author: Manuel Requena <manuel.requena@cttc.es>
+ * Author: Marco Miozzo <marco.miozzo@cttc.es>
  */
 
-#ifndef LENA_TEST_DOWNLINK_SINR_H
-#define LENA_TEST_DOWNLINK_SINR_H
+#ifndef LENA_TEST_RR_FF_MAC_SCHEDULER_H
+#define LENA_TEST_RR_FF_MAC_SCHEDULER_H
 
+#include "ns3/simulator.h"
 #include "ns3/test.h"
 
 
@@ -28,24 +29,27 @@ using namespace ns3;
 
 
 /**
- * Test 1.1 SINR calculation in downlink
+ * Test 1.4 Round Robin (RR) MAC Scheduler
  */
-class LenaDownlinkSinrTestSuite : public TestSuite
-{
-public:
-  LenaDownlinkSinrTestSuite ();
-};
-
-
-class LenaDownlinkSinrTestCase : public TestCase
+class LenaRrFfMacSchedulerTestCase : public TestCase
 {
   public:
-    LenaDownlinkSinrTestCase ();
-    virtual ~LenaDownlinkSinrTestCase ();
+    LenaRrFfMacSchedulerTestCase ();
+    virtual ~LenaRrFfMacSchedulerTestCase ();
 
   private:
     virtual void DoRun (void);
 };
 
 
-#endif /* LENA_TEST_DOWNLINK_SINR_H */
+
+class LenaTest1_4Suite : public TestSuite
+{
+  public:
+    LenaTest1_4Suite ();
+};
+
+
+
+
+#endif /* LENA_TEST_RR_FF_MAC_SCHEDULER_H */
