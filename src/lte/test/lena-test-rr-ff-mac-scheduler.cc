@@ -149,7 +149,7 @@ LenaRrFfMacSchedulerTestCase::DoRun (void)
   // Create Devices and install them in the Nodes (eNB and UE)
   NetDeviceContainer enbDevs;
   NetDeviceContainer ueDevs;
-  lena.SetScheduler ("RrFfMacScheduler");
+  lena.SetSchedulerType ("ns3::RrFfMacScheduler");
   enbDevs = lena.InstallEnbDevice (enbNodes);
   ueDevs = lena.InstallUeDevice (ueNodes);
   
