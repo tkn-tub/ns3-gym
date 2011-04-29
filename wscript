@@ -744,7 +744,14 @@ def shutdown(ctx):
     # Print the list of built modules with lines wrapped at 70 characters.
     print
     print 'Modules built:'
-    print textwrap.fill(', '.join(modules_without_prefix))
+    i = 1
+    for mod in modules_without_prefix:
+        print mod.ljust(25),
+        if i == 3:
+                print
+                i = 0
+        i = i+1
+    print
     print
 
     # Write the build status file.
