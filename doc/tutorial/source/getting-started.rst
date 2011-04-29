@@ -281,11 +281,19 @@ following magic words:
   'build' finished successfully (2m30.586s)
   
   Modules built: 
-  aodv, applications, bridge, click, config-store, core, csma, dsdv,
-  emu, energy, flow-monitor, internet, lte, mesh, mobility, mpi,
-  netanim, network, nix-vector-routing, ns3tcp, ns3wifi, olsr, openflow,
-  point-to-point, propagation, spectrum, stats, tap-bridge, test, tools,
-  topology-read, uan, virtual-net-device, visualizer, wifi, wimax
+  aodv                      applications              bridge                   
+  click                     config-store              core                     
+  csma                      csma-layout               dsdv                     
+  emu                       energy                    flow-monitor             
+  internet                  lte                       mesh                     
+  mobility                  mpi                       netanim                  
+  network                   nix-vector-routing        ns3tcp                   
+  ns3wifi                   olsr                      openflow                 
+  point-to-point            point-to-point-layout     propagation              
+  spectrum                  stats                     tap-bridge               
+  test                      tools                     topology-read            
+  uan                       virtual-net-device        visualizer               
+  wifi                      wimax                    
 
 Once the project has built you can say goodbye to your old friends, the 
 ``ns-3-allinone`` scripts.  You got what you needed from them and will now 
@@ -451,11 +459,19 @@ You will also see output from the test runner and the output will actually look 
   'build' finished successfully (1.799s)
   
   Modules built: 
-  aodv, applications, bridge, click, config-store, core, csma, dsdv,
-  emu, energy, flow-monitor, internet, lte, mesh, mobility, mpi,
-  netanim, network, nix-vector-routing, ns3tcp, ns3wifi, olsr, openflow,
-  point-to-point, propagation, spectrum, stats, tap-bridge, test, tools,
-  topology-read, uan, virtual-net-device, visualizer, wifi, wimax
+  aodv                      applications              bridge                   
+  click                     config-store              core                     
+  csma                      csma-layout               dsdv                     
+  emu                       energy                    flow-monitor             
+  internet                  lte                       mesh                     
+  mobility                  mpi                       netanim                  
+  network                   nix-vector-routing        ns3tcp                   
+  ns3wifi                   olsr                      openflow                 
+  point-to-point            point-to-point-layout     propagation              
+  spectrum                  stats                     tap-bridge               
+  test                      tools                     topology-read            
+  uan                       virtual-net-device        visualizer               
+  wifi                      wimax                    
 
   PASS: TestSuite ns3-wifi-interference
   PASS: TestSuite histogram
