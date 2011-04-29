@@ -737,22 +737,25 @@ def shutdown(ctx):
         return
     env = bld.env
 
-    # Get the sorted list of built modules without the "ns3-" in their name.
-    modules_without_prefix =[mod[len('ns3-'):] for mod in env['NS3_ENABLED_MODULES']]
-    modules_without_prefix.sort()
+    # Don't print the list if this a clean or distribution clean.
+    if ('clean' not in Options.arg_line) and ('distclean' not in Options.arg_line):
 
-    # Print the list of built modules with lines wrapped at 70 characters.
-    print
-    print 'Modules built:'
-    i = 1
-    for mod in modules_without_prefix:
-        print mod.ljust(25),
-        if i == 3:
-                print
-                i = 0
-        i = i+1
-    print
-    print
+        # Get the sorted list of built modules without the "ns3-" in their name.
+        modules_without_prefix =[mod[len('ns3-'):] for mod in env['NS3_ENABLED_MODULES']]
+        modules_without_prefix.sort()
+
+        # Print the list of built modules in 3 columns.
+        print
+        print 'Modules built:'
+        i = 1
+        for mod in modules_without_prefix:
+            print mod.ljust(25),
+            if i == 3:
+                    print
+                    i = 0
+            i = i+1
+        print
+        print
 
     # Write the build status file.
     build_status_file = os.path.join (env['NS3_BUILDDIR'], env['NS3_ACTIVE_VARIANT'], 'build-status.py')
