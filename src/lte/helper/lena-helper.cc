@@ -64,6 +64,7 @@ LenaHelper::DoStart (void)
   m_downlinkChannel->AddSpectrumPropagationLossModel (dlPropagationModel);
   m_uplinkChannel->AddSpectrumPropagationLossModel (ulPropagationModel);
   macStats = CreateObject<MacStatsCalculator> ();
+  rlcStats = CreateObject<RlcStatsCalculator> ();
   Object::DoStart ();
 }
 
@@ -402,5 +403,59 @@ LenaHelper::EnableUlMacTraces (void)
                   MakeBoundCallback(&UlSchedulingCallback, macStats));
 }
 
+void
+LenaHelper::EnableRlcTraces (void)
+{
+  EnableDlRlcTraces ();
+  EnableUlRlcTraces ();
+
+}
+
+void
+DlTxPduCallback(Ptr<RlcStatsCalculator> rlcStats, std::string path,
+                   uint16_t rnti, uint8_t lcid, uint32_t packetSize)
+{
+  rlcStats->DlTxPdu(rnti, lcid, packetSize);
+}
+
+void
+DlRxPduCallback(Ptr<RlcStatsCalculator> rlcStats, std::string path,
+                   uint16_t rnti, uint8_t lcid, uint32_t packetSize, uint64_t delay)
+{
+  rlcStats->DlRxPdu(rnti, lcid, packetSize, delay);
+}
+
+void
+LenaHelper::EnableDlRlcTraces (void)
+{
+  Config::Connect("/NodeList/0/DeviceList/0/LteEnbRrc/UeMap/*/RadioBearerMap/*/LteRlc/TxPDU",
+                   MakeBoundCallback(&DlTxPduCallback, rlcStats));
+  Config::Connect("/NodeList/*/DeviceList/0/LteUeRrc/RlcMap/*/RxPDU",
+                   MakeBoundCallback(&DlRxPduCallback, rlcStats));
+}
+
+void
+UlTxPduCallback(Ptr<RlcStatsCalculator> rlcStats, std::string path,
+                   uint16_t rnti, uint8_t lcid, uint32_t packetSize)
+{
+  rlcStats->UlTxPdu(rnti, lcid, packetSize);
+}
+
+void
+UlRxPduCallback(Ptr<RlcStatsCalculator> rlcStats, std::string path,
+                   uint16_t rnti, uint8_t lcid, uint32_t packetSize, uint64_t delay)
+{
+  rlcStats->UlRxPdu(rnti, lcid, packetSize, delay);
+}
+
+
+void
+LenaHelper::EnableUlRlcTraces (void)
+{
+  Config::Connect("/NodeList/*/DeviceList/0/LteUeRrc/RlcMap/*/TxPDU",
+                   MakeBoundCallback(&UlTxPduCallback, rlcStats));
+  Config::Connect ("/NodeList/0/DeviceList/0/LteEnbRrc/UeMap/*/RadioBearerMap/*/LteRlc/RxPDU",
+                   MakeBoundCallback(&UlRxPduCallback, rlcStats));
+}
 
 } // namespace ns3
