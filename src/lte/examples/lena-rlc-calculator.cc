@@ -23,11 +23,15 @@
 #include "ns3/network-module.h"
 #include "ns3/mobility-module.h"
 #include "ns3/lte-module.h"
+#include "ns3/mac-stats-calculator.h"
 #include "ns3/rlc-stats-calculator.h"
 #include "ns3/config-store.h"
 //#include "ns3/gtk-config-store.h"
 
+
+
 using namespace ns3;
+
 
 void UlTxPduCallback(Ptr<RlcStatsCalculator> rlcStats, std::string path,
                    uint16_t rnti, uint8_t lcid, uint32_t packetSize)
@@ -53,6 +57,7 @@ void DlRxPduCallback(Ptr<RlcStatsCalculator> rlcStats, std::string path,
   rlcStats->DlRxPdu(rnti, lcid, packetSize, delay);
 }
 
+
 int main (int argc, char *argv[])
 {
   // Command line arguments
@@ -68,7 +73,7 @@ int main (int argc, char *argv[])
   Ptr<LenaHelper> lena = CreateObject<LenaHelper> ();
 
   // Enable LTE log components
-  //lena->EnableLogComponents ();
+  lena->EnableLogComponents ();
 
   // Create Nodes: eNodeB and UE
   NodeContainer enbNodes;
@@ -110,6 +115,8 @@ int main (int argc, char *argv[])
                    MakeBoundCallback(&UlTxPduCallback, rlcStats));
   Config::Connect ("/NodeList/0/DeviceList/0/LteEnbRrc/UeMap/*/RadioBearerMap/*/LteRlc/RxPDU",
                    MakeBoundCallback(&UlRxPduCallback, rlcStats));
+
+  lena->EnableMacTraces ();
 
   Simulator::Run ();
 

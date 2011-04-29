@@ -31,6 +31,8 @@
 #include <ns3/ff-mac-csched-sap.h>
 #include <ns3/ff-mac-sched-sap.h>
 #include <ns3/lte-enb-phy-sap.h>
+#include "ns3/traced-value.h"
+#include "ns3/trace-source-accessor.h"
 
 namespace ns3 {
 
@@ -209,6 +211,20 @@ private:
   // PHY-SAP
   LteEnbPhySapProvider* m_enbPhySapProvider;
   LteEnbPhySapUser* m_enbPhySapUser;
+
+  uint32_t m_frameNo;
+  uint32_t m_subframeNo;
+  /**
+   * Trace information regarding DL scheduling
+   * Simulation time, Frame number, Subframe number, RNTI, MCS of TB1, size of TB1,
+   * MCS of TB2 (0 if not present), size of TB2 (0 if not present)
+   */
+  TracedCallback<uint32_t, uint32_t, uint16_t, uint8_t, uint16_t, uint8_t, uint16_t> m_dlScheduling;
+  /**
+   * Trace information regarding UL scheduling
+   * Simulation time, Frame number, Subframe number, RNTI, MCS of TB, size of TB
+   */
+  TracedCallback<uint32_t, uint32_t, uint16_t, uint8_t, uint16_t> m_ulScheduling;
 
 };
 
