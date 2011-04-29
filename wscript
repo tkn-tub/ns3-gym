@@ -753,10 +753,10 @@ def shutdown(ctx):
     out.write('#! /usr/bin/env python\n')
     out.write('\n')
     out.write('# Programs that are runnable.\n')
-    out.write('NS3_RUNNABLE_PROGRAMS = ' + str(env['NS3_RUNNABLE_PROGRAMS']) + '\n')
+    out.write('ns3_runnable_programs = ' + str(env['NS3_RUNNABLE_PROGRAMS']) + '\n')
     out.write('\n')
     out.write('# Scripts that are runnable.\n')
-    out.write('NS3_RUNNABLE_SCRIPTS = ' + str(env['NS3_RUNNABLE_SCRIPTS']) + '\n')
+    out.write('ns3_runnable_scripts = ' + str(env['NS3_RUNNABLE_SCRIPTS']) + '\n')
     out.write('\n')
     out.close()
 

@@ -33,4 +33,4 @@ def build(bld):
       ['csma', 'internet'])
     obj.source = 'simple-routing-ping6.cc'
 
-    bld.register_ns3_script('simple-routing-ping.py', ['csma', 'internet'])
+    bld.register_ns3_script('simple-routing-ping6.py', ['csma', 'internet', 'applications', 'tools', 'config-store', 'mobility', 'wifi', 'olsr'])
