@@ -18,8 +18,8 @@
  * Author: Marco Miozzo <marco.miozzo@cttc.es>
  */
 
-#ifndef LENA_TEST_PF_FF_MAC_SCHEDULER_H
-#define LENA_TEST_PF_FF_MAC_SCHEDULER_H
+#ifndef LENA_TEST_RR_FF_MAC_SCHEDULER_H
+#define LENA_TEST_RR_FF_MAC_SCHEDULER_H
 
 #include "ns3/simulator.h"
 #include "ns3/test.h"
@@ -29,13 +29,19 @@ using namespace ns3;
 
 
 /**
- * Test 1.5 Proportional Fair MAC Scheduler
+ * This system test program creates different test cases with a single eNB and 
+ * several UEs, all having the same Radio Bearer specification. In each test 
+ * case, the UEs see the same SINR from the eNB; different test cases are 
+ * implemented obtained by using different SINR values and different numbers of 
+ * UEs. The test consists on checking that the obtained throughput performance 
+ * is equal among users and matches a reference throughput value within a given 
+ * tolerance.
  */
-class LenaPfFfMacSchedulerTestCase : public TestCase
+class LenaRrFfMacSchedulerTestCase : public TestCase
 {
   public:
-    LenaPfFfMacSchedulerTestCase ();
-    virtual ~LenaPfFfMacSchedulerTestCase ();
+    LenaRrFfMacSchedulerTestCase ();
+    virtual ~LenaRrFfMacSchedulerTestCase ();
 
   private:
     virtual void DoRun (void);
@@ -43,10 +49,10 @@ class LenaPfFfMacSchedulerTestCase : public TestCase
 
 
 
-class LenaTest1_5Suite : public TestSuite
+class LenaTestRrFfMacSchedulerSuite : public TestSuite
 {
   public:
-    LenaTest1_5Suite ();
+    LenaTestRrFfMacSchedulerSuite ();
 };
 
 
