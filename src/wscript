@@ -251,7 +251,7 @@ def ns3_python_bindings(bld):
     pymod.source = ['bindings/ns3module.cc']
     pymod.target = '%s/%s' % (module_target_dir, extension_name)
     pymod.name = 'ns3module_%s' % module
-    pymod.uselib_local = "ns3-"+module
+    pymod.uselib_local = pymod.env['NS3_ENABLED_MODULES'] #  Should be '"ns3-"+module', but see bug 1117
     if pymod.env['ENABLE_STATIC_NS3']:
         if sys.platform == 'darwin':
             pymod.env.append_value('LINKFLAGS', '-Wl,-all_load')
