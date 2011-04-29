@@ -40,11 +40,15 @@ public:
 class LenaDownlinkSinrTestCase : public TestCase
 {
   public:
-    LenaDownlinkSinrTestCase ();
+    LenaDownlinkSinrTestCase (Ptr<SpectrumValue> sv, Ptr<SpectrumValue> sinr, std::string name);
     virtual ~LenaDownlinkSinrTestCase ();
 
   private:
     virtual void DoRun (void);
+
+    Ptr<SpectrumValue> m_sv;
+    Ptr<const SpectrumModel> m_sm;
+    Ptr<SpectrumValue> m_sinr;
 };
 
 

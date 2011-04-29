@@ -47,9 +47,86 @@ using namespace ns3;
 LenaDownlinkSinrTestSuite::LenaDownlinkSinrTestSuite ()
   : TestSuite ("lena-downlink-sinr", SYSTEM)
 {
+  LogLevel logLevel = (LogLevel)(LOG_PREFIX_FUNC | LOG_PREFIX_TIME | LOG_LEVEL_ALL);
+
+  LogComponentEnable ("LteEnbRrc", logLevel);
+  LogComponentEnable ("LteUeRrc", logLevel);
+  LogComponentEnable ("LteEnbMac", logLevel);
+  LogComponentEnable ("LteUeMac", logLevel);
+  LogComponentEnable ("LteRlc", logLevel);
+  LogComponentEnable ("RrPacketScheduler", logLevel);
+
+  LogComponentEnable ("LtePhy", logLevel);
+  LogComponentEnable ("LteEnbPhy", logLevel);
+  LogComponentEnable ("LteUePhy", logLevel);
+
+  LogComponentEnable ("LteSpectrumPhy", logLevel);
+  LogComponentEnable ("LteInterference", logLevel);
+  LogComponentEnable ("LteSinrChunkProcessor", logLevel);
+
+  LogComponentEnable ("LtePropagationLossModel", logLevel);
+  LogComponentEnable ("LossModel", logLevel);
+  LogComponentEnable ("ShadowingLossModel", logLevel);
+  LogComponentEnable ("PenetrationLossModel", logLevel);
+  LogComponentEnable ("MultipathLossModel", logLevel);
+  LogComponentEnable ("PathLossModel", logLevel);
+
+  LogComponentEnable ("LteNetDevice", logLevel);
+  LogComponentEnable ("LteUeNetDevice", logLevel);
+  LogComponentEnable ("LteEnbNetDevice", logLevel);
+
+  LogComponentEnable ("LenaTestSinrChunkProcessor", logLevel);
+  LogComponentEnable ("LenaDownlinkSinrTest", logLevel);
+  LogComponentEnable ("LenaUplinkSinrTest", logLevel);
+
   NS_LOG_INFO ("Creating LenaDownlinkSinrTestSuite");
 
-  AddTestCase (new LenaDownlinkSinrTestCase);
+  /**
+   * Build Spectrum Model values for the TX signal
+   */
+  Ptr<SpectrumModel> sm;
+
+  Bands bands;
+  BandInfo bi;
+
+  bi.fl = 2.400e9;
+  bi.fc = 2.410e9;
+  bi.fh = 2.420e9;
+  bands.push_back (bi);
+
+  bi.fl = 2.420e9;
+  bi.fc = 2.431e9;
+  bi.fh = 2.442e9;
+  bands.push_back (bi);
+
+  sm = Create<SpectrumModel> (bands);
+
+  /**
+   * TX signal #1: Power Spectral Density of the signal of interest = [-46 -48] dBm and BW = [20 22] MHz
+   */
+  Ptr<SpectrumValue> rxPsd1 = Create<SpectrumValue> (sm);
+  (*rxPsd1)[0] = 1.255943215755e-15;
+  (*rxPsd1)[1] = 7.204059965732e-16;
+
+  Ptr<SpectrumValue> theoreticalSinr1 = Create<SpectrumValue> (sm);
+  (*theoreticalSinr1)[0] = 3.72589167251055;
+  (*theoreticalSinr1)[1] = 3.72255684126076;
+
+  AddTestCase (new LenaDownlinkSinrTestCase (rxPsd1, theoreticalSinr1, "sdBm = [-46 -48]"));
+
+  /**
+   * TX signal #2: Power Spectral Density of the signal of interest = [-63 -61] dBm and BW = [20 22] MHz
+   */
+  Ptr<SpectrumValue> rxPsd2 = Create<SpectrumValue> (sm);
+  (*rxPsd2)[0] = 2.505936168136e-17;
+  (*rxPsd2)[1] = 3.610582885110e-17;
+
+  Ptr<SpectrumValue> theoreticalSinr2 = Create<SpectrumValue> (sm);
+  (*theoreticalSinr2)[0] = 0.0743413124381667;
+  (*theoreticalSinr2)[1] = 0.1865697965291756;
+
+  AddTestCase (new LenaDownlinkSinrTestCase (rxPsd2, theoreticalSinr2, "sdBm = [-63 -61]"));
+
 }
 
 static LenaDownlinkSinrTestSuite lenaDownlinkSinrTestSuite;
@@ -59,8 +136,11 @@ static LenaDownlinkSinrTestSuite lenaDownlinkSinrTestSuite;
  * TestCase
  */
 
-LenaDownlinkSinrTestCase::LenaDownlinkSinrTestCase ()
-  : TestCase ("SINR calculation in downlink")
+LenaDownlinkSinrTestCase::LenaDownlinkSinrTestCase (Ptr<SpectrumValue> sv, Ptr<SpectrumValue> sinr, std::string name)
+  : TestCase ("SINR calculation in downlink: " + name),
+    m_sv (sv),
+    m_sm (sv->GetSpectrumModel ()),
+    m_sinr (sinr)
 {
   NS_LOG_INFO ("Creating LenaDownlinkSinrTestCase");
 }
@@ -163,36 +243,12 @@ LenaDownlinkSinrTestCase::DoRun (void)
         }
     }
 
-  /**
-   * Build Spectrum Model values for signal
-   */
-  Ptr<SpectrumModel> sm;
 
-  Bands bands;
-  BandInfo bi;
-
-  bi.fl = 2.400e9;
-  bi.fc = 2.410e9;
-  bi.fh = 2.420e9;
-  bands.push_back (bi);
-
-  bi.fl = 2.420e9;
-  bi.fc = 2.431e9;
-  bi.fh = 2.442e9;
-  bands.push_back (bi);
-
-  sm = Create<SpectrumModel> (bands);
-
-  // Power Spectral Density of the signal of interest = [-46 -48] dBm and BW = [20 22] MHz
-  Ptr<SpectrumValue> rxPsd = Create<SpectrumValue> (sm);
-  (*rxPsd)[0] = 1.255943215755e-15;
-  (*rxPsd)[1] = 7.204059965732e-16;
-
-  Ptr<SpectrumValue> noisePsd = Create<SpectrumValue> (sm);
-  Ptr<SpectrumValue> i1 = Create<SpectrumValue> (sm);
-  Ptr<SpectrumValue> i2 = Create<SpectrumValue> (sm);
-  Ptr<SpectrumValue> i3 = Create<SpectrumValue> (sm);
-  Ptr<SpectrumValue> i4 = Create<SpectrumValue> (sm);
+  Ptr<SpectrumValue> noisePsd = Create<SpectrumValue> (m_sm);
+  Ptr<SpectrumValue> i1 = Create<SpectrumValue> (m_sm);
+  Ptr<SpectrumValue> i2 = Create<SpectrumValue> (m_sm);
+  Ptr<SpectrumValue> i3 = Create<SpectrumValue> (m_sm);
+  Ptr<SpectrumValue> i4 = Create<SpectrumValue> (m_sm);
 
   (*noisePsd)[0] = 5.000000000000e-19;
   (*noisePsd)[1] = 4.545454545455e-19;
@@ -223,7 +279,8 @@ LenaDownlinkSinrTestCase::DoRun (void)
    * Schedule the reception of the data signal plus the interference signals
    */
 
-  Simulator::Schedule (ts, &LteSpectrumPhy::StartRx, dlPhy, packetBursts[0], rxPsd, dlPhy->GetSpectrumType(), ds);
+  // eNB sends data to 2 UEs through 2 subcarriers
+  Simulator::Schedule (ts, &LteSpectrumPhy::StartRx, dlPhy, packetBursts[0], m_sv, dlPhy->GetSpectrumType(), ds);
 
   Simulator::Schedule (ti1, &LteSpectrumPhy::StartRx, dlPhy, packetBursts[1], i1, dlPhy->GetSpectrumType(), di1);
   Simulator::Schedule (ti2, &LteSpectrumPhy::StartRx, dlPhy, packetBursts[2], i2, dlPhy->GetSpectrumType(), di2);
@@ -238,14 +295,10 @@ LenaDownlinkSinrTestCase::DoRun (void)
    * Check that the values passed to LteSinrChunkProcessor::EvaluateSinrChunk () correspond
    * to known values which have been calculated offline (with octave) for the generated signals
    */
-  SpectrumValue theoreticalSinr(sm);
-  theoreticalSinr[0] = 3.72589167251055;
-  theoreticalSinr[1] = 3.72255684126076;
-
   SpectrumValue calculatedSinr = chunkProcessor->GetSinr ();
 
-  NS_LOG_INFO ("Theoretical SINR: " << theoreticalSinr);
+  NS_LOG_INFO ("Theoretical SINR: " << *m_sinr);
   NS_LOG_INFO ("Calculated SINR: " << calculatedSinr);
 
-  NS_TEST_ASSERT_MSG_EQ_TOL (calculatedSinr, theoreticalSinr, 0.0000001, "Wrong SINR !");
+  NS_TEST_ASSERT_MSG_EQ_TOL (calculatedSinr, *m_sinr, 0.0000001, "Wrong SINR !");
 }
