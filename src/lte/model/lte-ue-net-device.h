@@ -103,6 +103,9 @@ private:
   Ptr<LteUePhy> m_phy;
   Ptr<LteUeRrc> m_rrc;
 
+  uint64_t m_imsi;
+  static uint64_t m_imsiCounter;
+
 
 };
 
