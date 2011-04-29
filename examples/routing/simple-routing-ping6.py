@@ -27,49 +27,53 @@
 #                router
 #
 
-import ns3;
+from ns.applications import *
+from ns.core import *
+from ns.csma import *
+from ns.internet import *
+from ns.network import *
 
 def main(argv):
 
-    cmd = ns3.CommandLine();
+    cmd = CommandLine();
 
     cmd.Parse(argv);
 
     # Create nodes
     print "Create nodes"
-    n0 = ns3.Node();
-    r = ns3.Node();
-    n1 = ns3.Node();
+    n0 = Node();
+    r = Node();
+    n1 = Node();
 
-    net1 = ns3.NodeContainer();
+    net1 = NodeContainer();
     net1.Add(n0);
     net1.Add(r);
-    net2 = ns3.NodeContainer();
+    net2 = NodeContainer();
     net2.Add(r);
     net2.Add(n1);
-    all = ns3.NodeContainer();
+    all = NodeContainer();
     all.Add(n0);
     all.Add(r);
     all.Add(n1);
 
     # Create IPv6 Internet Stack
-    internetv6 = ns3.InternetStackHelper();
+    internetv6 = InternetStackHelper();
     internetv6.Install(all);
 
     # Create channels
-    csma = ns3.CsmaHelper();
-    csma.SetChannelAttribute("DataRate", ns3.DataRateValue(ns3.DataRate(5000000)));
-    csma.SetChannelAttribute("Delay", ns3.TimeValue(ns3.MilliSeconds(2)));
+    csma = CsmaHelper();
+    csma.SetChannelAttribute("DataRate", DataRateValue(DataRate(5000000)));
+    csma.SetChannelAttribute("Delay", TimeValue(MilliSeconds(2)));
     d1 = csma.Install(net1);
     d2 = csma.Install(net2);
 
     # Create networks and assign IPv6 Addresses
     print "Addressing"
-    ipv6 = ns3.Ipv6AddressHelper();
-    ipv6.NewNetwork(ns3.Ipv6Address("2001:1::"), ns3.Ipv6Prefix(64));
+    ipv6 = Ipv6AddressHelper();
+    ipv6.NewNetwork(Ipv6Address("2001:1::"), Ipv6Prefix(64));
     i1 = ipv6.Assign(d1);
     i1.SetRouter(1, True);
-    ipv6.NewNetwork(ns3.Ipv6Address("2001:2::"), ns3.Ipv6Prefix(64));
+    ipv6.NewNetwork(Ipv6Address("2001:2::"), Ipv6Prefix(64));
     i2 = ipv6.Assign(d2);
     i2.SetRouter(0, True);
 
@@ -77,28 +81,28 @@ def main(argv):
     print "Application"
     packetSize = 1024;
     maxPacketCount = 5;
-    interPacketInterval = ns3.Seconds(1.);
-    ping6 = ns3.Ping6Helper();
+    interPacketInterval = Seconds(1.);
+    ping6 = Ping6Helper();
 
     ping6.SetLocal(i1.GetAddress(0, 1));
     ping6.SetRemote(i2.GetAddress(1, 1)); 
 
-    ping6.SetAttribute("MaxPackets", ns3.UintegerValue(maxPacketCount));
-    ping6.SetAttribute("Interval", ns3.TimeValue(interPacketInterval));
-    ping6.SetAttribute("PacketSize", ns3.UintegerValue(packetSize));
+    ping6.SetAttribute("MaxPackets", UintegerValue(maxPacketCount));
+    ping6.SetAttribute("Interval", TimeValue(interPacketInterval));
+    ping6.SetAttribute("PacketSize", UintegerValue(packetSize));
 
-    apps = ping6.Install(ns3.NodeContainer(net1.Get(0)));
-    apps.Start(ns3.Seconds(2.0));
-    apps.Stop(ns3.Seconds(20.0));
+    apps = ping6.Install(NodeContainer(net1.Get(0)));
+    apps.Start(Seconds(2.0));
+    apps.Stop(Seconds(20.0));
 
     print "Tracing"
-    ascii = ns3.AsciiTraceHelper()
+    ascii = AsciiTraceHelper()
     csma.EnableAsciiAll(ascii.CreateFileStream("simple-routing-ping6.tr"))
     csma.EnablePcapAll("simple-routing-ping6", True)
 
     # Run Simulation     
-    ns3.Simulator.Run()
-    ns3.Simulator.Destroy()
+    Simulator.Run()
+    Simulator.Destroy()
 
 if __name__ == '__main__':
     import sys

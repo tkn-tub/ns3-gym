@@ -13,43 +13,47 @@
 #  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #  */
 
-import ns3
+from ns.applications import *
+from ns.core import *
+from ns.internet import *
+from ns.network import *
+from ns.point_to_point import *
 
-ns3.LogComponentEnable("UdpEchoClientApplication", ns3.LOG_LEVEL_INFO)
-ns3.LogComponentEnable("UdpEchoServerApplication", ns3.LOG_LEVEL_INFO)
+LogComponentEnable("UdpEchoClientApplication", LOG_LEVEL_INFO)
+LogComponentEnable("UdpEchoServerApplication", LOG_LEVEL_INFO)
 
-nodes = ns3.NodeContainer()
+nodes = NodeContainer()
 nodes.Create(2)
 
-pointToPoint = ns3.PointToPointHelper()
-pointToPoint.SetDeviceAttribute("DataRate", ns3.StringValue("5Mbps"))
-pointToPoint.SetChannelAttribute("Delay", ns3.StringValue("2ms"))
+pointToPoint = PointToPointHelper()
+pointToPoint.SetDeviceAttribute("DataRate", StringValue("5Mbps"))
+pointToPoint.SetChannelAttribute("Delay", StringValue("2ms"))
 
 devices = pointToPoint.Install(nodes)
 
-stack = ns3.InternetStackHelper()
+stack = InternetStackHelper()
 stack.Install(nodes)
 
-address = ns3.Ipv4AddressHelper()
-address.SetBase(ns3.Ipv4Address("10.1.1.0"), ns3.Ipv4Mask("255.255.255.0"))
+address = Ipv4AddressHelper()
+address.SetBase(Ipv4Address("10.1.1.0"), Ipv4Mask("255.255.255.0"))
 
 interfaces = address.Assign (devices);
 
-echoServer = ns3.UdpEchoServerHelper(9)
+echoServer = UdpEchoServerHelper(9)
 
 serverApps = echoServer.Install(nodes.Get(1))
-serverApps.Start(ns3.Seconds(1.0))
-serverApps.Stop(ns3.Seconds(10.0))
+serverApps.Start(Seconds(1.0))
+serverApps.Stop(Seconds(10.0))
 
-echoClient = ns3.UdpEchoClientHelper(interfaces.GetAddress(1), 9)
-echoClient.SetAttribute("MaxPackets", ns3.UintegerValue(1))
-echoClient.SetAttribute("Interval", ns3.TimeValue(ns3.Seconds (1.0)))
-echoClient.SetAttribute("PacketSize", ns3.UintegerValue(1024))
+echoClient = UdpEchoClientHelper(interfaces.GetAddress(1), 9)
+echoClient.SetAttribute("MaxPackets", UintegerValue(1))
+echoClient.SetAttribute("Interval", TimeValue(Seconds (1.0)))
+echoClient.SetAttribute("PacketSize", UintegerValue(1024))
 
 clientApps = echoClient.Install(nodes.Get(0))
-clientApps.Start(ns3.Seconds(2.0))
-clientApps.Stop(ns3.Seconds(10.0))
+clientApps.Start(Seconds(2.0))
+clientApps.Stop(Seconds(10.0))
 
-ns3.Simulator.Run()
-ns3.Simulator.Destroy()
+Simulator.Run()
+Simulator.Destroy()
 
