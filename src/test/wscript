@@ -4,7 +4,7 @@ def configure(conf):
     conf.sub_config('perf')
 
 def build(bld):
-    test = bld.create_ns3_module('test', ['internet', 'mobility', 'applications', 'csma', 'bridge', 'config-store', 'tools', 'point-to-point'])
+    test = bld.create_ns3_module('test', ['internet', 'mobility', 'applications', 'csma', 'bridge', 'config-store', 'tools', 'point-to-point', 'csma-layout'])
     headers = bld.new_task_gen('ns3header')
     headers.module = 'test'
 
