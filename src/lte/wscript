@@ -51,6 +51,7 @@ def build(bld):
         'test/lena-test-sinr-chunk-processor.cc',
         'test/lena-test-rr-ff-mac-scheduler.cc',
         'test/lena-test-pf-ff-mac-scheduler.cc',
+        'test/lte-test-earfcn.cc',
         ]
     
     headers = bld.new_task_gen('ns3header')

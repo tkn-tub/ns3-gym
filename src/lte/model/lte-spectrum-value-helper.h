@@ -34,6 +34,41 @@ namespace ns3 {
 class LteSpectrumValueHelper
 {
 public:
+
+
+  /**  
+   * Calculates the carrier frequency from the E-UTRA Absolute
+   * Radio Frequency Channel Number (EARFCN) according to 3GPP TS
+   * 36.101 section 5.7.3 "Carrier frequency and EARFCN".
+   *
+   * \param earfcn the EARFCN
+   * 
+   * \return the carrier frequency in MHz
+   */
+  static double GetCarrierFrequency (uint16_t earfcn);
+
+  /**  
+   * Calculates the dowlink carrier frequency from the E-UTRA Absolute
+   * Radio Frequency Channel Number (EARFCN) using the formula in 3GPP TS
+   * 36.101 section 5.7.3 "Carrier frequency and EARFCN".
+   *
+   * \param earfcn the EARFCN
+   * 
+   * \return the dowlink carrier frequency in MHz
+   */
+  static double GetDownlinkCarrierFrequency (uint16_t earfcn);
+
+  /**  
+   * Calculates the uplink carrier frequency from the E-UTRA Absolute
+   * Radio Frequency Channel Number (EARFCN) using the formula in 3GPP TS
+   * 36.101 section 5.7.3 "Carrier frequency and EARFCN".
+   *
+   * \param earfcn the EARFCN
+   * 
+   * \return the uplink carrier frequency in MHz
+   */
+  static double GetUplinkCarrierFrequency (uint16_t earfcn);  
+
   /**
    * \brief create spectrum value
    * \param powerTx the power transmission in dBm
