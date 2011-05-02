@@ -20,7 +20,9 @@
 
 #include "ns3/test.h"
 
-#include "ns3/lena-test-downlink-sinr.h"
+// #include "ns3/lena-test-downlink-sinr.h"
+#include "ns3/lena-test-uplink-sinr.h"
+
 
 
 using namespace ns3;
@@ -35,7 +37,8 @@ public:
 LenaTestSuite::LenaTestSuite ()
   : TestSuite ("lena", SYSTEM)
 {
-  AddTestCase (new LenaDownlinkSinrTestCase);
+//   AddTestCase (new LenaDownlinkSinrTestCase);
+  AddTestCase (new LenaUplinkSinrTestCase);
 }
 
 static LenaTestSuite lenaTestSuite;
