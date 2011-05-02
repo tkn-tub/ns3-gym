@@ -49,8 +49,8 @@ def build(bld):
         'test/lte-test-downlink-sinr.cc',
         'test/lte-test-uplink-sinr.cc',
         'test/lte-test-sinr-chunk-processor.cc',
-        'test/lena-test-rr-ff-mac-scheduler.cc',
-        'test/lena-test-pf-ff-mac-scheduler.cc',
+        'test/lte-test-rr-ff-mac-scheduler.cc',
+        'test/lte-test-pf-ff-mac-scheduler.cc',
         'test/lte-test-earfcn.cc',
         ]
     
@@ -103,8 +103,8 @@ def build(bld):
         'test/lte-test-downlink-sinr.h',
         'test/lte-test-uplink-sinr.h',
         'test/lte-test-sinr-chunk-processor.h',
-        'test/lena-test-rr-ff-mac-scheduler.h',
-        'test/lena-test-pf-ff-mac-scheduler.h',
+        'test/lte-test-rr-ff-mac-scheduler.h',
+        'test/lte-test-pf-ff-mac-scheduler.h',
         ]
 
     if (bld.env['ENABLE_EXAMPLES']):

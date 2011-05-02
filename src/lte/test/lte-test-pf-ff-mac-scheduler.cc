@@ -29,14 +29,14 @@
 #include <iostream>
 #include "ns3/rlc-stats-calculator.h"
 
-#include "ns3/lena-test-rr-ff-mac-scheduler.h"
+#include "ns3/lena-test-pf-ff-mac-scheduler.h"
 #include <ns3/eps-bearer.h>
 #include <ns3/node-container.h>
 #include <ns3/mobility-helper.h>
 #include <ns3/net-device-container.h>
 #include <ns3/lena-helper.h>
 
-NS_LOG_COMPONENT_DEFINE ("LenaTestRrFfMacCheduler");
+NS_LOG_COMPONENT_DEFINE ("LenaTestPfFfMacCheduler");
 
 using namespace ns3;
 
@@ -70,32 +70,27 @@ using namespace ns3;
 // }
 
 
-/**
- * Test 1.4 Round Robin (RR) MAC Scheduler
- */
-
-
-LenaTest1_4Suite::LenaTest1_4Suite ()
-: TestSuite ("lenaTest1.4", SYSTEM)
+LenaTestPfFfMacSchedulerSuite::LenaTestPfFfMacSchedulerSuite ()
+: TestSuite ("lteTestPfFfMacScheduler", SYSTEM)
 {
   SetVerbose (true);
-  NS_LOG_INFO ("creating LenaRrFfMacSchedulerTestCase");
-  AddTestCase (new LenaRrFfMacSchedulerTestCase);
+  NS_LOG_INFO ("creating LenaPfFfMacSchedulerTestCase");
+  AddTestCase (new LenaPfFfMacSchedulerTestCase);
 }
 
-static LenaTest1_4Suite lenaTest1_4Suite;
+static LenaTestPfFfMacSchedulerSuite lenaTestPfFfMacSchedulerSuite;
 
-LenaRrFfMacSchedulerTestCase::LenaRrFfMacSchedulerTestCase ()
-  : TestCase ("Round Robin (RR) Mac Scheduler Test Case")
+LenaPfFfMacSchedulerTestCase::LenaPfFfMacSchedulerTestCase ()
+  : TestCase ("Proportional Fair (PF) Mac Scheduler Test Case")
 {
 }
 
-LenaRrFfMacSchedulerTestCase::~LenaRrFfMacSchedulerTestCase ()
+LenaPfFfMacSchedulerTestCase::~LenaPfFfMacSchedulerTestCase ()
 {
 }
 
 void
-LenaRrFfMacSchedulerTestCase::DoRun (void)
+LenaPfFfMacSchedulerTestCase::DoRun (void)
 {
   LogComponentEnable ("LteEnbRrc", LOG_LEVEL_ALL);
   LogComponentEnable ("LteUeRrc", LOG_LEVEL_ALL);
@@ -131,8 +126,8 @@ LenaRrFfMacSchedulerTestCase::DoRun (void)
    */
   
   SetVerbose (true);
-  
-  LenaHelper lena;
+  Ptr<LenaHelper> lena = CreateObject<LenaHelper> ();
+
   // Create Nodes: eNodeB and UE
   NodeContainer enbNodes;
   NodeContainer ueNodes;
@@ -149,17 +144,17 @@ LenaRrFfMacSchedulerTestCase::DoRun (void)
   // Create Devices and install them in the Nodes (eNB and UE)
   NetDeviceContainer enbDevs;
   NetDeviceContainer ueDevs;
-  lena.SetSchedulerType ("ns3::RrFfMacScheduler");
-  enbDevs = lena.InstallEnbDevice (enbNodes);
-  ueDevs = lena.InstallUeDevice (ueNodes);
+  lena->SetSchedulerType ("ns3::PfFfMacScheduler");
+  enbDevs = lena->InstallEnbDevice (enbNodes);
+  ueDevs = lena->InstallUeDevice (ueNodes);
   
   // Attach a UE to a eNB
-  lena.Attach (ueDevs, enbDevs.Get (0));
+  lena->Attach (ueDevs, enbDevs.Get (0));
   
   // Activate an EPS bearer
   enum EpsBearer::Qci q = EpsBearer::GBR_CONV_VOICE;
   EpsBearer bearer (q);
-  lena.ActivateEpsBearer (ueDevs, bearer);
+  lena->ActivateEpsBearer (ueDevs, bearer);
   
   
   Simulator::Stop (Seconds (0.005));
@@ -171,7 +166,7 @@ LenaRrFfMacSchedulerTestCase::DoRun (void)
   Simulator::Destroy ();
 
   /**
-   * Check that the assignation is done in a RR fashion
+   * Check that the assignation is done in a "proportional fair" manner
    */
   //NS_TEST_ASSERT_MSG_EQ (*rxPsd, saveRxPsd, "Data signal corrupted !");
   //NS_TEST_ASSERT_MSG_EQ (*noisePsd, saveNoisePsd, "Noise signal corrupted !");
@@ -181,26 +176,9 @@ LenaRrFfMacSchedulerTestCase::DoRun (void)
 
   NS_LOG_INFO ("User 1 Rx Data: " << rlcStats->GetDlRxData (1,1));
   NS_LOG_INFO ("User 2 Rx Data: " << rlcStats->GetDlRxData (2,1));
-  NS_TEST_ASSERT_MSG_EQ_TOL (rlcStats->GetDlRxData (1,1), rlcStats->GetDlRxData (2,1), 0.0000001, " Unfair Throughput!");
+  NS_TEST_ASSERT_MSG_EQ_TOL (rlcStats->GetDlRxData (1,1), rlcStats->GetDlRxData (2,1), 100, " Unfair Throughput!");
 
   //NS_TEST_ASSERT_MSG_EQ_TOL (calculatedSinr, theoreticalSinr, 0.000001, "Wrong SINR !");
 }
-
-
-
-
-// class LenaTest1_4Suite : public TestSuite
-// {
-//   public:
-//     LenaTest1_4Suite ();
-// };
-// 
-// LenaTest1_4Suite::LenaTest1_4Suite ()
-// : TestSuite ("lenaTest1.4", SYSTEM)
-// {
-//   AddTestCase (new LenaRrFfMacSchedulerTestCase ());
-// }
-// 
-// static LenaTest1_4Suite lenaTest1_4Suite;
 
 
