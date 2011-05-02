@@ -19,8 +19,8 @@
  *         Nicola Baldo <nbaldo@cttc.es>
  */
 
-#ifndef LENA_TEST_SINR_CHUNK_PROCESSOR_H
-#define LENA_TEST_SINR_CHUNK_PROCESSOR_H
+#ifndef LTE_TEST_SINR_CHUNK_PROCESSOR_H
+#define LTE_TEST_SINR_CHUNK_PROCESSOR_H
 
 #include "ns3/lte-sinr-chunk-processor.h"
 
@@ -32,11 +32,11 @@ namespace ns3 {
  * It is plugged on the receiving SpectrumPhy and therefore
  * receives the SINR SpectrumValue calculated by the LteInterference module.
  */
-class LenaTestSinrChunkProcessor : public LteSinrChunkProcessor
+class LteTestSinrChunkProcessor : public LteSinrChunkProcessor
 {
 public:
-  LenaTestSinrChunkProcessor (Ptr<LtePhy> p);
-  virtual ~LenaTestSinrChunkProcessor ();
+  LteTestSinrChunkProcessor (Ptr<LtePhy> p);
+  virtual ~LteTestSinrChunkProcessor ();
 
   virtual void Start ();
   virtual void EvaluateSinrChunk (const SpectrumValue& sinr, Time duration);
@@ -53,4 +53,4 @@ private:
 
 } // namespace ns3
 
-#endif /* LENA_TEST_SINR_CHUNK_PROCESSOR_H */
+#endif /* LTE_TEST_SINR_CHUNK_PROCESSOR_H */
