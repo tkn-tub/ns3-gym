@@ -41,33 +41,33 @@ NS_LOG_COMPONENT_DEFINE ("LenaTestRrFfMacCheduler");
 using namespace ns3;
 
 
-// void
-// UlTxPduCallback(Ptr<RlcStatsCalculator> rlcStats, std::string path,
-//                      uint16_t rnti, uint8_t lcid, uint32_t packetSize)
-// {
-//   rlcStats->UlTxPdu(rnti, lcid, packetSize);
-// }
-//                      
-// void 
-// UlRxPduCallback(Ptr<RlcStatsCalculator> rlcStats, std::string path,
-//                    uint16_t rnti, uint8_t lcid, uint32_t packetSize, uint64_t delay)
-// {
-//   rlcStats->UlRxPdu(rnti, lcid, packetSize, delay);
-// }
-//                                           
-// void
-// DlTxPduCallback(Ptr<RlcStatsCalculator> rlcStats, std::string path,
-//                    uint16_t rnti, uint8_t lcid, uint32_t packetSize)
-// {
-//   rlcStats->DlTxPdu(rnti, lcid, packetSize);
-// }
-//                                                                
-// void 
-// DlRxPduCallback(Ptr<RlcStatsCalculator> rlcStats, std::string path,
-//                    uint16_t rnti, uint8_t lcid, uint32_t packetSize, uint64_t delay)
-// {
-//   rlcStats->DlRxPdu(rnti, lcid, packetSize, delay);
-// }
+void
+UlTxPduCallback(Ptr<RlcStatsCalculator> rlcStats, std::string path,
+                     uint16_t rnti, uint8_t lcid, uint32_t packetSize)
+{
+  rlcStats->UlTxPdu(rnti, lcid, packetSize);
+}
+                     
+void 
+UlRxPduCallback(Ptr<RlcStatsCalculator> rlcStats, std::string path,
+                   uint16_t rnti, uint8_t lcid, uint32_t packetSize, uint64_t delay)
+{
+  rlcStats->UlRxPdu(rnti, lcid, packetSize, delay);
+}
+                                          
+void
+DlTxPduCallback(Ptr<RlcStatsCalculator> rlcStats, std::string path,
+                   uint16_t rnti, uint8_t lcid, uint32_t packetSize)
+{
+  rlcStats->DlTxPdu(rnti, lcid, packetSize);
+}
+                                                               
+void 
+DlRxPduCallback(Ptr<RlcStatsCalculator> rlcStats, std::string path,
+                   uint16_t rnti, uint8_t lcid, uint32_t packetSize, uint64_t delay)
+{
+  rlcStats->DlRxPdu(rnti, lcid, packetSize, delay);
+}
 
 
 
@@ -120,8 +120,9 @@ LenaRrFfMacSchedulerTestCase::DoRun (void)
   LogComponentEnable ("LteUeNetDevice", LOG_LEVEL_ALL);
   LogComponentEnable ("LteEnbNetDevice", LOG_LEVEL_ALL);
 
-  LogComponentEnable ("LenaTestSinrChunkProcessor", LOG_LEVEL_ALL);
-  LogComponentEnable ("LenaTest", LOG_LEVEL_ALL);
+  LogComponentEnable ("LenaTestRrFfMacCheduler", LOG_LEVEL_ALL);
+  LogComponentEnable ("RlcStatsCalculator", LOG_LEVEL_ALL);
+  
 
   /**
    * Initialize Simulation Scenario: 1 eNB and 2 UEs
@@ -159,9 +160,18 @@ LenaRrFfMacSchedulerTestCase::DoRun (void)
   lena->ActivateEpsBearer (ueDevs, bearer);
   
   
-  Simulator::Stop (Seconds (0.005));
+  Simulator::Stop (Seconds (0.050));
   
   Ptr<RlcStatsCalculator> rlcStats = CreateObject<RlcStatsCalculator> ();
+  Config::Connect("/NodeList/0/DeviceList/0/LteEnbRrc/UeMap/*/RadioBearerMap/*/LteRlc/TxPDU",
+                  MakeBoundCallback(&DlTxPduCallback, rlcStats));
+  Config::Connect("/NodeList/*/DeviceList/0/LteUeRrc/RlcMap/*/RxPDU",
+                  MakeBoundCallback(&DlRxPduCallback, rlcStats));
+                  
+  Config::Connect("/NodeList/*/DeviceList/0/LteUeRrc/RlcMap/*/TxPDU",
+                  MakeBoundCallback(&UlTxPduCallback, rlcStats));
+  Config::Connect ("/NodeList/0/DeviceList/0/LteEnbRrc/UeMap/*/RadioBearerMap/*/LteRlc/RxPDU",
+                  MakeBoundCallback(&UlRxPduCallback, rlcStats));
   
   Simulator::Run ();
   
