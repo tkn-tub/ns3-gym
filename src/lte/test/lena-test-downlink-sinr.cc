@@ -49,35 +49,8 @@ LenaDownlinkSinrTestSuite::LenaDownlinkSinrTestSuite ()
 {
   LogLevel logLevel = (LogLevel)(LOG_PREFIX_FUNC | LOG_PREFIX_TIME | LOG_LEVEL_ALL);
 
-  LogComponentEnable ("LteEnbRrc", logLevel);
-  LogComponentEnable ("LteUeRrc", logLevel);
-  LogComponentEnable ("LteEnbMac", logLevel);
-  LogComponentEnable ("LteUeMac", logLevel);
-  LogComponentEnable ("LteRlc", logLevel);
-  LogComponentEnable ("RrPacketScheduler", logLevel);
-
-  LogComponentEnable ("LtePhy", logLevel);
-  LogComponentEnable ("LteEnbPhy", logLevel);
-  LogComponentEnable ("LteUePhy", logLevel);
-
-  LogComponentEnable ("LteSpectrumPhy", logLevel);
-  LogComponentEnable ("LteInterference", logLevel);
-  LogComponentEnable ("LteSinrChunkProcessor", logLevel);
-
-  LogComponentEnable ("LtePropagationLossModel", logLevel);
-  LogComponentEnable ("LossModel", logLevel);
-  LogComponentEnable ("ShadowingLossModel", logLevel);
-  LogComponentEnable ("PenetrationLossModel", logLevel);
-  LogComponentEnable ("MultipathLossModel", logLevel);
-  LogComponentEnable ("PathLossModel", logLevel);
-
-  LogComponentEnable ("LteNetDevice", logLevel);
-  LogComponentEnable ("LteUeNetDevice", logLevel);
-  LogComponentEnable ("LteEnbNetDevice", logLevel);
-
   LogComponentEnable ("LenaTestSinrChunkProcessor", logLevel);
   LogComponentEnable ("LenaDownlinkSinrTest", logLevel);
-  LogComponentEnable ("LenaUplinkSinrTest", logLevel);
 
   NS_LOG_INFO ("Creating LenaDownlinkSinrTestSuite");
 
@@ -102,7 +75,7 @@ LenaDownlinkSinrTestSuite::LenaDownlinkSinrTestSuite ()
   sm = Create<SpectrumModel> (bands);
 
   /**
-   * TX signal #1: Power Spectral Density of the signal of interest = [-46 -48] dBm and BW = [20 22] MHz
+   * TX signal #1: Power Spectral Density (W/Hz) of the signal of interest = [-46 -48] dBm and BW = [20 22] MHz
    */
   Ptr<SpectrumValue> rxPsd1 = Create<SpectrumValue> (sm);
   (*rxPsd1)[0] = 1.255943215755e-15;
@@ -115,7 +88,7 @@ LenaDownlinkSinrTestSuite::LenaDownlinkSinrTestSuite ()
   AddTestCase (new LenaDownlinkSinrTestCase (rxPsd1, theoreticalSinr1, "sdBm = [-46 -48]"));
 
   /**
-   * TX signal #2: Power Spectral Density of the signal of interest = [-63 -61] dBm and BW = [20 22] MHz
+   * TX signal #2: Power Spectral Density (W/Hz) of the signal of interest = [-63 -61] dBm and BW = [20 22] MHz
    */
   Ptr<SpectrumValue> rxPsd2 = Create<SpectrumValue> (sm);
   (*rxPsd2)[0] = 2.505936168136e-17;
@@ -179,10 +152,6 @@ LenaDownlinkSinrTestCase::DoRun (void)
   LogComponentEnable ("LteNetDevice", logLevel);
   LogComponentEnable ("LteUeNetDevice", logLevel);
   LogComponentEnable ("LteEnbNetDevice", logLevel);
-
-  LogComponentEnable ("LenaTestSinrChunkProcessor", logLevel);
-  LogComponentEnable ("LenaDownlinkSinrTest", logLevel);
-  LogComponentEnable ("LenaUplinkSinrTest", logLevel);
 
   /**
    * Instantiate a single receiving LteSpectrumPhy

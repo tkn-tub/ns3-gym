@@ -21,6 +21,8 @@
 #ifndef LENA_TEST_DOWNLINK_SINR_H
 #define LENA_TEST_DOWNLINK_SINR_H
 
+#include "ns3/spectrum-value.h"
+
 #include "ns3/test.h"
 
 
