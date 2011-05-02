@@ -34,6 +34,7 @@
 #include <ns3/lte-ue-phy.h>
 
 
+
 NS_LOG_COMPONENT_DEFINE ("LteEnbMac");
 
 namespace ns3 {
@@ -297,7 +298,15 @@ LteEnbMac::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::LteEnbMac")
     .SetParent<Object> ()
-    .AddConstructor<LteEnbMac> ();
+    .AddConstructor<LteEnbMac> ()
+    .AddTraceSource ("DlScheduling",
+                     "Information regarding DL scheduling.",
+                     MakeTraceSourceAccessor (&LteEnbMac::m_dlScheduling))
+    .AddTraceSource ("UlScheduling",
+                     "Information regarding UL scheduling.",
+                     MakeTraceSourceAccessor (&LteEnbMac::m_ulScheduling))
+    ;
+
   return tid;
 }
 
@@ -399,6 +408,10 @@ void
 LteEnbMac::DoSubframeIndication (uint32_t frameNo, uint32_t subframeNo)
 {
   NS_LOG_FUNCTION (this);
+
+  // Store current frame / subframe number
+  m_frameNo = frameNo;
+  m_subframeNo = subframeNo;
 
 
   // --- DOWNLINK ---
@@ -722,6 +735,34 @@ LteEnbMac::DoSchedDlConfigInd (FfMacSchedSapUser::SchedDlConfigIndParameters ind
         }
     }
 
+  // Fire the trace with the DL information
+  for (  uint32_t i  = 0; i < ind.m_buildDataList.size (); i++ )
+    {
+      // Only one TB used
+      if (ind.m_buildDataList.at (i).m_dci.m_tbsSize.size () == 1)
+        {
+          m_dlScheduling (m_frameNo, m_subframeNo, ind.m_buildDataList.at (i).m_dci.m_rnti,
+                          ind.m_buildDataList.at (i).m_dci.m_mcs.at (0),
+                          ind.m_buildDataList.at (i).m_dci.m_tbsSize.at (0),
+                          0, 0
+                         );
+
+        }
+      // Two TBs used
+      else if (ind.m_buildDataList.at (i).m_dci.m_tbsSize.size () == 2)
+        {
+          m_dlScheduling (m_frameNo, m_subframeNo, ind.m_buildDataList.at (i).m_dci.m_rnti,
+                          ind.m_buildDataList.at (i).m_dci.m_mcs.at (0),
+                          ind.m_buildDataList.at (i).m_dci.m_tbsSize.at (0),
+                          ind.m_buildDataList.at (i).m_dci.m_mcs.at (1),
+                          ind.m_buildDataList.at (i).m_dci.m_tbsSize.at (1)
+                         );
+        }
+      else
+        {
+          NS_FATAL_ERROR ("Found element with more than two transport blocks");
+        }
+    }
 }
 
 
@@ -739,6 +780,15 @@ LteEnbMac::DoSchedUlConfigInd (FfMacSchedSapUser::SchedUlConfigIndParameters ind
       m_enbPhySapProvider->SendIdealControlMessage (msg);
     }
   
+  // Fire the trace with the UL information
+  for (  uint32_t i  = 0; i < ind.m_dciList.size (); i++ )
+    {
+        m_ulScheduling (m_frameNo, m_subframeNo, ind.m_dciList.at (i).m_rnti,
+                        ind.m_dciList.at (i).m_mcs, ind.m_dciList.at (i).m_tbSize);
+    }
+
+
+
 }
 
 

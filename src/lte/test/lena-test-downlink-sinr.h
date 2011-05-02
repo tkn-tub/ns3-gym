@@ -21,6 +21,8 @@
 #ifndef LENA_TEST_DOWNLINK_SINR_H
 #define LENA_TEST_DOWNLINK_SINR_H
 
+#include "ns3/spectrum-value.h"
+
 #include "ns3/test.h"
 
 
@@ -40,11 +42,15 @@ public:
 class LenaDownlinkSinrTestCase : public TestCase
 {
   public:
-    LenaDownlinkSinrTestCase ();
+    LenaDownlinkSinrTestCase (Ptr<SpectrumValue> sv, Ptr<SpectrumValue> sinr, std::string name);
     virtual ~LenaDownlinkSinrTestCase ();
 
   private:
     virtual void DoRun (void);
+
+    Ptr<SpectrumValue> m_sv;
+    Ptr<const SpectrumModel> m_sm;
+    Ptr<SpectrumValue> m_sinr;
 };
 
 

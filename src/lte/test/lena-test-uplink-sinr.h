@@ -18,24 +18,41 @@
  * Author: Manuel Requena <manuel.requena@cttc.es>
  */
 
-#include "ns3/test.h"
+#ifndef LENA_TEST_UPLINK_SINR_H
+#define LENA_TEST_UPLINK_SINR_H
 
-#include "ns3/lena-test-downlink-sinr.h"
+#include "ns3/spectrum-value.h"
+
+#include "ns3/test.h"
 
 
 using namespace ns3;
 
 
-class LenaTestSuite : public TestSuite
+/**
+ * Test 1.2 SINR calculation in uplink
+ */
+class LenaUplinkSinrTestSuite : public TestSuite
 {
 public:
-  LenaTestSuite ();
+  LenaUplinkSinrTestSuite ();
 };
 
-LenaTestSuite::LenaTestSuite ()
-  : TestSuite ("lena", SYSTEM)
-{
-  AddTestCase (new LenaDownlinkSinrTestCase);
-}
 
-static LenaTestSuite lenaTestSuite;
+class LenaUplinkSinrTestCase : public TestCase
+{
+  public:
+    LenaUplinkSinrTestCase (Ptr<SpectrumValue> sv1, Ptr<SpectrumValue> sv2, Ptr<SpectrumValue> sinr, std::string name);
+    virtual ~LenaUplinkSinrTestCase ();
+
+  private:
+    virtual void DoRun (void);
+
+    Ptr<SpectrumValue> m_sv1;
+    Ptr<SpectrumValue> m_sv2;
+    Ptr<const SpectrumModel> m_sm;
+    Ptr<SpectrumValue> m_sinr;
+};
+
+
+#endif /* LENA_TEST_UPLINK_SINR_H */

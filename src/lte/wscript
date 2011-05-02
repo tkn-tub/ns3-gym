@@ -29,6 +29,7 @@ def build(bld):
         'model/ideal-control-messages.cc',
         'helper/lena-helper.cc',
         'helper/rlc-stats-calculator.cc',
+        'helper/mac-stats-calculator.cc',
         'model/ff-mac-csched-sap.cc',
         'model/ff-mac-sched-sap.cc',
         'model/lte-mac-sap.cc',
@@ -45,11 +46,12 @@ def build(bld):
         'model/lte-interference.cc',
         'model/lte-sinr-chunk-processor.cc',
         'model/pf-ff-mac-scheduler.cc',
-        'test/lena-test-suite.cc',
         'test/lena-test-downlink-sinr.cc',
+        'test/lena-test-uplink-sinr.cc',
         'test/lena-test-sinr-chunk-processor.cc',
         'test/lte-test-rr-ff-mac-scheduler.cc',
         'test/lte-test-pf-ff-mac-scheduler.cc',
+        'test/lte-test-earfcn.cc',
         ]
     
     headers = bld.new_task_gen('ns3header')
@@ -79,6 +81,7 @@ def build(bld):
         'model/lte-ue-net-device.h',
         'model/ideal-control-messages.h',
         'helper/lena-helper.h',
+        'helper/mac-stats-calculator.h',
         'helper/rlc-stats-calculator.h',
         'model/ff-mac-common.h',
         'model/ff-mac-csched-sap.h',
@@ -98,6 +101,7 @@ def build(bld):
         'model/lte-sinr-chunk-processor.h',
         'model/pf-ff-mac-scheduler.h',
         'test/lena-test-downlink-sinr.h',
+        'test/lena-test-uplink-sinr.h',
         'test/lena-test-sinr-chunk-processor.h',
         'test/lte-test-rr-ff-mac-scheduler.h',
         'test/lte-test-pf-ff-mac-scheduler.h',
